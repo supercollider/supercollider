@@ -1071,7 +1071,7 @@ static ColumnDescriptor* prepareColumnTable(ColumnDescriptor* sels, int numSelec
     SymbolTable* symbolTable = gMainVMGlobals->symbolTable;
 
     int selectorTableIndex = 0;
-    for (int i : boost::irange(0, symbolTable->TableSize())) {
+    for (auto i : boost::irange(decltype(symbolTable->TableSize())(0), symbolTable->TableSize())) {
         PyrSymbol* sym = symbolTable->Get(i);
         if (sym && (sym->flags & sym_Selector))
             sels[selectorTableIndex++].selector = sym;

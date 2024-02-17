@@ -24,26 +24,61 @@ Primitives for Symbol.
 
 */
 
-#include <string.h>
-#include <stdlib.h>
+#include <cstring>
+#include <cstdlib>
 #include "PyrPrimitive.h"
 #include "PyrSymbol.h"
 #include "VMGlobals.h"
 #include "PyrKernel.h"
 #include "SCBase.h"
 
-int prSymbolIsPrefix(struct VMGlobals* g, int numArgsPushed) {
-    PyrSlot *a, *b;
-    int length;
 
-    a = g->sp - 1;
-    b = g->sp;
+// small symbol size optimization.
+static constexpr size_t small_symbol_size = 16;
+static constexpr size_t medium_symbol_size = 256; // the value used before
+static_assert(small_symbol_size < medium_symbol_size);
+
+template <size_t FreeCharacters, class WithCharArray, class WithStdString>
+auto do_with_copy_sym_string_with_free_characters(const PyrSymbol& sym, WithCharArray&& with_char_array,
+                                                  WithStdString&& with_std_string) {
+    static_assert(std::is_invocable<WithCharArray, char*, decltype(sym.length)>::value,
+                  "WithCharArray must be invocable with a char* and length of the symbol.\n");
+
+    static_assert(std::is_invocable<WithStdString, std::string&>::value,
+                  "WithStdString must be invocable with a std::string.\n");
+
+    static_assert(std::is_same_v<std::invoke_result_t<WithCharArray, char*, decltype(sym.length)>,
+                                 std::invoke_result_t<WithStdString, std::string&>>,
+                  "WithCharArray must return the same as WithStdString.\n");
+
+    if (sym.length <= small_symbol_size - FreeCharacters) {
+        char setter[small_symbol_size];
+        memcpy(setter, sym.name, sym.length);
+        return std::forward<WithCharArray>(with_char_array)(setter, sym.length);
+    } else if (sym.length <= medium_symbol_size - FreeCharacters) {
+        char setter[medium_symbol_size];
+        memcpy(setter, sym.name, sym.length);
+        return std::forward<WithCharArray>(with_char_array)(setter, sym.length);
+    } else {
+        std::string setter(sym.name);
+        return std::forward<WithStdString>(with_std_string)(setter);
+    }
+}
+template <class WithCharArray, class WithStdString>
+void do_with_copy_sym_string(const PyrSymbol& sym, WithCharArray&& with_char_array, WithStdString&& with_std_string) {
+    do_with_copy_sym_string_with_free_characters<0>(sym, std::forward<WithCharArray>(with_char_array),
+                                                    std::forward<WithStdString>(with_std_string));
+}
+
+int prSymbolIsPrefix(struct VMGlobals* g, int numArgsPushed) {
+    PyrSlot* a = g->sp - 1;
+    PyrSlot* b = g->sp;
     if (!IsSym(a) || !IsSym(b))
         return errWrongType;
-    int32 alen = slotRawSymbol(a)->length;
-    int32 blen = slotRawSymbol(b)->length;
-    length = sc_min(alen, blen);
-    if (memcmp(slotRawSymbol(a)->name, slotRawSymbol(b)->name, length) == 0 && length > 0) {
+    const auto alen = slotRawSymbol(a)->length;
+    const auto blen = slotRawSymbol(b)->length;
+    const auto length = sc_min(alen, blen);
+    if (memcmp(slotRawSymbol(a)->name, slotRawSymbol(b)->name, length) == 0) {
         SetTrue(a);
     } else {
         SetFalse(a);
@@ -52,20 +87,14 @@ int prSymbolIsPrefix(struct VMGlobals* g, int numArgsPushed) {
 }
 
 int prSymbolClass(struct VMGlobals* g, int numArgsPushed) {
-    PyrSlot* a;
-    PyrClass* classobj;
-    // char firstChar;
+    PyrSlot* a = g->sp;
 
-    a = g->sp;
     if (slotRawSymbol(a)->flags & sym_Class) {
-        // firstChar = slotRawSymbol(a)->name[0];
-        // if (firstChar >= 'A' && firstChar <= 'Z') {
-        classobj = slotRawSymbol(a)->u.classobj;
-        if (classobj) {
+        PyrClass* classobj = slotRawSymbol(a)->u.classobj;
+        if (classobj)
             SetObject(a, classobj);
-        } else {
+        else
             SetNil(a);
-        }
     } else {
         SetNil(a);
     }
@@ -73,82 +102,80 @@ int prSymbolClass(struct VMGlobals* g, int numArgsPushed) {
 }
 
 int prSymbolIsSetter(struct VMGlobals* g, int numArgsPushed) {
-    PyrSlot* a;
-
-    a = g->sp;
-    if (slotRawSymbol(a)->flags & sym_Setter) {
+    PyrSlot* a = g->sp;
+    if (slotRawSymbol(a)->flags & sym_Setter)
         SetTrue(a);
-    } else {
+    else
         SetFalse(a);
-    }
     return errNone;
 }
 
 int prSymbolAsSetter(struct VMGlobals* g, int numArgsPushed) {
-    PyrSlot* a;
-    char str[256];
-    int len;
-
-    a = g->sp;
-    if (!(slotRawSymbol(a)->flags & sym_Setter)) {
-        if ((slotRawSymbol(a)->flags & sym_Class) || (slotRawSymbol(a)->flags & sym_Primitive)) {
+    PyrSlot* a = g->sp;
+    // note the pointer aliasing here
+    PyrSymbol& sym = *slotRawSymbol(a);
+    if (!(sym.flags & sym_Setter)) {
+        if ((sym.flags & sym_Class) || (sym.flags & sym_Primitive)) {
             error("Cannot convert class names or primitive names to setters.\n");
             return errFailed;
         }
-        if (strlen(slotRawSymbol(a)->name) > 255) {
-            error("symbol name too long.\n");
-            return errFailed;
-        }
-        strcpy(str, slotRawSymbol(a)->name);
-        len = strlen(str);
-        str[len] = '_';
-        str[len + 1] = 0;
 
-        // postfl("prSymbolAsSetter %s\n", str);
-        SetRaw(a, getsym(str));
+        do_with_copy_sym_string_with_free_characters<1>(
+            sym,
+            [&](char* setter, size_t len) {
+                setter[len] = '_';
+                setter[len + 1] = '\0';
+                SetRaw(a, getsym(setter));
+            },
+            [&](std::string setter) {
+                setter += '_';
+                SetRaw(a, getsym(setter.c_str()));
+            });
     }
     return errNone;
 }
 
 int prSymbolAsGetter(struct VMGlobals* g, int numArgsPushed) {
-    PyrSlot* a;
-    char str[256];
+    // chops off the underscore if present
+    PyrSlot* a = g->sp;
+    // note the pointer aliasing here
+    const PyrSymbol& sym = *slotRawSymbol(a);
 
-    a = g->sp;
-    if ((slotRawSymbol(a)->flags & sym_Setter)) {
-        if ((slotRawSymbol(a)->flags & sym_Class) || (slotRawSymbol(a)->flags & sym_Primitive)) {
+    if ((sym.flags & sym_Setter)) {
+        if ((sym.flags & sym_Class) || (sym.flags & sym_Primitive)) {
             error("Cannot convert class names or primitive names to getters.\n");
             return errFailed;
         }
-        strcpy(str, slotRawSymbol(a)->name);
-        str[strlen(str) - 1] = 0;
-        // postfl("prSymbolAsGetter %s\n", str);
-        SetRaw(a, getsym(str));
+        do_with_copy_sym_string(
+            sym,
+            [&](char* c, size_t len) {
+                c[len - 1] = '\0';
+                SetRaw(a, getsym(c));
+            },
+            [&](std::string c) {
+                c.erase(c.size());
+                SetRaw(a, getsym(c.c_str()));
+            });
     }
     return errNone;
 }
 
 int prSymbolIsClassName(struct VMGlobals* g, int numArgsPushed) {
-    PyrSlot* a;
-
-    a = g->sp;
-    if (slotRawSymbol(a)->flags & sym_Class) {
+    PyrSlot* a = g->sp;
+    if (slotRawSymbol(a)->flags & sym_Class)
         SetTrue(a);
-    } else {
+    else
         SetFalse(a);
-    }
+
     return errNone;
 }
 
 int prSymbolIsMetaClassName(struct VMGlobals* g, int numArgsPushed) {
-    PyrSlot* a;
-
-    a = g->sp;
-    if (slotRawSymbol(a)->flags & sym_MetaClass) {
+    PyrSlot* a = g->sp;
+    if (slotRawSymbol(a)->flags & sym_MetaClass)
         SetTrue(a);
-    } else {
+    else
         SetFalse(a);
-    }
     return errNone;
 }
 
@@ -175,10 +202,10 @@ int prSymbol_IsBinaryOp(struct VMGlobals* g, int numArgsPushed) {
         if (str[0] == '/' && (str[1] == '/' || str[1] == '*')) {
             SetFalse(a);
         } else {
-            const int length = strlen(str);
+            const auto len = slotRawSymbol(a)->length;
             SetTrue(a);
-            for (int i = 0; i < length; i++) {
-                bool character_is_binary_operator = strchr(binary_op_characters, str[i]);
+            for (std::remove_const<decltype(len)>::type i = 0; i < len; i++) {
+                const bool character_is_binary_operator = strchr(binary_op_characters, str[i]);
                 if (!character_is_binary_operator) {
                     SetFalse(a);
                     break;
@@ -194,61 +221,53 @@ int prSymbol_IsIdentifier(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     const char* str = slotRawSymbol(a)->name;
 
-    // An empty symbol is not a valid identifier.
-    if (str[0] == '\0') {
+    // all symbols are valid c string, so they have at least a size of 1
+    if (!std::islower(static_cast<unsigned char>(str[0]))) {
         SetFalse(a);
-
-        // The first character must be a lowercase letter.
-    } else if ('a' <= str[0] && str[0] <= 'z') {
-        int length = strlen(str);
-        SetTrue(a);
-        // All other characters must be alphanumeric or '_'.
-        for (int i = 1; i < length; i++) {
-            char c = str[i];
-            if (!((c == '_') || ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') || ('0' <= c && c <= '9'))) {
-                SetFalse(a);
-                break;
+        return errNone;
+    }
+    const auto len = slotRawSymbol(a)->length;
+    const bool all_chars_are_valid = [&]() -> bool {
+        for (std::remove_const<decltype(len)>::type i = 1; i < len; i++) {
+            const char c = str[i];
+            if (!(std::isalnum(c) or c == '_')) {
+                return false;
             }
         }
-    } else {
+        return true;
+    }();
+    if (all_chars_are_valid)
+        SetTrue(a);
+    else
         SetFalse(a);
-    }
 
     return errNone;
 }
 
 int prSymbol_AsInteger(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
-
-    char* str = slotRawSymbol(a)->name;
+    const char* str = slotRawSymbol(a)->name;
     SetInt(a, atoi(str));
-
     return errNone;
 }
 
 int prSymbol_PrimitiveIndex(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
-
     SetInt(a, slotRawSymbol(a)->u.index);
-
     return errNone;
 }
 
 int prSymbol_SpecialIndex(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
-
     SetInt(a, slotRawSymbol(a)->specialIndex);
-
     return errNone;
 }
 
 
 int prSymbol_AsFloat(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
-
-    char* str = slotRawSymbol(a)->name;
+    const char* str = slotRawSymbol(a)->name;
     SetFloat(a, atof(str));
-
     return errNone;
 }
 
@@ -327,34 +346,22 @@ int prSymbol_AsFloat(struct VMGlobals* g, int numArgsPushed) {
  * Initial revision
  */
 
-
-#ifndef lo_NEGATE
-#    define lo_NEGATE '!'
-#endif
-
-#ifndef lo_true
-#    define lo_true 1
-#endif
-#ifndef lo_false
-#    define lo_false 0
-#endif
-
-inline int lo_pattern_match(const char* str, const char* p) {
+inline bool lo_pattern_match(const char* str, const char* p) {
     int negate;
     int match;
     char c;
 
     while (*p) {
         if (!*str && *p != '*')
-            return lo_false;
+            return false;
 
         switch (c = *p++) {
         case '*':
-            while (*p == '*' && *p != '/')
+            while (*p == '*')
                 p++;
 
             if (!*p)
-                return lo_true;
+                return true;
 
             //                if (*p != '?' && *p != '[' && *p != '\\')
             if (*p != '?' && *p != '[' && *p != '{')
@@ -363,64 +370,64 @@ inline int lo_pattern_match(const char* str, const char* p) {
 
             while (*str) {
                 if (lo_pattern_match(str, p))
-                    return lo_true;
+                    return true;
                 str++;
             }
-            return lo_false;
+            return false;
 
         case '?':
             if (*str)
                 break;
-            return lo_false;
+            return false;
             /*
              * set specification is inclusive, that is [a-z] is a, z and
              * everything in between. this means [z-a] may be interpreted
              * as a set that contains z, a and nothing in between.
              */
         case '[':
-            if (*p != lo_NEGATE)
-                negate = lo_false;
+            if (*p != '!')
+                negate = false;
             else {
-                negate = lo_true;
+                negate = true;
                 p++;
             }
 
-            match = lo_false;
+            match = false;
 
             while (!match && (c = *p++)) {
                 if (!*p)
-                    return lo_false;
+                    return false;
                 if (*p == '-') { /* c-c */
                     if (!*++p)
-                        return lo_false;
+                        return false;
                     if (*p != ']') {
                         if (*str == c || *str == *p || (*str > c && *str < *p))
-                            match = lo_true;
+                            match = true;
                     } else { /* c-] */
                         if (*str >= c)
-                            match = lo_true;
+                            match = true;
                         break;
                     }
                 } else { /* cc or c] */
                     if (c == *str)
-                        match = lo_true;
+                        match = true;
                     if (*p != ']') {
                         if (*p == *str)
-                            match = lo_true;
+                            match = true;
                     } else
                         break;
                 }
             }
 
             if (negate == match)
-                return lo_false;
+                return false;
             /*
              * if there is a match, skip past the cset and continue on
              */
             while (*p && *p != ']')
                 p++;
             if (!*p++) /* oops! */
-                return lo_false;
+                return false;
             break;
 
             /*
@@ -435,32 +442,32 @@ inline int lo_pattern_match(const char* str, const char* p) {
             while (*remainder && *remainder != '}')
                 remainder++;
             if (!*remainder++) /* oops! */
-                return lo_false;
+                return false;
 
             c = *p++;
 
             while (c) {
                 if (c == ',') {
                     if (lo_pattern_match(str, remainder)) {
-                        return lo_true;
+                        return true;
                     } else {
                         // backtrack on test string
                         str = place;
                         // continue testing,
                         // skip comma
                         if (!*p++) // oops
-                            return lo_false;
+                            return false;
                     }
                 } else if (c == '}') {
                     // continue normal pattern matching
                     if (!*p && !*str)
-                        return lo_true;
+                        return true;
                     str--; // str is incremented again below
                     break;
                 } else if (c == *str) {
                     str++;
                     if (!*str && *remainder)
-                        return lo_false;
+                        return false;
                 } else { // skip to next comma
                     str = place;
                     while (*p != ',' && *p != '}' && *p)
@@ -468,7 +475,7 @@ inline int lo_pattern_match(const char* str, const char* p) {
                     if (*p == ',')
                         p++;
                     else if (*p == '}') {
-                        return lo_false;
+                        return false;
                     }
                 }
                 c = *p++;
@@ -485,7 +492,7 @@ inline int lo_pattern_match(const char* str, const char* p) {
 
         default:
             if (c != *str)
-                return lo_false;
+                return false;
             break;
         }
         str++;
@@ -498,15 +505,10 @@ inline int lo_pattern_match(const char* str, const char* p) {
 
 
 int prSymbol_matchOSCPattern(struct VMGlobals* g, int numArgsPushed) {
-    PyrSlot *a, *b;
-
-    a = g->sp - 1;
-    b = g->sp;
+    PyrSlot* a = g->sp - 1;
+    PyrSlot* b = g->sp;
     if (!IsSym(a) || !IsSym(b))
         return errWrongType;
-    //	int32 alen = slotRawSymbol(a)->length;
-    //	int32 blen = slotRawSymbol(b)->length;
-    //	length = sc_min(alen, blen);
     if (lo_pattern_match(slotRawSymbol(a)->name, slotRawSymbol(b)->name)) {
         SetTrue(a);
     } else {
@@ -518,8 +520,8 @@ int prSymbol_matchOSCPattern(struct VMGlobals* g, int numArgsPushed) {
 int prSymbol_isMap(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
-    char* str = slotRawSymbol(a)->name;
-    if (strlen(str) > 1 && (str[0] == 'a' || str[0] == 'c') && str[1] >= '0' && str[1] <= '9')
+    const char* str = slotRawSymbol(a)->name;
+    if ((str[0] == 'a' || str[0] == 'c') && std::isdigit(static_cast<unsigned char>(str[1])))
         SetTrue(a);
     else
         SetFalse(a);
@@ -528,9 +530,8 @@ int prSymbol_isMap(struct VMGlobals* g, int numArgsPushed) {
 }
 
 void initSymbolPrimitives() {
-    int base, index = 0;
-
-    base = nextPrimitiveIndex();
+    int base = nextPrimitiveIndex();
+    int index = 0;
 
     definePrimitive(base, index++, "_SymbolIsPrefix", prSymbolIsPrefix, 2, 0);
     definePrimitive(base, index++, "_SymbolClass", prSymbolClass, 1, 0);

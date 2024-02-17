@@ -20,23 +20,26 @@
 
 #include "SCBase.h"
 #include "PyrSymbolTable.h"
-#include "clz.h"
-#include <stdlib.h>
-#include <string.h>
+#include "PyrSymbol.h"
 #include "InitAlloc.h"
 #include "VMGlobals.h"
 #include "Hash.h"
 
-SCLANG_DLLEXPORT_C PyrSymbol* getsym(const char* name) {
-    PyrSymbol* symbol = gMainVMGlobals->symbolTable->Make(name);
-    if (!symbol) {
-        fprintf(stderr, "getsym failed '%s'\n", name);
-        exit(-1);
-    }
-    return symbol;
-}
+#include <cstring>
+
+SCLANG_DLLEXPORT_C PyrSymbol* getsym(const char* name) { return gMainVMGlobals->symbolTable->Make(name); }
 
 SCLANG_DLLEXPORT_C PyrSymbol* getmetasym(const char* name) {
+    // TODO: make this function is safe!
+    // If the class name is longer than 250 characters it will be truncated,
+    //      which means there could be a name collision here (which would be very bad for sclang).
+    // However, if this throws, a long class name will crash the interpreter without a good warning.
+
+    // Therefore, the following lines are omited.
+
+    // if (strlen(name) > 250)
+    //      throw std::runtime_error("Class name too long, max 250 characters. Received: " + std::string(name) + '\n');
+
     char str[256];
     strcpy(str, "Meta_");
     strncat(str, name, 250);
@@ -54,68 +57,67 @@ SymbolSpace::SymbolSpace(AllocPool* inPool) {
     mSymbolPool.Init(inPool, SYMBOLCHUNK, SYMBOLCHUNK, SYMBOLCHUNK / 5);
 }
 
+PyrSymbol* SymbolSpace::NewSymbol(const char* inName, hash_t inHash, size_t inLength) {
+    auto* sym_ptr = mSymbolPool.Alloc(sizeof(PyrSymbol));
+    if (sym_ptr == nullptr)
+        throw std::runtime_error(exceptionMsgs::outOfMemory);
 
-PyrSymbol* SymbolSpace::NewSymbol(const char* inName, int inHash, int inLength) {
-    PyrSymbol* sym;
-    sym = (PyrSymbol*)mSymbolPool.Alloc(sizeof(PyrSymbol));
-    MEMFAIL(sym);
-    sym->name = (char*)mStringPool.Alloc(inLength + 1);
-    MEMFAIL(sym->name);
-    strcpy(sym->name, inName);
-    sym->hash = inHash;
-    sym->length = inLength;
-    sym->specialIndex = -1;
-    sym->flags = 0;
-    if (inName[0] >= 'A' && inName[0] <= 'Z')
-        sym->flags |= sym_Class;
-    if (inLength > 1 && inName[0] == '_')
-        sym->flags |= sym_Primitive;
-    if (inLength > 1 && inName[inLength - 1] == '_')
-        sym->flags |= sym_Setter;
-    sym->u.index = 0;
-    sym->classdep = nullptr;
-    return sym;
+    char* name_ptr = reinterpret_cast<char*>(mStringPool.Alloc(inLength + 1));
+    if (name_ptr == nullptr)
+        throw std::runtime_error(exceptionMsgs::outOfMemory);
+    strcpy(name_ptr, inName);
+
+    return new (sym_ptr) PyrSymbol(name_ptr, inHash, inLength, -1);
 }
 
+// if given zero, this returns zero.
+// if given a power of two, returns input
+[[nodiscard]] constexpr inline uint32 next_power_of_two(uint32 n) noexcept {
+    n--;
+    n |= n >> 1;
+    n |= n >> 2;
+    n |= n >> 4;
+    n |= n >> 8;
+    n |= n >> 16;
+    n++;
+    return n;
+}
 
-SymbolTable::SymbolTable(AllocPool* inPool, int inSize): mPool(inPool), mSpace(inPool), mMaxItems(inSize) {
-    assert(ISPOWEROFTWO(inSize));
-
+SymbolTable::SymbolTable(AllocPool* inPool, uint32 inSize):
+    mPool(inPool),
+    mSpace(inPool),
+    mMaxItemsPowerOfTwo(next_power_of_two(std::max(inSize, uint32(2)))),
+    mMaxSizeModuloMask(mMaxItemsPowerOfTwo - 1) {
+    if (inSize >= mMaxCapacity)
+        throw std::runtime_error("Exceeded maximum size of symbol table.");
     AllocTable();
 }
 
-
 void SymbolTable::CopyFrom(SymbolTable& inTable) {
     MakeEmpty();
-    Rehash(inTable.mTable, inTable.mMaxItems);
+    Rehash(inTable.mTable, inTable.mMaxItemsPowerOfTwo);
 }
 
-int SymbolTable::StrHash(const char* inName, size_t* outLength) { return Hash(inName, outLength); }
+PyrSymbol* SymbolTable::Find(const char* inName) { return Find(inName, Hash(inName)); }
 
-PyrSymbol* SymbolTable::Find(const char* inName) {
-    size_t length;
-    int hash = StrHash(inName, &length);
-    return Find(inName, hash);
-}
-
-PyrSymbol* SymbolTable::Find(const char* inName, int inHash) {
-    int index = inHash & mMask;
+PyrSymbol* SymbolTable::Find(const char* inName, hash_t inHash) {
+    uint32 index = inHash & mMaxSizeModuloMask;
     PyrSymbol* sym = mTable[index];
     while (sym && (sym->hash != inHash || strcmp(inName, sym->name) != 0)) {
-        index = (index + 1) & mMask;
+        index = (index + 1) & mMaxSizeModuloMask;
         sym = mTable[index];
     }
     return sym;
 }
 
 void SymbolTable::Add(PyrSymbol* inSymbol) {
-    if (mNumItems + 1 > (mMaxItems >> 1))
+    if (mNumItems + 1 > mMaxItemsPowerOfTwo / 2)
         Grow();
 
-    int index = inSymbol->hash & mMask;
+    uint32 index = inSymbol->hash & mMaxSizeModuloMask;
     PyrSymbol* testSymbol = mTable[index];
     while (testSymbol && testSymbol != inSymbol) {
-        index = (index + 1) & mMask;
+        index = (index + 1) & mMaxSizeModuloMask;
         testSymbol = mTable[index];
     }
     if (!testSymbol) { // if it is not already in the table.
@@ -124,67 +126,82 @@ void SymbolTable::Add(PyrSymbol* inSymbol) {
     }
 }
 
-PyrSymbol* SymbolTable::MakeNew(const char* inName, int inHash, int inLength) {
+PyrSymbol* SymbolTable::MakeNew(const char* inName, hash_t inHash, size_t inLength) {
     PyrSymbol* symbol = mSpace.NewSymbol(inName, inHash, inLength);
     Add(symbol);
-
     return symbol;
 }
 
 PyrSymbol* SymbolTable::Make(const char* inName) {
-    size_t length;
-    int hash = StrHash(inName, &length);
-    PyrSymbol* symbol = Find(inName, hash);
-    if (!symbol)
-        symbol = MakeNew(inName, hash, length);
-    return symbol;
+    const auto [hash, length] = HashWithSize(inName);
+    return Find(inName, hash) ?: MakeNew(inName, hash, length);
 }
 
 void SymbolTable::MakeEmpty() {
-    int size = mMaxItems * sizeof(PyrSymbol*);
+    const auto size = mMaxItemsPowerOfTwo * sizeof(PyrSymbol*);
     memset(mTable, 0, size);
     mNumItems = 0;
 }
 
 void SymbolTable::AllocTable() {
-    int size = mMaxItems * sizeof(PyrSymbol*);
+    const auto size = mMaxItemsPowerOfTwo * sizeof(PyrSymbol*);
     mTable = (PyrSymbol**)mPool->Alloc(size);
-    MEMFAIL(mTable);
-
-    MakeEmpty();
-    mMask = mMaxItems - 1;
+    if (mTable == nullptr)
+        throw std::runtime_error(exceptionMsgs::outOfMemory);
+    memset(mTable, 0, size);
+    mNumItems = 0;
+    mMaxSizeModuloMask = mMaxItemsPowerOfTwo - 1;
 }
 
-void SymbolTable::Rehash(PyrSymbol** inTable, int inSize) {
-    // rehash all entries from inTable into the new table
-    for (int i = 0; i < inSize; ++i) {
-        if (inTable[i])
-            Add(inTable[i]);
+void SymbolTable::Rehash(PyrSymbol** oldTable, uint32 inSize) {
+    for (auto i = 0; i < inSize; ++i) {
+        if (oldTable[i])
+            Add(oldTable[i]);
+    }
+}
+
+void SymbolTable::RehashAssertCapacitySufficient(PyrSymbol** oldTable, uint32 inSize) {
+    for (auto i = 0; i < inSize; ++i) {
+        if (oldTable[i]) {
+            uint32 index = oldTable[i]->hash & mMaxSizeModuloMask;
+            PyrSymbol* testSymbol = mTable[index];
+            while (testSymbol && testSymbol != oldTable[i]) {
+                index = (index + 1) & mMaxSizeModuloMask;
+                testSymbol = mTable[index];
+            }
+            if (!testSymbol) { // if it is not already in the table.
+                mTable[index] = oldTable[i];
+                mNumItems++;
+            }
+        }
     }
 }
 
 void SymbolTable::Grow() {
+    if (mMaxItemsPowerOfTwo >= mMaxCapacity)
+        throw std::runtime_error("Exceeded maximum size of symbol table.");
+
     PyrSymbol** oldtable = mTable;
-    int oldsize = mMaxItems;
+    const auto oldsize = mMaxItemsPowerOfTwo;
 
     // create new table
-    mMaxItems += mMaxItems;
+    mMaxItemsPowerOfTwo *= 2;
     AllocTable();
 
-    Rehash(oldtable, oldsize);
+    RehashAssertCapacitySufficient(oldtable, oldsize);
 
     mPool->Free(oldtable);
 }
 
 void SymbolTable::CheckSymbols() {
-    for (int i = 0; i < TableSize(); ++i) {
+    for (auto i = 0; i < TableSize(); ++i) {
         PyrSymbol* symbol = Get(i);
+
         if (symbol && symbol->u.index == 0) {
-            int c;
-            c = symbol->name[0];
+            const auto c = symbol->name[0];
             if (c == '_') {
                 post("WARNING: Primitive '%s' used but not bound\n", symbol->name);
-            } else if (c >= 'A' && c <= 'Z') {
+            } else if (std::isupper(static_cast<unsigned char>(c))) {
                 post("WARNING: Symbol '%s' used but not defined as a Class\n", symbol->name);
             } else if ((symbol->flags & sym_Called) && !(symbol->flags & sym_Selector)) {
                 post("WARNING: Method '%s' called but not defined\n", symbol->name);

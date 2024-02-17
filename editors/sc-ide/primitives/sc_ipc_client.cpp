@@ -368,15 +368,12 @@ int ScIDE_SetDocTextMirror(struct VMGlobals* g, int numArgsPushed) {
 
     PyrSlot* textSlot = g->sp - 2;
 
-    int length = slotStrLen(textSlot);
-
-    if (length == -1)
+    if(!(IsSym(textSlot) or isKindOfSlot(textSlot, class_string)))
         return errWrongType;
 
-    std::vector<char> text(length + 1);
 
-    if (slotStrVal(textSlot, text.data(), length + 1))
-        return errWrongType;
+    const auto [errCode, text] = slotStdStrVal(textSlot);
+    if(errCode) return errCode;
 
     int pos, range, err = errNone;
     PyrSlot* posSlot = g->sp - 1;
@@ -390,7 +387,7 @@ int ScIDE_SetDocTextMirror(struct VMGlobals* g, int numArgsPushed) {
         return err;
 
     QByteArray key = QByteArray(id);
-    QString docText = QString(text.data());
+    QString docText = QString::fromStdString(text);
 
     gIpcClient->setTextMirrorForDocument(key, docText, pos, range);
 

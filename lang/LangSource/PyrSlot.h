@@ -57,11 +57,11 @@ int asCompileString(PyrSlot* slot, char* str);
 int slotIntVal(PyrSlot* slot, int* value);
 int slotFloatVal(PyrSlot* slot, float* value);
 int slotDoubleVal(PyrSlot* slot, double* value);
-int slotStrVal(PyrSlot* slot, char* str, int maxlen);
+int slotStrVal(PyrSlot* slot, char* str, size_t maxlen);
 std::tuple<int, std::string> slotStdStrVal(PyrSlot* slot);
 std::tuple<int, std::string> slotStrStdStrVal(PyrSlot* slot);
-int slotStrLen(PyrSlot* slot);
-int slotPStrVal(PyrSlot* slot, unsigned char* str);
+size_t slotStrLenAssumeTextual(PyrSlot* slot);
+//int slotPStrVal(PyrSlot* slot, unsigned char* str);
 int slotSymbolVal(PyrSlot* slot, PyrSymbol** symbol);
 
 template <typename numeric_type> inline void setSlotVal(PyrSlot* slot, numeric_type value);

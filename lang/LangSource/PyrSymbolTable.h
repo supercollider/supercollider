@@ -33,7 +33,8 @@ SCLANG_DLLEXPORT_C PyrSymbol* findsym(const char* name);
 class SymbolSpace {
 public:
     SymbolSpace(AllocPool* inPool);
-    PyrSymbol* NewSymbol(const char* inName, int inHash, int inLength);
+    // inName must be a valid c string (null terminated)
+    PyrSymbol* NewSymbol(const char* inName, hash_t inHash, size_t inLength);
 
 private:
     AllocPool* mPool;
@@ -42,14 +43,16 @@ private:
 };
 
 class SymbolTable {
+    // Size of the symbol is size_t.
+    // Num elements is uint32 (this was int).
 public:
-    SymbolTable(AllocPool* inPool, int inSize);
+    SymbolTable(AllocPool* inPool, uint32 inSize);
 
     void CopyFrom(SymbolTable& inTable);
 
-    int NumItems() { return mNumItems; }
-    int TableSize() { return mMaxItems; }
-    PyrSymbol* Get(int inIndex) { return mTable[inIndex]; }
+    [[nodiscard]] uint32 NumItems() const { return mNumItems; }
+    [[nodiscard]] uint32 TableSize() const { return mMaxItemsPowerOfTwo; }
+    PyrSymbol* Get(uint32 inIndex) { return mTable[inIndex]; }
 
     void CheckSymbols();
 
@@ -59,18 +62,19 @@ private:
 
     PyrSymbol* Find(const char* inName);
     PyrSymbol* Make(const char* inName);
-    PyrSymbol* MakeNew(const char* inName, int inHash, int inLength);
+    PyrSymbol* MakeNew(const char* inName, hash_t inHash, size_t inLength);
 
-    int StrHash(const char* inName, size_t* outLength);
     void AllocTable();
     void Grow();
-    PyrSymbol* Find(const char* inName, int inHash);
+    PyrSymbol* Find(const char* inName, hash_t inHash);
     void Add(PyrSymbol* inSymbol);
-    void Rehash(PyrSymbol** inTable, int inSize);
+    void Rehash(PyrSymbol** oldTable, uint32 inSize);
+    void RehashAssertCapacitySufficient(PyrSymbol** oldTable, uint32 inSize);
     void MakeEmpty();
 
     AllocPool* mPool;
     SymbolSpace mSpace;
-    PyrSymbol** mTable;
-    int mNumItems, mMaxItems, mMask;
+    PyrSymbol** mTable = nullptr;
+    uint32 mNumItems = 0, mMaxItemsPowerOfTwo, mMaxSizeModuloMask;
+    static constexpr auto mMaxCapacity = std::numeric_limits<decltype(mNumItems)>::max() / 2;
 };

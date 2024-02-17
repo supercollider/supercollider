@@ -32,8 +32,8 @@ protected:
     T s;
 
 public:
-    SC_IOStream(): s(0) {}
-    SC_IOStream(T inStream): s(inStream) {}
+    SC_IOStream(): s(0) { }
+    SC_IOStream(T inStream): s(inStream) { }
 
     void SetStream(T inStream) { s = inStream; }
     T GetStream() { return s; }
@@ -72,6 +72,24 @@ public:
         writeUInt8((uint8)(inInt >> 24));
     }
 
+    template<class I>
+    void writeInteger_be(I sz){
+        static_assert(std::is_integral_v<I>);
+        uint8 bytes[sizeof(I)];
+        std::memcpy(bytes, reinterpret_cast<void*>(&sz), sizeof(I));
+        for(size_t i = 0; i < sizeof(I); ++i)
+            writeUInt8(bytes[sizeof(I) - 1 - i]);
+    }
+
+    template<class I>
+    void writeInteger_le(I sz) {
+        static_assert(std::is_integral_v<I>);
+        uint8 bytes[sizeof(I)];
+        std::memcpy(bytes, reinterpret_cast<void*>(&sz), sizeof(I));
+        for(size_t i = 0; i < sizeof(I); ++i)
+            writeUInt8(bytes[sizeof(I)]);
+    }
+
 #if BYTE_ORDER == BIG_ENDIAN
     void writeFloat_be(float inFloat)
 #else
@@ -148,7 +166,6 @@ public:
         writeUInt8(u.c[1]);
         writeUInt8(u.c[0]);
     }
-
 
     int8 readInt8() { return (int8)readUInt8(); }
 
@@ -180,6 +197,29 @@ public:
         return (int32)((d << 24) | (c << 16) | (b << 8) | a);
     }
 
+    template<class I>
+    I readInteger_le() {
+        static_assert(std::is_integral_v<I>);
+        uint8 bytes[sizeof(I)];
+        for(size_t i=0; i < sizeof(I); ++i)
+            bytes[i] = readUInt8();
+        std::reverse(bytes, bytes + sizeof(I));
+        I out;
+        std::memcpy(reinterpret_cast<uint8 *>(&out), bytes, sizeof(I));
+        return out;
+    }
+
+    template<class I>
+    I readInteger_be() {
+        static_assert(std::is_integral_v<I>);
+        uint8 bytes[sizeof(I)];
+        for(size_t i=0; i < sizeof(I); ++i)
+            bytes[i] = readUInt8();
+        I out;
+        std::memcpy(reinterpret_cast<uint8 *>(&out), bytes, sizeof(I));
+        return out;
+    }
+
 #if BYTE_ORDER == BIG_ENDIAN
     float readFloat_be()
 #else
@@ -213,7 +253,6 @@ public:
         u.c[0] = readUInt8();
         return u.f;
     }
-
 
 #if BYTE_ORDER == BIG_ENDIAN
     double readDouble_be()
@@ -258,14 +297,22 @@ public:
     }
 
     void readSymbol(char* outString) {
-        int length = readUInt8();
+#if BYTE_ORDER == BIG_ENDIAN
+        const size_t length = readInteger_be<size_t>();
+#else
+        const size_t length = readInteger_le<size_t>();
+#endif
         readData(outString, length);
         outString[length] = 0;
     }
 
     void writeSymbol(char* inString) {
         size_t length = strlen(inString);
-        writeUInt8((uint8)length);
+#if BYTE_ORDER == BIG_ENDIAN
+        writeInteger_be(length);
+#else
+        writeInteger_le(length);
+#endif
         writeData(inString, length);
     }
 };

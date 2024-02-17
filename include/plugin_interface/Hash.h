@@ -30,27 +30,9 @@
 // TODO: could this be made unsigned, integer overflow is only implementation defined on signed types?
 using hash_t = int32;
 
-
-// bit cast from c++20, copied from cpp-ref, used to remove the c cast, which is implementation defined.
-template <class To, class From>
-constexpr inline
-std::enable_if_t<sizeof(To) == sizeof(From) && std::is_trivially_copyable_v<From> && std::is_trivially_copyable_v<To>,
-    To>
-bit_cast(const From& src) noexcept {
-    static_assert(std::is_trivially_constructible_v<To>,
-                  "This implementation additionally requires "
-                  "destination type to be trivially constructible");
-
-    To dst;
-    memcpy(&dst, &src, sizeof(To));
-    return dst;
-}
-
-
 // These hash functions are among the best there are in terms of both speed and quality.
 // A good hash function makes a lot of difference.
 // I have not used Bob Jenkins own hash function because the keys I use are relatively short.
-
 
 // hash function for a string
 constexpr inline hash_t Hash(const char* key) {
@@ -83,8 +65,6 @@ constexpr inline hash_t Hash(const char* key, size_t* outLength) {
     hash += hash << 3;
     hash ^= hash >> 11;
     hash += hash << 15;
-// pedantic but possible
-    static_assert(std::numeric_limits<size_t>::max() >= std::numeric_limits<decltype(key - startKey)>::max());
     *outLength = static_cast<size_t>(key - startKey);
     return hash;
 }
@@ -116,7 +96,7 @@ constexpr inline hash_t Hash(int32 inKey) {
 // Thomas Wang's integer hash.
 // http://www.concentric.net/~Ttwang/tech/inthash.htm
 // a faster hash for integers. also very good.
-    auto hash = bit_cast<uint32>(inKey);
+    auto hash = (uint32)inKey;
     hash += ~(hash << 15);
     hash ^= hash >> 10;
     hash += hash << 3;
@@ -129,7 +109,7 @@ constexpr inline hash_t Hash(int32 inKey) {
 // this function isn't used in the vm (where hash_t is int32), but might be used elsewhere
 constexpr inline int64 Hash64(int64 inKey) {
 // Thomas Wang's 64 bit integer hash.
-    auto hash = bit_cast<uint64>(inKey);
+    auto hash = (uint64)inKey;
     hash += ~(hash << 32);
     hash ^= (hash >> 22);
     hash += ~(hash << 13);

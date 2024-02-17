@@ -43,7 +43,7 @@
 #include "PyrArchiverT.h"
 #include "PyrDeepCopier.h"
 #include "PyrDeepFreezer.h"
-//#include "Wacom.h"
+// #include "Wacom.h"
 #include "InitAlloc.h"
 #include "SC_AudioDevicePrim.hpp"
 #include "SC_LanguageConfig.hpp"
@@ -99,16 +99,11 @@ int getPrimitiveNumArgs(int index) { return gPrimitiveTable.table[index].numArgs
 
 PyrSymbol* getPrimitiveName(int index) { return gPrimitiveTable.table[index].name; }
 
-int slotStrLen(PyrSlot* slot) {
-    if (IsSym(slot))
-        return slotRawSymbol(slot)->length;
-    if (isKindOfSlot(slot, class_string))
-        return slotRawObject(slot)->size;
-
-    return -1;
+size_t slotStrLenAssumeTextual(PyrSlot* slot) {
+    return (IsSym(slot)) ? slotRawSymbol(slot)->length : slotRawObject(slot)->size;
 }
 
-int slotStrVal(PyrSlot* slot, char* str, int maxlen) {
+int slotStrVal(PyrSlot* slot, char* str, size_t maxlen) {
     if (IsSym(slot)) {
         strncpy(str, slotRawSymbol(slot)->name, maxlen);
         return errNone;
@@ -129,11 +124,10 @@ int slotStrVal(PyrSlot* slot, char* str, int maxlen) {
  *  In case of an error the string will be empty.
  */
 std::tuple<int, std::string> slotStdStrVal(PyrSlot* slot) {
-    return IsSym(slot)
-        ? std::make_tuple(errNone, std::string(slotRawSymbol(slot)->name, (size_t)slotRawSymbol(slot)->length))
-        : (isKindOfSlot(slot, class_string)
-               ? std::make_tuple(errNone, std::string(slotRawString(slot)->s, slotRawObject(slot)->size))
-               : std::make_tuple(errWrongType, std::string()));
+    return IsSym(slot) ? std::make_tuple(errNone, std::string(slotRawSymbol(slot)->name, slotRawSymbol(slot)->length))
+                       : (isKindOfSlot(slot, class_string)
+                              ? std::make_tuple(errNone, std::string(slotRawString(slot)->s, slotRawObject(slot)->size))
+                              : std::make_tuple(errWrongType, std::string()));
 }
 
 /**
@@ -148,9 +142,10 @@ std::tuple<int, std::string> slotStrStdStrVal(PyrSlot* slot) {
         : std::make_tuple(errWrongType, std::string());
 }
 
-int slotPStrVal(PyrSlot* slot, unsigned char* str) {
+[[deprecated("Isn't clear what this function is supposed to do.")]] int slotPStrVal(PyrSlot* slot, unsigned char* str) {
     if (IsSym(slot)) {
         strncpy((char*)str + 1, slotRawSymbol(slot)->name, 255);
+        // the following line is an issue.
         str[0] = slotRawSymbol(slot)->length;
         return errNone;
     } else if (isKindOfSlot(slot, class_string)) {
@@ -471,7 +466,7 @@ int prAsCompileString(struct VMGlobals* g, int numArgsPushed) {
 
     a = g->sp;
     if (IsSym(a)) {
-        int len = strlen(slotRawSymbol(a)->name) + 1;
+        const auto len = slotRawSymbol(a)->length;
         if (len < 255) {
             char str[256];
             sprintf(str, "'%s'", slotRawSymbol(a)->name);
@@ -2826,7 +2821,7 @@ int prUGenCodeString(struct VMGlobals* g, int numArgsPushed) {
                     return errWrongType;
                 PyrSymbol* inputSym = slotRawSymbol(&inputNameSlot);
                 char* inputName = inputSym->name;
-                int inputNameSize = inputSym->length;
+                const auto inputNameSize = inputSym->length;
                 if (inputNameSize == nameSize && strncmp(inputName, name, nameSize) == 0) {
                     found = true;
                     slotIndex = j;
