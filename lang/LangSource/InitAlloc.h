@@ -24,8 +24,12 @@
 #include "SC_AllocPool.h"
 #include <stdexcept>
 
+
+namespace exceptionMsgs {
+constexpr static auto outOfMemory = "Out of memory!\n";
+}
 #define MEMFAIL(ptr)                                                                                                   \
     if (!(ptr)) {                                                                                                      \
-        throw std::runtime_error("Out of memory!\n");                                                                  \
+        throw std::runtime_error(exceptionMsgs::outOfMemory);                                                                  \
     }
-#define MEMFAILED throw std::runtime_error("Out of memory!\n");
+#define MEMFAILED throw std::runtime_error(exceptionMsgs::outOfMemory);
