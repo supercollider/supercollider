@@ -21,8 +21,31 @@
 
 #pragma once
 
+#include <cstring>
+#include <tuple>
+#include <limits>
 #include "SC_Types.h"
 #include "SC_Endian.h"
+
+// TODO: could this be made unsigned, integer overflow is only implementation defined on signed types?
+using hash_t = int32;
+
+
+// bit cast from c++20, copied from cpp-ref, used to remove the c cast, which is implementation defined.
+template <class To, class From>
+constexpr inline
+std::enable_if_t<sizeof(To) == sizeof(From) && std::is_trivially_copyable_v<From> && std::is_trivially_copyable_v<To>,
+    To>
+bit_cast(const From& src) noexcept {
+    static_assert(std::is_trivially_constructible_v<To>,
+                  "This implementation additionally requires "
+                  "destination type to be trivially constructible");
+
+    To dst;
+    memcpy(&dst, &src, sizeof(To));
+    return dst;
+}
+
 
 // These hash functions are among the best there are in terms of both speed and quality.
 // A good hash function makes a lot of difference.
@@ -30,13 +53,13 @@
 
 
 // hash function for a string
-inline int32 Hash(const char* inKey) {
-    // the one-at-a-time hash.
-    // a very good hash function. ref: a web page by Bob Jenkins.
-    // http://www.burtleburtle.net/bob/hash/doobs.html
-    int32 hash = 0;
-    while (*inKey) {
-        hash += *inKey++;
+constexpr inline hash_t Hash(const char* key) {
+// the one-at-a-time hash.
+// a very good hash function. ref: a web page by Bob Jenkins.
+// http://www.burtleburtle.net/bob/hash/doobs.html
+    hash_t hash = 0;
+    while (*key) {
+        hash += *key++;
         hash += hash << 10;
         hash ^= hash >> 6;
     }
@@ -47,30 +70,38 @@ inline int32 Hash(const char* inKey) {
 }
 
 // hash function for a string that also returns the length
-inline int32 Hash(const char* inKey, size_t* outLength) {
-    // the one-at-a-time hash.
-    // a very good hash function. ref: a web page by Bob Jenkins.
-    const char* origKey = inKey;
-    int32 hash = 0;
-    while (*inKey) {
-        hash += *inKey++;
+constexpr inline hash_t Hash(const char* key, size_t* outLength) {
+// the one-at-a-time hash.
+// a very good hash function. ref: a web page by Bob Jenkins.
+    const char* startKey = key;
+    hash_t hash = 0;
+    while (*key) {
+        hash += *key++;
         hash += hash << 10;
         hash ^= hash >> 6;
     }
     hash += hash << 3;
     hash ^= hash >> 11;
     hash += hash << 15;
-    *outLength = (size_t)(inKey - origKey);
+// pedantic but possible
+    static_assert(std::numeric_limits<size_t>::max() >= std::numeric_limits<decltype(key - startKey)>::max());
+    *outLength = static_cast<size_t>(key - startKey);
     return hash;
 }
 
+constexpr inline std::tuple<hash_t, size_t> HashWithSize(const char* in) {
+    size_t size = 0;
+    hash_t h = Hash(in, &size);
+    return { h, size };
+}
+
 // hash function for an array of char
-inline int32 Hash(const char* inKey, int32 inLength) {
-    // the one-at-a-time hash.
-    // a very good hash function. ref: a web page by Bob Jenkins.
-    int32 hash = 0;
-    for (int i = 0; i < inLength; ++i) {
-        hash += *inKey++;
+constexpr inline hash_t Hash(const char* key, uint32 inLength) {
+// the one-at-a-time hash.
+// a very good hash function. ref: a web page by Bob Jenkins.
+    hash_t hash = 0;
+    for (decltype(inLength) i = 0; i < inLength; ++i) {
+        hash += *key++;
         hash += hash << 10;
         hash ^= hash >> 6;
     }
@@ -81,23 +112,24 @@ inline int32 Hash(const char* inKey, int32 inLength) {
 }
 
 // hash function for integers
-inline int32 Hash(int32 inKey) {
-    // Thomas Wang's integer hash.
-    // http://www.concentric.net/~Ttwang/tech/inthash.htm
-    // a faster hash for integers. also very good.
-    uint32 hash = (uint32)inKey;
+constexpr inline hash_t Hash(int32 inKey) {
+// Thomas Wang's integer hash.
+// http://www.concentric.net/~Ttwang/tech/inthash.htm
+// a faster hash for integers. also very good.
+    auto hash = bit_cast<uint32>(inKey);
     hash += ~(hash << 15);
     hash ^= hash >> 10;
     hash += hash << 3;
     hash ^= hash >> 6;
     hash += ~(hash << 11);
     hash ^= hash >> 16;
-    return (int32)hash;
+    return (hash_t)hash;
 }
 
-inline int64 Hash64(int64 inKey) {
-    // Thomas Wang's 64 bit integer hash.
-    uint64 hash = (uint64)inKey;
+// this function isn't used in the vm (where hash_t is int32), but might be used elsewhere
+constexpr inline int64 Hash64(int64 inKey) {
+// Thomas Wang's 64 bit integer hash.
+    auto hash = bit_cast<uint64>(inKey);
     hash += ~(hash << 32);
     hash ^= (hash >> 22);
     hash += ~(hash << 13);
@@ -109,13 +141,12 @@ inline int64 Hash64(int64 inKey) {
     return (int64)hash;
 }
 
-inline int32 Hash(const int32* inKey, int32 inLength) {
-    // one-at-a-time hashing of a string of int32's.
-    // uses Thomas Wang's integer hash for the combining step.
-    int32 hash = 0;
-    for (int i = 0; i < inLength; ++i) {
+constexpr inline hash_t Hash(const int32* inKey, uint32 inLength) {
+// one-at-a-time hashing of a string of int32's.
+// uses Thomas Wang's integer hash for the combining step.
+    hash_t hash = 0;
+    for (decltype(inLength) i = 0; i < inLength; ++i)
         hash = Hash(hash + *inKey++);
-    }
     return hash;
 }
 
@@ -125,14 +156,15 @@ const int32 kLASTCHAR = (int32)0xFF000000;
 const int32 kLASTCHAR = (int32)0x000000FF;
 #endif
 
-inline int32 Hash(const int32* inKey) {
-    // hashing of a string of int32's.
-    // uses Thomas Wang's integer hash for the combining step.
-    int32 hash = 0;
-    int32 c;
-    do {
-        c = *inKey++;
+constexpr inline hash_t Hash(const int32* inKey) {
+// hashing of a string of int32's.
+// uses Thomas Wang's integer hash for the combining step.
+    hash_t hash = 0;
+    for (;;) {
+        const int32 c = *inKey++;
         hash = Hash(hash + c);
-    } while (c & kLASTCHAR);
+        if (!(c & kLASTCHAR))
+            break;
+    }
     return hash;
 }
