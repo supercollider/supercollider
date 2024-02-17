@@ -30,6 +30,6 @@ constexpr static auto outOfMemory = "Out of memory!\n";
 }
 #define MEMFAIL(ptr)                                                                                                   \
     if (!(ptr)) {                                                                                                      \
-        throw std::runtime_error(exceptionMsgs::outOfMemory);                                                                  \
+        throw std::runtime_error(exceptionMsgs::outOfMemory);                                                          \
     }
 #define MEMFAILED throw std::runtime_error(exceptionMsgs::outOfMemory);

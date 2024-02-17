@@ -83,7 +83,7 @@ inline PyrSymbol::PyrSymbol(char* iname, hash_t ihash, int16 ispecialIndex) noex
     specialIndex(ispecialIndex),
     flags(build_flags(iname, length)),
     u(),
-    classdep(nullptr) { }
+    classdep(nullptr) {}
 
 inline PyrSymbol::PyrSymbol(char* iname, hash_t ihash, size_t ilength, int16 ispecialIndex) noexcept:
     name(iname),
@@ -92,4 +92,4 @@ inline PyrSymbol::PyrSymbol(char* iname, hash_t ihash, size_t ilength, int16 isp
     specialIndex(ispecialIndex),
     flags(build_flags(iname, ilength)),
     u(),
-    classdep(nullptr) { }
+    classdep(nullptr) {}

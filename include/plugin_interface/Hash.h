@@ -36,9 +36,9 @@ using hash_t = int32;
 
 // hash function for a string
 constexpr inline hash_t Hash(const char* key) {
-// the one-at-a-time hash.
-// a very good hash function. ref: a web page by Bob Jenkins.
-// http://www.burtleburtle.net/bob/hash/doobs.html
+    // the one-at-a-time hash.
+    // a very good hash function. ref: a web page by Bob Jenkins.
+    // http://www.burtleburtle.net/bob/hash/doobs.html
     hash_t hash = 0;
     while (*key) {
         hash += *key++;
@@ -53,8 +53,8 @@ constexpr inline hash_t Hash(const char* key) {
 
 // hash function for a string that also returns the length
 constexpr inline hash_t Hash(const char* key, size_t* outLength) {
-// the one-at-a-time hash.
-// a very good hash function. ref: a web page by Bob Jenkins.
+    // the one-at-a-time hash.
+    // a very good hash function. ref: a web page by Bob Jenkins.
     const char* startKey = key;
     hash_t hash = 0;
     while (*key) {
@@ -77,8 +77,8 @@ constexpr inline std::tuple<hash_t, size_t> HashWithSize(const char* in) {
 
 // hash function for an array of char
 constexpr inline hash_t Hash(const char* key, uint32 inLength) {
-// the one-at-a-time hash.
-// a very good hash function. ref: a web page by Bob Jenkins.
+    // the one-at-a-time hash.
+    // a very good hash function. ref: a web page by Bob Jenkins.
     hash_t hash = 0;
     for (decltype(inLength) i = 0; i < inLength; ++i) {
         hash += *key++;
@@ -93,9 +93,9 @@ constexpr inline hash_t Hash(const char* key, uint32 inLength) {
 
 // hash function for integers
 constexpr inline hash_t Hash(int32 inKey) {
-// Thomas Wang's integer hash.
-// http://www.concentric.net/~Ttwang/tech/inthash.htm
-// a faster hash for integers. also very good.
+    // Thomas Wang's integer hash.
+    // http://www.concentric.net/~Ttwang/tech/inthash.htm
+    // a faster hash for integers. also very good.
     auto hash = (uint32)inKey;
     hash += ~(hash << 15);
     hash ^= hash >> 10;
@@ -108,7 +108,7 @@ constexpr inline hash_t Hash(int32 inKey) {
 
 // this function isn't used in the vm (where hash_t is int32), but might be used elsewhere
 constexpr inline int64 Hash64(int64 inKey) {
-// Thomas Wang's 64 bit integer hash.
+    // Thomas Wang's 64 bit integer hash.
     auto hash = (uint64)inKey;
     hash += ~(hash << 32);
     hash ^= (hash >> 22);
@@ -122,8 +122,8 @@ constexpr inline int64 Hash64(int64 inKey) {
 }
 
 constexpr inline hash_t Hash(const int32* inKey, uint32 inLength) {
-// one-at-a-time hashing of a string of int32's.
-// uses Thomas Wang's integer hash for the combining step.
+    // one-at-a-time hashing of a string of int32's.
+    // uses Thomas Wang's integer hash for the combining step.
     hash_t hash = 0;
     for (decltype(inLength) i = 0; i < inLength; ++i)
         hash = Hash(hash + *inKey++);
@@ -137,8 +137,8 @@ const int32 kLASTCHAR = (int32)0x000000FF;
 #endif
 
 constexpr inline hash_t Hash(const int32* inKey) {
-// hashing of a string of int32's.
-// uses Thomas Wang's integer hash for the combining step.
+    // hashing of a string of int32's.
+    // uses Thomas Wang's integer hash for the combining step.
     hash_t hash = 0;
     for (;;) {
         const int32 c = *inKey++;

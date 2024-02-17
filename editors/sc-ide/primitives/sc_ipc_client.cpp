@@ -368,12 +368,13 @@ int ScIDE_SetDocTextMirror(struct VMGlobals* g, int numArgsPushed) {
 
     PyrSlot* textSlot = g->sp - 2;
 
-    if(!(IsSym(textSlot) or isKindOfSlot(textSlot, class_string)))
+    if (!(IsSym(textSlot) or isKindOfSlot(textSlot, class_string)))
         return errWrongType;
 
 
     const auto [errCode, text] = slotStdStrVal(textSlot);
-    if(errCode) return errCode;
+    if (errCode)
+        return errCode;
 
     int pos, range, err = errNone;
     PyrSlot* posSlot = g->sp - 1;

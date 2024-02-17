@@ -72,21 +72,19 @@ public:
         writeUInt8((uint8)(inInt >> 24));
     }
 
-    template<class I>
-    void writeInteger_be(I sz){
+    template <class I> void writeInteger_be(I sz) {
         static_assert(std::is_integral_v<I>);
         uint8 bytes[sizeof(I)];
         std::memcpy(bytes, reinterpret_cast<void*>(&sz), sizeof(I));
-        for(size_t i = 0; i < sizeof(I); ++i)
+        for (size_t i = 0; i < sizeof(I); ++i)
             writeUInt8(bytes[sizeof(I) - 1 - i]);
     }
 
-    template<class I>
-    void writeInteger_le(I sz) {
+    template <class I> void writeInteger_le(I sz) {
         static_assert(std::is_integral_v<I>);
         uint8 bytes[sizeof(I)];
         std::memcpy(bytes, reinterpret_cast<void*>(&sz), sizeof(I));
-        for(size_t i = 0; i < sizeof(I); ++i)
+        for (size_t i = 0; i < sizeof(I); ++i)
             writeUInt8(bytes[sizeof(I)]);
     }
 
@@ -197,26 +195,24 @@ public:
         return (int32)((d << 24) | (c << 16) | (b << 8) | a);
     }
 
-    template<class I>
-    I readInteger_le() {
+    template <class I> I readInteger_le() {
         static_assert(std::is_integral_v<I>);
         uint8 bytes[sizeof(I)];
-        for(size_t i=0; i < sizeof(I); ++i)
+        for (size_t i = 0; i < sizeof(I); ++i)
             bytes[i] = readUInt8();
         std::reverse(bytes, bytes + sizeof(I));
         I out;
-        std::memcpy(reinterpret_cast<uint8 *>(&out), bytes, sizeof(I));
+        std::memcpy(reinterpret_cast<uint8*>(&out), bytes, sizeof(I));
         return out;
     }
 
-    template<class I>
-    I readInteger_be() {
+    template <class I> I readInteger_be() {
         static_assert(std::is_integral_v<I>);
         uint8 bytes[sizeof(I)];
-        for(size_t i=0; i < sizeof(I); ++i)
+        for (size_t i = 0; i < sizeof(I); ++i)
             bytes[i] = readUInt8();
         I out;
-        std::memcpy(reinterpret_cast<uint8 *>(&out), bytes, sizeof(I));
+        std::memcpy(reinterpret_cast<uint8*>(&out), bytes, sizeof(I));
         return out;
     }
 
