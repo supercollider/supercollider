@@ -26,6 +26,24 @@ ClassMethods::
 method::new
 Creates a new SoundFile instance.
 
+method:: write
+Writes an array (or nested array) to a path as a sound file.
+
+argument:: pathName
+The path as a link::Classes/String::.
+
+argument:: array
+The data to write. Can be an array of number, or if multichannel, an array of arrays of multichannel.
+
+argument:: headerFormat
+See link::Classes/SoundFile#-headerFormat::.
+
+argument:: sampleRate
+A number, defaults to 44100.
+
+argument:: sampleFormat
+See link::Classes/SoundFile#-sampleFormat::.
+
 method:: openRead
 Try to open the audio file at the given path.
 
