@@ -61,4 +61,9 @@ Number : Magnitude {
 		^this.forBy(last, step, function)
 	}
 
+
+	// rational
+	numerator { ^this }
+    denominator { ^1 }
+    rational { arg denominator=1; ^Rational(this, denominator) }
 }

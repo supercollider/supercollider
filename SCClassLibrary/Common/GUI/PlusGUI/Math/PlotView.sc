@@ -1225,9 +1225,8 @@ Plotter {
 	}
 }
 
-
 + ArrayedCollection {
-	plot { |name, bounds, discrete = false, numChannels, minval, maxval, separately = true|
+	plot { |name, bounds, discrete=false, numChannels, minval, maxval, separately = true|
 		var array, plotter;
 		array = this.as(Array);
 
@@ -1239,22 +1238,19 @@ Plotter {
 		if(discrete) { plotter.plotMode = \points };
 
 		numChannels !? { array = array.unlace(numChannels) };
-		array = array.collect {|elem, i|
+		array = array.collect {|elem|
 			if (elem.isKindOf(Env)) {
 				elem.asMultichannelSignal.flop
 			} {
-				if(elem.isNil) {
-					Error("Cannot plot array: non-numeric value at index %".format(i)).throw
-				};
 				elem
-			}
+			};
+            if (elem.isKindOf(Rational)) { elem.asFloat } { elem };
 		};
-
 		plotter.setValue(
 			array,
 			findSpecs: true,
-			refresh: true,
 			separately: separately,
+			refresh: true,
 			minval: minval,
 			maxval: maxval
 		);
@@ -1262,6 +1258,8 @@ Plotter {
 		^plotter
 	}
 }
+
+
 
 + Collection {
 	plotHisto { arg steps = 100, min, max;

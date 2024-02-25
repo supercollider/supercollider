@@ -696,6 +696,20 @@ SimpleNumber : Number {
 
 	playAndDelta {}
 
+    asRational { arg maxDenominator=100,fasterBetter=false;
+        var fraction;
+        if (this == inf) { ^inf } {
+            fraction = this.asFraction(maxDenominator, fasterBetter);
+            ^Rational(fraction[0], fraction[1])
+        }
+    }
+
+    %/ { arg aNumber; ^Rational(this, aNumber) }
+
+    performBinaryOpOnRational { arg aSelector, rational, adverb;
+        ^rational.perform(aSelector, this.asRational, adverb)
+    }
+
 	asQuant { ^Quant(this) }
 
 	// a clock format inspired by ISO 8601 time interval display (truncated representation)

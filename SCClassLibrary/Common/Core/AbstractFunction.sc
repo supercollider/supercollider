@@ -157,6 +157,10 @@ AbstractFunction {
 	real { ^this }
 	imag { ^0.0 }
 
+	// rational
+    performBinaryOpOnRational { arg aSelector, aRational, adverb;
+        ^this.reverseComposeBinaryOp(aSelector, aRational, adverb)
+    }
 
 	|| { arg function, adverb; ^this.composeBinaryOp('||', function, adverb) }
 	&& { arg function, adverb; ^this.composeBinaryOp('&&', function, adverb) }

@@ -232,6 +232,9 @@ Integer : SimpleNumber {
 		^Array.fib(this, a, b);
 	}
 
+    asRational { ^Rational(this, 1) }
+    //as { arg aSimilarClass; ^aSimilarClass.new(this.numerator, 1 ) }
+
 	factors {
 		var num, array, prime;
 		if(this <= 1) { ^[] }; // no prime factors exist below the first prime

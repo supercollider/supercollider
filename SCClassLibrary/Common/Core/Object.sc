@@ -377,6 +377,12 @@ Object  {
 		thisThread.handleError(this);
 	}
 
+	// rational
+    isRational { ^false }
+
+    performBinaryOpOnRational { arg aSelector, thing, adverb;
+        ^this.performBinaryOpOnSomething(aSelector, thing, adverb)
+    }
 
 	// conversion
 	species { ^this.class }

@@ -340,6 +340,10 @@ SequenceableCollection : Collection {
 		^true
 	}
 
+    asRational { arg maxDenominator = 100;
+        ^this.collect { |item| item.asRational(maxDenominator) }
+    }
+	
 	resamp0 { arg newSize;
 		var factor = this.size - 1 / (newSize - 1).max(1);
 		^this.species.fill(newSize, { |i| this.at((i * factor).round(1.0).asInteger) })

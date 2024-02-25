@@ -37,6 +37,12 @@ String[char] : RawArray {
 		^lines;
 	}
 
+
+    asRational {
+        var stringArray = this.split($/ );
+        ^Rational(stringArray[0].asFloat, stringArray[1].asFloat)
+    }
+	
 	asSymbol {
 		_StringAsSymbol
 		^this.primitiveFailed
