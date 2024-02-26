@@ -74,9 +74,6 @@ SoundFile {
 	*write {|pathName, array, headerFormat, sampleRate, sampleFormat|
         var file = SoundFile.new;
 
-        if(array.isKindOf(SequenceableCollection).not,
-            {Error("Argument 'array' must be an instance of SequenceableCollection (e.g., Array). Received" + array.class.asString + "with value" + array.asString).throw});
-
         if(array.shape.size > 2,
             {Error(
                 "Cannot write an array with nested channels."
