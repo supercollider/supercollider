@@ -33,7 +33,8 @@ argument:: pathName
 The path as a link::Classes/String::.
 
 argument:: array
-The data to write. Can be an array of number, or if multichannel, an array of arrays of multichannel.
+The data to write. Can be an array of numbers for a mono audio file, or an array of arrays-of-numbers for a multichannel audio file.
+Does not accept further nested arrays.
 
 argument:: headerFormat
 See link::Classes/SoundFile#-headerFormat::.
@@ -43,6 +44,8 @@ A number, defaults to 44100.
 
 argument:: sampleFormat
 See link::Classes/SoundFile#-sampleFormat::.
+
+returns:: The path is successful, or throws if unsuccessful.
 
 method:: openRead
 Try to open the audio file at the given path.
