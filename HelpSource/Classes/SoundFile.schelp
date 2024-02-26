@@ -35,6 +35,7 @@ The path as a link::Classes/String::.
 argument:: array
 The data to write. Can be an array of numbers for a mono audio file, or an array of arrays-of-numbers for a multichannel audio file.
 Does not accept further nested arrays.
+Please note, that supercollider will break with large arrays, mono sound files longer that about 45 mins will not work.
 
 argument:: headerFormat
 See link::Classes/SoundFile#-headerFormat::.
