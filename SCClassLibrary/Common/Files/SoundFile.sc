@@ -87,20 +87,19 @@ SoundFile {
             array = array.lace(array.shape.reduce('*')); // interlace the channels
         };
 
+        // assign if not nil
         headerFormat !? file.headerFormat_(_);
         sampleFormat !? file.sampleFormat_(_);
         sampleRate !? file.sampleRate_(_);
 
-        file.numChannels_( if(array.rank <= 1, { 1 }, { array.shape[0] }) );
+        file.numChannels_(if(array.rank <= 1, { 1 }, { array.shape[0] }));
 
         if(file.openWrite(pathName).not) {
             Error("Could not open file at path:" + pathName).throw
         };
 
-        // interlace the samples and write
-        file.writeData(FloatArray.newFrom(array.asFloat));
-
-        file.close;
+        // interlace the samples and write, always close the file
+        protect { file.writeData(FloatArray.newFrom(array.asFloat)) } { file.close };
         ^pathName
     }
 
