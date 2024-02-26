@@ -91,7 +91,7 @@ SoundFile {
         sampleFormat !? file.sampleFormat_(_);
         sampleRate !? file.sampleRate_(_);
 
-        file.numChannels_(if(array.rank <= 1, 1, {array.shape[0]}));
+        file.numChannels_( if(array.rank <= 1, { 1 }, { array.shape[0] }) );
 
         if(file.openWrite(pathName).not) {
             Error("Could not open file at path:" + pathName).throw
