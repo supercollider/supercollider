@@ -71,7 +71,7 @@ SoundFile {
 		^res
 	}
 
-	*write {|pathName, array, headerFormat, sampleRate, sampleFormat|
+    *write {|pathName, array, headerFormat, sampleRate, sampleFormat|
         var file = SoundFile.new;
 
         if (array.rank > 2) {
@@ -82,12 +82,7 @@ SoundFile {
             ).throw
         };
 
-        // multichannel audio
-        if(array.rank == 2) {
-            array = array.lace(array.shape.reduce('*')); // interlace the channels
-        };
-
-        // assign if not nil
+        // Assign if not nil.
         headerFormat !? file.headerFormat_(_);
         sampleFormat !? file.sampleFormat_(_);
         sampleRate !? file.sampleRate_(_);
@@ -98,8 +93,13 @@ SoundFile {
             Error("Could not open file at path:" + pathName).throw
         };
 
-        // interlace the samples and write, always close the file
-        protect { file.writeData(FloatArray.newFrom(array.asFloat)) } { file.close };
+        // Interlace the samples and write, always close the file.
+        // Format will be: L1, R1, C1, L2, R2, C2 ...
+        protect {
+            file.writeData(
+                FloatArray.newFrom(array.lace(array.shape.reduce('*')).asFloat)
+            )
+        } { file.close };
         ^pathName
     }
 
