@@ -74,25 +74,31 @@ SoundFile {
 	*write {|pathName, array, headerFormat, sampleRate, sampleFormat|
         var file = SoundFile.new;
 
-        if(array.shape.size > 2,
-            {Error(
+        if (array.rank > 2) {
+            Error(
                 "Cannot write an array with nested channels."
-                + "The array should be formatted as: "
-                + "[  [channel 1 samples...], [channel 2 samples...], ...]"
-            ).throw}
-        );
+                "The array should be formatted as: "
+                "[  [channel 1 samples...], [channel 2 samples...], ...]"
+            ).throw
+        };
+
+        // multichannel audio
+        if(array.rank == 2) {
+            array = array.lace(array.shape.reduce('*')); // interlace the channels
+        };
 
         headerFormat !? file.headerFormat_(_);
         sampleFormat !? file.sampleFormat_(_);
         sampleRate !? file.sampleRate_(_);
 
-        file.numChannels_(if(array.shape.size == 1, 1, {array.shape[0]}));
+        file.numChannels_(if(array.rank <= 1, 1, {array.shape[0]}));
 
-        if(file.openWrite(pathName).not,
-            {Error("Could not open file at path:" + pathName).throw});
+        if(file.openWrite(pathName).not) {
+            Error("Could not open file at path:" + pathName).throw
+        };
 
         // interlace the samples and write
-        file.writeData(FloatArray.with(*array.lace(array.shape.reduce('*')).asFloat));
+        file.writeData(FloatArray.with(*array.asFloat));
 
         file.close;
         ^pathName
