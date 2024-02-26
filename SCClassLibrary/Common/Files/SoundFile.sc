@@ -98,7 +98,7 @@ SoundFile {
         };
 
         // interlace the samples and write
-        file.writeData(FloatArray.with(*array.asFloat));
+        file.writeData(FloatArray.newFrom(array.asFloat));
 
         file.close;
         ^pathName
