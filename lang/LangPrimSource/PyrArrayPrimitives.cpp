@@ -2517,7 +2517,7 @@ struct IsRegularResult {
     constexpr explicit(false) operator int() const noexcept { return m_value; }
 
 private:
-    constexpr explicit IsRegularResult(int i) noexcept: m_value(i) { }
+    constexpr explicit IsRegularResult(int i) noexcept: m_value(i) {}
     int m_value;
 };
 // Does a depth first check of the size and shape.
