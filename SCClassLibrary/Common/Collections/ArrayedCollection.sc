@@ -23,6 +23,12 @@ ArrayedCollection : SequenceableCollection {
 		_BasicMaxSize
 		^this.primitiveFailed
 	}
+	isRegular {
+	    // checks whether all nested subcollections are the same size.
+	    _ArrayIsRegular
+		^this.primitiveFailed
+	}
+
 
 	swap { arg i, j; var temp;
 		_BasicSwap;

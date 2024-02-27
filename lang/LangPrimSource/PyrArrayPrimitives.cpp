@@ -25,7 +25,9 @@ Primitives for Arrays.
 
 #include "GC.h"
 #include "PyrKernel.h"
+#include "PyrSymbol.h"
 #include "PyrPrimitive.h"
+#include "SCBase.h"
 #include "SC_InlineBinaryOp.h"
 #include "SC_Constants.h"
 #include "SC_Levenshtein.h"
@@ -2503,6 +2505,102 @@ int prArrayLevenshteinDistance(struct VMGlobals* g, int numArgsPushed) {
     return arrayLevenshteinDistance(slotThisArray, objThisArray, objThatArray);
 }
 
+struct IsRegularResult {
+    static IsRegularResult make_size(int sz) { return IsRegularResult(sz); }
+    static IsRegularResult make_not_an_array() { return IsRegularResult(-1); }
+    static IsRegularResult make_irregular() { return IsRegularResult(-2); }
+    static IsRegularResult make_type_error() { return IsRegularResult(-3); }
+    [[nodiscard]] constexpr bool valid() const noexcept { return m_value >= -1; }
+    [[nodiscard]] constexpr bool invalid() const noexcept { return m_value < -1; }
+    [[nodiscard]] constexpr bool irregular() const noexcept { return m_value == -2; }
+    [[nodiscard]] constexpr bool type_error() const noexcept { return m_value == -3; }
+
+    constexpr explicit(false) operator int() const noexcept { return m_value; }
+
+private:
+    constexpr explicit IsRegularResult(int i) noexcept: m_value(i) { }
+    int m_value;
+};
+// Does a depth first check of the size and shape.
+// On left most path, inserts the size.
+inline IsRegularResult is_regular(const PyrSlot* a, std::vector<IsRegularResult>& expected_size, uint32_t depth,
+                                  bool is_left_most) {
+    // no Lists, only derived classes of ArrayedCollection!
+    if (isKindOfSlot(a, class_sequenceable_collection) && !isKindOfSlot(a, class_arrayed_collection)) {
+        return IsRegularResult::make_type_error();
+    }
+    // not an array
+    else if (!IsObj(a) || !isKindOfSlot(a, class_arrayed_collection)) {
+        if (expected_size.size() < depth + 1) {
+            if (!is_left_most)
+                return IsRegularResult::make_irregular();
+            expected_size.push_back(IsRegularResult::make_not_an_array());
+        }
+
+        if (expected_size[depth] != IsRegularResult::make_not_an_array())
+            return IsRegularResult::make_irregular();
+        else
+            return IsRegularResult::make_not_an_array();
+    }
+    // array
+    else {
+        const PyrObject* obj = slotRawObject(a);
+        const int size = obj->size;
+
+        if (expected_size.size() < depth + 1) {
+            if (!is_left_most)
+                return IsRegularResult::make_irregular();
+            expected_size.push_back(IsRegularResult::make_size(size));
+        }
+
+        // mismatch
+        if (size != expected_size[depth])
+            return IsRegularResult::make_irregular();
+        // no children
+        else if (size == 0)
+            return IsRegularResult::make_size(0);
+        // children
+        else {
+            const PyrSlot* item_at_index = obj->slots;
+
+            // left most path, inserts expected_size
+            const auto first_sz = is_regular(item_at_index, expected_size, depth + 1, is_left_most);
+            if (first_sz.invalid())
+                return first_sz;
+
+            for (int i = 1; i < size; ++i) {
+                const auto this_sz = is_regular(item_at_index + i, expected_size, depth + 1, false);
+                if (this_sz.invalid())
+                    return this_sz;
+                else if (this_sz != first_sz)
+                    return IsRegularResult::make_irregular();
+            }
+            return IsRegularResult::make_size(size);
+        }
+    }
+}
+
+int prArrayIsRegular(struct VMGlobals* g, int numArgsPushed) {
+    // checks array's sub arrays all have the same size, recurs on those sub arrays to check them
+    PyrSlot* array = g->sp;
+    if (!isKindOfSlot(array, class_arrayed_collection))
+        return errWrongType;
+
+    std::vector<IsRegularResult> expected_shape;
+    const auto r = is_regular(array, expected_shape, 0, true);
+    if (r.irregular()) {
+        SetBool(array, false);
+        return errNone;
+    } else if (r.type_error()) {
+        post("Subarray was not an instance of ArrayedCollection.\n");
+        SetNil(array);
+        return errWrongType;
+    } else {
+        SetBool(array, true);
+        return errNone;
+    }
+}
+
 void initArrayPrimitives() {
     int base, index;
 
@@ -2563,4 +2661,5 @@ void initArrayPrimitives() {
     definePrimitive(base, index++, "_ArrayUnlace", prArrayUnlace, 3, 0);
 
     definePrimitive(base, index++, "_ArrayLevenshteinDistance", prArrayLevenshteinDistance, 2, 0);
+    definePrimitive(base, index++, "_ArrayIsRegular", prArrayIsRegular, 1, 0);
 }
