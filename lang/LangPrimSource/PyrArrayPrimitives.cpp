@@ -25,7 +25,6 @@ Primitives for Arrays.
 
 #include "GC.h"
 #include "PyrKernel.h"
-#include "PyrSymbol.h"
 #include "PyrPrimitive.h"
 #include "SCBase.h"
 #include "SC_InlineBinaryOp.h"
