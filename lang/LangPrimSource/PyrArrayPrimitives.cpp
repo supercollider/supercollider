@@ -32,7 +32,7 @@ Primitives for Arrays.
 #include "SC_Levenshtein.h"
 
 #include <cstring>
-#include <algorithm>
+#include <vector>
 
 // Primitives that work with Arrays. Most of these are used in ArrayedCollection and Array.
 
