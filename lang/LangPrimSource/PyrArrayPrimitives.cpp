@@ -2514,7 +2514,8 @@ struct IsRegularResult {
     [[nodiscard]] constexpr bool irregular() const noexcept { return m_value == -2; }
     [[nodiscard]] constexpr bool type_error() const noexcept { return m_value == -3; }
 
-    constexpr explicit(false) operator int() const noexcept { return m_value; }
+    // implicitly converts to int.
+    constexpr operator int() const noexcept { return m_value; }
 
 private:
     constexpr explicit IsRegularResult(int i) noexcept: m_value(i) {}
