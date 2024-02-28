@@ -52,6 +52,28 @@ code::
 [4, 5, 6].maxSize; // gosh
 ::
 
+method::isRegular
+Returns true if all nested sub arrays are the same size.
+Can also be thought of as returning true if the total number of all nested elements can be expressed as the product of the array's dimensions, which is a requirement of a valid multichannel sound file.
+Example:
+code::
+[1, 2, 3].isRegular // true
+[[1, 2], [3, 4]].isRegular // true
+
+[1, 2, [3]].isRegular // false
+[[1, 2], [3]].isRegular // false
+
+// valid multichannel sound file
+a = [[1,2,3], [4, 5, 6]];
+a.shape.reduce('*') == a.flatten.size // true
+a.isRegular // true
+
+// invalid multichannel sound file
+b = [[1,2,3], [4, 5]];
+b.shape.reduce('*') == b.flatten.size // false
+b.isRegular // false
+::
+
 method::at
 Return the item at strong::index::.
 
