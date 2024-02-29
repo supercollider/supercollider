@@ -12,7 +12,7 @@ Rational : Number {
 
 	reduce {
 		var d;
-		h// check for bad terms
+		// check for bad terms
         if (numerator == inf) { ^inf };
         if (numerator == -inf) { ^-inf };
         if (denominator == inf) { ^this.class.new(0, 1) };
