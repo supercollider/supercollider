@@ -1,0 +1,638 @@
+From b9ebead6b5a64679529c53bed3f7771db356707c Mon Sep 17 00:00:00 2001
+From: Bernardo Barros <bernardo.barros@protonmail.ch>
+Date: Sat, 24 Feb 2024 23:31:50 -0500
+Subject: [PATCH] Add rational number support
+
+---
+ HelpSource/Classes/Rational.schelp            | 246 ++++++++++++++++++
+ .../Collections/SequenceableCollection.sc     |   4 +
+ SCClassLibrary/Common/Collections/String.sc   |   6 +
+ .../Common/Core/AbstractFunction.sc           |   4 +
+ SCClassLibrary/Common/Core/Object.sc          |   6 +
+ .../Common/GUI/PlusGUI/Math/PlotView.sc       |  16 +-
+ SCClassLibrary/Common/Math/Integer.sc         |   3 +
+ SCClassLibrary/Common/Math/Number.sc          |   5 +
+ SCClassLibrary/Common/Math/Rational.sc        | 189 ++++++++++++++
+ SCClassLibrary/Common/Math/SimpleNumber.sc    |  14 +
+ 10 files changed, 484 insertions(+), 9 deletions(-)
+ create mode 100644 HelpSource/Classes/Rational.schelp
+ create mode 100644 SCClassLibrary/Common/Math/Rational.sc
+
+diff --git a/HelpSource/Classes/Rational.schelp b/HelpSource/Classes/Rational.schelp
+new file mode 100644
+index 000000000..128cacd58
+--- /dev/null
++++ b/HelpSource/Classes/Rational.schelp
+@@ -0,0 +1,246 @@
++CLASS:: Rational
++summary:: Rational number
++categories:: Math
++related:: Classes/SimpleNumber, Classes/Float, Classes/Integer
++
++DESCRIPTION::
++A rational number. Alternative syntax: code::x %/ y::
++
++note::
++LIST::
++## Operations with code::Rational:: can be one order of magnitude slower compared to link::Classes/Float::.
++## code::Rational:: internally represents numerator and denominator as 64-bit link::Classes/Float::s. If you want to initialize it with a term outside the range code::-2147483648:: to code::2147483647:: you will need to force the number to be a Float by adding a decimal zero, e.g. code::-2147483649.0:: and code::2147483648.0::.
++::
++::
++
++CLASSMETHODS::
++
++method:: new
++Rational also accepts Floats and Strings in its code::new:: instantiation method. This class will always reduce a rational expression to its lowest terms (e.g. code::3 %/ 2:: instead of code::6 %/ 4::).
++
++code::
++Rational(6,4)     // -> 3 %/ 2
++Rational("8/4")   // -> 2 %/ 1
++Rational(0.33333) // -> 1 %/ 3
++::
++
++INSTANCEMETHODS::
++
++method:: %/
++Alternative syntax for code::Rational(x,y)::
++code::
++5 %/ 7 == Rational(5,7) // -> true
++::
++
++method:: +
++Addition
++code::
++Rational(3,2) + Rational(3,2) // -> 3 %/ 1
++(3 %/ 2) + (3 %/ 2)           // -> 3 %/ 1
++::
++
++method:: -
++Subtraction
++code::
++Rational(6,5) - Rational(1,3) // -> 13 %/ 15
++(6 %/ 5) - (1 %/ 3)           // -> 13 %/ 15
++::
++
++method:: *
++Multiplication
++code::
++Rational(3,7) * Rational(9,5) // -> 27 %/ 35
++(3 %/ 7) * (9 %/ 5)           // -> 27 %/ 35
++::
++
++method:: /
++Division
++code::
++Rational(5,3) / Rational(7,5) // -> 25 %/ 21
++(5 %/ 3) / (7 %/ 5)           // -> 25 %/ 21
++::
++
++method:: abs
++Absolute value.
++code::
++Rational(-5,4).abs // -> 5 %/ 4
++::
++
++method:: asFloat
++As link::Classes/Float::
++code::
++Rational(5,7).asFloat // -> 0.71428571428571
++::
++
++method:: pow
++code::
++Rational(1,2).pow(2)
++// same as:
++(1 %/ 2) ** 2 // -> 1 %/ 4
++
++Rational(4,5).pow(-4) // -> 625 %/ 256
++::
++
++method:: reciprocal
++Reciprocal
++code::
++Rational(5,7).reciprocal // -> 7 %/ 5
++::
++
++method:: squared
++Power of two
++code::
++Rational(5,7).squared // -> 25 %/ 49
++::
++
++EXAMPLES::
++
++SUBSECTION:: Basic operations
++
++code::
++a = Rational(3, 2); // a rational number
++b = 4%/5;           // another rational number
++
++c = 1 %/ (1 + (1 %/ (1 + (1 %/ 2)))); // -> 3 %/ 5
++
++a + b;    // -> 23 %/ 10
++a - b;    // -> 7 %/ 10
++a / b;    // -> 15 %/ 8
++a * b;    // -> 6 %/ 5
++a.pow(2); // -> 9 %/ 4
++
++a.min(b);    // -> 4 %/ 5
++b.max(2.32); // -> 2.32
++
++// force denominator to be less than 20:
++(4342%/3424).simplify(20); // -> 19 %/ 15
++::
++
++
++SUBSECTION:: Comparisons
++
++code::
++(7 %/ 3) >  (2 %/ 1) // -> true
++(6 %/ 4) <  (3 %/ 2) // -> false
++(5 %/ 5) == (4 %/ 3) // -> false
++(4 %/ 6) <= (5 %/ 4) // -> true
++(3 %/ 7) >= (6 %/ 5) // -> false
++::
++
++SUBSECTION:: Sorting
++
++code::
++d = [ 0 %/ 1, 3 %/ 5, -3 %/ 4, -1 %/ 5, 3 %/ 4, -2 %/ 3, 7 %/ 8, 1 %/ 1, -3 %/ 1, 1 %/ 6, 1 %/ 6, 7 %/ 8, -10 %/ 7, 0 %/ 1, 0 %/ 1, 5 %/ 3, 10 %/ 1, 3 %/ 5, 0 %/ 1, -2 %/ 7 ];
++
++d.sort;
++
++// sort an Array with Floats and Rationals:
++e = [1, 1.5, 3 %/ 5, 8 %/ 5, 1.342];
++e.sort;
++::
++
++SUBSECTION:: Continued fractions
++
++Recursive function to calculate finite continued fractions:
++
++code::
++f = { | x | if (x == 0) { 1 %/ 1 } {  1 + Rational(1, f.(x-1)) } };
++a = 20 collect: f.(_);
++a.plot;
++::
++
++SUBSECTION:: Stern-Brocot numbers
++
++In number theory, the Stern–Brocot tree is an infinite complete binary tree in which the vertices correspond one-for-one to the positive rational numbers, whose values are ordered from the left to the right as in a search tree.
++
++code::
++f = { | n |
++    var a = [ 1, 1 ];
++    n do: { | i | a = a add: ( a[i] + a[i+1] ) add: a[i+1] };
++    (a.size - 1) collect: { | i | a[i] %/ a[i+1] }
++};
++Post << f.(25);
++::
++
++SUBSECTION:: Conversion between Rational and Float
++
++Conversion between link::Classes/Float:: and Rational can have different degrees of precision:
++
++code::
++pi;                       // 3.1415926535898
++
++a = pi.asRational(99999); // 208341 %/ 66317
++b = pi.asRational(999);   // 355 %/ 113
++c = pi.asRational(99);    // 22 %/ 7
++
++a.asFloat;                // 3.1415926534674
++b.asFloat;                // 3.141592920354
++c.asFloat;                // 3.1428571428571
++
++pi.equalWithPrecision(a.asFloat, 0.000000001); // true
++pi.equalWithPrecision(b.asFloat, 0.00001);     // true
++pi.equalWithPrecision(c.asFloat, 0.01);        // true
++::
++
++SUBSECTION:: Sound Example
++
++code::
++(
++var is, f, l, ds, p, ps, next_i;
++
++s.waitForBoot {
++
++    SynthDef(\blip, { | out, freq = 440, amp = 0.05, nharms = 10, pan = 0, gate = 1 |
++        var audio = Blip.ar(freq, nharms, amp);
++        var env = Linen.kr(gate, doneAction: 2);
++        OffsetOut.ar(out, Pan2.ar(audio, pan, env) );
++    }).add;
++
++    is = [ 8%/15, 5%/9, 9%/16, 3%/5, 5%/8, 2%/3, 45%/64, 32%/45, 3%/4, 4%/5, 5%/6, 8%/9, 9%/10, 15%/16, 16%/15, 10%/9, 9%/8, 6%/5, 5%/4, 4%/3, 45%/32, 64%/45, 3%/2, 8%/5, 5%/3, 16%/9,9%/5, 15%/8 ];
++
++    ds = Array.fill2D(25, 25, { | r, c | (c+11) %/ (r+13) }).flat.pow(pi) / pi;
++
++    ps = Array.geom( 7, 4 %/ 1, 4 %/ 7 );
++
++    f = rrand( 20, 16000 );
++
++    l = {
++        loop {
++            next_i=is.choose;
++            if ( f <= 200  ) { next_i = max(next_i,next_i.reciprocal) };
++            if ( f >= 2600 ) { next_i = min(next_i,next_i.reciprocal) };
++
++            " -> ".post;
++            f = f * next_i.post.asFloat;
++            " -> ".post;
++
++            (
++                instrument: \blip,
++                freq:       f.post,
++                nharms:     rrand(1,4),
++                dur:        is.choose.asFloat,
++                pan:        rrand(-0.75,0.75),
++                amp:        rrand(0.01,0.1)
++            ).play;
++
++            " Hz\n    dur: ".post;
++            (ds.choose.postln * p).asFloat.wait;
++
++        }
++    };
++
++
++    fork {
++        loop {
++            p = ps.choose;
++            Post << format("\n\n========== Tempo % ==========\n\n", p);
++            rrand(3,13.0).wait;
++        }
++    };
++
++    s.sync;
++
++    { l.fork } ! 3
++}
++)
++::
+diff --git a/SCClassLibrary/Common/Collections/SequenceableCollection.sc b/SCClassLibrary/Common/Collections/SequenceableCollection.sc
+index 54e55224c..c8745b47c 100644
+--- a/SCClassLibrary/Common/Collections/SequenceableCollection.sc
++++ b/SCClassLibrary/Common/Collections/SequenceableCollection.sc
+@@ -340,6 +340,10 @@ SequenceableCollection : Collection {
+ 		^true
+ 	}
+ 
++    asRational { arg maxDenominator = 100;
++        ^this.collect { |item| item.asRational(maxDenominator) }
++    }
++	
+ 	resamp0 { arg newSize;
+ 		var factor = this.size - 1 / (newSize - 1).max(1);
+ 		^this.species.fill(newSize, { |i| this.at((i * factor).round(1.0).asInteger) })
+diff --git a/SCClassLibrary/Common/Collections/String.sc b/SCClassLibrary/Common/Collections/String.sc
+index b9b9ecc77..ac385aff8 100644
+--- a/SCClassLibrary/Common/Collections/String.sc
++++ b/SCClassLibrary/Common/Collections/String.sc
+@@ -37,6 +37,12 @@ String[char] : RawArray {
+ 		^lines;
+ 	}
+ 
++
++    asRational {
++        var stringArray = this.split($/ );
++        ^Rational(stringArray[0].asFloat, stringArray[1].asFloat)
++    }
++	
+ 	asSymbol {
+ 		_StringAsSymbol
+ 		^this.primitiveFailed
+diff --git a/SCClassLibrary/Common/Core/AbstractFunction.sc b/SCClassLibrary/Common/Core/AbstractFunction.sc
+index 81483663b..8a0c6e857 100644
+--- a/SCClassLibrary/Common/Core/AbstractFunction.sc
++++ b/SCClassLibrary/Common/Core/AbstractFunction.sc
+@@ -157,6 +157,10 @@ AbstractFunction {
+ 	real { ^this }
+ 	imag { ^0.0 }
+ 
++	// rational
++    performBinaryOpOnRational { arg aSelector, aRational, adverb;
++        ^this.reverseComposeBinaryOp(aSelector, aRational, adverb)
++    }
+ 
+ 	|| { arg function, adverb; ^this.composeBinaryOp('||', function, adverb) }
+ 	&& { arg function, adverb; ^this.composeBinaryOp('&&', function, adverb) }
+diff --git a/SCClassLibrary/Common/Core/Object.sc b/SCClassLibrary/Common/Core/Object.sc
+index 5426874f8..ed1b55f2d 100644
+--- a/SCClassLibrary/Common/Core/Object.sc
++++ b/SCClassLibrary/Common/Core/Object.sc
+@@ -377,6 +377,12 @@ Object  {
+ 		thisThread.handleError(this);
+ 	}
+ 
++	// rational
++    isRational { ^false }
++
++    performBinaryOpOnRational { arg aSelector, thing, adverb;
++        ^this.performBinaryOpOnSomething(aSelector, thing, adverb)
++    }
+ 
+ 	// conversion
+ 	species { ^this.class }
+diff --git a/SCClassLibrary/Common/GUI/PlusGUI/Math/PlotView.sc b/SCClassLibrary/Common/GUI/PlusGUI/Math/PlotView.sc
+index 0eedf1752..3c59c4a82 100644
+--- a/SCClassLibrary/Common/GUI/PlusGUI/Math/PlotView.sc
++++ b/SCClassLibrary/Common/GUI/PlusGUI/Math/PlotView.sc
+@@ -1225,9 +1225,8 @@ Plotter {
+ 	}
+ }
+ 
+-
+ + ArrayedCollection {
+-	plot { |name, bounds, discrete = false, numChannels, minval, maxval, separately = true|
++	plot { |name, bounds, discrete=false, numChannels, minval, maxval, separately = true|
+ 		var array, plotter;
+ 		array = this.as(Array);
+ 
+@@ -1239,22 +1238,19 @@ Plotter {
+ 		if(discrete) { plotter.plotMode = \points };
+ 
+ 		numChannels !? { array = array.unlace(numChannels) };
+-		array = array.collect {|elem, i|
++		array = array.collect {|elem|
+ 			if (elem.isKindOf(Env)) {
+ 				elem.asMultichannelSignal.flop
+ 			} {
+-				if(elem.isNil) {
+-					Error("Cannot plot array: non-numeric value at index %".format(i)).throw
+-				};
+ 				elem
+-			}
++			};
++            if (elem.isKindOf(Rational)) { elem.asFloat } { elem };
+ 		};
+-
+ 		plotter.setValue(
+ 			array,
+ 			findSpecs: true,
+-			refresh: true,
+ 			separately: separately,
++			refresh: true,
+ 			minval: minval,
+ 			maxval: maxval
+ 		);
+@@ -1263,6 +1259,8 @@ Plotter {
+ 	}
+ }
+ 
++
++
+ + Collection {
+ 	plotHisto { arg steps = 100, min, max;
+ 		var histo = this.histo(steps, min, max);
+diff --git a/SCClassLibrary/Common/Math/Integer.sc b/SCClassLibrary/Common/Math/Integer.sc
+index 131f7d03f..4e884074f 100644
+--- a/SCClassLibrary/Common/Math/Integer.sc
++++ b/SCClassLibrary/Common/Math/Integer.sc
+@@ -232,6 +232,9 @@ Integer : SimpleNumber {
+ 		^Array.fib(this, a, b);
+ 	}
+ 
++    asRational { ^Rational(this, 1) }
++    //as { arg aSimilarClass; ^aSimilarClass.new(this.numerator, 1 ) }
++
+ 	factors {
+ 		var num, array, prime;
+ 		if(this <= 1) { ^[] }; // no prime factors exist below the first prime
+diff --git a/SCClassLibrary/Common/Math/Number.sc b/SCClassLibrary/Common/Math/Number.sc
+index 9a305e471..57b9f0c4a 100644
+--- a/SCClassLibrary/Common/Math/Number.sc
++++ b/SCClassLibrary/Common/Math/Number.sc
+@@ -61,4 +61,9 @@ Number : Magnitude {
+ 		^this.forBy(last, step, function)
+ 	}
+ 
++
++	// rational
++	numerator { ^this }
++    denominator { ^1 }
++    rational { arg denominator=1; ^Rational(this, denominator) }
+ }
+diff --git a/SCClassLibrary/Common/Math/Rational.sc b/SCClassLibrary/Common/Math/Rational.sc
+new file mode 100644
+index 000000000..929a4c29c
+--- /dev/null
++++ b/SCClassLibrary/Common/Math/Rational.sc
+@@ -0,0 +1,189 @@
++/*
++	TestRational.run
++*/
++
++Rational : Number {
++	var <numerator, <denominator;
++
++	*new { arg numerator=1.0, denominator=1.0;
++		if(numerator.isKindOf(String)) { ^numerator.asRational };
++		^super.newCopyArgs(numerator, denominator).reduce
++	}
++
++	reduce {
++		var d;
++		h// check for bad terms
++        if (numerator == inf) { ^inf };
++        if (numerator == -inf) { ^-inf };
++        if (denominator == inf) { ^this.class.new(0, 1) };
++        if (denominator == -inf) { ^1 / -inf };
++        if (numerator.isNaN || denominator.isNaN) { ^0/0 };
++
++        // at least one Rational
++        if (this.numerator.isKindOf(Rational) || this.denominator.isKindOf(Rational)) {
++            ^(numerator.asRational / denominator.asRational)
++        };
++
++        // Ints or rounded Floats
++        ^if (this.numerator.frac == 0 && this.denominator.frac == 0) {
++
++            // check for bad terms
++            if (denominator == 0) {
++                "Rational has zero denominator".error
++            };
++
++            d = this.factor;
++            numerator = ((this.numerator / d).abs * d.sign).round.asFloat;
++            denominator = (this.denominator / d).abs.round.asFloat;
++            Rational.fromReducedTerms(numerator, denominator)
++        } {
++            // other Number cases
++            (this.numerator / this.denominator).asRational
++        }
++    }
++
++    *fromReducedTerms { arg numerator=1.0, denominator=1.0;
++        ^super.newCopyArgs(numerator, denominator);
++    }
++
++    *newFrom { arg that; ^that.asRational }
++
++    factor {
++        var d = gcd(this.numerator.asInteger, this.denominator.asInteger).abs;
++        if (denominator < 0) { d = d.neg };
++        if (numerator   < 0) { d = d.neg };
++        ^d.asFloat
++    }
++
++    sign {
++        if (this.numerator == 0 ) { ^0    };
++        if (this.numerator >  0 ) { ^1    };
++        if (this.numerator <  0 ) { ^(-1) };
++    }
++
++    numerator_ { arg newNumerator=1.0; numerator = newNumerator; ^this.reduce }
++
++    denominator_ { arg newDenominator=1.0; denominator = newDenominator; ^this.reduce }
++
++    isNumeratorPowerOfTwo { ^this.numerator.asInteger.isPowerOfTwo }
++
++    isDenominatorPowerOfTwo { ^this.denominator.asInteger.isPowerOfTwo }
++
++    performBinaryOpOnSimpleNumber { arg aSelector, aNumber, adverb;
++        ^aNumber.asRational.perform(aSelector, this, adverb)
++    }
++
++    isRational { ^true }
++
++    %/ { arg aNumber; ^this.class.new(this, aNumber) }
++
++    asRational { ^this }
++
++    asFloat { ^(this.numerator / this.denominator).asFloat }
++
++    asInteger { ^(this.numerator / this.denominator).asInteger }
++
++    asInt { ^this.asInteger }
++
++    reciprocal { ^this.class.new(this.denominator, this.numerator) }
++
++    printOn { arg stream;
++        stream <<  numerator.asString.replace(".0","") << "%/" << denominator.asString.replace(".0","")
++    }
++
++    storeOn { arg stream;
++        stream <<  numerator.asString.replace(".0","") << "%/" << denominator.asString.replace(".0","")
++    }
++
++    isNaN { ^false }
++
++    hash { ^this.instVarHash }
++
++    + { arg aNumber, adverb;
++        ^this.class.new(
++            (this.numerator * aNumber.denominator) + (this.denominator * aNumber.numerator),
++            this.denominator * aNumber.denominator)
++    }
++
++    - { arg aNumber, adverb;
++        ^this.class.new(
++            (this.numerator * aNumber.denominator) - (this.denominator * aNumber.numerator),
++            this.denominator * aNumber.denominator)
++    }
++
++    * { arg aNumber, adverb;
++        ^this.class.new(
++            this.numerator * aNumber.numerator,
++            this.denominator * aNumber.denominator)
++    }
++
++    / { arg aNumber, adverb;
++        ^this.class.new(
++            this.numerator * aNumber.denominator,
++            this.denominator * aNumber.numerator)
++    }
++
++    == { arg aNumber, adverb;
++        ^(this.numerator * aNumber.denominator) == (this.denominator * aNumber.numerator)
++    }
++
++    != { arg aNumber, adverb;
++        ^(this.numerator * aNumber.denominator) != (this.denominator * aNumber.numerator)
++    }
++
++    pow { arg n;
++
++        ^case
++        { n == 0 } { this.class.new(1,1) }
++
++        { n > 0 } {
++            this.class.new(
++                this.numerator.pow(n),
++                this.denominator.pow(n)
++            )
++        }
++
++        { n < 0  } {
++            if((this.numerator == 0).not) {
++                this.reciprocal.pow(n.abs)
++            } {
++                "Rational has zero denominator.".error
++            }
++        }
++    }
++
++    simplify { arg maxDenominator=20, fasterBetter=false;
++        ^this.asFloat.asRational(maxDenominator,fasterBetter)
++    }
++
++    < { arg aNumber;
++        ^(this.numerator * aNumber.denominator) < (this.denominator * aNumber.numerator)
++    }
++
++    > { arg aNumber;
++        ^(this.numerator * aNumber.denominator) > (this.denominator * aNumber.numerator)
++    }
++
++    <= { arg aNumber;
++        ^(this.numerator * aNumber.denominator) <= (this.denominator * aNumber.numerator)
++    }
++
++    >= { arg aNumber;
++        ^(this.numerator * aNumber.denominator) >= (this.denominator * aNumber.numerator)
++    }
++
++    isNegative { ^this.numerator.isNegative }
++
++    isPositive { ^this.numerator.isPositive }
++
++    neg { ^this * -1 }
++
++    squared { ^this.pow(2) }
++
++    cubed { ^this.pow(3) }
++
++    abs { ^this.class.new(numerator.abs, denominator) }
++
++}
++
++
+diff --git a/SCClassLibrary/Common/Math/SimpleNumber.sc b/SCClassLibrary/Common/Math/SimpleNumber.sc
+index 5f18543ef..bd912cb5b 100644
+--- a/SCClassLibrary/Common/Math/SimpleNumber.sc
++++ b/SCClassLibrary/Common/Math/SimpleNumber.sc
+@@ -696,6 +696,20 @@ SimpleNumber : Number {
+ 
+ 	playAndDelta {}
+ 
++    asRational { arg maxDenominator=100,fasterBetter=false;
++        var fraction;
++        if (this == inf) { ^inf } {
++            fraction = this.asFraction(maxDenominator, fasterBetter);
++            ^Rational(fraction[0], fraction[1])
++        }
++    }
++
++    %/ { arg aNumber; ^Rational(this, aNumber) }
++
++    performBinaryOpOnRational { arg aSelector, rational, adverb;
++        ^rational.perform(aSelector, this.asRational, adverb)
++    }
++
+ 	asQuant { ^Quant(this) }
+ 
+ 	// a clock format inspired by ISO 8601 time interval display (truncated representation)
+-- 
+2.44.0
+
