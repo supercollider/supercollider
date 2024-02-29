@@ -2526,7 +2526,7 @@ struct IsRectangularResult {
     constexpr operator int() const noexcept { return m_value; }
 
 private:
-    constexpr explicit IsRectangularResult(int i) noexcept: m_value(i) { }
+    constexpr explicit IsRectangularResult(int i) noexcept: m_value(i) {}
     int m_value;
 };
 
