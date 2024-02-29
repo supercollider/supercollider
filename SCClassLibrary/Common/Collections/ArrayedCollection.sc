@@ -23,9 +23,9 @@ ArrayedCollection : SequenceableCollection {
 		_BasicMaxSize
 		^this.primitiveFailed
 	}
-	isRegular {
+	isRectangular {
 	    // checks whether all nested subcollections are the same size.
-	    _ArrayIsRegular
+	    _ArrayIsRectangular
 		^this.primitiveFailed
 	}
 
