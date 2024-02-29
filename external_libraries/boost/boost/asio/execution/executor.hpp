@@ -40,10 +40,10 @@ template <typename T, typename F>
 struct is_executor_of_impl_base :
   integral_constant<bool,
     conditional<true, true_type,
-        typename result_of<typename decay<F>::type&()>::type
+        typename result_of<typename std::decay_t<F>::type&()>::type
       >::type::value
-      && is_constructible<typename decay<F>::type, F>::value
-      && is_move_constructible<typename decay<F>::type>::value
+      && is_constructible<typename std::decay_t<F>::type, F>::value
+      && is_move_constructible<typename std::decay_t<F>::type>::value
 #if defined(BOOST_ASIO_HAS_NOEXCEPT)
       && is_nothrow_copy_constructible<T>::value
       && is_nothrow_destructible<T>::value

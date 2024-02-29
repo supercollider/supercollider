@@ -24,8 +24,8 @@ Primitives for Symbol.
 
 */
 
-#include <string.h>
-#include <stdlib.h>
+#include <cstring>
+#include <cstdlib>
 #include "PyrPrimitive.h"
 #include "PyrSymbol.h"
 #include "VMGlobals.h"
@@ -200,7 +200,8 @@ int prSymbol_IsIdentifier(struct VMGlobals* g, int numArgsPushed) {
 
         // The first character must be a lowercase letter.
     } else if ('a' <= str[0] && str[0] <= 'z') {
-        int length = strlen(str);
+        int length;
+        length = strlen(str);
         SetTrue(a);
         // All other characters must be alphanumeric or '_'.
         for (int i = 1; i < length; i++) {

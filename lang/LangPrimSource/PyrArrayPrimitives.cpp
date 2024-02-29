@@ -35,7 +35,7 @@ Primitives for Arrays.
 
 // Primitives that work with Arrays. Most of these are used in ArrayedCollection and Array.
 
-int basicSize(struct VMGlobals* g, int numArgsPushed) {
+inline int basicSize(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
     PyrObject* obj;
 
@@ -49,7 +49,7 @@ int basicSize(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int basicMaxSize(struct VMGlobals* g, int numArgsPushed) {
+inline int basicMaxSize(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
     PyrObject* obj;
     int maxsize;
@@ -65,7 +65,7 @@ int basicMaxSize(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int basicSwap(struct VMGlobals* g, int numArgsPushed) {
+inline int basicSwap(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b, *c, tempi, tempj;
     int i, j;
     PyrObject* obj;
@@ -105,7 +105,7 @@ int basicSwap(struct VMGlobals* g, int numArgsPushed) {
 int getIndexedInt(PyrObject* obj, int index, int* value);
 void DumpBackTrace(VMGlobals* g);
 
-int basicAt(struct VMGlobals* g, int numArgsPushed) {
+inline int basicAt(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b;
     int index;
     PyrObject* obj;
@@ -149,7 +149,7 @@ int basicAt(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int basicRemoveAt(struct VMGlobals* g, int numArgsPushed) {
+inline int basicRemoveAt(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b;
     int index, length, elemsize;
     PyrObject* obj;

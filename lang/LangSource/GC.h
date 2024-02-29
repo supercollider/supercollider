@@ -185,7 +185,7 @@ private:
 
     void beginPause();
     void endPause();
-    void reportPause();
+    static static void reportPause();
 
     VMGlobals* mVMGlobals;
     AllocPool* mPool;

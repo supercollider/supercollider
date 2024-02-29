@@ -24,7 +24,7 @@
 #include "PyrObjectProto.h"
 #include "PyrSymbol.h"
 #include "InitAlloc.h"
-#include <string.h>
+#include <cstring>
 #include <stdexcept>
 
 #define PAUSETIMES 0
@@ -344,8 +344,10 @@ HOT PyrObject* PyrGC::New(size_t inNumBytes, long inFlags, long inFormat, bool i
 
     // obtain size info
 
-    int32 alignedSize = (inNumBytes + kAlignMask) & ~kAlignMask; // 16 byte align
-    int32 numSlots = alignedSize / sizeof(PyrSlot);
+    int32 alignedSize;
+    alignedSize = (inNumBytes + kAlignMask) & ~kAlignMask; // 16 byte align
+    int32 numSlots;
+    numSlots = alignedSize / sizeof(PyrSlot);
     numSlots = numSlots < 1 ? 1 : numSlots;
     int32 sizeclass = LOG2CEIL(numSlots);
     sizeclass = sc_min(sizeclass, kNumGCSizeClasses - 1);
@@ -379,13 +381,16 @@ HOT PyrObject* PyrGC::NewFrame(size_t inNumBytes, long inFlags, long inFormat, b
 
     // obtain size info
 
-    int32 alignedSize = (inNumBytes + kAlignMask) & ~kAlignMask; // 16 byte align
-    int32 numSlots = alignedSize / sizeof(PyrSlot);
+    int32 alignedSize;
+    alignedSize = inNumBytes + kAlignMask & ~kAlignMask; // 16 byte align
+    int32 numSlots;
+    numSlots = alignedSize / sizeof(PyrSlot);
     numSlots = numSlots < 1 ? 1 : numSlots;
     int32 sizeclass = LOG2CEIL(numSlots);
     sizeclass = sc_min(sizeclass, kNumGCSizeClasses - 1);
 
-    int32 credit = 1L << sizeclass;
+    int32 credit;
+    credit = 1L << sizeclass;
     mAllocTotal += credit;
     mNumAllocs++;
     mNumToScan += credit;
@@ -713,7 +718,7 @@ void PyrGC::Finalize(PyrObject* finalizer) {
     if (!IsObj(finalizer->slots + 1))
         return;
 
-    ObjFuncPtr func = (ObjFuncPtr)slotRawPtr(&finalizer->slots[0]);
+    auto func = (ObjFuncPtr)slotRawPtr(&finalizer->slots[0]);
     PyrObject* obj = slotRawObject(&finalizer->slots[1]);
     // post("FINALIZE %s %p\n", slotRawSymbol(&obj->classptr->name)->name, obj);
     (func)(mVMGlobals, obj);

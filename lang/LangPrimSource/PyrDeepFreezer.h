@@ -40,11 +40,7 @@ const int32 kDeepFreezerObjectArrayInitialCapacity = 32;
 
 class PyrDeepFreezer {
 public:
-    PyrDeepFreezer(VMGlobals* inG):
-        g(inG),
-        objectArray(initialObjectArray),
-        numObjects(0),
-        objectArrayCapacity(kDeepFreezerObjectArrayInitialCapacity) {}
+    explicit PyrDeepFreezer(VMGlobals* inG);
 
     ~PyrDeepFreezer() {
         if (objectArrayCapacity > kDeepFreezerObjectArrayInitialCapacity)
@@ -72,17 +68,13 @@ public:
     }
 
 private:
-    void recurse(PyrObject* obj, int n) {
-        PyrSlot* slot = obj->slots;
-        for (int i = 0; i < n; ++i, ++slot)
-            if (IsObj(slot))
-                constructObjectArray(slotRawObject(slot));
-    }
+    void recurse(PyrObject* obj, int n);
 
     void growObjectArray() {
         int32 newObjectArrayCapacity = objectArrayCapacity << 1;
 
-        int32 newSize = newObjectArrayCapacity * sizeof(PyrObject*);
+        int32 newSize;
+        newSize = newObjectArrayCapacity * sizeof(PyrObject*);
         PyrObject** newArray = (PyrObject**)g->allocPool->Alloc(newSize);
         MEMFAIL(newArray);
         memcpy(newArray, objectArray, numObjects * sizeof(PyrObject*));
@@ -104,38 +96,7 @@ private:
         objectArray[numObjects++] = obj;
     }
 
-    void constructObjectArray(PyrObject* obj) {
-        if (obj->IsPermanent())
-            return;
-
-        if (!obj->IsMarked()) {
-            if (isKindOf(obj, class_process)) {
-                throw std::runtime_error("cannot freeze Process.\n");
-            } else if (isKindOf(obj, s_interpreter->u.classobj)) {
-                throw std::runtime_error("cannot freeze Interpreter.\n");
-            } else if (isKindOf(obj, class_rawarray)) {
-                putObject(obj);
-            } else if (isKindOf(obj, class_array)) {
-                putObject(obj);
-                recurse(obj, obj->size);
-            } else if (isKindOf(obj, class_func)) {
-                if (NotNil(&slotRawBlock(&((PyrClosure*)obj)->block)->contextDef)) {
-                    throw std::runtime_error("open Function can not be frozen.\n");
-                }
-                putObject(obj);
-                recurse(obj, obj->size);
-            } else if (isKindOf(obj, class_method)) {
-                throw std::runtime_error("cannot freeze Methods.\n");
-            } else if (isKindOf(obj, class_thread)) {
-                throw std::runtime_error("cannot freeze Threads.\n");
-            } else if (isKindOf(obj, class_frame)) {
-                throw std::runtime_error("cannot freeze Frames.\n");
-            } else {
-                putObject(obj);
-                recurse(obj, obj->size);
-            }
-        }
-    }
+    void constructObjectArray(PyrObject* obj);
 
     VMGlobals* g;
 
@@ -145,3 +106,46 @@ private:
 
     PyrObject* initialObjectArray[kDeepFreezerObjectArrayInitialCapacity];
 };
+void PyrDeepFreezer::recurse(PyrObject* obj, int n) {
+    PyrSlot* slot = obj->slots;
+    for (int i = 0; i < n; ++i, ++slot)
+        if (IsObj(slot))
+            constructObjectArray(slotRawObject(slot));
+}
+void PyrDeepFreezer::constructObjectArray(PyrObject* obj) {
+    if (obj->IsPermanent())
+        return;
+
+    if (!obj->IsMarked()) {
+        if (isKindOf(obj, class_process)) {
+            throw std::runtime_error("cannot freeze Process.\n");
+        } else if (isKindOf(obj, s_interpreter->u.classobj)) {
+            throw std::runtime_error("cannot freeze Interpreter.\n");
+        } else if (isKindOf(obj, class_rawarray)) {
+            putObject(obj);
+        } else if (isKindOf(obj, class_array)) {
+            putObject(obj);
+            recurse(obj, obj->size);
+        } else if (isKindOf(obj, class_func)) {
+            if (NotNil(&slotRawBlock(&((PyrClosure*)obj)->block)->contextDef)) {
+                throw std::runtime_error("open Function can not be frozen.\n");
+            }
+            putObject(obj);
+            recurse(obj, obj->size);
+        } else if (isKindOf(obj, class_method)) {
+            throw std::runtime_error("cannot freeze Methods.\n");
+        } else if (isKindOf(obj, class_thread)) {
+            throw std::runtime_error("cannot freeze Threads.\n");
+        } else if (isKindOf(obj, class_frame)) {
+            throw std::runtime_error("cannot freeze Frames.\n");
+        } else {
+            putObject(obj);
+            recurse(obj, obj->size);
+        }
+    }
+}
+PyrDeepFreezer::PyrDeepFreezer(VMGlobals* inG):
+    g(inG),
+    objectArray(initialObjectArray),
+    numObjects(0),
+    objectArrayCapacity(kDeepFreezerObjectArrayInitialCapacity) {}
