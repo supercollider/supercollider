@@ -23,12 +23,6 @@ ArrayedCollection : SequenceableCollection {
 		_BasicMaxSize
 		^this.primitiveFailed
 	}
-	isRectangular {
-	    // checks whether all nested subcollections are the same size.
-	    _ArrayIsRectangular
-		^this.primitiveFailed
-	}
-
 
 	swap { arg i, j; var temp;
 		_BasicSwap;
@@ -327,14 +321,21 @@ ArrayedCollection : SequenceableCollection {
 	}
 
 	// concepts borrowed from J programming language
-	rank {
-		// rank is the number of dimensions in a multidimensional array.
-		// see also Object-rank
-		// this assumes every element has the same rank
+	isRectangular {
+	    // all nested arrays are the same size and elements are at the same depth.
+	    _ArrayIsRectangular
+		^this.primitiveFailed
+	}
+	rank {|test=false|
+	    if(test and: this.isRectangular.not){
+            Error("Array is not rectangular, rank cannot be calculated").throw
+	    };
 		^1 + this.first.rank
 	}
-	shape {
-		// this assumes every element has the same shape
+	shape { |test=false|
+	    if(test and: this.isRectangular.not){
+            Error("Array is not rectangular, shape cannot be calculated").throw
+	    };
 		^[this.size] ++ this[0].shape
 	}
 	reshape { arg ... shape;

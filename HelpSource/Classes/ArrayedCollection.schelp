@@ -53,8 +53,9 @@ code::
 ::
 
 method::isRectangular
-Returns true if all nested sub arrays are the same size.
-Can also be thought of as returning true if the total number of all nested elements can be expressed as the product of the array's dimensions, which is a requirement of a valid multichannel sound file.
+Returns true if all nested sub arrays are the same size and all elements have the same depth.
+This is a requirement of several nested array algorithms and formats, notably multichannel audio files.
+
 Example:
 code::
 [1, 2, 3].isRectangular // true
@@ -62,6 +63,7 @@ code::
 
 [1, 2, [3]].isRectangular // false
 [[1, 2], [3]].isRectangular // false
+[[1, 2], [3, [4, 5]]].isRectangular // false
 
 // valid multichannel sound file
 a = [[1,2,3], [4, 5, 6]];
@@ -461,25 +463,40 @@ a.performInPlace(\normalizeSum, 3, 6);
 ::
 
 method::rank
-Rank is the number of dimensions in a multidimensional array.
+Requires link::#-isRectangular:: as a precondition.
+Returns the number of dimensions the value has.
+A single value (scalar) has rank of 0, while an empty array has rank of 1.
+If the array is not rectangular the wrong result will be returned, as this only considers the left-most elements.
+
+Optionally, rank takes an boolean as an argument indicating if it should test the array is rectangular.
+
 code::
-a = [4,7,6,8];
-a.rank;
-a = [[4,7],[6,8]];
-a.rank;
+[].rank // 1
+[4,7,6,8].rank // 1
+[[4,7],[6,8]].rank // 2
+[1 ,2, [3, 4]].rank // 1, this array is not rectangular and returns a meaningless value.
+[1 ,2, [3, 4]].rank(test: true) // throws an error
 ::
 
+
+
 method::shape
-For a multidimensional array, returns the number of elements along each dimension.
+Requires link::#-isRectangular:: as a precondition.
+For a multidimensional array, returns an array of the number of elements along each consecutive dimension.
+If the array is not rectangular the wrong result will be returned, as this only considers nested arrays at index zero.
+
+Optionally, shape takes an boolean as an argument indicating if it should test the array is rectangular.
 code::
-a = [4,7,6,8];
-a.shape;
-a = [[4,7],[6,8]];
-a.shape;
+[4,7,6,8].shape // [4]
+[[4,7],[6,8]].shape // [2, 2]
+[1 ,2, [3, 4]].shape // [3], this array is not rectangular and returns a meaningless value.
+[1 ,2, [3, 4]].shape(test: true) // throws an error
 ::
 
 method::reshape
-For a multidimensional array, rearranges the data using the desired number of elements along each dimension. The data may be extended using wrapExtend if needed.
+For a multidimensional array, rearranges the data using the desired number of elements along each dimension.
+The data may be extended using wrapExtend if needed.
+This will always return a rectangular array, see link::#-isRectangular::.
 code::
 a = [4,7,6,8];
 a.reshape(2,2);
