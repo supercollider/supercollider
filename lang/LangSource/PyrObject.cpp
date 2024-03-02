@@ -145,7 +145,7 @@ PyrSymbol* s_systemclock;
 PyrSymbol* s_server_shm_interface;
 PyrSymbol *s_interpretCmdLine, *s_interpretPrintCmdLine;
 
-PyrSymbol* s_doesNotUnderstand;
+PyrSymbol* s_doesNotUnderstand, *s_doesNotUnderstandWithKeys;
 PyrSymbol *s_curProcess, *s_curMethod, *s_curBlock, *s_curClosure, *s_curThread;
 PyrSymbol *s_run, *s_stop, *s_tick;
 PyrSymbol* s_startup;
@@ -247,6 +247,7 @@ void initSymbols() {
     s_interpretPrintCmdLine = getsym("interpretPrintCmdLine");
 
     s_doesNotUnderstand = getsym("doesNotUnderstand");
+    s_doesNotUnderstandWithKeys = getsym("doesNotUnderstandWithKeys");
 
     s_startup = getsym("startup");
     s_awake = getsym("awake");

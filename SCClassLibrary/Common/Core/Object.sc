@@ -343,6 +343,9 @@ Object  {
 	doesNotUnderstand { arg selector ... args;
 		DoesNotUnderstandError(this, selector, args).throw;
 	}
+	doesNotUnderstandWithKeys { |selector, withoutKeys, withKeys|
+		DoesNotUnderstandError(this, selector, [withoutKeys, withKeys]).throw;
+	}
 	shouldNotImplement { arg method;
 		ShouldNotImplementError(this, method, this.class).throw;
 	}
