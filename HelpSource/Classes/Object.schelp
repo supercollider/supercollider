@@ -652,6 +652,56 @@ foo {
 }
 ::
 
+
+subsection::Handling 'non-understood' messages and writing 'wrapper' classes
+
+When an object receives a message that it does not understand one of the following two methods are called before an error is thrown: link::#-doesNotUnderstand:: and link::#-doesNotUnderstandAbout::.
+This means it is possible to redirect the message, calling any other code desired.
+
+link::#-doesNotUnderstand:: is maintained for compatibility reasons.
+New code should only use link::#-doesNotUnderstandAbout::.
+
+If link::#-doesNotUnderstand:: is implemented but not link::#-doesNotUnderstandAbout:: when the user passes keyword arguments, they will be discarded, a warning posted, and link::#-doesNotUnderstand:: called.
+If the inverse is true, link::#-doesNotUnderstandAbout:: will be called and the code::keywordArgumentPairs:: array will be empty.
+
+By default, both methods throw a link::Classes/DoesNotUnderstandError::.
+
+method::doesNotUnderstandAbout
+This is called when an object receives a message it does not understand.
+Object's implementation will throw an error, but other classes (link::Classes/IdentityDictionary::) might override this.
+
+argument::selector
+The name of the message as a link::Classes/Symbol::.
+
+argument::argumentsArray
+An link::Classes/Array:: of arguments that have been passed directly and not via keywords.
+
+argument::keywordArgumentPairs
+The arguments that have been passed via keywords.
+These are formatted as an link::Classes/Array:: of key-value pairs link::Reference/Key-Value-Pairs::.
+If there are none, then link::Classes/Nil:: is passed instead of an empty array.
+
+code::
+4.someThing(3, someArgument: 42) // ERROR: Message 'someThing' not understood.
+::
+
+
+method::doesNotUnderstand
+This method is maintained for backwards compatibility, use link::#-doesNotUnderstandAbout:: instead.
+
+This method is only called when a class (that isn't Object) has implemented this method and not link::#-doesNotUnderstandAbout::.
+Object's implementation delegates to link::#-doesNotUnderstandAbout::.
+
+argument::selector
+The name of the message as a link::Classes/Symbol::.
+
+argument::... args
+The arguments passed.
+
+code::
+4.someThing(2) // ERROR: Message 'someThing' not understood.
+::
+
 subsection::Printing and Introspection
 
 method::post

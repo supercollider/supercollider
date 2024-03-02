@@ -694,54 +694,64 @@ lookup_again:
 }
 
 
-extern PyrClass* class_identdict;
-void doesNotUnderstandWithKeys(VMGlobals* g, PyrSymbol* selector, long numArgsPushed, long numKeyArgsPushed) {
-    PyrSlot *qslot, *pslot, *pend;
-    long i, index;
-    PyrSlot *uniqueMethodSlot, *arraySlot, *recvrSlot, *selSlot, *slot;
-    PyrClass* classobj;
-    PyrMethod* meth;
-    PyrObject* array;
+PyrMethod& get_method(PyrClass* class_of_obj, PyrSymbol* name_sym) {
+    const auto meth_index = slotRawInt(&class_of_obj->classIndex) + name_sym->u.index;
+    return *gRowTable[meth_index];
+}
 
+inline void maybe_do_sanity_check() {
 #ifdef GC_SANITYCHECK
     g->gc->SanityCheck();
 #endif
-    // move args up by one to make room for selector
-    qslot = g->sp + 1;
-    pslot = g->sp + 2;
-    pend = pslot - numArgsPushed + 1;
-    while (pslot > pend)
-        *--pslot = *--qslot;
+};
 
-    selSlot = g->sp - numArgsPushed + 2;
+extern PyrClass* class_identdict;
+
+void doesNotUnderstandWithKeys(VMGlobals* g, PyrSymbol* selector, long numArgsPushed, long numKeyArgsPushed) {
+    // subtract one as 'this' is counted in numArgsPushed.
+    const auto num_norm_args = numArgsPushed - (numKeyArgsPushed * 2) - 1;
+
+    {
+        // move args up by one to make room for selector
+        PyrSlot* qslot = g->sp + 1;
+        PyrSlot* pslot = g->sp + 2;
+        PyrSlot* pend = pslot - numArgsPushed + 1;
+        while (pslot > pend)
+            *--pslot = *--qslot;
+    }
+    g->sp++; // increase stack size as a new thing has been added
+
+    // put selector in place
+    PyrSlot* selSlot = g->sp - numArgsPushed + 1;
     SetSymbol(selSlot, selector);
-    g->sp++;
 
-    recvrSlot = selSlot - 1;
+    // current stack state: recvr, selector, normalArgs..., (kw, arg) ...
 
-    classobj = classOfSlot(recvrSlot);
+    PyrSlot* recvrSlot = selSlot - 1;
 
-    index = slotRawInt(&classobj->classIndex) + s_doesNotUnderstand->u.index;
-    meth = gRowTable[index];
+    auto this_class = classOfSlot(recvrSlot);
 
+    PyrMethod& This_doesNotUnderstandAbout_method_obj = get_method(this_class, s_doesNotUnderstandAbout);
 
-    if (slotRawClass(&meth->ownerclass) == class_object) {
-        // lookup instance specific method
-        uniqueMethodSlot = &g->classvars->slots[cvxUniqueMethods];
+    // If the doesNotUnderstandAbout method is actually a literal instance of an object (rather than Method),
+    // then lookup instance specific method.
+    if (slotRawClass(&This_doesNotUnderstandAbout_method_obj.ownerclass) == class_object) {
+        PyrSlot* uniqueMethodSlot = &g->classvars->slots[cvxUniqueMethods];
         if (isKindOfSlot(uniqueMethodSlot, class_identdict)) {
-            arraySlot = slotRawObject(uniqueMethodSlot)->slots + ivxIdentDict_array;
+            PyrSlot* arraySlot = slotRawObject(uniqueMethodSlot)->slots + ivxIdentDict_array;
+            PyrObject* array;
             if ((IsObj(arraySlot) && (array = slotRawObject(arraySlot))->classptr == class_array)) {
-                i = arrayAtIdentityHashInPairs(array, recvrSlot);
+                const auto i = arrayAtIdentityHashInPairs(array, recvrSlot);
                 if (i >= 0) {
-                    slot = array->slots + i;
+                    PyrSlot* slot = array->slots + i;
                     if (NotNil(slot)) {
                         ++slot;
                         if (isKindOfSlot(slot, class_identdict)) {
                             arraySlot = slotRawObject(slot)->slots + ivxIdentDict_array;
                             if ((IsObj(arraySlot) && (array = slotRawObject(arraySlot))->classptr == class_array)) {
-                                i = arrayAtIdentityHashInPairs(array, selSlot);
-                                if (i >= 0) {
-                                    slot = array->slots + i;
+                                const auto j = arrayAtIdentityHashInPairs(array, selSlot);
+                                if (j >= 0) {
+                                    slot = array->slots + j;
                                     if (NotNil(slot)) {
                                         ++slot;
                                         slotCopy(selSlot, recvrSlot);
@@ -758,62 +768,95 @@ void doesNotUnderstandWithKeys(VMGlobals* g, PyrSymbol* selector, long numArgsPu
         }
     }
 
-    executeMethodWithKeys(g, meth, numArgsPushed + 1, numKeyArgsPushed);
+    PyrMethod& This_doesNotUnderstand_method_obj = get_method(this_class, s_doesNotUnderstand);
 
-#ifdef GC_SANITYCHECK
-    g->gc->SanityCheck();
-#endif
+    const auto classOfDoesNotUnderstand = slotRawClass(&This_doesNotUnderstand_method_obj.ownerclass);
+    const auto classOfDoesNotUnderstandAbout = slotRawClass(&This_doesNotUnderstandAbout_method_obj.ownerclass);
+
+    PyrClass* cur_class = this_class;
+    while (true) {
+        if (cur_class == classOfDoesNotUnderstandAbout) {
+            PyrObject* without_arg_array = newPyrArray(g->gc, static_cast<int>(num_norm_args), 0, true);
+            without_arg_array->size = static_cast<int>(num_norm_args);
+            // this does not run GC as the previous array is not yet on the stack.
+            PyrObject* with_arg_array = newPyrArray(g->gc, static_cast<int>(numKeyArgsPushed * 2), 0, false);
+            with_arg_array->size = static_cast<int>(numKeyArgsPushed * 2);
+            // copy from stack into array
+            slotCopy(without_arg_array->slots, recvrSlot + 2, static_cast<int>(num_norm_args));
+            slotCopy(with_arg_array->slots, recvrSlot + 2 + num_norm_args, static_cast<int>(numKeyArgsPushed * 2));
+            // put arrays on stack
+            SetObject(recvrSlot + 2, without_arg_array);
+            SetObject(recvrSlot + 3, with_arg_array);
+
+            // set the stack pointer to be the last obj
+            g->sp = recvrSlot + 3;
+
+            // recvr, selector, withoutKeys, withKeys ... 4 things on stack
+            executeMethod(g, &This_doesNotUnderstandAbout_method_obj, 4);
+            maybe_do_sanity_check();
+            return;
+
+        } else if (cur_class == classOfDoesNotUnderstand) {
+            postfl("WARNING: %s does not implement doesNotUnderstandAbout and keyword arguments will be dropped.\n",
+                   slotRawSymbol(&classOfSlot(recvrSlot)->name)->name);
+
+            g->sp = recvrSlot + 1 + num_norm_args;
+
+            // an addition arg here for the selector that is now on the stack
+            executeMethod(g, &This_doesNotUnderstand_method_obj, num_norm_args + 2);
+            maybe_do_sanity_check();
+            return;
+        }
+        cur_class = slotRawSymbol(&cur_class->superclass)->u.classobj;
+    }
 }
 
 int blockValue(struct VMGlobals* g, int numArgsPushed);
 
 void doesNotUnderstand(VMGlobals* g, PyrSymbol* selector, long numArgsPushed) {
-    PyrSlot *qslot, *pslot, *pend;
-    long i, index;
-    PyrSlot *uniqueMethodSlot, *arraySlot, *recvrSlot, *selSlot, *slot;
-    PyrClass* classobj;
-    PyrMethod* meth;
-    PyrObject* array;
+    maybe_do_sanity_check();
 
-#ifdef GC_SANITYCHECK
-    g->gc->SanityCheck();
-#endif
-    // move args up by one to make room for selector
-    qslot = g->sp + 1;
-    pslot = g->sp + 2;
-    pend = pslot - numArgsPushed + 1;
-    while (pslot > pend)
-        *--pslot = *--qslot;
+    {
+        // move args up by one to make room for selector
+        PyrSlot* qslot = g->sp + 1;
+        PyrSlot* pslot = g->sp + 2;
+        PyrSlot* pend = pslot - numArgsPushed + 1;
+        while (pslot > pend)
+            *--pslot = *--qslot;
+    }
+    g->sp++; // increase stack size as a new thing has been added
 
-    selSlot = g->sp - numArgsPushed + 2;
+    // put selector in place
+    PyrSlot* selSlot = g->sp - numArgsPushed + 1;
     SetSymbol(selSlot, selector);
-    g->sp++;
 
-    recvrSlot = selSlot - 1;
+    // current stack state: recvr, selector, args...
 
-    classobj = classOfSlot(recvrSlot);
+    PyrSlot* recvrSlot = selSlot - 1;
 
-    index = slotRawInt(&classobj->classIndex) + s_doesNotUnderstand->u.index;
-    meth = gRowTable[index];
+    auto this_class = classOfSlot(recvrSlot);
 
+    PyrMethod& This_doesNotUnderstand_method_obj = get_method(this_class, s_doesNotUnderstand);
 
-    if (slotRawClass(&meth->ownerclass) == class_object) {
-        // lookup instance specific method
-        uniqueMethodSlot = &g->classvars->slots[cvxUniqueMethods];
+    // If the doesNotUnderstand method is actually a literal instance of an object (rather than Method),
+    // then lookup instance specific method.
+    if (slotRawClass(&This_doesNotUnderstand_method_obj.ownerclass) == class_object) {
+        PyrSlot* uniqueMethodSlot = &g->classvars->slots[cvxUniqueMethods];
         if (isKindOfSlot(uniqueMethodSlot, class_identdict)) {
-            arraySlot = slotRawObject(uniqueMethodSlot)->slots + ivxIdentDict_array;
+            PyrSlot* arraySlot = slotRawObject(uniqueMethodSlot)->slots + ivxIdentDict_array;
+            PyrObject* array;
             if ((IsObj(arraySlot) && (array = slotRawObject(arraySlot))->classptr == class_array)) {
-                i = arrayAtIdentityHashInPairs(array, recvrSlot);
+                const auto i = arrayAtIdentityHashInPairs(array, recvrSlot);
                 if (i >= 0) {
-                    slot = array->slots + i;
+                    PyrSlot* slot = array->slots + i;
                     if (NotNil(slot)) {
                         ++slot;
                         if (isKindOfSlot(slot, class_identdict)) {
                             arraySlot = slotRawObject(slot)->slots + ivxIdentDict_array;
                             if ((IsObj(arraySlot) && (array = slotRawObject(arraySlot))->classptr == class_array)) {
-                                i = arrayAtIdentityHashInPairs(array, selSlot);
-                                if (i >= 0) {
-                                    slot = array->slots + i;
+                                const auto j = arrayAtIdentityHashInPairs(array, selSlot);
+                                if (j >= 0) {
+                                    slot = array->slots + j;
                                     if (NotNil(slot)) {
                                         ++slot;
                                         slotCopy(selSlot, recvrSlot);
@@ -829,12 +872,39 @@ void doesNotUnderstand(VMGlobals* g, PyrSymbol* selector, long numArgsPushed) {
             }
         }
     }
+    PyrMethod& This_doesNotUnderstandAbout_method_obj = get_method(this_class, s_doesNotUnderstandAbout);
 
-    executeMethod(g, meth, numArgsPushed + 1);
+    const auto classOfDoesNotUnderstand = slotRawClass(&This_doesNotUnderstand_method_obj.ownerclass);
+    const auto classOfDoesNotUnderstandAbout = slotRawClass(&This_doesNotUnderstandAbout_method_obj.ownerclass);
 
-#ifdef GC_SANITYCHECK
-    g->gc->SanityCheck();
-#endif
+    // Call either doesNotUnderstand or doesNotUnderstandAbout depending on which is first when climbing the hierarchy.
+    // This mean child classes always change the behaviour of superclass, which is expected due to method overriding.
+
+    PyrClass* cur_class = this_class;
+    while (true) {
+        if (cur_class == classOfDoesNotUnderstandAbout) {
+            const auto num_real_args = static_cast<int>(numArgsPushed) - 1;
+            PyrObject* without_keyword_arg_array = newPyrArray(g->gc, num_real_args, 0, true);
+            without_keyword_arg_array->size = num_real_args;
+
+            slotCopy(without_keyword_arg_array->slots, recvrSlot + 2, num_real_args);
+            SetObject(recvrSlot + 2, without_keyword_arg_array);
+            SetNil(recvrSlot + 3); // no keyword arguments, set it to nil.
+
+            g->sp = recvrSlot + 3;
+
+            executeMethod(g, &This_doesNotUnderstandAbout_method_obj, 4);
+            maybe_do_sanity_check();
+            return;
+
+        } else if (cur_class == classOfDoesNotUnderstand) {
+            // add one for the selector
+            executeMethod(g, &This_doesNotUnderstand_method_obj, numArgsPushed + 1);
+            maybe_do_sanity_check();
+            return;
+        }
+        cur_class = slotRawSymbol(&cur_class->superclass)->u.classobj;
+    }
 }
 
 HOT void executeMethodWithKeys(VMGlobals* g, PyrMethod* meth, long allArgsPushed, long numKeyArgsPushed) {

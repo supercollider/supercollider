@@ -340,8 +340,11 @@ Object  {
 	subclassResponsibility { arg method;
 		SubclassResponsibilityError(this, method, this.class).throw;
 	}
-	doesNotUnderstand { arg selector ... args;
-		DoesNotUnderstandError(this, selector, args).throw;
+	doesNotUnderstand { |selector ...args|
+		^this.doesNotUnderstandAbout(selector, args)
+	}
+	doesNotUnderstandAbout {|selector, argumentsArray, keywordArgumentPairs|
+		DoesNotUnderstandError(this, selector, argumentsArray, keywordArgumentPairs).throw;
 	}
 	shouldNotImplement { arg method;
 		ShouldNotImplementError(this, method, this.class).throw;
