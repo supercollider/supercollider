@@ -145,7 +145,7 @@ PyrSymbol* s_systemclock;
 PyrSymbol* s_server_shm_interface;
 PyrSymbol *s_interpretCmdLine, *s_interpretPrintCmdLine;
 
-PyrSymbol* s_doesNotUnderstand, *s_doesNotUnderstandWithKeys;
+PyrSymbol *s_doesNotUnderstand, *s_doesNotUnderstandWithKeys;
 PyrSymbol *s_curProcess, *s_curMethod, *s_curBlock, *s_curClosure, *s_curThread;
 PyrSymbol *s_run, *s_stop, *s_tick;
 PyrSymbol* s_startup;
@@ -781,7 +781,7 @@ public:
 
     pyr_pool_compile_allocator(void) {}
 
-    template <class U> pyr_pool_compile_allocator(pyr_pool_compile_allocator<U> const&) {}
+    template <class U> pyr_pool_compile_allocator(pyr_pool_compile_allocator<U> const&) { }
 
     pointer address(reference x) const { return &x; }
 
