@@ -26,7 +26,7 @@ ClassMethods::
 method::new
 Creates a new SoundFile instance.
 
-method:: write
+method:: writeArray
 Writes an array (or nested array) to a path as a sound file.
 
 argument:: pathName

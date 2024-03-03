@@ -71,7 +71,7 @@ SoundFile {
 		^res
 	}
 
-    *write {|pathName, array, headerFormat, sampleRate, sampleFormat|
+    *writeArray {|pathName, array, headerFormat, sampleRate, sampleFormat|
         var file = SoundFile.new;
 
         if (array.rank > 2) {
