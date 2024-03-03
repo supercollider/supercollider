@@ -559,47 +559,26 @@ IdentityDictionary : Dictionary {
 		};
 		^this.superPerformList(\doesNotUnderstand, selector, args);
 	}
+    doesNotUnderstandWithKeys {|selector, withOutKeys, withKeys|
+		if(know.not){
+			^this.superPerformList(\doesNotUnderstandWithKeys, selector, withOutKeys, withKeys)
+		};
 
-	doesNotUnderstandWithKeys {|selector, withOutKeys, withKeys|
-    		if(know){
-    			var obj = this[selector] ?? {
-    				^this.superPerformList(\doesNotUnderstandWithKeys, selector, withOutKeys, withKeys)
-    			};
-    			var def = obj.def;
-    			var withKeysEv = withKeys.asEvent;
-    			var args = ();
+		^this.doesNotUnderstandWithKeysFunctionHelper(
+			func: this[selector] ?? {
+				^this.superPerformList(\doesNotUnderstandWithKeys, selector, withOutKeys, withKeys)
+			},
+			withoutArray: [this] ++ withOutKeys, // append self to front of function call
+			withEvent: withKeys.asEvent
+		)
+	}
 
-    			// Build non-keyword args by building an event using the arg names from the FunctionDef.
-    			def.argNames.do({|n, index|
-    				if(index == 0){
-    					args[n] = this; // self is always first
-    				} {
-    					if(withOutKeys[index - 1].isNil.not){
-    						args[n] = withOutKeys[index - 1]
-    					}
-    				}
-    			});
-
-    			// Check there is no ambiguity as to which arg goes where in the call
-    			withKeysEv.keys.do({|k|
-    				if(args.includesKey(k)){ Error("Key % already added".format(k)).throw }
-    			});
-
-    			// add the keyword args supplied
-    			args = args ++ withKeysEv;
-
-    			^obj.performWithEnvir(\value, args);
-    		} {
-    			^this.superPerformList(\doesNotUnderstandWithKeys, selector, withOutKeys, withKeys);
-    		}
-    	}
-
-		// Quant support.
-		// The Quant class assumes the quant/phase/offset scheduling model.
-		// If you want a different model, you can write a dictionary like so:
-		// (nextTimeOnGrid: { |self, clock| ... calculate absolute beat number here ... },
-		//	parameter: value, parameter: value, etc.)
-		// If you leave out the nextTimeOnGrid function, fallback to quant/phase/offset.
+    // Quant support.
+    // The Quant class assumes the quant/phase/offset scheduling model.
+    // If you want a different model, you can write a dictionary like so:
+    // (nextTimeOnGrid: { |self, clock| ... calculate absolute beat number here ... },
+    //	parameter: value, parameter: value, etc.)
+    // If you leave out the nextTimeOnGrid function, fallback to quant/phase/offset.
 
 	nextTimeOnGrid { |clock, referenceBeat|
 		if(this[\nextTimeOnGrid].notNil) {

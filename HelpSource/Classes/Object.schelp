@@ -613,7 +613,11 @@ Remove all dependants of the receiver. Any object that has had dependants added 
 
 subsection::Error Support
 
-Object implements a number of methods which throw instances of Error. A number of methods (e.g. doesNotUnderstand) are 'private' and do not normally need to be called directly in user code. Others, such as those documented below can be useful for purposes such as object oriented design (e.g. to define an abstract interface which will be implemented in subclasses) and deprecation of methods. The reserved keyword thisMethod can be used to refer to the enclosing method. See also Method and Function (for exception handling).
+Object implements a number of methods which throw instances of Error.
+A number of methods (e.g. doesNotUnderstand) do not normally need to be called directly in user code.
+Others can be useful for purposes such as object oriented design (e.g. to define an abstract interface which will be implemented in subclasses) and deprecation of methods.
+The reserved keyword thisMethod can be used to refer to the enclosing method.
+See also Method and Function (for exception handling).
 
 method::throw
 
@@ -650,6 +654,43 @@ foo {
 	this.deprecated(thisMethod, OtherClass.class.findMethod(\bar));
 	...
 }
+::
+
+
+method::doesNotUnderstand
+Not usually called in user code.
+This is called when an object revives a message it does not understand.
+Object's implementation will throw an error, but other classes (link::Classes/IdentityDictionary::) might override this.
+This is a fundamental part of the smalltalk design.
+
+argument::selector
+The name of the message.
+
+argument::args
+The arguments passed.
+
+code::
+4.someThing(2) // ERROR: Message 'someThing' not understood.
+::
+
+method::doesNotUnderstandWithKeys
+Not usually called in user code.
+This is called when an object revives a message it does not understand, but there are keyword arguments.
+Object's implementation will throw an error, but other classes (link::Classes/IdentityDictionary::) might do something else.
+This is a fundamental part of the smalltalk design.
+
+argument::selector
+The name of the message.
+
+argument::withoutKeys
+The arguments passed that did not have a keyword attached.
+
+argument::withKeys
+The arguments passed that did have a keyword attached.
+These are formatted as an array of key-value pairs link::Reference/Key-Value-Pairs::.
+
+code::
+4.someThing(3, someArgument: 42) // ERROR: Message 'someThing' not understood.
 ::
 
 subsection::Printing and Introspection

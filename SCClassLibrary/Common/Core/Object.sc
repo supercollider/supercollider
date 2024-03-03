@@ -343,8 +343,53 @@ Object  {
 	doesNotUnderstand { arg selector ... args;
 		DoesNotUnderstandError(this, selector, args).throw;
 	}
+    prDoesNotUnderstandWithKeysHelper { |callingFunc, expectedArgNames, withoutArray, withEvent|
+		var args = expectedArgNames.collect({|name, index| name -> withoutArray[index] }).asEvent;
+		withEvent.keys.do({|k|
+			if(expectedArgNames.includes(k).not){
+				Error("Key '%' not found in function call".format(k)).throw
+			};
+			if(args.includesKey(k)){
+				Error("Duplicate function keyword '%'".format(k)).throw
+			}
+		});
+		^callingFunc.(args ++ withEvent);
+	}
+	doesNotUnderstandWithKeysFunctionHelper { |func, withoutArray, withEvent|
+		^this.prDoesNotUnderstandWithKeysHelper(
+			callingFunc: {|ev| func.valueWithEnvir(ev) },
+			expectedArgNames: func.def.argNames,
+			withoutArray: withoutArray,
+			withEvent: withEvent
+		)
+	}
+	doesNotUnderstandWithKeysClassMethodHelper { |class, methodName, withoutArray, withEvent|
+		// note 'class' is NOT a meta class here.
+		var meth = class.class.findRespondingMethodFor(methodName) ?? {
+			^Error("Could not find class method" + methodName + "for class" + class.asSymbol).throw
+		};
+
+		^this.prDoesNotUnderstandWithKeysHelper(
+			callingFunc: {|ev| class.performWithEnvir(methodName, ev) },
+			expectedArgNames: meth.argNames,
+			withoutArray: [class] ++ withoutArray, // push 'class' as this first!
+			withEvent: withEvent
+		)
+	}
+	doesNotUnderstandWithKeysMethodHelper { |class, this_object, methodName, withoutArray, withEvent|
+		var meth = class.findRespondingMethodFor(methodName) ?? {
+			^Error("Could not find method" + methodName + "for class" + class.asSymbol).throw
+		};
+
+		^this.prDoesNotUnderstandWithKeysHelper(
+			callingFunc: {|ev| class.performWithEnvir(methodName, ev) },
+			expectedArgNames: meth.argNames,
+			withoutArray: [this_object] ++ withoutArray, // push 'this_object' as this first!
+			withEvent: withEvent
+		)
+	}
 	doesNotUnderstandWithKeys { |selector, withoutKeys, withKeys|
-		DoesNotUnderstandError(this, selector, [withoutKeys, withKeys]).throw;
+		DoesNotUnderstandWithKeysError(this, selector, withoutKeys, withKeys).throw;
 	}
 	shouldNotImplement { arg method;
 		ShouldNotImplementError(this, method, this.class).throw;
