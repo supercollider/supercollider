@@ -456,6 +456,14 @@ void trimTrailingZeros(char* str) {
     }
 }
 
+
+int digitsToLeftOfDecimal(double value) {
+    if (value < 1.0 && value > -1.0) {
+        return 0;
+    }
+    return static_cast<int>(std::floor(std::log10(std::fabs(value))) + 1);
+}
+
 int prFloat_AsStringPrec(struct VMGlobals* g, int numArgsPushed);
 int prFloat_AsStringPrec(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 1;
@@ -473,32 +481,27 @@ int prFloat_AsStringPrec(struct VMGlobals* g, int numArgsPushed) {
         return errFailed;
     }
 
-    // Calculate the number of significant digits in the value
-    // This approach assumes normal floating-point numbers and avoids edge cases
-    int significantDigits = value == 0 ? 1 : std::max(1, static_cast<int>(std::log10(std::fabs(value)) + 1));
-
-
-    // Apply the precision limit only if the requested precision exceeds the number of significant digits
-    if (precision > significantDigits) {
-        precision = std::min(precision, significantDigits + 15);
-    }
+    int digitsToLeft = digitsToLeftOfDecimal(value);
 
     char fmt[12]; // Buffer size accounts for potential format strings like "%.15g" plus null terminator
     char str[256]; // Output buffer for the formatted number, sufficiently large for most use cases
 
-    // Formatting logic remains the same, now with dynamic precision adjustment
-    if (precision > 15 || std::fabs(value) < 1e-5 || std::fabs(value) >= 1e5) {
-        snprintf(fmt, sizeof(fmt), "%%.%dg", precision);
-    } else {
+    //  precision adjustment to avoid undesirable sci notation
+    if (precision >= digitsToLeft || (std::fabs(value) > 1e-8 && std::fabs(value) <= 1e8)) {
         snprintf(fmt, sizeof(fmt), "%%.%df", precision);
+    } else {
+        snprintf(fmt, sizeof(fmt), "%%.%dg", precision);
     }
 
-    int written = snprintf(str, sizeof(str), fmt, value);
+    int written = snprintf(str, sizeof(str), "%.2f", value);
+
+    // Checking if 'written' indicates truncation
     if (written < 0 || written >= sizeof(str)) {
+        str[sizeof(str) - 1] = '\0'; // Ensure null termination
         return errFailed;
     }
 
-    trimTrailingZeros(str); // Improve readability by trimming unnecessary trailing zeros
+    trimTrailingZeros(str);
 
     PyrString* string = newPyrString(g->gc, str, 0, true);
     if (!string) {
