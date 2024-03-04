@@ -376,15 +376,15 @@ Object  {
 			withEvent: withEvent
 		)
 	}
-	doesNotUnderstandWithKeysMethodHelper { |class, this_object, methodName, withoutArray, withEvent|
+	doesNotUnderstandWithKeysMethodHelper { |class, thisObject, methodName, withoutArray, withEvent|
 		var meth = class.findRespondingMethodFor(methodName) ?? {
 			^Error("Could not find method" + methodName + "for class" + class.asSymbol).throw
 		};
 
 		^this.prDoesNotUnderstandWithKeysHelper(
-			callingFunc: {|ev| class.performWithEnvir(methodName, ev) },
+			callingFunc: {|ev| thisObject.performWithEnvir(methodName, ev) },
 			expectedArgNames: meth.argNames,
-			withoutArray: [this_object] ++ withoutArray, // push 'this_object' as this first!
+			withoutArray: [thisObject] ++ withoutArray, // push 'thisObject' as this first!
 			withEvent: withEvent
 		)
 	}
