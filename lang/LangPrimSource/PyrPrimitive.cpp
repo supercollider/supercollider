@@ -461,7 +461,7 @@ int digitsToLeftOfDecimal(double value) {
     if (value < 1.0 && value > -1.0) {
         return 0;
     }
-    return static_cast<int>(std::floor(std::log10(std::fabs(value))) + 1);
+    return static_cast<int>(std::floor(std::log10(value)) + 1);
 }
 
 int prFloat_AsStringPrec(struct VMGlobals* g, int numArgsPushed);
@@ -487,17 +487,15 @@ int prFloat_AsStringPrec(struct VMGlobals* g, int numArgsPushed) {
     char str[256]; // Output buffer for the formatted number, sufficiently large for most use cases
 
     //  precision adjustment to avoid undesirable sci notation
-    if (precision >= digitsToLeft || (std::fabs(value) > 1e-8 && std::fabs(value) <= 1e8)) {
+    if (precision >= digitsToLeft || (std::fabs(value) > 1e-5 && std::fabs(value) <= 1e5)) {
         snprintf(fmt, sizeof(fmt), "%%.%df", precision);
     } else {
         snprintf(fmt, sizeof(fmt), "%%.%dg", precision);
     }
 
-    int written = snprintf(str, sizeof(str), "%.2f", value);
+    int written = snprintf(str, sizeof(str), fmt, value);
 
-    // Checking if 'written' indicates truncation
-    if (written < 0 || written >= sizeof(str)) {
-        str[sizeof(str) - 1] = '\0'; // Ensure null termination
+    if (written < 0) {
         return errFailed;
     }
 
