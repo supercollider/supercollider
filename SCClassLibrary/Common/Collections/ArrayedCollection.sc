@@ -322,21 +322,16 @@ ArrayedCollection : SequenceableCollection {
 
 	// concepts borrowed from J programming language
 	isRectangular {
-	    // all nested arrays are the same size and elements are at the same depth.
 	    _ArrayIsRectangular
 		^this.primitiveFailed
 	}
-	rank {|test=false|
-	    if(test and: this.isRectangular.not){
-            Error("Array is not rectangular, rank cannot be calculated").throw
-	    };
-		^1 + this.first.rank
+	rank {
+        // precondition: isRectangular
+        ^1 + this.first.rank
 	}
-	shape { |test=false|
-	    if(test and: this.isRectangular.not){
-            Error("Array is not rectangular, shape cannot be calculated").throw
-	    };
-		^[this.size] ++ this[0].shape
+	shape {
+        // precondition: isRectangular
+        ^[this.size] ++ this[0].shape
 	}
 	reshape { arg ... shape;
 		var size = shape.product;
