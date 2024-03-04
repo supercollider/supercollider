@@ -43,13 +43,18 @@
 #include "PyrArchiverT.h"
 #include "PyrDeepCopier.h"
 #include "PyrDeepFreezer.h"
-//#include "Wacom.h"
+// #include "Wacom.h"
 #include "InitAlloc.h"
 #include "SC_AudioDevicePrim.hpp"
 #include "SC_LanguageConfig.hpp"
 #include "SC_Filesystem.hpp"
 #include "SC_Version.hpp"
 #include <map>
+
+#include <cstdio> // For snprintf
+#include <cstring> // For strrchr
+#include <cmath> // For std::fabs
+#include <algorithm>
 
 #ifdef _WIN32
 #    include <direct.h>
@@ -438,6 +443,19 @@ int prObjectString(struct VMGlobals* g, int numArgsPushed) {
     }
 }
 
+void trimTrailingZeros(char* str) {
+    char* point = strrchr(str, '.');
+    if (point != nullptr) {
+        char* end = str + strlen(str) - 1;
+        while (end > point && *end == '0') {
+            *end-- = '\0';
+        }
+        if (end == point) { // If only the decimal point is left, remove it too
+            *end = '\0';
+        }
+    }
+}
+
 int prFloat_AsStringPrec(struct VMGlobals* g, int numArgsPushed);
 int prFloat_AsStringPrec(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 1;
@@ -445,23 +463,52 @@ int prFloat_AsStringPrec(struct VMGlobals* g, int numArgsPushed) {
 
     int precision;
     int err = slotIntVal(b, &precision);
-    if (err)
-        return err;
+    if (err) {
+        return err; // Return error if precision cannot be obtained
+    }
 
-    char fmt[8], str[256];
-    // if our precision is bigger than our stringsize, we can generate a very nasty buffer overflow here. So
-    if (precision <= 0)
-        precision = 1;
-    if (precision >= 200)
-        precision = 200; // Nothing is that big anyway. And we know we will be smaller than our 256 char string
+    double value = slotRawFloat(a);
 
-    sprintf(fmt, "%%.%dg", precision);
-    sprintf(str, fmt, slotRawFloat(a));
+    if (std::isnan(value) || std::isinf(value)) {
+        return errFailed;
+    }
+
+    // Calculate the number of significant digits in the value
+    // This approach assumes normal floating-point numbers and avoids edge cases
+    int significantDigits = value == 0 ? 1 : std::max(1, static_cast<int>(std::log10(std::fabs(value)) + 1));
+
+
+    // Apply the precision limit only if the requested precision exceeds the number of significant digits
+    if (precision > significantDigits) {
+        precision = std::min(precision, significantDigits + 15);
+    }
+
+    char fmt[12]; // Buffer size accounts for potential format strings like "%.15g" plus null terminator
+    char str[256]; // Output buffer for the formatted number, sufficiently large for most use cases
+
+    // Formatting logic remains the same, now with dynamic precision adjustment
+    if (precision > 15 || std::fabs(value) < 1e-5 || std::fabs(value) >= 1e5) {
+        snprintf(fmt, sizeof(fmt), "%%.%dg", precision);
+    } else {
+        snprintf(fmt, sizeof(fmt), "%%.%df", precision);
+    }
+
+    int written = snprintf(str, sizeof(str), fmt, value);
+    if (written < 0 || written >= sizeof(str)) {
+        return errFailed;
+    }
+
+    trimTrailingZeros(str); // Improve readability by trimming unnecessary trailing zeros
 
     PyrString* string = newPyrString(g->gc, str, 0, true);
+    if (!string) {
+        return errFailed;
+    }
+
     SetObject(a, string);
     return errNone;
 }
+
 
 int prAsCompileString(struct VMGlobals* g, int numArgsPushed);
 int prAsCompileString(struct VMGlobals* g, int numArgsPushed) {
