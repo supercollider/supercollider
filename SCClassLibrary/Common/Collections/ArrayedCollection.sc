@@ -454,11 +454,13 @@ ArrayedCollection : SequenceableCollection {
 }
 
 RawArray : ArrayedCollection {
-	// species { ^this.class }
 	archiveAsCompileString { ^true }
 	archiveAsObject { ^true }
 
 	rate { ^\scalar }
+	isRectangular { ^true }
+	shape { ^[this.size] }
+	rank { ^1 }
 
 	readFromStream { |stream, method|
 		if(method.notNil) {
