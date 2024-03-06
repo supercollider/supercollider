@@ -1,16 +1,31 @@
 + Server {
-	scope { arg numChannels, index = 0, bufsize = 4096, zoom = (1), rate = \audio;
+	scope { arg numChannels, index = 0, bufsize = 4096, zoom = (1), rate = \audio, position = nil;
 		numChannels = numChannels ?? { if (index == 0) { options.numOutputBusChannels } { 2 } };
 
-		if(scopeWindow.isNil) {
-			scopeWindow = Stethoscope(this, numChannels, index, bufsize, zoom, rate, nil,
-				this.options.numBuffers);
+		if(position.isNil) {
+			if(scopeWindow.isNil) {
+				scopeWindow = Stethoscope(this, numChannels, index, bufsize, zoom, rate, nil,
+					this.options.numBuffers);
 				// prevent buffer conflicts by using reserved bufnum
-			scopeWindow.window.onClose = scopeWindow.window.onClose.addFunc({ scopeWindow = nil });
+				scopeWindow.window.onClose = scopeWindow.window.onClose.addFunc({ scopeWindow = nil });
+			} {
+				scopeWindow.setProperties(numChannels, index, bufsize, zoom, rate);
+				scopeWindow.run;
+				scopeWindow.window.front;
+			}
 		} {
-			scopeWindow.setProperties(numChannels, index, bufsize, zoom, rate);
-			scopeWindow.run;
-			scopeWindow.window.front;
+			var window = Window("Stethoscope", Rect(position.x, position.y, 250, 250));
+
+			if(scopeWindow.isNil) {
+				scopeWindow = Stethoscope(this, numChannels, index, bufsize, zoom, rate, window.view,
+					this.options.numBuffers);
+				// prevent buffer conflicts by using reserved bufnum
+				window.onClose = window.onClose.addFunc({ scopeWindow = nil });
+				window.front;
+			} {
+				scopeWindow.setProperties(numChannels, index, bufsize, zoom, rate);
+				scopeWindow.run;
+			}
 		};
 		^scopeWindow
 	}
@@ -28,7 +43,7 @@
 
 
 + Function {
-	scope { arg numChannels, outbus = 0, fadeTime = 0.05, bufsize = 4096, zoom;
+	scope { arg numChannels, outbus = 0, fadeTime = 0.05, bufsize = 4096, zoom, position = nil;
 		var synth, synthDef, bytes, synthMsg, outUGen, server;
 
 		server = Server.default;
@@ -45,7 +60,7 @@
 		bytes = synthDef.asBytes;
 		synthMsg = synth.newMsg(server, [\i_out, outbus, \out, outbus], \addToHead);
 		server.sendMsg("/d_recv", bytes, synthMsg);
-		server.scope(numChannels, outbus, bufsize, zoom, outUGen.rate);
+		server.scope(numChannels, outbus, bufsize, zoom, outUGen.rate, position);
 		^synth
 	}
 
