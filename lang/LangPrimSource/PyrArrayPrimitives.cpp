@@ -2568,10 +2568,16 @@ inline IsRectangularResult is_rectangular(const PyrSlot* a, std::vector<IsRectan
     if (size != expected_size[depth])
         return IsRectangularResult::make_false_result();
 
+
+    // raw arrays are functors over exactly one type, which is always a c++ scalar type
+    // (https://en.cppreference.com/w/cpp/types/is_scalar)
+    // therefore the size can be returned without checking
+    if (isKindOf(obj, class_rawarray))
+        return IsRectangularResult::make_size(size);
+
     // early return for no children
     if (size <= 0)
         return IsRectangularResult::make_size(0);
-
     // iterator over the children
     const PyrSlot* item_at_index = obj->slots;
 
