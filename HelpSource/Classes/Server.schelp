@@ -578,6 +578,8 @@ argument:: zoom
 a zoom value for the scope's X-axis. Larger values show more. The default is 1.
 argument:: rate
 whether to display audio or control rate buses (either \audio or \control)
+argument:: position
+the position of the scope window. The value should be a point: x@y. The default is nil and the scope window will be in the centre of the display.
 
 method:: freqscope
 Show frequency analyzer window.
