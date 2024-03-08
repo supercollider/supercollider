@@ -197,7 +197,7 @@ jobs:
 
           - job-name: 'universal'
             os-version: '14'
-            xcode-version: '15.3'
+            xcode-version: '15.2'
             deployment-target: '10.14'
             cmake-architectures: 'x86_64;arm64'
             use-syslibs: false
@@ -211,7 +211,7 @@ jobs:
 
           - job-name: 'x64 legacy'
             os-version: '14'
-            xcode-version: '15.3'
+            xcode-version: '15.2'
             qt-version: '5.9.9' # will use qt from aqtinstall
             deployment-target: '10.11'
             cmake-architectures: x86_64
@@ -225,7 +225,7 @@ jobs:
 
           - job-name: 'x64 use system libraries'
             os-version: '14'
-            xcode-version: '15.3'
+            xcode-version: '15.2'
             deployment-target: '10.14'
             cmake-architectures: x86_64
             use-syslibs: true
@@ -234,7 +234,7 @@ jobs:
 
           - job-name: 'x64 shared libscsynth'
             os-version: '14'
-            xcode-version: '15.3'
+            xcode-version: '15.2'
             deployment-target: '10.14'
             cmake-architectures: x86_64
             use-syslibs: false
