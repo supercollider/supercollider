@@ -75,8 +75,17 @@ Stethoscope {
 		cycle = cycleSpec.constrain(cycle_);
 		yZoom = 1.0;
 
-		smallSize = Size(250,250);
-		largeSize = Size(500,500);
+		# smallSize, largeSize = if(parent.isNil) {
+			[
+				Size(250,250),
+				Size(500,500)
+			]
+		} {
+			[
+				Size(parent.bounds.width, parent.bounds.height),
+				Size(parent.bounds.width * 2, parent.bounds.height * 2)
+			]
+		};
 
 		makeGui = { arg parent;
 			var gizmo;
@@ -85,14 +94,13 @@ Stethoscope {
 
 			if( window.notNil ) {window.close};
 
-			if( parent.isNil ) {
-				view = window = Window(
+			view = window = if( parent.isNil ) {
+				Window(
 					bounds: (smallSize).asRect.center_(Window.availableBounds.center)
-				).name_("Stethoscope");
-			}{
-				view = View( parent, Rect(0,0,250,250) );
-				window = nil;
-			};
+				)
+			} {
+				parent;
+			}.name_("Stethoscope");
 
 			// WIDGETS
 
@@ -393,7 +401,20 @@ Stethoscope {
 
 	size_ { arg value;
 		var sz = value.asSize;
-		if( window.notNil ) { window.setInnerExtent(sz.width,sz.height) };
+		if(window.notNil) {
+			var widthExceedsBounds = sz.width + window.bounds.left > Window.screenBounds.width;
+			var heightExceedsBounds = window.bounds.top - sz.height < 0 ;
+			if(widthExceedsBounds && heightExceedsBounds) {
+				window.setInnerExtent(sz.width,sz.height)
+			} {
+				window.bounds_(Rect(
+					if(widthExceedsBounds) { Window.screenBounds.width - sz.width } { window.bounds.left },
+					if(heightExceedsBounds) { 0 } { window.bounds.top },
+					sz.width,
+					sz.height
+				))
+			}
+		};
 	}
 
 	toggleSize {
