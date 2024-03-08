@@ -748,10 +748,9 @@ float hid_element_map_logical( struct hid_device_element * element ){
   return result;
 }
 
-/** TODO: this needs a linking with the math library */
 float hid_element_resolution( struct hid_device_element * element ){
     float result = 0;
-//     result = ( element->logical_max - element->logical_min) / ( ( element->phys_max - element->phys_min) * pow(10, element->unit_exponent) );
+    result = ( element->logical_max - element->logical_min) / ( ( element->phys_max - element->phys_min) * pow(10, element->unit_exponent) );
     return result;
 }
 
