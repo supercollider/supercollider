@@ -368,7 +368,7 @@
 		} {
 			plotTreeWindow.bounds_(bounds).front;
 		};
-		onClose = this.plotTreeView(interval, plotTreeWindow.view, { defer {plotTreeWindow.close}; });
+		onClose = this.plotTreeView(interval, plotTreeWindow.view, { defer { plotTreeWindow.close } });
 		plotTreeWindow.onClose = {
 			onClose.value;
 			plotTreeWindow = nil
