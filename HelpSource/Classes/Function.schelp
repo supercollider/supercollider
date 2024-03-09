@@ -549,7 +549,7 @@ argument:: parent
 Either a link::Classes/Window:: or link::Classes/View:: may be passed in - then the plot is embedded. Otherwise a new link::Classes/Window:: is created.
 code::
 (
-var w = Window("The parent of a ploter").front;
+var w = Window("The parent of a plotter").front;
 { SinOsc.ar }.plot(0.01, parent: w)
 )
 ::
