@@ -360,15 +360,18 @@
 		this.startAliveThread;
 	}
 
-	plotTree {|interval=0.5|
-		var onClose, window = Window.new(name.asString + "Node Tree",
-			Rect(128, 64, 400, 400),
-			scroll:true
-		).front;
-		window.view.hasHorizontalScroller_(false).background_(Color.grey(0.9));
-		onClose = this.plotTreeView(interval, window.view, { defer {window.close}; });
-		window.onClose = {
+	plotTree { |interval=0.5, bounds=(Rect(128, 64, 400, 400))|
+		var onClose;
+		if(plotTreeWindow.isNil) {
+			plotTreeWindow = Window.new(name.asString + "Node Tree", bounds, scroll:true);
+			plotTreeWindow.view.hasHorizontalScroller_(false).background_(Color.grey(0.9)).front
+		} {
+			plotTreeWindow.bounds_(bounds).front;
+		};
+		onClose = this.plotTreeView(interval, plotTreeWindow.view, { defer {plotTreeWindow.close}; });
+		plotTreeWindow.onClose = {
 			onClose.value;
+			plotTreeWindow = nil
 		};
 	}
 
