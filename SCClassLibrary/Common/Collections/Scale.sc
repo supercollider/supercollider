@@ -195,8 +195,11 @@ Tuning {
 		!? { |v| v } //return if valid
 		?? { super.doesNotUnderstand(selector, args) }
 	}
-	*doesNotUnderstandWithKeys {|selector, withOutKeys, withKeys|
-		^this.doesNotUnderstandWithKeysClassMethodHelper(Scale, \newFromKey, [selector] ++ withOutKeys, withKeys.asEvent)
+
+	*doesNotUnderstandWithKeys {|selector, argsArray, keywordArgsAsPairs|
+		^Tuning.class
+		.findRespondingMethodFor(\newFromKey)
+		.evaluateWithArgsAndKwArgs([selector] ++ argsArray, keywordArgsAsPairs.asEvent, Tuning)
 	}
 
 	*newFromKey { | key |
