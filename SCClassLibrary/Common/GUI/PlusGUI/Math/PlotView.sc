@@ -1227,7 +1227,7 @@ Plotter {
 
 
 + ArrayedCollection {
-	plot { |name, bounds, discrete = false, numChannels, minval, maxval, separately = true|
+	plot { |name, bounds, discrete = false, numChannels, minval, maxval, separately = true, parent|
 		var array, plotter;
 		array = this.as(Array);
 
@@ -1235,7 +1235,7 @@ Plotter {
 			"Cannot currently plot an array with more than 3 dimensions".warn;
 			^nil
 		};
-		plotter = Plotter(name, bounds);
+		plotter = Plotter(name, bounds, parent);
 		if(discrete) { plotter.plotMode = \points };
 
 		numChannels !? { array = array.unlace(numChannels) };
@@ -1337,40 +1337,40 @@ Plotter {
 		^plotter
 	}
 
-	plotAudio { |duration = 0.01, minval = -1, maxval = 1, server, bounds|
-		^this.plot(duration, server, bounds, minval, maxval)
+	plotAudio { |duration = 0.01, minval = -1, maxval = 1, server, bounds, parent|
+		^this.plot(duration, server, bounds, minval, maxval, parent: parent)
 	}
 }
 
 + Bus {
-	plot { |duration = 0.01, bounds, minval, maxval, separately = false|
+	plot { |duration = 0.01, bounds, minval, maxval, separately = false, parent|
 		if (this.rate == \audio, {
-			^{ InFeedback.ar(this.index, this.numChannels) }.plot(duration, this.server, bounds, minval, maxval, separately);
+			^{ InFeedback.ar(this.index, this.numChannels) }.plot(duration, this.server, bounds, minval, maxval, separately, parent);
 		},{
-			^{ In.kr(this.index, this.numChannels) }.plot(duration, this.server, bounds, minval, maxval, separately);
+			^{ In.kr(this.index, this.numChannels) }.plot(duration, this.server, bounds, minval, maxval, separately, parent);
 		});
 	}
 
-	plotAudio { |duration = 0.01, minval = -1, maxval = 1, bounds|
-		^this.plot(duration, bounds, minval, maxval)
+	plotAudio { |duration = 0.01, minval = -1, maxval = 1, bounds, parent|
+		^this.plot(duration, bounds, minval, maxval, parent: parent)
 	}
 }
 
 + Wavetable {
-	plot { |name, bounds, minval, maxval|
-		^this.asSignal.plot(name, bounds, minval: minval, maxval: maxval)
+	plot { |name, bounds, minval, maxval, parent|
+		^this.asSignal.plot(name, bounds, minval: minval, maxval: maxval, parent: parent)
 	}
 }
 
 + Buffer {
-	plot { |name, bounds, minval, maxval, separately = false|
+	plot { |name, bounds, minval, maxval, separately = false, parent|
 		var plotter, action;
 		if(server.serverRunning.not) { "Server % not running".format(server).warn; ^nil };
 		if(numFrames.isNil) { "Buffer not allocated, can't plot data".warn; ^nil };
 
 		plotter = [0].plot(
 			name ? "Buffer plot (bufnum: %)".format(this.bufnum),
-			bounds, minval: minval, maxval: maxval
+			bounds, minval: minval, maxval: maxval, parent: parent
 		);
 
 		action = { |array, buf|
@@ -1402,10 +1402,10 @@ Plotter {
 
 
 + Env {
-	plot { |size = 400, bounds, minval, maxval, name|
+	plot { |size = 400, bounds, minval, maxval, name, parent|
 		var plotLabel = if (name.isNil) { "Envelope" } { name };
 		var plotter = [this.asMultichannelSignal(size).flop]
-		.plot(name, bounds, minval: minval, maxval: maxval);
+		.plot(name, bounds, minval: minval, maxval: maxval, parent: parent);
 
 		var duration = this.duration.asArray;
 		var channelCount = duration.size;
@@ -1420,9 +1420,9 @@ Plotter {
 
 + AbstractFunction {
 	plotGraph { arg n=500, from = 0.0, to = 1.0, name, bounds, discrete = false,
-		numChannels, minval, maxval, separately = true;
+		numChannels, minval, maxval, separately = true, parent;
 		var array = Array.interpolation(n, from, to);
 		var res = array.collect { |x| this.value(x) };
-		^res.plot(name, bounds, discrete, numChannels, minval, maxval, separately)
+		^res.plot(name, bounds, discrete, numChannels, minval, maxval, separately, parent)
 	}
 }
