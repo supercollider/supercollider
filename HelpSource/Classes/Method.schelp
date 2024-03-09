@@ -53,3 +53,41 @@ method:: filenameSymbol
 returns::
 A link::Classes/Symbol:: which is the full path of the source file that this method is defined in.
 
+method::isClassMethod
+returns::
+A link::Classes/Boolean:: where true represents if this link::Classes/Method:: is a class method,
+and false represents when this is an instance method.
+
+method::evaluateWithArgsAndKwArgs
+Evaluate the method if the passed in arguments, this should not be used in everyday code,
+and is only here to facilitate the implementation of link::Classes/Object#-doesNotUnderstandWithKeys::
+where argument names must be checked.
+
+argument::argsArray
+The non-keyword arguments as an link::Classes/Array::.
+
+argument::keywordArgsEvent
+The 'keyworded' arguments as an link::Classes/IdentityDictionary::, where the keyword is the key.
+
+argument::thisObject
+The object to call this link::Classes/Method:: on, the object must be a kind of class held in link::#-ownerClass::.
+In the case of calling class methods, as opposed to instance methods, the non-meta class is passed in.
+
+
+code::
+// example of calling a class method
+Scale.class
+.findRespondingMethodFor(\newFromKey)
+.evaluateWithArgsAndKwArgs([\major], (\tuning: Tuning.choose), Scale)
+
+// example of calling an instance method
+(
+var a = [1,2,3];
+a.class
+.findRespondingMethodFor(\collect)
+.evaluateWithArgsAndKwArgs([], (function: (_ * 2)), a) // returns [2, 4, 6]
+)
+::
+
+
+

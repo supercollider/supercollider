@@ -116,6 +116,13 @@ method::asString
 
 Return the name of the class as a String.
 
+method::removeMeta
+If the class is a meta class, this returns the child.
+
+code::
+Meta_Scale.removeMeta == Scale // true
+::
+
 
 subsection:: Accessing
 

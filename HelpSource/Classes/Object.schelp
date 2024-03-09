@@ -530,6 +530,49 @@ Set[1, 2, 3].tryPerform(\keysValuesDo, { |key, value| [key, value].postln });
 (a: 1, b: 2, c: 3).tryPerform(\keysValuesDo, { |key, value| [key, value].flippityblargh });
 ::
 
+method::performWithArgsAndKwArgs
+Like link::#-perform::, but allows a mix of arguments and keyword arguments to be passed.
+Error checking is done to ensure all the keywords are matched and there are no collisions.
+
+argument::selector
+A link::Classes/Symbol:: representing a method selector.
+
+argument::argsArray
+The non-keyword arguments as an link::Classes/Array::.
+
+argument::keywordArgsEvent
+The 'keyworded' arguments as an link::Classes/IdentityDictionary::, where the keyword is the key.
+
+method::valueWithArgsAndKwArgs
+Like link::#-performWithArgsAndKwArgs::, but only calls value.
+
+argument::argsArray
+The non-keyword arguments as an link::Classes/Array::.
+
+argument::keywordArgsEvent
+The arguments as an link::Classes/IdentityDictionary::, where the keyword is the key.
+
+method::functionPerformList
+A method called in object prototyping, see link::Classes/IdentityDictionary#-new::.
+By default, this will do nothing and return the object,
+link::Classes/Function#-functionPerformList:: provides a useful implementation.
+Not called in normal use.
+
+method::functionPerformWithArgsAndKwArgs
+Like link::#-functionPerformList::, but allows for keyword arguments to be passed.
+If the keywords do not match the function or there is argument collisions between the non-keyword and keyword arguments this will throw an error,
+even if link::#-functionPerformList:: does nothing.
+
+argument::selector
+A link::Classes/Symbol:: representing a method selector.
+
+argument::argsArray
+The non-keyword arguments as an link::Classes/Array::.
+
+argument::keywordArgsEvent
+The arguments as an link::Classes/IdentityDictionary::, where the keyword is the key.
+
+
 method::superPerform
 
 Like perform, superPerform calls a method, however it calls the method on the superclass.
@@ -663,7 +706,7 @@ This is called when an object receives a message it does not understand.
 Object's implementation will throw an error, but other classes (link::Classes/IdentityDictionary::) might override this.
 
 argument::selector
-The name of the message.
+The name of the message as a link::Classes/Symbol::.
 
 argument::... args
 The arguments passed.
@@ -678,97 +721,17 @@ This is called when an object receives a message it does not understand, but the
 Object's implementation will throw an error, but other classes (link::Classes/IdentityDictionary::) might override this.
 
 argument::selector
-The name of the message.
+The name of the message as a link::Classes/Symbol::.
 
-argument::withoutKeys
-The arguments passed that did not have keywords attached.
+argument::argsArray
+The arguments passed that did not have keywords attached passed as an link::Classes/Array::
 
-argument::withKeys
+argument::keywordArrayPair
 The arguments passed that did have keywords attached.
-These are formatted as an array of key-value pairs link::Reference/Key-Value-Pairs::.
+These are formatted as an link::Classes/Array:: of key-value pairs link::Reference/Key-Value-Pairs::.
 
 code::
 4.someThing(3, someArgument: 42) // ERROR: Message 'someThing' not understood.
-::
-
-subsection::Internal Helpers for doesNotUnderstandWithKeys
-These methods are useful for those writing classes that wish to use doesNotUnderstandWithKeys.
-This will ensure arguments do not collide and provides an easy way to call arbitrary functions with keyword arguments,
-which can otherwise be cumbersome.
-
-method::doesNotUnderstandWithKeysFunctionHelper
-Use when trying to call a standard function.
-argument::func
-Takes a link::Classes/Function::.
-
-argument::withoutArray
-An array of arguments without keywords.
-
-argument::withEvent
-An link::Classes/Event::, or link::Classes/IdentityDictionary:: with the keyword args in.
-
-code::
-this.doesNotUnderstandWithKeysFunctionHelper(
-    func: {|a, b, c| [a, b, c].postln },
-    withoutArray: [1, 2],
-    withEvent: (\c: 42)
-);
-// prints [1, 2, 42]
-::
-
-See link::Classes/IdentityDictionary#-doesNotUnderstandWithKeys:: for a fuller example.
-
-
-method::doesNotUnderstandWithKeysClassMethodHelper
-Use when calling a class method.
-argument::class
-Takes a link::Classes/Class::.
-
-argument::methodName
-An link::Classes/Symbol:: of the method name wished to be called.
-
-argument::withoutArray
-An array of arguments without keywords.
-
-argument::withEvent
-An link::Classes/Event::, or link::Classes/IdentityDictionary:: with the keyword args in.
-
-code::
-this.doesNotUnderstandWithKeysClassMethodHelper(
-    class: Scale,
-    methodName: \newFromKey,
-    withoutArray: [\major] ,
-    withEvent: (\tuning: Tuning.choose)
-);
-// -> Scale([0, 2, 4, 5, 7, 9, 11], 12, ...)
-::
-
-method::doesNotUnderstandWithKeysMethodHelper
-Use when calling a method on an object.
-argument::class
-Takes a link::Classes/Class::.
-
-argument::thisObject
-An object of the previously given class on which the method will be called.
-
-argument::methodName
-An link::Classes/Symbol:: of the method name wished to be called.
-
-argument::withoutArray
-An array of arguments without keywords.
-
-argument::withEvent
-An link::Classes/Event::, or link::Classes/IdentityDictionary:: with the keyword args in.
-
-code::
-this.doesNotUnderstandWithKeysMethodHelper(
-    class: Integer,
-    thisObject: 4,
-    methodName: \pow,
-    withoutArray: [2],
-    withEvent: ()
-);
-// -> 16 [4.pow(2)]
 ::
 
 subsection::Printing and Introspection

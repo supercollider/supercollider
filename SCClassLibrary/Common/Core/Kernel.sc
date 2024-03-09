@@ -26,6 +26,12 @@ Class {
 	}
 	asClass { ^this }
 	isMetaClass { ^this.class === Class }
+	removeMeta {
+		if(this.asString[..4] != "Meta_") {
+			Error("Class was not a meta class").throw
+		};
+		^this.asString[5..].asSymbol.asClass
+	}
 
 	initClass {   }
 
@@ -40,7 +46,7 @@ Class {
 			classesInited.add(aClass);
 
 			if(aClass.isMetaClass.not and: { aClass.class.findMethod(\initClass).notNil }, {
-					aClass.initClass;
+				aClass.initClass;
 			});
 
 			if(aClass.subclasses.notNil,{
@@ -88,7 +94,7 @@ Class {
 	}
 
 	dumpClassSubtree {
-		 _DumpClassSubtree
+		_DumpClassSubtree
 		^this.primitiveFailed
 	}
 	dumpInterface {
@@ -549,6 +555,32 @@ FunctionDef {
 		^().putPairs(this.keyValuePairsFromArgs)
 	}
 
+	makeNonOverlappingKeywordArgsEvent {|argsArray, keywordArgsEvent, omitArgNameIfFirst|
+		var argsAppliedKeywords =
+		(argNames[0] == omitArgNameIfFirst).if({argNames[1..]}, {argNames})
+		.collect({|name, index| name -> argsArray[index] })
+		.asEvent;
+
+		keywordArgsEvent.keys.do({|k|
+			if(argNames.includes(k).not){
+				Error("Key '%' not found in function call".format(k)).throw
+			};
+			if(argsAppliedKeywords.includesKey(k)){
+				Error("Duplicate function keyword '%'".format(k)).throw
+			}
+		});
+		^argsAppliedKeywords ++ keywordArgsEvent
+	}
+	makeNonOverlappingKeywordArgsArray {|argsArray, keywordArgsEvent, omitArgNameIfFirst|
+		var nonOverlapping = this.makeNonOverlappingKeywordArgsEvent(
+			argsArray,
+			keywordArgsEvent,
+			omitArgNameIfFirst
+		);
+		var default = this.keyValuePairsFromArgs;
+		^argNames.collect({|n, index| nonOverlapping[n] ?? {default[index]} })
+	}
+
 }
 
 Method : FunctionDef {
@@ -596,6 +628,16 @@ Method : FunctionDef {
 		^[names, values].flop.flatten
 	}
 
+	isClassMethod {	^ownerClass.isMetaClass	}
+
+	evaluateWithArgsAndKwArgs{|argsArray, keywordArgsEvent, thisObject|
+		var args;
+		if(thisObject.isKindOf(ownerClass).not){
+			Error("Attempt to call method % on object %: %".format(this, thisObject, thisObject.class)).throw
+		};
+		args = this.makeNonOverlappingKeywordArgsEvent(argsArray: argsArray, keywordArgsEvent: keywordArgsEvent, omitArgNameIfFirst: \this);
+		^thisObject.performWithEnvir(name, args)
+	}
 }
 
 Frame {
@@ -700,8 +742,8 @@ Interpreter {
 		protect {
 			result = this.compileFile(pathName).valueArray(args)
 		} { |exception|
-				exception !? { exception.path = pathName };
-				thisProcess.nowExecutingPath = saveExecutingPath
+            exception !? { exception.path = pathName };
+            thisProcess.nowExecutingPath = saveExecutingPath
 		};
 		^result
 	}
@@ -730,7 +772,7 @@ Interpreter {
 		// Do not edit this method!
 
 		{}	// this forces the compiler to generate a heap allocated frame rather than
-			// a frame on the stack
+		// a frame on the stack
 	}
 	shallowCopy { ^this }
 }

@@ -137,6 +137,33 @@ Object  {
 		^this.performWithEnvir(selector, ().putPairs(pairs))
 	}
 
+	performWithArgsAndKwArgs{|selector, argsArray, keywordArgsEvent|
+		var method = this.class.findRespondingMethodFor(selector) ?? {
+			DoesNotUnderstandWithKeysError(this.class, selector, argsArray, keywordArgsEvent).throw
+		};
+		^method.evaluateWithArgsAndKwArgs(
+			argsArray: argsArray,
+			keywordArgsEvent: keywordArgsEvent,
+			thisObject: this
+		)
+	}
+	valueWithArgsAndKwArgs{|argsArray, keywordArgsEvent|
+		^this.performWithArgsAndKwArgs(\value, argsArray, keywordArgsEvent)
+	}
+	functionPerformWithArgsAndKwArgs{|selector, argsArray, keywordArgsEvent|
+		if(keywordArgsEvent.isNil or: {keywordArgsEvent.size == 0}){
+			^this.functionPerformList(selector,	argsArray)
+		}{
+			var method = this.class.findRespondingMethodFor(selector) ?? {
+				DoesNotUnderstandWithKeysError(this.class, selector, argsArray, keywordArgsEvent).throw
+			};
+			^this.functionPerformList(
+				selector,
+				method.makeNonOverlappingKeywordArgsArray(argsArray, keywordArgsEvent)
+			)
+		}
+	}
+
 	// copying
 	copy { ^this.shallowCopy }
 	contentsCopy { ^this.shallowCopy }
@@ -343,53 +370,8 @@ Object  {
 	doesNotUnderstand { arg selector ... args;
 		DoesNotUnderstandError(this, selector, args).throw;
 	}
-    prDoesNotUnderstandWithKeysHelper { |callingFunc, expectedArgNames, withoutArray, withEvent|
-		var args = expectedArgNames.collect({|name, index| name -> withoutArray[index] }).asEvent;
-		withEvent.keys.do({|k|
-			if(expectedArgNames.includes(k).not){
-				Error("Key '%' not found in function call".format(k)).throw
-			};
-			if(args.includesKey(k)){
-				Error("Duplicate function keyword '%'".format(k)).throw
-			}
-		});
-		^callingFunc.(args ++ withEvent);
-	}
-	doesNotUnderstandWithKeysFunctionHelper { |func, withoutArray, withEvent|
-		^this.prDoesNotUnderstandWithKeysHelper(
-			callingFunc: {|ev| func.valueWithEnvir(ev) },
-			expectedArgNames: func.def.argNames,
-			withoutArray: withoutArray,
-			withEvent: withEvent
-		)
-	}
-	doesNotUnderstandWithKeysClassMethodHelper { |class, methodName, withoutArray, withEvent|
-		// note 'class' is NOT a meta class here.
-		var meth = class.class.findRespondingMethodFor(methodName) ?? {
-			^Error("Could not find class method" + methodName + "for class" + class.asSymbol).throw
-		};
-
-		^this.prDoesNotUnderstandWithKeysHelper(
-			callingFunc: {|ev| class.performWithEnvir(methodName, ev) },
-			expectedArgNames: meth.argNames,
-			withoutArray: [class] ++ withoutArray, // push 'class' as this first!
-			withEvent: withEvent
-		)
-	}
-	doesNotUnderstandWithKeysMethodHelper { |class, thisObject, methodName, withoutArray, withEvent|
-		var meth = class.findRespondingMethodFor(methodName) ?? {
-			^Error("Could not find method" + methodName + "for class" + class.asSymbol).throw
-		};
-
-		^this.prDoesNotUnderstandWithKeysHelper(
-			callingFunc: {|ev| thisObject.performWithEnvir(methodName, ev) },
-			expectedArgNames: meth.argNames,
-			withoutArray: [thisObject] ++ withoutArray, // push 'thisObject' as this first!
-			withEvent: withEvent
-		)
-	}
-	doesNotUnderstandWithKeys { |selector, withoutKeys, withKeys|
-		DoesNotUnderstandWithKeysError(this, selector, withoutKeys, withKeys).throw;
+	doesNotUnderstandWithKeys {|selector, argsArray, keywordArrayPair|
+		DoesNotUnderstandWithKeysError(this, selector, argsArray, keywordArrayPair).throw;
 	}
 	shouldNotImplement { arg method;
 		ShouldNotImplementError(this, method, this.class).throw;
@@ -723,10 +705,10 @@ Object  {
 		if (aSelector === '==', {
 			^false
 		},{
-		if (aSelector === '!=', {
-			^true
-		},{
-			BinaryOpFailureError(this, aSelector, [thing, adverb]).throw;
+			if (aSelector === '!=', {
+				^true
+			},{
+				BinaryOpFailureError(this, aSelector, [thing, adverb]).throw;
 		})});
 	}
 	performBinaryOpOnSimpleNumber { arg aSelector, thing, adverb;
@@ -753,7 +735,7 @@ Object  {
 			if (name.isNil or: { name.asString.isEmpty }) { Error("missing SynthDef file name").throw } {
 				name = dir +/+ name ++ ".scsyndef";
 				if(overwrite or: { pathMatch(name).isEmpty })
-					{
+				{
 					file = File(name, "w");
 					protect {
 						AbstractMDPlugin.clearMetadata(name);

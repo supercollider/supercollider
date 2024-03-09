@@ -110,6 +110,24 @@ code::
 { |a = 9, b = 10, c| a + b }.def.makeEnvirFromArgs;
 ::
 
+
+method:: makeNonOverlappingKeywordArgsEvent
+Create an link::Classes/IdentityDictionary:: from the passed in arguments and keyword arguments,
+ensuring all the arguments will be accepted by the link::Classes/FunctionDef:: and none of the arguments collide with each other.
+
+argument::argsArray
+The non-keyword arguments as an link::Classes/Array::.
+
+argument::keywordArgsEvent
+The 'keyworded' arguments as an link::Classes/IdentityDictionary::, where the keyword is the key.
+
+argument::omitArgNameIfFirst
+A link::Classes/Symbol:: representing an argument name that will be skipped if it is first in the argument list.
+Often, this is set to code::\this:: in the case of calling a link::Classes/Method::.
+
+method::makeNonOverlappingKeywordArgsArray
+Like link::#-makeNonOverlappingKeywordArgsEvent:: but returns an link::Classes/Array:: with the arguments in the corerct order.
+
 subsection::Generating Strings
 
 method::makeFuncModifierString

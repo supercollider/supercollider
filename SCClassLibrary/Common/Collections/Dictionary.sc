@@ -331,10 +331,10 @@ Dictionary : Set {
 		var oldElements = array;
 		array = Array.newClear(array.size * 2);
 		this.keysValuesArrayDo(oldElements,
-		{ arg key, val;
-			index = this.scanFor(key);
-			array.put(index, key);
-			array.put(index+1, val);
+			{ arg key, val;
+				index = this.scanFor(key);
+				array.put(index, key);
+				array.put(index+1, val);
 		});
 	}
 	fixCollisionsFrom { arg index;
@@ -438,9 +438,9 @@ IdentityDictionary : Dictionary {
 		index = this.scanFor(key);
 		array.put(index+1, value);
 		if ( array.at(index).isNil, {
-			array.put(index, key);
-			size = size + 1;
-			if (array.size < (size * 4), { this.grow });
+		array.put(index, key);
+		size = size + 1;
+		if (array.size < (size * 4), { this.grow });
 		});
 		*/
 	}
@@ -453,9 +453,9 @@ IdentityDictionary : Dictionary {
 		prev = array.at(index + 1);
 		array.put(index+1, value);
 		if ( array.at(index).isNil, {
-			array.put(index, key);
-			size = size + 1;
-			if (array.size < (size * 4), { this.grow });
+		array.put(index, key);
+		size = size + 1;
+		if (array.size < (size * 4), { this.grow });
 		});
 		^prev
 		*/
@@ -559,26 +559,33 @@ IdentityDictionary : Dictionary {
 		};
 		^this.superPerformList(\doesNotUnderstand, selector, args);
 	}
-    doesNotUnderstandWithKeys {|selector, withOutKeys, withKeys|
+
+	doesNotUnderstandWithKeys {|selector, argsArray, keywordArgsAsPairs|
 		if(know.not){
-			^this.superPerformList(\doesNotUnderstandWithKeys, selector, withOutKeys, withKeys)
+			^this.superPerformList(\doesNotUnderstandWithKeys, selector, argsArray, keywordArgsAsPairs)
 		};
 
-		^this.doesNotUnderstandWithKeysFunctionHelper(
-			func: this[selector] ?? {
-				^this.superPerformList(\doesNotUnderstandWithKeys, selector, withOutKeys, withKeys)
-			},
-			withoutArray: [this] ++ withOutKeys, // append self to front of function call
-			withEvent: withKeys.asEvent
-		)
+		this[selector] !? {|f|
+			^f.functionPerformWithArgsAndKwArgs(\value, [this] ++ argsArray, keywordArgsAsPairs.asEvent)
+		};
+
+		// You cannot call a setter with a keyword arg, it does not make sense.
+
+		// If the keyword arg names don't match this will fail.
+		// Note how the selector is passed in here.
+		this[\forward] !? {|f|
+			^f.functionPerformWithArgsAndKwArgs(\value, [this, selector] ++ argsArray, keywordArgsAsPairs.asEvent)
+		};
+
+		^nil
 	}
 
-    // Quant support.
-    // The Quant class assumes the quant/phase/offset scheduling model.
-    // If you want a different model, you can write a dictionary like so:
-    // (nextTimeOnGrid: { |self, clock| ... calculate absolute beat number here ... },
-    //	parameter: value, parameter: value, etc.)
-    // If you leave out the nextTimeOnGrid function, fallback to quant/phase/offset.
+	// Quant support.
+	// The Quant class assumes the quant/phase/offset scheduling model.
+	// If you want a different model, you can write a dictionary like so:
+	// (nextTimeOnGrid: { |self, clock| ... calculate absolute beat number here ... },
+	//	parameter: value, parameter: value, etc.)
+	// If you leave out the nextTimeOnGrid function, fallback to quant/phase/offset.
 
 	nextTimeOnGrid { |clock, referenceBeat|
 		if(this[\nextTimeOnGrid].notNil) {
