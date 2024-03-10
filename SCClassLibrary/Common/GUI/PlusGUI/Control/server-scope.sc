@@ -2,36 +2,20 @@
 	scope { arg numChannels, index = 0, bufsize = 4096, zoom = (1), rate = \audio, bounds = nil;
 		numChannels = numChannels ?? { if (index == 0) { options.numOutputBusChannels } { 2 } };
 
-		if(bounds.isNil) {
-			if(scopeWindow.isNil) {
-				scopeWindow = Stethoscope(this, numChannels, index, bufsize, zoom, rate, nil,
-					this.options.numBuffers);
-				// prevent buffer conflicts by using reserved bufnum
-				scopeWindow.window.onClose = scopeWindow.window.onClose.addFunc({ scopeWindow = nil });
-			} {
-				scopeWindow.setProperties(numChannels, index, bufsize, zoom, rate);
-				scopeWindow.run;
-				scopeWindow.window.front;
-			}
+		if(scopeWindow.isNil) {
+			scopeWindow = Stethoscope(this, numChannels, index, bufsize, zoom, rate, nil,
+				this.options.numBuffers);
+			// prevent buffer conflicts by using reserved bufnum
+			scopeWindow.window.onClose = scopeWindow.window.onClose.addFunc({ scopeWindow = nil });
 		} {
-			if(scopeWindow.isNil) {
-				scopeWindowDefined = Window("Stethoscope", bounds);
-				scopeWindow = Stethoscope(this, numChannels, index, bufsize, zoom, rate, scopeWindowDefined,
-					this.options.numBuffers);
-				// prevent buffer conflicts by using reserved bufnum
-				scopeWindowDefined.onClose = scopeWindowDefined.onClose.addFunc({ scopeWindow = nil; scopeWindowDefined = nil });
-				scopeWindowDefined.front;
-			} {
-				scopeWindow.setProperties(numChannels, index, bufsize, zoom, rate);
-				scopeWindow.run;
-				if(scopeWindowDefined.isNil) {
-					scopeWindow.window
-				} {
-					scopeWindowDefined
-				}.bounds_(bounds).front;
-			};
+			scopeWindow.setProperties(numChannels, index, bufsize, zoom, rate);
+			scopeWindow.run;
+			scopeWindow.window.front;
 		};
-		^scopeWindow
+		^if(bounds == nil) {
+			scopeWindow } {
+			scopeWindow.window.bounds_(bounds)
+		}
 	}
 
 	freqscope {
