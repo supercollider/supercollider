@@ -402,17 +402,19 @@ Stethoscope {
 	size_ { arg value;
 		var sz = value.asSize;
 		if(window.notNil) {
-			var widthExceedsBounds = sz.width + window.bounds.left > Window.screenBounds.width;
-			var heightExceedsBounds = window.bounds.top - sz.height < 0 ;
-			if(widthExceedsBounds && heightExceedsBounds) {
-				window.setInnerExtent(sz.width,sz.height)
+			var widthIsWithinBounds = sz.width + window.bounds.left < Window.screenBounds.width;
+			var heightIsWithinBounds = window.bounds.bottom - sz.height > 0;
+			if(widthIsWithinBounds && heightIsWithinBounds) {
+				window.setInnerExtent(sz.width,sz.height);
 			} {
-				window.bounds_(Rect(
-					if(widthExceedsBounds) { Window.screenBounds.width - sz.width } { window.bounds.left },
-					if(heightExceedsBounds) { 0 } { window.bounds.top },
-					sz.width,
-					sz.height
-				))
+				window.bounds_(
+					Rect(
+						if(widthIsWithinBounds) { window.bounds.left } { Window.screenBounds.width - sz.width },
+						if(heightIsWithinBounds) { window.bounds.bottom - sz.height } { 0 },
+						sz.width,
+						sz.height
+					)
+				)
 			}
 		};
 	}
