@@ -566,15 +566,15 @@ IdentityDictionary : Dictionary {
 		};
 
 		this[selector] !? {|f|
-			^f.functionPerformWithArgsAndKwArgs(\value, [this] ++ argsArray, keywordArgsAsPairs.asEvent)
+			^f.functionPerformWithArgsAndKeywordArgs(\value, [this] ++ argsArray, keywordArgsAsPairs.asEvent)
 		};
 
-		// You cannot call a setter with a keyword arg, it does not make sense.
+		// Unlike in doesNotUnderstand, we don't convert to a setter as this isn't possible with keyword args.
 
 		// If the keyword arg names don't match this will fail.
 		// Note how the selector is passed in here.
 		this[\forward] !? {|f|
-			^f.functionPerformWithArgsAndKwArgs(\value, [this, selector] ++ argsArray, keywordArgsAsPairs.asEvent)
+			^f.functionPerformWithArgsAndKeywordArgs(\value, [this, selector] ++ argsArray, keywordArgsAsPairs.asEvent)
 		};
 
 		^nil

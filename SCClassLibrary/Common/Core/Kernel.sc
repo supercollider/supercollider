@@ -26,12 +26,6 @@ Class {
 	}
 	asClass { ^this }
 	isMetaClass { ^this.class === Class }
-	removeMeta {
-		if(this.asString[..4] != "Meta_") {
-			Error("Class was not a meta class").throw
-		};
-		^this.asString[5..].asSymbol.asClass
-	}
 
 	initClass {   }
 
@@ -46,7 +40,7 @@ Class {
 			classesInited.add(aClass);
 
 			if(aClass.isMetaClass.not and: { aClass.class.findMethod(\initClass).notNil }, {
-				aClass.initClass;
+				aClass.initClass
 			});
 
 			if(aClass.subclasses.notNil,{
@@ -571,6 +565,7 @@ FunctionDef {
 		});
 		^argsAppliedKeywords ++ keywordArgsEvent
 	}
+
 	makeNonOverlappingKeywordArgsArray {|argsArray, keywordArgsEvent, omitArgNameIfFirst|
 		var nonOverlapping = this.makeNonOverlappingKeywordArgsEvent(
 			argsArray,
@@ -630,12 +625,17 @@ Method : FunctionDef {
 
 	isClassMethod {	^ownerClass.isMetaClass	}
 
-	evaluateWithArgsAndKwArgs{|argsArray, keywordArgsEvent, thisObject|
+	evaluateWithArgsAndKeywordArgs {|argsArray, keywordArgsEvent, thisObject|
 		var args;
 		if(thisObject.isKindOf(ownerClass).not){
-			Error("Attempt to call method % on object %: %".format(this, thisObject, thisObject.class)).throw
+			Error("Attempt to call method % on object %: %".format(this, thisObject, thisObject.class))
+			.throw
 		};
-		args = this.makeNonOverlappingKeywordArgsEvent(argsArray: argsArray, keywordArgsEvent: keywordArgsEvent, omitArgNameIfFirst: \this);
+		args = this.makeNonOverlappingKeywordArgsEvent(
+			argsArray: argsArray,
+			keywordArgsEvent: keywordArgsEvent,
+			omitArgNameIfFirst: \this
+		);
 		^thisObject.performWithEnvir(name, args)
 	}
 }
@@ -742,8 +742,8 @@ Interpreter {
 		protect {
 			result = this.compileFile(pathName).valueArray(args)
 		} { |exception|
-            exception !? { exception.path = pathName };
-            thisProcess.nowExecutingPath = saveExecutingPath
+			exception !? { exception.path = pathName };
+			thisProcess.nowExecutingPath = saveExecutingPath
 		};
 		^result
 	}

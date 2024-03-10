@@ -137,21 +137,21 @@ Object  {
 		^this.performWithEnvir(selector, ().putPairs(pairs))
 	}
 
-	performWithArgsAndKwArgs{|selector, argsArray, keywordArgsEvent|
+	performWithArgsAndKeywordArgs {|selector, argsArray, keywordArgsEvent|
 		var method = this.class.findRespondingMethodFor(selector) ?? {
 			DoesNotUnderstandWithKeysError(this.class, selector, argsArray, keywordArgsEvent).throw
 		};
-		^method.evaluateWithArgsAndKwArgs(
+		^method.evaluateWithArgsAndKeywordArgs(
 			argsArray: argsArray,
 			keywordArgsEvent: keywordArgsEvent,
 			thisObject: this
 		)
 	}
-	valueWithArgsAndKwArgs{|argsArray, keywordArgsEvent|
-		^this.performWithArgsAndKwArgs(\value, argsArray, keywordArgsEvent)
+	valueWithArgsAndKeywordArgs {|argsArray, keywordArgsEvent|
+		^this.performWithArgsAndKeywordArgs(\value, argsArray, keywordArgsEvent)
 	}
-	functionPerformWithArgsAndKwArgs{|selector, argsArray, keywordArgsEvent|
-		if(keywordArgsEvent.isNil or: {keywordArgsEvent.size == 0}){
+	functionPerformWithArgsAndKeywordArgs {|selector, argsArray, keywordArgsEvent|
+		if(keywordArgsEvent.isNil or: {keywordArgsEvent.isEmpty}){
 			^this.functionPerformList(selector,	argsArray)
 		}{
 			var method = this.class.findRespondingMethodFor(selector) ?? {
