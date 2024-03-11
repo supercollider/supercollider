@@ -71,7 +71,7 @@ SoundFile {
 		^res
 	}
 
-    *writeArray {|pathName, array, headerFormat, sampleRate, sampleFormat|
+    *writeArray {|array, pathName, headerFormat, sampleFormat, sampleRate|
         var file = SoundFile.new;
 
         if (array.rank > 2) {
@@ -96,9 +96,10 @@ SoundFile {
         // Interlace the samples and write, always close the file.
         // Format will be: L1, R1, C1, L2, R2, C2 ...
         protect {
-            file.writeData(
-                FloatArray.newFrom(array.lace(array.shape.reduce('*')).asFloat)
-            )
+            var size = array.shape.product;
+            var flattenedArray = array.lace(size); // lace is faster than .flop.flat.
+            var data = FloatArray.newFrom(flattenedArray.asFloat);
+            file.writeData(data)
         } { file.close };
         ^pathName
     }
