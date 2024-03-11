@@ -530,48 +530,11 @@ Set[1, 2, 3].tryPerform(\keysValuesDo, { |key, value| [key, value].postln });
 (a: 1, b: 2, c: 3).tryPerform(\keysValuesDo, { |key, value| [key, value].flippityblargh });
 ::
 
-method::performWithArgsAndKwArgs
-Like link::#-perform::, but allows a mix of arguments and keyword arguments to be passed.
-Error checking is done to ensure all the keywords are matched and there are no collisions.
-
-argument::selector
-A link::Classes/Symbol:: representing a method selector.
-
-argument::argsArray
-The non-keyword arguments as an link::Classes/Array::.
-
-argument::keywordArgsEvent
-The 'keyworded' arguments as an link::Classes/IdentityDictionary::, where the keyword is the key.
-
-method::valueWithArgsAndKwArgs
-Like link::#-performWithArgsAndKwArgs::, but only calls value.
-
-argument::argsArray
-The non-keyword arguments as an link::Classes/Array::.
-
-argument::keywordArgsEvent
-The arguments as an link::Classes/IdentityDictionary::, where the keyword is the key.
-
 method::functionPerformList
 A method called in object prototyping, see link::Classes/IdentityDictionary#-new::.
-By default, this will do nothing and return the object,
+By default this will do nothing and return the object.
 link::Classes/Function#-functionPerformList:: provides a useful implementation.
 Not called in normal use.
-
-method::functionPerformWithArgsAndKwArgs
-Like link::#-functionPerformList::, but allows for keyword arguments to be passed.
-If the keywords do not match the function or there is argument collisions between the non-keyword and keyword arguments this will throw an error,
-even if link::#-functionPerformList:: does nothing.
-
-argument::selector
-A link::Classes/Symbol:: representing a method selector.
-
-argument::argsArray
-The non-keyword arguments as an link::Classes/Array::.
-
-argument::keywordArgsEvent
-The arguments as an link::Classes/IdentityDictionary::, where the keyword is the key.
-
 
 method::superPerform
 

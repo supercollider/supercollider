@@ -53,30 +53,6 @@ Function : AbstractFunction {
 		// unsupplied argument names are looked up in the currentEnvironment
 		^this.primitiveFailed
 	}
-	performWithArgsAndKeywordArgs{|selector, argsArray, keywordArgsEvent|
-		^if(selector == \value) { // use FunctionDef for lookup
-			this.valueWithArgsAndKeywordArgs(argsArray, keywordArgsEvent)
-		} {
-			this.superPerform(\performWithArgsAndKeywordArgs, selector, argsArray, keywordArgsEvent)
-		}
-	}
-	valueWithArgsAndKeywordArgs{|argsArray, keywordArgsEvent|
-		// value is special for Function, because the args are looked up in the FunctionDef, not in the Method.
-		^this.valueWithEnvir(
-			this.def.makeNonOverlappingKeywordArgsEvent(argsArray, keywordArgsEvent)
-		)
-	}
-	functionPerformWithArgsAndKeywordArgs{|selector, argsArray, keywordArgsEvent|
-		if(keywordArgsEvent.isNil or: {keywordArgsEvent.size == 0}){
-			^this.functionPerformList(selector,	argsArray)
-		}{
-			^this.functionPerformList(
-				selector,
-				this.def.makeNonOverlappingKeywordArgsArray(argsArray, keywordArgsEvent)
-			)
-		}
-	}
-
 	functionPerformList { arg selector, arglist;
 		_ObjectPerformList;
 		^this.primitiveFailed

@@ -549,31 +549,54 @@ FunctionDef {
 		^().putPairs(this.keyValuePairsFromArgs)
 	}
 
-	makeNonOverlappingKeywordArgsEvent {|argsArray, keywordArgsEvent, omitArgNameIfFirst|
-		var argsAppliedKeywords =
-		(argNames[0] == omitArgNameIfFirst).if({argNames[1..]}, {argNames})
-		.collect({|name, index| name -> argsArray[index] })
-		.asEvent;
 
-		keywordArgsEvent.keys.do({|k|
-			if(argNames.includes(k).not){
-				Error("Key '%' not found in function call".format(k)).throw
+	prMakePerformableEnvir {|argsArray=([]), keywordArgsEvent=(()), dropFirstN=0|
+		var argNamesNoThis = argNames.drop(dropFirstN);
+		var setOfAddedNames = Set();
+		var out = ();
+		// skips this
+		argsArray.do{|ar, i|
+			out[argNamesNoThis[i]] = ar;
+			setOfAddedNames.add(argNamesNoThis[i]);
+		};
+
+		keywordArgsEvent.keysValuesDo{|k, v|
+			var index;
+			if(setOfAddedNames.includes(k)) {
+				Error("Argument with name % already added.".format(k)).throw
 			};
-			if(argsAppliedKeywords.includesKey(k)){
-				Error("Duplicate function keyword '%'".format(k)).throw
-			}
-		});
-		^argsAppliedKeywords ++ keywordArgsEvent
+
+			if(argNamesNoThis.includes(k).not) {
+				Error("Argument '%' not found in method '%'".format(k, this)).throw
+			};
+
+			out[k] = v;
+			setOfAddedNames.add(k);
+		};
+		^out
 	}
 
-	makeNonOverlappingKeywordArgsArray {|argsArray, keywordArgsEvent, omitArgNameIfFirst|
-		var nonOverlapping = this.makeNonOverlappingKeywordArgsEvent(
-			argsArray,
-			keywordArgsEvent,
-			omitArgNameIfFirst
-		);
-		var default = this.keyValuePairsFromArgs;
-		^argNames.collect({|n, index| nonOverlapping[n] ?? {default[index]} })
+	prMakePerformableArray {|argsArray=([]), keywordArgsEvent=(()), dropFirstN=0|
+		var ev = this.makePerformableEnvir(argsArray, keywordArgsEvent, dropFirstN);
+		var protoDrop = prototypeFrame.drop(dropFirstN);
+		var arr = [];
+
+		argNames.do{|name, i|
+			ev[name] !? {|a|
+				arr = arr.add(a)
+			} ?? {
+				arr = arr.add(prototypeFrame[i])
+			}
+		};
+		^arr.drop(dropFirstN)
+	}
+
+	makePerformableEnvir {|argsArray=([]), keywordArgsEvent=(())|
+		^this.prMakePerformableEnvir(argsArray, keywordArgsEvent, 0)
+	}
+
+	makePerformableArray {|argsArray=([]), keywordArgsEvent=(())|
+		^this.prMakePerformableArray(argsArray, keywordArgsEvent)
 	}
 
 }
@@ -625,19 +648,17 @@ Method : FunctionDef {
 
 	isClassMethod {	^ownerClass.isMetaClass	}
 
-	evaluateWithArgsAndKeywordArgs {|argsArray, keywordArgsEvent, thisObject|
-		var args;
-		if(thisObject.isKindOf(ownerClass).not){
-			Error("Attempt to call method % on object %: %".format(this, thisObject, thisObject.class))
-			.throw
-		};
-		args = this.makeNonOverlappingKeywordArgsEvent(
-			argsArray: argsArray,
-			keywordArgsEvent: keywordArgsEvent,
-			omitArgNameIfFirst: \this
-		);
-		^thisObject.performWithEnvir(name, args)
+
+	makePerformableEnvir {|argsArray=([]), keywordArgsEvent=(())|
+		// drop the first argument as it is always 'this'
+		^this.prMakePerformableEnvir(argsArray, keywordArgsEvent, 1)
 	}
+
+	makePerformableArray {|argsArray=([]), keywordArgsEvent=(())|
+		// drop the first argument as it is always 'this'
+		^this.prMakePerformableArray(argsArray, keywordArgsEvent, 1)
+	}
+
 }
 
 Frame {

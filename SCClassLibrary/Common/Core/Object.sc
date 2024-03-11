@@ -137,33 +137,6 @@ Object  {
 		^this.performWithEnvir(selector, ().putPairs(pairs))
 	}
 
-	performWithArgsAndKeywordArgs {|selector, argsArray, keywordArgsEvent|
-		var method = this.class.findRespondingMethodFor(selector) ?? {
-			DoesNotUnderstandWithKeysError(this.class, selector, argsArray, keywordArgsEvent).throw
-		};
-		^method.evaluateWithArgsAndKeywordArgs(
-			argsArray: argsArray,
-			keywordArgsEvent: keywordArgsEvent,
-			thisObject: this
-		)
-	}
-	valueWithArgsAndKeywordArgs {|argsArray, keywordArgsEvent|
-		^this.performWithArgsAndKeywordArgs(\value, argsArray, keywordArgsEvent)
-	}
-	functionPerformWithArgsAndKeywordArgs {|selector, argsArray, keywordArgsEvent|
-		if(keywordArgsEvent.isNil or: {keywordArgsEvent.isEmpty}){
-			^this.functionPerformList(selector,	argsArray)
-		}{
-			var method = this.class.findRespondingMethodFor(selector) ?? {
-				DoesNotUnderstandWithKeysError(this.class, selector, argsArray, keywordArgsEvent).throw
-			};
-			^this.functionPerformList(
-				selector,
-				method.makeNonOverlappingKeywordArgsArray(argsArray, keywordArgsEvent)
-			)
-		}
-	}
-
 	// copying
 	copy { ^this.shallowCopy }
 	contentsCopy { ^this.shallowCopy }
