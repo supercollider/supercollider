@@ -30,7 +30,7 @@ code::
 
 method::sourceCode
 
-Get the source code string.
+Get the source code as a link::Classes/String::.
 code::
 { |a = 9, b = 10, c| a + b }.def.sourceCode.postcs;
 ::
@@ -45,18 +45,28 @@ return a list of all references to a given symbol.
 
 method::argNames
 
-Get the Array of Symbols of the argument names.
+Get all of the arguments' names as a link::Classes/SymbolArray::.
 
 code::
 { |a = 9, b = 10, c| a + b }.def.argNames;
 ::
+
+method::argNamesForCall
+Like link::#-argNames:: but may omit
+
 method::prototypeFrame
 
-Get the array of default values for argument and temporary variables.
+Get an array of default values for all arguments and variables.
 
 code::
 { |a = 9, b = 10, c| a + b }.def.prototypeFrame;
+{ |a = 9, b = 10, c| var i = 'I\'m stored here too!'; a + b }.def.prototypeFrame;
+
 ::
+
+
+
+
 method::varNames
 
 Get the Array of Symbols of the local variable names.

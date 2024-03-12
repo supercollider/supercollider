@@ -4,7 +4,10 @@ summary:: Code that implements an operation upon instances of a Class.
 related:: Classes/Class
 
 description::
-A Method is code that is a part of the set of operations upon instances of a link::Classes/Class::.
+A link::Classes/Method:: is a language side representation of a single method defined within a class.
+
+For a definition of a method,
+see link::Guides/Intro-to-Objects:: and link::Guides/WritingClasses::.
 
 subsection:: Related Keywords
 
@@ -40,6 +43,7 @@ instanceMethods::
 method::ownerClass
 returns::
 The link::Classes/Class:: for which the method is part of the implementation.
+If this is a class method, then the owner class will be a 'Meta_Class'.
 
 method::name
 returns::
@@ -47,7 +51,8 @@ A link::Classes/Symbol:: which is the name of the Method.
 
 method::primitiveName
 returns::
-A link::Classes/Symbol:: which contains the name of the primitive function that implements the Method, if there is one.
+A link::Classes/Symbol:: which contains the name of the primitive function that implements the Method,
+if there is one, otherwise returns link::Classes/Nil::.
 
 method:: filenameSymbol
 returns::
@@ -57,7 +62,3 @@ method::isClassMethod
 returns::
 A link::Classes/Boolean:: where true represents if this link::Classes/Method:: is a class method,
 and false represents when this is an instance method.
-::
-
-
-

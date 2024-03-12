@@ -413,10 +413,17 @@ Process {
 
 
 FunctionDef {
-	var raw1, raw2, <code, <selectors, <constants, <prototypeFrame, <context, <argNames, <varNames;
-	var <sourceCode;
+	var raw1, raw2; // Internal - don't touch
+	var <code; // Compiled bytecode
+	var <selectors; // All the explicit selectors (messages) used
+	var <constants; // Constants used in function
+	var <prototypeFrame; // All the default arguments' values
+	var <context; // The enclosing FunctionDef or Method
+	var <argNames; // All the argument names as a SymbolArray
+	var <varNames; // All the variable names as a SymbolArray
+	var <sourceCode; // The literal source code as a String
 
-	// a FunctionDef is defined by a code within curly braces {}
+	// A FunctionDef is defined by a code within curly braces {}.
 	// When you use a FunctionDef in your code it gets pushed on the stack
 	// as an instance of Function
 
@@ -430,16 +437,19 @@ FunctionDef {
 		_FunDef_NumArgs
 		^this.primitiveFailed
 	}
+
 	numVars {
 		// return number of variables in the function
 		_FunDef_NumVars
 		^this.primitiveFailed
 	}
+
 	varArgs {
 		// return boolean whether function has ellipsis argument
 		_FunDef_VarArgs
 		^this.primitiveFailed
 	}
+
 	shallowCopy { ^this }
 
 	asFunction {
@@ -452,11 +462,28 @@ FunctionDef {
 		_FunctionDefDumpContexts
 		^this.primitiveFailed
 	}
+
+	// These methods are used to indicate that only a subsection of the argName
+	//     and prototypeFrame are used to call the FunctionDef.
+	argNamesForCallStartIndex { ^0 }
+	argNamesForCallSize { ^argNames.size }
+
+	argNamesForCall {
+		^argNames
+		.drop(this.argNamesForCallStartIndex)
+		.keep(this.argNamesForCallSize)
+	}
+
+	defaultArgsForCall {
+		^prototypeFrame
+		.drop(this.argNamesForCallStartIndex)
+		.keep(this.argNamesForCallSize)
+	}
+
 	inspectorClass { ^FunctionDefInspector }
 
-	findReferences { arg aSymbol, references;
-		var lits;
-		lits = selectors.asArray;
+	findReferences { |aSymbol, references|
+		var lits = selectors.asArray;
 		if (lits.includes(aSymbol), {
 			references = references.add(this);
 		});
@@ -467,9 +494,9 @@ FunctionDef {
 		});
 		^references
 	}
-	storeOn { arg stream;
-		stream << "nil"
-	}
+
+	storeOn { |stream| stream << "nil" }
+
 	checkCanArchive { "cannot archive FunctionDefs".warn }
 	archiveAsCompileString { ^true }
 
@@ -477,7 +504,7 @@ FunctionDef {
 		^argNames.size > 0 and: { argNames[0] == \_ }
 	}
 
-	argumentString { arg withDefaultValues=true, withEllipsis=false, asArray=false;
+	argumentString { |withDefaultValues=true, withEllipsis=false, asArray=false|
 		var res = "", pairs;
 		var lastIndex, noVarArgs, varArgName;
 		if(asArray) {
@@ -539,92 +566,79 @@ FunctionDef {
 	}
 
 	keyValuePairsFromArgs {
-		var values;
 		if(argNames.isNil) { ^[] };
-		values = this.prototypeFrame.keep(argNames.size);
-		^[argNames, values].flop.flatten
+		^[this.argNamesForCall, this.defaultArgsForCall].lace(this.argNamesForCallSize * 2);
 	}
 
 	makeEnvirFromArgs {
 		^().putPairs(this.keyValuePairsFromArgs)
 	}
 
-
-	prMakePerformableEnvir {|argsArray=([]), keywordArgsEvent=(()), dropFirstN=0|
-		var argNamesNoThis = argNames.drop(dropFirstN);
+	makePerformableEnvir {|argsArray=([]), keywordArgsEvent=(())|
+		var argNamesCall = this.argNamesForCall;
 		var setOfAddedNames = Set();
-		var out = ();
-		// skips this
+		var envir = ();
+
 		argsArray.do{|ar, i|
-			out[argNamesNoThis[i]] = ar;
-			setOfAddedNames.add(argNamesNoThis[i]);
+			envir[argNamesCall[i]] = ar;
+			setOfAddedNames.add(argNamesCall[i]);
 		};
 
 		keywordArgsEvent.keysValuesDo{|k, v|
-			var index;
 			if(setOfAddedNames.includes(k)) {
 				Error("Argument with name % already added.".format(k)).throw
 			};
 
-			if(argNamesNoThis.includes(k).not) {
+			if(argNamesCall.includes(k).not) {
 				Error("Argument '%' not found in method '%'".format(k, this)).throw
 			};
 
-			out[k] = v;
+			envir[k] = v;
 			setOfAddedNames.add(k);
 		};
-		^out
-	}
-
-	prMakePerformableArray {|argsArray=([]), keywordArgsEvent=(()), dropFirstN=0|
-		var ev = this.makePerformableEnvir(argsArray, keywordArgsEvent, dropFirstN);
-		var protoDrop = prototypeFrame.drop(dropFirstN);
-		var arr = [];
-
-		argNames.do{|name, i|
-			ev[name] !? {|a|
-				arr = arr.add(a)
-			} ?? {
-				arr = arr.add(prototypeFrame[i])
-			}
-		};
-		^arr.drop(dropFirstN)
-	}
-
-	makePerformableEnvir {|argsArray=([]), keywordArgsEvent=(())|
-		^this.prMakePerformableEnvir(argsArray, keywordArgsEvent, 0)
+		^envir
 	}
 
 	makePerformableArray {|argsArray=([]), keywordArgsEvent=(())|
-		^this.prMakePerformableArray(argsArray, keywordArgsEvent)
+		var defaultArgs = this.defaultArgsForCall;
+		var ev = this.makePerformableEnvir(argsArray, keywordArgsEvent);
+		^argNames.collect{|name, i| ev[name] ?? {defaultArgs[i]} }
 	}
 
 }
 
 Method : FunctionDef {
-	var <ownerClass, <name, <primitiveName;
-	var <filenameSymbol, <charPos;
+	var <ownerClass;
+	var <name;
+	var <primitiveName; // A Symbol or nil.
+	var <filenameSymbol;
+	var <charPos; // Position in source code, use in combination with filenameSymbol.
 
-	openCodeFile {
-		this.filenameSymbol.asString.openDocument(this.charPos, -1);
-	}
-	hasHelpFile {
-		//should cache this in Library or classvar
-		//can't add instance variables to Class
-		^this.name.asString.findHelpFile.notNil
-	}
-	help {
-		HelpBrowser.openHelpForMethod(this);
-	}
+	isClassMethod {	^ownerClass.isMetaClass	}
+
+	// Remove 'this' from arguments when calling so as not to override it.
+	argNamesForCallStartIndex { ^1 }
+	argNamesForCallSize { ^argNames.size - 1 }
+
+	openCodeFile { this.filenameSymbol.asString.openDocument(this.charPos, -1) }
+
+	hasHelpFile { ^this.name.asString.findHelpFile.notNil }
+
+	help { HelpBrowser.openHelpForMethod(this) }
+
 	inspectorClass { ^MethodInspector }
-	storeOn { arg stream;
+
+	archiveAsObject { ^true }
+
+	checkCanArchive {} // can archive method, other classes post a warning.
+
+	storeOn { |stream|
 		stream << ownerClass.name << ".findMethod(" << name.asCompileString << ")"
 	}
-	archiveAsObject { ^true }
-	checkCanArchive {}
-	findReferences { arg aSymbol, references;
-		var lits, functionRefs;
-		lits = selectors.asArray;
+
+	findReferences { |aSymbol, references|
+		var functionRefs;
+		var lits = selectors.asArray;
 		if (lits.includes(aSymbol), {
 			references = references.add(this);
 			^references // we only need to be listed once
@@ -637,28 +651,6 @@ Method : FunctionDef {
 		functionRefs.notNil.if({references = references.add(this)});
 		^references
 	}
-
-	keyValuePairsFromArgs {
-		var names, values;
-		if(argNames.isNil, { ^[] });
-		names = argNames.drop(1); // first argName is "this"
-		values = this.prototypeFrame.drop(1).keep(names.size);
-		^[names, values].flop.flatten
-	}
-
-	isClassMethod {	^ownerClass.isMetaClass	}
-
-
-	makePerformableEnvir {|argsArray=([]), keywordArgsEvent=(())|
-		// drop the first argument as it is always 'this'
-		^this.prMakePerformableEnvir(argsArray, keywordArgsEvent, 1)
-	}
-
-	makePerformableArray {|argsArray=([]), keywordArgsEvent=(())|
-		// drop the first argument as it is always 'this'
-		^this.prMakePerformableArray(argsArray, keywordArgsEvent, 1)
-	}
-
 }
 
 Frame {
