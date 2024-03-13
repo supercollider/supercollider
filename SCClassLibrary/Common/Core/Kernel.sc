@@ -563,29 +563,15 @@ FunctionDef {
 		^().putPairs(this.keyValuePairsFromArgs)
 	}
 
-
 	makePerformableArray {|argumentsArray=([]), keywordArgumentEnvir=(())|
 		// This will return an array with all the arguments put in place.
 		// Variable arguments are place at the end (not in a seperate array).
 		// Consider moving this whole method to a primitive.
-		var addedNames = Set();
-		var arguments = this.defaultArgs;
+		var arguments = this.defaultArgs
+		.drop(if(this.varArgs, -1, 0)) // the default provided by the prototypeFrame for varArgs '[]' is incorrect, so drop it.
+		.overWrite(argumentsArray);
 		var argNamesCall = this.argumentNamesForCall;
-		var varArgName = if (this.varArgs) { argNamesCall.last} {nil};
-
-		// Return no argument in the varArgs position if empty.
-		// This means the default provided by the prototypeFrame ( '[]' ) is incorrect, so drop it.
-		if (this.varArgs){ arguments = arguments.drop(-1) };
-
-		// put non-keyword-arguments in first
-		argumentsArray.do{|a, i|
-			argNamesCall[i] !? {|n| addedNames.add(n) }; // cannot collide here. Nil if a varArg.
-			if (i >= arguments.size) {
-				arguments = arguments.add(a);
-			} {
-				arguments[i] = a;
-			};
-		};
+		var addedNames = argNamesCall.keep(argumentsArray.size);
 
 		// check keywordArgumentEnvir do not collide with a	argumentsArray,
 		//    and that they are present in the method.
@@ -600,8 +586,8 @@ FunctionDef {
 			argNamesCall.detectIndex({|n| n == name }) ?? {
 				Error("Arguments '%' not understood by function '%'".format(name, this)).throw
 			} !? { |i|
-				addedNames.add(name);
-				if (name == varArgName){ arguments = arguments.addAll(a) } { arguments[i] = a }
+				addedNames = addedNames.add(name);
+				if (name == argNamesCall.last){ arguments = arguments.addAll(a) } { arguments[i] = a }
 			};
 		};
 
