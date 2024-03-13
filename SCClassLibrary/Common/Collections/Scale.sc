@@ -24,10 +24,9 @@ Scale {
 		?? { super.doesNotUnderstand(selector, args) }
 	}
 	*doesNotUnderstandWithKeys {|selector, argsArray, keywordArgsAsPairs|
-		^Scale.performWithEnvir(
-			\newFromKey,
-			Scale.class.findRespondingMethodFor(\newFromKey)
-			.makePerformableEnvir([selector] ++ argsArray, keywordArgsAsPairs)
+		^Scale.perform(\newFromKey,
+			*Scale.class.findRespondingMethodFor(\newFromKey)
+			.makePerformableArray([selector] ++ argsArray, keywordArgsAsPairs.asEvent)
 		)
 	}
 
@@ -199,10 +198,9 @@ Tuning {
 	}
 
 	*doesNotUnderstandWithKeys {|selector, argsArray, keywordArgsAsPairs|
-		^Tuning.performWithEnvir(
-			\newFromKey,
-			Tuning.class.findRespondingMethodFor(\newFromKey)
-			.makePerformableEnvir([selector] ++ argsArray, keywordArgsAsPairs)
+		^Tuning.perform(\newFromKey,
+			*Tuning.class.findRespondingMethodFor(\newFromKey)
+			.makePerformableArray([selector] ++ argsArray, keywordArgsAsPairs.asEvent)
 		)
 	}
 
