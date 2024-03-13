@@ -643,10 +643,6 @@ Method : FunctionDef {
 	storeOn { arg stream;
 		stream << ownerClass.name << ".findMethod(" << name.asCompileString << ")"
 	}
-
-	findReferences { |aSymbol, references|
-		var functionRefs;
-		var lits = selectors.asArray;
 	archiveAsObject { ^true }
 	checkCanArchive {}
 	findReferences { arg aSymbol, references;
