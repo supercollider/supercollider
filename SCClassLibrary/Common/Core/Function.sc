@@ -72,6 +72,7 @@ Function : AbstractFunction {
 		// evaluate a function, using arguments from the supplied environment
 		// slightly faster than valueEnvir and does not replace the currentEnvironment
 		^this.valueArray(prototypeFrame)
+	}
 
 	valueWith {|argumentsArray=([]), keywordArgumentEnvir=(())|
 		^this.valueArray(def.makePerformableArray(argumentsArray, keywordArgumentEnvir));
