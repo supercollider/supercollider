@@ -74,67 +74,7 @@ Function : AbstractFunction {
 		^this.valueArray(prototypeFrame)
 
 	valueWith {|argumentsArray=([]), keywordArgumentEnvir=(()), variableArgumentsArray=([])|
-		// this method is *almost* a line-by-line copy of Object-performWith.
-		// Consider moving this whole method to a primitive.
-		var argNames = def.argNames; // use the current def, not a method lookup
-		var addedNames = Set();
-
-		// fill with defaults.
-		var arguments = def.prototypeFrame[0..(argNames.size - 1)].copy;
-
-		// if false varArgs, then no variable argments.
-		// if varArgs, then maybe variable arguments.
-		if (def.varArgs.not and: {variableArgumentsArray.isEmpty.not}) {
-			Error("Function '%' does not support variable arguments".format(this)).throw
-		};
-
-		// put non-keyword-arguments in first
-		argumentsArray.do{|a, i|
-			addedNames.add(argNames[i]); // cannot collide here.
-			arguments[i] = a;
-		};
-
-		// check keywordArgumentEnvir do not collide with a	argumentsArray,
-		//    and that they are present in the method.
-		keywordArgumentEnvir.keysValuesDo{|name, a|
-			if (addedNames.includes(name)) {
-				Error(
-					"Arguments cannot be duplicated, "
-					"got two values for argument '%'".format(name)
-				).throw
-			};
-
-			argNames.detectIndex({|n| n == name }) ?? {
-				Error("Arguments '%' not understood by function '%'".format(name, this)).throw
-			} !? { |i|
-				addedNames.add(name);
-				arguments[i] = a;
-			};
-		};
-
-		// valueArray expects no argument in the varArgs position if empty.
-		// This means the default provided by the prototypeFrame ( '[]' ) is incorrect!
-		if (def.varArgs){
-			arguments = arguments[0..(argNames.size - 2)];
-		};
-
-		// override default varArg if present.
-		if(variableArgumentsArray.isEmpty.not){
-			var name = argNames.last;
-			var i = argNames.size - 1;
-			if (addedNames.includes(name)){
-				Error(
-					"Arguments cannot be duplicated, "
-					"got two values for variable argument '%'".format(name)
-				).throw
-			};
-			// remove the default varArg and append ours.
-			// performList is expecting each varArg to be appended to the array,
-			//    not placed in an array at the end.
-			arguments = arguments ++ [variableArgumentsArray];
-		};
-
-		^this.valueArray(*arguments);
+		^this.valueArray(def.makePerformableArray(argumentsArray, keywordArgumentEnvir, variableArgumentsArray));
 	}
 
 	performWithEnvir { |selector, envir|

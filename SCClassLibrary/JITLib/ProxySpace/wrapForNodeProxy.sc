@@ -60,7 +60,7 @@
 + Function {
 	prepareForProxySynthDef { ^this }
 	argNames { ^def.argNames }
-	defaultArgs { ^def.prototypeFrame }
+	defaultArgs { ^def.defaultArguments }
 }
 
 + AbstractFunction {

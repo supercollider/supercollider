@@ -417,9 +417,9 @@ FunctionDef {
 	var <code; // Compiled bytecode
 	var <selectors; // All the explicit selectors (messages) used
 	var <constants; // Constants used in function
-	var <prototypeFrame; // All the default arguments' values
+	var <prototypeFrame; // All the default arguments' and varaibles' values
 	var <context; // The enclosing FunctionDef or Method
-	var <argNames; // All the argument names as a SymbolArray
+	var <argNames; // All the argument names as a SymbolArray, this will include 'this' for Method.
 	var <varNames; // All the variable names as a SymbolArray
 	var <sourceCode; // The literal source code as a String
 
@@ -463,22 +463,8 @@ FunctionDef {
 		^this.primitiveFailed
 	}
 
-	// These methods are used to indicate that only a subsection of the argName
-	//     and prototypeFrame are used to call the FunctionDef.
-	argNamesForCallStartIndex { ^0 }
-	argNamesForCallSize { ^argNames.size }
-
-	argNamesForCall {
-		^argNames
-		.drop(this.argNamesForCallStartIndex)
-		.keep(this.argNamesForCallSize)
-	}
-
-	defaultArgsForCall {
-		^prototypeFrame
-		.drop(this.argNamesForCallStartIndex)
-		.keep(this.argNamesForCallSize)
-	}
+	defaultArguments { ^this.prototypeFrame.keep(argNames.size).copy }
+	argumentNamesForCall { ^argNames }
 
 	inspectorClass { ^FunctionDefInspector }
 
@@ -577,53 +563,69 @@ FunctionDef {
 		^().putPairs(this.keyValuePairsFromArgs)
 	}
 
-	makePerformableEnvir {|argsArray=([]), keywordArgsEvent=(())|
-		var argNamesCall = this.argNamesForCall;
-		var setOfAddedNames = Set();
-		var envir = ();
 
-		argsArray.do{|ar, i|
-			envir[argNamesCall[i]] = ar;
-			setOfAddedNames.add(argNamesCall[i]);
+	makePerformableArray {|argumentsArray=([]), keywordArgumentEnvir=(()), variableArgumentsArray=([])|
+		// This will return an array with all the arguments put in place.
+		// Variable arguments are place at the end (not in a seperate array).
+		// Consider moving this whole method to a primitive.
+		var addedNames = Set();
+		var arguments = this.defaultArguments;
+		var argNamesCall = this.argumentNamesForCall;
+
+		// if false varArgs, then no variable argments.
+		// if varArgs, then maybe variable arguments.
+		if (this.varArgs.not and: {variableArgumentsArray.isEmpty.not}) {
+			Error("Function '%' does not support variable arguments".format(this)).throw
 		};
 
-		keywordArgsEvent.keysValuesDo{|k, v|
-			if(setOfAddedNames.includes(k)) {
-				Error("Argument with name % already added.".format(k)).throw
-			};
-
-			if(argNamesCall.includes(k).not) {
-				Error("Argument '%' not found in method '%'".format(k, this)).throw
-			};
-
-			envir[k] = v;
-			setOfAddedNames.add(k);
+		// put non-keyword-arguments in first
+		argumentsArray.do{|a, i|
+			addedNames.add(argNamesCall[i]); // cannot collide here.
+			arguments[i] = a;
 		};
-		^envir
-	}
 
-	makePerformableArray {|argsArray=([]), keywordArgsEvent=(())|
-		var defaultArgs = this.defaultArgsForCall;
-		var ev = this.makePerformableEnvir(argsArray, keywordArgsEvent);
-		^argNames.collect{|name, i| ev[name] ?? {defaultArgs[i]} }
-	}
+		// check keywordArgumentEnvir do not collide with a	argumentsArray,
+		//    and that they are present in the method.
+		keywordArgumentEnvir.keysValuesDo{|name, a|
+			if (addedNames.includes(name)) {
+				Error(
+					"Arguments cannot be duplicated, "
+					"got two values for argument '%'".format(name)
+				).throw
+			};
 
+			argNamesCall.detectIndex({|n| n == name }) ?? {
+				Error("Arguments '%' not understood by function '%'".format(name, this)).throw
+			} !? { |i|
+				addedNames.add(name);
+				arguments[i] = a;
+			};
+		};
+
+		// valueArray expects no argument in the varArgs position if empty.
+		// This means the default provided by the prototypeFrame ( '[]' ) is incorrect, so drop it.
+		if (this.varArgs){ arguments = arguments.drop(-1) };
+
+		if(variableArgumentsArray.isEmpty.not){
+			if (addedNames.includes(argNames.last)){
+				Error(
+					"Arguments cannot be duplicated, "
+					"got two values for variable argument '%'".format(argNames.last)
+				).throw
+			};
+			// remove the default varArg and append ours.
+			// performList is expecting each varArg to be appended to the array,
+			//    not placed in an array at the end.
+			arguments = arguments ++ variableArgumentsArray;
+		};
+
+		^arguments
+	}
 }
 
 Method : FunctionDef {
-	var <ownerClass;
-	var <name;
-	var <primitiveName; // A Symbol or nil.
-	var <filenameSymbol;
-	var <charPos; // Position in source code, use in combination with filenameSymbol.
-
-	isClassMethod {	^ownerClass.isMetaClass	}
-
-	// Remove 'this' from arguments when calling so as not to override it.
-	argNamesForCallStartIndex { ^1 }
-	argNamesForCallSize { ^argNames.size - 1 }
-
-	openCodeFile { this.filenameSymbol.asString.openDocument(this.charPos, -1) }
+	var <ownerClass, <name, <primitiveName;
+	var <filenameSymbol, <charPos;
 
 	defaultArguments { ^this.prototypeFrame.drop(1).keep(argNames.size - 1).copy }
 	argumentNamesForCall { ^argNames.drop(1) } // drop this

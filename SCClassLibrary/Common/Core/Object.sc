@@ -138,7 +138,7 @@ Object  {
 	}
 
 	performWith {|selector, argumentsArray=([]), keywordArgumentEnvir=(()), variableArgumentsArray=([])|
-		// Consider moving this whole method to a primitive.
+
 		var method = this.class.findRespondingMethodFor(selector) ?? {
 			^this.doesNotUnderstand(selector)
 		};
@@ -160,47 +160,10 @@ Object  {
 			arguments[i] = a;
 		};
 
-		// check keywordArgumentEnvir do not collide with a	argumentsArray,
-		//    and that they are present in the method.
-		keywordArgumentEnvir.keysValuesDo{|name, a|
-			if (addedNames.includes(name)) {
-				Error(
-					"Arguments cannot be duplicated, "
-					"got two values for argument '%'".format(name)
-				).throw
-			};
-
-			argNames.detectIndex({|n| n == name }) ?? {
-				Error("Arguments '%' not understood by method '%'".format(name, selector)).throw
-			} !? { |i|
-				addedNames.add(name);
-				arguments[i] = a;
-			};
-		};
-
-		if (method.varArgs){
-			arguments = arguments[0..(argNames.size - 2)];
-		};
-
-		// override default varArg if present.
-		if(variableArgumentsArray.isEmpty.not){
-			var name = argNames.last;
-			var i = argNames.size - 1;
-			if (addedNames.includes(name)){
-				Error(
-					"Arguments cannot be duplicated, "
-					"got two values for variable argument '%'".format(name)
-				).throw
-			};
-			// remove the default varArg and append ours.
-			// `performList` is expecting each varArg to be appended to the array,
-			//    not placed in an array at the end.
-			// Please note how this differs from Function's `valueWith`,
-			//    which uses `valueArray`, and requires a different layout on the stack.
-			arguments = arguments ++ variableArgumentsArray;
-		};
-
-		^this.performList(selector, arguments)
+		^this.perform(
+			selector,
+			*method.makePerformableArray(argumentsArray, keywordArgumentEnvir, variableArgumentsArray)
+		)
 	}
 
 	// copying
