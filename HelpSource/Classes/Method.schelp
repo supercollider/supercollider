@@ -4,7 +4,7 @@ summary:: Code that implements an operation upon instances of a Class.
 related:: Classes/Class
 
 description::
-A link::Classes/Method:: is a language side representation of a single method defined within a class.
+link::Classes/Method::s are created for each method defined with a class.
 
 For a definition of a method,
 see link::Guides/Intro-to-Objects:: and link::Guides/WritingClasses::.
@@ -53,6 +53,13 @@ method::primitiveName
 returns::
 A link::Classes/Symbol:: which contains the name of the primitive function that implements the Method,
 if there is one, otherwise returns link::Classes/Nil::.
+
+method::defaultArgs
+Returns the default arguments needed to call the function.
+This will correctly omit 'this'.
+
+method::argumentNamesForCall
+Same as link::#-argName:: but will omit 'this', useful when calling the method.
 
 method:: filenameSymbol
 returns::

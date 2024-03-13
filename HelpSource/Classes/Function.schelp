@@ -122,9 +122,31 @@ e = Environment.make({ ~a = 3; ~b = 10 });
 )
 ::
 
+method::valueWith
+Evaluate the function using a mix of arguments and keyword arguments.
+
+argument::argumentsArray
+Arguments as an link::Classes/Array::.
+
+argument::keywordArgumentEnvir
+Keyword arguments as an link::Classes/IdentityDictionary::.
+
+discussion::
+code::
+f = { |a, b ...e|
+   a.debug(\a);
+   b.debug(\b);
+   e.debug(\e);
+};
+f.valueWith([\a], (e: [1,2,3]));
+::
+
+
 method::functionPerformList
 
-For Function, this behaves the same as valueArray(arglist). It is used  where Functions and other objects should behave differently to value, such as in the object prototyping implementation of Environment.
+For Function, this behaves the same as valueArray(arglist).
+It is used  where Functions and other objects should behave differently to value,
+such as in the object prototyping implementation of Environment.
 
 
 method::performWithEnvir

@@ -575,7 +575,6 @@ IdentityDictionary : Dictionary {
 		// Unlike in doesNotUnderstand, we don't convert to a setter as this isn't
 		// possible with keyword args.
 
-		// If the keyword arg names don't match this will fail.
 		// Note how the selector is passed in here.
 		this[\forward] !? {|f|
 			^f.functionPerformList(
