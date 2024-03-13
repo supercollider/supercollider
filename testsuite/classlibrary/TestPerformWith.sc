@@ -35,8 +35,24 @@ TestPerformWith : UnitTest {
 	test_method_var_args_expand {
 		this.assertEquals(
 			TestPerformWithMethod()
-			.performWith(\meth, [\a], (b: \b, c: \c, d: \d), [\e, \f]),
+			.performWith(\meth, [\a], (b: \b, c: \c, d: \d, e: [\e, \f])),
 			[\a, \b, \c, \d, [\e, \f]]
+		);
+	}
+
+	test_method_many_normal_args {
+		this.assertEquals(
+			TestPerformWithMethod()
+			.performWith(\meth, [\a, \b, \c, \d, \e, \f, \g]),
+			[\a, \b, \c, \d, [\e, \f, \g]]
+		);
+	}
+
+	test_method_varArgKeyword {
+		this.assertEquals(
+			TestPerformWithMethod()
+			.performWith(\meth, [], (e: [\a, \b, \c, \d])),
+			[nil, nil, nil, nil, [\a, \b, \c, \d]]
 		);
 	}
 
@@ -84,7 +100,7 @@ TestPerformWith : UnitTest {
 			[a, b, c, d, e]
 		};
 		this.assertEquals(
-			f.performWith(\value, [\a], (b: \b, c: \c, d: \d), [\e, \f]),
+			f.performWith(\value, [\a], (b: \b, c: \c, d: \d, e: [\e, \f])),
 			[\a, \b, \c, \d, [\e, \f]]
 		);
 	}

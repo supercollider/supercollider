@@ -73,17 +73,17 @@ Function : AbstractFunction {
 		// slightly faster than valueEnvir and does not replace the currentEnvironment
 		^this.valueArray(prototypeFrame)
 
-	valueWith {|argumentsArray=([]), keywordArgumentEnvir=(()), variableArgumentsArray=([])|
-		^this.valueArray(def.makePerformableArray(argumentsArray, keywordArgumentEnvir, variableArgumentsArray));
+	valueWith {|argumentsArray=([]), keywordArgumentEnvir=(())|
+		^this.valueArray(def.makePerformableArray(argumentsArray, keywordArgumentEnvir));
 	}
 
 	performWithEnvir { |selector, envir|
 		if(selector === \value) { ^this.valueWithEnvir(envir) };
 		^super.performWithEnvir(selector, envir)
 	}
-	performWith {|selector, argumentsArray=([]), keywordArgumentEnvir=(()), variableArgumentsArray=([])|
-		if(selector === \value) { ^this.valueWith(argumentsArray, keywordArgumentEnvir, variableArgumentsArray) };
-		^super.performWith(selector, argumentsArray, keywordArgumentEnvir, variableArgumentsArray)
+	performWith {|selector, argumentsArray=([]), keywordArgumentEnvir=(())|
+		if(selector === \value) { ^this.valueWith(argumentsArray, keywordArgumentEnvir) };
+		^super.performWith(selector, argumentsArray, keywordArgumentEnvir)
 	}
 
 	performKeyValuePairs { |selector, pairs|

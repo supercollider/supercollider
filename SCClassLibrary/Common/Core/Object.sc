@@ -137,13 +137,13 @@ Object  {
 		^this.performWithEnvir(selector, ().putPairs(pairs))
 	}
 
-	performWith {|selector, argumentsArray=([]), keywordArgumentEnvir=(()), variableArgumentsArray=([])|
+	performWith {|selector, argumentsArray=([]), keywordArgumentEnvir=(())|
 		var method = this.class.findRespondingMethodFor(selector) ?? {
 			^this.doesNotUnderstand(selector)
 		};
 		^this.perform(
 			selector,
-			*method.makePerformableArray(argumentsArray, keywordArgumentEnvir, variableArgumentsArray)
+			*method.makePerformableArray(argumentsArray, keywordArgumentEnvir)
 		)
 	}
 
@@ -179,10 +179,10 @@ Object  {
 	valueEnvir { ^this }
 	valueArrayEnvir { ^this }
 
-	valueWith {|argumentsArray=([]), keywordArgumentEnvir=(()), variableArgumentsArray=([])|
+	valueWith {|argumentsArray=([]), keywordArgumentEnvir=(())|
 		^this.valueArray(
 			this.class.findRespondingMethodFor(\value).
-			makePerformableArray(argumentsArray, keywordArgumentEnvir, variableArgumentsArray)
+			makePerformableArray(argumentsArray, keywordArgumentEnvir)
 		)
 	}
 

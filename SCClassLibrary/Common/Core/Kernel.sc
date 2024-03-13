@@ -564,24 +564,27 @@ FunctionDef {
 	}
 
 
-	makePerformableArray {|argumentsArray=([]), keywordArgumentEnvir=(()), variableArgumentsArray=([])|
+	makePerformableArray {|argumentsArray=([]), keywordArgumentEnvir=(())|
 		// This will return an array with all the arguments put in place.
 		// Variable arguments are place at the end (not in a seperate array).
 		// Consider moving this whole method to a primitive.
 		var addedNames = Set();
 		var arguments = this.defaultArguments;
 		var argNamesCall = this.argumentNamesForCall;
+		var varArgName = if (this.varArgs) { argNamesCall.last} {nil};
 
-		// if false varArgs, then no variable argments.
-		// if varArgs, then maybe variable arguments.
-		if (this.varArgs.not and: {variableArgumentsArray.isEmpty.not}) {
-			Error("Function '%' does not support variable arguments".format(this)).throw
-		};
+		// Return no argument in the varArgs position if empty.
+		// This means the default provided by the prototypeFrame ( '[]' ) is incorrect, so drop it.
+		if (this.varArgs){ arguments = arguments.drop(-1) };
 
 		// put non-keyword-arguments in first
 		argumentsArray.do{|a, i|
-			addedNames.add(argNamesCall[i]); // cannot collide here.
-			arguments[i] = a;
+			argNamesCall[i] !? {|n| addedNames.add(n) }; // cannot collide here. Nil if a varArg.
+			if (i >= arguments.size) {
+				arguments = arguments.add(a);
+			} {
+				arguments[i] = a;
+			};
 		};
 
 		// check keywordArgumentEnvir do not collide with a	argumentsArray,
@@ -598,25 +601,8 @@ FunctionDef {
 				Error("Arguments '%' not understood by function '%'".format(name, this)).throw
 			} !? { |i|
 				addedNames.add(name);
-				arguments[i] = a;
+				if (name == varArgName){ arguments = arguments.addAll(a) } { arguments[i] = a }
 			};
-		};
-
-		// valueArray expects no argument in the varArgs position if empty.
-		// This means the default provided by the prototypeFrame ( '[]' ) is incorrect, so drop it.
-		if (this.varArgs){ arguments = arguments.drop(-1) };
-
-		if(variableArgumentsArray.isEmpty.not){
-			if (addedNames.includes(argNames.last)){
-				Error(
-					"Arguments cannot be duplicated, "
-					"got two values for variable argument '%'".format(argNames.last)
-				).throw
-			};
-			// remove the default varArg and append ours.
-			// performList is expecting each varArg to be appended to the array,
-			//    not placed in an array at the end.
-			arguments = arguments ++ variableArgumentsArray;
 		};
 
 		^arguments
