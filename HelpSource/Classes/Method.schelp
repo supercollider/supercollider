@@ -65,7 +65,3 @@ method:: filenameSymbol
 returns::
 A link::Classes/Symbol:: which is the full path of the source file that this method is defined in.
 
-method::isClassMethod
-returns::
-A link::Classes/Boolean:: where true represents if this link::Classes/Method:: is a class method,
-and false represents when this is an instance method.
