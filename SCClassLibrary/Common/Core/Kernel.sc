@@ -482,8 +482,9 @@ FunctionDef {
 
 	inspectorClass { ^FunctionDefInspector }
 
-	findReferences { |aSymbol, references|
-		var lits = selectors.asArray;
+	findReferences { arg aSymbol, references;
+		var lits;
+		lits = selectors.asArray;
 		if (lits.includes(aSymbol), {
 			references = references.add(this);
 		});
@@ -494,9 +495,9 @@ FunctionDef {
 		});
 		^references
 	}
-
-	storeOn { |stream| stream << "nil" }
-
+	storeOn { arg stream;
+		stream << "nil"
+	}
 	checkCanArchive { "cannot archive FunctionDefs".warn }
 	archiveAsCompileString { ^true }
 
@@ -504,7 +505,7 @@ FunctionDef {
 		^argNames.size > 0 and: { argNames[0] == \_ }
 	}
 
-	argumentString { |withDefaultValues=true, withEllipsis=false, asArray=false|
+	argumentString { arg withDefaultValues=true, withEllipsis=false, asArray=false;
 		var res = "", pairs;
 		var lastIndex, noVarArgs, varArgName;
 		if(asArray) {
@@ -566,8 +567,10 @@ FunctionDef {
 	}
 
 	keyValuePairsFromArgs {
+		var values;
 		if(argNames.isNil) { ^[] };
-		^[this.argNamesForCall, this.defaultArgsForCall].lace(this.argNamesForCallSize * 2);
+		values = this.prototypeFrame.keep(argNames.size);
+		^[argNames, values].flop.flatten
 	}
 
 	makeEnvirFromArgs {
@@ -622,23 +625,33 @@ Method : FunctionDef {
 
 	openCodeFile { this.filenameSymbol.asString.openDocument(this.charPos, -1) }
 
-	hasHelpFile { ^this.name.asString.findHelpFile.notNil }
+	defaultArguments { ^this.prototypeFrame.drop(1).keep(argNames.size - 1).copy }
+	argumentNamesForCall { ^argNames.drop(1) } // drop this
 
-	help { HelpBrowser.openHelpForMethod(this) }
-
+	openCodeFile {
+		this.filenameSymbol.asString.openDocument(this.charPos, -1);
+	}
+	hasHelpFile {
+		//should cache this in Library or classvar
+		//can't add instance variables to Class
+		^this.name.asString.findHelpFile.notNil
+	}
+	help {
+		HelpBrowser.openHelpForMethod(this);
+	}
 	inspectorClass { ^MethodInspector }
-
-	archiveAsObject { ^true }
-
-	checkCanArchive {} // can archive method, other classes post a warning.
-
-	storeOn { |stream|
+	storeOn { arg stream;
 		stream << ownerClass.name << ".findMethod(" << name.asCompileString << ")"
 	}
 
 	findReferences { |aSymbol, references|
 		var functionRefs;
 		var lits = selectors.asArray;
+	archiveAsObject { ^true }
+	checkCanArchive {}
+	findReferences { arg aSymbol, references;
+		var lits, functionRefs;
+		lits = selectors.asArray;
 		if (lits.includes(aSymbol), {
 			references = references.add(this);
 			^references // we only need to be listed once
@@ -650,6 +663,14 @@ Method : FunctionDef {
 		});
 		functionRefs.notNil.if({references = references.add(this)});
 		^references
+	}
+
+	keyValuePairsFromArgs {
+		var names, values;
+		if(argNames.isNil, { ^[] });
+		names = argNames.drop(1); // first argName is "this"
+		values = this.prototypeFrame.drop(1).keep(names.size);
+		^[names, values].flop.flatten
 	}
 }
 
