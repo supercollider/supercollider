@@ -138,28 +138,9 @@ Object  {
 	}
 
 	performWith {|selector, argumentsArray=([]), keywordArgumentEnvir=(()), variableArgumentsArray=([])|
-
 		var method = this.class.findRespondingMethodFor(selector) ?? {
 			^this.doesNotUnderstand(selector)
 		};
-		var argNames = method.argNames[1..];
-		var addedNames = Set();
-
-		// fill with defaults.
-		var arguments = method.prototypeFrame[1..argNames.size].copy;
-
-		// if false varArgs, then no variable argments.
-		// if varArgs, then maybe variable arguments.
-		if (method.varArgs.not and: {variableArgumentsArray.isEmpty.not}) {
-			Error("Method '&' does not support variable arguments".format(method)).throw
-		};
-
-		// put non-keyword-arguments in first
-		argumentsArray.do{|a, i|
-			addedNames.add(argNames[i]); // cannot collide here.
-			arguments[i] = a;
-		};
-
 		^this.perform(
 			selector,
 			*method.makePerformableArray(argumentsArray, keywordArgumentEnvir, variableArgumentsArray)
@@ -197,6 +178,13 @@ Object  {
 	valueArray { ^this }
 	valueEnvir { ^this }
 	valueArrayEnvir { ^this }
+
+	valueWith {|argumentsArray=([]), keywordArgumentEnvir=(()), variableArgumentsArray=([])|
+		^this.valueArray(
+			this.class.findRespondingMethodFor(\value).
+			makePerformableArray(argumentsArray, keywordArgumentEnvir, variableArgumentsArray)
+		)
+	}
 
 	// equality, identity
 	== { arg obj; ^this === obj }
