@@ -24,8 +24,8 @@
 }
 
 + Bus {
-	scope { arg bufsize = 4096, zoom;
-		^server.scope(numChannels, index, bufsize, zoom, rate);
+	scope { arg bufsize = 4096, zoom, bounds = nil;
+		^server.scope(numChannels, index, bufsize, zoom, rate, bounds);
 	}
 }
 
