@@ -463,7 +463,7 @@ FunctionDef {
 		^this.primitiveFailed
 	}
 
-	defaultArguments { ^this.prototypeFrame.keep(argNames.size).copy }
+	defaultArgs { ^this.prototypeFrame.keep(argNames.size).copy }
 	argumentNamesForCall { ^argNames }
 
 	inspectorClass { ^FunctionDefInspector }
@@ -569,7 +569,7 @@ FunctionDef {
 		// Variable arguments are place at the end (not in a seperate array).
 		// Consider moving this whole method to a primitive.
 		var addedNames = Set();
-		var arguments = this.defaultArguments;
+		var arguments = this.defaultArgs;
 		var argNamesCall = this.argumentNamesForCall;
 		var varArgName = if (this.varArgs) { argNamesCall.last} {nil};
 
@@ -613,7 +613,7 @@ Method : FunctionDef {
 	var <ownerClass, <name, <primitiveName;
 	var <filenameSymbol, <charPos;
 
-	defaultArguments { ^this.prototypeFrame.drop(1).keep(argNames.size - 1).copy }
+	defaultArgs { ^this.prototypeFrame.drop(1).keep(argNames.size - 1).copy }
 	argumentNamesForCall { ^argNames.drop(1) } // drop this
 
 	openCodeFile {

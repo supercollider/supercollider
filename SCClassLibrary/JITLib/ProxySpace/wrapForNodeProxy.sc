@@ -59,8 +59,8 @@
 
 + Function {
 	prepareForProxySynthDef { ^this }
-	argNames { ^def.argNames }
-	defaultArgs { ^def.defaultArguments }
+	argNames { ^def.argumentNamesForCall }
+	defaultArgs { ^def.defaultArgs }
 }
 
 + AbstractFunction {
