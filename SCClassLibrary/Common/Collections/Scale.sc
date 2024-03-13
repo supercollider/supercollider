@@ -24,10 +24,7 @@ Scale {
 		?? { super.doesNotUnderstand(selector, args) }
 	}
 	*doesNotUnderstandWithKeys {|selector, argsArray, keywordArgsAsPairs|
-		^Scale.perform(\newFromKey,
-			*Scale.class.findRespondingMethodFor(\newFromKey)
-			.makePerformableArray([selector] ++ argsArray, keywordArgsAsPairs.asEvent)
-		)
+		^Scale.performWith(\newFromKey, [selector] ++ argsArray, keywordArgsAsPairs)
 	}
 
 	*newFromKey { |key, tuning|
