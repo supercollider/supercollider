@@ -305,8 +305,12 @@ Function : AbstractFunction {
 			if(fadeTime > 0) {
 				val = val * EnvGen.kr(Env.linen(fadeTime, duration - (2 * fadeTime), fadeTime))
 			};
-			RecordBuf.perform(RecordBuf.methodSelectorForRate(rate), val, bufnum, loop: 0);
-			Line.perform(Line.methodSelectorForRate(rate), dur: duration, doneAction: 2);
+			RecordBuf.perform(
+				RecordBuf.methodSelectorForRate(rate),
+				val, bufnum,
+				loop: 0,
+				doneAction: 2
+			);
 		});
 
 		buffer = Buffer.new(server);
