@@ -28,6 +28,9 @@ Maybe : Ref {
 		^this.notYetImplemented(thisMethod)
 		//^value.valueArrayEnvir(args) ? defaultValue
 	}
+	functionPerformList { |selector, arglist|
+		^this.performList(selector, arglist)
+	}
 	functionPerformWith {|selector, argumentsArray, keywordArgumentEnvir|
 		^this.performWith(selector, argumentsArray, keywordArgumentEnvir)
 	}
