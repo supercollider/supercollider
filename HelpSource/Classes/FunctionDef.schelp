@@ -52,8 +52,8 @@ code::
 ::
 
 method::argumentNamesForCall
-Same as link::#-argName::, but guarantees only the argument names the user sees are present.
-See link::Classes/Method#-argumentNamesForCall::.
+Returns the argument names in code,
+both for functions and methods (in methods, link::#-argNames:: have this as first item).
 
 method::prototypeFrame
 
@@ -125,7 +125,7 @@ code::
 method::makePerformableArray
 Returns an array that can be passed to link::Classes/Object#-perform:: or link::Classes/Function#-value::.
 
-Both keyword and non-keyword arguments may be supplied at the same time.
+Both keyword and non-keyword arguments may be provided at the same time.
 If a value for an argument is provided in both the keyword and non-keyword arguments this will throw an error.
 If a keyword argument is provide, but the name can't be found an error will be thrown.
 
