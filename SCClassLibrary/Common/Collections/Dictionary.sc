@@ -540,7 +540,7 @@ IdentityDictionary : Dictionary {
 
 			func = this[selector];
 			if (func.notNil) {
-				^func.functionPerformList(\value, this, args);
+				^func.functionPerformWith(\value, [this] ++ args);
 			};
 
 			if (selector.isSetter) {
@@ -553,7 +553,7 @@ IdentityDictionary : Dictionary {
 			};
 			func = this[\forward];
 			if (func.notNil) {
-				^func.functionPerformList(\value, this, selector, args);
+				^func.functionPerformWith(\value, [this, selector] ++ args);
 			};
 			^nil
 		};
@@ -566,10 +566,7 @@ IdentityDictionary : Dictionary {
 		};
 
 		this[selector] !? {|f|
-			^f.functionPerformList(
-                \value,
-                 f.def.makePerformableArray([this] ++ argsArray, keywordArgsAsPairs.asEvent)
-             )
+			^f.functionPerformWith(\value, [this] ++ argsArray, keywordArgsAsPairs.asEvent);
 		};
 
 		// Unlike in doesNotUnderstand, we don't convert to a setter as this isn't
@@ -577,10 +574,7 @@ IdentityDictionary : Dictionary {
 
 		// Note how the selector is passed in here.
 		this[\forward] !? {|f|
-			^f.functionPerformList(
-                \value,
-				f.def.makePerformableArray([this, selector] ++ argsArray, keywordArgsAsPairs.asEvent)
-			)
+			^f.functionPerformWith(\value, [this, selector] ++ argsArray, keywordArgsAsPairs.asEvent)
 		};
 
 		^nil

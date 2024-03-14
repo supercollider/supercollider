@@ -255,6 +255,9 @@ UnaryOpFunction : AbstractFunction {
 	functionPerformList { arg selector, arglist;
 		^this.performList(selector, arglist)
 	}
+	functionPerformWith {|selector, argumentsArray, keywordArgumentEnvir|
+		^this.performWith(selector, argumentsArray, keywordArgumentEnvir)
+	}
 	storeOn { arg stream;
 		stream <<< a << "." << selector;
 	}
@@ -280,8 +283,8 @@ BinaryOpFunction : AbstractFunction {
 	valueArrayEnvir { arg ... args;
 		^a.valueArrayEnvir(args).perform(selector, b.valueArrayEnvir(args), adverb)
 	}
-	functionPerformList { arg selector, arglist;
-		^this.performList(selector, arglist)
+	functionPerformWith {|selector, argumentsArray, keywordArgumentEnvir|
+		^this.performWith(selector, argumentsArray, keywordArgumentEnvir)
 	}
 	storeOn { arg stream;
 		stream << "(" <<< a << " " << selector.asBinOpString;
@@ -309,8 +312,8 @@ NAryOpFunction : AbstractFunction {
 	valueArrayEnvir { arg ... args;
 		^a.valueArrayEnvir(args).performList(selector, arglist.collect(_.valueArrayEnvir(args)))
 	}
-	functionPerformList { arg selector, arglist;
-		^this.performList(selector, arglist)
+	functionPerformWith {|selector, argumentsArray, keywordArgumentEnvir|
+		^this.performWith(selector, argumentsArray, keywordArgumentEnvir)
 	}
 	storeOn { arg stream;
 		stream <<< a << "." << selector << "(" <<<* arglist << ")"

@@ -460,7 +460,7 @@ FunctionDef {
 		^this.primitiveFailed
 	}
 
-	defaultArgs { ^this.prototypeFrame.keep(argNames.size).copy }
+	defaultArgs { ^this.prototypeFrame.keep(argNames.size) }
 	argumentNamesForCall { ^argNames }
 
 	inspectorClass { ^FunctionDefInspector }
@@ -565,26 +565,27 @@ FunctionDef {
 		// Variable arguments are place at the end (not in a seperate array).
 		// Consider moving this whole method to a primitive.
 		var arguments = this.defaultArgs
-		.drop(if(this.varArgs, -1, 0)) // the default provided by the prototypeFrame for varArgs '[]' is incorrect, so drop it.
+		.drop(if(this.varArgs, -1, 0)) // here we don't want the default provide by prototypeFrame for varArgs '[]', so drop it.
 		.overWrite(argumentsArray);
 		var argNamesCall = this.argumentNamesForCall;
 		var addedNames = argNamesCall.keep(argumentsArray.size);
+		var varArgName = if(this.varArgs, {argNamesCall.last});
 
 		// check keywordArgumentEnvir do not collide with a	argumentsArray,
 		//    and that they are present in the method.
 		keywordArgumentEnvir.keysValuesDo{|name, a|
 			if (addedNames.includes(name)) {
 				Error(
-					"Arguments cannot be duplicated, "
+					"The same argument cannot be passed twice, "
 					"got two values for argument '%'".format(name)
 				).throw
 			};
 
 			argNamesCall.detectIndex({|n| n == name }) ?? {
-				Error("Arguments '%' not understood by function '%'".format(name, this)).throw
+				Error("Argument '%' not understood by function '%'".format(name, this)).throw
 			} !? { |i|
 				addedNames = addedNames.add(name);
-				if (name == argNamesCall.last){ arguments = arguments.addAll(a) } { arguments[i] = a }
+				if (name == varArgName){ arguments = arguments.addAll(a) } { arguments[i] = a }
 			};
 		};
 
@@ -596,7 +597,7 @@ Method : FunctionDef {
 	var <ownerClass, <name, <primitiveName;
 	var <filenameSymbol, <charPos;
 
-	defaultArgs { ^this.prototypeFrame.drop(1).keep(argNames.size - 1).copy }
+	defaultArgs { ^this.prototypeFrame.drop(1).keep(argNames.size - 1) }
 	argumentNamesForCall { ^argNames.drop(1) } // drop this
 
 	openCodeFile {

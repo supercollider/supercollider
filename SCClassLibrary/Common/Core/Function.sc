@@ -53,9 +53,9 @@ Function : AbstractFunction {
 		// unsupplied argument names are looked up in the currentEnvironment
 		^this.primitiveFailed
 	}
-	functionPerformList { arg selector, arglist;
-		_ObjectPerformList;
-		^this.primitiveFailed
+	functionPerformWith {|selector, argumentsArray, keywordArgumentEnvir|
+		keywordArgumentEnvir ?? { ^this.valueArray(argumentsArray) };
+		^this.valueWith(argumentsArray, keywordArgumentEnvir);
 	}
 
 	valueWithEnvir { arg envir;
@@ -82,7 +82,7 @@ Function : AbstractFunction {
 		if(selector === \value) { ^this.valueWithEnvir(envir) };
 		^super.performWithEnvir(selector, envir)
 	}
-	performWith {|selector, argumentsArray=([]), keywordArgumentEnvir=(())|
+	performWith {|selector, argumentsArray, keywordArgumentEnvir|
 		if(selector === \value) { ^this.valueWith(argumentsArray, keywordArgumentEnvir) };
 		^super.performWith(selector, argumentsArray, keywordArgumentEnvir)
 	}

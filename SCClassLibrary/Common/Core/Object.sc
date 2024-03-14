@@ -88,8 +88,12 @@ Object  {
 		_ObjectPerformList;
 		^this.primitiveFailed
 	}
-	functionPerformList {
-		// perform only if Function. see Function-functionPerformList
+	functionPerformList {|selector, argumentsArray|
+		this.deprecated(thisMethod, this.class.findRespondingMethodFor(\functionPerformWith));
+		^this.functionPerformWith(selector, argumentsArray);
+	}
+	functionPerformWith {|selector, argumentsArray, keywordArgumentEnvir|
+		// Used to opt into object prototyping. see Function-functionPerformWith
 		^this
 	}
 
@@ -137,7 +141,7 @@ Object  {
 		^this.performWithEnvir(selector, ().putPairs(pairs))
 	}
 
-	performWith {|selector, argumentsArray=([]), keywordArgumentEnvir=(())|
+	performWith {|selector, argumentsArray, keywordArgumentEnvir|
 		var method = this.class.findRespondingMethodFor(selector) ?? {
 			^this.doesNotUnderstand(selector)
 		};

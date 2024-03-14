@@ -19,10 +19,11 @@ Scale {
 	}
 
 	*doesNotUnderstand { |selector, args|
-		^this.newFromKey(selector, args).deepCopy
-		!? { |v| v } //return if valid
-		?? { super.doesNotUnderstand(selector, args) }
-	}
+	    var scale = this.newFromKey(selector, args);
+        if(scale.notNil) { ^scale.deepCopy };
+        ^super.doesNotUnderstand(selector, args)
+    }
+
 	*doesNotUnderstandWithKeys {|selector, argsArray, keywordArgsAsPairs|
 		^Scale.performWith(\newFromKey, [selector] ++ argsArray, keywordArgsAsPairs)
 	}
@@ -189,16 +190,13 @@ Tuning {
 	}
 
 	*doesNotUnderstand { |selector, args|
-		^this.newFromKey(selector, args).deepCopy
-		!? { |v| v } //return if valid
-		?? { super.doesNotUnderstand(selector, args) }
+	    var tuning = this.newFromKey(selector, args);
+        if(tuning.notNil) { ^tuning.deepCopy };
+        ^super.doesNotUnderstand(selector, args)
 	}
 
 	*doesNotUnderstandWithKeys {|selector, argsArray, keywordArgsAsPairs|
-		^Tuning.perform(\newFromKey,
-			*Tuning.class.findRespondingMethodFor(\newFromKey)
-			.makePerformableArray([selector] ++ argsArray, keywordArgsAsPairs.asEvent)
-		)
+        ^Tuning.performWith(\newFromKey, [selector] ++ argsArray, keywordArgsAsPairs.asEvent);
 	}
 
 	*newFromKey { | key |
