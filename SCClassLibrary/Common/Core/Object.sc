@@ -91,7 +91,7 @@ Object  {
 	functionPerformList {
 		// Used to opt into object prototyping. see Function-functionPerformList
 		// Ensure both functionPerformList and functionPerformWith do the same thing.
-        ^this;
+		^this;
 	}
 	functionPerformWith {|selector, argumentsArray, keywordArgumentEnvir|
 		// Used to opt into object prototyping. see Function-functionPerformWith
@@ -701,10 +701,10 @@ Object  {
 		if (aSelector === '==', {
 			^false
 		},{
-		if (aSelector === '!=', {
-			^true
-		},{
-			BinaryOpFailureError(this, aSelector, [thing, adverb]).throw;
+			if (aSelector === '!=', {
+				^true
+			},{
+				BinaryOpFailureError(this, aSelector, [thing, adverb]).throw;
 		})});
 	}
 	performBinaryOpOnSimpleNumber { arg aSelector, thing, adverb;
@@ -731,7 +731,7 @@ Object  {
 			if (name.isNil or: { name.asString.isEmpty }) { Error("missing SynthDef file name").throw } {
 				name = dir +/+ name ++ ".scsyndef";
 				if(overwrite or: { pathMatch(name).isEmpty })
-					{
+				{
 					file = File(name, "w");
 					protect {
 						AbstractMDPlugin.clearMetadata(name);
