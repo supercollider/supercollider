@@ -1,5 +1,5 @@
 + Server {
-	scope { arg numChannels, index = 0, bufsize = 4096, zoom = (1), rate = \audio, bounds = nil;
+	scope { arg numChannels, index = 0, bufsize = 4096, zoom = (1), rate = \audio, bounds;
 		numChannels = numChannels ?? { if (index == 0) { options.numOutputBusChannels } { 2 } };
 
 		if(scopeWindow.isNil) {
@@ -24,14 +24,14 @@
 }
 
 + Bus {
-	scope { arg bufsize = 4096, zoom, bounds = nil;
+	scope { arg bufsize = 4096, zoom, bounds;
 		^server.scope(numChannels, index, bufsize, zoom, rate, bounds);
 	}
 }
 
 
 + Function {
-	scope { arg numChannels, outbus = 0, fadeTime = 0.05, bufsize = 4096, zoom, bounds = nil;
+	scope { arg numChannels, outbus = 0, fadeTime = 0.05, bufsize = 4096, zoom, bounds;
 		var synth, synthDef, bytes, synthMsg, outUGen, server;
 
 		server = Server.default;
