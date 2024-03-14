@@ -1,5 +1,5 @@
 + Server {
-	meter { |numIns, numOuts, position = nil|
+	meter { |numIns, numOuts, position|
 		if(position == nil) {
 			if(numIns.notNil or: numOuts.notNil and: { serverMeter.notNil }) { serverMeter.close };
 			if(serverMeter.isNil or: { serverMeter.isClosed }) {
