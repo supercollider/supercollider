@@ -40,7 +40,7 @@ Class {
 			classesInited.add(aClass);
 
 			if(aClass.isMetaClass.not and: { aClass.class.findMethod(\initClass).notNil }, {
-				aClass.initClass
+					aClass.initClass;
 			});
 
 			if(aClass.subclasses.notNil,{
@@ -88,7 +88,7 @@ Class {
 	}
 
 	dumpClassSubtree {
-		_DumpClassSubtree
+		 _DumpClassSubtree
 		^this.primitiveFailed
 	}
 	dumpInterface {
@@ -416,7 +416,7 @@ FunctionDef {
 	var raw1, raw2; // Internal - don't touch
 	var <code; // Compiled bytecode
 	var <selectors; // All the explicit selectors (messages) used
-	var <constants; // Constants used in function
+	var <constants; // All the constants used in function
 	var <prototypeFrame; // All the default arguments' and varaibles' values
 	var <context; // The enclosing FunctionDef or Method
 	var <argNames; // All the argument names as a SymbolArray, this will include 'this' for Method.
@@ -437,19 +437,16 @@ FunctionDef {
 		_FunDef_NumArgs
 		^this.primitiveFailed
 	}
-
 	numVars {
 		// return number of variables in the function
 		_FunDef_NumVars
 		^this.primitiveFailed
 	}
-
 	varArgs {
 		// return boolean whether function has ellipsis argument
 		_FunDef_VarArgs
 		^this.primitiveFailed
 	}
-
 	shallowCopy { ^this }
 
 	asFunction {
@@ -642,6 +639,7 @@ Method : FunctionDef {
 		values = this.prototypeFrame.drop(1).keep(names.size);
 		^[names, values].flop.flatten
 	}
+
 }
 
 Frame {
@@ -746,8 +744,8 @@ Interpreter {
 		protect {
 			result = this.compileFile(pathName).valueArray(args)
 		} { |exception|
-			exception !? { exception.path = pathName };
-			thisProcess.nowExecutingPath = saveExecutingPath
+				exception !? { exception.path = pathName };
+				thisProcess.nowExecutingPath = saveExecutingPath
 		};
 		^result
 	}
@@ -776,7 +774,7 @@ Interpreter {
 		// Do not edit this method!
 
 		{}	// this forces the compiler to generate a heap allocated frame rather than
-		// a frame on the stack
+			// a frame on the stack
 	}
 	shallowCopy { ^this }
 }

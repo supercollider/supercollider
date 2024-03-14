@@ -116,6 +116,7 @@ method::asString
 
 Return the name of the class as a String.
 
+
 subsection:: Accessing
 
 method::name

@@ -331,10 +331,10 @@ Dictionary : Set {
 		var oldElements = array;
 		array = Array.newClear(array.size * 2);
 		this.keysValuesArrayDo(oldElements,
-			{ arg key, val;
-				index = this.scanFor(key);
-				array.put(index, key);
-				array.put(index+1, val);
+		{ arg key, val;
+			index = this.scanFor(key);
+			array.put(index, key);
+			array.put(index+1, val);
 		});
 	}
 	fixCollisionsFrom { arg index;
@@ -438,9 +438,9 @@ IdentityDictionary : Dictionary {
 		index = this.scanFor(key);
 		array.put(index+1, value);
 		if ( array.at(index).isNil, {
-		array.put(index, key);
-		size = size + 1;
-		if (array.size < (size * 4), { this.grow });
+			array.put(index, key);
+			size = size + 1;
+			if (array.size < (size * 4), { this.grow });
 		});
 		*/
 	}
@@ -453,9 +453,9 @@ IdentityDictionary : Dictionary {
 		prev = array.at(index + 1);
 		array.put(index+1, value);
 		if ( array.at(index).isNil, {
-		array.put(index, key);
-		size = size + 1;
-		if (array.size < (size * 4), { this.grow });
+			array.put(index, key);
+			size = size + 1;
+			if (array.size < (size * 4), { this.grow });
 		});
 		^prev
 		*/
