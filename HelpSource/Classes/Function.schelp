@@ -148,6 +148,30 @@ For Function, this behaves the same as valueArray(arglist).
 It is used  where Functions and other objects should behave differently to value,
 such as in the object prototyping implementation of Environment.
 
+Ensure both this method and link::#-functionPerformWith:: do the same thing or the behaviour will change when the user passes keyword arguments.
+
+argument::selector
+The message to be run as a link::Classes/Symbol::.
+
+argument::arglist
+The arguments to pass as an link::Classes/Array::.
+
+method::functionPerformWith
+
+For Function, this behaves the same as valueArray(arglist).
+It is used  where Functions and other objects should behave differently to value,
+such as in the object prototyping implementation of Environment.
+
+Ensure both this method and link::#-functionPerformList:: do the same thing or the behaviour will change when the user passes keyword arguments.
+
+argument::selector
+The message to be run as a link::Classes/Symbol::.
+
+argument::argumentsArray
+Arguments as an link::Classes/Array::.
+
+argument::keywordArgumentEnvir
+Keyword arguments as an link::Classes/IdentityDictionary::.
 
 method::performWithEnvir
 

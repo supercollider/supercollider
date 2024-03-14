@@ -1376,7 +1376,6 @@ void PyrMethodNode::compile(PyrSlot* result) {
     } else if (slotRawSymbol(&gCompilingMethod->name) == s_doesNotUnderstand) {
         methType = methNormal;
     } else if (slotRawSymbol(&gCompilingMethod->name) == s_doesNotUnderstandWithKeys) {
-        // this branch could be incorrect as I don't know what it does.
         methType = methNormal;
     } else {
         int bodyType = mBody->mClassno;

@@ -53,8 +53,12 @@ Function : AbstractFunction {
 		// unsupplied argument names are looked up in the currentEnvironment
 		^this.primitiveFailed
 	}
+	functionPerformList { arg selector, arglist;
+        _ObjectPerformList;
+        ^this.primitiveFailed
+    }
 	functionPerformWith {|selector, argumentsArray, keywordArgumentEnvir|
-		keywordArgumentEnvir ?? { ^this.valueArray(argumentsArray) };
+		keywordArgumentEnvir ?? { this.functionPerformList(selector, argumentsArray) };
 		^this.valueWith(argumentsArray, keywordArgumentEnvir);
 	}
 
@@ -74,7 +78,7 @@ Function : AbstractFunction {
 		^this.valueArray(prototypeFrame)
 	}
 
-	valueWith {|argumentsArray=([]), keywordArgumentEnvir=(())|
+	valueWith {|argumentsArray, keywordArgumentEnvir|
 		^this.valueArray(def.makePerformableArray(argumentsArray, keywordArgumentEnvir));
 	}
 

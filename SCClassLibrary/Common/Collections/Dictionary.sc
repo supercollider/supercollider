@@ -540,7 +540,7 @@ IdentityDictionary : Dictionary {
 
 			func = this[selector];
 			if (func.notNil) {
-				^func.functionPerformWith(\value, [this] ++ args);
+				^func.functionPerformList(\value, this, args);
 			};
 
 			if (selector.isSetter) {
@@ -553,7 +553,7 @@ IdentityDictionary : Dictionary {
 			};
 			func = this[\forward];
 			if (func.notNil) {
-				^func.functionPerformWith(\value, [this, selector] ++ args);
+				^func.functionPerformList(\value, this, selector, args);
 			};
 			^nil
 		};

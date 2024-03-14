@@ -88,12 +88,14 @@ Object  {
 		_ObjectPerformList;
 		^this.primitiveFailed
 	}
-	functionPerformList {|selector, argumentsArray|
-		this.deprecated(thisMethod, this.class.findRespondingMethodFor(\functionPerformWith));
-		^this.functionPerformWith(selector, argumentsArray);
+	functionPerformList {
+		// Used to opt into object prototyping. see Function-functionPerformList
+		// Ensure both functionPerformList and functionPerformWith do the same thing.
+        ^this;
 	}
 	functionPerformWith {|selector, argumentsArray, keywordArgumentEnvir|
 		// Used to opt into object prototyping. see Function-functionPerformWith
+		// Ensure both functionPerformList and functionPerformWith do the same thing.
 		^this
 	}
 
