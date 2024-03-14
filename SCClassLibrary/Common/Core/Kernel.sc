@@ -565,7 +565,7 @@ FunctionDef {
 		// Variable arguments are place at the end (not in a seperate array).
 		// Consider moving this whole method to a primitive.
 		var arguments = this.defaultArgs
-		.drop(if(this.varArgs, -1, 0)) // here we don't want the default provide by prototypeFrame for varArgs '[]', so drop it.
+		.drop(if(this.varArgs, -1, 0)) // here we don't want the default provided by prototypeFrame for varArgs '[]', so drop it.
 		.overWrite(argumentsArray);
 		var argNamesCall = this.argumentNamesForCall;
 		var addedNames = argNamesCall.keep(argumentsArray.size);
