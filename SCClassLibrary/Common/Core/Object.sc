@@ -88,16 +88,12 @@ Object  {
 		_ObjectPerformList;
 		^this.primitiveFailed
 	}
-	functionPerformList {
-		// Used to opt into object prototyping. see Function-functionPerformList
-		// Ensure both functionPerformList and functionPerformWith do the same thing.
-		^this;
-	}
-	functionPerformWith {|selector, argumentsArray, keywordArgumentEnvir|
-		// Used to opt into object prototyping. see Function-functionPerformWith
-		// Ensure both functionPerformList and functionPerformWith do the same thing.
-		^this
-	}
+	// Used in object prototyping. See Function-functionPerformList
+	// Ensure both functionPerformList and functionPerformWith do the same thing.
+	functionPerformList { ^this }
+	// Used in object prototyping. See Function-functionPerformList
+	// Ensure both functionPerformList and functionPerformWith do the same thing.
+	functionPerformWith {^this }
 
 	// super.perform(selector,arg) doesn't do what you might think.
 	// \perform would be looked up in the superclass, not the selector you are interested in.
@@ -144,13 +140,15 @@ Object  {
 	}
 
 	performWith {|selector, argumentsArray, keywordArgumentEnvir|
-		var method = this.class.findRespondingMethodFor(selector) ?? {
+		var method, argList;
+		if(keywordArgumentEnvir.isNil) {
+			^this.performList(selector, argumentsArray);
+		};
+		method = this.class.findRespondingMethodFor(selector) ?? {
 			^this.doesNotUnderstand(selector)
 		};
-		^this.perform(
-			selector,
-			*method.makePerformableArray(argumentsArray, keywordArgumentEnvir)
-		)
+		argList = method.makePerformableArray(argumentsArray, keywordArgumentEnvir);
+		^this.performList(selector, argList)
 	}
 
 	// copying
