@@ -54,9 +54,9 @@ Function : AbstractFunction {
 		^this.primitiveFailed
 	}
 	functionPerformList { arg selector, arglist;
-        _ObjectPerformList;
-        ^this.primitiveFailed
-    }
+		_ObjectPerformList;
+		^this.primitiveFailed
+	}
 	functionPerformWith {|selector, argumentsArray, keywordArgumentEnvir|
 		keywordArgumentEnvir ?? { this.functionPerformList(selector, argumentsArray) };
 		^this.valueWith(argumentsArray, keywordArgumentEnvir);
