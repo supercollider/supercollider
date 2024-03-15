@@ -304,14 +304,14 @@ int prString_ReplaceRegex(struct VMGlobals* g, int numArgsPushed) {
         std::string out {};
         // PyrStrings are not null terminated so a copy is needed.
         const auto [replaceError, replace] = slotStrStdStrVal(slot_replace);
-        if(replaceError != errNone){
+        if (replaceError != errNone) {
             SetNil(slot_this);
             return replaceError;
         }
 
         boost::regex_replace(std::back_inserter(out), source_start, source_start + source_size, pattern, replace);
 
-        if(out.size() > std::numeric_limits<decltype(PyrObjectHdr{}.size)>::max()){
+        if (out.size() > std::numeric_limits<decltype(PyrObjectHdr {}.size)>::max()) {
             SetNil(slot_this);
             return errIntegerOverflow;
         }
