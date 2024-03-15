@@ -1,5 +1,4 @@
 UGen : AbstractFunction {
-	classvar <>buildSynthDef; // the synth currently under construction
 	var <>synthDef;
 	var <>inputs;
 	var <>rate = 'audio';
@@ -7,6 +6,8 @@ UGen : AbstractFunction {
 	var <>synthIndex = -1, <>specialIndex=0;
 
 	var <>antecedents, <>descendants, <>widthFirstAntecedents; // topo sorting
+
+    *buildSynthDef { ^SynthDef.getActiveSingleton }
 
 	// instance creation
 	*new1 { arg rate ... args;
@@ -305,7 +306,7 @@ UGen : AbstractFunction {
 	@ { arg y; ^Point.new(this, y) } // dynamic geometry support
 
 	addToSynth {
-		synthDef = buildSynthDef;
+		synthDef = UGen.buildSynthDef;
 		if (synthDef.notNil, { synthDef.addUGen(this) });
 	}
 
@@ -551,7 +552,7 @@ UGen : AbstractFunction {
 					a.optimizeGraph
 				}
 			};
-			buildSynthDef.removeUGen(this);
+			UGen.buildSynthDef.removeUGen(this);
 			^true;
 		};
 		^false
@@ -611,7 +612,7 @@ OutputProxy : UGen {
 		^super.new1(rate, itsSourceUGen, index)
 	}
 	addToSynth {
-		synthDef = buildSynthDef;
+		synthDef = UGen.buildSynthDef;
 	}
 	init { arg argSource, argIndex;
 		source = argSource;

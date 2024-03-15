@@ -81,7 +81,7 @@ PV_ChainUGen : WidthFirstUGen {
 	addCopiesIfNeeded {
 		var directDescendants, frames, buf, copy;
 		// find UGens that have me as an input
-		directDescendants = buildSynthDef.children.select ({ |child|
+		directDescendants = UGen.buildSynthDef.children.select ({ |child|
 			var inputs;
 			child.isKindOf(PV_Copy).not and: { child.isKindOf(WidthFirstUGen) } and: {
 				inputs = child.inputs;
@@ -100,10 +100,10 @@ PV_ChainUGen : WidthFirstUGen {
 						copy = PV_Copy(this, buf);
 						copy.widthFirstAntecedents = widthFirstAntecedents ++ [buf];
 						desc.inputs[j] = copy;
-						buildSynthDef.children = buildSynthDef.children.drop(-3).insert(this.synthIndex + 1, frames);
-						buildSynthDef.children = buildSynthDef.children.insert(this.synthIndex + 2, buf);
-						buildSynthDef.children = buildSynthDef.children.insert(this.synthIndex + 3, copy);
-						buildSynthDef.indexUGens;
+						UGen.buildSynthDef.children = UGen.buildSynthDef.children.drop(-3).insert(this.synthIndex + 1, frames);
+						UGen.buildSynthDef.children = UGen.buildSynthDef.children.insert(this.synthIndex + 2, buf);
+						UGen.buildSynthDef.children = UGen.buildSynthDef.children.insert(this.synthIndex + 3, copy);
+						UGen.buildSynthDef.indexUGens;
 					});
 				});
 			});
