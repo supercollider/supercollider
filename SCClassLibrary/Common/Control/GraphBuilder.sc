@@ -144,6 +144,13 @@ NamedControl {
 			if(str[1] == $_) { prefix = str[0] };
 		};
 
+		if(buildSynthDef.isNil) {
+			Error(
+				"Building a control ('%') outside a SynthDef is not possible.\n"
+				"This UGen function can't be evaluated directly.".format(name);
+			).throw;
+		};
+
 		if(fixedLag && lags.notNil && prefix.isNil) {
 			buildSynthDef.addKr(name, values.unbubble);
 			if(rate === \audio) {
