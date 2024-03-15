@@ -270,31 +270,23 @@ public:
 }
 
 
-static int prString_ReplaceRegex(struct VMGlobals* g, int numArgsPushed) {
-    // String::regexReplace { |regex: String, replaceText: String| ... }
-    if (numArgsPushed != 3)
-        return errFailed; // this is counted
-
+int prString_ReplaceRegex(struct VMGlobals* g, int numArgsPushed) {
     // caches the last 64 boost:regex instances.
     static detail::regex_lru_cache regex_lru_cache(boost::regex_constants::ECMAScript | boost::regex_constants::nosubs);
 
-    using namespace boost;
 
-    // TODO: fix const-ness of isKindOfSlot
     PyrSlot* slot_this = g->sp - 2; // source string
-    /*const*/ PyrSlot* slot_regex = g->sp - 1; // find
-    /*const*/ PyrSlot* slot_replace = g->sp; // replace with
+    PyrSlot* slot_regex = g->sp - 1; // find
+    PyrSlot* slot_replace = g->sp; // replace with
 
     // slot one does not need to be checked as this method should only be called from methods in String,
     //    or children thereof.
     if (!isKindOfSlot(slot_regex, class_string)) {
         SetNil(slot_this);
-        postfl("Error: slot 2 is wrong type, should be a String\n");
         return errWrongType;
     }
     if (!isKindOfSlot(slot_replace, class_string)) {
         SetNil(slot_this);
-        postfl("Error: slot 4 is wrong type, should be a String\n");
         return errWrongType;
     }
 
@@ -306,28 +298,25 @@ static int prString_ReplaceRegex(struct VMGlobals* g, int numArgsPushed) {
 
         if (source_size < 0) { // size is signed
             SetNil(slot_this);
-            return errFailed;
+            return errIntegerOverflow;
         }
 
-        const char* source_end = source_start + source_size;
-
-        // this allocation is necessary as the result needs to be extendable
         std::string out {};
-        // couldn't get the 'replace' argument in regex_replace to work as the char* isn't (necessarily) null
-        //    terminated.
-        std::string replace { slotRawString(slot_replace)->s,
-                              static_cast<std::size_t>(slotRawString(slot_replace)->size) };
+        // PyrStrings are not null terminated so a copy is needed.
+        const auto [replaceError, replace] = slotStrStdStrVal(slot_replace);
+        if(replaceError != errNone){
+            SetNil(slot_this);
+            return replaceError;
+        }
 
-        regex_replace(std::back_inserter(out), source_start, source_end, pattern, replace);
+        boost::regex_replace(std::back_inserter(out), source_start, source_start + source_size, pattern, replace);
 
-        // now 'out' has been filled, it's data must be copied to avoid being free'ed when 'out' goes out of scope
-        PyrString* output_string = newPyrStringN(g->gc, static_cast<int>(out.size()), 0, true);
-        std::copy(out.begin(), out.end(), output_string->s);
-
-        // do we need to free the input string from the garbage collector somehow?
-        // prString_AsCompileString does not.
-        // output slot is the first slot.
-        SetObject(slot_this, output_string);
+        if(out.size() > std::numeric_limits<decltype(PyrObjectHdr{}.size)>::max()){
+            SetNil(slot_this);
+            return errIntegerOverflow;
+        }
+        SetObject(slot_this, newPyrStringN(g->gc, static_cast<int>(out.size()), 0, true));
+        std::copy(out.begin(), out.end(), slotRawString(slot_this)->s);
         return errNone;
     } catch (const std::exception& e) {
         postfl("Warning: Exception in _String_ReplaceRegex -%s\n", e.what());
