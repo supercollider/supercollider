@@ -78,10 +78,10 @@ NamedControl {
 
 		name = name.asSymbol;
 
-		if (spec.notNil) {
+		if(spec.notNil) {
 			spec = spec.asSpec;
 
-			if (values.isNil) {
+			if(values.isNil) {
 				values = spec.default;
 			};
 		};
@@ -89,10 +89,10 @@ NamedControl {
 		res = currentControls.at(name);
 
 		lags = lags.deepCollect(inf, {|elem|
-			if (elem == 0) { nil } { elem }
+			if(elem == 0) { nil } { elem }
 		});
 
-		if (lags.rate == \scalar) {
+		if(lags.rate == \scalar) {
 			fixedLag = true;
 		};
 
@@ -113,8 +113,8 @@ NamedControl {
 
 		};
 
-		if(res.fixedLag and: lags.notNil) {
-			if( res.lags != lags ) {
+		if(res.fixedLag and: { lags.notNil }) {
+			if(res.lags != lags) {
 				Error("NamedControl: cannot have more than one set of "
 					"fixed lag values in the same control.").throw;
 			} {
@@ -144,7 +144,14 @@ NamedControl {
 			if(str[1] == $_) { prefix = str[0] };
 		};
 
-		if(fixedLag && lags.notNil && prefix.isNil) {
+		if(buildSynthDef.isNil) {
+			Error(
+				"Building a control ('%') outside a SynthDef is not possible.\n"
+				"This UGen function can't be evaluated directly.".format(name);
+			).throw;
+		};
+
+		if(fixedLag and: { lags.notNil } and: { prefix.isNil }) {
 			buildSynthDef.addKr(name, values.unbubble);
 			if(rate === \audio) {
 				control = LagControl.ar(values.flat.unbubble, lags)
@@ -152,16 +159,16 @@ NamedControl {
 				control = LagControl.kr(values.flat.unbubble, lags)
 			};
 		} {
-			if(prefix == $a or: {rate === \audio}) {
+			if(prefix == $a or: { rate === \audio }) {
 				buildSynthDef.addAr(name, values.unbubble);
 				control = AudioControl.ar(values.flat.unbubble);
 
 			} {
-				if(prefix == $t or: {rate === \trigger}) {
+				if(prefix == $t or: { rate === \trigger }) {
 					buildSynthDef.addTr(name, values.unbubble);
 					control = TrigControl.kr(values.flat.unbubble);
 				} {
-					if(prefix == $i or: {rate === \scalar}) {
+					if(prefix == $i or: { rate === \scalar }) {
 						buildSynthDef.addIr(name, values.unbubble);
 						control = Control.ir(values.flat.unbubble);
 					} {
@@ -176,7 +183,7 @@ NamedControl {
 	}
 
 	*initDict {
-		if(UGen.buildSynthDef !== buildSynthDef or: currentControls.isNil) {
+		if(UGen.buildSynthDef !== buildSynthDef or: { currentControls.isNil }) {
 			buildSynthDef = UGen.buildSynthDef;
 			currentControls = IdentityDictionary.new;
 		};
