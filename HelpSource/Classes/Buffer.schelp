@@ -811,6 +811,19 @@ argument:: maxval
 the maximum value in the plot
 argument:: separately
 a boolean whether to use separate display ranges or a single shared range.
+argument:: parent
+Either a link::Classes/Window:: or link::Classes/View:: may be passed in - then the plot is embedded. Otherwise a new link::Classes/Window:: is created.
+code::
+(
+s.waitForBoot {
+	var w = Window("parent");
+	var buf = Buffer.read(s, Platform.resourceDir +/+ "sounds/sinedPink.aiff");
+	s.sync;
+	buf.plot(parent: w);
+	w.front
+}
+)
+::
 discussion::
 code::
 s.boot;
