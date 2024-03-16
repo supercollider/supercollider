@@ -206,15 +206,15 @@ the system's package manager. allow you to install new Qt versions simply.
 
 
 ``` sh
-sudo apt-get install qtbase5-dev qt5-qmake qttools5-dev qttools5-dev-tools \
-  qtdeclarative5-dev libqt5svg5-dev libqt5websockets5-dev qtwebengine5-dev
+sudo apt-get install qtbase5-dev qt5-qmake \
+    qttools5-dev qttools5-dev-tools qtdeclarative5-dev \
+    libqt5svg5-dev libqt5websockets5-dev qtwebengine5-dev
 ```
 
 ### Installing Qt on Ubuntu Trusty or Xenial ###
 
 If you are on Ubuntu 14.04 (Trusty) or 16.04 (Xenial), [Stephan Binner's
-Launchpad PPAs](https://launchpad.net/~beineri) allow for simple installation
-of new Qt versions.
+Launchpad PPAs](https://launchpad.net/~beineri) allow you to install new Qt versions easily.
 
 On Xenial:
 
@@ -223,8 +223,9 @@ sudo apt-add-repository ppa:beineri/opt-qt-5.11.0-xenial
 
 sudo apt-get update
 
-sudo apt-get install qt511base qt511location qt511tools qt511webchannel \
-  qt511xmlpatterns qt511svg qt511webengine qt511websockets
+sudo apt-get install qt511base qt511location qt511tools \
+    qt511webchannel qt511xmlpatterns qt511svg \
+    qt511webengine qt511websockets
 ```
 
 On Trusty, only Qt 5.10 and below are available:
@@ -399,7 +400,7 @@ directory. One good place to put it would be `$HOME/usr/local`:
 cmake -DCMAKE_INSTALL_PREFIX=~/usr/local ..
 ```
 
-If you do this, make sure `~/usr/local/bin` is in your PATH. Add a line such as
+If you do this, ensure `~/usr/local/bin` is in your PATH. Add a line such as
 `PATH=$PATH:$HOME/usr/local/bin` to `~/.profile`.
 
 
@@ -433,8 +434,13 @@ cmake -DLIB_SUFFIX=64 ..
 If CMake runs successfully without errors, you are ready to move on to building.
 You can freely alternate between building and setting CMake flags.
 
-After setting your CMake flags, just use `make`. The `-j` option leverages
-multiple cores for faster build times if possible:
+After setting your CMake flags, just use `make`:
+
+``` sh
+make
+``` 
+
+The `-j` option leverages multiple cores for faster build times if possible:
 
 ``` sh
 make -j$(nproc)
