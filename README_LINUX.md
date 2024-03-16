@@ -80,12 +80,12 @@ features if they are not needed for your specific use case.
   flags offer flexibility:
   - `NO_X11=ON`: Disables the X11 graphics and the dependency
     [libxt](http://www.X.org). This feature is helpful for headless setups or
-    where a GUI is not required. Note that it depends on specific unit
-    generators (UGens), such as MouseX.   
+    where a GUI is not required. Note that it is required by specific unit
+    generators (UGens), such as MouseX.
   - `NO_AVAHI=ON`: This option omits support for Avahi, which is offered by the
     dependency [libavahi-client](http://www.avahi.org). This dependency is
     primarily used for network service discovery.
-    
+
 Adjusting these flags allows you to streamline your SuperCollider installation,
 ensuring it only includes the necessary components.
 
