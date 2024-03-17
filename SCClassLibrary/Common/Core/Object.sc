@@ -183,7 +183,7 @@ Object  {
 	valueEnvir { ^this }
 	valueArrayEnvir { ^this }
 
-	valueWith {|argumentsArray=([]), keywordArgumentEnvir=(())|
+	valueWith {|argumentsArray, keywordArgumentEnvir|
 		^this.valueArray(
 			this.class.findRespondingMethodFor(\value).
 			makePerformableArray(argumentsArray, keywordArgumentEnvir)
