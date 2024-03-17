@@ -372,7 +372,7 @@ inline int sc_fold(int in, int lo, int hi) {
     return c + lo;
 }
 
-
+// Greatest common divisor - Stein's algorithm
 inline int sc_gcd(int a, int b) {
     if (a == 0)
         return b;
@@ -388,6 +388,9 @@ inline int sc_gcd(int a, int b) {
         return negative ? -1 : 1;
     }
 
+    // Stein's algorithm computes the greatest common divisor of two odd
+    // integers by repeatedly subtracting the smaller from the larger
+    // until the smaller number becomes 0.
     int shift = __builtin_ctz(a | b);
     a >>= __builtin_ctz(a);
     while (b != 0) {
@@ -400,46 +403,6 @@ inline int sc_gcd(int a, int b) {
     return (negative ? -1 : 1) * (a << shift);
 }
 
-
-// /// Greatest common divisor
-// inline int sc_gcd(int a, int b) {
-//     if (a == 0)
-//         return b;
-
-//     if (b == 0)
-//         return a;
-
-//     const bool negative = (a <= 0 && b <= 0);
-//     a = sc_abs(a);
-//     b = sc_abs(b);
-
-//     if (a == 1 || b == 1) {
-//         if (negative) {
-//             return -1;
-//         } else {
-//             return 1;
-//         }
-//     }
-
-//     if (a < b) {
-//         int t = a;
-//         a = b;
-//         b = t;
-//     }
-
-//     while (b > 0) {
-//         int t = a % b;
-//         a = b;
-//         b = t;
-//     }
-
-//     if (negative) {
-//         a = 0 - a;
-//     }
-
-//     return a;
-// }
-
 /// Least common multiple
 inline int sc_lcm(int a, int b) {
     if (a == 0 || b == 0)
@@ -449,56 +412,15 @@ inline int sc_lcm(int a, int b) {
 }
 
 
-/// Greatest common divisor
-// inline long sc_gcd(long a, long b) {
-//     if (a == 0)
-//         return b;
-
-//     if (b == 0)
-//         return a;
-
-//     const bool negative = (a <= 0 && b <= 0);
-
-//     a = sc_abs(a);
-//     b = sc_abs(b);
-
-//     if (a == 1 || b == 1) {
-//         if (negative) {
-//             return (long)-1;
-//             return (long)1;
-//         }
-//     }
-
-//     if (a < b) {
-//         long t = a;
-//         a = b;
-//         b = t;
-//     }
-
-//     while (b > 0) {
-//         long t = a % b;
-//         a = b;
-//         b = t;
-//     }
-
-//     if (negative) {
-//         a = 0 - a;
-//     }
-
-//     return a;
-// }
-
-
-// Stein's algorithm works by exploiting properties of even numbers
-// and bit operations, making it more efficient on
-// binary computers compared to the traditional Euclidean algorithm
-
+// Greatest common divisor - Stein's algorithm
 inline long sc_gcd(long a, long b) {
+    // Base case: GCD(0, b) == b, GCD(a, 0) == a
     if (a == 0)
         return b;
     if (b == 0)
         return a;
 
+    // In SC => gcd(neg, neg) -> neg
     const bool negative = (a < 0) || (b < 0);
 
     if (a == 1 || b == 1) {
@@ -508,9 +430,13 @@ inline long sc_gcd(long a, long b) {
     a = std::abs(a);
     b = std::abs(b);
 
+    // Shift a and b; reduce them to odd numbers
     long shift = __builtin_ctz(a | b);
-
     a >>= __builtin_ctz(a);
+
+    // Stein's algorithm computes the greatest common divisor of two odd
+    // integers by repeatedly subtracting the smaller from the larger
+    // until the smaller number becomes 0.
     while (b != 0) {
         b >>= __builtin_ctz(b);
         if (a > b)
@@ -518,6 +444,7 @@ inline long sc_gcd(long a, long b) {
         b -= a;
     }
 
+    // Return the result with the sign
     return (negative ? -1 : 1) * (a << shift);
 }
 
