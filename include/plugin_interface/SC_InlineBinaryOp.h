@@ -372,46 +372,52 @@ inline int sc_fold(int in, int lo, int hi) {
     return c + lo;
 }
 
-// Greatest common divisor
+/// Greatest common divisor
 inline int sc_gcd(int a, int b) {
     if (a == 0)
         return b;
+
     if (b == 0)
         return a;
 
-    const bool negative = (a < 0) || (b < 0);
+    const bool negative = (a <= 0 && b <= 0);
 
-    a = std::abs(a);
-    b = std::abs(b);
+    a = sc_abs(a);
+    b = sc_abs(b);
 
     if (a == 1 || b == 1) {
-        return negative ? -1 : 1;
+        if (negative) {
+            return -1;
+        } else {
+            return 1;
+        }
     }
 
-    // Stein's algorithm computes the greatest common divisor of two
-    // integers using bitwise operations and subtraction, rather than division.
-    // steps such as dividing even numbers by 2 (bit-shifting) and
-    // subtracting one odd number from another. It has better performance
-    // over the traditional Euclidean by minimizing expensive operations.
-    int shift = __builtin_ctz(a | b);
-    a >>= __builtin_ctz(a);
-    while (b != 0) {
-        b >>= __builtin_ctz(b);
-        if (a > b)
-            std::swap(a, b);
-        b -= a;
+    if (a < b) {
+        int t = a;
+        a = b;
+        b = t;
     }
 
-    return (negative ? -1 : 1) * (a << shift);
+    while (b > 0) {
+        int t = a % b;
+        a = b;
+        b = t;
+    }
+
+    if (negative) {
+        a = 0 - a;
+    }
+
+    return a;
 }
 
-// Least common multiple
+/// Least common multiple
 inline int sc_lcm(int a, int b) {
     if (a == 0 || b == 0)
         return 0;
     else
-        // div before mul to avoid overflow
-        return (a / sc_gcd(a, b)) * b;
+        return (a * b) / sc_gcd(a, b);
 }
 
 
@@ -442,6 +448,7 @@ inline long sc_gcd(long a, long b) {
     // steps such as dividing even numbers by 2 (bit-shifting) and
     // subtracting one odd number from another. It has better performance
     // over the traditional Euclidean by minimizing expensive operations.
+
     while (b != 0) {
         b >>= __builtin_ctz(b);
         if (a > b)
@@ -449,7 +456,6 @@ inline long sc_gcd(long a, long b) {
         b -= a;
     }
 
-    // Return the result with the sign
     return (negative ? -1 : 1) * (a << shift);
 }
 
@@ -458,8 +464,7 @@ inline long sc_lcm(long a, long b) {
     if (a == 0 || b == 0)
         return 0;
     else
-        // div before mul to avoid overflow
-        return (a / sc_gcd(a, b)) * b;
+        return (a * b) / sc_gcd(a, b);
 }
 
 /// Greatest common divisor
