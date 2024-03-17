@@ -422,43 +422,75 @@ inline int sc_lcm(int a, int b) {
 
 
 /// Greatest common divisor
+// inline long sc_gcd(long a, long b) {
+//     if (a == 0)
+//         return b;
+
+//     if (b == 0)
+//         return a;
+
+//     const bool negative = (a <= 0 && b <= 0);
+
+//     a = sc_abs(a);
+//     b = sc_abs(b);
+
+//     if (a == 1 || b == 1) {
+//         if (negative) {
+//             return (long)-1;
+//         } else {
+//             return (long)1;
+//         }
+//     }
+
+//     if (a < b) {
+//         long t = a;
+//         a = b;
+//         b = t;
+//     }
+
+//     while (b > 0) {
+//         long t = a % b;
+//         a = b;
+//         b = t;
+//     }
+
+//     if (negative) {
+//         a = 0 - a;
+//     }
+
+//     return a;
+// }
+
+
+// Stein's algorithm works by exploiting properties of even numbers
+// and bit operations, making it more efficient on
+// binary computers compared to the traditional Euclidean algorithm
+
 inline long sc_gcd(long a, long b) {
     if (a == 0)
         return b;
-
     if (b == 0)
         return a;
 
-    const bool negative = (a <= 0 && b <= 0);
+    const bool negative = (a < 0) || (b < 0);
 
     a = sc_abs(a);
     b = sc_abs(b);
 
     if (a == 1 || b == 1) {
-        if (negative) {
-            return (long)-1;
-        } else {
-            return (long)1;
-        }
+        return negative ? -1 : 1;
     }
 
-    if (a < b) {
-        long t = a;
-        a = b;
-        b = t;
+    long shift = __builtin_ctz(a | b);
+    a >>= __builtin_ctz(a);
+    while (b != 0) {
+        b >>= __builtin_ctz(b);
+        if (a > b)
+            std::swap(a, b);
+        b -= a;
     }
 
-    while (b > 0) {
-        long t = a % b;
-        a = b;
-        b = t;
-    }
-
-    if (negative) {
-        a = 0 - a;
-    }
-
-    return a;
+    return (negative ? -1 : 1) * (a << shift);
 }
 
 /// Least common multiple
