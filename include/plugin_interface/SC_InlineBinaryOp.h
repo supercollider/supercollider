@@ -374,6 +374,9 @@ inline int sc_fold(int in, int lo, int hi) {
 
 
 inline int sc_gcd(int a, int b) {
+    a = sc_abs(a);
+    b = sc_abs(b);
+
     if (a == 0)
         return b;
     if (b == 0)
@@ -381,8 +384,6 @@ inline int sc_gcd(int a, int b) {
 
     const bool negative = (a < 0) || (b < 0);
 
-    a = sc_abs(a);
-    b = sc_abs(b);
 
     if (a == 1 || b == 1) {
         return negative ? -1 : 1;
@@ -446,7 +447,7 @@ inline int sc_lcm(int a, int b) {
     if (a == 0 || b == 0)
         return 0;
     else
-        return (a * b) / sc_gcd(a, b);
+        return (a / sc_gcd(a, b)) * b; // div before mul to avoid overflow
 }
 
 
@@ -496,6 +497,9 @@ inline int sc_lcm(int a, int b) {
 // binary computers compared to the traditional Euclidean algorithm
 
 inline long sc_gcd(long a, long b) {
+    a = sc_abs(a);
+    b = sc_abs(b);
+
     if (a == 0)
         return b;
     if (b == 0)
@@ -503,14 +507,12 @@ inline long sc_gcd(long a, long b) {
 
     const bool negative = (a < 0) || (b < 0);
 
-    a = sc_abs(a);
-    b = sc_abs(b);
-
     if (a == 1 || b == 1) {
         return negative ? -1 : 1;
     }
 
     long shift = __builtin_ctz(a | b);
+
     a >>= __builtin_ctz(a);
     while (b != 0) {
         b >>= __builtin_ctz(b);
@@ -525,9 +527,9 @@ inline long sc_gcd(long a, long b) {
 /// Least common multiple
 inline long sc_lcm(long a, long b) {
     if (a == 0 || b == 0)
-        return (long)0;
+        return 0;
     else
-        return (a * b) / sc_gcd(a, b);
+        return (a / sc_gcd(a, b)) * b; // div before mul to avoid overflow
 }
 
 /// Greatest common divisor
