@@ -374,9 +374,6 @@ inline int sc_fold(int in, int lo, int hi) {
 
 
 inline int sc_gcd(int a, int b) {
-    a = std::abs(a);
-    b = std::abs(b);
-
     if (a == 0)
         return b;
     if (b == 0)
@@ -384,6 +381,8 @@ inline int sc_gcd(int a, int b) {
 
     const bool negative = (a < 0) || (b < 0);
 
+    a = std::abs(a);
+    b = std::abs(b);
 
     if (a == 1 || b == 1) {
         return negative ? -1 : 1;
@@ -465,7 +464,7 @@ inline int sc_lcm(int a, int b) {
 
 //     if (a == 1 || b == 1) {
 //         if (negative) {
-//             return (long)-1;     
+//             return (long)-1;
 //             return (long)1;
 //         }
 //     }
@@ -495,9 +494,6 @@ inline int sc_lcm(int a, int b) {
 // binary computers compared to the traditional Euclidean algorithm
 
 inline long sc_gcd(long a, long b) {
-    a = std::abs(a);
-    b = std::abs(b);
-
     if (a == 0)
         return b;
     if (b == 0)
@@ -508,6 +504,9 @@ inline long sc_gcd(long a, long b) {
     if (a == 1 || b == 1) {
         return negative ? -1 : 1;
     }
+
+    a = std::abs(a);
+    b = std::abs(b);
 
     long shift = __builtin_ctz(a | b);
 
