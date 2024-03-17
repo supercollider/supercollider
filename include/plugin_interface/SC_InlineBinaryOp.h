@@ -374,20 +374,20 @@ inline int sc_fold(int in, int lo, int hi) {
 
 
 inline int sc_gcd(int a, int b) {
-    a = sc_abs(a);
-    b = sc_abs(b);
+    a = std::abs(a);
+    b = std::abs(b);
 
     if (a == 0)
         return b;
     if (b == 0)
         return a;
 
-    const bool negative = (a < 0) || (b < 0);
+    //const bool negative = (a < 0) || (b < 0);
 
 
-    if (a == 1 || b == 1) {
-        return negative ? -1 : 1;
-    }
+    // if (a == 1 || b == 1) {
+    //     return negative ? -1 : 1;
+    // }
 
     int shift = __builtin_ctz(a | b);
     a >>= __builtin_ctz(a);
@@ -398,7 +398,7 @@ inline int sc_gcd(int a, int b) {
         b -= a;
     }
 
-    return (negative ? -1 : 1) * (a << shift);
+    return /*(negative ? -1 : 1) */ (a << shift);
 }
 
 
@@ -411,7 +411,6 @@ inline int sc_gcd(int a, int b) {
 //         return a;
 
 //     const bool negative = (a <= 0 && b <= 0);
-
 //     a = sc_abs(a);
 //     b = sc_abs(b);
 
@@ -466,8 +465,7 @@ inline int sc_lcm(int a, int b) {
 
 //     if (a == 1 || b == 1) {
 //         if (negative) {
-//             return (long)-1;
-//         } else {
+//             return (long)-1;     
 //             return (long)1;
 //         }
 //     }
@@ -497,19 +495,19 @@ inline int sc_lcm(int a, int b) {
 // binary computers compared to the traditional Euclidean algorithm
 
 inline long sc_gcd(long a, long b) {
-    a = sc_abs(a);
-    b = sc_abs(b);
+    a = std::abs(a);
+    b = std::abs(b);
 
     if (a == 0)
         return b;
     if (b == 0)
         return a;
 
-    const bool negative = (a < 0) || (b < 0);
+    // const bool negative = (a < 0) || (b < 0);
 
-    if (a == 1 || b == 1) {
-        return negative ? -1 : 1;
-    }
+    // if (a == 1 || b == 1) {
+    //     return negative ? -1 : 1;
+    // }
 
     long shift = __builtin_ctz(a | b);
 
@@ -521,7 +519,7 @@ inline long sc_gcd(long a, long b) {
         b -= a;
     }
 
-    return (negative ? -1 : 1) * (a << shift);
+    return /*(negative ? -1 : 1) */ (a << shift);
 }
 
 /// Least common multiple
