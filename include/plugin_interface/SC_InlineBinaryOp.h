@@ -382,12 +382,12 @@ inline int sc_gcd(int a, int b) {
     if (b == 0)
         return a;
 
-    //const bool negative = (a < 0) || (b < 0);
+    const bool negative = (a < 0) || (b < 0);
 
 
-    // if (a == 1 || b == 1) {
-    //     return negative ? -1 : 1;
-    // }
+    if (a == 1 || b == 1) {
+        return negative ? -1 : 1;
+    }
 
     int shift = __builtin_ctz(a | b);
     a >>= __builtin_ctz(a);
@@ -398,7 +398,7 @@ inline int sc_gcd(int a, int b) {
         b -= a;
     }
 
-    return /*(negative ? -1 : 1) */ (a << shift);
+    return (negative ? -1 : 1) * (a << shift);
 }
 
 
@@ -503,11 +503,11 @@ inline long sc_gcd(long a, long b) {
     if (b == 0)
         return a;
 
-    // const bool negative = (a < 0) || (b < 0);
+    const bool negative = (a < 0) || (b < 0);
 
-    // if (a == 1 || b == 1) {
-    //     return negative ? -1 : 1;
-    // }
+    if (a == 1 || b == 1) {
+        return negative ? -1 : 1;
+    }
 
     long shift = __builtin_ctz(a | b);
 
@@ -519,7 +519,7 @@ inline long sc_gcd(long a, long b) {
         b -= a;
     }
 
-    return /*(negative ? -1 : 1) */ (a << shift);
+    return (negative ? -1 : 1) * (a << shift);
 }
 
 /// Least common multiple
