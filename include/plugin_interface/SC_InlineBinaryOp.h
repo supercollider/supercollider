@@ -372,7 +372,7 @@ inline int sc_fold(int in, int lo, int hi) {
     return c + lo;
 }
 
-// Greatest common divisor - Stein's algorithm
+// Greatest common divisor
 inline int sc_gcd(int a, int b) {
     if (a == 0)
         return b;
@@ -388,9 +388,11 @@ inline int sc_gcd(int a, int b) {
         return negative ? -1 : 1;
     }
 
-    // Stein's algorithm computes the greatest common divisor of two odd
-    // integers by repeatedly subtracting the smaller from the larger
-    // until the smaller number becomes 0.
+    // Stein's algorithm computes the greatest common divisor of two
+    // integers using bitwise operations and subtraction, rather than division.
+    // steps such as dividing even numbers by 2 (bit-shifting) and
+    // subtracting one odd number from another. It has betterperformance
+    // over the traditional Euclidean by minimizing expensive operations.
     int shift = __builtin_ctz(a | b);
     a >>= __builtin_ctz(a);
     while (b != 0) {
@@ -403,16 +405,17 @@ inline int sc_gcd(int a, int b) {
     return (negative ? -1 : 1) * (a << shift);
 }
 
-/// Least common multiple
+// Least common multiple
 inline int sc_lcm(int a, int b) {
     if (a == 0 || b == 0)
         return 0;
     else
-        return (a / sc_gcd(a, b)) * b; // div before mul to avoid overflow
+        // div before mul to avoid overflow
+        return (a / sc_gcd(a, b)) * b;
 }
 
 
-// Greatest common divisor - Stein's algorithm
+// Greatest common divisor
 inline long sc_gcd(long a, long b) {
     // Base case: GCD(0, b) == b, GCD(a, 0) == a
     if (a == 0)
@@ -430,13 +433,15 @@ inline long sc_gcd(long a, long b) {
     a = std::abs(a);
     b = std::abs(b);
 
-    // Shift a and b; reduce them to odd numbers
+    // Shift a and b
     long shift = __builtin_ctz(a | b);
     a >>= __builtin_ctz(a);
 
-    // Stein's algorithm computes the greatest common divisor of two odd
-    // integers by repeatedly subtracting the smaller from the larger
-    // until the smaller number becomes 0.
+    // Stein's algorithm computes the greatest common divisor of two
+    // integers using bitwise operations and subtraction, rather than division.
+    // steps such as dividing even numbers by 2 (bit-shifting) and
+    // subtracting one odd number from another. It has betterperformance
+    // over the traditional Euclidean by minimizing expensive operations.
     while (b != 0) {
         b >>= __builtin_ctz(b);
         if (a > b)
@@ -448,12 +453,13 @@ inline long sc_gcd(long a, long b) {
     return (negative ? -1 : 1) * (a << shift);
 }
 
-/// Least common multiple
+// Least common multiple
 inline long sc_lcm(long a, long b) {
     if (a == 0 || b == 0)
         return 0;
     else
-        return (a / sc_gcd(a, b)) * b; // div before mul to avoid overflow
+        // div before mul to avoid overflow
+        return (a / sc_gcd(a, b)) * b;
 }
 
 /// Greatest common divisor
