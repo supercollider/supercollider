@@ -391,7 +391,7 @@ inline int sc_gcd(int a, int b) {
     // Stein's algorithm computes the greatest common divisor of two
     // integers using bitwise operations and subtraction, rather than division.
     // steps such as dividing even numbers by 2 (bit-shifting) and
-    // subtracting one odd number from another. It has betterperformance
+    // subtracting one odd number from another. It has better performance
     // over the traditional Euclidean by minimizing expensive operations.
     int shift = __builtin_ctz(a | b);
     a >>= __builtin_ctz(a);
@@ -440,7 +440,7 @@ inline long sc_gcd(long a, long b) {
     // Stein's algorithm computes the greatest common divisor of two
     // integers using bitwise operations and subtraction, rather than division.
     // steps such as dividing even numbers by 2 (bit-shifting) and
-    // subtracting one odd number from another. It has betterperformance
+    // subtracting one odd number from another. It has better performance
     // over the traditional Euclidean by minimizing expensive operations.
     while (b != 0) {
         b >>= __builtin_ctz(b);
