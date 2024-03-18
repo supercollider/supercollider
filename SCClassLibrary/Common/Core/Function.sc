@@ -316,13 +316,19 @@ Function : AbstractFunction {
 		buffer = Buffer.new(server);
 
 		Routine.run {
-			var numFrames, running;
+			var numFrames, running, sampleRate;
 			running = server.serverRunning;
 			if(running.not) { server.bootSync; 1.wait };
-			numFrames = duration * server.sampleRate;
-			if(rate == \control) { numFrames = numFrames / server.options.blockSize };
+
+			sampleRate = if(rate == \control) {
+				server.sampleRate / server.options.blockSize
+			} {
+				server.sampleRate
+			};
+			numFrames = duration * sampleRate;
 			buffer.numFrames = numFrames.asInteger;
 			buffer.numChannels = numChannels;
+			buffer.sampleRate = sampleRate;
 			buffer = buffer.alloc(numFrames, numChannels);
 			server.sync;
 			def.send(server);

@@ -582,7 +582,7 @@ argument::target
 A server, synth, or group where to place the synth that plays the function
 
 argument::action
-A function to call when writing is finished.
+A function to call when writing is finished. It is passed two arguments: the array and the buffer used for plotting.
 
 code::
 // get some data from the synth audio
@@ -606,7 +606,7 @@ argument::target
 A server, synth, or group where to place the synth that plays the function
 
 argument::action
-A function to call when writing is finished.
+A function to call when writing is finished.  It is passed two arguments: the array and the buffer used for plotting.
 
 argument:: wait
 The amount of time in seconds to wait between sending getn messages. Longer times are safer. The default is 0.01 seconds which seems reliable under normal circumstances. A setting of 0 is not recommended.
