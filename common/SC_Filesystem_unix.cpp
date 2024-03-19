@@ -94,10 +94,14 @@ bool SC_Filesystem::isNonHostPlatformDirectoryName(const std::string& s) {
 }
 
 Path SC_Filesystem::defaultSystemAppSupportDirectory() {
-#    ifdef SC_DATA_DIR
-    return Path(SC_DATA_DIR);
+#    ifdef LINUX_APPIMAGE
+    return appdirDirectory() / LOCAL_DIR_NAME / SHARE_DIR_NAME / SC_FOLDERNAME_APPLICATION_NAME;
 #    else
+#        ifdef SC_DATA_DIR
+    return Path(SC_DATA_DIR);
+#        else
     return ROOT_PATH / LOCAL_DIR_NAME / SHARE_DIR_NAME / SC_FOLDERNAME_APPLICATION_NAME;
+#        endif
 #    endif
 }
 
@@ -125,11 +129,28 @@ Path SC_Filesystem::defaultUserConfigDirectory() {
 }
 
 Path SC_Filesystem::defaultResourceDirectory() {
-#    ifdef SC_DATA_DIR
-    return Path(SC_DATA_DIR);
+#    ifdef LINUX_APPIMAGE
+    return appdirDirectory() / USER_DIR_NAME / SHARE_DIR_NAME / SC_FOLDERNAME_APPLICATION_NAME;
 #    else
+#        ifdef SC_DATA_DIR
+    return Path(SC_DATA_DIR);
+#        else
     return ROOT_PATH / USER_DIR_NAME / SHARE_DIR_NAME / SC_FOLDERNAME_APPLICATION_NAME;
+#        endif
 #    endif
 }
+
+#    ifdef LINUX_APPIMAGE
+Path SC_Filesystem::appdirDirectory() {
+    char* env_appdir = std::getenv("APPDIR");
+    if (env_appdir == NULL) {
+        fprintf(stderr,
+                "Error: APPDIR environment variable not defined. This build of SuperCollider must run inside a "
+                "Linux AppImage.");
+        exit(1);
+    }
+    return Path(env_appdir);
+}
+#    endif
 
 #endif // defined(__linux__) || defined(__FreeBSD__) || defined(__OpenBSD__)
