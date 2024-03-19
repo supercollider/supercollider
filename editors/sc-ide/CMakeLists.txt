@@ -6,11 +6,14 @@ set(QT_IDE_COMPONENTS
     Widgets
 )
 
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS "${QT_IDE_COMPONENTS}")
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS "${QT_IDE_COMPONENTS}")
+
 set(QT_IDE_LIBRARIES
-    Qt5::Concurrent
-    Qt5::Core
-    Qt5::Network
-    Qt5::Widgets
+    Qt${QT_VERSION_MAJOR}::Concurrent
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Network
+    Qt${QT_VERSION_MAJOR}::Widgets
 )
 
 if(SC_USE_QTWEBENGINE)
@@ -21,18 +24,11 @@ if(SC_USE_QTWEBENGINE)
         WebSockets
     )
     list(APPEND QT_IDE_LIBRARIES
-        Qt5::WebChannel
-        Qt5::WebEngineWidgets
-        Qt5::WebSockets
+        Qt${QT_VERSION_MAJOR}::WebChannel
+        Qt${QT_VERSION_MAJOR}::WebEngineWidgets
+        Qt${QT_VERSION_MAJOR}::WebSockets
     )
 endif()
-
-find_package(
-    Qt5 ${REQUIRED_QT_VERSION}
-    COMPONENTS
-    ${QT_IDE_COMPONENTS}
-    REQUIRED
-)
 
 if(${CMAKE_COMPILER_IS_GNUCXX})
     add_definitions(-Wreorder)
@@ -262,10 +258,19 @@ add_custom_target( update_ide_translations
             -no-obsolete -pluralonly
 )
 
-qt5_wrap_cpp( ide_moc_src ${ide_moc_hdr} )
-qt5_wrap_ui( ide_forms_src ${ide_forms} )
-qt5_add_resources( ide_rcc resources.qrc )
-qt5_add_translation( translations ${translation_src} ${native_translation_src} )
+if(${QT_VERSION_MAJOR} STREQUAL 5)
+    qt5_wrap_cpp( ide_moc_src ${ide_moc_hdr} )
+    qt5_wrap_ui( ide_forms_src ${ide_forms} )
+    qt5_add_resources( ide_rcc resources.qrc )
+    qt5_add_translation( translations ${translation_src} ${native_translation_src} )
+elseif(${QT_VERSION_MAJOR} STREQUAL 5)
+    qt6_wrap_cpp( ide_moc_src ${ide_moc_hdr} )
+    qt6_wrap_ui( ide_forms_src ${ide_forms} )
+    qt6_add_resources( ide_rcc resources.qrc )
+    qt6_add_translation( translations ${translation_src} ${native_translation_src} )
+else()
+    message(ERROR "Use Qt${QT_VERSION_MAJOR} macros")
+endif()
 
 set(ide_sources ${ide_src} ${all_hdr} )
 

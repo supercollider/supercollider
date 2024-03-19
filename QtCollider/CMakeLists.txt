@@ -1,4 +1,3 @@
-set(REQUIRED_QT_VERSION 5.7)
 option(SC_USE_QTWEBENGINE "Build with Qt WebEngine." ON)
 
 ###############################################################################
@@ -14,21 +13,26 @@ set(
   Widgets
 )
 
-set (QT_COLLIDER_LIBS
-  Qt5::Core Qt5::Gui Qt5::Network Qt5::PrintSupport Qt5::Svg Qt5::Widgets
-  ${MATH_LIBRARY})
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS "${QT_COMPONENTS}")
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS "${QT_COMPONENTS}")
+
+set (QT_COLLIDER_LIBS ${MATH_LIBRARY})
+foreach(component ${QT_COMPONENTS})
+  list(APPEND QT_COLLIDER_LIBS Qt${QT_VERSION_MAJOR}::${component})
+endforeach()
 
 if(SC_USE_QTWEBENGINE)
   list(APPEND QT_COMPONENTS WebEngine WebEngineCore WebEngineWidgets)
-  list(APPEND QT_COLLIDER_LIBS Qt5::WebEngineCore Qt5::WebEngineWidgets)
+  list(APPEND QT_COLLIDER_LIBS
+    Qt${QT_VERSION_MAJOR}::WebEngineCore
+    Qt${QT_VERSION_MAJOR}::WebEngineWidgets
+    )
 endif()
 
-find_package(Qt5 ${REQUIRED_QT_VERSION} COMPONENTS ${QT_COMPONENTS} REQUIRED)
-
 if (APPLE)
-  find_package(Qt5MacExtras)
-  mark_as_advanced(Qt5MacExtras_DIR)
-  list(APPEND QT_COLLIDER_LIBS Qt5::MacExtras)
+  find_package(Qt${QT_VERSION_MAJOR}MacExtras)
+  mark_as_advanced(Qt${QT_VERSION_MAJOR}MacExtras_DIR)
+  list(APPEND QT_COLLIDER_LIBS Qt${QT_VERSION_MAJOR}::MacExtras)
 endif()
 
 ###############################################################################
@@ -153,11 +157,24 @@ endif()
 
 ###############################################################################
 
-qt5_wrap_cpp( QT_COLLIDER_MOC_SRCS ${QT_COLLIDER_HDRS} )
-qt5_add_resources( QT_COLLIDER_RCC ${QT_COLLIDER_DIR}/resources.qrc )
+if(${QT_VERSION_MAJOR} STREQUAL 5)
+  qt5_wrap_cpp( QT_COLLIDER_MOC_SRCS ${QT_COLLIDER_HDRS} )
+  qt5_add_resources( QT_COLLIDER_RCC ${QT_COLLIDER_DIR}/resources.qrc )
+elseif(${QT_VERSION_MAJOR} STREQUAL 5)
+  qt6_wrap_cpp( QT_COLLIDER_MOC_SRCS ${QT_COLLIDER_HDRS} )
+  qt6_add_resources( QT_COLLIDER_RCC ${QT_COLLIDER_DIR}/resources.qrc )
+else()
+  message(ERROR "Use Qt${QT_VERSION_MAJOR} macros")
+endif()
 
 if(APPLE)
-	qt5_wrap_cpp( QT_COLLIDER_OBJ_MOC_SRCS ${QT_COLLIDER_DIR}/widgets/QcQuartzComposerView.h )
+  if(${QT_VERSION_MAJOR} STREQUAL 5)
+    qt5_wrap_cpp( QT_COLLIDER_OBJ_MOC_SRCS ${QT_COLLIDER_DIR}/widgets/QcQuartzComposerView.h )
+  elseif(${QT_VERSION_MAJOR} STREQUAL 5)
+    qt6_wrap_cpp( QT_COLLIDER_OBJ_MOC_SRCS ${QT_COLLIDER_DIR}/widgets/QcQuartzComposerView.h )
+  else()
+    message(ERROR "Use Qt${QT_VERSION_MAJOR} macros")
+  endif()
 	list(APPEND QT_COLLIDER_HDRS ${QT_COLLIDER_DIR}/widgets/QcQuartzComposerView.h )
   	set( QT_COLLIDER_OBJCPP_SRCS
   		${QT_COLLIDER_OBJ_MOC_SRCS}
