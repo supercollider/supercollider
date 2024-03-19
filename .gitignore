@@ -24,6 +24,9 @@ package/*.asc
 .idea
 cmake-build-*
 
+# VS Code/Codium files
+.vscode/
+
 # Python/PyCharm files
 venv
 __pycache__

@@ -28,12 +28,14 @@ if(AUDIOAPI STREQUAL "default")
 		set(AUDIOAPI coreaudio)
 	elseif(WIN32)
 		set(AUDIOAPI portaudio)
+	elseif(EMSCRIPTEN)
+		set(AUDIOAPI webaudio)
 	else()
 		set(AUDIOAPI jack)
 	endif(APPLE)
 endif()
 
-if(NOT AUDIOAPI MATCHES "^(jack|coreaudio|portaudio|bela)$")
+if(NOT AUDIOAPI MATCHES "^(jack|coreaudio|portaudio|bela|openal|webaudio)$")
 	message(FATAL_ERROR "Unrecognised audio API: ${AUDIOAPI}")
 endif()
 
@@ -65,6 +67,8 @@ elseif(AUDIOAPI STREQUAL bela)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${BELA_C_FLAGS}")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BELA_CXX_FLAGS}")
     endif()
+elseif(AUDIOAPI STREQUAL webaudio AND NOT EMSCRIPTEN)
+	message(FATAL_ERROR "WebAudio selected as audio API, but not building with Emscripten")
 endif()
 message(STATUS "Audio API (scsynth): ${AUDIOAPI}")
 
@@ -128,6 +132,30 @@ if(AUDIOAPI STREQUAL bela)
     list(APPEND scsynth_sources ../../common/XenomaiLock.cpp)
 endif()
 
+if (EMSCRIPTEN)
+	# the plugins are linked statically, their sources must be included
+	set(plugin_sources_abs "")
+	set(plugin_sources_rel ${plugin_sources}
+		FFTInterfaceTable.cpp
+		FFT_UGens.cpp
+		PV_UGens.cpp
+		PartitionedConvolution.cpp
+
+		Convolution.cpp
+		FFT2InterfaceTable.cpp
+		FeatureDetection.cpp
+		PV_ThirdParty.cpp
+	)
+	foreach(plugin ${plugin_sources_rel})
+		string(CONCAT plugin_abs ${CMAKE_SOURCE_DIR}/server/plugins/ ${plugin} )
+		list(APPEND plugin_sources_abs ${plugin_abs})
+	endforeach(plugin)
+
+	# message(STATUS "plugin_sources_abs = ${plugin_sources_abs}")
+
+	list(APPEND scsynth_sources ${plugin_sources_abs})
+endif()
+
 include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/common
                     ${CMAKE_SOURCE_DIR}/include/server
@@ -149,6 +177,9 @@ elseif (AUDIOAPI STREQUAL bela)
     list(APPEND scsynth_sources SC_Bela.cpp)
     add_definitions("-DSC_AUDIO_API=SC_AUDIO_API_BELA" "-DSC_BELA" ${XENOMAI_DEFINITIONS} ${BELA_DEFINITIONS})
     include_directories(${XENOMAI_INCLUDE_DIRS} ${BELA_INCLUDE_DIRS})
+elseif (AUDIOAPI STREQUAL webaudio)
+	list(APPEND scsynth_sources SC_WebAudio.cpp)
+	add_definitions("-DSC_AUDIO_API=SC_AUDIO_API_WEBAUDIO")
 endif()
 
 set (FINAL_BUILD 0) # disable final build for scsynth
@@ -262,6 +293,10 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	target_link_libraries(libscsynth rt)
 endif()
 
+if (EMSCRIPTEN)
+	set(CMAKE_EXECUTABLE_SUFFIX ".html")
+endif()
+
 add_executable(scsynth
     scsynth_main.cpp
 
@@ -273,6 +308,13 @@ target_link_libraries(scsynth libscsynth)
 
 if(AUDIOAPI STREQUAL bela)
     target_link_libraries(scsynth ${XENOMAI_LIBRARIES} ${BELA_LIBRARIES} belaextra)
+endif()
+
+if (EMSCRIPTEN)
+	set_target_properties(libscsynth boost_system_lib boost_filesystem_lib PROPERTIES LINK_FLAGS "-s USE_PTHREADS=1 -s WASM=1 -pthread -s DISABLE_EXCEPTION_CATCHING=0")
+	set_target_properties(scsynth PROPERTIES LINK_FLAGS "-s USE_PTHREADS=1 -s WASM=1 -pthread --bind -s DISABLE_EXCEPTION_CATCHING=0 -s INITIAL_MEMORY=67108864 -s EXTRA_EXPORTED_RUNTIME_METHODS=[\"ccall\",\"callMain\"] --pre-js ${CMAKE_SOURCE_DIR}/wasm/pre.js")
+	set_property(TARGET scsynth libscsynth
+							 APPEND PROPERTY COMPILE_FLAGS "-pthread -DSTATIC_PLUGINS")
 endif()
 
 if (PTHREADS_FOUND)

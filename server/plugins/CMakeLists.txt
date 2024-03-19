@@ -355,4 +355,5 @@ endif()
 set_property(TARGET ${plugins} ${supernova_plugins} PROPERTY FOLDER UnitGenerators)
 
 set(plugins "${plugins}" PARENT_SCOPE)
+set(plugin_sources "${plugin_sources}" PARENT_SCOPE)
 set(supernova_plugins "${supernova_plugins}" PARENT_SCOPE)
