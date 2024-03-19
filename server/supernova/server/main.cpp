@@ -68,6 +68,10 @@ using namespace nova;
 using namespace std;
 using DirName = SC_Filesystem::DirName;
 
+namespace nova {
+void parse_hardware_topology(void);
+}
+
 namespace {
 
 /* signal handler */
@@ -320,9 +324,10 @@ void lock_memory(server_arguments const& args) {
 } /* namespace */
 
 int supernova_main(int argc, char* argv[]) {
-    drop_rt_scheduling(); // when being called from sclang, we inherit a low rt-scheduling priority. but we don't want
-                          // it!
+    drop_rt_scheduling(); // when being called from sclang, we inherit a low rt-scheduling priority.
+                          // but we don't want it!
     enable_core_dumps();
+    parse_hardware_topology();
 
     server_arguments::initialize(argc, argv);
     server_arguments const& args = server_arguments::instance();

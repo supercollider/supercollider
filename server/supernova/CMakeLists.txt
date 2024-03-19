@@ -53,6 +53,8 @@ set(libsupernova_src
     server/node_graph.cpp
     server/server.cpp
     server/server_args.cpp
+
+    utilities/hardware_topology.cpp
 )
 
 if(APPLE)

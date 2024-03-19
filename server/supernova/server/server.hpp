@@ -88,12 +88,13 @@ private:
  *
  * */
 struct thread_init_functor {
-    thread_init_functor(bool real_time): rt(real_time) {}
+    thread_init_functor(bool real_time, bool pin_threads): rt(real_time), pin(pin_threads) {}
 
     void operator()(int thread_index);
 
 private:
     const bool rt;
+    const bool pin;
 };
 
 struct io_thread_init_functor {
@@ -123,6 +124,7 @@ public:
     SC_TimeDLL mDLL;
     bool use_system_clock;
     bool non_rt;
+    bool pin_threads;
     double smooth_samplerate;
 
     typedef detail::audio_backend audio_backend;
