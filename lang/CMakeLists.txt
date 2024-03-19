@@ -203,6 +203,9 @@ else()
 	add_library(libsclang STATIC ${sclang_sources} ${sclang_parser_source})
 endif()
 
+set(CMAKE_SCLANG_CONF_PATH "/home/user/supercollider/test/sclang_conf.yaml" CACHE STRING "Include custom default language configurations")
+target_compile_definitions(libsclang PUBLIC CMAKE_SCLANG_CONF_PATH="${CMAKE_SCLANG_CONF_PATH}")
+
 target_compile_definitions(libsclang PRIVATE YYSTACK_USE_ALLOC)
 target_link_libraries(libsclang tlsf ${PTHREADS_LIBRARIES})
 

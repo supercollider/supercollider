@@ -24,10 +24,10 @@ endif()
 
 # run simple tests
 foreach(test ${simple_tests})
-  string(REPLACE .cpp "" test_name ${test} )
+  get_filename_component(test_name ${test} NAME_WE)
   add_executable(${test_name} ${test})
 
-  target_link_libraries(${test_name} boost_test libsupernova boost_thread_lib)
+  target_link_libraries(${test_name} server_boost_test libsupernova boost_thread_lib)
 
   if(LINUX AND CMAKE_COMPILER_IS_CLANG)
     target_link_libraries(${test_name} atomic)
