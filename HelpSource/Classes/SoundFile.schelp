@@ -26,6 +26,31 @@ ClassMethods::
 method::new
 Creates a new SoundFile instance.
 
+method:: writeArray
+Writes an array (or nested array) to a path as a sound file.
+
+argument:: array
+The data to write.
+Can be an array of numbers for a mono audio file, or an array of arrays-of-numbers for a multichannel audio file.
+Does not accept further nested arrays.
+Please note, that supercollider does not currently support very large arrays,
+roughly speaking,
+mono sound files longer than 45 mins at a sampling rate of 44100 will cause supercollider to fail silently.
+
+argument:: pathName
+The path as a link::Classes/String::.
+
+argument:: headerFormat
+See link::Classes/SoundFile#-headerFormat::.
+
+argument:: sampleFormat
+See link::Classes/SoundFile#-sampleFormat::.
+
+argument:: sampleRate
+A number, defaults to 44100.
+
+returns:: The path if successful, or throws if unsuccessful.
+
 method:: openRead
 Try to open the audio file at the given path.
 
