@@ -2,12 +2,15 @@ if(APPLE)
 
 	###### The user may set the app name, causing a standalone build
 	######	cmake -D standalone:string=MyFabApp ../
-	if ("${standalone}" STREQUAL "")
-		set(scappbundlename ${PROJECT_NAME})
-	else()
+	if(STANDALONE)
+		if("${standalone}" STREQUAL "")
+			set(standalone "SuperCollider-Standalone") # default standalone name
+		endif()
 		# We're building a standalone, change the app name.
 		set(scappbundlename ${standalone})
 		message(STATUS "Building sc in STANDALONE mode. App name: " ${standalone})
+	else()
+		set(scappbundlename ${PROJECT_NAME})
 	endif()
 
 	set(scappauxresourcesdir "${scappbundlename}/${scappbundlename}.app/Contents/Resources" CACHE STRING "Installation path for the Resourcedir")

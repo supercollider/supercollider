@@ -71,6 +71,8 @@ Main : Process {
 
 			})
 		).postln;
+
+		if(Platform.isStandalone, { this.startStandalone });
 	}
 
 	shutdown { // at recompile, quit

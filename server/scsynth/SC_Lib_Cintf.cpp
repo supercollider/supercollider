@@ -167,8 +167,10 @@ void initialize_library(const char* uGensPluginPath) {
 
     // If uGensPluginPath is supplied, it is exclusive.
     bool loadUGensExtDirs = true;
+    bool loadDefaultPluginDir = true;
     if (uGensPluginPath) {
         loadUGensExtDirs = false;
+        loadDefaultPluginDir = false;
         SC_StringParser sp(uGensPluginPath, SC_STRPARSE_PATHDELIMITER);
         while (!sp.AtEnd()) {
             PlugIn_LoadDir(const_cast<char*>(sp.NextToken()), true);
@@ -177,6 +179,22 @@ void initialize_library(const char* uGensPluginPath) {
 
     using DirName = SC_Filesystem::DirName;
 
+    if (loadDefaultPluginDir) {
+        // load default plugin directory
+        const bfs::path pluginDir = SC_Filesystem::instance().getDirectory(DirName::Resource) / SC_PLUGIN_DIR_NAME;
+
+        if (bfs::is_directory(pluginDir)) {
+            PlugIn_LoadDir(pluginDir, true);
+        }
+    }
+
+#ifdef STANDALONE
+    // load system extension plugins
+    const bfs::path standaloneExtDir = SC_Filesystem::instance().getDirectory(DirName::StandaloneExtension);
+    PlugIn_LoadDir(standaloneExtDir, true);
+#endif // STANDALONE
+
+
     if (loadUGensExtDirs) {
 #ifdef SC_PLUGIN_DIR
         // load globally installed plugins
@@ -184,12 +202,6 @@ void initialize_library(const char* uGensPluginPath) {
             PlugIn_LoadDir(SC_PLUGIN_DIR, true);
         }
 #endif // SC_PLUGIN_DIR
-       // load default plugin directory
-        const bfs::path pluginDir = SC_Filesystem::instance().getDirectory(DirName::Resource) / SC_PLUGIN_DIR_NAME;
-
-        if (bfs::is_directory(pluginDir)) {
-            PlugIn_LoadDir(pluginDir, true);
-        }
     }
 
     // get extension directories

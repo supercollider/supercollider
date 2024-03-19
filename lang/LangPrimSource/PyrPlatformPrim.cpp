@@ -76,6 +76,20 @@ static int prPlatform_resourceDir(struct VMGlobals* g, int numArgsPushed) {
     return prPlatform_getDirectory(g, DirName::Resource);
 }
 
+static int prPlatform_standaloneDir(struct VMGlobals* g, int numArgsPushed) {
+    return prPlatform_getDirectory(g, DirName::Standalone);
+}
+
+static int prPlatform_isStandalone(struct VMGlobals* g, int numArgsPushed) {
+    PyrSlot* a = g->sp;
+#ifdef STANDALONE
+    SetBool(a, true);
+#else
+    SetBool(a, false);
+#endif
+    return errNone;
+}
+
 #ifdef _WIN32
 static int prWinPlatform_myDocumentsDir(struct VMGlobals* g, int numArgsPushed) {
     return prPlatform_getDirectory(g, DirName::MyDocuments);
@@ -152,6 +166,8 @@ void initPlatformPrimitives() {
     definePrimitive(base, index++, "_Platform_userExtensionDir", prPlatform_userExtensionDir, 1, 0);
     definePrimitive(base, index++, "_Platform_userConfigDir", prPlatform_userConfigDir, 1, 0);
     definePrimitive(base, index++, "_Platform_resourceDir", prPlatform_resourceDir, 1, 0);
+    definePrimitive(base, index++, "_Platform_standaloneDir", prPlatform_standaloneDir, 1, 0);
+    definePrimitive(base, index++, "_Platform_isStandalone", prPlatform_isStandalone, 1, 0);
     definePrimitive(base, index++, "_Platform_ideName", prPlatform_ideName, 1, 0);
     definePrimitive(base, index++, "_Platform_hasQt", prPlatform_hasQt, 1, 0);
     definePrimitive(base, index++, "_Platform_hasQtWebEngine", prPlatform_hasQtWebEngine, 1, 0);

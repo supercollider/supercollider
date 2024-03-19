@@ -1,0 +1,1 @@
+"*** Modify Standalone/startup.scd with your own standalone code. ***".postln;

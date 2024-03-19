@@ -71,7 +71,11 @@ void QtCollider::init() {
 #endif
 
         static int qcArgc = 1;
+#ifdef STANDALONE
+        static char qcArg0[] = "SuperCollider Standalone";
+#else
         static char qcArg0[] = "SuperCollider";
+#endif
         static char* qcArgv[1] = { qcArg0 };
 
         QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);

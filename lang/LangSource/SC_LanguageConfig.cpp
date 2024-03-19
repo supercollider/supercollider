@@ -68,6 +68,29 @@ void SC_LanguageConfig::setExcludeDefaultPaths(bool value) {
     mExcludeDefaultPaths = value;
 }
 
+void SC_LanguageConfig::setUseStandalonePaths(bool value) {
+    mDefaultClassLibraryDirectories.clear();
+    if (value) {
+        // for standalones we ignore the standard extension paths but keep the default library...
+        const Path& classLibraryDir = SC_Filesystem::instance().getDirectory(DirName::Resource) / CLASS_LIB_DIR_NAME;
+        addPath(mDefaultClassLibraryDirectories, classLibraryDir);
+        // ... and add a folder in the same directory as the app bundle
+        const Path& standaloneExtensionDir = SC_Filesystem::instance().getDirectory(DirName::StandaloneExtension);
+        addPath(mDefaultClassLibraryDirectories, standaloneExtensionDir);
+    } else {
+        if (!mExcludeDefaultPaths) {
+            const Path& classLibraryDir =
+                SC_Filesystem::instance().getDirectory(DirName::Resource) / CLASS_LIB_DIR_NAME;
+            addPath(mDefaultClassLibraryDirectories, classLibraryDir);
+
+            const Path& systemExtensionDir = SC_Filesystem::instance().getDirectory(DirName::SystemExtension);
+            addPath(mDefaultClassLibraryDirectories, systemExtensionDir);
+
+            const Path& userExtensionDir = SC_Filesystem::instance().getDirectory(DirName::UserExtension);
+            addPath(mDefaultClassLibraryDirectories, userExtensionDir);
+        }
+    }
+}
 
 void SC_LanguageConfig::postExcludedDirectories(void) const {
     for (auto it : mExcludedDirectories) {
@@ -144,9 +167,10 @@ bool SC_LanguageConfig::readLibraryConfigYAML(const Path& fileName, bool standal
             processBool(
                 POST_INLINE_WARNINGS, doc, [](bool b) { gPostInlineWarnings = b; }, []() {});
             processBool(
-                EXCLUDE_DEFAULT_PATHS, doc,
-                [standalone](bool b) { gLanguageConfig->setExcludeDefaultPaths(standalone || b); },
-                [standalone] { gLanguageConfig->setExcludeDefaultPaths(standalone); });
+                EXCLUDE_DEFAULT_PATHS, doc, [](bool b) { gLanguageConfig->setExcludeDefaultPaths(b); }, []() {});
+
+            if (standalone)
+                gLanguageConfig->setUseStandalonePaths(standalone);
 
             processPathList(INCLUDE_PATHS, doc, [](const Path& p) { gLanguageConfig->addIncludedDirectory(p); });
             processPathList(EXCLUDE_PATHS, doc, [](const Path& p) { gLanguageConfig->addExcludedDirectory(p); });
@@ -200,7 +224,8 @@ bool SC_LanguageConfig::writeLibraryConfigYAML(const Path& fileName) {
 bool SC_LanguageConfig::defaultLibraryConfig(bool standalone) {
     freeLibraryConfig();
     gLanguageConfig = new SC_LanguageConfig();
-    gLanguageConfig->setExcludeDefaultPaths(standalone);
+    if (standalone)
+        gLanguageConfig->setUseStandalonePaths(standalone);
     return true;
 }
 

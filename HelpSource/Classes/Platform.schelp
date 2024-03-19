@@ -47,6 +47,12 @@ system application support directory
 method:: systemExtensionDir
 system extension directory (see link::Guides/UsingExtensions::)
 
+method:: standaloneDir
+directory for standalone resources when running in standalone mode
+
+method:: isStandalone
+returns true if running in standalone mode
+
 method:: userHomeDir
 user home directory
 
@@ -116,6 +122,12 @@ system application support directory
 
 method:: systemExtensionDir
 system extension directory (see link::Guides/UsingExtensions::)
+
+method:: standaloneDir
+directory for standalone resources when running in standalone mode
+
+method:: isStandalone
+returns true if running in standalone mode
 
 method:: userHomeDir
 user home directory

@@ -56,7 +56,7 @@ METHOD:: excludeDefaultPaths
 Get or set whether default class library paths are included.
 
 note::
-If sclang is started with -a the class library paths are excluded and this value is ignored. The default class library paths are Platform.classLibraryDir, and the system and user extensions directories.
+If sclang is launched with -a it will run in standalone mode. In this case the default class library (Platform.classLibraryDir) is included, along with the folder Standalone/Extensions adjacent to the app bundle. Extension directories are excluded.
 ::
 
 subsection:: Compiler Warnings

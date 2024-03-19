@@ -126,8 +126,8 @@ void SC_TerminalClient::printUsage() {
         "   -s                             Call Main.stop on shutdown\n"
         "   -u <network-port-number>       Set UDP listening port (default %d)\n"
         "   -i <ide-name>                  Specify IDE name (for enabling IDE-specific class code, default \"%s\")\n"
-        "   -a                             Standalone mode (exclude SCClassLibrary and user and system Extensions "
-        "folders from search path)\n",
+        "   -a                             Standalone mode (exclude user and system extension "
+        "folders from search path, include standalone folder)\n",
         memGrowBuf, memSpaceBuf, opt.mPort, SC_Filesystem::instance().getIdeName().c_str());
 }
 
