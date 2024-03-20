@@ -60,6 +60,7 @@ static __inline__ int64 CLZ(int64 arg) {
 
 #    include <intrin.h>
 #    pragma intrinsic(_BitScanReverse)
+#    pragma intrinsic(_BitScanReverse64)
 
 __forceinline static int32 CLZ(int32 arg) {
     unsigned long idx;
@@ -67,6 +68,13 @@ __forceinline static int32 CLZ(int32 arg) {
         return (int32)(31 - idx);
     }
     return 32;
+}
+__forceinline static int64 CLZ(int64 arg) {
+    uint64 idx;
+    if (_BitScanReverse64(&idx, static_cast<uint64>(arg))) {
+        return (int64)(63 - idx);
+    }
+    return 64;
 }
 
 #elif defined(__ppc__) || defined(__powerpc__) || defined(__PPC__)
