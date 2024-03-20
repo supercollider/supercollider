@@ -105,7 +105,7 @@ inline bool NotPtr(const PyrSlot* slot) { return slot->tag != tagPtr; }
 
 
 /* setter functions */
-inline void SetInt(PyrSlot* slot, int val) {
+inline void SetInt(PyrSlot* slot, int64 val) {
     slot->tag = tagInt;
     slot->u.i = val;
 }
@@ -162,14 +162,14 @@ inline void SetRawChar(PyrSlot* slot, int val) {
     assert(IsChar(slot));
     slot->u.c = val;
 }
-inline void SetRaw(PyrSlot* slot, int val) {
+inline void SetRaw(PyrSlot* slot, int64 val) {
     assert(IsInt(slot));
     slot->u.i = val;
 }
-inline void SetRaw(PyrSlot* slot, long val) {
-    assert(IsInt(slot));
-    slot->u.i = val;
-}
+//inline void SetRaw(PyrSlot* slot, long val) {
+    //assert(IsInt(slot));
+    //slot->u.i = val;
+//}
 inline void SetRaw(PyrSlot* slot, PyrObject* val) {
     assert(IsObj(slot));
     slot->u.o = val;
@@ -205,7 +205,17 @@ template <typename numeric_type> inline int slotVal(PyrSlot* slot, numeric_type*
 
 inline int slotFloatVal(PyrSlot* slot, float* value) { return slotVal<float>(slot, value); }
 
-inline int slotIntVal(PyrSlot* slot, int* value) { return slotVal<int>(slot, value); }
+inline int64 slotIntVal(PyrSlot* slot, int64* value) { return slotVal(slot, value); }
+inline int32 slotIntVal(PyrSlot* slot, int32* value) {
+    if (IsFloat(slot)) {
+        *value = static_cast<int32>(slot->u.f);
+        return errNone;
+    } else if (IsInt(slot)) {
+        *value = static_cast<int32>(slot->u.i);
+        return errNone;
+    }
+    return errWrongType;
+}
 
 inline int slotDoubleVal(PyrSlot* slot, double* value) { return slotVal<double>(slot, value); }
 
@@ -255,7 +265,7 @@ inline const PyrSymbol* slotRawSymbol(const PyrSlot* slot) { return slot->u.s; }
 
 inline int slotRawChar(const PyrSlot* slot) { return slot->u.c; }
 
-inline int slotRawInt(const PyrSlot* slot) {
+inline int64 slotRawInt(const PyrSlot* slot) {
     assert(IsInt(slot));
     return slot->u.i;
 }

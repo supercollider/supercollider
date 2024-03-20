@@ -54,7 +54,7 @@ bool postString(PyrSlot* slot, char* str);
 const char* slotSymString(PyrSlot* slot);
 int asCompileString(PyrSlot* slot, char* str);
 
-int slotIntVal(PyrSlot* slot, int* value);
+int64 slotIntVal(PyrSlot* slot, int64* value);
 int slotFloatVal(PyrSlot* slot, float* value);
 int slotDoubleVal(PyrSlot* slot, double* value);
 int slotStrVal(PyrSlot* slot, char* str, int maxlen);

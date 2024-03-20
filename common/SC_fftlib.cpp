@@ -264,8 +264,8 @@ scfft* scfft_create(size_t fullsize, size_t winsize, SCFFT_WindowFunction wintyp
 
     f->nfull = fullsize;
     f->nwin = winsize;
-    f->log2nfull = LOG2CEIL(fullsize);
-    f->log2nwin = LOG2CEIL(winsize);
+    f->log2nfull = LOG2CEIL(static_cast<int32>(fullsize));
+    f->log2nwin = LOG2CEIL(static_cast<int32>(winsize));
     f->wintype = wintype;
     f->indata = indata;
     f->outdata = outdata;

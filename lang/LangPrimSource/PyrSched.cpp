@@ -75,7 +75,7 @@ bool addheap(VMGlobals* g, PyrObject* heapArg, double schedtime, PyrSlot* task) 
     /* parent and sibling in the heap, not in the task hierarchy */
     int mom = heap->size - 1;
     PyrSlot* pme = heap->slots + mom;
-    int stabilityCount = slotRawInt(&heap->count);
+    int64 stabilityCount = slotRawInt(&heap->count);
     SetRaw(&heap->count, stabilityCount + 1);
 
     for (; mom > 0;) { /* percolate up heap */
@@ -139,7 +139,7 @@ bool getheap(VMGlobals* g, PyrObject* heapArg, double* schedtime, PyrSlot* task)
         PyrSlot* pme = heap->slots + me;
         PyrSlot* pend = heap->slots + size;
         double timetemp = slotRawFloat(&pmom[0]);
-        int stabilityCountTemp = slotRawInt(&pmom[2]);
+        int64 stabilityCountTemp = slotRawInt(&pmom[2]);
         PyrSlot tasktemp;
         slotCopy(&tasktemp, &pmom[1]);
         for (; pme < pend;) {

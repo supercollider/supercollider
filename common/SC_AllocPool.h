@@ -182,7 +182,7 @@ private:
             return inSize >> 4;
         if (inSize >= 262144)
             return 127;
-        int bits = 28 - CLZ(inSize);
+        int bits = 28 - CLZ(static_cast<uint32>(inSize));
         return (bits << 3) + (inSize >> bits);
     }
 

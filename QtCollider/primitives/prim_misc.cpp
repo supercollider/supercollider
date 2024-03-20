@@ -343,7 +343,7 @@ QC_LANG_PRIMITIVE(QView_AddActionToView, 3, PyrSlot* r, PyrSlot* a, VMGlobals* g
 
             if (NotNil(indexArg)) {
                 if (IsInt(indexArg)) {
-                    int index = std::max(slotRawInt(indexArg), 0);
+                    int index = std::max(slotRawInt(indexArg), int64(0));
 
                     auto actions = widget->actions();
 

@@ -50,8 +50,8 @@ inline bool NotSignal(PyrSlot* slot) { return (NotObj(slot) || slotRawObject(slo
 /* functors for dispatching template code */
 
 struct addNum {
-    static inline double run(double lhs, double rhs) { return lhs + rhs; }
-    static inline int run(int lhs, int rhs) { return lhs + rhs; }
+    template<class T>
+    static inline T run(T lhs, T rhs) { return lhs + rhs; }
     static inline PyrObject* signal_xf(VMGlobals* g, PyrObject* ina, float inb) { return signal_add_xf(g, ina, inb); }
     static inline PyrObject* signal_fx(VMGlobals* g, float ina, PyrObject* inb) { return signal_xf(g, inb, ina); }
     static inline PyrObject* signal_xx(VMGlobals* g, PyrObject* ina, PyrObject* inb) {
@@ -60,8 +60,8 @@ struct addNum {
 };
 
 struct mulNum {
-    static inline double run(double lhs, double rhs) { return lhs * rhs; }
-    static inline int run(int lhs, int rhs) { return lhs * rhs; }
+    template<class T>
+    static inline T run(T lhs, T rhs) { return lhs * rhs; }
     static inline PyrObject* signal_xf(VMGlobals* g, PyrObject* ina, float inb) { return signal_mul_xf(g, ina, inb); }
     static inline PyrObject* signal_fx(VMGlobals* g, float ina, PyrObject* inb) { return signal_xf(g, inb, ina); }
     static inline PyrObject* signal_xx(VMGlobals* g, PyrObject* ina, PyrObject* inb) {
@@ -70,8 +70,8 @@ struct mulNum {
 };
 
 struct subNum {
-    static inline double run(double lhs, double rhs) { return lhs - rhs; }
-    static inline int run(int lhs, int rhs) { return lhs - rhs; }
+    template<class T>
+    static inline T run(T lhs, T rhs) { return lhs - rhs; }
     static inline PyrObject* signal_xf(VMGlobals* g, PyrObject* ina, float inb) { return signal_sub_xf(g, ina, inb); }
     static inline PyrObject* signal_fx(VMGlobals* g, float ina, PyrObject* inb) { return signal_sub_fx(g, ina, inb); }
     static inline PyrObject* signal_xx(VMGlobals* g, PyrObject* ina, PyrObject* inb) {

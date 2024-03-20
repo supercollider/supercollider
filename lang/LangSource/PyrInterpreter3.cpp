@@ -1771,9 +1771,9 @@ HOT void Interpret(VMGlobals* g) {
                 }
 
                 if (slotRawInt(&g->receiver) <= slotRawInt(&vars[1])) {
-                    SetRaw(&vars[5], 1);
+                    SetRaw(&vars[5], int64(1));
                 } else {
-                    SetRaw(&vars[5], -1);
+                    SetRaw(&vars[5], int64(-1));
                 }
                 slotCopy(&vars[3], &g->receiver);
 
@@ -1915,7 +1915,7 @@ HOT void Interpret(VMGlobals* g) {
 
             // ArrayedCollection-reverseDo : 143 11, 143 12, 143 4
             case 11:
-                SetRaw(&g->frame->vars[2], slotRawObject(&g->receiver)->size - 1);
+                SetRaw(&g->frame->vars[2], int64(slotRawObject(&g->receiver)->size - 1));
                 dispatch_opcode;
             case 12: {
                 PyrSlot* vars = g->frame->vars;
@@ -1955,7 +1955,7 @@ HOT void Interpret(VMGlobals* g) {
                     goto class_lookup;
                 }
 
-                int m = slotRawInt(&vars[3]);
+                int64 m = slotRawInt(&vars[3]);
                 PyrObject* obj = slotRawObject(&vars[1]);
 
 

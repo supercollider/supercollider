@@ -114,7 +114,7 @@ int prSignalPeak(struct VMGlobals* g, int numArgsPushed) {
 
 int prSignalNormalize(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b, *c;
-    int err, start, end;
+    int64 err, start, end;
 
     a = g->sp - 2;
     b = g->sp - 1;
@@ -160,7 +160,7 @@ int prSignalIntegral(struct VMGlobals* g, int numArgsPushed) {
 
 int prSignalInvert(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b, *c;
-    int err, start, end;
+    int64 err, start, end;
 
     a = g->sp - 2;
     b = g->sp - 1;
@@ -188,7 +188,7 @@ int prSignalInvert(struct VMGlobals* g, int numArgsPushed) {
 
 int prSignalReverse(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b, *c;
-    int err, start, end;
+    int64 err, start, end;
 
     a = g->sp - 2;
     b = g->sp - 1;
@@ -216,7 +216,7 @@ int prSignalReverse(struct VMGlobals* g, int numArgsPushed) {
 
 int prSignalRotate(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b;
-    int err, rot;
+    int64 err, rot;
 
     a = g->sp - 1;
     b = g->sp;
@@ -231,8 +231,8 @@ int prSignalRotate(struct VMGlobals* g, int numArgsPushed) {
 
 int prSignalOverDub(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b, *c;
-    int err;
-    int index;
+    int64 err;
+    int64 index;
 
     a = g->sp - 2;
     b = g->sp - 1;
@@ -250,8 +250,8 @@ int prSignalOverDub(struct VMGlobals* g, int numArgsPushed) {
 
 int prSignalOverWrite(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b, *c;
-    int err;
-    int index;
+    int64 err;
+    int64 index;
 
     a = g->sp - 2;
     b = g->sp - 1;
@@ -269,8 +269,8 @@ int prSignalOverWrite(struct VMGlobals* g, int numArgsPushed) {
 
 int prSignalFade(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b, *c, *d, *e;
-    int err;
-    int start, end;
+    int64 err;
+    int64 start, end;
     float lvl0, lvl1;
 
     a = g->sp - 4;

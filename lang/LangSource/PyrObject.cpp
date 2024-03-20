@@ -2541,7 +2541,43 @@ void freePyrObject(PyrObject* obj) {
     }
 }
 
-int getIndexedInt(PyrObject* obj, int index, int* value) {
+int getIndexedInt(PyrObject* obj, int index, int64* value) {
+    PyrSlot* slot;
+    int err = errNone;
+    if (index < 0 || index >= obj->size)
+        return errIndexOutOfRange;
+    switch (obj->obj_format) {
+    case obj_slot:
+        slot = obj->slots + index;
+        if (IsFloat(slot)) {
+            *value = (int)slotRawFloat(slot);
+        } else if (IsInt(slot)) {
+            *value = slotRawInt(slot);
+        } else {
+            err = errWrongType;
+        }
+        break;
+    case obj_double:
+        *value = (int)((double*)(obj->slots))[index];
+        break;
+    case obj_float:
+        *value = (int)((float*)(obj->slots))[index];
+        break;
+    case obj_int32:
+        *value = ((int32*)(obj->slots))[index];
+        break;
+    case obj_int16:
+        *value = ((int16*)(obj->slots))[index];
+        break;
+    case obj_int8:
+        *value = ((int8*)(obj->slots))[index];
+        break;
+    default:
+        err = errWrongType;
+    }
+    return err;
+}
+int getIndexedInt(PyrObject* obj, int index, int32* value) {
     PyrSlot* slot;
     int err = errNone;
     if (index < 0 || index >= obj->size)

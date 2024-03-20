@@ -443,7 +443,7 @@ int prFloat_AsStringPrec(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 1;
     PyrSlot* b = g->sp;
 
-    int precision;
+    int64 precision;
     int err = slotIntVal(b, &precision);
     if (err)
         return err;
@@ -2080,7 +2080,7 @@ int dumpGCdumpGrey(struct VMGlobals* g, int numArgsPushed) {
 int dumpGCdumpSet(struct VMGlobals* g, int numArgsPushed);
 int dumpGCdumpSet(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* b = g->sp;
-    int set;
+    int64 set;
     int err = slotIntVal(b, &set);
     if (err)
         return err;
@@ -2755,7 +2755,7 @@ int prUGenCodeString(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *aa, *bb, *cc, *dd, *ee;
     char* out = sCodeStringOut;
     char ugenPrefix[16];
-    int err;
+    int64 err;
 
     aa = g->sp - 4; // code string
     bb = g->sp - 3; // ugen prefix
@@ -2763,7 +2763,7 @@ int prUGenCodeString(struct VMGlobals* g, int numArgsPushed) {
     cc = g->sp - 1; // input names
     dd = g->sp; // input value strings
 
-    int ugenIndex;
+    int64 ugenIndex;
     err = slotIntVal(bb, &ugenIndex);
     if (err)
         return err;
@@ -2939,7 +2939,7 @@ void switchToThread(VMGlobals* g, PyrThread* newthread, int oldstate, int* numAr
     slotCopy(&oldthread->environment, currentEnvironmentSlot);
     gc->GCWrite(oldthread, currentEnvironmentSlot);
 
-    SetRaw(&oldthread->state, oldstate);
+    SetRaw(&oldthread->state, int64(oldstate));
 
     if (oldstate == tDone) {
         SetObject(&oldthread->stack, gc->Stack());
@@ -2952,8 +2952,8 @@ void switchToThread(VMGlobals* g, PyrThread* newthread, int oldstate, int* numAr
         SetNil(&oldthread->frame);
         SetRaw(&oldthread->ip, (void*)nullptr);
         SetRaw(&oldthread->sp, (void*)nullptr);
-        SetRaw(&oldthread->numArgsPushed, 0);
-        SetRaw(&oldthread->numpop, 0);
+        SetRaw(&oldthread->numArgsPushed, int64(0));
+        SetRaw(&oldthread->numpop, int64(0));
         SetNil(&oldthread->parent);
     } else if (oldstate == tInit) {
         SetObject(&oldthread->stack, gc->Stack());
@@ -2966,8 +2966,8 @@ void switchToThread(VMGlobals* g, PyrThread* newthread, int oldstate, int* numAr
         SetNil(&oldthread->frame);
         SetRaw(&oldthread->ip, (void*)nullptr);
         SetRaw(&oldthread->sp, (void*)nullptr);
-        SetRaw(&oldthread->numArgsPushed, 0);
-        SetRaw(&oldthread->numpop, 0);
+        SetRaw(&oldthread->numArgsPushed, int64(0));
+        SetRaw(&oldthread->numpop, int64(0));
         SetNil(&oldthread->parent);
     } else {
         // save old thread's state
@@ -2982,8 +2982,8 @@ void switchToThread(VMGlobals* g, PyrThread* newthread, int oldstate, int* numAr
         SetPtr(&oldthread->ip, g->ip);
         SetPtr(&oldthread->sp, g->sp);
         slotCopy(&oldthread->receiver, &g->receiver);
-        SetRaw(&oldthread->numArgsPushed, *numArgsPushed);
-        SetRaw(&oldthread->numpop, g->numpop);
+        SetRaw(&oldthread->numArgsPushed, int64(*numArgsPushed));
+        SetRaw(&oldthread->numpop, int64(g->numpop));
 
         // gc->ToGrey(oldthread);
         if (gc->ObjIsBlack(oldthread)) {
@@ -3036,7 +3036,7 @@ void switchToThread(VMGlobals* g, PyrThread* newthread, int oldstate, int* numAr
     SetRaw(&newthread->sp, (void*)nullptr);
     SetNil(&newthread->receiver);
 
-    SetRaw(&newthread->state, tRunning);
+    SetRaw(&newthread->state, int64(tRunning));
 
 
     // set new environment
@@ -3107,7 +3107,7 @@ extern PyrSymbol* s_prstart;
 int prThreadInit(struct VMGlobals* g, int numArgsPushed);
 int prThreadInit(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b, *c;
-    int stacksize, err;
+    int64 stacksize, err;
     PyrThread* thread;
 
     // postfl("->prThreadInit\n");
@@ -3128,7 +3128,7 @@ int prThreadInit(struct VMGlobals* g, int numArgsPushed) {
     if (err)
         return err;
 
-    stacksize = std::max(stacksize, EVALSTACKDEPTH);
+    stacksize = std::max(stacksize, int64(EVALSTACKDEPTH));
 
     double beats, seconds;
     err = slotDoubleVal(&g->thread->beats, &beats);
@@ -3154,8 +3154,8 @@ int prThreadRandSeed(struct VMGlobals* g, int numArgsPushed) {
 
     PyrThread* thread = slotRawThread(a);
 
-    int32 seed;
-    int err = slotIntVal(b, &seed);
+    int64 seed;
+    int64 err = slotIntVal(b, &seed);
     if (err)
         return err;
 
@@ -3401,7 +3401,7 @@ int prRoutineReset(struct VMGlobals* g, int numArgsPushed) {
     state = slotRawInt(&thread->state);
     // post("->prRoutineReset %d\n", state);
     if (state == tSuspended) {
-        SetRaw(&thread->state, tInit);
+        SetRaw(&thread->state, int64(tInit));
         slotRawObject(&thread->stack)->size = 0;
         SetNil(&thread->method);
         SetNil(&thread->block);
@@ -3409,11 +3409,11 @@ int prRoutineReset(struct VMGlobals* g, int numArgsPushed) {
         SetNil(&thread->frame);
         SetRaw(&thread->ip, (void*)nullptr);
         SetRaw(&thread->sp, (void*)nullptr);
-        SetRaw(&thread->numArgsPushed, 0);
-        SetRaw(&thread->numpop, 0);
+        SetRaw(&thread->numArgsPushed, int64(0));
+        SetRaw(&thread->numpop, int64(0));
         SetNil(&thread->parent);
     } else if (state == tDone) {
-        SetRaw(&thread->state, tInit);
+        SetRaw(&thread->state, int64(tInit));
         slotRawObject(&thread->stack)->size = 0;
         SetNil(&thread->method);
         SetNil(&thread->block);
@@ -3421,8 +3421,8 @@ int prRoutineReset(struct VMGlobals* g, int numArgsPushed) {
         SetNil(&thread->frame);
         SetRaw(&thread->ip, (void*)nullptr);
         SetRaw(&thread->sp, (void*)nullptr);
-        SetRaw(&thread->numArgsPushed, 0);
-        SetRaw(&thread->numpop, 0);
+        SetRaw(&thread->numArgsPushed, int64(0));
+        SetRaw(&thread->numpop, int64(0));
         SetNil(&thread->parent);
     } else if (state == tInit) {
         // do nothing
@@ -3452,7 +3452,7 @@ int prRoutineStop(struct VMGlobals* g, int numArgsPushed) {
 
     if (state == tSuspended || state == tInit) {
         SetNil(&g->thread->terminalValue);
-        SetRaw(&thread->state, tDone);
+        SetRaw(&thread->state, int64(tDone));
         slotRawObject(&thread->stack)->size = 0;
     } else if (state == tDone) {
         // do nothing

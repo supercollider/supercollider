@@ -2780,7 +2780,7 @@ void BufDelayN_next(BufDelayN* unit, int inNumSamples) {
     float dsamp = unit->m_dsamp;
 
     if (delaytime == unit->m_delaytime) {
-        DelayN_delay_loop<false>(out, in, iwrphase, dsamp, mask, bufData, inNumSamples, PREVIOUSPOWEROFTWO(bufSamples));
+        DelayN_delay_loop<false>(out, in, iwrphase, dsamp, mask, bufData, inNumSamples, PREVIOUSPOWEROFTWO(static_cast<int32>(bufSamples)));
     } else {
         float next_dsamp = BufCalcDelay(unit, bufSamples, delaytime);
         float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
@@ -2806,7 +2806,7 @@ void BufDelayN_next_z(BufDelayN* unit, int inNumSamples) {
     float dsamp = unit->m_dsamp;
 
     if (delaytime == unit->m_delaytime) {
-        DelayN_delay_loop<true>(out, in, iwrphase, dsamp, mask, bufData, inNumSamples, PREVIOUSPOWEROFTWO(bufSamples));
+        DelayN_delay_loop<true>(out, in, iwrphase, dsamp, mask, bufData, inNumSamples, PREVIOUSPOWEROFTWO(static_cast<int32>(bufSamples)));
     } else {
         float next_dsamp = BufCalcDelay(unit, bufSamples, delaytime);
         float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
@@ -2989,7 +2989,7 @@ void BufCombN_next(BufCombN* unit, int inNumSamples) {
         float* dlybuf1 = bufData - ZOFF;
         float* dlyrd = dlybuf1 + (irdphase & mask);
         float* dlywr = dlybuf1 + (iwrphase & mask);
-        float* dlyN = dlybuf1 + PREVIOUSPOWEROFTWO(bufSamples);
+        float* dlyN = dlybuf1 + PREVIOUSPOWEROFTWO(static_cast<int32>(bufSamples));
         if (decaytime == unit->m_decaytime) {
             long remain = inNumSamples;
             while (remain) {
@@ -3059,7 +3059,7 @@ void BufCombN_next_z(BufCombN* unit, int inNumSamples) {
     if (delaytime == unit->m_delaytime) {
         long irdphase = iwrphase - (long)dsamp;
         float* dlybuf1 = bufData - ZOFF;
-        float* dlyN = dlybuf1 + PREVIOUSPOWEROFTWO(bufSamples);
+        float* dlyN = dlybuf1 + PREVIOUSPOWEROFTWO(static_cast<int32>(bufSamples));
         if (decaytime == unit->m_decaytime) {
             long remain = inNumSamples;
             while (remain) {
@@ -3223,7 +3223,7 @@ void BufAllpassN_next(BufAllpassN* unit, int inNumSamples) {
         float* dlybuf1 = bufData - ZOFF;
         float* dlyrd = dlybuf1 + (irdphase & mask);
         float* dlywr = dlybuf1 + (iwrphase & mask);
-        float* dlyN = dlybuf1 + PREVIOUSPOWEROFTWO(bufSamples);
+        float* dlyN = dlybuf1 + PREVIOUSPOWEROFTWO(static_cast<int32>(bufSamples));
         if (decaytime == unit->m_decaytime) {
             long remain = inNumSamples;
             while (remain) {
@@ -3295,7 +3295,7 @@ void BufAllpassN_next_z(BufAllpassN* unit, int inNumSamples) {
     if (delaytime == unit->m_delaytime) {
         long irdphase = iwrphase - (long)dsamp;
         float* dlybuf1 = bufData - ZOFF;
-        float* dlyN = dlybuf1 + PREVIOUSPOWEROFTWO(bufSamples);
+        float* dlyN = dlybuf1 + PREVIOUSPOWEROFTWO(static_cast<int32>(bufSamples));
         if (decaytime == unit->m_decaytime) {
             long remain = inNumSamples;
             while (remain) {
@@ -5243,7 +5243,7 @@ void GrainTap_Ctor(GrainTap* unit) {
 
     GET_BUF
 
-    if (!ISPOWEROFTWO(bufSamples)) {
+    if (!ISPOWEROFTWO(static_cast<int32>(bufSamples))) {
         Print("GrainTap buffer size not a power of two.\n");
         SETCALC(*ClearUnitOutputs);
         return;

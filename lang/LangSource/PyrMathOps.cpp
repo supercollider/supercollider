@@ -74,7 +74,7 @@ int doSpecialUnaryArithMsg(VMGlobals* g, int numArgsPushed) {
             SetFloat(a, (double)slotRawInt(a));
             break;
         case opAsInteger:
-            SetRaw(a, (int)slotRawInt(a));
+            SetRaw(a, static_cast<int64>(slotRawInt(a)));
             break;
         case opCeil:
             SetRaw(a, slotRawInt(a));
@@ -83,10 +83,10 @@ int doSpecialUnaryArithMsg(VMGlobals* g, int numArgsPushed) {
             SetRaw(a, slotRawInt(a));
             break;
         case opFrac:
-            SetRaw(a, 0);
+            SetRaw(a, int64(0));
             break;
         case opSign:
-            SetRaw(a, slotRawInt(a) > 0 ? 1 : (slotRawInt(a) == 0 ? 0 : -1));
+            SetRaw(a, static_cast<int64>(slotRawInt(a) > 0 ? 1 : (slotRawInt(a) == 0 ? 0 : -1)));
             break;
         case opSquared:
             SetRaw(a, slotRawInt(a) * slotRawInt(a));
@@ -164,16 +164,16 @@ int doSpecialUnaryArithMsg(VMGlobals* g, int numArgsPushed) {
             SetFloat(a, tanh((double)slotRawInt(a)));
             break;
         case opRand:
-            SetRaw(a, g->rgen->irand(slotRawInt(a)));
+            SetRaw(a, static_cast<int64>(g->rgen->irand(slotRawInt(a))));
             break;
         case opRand2:
-            SetRaw(a, g->rgen->irand2(slotRawInt(a)));
+            SetRaw(a, static_cast<int64>(g->rgen->irand2(slotRawInt(a))));
             break;
         case opLinRand:
-            SetRaw(a, g->rgen->ilinrand(slotRawInt(a)));
+            SetRaw(a, static_cast<int64>(g->rgen->ilinrand(slotRawInt(a))));
             break;
         case opBiLinRand:
-            SetRaw(a, g->rgen->ibilinrand(slotRawInt(a)));
+            SetRaw(a, static_cast<int64>(g->rgen->ibilinrand(slotRawInt(a))));
             break;
 
             //				case opExpRand : SetFloat(a, g->rgen->exprand(slotRawInt(a))); break;
@@ -404,9 +404,13 @@ int doSpecialUnaryArithMsg(VMGlobals* g, int numArgsPushed) {
         case opNotNil:
             SetTrue(a);
             break;
-        case opBitNot:
-            SetRaw(a, ~(int)slotRawFloat(a));
+        case opBitNot: {
+            int64 n;
+            const double d = slotRawFloat(a);
+            memcpy(&n, &d, sizeof(n));
+            SetRaw(a, ~n);
             break;
+        }
         case opAbs:
             SetRaw(a, sc_abs(slotRawFloat(a)));
             break;
@@ -610,7 +614,7 @@ int doSpecialBinaryArithMsg(VMGlobals* g, int numArgsPushed, bool isPrimitive) {
                 SetFloat(a, (double)slotRawInt(a) / (double)slotRawInt(b));
                 break;
             case opMod:
-                SetRaw(a, sc_mod((int)slotRawInt(a), (int)slotRawInt(b)));
+                SetRaw(a, sc_mod(slotRawInt(a), slotRawInt(b)));
                 break;
             case opEQ:
                 SetBool(a, slotRawInt(a) == slotRawInt(b));
@@ -654,13 +658,13 @@ int doSpecialBinaryArithMsg(VMGlobals* g, int numArgsPushed, bool isPrimitive) {
                 SetRaw(a, sc_gcd((long)slotRawInt(a), (long)slotRawInt(b)));
                 break;
             case opRound:
-                SetRaw(a, sc_round((int)slotRawInt(a), (int)slotRawInt(b)));
+                SetRaw(a, sc_round(slotRawInt(a), slotRawInt(b)));
                 break;
             case opRoundUp:
-                SetRaw(a, sc_roundUp((int)slotRawInt(a), (int)slotRawInt(b)));
+                SetRaw(a, sc_roundUp(slotRawInt(a), slotRawInt(b)));
                 break;
             case opTrunc:
-                SetRaw(a, sc_trunc((int)slotRawInt(a), (int)slotRawInt(b)));
+                SetRaw(a, sc_trunc(slotRawInt(a), slotRawInt(b)));
                 break;
             case opAtan2:
                 SetFloat(a, atan2((double)slotRawInt(a), (double)slotRawInt(b)));

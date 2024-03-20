@@ -1877,8 +1877,8 @@ void Dswitch1_next(Dswitch1* unit, int inNumSamples) {
             OUT0(0) = x;
             return;
         }
-        int index = (int32)floor(x + 0.5f);
-        index = sc_wrap(index, 0, unit->mNumInputs - 2) + 1;
+        int32 index = (int32)floor(x + 0.5f);
+        index = sc_wrap(index, int32(0), static_cast<int32>(unit->mNumInputs - 2)) + 1;
         OUT0(0) = DEMANDINPUT_A(index, inNumSamples);
     } else {
         for (int i = 0; i < unit->mNumInputs; ++i) {
@@ -1904,8 +1904,8 @@ void Dswitch_next(Dswitch* unit, int inNumSamples) {
             if (sc_isnan(ival))
                 val = ival;
             else {
-                int index = (int32)floor(ival + 0.5f);
-                index = sc_wrap(index, 0, unit->mNumInputs - 2) + 1;
+                int32 index = (int32)floor(ival + 0.5f);
+                index = sc_wrap(index, int32(0), static_cast<int32>(unit->mNumInputs - 2)) + 1;
                 val = DEMANDINPUT_A(index, inNumSamples);
 
                 RESETINPUT(unit->m_index);
@@ -1920,16 +1920,16 @@ void Dswitch_next(Dswitch* unit, int inNumSamples) {
         for (int i = 0; i < unit->mNumInputs; ++i) {
             RESETINPUT(i);
         }
-        int index = (int32)floor(DEMANDINPUT(0) + 0.5f);
-        index = sc_wrap(index, 0, unit->mNumInputs - 1) + 1;
+        int32 index = (int32)floor(DEMANDINPUT(0) + 0.5f);
+        index = sc_wrap(index, int32(0), static_cast<int32>(unit->mNumInputs - 1)) + 1;
         unit->m_index = index;
     }
 }
 
 void Dswitch_Ctor(Dswitch* unit) {
     SETCALC(Dswitch_next);
-    int index = (int32)floor(DEMANDINPUT(0) + 0.5f);
-    index = sc_wrap(index, 0, unit->mNumInputs - 1) + 1;
+    int32 index = (int32)floor(DEMANDINPUT(0) + 0.5f);
+    index = sc_wrap(index, int32(0), static_cast<int32>(unit->mNumInputs - 1)) + 1;
     unit->m_index = index;
     OUT0(0) = 0.f;
 }

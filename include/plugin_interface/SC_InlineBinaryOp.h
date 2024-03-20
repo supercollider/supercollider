@@ -312,8 +312,10 @@ inline double sc_hypotx(double x, double y) {
     return x + y - kDSQRT2M1 * minxy;
 }
 
-inline int sc_div(int a, int b) {
-    int c;
+template<class T>
+inline T sc_div(T a, T b) {
+    static_assert(std::is_integral_v<T>);
+    T c;
     if (b) {
         if (a < 0)
             c = (a + 1) / b - 1;
@@ -335,9 +337,11 @@ inline int sc_mod(int a, int b)
 */
 
 /// Modulo
-inline int sc_mod(int in, int hi) {
+template<class T>
+inline T sc_mod(T in, T hi) {
+    static_assert(std::is_integral_v<T>);
     // avoid the divide if possible
-    const int lo = 0;
+    const T lo = 0;
     if (in >= hi) {
         in -= hi;
         if (in < hi)
@@ -352,7 +356,7 @@ inline int sc_mod(int in, int hi) {
     if (hi == lo)
         return lo;
 
-    int c;
+    T c;
     c = in % hi;
     if (c < 0)
         c += hi;
@@ -360,20 +364,28 @@ inline int sc_mod(int in, int hi) {
 }
 
 /// Wrap in between lo and hi
-inline int sc_wrap(int in, int lo, int hi) { return sc_mod(in - lo, hi - lo + 1) + lo; }
+template<class T>
+inline T sc_wrap(T in, T lo, T hi) {
+    static_assert(std::is_integral_v<T>);
+    return sc_mod(in - lo, hi - lo + 1) + lo;
+}
 
 /// Folds in to value between lo and hi
-inline int sc_fold(int in, int lo, int hi) {
-    int b = hi - lo;
-    int b2 = b + b;
-    int c = sc_mod(in - lo, b2);
+template<class T>
+inline T sc_fold(T in, T lo, T hi) {
+    static_assert(std::is_integral_v<T>);
+    T b = hi - lo;
+    T b2 = b + b;
+    T c = sc_mod(in - lo, b2);
     if (c > b)
         c = b2 - c;
     return c + lo;
 }
 
 /// Greatest common divisor
-inline int sc_gcd(int a, int b) {
+template<class T>
+inline T sc_gcd(T a, T b) {
+    static_assert(std::is_integral_v<T>);
     if (a == 0)
         return b;
 
@@ -394,13 +406,13 @@ inline int sc_gcd(int a, int b) {
     }
 
     if (a < b) {
-        int t = a;
+        T t = a;
         a = b;
         b = t;
     }
 
     while (b > 0) {
-        int t = a % b;
+        T t = a % b;
         a = b;
         b = t;
     }
@@ -413,7 +425,9 @@ inline int sc_gcd(int a, int b) {
 }
 
 /// Least common multiple
-inline int sc_lcm(int a, int b) {
+template<class T>
+inline T sc_lcm(T a, T b) {
+    static_assert(std::is_integral_v<T>);
     if (a == 0 || b == 0)
         return 0;
     else
@@ -422,82 +436,69 @@ inline int sc_lcm(int a, int b) {
 
 
 /// Greatest common divisor
-inline long sc_gcd(long a, long b) {
-    if (a == 0)
-        return b;
-
-    if (b == 0)
-        return a;
-
-    const bool negative = (a <= 0 && b <= 0);
-
-    a = sc_abs(a);
-    b = sc_abs(b);
-
-    if (a == 1 || b == 1) {
-        if (negative) {
-            return (long)-1;
-        } else {
-            return (long)1;
-        }
-    }
-
-    if (a < b) {
-        long t = a;
-        a = b;
-        b = t;
-    }
-
-    while (b > 0) {
-        long t = a % b;
-        a = b;
-        b = t;
-    }
-
-    if (negative) {
-        a = 0 - a;
-    }
-
-    return a;
-}
-
-/// Least common multiple
-inline long sc_lcm(long a, long b) {
-    if (a == 0 || b == 0)
-        return (long)0;
-    else
-        return (a * b) / sc_gcd(a, b);
-}
-
-/// Greatest common divisor
 inline float sc_gcd(float u, float v) { return (float)sc_gcd((long)std::trunc(u), (long)std::trunc(v)); }
 
 /// Least common multiple
 inline float sc_lcm(float u, float v) { return (float)sc_lcm((long)std::trunc(u), (long)std::trunc(v)); }
 
 /// Performs a bitwise and with the number b
-inline int sc_bitAnd(int a, int b) { return a & b; }
+template<class T>
+inline T sc_bitAnd(T a, T b) {
+    static_assert(std::is_integral_v<T>);
+    return a & b;
+}
 
 /// Performs a bitwise or with the number b
-inline int sc_bitOr(int a, int b) { return a | b; }
+template<class T>
+inline T sc_bitOr(T a, T b) {
+    static_assert(std::is_integral_v<T>);
+    return a | b;
+}
 
 /// Performs a binary leftshift with the number b
-inline int sc_leftShift(int a, int b) { return a << b; }
+template<class T>
+inline T sc_leftShift(T a, T b) {
+    static_assert(std::is_integral_v<T>);
+    return a << b;
+}
 
 /// Performs a binary rightshift with the number b
-inline int sc_rightShift(int a, int b) { return a >> b; }
+template<class T>
+inline T sc_rightShift(T a, T b) {
+    static_assert(std::is_integral_v<T>);
+    return a >> b;
+}
 
 /// Recast a as an unsigned integer and then perform a binary rightshift with the number b
-inline int sc_unsignedRightShift(int a, int b) { return (int)((uint32)a >> b); }
+
+// can't figure out how to do this in templates without c++ 20
+inline int32 sc_unsignedRightShift(int32 a, int32 b) {
+    return (int)((uint32)a >> b);
+}
+inline int64 sc_unsignedRightShift(int64 a, int64 b) {
+    return (int64)((uint64)a >> b);
+}
 
 /// Quantization by rounding. Rounds x to the nearest multiple of quant
-inline int sc_round(int x, int quant) { return quant == 0 ? x : sc_div(x + quant / 2, quant) * quant; }
+template<class T>
+inline T sc_round(T x, T quant) {
+    static_assert(std::is_integral_v<T>);
+    return quant == 0 ? x : sc_div(x + quant / 2, quant) * quant;
+}
 
 /// Round x up to multiple of quant
-inline int sc_roundUp(int x, int quant) { return quant == 0 ? x : sc_div(x + quant - 1, quant) * quant; }
+template<class T>
+inline T sc_roundUp(T x, T quant) {
+    static_assert(std::is_integral_v<T>);
+    return quant == 0 ? x : sc_div(x + quant - 1, quant) * quant;
+}
 
 /// Truncate to multiple of quant (e.g. it rounds numbers down to a multiple of quant)
-inline int sc_trunc(int x, int quant) { return quant == 0 ? x : sc_div(x, quant) * quant; }
+template<class T>
+inline T sc_trunc(T x, T quant) {
+    static_assert(std::is_integral_v<T>);
+    return quant == 0 ? x : sc_div(x, quant) * quant;
+}
 
 /// Exponentiation: x to the power of an integer
 template <typename F> inline F sc_powi(F x, unsigned int n) {

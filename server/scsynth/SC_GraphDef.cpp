@@ -247,7 +247,7 @@ static inline bool sortIndexMaps(IndexMap map1, IndexMap map2) { return map1.par
 // ver 2
 inline static void calcParamSpecs(GraphDef* graphDef, char*& buffer) {
     if (graphDef->mNumParamSpecs) {
-        int hashTableSize = NEXTPOWEROFTWO(graphDef->mNumParamSpecs);
+        int hashTableSize = NEXTPOWEROFTWO(static_cast<int32>(graphDef->mNumParamSpecs));
         graphDef->mParamSpecTable = new ParamSpecTable(&gMalloc, hashTableSize, false);
         uint32 nSpecs = graphDef->mNumParamSpecs;
         graphDef->mParamSpecs = (ParamSpec*)malloc(nSpecs * sizeof(ParamSpec));
@@ -290,7 +290,7 @@ inline static void calcParamSpecs(GraphDef* graphDef, char*& buffer) {
 
 inline static void calcParamSpecs1(GraphDef* graphDef, char*& buffer) {
     if (graphDef->mNumParamSpecs) {
-        int hashTableSize = NEXTPOWEROFTWO(graphDef->mNumParamSpecs);
+        int hashTableSize = NEXTPOWEROFTWO(static_cast<int32>(graphDef->mNumParamSpecs));
         graphDef->mParamSpecTable = new ParamSpecTable(&gMalloc, hashTableSize, false);
         uint32 nSpecs = graphDef->mNumParamSpecs;
         graphDef->mParamSpecs = (ParamSpec*)malloc(nSpecs * sizeof(ParamSpec));
