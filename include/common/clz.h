@@ -183,9 +183,16 @@ inline uint64 ZEROES(uint64 x) { return ONES(~x); }
 
 
 // reverse bits in a word
+
+#if defined(__GNUC__)
 inline uint32 BitReverse(uint32 x) { return __bswap_32(x); }
 inline uint64 BitReverse(uint64 x) { return __bswap_64(x); }
 
+#elif defined(_MSC_VER)
+
+inline uint32 BitReverse(uint32 x) { return _byteswap_ulong(x); }
+inline uint64 BitReverse(uint64 x) { return _byteswap_uint64(x); }
+#endif
 
 template <typename T> constexpr T rotl(T x, int s) noexcept {
     constexpr auto Nd = std::numeric_limits<T>::digits;
