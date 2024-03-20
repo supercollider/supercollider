@@ -6899,7 +6899,7 @@ void DelTapRd_next4_a(DelTapRd* unit, int inNumSamples) {
 PluginLoad(Delay) {
     ft = inTable;
 
-#define DefineInfoUnit(name) (*ft->fDefineUnit)(#name, sizeof(Unit), (UnitCtorFunc) & name##_Ctor, 0, 0);
+#define DefineInfoUnit(name) (*ft->fDefineUnit)(#name, sizeof(Unit), (UnitCtorFunc)&name##_Ctor, 0, 0);
 
     DefineInfoUnit(ControlRate);
     DefineInfoUnit(SampleRate);
@@ -6916,7 +6916,7 @@ PluginLoad(Delay) {
     DefineInfoUnit(NumRunningSynths);
     DefineInfoUnit(NodeID);
 
-#define DefineBufInfoUnit(name) (*ft->fDefineUnit)(#name, sizeof(BufInfoUnit), (UnitCtorFunc) & name##_Ctor, 0, 0);
+#define DefineBufInfoUnit(name) (*ft->fDefineUnit)(#name, sizeof(BufInfoUnit), (UnitCtorFunc)&name##_Ctor, 0, 0);
 
     DefineBufInfoUnit(BufSampleRate);
     DefineBufInfoUnit(BufRateScale);
@@ -6945,7 +6945,7 @@ PluginLoad(Delay) {
     DefineSimpleUnit(BufAllpassC);
 
 #define DefineDelayUnit(name)                                                                                          \
-    (*ft->fDefineUnit)(#name, sizeof(name), (UnitCtorFunc) & name##_Ctor, (UnitDtorFunc) & DelayUnit_Dtor, 0);
+    (*ft->fDefineUnit)(#name, sizeof(name), (UnitCtorFunc)&name##_Ctor, (UnitDtorFunc)&DelayUnit_Dtor, 0);
 
     DefineDelayUnit(DelayN);
     DefineDelayUnit(DelayL);

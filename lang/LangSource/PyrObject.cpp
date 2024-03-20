@@ -776,9 +776,7 @@ public:
     typedef const T& const_reference;
     typedef T value_type;
 
-    template <class U> struct rebind {
-        typedef pyr_pool_compile_allocator<U> other;
-    };
+    template <class U> struct rebind { typedef pyr_pool_compile_allocator<U> other; };
 
     pyr_pool_compile_allocator(void) {}
 

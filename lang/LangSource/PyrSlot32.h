@@ -236,10 +236,11 @@ inline void SetRaw(PyrSlot* slot, int64 val) {
     assert(IsInt(slot));
     slot->ui = val;
 }
-//inline void SetRaw(PyrSlot* slot, long val) {
+// inline void SetRaw(PyrSlot* slot, long val) {
 //    assert(IsInt(slot));
 //    slot->ui = val;
 //}
+
 inline void SetRaw(PyrSlot* slot, PyrObject* val) {
     assert(IsObj(slot));
     slot->uo = val;
