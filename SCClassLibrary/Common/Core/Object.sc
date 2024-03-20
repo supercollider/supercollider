@@ -700,10 +700,10 @@ Object  {
 		if (aSelector === '==', {
 			^false
 		},{
-			if (aSelector === '!=', {
-				^true
-			},{
-				BinaryOpFailureError(this, aSelector, [thing, adverb]).throw;
+		if (aSelector === '!=', {
+			^true
+		},{
+			BinaryOpFailureError(this, aSelector, [thing, adverb]).throw;
 		})});
 	}
 	performBinaryOpOnSimpleNumber { arg aSelector, thing, adverb;
@@ -730,7 +730,7 @@ Object  {
 			if (name.isNil or: { name.asString.isEmpty }) { Error("missing SynthDef file name").throw } {
 				name = dir +/+ name ++ ".scsyndef";
 				if(overwrite or: { pathMatch(name).isEmpty })
-				{
+					{
 					file = File(name, "w");
 					protect {
 						AbstractMDPlugin.clearMetadata(name);

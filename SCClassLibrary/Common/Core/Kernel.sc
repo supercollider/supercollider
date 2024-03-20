@@ -570,7 +570,7 @@ FunctionDef {
         	.drop(if(this.varArgs, -1, 0)) // here we don't want the default provided by prototypeFrame for varArgs '[]', so drop it.
         	.overWrite(argumentsArray);
 
-		// check keywordArgumentPairs do not collide with a	argumentsArray and that they are present in the method.
+		// check arguments in keywordArgumentPairs do not collide with those in argumentsArray and that they are present in the method.
 		keywordArgumentPairs.keysValuesDo {|name, a|
 			if (visitedArgNames.includes(name)) {
 				Error("The same argument cannot be passed twice, got two values for argument '%'".format(name))

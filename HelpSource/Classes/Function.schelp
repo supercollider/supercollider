@@ -137,12 +137,14 @@ Keyword arguments as any link::Reference/Key-Value-Pairs:: structure.
 
 discussion::
 code::
+(
 f = { |a, b ...e|
    a.debug(\a);
    b.debug(\b);
    e.debug(\e);
 };
 f.valueWith([\a], (e: [1,2,3]));
+)
 ::
 
 
