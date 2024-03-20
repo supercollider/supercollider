@@ -2780,7 +2780,8 @@ void BufDelayN_next(BufDelayN* unit, int inNumSamples) {
     float dsamp = unit->m_dsamp;
 
     if (delaytime == unit->m_delaytime) {
-        DelayN_delay_loop<false>(out, in, iwrphase, dsamp, mask, bufData, inNumSamples, PREVIOUSPOWEROFTWO(static_cast<int32>(bufSamples)));
+        DelayN_delay_loop<false>(out, in, iwrphase, dsamp, mask, bufData, inNumSamples,
+                                 PREVIOUSPOWEROFTWO(static_cast<int32>(bufSamples)));
     } else {
         float next_dsamp = BufCalcDelay(unit, bufSamples, delaytime);
         float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
@@ -2806,7 +2807,8 @@ void BufDelayN_next_z(BufDelayN* unit, int inNumSamples) {
     float dsamp = unit->m_dsamp;
 
     if (delaytime == unit->m_delaytime) {
-        DelayN_delay_loop<true>(out, in, iwrphase, dsamp, mask, bufData, inNumSamples, PREVIOUSPOWEROFTWO(static_cast<int32>(bufSamples)));
+        DelayN_delay_loop<true>(out, in, iwrphase, dsamp, mask, bufData, inNumSamples,
+                                PREVIOUSPOWEROFTWO(static_cast<int32>(bufSamples)));
     } else {
         float next_dsamp = BufCalcDelay(unit, bufSamples, delaytime);
         float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
@@ -6897,7 +6899,7 @@ void DelTapRd_next4_a(DelTapRd* unit, int inNumSamples) {
 PluginLoad(Delay) {
     ft = inTable;
 
-#define DefineInfoUnit(name) (*ft->fDefineUnit)(#name, sizeof(Unit), (UnitCtorFunc)&name##_Ctor, 0, 0);
+#define DefineInfoUnit(name) (*ft->fDefineUnit)(#name, sizeof(Unit), (UnitCtorFunc) & name##_Ctor, 0, 0);
 
     DefineInfoUnit(ControlRate);
     DefineInfoUnit(SampleRate);
@@ -6914,7 +6916,7 @@ PluginLoad(Delay) {
     DefineInfoUnit(NumRunningSynths);
     DefineInfoUnit(NodeID);
 
-#define DefineBufInfoUnit(name) (*ft->fDefineUnit)(#name, sizeof(BufInfoUnit), (UnitCtorFunc)&name##_Ctor, 0, 0);
+#define DefineBufInfoUnit(name) (*ft->fDefineUnit)(#name, sizeof(BufInfoUnit), (UnitCtorFunc) & name##_Ctor, 0, 0);
 
     DefineBufInfoUnit(BufSampleRate);
     DefineBufInfoUnit(BufRateScale);
@@ -6943,7 +6945,7 @@ PluginLoad(Delay) {
     DefineSimpleUnit(BufAllpassC);
 
 #define DefineDelayUnit(name)                                                                                          \
-    (*ft->fDefineUnit)(#name, sizeof(name), (UnitCtorFunc)&name##_Ctor, (UnitDtorFunc)&DelayUnit_Dtor, 0);
+    (*ft->fDefineUnit)(#name, sizeof(name), (UnitCtorFunc) & name##_Ctor, (UnitDtorFunc) & DelayUnit_Dtor, 0);
 
     DefineDelayUnit(DelayN);
     DefineDelayUnit(DelayL);

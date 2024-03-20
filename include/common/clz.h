@@ -49,12 +49,6 @@ static __inline__ int32 CLZ(int32 arg) {
     else
         return 32;
 }
-static __inline__ uint32 CLZ(uint32 arg) {
-    if (arg)
-        return __builtin_clz(arg);
-    else
-        return 32;
-}
 static __inline__ int64 CLZ(int64 arg) {
     if (arg)
         return __builtin_clzl(arg);
@@ -181,18 +175,11 @@ inline uint64 ZEROES(uint64 x) { return ONES(~x); }
 
 
 // reverse bits in a word
-inline uint32 BitReverse(uint32 x) {
-    return __bswap_32(x);
-}
-inline uint64  BitReverse(uint64 x ){
-    return __bswap_64(x);
-}
+inline uint32 BitReverse(uint32 x) { return __bswap_32(x); }
+inline uint64 BitReverse(uint64 x) { return __bswap_64(x); }
 
 
-
-template<typename T>
-constexpr T rotl(T x, int s) noexcept
-{
+template <typename T> constexpr T rotl(T x, int s) noexcept {
     constexpr auto Nd = std::numeric_limits<T>::digits;
     if ((Nd & (Nd - 1)) == 0) {
         // Variant for power of two _Nd which the compiler can
@@ -211,8 +198,7 @@ constexpr T rotl(T x, int s) noexcept
 }
 
 
-template<typename Tp>
-constexpr Tp rotr(Tp x, int s) noexcept {
+template <typename Tp> constexpr Tp rotr(Tp x, int s) noexcept {
     constexpr auto Nd = std::numeric_limits<Tp>::digits;
     if ((Nd & (Nd - 1)) == 0) {
         // Variant for power of two _Nd which the compiler can
@@ -236,13 +222,9 @@ inline uint32 RotateRight(uint32 x, uint32 s) {
     s = s & 31;
     return (x << (32 - s)) | (x >> s);
 }
-inline uint64 RotateRight(uint64 x, uint32 s) {
-    return rotr(x, s);
-}
+inline uint64 RotateRight(uint64 x, uint32 s) { return rotr(x, s); }
 inline uint32 RotateLeft(uint32 x, uint32 s) {
     s = s & 31;
     return (x >> (32 - s)) | (x << s);
 }
-inline uint64 RotateLeft(uint64 x, uint32 s) {
-    return rotl(x, s);
-}
+inline uint64 RotateLeft(uint64 x, uint32 s) { return rotl(x, s); }

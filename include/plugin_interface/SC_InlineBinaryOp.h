@@ -312,8 +312,7 @@ inline double sc_hypotx(double x, double y) {
     return x + y - kDSQRT2M1 * minxy;
 }
 
-template<class T>
-inline T sc_div(T a, T b) {
+template <class T> inline T sc_div(T a, T b) {
     static_assert(std::is_integral_v<T>);
     T c;
     if (b) {
@@ -337,8 +336,7 @@ inline int sc_mod(int a, int b)
 */
 
 /// Modulo
-template<class T>
-inline T sc_mod(T in, T hi) {
+template <class T> inline T sc_mod(T in, T hi) {
     static_assert(std::is_integral_v<T>);
     // avoid the divide if possible
     const T lo = 0;
@@ -364,15 +362,13 @@ inline T sc_mod(T in, T hi) {
 }
 
 /// Wrap in between lo and hi
-template<class T>
-inline T sc_wrap(T in, T lo, T hi) {
+template <class T> inline T sc_wrap(T in, T lo, T hi) {
     static_assert(std::is_integral_v<T>);
     return sc_mod(in - lo, hi - lo + 1) + lo;
 }
 
 /// Folds in to value between lo and hi
-template<class T>
-inline T sc_fold(T in, T lo, T hi) {
+template <class T> inline T sc_fold(T in, T lo, T hi) {
     static_assert(std::is_integral_v<T>);
     T b = hi - lo;
     T b2 = b + b;
@@ -383,8 +379,7 @@ inline T sc_fold(T in, T lo, T hi) {
 }
 
 /// Greatest common divisor
-template<class T>
-inline T sc_gcd(T a, T b) {
+template <class T> inline T sc_gcd(T a, T b) {
     static_assert(std::is_integral_v<T>);
     if (a == 0)
         return b;
@@ -425,8 +420,7 @@ inline T sc_gcd(T a, T b) {
 }
 
 /// Least common multiple
-template<class T>
-inline T sc_lcm(T a, T b) {
+template <class T> inline T sc_lcm(T a, T b) {
     static_assert(std::is_integral_v<T>);
     if (a == 0 || b == 0)
         return 0;
@@ -442,29 +436,25 @@ inline float sc_gcd(float u, float v) { return (float)sc_gcd((long)std::trunc(u)
 inline float sc_lcm(float u, float v) { return (float)sc_lcm((long)std::trunc(u), (long)std::trunc(v)); }
 
 /// Performs a bitwise and with the number b
-template<class T>
-inline T sc_bitAnd(T a, T b) {
+template <class T> inline T sc_bitAnd(T a, T b) {
     static_assert(std::is_integral_v<T>);
     return a & b;
 }
 
 /// Performs a bitwise or with the number b
-template<class T>
-inline T sc_bitOr(T a, T b) {
+template <class T> inline T sc_bitOr(T a, T b) {
     static_assert(std::is_integral_v<T>);
     return a | b;
 }
 
 /// Performs a binary leftshift with the number b
-template<class T>
-inline T sc_leftShift(T a, T b) {
+template <class T> inline T sc_leftShift(T a, T b) {
     static_assert(std::is_integral_v<T>);
     return a << b;
 }
 
 /// Performs a binary rightshift with the number b
-template<class T>
-inline T sc_rightShift(T a, T b) {
+template <class T> inline T sc_rightShift(T a, T b) {
     static_assert(std::is_integral_v<T>);
     return a >> b;
 }
@@ -472,30 +462,23 @@ inline T sc_rightShift(T a, T b) {
 /// Recast a as an unsigned integer and then perform a binary rightshift with the number b
 
 // can't figure out how to do this in templates without c++ 20
-inline int32 sc_unsignedRightShift(int32 a, int32 b) {
-    return (int)((uint32)a >> b);
-}
-inline int64 sc_unsignedRightShift(int64 a, int64 b) {
-    return (int64)((uint64)a >> b);
-}
+inline int32 sc_unsignedRightShift(int32 a, int32 b) { return (int)((uint32)a >> b); }
+inline int64 sc_unsignedRightShift(int64 a, int64 b) { return (int64)((uint64)a >> b); }
 
 /// Quantization by rounding. Rounds x to the nearest multiple of quant
-template<class T>
-inline T sc_round(T x, T quant) {
+template <class T> inline T sc_round(T x, T quant) {
     static_assert(std::is_integral_v<T>);
     return quant == 0 ? x : sc_div(x + quant / 2, quant) * quant;
 }
 
 /// Round x up to multiple of quant
-template<class T>
-inline T sc_roundUp(T x, T quant) {
+template <class T> inline T sc_roundUp(T x, T quant) {
     static_assert(std::is_integral_v<T>);
     return quant == 0 ? x : sc_div(x + quant - 1, quant) * quant;
 }
 
 /// Truncate to multiple of quant (e.g. it rounds numbers down to a multiple of quant)
-template<class T>
-inline T sc_trunc(T x, T quant) {
+template <class T> inline T sc_trunc(T x, T quant) {
     static_assert(std::is_integral_v<T>);
     return quant == 0 ? x : sc_div(x, quant) * quant;
 }

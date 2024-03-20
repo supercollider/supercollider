@@ -256,8 +256,9 @@ void PinkNoise_next(PinkNoise* unit, int inNumSamples) {
         uint32 total = unit->mTotal;
     uint32* dice = unit->mDice;
     LOOP1(inNumSamples, uint32 counter = trand(s1, s2, s3); // Magnus Jonsson's suggestion.
-          uint32 newrand = counter >> 13; int k = (CTZ(static_cast<int32>(counter))) & 15; uint32 prevrand = dice[k]; dice[k] = newrand;
-          total += (newrand - prevrand); newrand = trand(s1, s2, s3) >> 13; elem32 val; // ensure write before read <sk>
+          uint32 newrand = counter >> 13; int k = (CTZ(static_cast<int32>(counter))) & 15; uint32 prevrand = dice[k];
+          dice[k] = newrand; total += (newrand - prevrand); newrand = trand(s1, s2, s3) >> 13;
+          elem32 val; // ensure write before read <sk>
           val.u = (total + newrand) | 0x40000000; ZXP(out) = val.f - 3.0f; counter++;);
     unit->mTotal = total;
     RPUT
