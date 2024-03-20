@@ -42,8 +42,15 @@ instanceMethods::
 
 method::ownerClass
 returns::
-The link::Classes/Class:: for which the method is part of the implementation.
-If this is a class method, then the owner class will be a 'Meta_Class'.
+If the receiver is an instance method, the owner class is the class for this instance.
+For a class method, it is the class of the class, whose name is prefixed with "Meta_".
+
+code::
+m = Array.findRespondingMethodFor('reverse');
+m.ownerClass; // Array
+m = Array.class.findRespondingMethodFor(\new);
+m.ownerClass; // Meta_Array
+::
 
 method::name
 returns::
@@ -54,14 +61,55 @@ returns::
 A link::Classes/Symbol:: which contains the name of the primitive function that implements the Method,
 if there is one, otherwise returns link::Classes/Nil::.
 
-method::defaultArgs
-Returns the default arguments needed to call the function.
-This will correctly omit 'this'.
-
 method::argumentNamesForCall
-Same as link::#-argName:: but will omit 'this', useful when calling the method.
+Returns the argument names in as needed for calling the function as an link::Classes/Array::.
+This will remove any internal arguments include 'this'.
 
 method:: filenameSymbol
 returns::
 A link::Classes/Symbol:: which is the full path of the source file that this method is defined in.
 
+method::makePerformableArray
+This is used internally by link::Classes/Object#-performWith:: which is sufficient for all uses and recommended over link::#-makePerformableArray::.
+
+Returns an array that can be passed to link::Classes/Object#-performList:: along with the selector.
+
+Both keyword and non-keyword arguments may be provided at the same time.
+
+Errors are thrown if: a value for an argument is present in both the code::argumentsArray:: and the code::keywordArgumentPairs:: (argument collision),
+if a keyword argument's name cannot be found (unknown keyword),
+and if too many arguments are given to code::argumentsArray:: (too many arguments).
+
+Variable arguments are best placed with a keyword argument.
+However, if the code::keywordArgumentPairs:: is empty and all arguments in the code::argumentsArray:: are present, any extra arguments in code::argumentsArray:: will be passed to the variable argument, if present.
+Please note, that variable arguments are unpacked and individually appened to the end of the array, not contained in their own array.
+
+
+argument::argumentsArray
+Arguments as an link::Classes/Array::.
+
+argument::keywordArgumentPairs
+Keyword arguments as any link::Reference/Key-Value-Pairs:: structure.
+
+returns::Arguments as an link::Classes/Array::.
+
+discussion::
+code::
+a = "meow MEOW woof bahh bahh Meow";
+
+// how a user might call a method
+a.findAll("meow", ignoreCase: true);
+
+
+// using makePerformableArray directly, not recommended
+(
+var args = String
+	.findRespondingMethodFor('findAll')
+	.makePerformableArray(["meow"], [ignoreCase: true]);
+
+a.performList('findAll', args);
+)
+
+// using performWith, recommended
+a.performWith('findAll', ["meow"], [ignoreCase: true]);
+::

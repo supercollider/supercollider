@@ -125,11 +125,15 @@ e = Environment.make({ ~a = 3; ~b = 10 });
 method::valueWith
 Evaluate the function using a mix of arguments and keyword arguments.
 
-argument::argumentsArray
-Arguments as an link::Classes/Array::.
+Errors are thrown if: the arguments collide, an unknown keyword is found, or there are too many arguments.
+See link::Classes/FunctionDef#-makePerformableArray:: for a detailed description.
 
-argument::keywordArgumentEnvir
-Keyword arguments as an link::Classes/IdentityDictionary::.
+argument::argumentsArray
+Arguments as an array.
+
+argument::keywordArgumentPairs
+Keyword arguments as any link::Reference/Key-Value-Pairs:: structure.
+
 
 discussion::
 code::
@@ -164,14 +168,17 @@ such as in the object prototyping implementation of Environment.
 
 Ensure both this method and link::#-functionPerformList:: do the same thing or the behaviour will change when the user passes keyword arguments.
 
+Errors are thrown if: the arguments collide, an unknown keyword is found, or there are too many arguments.
+See link::Classes/Method#-makePerformableArray:: or link::Classes/FunctionDef#-makePerformableArray:: for a detailed description.
+
 argument::selector
 The message to be run as a link::Classes/Symbol::.
 
 argument::argumentsArray
 Arguments as an link::Classes/Array::.
 
-argument::keywordArgumentEnvir
-Keyword arguments as an link::Classes/IdentityDictionary::.
+argument::keywordArgumentPairs
+Keyword arguments as any link::Reference/Key-Value-Pairs:: structure.
 
 method::performWithEnvir
 

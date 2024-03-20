@@ -53,13 +53,18 @@ Function : AbstractFunction {
 		// unsupplied argument names are looked up in the currentEnvironment
 		^this.primitiveFailed
 	}
+
 	functionPerformList { arg selector, arglist;
+		// Used in object prototyping.
+		// Ensure both functionPerformList and functionPerformWith do the same thing.
 		_ObjectPerformList;
 		^this.primitiveFailed
 	}
-	functionPerformWith {|selector, argumentsArray, keywordArgumentEnvir|
-		keywordArgumentEnvir ?? { this.functionPerformList(selector, argumentsArray) };
-		^this.valueWith(argumentsArray, keywordArgumentEnvir);
+	functionPerformWith {|selector, argumentsArray, keywordArgumentPairs|
+		// Used in object prototyping.
+		// Ensure both functionPerformList and functionPerformWith do the same thing.
+		keywordArgumentPairs ?? { ^this.functionPerformList(selector, argumentsArray) };
+		^this.valueWith(argumentsArray, keywordArgumentPairs);
 	}
 
 	valueWithEnvir { arg envir;
@@ -78,17 +83,17 @@ Function : AbstractFunction {
 		^this.valueArray(prototypeFrame)
 	}
 
-	valueWith {|argumentsArray, keywordArgumentEnvir|
-		^this.valueArray(def.makePerformableArray(argumentsArray, keywordArgumentEnvir));
+	valueWith {|argumentsArray, keywordArgumentPairs|
+		^this.valueArray(def.makePerformableArray(argumentsArray, keywordArgumentPairs));
 	}
 
 	performWithEnvir { |selector, envir|
 		if(selector === \value) { ^this.valueWithEnvir(envir) };
 		^super.performWithEnvir(selector, envir)
 	}
-	performWith {|selector, argumentsArray, keywordArgumentEnvir|
-		if(selector === \value) { ^this.valueWith(argumentsArray, keywordArgumentEnvir) };
-		^super.performWith(selector, argumentsArray, keywordArgumentEnvir)
+	performWith {|selector, argumentsArray, keywordArgumentPairs|
+		if(selector === \value) { ^this.valueWith(argumentsArray, keywordArgumentPairs) };
+		^super.performWith(selector, argumentsArray, keywordArgumentPairs)
 	}
 
 	performKeyValuePairs { |selector, pairs|

@@ -560,23 +560,18 @@ IdentityDictionary : Dictionary {
 		^this.superPerformList(\doesNotUnderstand, selector, args);
 	}
 
-	doesNotUnderstandWithKeys {|selector, argsArray, keywordArgsAsPairs|
+	doesNotUnderstandWithKeys {|selector, argumentsArray, keywordArgumentPairs|
 		if(know.not){
-			^this.superPerformList(\doesNotUnderstandWithKeys, selector, argsArray, keywordArgsAsPairs )
+			^this.superPerformList(\doesNotUnderstandWithKeys, selector, argumentsArray, keywordArgumentPairs)
 		};
-
 		this[selector] !? {|f|
-			^f.functionPerformWith(\value, [this] ++ argsArray, keywordArgsAsPairs.asEvent);
+			^f.functionPerformWith(\value, [this] ++ argumentsArray, keywordArgumentPairs)
 		};
-
-		// Unlike in doesNotUnderstand, we don't convert to a setter as this isn't
-		// possible with keyword args.
-
-		// Note how the selector is passed in here.
+		// Unlike in doesNotUnderstand, we don't convert to a setter as this isn't possible with keyword args.
+		// Note how the selector is also passed to forward.
 		this[\forward] !? {|f|
-			^f.functionPerformWith(\value, [this, selector] ++ argsArray, keywordArgsAsPairs.asEvent)
+			^f.functionPerformWith(\value, [this, selector] ++ argumentsArray, keywordArgumentPairs)
 		};
-
 		^nil
 	}
 

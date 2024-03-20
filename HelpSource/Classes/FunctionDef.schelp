@@ -52,12 +52,11 @@ code::
 ::
 
 method::argumentNamesForCall
-Returns the argument names in code,
-both for functions and methods (in methods, link::#-argNames:: have this as first item).
+Returns the argument names in as needed for calling the function as an link::Classes/Array::.
+This will remove any internal arguments.
 
 method::prototypeFrame
-
-Get an array of default values for all arguments and variables.
+Get an link::Classes/Array:: of default values for all arguments and variables.
 
 code::
 { |a = 9, b = 10, c| a + b }.def.prototypeFrame;
@@ -66,7 +65,7 @@ code::
 ::
 
 method::defaultArgs
-Returns the default arguments needed to call the function.
+Returns the default arguments supplied in place of those not specified in a function call, if no default was provided for an argument, then link::Classes/Nil:: is returned in its place.
 
 
 method::varNames
@@ -123,48 +122,51 @@ code::
 ::
 
 method::makePerformableArray
-Returns an array that can be passed to link::Classes/Object#-perform:: or link::Classes/Function#-value::.
+
+This is used internally by link::Classes/Function#-valueWith:: which is sufficient for all uses and recommended over link::#-makePerformableArray::.
+
+Returns an array that can be passed directly to link::Classes/Function#-valueArray::.
 
 Both keyword and non-keyword arguments may be provided at the same time.
-If a value for an argument is provided in both the keyword and non-keyword arguments this will throw an error.
-If a keyword argument is provide, but the name can't be found an error will be thrown.
+
+Errors are thrown if: a value for an argument is present in both the code::argumentsArray:: and the code::keywordArgumentPairs:: (argument collision),
+if a keyword argument's name cannot be found (unknown keyword),
+and if too many arguments are given to code::argumentsArray:: (too many arguments).
 
 Variable arguments are best placed with a keyword argument.
-If all the non-keyword arguments are present
-(and the keywords empty),
-then any remaining arguments will be passed to the function's variable argument if present,
-if not, it will throw.
+However, if the code::keywordArgumentPairs:: is empty and all arguments in the code::argumentsArray:: are present, any extra arguments in code::argumentsArray:: will be passed to the variable argument, if present.
+Please note, that variable arguments are unpacked and individually appened to the end of the array, not contained in their own array.
 
-This method can be useful when implementing link::Classes/Object#-doesNotUnderstand:: and link::Classes/Object#-doesNotUnderstandWithKeys::,
-as it is the easiest way to call something with a mixture of arguments and keyword arguments.
 
 argument::argumentsArray
-Arguments as an array.
+Arguments as an link::Classes/Array::.
 
-argument::keywordArgumentEnvir
-Keyword arguments in an link::Classes/IdentityDictionary::.
+argument::keywordArgumentPairs
+Keyword arguments as any link::Reference/Key-Value-Pairs:: structure.
 
-returns::Arguments as an array.
-Variable arguments are appended onto the end of the array.
+returns::Arguments as an link::Classes/Array::.
 
+discussion::
 code::
-
+(
 f = { |a b ...e|
    var i = 0;
    a.debug(\a);
    b.debug(\b);
    e.debug(\e);
 };
+)
 
-f.value(
-	*f.def.makePerformableArray([\a], (e: [1,2,3]))
-);
+// using makePerformableArray, not recommended
+(
+var args = f.def.makePerformableArray([\a], (e: [1,2,3]));
+f.valueArray(args);
+)
 
-::
-Better in this case to use link::Classes/Function#-valueWith:: directly as it calls this internally.
-code::
+// using valueWith, recommended
 f.valueWith([\a], (e: [1,2,3]));
 ::
+
 
 subsection::Generating Strings
 

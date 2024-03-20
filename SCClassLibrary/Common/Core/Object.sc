@@ -93,7 +93,7 @@ Object  {
 	functionPerformList { ^this }
 	// Used in object prototyping. See Function-functionPerformList
 	// Ensure both functionPerformList and functionPerformWith do the same thing.
-	functionPerformWith {^this }
+	functionPerformWith { ^this }
 
 	// super.perform(selector,arg) doesn't do what you might think.
 	// \perform would be looked up in the superclass, not the selector you are interested in.
@@ -139,16 +139,16 @@ Object  {
 		^this.performWithEnvir(selector, ().putPairs(pairs))
 	}
 
-	performWith {|selector, argumentsArray, keywordArgumentEnvir|
-		var method, argList;
-		if(keywordArgumentEnvir.isNil) {
-			^this.performList(selector, argumentsArray);
-		};
-		method = this.class.findRespondingMethodFor(selector) ?? {
-			^this.doesNotUnderstand(selector)
-		};
-		argList = method.makePerformableArray(argumentsArray, keywordArgumentEnvir);
-		^this.performList(selector, argList)
+	performWith {|selector, argumentsArray, keywordArgumentPairs|
+		if(keywordArgumentPairs.isNil) {
+			^this.performList(selector, argumentsArray)
+		} {
+			var method = this.class.findRespondingMethodFor(selector) ?? {
+				^this.doesNotUnderstand(selector)
+			};
+			var argList = method.makePerformableArray(argumentsArray, keywordArgumentPairs);
+			^this.performList(selector, argList)
+		}
 	}
 
 	// copying
@@ -183,10 +183,11 @@ Object  {
 	valueEnvir { ^this }
 	valueArrayEnvir { ^this }
 
-	valueWith {|argumentsArray, keywordArgumentEnvir|
+	valueWith {|argumentsArray, keywordArgumentPairs|
 		^this.valueArray(
-			this.class.findRespondingMethodFor(\value).
-			makePerformableArray(argumentsArray, keywordArgumentEnvir)
+			this.class
+                .findRespondingMethodFor(\value)
+                .makePerformableArray(argumentsArray, keywordArgumentPairs)
 		)
 	}
 
@@ -364,8 +365,8 @@ Object  {
 	doesNotUnderstand { arg selector ... args;
 		DoesNotUnderstandError(this, selector, args).throw;
 	}
-	doesNotUnderstandWithKeys {|selector, argsArray, keywordArrayPair|
-		DoesNotUnderstandWithKeysError(this, selector, argsArray, keywordArrayPair).throw;
+	doesNotUnderstandWithKeys {|selector, argumentsArray, keywordArgumentPairs|
+		DoesNotUnderstandWithKeysError(this, selector, argumentsArray, keywordArgumentPairs).throw;
 	}
 	shouldNotImplement { arg method;
 		ShouldNotImplementError(this, method, this.class).throw;

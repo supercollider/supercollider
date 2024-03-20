@@ -517,17 +517,30 @@ a.performKeyValuePairs(\value, [\a, 1, \b, 2, \c, 3, \d, 4]);
 ::
 
 method::performWith
+Evaluate a method using a mix of arguments and keyword arguments.
+
+Errors are thrown if: the arguments collide, an unknown keyword is found, or there are too many arguments.
+See link::Classes/Method#-makePerformableArray:: for a detailed description.
+
 argument:: selector
 A link::Classes/Symbol:: representing a method selector.
 
 argument::argumentsArray
 Arguments as an link::Classes/Array::.
 
-argument::keywordArgumentEnvir
-Keyword arguments as an link::Classes/IdentityDictionary::.
+argument::keywordArgumentPairs
+Keyword arguments as any link::Reference/Key-Value-Pairs:: structure.
 
 discussion::
 code::
+7819.performWith(\asTimeString, [0.1, 365], (decimalPlaces:4));
+
+{ SinOsc.ar }.performWith(\plot, [0.05], (minval:0, maxval:1));
+
+"meow MEOW woof bahh bahh Meow".performWith('findAll', ["meow"], [ignoreCase: true]);
+
+// calling value on function shows how arguments are assigned:
+(
 f = { |a, b ...e|
    a.debug(\a);
    b.debug(\b);
@@ -535,11 +548,9 @@ f = { |a, b ...e|
 };
 
 f.performWith(\value, [\a], (e: [1,2,3]));
+)
 ::
 However, when calling a link::Classes/Function:: it is best to use link::Classes/Function#-valueWith::.
-code::
-f.valueWith([\a], (e: [1,2,3]));
-::
 
 method::tryPerform
 
@@ -705,10 +716,10 @@ Object's implementation will throw an error, but other classes (link::Classes/Id
 argument::selector
 The name of the message as a link::Classes/Symbol::.
 
-argument::argsArray
+argument::argumentsArray
 An link::Classes/Array:: of arguments that have been passed directly and not via keywords.
 
-argument::keywordArrayPair
+argument::keywordArgumentPairs
 The arguments that have been passed via keywords.
 These are formatted as an link::Classes/Array:: of key-value pairs link::Reference/Key-Value-Pairs::.
 

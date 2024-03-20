@@ -192,12 +192,12 @@ DoesNotUnderstandError : MethodError {
 }
 
 DoesNotUnderstandWithKeysError : MethodError {
-	var <>selector, <>argsWithOutKeys, <>argsWithKeys, <suggestedCorrection, suggestion = "";
-	*new { arg receiver, selector, argsWithOutKeys, argsWithKeys;
+	var <>selector, <>argumentsArray, <>keywordArgumentPairs, <suggestedCorrection, suggestion = "";
+	*new { arg receiver, selector, argumentsArray, keywordArgumentPairs;
 		^super.new(nil, receiver)
 		.selector_(selector)
-		.argsWithOutKeys_(argsWithOutKeys)
-		.argsWithKeys_(argsWithKeys.asEvent)
+		.argumentsArray_(argumentsArray)
+		.keywordArgumentPairs_(keywordArgumentPairs)
 		.init
 	}
 
@@ -228,9 +228,9 @@ DoesNotUnderstandWithKeysError : MethodError {
 		"RECEIVER:\n".post;
 		receiver.dump;
 		"ARGS WITHOUT KEYS:\n".post;
-		argsWithOutKeys.dumpAll;
+		argumentsArray.dumpAll;
 		"ARGS WITH KEYS:\n".post;
-		argsWithKeys.dumpAll;
+		keywordArgumentPairs.dumpAll;
 		this.errorPathString.post;
 		if(protectedBacktrace.notNil, { this.postProtectedBacktrace });
 		this.dumpBackTrace;

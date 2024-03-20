@@ -31,8 +31,8 @@ Maybe : Ref {
 	functionPerformList { |selector, arglist|
 		^this.performList(selector, arglist)
 	}
-	functionPerformWith {|selector, argumentsArray, keywordArgumentEnvir|
-		^this.performWith(selector, argumentsArray, keywordArgumentEnvir)
+	functionPerformWith {|selector, argumentsArray, keywordArgumentPairs|
+		^this.performWith(selector, argumentsArray, keywordArgumentPairs)
 	}
 
 	// this allows recursion

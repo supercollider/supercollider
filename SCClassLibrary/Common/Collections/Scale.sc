@@ -20,12 +20,12 @@ Scale {
 
 	*doesNotUnderstand { |selector, args|
 	    var scale = this.newFromKey(selector, args);
-        if(scale.notNil) { ^scale.deepCopy };
+        if(scale.notNil) { ^scale };
         ^super.doesNotUnderstand(selector, args)
     }
 
-	*doesNotUnderstandWithKeys {|selector, argsArray, keywordArgsAsPairs|
-		^Scale.performWith(\newFromKey, [selector] ++ argsArray, keywordArgsAsPairs)
+	*doesNotUnderstandWithKeys {|selector, argumentsArray, keywordArgumentPairs|
+		^Scale.performWith(\newFromKey, [selector] ++ argumentsArray, keywordArgumentPairs)
 	}
 
 	*newFromKey { |key, tuning|
@@ -191,12 +191,12 @@ Tuning {
 
 	*doesNotUnderstand { |selector, args|
 	    var tuning = this.newFromKey(selector, args);
-        if(tuning.notNil) { ^tuning.deepCopy };
+        if(tuning.notNil) { ^tuning };
         ^super.doesNotUnderstand(selector, args)
 	}
 
-	*doesNotUnderstandWithKeys {|selector, argsArray, keywordArgsAsPairs|
-        ^Tuning.performWith(\newFromKey, [selector] ++ argsArray, keywordArgsAsPairs.asEvent);
+	*doesNotUnderstandWithKeys {|selector, argumentsArray, keywordArgumentPairs|
+		^Tuning.performWith(\newFromKey, [selector] ++ argumentsArray, keywordArgumentPairs)
 	}
 
 	*newFromKey { | key |

@@ -560,32 +560,32 @@ FunctionDef {
 		^().putPairs(this.keyValuePairsFromArgs)
 	}
 
-	makePerformableArray {|argumentsArray=([]), keywordArgumentEnvir=(())|
-		// This will return an array with all the arguments put in place.
-		// Variable arguments are place at the end (not in a seperate array).
+	makePerformableArray {|argumentsArray=([]), keywordArgumentPairs=([])|
+		// This will return an array with all the arguments and default arguments in place.
 		// Consider moving this whole method to a primitive.
+		var argNamesForCall = this.argumentNamesForCall;
+		var visitedArgNames = argNamesForCall.keep(argumentsArray.size);
+		var varArgName = if(this.varArgs, {argNamesForCall.last});
 		var arguments = this.defaultArgs
-		.drop(if(this.varArgs, -1, 0)) // here we don't want the default provided by prototypeFrame for varArgs '[]', so drop it.
-		.overWrite(argumentsArray);
-		var argNamesCall = this.argumentNamesForCall;
-		var addedNames = argNamesCall.keep(argumentsArray.size);
-		var varArgName = if(this.varArgs, {argNamesCall.last});
+        	.drop(if(this.varArgs, -1, 0)) // here we don't want the default provided by prototypeFrame for varArgs '[]', so drop it.
+        	.overWrite(argumentsArray);
 
-		// check keywordArgumentEnvir do not collide with a	argumentsArray,
-		//    and that they are present in the method.
-		keywordArgumentEnvir.keysValuesDo{|name, a|
-			if (addedNames.includes(name)) {
-				Error(
-					"The same argument cannot be passed twice, "
-					"got two values for argument '%'".format(name)
-				).throw
+		// check keywordArgumentPairs do not collide with a	argumentsArray and that they are present in the method.
+		keywordArgumentPairs.keysValuesDo {|name, a|
+			if (visitedArgNames.includes(name)) {
+				Error("The same argument cannot be passed twice, got two values for argument '%'".format(name))
+					.throw
 			};
 
-			argNamesCall.detectIndex({|n| n == name }) ?? {
-				Error("Argument '%' not understood by function '%'".format(name, this)).throw
-			} !? { |i|
-				addedNames = addedNames.add(name);
-				if (name == varArgName){ arguments = arguments.addAll(a) } { arguments[i] = a }
+			argNamesForCall.detectIndex({|n| n == name })
+			?? { Error("Argument '%' not understood by function '%'".format(name, this)).throw }
+			!? { |indexOfName|
+				visitedArgNames = visitedArgNames.add(name);
+				if (name == varArgName){
+					arguments = arguments.addAll(a)  // append all var args to array
+				} {
+					arguments[indexOfName] = a
+				}
 			};
 		};
 
@@ -597,7 +597,7 @@ Method : FunctionDef {
 	var <ownerClass, <name, <primitiveName;
 	var <filenameSymbol, <charPos;
 
-	defaultArgs { ^this.prototypeFrame.drop(1).keep(argNames.size - 1) }
+	defaultArgs { ^this.prototypeFrame.keep(argNames.size).drop(1) }
 	argumentNamesForCall { ^argNames.drop(1) } // drop this
 
 	openCodeFile {
