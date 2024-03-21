@@ -164,17 +164,16 @@ private:
     static size_t SmallBinIndex(size_t inSize) { return inSize >> 4; }
 
     static size_t BinIndex2(size_t inSize) {
-        return ((inSize < 1024) ? (inSize >> 4)
-                                : (inSize < 2048)
-                        ? 56 + (inSize >> 7)
-                        : (inSize < 4096) ? 64 + (inSize >> 8)
-                                          : (inSize < 8192) ? 72 + (inSize >> 9)
-                                                            : (inSize < 16384) ? 80 + (inSize >> 10)
-                                                                               : (inSize < 32768) ? 88 + (inSize >> 11)
-                                                                                                  : (inSize < 65536)
-                                            ? 96 + (inSize >> 12)
-                                            : (inSize < 131072) ? 104 + (inSize >> 13)
-                                                                : (inSize < 262144) ? 112 + (inSize >> 14) : 127);
+        return ((inSize < 1024)         ? (inSize >> 4)
+                    : (inSize < 2048)   ? 56 + (inSize >> 7)
+                    : (inSize < 4096)   ? 64 + (inSize >> 8)
+                    : (inSize < 8192)   ? 72 + (inSize >> 9)
+                    : (inSize < 16384)  ? 80 + (inSize >> 10)
+                    : (inSize < 32768)  ? 88 + (inSize >> 11)
+                    : (inSize < 65536)  ? 96 + (inSize >> 12)
+                    : (inSize < 131072) ? 104 + (inSize >> 13)
+                    : (inSize < 262144) ? 112 + (inSize >> 14)
+                                        : 127);
     }
 
     static size_t BinIndex(size_t inSize) {
@@ -211,8 +210,7 @@ private:
         if (binBits >= bitValue) {
             binBits = (~(bitValue - 1) & binBits);
         } else {
-            for (++word; word < 4 && !mBinBlocks[word]; ++word) {
-            }
+            for (++word; word < 4 && !mBinBlocks[word]; ++word) {}
             if (word == 4)
                 return -1;
             binBits = mBinBlocks[word];

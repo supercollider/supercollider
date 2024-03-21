@@ -333,9 +333,7 @@ void ScProcess::onResponse(const QString& selector, const QString& data) {
                 Introspection newIntrospection = watcher->result();
                 mIntrospection = std::move(newIntrospection);
                 emit introspectionChanged();
-            } catch (std::exception& e) {
-                MainWindow::instance()->showStatusMessage(e.what());
-            }
+            } catch (std::exception& e) { MainWindow::instance()->showStatusMessage(e.what()); }
             watcher->deleteLater();
         });
 
@@ -383,9 +381,7 @@ void ScProcess::updateTextMirrorForDocument(Document* doc, int position, int cha
 
     try {
         sendSelectorAndData(mIpcSocket, QStringLiteral("updateDocText"), argList);
-    } catch (std::exception const& e) {
-        scPost(QStringLiteral("Exception during ScIDE_Send: %1\n").arg(e.what()));
-    }
+    } catch (std::exception const& e) { scPost(QStringLiteral("Exception during ScIDE_Send: %1\n").arg(e.what())); }
 }
 
 void ScProcess::updateSelectionMirrorForDocument(Document* doc, int start, int range) {
@@ -403,9 +399,7 @@ void ScProcess::updateSelectionMirrorForDocument(Document* doc, int start, int r
 
     try {
         sendSelectorAndData(mIpcSocket, QStringLiteral("updateDocSelection"), argList);
-    } catch (std::exception const& e) {
-        scPost(QStringLiteral("Exception during ScIDE_Send: %1\n").arg(e.what()));
-    }
+    } catch (std::exception const& e) { scPost(QStringLiteral("Exception during ScIDE_Send: %1\n").arg(e.what())); }
 }
 
 } // namespace ScIDE

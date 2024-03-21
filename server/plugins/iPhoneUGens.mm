@@ -165,8 +165,7 @@ void AccelerometerZ_Ctor(AccelerometerUGen* unit) {
 @implementation AccelerometerDelegate
 
 - (id)init {
-    if (self = [super init]) {
-    }
+    if (self = [super init]) {}
     return self;
 }
 

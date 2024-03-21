@@ -118,8 +118,8 @@ except ImportError:  # Forced testing
 # Constants
 #
 
-CLANG_FORMAT_ACCEPTED_VERSION_REGEX = re.compile("8\\.\\d+\\.\\d+")
-CLANG_FORMAT_ACCEPTED_VERSION_STRING = "8.y.z"
+CLANG_FORMAT_ACCEPTED_VERSION_REGEX = re.compile("14\\.\\d+\\.\\d+")
+CLANG_FORMAT_ACCEPTED_VERSION_STRING = "14.y.z"
 
 # all the extensions we format with clang-format in SC (no JS!)
 CLANG_FORMAT_FILES_REGEX = re.compile('\\.(cpp|hpp|h|c|m|mm)$')

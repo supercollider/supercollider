@@ -1145,9 +1145,9 @@ void rrand_d(BinaryOpUGen* unit, int inNumSamples) {
         float xa = DEMANDINPUT_A(0, inNumSamples);
         float xb = DEMANDINPUT_A(1, inNumSamples);
         RGen& rgen = *unit->mParent->mRGen;
-        OUT0(0) = sc_isnan(xa) || sc_isnan(xb)
-            ? NAN
-            : xb > xa ? xa + rgen.frand() * (xb - xa) : (xb + rgen.frand() * (xa - xb));
+        OUT0(0) = sc_isnan(xa) || sc_isnan(xb) ? NAN
+            : xb > xa                          ? xa + rgen.frand() * (xb - xa)
+                                               : (xb + rgen.frand() * (xa - xb));
     } else {
         RESETINPUT(0);
         RESETINPUT(1);

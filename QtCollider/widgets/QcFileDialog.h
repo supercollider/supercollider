@@ -62,7 +62,9 @@ private Q_SLOTS:
         if (res == QDialog::Accepted) {
             QStringList files = dialog->selectedFiles();
             QVariantList varFiles;
-            Q_FOREACH (QString f, files) { varFiles << QVariant(f); }
+            Q_FOREACH (QString f, files) {
+                varFiles << QVariant(f);
+            }
             Q_EMIT(accepted(varFiles));
         } else {
             Q_EMIT(rejected());

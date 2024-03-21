@@ -234,8 +234,7 @@ private:
                 break;
         }
 
-        while (poll_writer_queue(data_to_write.get(), deque_per_tick, pending_samples)) {
-        }
+        while (poll_writer_queue(data_to_write.get(), deque_per_tick, pending_samples)) {}
     }
 
     bool poll_writer_queue(sample_type* data_to_write, const size_t buffer_samples, size_t& pending_samples) {

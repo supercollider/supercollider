@@ -589,9 +589,7 @@ SCErr GraphDef_DeleteMsg(World* inWorld, GraphDef* inDef) {
 GraphDef* GraphDef_Recv(World* inWorld, char* buffer, GraphDef* inList) {
     try {
         inList = GraphDefLib_Read(inWorld, buffer, inList);
-    } catch (std::exception& exc) {
-        scprintf("exception in GraphDef_Recv: %s\n", exc.what());
-    } catch (...) {
+    } catch (std::exception& exc) { scprintf("exception in GraphDef_Recv: %s\n", exc.what()); } catch (...) {
         scprintf("unknown exception in GraphDef_Recv\n");
     }
 
