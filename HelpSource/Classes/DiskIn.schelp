@@ -18,7 +18,7 @@ private:: categories
 method::ar
 
 argument::numChannels
-Number of channels. This must match the number of channels in the buffer.
+Number of channels. This must match the number of channels in the buffer. Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.
 
 argument::bufnum
 Buffer number
@@ -126,4 +126,3 @@ s.sendMsg("/b_close", 0); // close the file.
 
 s.sendMsg("/b_free", 0); // frees the buffer
 ::
-
