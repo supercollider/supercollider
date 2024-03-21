@@ -80,11 +80,11 @@ int prSetBit(VMGlobals* g, int numArgsPushed) {
     PyrSlot* b = g->sp - 1;
     PyrSlot* c = g->sp;
 
-    int32 bit, mask;
-    int err = slotIntVal(b, &bit);
+    int64 bit, mask;
+    int64 err = slotIntVal(b, &bit);
     if (err)
         return err;
-    bit = bit & 31;
+    bit = bit & 63;
     mask = 1L << bit;
     if (IsFalse(c)) {
         SetRaw(a, slotRawInt(a) & ~mask);
@@ -104,7 +104,7 @@ int prHammingDistance(VMGlobals* g, int numArgsPushed) {
     int aInt = slotRawInt(a);
     int bInt = slotRawInt(b);
 
-    int count = 0, mask = 1;
+    int64 count = 0, mask = 1;
     for (int i = 0; i < 32; i++) {
         if ((aInt & mask) != (bInt & mask))
             count = count + 1;

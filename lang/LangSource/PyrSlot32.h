@@ -76,7 +76,7 @@ typedef union pyrslot {
 #endif // BIG_ENDIAN
         union {
             int c; /* char */
-            int i;
+            int64 i;
             float f;
             void* ptr;
             struct PyrObject* o;
@@ -145,7 +145,7 @@ typedef union pyrslot {
 inline int GetTag(const PyrSlot* slot) { return slot->utag; }
 
 /* some macros for setting values of slots */
-inline void SetInt(PyrSlot* slot, int val) {
+inline void SetInt(PyrSlot* slot, int64 val) {
     (slot)->utag = tagInt;
     (slot)->ui = (val);
 }
@@ -232,14 +232,15 @@ inline void SetRawChar(PyrSlot* slot, int val) {
     assert(IsChar(slot));
     slot->uc = val;
 }
-inline void SetRaw(PyrSlot* slot, int val) {
+inline void SetRaw(PyrSlot* slot, int64 val) {
     assert(IsInt(slot));
     slot->ui = val;
 }
-inline void SetRaw(PyrSlot* slot, long val) {
-    assert(IsInt(slot));
-    slot->ui = val;
-}
+// inline void SetRaw(PyrSlot* slot, long val) {
+//    assert(IsInt(slot));
+//    slot->ui = val;
+//}
+
 inline void SetRaw(PyrSlot* slot, PyrObject* val) {
     assert(IsObj(slot));
     slot->uo = val;
@@ -273,7 +274,7 @@ template <typename numeric_type> inline int slotVal(PyrSlot* slot, numeric_type*
 
 inline int slotFloatVal(PyrSlot* slot, float* value) { return slotVal<float>(slot, value); }
 
-inline int slotIntVal(PyrSlot* slot, int* value) { return slotVal<int>(slot, value); }
+inline int64 slotIntVal(PyrSlot* slot, int64* value) { return slotVal<int64>(slot, value); }
 
 inline int slotDoubleVal(PyrSlot* slot, double* value) { return slotVal<double>(slot, value); }
 
@@ -327,7 +328,7 @@ inline int slotRawChar(const PyrSlot* slot) {
     return slot->s.u.c;
 }
 
-inline int slotRawInt(const PyrSlot* slot) {
+inline int64 slotRawInt(const PyrSlot* slot) {
     assert(IsInt(slot));
     return slot->s.u.i;
 }

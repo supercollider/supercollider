@@ -102,12 +102,13 @@ int basicSwap(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int getIndexedInt(PyrObject* obj, int index, int* value);
+int getIndexedInt(PyrObject* obj, int index, int64* value);
+int getIndexedInt(PyrObject* obj, int index, int32* value);
 void DumpBackTrace(VMGlobals* g);
 
 int basicAt(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b;
-    int index;
+    int64 index;
     PyrObject* obj;
 
     a = g->sp - 1;
@@ -128,11 +129,11 @@ int basicAt(struct VMGlobals* g, int numArgsPushed) {
         }
     } else if (isKindOfSlot(b, class_arrayed_collection)) {
         PyrObject* indexArray = slotRawObject(b);
-        int size = indexArray->size;
+        int64 size = indexArray->size;
         PyrObject* outArray = newPyrArray(g->gc, size, 0, true);
         PyrSlot* outArraySlots = outArray->slots;
         for (int i = 0; i < size; ++i) {
-            int err = getIndexedInt(indexArray, i, &index);
+            int64 err = getIndexedInt(indexArray, i, &index);
             if (err)
                 return err;
             if (index < 0 || index >= obj->size) {
@@ -151,7 +152,7 @@ int basicAt(struct VMGlobals* g, int numArgsPushed) {
 
 int basicRemoveAt(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b;
-    int index, length, elemsize;
+    int64 index, length, elemsize;
     PyrObject* obj;
     void* ptr;
 
@@ -224,7 +225,7 @@ int basicRemoveAt(struct VMGlobals* g, int numArgsPushed) {
 int basicTakeAt(struct VMGlobals* g, int numArgsPushed);
 int basicTakeAt(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b;
-    int index, lastIndex;
+    int64 index, lastIndex;
     PyrObject* obj;
 
     a = g->sp - 1;
@@ -232,7 +233,7 @@ int basicTakeAt(struct VMGlobals* g, int numArgsPushed) {
 
     if (NotObj(a))
         return errWrongType;
-    int err = slotIntVal(b, &index);
+    int64 err = slotIntVal(b, &index);
     if (err)
         return errWrongType;
 
@@ -305,7 +306,7 @@ int basicTakeAt(struct VMGlobals* g, int numArgsPushed) {
 
 int basicWrapAt(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b;
-    int index;
+    int64 index;
     PyrObject* obj;
     a = g->sp - 1;
     b = g->sp;
@@ -321,7 +322,7 @@ int basicWrapAt(struct VMGlobals* g, int numArgsPushed) {
         return errNone;
     }
 
-    int err = slotIntVal(b, &index);
+    int64 err = slotIntVal(b, &index);
 
     if (!err) {
         index = sc_mod((int)index, (int)obj->size);
@@ -332,7 +333,7 @@ int basicWrapAt(struct VMGlobals* g, int numArgsPushed) {
         PyrObject* outArray = newPyrArray(g->gc, size, 0, true);
         PyrSlot* outArraySlots = outArray->slots;
         for (int i = 0; i < size; ++i) {
-            int err = getIndexedInt(indexArray, i, &index);
+            int64 err = getIndexedInt(indexArray, i, &index);
             if (err)
                 return err;
             index = sc_mod((int)index, (int)obj->size);
@@ -348,7 +349,7 @@ int basicWrapAt(struct VMGlobals* g, int numArgsPushed) {
 
 int basicFoldAt(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b;
-    int index;
+    int32 index;
     PyrObject* obj;
     a = g->sp - 1;
     b = g->sp;
@@ -364,7 +365,7 @@ int basicFoldAt(struct VMGlobals* g, int numArgsPushed) {
         return errNone;
     }
 
-    int err = slotIntVal(b, &index);
+    int64 err = slotIntVal(b, &index);
 
     if (!err) {
         index = sc_fold(index, 0, obj->size - 1);
@@ -375,7 +376,7 @@ int basicFoldAt(struct VMGlobals* g, int numArgsPushed) {
         PyrObject* outArray = newPyrArray(g->gc, size, 0, true);
         PyrSlot* outArraySlots = outArray->slots;
         for (int i = 0; i < size; ++i) {
-            int err = getIndexedInt(indexArray, i, &index);
+            int64 err = getIndexedInt(indexArray, i, &index);
             if (err)
                 return err;
             index = sc_fold(index, 0, obj->size - 1);
@@ -391,7 +392,7 @@ int basicFoldAt(struct VMGlobals* g, int numArgsPushed) {
 
 int basicClipAt(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b;
-    int index;
+    int64 index;
     PyrObject* obj;
     a = g->sp - 1;
     b = g->sp;
@@ -407,7 +408,7 @@ int basicClipAt(struct VMGlobals* g, int numArgsPushed) {
         return errNone;
     }
 
-    int err = slotIntVal(b, &index);
+    int64 err = slotIntVal(b, &index);
 
     if (!err) {
         index = sc_clip(index, 0, obj->size - 1);
@@ -418,7 +419,7 @@ int basicClipAt(struct VMGlobals* g, int numArgsPushed) {
         PyrObject* outArray = newPyrArray(g->gc, size, 0, true);
         PyrSlot* outArraySlots = outArray->slots;
         for (int i = 0; i < size; ++i) {
-            int err = getIndexedInt(indexArray, i, &index);
+            int64 err = getIndexedInt(indexArray, i, &index);
             if (err)
                 return err;
             index = sc_clip(index, 0, obj->size - 1);
@@ -435,7 +436,7 @@ int basicClipAt(struct VMGlobals* g, int numArgsPushed) {
 
 int basicPut(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b, *c;
-    int index;
+    int64 index;
     PyrObject* obj;
 
     a = g->sp - 2;
@@ -450,7 +451,7 @@ int basicPut(struct VMGlobals* g, int numArgsPushed) {
 
     if (NotObj(a))
         return errWrongType;
-    int err = slotIntVal(b, &index);
+    int64 err = slotIntVal(b, &index);
 
     if (!err) {
         if (index < 0 || index >= obj->size)
@@ -461,8 +462,8 @@ int basicPut(struct VMGlobals* g, int numArgsPushed) {
         int size = slotRawObject(b)->size;
 
         for (int i = 0; i < size; ++i) {
-            int index;
-            int err = getIndexedInt(indexArray, i, &index);
+            int64 index;
+            int64 err = getIndexedInt(indexArray, i, &index);
             if (err)
                 return err;
             if (index < 0 || index >= obj->size)
@@ -478,7 +479,7 @@ int basicPut(struct VMGlobals* g, int numArgsPushed) {
 
 int basicClipPut(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b, *c;
-    int index;
+    int64 index;
     PyrObject* obj;
 
     a = g->sp - 2;
@@ -493,7 +494,7 @@ int basicClipPut(struct VMGlobals* g, int numArgsPushed) {
 
     if (NotObj(a))
         return errWrongType;
-    int err = slotIntVal(b, &index);
+    int64 err = slotIntVal(b, &index);
 
     if (!err) {
         index = sc_clip(index, 0, obj->size - 1);
@@ -503,8 +504,8 @@ int basicClipPut(struct VMGlobals* g, int numArgsPushed) {
         int size = slotRawObject(b)->size;
 
         for (int i = 0; i < size; ++i) {
-            int index;
-            int err = getIndexedInt(indexArray, i, &index);
+            int64 index;
+            int64 err = getIndexedInt(indexArray, i, &index);
             if (err)
                 return err;
             index = sc_clip(index, 0, obj->size - 1);
@@ -519,7 +520,7 @@ int basicClipPut(struct VMGlobals* g, int numArgsPushed) {
 
 int basicWrapPut(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b, *c;
-    int index;
+    int64 index;
     PyrObject* obj;
 
     a = g->sp - 2;
@@ -534,7 +535,7 @@ int basicWrapPut(struct VMGlobals* g, int numArgsPushed) {
 
     if (NotObj(a))
         return errWrongType;
-    int err = slotIntVal(b, &index);
+    int64 err = slotIntVal(b, &index);
 
     if (!err) {
         index = sc_mod((int)index, (int)obj->size);
@@ -544,8 +545,8 @@ int basicWrapPut(struct VMGlobals* g, int numArgsPushed) {
         int size = slotRawObject(b)->size;
 
         for (int i = 0; i < size; ++i) {
-            int index;
-            int err = getIndexedInt(indexArray, i, &index);
+            int64 index;
+            int64 err = getIndexedInt(indexArray, i, &index);
             if (err)
                 return err;
             index = sc_mod((int)index, (int)obj->size);
@@ -560,7 +561,7 @@ int basicWrapPut(struct VMGlobals* g, int numArgsPushed) {
 
 int basicFoldPut(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b, *c;
-    int index;
+    int32 index;
     PyrObject* obj;
 
     a = g->sp - 2;
@@ -575,7 +576,7 @@ int basicFoldPut(struct VMGlobals* g, int numArgsPushed) {
 
     if (NotObj(a))
         return errWrongType;
-    int err = slotIntVal(b, &index);
+    int64 err = slotIntVal(b, &index);
 
     if (!err) {
         index = sc_fold(index, 0, obj->size - 1);
@@ -585,8 +586,8 @@ int basicFoldPut(struct VMGlobals* g, int numArgsPushed) {
         int size = slotRawObject(b)->size;
 
         for (int i = 0; i < size; ++i) {
-            int index;
-            int err = getIndexedInt(indexArray, i, &index);
+            int32 index;
+            int32 err = getIndexedInt(indexArray, i, &index);
             if (err)
                 return err;
             index = sc_fold(index, 0, obj->size - 1);
@@ -624,8 +625,8 @@ int prArrayPutEach(struct VMGlobals* g, int numArgsPushed) {
     int valsize = slotRawObject(c)->size;
 
     for (int i = 0; i < size; ++i) {
-        int index;
-        int err = slotIntVal(indices + i, &index);
+        int64 index;
+        int64 err = slotIntVal(indices + i, &index);
         if (err)
             return err;
         if (index < 0 || index >= obj->size)
@@ -837,8 +838,8 @@ int prArrayPutSeries(struct VMGlobals* g, int numArgsPushed) {
 
 int prArrayAdd(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b, *slots;
-    int maxelems, elemsize, format, tag, numbytes;
-    int err, ival;
+    int64 maxelems, elemsize, format, tag, numbytes;
+    int64 err, ival;
     double fval;
 
     a = g->sp - 1;
@@ -918,7 +919,7 @@ int prArrayAdd(struct VMGlobals* g, int numArgsPushed) {
 int prArrayInsert(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b, *c, *slots1, *slots2;
     PyrObject *array, *oldarray;
-    int err, ival;
+    int64 err, ival;
     double fval;
 
     a = g->sp - 2; // array
@@ -928,19 +929,19 @@ int prArrayInsert(struct VMGlobals* g, int numArgsPushed) {
         return errWrongType;
 
     array = slotRawObject(a);
-    const int format = slotRawObject(a)->obj_format;
+    const int64 format = slotRawObject(a)->obj_format;
 
-    const int size = array->size;
-    int index = slotRawInt(b);
+    const int64 size = array->size;
+    int64 index = slotRawInt(b);
     index = sc_clip(index, 0, size);
-    const int remain = size - index;
+    const int64 remain = size - index;
 
-    const int elemsize = gFormatElemSize[format];
-    const int maxelems = MAXINDEXSIZE(array);
+    const int64 elemsize = gFormatElemSize[format];
+    const int64 maxelems = MAXINDEXSIZE(array);
     if (size + 1 > maxelems || array->IsImmutable()) {
         oldarray = array;
 
-        const int numbytes = sizeof(PyrSlot) << (array->obj_sizeclass + 1);
+        const int64 numbytes = sizeof(PyrSlot) << (array->obj_sizeclass + 1);
         array = g->gc->New(numbytes, 0, format, true);
 
         array->classptr = oldarray->classptr;
@@ -1105,9 +1106,9 @@ int prArrayFill(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b, *slots;
     PyrObject* array;
     PyrSymbol* sym;
-    int i;
-    int format;
-    int err, ival;
+    int64 i;
+    int64 format;
+    int64 err, ival;
     double fval;
 
 
@@ -1246,8 +1247,8 @@ int prArrayPop(struct VMGlobals* g, int numArgsPushed) {
 
 
 int prArrayExtend(struct VMGlobals* g, int numArgsPushed) {
-    int numbytes, elemsize, format;
-    int err;
+    int64 numbytes, elemsize, format;
+    int64 err;
 
     PyrSlot* a = g->sp - 2; // array
     PyrSlot* b = g->sp - 1; // size
@@ -1276,8 +1277,8 @@ int prArrayExtend(struct VMGlobals* g, int numArgsPushed) {
     }
 
 
-    int fillSize = slotRawInt(b) - aobj->size;
-    int32 ival;
+    int64 fillSize = slotRawInt(b) - aobj->size;
+    int64 ival;
     float fval;
     double dval;
 
@@ -1481,8 +1482,8 @@ int prArrayAddAll(struct VMGlobals* g, int numArgsPushed) {
 int prArrayOverwrite(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b, *c;
     PyrObject *obj, *aobj;
-    int err, elemsize, newindexedsize, newsizebytes, pos, asize, bsize;
-    int format;
+    int64 err, elemsize, newindexedsize, newsizebytes, pos, asize, bsize;
+    int64 format;
 
     a = g->sp - 2;
     b = g->sp - 1;
@@ -2244,7 +2245,7 @@ int prArrayEnvAt(struct VMGlobals* g, int numArgsPushed) {
         return errFailed;
 
     double time;
-    int err = slotDoubleVal(b, &time);
+    int64 err = slotDoubleVal(b, &time);
     if (err)
         return err;
 
@@ -2253,7 +2254,7 @@ int prArrayEnvAt(struct VMGlobals* g, int numArgsPushed) {
     if (err)
         return err;
 
-    int numStages;
+    int64 numStages;
     err = slotIntVal(slots + kEnv_numStages, &numStages);
     if (err)
         return err;
@@ -2278,7 +2279,7 @@ int prArrayEnvAt(struct VMGlobals* g, int numArgsPushed) {
         // post("%d   %g   %g %g   %g   %g\n", i, time, begTime, endTime, dur, endLevel);
 
         if (time < endTime) {
-            int shape;
+            int64 shape;
             double curve;
 
             err = slotIntVal(slots + 2, &shape);
@@ -2392,7 +2393,7 @@ int prArrayIndexOfGreaterThan(struct VMGlobals* g, int numArgsPushed) {
 int prArrayUnlace(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b, *c, *slots, *slots2, *slots3;
     PyrObject *obj1, *obj2, *obj3;
-    int i, j, k, clump, numLists, size, size3, err;
+    int64 i, j, k, clump, numLists, size, size3, err;
 
     a = g->sp - 2;
     b = g->sp - 1;

@@ -207,7 +207,7 @@ int arrayAtIdentityHashInPairsWithHash(PyrObject* array, PyrSlot* key, int hash)
 
 int identDictPut(struct VMGlobals* g, PyrObject* dict, PyrSlot* key, PyrSlot* value) {
     PyrSlot *slot, *newslot;
-    int i, index, size;
+    int64 i, index, size;
     PyrObject* array;
 
     bool knows = IsTrue(dict->slots + ivxIdentDict_know);
@@ -274,7 +274,7 @@ int prIdentDict_Put(struct VMGlobals* g, int numArgsPushed) {
 
 int prIdentDict_PutGet(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b, *c, *d, *slot, *newslot;
-    int i, index, size;
+    int64 i, index, size;
     PyrObject* dict;
     PyrObject* array;
 
