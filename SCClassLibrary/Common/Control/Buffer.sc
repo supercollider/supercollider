@@ -569,19 +569,23 @@ Buffer {
 	}
 
 	query { |action|
-		// as above, make sure 'queryMsg' runs before creating the OSCFunc
-		var msg = this.queryMsg;
+		// Run queryMsg before creating the OSCFunc so it doesn't become stranded
+		// if queryMsg errors out on an invalid buffer
+		var msg_qry = this.queryMsg;
+
 		action = action ?? {
-			{ |addr, bufnum, numFrames, numChannels, sampleRate|
-				"bufnum: %\nnumFrames: %\nnumChannels: %\nsampleRate: %\n".format(
+			{ |oscAddrPattern, bufnum, numFrames, numChannels, sampleRate|
+				postf("bufnum: %\nnumFrames: %\nnumChannels: %\nsampleRate: %\n",
 					bufnum, numFrames, numChannels, sampleRate
-				).postln;
+				);
 			}
 		};
-		OSCFunc({ |msg|
-			action.valueArray(msg)
+
+		OSCFunc({ |msg_resp|
+			action.valueArray(msg_resp)
 		}, \b_info, server.addr, nil, [bufnum]).oneShot;
-		server.listSendMsg(msg)
+
+		server.listSendMsg(msg_qry)
 	}
 
 	queryMsg {
