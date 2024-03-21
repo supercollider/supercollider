@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-<!-- Please see CONTRIBUTING.md for guidelines. -->
+<!-- For informations about contributing see: https://github.com/supercollider/supercollider/wiki/Contributing-directory -->
 
 ## Environment
 
