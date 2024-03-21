@@ -28,8 +28,11 @@ Maybe : Ref {
 		^this.notYetImplemented(thisMethod)
 		//^value.valueArrayEnvir(args) ? defaultValue
 	}
-	functionPerformList { arg selector, arglist;
+	functionPerformList { |selector, arglist|
 		^this.performList(selector, arglist)
+	}
+	functionPerformWith {|selector, argumentsArray, keywordArgumentPairs|
+		^this.performWith(selector, argumentsArray, keywordArgumentPairs)
 	}
 
 	// this allows recursion

@@ -560,12 +560,27 @@ IdentityDictionary : Dictionary {
 		^this.superPerformList(\doesNotUnderstand, selector, args);
 	}
 
-		// Quant support.
-		// The Quant class assumes the quant/phase/offset scheduling model.
-		// If you want a different model, you can write a dictionary like so:
-		// (nextTimeOnGrid: { |self, clock| ... calculate absolute beat number here ... },
-		//	parameter: value, parameter: value, etc.)
-		// If you leave out the nextTimeOnGrid function, fallback to quant/phase/offset.
+	doesNotUnderstandWithKeys {|selector, argumentsArray, keywordArgumentPairs|
+		if(know.not){
+			^this.superPerformList(\doesNotUnderstandWithKeys, selector, argumentsArray, keywordArgumentPairs)
+		};
+		this[selector] !? {|f|
+			^f.functionPerformWith(\value, [this] ++ argumentsArray, keywordArgumentPairs)
+		};
+		// Unlike in doesNotUnderstand, we don't convert to a setter as this isn't possible with keyword args.
+		// Note how the selector is also passed to forward.
+		this[\forward] !? {|f|
+			^f.functionPerformWith(\value, [this, selector] ++ argumentsArray, keywordArgumentPairs)
+		};
+		^nil
+	}
+
+	// Quant support.
+	// The Quant class assumes the quant/phase/offset scheduling model.
+	// If you want a different model, you can write a dictionary like so:
+	// (nextTimeOnGrid: { |self, clock| ... calculate absolute beat number here ... },
+	//	parameter: value, parameter: value, etc.)
+	// If you leave out the nextTimeOnGrid function, fallback to quant/phase/offset.
 
 	nextTimeOnGrid { |clock, referenceBeat|
 		if(this[\nextTimeOnGrid].notNil) {

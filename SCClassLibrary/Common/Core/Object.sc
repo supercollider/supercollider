@@ -88,10 +88,12 @@ Object  {
 		_ObjectPerformList;
 		^this.primitiveFailed
 	}
-	functionPerformList {
-		// perform only if Function. see Function-functionPerformList
-		^this
-	}
+	// Used in object prototyping. See Function-functionPerformList
+	// Ensure both functionPerformList and functionPerformWith do the same thing.
+	functionPerformList { ^this }
+	// Used in object prototyping. See Function-functionPerformList
+	// Ensure both functionPerformList and functionPerformWith do the same thing.
+	functionPerformWith { ^this }
 
 	// super.perform(selector,arg) doesn't do what you might think.
 	// \perform would be looked up in the superclass, not the selector you are interested in.
@@ -137,6 +139,18 @@ Object  {
 		^this.performWithEnvir(selector, ().putPairs(pairs))
 	}
 
+	performWith {|selector, argumentsArray, keywordArgumentPairs|
+		if(keywordArgumentPairs.isNil) {
+			^this.performList(selector, argumentsArray)
+		} {
+			var method = this.class.findRespondingMethodFor(selector) ?? {
+				^this.doesNotUnderstand(selector)
+			};
+			var argList = method.makePerformableArray(argumentsArray, keywordArgumentPairs);
+			^this.performList(selector, argList)
+		}
+	}
+
 	// copying
 	copy { ^this.shallowCopy }
 	contentsCopy { ^this.shallowCopy }
@@ -168,6 +182,14 @@ Object  {
 	valueArray { ^this }
 	valueEnvir { ^this }
 	valueArrayEnvir { ^this }
+
+	valueWith {|argumentsArray, keywordArgumentPairs|
+		^this.valueArray(
+			this.class
+                .findRespondingMethodFor(\value)
+                .makePerformableArray(argumentsArray, keywordArgumentPairs)
+		)
+	}
 
 	// equality, identity
 	== { arg obj; ^this === obj }
@@ -342,6 +364,9 @@ Object  {
 	}
 	doesNotUnderstand { arg selector ... args;
 		DoesNotUnderstandError(this, selector, args).throw;
+	}
+	doesNotUnderstandWithKeys {|selector, argumentsArray, keywordArgumentPairs|
+		DoesNotUnderstandWithKeysError(this, selector, argumentsArray, keywordArgumentPairs).throw;
 	}
 	shouldNotImplement { arg method;
 		ShouldNotImplementError(this, method, this.class).throw;

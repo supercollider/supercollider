@@ -696,52 +696,53 @@ lookup_again:
 
 extern PyrClass* class_identdict;
 void doesNotUnderstandWithKeys(VMGlobals* g, PyrSymbol* selector, long numArgsPushed, long numKeyArgsPushed) {
-    PyrSlot *qslot, *pslot, *pend;
-    long i, index;
-    PyrSlot *uniqueMethodSlot, *arraySlot, *recvrSlot, *selSlot, *slot;
-    PyrClass* classobj;
-    PyrMethod* meth;
-    PyrObject* array;
+    // subtract one as 'this' is counted in numArgsPushed.
+    const auto num_norm_args = numArgsPushed - (numKeyArgsPushed * 2) - 1;
 
-#ifdef GC_SANITYCHECK
-    g->gc->SanityCheck();
-#endif
-    // move args up by one to make room for selector
-    qslot = g->sp + 1;
-    pslot = g->sp + 2;
-    pend = pslot - numArgsPushed + 1;
-    while (pslot > pend)
-        *--pslot = *--qslot;
+    {
+        // move args up by one to make room for selector
+        PyrSlot* qslot = g->sp + 1;
+        PyrSlot* pslot = g->sp + 2;
+        PyrSlot* pend = pslot - numArgsPushed + 1;
+        while (pslot > pend)
+            *--pslot = *--qslot;
+    }
+    g->sp++; // increase stack size as a new thing has been added
 
-    selSlot = g->sp - numArgsPushed + 2;
+    PyrSlot* final_slot = g->sp; // for the final method call
+
+    // put selector in place
+    PyrSlot* selSlot = g->sp - numArgsPushed + 1;
     SetSymbol(selSlot, selector);
-    g->sp++;
 
-    recvrSlot = selSlot - 1;
+    // current stack state: recvr, selector, normalArgs..., (kw, arg) ...
 
-    classobj = classOfSlot(recvrSlot);
+    PyrSlot* recvrSlot = selSlot - 1;
 
-    index = slotRawInt(&classobj->classIndex) + s_doesNotUnderstand->u.index;
-    meth = gRowTable[index];
+    // get doesNotUnderstandWithKeys method.
+    const PyrClass* classobj = classOfSlot(recvrSlot);
+    const auto meth_index = slotRawInt(&classobj->classIndex) + s_doesNotUnderstandWithKeys->u.index;
+    PyrMethod* meth = gRowTable[meth_index];
 
-
+    // this is an optimization for unique methods (I think).
     if (slotRawClass(&meth->ownerclass) == class_object) {
         // lookup instance specific method
-        uniqueMethodSlot = &g->classvars->slots[cvxUniqueMethods];
+        PyrSlot* uniqueMethodSlot = &g->classvars->slots[cvxUniqueMethods];
         if (isKindOfSlot(uniqueMethodSlot, class_identdict)) {
-            arraySlot = slotRawObject(uniqueMethodSlot)->slots + ivxIdentDict_array;
+            PyrSlot* arraySlot = slotRawObject(uniqueMethodSlot)->slots + ivxIdentDict_array;
+            PyrObject* array;
             if ((IsObj(arraySlot) && (array = slotRawObject(arraySlot))->classptr == class_array)) {
-                i = arrayAtIdentityHashInPairs(array, recvrSlot);
+                const auto i = arrayAtIdentityHashInPairs(array, recvrSlot);
                 if (i >= 0) {
-                    slot = array->slots + i;
+                    PyrSlot* slot = array->slots + i;
                     if (NotNil(slot)) {
                         ++slot;
                         if (isKindOfSlot(slot, class_identdict)) {
                             arraySlot = slotRawObject(slot)->slots + ivxIdentDict_array;
                             if ((IsObj(arraySlot) && (array = slotRawObject(arraySlot))->classptr == class_array)) {
-                                i = arrayAtIdentityHashInPairs(array, selSlot);
-                                if (i >= 0) {
-                                    slot = array->slots + i;
+                                const auto j = arrayAtIdentityHashInPairs(array, selSlot);
+                                if (j >= 0) {
+                                    slot = array->slots + j;
                                     if (NotNil(slot)) {
                                         ++slot;
                                         slotCopy(selSlot, recvrSlot);
@@ -758,7 +759,22 @@ void doesNotUnderstandWithKeys(VMGlobals* g, PyrSymbol* selector, long numArgsPu
         }
     }
 
-    executeMethodWithKeys(g, meth, numArgsPushed + 1, numKeyArgsPushed);
+    PyrObject* without_arg_array = newPyrArray(g->gc, num_norm_args, 0, true);
+    without_arg_array->size = num_norm_args;
+    // this does not run GC as the previous array is not yet on the stack.
+    PyrObject* with_arg_array = newPyrArray(g->gc, numKeyArgsPushed * 2, 0, false);
+    with_arg_array->size = numKeyArgsPushed * 2;
+    // copy from stack into array
+    slotCopy(without_arg_array->slots, recvrSlot + 2, num_norm_args);
+    slotCopy(with_arg_array->slots, recvrSlot + 2 + num_norm_args, numKeyArgsPushed * 2);
+    // put arrays on stack
+    SetObject(recvrSlot + 2, without_arg_array);
+    SetObject(recvrSlot + 3, with_arg_array);
+
+    g->sp = final_slot - (numArgsPushed - 3);
+
+    // recvr, selector, withoutKeys, withKeys ... 4 things on stack
+    executeMethod(g, meth, 4);
 
 #ifdef GC_SANITYCHECK
     g->gc->SanityCheck();
