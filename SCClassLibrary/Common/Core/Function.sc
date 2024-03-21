@@ -64,7 +64,7 @@ Function : AbstractFunction {
 		// Used in object prototyping.
 		// Ensure both functionPerformList and functionPerformWith do the same thing.
 		keywordArgumentPairs ?? { ^this.functionPerformList(selector, argumentsArray) };
-		^this.valueWith(argumentsArray, keywordArgumentPairs);
+		^this.valueWith(argumentsArray, keywordArgumentPairs)
 	}
 
 	valueWithEnvir { arg envir;
@@ -84,7 +84,7 @@ Function : AbstractFunction {
 	}
 
 	valueWith {|argumentsArray, keywordArgumentPairs|
-		^this.valueArray(def.makePerformableArray(argumentsArray, keywordArgumentPairs));
+		^this.valueArray(def.makePerformableArray(argumentsArray, keywordArgumentPairs))
 	}
 
 	performWithEnvir { |selector, envir|

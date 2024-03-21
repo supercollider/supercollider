@@ -62,7 +62,7 @@ A link::Classes/Symbol:: which contains the name of the primitive function that 
 if there is one, otherwise returns link::Classes/Nil::.
 
 method::argumentNamesForCall
-Returns the argument names in as needed for calling the function as an link::Classes/Array::.
+Returns the argument names as needed for calling the function as an link::Classes/Array::.
 This will remove any internal arguments include 'this'.
 
 method:: filenameSymbol
