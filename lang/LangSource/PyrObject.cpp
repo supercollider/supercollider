@@ -2440,26 +2440,22 @@ PyrDoubleArray* newPyrDoubleArray(class PyrGC* gc, int size, int flags, bool run
 }
 
 PyrString* newPyrString(class PyrGC* gc, const char* s, int flags, bool runGC) {
-    PyrString* string;
-    int length = strlen(s);
-
-    if (!gc)
-        string = (PyrString*)PyrGC::NewPermanent(length, flags, obj_char);
-    else
-        string = (PyrString*)gc->New(length, flags, obj_char, runGC);
+    const std::size_t length = strlen(s);
+    if (length > std::numeric_limits<int>::max())
+        return nullptr;
+    PyrString* string = (gc == nullptr) ? reinterpret_cast<PyrString*>(PyrGC::NewPermanent(length, flags, obj_char))
+                                        : reinterpret_cast<PyrString*>(gc->New(length, flags, obj_char, runGC));
     string->classptr = class_string;
-    string->size = length;
+    string->size = static_cast<int>(length);
     memcpy(string->s, s, length);
     return string;
 }
 
 PyrString* newPyrStringN(class PyrGC* gc, int length, int flags, bool runGC) {
-    PyrString* string;
-
-    if (!gc)
-        string = (PyrString*)PyrGC::NewPermanent(length, flags, obj_char);
-    else
-        string = (PyrString*)gc->New(length, flags, obj_char, runGC);
+    if (length > std::numeric_limits<int>::max())
+        return nullptr;
+    PyrString* string = (gc == nullptr) ? reinterpret_cast<PyrString*>(PyrGC::NewPermanent(length, flags, obj_char))
+                                        : reinterpret_cast<PyrString*>(gc->New(length, flags, obj_char, runGC));
     string->classptr = class_string;
     string->size = length; // filled with garbage!
     return string;
