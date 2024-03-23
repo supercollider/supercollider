@@ -1,18 +1,21 @@
 + Server {
-	scope { arg numChannels, index = 0, bufsize = 4096, zoom = (1), rate = \audio;
+	scope { arg numChannels, index = 0, bufsize = 4096, zoom = (1), rate = \audio, bounds;
 		numChannels = numChannels ?? { if (index == 0) { options.numOutputBusChannels } { 2 } };
 
 		if(scopeWindow.isNil) {
 			scopeWindow = Stethoscope(this, numChannels, index, bufsize, zoom, rate, nil,
 				this.options.numBuffers);
-				// prevent buffer conflicts by using reserved bufnum
+			// prevent buffer conflicts by using reserved bufnum
 			scopeWindow.window.onClose = scopeWindow.window.onClose.addFunc({ scopeWindow = nil });
 		} {
 			scopeWindow.setProperties(numChannels, index, bufsize, zoom, rate);
 			scopeWindow.run;
 			scopeWindow.window.front;
 		};
-		^scopeWindow
+		^if(bounds == nil) {
+			scopeWindow } {
+			scopeWindow.window.bounds_(bounds)
+		}
 	}
 
 	freqscope {
@@ -21,14 +24,14 @@
 }
 
 + Bus {
-	scope { arg bufsize = 4096, zoom;
-		^server.scope(numChannels, index, bufsize, zoom, rate);
+	scope { arg bufsize = 4096, zoom, bounds;
+		^server.scope(numChannels, index, bufsize, zoom, rate, bounds);
 	}
 }
 
 
 + Function {
-	scope { arg numChannels, outbus = 0, fadeTime = 0.05, bufsize = 4096, zoom;
+	scope { arg numChannels, outbus = 0, fadeTime = 0.05, bufsize = 4096, zoom, bounds;
 		var synth, synthDef, bytes, synthMsg, outUGen, server;
 
 		server = Server.default;
@@ -45,7 +48,7 @@
 		bytes = synthDef.asBytes;
 		synthMsg = synth.newMsg(server, [\i_out, outbus, \out, outbus], \addToHead);
 		server.sendMsg("/d_recv", bytes, synthMsg);
-		server.scope(numChannels, outbus, bufsize, zoom, outUGen.rate);
+		server.scope(numChannels, outbus, bufsize, zoom, outUGen.rate, bounds);
 		^synth
 	}
 
