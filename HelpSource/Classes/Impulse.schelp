@@ -54,12 +54,14 @@ code::Impulse:: would not support that.
 However, a you could generate an impulse train by phase modulation using the
 strong::rate:: parameter of a link::Classes/Phasor::, like this:
 code::
-({
+(
+{
 	var f = 1000;
 	HPZ1.ar(HPZ1.ar(
 		Phasor.ar(rate: f * SampleDur.ir)
 	)) > 1e-5
-}.plot(0.005))
+}.plot(0.005).plotMode_(\dstems)
+)
 ::
 
 
