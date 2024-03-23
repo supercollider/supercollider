@@ -48,7 +48,8 @@ ServerStatusWatcher {
 		this.prSendNotifyRequest(flag, false);
 	}
 
-	doWhenBooted { |onComplete, limit = 100, onFailure|
+
+	doWhenBooted { |onComplete, limit = 100, onFailure, clock = \AppClock|
 		var mBootNotifyFirst = bootNotifyFirst, postError = true;
 		bootNotifyFirst = false;
 
@@ -81,7 +82,7 @@ ServerStatusWatcher {
 				onComplete.value;
 			});
 
-		}.play(AppClock)
+		}.play(clock.asClass)
 	}
 
 
