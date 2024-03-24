@@ -1,5 +1,7 @@
 var storage;
 var menubar;
+var yPosBeforeClick;
+var toggleButtonStatus = true;
 
 function addInheritedMethods() {
     if(! /\/Classes\/[^\/]+/.test(window.location.pathname)) return; // skip this if not a class doc
@@ -85,6 +87,35 @@ escape_regexp = function(str) {
   var specials = new RegExp("[.*+?|()\\[\\]{}\\\\]", "g"); // .*+?|()[]{}\
   return str.replace(specials, "\\$&");
 }
+
+function toggleCodeLineNumbers() {
+  var text = toggleButtonStatus ? "show code line num" : "hide code line num";
+  var editorTextareas = $("textarea.editor");
+  toggleButtonStatus = !toggleButtonStatus;
+  if (toggleButtonStatus) {
+    editorTextareas.each(function() {
+      var codeMirrorInstance = this.editor;
+      codeMirrorInstance.setOption("lineNumbers", true);
+      $(".CodeMirror").css("padding", "0 1em 0 0");
+      $(".CodeMirror-gutters").css("margin-left", "-10px");
+      $(".CodeMirror pre").css("padding", "0 4px 0 2px");
+      $(".CodeMirror-scrollbar-filler").css("background-color", "transparent");
+      $(".CodeMirror-gutter-filler").css("background-color", "transparent");
+      $(".CodeMirror-linenumber").css("margin-left", "-10px;").css("padding", "0 3px 0 11px");
+    });
+  } else {
+    editorTextareas.each(function() {
+      var codeMirrorInstance = this.editor;
+      codeMirrorInstance.setOption("lineNumbers", false);
+      $(".CodeMirror").css("padding", "0 1em");
+      $(".CodeMirror-gutters").css("margin-left", "0px");
+      $(".CodeMirror pre").css("padding", "0 4px");
+      $(".CodeMirror-scrollbar-filler").css("background-color", "white");
+      $(".CodeMirror-gutter-filler").css("background-color", "white");
+      $(".CodeMirror-linenumber").css("margin-left", "0").css("padding", "0 3px 0 5px");
+    });
+  };
+};
 
 var toc_items;
 function toc_search(search_string) {
@@ -190,10 +221,32 @@ function fixTOC() {
         });
     });
 
+    create_menubar_item("123", "#", function(a, li) {
+        var originalText = a.text();
+        var isStrikethrough = true;
+        a.css("text-decoration", "line-through")
+        .click(function() {
+            yPosBeforeClick = window.scrollY;
+            toggleCodeLineNumbers();
+            if (isStrikethrough) {
+                a.css("text-decoration", "none");
+            } else {
+                a.css("text-decoration", "line-through");
+            }
+            isStrikethrough = !isStrikethrough;
+            setTimeout(function() {
+                if (yPosBeforeClick != window.scrollY) {
+                    window.scrollTo(0, yPosBeforeClick);
+                }
+            }, 0);
+        });
+    });
+
     if ($("#toc").length) {
         set_up_toc();
     }
 }
+
 
 // Set up a QWebChannel for communicating with C++ IDE objects. The main app publishes a handle
 // to IDE functionality at "IDE" which is made globally available here after the page and
