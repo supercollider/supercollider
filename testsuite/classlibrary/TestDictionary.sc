@@ -27,4 +27,9 @@ TestDictionary : UnitTest {
 
 	}
 
+	test_trueAt {
+		var dict = (x:7, y:false, z:true);
+		this.assert([\x, \y].every(dict.falseAt(_)) and: dict.trueAt(\z), "dictionary trueAt and falseAt should respond only true if the value really equals true.");
+	}
+
 }
