@@ -52,6 +52,20 @@ code::
 [4, 5, 6].maxSize; // gosh
 ::
 
+method::isRectangular
+Returns true if all nested sub arrays are the same size and all elements have the same depth.
+This is a requirement of several nested array algorithms and formats, notably multichannel audio files.
+
+Example:
+code::
+[1, 2, 3].isRectangular // true
+[[1, 2], [3, 4]].isRectangular // true
+
+[1, 2, [3]].isRectangular // false
+[[1, 2], [3]].isRectangular // false
+[[1, 2], [3, [4, 5]]].isRectangular // false
+::
+
 method::at
 Return the item at strong::index::.
 
@@ -439,25 +453,36 @@ a.performInPlace(\normalizeSum, 3, 6);
 ::
 
 method::rank
-Rank is the number of dimensions in a multidimensional array.
+Returns the number of dimensions of the collection.
+code::rank:: inspects the size of the left-most elements of sub-arrays only,
+i.e. it's assumed that the collection link::#-isRectangular::,
+so subarrays of mismatched sizes may not return an expected result.
+A single value has a rank of code::0::.
+An empty array has a rank of code::1::.
+
 code::
-a = [4,7,6,8];
-a.rank;
-a = [[4,7],[6,8]];
-a.rank;
+0.rank // 0
+[].rank // 1
+[4, 7, 6, 8].rank // 1
+[[4, 7], [6, 8]].rank // 2
+[1 ,2, [3, 4]].rank // 1, this array is not rectangular and returns a meaningless value.
 ::
 
 method::shape
-For a multidimensional array, returns the number of elements along each dimension.
+Returns an array describing the dimension of each nested array.
+Requires link::#-isRectangular:: as a precondition.
+
 code::
-a = [4,7,6,8];
-a.shape;
-a = [[4,7],[6,8]];
-a.shape;
+[4, 7, 6, 8].shape // [4]
+[[4, 7], [6, 8]].shape // [2, 2]
+[[[4, 7]], [[6, 8]]].shape // [2, 1, 2]
+[1, 2, [3, 4]].shape // [3], this array is not rectangular and returns a meaningless value.
 ::
 
 method::reshape
-For a multidimensional array, rearranges the data using the desired number of elements along each dimension. The data may be extended using wrapExtend if needed.
+For a multidimensional array, rearranges the data using the desired number of elements along each dimension.
+The data may be extended using link::Classes/Array#-wrapExtend:: if needed.
+This will always return a rectangular array, see link::#-isRectangular::.
 code::
 a = [4,7,6,8];
 a.reshape(2,2);

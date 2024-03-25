@@ -58,13 +58,13 @@ struct PyrClass : public PyrObjectHdr {
 };
 
 
-inline bool isKindOf(PyrObjectHdr* obj, struct PyrClass* testclass) {
+inline bool isKindOf(const PyrObjectHdr* obj, const struct PyrClass* testclass) {
     int objClassIndex = slotRawInt(&obj->classptr->classIndex);
     return objClassIndex >= slotRawInt(&testclass->classIndex)
         && objClassIndex <= slotRawInt(&testclass->maxSubclassIndex);
 }
 
-inline bool isKindOfSlot(PyrSlot* slot, struct PyrClass* testclass) {
+inline bool isKindOfSlot(const PyrSlot* slot, const struct PyrClass* testclass) {
     return IsObj(slot) && isKindOf(slotRawObject(slot), testclass);
 }
 

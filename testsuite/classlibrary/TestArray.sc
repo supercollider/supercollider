@@ -341,6 +341,28 @@ TestArray : UnitTest {
 	test_mirror1_twoElementArray_size { this.assertEquals([1, 2].mirror1.size, 2); }
 	test_mirror2_twoElementArray_size { this.assertEquals([1, 2].mirror2.size, 4); }
 
+	test_is_rectangular_flat {
+	    this.assert([1, 2, 3, 4].isRectangular, "isRectangular: flat arrays, [n1, n2,...], should always be rectangular");
+    }
+	test_is_rectangular_nested_flat {
+	    this.assert([[1, 2, 3, 4]].isRectangular, "isRectangular: single nested flat array, [[n1, n2 ...]] should be rectangular");
+    }
+	test_is_rectangular_square {
+	    this.assert([[1, 2], [3, 4]].isRectangular, "isRectangular: square matrix is rectangular");
+    }
+	test_is_rectangular_deep {
+	    this.assert([[[[[1], [2]], [[3], [4]]]]].isRectangular, "isRectangular: should work at any depth");
+    }
+	test_is_rectangular_false_case {
+	    this.assert([1, [2, 3]].isRectangular.not, "isRectangular: should reject different dimension sizes");
+    }
+	test_is_rectangular_with_raw_array {
+	    this.assert([FloatArray[1,2], Signal[3,4]].isRectangular, "isRectangular: should work on RawArrays (true case)");
+    }
+	test_is_rectangular_with_raw_array_false_case {
+	    this.assert([FloatArray[1,2], Signal[3,4,5]].isRectangular.not, "isRectangular: should work on RawArrays (false case)");
+	}
+
 } // End class
 
 TestArrayLace : UnitTest {
