@@ -2,7 +2,7 @@
 // traits/static_require_concept.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -92,7 +92,8 @@ struct has_static_require_concept
 template <typename T, typename Property>
 struct static_require_concept_trait<T, Property,
   typename enable_if<
-    has_static_require_concept<T, typename decay<Property>::type>::value
+    has_static_require_concept<typename decay<T>::type,
+      typename decay<Property>::type>::value
   >::type>
 {
   BOOST_ASIO_STATIC_CONSTEXPR(bool, is_valid = true);

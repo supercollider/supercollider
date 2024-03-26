@@ -2,7 +2,7 @@
 // detail/impl/strand_executor_service.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -15,7 +15,6 @@
 # pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
-#include <boost/asio/detail/call_stack.hpp>
 #include <boost/asio/detail/fenced_block.hpp>
 #include <boost/asio/detail/handler_invoke_helpers.hpp>
 #include <boost/asio/detail/recycling_allocator.hpp>
@@ -104,18 +103,14 @@ public:
 
     ~on_invoker_exit()
     {
-      this_->impl_->mutex_->lock();
-      this_->impl_->ready_queue_.push(this_->impl_->waiting_queue_);
-      bool more_handlers = this_->impl_->locked_ =
-        !this_->impl_->ready_queue_.empty();
-      this_->impl_->mutex_->unlock();
-
-      if (more_handlers)
+      if (push_waiting_to_ready(this_->impl_))
       {
         recycling_allocator<void> allocator;
+        executor_type ex = this_->executor_;
         execution::execute(
             boost::asio::prefer(
-              boost::asio::require(this_->executor_,
+              boost::asio::require(
+                BOOST_ASIO_MOVE_CAST(executor_type)(ex),
                 execution::blocking.never),
             execution::allocator(allocator)),
             BOOST_ASIO_MOVE_CAST(invoker)(*this_));
@@ -125,21 +120,11 @@ public:
 
   void operator()()
   {
-    // Indicate that this strand is executing on the current thread.
-    call_stack<strand_impl>::context ctx(impl_.get());
-
     // Ensure the next handler, if any, is scheduled on block exit.
     on_invoker_exit on_exit = { this };
     (void)on_exit;
 
-    // Run all ready handlers. No lock is required since the ready queue is
-    // accessed only within the strand.
-    boost::system::error_code ec;
-    while (scheduler_operation* o = impl_->ready_queue_.front())
-    {
-      impl_->ready_queue_.pop();
-      o->complete(impl_.get(), ec, 0);
-    }
+    run_ready_handlers(impl_);
   }
 
 private:
@@ -189,13 +174,7 @@ public:
 
     ~on_invoker_exit()
     {
-      this_->impl_->mutex_->lock();
-      this_->impl_->ready_queue_.push(this_->impl_->waiting_queue_);
-      bool more_handlers = this_->impl_->locked_ =
-        !this_->impl_->ready_queue_.empty();
-      this_->impl_->mutex_->unlock();
-
-      if (more_handlers)
+      if (push_waiting_to_ready(this_->impl_))
       {
         Executor ex(this_->work_.get_executor());
         recycling_allocator<void> allocator;
@@ -206,21 +185,11 @@ public:
 
   void operator()()
   {
-    // Indicate that this strand is executing on the current thread.
-    call_stack<strand_impl>::context ctx(impl_.get());
-
     // Ensure the next handler, if any, is scheduled on block exit.
     on_invoker_exit on_exit = { this };
     (void)on_exit;
 
-    // Run all ready handlers. No lock is required since the ready queue is
-    // accessed only within the strand.
-    boost::system::error_code ec;
-    while (scheduler_operation* o = impl_->ready_queue_.front())
-    {
-      impl_->ready_queue_.pop();
-      o->complete(impl_.get(), ec, 0);
-    }
+    run_ready_handlers(impl_);
   }
 
 private:
@@ -263,7 +232,7 @@ void strand_executor_service::do_execute(const implementation_type& impl,
   // If the executor is not never-blocking, and we are already in the strand,
   // then the function can run immediately.
   if (boost::asio::query(ex, execution::blocking) != execution::blocking.never
-      && call_stack<strand_impl>::contains(impl.get()))
+      && running_in_this_thread(impl))
   {
     // Make a local, non-const copy of the function.
     function_type tmp(BOOST_ASIO_MOVE_CAST(Function)(function));
@@ -297,7 +266,7 @@ void strand_executor_service::dispatch(const implementation_type& impl,
   typedef typename decay<Function>::type function_type;
 
   // If we are already in the strand then the function can run immediately.
-  if (call_stack<strand_impl>::contains(impl.get()))
+  if (running_in_this_thread(impl))
   {
     // Make a local, non-const copy of the function.
     function_type tmp(BOOST_ASIO_MOVE_CAST(Function)(function));

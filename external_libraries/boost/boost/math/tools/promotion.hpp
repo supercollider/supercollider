@@ -22,22 +22,8 @@
 #pragma once
 #endif
 
-// Boost type traits:
 #include <boost/math/tools/config.hpp>
-#include <boost/type_traits/is_floating_point.hpp> // for boost::is_floating_point;
-#include <boost/type_traits/is_integral.hpp> // for boost::is_integral
-#include <boost/type_traits/is_convertible.hpp> // for boost::is_convertible
-#include <boost/type_traits/is_same.hpp>// for boost::is_same
-#include <boost/type_traits/remove_cv.hpp>// for boost::remove_cv
-// Boost Template meta programming:
-#include <boost/mpl/if.hpp> // for boost::mpl::if_c.
-#include <boost/mpl/and.hpp> // for boost::mpl::if_c.
-#include <boost/mpl/or.hpp> // for boost::mpl::if_c.
-#include <boost/mpl/not.hpp> // for boost::mpl::if_c.
-
-#ifdef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
-#include <boost/static_assert.hpp>
-#endif
+#include <type_traits>
 
 namespace boost
 {
@@ -68,31 +54,31 @@ namespace boost
       template <class T>
       struct promote_arg
       { // If T is integral type, then promote to double.
-        typedef typename mpl::if_<is_integral<T>, double, T>::type type;
+        using type = typename std::conditional<std::is_integral<T>::value, double, T>::type;
       };
-      // These full specialisations reduce mpl::if_ usage and speed up
+      // These full specialisations reduce std::conditional usage and speed up
       // compilation:
-      template <> struct promote_arg<float> { typedef float type; };
-      template <> struct promote_arg<double>{ typedef double type; };
-      template <> struct promote_arg<long double> { typedef long double type; };
-      template <> struct promote_arg<int> {  typedef double type; };
+      template <> struct promote_arg<float> { using type = float; };
+      template <> struct promote_arg<double>{ using type = double; };
+      template <> struct promote_arg<long double> { using type = long double; };
+      template <> struct promote_arg<int> {  using type = double; };
 
       template <class T1, class T2>
       struct promote_args_2
       { // Promote, if necessary, & pick the wider of the two floating-point types.
         // for both parameter types, if integral promote to double.
-        typedef typename promote_arg<T1>::type T1P; // T1 perhaps promoted.
-        typedef typename promote_arg<T2>::type T2P; // T2 perhaps promoted.
+        using T1P = typename promote_arg<T1>::type; // T1 perhaps promoted.
+        using T2P = typename promote_arg<T2>::type; // T2 perhaps promoted.
 
-        typedef typename mpl::if_c<
-          is_floating_point<T1P>::value && is_floating_point<T2P>::value, // both T1P and T2P are floating-point?
+        using type = typename std::conditional<
+          std::is_floating_point<T1P>::value && std::is_floating_point<T2P>::value, // both T1P and T2P are floating-point?
 #ifdef BOOST_MATH_USE_FLOAT128
-           typename mpl::if_c<is_same<__float128, T1P>::value || is_same<__float128, T2P>::value, // either long double?
+           typename std::conditional<std::is_same<__float128, T1P>::value || std::is_same<__float128, T2P>::value, // either long double?
             __float128,
 #endif
-             typename mpl::if_c<is_same<long double, T1P>::value || is_same<long double, T2P>::value, // either long double?
+             typename std::conditional<std::is_same<long double, T1P>::value || std::is_same<long double, T2P>::value, // either long double?
                long double, // then result type is long double.
-               typename mpl::if_c<is_same<double, T1P>::value || is_same<double, T2P>::value, // either double?
+               typename std::conditional<std::is_same<double, T1P>::value || std::is_same<double, T2P>::value, // either double?
                   double, // result type is double.
                   float // else result type is float.
              >::type
@@ -101,51 +87,51 @@ namespace boost
 #endif
              >::type,
           // else one or the other is a user-defined type:
-          typename mpl::if_c<!is_floating_point<T2P>::value && ::boost::is_convertible<T1P, T2P>::value, T2P, T1P>::type>::type type;
+          typename std::conditional<!std::is_floating_point<T2P>::value && std::is_convertible<T1P, T2P>::value, T2P, T1P>::type>::type;
       }; // promote_arg2
-      // These full specialisations reduce mpl::if_ usage and speed up
+      // These full specialisations reduce std::conditional usage and speed up
       // compilation:
-      template <> struct promote_args_2<float, float> { typedef float type; };
-      template <> struct promote_args_2<double, double>{ typedef double type; };
-      template <> struct promote_args_2<long double, long double> { typedef long double type; };
-      template <> struct promote_args_2<int, int> {  typedef double type; };
-      template <> struct promote_args_2<int, float> {  typedef double type; };
-      template <> struct promote_args_2<float, int> {  typedef double type; };
-      template <> struct promote_args_2<int, double> {  typedef double type; };
-      template <> struct promote_args_2<double, int> {  typedef double type; };
-      template <> struct promote_args_2<int, long double> {  typedef long double type; };
-      template <> struct promote_args_2<long double, int> {  typedef long double type; };
-      template <> struct promote_args_2<float, double> {  typedef double type; };
-      template <> struct promote_args_2<double, float> {  typedef double type; };
-      template <> struct promote_args_2<float, long double> {  typedef long double type; };
-      template <> struct promote_args_2<long double, float> {  typedef long double type; };
-      template <> struct promote_args_2<double, long double> {  typedef long double type; };
-      template <> struct promote_args_2<long double, double> {  typedef long double type; };
+      template <> struct promote_args_2<float, float> { using type = float; };
+      template <> struct promote_args_2<double, double>{ using type = double; };
+      template <> struct promote_args_2<long double, long double> { using type = long double; };
+      template <> struct promote_args_2<int, int> {  using type = double; };
+      template <> struct promote_args_2<int, float> {  using type = double; };
+      template <> struct promote_args_2<float, int> {  using type = double; };
+      template <> struct promote_args_2<int, double> {  using type = double; };
+      template <> struct promote_args_2<double, int> {  using type = double; };
+      template <> struct promote_args_2<int, long double> {  using type = long double; };
+      template <> struct promote_args_2<long double, int> {  using type = long double; };
+      template <> struct promote_args_2<float, double> {  using type = double; };
+      template <> struct promote_args_2<double, float> {  using type = double; };
+      template <> struct promote_args_2<float, long double> {  using type = long double; };
+      template <> struct promote_args_2<long double, float> {  using type = long double; };
+      template <> struct promote_args_2<double, long double> {  using type = long double; };
+      template <> struct promote_args_2<long double, double> {  using type = long double; };
 
       template <class T1, class T2=float, class T3=float, class T4=float, class T5=float, class T6=float>
       struct promote_args
       {
-         typedef typename promote_args_2<
-            typename remove_cv<T1>::type,
+         using type = typename promote_args_2<
+            typename std::remove_cv<T1>::type,
             typename promote_args_2<
-               typename remove_cv<T2>::type,
+               typename std::remove_cv<T2>::type,
                typename promote_args_2<
-                  typename remove_cv<T3>::type,
+                  typename std::remove_cv<T3>::type,
                   typename promote_args_2<
-                     typename remove_cv<T4>::type,
+                     typename std::remove_cv<T4>::type,
                      typename promote_args_2<
-                        typename remove_cv<T5>::type, typename remove_cv<T6>::type
+                        typename std::remove_cv<T5>::type, typename std::remove_cv<T6>::type
                      >::type
                   >::type
                >::type
             >::type
-         >::type type;
+         >::type;
 
 #ifdef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
          //
          // Guard against use of long double if it's not supported:
          //
-         BOOST_STATIC_ASSERT_MSG((0 == ::boost::is_same<type, long double>::value), "Sorry, but this platform does not have sufficient long double support for the special functions to be reliably implemented.");
+         static_assert((0 == std::is_same<type, long double>::value), "Sorry, but this platform does not have sufficient long double support for the special functions to be reliably implemented.");
 #endif
       };
 
@@ -157,21 +143,21 @@ namespace boost
       template <class T1, class T2=float, class T3=float, class T4=float, class T5=float, class T6=float>
       struct promote_args_permissive
       {
-         typedef typename promote_args_2<
-            typename remove_cv<T1>::type,
+         using type = typename promote_args_2<
+            typename std::remove_cv<T1>::type,
             typename promote_args_2<
-               typename remove_cv<T2>::type,
+               typename std::remove_cv<T2>::type,
                typename promote_args_2<
-                  typename remove_cv<T3>::type,
+                  typename std::remove_cv<T3>::type,
                   typename promote_args_2<
-                     typename remove_cv<T4>::type,
+                     typename std::remove_cv<T4>::type,
                      typename promote_args_2<
-                        typename remove_cv<T5>::type, typename remove_cv<T6>::type
+                        typename std::remove_cv<T5>::type, typename std::remove_cv<T6>::type
                      >::type
                   >::type
                >::type
             >::type
-         >::type type;
+         >::type;
       };
 
     } // namespace tools

@@ -29,6 +29,10 @@
 
 #include <boost/interprocess/detail/win32_api.hpp>
 
+#else
+
+#include <sys/stat.h>
+
 #endif
 
 #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
@@ -70,7 +74,7 @@ class permissions
    #if defined(BOOST_INTERPROCESS_WINDOWS)
    typedef void*  os_permissions_type;
    #else
-   typedef int    os_permissions_type;
+   typedef ::mode_t    os_permissions_type;
    #endif
    os_permissions_type  m_perm;
 
@@ -79,20 +83,20 @@ class permissions
    public:
    //!Constructs a permissions object from a user provided os-dependent
    //!permissions.
-   permissions(os_permissions_type type)
+   permissions(os_permissions_type type) BOOST_NOEXCEPT
       : m_perm(type)
    {}
 
    //!Constructs a default permissions object:
    //!A null security attributes pointer for windows or 0644
    //!for UNIX.
-   permissions()
+   permissions() BOOST_NOEXCEPT
    {  set_default(); }
 
    //!Sets permissions to default values:
    //!A null security attributes pointer for windows or 0644
    //!for UNIX.
-   void set_default()
+   void set_default() BOOST_NOEXCEPT
    {
       #if defined (BOOST_INTERPROCESS_WINDOWS)
       m_perm = 0;
@@ -103,7 +107,7 @@ class permissions
 
    //!Sets permissions to unrestricted access:
    //!A null DACL for windows or 0666 for UNIX.
-   void set_unrestricted()
+   void set_unrestricted() BOOST_NOEXCEPT
    {
       #if defined (BOOST_INTERPROCESS_WINDOWS)
       m_perm = &ipcdetail::unrestricted_permissions_holder<0>::unrestricted;
@@ -114,12 +118,12 @@ class permissions
 
    //!Sets permissions from a user provided os-dependent
    //!permissions.
-   void set_permissions(os_permissions_type perm)
+   void set_permissions(os_permissions_type perm) BOOST_NOEXCEPT
    {  m_perm = perm; }
 
    //!Returns stored os-dependent
    //!permissions
-   os_permissions_type get_permissions() const
+   os_permissions_type get_permissions() const BOOST_NOEXCEPT
    {  return m_perm; }
 };
 

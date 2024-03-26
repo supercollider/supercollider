@@ -2,7 +2,7 @@
 // ip/basic_endpoint.hpp
 // ~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -16,8 +16,13 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include <boost/asio/detail/config.hpp>
+#include <boost/asio/detail/cstdint.hpp>
 #include <boost/asio/ip/address.hpp>
 #include <boost/asio/ip/detail/endpoint.hpp>
+
+#if defined(BOOST_ASIO_HAS_STD_HASH)
+# include <functional>
+#endif // defined(BOOST_ASIO_HAS_STD_HASH)
 
 #if !defined(BOOST_ASIO_NO_IOSTREAM)
 # include <iosfwd>
@@ -28,6 +33,9 @@
 namespace boost {
 namespace asio {
 namespace ip {
+
+/// Type used for storing port numbers.
+typedef uint_least16_t port_type;
 
 /// Describes an endpoint for a version-independent IP socket.
 /**
@@ -79,7 +87,7 @@ public:
    * @endcode
    */
   basic_endpoint(const InternetProtocol& internet_protocol,
-      unsigned short port_num) BOOST_ASIO_NOEXCEPT
+      port_type port_num) BOOST_ASIO_NOEXCEPT
     : impl_(internet_protocol.family(), port_num)
   {
   }
@@ -88,7 +96,7 @@ public:
   /// constructor may be used for accepting connections on a specific interface
   /// or for making a connection to a remote endpoint.
   basic_endpoint(const boost::asio::ip::address& addr,
-      unsigned short port_num) BOOST_ASIO_NOEXCEPT
+      port_type port_num) BOOST_ASIO_NOEXCEPT
     : impl_(addr, port_num)
   {
   }
@@ -163,14 +171,14 @@ public:
 
   /// Get the port associated with the endpoint. The port number is always in
   /// the host's byte order.
-  unsigned short port() const BOOST_ASIO_NOEXCEPT
+  port_type port() const BOOST_ASIO_NOEXCEPT
   {
     return impl_.port();
   }
 
   /// Set the port associated with the endpoint. The port number is always in
   /// the host's byte order.
-  void port(unsigned short port_num) BOOST_ASIO_NOEXCEPT
+  void port(port_type port_num) BOOST_ASIO_NOEXCEPT
   {
     impl_.port(port_num);
   }
@@ -258,6 +266,25 @@ std::basic_ostream<Elem, Traits>& operator<<(
 } // namespace ip
 } // namespace asio
 } // namespace boost
+
+#if defined(BOOST_ASIO_HAS_STD_HASH)
+namespace std {
+
+template <typename InternetProtocol>
+struct hash<boost::asio::ip::basic_endpoint<InternetProtocol> >
+{
+  std::size_t operator()(
+      const boost::asio::ip::basic_endpoint<InternetProtocol>& ep)
+    const BOOST_ASIO_NOEXCEPT
+  {
+    std::size_t hash1 = std::hash<boost::asio::ip::address>()(ep.address());
+    std::size_t hash2 = std::hash<unsigned short>()(ep.port());
+    return hash1 ^ (hash2 + 0x9e3779b9 + (hash1 << 6) + (hash1 >> 2));
+  }
+};
+
+} // namespace std
+#endif // defined(BOOST_ASIO_HAS_STD_HASH)
 
 #include <boost/asio/detail/pop_options.hpp>
 

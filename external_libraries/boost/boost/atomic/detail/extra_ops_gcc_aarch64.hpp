@@ -238,7 +238,7 @@ struct extra_operations_gcc_aarch64< Base, 1u, Signed > :
             "st" st_mo "xrb %w[tmp], %w[result], %[storage]\n\t"\
             "cbnz %w[tmp], 1b\n\t"\
             : [tmp] "=&r" (tmp), [storage] "+Q" (storage), [result] "=&r" (result)\
-            : [value] "Ir" (v)\
+            : [value] "Kr" (v)\
             : "memory"\
         );
 
@@ -262,7 +262,7 @@ struct extra_operations_gcc_aarch64< Base, 1u, Signed > :
             "st" st_mo "xrb %w[tmp], %w[result], %[storage]\n\t"\
             "cbnz %w[tmp], 1b\n\t"\
             : [tmp] "=&r" (tmp), [storage] "+Q" (storage), [result] "=&r" (result)\
-            : [value] "Ir" (v)\
+            : [value] "Kr" (v)\
             : "memory"\
         );
 
@@ -286,7 +286,7 @@ struct extra_operations_gcc_aarch64< Base, 1u, Signed > :
             "st" st_mo "xrb %w[tmp], %w[result], %[storage]\n\t"\
             "cbnz %w[tmp], 1b\n\t"\
             : [tmp] "=&r" (tmp), [storage] "+Q" (storage), [result] "=&r" (result)\
-            : [value] "Ir" (v)\
+            : [value] "Kr" (v)\
             : "memory"\
         );
 
@@ -473,7 +473,7 @@ struct extra_operations_gcc_aarch64< Base, 2u, Signed > :
             "st" st_mo "xrh %w[tmp], %w[result], %[storage]\n\t"\
             "cbnz %w[tmp], 1b\n\t"\
             : [tmp] "=&r" (tmp), [storage] "+Q" (storage), [result] "=&r" (result)\
-            : [value] "Ir" (v)\
+            : [value] "Kr" (v)\
             : "memory"\
         );
 
@@ -497,7 +497,7 @@ struct extra_operations_gcc_aarch64< Base, 2u, Signed > :
             "st" st_mo "xrh %w[tmp], %w[result], %[storage]\n\t"\
             "cbnz %w[tmp], 1b\n\t"\
             : [tmp] "=&r" (tmp), [storage] "+Q" (storage), [result] "=&r" (result)\
-            : [value] "Ir" (v)\
+            : [value] "Kr" (v)\
             : "memory"\
         );
 
@@ -521,7 +521,7 @@ struct extra_operations_gcc_aarch64< Base, 2u, Signed > :
             "st" st_mo "xrh %w[tmp], %w[result], %[storage]\n\t"\
             "cbnz %w[tmp], 1b\n\t"\
             : [tmp] "=&r" (tmp), [storage] "+Q" (storage), [result] "=&r" (result)\
-            : [value] "Ir" (v)\
+            : [value] "Kr" (v)\
             : "memory"\
         );
 
@@ -708,7 +708,7 @@ struct extra_operations_gcc_aarch64< Base, 4u, Signed > :
             "st" st_mo "xr %w[tmp], %w[result], %[storage]\n\t"\
             "cbnz %w[tmp], 1b\n\t"\
             : [tmp] "=&r" (tmp), [storage] "+Q" (storage), [result] "=&r" (result)\
-            : [value] "Ir" (v)\
+            : [value] "Kr" (v)\
             : "memory"\
         );
 
@@ -732,7 +732,7 @@ struct extra_operations_gcc_aarch64< Base, 4u, Signed > :
             "st" st_mo "xr %w[tmp], %w[result], %[storage]\n\t"\
             "cbnz %w[tmp], 1b\n\t"\
             : [tmp] "=&r" (tmp), [storage] "+Q" (storage), [result] "=&r" (result)\
-            : [value] "Ir" (v)\
+            : [value] "Kr" (v)\
             : "memory"\
         );
 
@@ -756,7 +756,7 @@ struct extra_operations_gcc_aarch64< Base, 4u, Signed > :
             "st" st_mo "xr %w[tmp], %w[result], %[storage]\n\t"\
             "cbnz %w[tmp], 1b\n\t"\
             : [tmp] "=&r" (tmp), [storage] "+Q" (storage), [result] "=&r" (result)\
-            : [value] "Ir" (v)\
+            : [value] "Kr" (v)\
             : "memory"\
         );
 
@@ -943,7 +943,7 @@ struct extra_operations_gcc_aarch64< Base, 8u, Signed > :
             "st" st_mo "xr %w[tmp], %x[result], %[storage]\n\t"\
             "cbnz %w[tmp], 1b\n\t"\
             : [tmp] "=&r" (tmp), [storage] "+Q" (storage), [result] "=&r" (result)\
-            : [value] "Ir" (v)\
+            : [value] "Lr" (v)\
             : "memory"\
         );
 
@@ -967,7 +967,7 @@ struct extra_operations_gcc_aarch64< Base, 8u, Signed > :
             "st" st_mo "xr %w[tmp], %x[result], %[storage]\n\t"\
             "cbnz %w[tmp], 1b\n\t"\
             : [tmp] "=&r" (tmp), [storage] "+Q" (storage), [result] "=&r" (result)\
-            : [value] "Ir" (v)\
+            : [value] "Lr" (v)\
             : "memory"\
         );
 
@@ -991,7 +991,7 @@ struct extra_operations_gcc_aarch64< Base, 8u, Signed > :
             "st" st_mo "xr %w[tmp], %x[result], %[storage]\n\t"\
             "cbnz %w[tmp], 1b\n\t"\
             : [tmp] "=&r" (tmp), [storage] "+Q" (storage), [result] "=&r" (result)\
-            : [value] "Ir" (v)\
+            : [value] "Lr" (v)\
             : "memory"\
         );
 
@@ -1196,7 +1196,7 @@ struct extra_operations_gcc_aarch64< Base, 16u, Signed > :
             "cbnz %w[tmp], 1b\n\t"\
             : [tmp] "=&r" (tmp), [storage] "+Q" (storage),\
               [result_0] "=&r" (result.as_uint64[0u]), [result_1] "=&r" (result.as_uint64[1u])\
-            : [value_0] "r" (value.as_uint64[0u]), [value_1] "r" (value.as_uint64[1u])\
+            : [value_0] "Lr" (value.as_uint64[0u]), [value_1] "Lr" (value.as_uint64[1u])\
             : "memory"\
         );
 
@@ -1223,7 +1223,7 @@ struct extra_operations_gcc_aarch64< Base, 16u, Signed > :
             "cbnz %w[tmp], 1b\n\t"\
             : [tmp] "=&r" (tmp), [storage] "+Q" (storage),\
               [result_0] "=&r" (result.as_uint64[0u]), [result_1] "=&r" (result.as_uint64[1u])\
-            : [value_0] "r" (value.as_uint64[0u]), [value_1] "r" (value.as_uint64[1u])\
+            : [value_0] "Lr" (value.as_uint64[0u]), [value_1] "Lr" (value.as_uint64[1u])\
             : "memory"\
         );
 
@@ -1250,7 +1250,7 @@ struct extra_operations_gcc_aarch64< Base, 16u, Signed > :
             "cbnz %w[tmp], 1b\n\t"\
             : [tmp] "=&r" (tmp), [storage] "+Q" (storage),\
               [result_0] "=&r" (result.as_uint64[0u]), [result_1] "=&r" (result.as_uint64[1u])\
-            : [value_0] "r" (value.as_uint64[0u]), [value_1] "r" (value.as_uint64[1u])\
+            : [value_0] "Lr" (value.as_uint64[0u]), [value_1] "Lr" (value.as_uint64[1u])\
             : "memory"\
         );
 

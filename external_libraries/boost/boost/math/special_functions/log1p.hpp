@@ -12,21 +12,17 @@
 #pragma warning(disable:4702) // Unreachable code (release mode only warning)
 #endif
 
-#include <boost/config/no_tr1/cmath.hpp>
-#include <math.h> // platform's ::log1p
-#include <boost/limits.hpp>
+#include <cmath>
+#include <cstdint>
+#include <limits>
 #include <boost/math/tools/config.hpp>
 #include <boost/math/tools/series.hpp>
 #include <boost/math/tools/rational.hpp>
 #include <boost/math/tools/big_constant.hpp>
 #include <boost/math/policies/error_handling.hpp>
 #include <boost/math/special_functions/math_fwd.hpp>
-
-#ifndef BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS
-#  include <boost/static_assert.hpp>
-#else
-#  include <boost/assert.hpp>
-#endif
+#include <boost/math/tools/assert.hpp>
+#include <boost/math/special_functions/fpclassify.hpp>
 
 #if defined(__GNUC__) && defined(BOOST_MATH_USE_FLOAT128)
 //
@@ -83,7 +79,7 @@ namespace detail
 // it performs no better than log(1+x): which is to say not very well at all.
 //
 template <class T, class Policy>
-T log1p_imp(T const & x, const Policy& pol, const boost::integral_constant<int, 0>&)
+T log1p_imp(T const & x, const Policy& pol, const std::integral_constant<int, 0>&)
 { // The function returns the natural logarithm of 1 + x.
    typedef typename tools::promote_args<T>::type result_type;
    BOOST_MATH_STD_USING
@@ -105,19 +101,16 @@ T log1p_imp(T const & x, const Policy& pol, const boost::integral_constant<int, 
    if(a < tools::epsilon<result_type>())
       return x;
    detail::log1p_series<result_type> s(x);
-   boost::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
-#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582)) && !BOOST_WORKAROUND(__EDG_VERSION__, <= 245)
+   std::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
+
    result_type result = tools::sum_series(s, policies::get_epsilon<result_type, Policy>(), max_iter);
-#else
-   result_type zero = 0;
-   result_type result = tools::sum_series(s, policies::get_epsilon<result_type, Policy>(), max_iter, zero);
-#endif
+
    policies::check_series_iterations<T>(function, max_iter, pol);
    return result;
 }
 
 template <class T, class Policy>
-T log1p_imp(T const& x, const Policy& pol, const boost::integral_constant<int, 53>&)
+T log1p_imp(T const& x, const Policy& pol, const std::integral_constant<int, 53>&)
 { // The function returns the natural logarithm of 1 + x.
    BOOST_MATH_STD_USING
 
@@ -170,7 +163,7 @@ T log1p_imp(T const& x, const Policy& pol, const boost::integral_constant<int, 5
 }
 
 template <class T, class Policy>
-T log1p_imp(T const& x, const Policy& pol, const boost::integral_constant<int, 64>&)
+T log1p_imp(T const& x, const Policy& pol, const std::integral_constant<int, 64>&)
 { // The function returns the natural logarithm of 1 + x.
    BOOST_MATH_STD_USING
 
@@ -225,7 +218,7 @@ T log1p_imp(T const& x, const Policy& pol, const boost::integral_constant<int, 6
 }
 
 template <class T, class Policy>
-T log1p_imp(T const& x, const Policy& pol, const boost::integral_constant<int, 24>&)
+T log1p_imp(T const& x, const Policy& pol, const std::integral_constant<int, 24>&)
 { // The function returns the natural logarithm of 1 + x.
    BOOST_MATH_STD_USING
 
@@ -280,8 +273,8 @@ struct log1p_initializer
          do_init(tag());
       }
       template <int N>
-      static void do_init(const boost::integral_constant<int, N>&){}
-      static void do_init(const boost::integral_constant<int, 64>&)
+      static void do_init(const std::integral_constant<int, N>&){}
+      static void do_init(const std::integral_constant<int, 64>&)
       {
          boost::math::log1p(static_cast<T>(0.25), Policy());
       }
@@ -313,7 +306,7 @@ inline typename tools::promote_args<T>::type log1p(T x, const Policy&)
       policies::discrete_quantile<>,
       policies::assert_undefined<> >::type forwarding_policy;
 
-   typedef boost::integral_constant<int,
+   typedef std::integral_constant<int,
       precision_type::value <= 0 ? 0 :
       precision_type::value <= 53 ? 53 :
       precision_type::value <= 64 ? 64 : 0
@@ -324,24 +317,6 @@ inline typename tools::promote_args<T>::type log1p(T x, const Policy&)
    return policies::checked_narrowing_cast<result_type, forwarding_policy>(
       detail::log1p_imp(static_cast<value_type>(x), forwarding_policy(), tag_type()), "boost::math::log1p<%1%>(%1%)");
 }
-
-#if BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x564))
-// These overloads work around a type deduction bug:
-inline float log1p(float z)
-{
-   return log1p<float>(z);
-}
-inline double log1p(double z)
-{
-   return log1p<double>(z);
-}
-#ifndef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
-inline long double log1p(long double z)
-{
-   return log1p<long double>(z);
-}
-#endif
-#endif
 
 #ifdef log1p
 #  ifndef BOOST_HAS_LOG1P
@@ -481,13 +456,10 @@ inline typename tools::promote_args<T>::type
       return -x * x / 2;
    boost::math::detail::log1p_series<T> s(x);
    s();
-   boost::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
-#if BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
-   T zero = 0;
-   T result = boost::math::tools::sum_series(s, policies::get_epsilon<T, Policy>(), max_iter, zero);
-#else
+   std::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
+
    T result = boost::math::tools::sum_series(s, policies::get_epsilon<T, Policy>(), max_iter);
-#endif
+
    policies::check_series_iterations<T>(function, max_iter, pol);
    return result;
 }

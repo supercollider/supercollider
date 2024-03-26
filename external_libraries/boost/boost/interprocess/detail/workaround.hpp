@@ -19,9 +19,17 @@
 #  pragma once
 #endif
 
+#if defined(BOOST_INTERPROCESS_FORCE_NATIVE_EMULATION) && defined(BOOST_INTERPROCESS_FORCE_GENERIC_EMULATION) 
+#error "BOOST_INTERPROCESS_FORCE_NATIVE_EMULATION && BOOST_INTERPROCESS_FORCE_GENERIC_EMULATION can't be defined at the same time"
+#endif
+
+//#define BOOST_INTERPROCESS_FORCE_NATIVE_EMULATION
+
 #if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
    #define BOOST_INTERPROCESS_WINDOWS
-   #define BOOST_INTERPROCESS_FORCE_GENERIC_EMULATION
+   #if !defined(BOOST_INTERPROCESS_FORCE_NATIVE_EMULATION) && !defined(BOOST_INTERPROCESS_FORCE_GENERIC_EMULATION)
+      #define BOOST_INTERPROCESS_FORCE_GENERIC_EMULATION
+   #endif
    #define BOOST_INTERPROCESS_HAS_KERNEL_BOOTTIME
 #else
    #include <unistd.h>
@@ -61,6 +69,13 @@
       #else
          #define BOOST_INTERPROCESS_POSIX_PROCESS_SHARED
       #endif
+   #endif
+
+   //////////////////////////////////////////////////////
+   //    BOOST_INTERPROCESS_POSIX_ROBUST_MUTEXES
+   //////////////////////////////////////////////////////
+   #if (_XOPEN_SOURCE >= 700 || _POSIX_C_SOURCE >= 200809L)
+      #define BOOST_INTERPROCESS_POSIX_ROBUST_MUTEXES
    #endif
 
    //////////////////////////////////////////////////////
@@ -147,6 +162,14 @@
        (defined (_FILE_OFFSET_BITS) &&(_FILE_OFFSET_BITS  - 0 >= 64))
       #define BOOST_INTERPROCESS_UNIX_64_BIT_OR_BIGGER_OFF_T
    #endif
+
+   //////////////////////////////////////////////////////
+   //posix_fallocate
+   //////////////////////////////////////////////////////
+   #if (_XOPEN_SOURCE >= 600 || _POSIX_C_SOURCE >= 200112L)
+   #define BOOST_INTERPROCESS_POSIX_FALLOCATE
+   #endif
+
 #endif   //!defined(BOOST_INTERPROCESS_WINDOWS)
 
 #if defined(BOOST_INTERPROCESS_WINDOWS) || defined(BOOST_INTERPROCESS_POSIX_MAPPED_FILES)
@@ -166,6 +189,18 @@
 // Timeout duration use if BOOST_INTERPROCESS_ENABLE_TIMEOUT_WHEN_LOCKING is set
 #ifndef BOOST_INTERPROCESS_TIMEOUT_WHEN_LOCKING_DURATION_MS
    #define BOOST_INTERPROCESS_TIMEOUT_WHEN_LOCKING_DURATION_MS 10000
+#endif
+
+
+// Max open or create tries with managed memory segments
+#ifndef BOOST_INTERPROCESS_MANAGED_OPEN_OR_CREATE_INITIALIZE_MAX_TRIES
+   #define BOOST_INTERPROCESS_MANAGED_OPEN_OR_CREATE_INITIALIZE_MAX_TRIES 20u
+#endif
+
+// Maximum timeout in seconds with open or create tries with managed memory segments
+// waiting the creator to initialize the shared memory
+#ifndef BOOST_INTERPROCESS_MANAGED_OPEN_OR_CREATE_INITIALIZE_TIMEOUT_SEC
+   #define BOOST_INTERPROCESS_MANAGED_OPEN_OR_CREATE_INITIALIZE_TIMEOUT_SEC 300u
 #endif
 
 //Other switches
@@ -188,14 +223,40 @@
    #define BOOST_INTERPROCESS_FORCEINLINE inline
 #elif defined(BOOST_INTERPROCESS_FORCEINLINE_IS_BOOST_FORCELINE)
    #define BOOST_INTERPROCESS_FORCEINLINE BOOST_FORCEINLINE
-#elif defined(BOOST_MSVC) && defined(_DEBUG)
-   //"__forceinline" and MSVC seems to have some bugs in debug mode
+#elif defined(BOOST_MSVC) && (_MSC_VER < 1900 || defined(_DEBUG))
+   //"__forceinline" and MSVC seems to have some bugs in old versions and in debug mode
    #define BOOST_INTERPROCESS_FORCEINLINE inline
-#elif defined(__GNUC__) && ((__GNUC__ < 4) || (__GNUC__ == 4 && (__GNUC_MINOR__ < 5)))
+#elif defined(BOOST_GCC) && (__GNUC__ <= 5)
    //Older GCCs have problems with forceinline
    #define BOOST_INTERPROCESS_FORCEINLINE inline
 #else
    #define BOOST_INTERPROCESS_FORCEINLINE BOOST_FORCEINLINE
 #endif
+
+#ifdef BOOST_WINDOWS
+
+#define BOOST_INTERPROCESS_WCHAR_NAMED_RESOURCES
+
+#ifdef __clang__
+   #define BOOST_INTERPROCESS_DISABLE_DEPRECATED_WARNING _Pragma("clang diagnostic push") \
+                                                         _Pragma("clang diagnostic ignored \"-Wdeprecated-declarations\"")
+   #define BOOST_INTERPROCESS_RESTORE_WARNING            _Pragma("clang diagnostic pop")
+#else // __clang__
+   #define BOOST_INTERPROCESS_DISABLE_DEPRECATED_WARNING __pragma(warning(push)) \
+                                                         __pragma(warning(disable : 4996))
+   #define BOOST_INTERPROCESS_RESTORE_WARNING            __pragma(warning(pop))
+#endif // __clang__
+
+#endif
+
+#if defined(BOOST_HAS_THREADS) 
+#  if defined(_MSC_VER) || defined(__MWERKS__) || defined(__MINGW32__) ||  defined(__BORLANDC__)
+     //no reentrant posix functions (eg: localtime_r)
+#  elif (!defined(__hpux) || (defined(__hpux) && defined(_REENTRANT)))
+#   define BOOST_INTERPROCESS_HAS_REENTRANT_STD_FUNCTIONS
+#  endif
+#endif
+
+#include <boost/core/no_exceptions_support.hpp>
 
 #endif   //#ifndef BOOST_INTERPROCESS_DETAIL_WORKAROUND_HPP

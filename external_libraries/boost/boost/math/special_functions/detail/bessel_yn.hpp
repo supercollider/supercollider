@@ -62,7 +62,7 @@ T bessel_yn(int n, T x, const Policy& pol)
     }
     else if(asymptotic_bessel_large_x_limit(n, x))
     {
-       value = factor * asymptotic_bessel_y_large_x_2(static_cast<T>(abs(n)), x);
+       value = factor * asymptotic_bessel_y_large_x_2(static_cast<T>(abs(n)), x, pol);
     }
     else if (n == 0)
     {
@@ -77,7 +77,7 @@ T bessel_yn(int n, T x, const Policy& pol)
        prev = bessel_y0(x, pol);
        current = bessel_y1(x, pol);
        int k = 1;
-       BOOST_ASSERT(k < n);
+       BOOST_MATH_ASSERT(k < n);
        policies::check_series_iterations<T>("boost::math::bessel_y_n<%1%>(%1%,%1%)", n, pol);
        T mult = 2 * k / x;
        value = mult * current - prev;

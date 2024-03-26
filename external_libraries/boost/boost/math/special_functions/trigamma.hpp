@@ -16,7 +16,6 @@
 #include <boost/math/tools/promotion.hpp>
 #include <boost/math/policies/error_handling.hpp>
 #include <boost/math/constants/constants.hpp>
-#include <boost/mpl/comparison.hpp>
 #include <boost/math/tools/big_constant.hpp>
 #include <boost/math/special_functions/polygamma.hpp>
 
@@ -38,7 +37,7 @@ template<class T, class Policy>
 T polygamma_imp(const int n, T x, const Policy &pol);
 
 template <class T, class Policy>
-T trigamma_prec(T x, const boost::integral_constant<int, 53>*, const Policy&)
+T trigamma_prec(T x, const std::integral_constant<int, 53>*, const Policy&)
 {
    // Max error in interpolated form: 3.736e-017
    static const T offset = BOOST_MATH_BIG_CONSTANT(T, 53, 2.1093254089355469);
@@ -111,7 +110,7 @@ T trigamma_prec(T x, const boost::integral_constant<int, 53>*, const Policy&)
 }
    
 template <class T, class Policy>
-T trigamma_prec(T x, const boost::integral_constant<int, 64>*, const Policy&)
+T trigamma_prec(T x, const std::integral_constant<int, 64>*, const Policy&)
 {
    // Max error in interpolated form: 1.178e-020
    static const T offset_1_2 = BOOST_MATH_BIG_CONSTANT(T, 64, 2.109325408935546875);
@@ -189,7 +188,7 @@ T trigamma_prec(T x, const boost::integral_constant<int, 64>*, const Policy&)
 }
 
 template <class T, class Policy>
-T trigamma_prec(T x, const boost::integral_constant<int, 113>*, const Policy&)
+T trigamma_prec(T x, const std::integral_constant<int, 113>*, const Policy&)
 {
    // Max error in interpolated form: 1.916e-035
 
@@ -391,7 +390,7 @@ T trigamma_imp(T x, const Tag* t, const Policy& pol)
 }
 
 template <class T, class Policy>
-T trigamma_imp(T x, const boost::integral_constant<int, 0>*, const Policy& pol)
+T trigamma_imp(T x, const std::integral_constant<int, 0>*, const Policy& pol)
 {
    return polygamma_imp(1, x, pol);
 }
@@ -406,13 +405,13 @@ struct trigamma_initializer
       init()
       {
          typedef typename policies::precision<T, Policy>::type precision_type;
-         do_init(boost::integral_constant<bool, precision_type::value && (precision_type::value <= 113)>());
+         do_init(std::integral_constant<bool, precision_type::value && (precision_type::value <= 113)>());
       }
-      void do_init(const boost::true_type&)
+      void do_init(const std::true_type&)
       {
          boost::math::trigamma(T(2.5), Policy());
       }
-      void do_init(const boost::false_type&){}
+      void do_init(const std::false_type&){}
       void force_instantiate()const{}
    };
    static const init initializer;
@@ -434,7 +433,7 @@ inline typename tools::promote_args<T>::type
    typedef typename tools::promote_args<T>::type result_type;
    typedef typename policies::evaluation<result_type, Policy>::type value_type;
    typedef typename policies::precision<T, Policy>::type precision_type;
-   typedef boost::integral_constant<int,
+   typedef std::integral_constant<int,
       precision_type::value <= 0 ? 0 :
       precision_type::value <= 53 ? 53 :
       precision_type::value <= 64 ? 64 :

@@ -147,12 +147,12 @@ namespace executors
         {
 #if 1
           // fix for gcc 6.2 ICE - see github.com/supercollider/supercollider/pull/2473
-# ifndef __MINGW32__
+#ifndef __MINGW32__
           thread th (&basic_thread_pool::worker_thread, this);
-# else
+#else
           auto worker = [=](){ this->worker_thread(); };
           thread th (worker);
-# endif
+#endif
           threads.push_back(thread_t(boost::move(th)));
 #else
           threads.push_back(thread_t(&basic_thread_pool::worker_thread, this)); // do not compile

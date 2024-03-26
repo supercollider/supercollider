@@ -151,7 +151,7 @@ class new_allocator
    {}
 
    //!Allocates memory for an array of count elements.
-   //!Throws std::bad_alloc if there is no enough memory
+   //!Throws bad_alloc if there is no enough memory
    pointer allocate(size_type count)
    {
       const std::size_t max_count = std::size_t(-1)/(2*sizeof(T));
@@ -162,8 +162,15 @@ class new_allocator
 
    //!Deallocates previously allocated memory.
    //!Never throws
-   void deallocate(pointer ptr, size_type) BOOST_NOEXCEPT_OR_NOTHROW
-     { ::operator delete((void*)ptr); }
+   void deallocate(pointer ptr, size_type n) BOOST_NOEXCEPT_OR_NOTHROW
+   {
+      (void)n;
+      # if __cpp_sized_deallocation
+      ::operator delete((void*)ptr, n * sizeof(T));
+      #else
+      ::operator delete((void*)ptr);
+      # endif
+   }
 
    //!Returns the maximum number of elements that could be allocated.
    //!Never throws

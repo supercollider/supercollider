@@ -13,10 +13,12 @@
 
 #include <boost/algorithm/string/config.hpp>
 #include <algorithm>
+#include <cstring>
 #include <functional>
 #include <locale>
 
 #include <boost/range/begin.hpp>
+#include <boost/range/distance.hpp>
 #include <boost/range/end.hpp>
 
 #include <boost/algorithm/string/predicate_facade.hpp>

@@ -10,7 +10,7 @@
 #ifndef BOOST_MATH_HYPERGEOMETRIC_RATIONAL_HPP
 #define BOOST_MATH_HYPERGEOMETRIC_RATIONAL_HPP
 
-  #include <boost/array.hpp>
+  #include <array>
 
   namespace boost{ namespace math{ namespace detail{
 
@@ -116,7 +116,7 @@
     const T cp1_inc = cp1 + one;
     const T cp1_mul_cp1_inc = cp1 * cp1_inc;
 
-    boost::array<T, 9u> d = {{
+    std::array<T, 9u> d = {{
       ((half_7 - ab) * z2) - sabz,
       abz1_div_4,
       abz1_div_4 - (two * sabz),

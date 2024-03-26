@@ -56,8 +56,8 @@ inline T asymptotic_bessel_derivative_phase_mx(T v, T x)
    return s;
 }
 
-template <class T>
-inline T asymptotic_bessel_y_derivative_large_x_2(T v, T x)
+template <class T, class Policy>
+inline T asymptotic_bessel_y_derivative_large_x_2(T v, T x, const Policy& pol)
 {
    // See A&S 9.2.20.
    BOOST_MATH_STD_USING
@@ -75,8 +75,8 @@ inline T asymptotic_bessel_y_derivative_large_x_2(T v, T x)
    const T cx = cos(x);
    const T sx = sin(x);
    const T vd2shifted = (v / 2) - 0.25f;
-   const T ci = cos_pi(vd2shifted);
-   const T si = sin_pi(vd2shifted);
+   const T ci = cos_pi(vd2shifted, pol);
+   const T si = sin_pi(vd2shifted, pol);
    const T sin_phase = sin(phase) * (cx * ci + sx * si) + cos(phase) * (sx * ci - cx * si);
    BOOST_MATH_INSTRUMENT_CODE(sin(phase));
    BOOST_MATH_INSTRUMENT_CODE(cos(x));
@@ -85,8 +85,8 @@ inline T asymptotic_bessel_y_derivative_large_x_2(T v, T x)
    return sin_phase * ampl;
 }
 
-template <class T>
-inline T asymptotic_bessel_j_derivative_large_x_2(T v, T x)
+template <class T, class Policy>
+inline T asymptotic_bessel_j_derivative_large_x_2(T v, T x, const Policy& pol)
 {
    // See A&S 9.2.20.
    BOOST_MATH_STD_USING
@@ -108,8 +108,8 @@ inline T asymptotic_bessel_j_derivative_large_x_2(T v, T x)
    const T cx = cos(x);
    const T sx = sin(x);
    const T vd2shifted = (v / 2) - 0.25f;
-   const T ci = cos_pi(vd2shifted);
-   const T si = sin_pi(vd2shifted);
+   const T ci = cos_pi(vd2shifted, pol);
+   const T si = sin_pi(vd2shifted, pol);
    const T sin_phase = cos(phase) * (cx * ci + sx * si) - sin(phase) * (sx * ci - cx * si);
    BOOST_MATH_INSTRUMENT_VARIABLE(sin_phase);
    return sin_phase * ampl;

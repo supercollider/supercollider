@@ -26,6 +26,7 @@
 //!   - boost::container::static_vector
 //!   - boost::container::small_vector_base
 //!   - boost::container::small_vector
+//!   - boost::container::devector
 //!   - boost::container::slist
 //!   - boost::container::list
 //!   - boost::container::set
@@ -91,9 +92,6 @@ namespace container {
 
 #ifndef BOOST_CONTAINER_DOXYGEN_INVOKED
 
-template<class T1, class T2>
-struct pair;
-
 template<class T>
 class new_allocator;
 
@@ -121,6 +119,11 @@ template < class T
          , class Allocator = void
          , class Options   = void  >
 class small_vector;
+
+template <class T
+         ,class Allocator = void
+         ,class Options   = void>
+class devector;
 
 template <class T
          ,class Allocator = void
@@ -376,6 +379,7 @@ struct dummy
 
 }  //detail_really_deep_namespace {
 
+typedef const std::piecewise_construct_t & piecewise_construct_t;
 
 #endif   //#ifndef BOOST_CONTAINER_DOXYGEN_INVOKED
 

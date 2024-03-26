@@ -40,10 +40,18 @@ namespace boost {
             // Protected construction/destruction
 
                 // Default constructor
-                find_iterator_base() {}
+                BOOST_DEFAULTED_FUNCTION(find_iterator_base(), {})
+
                 // Copy construction
-                find_iterator_base( const find_iterator_base& Other ) :
+                BOOST_DEFAULTED_FUNCTION(find_iterator_base( const find_iterator_base& Other ), :
                     m_Finder(Other.m_Finder) {}
+                )
+
+                // Assignment
+                BOOST_DEFAULTED_FUNCTION(find_iterator_base& operator=( const find_iterator_base& Other ), {
+                    m_Finder = Other.m_Finder;
+                    return *this;
+                })
                 
                 // Constructor
                 template<typename FinderT>
@@ -51,7 +59,7 @@ namespace boost {
                     m_Finder(Finder) {}
 
                 // Destructor
-                ~find_iterator_base() {}
+                BOOST_DEFAULTED_FUNCTION(~find_iterator_base(), {})
 
                 // Find operation
                 match_type do_find( 

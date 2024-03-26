@@ -151,7 +151,14 @@ public:
     T* get_ptr() const BOOST_NOEXCEPT { return ptr_; }
     T* operator->() const { BOOST_ASSERT(ptr_); return ptr_; }
     T& operator*() const { BOOST_ASSERT(ptr_); return *ptr_; }
-    T& value() const { return ptr_ ? *ptr_ : (throw_exception(bad_optional_access()), *ptr_); }
+    
+    T& value() const
+    {
+      if (this->is_initialized())
+        return this->get();
+      else
+        throw_exception(bad_optional_access());
+    }
     
     bool operator!() const BOOST_NOEXCEPT { return ptr_ == 0; }  
     BOOST_EXPLICIT_OPERATOR_BOOL_NOEXCEPT()

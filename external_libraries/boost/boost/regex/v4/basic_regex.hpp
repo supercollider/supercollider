@@ -416,7 +416,7 @@ public:
    {
       typedef typename traits::string_type seq_type;
       seq_type a(arg_first, arg_last);
-      if(a.size())
+      if(!a.empty())
          assign(static_cast<const charT*>(&*a.begin()), static_cast<const charT*>(&*a.begin() + a.size()), f);
       else
          assign(static_cast<const charT*>(0), static_cast<const charT*>(0), f);
@@ -617,32 +617,32 @@ public:
    //
    const BOOST_REGEX_DETAIL_NS::re_syntax_base* get_first_state()const
    {
-      BOOST_ASSERT(0 != m_pimpl.get());
+      BOOST_REGEX_ASSERT(0 != m_pimpl.get());
       return m_pimpl->get_first_state();
    }
    unsigned get_restart_type()const
    {
-      BOOST_ASSERT(0 != m_pimpl.get());
+      BOOST_REGEX_ASSERT(0 != m_pimpl.get());
       return m_pimpl->get_restart_type();
    }
    const unsigned char* get_map()const
    {
-      BOOST_ASSERT(0 != m_pimpl.get());
+      BOOST_REGEX_ASSERT(0 != m_pimpl.get());
       return m_pimpl->get_map();
    }
    const ::boost::regex_traits_wrapper<traits>& get_traits()const
    {
-      BOOST_ASSERT(0 != m_pimpl.get());
+      BOOST_REGEX_ASSERT(0 != m_pimpl.get());
       return m_pimpl->get_traits();
    }
    bool can_be_null()const
    {
-      BOOST_ASSERT(0 != m_pimpl.get());
+      BOOST_REGEX_ASSERT(0 != m_pimpl.get());
       return m_pimpl->can_be_null();
    }
    const BOOST_REGEX_DETAIL_NS::regex_data<charT, traits>& get_data()const
    {
-      BOOST_ASSERT(0 != m_pimpl.get());
+      BOOST_REGEX_ASSERT(0 != m_pimpl.get());
       return m_pimpl->get_data();
    }
    boost::shared_ptr<BOOST_REGEX_DETAIL_NS::named_subexpressions > get_named_subs()const
@@ -657,7 +657,7 @@ private:
 //
 // out of line members;
 // these are the only members that mutate the basic_regex object,
-// and are designed to provide the strong exception guarentee
+// and are designed to provide the strong exception guarantee
 // (in the event of a throw, the state of the object remains unchanged).
 //
 template <class charT, class traits>
@@ -795,4 +795,3 @@ public:
 #endif
 
 #endif
-

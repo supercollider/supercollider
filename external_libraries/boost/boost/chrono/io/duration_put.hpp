@@ -102,7 +102,7 @@ namespace boost
        */
       template <typename Rep, typename Period>
       iter_type put(iter_type s, std::ios_base& ios, char_type fill, duration<Rep, Period> const& d, const CharT* pattern,
-          const CharT* pat_end, const char_type* val = 0) const
+          const CharT* pat_end, const char_type* val = BOOST_NULLPTR) const
       {
         if (std::has_facet<duration_units<CharT> >(ios.getloc()))
         {
@@ -119,7 +119,7 @@ namespace boost
 
       template <typename Rep, typename Period>
       iter_type put(duration_units<CharT> const& units_facet, iter_type s, std::ios_base& ios, char_type fill,
-          duration<Rep, Period> const& d, const CharT* pattern, const CharT* pat_end, const char_type* val = 0) const
+          duration<Rep, Period> const& d, const CharT* pattern, const CharT* pat_end, const char_type* val = BOOST_NULLPTR) const
       {
 
         const std::ctype<char_type>& ct = std::use_facet<std::ctype<char_type> >(ios.getloc());
@@ -170,7 +170,7 @@ namespace boost
        * @Returns An iterator pointing immediately after the last character produced.
        */
       template <typename Rep, typename Period>
-      iter_type put(iter_type s, std::ios_base& ios, char_type fill, duration<Rep, Period> const& d, const char_type* val = 0) const
+      iter_type put(iter_type s, std::ios_base& ios, char_type fill, duration<Rep, Period> const& d, const char_type* val = BOOST_NULLPTR) const
       {
         if (std::has_facet<duration_units<CharT> >(ios.getloc()))
         {
@@ -198,7 +198,7 @@ namespace boost
        * @Returns s, iterator pointing immediately after the last character produced.
        */
       template <typename Rep, typename Period>
-      iter_type put_value(iter_type s, std::ios_base& ios, char_type fill, duration<Rep, Period> const& d, const char_type* val = 0) const
+      iter_type put_value(iter_type s, std::ios_base& ios, char_type fill, duration<Rep, Period> const& d, const char_type* val = BOOST_NULLPTR) const
       {
         if (val)
         {
@@ -213,7 +213,7 @@ namespace boost
       }
 
       template <typename Rep, typename Period>
-      iter_type put_value(iter_type s, std::ios_base& ios, char_type fill, duration<process_times<Rep>, Period> const& d, const char_type* = 0) const
+      iter_type put_value(iter_type s, std::ios_base& ios, char_type fill, duration<process_times<Rep>, Period> const& d, const char_type* = BOOST_NULLPTR) const
       {
         *s++ = CharT('{');
         s = put_value(s, ios, fill, process_real_cpu_clock::duration(d.count().real));

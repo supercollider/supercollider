@@ -52,7 +52,7 @@ class deleter
    segment_manager_pointer mp_mngr;
 
    public:
-   deleter(segment_manager_pointer pmngr)
+   deleter(segment_manager_pointer pmngr) BOOST_NOEXCEPT
       :  mp_mngr(pmngr)
    {}
 

@@ -35,6 +35,11 @@ Pyramid 9810 architecture.
 #   define BOOST_ARCH_PYRAMID_AVAILABLE
 #endif
 
+#if BOOST_ARCH_PYRAMID
+#   undef BOOST_ARCH_WORD_BITS_32
+#   define BOOST_ARCH_WORD_BITS_32 BOOST_VERSION_NUMBER_AVAILABLE
+#endif
+
 #define BOOST_ARCH_PYRAMID_NAME "Pyramid 9810"
 
 #endif

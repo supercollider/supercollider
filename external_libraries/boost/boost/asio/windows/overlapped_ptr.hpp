@@ -2,7 +2,7 @@
 // windows/overlapped_ptr.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -53,9 +53,9 @@ public:
   template <typename ExecutionContext, typename Handler>
   explicit overlapped_ptr(ExecutionContext& context,
       BOOST_ASIO_MOVE_ARG(Handler) handler,
-      typename enable_if<
+      typename constraint<
         is_convertible<ExecutionContext&, execution_context&>::value
-      >::type* = 0)
+      >::type = 0)
     : impl_(context.get_executor(), BOOST_ASIO_MOVE_CAST(Handler)(handler))
   {
   }
@@ -64,10 +64,10 @@ public:
   template <typename Executor, typename Handler>
   explicit overlapped_ptr(const Executor& ex,
       BOOST_ASIO_MOVE_ARG(Handler) handler,
-      typename enable_if<
+      typename constraint<
         execution::is_executor<Executor>::value
           || is_executor<Executor>::value
-      >::type* = 0)
+      >::type = 0)
     : impl_(ex, BOOST_ASIO_MOVE_CAST(Handler)(handler))
   {
   }
@@ -87,9 +87,9 @@ public:
   /// object.
   template <typename ExecutionContext, typename Handler>
   void reset(ExecutionContext& context, BOOST_ASIO_MOVE_ARG(Handler) handler,
-      typename enable_if<
+      typename constraint<
         is_convertible<ExecutionContext&, execution_context&>::value
-      >::type* = 0)
+      >::type = 0)
   {
     impl_.reset(context.get_executor(), BOOST_ASIO_MOVE_CAST(Handler)(handler));
   }
@@ -98,10 +98,10 @@ public:
   /// object.
   template <typename Executor, typename Handler>
   void reset(const Executor& ex, BOOST_ASIO_MOVE_ARG(Handler) handler,
-      typename enable_if<
+      typename constraint<
         execution::is_executor<Executor>::value
           || is_executor<Executor>::value
-      >::type* = 0)
+      >::type = 0)
   {
     impl_.reset(ex, BOOST_ASIO_MOVE_CAST(Handler)(handler));
   }

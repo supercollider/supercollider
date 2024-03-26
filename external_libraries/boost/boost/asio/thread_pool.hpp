@@ -2,7 +2,7 @@
 // thread_pool.hpp
 // ~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -231,6 +231,12 @@ public:
       basic_executor_type&& other) BOOST_ASIO_NOEXCEPT;
 #endif // defined(BOOST_ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
 
+#if !defined(GENERATING_DOCUMENTATION)
+private:
+  friend struct boost_asio_require_fn::impl;
+  friend struct boost_asio_prefer_fn::impl;
+#endif // !defined(GENERATING_DOCUMENTATION)
+
   /// Obtain an executor with the @c blocking.possibly property.
   /**
    * Do not call this function directly. It is intended for use with the
@@ -391,6 +397,13 @@ public:
         pool_, std::allocator<void>(), bits_);
   }
 
+#if !defined(GENERATING_DOCUMENTATION)
+private:
+  friend struct boost_asio_query_fn::impl;
+  friend struct boost::asio::execution::detail::mapping_t<0>;
+  friend struct boost::asio::execution::detail::outstanding_work_t<0>;
+#endif // !defined(GENERATING_DOCUMENTATION)
+
   /// Query the current value of the @c bulk_guarantee property.
   /**
    * Do not call this function directly. It is intended for use with the
@@ -547,6 +560,7 @@ public:
     return static_cast<std::size_t>(pool_->num_threads_);
   }
 
+public:
   /// Determine whether the thread pool is running in the current thread.
   /**
    * @return @c true if the current thread is running the thread pool. Otherwise
@@ -578,6 +592,11 @@ public:
       || a.bits_ != b.bits_;
   }
 
+#if !defined(GENERATING_DOCUMENTATION)
+private:
+  friend struct boost_asio_execution_execute_fn::impl;
+#endif // !defined(GENERATING_DOCUMENTATION)
+
   /// Execution function.
   /**
    * Do not call this function directly. It is intended for use with the
@@ -594,6 +613,7 @@ public:
         integral_constant<bool, (Bits & blocking_always) != 0>());
   }
 
+public:
   /// Bulk execution function.
   template <typename Function>
   void bulk_execute(BOOST_ASIO_MOVE_ARG(Function) f, std::size_t n) const
@@ -1097,6 +1117,15 @@ struct query_member<
 #endif // !defined(BOOST_ASIO_HAS_DEDUCED_QUERY_MEMBER_TRAIT)
 
 } // namespace traits
+
+namespace execution {
+
+template <>
+struct is_executor<thread_pool> : false_type
+{
+};
+
+} // namespace execution
 
 #endif // !defined(GENERATING_DOCUMENTATION)
 

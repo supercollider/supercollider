@@ -23,10 +23,12 @@
 
 #include <boost/config.hpp>
 #include <boost/ref.hpp>
-#include <boost/mem_fn.hpp>
+#include <boost/bind/mem_fn.hpp>
 #include <boost/type.hpp>
 #include <boost/is_placeholder.hpp>
 #include <boost/bind/arg.hpp>
+#include <boost/bind/detail/result_traits.hpp>
+#include <boost/bind/std_placeholders.hpp>
 #include <boost/detail/workaround.hpp>
 #include <boost/visit_each.hpp>
 #include <boost/core/enable_if.hpp>
@@ -58,29 +60,6 @@ template<class T> class weak_ptr;
 
 namespace _bi // implementation details
 {
-
-// result_traits
-
-template<class R, class F> struct result_traits
-{
-    typedef R type;
-};
-
-#if !defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION) && !defined(BOOST_NO_FUNCTION_TEMPLATE_ORDERING)
-
-struct unspecified {};
-
-template<class F> struct result_traits<unspecified, F>
-{
-    typedef typename F::result_type type;
-};
-
-template<class F> struct result_traits< unspecified, reference_wrapper<F> >
-{
-    typedef typename F::result_type type;
-};
-
-#endif
 
 // ref_compare
 
@@ -865,7 +844,7 @@ public:
 
 // bind_t
 
-#if !defined( BOOST_NO_CXX11_RVALUE_REFERENCES )
+#if !defined(BOOST_NO_CXX11_RVALUE_REFERENCES) && !(defined(BOOST_GCC) && BOOST_GCC < 40600)
 
 template< class A1 > class rrlist1
 {
@@ -2191,6 +2170,7 @@ template<class F, class A1, class A2, class A3, class A4, class A5, class A6, cl
 #   undef BOOST_BIND_MF_NOEXCEPT
 #   define BOOST_BIND_MF_NOEXCEPT noexcept
 #   include <boost/bind/bind_mf_cc.hpp>
+#   include <boost/bind/bind_mf2_cc.hpp>
 # endif
 
 #undef BOOST_BIND_MF_NAME

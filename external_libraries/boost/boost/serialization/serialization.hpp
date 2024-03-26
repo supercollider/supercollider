@@ -45,15 +45,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // layer 2 - default implementation of non-intrusive serialization.
 //
-// note the usage of function overloading to compensate that C++ does not
-// currently support Partial Template Specialization for function templates
-// We have declared the version number as "const unsigned long".
-// Overriding templates for specific data types should declare the version
-// number as "const unsigned int". Template matching will first be applied
-// to functions with the same version types - that is the overloads.
-// If there is no declared function prototype that matches, the second argument
-// will be converted to "const unsigned long" and a match will be made with
-// one of the default template functions below.
 
 namespace boost {
 namespace serialization {

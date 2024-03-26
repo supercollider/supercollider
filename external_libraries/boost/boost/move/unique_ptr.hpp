@@ -430,7 +430,7 @@ class unique_ptr
    {
       //If T is not an array type, element_type_t<Pointer> derives from T
       //it uses the default deleter and T has no virtual destructor, then you have a problem
-      BOOST_STATIC_ASSERT(( !::boost::move_upmu::missing_virtual_destructor
+      BOOST_STATIC_ASSERT(( !bmupd::missing_virtual_destructor
                             <D, typename bmupd::get_element_type<Pointer>::type>::value ));
       //If this constructor is instantiated with a pointer type or reference type
       //for the template argument D, the program is ill-formed.
@@ -468,7 +468,7 @@ class unique_ptr
    {
       //If T is not an array type, element_type_t<Pointer> derives from T
       //it uses the default deleter and T has no virtual destructor, then you have a problem
-      BOOST_STATIC_ASSERT(( !::boost::move_upmu::missing_virtual_destructor
+      BOOST_STATIC_ASSERT(( !bmupd::missing_virtual_destructor
                             <D, typename bmupd::get_element_type<Pointer>::type>::value ));
    }
 
@@ -506,7 +506,7 @@ class unique_ptr
    {
       //If T is not an array type, element_type_t<Pointer> derives from T
       //it uses the default deleter and T has no virtual destructor, then you have a problem
-      BOOST_STATIC_ASSERT(( !::boost::move_upmu::missing_virtual_destructor
+      BOOST_STATIC_ASSERT(( !bmupd::missing_virtual_destructor
                             <D, typename bmupd::get_element_type<Pointer>::type>::value ));
    }
 
@@ -553,7 +553,7 @@ class unique_ptr
    {
       //If T is not an array type, U derives from T
       //it uses the default deleter and T has no virtual destructor, then you have a problem
-      BOOST_STATIC_ASSERT(( !::boost::move_upmu::missing_virtual_destructor
+      BOOST_STATIC_ASSERT(( !bmupd::missing_virtual_destructor
                             <D, typename unique_ptr<U, E>::pointer>::value ));
    }
 
@@ -711,7 +711,7 @@ class unique_ptr
    {
       //If T is not an array type, element_type_t<Pointer> derives from T
       //it uses the default deleter and T has no virtual destructor, then you have a problem
-      BOOST_STATIC_ASSERT(( !::boost::move_upmu::missing_virtual_destructor
+      BOOST_STATIC_ASSERT(( !bmupd::missing_virtual_destructor
                             <D, typename bmupd::get_element_type<Pointer>::type>::value ));
       pointer tmp = m_data.m_p;
       m_data.m_p = p;

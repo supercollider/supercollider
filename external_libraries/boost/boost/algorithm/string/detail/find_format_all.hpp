@@ -18,6 +18,8 @@
 #include <boost/algorithm/string/detail/find_format_store.hpp>
 #include <boost/algorithm/string/detail/replace_storage.hpp>
 
+#include <deque>
+
 namespace boost {
     namespace algorithm {
         namespace detail {

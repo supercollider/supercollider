@@ -167,7 +167,7 @@ struct resolve_traits {
                 is_array<T>,
                 array_adapter<Mode, T>,
                 else_,
-                #if !BOOST_WORKAROUND(__BORLANDC__, < 0x600)
+                #if !BOOST_WORKAROUND(BOOST_BORLANDC, < 0x600)
                     const T&
                 #else
                     T
@@ -196,7 +196,7 @@ typename resolve_traits<Mode, Ch, T>::type
 resolve(const T& t BOOST_IOSTREAMS_DISABLE_IF_STREAM(T))
 { return resolve<Mode, Ch>(t, is_std_io<T>()); }
 
-# if !BOOST_WORKAROUND(__BORLANDC__, < 0x600) && \
+# if !BOOST_WORKAROUND(BOOST_BORLANDC, < 0x600) && \
      !defined(__GNUC__) // ---------------------------------------------------//
 
 template<typename Mode, typename Ch, typename T>

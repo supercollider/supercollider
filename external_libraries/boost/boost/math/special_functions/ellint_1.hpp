@@ -109,7 +109,7 @@ T ellint_f_imp(T phi, T k, const Policy& pol)
        BOOST_MATH_INSTRUMENT_VARIABLE(cosp);
        if(sinp > tools::min_value<T>())
        {
-          BOOST_ASSERT(rphi != 0); // precondition, can't be true if sin(rphi) != 0.
+          BOOST_MATH_ASSERT(rphi != 0); // precondition, can't be true if sin(rphi) != 0.
           //
           // Use http://dlmf.nist.gov/19.25#E5, note that
           // c-1 simplifies to cot^2(rphi) which avoid cancellation:
@@ -157,7 +157,7 @@ T ellint_k_imp(T k, const Policy& pol)
 }
 
 template <typename T, typename Policy>
-inline typename tools::promote_args<T>::type ellint_1(T k, const Policy& pol, const boost::true_type&)
+inline typename tools::promote_args<T>::type ellint_1(T k, const Policy& pol, const std::true_type&)
 {
    typedef typename tools::promote_args<T>::type result_type;
    typedef typename policies::evaluation<result_type, Policy>::type value_type;
@@ -165,7 +165,7 @@ inline typename tools::promote_args<T>::type ellint_1(T k, const Policy& pol, co
 }
 
 template <class T1, class T2>
-inline typename tools::promote_args<T1, T2>::type ellint_1(T1 k, T2 phi, const boost::false_type&)
+inline typename tools::promote_args<T1, T2>::type ellint_1(T1 k, T2 phi, const std::false_type&)
 {
    return boost::math::ellint_1(k, phi, policies::policy<>());
 }

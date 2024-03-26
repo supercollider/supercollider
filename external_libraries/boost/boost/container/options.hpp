@@ -113,19 +113,32 @@ using tree_assoc_options_t = typename boost::container::tree_assoc_options<Optio
 
 #if !defined(BOOST_CONTAINER_DOXYGEN_INVOKED)
 
-template<bool StoreHash>
+template<bool StoreHash, bool CacheBegin, bool LinearBuckets, bool FastmodBuckets>
 struct hash_opt
 {
-   static const bool store_hash = StoreHash;
+   static const bool store_hash  = StoreHash;
+   static const bool cache_begin = CacheBegin;
+   static const bool linear_buckets = LinearBuckets;
+   static const bool fastmod_buckets = FastmodBuckets;
 };
 
-typedef hash_opt<false> hash_assoc_defaults;
+typedef hash_opt<false, false, false, false> hash_assoc_defaults;
 
 #endif   //!defined(BOOST_CONTAINER_DOXYGEN_INVOKED)
 
-//!This option setter specifies if node size is optimized
-//!storing rebalancing data masked into pointers for ordered associative containers
+//!This option setter specifies if nodes also store the hash value
+//!so that search and rehashing for hash-expensive types is improved.
+//!This option might degrade performance for easy to hash types (like integers)
 BOOST_INTRUSIVE_OPTION_CONSTANT(store_hash, bool, Enabled, store_hash)
+
+//!This option setter specifies if the container will cache the first
+//!non-empty bucket so that begin() is O(1) instead of searching for the
+//!first non-empty bucket (which can be O(bucket_size()))
+BOOST_INTRUSIVE_OPTION_CONSTANT(cache_begin, bool, Enabled, cache_begin)
+
+BOOST_INTRUSIVE_OPTION_CONSTANT(linear_buckets, bool, Enabled, linear_buckets)
+
+BOOST_INTRUSIVE_OPTION_CONSTANT(fastmod_buckets, bool, Enabled, fastmod_buckets)
 
 //! Helper metafunction to combine options into a single type to be used
 //! by \c boost::container::hash_set, \c boost::container::hash_multiset
@@ -147,7 +160,11 @@ struct hash_assoc_options
       Options...
       #endif
       >::type packed_options;
-   typedef hash_opt<packed_options::store_hash> implementation_defined;
+   typedef hash_opt<packed_options::store_hash
+                   ,packed_options::cache_begin
+                   ,packed_options::linear_buckets
+                   ,packed_options::fastmod_buckets
+                   > implementation_defined;
    /// @endcond
    typedef implementation_defined type;
 };
@@ -214,6 +231,13 @@ struct vector_opt
 class default_next_capacity;
 
 typedef vector_opt<void, void> vector_null_opt;
+
+template<class GrowthType, class StoredSizeType>
+struct devector_opt
+   : vector_opt<GrowthType, StoredSizeType>
+{};
+
+typedef devector_opt<void, void> devector_null_opt;
 
 #else    //!defined(BOOST_CONTAINER_DOXYGEN_INVOKED)
 
@@ -442,6 +466,40 @@ using static_vector_options_t = typename boost::container::static_vector_options
 
 #endif
 
+//! Helper metafunction to combine options into a single type to be used
+//! by \c boost::container::devector.
+//! Supported options are: \c boost::container::growth_factor and \c boost::container::stored_size
+#if defined(BOOST_CONTAINER_DOXYGEN_INVOKED) || defined(BOOST_CONTAINER_VARIADIC_TEMPLATES)
+template<class ...Options>
+#else
+template<class O1 = void, class O2 = void, class O3 = void, class O4 = void>
+#endif
+struct devector_options
+{
+   /// @cond
+   typedef typename ::boost::intrusive::pack_options
+      < devector_null_opt,
+      #if !defined(BOOST_CONTAINER_VARIADIC_TEMPLATES)
+      O1, O2, O3, O4
+      #else
+      Options...
+      #endif
+      >::type packed_options;
+   typedef devector_opt< typename packed_options::growth_factor_type
+                       , typename packed_options::stored_size_type> implementation_defined;
+   /// @endcond
+   typedef implementation_defined type;
+};
+
+#if !defined(BOOST_NO_CXX11_TEMPLATE_ALIASES)
+
+//! Helper alias metafunction to combine options into a single type to be used
+//! by \c boost::container::devector.
+//! Supported options are: \c boost::container::growth_factor and \c boost::container::stored_size
+template<class ...Options>
+using devector_options_t = typename boost::container::devector_options<Options...>::type;
+
+#endif
 
 ////////////////////////////////////////////////////////////////
 //

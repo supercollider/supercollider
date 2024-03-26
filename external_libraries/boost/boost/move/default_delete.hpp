@@ -112,6 +112,33 @@ void call_delete(T *p, is_array_del<false>)
    delete p;
 }
 
+template< class T, class U
+        , bool enable =  def_del_compatible_cond< U, T>::value &&
+                        !move_upmu::is_array<T>::value &&
+                        !move_upmu::is_same<typename move_upmu::remove_cv<T>::type, void>::value &&
+                        !move_upmu::is_same<typename move_upmu::remove_cv<U>::type, typename move_upmu::remove_cv<T>::type>::value
+        >
+struct missing_virtual_destructor_default_delete
+{  static const bool value = !move_upmu::has_virtual_destructor<T>::value;  };
+
+template<class T, class U>
+struct missing_virtual_destructor_default_delete<T, U, false>
+{  static const bool value = false;  };
+
+//////////////////////////////////////
+//       missing_virtual_destructor
+//////////////////////////////////////
+
+template<class Deleter, class U>
+struct missing_virtual_destructor
+{  static const bool value = false;  };
+
+template<class T, class U>
+struct missing_virtual_destructor< ::boost::movelib::default_delete<T>, U >
+   : missing_virtual_destructor_default_delete<T, U>
+{};
+
+
 }  //namespace move_upd {
 // @endcond
 
@@ -163,7 +190,7 @@ struct default_delete
    {
       //If T is not an array type, U derives from T
       //and T has no virtual destructor, then you have a problem
-      BOOST_STATIC_ASSERT(( !::boost::move_upmu::missing_virtual_destructor<default_delete, U>::value ));
+      BOOST_STATIC_ASSERT(( !bmupd::missing_virtual_destructor<default_delete, U>::value ));
    }
 
    //! <b>Effects</b>: Constructs a default_delete object from another <tt>default_delete<U></tt> object.
@@ -178,7 +205,7 @@ struct default_delete
    {
       //If T is not an array type, U derives from T
       //and T has no virtual destructor, then you have a problem
-      BOOST_STATIC_ASSERT(( !::boost::move_upmu::missing_virtual_destructor<default_delete, U>::value ));
+      BOOST_STATIC_ASSERT(( !bmupd::missing_virtual_destructor<default_delete, U>::value ));
       return *this;
    }
 
@@ -198,7 +225,7 @@ struct default_delete
       BOOST_STATIC_ASSERT(sizeof(U) > 0);
       //If T is not an array type, U derives from T
       //and T has no virtual destructor, then you have a problem
-      BOOST_STATIC_ASSERT(( !::boost::move_upmu::missing_virtual_destructor<default_delete, U>::value ));
+      BOOST_STATIC_ASSERT(( !bmupd::missing_virtual_destructor<default_delete, U>::value ));
       element_type * const p = static_cast<element_type*>(ptr);
       move_upd::call_delete(p, move_upd::is_array_del<bmupmu::is_array<T>::value>());
    }

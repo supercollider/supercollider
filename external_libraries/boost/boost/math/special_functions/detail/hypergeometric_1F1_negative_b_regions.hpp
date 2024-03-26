@@ -396,7 +396,7 @@ namespace boost {
             static const unsigned total_elements = sizeof(domain) / sizeof(domain[0]);
             static const unsigned stride = 16;
             //static const unsigned a_elements = total_elements / stride;
-            BOOST_ASSERT(total_elements % stride == 0);
+            BOOST_MATH_ASSERT(total_elements % stride == 0);
 
             static const double a_max = domain[total_elements - 1][0];
             static const double a_min = domain[0][0];
@@ -428,7 +428,7 @@ namespace boost {
                if (b > b_max)
                   return 0;  // TODO: don't know what else to do???
                unsigned index = total_elements - stride;
-               BOOST_ASSERT(domain[index][0] == a_max);
+               BOOST_MATH_ASSERT(domain[index][0] == a_max);
                while (domain[index][1] < b) 
                   ++index;
                double b0 = domain[index - 1][1];
@@ -461,17 +461,17 @@ namespace boost {
             double y1 = domain[index - 1][1];
             double y2 = domain[index][1];
             double f11 = domain[index - stride - 1][2];
-            BOOST_ASSERT(domain[index - stride - 1][0] == x1);
-            BOOST_ASSERT(domain[index - stride - 1][1] == y1);
+            BOOST_MATH_ASSERT(domain[index - stride - 1][0] == x1);
+            BOOST_MATH_ASSERT(domain[index - stride - 1][1] == y1);
             double f12 = domain[index - stride][2];
-            BOOST_ASSERT(domain[index - stride][0] == x1);
-            BOOST_ASSERT(domain[index - stride][1] == y2);
+            BOOST_MATH_ASSERT(domain[index - stride][0] == x1);
+            BOOST_MATH_ASSERT(domain[index - stride][1] == y2);
             double f21 = domain[index - 1][2];
-            BOOST_ASSERT(domain[index - 1][0] == x2);
-            BOOST_ASSERT(domain[index - 1][1] == y1);
+            BOOST_MATH_ASSERT(domain[index - 1][0] == x2);
+            BOOST_MATH_ASSERT(domain[index - 1][1] == y1);
             double f22 = domain[index][2];
-            BOOST_ASSERT(domain[index][0] == x2);
-            BOOST_ASSERT(domain[index][1] == y2);
+            BOOST_MATH_ASSERT(domain[index][0] == x2);
+            BOOST_MATH_ASSERT(domain[index][1] == y2);
             //
             // Interpolation is a crude tool and our corners have quite tight bounds,
             // and the "impossible region" is bounded by convex planes.  For the upper
@@ -500,13 +500,13 @@ namespace boost {
             if (z < lower_limit)
                return -1;
 
-            BOOST_ASSERT(f11 <= domain[index - stride - 1][3]);
+            BOOST_MATH_ASSERT(f11 <= domain[index - stride - 1][3]);
             f11 = domain[index - stride - 1][3];
-            BOOST_ASSERT(f12 <= domain[index - stride][3]);
+            BOOST_MATH_ASSERT(f12 <= domain[index - stride][3]);
             f12 = domain[index - stride][3];
-            BOOST_ASSERT(f21 <= domain[index - 1][3]);
+            BOOST_MATH_ASSERT(f21 <= domain[index - 1][3]);
             f21 = domain[index - 1][3];
-            BOOST_ASSERT(f22 <= domain[index][3]);
+            BOOST_MATH_ASSERT(f22 <= domain[index][3]);
             f22 = domain[index][3];
 
             T upper_limit = static_cast<T>(1 / ((x2 - x1) * (y2 - y1)) * (f11 * (x2 - a) * (y2 - b) + f21 * (a - x1) * (y2 - b) + f12 * (x2 - a) * (b - y1) + f22 * (a - x1) * (b - y1)));

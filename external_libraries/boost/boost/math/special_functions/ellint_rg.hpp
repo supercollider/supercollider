@@ -46,8 +46,8 @@ namespace boost { namespace math { namespace detail{
       if(y > z)
          swap(y, z);
       
-      BOOST_ASSERT(x >= z);
-      BOOST_ASSERT(z >= y);
+      BOOST_MATH_ASSERT(x >= z);
+      BOOST_MATH_ASSERT(z >= y);
       //
       // Special cases from http://dlmf.nist.gov/19.20#ii
       //

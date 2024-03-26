@@ -2,7 +2,7 @@
 // strand.hpp
 // ~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -18,6 +18,7 @@
 #include <boost/asio/detail/config.hpp>
 #include <boost/asio/detail/strand_executor_service.hpp>
 #include <boost/asio/detail/type_traits.hpp>
+#include <boost/asio/execution/blocking.hpp>
 #include <boost/asio/execution/executor.hpp>
 #include <boost/asio/is_executor.hpp>
 
@@ -48,13 +49,13 @@ public:
   /// Construct a strand for the specified executor.
   template <typename Executor1>
   explicit strand(const Executor1& e,
-      typename enable_if<
+      typename constraint<
         conditional<
           !is_same<Executor1, strand>::value,
           is_convertible<Executor1, Executor>,
           false_type
         >::type::value
-      >::type* = 0)
+      >::type = 0)
     : executor_(e),
       impl_(strand::create_implementation(executor_))
   {
@@ -158,7 +159,7 @@ public:
   /// Forward a query to the underlying executor.
   /**
    * Do not call this function directly. It is intended for use with the
-   * execution::execute customisation point.
+   * boost::asio::query customisation point.
    *
    * For example:
    * @code boost::asio::strand<my_executor_type> ex = ...;
@@ -167,14 +168,19 @@ public:
    *   ... @endcode
    */
   template <typename Property>
-  typename enable_if<
+  typename constraint<
     can_query<const Executor&, Property>::value,
-    typename query_result<const Executor&, Property>::type
+    typename conditional<
+      is_convertible<Property, execution::blocking_t>::value,
+      execution::blocking_t,
+      typename query_result<const Executor&, Property>::type
+    >::type
   >::type query(const Property& p) const
     BOOST_ASIO_NOEXCEPT_IF((
       is_nothrow_query<const Executor&, Property>::value))
   {
-    return boost::asio::query(executor_, p);
+    return this->query_helper(
+        is_convertible<Property, execution::blocking_t>(), p);
   }
 
   /// Forward a requirement to the underlying executor.
@@ -188,8 +194,9 @@ public:
    *     boost::asio::execution::blocking.never); @endcode
    */
   template <typename Property>
-  typename enable_if<
-    can_require<const Executor&, Property>::value,
+  typename constraint<
+    can_require<const Executor&, Property>::value
+      && !is_convertible<Property, execution::blocking_t::always_t>::value,
     strand<typename decay<
       typename require_result<const Executor&, Property>::type
     >::type>
@@ -213,8 +220,9 @@ public:
    *     boost::asio::execution::blocking.never); @endcode
    */
   template <typename Property>
-  typename enable_if<
-    can_prefer<const Executor&, Property>::value,
+  typename constraint<
+    can_prefer<const Executor&, Property>::value
+      && !is_convertible<Property, execution::blocking_t::always_t>::value,
     strand<typename decay<
       typename prefer_result<const Executor&, Property>::type
     >::type>
@@ -271,8 +279,9 @@ public:
    * function object must be: @code void function(); @endcode
    */
   template <typename Function>
-  typename enable_if<
-    execution::can_execute<const Executor&, Function>::value
+  typename constraint<
+    execution::can_execute<const Executor&, Function>::value,
+    void
   >::type execute(BOOST_ASIO_MOVE_ARG(Function) f) const
   {
     detail::strand_executor_service::execute(impl_,
@@ -382,9 +391,9 @@ private:
 
   template <typename InnerExecutor>
   static implementation_type create_implementation(const InnerExecutor& ex,
-      typename enable_if<
+      typename constraint<
         can_query<InnerExecutor, execution::context_t>::value
-      >::type* = 0)
+      >::type = 0)
   {
     return use_service<detail::strand_executor_service>(
         boost::asio::query(ex, execution::context)).create_implementation();
@@ -392,9 +401,9 @@ private:
 
   template <typename InnerExecutor>
   static implementation_type create_implementation(const InnerExecutor& ex,
-      typename enable_if<
+      typename constraint<
         !can_query<InnerExecutor, execution::context_t>::value
-      >::type* = 0)
+      >::type = 0)
   {
     return use_service<detail::strand_executor_service>(
         ex.context()).create_implementation();
@@ -404,6 +413,21 @@ private:
     : executor_(ex),
       impl_(impl)
   {
+  }
+
+  template <typename Property>
+  typename query_result<const Executor&, Property>::type query_helper(
+      false_type, const Property& property) const
+  {
+    return boost::asio::query(executor_, property);
+  }
+
+  template <typename Property>
+  execution::blocking_t query_helper(true_type, const Property& property) const
+  {
+    execution::blocking_t result = boost::asio::query(executor_, property);
+    return result == execution::blocking.always
+      ? execution::blocking.possibly : result;
   }
 
   Executor executor_;
@@ -418,22 +442,33 @@ private:
 /*@{*/
 
 /// Create a @ref strand object for an executor.
+/**
+ * @param ex An executor.
+ *
+ * @returns A strand constructed with the specified executor.
+ */
 template <typename Executor>
 inline strand<Executor> make_strand(const Executor& ex,
-    typename enable_if<
+    typename constraint<
       is_executor<Executor>::value || execution::is_executor<Executor>::value
-    >::type* = 0)
+    >::type = 0)
 {
   return strand<Executor>(ex);
 }
 
 /// Create a @ref strand object for an execution context.
+/**
+ * @param ctx An execution context, from which an executor will be obtained.
+ *
+ * @returns A strand constructed with the execution context's executor, obtained
+ * by performing <tt>ctx.get_executor()</tt>.
+ */
 template <typename ExecutionContext>
 inline strand<typename ExecutionContext::executor_type>
 make_strand(ExecutionContext& ctx,
-    typename enable_if<
+    typename constraint<
       is_convertible<ExecutionContext&, execution_context&>::value
-    >::type* = 0)
+    >::type = 0)
 {
   return strand<typename ExecutionContext::executor_type>(ctx.get_executor());
 }
@@ -458,7 +493,10 @@ struct equality_comparable<strand<Executor> >
 #if !defined(BOOST_ASIO_HAS_DEDUCED_EXECUTE_MEMBER_TRAIT)
 
 template <typename Executor, typename Function>
-struct execute_member<strand<Executor>, Function>
+struct execute_member<strand<Executor>, Function,
+    typename enable_if<
+      execution::can_execute<const Executor&, Function>::value
+    >::type>
 {
   BOOST_ASIO_STATIC_CONSTEXPR(bool, is_valid = true);
   BOOST_ASIO_STATIC_CONSTEXPR(bool, is_noexcept = false);
@@ -478,7 +516,10 @@ struct query_member<strand<Executor>, Property,
   BOOST_ASIO_STATIC_CONSTEXPR(bool, is_valid = true);
   BOOST_ASIO_STATIC_CONSTEXPR(bool, is_noexcept =
       (is_nothrow_query<Executor, Property>::value));
-  typedef typename query_result<Executor, Property>::type result_type;
+  typedef typename conditional<
+    is_convertible<Property, execution::blocking_t>::value,
+      execution::blocking_t, typename query_result<Executor, Property>::type
+        >::type result_type;
 };
 
 #endif // !defined(BOOST_ASIO_HAS_DEDUCED_QUERY_MEMBER_TRAIT)
@@ -489,6 +530,7 @@ template <typename Executor, typename Property>
 struct require_member<strand<Executor>, Property,
     typename enable_if<
       can_require<const Executor&, Property>::value
+        && !is_convertible<Property, execution::blocking_t::always_t>::value
     >::type>
 {
   BOOST_ASIO_STATIC_CONSTEXPR(bool, is_valid = true);
@@ -507,6 +549,7 @@ template <typename Executor, typename Property>
 struct prefer_member<strand<Executor>, Property,
     typename enable_if<
       can_prefer<const Executor&, Property>::value
+        && !is_convertible<Property, execution::blocking_t::always_t>::value
     >::type>
 {
   BOOST_ASIO_STATIC_CONSTEXPR(bool, is_valid = true);

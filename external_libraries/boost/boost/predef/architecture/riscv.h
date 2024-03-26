@@ -35,6 +35,11 @@ http://en.wikipedia.org/wiki/RISC-V[RISC-V] architecture.
 #   define BOOST_ARCH_RISCV_AVAILABLE
 #endif
 
+#if BOOST_ARCH_RISCV
+#   undef BOOST_ARCH_WORD_BITS_32
+#   define BOOST_ARCH_WORD_BITS_32 BOOST_VERSION_NUMBER_AVAILABLE
+#endif
+
 #define BOOST_ARCH_RISCV_NAME "RISC-V"
 
 #endif

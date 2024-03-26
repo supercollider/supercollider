@@ -14,7 +14,7 @@
   namespace boost { namespace math { namespace detail {
 
      template <class T, class Policy>
-     T hypergeometric_1F1_imp(const T& a, const T& b, const T& z, const Policy& pol, int& log_scaling);
+     T hypergeometric_1F1_imp(const T& a, const T& b, const T& z, const Policy& pol, long long& log_scaling);
 
      /*
       Evaluation by method of ratios for domain b < 0 < a,z
@@ -82,14 +82,14 @@
      }
 
      template <class T, class Policy>
-     T hypergeometric_1F1_from_function_ratio_negative_b(const T& a, const T& b, const T& z, const Policy& pol, int& log_scaling, const T& ratio)
+     T hypergeometric_1F1_from_function_ratio_negative_b(const T& a, const T& b, const T& z, const Policy& pol, long long& log_scaling, const T& ratio)
      {
         BOOST_MATH_STD_USING
         //
         // Let M2 = M(1+a-b, 2-b, z)
         // This is going to be a mighty big number:
         //
-        int local_scaling = 0;
+        long long local_scaling = 0;
         T M2 = boost::math::detail::hypergeometric_1F1_imp(T(1 + a - b), T(2 - b), z, pol, local_scaling);
         log_scaling -= local_scaling; // all the M2 terms are in the denominator
         //
@@ -98,7 +98,7 @@
         //
         if (fabs(M2) > 1)
         {
-           int s = itrunc(log(fabs(M2)));
+           long long s = lltrunc(log(fabs(M2)));
            log_scaling -= s;  // M2 will be in the denominator, so subtract the scaling!
            local_scaling += s;
            M2 *= exp(T(-s));
@@ -107,14 +107,14 @@
         // Let M3 = M(1+a-b + 1, 2-b + 1, z)
         // we can get to this from the ratio which is cheaper to calculate:
         //
-        boost::uintmax_t max_iter = boost::math::policies::get_max_series_iterations<Policy>();
+        std::uintmax_t max_iter = boost::math::policies::get_max_series_iterations<Policy>();
         boost::math::detail::hypergeometric_1F1_recurrence_a_and_b_coefficients<T> coef2(1 + a - b + 1, 2 - b + 1, z);
         T M3 = boost::math::tools::function_ratio_from_backwards_recurrence(coef2, boost::math::policies::get_epsilon<T, Policy>(), max_iter) * M2;
         boost::math::policies::check_series_iterations<T>("boost::math::hypergeometric_1F1_from_function_ratio_negative_b_positive_a<%1%>(%1%,%1%,%1%)", max_iter, pol);
         //
         // Get the RHS of the Wronksian:
         //
-        int fz = itrunc(z);
+        long long fz = lltrunc(z);
         log_scaling += fz;
         T rhs = (1 - b) * exp(z - fz);
         //
@@ -128,13 +128,13 @@
      }
 
      template <class T, class Policy>
-     T hypergeometric_1F1_from_function_ratio_negative_b(const T& a, const T& b, const T& z, const Policy& pol, int& log_scaling)
+     T hypergeometric_1F1_from_function_ratio_negative_b(const T& a, const T& b, const T& z, const Policy& pol, long long& log_scaling)
      {
         BOOST_MATH_STD_USING
         //
         // Get the function ratio, M(a+1, b+1, z)/M(a,b,z):
         //
-        boost::uintmax_t max_iter = boost::math::policies::get_max_series_iterations<Policy>();
+        std::uintmax_t max_iter = boost::math::policies::get_max_series_iterations<Policy>();
         boost::math::detail::hypergeometric_1F1_recurrence_a_and_b_coefficients<T> coef(a + 1, b + 1, z);
         T ratio = boost::math::tools::function_ratio_from_backwards_recurrence(coef, boost::math::policies::get_epsilon<T, Policy>(), max_iter);
         boost::math::policies::check_series_iterations<T>("boost::math::hypergeometric_1F1_from_function_ratio_negative_b_positive_a<%1%>(%1%,%1%,%1%)", max_iter, pol);
@@ -565,18 +565,18 @@
         while ((data[index][1] < b) && (data[index][2] > 1.25))
            --index;
         ++index;
-        BOOST_ASSERT(a > data[index][0]);
-        BOOST_ASSERT(-b < -data[index][1]);
+        BOOST_MATH_ASSERT(a > data[index][0]);
+        BOOST_MATH_ASSERT(-b < -data[index][1]);
         return z > data[index][2];
      }
      template <class T, class Policy>
-     T hypergeometric_1F1_from_function_ratio_negative_b_forwards(const T& a, const T& b, const T& z, const Policy& pol, int& log_scaling)
+     T hypergeometric_1F1_from_function_ratio_negative_b_forwards(const T& a, const T& b, const T& z, const Policy& pol, long long& log_scaling)
      {
         BOOST_MATH_STD_USING
         //
         // Get the function ratio, M(a+1, b+1, z)/M(a,b,z):
         //
-        boost::uintmax_t max_iter = boost::math::policies::get_max_series_iterations<Policy>();
+        std::uintmax_t max_iter = boost::math::policies::get_max_series_iterations<Policy>();
         boost::math::detail::hypergeometric_1F1_recurrence_a_and_b_coefficients<T> coef(a, b, z);
         T ratio = 1 / boost::math::tools::function_ratio_from_forwards_recurrence(coef, boost::math::policies::get_epsilon<T, Policy>(), max_iter);
         boost::math::policies::check_series_iterations<T>("boost::math::hypergeometric_1F1_from_function_ratio_negative_b_positive_a<%1%>(%1%,%1%,%1%)", max_iter, pol);
@@ -586,7 +586,7 @@
         // it will also be stable for M(a, b+1, z) etc all the way up to the origin, and hopefully one step beyond.  So
         // use a reference value just over the origin to normalise:
         //
-        int scale = 0;
+        long long scale = 0;
         int steps = itrunc(ceil(-b));
         T reference_value = hypergeometric_1F1_imp(T(a + steps), T(b + steps), z, pol, log_scaling);
         T found = boost::math::tools::apply_recurrence_relation_forward(boost::math::detail::hypergeometric_1F1_recurrence_a_and_b_coefficients<T>(a + 1, b + 1, z), steps - 1, T(1), ratio, &scale);
@@ -594,14 +594,14 @@
         if ((fabs(reference_value) < 1) && (fabs(reference_value) < tools::min_value<T>() * fabs(found)))
         {
            // Possible underflow, rescale
-           int s = itrunc(tools::log_max_value<T>());
+           long long s = lltrunc(tools::log_max_value<T>());
            log_scaling -= s;
            reference_value *= exp(T(s));
         }
         else if ((fabs(found) < 1) && (fabs(reference_value) > tools::max_value<T>() * fabs(found)))
         {
            // Overflow, rescale:
-           int s = itrunc(tools::log_max_value<T>());
+           long long s = lltrunc(tools::log_max_value<T>());
            log_scaling += s;
            reference_value /= exp(T(s));
         }
@@ -619,13 +619,13 @@
      // to a different behaviour.
      //
      template <class T, class Policy>
-     T hypergeometric_1F1_from_function_ratio_negative_ab(const T& a, const T& b, const T& z, const Policy& pol, int& log_scaling)
+     T hypergeometric_1F1_from_function_ratio_negative_ab(const T& a, const T& b, const T& z, const Policy& pol, long long& log_scaling)
      {
         BOOST_MATH_STD_USING
         //
         // Get the function ratio, M(a+1, b+1, z)/M(a,b,z):
         //
-        boost::uintmax_t max_iter = boost::math::policies::get_max_series_iterations<Policy>();
+        std::uintmax_t max_iter = boost::math::policies::get_max_series_iterations<Policy>();
         boost::math::detail::hypergeometric_1F1_recurrence_b_coefficients<T> coef(a, b + 1, z);
         T ratio = boost::math::tools::function_ratio_from_backwards_recurrence(coef, boost::math::policies::get_epsilon<T, Policy>(), max_iter);
         boost::math::policies::check_series_iterations<T>("boost::math::hypergeometric_1F1_from_function_ratio_negative_b_positive_a<%1%>(%1%,%1%,%1%)", max_iter, pol);
@@ -641,14 +641,14 @@
         // Let M2 = M(1+a-b, 2-b, z)
         // This is going to be a mighty big number:
         //
-        int local_scaling = 0;
+        long long local_scaling = 0;
         T M2 = boost::math::detail::hypergeometric_1F1_imp(T(1 + a - b), T(2 - b), z, pol, local_scaling);
         log_scaling -= local_scaling; // all the M2 terms are in the denominator
         //
         // Let M3 = M(1+a-b + 1, 2-b + 1, z)
         // We don't use the ratio to get this as it's not clear that it's reliable:
         //
-        int local_scaling2 = 0;
+        long long local_scaling2 = 0;
         T M3 = boost::math::detail::hypergeometric_1F1_imp(T(2 + a - b), T(3 - b), z, pol, local_scaling2);
         //
         // M2 and M3 must be identically scaled:
@@ -660,7 +660,7 @@
         //
         // Get the RHS of the Wronksian:
         //
-        int fz = itrunc(z);
+        long long fz = lltrunc(z);
         log_scaling += fz;
         T rhs = (1 - b) * exp(z - fz);
         //

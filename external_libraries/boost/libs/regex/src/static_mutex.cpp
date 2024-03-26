@@ -17,7 +17,10 @@
   */
 
 #define BOOST_REGEX_SOURCE
-#include <boost/config.hpp>
+#include <boost/regex/config.hpp>
+
+#if defined(BOOST_REGEX_CXX03)
+
 #include <boost/assert.hpp>
 
 #ifdef BOOST_HAS_THREADS
@@ -183,3 +186,4 @@ void scoped_static_mutex_lock::unlock()
 }
 
 #endif // BOOST_HAS_THREADS
+#endif

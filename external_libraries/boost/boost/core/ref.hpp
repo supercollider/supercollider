@@ -10,6 +10,7 @@
 #include <boost/config.hpp>
 #include <boost/config/workaround.hpp>
 #include <boost/core/addressof.hpp>
+#include <boost/core/enable_if.hpp>
 
 //
 //  ref.hpp - ref/cref, useful helper functions
@@ -45,6 +46,26 @@ namespace boost
     struct ref_workaround_tag {};
 
 #endif
+
+namespace detail
+{
+
+template< class Y, class T > struct ref_convertible
+{
+    typedef char (&yes) [1];
+    typedef char (&no)  [2];
+
+    static yes f( T* );
+    static no  f( ... );
+
+    enum _vt { value = sizeof( (f)( static_cast<Y*>(0) ) ) == sizeof(yes) };
+};
+
+struct ref_empty
+{
+};
+
+} // namespace detail
 
 // reference_wrapper
 
@@ -86,6 +107,21 @@ public:
     BOOST_DELETED_FUNCTION(reference_wrapper(T&& t))
 public:
 #endif
+
+    template<class Y> friend class reference_wrapper;
+
+    /**
+     Constructs a `reference_wrapper` object that stores the
+     reference stored in the compatible `reference_wrapper` `r`.
+
+     @remark Only enabled when `Y*` is convertible to `T*`.
+     @remark Does not throw.
+    */
+    template<class Y> reference_wrapper( reference_wrapper<Y> r,
+        typename enable_if_c<boost::detail::ref_convertible<Y, T>::value,
+            boost::detail::ref_empty>::type = boost::detail::ref_empty() ): t_( r.t_ )
+    {
+    }
 
     /**
      @return The stored reference.

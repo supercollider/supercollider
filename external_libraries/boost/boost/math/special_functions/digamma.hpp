@@ -18,7 +18,6 @@
 #include <boost/math/tools/promotion.hpp>
 #include <boost/math/policies/error_handling.hpp>
 #include <boost/math/constants/constants.hpp>
-#include <boost/mpl/comparison.hpp>
 #include <boost/math/tools/big_constant.hpp>
 
 #if defined(__GNUC__) && defined(BOOST_MATH_USE_FLOAT128)
@@ -38,9 +37,9 @@ namespace detail{
 // Begin by defining the smallest value for which it is safe to
 // use the asymptotic expansion for digamma:
 //
-inline unsigned digamma_large_lim(const boost::integral_constant<int, 0>*)
+inline unsigned digamma_large_lim(const std::integral_constant<int, 0>*)
 {  return 20;  }
-inline unsigned digamma_large_lim(const boost::integral_constant<int, 113>*)
+inline unsigned digamma_large_lim(const std::integral_constant<int, 113>*)
 {  return 20;  }
 inline unsigned digamma_large_lim(const void*)
 {  return 10;  }
@@ -55,7 +54,7 @@ inline unsigned digamma_large_lim(const void*)
 // This first one gives 34-digit precision for x >= 20:
 //
 template <class T>
-inline T digamma_imp_large(T x, const boost::integral_constant<int, 113>*)
+inline T digamma_imp_large(T x, const std::integral_constant<int, 113>*)
 {
    BOOST_MATH_STD_USING // ADL of std functions.
    static const T P[] = {
@@ -88,7 +87,7 @@ inline T digamma_imp_large(T x, const boost::integral_constant<int, 113>*)
 // 19-digit precision for x >= 10:
 //
 template <class T>
-inline T digamma_imp_large(T x, const boost::integral_constant<int, 64>*)
+inline T digamma_imp_large(T x, const std::integral_constant<int, 64>*)
 {
    BOOST_MATH_STD_USING // ADL of std functions.
    static const T P[] = {
@@ -115,7 +114,7 @@ inline T digamma_imp_large(T x, const boost::integral_constant<int, 64>*)
 // 17-digit precision for x >= 10:
 //
 template <class T>
-inline T digamma_imp_large(T x, const boost::integral_constant<int, 53>*)
+inline T digamma_imp_large(T x, const std::integral_constant<int, 53>*)
 {
    BOOST_MATH_STD_USING // ADL of std functions.
    static const T P[] = {
@@ -139,7 +138,7 @@ inline T digamma_imp_large(T x, const boost::integral_constant<int, 53>*)
 // 9-digit precision for x >= 10:
 //
 template <class T>
-inline T digamma_imp_large(T x, const boost::integral_constant<int, 24>*)
+inline T digamma_imp_large(T x, const std::integral_constant<int, 24>*)
 {
    BOOST_MATH_STD_USING // ADL of std functions.
    static const T P[] = {
@@ -178,12 +177,12 @@ public:
 };
 
 template <class T, class Policy>
-inline T digamma_imp_large(T x, const Policy& pol, const boost::integral_constant<int, 0>*)
+inline T digamma_imp_large(T x, const Policy& pol, const std::integral_constant<int, 0>*)
 {
    BOOST_MATH_STD_USING
    digamma_series_func<T> s(x);
    T result = log(x) - 1 / (2 * x);
-   boost::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
+   std::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
    result = boost::math::tools::sum_series(s, boost::math::policies::get_epsilon<T, Policy>(), max_iter, -result);
    result = -result;
    policies::check_series_iterations<T>("boost::math::digamma<%1%>(%1%)", max_iter, pol);
@@ -195,7 +194,7 @@ inline T digamma_imp_large(T x, const Policy& pol, const boost::integral_constan
 // 35-digit precision:
 //
 template <class T>
-T digamma_imp_1_2(T x, const boost::integral_constant<int, 113>*)
+T digamma_imp_1_2(T x, const std::integral_constant<int, 113>*)
 {
    //
    // Now the approximation, we use the form:
@@ -257,7 +256,7 @@ T digamma_imp_1_2(T x, const boost::integral_constant<int, 113>*)
 // 19-digit precision:
 //
 template <class T>
-T digamma_imp_1_2(T x, const boost::integral_constant<int, 64>*)
+T digamma_imp_1_2(T x, const std::integral_constant<int, 64>*)
 {
    //
    // Now the approximation, we use the form:
@@ -307,7 +306,7 @@ T digamma_imp_1_2(T x, const boost::integral_constant<int, 64>*)
 // 18-digit precision:
 //
 template <class T>
-T digamma_imp_1_2(T x, const boost::integral_constant<int, 53>*)
+T digamma_imp_1_2(T x, const std::integral_constant<int, 53>*)
 {
    //
    // Now the approximation, we use the form:
@@ -356,7 +355,7 @@ T digamma_imp_1_2(T x, const boost::integral_constant<int, 53>*)
 // 9-digit precision:
 //
 template <class T>
-inline T digamma_imp_1_2(T x, const boost::integral_constant<int, 24>*)
+inline T digamma_imp_1_2(T x, const std::integral_constant<int, 24>*)
 {
    //
    // Now the approximation, we use the form:
@@ -460,7 +459,7 @@ T digamma_imp(T x, const Tag* t, const Policy& pol)
 }
 
 template <class T, class Policy>
-T digamma_imp(T x, const boost::integral_constant<int, 0>* t, const Policy& pol)
+T digamma_imp(T x, const std::integral_constant<int, 0>* t, const Policy& pol)
 {
    //
    // This handles reflection of negative arguments, and all our
@@ -562,14 +561,14 @@ struct digamma_initializer
       init()
       {
          typedef typename policies::precision<T, Policy>::type precision_type;
-         do_init(boost::integral_constant<bool, precision_type::value && (precision_type::value <= 113)>());
+         do_init(std::integral_constant<bool, precision_type::value && (precision_type::value <= 113)>());
       }
-      void do_init(const boost::true_type&)
+      void do_init(const std::true_type&)
       {
          boost::math::digamma(T(1.5), Policy());
          boost::math::digamma(T(500), Policy());
       }
-      void do_init(const false_type&){}
+      void do_init(const std::false_type&){}
       void force_instantiate()const{}
    };
    static const init initializer;
@@ -591,7 +590,7 @@ inline typename tools::promote_args<T>::type
    typedef typename tools::promote_args<T>::type result_type;
    typedef typename policies::evaluation<result_type, Policy>::type value_type;
    typedef typename policies::precision<T, Policy>::type precision_type;
-   typedef boost::integral_constant<int,
+   typedef std::integral_constant<int,
       (precision_type::value <= 0) || (precision_type::value > 113) ? 0 :
       precision_type::value <= 24 ? 24 :
       precision_type::value <= 53 ? 53 :

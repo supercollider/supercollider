@@ -2,7 +2,7 @@
 // detail/std_event.hpp
 // ~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -76,7 +76,7 @@ public:
 
   // Unlock the mutex and signal one waiter who may destroy us.
   template <typename Lock>
-  void unlock_and_signal_one(Lock& lock)
+  void unlock_and_signal_one_for_destruction(Lock& lock)
   {
     BOOST_ASIO_ASSERT(lock.locked());
     state_ |= 1;

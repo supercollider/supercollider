@@ -2,7 +2,7 @@
 // execution/context_as.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -71,8 +71,18 @@ struct context_as_t
 #if defined(BOOST_ASIO_HAS_VARIABLE_TEMPLATES)
   template <typename U>
   BOOST_ASIO_STATIC_CONSTEXPR(bool,
-    is_applicable_property_v = is_executor<U>::value
-      || is_sender<U>::value || is_scheduler<U>::value);
+    is_applicable_property_v = (
+      is_executor<U>::value
+        || conditional<
+            is_executor<U>::value,
+            false_type,
+            is_sender<U>
+          >::type::value
+        || conditional<
+            is_executor<U>::value,
+            false_type,
+            is_scheduler<U>
+          >::type::value));
 #endif // defined(BOOST_ASIO_HAS_VARIABLE_TEMPLATES)
 
   BOOST_ASIO_STATIC_CONSTEXPR(bool, is_requirable = false);
@@ -92,12 +102,12 @@ struct context_as_t
   && defined(BOOST_ASIO_HAS_SFINAE_VARIABLE_TEMPLATES)
   template <typename E>
   static BOOST_ASIO_CONSTEXPR
-  typename traits::query_static_constexpr_member<E, context_t>::result_type
+  typename context_t::query_static_constexpr_member<E>::result_type
   static_query()
     BOOST_ASIO_NOEXCEPT_IF((
-      traits::query_static_constexpr_member<E, context_t>::is_noexcept))
+      context_t::query_static_constexpr_member<E>::is_noexcept))
   {
-    return traits::query_static_constexpr_member<E, context_t>::value();
+    return context_t::query_static_constexpr_member<E>::value();
   }
 
   template <typename E, typename U = decltype(context_as_t::static_query<E>())>
@@ -111,7 +121,9 @@ struct context_as_t
       const Executor& ex, const context_as_t<U>&,
       typename enable_if<
         is_same<T, U>::value
-          && can_query<const Executor&, const context_t&>::value
+      >::type* = 0,
+      typename enable_if<
+        can_query<const Executor&, const context_t&>::value
       >::type* = 0)
 #if !defined(__clang__) // Clang crashes if noexcept is used here.
 #if defined(BOOST_ASIO_MSVC) // Visual C++ wants the type to be qualified.
@@ -151,8 +163,16 @@ template <typename T, typename U>
 struct is_applicable_property<T, execution::context_as_t<U> >
   : integral_constant<bool,
       execution::is_executor<T>::value
-        || execution::is_sender<T>::value
-        || execution::is_scheduler<T>::value>
+        || conditional<
+            execution::is_executor<T>::value,
+            false_type,
+            execution::is_sender<T>
+          >::type::value
+        || conditional<
+            execution::is_executor<T>::value,
+            false_type,
+            execution::is_scheduler<T>
+          >::type::value>
 {
 };
 

@@ -11,6 +11,7 @@
 #include <boost/core/demangle.hpp>
 #include <boost/current_function.hpp>
 #include <string>
+#include <string.h>
 
 #ifndef BOOST_EXCEPTION_ENABLE_WARNINGS
 #if __GNUC__*100+__GNUC_MINOR__>301
@@ -69,7 +70,7 @@ boost
             bool
             operator<( type_info_ const & a, type_info_ const & b )
                 {
-                return 0!=(a.type_->before(*b.type_));
+                return a.type_!=b.type_ && strcmp(a.type_->name(), b.type_->name()) < 0;
                 }
             };
         }

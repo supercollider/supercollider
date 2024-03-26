@@ -1,5 +1,5 @@
 /*
-Copyright Rene Rivera 2008-2015
+Copyright Rene Rivera 2008-2021
 Distributed under the Boost Software License, Version 1.0.
 (See accompanying file LICENSE_1_0.txt or copy at
 http://www.boost.org/LICENSE_1_0.txt)
@@ -14,7 +14,7 @@ http://www.boost.org/LICENSE_1_0.txt)
 /* tag::reference[]
 = `BOOST_ARCH_X86_64`
 
-http://en.wikipedia.org/wiki/Ia64[Intel IA-64] architecture.
+https://en.wikipedia.org/wiki/X86-64[X86-64] architecture.
 
 [options="header"]
 |===
@@ -39,6 +39,11 @@ http://en.wikipedia.org/wiki/Ia64[Intel IA-64] architecture.
 
 #if BOOST_ARCH_X86_64
 #   define BOOST_ARCH_X86_64_AVAILABLE
+#endif
+
+#if BOOST_ARCH_X86_64
+#   undef BOOST_ARCH_WORD_BITS_64
+#   define BOOST_ARCH_WORD_BITS_64 BOOST_VERSION_NUMBER_AVAILABLE
 #endif
 
 #define BOOST_ARCH_X86_64_NAME "Intel x86-64"

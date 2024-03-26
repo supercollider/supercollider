@@ -137,7 +137,7 @@ inline typename tools::promote_args<T, U, V>::type jacobi_elliptic(T k, U theta,
       *pcn = policies::checked_narrowing_cast<result_type, Policy>(cn, function);
    if(pdn)
       *pdn = policies::checked_narrowing_cast<result_type, Policy>(dn, function);
-   return policies::checked_narrowing_cast<result_type, Policy>(sn, function);;
+   return policies::checked_narrowing_cast<result_type, Policy>(sn, function);
 }
 
 template <class T, class U, class V>

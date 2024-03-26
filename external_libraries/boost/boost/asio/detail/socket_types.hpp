@@ -2,7 +2,7 @@
 // detail/socket_types.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -207,6 +207,7 @@ typedef unsigned long ioctl_arg_type;
 typedef u_long u_long_type;
 typedef u_short u_short_type;
 typedef int signed_size_type;
+struct sockaddr_un_type { u_short sun_family; char sun_path[108]; };
 # define BOOST_ASIO_OS_DEF(c) BOOST_ASIO_OS_DEF_##c
 # define BOOST_ASIO_OS_DEF_AF_UNSPEC AF_UNSPEC
 # define BOOST_ASIO_OS_DEF_AF_INET AF_INET

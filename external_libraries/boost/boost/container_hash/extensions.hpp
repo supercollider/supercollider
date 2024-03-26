@@ -31,9 +31,7 @@
 #   include <tuple>
 #endif
 
-#if !defined(BOOST_NO_CXX11_HDR_MEMORY)
-#   include <memory>
-#endif
+#include <memory>
 
 #if defined(BOOST_NO_FUNCTION_TEMPLATE_ORDERING)
 #include <boost/type_traits/is_array.hpp>

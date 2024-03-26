@@ -41,6 +41,18 @@ inline boost::arg<7> _7() { return boost::arg<7>(); }
 inline boost::arg<8> _8() { return boost::arg<8>(); }
 inline boost::arg<9> _9() { return boost::arg<9>(); }
 
+#elif !defined(BOOST_NO_CXX17_INLINE_VARIABLES)
+
+BOOST_INLINE_CONSTEXPR boost::arg<1> _1;
+BOOST_INLINE_CONSTEXPR boost::arg<2> _2;
+BOOST_INLINE_CONSTEXPR boost::arg<3> _3;
+BOOST_INLINE_CONSTEXPR boost::arg<4> _4;
+BOOST_INLINE_CONSTEXPR boost::arg<5> _5;
+BOOST_INLINE_CONSTEXPR boost::arg<6> _6;
+BOOST_INLINE_CONSTEXPR boost::arg<7> _7;
+BOOST_INLINE_CONSTEXPR boost::arg<8> _8;
+BOOST_INLINE_CONSTEXPR boost::arg<9> _9;
+
 #else
 
 BOOST_STATIC_CONSTEXPR boost::arg<1> _1;

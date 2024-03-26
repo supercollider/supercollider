@@ -59,7 +59,7 @@ struct node_cloner
    {}
 
    // tree-based containers use this method, which is proxy-reference friendly
-   BOOST_INTRUSIVE_FORCEINLINE node_ptr operator()(const node_ptr & p)
+   BOOST_INTRUSIVE_FORCEINLINE node_ptr operator()(node_ptr p)
    {
       reference_type v = *traits_->to_value_ptr(p);
       node_ptr n = traits_->to_node_ptr(*base_t::get()(v));
@@ -85,13 +85,13 @@ struct node_disposer
    static const bool safemode_or_autounlink =
       is_safe_autounlink<value_traits::link_mode>::value;
 
-   node_disposer(F f, const ValueTraits *cont)
+   BOOST_INTRUSIVE_FORCEINLINE node_disposer(F f, const ValueTraits *cont)
       :  base_t(f), traits_(cont)
    {}
 
-   BOOST_INTRUSIVE_FORCEINLINE void operator()(const node_ptr & p)
+   BOOST_INTRUSIVE_FORCEINLINE void operator()(node_ptr p)
    {
-      if(safemode_or_autounlink)
+      BOOST_IF_CONSTEXPR(safemode_or_autounlink)
          node_algorithms::init(p);
       base_t::get()(traits_->to_value_ptr(p));
    }

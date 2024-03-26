@@ -28,7 +28,7 @@
 # define BOOST_OPTIONAL_NO_INPLACE_FACTORY_SUPPORT
 #endif
 
-#if BOOST_WORKAROUND(__BORLANDC__, <= 0x551)
+#if BOOST_WORKAROUND(BOOST_BORLANDC, <= 0x551)
 // BCB (5.5.1) cannot parse the nested template struct in an inplace factory.
 # define BOOST_OPTIONAL_NO_INPLACE_FACTORY_SUPPORT
 #endif
