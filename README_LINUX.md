@@ -106,15 +106,15 @@ requirements to ensure compatibility and functionality.
 
 | Package      | Purpose                                           | Version | More Information                                                        |
 |--------------|---------------------------------------------------|---------|-------------------------------------------------------------------------|
-| Qt           | Powers the IDE and enhances the Qt GUI toolkit.   | >= 5.7  | [Qt](http://qt-project.org)                                             |
-| git          | Enables the Quarks package management system.     |         | [git](https://git-scm.com/)                                             |
-| ALSA         | Provides MIDI support for musical interfaces.     |         | [ALSA](http://www.alsa-project.org)                                     |
+| Qt           | Required by the IDE and the GUI toolkit.          | >= 5.7  | [Qt](http://qt-project.org)                                             |
+| git          | Required for Quarks, package management system    |         | [git](https://git-scm.com/)                                             |
+| ALSA         | Provides MIDI support                             |         | [ALSA](http://www.alsa-project.org)                                     |
 | libudev      | Supports Human Interface Devices (HID) for input. |         | [libudev](http://www.freedesktop.org/software/systemd/man/libudev.html) |
-| Linux kernel | Ensures compatibility for low-level device input. | >= 2.6  | [Linux kernel](http://www.kernel.org)                                   |
-| libreadline  | Improves command-line interface (CLI) usability.  | >= 5    | [libreadline](http://savannah.gnu.org/projects/readline)                |
-| ncurses      | Enhances text interface interaction within CLI.   |         | [ncurses](https://invisible-island.net/ncurses/)                        |
+| Linux kernel | For compatibility with low-level device input     | >= 2.6  | [Linux kernel](http://www.kernel.org)                                   |
+| libreadline  | Required for command-line interface (CLI)         | >= 5    | [libreadline](http://savannah.gnu.org/projects/readline)                |
+| ncurses      | Required for text interface interaction (CLI)     |         | [ncurses](https://invisible-island.net/ncurses/)                        |
 
-**Qt Version Note:** We advise using the most recent release within the Qt 5.x series.**
+**Qt Version Note:** We advise using the most recent release within the *Qt 5.x* series.**
 
 Installing requirements on Debian
 ---------------------------------
