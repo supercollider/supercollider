@@ -5,7 +5,7 @@ Building SuperCollider on Linux
 This document guides compiling and configuring SuperCollider on
 Linux operating systems. It offers directions for customizing your
 SuperCollider setup, making sure the installation meets your goals and technical
-needs. It includes information on running `scsynth` and supernova in standalone 
+needs. It includes information on running `scsynth` and `supernova` in standalone 
 mode and running `sclang` with or without a graphical user interface (GUI).
 
 
@@ -86,7 +86,7 @@ ensuring it only includes the necessary components.
 Additional Information
 ----------------------
 
-These are strict requirements for `scsynth` and `supernova` with their weblinks:
+Requirements for `scsynth` and `supernova` with their weblinks:
 
 - C++ compiler with C++17 support: [gcc](http://www.gnu.org/software/gcc) >= 6.3, [clang](https://clang.llvm.org) >= 3.9.  
 - Build system: [cmake](http://www.cmake.org) >= 3.12.
