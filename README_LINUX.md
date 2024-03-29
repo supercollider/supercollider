@@ -2,9 +2,9 @@ Building SuperCollider on Linux
 ===============================
 
 
-This document is a guide for compiling and configuring SuperCollider on
+This document guides compiling and configuring SuperCollider on
 Linux operating systems. It offers directions for customizing your
-SuperCollider setup, ensuring the installation meets your goals and technical
+SuperCollider setup, making sure the installation meets your goals and technical
 needs. It includes information on running `scsynth` and supernova in standalone 
 mode and running `sclang` with or without a graphical user interface (GUI).
 
@@ -43,7 +43,7 @@ Build Requirements
 
 Specific prerequisites are necessary to compile SuperCollider on Linux systems.
  These requirements fall into two categories: essential dependencies for the
- core functionality of `scsynth` and `supernova`, and optional components that
+ core functionality of `scsynth` and `supernova` and optional components that
  provide additional features and capabilities.
 
 ### Essential Build Requirements ###
@@ -73,9 +73,9 @@ features if they are not needed for your specific use case.
   flags offer flexibility:
   - `NO_X11=ON`: Disables the X11 graphics and the dependency
     [libxt](http://www.X.org). This feature is helpful for headless setups or
-    where a GUI is not required. Note that it is required by specific *Unit
-    Generators* (`UGen`s), such as `MouseX`.
-  - `NO_AVAHI=ON`: This option omits support for Avahi, which is offered by the
+    where a GUI is not required. It is required by specific *Unit Generators*
+    (`UGen`s), such as `MouseX`.
+  - `NO_AVAHI=ON`: This option omits support for Avahi, offered by the
     dependency [libavahi-client](http://www.avahi.org). This dependency is
     primarily used for network service discovery.
 
@@ -114,7 +114,7 @@ requirements to ensure compatibility and functionality.
 | libreadline  | Improves command-line interface (CLI) usability.  | >= 5    | [libreadline](http://savannah.gnu.org/projects/readline)                |
 | ncurses      | Enhances text interface interaction within CLI.   |         | [ncurses](https://invisible-island.net/ncurses/)                        |
 
-**Qt Version Note:** We advise using the most recent release within the Qt 5.x series.
+**Qt Version Note:** We advise using the most recent release within the Qt 5.x series.**
 
 Installing requirements on Debian
 ---------------------------------
@@ -278,7 +278,7 @@ Building
 SuperCollider is presently hosted on Github:
 <https://github.com/SuperCollider/SuperCollider>
 
-To obtain the SuperCollider source code, download a release tarball, or clone
+To obtain the SuperCollider source code, download a release tarball or clone
 the repository with `git`.
 
 SuperCollider releases are available to download here:
