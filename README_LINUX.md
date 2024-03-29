@@ -287,15 +287,16 @@ the repository with `git`.
 SuperCollider releases are available to download here:
 <https://github.com/supercollider/supercollider/releases>
 
-You can clone the repository with the following command:
+To download the SuperCollider source code from GitHub and ensure all 
+submodules are also downloaded, use the following command:
 
 ``` sh
 git clone --recurse-submodules https://github.com/SuperCollider/SuperCollider.git
 ```
 
 The `--recurse-submodules` option will clone the repository's submodules needed
-to build SuperCollider. Running the following command from the root of your
-local repository also clones and syncs all the necessary submodules you will need:
+to build SuperCollider. You can also clone the submodules after cloning the main 
+repository, using the following command:
 
 ``` sh
 git submodule update --init --recursive
@@ -376,8 +377,8 @@ defaults using `cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ..`.
 
 
 Suppose you're compiling SC only for use on your machine (that is, you aren't
-cross-compiling or packaging SC for distribution). In that case, you can turn on
-the NATIVE flag to enable CPU-specific optimizations:
+ packaging SC for distribution). In that case, you can turn on
+the NATIVE option `ON` to enable CPU-specific optimizations:
 
 
 ``` sh
