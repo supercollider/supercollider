@@ -453,18 +453,17 @@ Troubleshooting Common Build Issues
 -----------------------------------
 
 - **Missing Dependencies**: If you encounter errors related to missing packages
-  or libraries, ensure all build requirements are according to the "Build
+  or libraries, ensure all build requirements are installed – see "Build
   Requirements" section. Some Linux distributions may have package names that
   are different from those listed, so you may need to search for the correct
-  package names for your specific distribution. If you need clarification on
-  what's missing, consult the error messages provided by the build process,
-  which typically indicate what was not found.
+  package names for your distribution. If you need clarification on
+  what's missing, consult the error messages provided by the build process.
   
  
 - **Qt Version Issues**: If you're facing problems with Qt, especially on older
   Linux distributions, ensure you're using Qt 5.7 or later. See the
   [Installing Qt for SuperCollider](#installing-qt-for-supercollider)
-  section for instructions on installing or updating Qt.
+  section for instructions on installing Qt.
 
 
 Building a Debian package
@@ -526,14 +525,13 @@ specified with the `-d` option.
 ### Headless operation ###
 
 
-To utilize SuperCollider's command-line interface (`sclang`) without a graphical
+To use SuperCollider's command-line interface (`sclang`) without a graphical
 interface, you can operate it in a headless mode even when the standard build
 relies on the Qt framework. This is particularly useful for running
 SuperCollider on servers or any environment lacking a graphical user interface
-(GUI). To enable headless operation, you must set the `QT_QPA_PLATFORM`
-environment variable `offscreen`. This instructs Qt to run without attempting
-to connect to an X server, thereby allowing `sclang` to execute in environments
-without a display server:
+(GUI). To enable headless operation, set the `QT_QPA_PLATFORM`
+environment variable to `offscreen`. This tells Qt to run without attempting
+to connect to an X server.
 
 ```sh
 export QT_QPA_PLATFORM=offscreen
