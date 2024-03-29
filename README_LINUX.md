@@ -75,6 +75,9 @@ features if they are not needed for your specific use case.
     [libxt](http://www.X.org). This feature is helpful for headless setups or
     where a GUI is not required. It is required by specific *Unit Generators*
     (`UGen`s), such as `MouseX`.
+    Warning: If you use Wayland instead of X11, presently, `MouseX` will behave
+    differently. It will only return values within a focused GUI window. This is
+    due to a different security approach by the Wayland team. 
   - `NO_AVAHI=ON`: This option omits support for Avahi, offered by the
     dependency [libavahi-client](http://www.avahi.org). This dependency is
     primarily used for network service discovery.
