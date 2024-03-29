@@ -2,18 +2,11 @@ Building SuperCollider on Linux
 ===============================
 
 
-This document is a manual for compiling and configuring SuperCollider on
-Linux-based operating systems. SuperCollider is a framework for audio synthesis
-and algorithmic composition, adopted by diverse demographics, including
-musicians, artists, and researchers. It offers directions for customizing your
+This document is a guide for compiling and configuring SuperCollider on
+Linux operating systems. It offers directions for customizing your
 SuperCollider setup, ensuring the installation meets your goals and technical
-needs.
-
-This guide will help you build SuperCollider from the source code, providing
-step-by-step instructions for obtaining the necessary dependencies, configuring
-the build, and compiling the source code. It also includes information on
-running scsynth and supernova in standalone mode and running sclang with or
-without a graphical user interface (GUI).
+needs. It includes information on running `scsynth` and supernova in standalone 
+mode and running `sclang` with or without a graphical user interface (GUI).
 
 
 ## Table of Contents
@@ -80,8 +73,8 @@ features if they are not needed for your specific use case.
   flags offer flexibility:
   - `NO_X11=ON`: Disables the X11 graphics and the dependency
     [libxt](http://www.X.org). This feature is helpful for headless setups or
-    where a GUI is not required. Note that it is required by specific unit
-    generators (UGens), such as MouseX.
+    where a GUI is not required. Note that it is required by specific *Unit
+    Generators* (`UGen`s), such as `MouseX`.
   - `NO_AVAHI=ON`: This option omits support for Avahi, which is offered by the
     dependency [libavahi-client](http://www.avahi.org). This dependency is
     primarily used for network service discovery.
@@ -316,7 +309,7 @@ cd build
 ```
 
 You can name this whatever you want, allowing multiple independent build
-directories. If your SuperCollider source is also a git repository, the
+directories. If your SuperCollider source is also a Git repository, the
 `.gitignore` file will tell git to ignore files in the `build` folder.
 
 ### Step 3: Set CMake flags ###
@@ -339,7 +332,7 @@ essential ones here and introduce them in more detail in the documentation.
 
 #### Handling Nonstandard Qt Installations ####
 
-Specifying the Qt installation path becomes crucial when integrating `sclang`
+Specifying the Qt installation path becomes necessary when integrating `sclang`
 with GUI features or the SuperCollider IDE, especially if you've installed Qt
 outside standard package managers.
 
@@ -469,15 +462,16 @@ Troubleshooting Common Build Issues
   
  
 - **Qt Version Issues**: If you're facing problems with Qt, especially on older
-  Linux distributions, ensure you're using Qt 5.7 or later. . See the
-  "Installing Qt" section for detailed instructions on updating Qt.
+  Linux distributions, ensure you're using Qt 5.7 or later. See the
+  [Installing Qt for SuperCollider](#installing-qt-for-supercollider)
+  section for instructions on installing or updating Qt.
 
 
 Building a Debian package
 -------------------------
 
 The Debian Multimedia team maintains the most up-to-date Debian packaging rules.
-Find the repository (with debian/ folder) here:
+Find the repository (with a `debian/` folder) here:
 
 <https://salsa.debian.org/multimedia-team/supercollider>
 
@@ -486,7 +480,7 @@ Running scsynth or supernova (standalone)
 
 Run `scsynth --help` or `supernova --help` to get an option summary. Remember to
 start `jackd` before starting the server. If you want to add directories to
-SuperCollider's search path or assign default jack ports, set up your
+SuperCollider's search path or assign default jack ports, and set up your
 environment as described below.
 
 You can specify the number of jack input/output channels created with the
@@ -532,7 +526,7 @@ specified with the `-d` option.
 ### Headless operation ###
 
 
-To utilize SuperCollider's command-line interface (sclang) without a graphical
+To utilize SuperCollider's command-line interface (`sclang`) without a graphical
 interface, you can operate it in a headless mode even when the standard build
 relies on the Qt framework. This is particularly useful for running
 SuperCollider on servers or any environment lacking a graphical user interface
@@ -546,7 +540,7 @@ export QT_QPA_PLATFORM=offscreen
 sclang
 ```
 
-By configuring this environment variable, sclang bypasses the need for graphical
+By configuring this environment variable, `sclang` bypasses the need for a graphical
 output, making it adaptable for scripts, automated tasks, and server-based
 applications where GUI is unnecessary or unavailable.
 
