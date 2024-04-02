@@ -17,7 +17,7 @@ method::ar, kr
 
 argument::numChans
 
-Number of output speakers. Typically 4 to 8.
+Number of output speakers. Typically 4 to 8. Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.
 
 
 argument::w
@@ -66,4 +66,3 @@ code::
 )
 
 ::
-
