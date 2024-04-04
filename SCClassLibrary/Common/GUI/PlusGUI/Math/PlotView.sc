@@ -1298,7 +1298,7 @@ Plotter {
 		action = { |array, buf|
 			var numChan = buf.numChannels;
 			var numFrames = buf.numFrames;
-			var frameDur =  1 / buf.sampleRate;
+			var frameDur;
 
 			defer {
 				plotter.setValue(
@@ -1316,6 +1316,11 @@ Plotter {
 				// (based on a plot at full screen width), set the x values (domain)
 				// explicitly for accurate time alignment with grid lines.
 				if(numFrames < (Window.screenBounds.width / 2.5)) {
+					frameDur = if(this.value.rate == \control) {
+						server.options.blockSize / server.sampleRate
+					} {
+						1 / server.sampleRate
+					};
 					plotter.domain = numFrames.collect(_ * frameDur);
 				};
 				// save vertical space with highly multichannel plots
