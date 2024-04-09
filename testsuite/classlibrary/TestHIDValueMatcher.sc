@@ -1,0 +1,3 @@
+HIDValueMatcherTest : UnitTest {
+    *init{}
+}

@@ -1,0 +1,3 @@
+HIDElementDispatcherTest : UnitTest {
+    *init{}
+}

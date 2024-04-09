@@ -1,0 +1,3 @@
+HIDUsageDispatcherTest : UnitTest {
+    *init{}
+}

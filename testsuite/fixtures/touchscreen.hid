@@ -1,0 +1,1470 @@
+# WingCool Inc. TouchScreen
+# 0x05, 0x0d,                    // Usage Page (Digitizers)             0
+# 0x09, 0x04,                    // Usage (Touch Screen)                2
+# 0xa1, 0x01,                    // Collection (Application)            4
+# 0x85, 0x0d,                    //  Report ID (13)                     6
+# 0x05, 0x0d,                    //  Usage Page (Digitizers)            8
+# 0x09, 0x22,                    //  Usage (Finger)                     10
+# 0xa1, 0x02,                    //  Collection (Logical)               12
+# 0x09, 0x42,                    //   Usage (Tip Switch)                14
+# 0x15, 0x00,                    //   Logical Minimum (0)               16
+# 0x25, 0x01,                    //   Logical Maximum (1)               18
+# 0x75, 0x01,                    //   Report Size (1)                   20
+# 0x95, 0x01,                    //   Report Count (1)                  22
+# 0x81, 0x02,                    //   Input (Data,Var,Abs)              24
+# 0x95, 0x03,                    //   Report Count (3)                  26
+# 0x81, 0x01,                    //   Input (Cnst,Arr,Abs)              28
+# 0x09, 0x51,                    //   Usage (Contact Id)                30
+# 0x75, 0x04,                    //   Report Size (4)                   32
+# 0x25, 0x0f,                    //   Logical Maximum (15)              34
+# 0x95, 0x01,                    //   Report Count (1)                  36
+# 0x81, 0x02,                    //   Input (Data,Var,Abs)              38
+# 0x05, 0x01,                    //   Usage Page (Generic Desktop)      40
+# 0x26, 0xff, 0x3f,              //   Logical Maximum (16383)           42
+# 0x75, 0x10,                    //   Report Size (16)                  45
+# 0x55, 0x0e,                    //   Unit Exponent (-2)                47
+# 0x65, 0x11,                    //   Unit (SILinear: cm)               49
+# 0x09, 0x30,                    //   Usage (X)                         51
+# 0x35, 0x00,                    //   Physical Minimum (0)              53
+# 0x46, 0x79, 0x08,              //   Physical Maximum (2169)           55
+# 0x81, 0x02,                    //   Input (Data,Var,Abs)              58
+# 0x26, 0x7f, 0x25,              //   Logical Maximum (9599)            60
+# 0x46, 0x8a, 0x03,              //   Physical Maximum (906)            63
+# 0x09, 0x31,                    //   Usage (Y)                         66
+# 0x81, 0x02,                    //   Input (Data,Var,Abs)              68
+# 0x05, 0x0d,                    //   Usage Page (Digitizers)           70
+# 0xc0,                          //  End Collection                     72
+# 0x09, 0x22,                    //  Usage (Finger)                     73
+# 0xa1, 0x02,                    //  Collection (Logical)               75
+# 0x09, 0x42,                    //   Usage (Tip Switch)                77
+# 0x15, 0x00,                    //   Logical Minimum (0)               79
+# 0x25, 0x01,                    //   Logical Maximum (1)               81
+# 0x75, 0x01,                    //   Report Size (1)                   83
+# 0x95, 0x01,                    //   Report Count (1)                  85
+# 0x81, 0x02,                    //   Input (Data,Var,Abs)              87
+# 0x95, 0x03,                    //   Report Count (3)                  89
+# 0x81, 0x01,                    //   Input (Cnst,Arr,Abs)              91
+# 0x09, 0x51,                    //   Usage (Contact Id)                93
+# 0x75, 0x04,                    //   Report Size (4)                   95
+# 0x25, 0x0f,                    //   Logical Maximum (15)              97
+# 0x95, 0x01,                    //   Report Count (1)                  99
+# 0x81, 0x02,                    //   Input (Data,Var,Abs)              101
+# 0x05, 0x01,                    //   Usage Page (Generic Desktop)      103
+# 0x26, 0xff, 0x3f,              //   Logical Maximum (16383)           105
+# 0x75, 0x10,                    //   Report Size (16)                  108
+# 0x55, 0x0e,                    //   Unit Exponent (-2)                110
+# 0x65, 0x11,                    //   Unit (SILinear: cm)               112
+# 0x09, 0x30,                    //   Usage (X)                         114
+# 0x35, 0x00,                    //   Physical Minimum (0)              116
+# 0x46, 0x79, 0x08,              //   Physical Maximum (2169)           118
+# 0x81, 0x02,                    //   Input (Data,Var,Abs)              121
+# 0x26, 0x7f, 0x25,              //   Logical Maximum (9599)            123
+# 0x46, 0x8a, 0x03,              //   Physical Maximum (906)            126
+# 0x09, 0x31,                    //   Usage (Y)                         129
+# 0x81, 0x02,                    //   Input (Data,Var,Abs)              131
+# 0x05, 0x0d,                    //   Usage Page (Digitizers)           133
+# 0xc0,                          //  End Collection                     135
+# 0x27, 0xff, 0xff, 0x00, 0x00,  //  Logical Maximum (65535)            136
+# 0x75, 0x10,                    //  Report Size (16)                   141
+# 0x95, 0x01,                    //  Report Count (1)                   143
+# 0x09, 0x56,                    //  Usage (Scan Time)                  145
+# 0x81, 0x02,                    //  Input (Data,Var,Abs)               147
+# 0x09, 0x54,                    //  Usage (Contact Count)              149
+# 0x15, 0x00,                    //  Logical Minimum (0)                151
+# 0x25, 0x7f,                    //  Logical Maximum (127)              153
+# 0x95, 0x01,                    //  Report Count (1)                   155
+# 0x75, 0x08,                    //  Report Size (8)                    157
+# 0x81, 0x02,                    //  Input (Data,Var,Abs)               159
+# 0x85, 0x0a,                    //  Report ID (10)                     161
+# 0x09, 0x55,                    //  Usage (Contact Max)                163
+# 0x95, 0x01,                    //  Report Count (1)                   165
+# 0x25, 0x0f,                    //  Logical Maximum (15)               167
+# 0xb1, 0x02,                    //  Feature (Data,Var,Abs)             169
+# 0xc0,                          // End Collection                      171
+# 0x05, 0x0d,                    // Usage Page (Digitizers)             172
+# 0x09, 0x0e,                    // Usage (Device Configuration)        174
+# 0xa1, 0x01,                    // Collection (Application)            176
+# 0x85, 0x21,                    //  Report ID (33)                     178
+# 0x09, 0x22,                    //  Usage (Finger)                     180
+# 0xa1, 0x00,                    //  Collection (Physical)              182
+# 0x09, 0x52,                    //   Usage (Inputmode)                 184
+# 0x09, 0x53,                    //   Usage (Device Index)              186
+# 0x15, 0x00,                    //   Logical Minimum (0)               188
+# 0x25, 0x0a,                    //   Logical Maximum (10)              190
+# 0x75, 0x08,                    //   Report Size (8)                   192
+# 0x95, 0x02,                    //   Report Count (2)                  194
+# 0xb1, 0x02,                    //   Feature (Data,Var,Abs)            196
+# 0xc0,                          //  End Collection                     198
+# 0xc0,                          // End Collection                      199
+# 
+R: 200 05 0d 09 04 a1 01 85 0d 05 0d 09 22 a1 02 09 42 15 00 25 01 75 01 95 01 81 02 95 03 81 01 09 51 75 04 25 0f 95 01 81 02 05 01 26 ff 3f 75 10 55 0e 65 11 09 30 35 00 46 79 08 81 02 26 7f 25 46 8a 03 09 31 81 02 05 0d c0 09 22 a1 02 09 42 15 00 25 01 75 01 95 01 81 02 95 03 81 01 09 51 75 04 25 0f 95 01 81 02 05 01 26 ff 3f 75 10 55 0e 65 11 09 30 35 00 46 79 08 81 02 26 7f 25 46 8a 03 09 31 81 02 05 0d c0 27 ff ff 00 00 75 10 95 01 09 56 81 02 09 54 15 00 25 7f 95 01 75 08 81 02 85 0a 09 55 95 01 25 0f b1 02 c0 05 0d 09 0e a1 01 85 21 09 22 a1 00 09 52 09 53 15 00 25 0a 75 08 95 02 b1 02 c0 c0
+N: WingCool Inc. TouchScreen
+I: 3 27c6 0858
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6319 | Y:   4598 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   7355 | Y:   8369 | Scan Time:    257 | Contact Count:    4 
+E: 000000.000000 14 0d 41 af 18 f6 11 31 bb 1c b1 20 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   8789 | Y:   5125 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   9058 | Y:   6611 | Scan Time:    257 | Contact Count:    0 
+E: 000000.004686 14 0d 21 55 22 05 14 11 62 23 d3 19 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   8298 | Y:   7417 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6319 | Y:   4598 | Scan Time:    257 | Contact Count:    5 
+E: 000000.023054 14 0d 51 6a 20 f9 1c 41 af 18 f6 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7355 | Y:   8369 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8789 | Y:   5125 | Scan Time:    257 | Contact Count:    0 
+E: 000000.023680 14 0d 31 bb 1c b1 20 21 55 22 05 14 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   9058 | Y:   6611 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000000.023905 14 0d 11 62 23 d3 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   8298 | Y:   7417 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6315 | Y:   4595 | Scan Time:    257 | Contact Count:    5 
+E: 000000.042690 14 0d 51 6a 20 f9 1c 41 ab 18 f3 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7355 | Y:   8369 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8789 | Y:   5126 | Scan Time:    257 | Contact Count:    0 
+E: 000000.043666 14 0d 31 bb 1c b1 20 21 55 22 06 14 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   9056 | Y:   6611 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000000.044679 14 0d 11 60 23 d3 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   8298 | Y:   7417 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6308 | Y:   4593 | Scan Time:    257 | Contact Count:    5 
+E: 000000.064691 14 0d 51 6a 20 f9 1c 41 a4 18 f1 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7355 | Y:   8369 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8789 | Y:   5127 | Scan Time:    257 | Contact Count:    0 
+E: 000000.065674 14 0d 31 bb 1c b1 20 21 55 22 07 14 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   9055 | Y:   6611 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000000.066652 14 0d 11 5f 23 d3 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   8298 | Y:   7417 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6311 | Y:   4594 | Scan Time:    257 | Contact Count:    5 
+E: 000000.086014 14 0d 51 6a 20 f9 1c 41 a7 18 f2 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7355 | Y:   8369 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8789 | Y:   5127 | Scan Time:    257 | Contact Count:    0 
+E: 000000.086866 14 0d 31 bb 1c b1 20 21 55 22 07 14 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   9055 | Y:   6611 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000000.087913 14 0d 11 5f 23 d3 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   8297 | Y:   7417 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6306 | Y:   4590 | Scan Time:    257 | Contact Count:    5 
+E: 000000.107855 14 0d 51 69 20 f9 1c 41 a2 18 ee 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7355 | Y:   8368 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8789 | Y:   5127 | Scan Time:    257 | Contact Count:    0 
+E: 000000.108808 14 0d 31 bb 1c b0 20 21 55 22 07 14 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   9054 | Y:   6611 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000000.109843 14 0d 11 5e 23 d3 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   8297 | Y:   7417 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6299 | Y:   4586 | Scan Time:    257 | Contact Count:    5 
+E: 000000.128710 14 0d 51 69 20 f9 1c 41 9b 18 ea 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7355 | Y:   8367 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8789 | Y:   5129 | Scan Time:    257 | Contact Count:    0 
+E: 000000.129638 14 0d 31 bb 1c af 20 21 55 22 09 14 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   9053 | Y:   6611 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000000.130647 14 0d 11 5d 23 d3 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   8297 | Y:   7417 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6297 | Y:   4583 | Scan Time:    257 | Contact Count:    5 
+E: 000000.149897 14 0d 51 69 20 f9 1c 41 99 18 e7 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7355 | Y:   8367 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8789 | Y:   5129 | Scan Time:    257 | Contact Count:    0 
+E: 000000.150791 14 0d 31 bb 1c af 20 21 55 22 09 14 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   9053 | Y:   6611 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000000.151852 14 0d 11 5d 23 d3 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   8297 | Y:   7417 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6299 | Y:   4585 | Scan Time:    257 | Contact Count:    5 
+E: 000000.171691 14 0d 51 69 20 f9 1c 41 9b 18 e9 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7355 | Y:   8367 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8789 | Y:   5129 | Scan Time:    257 | Contact Count:    0 
+E: 000000.172646 14 0d 31 bb 1c af 20 21 55 22 09 14 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   9053 | Y:   6611 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000000.173652 14 0d 11 5d 23 d3 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   8297 | Y:   7417 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6297 | Y:   4582 | Scan Time:    257 | Contact Count:    5 
+E: 000000.192892 14 0d 51 69 20 f9 1c 41 99 18 e6 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7355 | Y:   8367 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8789 | Y:   5129 | Scan Time:    257 | Contact Count:    0 
+E: 000000.193748 14 0d 31 bb 1c af 20 21 55 22 09 14 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   9053 | Y:   6611 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000000.194932 14 0d 11 5d 23 d3 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   8296 | Y:   7417 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6297 | Y:   4580 | Scan Time:    257 | Contact Count:    5 
+E: 000000.214726 14 0d 51 68 20 f9 1c 41 99 18 e4 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7355 | Y:   8367 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8789 | Y:   5129 | Scan Time:    257 | Contact Count:    0 
+E: 000000.215652 14 0d 31 bb 1c af 20 21 55 22 09 14 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   9053 | Y:   6611 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000000.216666 14 0d 11 5d 23 d3 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   8296 | Y:   7417 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6297 | Y:   4579 | Scan Time:    257 | Contact Count:    5 
+E: 000000.235725 14 0d 51 68 20 f9 1c 41 99 18 e3 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7355 | Y:   8367 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8789 | Y:   5129 | Scan Time:    257 | Contact Count:    0 
+E: 000000.236648 14 0d 31 bb 1c af 20 21 55 22 09 14 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   9053 | Y:   6611 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000000.237657 14 0d 11 5d 23 d3 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   8296 | Y:   7417 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6297 | Y:   4578 | Scan Time:    257 | Contact Count:    5 
+E: 000000.256865 14 0d 51 68 20 f9 1c 41 99 18 e2 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7355 | Y:   8367 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8789 | Y:   5129 | Scan Time:    257 | Contact Count:    0 
+E: 000000.257794 14 0d 31 bb 1c af 20 21 55 22 09 14 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   9053 | Y:   6611 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000000.258897 14 0d 11 5d 23 d3 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   8296 | Y:   7417 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6297 | Y:   4578 | Scan Time:    257 | Contact Count:    5 
+E: 000000.278720 14 0d 51 68 20 f9 1c 41 99 18 e2 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7355 | Y:   8367 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8789 | Y:   5129 | Scan Time:    257 | Contact Count:    0 
+E: 000000.279646 14 0d 31 bb 1c af 20 21 55 22 09 14 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   9054 | Y:   6611 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000000.280665 14 0d 11 5e 23 d3 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   8296 | Y:   7417 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6297 | Y:   4578 | Scan Time:    257 | Contact Count:    5 
+E: 000000.299878 14 0d 51 68 20 f9 1c 41 99 18 e2 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7355 | Y:   8367 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8789 | Y:   5129 | Scan Time:    257 | Contact Count:    0 
+E: 000000.301017 14 0d 31 bb 1c af 20 21 55 22 09 14 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   9055 | Y:   6611 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000000.301831 14 0d 11 5f 23 d3 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   8296 | Y:   7418 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6298 | Y:   4578 | Scan Time:    257 | Contact Count:    5 
+E: 000000.321705 14 0d 51 68 20 fa 1c 41 9a 18 e2 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7355 | Y:   8368 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8789 | Y:   5129 | Scan Time:    257 | Contact Count:    0 
+E: 000000.322653 14 0d 31 bb 1c b0 20 21 55 22 09 14 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   9055 | Y:   6612 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000000.323663 14 0d 11 5f 23 d4 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   8296 | Y:   7419 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6298 | Y:   4578 | Scan Time:    257 | Contact Count:    5 
+E: 000000.343015 14 0d 51 68 20 fb 1c 41 9a 18 e2 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7355 | Y:   8369 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8789 | Y:   5129 | Scan Time:    257 | Contact Count:    0 
+E: 000000.344158 14 0d 31 bb 1c b1 20 21 55 22 09 14 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   9056 | Y:   6612 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000000.345252 14 0d 11 60 23 d4 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   8296 | Y:   7419 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6299 | Y:   4579 | Scan Time:    257 | Contact Count:    5 
+E: 000000.363675 14 0d 51 68 20 fb 1c 41 9b 18 e3 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7355 | Y:   8369 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8789 | Y:   5129 | Scan Time:    257 | Contact Count:    0 
+E: 000000.364665 14 0d 31 bb 1c b1 20 21 55 22 09 14 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   9057 | Y:   6613 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000000.365660 14 0d 11 61 23 d5 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   8296 | Y:   7420 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6299 | Y:   4580 | Scan Time:    257 | Contact Count:    5 
+E: 000000.385919 14 0d 51 68 20 fc 1c 41 9b 18 e4 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7355 | Y:   8370 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8790 | Y:   5129 | Scan Time:    257 | Contact Count:    0 
+E: 000000.386807 14 0d 31 bb 1c b2 20 21 56 22 09 14 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   9058 | Y:   6614 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000000.387659 14 0d 11 62 23 d6 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   8296 | Y:   7420 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6299 | Y:   4582 | Scan Time:    257 | Contact Count:    5 
+E: 000000.406725 14 0d 51 68 20 fc 1c 41 9b 18 e6 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7355 | Y:   8371 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8791 | Y:   5129 | Scan Time:    257 | Contact Count:    0 
+E: 000000.407663 14 0d 31 bb 1c b3 20 21 57 22 09 14 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   9059 | Y:   6615 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000000.408769 14 0d 11 63 23 d7 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   8296 | Y:   7420 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6300 | Y:   4584 | Scan Time:    257 | Contact Count:    5 
+E: 000000.427714 14 0d 51 68 20 fc 1c 41 9c 18 e8 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7356 | Y:   8372 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8792 | Y:   5130 | Scan Time:    257 | Contact Count:    0 
+E: 000000.428651 14 0d 31 bc 1c b4 20 21 58 22 0a 14 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   9061 | Y:   6617 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000000.429616 14 0d 11 65 23 d9 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   8296 | Y:   7420 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6302 | Y:   4587 | Scan Time:    257 | Contact Count:    5 
+E: 000000.449918 14 0d 51 68 20 fc 1c 41 9e 18 eb 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7356 | Y:   8372 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8792 | Y:   5130 | Scan Time:    257 | Contact Count:    0 
+E: 000000.450993 14 0d 31 bc 1c b4 20 21 58 22 0a 14 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   9061 | Y:   6618 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000000.451927 14 0d 11 65 23 da 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   8296 | Y:   7421 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6303 | Y:   4590 | Scan Time:    257 | Contact Count:    5 
+E: 000000.470706 14 0d 51 68 20 fd 1c 41 9f 18 ee 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7357 | Y:   8372 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8793 | Y:   5131 | Scan Time:    257 | Contact Count:    0 
+E: 000000.471655 14 0d 31 bd 1c b4 20 21 59 22 0b 14 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   9063 | Y:   6619 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000000.472651 14 0d 11 67 23 db 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   8296 | Y:   7421 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6304 | Y:   4595 | Scan Time:    257 | Contact Count:    5 
+E: 000000.492981 14 0d 51 68 20 fd 1c 41 a0 18 f3 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7357 | Y:   8372 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8793 | Y:   5132 | Scan Time:    257 | Contact Count:    0 
+E: 000000.493768 14 0d 31 bd 1c b4 20 21 59 22 0c 14 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   9063 | Y:   6619 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000000.494821 14 0d 11 67 23 db 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   8296 | Y:   7421 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6307 | Y:   4606 | Scan Time:    257 | Contact Count:    5 
+E: 000000.513691 14 0d 51 68 20 fd 1c 41 a3 18 fe 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7357 | Y:   8372 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8793 | Y:   5132 | Scan Time:    257 | Contact Count:    0 
+E: 000000.514655 14 0d 31 bd 1c b4 20 21 59 22 0c 14 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   9064 | Y:   6619 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000000.515677 14 0d 11 68 23 db 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   8296 | Y:   7421 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6312 | Y:   4625 | Scan Time:    257 | Contact Count:    5 
+E: 000000.534957 14 0d 51 68 20 fd 1c 41 a8 18 11 12 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7357 | Y:   8372 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8793 | Y:   5132 | Scan Time:    257 | Contact Count:    0 
+E: 000000.535678 14 0d 31 bd 1c b4 20 21 59 22 0c 14 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   9064 | Y:   6619 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000000.536864 14 0d 11 68 23 db 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 0 | # | Contact Id:   5 | X:   8296 | Y:   7421 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6325 | Y:   4685 | Scan Time:    257 | Contact Count:    5 
+E: 000000.553693 14 0d 50 68 20 fd 1c 41 b5 18 4d 12 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7357 | Y:   8372 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8793 | Y:   5132 | Scan Time:    257 | Contact Count:    0 
+E: 000000.554655 14 0d 31 bd 1c b4 20 21 59 22 0c 14 01 01 00
+# ReportID: 13 / Tip Switch: 0 | # | Contact Id:   1 | X:   9064 | Y:   6619 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000000.555658 14 0d 10 68 23 db 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 0 | # | Contact Id:   5 | X:   8296 | Y:   7421 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6364 | Y:   4863 | Scan Time:    257 | Contact Count:    5 
+E: 000000.574916 14 0d 50 68 20 fd 1c 41 dc 18 ff 12 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7357 | Y:   8372 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8793 | Y:   5134 | Scan Time:    257 | Contact Count:    0 
+E: 000000.575822 14 0d 31 bd 1c b4 20 21 59 22 0e 14 01 01 00
+# ReportID: 13 / Tip Switch: 0 | # | Contact Id:   1 | X:   9064 | Y:   6619 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000000.576822 14 0d 10 68 23 db 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6404 | Y:   5026 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   7357 | Y:   8372 | Scan Time:    257 | Contact Count:    3 
+E: 000000.596724 14 0d 41 04 19 a2 13 31 bd 1c b4 20 01 01 03
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   8793 | Y:   5137 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000000.597667 14 0d 21 59 22 11 14 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6444 | Y:   5159 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   7357 | Y:   8372 | Scan Time:    257 | Contact Count:    4 
+E: 000000.618762 14 0d 41 2c 19 27 14 31 bd 1c b4 20 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   8795 | Y:   5139 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   8658 | Y:   6600 | Scan Time:    257 | Contact Count:    0 
+E: 000000.619651 14 0d 21 5b 22 13 14 11 d2 21 c8 19 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6464 | Y:   5195 
+#              | Tip Switch: 0 | # | Contact Id:   3 | X:   7357 | Y:   8372 | Scan Time:    257 | Contact Count:    4 
+E: 000000.639842 14 0d 41 40 19 4b 14 30 bd 1c b4 20 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   8796 | Y:   5142 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   8658 | Y:   6600 | Scan Time:    257 | Contact Count:    0 
+E: 000000.640689 14 0d 21 5c 22 16 14 11 d2 21 c8 19 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6479 | Y:   5208 
+#              | Tip Switch: 0 | # | Contact Id:   3 | X:   7357 | Y:   8372 | Scan Time:    257 | Contact Count:    4 
+E: 000000.658873 14 0d 41 4f 19 58 14 30 bd 1c b4 20 01 01 04
+# ReportID: 13 / Tip Switch: 0 | # | Contact Id:   2 | X:   8796 | Y:   5142 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   8623 | Y:   6598 | Scan Time:    257 | Contact Count:    0 
+E: 000000.659838 14 0d 20 5c 22 16 14 11 af 21 c6 19 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6485 | Y:   5212 
+#              | Tip Switch: 0 | # | Contact Id:   2 | X:   8796 | Y:   5142 | Scan Time:    257 | Contact Count:    3 
+E: 000000.680702 14 0d 41 55 19 5c 14 20 5c 22 16 14 01 01 03
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8561 | Y:   6596 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000000.681665 14 0d 11 71 21 c4 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6491 | Y:   5213 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   8495 | Y:   6597 | Scan Time:    257 | Contact Count:    2 
+E: 000000.703027 14 0d 41 5b 19 5d 14 11 2f 21 c5 19 01 01 02
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6486 | Y:   5212 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   8462 | Y:   6603 | Scan Time:    257 | Contact Count:    2 
+E: 000000.723777 14 0d 41 56 19 5c 14 11 0e 21 cb 19 01 01 02
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6491 | Y:   5213 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   8445 | Y:   6615 | Scan Time:    257 | Contact Count:    2 
+E: 000000.744912 14 0d 41 5b 19 5d 14 11 fd 20 d7 19 01 01 02
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6492 | Y:   5214 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   8377 | Y:   6627 | Scan Time:    257 | Contact Count:    2 
+E: 000000.765792 14 0d 41 5c 19 5e 14 11 b9 20 e3 19 01 01 02
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6493 | Y:   5214 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   8231 | Y:   6634 | Scan Time:    257 | Contact Count:    2 
+E: 000000.788740 14 0d 41 5d 19 5e 14 11 27 20 ea 19 01 01 02
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6492 | Y:   5214 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   8059 | Y:   6632 | Scan Time:    257 | Contact Count:    2 
+E: 000000.811088 14 0d 41 5c 19 5e 14 11 7b 1f e8 19 01 01 02
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6493 | Y:   5214 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   6899 | Y:   7205 | Scan Time:    257 | Contact Count:    4 
+E: 000000.833706 14 0d 41 5d 19 5e 14 31 f3 1a 25 1c 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   8084 | Y:   5459 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   7883 | Y:   6627 | Scan Time:    257 | Contact Count:    0 
+E: 000000.834670 14 0d 21 94 1f 53 15 11 cb 1e e3 19 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6494 | Y:   5215 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   6899 | Y:   7205 | Scan Time:    257 | Contact Count:    4 
+E: 000000.854862 14 0d 41 5e 19 5f 14 31 f3 1a 25 1c 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   8084 | Y:   5459 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   7759 | Y:   6607 | Scan Time:    257 | Contact Count:    0 
+E: 000000.855752 14 0d 21 94 1f 53 15 11 4f 1e cf 19 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6494 | Y:   5218 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   6899 | Y:   7204 | Scan Time:    257 | Contact Count:    4 
+E: 000000.875709 14 0d 41 5e 19 62 14 31 f3 1a 24 1c 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   8077 | Y:   5459 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   7667 | Y:   6577 | Scan Time:    257 | Contact Count:    0 
+E: 000000.876667 14 0d 21 8d 1f 53 15 11 f3 1d b1 19 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6490 | Y:   5227 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   6899 | Y:   7204 | Scan Time:    257 | Contact Count:    4 
+E: 000000.896953 14 0d 41 5a 19 6b 14 31 f3 1a 24 1c 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   8063 | Y:   5458 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   7632 | Y:   6547 | Scan Time:    257 | Contact Count:    0 
+E: 000000.898552 14 0d 21 7f 1f 52 15 11 d0 1d 93 19 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6477 | Y:   5243 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   6904 | Y:   7205 | Scan Time:    257 | Contact Count:    4 
+E: 000000.918705 14 0d 41 4d 19 7b 14 31 f8 1a 25 1c 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   8066 | Y:   5458 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   7630 | Y:   6532 | Scan Time:    257 | Contact Count:    0 
+E: 000000.919675 14 0d 21 82 1f 52 15 11 ce 1d 84 19 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6440 | Y:   5269 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   6931 | Y:   7212 | Scan Time:    257 | Contact Count:    4 
+E: 000000.940897 14 0d 41 28 19 95 14 31 13 1b 2c 1c 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   8048 | Y:   5458 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   7635 | Y:   6541 | Scan Time:    257 | Contact Count:    0 
+E: 000000.941790 14 0d 21 70 1f 52 15 11 d3 1d 8d 19 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6328 | Y:   5292 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   7056 | Y:   7255 | Scan Time:    257 | Contact Count:    4 
+E: 000000.961783 14 0d 41 b8 18 ac 14 31 90 1b 57 1c 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   8027 | Y:   5457 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   7685 | Y:   6567 | Scan Time:    257 | Contact Count:    0 
+E: 000000.962692 14 0d 21 5b 1f 51 15 11 05 1e a7 19 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6223 | Y:   5265 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   7205 | Y:   7309 | Scan Time:    257 | Contact Count:    4 
+E: 000000.982786 14 0d 41 4f 18 91 14 31 25 1c 8d 1c 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   8010 | Y:   5457 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   7794 | Y:   6602 | Scan Time:    257 | Contact Count:    0 
+E: 000000.983810 14 0d 21 4a 1f 51 15 11 72 1e ca 19 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   6440 | Y:   8116 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6136 | Y:   5175 | Scan Time:    257 | Contact Count:    5 
+E: 000001.005853 14 0d 51 28 19 b4 1f 41 f8 17 37 14 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7368 | Y:   7365 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   7999 | Y:   5456 | Scan Time:    257 | Contact Count:    0 
+E: 000001.006813 14 0d 31 c8 1c c5 1c 21 3f 1f 50 15 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   7925 | Y:   6644 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000001.007838 14 0d 11 f5 1e f4 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   6440 | Y:   8116 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6098 | Y:   5055 | Scan Time:    257 | Contact Count:    5 
+E: 000001.026733 14 0d 51 28 19 b4 1f 41 d2 17 bf 13 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7478 | Y:   7402 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   7995 | Y:   5456 | Scan Time:    257 | Contact Count:    0 
+E: 000001.027668 14 0d 31 36 1d ea 1c 21 3b 1f 50 15 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8046 | Y:   6677 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000001.028693 14 0d 11 6e 1f 15 1a 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   6433 | Y:   8113 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6085 | Y:   4916 | Scan Time:    257 | Contact Count:    5 
+E: 000001.047763 14 0d 51 21 19 b1 1f 41 c5 17 34 13 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7546 | Y:   7427 
+#              | Tip Switch: 0 | # | Contact Id:   2 | X:   7995 | Y:   5456 | Scan Time:    257 | Contact Count:    0 
+E: 000001.048672 14 0d 31 7a 1d 03 1d 20 3b 1f 50 15 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8136 | Y:   6715 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000001.049670 14 0d 11 c8 1f 3b 1a 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 0 | # | Contact Id:   5 | X:   6433 | Y:   8113 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6072 | Y:   4802 | Scan Time:    257 | Contact Count:    5 
+E: 000001.067928 14 0d 50 21 19 b1 1f 41 b8 17 c2 12 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7572 | Y:   7447 
+#              | Tip Switch: 0 | # | Contact Id:   2 | X:   7995 | Y:   5456 | Scan Time:    257 | Contact Count:    0 
+E: 000001.068823 14 0d 31 94 1d 17 1d 20 3b 1f 50 15 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8222 | Y:   6742 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000001.069676 14 0d 11 1e 20 56 1a 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 0 | # | Contact Id:   5 | X:   6433 | Y:   8113 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6069 | Y:   4705 | Scan Time:    257 | Contact Count:    4 
+E: 000001.088854 14 0d 50 21 19 b1 1f 41 b5 17 61 12 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7573 | Y:   7454 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   8280 | Y:   6780 | Scan Time:    257 | Contact Count:    0 
+E: 000001.090132 14 0d 31 95 1d 1e 1d 11 58 20 7c 1a 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6072 | Y:   4640 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   7565 | Y:   7460 | Scan Time:    257 | Contact Count:    3 
+E: 000001.110746 14 0d 41 b8 17 20 12 31 8d 1d 24 1d 01 01 03
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8305 | Y:   6807 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000001.111685 14 0d 11 71 20 97 1a 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6085 | Y:   4590 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   7549 | Y:   7457 | Scan Time:    257 | Contact Count:    4 
+E: 000001.133843 14 0d 41 c5 17 ee 11 31 7d 1d 21 1d 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   6069 | Y:   8069 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   8280 | Y:   6833 | Scan Time:    257 | Contact Count:    0 
+E: 000001.135397 14 0d 21 b5 17 85 1f 11 58 20 b1 1a 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6099 | Y:   4540 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   7435 | Y:   7469 | Scan Time:    257 | Contact Count:    4 
+E: 000001.154878 14 0d 41 d3 17 bc 11 31 0b 1d 2d 1d 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   6069 | Y:   8069 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   8195 | Y:   6847 | Scan Time:    257 | Contact Count:    0 
+E: 000001.156326 14 0d 21 b5 17 85 1f 11 03 20 bf 1a 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   8450 | Y:   5665 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6119 | Y:   4492 | Scan Time:    257 | Contact Count:    5 
+E: 000001.175878 14 0d 51 02 21 21 16 41 e7 17 8c 11 01 01 05
+# ReportID: 13 / Tip Switch: 0 | # | Contact Id:   3 | X:   7435 | Y:   7469 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   6069 | Y:   8080 | Scan Time:    257 | Contact Count:    0 
+E: 000001.176780 14 0d 30 0b 1d 2d 1d 21 b5 17 90 1f 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8085 | Y:   6859 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000001.178670 14 0d 11 95 1f cb 1a 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   8450 | Y:   5665 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6133 | Y:   4462 | Scan Time:    257 | Contact Count:    5 
+E: 000001.196743 14 0d 51 02 21 21 16 41 f5 17 6e 11 01 01 05
+# ReportID: 13 / Tip Switch: 0 | # | Contact Id:   3 | X:   7435 | Y:   7469 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   6069 | Y:   8105 | Scan Time:    257 | Contact Count:    0 
+E: 000001.197669 14 0d 30 0b 1d 2d 1d 21 b5 17 a9 1f 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   7979 | Y:   6870 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000001.198677 14 0d 11 2b 1f d6 1a 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 0 | # | Contact Id:   5 | X:   8450 | Y:   5665 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6145 | Y:   4449 | Scan Time:    257 | Contact Count:    4 
+E: 000001.216853 14 0d 50 02 21 21 16 41 01 18 61 11 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   6071 | Y:   8140 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   7891 | Y:   6881 | Scan Time:    257 | Contact Count:    0 
+E: 000001.217720 14 0d 21 b7 17 cc 1f 11 d3 1e e1 1a 01 01 00
+# ReportID: 13 / Tip Switch: 0 | # | Contact Id:   5 | X:   8450 | Y:   5665 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6146 | Y:   4449 | Scan Time:    257 | Contact Count:    4 
+E: 000001.237747 14 0d 50 02 21 21 16 41 02 18 61 11 01 01 04
+# ReportID: 13 / Tip Switch: 0 | # | Contact Id:   2 | X:   6071 | Y:   8140 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   7803 | Y:   6892 | Scan Time:    257 | Contact Count:    0 
+E: 000001.238687 14 0d 20 b7 17 cc 1f 11 7b 1e ec 1a 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6146 | Y:   4456 
+#              | Tip Switch: 0 | # | Contact Id:   2 | X:   6071 | Y:   8140 | Scan Time:    257 | Contact Count:    3 
+E: 000001.259812 14 0d 41 02 18 68 11 20 b7 17 cc 1f 01 01 03
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   7728 | Y:   6895 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000001.260858 14 0d 11 30 1e ef 1a 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6144 | Y:   4462 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   7691 | Y:   6893 | Scan Time:    257 | Contact Count:    2 
+E: 000001.280753 14 0d 41 00 18 6e 11 11 0b 1e ed 1a 01 01 02
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6134 | Y:   4494 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   6432 | Y:   8291 | Scan Time:    257 | Contact Count:    3 
+E: 000001.304023 14 0d 41 f6 17 8e 11 21 20 19 63 20 01 01 03
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   7689 | Y:   6891 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000001.305608 14 0d 11 09 1e eb 1a 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6103 | Y:   4603 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   7253 | Y:   7609 | Scan Time:    257 | Contact Count:    4 
+E: 000001.325752 14 0d 41 d7 17 fb 11 31 55 1c b9 1d 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   6432 | Y:   8291 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   7733 | Y:   6889 | Scan Time:    257 | Contact Count:    0 
+E: 000001.326694 14 0d 21 20 19 63 20 11 35 1e e9 1a 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6072 | Y:   4707 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   7253 | Y:   7609 | Scan Time:    257 | Contact Count:    4 
+E: 000001.346837 14 0d 41 b8 17 63 12 31 55 1c b9 1d 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   6434 | Y:   8289 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   7799 | Y:   6887 | Scan Time:    257 | Contact Count:    0 
+E: 000001.347837 14 0d 21 22 19 61 20 11 77 1e e7 1a 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6047 | Y:   4800 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   7267 | Y:   7605 | Scan Time:    257 | Contact Count:    4 
+E: 000001.368733 14 0d 41 9f 17 c0 12 31 63 1c b5 1d 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   6439 | Y:   8281 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   7867 | Y:   6879 | Scan Time:    257 | Contact Count:    0 
+E: 000001.369711 14 0d 21 27 19 59 20 11 bb 1e df 1a 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6031 | Y:   4850 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   7285 | Y:   7592 | Scan Time:    257 | Contact Count:    4 
+E: 000001.389885 14 0d 41 8f 17 f2 12 31 75 1c a8 1d 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   6437 | Y:   8283 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   7912 | Y:   6859 | Scan Time:    257 | Contact Count:    0 
+E: 000001.390799 14 0d 21 25 19 5b 20 11 e8 1e cb 1a 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6015 | Y:   4883 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   7318 | Y:   7569 | Scan Time:    257 | Contact Count:    4 
+E: 000001.410745 14 0d 41 7f 17 13 13 31 96 1c 91 1d 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   6443 | Y:   8269 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   7944 | Y:   6830 | Scan Time:    257 | Contact Count:    0 
+E: 000001.411690 14 0d 21 2b 19 4d 20 11 08 1f ae 1a 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   5996 | Y:   4914 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   7352 | Y:   7540 | Scan Time:    257 | Contact Count:    4 
+E: 000001.432998 14 0d 41 6c 17 32 13 31 b8 1c 74 1d 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   6453 | Y:   8249 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   7972 | Y:   6804 | Scan Time:    257 | Contact Count:    0 
+E: 000001.434039 14 0d 21 35 19 39 20 11 24 1f 94 1a 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   5970 | Y:   4949 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   7391 | Y:   7514 | Scan Time:    257 | Contact Count:    4 
+E: 000001.453700 14 0d 41 52 17 55 13 31 df 1c 5a 1d 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   6466 | Y:   8224 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   7997 | Y:   6784 | Scan Time:    257 | Contact Count:    0 
+E: 000001.454688 14 0d 21 42 19 20 20 11 3d 1f 80 1a 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   5938 | Y:   4992 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   7417 | Y:   7495 | Scan Time:    257 | Contact Count:    4 
+E: 000001.476004 14 0d 41 32 17 80 13 31 f9 1c 47 1d 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   6482 | Y:   8197 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   8011 | Y:   6771 | Scan Time:    257 | Contact Count:    0 
+E: 000001.477543 14 0d 21 52 19 05 20 11 4b 1f 73 1a 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   5911 | Y:   5047 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   7428 | Y:   7480 | Scan Time:    257 | Contact Count:    4 
+E: 000001.496745 14 0d 41 17 17 b7 13 31 04 1d 38 1d 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   6495 | Y:   8170 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   8002 | Y:   6778 | Scan Time:    257 | Contact Count:    0 
+E: 000001.497709 14 0d 21 5f 19 ea 1f 11 42 1f 7a 1a 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   5893 | Y:   5114 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   7423 | Y:   7462 | Scan Time:    257 | Contact Count:    4 
+E: 000001.518759 14 0d 41 05 17 fa 13 31 ff 1c 26 1d 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   6500 | Y:   8138 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   8012 | Y:   6768 | Scan Time:    257 | Contact Count:    0 
+E: 000001.519736 14 0d 21 64 19 ca 1f 11 4c 1f 70 1a 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   5886 | Y:   5169 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   7393 | Y:   7431 | Scan Time:    257 | Contact Count:    4 
+E: 000001.538719 14 0d 41 fe 16 31 14 31 e1 1c 07 1d 01 01 04
+# ReportID: 13 / Tip Switch: 0 | # | Contact Id:   2 | X:   6500 | Y:   8138 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   8016 | Y:   6758 | Scan Time:    257 | Contact Count:    0 
+E: 000001.539966 14 0d 20 64 19 ca 1f 11 50 1f 66 1a 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   5883 | Y:   5200 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   7345 | Y:   7391 | Scan Time:    257 | Contact Count:    4 
+E: 000001.559745 14 0d 41 fb 16 50 14 31 b1 1c df 1c 01 01 04
+# ReportID: 13 / Tip Switch: 0 | # | Contact Id:   2 | X:   6500 | Y:   8138 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   8016 | Y:   6747 | Scan Time:    257 | Contact Count:    0 
+E: 000001.560693 14 0d 20 64 19 ca 1f 11 50 1f 5b 1a 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   5883 | Y:   5209 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   7288 | Y:   7345 | Scan Time:    257 | Contact Count:    3 
+E: 000001.581918 14 0d 41 fb 16 59 14 31 78 1c b1 1c 01 01 03
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8015 | Y:   6735 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000001.582992 14 0d 11 4f 1f 4f 1a 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   5883 | Y:   5212 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   7206 | Y:   7290 | Scan Time:    257 | Contact Count:    3 
+E: 000001.603737 14 0d 41 fb 16 5c 14 31 26 1c 7a 1c 01 01 03
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8011 | Y:   6721 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000001.604688 14 0d 11 4b 1f 41 1a 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   5885 | Y:   5210 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   7074 | Y:   7231 | Scan Time:    257 | Contact Count:    3 
+E: 000001.625017 14 0d 41 fd 16 5a 14 31 a2 1b 3f 1c 01 01 03
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   7992 | Y:   6707 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000001.626420 14 0d 11 38 1f 33 1a 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   5893 | Y:   5211 
+#              | Tip Switch: 0 | # | Contact Id:   3 | X:   7074 | Y:   7231 | Scan Time:    257 | Contact Count:    3 
+E: 000001.644717 14 0d 41 05 17 5b 14 30 a2 1b 3f 1c 01 01 03
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   7952 | Y:   6694 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000001.645700 14 0d 11 10 1f 26 1a 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   5910 | Y:   5207 
+#              | Tip Switch: 0 | # | Contact Id:   3 | X:   7074 | Y:   7231 | Scan Time:    257 | Contact Count:    4 
+E: 000001.667960 14 0d 41 16 17 57 14 30 a2 1b 3f 1c 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   8076 | Y:   5614 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   7837 | Y:   6677 | Scan Time:    257 | Contact Count:    0 
+E: 000001.669334 14 0d 21 8c 1f ee 15 11 9d 1e 15 1a 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   5941 | Y:   5196 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8076 | Y:   5614 | Scan Time:    257 | Contact Count:    3 
+E: 000001.688961 14 0d 41 35 17 4c 14 21 8c 1f ee 15 01 01 03
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   7747 | Y:   6674 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000001.690427 14 0d 11 43 1e 12 1a 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   5980 | Y:   5178 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   6824 | Y:   7198 | Scan Time:    257 | Contact Count:    4 
+E: 000001.711124 14 0d 41 5c 17 3a 14 31 a8 1a 1e 1c 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   8068 | Y:   5619 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   7678 | Y:   6673 | Scan Time:    257 | Contact Count:    0 
+E: 000001.712368 14 0d 21 84 1f f3 15 11 fe 1d 11 1a 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6024 | Y:   5159 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   6824 | Y:   7198 | Scan Time:    257 | Contact Count:    4 
+E: 000001.730716 14 0d 41 88 17 27 14 31 a8 1a 1e 1c 01 01 04
+# ReportID: 13 / Tip Switch: 0 | # | Contact Id:   2 | X:   8068 | Y:   5619 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   7645 | Y:   6673 | Scan Time:    257 | Contact Count:    0 
+E: 000001.731973 14 0d 20 84 1f f3 15 11 dd 1d 11 1a 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6068 | Y:   5140 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   6824 | Y:   7207 | Scan Time:    257 | Contact Count:    4 
+E: 000001.752997 14 0d 41 b4 17 14 14 31 a8 1a 27 1c 01 01 04
+# ReportID: 13 / Tip Switch: 0 | # | Contact Id:   2 | X:   8068 | Y:   5619 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   7620 | Y:   6673 | Scan Time:    257 | Contact Count:    0 
+E: 000001.754292 14 0d 20 84 1f f3 15 11 c4 1d 11 1a 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6109 | Y:   5125 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   6827 | Y:   7229 | Scan Time:    257 | Contact Count:    3 
+E: 000001.773751 14 0d 41 dd 17 05 14 31 ab 1a 3d 1c 01 01 03
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   7603 | Y:   6677 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000001.774699 14 0d 11 b3 1d 15 1a 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6151 | Y:   5111 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   6834 | Y:   7267 | Scan Time:    257 | Contact Count:    3 
+E: 000001.796160 14 0d 41 07 18 f7 13 31 b2 1a 63 1c 01 01 03
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   7613 | Y:   6675 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000001.797417 14 0d 11 bd 1d 13 1a 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6194 | Y:   5098 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   6844 | Y:   7307 | Scan Time:    257 | Contact Count:    4 
+E: 000001.818710 14 0d 41 32 18 ea 13 31 bc 1a 8b 1c 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   6144 | Y:   7906 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   7599 | Y:   6679 | Scan Time:    257 | Contact Count:    0 
+E: 000001.819710 14 0d 21 00 18 e2 1e 11 af 1d 17 1a 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6237 | Y:   5084 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   6869 | Y:   7349 | Scan Time:    257 | Contact Count:    4 
+E: 000001.838943 14 0d 41 5d 18 dc 13 31 d5 1a b5 1c 01 01 04
+# ReportID: 13 / Tip Switch: 0 | # | Contact Id:   2 | X:   6144 | Y:   7906 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   7591 | Y:   6684 | Scan Time:    257 | Contact Count:    0 
+E: 000001.840157 14 0d 20 00 18 e2 1e 11 a7 1d 1c 1a 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6276 | Y:   5071 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   6941 | Y:   7389 | Scan Time:    257 | Contact Count:    4 
+E: 000001.860730 14 0d 41 84 18 cf 13 31 1d 1b dd 1c 01 01 04
+# ReportID: 13 / Tip Switch: 0 | # | Contact Id:   2 | X:   6144 | Y:   7906 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   7589 | Y:   6691 | Scan Time:    257 | Contact Count:    0 
+E: 000001.861734 14 0d 20 00 18 e2 1e 11 a5 1d 23 1a 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   6307 | Y:   5059 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   7059 | Y:   7435 | Scan Time:    257 | Contact Count:    4 
+E: 000001.884286 14 0d 41 a3 18 c3 13 31 93 1b 0b 1d 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   7995 | Y:   5765 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   7591 | Y:   6687 | Scan Time:    257 | Contact Count:    0 
+E: 000001.887234 14 0d 21 3b 1f 85 16 11 a7 1d 1f 1a 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   6711 | Y:   8164 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6332 | Y:   5049 | Scan Time:    257 | Contact Count:    5 
+E: 000001.903981 14 0d 51 37 1a e4 1f 41 bc 18 b9 13 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7183 | Y:   7477 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   7995 | Y:   5765 | Scan Time:    257 | Contact Count:    0 
+E: 000001.905285 14 0d 31 0f 1c 35 1d 21 3b 1f 85 16 01 01 00
+# ReportID: 13 / Tip Switch: 0 | # | Contact Id:   1 | X:   7591 | Y:   6687 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000001.906618 14 0d 10 a7 1d 1f 1a 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   6711 | Y:   8164 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6351 | Y:   5040 | Scan Time:    257 | Contact Count:    5 
+E: 000001.926118 14 0d 51 37 1a e4 1f 41 cf 18 b0 13 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7296 | Y:   7509 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   7995 | Y:   5765 | Scan Time:    257 | Contact Count:    0 
+E: 000001.927346 14 0d 31 80 1c 55 1d 21 3b 1f 85 16 01 01 00
+# ReportID: 13 / Tip Switch: 0 | # | Contact Id:   1 | X:   7591 | Y:   6687 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000001.928110 14 0d 10 a7 1d 1f 1a 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   6719 | Y:   8164 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6366 | Y:   5035 | Scan Time:    257 | Contact Count:    4 
+E: 000001.946724 14 0d 51 3f 1a e4 1f 41 de 18 ab 13 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7396 | Y:   7531 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   7995 | Y:   5764 | Scan Time:    257 | Contact Count:    0 
+E: 000001.947700 14 0d 31 e4 1c 6b 1d 21 3b 1f 84 16 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   6733 | Y:   8162 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6357 | Y:   5038 | Scan Time:    257 | Contact Count:    5 
+E: 000001.970208 14 0d 51 4d 1a e2 1f 41 d5 18 ae 13 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7506 | Y:   7544 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   7995 | Y:   5764 | Scan Time:    257 | Contact Count:    0 
+E: 000001.972326 14 0d 31 52 1d 78 1d 21 3b 1f 84 16 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8329 | Y:   6877 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000001.973428 14 0d 11 89 20 dd 1a 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   6728 | Y:   8160 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6373 | Y:   5034 | Scan Time:    257 | Contact Count:    5 
+E: 000001.989957 14 0d 51 48 1a e0 1f 41 e5 18 aa 13 01 01 05
+# ReportID: 13 / Tip Switch: 0 | # | Contact Id:   3 | X:   7506 | Y:   7544 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   7995 | Y:   5756 | Scan Time:    257 | Contact Count:    0 
+E: 000001.991120 14 0d 30 52 1d 78 1d 21 3b 1f 7c 16 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8329 | Y:   6877 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000001.991967 14 0d 11 89 20 dd 1a 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   6742 | Y:   8152 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6386 | Y:   5032 | Scan Time:    257 | Contact Count:    5 
+E: 000002.012483 14 0d 51 56 1a d8 1f 41 f2 18 a8 13 01 01 05
+# ReportID: 13 / Tip Switch: 0 | # | Contact Id:   3 | X:   7506 | Y:   7544 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   7995 | Y:   5734 | Scan Time:    257 | Contact Count:    0 
+E: 000002.015657 14 0d 30 52 1d 78 1d 21 3b 1f 66 16 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8347 | Y:   6869 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.017536 14 0d 11 9b 20 d5 1a 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   6760 | Y:   8135 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6396 | Y:   5033 | Scan Time:    257 | Contact Count:    4 
+E: 000002.032724 14 0d 51 68 1a c7 1f 41 fc 18 a9 13 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   7997 | Y:   5650 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   8374 | Y:   6839 | Scan Time:    257 | Contact Count:    0 
+E: 000002.033708 14 0d 21 3d 1f 12 16 11 b6 20 b7 1a 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   6776 | Y:   8109 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6404 | Y:   5037 | Scan Time:    257 | Contact Count:    5 
+E: 000002.056090 14 0d 51 78 1a ad 1f 41 04 19 ad 13 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7923 | Y:   7424 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8008 | Y:   5569 | Scan Time:    257 | Contact Count:    0 
+E: 000002.057928 14 0d 31 f3 1e 00 1d 21 48 1f c1 15 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8403 | Y:   6799 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.058982 14 0d 11 d3 20 8f 1a 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   6792 | Y:   8079 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6408 | Y:   5045 | Scan Time:    257 | Contact Count:    5 
+E: 000002.076736 14 0d 51 88 1a 8f 1f 41 08 19 b5 13 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7923 | Y:   7424 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8022 | Y:   5494 | Scan Time:    257 | Contact Count:    0 
+E: 000002.077677 14 0d 31 f3 1e 00 1d 21 56 1f 76 15 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8414 | Y:   6761 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.078681 14 0d 11 de 20 69 1a 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   6807 | Y:   8049 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6408 | Y:   5060 | Scan Time:    257 | Contact Count:    5 
+E: 000002.099213 14 0d 51 97 1a 71 1f 41 08 19 c4 13 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7931 | Y:   7421 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8037 | Y:   5454 | Scan Time:    257 | Contact Count:    0 
+E: 000002.102109 14 0d 31 fb 1e fd 1c 21 65 1f 4e 15 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8429 | Y:   6734 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.103620 14 0d 11 ed 20 4e 1a 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   6822 | Y:   8020 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   6398 | Y:   5090 | Scan Time:    257 | Contact Count:    5 
+E: 000002.119741 14 0d 51 a6 1a 54 1f 41 fe 18 e2 13 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7951 | Y:   7410 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8044 | Y:   5416 | Scan Time:    257 | Contact Count:    0 
+E: 000002.120679 14 0d 31 0f 1f f2 1c 21 6c 1f 28 15 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8459 | Y:   6705 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.121756 14 0d 11 0b 21 31 1a 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   6839 | Y:   7999 
+#              | Tip Switch: 0 | # | Contact Id:   4 | X:   6398 | Y:   5090 | Scan Time:    257 | Contact Count:    5 
+E: 000002.140298 14 0d 51 b7 1a 3f 1f 40 fe 18 e2 13 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7976 | Y:   7387 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8048 | Y:   5366 | Scan Time:    257 | Contact Count:    0 
+E: 000002.142283 14 0d 31 28 1f db 1c 21 70 1f f6 14 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8509 | Y:   6675 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.143413 14 0d 11 3d 21 13 1a 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   6857 | Y:   7985 
+#              | Tip Switch: 0 | # | Contact Id:   4 | X:   6398 | Y:   5090 | Scan Time:    257 | Contact Count:    5 
+E: 000002.161774 14 0d 51 c9 1a 31 1f 40 fe 18 e2 13 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   7995 | Y:   7361 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8051 | Y:   5308 | Scan Time:    257 | Contact Count:    0 
+E: 000002.162698 14 0d 31 3b 1f c1 1c 21 73 1f bc 14 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8548 | Y:   6645 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.163698 14 0d 11 64 21 f5 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 0 | # | Contact Id:   5 | X:   6857 | Y:   7985 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   8005 | Y:   7340 | Scan Time:    257 | Contact Count:    4 
+E: 000002.181774 14 0d 50 c9 1a 31 1f 31 45 1f ac 1c 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   8056 | Y:   5251 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   8578 | Y:   6610 | Scan Time:    257 | Contact Count:    0 
+E: 000002.182736 14 0d 21 78 1f 83 14 11 82 21 d2 19 01 01 00
+# ReportID: 13 / Tip Switch: 0 | # | Contact Id:   5 | X:   6857 | Y:   7985 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   8017 | Y:   7320 | Scan Time:    257 | Contact Count:    4 
+E: 000002.203847 14 0d 50 c9 1a 31 1f 31 51 1f 98 1c 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   8061 | Y:   5212 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   8594 | Y:   6578 | Scan Time:    257 | Contact Count:    0 
+E: 000002.204883 14 0d 21 7d 1f 5c 14 11 92 21 b2 19 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   5985 | Y:   4674 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   8029 | Y:   7305 | Scan Time:    257 | Contact Count:    4 
+E: 000002.225776 14 0d 41 61 17 42 12 31 5d 1f 89 1c 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   8067 | Y:   5184 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   8610 | Y:   6551 | Scan Time:    257 | Contact Count:    0 
+E: 000002.226756 14 0d 21 83 1f 40 14 11 a2 21 97 19 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   5985 | Y:   4674 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   8036 | Y:   7295 | Scan Time:    257 | Contact Count:    4 
+E: 000002.247844 14 0d 41 61 17 42 12 31 64 1f 7f 1c 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   8075 | Y:   5165 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   8616 | Y:   6540 | Scan Time:    257 | Contact Count:    0 
+E: 000002.248851 14 0d 21 8b 1f 2d 14 11 a8 21 8c 19 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   5977 | Y:   4660 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   8037 | Y:   7292 | Scan Time:    257 | Contact Count:    4 
+E: 000002.269875 14 0d 41 59 17 34 12 31 65 1f 7c 1c 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   8082 | Y:   5149 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   8619 | Y:   6532 | Scan Time:    257 | Contact Count:    0 
+E: 000002.270862 14 0d 21 92 1f 1d 14 11 ab 21 84 19 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   5959 | Y:   4635 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   8043 | Y:   7270 | Scan Time:    257 | Contact Count:    4 
+E: 000002.290932 14 0d 41 47 17 1b 12 31 6b 1f 66 1c 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   8077 | Y:   5158 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   8618 | Y:   6535 | Scan Time:    257 | Contact Count:    0 
+E: 000002.291938 14 0d 21 8d 1f 26 14 11 aa 21 87 19 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   5921 | Y:   4588 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   8050 | Y:   7247 | Scan Time:    257 | Contact Count:    4 
+E: 000002.311996 14 0d 41 21 17 ec 11 31 72 1f 4f 1c 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   8085 | Y:   5139 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   8623 | Y:   6521 | Scan Time:    257 | Contact Count:    0 
+E: 000002.312831 14 0d 21 95 1f 13 14 11 af 21 79 19 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   5883 | Y:   4539 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   8060 | Y:   7223 | Scan Time:    257 | Contact Count:    4 
+E: 000002.332886 14 0d 41 fb 16 bb 11 31 7c 1f 37 1c 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   8089 | Y:   5118 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   8629 | Y:   6504 | Scan Time:    257 | Contact Count:    0 
+E: 000002.334079 14 0d 21 99 1f fe 13 11 b5 21 68 19 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   5847 | Y:   4484 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   8074 | Y:   7217 | Scan Time:    257 | Contact Count:    4 
+E: 000002.354740 14 0d 41 d7 16 84 11 31 8a 1f 31 1c 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   8092 | Y:   5095 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   8635 | Y:   6487 | Scan Time:    257 | Contact Count:    0 
+E: 000002.355721 14 0d 21 9c 1f e7 13 11 bb 21 57 19 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   4 | X:   5813 | Y:   4420 
+#              | Tip Switch: 1 | # | Contact Id:   3 | X:   8093 | Y:   7212 | Scan Time:    257 | Contact Count:    4 
+E: 000002.375941 14 0d 41 b5 16 44 11 31 9d 1f 2c 1c 01 01 04
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   2 | X:   8095 | Y:   5073 
+#              | Tip Switch: 1 | # | Contact Id:   1 | X:   8643 | Y:   6470 | Scan Time:    257 | Contact Count:    0 
+E: 000002.376851 14 0d 21 9f 1f d1 13 11 c3 21 46 19 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7112 | Y:   8160 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   5761 | Y:   4330 | Scan Time:    257 | Contact Count:    5 
+E: 000002.398870 14 0d 51 c8 1b e0 1f 41 81 16 ea 10 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8084 | Y:   7215 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8096 | Y:   5054 | Scan Time:    257 | Contact Count:    0 
+E: 000002.399787 14 0d 31 94 1f 2f 1c 21 a0 1f be 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8651 | Y:   6459 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.400860 14 0d 11 cb 21 3b 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7112 | Y:   8160 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   5694 | Y:   4209 | Scan Time:    257 | Contact Count:    5 
+E: 000002.419855 14 0d 51 c8 1b e0 1f 41 3e 16 71 10 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8104 | Y:   7212 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8100 | Y:   5037 | Scan Time:    257 | Contact Count:    0 
+E: 000002.420938 14 0d 31 a8 1f 2c 1c 21 a4 1f ad 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8658 | Y:   6452 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.421850 14 0d 11 d2 21 34 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7112 | Y:   8168 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   5618 | Y:   4092 | Scan Time:    257 | Contact Count:    5 
+E: 000002.440951 14 0d 51 c8 1b e8 1f 41 f2 15 fc 0f 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8131 | Y:   7212 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8116 | Y:   5018 | Scan Time:    257 | Contact Count:    0 
+E: 000002.441881 14 0d 31 c3 1f 2c 1c 21 b4 1f 9a 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8655 | Y:   6456 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.442854 14 0d 11 cf 21 38 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7109 | Y:   8178 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   5542 | Y:   3991 | Scan Time:    257 | Contact Count:    5 
+E: 000002.463001 14 0d 51 c5 1b f2 1f 41 a6 15 97 0f 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8159 | Y:   7212 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8155 | Y:   4991 | Scan Time:    257 | Contact Count:    0 
+E: 000002.463879 14 0d 31 df 1f 2c 1c 21 db 1f 7f 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8663 | Y:   6447 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.464950 14 0d 11 d7 21 2f 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7110 | Y:   8174 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   5473 | Y:   3924 | Scan Time:    257 | Contact Count:    5 
+E: 000002.484001 14 0d 51 c6 1b ee 1f 41 61 15 54 0f 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8190 | Y:   7210 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8253 | Y:   4930 | Scan Time:    257 | Contact Count:    0 
+E: 000002.484854 14 0d 31 fe 1f 2a 1c 21 3d 20 42 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8675 | Y:   6439 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.485968 14 0d 11 e3 21 27 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7108 | Y:   8180 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   5410 | Y:   3860 | Scan Time:    257 | Contact Count:    5 
+E: 000002.505007 14 0d 51 c4 1b f4 1f 41 22 15 14 0f 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8219 | Y:   7207 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8316 | Y:   4888 | Scan Time:    257 | Contact Count:    0 
+E: 000002.505860 14 0d 31 1b 20 27 1c 21 7c 20 18 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8690 | Y:   6427 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.506992 14 0d 11 f2 21 1b 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7106 | Y:   8188 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   5348 | Y:   3800 | Scan Time:    257 | Contact Count:    5 
+E: 000002.527000 14 0d 51 c2 1b fc 1f 41 e4 14 d8 0e 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8240 | Y:   7203 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8349 | Y:   4859 | Scan Time:    257 | Contact Count:    0 
+E: 000002.527821 14 0d 31 30 20 23 1c 21 9d 20 fb 12 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8704 | Y:   6417 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.528972 14 0d 11 00 22 11 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7103 | Y:   8190 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   5294 | Y:   3739 | Scan Time:    257 | Contact Count:    5 
+E: 000002.547878 14 0d 51 bf 1b fe 1f 41 ae 14 9b 0e 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8255 | Y:   7198 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8349 | Y:   4854 | Scan Time:    257 | Contact Count:    0 
+E: 000002.548957 14 0d 31 3f 20 1e 1c 21 9d 20 f6 12 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8719 | Y:   6407 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.549810 14 0d 11 0f 22 07 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7105 | Y:   8189 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   5252 | Y:   3689 | Scan Time:    257 | Contact Count:    5 
+E: 000002.569965 14 0d 51 c1 1b fd 1f 41 84 14 69 0e 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8263 | Y:   7195 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8348 | Y:   4853 | Scan Time:    257 | Contact Count:    0 
+E: 000002.570813 14 0d 31 47 20 1b 1c 21 9c 20 f5 12 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8731 | Y:   6400 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.571944 14 0d 11 1b 22 00 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7103 | Y:   8190 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   5218 | Y:   3653 | Scan Time:    257 | Contact Count:    5 
+E: 000002.590847 14 0d 51 bf 1b fe 1f 41 62 14 45 0e 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8258 | Y:   7197 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8348 | Y:   4854 | Scan Time:    257 | Contact Count:    0 
+E: 000002.591803 14 0d 31 42 20 1d 1c 21 9c 20 f6 12 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8738 | Y:   6395 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.592814 14 0d 11 22 22 fb 18 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7103 | Y:   8190 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   5175 | Y:   3625 | Scan Time:    257 | Contact Count:    5 
+E: 000002.611855 14 0d 51 bf 1b fe 1f 41 37 14 29 0e 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8264 | Y:   7194 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8348 | Y:   4852 | Scan Time:    257 | Contact Count:    0 
+E: 000002.612805 14 0d 31 48 20 1a 1c 21 9c 20 f4 12 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8741 | Y:   6393 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.613772 14 0d 11 25 22 f9 18 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7103 | Y:   8192 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   5123 | Y:   3597 | Scan Time:    257 | Contact Count:    5 
+E: 000002.633793 14 0d 51 bf 1b 00 20 41 03 14 0d 0e 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8267 | Y:   7193 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8348 | Y:   4850 | Scan Time:    257 | Contact Count:    0 
+E: 000002.634749 14 0d 31 4b 20 19 1c 21 9c 20 f2 12 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8742 | Y:   6392 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.635754 14 0d 11 26 22 f8 18 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7103 | Y:   8193 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   5068 | Y:   3569 | Scan Time:    257 | Contact Count:    5 
+E: 000002.654751 14 0d 51 bf 1b 01 20 41 cc 13 f1 0d 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8267 | Y:   7193 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8348 | Y:   4849 | Scan Time:    257 | Contact Count:    0 
+E: 000002.655725 14 0d 31 4b 20 19 1c 21 9c 20 f1 12 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8743 | Y:   6391 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.656725 14 0d 11 27 22 f7 18 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7100 | Y:   8194 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   5021 | Y:   3542 | Scan Time:    257 | Contact Count:    5 
+E: 000002.676752 14 0d 51 bc 1b 02 20 41 9d 13 d6 0d 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8267 | Y:   7193 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8348 | Y:   4850 | Scan Time:    257 | Contact Count:    0 
+E: 000002.677751 14 0d 31 4b 20 19 1c 21 9c 20 f2 12 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8743 | Y:   6390 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.678754 14 0d 11 27 22 f6 18 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7097 | Y:   8195 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4985 | Y:   3525 | Scan Time:    257 | Contact Count:    5 
+E: 000002.697807 14 0d 51 b9 1b 03 20 41 79 13 c5 0d 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8267 | Y:   7193 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8347 | Y:   4849 | Scan Time:    257 | Contact Count:    0 
+E: 000002.698722 14 0d 31 4b 20 19 1c 21 9b 20 f1 12 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8743 | Y:   6390 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.699734 14 0d 11 27 22 f6 18 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7094 | Y:   8197 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4965 | Y:   3515 | Scan Time:    257 | Contact Count:    5 
+E: 000002.718748 14 0d 51 b6 1b 05 20 41 65 13 bb 0d 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8267 | Y:   7193 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8347 | Y:   4849 | Scan Time:    257 | Contact Count:    0 
+E: 000002.719697 14 0d 31 4b 20 19 1c 21 9b 20 f1 12 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8743 | Y:   6390 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.720698 14 0d 11 27 22 f6 18 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7091 | Y:   8198 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4955 | Y:   3513 | Scan Time:    257 | Contact Count:    5 
+E: 000002.740740 14 0d 51 b3 1b 06 20 41 5b 13 b9 0d 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8267 | Y:   7193 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8347 | Y:   4849 | Scan Time:    257 | Contact Count:    0 
+E: 000002.741734 14 0d 31 4b 20 19 1c 21 9b 20 f1 12 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8743 | Y:   6390 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.742695 14 0d 11 27 22 f6 18 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7089 | Y:   8199 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4949 | Y:   3513 | Scan Time:    257 | Contact Count:    5 
+E: 000002.761787 14 0d 51 b1 1b 07 20 41 55 13 b9 0d 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8267 | Y:   7194 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8347 | Y:   4849 | Scan Time:    257 | Contact Count:    0 
+E: 000002.762766 14 0d 31 4b 20 1a 1c 21 9b 20 f1 12 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8743 | Y:   6390 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.763774 14 0d 11 27 22 f6 18 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7087 | Y:   8200 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4952 | Y:   3513 | Scan Time:    257 | Contact Count:    5 
+E: 000002.783863 14 0d 51 af 1b 08 20 41 58 13 b9 0d 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8267 | Y:   7195 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8347 | Y:   4849 | Scan Time:    257 | Contact Count:    0 
+E: 000002.784865 14 0d 31 4b 20 1b 1c 21 9b 20 f1 12 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8743 | Y:   6390 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.785873 14 0d 11 27 22 f6 18 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7087 | Y:   8200 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4947 | Y:   3514 | Scan Time:    257 | Contact Count:    5 
+E: 000002.804907 14 0d 51 af 1b 08 20 41 53 13 ba 0d 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8267 | Y:   7197 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8347 | Y:   4849 | Scan Time:    257 | Contact Count:    0 
+E: 000002.805784 14 0d 31 4b 20 1d 1c 21 9b 20 f1 12 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8743 | Y:   6390 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.806895 14 0d 11 27 22 f6 18 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7087 | Y:   8201 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4943 | Y:   3517 | Scan Time:    257 | Contact Count:    5 
+E: 000002.825999 14 0d 51 af 1b 09 20 41 4f 13 bd 0d 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8267 | Y:   7199 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8347 | Y:   4849 | Scan Time:    257 | Contact Count:    0 
+E: 000002.826770 14 0d 31 4b 20 1f 1c 21 9b 20 f1 12 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8743 | Y:   6390 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.827988 14 0d 11 27 22 f6 18 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7087 | Y:   8202 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4941 | Y:   3525 | Scan Time:    257 | Contact Count:    5 
+E: 000002.848000 14 0d 51 af 1b 0a 20 41 4d 13 c5 0d 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8266 | Y:   7201 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8346 | Y:   4849 | Scan Time:    257 | Contact Count:    0 
+E: 000002.848746 14 0d 31 4a 20 21 1c 21 9a 20 f1 12 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8743 | Y:   6390 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.850001 14 0d 11 27 22 f6 18 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7086 | Y:   8202 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4939 | Y:   3543 | Scan Time:    257 | Contact Count:    5 
+E: 000002.868999 14 0d 51 ae 1b 0a 20 41 4b 13 d7 0d 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8264 | Y:   7202 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8345 | Y:   4849 | Scan Time:    257 | Contact Count:    0 
+E: 000002.869800 14 0d 31 48 20 22 1c 21 99 20 f1 12 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8743 | Y:   6390 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.870979 14 0d 11 27 22 f6 18 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7083 | Y:   8202 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4935 | Y:   3571 | Scan Time:    257 | Contact Count:    5 
+E: 000002.890036 14 0d 51 ab 1b 0a 20 41 47 13 f3 0d 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8259 | Y:   7204 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8344 | Y:   4849 | Scan Time:    257 | Contact Count:    0 
+E: 000002.890853 14 0d 31 43 20 24 1c 21 98 20 f1 12 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8743 | Y:   6390 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.892031 14 0d 11 27 22 f6 18 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7080 | Y:   8202 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4931 | Y:   3610 | Scan Time:    257 | Contact Count:    5 
+E: 000002.912030 14 0d 51 a8 1b 0a 20 41 43 13 1a 0e 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8254 | Y:   7204 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8341 | Y:   4849 | Scan Time:    257 | Contact Count:    0 
+E: 000002.912847 14 0d 31 3e 20 24 1c 21 95 20 f1 12 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8742 | Y:   6390 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.914029 14 0d 11 26 22 f6 18 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7077 | Y:   8202 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4928 | Y:   3654 | Scan Time:    257 | Contact Count:    5 
+E: 000002.933032 14 0d 51 a5 1b 0a 20 41 40 13 46 0e 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8247 | Y:   7205 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8338 | Y:   4849 | Scan Time:    257 | Contact Count:    0 
+E: 000002.933755 14 0d 31 37 20 25 1c 21 92 20 f1 12 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8740 | Y:   6390 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.934993 14 0d 11 24 22 f6 18 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7074 | Y:   8202 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4927 | Y:   3696 | Scan Time:    257 | Contact Count:    5 
+E: 000002.955004 14 0d 51 a2 1b 0a 20 41 3f 13 70 0e 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8240 | Y:   7207 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8336 | Y:   4850 | Scan Time:    257 | Contact Count:    0 
+E: 000002.955808 14 0d 31 30 20 27 1c 21 90 20 f2 12 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8736 | Y:   6392 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.956855 14 0d 11 20 22 f8 18 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7070 | Y:   8202 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4927 | Y:   3735 | Scan Time:    257 | Contact Count:    5 
+E: 000002.976028 14 0d 51 9e 1b 0a 20 41 3f 13 97 0e 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8233 | Y:   7209 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8334 | Y:   4851 | Scan Time:    257 | Contact Count:    0 
+E: 000002.976928 14 0d 31 29 20 29 1c 21 8e 20 f3 12 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8731 | Y:   6394 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.978023 14 0d 11 1b 22 fa 18 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7067 | Y:   8202 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4927 | Y:   3771 | Scan Time:    257 | Contact Count:    5 
+E: 000002.997002 14 0d 51 9b 1b 0a 20 41 3f 13 bb 0e 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8227 | Y:   7210 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8332 | Y:   4853 | Scan Time:    257 | Contact Count:    0 
+E: 000002.997810 14 0d 31 23 20 2a 1c 21 8c 20 f5 12 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8727 | Y:   6395 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000002.998993 14 0d 11 17 22 fb 18 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7065 | Y:   8202 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4927 | Y:   3804 | Scan Time:    257 | Contact Count:    5 
+E: 000003.019001 14 0d 51 99 1b 0a 20 41 3f 13 dc 0e 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8222 | Y:   7212 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8331 | Y:   4856 | Scan Time:    257 | Contact Count:    0 
+E: 000003.019754 14 0d 31 1e 20 2c 1c 21 8b 20 f8 12 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8722 | Y:   6398 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.020988 14 0d 11 12 22 fe 18 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7064 | Y:   8202 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4927 | Y:   3835 | Scan Time:    257 | Contact Count:    5 
+E: 000003.040053 14 0d 51 98 1b 0a 20 41 3f 13 fb 0e 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8216 | Y:   7213 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8330 | Y:   4859 | Scan Time:    257 | Contact Count:    0 
+E: 000003.040755 14 0d 31 18 20 2d 1c 21 8a 20 fb 12 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8720 | Y:   6400 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.041988 14 0d 11 10 22 00 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7063 | Y:   8202 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4927 | Y:   3865 | Scan Time:    257 | Contact Count:    5 
+E: 000003.061044 14 0d 51 97 1b 0a 20 41 3f 13 19 0f 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8213 | Y:   7214 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8328 | Y:   4860 | Scan Time:    257 | Contact Count:    0 
+E: 000003.061760 14 0d 31 15 20 2e 1c 21 88 20 fc 12 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8718 | Y:   6403 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.063043 14 0d 11 0e 22 03 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7063 | Y:   8202 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4928 | Y:   3895 | Scan Time:    257 | Contact Count:    5 
+E: 000003.083059 14 0d 51 97 1b 0a 20 41 40 13 37 0f 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8210 | Y:   7215 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8328 | Y:   4864 | Scan Time:    257 | Contact Count:    0 
+E: 000003.083899 14 0d 31 12 20 2f 1c 21 88 20 00 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8716 | Y:   6405 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.085040 14 0d 11 0c 22 05 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7062 | Y:   8202 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4930 | Y:   3924 | Scan Time:    257 | Contact Count:    5 
+E: 000003.104042 14 0d 51 96 1b 0a 20 41 42 13 54 0f 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8206 | Y:   7217 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8326 | Y:   4867 | Scan Time:    257 | Contact Count:    0 
+E: 000003.104858 14 0d 31 0e 20 31 1c 21 86 20 03 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8713 | Y:   6408 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.106032 14 0d 11 09 22 08 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7061 | Y:   8202 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4934 | Y:   3954 | Scan Time:    257 | Contact Count:    5 
+E: 000003.125042 14 0d 51 95 1b 0a 20 41 46 13 72 0f 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8203 | Y:   7219 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8325 | Y:   4870 | Scan Time:    257 | Contact Count:    0 
+E: 000003.125907 14 0d 31 0b 20 33 1c 21 85 20 06 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8710 | Y:   6410 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.127037 14 0d 11 06 22 0a 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7058 | Y:   8202 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4938 | Y:   3984 | Scan Time:    257 | Contact Count:    5 
+E: 000003.147071 14 0d 51 92 1b 0a 20 41 4a 13 90 0f 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8198 | Y:   7219 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8322 | Y:   4872 | Scan Time:    257 | Contact Count:    0 
+E: 000003.147898 14 0d 31 06 20 33 1c 21 82 20 08 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8706 | Y:   6413 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.149034 14 0d 11 02 22 0d 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7055 | Y:   8202 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4941 | Y:   4013 | Scan Time:    257 | Contact Count:    5 
+E: 000003.168050 14 0d 51 8f 1b 0a 20 41 4d 13 ad 0f 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8193 | Y:   7220 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8317 | Y:   4875 | Scan Time:    257 | Contact Count:    0 
+E: 000003.168923 14 0d 31 01 20 34 1c 21 7d 20 0b 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8699 | Y:   6414 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.170040 14 0d 11 fb 21 0e 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7051 | Y:   8201 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4943 | Y:   4040 | Scan Time:    257 | Contact Count:    5 
+E: 000003.190045 14 0d 51 8b 1b 09 20 41 4f 13 c8 0f 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8187 | Y:   7220 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8312 | Y:   4877 | Scan Time:    257 | Contact Count:    0 
+E: 000003.190866 14 0d 31 fb 1f 34 1c 21 78 20 0d 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8693 | Y:   6415 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.192037 14 0d 11 f5 21 0f 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7046 | Y:   8201 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4944 | Y:   4067 | Scan Time:    257 | Contact Count:    5 
+E: 000003.210947 14 0d 51 86 1b 09 20 41 50 13 e3 0f 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8179 | Y:   7220 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8306 | Y:   4879 | Scan Time:    257 | Contact Count:    0 
+E: 000003.211771 14 0d 31 f3 1f 34 1c 21 72 20 0f 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8688 | Y:   6415 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.212864 14 0d 11 f0 21 0f 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7041 | Y:   8200 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4944 | Y:   4095 | Scan Time:    257 | Contact Count:    5 
+E: 000003.231796 14 0d 51 81 1b 08 20 41 50 13 ff 0f 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8170 | Y:   7219 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8299 | Y:   4880 | Scan Time:    257 | Contact Count:    0 
+E: 000003.232784 14 0d 31 ea 1f 33 1c 21 6b 20 10 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8683 | Y:   6415 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.233781 14 0d 11 eb 21 0f 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7037 | Y:   8200 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4944 | Y:   4124 | Scan Time:    257 | Contact Count:    5 
+E: 000003.253968 14 0d 51 7d 1b 08 20 41 50 13 1c 10 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8161 | Y:   7219 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8291 | Y:   4881 | Scan Time:    257 | Contact Count:    0 
+E: 000003.254932 14 0d 31 e1 1f 33 1c 21 63 20 11 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8677 | Y:   6415 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.255968 14 0d 11 e5 21 0f 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7032 | Y:   8197 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4944 | Y:   4150 | Scan Time:    257 | Contact Count:    5 
+E: 000003.274898 14 0d 51 78 1b 05 20 41 50 13 36 10 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8152 | Y:   7217 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8283 | Y:   4882 | Scan Time:    257 | Contact Count:    0 
+E: 000003.275874 14 0d 31 d8 1f 31 1c 21 5b 20 12 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8672 | Y:   6415 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.276879 14 0d 11 e0 21 0f 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7028 | Y:   8195 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4944 | Y:   4177 | Scan Time:    257 | Contact Count:    5 
+E: 000003.295904 14 0d 51 74 1b 03 20 41 50 13 51 10 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8145 | Y:   7217 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8273 | Y:   4883 | Scan Time:    257 | Contact Count:    0 
+E: 000003.296881 14 0d 31 d1 1f 31 1c 21 51 20 13 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8666 | Y:   6416 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.297888 14 0d 11 da 21 10 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7023 | Y:   8192 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4944 | Y:   4201 | Scan Time:    257 | Contact Count:    5 
+E: 000003.317908 14 0d 51 6f 1b 00 20 41 50 13 69 10 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8139 | Y:   7215 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8261 | Y:   4883 | Scan Time:    257 | Contact Count:    0 
+E: 000003.318897 14 0d 31 cb 1f 2f 1c 21 45 20 13 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8660 | Y:   6416 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.319913 14 0d 11 d4 21 10 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7016 | Y:   8189 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4944 | Y:   4226 | Scan Time:    257 | Contact Count:    5 
+E: 000003.338988 14 0d 51 68 1b fd 1f 41 50 13 82 10 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8135 | Y:   7215 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8250 | Y:   4884 | Scan Time:    257 | Contact Count:    0 
+E: 000003.339849 14 0d 31 c7 1f 2f 1c 21 3a 20 14 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8654 | Y:   6416 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.340977 14 0d 11 ce 21 10 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7010 | Y:   8185 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4946 | Y:   4254 | Scan Time:    257 | Contact Count:    5 
+E: 000003.361045 14 0d 51 62 1b f9 1f 41 52 13 9e 10 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8131 | Y:   7215 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8238 | Y:   4884 | Scan Time:    257 | Contact Count:    0 
+E: 000003.361876 14 0d 31 c3 1f 2f 1c 21 2e 20 14 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8649 | Y:   6416 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.363054 14 0d 11 c9 21 10 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   7002 | Y:   8183 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4949 | Y:   4285 | Scan Time:    257 | Contact Count:    5 
+E: 000003.382051 14 0d 51 5a 1b f7 1f 41 55 13 bd 10 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8128 | Y:   7215 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8227 | Y:   4885 | Scan Time:    257 | Contact Count:    0 
+E: 000003.382869 14 0d 31 c0 1f 2f 1c 21 23 20 15 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8645 | Y:   6416 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.383901 14 0d 11 c5 21 10 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   6995 | Y:   8182 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4954 | Y:   4319 | Scan Time:    257 | Contact Count:    5 
+E: 000003.403110 14 0d 51 53 1b f6 1f 41 5a 13 df 10 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8125 | Y:   7215 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8216 | Y:   4889 | Scan Time:    257 | Contact Count:    0 
+E: 000003.403923 14 0d 31 bd 1f 2f 1c 21 18 20 19 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8642 | Y:   6416 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.405050 14 0d 11 c2 21 10 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   6988 | Y:   8180 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4961 | Y:   4354 | Scan Time:    257 | Contact Count:    5 
+E: 000003.425056 14 0d 51 4c 1b f4 1f 41 61 13 02 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8121 | Y:   7215 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8201 | Y:   4894 | Scan Time:    257 | Contact Count:    0 
+E: 000003.425873 14 0d 31 b9 1f 2f 1c 21 09 20 1e 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8639 | Y:   6416 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.427046 14 0d 11 bf 21 10 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   6982 | Y:   8179 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4968 | Y:   4389 | Scan Time:    257 | Contact Count:    5 
+E: 000003.446059 14 0d 51 46 1b f3 1f 41 68 13 25 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8117 | Y:   7215 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8180 | Y:   4902 | Scan Time:    257 | Contact Count:    0 
+E: 000003.446950 14 0d 31 b5 1f 2f 1c 21 f4 1f 26 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8636 | Y:   6416 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.448046 14 0d 11 bc 21 10 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   6976 | Y:   8177 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4974 | Y:   4424 | Scan Time:    257 | Contact Count:    5 
+E: 000003.467012 14 0d 51 40 1b f1 1f 41 6e 13 48 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8114 | Y:   7215 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8138 | Y:   4919 | Scan Time:    257 | Contact Count:    0 
+E: 000003.467817 14 0d 31 b2 1f 2f 1c 21 ca 1f 37 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8632 | Y:   6416 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.469008 14 0d 11 b8 21 10 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   6971 | Y:   8174 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4978 | Y:   4457 | Scan Time:    257 | Contact Count:    5 
+E: 000003.489000 14 0d 51 3b 1b ee 1f 41 72 13 69 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8110 | Y:   7214 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8101 | Y:   4932 | Scan Time:    257 | Contact Count:    0 
+E: 000003.490023 14 0d 31 ae 1f 2e 1c 21 a5 1f 44 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8629 | Y:   6416 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.490987 14 0d 11 b5 21 10 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   6965 | Y:   8172 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4984 | Y:   4490 | Scan Time:    257 | Contact Count:    5 
+E: 000003.510025 14 0d 51 35 1b ec 1f 41 78 13 8a 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8107 | Y:   7214 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8067 | Y:   4945 | Scan Time:    257 | Contact Count:    0 
+E: 000003.511169 14 0d 31 ab 1f 2e 1c 21 83 1f 51 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8626 | Y:   6416 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.511833 14 0d 11 b2 21 10 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   6961 | Y:   8170 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   4992 | Y:   4524 | Scan Time:    257 | Contact Count:    5 
+E: 000003.532131 14 0d 51 31 1b ea 1f 41 80 13 ac 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8104 | Y:   7214 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8040 | Y:   4957 | Scan Time:    257 | Contact Count:    0 
+E: 000003.532965 14 0d 31 a8 1f 2e 1c 21 68 1f 5d 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8622 | Y:   6416 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.534037 14 0d 11 ae 21 10 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   6955 | Y:   8168 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   5003 | Y:   4560 | Scan Time:    257 | Contact Count:    5 
+E: 000003.553073 14 0d 51 2b 1b e8 1f 41 8b 13 d0 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8101 | Y:   7214 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8020 | Y:   4968 | Scan Time:    257 | Contact Count:    0 
+E: 000003.553845 14 0d 31 a5 1f 2e 1c 21 54 1f 68 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8618 | Y:   6415 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.555052 14 0d 11 aa 21 0f 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   6950 | Y:   8167 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   5019 | Y:   4600 | Scan Time:    257 | Contact Count:    5 
+E: 000003.574072 14 0d 51 26 1b e7 1f 41 9b 13 f8 11 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8098 | Y:   7214 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8005 | Y:   4979 | Scan Time:    257 | Contact Count:    0 
+E: 000003.574874 14 0d 31 a2 1f 2e 1c 21 45 1f 73 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8615 | Y:   6415 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.576052 14 0d 11 a7 21 0f 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   6944 | Y:   8166 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   5037 | Y:   4642 | Scan Time:    257 | Contact Count:    5 
+E: 000003.594929 14 0d 51 20 1b e6 1f 41 ad 13 22 12 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8096 | Y:   7212 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   8013 | Y:   4974 | Scan Time:    257 | Contact Count:    0 
+E: 000003.596358 14 0d 31 a0 1f 2c 1c 21 4d 1f 6e 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8613 | Y:   6415 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.597167 14 0d 11 a5 21 0f 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   6939 | Y:   8165 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   5054 | Y:   4681 | Scan Time:    257 | Contact Count:    5 
+E: 000003.618007 14 0d 51 1b 1b e5 1f 41 be 13 49 12 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8093 | Y:   7211 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   7998 | Y:   4986 | Scan Time:    257 | Contact Count:    0 
+E: 000003.618900 14 0d 31 9d 1f 2b 1c 21 3e 1f 7a 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8609 | Y:   6414 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.619890 14 0d 11 a1 21 0e 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   6933 | Y:   8164 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   5069 | Y:   4714 | Scan Time:    257 | Contact Count:    5 
+E: 000003.639040 14 0d 51 15 1b e4 1f 41 cd 13 6a 12 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8091 | Y:   7209 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   7981 | Y:   5000 | Scan Time:    257 | Contact Count:    0 
+E: 000003.639762 14 0d 31 9b 1f 29 1c 21 2d 1f 88 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8605 | Y:   6412 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.641024 14 0d 11 9d 21 0c 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   6930 | Y:   8161 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   5080 | Y:   4740 | Scan Time:    257 | Contact Count:    5 
+E: 000003.659969 14 0d 51 12 1b e1 1f 41 d8 13 84 12 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8089 | Y:   7207 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   7963 | Y:   5017 | Scan Time:    257 | Contact Count:    0 
+E: 000003.660920 14 0d 31 99 1f 27 1c 21 1b 1f 99 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8600 | Y:   6411 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.661913 14 0d 11 98 21 0b 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   6926 | Y:   8157 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   5088 | Y:   4757 | Scan Time:    257 | Contact Count:    5 
+E: 000003.681056 14 0d 51 0e 1b dd 1f 41 e0 13 95 12 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8085 | Y:   7205 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   7941 | Y:   5040 | Scan Time:    257 | Contact Count:    0 
+E: 000003.681855 14 0d 31 95 1f 25 1c 21 05 1f b0 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8595 | Y:   6409 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.683091 14 0d 11 93 21 09 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   5 | X:   6921 | Y:   8153 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   5093 | Y:   4767 | Scan Time:    257 | Contact Count:    5 
+E: 000003.701922 14 0d 51 09 1b d9 1f 41 e5 13 9f 12 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8082 | Y:   7205 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   7896 | Y:   5083 | Scan Time:    257 | Contact Count:    0 
+E: 000003.702843 14 0d 31 92 1f 25 1c 21 d8 1e db 13 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8589 | Y:   6407 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.703851 14 0d 11 8d 21 07 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 0 | # | Contact Id:   5 | X:   6921 | Y:   8153 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   5098 | Y:   4780 | Scan Time:    257 | Contact Count:    5 
+E: 000003.721931 14 0d 50 09 1b d9 1f 41 ea 13 ac 12 01 01 05
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   3 | X:   8077 | Y:   7204 
+#              | Tip Switch: 1 | # | Contact Id:   2 | X:   7793 | Y:   5164 | Scan Time:    257 | Contact Count:    0 
+E: 000003.722838 14 0d 31 8d 1f 24 1c 21 71 1e 2c 14 01 01 00
+# ReportID: 13 / Tip Switch: 1 | # | Contact Id:   1 | X:   8583 | Y:   6405 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.723851 14 0d 11 87 21 05 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 0 | # | Contact Id:   5 | X:   6921 | Y:   8153 
+#              | Tip Switch: 1 | # | Contact Id:   4 | X:   5112 | Y:   4807 | Scan Time:    257 | Contact Count:    5 
+E: 000003.739759 14 0d 50 09 1b d9 1f 41 f8 13 c7 12 01 01 05
+# ReportID: 13 / Tip Switch: 0 | # | Contact Id:   3 | X:   8077 | Y:   7204 
+#              | Tip Switch: 0 | # | Contact Id:   2 | X:   7793 | Y:   5164 | Scan Time:    257 | Contact Count:    0 
+E: 000003.740775 14 0d 30 8d 1f 24 1c 20 71 1e 2c 14 01 01 00
+# ReportID: 13 / Tip Switch: 0 | # | Contact Id:   1 | X:   8583 | Y:   6405 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    0 
+E: 000003.741777 14 0d 10 87 21 05 19 00 00 00 00 00 01 01 00
+# ReportID: 13 / Tip Switch: 0 | # | Contact Id:   4 | X:   5112 | Y:   4807 
+#              | Tip Switch: 0 | # | Contact Id:   3 | X:   8077 | Y:   7204 | Scan Time:    257 | Contact Count:    4 
+E: 000003.758901 14 0d 40 f8 13 c7 12 30 8d 1f 24 1c 01 01 04
+# ReportID: 13 / Tip Switch: 0 | # | Contact Id:   2 | X:   7793 | Y:   5164 
+#              | Tip Switch: 0 | # | Contact Id:   1 | X:   8583 | Y:   6405 | Scan Time:    257 | Contact Count:    0 
+E: 000003.759847 14 0d 20 71 1e 2c 14 10 87 21 05 19 01 01 00
+# ReportID: 13 / Tip Switch: 0 | # | Contact Id:   4 | X:   5112 | Y:   4807 
+#              | Tip Switch: 0 | # | Contact Id:   0 | X:      0 | Y:      0 | Scan Time:    257 | Contact Count:    1 
+E: 000003.779945 14 0d 40 f8 13 c7 12 00 00 00 00 00 01 01 01

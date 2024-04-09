@@ -1,0 +1,3 @@
+HIDRawValueMatcherTest : UnitTest {
+    *init{}
+}

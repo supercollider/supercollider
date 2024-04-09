@@ -1,0 +1,3 @@
+HIDUsageTest : UnitTest {
+    *init{}
+}

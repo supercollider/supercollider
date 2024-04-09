@@ -1,0 +1,3 @@
+HIDFuncDeviceProtoMatcherTest : UnitTest {
+    *init{}
+}

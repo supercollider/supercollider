@@ -1,0 +1,3 @@
+HIDDeviceDispatcherTest : UnitTest {
+    *init{}
+}

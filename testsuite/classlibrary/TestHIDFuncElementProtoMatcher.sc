@@ -1,0 +1,3 @@
+HIDFuncElementProtoMatcherTest : UnitTest {
+    *init{}
+}

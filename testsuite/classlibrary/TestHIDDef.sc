@@ -1,0 +1,3 @@
+HIDDefTest : UnitTest {
+    *init{}
+}

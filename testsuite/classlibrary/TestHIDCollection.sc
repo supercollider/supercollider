@@ -1,0 +1,3 @@
+HIDCollectionTest : UnitTest {
+    *init{}
+}
