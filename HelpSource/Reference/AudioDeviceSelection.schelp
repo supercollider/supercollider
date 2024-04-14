@@ -92,7 +92,9 @@ teletype::SC_JACK_DEFAULT_OUTPUTS::. These allow SuperCollider to detect system 
 
 These variables are written as a string that specifies another jack client or a comma-separated list of jack ports formatted as a string.
 
-If these are not set, the server will not connect to any JACK ports automatically. You may connect them manually, or by issuing teletype::jack_connect:: / teletype::jack_disconnect:: shell commands (link::Classes/String#-unixCmd::). Note that the SuperCollider language client sets these environment variables to "system" by default, so that a server booted from SC language emphasis::will:: connect by default. However, a server booted from the command line will not auto-connect, unless you set the variables in the same terminal session or shell profile (below).
+The SuperCollider language client sets these environment variables to "system" by default, so that a server booted from SC language will connect by default.
+
+If these are not set, the server will not connect to any JACK ports automatically. You may connect them manually, or by issuing teletype::jack_connect:: / teletype::jack_disconnect:: shell commands (link::Classes/String#-unixCmd::). A server booted from the command line will thus not auto-connect, unless you set the variables in the same terminal session or shell profile (below).
 
 This is the recommended way of changing the Jack environment variables for SuperCollider from within a SuperCollider script:
 
