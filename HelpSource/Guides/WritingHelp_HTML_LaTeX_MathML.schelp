@@ -462,7 +462,7 @@ table::
 ::
 ::
 
-## strong::LaTeX:: via MathJax script (link::https://www.mathjax.org/#gettingstarted::. The script is automatically included by SC when it renders the SC-Doc to HTML, so you don't need to include it again.)
+## strong::LaTeX:: via link::https://www.mathjax.org/#gettingstarted#MathJax script:: The script is automatically included by SC when it renders the SC-Doc to HTML, so you don't need to include it again.
 
 code::
 \(2^3\)
@@ -593,7 +593,7 @@ teletype::
 </math>
 ::
 
-## strong::LaTeX:: via MathJax script (link::https://www.mathjax.org/#gettingstarted::. The script is automatically included by SC when it renders the SC-Doc to HTML, so you don't need to include it again.)
+## strong::LaTeX:: via link::https://www.mathjax.org/#gettingstarted#MathJax script::. The script is automatically included by SC when it renders the SC-Doc to HTML, so you don't need to include it again.
 
 code::
 \(\log_2 2\)
@@ -638,7 +638,7 @@ table::
 ::
 ::
 
-In paragraphs, you can use fractions such as 1<sup>1</sup>/<sub>2</sub> HTML’s superscript and subscript. It can also be used in teletype text. teletype::<sup>1</sup>/<sub>4</sub> : <sup>1</sup>/<sub>2</sub> : 1 : 2 : 4::. You can also use more mathematically styled fractions such as \(1\frac{1}{2}\) (frac), \(1\tfrac{1}{2}\) (tfrac), \(1\dfrac{1}{2}\) (dfrac) using LaTex syntax via MathJax script (link::https://www.mathjax.org/#gettingstarted::. The script is automatically included by SC when it renders the SC-Doc to HTML, so you don't need to include it again.). However, it cannot be used in teletype text: teletype::\(\frac{1}{4}\) : \(\frac{1}{2}\) : \(1\) : \(2\) : \(4\)::. To use the fraction in the same style of LaTeX in teletype text, MathML should be used:
+In paragraphs, you can use fractions such as 1<sup>1</sup>/<sub>2</sub> HTML’s superscript and subscript. It can also be used in teletype text. teletype::<sup>1</sup>/<sub>4</sub> : <sup>1</sup>/<sub>2</sub> : 1 : 2 : 4::. You can also use more mathematically styled fractions such as \(1\frac{1}{2}\) (frac), \(1\tfrac{1}{2}\) (tfrac), \(1\dfrac{1}{2}\) (dfrac) using LaTex syntax via link::https://www.mathjax.org/#gettingstarted#MathJax script::. The script is automatically included by SC when it renders the SC-Doc to HTML, so you don't need to include it again. However, it cannot be used in teletype text: teletype::\(\frac{1}{4}\) : \(\frac{1}{2}\) : \(1\) : \(2\) : \(4\)::. To use the fraction in the same style of LaTeX in teletype text, MathML should be used:
 
 code::
 <math>
@@ -680,7 +680,7 @@ subsection:: :sub:1.2.4. Equations
 
 
 
-The following code represents a mathematical equation using LaTeX Synthex via MathJax script (link::https://www.mathjax.org/#gettingstarted::. The script is automatically included by SC when it renders the SC-Doc to HTML, so you don't need to include it again.). This cannot be inlined.
+The following code represents a mathematical equation using LaTeX Synthex via link::https://www.mathjax.org/#gettingstarted#MathJax script::. The script is automatically included by SC when it renders the SC-Doc to HTML, so you don't need to include it again. This cannot be inlined.
 
 code::
 \[x = {-b \pm \sqrt{b^2-4ac} \over 2a}.\]
@@ -695,6 +695,10 @@ When \(a \ne 0\), there are two solutions to \(ax^2 + bx + c = 0\) and they are
 (cited from: link::https://jsbin.com/?html,output::
 )
 ::
+
+
+
+
 
 
 
