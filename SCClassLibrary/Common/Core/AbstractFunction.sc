@@ -283,8 +283,8 @@ BinaryOpFunction : AbstractFunction {
 	valueArrayEnvir { arg ... args;
 		^a.valueArrayEnvir(args).perform(selector, b.valueArrayEnvir(args), adverb)
 	}
-	functionPerformList { |selector, arglist|
-	    ^this.performList(selector, arglist)
+	functionPerformList { arg selector, arglist;
+		^this.performList(selector, arglist)
 	}
 	functionPerformWith {|selector, argumentsArray, keywordArgumentPairs|
 		^this.performWith(selector, argumentsArray, keywordArgumentPairs)
@@ -315,8 +315,8 @@ NAryOpFunction : AbstractFunction {
 	valueArrayEnvir { arg ... args;
 		^a.valueArrayEnvir(args).performList(selector, arglist.collect(_.valueArrayEnvir(args)))
 	}
-	functionPerformList { |selector, arglist|
-	    ^this.performList(selector, arglist)
+	functionPerformList { arg selector, arglist;
+		^this.performList(selector, arglist)
 	}
 	functionPerformWith {|selector, argumentsArray, keywordArgumentPairs|
 		^this.performWith(selector, argumentsArray, keywordArgumentPairs)

@@ -305,7 +305,7 @@ ScaleAD : Scale {
 	var <>descScale;
 	*new { | degrees, pitchesPerOctave, descDegrees, tuning, name = "Unknown Scale" |
 		^super.new(degrees, pitchesPerOctave, tuning, name)
-		.descScale_(Scale(descDegrees, pitchesPerOctave, tuning, name ++ "desc"))
+			.descScale_(Scale(descDegrees, pitchesPerOctave, tuning, name ++ "desc"))
 		;
 	}
 	asStream { ^ScaleStream(this, 0) }
@@ -564,7 +564,7 @@ ScaleStream {
 				8.94, 10.04, 10.9], 2, "Meantone, 1/6 Pythagorean Comma"),
 			\kirnberger -> Tuning.new([1, 256/243, (5.sqrt)/2, 32/27, 5/4, 4/3,
 				45/32, 5 ** 0.25, 128/81, (5 ** 0.75)/2, 16/9, 15/8].ratiomidi, 2,
-			"Kirnberger III"),
+				"Kirnberger III"),
 			\werckmeister -> Tuning.new(#[0, 0.92, 1.93, 2.94, 3.915, 4.98, 5.9, 6.965,
 				7.93, 8.895, 9.96, 10.935], 2, "Werckmeister III"),
 			\vallotti -> Tuning.new(#[0, 0.94135, 1.9609, 2.98045, 3.92180, 5.01955,
@@ -598,13 +598,13 @@ ScaleStream {
 				8/7, 7/6, 32/27, 6/5, 11/9, 5/4, 14/11, 9/7, 21/16, 4/3, 27/20, 11/8,
 				7/5, 10/7, 16/11, 40/27, 3/2, 32/21, 14/9, 11/7, 8/5, 18/11, 5/3, 27/16,
 				12/7, 7/4, 16/9, 9/5, 20/11, 11/6, 15/8, 40/21, 64/33, 160/81].ratiomidi, 2,
-			"Harry Partch"),
+				"Harry Partch"),
 			\catler -> Tuning.new([1, 33/32, 16/15, 9/8, 8/7, 7/6, 6/5, 128/105, 16/13,
 				5/4, 21/16, 4/3, 11/8, 45/32, 16/11, 3/2, 8/5, 13/8, 5/3, 27/16, 7/4,
 				16/9, 24/13, 15/8].ratiomidi, 2, "Jon Catler"),
 			\chalmers -> Tuning.new([1, 21/20, 16/15, 9/8, 7/6, 6/5, 5/4, 21/16, 4/3, 7/5,
 				35/24, 3/2, 63/40, 8/5, 5/3, 7/4, 9/5, 28/15, 63/32].ratiomidi, 2,
-			"John Chalmers"),
+				"John Chalmers"),
 			\harrison -> Tuning.new([1, 16/15, 10/9, 8/7, 7/6, 6/5, 5/4, 4/3, 17/12, 3/2,
 				8/5, 5/3, 12/7, 7/4, 9/5, 15/8].ratiomidi, 2, "Lou Harrison"),
 			\sruti -> Tuning.new([1, 256/243, 16/15, 10/9, 9/8, 32/27, 6/5, 5/4, 81/64,
