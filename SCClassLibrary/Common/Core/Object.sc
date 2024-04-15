@@ -186,8 +186,8 @@ Object  {
 	valueWith {|argumentsArray, keywordArgumentPairs|
 		^this.valueArray(
 			this.class
-                .findRespondingMethodFor(\value)
-                .makePerformableArray(argumentsArray, keywordArgumentPairs)
+			    .findRespondingMethodFor(\value)
+			    .makePerformableArray(argumentsArray, keywordArgumentPairs)
 		)
 	}
 

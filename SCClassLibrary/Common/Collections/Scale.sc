@@ -19,10 +19,10 @@ Scale {
 	}
 
 	*doesNotUnderstand { |selector, args|
-	    var scale = this.newFromKey(selector, args);
-        if(scale.notNil) { ^scale };
-        ^super.doesNotUnderstand(selector, args)
-    }
+		var scale = this.newFromKey(selector, args);
+		if(scale.notNil) { ^scale };
+		^super.doesNotUnderstand(selector, args)
+	}
 
 	*doesNotUnderstandWithKeys {|selector, argumentsArray, keywordArgumentPairs|
 		^Scale.performWith(\newFromKey, [selector] ++ argumentsArray, keywordArgumentPairs)

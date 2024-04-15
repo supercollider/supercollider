@@ -52,7 +52,7 @@ code::
 ::
 
 method::argumentNamesForCall
-Returns the argument names in as needed for calling the function as an link::Classes/Array::.
+Returns the argument names as needed for calling the function as an link::Classes/Array::.
 This will remove any internal arguments.
 
 method::prototypeFrame
