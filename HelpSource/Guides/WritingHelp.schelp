@@ -1,7 +1,7 @@
 title:: Writing Help
 summary:: Get started with writing help
 categories:: HelpSystem
-related:: Reference/SCDocSyntax, Classes/SCDoc
+related:: Reference/SCDocSyntax, Classes/SCDoc, Guides/WritingHelp_HTML_LaTeX_MathML
 
 section:: Writing new help
 The simplest way is to look at an existing help file or class document, and read this document and link::Reference/SCDocSyntax::
