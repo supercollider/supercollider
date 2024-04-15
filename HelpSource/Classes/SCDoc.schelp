@@ -1,7 +1,7 @@
 class:: SCDoc
 summary:: Help system main class
 categories:: HelpSystem
-related:: Reference/SCDocSyntax, Guides/WritingHelp, Classes/SCDocHTMLRenderer, Classes/SCDocNode, Classes/SCDocEntry
+related:: Reference/SCDocSyntax, Guides/WritingHelp, Classes/SCDocHTMLRenderer, Classes/SCDocNode, Classes/SCDocEntry, Guides/WritingHelp_HTML_LaTeX_MathML
 
 DESCRIPTION::
 SCDoc manages the SuperCollider documentation system.
