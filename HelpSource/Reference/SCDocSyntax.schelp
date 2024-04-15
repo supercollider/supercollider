@@ -1,7 +1,7 @@
 title:: SCDoc Syntax
 summary:: SCDoc markup language syntax
 categories:: HelpSystem
-related:: Guides/WritingHelp, Classes/SCDoc, Classes/SCDocHTMLRenderer
+related:: Guides/WritingHelp, Classes/SCDoc, Classes/SCDocHTMLRenderer, Guides/WritingHelp_HTML_LaTeX_MathML
 
 section:: Introduction
 
@@ -9,7 +9,7 @@ This document specifies the syntax and link::#Grammar:: of the link::Classes/SCD
 code::SCDoc Markup:: is used in SuperCollider mainly for helpfiles.
 It is a syntax that features semantic a semantic level specific to the requirements of SuperCollider.
 
-note::A guide to writing help can be found at link::Guides/WritingHelp::.::
+note::A guide to writing help can be found at link::Guides/WritingHelp::. A guide to using some HTML, LaTeX and MathML syntax can be found at link::Guides/WritingHelp_HTML_LaTeX_MathML::.::
 
 section:: Specification
 
