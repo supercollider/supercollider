@@ -366,7 +366,7 @@ Object  {
 		DoesNotUnderstandError(this, selector, args).throw;
 	}
 	doesNotUnderstandWithKeys {|selector, argumentsArray, keywordArgumentPairs|
-		DoesNotUnderstandWithKeysError(this, selector, argumentsArray, keywordArgumentPairs).throw;
+		DoesNotUnderstandError(this, selector, argumentsArray, keywordArgumentPairs).throw;
 	}
 	shouldNotImplement { arg method;
 		ShouldNotImplementError(this, method, this.class).throw;

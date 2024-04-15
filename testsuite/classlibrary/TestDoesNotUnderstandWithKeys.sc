@@ -8,7 +8,7 @@ TestDoesNotUnderstandWithKeys : UnitTest {
 	test_object_throws {
 		this.assertException(
 			{Object().forSomeMethodThatObjectDoesNotUnderstand(1, 2, argA: 3)},
-			DoesNotUnderstandWithKeysError
+			DoesNotUnderstandError
 		)
 	}
 

@@ -147,56 +147,11 @@ ShouldNotImplementError : MethodError {
 }
 
 DoesNotUnderstandError : MethodError {
-	var <>selector, <>args, <suggestedCorrection, suggestion = "";
-	*new { arg receiver, selector, args;
-		^super.new(nil, receiver).selector_(selector).args_(args).init
-	}
-
-	init {
-		var methods, methodNames, editDistances, minIndex, lowerCaseSelector;
-
-		if(receiver.notNil) {
-			methods = receiver.class.superclasses.add(receiver.class).collect(_.methods).reduce('++');
-			methodNames = methods.collect { |x| x.name.asString.toLower };
-			// we compare lower-case versions to prioritize capitalization mistakes
-			lowerCaseSelector = selector.asString.toLower;
-			editDistances = methodNames.collect(_.editDistance(lowerCaseSelector));
-			minIndex = editDistances.minIndex;
-			// Edit distance of 3 chosen arbitrarily; also, filter out completely dissimilar matches
-			// to avoid unhelpful suggestions.
-			if(editDistances[minIndex] <= 3 and: { methodNames[minIndex].similarity(lowerCaseSelector) > 0 }) {
-				suggestedCorrection = methods[minIndex];
-				suggestion = "\nPerhaps you misspelled '%', or meant to call '%' on another receiver?"
-				.format(suggestedCorrection.name, selector);
-			}
-		}
-	}
-	errorString {
-		^"ERROR: Message '" ++ selector ++ "' not understood." ++ suggestion
-	}
-	reportError {
-		this.errorString.postln;
-		"RECEIVER:\n".post;
-		receiver.dump;
-		"ARGS:\n".post;
-		args.dumpAll;
-		this.errorPathString.post;
-		if(protectedBacktrace.notNil, { this.postProtectedBacktrace });
-		this.dumpBackTrace;
-		// this.adviceLink.postln;
-		"^^ %\nRECEIVER: %\n\n\n".postf(this.errorString, receiver);
-	}
-	adviceLinkPage {
-		^"%#%".format(this.class.name, selector)
-	}
-}
-
-DoesNotUnderstandWithKeysError : MethodError {
-	var <>selector, <>argumentsArray, <>keywordArgumentPairs, <suggestedCorrection, suggestion = "";
-	*new { arg receiver, selector, argumentsArray, keywordArgumentPairs;
+	var <>selector, <>args, <>keywordArgumentPairs, <suggestedCorrection, suggestion = "";
+	*new { arg receiver, selector, args, keywordArgumentPairs;
 		^super.new(nil, receiver)
 		.selector_(selector)
-		.argumentsArray_(argumentsArray)
+		.args_(args)
 		.keywordArgumentPairs_(keywordArgumentPairs)
 		.init
 	}
@@ -225,12 +180,14 @@ DoesNotUnderstandWithKeysError : MethodError {
 	}
 	reportError {
 		this.errorString.postln;
-		"RECEIVER:\n".post;
+		"RECEIVER:".postln;
 		receiver.dump;
-		"ARGS WITHOUT KEYS:\n".post;
-		argumentsArray.dumpAll;
-		"ARGS WITH KEYS:\n".post;
-		keywordArgumentPairs.dumpAll;
+		"ARGS:".postln;
+		args.dumpAll;
+		keywordArgumentPairs !? {|kw|
+			"KEYWORD ARGUMENTS:".postln;
+			kw.dumpAll;
+		};
 		this.errorPathString.post;
 		if(protectedBacktrace.notNil, { this.postProtectedBacktrace });
 		this.dumpBackTrace;
@@ -241,6 +198,7 @@ DoesNotUnderstandWithKeysError : MethodError {
 		^"%#%".format(this.class.name, selector)
 	}
 }
+
 
 MustBeBooleanError : MethodError {
 	errorString {
