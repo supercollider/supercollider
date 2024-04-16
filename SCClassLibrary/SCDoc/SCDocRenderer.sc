@@ -871,6 +871,10 @@ SCDocHTMLRenderer {
 				stream << "\n<h2><a class='anchor' name='" << this.escapeSpacesInAnchor(node.text)
 				<< "'>" << this.escapeSpecialChars(node.text)
 				.replace("%20", " ")
+				.replace("❪", "<span style='font-size: 0.85em'>❪")
+				.replace("❫", "❫</span>")
+				.replace("❨", "<span style='font-size: 0.85em'>❨")
+				.replace("❩", "❩</span>")
 				.replace("❲", "<span style='font-size: 0.71em'>❲")
 				.replace("❳", "❳</span>")
 				<< "</a></h2>\n";
@@ -887,6 +891,10 @@ SCDocHTMLRenderer {
 					stream << "\n<h4><a class='anchor' name='" << this.escapeSpacesInAnchor(node.text)
 					<< "'>" << this.escapeSpacesInAnchor(node.text)[5..]
 					.replace("%20", " ")
+					.replace("❪", "<span style='font-size: 0.85em'>❪")
+					.replace("❫", "❫</span>")
+					.replace("❨", "<span style='font-size: 0.85em'>❨")
+					.replace("❩", "❩</span>")
 					.replace("❲", "<span style='font-size: 0.71em'>❲")
 					.replace("❳", "❳</span>")
 					<< "</a></h4>\n"
@@ -966,6 +974,10 @@ SCDocHTMLRenderer {
 						stream << "<li class='toc1'><a href='#" << this.escapeSpacesInAnchor(n.text) << "'>"
 						<< this.escapeSpecialChars(n.text)
 						.replace("%20", " ")
+						.replace("❪", "<span style='font-size: 0.85em'>❪")
+						.replace("❫", "❫</span>")
+						.replace("❨", "<span style='font-size: 0.85em'>❨")
+						.replace("❩", "❩</span>")
 						.replace("❲", "<span style='font-size: 0.71em'>❲")
 						.replace("❳", "❳</span>")
 						<< "</a></li>\n";
@@ -976,7 +988,10 @@ SCDocHTMLRenderer {
 							stream << "<li class='toc2'><a href='#" << this.escapeSpacesInAnchor(n.text) << "'>  "
 							<< this.escapeSpacesInAnchor(n.text)[5..]
 							.replace("%20", " ")
-							.replace("%20", " ")
+							.replace("❪", "<span style='font-size: 0.85em'>❪")
+							.replace("❫", "❫</span>")
+							.replace("❨", "<span style='font-size: 0.85em'>❨")
+							.replace("❩", "❩</span>")
 							.replace("❲", "<span style='font-size: 0.71em'>❲")
 							.replace("❳", "❳</span>")
 							<< "</a></li>\n"
