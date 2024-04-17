@@ -715,9 +715,9 @@ code::
 \[x = {-b \pm \sqrt{b^2-4ac} \over 2a}.\]
 
 table::
-## strong::An examlple:: shwoing inlined mathematical expressions and an equation:
+## strong::An examlple:: showing inlined mathematical expressions and an equation:
 When \(a \ne 0\), there are two solutions to \(ax^2 + bx + c = 0\) and they are
-\[x = {-b \pm \sqrt{b^2-4ac} \over 2a}.\]
+\(x = {-b \pm \sqrt{b^2-4ac} \over 2a}.\)
 
 (cited from: link::https://jsbin.com/?html,output::
 )
