@@ -99,7 +99,7 @@ s.boot;
 // allocate an array of Buffers and fill them with different harmonics
 (
 b = Buffer.allocConsecutive(8, s, 4096, 1, { |buf, i|
-	buf.sine1Msg((1..((i+1)*6)).reciprocal) // completion Messages
+	buf.sine1Msg((1 .. ((i + 1) * 6)).reciprocal) // completion messages
 });
 
 a = { VOsc.ar(SinOsc.kr(0.5, 0).range(b.first.bufnum + 0.1, b.last.bufnum - 0.1),
@@ -135,18 +135,18 @@ b = Buffer.read(s, p);
 
 // now play it
 (
-x = SynthDef(\help_Buffer, { arg out = 0, bufnum;
-    Out.ar( out,
+x = SynthDef(\help_Buffer, { |out = 0, bufnum|
+    Out.ar(out,
 	    PlayBuf.ar(1, bufnum, BufRateScale.kr(bufnum))
     )
-}).play(s,[\bufnum, b]);
+}).play(s, [\bufnum, b]);
 )
 x.free; b.free;
 
 // with an action function
 // note that the vars are not immediately up-to-date
 (
-b = Buffer.read(s, p, action: { arg buffer;
+b = Buffer.read(s, p, action: { |buffer|
     ("After update:" + buffer.numFrames).postln;
     x = { PlayBuf.ar(1, buffer, BufRateScale.kr(buffer)) }.play;
 });
@@ -215,18 +215,18 @@ code::
 // with a completion message
 s.boot;
 (
-SynthDef(\help_Buffer,{ arg out=0, bufnum;
-	Out.ar( out,
-		PlayBuf.ar(1,bufnum,BufRateScale.kr(bufnum))
+SynthDef(\help_Buffer, { |out = 0, bufnum|
+	Out.ar(out,
+		PlayBuf.ar(1, bufnum, BufRateScale.kr(bufnum))
 	)
 }).add;
 
 y = Synth.basicNew(\help_Buffer); // not sent yet
 b = Buffer.readNoUpdate(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav",
-	completionMessage: { arg buffer;
+	completionMessage: { |buffer|
 		// synth add its s_new msg to follow
 		// after the buffer read completes
-		y.newMsg(s,[\bufnum, buffer],\addToTail)
+		y.newMsg(s, [\bufnum, buffer], \addToTail)
 	});
 )
 // note vars not accurate
@@ -256,9 +256,9 @@ discussion::
 code::
 s.boot;
 (
-SynthDef(\help_Buffer_cue,{ arg out=0,bufnum;
+SynthDef(\help_Buffer_cue, { |out = 0, bufnum|
 	Out.ar(out,
-		DiskIn.ar( 1, bufnum )
+		DiskIn.ar(1, bufnum)
 	)
 }).add;
 )
@@ -288,23 +288,23 @@ This is accomplished through writing the collection to a SoundFile and loading i
 code::
 s.boot;
 (
-a = FloatArray.fill(44100 * 5.0, {1.0.rand2}); // 5 seconds of noise
+a = FloatArray.fill(44100 * 5.0, { 1.0.rand2 }); // 5 seconds of noise
 b = Buffer.loadCollection(s, a);
 )
 
 // test it
-b.get(20000,{|msg| (msg == a[20000]).postln});
+b.get(20000, { |msg| (msg == a[20000]).postln });
 // play it
 x = { PlayBuf.ar(1, b, BufRateScale.kr(b), loop: 0) * 0.5 }.play;
 b.free; x.free;
 
 // interleave a multi-dimensional array
 (
-l = Signal.sineFill(16384, Array.fill(200, {0}).add(1));
-r = Array.fill(16384, {1.0.rand2});
+l = Signal.sineFill(16384, Array.fill(200, { 0 }).add(1));
+r = Array.fill(16384, { 1.0.rand2 });
 m = [Array.newFrom(l), r]; // a multi-dimensional array
 m = m.lace(32768); // interleave the two collections
-b = Buffer.loadCollection(s, m, 2, {|buf|
+b = Buffer.loadCollection(s, m, 2, { |buf|
 	x = { PlayBuf.ar(2, buf, BufRateScale.kr(buf), loop: 1) * 0.5 }.play;
 });
 )
@@ -329,10 +329,10 @@ This allows for larger collections than setn, below. This is not as safe as link
 code::
 s.boot;
 (
-a = Array.fill(2000000,{ rrand(0.0,1.0) }); // a LARGE collection
-b = Buffer.sendCollection(s, a, 1, 0, {arg buf; "finished".postln;});
+a = Array.fill(2000000, { rrand(0.0, 1.0) }); // a LARGE collection
+b = Buffer.sendCollection(s, a, 1, 0, { |buf| "finished".postln });
 )
-b.get(1999999, {|msg| (msg == a[1999999]).postln});
+b.get(1999999, { |msg| (msg == a[1999999]).postln });
 b.free;
 ::
 
@@ -352,7 +352,7 @@ discussion::
 code::
 s.boot;
 (
-b = Buffer.loadDialog(s, action: { arg buffer;
+b = Buffer.loadDialog(s, action: { |buffer|
 	x = { PlayBuf.ar(buffer.numChannels, buffer, BufRateScale.kr(buffer)) }.play;
 });
 )
@@ -421,7 +421,7 @@ Returns the buffer number of the corresponding server-side buffer. In normal use
 discussion::
 code::
 s.boot;
-b = Buffer.alloc(s,44100 * 8.0,2);
+b = Buffer.alloc(s, 44100 * 8.0, 2);
 b.bufnum.postln;
 b.free;
 ::
@@ -606,7 +606,7 @@ code::
 s.boot;
 b = Buffer.alloc(s, 4, 2);
 b.set(0, 0.2, 1, 0.3, 7, 0.4); // set the values at indices 0, 1, and 7.
-b.getn(0, 8, {|msg| msg.postln});
+b.getn(0, 8, { |msg| msg.postln });
 b.free;
 ::
 
@@ -618,11 +618,11 @@ Note that multichannel buffers interleave their sample data, therefore the actua
 N.B. The maximum number of values that you can set with a single setn message is 1633 when the server is using UDP as its communication protocol. Use link::#-loadCollection:: and link::#-sendCollection:: to set larger ranges of values.
 code::
 s.boot;
-b = Buffer.alloc(s,16);
-b.setn(0, Array.fill(16, { rrand(0,1) }));
-b.getn(0, b.numFrames, {|msg| msg.postln});
+b = Buffer.alloc(s, 16);
+b.setn(0, Array.fill(16, { rrand(0, 1) }));
+b.getn(0, b.numFrames, { |msg| msg.postln });
 b.setn(0, [1, 2, 3], 4, [1, 2, 3]);
-b.getn(0, b.numFrames, {|msg| msg.postln});
+b.getn(0, b.numFrames, { |msg| msg.postln });
 b.free;
 ::
 
@@ -641,11 +641,11 @@ The number of channels and frames will have been determined when the buffer was 
 code::
 s.boot;
 (
-v = Signal.sineFill(128, 1.0/[1,2,3,4,5,6]);
+v = Signal.sineFill(128, 1.0 / [1, 2, 3, 4, 5, 6]);
 b = Buffer.alloc(s, 128);
 )
 (
-b.loadCollection(v, action: {|buf|
+b.loadCollection(v, action: { |buf|
 	x = { PlayBuf.ar(buf.numChannels, buf, BufRateScale.kr(buf), loop: 1)
 		* 0.2 }.play;
 });
@@ -654,14 +654,14 @@ x.free; b.free;
 
 // interleave a multi-dimensional array
 (
-l = Signal.sineFill(16384, Array.fill(200, {0}).add(1));
-r = Array.fill(16384, {1.0.rand2});
+l = Signal.sineFill(16384, Array.fill(200, { 0 }).add(1));
+r = Array.fill(16384, { 1.0.rand2 });
 m = [Array.newFrom(l), r]; // a multi-dimensional array
 m = m.lace(32768); // interleave the two collections
 b = Buffer.alloc(s, 16384, 2);
 )
 (
-b.loadCollection(m, 0, {|buf|
+b.loadCollection(m, 0, { |buf|
 	x = { PlayBuf.ar(2, buf, BufRateScale.kr(buf), loop: 1) * 0.5 }.play;
 });
 )
@@ -684,11 +684,11 @@ This allows for larger collections than setn. This is not as safe as loadCollect
 code::
 s.boot;
 (
-a = Array.fill(2000000,{ rrand(0.0,1.0) });
+a = Array.fill(2000000, { rrand(0.0, 1.0) });
 b = Buffer.alloc(s, 2000000);
 )
-b = b.sendCollection(a, action: {arg buf; "finished".postln;});
-b.get(1999999, {|msg| (msg == a[1999999]).postln});
+b = b.sendCollection(a, action: { |buf| "finished".postln });
+b.get(1999999, { |msg| (msg == a[1999999]).postln });
 b.free;
 ::
 
@@ -697,9 +697,9 @@ Send a message requesting the value in the buffer at index. action is a Function
 discussion::
 code::
 s.boot;
-b = Buffer.alloc(s,16);
+b = Buffer.alloc(s, 16);
 b.setn(0, Array.fill(16, { rrand(0.0, 1.0) }));
-b.get(0, {|msg| msg.postln});
+b.get(0, { |msg| msg.postln });
 b.free;
 ::
 
@@ -722,7 +722,7 @@ code::
 s.boot;
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 // same as Buffer.plot
-b.loadToFloatArray(action: { arg array; a = array; { a.plot }.defer; "done".postln });
+b.loadToFloatArray(action: { |array| { array.plot }.defer; "done".postln });
 b.free;
 ::
 
@@ -744,7 +744,7 @@ code::
 s.boot;
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 // like Buffer.plot
-b.getToFloatArray(wait:0.01,action:{arg array; a = array; { a.plot }.defer; "done".postln });
+b.getToFloatArray(wait: 0.01, action: { |array { array.plot }.defer; "done".postln });
 b.free;
 ::
 
@@ -762,8 +762,7 @@ Note: This method used to be called copy, but this conflicts with the method for
 code::
 s.boot;
 (
-SynthDef(\help_Buffer_copy, {
-	arg out = 0, buf;
+SynthDef(\help_Buffer_copy, { |out = 0, buf|
 	Line.ar(0, 0, dur: BufDur.kr(buf), doneAction: Done.freeSelf);
 	Out.ar(out, PlayBuf.ar(1, buf));
 }).add;
@@ -861,8 +860,8 @@ discussion::
 code::
 s.boot;
 b = Buffer.readNoUpdate(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
-b.numFrames; // incorrect, shows nil
-b.updateInfo({|buf| buf.numFrames.postln; }); // now it's right
+b.numFrames; // shows nil
+b.updateInfo({ |buf| buf.numFrames.postln }); // now it's updated
 b.free;
 ::
 
@@ -959,12 +958,12 @@ In previous versions, offsetting (to ensure the center value is zero) was perfor
 ::
 code::
 s.boot;
-b = Buffer.alloc(s, 512, 1, {arg buf; buf.chebyMsg([1,0,1,1,0,1])});
+b = Buffer.alloc(s, 512, 1, { |buf| buf.chebyMsg([1, 0, 1, 1, 0, 1]) });
 (
 x = {
 	Shaper.ar(
 		b,
-		SinOsc.ar(300, 0, Line.kr(0,1,6)),
+		SinOsc.ar(300, 0, Line.kr(0, 1, 6)),
 		0.5
 	)
 }.play;
