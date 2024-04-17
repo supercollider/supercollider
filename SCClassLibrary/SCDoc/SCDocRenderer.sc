@@ -48,7 +48,33 @@ SCDocHTMLRenderer {
 		^x;
 	}
 	*escapeSpacesInAnchor { |str|
-		^str.replace(" ", "%20")
+		^str
+		.replace(" ", "%20")
+		//.replace(" ", "%E2%80%82") // does not work if section and subsection contain non-Roman characters.
+		.replace("❪", /*"%E2%9D%AA"*/ "_y(y_")
+		.replace("❫", /*"%E2%9D%AB"*/ "_y)y_")
+		.replace("❨", /*"%E2%9D%A8"*/ "_s(s_")
+		.replace("❩", /*"%E2%9D%A9"*/ "_s)s_")
+		.replace("❲", /*"%E2%9D%B2"*/ "_o(o_")
+		.replace("❳", /*"%E2%9D%B3"*/ "_o)o_")
+	}
+	*parenthesisForSmallFont { |str|
+		str = str
+		.replace("%20", " ")
+		//.replace("%E2%80%82", " ") // does not work if section and subsection contain non-Roman characters.
+		.replace(/*"%E2%9D%AA"*/"_y(y_", "❪")
+		.replace(/*"%E2%9D%AB"*/"_y)y_", "❫")
+		.replace(/*"%E2%9D%A8"*/"_s(s_", "❨")
+		.replace(/*"%E2%9D%A9"*/"_s)s_", "❩")
+		.replace(/*"%E2%9D%B2"*/"_o(o_", "❲")
+		.replace(/*"%E2%9D%B3"*/"_o)o_", "❳")
+		.replace("❪", "<span style='font-size: 0.85em'>❪")
+		.replace("❫", "❫</span>")
+		.replace("❨", "<span style='font-size: 0.85em'>❨")
+		.replace("❩", "❩</span>")
+		.replace("❲", "<span style='font-size: 0.71em'>❲")
+		.replace("❳", "❳</span>");
+		^str
 	}
 
 	// Find the target (what goes after href=) for a link that stays inside the hlp system
@@ -250,8 +276,15 @@ SCDocHTMLRenderer {
 		// << "<script src='" << baseDir << "/frontend.js' type='text/javascript'></script>\n" //does not exist
 		// QWebChannel access
 		// << "<script src='qrc:///qtwebchannel/qwebchannel.js' type='text/javascript'></script>\n" // does not exist
-		<< "<script src='https://polyfill.io/v3/polyfill.min.js?features=es6'></script>\n"
-		<< "<script id='MathJax-script' async src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js'></script>\n"
+
+		// MathJax |--->
+		// << "<script src='https://polyfill.io/v3/polyfill.min.js?features=es6'></script>\n" // online access
+		<< "<script src='" << baseDir << "/lib/polyfill.min.js?features=es6'></script>\n" // local access of the source above
+		// << "<script id='MathJax-script' async src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js'></script>\n" // online access
+		<< "<script src='" << baseDir << "/lib/node_modules/mathjax-full/es5/tex-mml-chtml.js' id='MathJax-script' async></script>" // local access of the source above
+		//<< "<script src='" << baseDir << "/node_modules/mathjax-full/es5/tex-chtml-full-speech.js' id='MathJax-script' async></script>" // local access of tex-chtml-full-speech
+		// <---| MathJax
+
 		<< "</head>\n"
 		<< "<body onload='fixTOC()'>\n";
 
@@ -555,13 +588,7 @@ SCDocHTMLRenderer {
 			\NL, { }, // these shouldn't be here..
 			// Plain text and modal tags
 			\TEXT, {
-				stream << this.escapeSpecialChars(node.text)
-			.replace("❪", "<span style='font-size: 0.85em'>❪")
-			.replace("❫", "❫</span>")
-			.replace("❨", "<span style='font-size: 0.85em'>❨")
-			.replace("❩", "❩</span>")
-			.replace("❲", "<span style='font-size: 0.71em'>❲")
-			.replace("❳", "❳</span>");
+				stream << SCDocHTMLRenderer.parenthesisForSmallFont(this.escapeSpecialChars(node.text));
 			},
 			\LINK, {
 				stream << this.htmlForLink(node.text);
@@ -578,55 +605,27 @@ SCDocHTMLRenderer {
 			},
 			\EMPHASIS, {
 				stream << "<em>"
-				<< this.escapeSpecialChars(node.text)
-				.replace("❪", "<span style='font-size: 0.85em'>❪")
-				.replace("❫", "❫</span>")
-				.replace("❨", "<span style='font-size: 0.85em'>❨")
-				.replace("❩", "❩</span>")
-				.replace("❲", "<span style='font-size: 0.71em'>❲")
-				.replace("❳", "❳</span>")
+				<< SCDocHTMLRenderer.parenthesisForSmallFont(this.escapeSpecialChars(node.text))
 				<< "</em>";
 			},
 			\TELETYPEBLOCK, {
-				stream << "\n<pre>" << this.escapeSpecialChars(node.text)
-				.replace("❪", "<span style='font-size: 0.85em'>❪")
-				.replace("❫", "❫</span>")
-				.replace("❨", "<span style='font-size: 0.85em'>❨")
-				.replace("❩", "❩</span>")
-				.replace("❲", "<span style='font-size: 0.71em'>❲")
-				.replace("❳", "❳</span>")
+				stream << "\n<pre>"
+				<< SCDocHTMLRenderer.parenthesisForSmallFont(this.escapeSpecialChars(node.text))
 				<< "</pre>\n";
 			},
 			\TELETYPE, {
-				stream << "<code>" << this.escapeSpecialChars(node.text)
-				.replace("❪", "<span style='font-size: 0.85em'>❪")
-				.replace("❫", "❫</span>")
-				.replace("❨", "<span style='font-size: 0.85em'>❨")
-				.replace("❩", "❩</span>")
-				.replace("❲", "<span style='font-size: 0.71em'>❲")
-				.replace("❳", "❳</span>")
+				stream << "<code>"
+				<< SCDocHTMLRenderer.parenthesisForSmallFont(this.escapeSpecialChars(node.text))
 				<< "</code>";
 			},
 			\STRONG, {
 				stream << "<strong>"
-				<< this.escapeSpecialChars(node.text)
-				.replace("❪", "<span style='font-size: 0.85em'>❪")
-				.replace("❫", "❫</span>")
-				.replace("❨", "<span style='font-size: 0.85em'>❨")
-				.replace("❩", "❩</span>")
-				.replace("❲", "<span style='font-size: 0.71em'>❲")
-				.replace("❳", "❳</span>")
+				<< SCDocHTMLRenderer.parenthesisForSmallFont(this.escapeSpecialChars(node.text))
 				<< "</strong>";
 			},
 			\SOFT, {
 				stream << "<span class='soft'>"
-				<< this.escapeSpecialChars(node.text)
-				.replace("❪", "<span style='font-size: 0.85em'>❪")
-				.replace("❫", "❫</span>")
-				.replace("❨", "<span style='font-size: 0.85em'>❨")
-				.replace("❩", "❩</span>")
-				.replace("❲", "<span style='font-size: 0.71em'>❲")
-				.replace("❳", "❳</span>")
+				<< SCDocHTMLRenderer.parenthesisForSmallFont(this.escapeSpecialChars(node.text))
 				<< "</span>";
 			},
 			\ANCHOR, {
@@ -648,13 +647,7 @@ SCDocHTMLRenderer {
 				};
 				f[1] !? {
 					stream << "<br><b>"
-					<< f[1]
-					.replace("❪", "<span style='font-size: 0.85em'>❪")
-					.replace("❫", "❫</span>")
-					.replace("❨", "<span style='font-size: 0.85em'>❨")
-					.replace("❩", "❩</span>")
-					.replace("❲", "<span style='font-size: 0.71em'>❲")
-					.replace("❳", "❳</span>")
+					<< SCDocHTMLRenderer.parenthesisForSmallFont(f[1])
 					<< "</b>"
 				}; // ugly..
 				stream << "</div>\n";
@@ -869,14 +862,8 @@ SCDocHTMLRenderer {
 			},
 			\SECTION, {
 				stream << "\n<h2><a class='anchor' name='" << this.escapeSpacesInAnchor(node.text)
-				<< "'>" << this.escapeSpecialChars(node.text)
-				.replace("%20", " ")
-				.replace("❪", "<span style='font-size: 0.85em'>❪")
-				.replace("❫", "❫</span>")
-				.replace("❨", "<span style='font-size: 0.85em'>❨")
-				.replace("❩", "❩</span>")
-				.replace("❲", "<span style='font-size: 0.71em'>❲")
-				.replace("❳", "❳</span>")
+				<< "'>"
+				<< SCDocHTMLRenderer.parenthesisForSmallFont(this.escapeSpecialChars(node.text))
 				<< "</a></h2>\n";
 				if(node.makeDiv.isNil) {
 					this.renderChildren(stream, node);
@@ -889,22 +876,13 @@ SCDocHTMLRenderer {
 			\SUBSECTION, {
 				if(this.escapeSpacesInAnchor(node.text)[0..4] == ":sub:") {
 					stream << "\n<h4><a class='anchor' name='" << this.escapeSpacesInAnchor(node.text)
-					<< "'>" << this.escapeSpacesInAnchor(node.text)[5..]
-					.replace("%20", " ")
-					.replace("❪", "<span style='font-size: 0.85em'>❪")
-					.replace("❫", "❫</span>")
-					.replace("❨", "<span style='font-size: 0.85em'>❨")
-					.replace("❩", "❩</span>")
-					.replace("❲", "<span style='font-size: 0.71em'>❲")
-					.replace("❳", "❳</span>")
+					<< "'>"
+					<< SCDocHTMLRenderer.parenthesisForSmallFont(this.escapeSpacesInAnchor(node.text)[5..])
 					<< "</a></h4>\n"
 				} {
 					stream << "\n<h3><a class='anchor' name='" << this.escapeSpacesInAnchor(node.text)
-					<< "'>" << this.escapeSpacesInAnchor(node.text)
-					.replace("%20", " ")
-					.replace("%20", " ")
-					.replace("❲", "<span style='font-size: 0.71em'>❲")
-					.replace("❳", "❳</span>")
+					<< "'>"
+					<< SCDocHTMLRenderer.parenthesisForSmallFont(this.escapeSpacesInAnchor(node.text))
 					<< "</a></h3>\n"
 				};
 				if(node.makeDiv.isNil) {
@@ -972,35 +950,18 @@ SCDocHTMLRenderer {
 
 					\SECTION, {
 						stream << "<li class='toc1'><a href='#" << this.escapeSpacesInAnchor(n.text) << "'>"
-						<< this.escapeSpecialChars(n.text)
-						.replace("%20", " ")
-						.replace("❪", "<span style='font-size: 0.85em'>❪")
-						.replace("❫", "❫</span>")
-						.replace("❨", "<span style='font-size: 0.85em'>❨")
-						.replace("❩", "❩</span>")
-						.replace("❲", "<span style='font-size: 0.71em'>❲")
-						.replace("❳", "❳</span>")
+						<< SCDocHTMLRenderer.parenthesisForSmallFont(this.escapeSpecialChars(n.text))
 						<< "</a></li>\n";
 						this.renderTOC(stream, n);
 					},
 					\SUBSECTION, {
 						if(this.escapeSpacesInAnchor(n.text)[0..4] == ":sub:") {
 							stream << "<li class='toc2'><a href='#" << this.escapeSpacesInAnchor(n.text) << "'>  "
-							<< this.escapeSpacesInAnchor(n.text)[5..]
-							.replace("%20", " ")
-							.replace("❪", "<span style='font-size: 0.85em'>❪")
-							.replace("❫", "❫</span>")
-							.replace("❨", "<span style='font-size: 0.85em'>❨")
-							.replace("❩", "❩</span>")
-							.replace("❲", "<span style='font-size: 0.71em'>❲")
-							.replace("❳", "❳</span>")
+							<< SCDocHTMLRenderer.parenthesisForSmallFont(this.escapeSpacesInAnchor(n.text)[5..])
 							<< "</a></li>\n"
 						} {
 							stream << "<li class='toc2'><a href='#" << this.escapeSpacesInAnchor(n.text) << "'>"
-							<< this.escapeSpecialChars(n.text)
-							.replace("%20", " ")
-							.replace("❲", "<span style='font-size: 0.71em'>❲")
-							.replace("❳", "❳</span>")
+							<< SCDocHTMLRenderer.parenthesisForSmallFont(this.escapeSpecialChars(n.text))
 							<< "</a></li>\n"
 						};
 						this.renderTOC(stream, n);
