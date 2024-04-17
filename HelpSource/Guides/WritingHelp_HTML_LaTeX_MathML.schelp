@@ -535,53 +535,13 @@ log<sub>2</sub>2 = 1
 <em>log<sub>2</sub></em>2 = 1
 ::
 
-table::
-##strong::Examples:::
-table::
-##Amplitude and dB FS:
-table::
-##20 <em>log</em><sub>10</sub> (1 / 1) = 0 dB
-||
-code::
-20 * log10(1/1)
-::
-
-##20 <em>log</em><sub>10</sub> (0.1 / 1) = -20 dB
-||
-code::
-20 * log10(1e-1/1)
-::
-
-##20 <em>log</em><sub>10</sub> (0.01 / 1) = -40 dB
-||
-code::
-20 * log10(1e-2/1)
-::
-
-##20 <em>log</em><sub>10</sub> (0.001 / 1) = -60 dB
-||
-code::
-20 * log10(1e-3/1)
-::
-
-##20 <em>log</em><sub>10</sub> (0.0001 / 1) = -80 dB
-||
-code::
-20 * log10(1e-4/1)
-::
-
-##20 <em>log</em><sub>10</sub> (0.00001 / 1) = -100 dB
-||
-code::
-20 * log10(1e-5/1)
-::
-::
-::
-::
 
 Also, the following ways are suppored:
 list::
 ## strong::MathML::
+
+MathML code is typically lengthy, but it can be represented in teletype.
+
 code::
 <math>
   <mrow>
@@ -637,6 +597,59 @@ table::
 ##
 teletype::
 \(\log_2 2\)
+::
+::
+::
+
+
+table::
+##strong::Examples:::
+MathML examples are omitted since they are too long.
+table::
+##Amplitude and dB FS:
+table::
+##using subscript|| using LaTeX|| sclang code
+##20 <em>log</em><sub>10</sub> (1 / 1) = 0 dB
+||\begin{align*} 20 \log_{10} \left( \frac{1}{1} \right) &\quad \quad \ = \quad 0 \text{ dB FS} \end{align*}
+||
+code::
+20 * log10(1/1)
+::
+
+##20 <em>log</em><sub>10</sub> (1 / 1) = 0 dB
+||\begin{align*} 20 \log_{10} \left( \frac{0.1}{1} \right) &\quad \quad \ = \quad -20 \text{ dB FS} \end{align*}
+||
+code::
+20 * log10(1e-1/1)
+::
+
+##20 <em>log</em><sub>10</sub> (0.01 / 1) = -40 dB
+||\begin{align*} 20 \log_{10} \left( \frac{0.01}{1} \right) &\quad \quad = \quad -40 \text{ dB FS} \end{align*}
+||
+code::
+20 * log10(1e-2/1)
+::
+
+##20 <em>log</em><sub>10</sub> (0.001 / 1) = -60 dB
+||\begin{align*} 20 \log_{10} \left( \frac{0.001}{1} \right) &\quad \ = \quad -60 \text{ dB FS} \end{align*}
+||
+code::
+20 * log10(1e-3/1)
+::
+
+##20 <em>log</em><sub>10</sub> (0.0001 / 1) = -80 dB
+||\begin{align*} 20 \log_{10} \left( \frac{0.0001}{1} \right) &\quad = \quad -80 \text{ dB FS} \end{align*}
+||
+code::
+20 * log10(1e-4/1)
+::
+
+##20 <em>log</em><sub>10</sub> (0.00001 / 1) = -100 dB
+||\begin{align*} 20 \log_{10} \left( \frac{0.00001}{1} \right) &\quad = \quad -100 \text{ dB FS} \end{align*}
+||
+code::
+20 * log10(1e-5/1)
+::
 ::
 ::
 ::
