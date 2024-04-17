@@ -20,11 +20,11 @@ subsection:: 1.1. Text
 
 
 
-subsection:: :sub:1.1.1. SUBSUBSECTION ❲soft-coded, but appears in TOC❳
+subsection:: :sub:1.1.1. SUBSUBSECTION ❨soft-coded, but appears in TOC❩
 
 The following code displays a soft-coded subsection, which also appears in the TOC:
 code::
-subsection:: :sub:1.1.1. SUBSUBSECTION ❲soft-coded, but appears in TOC❳
+subsection:: :sub:1.1.1. SUBSUBSECTION ❨soft-coded, but appears in TOC❩
 ::
 image::resources/subsubsection_in_TOC.png::
 
@@ -220,6 +220,7 @@ text
 
 
 
+
 subsection:: :sub:1.1.5. Small Text
 
 
@@ -244,7 +245,31 @@ This is normal text.
 
 
 
-subsection:: :sub:1.1.6. Strong and Emphasis
+subsection:: :sub:1.1.6. Alternative brackets for predefined smaller text
+
+
+The following brackets make themselves and the text within smaller and are useful when the text is written in non-Roman alphabets:
+list::
+## ❪❫: 0.85em. It can be used for year for example.
+## ❨❩: 0.85em. It can be used for explanatory text for example.
+## ❲❳: 0.71em. It can be used for the origin of the word.
+::
+
+table::
+## strong::Examples::
+list::
+## akousmatikós ❲ἀκουσματικός❳
+## reduced listening ❲l'écoute réduite❳
+## Pierre Schaeffer 'Études de bruits' ❪1948❫.
+## SuperCollider ❨a cross-platform environment for audio synthesis and algorithmic composition used by musicians, artists and researchers working with sound❩ can be installed and run on Linux, macOS and Windows, as well as microcomputers such as Raspberry Pi and BeagleBone Black.
+::
+::
+
+
+
+
+
+subsection:: :sub:1.1.7. Strong and Emphasis
 
 
 list::
@@ -379,11 +404,13 @@ teletype::
 
 
 
-subsection:: :sub:1.1.7. Superscript and Subscript
+subsection:: :sub:1.1.8. Superscript and Subscript
 
 
 For superscripts, see link::#:sub:1.2.1. Exponentiation: base and exponent in text body#1.2.1. Exponentiation: base and exponent in text body::.
 For subscripts, see link::#:sub:1.2.2. Logarithm: base and operand in text body#1.2.2. Logarithm: base and operand in text body::.
+
+
 
 
 
