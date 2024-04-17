@@ -664,7 +664,7 @@ HOT void PyrGC::Collect() {
     if (mNumToScan > 0) {
         // post("->Collect  ns %d  ng %d  s %d\n", mNumToScan, mNumGrey, mScans);
         // DumpInfo();
-        mNumToScan += mNumToScan >> 3;
+        mNumToScan += static_cast<uint32>(mNumToScan) >> 3;
 
         // post("->Collect2  ns %d  ng %d  s %d\n", mNumToScan, mNumGrey, mScans);
         // mCurSet = 0;
