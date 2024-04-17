@@ -616,7 +616,7 @@ code::
 20 * log10(1/1)
 ::
 
-##20 <em>log</em><sub>10</sub> (1 / 1) = 0 dB
+##20 <em>log</em><sub>10</sub> (1 / 1) = -20 dB
 ||\begin{align*} 20 \log_{10} \left( \frac{0.1}{1} \right) &\quad \quad \ = \quad -20 \text{ dB FS} \end{align*}
 ||
 code::
