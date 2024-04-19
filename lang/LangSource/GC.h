@@ -126,7 +126,7 @@ public:
     // users should not call anything below.
 
     void Collect();
-    void Collect(int32 inNumToScan);
+    void Collect(uint64 inNumToScan);
     void LazyCollect() {
         if (mUncollectedAllocations > kLazyCollectThreshold)
             Collect();
@@ -197,7 +197,7 @@ private:
     PyrObjectHdr mGrey;
 
     int32 mPartialScanSlot;
-    int32 mNumToScan;
+    uint64 mNumToScan;
     int32 mNumGrey;
 
     int32 mFlips, mCollects, mAllocTotal, mScans, mNumAllocs, mStackScans, mNumPartialScans, mSlotsScanned,

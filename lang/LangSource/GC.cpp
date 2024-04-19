@@ -29,7 +29,6 @@
 
 #define PAUSETIMES 0
 
-
 double pauseBeginTime = 0.;
 double totalPauseTime = 0.;
 double maxPauseTime = 0.;
@@ -44,7 +43,7 @@ int maxPauseNumToScan = 0;
 int maxPauseSlotsScanned = 0;
 int checkStackScans = 0;
 int checkFlips = 0;
-int checkNumToScan = 0;
+uint64 checkNumToScan = 0;
 int checkScans = 0;
 int checkPartialScans = 0;
 int checkSlotsScanned = 0;
@@ -500,9 +499,7 @@ HOT void PyrGC::DoPartialScan(int32 inObjSize) {
     mNumPartialScans++;
     if (remain <= 0) {
         mPartialScanObj = nullptr;
-        mNumToScan -= 4;
-        if (mNumToScan < 0)
-            mNumToScan = 0;
+        mNumToScan -= (mNumToScan <= 4) ? mNumToScan : 4;
         return;
     }
     int32 numtoscan = sc_min(remain, mNumToScan);
@@ -510,13 +507,11 @@ HOT void PyrGC::DoPartialScan(int32 inObjSize) {
 
     if (numtoscan == remain) {
         mPartialScanObj = nullptr;
-        mNumToScan -= numtoscan + 4;
+        mNumToScan -= (mNumToScan <= numtoscan + 4) ? mNumToScan : numtoscan + 4;
     } else {
         mPartialScanSlot += numtoscan;
-        mNumToScan -= numtoscan;
+        mNumToScan -= (mNumToScan <= numtoscan) ? mNumToScan : numtoscan;
     }
-    if (mNumToScan < 0)
-        mNumToScan = 0;
     // post("partial %5d xx %4d %2d %s\n", mScans, mNumToScan, mNumGrey);
     // post("partial %5d %2d %4d %2d %s\n", mScans, i, mNumToScan, mNumGrey, slotRawSymbol(&obj->classptr->name)->name);
 }
@@ -552,13 +547,11 @@ HOT bool PyrGC::ScanOneObj() {
         DoPartialScan(size);
     } else if (size > 0) {
         ScanSlots(obj->slots, size);
-        mNumToScan -= 1L << obj->obj_sizeclass;
-        if (mNumToScan < 0)
-            mNumToScan = 0;
+        const auto sub = 1L << obj->obj_sizeclass;
+        mNumToScan -= (mNumToScan <= sub) ? mNumToScan : sub;
     } else {
-        mNumToScan -= 1L << obj->obj_sizeclass;
-        if (mNumToScan < 0)
-            mNumToScan = 0;
+        const auto sub = 1L << obj->obj_sizeclass;
+        mNumToScan -= (mNumToScan <= sub) ? mNumToScan : sub;
     }
     return true;
 }
@@ -647,7 +640,7 @@ void PyrGC::FullCollection() {
     SweepBigObjects();
 }
 
-void PyrGC::Collect(int32 inNumToScan) {
+void PyrGC::Collect(uint64 inNumToScan) {
     mNumToScan = sc_max(mNumToScan, inNumToScan);
     Collect(); // collect space
 }
@@ -660,43 +653,45 @@ HOT void PyrGC::Collect() {
 #ifdef GC_SANITYCHECK
     SanityCheck();
 #endif
+    if (mNumToScan == 0) {
+        mUncollectedAllocations = 0;
+        return;
+    }
 
-    if (mNumToScan > 0) {
-        // post("->Collect  ns %d  ng %d  s %d\n", mNumToScan, mNumGrey, mScans);
-        // DumpInfo();
-        mNumToScan += static_cast<uint32>(mNumToScan) >> 3;
+    // post("->Collect  ns %d  ng %d  s %d\n", mNumToScan, mNumGrey, mScans);
+    // DumpInfo();
+    mNumToScan += mNumToScan >> 3;
 
-        // post("->Collect2  ns %d  ng %d  s %d\n", mNumToScan, mNumGrey, mScans);
-        // mCurSet = 0;
-        while (mNumToScan > 0) {
-            while (mNumToScan > 0 && (mNumGrey > 0 || mPartialScanObj)) {
-                if (mPartialScanObj) {
-                    DoPartialScan(ScanSize(mPartialScanObj));
-                } else {
-                    if (!ScanOneObj())
-                        break;
-                }
-            }
-            if (mNumGrey == 0 && mPartialScanObj == nullptr) {
-                if (!stackScanned) {
-                    stackScanned = true;
-                    mStackScans++;
-                    ScanStack();
-                    ScanFrames();
-                }
-                if (mNumGrey == 0 && mPartialScanObj == nullptr && stackScanned) {
-                    Flip();
+    // post("->Collect2  ns %d  ng %d  s %d\n", mNumToScan, mNumGrey, mScans);
+    // mCurSet = 0;
+    while (mNumToScan > 0) {
+        while (mNumToScan > 0 && (mNumGrey > 0 || mPartialScanObj)) {
+            if (mPartialScanObj) {
+                DoPartialScan(ScanSize(mPartialScanObj));
+            } else {
+                if (!ScanOneObj())
                     break;
-                }
             }
         }
-        // post("<-Collect  ns %d  ng %d  s %d\n", mNumToScan, mNumGrey, mScans);
-        // DumpInfo();
-        // post("size9:\n");
-        // TraceAnyPathToObjsOfSize(9);
-        // post("greys:\n");
-        // TraceAnyPathToAllGrey();
+        if (mNumGrey == 0 && mPartialScanObj == nullptr) {
+            if (!stackScanned) {
+                stackScanned = true;
+                mStackScans++;
+                ScanStack();
+                ScanFrames();
+            }
+            if (mNumGrey == 0 && mPartialScanObj == nullptr && stackScanned) {
+                Flip();
+                break;
+            }
+        }
     }
+    // post("<-Collect  ns %d  ng %d  s %d\n", mNumToScan, mNumGrey, mScans);
+    // DumpInfo();
+    // post("size9:\n");
+    // TraceAnyPathToObjsOfSize(9);
+    // post("greys:\n");
+    // TraceAnyPathToAllGrey();
     // post("mNumToScan %d\n", mNumToScan);
 
     mUncollectedAllocations = 0;
