@@ -19,17 +19,17 @@ Examples::
 code::
 (
 var a, b;
-a = Pfin(5, Pseq(#[1, 2, 3],inf));
+a = Pfin(5, Pseq(#[1, 2, 3], inf));
 b = a.asStream;
-9.do({ b.next.postln; });
+9.do({ b.next.postln });
 )
 
 
-//Pfin used as a sequence of pitches
+// Pfin used as a sequence of pitches
 
 (
 SynthDef(\help_sinegrain,
-	{ arg out=0, freq=440, sustain=0.05;
+	{ |out = 0, freq = 440, sustain = 0.05|
 		var env;
 		env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction: Done.freeSelf);
 		Out.ar(out, SinOsc.ar(freq, 0, env))

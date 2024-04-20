@@ -102,7 +102,7 @@ r = Rect(0, 0, ServerMeterView.getWidth(2, 2) * 2, ServerMeterView.height)
 w = Window.new("Local | Internal", r);
 
 // make one ServerMeterView to monitor the input/output of each server
-ServerMeterView.new(s, w, Point(0,0), 2, 2);
-ServerMeterView.new(q, w, Point(ServerMeterView.getWidth(2,2), 0), 2, 2);
+ServerMeterView.new(s, w, Point(0, 0), 2, 2);
+ServerMeterView.new(q, w, Point(ServerMeterView.getWidth(2, 2), 0), 2, 2);
 w.front; // show the window
 ::

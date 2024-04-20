@@ -30,7 +30,7 @@ Creates a Dictionary with an initial capacity for strong::n:: key value mappings
 method::newFrom
 Creates a new Dictionary from another collection.
 code::
-d= Dictionary.newFrom([\a, 1, \b, 2, \c, 4]);
+d = Dictionary.newFrom([\a, 1, \b, 2, \c, 4]);
 ::
 argument::aCollection
 any Object that responds to keysValuesDo (usually a List or an Array).
@@ -38,7 +38,7 @@ any Object that responds to keysValuesDo (usually a List or an Array).
 discussion::
 A new Dictionary can also be created from an array of link::Classes/Association::s:
 code::
-Dictionary.with(*[\a->1,\b->2,\c->3])
+Dictionary.with(*[\a->1, \b->2, \c->3])
 ::
 Or from a single Association like:
 code::
@@ -427,8 +427,8 @@ d = (
 )
 
 // draw new values
-d.rout.((z:999));
-d.rout.((z:1, a:0));
+d.rout.((z: 999));
+d.rout.((z: 1, a: 0));
 d.rout.(());
 ::
 
@@ -452,11 +452,11 @@ code::
 \hello === \hello;	// true
 
 // compare: Dictionary will only store one "hello"
-Dictionary["hello" -> 0, "hello" -> 1]; // Dictionary[ (hello -> 1) ]
+Dictionary["hello" -> 0, "hello" -> 1]; // Dictionary[(hello -> 1)]
 // while Event will store both "hello" because they are not identical
-("hello": 0, "hello": 1); // ( "hello": 1, "hello": 0 )
+("hello": 0, "hello": 1); // ("hello": 1, "hello": 0)
 
 // for symbols as keys, Dictionary and Event show the same behaviour:
-Dictionary[\hello -> 1, \hello -> 0]; // Dictionary[ (hello -> 0) ]
-( \hello: 1, \hello: 0 ); // ( 'hello': 0 )
+Dictionary[\hello -> 1, \hello -> 0]; // Dictionary[(hello -> 0)]
+(\hello: 1, \hello: 0); // ('hello': 0)
 ::

@@ -111,7 +111,7 @@ returns:: A Boolean, true if the clock is active or false if the clock has been 
 method::tempo
 Sets or gets the current tempo in beats per second at the current strong::logical time::.
 code::
-t= TempoClock.new;
+t = TempoClock.new;
 t.tempo_(2.0); // equivalent to t.tempo = 2.0;
 t.tempo;
 t.tempo_(72/60) // 72 beats per minute
@@ -170,7 +170,6 @@ fork {
 )
 
 c.beats = 100;
-
 ::
 
 
@@ -205,8 +204,8 @@ method::play
 
 Plays task (a function) at the next beat, where strong::quant:: is 1 by default. Shortcut for link::#-schedAbs::; see link::#-seconds:: and link::#-nextTimeOnGrid:: for further details on time and quant.
 code::
-t= TempoClock.default;
-t.play({arg beats, time, clock; [beats, time, clock].postln});
+t = TempoClock.default;
+t.play({ |beats, time, clock| [beats, time, clock].postln });
 ::
 
 method::playNextBar
@@ -280,7 +279,7 @@ Returns a bar as a float relative to link::#-baseBarBeat::.
 method::bars2beats
 Returns a beat relative to link::#-baseBar::.
 code::
-t= TempoClock.default;
+t = TempoClock.default;
 t.bars2beats(t.bar) // downbeat of the current bar
 ::
 
@@ -290,7 +289,7 @@ Returns the logical time to next beat. strong::quant:: is 1 by default, relative
 method::nextTimeOnGrid
 With default values, returns the next whole beat. strong::quant:: is 1 by default, strong::phase:: is 0. quant is relative to link::#-baseBarBeat::, such that
 code::
-t= TempoClock.default;
+t = TempoClock.default;
 t.nextTimeOnGrid(t.beatsPerBar) == t.nextBar // => true
 ::
 Together strong::quant:: and strong::phase:: are useful for finding the next n beat in a bar, e.g. code::nextTimeOnGrid(4, 2):: will return the next 3rd beat of a bar (of 4 beats), whereas code::nextBar-2:: may return an elapsed beat.
@@ -306,7 +305,7 @@ Returns the current elapsed time. (This method is inherited from link::Classes/C
 method::beats2secs
 Converts absolute strong::beats:: to absolute strong::seconds::, returning the elapsed time of the clock at the given strong::beats::. Only works for times in the current tempo. If the tempo changes any computed time in future will be wrong.
 code::
-t= TempoClock.default;
+t = TempoClock.default;
 t.beats2secs(t.beats) // equivalent to t.seconds
 t.beats2secs(0) // how many seconds after startup did beat 0 occur?
 ::
@@ -320,7 +319,7 @@ code::
 t = TempoClock(1); // create a TempoClock
 
 // schedule an event at next whole beat
-t.schedAbs(t.beats.ceil, { arg beat, sec; [beat, sec].postln; 1 });
+t.schedAbs(t.beats.ceil, { |beat, sec| [beat, sec].postln; 1 });
 
 t.tempo = 2;
 t.tempo = 4;
@@ -329,7 +328,7 @@ t.tempo = 1;
 
 t.clear;
 
-t.schedAbs(t.beats.ceil, { arg beat, sec; [beat, sec].postln; 1 });
+t.schedAbs(t.beats.ceil, { |beat, sec| [beat, sec].postln; 1 });
 
 t.stop;
 ::
@@ -343,8 +342,8 @@ t = TempoClock(1, 0, v);
 u = TempoClock(0.4, 0, v);
 
 // start two functions at beat zero in each clock.
-t.schedAbs(0, { arg beat, sec; [\t, beat, sec].postln; 1 });
-u.schedAbs(0, { arg beat, sec; [\u, beat, sec].postln; 1 });
+t.schedAbs(0, { |beat, sec| [\t, beat, sec].postln; 1 });
+u.schedAbs(0, { |beat, sec| [\u, beat, sec].postln; 1 });
 )
 
 (
@@ -373,8 +372,8 @@ u = TempoClock(1, 0, v);
 
 // start two functions at beat zero in each clock.
 // t controls u's tempo. They should stay in sync.
-t.schedAbs(0, { arg beat, sec; u.tempo = t.tempo * [1,2,3,4,5].choose; [\t, beat, sec].postln; 1 });
-u.schedAbs(0, { arg beat, sec; [\u, beat, sec].postln; 1 });
+t.schedAbs(0, { |beat, sec| u.tempo = t.tempo * [1, 2, 3, 4, 5].choose; [\t, beat, sec].postln; 1 });
+u.schedAbs(0, { |beat, sec| [\u, beat, sec].postln; 1 });
 )
 
 (

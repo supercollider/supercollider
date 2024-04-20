@@ -128,7 +128,7 @@ f.(18.0) // float is ok.
 // check the ratio between adjacent factorials:
 f.(18.0) / f.(17.0) == 18 // true
 // 18 is already the largest possible factorial representable in 64-bit float (< 2^53)
-{:x, x<-(1.0..40), f.(x) < (2 ** 53) }.all.last
+{ :x, x<-(1.0..40), f.(x) < (2 ** 53) }.all.last
 ::
 
 
@@ -175,6 +175,6 @@ c - a // incorrect (also 1)
 // here we divide two numbers that follow each other
 // and it is correct up to f.(170), about 7.25e+306.
 f = { |x| if(x < 2) { x } { x * f.(x - 1) } };
-{:x, x<-(1.0..180), f.(x) / f.(x - 1) == x }.all.last
+{ :x, x<-(1.0..180), f.(x) / f.(x - 1) == x }.all.last
 
 ::

@@ -62,7 +62,7 @@ example:
 code::
 (
 var w = Window("arcTo", Rect(100, 200, 300, 300)).front;
-var r= 15;
+var r = 15;
 w.drawFunc = { |v|
     Pen.fillColor = Color.blue;
     Pen.strokeColor = Color.red;
@@ -92,7 +92,7 @@ w.drawFunc = {
         Pen.color = Color.red(rrand(0.0, 1), rrand(0.0, 0.5));
         Pen.addArc((100.rand)@(100.rand), rrand(10, 100), 2pi.rand, pi);
         Pen.perform([\stroke, \fill].choose);
-    }
+   }
 };
 w.refresh;
 )
@@ -328,7 +328,7 @@ w = Window.new.front;
 w.view.background_(Color.white);
 w.drawFunc = {
     Pen.strokeColor = Color.blue;
-    Pen.translate(200,100); // 0@0 is now 200@100
+    Pen.translate(200, 100); // 0@0 is now 200@100
     Pen.moveTo(0@0);
     Pen.lineTo(50@100);
     Pen.lineTo(100@100);
@@ -369,7 +369,7 @@ w = Window.new.front;
 w.view.background_(Color.white);
 w.drawFunc = {
     Pen.strokeColor = Color.green;
-    Pen.translate(200,100);
+    Pen.translate(200, 100);
     Pen.scale(0.5, 2);
     Pen.moveTo(0@0); // you have to set a starting point...
     Pen.lineTo(50@100);
@@ -394,7 +394,7 @@ w = Window.new.front;
 w.view.background_(Color.white);
 w.drawFunc = {
     Pen.fillColor = Color.green(0.5, 0.8);
-    Pen.translate(200,100);
+    Pen.translate(200, 100);
     Pen.skew(0.5, 0.2);
     Pen.moveTo(0@0); // you have to set a starting point...
     Pen.lineTo(50@100);
@@ -421,7 +421,7 @@ c = 0;
 w.drawFunc = {
     Pen.translate(220, 200);
     10.do({
-        Pen.translate(0,10);
+        Pen.translate(0, 10);
         Pen.fillColor = Color.hsv(c.fold(0, 1), 1, 1, 0.5);
         Pen.moveTo(0@0); // you have to set a starting point...
         Pen.lineTo(50@100);
@@ -445,7 +445,7 @@ Gets or sets the coordinate system transformation matrix.
 See link::#Matrix example:: for an example.
 
 argument:: matrixArray
-An array of the form code::[ zoomX, shearingY, shearingX, zoomY, translateX, translateY ]::
+An array of the form code::[zoomX, shearingY, shearingX, zoomY, translateX, translateY]::
 
 method:: width
 Sets the width of the Pen for the whole stroke
@@ -460,7 +460,7 @@ code::
 w = Window.new.front;
 w.view.background_(Color.white);
 w.drawFunc = {
-    //paint origin
+    // paint origin
     Pen.fillColor = Color.gray(0, 0.5);
     Pen.addArc(0@0, 20, 0, 2pi);
     Pen.fill;
@@ -468,7 +468,7 @@ w.drawFunc = {
 
     Pen.use { // draw something complex...
         Pen.width = 0.5;
-        Pen.translate(100,100);
+        Pen.translate(100, 100);
         Pen.fillColor = Color.blue;
         Pen.addArc(0@0, 10, 0, 2pi);
         Pen.fill;
@@ -526,7 +526,7 @@ w.drawFunc = {
 
     // everything else we draw is now clipped
     Pen.fillColor = Color.yellow;
-    Pen.fillRect(Rect(0,0,400,400));
+    Pen.fillRect(Rect(0, 0, 400, 400));
     Pen.fillColor = Color.red;
     Pen.moveTo(200@100);
 
@@ -552,14 +552,14 @@ var w = Window("smoothing", Rect(100, 200, 500, 300)).front;
 w.view.background_(Color.white);
 w.drawFunc = { |v|
     Pen.strokeColor = Color.grey(0.25);
-    Pen.smoothing_(false); //no anti-aliasing
-    50.do{|i|
+    Pen.smoothing_(false); // no anti-aliasing
+    50.do{ |i|
         Pen.moveTo(50@50.rrand(250));
         Pen.lineTo(250@50.rrand(250));
     };
     Pen.stroke;
-    Pen.smoothing_(true); //anti-aliasing (default)
-    50.do{|i|
+    Pen.smoothing_(true); // anti-aliasing (default)
+    50.do{ |i|
         Pen.moveTo(250@50.rrand(250));
         Pen.lineTo(450@50.rrand(250));
     };
@@ -593,11 +593,11 @@ code::
 (
 w = Window.new.front;
 w.view.background_(Color.white);
-StaticText(w, Rect(0,0,200,20))
+StaticText(w, Rect(0, 0, 200, 20))
     .string_(" Change Line Cap & Join Styles: ");
-y = PopUpMenu(w, Rect(200,0,130,20))
+y = PopUpMenu(w, Rect(200, 0, 130, 20))
     .items_(["Butt - Miter", "Round - Round", "Square - Bevel"])
-    .action_({w.refresh});
+    .action_({ w.refresh });
 w.drawFunc = {
     Pen.strokeColor = Color.red;
     Pen.width_(8.0);
@@ -637,7 +637,7 @@ w = Window.new.front;
 w.view.background = Color.red;
 i = Image.open(SCDoc.helpSourceDir +/+ "images/Swamp.png");
 w.drawFunc_({
-	Pen.drawImage( Point(140, 140), i, operation: 'sourceOver', opacity:1);
+	Pen.drawImage(Point(140, 140), i, operation: 'sourceOver', opacity: 1);
 });
 )
 ::
@@ -650,15 +650,15 @@ code::
 	w.drawFunc = {
 		Pen.use {
 			// use the same rect for everything, just scale and rotate
-			var r = Rect(0,0,200,80);
+			var r = Rect(0, 0, 200, 80);
 			Pen.fillColor = Color.black;
 			// offset all subsequent co-ordinates
-			Pen.translate(80,20);
+			Pen.translate(80, 20);
 			Pen.fillRect(r);
 			Pen.fillColor = Color.red;
 			// scale all subsequent co-ordinates
 			Pen.scale(0.8, 0.8);
-			Pen.translate(8,10);
+			Pen.translate(8, 10);
 			// rotate all subsequent co-ordinates
 			Pen.rotate(0.1pi);
 			Pen.fillRect(r);
@@ -668,10 +668,10 @@ code::
 			Pen.rotate(0.1pi);
 			Pen.width = 3;
 			Pen.strokeRect(r);
-			Pen.fillColor = Color.yellow(1,0.5);
+			Pen.fillColor = Color.yellow(1, 0.5);
 			Pen.scale(0.8, 0.8);
 			Pen.rotate(0.1pi);
-			Pen.translate(20,-20);
+			Pen.translate(20, -20);
 			Pen.fillOval(r);
 		}
 	};
@@ -685,7 +685,7 @@ code::
 var w, run = true;
 w = Window("my name is... panel", Rect(128, 64, 800, 800));
 w.view.background = Color.white;
-w.onClose = { run = false; };
+w.onClose = { run = false };
 w.front;
 w.drawFunc = {
 	Pen.use {
@@ -708,13 +708,13 @@ code::
 var w, run = true;
 w = Window("my name is... panel", Rect(128, 64, 800, 500));
 w.view.background = Color.white;
-w.onClose = { run = false; };
+w.onClose = { run = false };
 w.front;
 w.drawFunc = {
 	Pen.use {
 		Pen.width = 2;
 		80.do {
-			Pen.width = rrand(0,4) + 0.5;
+			Pen.width = rrand(0, 4) + 0.5;
 			Pen.beginPath;
 			Pen.moveTo(Point(800.rand, 500.rand));
 			Pen.lineTo(Point(800.rand, 500.rand));
@@ -738,7 +738,7 @@ code::
 // By James McCartney
 var w, h = 700, v = 700, seed, run = true, phase = 0;
 w = Window("wedge", Rect(40, 40, h, v), false);
-w.view.background = Color.rand(0,0.3);
+w.view.background = Color.rand(0, 0.3);
 w.onClose = { run = false }; // stop the thread on close
 w.front;
 // store an initial seed value for the random generator
@@ -749,8 +749,8 @@ w.drawFunc = {
 		// reset this thread's seed for a moment
 		thisThread.randSeed = Date.seed;
 		// now a slight chance of a new seed or background color
-		if (0.006.coin) { seed = Date.seed; };
-		if (0.02.coin) { w.view.background = Color.rand(0,0.3); };
+		if (0.006.coin) { seed = Date.seed };
+		if (0.02.coin) { w.view.background = Color.rand(0, 0.3) };
 		// either revert to the stored seed or set the new one
 		thisThread.randSeed = seed;
 		// the random values below will be the same each time if the seed has not changed
@@ -760,20 +760,20 @@ w.drawFunc = {
 		// negative random values rotate one direction, positive the other
 		Pen.rotate(phase * 1.0.rand2);
 		// scale the rotated y axis in a sine pattern
-		Pen.scale(1, 0.3 * sin(phase * 1.0.rand2 + 2pi.rand) + 0.5 );
+		Pen.scale(1, 0.3 * sin(phase * 1.0.rand2 + 2pi.rand) + 0.5);
 		// create a random number of annular wedges
-		rrand(6,24).do {
-			Pen.color = Color.rand(0.0,1.0).alpha_(rrand(0.1,0.7));
+		rrand(6, 24).do {
+            Pen.color = Color.rand(0.0, 1.0).alpha_(rrand(0.1, 0.7));
 			Pen.beginPath;
-			Pen.addAnnularWedge(Point(0,0), a = rrand(60,300), a + 50.rand2, 2pi.rand
+			Pen.addAnnularWedge(Point(0, 0), a = rrand(60, 300), a + 50.rand2, 2pi.rand
 				+ (phase * 2.0.rand2), 2pi.rand);
-			if (0.5.coin) {Pen.stroke}{Pen.fill};
+			if (0.5.coin) { Pen.stroke }{ Pen.fill };
 		};
 	};
 };
 
 // fork a thread to update 20 times a second, and advance the phase each time
-{ while { run } { w.refresh; 0.05.wait; phase = phase + 0.01pi;} }.fork(AppClock)
+{ while { run } { w.refresh; 0.05.wait; phase = phase + 0.01pi } }.fork(AppClock)
 
 )
 ::
@@ -782,11 +782,11 @@ code::
 var w, phase = 0, seed = Date.seed, run = true;
 w = Window("my name is... panel", Rect(128, 64, 800, 800));
 w.view.background = Color.blue(0.4);
-w.onClose = { run = false; };
+w.onClose = { run = false };
 w.front;
 w.drawFunc = {
 	Pen.use {
-		if (0.02.coin) { seed = Date.seed; };
+		if (0.02.coin) { seed = Date.seed };
 		thisThread.randSeed = seed;
 		Pen.strokeColor = Color.white;
 		200.do {
@@ -794,12 +794,12 @@ w.drawFunc = {
 			var b = 24.rand;
 			var r1 = 230 + (50 * a);
 			var a1 = 2pi / 24 * b + phase;
-			var r2 = 230 + (50 * (a + 1.rand2).fold(0,3));
-			var a2 = 2pi / 24 * (b + (3.rand2)).wrap(0,23) + phase;
+			var r2 = 230 + (50 * (a + 1.rand2).fold(0, 3));
+			var a2 = 2pi / 24 * (b + (3.rand2)).wrap(0, 23) + phase;
 			Pen.width = 0.2 + 1.0.linrand;
 			Pen.beginPath;
-			Pen.moveTo(Polar(r1, a1).asPoint + Point(400,400));
-			Pen.lineTo(Polar(r2, a2).asPoint + Point(400,400));
+			Pen.moveTo(Polar(r1, a1).asPoint + Point(400, 400));
+			Pen.lineTo(Polar(r2, a2).asPoint + Point(400, 400));
 			Pen.stroke;
 		};
 		thisThread.randSeed = Date.seed;
@@ -808,12 +808,12 @@ w.drawFunc = {
 			var b = 24.rand;
 			var r1 = 230 + (50 * a);
 			var a1 = 2pi / 24 * b + phase;
-			var r2 = 230 + (50 * (a + 1.rand2).fold(0,3));
-			var a2 = 2pi / 24 * (b + (3.rand2)).wrap(0,23) + phase;
+			var r2 = 230 + (50 * (a + 1.rand2).fold(0, 3));
+			var a2 = 2pi / 24 * (b + (3.rand2)).wrap(0, 23) + phase;
 			Pen.width = 0.2 + 1.5.linrand;
 			Pen.beginPath;
-			Pen.moveTo(Polar(r1, a1).asPoint + Point(400,400));
-			Pen.lineTo(Polar(r2, a2).asPoint + Point(400,400));
+			Pen.moveTo(Polar(r1, a1).asPoint + Point(400, 400));
+			Pen.lineTo(Polar(r2, a2).asPoint + Point(400, 400));
 			Pen.stroke;
 		};
 	};
@@ -833,8 +833,8 @@ w.onClose = { run = false };
 w.front;
 w.drawFunc = {
 	thisThread.randSeed = Date.seed;
-	if (0.0125.coin) { seed = Date.seed; phase = 0; zoom = 0.7; zoomf = exprand(1/1.01, 1.01); }
-	{ phase = phase + (2pi/80); zoom = zoom * zoomf; };
+	if (0.0125.coin) { seed = Date.seed; phase = 0; zoom = 0.7; zoomf = exprand(1/1.01, 1.01) }
+	{ phase = phase + (2pi/80); zoom = zoom * zoomf };
 	thisThread.randSeed = seed;
 	Pen.use {
 		var p1 = Point(20.rand2 + (h/2), 20.rand2 + (v/2));
@@ -850,8 +850,8 @@ w.drawFunc = {
 		xlates = xlates ++ xlates.neg;
 		ylates = ylates ++ xlates.neg;
 		rots = rots ++ rots.neg;
-		xform = {|i| [xlates[i], ylates[i], rots[i], xscales[i], yscales[i]] } ! 4;
-		Pen.strokeColor = Color.grey(1,0.5);
+		xform = { |i| [xlates[i], ylates[i], rots[i], xscales[i], yscales[i]] } ! 4;
+		Pen.strokeColor = Color.grey(1, 0.5);
 		Pen.width = 8.linrand + 1;
 		Pen.translate(400, 400);
 		Pen.scale(zoom, zoom);
@@ -871,7 +871,7 @@ w.drawFunc = {
 	};
 };
 
-{ while { run } { w.refresh; 0.05.wait; } }.fork(AppClock)
+{ while { run } { w.refresh; 0.05.wait } }.fork(AppClock)
 
 )
 ::
@@ -887,7 +887,7 @@ w = Window.new.front;
 w.view.background_(Color.white);
 
 // create a controller-window
-controlWindow = Window("matrix controls", Rect(400,200,350,120));
+controlWindow = Window("matrix controls", Rect(400, 200, 350, 120));
 controlWindow.front;
 
 // determine the rectangle to be drawn
@@ -908,14 +908,14 @@ w.drawFunc = {
     Pen.line(b, d);
     Pen.stroke;
 
-    Pen.font = Font( "Helvetica-Bold", 12 );
-    Pen.stringAtPoint( "A", a - 6 );
-    Pen.stringAtPoint( "B", b - 6 );
-    Pen.stringAtPoint( "C", c - (0@6) );
-    Pen.stringAtPoint( "D", d - (0@6) );
+    Pen.font = Font("Helvetica-Bold", 12);
+    Pen.stringAtPoint("A", a - 6);
+    Pen.stringAtPoint("B", b - 6);
+    Pen.stringAtPoint("C", c - (0@6));
+    Pen.stringAtPoint("D", d - (0@6));
 
-    Pen.font = Font( "Helvetica", 10 );
-    Pen.stringInRect( "a matrix test", r.moveBy( 50, 50 ));
+    Pen.font = Font("Helvetica", 10);
+    Pen.stringInRect("a matrix test", r.moveBy(50, 50));
 };
 
 controlWindow.view.decorator = sliders = FlowLayout(controlWindow.view.bounds);
@@ -944,7 +944,7 @@ w.refresh;
 subsection:: Transparency layer example
 code::
 (
-w = Window.new("Transparency Layer test", Rect(400,400,430,450)).front;
+w = Window.new("Transparency Layer test", Rect(400, 400, 430, 450)).front;
 w.drawFunc = {
     Color.blue.setStroke;
 
@@ -953,15 +953,15 @@ w.drawFunc = {
     Pen.beginTransparencyLayer;
 
     Color.red.setFill;
-    Pen.addOval(Rect(20,40,100,100));
+    Pen.addOval(Rect(20, 40, 100, 100));
     Pen.fill;
 
     Color.green.setFill;
-    Pen.addOval(Rect(30,70,100,100));
+    Pen.addOval(Rect(30, 70, 100, 100));
     Pen.fill;
 
     Color.blue.setFill;
-    Pen.addOval(Rect(60,40,100,100));
+    Pen.addOval(Rect(60, 40, 100, 100));
     Pen.fill;
 
     "With Transparency Layer".drawCenteredIn(Rect(30, 40, 100, 100), Font.default, Color.white);
@@ -974,15 +974,15 @@ w.drawFunc = {
 
 
     Color.red.setFill;
-    Pen.addOval(Rect(20,40,100,100));
+    Pen.addOval(Rect(20, 40, 100, 100));
     Pen.fill;
 
     Color.green.setFill;
-    Pen.addOval(Rect(30,70,100,100));
+    Pen.addOval(Rect(30, 70, 100, 100));
     Pen.fill;
 
     Color.blue.setFill;
-    Pen.addOval(Rect(60,40,100,100));
+    Pen.addOval(Rect(60, 40, 100, 100));
     Pen.fill;
 
     "Without Transparency Layer".drawCenteredIn(Rect(30, 40, 100, 100), Font.default, Color.white);
@@ -994,11 +994,11 @@ w.drawFunc = {
         Pen.beginTransparencyLayer;
 
         Pen.push;
-        Pen.addOval(Rect(20,40,170,170));
+        Pen.addOval(Rect(20, 40, 170, 170));
         Pen.fillAxialGradient(w.view.bounds.leftTop, w.view.bounds.rightBottom, Color.rand, Color.rand);
         Pen.pop;
 
-        "With Transparency Layer".drawCenteredIn(Rect(20,40,170,170), Font.default, Color.white);
+        "With Transparency Layer".drawCenteredIn(Rect(20, 40, 170, 170), Font.default, Color.white);
 
         Pen.endTransparencyLayer;
     };
@@ -1006,10 +1006,10 @@ w.drawFunc = {
     Pen.use {
         Pen.translate(200, 200);
         Pen.setShadow(2@2, 10, Color.black);
-        Pen.addOval(Rect(20,40,170,170));
+        Pen.addOval(Rect(20, 40, 170, 170));
         Pen.fillAxialGradient(w.view.bounds.leftTop, w.view.bounds.rightBottom, Color.rand, Color.rand);
 
-        "Without Transparency Layer".drawCenteredIn(Rect(20,40,170,170), Font.default, Color.white);
+        "Without Transparency Layer".drawCenteredIn(Rect(20, 40, 170, 170), Font.default, Color.white);
     };
 };
 w.refresh;
@@ -1051,7 +1051,7 @@ different blend modes:
 */
 
 (
-	var blendMode=0, blendString="Normal";
+	var blendMode = 0, blendString = "Normal";
 	w = Window.new.front;
 	m = PopUpMenu(w, Rect(10, w.view.bounds.height - 30, 150, 20));
 	m.items = [
@@ -1073,13 +1073,13 @@ different blend modes:
 		"15 - Luminosity"
 	];
 
-	m.action_({|view|
+	m.action_({ |view|
 		blendMode = view.value;
 		blendString = view.items.at(blendMode);
 		w.refresh;
 	});
 	w.drawFunc = {
-		80.do{|i|
+		80.do{ |i|
 			Pen.use {
 			Pen.blendMode_(blendMode);
 			Pen.color = Color.green(0.6, 0.10);

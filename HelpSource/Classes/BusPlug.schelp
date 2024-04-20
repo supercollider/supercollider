@@ -243,7 +243,7 @@ m.free; z.free;
 
 // using as a audio monitor
 
-p = BusPlug.audio(s,2);
+p = BusPlug.audio(s, 2);
 d = { Out.ar(p.index, PinkNoise.ar([0.1, 0.1])) }.play;
 
 
@@ -263,6 +263,6 @@ p.stop;
 p.play(12);
 
 // listen to that bus for a test:
-x = { InFeedback.ar(12,2) }.play;
+x = { InFeedback.ar(12, 2) }.play;
 x.free;
 ::

@@ -35,7 +35,7 @@ EXAMPLES::
 
 code::
 a = RingNumberAllocator.new(3, 5)
-7.do {a.alloc.post } //3453453
+7.do {a.alloc.post } // 3453453
 a.init
 a.alloc // 3
 ::

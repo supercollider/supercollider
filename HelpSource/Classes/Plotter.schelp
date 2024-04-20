@@ -52,7 +52,7 @@ Env.perc(0.4, 0.6).plot;
 ::
 
 
-method:: plotGraph (n,from,to,...)
+method:: plotGraph (n, from, to, ...)
 
 code::
 { |x| sin(x) }.plotGraph(300, 0, 2*pi);
@@ -165,7 +165,7 @@ s.waitForBoot{
 
 /* Mixed modes */
 (
-d = 4.collect({ |i| 100.collect({ |j| sinPi(1+i.squared*j * 50.reciprocal) })});
+d = 4.collect({ |i| 100.collect({ |j| sinPi(1+i.squared*j * 50.reciprocal) }) });
 p = d.plot;
 p.plotColor_([Color.red, Color.cyan, Color.green, Color.blue]);
 p.plotMode_([\steps, \linear, \plines, \points]);
@@ -264,7 +264,7 @@ to set Plot properties to ensure proper behavior when using link::#-superpose::.
 ::
 
 argument:: ... pairs
-A list of symbol,value pairs. Supported properties:
+A list of symbol, value pairs. Supported properties:
 list::
 ## font
 ## fontColor
@@ -273,11 +273,11 @@ list::
 ## plotColor (an link::Classes/Array::)
 ## backgroundColor
 ## gridLinePattern
-## gridLineSmoothing ( link::Classes/Boolean:: )
+## gridLineSmoothing (link::Classes/Boolean::)
 ## labelX
 ## labelY
-## gridOnX ( link::Classes/Boolean:: )
-## gridOnY ( link::Classes/Boolean:: )
+## gridOnX (link::Classes/Boolean::)
+## gridOnY (link::Classes/Boolean::)
 ::
 
 discussion::
@@ -333,7 +333,7 @@ table::
 ## code::\gridColor:: || The link::Classes/Color:: of the axis grid lines.
 ::
 
-The properties code::\drawBaseLine::,  code::\drawBoundingLines::, or code::\drawBoundingRect:: are mutually exlusive — setting any of them to true will set the others two to code::false::. In the context of code::Plotter::, setting code::\drawBoundingRect:: on one axis to code::true:: has the same appearance of setting code::\drawBoundingLines:: on emphasis::both:: axes to code::true::.
+The properties code::\drawBaseLine::, code::\drawBoundingLines::, or code::\drawBoundingRect:: are mutually exlusive — setting any of them to true will set the others two to code::false::. In the context of code::Plotter::, setting code::\drawBoundingRect:: on one axis to code::true:: has the same appearance of setting code::\drawBoundingLines:: on emphasis::both:: axes to code::true::.
 
 discussion::
 This is a convenience method to set the grid properties for emphasis::all:: code::Plot::s to the same values.
@@ -341,7 +341,7 @@ An Example:
 code::
 (
 var plotter = [10, 34, 167].collect({ |freq|
-	101.collect{|i| sin((i/1000) * 2pi * freq)}
+	101.collect{ |i| sin((i/1000) * 2pi * freq) }
 }).plot;
 plotter.setGridProperties(\x,
 	\labelAnchor, \topLeft,
@@ -362,7 +362,7 @@ code::
 (
 var plotter, labelAnchors;
 plotter = [10, 34, 167].collect({ |freq|
-	101.collect{|i| sin((i/1000) * 2pi * freq)}
+	101.collect{ |i| sin((i/1000) * 2pi * freq) }
 }).plot;
 
 labelAnchors = [\topLeft, \top, \bottomLeft];
@@ -391,7 +391,7 @@ As a convenience method, code::getGridProperty:: assumes that properties across 
 code::
 ( // inspect the \labelAnchor of each DrawGridX
 var plotter  = [10, 34, 167].collect({ |freq|
-	101.collect{|i| sin((i/1000) * 2pi * freq)}
+	101.collect{ |i| sin((i/1000) * 2pi * freq) }
 }).plot;
 
 plotter.plots.collect({ |plot|
@@ -452,7 +452,7 @@ Set/get the x-axis positions of your data points. The size of the code::domainAr
 code::
 (
 var data, domain, plot;
-domain = 25.collect({rrand(0, 50)}).sort;
+domain = 25.collect({ rrand(0, 50) }).sort;
 data = domain.linlin(0, 50, 0, 1);
 
 plot = data.plot.plotMode_(\points);
@@ -593,7 +593,7 @@ a = Plotter("the plot", Rect(600, 30, 600, 400));
 a.value = (0..100).normalize(0, 8pi).sin;
 )
 
-a.value = { |i| (0..90) % (i + 12) + ( (0..90) % (i + 2 * 1) ) }.dup(3);
+a.value = { |i| (0..90) % (i + 12) + ((0..90) % (i + 2 * 1)) }.dup(3);
 a.value = (0..12).squared;
 a.plotMode = \points;
 a.plotMode = \levels;
@@ -693,8 +693,8 @@ var rs = 0, plt2;
 // xs are the sample points over a 2pi range
 
 // sample locations, normalized
-xs = 50.collect({rrand(0.05, 1)}).normalizeSum;
-xs.do{ |me, i| xs[i] = me + rs; rs = rs + me; };
+xs = 50.collect({ rrand(0.05, 1) }).normalizeSum;
+xs.do{ |me, i| xs[i] = me + rs; rs = rs + me };
 
 // force beginning/end to land on 0/2pi
 xs[0] = 0;
@@ -740,8 +740,8 @@ subsection:: Axis labels
 code::
 (
 p = 4.collect({
-	100.collect({ rrand(0,1.0) })
-}).plot(bounds: Rect(50,50,500,650));
+	100.collect({ rrand(0, 1.0) })
+}).plot(bounds: Rect(50, 50, 500, 650));
 p.plotColor_([Color.red, Color.blue, Color.green, Color.cyan]);
 )
 

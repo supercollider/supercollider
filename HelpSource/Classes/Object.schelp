@@ -379,33 +379,33 @@ This method allow building up chains of actions to be performed on an object (po
 
 Examples:
 code::
-x !? ( _ * 3 ) ?? { "It was a nil, so I give a default value".postln; Point(1,1) }
+x !? (_ * 3) ?? { "It was a nil, so I give a default value".postln; Point(1, 1) }
 ::
 With code::x = nil::, this will result in:
 teletype::
 It was a nil, so I give a default value
-Point( 1, 1 )
+Point(1, 1)
 ::
-But if code::x = Point(3,4)::, the result will be:
+But if code::x = Point(3, 4)::, the result will be:
 teletype::
-Point( 9, 12 )
+Point(9, 12)
 ::
 
 Nested nil checks:
 code::
 (
 x = nil;
-y = Point(3,4);
-z = Point(5,6);
+y = Point(3, 4);
+z = Point(5, 6);
 x !? { |x| y !? { |y| z !? { |z|  x.rho * y.rho * z.rho } } }
 )
 ::
 Results in teletype::nil::
 code::
 (
-x = Point(1,2);
-y = Point(3,4);
-z = Point(5,6);
+x = Point(1, 2);
+y = Point(3, 4);
+z = Point(5, 6);
 x !? { |x| y !? { |y| z !? {  |z| x.rho * y.rho * z.rho } } }
 )
 ::
@@ -464,12 +464,12 @@ code::
 var x, z;
 z = [0, 1, 1.1, 1.3, 1.5, 2];
 x = switch (z.choose)
-	{1}   { \no }
-	{1.1} { \wrong }
-	{1.3} { \wrong }
-	{1.5} { \wrong }
-	{2}   { \wrong }
-	{0}   { \true };
+	{ 1 }   { \no }
+	{ 1.1 } { \wrong }
+	{ 1.3 } { \wrong }
+	{ 1.5 } { \wrong }
+	{ 2 }   { \wrong }
+	{ 0 }   { \true };
 x.postln;
 )
 ::
@@ -563,10 +563,10 @@ argument:: ... args
 Method arguments which, if they contain an array, will call the method multiple times for each sub-element.
 discussion::
 code::
-a = { |a, b, c| format("% plus % times % is %", a, b, c, a + b * c).quote; };
+a = { |a, b, c| format("% plus % times % is %", a, b, c, a + b * c).quote };
 a.multiChannelPerform(\value, [1, 10, 100, 1000], [2, 7, 9], [3, 7]);
 
-["foo","bar"].multiChannelPerform('++',["l","bro","t"]);
+["foo", "bar"].multiChannelPerform('++', ["l", "bro", "t"]);
 ::
 
 subsection::Unique Methods
@@ -753,7 +753,7 @@ method::do
 Object evaluates the function with itself as an argument, returning the result. Different classes respond to this message differently.
 discussion::
 code::
-f = { |x, i| [x, i].postln; };
+f = { |x, i| [x, i].postln };
 [1, 2, 3].do(f); // Array.do
 10.do(f); // Integer.do
 ($Q).do(f); // Object.do
