@@ -1,7 +1,7 @@
 TITLE::LaTeX Support for SuperCollider via MathJax
 summary::How to use LaTeX Syntax in SCDocs using MathJax
 categories:: HelpSystem
-related:: Guides/WritingHelp, Classes/SCDoc, Classes/SCDocHTMLRenderer, Guides/WritingHelp_HTML_LaTeX
+related:: Guides/WritingHelp, Classes/SCDoc, Classes/SCDocHTMLRenderer
 
 
 
