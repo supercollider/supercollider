@@ -50,6 +50,45 @@ SCDocHTMLRenderer {
 	*escapeSpacesInAnchor { |str|
 		^str.replace(" ", "%20")
 	}
+	*renderNonCodePunctuation { |str|
+		^str
+		.replace("%20", " ")
+		//.replace("%E2%80%82", " ") // does not work if section and subsection contain non-Roman characters.
+		.replace(/*"%E2%9D%AA"*/"_f(_", "<span style='font-size: 0.85em'>❪") // MEDIUM FLATTENED
+		.replace(/*"%E2%9D%AB"*/"_f)_", "❫</span>")
+		.replace(/*"%E2%9D%A8"*/"_m(_", "<span style='font-size: 0.85em'>❨") // MEDIUM
+		.replace(/*"%E2%9D%A9"*/"_m)_", "❩</span>")
+		.replace(/*"%E2%9D%B2"*/"_s(_", "<span style='font-size: 0.71em'>❲") // TORTOISE SHELL
+		.replace(/*"%E2%9D%B3"*/"_s)_", "❳</span>")
+		.replace(/*"%E2%9F%A8"*/"_m&lt;_", "⟨") // mathematical angle
+		.replace(/*"%E2%9F%A9"*/"_m&gt;_", "⟩")
+		.replace(/*"%E2%9F%AA"*/"_m&lt;&lt;_", "⟪") // mathematical double angle
+		.replace(/*"%E2%9F%AB"*/"_m&gt;&gt;_", "⟫")
+		.replace(/*"%E3%80%88"*/"_n&lt;_", "〈") // angle bracket (problematic with some font due to spacing). Use mathematical angle
+		.replace(/*"%E3%80%89"*/"_n&gt;_", "〉")
+		.replace(/*"%E3%80%8A"*/"_n&lt;&lt;_", "《") // DOUBLE ANGLE BRACKET (problematic with some font due to spacing). Use mathematical double angle
+		.replace(/*"%E3%80%8B"*/"_n&gt;&gt;_", "》")
+		.replace(/*"%E3%80%8C"*/"_c&lt;_", "「") // CORNER BRACKET
+		.replace(/*"%E3%80%8D"*/"_c&gt;_", "」")
+		.replace(/*"%E3%80%8E"*/"_w&lt;_", "『") // WHITE CORNER BRACKET
+		.replace(/*"%E3%80%8F"*/"_w&gt;_", "』")
+		.replace(/*"%E2%80%B9"*/"_p&lt;_", "‹") // POINTING ANGLE
+		.replace(/*"%E2%80%BA"*/"_p&gt;_", "›")
+		.replace(/*"%C2%AB"*/"_p&lt;&lt;_", "«") // POINTING DOUBLE ANGLE
+		.replace(/*"%C2%BB"*/"_p&gt;&gt;_", "»")
+		.replace(/*"%E2%80%9E"*/"_ll\"_", "„") // LOW-9 QUOTATION MARK
+		.replace(/*"%E2%80%9C"*/"_lr\"_", "“")
+		.replace(/*"%E2%80%9A"*/"_ll'_", "‚") // DOUBLE LOW-9 QUOTATION MARK
+		.replace(/*"%E2%80%98"*/"_lr'_", "‘")
+		.replace(/*"%E2%80%9C"*/"_ql\"_", "“") // OPENING DOUBLE QUOTATION
+		.replace(/*"%E2%80%9D"*/"_qr\"_", "”") // CLOSING DOUBLE QUOTATION
+		.replace(/*"%E2%80%98"*/"_ql'_", "‘") // OPENING SINGLE QUOTATION
+		.replace(/*"%E2%80%99"*/"_qr'_", "’") // CLOSING SINGLE QUOTATION
+		.replace(/*"%CA%BC"*/"_a''_", "ʼ") // MODIFIER LETTER APOSTROPHE
+		.replace(/*"%E2%80%%95"*/"_q-_", "―") // HORIZONTAL BAR
+		.replace(/*"%E2%8B%AF"*/"_me..._", "⋯") // MIDLINE HORIZONTAL ELLIPSIS (automatic)
+		.replace(/*"%E2%80%A6"*/"_ue..._", "…") // HORIZONTAL ELLIPSIS (automatic)
+	}
 
 	// Find the target (what goes after href=) for a link that stays inside the hlp system
 	*prLinkTargetForInternalLink { |linkBase, linkAnchor, originalLink|
@@ -167,7 +206,7 @@ SCDocHTMLRenderer {
 		if(escape) { linkText = this.escapeSpecialChars(linkText) };
 
 		// Return a well-formatted <a> tag using the target and link text
-		^"<a href=\"" ++ linkTarget ++ "\">" ++ linkText ++ "</a>";
+		^"<a href='" ++ linkTarget ++ "'>" ++ SCDocHTMLRenderer.renderNonCodePunctuation(linkText) ++ "</a>";
 	}
 
 	*makeArgString {|m, par=true|
@@ -223,7 +262,7 @@ SCDocHTMLRenderer {
 		if(thisIsTheMainHelpFile) {
 			stream << "SuperCollider " << Main.version << " Help";
 		} {
-			stream << doc.title << " | SuperCollider " << Main.version << " Help";
+			stream << SCDocHTMLRenderer.renderNonCodePunctuation(doc.title) << " | SuperCollider " << Main.version << " Help";
 		};
 
 		// XXX if you make changes here, make sure to also update the static HTML files
@@ -242,7 +281,7 @@ SCDocHTMLRenderer {
 		<< "<script src='" << baseDir << "/lib/codemirror-addon-simple-5.39.2.min.js' type='text/javascript'></script>\n"
 		<< "<script>\n"
 		<< "var helpRoot = '" << baseDir << "';\n"
-		<< "var scdoc_title = '" << doc.title.escapeChar($') << "';\n"
+		<< "var scdoc_title = '" << SCDocHTMLRenderer.renderNonCodePunctuation(doc.title.escapeChar($')) << "';\n"
 		<< "var scdoc_sc_version = '" << Main.version << "';\n"
 		<< "</script>\n"
 		<< "<script src='" << baseDir << "/scdoc.js' type='text/javascript'></script>\n"
@@ -257,7 +296,7 @@ SCDocHTMLRenderer {
 		displayedTitle = if(
 			thisIsTheMainHelpFile,
 			{ "SuperCollider " ++ Main.version },
-			{ doc.title }
+			{ SCDocHTMLRenderer.renderNonCodePunctuation(doc.title) }
 		);
 
 		stream
@@ -329,7 +368,7 @@ SCDocHTMLRenderer {
 		};
 		stream
 		<< "</h1>\n"
-		<< "<div id='summary'>" << this.escapeSpecialChars(doc.summary) << "</div>\n"
+		<< "\n<div id='summary'>" << SCDocHTMLRenderer.renderNonCodePunctuation(this.escapeSpecialChars(doc.summary)) << "</div>\n"
 		<< "</div>\n"
 		<< "<div class='subheader'>\n";
 
@@ -553,7 +592,7 @@ SCDocHTMLRenderer {
 			\NL, { }, // these shouldn't be here..
 // Plain text and modal tags
 			\TEXT, {
-				stream << this.escapeSpecialChars(node.text);
+				stream << SCDocHTMLRenderer.renderNonCodePunctuation(this.escapeSpecialChars(node.text));
 			},
 			\LINK, {
 				stream << this.htmlForLink(node.text);
@@ -569,19 +608,29 @@ SCDocHTMLRenderer {
 				<< "</code>";
 			},
 			\EMPHASIS, {
-				stream << "<em>" << this.escapeSpecialChars(node.text) << "</em>";
+				stream << "<em>"
+				<< SCDocHTMLRenderer.renderNonCodePunctuation(this.escapeSpecialChars(node.text))
+				<< "</em>";
 			},
 			\TELETYPEBLOCK, {
-				stream << "<pre>" << this.escapeSpecialChars(node.text) << "</pre>";
+				stream << "\n<pre>"
+				<< SCDocHTMLRenderer.renderNonCodePunctuation(this.escapeSpecialChars(node.text))
+				<< "</pre>\n";
 			},
 			\TELETYPE, {
-				stream << "<code>" << this.escapeSpecialChars(node.text) << "</code>";
+				stream << "<code>"
+				<< SCDocHTMLRenderer.renderNonCodePunctuation(this.escapeSpecialChars(node.text))
+				<< "</code>";
 			},
 			\STRONG, {
-				stream << "<strong>" << this.escapeSpecialChars(node.text) << "</strong>";
+				stream << "<strong>"
+				<< SCDocHTMLRenderer.renderNonCodePunctuation(this.escapeSpecialChars(node.text))
+				<< "</strong>";
 			},
 			\SOFT, {
-				stream << "<span class='soft'>" << this.escapeSpecialChars(node.text) << "</span>";
+				stream << "<span class='soft'>"
+				<< SCDocHTMLRenderer.renderNonCodePunctuation(this.escapeSpecialChars(node.text))
+				<< "</span>";
 			},
 			\ANCHOR, {
 				stream << "<a class='anchor' name='" << this.escapeSpacesInAnchor(node.text) << "'>&nbsp;</a>";
@@ -600,7 +649,11 @@ SCDocHTMLRenderer {
 				} {
 					stream << this.htmlForLink(f[2]++"#"++(f[3]?"")++"#"++img,false);
 				};
-				f[1] !? { stream << "<br><b>" << f[1] << "</b>" }; // ugly..
+				f[1] !? {
+					stream << "<br><b>"
+					<< SCDocHTMLRenderer.renderNonCodePunctuation(f[1])
+					<< "</b>"
+				}; // ugly..
 				stream << "</div>\n";
 			},
 // Other stuff
@@ -812,25 +865,30 @@ SCDocHTMLRenderer {
 				this.renderChildren(stream, node);
 			},
 			\SECTION, {
-				stream << "<h2><a class='anchor' name='" << this.escapeSpacesInAnchor(node.text)
-				<< "'>" << this.escapeSpecialChars(node.text) << "</a></h2>\n";
+				stream << "\n<h2><a class='anchor' name='" << this.escapeSpacesInAnchor(node.text)
+				<< "'>"
+				<< SCDocHTMLRenderer.renderNonCodePunctuation(this.escapeSpecialChars(node.text))
+				<< "</a></h2>\n";
 				if(node.makeDiv.isNil) {
 					this.renderChildren(stream, node);
 				} {
-					stream << "<div id='" << node.makeDiv << "'>";
+					stream << "\n<div id='" << node.makeDiv << "'>";
 					this.renderChildren(stream, node);
-					stream << "</div>";
+					stream << "</div>\n";
 				};
 			},
 			\SUBSECTION, {
-				stream << "<h3><a class='anchor' name='" << this.escapeSpacesInAnchor(node.text)
-				<< "'>" << this.escapeSpecialChars(node.text) << "</a></h3>\n";
+
+					stream << "\n<h3><a class='anchor' name='" << this.escapeSpacesInAnchor(node.text)
+					<< "'>"
+					<< SCDocHTMLRenderer.renderNonCodePunctuation(this.escapeSpacesInAnchor(node.text))
+					<< "</a></h3>\n";
 				if(node.makeDiv.isNil) {
 					this.renderChildren(stream, node);
 				} {
-					stream << "<div id='" << node.makeDiv << "'>";
+					stream << "\n<div id='" << node.makeDiv << "'>";
 					this.renderChildren(stream, node);
-					stream << "</div>";
+					stream << "</div>\n";
 				};
 			},
 			{
@@ -890,12 +948,14 @@ SCDocHTMLRenderer {
 
 					\SECTION, {
 						stream << "<li class='toc1'><a href='#" << this.escapeSpacesInAnchor(n.text) << "'>"
-						<< this.escapeSpecialChars(n.text) << "</a></li>\n";
+						<< SCDocHTMLRenderer.renderNonCodePunctuation(this.escapeSpecialChars(n.text))
+						<< "</a></li>\n";
 						this.renderTOC(stream, n);
 					},
 					\SUBSECTION, {
-						stream << "<li class='toc2'><a href='#" << this.escapeSpacesInAnchor(n.text) << "'>"
-						<< this.escapeSpecialChars(n.text) << "</a></li>\n";
+							stream << "<li class='toc2'><a href='#" << this.escapeSpacesInAnchor(n.text) << "'>"
+							<< SCDocHTMLRenderer.renderNonCodePunctuation(this.escapeSpecialChars(n.text))
+							<< "</a></li>\n";
 						this.renderTOC(stream, n);
 					}
 				);
@@ -928,7 +988,7 @@ SCDocHTMLRenderer {
 		var name, doc, desc = "";
 		name = cls.name.asString;
 		doc = SCDoc.documents["Classes/"++name];
-		doc !? { desc = " - "++doc.summary };
+		doc !? { desc = " - "++SCDocHTMLRenderer.renderNonCodePunctuation(doc.summary) };
 		if(cls.name.isMetaClassName, {^this});
 		stream << "<li> <a href='" << baseDir << "/Classes/" << name << ".html'>"
 		<< name << "</a>" << desc << "\n";
