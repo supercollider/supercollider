@@ -247,9 +247,34 @@ SCDocHTMLRenderer {
 		<< "</script>\n"
 		<< "<script src='" << baseDir << "/scdoc.js' type='text/javascript'></script>\n"
 		<< "<script src='" << baseDir << "/docmap.js' type='text/javascript'></script>\n" // FIXME: remove?
-		<< "<script src='" << baseDir << "/frontend.js' type='text/javascript'></script>\n"
+		<< "<script src='" << baseDir << "/frontend.js' type='text/javascript'></script>\n" // Should be removed? It does not exist
 		// QWebChannel access
-		<< "<script src='qrc:///qtwebchannel/qwebchannel.js' type='text/javascript'></script>\n"
+		<< "<script src='qrc:///qtwebchannel/qwebchannel.js' type='text/javascript'></script>\n" // Should be removed? It does not exist
+
+		// MathJax |--->
+		<< "<script src='" << baseDir << "/lib/polyfill.min.js?features=es6'></script>\n" // local access /* << "<script src='https://polyfill.io/v3/polyfill.min.js?features=es6'></script>\n" */ // online access
+		<< "<script>\n"
+		<< "  window.MathJax = {\n"
+		<< "    tex: {\n"
+		<< "      packages: {'[+]': ['ams']},\n"
+		<< "      processEscapes: true\n"
+		<< "    },\n"
+		<< "    options: {\n"
+		<< "      skipHtmlTags: ['script', 'noscript', 'style', 'textarea']\n"
+		<< "    },\n"
+		<< "    loader: {\n"
+		<< "      load: ['[tex]/ams']\n"
+		<< "    },\n"
+		<< "    startup: {\n"
+		<< "      pageReady: () => {\n"
+		<< "        return MathJax.startup.defaultPageReady();\n"
+		<< "      }\n"
+		<< "    }\n"
+		<< "  };\n"
+		<< "</script>\n"
+		<< "<script id='MathJax-script' src='" << baseDir << "/lib/node_modules/mathjax-full/es5/tex-mml-chtml.js' async></script>\n" // offline accesss /* << "<script id='MathJax-script' src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js' async></script>\n" */ // online accesss
+		// <---| MathJax
+
 		<< "</head>\n"
 		<< "<body onload='fixTOC()'>\n";
 
@@ -540,7 +565,110 @@ SCDocHTMLRenderer {
 	}
 
 	*renderSubTree {|stream, node|
-		var f, z, img;
+		var replaceRegexp, parseHelpForLaTeX, parseMathML, f, z, img;
+		replaceRegexp = { |source, findRegexp, replace|
+			var founds, replaced;
+			founds = source.findRegexp(findRegexp);
+			founds = if(findRegexp[0] == $^) {
+				founds.collect { |array| if (array[0] == 0) {array} {} }
+			} {
+				founds
+			};
+			while { founds.includes(nil) } { founds.remove(nil) };
+			founds = founds.asSet.asArray.sort({ |a, b| a[0] < b[0] });
+			replaced = source;
+			if(founds.size > 0) {
+				founds.reverse.do { |idx_str|
+					var foundIndex, foundString;
+					#foundIndex, foundString = idx_str;
+					replaced = if (foundIndex > 0) {
+						var lastString = replaced[foundIndex + foundString.size ..];
+						lastString = if(lastString != nil) { lastString } { "" };
+						replaced[0 .. foundIndex - 1] ++ replace ++ lastString
+					} {
+						replace ++ replaced[foundString.size ..]
+					}
+				}
+			} {
+				replaced
+			};
+			replaced
+		};
+		parseHelpForLaTeX = { |str|
+			str
+			.replace(":teletype:", "teletype::")
+			.replace(":/teletype:", "::")
+		};
+		parseMathML = { |str|
+			var replaced = str
+			.replace("&lt;annotation&gt;", "<annotation>")
+			.replace("&lt;/annotation&gt;", "</annotation>")
+			.replace("&lt;annotation-xml&gt;", "<annotation-xml>")
+			.replace("&lt;annotation-xml ", "<annotation-xml ")
+			.replace("&lt;/annotation-xml&gt;", "</annotation-xml>")
+			.replace("&lt;maction&gt;", "<maction>")
+			.replace("&lt;maction ", "<maction ")
+			.replace("&lt;/maction&gt;", "</maction>")
+			.replace("&lt;math&gt;", "<math>")
+			.replace("&lt;math ", "<math ")
+			.replace("&lt;math display='block'&gt;", "<math display='block'>")
+			.replace("&lt;math display='inline'&gt;", "<math display='inline'>")
+			.replace("&lt;/math&gt;", "</math>")
+			.replace("&lt;merror&gt;", "<merror>")
+			.replace("&lt;/merror&gt;", "</merror>")
+			.replace("&lt;mfrac&gt;", "<mfrac>")
+			.replace("&lt;/mfrac&gt;", "</mfrac>")
+			.replace("&lt;mi&gt;", "<mi>")
+			.replace("&lt;/mi&gt;", "</mi>")
+			.replace("&lt;mmultiscripts>", "<mmultiscripts>")
+			.replace("&lt;mmultiscripts ", "<mmultiscripts ")
+			.replace("&lt;/mmultiscripts>", "</mmultiscripts>")
+			.replace("&lt;mn&gt;", "<mn>")
+			.replace("&lt;/mn&gt;", "</mn>")
+			.replace("&lt;mo&gt;", "<mo>")
+			.replace("&lt;/mo&gt;", "</mo>")
+			.replace("&lt;mover&gt;", "<mover>")
+			.replace("&lt;/mover&gt;", "</mover>")
+			.replace("&lt;mpadded&gt;", "<mpadded>")
+			.replace("&lt;/mpadded&gt;", "</mpadded>")
+			.replace("&lt;mphantom&gt;", "<mphantom>")
+			.replace("&lt;/mphantom&gt;", "</mphantom>")
+			.replace("&lt;mprescripts&gt;", "<mprescripts>")
+			.replace("&lt;/mprescripts&gt;", "</mprescripts>")
+			.replace("&lt;mroot&gt;", "<mroot>")
+			.replace("&lt;/mroot&gt;", "</mroot>")
+			.replace("&lt;mrow&gt;", "<mrow>")
+			.replace("&lt;/mrow&gt;", "</mrow>")
+			.replace("&lt;ms&gt;", "<ms>")
+			.replace("&lt;/ms&gt;", "</ms>")
+			.replace("&lt;mspace&gt;", "<mspace>")
+			.replace("&lt;/mspace&gt;", "</mspace>")
+			.replace("&lt;msqrt&gt;", "<msqrt>")
+			.replace("&lt;/msqrt&gt;", "</msqrt>")
+			.replace("&lt;mstyle&gt;", "<mstyle>")
+			.replace("&lt;/mstyle&gt;", "</mstyle>")
+			.replace("&lt;msub&gt;", "<msub>")
+			.replace("&lt;/msub&gt;", "</msub>")
+			.replace("&lt;msubsup&gt;", "<msubsup>")
+			.replace("&lt;/msubsup&gt;", "</msubsup>")
+			.replace("&lt;msup&gt;", "<msup>")
+			.replace("&lt;/msup&gt;", "</msup>")
+			.replace("&lt;mtable&gt;", "<mtable>")
+			.replace("&lt;/mtable&gt;", "</mtable>")
+			.replace("&lt;mtd&gt;", "<mtd>")
+			.replace("&lt;/mtd&gt;", "</mtd>")
+			.replace("&lt;mtext&gt;", "<mtext>")
+			.replace("&lt;/mtext&gt;", "</mtext>")
+			.replace("&lt;mtr&gt;", "<mtr>")
+			.replace("&lt;/mtr&gt;", "</mtr>")
+			.replace("&lt;munder&gt;", "<munder>")
+			.replace("&lt;/munder&gt;", "</munder>")
+			.replace("&lt;munderover&gt;", "<munderover>")
+			.replace("&lt;/munderover&gt;", "</munderover>")
+			.replace("&lt;semantics&gt;", "<semantics>")
+			.replace("&lt;/semantics&gt;", "</semantics>");
+			replaceRegexp.(replaced, "(?<!n)'&gt;(?!'|\",|=|&|\n\s+<(?!\n)|NOTE:&lt;|WARNING:&lt;|Description&lt;|\n<source|\n<caption|\n</v|\n</a|\nYour)", "'>")
+		};
 		switch(node.id,
 			\PROSE, {
 				if(noParBreak) {
@@ -551,37 +679,37 @@ SCDocHTMLRenderer {
 				this.renderChildren(stream, node);
 			},
 			\NL, { }, // these shouldn't be here..
-// Plain text and modal tags
+			// Plain text and modal tags
 			\TEXT, {
-				stream << this.escapeSpecialChars(node.text);
+				stream << parseMathML.(this.escapeSpecialChars(node.text));
 			},
 			\LINK, {
 				stream << this.htmlForLink(node.text);
 			},
 			\CODEBLOCK, {
 				stream << "<textarea class='editor'>"
-				<< this.escapeSpecialChars(node.text)
+				<< parseHelpForLaTeX.(parseMathML.(this.escapeSpecialChars(node.text)))
 				<< "</textarea>\n";
 			},
 			\CODE, {
 				stream << "<code>"
-				<< this.escapeSpecialChars(node.text)
+				<< parseHelpForLaTeX.(parseMathML.(this.escapeSpecialChars(node.text)))
 				<< "</code>";
 			},
 			\EMPHASIS, {
-				stream << "<em>" << this.escapeSpecialChars(node.text) << "</em>";
+				stream << "<em>" << parseMathML.(this.escapeSpecialChars(node.text)) << "</em>";
 			},
 			\TELETYPEBLOCK, {
-				stream << "<pre>" << this.escapeSpecialChars(node.text) << "</pre>";
+				stream << "<pre>" << parseMathML.(this.escapeSpecialChars(node.text)) << "</pre>";
 			},
 			\TELETYPE, {
-				stream << "<code>" << this.escapeSpecialChars(node.text) << "</code>";
+				stream << "<code>" << parseMathML.(this.escapeSpecialChars(node.text)) << "</code>";
 			},
 			\STRONG, {
-				stream << "<strong>" << this.escapeSpecialChars(node.text) << "</strong>";
+				stream << "<strong>" << parseMathML.(this.escapeSpecialChars(node.text)) << "</strong>";
 			},
 			\SOFT, {
-				stream << "<span class='soft'>" << this.escapeSpecialChars(node.text) << "</span>";
+				stream << "<span class='soft'>" << parseMathML.(this.escapeSpecialChars(node.text)) << "</span>";
 			},
 			\ANCHOR, {
 				stream << "<a class='anchor' name='" << this.escapeSpacesInAnchor(node.text) << "'>&nbsp;</a>";
@@ -600,10 +728,10 @@ SCDocHTMLRenderer {
 				} {
 					stream << this.htmlForLink(f[2]++"#"++(f[3]?"")++"#"++img,false);
 				};
-				f[1] !? { stream << "<br><b>" << f[1] << "</b>" }; // ugly..
+				f[1] !? { stream << "<br><b>" << parseMathML.(f[1]) << "</b>" }; // ugly..
 				stream << "</div>\n";
 			},
-// Other stuff
+			// Other stuff
 			\NOTE, {
 				stream << "<div class='note'><span class='notelabel'>NOTE:</span> ";
 				noParBreak = true;
@@ -631,7 +759,7 @@ SCDocHTMLRenderer {
 				this.renderClassTree(stream, node.text.asSymbol.asClass);
 				stream << "</ul>";
 			},
-// Lists and tree
+			// Lists and tree
 			\LIST, {
 				stream << "<ul>\n";
 				this.renderChildren(stream, node);
@@ -652,7 +780,7 @@ SCDocHTMLRenderer {
 				noParBreak = true;
 				this.renderChildren(stream, node);
 			},
-// Definitionlist
+			// Definitionlist
 			\DEFINITIONLIST, {
 				stream << "<dl>\n";
 				this.renderChildren(stream, node);
@@ -671,7 +799,7 @@ SCDocHTMLRenderer {
 				noParBreak = true;
 				this.renderChildren(stream, node);
 			},
-// Tables
+			// Tables
 			\TABLE, {
 				stream << "<table>\n";
 				this.renderChildren(stream, node);
@@ -686,7 +814,7 @@ SCDocHTMLRenderer {
 				noParBreak = true;
 				this.renderChildren(stream, node);
 			},
-// Methods
+			// Methods
 			\CMETHOD, {
 				this.renderMethod(
 					stream, node,
@@ -755,7 +883,7 @@ SCDocHTMLRenderer {
 							f = currentMethod.argNames[currArg].asString;
 							if(
 								(z = if(currentMethod.varArgs and: {currArg==(currentMethod.argNames.size-1)})
-										{"... "++f} {f}
+									{"... "++f} {f}
 								) != node.text;
 							) {
 								"SCDoc: In %\n"
@@ -790,7 +918,7 @@ SCDocHTMLRenderer {
 				stream << "<h4>Discussion:</h4>\n";
 				this.renderChildren(stream, node);
 			},
-// Sections
+			// Sections
 			\CLASSMETHODS, {
 				if(node.notPrivOnly) {
 					stream << "<h2><a class='anchor' name='classmethods'>Class Methods</a></h2>\n";
@@ -813,7 +941,7 @@ SCDocHTMLRenderer {
 			},
 			\SECTION, {
 				stream << "<h2><a class='anchor' name='" << this.escapeSpacesInAnchor(node.text)
-				<< "'>" << this.escapeSpecialChars(node.text) << "</a></h2>\n";
+				<< "'>" << parseMathML.(this.escapeSpecialChars(node.text)) << "</a></h2>\n";
 				if(node.makeDiv.isNil) {
 					this.renderChildren(stream, node);
 				} {
@@ -824,7 +952,7 @@ SCDocHTMLRenderer {
 			},
 			\SUBSECTION, {
 				stream << "<h3><a class='anchor' name='" << this.escapeSpacesInAnchor(node.text)
-				<< "'>" << this.escapeSpecialChars(node.text) << "</a></h3>\n";
+				<< "'>" << parseMathML.(this.escapeSpecialChars(node.text)) << "</a></h3>\n";
 				if(node.makeDiv.isNil) {
 					this.renderChildren(stream, node);
 				} {
@@ -999,9 +1127,10 @@ SCDocHTMLRenderer {
 	}
 
 	*renderToFile {|filename, doc, root|
-		var stream;
+		var stream, streamedText;
 		File.mkdir(filename.dirname);
 		stream = File(filename, "w");
+
 		if(stream.isOpen) {
 			this.renderOnStream(stream, doc, root);
 			stream.close;

@@ -1,0 +1,321 @@
+TITLE::LaTeX and MathML Support via MathJax
+summary::How to use LaTeX Syntax in SCDocs using MathJax
+categories:: HelpSystem
+related:: Guides/WritingHelp, Classes/SCDoc, Classes/SCDocHTMLRenderer, Guides/WritingHelp_HTML_LaTeX_MathML
+
+
+
+
+
+
+
+
+
+
+LaTeX and MathML syntax is available through MathJax scripts. The scripts are shipped with the SuperCollider installation and are automatically included by the link::https://www.mathjax.org/#gettingstarted#Getting Started:: (link::https://www.mathjax.org/#gettingstarted::)
+when rendering the SC-Doc to HTML. In principle, SuperCollider users do not have to deal with these scripts.
+
+
+
+
+
+
+
+
+
+
+
+section:: LaTeX support
+
+
+This document only covers the inline and display modes. For details of LaTeX syntax, see the LaTeX documentation:
+<link::https://www.latex-project.org/help/documentation/::>.
+
+
+
+subsection:: Inline mode
+
+
+Inline mode is used to insert a mathematical expression into the text flow and is achieved by enclosing the LaTeX code in a pair of code::\(:: and code::\):: delimiters. For example, the following LaTeX code will display the rendered mathematical expression \(a^2 + b^2 = c^2\) within a line of text:
+code::
+\(a^2 + b^2 = c^2\)
+::
+It also works in inline teletype text (teletype::\(a^2 + b^2 = c^2\)::)
+code::
+:teletype:\(a^2 + b^2 = c^2\):/teletype:
+::
+and teletype block:
+teletype::
+\(a^2 + b^2 = c^2\)
+::
+code::
+:teletype:
+\(a^2 + b^2 = c^2\)
+:/teletype:
+::
+
+
+
+
+
+subsection:: Display mode
+
+
+Display mode is used to insert a mathematical expression on its own line and is achieved by enclosing the LaTeX code in a pair of code::\[:: and code::\]:: delimiters. For example, the following LaTeX code will display the rendered mathematical expression \[a^2 + b^2 = c^2\] on a separate line from the text paragraph:
+
+code::
+\(a^2 + b^2 = c^2\)
+::
+
+The use of display math in teletext is not recommended as it reduces readability in the following ways: In inline teletype text (teletype::\[a^2 + b^2 = c^2\]::)
+code::
+:teletype:\[a^2 + b^2 = c^2\]:/teletype:
+::
+and teletype block:
+teletype::
+\[a^2 + b^2 = c^2\]
+::
+code::
+:teletype:
+\[a^2 + b^2 = c^2\]
+:/teletype:
+::
+
+
+
+
+
+
+
+
+
+
+section:: MathML support
+
+
+Warning::
+The attribute should be written in single quotation marks.
+::
+
+This document only covers inline and block representation. For details of the MathML syntax, see the MathML documentation: <link::https://developer.mozilla.org/en-US/docs/Web/MathML::>.
+Based on <link::https://w3c.github.io/mathml-core/#mathml-elements-and-attributes::>, the following MathML tags are currently bridged to MathJax by the link::Classes/SCDocHTMLRenderer##*renderSubTree#.renderSubTree:: classmethod of the link::Classes/SCDocHTMLRenderer:: class:
+
+numberedlist::
+## code::<::code::annotation>::, code::<::code::/annotation>::
+## code::<::code::annotation-xml>::, code::<::code::annotation-xml:: , code::<::code::/annotation-xml>::
+## code::<::code::maction>::, code::<::code::maction:: , code::<::code::/maction>::
+## code::<::code::math>::, code::<::teletype::/math:: , code::<::code::math display='block'>::, code::<::code::math display='inline'>::, code::<::code::/math>::
+## code::<::code::merror>::, code::<::code::/merror>::
+## code::<::code::mfrac>::, code::<::code::/mfrac>::
+## code::<::code::mi>::, code::<::code::/mi>::
+## code::<::code::mmultiscripts>::, code::<::code::mmultiscripts:: , code::<::code::/mmultiscripts>::
+## code::<::code::mn>::, code::<::code::/mn>::
+## code::<::code::mo>::, code::<::code::/mo>::
+## code::<::code::mover>::, code::<::code::/mover>::
+## code::<::code::mpadded>::, code::<::code::/mpadded>::
+## code::<::code::mphantom>::, code::<::code::/mphantom>::
+## code::<::code::mprescripts>::, code::<::code::/mprescripts>::
+## code::<::code::mroot>::, code::<::code::/mroot>::
+## code::<::code::mrow>::, code::<::code::/mrow>::
+## code::<::code::ms>::, code::<::code::/ms>::
+## code::<::code::mspace>::, code::<::code::/mspace>::
+## code::<::code::msqrt>::, code::<::code::/msqrt>::
+## code::<::code::mstyle>::, code::<::code::/mstyle>::
+## code::<::code::msub>::, code::<::code::/msub>::
+## code::<::code::msubsup>::, code::<::code::/msubsup>::
+## code::<::code::msup>::, code::<::code::/msup>::
+## code::<::code::mtable>::, code::<::code::/mtable>::
+## code::<::code::mtd>::, code::<::code::/mtd>::
+## code::<::code::mtext>::, code::<::code::/mtext>::
+## code::<::code::mtr>::, code::<::code::/mtr>::
+## code::<::code::munder>::, code::<::code::/munder>::
+## code::<::code::munderover>::, code::<::code::/munderover>::
+## code::<::code::semantics>::, code::<::code::/semantics>::
+::
+
+
+
+
+
+
+
+
+
+
+subsection:: Inline
+
+Inline display is used to insert a mathematical expression into the text flow and is achieved by using code::<::code::math>:: or code::<::code::math display='inline'>:: tag. For example, the following MathML code will display the rendered mathematical expression
+<math display='inline'>
+  <msup>
+    <mi>a</mi>
+    <mn>2</mn>
+  </msup>
+  <mo>+</mo>
+  <msup>
+    <mi>b</mi>
+    <mn>2</mn>
+  </msup>
+  <mo>=</mo>
+  <msup>
+    <mi>c</mi>
+    <mn>2</mn>
+  </msup>
+</math>
+within a line of text:
+
+table::
+##code::
+<math>
+  <msup>
+    <mi>a</mi>
+    <mn>2</mn>
+  </msup>
+  <mo>+</mo>
+  <msup>
+    <mi>b</mi>
+    <mn>2</mn>
+  </msup>
+  <mo>=</mo>
+  <msup>
+    <mi>c</mi>
+    <mn>2</mn>
+  </msup>
+</math>
+::
+||
+code::
+<math display='inline'>
+  <msup>
+    <mi>a</mi>
+    <mn>2</mn>
+  </msup>
+  <mo>+</mo>
+  <msup>
+    <mi>b</mi>
+    <mn>2</mn>
+  </msup>
+  <mo>=</mo>
+  <msup>
+    <mi>c</mi>
+    <mn>2</mn>
+  </msup>
+</math>
+::
+::
+
+subsection:: Block
+
+Block mode is used to insert a mathematical expression on its own line and is achieved by using code::<::code::math display='block'>:: tag. For example, the following MathML code will display the rendered mathematical expression
+<math display='block'>
+  <msup>
+    <mi>a</mi>
+    <mn>2</mn>
+  </msup>
+  <mo>+</mo>
+  <msup>
+    <mi>b</mi>
+    <mn>2</mn>
+  </msup>
+  <mo>=</mo>
+  <msup>
+    <mi>c</mi>
+    <mn>2</mn>
+  </msup>
+</math>
+on a separate line from the text paragraph:
+
+code::
+<math display='block'>
+  <msup>
+    <mi>a</mi>
+    <mn>2</mn>
+  </msup>
+  <mo>+</mo>
+  <msup>
+    <mi>b</mi>
+    <mn>2</mn>
+  </msup>
+  <mo>=</mo>
+  <msup>
+    <mi>c</mi>
+    <mn>2</mn>
+  </msup>
+</math>
+::
+
+The use of display math in teletext is not recommended as it reduces readability in the following ways: In inline teletype text
+(
+<math display='block'>
+  <msup>
+    <mi>a</mi>
+    <mn>2</mn>
+  </msup>
+  <mo>+</mo>
+  <msup>
+    <mi>b</mi>
+    <mn>2</mn>
+  </msup>
+  <mo>=</mo>
+  <msup>
+    <mi>c</mi>
+    <mn>2</mn>
+  </msup>
+</math>
+)
+code::
+<math display='block'>
+  <msup>
+    <mi>a</mi>
+    <mn>2</mn>
+  </msup>
+  <mo>+</mo>
+  <msup>
+    <mi>b</mi>
+    <mn>2</mn>
+  </msup>
+  <mo>=</mo>
+  <msup>
+    <mi>c</mi>
+    <mn>2</mn>
+  </msup>
+</math>
+::
+and teletype block:
+teletype::
+<math display='block'>
+  <msup>
+    <mi>a</mi>
+    <mn>2</mn>
+  </msup>
+  <mo>+</mo>
+  <msup>
+    <mi>b</mi>
+    <mn>2</mn>
+  </msup>
+  <mo>=</mo>
+  <msup>
+    <mi>c</mi>
+    <mn>2</mn>
+  </msup>
+</math>
+::
+code::
+:teletype:
+<math display='block'>
+  <msup>
+    <mi>a</mi>
+    <mn>2</mn>
+  </msup>
+  <mo>+</mo>
+  <msup>
+    <mi>b</mi>
+    <mn>2</mn>
+  </msup>
+  <mo>=</mo>
+  <msup>
+    <mi>c</mi>
+    <mn>2</mn>
+  </msup>
+</math>
+:/teletype:
+::
