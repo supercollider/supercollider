@@ -9,8 +9,7 @@ A two-channel reverb link::Classes/UGen::, based on the "GVerb" LADSPA effect by
 subsection:: Known issues
 list::
 ## There is a large CPU spike when the synth is instantiated while all the delay lines are zeroed out.
-## Quick changes in roomsize result in zipper noise.
-## emphasis::Changing the roomsize does not work properly! Still trying to look for the bug... (-josh)::
+## Changes in roomsize result in pitch shifting and noise.
 ::
 
 classmethods::
