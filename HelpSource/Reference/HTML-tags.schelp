@@ -1,0 +1,668 @@
+TITLE::HTML tags in SCDocs
+summary::How to use HTML tags in SCDocs
+categories:: HelpSystem
+related:: Guides/WritingHelp, Classes/SCDoc, Classes/SCDocHTMLRenderer
+
+
+
+
+
+
+
+
+
+
+section:: Formatting Text
+
+
+
+
+
+subsection:: Paragraph spacing
+
+
+The following code prints a blank line:
+
+table::
+##
+code::
+Line 1 begins.
+It is still Line 1.
+
+Line 2
+
+<br>Line 4 due to '<br>'
+
+<br> Line 6 due to '<br>'
+
+<br>
+Line 8
+::
+
+||
+Line 1 begins.
+It is still Line 1.
+
+Line 2
+
+<br>Line 4 due to '<br>'
+
+<br> Line 6 due to '<br>'
+
+<br>
+Line 8
+::
+
+<br>
+
+The height of a line can be adjusted with the units like teletype::em::, teletype::rem:: and teletype::%:::
+
+table::
+##code::
+Line 1
+<p style='line-height:33%'><br>
+Line 4
+<p style='line-height:0.33em'><br>
+Line 6
+<p style='line-height:0.33rem'><br>
+Line 8
+<p style='line-height:0.66%'><br>
+Line 10
+<p style='line-height:0.66em'><br>
+Line 12
+<p style='line-height:0.66rem'><br>
+::
+||
+Line 1: default line-height
+
+Line 2: 'line-height:33%'
+<p style='line-height:33%'><br>
+Line 4: 'line-height:0.33em
+<p style='line-height:0.33em'><br>
+Line 6: 'line-height:0.33em'
+<p style='line-height:0.33rem'><br>
+Line 8: 'line-height:66%'
+<p style='line-height:66%'><br>
+Line 10: 'line-height:0.66em'
+<p style='line-height:0.66em'><br>
+Line 12: 'line-height:0.66rem'
+<p style='line-height:0.66rem'><br>
+::
+
+<br>
+
+table::
+##strong::An Example:::
+table::
+##The standard Lorem Ipsum passage, used since the 1500s:
+
+emphasis::Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.::
+
+<p style='line-height:0.3em'><br><p>
+
+Section 1.10.32 of “de Finibus Bonorum et Malorum”, written by Cicero in 45 BC:
+
+"emphasis::Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?::"
+::
+::
+
+<br>
+
+
+
+
+
+subsection:: Table
+
+
+All table tags are supported as follow:
+
+code::
+  <table border='1px solid black' style='text-align:center'>
+    <caption>Order Details</caption>
+    <thead>
+      <tr>
+        <th scope='col' style='text-align:center'>Order ID</th>
+        <th scope='col'>Customer</th>
+        <th scope='col'>Items</th>
+		<th scope='col' colspan='2'>Shipping</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <th scope='row' rowspan='2'>12345</th>
+        <td rowspan='2'>John Doe</td>
+        <td>Headphones</td>
+        <td rowspan='2'>Address</td>
+        <td>Standard</td>
+      </tr>
+      <tr>
+        <td>Speakers</td>
+        <td>Express</td>
+      </tr>
+      <tr>
+        <th scope='row'>67890</th>
+        <td>Jane Smith</td>
+        <td>Software Bundle</td>
+        <td colspan='2'>Downloadable</td>
+      </tr>
+    </tbody>
+  </table>
+::
+
+<br>
+
+table::
+##
+  <table border='1px solid black' style='text-align:center'>
+    <caption>Order Details</caption>
+    <thead>
+      <tr>
+        <th scope='col' style='text-align:center'>Order ID</th>
+        <th scope='col'>Customer</th>
+        <th scope='col'>Items</th>
+		<th scope='col' colspan='2'>Shipping</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <th scope='row' rowspan='2'>12345</th>
+        <td rowspan='2'>John Doe</td>
+        <td>Headphones</td>
+        <td rowspan='2'>Address</td>
+        <td>Standard</td>
+      </tr>
+      <tr>
+        <td>Speakers</td>
+        <td>Express</td>
+      </tr>
+      <tr>
+        <th scope='row'>67890</th>
+        <td>Jane Smith</td>
+        <td>Software Bundle</td>
+        <td colspan='2'>Downloadable</td>
+      </tr>
+    </tbody>
+  </table>
+::
+
+
+
+
+subsection:: Horizontal Line
+
+
+The following code prints a horizontal line:
+
+code::
+<hr>
+::
+table::
+##<hr>
+::
+
+A horizontal line in teletype:
+
+table::
+##
+teletype::
+text
+<hr>text
+::
+::
+
+
+
+
+
+subsection:: Small Text
+
+
+The following code displays small text:
+code::
+<small>This is small text.</small>
+::
+
+table::
+##<small>This is small text.</small>
+::
+
+Normal and small text in teletype:
+
+table::
+##
+teletype::
+This is normal text.
+<small>This is small text.</small>
+::
+::
+
+
+
+
+
+subsection:: Strong and Emphasis
+
+
+list::
+##The following code displays bold text:
+code::
+strong::This is bold text.::
+::
+
+table::
+##strong::This is bold text.::
+::
+
+To use bold text in teletype, you can use a pair of the following tags:
+code::
+<strong></strong>
+::
+
+table::
+##
+teletype::
+<strong>This is bold text.</strong>
+::
+::
+
+##The following code
+code::
+emphasis::This is italic text.::
+::
+and the following code display italic text:
+code::
+<em>This is italic text.<em>
+::
+table::
+##
+<em>This is italic text.<em>
+::
+
+To use bold text in teletype, you can use a pair of the following tags:
+
+code::
+<em></em>
+::
+
+table::
+##
+teletype::
+<em>This is italic text.</em>
+::
+::
+
+##Bold italic text is not available with the built-in hardcoded link::Reference/SCDocSyntax::.
+The following code displays bold italic text:
+
+code::
+<em>strong::This is bold italic text.::</em>
+::
+
+table::
+##
+<em>strong::This is bold italic text.::</em>
+::
+
+To use bold text in teletype, you can use one of a pair of the following tags:
+
+code::
+<em><strong></strong></em>
+::
+table::
+##teletype::
+<em><strong>This is bold italic text.</strong></em>
+::
+::
+
+or
+
+code::
+<strong><em></em></strong>
+::
+
+table::
+##teletype::
+<strong><em>This is bold italic text.</em></strong>
+::
+::
+::
+
+<br>
+
+Small text can also be italic, bold and bold italic.
+table::
+##code||text||teletype
+##code::
+<small>small normal text</small>
+::
+||
+<small>small normal text</small>
+||
+teletype::
+<small>small normal text</small>
+::
+##
+code::
+<small><strong>small bold text</strong></small>
+::
+||
+<small><strong>small bold text</strong></small>
+||
+teletype::
+<small><strong>small bold text</strong></small>
+::
+##
+code::
+<small><em>small italic text</em></small>
+::
+||
+<small><em>small italic text</em></small>
+||
+teletype::
+<small><em>small italic text</em></small>
+::
+##
+code::
+<small><em><strong>small bold italic text</strong></em></small>
+::
+||
+<small><em><strong>small bold italic text</strong></em></small>
+||
+teletype::
+<small><em><strong>small bold italic text</strong></em></small>
+::
+::
+<br>
+<br>
+<br>
+
+
+
+
+
+subsection:: Superscript and Subscript
+
+
+For superscripts, see link::#Exponentiation: base and exponent in text body#Exponentiation: base and exponent in text body::.
+For subscripts, see link::#Logarithm: base and operand in text body#Logarithm: base and operand in text body::.
+<br>
+<br>
+<br>
+<br>
+
+
+
+
+
+
+
+
+section:: Mathematical Expressions
+
+
+subsection:: Exponentiation: base and exponent in text body
+
+
+The following code displays an exponential expression with base and exponent:
+
+code::
+2<sup>2</sup> = 4
+::
+2<sup>2</sup> = 4
+
+In teletype:
+
+teletype::
+2<sup>2</sup> = 4
+::
+
+
+list::
+##linear scale:
+teletype::
+1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+1  2     4           8                       16                                              32
+::
+##Logarithmic scale (expressed using exponentiation. See increasing exponents)
+teletype::
+1<sup> </sup>                 2<sup> </sup>                 4<sup> </sup>                 8<sup> </sup>                 16<sup> </sup>                32
+2<sup>0</sup>                 2<sup>1</sup>                 2<sup>2</sup>                 2<sup>3</sup>                 2<sup>4</sup>                 2<sup>5</sup>
+::
+::
+
+
+
+
+
+subsection:: Logarithm: base and operand in text body
+
+
+The following code displays a logarithmic expression with base and operand:
+
+code::
+log<sub>2</sub>2 = 1
+<em>log<sub>2</sub></em> 2 = 1
+::
+
+log<sub>2</sub>2 = 1
+
+<em>log<sub>2</sub></em>2 = 1
+
+In teletype:
+
+teletype::
+log<sub>2</sub>2 = 1
+<em>log<sub>2</sub></em>2 = 1
+::
+
+<br>
+table::
+##strong::Examples:::
+Amplitude and dB FS:
+table::
+##20 <em>log</em><sub>10</sub> (1 / 1) = 0 dB
+||
+code::
+20 * log10(1/1)
+::
+
+##20 <em>log</em><sub>10</sub> (0.1 / 1) = -20 dB
+||
+code::
+20 * log10(1e-1/1)
+::
+
+##20 <em>log</em><sub>10</sub> (0.01 / 1) = -40 dB
+||
+code::
+20 * log10(1e-2/1)
+::
+
+##20 <em>log</em><sub>10</sub> (0.001 / 1) = -60 dB
+||
+code::
+20 * log10(1e-3/1)
+::
+
+##20 <em>log</em><sub>10</sub> (0.0001 / 1) = -80 dB
+||
+code::
+20 * log10(1e-4/1)
+::
+
+##20 <em>log</em><sub>10</sub> (0.00001 / 1) = -100 dB
+||
+code::
+20 * log10(1e-5/1)
+::
+::
+::
+
+
+
+
+
+subsection:: Fraction in text body
+
+
+Fraction in text body can be presented as follows:
+
+code::
+1<sup>1</sup>/<sub>2</sub>
+::
+
+1<sup>1</sup>/<sub>2</sub>
+
+
+In paragraphs, you can use fractions such as 1<sup>1</sup>/<sub>2</sub> HTML’s superscript and subscript. It can also be used in teletype text. teletype::<sup>1</sup>/<sub>4</sub> : <sup>1</sup>/<sub>2</sub> : 1 : 2 : 4::.
+
+
+
+
+
+
+
+
+
+
+section:: Embedding other HTML with iframe
+
+
+The following code embeds a web page in an html document:
+
+code::
+<iframe width='100%' height='380' src='https://supercollider.github.io/' title='SuperCollider Forum scsynth' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' referrerpolicy='strict-origin-when-cross-origin' allowfullscreen></iframe>
+::
+<iframe width='100%' height='380' src='https://supercollider.github.io/' title='SuperCollider Forum scsynth' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' referrerpolicy='strict-origin-when-cross-origin' allowfullscreen></iframe>
+
+
+
+
+
+section:: Multimedia
+
+
+subsection:: Audio
+
+
+strong::Offline Audio::
+
+
+The following code demonstrates audio control using one or more local audio files:
+
+code::
+<audio controls>
+<source src='./resources/a11wlk01.mp3' type='audio/mpeg'>
+<source src='./resources/a11wlk01.ogg' type='audio/ogg'>
+<source src='./resources/a11wlk01.wav' type='audio/wav'>
+<source src='./resources/a11wlk01.aiff' type='audio/aiff'>
+<source src='./resources/a11wlk01.flac' type='audio/flac'>
+<source src='./resources/a11wlk01.m4a' type='audio/mp4'>
+<source src='./resources/a11wlk01.wma' type='audio/x-ms-wma'>
+Your browser does not support the audio element.
+</audio>
+::
+
+<audio controls>
+<source src='./resources/a11wlk01.mp3' type='audio/mpeg'>
+<source src='./resources/a11wlk01.ogg' type='audio/ogg'>
+<source src='./resources/a11wlk01.wav' type='audio/wav'>
+<source src='./resources/a11wlk01.aiff' type='audio/aiff'>
+<source src='./resources/a11wlk01.flac' type='audio/flac'>
+<source src='./resources/a11wlk01.m4a' type='audio/mp4'>
+<source src='./resources/a11wlk01.wma' type='audio/x-ms-wma'>
+Your browser does not support the audio element.
+</audio>
+
+
+
+
+
+strong::Online Audio::
+
+
+The following code demonstrates audio control with an online audio file:
+
+code::
+<audio controls>
+<source src='https://www.w3schools.com/html/horse.ogg' type='audio/ogg'>
+Your browser does not support the audio element.
+</audio>
+::
+
+<audio controls>
+<source src='https://www.w3schools.com/html/horse.ogg' type='audio/ogg'>
+Your browser does not support the audio element.
+</audio>
+
+
+
+
+
+
+
+
+
+
+subsection:: Video
+
+
+Videos can be embedded, but when printed, their contents won't show up in the video frame.
+
+<br>
+
+strong::Offline Video::
+
+The following code demonstrates video control using a local video file:
+
+table::
+##size <br><br> defined
+||
+
+code::
+<video controls width='114' height='77'>
+<source src='./resources/wave_propagation_simulation_2D.mp4' title='2D simulation of the propagation of a wave in air' type='video/mp4'>
+</video>
+::
+table::
+##
+<video controls width='114' height='77'>
+<source src='./resources/wave_propagation_simulation_2D.mp4' title='2D simulation of the propagation of a wave in air' type='video/mp4'>
+</video>
+::
+##size <br><br> not <br><br> defined
+||
+code::
+<video controls>
+<source src='./resources/wave_propagation_simulation_2D.mp4' title='2D simulation of the propagation of a wave in air' type='video/mp4'>
+</video>
+::
+table::
+##
+<video controls>
+<source src='./resources/wave_propagation_simulation_2D.mp4' title='2D simulation of the propagation of a wave in air' type='video/mp4'>
+</video>
+::
+::
+
+<br>
+
+
+
+
+
+strong::Online Video::
+
+
+The following code displays a YouTube video using an iframe:
+code::
+<iframe width='560' height='315' src='https://www.youtube.com/embed/FI5rYjP9Vn8?si=X4WSZJaBZQToE9je' title='YouTube video player' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' referrerpolicy='strict-origin-when-cross-origin' allowfullscreen></iframe>
+::
+<p style='line-height:0.2em'><br><p>
+<iframe width='560' height='315' src='https://www.youtube.com/embed/FI5rYjP9Vn8?si=X4WSZJaBZQToE9je' title='YouTube video player' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' referrerpolicy='strict-origin-when-cross-origin' allowfullscreen></iframe>
+
+ 

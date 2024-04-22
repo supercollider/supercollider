@@ -50,6 +50,121 @@ SCDocHTMLRenderer {
 	*escapeSpacesInAnchor { |str|
 		^str.replace(" ", "%20")
 	}
+	*replaceRegexp { |source, findRegexp, replace|
+			var founds, replaced;
+			founds = source.findRegexp(findRegexp);
+			founds = if(findRegexp[0] == $^) {
+				founds.collect { |array| if (array[0] == 0) {array} {} }
+			} {
+				founds
+			};
+			while { founds.includes(nil) } { founds.remove(nil) };
+			founds = founds.asSet.asArray.sort({ |a, b| a[0] < b[0] });
+			replaced = source;
+			if(founds.size > 0) {
+				founds.reverse.do { |idx_str|
+					var foundIndex, foundString;
+					#foundIndex, foundString = idx_str;
+					replaced = if (foundIndex > 0) {
+						var lastString = replaced[foundIndex + foundString.size ..];
+						lastString = if(lastString != nil) { lastString } { "" };
+						replaced[0 .. foundIndex - 1] ++ replace ++ lastString
+					} {
+						replace ++ replaced[foundString.size ..]
+					}
+				}
+			} {
+				replaced
+			};
+			^replaced
+		}
+	*parseHTML{ |str|
+		var replaced;
+		if ("&lt;|&gt;".matchRegexp(str)) {
+			replaced = str
+
+			// paragraph, line height:
+			.replace("&lt;p&gt;", "\n<p>\n")
+			.replace("&lt;p style='line-height:", "<p style='line-height:")
+			.replace("&lt;/p&gt;", "\n</p>\n")
+
+			// horizontal line:
+			.replace("&lt;hr&gt;", "<hr>")
+
+			// small text:
+			.replace("&lt;small&gt;", "<small>")
+			.replace("&lt;/small&gt;", "</small>")
+
+			// italic:
+			.replace("&lt;em&gt;", "<em>")
+			.replace("&lt;/em&gt;", "</em>")
+			.replace("em'&gt;", "em'>")
+
+			// bold:
+			.replace("&lt;strong&gt;", "<strong>")
+			.replace("&lt;/strong&gt;", "</strong>")
+
+			// subscript and superscript:
+			.replace("&lt;sub&gt;", "<sub>")
+			.replace("&lt;/sub&gt;", "</sub>")
+			.replace("&lt;sup&gt;", "<sup>")
+			.replace("&lt;/sup&gt;", "</sup>")
+
+			// iframe::
+			.replace("&lt;iframe", "<iframe")
+			.replace("&lt;/iframe&gt;", "</iframe>")
+			.replace("'&gt; <source src='", "'> <source src='")
+			.replace("allowfullscreen&gt;", "allowfullscreen>")
+
+			// audio:
+			.replace("&lt;audio controls autoplay&gt;", "<audio controls autoplay>")
+			.replace("&lt;audio controls&gt;", "<audio controls>")
+			.replace("&lt;source src=", "<source src=")/*
+			.replace("/wav'&gt;", "/wav'>")
+			.replace("/aiff'&gt;", "/aiff'>")
+			.replace("/flac'&gt;", "/flac'>")
+			.replace("/ogg'&gt;", "/ogg'>")
+			.replace("/mpeg'&gt;", "/mpeg'>")
+			.replace("/mp4'&gt;", "/mp4'>")
+			.replace("/x-ms-wma'&gt;", "/x-ms-wma'>")*/
+			.replace("&lt;/audio&gt;", "</audio>")
+
+			// video:
+			.replace("&lt;video controls autoplay&gt;", "<video controls autoplay>")
+			.replace("&lt;video controls&gt;", "<video controls>")
+			.replace("&lt;video controls width=", "<video controls width=")
+			.replace("&lt;/video&gt;", "</video>")
+
+			// table:
+			.replace("&lt;table&gt;", "\n<table>")
+			.replace("&lt;table ", "\n<table ")
+			.replace("&lt;/table&gt;", "\n</table>")
+			.replace("&lt;caption&gt;", "\n<caption>")
+			.replace("&lt;/caption&gt;", "\n</caption>")
+			.replace("&lt;thead&gt;", "\n<thead>")
+			.replace("&lt;/thead&gt;", "\n</thead>")
+			.replace("&lt;tr&gt;", "\n<tr>")
+			.replace("&lt;/tr&gt;", "\n</tr>")
+			.replace("&lt;th scope='col'&gt;", "\n<th scope='col'>")
+			.replace("&lt;th scope='row'&gt;", "\n<th scope='row'>")
+			.replace("&lt;th ", "\n<th ")
+			.replace("&lt;/th&gt;", "\n</th>")
+			.replace("&lt;tbody&gt;", "\n<tbody>")
+			.replace("&lt;/tbody&gt;", "</tbody>")
+			.replace("&lt;/tbody&gt;", "</tbody>")
+			.replace("&lt;td&gt;", "\n<td>")
+			.replace("&lt;td", "\n<td")
+			.replace("&lt;/td&gt;", "\n</td>");
+
+			// empty line
+			replaced = SCDocHTMLRenderer.replaceRegexp(replaced, "(?<!'|')&lt;br&gt;(?!'|')", "\n<br>\n");
+			// '&gt; to > (only > converted using this method)'&gt;
+			replaced = SCDocHTMLRenderer.replaceRegexp(replaced, "(?<!n)'&gt;(?!'|\",|=|&|\n\s+<(?!\n)|NOTE:&lt;|WARNING:&lt;|Description&lt;|\n<source|\n<caption|\n</v|\n</a|\nYour)", "'>");
+		} {
+			replaced = str
+		};
+		^replaced
+	}
 
 	// Find the target (what goes after href=) for a link that stays inside the hlp system
 	*prLinkTargetForInternalLink { |linkBase, linkAnchor, originalLink|
@@ -158,16 +273,15 @@ SCDocHTMLRenderer {
 			linkText = if(linkText.isEmpty) { link } { linkText };
 			linkTarget = this.prLinkTargetForExternalLink(linkBase, linkAnchor);
 		} {
-		    // Process a link that goes to a URL within the help system
+			// Process a link that goes to a URL within the help system
 			linkText = this.prLinkTextForInternalLink(linkBase, linkAnchor, linkText);
 			linkTarget = this.prLinkTargetForInternalLink(linkBase, linkAnchor, link);
 		};
 
 		// Escape special characters in the link text if requested
 		if(escape) { linkText = this.escapeSpecialChars(linkText) };
-
 		// Return a well-formatted <a> tag using the target and link text
-		^"<a href=\"" ++ linkTarget ++ "\">" ++ linkText ++ "</a>";
+		^("<a href='" ++ linkTarget ++ "'>" ++ linkText ++ "</a>");
 	}
 
 	*makeArgString {|m, par=true|
@@ -217,8 +331,8 @@ SCDocHTMLRenderer {
 
 		stream
 		<< "<!doctype html>"
-		<< "<html lang='en'>"
-		<< "<head><title>";
+		<< "\n<html lang='en'>"
+		<< "\n<head>\n<title>";
 
 		if(thisIsTheMainHelpFile) {
 			stream << "SuperCollider " << Main.version << " Help";
@@ -250,7 +364,7 @@ SCDocHTMLRenderer {
 		<< "<script src='" << baseDir << "/frontend.js' type='text/javascript'></script>\n"
 		// QWebChannel access
 		<< "<script src='qrc:///qtwebchannel/qwebchannel.js' type='text/javascript'></script>\n"
-		<< "</head>\n"
+		<< "</head>\n\n"
 		<< "<body onload='fixTOC()'>\n";
 
 
@@ -262,13 +376,13 @@ SCDocHTMLRenderer {
 
 		stream
 		<< "<div id='toc'>\n"
-		<< "<div id='toctitle'>" << displayedTitle << ":</div>\n"
+		<< "<div id='toctitle'>" << displayedTitle << ":</div>"
 		<< "<span class='toc_search'>Filter: <input id='toc_search'></span>";
 		this.renderTOC(stream, body);
-		stream << "</div>";
+		stream << "\n</div>\n";
 
 		stream
-		<< "<div id='menubar'></div>\n"
+		<< "<div id='menubar'></div>"
 		<< "<div class='contents'>\n"
 		<< "<div class='header'>\n";
 
@@ -287,7 +401,7 @@ SCDocHTMLRenderer {
 					stream << " | "
 				};
 
-				stream << "<span id='categories'>"
+				stream << "\n<span id='categories'>"
 
 				<< (doc.categories.collect { | path |
 					// get all the components of a category path ("UGens>Generators>Deterministic")
@@ -305,10 +419,10 @@ SCDocHTMLRenderer {
 				<< "</span>\n";
 			};
 
-			stream << "</div>";
+			stream << "\n</div>";
 		};
 
-		stream << "<h1>" << displayedTitle;
+		stream << "\n<h1>" << displayedTitle;
 		if(thisIsTheMainHelpFile) {
 			stream << "<span class='headerimage'><img src='" << baseDir << "/images/SC_icon.png'/></span>";
 		};
@@ -325,12 +439,12 @@ SCDocHTMLRenderer {
 			<< "<div class='extension-indicator-ctr' title='This help file originates from a third-party quark or plugin for SuperCollider.'>"
 			<< "<img class='extension-indicator-icon' alt='Extension' src='" << baseDir << "/images/plugin.png'>"
 			<< "<span class='extension-indicator-text'>Extension</span>"
-			<< "</div>";
+			<< "\n</div>\n";
 		};
 		stream
 		<< "</h1>\n"
 		<< "<div id='summary'>" << this.escapeSpecialChars(doc.summary) << "</div>\n"
-		<< "</div>\n"
+		<< "\n</div>\n"
 		<< "<div class='subheader'>\n";
 
 		if(doc.isClassDoc) {
@@ -350,7 +464,7 @@ SCDocHTMLRenderer {
 					if(z) {
 						stream << "</span><a class='subclass_toggle' href='#' onclick='javascript:showAllSubclasses(this); return false'>&hellip;&nbsp;see&nbsp;all</a>";
 					};
-					stream << "</div>\n";
+					stream << "\n</div>\n";
 				};
 				if(currentImplClass.notNil) {
 					stream << "<div class='inheritance'>Implementing class: "
@@ -378,7 +492,7 @@ SCDocHTMLRenderer {
 			};
 		};
 
-		stream << "</div>\n";
+		stream << "\n</div>\n";
 	}
 
 	*renderChildren {|stream, node|
@@ -534,7 +648,7 @@ SCDocHTMLRenderer {
 		if(node.children.size > 1) {
 			stream << "<div class='method'>";
 			this.renderChildren(stream, node.children[1]);
-			stream << "</div>";
+			stream << "</div>\n";
 		};
 		currentMethod = nil;
 	}
@@ -546,42 +660,56 @@ SCDocHTMLRenderer {
 				if(noParBreak) {
 					noParBreak = false;
 				} {
-					stream << "\n<p>";
+					stream << "\n<p>\n";
 				};
 				this.renderChildren(stream, node);
 			},
 			\NL, { }, // these shouldn't be here..
 // Plain text and modal tags
 			\TEXT, {
-				stream << this.escapeSpecialChars(node.text);
+				stream << SCDocHTMLRenderer.parseHTML(this.escapeSpecialChars(node.text));
 			},
 			\LINK, {
-				stream << this.htmlForLink(node.text);
+				stream
+				<< this.htmlForLink(node.text)
+				.replace("<a href='http", "http")
+				.replace("''>http", "'>http")
+				.replace("'</a>", "</a>");
 			},
 			\CODEBLOCK, {
-				stream << "<textarea class='editor'>"
+				stream << "\n<textarea class='editor'>"
 				<< this.escapeSpecialChars(node.text)
 				<< "</textarea>\n";
 			},
 			\CODE, {
-				stream << "<code>"
+				stream << "\n<code>"
 				<< this.escapeSpecialChars(node.text)
-				<< "</code>";
+				<< "</code>\n";
 			},
 			\EMPHASIS, {
-				stream << "<em>" << this.escapeSpecialChars(node.text) << "</em>";
+				stream << "<em>"
+				<< SCDocHTMLRenderer.parseHTML(this.escapeSpecialChars(node.text))
+				<< "</em>";
 			},
 			\TELETYPEBLOCK, {
-				stream << "<pre>" << this.escapeSpecialChars(node.text) << "</pre>";
+				stream << "\n<pre>"
+				<< SCDocHTMLRenderer.parseHTML(this.escapeSpecialChars(node.text))
+				<< "</pre>\n";
 			},
 			\TELETYPE, {
-				stream << "<code>" << this.escapeSpecialChars(node.text) << "</code>";
+				stream << "\n<code>"
+				<< SCDocHTMLRenderer.parseHTML(this.escapeSpecialChars(node.text))
+				<< "</code>\n";
 			},
 			\STRONG, {
-				stream << "<strong>" << this.escapeSpecialChars(node.text) << "</strong>";
+				stream << "<strong>"
+				<< SCDocHTMLRenderer.parseHTML(this.escapeSpecialChars(node.text))
+				<< "</strong>";
 			},
 			\SOFT, {
-				stream << "<span class='soft'>" << this.escapeSpecialChars(node.text) << "</span>";
+				stream << "<span class='soft'>"
+				<< SCDocHTMLRenderer.parseHTML(this.escapeSpecialChars(node.text))
+				<< "</span>";
 			},
 			\ANCHOR, {
 				stream << "<a class='anchor' name='" << this.escapeSpacesInAnchor(node.text) << "'>&nbsp;</a>";
@@ -600,21 +728,23 @@ SCDocHTMLRenderer {
 				} {
 					stream << this.htmlForLink(f[2]++"#"++(f[3]?"")++"#"++img,false);
 				};
-				f[1] !? { stream << "<br><b>" << f[1] << "</b>" }; // ugly..
-				stream << "</div>\n";
+				f[1] !? { stream << "<br><b>"
+					<< SCDocHTMLRenderer.parseHTML(this.escapeSpecialChars(f[1]))
+					<< "</b>" }; // ugly..
+				stream << "\n</div>\n";
 			},
 // Other stuff
 			\NOTE, {
 				stream << "<div class='note'><span class='notelabel'>NOTE:</span> ";
 				noParBreak = true;
 				this.renderChildren(stream, node);
-				stream << "</div>";
+				stream << "\n</div>";
 			},
 			\WARNING, {
 				stream << "<div class='warning'><span class='warninglabel'>WARNING:</span> ";
 				noParBreak = true;
 				this.renderChildren(stream, node);
-				stream << "</div>";
+				stream << "\n</div>";
 			},
 			\FOOTNOTE, {
 				footNotes = footNotes.add(node);
@@ -627,28 +757,28 @@ SCDocHTMLRenderer {
 				<< "</sup></a> ";
 			},
 			\CLASSTREE, {
-				stream << "<ul class='tree'>";
+				stream << "\n<ul class='tree'>";
 				this.renderClassTree(stream, node.text.asSymbol.asClass);
-				stream << "</ul>";
+				stream << "</ul>\n";
 			},
 // Lists and tree
 			\LIST, {
-				stream << "<ul>\n";
+				stream << "\n<ul>\n";
 				this.renderChildren(stream, node);
 				stream << "</ul>\n";
 			},
 			\TREE, {
-				stream << "<ul class='tree'>\n";
+				stream << "\n<ul class='tree'>\n";
 				this.renderChildren(stream, node);
 				stream << "</ul>\n";
 			},
 			\NUMBEREDLIST, {
-				stream << "<ol>\n";
+				stream << "\n<ol>\n";
 				this.renderChildren(stream, node);
 				stream << "</ol>\n";
 			},
 			\ITEM, { // for LIST, TREE and NUMBEREDLIST
-				stream << "<li>";
+				stream << "\n<li>";
 				noParBreak = true;
 				this.renderChildren(stream, node);
 			},
@@ -673,16 +803,16 @@ SCDocHTMLRenderer {
 			},
 // Tables
 			\TABLE, {
-				stream << "<table>\n";
+				stream << "\n<table>";
 				this.renderChildren(stream, node);
 				stream << "</table>\n";
 			},
 			\TABROW, {
-				stream << "<tr>";
+				stream << "\n<tr>";
 				this.renderChildren(stream, node);
 			},
 			\TABCOL, {
-				stream << "<td>";
+				stream << "\n<td>";
 				noParBreak = true;
 				this.renderChildren(stream, node);
 			},
@@ -716,7 +846,7 @@ SCDocHTMLRenderer {
 			\CCOPYMETHOD, {},
 			\ICOPYMETHOD, {},
 			\ARGUMENTS, {
-				stream << "<h4>Arguments:</h4>\n<table class='arguments'>\n";
+				stream << "\n<h4>Arguments:</h4>\n<table class='arguments'>\n";
 				currArg = 0;
 				if(currentMethod.notNil and: {node.children.size < (currentNArgs-1)}) {
 					"SCDoc: In %\n"
@@ -783,7 +913,7 @@ SCDocHTMLRenderer {
 			\RETURNS, {
 				stream << "<h4>Returns:</h4>\n<div class='returnvalue'>";
 				this.renderChildren(stream, node);
-				stream << "</div>";
+				stream << "\n</div>\n";
 
 			},
 			\DISCUSSION, {
@@ -793,44 +923,44 @@ SCDocHTMLRenderer {
 // Sections
 			\CLASSMETHODS, {
 				if(node.notPrivOnly) {
-					stream << "<h2><a class='anchor' name='classmethods'>Class Methods</a></h2>\n";
+					stream << "\n<h2><a class='anchor' name='classmethods'>Class Methods</a></h2>\n";
 				};
 				this.renderChildren(stream, node);
 			},
 			\INSTANCEMETHODS, {
 				if(node.notPrivOnly) {
-					stream << "<h2><a class='anchor' name='instancemethods'>Instance Methods</a></h2>\n";
+					stream << "\n<h2><a class='anchor' name='instancemethods'>Instance Methods</a></h2>\n";
 				};
 				this.renderChildren(stream, node);
 			},
 			\DESCRIPTION, {
-				stream << "<h2><a class='anchor' name='description'>Description</a></h2>\n";
+				stream << "\n<h2><a class='anchor' name='description'>Description</a></h2>\n";
 				this.renderChildren(stream, node);
 			},
 			\EXAMPLES, {
-				stream << "<h2><a class='anchor' name='examples'>Examples</a></h2>\n";
+				stream << "\n<h2><a class='anchor' name='examples'>Examples</a></h2>\n";
 				this.renderChildren(stream, node);
 			},
 			\SECTION, {
-				stream << "<h2><a class='anchor' name='" << this.escapeSpacesInAnchor(node.text)
+				stream << "\n<h2><a class='anchor' name='" << this.escapeSpacesInAnchor(node.text)
 				<< "'>" << this.escapeSpecialChars(node.text) << "</a></h2>\n";
 				if(node.makeDiv.isNil) {
 					this.renderChildren(stream, node);
 				} {
 					stream << "<div id='" << node.makeDiv << "'>";
 					this.renderChildren(stream, node);
-					stream << "</div>";
+					stream << "\n</div>\n";
 				};
 			},
 			\SUBSECTION, {
-				stream << "<h3><a class='anchor' name='" << this.escapeSpacesInAnchor(node.text)
+				stream << "\n<h3><a class='anchor' name='" << this.escapeSpacesInAnchor(node.text)
 				<< "'>" << this.escapeSpecialChars(node.text) << "</a></h3>\n";
 				if(node.makeDiv.isNil) {
 					this.renderChildren(stream, node);
 				} {
-					stream << "<div id='" << node.makeDiv << "'>";
+					stream << "\n<div id='" << node.makeDiv << "'>";
 					this.renderChildren(stream, node);
-					stream << "</div>";
+					stream << "</div>\n";
 				};
 			},
 			{
@@ -900,7 +1030,7 @@ SCDocHTMLRenderer {
 					}
 				);
 			};
-			stream << "</ul>";
+			stream << "</ul>\n";
 		};
 	}
 
@@ -950,9 +1080,9 @@ SCDocHTMLRenderer {
 				<< "[<a href='#footnote_org_" << (i+1) << "'>" << (i+1) << "</a>] - ";
 				noParBreak = true;
 				this.renderChildren(stream, n);
-				stream << "</div>";
+				stream << "\n</div>\n";
 			};
-			stream << "</div>";
+			stream << "\n</div>\n";
 		};
 	}
 
@@ -963,10 +1093,10 @@ SCDocHTMLRenderer {
 			<< doc.fullPath << "</a><br>"
 		};
 		stream << "link::" << doc.path << "::<br>"
-		<< "</div>"
-		<< "</div>"
+		<< "\n</div>\n"
+		<< "\n</div>\n"
 		<< "<script src='" << baseDir << "/editor.js' type='text/javascript'></script>\n"
-		<< "</body></html>";
+		<< "</body>\n</html>";
 	}
 
 	*renderOnStream {|stream, doc, root|
