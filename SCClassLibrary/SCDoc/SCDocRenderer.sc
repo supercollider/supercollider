@@ -78,10 +78,8 @@ SCDocHTMLRenderer {
 			};
 			^replaced
 		}
-	*parseHTML{ |str|
-		var replaced;
-		if ("&lt;|&gt;".matchRegexp(str)) {
-			replaced = str
+	*parseHTML { |str|
+			str = str
 
 			// paragraph, line height:
 			.replace("&lt;p&gt;", "\n<p>\n")
@@ -157,13 +155,11 @@ SCDocHTMLRenderer {
 			.replace("&lt;/td&gt;", "\n</td>");
 
 			// empty line
-			replaced = SCDocHTMLRenderer.replaceRegexp(replaced, "(?<!'|')&lt;br&gt;(?!'|')", "\n<br>\n");
+			str = SCDocHTMLRenderer.replaceRegexp(str, "(?<!'|')&lt;br&gt;(?!'|')", "\n<br>\n");
+
 			// '&gt; to > (only > converted using this method)'&gt;
-			replaced = SCDocHTMLRenderer.replaceRegexp(replaced, "(?<!n)'&gt;(?!'|\",|=|&|\n\s+<(?!\n)|NOTE:&lt;|WARNING:&lt;|Description&lt;|\n<source|\n<caption|\n</v|\n</a|\nYour)", "'>");
-		} {
-			replaced = str
-		};
-		^replaced
+			str = SCDocHTMLRenderer.replaceRegexp(str, "(?<!n)'&gt;(?!'|\",|=|&|\n\s+<(?!\n)|NOTE:&lt;|WARNING:&lt;|Description&lt;|\n<source|\n<caption|\n</v|\n</a|\nYour)", "'>");
+		^str
 	}
 
 	// Find the target (what goes after href=) for a link that stays inside the hlp system

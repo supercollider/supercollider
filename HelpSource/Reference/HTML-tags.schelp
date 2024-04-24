@@ -30,13 +30,10 @@ Line 1 begins.
 It is still Line 1.
 
 Line 2
-
-<br>Line 4 due to '<br>'
-
-<br> Line 6 due to '<br>'
-
+<br>Line 3 due to '<br>'
+<br> Line 4 due to '<br>'
 <br>
-Line 8
+Line 5
 ::
 
 ||
@@ -44,49 +41,46 @@ Line 1 begins.
 It is still Line 1.
 
 Line 2
-
-<br>Line 4 due to '<br>'
-
-<br> Line 6 due to '<br>'
-
+<br>Line 3 due to '<br>'
+<br> Line 4 due to '<br>'
 <br>
-Line 8
+Line 5
 ::
-
-<br>
 
 The height of a line can be adjusted with the units like teletype::em::, teletype::rem:: and teletype::%:::
 
 table::
 ##code::
-Line 1
-<p style='line-height:33%'><br>
-Line 4
-<p style='line-height:0.33em'><br>
-Line 6
-<p style='line-height:0.33rem'><br>
-Line 8
-<p style='line-height:0.66%'><br>
-Line 10
-<p style='line-height:0.66em'><br>
-Line 12
-<p style='line-height:0.66rem'><br>
+Line 1: default line-height
+
+Line 2: 'line-height:33%'
+<p style='line-height:33%'>
+Line 4: 'line-height:0.33em
+<p style='line-height:0.33em'>
+Line 6: 'line-height:0.33em'
+<p style='line-height:0.33rem'>
+Line 8: 'line-height:66%'
+<p style='line-height:66%'>
+Line 10: 'line-height:0.66em'
+<p style='line-height:0.66em'>
+Line 12: 'line-height:0.66rem'
+<p style='line-height:0.66rem'>
 ::
 ||
 Line 1: default line-height
 
 Line 2: 'line-height:33%'
-<p style='line-height:33%'><br>
+<p style='line-height:33%'>
 Line 4: 'line-height:0.33em
-<p style='line-height:0.33em'><br>
+<p style='line-height:0.33em'>
 Line 6: 'line-height:0.33em'
-<p style='line-height:0.33rem'><br>
+<p style='line-height:0.33rem'>
 Line 8: 'line-height:66%'
-<p style='line-height:66%'><br>
+<p style='line-height:66%'>
 Line 10: 'line-height:0.66em'
-<p style='line-height:0.66em'><br>
+<p style='line-height:0.66em'>
 Line 12: 'line-height:0.66rem'
-<p style='line-height:0.66rem'><br>
+<p style='line-height:0.66rem'>
 ::
 
 <br>
@@ -118,7 +112,7 @@ subsection:: Table
 All table tags are supported as follow:
 
 code::
-  <table border='1px solid black' style='text-align:center'>
+  <table style='border:2px solid #ccc; border-collapse:collapse; text-align:center'>
     <caption>Order Details</caption>
     <thead>
       <tr>
@@ -155,7 +149,7 @@ code::
 
 table::
 ##
-  <table border='1px solid black' style='text-align:center'>
+  <table style='border:2px solid #ccc; border-collapse:collapse; text-align:center'>
     <caption>Order Details</caption>
     <thead>
       <tr>
