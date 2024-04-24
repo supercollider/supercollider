@@ -281,7 +281,7 @@ SCDocHTMLRenderer {
 		<< "<script src='" << baseDir << "/lib/codemirror-addon-simple-5.39.2.min.js' type='text/javascript'></script>\n"
 		<< "<script>\n"
 		<< "var helpRoot = '" << baseDir << "';\n"
-		<< "var scdoc_title = '" << SCDocHTMLRenderer.renderNonCodePunctuation(doc.title.escapeChar($')) << "';\n"
+		<< "var scdoc_title = '" << doc.title.escapeChar($') << "';\n"
 		<< "var scdoc_sc_version = '" << Main.version << "';\n"
 		<< "</script>\n"
 		<< "<script src='" << baseDir << "/scdoc.js' type='text/javascript'></script>\n"
