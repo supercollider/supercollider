@@ -51,114 +51,114 @@ SCDocHTMLRenderer {
 		^str.replace(" ", "%20")
 	}
 	*replaceRegexp { |source, findRegexp, replace|
-			var founds, replaced;
-			founds = source.findRegexp(findRegexp);
-			founds = if(findRegexp[0] == $^) {
-				founds.collect { |array| if (array[0] == 0) {array} {} }
-			} {
-				founds
-			};
-			while { founds.includes(nil) } { founds.remove(nil) };
-			founds = founds.asSet.asArray.sort({ |a, b| a[0] < b[0] });
-			replaced = source;
-			if(founds.size > 0) {
-				founds.reverse.do { |idx_str|
-					var foundIndex, foundString;
-					#foundIndex, foundString = idx_str;
-					replaced = if (foundIndex > 0) {
-						var lastString = replaced[foundIndex + foundString.size ..];
-						lastString = if(lastString != nil) { lastString } { "" };
-						replaced[0 .. foundIndex - 1] ++ replace ++ lastString
-					} {
-						replace ++ replaced[foundString.size ..]
-					}
+		var founds, replaced;
+		founds = source.findRegexp(findRegexp);
+		founds = if(findRegexp[0] == $^) {
+			founds.collect { |array| if (array[0] == 0) {array} {} }
+		} {
+			founds
+		};
+		while { founds.includes(nil) } { founds.remove(nil) };
+		founds = founds.asSet.asArray.sort({ |a, b| a[0] < b[0] });
+		replaced = source;
+		if(founds.size > 0) {
+			founds.reverse.do { |idx_str|
+				var foundIndex, foundString;
+				#foundIndex, foundString = idx_str;
+				replaced = if (foundIndex > 0) {
+					var lastString = replaced[foundIndex + foundString.size ..];
+					lastString = if(lastString != nil) { lastString } { "" };
+					replaced[0 .. foundIndex - 1] ++ replace ++ lastString
+				} {
+					replace ++ replaced[foundString.size ..]
 				}
-			} {
-				replaced
-			};
-			^replaced
-		}
+			}
+		} {
+			replaced
+		};
+		^replaced
+	}
 	*parseHTML { |str|
-			str = str
+		str = str
 
-			// paragraph, line height:
-			.replace("&lt;p&gt;", "\n<p>\n")
-			.replace("&lt;p style='line-height:", "<p style='line-height:")
-			.replace("&lt;/p&gt;", "\n</p>\n")
+		// paragraph, line height:
+		.replace("&lt;p&gt;", "\n<p>\n")
+		.replace("&lt;p style='line-height:", "<p style='line-height:")
+		.replace("&lt;/p&gt;", "\n</p>\n")
 
-			// horizontal line:
-			.replace("&lt;hr&gt;", "<hr>")
+		// horizontal line:
+		.replace("&lt;hr&gt;", "<hr>")
 
-			// small text:
-			.replace("&lt;small&gt;", "<small>")
-			.replace("&lt;/small&gt;", "</small>")
+		// small text:
+		.replace("&lt;small&gt;", "<small>")
+		.replace("&lt;/small&gt;", "</small>")
 
-			// italic:
-			.replace("&lt;em&gt;", "<em>")
-			.replace("&lt;/em&gt;", "</em>")
-			.replace("em'&gt;", "em'>")
+		// italic:
+		.replace("&lt;em&gt;", "<em>")
+		.replace("&lt;/em&gt;", "</em>")
+		.replace("em'&gt;", "em'>")
 
-			// bold:
-			.replace("&lt;strong&gt;", "<strong>")
-			.replace("&lt;/strong&gt;", "</strong>")
+		// bold:
+		.replace("&lt;strong&gt;", "<strong>")
+		.replace("&lt;/strong&gt;", "</strong>")
 
-			// subscript and superscript:
-			.replace("&lt;sub&gt;", "<sub>")
-			.replace("&lt;/sub&gt;", "</sub>")
-			.replace("&lt;sup&gt;", "<sup>")
-			.replace("&lt;/sup&gt;", "</sup>")
+		// subscript and superscript:
+		.replace("&lt;sub&gt;", "<sub>")
+		.replace("&lt;/sub&gt;", "</sub>")
+		.replace("&lt;sup&gt;", "<sup>")
+		.replace("&lt;/sup&gt;", "</sup>")
 
-			// iframe::
-			.replace("&lt;iframe", "<iframe")
-			.replace("&lt;/iframe&gt;", "</iframe>")
-			.replace("'&gt; <source src='", "'> <source src='")
-			.replace("allowfullscreen&gt;", "allowfullscreen>")
+		// iframe::
+		.replace("&lt;iframe", "<iframe")
+		.replace("&lt;/iframe&gt;", "</iframe>")
+		.replace("'&gt; <source src='", "'> <source src='")
+		.replace("allowfullscreen&gt;", "allowfullscreen>")
 
-			// audio:
-			.replace("&lt;audio controls autoplay&gt;", "<audio controls autoplay>")
-			.replace("&lt;audio controls&gt;", "<audio controls>")
-			.replace("&lt;source src=", "<source src=")/*
-			.replace("/wav'&gt;", "/wav'>")
-			.replace("/aiff'&gt;", "/aiff'>")
-			.replace("/flac'&gt;", "/flac'>")
-			.replace("/ogg'&gt;", "/ogg'>")
-			.replace("/mpeg'&gt;", "/mpeg'>")
-			.replace("/mp4'&gt;", "/mp4'>")
-			.replace("/x-ms-wma'&gt;", "/x-ms-wma'>")*/
-			.replace("&lt;/audio&gt;", "</audio>")
+		// audio:
+		.replace("&lt;audio controls autoplay&gt;", "<audio controls autoplay>")
+		.replace("&lt;audio controls&gt;", "<audio controls>")
+		.replace("&lt;source src=", "<source src=")/*
+		.replace("/wav'&gt;", "/wav'>")
+		.replace("/aiff'&gt;", "/aiff'>")
+		.replace("/flac'&gt;", "/flac'>")
+		.replace("/ogg'&gt;", "/ogg'>")
+		.replace("/mpeg'&gt;", "/mpeg'>")
+		.replace("/mp4'&gt;", "/mp4'>")
+		.replace("/x-ms-wma'&gt;", "/x-ms-wma'>")*/
+		.replace("&lt;/audio&gt;", "</audio>")
 
-			// video:
-			.replace("&lt;video controls autoplay&gt;", "<video controls autoplay>")
-			.replace("&lt;video controls&gt;", "<video controls>")
-			.replace("&lt;video controls width=", "<video controls width=")
-			.replace("&lt;/video&gt;", "</video>")
+		// video:
+		.replace("&lt;video controls autoplay&gt;", "<video controls autoplay>")
+		.replace("&lt;video controls&gt;", "<video controls>")
+		.replace("&lt;video controls width=", "<video controls width=")
+		.replace("&lt;/video&gt;", "</video>")
 
-			// table:
-			.replace("&lt;table&gt;", "\n<table>")
-			.replace("&lt;table ", "\n<table ")
-			.replace("&lt;/table&gt;", "\n</table>")
-			.replace("&lt;caption&gt;", "\n<caption>")
-			.replace("&lt;/caption&gt;", "\n</caption>")
-			.replace("&lt;thead&gt;", "\n<thead>")
-			.replace("&lt;/thead&gt;", "\n</thead>")
-			.replace("&lt;tr&gt;", "\n<tr>")
-			.replace("&lt;/tr&gt;", "\n</tr>")
-			.replace("&lt;th scope='col'&gt;", "\n<th scope='col'>")
-			.replace("&lt;th scope='row'&gt;", "\n<th scope='row'>")
-			.replace("&lt;th ", "\n<th ")
-			.replace("&lt;/th&gt;", "\n</th>")
-			.replace("&lt;tbody&gt;", "\n<tbody>")
-			.replace("&lt;/tbody&gt;", "</tbody>")
-			.replace("&lt;/tbody&gt;", "</tbody>")
-			.replace("&lt;td&gt;", "\n<td>")
-			.replace("&lt;td", "\n<td")
-			.replace("&lt;/td&gt;", "\n</td>");
+		// table:
+		.replace("&lt;table&gt;", "\n<table>")
+		.replace("&lt;table ", "\n<table ")
+		.replace("&lt;/table&gt;", "\n</table>")
+		.replace("&lt;caption&gt;", "\n<caption>")
+		.replace("&lt;/caption&gt;", "\n</caption>")
+		.replace("&lt;thead&gt;", "\n<thead>")
+		.replace("&lt;/thead&gt;", "\n</thead>")
+		.replace("&lt;tr&gt;", "\n<tr>")
+		.replace("&lt;/tr&gt;", "\n</tr>")
+		.replace("&lt;th scope='col'&gt;", "\n<th scope='col'>")
+		.replace("&lt;th scope='row'&gt;", "\n<th scope='row'>")
+		.replace("&lt;th ", "\n<th ")
+		.replace("&lt;/th&gt;", "\n</th>")
+		.replace("&lt;tbody&gt;", "\n<tbody>")
+		.replace("&lt;/tbody&gt;", "</tbody>")
+		.replace("&lt;/tbody&gt;", "</tbody>")
+		.replace("&lt;td&gt;", "\n<td>")
+		.replace("&lt;td", "\n<td")
+		.replace("&lt;/td&gt;", "\n</td>");
 
-			// empty line
-			str = SCDocHTMLRenderer.replaceRegexp(str, "(?<!'|')&lt;br&gt;(?!'|')", "\n<br>\n");
+		// empty line
+		str = SCDocHTMLRenderer.replaceRegexp(str, "(?<!'|')&lt;br&gt;(?!'|')", "\n<br>\n");
 
-			// '&gt; to > (only > converted using this method)'&gt;
-			str = SCDocHTMLRenderer.replaceRegexp(str, "(?<!n)'&gt;(?!'|\",|=|&|\n\s+<(?!\n)|NOTE:&lt;|WARNING:&lt;|Description&lt;|\n<source|\n<caption|\n</v|\n</a|\nYour)", "'>");
+		// '&gt; to > (only > converted using this method)'&gt;
+		str = SCDocHTMLRenderer.replaceRegexp(str, "(?<!n)'&gt;(?!'|\",|=|&|\n\s+<(?!\n)|NOTE:&lt;|WARNING:&lt;|Description&lt;|\n<source|\n<caption|\n</v|\n</a|\nYour)", "'>");
 		^str
 	}
 
