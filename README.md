@@ -8,7 +8,7 @@
 - **sclang**, an interpreted programming language that controls the servers
 - **scide**, an editing environment for sclang with an integrated help system
 
-sclang comes with its own package manager, called Quarks. scsynth and supernova both support third-party plugins via C and C++ APIs.
+sclang comes with its package manager, called Quarks. scsynth and supernova both support third-party plugins via C and C++ APIs.
 
 SuperCollider is written in C++17 using several third-party libraries, including Qt and Boost. It can be used on Windows, macOS, a variety of Linux and BSD distributions, Raspberry Pi, and BeagleBone Black.
 
@@ -17,7 +17,7 @@ Install
 
 macOS and Windows builds for stable releases are provided at our [downloads page][downloads page]. See the [macOS README](README_MACOS.md) and [Windows README](README_WINDOWS.md) for instructions on usage, and how to build SC yourself.
 
-To get the latest stable version, Linux users will need to build SuperCollider themselves. See the [Linux README](README_LINUX.md) for instructions.
+To get the latest stable version, Linux users must build SuperCollider themselves. See the [Linux README](README_LINUX.md) for instructions.
 
 See the [Raspberry Pi](README_RASPBERRY_PI.md) and [BeagleBone Black](README_BEAGLEBONE_BLACK.md) READMEs for instructions on building on those platforms.
 
@@ -25,7 +25,7 @@ See the [Raspberry Pi](README_RASPBERRY_PI.md) and [BeagleBone Black](README_BEA
 
 ### Platform support
 
-SuperCollider is tested with:
+SuperCollider is tested with the following:
 - Windows 10 (32- and 64-bit) and MSVC 2019
 - macOS 12 and Xcode 13.4.1
 - Ubuntu 22.04 and gcc 12
@@ -83,7 +83,7 @@ Please read our adopted [code of conduct](CODE_OF_CONDUCT.md), which applies to 
 Contribute
 ----------
 
-Development of SuperCollider happens here on GitHub, and we are grateful to the community for contributing bugfixes and improvements. Read below to learn how you can take part in improving SuperCollider.
+Development of SuperCollider happens here on GitHub, and we are grateful to the community for contributing bug fixes and improvements. Read below to learn how you can take part in improving SuperCollider.
 
 ### [Code of Conduct](CODE_OF_CONDUCT.md)
 
@@ -91,11 +91,11 @@ Please read our adopted [code of conduct](CODE_OF_CONDUCT.md) before contributin
 
 ### [Contributing Guide](https://github.com/supercollider/supercollider/wiki)
 
-Read our [contributing guide](https://github.com/supercollider/supercollider/wiki) to learn about our development process, how to propose bugfixes and improvements, and how to build and test your changes.
+Read our [contributing guide](https://github.com/supercollider/supercollider/wiki) to learn about our development process, how to propose bug fixes and improvements, and how to build and test your changes.
 
 ### Good First Issues
 
-To help you get your feet wet and get you familiar with our contribution process, we have a list of [good first issues](https://github.com/supercollider/supercollider/labels/good%20first%20issue) that contain bugs which have a relatively limited scope. This is a great place to get started. You can also ask on our developer's mailing list, on [Slack][Slack], or on the [forum][Discourse].
+To help you get your feet wet and get familiar with our contribution process, we have a list of [good first issues](https://github.com/supercollider/supercollider/labels/good%20first%20issue) that contain bugs that have a relatively limited scope. This is a great place to get started. You can also ask on our developer's mailing list, on [Slack][Slack], or on the [forum][Discourse].
 
 ### Requests for Comment
 
