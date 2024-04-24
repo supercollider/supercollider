@@ -108,7 +108,7 @@ SCDocHTMLRenderer {
 		.replace("&lt;sup&gt;", "<sup>")
 		.replace("&lt;/sup&gt;", "</sup>")
 
-		// iframe::
+		// iframe:
 		.replace("&lt;iframe", "<iframe")
 		.replace("&lt;/iframe&gt;", "</iframe>")
 		.replace("'&gt; <source src='", "'> <source src='")
@@ -151,7 +151,6 @@ SCDocHTMLRenderer {
 		.replace("&lt;th ", "\n<th ")
 		.replace("&lt;/th&gt;", "\n</th>")
 		.replace("&lt;tbody&gt;", "\n<tbody>")
-		.replace("&lt;/tbody&gt;", "</tbody>")
 		.replace("&lt;/tbody&gt;", "</tbody>")
 		.replace("&lt;td&gt;", "\n<td>")
 		.replace("&lt;td", "\n<td")
@@ -669,11 +668,14 @@ SCDocHTMLRenderer {
 				stream << SCDocHTMLRenderer.parseHTML(this.escapeSpecialChars(node.text));
 			},
 			\LINK, {
+				var thisLink = this.htmlForLink(node.text);
 				stream
-				<< this.htmlForLink(node.text)
-				.replace("<a href='http", "http")
-				.replace("''>http", "'>http")
-				.replace("'</a>", "</a>");
+				<< if (thisLink.contains("''>")) {
+					SCDocHTMLRenderer.replaceRegexp(thisLink, ".*''>", "")
+					.replace("'</a>", "'")
+				} {
+					thisLink
+				};
 			},
 			\CODEBLOCK, {
 				stream << "\n<textarea class='editor'>"
