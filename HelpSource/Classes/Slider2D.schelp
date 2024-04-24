@@ -74,6 +74,11 @@ METHOD:: knobColor
 	argument::
 		A Color.
 
+METHOD:: thumbSize
+	The size of the handle.
+
+	argument::
+		An Integer amount of pixels.
 
 
 SUBSECTION:: Interaction

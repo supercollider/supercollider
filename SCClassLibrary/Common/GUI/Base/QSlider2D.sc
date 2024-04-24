@@ -58,6 +58,9 @@ Slider2D : QAbstractStepValue {
 	incrementY { arg factor=1.0; this.invokeMethod( \incrementY, factor.asFloat ); }
 	decrementY { arg factor=1.0; this.invokeMethod( \decrementY, factor.asFloat ); }
 
+	thumbSize { ^this.getProperty(\thumbSize) }
+	thumbSize_ { |pixels| this.setProperty(\thumbSize, pixels) }
+
 	randomize {
 		this.setXYActive( 1.0.rand, 1.0.rand );
 	}
