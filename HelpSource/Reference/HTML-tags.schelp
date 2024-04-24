@@ -146,6 +146,7 @@ code::
 ::
 
 <br>
+<p style='line-height:0.33rem'><<br>
 
 table::
 ##
@@ -325,6 +326,7 @@ table::
 ::
 
 <br>
+<br>
 
 Small text can also be italic, bold and bold italic.
 table::
@@ -427,6 +429,7 @@ teletype::
 2<sup>0</sup>                 2<sup>1</sup>                 2<sup>2</sup>                 2<sup>3</sup>                 2<sup>4</sup>                 2<sup>5</sup>
 ::
 ::
+<br>
 
 
 
@@ -540,8 +543,87 @@ code::
 section:: Multimedia
 
 
+
+
+
+subsection:: Image
+
+
+<br>
+
+
+strong::Offline Image::
+
+
+The following code demonstrates placing image with automatic size:
+
+code::
+<img src='./functions.png' alt='Image description' width='auto' height='auto'>
+::
+
+table::
+##<img src='./functions.png' alt='Image description' width='auto' height='auto'>
+::
+
+The following code demonstrates placing image by defining its height:
+code::
+<img src='./functions.png' alt='Image description' width='auto' height='200'>
+::
+
+table::
+##<img src='./functions.png' alt='Image description' width='auto' height='200'>
+::
+
+The following code demonstrates placing image by defining its width:
+code::
+<img src='./functions.png' alt='Image description' width='200' height='auto'>
+::
+
+table::
+##<img src='./functions.png' alt='Image description' width='200' height='auto'>
+::
+<br>
+
+
+strong::Online Image::
+
+
+The following code demonstrates placing image with automatic size:
+
+code::
+<img src='https://doc.sccode.org/Reference/functions.png' alt='Image description' width='auto' height='auto'>
+::
+
+table::
+##<img src='https://doc.sccode.org/Reference/functions.png' alt='Image description' width='auto' height='auto'>
+::
+
+The following code demonstrates placing image by defining its height:
+code::
+<img src='https://doc.sccode.org/Reference/functions.png' alt='Image description' width='auto' height='200'>
+::
+
+table::
+##<img src='https://doc.sccode.org/Reference/functions.png' alt='Image description' width='auto' height='200'>
+::
+
+The following code demonstrates placing image by defining its width:
+code::
+<img src='https://doc.sccode.org/Reference/functions.png' alt='Image description' width='200' height='auto'>
+::
+
+table::
+##<img src='https://doc.sccode.org/Reference/functions.png' alt='Image description' width='200' height='auto'>
+::
+
+
+
+
+
 subsection:: Audio
 
+
+<br>
 
 strong::Offline Audio::
 
@@ -573,7 +655,7 @@ Your browser does not support the audio element.
 </audio>
 
 
-
+<br>
 
 
 strong::Online Audio::
@@ -618,13 +700,13 @@ table::
 ||
 
 code::
-<video controls width='114' height='77'>
+<video controls width='auto' height='50'>
 <source src='./resources/wave_propagation_simulation_2D.mp4' title='2D simulation of the propagation of a wave in air' type='video/mp4'>
 </video>
 ::
 table::
 ##
-<video controls width='114' height='77'>
+<video controls width='auto' height='50'>
 <source src='./resources/wave_propagation_simulation_2D.mp4' title='2D simulation of the propagation of a wave in air' type='video/mp4'>
 </video>
 ::
