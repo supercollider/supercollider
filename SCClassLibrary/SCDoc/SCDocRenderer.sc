@@ -114,6 +114,9 @@ SCDocHTMLRenderer {
 		.replace("'&gt; <source src='", "'> <source src='")
 		.replace("allowfullscreen&gt;", "allowfullscreen>")
 
+		// image:
+		.replace("&lt;img src=", "<img src=")
+
 		// audio:
 		.replace("&lt;audio controls autoplay&gt;", "<audio controls autoplay>")
 		.replace("&lt;audio controls&gt;", "<audio controls>")
