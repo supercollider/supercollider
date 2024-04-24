@@ -47,7 +47,8 @@ Line 2
 Line 5
 ::
 
-The height of a line can be adjusted with the units like teletype::em::, teletype::rem:: and teletype::%:::
+table::
+##The height of a line can be adjusted with the units like teletype::em::, teletype::rem:: and teletype::%:::
 
 table::
 ##code::
@@ -83,24 +84,26 @@ Line 12: 'line-height:0.66rem'
 <p style='line-height:0.66rem'>
 ::
 
-<br>
+Warning::
+Attributes should be written in single quotation marks.
+::
+::
 
 table::
 ##strong::An Example:::
 table::
-##The standard Lorem Ipsum passage, used since the 1500s:
+##
+The standard Lorem Ipsum passage, used since the 1500s:
 
 emphasis::Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.::
 
-<p style='line-height:0.3em'><br><p>
+<p style='line-height:0.2em'><br><p>
 
 Section 1.10.32 of “de Finibus Bonorum et Malorum”, written by Cicero in 45 BC:
-
+<p style='line-height:1.35em'>
 "emphasis::Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?::"
+<p>::
 ::
-::
-
-<br>
 
 
 
@@ -111,76 +114,85 @@ subsection:: Table
 
 All table tags are supported as follow:
 
-code::
-  <table style='border:2px solid #ccc; border-collapse:collapse; text-align:center'>
-    <caption>Order Details</caption>
-    <thead>
-      <tr>
-        <th scope='col' style='text-align:center'>Order ID</th>
-        <th scope='col'>Customer</th>
-        <th scope='col'>Items</th>
-		<th scope='col' colspan='2'>Shipping</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      <tr>
-        <th scope='row' rowspan='2'>12345</th>
-        <td rowspan='2'>John Doe</td>
-        <td>Headphones</td>
-        <td rowspan='2'>Address</td>
-        <td>Standard</td>
-      </tr>
-      <tr>
-        <td>Speakers</td>
-        <td>Express</td>
-      </tr>
-      <tr>
-        <th scope='row'>67890</th>
-        <td>Jane Smith</td>
-        <td>Software Bundle</td>
-        <td colspan='2'>Downloadable</td>
-      </tr>
-    </tbody>
-  </table>
+list::
+##teletype::<::teletype::table>::, teletype::<::teletype::table ::, teletype::<::teletype::/table>::
+##teletype::<::teletype::caption>::, teletype::<::teletype::/caption>::
+##teletype::<::teletype::thead>::, teletype::<::teletype::/thead>::
+##teletype::<::teletype::tr>::, teletype::<::teletype::/tr>::
+##teletype::<::teletype::th scope='col'>::, teletype::<::teletype::th scope='row'>::, teletype::<::teletype::th >::, teletype::<::teletype::/th>::
+##teletype::<::teletype::tbody>::, teletype::<::teletype::/tbody>::
+##teletype::<::teletype::td>::, teletype::<::teletype::td>::, teletype::<::teletype::/td>::
 ::
 
-<br>
-<p style='line-height:0.33rem'><<br>
 
+Warning::
+Attributes should be written in single quotation marks.
+::
 table::
-##
-  <table style='border:2px solid #ccc; border-collapse:collapse; text-align:center'>
-    <caption>Order Details</caption>
-    <thead>
-      <tr>
-        <th scope='col' style='text-align:center'>Order ID</th>
-        <th scope='col'>Customer</th>
-        <th scope='col'>Items</th>
-		<th scope='col' colspan='2'>Shipping</th>
-      </tr>
-    </thead>
+##strong::Example::
+code::
+<table style='border:1px solid #ccc; border-collapse:collapse; text-align:center'>
+  <caption>Order Details</caption>
+  <thead>
+    <tr>
+      <th scope='col' style='text-align:center; border:1px solid #ccc; font-size:0.8em'>Order ID</th>
+      <th scope='col' style='border:1px solid #ccc; font-size:0.8em'>Customer</th>
+      <th scope='col' style='border:1px solid #ccc; font-size:0.8em'>Items</th>
+	  <th scope='col' colspan='2' style='border:1px solid #ccc; font-size:0.8em'>Shipping</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope='row' rowspan='2' style='border:1px solid #ccc; line-height:0.5em; font-size:0.8em'>12345</th>
+      <td rowspan='2' style='line-height:0.5em; font-size:0.8em'>John Doe</td>
+      <td style='line-height:0.5em; font-size:0.8em'>Headphones</td>
+      <td rowspan='2' style='line-height:0.5em; font-size:0.8em'>Address</td>
+      <td style='line-height:0.5em; font-size:0.8em'>Standard</td>
+    </tr>
+    <tr>
+      <td style='line-height:0.5em; font-size:0.8em'>Speakers</td>
+      <td style='line-height:0.5em; font-size:0.8em'>Express</td>
+    </tr>
+    <tr>
+      <th scope='row' style='border:1px solid #ccc; line-height:0.5em; font-size:0.8em'>67890</th>
+      <td style='line-height:0.5em; font-size:0.8em'>Jane Smith</td>
+      <td style='line-height:0.5em; font-size:0.8em'>Software Bundle</td>
+      <td colspan='2' style='line-height:0.5em; font-size:0.8em'>Downloadable</td>
+    </tr>
+  </tbody>
+</table>
+::
 
-    <tbody>
-      <tr>
-        <th scope='row' rowspan='2'>12345</th>
-        <td rowspan='2'>John Doe</td>
-        <td>Headphones</td>
-        <td rowspan='2'>Address</td>
-        <td>Standard</td>
-      </tr>
-      <tr>
-        <td>Speakers</td>
-        <td>Express</td>
-      </tr>
-      <tr>
-        <th scope='row'>67890</th>
-        <td>Jane Smith</td>
-        <td>Software Bundle</td>
-        <td colspan='2'>Downloadable</td>
-      </tr>
-    </tbody>
-  </table>
+<table style='border:1px solid #ccc; border-collapse:collapse; text-align:center'>
+  <caption>Order Details</caption>
+  <thead>
+    <tr>
+      <th scope='col' style='text-align:center; border:1px solid #ccc; font-size:0.8em'>Order ID</th>
+      <th scope='col' style='border:1px solid #ccc; font-size:0.8em'>Customer</th>
+      <th scope='col' style='border:1px solid #ccc; font-size:0.8em'>Items</th>
+	  <th scope='col' colspan='2' style='border:1px solid #ccc; font-size:0.8em'>Shipping</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope='row' rowspan='2' style='border:1px solid #ccc; line-height:0.5em; font-size:0.8em'>12345</th>
+      <td rowspan='2' style='line-height:0.5em; font-size:0.8em'>John Doe</td>
+      <td style='line-height:0.5em; font-size:0.8em'>Headphones</td>
+      <td rowspan='2' style='line-height:0.5em; font-size:0.8em'>Address</td>
+      <td style='line-height:0.5em; font-size:0.8em'>Standard</td>
+    </tr>
+    <tr>
+      <td style='line-height:0.5em; font-size:0.8em'>Speakers</td>
+      <td style='line-height:0.5em; font-size:0.8em'>Express</td>
+    </tr>
+    <tr>
+      <th scope='row' style='border:1px solid #ccc; line-height:0.5em; font-size:0.8em'>67890</th>
+      <td style='line-height:0.5em; font-size:0.8em'>Jane Smith</td>
+      <td style='line-height:0.5em; font-size:0.8em'>Software Bundle</td>
+      <td colspan='2' style='line-height:0.5em; font-size:0.8em'>Downloadable</td>
+    </tr>
+  </tbody>
+</table>
 ::
 
 
@@ -229,8 +241,7 @@ Normal and small text in teletype:
 table::
 ##
 teletype::
-This is normal text.
-<small>This is small text.</small>
+This is normal text. <small>This is small text.</small>
 ::
 ::
 
@@ -325,8 +336,6 @@ table::
 ::
 ::
 
-<br>
-<br>
 
 Small text can also be italic, bold and bold italic.
 table::
@@ -371,9 +380,6 @@ teletype::
 <small><em><strong>small bold italic text</strong></em></small>
 ::
 ::
-<br>
-<br>
-<br>
 
 
 
@@ -384,10 +390,7 @@ subsection:: Superscript and Subscript
 
 For superscripts, see link::#Exponentiation: base and exponent in text body#Exponentiation: base and exponent in text body::.
 For subscripts, see link::#Logarithm: base and operand in text body#Logarithm: base and operand in text body::.
-<br>
-<br>
-<br>
-<br>
+
 
 
 
@@ -429,7 +432,7 @@ teletype::
 2<sup>0</sup>                 2<sup>1</sup>                 2<sup>2</sup>                 2<sup>3</sup>                 2<sup>4</sup>                 2<sup>5</sup>
 ::
 ::
-<br>
+
 
 
 
@@ -456,7 +459,7 @@ log<sub>2</sub>2 = 1
 <em>log<sub>2</sub></em>2 = 1
 ::
 
-<br>
+
 table::
 ##strong::Examples:::
 Amplitude and dB FS:
@@ -529,12 +532,16 @@ In paragraphs, you can use fractions such as 1<sup>1</sup>/<sub>2</sub> HTML’s
 section:: Embedding other HTML with iframe
 
 
+Warning::
+Attributes should be written in single quotation marks.
+::
+
 The following code embeds a web page in an html document:
 
 code::
-<iframe width='100%' height='380' src='https://supercollider.github.io/' title='SuperCollider Forum scsynth' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' referrerpolicy='strict-origin-when-cross-origin' allowfullscreen></iframe>
+<iframe width='100%' height='470' src='https://supercollider.github.io/' title='SuperCollider Forum scsynth' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' referrerpolicy='strict-origin-when-cross-origin' allowfullscreen></iframe>
 ::
-<iframe width='100%' height='380' src='https://supercollider.github.io/' title='SuperCollider Forum scsynth' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' referrerpolicy='strict-origin-when-cross-origin' allowfullscreen></iframe>
+<iframe width='100%' height='470' src='https://supercollider.github.io/' title='SuperCollider Forum scsynth' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' referrerpolicy='strict-origin-when-cross-origin' allowfullscreen></iframe>
 
 
 
@@ -549,7 +556,9 @@ section:: Multimedia
 subsection:: Image
 
 
-<br>
+Warning::
+Attributes should be written in single quotation marks.
+::
 
 
 strong::Offline Image::
@@ -582,7 +591,7 @@ code::
 table::
 ##<img src='./functions.png' alt='Image description' width='200' height='auto'>
 ::
-<br>
+
 
 
 strong::Online Image::
@@ -623,7 +632,9 @@ table::
 subsection:: Audio
 
 
-<br>
+Warning::
+Attributes should be written in single quotation marks.
+::
 
 strong::Offline Audio::
 
@@ -655,7 +666,7 @@ Your browser does not support the audio element.
 </audio>
 
 
-<br>
+
 
 
 strong::Online Audio::
@@ -689,7 +700,9 @@ subsection:: Video
 
 Videos can be embedded, but when printed, their contents won't show up in the video frame.
 
-<br>
+Warning::
+Attributes should be written in single quotation marks.
+::
 
 strong::Offline Video::
 
@@ -700,13 +713,13 @@ table::
 ||
 
 code::
-<video controls width='auto' height='50'>
+<video controls width='auto' height='430'>
 <source src='./resources/wave_propagation_simulation_2D.mp4' title='2D simulation of the propagation of a wave in air' type='video/mp4'>
 </video>
 ::
 table::
 ##
-<video controls width='auto' height='50'>
+<video controls width='auto' height='430'>
 <source src='./resources/wave_propagation_simulation_2D.mp4' title='2D simulation of the propagation of a wave in air' type='video/mp4'>
 </video>
 ::
@@ -725,7 +738,7 @@ table::
 ::
 ::
 
-<br>
+
 
 
 
@@ -736,9 +749,8 @@ strong::Online Video::
 
 The following code displays a YouTube video using an iframe:
 code::
-<iframe width='560' height='315' src='https://www.youtube.com/embed/FI5rYjP9Vn8?si=X4WSZJaBZQToE9je' title='YouTube video player' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' referrerpolicy='strict-origin-when-cross-origin' allowfullscreen></iframe>
+<iframe width='520' height='292' src='https://www.youtube.com/embed/FI5rYjP9Vn8?si=X4WSZJaBZQToE9je' title='YouTube video player' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' referrerpolicy='strict-origin-when-cross-origin' allowfullscreen></iframe>
 ::
 <p style='line-height:0.2em'><br><p>
-<iframe width='560' height='315' src='https://www.youtube.com/embed/FI5rYjP9Vn8?si=X4WSZJaBZQToE9je' title='YouTube video player' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' referrerpolicy='strict-origin-when-cross-origin' allowfullscreen></iframe>
-
+<iframe width='520' height='292' src='https://www.youtube.com/embed/FI5rYjP9Vn8?si=X4WSZJaBZQToE9je' title='YouTube video player' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' referrerpolicy='strict-origin-when-cross-origin' allowfullscreen></iframe>
  
