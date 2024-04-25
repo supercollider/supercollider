@@ -17,6 +17,19 @@ a = { Button(w) } ! 10;
 w.layout = HLayout(*a);
 );
 
+// for a scroll view we need to set its canvas to a View with the desired layout
+(
+var view = ScrollView();
+view.canvas = View().layout_(HLayout(
+	*(
+		100.collect {
+			Slider().orientation_(\vertical).background_(Color.rand)
+		}
+	)
+));
+view.front;
+)
+
 // combining HLayout and VLayout
 
 (
