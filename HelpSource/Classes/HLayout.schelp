@@ -9,11 +9,15 @@ See documentation of superclass link::Classes/LineLayout:: for details.
 
 EXAMPLES::
 code::
+
+// simple example
 (
 w = Window().front;
 a = { Button(w) } ! 10;
 w.layout = HLayout(*a);
 );
+
+// combining HLayout and VLayout
 
 (
 w = Window().front;
