@@ -1,7 +1,7 @@
 CLASS:: VLayout
 summary:: A layout that distributes views in a vertical line
 categories:: GUI>Layout
-related:: Classes/HLayout, Classes/GridLayout, Classes/StackLayout, Guides/GUI-Layout-Management
+related:: Classes/LineLayout, Classes/HLayout, Classes/GridLayout, Classes/StackLayout, Guides/GUI-Layout-Management
 
 DESCRIPTION::
 See documentation of superclass link::Classes/LineLayout:: for details.

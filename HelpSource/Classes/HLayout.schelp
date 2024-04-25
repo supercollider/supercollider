@@ -1,7 +1,7 @@
 CLASS:: HLayout
 summary:: A layout that distributes views in a horizontal line
 categories:: GUI>Layout
-related:: Classes/VLayout, Classes/GridLayout, Classes/StackLayout, Guides/GUI-Layout-Management
+related:: Classes/LineLayout, Classes/VLayout, Classes/GridLayout, Classes/StackLayout, Guides/GUI-Layout-Management
 
 DESCRIPTION::
 See documentation of superclass link::Classes/LineLayout:: for details.
