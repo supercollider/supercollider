@@ -51,109 +51,10 @@ SCDocHTMLRenderer {
 		^str.replace(" ", "%20")
 	}
 
-	*replaceRegexp { |source, findRegexp, replace|
-		var founds, replaced;
-		founds = source.findRegexp(findRegexp);
-		founds = if(findRegexp[0] == $^) {
-			founds.collect { |array| if (array[0] == 0) {array} {} }
-		} {
-			founds
-		};
-		while { founds.includes(nil) } { founds.remove(nil) };
-		founds = founds.asSet.asArray.sort({ |a, b| a[0] < b[0] });
-		replaced = source;
-		if(founds.size > 0) {
-			founds.reverse.do { |idx_str|
-				var foundIndex, foundString;
-				#foundIndex, foundString = idx_str;
-				replaced = if (foundIndex > 0) {
-					var lastString = replaced[foundIndex + foundString.size ..];
-					lastString = if(lastString != nil) { lastString } { "" };
-					replaced[0 .. foundIndex - 1] ++ replace ++ lastString
-				} {
-					replace ++ replaced[foundString.size ..]
-				}
-			}
-		} {
-			replaced
-		};
-		^replaced
-	}
 	*teletypeWithinCode { |str|
 		^str
 		.replace(":teletype:", "teletype::")
 		.replace(":/teletype:", "::")
-	}
-	*parseMathML { |str|
-		str = str
-			.replace("&lt;annotation&gt;", "<annotation>")
-			.replace("&lt;/annotation&gt;", "</annotation>")
-			.replace("&lt;annotation-xml&gt;", "<annotation-xml>")
-			.replace("&lt;annotation-xml ", "<annotation-xml ")
-			.replace("&lt;/annotation-xml&gt;", "</annotation-xml>")
-			.replace("&lt;maction&gt;", "<maction>")
-			.replace("&lt;maction ", "<maction ")
-			.replace("&lt;/maction&gt;", "</maction>")
-			.replace("&lt;math&gt;", "<math>")
-			.replace("&lt;math display='block'&gt;", "<math display='block'>")
-			.replace("&lt;math display='inline'&gt;", "<math display='inline'>")
-			.replace("&lt;math ", "<math ")
-			.replace("&lt;/math&gt;", "</math>")
-			.replace("&lt;merror&gt;", "<merror>")
-			.replace("&lt;/merror&gt;", "</merror>")
-			.replace("&lt;mfrac&gt;", "<mfrac>")
-			.replace("&lt;/mfrac&gt;", "</mfrac>")
-			.replace("&lt;mi&gt;", "<mi>")
-			.replace("&lt;/mi&gt;", "</mi>")
-			.replace("&lt;mmultiscripts>", "<mmultiscripts>")
-			.replace("&lt;mmultiscripts ", "<mmultiscripts ")
-			.replace("&lt;/mmultiscripts>", "</mmultiscripts>")
-			.replace("&lt;mn&gt;", "<mn>")
-			.replace("&lt;/mn&gt;", "</mn>")
-			.replace("&lt;mo&gt;", "<mo>")
-			.replace("&lt;/mo&gt;", "</mo>")
-			.replace("&lt;mover&gt;", "<mover>")
-			.replace("&lt;/mover&gt;", "</mover>")
-			.replace("&lt;mpadded&gt;", "<mpadded>")
-			.replace("&lt;/mpadded&gt;", "</mpadded>")
-			.replace("&lt;mphantom&gt;", "<mphantom>")
-			.replace("&lt;/mphantom&gt;", "</mphantom>")
-			.replace("&lt;mprescripts&gt;", "<mprescripts>")
-			.replace("&lt;/mprescripts&gt;", "</mprescripts>")
-			.replace("&lt;mroot&gt;", "<mroot>")
-			.replace("&lt;/mroot&gt;", "</mroot>")
-			.replace("&lt;mrow&gt;", "<mrow>")
-			.replace("&lt;/mrow&gt;", "</mrow>")
-			.replace("&lt;ms&gt;", "<ms>")
-			.replace("&lt;/ms&gt;", "</ms>")
-			.replace("&lt;mspace&gt;", "<mspace>")
-			.replace("&lt;/mspace&gt;", "</mspace>")
-			.replace("&lt;msqrt&gt;", "<msqrt>")
-			.replace("&lt;/msqrt&gt;", "</msqrt>")
-			.replace("&lt;mstyle&gt;", "<mstyle>")
-			.replace("&lt;/mstyle&gt;", "</mstyle>")
-			.replace("&lt;msub&gt;", "<msub>")
-			.replace("&lt;/msub&gt;", "</msub>")
-			.replace("&lt;msubsup&gt;", "<msubsup>")
-			.replace("&lt;/msubsup&gt;", "</msubsup>")
-			.replace("&lt;msup&gt;", "<msup>")
-			.replace("&lt;/msup&gt;", "</msup>")
-			.replace("&lt;mtable&gt;", "<mtable>")
-			.replace("&lt;/mtable&gt;", "</mtable>")
-			.replace("&lt;mtd&gt;", "<mtd>")
-			.replace("&lt;/mtd&gt;", "</mtd>")
-			.replace("&lt;mtext&gt;", "<mtext>")
-			.replace("&lt;/mtext&gt;", "</mtext>")
-			.replace("&lt;mtr&gt;", "<mtr>")
-			.replace("&lt;/mtr&gt;", "</mtr>")
-			.replace("&lt;munder&gt;", "<munder>")
-			.replace("&lt;/munder&gt;", "</munder>")
-			.replace("&lt;munderover&gt;", "<munderover>")
-			.replace("&lt;/munderover&gt;", "</munderover>")
-			.replace("&lt;semantics&gt;", "<semantics>")
-			.replace("&lt;/semantics&gt;", "</semantics>");
-		str = SCDocHTMLRenderer.replaceRegexp(str, "(?<!n)'&gt;(?!'|\",|=|&|\n\s+<(?!\n)|NOTE:&lt;|WARNING:&lt;|Description&lt;|\n<source|\n<caption|\n</v|\n</a|\nYour)", "'>");
-		^str
 	}
 
 	// Find the target (what goes after href=) for a link that stays inside the hlp system
@@ -575,13 +476,13 @@ SCDocHTMLRenderer {
 				};
 				lastargs = args2;
 				case
-				{args2.size>maxargs} {
-					maxargs = args2.size;
-					currentMethod = m2 ?? m;
-				}
-				{args2.size<minArgs} {
-					minArgs = args2.size;
-				};
+					{args2.size>maxargs} {
+						maxargs = args2.size;
+						currentMethod = m2 ?? m;
+					}
+					{args2.size<minArgs} {
+						minArgs = args2.size;
+					};
 			} {
 				m = nil;
 				m2 = nil;
@@ -653,8 +554,8 @@ SCDocHTMLRenderer {
 		if(currentMethod.notNil) {
 			currentNArgs = currentMethod.argNames.size;
 			if(currentNArgs > 2
-				and: {currentMethod.argNames[currentNArgs-1] == \add}
-				and: {currentMethod.argNames[currentNArgs-2] == \mul}) {
+			and: {currentMethod.argNames[currentNArgs-1] == \add}
+			and: {currentMethod.argNames[currentNArgs-2] == \mul}) {
 				currentNArgs = currentNArgs - 2;
 			}
 		} {
@@ -681,11 +582,9 @@ SCDocHTMLRenderer {
 				this.renderChildren(stream, node);
 			},
 			\NL, { }, // these shouldn't be here..
-			// Plain text and modal tags
+// Plain text and modal tags
 			\TEXT, {
-				stream << SCDocHTMLRenderer.parseMathML(
-					this.escapeSpecialChars(node.text)
-				);
+				stream << this.escapeSpecialChars(node.text);
 			},
 			\LINK, {
 				stream << this.htmlForLink(node.text);
@@ -693,55 +592,31 @@ SCDocHTMLRenderer {
 			\CODEBLOCK, {
 				stream << "<textarea class='editor'>"
 				<< SCDocHTMLRenderer.teletypeWithinCode(
-					SCDocHTMLRenderer.parseMathML(
-						this.escapeSpecialChars(node.text)
-					)
+					this.escapeSpecialChars(node.text)
 				)
 				<< "</textarea>\n";
 			},
 			\CODE, {
 				stream << "<code>"
 				<< SCDocHTMLRenderer.teletypeWithinCode(
-					SCDocHTMLRenderer.parseMathML(
-						this.escapeSpecialChars(node.text)
-					)
+					this.escapeSpecialChars(node.text)
 				)
 				<< "</code>";
 			},
 			\EMPHASIS, {
-				stream << "<em>"
-				<< SCDocHTMLRenderer.parseMathML(
-					this.escapeSpecialChars(node.text)
-				)
-				<< "</em>";
+				stream << "<em>" << this.escapeSpecialChars(node.text) << "</em>";
 			},
 			\TELETYPEBLOCK, {
-				stream << "<pre>"
-				<< SCDocHTMLRenderer.parseMathML(
-					this.escapeSpecialChars(node.text)
-				)
-				<< "</pre>";
+				stream << "<pre>" << this.escapeSpecialChars(node.text) << "</pre>";
 			},
 			\TELETYPE, {
-				stream << "<code>"
-				<< SCDocHTMLRenderer.parseMathML(
-					this.escapeSpecialChars(node.text)
-				)
-				<< "</code>";
+				stream << "<code>" << this.escapeSpecialChars(node.text) << "</code>";
 			},
 			\STRONG, {
-				stream << "<strong>"
-				<< SCDocHTMLRenderer.parseMathML(
-					this.escapeSpecialChars(node.text)
-				)
-				<< "</strong>";
+				stream << "<strong>" << this.escapeSpecialChars(node.text) << "</strong>";
 			},
 			\SOFT, {
-				stream << "<span class='soft'>"
-				<< SCDocHTMLRenderer.parseMathML(
-					this.escapeSpecialChars(node.text)
-				)
-				<< "</span>";
+				stream << "<span class='soft'>" << this.escapeSpecialChars(node.text) << "</span>";
 			},
 			\ANCHOR, {
 				stream << "<a class='anchor' name='" << this.escapeSpacesInAnchor(node.text) << "'>&nbsp;</a>";
@@ -760,10 +635,10 @@ SCDocHTMLRenderer {
 				} {
 					stream << this.htmlForLink(f[2]++"#"++(f[3]?"")++"#"++img,false);
 				};
-				f[1] !? { stream << "<br><b>" << SCDocHTMLRenderer.parseMathML(f[1]) << "</b>" }; // ugly..
+				f[1] !? { stream << "<br><b>" << f[1] << "</b>" }; // ugly..
 				stream << "</div>\n";
 			},
-			// Other stuff
+// Other stuff
 			\NOTE, {
 				stream << "<div class='note'><span class='notelabel'>NOTE:</span> ";
 				noParBreak = true;
@@ -791,7 +666,7 @@ SCDocHTMLRenderer {
 				this.renderClassTree(stream, node.text.asSymbol.asClass);
 				stream << "</ul>";
 			},
-			// Lists and tree
+// Lists and tree
 			\LIST, {
 				stream << "<ul>\n";
 				this.renderChildren(stream, node);
@@ -812,7 +687,7 @@ SCDocHTMLRenderer {
 				noParBreak = true;
 				this.renderChildren(stream, node);
 			},
-			// Definitionlist
+// Definitionlist
 			\DEFINITIONLIST, {
 				stream << "<dl>\n";
 				this.renderChildren(stream, node);
@@ -831,7 +706,7 @@ SCDocHTMLRenderer {
 				noParBreak = true;
 				this.renderChildren(stream, node);
 			},
-			// Tables
+// Tables
 			\TABLE, {
 				stream << "<table>\n";
 				this.renderChildren(stream, node);
@@ -846,7 +721,7 @@ SCDocHTMLRenderer {
 				noParBreak = true;
 				this.renderChildren(stream, node);
 			},
-			// Methods
+// Methods
 			\CMETHOD, {
 				this.renderMethod(
 					stream, node,
@@ -915,7 +790,7 @@ SCDocHTMLRenderer {
 							f = currentMethod.argNames[currArg].asString;
 							if(
 								(z = if(currentMethod.varArgs and: {currArg==(currentMethod.argNames.size-1)})
-									{"... "++f} {f}
+										{"... "++f} {f}
 								) != node.text;
 							) {
 								"SCDoc: In %\n"
@@ -950,7 +825,7 @@ SCDocHTMLRenderer {
 				stream << "<h4>Discussion:</h4>\n";
 				this.renderChildren(stream, node);
 			},
-			// Sections
+// Sections
 			\CLASSMETHODS, {
 				if(node.notPrivOnly) {
 					stream << "<h2><a class='anchor' name='classmethods'>Class Methods</a></h2>\n";
@@ -973,11 +848,7 @@ SCDocHTMLRenderer {
 			},
 			\SECTION, {
 				stream << "<h2><a class='anchor' name='" << this.escapeSpacesInAnchor(node.text)
-				<< "'>"
-				<< SCDocHTMLRenderer.parseMathML(
-					this.escapeSpecialChars(node.text)
-				)
-				<< "</a></h2>\n";
+				<< "'>" << this.escapeSpecialChars(node.text) << "</a></h2>\n";
 				if(node.makeDiv.isNil) {
 					this.renderChildren(stream, node);
 				} {
@@ -988,11 +859,7 @@ SCDocHTMLRenderer {
 			},
 			\SUBSECTION, {
 				stream << "<h3><a class='anchor' name='" << this.escapeSpacesInAnchor(node.text)
-				<< "'>"
-				<< SCDocHTMLRenderer.parseMathML(
-					this.escapeSpecialChars(node.text)
-				)
-				<< "</a></h3>\n";
+				<< "'>" << this.escapeSpecialChars(node.text) << "</a></h3>\n";
 				if(node.makeDiv.isNil) {
 					this.renderChildren(stream, node);
 				} {
@@ -1167,10 +1034,9 @@ SCDocHTMLRenderer {
 	}
 
 	*renderToFile {|filename, doc, root|
-		var stream, streamedText;
+		var stream;
 		File.mkdir(filename.dirname);
 		stream = File(filename, "w");
-
 		if(stream.isOpen) {
 			this.renderOnStream(stream, doc, root);
 			stream.close;
