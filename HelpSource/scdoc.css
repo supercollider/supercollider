@@ -389,8 +389,9 @@ div.footnote {
 }
 
 h1 {
-    margin: 0.15em 0;
+    margin: 0.1em 0;
     font-size: 2.6em;
+    line-height: 1.03em;
 }
 
 h2 {
@@ -400,6 +401,7 @@ h2 {
     margin-bottom: 2px;
     font-size: 1.4em;
     padding-bottom: 0.2em;
+    width: 1030px /* This is also a guide to the width of text on printed paper. Use ctrl/cmd + F, then type 1030 and find the text width in @media print { dvi.contents { width: 1030px; } } */
 }
 
 h3 {
