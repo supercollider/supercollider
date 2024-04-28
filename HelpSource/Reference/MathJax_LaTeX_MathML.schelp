@@ -52,7 +52,7 @@ subsection:: Display mode
 Display mode is used to insert a mathematical expression on its own line and is achieved by enclosing the LaTeX code in a pair of code::\[:: and code::\]:: delimiters. For example, the following LaTeX code will display the rendered mathematical expression \[a^2 + b^2 = c^2\] on a separate line from the text paragraph:
 
 code::
-\(a^2 + b^2 = c^2\)
+\[a^2 + b^2 = c^2\]
 ::
 
 
