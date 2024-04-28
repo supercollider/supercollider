@@ -767,3 +767,12 @@ div.met_subclasses a.seemore {
     font-size: 9pt;
     color: #777;
 }
+
+.sup {
+    font-size: 0.7em;
+    vertical-align: super;
+}
+.sub {
+    font-size: 0.7em;
+    vertical-align: sub;
+}
