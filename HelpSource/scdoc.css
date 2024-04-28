@@ -131,7 +131,7 @@ a.subclass_toggle:hover {
     background-image: url("images/SC_icon.png");
     background-repeat: no-repeat;
     background-position: 0.5em center;
-    background-size: 1.5em;
+    background-size: 1.1em;
 }
 
 a.menu-link {
@@ -688,7 +688,7 @@ table#search_settings {
     color: #555;
     width: 100%;
     margin-left: 0px;
-    margin-right: 0px;*/
+    margin-right: 0px;
     margin: 0px;
     padding: 0px;
     border-collapse: collapse;

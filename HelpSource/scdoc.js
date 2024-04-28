@@ -159,8 +159,8 @@ function fixTOC() {
     create_menubar_item("", helpRoot + "/Help.html", function (a, li) {
         a.addClass("home");
         $('<span>', { 
-            text: "SuperCollider"
-        }).appendTo(a);
+            text: "    SuperCollider"
+        }).css('white-space', 'pre').appendTo(a);;
     });
 
     create_menubar_item("Browse", helpRoot + "/Browse.html");
