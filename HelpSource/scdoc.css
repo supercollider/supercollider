@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700&family=Noto+Serif:wght@300;400;500;600;700&family=Noto+Sans+Mono:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;700&display=swap');
+
 *, *::before, *::after {
     box-sizing: inherit;
 }
@@ -11,40 +13,102 @@ html, body {
 }
 
 body {
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 10pt;
+    font-family: 'Noto Sans', Arial, Helvetica, sans-serif; 
+    font-size: 1.24em;
     color: black;
-    background: white;
+    background: #eaeaea /* #e7e7e7 */;
+    font-weight: normal;
+    line-height: 1.5em /* 1.65em */;
+    vertical-align: middle;
+    text-align: justify;
+    word-break: break-word;
+    line-break: auto;
+    /* -webkit-hyphens: auto; */
+    /* -ms-hyphens: auto; */
+    /* hyphens: auto; */
+    /* font-stretch: ultra-condensed; */
 }
 
 div.contents {
     margin: 0;
     padding: calc(33px + .5em) 1em 1em;
+    /* width: 1030px; */ /* for AA4 */
+    /* page-break-inside: avoid; */ /* the menubar is printed out on the first page only when the height of the first div too tall */
+    /* transform: scale(0.975, 1); */
 }
 
 table {
     border-collapse: collapse;
-    font-size: 10pt;
-    margin-top: 1em;
-    margin-left: 2em;
+    font-size: 0.92em /* inherit */;
+    margin-top: 0.7em;
+    margin-left: 0em;
+    margin-right: 0em;
+    width: 100%;
+    table-layout: auto; 
+    line-height: 1.6em;
+    text-indent: 0;
+    font-weight: normal;
+    /* page-break-inside: avoid; */
+    /* text-align: left; */
 }
 table td {
-    border: 1px solid #ddd;
-    padding: 0.3em;
+    border: 2px solid #ccc;
+    padding: 0.5em;
+    vertical-align: middle;
+    text-indent: 0;
+    background: #fafafa;
+    /* white-space: nowrap; */
+}
+td code {
+    margin: 0.3em 0 0.3em;
+}
+td pre {
+    margin: 0.3em 0 0.3em;
+}
+td ul {
+    list-style-type: disc;
+    margin-left: 1.34em;
+    margin-top: 0.8em;
+    margin-bottom: 0;
+    padding: 0;
 }
 
 table table {
-    margin: 0em;
+    margin: 0.2em 0em 0.2em; /* top side bottom */
 }
 
 p {
-    margin-top: 1em;
-    margin-bottom: 0.3em;
+    margin: 0.6em 0;
+    text-indent: 0em;
+}
+table table td {
+    vertical-align: middle /* top */;
+    font-size:/* inherit */ 1.05em;
+    border: 1px solid #ccc;
+    /* white-space: nowrap; */
+    background: #f5f5f5
+}
+
+table table table {
+    margin: 0.2em 0em 0.2em;
+}
+
+table table table td {
+    vertical-align: middle /* top */;
+    font-size: /* inherit */ 1.05em;
+    border: 1px solid #ccc;
+    /* white-space: nowrap; */
+    background: #f0f0f0
+}
+
+table table ul {
+    margin-bottom: 0em;
 }
 
 a:link, a:visited, a:link:hover {
     text-decoration: none;
     color: #449;
+    /* word-break: break-all; */
 }
 
 a:link:hover {
@@ -76,10 +140,10 @@ ul.inheritedmets {
     margin-top: 0.25em;
 }
 ul.inheritedmets li {
-    font-family: monospace;
+    font-family: /* 2Coding, */ 'Noto Mono', monospace;
 }
 a.inheritedmets_toggle {
-    font-size: 9pt;
+    font-size: 0.9em;
     color: #558;
     font-weight: normal;
 /*    margin-left: 2em;*/
@@ -106,11 +170,13 @@ a.subclass_toggle:hover {
     text-indent: 0;
     width: 100%;
     height: 33px;
-    padding: 0.5em 0;
+    padding: 0 0.5em;
     background-color: #f9f9f9;
     box-shadow: 0em 0em 0.25em rgba(128, 128, 128, 0.5);
     z-index: 2;
-}
+    border: 0;
+    box-sizing: border-box;
+    }
 
 #nav {
     padding: 0;
@@ -121,7 +187,7 @@ a.subclass_toggle:hover {
     padding: 0;
     margin: 0;
     border-right: 1px solid #ddd;
-    font-size: 10pt;
+    font-size: 0.8em;
     display: inline-block;
 }
 
@@ -131,7 +197,7 @@ a.subclass_toggle:hover {
     background-image: url("images/SC_icon.png");
     background-repeat: no-repeat;
     background-position: 0.5em center;
-    background-size: 1.5em;
+    background-size: 1.1em;
 }
 
 a.menu-link {
@@ -202,23 +268,23 @@ a.menu-link:hover {
 }
 
 .submenu a {
-        position: relative;
-        display: block;
-        margin: 0;
+    position: relative;
+    display: block;
+    margin: 0;
 /*      padding: 5px 10px;*/
-        padding: 0.2em;
-        width: auto;
-        white-space: nowrap;
-        text-align: left;
+    padding: 0.2em;
+    width: auto;
+    white-space: nowrap;
+    text-align: left;
 /*      text-decoration: none;*/
-        color: #447;
-        font-weight: bold;
+    color: #447;
+    font-weight: bold;
 }
 
 .toc_search {
-    margin-left: 10px;
+    margin-left: 1em;
     color: #999;
-    font-size: 9pt;
+    font-size: 0.9em;
 }
 
 .toc_search input {
@@ -227,7 +293,7 @@ a.menu-link:hover {
 
 
 .header {
-  padding-bottom: 0.18em;
+    padding-bottom: 0.18em;
 }
 
 #label {
@@ -254,15 +320,15 @@ a.menu-link:hover {
 }
 
 #superclasses {
-    font-size: 9pt;
+    font-size: 0.35em;
     color: #444;
     font-weight: normal;
 }
 
 .extension-indicator-ctr {
     float: right;
-    font-size: 12pt;
-    padding: 0.4em 0.4em 0.2em 0.4em;
+    font-size: 0.5em;
+    padding: 0.3em 0.4em 0.1em 0.3em;
     background-color: #601c8b;
     color: white;
     border-radius: 3px;
@@ -279,14 +345,14 @@ a.menu-link:hover {
 }
 
 .subheader {
-    font-size: 9pt;
+    font-size: 0.9em;
     color: #444;
     margin-top: 1em;
 }
 
 .jump {
     text-align: right;
-    font-size: 9pt;
+    font-size: 0.9em;
     color: #555;
 }
 .jump a {
@@ -296,7 +362,7 @@ a.menu-link:hover {
 }
 
 a.footnote {
-    font-size: 9pt;
+    font-size: 0.9em;
     top: -0.1em;
 }
 div.footnotes {
@@ -304,11 +370,18 @@ div.footnotes {
     margin-left: 2em;
     margin-top: 3em;
     margin-right: 2em;
+    padding-top: 0.5em;
 }
 div.footnote {
-    margin-bottom: 0.5em;
-    margin-top: 0.5em;
-    font-size: 9pt;
+    margin-bottom: 0.1em;
+    margin-top: 0.1em;
+    font-size: 0.9em;
+    line-height: 1.5em;
+    text-align: left;
+    padding-top: 0.5em;
+    /*margin-left: 0.4em;*/
+    /*padding-left: 2.01em;*/
+    /* text-indent: -2.01em */
 }
 
 .soft {
@@ -316,9 +389,8 @@ div.footnote {
 }
 
 h1 {
-    margin: 0.1em 0;
+    margin: 0.15em 0;
     font-size: 2.6em;
-    margin-bottom: 0em;
 }
 
 h2 {
@@ -326,21 +398,24 @@ h2 {
     margin-top: 1.0em;
     text-align: left;
     margin-bottom: 2px;
-    font-size: 1.6em;
+    font-size: 1.4em;
+    padding-bottom: 0.2em;
 }
 
 h3 {
     margin-top: 2.0em;
     margin-bottom: 1px;
     text-align: left;
-    font-size: 1.4em;
+    font-size: 1.15em;
 }
 
 h4 {
-    margin-top: 1em;
+    margin-top: 1.4em;
     margin-bottom: 0em;
     margin-left: 0em;
     color: #777;
+    font-size: 1.05em;
+    text-align: left;
 }
 
 h1,
@@ -352,49 +427,64 @@ h4 {
 
 /* https://css-tricks.com/hash-tag-links-padding/ */
 .anchor::before {
-    content: " ";
-    margin-top: -3em;
-    height: 3em;
+    content: "";
+    margin-top: 0;
+    height: 0;
     visibility: hidden;
     pointer-events: none;
+    padding-top: 0;
+    display: inline;
 }
 
 a.method-name::before {
     display: inline-block;
     content: " ";
     margin-top: -5em;
-    height: 5em;
+    height: 0.5em;
     visibility: hidden;
     pointer-events: none;
 }
 
 dt {
-    font-weight: bold;
+    font-weight: 600;
 }
 dd {
-    margin-top: 0.25em;
-    margin-bottom: 1.25em;
+    margin-top: 0.3em;
+    margin-bottom: 1.2em;
+    margin-left: 1.5em;
 }
 
 code, pre {
-    font-family: monospace;
-    font-size: 9pt;
+    font-family: /* D2Coding */ 'Noto Mono', monospace;
+    font-size: 0.9em;
+    background-color: whitesmoke;
+    white-space: pre-wrap;
+    word-break: break-word;
+    text-align: left;
+    margin: 0.3em 0 0.3em;
+    line-height: 1.95em;
+    /* text-indent: 0; */
+    padding-right: 0;
 }
 
 pre {
     border-left: 2px solid #e0e0e0;
-    padding-left: 1em;
+    padding-left: 0.4em;
+    margin: 0.3em 0 0.3em;
 }
 
 .image {
     text-align: center;
-    margin: 2em;
-    font-size: 9pt;
+    margin: 0em;
+    font-size: 0.95em;
+    line-height: 1.3em;
 }
 
 .image img {
-    margin-bottom: 1em;
+    margin-bottom: 0em;
     max-width: 100%;
+    page-break-inside: avoid;
+    /* transform: scale(1, 0.975) */
 }
 
 .methprefix {
@@ -405,11 +495,11 @@ pre {
 }
 
 .method-code {
-    font-family: monospace;
+    font-family: /* D2Coding */ 'Noto Mono', monospace;
     font-weight: normal;
     font-size: 1.05em !important;
     margin-bottom: 0em;
-    margin-top: 0.75em;
+    margin-top: 0.3em;
     padding: 0.25em;
     border: none;
     padding-left: 4em;
@@ -423,7 +513,7 @@ a.method-name {
 
 .method {
     margin-left: 2em;
-    margin-bottom: 2em;
+    margin-bottom: 1em;
 }
 
 .argstr {
@@ -431,13 +521,14 @@ a.method-name {
 }
 
 .extmethod {
-    font-size: 9pt;
+    font-size: 0.9em;
     color: #444;
     padding-left: 0.2em;
+    text-align: left;
 }
 
 .supmethod {
-    font-size: 9pt;
+    font-size: 0.9em;
     color: #444;
     padding-left: 0.2em;
 }
@@ -447,6 +538,7 @@ table.arguments {
     margin-bottom: 0em;
     margin-top: 0.5em;
     border-collapse: collapse;
+    width: auto;
 }
 
 table.arguments td.argumentname, td.argumentdesc {
@@ -458,6 +550,7 @@ table.arguments td.argumentname, td.argumentdesc {
 
 td.argumentname {
     font-weight: bold;
+    width: 8em;
 }
 
 div.returnvalue {
@@ -466,20 +559,31 @@ div.returnvalue {
 
 td p {
     margin-top: 0em;
+    margin-bottom: 0em;
 }
 
 .note, .warning {
-/*    border-left: 4px solid #eea;*/
-    background: #f7f7d7;
-    padding: 0.5em;
+    border-top: 2px solid #EEE /* #eeb */;
+    border-left: 2px solid #E3E3E3 /* #eea */;
+    border-right: 4px solid #D5D5D5 /* #eed */;
+    border-bottom: 4px solid #CCC /* #eec */;
+    border-radius: 5px 20px / 5px;
+    font-size: 0.92em;
+    /* page-break-inside: avoid; */
+    background-color: #DDDDDD /* #f7f7d7 */;
+    padding: 0.5em 0.6em 0.6em;
     margin-top: 1em;
     margin-bottom: 1em;
 }
 .notelabel, .warninglabel {
     font-weight: bold;
+    /* display: block; */
 }
 .warninglabel {
-    color: red;
+    color: #CA4543;
+}
+.notelabel {
+    color: #4480CF /* royalblue */;
 }
 
 /*.version {
@@ -491,12 +595,13 @@ td p {
 }*/
 
 .doclink {
-    font-size: 9pt;
+    font-size: 0.85em;
     color: #888;
     text-align: right;
-    margin-top: 2em;
-    margin-bottom: 2em;
+    margin-top: 2.5em;
+    margin-bottom: 0.5em;
     border-top: 1px solid #ddd;
+    line-height: 1.1em;
 }
 .doclink a {
     color: #444;
@@ -524,28 +629,47 @@ td p {
 
 #toc-container {
     float: right;
+    font-size: 1.12em;
 }
 
 #toc {
-    width: 20em;
-    max-height: calc(100vh - 2.5em);
+    width: auto;
+    max-height: calc(100vh - 3em);
     overflow-y: auto;
     overflow-x: hidden;
     overflow-wrap: break-word;
     right: 0;
-    line-height: 130%;
+    line-height: 1.3em;
 }
 #toctitle {
     font-weight: bold;
-    font-size: 120%;
+    font-size: 1.2em;
     margin: 0.7em 0.5em;
     color: #333;
 }
 
 li {
-    padding-bottom: 0.5em;
+    padding-bottom: 0;
+    padding-top: 0;
+    padding-left: 0;
+    margin-left: -0.07em;
+    margin-top: 0.2em /* 0.25em */;
+    margin-bottom: 0.2em /* 0.25em */;
+    line-height: 1.65em;
+    /* text-indent: 0; */
+    text-align: left;
 }
-
+/* 
+ol {
+    margin: 0;
+    margin-left: -0.05em;
+}
+*/
+/* 
+li li {
+    margin-left: -1em
+}
+*/
 ul.toc {
     list-style-type: none;
     margin: 0;
@@ -581,37 +705,37 @@ ul.toc li a:hover {
     color: #444;
 }
 .toc3 {
-    font-family: monospace;
+    font-family:/* D2Coding */ 'Noto Mono', monospace;
     font-weight: normal;
-/*    font-size: 9.5pt;*/
+    font-size: 0.9em
 }
 .toc3 a {
     color: #555;
 }
 
 ul.tree, ul.tree ul {
- list-style-type: none;
- background: url(images/vline.png) repeat-y;
- margin: 0;
- padding: 0;
- margin-left: 1em;
+    list-style-type: none;
+    background: url(images/vline.png) repeat-y;
+    margin: 0;
+    padding: 0;
+    margin-left: 1em;
 }
 
 ul.tree ul {
- margin-left: 15px;
+    margin-left: 15px;
 }
 
 ul.tree li {
- margin: 0;
- padding: 0 12px;
- line-height: 20px;
- background: url(images/node.png) no-repeat;
-/* color: #369;
+    margin: 0;
+    padding: 0 12px;
+    line-height: 25px;
+    background: url(images/node.png) no-repeat;
+    /* color: #369;
  font-weight: bold;*/
 }
 
 ul.tree li:last-child {
- background: #fff url(images/lastnode.png) no-repeat;
+    background: #f7f7f7 url(images/lastnode.png) no-repeat;
 }
 
 :target {
@@ -646,17 +770,17 @@ div.result_category {
     color: #555;
     margin-top: 1em;
     margin-bottom: 0.5em;
-/*    font-size: 9.5pt;
+    /*    font-size: 9.5pt;
     border-bottom: 1px solid #ccc;*/
     font-weight: bold;
 /*    font-size: 11pt;*/
 }
 div.met_docs {
     margin-bottom: 0.2em;
-/*    margin-left: 2em;*/
+    /*    margin-left: 2em;*/
 }
 div.met_subclasses {
-    font-size: 9pt;
+    font-size: 0.9em;
     color: #777;
     margin-left: 3em;
     text-align: left;
@@ -672,23 +796,23 @@ div.met_subclasses a.seemore {
     padding: 0.5em;
     padding-top: 0.25em;
     padding-bottom: 0.25em;
-    font-size: 9pt;
+    font-size: 0.9em;
     color: #555;
     background: #eee;
 }
 #search_checks0 {
-    font-size: 9pt;
+    font-size: 0.9em;
     color: #555;
     border-bottom: 1px solid #ddd;
     margin-top: 1em;
     padding-bottom: 1em;
 }
 table#search_settings {
-    font-size: 9pt;
+    font-size: 0.9em;
     color: #555;
     width: 100%;
     margin-left: 0px;
-    margin-right: 0px;*/
+    margin-right: 0px;
     margin: 0px;
     padding: 0px;
     border-collapse: collapse;
@@ -699,11 +823,11 @@ table#search_settings {
 }
 #random {
     text-align: right;
-    font-size: 9pt;
+    font-size: 0.9em;
 }
 #js_error {
-    font-family: Andale Mono, monospace;
-    font-size: 9pt;
+    font-family: 'Roboto Mono', 'Andale Mono', monospace;
+    font-size: 0.9em;
     color: red;
 }
 
@@ -718,7 +842,7 @@ table#search_settings {
     margin-left: 2em;
 }
 div.met_subclasses {
-    font-size: 9pt;
+    font-size: 0.9em;
     color: #777;
     margin-left: 3em;
     text-align: left;
@@ -733,24 +857,24 @@ div.met_subclasses a.seemore {
 }
 
 .method_name {
-    font-family: Andale Mono, monospace;
-    font-size: 9.5pt;
+    font-family: 'Roboto Mono', 'Andale Mono', monospace;
+    font-size: 1.5em;
 }
 #method_note {
-    font-size: 9pt;
+    font-size: 0.9em;
     color: #777;
     border-top: 1px solid #ddd;
     text-align: center;
     margin-top: 2em;
 }
 #total_count {
-    font-size: 9pt;
+    font-size: 0.9em;
     color: #777;
 }
 .searchlink {
     background: #eed;
     text-align: center;
-    font-size: 9pt;
+    font-size: 0.9em;
     padding: 0.25em;
     margin: 0.25em 0;
 }
@@ -764,6 +888,139 @@ div.met_subclasses a.seemore {
     margin-top: 0.2em;
 }
 #total_count {
-    font-size: 9pt;
+    font-size: 0.9em;
     color: #777;
+}
+.CodeMirror-linenumber {
+    min-width: 30px;
+    margin-left: -9.5px;
+}
+.CodeMirror {
+    margin: 0.15em 0 0.15em;
+    /* background: ghostwhite; */
+    font-family: /* D2Coding */ 'Noto Mono', monospace;
+    font-size: 0.92em; /* 0.88em; */
+    /*line-height: 1.55em;*/ /* 1.65em; */
+    /* width: auto; */
+    /* padding: 0.3em 0.5em 0.2em; */
+    /* page-break-inside: avoid; */
+}
+/* 
+.CodeMirror-cursors, .CodeMirror pre {
+    padding: 0 0.1em; */
+/* Horizontal padding of content */
+/* } */
+/*
+.CodeMirror-lines {
+    padding: 0.1em 0; /* Vertical padding around content */
+    /*padding-bottom: -1em;
+}
+*/
+/*
+textarea.editor {
+    opacity: 0;
+}
+*/
+
+@media screen {       
+}
+@media print {
+    /* 
+    .nav {
+        display: none;
+    }
+    a:: after {
+        content: " <" attr(href) ">"; color: #666;
+    }
+    */
+    @page {
+        size: A4;
+        margin-top: 30mm;
+        margin-bottom: 27mm;
+    }
+    @page :left {
+        margin-left: 14mm;
+        margin-right: 14mm;
+    }
+    @page :right {
+        margin-left: 14mm;
+        margin-right: 14mm;
+    }
+    html, body {
+        font-family: 'Noto Serif CJK KR', 'Noto Serif';
+        padding: 0.6em 0 0;
+    }
+    div.contents {
+        width: 1030px; /* for AA4 */
+    }
+    table, dt, .image {
+        font-family: 'Noto Sans CJK KR', 'Noto Sans', Arial, Helvetica, sans-serif;
+    }
+    #menubar,
+    #menubar .menuitem .home,
+    #menubar .menuitem,
+    #menubar .toc-link {
+        display: none;
+    }
+    /*
+    #summary {
+        display: none;
+    }
+    */
+    #label {
+        font-size: 0;
+        margin-top: 0;
+        line-height: 0
+    }
+    #folder {
+        font-size: 0;
+    }
+    #categories {
+        font-size: 0;
+    }
+    h1 {
+        margin: 0;
+        margin-top: -1em;
+        font-size: 1.65em;
+        /* line-height: 2.45em */
+    }
+    h2 {
+        border-bottom: 1px solid #ddd;
+        /* margin-top: 2.3em; */
+        /* margin-bottom: 0.5em; */
+        text-align: left;
+        font-size: 1.4em;
+        line-height: 2.15em
+    }
+    h3 {
+        /* 
+        margin-top: 2em;
+        margin-bottom: 1px;
+        */
+        text-align: left;
+        font-size: 1.15em;
+        line-height: 1.85em
+    }
+    h4 {
+        /* 
+        margin-top: 1.4em;
+        margin-bottom: 0;
+        */
+        margin-left: 0;
+        color: #777;
+        font-size: 1.05em;
+        text-align: left;
+        line-height: 1.55em
+    }
+    .subheader {
+        display: none;
+    }
+    #related {
+        font-size: 0;
+        line-height: 0;
+        margin-top: 0;
+    }
+    .doclink {
+        display: none;
+    }
 }
