@@ -1,7 +1,7 @@
 var storage;
 var menubar;
 var yPosBeforeClick;
-var toggleButtonStatus = true;
+var toggleButtonStatus = false;
 
 function addInheritedMethods() {
     if(! /\/Classes\/[^\/]+/.test(window.location.pathname)) return; // skip this if not a class doc
