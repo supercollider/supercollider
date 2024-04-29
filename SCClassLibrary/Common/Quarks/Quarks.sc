@@ -10,7 +10,7 @@ Quarks {
 		cache,
 		regex,
 		installedPaths,
-		<>installing;
+		installing;
 
 	*install { |name, refspec|
 		var path, quark;
@@ -198,29 +198,27 @@ Quarks {
 			},
 			prev = this.installed.detect({ |q| q.name == quark.name });
 
-		if(prev.notNil and: {prev.localPath != quark.localPath}, {
+		if(prev.notNil and: {prev.localPath != quark.localPath}) {
 			("A version of % is already installed at %".format(quark, prev.localPath)).error;
 			^false
-		});
+		};
 
 		"Installing %".format(quark.name).postln;
 		// add currently installing quark to 'installing' Array
-		installing = (installing.size == 0).if{ quark.bubble }{ installing ++ quark.bubble };
+		installing = if(installing.size == 0) { quark.bubble } { installing ++ quark };
 		quark.checkout();
-		quark.isCompatible().not.if{
+		if(quark.isCompatible().not) {
 			^incompatible.value(quark.name);
 		};
 		quark.dependencies.do{ |dep|
 			var ok;
 			// check if dependency is already installing
-			installing.detect({ |q| q.name == dep.name }).isNil.if{				
+			if(installing.detect({ |q| q.name == dep.name }).isNil) {				
 				ok = dep.install();
-				ok.not.if{
+				if(ok.not) {
 					("Failed to install" + quark.name).error;
 					^false
 				}
-			}{
-				(dep.name + "already installing").postln
 			}
 		};
 		quark.runHook(\preInstall);
