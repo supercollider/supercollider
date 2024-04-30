@@ -189,7 +189,7 @@ Quarks {
 	*installQuark { |quark|
 		var
 			deps,
-			incompatible = { arg name;
+			incompatible = { |name|
 				(quark.name
 					+ "reports an incompatibility with this SuperCollider version"
 					+ "or with other already installed quarks."
@@ -198,14 +198,14 @@ Quarks {
 			},
 			prev = this.installed.detect({ |q| q.name == quark.name });
 
-		if(prev.notNil and: {prev.localPath != quark.localPath}) {
+		if(prev.notNil and: { prev.localPath != quark.localPath }) {
 			("A version of % is already installed at %".format(quark, prev.localPath)).error;
 			^false
 		};
 
 		"Installing %".format(quark.name).postln;
 		// add currently installing quark to 'installing' Array
-		installing = if(installing.size == 0) { quark.bubble } { installing ++ quark };
+		installing = if(installing.size == 0) { [quark] } { installing ++ quark };
 		quark.checkout();
 		if(quark.isCompatible().not) {
 			^incompatible.value(quark.name);
