@@ -399,7 +399,7 @@ SCDocHTMLRenderer {
 			methodType,
 			\classMethod, { "*" },
 			\instanceMethod, { "-" },
-			\genericMethod, { "" }
+			\genericMethod, { "." }
 		);
 
 		minArgs = inf;
