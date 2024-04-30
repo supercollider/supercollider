@@ -1,4 +1,4 @@
-TITLE::LaTeX Support for SuperCollider via MathJax
+TITLE::LaTeX and MathML in SCDoc
 summary::How to use LaTeX Syntax in SCDocs using MathJax
 categories:: HelpSystem
 related:: Guides/WritingHelp, Classes/SCDoc, Classes/SCDocHTMLRenderer
@@ -11,8 +11,8 @@ related:: Guides/WritingHelp, Classes/SCDoc, Classes/SCDocHTMLRenderer
 
 
 
-
-LaTeX syntax is available through MathJax scripts. The scripts are shipped with the SuperCollider installation and are automatically included by the link::https://www.mathjax.org/#gettingstarted#Getting Started:: (link::https://www.mathjax.org/#gettingstarted::) when rendering the SC-Doc to HTML. In principle, SuperCollider users do not have to deal with these scripts.
+LaTeX syntax is available through MathJax scripts. The scripts are shipped with the SuperCollider installation and are automatically included by the link::https://www.mathjax.org/#gettingstarted#Getting Started:: (https://www.mathjax.org/#gettingstarted) when
+rendering the SC-Doc to HTML. In principle, SuperCollider users do not have to deal with these scripts.
 
 
 
@@ -41,6 +41,8 @@ Inline mode is used to insert a mathematical expression into the text flow and i
 code::
 \(a^2 + b^2 = c^2\)
 ::
+It can also be used in teletype text teletype::\(a^2 + b^2 = c^2\):: as in this sentence.
+
 
 
 
@@ -68,10 +70,7 @@ section:: MathML support
 
 
 
-
-
 MathML code can be viewed or copied by right-clicking on a mathematical expression:
-
 table::
 ##image::resources/MathML1.png::
 ||image::resources/MathML2.png::

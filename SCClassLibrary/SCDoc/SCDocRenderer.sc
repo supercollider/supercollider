@@ -258,27 +258,14 @@ SCDocHTMLRenderer {
 		<< "<script src='qrc:///qtwebchannel/qwebchannel.js' type='text/javascript'></script>\n" // Should be removed? It does not exist
 
 		// MathJax |--->
-		<< "<script src='" << baseDir << "/lib/polyfill.min.js?features=es6'></script>\n" // local access /* << "<script src='https://polyfill.io/v3/polyfill.min.js?features=es6'></script>\n" */ // online access
 		<< "<script>\n"
 		<< "  window.MathJax = {\n"
-		<< "    tex: {\n"
-		<< "      packages: {'[+]': ['ams']},\n"
-		<< "      processEscapes: true\n"
-		<< "    },\n"
 		<< "    options: {\n"
-		<< "      skipHtmlTags: ['script', 'noscript', 'style', 'textarea']\n"
+		<< "      skipHtmlTags: ['script', 'textarea']\n"
 		<< "    },\n"
-		<< "    loader: {\n"
-		<< "      load: ['[tex]/ams']\n"
-		<< "    },\n"
-		<< "    startup: {\n"
-		<< "      pageReady: () => {\n"
-		<< "        return MathJax.startup.defaultPageReady();\n"
-		<< "      }\n"
 		<< "    }\n"
-		<< "  };\n"
 		<< "</script>\n"
-		<< "<script id='MathJax-script' src='" << baseDir << "/lib/node_modules/mathjax-full/es5/tex-mml-chtml.js' async></script>\n" // offline accesss /* << "<script id='MathJax-script' src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js' async></script>\n" */ // online accesss
+		<< "<script src='" << baseDir << "/lib/node_modules/mathjax/es5/tex-chtml-full.js' defer></script>\n" // offline accesss /* << "<script id='MathJax-script' src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js' defer></script>\n" */ // online accesss
 		// <---| MathJax
 
 		<< "</head>\n"
