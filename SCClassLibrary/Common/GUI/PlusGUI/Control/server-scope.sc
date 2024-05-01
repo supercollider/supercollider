@@ -1,21 +1,18 @@
 + Server {
-	scope { arg numChannels, index = 0, bufsize = 4096, zoom = (1), rate = \audio, bounds;
+	scope { arg numChannels, index = 0, bufsize = 4096, zoom = (1), rate = \audio;
 		numChannels = numChannels ?? { if (index == 0) { options.numOutputBusChannels } { 2 } };
 
 		if(scopeWindow.isNil) {
 			scopeWindow = Stethoscope(this, numChannels, index, bufsize, zoom, rate, nil,
 				this.options.numBuffers);
-			// prevent buffer conflicts by using reserved bufnum
+				// prevent buffer conflicts by using reserved bufnum
 			scopeWindow.window.onClose = scopeWindow.window.onClose.addFunc({ scopeWindow = nil });
 		} {
 			scopeWindow.setProperties(numChannels, index, bufsize, zoom, rate);
 			scopeWindow.run;
 			scopeWindow.window.front;
 		};
-		^if(bounds == nil) {
-			scopeWindow } {
-			scopeWindow.window.bounds_(bounds)
-		}
+		^scopeWindow
 	}
 
 	freqscope {
@@ -24,31 +21,22 @@
 }
 
 + Bus {
-	scope { arg bufsize = 4096, zoom, bounds;
-		^server.scope(numChannels, index, bufsize, zoom, rate, bounds);
+	scope { arg bufsize = 4096, zoom;
+		^server.scope(numChannels, index, bufsize, zoom, rate);
 	}
 }
 
 
 + Function {
-	scope { arg numChannels, outbus = 0, fadeTime = 0.05, bufsize = 4096, zoom, bounds;
+	scope { arg numChannels, outbus = 0, fadeTime = 0.05, bufsize = 4096, zoom;
 		var synth, synthDef, bytes, synthMsg, outUGen, server;
 
 		server = Server.default;
-		if(server.serverRunning.not) {
-			(server.name.asString ++ " server not running!").postln;
-			^nil
-		};
-
-		synthDef = this.asSynthDef(name: SystemSynthDefs.generateTempName, fadeTime:fadeTime);
-		outUGen = synthDef.children.detect { |ugen| ugen.class === Out };
-
-		numChannels = numChannels ?? { if(outUGen.notNil) { (outUGen.inputs.size - 1) } { 1 } };
-		synth = Synth.basicNew(synthDef.name, server);
+@@ -45,7 +48,7 @@
 		bytes = synthDef.asBytes;
 		synthMsg = synth.newMsg(server, [\i_out, outbus, \out, outbus], \addToHead);
 		server.sendMsg("/d_recv", bytes, synthMsg);
-		server.scope(numChannels, outbus, bufsize, zoom, outUGen.rate, bounds);
+		server.scope(numChannels, outbus, bufsize, zoom, outUGen.rate);
 		^synth
 	}
 

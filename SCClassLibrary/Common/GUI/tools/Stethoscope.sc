@@ -460,6 +460,10 @@ Stethoscope {
 		);
 		^true;
 	}
+	
+	bounds_ { arg rect;
+		if( window.notNil ) { window.bounds_(rect.asRect) };
+	}
 }
 
 BusScopeSynth {
