@@ -420,7 +420,7 @@ code::
 ::
 
 method::perfectShuffle
-Returns a copy of the receiver with its items split into two equal halves, then reconstructed by interleaving the two halves. note::use an even number of item pairs in order to not loose any items in the shuffle.::
+Returns a copy of the receiver with its items split into two equal halves, then reconstructed by interleaving the two halves. note::the size of the collection should be even, otherwise the item directly in the middle of the collection will be lost in the shuffle.::
 code::
 (
 var y, z;
