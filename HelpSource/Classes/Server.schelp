@@ -585,17 +585,10 @@ Show frequency analyzer window.
 method:: meter
 Show input/output level meters.
 
-argument:: numIns
-the number of input channels. The default is nil and the number of input channels defined by code::Server.local.options.numInputBusChannels:: is used when using a local server.
-argument:: numOuts
-the number of output channels. The default is nil and the number of output channels defined by code::Server.local.options.numOutputBusChannels:: is used when using a local server.
-
 method:: plotTree
 Plot the node/group tree. As link::#-queryAllNodes:: but graphical.
-
 argument:: interval
 Polling interval.
-
 argument:: bounds
 the bounds of the scope window. A Rect specifying position and size of the window. The size does not include the border and title bar. Position is measured from the bottom-left corner of the screen (this is different than link::Classes/View#-bounds::). The default is nil and the scope window will be in the centre of the display.
 

@@ -510,7 +510,6 @@ argument::bufsize
 The size of the buffer for the ScopeView. The default is 4096.
 argument::zoom
 A zoom value for the scope's X axis. Larger values show more. The default is 1.
-
 argument:: bounds
 the bounds of the scope window. A Rect specifying position and size of the window. The size does not include the border and title bar. Position is measured from the bottom-left corner of the screen (this is different than link::Classes/View#-bounds::). The default is nil and the scope window will be in the centre of the display.
 method::plot
