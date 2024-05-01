@@ -433,9 +433,19 @@ method:: numChannels
 Returns the number of channels in the corresponding server-side buffer.
 
 method:: sampleRate
-Returns the sample rate of the corresponding server-side buffer.
+Returns the language-side instance variable code::sampleRate::, of the corresponding server-side buffer. By default, this will be set to the server's sample rate when the code::Buffer:: is instantiated.
 
-Changing this value only changes what the buffer thinks its sample rate is. It does not resample the buffer's content.
+The code::sampleRate:: setter method only changes the language-side instance variable. It does not resample the buffer or change its sample rate on the server.
+However, it can be useful, for example, for later inferring whether audio-rate or control-rate data has been writen to the buffer.
+note::
+Setting the code::sampleRate:: instance variable affects the returned link::#-duration:: (which returns code::numFrames / sampleRate::).
+::
+warning::
+You can use link::#-query:: to inspect the buffer's sample rate on the server, but this will also emphasis::update the:: code::sampleRate:: emphasis::instance variable::, overwriting its value which you may have previously set.
+::
+
+method:: duration
+Returns code::this.numFrames / this.sampleRate:: (language-side instance variables).
 
 method:: path
 Returns a string containing the path of a soundfile that has been loaded into the corresponding server-side buffer.
@@ -448,15 +458,6 @@ These methods allocate the necessary memory on the server for a Buffer previousl
 method:: alloc, allocMsg
 argument:: completionMessage
 A valid OSC message or a Function which will return one. A Function will be passed this Buffer as an argument when evaluated.
-discussion::
-code::
-s.boot;
-b = Buffer.new(s, 44100 * 8.0, 2);
-b.query; // numFrames = 0
-b.alloc;
-b.query; // numFrames = 352800
-b.free;
-::
 
 method:: allocRead, allocReadMsg
 Read a soundfile into a buffer on the server for a Buffer previously created with link::#*new::. Note that this will not autoupdate instance variables. Call code::updateInfo:: in order to do this.
@@ -835,9 +836,23 @@ x.free; b.free;
 ::
 
 method:: query
-Sends a b_query message to the server, asking for a description of this buffer. The results are posted to the post window. Does not update instance vars.
+Sends a code::\b_query:: message to the server, which reponds with: the OSC address pattern (code::/b_info::), code::bufnum::, code::numFrames::, code::numChannels::, and code::sampleRate:: of the server-side buffer representation. These values are passed, in order, to the strong::action:: function which, by default, is:
+code::
+action: { |oscAddrPattern, bufnum, numFrames, numChannels, sampleRate|
+    postf("bufnum: %\nnumFrames: %\nnumChannels: %\nsampleRate: %\n",
+        bufnum, numFrames, numChannels, sampleRate
+    );
+}
+::
+which posts the buffer's attributes.
+warning::
+Calling code::query:: will update the code::Buffer:: instance variables code::numFrames::, code::numChannels::, and code::sampleRate::.
+This is a side effect of the action of the OSC responders stored in buffer's entry in the code::serverCaches::.
+::
+
 argument:: action
-An optional Function to be called which takes the arguments code::msgType, bufnum, numFrames, numChannels, sampleRate::. Providing a function here will bypass code::query::'s normal behaviour, i.e., the usual buffer information will not be posted.
+An optional link::Classes/Function:: to be called with the buffer attributes listed above as arguments, replacing the default strong::action::.
+
 method:: updateInfo
 Sends a b_query message to the server, asking for a description of this buffer. Upon reply this Buffer's instance variables are automatically updated.
 argument:: action
