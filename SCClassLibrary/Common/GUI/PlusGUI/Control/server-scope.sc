@@ -1,21 +1,18 @@
 + Server {
-	scope { arg numChannels, index = 0, bufsize = 4096, zoom = (1), rate = \audio, bounds;
+	scope { arg numChannels, index = 0, bufsize = 4096, zoom = (1), rate = \audio;
 		numChannels = numChannels ?? { if (index == 0) { options.numOutputBusChannels } { 2 } };
 
 		if(scopeWindow.isNil) {
 			scopeWindow = Stethoscope(this, numChannels, index, bufsize, zoom, rate, nil,
 				this.options.numBuffers);
-			// prevent buffer conflicts by using reserved bufnum
+				// prevent buffer conflicts by using reserved bufnum
 			scopeWindow.window.onClose = scopeWindow.window.onClose.addFunc({ scopeWindow = nil });
 		} {
 			scopeWindow.setProperties(numChannels, index, bufsize, zoom, rate);
 			scopeWindow.run;
 			scopeWindow.window.front;
 		};
-		^if(bounds == nil) {
-			scopeWindow } {
-			scopeWindow.window.bounds_(bounds)
-		}
+		^scopeWindow
 	}
 
 	freqscope {
@@ -24,8 +21,8 @@
 }
 
 + Bus {
-	scope { arg bufsize = 4096, zoom, bounds;
-		^server.scope(numChannels, index, bufsize, zoom, rate, bounds);
+	scope { arg bufsize = 4096, zoom;
+		^server.scope(numChannels, index, bufsize, zoom, rate);
 	}
 }
 
