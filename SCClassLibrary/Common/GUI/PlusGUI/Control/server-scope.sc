@@ -32,7 +32,16 @@
 		var synth, synthDef, bytes, synthMsg, outUGen, server;
 
 		server = Server.default;
-@@ -45,7 +48,7 @@
+		if(server.serverRunning.not) {
+			(server.name.asString ++ " server not running!").postln;
+			^nil
+		};
+
+		synthDef = this.asSynthDef(name: SystemSynthDefs.generateTempName, fadeTime:fadeTime);
+		outUGen = synthDef.children.detect { |ugen| ugen.class === Out };
+
+		numChannels = numChannels ?? { if(outUGen.notNil) { (outUGen.inputs.size - 1) } { 1 } };
+		synth = Synth.basicNew(synthDef.name, server);
 		bytes = synthDef.asBytes;
 		synthMsg = synth.newMsg(server, [\i_out, outbus, \out, outbus], \addToHead);
 		server.sendMsg("/d_recv", bytes, synthMsg);
