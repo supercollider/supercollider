@@ -75,16 +75,12 @@ Stethoscope {
 		cycle = cycleSpec.constrain(cycle_);
 		yZoom = 1.0;
 
-		# smallSize, largeSize = if(parent.isNil) {
-			[
-				Size(250,250),
-				Size(500,500)
-			]
+		if(parent.isNil) {
+			smallSize = Size(250,250);
+			largeSize = Size(500,500);
 		} {
-			[
-				Size(parent.bounds.width, parent.bounds.height),
-				Size(parent.bounds.width * 2, parent.bounds.height * 2)
-			]
+			smallSize = Size(parent.bounds.width, parent.bounds.height);
+			largeSize = Size(parent.bounds.width * 2, parent.bounds.height * 2);
 		};
 
 		makeGui = { arg parent;
