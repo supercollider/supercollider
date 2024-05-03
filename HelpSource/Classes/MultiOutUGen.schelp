@@ -15,3 +15,5 @@ instancemethods::
 method:: initOutputs
 Create an array of OutputProxies for the outputs.
 
+argument:: numChannels
+Number of outputs. Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.
