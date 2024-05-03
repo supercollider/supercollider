@@ -127,3 +127,19 @@ w.layout = VLayout(
 w.front;
 )
 ::
+
+For a scroll view we need to set its canvas to a View with the desired layout.
+
+code::
+(
+var view = ScrollView();
+view.canvas = View().layout_(VLayout(
+	*(
+		100.collect {
+			Slider().orientation_(\horizontal).background_(Color.rand)
+		}
+	)
+));
+view.front;
+)
+::
