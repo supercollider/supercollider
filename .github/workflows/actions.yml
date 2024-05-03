@@ -210,8 +210,8 @@ jobs:
             verify-app: true
 
           - job-name: 'x64 legacy'
-            os-version: '11'
-            xcode-version: '12.4'
+            os-version: '12'
+            xcode-version: '13.4.1'
             qt-version: '5.9.9' # will use qt from aqtinstall
             deployment-target: '10.11'
             cmake-architectures: x86_64
@@ -219,6 +219,7 @@ jobs:
             shared-libscsynth: false
             build-libsndfile: true
             system-portaudio: false
+            build-fftw: true
             vcpkg-triplet: x64-osx-release-supercollider # required for build-libsndfile
             artifact-suffix: 'macOS-x64-legacy' # set if needed - will trigger artifact upload
 
@@ -538,9 +539,7 @@ jobs:
       - name: build
         shell: bash
         run: |
-          BUILD_PARALLELISM=
-          if [[ ${{ startsWith(matrix.cmake-generator, 'MinGW') }} == true ]]; then BUILD_PARALLELISM="-- -j2"; fi
-          cmake --build $BUILD_PATH --config Release --target install $BUILD_PARALLELISM
+          cmake --build $BUILD_PATH --config Release --target install --parallel 2
       - name: create archive
         if: matrix.artifact-suffix
         shell: bash

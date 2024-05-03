@@ -15,7 +15,7 @@ method::ar, kr
 
 argument::numChans
 
-Number of output channels.
+Number of output channels. Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.
 
 
 argument::in
@@ -118,4 +118,3 @@ code::
 )
 
 ::
-
