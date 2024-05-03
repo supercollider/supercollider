@@ -72,7 +72,7 @@ chain = chain.pvcalc2(chain2, numframes, func, frombin, tobin, zeroothers)
 ::
 
 argument::chain2
-The scond FFT chain.
+The second FFT chain.
 
 argument::numframes
 Number of FFT frames to process
