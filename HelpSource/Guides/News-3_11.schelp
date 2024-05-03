@@ -60,7 +60,7 @@ Prevented coreaudio from resampling audio stream when using portaudio on macOS (
 
 Fixed an erroneous include  that stopped supernova from compiling in some cases (#4018)
 
-section:: Ugens: Fixed
+section:: UGens: Fixed
 
 Fixed an issue with the Done flags on EnvGen (#4789)
 
