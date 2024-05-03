@@ -15,7 +15,7 @@ classmethods::
 method::ar
 
 argument::numChannels
-The number of output channels.
+The number of output channels. Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.
 
 argument::trigger
 At each trigger, the following arguments are sampled and used as
