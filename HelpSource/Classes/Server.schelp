@@ -267,8 +267,7 @@ code::
 ~tempo = TempoClock;
 ~tempo.tempo = 1;
 
-// s.doWhenBooted ({
-// s.boot should be evaluated separately when using s.doWhenbooted.
+// s.doWhenBooted ({ // s.boot should be evaluated separately when using s.doWhenbooted.
 s.waitForBoot ({
 	var win, routine;
 	defer {
