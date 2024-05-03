@@ -45,7 +45,7 @@
 		bytes = synthDef.asBytes;
 		synthMsg = synth.newMsg(server, [\i_out, outbus, \out, outbus], \addToHead);
 		server.sendMsg("/d_recv", bytes, synthMsg);
-		server.scope(numChannels, outbus, bufsize, zoom, outUGen.rate, bounds);
+		server.scope(numChannels, outbus, bufsize, zoom, outUGen.rate).bounds_(bounds); 
 		^synth
 	}
 
