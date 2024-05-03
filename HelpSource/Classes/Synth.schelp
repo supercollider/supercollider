@@ -385,7 +385,7 @@ y.free;
 r.free;
 
 // look at the Server window
-// still see 4 Ugens and 1 synth?
+// still see 4 UGens and 1 synth?
 // you can't hear me, but don't forget to free me
 t.free;
 ::

@@ -10,7 +10,7 @@ private:: categories
 
 method:: ar
 argument::numChannels
-the number of channels in the soundfile used in bufnum.
+the number of channels in the soundfile used in bufnum. Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.
 
 argument::bufnum
 the buffer number of a mono soundfile.
@@ -101,4 +101,3 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff");
 )
 b.free;
 ::
-
