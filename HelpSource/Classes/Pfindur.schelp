@@ -33,7 +33,7 @@ x = a.asStream;
 
 (
 var a, b;
-a = Pfindur(5, Pbind(\dur, Prand([1, 2, 0.5, 0.1], 4)), filling: (note: 1920));
+a = Pfindur(5, Pbind(\dur, Prand([1, 2, 0.5, 0.1], 4)));
 x = a.asStream;
 9.do({ x.next(Event.default).postln; });
 )
