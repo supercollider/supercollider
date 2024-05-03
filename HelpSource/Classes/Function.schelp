@@ -516,7 +516,7 @@ method::plot
 note::See link::Reference/plot:: for a general reference on plotting::
 
 
-Calculates duration in seconds worth of the output of this function asynchronously, and plots it in a GUI window. Unlike play and scope it will not work with explicit Out Ugens, so your function should return a UGen or an Array of them. The plot will be calculated in realtime.
+Calculates duration in seconds worth of the output of this function asynchronously, and plots it in a GUI window. Unlike play and scope it will not work with explicit Out UGens, so your function should return a UGen or an Array of them. The plot will be calculated in realtime.
 
 code::
 { SinOsc.ar(440) }.plot(0.01, bounds: Window.screenBounds);
