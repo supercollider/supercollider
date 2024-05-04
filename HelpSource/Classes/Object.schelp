@@ -189,8 +189,6 @@ A String containing the resulting file's path.
 
 subsection::Equality and Identity
 
-Equality, queried with code::==:: or code::!=::, is whether the values or contents of two objects are the same by comparing the values, contents or emphasis::hash table indecise::. Identity, queried by code::===:: or code::!==::, is whether two objects refer to the same object by comparing the emphasis::identity hash table indecise:: or virtual memory addresses.
-
 method::==
 
 Answer whether the receiver equals anotherObject. The definition of equality depends on the class of the receiver. The default implementation in Object is to answer if the two objects are identical.
@@ -206,16 +204,6 @@ a === b; // not identical
 "worth trying" == "worth trying"; // equal
 ::
 
-Discussion::
-
-For more details on the differences between equality and identity of some class instances, see the following sections: anchor::equality & identity discussion::
-list::
-## link::Classes/SimpleNumber#-==:: for link::Classes/SimpleNumber:: and its subclasses link::Classes/Float:: and link::Classes/Integer::
-##
-link::Classes/SequenceableCollection#-==:: for link::Classes/SequenceableCollection:: and its subclasses, such as link::Classes/Array::
-##
-link::Classes/String#-==:: for link::Classes/String::.
-::
 
 method::===
 
@@ -226,46 +214,6 @@ code::
 "worth trying" === "worth trying"; // not identical
 'worth trying' === 'worth trying'; // identical (symbols are unique)
 ::
-
-The low information of the link::Classes/Symbol:: class instances, returned by the code::.dump:: method (see: link::#-dump::), shows only its class and its value (symbol) because it is unique:
-code::
-'worth trying'.dump
-::
-teletype::
-   Symbol 'worth trying'
--> worth trying
-::
-
-Also, the link::#-hash:: and link::#-identityHash:: methods return the same emphasis::hash table index:::
-
-code::
-'worth trying'.hash
-::
-teletype::
--> 1726909008
-::
-
-code::
-'worth trying'.identityHash
-::
-teletype::
--> 1726909008
-::
-
-code::
-'worth trying'.hash ==  'worth trying'.identityHash
-::
-teletype::
--> true
-::
-code::
-'worth trying'.hash === 'worth trying'.identityHash
-::
-teletype::
--> true
-::
-
-For details on the identity of link::Classes/Integer::, link::Classes/Float::, link::Classes/Array:: and link::Classes/String::, see the link::#equality & identity discussion#Discussion section in the ==(obj) method::.
 
 method::!=
 
@@ -756,8 +704,11 @@ code::
 Object.new.dump  // an istance of the class Object
 ::
 
-The detailed low level format and information varies depending on the receiver.
-Some instance objects, especially unique objects, return the class name and value (also low data if necessary) of the dumped object:
+discussion::
+
+list::
+## The detailed low level format and information varies depending on the receiver.
+## Some instance objects, especially unique objects, return the class name and value (also low data if necessary) of the dumped object:
 
 definitionlist::
 ## link::Classes/Float::
@@ -772,20 +723,14 @@ teletype::
 ::
 The last two groups of an 8-digit integer are the raw hexadecimal representation of the 64-bit double value according to link::https://ieeexplore.ieee.org/document/8766229##IEEE 754 Floating Point:: (https://ieeexplore.ieee.org/document/8766229). Each part is represented as follows:
 
-table::
-##
-soft::                    :: raw hexadecimal representation of the 64-bit double value
-
-soft::                    :: ––––––––––––––––––––––––––––––––
-
 teletype::
-Float   -1.000000    00000000                      3FF00000
-::
-soft:: ::|soft::       ::|soft::           ::|soft::                           ::|
-
-class soft::   :: |soft::          ::significant part (mantissa) soft::   ::exponent part with sign bit
-
-soft::       :: decmial representation
+                         raw hexadecimal representation
+                           of the 64-bit double value
+                         ––––––––––––––––––––––––––––––
+Float   -1.000000        00000000              3FF00000
+|       |                |                     |
+class   decmial          significant part      exponent part
+        representation   (mantissa)            with sign bit
 ::
 ## link::Classes/Integer::
 ||
@@ -817,7 +762,7 @@ teletype::
 ::
 ::
 
-Some instance objects return more detailed information, such as
+## Some instance objects return more detailed information, such as
 list::
 ## addrress in virtual memory (the hexadecimal number prefixed with 0x),
 ## emphasis::garage collector color:: (gc),
@@ -868,6 +813,7 @@ Instance of Set {    (0x1489e2068, gc=A4, fmt=00, flg=00, set=02)
     size : Integer 2
 }
 -> Set[2, 1]
+::
 ::
 ::
 
