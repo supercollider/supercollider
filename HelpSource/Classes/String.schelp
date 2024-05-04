@@ -996,4 +996,4 @@ method::bounds
 Tries to return a link::Classes/Rect:: with the size needed to fit this string if drawn with given font.
 argument:: font
 A link::Classes/Font::
- 
+
