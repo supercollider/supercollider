@@ -20,98 +20,15 @@ method::nowExecutingPath
 
 Usage: code::thisProcess.nowExecutingPath::
 
+Returns the full path to the file containing the code that is currently executing emphasis::interactively:: in the interpreter. Usually this is the current document. If the code block executes another file on disk, using link::Classes/String#-load:: or link::Classes/String#-loadPaths::, teletype::nowExecutingPath:: will be the location of the executed file.
 
 teletype::nowExecutingPath:: is valid only for interactive code, i.e., code files with a teletype::.scd:: extension. It does not apply to class definitions (teletype::.sc::). For that, use code::thisMethod.filenameSymbol:: or code::this.class.filenameSymbol::.
 
+This method is supported in the SuperCollider IDE, the scel (SuperCollider-Emacs-Lisp) environment and the command-line interface (CLI). In other editor environments, it will return code::nil::.
+
+See link::#examples#Examples:: for various uses of code::thisProcess.nowExecutingPath:: with link::Classes/CmdPeriod::, link::Classes/ServerBoot:: and link::Classes/ServerTree::, link::Classes/Routine:: and link::Classes/Task::.
+
 WARNING:: teletype::nowExecutingPath:: has a corresponding setter method, teletype::nowExecutingPath_::, for internal use only by the interpreter. Do not call the setter method!::
-
-Returns:: The full path to the file containing the code that is currently executing emphasis::interactively:: in the interpreter when used in the command-line interface (CLI), and IDE such as SuperCollider IDE and the scel (SuperCollider-Emacs-Lisp) environment. In some environments, it can return code::nil::
-Usually this is the current document. If a code block ("fileMain.scd" in the example code below) executes another file on disk ("fileForLoad.scd" in the example code below), using link::Classes/String#-load:: or link::Classes/String#-loadPaths::, teletype::nowExecutingPath:: will be the location of the executed file ("fileForLoad.scd" in the example code below). However, if the function is called in the executed file ("fileForLoad.scd" in the example code below), teletype::nowExecutingPath:: will be the code block ("fileMain.scd" in the example code below).
-
-code::
-(
-var fileMainPath, fileMain, fileForLoad;
-
-fileMainPath = "~/Downloads/fileMain.scd".standardizePath;
-fileMain = File(fileMainPath, "w");
-fileMain.write("(
-(" ++ "thisProcess.nowExecutingPath in fileMain.scd:".quote + "+ thisProcess.nowExecutingPath).postln;\n
-~test = (thisProcess.nowExecutingPath.dirname +/+" + "fileForLoad.scd".quote ++");\n
-~test.load.function1;\n
-~test.openOS; // because .openDocument only works in SC-IDE\n
-'fileMain.scd tasks finished'.postln;
-)");
-fileMain.close;
-
-fileForLoad = File(fileMainPath.dirname +/+ "fileForLoad.scd", "w");
-fileForLoad << ("(
-" ++ "thisProcess.nowExecutingPath in fileForLoad.scd:".quote + "+ thisProcess.nowExecutingPath).postln;\n(
-function1: {
-(" ++ "thisProcess.nowExecutingPath in the function in fileForFunctions.scd:".quote + "+ thisProcess.nowExecutingPath).postln
-}\n)");
-fileForLoad.close;
-
-fileMainPath.openOS; // because .openDocument only works in SC-IDE\n
-)
-
-/* Usage in command line interfece */
-// Linux:
-sclang '/home/parallels/Downloads/fileMain.scd'
-
-// macOS (/Applications/SuperCollider.app might be changed to properly):
-/Applications/SuperCollider.app/Contents/MacOS/sclang ~/Downloads/fileMain.scd
-
-// Windows (C:\Program Files\SuperCollider_dev\ should be changed to properly):
-"C:\Program Files\SuperCollider_dev\sclang.exe" %userprofile%\Downloads\fileMain.scd
-::
-
-teletype::
--> /Users/prko/Downloads/fileMain.scd
-thisProcess.nowExecutingPath in fileMain.scd: /Users/prko/Downloads/fileMain.scd
-thisProcess.nowExecutingPath in fileForLoad.scd: /Users/prko/Downloads/fileForLoad.scd
-thisProcess.nowExecutingPath in the function in fileForFunctions.scd: /Users/prko/Downloads/fileMain.scd
--> thisProcess.nowExecutingPath in the function in fileForFunctions.scd: /Users/prko/Downloads/fileMain.scd
-::
-
-When used in link::Classes/CmdPeriod::, link::Classes/ServerBoot:: or link::Classes/ServerTree::, it will return teletype::nil:::
-
-code::
-(
-// CmdPeriod.add {
-// ServerTree.add {
-ServerBoot.add {
-	var path = thisProcess.nowExecutingPath;
-	("\tServerBoot's thisProcess.nowExecutingPath:" + path).postln
-};
-s.reboot
-)
-
-(
-// r {
-Routine {
-	var path = thisProcess.nowExecutingPath;
-	("\tthisProcess.nowExecutingPath in path fork:" + path).postln
-}.()
-)
-
-(
-// s.waitForBoot {
-// s.doWhenBooted {
-fork {
-	var path = thisProcess.nowExecutingPath;
-	("\ts.waitForBoot's thisProcess.nowExecutingPath:" + path).postln
-};
-s.reboot;
-)
-
-(
-Task {
-	var path = thisProcess.nowExecutingPath;
-	("\tTask's thisProcess.nowExecutingPath:" + path).postln
-}.start
-// }.play
-)
-::
 
 method::startup
 
@@ -141,3 +58,235 @@ list::
 This means that link::Classes/Thread#.thisThread#thisThread:: will always initially point
 to the main Thread. However, when some code starts a link::Classes/Routine::, the Routine
 becomes the current Thread, with the main Thread as its parent.
+
+examples::
+
+strong::Example 1.:: Comparison of the path of the evaluated code block in a saved SCD, the loaded SCD and the function in the loaded SCD:
+
+table::
+##
+
+If a code block ("fileMain.scd" in the example code below) executes another file on disk ("fileForLoad.scd" in the example code below), using link::Classes/String#-load:: or link::Classes/String#-loadPaths::, teletype::thisProcess.nowExecutingPath:: will be the location of the executed file ("fileForLoad.scd" in the example code below). However, if the function is called in the executed file ("fileForLoad.scd" in the example code below), teletype::thisProcess.nowExecutingPath:: will be the document of the code block ("fileMain.scd" in the example code below).
+
+strong::Steps:::
+
+numberedlist::
+
+## Preparation code:
+
+code::
+(
+var test, fileMain, fileForLoad;
+
+test = "thisProcess.nowExecutingPath";
+~fileMainPath = "~/fileMain.scd".standardizePath;
+fileMain = File(~fileMainPath, "w");
+fileMain.write(
+	"(\n" ++
+	"(" ++ (test ++ ":").quote ++ ").postln;\n" ++
+	"(" ++ ("\tin fileMain.scd:                       ").quote + "+" + test ++ ").postln;\n" ++
+	"~test = (" ++ test ++ ".dirname +/+" + "fileForLoad.scd".quote ++");\n" ++
+	"~test.load.testFunction;\n" ++
+	"~test.openOS; // n.b.: .openDocument only works in SC-IDE\n" ++
+	"'fileMain.scd tasks finished'.postln;\n" ++
+	")"
+);
+fileMain.close;
+
+fileForLoad = File(~fileMainPath.dirname +/+ "fileForLoad.scd", "w");
+fileForLoad << (
+	"(" ++ "\tin fileForLoad.scd:                    ".quote + "+" + test ++ ").postln;\n" ++
+	"(\n" ++
+	"testFunction: {\n" ++
+	"\t(" ++ "\tin the testFunction in fileForLoad.scd:".quote + "+" + test ++ ").postln
+}\n)");
+fileForLoad.close;
+)
+::
+
+Post window returns:
+teletype::
+-> a File
+::
+
+## Execute SCD file:
+
+list::
+## In SC-IDE:
+
+code::
+~fileMainPath.openOS; // n.b.: .openDocument only works in SC-IDE
+::
+
+Post window returns:
+
+teletype::
+-> /Users/prko/fileMain.scd
+thisProcess.nowExecutingPath:
+	in fileMain.scd:                        /Users/prko/fileMain.scd
+	in fileForLoad.scd:                     /Users/prko/fileForLoad.scd
+	in the testFunction in fileForLoad.scd: /Users/prko/fileMain.scd
+fileMain.scd tasks finished
+-> fileMain.scd tasks finished
+::
+
+## In command line interface (CLI):
+
+code::
+// Linux:
+sclang '/home/parallels/fileMain.scd'
+
+// macOS (/Applications/SuperCollider.app might be changed to properly):
+/Applications/SuperCollider.app/Contents/MacOS/sclang ~/fileMain.scd
+
+// Windows (C:\Program Files\SuperCollider_dev\ should be changed to properly):
+"C:\Program Files\SuperCollider_dev\sclang.exe" %userprofile%\fileMain.scd
+::
+
+sclang returns to the terminal window (command prompt window on Windows):
+
+teletype::
+... (messages are truncated) ...
+*** Welcome to SuperCollider 3.13.0. *** For help press F1.
+thisProcess.nowExecutingPath:
+        in fileMain.scd:                        C:\Users\YourAccountFolder\fileMain.scd
+        in fileForLoad.scd:                     C:\Users\YourAccountFolder\fileForLoad.scd
+        in the testFunction in fileForLoad.scd: C:\Users\YourAccountFolder\fileMain.scd
+fileMain.scd tasks finished
+::
+::
+::
+::
+
+strong::Example 2.:: link::Classes/CmdPeriod::, link::Classes/ServerBoot:: and link::Classes/ServerTree:::
+
+table::
+##
+warning::The retuned path depends on the existence of the startup.scd file when the interpreter boots.::
+
+When used in link::Classes/CmdPeriod::, link::Classes/ServerBoot:: and link::Classes/ServerTree::, it will return teletype::nil:: unless startup.scd exists.
+
+code::
+(
+CmdPeriod.add {
+	var path = thisProcess.nowExecutingPath;
+	("- CmdPeriod’s thisProcess.nowExecutingPath:" + path).postln
+};
+ServerBoot.add {
+	var path = thisProcess.nowExecutingPath;
+	("- ServerBoot’s thisProcess.nowExecutingPath:" + path).postln
+};
+ServerTree.add {
+	var path = thisProcess.nowExecutingPath;
+	("- ServerTree’s thisProcess.nowExecutingPath:" + path).postln
+};
+s.reboot
+)
+::
+
+list::
+## If startup.scd exists:
+
+list::
+## When evaluating the code above, post window returns
+teletype::
+... (messages are truncated) ...
+localhost: keeping clientID (0) as confirmed by server process.
+- ServerBoot’s thisProcess.nowExecutingPath: /Users/prko/Library/Application Support/SuperCollider/startup.scd
+- ServerTree’s thisProcess.nowExecutingPath: /Users/prko/Library/Application Support/SuperCollider/startup.scd
+Shared memory server interface initialized
+::
+
+## When pressing CMD/control + . after evaluating the code above:
+
+teletype::
+- CmdPeriod’s thisProcess.nowExecutingPath: /Users/prko/Library/Application Support/SuperCollider/startup.scd
+- ServerTree’s thisProcess.nowExecutingPath: /Users/prko/Library/Application Support/SuperCollider/startup.scd
+::
+::
+## If there is no startup.scd:
+
+list::
+## When evaluating the code above, post window returns
+teletype::
+... (messages are truncated) ...
+localhost: keeping clientID (0) as confirmed by server process.
+- ServerBoot’s thisProcess.nowExecutingPath: nil
+- ServerTree’s thisProcess.nowExecutingPath: nil
+Shared memory server interface initialized
+::
+
+## When pressing CMD/control + . after evaluating the code above:
+
+teletype::
+- CmdPeriod’s thisProcess.nowExecutingPath: nil
+- ServerTree’s thisProcess.nowExecutingPath: nil
+::
+::
+::
+::
+
+strong::Example 3.:: In link::Classes/Routine:: and link::Classes/Task:::
+
+table::
+## The following examples return the full path of the SCD file where the evaluated code block is located.
+warning::Each code should be copied and pasted into an SCD file that has already been saved in a folder.::
+list::
+## link::Classes/Routine#play:::
+code::
+(
+Routine {
+	var path = thisProcess.nowExecutingPath;
+	("- thisProcess.nowExecutingPath in path Routine:" + path).postln
+}.play;
+
+r {
+	var path = thisProcess.nowExecutingPath;
+	("- thisProcess.nowExecutingPath in path r:      " + path).postln
+}.play
+)
+::
+## link::Classes/Function#fork:::
+code::
+(
+fork {
+	var path = thisProcess.nowExecutingPath;
+	("- fork's thisProcess.nowExecutingPath:" + path).postln
+}
+)
+::
+## link::Classes/Server#waitForBoot:::
+code::
+(
+s.waitForBoot {
+	var path = thisProcess.nowExecutingPath;
+	("- .waitForBoot's thisProcess.nowExecutingPath:" + path).postln
+}
+)
+::
+## link::Classes/Server#doWhenBooted:::
+code::
+(
+s.doWhenBooted {
+	var path = thisProcess.nowExecutingPath;
+	("- .doWhenBooted's thisProcess.nowExecutingPath:" + path).postln
+};
+s.reboot;
+)
+::
+## link::Classes/Task:::
+code::
+(
+Task {
+	var path = thisProcess.nowExecutingPath;
+	("- Task's thisProcess.nowExecutingPath:" + path).postln
+}.start;
+
+Task {
+	var path = thisProcess.nowExecutingPath;
+	("- Task's thisProcess.nowExecutingPath:" + path).postln
+}.play
+)
+::
+::
+::
