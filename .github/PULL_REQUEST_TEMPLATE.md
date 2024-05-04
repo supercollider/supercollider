@@ -25,7 +25,7 @@
 
 <!-- ## Merge notes
 (optional) You may also add notes of:
-     - Dependencies: if this PR depends on any other PRs
+     - Dependencies: if this PR depends on any other PRs or actions
      - Merge Note: any considerations regarding merging this PR
      - Release Notes: text you think would be useful to include in the Release Notes
 -->
