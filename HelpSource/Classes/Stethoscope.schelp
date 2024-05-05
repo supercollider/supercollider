@@ -180,6 +180,11 @@ METHOD:: bounds
         A Rect or a Point interpreted link::Classes/Point#-asRect#as Rect::.
     returns::
         A Rect.
+code::
+s.scope.bounds_(Rect(100, 200, 500, 600));
+s.scope.bounds_([100, 200, 500, 600]);
+s.scope.bounds_(Size(500, 600));
+::
         
         
 SUBSECTION:: Operation
