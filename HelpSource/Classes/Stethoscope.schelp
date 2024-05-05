@@ -177,14 +177,16 @@ SUBSECTION:: Size and position
 METHOD:: bounds
     The position and size of the window. The position is relative to the bottom-left corner of the screen.
     argument::
-        A Rect or a Point interpreted link::Classes/Point#-asRect#as Rect::.
+        A Rect, a Point interpreted link::Classes/Point#-asRect#.asRect:: or anything that responds to it.
     returns::
         A Rect.
 code::
 s.scope.bounds_(Rect(100, 200, 500, 600));
+s.scope.bounds_(500@600);
 s.scope.bounds_([100, 200, 500, 600]);
 s.scope.bounds_(Size(500, 600));
 ::
+
         
         
 SUBSECTION:: Operation
