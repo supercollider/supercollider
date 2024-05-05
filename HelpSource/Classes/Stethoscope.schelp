@@ -172,6 +172,16 @@ METHOD:: style
         One of the above Integers.
 
 
+SUBSECTION:: Size and position
+        
+METHOD:: bounds
+    The position and size of the window. The position is relative to the bottom-left corner of the screen.
+    argument::
+        A Rect or a Point interpreted link::Classes/Point#-asRect#as Rect::.
+    returns::
+        A Rect.
+        
+        
 SUBSECTION:: Operation
 
 METHOD:: run
