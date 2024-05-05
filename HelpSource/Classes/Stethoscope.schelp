@@ -134,6 +134,22 @@ SUBSECTION:: Display
 METHOD:: window
     The (parent) Window of the scope.
 
+METHOD:: bounds
+    The position and size of the window. The position is relative to the bottom-left corner of the screen.
+    argument::
+        A link::Classes/Rect::, or any object responding to the link::Search#asRect:: method. The width less than 264 will be changed to 264, the minimum width.
+    returns::
+        A Rect.
+code::
+s.scope.bounds_(Rect(100, 200, 500, 600));
+s.scope.bounds_([100, 200, 500, 600]);
+s.scope.bounds_(Size(500, 600));
+::
+code::
+s.scope.bounds_(Rect(0, 0, 500, 600));
+s.scope.bounds_(500@600);
+::
+
 METHOD:: size
     Sets the width and the height of the scope window.
     argument::
@@ -170,23 +186,6 @@ METHOD:: style
 
     argument::
         One of the above Integers.
-
-
-SUBSECTION:: Size and position
-        
-METHOD:: bounds
-    The position and size of the window. The position is relative to the bottom-left corner of the screen.
-    argument::
-        A Rect, a Point interpreted link::Classes/Point#-asRect#.asRect:: or anything that responds to it.
-    returns::
-        A Rect.
-code::
-s.scope.bounds_(Rect(100, 200, 500, 600));
-s.scope.bounds_(500@600);
-s.scope.bounds_([100, 200, 500, 600]);
-s.scope.bounds_(Size(500, 600));
-::
-
         
         
 SUBSECTION:: Operation
