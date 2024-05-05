@@ -439,8 +439,14 @@ Stethoscope {
 	}
 	
 	bounds_ { arg rect;
-		if( window.notNil ) { window.bounds_(rect.asRect) };
+		if( window.notNil ) {
+			if (rect.width < 264) {
+				"The width value you set will be changed to 264, the minimum width.".postln;
+			};
+			window.bounds_(rect.asRect)
+		};
 	}
+	bounds { ^this.window.bounds }
 }
 
 BusScopeSynth {
