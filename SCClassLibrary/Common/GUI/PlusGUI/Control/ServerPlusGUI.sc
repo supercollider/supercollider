@@ -1,3 +1,23 @@
+ServerTreeView {
+	*new { |aServer, bounds=(Rect(128, 64, 400, 400)), interval=0.5|
+		var onClose, window;
+		window = Window.new(name.asString, bounds, scroll:true).front;
+		onClose = aServer.plotTreeView(interval, window.view, { defer {window.close}; });
+		window.onClose = {
+			onClose.value;
+		};
+		^window.view.hasHorizontalScroller_(false).background_(Color.grey(0.9));
+	}
+
+	*closeAll {
+		Window.allWindows.do{ |win|
+		if (win.name.debug == "ServerTreeView") { win.close }
+		}
+	}
+
+	close { this.close }
+}
+
 + Server {
 
 	// splitting makeWindow and makeGui, makes sure that makeWindow can be overridden

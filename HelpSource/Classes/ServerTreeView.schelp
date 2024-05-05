@@ -1,0 +1,55 @@
+class:: ServerTreeView
+summary:: Show Server-side Node Tree
+categories:: GUI>Views
+related:: Classes/ServerTreeView
+
+description::
+ServerTreeView shows the node tree on a server.
+
+note::
+The link::Classes/ServerTreeView:: will disappear when the pointed server is not running.
+::
+
+classmethods::
+
+method:: new
+argument:: aServer
+The server to display its node tree.
+argument:: bounds
+A link::Classes/Rect::, or any object responding to the link::Search#asRect:: method.
+argument:: interval
+Polling interval.
+
+method:: closeAll
+Close all instances of link::Classes/ServerTreeView::
+
+instancemethods::
+
+method::close
+Close the receiver.
+
+examples::
+
+code::
+// Start server
+s.boot;
+
+// Create a ServerTreeView:
+a = ServerTreeView.new(s)
+
+// Create a ServerTreeView:
+b = ServerTreeView(s)
+
+// Create a ServerTreeView:
+
+c = ServerTreeView(s, Rect(300, 600, 300, 600)) // arguments: server, bounds
+// Create a ServerTreeView:
+
+d = ServerTreeView(s, Rect(300, 600, 300, 600), 1) // arguments: server, bounds, interval
+
+// Close a particular ServerTreeView:
+a.close
+
+// Close all ServerTreeView instances.
+ServerTreeView.closeAll
+::
