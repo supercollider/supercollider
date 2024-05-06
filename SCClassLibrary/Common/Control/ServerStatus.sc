@@ -48,7 +48,6 @@ ServerStatusWatcher {
 		this.prSendNotifyRequest(flag, false);
 	}
 
-
 	doWhenBooted { |onComplete, limit = 100, onFailure, clock|
 		var mBootNotifyFirst = bootNotifyFirst, postError = true;
 		bootNotifyFirst = false;
