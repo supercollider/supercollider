@@ -1,4 +1,5 @@
 ServerTreeView {
+	var <window;
 	*new { |aServer, bounds=(Rect(128, 64, 400, 400)), interval=0.5|
 		var onClose, window;
 		window = Window.new(name.asString, bounds, scroll:true).front;
@@ -6,16 +7,11 @@ ServerTreeView {
 		window.onClose = {
 			onClose.value;
 		};
-		^window.view.hasHorizontalScroller_(false).background_(Color.grey(0.9));
+		window.view.hasHorizontalScroller_(false).background_(Color.grey(0.9));
+		^super.newCopyArgs(window, onClose)
 	}
 
-	*closeAll {
-		Window.allWindows.do{ |win|
-		if (win.name.debug == "ServerTreeView") { win.close }
-		}
-	}
-
-	close { this.close }
+	close { window.close }
 }
 
 + Server {
