@@ -137,7 +137,7 @@ METHOD:: window
 METHOD:: bounds
     The position and size of the window. The position is relative to the bottom-left corner of the screen.
     argument::
-        A link::Classes/Rect::, or any object responding to the link::Search#asRect:: method. The width less than 264 will be changed to 264, the minimum width.
+        A link::Classes/Rect::, or any object responding to the link::Search#asRect#.asRect:: method. The width less than 264 will be changed to 264, the minimum width.
     returns::
         A Rect.
 code::
