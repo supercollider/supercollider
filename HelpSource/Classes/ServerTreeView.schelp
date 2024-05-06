@@ -16,7 +16,7 @@ method:: new
 argument:: aServer
 The server to display its node tree.
 argument:: bounds
-A link::Classes/Rect::, or any object responding to the link::Search#asRect:: method.
+A link::Classes/Rect::, or any object responding to the link::Search#asRect#.asRect:: method.
 argument:: interval
 Polling interval.
 
