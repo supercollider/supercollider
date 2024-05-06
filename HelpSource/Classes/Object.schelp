@@ -470,7 +470,7 @@ Instead of directly sending a method to an object, a method may be invoked given
 
 method::perform
 
-The selector argument must be a Symbol. Sends the method named by the selector with the given arguments to the receiver.
+The selector argument must be a link::Classes/Symbol::. Sends the method named by the selector with the given arguments to the receiver.
 
 If the first argument is an Array or List, this method behaves like code::performMsg::. However, this usage is discouraged, and code::performMsg:: ought to be used instead.
 
@@ -495,7 +495,7 @@ a.performMsg([\value, 1, 2, 3]);
 method::performWithEnvir
 
 argument:: selector
-A Symbol representing a method selector.
+A link::Classes/Symbol:: representing a method selector.
 argument:: envir
 The remaining arguments derived from the environment and passed as arguments to the method named by the selector.
 discussion::
@@ -507,7 +507,7 @@ a.performWithEnvir(\value, (a: 1, c: 3, d: 4, b: 2));
 method::performKeyValuePairs
 
 argument:: selector
-A Symbol representing a method selector.
+A link::Classes/Symbol:: representing a method selector.
 argument:: pairs
 Array or List with key-value pairs.
 discussion::
@@ -515,6 +515,42 @@ code::
 a = { |a, b, c| postf("% plus % plus % is %\n", a, b, c, a + b + c); "" };
 a.performKeyValuePairs(\value, [\a, 1, \b, 2, \c, 3, \d, 4]);
 ::
+
+method::performWith
+Evaluate a method using a mix of arguments and keyword arguments.
+
+Errors are thrown if: the arguments collide, an unknown keyword is found, or there are too many arguments.
+See link::Classes/Method#-makePerformableArray:: for a detailed description.
+
+argument:: selector
+A link::Classes/Symbol:: representing a method selector.
+
+argument::argumentsArray
+Arguments as an link::Classes/Array::.
+
+argument::keywordArgumentPairs
+Keyword arguments as any link::Reference/Key-Value-Pairs:: structure.
+
+discussion::
+code::
+7819.performWith(\asTimeString, [0.1, 365], (decimalPlaces:4));
+
+{ SinOsc.ar }.performWith(\plot, [0.05], (minval:0, maxval:1));
+
+"meow MEOW woof bahh bahh Meow".performWith('findAll', ["meow"], [ignoreCase: true]);
+
+// calling value on function shows how arguments are assigned:
+(
+f = { |a, b ...e|
+   a.debug(\a);
+   b.debug(\b);
+   e.debug(\e);
+};
+
+f.performWith(\value, [\a], (e: [1,2,3]));
+)
+::
+However, when calling a link::Classes/Function:: it is best to use link::Classes/Function#-valueWith::.
 
 method::tryPerform
 
@@ -529,6 +565,12 @@ Set[1, 2, 3].tryPerform(\keysValuesDo, { |key, value| [key, value].postln });
 // Error occurs within keysValuesDo -- error is thrown back to halt execution
 (a: 1, b: 2, c: 3).tryPerform(\keysValuesDo, { |key, value| [key, value].flippityblargh });
 ::
+
+method::functionPerformList
+A method called in object prototyping, see link::Classes/IdentityDictionary#-new::.
+By default this will do nothing and return the object.
+link::Classes/Function#-functionPerformList:: provides a useful implementation.
+Not called in normal use.
 
 method::superPerform
 

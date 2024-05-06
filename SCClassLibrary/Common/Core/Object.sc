@@ -88,10 +88,11 @@ Object  {
 		_ObjectPerformList;
 		^this.primitiveFailed
 	}
-	functionPerformList {
-		// perform only if Function. see Function-functionPerformList
-		^this
-	}
+
+	// Used in object prototyping. See help file.
+	// Ensure these two methods do the same thing.
+	functionPerformList { ^this }
+	functionPerformWithKeys { ^this }
 
 	// super.perform(selector,arg) doesn't do what you might think.
 	// \perform would be looked up in the superclass, not the selector you are interested in.
@@ -121,7 +122,7 @@ Object  {
 		var argNames, args;
 		var method = this.class.findRespondingMethodFor(selector);
 
-		if(method.isNil) { ^this.doesNotUnderstand(selector) };
+		if(method.isNil) { ^this.doesNotUnderstandAbout(selector, [], nil) };
 
 		argNames = method.argNames.drop(1);
 		args = method.prototypeFrame.drop(1);
@@ -135,6 +136,18 @@ Object  {
 
 	performKeyValuePairs { |selector, pairs|
 		^this.performWithEnvir(selector, ().putPairs(pairs))
+	}
+
+	performWithKeys {|selector, argumentsArray, keywordArgumentPairs|
+		if(keywordArgumentPairs.isNil) {
+			^this.performList(selector, argumentsArray)
+		} {
+			var method = this.class.findRespondingMethodFor(selector) ?? {
+				^this.doesNotUnderstandAbout(selector, [], nil)
+			};
+			var argList = method.makePerformableArray(argumentsArray, keywordArgumentPairs);
+			^this.performList(selector, argList)
+		}
 	}
 
 	// copying
@@ -168,6 +181,14 @@ Object  {
 	valueArray { ^this }
 	valueEnvir { ^this }
 	valueArrayEnvir { ^this }
+
+	valueWithKeys{|argumentsArray, keywordArgumentPairs|
+		^this.value(
+			*this.class
+			    .findRespondingMethodFor(\value)
+			    .makePerformableArray(argumentsArray, keywordArgumentPairs)
+		)
+	}
 
 	// equality, identity
 	== { arg obj; ^this === obj }
@@ -340,6 +361,7 @@ Object  {
 	subclassResponsibility { arg method;
 		SubclassResponsibilityError(this, method, this.class).throw;
 	}
+	// maintained for compatibility.
 	doesNotUnderstand { |selector ...args|
 		^this.doesNotUnderstandAbout(selector, args)
 	}

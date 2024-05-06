@@ -534,38 +534,40 @@ IdentityDictionary : Dictionary {
 		if(parent.notNil) { stream << "\n.parent_(" <<< parent << ")" };
 	}
 
-	doesNotUnderstand { arg selector ... args;
-		var func;
-		if (know) {
-
-			func = this[selector];
-			if (func.notNil) {
-				^func.functionPerformList(\value, this, args);
-			};
-
-			if (selector.isSetter) {
-				selector = selector.asGetter;
-				if(this.respondsTo(selector)) {
-					warn(selector.asCompileString
-						+ "exists as a method name, so you can't use it as a pseudo-method.")
-				};
-				^this[selector] = args[0];
-			};
-			func = this[\forward];
-			if (func.notNil) {
-				^func.functionPerformList(\value, this, selector, args);
-			};
-			^nil
+	doesNotUnderstandAbout { |selector, argumentsArray, keywordArgumentPairs|
+		if(know.not){
+			^this.superPerformList(\doesNotUnderstandAbout, [selector, argumentsArray, keywordArgumentPairs])
 		};
-		^this.superPerformList(\doesNotUnderstand, selector, args);
+
+		this[selector] !? {|f|
+			^f.functionPerformWithKeys(\value, [this] ++ argumentsArray, keywordArgumentPairs)
+		};
+
+		if (selector.isSetter) {
+			if(keywordArgumentPairs.isNil.not){
+				Error("Cannot have keywords when calling a setter.").throw
+			} {
+				var varName = selector.asGetter;
+				if(this.respondsTo(varName)) {
+					warn(selector.asCompileString + "exists as a method name, so you can't use it as a pseudo-method.")
+				};
+				^this[varName] = argumentsArray[0];
+			}
+		};
+
+		this[\forward] !? {|f|
+			^f.functionPerformWithKeys(\value, [this, selector] ++ argumentsArray, keywordArgumentPairs)
+		};
+
+		^nil
 	}
 
-		// Quant support.
-		// The Quant class assumes the quant/phase/offset scheduling model.
-		// If you want a different model, you can write a dictionary like so:
-		// (nextTimeOnGrid: { |self, clock| ... calculate absolute beat number here ... },
-		//	parameter: value, parameter: value, etc.)
-		// If you leave out the nextTimeOnGrid function, fallback to quant/phase/offset.
+	// Quant support.
+	// The Quant class assumes the quant/phase/offset scheduling model.
+	// If you want a different model, you can write a dictionary like so:
+	// (nextTimeOnGrid: { |self, clock| ... calculate absolute beat number here ... },
+	//	parameter: value, parameter: value, etc.)
+	// If you leave out the nextTimeOnGrid function, fallback to quant/phase/offset.
 
 	nextTimeOnGrid { |clock, referenceBeat|
 		if(this[\nextTimeOnGrid].notNil) {

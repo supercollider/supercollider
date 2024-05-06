@@ -45,18 +45,29 @@ return a list of all references to a given symbol.
 
 method::argNames
 
-Get the Array of Symbols of the argument names.
+Get all of the arguments' names as a link::Classes/SymbolArray::.
 
 code::
 { |a = 9, b = 10, c| a + b }.def.argNames;
 ::
-method::prototypeFrame
 
-Get the array of default values for argument and temporary variables.
+method::argumentNamesForCall
+Returns the argument names as needed for calling the function as an link::Classes/Array::.
+This will remove any internal arguments.
+
+method::prototypeFrame
+Get an link::Classes/Array:: of default values for all arguments and variables.
 
 code::
 { |a = 9, b = 10, c| a + b }.def.prototypeFrame;
+{ |a = 9, b = 10, c| var i = 'I\'m stored here too!'; a + b }.def.prototypeFrame;
+
 ::
+
+method::defaultArgs
+Returns the default arguments supplied in place of those not specified in a function call, if no default was provided for an argument, then link::Classes/Nil:: is returned in its place.
+
+
 method::varNames
 
 Get the Array of Symbols of the local variable names.
@@ -109,6 +120,53 @@ Get the Array of Symbols of the local variable names.
 code::
 { |a = 9, b = 10, c| a + b }.def.makeEnvirFromArgs;
 ::
+
+method::makePerformableArray
+
+This is used internally by link::Classes/Function#-valueWith:: which is sufficient for all uses and recommended over link::#-makePerformableArray::.
+
+Returns an array that can be passed directly to link::Classes/Function#-valueArray::.
+
+Both keyword and non-keyword arguments may be provided at the same time.
+
+Errors are thrown if: a value for an argument is present in both the code::argumentsArray:: and the code::keywordArgumentPairs:: (argument collision),
+if a keyword argument's name cannot be found (unknown keyword),
+and if too many arguments are given to code::argumentsArray:: (too many arguments).
+
+Variable arguments are best placed with a keyword argument.
+However, if the code::keywordArgumentPairs:: is empty and all arguments in the code::argumentsArray:: are present, any extra arguments in code::argumentsArray:: will be passed to the variable argument, if present.
+Please note, that variable arguments are unpacked and individually appened to the end of the array, not contained in their own array.
+
+
+argument::argumentsArray
+Arguments as an link::Classes/Array::.
+
+argument::keywordArgumentPairs
+Keyword arguments as any link::Reference/Key-Value-Pairs:: structure.
+
+returns::Arguments as an link::Classes/Array::.
+
+discussion::
+code::
+(
+f = { |a b ...e|
+   var i = 0;
+   a.debug(\a);
+   b.debug(\b);
+   e.debug(\e);
+};
+)
+
+// using makePerformableArray, not recommended
+(
+var args = f.def.makePerformableArray([\a], (e: [1,2,3]));
+f.valueArray(args);
+)
+
+// using valueWith, recommended
+f.valueWith([\a], (e: [1,2,3]));
+::
+
 
 subsection::Generating Strings
 

@@ -139,17 +139,16 @@ EnvironmentRedirect {
 	know_ { arg flag; envir.know = flag }
 	know { ^envir.know }
 
-	doesNotUnderstand { arg selector ... args;
-		var func;
-		if (this.know) {
-			if (selector.isSetter) {
-				selector = selector.asGetter;
-				^this[selector] = args[0];
-			};
-			^this.doFunctionPerform(selector, args)
-
+	doesNotUnderstandAbout {|selector, argumentsArray, keywordArgumentPairs|
+		if (this.know.not) {
+			^this.superPerformList(\doesNotUnderstandAbout, [selector, argumentsArray, keywordArgumentPairs])
 		};
-		^this.superPerformList(\doesNotUnderstand, selector, args);
+
+		if (selector.isSetter and: keywordArgumentPairs.isNil) {
+			^this[selector.asGetter] = argumentsArray[0];
+		};
+
+		^this.doFunctionPerformWithKeys(selector, argumentsArray, keywordArgumentPairs)
 	}
 
 	doFunctionPerform { arg selector, args;
@@ -159,6 +158,16 @@ EnvironmentRedirect {
 			}
 		};
 		^this[selector].functionPerformList(\value, this, args);
+	}
+
+	doFunctionPerformWithKeys{ |selector, argumentsArray, keywordArgumentPairs|
+	    keywordArgumentPairs ?? { this.doFunctionPerform(selector, argumentsArray) };
+		envir[\forward] !? {
+			if(envir[selector].isNil) {
+				^envir[\forward].functionPerformWithKeys(\value, [this] ++ selector ++ argumentsArray, keywordArgumentPairs);
+			}
+		};
+		^this[selector].functionPerformWithKeys(\value, [this] ++ argumentsArray, keywordArgumentPairs);
 	}
 
 	printOn { | stream |

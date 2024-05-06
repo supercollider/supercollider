@@ -18,9 +18,10 @@ Scale {
 		^all.at(key)
 	}
 
-	*doesNotUnderstand { |selector, args|
-		var scale = this.newFromKey(selector, args).deepCopy;
-		^scale ?? { super.doesNotUnderstand(selector, args) };
+	*doesNotUnderstandAbout {|selector, argumentsArray, keywordArgumentPairs|
+		^Scale.performWithKeys(\newFromKey, [selector] ++ argumentsArray, keywordArgumentPairs) ?? {
+			super.doesNotUnderstandAbout(selector, [argumentsArray, keywordArgumentPairs])
+		}
 	}
 
 	*newFromKey { |key, tuning|
@@ -184,9 +185,10 @@ Tuning {
 		^all.at(key)
 	}
 
-	*doesNotUnderstand { |selector, args|
-		var tuning = this.newFromKey(selector, args).deepCopy;
-		^tuning ?? { super.doesNotUnderstand(selector, args) }
+	*doesNotUnderstandAbout {|selector, argumentsArray, keywordArgumentPairs|
+		^Tuning.performWithKeys(\newFromKey, [selector] ++ argumentsArray, keywordArgumentPairs) ?? {
+			super.doesNotUnderstandAbout(selector, [argumentsArray, keywordArgumentPairs])
+		}
 	}
 
 	*newFromKey { | key |

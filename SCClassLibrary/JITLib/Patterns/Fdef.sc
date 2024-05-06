@@ -28,8 +28,11 @@ Maybe : Ref {
 		^this.notYetImplemented(thisMethod)
 		//^value.valueArrayEnvir(args) ? defaultValue
 	}
-	functionPerformList { arg selector, arglist;
+	functionPerformList { |selector, arglist|
 		^this.performList(selector, arglist)
+	}
+	functionPerformWithKeys {|selector, argumentsArray, keywordArgumentPairs|
+		^this.performWithKeys(selector, argumentsArray, keywordArgumentPairs)
 	}
 
 	// this allows recursion
@@ -79,6 +82,7 @@ Maybe : Ref {
 	}
 
 	doesNotUnderstand { arg selector ... args;
+		// keyword arguments are not allowed in operator calls.
 		^this.composeNAryOp(selector, args)
 	}
 

@@ -413,10 +413,17 @@ Process {
 
 
 FunctionDef {
-	var raw1, raw2, <code, <selectors, <constants, <prototypeFrame, <context, <argNames, <varNames;
-	var <sourceCode;
+	var raw1, raw2; // Internal - don't touch
+	var <code; // Compiled bytecode
+	var <selectors; // All the explicit selectors (messages) used
+	var <constants; // All the constants used in function
+	var <prototypeFrame; // All the default arguments' and varaibles' values
+	var <context; // The enclosing FunctionDef or Method
+	var <argNames; // All the argument names as a SymbolArray, this will include 'this' for Method.
+	var <varNames; // All the variable names as a SymbolArray
+	var <sourceCode; // The literal source code as a String
 
-	// a FunctionDef is defined by a code within curly braces {}
+	// A FunctionDef is defined by a code within curly braces {}.
 	// When you use a FunctionDef in your code it gets pushed on the stack
 	// as an instance of Function
 
@@ -452,6 +459,10 @@ FunctionDef {
 		_FunctionDefDumpContexts
 		^this.primitiveFailed
 	}
+
+	defaultArgs { ^this.prototypeFrame.keep(argNames.size) }
+	argumentNamesForCall { ^argNames }
+
 	inspectorClass { ^FunctionDefInspector }
 
 	findReferences { arg aSymbol, references;
@@ -549,11 +560,45 @@ FunctionDef {
 		^().putPairs(this.keyValuePairsFromArgs)
 	}
 
+	makePerformableArray {|argumentsArray=([]), keywordArgumentPairs=([])|
+		// This will return an array with all the arguments and default arguments in place.
+		// Consider moving this whole method to a primitive.
+		var argNamesForCall = this.argumentNamesForCall;
+		var visitedArgNames = argNamesForCall.keep(argumentsArray.size);
+		var varArgName = if(this.varArgs, {argNamesForCall.last});
+		var arguments = this.defaultArgs
+        	.drop(if(this.varArgs, -1, 0)) // here we don't want the default provided by prototypeFrame for varArgs '[]', so drop it.
+        	.overWrite(argumentsArray);
+
+		// check arguments in keywordArgumentPairs do not collide with those in argumentsArray and that they are present in the method.
+		keywordArgumentPairs.keysValuesDo {|name, a|
+			if (visitedArgNames.includes(name)) {
+				Error("The same argument cannot be passed twice, got two values for argument '%'".format(name))
+					.throw
+			};
+
+			argNamesForCall.indexOf(name)
+			?? { Error("Argument '%' not understood by function '%'".format(name, this)).throw }
+			!? { |indexOfName|
+				visitedArgNames = visitedArgNames.add(name);
+				if (name == varArgName){
+					arguments = arguments.addAll(a)  // append all var args to array
+				} {
+					arguments[indexOfName] = a
+				}
+			};
+		};
+
+		^arguments
+	}
 }
 
 Method : FunctionDef {
 	var <ownerClass, <name, <primitiveName;
 	var <filenameSymbol, <charPos;
+
+	defaultArgs { ^this.prototypeFrame.keep(argNames.size).drop(1) }
+	argumentNamesForCall { ^argNames.drop(1) } // drop this
 
 	openCodeFile {
 		this.filenameSymbol.asString.openDocument(this.charPos, -1);

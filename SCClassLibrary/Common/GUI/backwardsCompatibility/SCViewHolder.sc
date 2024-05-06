@@ -46,14 +46,13 @@ SCViewHolder {
 	}
 
 	// delegate to the view
-	doesNotUnderstand { |selector ... args|
-		var	result;
-		view.respondsTo(selector).if({
-			result = view.performList(selector, args);
-			^(result === view).if({ this }, { result });
-		}, {
-			DoesNotUnderstandError(this, selector, args).throw;
-		});
+	doesNotUnderstandAbout { |selector, argumentsArray, keywordArgumentPairs|
+		if (view.respondsTo(selector)) {
+			var result = view.performWithKeys(selector, argumentsArray, keywordArgumentPairs);
+			^if(result === view) { this } { result }
+		};
+
+		^super.doesNotUnderstandAbout(selector, argumentsArray, keywordArgumentPairs);
 	}
 }
 

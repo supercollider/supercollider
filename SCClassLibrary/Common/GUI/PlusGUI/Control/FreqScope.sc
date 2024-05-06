@@ -302,8 +302,8 @@ FreqScopeView {
 		^scope.special(synthDefName, [\in2, bus2])
 	}
 
-	doesNotUnderstand { arg selector ... args;
-		^scope.performList(selector, args);
+	doesNotUnderstandAbout {|selector, argumentsArray, keywordArgumentPairs|
+		^scope.performWithKeys(selector, argumentsArray, keywordArgumentPairs);
 	}
 
 	shmScopeAvailable {

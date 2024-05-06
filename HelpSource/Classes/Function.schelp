@@ -122,10 +122,63 @@ e = Environment.make({ ~a = 3; ~b = 10 });
 )
 ::
 
+method::valueWith
+Evaluate the function using a mix of arguments and keyword arguments.
+
+Errors are thrown if: the arguments collide, an unknown keyword is found, or there are too many arguments.
+See link::Classes/FunctionDef#-makePerformableArray:: for a detailed description.
+
+argument::argumentsArray
+Arguments as an array.
+
+argument::keywordArgumentPairs
+Keyword arguments as any link::Reference/Key-Value-Pairs:: structure.
+
+
+discussion::
+code::
+(
+f = { |a, b ...e|
+   a.debug(\a);
+   b.debug(\b);
+   e.debug(\e);
+};
+f.valueWith([\a], (e: [1,2,3]));
+)
+::
+
+
 method::functionPerformList
 
-For Function, this behaves the same as valueArray(arglist). It is used  where Functions and other objects should behave differently to value, such as in the object prototyping implementation of Environment.
+For Function, this behaves the same as valueArray(arglist).
+It is used  where Functions and other objects should behave differently to value,
+such as in the object prototyping implementation of Environment.
 
+argument::selector
+The message to be run as a link::Classes/Symbol::.
+
+argument::arglist
+The arguments to pass as an link::Classes/Array::.
+
+method::functionPerformWith
+
+For Function, this behaves the same as valueArray(arglist).
+It is used  where Functions and other objects should behave differently to value,
+such as in the object prototyping implementation of Environment.
+
+Ensure both this method and link::#-functionPerformList:: do the same thing or the behaviour will change when the user passes keyword arguments.
+
+Errors are thrown if: the arguments collide, an unknown keyword is found, or there are too many arguments.
+See link::Classes/Method#-makePerformableArray:: or link::Classes/FunctionDef#-makePerformableArray:: for a detailed description.
+
+argument::selector
+The message to be run as a link::Classes/Symbol::.
+
+argument::argumentsArray
+Arguments as an link::Classes/Array::.
+
+argument::keywordArgumentPairs
+Keyword arguments as any link::Reference/Key-Value-Pairs:: structure.
 
 method::performWithEnvir
 

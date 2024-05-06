@@ -53,9 +53,18 @@ Function : AbstractFunction {
 		// unsupplied argument names are looked up in the currentEnvironment
 		^this.primitiveFailed
 	}
+
 	functionPerformList { arg selector, arglist;
+		// Used in object prototyping.
+		// Ensure both functionPerformList and functionPerformWith do the same thing.
 		_ObjectPerformList;
 		^this.primitiveFailed
+	}
+	functionPerformWithKeys {|selector, argumentsArray, keywordArgumentPairs|
+		// Used in object prototyping.
+		// Ensure both functionPerformList and functionPerformWith[selector] ++  do the same thing.
+		keywordArgumentPairs ?? { ^this.functionPerformList(selector, argumentsArray) };
+		^this.performWithKeys(selector, argumentsArray, keywordArgumentPairs)
 	}
 
 	valueWithEnvir { arg envir;
@@ -74,9 +83,17 @@ Function : AbstractFunction {
 		^this.valueArray(prototypeFrame)
 	}
 
+	valueWithKeys {|argumentsArray, keywordArgumentPairs|
+		^this.valueArray(def.makePerformableArray(argumentsArray, keywordArgumentPairs))
+	}
+
 	performWithEnvir { |selector, envir|
 		if(selector === \value) { ^this.valueWithEnvir(envir) };
 		^super.performWithEnvir(selector, envir)
+	}
+	performWithKeys {|selector, argumentsArray, keywordArgumentPairs|
+		if(selector === \value) { ^this.valueWithKeys(argumentsArray, keywordArgumentPairs) };
+		^super.performWithKeys(selector, argumentsArray, keywordArgumentPairs)
 	}
 
 	performKeyValuePairs { |selector, pairs|
@@ -309,10 +326,10 @@ Function : AbstractFunction {
 			if(fadeTime > 0) {
 				outputs = outputs * EnvGen.kr(Env.linen(fadeTime, duration - (2 * fadeTime), fadeTime))
 			};
-      
+
 			RecordBuf.perform(RecordBuf.methodSelectorForRate(defRate), outputs, bufnum, loop: 0);
 			Line.perform(Line.methodSelectorForRate(defRate), dur: duration, doneAction: 2);
-      
+
 		});
 
 		buffer = Buffer.new(server);

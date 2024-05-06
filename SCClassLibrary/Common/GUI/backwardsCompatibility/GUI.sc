@@ -162,7 +162,7 @@ GUI {
 	* and is delegated to the button association of the
 	* current scheme.
 	*/
-	*doesNotUnderstand { arg selector ... args;
+	*doesNotUnderstandAbout { arg selector ... args;
 		if ( scheme.notNil ){
 			^scheme.performList( selector, args );
 		}{
