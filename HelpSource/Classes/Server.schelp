@@ -264,11 +264,11 @@ To play sound or music with more precise time control, the fourth argument clock
 
 code::
 (
-~tempo = TempoClock;
-~tempo.tempo = 1;
+t = TempoClock;
+t.tempo = 1;
 
 // s.doWhenBooted ({ // s.boot should be evaluated separately when using s.doWhenbooted.
-s.waitForBoot ({
+s.waitForBoot({
 	var win, routine;
 	defer {
 		win = Window();
@@ -285,10 +285,10 @@ s.waitForBoot ({
 		};
 		defer { win.close }
 	}
-}, clock: ~tempo)
+}, clock: t)
 )
 
-~tempo.tempo = 30/60
+t.tempo = 30/60
 ::
 
 method:: boot
