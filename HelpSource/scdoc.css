@@ -552,7 +552,6 @@ table.arguments td.argumentname, td.argumentdesc {
 
 td.argumentname {
     font-weight: bold;
-    white-space: nowrap;
 }
 
 div.returnvalue {
