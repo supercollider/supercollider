@@ -83,7 +83,7 @@ ServerStatusWatcher {
 				onComplete.value;
 			});
 
-		}.play(clock.asClass)
+		}.play(clock)
 	}
 
 

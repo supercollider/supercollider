@@ -786,17 +786,19 @@ Server {
 		condition.wait
 	}
 
-	waitForBoot { |onComplete, limit = 100, onFailure, clock = \AppClock|
+	waitForBoot { |onComplete, limit = 100, onFailure, clock|
 		// onFailure.true: why is this necessary?
 		// this.boot also calls doWhenBooted.
 		// doWhenBooted prints the normal boot failure message.
 		// if the server fails to boot, the failure error gets posted TWICE.
 		// So, we suppress one of them.
+		clock = clock ?? { AppClock };
 		if(this.serverRunning.not) { this.boot(onFailure: true) };
 		this.doWhenBooted(onComplete, limit, onFailure, clock);
 	}
 
-	doWhenBooted { |onComplete, limit=100, onFailure, clock = \AppClock|
+	doWhenBooted { |onComplete, limit=100, onFailure, clock|
+		clock = clock ?? { AppClock };
 		statusWatcher.doWhenBooted(onComplete, limit, onFailure, clock)
 	}
 
