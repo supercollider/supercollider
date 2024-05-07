@@ -29,3 +29,12 @@
      - Merge Note: any considerations regarding merging this PR
      - Release Notes: text you think would be useful to include in the Release Notes
 -->
+
+<!-- Note: The recommended commit message format is:
+     component: sub-component: short description of changes
+For example:
+     classlib: ClassBrowser: fix search with empty query string
+Common `comp:` labels:
+     help, classlib, sclang, scsynth, plugins, tests, docs, SCDoc
+See wiki for more info: Wiki->Creating Pull Requests->git-commit-message-format
+-->
