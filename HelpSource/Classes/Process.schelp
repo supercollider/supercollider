@@ -24,7 +24,7 @@ Returns the full path to the file containing the code that is currently executin
 
 teletype::nowExecutingPath:: is valid only for interactive code, i.e., code files with a teletype::.scd:: extension. It does not apply to class definitions (teletype::.sc::). For that, use code::thisMethod.filenameSymbol:: or code::this.class.filenameSymbol::.
 
-This method is supported in the SuperCollider IDE, the scel (SuperCollider-Emacs-Lisp) environment and the command-line interface (CLI). In other editor environments, it will return code::nil::.
+The method is supported in various environments, including the SuperCollider IDE, Neovim (SCNvim), Emacs (scel), VSCode/VSCodium, and the command line interface (CLI). In unsupported editors, it will return code::nil::.
 
 See link::#examples#Examples:: for various uses of code::thisProcess.nowExecutingPath:: with link::Classes/CmdPeriod::, link::Classes/ServerBoot:: and link::Classes/ServerTree::, link::Classes/Routine:: and link::Classes/Task::.
 
@@ -66,7 +66,7 @@ strong::Example 1.:: Comparison of the path of the evaluated code block in a sav
 table::
 ##
 
-If a code block ("fileMain.scd" in the example code below) executes another file on disk ("fileForLoad.scd" in the example code below), using link::Classes/String#-load:: or link::Classes/String#-loadPaths::, teletype::thisProcess.nowExecutingPath:: will be the location of the executed file ("fileForLoad.scd" in the example code below). However, if the function is called in the executed file ("fileForLoad.scd" in the example code below), teletype::thisProcess.nowExecutingPath:: will be the document of the code block ("fileMain.scd" in the example code below).
+If a code ("fileMain.scd" in the example code below) executes another file on disk ("fileForLoad.scd" in the example code below) using link::Classes/String#-load:: or link::Classes/String#-loadPaths::, teletype::thisProcess.nowExecutingPath:: will be the location of the executed file ("fileForLoad.scd" in the example code below). If a function containing thisProcess.nowExecutingPath is called (the function defined in "fileForLoad.scd" in the example code below), teletype::thisProcess.nowExecutingPath:: will return the path of the document containing the function call ("fileMain.scd" in the example code below).
 
 strong::Steps:::
 
@@ -112,10 +112,12 @@ teletype::
 ## Execute SCD file:
 
 list::
-## In SC-IDE:
+## In SC-IDE or other editors:
 
 code::
-~fileMainPath.openOS; // n.b.: .openDocument only works in SC-IDE
+~fileMainPath.openOS;
+// Note: .openDocument only works in SC-IDE.
+// openOS will work in other editors and the system default application will open the SCD file.
 ::
 
 Post window returns:
