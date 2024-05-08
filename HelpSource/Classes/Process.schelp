@@ -117,7 +117,7 @@ list::
 code::
 ~fileMainPath.openOS;
 // Note: .openDocument only works in SC-IDE.
-// openOS will work in other editors and the system default application will open the SCD file.
+// .openOS will work in other editors and the system default application will open the SCD file.
 ::
 
 Post window returns:
