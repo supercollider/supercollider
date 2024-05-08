@@ -1,27 +1,50 @@
 ServerTreeView {
-	var <window;
-	*new { |aServer, bounds=(Rect(128, 64, 400, 400)), interval=0.5|
-		var aServerTreeView, window;
-		window = Window.new(name.asString, bounds, scroll:true).front;
-		aServerTreeView = ServerTreeView.plotTreeView(aServer, interval, window, { defer { window.close } });
-		window.view.hasHorizontalScroller_(false).background_(Color.grey(0.9));
-		^super.newCopyArgs(window, aServerTreeView)
+	var <server, <bounds, viewParent, <window, resp, updateFunc, updater, tabSize = 25, treeViewStatus;
+
+	*new { |server, bounds=(Rect(128, 64, 400, 400)), parent|
+		if(bounds.asRect.width < 400) {
+			var bnds = bounds.asRect;
+			"The width value you set will be changed to 400, the minimum width.".postln;
+			bounds = Rect(bnds.left, bnds.top, 400, bnds.height);
+		};
+		^super.newCopyArgs(server).makeWindow(bounds, parent)
 	}
 
-	close { window.close }
+	makeWindow { |bounds, parent|
+		if(parent == nil) {
+			window = Window.new(this.asString, bounds, scroll:true);
+			viewParent = window;
+		} {
+			if (parent.name.contains(" Node Tree")) {
+				window = parent
+			} {
+				parent.close;
+				window = Window.new(parent.name, parent.bounds, scroll:true);
+			};
+			viewParent = window;
+			window.view.hasHorizontalScroller_(false).background_(Color.grey(0.9))
+		};
+		treeViewStatus = StaticText(window, Rect(tabSize, 0, window.bounds.width - (tabSize * 2) + 1, tabSize))
+		.string_(" STOPPED")
+		//.background_(Color.black)
+		//.stringColor_(Color.grey(0.8))
+		.font_(Font.sansSerif(14 ).boldVariant);
+		window.front
+	}
 
-	*plotTreeView { |aServer, interval=0.5, parent, actionIfFail|
-		var resp, done = false;
+	start { |interval = 0.5, actionIfFail|
+		var done = false;
 		var collectChildren, levels, countSize;
 		var view, bounds;
-		var updater, updateFunc;
-		var tabSize = 25;
 		var pen, font;
 
+		treeViewStatus.string_(" STARTED: current server tree");
+
 		pen = GUI.current.pen;
+
 		font = Font.sansSerif(10);
 
-		view = UserView.new(parent, Rect(0,0,400,400));
+		view = UserView.new(viewParent, Rect(0,0,400,400));
 
 		view.drawFunc = {
 			var xtabs = 0, ytabs = 0, drawFunc;
@@ -37,7 +60,7 @@ ServerTreeView {
 						endYTabs = ytabs + thisSize + 0.2;
 						rect = Rect(xtabs * tabSize + 0.5,
 							ytabs * tabSize + 0.5,
-							parent.bounds.width - (xtabs * tabSize * 2),
+							viewParent.bounds.width - (xtabs * tabSize * 2),
 							thisSize * tabSize;
 						);
 						pen.fillColor = Color.grey(0.8);
@@ -135,12 +158,12 @@ ServerTreeView {
 				view.bounds = Rect(0, 0, 400, max(400, tabSize * (countSize.value(levels) + 2)));
 				view.refresh;
 			}
-		}, '/g_queryTree.reply', aServer.addr).fix;
+		}, '/g_queryTree.reply', this.server.addr).fix;
 
 		updateFunc = {
 			updater = fork {
 				loop {
-					aServer.sendMsg("/g_queryTree", 0, 0);
+					this.server.sendMsg("/g_queryTree", 0, 0);
 					interval.wait;
 				}
 			}
@@ -153,12 +176,19 @@ ServerTreeView {
 				"Server failed to respond to Group:queryTree!".warn;
 			});
 		});
-		//action to be executed when enclosing window closes
-		^{
-			updater.stop;
-			CmdPeriod.remove(updateFunc);
-			resp.free;
-		}
+	}
+
+	stop {
+		treeViewStatus.string_(" STOPPED: last updated server tree")
+		.background_(Color.grey(0.7));
+		updater.stop;
+		CmdPeriod.remove(updateFunc);
+		resp.free;
+	}
+
+	close {
+		this.stop;
+		window.close
 	}
 }
 
@@ -266,7 +296,7 @@ ServerTreeView {
 		};
 
 		w.view.keyDownAction = { arg view, char, modifiers;
-				// if any modifiers except shift key are pressed, skip action
+			// if any modifiers except shift key are pressed, skip action
 			if(modifiers & 16515072 == 0) {
 
 				case
@@ -423,26 +453,26 @@ ServerTreeView {
 		};
 
 		if(isLocal or: { options.remoteControlVolume }) {
-		{
-			var volSpec, currentVolume;
-			var volumeSlider, muteButton, muteActions, volController;
+			{
+				var volSpec, currentVolume;
+				var volumeSlider, muteButton, muteActions, volController;
 
-			currentVolume = this.volume.volume;
+				currentVolume = this.volume.volume;
 
-			muteActions = [{this.unmute}, {this.mute}];
-			volSpec = [volume.min, volume.max, \db].asSpec;
+				muteActions = [{this.unmute}, {this.mute}];
+				volSpec = [volume.min, volume.max, \db].asSpec;
 
-			gui.staticText.new(w, Rect(0,0, 44, 18))
+				gui.staticText.new(w, Rect(0,0, 44, 18))
 				.font_(font)
 				.string_("volume:");
 
-			muteButton = gui.button.new(w, Rect(0, 0, 20, 18))
+				muteButton = gui.button.new(w, Rect(0, 0, 20, 18))
 				.font_(font)
 				.canFocus_(false)
 				.states_([
 					["M"],
 					["M", nil, faintRed]
-					])
+				])
 				.action_({arg me;
 					if(this.serverRunning) {
 						muteActions[me.value].value;
@@ -452,7 +482,7 @@ ServerTreeView {
 					}
 				});
 
-			volumeNum = gui.numberBox.new(w, Rect(0, 0, 28, 18))
+				volumeNum = gui.numberBox.new(w, Rect(0, 0, 28, 18))
 				.font_(font)
 				.value_(currentVolume)
 				.align_(\center)
@@ -461,9 +491,9 @@ ServerTreeView {
 					newdb = me.value.clip(-90, 6);
 					this.volume_(newdb);
 					volumeSlider.value_(volSpec.unmap(newdb));
-					});
+				});
 
-			volumeSlider = gui.slider.new(w, Rect(0, 0, 172, 18))
+				volumeSlider = gui.slider.new(w, Rect(0, 0, 172, 18))
 				.value_(volSpec.unmap(currentVolume).round(0.1))
 				.onClose_{volController.remove}
 				.action_({arg me;
@@ -471,7 +501,7 @@ ServerTreeView {
 					newdb = volSpec.map(me.value).round(0.1);
 					this.volume_(newdb);
 					volumeNum.value_(newdb);
-					})
+				})
 				.keyDownAction_({arg slider, char, modifiers, unicode, keycode;
 					if (char == $], { slider.increment; });
 					if (char == $[, { slider.decrement; });
@@ -480,8 +510,8 @@ ServerTreeView {
 					if (unicode == 16rF701, { slider.decrement; });
 					if (unicode == 16rF702, { slider.decrement; });
 					nil;
-					});
-			volController = SimpleController(volume)
+				});
+				volController = SimpleController(volume)
 				.put(\amp, {|changer, what, vol|
 					{
 						volumeNum.value_(vol.round(0.01));
@@ -498,23 +528,23 @@ ServerTreeView {
 					volumeSlider.value_(volSpec.unmap(volume.volume));
 				})
 
-		}.value;
+			}.value;
 		};
 
 		w.front;
 
 		serverController = SimpleController(this)
-			.put(\serverRunning, {	if(this.serverRunning, running, stopped) })
-			.put(\counts,{
-				countsViews.at(0).string = statusWatcher.avgCPU.round(0.1);
-				countsViews.at(1).string = statusWatcher.peakCPU.round(0.1);
-				countsViews.at(2).string = statusWatcher.numUGens;
-				countsViews.at(3).string = statusWatcher.numSynths;
-				countsViews.at(4).string = statusWatcher.numGroups;
-				countsViews.at(5).string = statusWatcher.numSynthDefs;
-			})
-			.put(\bundling, bundling)
-			.put(\default, showDefault);
+		.put(\serverRunning, {	if(this.serverRunning, running, stopped) })
+		.put(\counts,{
+			countsViews.at(0).string = statusWatcher.avgCPU.round(0.1);
+			countsViews.at(1).string = statusWatcher.peakCPU.round(0.1);
+			countsViews.at(2).string = statusWatcher.numUGens;
+			countsViews.at(3).string = statusWatcher.numSynths;
+			countsViews.at(4).string = statusWatcher.numGroups;
+			countsViews.at(5).string = statusWatcher.numSynthDefs;
+		})
+		.put(\bundling, bundling)
+		.put(\default, showDefault);
 		if(isLocal){
 			serverController.put(\cmdPeriod, {
 				recorder.setProperty(\value, 0)
@@ -524,18 +554,25 @@ ServerTreeView {
 		this.startAliveThread;
 	}
 
-	plotTree { |interval=0.5|
-		if(plotTreeWindow.isNil) {
-			plotTreeWindow = ServerTreeView.new(this)
-		} {
-			plotTreeWindow.window.front;
+	plotTree { |interval=0.5, bounds=(Rect(128, 64, 400, 400))|
+		if(bounds.asRect.width < 400) {
+			var bnds = bounds.asRect;
+			bounds =  Rect(bnds.left, bnds.top, 400, bnds.height);
+			"The width value you set will be changed to 400, the minimum width.".postln;
 		};
-		plotTreeWindow.window.onClose = {
-			plotTreeWindow = nil
+		if(plotTreeWindow.isNil) {
+			plotTreeWindow = Window(name.asString + "Node Tree", bounds, scroll:true);
+			plotTreeWindow.onClose = { plotTreeWindow = nil };
+			this.plotTreeView(interval, plotTreeWindow, { defer { plotTreeWindow.close } });
+		} {
+			plotTreeWindow.bounds_(bounds).front;
 		};
 	}
-
-	plotTreeView {|interval=0.5, parent, actionIfFail|
-		ServerTreeView.plotTreeView(this, interval, parent, actionIfFail);
+	plotTreeView { |interval=0.5, parent, actionIfFail|
+		if(parent == nil) {
+			"Cannot make a window, You should define the parent argument.".postln;
+		} {
+			ServerTreeView(this, parent: parent).start(interval, actionIfFail)
+		}
 	}
 }
