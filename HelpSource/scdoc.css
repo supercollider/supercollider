@@ -948,14 +948,14 @@ textarea.editor {
         margin-right: 14mm;
     }
     html, body {
-        font-family: 'Noto Serif CJK KR', 'Noto Serif';
+        font-family: 'Noto Serif';
         padding: 0.6em 0 0;
     }
     div.contents {
         width: 1030px; /* for AA4 */
     }
     table, dt, .image {
-        font-family: 'Noto Sans CJK KR', 'Noto Sans', Arial, Helvetica, sans-serif;
+        font-family: 'Noto Sans', Arial, Helvetica, sans-serif;
     }
     #menubar,
     #menubar .menuitem .home,
