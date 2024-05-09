@@ -68,45 +68,33 @@ table::
 
 If a code ("fileMain.scd" in the example code below) executes another file on disk ("fileForLoad.scd" in the example code below) using link::Classes/String#-load:: or link::Classes/String#-loadPaths::, teletype::thisProcess.nowExecutingPath:: will be the location of the executed file ("fileForLoad.scd" in the example code below). If a function containing thisProcess.nowExecutingPath is called (the function defined in "fileForLoad.scd" in the example code below), teletype::thisProcess.nowExecutingPath:: will return the path of the document containing the function call ("fileMain.scd" in the example code below).
 
-strong::Steps:::
+table::
+## strong::Steps:::
 
 numberedlist::
 
-## Preparation code:
+## Preparation:
 
+numberedlist::
+## Create an SCD file called fileMain.scd in your home folder using the following block of code:
 code::
 (
-var test, fileMain, fileForLoad;
-
-test = "thisProcess.nowExecutingPath";
-~fileMainPath = "~/fileMain.scd".standardizePath;
-fileMain = File(~fileMainPath, "w");
-fileMain.write(
-	"(\n" ++
-	"(" ++ (test ++ ":").quote ++ ").postln;\n" ++
-	"(" ++ ("\tin fileMain.scd:                       ").quote + "+" + test ++ ").postln;\n" ++
-	"~test = (" ++ test ++ ".dirname +/+" + "fileForLoad.scd".quote ++");\n" ++
-	"~test.load.testFunction;\n" ++
-	"~test.openOS; // n.b.: .openDocument only works in SC-IDE\n" ++
-	"'fileMain.scd tasks finished'.postln;\n" ++
-	")"
-);
-fileMain.close;
-
-fileForLoad = File(~fileMainPath.dirname +/+ "fileForLoad.scd", "w");
-fileForLoad << (
-	"(" ++ "\tin fileForLoad.scd:                    ".quote + "+" + test ++ ").postln;\n" ++
-	"(\n" ++
-	"testFunction: {\n" ++
-	"\t(" ++ "\tin the testFunction in fileForLoad.scd:".quote + "+" + test ++ ").postln
-}\n)");
-fileForLoad.close;
+("thisProcess.nowExecutingPath:").postln;
+("	in fileMain.scd:                       " + thisProcess.nowExecutingPath).postln;
+~test = (thisProcess.nowExecutingPath.dirname +/+ "fileForLoad.scd");
+~test.load.testFunction;
+'fileMain.scd tasks finished'.postln;
 )
 ::
-
-Post window returns:
-teletype::
--> a File
+## Create an SCD file called fileForLoad.scd in your home folder using the following block of code:
+code::
+("	in fileForLoad.scd:                    " + thisProcess.nowExecutingPath).postln;
+(
+testFunction: {
+	("	in the testFunction in fileForLoad.scd:" + thisProcess.nowExecutingPath).postln
+}
+)
+::
 ::
 
 ## Execute SCD file:
@@ -114,29 +102,35 @@ teletype::
 list::
 ## In SC-IDE or other editors:
 
+numberedlist::
+## Create a new SCD file (you do not need to save it for this step), then evaluate the following code:
+
 code::
-~fileMainPath.openOS;
-// Note: .openDocument only works in SC-IDE.
-// .openOS will work in other editors and the system default application will open the SCD file.
+"~/fileMain.scd".standardizePath.openOS;
+// Note:
+// - .openDocument only works in SC-IDE.
+// - .openOS will work in other editors and
+//   the system default application will open the SCD file.
 ::
 
-Post window returns:
+## Post window returns:
 
 teletype::
--> /Users/prko/fileMain.scd
+-> /Users/_Your_Account_Folder_/fileMain.scd
 thisProcess.nowExecutingPath:
-	in fileMain.scd:                        /Users/prko/fileMain.scd
-	in fileForLoad.scd:                     /Users/prko/fileForLoad.scd
-	in the testFunction in fileForLoad.scd: /Users/prko/fileMain.scd
+	in fileMain.scd:                        /Users/_Your_Account_Folder_/fileMain.scd
+	in fileForLoad.scd:                     /Users/_Your_Account_Folder_/fileForLoad.scd
+	in the testFunction in fileForLoad.scd: /Users/_Your_Account_Folder_/fileMain.scd
 fileMain.scd tasks finished
 -> fileMain.scd tasks finished
+::
 ::
 
 ## In command line interface (CLI):
 
 code::
 // Linux:
-sclang '/home/parallels/fileMain.scd'
+sclang '/home/_Your_Account_Folder_/fileMain.scd'
 
 // macOS (/Applications/SuperCollider.app might be changed to properly):
 /Applications/SuperCollider.app/Contents/MacOS/sclang ~/fileMain.scd
@@ -151,10 +145,11 @@ teletype::
 ... (messages are truncated) ...
 *** Welcome to SuperCollider 3.13.0. *** For help press F1.
 thisProcess.nowExecutingPath:
-        in fileMain.scd:                        C:\Users\YourAccountFolder\fileMain.scd
-        in fileForLoad.scd:                     C:\Users\YourAccountFolder\fileForLoad.scd
-        in the testFunction in fileForLoad.scd: C:\Users\YourAccountFolder\fileMain.scd
+        in fileMain.scd:                        C:\Users\_Your_Account_Folder_\fileMain.scd
+        in fileForLoad.scd:                     C:\Users\_Your_Account_Folder_\fileForLoad.scd
+        in the testFunction in fileForLoad.scd: C:\Users\_Your_Account_Folder_\fileMain.scd
 fileMain.scd tasks finished
+::
 ::
 ::
 ::
@@ -194,16 +189,16 @@ list::
 teletype::
 ... (messages are truncated) ...
 localhost: keeping clientID (0) as confirmed by server process.
-- ServerBoot’s thisProcess.nowExecutingPath: /Users/prko/Library/Application Support/SuperCollider/startup.scd
-- ServerTree’s thisProcess.nowExecutingPath: /Users/prko/Library/Application Support/SuperCollider/startup.scd
+- ServerBoot’s thisProcess.nowExecutingPath: /Users/_Your_Account_Folder_/Library/Application Support/SuperCollider/startup.scd
+- ServerTree’s thisProcess.nowExecutingPath: /Users/_Your_Account_Folder_/Library/Application Support/SuperCollider/startup.scd
 Shared memory server interface initialized
 ::
 
 ## When pressing CMD/control + . after evaluating the code above:
 
 teletype::
-- CmdPeriod’s thisProcess.nowExecutingPath: /Users/prko/Library/Application Support/SuperCollider/startup.scd
-- ServerTree’s thisProcess.nowExecutingPath: /Users/prko/Library/Application Support/SuperCollider/startup.scd
+- CmdPeriod’s thisProcess.nowExecutingPath: /Users/_Your_Account_Folder_/Library/Application Support/SuperCollider/startup.scd
+- ServerTree’s thisProcess.nowExecutingPath: /Users/_Your_Account_Folder_/Library/Application Support/SuperCollider/startup.scd
 ::
 ::
 ## If there is no startup.scd:
