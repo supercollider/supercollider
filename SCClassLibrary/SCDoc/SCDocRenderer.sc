@@ -253,9 +253,9 @@ SCDocHTMLRenderer {
 		<< "</script>\n"
 		<< "<script src='" << baseDir << "/scdoc.js' type='text/javascript'></script>\n"
 		<< "<script src='" << baseDir << "/docmap.js' type='text/javascript'></script>\n" // FIXME: remove?
-		<< "<script src='" << baseDir << "/frontend.js' type='text/javascript'></script>\n" // Should be removed? It does not exist
+		<< "<script src='" << baseDir << "/frontend.js' type='text/javascript'></script>\n"
 		// QWebChannel access
-		<< "<script src='qrc:///qtwebchannel/qwebchannel.js' type='text/javascript'></script>\n" // Should be removed? It does not exist
+		<< "<script src='qrc:///qtwebchannel/qwebchannel.js' type='text/javascript'></script>\n"
 
 		// MathJax |--->
 		<< "<script>\n"
