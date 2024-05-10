@@ -246,7 +246,7 @@ SCDocHTMLRenderer {
 		<< "var scdoc_sc_version = '" << Main.version << "';\n"
 		<< "</script>\n"
 		<< "<script src='" << baseDir << "/scdoc.js' type='text/javascript'></script>\n"
-		// << "<script src='" << baseDir << "/docmap.js' type='text/javascript'></script>\n" // FIXME: remove?  // does not exist
+		<< "<script src='" << baseDir << "/docmap.js' type='text/javascript'></script>\n" // FIXME: remove?
 		// << "<script src='" << baseDir << "/frontend.js' type='text/javascript'></script>\n" // does not exist
 		// QWebChannel access
 		// << "<script src='qrc:///qtwebchannel/qwebchannel.js' type='text/javascript'></script>\n" // does not exist
