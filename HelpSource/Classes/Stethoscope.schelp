@@ -231,6 +231,21 @@ c.scope;
 // fact that ScopeOut.kr doesn't work yet.)
 ::
 
+SUBSECTION:: Multi-channel Lissajou plots
+code::
+(
+{ 
+	var f = { |l,h| SinOsc.kr(0.1, {pi.rand}).range(l, h) } ;
+	Pulse.ar({ f.(20, 1000) }!6, { f.(0.0, 1) }!6, { f.(0.0, 1.0) }!6) 
+}.play;
+)
+
+c = s.scope;
+c.numChannels = 6;
+c.scopeView.waveColors = [Color.red, Color.red, Color.cyan, Color.cyan, Color.white, Color.white];
+c.style = 2;
+::
+
 SUBSECTION:: Embedded use
 You can pass your own view in to add a stethoscope to it:
 
