@@ -1,3 +1,25 @@
+:root {
+    /* Main foreground (text) color shades, from strong to weak */
+    --color-fg: black;
+    --color-fg-400: #333;
+    --color-fg-300: #555;
+    --color-fg-200: #777;
+    --color-fg-100: #aaa;
+    --color-fg-50:  #ddd;
+    /* Backgrounds */
+    --color-bg: white;
+    --color-bg-menu: #f9f9f9;
+    /* Colors */
+    --color-links: #449;
+    --color-extension-bg: #601c8b;
+    --color-extension-fg: white;
+    --color-extension-border: #39174F;
+    --color-warning-bg: #f7f7d7;
+    --color-warning-fg: black;
+    --color-error: red;
+    --color-undocumented: #88b;
+}
+
 *, *::before, *::after {
     box-sizing: inherit;
 }
@@ -13,8 +35,8 @@ html, body {
 body {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 10pt;
-    color: black;
-    background: white;
+    color: var(--color-fg);
+    background: var(--color-bg);
 }
 
 div.contents {
@@ -29,7 +51,7 @@ table {
     margin-left: 2em;
 }
 table td {
-    border: 1px solid #ddd;
+    border: 1px solid var(--color-fg-50);
     padding: 0.3em;
 }
 
@@ -44,7 +66,7 @@ p {
 
 a:link, a:visited, a:link:hover {
     text-decoration: none;
-    color: #449;
+    color: var(--color-links);
 }
 
 a:link:hover {
@@ -53,6 +75,8 @@ a:link:hover {
 
 input {
     max-width: 100%;
+    background-color: var(--color-fg-50);
+    color: var(--color-fg-300);
 }
 
 #inheritedclassmets, #inheritedinstmets {
@@ -61,12 +85,12 @@ input {
 
 .inheritedmets_class {
     font-weight: bold;
-    color: #555;
+    color: var(--color-fg-300);
     margin-top: 0.5em;
     margin-bottom: 0.25em;
 }
 .inheritedmets_class a {
-    color: #333;
+    color: var(--color-fg-400);
 }
 ul.inheritedmets {
     list-style: none;
@@ -80,24 +104,24 @@ ul.inheritedmets li {
 }
 a.inheritedmets_toggle {
     font-size: 9pt;
-    color: #558;
+    color: var(--color-links);
     font-weight: normal;
 /*    margin-left: 2em;*/
 }
 
 a.inheritedmets_toggle:hover {
     text-decoration: none;
-    color: #000;
+    color: var(--color-fg);
 }
 
 a.subclass_toggle {
-    color: #555;
+    color: var(--color-fg-300);
     font-weight: normal;
 }
 
 a.subclass_toggle:hover {
     text-decoration: none;
-    color: #000;
+    color: var(--color-fg);
 }
 
 
@@ -107,7 +131,7 @@ a.subclass_toggle:hover {
     width: 100%;
     height: 33px;
     padding: 0.5em 0;
-    background-color: #f9f9f9;
+    background-color: var(--color-bg-menu);
     box-shadow: 0em 0em 0.25em rgba(128, 128, 128, 0.5);
     z-index: 2;
 }
@@ -120,7 +144,7 @@ a.subclass_toggle:hover {
 #menubar .menuitem {
     padding: 0;
     margin: 0;
-    border-right: 1px solid #ddd;
+    border-right: 1px solid var(--color-fg-50);
     font-size: 10pt;
     display: inline-block;
 }
@@ -135,7 +159,7 @@ a.subclass_toggle:hover {
 }
 
 a.menu-link {
-    color: #666;
+    color: var(--color-fg-300);
     padding: 0 0.75em 0 0.75em;
     /* This ensures that the logo isn't cut off. */
     min-height: 1.5em;
@@ -144,7 +168,7 @@ a.menu-link {
 }
 a.menu-link:hover {
     text-decoration: none;
-    color: #999;
+    color: var(--color-fg-200);
 }
 
 #menubar .menuitem .home a {
@@ -184,21 +208,20 @@ a.menu-link:hover {
     border-right: none;
 }
 
+/* UNUSED
 #topdoctitle {
-/*    font-weight: bold;*/
     font-style: italic;
-/*    color: #fff;*/
     color: #444;
     cursor: pointer;
-}
+}*/
 
 .submenu, #toc {
     position: absolute;
     top: 33px;
     padding: 0.5em;
     display: none;
-    background-color: #f9f9f9;
-    border: thin solid #ddd;
+    background-color: var(--color-bg-menu);
+    border: thin solid var(--color-fg-50);
 }
 
 .submenu a {
@@ -211,18 +234,18 @@ a.menu-link:hover {
         white-space: nowrap;
         text-align: left;
 /*      text-decoration: none;*/
-        color: #447;
+        color: var(--color-links);
         font-weight: bold;
 }
 
 .toc_search {
     margin-left: 10px;
-    color: #999;
+    color: var(--color-fg-200);
     font-size: 9pt;
 }
 
 .toc_search input {
-    border: 1px solid #ddd;
+    border: 1px solid var(--color-fg-50);
 }
 
 
@@ -231,7 +254,7 @@ a.menu-link:hover {
 }
 
 #label {
-    color: #666;
+    color: var(--color-fg-300);
     font-size: 0.9em;
 }
 
@@ -239,7 +262,7 @@ a.menu-link:hover {
     font-weight: normal;
     font-size: 1.1em;
     font-style: italic;
-    color: #444;
+    color: var(--color-444);
 }
 #related {
     font-weight: bold;
@@ -255,7 +278,7 @@ a.menu-link:hover {
 
 #superclasses {
     font-size: 9pt;
-    color: #444;
+    color: var(--color-444);
     font-weight: normal;
 }
 
@@ -263,10 +286,10 @@ a.menu-link:hover {
     float: right;
     font-size: 12pt;
     padding: 0.4em 0.4em 0.2em 0.4em;
-    background-color: #601c8b;
-    color: white;
+    background-color: var(--color-extension-bg);
+    color: var(--color-extension-fg);
     border-radius: 3px;
-    border-bottom: 2px solid #39174F;
+    border-bottom: 2px solid var(--color-extension-border);
 }
 
 .extension-indicator-icon {
@@ -280,14 +303,14 @@ a.menu-link:hover {
 
 .subheader {
     font-size: 9pt;
-    color: #444;
+    color: var(--color-444);
     margin-top: 1em;
 }
 
 .jump {
     text-align: right;
     font-size: 9pt;
-    color: #555;
+    color: var(--color-fg-300);
 }
 .jump a {
     font-weight: bold;
@@ -300,7 +323,7 @@ a.footnote {
     top: -0.1em;
 }
 div.footnotes {
-    border-top: 1px solid #aaa;
+    border-top: 1px solid var(--color-fg-100);
     margin-left: 2em;
     margin-top: 3em;
     margin-right: 2em;
@@ -312,7 +335,7 @@ div.footnote {
 }
 
 .soft {
-    color: #777;
+    color: var(--color-fg-200);
 }
 
 h1 {
@@ -322,7 +345,7 @@ h1 {
 }
 
 h2 {
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid var(--color-fg-50);
     margin-top: 1.0em;
     text-align: left;
     margin-bottom: 2px;
@@ -340,7 +363,7 @@ h4 {
     margin-top: 1em;
     margin-bottom: 0em;
     margin-left: 0em;
-    color: #777;
+    color: var(--color-fg-200);
 }
 
 h1,
@@ -382,7 +405,7 @@ code, pre {
 }
 
 pre {
-    border-left: 2px solid #e0e0e0;
+    border-left: 2px solid var(--color-fg-50);
     padding-left: 1em;
 }
 
@@ -399,7 +422,7 @@ pre {
 
 .methprefix {
     font-weight: normal;
-    color: #777;
+    color: var(--color-fg-200);
     padding-right: 0.5em;
     margin-left: -1em;
 }
@@ -417,7 +440,7 @@ pre {
 }
 
 a.method-name {
-    color: black;
+    color: var(--color-fg);
     font-weight: bold;
 }
 
@@ -432,13 +455,13 @@ a.method-name {
 
 .extmethod {
     font-size: 9pt;
-    color: #444;
+    color: var(--color-444);
     padding-left: 0.2em;
 }
 
 .supmethod {
     font-size: 9pt;
-    color: #444;
+    color: var(--color-444);
     padding-left: 0.2em;
 }
 
@@ -470,7 +493,8 @@ td p {
 
 .note, .warning {
 /*    border-left: 4px solid #eea;*/
-    background: #f7f7d7;
+    background: var(--color-warning-bg);
+    color: var(--color-warning-fg);
     padding: 0.5em;
     margin-top: 1em;
     margin-bottom: 1em;
@@ -479,7 +503,7 @@ td p {
     font-weight: bold;
 }
 .warninglabel {
-    color: red;
+    color: var(--color-error);
 }
 
 /*.version {
@@ -492,17 +516,18 @@ td p {
 
 .doclink {
     font-size: 9pt;
-    color: #888;
+    color: var(--color-fg-200);
     text-align: right;
     margin-top: 2em;
     margin-bottom: 2em;
-    border-top: 1px solid #ddd;
+    border-top: 1px solid var(--color-fg-50);
 }
 .doclink a {
-    color: #444;
+    color: var(--color-fg-400);
     word-wrap: break-word;
 }
 
+/* UNUSED
 #sidetoc {
     position: fixed;
     display: block;
@@ -512,7 +537,6 @@ td p {
     padding: 10px;
     height: 100%;
     overflow: auto;
-/*    background: #eee;*/
     background: #fff;
     border-right: 1px solid #bbb;
 }
@@ -520,7 +544,7 @@ td p {
 #sidetoc a:hover {
     text-decoration: none;
     color: black;
-}
+}*/
 
 #toc-container {
     float: right;
@@ -539,7 +563,7 @@ td p {
     font-weight: bold;
     font-size: 120%;
     margin: 0.7em 0.5em;
-    color: #333;
+    color: var(--color-fg-400);
 }
 
 li {
@@ -565,20 +589,20 @@ ul.toc li a {
 }
 
 ul.toc li a:hover {
-    background: #eee;
+    background: var(--color-eee);
 }
 
 .toc1 {
     font-weight: bold;
 }
 .toc1 a {
-    color: #444;
+    color: var(--color-444);
 }
 .toc2 {
     font-weight: normal;
 }
 .toc2 a {
-    color: #444;
+    color: var(--color-444);
 }
 .toc3 {
     font-family: monospace;
@@ -586,7 +610,7 @@ ul.toc li a:hover {
 /*    font-size: 9.5pt;*/
 }
 .toc3 a {
-    color: #555;
+    color: var(--color-fg-300);
 }
 
 ul.tree, ul.tree ul {
@@ -611,7 +635,7 @@ ul.tree li {
 }
 
 ul.tree li:last-child {
- background: #fff url(images/lastnode.png) no-repeat;
+ background: var(--color-bg) url(images/lastnode.png) no-repeat;
 }
 
 :target {
@@ -621,7 +645,7 @@ ul.tree li:last-child {
 }
 
 a.undoc {
-    color: #88b;
+    color: var(--color-undocumented);
     text-decoration: line-through;
 }
 
@@ -633,17 +657,17 @@ div#search_box {
 }
 
 #search_input {
-    border: 1px solid #aaa;
-    background: #eee;
+    border: 1px solid var(--color-fg-100);
+    background: var(--color-eee);
     margin-left: 0.5em;
 }
 div#search_count {
-    border-bottom: 2px solid #aaa;
-    color: #333;
+    border-bottom: 2px solid var(--color-fg-100);
+    color: var(--color-fg-400);
 }
 
 div.result_category {
-    color: #555;
+    color: var(--color-fg-300);
     margin-top: 1em;
     margin-bottom: 0.5em;
 /*    font-size: 9.5pt;
@@ -657,38 +681,36 @@ div.met_docs {
 }
 div.met_subclasses {
     font-size: 9pt;
-    color: #777;
+    color: var(--color-fg-200);
     margin-left: 3em;
     text-align: left;
 }
 div.met_subclasses a {
-    color: #444;
+    color: var(--color-444);
 }
 div.met_subclasses a.seemore {
     margin-left: 0.2em;
-    color: #558;
+    color: var(--color-links);
 }
 #search_checks {
     padding: 0.5em;
     padding-top: 0.25em;
     padding-bottom: 0.25em;
     font-size: 9pt;
-    color: #555;
-    background: #eee;
+    color: var(--color-fg-300);
+    background: var(--color-eee);
 }
 #search_checks0 {
     font-size: 9pt;
-    color: #555;
-    border-bottom: 1px solid #ddd;
+    color: var(--color-fg-300);
+    border-bottom: 1px solid var(--color-fg-50);
     margin-top: 1em;
     padding-bottom: 1em;
 }
 table#search_settings {
     font-size: 9pt;
-    color: #555;
+    color: var(--color-fg-300);
     width: 100%;
-    margin-left: 0px;
-    margin-right: 0px;*/
     margin: 0px;
     padding: 0px;
     border-collapse: collapse;
@@ -704,7 +726,7 @@ table#search_settings {
 #js_error {
     font-family: Andale Mono, monospace;
     font-size: 9pt;
-    color: red;
+    color: var(--color-error);
 }
 
 /* from Methods.html in HelpSource/Overview/ */
@@ -717,20 +739,6 @@ table#search_settings {
     margin-bottom: 0.2em;
     margin-left: 2em;
 }
-div.met_subclasses {
-    font-size: 9pt;
-    color: #777;
-    margin-left: 3em;
-    text-align: left;
-}
-div.met_subclasses a {
-    color: #444;
-}
-
-div.met_subclasses a.seemore {
-    margin-left: 0.2em;
-    color: #558;
-}
 
 .method_name {
     font-family: Andale Mono, monospace;
@@ -738,17 +746,18 @@ div.met_subclasses a.seemore {
 }
 #method_note {
     font-size: 9pt;
-    color: #777;
-    border-top: 1px solid #ddd;
+    color: var(--color-fg-200);
+    border-top: 1px solid var(--color-fg-50);
     text-align: center;
     margin-top: 2em;
 }
 #total_count {
     font-size: 9pt;
-    color: #777;
+    color: var(--color-fg-200);
 }
 .searchlink {
-    background: #eed;
+    background: var(--color-warning-bg);
+    color: var(--color-warning-fg);
     text-align: center;
     font-size: 9pt;
     padding: 0.25em;
@@ -762,8 +771,4 @@ div.met_subclasses a.seemore {
 .result_item {
     margin-left: 1.5em;
     margin-top: 0.2em;
-}
-#total_count {
-    font-size: 9pt;
-    color: #777;
 }
