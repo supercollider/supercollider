@@ -30,7 +30,7 @@ In such cases, it is best to set a reasonable maximum for numItems:
 code::
 // an Ndef with 100 controls
 Ndef(\1, {
-	SinOsc.ar(freq: 150.collect{|i|
+	SinOsc.ar(freq: 100.collect{|i|
 		"freq%".format(i).asSymbol.kr(100, spec: Spec.specs[\freq])
 	})
 });
