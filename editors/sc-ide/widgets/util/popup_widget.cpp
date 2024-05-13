@@ -27,19 +27,11 @@
 
 namespace ScIDE {
 
-PopUpWidget::PopUpWidget( QWidget * parent ):
-    QWidget( parent, Qt::ToolTip ),
-    mEventLoop(0),
-    mResult(0)
-{}
+PopUpWidget::PopUpWidget(QWidget* parent): QWidget(parent, Qt::ToolTip), mEventLoop(0), mResult(0) {}
 
-PopUpWidget::~PopUpWidget()
-{
-    quit();
-}
+PopUpWidget::~PopUpWidget() { quit(); }
 
-int PopUpWidget::exec( const QRect & targetRect )
-{
+int PopUpWidget::exec(const QRect& targetRect) {
     if (mEventLoop) {
         qWarning("ScIDE::PopUpWidget: recursive exec() - suppressed!");
         return Rejected;
@@ -61,17 +53,14 @@ int PopUpWidget::exec( const QRect & targetRect )
     return mResult;
 }
 
-void PopUpWidget::popup( const QRect & targetRect )
-{
+void PopUpWidget::popup(const QRect& targetRect) {
     mResult = Rejected;
     mTargetRect = targetRect;
     show();
 }
 
-void PopUpWidget::keyPressEvent( QKeyEvent *ke )
-{
-    switch(ke->key())
-    {
+void PopUpWidget::keyPressEvent(QKeyEvent* ke) {
+    switch (ke->key()) {
     case Qt::Key_Escape:
         reject();
         break;
@@ -79,25 +68,23 @@ void PopUpWidget::keyPressEvent( QKeyEvent *ke )
     }
 }
 
-void PopUpWidget::showEvent( QShowEvent * )
-{
+void PopUpWidget::showEvent(QShowEvent*) {
     QRect rect = geometry();
-    rect.moveTopLeft( mTargetRect.bottomLeft() );
+    rect.moveTopLeft(mTargetRect.bottomLeft());
 
-    QWidget * parentWid = parentWidget();
-    QWidget * referenceWidget = parentWid ? parentWid : this;
+    QWidget* parentWid = parentWidget();
+    QWidget* referenceWidget = parentWid ? parentWid : this;
 
     QRect screen = QApplication::desktop()->availableGeometry(referenceWidget);
-    if (!screen.contains(rect))
-    {
+    if (!screen.contains(rect)) {
         if (rect.right() > screen.right())
-            rect.moveRight( screen.right() );
+            rect.moveRight(screen.right());
         if (rect.left() < screen.left())
-            rect.moveLeft( screen.left() );
+            rect.moveLeft(screen.left());
         if (rect.bottom() > screen.bottom())
-            rect.moveBottom( qMin( mTargetRect.top(), screen.bottom()) );
+            rect.moveBottom(qMin(mTargetRect.top(), screen.bottom()));
         if (rect.top() < screen.top())
-            rect.moveTop( screen.top() );
+            rect.moveTop(screen.top());
     }
 
     move(rect.topLeft());

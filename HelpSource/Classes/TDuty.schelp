@@ -46,7 +46,7 @@ link::Classes/Done::  for more detail.
 
 
 argument::gapFirst
-when 0 (default), the UGen does the first level poll immediately and then waits for the first durational value. When this is 1, the UGen initially polls the first durational value, waits for that duration, and then polls the first level (along with polling the next durational value). So gapFirst > 0 makes TDuty behave like link::Classes/TDuty_old::.
+when 0 (default), the UGen does the first level poll immediately and then waits for the first durational value. When this is 1, the UGen initially polls the first durational value, waits for that duration, and then polls the first level (along with polling the next durational value).
 
 Examples::
 

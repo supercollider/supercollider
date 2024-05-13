@@ -1,13 +1,17 @@
-Date {
-	var <>year=2000, <>month=1, <>day=1, <>hour=0, <>minute=0, <>second=0, <>dayOfWeek=6,
-		<>rawSeconds=0;
+Date : Magnitude {
+	var <>year, <>month, <>day, <>hour, <>minute, <>second, <>dayOfWeek,
+		<>rawSeconds;
 
 	*getDate { ^this.localtime }
 	*localtime { ^this.new.localtime }
 	*gmtime { ^this.new.gmtime }
 	*new { arg year, month, day, hour, minute, second, dayOfWeek, rawSeconds;
-		^super.newCopyArgs(year, month, day, hour, minute, second, dayOfWeek,
-				rawSeconds);
+		var instance = super.newCopyArgs(year, month, day, hour, minute, second, dayOfWeek,
+			rawSeconds);
+		^instance.prInitialize;
+	}
+	*fromString { arg string, format;
+		^this.new.prFromString(string, format)
 	}
 	storeArgs {
 		^[year, month, day, hour, minute, second, dayOfWeek, rawSeconds]
@@ -62,6 +66,35 @@ Date {
 		})
 	}
 
+	resolve {
+		_Date_Resolve
+		^this.primitiveFailed
+	}
+	prFromString { arg string, format;
+		_Date_FromString
+		^this.primitiveFailed
+	}
+	prInitialize {
+		case
+		{ rawSeconds.notNil } {
+			// 1. rawSeconds was specified: use it to calculate all other variables
+			this.prResolveFromRawSeconds
+		}
+		{ [\year, \month, \day, \hour, \minute, \second].collect{ |v| this.instVarAt(v) }.every(_.isNil) } {
+			// 2. All (YMD, HMS) variables are nil: return current (local) time
+			this.localtime
+		}
+		{
+			// 3. In all other cases, resolve dayOfWeek and rawSeconds from the other
+			// variables (YMD, HMS).  If no year is provided, will throw an error.
+			this.resolve
+		};
+		^this;
+	}
+	prResolveFromRawSeconds {
+		_Date_ResolveFromRawSeconds
+		^this.primitiveFailed
+	}
 	asctime {
 		_AscTime
 		^this.primitiveFailed
@@ -73,5 +106,26 @@ Date {
 		arg format;
 		_prStrFTime;
 		^this.primitiveFailed
+	}
+	< { arg other;
+		^this.rawSeconds < other.rawSeconds
+	}
+	<= { arg other;
+		^this.rawSeconds <= other.rawSeconds
+	}
+	> { arg other;
+		^this.rawSeconds > other.rawSeconds
+	}
+	>= { arg other;
+		^this.rawSeconds >= other.rawSeconds
+	}
+	== { arg other;
+		^this.rawSeconds == other.rawSeconds
+	}
+	hash {
+		^this.instVarHash(#[\rawSeconds])
+	}
+	!= { arg other;
+		^this.rawSeconds != other.rawSeconds
 	}
 }

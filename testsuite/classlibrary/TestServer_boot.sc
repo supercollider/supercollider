@@ -68,34 +68,31 @@ TestServer_boot : UnitTest {
 	}
 
 	test_rebootOffServer {
-		s.reboot;
-		this.wait({ s.serverRunning }, "server reboot failed.", 5);
+		var condvar = CondVar();
 
-		this.assert(s.serverRunning,
-			"A turned-off server should be running after reboot."
-		);
+		s.reboot;
+		condvar.waitFor(5);
+
+		this.assertEquals(s.serverRunning, true, "Calling reboot should boot a non-booted Server.");
 		s.quit;
 	}
 
 	test_rebootRunningServer {
-		var rebooted = false;
+		var condvar = CondVar();
 
-		s.quit;
-		s.doWhenBooted {
-			// first boot OK, starting reboot from here
+		s.waitForBoot {
+			s.sync;
 			s.reboot {
 				s.doWhenBooted {
-					rebooted = true
+					condvar.signalOne;
 				}
 			};
 		};
-		s.boot;
 
-		this.wait({ rebooted }, "server reboot failed.", 5);
+		// this can take a while, timeout needs to be generous
+		condvar.waitFor(10);
 
-		this.assert(s.serverRunning,
-			"A running server should be running again after reboot."
-		);
+		this.assertEquals(s.serverRunning, true, "Calling reboot should reboot a running Server.");
 		s.quit;
 	}
 
@@ -212,7 +209,6 @@ TestServer_boot : UnitTest {
 		};
 
 		100.do {
-			".".post;
 			nodeID = s.nextNodeID;
 			if(nodeID <= prevNodeID) {
 				failed = true;
@@ -221,8 +217,6 @@ TestServer_boot : UnitTest {
 			};
 			prevNodeID = nodeID;
 		};
-
-		"Done.".postln;
 
 		this.assert(failed.not,
 			"allocating nodeIDs while booting should not produce duplicate nodeIDs."
@@ -255,7 +249,7 @@ TestServer_boot : UnitTest {
 			}.play(s);
 
 			s.sync;
-			1.wait;
+			(s.latency + 0.2).wait;
 
 			// clean up
 			pbindPlayer.stop;

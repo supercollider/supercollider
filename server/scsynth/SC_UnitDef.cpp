@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -32,112 +32,131 @@
 #include "SC_World.h"
 #include "sc_msg_iter.h"
 
+extern int gMissingNodeID;
 
-bool UnitDef_Create(const char *inName, size_t inAllocSize, UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags)
-{
-	if (strlen(inName) >= kSCNameByteLen) return false;
+bool UnitDef_Create(const char* inName, size_t inAllocSize, UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags) {
+    if (strlen(inName) >= kSCNameByteLen)
+        return false;
 
-	UnitDef *unitDef = (UnitDef*)malloc(sizeof(UnitDef));
-	if (!unitDef) return false;
+    UnitDef* unitDef = (UnitDef*)malloc(sizeof(UnitDef));
+    if (!unitDef)
+        return false;
 
-	str4cpy(unitDef->mUnitDefName, inName);
-	unitDef->mHash = Hash(unitDef->mUnitDefName);
+    str4cpy(unitDef->mUnitDefName, inName);
+    unitDef->mHash = Hash(unitDef->mUnitDefName);
 
-	unitDef->mAllocSize = inAllocSize;
-	unitDef->mUnitCtorFunc = inCtor;
-	unitDef->mUnitDtorFunc = inDtor;
+    unitDef->mAllocSize = inAllocSize;
+    unitDef->mUnitCtorFunc = inCtor;
+    unitDef->mUnitDtorFunc = inDtor;
 
-	unitDef->mCmds = 0;
-	unitDef->mFlags = inFlags;
+    unitDef->mCmds = nullptr;
+    unitDef->mFlags = inFlags;
 
-	if (!AddUnitDef(unitDef)) {
-		free(unitDef);
-		return false;
-	}
-	return true;
+    if (!AddUnitDef(unitDef)) {
+        free(unitDef);
+        return false;
+    }
+    return true;
 }
 
 
+bool UnitDef_AddCmd(const char* inUnitDefName, const char* inCmdName, UnitCmdFunc inFunc) {
+    if (strlen(inUnitDefName) >= kSCNameByteLen)
+        return false;
+    int32 unitDefName[kSCNameLen];
+    memset(unitDefName, 0, kSCNameByteLen);
+    strcpy((char*)unitDefName, inUnitDefName);
 
-bool UnitDef_AddCmd(const char *inUnitDefName, const char *inCmdName, UnitCmdFunc inFunc)
-{
-	if (strlen(inUnitDefName) >= kSCNameByteLen) return false;
-	int32 unitDefName[kSCNameLen];
-	memset(unitDefName, 0, kSCNameByteLen);
-	strcpy((char*)unitDefName, inUnitDefName);
+    if (strlen(inCmdName) >= kSCNameByteLen)
+        return false;
 
-	if (strlen(inCmdName) >= kSCNameByteLen) return false;
+    UnitDef* unitDef = GetUnitDef(unitDefName);
+    if (!unitDef)
+        return false;
 
-	UnitDef* unitDef = GetUnitDef(unitDefName);
-	if (!unitDef) return false;
+    if (!unitDef->mCmds)
+        unitDef->mCmds = new HashTable<UnitCmd, Malloc>(&gMalloc, 4, true);
 
-	if (!unitDef->mCmds)
-		unitDef->mCmds = new HashTable<UnitCmd, Malloc>(&gMalloc, 4, true);
+    UnitCmd* cmd = new UnitCmd();
+    memset(cmd->mCmdName, 0, kSCNameByteLen);
+    strcpy((char*)cmd->mCmdName, inCmdName);
 
-	UnitCmd *cmd = new UnitCmd();
-	memset(cmd->mCmdName, 0, kSCNameByteLen);
-	strcpy((char*)cmd->mCmdName, inCmdName);
+    cmd->mFunc = inFunc;
+    cmd->mHash = Hash(cmd->mCmdName);
+    unitDef->mCmds->Add(cmd);
 
-	cmd->mFunc = inFunc;
-	cmd->mHash = Hash(cmd->mCmdName);
-	unitDef->mCmds->Add(cmd);
-
-	return true;
+    return true;
 }
 
-bool PlugIn_DefineCmd(const char *inCmdName, PlugInCmdFunc inFunc, void *inUserData)
-{
-	if (strlen(inCmdName) >= kSCNameByteLen) return false;
+bool PlugIn_DefineCmd(const char* inCmdName, PlugInCmdFunc inFunc, void* inUserData) {
+    if (strlen(inCmdName) >= kSCNameByteLen)
+        return false;
 
-	PlugInCmd *cmd = new PlugInCmd();
-	memset(cmd->mCmdName, 0, kSCNameByteLen);
-	strcpy((char*)cmd->mCmdName, inCmdName);
+    PlugInCmd* cmd = new PlugInCmd();
+    memset(cmd->mCmdName, 0, kSCNameByteLen);
+    strcpy((char*)cmd->mCmdName, inCmdName);
 
-	cmd->mFunc = inFunc;
-	cmd->mHash = Hash(cmd->mCmdName);
-	cmd->mUserData = inUserData;
-	AddPlugInCmd(cmd);
+    cmd->mFunc = inFunc;
+    cmd->mHash = Hash(cmd->mCmdName);
+    cmd->mUserData = inUserData;
+    AddPlugInCmd(cmd);
 
-	return true;
+    return true;
 }
 
-int Unit_DoCmd(World *inWorld, int inSize, char *inData)
-{
-	sc_msg_iter msg(inSize, inData);
-	int nodeID = msg.geti();
-	Graph* graph = World_GetGraph(inWorld, nodeID);
-	if (!graph) return kSCErr_NodeNotFound;
+void Graph_FirstCalc(Graph* inGraph);
+void Graph_NullFirstCalc(Graph* inGraph);
+void Graph_QueueUnitCmd(Graph* inGraph, int inSize, const char* inData);
 
-	uint32 unitID = msg.geti();
-	if (unitID >= graph->mNumUnits) return kSCErr_IndexOutOfRange;
+int Unit_DoCmd(World* inWorld, int inSize, char* inData) {
+    sc_msg_iter msg(inSize, inData);
+    int nodeID = msg.geti();
+    gMissingNodeID = nodeID;
+    Graph* graph = World_GetGraph(inWorld, nodeID);
+    if (!graph)
+        return kSCErr_NodeNotFound;
 
-	Unit *unit = graph->mUnits[unitID];
+    uint32 unitID = msg.geti();
+    if (unitID >= graph->mNumUnits)
+        return kSCErr_IndexOutOfRange;
 
-	UnitDef* unitDef = unit->mUnitDef;
+    Unit* unit = graph->mUnits[unitID];
 
-	int32 *cmdName = msg.gets4();
-	if (!cmdName) return kSCErr_Failed;
+    UnitDef* unitDef = unit->mUnitDef;
 
-	if (!unitDef->mCmds) return kSCErr_Failed;
-	UnitCmd *cmd = unitDef->mCmds->Get(cmdName);
-	if (!cmd) return kSCErr_Failed;
+    int32* cmdName = msg.gets4();
+    if (!cmdName)
+        return kSCErr_Failed;
 
-	(cmd->mFunc)(unit, &msg);
+    if (!unitDef->mCmds)
+        return kSCErr_Failed;
+    UnitCmd* cmd = unitDef->mCmds->Get(cmdName);
+    if (!cmd)
+        return kSCErr_Failed;
 
-	return kSCErr_None;
+    // only run unit command if the ctor has been called!
+    if (graph->mNode.mCalcFunc == (NodeCalcFunc)&Graph_FirstCalc
+        || graph->mNode.mCalcFunc == (NodeCalcFunc)&Graph_NullFirstCalc) {
+        Graph_QueueUnitCmd(graph, inSize, inData);
+    } else {
+        (cmd->mFunc)(unit, &msg);
+    }
+
+    return kSCErr_None;
 }
 
-int PlugIn_DoCmd(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
-{
-	sc_msg_iter msg(inSize, inData);
+int PlugIn_DoCmd(World* inWorld, int inSize, char* inData, ReplyAddress* inReply) {
+    sc_msg_iter msg(inSize, inData);
 
-	int32 *cmdName = msg.gets4();
-	if (!cmdName) return kSCErr_Failed;
+    int32* cmdName = msg.gets4();
+    if (!cmdName)
+        return kSCErr_Failed;
 
-	PlugInCmd *cmd = GetPlugInCmd(cmdName);
-	if (!cmd) return kSCErr_Failed;
+    PlugInCmd* cmd = GetPlugInCmd(cmdName);
+    if (!cmd)
+        return kSCErr_Failed;
 
-	(cmd->mFunc)(inWorld, cmd->mUserData, &msg, (void*)inReply);
+    (cmd->mFunc)(inWorld, cmd->mUserData, &msg, (void*)inReply);
 
-	return kSCErr_None;
+    return kSCErr_None;
 }

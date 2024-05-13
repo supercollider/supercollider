@@ -139,6 +139,7 @@ Env {
 
 	*xyc { arg xyc;
 		var times, levels, curves, offset, order;
+		xyc = xyc.collect({|arr| arr[0..1] ++ (arr[2] ? \lin)});
 		#times, levels, curves = xyc.flop;
 		if(times.every(_.isKindOf(Magnitude))) { // sort triplets, if possible.
 			order = times.order;
@@ -284,6 +285,10 @@ Env {
 
 	asStream {
 		^Routine({ arg inval; this.embedInStream(inval) })
+	}
+
+	streamArg {
+		^this.asStream
 	}
 
 	asPseg {

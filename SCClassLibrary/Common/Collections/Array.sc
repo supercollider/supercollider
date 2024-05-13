@@ -25,8 +25,11 @@ Array[slot] : ArrayedCollection {
 		_ArrayMirror2
 		^this.primitiveFailed
 	}
-	stutter { arg n=2;
-		_ArrayStutter
+	stutter { |n=2|
+		^this.dupEach(n);
+	}
+	dupEach { | n=2 |
+		_ArrayDupEach
 		^this.primitiveFailed
 	}
 	rotate { arg n=1;
@@ -287,15 +290,15 @@ Array[slot] : ArrayedCollection {
 
 	printOn { arg stream;
 		if (stream.atLimit, { ^this });
-		stream << "[ " ;
+		stream << "[" ;
 		this.printItemsOn(stream);
-		stream << " ]" ;
+		stream << "]" ;
 	}
 	storeOn { arg stream;
 		if (stream.atLimit, { ^this });
-		stream << "[ " ;
+		stream << "[" ;
 		this.storeItemsOn(stream);
-		stream << " ]" ;
+		stream << "]" ;
 	}
 	prUnarchive { arg slotArray;
 		slotArray.pairsDo {|index, slots| this[index].setSlots(slots) };

@@ -103,11 +103,11 @@ groups:
 */
 
 SynthDef("mixer3", {
-	var channels, faders, master;
+	var channels, faders, main;
 	channels = In.ar(4, 16).clump(2);
-	master = Ramp.kr(In.kr(0, 1), 0.05);
+	main = Ramp.kr(In.kr(0, 1), 0.05);
 	faders = Ramp.kr(In.kr(1, 8), 0.05);
-	Out.ar(0, Mix(channels * faders) * master);
+	Out.ar(0, Mix(channels * faders) * main);
 }).add;
 
 SynthDef("line", { arg out, start=1, end=0, dur=3;

@@ -1,12 +1,15 @@
 class:: DiskIn
 summary:: Stream in audio from a file.
-related:: Classes/PlayBuf, Classes/DiskOut
+related:: Classes/PlayBuf, Classes/VDiskIn, Classes/DiskOut
 categories::  UGens>InOut, UGens>Buffer
 
 Description::
 
 Continuously play a longer soundfile from disk. This requires a buffer to
 be preloaded with one buffer size of sound.
+
+DiskIn cannot alter playback rate. See link::Classes/VDiskIn:: for a
+disk-streaming UGen with rate control.
 
 
 classmethods::
@@ -15,7 +18,7 @@ private:: categories
 method::ar
 
 argument::numChannels
-Number of channels. This must match the number of channels in the buffer.
+Number of channels. This must match the number of channels in the buffer. Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.
 
 argument::bufnum
 Buffer number
@@ -123,4 +126,3 @@ s.sendMsg("/b_close", 0); // close the file.
 
 s.sendMsg("/b_free", 0); // frees the buffer
 ::
-

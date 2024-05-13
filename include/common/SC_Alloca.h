@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2011 Tim Blechmann. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,13 +21,13 @@
 #pragma once
 
 #ifdef __linux__
-#include <alloca.h>
+#    include <alloca.h>
 
 #elif defined(_WIN32)
-#include <malloc.h>
+#    include <malloc.h>
 
-#ifndef alloca
-#define alloca _alloca
-#endif
+#    ifndef alloca
+#        define alloca _alloca
+#    endif
 
 #endif

@@ -25,7 +25,7 @@ EnvirGui : JITGui {
 	}
 
 	*new { |object, numItems = 8, parent, bounds, makeSkip = true, options = #[]|
-		^super.new(object, numItems, parent, bounds, makeSkip = true, options);
+		^super.new(object, numItems, parent, bounds, makeSkip, options);
 	}
 
 	setDefaults {
@@ -140,7 +140,7 @@ EnvirGui : JITGui {
 	}
 
 	accepts { |obj|
-		^(obj.isNil or: { obj.isKindOf(Dictionary) })
+		^(obj.isNil or: { obj.isKindOf(Dictionary) or: {obj.isKindOf(EnvironmentRedirect)} })
 	}
 
 		// backwards compatibility
@@ -321,12 +321,18 @@ EnvirGui : JITGui {
 		}
 	}
 
-	// this finds global specs and local specs in the gui only
-	// - use JITLibExtensions for specs attached to the JITGui objects.
-	// precedence: global specs first, then cached local,
-	// else guess an initial spec and remember it.
+	// first, check the object if it has a local spec (in synth func)
+	// if not, use local gui specs, then global specs;
+	// if none found, guess an initial spec and remember it.
+	// note: for specs attached to proxies, use JITLibExtensions quark
 	getSpec { |key, value|
-		var spec = specs[key] ?? { key.asSpec };
+		var spec;
+		if (object.respondsTo(\findFirstSpecFor)) {
+			spec = object.findFirstSpecFor(key);
+			if (spec.notNil) { ^spec };
+		};
+
+		spec = specs[key] ?? { key.asSpec };
 		if (spec.isNil) {
 			spec = Spec.guess(key, value);
 			specs.put(key, spec);

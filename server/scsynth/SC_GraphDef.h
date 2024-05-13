@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,12 +24,11 @@
 #include "HashTable.h"
 #include <boost/filesystem/path.hpp> // path
 
-struct ParamSpec
-{
-	int32 mName[kSCNameLen];
-	int32 mIndex;
-	int32 mHash;
-	int32 mNumChannels;
+struct ParamSpec {
+    int32 mName[kSCNameLen];
+    int32 mIndex;
+    int32 mHash;
+    int32 mNumChannels;
 };
 
 typedef HashTable<ParamSpec, Malloc> ParamSpecTable;
@@ -37,47 +36,46 @@ typedef HashTable<ParamSpec, Malloc> ParamSpecTable;
 /** \note Relevant scsynth code: `GraphDef_Read(World *, char*&, GraphDef*, int32)`
  *  \note Relevant supernova code: `sc_synthdef::prepare(void)`
  */
-struct GraphDef
-{
-	NodeDef mNodeDef;
+struct GraphDef {
+    NodeDef mNodeDef;
 
-	uint32 mNumControls;
-	uint32 mNumAudioControls;
+    uint32 mNumControls;
+    uint32 mNumAudioControls;
 
-	uint32 mNumWires;
-	uint32 mNumConstants;
-	uint32 mNumUnitSpecs;
-	uint32 mNumWireBufs;
-	uint32 mNumCalcUnits;
+    uint32 mNumWires;
+    uint32 mNumConstants;
+    uint32 mNumUnitSpecs;
+    uint32 mNumWireBufs;
+    uint32 mNumCalcUnits;
 
-	float32 *mInitialControlValues;
-	float32 *mConstants;
+    float32* mInitialControlValues;
+    float32* mConstants;
 
-	struct UnitSpec *mUnitSpecs;
+    struct UnitSpec* mUnitSpecs;
 
-	size_t mWiresAllocSize, mUnitsAllocSize, mCalcUnitsAllocSize;
-	size_t mControlAllocSize, mMapControlsAllocSize, mMapControlRatesAllocSize, mAudioMapBusOffsetSize;
+    size_t mWiresAllocSize, mUnitsAllocSize, mCalcUnitsAllocSize;
+    size_t mControlAllocSize, mMapControlsAllocSize, mMapControlRatesAllocSize, mAudioMapBusOffsetSize;
 
-	uint32 mNumParamSpecs;
-	ParamSpec *mParamSpecs;
-	ParamSpecTable *mParamSpecTable;
+    uint32 mNumParamSpecs;
+    ParamSpec* mParamSpecs;
+    ParamSpecTable* mParamSpecTable;
 
-	int mRefCount;
-	struct GraphDef* mNext;
+    int mRefCount;
+    struct GraphDef* mNext;
 
-	struct GraphDef *mOriginal;
+    struct GraphDef* mOriginal;
 
-	uint32 mNumVariants;
-	struct GraphDef* mVariants;
+    uint32 mNumVariants;
+    struct GraphDef* mVariants;
 };
 typedef struct GraphDef GraphDef;
 
-GraphDef* GraphDef_Recv(World *inWorld, char *buffer, GraphDef *inList);
-GraphDef* GraphDef_Load(struct World *inWorld, const boost::filesystem::path& path, GraphDef* inList);
-GraphDef* GraphDef_LoadDir(struct World *inWorld, const boost::filesystem::path& path, GraphDef* inList);
-GraphDef* GraphDef_LoadGlob(World *inWorld, const char *pattern, GraphDef *inList);
-SCErr GraphDef_Remove(World *inWorld, int32 *inName);
-SCErr GraphDef_DeleteMsg(struct World *inWorld, GraphDef *inDef);
-void GraphDef_Dump(GraphDef *inGraphDef);
+GraphDef* GraphDef_Recv(World* inWorld, char* buffer, GraphDef* inList);
+GraphDef* GraphDef_Load(struct World* inWorld, const boost::filesystem::path& path, GraphDef* inList);
+GraphDef* GraphDef_LoadDir(struct World* inWorld, const boost::filesystem::path& path, GraphDef* inList);
+GraphDef* GraphDef_LoadGlob(World* inWorld, const char* pattern, GraphDef* inList);
+SCErr GraphDef_Remove(World* inWorld, int32* inName);
+SCErr GraphDef_DeleteMsg(struct World* inWorld, GraphDef* inDef);
+void GraphDef_Dump(GraphDef* inGraphDef);
 int32 GetHash(ParamSpec* inParamSpec);
 int32* GetKey(ParamSpec* inParamSpec);

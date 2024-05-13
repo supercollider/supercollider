@@ -19,7 +19,7 @@ code::
 (
 var x;
 var func = { "an error happened".postln };
-a = Pprotect(Pseq([1, 3, 3, Pfuncn({ Error.throw }), 2]), func);
+a = Pprotect(Pseq([1, 3, 3, Pfuncn({ Error.new.throw }), 2]), func);
 x = Pbind(\degree, a, \dur, 0.5).play;
 )
 ::

@@ -27,15 +27,15 @@ namespace ScIDE {
 
 class ScProcess;
 
-class LangStatusBox : public StatusBox
-{
+class LangStatusBox : public StatusBox {
     Q_OBJECT
 public:
-    LangStatusBox(ScProcess *, QWidget *parent = 0);
+    LangStatusBox(ScProcess*, QWidget* parent = 0);
 private slots:
-    void onInterpreterStateChanged( QProcess::ProcessState );
+    void onInterpreterStateChanged(QProcess::ProcessState);
+
 private:
-    StatusLabel *mLabel;
+    StatusLabel* mLabel;
 };
 
 } // namespace ScIDE

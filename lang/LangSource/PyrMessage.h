@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -26,24 +26,18 @@
 #define MAXKEYSLOTS 128
 extern PyrSlot keywordstack[MAXKEYSLOTS];
 extern bool gKeywordError;
-extern PyrMethod **gRowTable;
+extern PyrMethod** gRowTable;
 
 void initUniqueMethods();
 
-void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector,
-		long numArgsPushed, long numKeyArgsPushed);
-void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed);
-void sendSuperMessageWithKeys(VMGlobals *g, PyrSymbol *selector,
-		long numArgsPushed, long numKeyArgsPushed);
-void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed);
-void doesNotUnderstandWithKeys(VMGlobals *g, PyrSymbol *selector,
-		long numArgsPushed, long numKeyArgsPushed);
-void doesNotUnderstand(VMGlobals *g, PyrSymbol *selector,
-		long numArgsPushed);
-void returnFromBlock(VMGlobals *g);
-void returnFromMethod(VMGlobals *g);
-void executeMethod(VMGlobals *g, PyrMethod *meth, long numArgsPushed);
-void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed,
-		long numKeyArgsPushed);
-int keywordFixStack(VMGlobals *g, PyrMethod *meth, PyrMethodRaw *methraw, long allArgsPushed,
-		long numKeyArgsPushed);
+void sendMessageWithKeys(VMGlobals* g, PyrSymbol* selector, long numArgsPushed, long numKeyArgsPushed);
+void sendMessage(VMGlobals* g, PyrSymbol* selector, long numArgsPushed);
+void sendSuperMessageWithKeys(VMGlobals* g, PyrSymbol* selector, long numArgsPushed, long numKeyArgsPushed);
+void sendSuperMessage(VMGlobals* g, PyrSymbol* selector, long numArgsPushed);
+void doesNotUnderstandWithKeys(VMGlobals* g, PyrSymbol* selector, long numArgsPushed, long numKeyArgsPushed);
+void doesNotUnderstand(VMGlobals* g, PyrSymbol* selector, long numArgsPushed);
+void returnFromBlock(VMGlobals* g);
+void returnFromMethod(VMGlobals* g);
+void executeMethod(VMGlobals* g, PyrMethod* meth, long numArgsPushed);
+void executeMethodWithKeys(VMGlobals* g, PyrMethod* meth, long allArgsPushed, long numKeyArgsPushed);
+int keywordFixStack(VMGlobals* g, PyrMethod* meth, PyrMethodRaw* methraw, long allArgsPushed, long numKeyArgsPushed);

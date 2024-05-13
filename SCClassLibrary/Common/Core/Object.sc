@@ -217,6 +217,20 @@ Object  {
 	hash { _ObjectHash; ^this.primitiveFailed }
 	identityHash { _ObjectHash; ^this.primitiveFailed }
 
+	// lazy equality: same as == for objects
+	// "composed" for lazy operands (patterns, UGens)
+	|==| { |that|
+		^that.prReverseLazyEquals(this)
+	}
+	|!=| { |that|
+		^not(this |==| that)
+	}
+	// a user might write `something |==| aPattern`
+	// so we need to support reverse dispatch
+	prReverseLazyEquals { |that|
+		^(this == that)
+	}
+
 	// create an association
 	-> { arg obj; ^Association.new(this, obj) }
 
@@ -611,8 +625,6 @@ Object  {
 	+>> { arg that; ^unsignedRightShift(this, that) }
 	<! { arg that; ^firstArg(this, that) }
 
-	asInt { ^this.asInteger }
-
 	blend { arg that, blendFrac = 0.5;
 		// blendFrac should be from zero to one
 		^this + (blendFrac * (that - this));
@@ -690,7 +702,7 @@ Object  {
 		StartUp.defer { // make sure the synth defs are written to the right path
 			var file;
 			dir = dir ? SynthDef.synthDefDir;
-			if (name.isNil) { Error("missing SynthDef file name").throw } {
+			if (name.isNil or: { name.asString.isEmpty }) { Error("missing SynthDef file name").throw } {
 				name = dir +/+ name ++ ".scsyndef";
 				if(overwrite or: { pathMatch(name).isEmpty })
 					{

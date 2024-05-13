@@ -19,7 +19,7 @@
 
 #include <cstddef>
 #include <boost/assert.hpp>
-#include <boost/utility/enable_if.hpp>
+#include <boost/core/enable_if.hpp>
 #include <boost/mpl/and.hpp>
 #include <boost/sync/detail/config.hpp>
 #include <boost/sync/locks/unique_lock_fwd.hpp>
@@ -56,25 +56,27 @@ private:
 public:
 #if defined(PTHREAD_COND_INITIALIZER)
 #if !defined(BOOST_NO_CXX11_UNIFIED_INITIALIZATION_SYNTAX)
-#if !defined(BOOST_NO_CXX11_CONSTEXPR)
+// On Cygwin, as of 2019-01-03, PTHREAD_COND_INITIALIZER is defined as a cast of an integer constant to a pointer,
+// which is equivalent to a reinterpret_cast in C++ and is not a valid constant expression.
+#if !defined(BOOST_NO_CXX11_CONSTEXPR) && !defined(__CYGWIN__)
 #define BOOST_SYNC_DEFINES_CONDITION_VARIABLE_CONSTEXPR_CONSTRUCTOR
+    constexpr
 #endif
-
-    BOOST_CONSTEXPR condition_variable() BOOST_NOEXCEPT : m_cond(PTHREAD_COND_INITIALIZER)
+    condition_variable() BOOST_NOEXCEPT : m_cond(PTHREAD_COND_INITIALIZER)
     {
     }
-#else
+#else // !defined(BOOST_NO_CXX11_UNIFIED_INITIALIZATION_SYNTAX)
     condition_variable() BOOST_NOEXCEPT
     {
         BOOST_CONSTEXPR_OR_CONST pthread_cond_t temp = PTHREAD_COND_INITIALIZER;
         m_cond = temp;
     }
-#endif
+#endif // !defined(BOOST_NO_CXX11_UNIFIED_INITIALIZATION_SYNTAX)
 #else // defined(PTHREAD_COND_INITIALIZER)
     condition_variable()
     {
         int const res = pthread_cond_init(&m_cond, NULL);
-        if (res)
+        if (BOOST_UNLIKELY(res != 0))
             BOOST_SYNC_DETAIL_THROW(resource_error, (res)("condition_variable constructor failed in pthread_cond_init"));
     }
 #endif // defined(PTHREAD_COND_INITIALIZER)
@@ -204,7 +206,7 @@ private:
     void priv_wait(pthread_mutex_t* mtx)
     {
         int const res = sync::detail::posix::pthread_cond_wait(&m_cond, mtx);
-        if (res != 0)
+        if (BOOST_UNLIKELY(res != 0))
             BOOST_SYNC_DETAIL_THROW(wait_error, (res)("condition_variable::wait failed in pthread_cond_wait"));
     }
 
@@ -220,7 +222,7 @@ private:
         int const res = sync::detail::posix::pthread_cond_timedwait(&m_cond, lock.mutex()->native_handle(), &t.get());
         if (res == ETIMEDOUT)
             return sync::cv_status::timeout;
-        else if (res != 0)
+        else if (BOOST_UNLIKELY(res != 0))
             BOOST_SYNC_DETAIL_THROW(wait_error, (res)("condition_variable::timed_wait failed in pthread_cond_timedwait"));
         return sync::cv_status::no_timeout;
     }

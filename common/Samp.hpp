@@ -26,12 +26,10 @@ const long kSineSize = 8192;
 const long kSineMask = kSineSize - 1;
 const double kSinePhaseScale = kSineSize / (2.0 * 3.1415926535897932384626433832795);
 
-extern float32 gSine[kSineSize+1];
-extern float32 gPMSine[kSineSize+1];
-extern float32 gInvSine[kSineSize+1];
-extern float32 gSineWavetable[2*kSineSize];
+extern float32 gSine[kSineSize + 1];
+extern float32 gPMSine[kSineSize + 1];
+extern float32 gInvSine[kSineSize + 1];
+extern float32 gSineWavetable[2 * kSineSize];
 
 void SignalAsWavetable(float32* signal, float32* wavetable, long inSize);
 void WavetableAsSignal(float32* wavetable, float32* signal, long inSize);
-
-

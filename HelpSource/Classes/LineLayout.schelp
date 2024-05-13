@@ -37,6 +37,7 @@ If the item is a stretchable empty space (nil) alignment will have no effect; if
 
 Example:
 code::
+(
 w = Window.new;
 w.layout = VLayout(
 	[Button().states_([["Foo"]]), stretch:1, align:\bottomLeft],
@@ -45,6 +46,7 @@ w.layout = VLayout(
 	[nil, s:1]
 );
 w.front;
+)
 ::
 
 
@@ -112,6 +114,7 @@ EXAMPLES::
 Try resizing the window created by the following code.
 
 code::
+(
 w = Window.new;
 w.layout = VLayout(
 	TextView().string_("Foo\nBar\nFoo\nBar\nFoo"),
@@ -122,4 +125,21 @@ w.layout = VLayout(
 	)
 );
 w.front;
+)
+::
+
+For a scroll view we need to set its canvas to a View with the desired layout.
+
+code::
+(
+var view = ScrollView();
+view.canvas = View().layout_(VLayout(
+	*(
+		100.collect {
+			Slider().orientation_(\horizontal).background_(Color.rand)
+		}
+	)
+));
+view.front;
+)
 ::

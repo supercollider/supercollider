@@ -9,7 +9,8 @@ Quarks {
 		fetched=false,
 		cache,
 		regex,
-		installedPaths;
+		installedPaths,
+		installing;
 
 	*install { |name, refspec|
 		var path, quark;
@@ -24,6 +25,10 @@ Quarks {
 				("Quarks-install: path does not exist" + path).error;
 				^nil
 			});
+			if(File.type(path) != \directory, {
+				("Quarks-install: path is not a directory" + path).error;
+				^nil
+			});
 			quark = Quark.fromLocalPath(path);
 			this.installQuark(quark);
 			^quark
@@ -33,12 +38,14 @@ Quarks {
 		// by quark name or local path
 		this.installed.do { |q|
 			if(q.name == name, {
-				this.unlink(q.localPath)
+				this.uninstallQuark(q);
 			});
 		};
 	}
 	*uninstallQuark { |quark|
+		quark.runHook(\preUninstall);
 		this.unlink(quark.localPath);
+		quark.runHook(\postUninstall);
 		this.clearCache;
 	}
 	*clear {
@@ -147,6 +154,7 @@ Quarks {
 		});
 		localPath = this.quarkNameAsLocalPath(name);
 		if(Git.isGit(localPath), {
+			// Quark.update will run preUpdate and postUpdate hooks
 			Quark.fromLocalPath(localPath).update();
 		}, {
 			("Quark" + name + "was not installed using git, cannot update.").warn;
@@ -181,7 +189,7 @@ Quarks {
 	*installQuark { |quark|
 		var
 			deps,
-			incompatible = { arg name;
+			incompatible = { |name|
 				(quark.name
 					+ "reports an incompatibility with this SuperCollider version"
 					+ "or with other already installed quarks."
@@ -190,26 +198,35 @@ Quarks {
 			},
 			prev = this.installed.detect({ |q| q.name == quark.name });
 
-		if(prev.notNil and: {prev.localPath != quark.localPath}, {
+		if(prev.notNil and: { prev.localPath != quark.localPath }) {
 			("A version of % is already installed at %".format(quark, prev.localPath)).error;
 			^false
-		});
+		};
 
 		"Installing %".format(quark.name).postln;
-
+		// add currently installing quark to 'installing' Array
+		installing = if(installing.size == 0) { [quark] } { installing ++ quark };
 		quark.checkout();
-		if(quark.isCompatible().not, {
+		if(quark.isCompatible().not) {
 			^incompatible.value(quark.name);
-		});
-		quark.dependencies.do { |dep|
-			var ok = dep.install();
-			if(ok.not, {
-				("Failed to install" + quark.name).error;
-				^false
-			});
 		};
+		quark.dependencies.do{ |dep|
+			var ok;
+			// check if dependency is already installing
+			if(installing.detect({ |q| q.name == dep.name }).isNil) {				
+				ok = dep.install();
+				if(ok.not) {
+					("Failed to install" + quark.name).error;
+					^false
+				}
+			}
+		};
+		quark.runHook(\preInstall);
 		this.link(quark.localPath);
+		quark.runHook(\postInstall);
 		(quark.name + "installed").postln;
+		// remove quark from installing Array
+		installing = installing.reject{ |q| q.name == quark.name };
 		this.clearCache();
 		^true
 	}
@@ -321,7 +338,12 @@ Quarks {
 			if(fetch, { this.prFetchDirectory });
 			this.prReadDirectoryFile(dirTxtPath);
 		}.try({ arg err;
-			("Failed to read quarks directory listing: % %".format(if(fetch, directoryUrl, dirTxtPath), err)).error;
+			// 'err' should, by definition, be an Exception
+			// and all Exceptions should respond to 'errorString'
+			// but "throw during error handling" is really really bad,
+			// so, be doubly sure it won't happen
+			var text = err.tryPerform(\errorString) ?? { text = err.asString };
+			("Failed to read quarks directory listing: %\n%".format(if(fetch, directoryUrl, dirTxtPath), text)).error;
 			if(fetch, {
 				// if fetch failed, try read from cache
 				if(File.exists(dirTxtPath), {

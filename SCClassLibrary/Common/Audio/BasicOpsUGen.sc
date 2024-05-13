@@ -168,6 +168,7 @@ BinaryOpUGen : BasicOpUGen {
 	optimizeAddNeg {
 		var a, b, replacement;
 		#a, b = inputs;
+		if(a === b) { ^nil };  // non optimizable edge case.
 
 		if (b.isKindOf(UnaryOpUGen) and: { b.operator == 'neg' and: { b.descendants.size == 1 } }) {
 			// a + b.neg -> a - b
@@ -197,6 +198,7 @@ BinaryOpUGen : BasicOpUGen {
 	optimizeToMulAdd {
 		var a, b, replacement;
 		#a, b = inputs;
+		if(a === b) { ^nil };
 
 		if (a.isKindOf(BinaryOpUGen) and: { a.operator == '*'
 			and: { a.descendants.size == 1 }})
@@ -244,7 +246,12 @@ BinaryOpUGen : BasicOpUGen {
 		if (a.isKindOf(BinaryOpUGen) and: { a.operator == '+'
 			and: { a.descendants.size == 1 }}) {
 			buildSynthDef.removeUGen(a);
-			replacement = Sum3(a.inputs[0], a.inputs[1], b).descendants_(descendants);
+			if(a === b) {
+				replacement = Sum4(a.inputs[0], a.inputs[0], a.inputs[1], a.inputs[1])
+				.descendants_(descendants);
+			} {
+				replacement = Sum3(a.inputs[0], a.inputs[1], b).descendants_(descendants);
+			};
 			this.optimizeUpdateDescendants(replacement, a);
 			^replacement;
 		};
@@ -252,6 +259,8 @@ BinaryOpUGen : BasicOpUGen {
 		if (b.isKindOf(BinaryOpUGen) and: { b.operator == '+'
 			and: { b.descendants.size == 1 }}) {
 			buildSynthDef.removeUGen(b);
+			// we do not need the a === b check here
+			// if a === b, then the 'a' branch above must have handled it
 			replacement = Sum3(b.inputs[0], b.inputs[1], a).descendants_(descendants);
 			this.optimizeUpdateDescendants(replacement, b);
 			^replacement;
@@ -262,6 +271,7 @@ BinaryOpUGen : BasicOpUGen {
 	optimizeToSum4 {
 		var a, b, replacement;
 		#a, b = inputs;
+		if(a === b) { ^nil };
 		if(a.rate == \demand or: { b.rate == \demand }) { ^nil };
 
 		if (a.isKindOf(Sum3) and: { a.descendants.size == 1 }) {

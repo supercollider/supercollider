@@ -4,8 +4,22 @@ UnitTest.gui
 TestCoreUGens.run
 */
 TestCoreUGens : UnitTest {
+
+	var server;
+
+	setUp {
+		server = Server(this.class.name);
+	}
+
+	tearDown {
+		server.quit;
+		server.remove;
+	}
+
 	test_ugen_generator_equivalences {
 		var n, v;
+		var condvar = CondVar();
+		var completed = 0;
 
 		// These pairs should generate the same shapes, so subtracting should give zero.
 		// Of course there's some rounding error due to floating-point accuracy.
@@ -198,8 +212,6 @@ TestCoreUGens : UnitTest {
 			},
 
 		];
-		var testsIncomplete = tests.size;
-
 
 		//////////////////////////////////////////
 		// reversible unary ops:
@@ -262,21 +274,23 @@ TestCoreUGens : UnitTest {
 		};
 
 
-		this.bootServer;
+		server.bootSync;
 		tests.keysValuesDo{|name, func|
-			func.loadToFloatArray(1, Server.default, { |data|
+			func.loadToFloatArray(1, server, { |data|
 				this.assertArrayFloatEquals(data, 0, name.quote, within: 0.001, report: true);
-				testsIncomplete = testsIncomplete - 1;
+				completed = completed + 1;
+				condvar.signalOne;
 			});
 			rrand(0.12, 0.35).wait;
 		};
 
-
-		this.wait{testsIncomplete==0};
+		condvar.waitFor(1, { completed == tests.size });
 	}
 
 	test_exact_convergence {
 		var n, v;
+		var condvar = CondVar();
+		var completed = 0;
 
 		// Tests for things that should converge exactly to zero
 		var tests = Dictionary[
@@ -285,21 +299,23 @@ TestCoreUGens : UnitTest {
 			"Pan2.ar(ar, , kr) should converge properly to zero when amp set to zero" -> {(Line.ar(1,0,0.2)<=0)*Pan2.ar(BrownNoise.ar, 0, Line.kr(1,0, 0.1)>0).mean},
 
 		];
-		var testsIncomplete = tests.size;
-		this.bootServer;
+		server.bootSync;
 		tests.keysValuesDo{|name, func|
-			func.loadToFloatArray(1, Server.default, { |data|
+			func.loadToFloatArray(1, server, { |data|
 				this.assertArrayFloatEquals(data, 0, name.quote, within: 0.0, report: true);
-				testsIncomplete = testsIncomplete - 1;
+				completed = completed + 1;
+				condvar.signalOne;
 			});
 			rrand(0.05, 0.1).wait;
 		};
-		this.wait{testsIncomplete==0};
+
+		condvar.waitFor(1, { completed == tests.size });
 	}
 
 	test_muladd {
 		var n, v;
-		var testsIncomplete;
+		var condvar = CondVar();
+		var completed = 0;
 
 		var tests = Dictionary[
 		];
@@ -309,41 +325,45 @@ TestCoreUGens : UnitTest {
 			"{DC.%(%).madd(DC.%(%), DC.%(%)) - (% * % + %)}".format(*(tup ++ tup[1,3..])).interpret;
 		};
 
-		testsIncomplete = tests.size;
-		this.bootServer;
+		server.bootSync;
 		tests.keysValuesDo{|name, func|
-			func.loadToFloatArray(0.1, Server.default, { |data|
+			func.loadToFloatArray(0.1, server, { |data|
 				this.assertArrayFloatEquals(data, 0, name.quote, report: true);
-				testsIncomplete = testsIncomplete - 1;
+				completed = completed + 1;
+				condvar.signalOne;
 			});
 			rrand(0.06, 0.15).wait;
 		};
-		this.wait{testsIncomplete==0};
+
+		condvar.waitFor(1, { completed == tests.size });
 	}
 
 
 	test_bufugens{
 		var d, b, c;
-		var testsIncomplete = 6;
-		this.bootServer;
+		var tests = [1, 2, 8, 16, 32, 33];
+		var condvar = CondVar();
+		var completed = 0;
+
+		server.bootSync;
 
 		// channel sizes for test:
-		[1,2, 8,16, 32,33].do{ |numchans|
+		tests.do{ |numchans|
 
 			// Random data for test
-			d = {1.0.rand}.dup((Server.default.sampleRate * 0.25).round * numchans);
+			d = {1.0.rand}.dup((server.sampleRate * 0.25).round * numchans);
 
 			// load data to server
-			b = Buffer.loadCollection(Server.default, d, numchans);
+			b = Buffer.loadCollection(server, d, numchans);
 			// a buffer for recording the results
-			c = Buffer.alloc(Server.default, d.size / numchans, numchans);
-			Server.default.sync;
+			c = Buffer.alloc(server, d.size / numchans, numchans);
+			server.sync;
 
 			// Copying data from b to c:
 			{
 				RecordBuf.ar(PlayBuf.ar(numchans, b, BufRateScale.ir(b), doneAction: 2), c, loop:0) * 0.1;
-			}.play;
-			Server.default.sync;
+			}.play(server);
+			server.sync;
 			1.0.wait;
 			c.loadToFloatArray(action: { |data|
 				// The data recorded to "c" should be exactly the same as the original data "d"
@@ -351,34 +371,128 @@ TestCoreUGens : UnitTest {
 					"data->loadCollection->PlayBuf->RecordBuf->loadToFloatArray->data (% channels)".format(numchans), report: true);
 				b.free;
 				c.free;
-				testsIncomplete = testsIncomplete - 1;
+				completed = completed + 1;
+				condvar.signalOne;
 			});
 			0.32.wait;
-			Server.default.sync;
+			server.sync;
 		};
-		this.wait{testsIncomplete==0};
+
+		condvar.waitFor(1, { completed == tests.size });
+	}
+
+	test_impulse {
+		var funcs, results, frq, phs;
+		var rates = [\kr,\ar];
+		var renderCond = Condition();
+
+		server.bootSync;
+
+		frq = server.sampleRate / server.options.blockSize * 2.123; // 2.123 impulses per block
+		phs = 0;
+
+		rates.do{ |rate|
+
+			funcs = [{DC.ar(frq)}, {DC.kr(frq)}, frq].collect({ |in0|
+				[{DC.ar(phs)}, {DC.kr(phs)}, phs].collect{ |in1|
+					{ Impulse.perform(rate, in0, in1) }
+				}
+			}).flat;
+			results = Array.newClear(funcs.size);
+
+			funcs.do{ |f, i|
+				f.loadToFloatArray(
+					duration: server.options.blockSize / server.sampleRate * 3, // 3 blocks
+					action: { |arr| results[i] = arr; renderCond.test_(true).signal }
+				);
+				renderCond.wait; renderCond.test_(false)
+			};
+
+			this.assert(results.every(_ == results[0]),
+				"Impulse.%: all rate combinations of identical unmodulated input values should have identical output".format(rate),
+				report: true);
+		};
+
+		/* Tests in response to historical bugs */
+
+		// Phase wrapping, initial phase offset
+		// https://github.com/supercollider/supercollider/pull/2864#issuecomment-299860789
+		frq = 50;
+		{ Impulse.kr(frq, 3.8) }.loadToFloatArray(
+			duration: frq.reciprocal, // render one freq period (should contain only 1 impulse)
+			action: { |arr|
+				this.assert(arr.sum == 1.0, "Impulse.kr: phase that is far out-of-range should wrap immediately in-range, and not cause multiple impulses to fire.", report: true);
+				this.assert(arr[0] != 1.0, "Impulse.kr: a phase offset other than 0 or 1 should not produce an impulse on the first output sample.", report: true);
+				renderCond.test_(true).signal;
+			}
+		);
+		renderCond.wait; renderCond.test_(false);
+
+		// Phase offset of 0,1,-1 should be equal on first sample
+		rates.do{ |rate|
+			var phases = [0, 1, -1];
+			phases.do{ |phs|
+				{ Impulse.perform(rate, frq, phs) }.loadToFloatArray(
+					duration: frq.reciprocal, // 1 freq period
+					action: { |arr|
+						this.assert(arr[0] == 1.0,
+							"Impulse.%: initial phase of % should produce and impulse on the first frame.".format(rate, phs), report: true);
+						renderCond.test_(true).signal;
+					}
+				);
+				renderCond.wait; renderCond.test_(false);
+			}
+		};
+
+		// Freq = 0 should produce a single impulse on first frame
+		// https://github.com/supercollider/supercollider/pull/4150#issuecomment-582905976
+		rates.do{ |rate|
+			{ Impulse.perform(rate, 0) }.loadToFloatArray(
+				duration: server.options.blockSize / server.sampleRate * 3, // 3 blocks
+				action: { |arr|
+					this.assert(arr[0] == 1.0 and: { arr.sum == 1.0 },
+						"Impulse.%: freq = 0 should produce a single impulse on the first frame and no more.".format(rate), report: true);
+					renderCond.test_(true).signal;
+				}
+			);
+			renderCond.wait; renderCond.test_(false);
+		};
+
+		// Positive and negative freqs should produce the same output
+		rates.do{ |rate|
+			{ Impulse.perform(rate, 100 * [1,-1]) }.loadToFloatArray(
+				duration: 5 * frq.reciprocal,
+				action: { |arr|
+					arr = arr.clump(2).flop; // de-interleave
+					this.assertArrayFloatEquals(arr[0], arr[1],
+						"Impulse.%: positive and negative frequencies should produce the same output.".format(rate), report: true);
+					renderCond.test_(true).signal;
+				}
+			);
+			renderCond.wait; renderCond.test_(false);
+		};
 	}
 
 	test_demand {
-		var nodesToFree, tests, s = this.s, testNaN;
+		var nodesToFree, tests, testNaN;
 
-		this.bootServer;
+		server.bootSync;
 		nodesToFree = [];
 
 		OSCFunc({ |message|
 			if(nodesToFree.indexOf(message[1]).notNil) {
 				nodesToFree.removeAt(nodesToFree.indexOf(message[1]))
 			};
-		}, \n_end, s.addr).oneShot;
+		}, \n_end, server.addr).oneShot;
 
 		tests = [
 			{LPF.ar(LeakDC.ar(Duty.ar(0.1, 0, Dseq((1..8)), 2)))}
 		];
 
-		tests.do{|item| nodesToFree = nodesToFree.add(item.play.nodeID) };
+		tests.do{|item| nodesToFree = nodesToFree.add(item.play(server).nodeID) };
 
 		1.5.wait;
-		s.sync;
+		server.sync;
 
 		// The items should all have freed by now...
 		this.assert(nodesToFree.size == 0, "Duty should free itself after a limited sequence");
@@ -388,19 +502,23 @@ TestCoreUGens : UnitTest {
 
 		OSCFunc({ |message|
 			switch(message[2], 5453, { testNaN = message[3] <= 0.0 or: { message[3] >= 1.0 } });
-		}, \tr, s.addr).oneShot;
+		}, \tr, server.addr).oneShot;
 
 		{
 			Line.kr(1, 0, 1, 1, 0, 2);
 			SendTrig.kr(Impulse.kr(10, 0.5), 5453, LFTri.ar(Duty.ar(0.1, 0, Dseq(#[100], 1))))
-		}.play;
+		}.play(server);
 		1.5.wait;
-		s.sync;
+		server.sync;
 		this.assert(testNaN.not, "Duty+LFTri should not output NaN");
 	}
 
 	test_pitchtrackers {
-		var tests = Dictionary[
+		var tests;
+		var condvar = CondVar();
+		var completed = 0;
+
+		tests = Dictionary[
 			"ZCR.ar() tracking a SinOsc"
 			-> { var freq = XLine.kr(100, 1000, 10);
 				var son = SinOsc.ar(freq);
@@ -416,19 +534,20 @@ TestCoreUGens : UnitTest {
 				Out.ar(0, (son * 0.1).dup);
 				dev * 0.1 /* rescaled cos Pitch more variable than ZCR */ },
 		];
-		var testsIncomplete = tests.size;
-		this.bootServer;
+
+		server.bootSync;
+
 		tests.keysValuesDo{|text, func|
-			func.loadToFloatArray(10, Server.default, { |data|
+			func.loadToFloatArray(10, server, { |data|
 				this.assertArrayFloatEquals(data, 0.0, text, within: 1.0);
-				testsIncomplete = testsIncomplete - 1;
+				completed = completed + 1;
+				condvar.signalOne;
 			});
 			rrand(0.12, 0.35).wait;
 		};
 
-		// Wait for async tests
-		this.wait{testsIncomplete==0};
-	} // test_pitchtrackers
+		condvar.waitFor(1, { completed == tests.size });
+	}
 
 	test_out_ugens {
 		var testAudioRate, testControlRate;
@@ -494,11 +613,38 @@ TestCoreUGens : UnitTest {
 			fails and: works
 		};
 
-		this.bootServer;
+		server.bootSync;
 		this.assert(testAudioRate.value, report:true, onFailure:"test_out_ugens: failed with audio rate ugens");
 		this.assert(testControlRate.value, report:true, onFailure:"test_out_ugens: failed with control rate ugens");
 
 	}
+
+	test_binaryValue_isUniform {
+		var from = [100, -100, 0, { 100 }, { -100 }, { 0 }];
+		var to = [1, 0, 0, 1, 0, 0];
+		var text = ["positive", "negative", "zero", "positive valued function", "negative valued function", "zero valued function"];
+		var condvar = CondVar();
+		var completed = 0;
+
+		server.bootSync;
+
+		from.size.do { |i|
+			this.assert(from[i].binaryValue.value == to[i], "% should correspond to %".format(text[i], to[i]));
+		};
+
+		from.size.do { |i|
+
+			{ DC.ar(from[i]).binaryValue }.loadToFloatArray(0.001, server, { |data|
+				this.assertFloatEquals(data[0], to[i],"% signal should correspond to %".format(text[i], to[i]), within: 0.1);
+				completed = completed + 1;
+				condvar.signalOne;
+			})
+		};
+
+		condvar.waitFor(1, { completed == from.size });
+
+	}
+
 
 
 } // end TestCoreUGens class

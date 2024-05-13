@@ -39,12 +39,10 @@ project boost/sync
       <define>BOOST_SYNC_BUILDING=1
       <target-os>windows:<define>BOOST_USE_WINDOWS_H=1
       <target-os>windows:<define>WIN32_LEAN_AND_MEAN=1
-      <library>/boost/system//boost_system
 
     : usage-requirements  # pass these requirement to dependents (i.e. users)
       <link>static:<define>BOOST_SYNC_STATIC_LINK=1
       <link>shared:<define>BOOST_SYNC_DYN_LINK=1
-      <library>/boost/system//boost_system
     ;
 
 rule win32_pthread_paths ( properties * )
@@ -177,3 +175,6 @@ lib boost_sync
     :
       <conditional>@usage-requirements
     ;
+
+
+boost-install boost_sync ;

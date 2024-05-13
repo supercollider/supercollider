@@ -87,7 +87,7 @@ Ppar([
 
 (
 q = Ppar([
-	// walking bass (by an idiot bass player who only chooses notes randomly)
+	// walking bass (by a bass player who only chooses notes randomly)
 	Pbind(
 		\octave, 3,
 		\degree, Pwhite(0, 7, inf),

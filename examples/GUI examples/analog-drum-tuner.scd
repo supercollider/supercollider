@@ -163,8 +163,8 @@ s.waitForBoot({
 		.states_([["load"]])
 		.action_({
 			var	values;
-			File.openDialog("", { |path|
-				values = Object.readTextArchive(path[0]);
+			Dialog.openPanel({ |path|
+				values = Object.readTextArchive(path);
 				(values.size != 6).if({
 					Error("File does not contain a ringz spec.").throw;
 					}, {

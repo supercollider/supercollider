@@ -10,7 +10,7 @@ classmethods::
 method:: ar
 
 argument:: numChannels
-number of channels
+number of channels. Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.
 
 argument:: bufnum
 buffer number
@@ -41,7 +41,7 @@ examples::
 code::
 b = Buffer.cueSoundFile(s, Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff", 0, 1);
 
-x = { VDiskIn.ar(1, b, LFNoise2.kr(0.2).range(0.5, 2), 1, loop:1) }.play;
+x = { VDiskIn.ar(1, b, LFNoise2.kr(0.2).range(0.5, 2), loop:1) }.play;
 
 b.close;
 
@@ -89,10 +89,6 @@ o = OSCFunc({ arg msg;
 		.postf(sendID, index % c.numFrames, (index % c.numFrames / c.sampleRate));
 },'/diskin', s.addr)
 );
-
-b.close; b.free;
-
-b.alloc; b.cueSoundFile(Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff", 0); c = SoundFile(Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff").info;
 
 x.free; b.close; b.free; o.free; // clean up eventually
 ::

@@ -1,37 +1,37 @@
-# This makes sclang/scide work with a Qt installation at a fixed, non-system location.
-SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-
-find_package(
-    Qt5 ${REQUIRED_QT_VERSION}
-    COMPONENTS
+set(QT_IDE_COMPONENTS
     Concurrent
     Core
     LinguistTools
-    # OpenGL
-    PrintSupport
-    Qml
-    Quick
-    Sql
-    WebChannel
-    WebEngine
-    WebEngineWidgets
-    WebSockets
+    Network
     Widgets
-    REQUIRED
 )
 
 set(QT_IDE_LIBRARIES
     Qt5::Concurrent
     Qt5::Core
-    # Qt5::OpenGL
-    Qt5::PrintSupport
-    Qt5::Qml
-    Qt5::Quick
-    Qt5::Sql
-    Qt5::WebChannel
-    Qt5::WebEngineWidgets
-    Qt5::WebSockets
+    Qt5::Network
+    Qt5::Widgets
+)
+
+if(SC_USE_QTWEBENGINE)
+    list(APPEND QT_IDE_COMPONENTS
+        WebChannel
+        WebEngine
+        WebEngineWidgets
+        WebSockets
+    )
+    list(APPEND QT_IDE_LIBRARIES
+        Qt5::WebChannel
+        Qt5::WebEngineWidgets
+        Qt5::WebSockets
+    )
+endif()
+
+find_package(
+    Qt5 ${REQUIRED_QT_VERSION}
+    COMPONENTS
+    ${QT_IDE_COMPONENTS}
+    REQUIRED
 )
 
 if(${CMAKE_COMPILER_IS_GNUCXX})
@@ -66,8 +66,6 @@ if(APPLE)
     set(AdditionalBundleSources ${ClassLibrary} ${HelpSource} ${BundleResources} ${Examples} ${Sounds} ${Icons})
 endif()
 
-
-
 set ( ide_moc_hdr
     core/main.hpp
     core/sig_mux.hpp
@@ -90,7 +88,6 @@ set ( ide_moc_hdr
     widgets/session_switch_dialog.hpp
     widgets/sessions_dialog.hpp
     widgets/tool_box.hpp
-    widgets/help_browser.hpp
     widgets/audio_status_box.hpp
     widgets/lang_status_box.hpp
     widgets/code_editor/editor.hpp
@@ -112,11 +109,6 @@ set ( ide_moc_hdr
     widgets/util/color_widget.hpp
     widgets/util/docklet.hpp
     widgets/util/volume_widget.hpp
-    widgets/util/WebSocketTransport.hpp
-    widgets/util/WebSocketClientWrapper.hpp
-    widgets/util/IDEWebChannelWrapper.hpp
-
-    ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.hpp
 )
 
 file (GLOB_RECURSE all_hdr *hpp)
@@ -148,7 +140,6 @@ set ( ide_src
     widgets/multi_editor.cpp
     widgets/post_window.cpp
     widgets/session_switch_dialog.cpp
-    widgets/help_browser.cpp
     widgets/audio_status_box.cpp
     widgets/lang_status_box.cpp
     widgets/code_editor/editor.cpp
@@ -169,10 +160,7 @@ set ( ide_src
     widgets/util/docklet.cpp
     widgets/util/volume_widget.cpp
     widgets/util/status_box.cpp
-    widgets/util/WebSocketTransport.cpp
     widgets/style/style.cpp
-
-    ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.cpp
 
     ${CMAKE_SOURCE_DIR}/common/SC_TextUtils.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp
@@ -187,6 +175,27 @@ set ( ide_src
     ${CMAKE_SOURCE_DIR}/SCDoc/SCDoc.tab.cpp
     ${CMAKE_SOURCE_DIR}/SCDoc/lex.scdoc.cpp
 )
+
+set(ide_webengine_moc_hdrs
+    widgets/help_browser.hpp
+    widgets/util/WebSocketTransport.hpp
+    widgets/util/WebSocketClientWrapper.hpp
+    widgets/util/IDEWebChannelWrapper.hpp
+    ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.hpp
+    ${CMAKE_SOURCE_DIR}/QtCollider/widgets/QcWebView.h
+    ${CMAKE_SOURCE_DIR}/QtCollider/QcCallback.hpp
+)
+set(ide_webengine_src
+    widgets/help_browser.cpp
+    widgets/util/WebSocketTransport.cpp
+    ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.cpp
+    ${CMAKE_SOURCE_DIR}/QtCollider/widgets/QcWebView.cpp
+)
+
+if(SC_USE_QTWEBENGINE)
+    list(APPEND ide_moc_hdr ${ide_webengine_moc_hdrs})
+    list(APPEND ide_src ${ide_webengine_src})
+endif()
 
 set( ide_forms
     forms/settings_dialog.ui
@@ -219,7 +228,6 @@ endif()
 include_directories(${CMAKE_SOURCE_DIR}/include/common)
 include_directories(${CMAKE_SOURCE_DIR}/common)
 include_directories(${CMAKE_SOURCE_DIR}/include/plugin_interface)
-include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost)
 include_directories(${YAMLCPP_INCLUDE_DIR})
 # For QtCollider headers:
 include_directories(${CMAKE_SOURCE_DIR})
@@ -261,7 +269,7 @@ qt5_add_translation( translations ${translation_src} ${native_translation_src} )
 
 set(ide_sources ${ide_src} ${all_hdr} )
 
-set(ide_rc_sources ${ide_moc_src} ${ide_forms_src} ${ide_rcc} ${translations})
+set(ide_rc_sources ${ide_moc_src} ${ide_forms_src} ${ide_rcc})
 
 if(APPLE)
     foreach(file ${translations})
@@ -282,51 +290,83 @@ endif(WIN32)
 # final builds of the IDE seem to be broken atm
 if(0 AND FINAL_BUILD)
   CREATE_FINAL_FILE(scide_final.cpp ${ide_sources})
-  add_executable( SuperCollider MACOSX_BUNDLE scide_final.cpp ${ide_rc_sources} ${RES_FILES} ${AdditionalBundleSources})
+  add_library( libscide STATIC scide_final.cpp ${ide_rc_sources})
 else()
-  add_executable( SuperCollider MACOSX_BUNDLE ${ide_sources} ${ide_rc_sources} ${RES_FILES} ${AdditionalBundleSources})
+  add_library( libscide STATIC ${ide_sources} ${ide_rc_sources})
 endif()
+
+# Enable targets that depend on libscide to find its headers and their contents.
+# The existing code uses a mix of paths, such as:
+#  "settings/manager.hpp"
+#  "util/standard_dirs.hpp"
+#  "../primitives/localsocket_utils.hpp"
+# So we need add all the sub-directories to the search path:
+target_include_directories(libscide PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/core
+    ${CMAKE_CURRENT_SOURCE_DIR}/core/settings
+    ${CMAKE_CURRENT_SOURCE_DIR}/core/util
+    ${CMAKE_CURRENT_SOURCE_DIR}/forms
+    ${CMAKE_CURRENT_SOURCE_DIR}/primitives
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/code_editor
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/settings
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/style
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/util
+)
+
+add_executable( SuperCollider MACOSX_BUNDLE core/main_function.cpp ${RES_FILES} ${AdditionalBundleSources} ${translations})
+
+set_target_properties(libscide PROPERTIES PREFIX "")
 
 if(APPLE)
     set_target_properties(SuperCollider PROPERTIES OUTPUT_NAME "${ide_name}")
+    if(NOT SC_DISABLE_XCODE_CODESIGNING)
+        # codesign --deep seems to be needed for the SuperCollider binary to allow incremental builds
+        set_target_properties(SuperCollider PROPERTIES XCODE_ATTRIBUTE_OTHER_CODE_SIGN_FLAGS "--deep")
+    endif()
 else()
     set_target_properties(SuperCollider PROPERTIES OUTPUT_NAME "scide")
 endif()
 
-target_link_libraries( SuperCollider
+target_link_libraries( libscide PUBLIC
     ${QT_IDE_LIBRARIES}
     ${YAMLCPP_LIBRARY}
     oscpack
 )
 
-if(Boost_FOUND)
-    target_link_libraries( SuperCollider ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} )
-else()
-    # in-house-built boost system
-    target_link_libraries( SuperCollider boost_system boost_filesystem )
-endif()
+target_link_libraries( SuperCollider libscide)
+
+target_link_libraries( libscide PUBLIC boost_system_lib boost_filesystem_lib)
+include_directories(${boost_include_dirs})
+
+# This makes sclang/scide work with a Qt installation at a fixed location.
+set_property(TARGET libscide SuperCollider PROPERTY INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 if(APPLE)
-    target_link_libraries( ${ide_name} "-framework CoreServices -framework Foundation")
-    target_link_libraries( ${ide_name} "-framework Cocoa" )
+    target_link_libraries( libscide PUBLIC "-framework CoreServices -framework Foundation")
+    target_link_libraries( libscide PUBLIC "-framework Cocoa" )
 elseif(WIN32)
-    target_link_libraries( SuperCollider wsock32 )
+    target_link_libraries( libscide PUBLIC wsock32 )
     # The following prevents a Windows console from showing up
     # when the executable is started:
     set_target_properties( SuperCollider PROPERTIES WIN32_EXECUTABLE TRUE )
 endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-    target_link_libraries(SuperCollider rt)
+    target_link_libraries(libscide PUBLIC rt)
 
     find_package(X11 REQUIRED)
 
     include_directories(${X11_INCLUDE_DIR})
-    target_link_libraries(SuperCollider ${X11_X11_LIB})
+    target_link_libraries(libscide PUBLIC ${X11_X11_LIB})
+
+    # This makes sclang/scide work with a Qt installation at a fixed location.
+    set_property(TARGET libscide SuperCollider PROPERTY INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 endif()
 
 if(PTHREADS_FOUND)
-    target_link_libraries(SuperCollider ${PTHREADS_LIBRARIES})
+    target_link_libraries(libscide PUBLIC ${PTHREADS_LIBRARIES})
 endif()
 
 if(LTO)
@@ -337,6 +377,10 @@ if(LTO)
                  APPEND PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program")
 endif()
 
+if(SC_USE_QTWEBENGINE)
+    message(STATUS "IDE: Building with QtWebEngine")
+    target_compile_definitions(libscide PUBLIC SC_USE_QTWEBENGINE)
+endif()
 
 # Installation
 
@@ -347,6 +391,8 @@ if(APPLE)
 
     # set how it shows up in the Info.plist file
     SET(MACOSX_BUNDLE_ICON_FILE ../../icons/sc_ide.icns)
+    # ensure copyright in plist file always says current year as end date
+    string(TIMESTAMP CURRENT_YEAR "%Y")
 
     install(TARGETS SuperCollider
           DESTINATION ${scappbundlename})
@@ -432,20 +478,111 @@ if(APPLE OR WIN32)
         # only the IDE executable is scanned normally, so force scanning of sclang as well
         # to get QtWebEngine, libsndfile, and other libs. also force scanning of QtWebEngineProcess
         # because macdeployqt is a fickle beast.
+        set(CONTENTS_DIR ${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents)
+        set(QT_WEBENGINE_APP
+            "${CONTENTS_DIR}/Frameworks/QtWebEngineCore.framework/Versions/5/Helpers/QtWebEngineProcess.app")
+        set(QT_WEBENGINE_PROCESS "${QT_WEBENGINE_APP}/Contents/MacOS/QtWebEngineProcess")
         set(DEPLOY_CMD "\"${DEPLOY_PROG}\"
                 \"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\"
                 -verbose=1
-                -executable=${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
-                -executable=${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/scsynth
-                -executable=${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/supernova
-                -executable=${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/plugins/DiskIO_UGens.scx
-                -executable=${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/plugins/DiskIO_UGens_supernova.scx
-                -executable=${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Frameworks/QtWebEngineCore.framework/Versions/5/Helpers/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess
+                -executable=${CONTENTS_DIR}/MacOS/sclang
+                -executable=${CONTENTS_DIR}/Resources/scsynth
+                -executable=${CONTENTS_DIR}/Resources/supernova
+                -executable=${CONTENTS_DIR}/Resources/plugins/DiskIO_UGens.scx
+                -executable=${CONTENTS_DIR}/Resources/plugins/DiskIO_UGens_supernova.scx
+                -executable=${QT_WEBENGINE_PROCESS}
             ")
-        set(VERIFY_CMD "include(BundleUtilities)
-            message(STATUS \"Verifying app\")
-            verify_app(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\")
+        set(VERIFY_CMD "include(BundleUtilities)")
+        if(SUPERNOVA)
+            get_target_property(LINK_FFTW libsupernova SUPERNOVA_FFTW)
+            if(LINK_FFTW)
+                message(STATUS "macdeployqt: will fix linking FFTW for supernova")
+                # For supernova, libfftw3f.3.dylib has a further dependency (libgcc_s) which is copied in,
+                # but libfftw3f is not fixed up automatically when supernova is deployed.
+                string(APPEND VERIFY_CMD "
+                message(STATUS \"Fixing up bad path in libfftw3f.3.dylib manually due to faulty logic in macdeployqt\")
+                execute_process(COMMAND install_name_tool -change /usr/local/lib/gcc/9/libgcc_s.1.dylib
+                    @loader_path/libgcc_s.1.dylib ${CONTENTS_DIR}/Frameworks/libfftw3f.3.dylib)
+                execute_process(COMMAND install_name_tool -change /usr/local/lib/gcc/10/libgcc_s.1.dylib
+                    @loader_path/libgcc_s.1.dylib ${CONTENTS_DIR}/Frameworks/libfftw3f.3.dylib)
+                execute_process(COMMAND install_name_tool -change /usr/local/lib/gcc/11/libgcc_s.1.dylib
+                    @loader_path/libgcc_s.1.dylib ${CONTENTS_DIR}/Frameworks/libfftw3f.3.dylib)
+                    ")
+            endif()
+        endif()
+
+        if(SC_USE_QTWEBENGINE AND ${Qt5_VERSION} VERSION_EQUAL 5.15.1)
+            # QTBUG-86759 / #5175 -- macdeployqt fails to copy part of QtWebEngineCore that contains QtWebEngineProcess.app.
+            message(STATUS "macdeployqt: will fix deploying QtWebEngineProcess.app for Qt 5.15.1")
+
+            # Assume that QtWebEngine and QtWebEngineCore frameworks live in the same directory. Using
+            # Qt5::WebEngineCore doesn't work here; even requesting that component explicitly above doesn't fix it.
+            get_target_property(QT_WEBENGINE_LOCATION Qt5::WebEngine LOCATION)
+            get_filename_component(QT_WEBENGINE_DIR "${QT_WEBENGINE_LOCATION}" DIRECTORY)
+            get_filename_component(QT_WEBENGINECORE_COPY_FROM ../QtWebEngineCore.framework/Versions/5/Helpers ABSOLUTE BASE_DIR "${QT_WEBENGINE_DIR}")
+            set(QT_WEBENGINECORE_COPY_TO "${CONTENTS_DIR}/Frameworks/QtWebEngineCore.framework/Versions/5/Helpers")
+
+            # Construct a call to install_name_tool that fixes up Qt lib dependencies. We can't use fixup_bundle for
+            # this because it copies all the dependencies (~200MB) into this nested bundle.
+            set(QT_WEBENGINE_FIXUP_COMMAND "install_name_tool ${QT_WEBENGINE_PROCESS}")
+            foreach(component Gui Core WebEngineCore Quick QmlModels WebChannel Qml Network Positioning)
+                get_target_property(component_location Qt5::${component} LOCATION)
+                get_filename_component(component_location "${component_location}" DIRECTORY)
+                get_filename_component(component_location Versions/5/Qt${component} REALPATH BASE_DIR "${component_location}")
+                # If qt is installed through homebrew, `component_location` will look like
+                # /usr/local/Cellar/qt/5.15.1/lib/QtFoo.framework/Versions/5/QtFoo
+                set(component_load_path "@loader_path/../../../../../../../Qt${component}.framework/Versions/5/Qt${component}")
+                string(APPEND QT_WEBENGINE_FIXUP_COMMAND " -change \"${component_location}\" ${component_load_path}")
+            endforeach()
+
+            string(APPEND VERIFY_CMD "
+                message(STATUS \"Fixing up bad deployment of QtWebEngineProcess with Qt 5.15.1\")
+                execute_process(COMMAND \"${CMAKE_COMMAND}\" -E remove_directory \"${QT_WEBENGINECORE_COPY_TO}\")
+                execute_process(COMMAND \"${CMAKE_COMMAND}\" -E copy_directory \"${QT_WEBENGINECORE_COPY_FROM}\"
+                    \"${QT_WEBENGINECORE_COPY_TO}\")
+                # Mark all copied files +w. The actual process so we can run install_name_tool on it, and then the other
+                # copied files mainly to avoid having to run xattr with sudo.
+                execute_process(COMMAND chmod +w ${QT_WEBENGINE_PROCESS})
+                execute_process(COMMAND chmod +w ${QT_WEBENGINE_APP}/Contents/Info.plist)
+                execute_process(COMMAND chmod +w ${QT_WEBENGINE_APP}/Contents/PkgInfo)
+                execute_process(COMMAND chmod +w ${QT_WEBENGINE_APP}/Contents/Resources/empty.lproj)
+                execute_process(COMMAND chmod +w ${QT_WEBENGINE_APP}/Contents/Resources/QtWebEngineProcess.entitlements)
+                execute_process(COMMAND ${QT_WEBENGINE_FIXUP_COMMAND})
+                ")
+        endif()
+
+        if(SC_CODESIGN_AFTER_DEPLOY)
+            string(APPEND VERIFY_CMD "
+                message(STATUS \"Running ad hoc code signing\")
+                execute_process(COMMAND 
+                    codesign --force --deep --sign - ${CONTENTS_DIR}/MacOS/SuperCollider
+                )
+                execute_process(COMMAND 
+                    sh -c \
+                    \"find ${CONTENTS_DIR}/MacOS ${CONTENTS_DIR}/Frameworks \
+                    ${CONTENTS_DIR}/Resources ${CONTENTS_DIR}/Resources/plugins \
+                    \\\\( \
+                        -name \\\"*.dylib\\\" \
+                        -o -name \\\"*.framework\\\" \
+                        -o -name \\\"sclang\\\" \
+                        -o -name \\\"scsynth\\\" \
+                        -o -name \\\"supernova\\\" \
+                        -o -name \\\"*.scx\\\" \
+                        -maxdepth 1 \
+                    \\\\) \
+                    -exec codesign --force --sign - {} \\\;\"
+                )
+                execute_process(COMMAND 
+                    codesign --force --sign - ${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app
+                )
             ")
+        endif()
+
+        if(SC_VERIFY_APP)
+            string(APPEND VERIFY_CMD "
+                message(STATUS \"Verifying app\")
+                verify_app(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\")")
+        endif()
     else() # WIN32
         find_program(DEPLOY_PROG windeployqt PATHS ${CMAKE_PREFIX_PATH})
         set(DEPLOY_CMD "\"${DEPLOY_PROG}\"

@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -22,27 +22,27 @@
 
 void initMathPrimitives();
 
-int prAddNum(VMGlobals *g, int numArgsPushed);
-int prSubNum(VMGlobals *g, int numArgsPushed);
-int prMulNum(VMGlobals *g, int numArgsPushed);
+int prAddNum(VMGlobals* g, int numArgsPushed);
+int prSubNum(VMGlobals* g, int numArgsPushed);
+int prMulNum(VMGlobals* g, int numArgsPushed);
 
-int prAddInt(VMGlobals *g, int numArgsPushed);
-int prSubInt(VMGlobals *g, int numArgsPushed);
-int prMulInt(VMGlobals *g, int numArgsPushed);
+int prAddInt(VMGlobals* g, int numArgsPushed);
+int prSubInt(VMGlobals* g, int numArgsPushed);
+int prMulInt(VMGlobals* g, int numArgsPushed);
 
-int prAddFloat(VMGlobals *g, int numArgsPushed);
-int prSubFloat(VMGlobals *g, int numArgsPushed);
-int prMulFloat(VMGlobals *g, int numArgsPushed);
+int prAddFloat(VMGlobals* g, int numArgsPushed);
+int prSubFloat(VMGlobals* g, int numArgsPushed);
+int prMulFloat(VMGlobals* g, int numArgsPushed);
 
-int mathClip(VMGlobals *g, int numArgsPushed);
-int mathWrap(VMGlobals *g, int numArgsPushed);
-int mathFold(VMGlobals *g, int numArgsPushed);
-int mathClipInt(VMGlobals *g, int numArgsPushed);
-int mathWrapInt(VMGlobals *g, int numArgsPushed);
-int mathFoldInt(VMGlobals *g, int numArgsPushed);
-int mathClipFloat(VMGlobals *g, int numArgsPushed);
-int mathWrapFloat(VMGlobals *g, int numArgsPushed);
-int mathFoldFloat(VMGlobals *g, int numArgsPushed);
-int mathClipSignal(VMGlobals *g, int numArgsPushed);
-int mathWrapSignal(VMGlobals *g, int numArgsPushed);
-int mathFoldSignal(VMGlobals *g, int numArgsPushed);
+int mathClip(VMGlobals* g, int numArgsPushed);
+int mathWrap(VMGlobals* g, int numArgsPushed);
+int mathFold(VMGlobals* g, int numArgsPushed);
+int mathClipInt(VMGlobals* g, int numArgsPushed);
+int mathWrapInt(VMGlobals* g, int numArgsPushed);
+int mathFoldInt(VMGlobals* g, int numArgsPushed);
+int mathClipFloat(VMGlobals* g, int numArgsPushed);
+int mathWrapFloat(VMGlobals* g, int numArgsPushed);
+int mathFoldFloat(VMGlobals* g, int numArgsPushed);
+int mathClipSignal(VMGlobals* g, int numArgsPushed);
+int mathWrapSignal(VMGlobals* g, int numArgsPushed);
+int mathFoldSignal(VMGlobals* g, int numArgsPushed);

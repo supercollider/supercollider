@@ -29,33 +29,28 @@
 
 using namespace ScIDE;
 
-SessionSwitchDialog::SessionSwitchDialog(QWidget * parent):
-    QDialog(parent)
-{
+SessionSwitchDialog::SessionSwitchDialog(QWidget* parent): QDialog(parent) {
     setWindowTitle(tr("Switch Session"));
 
     mSessions = new QListWidget(this);
 
-    QHBoxLayout *contentBox = new QHBoxLayout;
+    QHBoxLayout* contentBox = new QHBoxLayout;
     contentBox->addWidget(mSessions);
     setLayout(contentBox);
 
-    SessionManager * sessionManager = Main::sessionManager();
+    SessionManager* sessionManager = Main::sessionManager();
     QStringList sessions = sessionManager->availableSessions();
     mSessions->addItems(sessions);
 
-    const Session * currentSession = sessionManager->currentSession();
-    if(!currentSession)
+    const Session* currentSession = sessionManager->currentSession();
+    if (!currentSession)
         return;
 
-    const int currentSessionIndex = sessions.indexOf( currentSession->name() );
+    const int currentSessionIndex = sessions.indexOf(currentSession->name());
     if (currentSessionIndex != -1)
         mSessions->setCurrentRow(currentSessionIndex);
 
     connect(mSessions, SIGNAL(itemActivated(QListWidgetItem*)), this, SLOT(onItemActivated(QListWidgetItem*)));
 }
 
-void SessionSwitchDialog::onItemActivated(QListWidgetItem* item)
-{
-    accept();
-}
+void SessionSwitchDialog::onItemActivated(QListWidgetItem* item) { accept(); }

@@ -4,7 +4,7 @@ categories:: JITLib>NodeProxy, Live Coding
 related:: Reference/playN, Classes/NodeProxy, Classes/Bus
 
 description::
-A general purpose class for monitoring or crosslinking between busses. It supports multichannel expansion and crossfading between settings. It provides optimizations for playing contiguous channels to other contiguous busses (link::#play::) and for more complex routings, such as splitting, spreading etc to multiple channels (link::#playN::). Monitor uses the existing set of  link::Classes/SystemSynthDefs:: to do this.
+A general purpose class for monitoring or crosslinking between busses. It supports multichannel expansion and crossfading between settings. It provides optimizations for playing contiguous channels to other contiguous busses (link::#-play::) and for more complex routings, such as splitting, spreading etc to multiple channels (link::#-playN::). Monitor uses the existing set of link::Classes/SystemSynthDefs:: to do this.
 
 code::
 { Out.ar(87, SinOsc.ar(MouseX.kr(240, 1000, 1) * [1, 2, 3], 0, 0.2)) }.play; // play three sine tone on channels 87, 88, and 89
@@ -38,7 +38,7 @@ argument::target
 where to send the synths to (default: server default group)
 
 argument::multi
-keep old links and add new one: this allows you to add layer after layer, otherwise free ther previous mapping (false by default).
+keep old links and add new one: this allows you to add layer after layer, otherwise free the previous mapping (false by default).
 
 argument::volume
 volume at which to monitor
@@ -185,7 +185,7 @@ method::numChannels
 Return the number of input channels.
 
 method::copy
-Return a copy of the receiver, with the same channel setting, but not running. You can run it with the settings by sending it the link::#play:: message, and pass in any modifications you want to make.
+Return a copy of the receiver, with the same channel setting, but not running. You can run it with the settings by sending it the link::#-play:: message, and pass in any modifications you want to make.
 
 
 method::playToBundle

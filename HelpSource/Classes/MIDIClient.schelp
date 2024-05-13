@@ -1,7 +1,7 @@
 TITLE:: MIDIClient
 summary:: Basic access to MIDI on your computer
 categories:: External Control>MIDI
-related:: Classes/MIDIIn, Classes/MIDIOut, Classes/MIDIFunc, Classes/MIDIdef, Guides/MIDI, Guides/UsingMIDI
+related:: Classes/MIDIIn, Classes/MIDIOut, Classes/MIDIFunc, Classes/MIDIdef, Guides/MIDI, Guides/UsingMIDI, Classes/MIDIEndPoint
 
 DESCRIPTION::
 MIDIClient is the core class that provides access to the MIDI subsystem on your computer.
@@ -37,8 +37,8 @@ Cleans up the MIDIClient. After using this method, you will have to reinitialize
 
 
 METHOD:: list
-Created the list of available sources and destinations.
-
+Refresh the list of available sources and destinations.
+If you have connected a MIDI device after MIDIClient initialization, you won't see it until this method is run.
 
 METHOD:: sources
 The list of available MIDI sources, including SuperCollider's own sources.
@@ -78,10 +78,37 @@ On non-linux systems, it posts a warning and returns nil.
 
 EXAMPLES::
 
+This is Linux specific code.
+The function takes care of initializing MIDIClient, detects a MIDI device named SE25 and connects it to port 0 of SuperCollider.
+
 code::
-MIDIClient.init;
+(
+~connect_midi_devices = { arg device, name;
+	// init or refresh MIDIClient end points
+	if(MIDIClient.initialized == false) {
+		MIDIClient.init;
+	} {
+		MIDIClient.list;
+	};
 
-MIDIClient.disposeClient;
+	MIDIClient.sources.do({ arg endPoint;
+		if(device.notNil and: { name.notNil} and: {endPoint.device == device} and: { endPoint.name == name }) {
+			// catch exception thrown when already connected
+			try {
+				// connect SuperCollider out port 0 to MIDI device
+				MIDIOut.connect(0, endPoint.uid);
+			};
+			try {
+				// connect MIDI device to SuperCollider in port 0
+				MIDIIn.connect(0, endPoint.uid);
+			}
+		}
+	})
 
-MIDIClient.init( verbose: false );
+}
+)
+
+~connect_midi_devices.("SE25", "SE25 MIDI 1"); // test it now
 ::
+
+

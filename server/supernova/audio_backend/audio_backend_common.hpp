@@ -29,22 +29,17 @@
 
 #include "malloc_aligned.hpp"
 
-namespace nova   {
-namespace detail {
+namespace nova { namespace detail {
 
 template <typename sample_type, typename io_sample_type, bool blocking, bool managed_memory = true>
-class audio_backend_base:
-    boost::mpl::if_c<blocking, spin_lock, dummy_mutex>::type
-{
+class audio_backend_base : boost::mpl::if_c<blocking, spin_lock, dummy_mutex>::type {
     typedef typename boost::mpl::if_c<blocking, spin_lock, dummy_mutex>::type lock_t;
     typedef std::size_t size_t;
 
 public:
     /* @{ */
     /** buffers can be directly mapped to the io regions of the host application */
-    template <typename Iterator>
-    void input_mapping(Iterator const & buffer_begin, Iterator const & buffer_end)
-    {
+    template <typename Iterator> void input_mapping(Iterator const& buffer_begin, Iterator const& buffer_end) {
         static_assert(!managed_memory, "audio_backend_common: managed_memory == true");
 
         size_t input_count = buffer_end - buffer_begin;
@@ -53,9 +48,7 @@ public:
         std::copy(buffer_begin, buffer_end, input_samples.begin());
     }
 
-    template <typename Iterator>
-    void output_mapping(Iterator const & buffer_begin, Iterator const & buffer_end)
-    {
+    template <typename Iterator> void output_mapping(Iterator const& buffer_begin, Iterator const& buffer_end) {
         static_assert(!managed_memory, "audio_backend_common: managed_memory == true");
 
         size_t output_count = buffer_end - buffer_begin;
@@ -66,20 +59,17 @@ public:
     /* @} */
 
 protected:
-    void clear_inputs(size_t frames_per_tick)
-    {
+    void clear_inputs(size_t frames_per_tick) {
         for (uint16_t channel = 0; channel != input_samples.size(); ++channel)
             zerovec_simd(input_samples[channel].get(), frames_per_tick);
     }
 
-    void clear_outputs(size_t frames_per_tick)
-    {
+    void clear_outputs(size_t frames_per_tick) {
         for (uint16_t channel = 0; channel != output_samples.size(); ++channel)
             zerovec_simd(output_samples[channel].get(), frames_per_tick);
     }
 
-    void prepare_helper_buffers(size_t input_channels, size_t output_channels, size_t frames)
-    {
+    void prepare_helper_buffers(size_t input_channels, size_t output_channels, size_t frames) {
         static_assert(managed_memory, "audio_backend_common: managed_memory == false");
 
         input_samples.resize(input_channels);
@@ -88,8 +78,7 @@ protected:
         std::generate(output_samples.begin(), output_samples.end(), std::bind(calloc_aligned<sample_type>, frames));
     }
 
-    void fetch_inputs(const float ** inputs, size_t frames, int input_channels)
-    {
+    void fetch_inputs(const float** inputs, size_t frames, int input_channels) {
         if (is_multiple_of_vectorsize(frames)) {
             for (uint16_t i = 0; i != input_channels; ++i) {
                 if (is_aligned(inputs[i]))
@@ -106,8 +95,7 @@ protected:
         }
     }
 
-    void deliver_outputs(float ** outputs, size_t frames, int output_channels)
-    {
+    void deliver_outputs(float** outputs, size_t frames, int output_channels) {
         if (is_multiple_of_vectorsize(frames)) {
             for (uint16_t i = 0; i != output_channels; ++i) {
                 if (is_aligned(outputs[i]))
@@ -124,47 +112,32 @@ protected:
         }
     }
 
-    static bool is_aligned(const void * arg)
-    {
+    static bool is_aligned(const void* arg) {
         size_t mask = sizeof(vec<float>::size) * sizeof(float) * 8 - 1;
         return !((size_t)arg & mask);
     }
 
-    static bool is_multiple_of_vectorsize(size_t count)
-    {
-        return !(count & (vec<float>::objects_per_cacheline - 1));
-    }
+    static bool is_multiple_of_vectorsize(size_t count) { return !(count & (vec<float>::objects_per_cacheline - 1)); }
 
     std::vector<aligned_storage_ptr<sample_type, managed_memory>,
-                boost::alignment::aligned_allocator<aligned_storage_ptr<sample_type, managed_memory>, 64>> input_samples, output_samples;
+                boost::alignment::aligned_allocator<aligned_storage_ptr<sample_type, managed_memory>, 64>>
+        input_samples, output_samples;
 };
 
-class audio_settings_basic
-{
+class audio_settings_basic {
 protected:
     float samplerate_ = 0.f;
     uint16_t input_channels = 0;
     uint16_t output_channels = 0;
 
 public:
-    audio_settings_basic(void)
-    {}
+    audio_settings_basic(void) {}
 
-    float get_samplerate(void) const
-    {
-        return samplerate_;
-    }
+    float get_samplerate(void) const { return samplerate_; }
 
-    uint16_t get_input_count(void) const
-    {
-        return input_channels;
-    }
+    uint16_t get_input_count(void) const { return input_channels; }
 
-    uint16_t get_output_count(void) const
-    {
-        return output_channels;
-    }
+    uint16_t get_output_count(void) const { return output_channels; }
 };
 
-} /* namespace detail */
-} /* namespace nova */
+} /* namespace detail */ } /* namespace nova */

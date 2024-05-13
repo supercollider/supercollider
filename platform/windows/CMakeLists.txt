@@ -35,7 +35,7 @@ endif(MSVC)
 
 add_custom_target( installer
     COMMAND ${CMAKE_COMMAND}
-        "-DSC_VERSION=${PROJECT_VERSION}"
+        "-DSC_VERSION=${SC_VERSION}"
         "-DSC_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
         "-DNSIS_SCRIPT=${CMAKE_CURRENT_SOURCE_DIR}/supercollider.nsi"
         "-DSC_CUBE_PATH=${CMAKE_CURRENT_SOURCE_DIR}/Resources/sc_cube.ico"

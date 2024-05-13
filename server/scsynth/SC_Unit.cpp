@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -31,64 +31,54 @@
 
 void Unit_ChooseMulAddFunc(Unit* unit);
 
-Unit* Unit_New(World *inWorld, UnitSpec *inUnitSpec, char*& memory)
-{
-	UnitDef *def = inUnitSpec->mUnitDef;
+Unit* Unit_New(World* inWorld, UnitSpec* inUnitSpec, char*& memory) {
+    UnitDef* def = inUnitSpec->mUnitDef;
 
-	Unit *unit = (Unit*)memory;
-	memory += def->mAllocSize;
+    Unit* unit = (Unit*)memory;
+    memory += def->mAllocSize;
 
-	unit->mWorld = inWorld;
-	unit->mUnitDef = def;
+    unit->mWorld = inWorld;
+    unit->mUnitDef = def;
 
-	uint32 numInputs = inUnitSpec->mNumInputs;
-	uint32 numOutputs = inUnitSpec->mNumOutputs;
-	unit->mNumInputs = numInputs;
-	unit->mNumOutputs = numOutputs;
-	uint64 numPorts = numInputs + numOutputs;
+    uint32 numInputs = inUnitSpec->mNumInputs;
+    uint32 numOutputs = inUnitSpec->mNumOutputs;
+    unit->mNumInputs = numInputs;
+    unit->mNumOutputs = numOutputs;
+    uint64 numPorts = numInputs + numOutputs;
 
-	unit->mInput = (Wire**)memory;
-	memory += numPorts * sizeof(Wire*);
+    unit->mInput = (Wire**)memory;
+    memory += numPorts * sizeof(Wire*);
 
-	unit->mOutput = unit->mInput + numInputs;
+    unit->mOutput = unit->mInput + numInputs;
 
-	unit->mInBuf = (float**)memory;
-	memory += numPorts * sizeof(float*);
+    unit->mInBuf = (float**)memory;
+    memory += numPorts * sizeof(float*);
 
-	unit->mOutBuf = unit->mInBuf + numInputs;
+    unit->mOutBuf = unit->mInBuf + numInputs;
 
-	unit->mCalcRate = inUnitSpec->mCalcRate;
-	unit->mSpecialIndex = inUnitSpec->mSpecialIndex;
-	Rate* rateInfo = unit->mRate = inUnitSpec->mRateInfo;
-	unit->mBufLength = rateInfo->mBufLength;
+    unit->mCalcRate = inUnitSpec->mCalcRate;
+    unit->mSpecialIndex = inUnitSpec->mSpecialIndex;
+    Rate* rateInfo = unit->mRate = inUnitSpec->mRateInfo;
+    unit->mBufLength = rateInfo->mBufLength;
 
-	unit->mDone = false;
+    unit->mDone = false;
 
-	return unit;
+    return unit;
 }
 
-void Unit_Dtor(Unit *inUnit)
-{
+void Unit_Dtor(Unit* inUnit) {}
+
+void Unit_ZeroOutputs(Unit* unit, int inNumSamples) {
+    uint32 numOuts = unit->mNumOutputs;
+    for (uint32 i = 0; i < numOuts; ++i) {
+        float* out = OUT(i);
+        Clear(inNumSamples, out);
+    }
 }
 
-void Unit_ZeroOutputs(Unit *unit, int inNumSamples)
-{
-	uint32 numOuts = unit->mNumOutputs;
-	for (uint32 i=0; i<numOuts; ++i) {
-		float *out = OUT(i);
-		Clear(inNumSamples, out);
-	}
-
+void Unit_EndCalc(Unit* inUnit, int inNumSamples) {
+    inUnit->mDone = true;
+    Unit_ZeroOutputs(inUnit, inNumSamples);
 }
 
-void Unit_EndCalc(Unit *inUnit, int inNumSamples)
-{
-	inUnit->mDone = true;
-	Unit_ZeroOutputs(inUnit, inNumSamples);
-}
-
-void Unit_End(Unit *inUnit)
-{
-	inUnit->mCalcFunc = (UnitCalcFunc)&Unit_EndCalc;
-}
-
+void Unit_End(Unit* inUnit) { inUnit->mCalcFunc = (UnitCalcFunc)&Unit_EndCalc; }

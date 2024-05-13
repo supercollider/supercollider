@@ -11,12 +11,11 @@
 using namespace nova;
 using namespace std;
 
-boost::filesystem::path base_path ("/home/tim/workspace/nova-server/debug_plugins/");
+boost::filesystem::path base_path("/home/tim/workspace/nova-server/debug_plugins/");
 
-BOOST_AUTO_TEST_CASE( ugen_factory_test_1 )
-{
+BOOST_AUTO_TEST_CASE(ugen_factory_test_1) {
     server_arguments::initialize(0, 0);
-    rt_pool.init(1024*1024);
+    rt_pool.init(1024 * 1024);
     sc_factory.initialize();
 
     sc_factory.load_plugin(base_path / "BinaryOpUGens.so");
@@ -46,23 +45,15 @@ BOOST_AUTO_TEST_CASE( ugen_factory_test_1 )
     sc_factory.load_plugin(base_path / "UnaryOpUGens.so");
     sc_factory.load_plugin(base_path / "UnpackFFTUGens.so");
 
-    rt_pool.init(1024*1024*16, true);
+    rt_pool.init(1024 * 1024 * 16, true);
 }
 
 
-const char * test_synthdefs[] =
-{
-    "default.scsyndef",
-    "help-In.scsyndef",
-    "help_out.scsyndef",
-    "help_out2.scsyndef",
-    "help_InFeedback.scsyndef",
-    "help_LocalIn.scsyndef",
-    "help_PlayBuf.scsyndef",
-    "help_RecordBuf.scsyndef",
-    "help_RecordBuf_overdub.scsyndef",
-    "help_LocalBuf.scsyndef",
-    "help_Demand.scsyndef",
+const char* test_synthdefs[] = {
+    "default.scsyndef",       "help-In.scsyndef",         "help_out.scsyndef",
+    "help_out2.scsyndef",     "help_InFeedback.scsyndef", "help_LocalIn.scsyndef",
+    "help_PlayBuf.scsyndef",  "help_RecordBuf.scsyndef",  "help_RecordBuf_overdub.scsyndef",
+    "help_LocalBuf.scsyndef", "help_Demand.scsyndef",
 };
 
 

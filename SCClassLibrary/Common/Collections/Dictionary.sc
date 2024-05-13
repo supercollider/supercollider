@@ -23,7 +23,7 @@ Dictionary : Set {
 		^nil
 	}
 	trueAt { arg key;
-		^this.at(key) ? false
+		^this.at(key).booleanValue
 	}
 	add { arg anAssociation;
 		this.put(anAssociation.key, anAssociation.value);
@@ -547,7 +547,7 @@ IdentityDictionary : Dictionary {
 				selector = selector.asGetter;
 				if(this.respondsTo(selector)) {
 					warn(selector.asCompileString
-						+ "exists a method name, so you can't use it as pseudo-method.")
+						+ "exists as a method name, so you can't use it as a pseudo-method.")
 				};
 				^this[selector] = args[0];
 			};
@@ -567,11 +567,14 @@ IdentityDictionary : Dictionary {
 		//	parameter: value, parameter: value, etc.)
 		// If you leave out the nextTimeOnGrid function, fallback to quant/phase/offset.
 
-	nextTimeOnGrid { |clock|
+	nextTimeOnGrid { |clock, referenceBeat|
 		if(this[\nextTimeOnGrid].notNil) {
-			^this[\nextTimeOnGrid].value(this, clock)
+			// 'nextTimeOnGrid' function shouldn't be responsible for
+			// resolving a nil referenceBeat
+			^this[\nextTimeOnGrid].value(this, clock, referenceBeat ?? { thisThread.beats })
 		} {
-			^clock.nextTimeOnGrid(this[\quant] ? 1, (this[\phase] ? 0) - (this[\offset] ? 0))
+			// but anyClock.nextTimeOnGrid is already responsible for that
+			^clock.nextTimeOnGrid(this[\quant] ? 1, (this[\phase] ? 0) - (this[\offset] ? 0), referenceBeat)
 		}
 	}
 	asQuant { ^this.copy }

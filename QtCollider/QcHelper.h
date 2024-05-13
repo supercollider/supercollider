@@ -7,9 +7,8 @@
 #include <QFont>
 #include <QVariant>
 
-struct QcHelper
-{
-  protected:
+struct QcHelper {
+protected:
     QcHelper() {}
     float dummyFloat() const { return 0; }
     int dummyInt() const { return 0; }

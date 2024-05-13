@@ -26,41 +26,36 @@
 
 namespace ScIDE {
 
-class SignalMultiplexer : public QObject
-{
+class SignalMultiplexer : public QObject {
     Q_OBJECT
 
 public:
-    enum ConnectionMode {
-        ConnectionNecessary = 0,
-        ConnectionOptional = 1
-    };
+    enum ConnectionMode { ConnectionNecessary = 0, ConnectionOptional = 1 };
 
-    SignalMultiplexer(QObject *parent = 0);
+    SignalMultiplexer(QObject* parent = 0);
 
-    void connect(QObject *sender, const char *signal, const char *slot, ConnectionMode = ConnectionNecessary);
-    bool disconnect(QObject *sender, const char *signal, const char *slot);
-    void connect(const char *signal, QObject *receiver, const char *slot, ConnectionMode = ConnectionNecessary);
-    bool disconnect(const char *signal, QObject *receiver, const char *slot);
-    bool disconnect(QObject *sender);
-    
-    QObject *currentObject() const { return mObject; }
+    void connect(QObject* sender, const char* signal, const char* slot, ConnectionMode = ConnectionNecessary);
+    bool disconnect(QObject* sender, const char* signal, const char* slot);
+    void connect(const char* signal, QObject* receiver, const char* slot, ConnectionMode = ConnectionNecessary);
+    bool disconnect(const char* signal, QObject* receiver, const char* slot);
+    bool disconnect(QObject* sender);
+
+    QObject* currentObject() const { return mObject; }
 
 public slots:
-    void setCurrentObject(QObject *newObject);
+    void setCurrentObject(QObject* newObject);
 
 private:
-    struct Connection
-    {
+    struct Connection {
         QPointer<QObject> sender;
         QPointer<QObject> receiver;
-        const char *signal;
-        const char *slot;
+        const char* signal;
+        const char* slot;
         ConnectionMode mode;
     };
 
-    void connect(const Connection &conn);
-    void disconnect(const Connection &conn);
+    void connect(const Connection& conn);
+    void disconnect(const Connection& conn);
 
     QPointer<QObject> mObject;
     QList<Connection> mConnections;

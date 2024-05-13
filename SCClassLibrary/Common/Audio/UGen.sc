@@ -109,9 +109,15 @@ UGen : AbstractFunction {
 		}
 	}
 
-	degrad { ^this * (pi/180) }
+	degrad {
+		// degree * (pi/180)
+		^this * 0.01745329251994329547
+	}
 
-	raddeg { ^this * (180/pi) }
+	raddeg {
+		// radian * (180/pi)
+		^this * 57.29577951308232286465
+	}
 
 	blend { arg that, blendFrac = 0.5;
 		var pan;
@@ -277,6 +283,23 @@ UGen : AbstractFunction {
 		^ModDif.multiNew(this.rate, this, that, mod)
 	}
 
+	binaryValue { ^this.sign.max(0) }
+
+
+	// Note that this differs from |==| for other AbstractFunctions
+	// Other AbstractFunctions write '|==|' into the compound function
+	// for the sake of their 'storeOn' (compile string) representation.
+	// For UGens, scsynth does not support |==| (same handling --> error).
+	// So here, we use '==' which scsynth does understand.
+	// Also, BinaryOpUGen doesn't write a compile string.
+	|==| { |that|
+		^this.composeBinaryOp('==', that)
+	}
+	prReverseLazyEquals { |that|
+		// commutative, so it's OK to flip the operands
+		^this.composeBinaryOp('==', that)
+	}
+
 	sanitize {
 		^Sanitize.perform(this.methodSelectorForRate, this);
 	}
@@ -413,7 +436,7 @@ UGen : AbstractFunction {
 		if (anInput.isValidUGenInput, {
 			^BinaryOpUGen.new(aSelector, this, anInput)
 		},{
-			anInput.performBinaryOpOnUGen(aSelector, this);
+			^anInput.performBinaryOpOnUGen(aSelector, this);
 		});
 	}
 	reverseComposeBinaryOp { arg aSelector, aUGen;
@@ -556,8 +579,9 @@ MultiOutUGen : UGen {
 	}
 
 	initOutputs { arg numChannels, rate;
-		if(numChannels.isNil or: { numChannels < 1 }, {
-			Error("%: wrong number of channels (%)".format(this, numChannels)).throw
+		if(numChannels.isInteger.not or: { numChannels < 1 }, {
+			Error("%: numChannels must be a nonzero positive integer, but received (%)."
+              .format(this, numChannels)).throw
 		});
 		channels = Array.fill(numChannels, { arg i;
 			OutputProxy(rate, this, i);
@@ -602,4 +626,29 @@ OutputProxy : UGen {
 	dumpName {
 		^this.source.dumpName ++ "[" ++ outputIndex ++ "]"
 	}
+
+	controlName {
+		var counter = 0, index = 0;
+
+		this.synthDef.children.do({
+			arg ugen;
+			if(this.source.synthIndex == ugen.synthIndex,
+				{ index = counter + this.outputIndex; });
+			if(ugen.isKindOf(Control),
+				{ counter = counter + ugen.channels.size; });
+		});
+
+		^synthDef.controlNames.detect({ |c| c.index == index });
+	}
+
+	spec_{ arg spec;
+		var controlName, name;
+		controlName = this.controlName;
+		if (this.controlName.notNil) {
+			controlName.spec = spec;
+		} {
+			"Cannot set spec on a non-Control".error;
+		}
+	}
+
 }

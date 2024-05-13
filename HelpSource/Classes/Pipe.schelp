@@ -18,7 +18,7 @@ A link::Classes/String:: representing the mode. Valid modes are "w" (pipe to std
 
 method::argv
 
-argument::executableAndArguments
+argument::args
 A link::Classes/SequenceableCollection:: containining strings where the first string is the path to the executable to be run and all other strings are passed as arguments to the executable. This method starts the process directly without using a shell.
 
 argument::mode
@@ -40,7 +40,7 @@ A link::Classes/String:: passed to popen, so should be one of: "r","w"
 method::openArgv
 Open the file.
 
-argument::executableAndArguments
+argument::args
 A link::Classes/SequenceableCollection:: containining strings where the first string is the path to the executable to be run and all other strings are passed as arguments to the executable. This method starts the process directly without using a shell.
 
 argument::mode
@@ -52,11 +52,6 @@ Closes the pipe, waiting for the command to finish. You must do this explicitly 
 returns:: The exit status of the command (an Integer).
 
 Examples::
-
-note::
-For anyone still using macOS 10.3, UNIX commands like pipe do not work when the server is booted; quit the server, otherwise SuperCollider crashes. More recent macOS is not affected.
-
-::
 
 code::
 // this pipes in stdout from ls

@@ -10,61 +10,43 @@
 using namespace nova;
 using namespace std;
 
-namespace
-{
+namespace {
 
-template <int size, bool b>
-void test_pool_instatiation(void)
-{
-    static_allocator<int, size, b> alloc;
-}
+template <int size, bool b> void test_pool_instatiation(void) { static_allocator<int, size, b> alloc; }
 
-struct initialized_struct
-{
-    initialized_struct(int i):
-        i(i), f(0.2)
-    {}
+struct initialized_struct {
+    initialized_struct(int i): i(i), f(0.2) {}
 
-    bool operator<(initialized_struct const & rhs) const
-    {
-        return i < rhs.i;
-    }
+    bool operator<(initialized_struct const& rhs) const { return i < rhs.i; }
 
     int i;
     double f;
 };
 
-template <typename T, bool b>
-void test_list(void)
-{
-    list<T, static_allocator<T, 8192, b> > vec;
+template <typename T, bool b> void test_list(void) {
+    list<T, static_allocator<T, 8192, b>> vec;
 
     for (int i = 0; i != 8192; ++i)
         vec.push_back(T(i));
 }
 
 
-template <typename T, bool b>
-void test_vector(void)
-{
-    vector<T, static_allocator<T, 8192, b> > vec;
+template <typename T, bool b> void test_vector(void) {
+    vector<T, static_allocator<T, 8192, b>> vec;
 
     for (int i = 0; i != 8192; ++i)
         vec.push_back(T(i));
 }
 
-template <typename T, bool b>
-void test_set(void)
-{
-    set<T, std::less<T>, static_allocator<T, 8192, b> > set;
+template <typename T, bool b> void test_set(void) {
+    set<T, std::less<T>, static_allocator<T, 8192, b>> set;
 
     for (int i = 0; i != 8192; ++i)
         set.insert(T(i));
 }
 
 }
-BOOST_AUTO_TEST_CASE( static_alloc_test_1 )
-{
+BOOST_AUTO_TEST_CASE(static_alloc_test_1) {
     test_pool_instatiation<16, false>();
     test_pool_instatiation<128, false>();
     test_pool_instatiation<1024, false>();
@@ -88,8 +70,7 @@ BOOST_AUTO_TEST_CASE( static_alloc_test_2 )
 }
 #endif
 
-BOOST_AUTO_TEST_CASE( static_alloc_test_3 )
-{
+BOOST_AUTO_TEST_CASE(static_alloc_test_3) {
     test_vector<int, false>();
     test_vector<initialized_struct, false>();
 

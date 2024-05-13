@@ -1,27 +1,29 @@
 set(REQUIRED_QT_VERSION 5.7)
+option(SC_USE_QTWEBENGINE "Build with Qt WebEngine." ON)
 
-find_package(
-  Qt5 ${REQUIRED_QT_VERSION}
-  COMPONENTS
+###############################################################################
+# Components and libraries
+
+set(
+  QT_COMPONENTS
   Core
-  Widgets
+  Gui
   Network
-  WebEngine
-  WebEngineCore
-  WebEngineWidgets
   PrintSupport
-  OpenGL
-  Quick
-  Qml
-  Sql
   Svg
-  REQUIRED
+  Widgets
 )
 
 set (QT_COLLIDER_LIBS
-  Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::WebEngineCore Qt5::WebEngineWidgets Qt5::PrintSupport
-  Qt5::Quick Qt5::Qml Qt5::Sql Qt5::OpenGL Qt5::Svg
+  Qt5::Core Qt5::Gui Qt5::Network Qt5::PrintSupport Qt5::Svg Qt5::Widgets
   ${MATH_LIBRARY})
+
+if(SC_USE_QTWEBENGINE)
+  list(APPEND QT_COMPONENTS WebEngine WebEngineCore WebEngineWidgets)
+  list(APPEND QT_COLLIDER_LIBS Qt5::WebEngineCore Qt5::WebEngineWidgets)
+endif()
+
+find_package(Qt5 ${REQUIRED_QT_VERSION} COMPONENTS ${QT_COMPONENTS} REQUIRED)
 
 if (APPLE)
   find_package(Qt5MacExtras)
@@ -29,8 +31,14 @@ if (APPLE)
   list(APPEND QT_COLLIDER_LIBS Qt5::MacExtras)
 endif()
 
+###############################################################################
+# Debug flags
+
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}  -DQC_DEBUG")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}  -DQC_DEBUG")
+
+###############################################################################
+# Source file manifest
 
 set(QT_COLLIDER_DIR ${CMAKE_SOURCE_DIR}/QtCollider)
 
@@ -41,6 +49,7 @@ set( QT_COLLIDER_HDRS
   ${QT_COLLIDER_DIR}/QObjectProxy.h
   ${QT_COLLIDER_DIR}/QWidgetProxy.h
   ${QT_COLLIDER_DIR}/QtDownload.h
+  ${QT_COLLIDER_DIR}/QcCallback.hpp
   ${QT_COLLIDER_DIR}/widgets/BasicWidgets.h
   ${QT_COLLIDER_DIR}/widgets/QcButton.h
   ${QT_COLLIDER_DIR}/widgets/QcCheckBox.h
@@ -65,8 +74,6 @@ set( QT_COLLIDER_HDRS
   ${QT_COLLIDER_DIR}/widgets/soundfileview/view.hpp
   ${QT_COLLIDER_DIR}/widgets/QcFileDialog.h
   ${QT_COLLIDER_DIR}/widgets/QcPenPrinter.h
-  ${QT_COLLIDER_DIR}/widgets/QcWebView.h
-  ${QT_COLLIDER_DIR}/widgets/web_page.hpp
   ${QT_COLLIDER_DIR}/widgets/QcWindow.h
   ${QT_COLLIDER_DIR}/layouts/layouts.hpp
   ${QT_COLLIDER_DIR}/layouts/stack_layout.hpp
@@ -85,6 +92,7 @@ set( QT_COLLIDER_SRCS
   ${QT_COLLIDER_DIR}/QWidgetProxy.cpp
   ${QT_COLLIDER_DIR}/QcObjectFactory.cpp
   ${QT_COLLIDER_DIR}/QtDownload.cpp
+  ${QT_COLLIDER_DIR}/QcCallback.cpp
   ${QT_COLLIDER_DIR}/hacks/hacks_x11.cpp
   ${QT_COLLIDER_DIR}/primitives/primitives.cpp
   ${QT_COLLIDER_DIR}/primitives/prim_QObject.cpp
@@ -113,6 +121,7 @@ set( QT_COLLIDER_SRCS
   ${QT_COLLIDER_DIR}/widgets/QcScope.cpp
   ${QT_COLLIDER_DIR}/widgets/QcScopeShm.cpp
   ${QT_COLLIDER_DIR}/widgets/QcLevelIndicator.cpp
+  ${QT_COLLIDER_DIR}/widgets/QcWebView.cpp
   ${QT_COLLIDER_DIR}/widgets/QcWindow.cpp
   ${QT_COLLIDER_DIR}/widgets/QcGraph.cpp
   ${QT_COLLIDER_DIR}/widgets/QcCanvas.cpp
@@ -121,7 +130,6 @@ set( QT_COLLIDER_SRCS
   ${QT_COLLIDER_DIR}/widgets/soundfileview/cachestream.cpp
   ${QT_COLLIDER_DIR}/widgets/QcFileDialog.cpp
   ${QT_COLLIDER_DIR}/widgets/QcPenPrinter.cpp
-  ${QT_COLLIDER_DIR}/widgets/QcWebView.cpp
   ${QT_COLLIDER_DIR}/widgets/web_page.cpp
   ${QT_COLLIDER_DIR}/layouts/layouts.cpp
   ${QT_COLLIDER_DIR}/layouts/stack_layout.cpp
@@ -134,8 +142,16 @@ if(QT_COLLIDER_LANG_CLIENT)
     list(APPEND QT_COLLIDER_SRCS ${QT_COLLIDER_DIR}/LanguageClient.cpp)
 endif()
 
+set(QT_COLLIDER_WEBENGINE_HDRS
+  ${QT_COLLIDER_DIR}/widgets/QcWebView.h
+  ${QT_COLLIDER_DIR}/widgets/web_page.hpp
+)
 
-set( QT_USE_QTWEBENGINE TRUE )
+if(SC_USE_QTWEBENGINE)
+  list(APPEND QT_COLLIDER_HDRS ${QT_COLLIDER_WEBENGINE_HDRS})
+endif()
+
+###############################################################################
 
 qt5_wrap_cpp( QT_COLLIDER_MOC_SRCS ${QT_COLLIDER_HDRS} )
 qt5_add_resources( QT_COLLIDER_RCC ${QT_COLLIDER_DIR}/resources.qrc )
@@ -159,6 +175,7 @@ list( APPEND QT_COLLIDER_SRCS
   ${QT_COLLIDER_OBJCPP_SRCS}
   ${QT_COLLIDER_MOC_SRCS}
   ${QT_COLLIDER_RCC}
+  ${QT_COLLIDER_WEBENGINE_HDRS}
 )
 
 add_definitions(-DSC_QT -DQT_COLLIDER_EXPORTING -DQT_NO_KEYWORDS)

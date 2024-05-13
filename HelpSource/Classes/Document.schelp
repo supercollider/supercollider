@@ -44,6 +44,7 @@ The length of the cursor selection of the file content.
 argument:: envir
 An instance of link::Classes/Environment::. The Environment to be used by the interpreter of the document window. By default, it is set to the current link::Classes/Environment::.
 discussion::
+See also link::Classes/Document#save:: below.
 code::
 Document.open("README", 292,253); // notice the selected text in the open document
 ::
@@ -97,7 +98,7 @@ argument:: action
 An instance of link::Classes/Function:: or link::Classes/FunctionList::.
 
 method:: autoRun
-If a document begins with the link::Classes/String::, code::"/*RUN*/"::, then the code following it int he file will be executed on opening the file, if autorun is set to true.
+If autoRun is set to true, documents beginning with the comment code::/*RUN*/:: will be executed immediately after being opened, and also when the class library is recompiled with the document already open in the IDE.
 argument:: value
 An instance of link::Classes/Boolean::. Default value is code::true::.
 
@@ -111,7 +112,7 @@ subsection:: Path Utilities
 Utilities and settings for dealing with documents such as SuperCollider code files. By default the document directory is SuperCollider's application directory.
 
 method:: dir
-Get/set the default document directory. The default is dependent on link::Classes/Document#implementationClass::.
+Get/set the default document directory. The default is dependent on link::#*implementationClass::.
 argument:: path
 The file system path to the directory. An instance of link::Classes/String::.
 discussion::
@@ -153,7 +154,7 @@ private:: prGetBackgroundColor, prGetBounds, prIsEditable, propen, prGetTitle, p
 subsection:: General Document Properties
 
 method:: path
-Get / set the the Document's path.
+Get / set the Document's path.
 argument:: apath
 An instance of link::Classes/String::. A files system path.
 discussion::
@@ -178,12 +179,12 @@ Document.current == Document.listener; // presumably returns false
 ::
 
 method:: editable
-Get / set the the document is editable.
+Get / set the document is editable.
 argument:: bool
 An instance of link::Classes/Boolean::.
 
 method:: name
-Get / set the title (same as link::Classes/Document#title::).
+Get / set the title (same as link::#-title::).
 argument:: aname
 An instance of link::Classes/String::.
 discussion::
@@ -192,7 +193,7 @@ Document.current.name.postln;
 ::
 
 method:: title
-Get / set the title (same as link::Classes/Document#name::).
+Get / set the title (same as link::#-name::).
 argument:: newTitle
 An instance of link::Classes/String::.
 
@@ -214,10 +215,10 @@ method:: isFront
 Returns code::true:: if the document is in front.
 
 method:: didBecomeKey
-Saves the current link::Classes/Environment::, makes the document current, and performs its link::Classes/Document#toFrontAction::.
+Saves the current link::Classes/Environment::, makes the document current, and performs its link::#-toFrontAction::.
 
 method:: didResignKey
-Performs the Document's link::Classes/Document#endFrontAction:: and restores the current link::Classes/Environment::.
+Performs the Document's link::#-endFrontAction:: and restores the current link::Classes/Environment::.
 
 
 
@@ -237,6 +238,20 @@ Task({
 	doc.close;
 }).play(AppClock);
 )
+::
+
+method:: save
+Save this Document.
+argument:: path
+An optional instance of link::Classes/String:: indicating the path to save the Document. If a path is not provided, the current path (if it has been previously saved or read) is used. After a successful save, this Document's path will be updated if needed. See also link::Classes/Document#*open:: above.
+code::
+d = Document.new("testSave", "foo");
+d.save(Platform.defaultTempDir ++ "foo.scd"); // saved in the temp dir
+d.string_("foobar", 0, 3);
+d.save; // save at previous path
+d.string_("save as now", 0, 6);
+d.save(Platform.defaultTempDir ++ "savedAs.scd");
+d.path;
 ::
 
 method:: front
@@ -261,14 +276,14 @@ argument:: value
 An instance of link::Classes/Function:: or link::Classes/FunctionList::.
 
 method:: mouseDownAction
-Get/set the action to be performed on link::Classes/Document#mouseDown::.
+Get/set the action to be performed on link::#-mouseDown::.
 
 argument:: action
 An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::document::, code::x::, code::y::, code::modifiers::, code::buttonNumber::, code::clickCount::.
 
 
 method:: mouseUpAction
-Get/set the action to be performed on link::Classes/Document#mouseUp::.
+Get/set the action to be performed on link::#-mouseUp::.
 argument:: action
 An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::document::, code::x::, code::y::, code::modifiers::, code::buttonNumber::.
 discussion::
@@ -294,12 +309,12 @@ s.waitForBoot({
 ::
 Test here and click in front of the numbers: 17 and 23.
 code::
-Document.current.mouseUpAction = nil; // clear mouseUpActiont
+Document.current.mouseUpAction = nil; // clear mouseUpAction
 ::
 
 
 method:: keyDownAction
-Get/set the action to be performed on link::Classes/Document#keyDown::.
+Get/set the action to be performed on link::#-keyDown::.
 argument:: action
 An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::document::, code::char::, code::modifiers::, code::unicode::, code::keycode::. See link::Classes/View#Key actions:: for details on these arguments.
 discussion::
@@ -310,7 +325,7 @@ Document.current.keyDownAction = nil;
 ::
 
 method:: keyUpAction
-Get/set the action to be performed on link::Classes/Document#keyUp::.
+Get/set the action to be performed on link::#-keyUp::.
 argument:: action
 An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::document::, code::char::, code::modifiers::, code::unicode::, code::keycode::. See link::Classes/View#Key actions:: for details on these arguments.
 discussion::
@@ -320,7 +335,7 @@ Document.current.keyUpAction = { arg ...args; args.postln };
 Document.current.keyUpAction = nil;
 ::
 
-subsection:: Editing Content
+subsection:: Accessing and Editing Content
 
 method:: selectLine
 Select a line of the document by number.
@@ -418,6 +433,28 @@ Document.current.string_(": test test test test test ",
 )
 // Watch me change content
 ::
+
+method:: getText
+Get a range of text from the document. Synchronous. The text is directly returned.
+argument:: start
+An link::Classes/Integer:: for the starting position to access.
+argument:: range
+An link::Classes/Integer:: for the number of characters to retrieve. -1 retrieves to the end of the document.
+
+method:: getTextAsync
+Get a range of text from the document. Asynchronous. The text is passed to the code::action:: function as an argument.
+
+note:: Currently, in Windows, link::#-getText:: and link::#-string:: may be unreliable. Windows users are recommended to use link::#-getTextAsync:: for the time being.
+::
+
+argument:: action
+A function to evaluate after the request is complete. It is passed one argument, a link::Classes/String::, for the retrieved contents.
+argument:: start
+An link::Classes/Integer:: for the starting position to access.
+argument:: range
+An link::Classes/Integer:: for the number of characters to retrieve. -1 retrieves to the end of the document.
+
+
 
 subsection:: Subclassing and Internal Methods
 

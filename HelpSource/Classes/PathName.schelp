@@ -194,7 +194,7 @@ Here is an example that uses many instance methods. Just pick any file to see al
 
 code::
 (
-GetFileDialog.new(
+FileDialog.new(
 	{ arg ok, path;
 	var myPathName;
 	if (ok,
@@ -223,7 +223,7 @@ Choose a soundfile to put into the library, using its foldername and filename.
 
 code::
 (
-GetFileDialog.new(
+FileDialog.new(
 	{ arg ok, path;
 	var myPathName, myFile;
 	if (ok,
@@ -260,7 +260,7 @@ table1 = Wavetable.sineFill(1024, [1,2,3]);
 table2 = Signal.newClear.asWavetable;
 table3 = Wavetable.sineFill(1024, Array.rand(64, 0.0, 1.0));
 
-GetFileDialog.new(
+FileDialog.new(
 	{ arg ok, path;
 	var myPathName, myPathOnly;
 	if (ok,

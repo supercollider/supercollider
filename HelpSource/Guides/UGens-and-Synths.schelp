@@ -51,7 +51,7 @@ s.sendMsg("/s_new", "FSinOsc-test", n = s.nextNodeID;);
 s.sendMsg("/n_free", n);
 ::
 
-It is VERY important and useful to understand the messaging structure which underlies the clientside Synth, Group, Buffer, and Bus objects. See link::Guides/NodeMessaging::, link::Tutorials/Tutorial::, and link::Guides/ClientVsServer:: for more detail.
+It is VERY important and useful to understand the messaging structure which underlies the clientside Synth, Group, Buffer, and Bus objects. See link::Guides/NodeMessaging::, link::Tutorials/Server_Tutorial::, and link::Guides/ClientVsServer:: for more detail.
 
 As a convenience the 'play' method of class link::Classes/Function:: will compile a SynthDef and create and play a synth using the function for you. With this method an link::Classes/Out:: ugen will be created for you if you do not do so explicitly.
 

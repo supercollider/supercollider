@@ -7,8 +7,7 @@ categories::  UGens>Generators>Stochastic
 Description::
 
 Randomly generates the values -1 or +1 at a rate given by the nearest
-integer division of the sample rate by the  code::freq::
-argument. It is probably pretty hard on your speakers!
+integer division of the sample rate by the  code::freq:: argument. It is probably pretty hard on your speakers!
 
 
 classmethods::

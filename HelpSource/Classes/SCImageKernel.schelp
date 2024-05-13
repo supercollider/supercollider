@@ -42,7 +42,7 @@ METHOD::shader
 get or set the shader string.
 
 METHOD::values
-get or set the values array. When setting the object indexes in the values Array must match the argument declaration order as defined in the main emphasis::kernel vec4 routine::. See link::#Examples:: for more info.
+get or set the values array. When setting the object indexes in the values Array must match the argument declaration order as defined in the main emphasis::kernel vec4 routine::. See link::#examples:: for more info.
 
 METHOD::isValid
 very basic verification to tell if all arguments of the shader are set.

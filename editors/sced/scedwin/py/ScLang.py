@@ -18,7 +18,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
+from __future__ import print_function
 import os
 import subprocess
 import time # FIXME: time is a workaround
@@ -81,9 +81,9 @@ class ScLang:
         if wdir is None or wdir == "":
             wdir = os.path.dirname(cmd)
 
-        print "Starting SuperCollider:"
-        print "-- command = " + cmd
-        print "-- working dir = " + wdir
+        print("Starting SuperCollider:")
+        print("-- command = " + cmd)
+        print("-- working dir = " + wdir)
 
         # On Windows, Popen pops up a new console window when gedit
         # is not started itself from a console.

@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -28,30 +28,23 @@
 #include <stdlib.h>
 #include <string.h>
 
-class SC_NamedObj
-{
+class SC_NamedObj {
 public:
-	SC_NamedObj();
-	virtual ~SC_NamedObj();
+    SC_NamedObj();
+    virtual ~SC_NamedObj();
 
-	const int32* Name() const { return mName; }
-	void SetName(const char *inName);
-	void SetName(const int32 *inName);
+    const int32* Name() const { return mName; }
+    void SetName(const char* inName);
+    void SetName(const int32* inName);
 
 private:
-	friend int32 GetHash(const SC_NamedObj *inObj);
-	friend const int32* GetKey(const SC_NamedObj *inObj);
+    friend int32 GetHash(const SC_NamedObj* inObj);
+    friend const int32* GetKey(const SC_NamedObj* inObj);
 
-	int32 mName[kSCNameLen];
-	int32 mHash;
+    int32 mName[kSCNameLen];
+    int32 mHash;
 };
 
-inline int32 GetHash(const SC_NamedObj *inObj)
-{
-	return inObj->mHash;
-}
+inline int32 GetHash(const SC_NamedObj* inObj) { return inObj->mHash; }
 
-inline const int32 *GetKey(const SC_NamedObj *inObj)
-{
-	return inObj->mName;
-}
+inline const int32* GetKey(const SC_NamedObj* inObj) { return inObj->mName; }

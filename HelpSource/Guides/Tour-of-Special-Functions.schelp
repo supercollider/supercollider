@@ -45,7 +45,11 @@ getPlotLay = { |plot, text|
 		clumped = data.asList.flop;
 	}{
 		#params, samps = data;
-		txt = txt ++ params.asString;
+		if (params.size > 6) {
+			txt = txt ++ format("( % .. % )", params.first, params.last);
+		} {
+			txt = txt ++ params.asString;
+		};
 		clumped = params.collect{ |param, i|
 			samps.collect([param, _, i])
 		}
@@ -55,12 +59,17 @@ getPlotLay = { |plot, text|
 		bundle.collect(func.applyTo(*_)).select(_.notNil)
 	});
 
-	pltr = res.plot( txt, minval: min, maxval: max).superpose_(true);
+	pltr = res.plot( txt, minval: min, maxval: max)
+	.superpose_(true)
+	.domainSpecs_([samps.minItem, samps.maxItem].asSpec)
+	.plotColor_(
+		genCol.(params !? params.size ?? 1, rrand(0,1.0))
+	)
+	;
 
 	pltr.plots[0]
-	.plotColor_(genCol.(params !? params.size ?? 1, rrand(0,1.0)))
-	.domainSpec_([samps.minItem, samps.maxItem].asSpec)
-	.gridColorX_(gridcol).gridColorY_(gridcol)
+	.gridColorX_(gridcol)
+	.gridColorY_(gridcol)
 	;
 
 	pltr
@@ -163,13 +172,13 @@ plotSpecs = [
 		-2.5, 12.5
 	],
 	[   { |z| checkCall.(\trigamma, z) },
-		(-4, -3.95 .. 10),
+		(-3.99, -3.94 .. 10),
 		"trigamma(z)\nTrigamma",
 		0, 30
 	],
 	[   // make sure z isn't a negative integer
 		{ |n, z| if ( z <= 0 nand: { (z % 1) == 0 }) { polygamma(n, z) } },
-		[[2,3], (-6, -5.99 .. 5)],
+		[[2,3], (-6, -5.95 .. 5)],
 		"polygamma(z)\nPolygamma\nn=",
 		-50, 400
 	]
@@ -186,26 +195,27 @@ CODE::
 (
 var plotSpecs = [
 	[   \gammaP,
-		[ [0.5,1,5,10], (0.0001, 0.05 .. 20) ],
+		[ (0.1, 0.3 .. 8), (0.01, 0.05 .. 20) ],
 		"gammaP(a, z)\nLower incomplete gamma function (normalized)\na=",
 	],
 	[   \gammaQ,
-		[ [0.5,1,5,10], (0.0001, 0.05 .. 20) ],
+		[ (0.1, 0.3 .. 8), (0.01, 0.05 .. 20) ],
 		"gammaQ(a, z)\nUpper incomplete gamma function (normalized)\na=",
 	],
 	[   \tgammaLower,
-		[ [0.5,1,5,10], (0.0001, 0.05 .. 15) ],
+		[ (0.1, 0.3 .. 8), (0.01, 0.05 .. 6) ],
 		"tgammaLower(a, z)\nLower incomplete gamma function (non-normalized)\na=",
-		0, 3,
+		0, 3
 	],
 	[   \tgammaUpper,
-		[ [0.5,1,5,10], (0.0001, 0.05 .. 15) ],
+		[ (0.1, 0.3 .. 8), (0.01, 0.05 .. 6) ],
 		"tgammaUpper(a, z)\nUpper incomplete gamma function (non-normalized)\na=",
+		0, 3
 	],
-	[	{ |delta, z| if(z.neg != delta) { tgammaDeltaRatio(z, delta) } },
-		[[-0.5, -0.2, -0.1, 0.1, 0.2, 0.5, 1], (0.0001, 0.1 .. 40)],
+	[   { |delta, z| if(z.neg != delta) { tgammaDeltaRatio(z, delta) } },
+		[ (-0.5, -0.45  .. 1), (0.0001, 0.1 .. 40)],
 		"tgammaDeltaRatio(z, delta)\nGamma Delta Ratio\ndelta=",
-		0, 7,
+		0, 7
 	]
 ];
 
@@ -339,26 +349,26 @@ CODE::
 (
 var erfSamps = (-3, -2.995 .. 3);
 var plotSpecs = [
-    [   \erf,
-        erfSamps,
-        "erf(z)\nError Function",
-        -1, 1
-    ],
-    [   \erfC,
-        erfSamps,
-        "erfC(z)\nComplement of the Error Function",
-        0, 2
-    ],
-    [   \erfInv,
-        (-0.9995, -0.995 .. 1),
-        "erfInv(z)\nInverse of the Error Function",
-        -3, 2
-    ],
-    [   \erfCInv,
-        (0.001, 0.002 .. 1.999),
-        "erfCInv(z)\nInverse of the Complement of the Error Function",
-        -3, 2
-    ]
+	[   \erf,
+		erfSamps,
+		"erf(z)\nError Function",
+		-1, 1
+	],
+	[   \erfC,
+		erfSamps,
+		"erfC(z)\nComplement of the Error Function",
+		0, 2
+	],
+	[   \erfInv,
+		(-0.9995, -0.995 .. 1),
+		"erfInv(z)\nInverse of the Error Function",
+		-3, 2
+	],
+	[   \erfCInv,
+		(0.001, 0.002 .. 1.999),
+		"erfCInv(z)\nInverse of the Complement of the Error Function",
+		-3, 2
+	]
 ];
 
 ~layOutPlots.( plotSpecs.collect{ |data| ~multiPlot.(*data) }, "Error Function" );
@@ -497,29 +507,29 @@ var plotSpecs = [
 	[   { |n, theta, i| var ms = (n.neg..n), phi = -15.degrad;
 			sphericalHarmonicR(n, ms[i], theta, phi)
 		},
-	    [dupN.(3), samps],
-		"sphericalHarmonicR(n, m, theta, phi)\nSpherical Harmonics (real part)\nm = (n.neg..n), phi = -15 degrees, ns=",
+		[dupN.(3), samps],
+		"sphericalHarmonicR(n, m, theta, phi)\nSpherical Harmonics (real part)\nm = (n.neg..n), phi = -15 deg, ns=",
 		-1, 1
 	],
 	[   { |n, theta, i| var ms = (n.neg..n), phi = 85.degrad;
 			sphericalHarmonicI(n, ms[i], theta, phi)
 		},
 		[dupN.(3), samps],
-		"sphericalHarmonicI(n, m, theta, phi)\nSpherical Harmonics (imaginary part)\nm = (n.neg..n), phi = 85 degrees, ns=",
+		"sphericalHarmonicI(n, m, theta, phi)\nSpherical Harmonics (imaginary part)\nm = (n.neg..n), phi = 85 deg, ns=",
 		-1, 1
 	],
 	[   { |n, theta, i| var ms = (n.neg..n), phi = 25.degrad;
 			sphericalHarmonicR(n, ms[i], theta, phi)
 		},
 		[dupN.(9), samps],
-		"sphericalHarmonicR(n, m, theta, phi)\nSpherical Harmonics (real part)\nm = (n.neg..n), phi = 25 degrees, ns=",
+		"sphericalHarmonicR(n, m, theta, phi)\nSpherical Harmonics (real part)\nm = (n.neg..n), phi = 25 deg, ns=",
 		-1.5, 1.5
 	],
 	[   { |n, theta, i| var ms = (n.neg..n), phi = 45.degrad;
 			sphericalHarmonicI(n, ms[i], theta, phi)
 		},
 		[dupN.(5), samps],
-		"sphericalHarmonicI(n, m, theta, phi)\nSpherical Harmonics (imaginary part)\nm = (n.neg..n), phi = 45 degrees, ns=",
+		"sphericalHarmonicI(n, m, theta, phi)\nSpherical Harmonics (imaginary part)\nm = (n.neg..n), phi = 45 deg, ns=",
 		-1, 1
 	]
 ];
@@ -553,7 +563,7 @@ var plotSpecs = [
 		-15, 15
 	],
 	[   \cylBesselK,
-		[[0,2,5,7,10], (0.001, 0.05 .. 10)],
+		[[0,2,5,7,10], (0.15, 0.25 .. 10)],
 		"cylBesselK(v, x)\nModified Bessel Function of the Second Kind \nvs=",
 		0, 4
 	],
@@ -585,8 +595,8 @@ var plotSpecs = [
 		"cylBesselJPrime(v, x)\nDerivative of the Bessel Function of the First Kind \nvs=",
 		-1, 1
 	],
-	[	\cylNeumannPrime,
-		[bPrimeVs, (0.001, 0.05 .. 20)],
+	[   \cylNeumannPrime,
+		[bPrimeVs, (0.04, 0.05 .. 20)],
 		"cylNeumannPrime(v, x)\nDerivative of the Bessel Function of the Second Kind \nvs=",
 		-1, 2
 	],
@@ -595,17 +605,17 @@ var plotSpecs = [
 		"cylBesselIPrime(v, x)\nDerivative of the Modified Bessel Function of the First Kind \nvs=",
 		-25, 25
 	],
-	[	\cylBesselKPrime,
+	[   \cylBesselKPrime,
 		[modBPrimeVs, (0.01, 0.05 .. 10)],
 		"cylBesselKPrime(v, x)\nDerivative of the Modified Bessel Function of the Second Kind \nvs=",
 		-0.5, 0
 	],
-	[	\sphBesselPrime,
+	[   \sphBesselPrime,
 		[modBPrimeVs, (0.001, 0.05 .. 20)],
 		"sphBesselPrime(v, x)\nDerivative of the Spherical Bessel Function of the First Kind \nvs=",
 	],
 	[   \sphNeumannPrime,
-		[modBPrimeVs, (0.001, 0.05 .. 20)],
+		[modBPrimeVs, (1.13, 1.15 .. 20)],
 		"sphNeumannPrime(v, x)\nDerivative of the Spherical Bessel Function of the Second Kind \nvs=",
 		-0.5, 0.5
 	],
@@ -704,11 +714,11 @@ var plotSpecs = [
 	[ \airyBi, biSamps, "airyBi(z)", -2,15],
 	[ \airyAiPrime, aiSamps, "airyAiPrime(z)", -1.2, 1.2],
 	[ \airyBiPrime, biSamps, "airyBiPrime(z)", -1.2, 1.2],
-	[	\airyAi,
+	[   \airyAi,
 		genSamps.(\airyAiZero, 7),
 		"AiryAi from 7th zero\nairyAiZero(n)"
 	],
-	[	\airyBi,
+	[   \airyBi,
 		genSamps.(\airyBiZero, 7),
 		"AiryBi from 7th zero\nairyBiZero(n)"
 	]

@@ -84,6 +84,7 @@ SimpleNumber : Number {
 	gcd { |aNumber, adverb| _GCD; ^aNumber.performBinaryOpOnSimpleNumber('gcd', this, adverb) }
 	round { |aNumber=1.0, adverb| _Round; ^aNumber.performBinaryOpOnSimpleNumber('round', this, adverb) }
 	roundUp { |aNumber=1.0, adverb| _RoundUp; ^aNumber.performBinaryOpOnSimpleNumber('roundUp', this, adverb) }
+	smallButNotZero { |thresh=1e-12| ^this != 0 and: {  this.abs < thresh  } }
 	trunc { |aNumber=1.0, adverb| _Trunc; ^aNumber.performBinaryOpOnSimpleNumber('trunc', this, adverb) }
 	atan2 { |aNumber, adverb| _Atan2; ^aNumber.performBinaryOpOnSimpleNumber('atan2', this, adverb) }
 	hypot { |aNumber, adverb| _Hypot; ^aNumber.performBinaryOpOnSimpleNumber('hypot', this, adverb) }
@@ -129,13 +130,20 @@ SimpleNumber : Number {
 
 	hash { _ObjectHash; ^this.primitiveFailed }
 
-	asInteger { _AsInt; ^this.primitiveFailed }
+	asInteger { _AsInteger; ^this.primitiveFailed }
 	asFloat { _AsFloat; ^this.primitiveFailed }
 	asComplex { ^Complex.new(this, 0.0) }
 	asRect { ^Rect(this, this, this, this) }
 
-	degrad { ^this * pi / 180 }
-	raddeg { ^this * 180 / pi }
+	degrad {
+		// degree * (pi/180)
+		^this * 0.01745329251994329547
+	}
+
+	raddeg {
+		// radian * (180/pi)
+		^this * 57.29577951308232286465
+	}
 
 	performBinaryOpOnSimpleNumber { |aSelector, aNumber, adverb|
 		BinaryOpFailureError(this, aSelector, [aNumber, adverb]).throw;
@@ -694,24 +702,42 @@ SimpleNumber : Number {
 	// receiver is a time in seconds, returns string "ddd:hh:mm:ss.sss"
 	// see String:asSecs for complement
 
-	asTimeString { |precision = 0.001, maxDays = 365, dropDaysIfPossible = true|
-		var decimal, days, hours, minutes, seconds, mseconds;
-		decimal = this.asInteger;
+	asTimeString { |precision = 0.001, maxDays = 365, dropDaysIfPossible = true, decimalPlaces = 3|
+		var number, decimal, days, hours, minutes, seconds, mseconds, msecstr, splitstr, isNegative;
+
+		// min value of precision depends on decimalPlaces
+		decimalPlaces = decimalPlaces.asInteger.max(0);
+		precision = max(precision, 10.pow(decimalPlaces.neg));
+
+		number = this.round(precision);
+		if(number == inf) {number = this}; //revert rounding if it produces inf
+		isNegative = number < 0;
+		number = number.abs;
+		decimal = number.asInteger;
 		days = decimal.div(86400).min(maxDays);
 		days = if(dropDaysIfPossible and: { days == 0 }) {
 			days = ""
 		} {
 			days.asString.padLeft(3, "0").add($:);
 		};
+		if(isNegative) {days = "-" ++ days};
 		hours = (decimal.div(3600) % 24).asString.padLeft(2, "0").add($:);
 		minutes = (decimal.div(60) % 60).asString.padLeft(2, "0").add($:);
-		seconds = (decimal % 60).asString.padLeft(2, "0").add($.);
-
-		// min value of precision is 0.001; this ensures that we stick to 3 decimal places in the
-		// formatted string.
-		precision = max(precision, 0.001);
-		mseconds = this.frac.round(precision) * 1000;
-		mseconds = mseconds.round.asInteger.asString.padLeft(3, "0");
+		seconds = (decimal % 60).asString.padLeft(2, "0");
+		mseconds = if(decimalPlaces > 0) {
+			// this could be simplified once sclang gains sprintf functionality, see issue #3570
+			msecstr = number.asString;
+			"." ++ if(msecstr.includes($e)) {
+				splitstr = msecstr.split($e);
+				if(msecstr.includes($.)) {
+					("".catArgs(*(splitstr.last.asInteger.neg - splitstr.first.split($.).first.size).collect({"0"})) ++ splitstr.first.replace(".", "")).padRight(decimalPlaces, "0")
+				} {
+					("".catArgs(*(splitstr.last.asInteger.neg - 1).collect({"0"})) ++ splitstr.first).padRight(decimalPlaces, "0")
+				}
+			} {
+				msecstr.split($.).last.padRight(decimalPlaces, "0")
+			};
+		} { "" };
 		^days ++ hours ++ minutes ++ seconds ++ mseconds
 	}
 

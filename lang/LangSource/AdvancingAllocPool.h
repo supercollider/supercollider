@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -36,44 +36,44 @@ struct AdvancingAllocPoolChunk;
 
 typedef int int32;
 
-inline void FailNil(void *ptr) {
-	if (!ptr) throw std::runtime_error("alloc failed");
+inline void FailNil(void* ptr) {
+    if (!ptr)
+        throw std::runtime_error("alloc failed");
 }
 
 struct AdvancingAllocPoolChunkHdr {
-	AdvancingAllocPoolChunk *mNext;
-	size_t mSize;
-	int32 mPad1, mPad2;
+    AdvancingAllocPoolChunk* mNext;
+    size_t mSize;
+    int32 mPad1, mPad2;
 };
 
 struct AdvancingAllocPoolChunk {
-	AdvancingAllocPoolChunk *mNext;
-	size_t mSize;
-	int32 mPad1, mPad2;
-	char mSpace[16];
+    AdvancingAllocPoolChunk* mNext;
+    size_t mSize;
+    int32 mPad1, mPad2;
+    char mSpace[16];
 };
 
-class AdvancingAllocPool
-{
+class AdvancingAllocPool {
 public:
-	AdvancingAllocPool();
-	~AdvancingAllocPool() { FreeAll(); }
+    AdvancingAllocPool();
+    ~AdvancingAllocPool() { FreeAll(); }
 
-	void Init(AllocPool *inAllocPool, size_t initSize, size_t growSize, size_t tooBigSize);
+    void Init(AllocPool* inAllocPool, size_t initSize, size_t growSize, size_t tooBigSize);
 
-	void *Alloc(size_t inBytes);
-	void FreeAll();
+    void* Alloc(size_t inBytes);
+    void FreeAll();
 
-	bool SanityCheck();
+    bool SanityCheck();
 
 private:
-	void AddChunk(size_t inSize);
+    void AddChunk(size_t inSize);
 
-	AllocPool* mAllocPool;
-	size_t mInitSize;
-	size_t mGrowSize;
-	size_t mCurSize;
-	size_t mTooBig;
-	AdvancingAllocPoolChunk *mChunks;
-	AdvancingAllocPoolChunk *mFatties;
+    AllocPool* mAllocPool;
+    size_t mInitSize;
+    size_t mGrowSize;
+    size_t mCurSize;
+    size_t mTooBig;
+    AdvancingAllocPoolChunk* mChunks;
+    AdvancingAllocPoolChunk* mFatties;
 };

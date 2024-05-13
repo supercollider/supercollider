@@ -6,6 +6,8 @@ Font {
 
 
 	*initClass {
+		if(Platform.hasQt.not) { ^nil; };	// skip init on Qt-less builds
+
 		try{
 			defaultSansFace = this.prDefaultFamilyForStyle(0);
 			defaultSerifFace = this.prDefaultFamilyForStyle(1);

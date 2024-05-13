@@ -6,12 +6,11 @@
 using namespace nova;
 using namespace std;
 
-BOOST_AUTO_TEST_CASE( sc_synth_factory )
-{
+BOOST_AUTO_TEST_CASE(sc_synth_factory) {
     synth_factory factory;
 
-    const char * home_ptr = getenv("HOME");
-    BOOST_REQUIRE (home_ptr != 0);
+    const char* home_ptr = getenv("HOME");
+    BOOST_REQUIRE(home_ptr != 0);
 
     path home(home_ptr);
 

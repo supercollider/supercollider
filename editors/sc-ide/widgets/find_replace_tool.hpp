@@ -34,16 +34,11 @@ namespace ScIDE {
 
 class GenericCodeEditor;
 
-class TextFindReplacePanel : public QWidget
-{
+class TextFindReplacePanel : public QWidget {
     Q_OBJECT
 
 public:
-    enum Mode
-    {
-        Find = 1,
-        Replace
-    };
+    enum Mode { Find = 1, Replace };
 
     enum ActionRole {
         FindNext,
@@ -53,12 +48,12 @@ public:
     };
 
 public:
-    TextFindReplacePanel( QWidget * parent = 0 );
+    TextFindReplacePanel(QWidget* parent = 0);
 
-    void setEditor( GenericCodeEditor *editor ) { mEditor = editor; }
+    void setEditor(GenericCodeEditor* editor) { mEditor = editor; }
 
-    Mode mode () const { return mMode; }
-    void setMode( Mode );
+    Mode mode() const { return mMode; }
+    void setMode(Mode);
     void initiate();
 
     QString findString() const { return mFindField->text(); }
@@ -69,7 +64,7 @@ public:
     QRegExp regexp();
     QTextDocument::FindFlags flags();
 
-    QAction *action ( ActionRole role ) { return mActions[role]; }
+    QAction* action(ActionRole role) { return mActions[role]; }
 
 public Q_SLOTS:
     void findNext();
@@ -83,30 +78,30 @@ private Q_SLOTS:
     void onFindFieldTextChanged();
 
 private:
-    void find (bool backwards);
-    bool eventFilter (QObject *, QEvent *);
-    static void reportFoundOccurrencies( int count );
-    static void reportReplacedOccurrencies( int count );
+    void find(bool backwards);
+    bool eventFilter(QObject*, QEvent*);
+    static void reportFoundOccurrencies(int count);
+    static void reportReplacedOccurrencies(int count);
 
-    QLineEdit *mFindField;
-    QLabel *mFindLabel;
-    QLineEdit *mReplaceField;
-    QLabel *mReplaceLabel;
-    QToolButton *mNextBtn;
-    QToolButton *mPrevBtn;
-    QToolButton *mReplaceBtn;
-    QToolButton *mReplaceAllBtn;
-    QToolButton *mOptionsBtn;
-    QAction *mMatchCaseAction;
-    QAction *mRegExpAction;
-    QAction *mWholeWordAction;
-    QAction *mActions[ActionCount];
+    QLineEdit* mFindField;
+    QLabel* mFindLabel;
+    QLineEdit* mReplaceField;
+    QLabel* mReplaceLabel;
+    QToolButton* mNextBtn;
+    QToolButton* mPrevBtn;
+    QToolButton* mReplaceBtn;
+    QToolButton* mReplaceAllBtn;
+    QToolButton* mOptionsBtn;
+    QAction* mMatchCaseAction;
+    QAction* mRegExpAction;
+    QAction* mWholeWordAction;
+    QAction* mActions[ActionCount];
 
-    QGridLayout *mGrid;
+    QGridLayout* mGrid;
 
     Mode mMode;
 
-    GenericCodeEditor *mEditor;
+    GenericCodeEditor* mEditor;
     int mSearchPosition;
 };
 

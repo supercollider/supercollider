@@ -9,15 +9,11 @@
 
 using namespace nova;
 
-namespace
-{
-void tick(void)
-{}
+namespace {
+void tick(void) {}
 }
 
-template <typename backend>
-void test_backend(void)
-{
+template <typename backend> void test_backend(void) {
     backend be;
 
     BOOST_REQUIRE(!be.audiostream_ready());
@@ -44,12 +40,6 @@ void test_backend(void)
     BOOST_REQUIRE(!be.audiostream_ready());
 }
 
-BOOST_AUTO_TEST_CASE( dummy_test_1 )
-{
-    test_backend<dummy_backend<&tick> >();
-}
+BOOST_AUTO_TEST_CASE(dummy_test_1) { test_backend<dummy_backend<&tick>>(); }
 
-BOOST_AUTO_TEST_CASE( pa_test_1 )
-{
-    test_backend<portaudio_backend<&tick> >();
-}
+BOOST_AUTO_TEST_CASE(pa_test_1) { test_backend<portaudio_backend<&tick>>(); }

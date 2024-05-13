@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,42 +24,38 @@
 #include "SC_Unit.h"
 #include "HashTable.h"
 
-struct PlugInCmd
-{
-	int32 mCmdName[kSCNameLen];
-	int32 mHash;
-	PlugInCmdFunc mFunc;
-	void *mUserData;
+struct PlugInCmd {
+    int32 mCmdName[kSCNameLen];
+    int32 mHash;
+    PlugInCmdFunc mFunc;
+    void* mUserData;
 };
 
-struct UnitCmd
-{
-	int32 mCmdName[kSCNameLen];
-	int32 mHash;
-	UnitCmdFunc mFunc;
+struct UnitCmd {
+    int32 mCmdName[kSCNameLen];
+    int32 mHash;
+    UnitCmdFunc mFunc;
 };
 
-struct UnitDef
-{
-	int32 mUnitDefName[kSCNameLen];
-	int32 mHash;
+struct UnitDef {
+    int32 mUnitDefName[kSCNameLen];
+    int32 mHash;
 
-	size_t mAllocSize;
-	UnitCtorFunc mUnitCtorFunc;
-	UnitDtorFunc mUnitDtorFunc;
+    size_t mAllocSize;
+    UnitCtorFunc mUnitCtorFunc;
+    UnitDtorFunc mUnitDtorFunc;
 
-	HashTable<UnitCmd, Malloc>* mCmds;
-	uint32 mFlags;
+    HashTable<UnitCmd, Malloc>* mCmds;
+    uint32 mFlags;
 };
 
 extern "C" {
-bool UnitDef_Create(const char *inName, size_t inAllocSize,
-	UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags);
-bool UnitDef_AddCmd(const char *inUnitDefName, const char *inCmdName, UnitCmdFunc inFunc);
-bool PlugIn_DefineCmd(const char *inCmdName, PlugInCmdFunc inFunc, void *inUserData);
+bool UnitDef_Create(const char* inName, size_t inAllocSize, UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags);
+bool UnitDef_AddCmd(const char* inUnitDefName, const char* inCmdName, UnitCmdFunc inFunc);
+bool PlugIn_DefineCmd(const char* inCmdName, PlugInCmdFunc inFunc, void* inUserData);
 }
 
-int Unit_DoCmd(World *inWorld, int inSize, char *inData);
+int Unit_DoCmd(World* inWorld, int inSize, char* inData);
 
-inline int32* GetKey(UnitCmd *inCmd) { return inCmd->mCmdName; }
-inline int32 GetHash(UnitCmd *inCmd) { return inCmd->mHash; }
+inline int32* GetKey(UnitCmd* inCmd) { return inCmd->mCmdName; }
+inline int32 GetHash(UnitCmd* inCmd) { return inCmd->mHash; }

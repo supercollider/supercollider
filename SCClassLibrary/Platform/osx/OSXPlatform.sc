@@ -18,7 +18,7 @@ OSXPlatform : UnixPlatform {
 	}
 
 	startup {
-		Server.program = "exec %/scsynth".format((String.scDir +/+ "../Resources").shellQuote);
+		Server.program = "exec %/scsynth".format((Platform.resourceDir +/+ "../Resources").shellQuote);
 
 		Score.program = Server.program;
 
@@ -75,5 +75,14 @@ OSXPlatform : UnixPlatform {
 		);
 		file.putString(string);
 		file.close;
+	}
+
+	defaultTempDir {
+		var dir;
+		// ensure trailing slash due to backwards compatibility
+		// see discussion at https://github.com/supercollider/supercollider/pull/4221
+		dir = Platform.userAppSupportDir +/+ "tmp/";
+		if(File.exists(dir).not) { dir.mkdir };
+		^dir;
 	}
 }

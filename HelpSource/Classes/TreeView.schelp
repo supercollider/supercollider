@@ -138,3 +138,46 @@ METHOD:: itemPressedAction
 
 METHOD:: onItemChanged
 	The object to be evaluated whenever the current item changes, passing this view as the argument.
+
+
+EXAMPLES::
+
+CODE::
+
+(
+var t = TreeView().front;
+t.columns_(["a", "b", "c", "d"]);
+t.addItem(["A1", "B1", "C1", "D1"]);
+t.addItem(["A2", "B2", "C2"]);
+t.addItem(["A3", "B3"]);
+t.addItem(["A4"]);
+)
+
+
+//sorting example
+(
+var names = ["black", "white", "red", "green", "blue", "cyan", "magenta", "yellow"];
+var colors = names.collect{|str| Color.perform(str.asSymbol)};
+var window, tree, popup;
+window = Window.new("TreeView example - RGBA colors").front;
+window.view.layout_(VLayout(
+	tree = TreeView()
+));
+tree.columns_(["Index", "Name", "Int", "Hex"]);
+tree.font = Font.defaultMonoFace;
+tree.setColumnWidth(0, 60);
+tree.setColumnWidth(2, 130);
+names.do{|str, i|
+	var intString = "% % % %".format(*(colors[i].asArray*255).asInteger);
+	tree.addItem([i, str, intString, colors[i].hexString]);
+};
+tree.numItems.do{|i|
+	var c = [Color.clear, colors[i], Color.clear, Color.clear];
+	tree.itemAt(i).colors_(c).textColors_(Color.grey);
+};
+tree.onItemChanged_({|view|
+	view.currentItem.strings.postln;
+});
+tree.canSort = true;
+)
+::

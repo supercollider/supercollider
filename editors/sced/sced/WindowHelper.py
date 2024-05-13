@@ -49,9 +49,6 @@ scui_str = """<ui>
         <menuitem action="ScedStartServer"/>
         <menuitem action="ScedStopServer"/>
         <separator/>
-        <menuitem action="ScedStartSwingOSC"/>
-        <menuitem action="ScedStopSwingOSC"/>
-        <separator/>
         <menuitem action="ScedFindHelp"/>
         <menuitem action="ScedBrowseHelp"/>
         <menuitem action="ScedSearchHelp"/>
@@ -189,14 +186,6 @@ class WindowHelper:
             ("ScedStopServer", None, _("Stop Server"), None,
              _("Stop the default server"),
              self.on_stop_server),
-
-            ("ScedStartSwingOSC", None, _("Start SwingOSC GUI Server"), None,
-             _("Start the SwingOSC GUI server"),
-             self.on_start_swingosc),
-
-            ("ScedStopSwingOSC", None, _("Stop SwingOSC GUI Server"), None,
-             _("Stop the SwingOSC GUI server"),
-             self.on_stop_swingosc),
         ]
 
         toggle_entries = [
@@ -341,11 +330,3 @@ class WindowHelper:
     def on_stop_server(self, action):
         # FIXME: make these actions possible only if interpreter is running and okay
         self.__lang.evaluate("Server.default.quit;", silent=True)
-
-    def on_start_swingosc(self, action):
-        # FIXME: make these actions possible only if interpreter is running and okay
-        self.__lang.evaluate("SwingOSC.default.boot;GUI.swing;", silent=False)
-
-    def on_stop_swingosc(self, action):
-        # FIXME: make these actions possible only if interpreter is running and okay
-        self.__lang.evaluate("SwingOSC.default.quit;", silent=False)

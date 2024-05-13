@@ -28,40 +28,37 @@ Executables
 
 `SuperCollider.app` is the IDE (integrated development environment) for writing and executing SuperCollider code.
 
-Inside that application's folder (`SuperCollider.app/Contents/MacOS/`) are the two executables that make up supercollider itself:
+Inside that application are the executables that make up SuperCollider itself:
 
-`sclang` - the language interpreter including Qt gui
-`scsynth` - the audio engine
-
+- `sclang`, the language interpreter including Qt GUI components
+- `SuperCollider`, the IDE executable launched by the app
+- `scsynth`, the original audio engine
+- `supernova`, the newer audio engine which supports multithreading
 
 Prerequisites:
 -------------
 
 - **Xcode** can be installed free from the Apple App Store or downloaded from: http://developer.apple.com.
-  Xcode >= 7 is recommended. Xcode 6 will work, but requires macOS >= 10.9.4.
+  Xcode >= 10 is recommended; use earlier versions at your own risk.
 - If you do not have the **Xcode command line tools** installed already, install them with:
   `xcode-select --install`
 - **homebrew** is recommended to install required libraries
   See http://brew.sh for installation instructions.
-- **git, cmake >= 3.5, libsndfile, readline, and qt5 >= 5.7**, installed via homebrew:
+- **git, cmake >= 3.12, libsndfile, readline, and qt5 >= 5.7**, installed via homebrew:
   `brew install git cmake libsndfile readline qt5`
 - If you are building with Qt libraries, you will also need the [requirements for
   QtWebEngine](https://doc.qt.io/qt-5/qtwebengine-platform-notes.html#macos), specifically macOS
   10.9 and the macOS SDK for 10.10 or later.
 
-- If you want to build with the *supernova* server, you need **portaudio** package, which can also be installed via homebrew:
-  `brew install portaudio`
+- If you want to build with the *supernova* server, you need **portaudio** and **fftw** packages, which can also be installed via homebrew:
+  `brew install portaudio fftw`
 
 Obtaining the source code
 -------------------------
 
-**Note** Please do not use non-ASCII characters (above code point 127) in your
-SuperCollider program path (i.e. the names of the folders containing SuperCollider).
-Doing so will break options to open class or method files.
+SuperCollider is hosted on Github: https://github.com/SuperCollider/SuperCollider
 
-SC is on Github: https://github.com/SuperCollider/SuperCollider
-
-Get a copy of the source code:
+First, clone the repository with git:
 
     git clone --recursive https://github.com/SuperCollider/SuperCollider.git
 
@@ -76,6 +73,7 @@ Build instructions
     cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt5`  ..
     # or, if you want to build with supernova:
     cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt5` -DSUPERNOVA=ON ..
+    # then start the build
     cmake --build . --target install --config RelWithDebInfo
 
 If successful this will build the application into `build/Install/SuperCollider/`
@@ -138,10 +136,9 @@ The most common build problems are related to incorrect versions of the core dep
 
 **Xcode**: `xcodebuild -version`, or the "About" dialog of the Xcode application. Any build from the 6.x series or greater should generally work.
 
-**cmake, qt5(.5.x), libsndfile, readline**: `brew info ____` will show you what you have installed - for example, `brew info qt5` should show you the Qt5 version
-information. A build using v5.6 and above will fail at the time of this writing because Qt5WebKit is missing in its binary distribution.
+**cmake, qt, libsndfile, readline**: `brew info ____` will show you what you have installed - for example, `brew info qt5` should show you the Qt5 version information.
 
-`brew upgrade ____` will update the dependency to a newer version (avoid this for Qt5 or handle different Qt5 versions with `brew switch`).
+`brew upgrade ____` will update the dependency to a newer version.
 
 Other common homebrew problems can be fixed using `brew doctor`.
 
@@ -159,15 +156,15 @@ Removing the CMakeCache.txt should fix most build problems. After running each o
 
 If you wish to build multiple git branches you should usually create a new build folder for each branch you're building. In practice, though, you can usually switch between similar branches and rebuild by simply deleting your CMakeCache.txt.
 
-### Travis continuous integration
+### GitHub Actions continuous integration
 
-The code on github is tested anytime a contributor pushes new changes, so if a mistake was made in the cutting edge development version and something is broken, then you should be able to see this by visiting the Travis status page:
+The code on github is tested anytime a contributor pushes new changes, so if a mistake was made in the cutting edge development version and something is broken, then you should be able to see this by visiting the GitHub Actions status page for the `develop` branch:
 
-https://travis-ci.org/supercollider/supercollider
+https://github.com/supercollider/supercollider/actions/workflows/actions.yml?query=branch%3Adevelop
 
 If the latest build status is failing, then you can switch your local copy to a previous commit that is still working (until the developers get a chance to fix the problem):
 
-- locate the most recent green build on the travis,
+- locate the most recent passing build in the GitHub Actions,
 - find it's git commit id (e.g. `595b956`), and
 - check out that change in git: `git checkout 595b956`
 - build
@@ -298,6 +295,55 @@ This should be fixed at some point (its a build tool configuration issue). Until
 
 They do however work on Linux and Windows.
 
+Building with native JACK backend
+------------------------------
+
+If you want to use `scsynth` or `supernova` on macOS with JACK, but _without_ the JackRouter driver, you can build them with the native JACK backend. **In that case you will not be able to boot `scsynth`/`supernova` without booting JACK first.** JackRouter allows any macOS application to stream audio to/from JACK, but at the time of writing this (early 2019) it is outdated and the development has stalled.
+
+First you need to install JACK, either through `homebrew`:
+
+```
+brew install jack qjackctl
+```
+
+or by installing the `JackOSX` package. Please note, JACK from `homebrew` is `jack1` and does _not_ include JackRouter. `JackOSX` is `jack2` and it does include JackRouter. `jack1` and `jack2` implement the same API, but you should have only one of them installed at a time.
+
+In order to build with JACK, you need to add the `-DAUDIOAPI=jack` flag to cmake.
+
+After running cmake configuration proceed with the build process as usual.
+
+### Running SuperCollider with JACK
+
+When `jack` is installed via `homebrew`, you need to add jack's path to the `$PATH` environment variable in `sclang`:
+
+```supercollider
+"PATH".setenv("echo $PATH".unixCmdGetStdOut ++ ":/usr/local/bin");
+```
+Please note, this is not needed when using the JackOSX package.
+
+Optionally, you can have `scsynth`/`supernova` automatically connect to system inputs/outputs by setting appropriate environment variables (refer to the Linux section of the "Audio device selection" reference in SuperCollider help):
+
+```supercollider
+// connect all input channels with system
+"SC_JACK_DEFAULT_INPUTS".setenv("system");
+// connect all output channels with system
+"SC_JACK_DEFAULT_OUTPUTS".setenv("system");
+```
+
+Now you can start JACK, either using `JackPilot` app (from JackOSX package), `qjackctl` (from `homebrew`) or from command line:
+
+
+```
+jackd -d coreaudio
+# or
+jackd -d coreaudio -r48000 -p512 # specifying sample rate and buffer size
+```
+
+Then start `scsynth`/`supernova` as usual.
+
+### Caveats
+
+JACK installed with `homebrew` can only use a single device for both input and output. In order to use it with the internal soundcard on macOS, one needs to create an aggregate device that includes both input and output. JACK from `JackOSX` does not have this limitation.
 
 sclang and scynth executables
 -----------------------------

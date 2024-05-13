@@ -128,6 +128,14 @@ EnvironmentRedirect {
 
 	clear { envir.clear }
 
+	keys { arg species(Set);
+		^envir.keys(species)
+	}
+
+	values {
+		^envir.values
+	}
+
 	know_ { arg flag; envir.know = flag }
 	know { ^envir.know }
 
@@ -155,9 +163,9 @@ EnvironmentRedirect {
 
 	printOn { | stream |
 		if (stream.atLimit) { ^this };
-		stream << this.class.name << "[ " ;
+		stream << this.class.name << "[" ;
 		envir.printItemsOn(stream);
-		stream << " ]" ;
+		stream << "]" ;
 	}
 
 	linkDoc { arg doc;

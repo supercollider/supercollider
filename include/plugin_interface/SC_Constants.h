@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,31 +23,63 @@
 #include <cmath>
 
 #ifndef __FP__
-const double pi     = std::acos(-1.);
+const double pi = std::acos(-1.);
 #else
-const double sc_pi  = std::acos(-1.);
-#define pi sc_pi // hack to avoid osx warning about deprecated pi
+const double sc_pi = std::acos(-1.);
+#    define pi sc_pi // hack to avoid osx warning about deprecated pi
 #endif
-const double pi2    = pi * .5;
-const double pi32   = pi * 1.5;
-const double twopi  = pi * 2.;
+
+/// pi / 2
+const double pi2 = pi * .5;
+
+/// 3pi / 2
+const double pi32 = pi * 1.5;
+
+/// 2pi
+const double twopi = pi * 2.;
+
+/// 1/2pi
 const double rtwopi = 1. / twopi;
+
+/// log(0.001)
 const double log001 = std::log(0.001);
-const double log01  = std::log(0.01);
-const double log1   = std::log(0.1);
-const double rlog2  = 1./std::log(2.);
-const double sqrt2  = std::sqrt(2.);
+
+/// log(0.01)
+const double log01 = std::log(0.01);
+
+/// log(0.1)
+const double log1 = std::log(0.1);
+
+/// 1/log(2)
+const double rlog2 = 1. / std::log(2.);
+
+/// sqrt(2)
+const double sqrt2 = std::sqrt(2.);
+
+/// 1/sqrt(2)
 const double rsqrt2 = 1. / sqrt2;
 
-const float pi_f    = std::acos(-1.f);
-const float pi2_f   = pi_f * 0.5f;
-const float pi32_f  = pi_f * 1.5f;
+/// pi as float
+const float pi_f = std::acos(-1.f);
+
+/// pi / 2
+const float pi2_f = pi_f * 0.5f;
+
+/// 3pi / 2
+const float pi32_f = pi_f * 1.5f;
+
+/// 2pi
 const float twopi_f = pi_f * 2.f;
+
+/// sqrt(2)
 const float sqrt2_f = std::sqrt(2.f);
-const float rsqrt2_f= 1.f/std::sqrt(2.f);
 
-// used to truncate precision
-const float truncFloat = (float)(3. * std::pow(2.0,22));
-const double truncDouble = 3. * std::pow(2.0,51);
+/// 1/sqrt(2)
+const float rsqrt2_f = 1.f / std::sqrt(2.f);
 
-const float kBadValue = 1e20f; // used in the secant table for values very close to 1/0
+/// used to truncate precision
+const float truncFloat = (float)(3. * std::pow(2.0, 22));
+const double truncDouble = 3. * std::pow(2.0, 51);
+
+/// used in the secant table for values very close to 1/0
+const float kBadValue = 1e20f;

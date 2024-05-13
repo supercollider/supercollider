@@ -3,7 +3,7 @@ summary:: Amplitude follower
 categories:: UGens>Analysis>Amplitude
 
 description::
-Tracks the peak amplitude of a signal.
+Tracks the relative amplitude of a signal, using an envelope follower algorithm. An envelope follower converges toward rising amplitude according to code::attackTime::, and toward falling amplitude according to code::releaseTime::. See the plot under Examples.
 
 classmethods::
 
@@ -13,10 +13,10 @@ argument::in
 Input signal
 
 argument::attackTime
-60dB convergence time for following attacks.
+20dB convergence time for following attacks.
 
 argument::releaseTime
-60dB convergence time for following decays.
+20dB convergence time for following decays.
 
 argument::mul
 
@@ -24,7 +24,24 @@ argument::add
 
 examples::
 
+The first example produces a plot, comparing a fast attack/release against slower settings. The green line (fast settings) approximates the amplitude more quickly, but also oscillates according to the wave shape. The blue line (slow settings) rises more slowly, but oscillates less (more stable measurement).
+
 code::
+(
+{
+	// LFSaw begins at 0, illustrates attack time better
+	var sig = LFSaw.ar(440);
+	var amps = Amplitude.ar(
+		sig,
+		attackTime: [0.001, 0.01],
+		releaseTime: [0.01, 0.2]
+	);
+	[sig] ++ amps
+}.plot
+.superpose_(true)
+.plotColor_([Color.black, Color.green, Color.blue]);
+)
+
 (
 // use input amplitude to control SinOsc frequency
 {

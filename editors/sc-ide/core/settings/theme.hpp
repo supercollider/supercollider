@@ -29,19 +29,17 @@ namespace ScIDE { namespace Settings {
 
 class Manager;
 
-int legacyTheme(Manager * settings);
+int legacyTheme(Manager* settings);
 
-class Theme
-{
-
+class Theme {
 public:
-    Theme(const QString & _name, Manager *settings = NULL);
-    Theme(const QString & _name, const QString & _source, Manager *settings = NULL);
+    Theme(const QString& _name, Manager* settings = NULL);
+    Theme(const QString& _name, const QString& _source, Manager* settings = NULL);
     ~Theme();
 
-    void setFormat(const QString & key, const QTextCharFormat & format);
-    const QTextCharFormat & format(const QString & key);
-    QString & name();
+    void setFormat(const QString& key, const QTextCharFormat& format);
+    const QTextCharFormat& format(const QString& key);
+    QString& name();
     bool locked();
     QList<QString> availableThemes();
 
@@ -49,7 +47,7 @@ public:
     void remove();
 
 private:
-    void fillUser(const QString & theme, const Manager *settings);
+    void fillUser(const QString& theme, const Manager* settings);
     void fillDefault();
     void fillClassic();
     void fillDark();
@@ -57,18 +55,13 @@ private:
     void fillSolarizedLight();
     void fillSolarizedDark();
 
-    void add(
-        const char *key,
-        const QColor & fg,
-        const QColor & bg = QColor(Qt::transparent),
-        bool bold = false,
-        bool italic = false
-    );
+    void add(const char* key, const QColor& fg, const QColor& bg = QColor(Qt::transparent), bool bold = false,
+             bool italic = false);
 
     bool mLocked;
-    QMap<QString, QTextCharFormat *> mFormats;
+    QMap<QString, QTextCharFormat*> mFormats;
     QString mName;
-    Manager *mSettings;
+    Manager* mSettings;
 };
 
 }} // namespace ScIDE:Settings

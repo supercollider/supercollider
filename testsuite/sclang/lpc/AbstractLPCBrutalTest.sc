@@ -71,6 +71,7 @@ AbstractLPCBrutalTest : UnitTest {
 
 		stringLengthsPerAlphabet[alphabetName].do {
 			arg len;
+			var diffs;
 			var filename = "%_%_%".format(alphabetName, len, testMode);
 
 			LPCTestUtils.evaluateAllStrings(
@@ -84,7 +85,7 @@ AbstractLPCBrutalTest : UnitTest {
 			);
 
 			if(this.performingValidation) {
-				var diffs = LPCTestUtils.compareFiles(
+				diffs = LPCTestUtils.compareFiles(
 					this.getActualDir +/+ filename,
 					this.getExpectedDir +/+ filename
 				);

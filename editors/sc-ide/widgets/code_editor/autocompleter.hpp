@@ -38,27 +38,28 @@ class ScCodeEditor;
 class TokenIterator;
 class MethodCallWidget;
 
-namespace ScLanguage { struct Method; struct Class; }
+namespace ScLanguage {
+struct Method;
+struct Class;
+}
 
-class AutoCompleter : public QObject
-{
+class AutoCompleter : public QObject {
     Q_OBJECT
 
 public:
+    AutoCompleter(ScCodeEditor*);
 
-    AutoCompleter( ScCodeEditor * );
-
-    void keyPress( QKeyEvent * );
-    void documentChanged( QTextDocument * );
+    void keyPress(QKeyEvent*);
+    void documentChanged(QTextDocument*);
     // NOTE: default 'force' to true in the following methods
     // for the purpose of argument-less QAction::triggered() signal:
-    void triggerCompletion( bool forceShow = true );
-    void triggerMethodCallAid( bool explicitly = true );
+    void triggerCompletion(bool forceShow = true);
+    void triggerMethodCallAid(bool explicitly = true);
 
 private slots:
     void onContentsChange(int pos, int removed, int added);
     void onCursorChanged();
-    void onCompletionMenuFinished( int result );
+    void onCompletionMenuFinished(int result);
     void updateCompletionMenuInfo();
     void clearMethodCallStack();
     void hideWidgets();
@@ -70,17 +71,12 @@ private:
     struct MethodCall {
         MethodCall(): position(0), method(0), functionalNotation(false), suppressed(false) {}
         int position;
-        const ScLanguage::Method *method;
+        const ScLanguage::Method* method;
         bool functionalNotation;
         bool suppressed;
     };
 
-    enum CompletionType {
-        ClassCompletion,
-        ClassMethodCompletion,
-        MethodCompletion,
-        InvalidCompletion
-    };
+    enum CompletionType { ClassCompletion, ClassMethodCompletion, MethodCompletion, InvalidCompletion };
 
     struct CompletionDescription {
         bool on;
@@ -102,45 +98,45 @@ private:
 
     typedef QStack<MethodCall>::iterator MethodCallIterator;
 
-    bool eventFilter( QObject *, QEvent * );
+    bool eventFilter(QObject*, QEvent*);
 
-    QTextDocument *document();
+    QTextDocument* document();
 
     // completion
 
-    void quitCompletion( const QString & reason = QString() );
-    void showCompletionMenu( bool forceShow );
-    void updateCompletionMenu( bool forceShow );
+    void quitCompletion(const QString& reason = QString());
+    void showCompletionMenu(bool forceShow);
+    void updateCompletionMenu(bool forceShow);
 
     // method call aid
 
-    const ScLanguage::Method *disambiguateMethod( const QString & methodName, int cursorPos );
-    void updateMethodCall( int cursorPos );
-    void pushMethodCall( const MethodCall & call );
-    void showMethodCall( const MethodCall & call, int arg = 0 );
+    const ScLanguage::Method* disambiguateMethod(const QString& methodName, int cursorPos);
+    void updateMethodCall(int cursorPos);
+    void pushMethodCall(const MethodCall& call);
+    void showMethodCall(const MethodCall& call, int arg = 0);
     void hideMethodCall();
-    bool trySwitchMethodCallArgument( bool backwards = false );
-    bool testMethodCall( const MethodCall &, int cursorPos,
-                         int & argNum, TokenIterator & argNameToken, bool strict = false );
+    bool trySwitchMethodCallArgument(bool backwards = false);
+    bool testMethodCall(const MethodCall&, int cursorPos, int& argNum, TokenIterator& argNameToken,
+                        bool strict = false);
 
-    static CompletionMenu * menuForClassCompletion(CompletionDescription const & completion, ScCodeEditor * editor);
-    static CompletionMenu * menuForClassMethodCompletion(CompletionDescription const & completion, ScCodeEditor * editor);
-    static CompletionMenu * menuForMethodCompletion(CompletionDescription const & completion, ScCodeEditor * editor);
+    static CompletionMenu* menuForClassCompletion(CompletionDescription const& completion, ScCodeEditor* editor);
+    static CompletionMenu* menuForClassMethodCompletion(CompletionDescription const& completion, ScCodeEditor* editor);
+    static CompletionMenu* menuForMethodCompletion(CompletionDescription const& completion, ScCodeEditor* editor);
 
-    static const ScLanguage::Class * classForToken( Token::Type type, const QString & string );
+    static const ScLanguage::Class* classForToken(Token::Type type, const QString& string);
 
     // utilities
 
-    QString tokenText( TokenIterator & it );
-    QRect globalCursorRect( int cursorPosition );
+    QString tokenText(TokenIterator& it);
+    QRect globalCursorRect(int cursorPosition);
     static QString findHelpClass(QString klass);
-    static DocNode * parseHelpClass(QString file);
-    static QString parseClassElement(DocNode *node, QString element);
-    static void parseClassNode(DocNode *node, QString *str);
+    static DocNode* parseHelpClass(QString file);
+    static QString parseClassElement(DocNode* node, QString element);
+    static void parseClassNode(DocNode* node, QString* str);
 
     // data
 
-    ScCodeEditor *mEditor;
+    ScCodeEditor* mEditor;
     CompletionDescription mCompletion;
     MethodCallContext mMethodCall;
 };

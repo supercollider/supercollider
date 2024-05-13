@@ -36,6 +36,6 @@ enum StandardDirectory {
     ScConfigUserDir
 };
 
-QString standardDirectory( StandardDirectory type );
+QString standardDirectory(StandardDirectory type);
 
 } // namespace ScIDE

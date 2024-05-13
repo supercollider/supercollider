@@ -26,9 +26,7 @@
 
 namespace ScIDE {
 
-AudioStatusBox::AudioStatusBox(ScServer *server, QWidget *parent):
-    StatusBox(parent)
-{
+AudioStatusBox::AudioStatusBox(ScServer* server, QWidget* parent): StatusBox(parent) {
     mStatisticsLabel = new StatusLabel;
     mVolumeLabel = new StatusLabel;
     mMuteLabel = new StatusLabel;
@@ -36,8 +34,8 @@ AudioStatusBox::AudioStatusBox(ScServer *server, QWidget *parent):
     mRecordLabel = new StatusLabel;
     mRecordLabel->setText("R");
 
-    QHBoxLayout *layout = new QHBoxLayout;
-    layout->setContentsMargins(0,0,0,0);
+    QHBoxLayout* layout = new QHBoxLayout;
+    layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(1);
     layout->addWidget(mStatisticsLabel);
     layout->addWidget(mVolumeLabel);
@@ -52,69 +50,63 @@ AudioStatusBox::AudioStatusBox(ScServer *server, QWidget *parent):
     server->action(ScServer::Mute)->setProperty("keep_menu_open", true);
     server->action(ScServer::DumpOSC)->setProperty("keep_menu_open", true);
 
-    addAction( server->action(ScServer::ToggleRunning) );
-    addAction( server->action(ScServer::Reboot) );
-    addAction( server->action(ScServer::KillAll) );
+    addAction(server->action(ScServer::ToggleRunning));
+    addAction(server->action(ScServer::Reboot));
+    addAction(server->action(ScServer::KillAll));
     addActionSeparator();
-    addAction( server->action(ScServer::ShowMeters) );
-    addAction( server->action(ScServer::ShowScope) );
-    addAction( server->action(ScServer::ShowFreqScope) );
-    addAction( server->action(ScServer::DumpNodeTree) );
-    addAction( server->action(ScServer::DumpNodeTreeWithControls) );
-    addAction( server->action(ScServer::PlotTree) );
-    addAction( server->action(ScServer::DumpOSC) );
+    addAction(server->action(ScServer::ShowMeters));
+    addAction(server->action(ScServer::ShowScope));
+    addAction(server->action(ScServer::ShowFreqScope));
+    addAction(server->action(ScServer::DumpNodeTree));
+    addAction(server->action(ScServer::DumpNodeTreeWithControls));
+    addAction(server->action(ScServer::PlotTree));
+    addAction(server->action(ScServer::DumpOSC));
     addActionSeparator();
-    addAction( server->action(ScServer::Record) );
-	addAction( server->action(ScServer::PauseRecord) );
+    addAction(server->action(ScServer::Record));
+    addAction(server->action(ScServer::PauseRecord));
     addActionSeparator();
-    addAction( server->action(ScServer::VolumeRestore) );
-    addAction( server->action(ScServer::Mute) );
-    addAction( server->action(ScServer::Volume) );
+    addAction(server->action(ScServer::VolumeRestore));
+    addAction(server->action(ScServer::Mute));
+    addAction(server->action(ScServer::Volume));
 
     // server -> box
-    connect( server, SIGNAL(runningStateChanged(bool,QString,int,bool)), this, SLOT(onServerRunningChanged(bool,QString,int,bool)) );
-    connect( server, SIGNAL(updateServerStatus(int,int,int,int,float,float)),
-             this, SLOT(updateStatistics(int,int,int,int,float,float)));
-    connect( server, SIGNAL(volumeChanged(float)),   this, SLOT(updateVolumeLabel(float)) );
-    connect( server, SIGNAL(mutedChanged(bool)),     this, SLOT(updateMuteLabel(bool))    );
-    connect( server, SIGNAL(recordingChanged(bool)), this, SLOT(updateRecordLabel(bool))  );
+    connect(server, SIGNAL(runningStateChanged(bool, QString, int, bool)), this,
+            SLOT(onServerRunningChanged(bool, QString, int, bool)));
+    connect(server, SIGNAL(updateServerStatus(int, int, int, int, float, float)), this,
+            SLOT(updateStatistics(int, int, int, int, float, float)));
+    connect(server, SIGNAL(volumeChanged(float)), this, SLOT(updateVolumeLabel(float)));
+    connect(server, SIGNAL(mutedChanged(bool)), this, SLOT(updateMuteLabel(bool)));
+    connect(server, SIGNAL(recordingChanged(bool)), this, SLOT(updateRecordLabel(bool)));
 
     onServerRunningChanged(false, "", 0, false);
-    updateVolumeLabel( server->volume() );
-    updateMuteLabel( server->isMuted() );
-    updateRecordLabel( server->isRecording() );
+    updateVolumeLabel(server->volume());
+    updateMuteLabel(server->isMuted());
+    updateRecordLabel(server->isRecording());
 
     // box to server
-    connect( this, &AudioStatusBox::decreaseVolume, [=] () {
-        server->changeVolume( -0.5 );
-    });
+    connect(this, &AudioStatusBox::decreaseVolume, [=]() { server->changeVolume(-0.5); });
 
-    connect( this, &AudioStatusBox::increaseVolume, [=] () {
-        server->changeVolume( +0.5 );
-    });
+    connect(this, &AudioStatusBox::increaseVolume, [=]() { server->changeVolume(+0.5); });
 }
 
 
-void AudioStatusBox::onServerRunningChanged(bool running, const QString &, int, bool unresponsive)
-{
-
+void AudioStatusBox::onServerRunningChanged(bool running, const QString&, int, bool unresponsive) {
     if (unresponsive) {
         mStatisticsLabel->setTextColor(Qt::yellow);
         mVolumeLabel->setTextColor(Qt::yellow);
-    } else if(running) {
+    } else if (running) {
         mStatisticsLabel->setTextColor(Qt::green);
         mVolumeLabel->setTextColor(Qt::green);
     } else {
         mStatisticsLabel->setTextColor(Qt::white);
         mVolumeLabel->setTextColor(Qt::white);
     };
-	if (!running) {
+    if (!running) {
         updateStatistics(0, 0, 0, 0, 0, 0);
-	}
+    }
 }
 
-void AudioStatusBox::wheelEvent(QWheelEvent * event)
-{
+void AudioStatusBox::wheelEvent(QWheelEvent* event) {
     if (event->orientation() == Qt::Vertical) {
         if (event->delta() > 0)
             emit increaseVolume();
@@ -124,34 +116,26 @@ void AudioStatusBox::wheelEvent(QWheelEvent * event)
     StatusBox::wheelEvent(event);
 }
 
-void AudioStatusBox::updateStatistics( int ugens, int synths, int groups, int synthDefs,
-                                       float avgCPU, float peakCPU )
-{
-    QString statusString =
-            QStringLiteral("%1% %2% %3u %4s %5g %6d ")
-            .arg(avgCPU,  5, 'f', 2)
-            .arg(peakCPU, 5, 'f', 2)
-            .arg(ugens,     4)
-            .arg(synths,    4)
-            .arg(groups,    4)
-            .arg(synthDefs, 4);
+void AudioStatusBox::updateStatistics(int ugens, int synths, int groups, int synthDefs, float avgCPU, float peakCPU) {
+    QString statusString = QStringLiteral("%1% %2% %3u %4s %5g %6d ")
+                               .arg(avgCPU, 5, 'f', 2)
+                               .arg(peakCPU, 5, 'f', 2)
+                               .arg(ugens, 4)
+                               .arg(synths, 4)
+                               .arg(groups, 4)
+                               .arg(synthDefs, 4);
 
     mStatisticsLabel->setText(statusString);
 }
 
-void AudioStatusBox::updateVolumeLabel( float volume )
-{
-    mVolumeLabel->setText( QStringLiteral("%1dB ").arg( volume, 5, 'f', 1) );
+void AudioStatusBox::updateVolumeLabel(float volume) {
+    mVolumeLabel->setText(QStringLiteral("%1dB ").arg(volume, 5, 'f', 1));
 }
 
-void AudioStatusBox::updateMuteLabel( bool muted )
-{
-    mMuteLabel->setTextColor( muted ? Qt::red : QColor(30,30,30) );
-}
+void AudioStatusBox::updateMuteLabel(bool muted) { mMuteLabel->setTextColor(muted ? Qt::red : QColor(30, 30, 30)); }
 
-void AudioStatusBox::updateRecordLabel( bool recording )
-{
-    mRecordLabel->setTextColor( recording ? Qt::red : QColor(30,30,30) );
+void AudioStatusBox::updateRecordLabel(bool recording) {
+    mRecordLabel->setTextColor(recording ? Qt::red : QColor(30, 30, 30));
 }
 
 

@@ -7,9 +7,50 @@ section::Using samples
 
 subsection::Playing a pattern in time with a sampled loop
 
-A deceptively complex requirement... here, we will loop the a11wlk01.wav sample between 0.404561 and 3.185917 seconds (chosen for its surprisingly accurate four-beat groove), and overlay synthesized bells emphasizing the meter.
+A deceptively complex requirement.
 
-It might be tempting to loop a link::Classes/PlayBuf:: so that the loop runs automatically on the server, but it can easily drift out of sync with the client (because of slight deviations in the actual sample rate). Instead, the example defines a SynthDef that plays exactly one repetition of the loop, and repeatedly triggers it once per bar.
+To synchronize patterns with a sampled loop, the basic procedure is:
+
+numberedlist::
+## Determine the loop boundaries.
+## Adjust tempo and/or playback rate.
+## Sequence individual loop segments alongside other patterns.
+::
+
+strong::1. Determine the loop boundaries::
+
+Use an external audio editor to identify a segment of the source file that loops in a musically sensible way. For this example, we will use "a11wlk01.wav" because it's readily available. Empirically, we can find that the segment from 0.404561 to 3.185917 seconds produces a rhythm that can be parsed as one bar of 4/4 time.
+
+The segment beginning (0.404561) and ending (3.185917) are important. We will use them below.
+
+Choose these values carefully. If the loop boundaries are wrong, then the musical result will not make sense.
+
+strong::2. Adjust tempo and/or playback rate::
+
+To match the loop tempo with sequencing tempo, we need to know both:
+
+list::
+## the loop's original tempo, and
+## the desired playback tempo.
+::
+
+strong::Original tempo: :: The duration of the segment chosen in part 1 is 3.185917 - 0.404561 = 2.781356 seconds. This spans one bar = 4 beats, so the duration of one beat is 2.781356 / 4 = 0.695339 seconds/beat. SuperCollider specifies tempo as beats per second, so we need the reciprocal: 1 / 0.695339 = 1.4381474359988 beats/second (86.289 bpm).
+
+code::
+((end - start) / numBeats).reciprocal
+
+// or, algebraically
+(end - start).reciprocal * numBeats
+
+// which equals
+numBeats / (end - start)
+::
+
+strong::Playback tempo: :: In principle, you can choose any tempo you like. The loop-segment player should provide a code::rate:: parameter, where the rate is code::desiredTempo / originalTempo::. If the original tempo is, as above, 86.289 bpm and you want to play at 72 bpm, you have to scale the sample's rate down by a factor of 72 / 86.289 = 0.83440531238049.
+
+strong::3. Sequence individual loop segments alongside other patterns::
+
+It might be tempting to loop a link::Classes/PlayBuf:: so that the loop runs automatically on the server, but it can easily drift out of sync with the client (because of slight deviations in the actual sample rate). Instead, it is better to define a SynthDef that plays exactly one repetition of the loop, and repeatedly triggers it once per bar.
 
 The primary bell pattern accents the downbeat and follows with a randomly generated rhythm. The catch is that we have no assurance that the link::Classes/Pwrand:: code::\dur:: pattern will add up to exactly 4 beats. The link::Classes/Pfindur:: ("finite duration") pattern cuts off the inner Pbind after 4 beats. This would stop the pattern, except link::Classes/Pn:: repeats the Pfindur infinitely, placing the accent in the right place every time.
 
@@ -20,36 +61,45 @@ code::
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 // one loop segment
-SynthDef(\oneLoop, { |out, bufnum, start, time, amp|
-	var	sig = PlayBuf.ar(1, bufnum, startPos: start, loop: 0),
-		env = EnvGen.kr(Env.linen(0.01, time, 0.05, level: amp), doneAction: Done.freeSelf);
-	Out.ar(out, (sig * env) ! 2)
+SynthDef(\oneLoop, { |out, bufnum, start, time, amp, rate = 1|
+	var sig = PlayBuf.ar(1, bufnum,
+		rate: rate * BufRateScale.kr(bufnum),
+		startPos: start, loop: 0
+	),
+	env = EnvGen.kr(Env.linen(0.01, time, 0.05, level: amp),
+		doneAction: Done.freeSelf);
+	Out.ar(out, (sig * env).dup);
 }).add;
 
 SynthDef(\bell, { |out, accent = 0, amp = 0.1, decayScale = 1|
-	var	exc = PinkNoise.ar(amp)
-			* Decay2.kr(Impulse.kr(0), 0.01, 0.05),
-		sig = Klank.ar(`[
-			{ ExpRand(400, 1600) } ! 4,
-			1 ! 4,
-			{ ExpRand(0.1, 0.4) } ! 4
-		], exc, freqscale: accent + 1, decayscale: decayScale);
+	var exc = PinkNoise.ar(amp)
+	* Decay2.kr(Impulse.kr(0), 0.01, 0.05),
+	sig = Klank.ar(`[
+		{ ExpRand(400, 1600) } ! 4,
+		1 ! 4,
+		{ ExpRand(0.1, 0.4) } ! 4
+	], exc, freqscale: accent + 1, decayscale: decayScale);
 	DetectSilence.ar(sig, doneAction: Done.freeSelf);
-	Out.ar(out, sig ! 2)
+	Out.ar(out, sig.dup)
 }).add;
 )
 
 (
-TempoClock.default.tempo = 0.35953685899971 * 4;
+var start = 0.404561, end = 3.185917,
+beatsInLoop = 4,
+originalTempo = beatsInLoop / (end - start);
+
+TempoClock.tempo = originalTempo;
 
 p = Ptpar([
 	0, Pbind(
 		\instrument, \oneLoop,
 		\bufnum, b,
 		\amp, 0.4,
-		\start, 17841,
-		\time, 0.35953685899971.reciprocal,
-		\dur, 4
+		\start, start * b.sampleRate,
+		\dur, beatsInLoop,
+		\time, Pkey(\dur) / Pfunc { thisThread.clock.tempo },
+		\rate, Pfunc { thisThread.clock.tempo / originalTempo }
 	),
 	0.5, Pn(
 		Pfindur(4,
@@ -72,6 +122,10 @@ p = Ptpar([
 ], 1).play;
 )
 
+// for fun, change tempo
+// resyncs on next bar
+TempoClock.tempo = 104/60;
+
 p.stop;
 ::
 
@@ -79,15 +133,20 @@ The use of Ptpar above means that you could stop or start only the whole ball of
 
 code::
 (
-TempoClock.default.tempo = 0.35953685899971 * 4;
+var start = 0.404561, end = 3.185917,
+beatsInLoop = 4,
+originalTempo = beatsInLoop / (end - start);
+
+TempoClock.tempo = originalTempo;
 
 p = Pbind(
 	\instrument, \oneLoop,
 	\bufnum, b,
 	\amp, 0.4,
-	\start, 17841,
-	\time, 0.35953685899971.reciprocal,
-	\dur, 4
+	\start, start * b.sampleRate,
+	\dur, beatsInLoop,
+	\time, Pkey(\dur) / Pfunc { thisThread.clock.tempo },
+	\rate, Pfunc { thisThread.clock.tempo / originalTempo }
 ).play(quant: [4, 3.5]);
 
 q = Pn(
@@ -127,14 +186,14 @@ The first example makes a custom protoEvent that calculates rate, as code::\freq
 code::
 // make a sound sample
 (
-var	recorder;
+var recorder;
 fork {
 	b = Buffer.alloc(s, 44100 * 2, 1);
 	s.sync;
 	recorder = { |freq = 440|
-		var	initPulse = Impulse.kr(0),
-			mod = SinOsc.ar(freq) * Decay2.kr(initPulse, 0.01, 3) * 5,
-			car = SinOsc.ar(freq + (mod*freq)) * Decay2.kr(initPulse, 0.01, 2.0);
+		var initPulse = Impulse.kr(0),
+		mod = SinOsc.ar(freq) * Decay2.kr(initPulse, 0.01, 3) * 5,
+		car = SinOsc.ar(freq + (mod*freq)) * Decay2.kr(initPulse, 0.01, 2.0);
 		RecordBuf.ar(car, b, loop: 0, doneAction: Done.freeSelf);
 		car ! 2
 	}.play;
@@ -146,14 +205,14 @@ fork {
 	}, '/n_end', s.addr);
 };
 SynthDef(\sampler, { |out, bufnum, freq = 1, amp = 1|
-	var	sig = PlayBuf.ar(1, bufnum, rate: freq, doneAction: Done.freeSelf) * amp;
+	var sig = PlayBuf.ar(1, bufnum, rate: freq, doneAction: Done.freeSelf) * amp;
 	Out.ar(out, sig ! 2)
 }).add;
 )
 
 (
 // WAIT for "done recording" message before doing this
-var	samplerEvent = Event.default.put(\freq, { ~midinote.midicps / ~sampleBaseFreq });
+var samplerEvent = Event.default.put(\freq, { ~midinote.midicps / ~sampleBaseFreq });
 
 TempoClock.default.tempo = 1;
 p = Pbind(
@@ -177,42 +236,42 @@ To extend the sampler's range using multiple samples and ensure smooth transitio
 MIDI note numbers are used for these calculations because it's a linear frequency scale and linear interpolation is easier than the exponential interpolation that would be required when using Hz. Assuming a sorted array, indexInBetween gives the fractional index using linear interpolation. If you need to use frequency in Hz, use this function in place of indexInBetween.
 
 code::
-	f = { |val, array|
-		var a, b, div;
-		var i = array.indexOfGreaterThan(val);
-		if(i.isNil) { array.size - 1 } {
-			if(i == 0) { i } {
-				a = array[i-1]; b = array[i];
-				div = b / a;
-				if(div == 1) { i } {
-						// log() / log() == log(val/a) at base (b/a)
-						// which is the inverse of exponential interpolation
-					log(val / a) / log(div) + i - 1
-				}
+f = { |val, array|
+	var a, b, div;
+	var i = array.indexOfGreaterThan(val);
+	if(i.isNil) { array.size - 1 } {
+		if(i == 0) { i } {
+			a = array[i-1]; b = array[i];
+			div = b / a;
+			if(div == 1) { i } {
+					// log() / log() == log(val/a) at base (b/a)
+					// which is the inverse of exponential interpolation
+				log(val / a) / log(div) + i - 1
 			}
-		};
+		}
 	};
+};
 ::
 
 But that function isn't needed for this example:
 
 code::
 (
-var	bufCount;
+var bufCount;
 ~midinotes = (39, 46 .. 88);
 bufCount = ~midinotes.size;
 
 fork {
-		// record the samples at different frequencies
+	// record the samples at different frequencies
 	b = Buffer.allocConsecutive(~midinotes.size, s, 44100 * 2, 1);
 	SynthDef(\sampleSource, { |freq = 440, bufnum|
-		var	initPulse = Impulse.kr(0),
-			mod = SinOsc.ar(freq) * Decay2.kr(initPulse, 0.01, 3) * 5,
-			car = SinOsc.ar(freq + (mod*freq)) * Decay2.kr(initPulse, 0.01, 2.0);
+		var initPulse = Impulse.kr(0),
+		mod = SinOsc.ar(freq) * Decay2.kr(initPulse, 0.01, 3) * 5,
+		car = SinOsc.ar(freq + (mod*freq)) * Decay2.kr(initPulse, 0.01, 2.0);
 		RecordBuf.ar(car, bufnum, loop: 0, doneAction: Done.freeSelf);
 	}).send(s);
 	s.sync;
-		// record all 8 buffers concurrently
+	// record all 8 buffers concurrently
 	b.do({ |buf, i|
 		Synth(\sampleSource, [freq: ~midinotes[i].midicps, bufnum: buf]);
 	});
@@ -226,12 +285,13 @@ o = OSCFunc({ |msg|
 }, '/n_end', s.addr);
 
 SynthDef(\multiSampler, { |out, bufnum, bufBase, baseFreqBuf, freq = 440, amp = 1|
-	var	buf1 = bufnum.floor,
-		buf2 = buf1 + 1,
-		xfade = (bufnum - buf1).madd(2, -1),
-		basefreqs = Index.kr(baseFreqBuf, [buf1, buf2]),
-		playbufs = PlayBuf.ar(1, bufBase + [buf1, buf2], freq / basefreqs, loop: 0, doneAction: Done.freeSelf),
-		sig = XFade2.ar(playbufs[0], playbufs[1], xfade, amp);
+	var buf1 = bufnum.floor,
+	buf2 = buf1 + 1,
+	xfade = (bufnum - buf1).madd(2, -1),
+	basefreqs = Index.kr(baseFreqBuf, [buf1, buf2]),
+	playbufs = PlayBuf.ar(1, bufBase + [buf1, buf2], freq / basefreqs, loop: 0,
+		doneAction: Done.freeSelf),
+	sig = XFade2.ar(playbufs[0], playbufs[1], xfade, amp);
 	Out.ar(out, sig ! 2)
 }).add;
 
@@ -247,11 +307,11 @@ p = Pbind(
 	\degree, Pseries(0, Prand(#[-2, -1, 1, 2], inf), inf).fold(-11, 11),
 	\dur, Pwrand([0.25, Pn(0.125, 2)], #[0.8, 0.2], inf),
 	\amp, Pexprand(0.1, 0.5, inf),
-		// some important conversions
-		// identify the buffer numbers to read
+	// some important conversions
+	// identify the buffer numbers to read
 	\freq, Pfunc { |ev| ev.use(ev[\freq]) },
 	\bufnum, Pfunc({ |ev| ~midinotes.indexInBetween(ev[\freq].cpsmidi) })
-		.clip(0, ~midinotes.size - 1.001)
+	.clip(0, ~midinotes.size - 1.001)
 ).play;
 )
 

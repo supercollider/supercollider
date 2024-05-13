@@ -356,7 +356,7 @@ definitionList::
 definitionList::
 ## chan || MIDI channel (0-15).
 ## midinote || Note number to trigger. This may be calculated from the standard pitch hierarchy described in link::Tutorials/A-Practical-Guide/PG_07_Value_Conversions:: (with the exception that only 12TET can be supported).
-## amp || code::MIDI velocity = amp / 12::.
+## amp || code::MIDI velocity = amp * 127::.
 ## sustain || How many beats to wait before sending the corresponding note off message. If not given directly, it's calculated as code::~sustain = ~dur * ~legato * ~stretch:: (just like the standard code::\note:: event type).
 ## hasGate || Normally true. If false, the note off message will not be sent.
 ::
@@ -428,6 +428,20 @@ Very important: Arrays normally multi-channel expand in patterns. So, you must w
 subsection::Miscellaneous
 
 definitionList::
+## composite || Perform any number of event types, given as ~types. You should ensure that parameters are compatible. It is possible, using code::\composite::, to play a synth and send MIDI for the same pitches. It is not possible to use one frequency for the synth and a different one for MIDI, in the same event (you would need two different events for that case).
+
+definitionList::
+## types || An array of Symbols, listing the Event types to be performed.
+::
+
+code::
+MIDIClient.init;
+m = MIDIOut(0);
+
+// should play a synth *and* an external MIDI note simultaneously
+(type: \composite, types: [\note, \midi], midiout: m, degree: 0, dur: 3).play;
+::
+
 ## phrase || See link::Tutorials/JITLib/recursive_phrasing::.
 
 ## setProperties || Set variables belonging to a given object. One possible use is to control a GUI using a pattern.

@@ -23,7 +23,7 @@ Frequency of the fundamental.
 
 argument::sawFreq
 
-Frequency of the slave synched sawtooth wave. Should always be
+Frequency of the synched sawtooth wave. Should always be
 greater than
 code::syncFreq:: .
 

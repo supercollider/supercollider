@@ -76,7 +76,7 @@ argument:: alpha
 Transparency between 0 and 1 as link::Classes/Float::.
 
 method:: rand
-A random RGB Color where the colors are randomly chosen between code::lo:: and code::hi::. See link::Classes/Color#new::.
+A random RGB Color where the colors are randomly chosen between code::lo:: and code::hi::. See link::#*new::.
 argument:: lo
 An instance of link::Classes/Float:: between 0 and 1.
 argument:: hi

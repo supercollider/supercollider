@@ -35,102 +35,72 @@ class group;
 
 namespace bi = boost::intrusive;
 
-typedef boost::intrusive::list<class server_node,
-                                boost::intrusive::constant_time_size<false> >
-server_node_list;
+typedef boost::intrusive::list<class server_node, boost::intrusive::constant_time_size<false>> server_node_list;
 
-class server_node:
-    public bi::list_base_hook<bi::link_mode<bi::auto_unlink> >,          /* group member */
-    public bi::unordered_set_base_hook<bi::link_mode<bi::auto_unlink> >  /* for node_id mapping */
+class server_node : public bi::list_base_hook<bi::link_mode<bi::auto_unlink>>, /* group member */
+                    public bi::unordered_set_base_hook<bi::link_mode<bi::auto_unlink>> /* for node_id mapping */
 {
 protected:
-    server_node(int32_t node_id, bool type):
-        node_id(node_id), node_is_synth(type), use_count_(0)
-    {}
+    server_node(int32_t node_id, bool type): node_id(node_id), node_is_synth(type), use_count_(0) {}
 
-    virtual ~server_node(void)
-    {
-        assert(parent_ == 0);
-    }
+    virtual ~server_node(void) { assert(parent_ == 0); }
 
     /* @{ */
     /** node id handling */
-    void reset_id(int32_t new_id)
-    {
-        node_id = new_id;
-    }
+    void reset_id(int32_t new_id) { node_id = new_id; }
 
 public:
     int32_t node_id;
 
-    int32_t id(void) const
-    {
-        return node_id;
-    }
+    int32_t id(void) const { return node_id; }
     /* @} */
 
-    typedef bi::list_base_hook<bi::link_mode<bi::auto_unlink> > parent_hook;
+    typedef bi::list_base_hook<bi::link_mode<bi::auto_unlink>> parent_hook;
 
     /* @{ */
     /** node_id mapping */
-    friend std::size_t hash_value(server_node const & that)
-    {
-        return hash(that.id());
-    }
+    friend std::size_t hash_value(server_node const& that) { return hash(that.id()); }
 
-    static int32_t hash(int32_t id)
-    {
+    static int32_t hash(int32_t id) {
         return id * 2654435761U; // knuth hash, 32bit should be enough
     }
 
-    friend bool operator< (server_node const & lhs, server_node const & rhs)
-    {
-        return lhs.node_id < rhs.node_id;
-    }
+    friend bool operator<(server_node const& lhs, server_node const& rhs) { return lhs.node_id < rhs.node_id; }
 
-    friend bool operator== (server_node const & lhs, server_node const & rhs)
-    {
-        return lhs.node_id == rhs.node_id;
-    }
+    friend bool operator==(server_node const& lhs, server_node const& rhs) { return lhs.node_id == rhs.node_id; }
     /* @} */
 
-    bool is_synth(void) const
-    {
-        return node_is_synth;
-    }
+    bool is_synth(void) const { return node_is_synth; }
 
-    bool is_group(void) const
-    {
-        return !node_is_synth;
-    }
+    bool is_group(void) const { return !node_is_synth; }
 
     /* @{ */
     /* set a scalar slot */
     virtual void set(slot_index_t slot_id, float val) = 0;
-    virtual void set(const char * slot_str, float val) = 0;
-    virtual void set(const char * slot_str, size_t hashed_str, float val) = 0;
+    virtual void set(const char* slot_str, float val) = 0;
+    virtual void set(const char* slot_str, size_t hashed_str, float val) = 0;
     /* @} */
 
     /* @{ */
     /* set an arrayed slot from array */
-    virtual void set_control_array(slot_index_t slot_str, size_t n, float * values) = 0;
-    virtual void set_control_array(const char * slot_str, size_t n, float * values) = 0;
-    virtual void set_control_array(const char * slot_str, size_t hashed_str, size_t n, float * values) = 0;
+    virtual void set_control_array(slot_index_t slot_str, size_t n, float* values) = 0;
+    virtual void set_control_array(const char* slot_str, size_t n, float* values) = 0;
+    virtual void set_control_array(const char* slot_str, size_t hashed_str, size_t n, float* values) = 0;
     /* @} */
 
     /* @{ */
     /* set an element of an arrayed slot */
     virtual void set_control_array_element(slot_index_t slot_str, size_t n, float values) = 0;
-    virtual void set_control_array_element(const char * slot_str, size_t n, float values) = 0;
-    virtual void set_control_array_element(const char * slot_str, size_t hashed_str, size_t n, float values) = 0;
+    virtual void set_control_array_element(const char* slot_str, size_t n, float values) = 0;
+    virtual void set_control_array_element(const char* slot_str, size_t hashed_str, size_t n, float values) = 0;
     /* @} */
 
     /* @{ */
     /** group traversing */
-    inline const server_node * previous_node(void) const;
-    inline server_node * previous_node(void);
-    inline const server_node * next_node(void) const;
-    inline server_node * next_node(void);
+    inline const server_node* previous_node(void) const;
+    inline server_node* previous_node(void);
+    inline const server_node* next_node(void) const;
+    inline server_node* next_node(void);
     /* @} */
 
 private:
@@ -141,20 +111,11 @@ private:
     bool running_ = true;
 
 public:
-    virtual void pause(void)
-    {
-        running_ = false;
-    }
+    virtual void pause(void) { running_ = false; }
 
-    virtual void resume(void)
-    {
-        running_ = true;
-    }
+    virtual void resume(void) { running_ = true; }
 
-    bool is_running(void) const
-    {
-        return running_;
-    }
+    bool is_running(void) const { return running_; }
     /* @} */
 
 private:
@@ -167,48 +128,32 @@ private:
 public:
     /* @{ */
     /** parent group handling */
-    const abstract_group * get_parent(void) const
-    {
-        return parent_;
-    }
+    const abstract_group* get_parent(void) const { return parent_; }
 
-    abstract_group * get_parent(void)
-    {
-        return parent_;
-    }
+    abstract_group* get_parent(void) { return parent_; }
 
-    inline void set_parent(abstract_group * parent);
+    inline void set_parent(abstract_group* parent);
     inline void clear_parent(void);
     /* @} */
 
 private:
-    abstract_group * parent_ = nullptr;
+    abstract_group* parent_ = nullptr;
 
 public:
     /* memory management for server_nodes */
     /* @{ */
-    inline void * operator new(std::size_t size)
-    {
-        return rt_pool.malloc(size);
-    }
+    inline void* operator new(std::size_t size) { return rt_pool.malloc(size); }
 
-    inline void operator delete(void * p)
-    {
-        rt_pool.free(p);
-    }
+    inline void operator delete(void* p) { rt_pool.free(p); }
     /* @} */
 
 public:
     /* refcountable */
     /* @{ */
-    void add_ref(void)
-    {
-        ++use_count_;
-    }
+    void add_ref(void) { ++use_count_; }
 
-    void release(void)
-    {
-        if(unlikely(--use_count_ == 0))
+    void release(void) {
+        if (unlikely(--use_count_ == 0))
             delete this;
     }
 
@@ -217,27 +162,20 @@ private:
     /* @} */
 };
 
-inline void intrusive_ptr_add_ref(server_node * p)
-{
-    p->add_ref();
-}
+inline void intrusive_ptr_add_ref(server_node* p) { p->add_ref(); }
 
-inline void intrusive_ptr_release(server_node * p)
-{
-    p->release();
-}
+inline void intrusive_ptr_release(server_node* p) { p->release(); }
 
-enum node_position
-{
-    head    = 0,
-    tail    = 1,
-    before  = 2,
-    after   = 3,
+enum node_position {
+    head = 0,
+    tail = 1,
+    before = 2,
+    after = 3,
     replace = 4,
-    insert  = 5                  /* for pgroups */
+    insert = 5 /* for pgroups */
 };
 
-typedef std::pair<server_node *, node_position> node_position_constraint;
+typedef std::pair<server_node*, node_position> node_position_constraint;
 
 
 } /* namespace nova */

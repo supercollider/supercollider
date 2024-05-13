@@ -135,19 +135,23 @@
 
 		if (isLocal) {
 			running = {
-				active.stringColor_(Color.new255(74, 120, 74));
-				active.string = "running";
-				booter.setProperty(\value,1);
-				recorder.enabled = true;
+				defer {
+					active.stringColor_(Color.new255(74, 120, 74));
+					active.string = "running";
+					booter.setProperty(\value,1);
+					recorder.enabled = true;
+				}
 			};
 			stopped = {
-				active.stringColor_(Color.grey(0.3));
-				active.string = "inactive";
-				stopDump.value;
-				booter.setProperty(\value,0);
-				recorder.setProperty(\value,0);
-				recorder.enabled = false;
-				countsViews.do(_.string = "");
+				defer {
+					active.stringColor_(Color.grey(0.3));
+					active.string = "inactive";
+					stopDump.value;
+					booter.setProperty(\value,0);
+					recorder.setProperty(\value,0);
+					recorder.enabled = false;
+					countsViews.do(_.string = "");
+				}
 			};
 			booting = {
 				active.stringColor_(Color.new255(255, 140, 0));
@@ -185,13 +189,17 @@
 
 		} {
 			running = {
-				active.stringColor_(Color.new255(74, 120, 74));
-				active.string = "running";
-				active.background = Color.clear;
+				defer {
+					active.stringColor_(Color.new255(74, 120, 74));
+					active.string = "running";
+					active.background = Color.clear;
+				}
 			};
 			stopped = {
-				active.stringColor_(Color.grey(0.5));
-				active.string = "inactive";
+				defer {
+					active.stringColor_(Color.grey(0.5));
+					active.string = "inactive";
+				}
 			};
 			booting = {
 				active.stringColor_(Color.new255(255, 140, 0));

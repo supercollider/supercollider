@@ -18,16 +18,18 @@
 #define BOOST_SYNC_DETAIL_MUTEXES_BASIC_MUTEX_WINDOWS_HPP_INCLUDED_
 
 #include <cstddef>
+#include <boost/cstdint.hpp>
 #include <boost/assert.hpp>
-#include <boost/detail/winapi/handles.hpp>
-#include <boost/detail/winapi/event.hpp>
-#include <boost/detail/winapi/wait.hpp>
-#include <boost/detail/winapi/get_last_error.hpp>
+#include <boost/memory_order.hpp>
+#include <boost/atomic/atomic.hpp>
+#include <boost/winapi/handles.hpp>
+#include <boost/winapi/event.hpp>
+#include <boost/winapi/wait.hpp>
+#include <boost/winapi/get_last_error.hpp>
 #include <boost/sync/detail/config.hpp>
 #include <boost/sync/exceptions/lock_error.hpp>
 #include <boost/sync/exceptions/resource_error.hpp>
 #include <boost/sync/detail/throw_exception.hpp>
-#include <boost/sync/detail/interlocked.hpp>
 
 #include <boost/sync/detail/header.hpp>
 
@@ -55,18 +57,20 @@ public:
     };
 
 public:
-    long m_active_count;
-    boost::detail::winapi::HANDLE_ m_event;
+    boost::atomic< boost::uint32_t > m_active_count;
+    // Note: Using uintptr_t instead of boost::winapi::HANDLE_ so that boost::atomic constructor is constexpr
+    boost::atomic< boost::uintptr_t > m_event;
 
 public:
-    BOOST_CONSTEXPR basic_mutex() BOOST_NOEXCEPT : m_active_count(0), m_event(NULL)
+    BOOST_CONSTEXPR basic_mutex() BOOST_NOEXCEPT : m_active_count(0u), m_event(0u)
     {
     }
 
     ~basic_mutex()
     {
-        if (m_event)
-            BOOST_VERIFY(boost::detail::winapi::CloseHandle(m_event) != 0);
+        boost::winapi::HANDLE_ event = reinterpret_cast< boost::winapi::HANDLE_ >(m_event.load(boost::memory_order_relaxed));
+        if (event)
+            BOOST_VERIFY(boost::winapi::CloseHandle(event) != 0);
     }
 
     void lock()
@@ -77,85 +81,74 @@ public:
 
     void unlock() BOOST_NOEXCEPT
     {
-        long const offset = lock_flag_value;
-        long const old_count = BOOST_ATOMIC_INTERLOCKED_EXCHANGE_ADD(&m_active_count, lock_flag_value);
-        if ((old_count & event_set_flag_value) == 0 && (old_count > offset))
+        BOOST_CONSTEXPR_OR_CONST boost::uint32_t offset = lock_flag_value;
+        const boost::uint32_t old_count = m_active_count.fetch_add(offset, boost::memory_order_release);
+        if ((old_count & event_set_flag_value) == 0u && (old_count > offset))
         {
-            if (!sync::detail::windows::interlocked_bit_test_and_set(&m_active_count, event_set_flag_bit))
+            if (!m_active_count.bit_test_and_set(event_set_flag_bit, boost::memory_order_relaxed))
             {
-                boost::detail::winapi::SetEvent(get_event());
+                boost::winapi::SetEvent(get_event());
             }
         }
     }
 
     bool try_lock()
     {
-        return !sync::detail::windows::interlocked_bit_test_and_set(&m_active_count, lock_flag_bit);
+        return !m_active_count.bit_test_and_set(lock_flag_bit, boost::memory_order_acquire);
     }
 
-    boost::detail::winapi::HANDLE_ get_event()
+    boost::winapi::HANDLE_ get_event()
     {
-        boost::detail::winapi::HANDLE_ event = sync::detail::windows::interlocked_read_acquire(&m_event);
+        boost::uintptr_t event = m_event.load(boost::memory_order_acquire);
 
-        if (!event)
+        if (BOOST_UNLIKELY(!event))
         {
-            event = boost::detail::winapi::create_anonymous_event(NULL, false, false);
-            if (event)
+            boost::winapi::HANDLE_ new_event = boost::winapi::create_anonymous_event(NULL, false, false);
+            if (BOOST_LIKELY(!!new_event))
             {
-#ifdef BOOST_MSVC
-#pragma warning(push)
-#pragma warning(disable:4311)
-#pragma warning(disable:4312)
-#endif
-                boost::detail::winapi::HANDLE_ const old_event = BOOST_ATOMIC_INTERLOCKED_COMPARE_EXCHANGE_POINTER(&m_event, event, NULL);
-#ifdef BOOST_MSVC
-#pragma warning(pop)
-#endif
-                if (old_event != NULL)
+                event = reinterpret_cast< boost::uintptr_t >(new_event);
+                boost::uintptr_t old_event = 0u;
+                const bool succeeded = m_event.compare_exchange_strong(old_event, event, boost::memory_order_acquire, boost::memory_order_relaxed);
+                if (BOOST_UNLIKELY(!succeeded))
                 {
-                    boost::detail::winapi::CloseHandle(event);
-                    return old_event;
+                    boost::winapi::CloseHandle(reinterpret_cast< boost::winapi::HANDLE_ >(event));
+                    return reinterpret_cast< boost::winapi::HANDLE_ >(old_event);
                 }
             }
             else
             {
-                const boost::detail::winapi::DWORD_ err = boost::detail::winapi::GetLastError();
-                BOOST_SYNC_DETAIL_THROW(resource_error, (err)("failed to create an event object"));
+                const boost::winapi::DWORD_ err = boost::winapi::GetLastError();
+                BOOST_SYNC_DETAIL_THROW(resource_error, (err)("Failed to create an event object"));
             }
         }
 
-        return event;
+        return reinterpret_cast< boost::winapi::HANDLE_ >(event);
     }
 
-    void mark_waiting_and_try_lock(long& old_count)
+    void mark_waiting_and_try_lock(boost::uint32_t& old_count)
     {
         while (true)
         {
-            long const was_locked = (old_count & lock_flag_value);
-            long const new_count = was_locked ? (old_count + 1) : (old_count | lock_flag_value);
-            long const current = BOOST_ATOMIC_INTERLOCKED_COMPARE_EXCHANGE(&m_active_count, new_count, old_count);
-            if (current == old_count)
+            const boost::uint32_t was_locked = (old_count & lock_flag_value);
+            const boost::uint32_t new_count = was_locked ? (old_count + 1u) : (old_count | lock_flag_value);
+            if (m_active_count.compare_exchange_weak(old_count, new_count, boost::memory_order_relaxed, boost::memory_order_relaxed))
             {
                 if (was_locked)
                     old_count = new_count;
                 break;
             }
-            old_count = current;
         }
     }
 
-    void clear_waiting_and_try_lock(long& old_count)
+    void clear_waiting_and_try_lock(boost::uint32_t& old_count)
     {
-        old_count &= ~lock_flag_value;
+        old_count &= ~static_cast< boost::uint32_t >(lock_flag_value);
         old_count |= event_set_flag_value;
         while (true)
         {
-            long const new_count = ((old_count & lock_flag_value) ? old_count : ((old_count - 1) | lock_flag_value)) & ~static_cast< long >(event_set_flag_value);
-            long const current = BOOST_ATOMIC_INTERLOCKED_COMPARE_EXCHANGE(&m_active_count, new_count, old_count);
-            if (current == old_count)
+            const boost::uint32_t new_count = ((old_count & lock_flag_value) ? old_count : ((old_count - 1u) | lock_flag_value)) & ~static_cast< boost::uint32_t >(event_set_flag_value);
+            if (m_active_count.compare_exchange_weak(old_count, new_count, boost::memory_order_relaxed, boost::memory_order_relaxed))
                 break;
-
-            old_count = current;
         }
     }
 
@@ -165,19 +158,19 @@ public:
 private:
     void priv_lock()
     {
-        long old_count = m_active_count;
+        boost::uint32_t old_count = m_active_count.load(boost::memory_order_acquire);
         mark_waiting_and_try_lock(old_count);
 
         if (old_count & lock_flag_value) try
         {
-            boost::detail::winapi::HANDLE_ const evt = get_event();
+            boost::winapi::HANDLE_ const evt = get_event();
             do
             {
-                const boost::detail::winapi::DWORD_ retval = boost::detail::winapi::WaitForSingleObject(evt, boost::detail::winapi::infinite);
-                if (retval != boost::detail::winapi::wait_object_0)
+                const boost::winapi::DWORD_ retval = boost::winapi::WaitForSingleObject(evt, boost::winapi::infinite);
+                if (BOOST_UNLIKELY(retval != boost::winapi::wait_object_0))
                 {
-                    const boost::detail::winapi::DWORD_ err = boost::detail::winapi::GetLastError();
-                    BOOST_SYNC_DETAIL_THROW(lock_error, (err)("failed to wait on the event object"));
+                    const boost::winapi::DWORD_ err = boost::winapi::GetLastError();
+                    BOOST_SYNC_DETAIL_THROW(lock_error, (err)("Failed to wait on the event object"));
                 }
                 clear_waiting_and_try_lock(old_count);
             }
@@ -185,7 +178,7 @@ private:
         }
         catch (...)
         {
-            BOOST_ATOMIC_INTERLOCKED_EXCHANGE_ADD(&m_active_count, -1);
+            m_active_count.opaque_sub(1u, boost::memory_order_relaxed);
             throw;
         }
     }

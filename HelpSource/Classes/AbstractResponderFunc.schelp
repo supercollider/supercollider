@@ -87,7 +87,7 @@ METHOD:: oneShot
 Indicate that this object should execute only once and then free itself.
 
 METHOD:: fix
-A synonym for link::#permanent::
+A synonym for link::#-permanent::
 
 METHOD:: free
 Disable this object and remove it from the global lists. This should be done when you are finished using this object.

@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,8 +23,8 @@
 
 void initArrayPrimitives();
 
-int prArrayMultiChanExpand(VMGlobals *g, int numArgsPushed);
+int prArrayMultiChanExpand(VMGlobals* g, int numArgsPushed);
 
-int arrayAtIdentityHash(PyrObject *array, PyrSlot *key);
-int arrayAtIdentityHashInPairs(PyrObject *array, PyrSlot *key);
-int arrayAtIdentityHashInPairsWithHash(PyrObject *array, PyrSlot *key, int hash);
+int arrayAtIdentityHash(PyrObject* array, PyrSlot* key);
+int arrayAtIdentityHashInPairs(PyrObject* array, PyrSlot* key);
+int arrayAtIdentityHashInPairsWithHash(PyrObject* array, PyrSlot* key, int hash);

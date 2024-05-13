@@ -8,6 +8,8 @@ This class allows control over items displayed in the sclang application-level m
 
 note:: This is the menu for the sclang application, not the IDE. ::
 
+warning:: The behavior of this class changed in version 3.10.2. Menu items for controlling the process and servers will not be added and updated by default, as in versions 3.10.0 and 3.10.1.  Those items can still be created by calling code::initBuiltInMenus::. This behavior may change again in a future version.::
+
 CODE::
 (
 ~testTone = MenuAction("Test Tone", {
@@ -15,12 +17,24 @@ CODE::
 });
 
 MainMenu.register(~testTone, "Tests");
-
-// MainMenu.unregister(~testTone); // to remove
 )
+
+MainMenu.unregister(~testTone); // to remove
 ::
 
 CLASSMETHODS::
+
+private:: prGetMenu, prGetMenuGroup, prUpdateServersMenu, prBuildAppMenus, prUpdate, prSetAppMenus
+
+METHOD:: initBuiltInMenus
+	Initialize menu items under the main "SuperCollider" menu that enable process and server monitoring and control:
+		LIST::
+			## Stop - same as Cmd/Ctrl-Period
+			## Servers - a submenu listing available servers, with items for controlling each. The
+default server will be noted, and selecting the name of a server in this menu will set it as the
+default.
+			## Quit - quit sclang process
+		::
 
 METHOD:: register
 	Register a MenuAction to a main application menu. This menu item will exist for the duration of the app, or until .unregister is called for the action.
@@ -48,7 +62,7 @@ METHOD:: register
 			## Help
 		::
 
-		If registering menu items for a Quark, consider registering as a sub-menu of the Quarks menu. This can easily be done using the link::Classes/MainMenu#registerQuarkMenu:: method.
+		If registering menu items for a Quark, consider registering as a sub-menu of the Quarks menu. This can easily be done using the link::#*registerQuarkMenu:: method.
 
 METHOD:: registerQuarkMenu
 	Convenience method for registering a menu of functionality related to a Quark.
@@ -73,6 +87,33 @@ METHOD:: otherMenus
 	A list of menus to append to the set of main application menus.
 
 	WARNING::This is intended for standalone SuperCollider applications, and should not be used to register menus during normal SC usage.::
+
+METHOD:: add
+	Adds a menu to code::otherMenus::.
+
+	ARGUMENT:: menu
+		A link::Classes/Menu::.
+
+METHOD:: remove
+	Removes a menu to code::otherMenus::.
+
+	ARGUMENT:: menu
+		A link::Classes/Menu::.
+
+METHOD:: insert
+	Inserts a menu in code::otherMenus:: at the given index.
+
+	ARGUMENT:: index
+		Index. An link::Classes/Integer::.
+
+	ARGUMENT:: menu
+		A link::Classes/Menu::.
+
+METHOD:: clear
+	Clears code::otherMenus::. The main application menus are unaffected.
+
+	ARGUMENT:: menu
+		A link::Classes/Menu::.
 
 METHOD:: applicationMenu
 	The main SuperCollider application menu.

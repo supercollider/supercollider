@@ -141,7 +141,9 @@ Color {
 		if (blue == max, {hue = (red - green) / delta + 4});
 		hue = hue/6;
 		if (hue < 0, {hue = hue + 1});
+		if (hue.isNaN, {hue = 0.0});
 		sat = delta / max;
+		if (sat.isNaN, {sat = 0.0});
 		val = max;
 		^[hue, sat, val, alpha]
 	}
@@ -187,7 +189,7 @@ Color {
 			if(val>15, { "hex value 0x% out of bounds - clipping to 0xF".format(chr).warn });
 			val.min(15);
 		}, Array);
-		if(digits.size == 3, { digits = digits.stutter(2) });
+		if(digits.size == 3, { digits = digits.dupEach(2) });
 		red = digits[0] * 16 + digits[1];
 		green = digits[2] * 16 + digits[3];
 		blue = digits[4] * 16 + digits[5];

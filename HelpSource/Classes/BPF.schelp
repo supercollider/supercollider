@@ -25,7 +25,7 @@ WARNING: due to the nature of its implementation frequency values close to 0 may
 
 argument::rq
 
-The reciprocal of Q. Q is conventionally defined as cutoffFreq / bandwidth, meaning rq = (bandwidth / cutoffFreq).
+The reciprocal of Q. Q is conventionally defined as freq / bandwidth, meaning rq = (bandwidth / freq).
 
 argument::mul
 

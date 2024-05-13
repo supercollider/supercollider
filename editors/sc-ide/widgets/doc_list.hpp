@@ -24,78 +24,67 @@
 #include "../core/doc_manager.hpp"
 
 #include <QListWidget>
-#include <QSignalMapper>
 
 namespace ScIDE {
 
 class DocumentManager;
 class Document;
 
-class DocumentListWidget : public QListWidget
-{
+class DocumentListWidget : public QListWidget {
     Q_OBJECT
 
 public:
-
-    DocumentListWidget(DocumentManager *, QWidget * parent = 0);
+    DocumentListWidget(DocumentManager*, QWidget* parent = 0);
 
 public Q_SLOTS:
 
-    void setCurrent( Document * );
-    void updateDockletOrder( int, int );
+    void setCurrent(Document*);
+    void updateDockletOrder(int, int);
 
 Q_SIGNALS:
 
-    void clicked( Document * );
-    void updateTabsOrder( QList<Document*> );
+    void clicked(Document*);
+    void updateTabsOrder(QList<Document*>);
 
 private Q_SLOTS:
 
-    void onOpen( Document *, int, int );
-    void onClose( Document * );
-    void onSaved( Document * );
-    void onModificationChanged(QObject*);
+    void onOpen(Document*, int, int);
+    void onClose(Document*);
+    void onSaved(Document*);
+    void onModificationChanged(Document*);
     void onItemClicked(QListWidgetItem*);
 
 protected:
-
-    virtual QSize sizeHint() const { return QSize(200,200); }
+    virtual QSize sizeHint() const { return QSize(200, 200); }
 
 private:
-    struct Item : public QListWidgetItem
-    {
-        Item( Document * doc, QListWidget * parent = 0 ):
-            QListWidgetItem(parent, QListWidgetItem::UserType),
-            mDoc(doc)
-        {
+    struct Item : public QListWidgetItem {
+        Item(Document* doc, QListWidget* parent = 0): QListWidgetItem(parent, QListWidgetItem::UserType), mDoc(doc) {
             setText(doc->title());
         }
 
-        Document *mDoc;
+        Document* mDoc;
     };
 
-    virtual void dropEvent( QDropEvent *);
+    virtual void dropEvent(QDropEvent*);
     QList<Document*> listDocuments();
 
-    Item *addItemFor( Document * );
-    Item *itemFor( Document * );
-    Item *itemFor( QListWidgetItem * );
-    QSignalMapper mModificationMapper;
+    Item* addItemFor(Document*);
+    Item* itemFor(Document*);
+    Item* itemFor(QListWidgetItem*);
     QIcon mDocModifiedIcon;
     QList<Document*> dockletOrder;
 };
 
-class DocumentsDocklet : public Docklet
-{
+class DocumentsDocklet : public Docklet {
     Q_OBJECT
 public:
-    DocumentsDocklet(DocumentManager *manager, QWidget* parent = 0);
+    DocumentsDocklet(DocumentManager* manager, QWidget* parent = 0);
 
-    DocumentListWidget *list() { return mDocList; }
+    DocumentListWidget* list() { return mDocList; }
 
 private:
-
-    DocumentListWidget *mDocList;
+    DocumentListWidget* mDocList;
 };
 
 } // namespace ScIDE

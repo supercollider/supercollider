@@ -30,19 +30,13 @@ class IDEWebChannelWrapper : public QObject {
     Q_OBJECT
 
 public:
-    IDEWebChannelWrapper(HelpBrowser* browser):
-        m_browser{browser}
-    {}
+    IDEWebChannelWrapper(HelpBrowser* browser): m_browser { browser } {}
 
 public slots:
-    void evaluateLine()
-    {
-        m_browser->evaluateSelection(false);
-    }
+    void evaluateLine() { m_browser->evaluateSelection(false); }
 
 private:
-    HelpBrowser * const m_browser;
+    HelpBrowser* const m_browser;
 };
 
 } // namespace ScIDE
-

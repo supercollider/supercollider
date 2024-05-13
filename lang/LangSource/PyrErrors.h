@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -26,21 +26,21 @@ virtual machine error codes.
 #pragma once
 
 enum { // primitive errors
-	errReturn = -1,	// not really an error.. primitive executed a non-local return
-	errNone,
-	errFailed = 5000,
-	errBadPrimitive,
-	errWrongType,
-	errIndexNotAnInteger,
-	errIndexOutOfRange,
-	errImmutableObject,
-	errNotAnIndexableObject,
-	errStackOverflow,
-	errOutOfMemory,
-	errCantCallOS,
-	errException,
+    errReturn = -1, // not really an error.. primitive executed a non-local return
+    errNone,
+    errFailed = 5000,
+    errBadPrimitive,
+    errWrongType,
+    errIndexNotAnInteger,
+    errIndexOutOfRange,
+    errImmutableObject,
+    errNotAnIndexableObject,
+    errStackOverflow,
+    errOutOfMemory,
+    errCantCallOS,
+    errException,
 
-	errPropertyNotFound = 6000,
+    errPropertyNotFound = 6000,
 
     errLastError
 };

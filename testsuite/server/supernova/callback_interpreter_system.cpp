@@ -6,23 +6,17 @@
 
 using namespace nova;
 
-namespace
-{
+namespace {
 
 int i = 0;
 
-struct dummy
-{
-    void run(void)
-    {
-        ++i;
-    }
+struct dummy {
+    void run(void) { ++i; }
 };
 
 }
 
-BOOST_AUTO_TEST_CASE( callback_system_test )
-{
+BOOST_AUTO_TEST_CASE(callback_system_test) {
     callback_system<dummy> cbs;
 
     cbs.add_callback(new dummy());
@@ -30,8 +24,7 @@ BOOST_AUTO_TEST_CASE( callback_system_test )
     BOOST_REQUIRE_EQUAL(i, 1);
 }
 
-BOOST_AUTO_TEST_CASE( threaded_callback_interpreter_test )
-{
+BOOST_AUTO_TEST_CASE(threaded_callback_interpreter_test) {
     threaded_callback_interpreter<dummy> cbi;
 
     cbi.start_thread();
@@ -43,8 +36,7 @@ BOOST_AUTO_TEST_CASE( threaded_callback_interpreter_test )
     BOOST_REQUIRE_EQUAL(i, 21);
 }
 
-BOOST_AUTO_TEST_CASE( callback_interpreter_threadpool_test )
-{
+BOOST_AUTO_TEST_CASE(callback_interpreter_threadpool_test) {
     {
         callback_interpreter_threadpool<dummy> cbi(4, true, thread_priority_interval().first);
 

@@ -118,8 +118,8 @@ function set_up_toc() {
 
     var toc_link = $("<a>", {
         href: "#",
-        class: "menu-link",
-        text: "Table of contents \u25bc"
+        class: "menu-link toc-link",
+        html: "T<span>able </span>O<span>f </span>C<span>ontents</span> \u25bc"
     }).appendTo(toc_container);
 
     $("#toc").appendTo(toc_container);
@@ -156,10 +156,11 @@ function fixTOC() {
 
     $("#menubar").append($("<ul>", {id: "nav"}));
 
-    create_menubar_item("SuperCollider " + scdoc_sc_version, helpRoot + "/Help.html");
-
-    create_menubar_item(scdoc_title, "#", function (a, li) {
-        a.addClass("title");
+    create_menubar_item("", helpRoot + "/Help.html", function (a, li) {
+        a.addClass("home");
+        $('<span>', { 
+            text: "SuperCollider"
+        }).appendTo(a);
     });
 
     create_menubar_item("Browse", helpRoot + "/Browse.html");
@@ -197,8 +198,13 @@ function fixTOC() {
 // Set up a QWebChannel for communicating with C++ IDE objects. The main app publishes a handle
 // to IDE functionality at "IDE" which is made globally available here after the page and
 // WebSocket have loaded.
-function setUpWebChannel() {
-    var baseUrl = "ws://localhost:12344";
+
+// This function is called by the IDE, and will not be called otherwise.
+function setUpWebChannel(port) {
+    if (typeof QWebChannel === "undefined") {
+        return;
+    }
+    var baseUrl = `ws://localhost:${port}`;
     var socket = new WebSocket(baseUrl);
     socket.onclose = function() { };
     socket.onerror = function(error) {
@@ -211,10 +217,3 @@ function setUpWebChannel() {
         });
     }
 }
-
-$(function () {
-    // Check that webchannel.js was loaded
-    if(typeof QWebChannel !== "undefined") {
-        setUpWebChannel();
-    }
-});

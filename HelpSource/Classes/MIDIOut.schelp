@@ -52,12 +52,20 @@ method::sysex
 Sends a sysex command represented as an link::Classes/Int8Array:: to the device.
 
 note::
-On Windows, the function call must contain a full sysex message. In other words,
-it must start with 0xF0 (240 or -16) and end with 0xF7 (247 or -9).
+The method call should contain a full sysex message. In other words,
+it should start with 0xF0 (240 or -16) and end with 0xF7 (247 or -9).
 ::
 
 argument:: packet
 An Int8Array of data bytes to be sent.
+
+code::
+m = MIDIOut(0);
+
+m.sysex(Int8Array[0xF0, 1, 2, 3, 0xF7]);  // OK!
+
+m.sysex(Int8Array[1, 2, 3]);  // not OK
+::
 
 private::send, prSysex
 
@@ -141,9 +149,15 @@ m.connect(1);  // connect to MIDIClient.destinations[1]
 
 WARNING:: The teletype::port:: argument to link::Classes/MIDIOut#*new:: has an entirely different meaning in Linux, compared to macOS and Windows. If user code calls this method emphasis::and:: cross-platform compatibility is needed, it is the user's responsibility to handle Linux separately. User code can check the platform using code::thisProcess.platform.name:: (which returns one of code::\osx::, code::\linux:: or code::\windows::). Or, for compatibility, use link::#*newByName:: instead.::
 
-link::Classes/MIDIOut#*new:: optionally takes a second argument, for the uid of the MIDI destination device. This establishes a direct connection to the target, which is not visible in Qjackctl. The teletype::port:: argument is irrelevant in this case; the MIDIOut instance is always one-to-one with the target.
+link::Classes/MIDIOut#*new:: optionally takes a second argument, for the uid of the MIDI destination device. If the uid is non-zero, then: 1/ all connections in the ALSA MIDI patchbay are ignored, and 2/ individual messages will be sent directly to the specified device.
 
-link::Classes/MIDIOut#*newByName:: should create one-to-one MIDIOut connections on all platforms.
+link::Classes/MIDIOut#*newByName:: locates a device by name and populates the uid in the new MIDIOut object. After successful completion, a MIDIOut object created using this method will have a non-zero uid.
+
+note::
+A non-zero uid (whether specified in teletype::MIDIOut.new::, found by teletype::MIDIOut.newByName::, or set manually later) does not create or use any ALSA MIDI connections. It is not a "connection" at all; rather, it is a parameter that causes outgoing MIDI messages to bypass ALSA MIDI connections and go directly to one specific device. Because it is not a connection, there is nothing to show in MIDI patchbay interfaces; users should not expect to see connections for these MIDIOut objects.
+
+Also, because a uid bypasses patchbay connections, it is meaningless to specify a uid and use teletype::.connect:: at the same time. A single MIDIOut object should not do both at once. (It does not break anything, but the patchbay connections are ignored.)
+::
 
 strong::Compatibility::
 list::

@@ -26,37 +26,26 @@
 
 namespace ScIDE {
 
-class PopUpWidget : public QWidget
-{
+class PopUpWidget : public QWidget {
     Q_OBJECT
 
 public:
-    enum Result {
-        Rejected = 0,
-        Accepted
-    };
+    enum Result { Rejected = 0, Accepted };
 
 public:
-    explicit PopUpWidget( QWidget * parent = 0 );
+    explicit PopUpWidget(QWidget* parent = 0);
     virtual ~PopUpWidget();
 
-    int exec( const QRect & targetRect );
-    void popup( const QRect & targetRect );
-    void setTargetRect( const QRect & targetRect ) { mTargetRect = targetRect; }
+    int exec(const QRect& targetRect);
+    void popup(const QRect& targetRect);
+    void setTargetRect(const QRect& targetRect) { mTargetRect = targetRect; }
 
 public slots:
-    void accept()
-    {
-        done(Accepted);
-    }
+    void accept() { done(Accepted); }
 
-    void reject()
-    {
-        done(Rejected);
-    }
+    void reject() { done(Rejected); }
 
-    void done(int result)
-    {
+    void done(int result) {
         mResult = result;
         hide();
         quit();
@@ -66,8 +55,7 @@ signals:
     void finished(int result);
 
 private:
-    void quit()
-    {
+    void quit() {
         if (mEventLoop) {
             mEventLoop->exit();
             mEventLoop = 0;
@@ -75,17 +63,16 @@ private:
     }
 
 protected:
-    virtual void hideEvent( QHideEvent *e )
-    {
+    virtual void hideEvent(QHideEvent* e) {
         quit();
         emit finished(mResult);
     }
 
-    virtual void keyPressEvent( QKeyEvent *ke );
-    virtual void showEvent( QShowEvent * );
+    virtual void keyPressEvent(QKeyEvent* ke);
+    virtual void showEvent(QShowEvent*);
 
 private:
-    QEventLoop *mEventLoop;
+    QEventLoop* mEventLoop;
     int mResult;
     QRect mTargetRect;
 };

@@ -22,8 +22,7 @@
 
 #include <QColor>
 
-namespace ScIDE {
-namespace color {
+namespace ScIDE { namespace color {
 
 QColor lighten(const QColor& color, int amount);
 QColor darken(const QColor& color, int amount);

@@ -19,16 +19,15 @@
 #pragma once
 
 #ifdef __GNUC__
-#define RESTRICTED_POINTERS
-#define ALIGNED_POINTERS
+#    define RESTRICTED_POINTERS
+#    define ALIGNED_POINTERS
 #endif
 
-namespace nova
-{
+namespace nova {
 typedef float sample;
 
 #ifndef RESTRICTED_POINTERS
-#define __restrict__ /*__restrict__*/
+#    define __restrict__ /*__restrict__*/
 #endif /* RESTRICTED_POINTERS */
 
 #ifdef ALIGNED_POINTERS
@@ -37,10 +36,10 @@ typedef sample aligned_sample __attribute__((aligned(4 * sizeof(sample))));
 typedef sample aligned_sample;
 #endif /* ALIGNED_POINTERS */
 
-typedef aligned_sample *__restrict__ restricted_sample_ptr;
-typedef const aligned_sample *__restrict__ const_restricted_sample_ptr;
+typedef aligned_sample* __restrict__ restricted_sample_ptr;
+typedef const aligned_sample* __restrict__ const_restricted_sample_ptr;
 
-typedef aligned_sample * aligned_sample_ptr;
-typedef const aligned_sample * const_aligned_sample_ptr;
+typedef aligned_sample* aligned_sample_ptr;
+typedef const aligned_sample* const_aligned_sample_ptr;
 
 } /* namespace nova */

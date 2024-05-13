@@ -29,7 +29,7 @@
 
 #elif defined(BOOST_WINDOWS)
 
-#include <boost/detail/winapi/config.hpp>
+#include <boost/winapi/config.hpp>
 #define BOOST_SYNC_DETAIL_PLATFORM_WINAPI
 
 #elif defined(__linux__) || defined(__linux) || defined(linux)
@@ -82,6 +82,9 @@
 
 #if !defined(BOOST_NO_CXX11_INLINE_NAMESPACES)
 #define BOOST_SYNC_DETAIL_OPEN_ABI_NAMESPACE inline namespace BOOST_SYNC_DETAIL_ABI_NAMESPACE
+#elif defined(BOOST_GCC) && BOOST_GCC >= 40400
+// GCC 7 deprecated strong using directives but allows inline namespaces in C++03 mode since GCC 4.4.
+#define BOOST_SYNC_DETAIL_OPEN_ABI_NAMESPACE __extension__ inline namespace BOOST_SYNC_DETAIL_ABI_NAMESPACE
 #else
 #define BOOST_SYNC_DETAIL_OPEN_ABI_NAMESPACE namespace BOOST_SYNC_DETAIL_ABI_NAMESPACE
 namespace boost {

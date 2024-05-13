@@ -23,7 +23,7 @@ subsection::Command paths
 
 OSC commands sometimes include additional parameters to specify the right responder.
 
-For example code::/tr:: commands, which are generated on the server by the link::Classes/SendTrig:: Ugen create an OSC packet consisting of: code:: [ /tr, nodeID, triggerID, value] ::.
+For example code::/tr:: commands, which are generated on the server by the link::Classes/SendTrig:: UGen create an OSC packet consisting of: code:: [ /tr, nodeID, triggerID, value] ::.
 This array actually specifies the source of value: code:: [ /tr, nodeID, triggerID] ::.
 We will refer to that array as a command path.
 

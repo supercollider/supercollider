@@ -10,7 +10,7 @@
  * \brief  This test verifies that \c chrono::system_clock has the same epoch time point as \c std::time_t
  */
 
-#include <boost/test/unit_test.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 #include <ctime>
 #include <boost/chrono/system_clocks.hpp>
@@ -21,20 +21,20 @@
 #endif
 
 #if !defined(BOOST_SYNC_DETAIL_STD_CHRONO_TIME_T_MISMATCH)
-#define BOOST_SYNC_DETAIL_CHECK_CLOCK(x) BOOST_CHECK_EQUAL(x, (std::time_t)0)
+#define BOOST_SYNC_DETAIL_CHECK_CLOCK(x) BOOST_TEST_EQ(x, (std::time_t)0)
 #else
-#define BOOST_SYNC_DETAIL_CHECK_CLOCK(x) BOOST_CHECK_NE(x, (std::time_t)0)
+#define BOOST_SYNC_DETAIL_CHECK_CLOCK(x) BOOST_TEST_NE(x, (std::time_t)0)
 #endif
 
 #if defined(BOOST_SYNC_DETAIL_TEST_STD_CHRONO)
 #include <chrono>
 
-BOOST_AUTO_TEST_CASE(std_chrono_system_clock_time_t_mismatch)
+void test_std_chrono_system_clock_time_t_mismatch()
 {
     BOOST_SYNC_DETAIL_CHECK_CLOCK(std::chrono::system_clock::to_time_t(std::chrono::system_clock::time_point()));
 }
 
-BOOST_AUTO_TEST_CASE(std_chrono_system_clock_time_t_now_mismatch)
+void test_std_chrono_system_clock_time_t_now_mismatch()
 {
     std::time_t t1, t3;
     std::chrono::system_clock::time_point chrono_t2;
@@ -50,21 +50,26 @@ BOOST_AUTO_TEST_CASE(std_chrono_system_clock_time_t_now_mismatch)
     // to_time_t is allowed to perform arithmetic rounding to seconds
     if (t2 > t1)
     {
-        BOOST_CHECK_EQUAL((t2 - t1), 1);
+        BOOST_TEST_EQ((t2 - t1), 1);
+    }
+    // std::time may also be implemented on top of system clock and perform arithmetic rounding
+    else if (t1 > t2)
+    {
+        BOOST_TEST_EQ((t1 - t2), 1);
     }
     else
     {
-        BOOST_CHECK_EQUAL(t1, t2);
+        BOOST_TEST_EQ(t1, t2);
     }
 }
 #endif
 
-BOOST_AUTO_TEST_CASE(boost_chrono_system_clock_time_t_mismatch)
+void test_boost_chrono_system_clock_time_t_mismatch()
 {
-    BOOST_CHECK_EQUAL(boost::chrono::system_clock::to_time_t(boost::chrono::system_clock::time_point()), (std::time_t)0);
+    BOOST_TEST_EQ(boost::chrono::system_clock::to_time_t(boost::chrono::system_clock::time_point()), (std::time_t)0);
 }
 
-BOOST_AUTO_TEST_CASE(boost_chrono_system_clock_time_t_now_mismatch)
+void test_boost_chrono_system_clock_time_t_now_mismatch()
 {
     std::time_t t1, t3;
     boost::chrono::system_clock::time_point chrono_t2;
@@ -80,10 +85,23 @@ BOOST_AUTO_TEST_CASE(boost_chrono_system_clock_time_t_now_mismatch)
     // to_time_t is allowed to perform arithmetic rounding to seconds
     if (t2 > t1)
     {
-        BOOST_CHECK_EQUAL((t2 - t1), 1);
+        BOOST_TEST_EQ((t2 - t1), 1);
     }
     else
     {
-        BOOST_CHECK_EQUAL(t1, t2);
+        BOOST_TEST_EQ(t1, t2);
     }
+}
+
+int main()
+{
+#if defined(BOOST_SYNC_DETAIL_TEST_STD_CHRONO)
+    test_std_chrono_system_clock_time_t_mismatch();
+    test_std_chrono_system_clock_time_t_now_mismatch();
+#endif
+
+    test_boost_chrono_system_clock_time_t_mismatch();
+    test_boost_chrono_system_clock_time_t_now_mismatch();
+
+    return boost::report_errors();
 }

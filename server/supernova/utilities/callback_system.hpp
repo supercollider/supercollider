@@ -31,33 +31,20 @@
 namespace nova {
 
 /** \brief simple templated callback system, using a lockfree fifo */
-template <class callback_type,
-          bool mpmc = true,
-          class callback_deleter = boost::checked_deleter<callback_type> >
-class callback_system:
-    private callback_deleter
-{
+template <class callback_type, bool mpmc = true, class callback_deleter = boost::checked_deleter<callback_type>>
+class callback_system : private callback_deleter {
     typedef typename boost::mpl::if_c<mpmc, boost::lockfree::queue<callback_type*>,
-                                            boost::lockfree::spsc_queue<callback_type*>
-                                     >::type queue_type;
+                                      boost::lockfree::spsc_queue<callback_type*>>::type queue_type;
 
 public:
-    callback_system(size_t element_count = 2048):
-        callbacks(element_count)
-    {}
+    callback_system(size_t element_count = 2048): callbacks(element_count) {}
 
     /** \brief adds a new Callback to the Scheduler, threadsafe */
-    inline void add_callback(callback_type * cb)
-    {
-        callbacks.push(cb);
-    }
+    inline void add_callback(callback_type* cb) { callbacks.push(cb); }
 
     /** \brief run all callbacks */
-    inline void run_callbacks(void)
-    {
-        callbacks.consume_all( [this]( callback_type * cb) {
-            run_callback( cb );
-        });
+    inline void run_callbacks(void) {
+        callbacks.consume_all([this](callback_type* cb) { run_callback(cb); });
     }
 
     /** \brief run one callback
@@ -65,23 +52,19 @@ public:
      * assumes, that the queue contains at least one callback
      *
      * */
-    void run_callback(void)
-    {
-        callbacks.consume_one( [this]( callback_type * cb) {
-            run_callback( cb );
-        });
+    void run_callback(void) {
+        callbacks.consume_one([this](callback_type* cb) { run_callback(cb); });
     }
 
 private:
     /** run a callback, handle exceptions */
-    bool run_callback(callback_type * runme)
-    {
+    bool run_callback(callback_type* runme) {
         bool ret;
         try {
             runme->run();
             ret = true;
-        } catch(std::exception const & e) {
-            std::cout << "unhandled exception while running callback: "  << e.what() << std::endl;
+        } catch (std::exception const& e) {
+            std::cout << "unhandled exception while running callback: " << e.what() << std::endl;
             ret = false;
         }
         callback_deleter::operator()(runme);
@@ -89,7 +72,7 @@ private:
     }
 
 protected:
-    queue_type callbacks;   /**< \brief fifo for callbacks */
+    queue_type callbacks; /**< \brief fifo for callbacks */
 };
 
 } /* namespace nova */

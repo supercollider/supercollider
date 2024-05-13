@@ -1,0 +1,428 @@
+class::CondVar
+categories::Scheduling
+summary::Condition variable: block one or more threads until some condition is true
+
+CondVar is a strong::condition variable::, a low-level synchronization tool which allows one or more threads to wait
+until some condition becomes true. Although it has "variable" in the name, a condition variable doesn't wrap a variable
+like, for example, link::Classes/FlowVar:: does. The condition referred to here is totally external to the CondVar
+object, and can be any arbitrary state in your code. CondVar supports two fundamental operations: waiting and
+signalling.  Waiting means suspending execution of the current thread until the relevant condition becomes true at some
+point in the future. Signalling means indicating to other threads that the condition is now true, and that they should
+continue executing.
+
+When waiting on a CondVar, you may optionally pass a predicate (an object, usually a Function, that returns a
+Boolean when evaluated with code::value::) as an argument. This leads to two general ways of using CondVar:
+
+list::
+## Manually checking your condition
+
+	numberedlist::
+	## First, check the condition in case it is already true.
+	## If the condition is false, call wait or waitFor without a predicate. This suspends execution of the current thread.
+	## When the CondVar is signalled or a timeout expires, the thread continues execution. You should then check the
+		condition again, and continue waiting if it is not satisfied.
+	::
+
+This usually takes the form of a while loop of the form: code::while { /* condition is false */ } { /* wait on condition
+*/ }::.
+
+## Have CondVar check your condition for you: call wait or waitFor with a predicate, which takes care of the three steps above.
+::
+
+The following code illustrates these two approaches:
+
+code::
+// Version 1: `wait` without predicate -- while loop required
+(
+var c = CondVar();
+// Our resource here will be a "message", which is set to some string
+// when available, and set to empty when unavailable. This resource is
+// initially unavailable.
+var message = "";
+
+// We add these delays to be clear about which thread runs first. Try
+// changing these values to see what happens!
+var waitThreadDelay = 1;
+var signalThreadDelay = 2;
+
+// These two forked threads will share the condition variable, `c`,
+// and the condition state, `message`.
+fork {
+	waitThreadDelay.wait;
+	while { message.isEmpty } {
+		"Resource is unavailable, waiting now".postln;
+		c.wait;
+	};
+	"Resource is available, message is: '%'\n".postf(message);
+};
+
+fork {
+	signalThreadDelay.wait;
+	message = "meow, world!";
+	c.signalOne;
+	"Resource was made available and waiting thread was signaled".postln;
+};
+)
+
+// Version 2: `wait` with predicate -- no while loop required
+(
+var c = CondVar(), message = "";
+var waitThreadDelay = 1;
+var signalThreadDelay = 2;
+
+fork {
+	waitThreadDelay.wait;
+	c.wait({ message.notEmpty });
+	"Resource is available, message is: '%'\n".postf(message);
+};
+
+fork {
+	signalThreadDelay.wait;
+	message = "meow, world!";
+	c.signalOne;
+	"Resource was made available and waiting thread was signaled".postln;
+};
+)
+::
+
+Internally, CondVar is little more than a queue of threads which are waiting for the condition to become true. When
+signaling, you have the choice of waking only the next waiting thread on the queue, if one exists (code::signalOne::),
+or waking all waiting threads in the queue (code::signalAll::).
+
+Note that threads in the queue do not resume immediately upon a signal. They are scheduled to resume immediately after
+the signalling thread relinquishes control, either by code::yield:: or code::wait::, or by reaching the end of a playing
+Routine. In the examples above, the code::signalOne:: Routine simply ends, so there is no need to code::yield:: anything.
+
+In other languages, you may see that condition variables also use a mutex for synchronization. This is typically
+necessary to protect shared access to the condition state.  However, since SuperCollider's interpreter is
+single-threaded, each running thread implicitly holds the global interpreter mutex and more fine-grained mutexes are
+unnecessary.
+
+classmethods::
+
+method::new
+
+Create a new instance.
+
+instancemethods::
+
+private::prSleepThread, prWakeThread, prRemoveWaitingThread, prConvertTimeoutBeatsToSafeValue
+private::prWait, prWaitFor
+
+method::wait
+
+The behavior depends on whether a code::predicate:: is given. If no code::predicate:: is given, this method simply
+blocks the current thread until it is woken by code::signalOne:: or code::signalAll::. Otherwise, this method is
+equivalent to code::while { predicate.value.not } { cond.wait }::. In other words, the thread only blocks if the
+predicate is false, otherwise it blocks and only resumes once the thread has been signalled and the predicate is true.
+
+This method must only be called within a link::Classes/Routine:: or Routine wrapper (for example, link::Classes/Task::
+or link::Classes/Tdef::).
+
+argument::predicate
+
+A condition to be checked before blocking, and before resuming after being woken by code::signalOne:: or
+code::signalAll::. If code::predicate.value.not:: is code::true::, execution resumes.  Typically, this is a Function
+that returns a Boolean.
+
+code::predicate:: is always executed on the thread which called code::wait::. If evaluating the predicate throws an
+exception, the exception will propagate up on the thread which called code::wait::, and the thread will no longer be
+waiting on this CondVar.
+
+When code::wait:: returns, the predicate was true. It may not be true later, for instance if it depends on external
+factors such as the system time or the state of the server.
+
+returns::this object
+
+method::waitFor
+
+Similar to code::wait::, but the thread will also be unblocked if the relative timeout code::timeoutBeats:: expires.
+
+If code::predicate:: is code::nil::, this method blocks the current thread until it is woken by code::signalOne:: or
+code::signalAll::, or the timeout expires. If code::predicate:: is not code::nil::, this method returns immediately if
+code::predicate.value:: is true, and otherwise blocks either until the timeout expires, or until the thread is woken by
+code::signalOne:: or code::signalAll:: and code::predicate.value:: is true.
+
+Because the interpreter's thread scheduler is not preemptive, an expiring timeout will only wake the thread if other
+threads are idle. You are not guaranteed that the thread will be woken close to the timeout duration expiring, or even
+that it will be woken at all. This could happen, for example, if some other thread enters an infinite loop and never
+yields.
+
+This method must only be called within a link::Classes/Routine:: or Routine wrapper (for example, link::Classes/Task:: or link::Classes/Tdef::).
+
+argument::timeoutBeats
+
+A duration in beats to wait before timing out. This value is converted according to the following rules: if its class is
+Integer or Float, it remainds unchanged; otherwise, if it responds to code::asInteger::, this method is called;
+otherwise, if it responds to code::asFloat::, this method is called. After this, if the resulting value is not an
+Integer or a Float, an error is thrown. An error is also thrown if the resulting value is code::inf:: or not a number
+(NaN).  If the resulting value is less than or equal to 0, code::waitFor:: returns the result of code::predicate.value::
+immediately if code::predicate:: is not nil and code::false:: otherwise.
+
+These strict checks are made to protect the thread which handles timeouts.
+
+argument::predicate
+
+A condition to be checked before blocking, and before resuming after being woken by code::signalOne:: or
+code::signalAll:: or a timeout. Typically, this is a Function that returns a Boolean.
+
+code::predicate:: is always executed on the thread which called code::wait::. If evaluating the predicate throws an
+exception, the exception will propagate up on the thread which called code::wait::, and the thread will no longer be
+waiting on this CondVar.
+
+returns::
+
+If the thread was woken because the timeout expired, then returns code::predicate.value:: if one was given and
+code::false:: if code::predicate:: was code::nil::.  Otherwise, returns code::true::.
+
+In other words, if code::predicate:: is non-nil, a return value of code::true:: means that code::predicate.value:: was
+true when the thread resumed.
+
+method::signalOne
+
+Wakes one thread waiting on this Condition. Threads are woken in the order in which they called code::wait:: or
+code::waitFor::. If a thread is woken and was waiting with a predicate, and that predicate is still code::false::, it
+will code::wait:: again and be placed at the end of the queue of threads waiting on this CondVar. Another thread will
+not be woken in that case.
+
+returns::this object
+
+method::signalAll
+
+Wakes all threads waiting on this Condition. Threads are woken in the order in which they called code::wait:: or
+code::waitFor::. If threads were waiting with predicates and their predicates are still code::false:: after being woken,
+they will block again in the same order as before this method was called.
+
+returns::this object
+
+method::shallowCopy, copy, deepCopy
+
+Throws a code::ShouldNotImplementError::; CondVars cannot be copied, shallow copied, or deep copied.
+
+examples::
+
+subsection::Simple interactive example
+
+code::
+(
+c = CondVar();
+
+Routine {
+	1.wait;
+	"waited for 1 second".postln;
+	1.wait;
+	"waited for another second, now waiting for you to run 'c.signalOne'...".postln;
+	c.wait;
+	"the condition is no longer waiting".postln;
+	1.wait;
+	"waited for another second, now waiting for you...".postln;
+	c.wait;
+	"the condition is no longer waiting".postln;
+	1.wait;
+	"the end".postln;
+}.play;
+)
+
+// Run this line to unblock the routine
+c.signalOne;
+::
+
+subsection::Producer-consumer queue: single producer, single consumer
+
+The following example shows a CondVar used to manage a simple producer-consumer queue with one consumer and one producer.
+
+The producer thread adds "tasks" to the queue, while the consumer thread removes and "processes" them. When there is no
+work to do, the consumer has to wait until work is available. When there is too much work to do, the producer thread
+should avoid creating more tasks. Try playing with the wait times for each thread to see what happens.
+
+code::
+(
+var full = CondVar(), empty = CondVar();
+var queue = Array();
+var maxQueueSize = 5;
+// The producer and consumer will wait between tasks for a duration
+// somewhere in these ranges.  Over time, you'll see the queue grow
+// and shrink between 0 and maxQueueSize, but CondVar keeps everything
+// synchronized.
+var producerWaitTimeRange = [0.1, 1];
+var consumerWaitTimeRange = [0.1, 1];
+
+// The "wait"s in each thread simulate doing some task asynchronously,
+// during which time other tasks might be created. If our tasks were
+// always created and/or executed synchronously, there would be no
+// need for a queue shared between two threads.
+
+// producer thread
+fork {
+	var counter = 0; // Our "task" is just an increasing number for now
+	var task;
+	loop {
+		// This guarantees that when we return from `wait`, there is
+		// enough room in the queue to add another task. To get past
+		// this, we have to wait until the consumer calls
+		// signalOne.
+		full.wait({ queue.size < maxQueueSize });
+
+		task = counter;
+		counter = counter + 1;
+		queue = queue.add(task);
+		postf("Producer created a task: %. Current queue size: %\n",
+			task, queue.size);
+
+		// Now that we've added a task to the queue, we have to let
+		// the consumer thread know in case it was waiting on us.
+		empty.signalOne;
+
+		wait(rrand(producerWaitTimeRange[0], producerWaitTimeRange[1]));
+	}
+};
+
+// consumer thread
+fork {
+	var task;
+	loop {
+		// As in the producer thread, this blocks us until both the
+		// queue has something in it, and we've been signaled by the
+		// producer.
+		empty.wait({ queue.notEmpty });
+
+		task = queue.removeAt(0);
+		postf("Consumer processed a task: %. Current queue size: %\n",
+			task, queue.size);
+
+		// We need to signal to the producer, in case it was waiting
+		// on us to insert something into the queue.
+		full.signalOne;
+
+		wait(rrand(consumerWaitTimeRange[0], consumerWaitTimeRange[1]));
+	}
+};
+)
+::
+
+subsection::Producer-consumer queue: multiple producers, multiple consumers
+
+Here is another producer-consumer example with multiple producers and multiple consumers. Note how easily the code above
+can be generalized.
+
+code::
+(
+var full = CondVar(), empty = CondVar();
+var queue = Array();
+var counter = 0; // The task counter is shared among all producers this time
+
+// Try experimenting with these parameters
+var maxQueueSize = 10;
+var numProducers = 3;
+var numConsumers = 3;
+var producerWaitTimeRange = [0.3, 1.5];
+var consumerWaitTimeRange = [0.3, 1.5];
+
+// producer threads
+numProducers.do { |index|
+	fork {
+		var task;
+		loop {
+			full.wait({ queue.size < maxQueueSize });
+
+			task = counter;
+			counter = counter + 1;
+			queue = queue.add(task);
+			postf("Producer % created a task: %. Current queue size: %\n",
+				index, task, queue.size);
+
+			// Even though there might be multiple consumers waiting
+			// on this condition, only one of them can possibly make
+			// use of the new task we just created.  So we use
+			// signalOne instead of signalAll.
+			empty.signalOne;
+
+			wait(rrand(producerWaitTimeRange[0], producerWaitTimeRange[1]));
+		}
+	}
+};
+
+// consumer thread
+numConsumers.do { |index|
+	fork {
+		var task;
+		loop {
+			empty.wait({ queue.notEmpty });
+
+			task = queue.removeAt(0);
+			postf("Consumer % processed a task: %. Current queue size: %\n",
+				index, task, queue.size);
+
+			full.signalOne;
+
+			wait(rrand(consumerWaitTimeRange[0], consumerWaitTimeRange[1]));
+		}
+	}
+}
+)
+::
+
+subsection::Using timeouts
+
+Sometimes, you want to wait on an external condition that may never come true, or you want to do something else in case
+you've been waiting for a long time. This is a good place to use code::waitFor::. In our example, we're using a Routine
+that sometimes fails to set the desired condition to simulate this "unreliable" task. Some practical examples of this
+might be a long asynchronous task on the server or in a call to unixCmd that doesn't finish in time, or doesn't produce
+the result we were looking for.
+
+code::
+(
+var condition = CondVar();
+
+// Our "unreliable" task will half the time signal us that it's done,
+// but half the time it will fail to do so.
+fork {
+	var coinFlip;
+	1.wait;
+	coinFlip = 0.5.coin;
+	postf("Flip gave us: % ; %signalling the condition\n", coinFlip,
+		if(coinFlip, "not ", ""));
+	if(coinFlip) { condition.signalOne };
+};
+
+fork {
+	// In this case, the random coin flip succeeding is our entire
+	// condition, so we don't pass any predicate to waitFor.
+	if(condition.waitFor(2)) {
+		"Coin flip succeeded!".postln
+	} {
+		"Coin flip failed, and we timed out".postln
+	};
+};
+)
+::
+
+We can also rewrite this example so that we get signalled no matter what, but the condition might still not come true.
+
+code::
+(
+var condition = CondVar();
+var coinFlip = false;
+
+fork {
+	// The coin flip now has multiple chances to succeed, but it still
+	// might not do so within our 2-second window.
+	5.do { |i|
+		0.2.wait;
+		coinFlip = 0.25.coin;
+		"Flip number %: got %\n".postf(i + 1, coinFlip);
+		condition.signalOne;
+	}
+};
+
+fork {
+	// We don't exit `waitFor` unless we timeout, or we get signalled
+	// *and* the predicate is true.
+	if(condition.waitFor(2, { coinFlip })) {
+		"Coin flip succeeded!".postln
+	} {
+		"Coin flip failed, and we timed out".postln
+	};
+};
+)
+::

@@ -35,10 +35,10 @@ Traverse
 Same like: link::#-depthFirstPreOrderTraversal::
 
 method::depthFirstPreOrderTraversal
-Traverse the data structure first link down, then across (see link::#Examples::).
+Traverse the data structure first link down, then across (see link::#examples::).
 
 method::depthFirstPostOrderTraversal
-Traverse the data structure from bottom up (see link::#Examples::).
+Traverse the data structure from bottom up (see link::#examples::).
 
 EXAMPLES::
 

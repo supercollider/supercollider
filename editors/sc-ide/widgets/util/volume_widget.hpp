@@ -27,29 +27,28 @@ class QSlider;
 
 namespace ScIDE {
 
-class VolumeWidget : public QWidget
-{
+class VolumeWidget : public QWidget {
     Q_OBJECT
 public:
-    explicit VolumeWidget( QWidget * parent = 0 );
+    explicit VolumeWidget(QWidget* parent = 0);
 
 public slots:
-    void setVolumeRange( float min, float max );
-    void setVolume( float volume );
+    void setVolumeRange(float min, float max);
+    void setVolume(float volume);
 
 signals:
-    void volumeChangeRequested( float volume );
+    void volumeChangeRequested(float volume);
 
 private slots:
     void onVolumeSliderAction();
 
 private:
-    int volumeToSlider( float volume );
-    float volumeFromSlider( int slider );
-    bool eventFilter( QObject *, QEvent * );
+    int volumeToSlider(float volume);
+    float volumeFromSlider(int slider);
+    bool eventFilter(QObject*, QEvent*);
 
-    QLabel *mVolumeLabel;
-    QSlider *mVolumeSlider;
+    QLabel* mVolumeLabel;
+    QSlider* mVolumeSlider;
 
     float mVolumeMin = -10000, mVolumeMax = 10000;
 };

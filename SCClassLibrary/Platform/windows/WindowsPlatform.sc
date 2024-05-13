@@ -8,12 +8,12 @@ WindowsPlatform : Platform {
 
 	initPlatform {
 		super.initPlatform;
-		recordingsDir = this.myDocumentsDir +/+ "SuperCollider" +/+ "Recordings";
+		recordingsDir = this.myDocumentsDir +/+ "Recordings";
 	}
 
 	startup {
 		// Server setup
-		Server.program = "scsynth.exe";
+		Server.program = (Platform.resourceDir +/+ "scsynth.exe").quote;
 
 		// Score setup
 		Score.program = Server.program;

@@ -32,14 +32,14 @@ argument:: gap
 An instance of link::Classes/Point::.
 
 method:: children
-An array containing all the views (children) contained in the the container.
+An array containing all the views (children) contained in the container.
 
 
 
 subsection:: Adding and Removing Subviews
 
 method:: add
-Adds a view to children. The placement of the child view will depend on the the decorator, and the child's bounds. Normally you don't need to call this directly, since subviews call it automatically when you create them.
+Adds a view to children. The placement of the child view will depend on the decorator, and the child's bounds. Normally you don't need to call this directly, since subviews call it automatically when you create them.
 argument:: child
 
 method:: removeAll

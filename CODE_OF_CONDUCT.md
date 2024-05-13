@@ -94,4 +94,4 @@ We expect all community participants (contributors, paid or otherwise; sponsors;
 
 ## License and attribution
 
-The SuperCollider Code of Conduct is distributed under a [Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/) license. It is based on the [Berlin Code of Conduct](http://berlincodeofconduct.org/), the [Open Code of Conduct](https://github.com/todogroup/opencodeofconduct), and the [Geek Feminism Code of Conduct] (http://geekfeminism.org/about/code-of-conduct/).
+The SuperCollider Code of Conduct is distributed under a [Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/) license. It is based on the [Berlin Code of Conduct](http://berlincodeofconduct.org/), the [Open Code of Conduct](https://github.com/todogroup/opencodeofconduct), and the [Geek Feminism Code of Conduct](http://geekfeminism.org/about/code-of-conduct/).

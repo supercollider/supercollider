@@ -8,6 +8,7 @@ When you schedule a function (as in the Scheduling Events tutorial), the functio
 Routines can be used for data processing, e.g.
 
 code::
+(
 r = Routine({
 	"abcde".yield;
 	"fghij".yield;
@@ -16,6 +17,7 @@ r = Routine({
 	"uvwxy".yield;
 	"z{|}~".yield;
 });
+)
 
 r.next;	// get the next value from the Routine
 6.do({ r.next.postln });
@@ -30,6 +32,7 @@ section::Scheduling routines
 Recall that, when you schedule a function on a clock, numbers returned by the function are treated as time values -- specifically, the amount of time until the function should execute again. The same thing happens with numbers yielded by a routine.
 
 code::
+(
 r = Routine({
 	var delta;
 	loop {
@@ -38,6 +41,7 @@ r = Routine({
 		delta.yield;
 	}
 });
+)
 
 r.next;
 
@@ -50,10 +54,10 @@ Now let's replace the posting statements with instructions to play a synth. Prep
 
 code::
 (
-SynthDef(\singrain, { |freq = 440, amp = 0.2, sustain = 1|
+SynthDef(\singrain, { |freq = 440, amp = 0.2, sustain = 1, out|
 	var sig;
 	sig = SinOsc.ar(freq, 0, amp) * EnvGen.kr(Env.perc(0.01, sustain), doneAction: Done.freeSelf);
-	Out.ar(0, sig ! 2);	// sig ! 2 is the same as [sig, sig]
+	Out.ar(out, sig ! 2);	// sig ! 2 is the same as [sig, sig]
 }).add;
 
 r = Routine({
@@ -168,10 +172,10 @@ dur = Routine({
 	[2, 2, 1, 0.5, 0.5, 1, 1, 2, 2, 3].do({ |dur| dur.yield });
 });
 
-SynthDef(\smooth, { |freq = 440, sustain = 1, amp = 0.5|
+SynthDef(\smooth, { |freq = 440, sustain = 1, amp = 0.5, out|
 	var sig;
 	sig = SinOsc.ar(freq, 0, amp) * EnvGen.kr(Env.linen(0.05, sustain, 0.1), doneAction: Done.freeSelf);
-	Out.ar(0, sig ! 2)
+	Out.ar(out, sig ! 2)
 }).add;
 
 r = Task({

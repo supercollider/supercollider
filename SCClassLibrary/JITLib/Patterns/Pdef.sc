@@ -174,7 +174,8 @@ PatternProxy : Pattern {
 	}
 
 	*clear {
-		this.all.do { arg pat; pat.clear }
+		this.all.do { arg pat; pat.clear };
+		this.all.clear;
 	}
 
 	clear {
@@ -274,10 +275,13 @@ Pdefn : PatternProxy {
 	}
 
 	storeArgs { ^[key] } // assume it was created globally
+
 	copy { |toKey|
-		if(key == toKey) { Error("cannot copy to identical key").throw };
+		if(toKey.isNil or: { key == toKey }) { Error("can only copy to new key (key is %)".format(toKey)).throw };
 		^this.class.new(toKey).copyState(this)
 	}
+
+	dup { |n = 2| ^{ this }.dup(n) } // avoid copy in Object::dup
 
 	prAdd { arg argKey;
 		key = argKey;
@@ -345,16 +349,19 @@ TaskProxy : PatternProxy {
 	////////// playing interface //////////
 
 	playOnce { arg argClock, doReset = (false), quant;
-		var clock = argClock ? this.clock;
-		^PauseStream.new(this.asProtected.asStream).play(clock, doReset, quant ? this.quant)
+		var pauseStream = PauseStream(
+			Pprotect(this, { pauseStream.streamError }).asStream
+		);
+		^pauseStream.play(argClock ? this.clock, doReset, quant ? this.quant)
 	}
 
 	play { arg argClock, doReset=false, quant;
+		argClock = argClock ? this.clock;
 		playQuant = quant ? this.quant;
 		if(player.isNil) {
 			player = this.playOnce(argClock, doReset, playQuant);
 		} {
-			// resets  when stream has ended or after pause/cmd-period:
+			// resets when stream has ended or after pause/cmd-period:
 			if (player.streamHasEnded or: { player.wasStopped }) { doReset = true };
 
 			if(player.isPlaying.not) {
@@ -364,9 +371,13 @@ TaskProxy : PatternProxy {
 			}
 		}
 	}
+
 	wakeUp {
-		if(this.isPlaying) { this.play(quant:playQuant) }	}
+		if(this.isPlaying) { this.play(quant:playQuant) }
+	}
+
 	asProtected {
+		// let's deprecate this method in 3.12
 		^Pprotect(this, { if(this.player.notNil) { this.player.streamError } })
 	}
 
@@ -416,9 +427,11 @@ Tdef : TaskProxy {
 	storeArgs { ^[key] }
 
 	copy { |toKey|
-		if(key == toKey) { Error("cannot copy to identical key").throw };
+		if(toKey.isNil or: { key == toKey }) { Error("can only copy to new key (key is %)".format(toKey)).throw };
 		^this.class.new(toKey).copyState(this)
 	}
+
+	dup { |n = 2| ^{ this }.dup(n) } // avoid copy in Object::dup
 
 	prAdd { arg argKey;
 		key = argKey;
@@ -493,7 +506,7 @@ EventPatternProxy : TaskProxy {
 	}
 
 	constrainStream { arg stream, newStream, inval, cleanup;
-		var delta, tolerance;
+		var delta, tolerance, fadeOutCleanup;
 		var quantBeat, catchUp, deltaTillCatchUp, forwardTime, quant = this.quant;
 
 		^if(this.quant.isNil) {
@@ -519,17 +532,19 @@ EventPatternProxy : TaskProxy {
 				} {
 					Pseq([
 						EmbedOnce(
-							Pfindur(delta, stream, tolerance).asStream,
+							Psync(stream, delta, delta, tolerance, delta).asStream,
 							cleanup
 						),
 						newStream
 					]).asStream
 				}
 			}{
+				fadeOutCleanup = cleanup.copy;
+				cleanup.clear; // change need be seen by caller function, i.e. embedInStream
 				Ppar([
 					EmbedOnce(
 						PfadeOut(stream, fadeTime, delta, tolerance),
-						cleanup
+						fadeOutCleanup
 					),
 					PfadeIn(newStream, fadeTime, delta, tolerance)
 				]).asStream
@@ -560,6 +575,7 @@ EventPatternProxy : TaskProxy {
 	////////// playing interface //////////
 
 	play { arg argClock, protoEvent, quant, doReset=false;
+		argClock = argClock ? this.clock;
 		playQuant = quant ? this.quant;
 		if(player.isNil) {
 			player = EventStreamPlayer(this.asProtected.asStream, protoEvent);
@@ -608,9 +624,11 @@ Pdef : EventPatternProxy {
 	}
 
 	copy { |toKey|
-		if(key == toKey) { Error("cannot copy to identical key").throw };
+		if(toKey.isNil or: { key == toKey }) { Error("can only copy to new key (key is %)".format(toKey)).throw };
 		^this.class.new(toKey).copyState(this)
 	}
+
+	dup { |n = 2| ^{ this }.dup(n) } // avoid copy in Object::dup
 
 	*hasGlobalDictionary { ^true }
 

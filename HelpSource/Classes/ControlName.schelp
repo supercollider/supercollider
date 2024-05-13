@@ -35,3 +35,20 @@ method::numChannels
 The number of channels.
 returns:: an link::Classes/Integer::
 
+method:: spec
+The link::Classes/ControlSpec:: for this control. If set, it will be added to the specs metadata for the current SynthDef.at
+
+code::
+(
+d = SynthDef(\tone, { |out = 0, freq = 200|
+	var sig;
+
+	freq.spec = ControlSpec(20, 20000);
+	sig = SinOsc.ar(freq);
+
+	Out.ar(out, sig);
+}).add;
+)
+
+d.specs.freq.postln;
+::

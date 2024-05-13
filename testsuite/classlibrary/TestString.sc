@@ -94,6 +94,79 @@ TestString : UnitTest {
 		this.assertEquals("dir" +/+ 'file', "dir%file".format(sep));
 	}
 
+	// regression tests for #4252
+	test_standardizePath_withTrailingSlash_shouldNotRemove {
+		var result = "~/".standardizePath;
+		var expected = "~".standardizePath ++ "/";
+		this.assertEquals(result, expected);
+	}
+
+	test_standardizePath_withTwoTrailingSlashes_shouldNotRemove {
+		var result = "~//".standardizePath;
+		var expected = "~".standardizePath ++ "//";
+		this.assertEquals(result, expected);
+	}
+
+	test_standardizePath_tilde_expandsToHome {
+		var result = "~".standardizePath;
+		var expected = Platform.userHomeDir;
+		this.assertEquals(result, expected);
+	}
+
+	test_splitext {
+		var result = "/foo/bar/baz.xyz".splitext;
+		var expected = ["/foo/bar/baz", "xyz"];
+		this.assertEquals(result, expected);
+	}
+
+	test_splitext_platform_path {
+		var p = Platform.pathSeparator;
+		var result = (p ++ "foo" ++ p ++ "bar" ++ p ++ "baz.xyz").splitext;
+		var expected = [p ++ "foo" ++ p ++ "bar" ++ p ++ "baz", "xyz"];
+		this.assertEquals(result, expected);
+	}
+
+	test_splitext_no_extension {
+		var result = "/foo/bar/baz".splitext;
+		var expected = ["/foo/bar/baz", nil];
+		this.assertEquals(result, expected);
+	}
+
+	test_splitext_no_extension_platform_path {
+		var p = Platform.pathSeparator;
+		var result = (p ++ "foo" ++ p ++ "bar" ++ p ++ "baz").splitext;
+		var expected = [p ++ "foo" ++ p ++ "bar" ++ p ++ "baz", nil];
+		this.assertEquals(result, expected);
+	}
+
+	test_splitext_early_return {
+		var result = "/foo.bar/baz.xyz".splitext;
+		var expected = ["/foo.bar/baz", "xyz"];
+		this.assertEquals(result, expected);
+	}
+
+	test_splitext_early_return_platform_path {
+		var p = Platform.pathSeparator;
+		var result = (p ++ "foo.bar" ++ p ++ "baz.xyz").splitext;
+		var expected = [p ++ "foo.bar" ++ p ++ "baz", "xyz"];
+		this.assertEquals(result, expected);
+	}
+
+	test_splitext_no_extension_early_return {
+		var result = "/foo.bar/baz".splitext;
+		var expected = ["/foo.bar/baz", nil];
+		this.assertEquals(result, expected);
+	}
+
+	test_splitext_no_extension_early_return_platform_path {
+		var p = Platform.pathSeparator;
+		var result = (p ++ "foo.bar" ++ p ++ "baz").splitext;
+		var expected = [p ++ "foo.bar" ++ p ++ "baz", nil];
+		this.assertEquals(result, expected);
+	}
+
+	// ------- time-related operations -----------------------------------------------
+
 	test_asSecs_stringDddHhMmSsSss_convertsToSeconds {
 		var result = "001:01:01:01.001".asSecs;
 		var expected = 90061.001;
@@ -118,4 +191,17 @@ TestString : UnitTest {
 		this.assertEquals(result, expected);
 	}
 
+	test_findRegexp_nonEmptyResult {
+		var result = "two words".findRegexp("[a-zA-Z]+");
+		this.assertEquals(
+			result,
+			[[0, "two"], [4, "words"]],
+			"`\"two words\".findRegexp(\"[a-zA-Z]+\")` should return a nested array of indices and matches"
+		)
+	}
+
+	test_findRegexp_emptyResult {
+		var result = "the quick brown fox".findRegexp("moo");
+		this.assertEquals(result, Array.new, "Non-matching findRegexp should return empty array");
+	}
 }

@@ -9,7 +9,7 @@ TestNetAddr : UnitTest {
 		f = big.copyRange(0, (size ? big.size)-1);
 		bundleSize = f.bundleSize;
 
-		this.bootServer;
+		this.bootServer(server);
 
 		("Sending bundle with " + f.size + "messages " + "bundleSize: " + bundleSize).debug;
 
@@ -33,18 +33,87 @@ TestNetAddr : UnitTest {
 		this.sendBundle(50);
 	}
 
+	doReceiveTest {
+		|port, testMsg, msgType, registerMethod, unregisterMethod, sendMethod|
+		var messageReceived = Condition(false);
+		var messageValue = nil;
+		var addr = NetAddr("127.0.0.1", port);
+		var func = {
+			|msg, time, replyAddr, recvPort|
+			messageValue = [msg, time, replyAddr, recvPort];
+			messageReceived.test_(true).signal;
+		};
+		var msg, time, replyAddr, recvPort;
+
+		thisProcess.openUDPPort(port, msgType);
+		thisProcess.perform(registerMethod, func);
+
+		addr.perform(
+			sendMethod,
+			*testMsg.isArray.if({ testMsg }, { [testMsg] })
+		);
+
+		{
+			if (messageReceived.test.not) {
+				messageValue = \timeout;
+				messageReceived.unhang;
+			}
+		}.defer(1);
+
+		messageReceived.wait();
+
+		thisProcess.perform(unregisterMethod, func);
+
+		if (messageValue == \timeout) {
+			this.assert(false, "addr.sendRaw was never received");
+		} {
+			#msg, time, replyAddr, recvPort = messageValue;
+
+			this.assert(messageValue != \timeout);
+			this.assertEquals(msg, testMsg, "Correct message received");
+			this.assertFloatEquals(time, AppClock.seconds, "Timestamp is valid", within: 0.1);
+			this.assertEquals(replyAddr.addr, addr.addr, "Hostname is valid");
+			this.assertEquals(replyAddr.port, 57120, "Port is valid");
+			this.assertEquals(recvPort, port, "recvPort is valid");
+		}
+	}
+
+	test_receiveRaw {
+		this.doReceiveTest(
+			port:				54321,
+			testMsg: 			"Test message. \n",
+			msgType: 			\raw,
+			registerMethod: 	\addRawRecvFunc,
+			unregisterMethod: 	\removeRawRecvFunc,
+			sendMethod: 		\sendRaw
+		)
+	}
+
+
+	test_receiveOSC {
+		this.doReceiveTest(
+			port:				54322,
+			testMsg: 			['/Test message. \n', 123], // floats will not pass - sclang's internal storage is `double` but is transmitted in OSC as `float`, so the transformation is not lossless.
+			msgType: 			\osc,
+			registerMethod: 	\addOSCRecvFunc,
+			unregisterMethod: 	\removeOSCRecvFunc,
+			sendMethod: 		\sendMsg
+		)
+	}
+
 	/*
 	test_sendBundleAll {
-		this.sendBundle;
+	this.sendBundle;
 	}
 	*/
 
 	tearDown {
 		server.quit;
+		server.remove;
 	}
 
 	setUp {
-		server = Server.default; 
+		server = Server(this.class.name);
 		addr = server.addr;
 
 		// mmmmmmm.   fixtures.

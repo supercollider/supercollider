@@ -235,6 +235,7 @@ SCDocHTMLRenderer {
 		<< "<link rel='stylesheet' href='" << baseDir << "/editor.css' type='text/css' />\n"
 		<< "<link rel='stylesheet' href='" << baseDir << "/frontend.css' type='text/css' />\n"
 		<< "<link rel='stylesheet' href='" << baseDir << "/custom.css' type='text/css' />\n"
+		<< "<meta name='viewport' content='width=device-width, initial-scale=1'>\n"
 		<< "<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />\n"
 		<< "<script src='" << baseDir << "/lib/jquery.min.js'></script>\n"
 		<< "<script src='" << baseDir << "/lib/codemirror-5.39.2.min.js' type='text/javascript'></script>\n"
@@ -246,6 +247,7 @@ SCDocHTMLRenderer {
 		<< "</script>\n"
 		<< "<script src='" << baseDir << "/scdoc.js' type='text/javascript'></script>\n"
 		<< "<script src='" << baseDir << "/docmap.js' type='text/javascript'></script>\n" // FIXME: remove?
+		<< "<script src='" << baseDir << "/frontend.js' type='text/javascript'></script>\n"
 		// QWebChannel access
 		<< "<script src='qrc:///qtwebchannel/qwebchannel.js' type='text/javascript'></script>\n"
 		<< "</head>\n"

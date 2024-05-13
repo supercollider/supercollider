@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -27,13 +27,12 @@ Functions for defining language primitives.
 
 #include "PyrSlot.h"
 
-typedef int (*PrimitiveHandler)(struct VMGlobals *g, int numArgsPushed);
-typedef int (*PrimitiveWithKeysHandler)(struct VMGlobals *g, int numArgsPushed, int numKeyArgsPushed);
+typedef int (*PrimitiveHandler)(struct VMGlobals* g, int numArgsPushed);
+typedef int (*PrimitiveWithKeysHandler)(struct VMGlobals* g, int numArgsPushed, int numKeyArgsPushed);
 
 int nextPrimitiveIndex();
-int definePrimitive(int base, int index, const char *name, PrimitiveHandler handler, int numArgs, int varArgs);
-int definePrimitiveWithKeys(int base, int index, const char *name,
-	PrimitiveHandler handler, PrimitiveWithKeysHandler keyhandler,
-	int numArgs, int varArgs);
+int definePrimitive(int base, int index, const char* name, PrimitiveHandler handler, int numArgs, int varArgs);
+int definePrimitiveWithKeys(int base, int index, const char* name, PrimitiveHandler handler,
+                            PrimitiveWithKeysHandler keyhandler, int numArgs, int varArgs);
 int getPrimitiveNumArgs(int index);
 PyrSymbol* getPrimitiveName(int index);

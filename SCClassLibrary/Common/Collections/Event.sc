@@ -25,14 +25,23 @@ Event : Environment {
 
 	// event types
 
-	*addEventType { arg type, func, parentEvent;
+	*addEventType { |type, func, parentEvent|
 		partialEvents.playerEvent.eventTypes.put(type, func);
 		this.addParentType(type, parentEvent)
 	}
 
-	*addParentType { arg type, parentEvent;
+	*addParentType { |type, parentEvent|
 		if(parentEvent.notNil and: { parentEvent.parent.isNil }) { parentEvent.parent = defaultParentEvent };
 		partialEvents.playerEvent.parentTypes.put(type, parentEvent)
+	}
+
+	*removeEventType { |type|
+		Event.removeParentType(type);
+		partialEvents.playerEvent.eventTypes.removeAt(type);
+	}
+
+	*removeParentType { |type|
+		partialEvents.playerEvent.parentTypes.removeAt(type)
 	}
 
 	*parentTypes {
@@ -117,28 +126,28 @@ Event : Environment {
 		var max, itemsPerLinem1, i=0;
 		itemsPerLinem1 = itemsPerLine - 1;
 		max = this.size;
-		stream << "( ";
+		stream << "(";
 		this.keysValuesDo({ arg key, val;
 			stream <<< key << ": " << val;
 			if ((i=i+1) < max, { stream.comma.space;
 				if (i % itemsPerLine == itemsPerLinem1, { stream.nl.space.space });
 			});
 		});
-		stream << " )";
+		stream << ")";
 	}
 
 	storeOn { arg stream, itemsPerLine = 5;
 		var max, itemsPerLinem1, i=0;
 		itemsPerLinem1 = itemsPerLine - 1;
 		max = this.size;
-		stream << "( ";
+		stream << "(";
 		this.keysValuesDo({ arg key, val;
 			stream <<< key << ": " <<< val;
 			if ((i=i+1) < max, { stream.comma.space;
 				if (i % itemsPerLine == itemsPerLinem1, { stream.nl.space.space });
 			});
 		});
-		stream << " )";
+		stream << ")";
 		if(proto.notNil) { stream << "\n.proto_(" <<< proto << ")" };
 		if(parent.notNil) { stream << "\n.parent_(" <<< parent << ")" };
 	}
@@ -564,8 +573,10 @@ Event : Environment {
 								);
 							}
 						} {
-
-							if (strum < 0) { bndl = bndl.reverse };
+							if (strum < 0) {
+								bndl = bndl.reverse;
+								ids = ids.reverse
+							};
 							strumOffset = offset + Array.series(bndl.size, 0, strum.abs);
 							~schedBundleArray.(
 								lag, strumOffset, server, bndl, ~latency
@@ -966,6 +977,14 @@ Event : Environment {
 							server.sendBundle(server.latency, *~bundle);
 						};
 						~bundle = nil;
+					},
+
+					composite: { |server|
+						~resultEvents = ~types.collect { |type|
+							if(type != \composite) {
+								currentEnvironment.copy.put(\type, type).play;
+							};
+						};
 					}
 				)
 			)

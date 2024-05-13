@@ -1,32 +1,59 @@
-
 TestUnitTest : UnitTest {
 
-	var someVar, setUp = false;
+	var setUpHappened = false;
+	classvar <>classSetUpHappened = false;
+	classvar <>classTearDownHappened = false;
+
+	*setUpClass {
+		this.classSetUpHappened = true;
+	}
+
+	*tearDownClass {
+		this.classTearDownHappened = true;
+	}
 
 	setUp {
-		setUp = true;
+		setUpHappened = true;
+	}
+
+	test_setUpClass_already_happened {
+		this.assert(this.class.classSetUpHappened, "setUpClass should have happened");
+	}
+
+	test_setUpClass {
+		this.class.classSetUpHappened = false;
+		this.class.prRunWithinSetUpClass {
+			this.assert(this.class.classSetUpHappened,
+				"setUpClass should have happened before prRunWithinSetUpClass function is called"
+			);
+		}
+	}
+
+	test_tearDownClass {
+		this.class.classTearDownHappened = false;
+		this.class.prRunWithinSetUpClass;
+		this.assert(this.class.classTearDownHappened,
+			"tearDownClass should have happened after prRunWithinSetUpClass function is called"
+		);
 	}
 
 	test_setUp {
-		this.assert( setUp, "setUp should have happened" )
+		this.assert(setUpHappened, "setUp should have happened")
+	}
+
+	test_bootServer {
+		var server = Server(this.class.name);
+		server.bootSync;
+		this.assert(server.serverRunning, "The test's Server should be booted while we waited");
+		server.quit.remove;
 	}
 
 	test_assert {
-		this.assert(true, "assert(true) should certainly work");
-	}
-
-	test_isolation_first {
-		this.assertEquals(someVar, nil, "methods in UnitTests should be isolated");
-		someVar = 2;
-	}
-
-	test_isolation_second {
-		this.assertEquals(someVar, nil, "methods in UnitTests should be isolated");
-		someVar = 2;
+		this.assert(true, "assert(true) should certainly work")
 	}
 
 	test_findTestedClass {
-		this.assertEquals( TestMixedBundleTester.findTestedClass, MixedBundleTester)
+		this.assertEquals(TestMixedBundleTester.findTestedClass, MixedBundleTester)
 	}
 
 	test_assertException_implicitThrow {
@@ -48,11 +75,17 @@ TestUnitTest : UnitTest {
 		this.assertNoException({ try { 1789.monarchy } }, "assertNoThrow should return true for not an error")
 	}
 
-	/*** IF YOU ADD MORE TESTS, UPDATE THE numTestMethods var ***/
-	// test_findTestMethods {
-	// 	var numTestMethods = 7;
-	// 	this.assert( this.findTestMethods.size == numTestMethods, "should be " + numTestMethods + " test methods");
-	// }
+	test_wait {
+		var unblock = false;
+		var r = Routine {
+			0.01.yield;
+			unblock = true;
+		};
+		r.play;
+		this.wait({ unblock }, maxTime: 0.02);
+		this.assertEquals(unblock, true, "UnitTest.wait should continue when test is true");
+	}
+
+
 
 }
-

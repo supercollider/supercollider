@@ -68,20 +68,22 @@ platform specific path separator
 method:: resourceDir
 platform specific resource directory
 
-method:: recordingsDir 
+method:: recordingsDir
 platform recordings directory
 
 method:: defaultTempDir
 default directory for temporary files
 
-method:: formatPathForCmdLine
+method:: hasQt
+true if the Qt library is available, false otherwise
 
-argument:: path
-A path string.
+method:: hasQtWebEngine
+true if the QtWebEngine library is available, false otherwise
 
-returns:: The input string formatted as a command-line argument. On Windows this
-method quotes the string. On Unix-based systems this method escapes space
-characters with a backslash.
+method:: architecture
+A link::Classes/Symbol:: naming the architecture for which this version of SuperCollider was built.
+Returns one of 'AArch32' (32-bit ARM), 'AArch64' (64-bit ARM, introduced in ARMv8), 'Itanium64', 'i386', 'x86_64',
+'PowerPC', or 'unknown' if the architecture is unidentifiable.
 
 subsection:: Features
 
@@ -100,7 +102,6 @@ returns the platform name
 
 method:: recompile
 recompile class library
-
 
 subsection:: Directories and filesystem stuff
 
@@ -146,7 +147,14 @@ platform specific resource directory
 method:: defaultTempDir
 default directory for temporary files
 
+method:: formatPathForCmdLine
 
+argument:: path
+A path string.
+
+returns:: The input string formatted as a command-line argument. On Windows this
+method quotes the string. On Unix-based systems this method escapes space
+characters with a backslash.
 
 subsection:: Startup files
 

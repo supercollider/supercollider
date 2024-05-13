@@ -87,6 +87,7 @@ AbstractFunction {
 	isPositive { ^this.composeUnaryOp('isPositive') }
 	isNegative { ^this.composeUnaryOp('isNegative') }
 	isStrictlyPositive { ^this.composeUnaryOp('isStrictlyPositive') }
+	binaryValue { ^this.composeUnaryOp('binaryValue') }
 
 	rho {  ^this.composeUnaryOp('rho') }
 	theta {  ^this.composeUnaryOp('theta') }
@@ -107,6 +108,14 @@ AbstractFunction {
 	<= { arg function, adverb; ^this.composeBinaryOp('<=', function, adverb) }
 	>  { arg function, adverb; ^this.composeBinaryOp('>',  function, adverb) }
 	>= { arg function, adverb; ^this.composeBinaryOp('>=', function, adverb) }
+
+	|==| { |that|
+		^this.composeBinaryOp('|==|', that)
+	}
+	prReverseLazyEquals { |that|
+		// commutative, so it's OK to flip the operands
+		^this.composeBinaryOp('|==|', that)
+	}
 
 	bitAnd { arg function, adverb; ^this.composeBinaryOp('bitAnd', function, adverb) }
 	bitOr { arg function, adverb; ^this.composeBinaryOp('bitOr', function, adverb) }
@@ -315,7 +324,7 @@ FunctionList : AbstractFunction {
 	var <>array, <flopped=false;
 
 	*new { arg functions;
-		^super.newCopyArgs(functions)
+		^super.newCopyArgs(functions ?? { Array.new })
 	}
 	addFunc { arg ... functions;
 		if(flopped) { Error("cannot add a function to a flopped FunctionList").throw };
@@ -358,6 +367,3 @@ FunctionList : AbstractFunction {
 	storeArgs { ^[array] }
 	copy { ^super.copy.array_(array.copy) }
 }
-
-
-

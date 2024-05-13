@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
  Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -18,29 +18,27 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-//machine listening plug-ins adapted for SuperCollider core
+// machine listening plug-ins adapted for SuperCollider core
 
 #include "ML.h"
 #include "FFT_UGens.h"
 
-InterfaceTable *ft;
+InterfaceTable* ft;
 
-PluginLoad(ML_UGens)
-{
-	ft = inTable;
+PluginLoad(ML_UGens) {
+    ft = inTable;
 
-	DefineDtorCantAliasUnit(BeatTrack);
-	DefineDtorUnit(Loudness);
-	DefineDtorUnit(KeyTrack);
+    DefineDtorCantAliasUnit(BeatTrack);
+    DefineDtorUnit(Loudness);
+    DefineDtorUnit(KeyTrack);
 
-	DefineDtorUnit(MFCC);
+    DefineDtorUnit(MFCC);
 
-	DefineDtorUnit(Onsets);
+    DefineDtorUnit(Onsets);
 
-	DefineDtorCantAliasUnit(BeatTrack2);
+    DefineDtorCantAliasUnit(BeatTrack2);
 
-	DefineSimpleUnit(SpecFlatness);
-	DefineDtorUnit(SpecPcile);
-	DefineSimpleUnit(SpecCentroid);
+    DefineSimpleUnit(SpecFlatness);
+    DefineDtorUnit(SpecPcile);
+    DefineSimpleUnit(SpecCentroid);
 }
-

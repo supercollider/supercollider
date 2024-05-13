@@ -107,7 +107,7 @@ method::end
 end all proxies (free and stop the monitors)
 
 method::clear
-clear the node proxy and remove it from the environment. this frees all buses. If a fadeTime is given, first fade out, then clear.
+clear all proxies and remove them from the environment. This frees all buses. If a fadeTime is given, first fade out, then clear.
 
 method::add
 add the ProxySpace to the repository (name required)
@@ -169,6 +169,21 @@ a boolean.
 
 argument::includeSettings
 a boolean.
+
+method::asCode
+
+If proxyspace is globally accessible, this posts a code string that can access it.
+
+code::
+p = ProxySpace.push(s.boot);
+p.reshaping = \elastic;
+p.asCode;
+p.pop;
+
+Ndef(\x); // initializes an Ndef proxyspace for default server
+Ndef.all[\localhost]; // access that proxyspace
+Ndef.all[\localhost].asCode; // posts as valid code
+::
 
 Examples::
 
