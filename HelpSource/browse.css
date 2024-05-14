@@ -11,11 +11,11 @@
     border: none;
 }
 .result_doc {
-    border-bottom: 1px solid var(--color-fg-50);
+    border-bottom: 1px solid var(--color-fg-100);
     margin-top: 0.5em;
 }
 .result_summary {
-    color: var(--color-fg-400);
+    color: var(--color-fg-300);
     font-size: 9pt;
     max-width: 18em;
     margin-bottom: 0.6em;
@@ -53,7 +53,7 @@
 #search_checks {
     font-size: 9pt;
     color: var(--color-fg-300);
-    border-bottom: 1px solid var(--color-fg-50);
+    border-bottom: 1px solid var(--color-fg-100);
     margin-top: 1em;
     padding-bottom: 1em;
 }

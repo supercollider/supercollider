@@ -1,23 +1,38 @@
 :root {
+    /* Default color theme */
     /* Main foreground (text) color shades, from strong to weak */
     --color-fg: black;
-    --color-fg-400: #333;
-    --color-fg-300: #555;
-    --color-fg-200: #777;
-    --color-fg-100: #aaa;
-    --color-fg-50:  #ddd;
+    --color-fg-300: #444;
+    --color-fg-200: #888;
+    --color-fg-100: #ddd;
     /* Backgrounds */
     --color-bg: white;
     --color-bg-menu: #f9f9f9;
+    --color-bg-input: #f0f0f0;
     /* Colors */
     --color-links: #449;
-    --color-extension-bg: #601c8b;
-    --color-extension-fg: white;
-    --color-extension-border: #39174F;
     --color-warning-bg: #f7f7d7;
     --color-warning-fg: black;
     --color-error: red;
-    --color-undocumented: #88b;
+    --color-extension-bg: #601c8b;
+    --color-extension-fg: white;
+    --color-extension-border: #39174F;
+    /* CodeMirror */
+    --color-cm-background: white;
+    --color-cm-border: #e1e1e1;
+    --color-cm-selection: rgba(248, 162, 0, 0.5);
+    --color-cm-flash: rgba(248, 162, 0, 0);
+    --color-cm-keyword: #0000e6;
+    --color-cm-built-in: #3333bf;
+    --color-cm-number: #980099;
+    --color-cm-symbol: #007300;
+    --color-cm-class: #0000d2;
+    --color-cm-primitive: #0000d2;
+    --color-cm-char: #007300;
+    --color-cm-env-var: #8c4614;
+    --color-cm-comment: #bf0000;
+    --color-cm-string: #5f5f5f;
+    --color-cm-text: #000000;
 }
 
 *, *::before, *::after {
@@ -39,6 +54,11 @@ body {
     background: var(--color-bg);
 }
 
+input, select, textarea {
+    background: var(--color-bg-input);
+    color: var(--color-fg);
+}
+
 div.contents {
     margin: 0;
     padding: calc(33px + .5em) 1em 1em;
@@ -51,7 +71,7 @@ table {
     margin-left: 2em;
 }
 table td {
-    border: 1px solid var(--color-fg-50);
+    border: 1px solid var(--color-fg-200);
     padding: 0.3em;
 }
 
@@ -75,8 +95,6 @@ a:link:hover {
 
 input {
     max-width: 100%;
-    background-color: var(--color-fg-50);
-    color: var(--color-fg-300);
 }
 
 #inheritedclassmets, #inheritedinstmets {
@@ -85,12 +103,12 @@ input {
 
 .inheritedmets_class {
     font-weight: bold;
-    color: var(--color-fg-300);
+    color: var(--color-fg-200);
     margin-top: 0.5em;
     margin-bottom: 0.25em;
 }
 .inheritedmets_class a {
-    color: var(--color-fg-400);
+    color: var(--color-fg-300);
 }
 ul.inheritedmets {
     list-style: none;
@@ -144,7 +162,7 @@ a.subclass_toggle:hover {
 #menubar .menuitem {
     padding: 0;
     margin: 0;
-    border-right: 1px solid var(--color-fg-50);
+    border-right: 1px solid var(--color-fg-100);
     font-size: 10pt;
     display: inline-block;
 }
@@ -221,7 +239,7 @@ a.menu-link:hover {
     padding: 0.5em;
     display: none;
     background-color: var(--color-bg-menu);
-    border: thin solid var(--color-fg-50);
+    border: thin solid var(--color-fg-100);
 }
 
 .submenu a {
@@ -245,7 +263,7 @@ a.menu-link:hover {
 }
 
 .toc_search input {
-    border: 1px solid var(--color-fg-50);
+    border: 1px solid var(--color-fg-100);
 }
 
 
@@ -262,7 +280,7 @@ a.menu-link:hover {
     font-weight: normal;
     font-size: 1.1em;
     font-style: italic;
-    color: var(--color-444);
+    color: var(--color-fg-300);
 }
 #related {
     font-weight: bold;
@@ -278,7 +296,7 @@ a.menu-link:hover {
 
 #superclasses {
     font-size: 9pt;
-    color: var(--color-444);
+    color: var(--color-fg-300);
     font-weight: normal;
 }
 
@@ -303,7 +321,7 @@ a.menu-link:hover {
 
 .subheader {
     font-size: 9pt;
-    color: var(--color-444);
+    color: var(--color-fg-300);
     margin-top: 1em;
 }
 
@@ -345,7 +363,7 @@ h1 {
 }
 
 h2 {
-    border-bottom: 1px solid var(--color-fg-50);
+    border-bottom: 1px solid var(--color-fg-100);
     margin-top: 1.0em;
     text-align: left;
     margin-bottom: 2px;
@@ -405,7 +423,7 @@ code, pre {
 }
 
 pre {
-    border-left: 2px solid var(--color-fg-50);
+    border-left: 2px solid var(--color-fg-100);
     padding-left: 1em;
 }
 
@@ -455,13 +473,13 @@ a.method-name {
 
 .extmethod {
     font-size: 9pt;
-    color: var(--color-444);
+    color: var(--color-fg-300);
     padding-left: 0.2em;
 }
 
 .supmethod {
     font-size: 9pt;
-    color: var(--color-444);
+    color: var(--color-fg-300);
     padding-left: 0.2em;
 }
 
@@ -520,10 +538,10 @@ td p {
     text-align: right;
     margin-top: 2em;
     margin-bottom: 2em;
-    border-top: 1px solid var(--color-fg-50);
+    border-top: 1px solid var(--color-fg-100);
 }
 .doclink a {
-    color: var(--color-fg-400);
+    color: var(--color-fg-300);
     word-wrap: break-word;
 }
 
@@ -563,7 +581,7 @@ td p {
     font-weight: bold;
     font-size: 120%;
     margin: 0.7em 0.5em;
-    color: var(--color-fg-400);
+    color: var(--color-fg-300);
 }
 
 li {
@@ -589,20 +607,20 @@ ul.toc li a {
 }
 
 ul.toc li a:hover {
-    background: var(--color-eee);
+    background: var(--color-bg-input);
 }
 
 .toc1 {
     font-weight: bold;
 }
 .toc1 a {
-    color: var(--color-444);
+    color: var(--color-fg-300);
 }
 .toc2 {
     font-weight: normal;
 }
 .toc2 a {
-    color: var(--color-444);
+    color: var(--color-fg-300);
 }
 .toc3 {
     font-family: monospace;
@@ -645,7 +663,7 @@ ul.tree li:last-child {
 }
 
 a.undoc {
-    color: var(--color-undocumented);
+    opacity: 50%;
     text-decoration: line-through;
 }
 
@@ -658,12 +676,11 @@ div#search_box {
 
 #search_input {
     border: 1px solid var(--color-fg-100);
-    background: var(--color-eee);
     margin-left: 0.5em;
 }
 div#search_count {
     border-bottom: 2px solid var(--color-fg-100);
-    color: var(--color-fg-400);
+    color: var(--color-fg-300);
 }
 
 div.result_category {
@@ -686,7 +703,7 @@ div.met_subclasses {
     text-align: left;
 }
 div.met_subclasses a {
-    color: var(--color-444);
+    color: var(--color-fg-300);
 }
 div.met_subclasses a.seemore {
     margin-left: 0.2em;
@@ -698,12 +715,12 @@ div.met_subclasses a.seemore {
     padding-bottom: 0.25em;
     font-size: 9pt;
     color: var(--color-fg-300);
-    background: var(--color-eee);
+    background: var(--color-bg-input);
 }
 #search_checks0 {
     font-size: 9pt;
     color: var(--color-fg-300);
-    border-bottom: 1px solid var(--color-fg-50);
+    border-bottom: 1px solid var(--color-fg-100);
     margin-top: 1em;
     padding-bottom: 1em;
 }
@@ -747,7 +764,7 @@ table#search_settings {
 #method_note {
     font-size: 9pt;
     color: var(--color-fg-200);
-    border-top: 1px solid var(--color-fg-50);
+    border-top: 1px solid var(--color-fg-100);
     text-align: center;
     margin-top: 2em;
 }
