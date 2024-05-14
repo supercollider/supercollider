@@ -51,7 +51,7 @@ static inline bool stringEqual(const char * a, const char * b)
 
 %}
 %locations
-%error-verbose
+%define parse.error verbose
 %union {
     intptr_t i;
     const char *id;
@@ -69,8 +69,8 @@ static inline bool stringEqual(const char * a, const char * b)
 // nestable range tags with no text, with children
 %token LIST TREE NUMBEREDLIST DEFINITIONLIST TABLE FOOTNOTE NOTE WARNING
 // modal range tags that take multi-line text
-%token CODE LINK ANCHOR SOFT IMAGE TELETYPE STRONG EMPHASIS
-%token CODEBLOCK "CODE block" TELETYPEBLOCK "TELETYPE block"
+%token CODE LINK ANCHOR SOFT IMAGE TELETYPE MATH STRONG EMPHASIS
+%token CODEBLOCK "CODE block" TELETYPEBLOCK "TELETYPE block" MATHBLOCK "MATH block"
 // symbols
 %token TAGSYM "::" BARS "||" HASHES "##"
 // text and whitespace
@@ -183,7 +183,7 @@ optsubsubsections: subsubsections
 subsubsections: subsubsections subsubsection { $$ = doc_node_add_child($1,$2); }
               | subsubsection { $$ = doc_node_make("(SUBSUBSECTIONS)",NULL,$1); }
               | body { $$ = doc_node_make_take_children("(SUBSUBSECTIONS)",NULL,$1); }
-; 
+;
 
 subsubsection: METHOD methnames optMETHODARGS eol methodbody
     {
@@ -317,18 +317,20 @@ inlinetag: LINK { $$ = "LINK"; }
          | EMPHASIS { $$ = "EMPHASIS"; }
          | CODE { $$ = "CODE"; }
          | TELETYPE { $$ = "TELETYPE"; }
+         | MATH { $$ = "MATH"; }
          | ANCHOR { $$ = "ANCHOR"; }
 ;
 
 blocktag: CODEBLOCK { $$ = "CODEBLOCK"; }
         | TELETYPEBLOCK { $$ = "TELETYPEBLOCK"; }
+        | MATHBLOCK { $$ = "MATHBLOCK"; }
 ;
 
 listtag: LIST { $$ = "LIST"; }
        | TREE { $$ = "TREE"; }
        | NUMBEREDLIST { $$ = "NUMBEREDLIST"; }
 ;
-       
+
 rangetag: WARNING { $$ = "WARNING"; }
         | NOTE { $$ = "NOTE"; }
 ;
