@@ -51,12 +51,6 @@ SCDocHTMLRenderer {
 		^str.replace(" ", "%20")
 	}
 
-	*teletypeWithinCode { |str|
-		^str
-		.replace(":teletype:", "teletype::")
-		.replace(":/teletype:", "::")
-	}
-
 	// Find the target (what goes after href=) for a link that stays inside the hlp system
 	*prLinkTargetForInternalLink { |linkBase, linkAnchor, originalLink|
 		var doc, result;
@@ -258,13 +252,7 @@ SCDocHTMLRenderer {
 		<< "<script src='qrc:///qtwebchannel/qwebchannel.js' type='text/javascript'></script>\n"
 
 		// MathJax |--->
-		<< "<script>\n"
-		<< "  window.MathJax = {\n"
-		<< "    options: {\n"
-		<< "      skipHtmlTags: ['script', 'textarea']\n"
-		<< "    },\n"
-		<< "    }\n"
-		<< "</script>\n"
+		<< "<script>window.MathJax = { options: { skipHtmlTags: ['script', 'textarea'] } }</script>\n"
 		<< "<script src='" << baseDir << "/lib/node_modules/mathjax/es5/tex-chtml-full.js' defer></script>\n" // offline accesss /* << "<script id='MathJax-script' src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js' defer></script>\n" */ // online accesss
 		// <---| MathJax
 
@@ -578,16 +566,12 @@ SCDocHTMLRenderer {
 			},
 			\CODEBLOCK, {
 				stream << "<textarea class='editor'>"
-				<< SCDocHTMLRenderer.teletypeWithinCode(
-					this.escapeSpecialChars(node.text)
-				)
+				<< this.escapeSpecialChars(node.text)
 				<< "</textarea>\n";
 			},
 			\CODE, {
 				stream << "<code>"
-				<< SCDocHTMLRenderer.teletypeWithinCode(
-					this.escapeSpecialChars(node.text)
-				)
+				<< this.escapeSpecialChars(node.text)
 				<< "</code>";
 			},
 			\EMPHASIS, {
@@ -612,6 +596,16 @@ SCDocHTMLRenderer {
 				node.children.do {|child|
 					stream << "<a class='anchor' name='kw_" << this.escapeSpacesInAnchor(child.text) << "'>&nbsp;</a>";
 				}
+			},
+			\MATHBLOCK, { // uses MathJax to typeset TeX math
+				stream << "<span class='math'>\\[\n"
+				<< this.escapeSpecialChars(node.text)
+				<< "\n\\]\n</span>";
+			},
+			\MATH, {
+				stream << "<span class='math'>\\("
+				<< this.escapeSpecialChars(node.text)
+				<< "\\)</span>";
 			},
 			\IMAGE, {
 				f = node.text.split($#);
