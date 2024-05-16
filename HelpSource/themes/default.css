@@ -21,7 +21,9 @@
     https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix
     */
     --sc-bg-color: var(--cm-background-color);
-    --sc-bg-warning: var(--cm-selection-color);
+    /* normally each theme uses --cm-keyword-color, but this generates grey text
+    on blue background, which is bad to read, therefore it gets manually adjusted here */
+    --sc-bg-warning: #aaa;
 
     --sc-text-color: var(--cm-text-color);
     --sc-text-warning: var(--cm-keyword-color);
