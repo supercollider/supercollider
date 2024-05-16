@@ -110,8 +110,6 @@ public:
 
 public slots:
     void applySettings(Settings::Manager*);
-    void setCssTheme();
-    void setCssTheme(const QString& themeName);
     void goHome();
     void closeDocument();
     void zoomIn();
