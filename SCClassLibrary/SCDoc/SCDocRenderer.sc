@@ -230,12 +230,12 @@ SCDocHTMLRenderer {
 		// (Search.html, Browse.html, etc.) if necessary.
 		stream
 		<< "</title>\n"
-		<< "<link rel='stylesheet' href='" << baseDir << "/custom.css' type='text/css' />\n"
 		<< "<link rel='stylesheet' href='" << baseDir << "/scdoc.css' type='text/css' />\n"
 		<< "<link rel='stylesheet' href='" << baseDir << "/codemirror.css' type='text/css' />\n"
 		<< "<link rel='stylesheet' href='" << baseDir << "/editor.css' type='text/css' />\n"
 		<< "<link rel='stylesheet' href='" << baseDir << "/frontend.css' type='text/css' />\n"
-    	<< "<link rel='stylesheet' id='scdoc-theme' href='" << baseDir << "/themes/default.css' type='text/css' />\n"
+		<< "<link rel='stylesheet' id='scdoc-theme' href='" << baseDir << "/themes/default.css' type='text/css' />\n"
+		<< "<link rel='stylesheet' href='" << baseDir << "/custom.css' type='text/css' />\n"
 		<< "<meta name='viewport' content='width=device-width, initial-scale=1'>\n"
 		<< "<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />\n"
 		<< "<script src='" << baseDir << "/lib/jquery.min.js'></script>\n"
