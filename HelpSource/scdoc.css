@@ -139,6 +139,13 @@ a.menu-link:hover {
     }
 }
 
+/* show theme selector only if there is enough space */
+@media (max-width: 600px) {
+    #menubar .menuitem:last-child {
+        visibility: hidden;
+    }
+}
+
 @media (min-width: 512px) {
     #menubar .menuitem .home a {
         padding-left: 2.5em;
