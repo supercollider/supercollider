@@ -190,43 +190,77 @@ function fixTOC() {
         });
     });
 
-    // if served via web, show theme switcher
-    // within IDE use the theme settings of the IDE to control the docs theme
-    if(window.location.protocol.startsWith("http")) {
-        create_menubar_item("Theme \u25bc", "#", function (a, li) {
-            var indexes_menu = $("<div>", {class: "submenu"}).hide()
-                .appendTo(li);
-
-            var nav_items = ["classic", "dark", "default", "dracula", "solarizedDark", "solarizedLight"];
-            nav_items.forEach(function (item) {
-                var themeLink = $("<a>", {
-                    text: item,
-                    href: "#"
-                });
-                themeLink.on("click", (e) => {
-                    setTheme(e.target.text);
-                    location.reload();
-                });
-                themeLink.appendTo(indexes_menu);
-            });
-
-            a.on("click", function (e) {
-                e.preventDefault();
-                indexes_menu.toggle();
-            });
-
-            $(document).on("click", function (e) {
-                if (!$(e.target).closest(li).length) {
-                    indexes_menu.hide();
-                }
-            });
-        });
-    }
+    buildThemeSwitcher();
 
     if ($("#toc").length) {
         set_up_toc();
     }
 }
+
+// theming
+const scDocsThemeStorageKey = "scDocsTheme";
+const scriptLocation = document.currentScript.src;
+const themeNames = [
+    "classic",
+    "dark",
+    "default",
+    "dracula",
+    "solarizedDark",
+    "solarizedLight"
+];
+
+function buildThemeSwitcher() {
+    create_menubar_item("Theme \u25bc", "#", function (a, li) {
+        var indexes_menu = $("<div>", { class: "submenu" }).hide()
+            .appendTo(li);
+
+
+        themeNames.forEach(function (themeName) {
+            var themeLink = $("<a>", {
+                text: themeName,
+                href: "#"
+            });
+            themeLink.on("click", (e) => {
+                setTheme(e.target.text);
+            });
+            themeLink.appendTo(indexes_menu);
+        });
+
+        a.on("click", function (e) {
+            e.preventDefault();
+            indexes_menu.toggle();
+        });
+
+        $(document).on("click", function (e) {
+            if (!$(e.target).closest(li).length) {
+                indexes_menu.hide();
+            }
+        });
+    });
+}
+
+function setTheme(themeName) {
+    console.log(`Set theme to ${themeName}`);
+    localStorage.setItem(scDocsThemeStorageKey, themeName);
+    applyTheme();
+}
+
+function applyTheme(theme=null) {
+    const themeName = theme ?? localStorage.getItem(scDocsThemeStorageKey) ?? "default";
+
+    const cssThemeTag = document.getElementById("scdoc-theme");
+    if(cssThemeTag===null) {
+        console.log(`Could not find scdoc-theme css tag! Can not apply theme ${themeName}`);
+        return;
+    }
+    
+    cssThemeTag.href = `${scriptLocation.split('/').slice(0, -1).join("/")}/themes/${themeName}.css`;
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    applyTheme();
+});
+
 
 // Set up a QWebChannel for communicating with C++ IDE objects. The main app publishes a handle
 // to IDE functionality at "IDE" which is made globally available here after the page and

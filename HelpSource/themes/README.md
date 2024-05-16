@@ -3,7 +3,7 @@
 In order to adapt the theme of the IDE also for the documentation the CSS of the documentation was refactored to use CSS variables.
 The values of these CSS variables are stored in the CSS files of this directory and are injected with JavaScript.
 
-The active theme is set by setting the variable `scDocsTheme` within the [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) of the website, which reflects the filename of the `css` files, see `theme.js`.
+The active theme is set by setting the variable `scDocsTheme` within the [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) of the website, which reflects the filename of the `css` files. The implementation can be found in `scdoc.js`.
 
 ## Development
 
