@@ -24,6 +24,26 @@ Ndef(\a, { |freq=300, dens=20, amp=0.1, pan|
 )
 ::
 
+Note that when creating an NdefGui for an Ndef with very many parameters,
+it may create more sliders than can fit on the window or screen.
+In such cases, it is best to set a reasonable maximum for numItems:
+code::
+// an Ndef with 100 controls
+Ndef(\1, {
+	SinOsc.ar(freq: 100.collect{|i|
+		"freq%".format(i).asSymbol.kr(100, spec: Spec.specs[\freq])
+	})
+});
+
+// this creates 100 paramViews, which do not usually fit in the gui window:
+g = Ndef(\1).gui;
+g.paramGui.paramViews.size;
+// creating the NdefGui with a reasonable max number of paramViews works,
+// and lets you scroll:
+g = Ndef(\1).gui(30);
+::
+
+
 ClassMethods::
 
 private::initClass
