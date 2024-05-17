@@ -4,18 +4,21 @@ Volume {
 
 	var <volume = 0.0, <lag = 0.1, <isMuted = false;
 
-	var <ampSynth, <numOutputChannels, defName, updateFunc, initFunc;
+	var <ampSynth, <numOutputChannels, <defName, updateFunc, initFunc;
 	var <>window;
-	var <permID, <baseAmpSynth;
+	var <group, baseAmpSynth;
 
 	*new { | server, startBus = 0, numChannels, min = -90, max = 6, persist = false |
 		^super.newCopyArgs(server ?? { Server.default }, startBus, numChannels, min, max, persist).init;
 	}
 
 	init {
-		permID = permID ?? { server.nextPermNodeID };
-		baseAmpSynth = Synth.basicNew('volumeAmpControl2', server, permID);
-		baseAmpSynth.group = server.defaultGroup;
+		// group nodeID should always be 2, so multiple clients can use it
+		group = Group.basicNew(server, server.nextPermNodeID);
+		defName = (\volumeAmpControl ++ this.numChannels).asSymbol;
+		// synth nodeID should always be 3, so multiple clients can use it
+		baseAmpSynth = Synth.basicNew(defName, server, server.nextPermNodeID);
+		baseAmpSynth.group = group;
 
 		// execute immediately if we're already past server tree functions
 		if(server.serverRunning) {
@@ -25,6 +28,7 @@ Volume {
 
 		initFunc = {
 			ampSynth = nil;
+			server.sendMsg(*group.newMsg(RootNode(server), \addToTail));
 			this.sendSynthDef;
 
 			// only create synth now if it won't be created by ServerTree
@@ -36,6 +40,7 @@ Volume {
 			ampSynth = nil;
 			if(persist) { this.updateSynth }
 		};
+
 		ServerTree.add(updateFunc, server);
 
 	}
@@ -44,6 +49,7 @@ Volume {
 		if (server.hasBooted) {
 			fork {
 				numOutputChannels = this.numChannels;
+				// update defName in case numChannels has changed
 				defName = (\volumeAmpControl ++ numOutputChannels).asSymbol;
 				baseAmpSynth.defName = defName;
 
@@ -79,10 +85,15 @@ Volume {
 					// [\volumeAmp, amp, \volumeLag, lag, \bus, startBus])
 
 					ampSynth = baseAmpSynth;
+
+					server.sendMsg(*group.newMsg(RootNode(server), \addToTail));
 					server.sendMsg(9, //"s_new"
-						defName, permID, Node.addActions[\addAfter], ampSynth.group.nodeID,
+						defName, baseAmpSynth.nodeID,
+						Node.addActions[\addToTail],
+						group.nodeID,
 						*[\volumeAmp, amp, \volumeLag, lag, \bus, startBus]
 					);
+
 				} {
 					ampSynth.set(\volumeAmp, amp);
 				}

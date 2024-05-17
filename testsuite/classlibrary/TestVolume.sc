@@ -2,7 +2,7 @@ TestVolume : UnitTest {
 
 	test_booting {
 		var s = Server(thisMethod.name);
-		var correctReply = [ '/g_queryTree.reply', 0, 0, 2, 1, 0, 1000, -1, 'volumeAmpControl2' ];
+		var correctReply = [ '/g_queryTree.reply', 0, 0, 2, 1, 0, 2, 1, 3, -1, 'volumeAmpControl2' ];
 		var queryReply;
 		var nodeIDidx = 6;
 
