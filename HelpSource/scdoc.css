@@ -32,7 +32,7 @@ body {
 div.contents {
     margin: 0;
     padding: calc(33px + .5em) 1em 1em;
-    /* width: 1030px; */ /* for AA4 */
+    /* width: 1030px; */ /* for A4 */
     /* page-break-inside: avoid; */ /* the menubar is printed out on the first page only when the height of the first div too tall */
     /* transform: scale(0.975, 1); */
 }
@@ -40,9 +40,7 @@ div.contents {
 table {
     border-collapse: collapse;
     font-size: 0.92em /* inherit */;
-    margin-top: 0.7em;
-    margin-left: 0em;
-    margin-right: 0em;
+    margin: 0.7em 0;
     width: 100%;
     table-layout: auto; 
     line-height: 1.6em;
@@ -58,6 +56,7 @@ table td {
     text-indent: 0;
     background: #fafafa;
     /* white-space: nowrap; */
+    word-break: keep-all;
 }
 td code {
     margin: 0.3em 0 0.3em;
@@ -68,17 +67,27 @@ td pre {
 td ul {
     list-style-type: disc;
     margin-left: 1.34em;
-    margin-top: 0.8em;
+    margin-top: 0 /* 0.8em */ ;
     margin-bottom: 0;
     padding: 0;
 }
-
-table table {
-    margin: 0.2em 0em 0.2em; /* top side bottom */
+td li:first-child {
+    margin-top: 0;
 }
-
+td li:last-child {
+    margin-bottom: 0;
+}
+table table {
+    margin: 1em 0em;
+}
+table table:first-child {
+    margin-top: 0.2em;
+}
+table table:last-child {
+    margin-bottom: 0.2em;
+}
 p {
-    margin: 0.6em 0;
+    margin: 0.2em 0.2em;
     text-indent: 0em;
 }
 table table td {
@@ -164,7 +173,6 @@ a.subclass_toggle:hover {
     color: #000;
 }
 
-
 #menubar {
     position: fixed;
     text-indent: 0;
@@ -206,7 +214,7 @@ a.menu-link {
     /* This ensures that the logo isn't cut off. */
     min-height: 1.5em;
     /* This gets the text to vertically center. Discovered by accident. */
-    line-height: 1.5em;
+    line-height: 1.1em;
 }
 a.menu-link:hover {
     text-decoration: none;
@@ -398,7 +406,7 @@ h2 {
     border-bottom: 1px solid #ddd;
     margin-top: 1.0em;
     text-align: left;
-    margin-bottom: 2px;
+    margin-bottom: 1em /*2px*/;
     font-size: 1.4em;
     padding-bottom: 0.2em;
     width: 1030px /* This is also a guide to the width of text on printed paper. Use ctrl/cmd + F, then type 1030 and find the text width in @media print { dvi.contents { width: 1030px; } } */
@@ -406,14 +414,14 @@ h2 {
 
 h3 {
     margin-top: 2.0em;
-    margin-bottom: 1px;
+    margin-bottom: 0.7em /*1px*/;
     text-align: left;
     font-size: 1.15em;
 }
 
 h4 {
     margin-top: 1.4em;
-    margin-bottom: 0em;
+    margin-bottom: 0.4em /* 0em */;
     margin-left: 0em;
     color: #777;
     font-size: 1.05em;
@@ -651,27 +659,27 @@ td p {
 }
 
 li {
-    padding-bottom: 0;
-    padding-top: 0;
-    padding-left: 0;
+    padding: 0.1em 0;
     margin-left: -0.07em;
-    margin-top: 0.2em /* 0.25em */;
-    margin-bottom: 0.2em /* 0.25em */;
     line-height: 1.65em;
     /* text-indent: 0; */
     text-align: left;
 }
-/* 
-ol {
-    margin: 0;
-    margin-left: -0.05em;
+.warning li:last-child,
+.note li:last-child {
+    margin-bottom: -1em;
+    padding-bottom: -1em;
 }
-*/
-/* 
-li li {
-    margin-left: -1em
+.warninglabel + ul, .warninglabel + ol
+.notelabel + ul, .notelabel + ol {
+    margin-top: 0em;
+    padding-top: 0em;
 }
-*/
+ul + p, ol + p {
+    margin-top: 0.2em;
+    padding-top: 1em;
+}
+
 ul.toc {
     list-style-type: none;
     margin: 0;
@@ -898,14 +906,20 @@ div.met_subclasses a.seemore {
     margin-left: -9.5px;
 }
 .CodeMirror {
-    margin: 0.15em 0 0.15em;
+    margin: 0.75em 0 0.75em;
     /* background: ghostwhite; */
     font-family: /* D2Coding */ 'Noto Mono', monospace;
     font-size: 0.92em; /* 0.88em; */
-    line-height: 1.4em /* 1.55em */ /* 1.65em */;
+    line-height: 1.5em /* 1.55em */ /* 1.65em */;
     /* width: auto; */
     /* padding: 0.3em 0.5em 0.2em; */
     /* page-break-inside: avoid; */
+}
+td:first-child .CodeMirror {
+    margin-top: 0.15em;
+}
+td .CodeMirror:last-child { 
+    margin-bottom: 0.15em;
 }
 /* 
 .CodeMirror-cursors, .CodeMirror pre {
@@ -953,7 +967,7 @@ textarea.editor {
         padding: 0.6em 0 0;
     }
     div.contents {
-        width: 1030px; /* for AA4 */
+        width: 1030px; /* for A4 */
     }
     table, dt, .image {
         font-family: 'Noto Sans', Arial, Helvetica, sans-serif;
