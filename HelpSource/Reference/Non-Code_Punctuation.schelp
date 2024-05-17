@@ -1,4 +1,4 @@
-TITLE::Various punctuation marks for non-code text
+TITLE::Non-code punctuation marks and symbols
 summary:: How to use alternative punctuation marks for non-code text to improve readability
 categories:: HelpSystem
 related:: Guides/WritingHelp, Classes/SCDoc, Classes/SCDocHTMLRenderer
@@ -21,13 +21,13 @@ table::
 ## strong::Examples 1. Various quotation marks::
 
 list::
-## Andreas asked me: _ql"_Have you read the _ql'_EU Expansion_qr'_ article?_qr"_
-## Andreas fragte mich: _ll"_Hast du den Artikel _ll'_EU-Erweiterung_lr'_ gelesen?_lr"_
-## Andreas fragte mich: _p>>_Hast du den Artikel _p>_EU-Erweiterung_p<_ gelesen?_p<<_
+## Andreas asked me: /ql"/Have you read the /ql'/EU Expansion/qr'/ article?/qr"/
+## Andreas fragte mich: /ll"/Hast du den Artikel /ll'/EU-Erweiterung/lr'/ gelesen?/lr"/
+## Andreas fragte mich: /p>>/Hast du den Artikel /p>/EU-Erweiterung/p</ gelesen?/p<</
 ## « Voulez-vous un sandwich, Henri ? »
 ::
-_m(__q-_ From Wikipedia article "Quotation mark
-"_m)_
+/m(//q-/ From Wikipedia article "Quotation mark
+"/m)/
 ::
 
 table::
@@ -37,27 +37,27 @@ Midline horizontal ellipsis and horizontal ellipsis are definable, but may chang
 ::
 
 list::
-## _ue..._ Jack and Jill
+## /ue.../ Jack and Jill
 
-_m(_horizontal ellipsis is used_m)_
+/m(/horizontal ellipsis is used/m)/
 
-## _me..._ Jack and Jill
+## /me.../ Jack and Jill
 
-_m(_midline horizontal ellipsis is used_m)_
+/m(/midline horizontal ellipsis is used/m)/
 
-## _ue..._ 잭과 질
+## /ue.../ 잭과 질
 
-_m(_horizontal ellipsis is used_m)_
-## _me..._ 잭과 질
+/m(/horizontal ellipsis is used/m)/
+## /me.../ 잭과 질
 
-_m(_midline horizontal ellipsis is used_m)_
+/m(/midline horizontal ellipsis is used/m)/
 ::
 ::
 
 table::
 ## strong::Examples 3. Apostrophe::
 
-Jack_a''_s and Jill_a''_s children
+Jack/a''/s and Jill/a''/s children
 ::
 
 
@@ -65,12 +65,12 @@ table::
 ## strong::Examples 4. Various brackets::
 
 list::
-## This is _m<<_The SuperCollider Book_m>>_.
-## This is _m<_The SuperCollider Book_m>_.
-## This is _n<<_The SuperCollider Book_n>>_.
-## This is _n<_The SuperCollider Book_n>_.
-## This is _c<_The SuperCollider Book_c>_.
-## This is _w<_The SuperCollider Book_w>_.
+## This is /m<</The SuperCollider Book/m>>/.
+## This is /m</The SuperCollider Book/m>/.
+## This is /n<</The SuperCollider Book/n>>/.
+## This is /n</The SuperCollider Book/n>/.
+## This is /c</The SuperCollider Book/c>/.
+## This is /w</The SuperCollider Book/w>/.
 ::
 ::
 
@@ -78,11 +78,11 @@ table::
 ## strong::Examples 5. Various brackets with predefined font size::
 
 list::
-## akousmatikós _s(_lἀκουσματικός_s)_
-## reduced listening _s(_l'écoute
-réduite_s)_
-## Pierre Schaeffer 'Études de bruits' _f(_1948_f)_.
-## SuperCollider _m(_a cross-platform environment for audio synthesis and algorithmic composition used by musicians, artists and researchers working with sound_m)_ can be installed and run on Linux, macOS and Windows, as well as microcomputers such as Raspberry Pi and BeagleBone Black.
+## akousmatikós /s(/lἀκουσματικός/s)/
+## reduced listening /s(/l'écoute
+réduite/s)/
+## Pierre Schaeffer 'Études de bruits' /f(/1948/f)/.
+## SuperCollider /m(/a cross-platform environment for audio synthesis and algorithmic composition used by musicians, artists and researchers working with sound/m)/ can be installed and run on Linux, macOS and Windows, as well as microcomputers such as Raspberry Pi and BeagleBone Black.
 ::
 ::
 
@@ -110,16 +110,16 @@ table::
 ## code to show || result
 ##
 code::
-_ql'_
+/ql'/
 ::
 ||
-_ql'_
+/ql'/
 ##
 code::
-_qr'_
+/qr'/
 ::
 ||
-_qr'_
+/qr'/
 ::
 
 ## DOUBLE QUOTATION
@@ -128,16 +128,16 @@ table::
 ## code to show || result
 ##
 code::
-_ql"_
+/ql"/
 ::
 ||
-_ql"_
+/ql"/
 ##
 code::
-_qr"_
+/qr"/
 ::
 ||
-_qr"_
+/qr"/
 ::
 
 ## LOW-9 QUOTATION MARK
@@ -146,16 +146,16 @@ table::
 ## code to show || result
 ##
 code::
-_ll"_
+/ll"/
 ::
 ||
-_ll"_
+/ll"/
 ##
 code::
-_lr"_
+/lr"/
 ::
 ||
-_lr"_
+/lr"/
 ::
 
 
@@ -165,16 +165,16 @@ table::
 ## code to show || result
 ##
 code::
-_ll'_
+/ll'/
 ::
 ||
-_ll'_
+/ll'/
 ##
 code::
-_lr'_
+/lr'/
 ::
 ||
-_lr'_
+/lr'/
 ::
 
 ## POINTING ANGLE
@@ -183,16 +183,16 @@ table::
 ## code to show || result
 ##
 code::
-_p<_
+/p</
 ::
 ||
-_p<_
+/p</
 ##
 code::
-_p>_
+/p>/
 ::
 ||
-_p>_
+/p>/
 ::
 
 ## POINTING DOUBLE ANGLE
@@ -201,16 +201,16 @@ table::
 ## code to show || result
 ##
 code::
-_p<<_
+/p<</
 ::
 ||
-_p<<_
+/p<</
 ##
 code::
-_p>>_
+/p>>/
 ::
 ||
-_p>>_
+/p>>/
 ::
 
 ## MATHEMATICAL ANGLE BRACKET
@@ -219,16 +219,16 @@ table::
 ## code to show || result
 ##
 code::
-_m<_
+/m</
 ::
 ||
-_m<_
+/m</
 ##
 code::
-_m>_
+/m>/
 ::
 ||
-_m>_
+/m>/
 ::
 
 ## MATHEMATICAL DOUBLE ANGLE BRACKET
@@ -237,16 +237,16 @@ table::
 ## code to show || result
 ##
 code::
-_m<<_
+/m<</
 ::
 ||
-_m<<_
+/m<</
 ##
 code::
-_m>>_
+/m>>/
 ::
 ||
-_m>>_
+/m>>/
 ::
 
 ## ANGLE BRACKET
@@ -257,16 +257,16 @@ table::
 ## code to show || result
 ##
 code::
-_n<_
+/n</
 ::
 ||
-_n<_
+/n</
 ##
 code::
-_n>_
+/n>/
 ::
 ||
-_n>_
+/n>/
 ::
 
 ## DOUBLE ANGLE BRACKET
@@ -277,16 +277,16 @@ table::
 ## code to show || result
 ##
 code::
-_n<<_
+/n<</
 ::
 ||
-_n<<_
+/n<</
 ##
 code::
-_n>>_
+/n>>/
 ::
 ||
-_n>>_
+/n>>/
 ::
 
 ## CORNER BRACKET
@@ -297,16 +297,16 @@ table::
 ## code to show || result
 ##
 code::
-_c<_
+/c</
 ::
 ||
-_c<_
+/c</
 ##
 code::
-_c>_
+/c>/
 ::
 ||
-_c>_
+/c>/
 ::
 
 ## WHITE CORNER BRACKET
@@ -317,16 +317,16 @@ table::
 ## code to show || result
 ##
 code::
-_w<_
+/w</
 ::
 ||
-_w<_
+/w</
 ##
 code::
-_w>_
+/w>/
 ::
 ||
-_w>_
+/w>/
 ::
 ::
 
@@ -340,16 +340,16 @@ subsection:: Quotation dash
 
 list::
 
-## QUOTATIOM DASH _m(_dashHORIZONTAL BAR_m)_
+## QUOTATIOM DASH /m(/dashHORIZONTAL BAR/m)/
 
 table::
 ## code to show || result
 ##
 code::
-_q-_
+/q-/
 ::
 ||
-_q-_
+/q-/
 ::
 ::
 
@@ -374,10 +374,10 @@ table::
 ## code to show || result
 ##
 code::
-_me..._
+/me.../
 ::
 ||
-_me..._
+/me.../
 ::
 
 ## HORIZONTAL ELLIPSIS
@@ -386,10 +386,10 @@ table::
 ## code to show || result
 ##
 code::
-_ue..._
+/ue.../
 ::
 ||
-_ue..._
+/ue.../
 ::
 ::
 
@@ -413,10 +413,10 @@ table::
 ## code to show || result
 ##
 code::
-_a''_
+/a''/
 ::
 ||
-_a''_
+/a''/
 ::
 ::
 
@@ -442,10 +442,10 @@ table::
 ## code to show || result
 ##
 code::
-_f(__f)_
+/f(//f)/
 ::
 ||
-_f(__f)_
+/f(//f)/
 ::
 
 ## ❨❩: MEDIUM LEFT PARENTHESIS ORNAMENT
@@ -456,10 +456,10 @@ table::
 ## code to show || result
 ##
 code::
-_m(__m)_
+/m(//m)/
 ::
 ||
-_m(__m)_
+/m(//m)/
 ::
 
 ## ❲❳: LIGHT TORTOISE SHELL BRACKET ORNAMENT
@@ -470,9 +470,10 @@ table::
 ## code to show || result
 ##
 code::
-_s(__s)_
+/s(//s)/
 ::
 ||
-_s(__s)_
+/s(//s)/
 ::
 ::
+
