@@ -334,10 +334,10 @@ jobs:
         run: brew install yaml-cpp boost
       - name: install qt from homebrew
         if: matrix.cmake-architectures == 'x86_64' && !matrix.qt-version
-        run: brew install qt5
+        run: brew install qt@5
       - name: install qt universal binary from homebrew
         if: matrix.cmake-architectures != 'x86_64' && !matrix.qt-version
-        run: ./brew-install-universal.sh qt5
+        run: ./brew-install-universal.sh qt@5
       - name: install qt using aqtinstall
         uses: jurplel/install-qt-action@v3
         if: matrix.qt-version
@@ -359,7 +359,7 @@ jobs:
 
           if $SHARED_LIBSCSYNTH; then EXTRA_CMAKE_FLAGS="-DLIBSCSYNTH=ON $EXTRA_CMAKE_FLAGS"; fi
 
-          if [[ -z "${{ matrix.qt-version }}" ]]; then EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=`brew --prefix qt5` $EXTRA_CMAKE_FLAGS"; fi
+          if [[ -z "${{ matrix.qt-version }}" ]]; then EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=`brew --prefix qt@5` $EXTRA_CMAKE_FLAGS"; fi
 
           if [[ "${{ matrix.verify-app }}" == "true" ]]; then EXTRA_CMAKE_FLAGS="-DSC_VERIFY_APP=ON $EXTRA_CMAKE_FLAGS"; fi
 
