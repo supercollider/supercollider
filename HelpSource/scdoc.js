@@ -240,7 +240,6 @@ function buildThemeSwitcher() {
 }
 
 function setTheme(themeName) {
-    console.log(`Set theme to ${themeName}`);
     localStorage.setItem(scDocsThemeStorageKey, themeName);
     applyTheme();
 }
