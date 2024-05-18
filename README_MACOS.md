@@ -45,7 +45,7 @@ Prerequisites:
 - **homebrew** is recommended to install required libraries
   See http://brew.sh for installation instructions.
 - **git, cmake >= 3.12, libsndfile, readline, and qt5 >= 5.7**, installed via homebrew:
-  `brew install git cmake libsndfile readline qt5`
+  `brew install git cmake libsndfile readline qt@5`
 - If you are building with Qt libraries, you will also need the [requirements for
   QtWebEngine](https://doc.qt.io/qt-5/qtwebengine-platform-notes.html#macos), specifically macOS
   10.9 and the macOS SDK for 10.10 or later.
@@ -70,9 +70,9 @@ Build instructions
     cd SuperCollider
     mkdir -p build
     cd build
-    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt5`  ..
+    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt@5`  ..
     # or, if you want to build with supernova:
-    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt5` -DSUPERNOVA=ON ..
+    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt@5` -DSUPERNOVA=ON ..
     # then start the build
     cmake --build . --target install --config RelWithDebInfo
 
@@ -95,7 +95,7 @@ More info on *supernova* can be found in the section **Frequently used cmake set
 
 ##### Prepare for building by making a configuration file:
 
-    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt5`  ..
+    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt@5`  ..
 
 (The `..` at the end is easy to miss. Don't forget it!)
 
@@ -136,7 +136,7 @@ The most common build problems are related to incorrect versions of the core dep
 
 **Xcode**: `xcodebuild -version`, or the "About" dialog of the Xcode application. Any build from the 6.x series or greater should generally work.
 
-**cmake, qt, libsndfile, readline**: `brew info ____` will show you what you have installed - for example, `brew info qt5` should show you the Qt5 version information.
+**cmake, qt, libsndfile, readline**: `brew info ____` will show you what you have installed - for example, `brew info qt@5` should show you the Qt5 version information.
 
 `brew upgrade ____` will update the dependency to a newer version.
 
