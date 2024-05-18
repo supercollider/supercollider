@@ -27,8 +27,6 @@
     --sc-text-warning: var(--cm-keyword-color);
     --sc-text-color-lighter: #333;
 
-    --sc-tertiary: var(--cm-built-in-color);
-
     --sc-neutral: #aaa;
     --sc-neutral-darker: #555;
     --sc-neutral-lighter: #ccc;

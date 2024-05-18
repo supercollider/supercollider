@@ -28,8 +28,6 @@
     --sc-text-warning: var(--cm-keyword-color);
     --sc-text-color-lighter: #bbb;
 
-    --sc-tertiary: var(--cm-built-in-color);
-
     --sc-neutral: #aaa;
     --sc-neutral-darker: #bbb;
     --sc-neutral-lighter: #555;

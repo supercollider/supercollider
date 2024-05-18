@@ -238,10 +238,10 @@ a.menu-link:hover {
     float: right;
     font-size: 12pt;
     padding: 0.4em 0.4em 0.2em 0.4em;
-    background-color: var(--sc-tertiary);
-    color: white;
+    background-color: var(--sc-bg-warning);
+    color: var(--sc-text-color);
     border-radius: 3px;
-    border-bottom: 2px solid var(--sc-text-color);
+    border-bottom: 2px solid #000;
 }
 
 .extension-indicator-icon {
