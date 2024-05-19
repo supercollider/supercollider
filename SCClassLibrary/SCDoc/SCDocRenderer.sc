@@ -50,7 +50,7 @@ SCDocHTMLRenderer {
 	*escapeSpacesInAnchor { |str|
 		^str.replace(" ", "%20")
 	}
-	*renderNonCodePunctuation { |str|
+	*prepareStringForNonCode { |str|
 		^str
 		.replace("%20", " ")
 		//.replace("%E2%80%82", " ") // does not work if section and subsection contain non-Roman characters.
@@ -206,7 +206,7 @@ SCDocHTMLRenderer {
 		if(escape) { linkText = this.escapeSpecialChars(linkText) };
 
 		// Return a well-formatted <a> tag using the target and link text
-		^"<a href='" ++ linkTarget ++ "'>" ++ this.renderNonCodePunctuation(linkText) ++ "</a>";
+		^"<a href='" ++ linkTarget ++ "'>" ++ this.prepareStringForNonCode(linkText) ++ "</a>";
 	}
 
 	*makeArgString {|m, par=true|
@@ -262,7 +262,7 @@ SCDocHTMLRenderer {
 		if(thisIsTheMainHelpFile) {
 			stream << "SuperCollider " << Main.version << " Help";
 		} {
-			stream << this.renderNonCodePunctuation(doc.title) << " | SuperCollider " << Main.version << " Help";
+			stream << this.prepareStringForNonCode(doc.title) << " | SuperCollider " << Main.version << " Help";
 		};
 
 		// XXX if you make changes here, make sure to also update the static HTML files
@@ -296,7 +296,7 @@ SCDocHTMLRenderer {
 		displayedTitle = if(
 			thisIsTheMainHelpFile,
 			{ "SuperCollider " ++ Main.version },
-			{ this.renderNonCodePunctuation(doc.title) }
+			{ this.prepareStringForNonCode(doc.title) }
 		);
 
 		stream
@@ -368,7 +368,7 @@ SCDocHTMLRenderer {
 		};
 		stream
 		<< "</h1>\n"
-		<< "\n<div id='summary'>" << this.renderNonCodePunctuation(this.escapeSpecialChars(doc.summary)) << "</div>\n"
+		<< "\n<div id='summary'>" << this.prepareStringForNonCode(this.escapeSpecialChars(doc.summary)) << "</div>\n"
 		<< "</div>\n"
 		<< "<div class='subheader'>\n";
 
@@ -592,44 +592,44 @@ SCDocHTMLRenderer {
 			\NL, { }, // these shouldn't be here..
 // Plain text and modal tags
 			\TEXT, {
-				stream << this.renderNonCodePunctuation(this.escapeSpecialChars(node.text));
+				stream << this.prepareStringForNonCode(this.escapeSpecialChars(node.text));
 			},
 			\LINK, {
 				stream << this.htmlForLink(node.text);
 			},
 			\CODEBLOCK, {
 				stream << "<textarea class='editor'>"
-				<< this.renderNonCodePunctuation(this.escapeSpecialChars(node.text))
+				<< this.prepareStringForNonCode(this.escapeSpecialChars(node.text))
 				<< "</textarea>\n";
 			},
 			\CODE, {
 				stream << "<code>"
-				<< this.renderNonCodePunctuation(this.escapeSpecialChars(node.text))
+				<< this.prepareStringForNonCode(this.escapeSpecialChars(node.text))
 				<< "</code>";
 			},
 			\EMPHASIS, {
 				stream << "<em>"
-				<< this.renderNonCodePunctuation(this.escapeSpecialChars(node.text))
+				<< this.prepareStringForNonCode(this.escapeSpecialChars(node.text))
 				<< "</em>";
 			},
 			\TELETYPEBLOCK, {
 				stream << "\n<pre>"
-				<< this.renderNonCodePunctuation(this.escapeSpecialChars(node.text))
+				<< this.prepareStringForNonCode(this.escapeSpecialChars(node.text))
 				<< "</pre>\n";
 			},
 			\TELETYPE, {
 				stream << "<code>"
-				<< this.renderNonCodePunctuation(this.escapeSpecialChars(node.text))
+				<< this.prepareStringForNonCode(this.escapeSpecialChars(node.text))
 				<< "</code>";
 			},
 			\STRONG, {
 				stream << "<strong>"
-				<< this.renderNonCodePunctuation(this.escapeSpecialChars(node.text))
+				<< this.prepareStringForNonCode(this.escapeSpecialChars(node.text))
 				<< "</strong>";
 			},
 			\SOFT, {
 				stream << "<span class='soft'>"
-				<< this.renderNonCodePunctuation(this.escapeSpecialChars(node.text))
+				<< this.prepareStringForNonCode(this.escapeSpecialChars(node.text))
 				<< "</span>";
 			},
 			\ANCHOR, {
@@ -651,7 +651,7 @@ SCDocHTMLRenderer {
 				};
 				f[1] !? {
 					stream << "<br><b>"
-					<< this.renderNonCodePunctuation(f[1])
+					<< this.prepareStringForNonCode(f[1])
 					<< "</b>"
 				}; // ugly..
 				stream << "</div>\n";
@@ -867,7 +867,7 @@ SCDocHTMLRenderer {
 			\SECTION, {
 				stream << "\n<h2><a class='anchor' name='" << this.escapeSpacesInAnchor(node.text)
 				<< "'>"
-				<< this.renderNonCodePunctuation(this.escapeSpecialChars(node.text))
+				<< this.prepareStringForNonCode(this.escapeSpecialChars(node.text))
 				<< "</a></h2>\n";
 				if(node.makeDiv.isNil) {
 					this.renderChildren(stream, node);
@@ -881,7 +881,7 @@ SCDocHTMLRenderer {
 
 					stream << "\n<h3><a class='anchor' name='" << this.escapeSpacesInAnchor(node.text)
 					<< "'>"
-					<< this.renderNonCodePunctuation(this.escapeSpacesInAnchor(node.text))
+					<< this.prepareStringForNonCode(this.escapeSpacesInAnchor(node.text))
 					<< "</a></h3>\n";
 				if(node.makeDiv.isNil) {
 					this.renderChildren(stream, node);
@@ -948,13 +948,13 @@ SCDocHTMLRenderer {
 
 					\SECTION, {
 						stream << "<li class='toc1'><a href='#" << this.escapeSpacesInAnchor(n.text) << "'>"
-						<< this.renderNonCodePunctuation(this.escapeSpecialChars(n.text))
+						<< this.prepareStringForNonCode(this.escapeSpecialChars(n.text))
 						<< "</a></li>\n";
 						this.renderTOC(stream, n);
 					},
 					\SUBSECTION, {
 							stream << "<li class='toc2'><a href='#" << this.escapeSpacesInAnchor(n.text) << "'>"
-							<< this.renderNonCodePunctuation(this.escapeSpecialChars(n.text))
+							<< this.prepareStringForNonCode(this.escapeSpecialChars(n.text))
 							<< "</a></li>\n";
 						this.renderTOC(stream, n);
 					}
@@ -988,7 +988,7 @@ SCDocHTMLRenderer {
 		var name, doc, desc = "";
 		name = cls.name.asString;
 		doc = SCDoc.documents["Classes/"++name];
-		doc !? { desc = " - " ++ this.renderNonCodePunctuation(doc.summary) };
+		doc !? { desc = " - " ++ this.prepareStringForNonCode(doc.summary) };
 		if(cls.name.isMetaClassName, {^this});
 		stream << "<li> <a href='" << baseDir << "/Classes/" << name << ".html'>"
 		<< name << "</a>" << desc << "\n";
