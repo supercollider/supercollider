@@ -62,12 +62,12 @@ a:link:hover {
 
 .inheritedmets_class {
     font-weight: bold;
-    color: #555;
+    color: var(--sc-neutral-darker);
     margin-top: 0.5em;
     margin-bottom: 0.25em;
 }
 .inheritedmets_class a {
-    color: #333;
+    color: var(--sc-text-color-lighter);
 }
 ul.inheritedmets {
     list-style: none;
@@ -81,14 +81,14 @@ ul.inheritedmets li {
 }
 a.inheritedmets_toggle {
     font-size: 9pt;
-    color: #558;
+    color: var(--sc-neutral-darker);
     font-weight: normal;
 /*    margin-left: 2em;*/
 }
 
 a.inheritedmets_toggle:hover {
     text-decoration: none;
-    color: #000;
+    color: var(--sc-text-color);
 }
 
 input {
