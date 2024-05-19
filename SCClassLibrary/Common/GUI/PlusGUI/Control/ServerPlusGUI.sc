@@ -1,33 +1,42 @@
 ServerTreeView {
 	var <server, <bounds, viewParent, <window, resp, updateFunc, updater, tabSize = 25, treeViewStatus;
 
-	*new { |server, bounds=(Rect(128, 64, 400, 400)), parent|
-		if(bounds.asRect.width < 400) {
-			var bnds = bounds.asRect;
-			"The width value you set will be changed to 400, the minimum width.".postln;
-			bounds = Rect(bnds.left, bnds.top, 400, bnds.height);
-		};
+	*new { |server, bounds, parent|
+		server = server ? Server.default;
 		^super.newCopyArgs(server).makeWindow(bounds, parent)
 	}
 
 	makeWindow { |bounds, parent|
-		if(parent == nil) {
-			window = Window.new(this.asString, bounds, scroll:true);
-			viewParent = window;
+		bounds = if(bounds.isNil) {
+			Rect(128, 64, 400, 400)
 		} {
-			if (parent.name.contains(" Node Tree")) {
-				window = parent
+			if(bounds.asRect.width < 400) {
+				var bnds = bounds.asRect;
+				"The width value you set will be changed to 400, the minimum width.".postln;
+				Rect(bnds.left, bnds.top, 400, bnds.height);
 			} {
-				parent.close;
-				window = Window.new(parent.name, parent.bounds, scroll:true);
-			};
-			viewParent = window;
-			window.view.hasHorizontalScroller_(false).background_(Color.grey(0.9))
+				bounds
+			}
 		};
+		if(parent.isNil) {
+			window = Window(this.asString, bounds, scroll:true);
+		} {
+			if(parent.view.asString == "a TopView") {
+				var name = parent.name;
+				(
+					"The Window should be created with scroll argumrnt value true. e.g.:" ++
+					"Window.(" ++ "title".quote ++ ", scroll: true)"
+				).postln;
+				window = Window(parent.name, bounds, scroll:true);
+				parent.close;
+			} {
+				window = parent;
+			}
+		};
+		viewParent = window;
+		window.view.hasHorizontalScroller_(false).background_(Color.grey(0.9));
 		treeViewStatus = StaticText(window, Rect(tabSize, 0, window.bounds.width - (tabSize * 2) + 1, tabSize))
 		.string_(" STOPPED")
-		//.background_(Color.black)
-		//.stringColor_(Color.grey(0.8))
 		.font_(Font.sansSerif(14 ).boldVariant);
 		window.front
 	}
@@ -37,62 +46,60 @@ ServerTreeView {
 		var collectChildren, levels, countSize;
 		var view, bounds;
 		var pen, font;
+		var drawFunc;
 
 		treeViewStatus.string_(" STARTED: current server tree");
 
 		pen = GUI.current.pen;
-
 		font = Font.sansSerif(10);
 
 		view = UserView.new(viewParent, Rect(0,0,400,400));
 
-		view.drawFunc = {
-			var xtabs = 0, ytabs = 0, drawFunc;
-
-			drawFunc = {|group|
-				var thisSize, rect, endYTabs;
-				xtabs = xtabs + 1;
-				ytabs = ytabs + 1;
-				pen.font = font;
-				group.do({|node|
-					if(node.value.isArray, {
-						thisSize = countSize.value(node);
-						endYTabs = ytabs + thisSize + 0.2;
-						rect = Rect(xtabs * tabSize + 0.5,
-							ytabs * tabSize + 0.5,
-							viewParent.bounds.width - (xtabs * tabSize * 2),
-							thisSize * tabSize;
-						);
-						pen.fillColor = Color.grey(0.8);
-						pen.fillRect(rect);
-						pen.strokeRect(rect);
-						pen.color = Color.black;
-						pen.stringInRect(
-							" Group" + node.key.asString +
-							(node.key == 1).if("- default group", ""),
-							rect
-						);
-						drawFunc.value(node.value);
-						ytabs = endYTabs;
-					},{
-						rect = Rect(xtabs * tabSize + 0.5,
-							ytabs * tabSize + 0.5,
-							7 * tabSize,
-							0.8 * tabSize
-						);
-						pen.fillColor = Color.white;
-						pen.fillRect(rect);
-						pen.strokeRect(rect);
-						pen.color = Color.black;
-						pen.stringInRect(
-							" " ++ node.key.asString + node.value.asString,
-							rect
-						);
-						ytabs = ytabs + 1;
-					});
+		drawFunc = {|group, xtabs = 0, ytabs = 0|
+			var thisSize, rect, endYTabs;
+			xtabs = xtabs + 1;
+			ytabs = ytabs + 1;
+			pen.font = font;
+			group.do({|node|
+				if(node.value.isArray, {
+					thisSize = countSize.value(node);
+					endYTabs = ytabs + thisSize + 0.2;
+					rect = Rect(xtabs * tabSize + 0.5,
+						ytabs * tabSize + 0.5,
+						viewParent.bounds.width - (xtabs * tabSize * 2),
+						thisSize * tabSize;
+					);
+					pen.fillColor = Color.grey(0.8);
+					pen.fillRect(rect);
+					pen.strokeRect(rect);
+					pen.color = Color.black;
+					pen.stringInRect(
+						" Group" + node.key.asString +
+						(node.key == 1).if("- default group", ""),
+						rect
+					);
+					drawFunc.value(node.value);
+					ytabs = endYTabs;
+				},{
+					rect = Rect(xtabs * tabSize + 0.5,
+						ytabs * tabSize + 0.5,
+						7 * tabSize,
+						0.8 * tabSize
+					);
+					pen.fillColor = Color.white;
+					pen.fillRect(rect);
+					pen.strokeRect(rect);
+					pen.color = Color.black;
+					pen.stringInRect(
+						" " ++ node.key.asString + node.value.asString,
+						rect
+					);
+					ytabs = ytabs + 1;
 				});
-				xtabs = xtabs - 1;
-			};
+			});
+			xtabs = xtabs - 1;
+		};
+		view.drawFunc = {
 			drawFunc.value(levels);
 		};
 
@@ -160,13 +167,23 @@ ServerTreeView {
 			}
 		}, '/g_queryTree.reply', this.server.addr).fix;
 
-		updateFunc = {
-			updater = fork {
+		updater = {
+			fork {
 				loop {
+					defer {
+						if (this.server.serverIsRunning) {
+							treeViewStatus.string_(" STARTED: current server tree");
+						} {
+							treeViewStatus.string_(" STOPPED: last updated server tree")
+						}
+					};
 					this.server.sendMsg("/g_queryTree", 0, 0);
 					interval.wait;
 				}
 			}
+		};
+		updateFunc = {
+			updater.()
 		};
 		updateFunc.value;
 		CmdPeriod.add(updateFunc);
@@ -567,7 +584,7 @@ ServerTreeView {
 		if(plotTreeWindow.isNil) {
 			bounds = bounds ?? Rect(128, 64, 400, 400);
 			bounds = detectWidth.(bounds);
-			plotTreeWindow = Window(name.asString + "Node Tree", bounds, scroll:true);
+			plotTreeWindow = Window(name.asString ++ " Node Tree", bounds, scroll:true);
 			plotTreeWindow.onClose = { plotTreeWindow = nil };
 			this.plotTreeView(interval, plotTreeWindow, { defer { plotTreeWindow.close } });
 		} {
@@ -577,10 +594,6 @@ ServerTreeView {
 		};
 	}
 	plotTreeView { |interval=0.5, parent, actionIfFail|
-		if(parent == nil) {
-			"Cannot make a window, You should define the parent argument.".postln;
-		} {
-			ServerTreeView(this, parent: parent).start(interval, actionIfFail)
-		}
+		ServerTreeView(this, parent: parent).start(interval, actionIfFail)
 	}
 }
