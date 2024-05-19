@@ -56,6 +56,41 @@ a:link:hover {
     text-decoration: underline;
 }
 
+#inheritedclassmets, #inheritedinstmets {
+    margin-top: 1em;
+}
+
+.inheritedmets_class {
+    font-weight: bold;
+    color: #555;
+    margin-top: 0.5em;
+    margin-bottom: 0.25em;
+}
+.inheritedmets_class a {
+    color: #333;
+}
+ul.inheritedmets {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    margin-left: 2em;
+    margin-top: 0.25em;
+}
+ul.inheritedmets li {
+    font-family: monospace;
+}
+a.inheritedmets_toggle {
+    font-size: 9pt;
+    color: #558;
+    font-weight: normal;
+/*    margin-left: 2em;*/
+}
+
+a.inheritedmets_toggle:hover {
+    text-decoration: none;
+    color: #000;
+}
+
 input {
     max-width: 100%;
 }
