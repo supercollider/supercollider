@@ -157,10 +157,10 @@ SCDocHTMLRenderer {
 		.replace("&lt;/td&gt;", "\n</td>");
 
 		// empty line
-		str = SCDocHTMLRenderer.replaceRegexp(str, "(?<!'|')&lt;br&gt;(?!'|')", "\n<br>\n");
+		str = this.replaceRegexp(str, "(?<!'|')&lt;br&gt;(?!'|')", "\n<br>\n");
 
 		// '&gt; to > (only > converted using this method)'&gt;
-		str = SCDocHTMLRenderer.replaceRegexp(str, "(?<!n)'&gt;(?!'|\",|=|&|\n\s+<(?!\n)|NOTE:&lt;|WARNING:&lt;|Description&lt;|\n<source|\n<caption|\n</v|\n</a|\nYour)", "'>");
+		str = this.replaceRegexp(str, "(?<!n)'&gt;(?!'|\",|=|&|\n\s+<(?!\n)|NOTE:&lt;|WARNING:&lt;|Description&lt;|\n<source|\n<caption|\n</v|\n</a|\nYour)", "'>");
 		^str
 	}
 
@@ -665,13 +665,13 @@ SCDocHTMLRenderer {
 			\NL, { }, // these shouldn't be here..
 // Plain text and modal tags
 			\TEXT, {
-				stream << SCDocHTMLRenderer.parseHTML(this.escapeSpecialChars(node.text));
+				stream << this.parseHTML(this.escapeSpecialChars(node.text));
 			},
 			\LINK, {
 				var thisLink = this.htmlForLink(node.text);
 				stream
 				<< if (thisLink.contains("''>")) {
-					SCDocHTMLRenderer.replaceRegexp(thisLink, ".*''>", "")
+					this.replaceRegexp(thisLink, ".*''>", "")
 					.replace("'</a>", "'")
 				} {
 					thisLink
@@ -689,27 +689,27 @@ SCDocHTMLRenderer {
 			},
 			\EMPHASIS, {
 				stream << "<em>"
-				<< SCDocHTMLRenderer.parseHTML(this.escapeSpecialChars(node.text))
+				<< this.parseHTML(this.escapeSpecialChars(node.text))
 				<< "</em>";
 			},
 			\TELETYPEBLOCK, {
 				stream << "\n<pre>"
-				<< SCDocHTMLRenderer.parseHTML(this.escapeSpecialChars(node.text))
+				<< this.parseHTML(this.escapeSpecialChars(node.text))
 				<< "</pre>\n";
 			},
 			\TELETYPE, {
 				stream << "\n<code>"
-				<< SCDocHTMLRenderer.parseHTML(this.escapeSpecialChars(node.text))
+				<< this.parseHTML(this.escapeSpecialChars(node.text))
 				<< "</code>\n";
 			},
 			\STRONG, {
 				stream << "<strong>"
-				<< SCDocHTMLRenderer.parseHTML(this.escapeSpecialChars(node.text))
+				<< this.parseHTML(this.escapeSpecialChars(node.text))
 				<< "</strong>";
 			},
 			\SOFT, {
 				stream << "<span class='soft'>"
-				<< SCDocHTMLRenderer.parseHTML(this.escapeSpecialChars(node.text))
+				<< this.parseHTML(this.escapeSpecialChars(node.text))
 				<< "</span>";
 			},
 			\ANCHOR, {
@@ -730,7 +730,7 @@ SCDocHTMLRenderer {
 					stream << this.htmlForLink(f[2]++"#"++(f[3]?"")++"#"++img,false);
 				};
 				f[1] !? { stream << "<br><b>"
-					<< SCDocHTMLRenderer.parseHTML(this.escapeSpecialChars(f[1]))
+					<< this.parseHTML(this.escapeSpecialChars(f[1]))
 					<< "</b>" }; // ugly..
 				stream << "\n</div>\n";
 			},
