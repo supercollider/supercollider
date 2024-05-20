@@ -650,7 +650,6 @@ div#search_box {
 
 #search_input {
     border: 1px solid var(--sc-neutral);
-    background: var(--sc-bg-color);
     margin-left: 0.5em;
 }
 div#search_count {
