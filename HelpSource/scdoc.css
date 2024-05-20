@@ -514,7 +514,7 @@ td p {
     border-top: 1px solid var(--sc-neutral-lighter);
 }
 .doclink a {
-    color: var(--sc-neutral-darker);
+    color: var(--sc-text-color-lighter);
     word-wrap: break-word;
 }
 
