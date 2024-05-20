@@ -1,3 +1,8 @@
+:root {
+    --color-input-fg: var(--sc-text-color);
+    --color-input-bg: var(--sc-neutral-darker);
+ }
+
 *, *::before, *::after {
     box-sizing: inherit;
 }
@@ -18,8 +23,8 @@ body {
 }
 
 input, select, textarea {
-    color: var(--sc-text-color);
-    background-color: var(--sc-neutral-lighter);
+    color: var(--color-input-fg);
+    background: var(--color-input-bg)
 }
 
 div.contents {
