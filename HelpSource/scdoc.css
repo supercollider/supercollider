@@ -637,7 +637,6 @@ ul.tree li:last-child {
 }
 
 a.undoc {
-    color: var(--sc-text-color-lighter);
     text-decoration: line-through;
     opacity: 50%;
 }
