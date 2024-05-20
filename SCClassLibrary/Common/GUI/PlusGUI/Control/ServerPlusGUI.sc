@@ -2,7 +2,7 @@ ServerTreeView {
 	var <server, <bounds, viewParent, <window, resp, updateFunc, updater, tabSize = 25, treeViewStatus;
 
 	*new { |server, bounds, parent|
-		server = server ? Server.default;
+		server  = server ?? { Server.default };
 		^super.newCopyArgs(server).makeWindow(bounds, parent)
 	}
 
@@ -10,8 +10,8 @@ ServerTreeView {
 		bounds = if(bounds.isNil) {
 			Rect(128, 64, 400, 400)
 		} {
+			var bnds = bounds.asRect;
 			if(bounds.asRect.width < 400) {
-				var bnds = bounds.asRect;
 				"The width value you set will be changed to 400, the minimum width.".postln;
 				Rect(bnds.left, bnds.top, 400, bnds.height);
 			} {
@@ -21,20 +21,11 @@ ServerTreeView {
 		if(parent.isNil) {
 			window = Window(this.asString, bounds, scroll:true);
 		} {
-			if(parent.view.asString == "a TopView") {
-				var name = parent.name;
-				(
-					"The Window should be created with scroll argumrnt value true. e.g.:" ++
-					"Window.(" ++ "title".quote ++ ", scroll: true)"
-				).postln;
-				window = Window(parent.name, bounds, scroll:true);
-				parent.close;
-			} {
-				window = parent;
-			}
+			window = parent
 		};
 		viewParent = window;
-		window.view.hasHorizontalScroller_(false).background_(Color.grey(0.9));
+		if(window.view.respondsTo(\hasHorizontalScroller_)) { window.view.hasHorizontalScroller_(false) };
+		window.view.background_(Color.grey(0.9));
 		treeViewStatus = StaticText(window, Rect(tabSize, 0, window.bounds.width - (tabSize * 2) + 1, tabSize))
 		.string_(" STOPPED")
 		.font_(Font.sansSerif(14 ).boldVariant);
@@ -48,15 +39,16 @@ ServerTreeView {
 		var pen, font;
 		var drawFunc;
 
-		treeViewStatus.string_(" STARTED: current server tree");
+		treeViewStatus.string_(" STARTED: current server tree")
+		.background_(Color.grey(0.9));
 
 		pen = GUI.current.pen;
 		font = Font.sansSerif(10);
 
 		view = UserView.new(viewParent, Rect(0,0,400,400));
 
-		drawFunc = {|group, xtabs = 0, ytabs = 0|
-			var thisSize, rect, endYTabs;
+		drawFunc = {|group|
+			var thisSize, rect, endYTabs, xtabs = 0, ytabs = 0;
 			xtabs = xtabs + 1;
 			ytabs = ytabs + 1;
 			pen.font = font;
@@ -171,10 +163,13 @@ ServerTreeView {
 			fork {
 				loop {
 					defer {
-						if (this.server.serverIsRunning) {
-							treeViewStatus.string_(" STARTED: current server tree");
-						} {
+						if (this.server.serverIsRunning.not) {
 							treeViewStatus.string_(" STOPPED: last updated server tree")
+							.background_(Color.grey(0.7));
+							this.server.doWhenBooted{
+								treeViewStatus.string_(" STARTED: current server tree")
+								.background_(Color.grey(0.9));
+							}
 						}
 					};
 					this.server.sendMsg("/g_queryTree", 0, 0);
@@ -183,7 +178,7 @@ ServerTreeView {
 			}
 		};
 		updateFunc = {
-			updater.()
+			updater.value;
 		};
 		updateFunc.value;
 		CmdPeriod.add(updateFunc);
