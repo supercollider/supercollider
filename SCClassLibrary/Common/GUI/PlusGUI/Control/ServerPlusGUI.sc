@@ -179,8 +179,7 @@ ServerTreeView {
 				}
 			}
 		};
-		updateFunc = updater;
-		updateFunc.value;
+		updateFunc = updater.value;
 		CmdPeriod.add(updateFunc);
 		SystemClock.sched(3, {
 			if(done.not, {
@@ -193,7 +192,7 @@ ServerTreeView {
 	stop {
 		treeViewStatus.string_(" STOPPED: last updated server tree")
 		.background_(Color.grey(0.7));
-		updater.stop;
+		updateFunc.stop;
 		CmdPeriod.remove(updateFunc);
 		resp.free;
 	}
