@@ -164,11 +164,13 @@ ServerTreeView {
 				loop {
 					defer {
 						if (this.server.serverIsRunning.not) {
-							treeViewStatus.string_(" STOPPED: last updated server tree")
-							.background_(Color.grey(0.7));
-							this.server.doWhenBooted{
-								treeViewStatus.string_(" STARTED: current server tree")
-								.background_(Color.grey(0.9));
+							if(window.isClosed.not) {
+								treeViewStatus.string_(" STOPPED: last updated server tree")
+								.background_(Color.grey(0.7));
+								this.server.doWhenBooted{
+									treeViewStatus.string_(" STARTED: current server tree")
+									.background_(Color.grey(0.9))
+								}
 							}
 						}
 					};
@@ -177,9 +179,7 @@ ServerTreeView {
 				}
 			}
 		};
-		updateFunc = {
-			updater.value;
-		};
+		updateFunc = updater;
 		updateFunc.value;
 		CmdPeriod.add(updateFunc);
 		SystemClock.sched(3, {
