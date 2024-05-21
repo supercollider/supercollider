@@ -25,7 +25,7 @@
 
 #include <vector>
 #include <string>
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 
 class SC_LanguageConfig;
 extern SC_LanguageConfig* gLanguageConfig;
@@ -42,7 +42,7 @@ extern const char* SCLANG_YAML_CONFIG_FILENAME;
  */
 class SC_LanguageConfig {
 public:
-    typedef boost::filesystem::path Path;
+    typedef std::filesystem::path Path;
     typedef std::vector<Path> DirVector;
 
     const DirVector& includedDirectories() const { return mIncludedDirectories; }

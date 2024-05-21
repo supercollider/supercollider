@@ -25,7 +25,7 @@
 #    include "SC_Win32Utils.h"
 #endif
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 #include "sc_ugen_factory.hpp"
 
@@ -215,8 +215,8 @@ bool sc_plugin_container::run_cmd_plugin(World* world, const char* name, struct 
 }
 
 
-void sc_ugen_factory::load_plugin_folder(boost::filesystem::path const& path) {
-    using namespace boost::filesystem;
+void sc_ugen_factory::load_plugin_folder(std::filesystem::path const& path) {
+    using namespace std::filesystem;
 
     directory_iterator end;
 
@@ -249,7 +249,7 @@ static bool check_api_version(int (*api_version)(), std::string const& filename)
 }
 
 #ifdef DLOPEN
-void sc_ugen_factory::load_plugin(boost::filesystem::path const& path) {
+void sc_ugen_factory::load_plugin(std::filesystem::path const& path) {
     using namespace std;
 
     // Ignore files that don't have the extension of an SC plugin
@@ -305,7 +305,7 @@ void sc_ugen_factory::close_handles(void) {
 
 #elif defined(_WIN32)
 
-void sc_ugen_factory::load_plugin(boost::filesystem::path const& path) {
+void sc_ugen_factory::load_plugin(std::filesystem::path const& path) {
     // Ignore files that don't have the extension of an SC plugin
     if (path.extension() != SC_PLUGIN_EXT) {
         return;

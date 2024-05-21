@@ -22,7 +22,7 @@
 
 #include "SC_Filesystem.hpp" // getDirectory
 #include "SC_Codecvt.hpp" // path_to_utf8_str
-#include <boost/filesystem/path.hpp> // path
+#include <filesystem>
 
 namespace ScIDE {
 
@@ -59,7 +59,7 @@ QString standardDirectory(StandardDirectory type) {
         return QString();
     }
 
-    const boost::filesystem::path path = SC_Filesystem::instance().getDirectory(dn);
+    const std::filesystem::path path = SC_Filesystem::instance().getDirectory(dn);
     return QString(SC_Codecvt::path_to_utf8_str(path).c_str());
 }
 
