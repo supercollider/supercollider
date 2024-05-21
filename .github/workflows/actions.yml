@@ -198,7 +198,7 @@ jobs:
           - job-name: 'universal'
             os-version: '12'
             xcode-version: '13.4.1'
-            deployment-target: '10.14'
+            deployment-target: '10.15'
             cmake-architectures: 'x86_64;arm64'
             use-syslibs: false
             shared-libscsynth: false
@@ -213,7 +213,7 @@ jobs:
             os-version: '12'
             xcode-version: '13.4.1'
             qt-version: '5.9.9' # will use qt from aqtinstall
-            deployment-target: '10.11'
+            deployment-target: '10.15'
             cmake-architectures: x86_64
             use-syslibs: false
             shared-libscsynth: false
@@ -226,7 +226,7 @@ jobs:
           - job-name: 'x64 use system libraries'
             os-version: '12'
             xcode-version: '13.4.1'
-            deployment-target: '10.14'
+            deployment-target: '10.15'
             cmake-architectures: x86_64
             use-syslibs: true
             shared-libscsynth: false
@@ -235,7 +235,7 @@ jobs:
           - job-name: 'x64 shared libscsynth'
             os-version: '12'
             xcode-version: '13.4.1'
-            deployment-target: '10.14'
+            deployment-target: '10.15'
             cmake-architectures: x86_64
             use-syslibs: false
             shared-libscsynth: true
