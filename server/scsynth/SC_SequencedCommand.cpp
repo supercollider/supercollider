@@ -30,8 +30,7 @@
 #include "../../common/SC_SndFileHelpers.hpp"
 #include "SC_WorldOptions.h"
 
-/* boost headers */
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 const size_t ERR_BUF_SIZE(512);
 
@@ -1434,7 +1433,7 @@ LoadSynthDefDirCmd::~LoadSynthDefDirCmd() { World_Free(mWorld, mFilename); }
 void LoadSynthDefDirCmd::CallDestructor() { this->~LoadSynthDefDirCmd(); }
 
 bool LoadSynthDefDirCmd::Stage2() {
-    if (!boost::filesystem::exists(mFilename)) {
+    if (!std::filesystem::exists(mFilename)) {
         char str[ERR_BUF_SIZE];
         snprintf(str, ERR_BUF_SIZE, "Could not load synthdefs. Directory '%s' does not exist\n", mFilename);
         SendFailure(&mReplyAddress, "/d_loadDir", mFilename);

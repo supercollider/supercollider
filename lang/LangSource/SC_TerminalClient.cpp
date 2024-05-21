@@ -61,7 +61,7 @@
 #include "SC_LanguageConfig.hpp"
 #include "SC_Version.hpp"
 
-#include <boost/filesystem/operations.hpp>
+#include <filesystem>
 
 using namespace boost::placeholders;
 
@@ -255,8 +255,7 @@ int SC_TerminalClient::run(int argc, char** argv) {
 
     // Create config directory so that it can be used by Quarks, etc. See #2919.
     if (!opt.mStandalone && !opt.mLibraryConfigFile)
-        boost::filesystem::create_directories(
-            SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::UserConfig));
+        std::filesystem::create_directories(SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::UserConfig));
 
     // startup library
     compileLibrary(opt.mStandalone);

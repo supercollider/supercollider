@@ -25,7 +25,7 @@
 #include "SC_Win32Utils.h"
 #include "SC_ServerBootDelayWarning.h"
 
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 #include <boost/algorithm/string.hpp>
 
 #include "server.hpp"
