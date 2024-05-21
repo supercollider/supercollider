@@ -1,35 +1,42 @@
 :root {
     /* editor colors */
-    --cm-background-color: #000;
-    --cm-border-color: #e1e1e1;
-    --cm-selection-color: #ff5500;
-    --cm-keyword-color: #ffa4e2;
-    --cm-built-in-color: #ffa4e2;
-    --cm-number-color: #4aff00;
-    --cm-symbol-color: #ddde00;
-    --cm-class-color: #00abff;
-    --cm-primitive-color: #aaff7f;
-    --cm-char-color: #ff55ff;
-    --cm-env-var-color: #73e7ad;
-    --cm-comment-color: #d4b982;
-    --cm-string-color: #d7d7d7;
-    --cm-text-color: #ffa4e2;
-    --cm-string-color: var(--cm-char-color);
+    --color-cm-background: #000;
+    --color-cm-border: #e1e1e1;
+    --color-cm-selection: #ff5500;
+    --color-cm-keyword: #ffa4e2;
+    --color-cm-built-in: #ffa4e2;
+    --color-cm-number: #4aff00;
+    --color-cm-symbol: #ddde00;
+    --color-cm-class: #00abff;
+    --color-cm-primitive: #aaff7f;
+    --color-cm-char: #ff55ff;
+    --color-cm-env-var: #73e7ad;
+    --color-cm-comment: #d4b982;
+    --color-cm-string: #d7d7d7;
+    --color-cm-text: #ffa4e2;
+    --color-cm-string: var(--color-cm-char);
 
     /* derived colors
     in future use `color-mix` to calculate them which allows for fewer variables
     but currently the qt browser does not support it, see
     https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix
     */
-    --sc-bg-color: var(--cm-background-color);
-    --sc-bg-warning: #555;
+    --color-bg: var(--color-cm-background);
 
-    --sc-text-color: var(--cm-text-color);
-    --sc-text-warning: var(--cm-keyword-color);
-    --sc-text-color-lighter: #bbb;
+    --color-warning-bg: #555;
+    --color-warning-fg: var(--color-cm-keyword);
 
-    --sc-neutral: #aaa;
-    --sc-neutral-darker: #bbb;
-    --sc-neutral-lighter: #555;
-    --sc-link-color: var(--cm-string-color);
+    --color-fg: var(--color-cm-text);
+    --color-fg-400: #bbb;
+    --color-fg-300: #bbb;
+    --color-fg-200: #aaa;
+    --color-fg-100: #555;
+    
+    --color-link: var(--color-cm-string);
+
+    --color-extensions-bg: var(--color-cm-primitive);
+    --color-extensions-fg: var(--color-cm-background);
+
+    --color-input-fg: var(--color-fg);
+    --color-input-bg: var(--color-fg-300);
 }

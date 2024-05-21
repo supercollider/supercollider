@@ -1,36 +1,43 @@
 :root {
     /* editor colors */
-    --cm-background-color: #fff;
-    --cm-border-color: #e1e1e1;
-    --cm-selection-color: rgb(248, 162, 0);
-    --cm-keyword-color: #CC3626;
-    --cm-built-in-color: #AF33A6;
-    --cm-number-color: #AF33A6;
-    --cm-symbol-color: #3F831E;
-    --cm-class-color: #3478BC;
-    --cm-primitive-color: #C07F00;
-    --cm-char-color: #AF33A6;
-    --cm-env-var-color: #C07F00;
-    --cm-comment-color: #848484;
-    --cm-string-color: #3F39C9;
-    --cm-text-color: #000;
+    --color-cm-background: #fff;
+    --color-cm-border: #e1e1e1;
+    --color-cm-selection: rgb(248, 162, 0);
+    --color-cm-keyword: #CC3626;
+    --color-cm-built-in: #AF33A6;
+    --color-cm-number: #AF33A6;
+    --color-cm-symbol: #3F831E;
+    --color-cm-class: #3478BC;
+    --color-cm-primitive: #C07F00;
+    --color-cm-char: #AF33A6;
+    --color-cm-env-var: #C07F00;
+    --color-cm-comment: #848484;
+    --color-cm-string: #3F39C9;
+    --color-cm-text: #000;
 
     /* derived colors
     in future use `color-mix` to calculate them which allows for fewer variables
     but currently the qt browser does not support it, see
     https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix
     */
-    --sc-bg-color: var(--cm-background-color);
-    /* normally each theme uses --cm-keyword-color, but this generates grey text
+    --color-bg: var(--color-cm-background);
+    
+    /* normally each theme uses --color-cm-keyword, but this generates grey text
     on blue background, which is bad to read, therefore it gets manually adjusted here */
-    --sc-bg-warning: #f7f7d7;
+    --color-warning-bg: #f7f7d7;
+    --color-warning-fg: var(--color-cm-keyword);
 
-    --sc-text-color: var(--cm-text-color);
-    --sc-text-warning: var(--cm-keyword-color);
-    --sc-text-color-lighter: #333;
+    --color-fg: var(--color-cm-text);
+    --color-fg-400: #333;
+    --color-fg-300: #555;
+    --color-fg-200: #aaa;
+    --color-fg-100: #ccc;
 
-    --sc-neutral: #aaa;
-    --sc-neutral-darker: #555;
-    --sc-neutral-lighter: #ccc;
-    --sc-link-color: var(--cm-string-color);
+    --color-link: var(--color-cm-string);
+
+    --color-extensions-bg: var(--color-cm-char);
+    --color-extensions-fg: var(--color-cm-background);
+
+    --color-input-fg: var(--color-fg);
+    --color-input-bg: var(--color-fg-300);
 }

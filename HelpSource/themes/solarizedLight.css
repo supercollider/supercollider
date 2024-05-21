@@ -1,34 +1,41 @@
 :root {
     /* editor colors */
-    --cm-background-color: #fdf6e3;
-    --cm-border-color: #e1e1e1;
-    --cm-selection-color: #abcfdb;
-    --cm-keyword-color: #dc322f;
-    --cm-built-in-color: #b58900;
-    --cm-number-color: #6c71c4;
-    --cm-symbol-color: #b58900;
-    --cm-class-color: #268bd2;
-    --cm-primitive-color: #2aa198;
-    --cm-char-color: #cb4b16;
-    --cm-env-var-color: #d33682;
-    --cm-comment-color: #586e75;
-    --cm-string-color: #93a1a1;
-    --cm-text-color: #657b83;
+    --color-cm-background: #fdf6e3;
+    --color-cm-border: #e1e1e1;
+    --color-cm-selection: #abcfdb;
+    --color-cm-keyword: #dc322f;
+    --color-cm-built-in: #b58900;
+    --color-cm-number: #6c71c4;
+    --color-cm-symbol: #b58900;
+    --color-cm-class: #268bd2;
+    --color-cm-primitive: #2aa198;
+    --color-cm-char: #cb4b16;
+    --color-cm-env-var: #d33682;
+    --color-cm-comment: #586e75;
+    --color-cm-string: #93a1a1;
+    --color-cm-text: #657b83;
 
     /* derived colors
     in future use `color-mix` to calculate them which allows for fewer variables
     but currently the qt browser does not support it, see
     https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix
     */
-    --sc-bg-color: var(--cm-background-color);
-    --sc-bg-warning: var(--cm-selection-color);
+    --color-bg: var(--color-cm-background);
 
-    --sc-text-color: var(--cm-text-color);
-    --sc-text-warning: var(--cm-keyword-color);
-    --sc-text-color-lighter: #333;
+    --color-warning-bg: var(--color-cm-selection);
+    --color-warning-fg: var(--color-cm-keyword);
 
-    --sc-neutral: #aaa;
-    --sc-neutral-darker: #555;
-    --sc-neutral-lighter: #ccc;
-    --sc-link-color: var(--cm-string-color);
+    --color-fg: var(--color-cm-text);
+    --color-fg-400: #333;
+    --color-fg-300: #555;
+    --color-fg-200: #aaa;
+    --color-fg-100: #ccc;
+    
+    --color-link: var(--color-cm-string);
+
+    --color-extensions-bg: var(--color-cm-char);
+    --color-extensions-fg: var(--color-cm-background);
+
+    --color-input-fg: var(--color-fg);
+    --color-input-bg: var(--color-fg-300);
 }
