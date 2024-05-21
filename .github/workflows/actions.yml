@@ -51,13 +51,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - job-name: 'focal gcc7'
-            os-version: '20.04'
-            c-compiler: 'gcc-7'
-            cxx-compiler: 'g++-7'
-            use-syslibs: false
-            shared-libscsynth: false
-
           - job-name: 'focal gcc9 shared libscsynth'
             os-version: '20.04'
             c-compiler: 'gcc-9'

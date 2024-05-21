@@ -33,7 +33,7 @@ SuperCollider is tested with:
 SuperCollider is known to support these platforms:
 - Windows Vista, 7, 8, 10, 11
 - macOS 10.15-12.x
-- Ubuntu 18.04-22.04
+- Ubuntu 20.04-22.04
 
 We also provide a legacy macOS binary for macOS 10.15 and above using Qt 5.9.
 
