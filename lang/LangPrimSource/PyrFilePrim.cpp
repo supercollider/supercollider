@@ -108,6 +108,13 @@ int prFileDeleteAll(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
+std::time_t to_time_t(std::filesystem::file_time_type file_time) {
+    using namespace std::chrono;
+    auto sctp = time_point_cast<system_clock::duration>(file_time - std::filesystem::file_time_type::clock::now()
+                                                        + system_clock::now());
+    return system_clock::to_time_t(sctp);
+}
+
 int prFileMTime(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a = g->sp - 1, *b = g->sp;
     char filename[PATH_MAX];
@@ -118,8 +125,7 @@ int prFileMTime(struct VMGlobals* g, int numArgsPushed) {
 
     const fs::path& p = SC_Codecvt::utf8_str_to_path(filename);
     auto mtime = fs::last_write_time(p);
-    const time_t time = decltype(mtime)::clock::to_time_t(mtime);
-    SetInt(a, time);
+    SetInt(a, to_time_t(mtime));
     return errNone;
 }
 

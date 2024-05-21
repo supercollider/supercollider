@@ -67,7 +67,7 @@ SC_Filesystem::Glob* SC_Filesystem::makeGlob(const char* pattern) {
     // remove a trailing backslash. Even if searching with 'foo/.', this will
     // change to 'foo' harmlessly. Use has_parent_path() because otherwise '.'
     // (referring to the CWD) won't be recognized as a valid query.
-    if (path.filename_is_dot() && path.has_parent_path())
+    if (path.filename() == "." && path.has_parent_path())
         path = path.parent_path();
 
     // expand to home directory, if path starts with tilde
@@ -103,7 +103,7 @@ Path SC_Filesystem::globNext(Glob* glob) {
 
         if (!::FindNextFileW(glob->mHandle, &glob->mEntry))
             glob->mAtEnd = true;
-    } while (glob->mFilename.filename_is_dot() || glob->mFilename.filename_is_dot_dot());
+    } while (glob->mFilename.filename() == "." || glob->mFilename.filename() == "..");
 
     // add preferred separator (L'\\') for directories on Windows, to match
     // POSIX globbing. boost::filesystem::is_directory won't work for this because
