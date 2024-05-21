@@ -276,7 +276,7 @@ a.menu-link:hover {
     background-color: var(--color-extensions-bg);
     color: var(--color-extensions-fg);
     border-radius: 3px;
-    border-bottom: 2px solid #000;
+    border-bottom: 2px solid var(--color-fg);
 }
 
 .extension-indicator-icon {
@@ -730,7 +730,7 @@ div.met_subclasses a.seemore {
 #method_note {
     font-size: 9pt;
     color: var(--color-fg-200);
-    border-top: 1px solid #ddd;
+    border-top: 1px solid var(--color-fg-100);
     text-align: center;
     margin-top: 2em;
 }
