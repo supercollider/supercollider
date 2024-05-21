@@ -513,25 +513,6 @@ td p {
     word-wrap: break-word;
 }
 
-#sidetoc {
-    position: fixed;
-    display: block;
-    width: 18em;
-    left: 0px;
-    margin: 0;
-    padding: 10px;
-    height: 100%;
-    overflow: auto;
-/*    background: #eee;*/
-    background: #fff;
-    border-right: 1px solid var(--color-fg-100);
-}
-
-#sidetoc a:hover {
-    text-decoration: none;
-    color: var(--color-bg);
-}
-
 #toc-container {
     float: right;
 }
