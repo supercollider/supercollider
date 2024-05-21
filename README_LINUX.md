@@ -6,7 +6,7 @@ Build requirements
 
 These are strict requirements for scsynth and supernova:
 
-- A C++ compiler with C++17 support. SuperCollider guarantees support for [gcc][gcc] >= 6.3 and [clang][clang] >= 3.9.
+- A C++ compiler with C++17 support. SuperCollider guarantees support for [gcc][gcc] >= 8.1 and [clang][clang] >= 3.9.
 - [cmake][cmake] >= 3.12: Cross-platform build system.
 - [libsndfile][libsndfile] >= 1.0: Soundfile I/O.
 - [libjack][libjack]: Development headers for the JACK Audio Connection Kit.
