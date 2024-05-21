@@ -21,7 +21,7 @@
     https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix
     */
     --color-bg: var(--color-cm-background);
-    
+
     /* normally each theme uses --color-cm-keyword, but this generates grey text
     on blue background, which is bad to read, therefore it gets manually adjusted here */
     --color-warning-bg: #f7f7d7;
@@ -35,7 +35,7 @@
 
     --color-link: var(--color-cm-string);
 
-    --color-extensions-bg: var(--color-cm-char);
+    --color-extensions-bg: #601c8b;
     --color-extensions-fg: var(--color-cm-background);
 
     --color-input-fg: var(--color-fg);
