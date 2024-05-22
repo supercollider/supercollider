@@ -2,7 +2,7 @@
     /* editor colors */
     --color-cm-background: #fff;
     --color-cm-border: #e1e1e1;
-    --color-cm-selection: rgb(248, 162, 0);
+    --color-cm-evaluated: rgb(248, 162, 0);
     --color-cm-keyword: #CC3626;
     --color-cm-built-in: #AF33A6;
     --color-cm-number: #AF33A6;
@@ -14,6 +14,7 @@
     --color-cm-comment: #848484;
     --color-cm-string: #3F39C9;
     --color-cm-text: #000;
+    --color-cm-selection: var(--color-cm-text);
 
     /* derived colors
     in future use `color-mix` to calculate them which allows for fewer variables
@@ -39,5 +40,5 @@
     --color-extensions-fg: var(--color-cm-background);
 
     --color-input-fg: var(--color-fg);
-    --color-input-bg: var(--color-fg-300);
+    --color-input-bg: var(--color-fg-100);
 }

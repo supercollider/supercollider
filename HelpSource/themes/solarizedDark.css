@@ -2,7 +2,7 @@
     /* editor colors */
     --color-cm-background: #002b36;
     --color-cm-border: #e1e1e1;
-    --color-cm-selection: rgb(206, 222, 228);
+    --color-cm-evaluated: rgb(206, 222, 228);
     --color-cm-keyword: #dc322f;
     --color-cm-built-in: #b58900;
     --color-cm-number: #6c71c4;
@@ -14,6 +14,7 @@
     --color-cm-comment: #93a1a1;
     --color-cm-string: #586e75;
     --color-cm-text: #839496;
+    --color-cm-selection: var(--color-cm-border);
 
     /* derived colors
     in future use `color-mix` to calculate them which allows for fewer variables
@@ -22,7 +23,7 @@
     */
     --color-bg: var(--color-cm-background);
 
-    --color-warning-bg: var(--color-cm-selection);
+    --color-warning-bg: var(--color-cm-evaluated);
     --color-warning-fg: var(--color-cm-keyword);
 
     --color-fg: var(--color-cm-text);
@@ -36,6 +37,5 @@
     --color-extensions-fg: var(--color-cm-background);
 
     --color-input-fg: var(--color-fg);
-    --color-input-bg: var(--color-fg-300);
+    --color-input-bg: var(--color-fg-100);
 }
-

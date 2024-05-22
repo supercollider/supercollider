@@ -20,8 +20,13 @@ textarea.editor {
 .CodeMirror-line::selection,
 .CodeMirror-line > span::selection,
 .CodeMirror-line > span > span::selection { 
-    /* the default IDE uses blue as a selection cover  */
-    background: var(--color-cm-selection) !important;
+    /* a selection within an IDE not just covers the background but
+    also changes the text color, allowing e.g. for inversion.
+    This is not possible via CodeMirror, see 
+    https://github.com/codemirror/codemirror5/issues/1212#issuecomment-13047835
+    */
+    background-color:  var(--color-cm-selection) !important;
+    opacity: 20% !important;
 }
 
 @keyframes text-flash {
@@ -30,7 +35,7 @@ textarea.editor {
         color: black;
     }
     40% { 
-        background: var(--color-cm-selection); 
+        background: var(--color-cm-evaluated); 
         color: black,
     }
     100% { 
