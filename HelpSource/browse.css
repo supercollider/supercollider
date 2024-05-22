@@ -55,15 +55,15 @@
     padding-bottom: 1em;
 }
 .cat_count {
-    color: var(--color-fg-100);
+    color: var(--color-fg-200);
     font-size: 9pt;
 }
 #total_count {
     font-size: 9pt;
-    color: var(--color-fg-100);;
+    color: var(--color-fg-200);;
 }
 .doc_kind {
-    color: var(--color-fg-100);;
+    color: var(--color-fg-200);
     float: right;
     font-size: 8pt;
     padding: 0 2px;
