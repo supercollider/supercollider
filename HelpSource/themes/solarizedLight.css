@@ -23,8 +23,8 @@
     */
     --color-bg: var(--color-cm-background);
 
-    --color-warning-bg: var(--color-cm-evaluated);
-    --color-warning-fg: #dbecf1;
+    --color-warning-bg: #dbecf1;
+    --color-warning-fg: var(--color-cm-keyword);
 
     --color-fg: var(--color-cm-text);
     --color-fg-400: #333;
@@ -32,7 +32,7 @@
     --color-fg-200: #aaa;
     --color-fg-100: #eee;
     
-    --color-link: var(--color-cm-string);
+    --color-link: #7b8d8d;
 
     --color-extensions-bg: var(--color-cm-char);
     --color-extensions-fg: var(--color-cm-background);
