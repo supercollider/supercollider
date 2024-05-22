@@ -256,8 +256,8 @@ function applyTheme(theme=null) {
     cssThemeTag.href = `${scriptLocation.split('/').slice(0, -1).join("/")}/themes/${themeName}.css`;
 }
 
-// scdoc.js is placed after the `theme` CSS to be changed
-// in the DOM, so it is safe to call it here.
+// scdoc.js is loaded after css themes so it's safe to call it here:
+// run immediately, don't wait for document load, to prevent "unstyled flash"
 applyTheme();
 
 // Set up a QWebChannel for communicating with C++ IDE objects. The main app publishes a handle
