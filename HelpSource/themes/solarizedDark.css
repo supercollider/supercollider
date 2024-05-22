@@ -29,8 +29,8 @@
     --color-fg: var(--color-cm-text);
     --color-fg-400: #ccc;
     --color-fg-300: #ccc;
-    --color-fg-200: #555;
-    --color-fg-100: #555;
+    --color-fg-200: #4f6e76;
+    --color-fg-100: #054252;
     --color-link: var(--color-cm-string);
 
     --color-extensions-bg: var(--color-cm-char);

@@ -24,13 +24,13 @@
     --color-bg: var(--color-cm-background);
 
     --color-warning-bg: var(--color-cm-evaluated);
-    --color-warning-fg: var(--color-cm-keyword);
+    --color-warning-fg: #dbecf1;
 
     --color-fg: var(--color-cm-text);
     --color-fg-400: #333;
     --color-fg-300: #555;
     --color-fg-200: #aaa;
-    --color-fg-100: #ccc;
+    --color-fg-100: #eee;
     
     --color-link: var(--color-cm-string);
 

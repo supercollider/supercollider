@@ -31,8 +31,8 @@
     --color-fg: var(--color-cm-text);
     --color-fg-400: #333;
     --color-fg-300: #555;
-    --color-fg-200: #aaa;
-    --color-fg-100: #ccc;
+    --color-fg-200: #999;
+    --color-fg-100: #f0f0f0;
 
     --color-link: var(--color-cm-string);
 
