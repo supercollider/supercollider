@@ -28,8 +28,14 @@ TestDictionary : UnitTest {
 	}
 
 	test_trueAt {
-		var dict = (x:7, y:false, z:true);
-		this.assert([\x, \y].every(dict.falseAt(_)) and: dict.trueAt(\z), "dictionary trueAt and falseAt should respond only true if the value really equals true.");
+		var dict = (k: 1, x:nil, y:false, z:true);
+		this.assert(1.falseAt(\y), "falseAt should respond with true for any object by default.");
+		this.assert(1.trueAt(\y).not, "trueAt should respond with false for any object by default.");
+		this.assert(dict.falseAt(\y), "dictionary falseAt should respond with false if its booleanValue is equivalent to false.");
+		this.assert(dict.falseAt(\x), "dictionary falseAt should respond with false if its value is unspecified.");
+		this.assert(dict.trueAt(\z), "dictionary trueAt should respond true if its booleanValue is equivalent to true.");
+		this.assert(dict.trueAt(\k), "dictionary trueAt should respond true if its booleanValue is equivalent to true.");
+
 	}
 
 }
