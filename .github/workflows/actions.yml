@@ -187,11 +187,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-
           - job-name: 'universal'
-            os-version: '12'
-            xcode-version: '13.4.1'
-            deployment-target: '10.15'
+            os-version: '14'
+            xcode-version: '15.4'
+            deployment-target: '11.0'
             cmake-architectures: 'x86_64;arm64'
             use-syslibs: false
             shared-libscsynth: false
