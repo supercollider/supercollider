@@ -111,9 +111,16 @@ SequenceableCollection : Collection {
 	asSequenceableCollection { ^this }
 
 	// select an element at random
-	choose {
-		^this.at(this.size.rand)
+	choose { arg weights;
+		^if (weights.isNil) {
+			// with equal probabilities
+			this.at(this.size.rand)
+		} {
+			// with relative weights
+			this.wchoose(weights.normalizeSum)
+		}
 	}
+
 	// select an element at random using an array of weights
 	wchoose { arg weights;
 		^this.at(weights.windex)
