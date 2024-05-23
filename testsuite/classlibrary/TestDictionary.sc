@@ -28,14 +28,14 @@ TestDictionary : UnitTest {
 	}
 
 	test_trueAt {
-		var dict = (k: 1, x:nil, y:false, z:true);
-		this.assert(1.falseAt(\y), "falseAt should respond with true for any object by default.");
-		this.assert(1.trueAt(\y).not, "trueAt should respond with false for any object by default.");
-		this.assert(dict.falseAt(\y), "dictionary falseAt should respond with false if its booleanValue is equivalent to false.");
-		this.assert(dict.falseAt(\x), "dictionary falseAt should respond with false if its value is unspecified.");
-		this.assert(dict.trueAt(\z), "dictionary trueAt should respond true if its booleanValue is equivalent to true.");
-		this.assert(dict.trueAt(\k), "dictionary trueAt should respond true if its booleanValue is equivalent to true.");
-
+		var dict = (k: 1, nothing:nil, no:false, yes:true);
+		this.assertEquals(1.falseAt(\no), true, "falseAt should respond with true for any object by default.");
+		this.assertEquals(1.trueAt(\no), false, "trueAt should respond with false for any object by default.");
+		this.assertEquals(dict.falseAt(\no), true, "dictionary falseAt should respond with true if its booleanValue is false.");
+		this.assertEquals(dict.falseAt(\nothing), true, "dictionary falseAt should respond with true if its value is unspecified.");
+		this.assertEquals(dict.trueAt(\nothing), false, "dictionary trueAt should respond with false if its value is unspecified.");
+		this.assertEquals(dict.trueAt(\yes), true, "dictionary trueAt should respond true if its booleanValue is true.");
+		this.assertEquals(dict.trueAt(\k), true, "dictionary trueAt should respond true if its booleanValue is true.");
 	}
 
 }
