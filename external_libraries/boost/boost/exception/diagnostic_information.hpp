@@ -9,7 +9,7 @@
 #include <boost/config.hpp>
 #include <boost/exception/get_error_info.hpp>
 #include <boost/exception/info.hpp>
-#include <boost/utility/enable_if.hpp>
+#include <boost/core/enable_if.hpp>
 #ifndef BOOST_NO_RTTI
 #include <boost/core/demangle.hpp>
 #endif
@@ -149,11 +149,11 @@ boost
                     if( f )
                         {
                         tmp << *f;
-                        if( int const * l=get_error_info<throw_line>(*be) )
+                        if( l )
                             tmp << '(' << *l << "): ";
                         }
                     tmp << "Throw in function ";
-                    if( char const * const * fn=get_error_info<throw_function>(*be) )
+                    if( fn )
                         tmp << *fn;
                     else
                         tmp << "(unknown)";

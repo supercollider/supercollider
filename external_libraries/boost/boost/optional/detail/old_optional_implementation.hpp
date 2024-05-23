@@ -79,7 +79,7 @@ class optional_base : public optional_tag
   private :
 
     typedef
-#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x564))
+#if !BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x564))
     BOOST_DEDUCED_TYPENAME
 #endif
     ::boost::detail::make_reference_content<T>::type internal_type ;
@@ -336,7 +336,7 @@ class optional_base : public optional_tag
     // No-throw (assuming T::~T() doesn't)
     void reset() BOOST_NOEXCEPT { destroy(); }
 
-    // **DEPPRECATED** Replaces the current value -if any- with 'val'
+    // **DEPRECATED** Replaces the current value -if any- with 'val'
     void reset ( argument_type val ) { assign(val); }
 
     // Returns a pointer to the value if this is initialized, otherwise,
@@ -542,7 +542,7 @@ class optional_base : public optional_tag
     //   Thus, the following overload is needed to properly handle the case when the 'lhs'
     //   is another optional.
     //
-    // For VC<=70 compilers this workaround dosen't work becasue the comnpiler issues and error
+    // For VC<=70 compilers this workaround doesn't work because the compiler issues and error
     // instead of choosing the wrong overload
     //
 #ifndef  BOOST_OPTIONAL_DETAIL_NO_RVALUE_REFERENCES
@@ -619,7 +619,7 @@ class optional_base : public optional_tag
     reference_const_type dereference( internal_type const* p, is_reference_tag     ) const { return p->get() ; }
     reference_type       dereference( internal_type*       p, is_reference_tag     )       { return p->get() ; }
 
-#if BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x581))
+#if BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x581))
     void destroy_impl ( is_not_reference_tag ) { get_ptr_impl()->internal_type::~internal_type() ; m_initialized = false ; }
 #else
     void destroy_impl ( is_not_reference_tag ) { get_ptr_impl()->~T() ; m_initialized = false ; }
@@ -629,7 +629,7 @@ class optional_base : public optional_tag
 
     // If T is of reference type, trying to get a pointer to the held value must result in a compile-time error.
     // Decent compilers should disallow conversions from reference_content<T>* to T*, but just in case,
-    // the following olverloads are used to filter out the case and guarantee an error in case of T being a reference.
+    // the following overloads are used to filter out the case and guarantee an error in case of T being a reference.
     pointer_const_type cast_ptr( internal_type const* p, is_not_reference_tag ) const { return p ; }
     pointer_type       cast_ptr( internal_type *      p, is_not_reference_tag )       { return p ; }
     pointer_const_type cast_ptr( internal_type const* p, is_reference_tag     ) const { return &p->get() ; }

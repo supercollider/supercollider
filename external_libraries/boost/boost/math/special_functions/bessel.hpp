@@ -36,6 +36,11 @@
 #include <boost/math/tools/series.hpp>
 #include <boost/math/tools/roots.hpp>
 
+#ifdef _MSC_VER
+# pragma warning(push)
+# pragma warning(disable: 6326) // potential comparison of a constant with another constant
+#endif
+
 namespace boost{ namespace math{
 
 namespace detail{
@@ -78,13 +83,10 @@ inline T sph_bessel_j_small_z_series(unsigned v, T x, const Policy& pol)
 {
    BOOST_MATH_STD_USING // ADL of std names
    sph_bessel_j_small_z_series_term<T, Policy> s(v, x);
-   boost::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
-#if BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
-   T zero = 0;
-   T result = boost::math::tools::sum_series(s, boost::math::policies::get_epsilon<T, Policy>(), max_iter, zero);
-#else
+   std::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
+
    T result = boost::math::tools::sum_series(s, boost::math::policies::get_epsilon<T, Policy>(), max_iter);
-#endif
+
    policies::check_series_iterations<T>("boost::math::sph_bessel_j_small_z_series<%1%>(%1%,%1%)", max_iter, pol);
    return result * sqrt(constants::pi<T>() / 4);
 }
@@ -109,7 +111,7 @@ T cyl_bessel_j_imp(T v, T x, const bessel_no_int_tag& t, const Policy& pol)
             function,
             "Got x = %1%, but we need x >= 0", x, pol);
    }
-   
+
    T j, y;
    bessel_jy(v, x, &j, &y, need_j, pol);
    return j;
@@ -163,7 +165,7 @@ inline T sph_bessel_j_imp(unsigned n, T x, const Policy& pol)
    //
    // Default case is just a naive evaluation of the definition:
    //
-   return sqrt(constants::pi<T>() / (2 * x)) 
+   return sqrt(constants::pi<T>() / (2 * x))
       * cyl_bessel_j_imp(T(T(n)+T(0.5f)), x, bessel_no_int_tag(), pol);
 }
 
@@ -206,7 +208,7 @@ T cyl_bessel_i_imp(T v, T x, const Policy& pol)
       }
       return sqrt(2 / (x * constants::pi<T>())) * sinh(x);
    }
-   if(policies::digits<T, Policy>() <= 113)
+   if((policies::digits<T, Policy>() <= 113) && (std::numeric_limits<T>::digits <= 113) && (std::numeric_limits<T>::radix == 2))
    {
       if(v == 0)
       {
@@ -237,7 +239,7 @@ inline T cyl_bessel_k_imp(T v, T x, const bessel_no_int_tag& /* t */, const Poli
    }
    if(x == 0)
    {
-      return (v == 0) ? policies::raise_overflow_error<T>(function, 0, pol)
+      return (v == 0) ? policies::raise_overflow_error<T>(function, nullptr, pol)
          : policies::raise_domain_error<T>(
          function,
          "Got x = %1%, but we need x > 0", x, pol);
@@ -275,20 +277,20 @@ inline T cyl_neumann_imp(T v, T x, const bessel_no_int_tag&, const Policy& pol)
    if(x <= 0)
    {
       return (v == 0) && (x == 0) ?
-         policies::raise_overflow_error<T>(function, 0, pol)
+         policies::raise_overflow_error<T>(function, nullptr, pol)
          : policies::raise_domain_error<T>(
                function,
                "Got x = %1%, but result is complex for x <= 0", x, pol);
    }
    T j, y;
    bessel_jy(v, x, &j, &y, need_y, pol);
-   // 
+   //
    // Post evaluation check for internal overflow during evaluation,
    // can occur when x is small and v is large, in which case the result
    // is -INF:
    //
    if(!(boost::math::isfinite)(y))
-      return -policies::raise_overflow_error<T>(function, 0, pol);
+      return -policies::raise_overflow_error<T>(function, nullptr, pol);
    return y;
 }
 
@@ -332,13 +334,13 @@ inline T sph_neumann_imp(unsigned v, T x, const Policy& pol)
          "Got x = %1%, but function requires x > 0.", x, pol);
 
    if(x < 2 * tools::min_value<T>())
-      return -policies::raise_overflow_error<T>(function, 0, pol);
+      return -policies::raise_overflow_error<T>(function, nullptr, pol);
 
    T result = cyl_neumann_imp(T(T(v)+0.5f), x, bessel_no_int_tag(), pol);
    T tx = sqrt(constants::pi<T>() / (2 * x));
 
    if((tx > 1) && (tools::max_value<T>() / tx < result))
-      return -policies::raise_overflow_error<T>(function, 0, pol);
+      return -policies::raise_overflow_error<T>(function, nullptr, pol);
 
    return result * tx;
 }
@@ -399,7 +401,7 @@ inline T cyl_bessel_j_zero_imp(T v, int m, const Policy& pol)
    const T guess_root = boost::math::detail::bessel_zero::cyl_bessel_j_zero_detail::initial_guess<T, Policy>((order_is_integer ? vv : v), m, pol);
 
    // Select the maximum allowed iterations from the policy.
-   boost::uintmax_t number_of_iterations = policies::get_max_root_iterations<Policy>();
+   std::uintmax_t number_of_iterations = policies::get_max_root_iterations<Policy>();
 
    const T delta_lo = ((guess_root > 0.2F) ? T(0.2) : T(guess_root / 2U));
 
@@ -478,7 +480,7 @@ inline T cyl_neumann_zero_imp(T v, int m, const Policy& pol)
    const T guess_root = boost::math::detail::bessel_zero::cyl_neumann_zero_detail::initial_guess<T, Policy>(v, m, pol);
 
    // Select the maximum allowed iterations from the policy.
-   boost::uintmax_t number_of_iterations = policies::get_max_root_iterations<Policy>();
+   std::uintmax_t number_of_iterations = policies::get_max_root_iterations<Policy>();
 
    const T delta_lo = ((guess_root > 0.2F) ? T(0.2) : T(guess_root / 2U));
 
@@ -511,9 +513,9 @@ inline typename detail::bessel_traits<T1, T2, Policy>::result_type cyl_bessel_j(
    typedef typename detail::bessel_traits<T1, T2, Policy>::optimisation_tag tag_type;
    typedef typename policies::evaluation<result_type, Policy>::type value_type;
    typedef typename policies::normalise<
-      Policy, 
-      policies::promote_float<false>, 
-      policies::promote_double<false>, 
+      Policy,
+      policies::promote_float<false>,
+      policies::promote_double<false>,
       policies::discrete_quantile<>,
       policies::assert_undefined<> >::type forwarding_policy;
    return policies::checked_narrowing_cast<result_type, Policy>(detail::cyl_bessel_j_imp<value_type>(v, static_cast<value_type>(x), tag_type(), forwarding_policy()), "boost::math::cyl_bessel_j<%1%>(%1%,%1%)");
@@ -532,9 +534,9 @@ inline typename detail::bessel_traits<T, T, Policy>::result_type sph_bessel(unsi
    typedef typename detail::bessel_traits<T, T, Policy>::result_type result_type;
    typedef typename policies::evaluation<result_type, Policy>::type value_type;
    typedef typename policies::normalise<
-      Policy, 
-      policies::promote_float<false>, 
-      policies::promote_double<false>, 
+      Policy,
+      policies::promote_float<false>,
+      policies::promote_double<false>,
       policies::discrete_quantile<>,
       policies::assert_undefined<> >::type forwarding_policy;
    return policies::checked_narrowing_cast<result_type, Policy>(detail::sph_bessel_j_imp<value_type>(v, static_cast<value_type>(x), forwarding_policy()), "boost::math::sph_bessel<%1%>(%1%,%1%)");
@@ -553,9 +555,9 @@ inline typename detail::bessel_traits<T1, T2, Policy>::result_type cyl_bessel_i(
    typedef typename detail::bessel_traits<T1, T2, Policy>::result_type result_type;
    typedef typename policies::evaluation<result_type, Policy>::type value_type;
    typedef typename policies::normalise<
-      Policy, 
-      policies::promote_float<false>, 
-      policies::promote_double<false>, 
+      Policy,
+      policies::promote_float<false>,
+      policies::promote_double<false>,
       policies::discrete_quantile<>,
       policies::assert_undefined<> >::type forwarding_policy;
    return policies::checked_narrowing_cast<result_type, Policy>(detail::cyl_bessel_i_imp<value_type>(static_cast<value_type>(v), static_cast<value_type>(x), forwarding_policy()), "boost::math::cyl_bessel_i<%1%>(%1%,%1%)");
@@ -575,9 +577,9 @@ inline typename detail::bessel_traits<T1, T2, Policy>::result_type cyl_bessel_k(
    typedef typename detail::bessel_traits<T1, T2, Policy>::optimisation_tag128 tag_type;
    typedef typename policies::evaluation<result_type, Policy>::type value_type;
    typedef typename policies::normalise<
-      Policy, 
-      policies::promote_float<false>, 
-      policies::promote_double<false>, 
+      Policy,
+      policies::promote_float<false>,
+      policies::promote_double<false>,
       policies::discrete_quantile<>,
       policies::assert_undefined<> >::type forwarding_policy;
    return policies::checked_narrowing_cast<result_type, Policy>(detail::cyl_bessel_k_imp<value_type>(v, static_cast<value_type>(x), tag_type(), forwarding_policy()), "boost::math::cyl_bessel_k<%1%>(%1%,%1%)");
@@ -597,9 +599,9 @@ inline typename detail::bessel_traits<T1, T2, Policy>::result_type cyl_neumann(T
    typedef typename detail::bessel_traits<T1, T2, Policy>::optimisation_tag tag_type;
    typedef typename policies::evaluation<result_type, Policy>::type value_type;
    typedef typename policies::normalise<
-      Policy, 
-      policies::promote_float<false>, 
-      policies::promote_double<false>, 
+      Policy,
+      policies::promote_float<false>,
+      policies::promote_double<false>,
       policies::discrete_quantile<>,
       policies::assert_undefined<> >::type forwarding_policy;
    return policies::checked_narrowing_cast<result_type, Policy>(detail::cyl_neumann_imp<value_type>(v, static_cast<value_type>(x), tag_type(), forwarding_policy()), "boost::math::cyl_neumann<%1%>(%1%,%1%)");
@@ -618,9 +620,9 @@ inline typename detail::bessel_traits<T, T, Policy>::result_type sph_neumann(uns
    typedef typename detail::bessel_traits<T, T, Policy>::result_type result_type;
    typedef typename policies::evaluation<result_type, Policy>::type value_type;
    typedef typename policies::normalise<
-      Policy, 
-      policies::promote_float<false>, 
-      policies::promote_double<false>, 
+      Policy,
+      policies::promote_float<false>,
+      policies::promote_double<false>,
       policies::discrete_quantile<>,
       policies::assert_undefined<> >::type forwarding_policy;
    return policies::checked_narrowing_cast<result_type, Policy>(detail::sph_neumann_imp<value_type>(v, static_cast<value_type>(x), forwarding_policy()), "boost::math::sph_neumann<%1%>(%1%,%1%)");
@@ -639,13 +641,13 @@ inline typename detail::bessel_traits<T, T, Policy>::result_type cyl_bessel_j_ze
    typedef typename detail::bessel_traits<T, T, Policy>::result_type result_type;
    typedef typename policies::evaluation<result_type, Policy>::type value_type;
    typedef typename policies::normalise<
-      Policy, 
-      policies::promote_float<false>, 
-      policies::promote_double<false>, 
+      Policy,
+      policies::promote_float<false>,
+      policies::promote_double<false>,
       policies::discrete_quantile<>,
       policies::assert_undefined<> >::type forwarding_policy;
 
-   BOOST_STATIC_ASSERT_MSG(    false == std::numeric_limits<T>::is_specialized
+   static_assert(    false == std::numeric_limits<T>::is_specialized
                            || (   true  == std::numeric_limits<T>::is_specialized
                                && false == std::numeric_limits<T>::is_integer),
                            "Order must be a floating-point type.");
@@ -656,7 +658,7 @@ inline typename detail::bessel_traits<T, T, Policy>::result_type cyl_bessel_j_ze
 template <class T>
 inline typename detail::bessel_traits<T, T, policies::policy<> >::result_type cyl_bessel_j_zero(T v, int m)
 {
-   BOOST_STATIC_ASSERT_MSG(    false == std::numeric_limits<T>::is_specialized
+   static_assert(    false == std::numeric_limits<T>::is_specialized
                            || (   true  == std::numeric_limits<T>::is_specialized
                                && false == std::numeric_limits<T>::is_integer),
                            "Order must be a floating-point type.");
@@ -671,7 +673,7 @@ inline OutputIterator cyl_bessel_j_zero(T v,
                               OutputIterator out_it,
                               const Policy& pol)
 {
-   BOOST_STATIC_ASSERT_MSG(    false == std::numeric_limits<T>::is_specialized
+   static_assert(    false == std::numeric_limits<T>::is_specialized
                            || (   true  == std::numeric_limits<T>::is_specialized
                                && false == std::numeric_limits<T>::is_integer),
                            "Order must be a floating-point type.");
@@ -700,13 +702,13 @@ inline typename detail::bessel_traits<T, T, Policy>::result_type cyl_neumann_zer
    typedef typename detail::bessel_traits<T, T, Policy>::result_type result_type;
    typedef typename policies::evaluation<result_type, Policy>::type value_type;
    typedef typename policies::normalise<
-      Policy, 
-      policies::promote_float<false>, 
-      policies::promote_double<false>, 
+      Policy,
+      policies::promote_float<false>,
+      policies::promote_double<false>,
       policies::discrete_quantile<>,
       policies::assert_undefined<> >::type forwarding_policy;
 
-   BOOST_STATIC_ASSERT_MSG(    false == std::numeric_limits<T>::is_specialized
+   static_assert(    false == std::numeric_limits<T>::is_specialized
                            || (   true  == std::numeric_limits<T>::is_specialized
                                && false == std::numeric_limits<T>::is_integer),
                            "Order must be a floating-point type.");
@@ -717,7 +719,7 @@ inline typename detail::bessel_traits<T, T, Policy>::result_type cyl_neumann_zer
 template <class T>
 inline typename detail::bessel_traits<T, T, policies::policy<> >::result_type cyl_neumann_zero(T v, int m)
 {
-   BOOST_STATIC_ASSERT_MSG(    false == std::numeric_limits<T>::is_specialized
+   static_assert(    false == std::numeric_limits<T>::is_specialized
                            || (   true  == std::numeric_limits<T>::is_specialized
                                && false == std::numeric_limits<T>::is_integer),
                            "Order must be a floating-point type.");
@@ -732,7 +734,7 @@ inline OutputIterator cyl_neumann_zero(T v,
                              OutputIterator out_it,
                              const Policy& pol)
 {
-   BOOST_STATIC_ASSERT_MSG(    false == std::numeric_limits<T>::is_specialized
+   static_assert(    false == std::numeric_limits<T>::is_specialized
                            || (   true  == std::numeric_limits<T>::is_specialized
                                && false == std::numeric_limits<T>::is_integer),
                            "Order must be a floating-point type.");
@@ -756,6 +758,10 @@ inline OutputIterator cyl_neumann_zero(T v,
 
 } // namespace math
 } // namespace boost
+
+#ifdef _MSC_VER
+# pragma warning(pop)
+#endif
 
 #endif // BOOST_MATH_BESSEL_HPP
 

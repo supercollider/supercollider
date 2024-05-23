@@ -1,6 +1,6 @@
 // Copyright Kevlin Henney, 2000-2005.
 // Copyright Alexander Nasonov, 2006-2010.
-// Copyright Antony Polukhin, 2011-2020.
+// Copyright Antony Polukhin, 2011-2023.
 //
 // Distributed under the Boost Software License, Version 1.0. (See
 // accompanying file LICENSE_1_0.txt or copy at
@@ -27,12 +27,11 @@
 #define BOOST_LCAST_NO_WCHAR_T
 #endif
 
-#include <cstddef>
-#include <cstring>
 #include <boost/limits.hpp>
 #include <boost/detail/workaround.hpp>
-#include <boost/math/special_functions/sign.hpp>
-#include <boost/math/special_functions/fpclassify.hpp>
+#include <boost/core/cmath.hpp>
+#include <cstddef>
+#include <cstring>
 
 #include <boost/lexical_cast/detail/lcast_char_constants.hpp>
 
@@ -55,7 +54,6 @@ namespace boost {
             , const CharT* lc_INFINITY, const CharT* lc_infinity
             , const CharT opening_brace, const CharT closing_brace) BOOST_NOEXCEPT
         {
-            using namespace std;
             if (begin == end) return false;
             const CharT minus = lcast_char_constants<CharT>::minus;
             const CharT plus = lcast_char_constants<CharT>::plus;
@@ -72,14 +70,14 @@ namespace boost {
                 begin += 3;
                 if (end != begin) {
                     /* It is 'nan(...)' or some bad input*/
-                    
+
                     if (end - begin < 2) return false; // bad input
                     -- end;
                     if (*begin != opening_brace || *end != closing_brace) return false; // bad input
                 }
 
                 if( !has_minus ) value = std::numeric_limits<T>::quiet_NaN();
-                else value = (boost::math::changesign) (std::numeric_limits<T>::quiet_NaN());
+                else value = boost::core::copysign(std::numeric_limits<T>::quiet_NaN(), static_cast<T>(-1));
                 return true;
             } else if (
                 ( /* 'INF' or 'inf' */
@@ -94,7 +92,7 @@ namespace boost {
              )
             {
                 if( !has_minus ) value = std::numeric_limits<T>::infinity();
-                else value = (boost::math::changesign) (std::numeric_limits<T>::infinity());
+                else value = -std::numeric_limits<T>::infinity();
                 return true;
             }
 
@@ -106,24 +104,23 @@ namespace boost {
                          , const CharT* lc_nan
                          , const CharT* lc_infinity) BOOST_NOEXCEPT
         {
-            using namespace std;
             const CharT minus = lcast_char_constants<CharT>::minus;
-            if ((boost::math::isnan)(value)) {
-                if ((boost::math::signbit)(value)) {
+            if (boost::core::isnan(value)) {
+                if (boost::core::signbit(value)) {
                     *begin = minus;
                     ++ begin;
                 }
 
-                memcpy(begin, lc_nan, 3 * sizeof(CharT));
+                std::memcpy(begin, lc_nan, 3 * sizeof(CharT));
                 end = begin + 3;
                 return true;
-            } else if ((boost::math::isinf)(value)) {
-                if ((boost::math::signbit)(value)) {
+            } else if (boost::core::isinf(value)) {
+                if (boost::core::signbit(value)) {
                     *begin = minus;
                     ++ begin;
                 }
 
-                memcpy(begin, lc_infinity, 3 * sizeof(CharT));
+                std::memcpy(begin, lc_infinity, 3 * sizeof(CharT));
                 end = begin + 3;
                 return true;
             }

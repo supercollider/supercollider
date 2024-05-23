@@ -1,6 +1,6 @@
 // Copyright Kevlin Henney, 2000-2005.
 // Copyright Alexander Nasonov, 2006-2010.
-// Copyright Antony Polukhin, 2011-2020.
+// Copyright Antony Polukhin, 2011-2023.
 //
 // Distributed under the Boost Software License, Version 1.0. (See
 // accompanying file LICENSE_1_0.txt or copy at
@@ -23,6 +23,24 @@
 #   pragma once
 #endif
 
+#include <boost/config/pragma_message.hpp>
+#if defined(BOOST_NO_CXX11_RVALUE_REFERENCES) || \
+    defined(BOOST_NO_CXX11_AUTO_DECLARATIONS) || \
+    defined(BOOST_NO_CXX11_CONSTEXPR) || \
+    defined(BOOST_NO_CXX11_NULLPTR) || \
+    defined(BOOST_NO_CXX11_NOEXCEPT) || \
+    defined(BOOST_NO_CXX11_DEFAULTED_FUNCTIONS) || \
+    defined(BOOST_NO_CXX11_FINAL) || \
+    defined(BOOST_NO_CXX11_ALIGNOF) || \
+    defined(BOOST_NO_CXX11_STATIC_ASSERT) || \
+    defined(BOOST_NO_CXX11_SMART_PTR) || \
+    defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST) || \
+    defined(BOOST_NO_CXX11_HDR_TYPE_TRAITS)
+
+BOOST_PRAGMA_MESSAGE("C++03 support is deprecated in Boost.LexicalCast 1.82 and will be removed in Boost.LexicalCast 1.84.")
+
+#endif
+
 #if defined(BOOST_NO_STRINGSTREAM) || defined(BOOST_NO_STD_WSTRING)
 #define BOOST_LCAST_NO_WCHAR_T
 #endif
@@ -31,7 +49,7 @@
 #include <boost/lexical_cast/bad_lexical_cast.hpp>
 #include <boost/lexical_cast/try_lexical_convert.hpp>
 
-namespace boost 
+namespace boost
 {
     template <typename Target, typename Source>
     inline Target lexical_cast(const Source &arg)

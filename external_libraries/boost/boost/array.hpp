@@ -44,8 +44,8 @@
 #include <iterator>
 #include <stdexcept>
 #include <boost/assert.hpp>
+#include <boost/core/swap.hpp>
 #include <boost/static_assert.hpp>
-#include <boost/swap.hpp>
 
 #include <boost/throw_exception.hpp>
 #include <algorithm>

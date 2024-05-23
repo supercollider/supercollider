@@ -2,7 +2,7 @@
 // detail/impl/win_iocp_serial_port_service.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Copyright (c) 2008 Rep Invariant Systems, Inc. (info@repinvariant.com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -47,6 +47,7 @@ boost::system::error_code win_iocp_serial_port_service::open(
   if (is_open(impl))
   {
     ec = boost::asio::error::already_open;
+    BOOST_ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
@@ -62,6 +63,7 @@ boost::system::error_code win_iocp_serial_port_service::open(
     DWORD last_error = ::GetLastError();
     ec = boost::system::error_code(last_error,
         boost::asio::error::get_system_category());
+    BOOST_ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
@@ -76,6 +78,7 @@ boost::system::error_code win_iocp_serial_port_service::open(
     ::CloseHandle(handle);
     ec = boost::system::error_code(last_error,
         boost::asio::error::get_system_category());
+    BOOST_ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
@@ -102,6 +105,7 @@ boost::system::error_code win_iocp_serial_port_service::open(
     ::CloseHandle(handle);
     ec = boost::system::error_code(last_error,
         boost::asio::error::get_system_category());
+    BOOST_ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
@@ -120,6 +124,7 @@ boost::system::error_code win_iocp_serial_port_service::open(
     ::CloseHandle(handle);
     ec = boost::system::error_code(last_error,
         boost::asio::error::get_system_category());
+    BOOST_ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
@@ -144,6 +149,7 @@ boost::system::error_code win_iocp_serial_port_service::do_set_option(
     DWORD last_error = ::GetLastError();
     ec = boost::system::error_code(last_error,
         boost::asio::error::get_system_category());
+    BOOST_ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
@@ -155,6 +161,7 @@ boost::system::error_code win_iocp_serial_port_service::do_set_option(
     DWORD last_error = ::GetLastError();
     ec = boost::system::error_code(last_error,
         boost::asio::error::get_system_category());
+    BOOST_ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
@@ -177,6 +184,7 @@ boost::system::error_code win_iocp_serial_port_service::do_get_option(
     DWORD last_error = ::GetLastError();
     ec = boost::system::error_code(last_error,
         boost::asio::error::get_system_category());
+    BOOST_ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 

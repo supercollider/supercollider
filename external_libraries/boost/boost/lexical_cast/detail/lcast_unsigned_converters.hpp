@@ -1,6 +1,6 @@
 // Copyright Kevlin Henney, 2000-2005.
 // Copyright Alexander Nasonov, 2006-2010.
-// Copyright Antony Polukhin, 2011-2020.
+// Copyright Antony Polukhin, 2011-2023.
 //
 // Distributed under the Boost Software License, Version 1.0. (See
 // accompanying file LICENSE_1_0.txt or copy at
@@ -50,9 +50,9 @@
 #include <boost/lexical_cast/detail/lcast_char_constants.hpp>
 #include <boost/type_traits/make_unsigned.hpp>
 #include <boost/type_traits/is_signed.hpp>
-#include <boost/noncopyable.hpp>
+#include <boost/core/noncopyable.hpp>
 
-namespace boost 
+namespace boost
 {
     namespace detail // lcast_to_unsigned
     {
@@ -60,8 +60,8 @@ namespace boost
         inline
         BOOST_DEDUCED_TYPENAME boost::make_unsigned<T>::type lcast_to_unsigned(const T value) BOOST_NOEXCEPT {
             typedef BOOST_DEDUCED_TYPENAME boost::make_unsigned<T>::type result_type;
-            return value < 0 
-                ? static_cast<result_type>(0u - static_cast<result_type>(value)) 
+            return value < 0
+                ? static_cast<result_type>(0u - static_cast<result_type>(value))
                 : static_cast<result_type>(value);
         }
     }
@@ -81,7 +81,7 @@ namespace boost
             int_type const  m_zero;
 
         public:
-            lcast_put_unsigned(const T n_param, CharT* finish) BOOST_NOEXCEPT 
+            lcast_put_unsigned(const T n_param, CharT* finish) BOOST_NOEXCEPT
                 : m_value(n_param), m_finish(finish)
                 , m_czero(lcast_char_constants<CharT>::zero), m_zero(Traits::to_int_type(m_czero))
             {
@@ -162,7 +162,7 @@ namespace boost
             T& m_value;
             const CharT* const m_begin;
             const CharT* m_end;
-    
+
         public:
             lcast_ret_unsigned(T& value, const CharT* const begin, const CharT* end) BOOST_NOEXCEPT
                 : m_multiplier_overflowed(false), m_multiplier(1), m_value(value), m_begin(begin), m_end(end)
@@ -250,7 +250,7 @@ namespace boost
             }
 
         private:
-            // Iteration that does not care about grouping/separators and assumes that all 
+            // Iteration that does not care about grouping/separators and assumes that all
             // input characters are digits
             inline bool main_convert_iteration() BOOST_NOEXCEPT {
                 CharT const czero = lcast_char_constants<CharT>::zero;
@@ -265,7 +265,7 @@ namespace boost
                 // We must correctly handle situations like `000000000000000000000000000001`.
                 // So we take care of overflow only if `dig_value` is not '0'.
                 if (*m_end < czero || *m_end >= czero + 10  // checking for correct digit
-                    || (dig_value && (                      // checking for overflow of ... 
+                    || (dig_value && (                      // checking for overflow of ...
                         m_multiplier_overflowed                             // ... multiplier
                         || static_cast<T>(maxv / dig_value) < m_multiplier  // ... subvalue
                         || static_cast<T>(maxv - new_sub_value) < m_value   // ... whole expression
@@ -273,7 +273,7 @@ namespace boost
                 ) return false;
 
                 m_value = static_cast<T>(m_value + new_sub_value);
-                
+
                 return true;
             }
 
@@ -283,7 +283,7 @@ namespace boost
                         return false;
                     }
                 }
-            
+
                 return true;
             }
         };

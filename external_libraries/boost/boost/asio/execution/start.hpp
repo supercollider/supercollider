@@ -2,7 +2,7 @@
 // execution/start.hpp
 // ~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -16,6 +16,9 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include <boost/asio/detail/config.hpp>
+
+#if !defined(BOOST_ASIO_NO_DEPRECATED)
+
 #include <boost/asio/detail/type_traits.hpp>
 #include <boost/asio/traits/start_member.hpp>
 #include <boost/asio/traits/start_free.hpp>
@@ -65,7 +68,7 @@ struct can_start :
 
 #else // defined(GENERATING_DOCUMENTATION)
 
-namespace asio_execution_start_fn {
+namespace boost_asio_execution_start_fn {
 
 using boost::asio::decay;
 using boost::asio::declval;
@@ -82,7 +85,7 @@ enum overload_type
   ill_formed
 };
 
-template <typename R, typename = void>
+template <typename R, typename = void, typename = void>
 struct call_traits
 {
   BOOST_ASIO_STATIC_CONSTEXPR(overload_type, overload = ill_formed);
@@ -93,9 +96,7 @@ struct call_traits
 template <typename R>
 struct call_traits<R,
   typename enable_if<
-    (
-      start_member<R>::is_valid
-    )
+    start_member<R>::is_valid
   >::type> :
   start_member<R>
 {
@@ -105,11 +106,10 @@ struct call_traits<R,
 template <typename R>
 struct call_traits<R,
   typename enable_if<
-    (
-      !start_member<R>::is_valid
-      &&
-      start_free<R>::is_valid
-    )
+    !start_member<R>::is_valid
+  >::type,
+  typename enable_if<
+    start_free<R>::is_valid
   >::type> :
   start_free<R>
 {
@@ -202,22 +202,22 @@ struct static_instance
 template <typename T>
 const T static_instance<T>::instance = {};
 
-} // namespace asio_execution_start_fn
+} // namespace boost_asio_execution_start_fn
 namespace boost {
 namespace asio {
 namespace execution {
 namespace {
 
-static BOOST_ASIO_CONSTEXPR const asio_execution_start_fn::impl&
-  start = asio_execution_start_fn::static_instance<>::instance;
+static BOOST_ASIO_CONSTEXPR const boost_asio_execution_start_fn::impl&
+  start = boost_asio_execution_start_fn::static_instance<>::instance;
 
 } // namespace
 
 template <typename R>
 struct can_start :
   integral_constant<bool,
-    asio_execution_start_fn::call_traits<R>::overload !=
-      asio_execution_start_fn::ill_formed>
+    boost_asio_execution_start_fn::call_traits<R>::overload !=
+      boost_asio_execution_start_fn::ill_formed>
 {
 };
 
@@ -231,7 +231,7 @@ constexpr bool can_start_v = can_start<R>::value;
 template <typename R>
 struct is_nothrow_start :
   integral_constant<bool,
-    asio_execution_start_fn::call_traits<R>::is_noexcept>
+    boost_asio_execution_start_fn::call_traits<R>::is_noexcept>
 {
 };
 
@@ -250,5 +250,7 @@ constexpr bool is_nothrow_start_v
 #endif // defined(GENERATING_DOCUMENTATION)
 
 #include <boost/asio/detail/pop_options.hpp>
+
+#endif // !defined(BOOST_ASIO_NO_DEPRECATED)
 
 #endif // BOOST_ASIO_EXECUTION_START_HPP

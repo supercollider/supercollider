@@ -2,7 +2,7 @@
 // ip/impl/network_v6.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Copyright (c) 2014 Oliver Kowalke (oliver dot kowalke at gmail dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -99,7 +99,9 @@ std::string network_v6::to_string(boost::system::error_code& ec) const
   using namespace std; // For sprintf.
   ec = boost::system::error_code();
   char prefix_len[16];
-#if defined(BOOST_ASIO_HAS_SECURE_RTL)
+#if defined(BOOST_ASIO_HAS_SNPRINTF)
+  snprintf(prefix_len, sizeof(prefix_len), "/%u", prefix_length_);
+#elif defined(BOOST_ASIO_HAS_SECURE_RTL)
   sprintf_s(prefix_len, sizeof(prefix_len), "/%u", prefix_length_);
 #else // defined(BOOST_ASIO_HAS_SECURE_RTL)
   sprintf(prefix_len, "/%u", prefix_length_);

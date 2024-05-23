@@ -2,7 +2,7 @@
 // system_executor.hpp
 // ~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -44,6 +44,12 @@ public:
     : allocator_(Allocator())
   {
   }
+
+#if !defined(GENERATING_DOCUMENTATION)
+private:
+  friend struct boost_asio_require_fn::impl;
+  friend struct boost_asio_prefer_fn::impl;
+#endif // !defined(GENERATING_DOCUMENTATION)
 
   /// Obtain an executor with the @c blocking.possibly property.
   /**
@@ -170,6 +176,15 @@ public:
         Relationship, std::allocator<void> >();
   }
 
+#if !defined(GENERATING_DOCUMENTATION)
+private:
+  friend struct boost_asio_query_fn::impl;
+  friend struct boost::asio::execution::detail::blocking_t<0>;
+  friend struct boost::asio::execution::detail::mapping_t<0>;
+  friend struct boost::asio::execution::detail::outstanding_work_t<0>;
+  friend struct boost::asio::execution::detail::relationship_t<0>;
+#endif // !defined(GENERATING_DOCUMENTATION)
+
   /// Query the current value of the @c mapping property.
   /**
    * Do not call this function directly. It is intended for use with the
@@ -279,6 +294,7 @@ public:
    */
   std::size_t query(execution::occupancy_t) const BOOST_ASIO_NOEXCEPT;
 
+public:
   /// Compare two executors for equality.
   /**
    * Two executors are equal if they refer to the same underlying io_context.
@@ -300,14 +316,6 @@ public:
   }
 
   /// Execution function.
-  /**
-   * Do not call this function directly. It is intended for use with the
-   * execution::execute customisation point.
-   *
-   * For example:
-   * @code boost::asio::system_executor ex;
-   * execution::execute(ex, my_function_object); @endcode
-   */
   template <typename Function>
   void execute(BOOST_ASIO_MOVE_ARG(Function) f) const
   {
@@ -315,6 +323,7 @@ public:
   }
 
 #if !defined(BOOST_ASIO_NO_TS_EXECUTORS)
+public:
   /// Obtain the underlying execution context.
   system_context& context() const BOOST_ASIO_NOEXCEPT;
 

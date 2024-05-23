@@ -15,13 +15,12 @@
 #pragma once
 #endif
 
-
-#include <boost/config/no_tr1/cmath.hpp>
-#include <boost/config.hpp>
+#include <cmath>
 #include <boost/math/tools/precision.hpp>
 #include <boost/math/policies/error_handling.hpp>
 #include <boost/math/special_functions/math_fwd.hpp>
 #include <boost/math/special_functions/log1p.hpp>
+#include <boost/math/special_functions/fpclassify.hpp>
 
 // This is the inverse of the hyperbolic tangent function.
 
@@ -32,13 +31,13 @@ namespace boost
        namespace detail
        {
         // This is the main fare
-        
+
         template<typename T, typename Policy>
         inline T    atanh_imp(const T x, const Policy& pol)
         {
             BOOST_MATH_STD_USING
             static const char* function = "boost::math::atanh<%1%>(%1%)";
-            
+
             if(x < -1)
             {
                return policies::raise_domain_error<T>(
@@ -60,12 +59,12 @@ namespace boost
             else if(x < -1 + tools::epsilon<T>())
             {
                // -Infinity:
-               return -policies::raise_overflow_error<T>(function, 0, pol);
+               return -policies::raise_overflow_error<T>(function, nullptr, pol);
             }
             else if(x > 1 - tools::epsilon<T>())
             {
                // Infinity:
-               return policies::raise_overflow_error<T>(function, 0, pol);
+               return policies::raise_overflow_error<T>(function, nullptr, pol);
             }
             else if(abs(x) >= tools::forth_root_epsilon<T>())
             {
@@ -79,15 +78,15 @@ namespace boost
                 // http://functions.wolfram.com/ElementaryFunctions/ArcTanh/06/01/03/01/
                 // approximation by taylor series in x at 0 up to order 2
                 T    result = x;
-                
+
                 if    (abs(x) >= tools::root_epsilon<T>())
                 {
                     T    x3 = x*x*x;
-                    
+
                     // approximation by taylor series in x at 0 up to order 4
                     result += x3/static_cast<T>(3);
                 }
-                
+
                 return(result);
             }
         }
@@ -99,9 +98,9 @@ namespace boost
             typedef typename tools::promote_args<T>::type result_type;
             typedef typename policies::evaluation<result_type, Policy>::type value_type;
             typedef typename policies::normalise<
-               Policy, 
-               policies::promote_float<false>, 
-               policies::promote_double<false>, 
+               Policy,
+               policies::promote_float<false>,
+               policies::promote_double<false>,
                policies::discrete_quantile<>,
                policies::assert_undefined<> >::type forwarding_policy;
            return policies::checked_narrowing_cast<result_type, forwarding_policy>(

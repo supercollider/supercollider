@@ -2,7 +2,7 @@
 // detail/blocking_executor_op.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -78,6 +78,7 @@ public:
       const boost::system::error_code& /*ec*/,
       std::size_t /*bytes_transferred*/)
   {
+    BOOST_ASIO_ASSUME(base != 0);
     blocking_executor_op* o(static_cast<blocking_executor_op*>(base));
 
     typename blocking_executor_op_base<Operation>::do_complete_cleanup

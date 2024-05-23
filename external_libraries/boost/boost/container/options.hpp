@@ -113,19 +113,32 @@ using tree_assoc_options_t = typename boost::container::tree_assoc_options<Optio
 
 #if !defined(BOOST_CONTAINER_DOXYGEN_INVOKED)
 
-template<bool StoreHash>
+template<bool StoreHash, bool CacheBegin, bool LinearBuckets, bool FastmodBuckets>
 struct hash_opt
 {
-   static const bool store_hash = StoreHash;
+   static const bool store_hash  = StoreHash;
+   static const bool cache_begin = CacheBegin;
+   static const bool linear_buckets = LinearBuckets;
+   static const bool fastmod_buckets = FastmodBuckets;
 };
 
-typedef hash_opt<false> hash_assoc_defaults;
+typedef hash_opt<false, false, false, false> hash_assoc_defaults;
 
 #endif   //!defined(BOOST_CONTAINER_DOXYGEN_INVOKED)
 
-//!This option setter specifies if node size is optimized
-//!storing rebalancing data masked into pointers for ordered associative containers
+//!This option setter specifies if nodes also store the hash value
+//!so that search and rehashing for hash-expensive types is improved.
+//!This option might degrade performance for easy to hash types (like integers)
 BOOST_INTRUSIVE_OPTION_CONSTANT(store_hash, bool, Enabled, store_hash)
+
+//!This option setter specifies if the container will cache the first
+//!non-empty bucket so that begin() is O(1) instead of searching for the
+//!first non-empty bucket (which can be O(bucket_size()))
+BOOST_INTRUSIVE_OPTION_CONSTANT(cache_begin, bool, Enabled, cache_begin)
+
+BOOST_INTRUSIVE_OPTION_CONSTANT(linear_buckets, bool, Enabled, linear_buckets)
+
+BOOST_INTRUSIVE_OPTION_CONSTANT(fastmod_buckets, bool, Enabled, fastmod_buckets)
 
 //! Helper metafunction to combine options into a single type to be used
 //! by \c boost::container::hash_set, \c boost::container::hash_multiset
@@ -147,7 +160,11 @@ struct hash_assoc_options
       Options...
       #endif
       >::type packed_options;
-   typedef hash_opt<packed_options::store_hash> implementation_defined;
+   typedef hash_opt<packed_options::store_hash
+                   ,packed_options::cache_begin
+                   ,packed_options::linear_buckets
+                   ,packed_options::fastmod_buckets
+                   > implementation_defined;
    /// @endcond
    typedef implementation_defined type;
 };
@@ -183,6 +200,20 @@ struct default_if_void<void, Default>
    typedef Default type;
 };
 
+template<std::size_t N, std::size_t DefaultN>
+struct default_if_zero
+{
+   static const std::size_t value = N;
+};
+
+template<std::size_t DefaultN>
+struct default_if_zero<0u, DefaultN>
+{
+   static const std::size_t value = DefaultN;
+};
+
+
+
 #endif
 
 #if !defined(BOOST_CONTAINER_DOXYGEN_INVOKED)
@@ -217,15 +248,15 @@ typedef vector_opt<void, void> vector_null_opt;
 
 #else    //!defined(BOOST_CONTAINER_DOXYGEN_INVOKED)
 
-//!This growth factor argument specifies that the container should increase it's
+//!This growth factor argument specifies that the container should increase its
 //!capacity a 50% when existing capacity is exhausted.
 struct growth_factor_50{};
 
-//!This growth factor argument specifies that the container should increase it's
+//!This growth factor argument specifies that the container should increase its
 //!capacity a 60% when existing capacity is exhausted.
 struct growth_factor_60{};
 
-//!This growth factor argument specifies that the container should increase it's
+//!This growth factor argument specifies that the container should increase its
 //!capacity a 100% (doubling its capacity) when existing capacity is exhausted.
 struct growth_factor_100{};
 
@@ -442,6 +473,125 @@ using static_vector_options_t = typename boost::container::static_vector_options
 
 #endif
 
+
+////////////////////////////////////////////////////////////////
+//
+//
+//          OPTIONS FOR DEVECTOR CONTAINER
+//
+//
+////////////////////////////////////////////////////////////////
+
+//!Thse options specify the relocation strategy of devector.
+//!
+//!Predefined relocation limits that can be passed as arguments to this option are:
+//!\c boost::container::relocate_on_66
+//!\c boost::container::relocate_on_75
+//!\c boost::container::relocate_on_80
+//!\c boost::container::relocate_on_85
+//!\c boost::container::relocate_on_90
+//!
+//!If this option is not specified, a default will be used by the container.
+//!
+//!Note: Repeated insertions at only one end (only back insertions or only front insertions) usually will
+//!lead to a single relocation when `relocate_on_66` is used and two relocations when `relocate_on_90`
+//!is used.
+
+#if !defined(BOOST_CONTAINER_DOXYGEN_INVOKED)
+
+BOOST_INTRUSIVE_OPTION_CONSTANT(relocate_on, std::size_t, Fraction, free_fraction)
+
+struct relocate_on_66 : public relocate_on<3U>{};
+
+struct relocate_on_75 : public relocate_on<4U> {};
+
+struct relocate_on_80 : public relocate_on<5U> {};
+
+struct relocate_on_85 : public relocate_on<7U> {};
+
+struct relocate_on_90 : public relocate_on<10U> {};
+
+template<class GrowthType, class StoredSizeType, std::size_t FreeFraction>
+struct devector_opt
+   : vector_opt<GrowthType, StoredSizeType>
+{
+   static const std::size_t free_fraction = FreeFraction;
+};
+
+typedef devector_opt<void, void, 0u> devector_null_opt;
+
+#else
+
+//!This relocation condition option specifies that the container will never relocate
+//!elements when there is no space at the side the insertion should
+//!take place
+struct relocate_never;
+
+//!This relocation condition option specifies that the container will relocate
+//!all elements when there is no space at the side the insertion should
+//!take place and memory usage is below 66% (2/3)
+struct relocate_on_66;
+
+//!This relocation condition option specifies that the container will relocate
+//!all elements when there is no space at the side the insertion should
+//!take place and memory usage is below 75% (3/4)
+struct relocate_on_75;
+
+//!This relocation condition option specifies that the container will relocate
+//!all elements when there is no space at the side the insertion should
+//!take place and memory usage is below 80% (4/5)
+struct relocate_on_80;
+
+//!This relocation condition option specifies that the container will relocate
+//!all elements when there is no space at the side the insertion should
+//!take place and memory usage is below 85% (6/7)
+struct relocate_on_85;
+
+//!This relocation condition option specifies that the container will relocate
+//!all elements when there is no space at the side the insertion should
+//!take place and memory usage is below 90% (9/10)
+struct relocate_on_90;
+
+#endif
+
+
+//! Helper metafunction to combine options into a single type to be used
+//! by \c boost::container::devector.
+//! Supported options are: \c boost::container::growth_factor, \c boost::container::stored_size
+//! and \c boost::container::relocate_on
+#if defined(BOOST_CONTAINER_DOXYGEN_INVOKED) || defined(BOOST_CONTAINER_VARIADIC_TEMPLATES)
+template<class ...Options>
+#else
+template<class O1 = void, class O2 = void, class O3 = void, class O4 = void>
+#endif
+struct devector_options
+{
+   /// @cond
+   typedef typename ::boost::intrusive::pack_options
+      < devector_null_opt,
+      #if !defined(BOOST_CONTAINER_VARIADIC_TEMPLATES)
+      O1, O2, O3, O4
+      #else
+      Options...
+      #endif
+      >::type packed_options;
+   typedef devector_opt< typename packed_options::growth_factor_type
+                       , typename packed_options::stored_size_type
+                       , packed_options::free_fraction
+                       > implementation_defined;
+   /// @endcond
+   typedef implementation_defined type;
+};
+
+#if !defined(BOOST_NO_CXX11_TEMPLATE_ALIASES)
+
+//! Helper alias metafunction to combine options into a single type to be used
+//! by \c boost::container::devector.
+//! Supported options are: \c boost::container::growth_factor and \c boost::container::stored_size
+template<class ...Options>
+using devector_options_t = typename boost::container::devector_options<Options...>::type;
+
+#endif
 
 ////////////////////////////////////////////////////////////////
 //

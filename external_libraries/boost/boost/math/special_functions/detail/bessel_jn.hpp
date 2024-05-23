@@ -51,7 +51,7 @@ T bessel_jn(int n, T x, const Policy& pol)
     // Special cases:
     //
     if(asymptotic_bessel_large_x_limit(T(n), x))
-       return factor * asymptotic_bessel_j_large_x_2<T>(T(n), x);
+       return factor * asymptotic_bessel_j_large_x_2<T>(T(n), x, pol);
     if (n == 0)
     {
         return factor * bessel_j0(x);
@@ -66,7 +66,7 @@ T bessel_jn(int n, T x, const Policy& pol)
         return static_cast<T>(0);
     }
 
-    BOOST_ASSERT(n > 1);
+    BOOST_MATH_ASSERT(n > 1);
     T scale = 1;
     if (n < abs(x))                         // forward recurrence
     {
@@ -122,7 +122,7 @@ T bessel_jn(int n, T x, const Policy& pol)
     value *= factor;
 
     if(tools::max_value<T>() * scale < fabs(value))
-       return policies::raise_overflow_error<T>("boost::math::bessel_jn<%1%>(%1%,%1%)", 0, pol);
+       return policies::raise_overflow_error<T>("boost::math::bessel_jn<%1%>(%1%,%1%)", nullptr, pol);
 
     return value / scale;
 }

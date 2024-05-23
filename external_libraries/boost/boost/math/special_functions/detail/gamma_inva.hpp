@@ -17,8 +17,8 @@
 #pragma once
 #endif
 
+#include <cstdint>
 #include <boost/math/tools/toms748_solve.hpp>
-#include <boost/cstdint.hpp>
 
 namespace boost{ namespace math{ namespace detail{
 
@@ -75,7 +75,7 @@ T gamma_inva_imp(const T& z, const T& p, const T& q, const Policy& pol)
    //
    if(p == 0)
    {
-      return policies::raise_overflow_error<T>("boost::math::gamma_p_inva<%1%>(%1%, %1%)", 0, Policy());
+      return policies::raise_overflow_error<T>("boost::math::gamma_p_inva<%1%>(%1%, %1%)", nullptr, Policy());
    }
    if(q == 0)
    {
@@ -91,7 +91,7 @@ T gamma_inva_imp(const T& z, const T& p, const T& q, const Policy& pol)
    //
    tools::eps_tolerance<T> tol(policies::digits<T, Policy>());
    //
-   // Now figure out a starting guess for what a may be, 
+   // Now figure out a starting guess for what a may be,
    // we'll start out with a value that'll put p or q
    // right bang in the middle of their range, the functions
    // are quite sensitive so we should need too many steps
@@ -102,7 +102,7 @@ T gamma_inva_imp(const T& z, const T& p, const T& q, const Policy& pol)
    if(z >= 1)
    {
       //
-      // We can use the relationship between the incomplete 
+      // We can use the relationship between the incomplete
       // gamma function and the poisson distribution to
       // calculate an approximate inverse, for large z
       // this is actually pretty accurate, but it fails badly
@@ -135,7 +135,7 @@ T gamma_inva_imp(const T& z, const T& p, const T& q, const Policy& pol)
    //
    // Max iterations permitted:
    //
-   boost::uintmax_t max_iter = policies::get_max_root_iterations<Policy>();
+   std::uintmax_t max_iter = policies::get_max_root_iterations<Policy>();
    //
    // Use our generic derivative-free root finding procedure.
    // We could use Newton steps here, taking the PDF of the
@@ -151,21 +151,21 @@ T gamma_inva_imp(const T& z, const T& p, const T& q, const Policy& pol)
 } // namespace detail
 
 template <class T1, class T2, class Policy>
-inline typename tools::promote_args<T1, T2>::type 
+inline typename tools::promote_args<T1, T2>::type
    gamma_p_inva(T1 x, T2 p, const Policy& pol)
 {
    typedef typename tools::promote_args<T1, T2>::type result_type;
    typedef typename policies::evaluation<result_type, Policy>::type value_type;
    typedef typename policies::normalise<
-      Policy, 
-      policies::promote_float<false>, 
-      policies::promote_double<false>, 
+      Policy,
+      policies::promote_float<false>,
+      policies::promote_double<false>,
       policies::discrete_quantile<>,
       policies::assert_undefined<> >::type forwarding_policy;
 
    if(p == 0)
    {
-      policies::raise_overflow_error<result_type>("boost::math::gamma_p_inva<%1%>(%1%, %1%)", 0, Policy());
+      policies::raise_overflow_error<result_type>("boost::math::gamma_p_inva<%1%>(%1%, %1%)", nullptr, Policy());
    }
    if(p == 1)
    {
@@ -174,28 +174,28 @@ inline typename tools::promote_args<T1, T2>::type
 
    return policies::checked_narrowing_cast<result_type, forwarding_policy>(
       detail::gamma_inva_imp(
-         static_cast<value_type>(x), 
-         static_cast<value_type>(p), 
-         static_cast<value_type>(1 - static_cast<value_type>(p)), 
+         static_cast<value_type>(x),
+         static_cast<value_type>(p),
+         static_cast<value_type>(1 - static_cast<value_type>(p)),
          pol), "boost::math::gamma_p_inva<%1%>(%1%, %1%)");
 }
 
 template <class T1, class T2, class Policy>
-inline typename tools::promote_args<T1, T2>::type 
+inline typename tools::promote_args<T1, T2>::type
    gamma_q_inva(T1 x, T2 q, const Policy& pol)
 {
    typedef typename tools::promote_args<T1, T2>::type result_type;
    typedef typename policies::evaluation<result_type, Policy>::type value_type;
    typedef typename policies::normalise<
-      Policy, 
-      policies::promote_float<false>, 
-      policies::promote_double<false>, 
+      Policy,
+      policies::promote_float<false>,
+      policies::promote_double<false>,
       policies::discrete_quantile<>,
       policies::assert_undefined<> >::type forwarding_policy;
 
    if(q == 1)
    {
-      policies::raise_overflow_error<result_type>("boost::math::gamma_q_inva<%1%>(%1%, %1%)", 0, Policy());
+      policies::raise_overflow_error<result_type>("boost::math::gamma_q_inva<%1%>(%1%, %1%)", nullptr, Policy());
    }
    if(q == 0)
    {
@@ -204,14 +204,14 @@ inline typename tools::promote_args<T1, T2>::type
 
    return policies::checked_narrowing_cast<result_type, forwarding_policy>(
       detail::gamma_inva_imp(
-         static_cast<value_type>(x), 
-         static_cast<value_type>(1 - static_cast<value_type>(q)), 
-         static_cast<value_type>(q), 
+         static_cast<value_type>(x),
+         static_cast<value_type>(1 - static_cast<value_type>(q)),
+         static_cast<value_type>(q),
          pol), "boost::math::gamma_q_inva<%1%>(%1%, %1%)");
 }
 
 template <class T1, class T2>
-inline typename tools::promote_args<T1, T2>::type 
+inline typename tools::promote_args<T1, T2>::type
    gamma_p_inva(T1 x, T2 p)
 {
    return boost::math::gamma_p_inva(x, p, policies::policy<>());

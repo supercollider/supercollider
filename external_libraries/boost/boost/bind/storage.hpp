@@ -21,6 +21,7 @@
 //  See http://www.boost.org/libs/bind/bind.html for documentation.
 //
 
+#include <boost/bind/detail/requires_cxx11.hpp>
 #include <boost/config.hpp>
 #include <boost/bind/arg.hpp>
 

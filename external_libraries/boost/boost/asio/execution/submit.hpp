@@ -2,7 +2,7 @@
 // execution/submit.hpp
 // ~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -16,6 +16,9 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include <boost/asio/detail/config.hpp>
+
+#if !defined(BOOST_ASIO_NO_DEPRECATED)
+
 #include <boost/asio/detail/type_traits.hpp>
 #include <boost/asio/execution/detail/submit_receiver.hpp>
 #include <boost/asio/execution/executor.hpp>
@@ -109,7 +112,7 @@ struct can_submit :
 
 #else // defined(GENERATING_DOCUMENTATION)
 
-namespace asio_execution_submit_fn {
+namespace boost_asio_execution_submit_fn {
 
 using boost::asio::declval;
 using boost::asio::enable_if;
@@ -127,7 +130,8 @@ enum overload_type
   ill_formed
 };
 
-template <typename S, typename R, typename = void>
+template <typename S, typename R, typename = void,
+    typename = void, typename = void>
 struct call_traits
 {
   BOOST_ASIO_STATIC_CONSTEXPR(overload_type, overload = ill_formed);
@@ -138,11 +142,10 @@ struct call_traits
 template <typename S, typename R>
 struct call_traits<S, void(R),
   typename enable_if<
-    (
-      submit_member<S, R>::is_valid
-      &&
-      is_sender_to<S, R>::value
-    )
+    submit_member<S, R>::is_valid
+  >::type,
+  typename enable_if<
+    is_sender_to<S, R>::value
   >::type> :
   submit_member<S, R>
 {
@@ -152,13 +155,13 @@ struct call_traits<S, void(R),
 template <typename S, typename R>
 struct call_traits<S, void(R),
   typename enable_if<
-    (
-      !submit_member<S, R>::is_valid
-      &&
-      submit_free<S, R>::is_valid
-      &&
-      is_sender_to<S, R>::value
-    )
+    !submit_member<S, R>::is_valid
+  >::type,
+  typename enable_if<
+    submit_free<S, R>::is_valid
+  >::type,
+  typename enable_if<
+    is_sender_to<S, R>::value
   >::type> :
   submit_free<S, R>
 {
@@ -168,13 +171,13 @@ struct call_traits<S, void(R),
 template <typename S, typename R>
 struct call_traits<S, void(R),
   typename enable_if<
-    (
-      !submit_member<S, R>::is_valid
-      &&
-      !submit_free<S, R>::is_valid
-      &&
-      is_sender_to<S, R>::value
-    )
+    !submit_member<S, R>::is_valid
+  >::type,
+  typename enable_if<
+    !submit_free<S, R>::is_valid
+  >::type,
+  typename enable_if<
+    is_sender_to<S, R>::value
   >::type>
 {
   BOOST_ASIO_STATIC_CONSTEXPR(overload_type, overload = adapter);
@@ -386,22 +389,22 @@ struct static_instance
 template <typename T>
 const T static_instance<T>::instance = {};
 
-} // namespace asio_execution_submit_fn
+} // namespace boost_asio_execution_submit_fn
 namespace boost {
 namespace asio {
 namespace execution {
 namespace {
 
-static BOOST_ASIO_CONSTEXPR const asio_execution_submit_fn::impl&
-  submit = asio_execution_submit_fn::static_instance<>::instance;
+static BOOST_ASIO_CONSTEXPR const boost_asio_execution_submit_fn::impl&
+  submit = boost_asio_execution_submit_fn::static_instance<>::instance;
 
 } // namespace
 
 template <typename S, typename R>
 struct can_submit :
   integral_constant<bool,
-    asio_execution_submit_fn::call_traits<S, void(R)>::overload !=
-      asio_execution_submit_fn::ill_formed>
+    boost_asio_execution_submit_fn::call_traits<S, void(R)>::overload !=
+      boost_asio_execution_submit_fn::ill_formed>
 {
 };
 
@@ -415,7 +418,7 @@ constexpr bool can_submit_v = can_submit<S, R>::value;
 template <typename S, typename R>
 struct is_nothrow_submit :
   integral_constant<bool,
-    asio_execution_submit_fn::call_traits<S, void(R)>::is_noexcept>
+    boost_asio_execution_submit_fn::call_traits<S, void(R)>::is_noexcept>
 {
 };
 
@@ -430,7 +433,7 @@ constexpr bool is_nothrow_submit_v
 template <typename S, typename R>
 struct submit_result
 {
-  typedef typename asio_execution_submit_fn::call_traits<
+  typedef typename boost_asio_execution_submit_fn::call_traits<
       S, void(R)>::result_type type;
 };
 
@@ -450,5 +453,7 @@ void submit_helper(BOOST_ASIO_MOVE_ARG(S) s, BOOST_ASIO_MOVE_ARG(R) r)
 #endif // defined(GENERATING_DOCUMENTATION)
 
 #include <boost/asio/detail/pop_options.hpp>
+
+#endif // !defined(BOOST_ASIO_NO_DEPRECATED)
 
 #endif // BOOST_ASIO_EXECUTION_SUBMIT_HPP

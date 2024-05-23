@@ -38,8 +38,6 @@
 #endif
 #include <boost/move/utility_core.hpp>
 
-#include <boost/core/no_exceptions_support.hpp>
-
 namespace boost { namespace container {
 
 #ifndef BOOST_CONTAINER_DOXYGEN_INVOKED

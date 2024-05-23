@@ -46,8 +46,8 @@ namespace boost { namespace math { namespace detail{
       if(y > z)
          swap(y, z);
       
-      BOOST_ASSERT(x >= z);
-      BOOST_ASSERT(z >= y);
+      BOOST_MATH_ASSERT(x >= z);
+      BOOST_MATH_ASSERT(z >= y);
       //
       // Special cases from http://dlmf.nist.gov/19.20#ii
       //
@@ -92,7 +92,7 @@ namespace boost { namespace math { namespace detail{
          T sum = 0;
          T sum_pow = 0.25f;
 
-         while(fabs(xn - yn) >= 2.7 * tools::root_epsilon<T>() * fabs(xn))
+         while(fabs(xn - yn) >= T(2.7) * tools::root_epsilon<T>() * fabs(xn))
          {
             T t = sqrt(xn * yn);
             xn = (xn + yn) / 2;

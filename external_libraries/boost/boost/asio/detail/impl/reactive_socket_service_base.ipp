@@ -2,7 +2,7 @@
 // detail/reactive_socket_service_base.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -18,7 +18,8 @@
 #include <boost/asio/detail/config.hpp>
 
 #if !defined(BOOST_ASIO_HAS_IOCP) \
-  && !defined(BOOST_ASIO_WINDOWS_RUNTIME)
+  && !defined(BOOST_ASIO_WINDOWS_RUNTIME) \
+  && !defined(BOOST_ASIO_HAS_IO_URING_AS_DEFAULT)
 
 #include <boost/asio/detail/reactive_socket_service_base.hpp>
 
@@ -44,6 +45,7 @@ void reactive_socket_service_base::construct(
 {
   impl.socket_ = invalid_socket;
   impl.state_ = 0;
+  impl.reactor_data_ = reactor::per_descriptor_data();
 }
 
 void reactive_socket_service_base::base_move_construct(
@@ -232,10 +234,11 @@ boost::system::error_code reactive_socket_service_base::do_assign(
   return ec;
 }
 
-void reactive_socket_service_base::start_op(
-    reactive_socket_service_base::base_implementation_type& impl,
-    int op_type, reactor_op* op, bool is_continuation,
-    bool is_non_blocking, bool noop)
+void reactive_socket_service_base::do_start_op(
+    reactive_socket_service_base::base_implementation_type& impl, int op_type,
+    reactor_op* op, bool is_continuation, bool is_non_blocking, bool noop,
+    void (*on_immediate)(operation* op, bool, const void*),
+    const void* immediate_arg)
 {
   if (!noop)
   {
@@ -243,32 +246,38 @@ void reactive_socket_service_base::start_op(
         || socket_ops::set_internal_non_blocking(
           impl.socket_, impl.state_, true, op->ec_))
     {
-      reactor_.start_op(op_type, impl.socket_,
-          impl.reactor_data_, op, is_continuation, is_non_blocking);
+      reactor_.start_op(op_type, impl.socket_, impl.reactor_data_, op,
+          is_continuation, is_non_blocking, on_immediate, immediate_arg);
       return;
     }
   }
 
-  reactor_.post_immediate_completion(op, is_continuation);
+  on_immediate(op, is_continuation, immediate_arg);
 }
 
-void reactive_socket_service_base::start_accept_op(
+void reactive_socket_service_base::do_start_accept_op(
     reactive_socket_service_base::base_implementation_type& impl,
-    reactor_op* op, bool is_continuation, bool peer_is_open)
+    reactor_op* op, bool is_continuation, bool peer_is_open,
+    void (*on_immediate)(operation* op, bool, const void*),
+    const void* immediate_arg)
 {
   if (!peer_is_open)
-    start_op(impl, reactor::read_op, op, is_continuation, true, false);
+  {
+    do_start_op(impl, reactor::read_op, op, is_continuation,
+        true, false, on_immediate, immediate_arg);
+  }
   else
   {
     op->ec_ = boost::asio::error::already_open;
-    reactor_.post_immediate_completion(op, is_continuation);
+    on_immediate(op, is_continuation, immediate_arg);
   }
 }
 
-void reactive_socket_service_base::start_connect_op(
+void reactive_socket_service_base::do_start_connect_op(
     reactive_socket_service_base::base_implementation_type& impl,
-    reactor_op* op, bool is_continuation,
-    const socket_addr_type* addr, size_t addrlen)
+    reactor_op* op, bool is_continuation, const void* addr, size_t addrlen,
+    void (*on_immediate)(operation* op, bool, const void*),
+    const void* immediate_arg)
 {
   if ((impl.state_ & socket_ops::non_blocking)
       || socket_ops::set_internal_non_blocking(
@@ -280,14 +289,14 @@ void reactive_socket_service_base::start_connect_op(
           || op->ec_ == boost::asio::error::would_block)
       {
         op->ec_ = boost::system::error_code();
-        reactor_.start_op(reactor::connect_op, impl.socket_,
-            impl.reactor_data_, op, is_continuation, false);
+        reactor_.start_op(reactor::connect_op, impl.socket_, impl.reactor_data_,
+            op, is_continuation, false, on_immediate, immediate_arg);
         return;
       }
     }
   }
 
-  reactor_.post_immediate_completion(op, is_continuation);
+  on_immediate(op, is_continuation, immediate_arg);
 }
 
 } // namespace detail
@@ -298,5 +307,6 @@ void reactive_socket_service_base::start_connect_op(
 
 #endif // !defined(BOOST_ASIO_HAS_IOCP)
        //   && !defined(BOOST_ASIO_WINDOWS_RUNTIME)
+       //   && !defined(BOOST_ASIO_HAS_IO_URING_AS_DEFAULT)
 
 #endif // BOOST_ASIO_DETAIL_IMPL_REACTIVE_SOCKET_SERVICE_BASE_IPP

@@ -14,18 +14,19 @@
 #include <boost/math/special_functions/factorials.hpp>
 #include <boost/math/special_functions/beta.hpp>
 #include <boost/math/policies/error_handling.hpp>
+#include <type_traits>
 
 namespace boost{ namespace math{
 
 template <class T, class Policy>
 T binomial_coefficient(unsigned n, unsigned k, const Policy& pol)
 {
-   BOOST_STATIC_ASSERT(!boost::is_integral<T>::value);
+   static_assert(!std::is_integral<T>::value, "Type T must not be an integral type");
    BOOST_MATH_STD_USING
    static const char* function = "boost::math::binomial_coefficient<%1%>(unsigned, unsigned)";
    if(k > n)
       return policies::raise_domain_error<T>(
-         function, 
+         function,
          "The binomial coefficient is undefined for k > n, but got k = %1%.",
          static_cast<T>(k), pol);
    T result;
@@ -45,11 +46,11 @@ T binomial_coefficient(unsigned n, unsigned k, const Policy& pol)
    {
       // Use the beta function:
       if(k < n - k)
-         result = k * beta(static_cast<T>(k), static_cast<T>(n-k+1), pol);
+         result = static_cast<T>(k * beta(static_cast<T>(k), static_cast<T>(n-k+1), pol));
       else
-         result = (n - k) * beta(static_cast<T>(k+1), static_cast<T>(n-k), pol);
+         result = static_cast<T>((n - k) * beta(static_cast<T>(k+1), static_cast<T>(n-k), pol));
       if(result == 0)
-         return policies::raise_overflow_error<T>(function, 0, pol);
+         return policies::raise_overflow_error<T>(function, nullptr, pol);
       result = 1 / result;
    }
    // convert to nearest integer:
@@ -61,9 +62,15 @@ T binomial_coefficient(unsigned n, unsigned k, const Policy& pol)
 // we'll promote to double:
 //
 template <>
-inline float binomial_coefficient<float, policies::policy<> >(unsigned n, unsigned k, const policies::policy<>& pol)
+inline float binomial_coefficient<float, policies::policy<> >(unsigned n, unsigned k, const policies::policy<>&)
 {
-   return policies::checked_narrowing_cast<float, policies::policy<> >(binomial_coefficient<double>(n, k, pol), "boost::math::binomial_coefficient<%1%>(unsigned,unsigned)");
+   typedef policies::normalise<
+       policies::policy<>,
+       policies::promote_float<true>,
+       policies::promote_double<false>,
+       policies::discrete_quantile<>,
+       policies::assert_undefined<> >::type forwarding_policy;
+   return policies::checked_narrowing_cast<float, forwarding_policy>(binomial_coefficient<double>(n, k, forwarding_policy()), "boost::math::binomial_coefficient<%1%>(unsigned,unsigned)");
 }
 
 template <class T>

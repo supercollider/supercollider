@@ -36,7 +36,7 @@ T bessel_kn(int n, T x, const Policy& pol)
     }
     if (x == 0)
     {
-       return policies::raise_overflow_error<T>(function, 0, pol);
+       return policies::raise_overflow_error<T>(function, nullptr, pol);
     }
 
     if (n < 0)
@@ -56,7 +56,7 @@ T bessel_kn(int n, T x, const Policy& pol)
        prev = bessel_k0(x);
        current = bessel_k1(x);
        int k = 1;
-       BOOST_ASSERT(k < n);
+       BOOST_MATH_ASSERT(k < n);
        T scale = 1;
        do
        {
@@ -74,7 +74,7 @@ T bessel_kn(int n, T x, const Policy& pol)
        }
        while(k < n);
        if(tools::max_value<T>() * scale < fabs(value))
-          return sign(scale) * sign(value) * policies::raise_overflow_error<T>(function, 0, pol);
+          return sign(scale) * sign(value) * policies::raise_overflow_error<T>(function, nullptr, pol);
        value /= scale;
     }
     return value;

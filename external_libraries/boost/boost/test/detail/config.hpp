@@ -158,6 +158,17 @@ class type_info;
 #endif
 
 //____________________________________________________________________________//
+
+// MSVC <= 12 and GCC <= 4.6 do not allow for defaulted destructors
+// See: https://github.com/boostorg/test/issues/385
+
+#if (defined(BOOST_MSVC) && BOOST_MSVC < 1900) || (defined(BOOST_GCC) && BOOST_GCC < 40700)
+#  define BOOST_TEST_DEFAULTED_FUNCTION(fun, body) fun body
+#else
+#  define BOOST_TEST_DEFAULTED_FUNCTION(fun, body) BOOST_DEFAULTED_FUNCTION(fun, body);
+#endif
+
+//____________________________________________________________________________//
 // string_view support
 //____________________________________________________________________________//
 // note the code should always be compatible with compiled version of boost.test

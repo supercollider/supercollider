@@ -2,7 +2,7 @@
 // execution/set_value.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -16,6 +16,9 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include <boost/asio/detail/config.hpp>
+
+#if !defined(BOOST_ASIO_NO_DEPRECATED)
+
 #include <boost/asio/detail/type_traits.hpp>
 #include <boost/asio/detail/variadic_templates.hpp>
 #include <boost/asio/traits/set_value_member.hpp>
@@ -71,7 +74,7 @@ struct can_set_value :
 
 #else // defined(GENERATING_DOCUMENTATION)
 
-namespace asio_execution_set_value_fn {
+namespace boost_asio_execution_set_value_fn {
 
 using boost::asio::decay;
 using boost::asio::declval;
@@ -88,7 +91,7 @@ enum overload_type
   ill_formed
 };
 
-template <typename R, typename Vs, typename = void>
+template <typename R, typename Vs, typename = void, typename = void>
 struct call_traits
 {
   BOOST_ASIO_STATIC_CONSTEXPR(overload_type, overload = ill_formed);
@@ -99,9 +102,7 @@ struct call_traits
 template <typename R, typename Vs>
 struct call_traits<R, Vs,
   typename enable_if<
-    (
-      set_value_member<R, Vs>::is_valid
-    )
+    set_value_member<R, Vs>::is_valid
   >::type> :
   set_value_member<R, Vs>
 {
@@ -111,11 +112,10 @@ struct call_traits<R, Vs,
 template <typename R, typename Vs>
 struct call_traits<R, Vs,
   typename enable_if<
-    (
-      !set_value_member<R, Vs>::is_valid
-      &&
-      set_value_free<R, Vs>::is_valid
-    )
+    !set_value_member<R, Vs>::is_valid
+  >::type,
+  typename enable_if<
+    set_value_free<R, Vs>::is_valid
   >::type> :
   set_value_free<R, Vs>
 {
@@ -386,14 +386,14 @@ struct static_instance
 template <typename T>
 const T static_instance<T>::instance = {};
 
-} // namespace asio_execution_set_value_fn
+} // namespace boost_asio_execution_set_value_fn
 namespace boost {
 namespace asio {
 namespace execution {
 namespace {
 
-static BOOST_ASIO_CONSTEXPR const asio_execution_set_value_fn::impl&
-  set_value = asio_execution_set_value_fn::static_instance<>::instance;
+static BOOST_ASIO_CONSTEXPR const boost_asio_execution_set_value_fn::impl&
+  set_value = boost_asio_execution_set_value_fn::static_instance<>::instance;
 
 } // namespace
 
@@ -402,8 +402,8 @@ static BOOST_ASIO_CONSTEXPR const asio_execution_set_value_fn::impl&
 template <typename R, typename... Vs>
 struct can_set_value :
   integral_constant<bool,
-    asio_execution_set_value_fn::call_traits<R, void(Vs...)>::overload !=
-      asio_execution_set_value_fn::ill_formed>
+    boost_asio_execution_set_value_fn::call_traits<R, void(Vs...)>::overload !=
+      boost_asio_execution_set_value_fn::ill_formed>
 {
 };
 
@@ -417,7 +417,7 @@ constexpr bool can_set_value_v = can_set_value<R, Vs...>::value;
 template <typename R, typename... Vs>
 struct is_nothrow_set_value :
   integral_constant<bool,
-    asio_execution_set_value_fn::call_traits<R, void(Vs...)>::is_noexcept>
+    boost_asio_execution_set_value_fn::call_traits<R, void(Vs...)>::is_noexcept>
 {
 };
 
@@ -444,15 +444,15 @@ struct is_nothrow_set_value;
 template <typename R>
 struct can_set_value<R> :
   integral_constant<bool,
-    asio_execution_set_value_fn::call_traits<R, void()>::overload !=
-      asio_execution_set_value_fn::ill_formed>
+    boost_asio_execution_set_value_fn::call_traits<R, void()>::overload !=
+      boost_asio_execution_set_value_fn::ill_formed>
 {
 };
 
 template <typename R>
 struct is_nothrow_set_value<R> :
   integral_constant<bool,
-    asio_execution_set_value_fn::call_traits<R, void()>::is_noexcept>
+    boost_asio_execution_set_value_fn::call_traits<R, void()>::is_noexcept>
 {
 };
 
@@ -460,16 +460,16 @@ struct is_nothrow_set_value<R> :
   template <typename R, BOOST_ASIO_VARIADIC_TPARAMS(n)> \
   struct can_set_value<R, BOOST_ASIO_VARIADIC_TARGS(n)> : \
     integral_constant<bool, \
-      asio_execution_set_value_fn::call_traits<R, \
+      boost_asio_execution_set_value_fn::call_traits<R, \
         void(BOOST_ASIO_VARIADIC_TARGS(n))>::overload != \
-          asio_execution_set_value_fn::ill_formed> \
+          boost_asio_execution_set_value_fn::ill_formed> \
   { \
   }; \
   \
   template <typename R, BOOST_ASIO_VARIADIC_TPARAMS(n)> \
   struct is_nothrow_set_value<R, BOOST_ASIO_VARIADIC_TARGS(n)> : \
     integral_constant<bool, \
-      asio_execution_set_value_fn::call_traits<R, \
+      boost_asio_execution_set_value_fn::call_traits<R, \
         void(BOOST_ASIO_VARIADIC_TARGS(n))>::is_noexcept> \
   { \
   }; \
@@ -486,5 +486,7 @@ BOOST_ASIO_VARIADIC_GENERATE(BOOST_ASIO_PRIVATE_SET_VALUE_TRAITS_DEF)
 #endif // defined(GENERATING_DOCUMENTATION)
 
 #include <boost/asio/detail/pop_options.hpp>
+
+#endif // !defined(BOOST_ASIO_NO_DEPRECATED)
 
 #endif // BOOST_ASIO_EXECUTION_SET_VALUE_HPP

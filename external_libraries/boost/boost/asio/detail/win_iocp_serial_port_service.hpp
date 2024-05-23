@@ -2,7 +2,7 @@
 // detail/win_iocp_serial_port_service.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Copyright (c) 2008 Rep Invariant Systems, Inc. (info@repinvariant.com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -138,6 +138,7 @@ public:
       boost::system::error_code& ec)
   {
     ec = boost::asio::error::operation_not_supported;
+    BOOST_ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 

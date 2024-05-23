@@ -1,6 +1,6 @@
 // Copyright Kevlin Henney, 2000-2005.
 // Copyright Alexander Nasonov, 2006-2010.
-// Copyright Antony Polukhin, 2011-2020.
+// Copyright Antony Polukhin, 2011-2023.
 //
 // Distributed under the Boost Software License, Version 1.0. (See
 // accompanying file LICENSE_1_0.txt or copy at
@@ -32,6 +32,7 @@
 #include <boost/type_traits/is_arithmetic.hpp>
 #include <boost/type_traits/is_base_of.hpp>
 #include <boost/type_traits/is_float.hpp>
+#include <boost/type_traits/remove_volatile.hpp>
 
 #include <boost/numeric/conversion/cast.hpp>
 
@@ -98,7 +99,10 @@ inline bool noexcept_numeric_convert(const Source& arg, Target& result) BOOST_NO
     >::type converter_t;
 
     bool res = nothrow_overflow_handler()(converter_t::out_of_range(arg));
-    result = converter_t::low_level_convert(converter_t::nearbyint(arg, res));
+    if (res) {
+        result = converter_t::low_level_convert(converter_t::nearbyint(arg, res));
+    }
+
     return res;
 }
 
@@ -152,14 +156,16 @@ struct lexical_cast_dynamic_num_ignoring_minus
 template <typename Target, typename Source>
 struct dynamic_num_converter_impl
 {
-    static inline bool try_convert(const Source &arg, Target& result) BOOST_NOEXCEPT {
+    typedef BOOST_DEDUCED_TYPENAME boost::remove_volatile<Source>::type source_type;
+
+    static inline bool try_convert(source_type arg, Target& result) BOOST_NOEXCEPT {
         typedef BOOST_DEDUCED_TYPENAME boost::conditional<
             boost::is_unsigned<Target>::value &&
-            (boost::is_signed<Source>::value || boost::is_float<Source>::value) &&
-            !(boost::is_same<Source, bool>::value) &&
+            (boost::is_signed<source_type>::value || boost::is_float<source_type>::value) &&
+            !(boost::is_same<source_type, bool>::value) &&
             !(boost::is_same<Target, bool>::value),
-            lexical_cast_dynamic_num_ignoring_minus<Target, Source>,
-            lexical_cast_dynamic_num_not_ignoring_minus<Target, Source>
+            lexical_cast_dynamic_num_ignoring_minus<Target, source_type>,
+            lexical_cast_dynamic_num_not_ignoring_minus<Target, source_type>
         >::type caster_type;
 
         return caster_type::try_convert(arg, result);

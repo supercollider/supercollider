@@ -9,27 +9,15 @@
 #ifdef _MSC_VER
 #pragma once
 #endif
-#include <boost/math/tools/complex.hpp> // test for multiprecision types.
+#include <boost/math/tools/complex.hpp> // test for multiprecision types in complex Newton
 
-#include <iostream>
 #include <utility>
-#include <boost/config/no_tr1/cmath.hpp>
-#include <stdexcept>
+#include <cmath>
+#include <tuple>
+#include <cstdint>
 
 #include <boost/math/tools/config.hpp>
-#include <boost/cstdint.hpp>
-#include <boost/assert.hpp>
-#include <boost/throw_exception.hpp>
 #include <boost/math/tools/cxx03_warn.hpp>
-
-#ifdef BOOST_MSVC
-#pragma warning(push)
-#pragma warning(disable: 4512)
-#endif
-#include <boost/math/tools/tuple.hpp>
-#ifdef BOOST_MSVC
-#pragma warning(pop)
-#endif
 
 #include <boost/math/special_functions/sign.hpp>
 #include <boost/math/special_functions/next.hpp>
@@ -94,7 +82,7 @@ void handle_zero_derivative(F f,
    T& result,
    T& guess,
    const T& min,
-   const T& max) BOOST_NOEXCEPT_IF(BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())))
+   const T& max) noexcept(BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())))
 {
    if (last_f0 == 0)
    {
@@ -140,7 +128,7 @@ void handle_zero_derivative(F f,
 } // namespace
 
 template <class F, class T, class Tol, class Policy>
-std::pair<T, T> bisect(F f, T min, T max, Tol tol, boost::uintmax_t& max_iter, const Policy& pol) BOOST_NOEXCEPT_IF(policies::is_noexcept_error_policy<Policy>::value&& BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())))
+std::pair<T, T> bisect(F f, T min, T max, Tol tol, std::uintmax_t& max_iter, const Policy& pol) noexcept(policies::is_noexcept_error_policy<Policy>::value&& BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())))
 {
    T fmin = f(min);
    T fmax = f(max);
@@ -173,7 +161,7 @@ std::pair<T, T> bisect(F f, T min, T max, Tol tol, boost::uintmax_t& max_iter, c
    //
    // Three function invocations so far:
    //
-   boost::uintmax_t count = max_iter;
+   std::uintmax_t count = max_iter;
    if (count < 3)
       count = 0;
    else
@@ -205,40 +193,33 @@ std::pair<T, T> bisect(F f, T min, T max, Tol tol, boost::uintmax_t& max_iter, c
    max_iter -= count;
 
 #ifdef BOOST_MATH_INSTRUMENT
-   std::cout << "Bisection iteration, final count = " << max_iter << std::endl;
-
-   static boost::uintmax_t max_count = 0;
-   if (max_iter > max_count)
-   {
-      max_count = max_iter;
-      std::cout << "Maximum iterations: " << max_iter << std::endl;
-   }
+   std::cout << "Bisection required " << max_iter << " iterations.\n";
 #endif
 
    return std::make_pair(min, max);
 }
 
 template <class F, class T, class Tol>
-inline std::pair<T, T> bisect(F f, T min, T max, Tol tol, boost::uintmax_t& max_iter)  BOOST_NOEXCEPT_IF(policies::is_noexcept_error_policy<policies::policy<> >::value&& BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())))
+inline std::pair<T, T> bisect(F f, T min, T max, Tol tol, std::uintmax_t& max_iter)  noexcept(policies::is_noexcept_error_policy<policies::policy<> >::value&& BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())))
 {
    return bisect(f, min, max, tol, max_iter, policies::policy<>());
 }
 
 template <class F, class T, class Tol>
-inline std::pair<T, T> bisect(F f, T min, T max, Tol tol) BOOST_NOEXCEPT_IF(policies::is_noexcept_error_policy<policies::policy<> >::value&& BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())))
+inline std::pair<T, T> bisect(F f, T min, T max, Tol tol) noexcept(policies::is_noexcept_error_policy<policies::policy<> >::value&& BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())))
 {
-   boost::uintmax_t m = (std::numeric_limits<boost::uintmax_t>::max)();
+   std::uintmax_t m = (std::numeric_limits<std::uintmax_t>::max)();
    return bisect(f, min, max, tol, m, policies::policy<>());
 }
 
 
 template <class F, class T>
-T newton_raphson_iterate(F f, T guess, T min, T max, int digits, boost::uintmax_t& max_iter) BOOST_NOEXCEPT_IF(policies::is_noexcept_error_policy<policies::policy<> >::value&& BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())))
+T newton_raphson_iterate(F f, T guess, T min, T max, int digits, std::uintmax_t& max_iter) noexcept(policies::is_noexcept_error_policy<policies::policy<> >::value&& BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())))
 {
    BOOST_MATH_STD_USING
 
    static const char* function = "boost::math::tools::newton_raphson_iterate<%1%>";
-   if (min >= max)
+   if (min > max)
    {
       return policies::raise_evaluation_error(function, "Range arguments in wrong order in boost::math::tools::newton_raphson_iterate(first arg=%1%)", min, boost::math::policies::policy<>());
    }
@@ -264,11 +245,11 @@ T newton_raphson_iterate(F f, T guess, T min, T max, int digits, boost::uintmax_
    T max_range_f = 0;
    T min_range_f = 0;
 
-   boost::uintmax_t count(max_iter);
+   std::uintmax_t count(max_iter);
 
 #ifdef BOOST_MATH_INSTRUMENT
    std::cout << "Newton_raphson_iterate, guess = " << guess << ", min = " << min << ", max = " << max
-      << ", digits = " << digits << ", max_iter = " << max_iter << std::endl;
+      << ", digits = " << digits << ", max_iter = " << max_iter << "\n";
 #endif
 
    do {
@@ -282,9 +263,6 @@ T newton_raphson_iterate(F f, T guess, T min, T max, int digits, boost::uintmax_
       if (f1 == 0)
       {
          // Oops zero derivative!!!
-#ifdef BOOST_MATH_INSTRUMENT
-         std::cout << "Newton iteration, zero derivative found!" << std::endl;
-#endif
          detail::handle_zero_derivative(f, last_f0, f0, delta, result, guess, min, max);
       }
       else
@@ -292,7 +270,7 @@ T newton_raphson_iterate(F f, T guess, T min, T max, int digits, boost::uintmax_
          delta = f0 / f1;
       }
 #ifdef BOOST_MATH_INSTRUMENT
-      std::cout << "Newton iteration " << max_iter - count << ", delta = " << delta << std::endl;
+      std::cout << "Newton iteration " << max_iter - count << ", delta = " << delta << ", residual = " << f0 << "\n";
 #endif
       if (fabs(delta * 2) > fabs(delta2))
       {
@@ -348,24 +326,16 @@ T newton_raphson_iterate(F f, T guess, T min, T max, int digits, boost::uintmax_
    max_iter -= count;
 
 #ifdef BOOST_MATH_INSTRUMENT
-   std::cout << "Newton Raphson final iteration count = " << max_iter << std::endl;
-
-   static boost::uintmax_t max_count = 0;
-   if (max_iter > max_count)
-   {
-      max_count = max_iter;
-      // std::cout << "Maximum iterations: " << max_iter << std::endl;
-      // Puzzled what this tells us, so commented out for now?
-   }
+   std::cout << "Newton Raphson required " << max_iter << " iterations\n";
 #endif
 
    return result;
 }
 
 template <class F, class T>
-inline T newton_raphson_iterate(F f, T guess, T min, T max, int digits) BOOST_NOEXCEPT_IF(policies::is_noexcept_error_policy<policies::policy<> >::value&& BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())))
+inline T newton_raphson_iterate(F f, T guess, T min, T max, int digits) noexcept(policies::is_noexcept_error_policy<policies::policy<> >::value&& BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())))
 {
-   boost::uintmax_t m = (std::numeric_limits<boost::uintmax_t>::max)();
+   std::uintmax_t m = (std::numeric_limits<std::uintmax_t>::max)();
    return newton_raphson_iterate(f, guess, min, max, digits, m);
 }
 
@@ -374,7 +344,7 @@ namespace detail {
    struct halley_step
    {
       template <class T>
-      static T step(const T& /*x*/, const T& f0, const T& f1, const T& f2) BOOST_NOEXCEPT_IF(BOOST_MATH_IS_FLOAT(T))
+      static T step(const T& /*x*/, const T& f0, const T& f1, const T& f2) noexcept(BOOST_MATH_IS_FLOAT(T))
       {
          using std::fabs;
          T denom = 2 * f0;
@@ -396,17 +366,25 @@ namespace detail {
    };
 
    template <class F, class T>
-   T bracket_root_towards_min(F f, T guess, const T& f0, T& min, T& max, boost::uintmax_t& count) BOOST_NOEXCEPT_IF(BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())));
+   T bracket_root_towards_min(F f, T guess, const T& f0, T& min, T& max, std::uintmax_t& count) noexcept(BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())));
 
    template <class F, class T>
-   T bracket_root_towards_max(F f, T guess, const T& f0, T& min, T& max, boost::uintmax_t& count) BOOST_NOEXCEPT_IF(BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())))
+   T bracket_root_towards_max(F f, T guess, const T& f0, T& min, T& max, std::uintmax_t& count) noexcept(BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())))
    {
       using std::fabs;
+      using std::ldexp;
+      using std::abs;
+      using std::frexp;
+      if(count < 2)
+         return guess - (max + min) / 2; // Not enough counts left to do anything!!
       //
       // Move guess towards max until we bracket the root, updating min and max as we go:
       //
+      int e;
+      frexp(max / guess, &e);
+      e = abs(e);
       T guess0 = guess;
-      T multiplier = 2;
+      T multiplier = e < 64 ? static_cast<T>(2) : static_cast<T>(ldexp(T(1), e / 32));
       T f_current = f0;
       if (fabs(min) < fabs(max))
       {
@@ -420,7 +398,7 @@ namespace detail {
                f_current = -f_current;  // There must be a change of sign!
                break;
             }
-            multiplier *= 2;
+            multiplier *= e > 1024 ? 8 : 2;
             unpack_0(f(guess), f_current);
          }
       }
@@ -439,7 +417,7 @@ namespace detail {
                f_current = -f_current;  // There must be a change of sign!
                break;
             }
-            multiplier *= 2;
+            multiplier *= e > 1024 ? 8 : 2;
             unpack_0(f(guess), f_current);
          }
       }
@@ -454,14 +432,22 @@ namespace detail {
    }
 
    template <class F, class T>
-   T bracket_root_towards_min(F f, T guess, const T& f0, T& min, T& max, boost::uintmax_t& count) BOOST_NOEXCEPT_IF(BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())))
+   T bracket_root_towards_min(F f, T guess, const T& f0, T& min, T& max, std::uintmax_t& count) noexcept(BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())))
    {
       using std::fabs;
+      using std::ldexp;
+      using std::abs;
+      using std::frexp;
+      if (count < 2)
+         return guess - (max + min) / 2; // Not enough counts left to do anything!!
       //
       // Move guess towards min until we bracket the root, updating min and max as we go:
       //
+      int e;
+      frexp(guess / min, &e);
+      e = abs(e);
       T guess0 = guess;
-      T multiplier = 2;
+      T multiplier = e < 64 ? static_cast<T>(2) : static_cast<T>(ldexp(T(1), e / 32));
       T f_current = f0;
 
       if (fabs(min) < fabs(max))
@@ -476,7 +462,7 @@ namespace detail {
                f_current = -f_current;  // There must be a change of sign!
                break;
             }
-            multiplier *= 2;
+            multiplier *= e > 1024 ? 8 : 2;
             unpack_0(f(guess), f_current);
          }
       }
@@ -495,7 +481,7 @@ namespace detail {
                f_current = -f_current;  // There must be a change of sign!
                break;
             }
-            multiplier *= 2;
+            multiplier *= e > 1024 ? 8 : 2;
             unpack_0(f(guess), f_current);
          }
       }
@@ -510,13 +496,13 @@ namespace detail {
    }
 
    template <class Stepper, class F, class T>
-   T second_order_root_finder(F f, T guess, T min, T max, int digits, boost::uintmax_t& max_iter) BOOST_NOEXCEPT_IF(policies::is_noexcept_error_policy<policies::policy<> >::value&& BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())))
+   T second_order_root_finder(F f, T guess, T min, T max, int digits, std::uintmax_t& max_iter) noexcept(policies::is_noexcept_error_policy<policies::policy<> >::value&& BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())))
    {
       BOOST_MATH_STD_USING
 
 #ifdef BOOST_MATH_INSTRUMENT
         std::cout << "Second order root iteration, guess = " << guess << ", min = " << min << ", max = " << max
-        << ", digits = " << digits << ", max_iter = " << max_iter << std::endl;
+        << ", digits = " << digits << ", max_iter = " << max_iter << "\n";
 #endif
       static const char* function = "boost::math::tools::halley_iterate<%1%>";
       if (min >= max)
@@ -535,7 +521,7 @@ namespace detail {
       bool out_of_bounds_sentry = false;
 
    #ifdef BOOST_MATH_INSTRUMENT
-      std::cout << "Second order root iteration, limit = " << factor << std::endl;
+      std::cout << "Second order root iteration, limit = " << factor << "\n";
    #endif
 
       //
@@ -551,13 +537,25 @@ namespace detail {
       T max_range_f = 0;
       T min_range_f = 0;
 
-      boost::uintmax_t count(max_iter);
+      std::uintmax_t count(max_iter);
 
       do {
          last_f0 = f0;
          delta2 = delta1;
          delta1 = delta;
-         detail::unpack_tuple(f(result), f0, f1, f2);
+#ifndef BOOST_NO_EXCEPTIONS
+         try
+#endif
+         {
+            detail::unpack_tuple(f(result), f0, f1, f2);
+         }
+#ifndef BOOST_NO_EXCEPTIONS
+         catch (const std::overflow_error&)
+         {
+            f0 = max > 0 ? tools::max_value<T>() : -tools::min_value<T>();
+            f1 = f2 = 0;
+         }
+#endif
          --count;
 
          BOOST_MATH_INSTRUMENT_VARIABLE(f0);
@@ -569,9 +567,6 @@ namespace detail {
          if (f1 == 0)
          {
             // Oops zero derivative!!!
-   #ifdef BOOST_MATH_INSTRUMENT
-            std::cout << "Second order root iteration, zero derivative found!" << std::endl;
-   #endif
             detail::handle_zero_derivative(f, last_f0, f0, delta, result, guess, min, max);
          }
          else
@@ -591,23 +586,33 @@ namespace detail {
                   // we can jump way out of bounds if we're not careful.
                   // See https://svn.boost.org/trac/boost/ticket/8314.
                   delta = f0 / f1;
-                  if (fabs(delta) > 2 * fabs(guess))
-                     delta = (delta < 0 ? -1 : 1) * 2 * fabs(guess);
+                  if (fabs(delta) > 2 * fabs(result))
+                     delta = (delta < 0 ? -1 : 1) * 2 * fabs(result);
                }
             }
             else
                delta = f0 / f1;
          }
    #ifdef BOOST_MATH_INSTRUMENT
-         std::cout << "Second order root iteration, delta = " << delta << std::endl;
+         std::cout << "Second order root iteration, delta = " << delta << ", residual = " << f0 << "\n";
    #endif
          T convergence = fabs(delta / delta2);
          if ((convergence > 0.8) && (convergence < 2))
          {
             // last two steps haven't converged.
-            delta = (delta > 0) ? (result - min) / 2 : (result - max) / 2;
-            if ((result != 0) && (fabs(delta) > result))
-               delta = sign(delta) * fabs(result) * 0.9f; // protect against huge jumps!
+            if (fabs(min) < 1 ? fabs(1000 * min) < fabs(max) : fabs(max / min) > 1000)
+            {
+               if(delta > 0)
+                  delta = bracket_root_towards_min(f, result, f0, min, max, count);
+               else
+                  delta = bracket_root_towards_max(f, result, f0, min, max, count);
+            }
+            else
+            {
+               delta = (delta > 0) ? (result - min) / 2 : (result - max) / 2;
+               if ((result != 0) && (fabs(delta) > result))
+                  delta = sign(delta) * fabs(result) * 0.9f; // protect against huge jumps!
+            }
             // reset delta2 so that this branch will *not* be taken on the
             // next iteration:
             delta2 = delta * 3;
@@ -644,6 +649,10 @@ namespace detail {
                }
                delta = bracket_root_towards_min(f, guess, f0, min, max, count);
                result = guess - delta;
+               if (result <= min)
+                  result = float_next(min);
+               if (result >= max)
+                  result = float_prior(max);
                guess = min;
                continue;
             }
@@ -670,6 +679,10 @@ namespace detail {
                }
                delta = bracket_root_towards_max(f, guess, f0, min, max, count);
                result = guess - delta;
+               if (result >= max)
+                  result = float_prior(max);
+               if (result <= min)
+                  result = float_next(min);
                guess = min;
                continue;
             }
@@ -697,7 +710,7 @@ namespace detail {
       max_iter -= count;
 
    #ifdef BOOST_MATH_INSTRUMENT
-      std::cout << "Second order root finder, final iteration count = " << max_iter << std::endl;
+      std::cout << "Second order root finder required " << max_iter << " iterations.\n";
    #endif
 
       return result;
@@ -705,15 +718,15 @@ namespace detail {
 } // T second_order_root_finder
 
 template <class F, class T>
-T halley_iterate(F f, T guess, T min, T max, int digits, boost::uintmax_t& max_iter) BOOST_NOEXCEPT_IF(policies::is_noexcept_error_policy<policies::policy<> >::value&& BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())))
+T halley_iterate(F f, T guess, T min, T max, int digits, std::uintmax_t& max_iter) noexcept(policies::is_noexcept_error_policy<policies::policy<> >::value&& BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())))
 {
    return detail::second_order_root_finder<detail::halley_step>(f, guess, min, max, digits, max_iter);
 }
 
 template <class F, class T>
-inline T halley_iterate(F f, T guess, T min, T max, int digits) BOOST_NOEXCEPT_IF(policies::is_noexcept_error_policy<policies::policy<> >::value&& BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())))
+inline T halley_iterate(F f, T guess, T min, T max, int digits) noexcept(policies::is_noexcept_error_policy<policies::policy<> >::value&& BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())))
 {
-   boost::uintmax_t m = (std::numeric_limits<boost::uintmax_t>::max)();
+   std::uintmax_t m = (std::numeric_limits<std::uintmax_t>::max)();
    return halley_iterate(f, guess, min, max, digits, m);
 }
 
@@ -722,7 +735,7 @@ namespace detail {
    struct schroder_stepper
    {
       template <class T>
-      static T step(const T& x, const T& f0, const T& f1, const T& f2) BOOST_NOEXCEPT_IF(BOOST_MATH_IS_FLOAT(T))
+      static T step(const T& x, const T& f0, const T& f1, const T& f2) noexcept(BOOST_MATH_IS_FLOAT(T))
       {
          using std::fabs;
          T ratio = f0 / f1;
@@ -743,30 +756,30 @@ namespace detail {
 }
 
 template <class F, class T>
-T schroder_iterate(F f, T guess, T min, T max, int digits, boost::uintmax_t& max_iter) BOOST_NOEXCEPT_IF(policies::is_noexcept_error_policy<policies::policy<> >::value&& BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())))
+T schroder_iterate(F f, T guess, T min, T max, int digits, std::uintmax_t& max_iter) noexcept(policies::is_noexcept_error_policy<policies::policy<> >::value&& BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())))
 {
    return detail::second_order_root_finder<detail::schroder_stepper>(f, guess, min, max, digits, max_iter);
 }
 
 template <class F, class T>
-inline T schroder_iterate(F f, T guess, T min, T max, int digits) BOOST_NOEXCEPT_IF(policies::is_noexcept_error_policy<policies::policy<> >::value&& BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())))
+inline T schroder_iterate(F f, T guess, T min, T max, int digits) noexcept(policies::is_noexcept_error_policy<policies::policy<> >::value&& BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())))
 {
-   boost::uintmax_t m = (std::numeric_limits<boost::uintmax_t>::max)();
+   std::uintmax_t m = (std::numeric_limits<std::uintmax_t>::max)();
    return schroder_iterate(f, guess, min, max, digits, m);
 }
 //
 // These two are the old spelling of this function, retained for backwards compatibility just in case:
 //
 template <class F, class T>
-T schroeder_iterate(F f, T guess, T min, T max, int digits, boost::uintmax_t& max_iter) BOOST_NOEXCEPT_IF(policies::is_noexcept_error_policy<policies::policy<> >::value&& BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())))
+T schroeder_iterate(F f, T guess, T min, T max, int digits, std::uintmax_t& max_iter) noexcept(policies::is_noexcept_error_policy<policies::policy<> >::value&& BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())))
 {
    return detail::second_order_root_finder<detail::schroder_stepper>(f, guess, min, max, digits, max_iter);
 }
 
 template <class F, class T>
-inline T schroeder_iterate(F f, T guess, T min, T max, int digits) BOOST_NOEXCEPT_IF(policies::is_noexcept_error_policy<policies::policy<> >::value&& BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())))
+inline T schroeder_iterate(F f, T guess, T min, T max, int digits) noexcept(policies::is_noexcept_error_policy<policies::policy<> >::value&& BOOST_MATH_IS_FLOAT(T) && noexcept(std::declval<F>()(std::declval<T>())))
 {
-   boost::uintmax_t m = (std::numeric_limits<boost::uintmax_t>::max)();
+   std::uintmax_t m = (std::numeric_limits<std::uintmax_t>::max)();
    return schroder_iterate(f, guess, min, max, digits, m);
 }
 

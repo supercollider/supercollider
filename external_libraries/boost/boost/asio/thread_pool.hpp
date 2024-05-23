@@ -2,7 +2,7 @@
 // thread_pool.hpp
 // ~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -166,8 +166,10 @@ template <typename Allocator, unsigned int Bits>
 class thread_pool::basic_executor_type : detail::thread_pool_bits
 {
 public:
-  /// The sender type, when this type is used as a scheduler.
+#if !defined(BOOST_ASIO_NO_DEPRECATED)
+  /// (Deprecated.) The sender type, when this type is used as a scheduler.
   typedef basic_executor_type sender_type;
+#endif // !defined(BOOST_ASIO_NO_DEPRECATED)
 
   /// The bulk execution shape type.
   typedef std::size_t shape_type;
@@ -230,6 +232,12 @@ public:
   basic_executor_type& operator=(
       basic_executor_type&& other) BOOST_ASIO_NOEXCEPT;
 #endif // defined(BOOST_ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
+
+#if !defined(GENERATING_DOCUMENTATION)
+private:
+  friend struct boost_asio_require_fn::impl;
+  friend struct boost_asio_prefer_fn::impl;
+#endif // !defined(GENERATING_DOCUMENTATION)
 
   /// Obtain an executor with the @c blocking.possibly property.
   /**
@@ -391,7 +399,15 @@ public:
         pool_, std::allocator<void>(), bits_);
   }
 
-  /// Query the current value of the @c bulk_guarantee property.
+#if !defined(GENERATING_DOCUMENTATION)
+private:
+  friend struct boost_asio_query_fn::impl;
+  friend struct boost::asio::execution::detail::mapping_t<0>;
+  friend struct boost::asio::execution::detail::outstanding_work_t<0>;
+#endif // !defined(GENERATING_DOCUMENTATION)
+
+#if !defined(BOOST_ASIO_NO_DEPRECATED)
+  /// (Deprecated.) Query the current value of the @c bulk_guarantee property.
   /**
    * Do not call this function directly. It is intended for use with the
    * boost::asio::query customisation point.
@@ -407,6 +423,7 @@ public:
   {
     return execution::bulk_guarantee.parallel;
   }
+#endif // !defined(BOOST_ASIO_NO_DEPRECATED)
 
   /// Query the current value of the @c mapping property.
   /**
@@ -547,6 +564,7 @@ public:
     return static_cast<std::size_t>(pool_->num_threads_);
   }
 
+public:
   /// Determine whether the thread pool is running in the current thread.
   /**
    * @return @c true if the current thread is running the thread pool. Otherwise
@@ -579,14 +597,6 @@ public:
   }
 
   /// Execution function.
-  /**
-   * Do not call this function directly. It is intended for use with the
-   * execution::execute customisation point.
-   *
-   * For example:
-   * @code auto ex = my_thread_pool.executor();
-   * execution::execute(ex, my_function_object); @endcode
-   */
   template <typename Function>
   void execute(BOOST_ASIO_MOVE_ARG(Function) f) const
   {
@@ -594,7 +604,9 @@ public:
         integral_constant<bool, (Bits & blocking_always) != 0>());
   }
 
-  /// Bulk execution function.
+public:
+#if !defined(BOOST_ASIO_NO_DEPRECATED)
+  /// (Deprecated.) Bulk execution function.
   template <typename Function>
   void bulk_execute(BOOST_ASIO_MOVE_ARG(Function) f, std::size_t n) const
   {
@@ -602,7 +614,7 @@ public:
         integral_constant<bool, (Bits & blocking_always) != 0>());
   }
 
-  /// Schedule function.
+  /// (Deprecated.) Schedule function.
   /**
    * Do not call this function directly. It is intended for use with the
    * execution::schedule customisation point.
@@ -614,7 +626,7 @@ public:
     return *this;
   }
 
-  /// Connect function.
+  /// (Deprecated.) Connect function.
   /**
    * Do not call this function directly. It is intended for use with the
    * execution::connect customisation point.
@@ -633,6 +645,7 @@ public:
     return execution::detail::as_operation<basic_executor_type, Receiver>(
         *this, BOOST_ASIO_MOVE_CAST(Receiver)(r));
   }
+#endif // !defined(BOOST_ASIO_NO_DEPRECATED)
 
 #if !defined(BOOST_ASIO_NO_TS_EXECUTORS)
   /// Obtain the underlying execution context.
@@ -799,6 +812,8 @@ struct execute_member<
 
 #if !defined(BOOST_ASIO_HAS_DEDUCED_SCHEDULE_MEMBER_TRAIT)
 
+#if !defined(BOOST_ASIO_NO_DEPRECATED)
+
 template <typename Allocator, unsigned int Bits>
 struct schedule_member<
     const boost::asio::thread_pool::basic_executor_type<Allocator, Bits>
@@ -810,9 +825,13 @@ struct schedule_member<
       Allocator, Bits> result_type;
 };
 
+#endif // !defined(BOOST_ASIO_NO_DEPRECATED)
+
 #endif // !defined(BOOST_ASIO_HAS_DEDUCED_SCHEDULE_MEMBER_TRAIT)
 
 #if !defined(BOOST_ASIO_HAS_DEDUCED_CONNECT_MEMBER_TRAIT)
+
+#if !defined(BOOST_ASIO_NO_DEPRECATED)
 
 template <typename Allocator, unsigned int Bits, typename Receiver>
 struct connect_member<
@@ -826,6 +845,8 @@ struct connect_member<
       boost::asio::thread_pool::basic_executor_type<Allocator, Bits>,
       Receiver> result_type;
 };
+
+#endif // !defined(BOOST_ASIO_NO_DEPRECATED)
 
 #endif // !defined(BOOST_ASIO_HAS_DEDUCED_CONNECT_MEMBER_TRAIT)
 
@@ -944,6 +965,8 @@ struct require_member<
 
 #if !defined(BOOST_ASIO_HAS_DEDUCED_QUERY_STATIC_CONSTEXPR_MEMBER_TRAIT)
 
+#if !defined(BOOST_ASIO_NO_DEPRECATED)
+
 template <typename Allocator, unsigned int Bits, typename Property>
 struct query_static_constexpr_member<
     boost::asio::thread_pool::basic_executor_type<Allocator, Bits>,
@@ -965,6 +988,8 @@ struct query_static_constexpr_member<
     return result_type();
   }
 };
+
+#endif // !defined(BOOST_ASIO_NO_DEPRECATED)
 
 template <typename Allocator, unsigned int Bits, typename Property>
 struct query_static_constexpr_member<
@@ -1097,6 +1122,15 @@ struct query_member<
 #endif // !defined(BOOST_ASIO_HAS_DEDUCED_QUERY_MEMBER_TRAIT)
 
 } // namespace traits
+
+namespace execution {
+
+template <>
+struct is_executor<thread_pool> : false_type
+{
+};
+
+} // namespace execution
 
 #endif // !defined(GENERATING_DOCUMENTATION)
 

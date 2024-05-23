@@ -62,10 +62,10 @@ T ellint_rc1p_imp(T y, const Policy& pol)
    }
    else
    {
-      if(y > -0.5)
+      if(y > T(-0.5))
       {
          T arg = sqrt(-y);
-         result = (boost::math::log1p(arg) - boost::math::log1p(-arg)) / (2 * sqrt(-y));
+         result = (boost::math::log1p(arg, pol) - boost::math::log1p(-arg, pol)) / (2 * sqrt(-y));
       }
       else
       {
@@ -124,13 +124,13 @@ T ellint_rj_imp(T x, T y, T z, T p, const Policy& pol)
       if(x > y)
          std::swap(x, y);
 
-      BOOST_ASSERT(x <= y);
-      BOOST_ASSERT(y <= z);
+      BOOST_MATH_ASSERT(x <= y);
+      BOOST_MATH_ASSERT(y <= z);
 
       T q = -p;
       p = (z * (x + y + q) - x * y) / (z + q);
 
-      BOOST_ASSERT(p >= 0);
+      BOOST_MATH_ASSERT(p >= 0);
 
       T value = (p - z) * ellint_rj_imp(x, y, z, p, pol);
       value -= 3 * ellint_rf_imp(x, y, z, pol);
@@ -166,7 +166,7 @@ T ellint_rj_imp(T x, T y, T z, T p, const Policy& pol)
          {
             return ellint_rd_imp(x, y, y, pol);
          }
-         else if((std::max)(y, p) / (std::min)(y, p) > 1.2)
+         else if((std::max)(y, p) / (std::min)(y, p) > T(1.2))
          {
             return 3 * (ellint_rc_imp(x, y, pol) - ellint_rc_imp(x, p, pol)) / (p - y);
          }
@@ -180,7 +180,7 @@ T ellint_rj_imp(T x, T y, T z, T p, const Policy& pol)
          // y = z = p:
          return ellint_rd_imp(x, y, y, pol);
       }
-      else if((std::max)(y, p) / (std::min)(y, p) > 1.2)
+      else if((std::max)(y, p) / (std::min)(y, p) > T(1.2))
       {
          // y = z:
          return 3 * (ellint_rc_imp(x, y, pol) - ellint_rc_imp(x, p, pol)) / (p - y);
@@ -218,7 +218,7 @@ T ellint_rj_imp(T x, T y, T z, T p, const Policy& pol)
       Dn = (rp + rx) * (rp + ry) * (rp + rz);
       En = delta / Dn;
       En /= Dn;
-      if((En < -0.5) && (En > -1.5))
+      if((En < T(-0.5)) && (En > T(-1.5)))
       {
          //
          // Occasionally En ~ -1, we then have no means of calculating

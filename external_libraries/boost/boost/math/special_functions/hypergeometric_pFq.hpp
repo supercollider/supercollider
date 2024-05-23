@@ -8,13 +8,8 @@
 #ifndef BOOST_MATH_HYPERGEOMETRIC_PFQ_HPP
 #define BOOST_MATH_HYPERGEOMETRIC_PFQ_HPP
 
-#include <boost/config.hpp>
-
-#if defined(BOOST_NO_CXX11_AUTO_DECLARATIONS) || defined(BOOST_NO_CXX11_LAMBDAS) || defined(BOOST_NO_CXX11_UNIFIED_INITIALIZATION_SYNTAX) || defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST) || defined(BOOST_NO_CXX11_HDR_CHRONO)
-# error "hypergeometric_pFq requires a C++11 compiler"
-#endif
-
 #include <boost/math/special_functions/detail/hypergeometric_pFq_checked_series.hpp>
+#include <boost/math/tools/throw_exception.hpp>
 #include <chrono>
 #include <initializer_list>
 
@@ -30,18 +25,18 @@ namespace boost {
 
          struct timed_iteration_terminator
          {
-            timed_iteration_terminator(boost::uintmax_t i, double t) : max_iter(i), max_time(t), start_time(std::chrono::system_clock::now()) {}
+            timed_iteration_terminator(std::uintmax_t i, double t) : max_iter(i), max_time(t), start_time(std::chrono::system_clock::now()) {}
 
-            bool operator()(boost::uintmax_t iter)const
+            bool operator()(std::uintmax_t iter)const
             {
                if (iter > max_iter)
-                  boost::throw_exception(boost::math::detail::pFq_termination_exception("pFq exceeded maximum permitted iterations."));
+                  BOOST_MATH_THROW_EXCEPTION(boost::math::detail::pFq_termination_exception("pFq exceeded maximum permitted iterations."));
                if (std::chrono::duration<double>(std::chrono::system_clock::now() - start_time).count() > max_time)
-                  boost::throw_exception(boost::math::detail::pFq_termination_exception("pFq exceeded maximum permitted evaluation time."));
+                  BOOST_MATH_THROW_EXCEPTION(boost::math::detail::pFq_termination_exception("pFq exceeded maximum permitted evaluation time."));
                return false;
             }
 
-            boost::uintmax_t max_iter;
+            std::uintmax_t max_iter;
             double max_time;
             std::chrono::system_clock::time_point start_time;
          };
@@ -62,7 +57,7 @@ namespace boost {
 
          BOOST_MATH_STD_USING
 
-         int scale = 0;
+         long long scale = 0;
          std::pair<value_type, value_type> r = boost::math::detail::hypergeometric_pFq_checked_series_impl(aj, bj, value_type(z), pol, boost::math::detail::iteration_terminator(boost::math::policies::get_max_series_iterations<forwarding_policy>()), scale);
          r.first *= exp(Real(scale));
          r.second *= exp(Real(scale));
@@ -82,13 +77,14 @@ namespace boost {
       {
          return hypergeometric_pFq<std::initializer_list<R>, Real, Policy>(aj, bj, z, p_abs_error, pol);
       }
-      
+
       template <class R, class Real>
-      inline typename tools::promote_args<Real, R>::type  hypergeometric_pFq(const std::initializer_list<R>& aj, const std::initializer_list<R>& bj, const Real& z, Real* p_abs_error = 0)
+      inline typename tools::promote_args<Real, R>::type  hypergeometric_pFq(const std::initializer_list<R>& aj, const std::initializer_list<R>& bj, const Real& z, Real* p_abs_error = nullptr)
       {
          return hypergeometric_pFq<std::initializer_list<R>, Real>(aj, bj, z, p_abs_error);
       }
 
+#ifndef BOOST_NO_EXCEPTIONS
       template <class T>
       struct scoped_precision
       {
@@ -131,7 +127,7 @@ namespace boost {
             z.precision(current_precision);
             try
             {
-               int scale = 0;
+               long long scale = 0;
                std::pair<Real, Real> rp = boost::math::detail::hypergeometric_pFq_checked_series_impl(aa, bb, z, pol, boost::math::detail::timed_iteration_terminator(boost::math::policies::get_max_series_iterations<Policy>(), timeout), scale);
                rp.first *= exp(Real(scale));
                rp.second *= exp(Real(scale));
@@ -192,7 +188,7 @@ namespace boost {
       {
          return hypergeometric_pFq_precision< std::initializer_list<Real>, Real>(aj, bj, z, digits10, timeout, boost::math::policies::policy<>());
       }
-
+#endif
    }
 } // namespaces
 

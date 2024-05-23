@@ -2,7 +2,7 @@
 // basic_waitable_timer.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -142,6 +142,9 @@ class basic_waitable_timer;
 template <typename Clock, typename WaitTraits, typename Executor>
 class basic_waitable_timer
 {
+private:
+  class initiate_async_wait;
+
 public:
   /// The type of the executor associated with the object.
   typedef Executor executor_type;
@@ -176,7 +179,7 @@ public:
    * dispatch handlers for any asynchronous operations performed on the timer.
    */
   explicit basic_waitable_timer(const executor_type& ex)
-    : impl_(ex)
+    : impl_(0, ex)
   {
   }
 
@@ -192,10 +195,10 @@ public:
    */
   template <typename ExecutionContext>
   explicit basic_waitable_timer(ExecutionContext& context,
-      typename enable_if<
+      typename constraint<
         is_convertible<ExecutionContext&, execution_context&>::value
-      >::type* = 0)
-    : impl_(context)
+      >::type = 0)
+    : impl_(0, 0, context)
   {
   }
 
@@ -210,7 +213,7 @@ public:
    * as an absolute time.
    */
   basic_waitable_timer(const executor_type& ex, const time_point& expiry_time)
-    : impl_(ex)
+    : impl_(0, ex)
   {
     boost::system::error_code ec;
     impl_.get_service().expires_at(impl_.get_implementation(), expiry_time, ec);
@@ -231,10 +234,10 @@ public:
   template <typename ExecutionContext>
   explicit basic_waitable_timer(ExecutionContext& context,
       const time_point& expiry_time,
-      typename enable_if<
+      typename constraint<
         is_convertible<ExecutionContext&, execution_context&>::value
-      >::type* = 0)
-    : impl_(context)
+      >::type = 0)
+    : impl_(0, 0, context)
   {
     boost::system::error_code ec;
     impl_.get_service().expires_at(impl_.get_implementation(), expiry_time, ec);
@@ -252,7 +255,7 @@ public:
    * now.
    */
   basic_waitable_timer(const executor_type& ex, const duration& expiry_time)
-    : impl_(ex)
+    : impl_(0, ex)
   {
     boost::system::error_code ec;
     impl_.get_service().expires_after(
@@ -274,10 +277,10 @@ public:
   template <typename ExecutionContext>
   explicit basic_waitable_timer(ExecutionContext& context,
       const duration& expiry_time,
-      typename enable_if<
+      typename constraint<
         is_convertible<ExecutionContext&, execution_context&>::value
-      >::type* = 0)
-    : impl_(context)
+      >::type = 0)
+    : impl_(0, 0, context)
   {
     boost::system::error_code ec;
     impl_.get_service().expires_after(
@@ -338,9 +341,9 @@ public:
   template <typename Executor1>
   basic_waitable_timer(
       basic_waitable_timer<Clock, WaitTraits, Executor1>&& other,
-      typename enable_if<
-          is_convertible<Executor1, Executor>::value
-      >::type* = 0)
+      typename constraint<
+        is_convertible<Executor1, Executor>::value
+      >::type = 0)
     : impl_(std::move(other.impl_))
   {
   }
@@ -358,7 +361,7 @@ public:
    * constructor.
    */
   template <typename Executor1>
-  typename enable_if<
+  typename constraint<
     is_convertible<Executor1, Executor>::value,
     basic_waitable_timer&
   >::type operator=(basic_waitable_timer<Clock, WaitTraits, Executor1>&& other)
@@ -379,7 +382,7 @@ public:
   }
 
   /// Get the executor associated with the object.
-  executor_type get_executor() BOOST_ASIO_NOEXCEPT
+  const executor_type& get_executor() BOOST_ASIO_NOEXCEPT
   {
     return impl_.get_executor();
   }
@@ -727,38 +730,57 @@ public:
   /// Start an asynchronous wait on the timer.
   /**
    * This function may be used to initiate an asynchronous wait against the
-   * timer. It always returns immediately.
+   * timer. It is an initiating function for an @ref asynchronous_operation,
+   * and always returns immediately.
    *
-   * For each call to async_wait(), the supplied handler will be called exactly
-   * once. The handler will be called when:
+   * For each call to async_wait(), the completion handler will be called
+   * exactly once. The completion handler will be called when:
    *
    * @li The timer has expired.
    *
    * @li The timer was cancelled, in which case the handler is passed the error
    * code boost::asio::error::operation_aborted.
    *
-   * @param handler The handler to be called when the timer expires. Copies
-   * will be made of the handler as required. The function signature of the
-   * handler must be:
+   * @param token The @ref completion_token that will be used to produce a
+   * completion handler, which will be called when the timer expires. Potential
+   * completion tokens include @ref use_future, @ref use_awaitable, @ref
+   * yield_context, or a function object with the correct completion signature.
+   * The function signature of the completion handler must be:
    * @code void handler(
    *   const boost::system::error_code& error // Result of operation.
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
-   * not, the handler will not be invoked from within this function. On
-   * immediate completion, invocation of the handler will be performed in a
+   * not, the completion handler will not be invoked from within this function.
+   * On immediate completion, invocation of the handler will be performed in a
    * manner equivalent to using boost::asio::post().
+   *
+   * @par Completion Signature
+   * @code void(boost::system::error_code) @endcode
+   *
+   * @par Per-Operation Cancellation
+   * This asynchronous operation supports cancellation for the following
+   * boost::asio::cancellation_type values:
+   *
+   * @li @c cancellation_type::terminal
+   *
+   * @li @c cancellation_type::partial
+   *
+   * @li @c cancellation_type::total
    */
   template <
       BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code))
-        WaitHandler BOOST_ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(WaitHandler,
-      void (boost::system::error_code))
+        WaitToken BOOST_ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
+  BOOST_ASIO_INITFN_AUTO_RESULT_TYPE_PREFIX(
+      WaitToken, void (boost::system::error_code))
   async_wait(
-      BOOST_ASIO_MOVE_ARG(WaitHandler) handler
+      BOOST_ASIO_MOVE_ARG(WaitToken) token
         BOOST_ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+    BOOST_ASIO_INITFN_AUTO_RESULT_TYPE_SUFFIX((
+      async_initiate<WaitToken, void (boost::system::error_code)>(
+          declval<initiate_async_wait>(), token)))
   {
-    return async_initiate<WaitHandler, void (boost::system::error_code)>(
-        initiate_async_wait(this), handler);
+    return async_initiate<WaitToken, void (boost::system::error_code)>(
+        initiate_async_wait(this), token);
   }
 
 private:
@@ -777,7 +799,7 @@ private:
     {
     }
 
-    executor_type get_executor() const BOOST_ASIO_NOEXCEPT
+    const executor_type& get_executor() const BOOST_ASIO_NOEXCEPT
     {
       return self_->get_executor();
     }

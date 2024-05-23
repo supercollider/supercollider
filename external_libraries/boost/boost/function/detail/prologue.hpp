@@ -9,6 +9,7 @@
 
 #ifndef BOOST_FUNCTION_PROLOGUE_HPP
 #define BOOST_FUNCTION_PROLOGUE_HPP
+#  include <boost/function/detail/requires_cxx11.hpp>
 #  include <cassert>
 #  include <algorithm>
 #  include <boost/config/no_tr1/functional.hpp> // unary_function, binary_function

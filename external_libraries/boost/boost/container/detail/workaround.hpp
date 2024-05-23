@@ -98,15 +98,24 @@
    #define BOOST_CONTAINER_FORCEINLINE inline
 #elif defined(BOOST_CONTAINER_FORCEINLINE_IS_BOOST_FORCELINE)
    #define BOOST_CONTAINER_FORCEINLINE BOOST_FORCEINLINE
-#elif defined(BOOST_MSVC) && defined(_DEBUG)
-   //"__forceinline" and MSVC seems to have some bugs in debug mode
+#elif defined(BOOST_MSVC) && (_MSC_VER <= 1900 || defined(_DEBUG))
+   //"__forceinline" and MSVC seems to have some bugs in old versions and in debug mode
    #define BOOST_CONTAINER_FORCEINLINE inline
-#elif defined(__GNUC__) && ((__GNUC__ < 4) || (__GNUC__ == 4 && (__GNUC_MINOR__ < 5)))
-   //Older GCCs have problems with forceinline
+#elif defined(BOOST_GCC) && ((__GNUC__ <= 5) || defined(__MINGW32__))
+   //Older GCCs and MinGw have problems with forceinline
    #define BOOST_CONTAINER_FORCEINLINE inline
 #else
    #define BOOST_CONTAINER_FORCEINLINE BOOST_FORCEINLINE
 #endif
+
+//#define BOOST_CONTAINER_DISABLE_NOINLINE
+
+#if defined(BOOST_CONTAINER_DISABLE_NOINLINE)
+   #define BOOST_CONTAINER_NOINLINE
+#else
+   #define BOOST_CONTAINER_NOINLINE BOOST_NOINLINE
+#endif
+
 
 #if !defined(__has_feature)
 #define BOOST_CONTAINER_HAS_FEATURE(feature) 0
@@ -120,14 +129,62 @@
 #endif
 
 
-#if (__cplusplus >= 201703L)
-   //CTAD supported
-   #ifdef __INTEL_COMPILER
-      //Intel compilers do not offer this feature yet
-      #define BOOST_CONTAINER_NO_CXX17_CTAD
-   #endif
-#else
+#if (BOOST_CXX_VERSION < 201703L) || !defined(__cpp_deduction_guides)
    #define BOOST_CONTAINER_NO_CXX17_CTAD
+#endif
+
+#if defined(BOOST_CONTAINER_DISABLE_ATTRIBUTE_NODISCARD)
+   #define BOOST_CONTAINER_ATTRIBUTE_NODISCARD
+#else
+   #if   defined(BOOST_GCC) && ((BOOST_GCC < 100000) || (__cplusplus < 201703L))
+      //Avoid using it in C++ < 17 and GCC < 10 because it warns in SFINAE contexts
+      //(see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=89070)
+      #define BOOST_CONTAINER_ATTRIBUTE_NODISCARD
+   #else
+      #define BOOST_CONTAINER_ATTRIBUTE_NODISCARD BOOST_ATTRIBUTE_NODISCARD
+   #endif
+#endif
+
+
+//Configuration options:
+
+//Define this to use std exception types instead of boost::container's own exception types
+//#define BOOST_CONTAINER_USE_STD_EXCEPTIONS
+
+
+namespace boost {
+namespace container {
+
+template <typename T1>
+BOOST_FORCEINLINE BOOST_CXX14_CONSTEXPR void ignore(T1 const&)
+{}
+
+}} //namespace boost::container {
+
+#if !(defined BOOST_NO_EXCEPTIONS)
+#    define BOOST_CONTAINER_TRY { try
+#    define BOOST_CONTAINER_CATCH(x) catch(x)
+#    define BOOST_CONTAINER_RETHROW throw;
+#    define BOOST_CONTAINER_CATCH_END }
+#else
+#    if !defined(BOOST_MSVC) || BOOST_MSVC >= 1900
+#        define BOOST_CONTAINER_TRY { if (true)
+#        define BOOST_CONTAINER_CATCH(x) else if (false)
+#    else
+// warning C4127: conditional expression is constant
+#        define BOOST_CONTAINER_TRY { \
+             __pragma(warning(push)) \
+             __pragma(warning(disable: 4127)) \
+             if (true) \
+             __pragma(warning(pop))
+#        define BOOST_CONTAINER_CATCH(x) else \
+             __pragma(warning(push)) \
+             __pragma(warning(disable: 4127)) \
+             if (false) \
+             __pragma(warning(pop))
+#    endif
+#    define BOOST_CONTAINER_RETHROW
+#    define BOOST_CONTAINER_CATCH_END }
 #endif
 
 #endif   //#ifndef BOOST_CONTAINER_DETAIL_WORKAROUND_HPP

@@ -2,7 +2,7 @@
 // error.hpp
 // ~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -224,6 +224,35 @@ enum misc_errors
   /// The descriptor cannot fit into the select system call's fd_set.
   fd_set_failure
 };
+
+#if !defined(BOOST_ASIO_ERROR_LOCATION) \
+  && !defined(BOOST_ASIO_DISABLE_ERROR_LOCATION) \
+  && defined(BOOST_ASIO_HAS_BOOST_CONFIG) \
+  && (BOOST_VERSION >= 107900)
+
+# define BOOST_ASIO_ERROR_LOCATION(e) \
+  do { \
+    BOOST_STATIC_CONSTEXPR boost::source_location loc \
+      = BOOST_CURRENT_LOCATION; \
+    (e).assign((e), &loc); \
+  } while (false)
+
+#else // !defined(BOOST_ASIO_ERROR_LOCATION)
+      //   && !defined(BOOST_ASIO_DISABLE_ERROR_LOCATION)
+      //   && defined(BOOST_ASIO_HAS_BOOST_CONFIG)
+      //   && (BOOST_VERSION >= 107900)
+
+# define BOOST_ASIO_ERROR_LOCATION(e) (void)0
+
+#endif // !defined(BOOST_ASIO_ERROR_LOCATION)
+       //   && !defined(BOOST_ASIO_DISABLE_ERROR_LOCATION)
+       //   && defined(BOOST_ASIO_HAS_BOOST_CONFIG)
+       //   && (BOOST_VERSION >= 107900)
+
+inline void clear(boost::system::error_code& ec)
+{
+  ec = boost::system::error_code();
+}
 
 inline const boost::system::error_category& get_system_category()
 {

@@ -2,7 +2,7 @@
 // detail/impl/scheduler.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2023 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -20,10 +20,15 @@
 #include <boost/asio/detail/concurrency_hint.hpp>
 #include <boost/asio/detail/event.hpp>
 #include <boost/asio/detail/limits.hpp>
-#include <boost/asio/detail/reactor.hpp>
 #include <boost/asio/detail/scheduler.hpp>
 #include <boost/asio/detail/scheduler_thread_info.hpp>
 #include <boost/asio/detail/signal_blocker.hpp>
+
+#if defined(BOOST_ASIO_HAS_IO_URING_AS_DEFAULT)
+# include <boost/asio/detail/io_uring_service.hpp>
+#else // defined(BOOST_ASIO_HAS_IO_URING_AS_DEFAULT)
+# include <boost/asio/detail/reactor.hpp>
+#endif // defined(BOOST_ASIO_HAS_IO_URING_AS_DEFAULT)
 
 #include <boost/asio/detail/push_options.hpp>
 
@@ -105,7 +110,7 @@ struct scheduler::work_cleanup
 };
 
 scheduler::scheduler(boost::asio::execution_context& ctx,
-    int concurrency_hint, bool own_thread)
+    int concurrency_hint, bool own_thread, get_task_func_type get_task)
   : boost::asio::detail::execution_context_service_base<scheduler>(ctx),
     one_thread_(concurrency_hint == 1
         || !BOOST_ASIO_CONCURRENCY_HINT_IS_LOCKING(
@@ -115,6 +120,7 @@ scheduler::scheduler(boost::asio::execution_context& ctx,
     mutex_(BOOST_ASIO_CONCURRENCY_HINT_IS_LOCKING(
           SCHEDULER, concurrency_hint)),
     task_(0),
+    get_task_(get_task),
     task_interrupted_(true),
     outstanding_work_(0),
     stopped_(false),
@@ -179,7 +185,7 @@ void scheduler::init_task()
   mutex::scoped_lock lock(mutex_);
   if (!shutdown_ && !task_)
   {
-    task_ = &use_service<reactor>(this->context());
+    task_ = get_task_(this->context());
     op_queue_.push(&task_operation_);
     wake_one_thread_and_unlock(lock);
   }
@@ -322,7 +328,13 @@ void scheduler::restart()
 void scheduler::compensating_work_started()
 {
   thread_info_base* this_thread = thread_call_stack::contains(this);
+  BOOST_ASIO_ASSUME(this_thread != 0); // Only called from inside scheduler.
   ++static_cast<thread_info*>(this_thread)->private_outstanding_work;
+}
+
+bool scheduler::can_dispatch()
+{
+  return thread_call_stack::contains(this) != 0;
 }
 
 void scheduler::capture_current_exception()
@@ -645,6 +657,15 @@ void scheduler::wake_one_thread_and_unlock(
     }
     lock.unlock();
   }
+}
+
+scheduler_task* scheduler::get_default_task(boost::asio::execution_context& ctx)
+{
+#if defined(BOOST_ASIO_HAS_IO_URING_AS_DEFAULT)
+  return &use_service<io_uring_service>(ctx);
+#else // defined(BOOST_ASIO_HAS_IO_URING_AS_DEFAULT)
+  return &use_service<reactor>(ctx);
+#endif // defined(BOOST_ASIO_HAS_IO_URING_AS_DEFAULT)
 }
 
 } // namespace detail

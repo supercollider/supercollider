@@ -6,7 +6,7 @@
 #ifndef BOOST_EXCEPTION_7E48761AD92811DC9011477D56D89593
 #define BOOST_EXCEPTION_7E48761AD92811DC9011477D56D89593
 
-#include <boost/utility/enable_if.hpp>
+#include <boost/core/enable_if.hpp>
 #include <boost/exception/detail/is_output_streamable.hpp>
 #include <sstream>
 

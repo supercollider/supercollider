@@ -1,5 +1,6 @@
 
 // Copyright (C) 2005-2016 Daniel James
+// Copyright (C) 2022 Christian Mazakas
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
@@ -24,24 +25,18 @@ namespace boost {
         typedef boost::unordered::detail::allocator_traits<value_allocator>
           value_allocator_traits;
 
-        typedef boost::unordered::detail::pick_node<A, value_type> pick;
-        typedef typename pick::node node;
-        typedef typename pick::bucket bucket;
-        typedef typename pick::link_pointer link_pointer;
-
         typedef boost::unordered::detail::table<types> table;
         typedef boost::unordered::detail::set_extractor<value_type> extractor;
 
-        typedef typename boost::unordered::detail::pick_policy<T>::type policy;
+        typedef typename boost::allocator_void_pointer<value_allocator>::type
+          void_pointer;
 
-        typedef boost::unordered::iterator_detail::c_iterator<node> iterator;
-        typedef boost::unordered::iterator_detail::c_iterator<node> c_iterator;
-        typedef boost::unordered::iterator_detail::cl_iterator<node> l_iterator;
-        typedef boost::unordered::iterator_detail::cl_iterator<node>
-          cl_iterator;
+        typedef boost::unordered::node_handle_set<
+          node<value_type, void_pointer>, T, A>
+          node_type;
 
-        typedef boost::unordered::node_handle_set<node, T, A> node_type;
-        typedef boost::unordered::insert_return_type_set<node, T, A>
+        typedef typename table::c_iterator iterator;
+        typedef boost::unordered::insert_return_type_set<iterator, node_type>
           insert_return_type;
       };
 

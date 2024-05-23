@@ -97,7 +97,7 @@ namespace boost { namespace math { namespace detail{
          T xn = sqrt(x);
          T yn = sqrt(y);
 
-         while(fabs(xn - yn) >= 2.7 * tools::root_epsilon<T>() * fabs(xn))
+         while(fabs(xn - yn) >= T(2.7) * tools::root_epsilon<T>() * fabs(xn))
          {
             T t = sqrt(xn * yn);
             xn = (xn + yn) / 2;

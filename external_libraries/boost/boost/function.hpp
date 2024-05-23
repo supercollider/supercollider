@@ -71,4 +71,6 @@
 #  undef BOOST_PP_ITERATION_PARAMS_1
 #endif
 
+#include <boost/function/detail/epilogue.hpp>
+
 #endif // !defined(BOOST_FUNCTION_MAX_ARGS_DEFINED) || (BOOST_FUNCTION_MAX_ARGS_DEFINED != BOOST_FUNCTION_MAX_ARGS)

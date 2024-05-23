@@ -74,10 +74,10 @@ T ellint_rc_imp(T x, T y, const Policy& pol)
     }
     else
     {
-       if(y / x > 0.5)
+       if(y / x > T(0.5))
        {
           T arg = sqrt((x - y) / x);
-          result = (boost::math::log1p(arg) - boost::math::log1p(-arg)) / (2 * sqrt(x - y));
+          result = (boost::math::log1p(arg, pol) - boost::math::log1p(-arg, pol)) / (2 * sqrt(x - y));
        }
        else
        {

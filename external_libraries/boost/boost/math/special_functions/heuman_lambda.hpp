@@ -12,7 +12,6 @@
 
 #include <boost/math/special_functions/math_fwd.hpp>
 #include <boost/math/special_functions/ellint_rj.hpp>
-#include <boost/math/special_functions/ellint_rj.hpp>
 #include <boost/math/special_functions/ellint_1.hpp>
 #include <boost/math/special_functions/jacobi_zeta.hpp>
 #include <boost/math/constants/constants.hpp>
@@ -52,6 +51,11 @@ T heuman_lambda_imp(T phi, T k, const Policy& pol)
     }
     else
     {
+          typedef std::integral_constant<int,
+             std::is_floating_point<T>::value&& std::numeric_limits<T>::digits && (std::numeric_limits<T>::digits <= 54) ? 0 :
+             std::is_floating_point<T>::value && std::numeric_limits<T>::digits && (std::numeric_limits<T>::digits <= 64) ? 1 : 2
+          > precision_tag_type;
+
        T rkp = sqrt(kp);
        T ratio;
        if(rkp == 1)
@@ -59,8 +63,8 @@ T heuman_lambda_imp(T phi, T k, const Policy& pol)
           return policies::raise_domain_error<T>(function, "When 1-k^2 == 1 then phi must be < Pi/2, but got phi = %1%", phi, pol);
        }
        else
-          ratio = ellint_f_imp(phi, rkp, pol) / ellint_k_imp(rkp, pol);
-       result = ratio + ellint_k_imp(k, pol) * jacobi_zeta_imp(phi, rkp, pol) / constants::half_pi<T>();
+          ratio = ellint_f_imp(phi, rkp, pol) / ellint_k_imp(rkp, pol, precision_tag_type());
+       result = ratio + ellint_k_imp(k, pol, precision_tag_type()) * jacobi_zeta_imp(phi, rkp, pol) / constants::half_pi<T>();
     }
     return result;
 }

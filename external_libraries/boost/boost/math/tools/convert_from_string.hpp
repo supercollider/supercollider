@@ -1,4 +1,5 @@
 //  Copyright John Maddock 2016.
+//  Copyright Matt Borland 2023.
 //  Use, modification and distribution are subject to the
 //  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -10,37 +11,59 @@
 #pragma once
 #endif
 
-#include <boost/type_traits/is_constructible.hpp>
-#include <boost/type_traits/conditional.hpp>
+#include <boost/math/tools/config.hpp>
+#include <type_traits>
+#ifndef BOOST_MATH_STANDALONE
 #include <boost/lexical_cast.hpp>
+#endif
 
 namespace boost{ namespace math{ namespace tools{
 
    template <class T>
    struct convert_from_string_result
    {
-      typedef typename boost::conditional<boost::is_constructible<T, const char*>::value, const char*, T>::type type;
+      typedef typename std::conditional<std::is_constructible<T, const char*>::value, const char*, T>::type type;
    };
 
    template <class Real>
-   Real convert_from_string(const char* p, const boost::false_type&)
+   Real convert_from_string(const char* p, const std::false_type&)
    {
-#ifdef BOOST_MATH_NO_LEXICAL_CAST
+      #ifdef BOOST_MATH_NO_LEXICAL_CAST
+
       // This function should not compile, we don't have the necessary functionality to support it:
-      BOOST_STATIC_ASSERT(sizeof(Real) == 0);
-#else
+      static_assert(sizeof(Real) == 0, "boost.lexical_cast is not supported in standalone mode.");
+      (void)p; // Suppresses -Wunused-parameter
+      return Real(0);
+
+      #elif defined(BOOST_MATH_USE_CHARCONV_FOR_CONVERSION)
+
+      if constexpr (std::is_arithmetic_v<Real>)
+      {
+         Real v {};
+         std::from_chars(p, p + std::strlen(p), v);
+
+         return v;
+      }
+      else
+      {
+         return boost::lexical_cast<Real>(p);
+      }
+
+      #else
+
       return boost::lexical_cast<Real>(p);
-#endif
+
+      #endif
    }
    template <class Real>
-   BOOST_CONSTEXPR const char* convert_from_string(const char* p, const boost::true_type&) BOOST_NOEXCEPT
+   constexpr const char* convert_from_string(const char* p, const std::true_type&) noexcept
    {
       return p;
    }
    template <class Real>
-   BOOST_CONSTEXPR typename convert_from_string_result<Real>::type convert_from_string(const char* p) BOOST_NOEXCEPT_IF((boost::is_constructible<Real, const char*>::value))
+   constexpr typename convert_from_string_result<Real>::type convert_from_string(const char* p) noexcept((std::is_constructible<Real, const char*>::value))
    {
-      return convert_from_string<Real>(p, boost::is_constructible<Real, const char*>());
+      return convert_from_string<Real>(p, std::is_constructible<Real, const char*>());
    }
 
 } // namespace tools
