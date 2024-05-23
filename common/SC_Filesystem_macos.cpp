@@ -30,6 +30,7 @@
 #    include "SC_Filesystem.hpp"
 
 #    include <filesystem> // path, parent_path(), canonical, current_path()
+#    include <cassert>
 
 // system includes
 #    include <Foundation/NSAutoreleasePool.h>
