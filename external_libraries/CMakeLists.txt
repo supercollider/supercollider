@@ -32,19 +32,15 @@ if(NOT SYSTEM_BOOST) # we compile boost ourselves
 	add_library(boost_program_options_lib STATIC EXCLUDE_FROM_ALL ${boost_program_options_src})
 	target_include_directories(boost_program_options_lib PUBLIC boost)
 
-	aux_source_directory(boost/libs/filesystem/src boost_filesystem_src)
-	add_library(boost_filesystem_lib STATIC EXCLUDE_FROM_ALL ${boost_filesystem_src})
-	target_include_directories(boost_filesystem_lib PUBLIC boost)
-
 	aux_source_directory(boost/libs/regex/src boost_regex_src)
 	add_library(boost_regex_lib STATIC EXCLUDE_FROM_ALL ${boost_regex_src})
 	target_include_directories(boost_regex_lib PUBLIC boost)
 
 	if(LTO)
-		set_property(TARGET boost_program_options_lib boost_system_lib boost_filesystem_lib
+		set_property(TARGET boost_program_options_lib boost_system_lib
 					 APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
 
-		set_property(TARGET boost_program_options_lib boost_system_lib boost_filesystem_lib
+		set_property(TARGET boost_program_options_lib boost_system_lib 
 					 APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 	endif()
 
@@ -63,7 +59,6 @@ if(NOT SYSTEM_BOOST) # we compile boost ourselves
 
 
 	if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-		target_compile_options(boost_filesystem_lib PRIVATE -fPIC)
 		target_compile_options(boost_thread_lib PRIVATE -fPIC)
 		target_link_libraries(boost_thread_lib rt)
 	endif()
@@ -81,7 +76,6 @@ if(NOT SYSTEM_BOOST) # we compile boost ourselves
         boost_thread_lib
         boost_program_options_lib
         boost_system_lib
-        boost_filesystem_lib
         PROPERTY FOLDER 3rdparty
     )
 endif()

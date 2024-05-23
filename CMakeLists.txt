@@ -316,9 +316,6 @@ if(SYSTEM_BOOST)
         add_library(boost_system_lib SHARED IMPORTED)
         set_property(TARGET boost_system_lib PROPERTY IMPORTED_LOCATION
           ${Boost_SYSTEM_LIBRARY})
-        add_library(boost_filesystem_lib SHARED IMPORTED)
-        set_property(TARGET boost_filesystem_lib PROPERTY IMPORTED_LOCATION
-          ${Boost_FILESYSTEM_LIBRARY})
         add_library(boost_program_options_lib SHARED IMPORTED)
         set_property(TARGET boost_program_options_lib PROPERTY
           IMPORTED_LOCATION ${Boost_PROGRAM_OPTIONS_LIBRARY})
