@@ -1,6 +1,6 @@
 class:: DebugFrame
 summary:: A representation of the call frame
-categories::  Core/Kernel
+categories::  Core
 
 Description::
 A representation of the call frame.
