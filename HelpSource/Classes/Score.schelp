@@ -127,7 +127,7 @@ adds bundle to the list.
 
 method::addSystemSynthDefs
 
-Some code requires a number of SynthDefs that are assumed to exist on the server (SystemSynthDefs). When booting a server in realtime mode, they are sent automatically. In non-realtime mode, they need to be added to the score explicitly:
+Some code requires a number of SynthDefs that are assumed to exist on the server (link::Classes/SystemSynthDefs::). When booting a server in realtime mode, they are sent automatically. In non-realtime mode, they need to be added to the score explicitly:
 
 code::
 x = Score.new;
