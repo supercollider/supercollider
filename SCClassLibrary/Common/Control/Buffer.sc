@@ -14,20 +14,23 @@ Buffer {
 	*new { arg server, numFrames, numChannels, bufnum;
 		server = server ? Server.default;
 		bufnum ?? { bufnum = server.nextBufferNumber(1) };
-		^super.newCopyArgs(server,
-						bufnum,
-						numFrames,
-						numChannels).sampleRate_(server.sampleRate).cache
+		^super.newCopyArgs(
+			server,
+			bufnum,
+			numFrames,
+			numChannels
+		).sampleRate_(server.sampleRate).cache
 	}
 
 	*alloc { arg server, numFrames, numChannels = 1, completionMessage, bufnum;
 		server = server ? Server.default;
 		bufnum ?? { bufnum = server.nextBufferNumber(1) };
-		^super.newCopyArgs(server,
-						bufnum,
-						numFrames,
-						numChannels)
-					.alloc(completionMessage).sampleRate_(server.sampleRate).cache
+		^super.newCopyArgs(
+			server,
+			bufnum,
+			numFrames,
+			numChannels
+		).alloc(completionMessage).sampleRate_(server.sampleRate).cache
 	}
 
 	*allocConsecutive { arg numBufs = 1, server, numFrames, numChannels = 1, completionMessage, bufnum;
@@ -88,8 +91,8 @@ Buffer {
 		server = server ? Server.default;
 		bufnum ?? { bufnum = server.nextBufferNumber(1) };
 		^super.newCopyArgs(server, bufnum)
-					.doOnInfo_(action).cache
-					.allocRead(path, startFrame, numFrames, {|buf|["/b_query", buf.bufnum] })
+			.doOnInfo_(action).cache
+			.allocRead(path, startFrame, numFrames, {|buf|["/b_query", buf.bufnum] })
 	}
 
 	read { arg argpath, fileStartFrame = 0, numFrames = -1, bufStartFrame = 0, leaveOpen = false, action;
@@ -97,7 +100,7 @@ Buffer {
 		doOnInfo = action;
 		server.listSendMsg(
 			this.readMsg(argpath, fileStartFrame, numFrames, bufStartFrame,
-						leaveOpen, {|buf| ["/b_query", buf.bufnum] })
+				leaveOpen, {|buf| ["/b_query", buf.bufnum] })
 		);
 	}
 
@@ -105,18 +108,18 @@ Buffer {
 		server = server ? Server.default;
 		bufnum ?? { bufnum = server.nextBufferNumber(1) };
 		^super.newCopyArgs(server, bufnum)
-					.doOnInfo_(action).cache
-					.allocReadChannel(path, startFrame, numFrames, channels,
-						{|buf|["/b_query", buf.bufnum]})
+			.doOnInfo_(action).cache
+			.allocReadChannel(path, startFrame, numFrames, channels,
+				{|buf|["/b_query", buf.bufnum]})
 	}
 
 	readChannel { arg argpath, fileStartFrame = 0, numFrames = -1,
-					bufStartFrame = 0, leaveOpen = false, channels, action;
+		bufStartFrame = 0, leaveOpen = false, channels, action;
 		this.cache;
 		doOnInfo = action;
 		server.listSendMsg(
 			this.readChannelMsg(argpath, fileStartFrame, numFrames, bufStartFrame,
-						leaveOpen, channels, {|buf| ["/b_query", buf.bufnum] })
+				leaveOpen, channels, {|buf| ["/b_query", buf.bufnum] })
 		)
 	}
 
@@ -127,7 +130,7 @@ Buffer {
 	}
 
 	readNoUpdate { arg argpath, fileStartFrame = 0, numFrames = -1,
-					bufStartFrame = 0, leaveOpen = false, completionMessage;
+		bufStartFrame = 0, leaveOpen = false, completionMessage;
 		server.listSendMsg(
 			this.readMsg(
 				argpath, fileStartFrame, numFrames, bufStartFrame, leaveOpen, completionMessage
@@ -136,7 +139,7 @@ Buffer {
 	}
 
 	readMsg { arg argpath, fileStartFrame = 0, numFrames = -1,
-					bufStartFrame = 0, leaveOpen = false, completionMessage;
+		bufStartFrame = 0, leaveOpen = false, completionMessage;
 		path = argpath;
 		^["/b_read", bufnum, path, fileStartFrame.asInteger, (numFrames ? -1).asInteger,
 			bufStartFrame.asInteger, leaveOpen.binaryValue, completionMessage.value(this)]
@@ -144,7 +147,7 @@ Buffer {
 	}
 
 	readChannelMsg { arg argpath, fileStartFrame = 0, numFrames = -1,
-					bufStartFrame = 0, leaveOpen = false, channels, completionMessage;
+		bufStartFrame = 0, leaveOpen = false, channels, completionMessage;
 		path = argpath;
 		^["/b_readChannel", bufnum, path, fileStartFrame.asInteger, (numFrames ? -1).asInteger,
 			bufStartFrame.asInteger, leaveOpen.binaryValue] ++ channels ++ [completionMessage.value(this)]
@@ -191,7 +194,6 @@ Buffer {
 								{("Could not delete data file:" + path).warn;});
 							action.value(buf);
 						}).allocRead(path, 0, -1, {|buf| ["/b_query", buf.bufnum] })
-
 				}, { "Failed to write data".warn; ^nil }
 			)
 		}, { "cannot use loadCollection with a non-local Server".warn; ^nil })
@@ -219,7 +221,7 @@ Buffer {
 						action.value(buf)
 					})
 
-				}, { "Failed to write data".warn });
+			}, { "Failed to write data".warn });
 		}, {"cannot do fromCollection with a non-local Server".warn })
 	}
 
@@ -238,7 +240,7 @@ Buffer {
 		var collstream, collsize, bundsize;
 
 		if(collection.isSequenceableCollection
-		and: { startFrame.isNumber and: { wait.isNumber } }) {
+			and: { startFrame.isNumber and: { wait.isNumber } }) {
 			collstream = CollStream.new;
 			collstream.collection = collection;
 			collsize = collection.size;
@@ -340,7 +342,7 @@ Buffer {
 	}
 
 	write { arg path, headerFormat = "aiff", sampleFormat = "int24", numFrames = -1,
-						startFrame = 0, leaveOpen = false, completionMessage;
+		startFrame = 0, leaveOpen = false, completionMessage;
 		path = path ?? { thisProcess.platform.recordingsDir +/+ "SC_" ++ Date.localtime.stamp ++ "." ++ headerFormat };
 		server.listSendMsg(
 			this.writeMsg(path,
@@ -351,12 +353,12 @@ Buffer {
 	}
 
 	writeMsg { arg path, headerFormat = "aiff", sampleFormat = "int24", numFrames = -1,
-						startFrame = 0, leaveOpen = false, completionMessage;
+		startFrame = 0, leaveOpen = false, completionMessage;
 		if(bufnum.isNil) { Error("Cannot write a % that has been freed".format(this.class.name)).throw };
 		// doesn't change my path
 		^["/b_write", bufnum, path,
-				headerFormat, sampleFormat, numFrames.asInteger, startFrame.asInteger,
-				leaveOpen.binaryValue, completionMessage.value(this)];
+			headerFormat, sampleFormat, numFrames.asInteger, startFrame.asInteger,
+			leaveOpen.binaryValue, completionMessage.value(this)];
 	}
 
 	free { arg completionMessage;
@@ -494,7 +496,7 @@ Buffer {
 			normalize.binaryValue
 			+ (asWavetable.binaryValue * 2)
 			+ (clearFirst.binaryValue * 4)]
-			++ genArgs
+		++ genArgs
 	}
 
 	sine1 { arg amps, normalize=true, asWavetable=true, clearFirst=true;
@@ -519,7 +521,7 @@ Buffer {
 			normalize.binaryValue
 			+ (asWavetable.binaryValue * 2)
 			+ (clearFirst.binaryValue * 4)]
-			++ amps
+		++ amps
 	}
 
 	sine2Msg { arg freqs, amps, normalize=true, asWavetable=true, clearFirst=true;
@@ -528,7 +530,7 @@ Buffer {
 			normalize.binaryValue
 			+ (asWavetable.binaryValue * 2)
 			+ (clearFirst.binaryValue * 4)]
-			++ [freqs, amps].lace(freqs.size * 2)
+		++ [freqs, amps].lace(freqs.size * 2)
 	}
 
 	sine3Msg { arg freqs, amps, phases, normalize=true, asWavetable=true, clearFirst=true;
@@ -537,7 +539,7 @@ Buffer {
 			normalize.binaryValue
 			+ (asWavetable.binaryValue * 2)
 			+ (clearFirst.binaryValue * 4)]
-			++ [freqs, amps, phases].lace(freqs.size * 3)
+		++ [freqs, amps, phases].lace(freqs.size * 3)
 	}
 
 	chebyMsg { arg amps, normalize=true, asWavetable=true, clearFirst=true;
@@ -546,7 +548,7 @@ Buffer {
 			normalize.binaryValue
 			+ (asWavetable.binaryValue * 2)
 			+ (clearFirst.binaryValue * 4)]
-			++ amps
+		++ amps
 	}
 
 	copyData { arg buf, dstStartAt = 0, srcStartAt = 0, numSamples = -1;
@@ -678,6 +680,19 @@ Buffer {
 		Dialog.openPanel({ arg path;
 			buffer.doOnInfo_(action)
 				.allocRead(path, startFrame, numFrames, { ["/b_query", buffer.bufnum] })
+		});
+		^buffer
+	}
+
+	*loadChannelDialog { arg server, startFrame = 0, numFrames, channels, action, bufnum;
+		var buffer;
+		server = server ? Server.default;
+		bufnum ?? { bufnum = server.nextBufferNumber(1) };
+		buffer = super.newCopyArgs(server, bufnum).cache;
+		Dialog.openPanel({ arg path;
+			buffer.doOnInfo_(action)
+			.allocReadChannel(path, startFrame, numFrames, channels,
+				{|buf|["/b_query", buf.bufnum]})
 		});
 		^buffer
 	}

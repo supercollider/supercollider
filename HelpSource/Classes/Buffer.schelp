@@ -337,7 +337,7 @@ b.free;
 ::
 
 method:: loadDialog
-As link::#*read:: above, but gives you a load dialog window to browse for a file. Cocoa compatible.
+As link::#*read:: above, but gives you a load dialog window to browse for a file.
 argument:: server
 The server on which to allocate the buffer.
 argument:: startFrame
@@ -358,7 +358,32 @@ b = Buffer.loadDialog(s, action: { |buffer|
 )
 x.free; b.free;
 ::
-
+		
+method:: loadChannelDialog
+As link::#*readChannel:: above, but gives you a load dialog window to browse for a file.
+argument:: server
+The server on which to allocate the buffer.
+argument:: startFrame
+The first frame of the soundfile to read. The default is 0, which is the beginning of the file.
+argument:: numFrames
+The number of frames to read. The default is -1, which will read the whole file.
+argument:: channels
+An Array of channels to be read from the soundfile. Indices start from zero. These will be read in the order provided. If absent or an empty array all channels will be read from soundfile in order.
+argument:: action
+A Function to be evaluated once the file has been read and this Buffer's instance variables have been updated. The function will be passed this Buffer as an argument.
+argument:: bufnum
+An explicitly specified buffer number. Supplying a number bypasses the server's buffer allocator, which can lead to conflicts. The best practice is to leave this unset and let the buffer number allocator choose the next available bufnum.
+discussion::
+code::
+s.boot;
+(
+b = Buffer.loadChannelDialog(s, channels: [0], action: { arg buffer;
+	x = { PlayBuf.ar(buffer.numChannels, buffer, BufRateScale.kr(buffer)) }.play;
+});
+)
+x.free; b.free;
+::
+		
 subsection:: Creation without Immediate Memory Allocation
 method:: new
 Create and return a new Buffer object, without immediately allocating the corresponding memory on the server. This combined with 'message' methods can be flexible with bundles.
