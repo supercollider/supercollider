@@ -211,7 +211,7 @@ const themeNames = [
 
 function buildThemeSwitcher() {
     create_menubar_item("Theme \u25bc", "#", function (a, li) {
-        var indexes_menu = $("<div>", { class: "submenu" }).hide()
+        const themesMenu = $("<div>", { class: "submenu" }).hide()
             .appendTo(li);
 
 
@@ -223,17 +223,17 @@ function buildThemeSwitcher() {
             themeLink.on("click", (e) => {
                 setTheme(e.target.text);
             });
-            themeLink.appendTo(indexes_menu);
+            themeLink.appendTo(themesMenu);
         });
 
         a.on("click", function (e) {
             e.preventDefault();
-            indexes_menu.toggle();
+            themesMenu.toggle();
         });
 
         $(document).on("click", function (e) {
             if (!$(e.target).closest(li).length) {
-                indexes_menu.hide();
+                themesMenu.hide();
             }
         });
     });
