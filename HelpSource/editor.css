@@ -6,7 +6,8 @@ textarea.editor {
     height: auto;
     padding: 0 1em;
     margin-top: 1em;
-    border-left: 2px solid var(--color-fg-100);
+    border-left: 2px solid var(--color-cm-border);
+    background-color: var(--color-cm-background);
     font-size: 1em;
     line-height: normal;
 }
