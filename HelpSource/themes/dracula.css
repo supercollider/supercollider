@@ -31,11 +31,11 @@
     --color-fg-300: #ccc;
     --color-fg-200: #aaa;
     --color-fg-100: #333;
-    
+
     --color-link: var(--color-cm-string);
 
     --color-extensions-bg: var(--color-cm-char);
-    --color-extensions-fg: var(--color-cm-background);
+    --color-extensions-fg: white;
 
     --color-input-fg: var(--color-fg);
     --color-input-bg: var(--color-fg-100);
