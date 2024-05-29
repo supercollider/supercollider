@@ -675,6 +675,17 @@ li {
     margin-top: 0em;
     padding-top: 0em;
 }
+.warning td li:last-child,
+.note td li:last-child {
+    margin-bottom: 0.15em;
+}
+.note table, .warning table{
+    margin-bottom: 0.15em;
+}
+td .warning:first-child,
+td .note:first-child {
+    margin-top: 0.15em;
+}
 ul + p, ol + p {
     margin-top: 0.2em;
     padding-top: 1em;
@@ -918,9 +929,16 @@ div.met_subclasses a.seemore {
 td:first-child .CodeMirror {
     margin-top: 0.15em;
 }
-td .CodeMirror:last-child { 
+td .CodeMirror:last-child,
+.warning .CodeMirror:last-child,
+.note .CodeMirror:last-child  { 
     margin-bottom: 0.15em;
 }
+.note p:last-child,
+.warning p:last-child,
+.table p:last-child {
+    margin-bottom: 0; 
+  }
 /* 
 .CodeMirror-cursors, .CodeMirror pre {
     padding: 0 0.1em; */
