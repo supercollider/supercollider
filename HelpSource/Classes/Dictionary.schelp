@@ -193,10 +193,22 @@ d.matchAt(\abc)
 ::
 
 method::trueAt
-Returns link::Classes/True:: if the item at the key is true, otherwise false. This method is also valid in link::Classes/Object::.
+Returns link::Classes/True:: if the item's booleanValue at the key is true, otherwise false. This method is also valid in link::Classes/Object::.
+code::
+d = (x:true, y:false);
+d.trueAt(\x) // true
+d.trueAt(\y) // false
+d.trueAt(\foo) // false
+
+// using binary value equivalents
+d = (x:1, y:0);
+d.trueAt(\x) // true
+d.trueAt(\y) // false
+d.trueAt(\foo) // false
+::
 
 method::falseAt
-Returns link::Classes/False:: if the item at the key is not true, otherwise true. This method is inherited from link::Classes/Object::.
+Returns link::Classes/False:: if the item's booleanValue at the key is not true, otherwise true. This method is inherited from link::Classes/Object::.
 
 subsection::Testing
 method::includes
