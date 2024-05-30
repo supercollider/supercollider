@@ -215,6 +215,34 @@ int prFileCopy(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
+int prFileTypeToInt(const fs::file_type& type) {
+    // see https://en.cppreference.com/w/cpp/filesystem/file_type
+    // and also check this with the `File.type` method located in
+    // `Common/Files/Files.sc`
+    switch (type) {
+    case fs::file_type::none:
+        return 0;
+    case fs::file_type::not_found:
+        return 1;
+    case fs::file_type::regular:
+        return 2;
+    case fs::file_type::directory:
+        return 3;
+    case fs::file_type::symlink:
+        return 4;
+    case fs::file_type::block:
+        return 5;
+    case fs::file_type::character:
+        return 6;
+    case fs::file_type::fifo:
+        return 7;
+    case fs::file_type::socket:
+        return 8;
+    default:
+        return 0;
+    }
+}
+
 int prFileType(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a = g->sp - 1, *b = g->sp;
     char filename[PATH_MAX];
@@ -225,7 +253,7 @@ int prFileType(struct VMGlobals* g, int numArgsPushed) {
 
     const fs::path& p = SC_Codecvt::utf8_str_to_path(filename);
     fs::file_status s(fs::symlink_status(p));
-    SetInt(a, static_cast<int>(s.type()));
+    SetInt(a, prFileTypeToInt(s.type()));
     return errNone;
 }
 
