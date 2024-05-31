@@ -112,6 +112,31 @@ pi.asStringPrec(6)
 7.4.asStringPrec(50)
 ::
 
+method:: dump
+
+code::
+-1.0.dump
+::
+
+returns
+
+teletype::
+   Float -1.000000   00000000 BFF00000
+-> -1.0
+::
+
+The last two groups of an 8-digit integer are the raw hexadecimal representation of the 64-bit double value according to link::https://ieeexplore.ieee.org/document/8766229##IEEE 754 Floating Point:: (https://ieeexplore.ieee.org/document/8766229). Each part is represented as follows:
+
+teletype::
+                         raw hexadecimal representation
+                           of the 64-bit double value
+                         ––––––––––––––––––––––––––––––
+Float   -1.000000        00000000              3FF00000
+|       |                |                     |
+class   decmial          significant part      exponent part
+        representation   (mantissa)            with sign bit
+::
+
 subsection::Using Floats as replacement for Integers
 
 In SuperCollider, Floats are 64-bit wide. Because  an link::Classes/Integer::  is 32-bit, it can only capture integers in the range code::-2147483648 .. +2147483647::, or about code:: 2 x 10^9 ::.
