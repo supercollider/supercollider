@@ -753,7 +753,7 @@ teletype::
 ::
 ::
 
-## Some instance objects return more detailed information, such as
+## Some instances return more detailed information, such as
 list::
 ## address in virtual memory (the hexadecimal number prefixed with 0x),
 ## emphasis::garbage collector color:: (gc),
