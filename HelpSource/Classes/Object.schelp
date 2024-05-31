@@ -692,7 +692,7 @@ code::
 method::dump
 
 Print a detailed low level representation of the receiver to the post window.
-Except for the link::Classes/List:: class, this method is not overridden in other classes. Any of the MetaClasses, Classes and Instances can be used by this method.
+Any object understands this method (this means metaclasses, classes and their instances). Note that in link::Classes/List:: class, this method dumps the list's internal array.
 
 code::
 Meta_Object.dump // the meta class of the class Object
@@ -707,8 +707,8 @@ Object.new.dump  // an istance of the class Object
 discussion::
 
 list::
-## The detailed low level format and information varies depending on the receiver.
-## Some instance objects, especially unique objects, return the class name and value (also low data if necessary) of the dumped object:
+## The detailed low level information varies depending on the receiver.
+## Some instance objects, especially unique objects, return the class name and value (also more data if necessary) of the dumped object:
 
 definitionlist::
 ## link::Classes/Float::
@@ -721,17 +721,8 @@ teletype::
    Float 1.000000   00000000 3FF00000
 -> 1.0
 ::
-The last two groups of an 8-digit integer are the raw hexadecimal representation of the 64-bit double value according to link::https://ieeexplore.ieee.org/document/8766229##IEEE 754 Floating Point:: (https://ieeexplore.ieee.org/document/8766229). Each part is represented as follows:
+For the detals, see link::Classes/Float#-dump::
 
-teletype::
-                         raw hexadecimal representation
-                           of the 64-bit double value
-                         ––––––––––––––––––––––––––––––
-Float   -1.000000        00000000              3FF00000
-|       |                |                     |
-class   decmial          significant part      exponent part
-        representation   (mantissa)            with sign bit
-::
 ## link::Classes/Integer::
 ||
 code::
@@ -764,10 +755,10 @@ teletype::
 
 ## Some instance objects return more detailed information, such as
 list::
-## addrress in virtual memory (the hexadecimal number prefixed with 0x),
-## emphasis::garage collector color:: (gc),
+## address in virtual memory (the hexadecimal number prefixed with 0x),
+## emphasis::garbage collector color:: (gc),
 ## emphasis::data format type:: (fmt),
-## emphasis::flags for immutablity, finalization and garbage collector debug sanity check:: (flg),
+## emphasis::flags for immutablity, finalization and sanity information from the garbage collector:: (flg),
 ## emphasis::size class:: (set),
 ## and so on (the information on the second and subsequent lines varies depending on the class to which the instance belongs)
 ::
