@@ -36,7 +36,14 @@ File.copy(
 	SCDoc.helpTargetDir +/+ "themes" +/+ "default.css",
 	SCDoc.helpTargetDir +/+ "custom.css"
 )
+
+// open directory with all themes
+(SCDoc.helpTargetDir +/+ "themes").openOS;
 ::
+
+The teletype::themes:: directory also contains a teletype::README.md:: which
+goes more into detail about how a theme gets applied and stored for a client
+and how a theme can be developed.
 
 subsection::Themes
 
