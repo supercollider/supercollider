@@ -8,7 +8,15 @@ repos:
     hooks:
     -   id: clang_format
         name: Format C++ code
-        entry: python tools/clang-format.py lintall
+        entry: python tools/clang-format.py formatall
+        pass_filenames: false
+        types_or:
+          - "c++"
+        language: python
+        additional_dependencies: ['clang-format==14.0.6']
+    -   id: clang_lint
+        name: Lint C++ code
+        entry: python tools/clang-format.py lintall 
         pass_filenames: false
         types_or:
           - "c++"
