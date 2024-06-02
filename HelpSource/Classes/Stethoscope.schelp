@@ -181,7 +181,7 @@ METHOD:: style
     list::
     ## 0 = the channels are vertically spaced
     ## 1 = the channels are overlaid
-    ## 2 = lissajou; the first two channels are used for 2D plotting (as streams of x and y coordinates).
+    ## 2 = lissajou; each pair of channels is used for 2D plotting (as streams of x and y coordinates).
     ::
 
     argument::
@@ -245,6 +245,21 @@ c.scope;
 
 // note that scoping control rate buses shows block size interpolation (this is due to the
 // fact that ScopeOut.kr doesn't work yet.)
+::
+
+SUBSECTION:: Multi-channel Lissajou plots
+code::
+(
+{ 
+	var f = { |l,h| SinOsc.kr(0.1, {pi.rand}).range(l, h) } ;
+	Pulse.ar({ f.(20, 1000) }!6, { f.(0.0, 1) }!6, { f.(0.0, 1.0) }!6) 
+}.play;
+)
+
+c = s.scope;
+c.numChannels = 6;
+c.scopeView.waveColors = [Color.red, Color.red, Color.cyan, Color.cyan, Color.white, Color.white];
+c.style = 2;
 ::
 
 SUBSECTION:: Embedded use
