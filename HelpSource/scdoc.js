@@ -220,6 +220,8 @@ function fixTOC() {
             }
         });
     });
+  
+    buildThemeSwitcher();
 
     create_menubar_item("123", "#", function(a, li) {
         var originalText = a.text();
@@ -241,8 +243,6 @@ function fixTOC() {
             }, 0);
         });
     });
-  
-    buildThemeSwitcher();
 
     if ($("#toc").length) {
         set_up_toc();
