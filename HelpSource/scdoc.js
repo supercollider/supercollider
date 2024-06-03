@@ -190,10 +190,75 @@ function fixTOC() {
         });
     });
 
+    buildThemeSwitcher();
+
     if ($("#toc").length) {
         set_up_toc();
     }
 }
+
+// theming
+const scDocsThemeStorageKey = "scDocsTheme";
+const scriptLocation = document.currentScript.src;
+const themeNames = [
+    "classic",
+    "dark",
+    "default",
+    "dracula",
+    "solarizedDark",
+    "solarizedLight"
+];
+
+function buildThemeSwitcher() {
+    create_menubar_item("Theme \u25bc", "#", function (a, li) {
+        const themesMenu = $("<div>", { class: "submenu" }).hide()
+            .appendTo(li);
+
+
+        themeNames.forEach(function (themeName) {
+            var themeLink = $("<a>", {
+                text: themeName,
+                href: "#"
+            });
+            themeLink.on("click", (e) => {
+                setTheme(e.target.text);
+            });
+            themeLink.appendTo(themesMenu);
+        });
+
+        a.on("click", function (e) {
+            e.preventDefault();
+            themesMenu.toggle();
+        });
+
+        $(document).on("click", function (e) {
+            if (!$(e.target).closest(li).length) {
+                themesMenu.hide();
+            }
+        });
+    });
+}
+
+function setTheme(themeName) {
+    localStorage.setItem(scDocsThemeStorageKey, themeName);
+    applyTheme();
+}
+
+function applyTheme(theme=null) {
+    const themeName = theme ?? localStorage.getItem(scDocsThemeStorageKey) ?? "default";
+
+    const cssThemeTag = document.getElementById("scdoc-theme");
+    if(cssThemeTag===null) {
+        console.log(`Could not find scdoc-theme css tag! Can not apply theme ${themeName}`);
+        return;
+    }
+    
+    cssThemeTag.href = `${scriptLocation.split('/').slice(0, -1).join("/")}/themes/${themeName}.css`;
+}
+
+// scdoc.js is loaded after css themes so it's safe to call it here:
+// run immediately, don't wait for document load, to prevent "unstyled flash"
+applyTheme();
 
 // Set up a QWebChannel for communicating with C++ IDE objects. The main app publishes a handle
 // to IDE functionality at "IDE" which is made globally available here after the page and
