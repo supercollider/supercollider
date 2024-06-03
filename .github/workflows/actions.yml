@@ -16,11 +16,11 @@ on:
     - cron:  '0 0 * * 0' # run weekly to refresh cache
 jobs:
   lint:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     outputs:
       sc-version: ${{ steps.set-version.outputs.version }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
       - name: lint class library
@@ -29,9 +29,9 @@ jobs:
           lintspaces -e .editorconfig SCClassLibrary/**/*.sc || true # ignore failure
       - name: lint cpp files
         run: |
-          sudo apt-get install -y clang-format-8
+          sudo apt-get install -y clang-format-14
           echo "Running tools/clang-format.py lintall"
-          tools/clang-format.py -c clang-format-8 -d clang-format-diff-8 lintall || exit 1
+          tools/clang-format.py -c clang-format-14 -d clang-format-diff-14 lintall || exit 1
           echo "Lint successful"
       - name: set version string for artifacts
         id: set-version
@@ -132,14 +132,14 @@ jobs:
       CXX: ${{ matrix.cxx-compiler }}
       ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
       - name: prepare daily timestamp for cache
         id: current-date
         run: echo "stamp=$(date '+%Y-%m-%d')" >> $GITHUB_OUTPUT
       - name: cache ccache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.ccache
@@ -181,7 +181,7 @@ jobs:
         if: matrix.artifact-suffix
         run: cd $INSTALL_PATH && zip --symlinks -r $ARTIFACT_FILE.zip .
       - name: upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: matrix.artifact-suffix
         with:
           name: ${{ env.ARTIFACT_FILE }}
@@ -258,7 +258,7 @@ jobs:
       BREW_UNIVERSAL_WORKDIR: ${{ github.workspace }}/brew-universal
       SKIP_SIGNING: 1 # for brew-install-universal
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
       - name: prepare timestamp for cache
@@ -267,7 +267,7 @@ jobs:
           echo "stamp=$(date '+%Y-%m-%d')" >> $GITHUB_OUTPUT
           echo "week=$(date '+%U')" >> $GITHUB_OUTPUT
       - name: cache ccache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/Library/Caches/ccache
           key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ matrix.cmake-architectures }}-${{ steps.current-date.outputs.stamp }}
@@ -275,14 +275,14 @@ jobs:
       - name: cleanup homebrew downloads # always remove existing downloads first, as we bring back relevant downloads from cache
         run: rm -rf $(brew --cache)
       - name: cache homebrew downloads
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: cache-homebrew
         with:
           path: ~/Library/Caches/Homebrew/downloads
           key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ matrix.cmake-architectures }}-homebrew-${{ steps.current-date.outputs.week }}
           restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ matrix.cmake-architectures }}-homebrew-
       - name: cache homebrew universal packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         if: matrix.cmake-architectures != 'x86_64' && (matrix.build-libsndfile != true || matrix.build-readline != true || matrix.build-fftw != true)
         with:
           path: ${{ env.BREW_UNIVERSAL_WORKDIR }}
@@ -290,7 +290,7 @@ jobs:
           restore-keys: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-brew_universal-
       - name: cache vcpkg
         if: matrix.vcpkg-triplet
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/vcpkg/archives
           key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.vcpkg-triplet }}-${{ steps.current-date.outputs.stamp }}
@@ -331,13 +331,13 @@ jobs:
           vcpkg install fftw3 --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"          
       - name: install system libraries
         if: env.USE_SYSLIBS == 'true'
-        run: brew install yaml-cpp boost
+        run: brew install yaml-cpp boost@1.76
       - name: install qt from homebrew
         if: matrix.cmake-architectures == 'x86_64' && !matrix.qt-version
-        run: brew install qt5
+        run: brew install qt@5
       - name: install qt universal binary from homebrew
         if: matrix.cmake-architectures != 'x86_64' && !matrix.qt-version
-        run: ./brew-install-universal.sh qt5
+        run: ./brew-install-universal.sh qt@5
       - name: install qt using aqtinstall
         uses: jurplel/install-qt-action@v3
         if: matrix.qt-version
@@ -355,11 +355,11 @@ jobs:
 
           EXTRA_CMAKE_FLAGS=
 
-          if $USE_SYSLIBS; then EXTRA_CMAKE_FLAGS="-DSYSTEM_BOOST=ON -DSYSTEM_YAMLCPP=ON $EXTRA_CMAKE_FLAGS"; fi
+          if $USE_SYSLIBS; then EXTRA_CMAKE_FLAGS="-DSYSTEM_BOOST=ON -DSYSTEM_YAMLCPP=ON -DBoost_INCLUDE_DIR=/usr/local/opt/boost@1.76/include $EXTRA_CMAKE_FLAGS"; fi
 
           if $SHARED_LIBSCSYNTH; then EXTRA_CMAKE_FLAGS="-DLIBSCSYNTH=ON $EXTRA_CMAKE_FLAGS"; fi
 
-          if [[ -z "${{ matrix.qt-version }}" ]]; then EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=`brew --prefix qt5` $EXTRA_CMAKE_FLAGS"; fi
+          if [[ -z "${{ matrix.qt-version }}" ]]; then EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=`brew --prefix qt@5` $EXTRA_CMAKE_FLAGS"; fi
 
           if [[ "${{ matrix.verify-app }}" == "true" ]]; then EXTRA_CMAKE_FLAGS="-DSC_VERIFY_APP=ON $EXTRA_CMAKE_FLAGS"; fi
 
@@ -388,7 +388,7 @@ jobs:
           # when that happens, we run it again
           hdiutil create -srcfolder SuperCollider -format UDZO -fs HFS+ $ARTIFACT_FILE || hdiutil create -srcfolder SuperCollider -format UDZO -fs HFS+ $ARTIFACT_FILE
       - name: upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: matrix.artifact-suffix
         with:
           name: ${{ env.ARTIFACT_FILE }}
@@ -458,7 +458,7 @@ jobs:
       ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}'
       INSTALLER_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.installer-suffix }}'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
       - name: prepare timestamp for cache
@@ -467,13 +467,13 @@ jobs:
         run: echo "stamp=$(date '+%Y-%m-%d')" >> $GITHUB_OUTPUT
       - name: cache vcpkg
         if: matrix.vcpkg-triplet
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/AppData/Local/vcpkg/archives
           key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.vcpkg-triplet }}-${{ steps.current-date.outputs.stamp }}
           restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.vcpkg-triplet }}-
       - name: cache ccache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/AppData/Local/ccache # updated in ccache 4.7, see https://github.com/ccache/ccache/issues/1023
           key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.qt-arch }}-${{ matrix.qt-version }}-${{ steps.current-date.outputs.stamp }}
@@ -545,7 +545,7 @@ jobs:
         shell: bash
         run: cd $INSTALL_PATH && 7z a $ARTIFACT_FILE.zip -tzip SuperCollider # this assumes that we end up with the build in the folder SuperCollider
       - name: upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: matrix.artifact-suffix
         with:
           name: ${{ env.ARTIFACT_FILE }}
@@ -557,7 +557,7 @@ jobs:
           export PATH="C:\Program Files (x86)\NSIS":$PATH
           cmake --build $BUILD_PATH --config Release --target installer
       - name: upload installer
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: matrix.create-installer == true
         with:
           name: ${{ env.INSTALLER_FILE }}
@@ -599,11 +599,11 @@ jobs:
       SCRIPT_ADD_PATH: ${{ github.workspace }}/testsuite/scripts/add_include_path.scd
       SCRIPT_PRINT_RESULTS: ${{ github.workspace }}/testsuite/scripts/print_results.scd
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: false # don't need submodules for testing
       - name: download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ env.ARTIFACT_FILE }}
           path: ${{ env.INSTALL_PATH }}
@@ -715,7 +715,7 @@ jobs:
       S3_ROOT_URL: 'https://supercollider.s3.amazonaws.com'
     steps:
       - name: download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         if: env.UPLOAD_TO_S3 == 'true'
         with:
           name: ${{ env.ARTIFACT_FILE }}
@@ -782,7 +782,7 @@ jobs:
       ARTIFACT_FILE_PREFIX: 'SuperCollider-${{ needs.lint.outputs.sc-version }}'
     steps:
       - name: download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: ${{ env.INSTALL_PATH }} # no "name" paramter - download all artifacts
       - name: upload to the release page
