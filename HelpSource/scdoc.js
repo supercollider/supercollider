@@ -89,33 +89,23 @@ escape_regexp = function(str) {
 }
 
 function toggleCodeLineNumbers() {
-  var text = toggleButtonStatus ? "show code line num" : "hide code line num";
-  var editorTextareas = $("textarea.editor");
-  toggleButtonStatus = !toggleButtonStatus;
-  if (toggleButtonStatus) {
-    editorTextareas.each(function() {
-      var codeMirrorInstance = this.editor;
-      codeMirrorInstance.setOption("lineNumbers", true);
-      $(".CodeMirror").css("padding", "0 1em 0 0");
-      $(".CodeMirror-gutters").css("margin-left", "-10px");
-      $(".CodeMirror pre").css("padding", "0 4px 0 2px");
-      $(".CodeMirror-scrollbar-filler").css("background-color", "transparent");
-      $(".CodeMirror-gutter-filler").css("background-color", "transparent");
-      $(".CodeMirror-linenumber").css("margin-left", "-10px;").css("padding", "0 3px 0 11px");
-    });
-  } else {
-    editorTextareas.each(function() {
-      var codeMirrorInstance = this.editor;
-      codeMirrorInstance.setOption("lineNumbers", false);
-      $(".CodeMirror").css("padding", "0 1em");
-      $(".CodeMirror-gutters").css("margin-left", "0px");
-      $(".CodeMirror pre").css("padding", "0 4px");
-      $(".CodeMirror-scrollbar-filler").css("background-color", "white");
-      $(".CodeMirror-gutter-filler").css("background-color", "white");
-      $(".CodeMirror-linenumber").css("margin-left", "0").css("padding", "0 3px 0 5px");
-    });
-  };
-};
+    var editorTextareas = $("textarea.editor");
+    toggleButtonStatus = !toggleButtonStatus;
+    localStorage.setItem('showCodeLineNumbers', toggleButtonStatus);
+    if (toggleButtonStatus) {
+        $(".CodeMirror").addClass("show-line-numbers");
+        editorTextareas.each(function() {
+            var codeMirrorInstance = this.editor;
+            codeMirrorInstance.setOption("lineNumbers", true);
+        });
+    } else {
+        $(".CodeMirror").removeClass("show-line-numbers");
+        editorTextareas.each(function() {
+            var codeMirrorInstance = this.editor;
+            codeMirrorInstance.setOption("lineNumbers", false);
+        });
+    }
+}
 
 var toc_items;
 function toc_search(search_string) {
@@ -201,7 +191,7 @@ function fixTOC() {
         var indexes_menu = $("<div>", {class: "submenu"}).hide()
             .appendTo(li);
 
-        var nav_items = ["Documents", "Classes", "Methods"];
+            var nav_items = ["Documents", "Classes", "ClassTree", "Methods"];
         nav_items.forEach(function (item) {
             $("<a>", {
                 text: item,
@@ -220,29 +210,8 @@ function fixTOC() {
             }
         });
     });
-  
-    buildThemeSwitcher();
 
-    create_menubar_item("123", "#", function(a, li) {
-        var originalText = a.text();
-        var isStrikethrough = true;
-        a.css("text-decoration", "line-through")
-        .click(function() {
-            yPosBeforeClick = window.scrollY;
-            toggleCodeLineNumbers();
-            if (isStrikethrough) {
-                a.css("text-decoration", "none");
-            } else {
-                a.css("text-decoration", "line-through");
-            }
-            isStrikethrough = !isStrikethrough;
-            setTimeout(function() {
-                if (yPosBeforeClick != window.scrollY) {
-                    window.scrollTo(0, yPosBeforeClick);
-                }
-            }, 0);
-        });
-    });
+    buildThemeSwitcher();
 
     if ($("#toc").length) {
         set_up_toc();
@@ -266,7 +235,6 @@ function buildThemeSwitcher() {
         const themesMenu = $("<div>", { class: "submenu" }).hide()
             .appendTo(li);
 
-
         themeNames.forEach(function (themeName) {
             var themeLink = $("<a>", {
                 text: themeName,
@@ -277,6 +245,27 @@ function buildThemeSwitcher() {
             });
             themeLink.appendTo(themesMenu);
         });
+
+        var locCheckbox = $("<input>", {
+            type: "checkbox",
+            id: "show-loc-numbers",
+            name: "show-loc-numbers"
+        });
+        var locLabel = $("<label>", {
+            for: "show-loc-numbers",
+            text: "Show LOC numbers"
+        });
+        var locWrapper = $("<div>").append(locCheckbox, locLabel);
+        locCheckbox.on("change", function() {
+            yPosBeforeClick = window.scrollY;
+            toggleCodeLineNumbers();
+            setTimeout(function() {
+                if (yPosBeforeClick != window.scrollY) {
+                    window.scrollTo(0, yPosBeforeClick);
+                }
+            }, 0);
+        });
+        themesMenu.append(locWrapper);
 
         a.on("click", function (e) {
             e.preventDefault();
@@ -307,6 +296,15 @@ function applyTheme(theme=null) {
     
     cssThemeTag.href = `${scriptLocation.split('/').slice(0, -1).join("/")}/themes/${themeName}.css`;
 }
+
+// Load saved settings on page load
+$(document).ready(function() {
+    var showCodeLineNumbers = localStorage.getItem('showCodeLineNumbers') === 'true';
+    $("#show-loc-numbers").prop('checked', showCodeLineNumbers);
+    if (showCodeLineNumbers) {
+        toggleCodeLineNumbers();
+    }
+});
 
 // scdoc.js is loaded after css themes so it's safe to call it here:
 // run immediately, don't wait for document load, to prevent "unstyled flash"
