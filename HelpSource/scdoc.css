@@ -762,3 +762,25 @@ div.met_subclasses a.seemore {
 .subheader {
     color: var(--color-fg);
 }
+
+.CodeMirror.show-line-numbers {
+    padding: 0 1em 0 0;
+}
+
+.CodeMirror.show-line-numbers .CodeMirror-gutters {
+    margin-left: -10px;
+}
+
+.CodeMirror.show-line-numbers pre {
+    padding: 0 4px 0 2px;
+}
+
+.CodeMirror.show-line-numbers .CodeMirror-scrollbar-filler,
+.CodeMirror.show-line-numbers .CodeMirror-gutter-filler {
+    background-color: transparent;
+}
+
+.CodeMirror.show-line-numbers .CodeMirror-linenumber {
+    margin-left: -10px;
+    padding: 0 3px 0 11px;
+}
