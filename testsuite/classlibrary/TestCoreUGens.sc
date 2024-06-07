@@ -645,6 +645,139 @@ TestCoreUGens : UnitTest {
 
 	}
 
+	test_line_startAndEndSampleAreOuputOverDur {
+		var durFrames = 5; // duration for the line to complete its trajectory, in frames
+		var renderFrames = durFrames + 1; // render one extra frame to check that the end value is reached
+		var startVal = 2;
+		var endVal = 20;
+		var tolerance = -100.dbamp;
+		var condvar = CondVar();
+
+		server.bootSync;
+
+		[\ar, \kr].do{ |rate|
+			[Line, XLine].do{ |ugen|
+				var fs = server.sampleRate;
+				var rateScale = switch(rate, \ar, { 1.0 }, \kr, { server.options.blockSize });
+				var lineDur = durFrames * rateScale / fs;
+				var testDur = renderFrames * rateScale / fs;
+
+				{
+					ugen.perform(rate, startVal, endVal, lineDur)
+				}.loadToFloatArray(testDur,
+					action: { |data|
+						this.assertFloatEquals(data.first, startVal,
+							"%.%'s first output sample should be its given start value.".format(ugen, rate), within: tolerance);
+						this.assert(data.last == endVal and: { data[data.size-2] != endVal },
+							"%.% should not reach its end value before the given duration".format(ugen, rate));
+						// Note an exception to the previouse test would be if the duration of the Line is less than a frame duration.
+						// In that (odd) case the "correct" first value is the end value. See GH issue #4279.
+						condvar.signalOne;
+				});
+				condvar.wait;
+			}
+		}
+	}
+
+	test_oscillators_startAtCorrectPhase {
+
+		var tolerance = -100.dbamp;
+		var condvar = CondVar();
+
+		server.bootSync;
+
+		[\ar, \kr].do{ |rate|
+			var period = 10; // a 10-sample period (should be even)
+			var halfPeriod = period * 0.5; // should divide evenly into sampleT
+			var fs = switch(rate,
+				\ar, { server.sampleRate },
+				\kr, { server.sampleRate / server.options.blockSize }
+			);
+			var freq = fs / period;
+			var iPhase, target, ugen, phaseRange;
+
+			// LFPulse: initial phase is one sample before the end of the pulse width
+			{
+				iPhase = (halfPeriod - 1) / period; // LFPulse phase is 0->1
+				LFPulse.perform(rate, freq, iPhase, 0.5)
+			}.loadToFloatArray(period + 1 / fs,
+				action: { |data|
+					// exact float comparison should be ok here...
+					// from LFPulse_next: z = phase < duty ? 1.f : 0.f;
+					this.assert(data[0] == 1.0 and: { data[1] == 0.0 },
+						"LFPulse.% should start at the correct initial phase".format(rate)
+					);
+					condvar.signalOne;
+			});
+			condvar.wait;
+
+			// LFSaw: initial phase is one sample before the signal flip toward -1
+			{
+				iPhase = (halfPeriod - 1) / period * 2; // LFPulse phase is 0->2
+				LFSaw.perform(rate, freq, iPhase)
+			}.loadToFloatArray(period + 1 / fs,
+				action: { |data|
+					this.assert(data[0] > 0.0 and: { data[1] < 0.0 },
+						"LFSaw.% should start at the correct initial phase".format(rate)
+					);
+					condvar.signalOne;
+			});
+			condvar.wait;
+
+			// LFPar: test initial phase
+			// [initPhase, targetValue] pairs to test, LFPar phase is 0->4
+			[
+				[0, 1.0],
+				[1, 0.0],
+				[2, -1.0],
+				[3, 0.0],
+				[4, 1.0]
+			].do{ |phaseValuePair|
+				#iPhase, target = phaseValuePair;
+				{
+					LFPar.perform(rate, freq, iPhase)
+				}.loadToFloatArray(period + 1 / fs,
+					action: { |data|
+						this.assertFloatEquals(data[0], target,
+							"LFPar.% should be % at initial phase of %".format(rate, target, iPhase),
+							within: tolerance
+						);
+						condvar.signalOne;
+				});
+				condvar.wait;
+			};
+
+			// LFCub, LFTri, SinOsc: testing initial phase
+			// [initPhase, targetValue] pairs to test — phase is normalized 0->1 here then scaled for each UGen
+			[
+				[0.00, 0.0],
+				[0.25, 1.0],
+				[0.50, 0.0],
+				[0.75, -1.0],
+				[1.00, 0.0]
+			].do{ |phaseValuePair|
+				#iPhase, target = phaseValuePair;
+				[
+					[LFCub, 2.0],  // LFPar phase is 0->2
+					[LFTri, 4.0],  // LFTri phase is 0->4
+					[SinOsc, 2pi], // SinOsc phase is 0->2pi
+				].do{ |ugenPhaseRangePair|
+					#ugen, phaseRange = ugenPhaseRangePair;
+					{
+						ugen.perform(rate, freq, iPhase * phaseRange)
+					}.loadToFloatArray(period + 1 / fs,
+						action: { |data|
+							this.assertFloatEquals(data[0], target,
+								"%.% should be % at initial phase of %".format(ugen, rate, target, iPhase * phaseRange),
+								within: tolerance
+							);
+							condvar.signalOne;
+					});
+					condvar.wait;
+				}
+			};
+		}
+	}
 
 
 } // end TestCoreUGens class
