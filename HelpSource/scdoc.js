@@ -282,3 +282,17 @@ function setUpWebChannel(port) {
         });
     }
 }
+
+function renderTex() {
+    for (let aSpan of document.getElementsByClassName("math")) {
+        const tex = aSpan.textContent;
+        katex.render(tex, aSpan, {
+            throwOnError: false,
+            displayMode: aSpan.classList.contains("block"),
+        });
+    }
+}
+
+window.addEventListener('DOMContentLoaded',function () {
+    renderTex();
+});
