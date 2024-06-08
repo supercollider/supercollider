@@ -311,9 +311,7 @@ Object  {
 
 	matchItem {|item| ^this === item }
 	trueAt { ^false }
-	falseAt { arg key;
-		^this.trueAt(key).not
-	}
+	falseAt { ^true }
 
 	pointsTo { arg obj; _ObjectPointsTo; ^this.primitiveFailed }
 	mutable { _ObjectIsMutable; ^this.primitiveFailed }

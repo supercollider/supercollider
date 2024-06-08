@@ -193,24 +193,31 @@ d.matchAt(\abc)
 ::
 
 method::trueAt
-Returns link::Classes/True:: if the item's booleanValue at the key is true, otherwise false. This method is also valid in link::Classes/Object::.
-code::
-d = (x:true, y:false);
-d.trueAt(\x) // true
-d.trueAt(\y) // false
-d.trueAt(\foo) // false
+Returns link::Classes/True:: if the item's teletype::booleanValue:: at the key is teletype::true::, otherwise teletype::false::.
 
+code::
 // using binary value equivalents
 d = (x:1, y:0);
-d.trueAt(\x) // true
-d.trueAt(\y) // false
+d.trueAt(\x)   // true
+d.trueAt(\y)   // false
 d.trueAt(\foo) // false
+
+// other kinds of objects
+d = (num: 23.7, yes:true, no:false, sym:\foo);
+d.trueAt(\num) // true
+d.trueAt(\yes) // true
+d.trueAt(\no)  // false
+d.trueAt(\sym) // false
+d.trueAt(\bar) // false (d[\bar] is nil)
 ::
 
 method::falseAt
-Returns link::Classes/False:: if the item's booleanValue at the key is not true, otherwise true. This method is inherited from link::Classes/Object::.
+Returns link::Classes/True:: if the item's teletype::booleanValue:: at the key is teletype::false::, otherwise teletype::true::.
+See link::#-trueAt:: for examples.
+
 
 subsection::Testing
+
 method::includes
 Returns true if the specified item is stored in the Dictionary as a value. Element is checked for equality (not for identity). For identity matching see subclasses: link::Classes/IdentityDictionary:: or link::Classes/Event::.
 code::

@@ -23,7 +23,12 @@ Dictionary : Set {
 		^nil
 	}
 	trueAt { arg key;
-		^this.at(key).booleanValue
+		var val = this.at(key);
+		if(val.respondsTo(\booleanValue).not) { ^false };
+		^val.booleanValue
+	}
+	falseAt { arg key;
+		^this.trueAt(key).not
 	}
 	add { arg anAssociation;
 		this.put(anAssociation.key, anAssociation.value);
