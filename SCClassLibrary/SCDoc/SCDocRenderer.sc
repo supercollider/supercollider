@@ -236,11 +236,13 @@ SCDocHTMLRenderer {
 		<< "<link rel='stylesheet' id='scdoc-theme' href='" << baseDir << "/themes/default.css' type='text/css' />\n"
 		<< "<link rel='stylesheet' href='" << baseDir << "/frontend.css' type='text/css' />\n"
 		<< "<link rel='stylesheet' href='" << baseDir << "/custom.css' type='text/css' />\n"
+		<< "<link rel='stylesheet' href='" << baseDir << "/lib/katex/katex.min.css' />\n"
 		<< "<meta name='viewport' content='width=device-width, initial-scale=1'>\n"
 		<< "<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />\n"
 		<< "<script src='" << baseDir << "/lib/jquery.min.js'></script>\n"
 		<< "<script src='" << baseDir << "/lib/codemirror-5.39.2.min.js' type='text/javascript'></script>\n"
 		<< "<script src='" << baseDir << "/lib/codemirror-addon-simple-5.39.2.min.js' type='text/javascript'></script>\n"
+		<< "<script defer src='" << baseDir << "/lib/katex/katex.min.js' type='text/javascript'></script>\n"
 		<< "<script>\n"
 		<< "var helpRoot = '" << baseDir << "';\n"
 		<< "var scdoc_title = '" << doc.title.escapeChar($') << "';\n"
@@ -591,6 +593,16 @@ SCDocHTMLRenderer {
 				node.children.do {|child|
 					stream << "<a class='anchor' name='kw_" << this.escapeSpacesInAnchor(child.text) << "'>&nbsp;</a>";
 				}
+			},
+			\MATHBLOCK, { // uses temml to convert tex to MathML
+				stream << "<span class='math block'>\n"
+				<< this.escapeSpecialChars(node.text)
+				<< "\n</span>";
+			},
+			\MATH, {
+				stream << "<span class='math'>"
+				<< this.escapeSpecialChars(node.text)
+				<< "</span>";
 			},
 			\IMAGE, {
 				f = node.text.split($#);
