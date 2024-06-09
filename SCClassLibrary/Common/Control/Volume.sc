@@ -6,20 +6,19 @@ Volume {
 
 	var <ampSynth, <numOutputChannels, <defName, updateFunc, initFunc;
 	var <>window;
-	var <group, baseAmpSynth;
-	var <listener;
+	var <group, <ampSynthRunning = false, <listener;
 
 	*new { | server, startBus = 0, numChannels, min = -90, max = 6, persist = false |
 		^super.newCopyArgs(server ?? { Server.default }, startBus, numChannels, min, max, persist).init;
 	}
 
 	init {
-		// group nodeID should always be 2, so multiple clients can use it
-		group = Group.basicNew(server, server.nextPermNodeID);
+		// hardcode group nodeID to 2, so multiple clients can use it
+		group = Group.basicNew(server, 2);
 		defName = (\volumeAmpControl ++ this.numChannels).asSymbol;
-		// synth nodeID should always be 3, so multiple clients can use it
-		baseAmpSynth = Synth.basicNew(defName, server, server.nextPermNodeID);
-		baseAmpSynth.group = group;
+		// hardcode synth nodeID to 3, so multiple clients can use it
+		ampSynth = Synth.basicNew(defName, server, 3);
+		ampSynth.group = group;
 
 		// execute immediately if we're already past server tree functions
 		if(server.serverRunning) {
@@ -28,7 +27,7 @@ Volume {
 		};
 
 		initFunc = {
-			ampSynth = nil;
+			ampSynthRunning = false;
 			server.sendMsg(*group.newMsg(RootNode(server), \addToTail));
 			this.sendSynthDef;
 
@@ -38,7 +37,7 @@ Volume {
 		ServerBoot.add(initFunc, server);
 
 		updateFunc = {
-			ampSynth = nil;
+			ampSynthRunning = false;
 			if(persist) { this.updateSynth }
 		};
 
@@ -48,24 +47,33 @@ Volume {
 
 	makeListener {
 		listener = OSCFunc({ |msg|
-			var vol, lag, gate, bus;
-			#vol, lag, gate, bus = msg.drop(3);
+			var invol, inlag, ingate, inbus;
+			#invol, inlag, ingate, inbus = msg.drop(3);
 
-			vol = vol.ampdb;
-			if (vol.equalWithPrecision(volume).not) {
-				"sync vol:".post;
-				this.volume = vol;
+			// server.post; msg.round(0.001).postcs;
+
+			invol = invol.ampdb;
+			if (invol.equalWithPrecision(volume).not) {
+				"sync vol: ".postln;
+				volume = invol;
+				this.changed(\amp, volume);
 			};
-			if (this.lag.equalWithPrecision(lag).not) {
+			if (inlag.equalWithPrecision(lag).not) {
 				"sync lag:".postln;
-				this.lag = lag;
+				lag = inlag;
 			};
-			if (gate <= 0.0) {
+			if (ingate <= 0.0) {
 				"ampSynth ended".postln;
+				ampSynthRunning = false;
+				msg.round(0.001).postcs;
+				volume = invol;
+				this.changed(\amp, volume);
+			} {
+				ampSynthRunning = true;
 			};
-			if (bus != startBus) {
-				"startBus changed?".postln;
-				startBus = bus;
+			if (inbus != startBus) {
+				"*** startBus changed!".postln;
+				startBus = inbus;
 			};
 
 		}, '/volumeUpdate', server.addr).permanent_(true)
@@ -77,7 +85,7 @@ Volume {
 				numOutputChannels = this.numChannels;
 				// update defName in case numChannels has changed
 				defName = (\volumeAmpControl ++ numOutputChannels).asSymbol;
-				baseAmpSynth.defName = defName;
+				ampSynth.defName = defName;
 
 				SynthDef(defName, { | volumeAmp = 1, volumeLag = 0.1, gate=1, bus |
 
@@ -100,7 +108,7 @@ Volume {
 
 	numChannels { ^numChannels ? server.options.numOutputBusChannels }
 	numChannels_ { |num|
-		if(ampSynth.notNil and: { num != this.numChannels }) {
+		if(ampSynthRunning and: { num != this.numChannels }) {
 			"Change in number of channels will not take effect until volume is reset to 0dB.".warn;
 		};
 		numChannels = num;
@@ -110,28 +118,32 @@ Volume {
 		var amp = if(isMuted.not) { volume.dbamp } { 0.0 };
 		var active = amp != 1.0;
 
+		thisMethod.postln;
+
 		if(active) {
 			if(server.hasBooted) {
-				if(ampSynth.isNil) {
+				if(ampSynthRunning.not) {
 					// Synth.after(server.defaultGroup, defName,
 					// [\volumeAmp, amp, \volumeLag, lag, \bus, startBus])
 
-					ampSynth = baseAmpSynth;
-
 					server.sendMsg(*group.newMsg(RootNode(server), \addToTail));
 					server.sendMsg(9, //"s_new"
-						defName, baseAmpSynth.nodeID,
+						defName, ampSynth.nodeID,
 						Node.addActions[\addToTail],
 						group.nodeID,
 						*[\volumeAmp, amp, \volumeLag, lag, \bus, startBus]
 					);
 
+					ampSynthRunning = true;
 				} {
 					ampSynth.set(\volumeAmp, amp);
 				}
 			}
 		} {
-			if(ampSynth.notNil) { ampSynth.release; ampSynth = nil }
+			if(ampSynthRunning) {
+				ampSynth.set(\volumeAmp, 1).release;
+				ampSynthRunning = false
+			}
 		}
 	}
 
@@ -152,10 +164,8 @@ Volume {
 	}
 
 	freeSynth {
-		ServerTree.remove(updateFunc, server);
-		updateFunc = nil;
 		ampSynth.release;
-		ampSynth = nil
+		ampSynthRunning = false;
 	}
 
 	// sets volume back to 1 - removes the synth

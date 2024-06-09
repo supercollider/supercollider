@@ -14,7 +14,7 @@ NodeIDAllocator {
 	reset {
 		mask = user << 26;
 		temp = initTemp;
-		perm = 2;
+		perm = 4;
 		permFreed = IdentitySet.new;
 	}
 	alloc {
