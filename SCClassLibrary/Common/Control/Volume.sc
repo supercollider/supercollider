@@ -7,6 +7,7 @@ Volume {
 	var <ampSynth, <numOutputChannels, <defName, updateFunc, initFunc;
 	var <>window;
 	var <group, baseAmpSynth;
+	var <listener;
 
 	*new { | server, startBus = 0, numChannels, min = -90, max = 6, persist = false |
 		^super.newCopyArgs(server ?? { Server.default }, startBus, numChannels, min, max, persist).init;
@@ -45,6 +46,31 @@ Volume {
 
 	}
 
+	makeListener {
+		listener = OSCFunc({ |msg|
+			var vol, lag, gate, bus;
+			#vol, lag, gate, bus = msg.drop(3);
+
+			vol = vol.ampdb;
+			if (vol.equalWithPrecision(volume).not) {
+				"sync vol:".post;
+				this.volume = vol;
+			};
+			if (this.lag.equalWithPrecision(lag).not) {
+				"sync lag:".postln;
+				this.lag = lag;
+			};
+			if (gate <= 0.0) {
+				"ampSynth ended".postln;
+			};
+			if (bus != startBus) {
+				"startBus changed?".postln;
+				startBus = bus;
+			};
+
+		}, '/volumeUpdate', server.addr).permanent_(true)
+	}
+
 	sendSynthDef {
 		if (server.hasBooted) {
 			fork {
@@ -54,6 +80,12 @@ Volume {
 				baseAmpSynth.defName = defName;
 
 				SynthDef(defName, { | volumeAmp = 1, volumeLag = 0.1, gate=1, bus |
+
+					var controls = [volumeAmp, volumeLag, gate, bus];
+					var updateTrig = Impulse.kr(1) + HPZ1.kr(controls).abs.sum;
+					// what replyID to use for shared remote server name?
+					SendReply.kr(updateTrig, '/volumeUpdate', controls);
+
 					XOut.ar(bus,
 						Linen.kr(gate, releaseTime: 0.05, doneAction:2),
 						In.ar(bus, numOutputChannels) * Lag.kr(volumeAmp, volumeLag)
