@@ -33,6 +33,11 @@ Volume {
 
 			// only create synth now if it won't be created by ServerTree
 			if (persist.not) { this.updateSynth };
+
+			// only start listener is multiple clients expected
+			if (server.options.maxLogins > 1) {
+				this.startListener
+			}
 		};
 		ServerBoot.add(initFunc, server);
 
@@ -45,38 +50,41 @@ Volume {
 
 	}
 
-	makeListener {
-		listener = OSCFunc({ |msg|
-			var invol, inlag, ingate, inbus;
-			#invol, inlag, ingate, inbus = msg.drop(3);
+	startListener {
+		listener = listener ?? {
+			OSCFunc({ |msg|
+				var invol, inlag, ingate, inbus;
+				#invol, inlag, ingate, inbus = msg.drop(3);
 
-			// server.post; msg.round(0.001).postcs;
+				// server.post; msg.round(0.001).postcs;
 
-			invol = invol.ampdb;
-			if (invol.equalWithPrecision(volume).not) {
-				"sync vol: ".postln;
-				volume = invol;
-				this.changed(\amp, volume);
-			};
-			if (inlag.equalWithPrecision(lag).not) {
-				"sync lag:".postln;
-				lag = inlag;
-			};
-			if (ingate <= 0.0) {
-				"ampSynth ended".postln;
-				ampSynthRunning = false;
-				msg.round(0.001).postcs;
-				volume = invol;
-				this.changed(\amp, volume);
-			} {
-				ampSynthRunning = true;
-			};
-			if (inbus != startBus) {
-				"*** startBus changed!".postln;
-				startBus = inbus;
-			};
+				invol = invol.ampdb;
+				if (invol.equalWithPrecision(volume).not) {
+					"sync vol: ".postln;
+					volume = invol;
+					this.changed(\amp, volume);
+				};
+				if (inlag.equalWithPrecision(lag).not) {
+					"sync lag:".postln;
+					lag = inlag;
+				};
+				if (ingate <= 0.0) {
+					"ampSynth ended".postln;
+					ampSynthRunning = false;
+					msg.round(0.001).postcs;
+					volume = invol;
+					this.changed(\amp, volume);
+				} {
+					ampSynthRunning = true;
+				};
+				if (inbus != startBus) {
+					"*** startBus changed!".postln;
+					startBus = inbus;
+				};
 
-		}, '/volumeUpdate', server.addr).permanent_(true)
+			}, '/volumeUpdate', server.addr).permanent_(true)
+		};
+		listener.enable;
 	}
 
 	sendSynthDef {
