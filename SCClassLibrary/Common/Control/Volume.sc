@@ -56,29 +56,22 @@ Volume {
 				var invol, inlag, ingate, inbus;
 				#invol, inlag, ingate, inbus = msg.drop(3);
 
-				// server.post; msg.round(0.001).postcs;
-
 				invol = invol.ampdb;
 				if (invol.equalWithPrecision(volume).not) {
-					"sync vol: ".postln;
 					volume = invol;
 					this.changed(\amp, volume);
 				};
 				if (inlag.equalWithPrecision(lag).not) {
-					"sync lag:".postln;
 					lag = inlag;
 				};
 				if (ingate <= 0.0) {
-					"ampSynth ended".postln;
 					ampSynthRunning = false;
-					msg.round(0.001).postcs;
 					volume = invol;
 					this.changed(\amp, volume);
 				} {
 					ampSynthRunning = true;
 				};
 				if (inbus != startBus) {
-					"*** startBus changed!".postln;
 					startBus = inbus;
 				};
 
@@ -125,8 +118,6 @@ Volume {
 	updateSynth {
 		var amp = if(isMuted.not) { volume.dbamp } { 0.0 };
 		var active = amp != 1.0;
-
-		thisMethod.postln;
 
 		if(active) {
 			if(server.hasBooted) {
