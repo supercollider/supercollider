@@ -125,7 +125,7 @@ teletype::
 -> -1.0
 ::
 
-The last two groups of an 8-digit integer are the raw hexadecimal representation of the 64-bit double value according to link::https://ieeexplore.ieee.org/document/8766229##IEEE 754 Floating Point:: (https://ieeexplore.ieee.org/document/8766229). Each part is represented as follows:
+The last two groups of an 8-digit integer are the raw hexadecimal representation of the 64-bit double value according to link::https://ieeexplore.ieee.org/document/8766229##IEEE 754 Floating Point:: (link::https://ieeexplore.ieee.org/document/8766229::). Each part is represented as follows:
 
 teletype::
                          raw hexadecimal representation
