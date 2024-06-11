@@ -590,7 +590,7 @@ Plot the node/group tree. As link::#-queryAllNodes:: but graphical.
 argument:: interval
 Polling interval.
 argument:: bounds
-the bounds of the scope window. A Rect specifying position and size of the window. The size does not include the border and title bar. Position is measured from the bottom-left corner of the screen (this is different than link::Classes/View#-bounds::). The default is nil and the scope window will be in the centre of the display.
+The bounds of the scope window. A Rect specifying position and size of the window. The size does not include the border and title bar. Position is measured from the bottom-left corner of the screen (this is different than link::Classes/View#-bounds::). The default is nil and the scope window will be in the centre of the display.
 
 method:: plotTreeView
 Plot the node/group tree graphically on a given view.
