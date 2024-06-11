@@ -32,6 +32,8 @@ jobs:
           python-version: '3.10'
       - uses: pre-commit/action@v3.0.0
         name: 'Run pre-commit'
+        env:
+            FULL_CHECK: 1
       - name: set version string for artifacts
         id: set-version
         run: |
