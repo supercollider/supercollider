@@ -51,6 +51,7 @@
 #include "SC_Version.hpp"
 #include <map>
 
+#include "TypedArguments.hpp"
 #ifdef _WIN32
 #    include <direct.h>
 #else
@@ -4023,6 +4024,61 @@ void doPrimitiveWithKeys(VMGlobals* g, PyrMethod* meth, int allArgsPushed, int n
 #endif
 }
 
+
+int typedArgumentTest(struct VMGlobals* g, int numArgsPushed) {
+    auto maybeArgs =
+        TypedArgsFromStack<FloatChecker, IntChecker, SymbolChecker, OrNil<ArrayChecker>, OrNil<FloatChecker>,
+                           OrChecker<FloatChecker, IntChecker, ArrayChecker>>::get(g, "typedArgumentTest");
+
+    if (!maybeArgs)
+        return errWrongType;
+
+    auto [arg0, arg1, arg2, arg3, arg4, arg5] = *maybeArgs;
+
+    post("arg0: %f\n", arg0);
+    post("arg1: %d\n", arg1);
+    post("arg2: %s\n", arg2->name);
+
+    if (arg3)
+        post("arg3: is an array\n");
+    else
+        post("arg3: is nil\n");
+
+    if (arg4)
+        post("arg4: %d\n", *arg4);
+    else
+        post("arg4: is nil\n");
+
+    arg5.visit(Overloaded {
+        [](FloatChecker, double f) { post("arg5 is a float: %f\n", f); },
+        [](IntChecker, int i) { post("arg5 is a int: %d\n", i); },
+        [](ArrayChecker, PyrObject* a) { post("arg5 is an array with size %d\n", a->size); },
+    });
+
+    if (arg5.holds<FloatChecker>())
+        post("arg5: got a float: %f\n", arg5.force<FloatChecker>());
+    else if (arg5.holds<IntChecker>())
+        post("arg5: got a int %d\n", arg5.force<IntChecker>());
+    else if (arg5.holds<ArrayChecker>())
+        post("arg5: got an array with size %d\n", arg5.force<ArrayChecker>()->size);
+    else
+        post("arg5: falied\n");
+
+
+    if (auto f = arg5.tryHolds<FloatChecker>(); f)
+        post("arg5: got a float: %f\n", *f);
+    else if (auto i = arg5.tryHolds<IntChecker>(); i)
+        post("arg5: got an int: %d\n", *i);
+    else if (auto a = arg5.tryHolds<ArrayChecker>(); a)
+        post("arg5: got an array of size: %d\n", (*a)->size);
+    else
+        post("arg5: failed\n");
+
+
+    return errNone;
+}
+
+
 void initPrimitives() {
     int base, index;
 
@@ -4287,6 +4343,8 @@ void initPrimitives() {
     definePrimitive(base, index++, "_SC_VersionMinor", prVersionMinor, 1, 0);
     definePrimitive(base, index++, "_SC_VersionPatch", prVersionPatch, 1, 0);
     definePrimitive(base, index++, "_SC_VersionTweak", prVersionTweak, 1, 0);
+
+    definePrimitive(base, index++, "_TypedArgumentTest", typedArgumentTest, 6, 0);
 
     // void initOscilPrimitives();
     // void initControllerPrimitives();
