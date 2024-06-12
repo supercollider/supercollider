@@ -47,7 +47,7 @@ a = { SinOsc.ar * 0.01 }.play;
 a.defName; // has the prefix 'temp__', followed by a number
 ::
 
-method:;maxTempDefNames
+method::maxTempDefNames
 
 A maximum count for the numbers to add to the tempNamePrefix
 
