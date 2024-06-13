@@ -137,6 +137,7 @@ a.subclass_toggle:hover {
     background-repeat: no-repeat;
     background-position: 0.5em center;
     background-size: 1.5em;
+    display: inline-block;
 }
 
 a.menu-link {
@@ -150,6 +151,10 @@ a.menu-link {
 a.menu-link:hover {
     text-decoration: none;
     color: var(--color-fg-200);
+}
+
+li.menuitem a.menu-link.home {
+    padding-left: 2.5em;
 }
 
 #menubar .menuitem .home a {
