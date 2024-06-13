@@ -1102,15 +1102,17 @@ void Integrator_next(Integrator* unit, int inNumSamples) {
 
 void Decay_Ctor(Decay* unit) {
     SETCALC(Decay_next);
+
     unit->m_decayTime = uninitializedControl;
     unit->m_b1 = 0.f;
     unit->m_y1 = 0.f;
+
     Decay_next(unit, 1);
+
+    unit->m_y1 = 0.f;
 }
 
 void Decay_next(Decay* unit, int inNumSamples) {
-    // printf("Decay_next_a\n");
-
     float* out = ZOUT(0);
     float* in = ZIN(0);
     float decayTime = ZIN0(1);
@@ -1127,7 +1129,7 @@ void Decay_next(Decay* unit, int inNumSamples) {
         unit->m_b1 = decayTime == 0.f ? 0.f : exp(log001 / (decayTime * SAMPLERATE));
         unit->m_decayTime = decayTime;
         double b1_slope = CALCSLOPE(unit->m_b1, b1);
-        // printf("decayTime %g  %g %g\n", unit->m_decayTime, next_b1, b1);
+
         LOOP1(inNumSamples, double y0 = ZXP(in); ZXP(out) = y1 = y0 + b1 * y1; b1 += b1_slope;);
     }
     unit->m_y1 = zapgremlins(y1);
@@ -1145,16 +1147,16 @@ void Decay2_Ctor(Decay2* unit) {
     unit->m_b1b = attackTime == 0.f ? 0.f : exp(log001 / (attackTime * SAMPLERATE));
     unit->m_decayTime = decayTime;
     unit->m_attackTime = attackTime;
+    unit->m_y1a = 0.f;
+    unit->m_y1b = 0.f;
 
-    float y0 = ZIN0(0);
-    unit->m_y1a = y0;
-    unit->m_y1b = y0;
-    ZOUT0(0) = 0.f;
+    Decay2_next(unit, 1);
+
+    unit->m_y1a = 0.f;
+    unit->m_y1b = 0.f;
 }
 
 void Decay2_next(Decay2* unit, int inNumSamples) {
-    // printf("Decay2_next_a\n");
-
     float* out = ZOUT(0);
     float* in = ZIN(0);
     float attackTime = ZIN0(1);
