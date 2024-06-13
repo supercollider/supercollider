@@ -1,0 +1,28 @@
+{
+    "version": 3,
+    "configurePresets": [
+        {
+            "name": "macOS base",
+            "hidden": true,
+            "binaryDir": "${sourceDir}/build/",
+            "generator": "Xcode",
+            "cacheVariables": {
+                "CMAKE_PREFIX_PATH": "/usr/local/opt/qt@5"
+            }
+        },
+        {
+            "inherits": "macOS base",
+            "name": "macOS_supernova",
+            "displayName": "macOS with supernova",
+            "cacheVariables": {
+                "SUPERNOVA": "ON"
+            }
+        },
+        {
+            "inherits": "macOS base",
+            "name": "macOS",
+            "displayName": "macOS without supernova",
+            "description": "macOS without supernova"
+        }
+    ]
+}
