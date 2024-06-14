@@ -50,7 +50,7 @@ enum {
 };
 
 typedef struct pyrslot {
-    long tag;
+    uint64 tag;
 
     union {
         int64 c; /* char */
