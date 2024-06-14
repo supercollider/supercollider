@@ -112,6 +112,17 @@ method::size
 
 Different classes respond to this message differently. Object always returns 0.
 
+method::rank
+Returns the number of dimensions the value has.
+A single value (scalar) has rank of zero.
+See link::Classes/ArrayedCollection#-rank:: for cases where this is useful.
+
+method::shape
+For a multidimensional array,
+returns an array of the number of elements along each consecutive dimension,
+see link::Classes/ArrayedCollection#-shape::.
+For a scalar value (most objects) returns nil.
+
 subsection::Copying
 
 method::copy
