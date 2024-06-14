@@ -7,7 +7,7 @@ NOTE:: link::Guides/News-3_13##News in SuperCollider version 3.13:: ::
 
 SECTION:: An introductory overview
 
-emphasis::SuperCollider:: is a cross-platform environment for audio synthesis and algorithmic composition used by musicians, artists and researchers working with sound. It can be link::https://supercollider.github.io/downloads.html##installed:: and run on Linux, macOS and Windows,
+emphasis::SuperCollider:: is a cross-platform environment for audio synthesis and algorithmic composition used by musicians, artists and researchers working with sound. It can link::https://supercollider.github.io/downloads.html##be installed:: and run on Linux, macOS and Windows,
 as well as microcomputers such as
 link::https://github.com/supercollider/supercollider/blob/develop/README_RASPBERRY_PI.md##Raspberry Pi:: and
 link::https://github.com/supercollider/supercollider/blob/develop/README_BEAGLEBONE_BLACK.md##BeagleBone Black::.
