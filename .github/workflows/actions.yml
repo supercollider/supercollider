@@ -17,23 +17,32 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-22.04
-    outputs:
-      sc-version: ${{ steps.set-version.outputs.version }}
+
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+
       - name: lint class library
         run: |
           sudo npm install -g lintspaces-cli
           lintspaces -e .editorconfig SCClassLibrary/**/*.sc || true # ignore failure
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
+
       - uses: pre-commit/action@v3.0.0
         name: 'Run pre-commit'
         env:
-            FULL_CHECK: 1
+          FULL_CHECK: 1
+
+  version-getter:
+    runs-on: ubuntu-22.04
+    outputs:
+      sc-version: ${{ steps.set-version.outputs.version }}
+
+    steps:
       - name: set version string for artifacts
         id: set-version
         run: |
@@ -45,151 +54,15 @@ jobs:
           fi
           echo "version=$SC_VERSION" >> $GITHUB_OUTPUT
 
-  Linux:
-    needs: lint
-    runs-on: ubuntu-${{ matrix.os-version }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - job-name: 'focal gcc7'
-            os-version: '20.04'
-            c-compiler: 'gcc-7'
-            cxx-compiler: 'g++-7'
-            use-syslibs: false
-            shared-libscsynth: false
-
-          - job-name: 'focal gcc9 shared libscsynth'
-            os-version: '20.04'
-            c-compiler: 'gcc-9'
-            cxx-compiler: 'g++-9'
-            use-syslibs: false
-            shared-libscsynth: true
-
-          - job-name: 'jammy gcc10 use system libraries'
-            os-version: '22.04'
-            c-compiler: 'gcc-10'
-            cxx-compiler: 'g++-10'
-            use-syslibs: true
-            shared-libscsynth: false
-
-          - job-name: 'jammy gcc11'
-            os-version: '22.04'
-            c-compiler: 'gcc-11'
-            cxx-compiler: 'g++-11'
-            use-syslibs: false
-            shared-libscsynth: false
-
-          - job-name: 'jammy gcc12'
-            os-version: '22.04'
-            c-compiler: 'gcc-12'
-            cxx-compiler: 'g++-12'
-            use-syslibs: false
-            shared-libscsynth: false
-            artifact-suffix: 'linux-jammy-gcc12' # set if needed - will trigger artifact upload
-
-          - job-name: 'focal clang7'
-            os-version: '20.04'
-            c-compiler: 'clang-7'
-            cxx-compiler: 'clang++-7'
-            use-syslibs: false
-            shared-libscsynth: false
-
-          - job-name: 'focal clang11'
-            os-version: '20.04'
-            c-compiler: 'clang-11'
-            cxx-compiler: 'clang++-11'
-            use-syslibs: false
-            shared-libscsynth: false
-
-          - job-name: 'focal clang12'
-            os-version: '20.04'
-            c-compiler: 'clang-12'
-            cxx-compiler: 'clang++-12'
-            use-syslibs: false
-            shared-libscsynth: false
-
-          - job-name: 'jammy clang13'
-            os-version: '22.04'
-            c-compiler: 'clang-13'
-            cxx-compiler: 'clang++-13'
-            use-syslibs: false
-            shared-libscsynth: false
-
-          - job-name: 'jammy clang14'
-            os-version: '22.04'
-            c-compiler: 'clang-14'
-            cxx-compiler: 'clang++-14'
-            use-syslibs: false
-            shared-libscsynth: false
-
-    name: Linux ${{ matrix.job-name }}
-    env:
-      BUILD_PATH: ${{ github.workspace }}/build
-      INSTALL_PATH: ${{ github.workspace }}/build/Install
-      USE_SYSLIBS: ${{ matrix.use-syslibs }}
-      SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
-      CC: ${{ matrix.c-compiler }}
-      CXX: ${{ matrix.cxx-compiler }}
-      ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}'
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-      - name: prepare daily timestamp for cache
-        id: current-date
-        run: echo "stamp=$(date '+%Y-%m-%d')" >> $GITHUB_OUTPUT
-      - name: cache ccache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.ccache
-            ~/.cache/ccache
-          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ steps.current-date.outputs.stamp }}
-          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-
-      - name: install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install --yes build-essential cmake pkg-config libjack-jackd2-dev libsndfile1-dev libasound2-dev libavahi-client-dev libreadline6-dev libfftw3-dev libicu-dev libxt-dev libudev-dev emacs ccache
-          # install appropriate clang/gcc compilers
-          if [[ "$CC" =~ clang-[1-9] ]]; then
-            sudo apt-get install -y $CC # package names are clang-X
-            sudo apt-get install -y libc++-${CC##clang-}-dev libc++abi-${CC##clang-}-dev # install additional libraries; package names are libc++-X-dev and libc++abi-X-dev
-          elif [[ "$CC" =~ gcc-[1-9] ]]; then
-            sudo apt-get install -y $CXX # package names are g++-X
-          fi
-      - name: install system libraries
-        if: env.USE_SYSLIBS == 'true'
-        run: sudo apt-get install --yes libboost-thread-dev libboost-system-dev libboost-filesystem-dev libboost-regex-dev libboost-test-dev libboost-program-options-dev libyaml-cpp-dev
-      - name: install qt from apt
-        run: sudo apt-get install qtbase5-dev qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5svg5-dev libqt5websockets5-dev qtwebengine5-dev
-      - name: configure
-        run: |
-          mkdir $BUILD_PATH && cd $BUILD_PATH
-
-          EXTRA_CMAKE_FLAGS=
-
-          if $USE_SYSLIBS; then EXTRA_CMAKE_FLAGS="-DSYSTEM_BOOST=ON -DSYSTEM_YAMLCPP=ON"; fi
-
-          if $SHARED_LIBSCSYNTH; then EXTRA_CMAKE_FLAGS="-DLIBSCSYNTH=ON $EXTRA_CMAKE_FLAGS"; fi
-
-          cmake $EXTRA_CMAKE_FLAGS -DSC_EL=ON -DSC_VIM=ON -DSC_ED=ON -DSC_QT=ON -DSC_IDE=ON  -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_PATH -DCMAKE_BUILD_TYPE=Release .. # --debug-output
-      - name: build
-        run: |
-          cd $BUILD_PATH
-          make install -j2
-      - name: create archive
-        if: matrix.artifact-suffix
-        run: cd $INSTALL_PATH && zip --symlinks -r $ARTIFACT_FILE.zip .
-      - name: upload artifacts
-        uses: actions/upload-artifact@v4
-        if: matrix.artifact-suffix
-        with:
-          name: ${{ env.ARTIFACT_FILE }}
-          path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}.zip
+  build-linux:
+    needs: [lint, version-getter]
+    uses: ./.github/workflows/build_linux.yml
+    with:
+      sc-version: ${{ needs.version-getter.outputs.sc-version }}
+    secrets: inherit
 
   macOS:
-    needs: lint
+    needs: [lint, version-getter]
     runs-on: macos-${{ matrix.os-version }}
     strategy:
       fail-fast: false
@@ -252,7 +125,7 @@ jobs:
       HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
       USE_SYSLIBS: ${{ matrix.use-syslibs }}
       SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
-      ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}.dmg'
+      ARTIFACT_FILE: 'SuperCollider-${{ needs.version-getter.outputs.sc-version }}-${{ matrix.artifact-suffix }}.dmg'
       DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer'
       MACOSX_DEPLOYMENT_TARGET: '${{ matrix.deployment-target }}'
       CMAKE_OSX_ARCHITECTURES: '${{ matrix.cmake-architectures }}'
@@ -396,7 +269,7 @@ jobs:
           path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
 
   Windows:
-    needs: lint
+    needs: [lint, version-getter]
     runs-on: windows-${{ matrix.os-version }}
     strategy:
       fail-fast: false
@@ -456,8 +329,8 @@ jobs:
       LIBS_DOWNLOAD_PATH: ${{ github.workspace }}/../3rd-party
       VCVARS_SCRIPT_PATH: 'C:/Program Files (x86)/Microsoft Visual Studio/${{ matrix.msvc-year }}/Enterprise/VC/Auxiliary/Build/${{ matrix.vcvars-script }}'
       FFTW_INSTALL_DIR: "C:/Program Files/fftw"
-      ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}'
-      INSTALLER_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.installer-suffix }}'
+      ARTIFACT_FILE: 'SuperCollider-${{ needs.version-getter.outputs.sc-version }}-${{ matrix.artifact-suffix }}'
+      INSTALLER_FILE: 'SuperCollider-${{ needs.version-getter.outputs.sc-version }}-${{ matrix.installer-suffix }}'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -586,12 +459,12 @@ jobs:
           #   sclang: 'build/Install/SuperCollider/sclang'
           #   artifact-suffix: win64
 
-    needs: [lint, Linux, macOS, Windows] # unfortunately we can't use matrix expression here to make Linux test depend only on Linux build
+    needs: [version-getter, build-linux, macOS, Windows] # unfortunately we can't use matrix expression here to make Linux test depend only on Linux build
     runs-on: '${{ matrix.runs-on }}'
     name: 'test on ${{ matrix.name }}'
     env:
       INSTALL_PATH: ${{ github.workspace }}/build/Install
-      ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}${{ matrix.artifact-extension }}'
+      ARTIFACT_FILE: 'SuperCollider-${{ needs.version-getter.outputs.sc-version }}-${{ matrix.artifact-suffix }}${{ matrix.artifact-extension }}'
       TESTS_PATH: ${{ github.workspace }}/testsuite/classlibrary
       SCLANG: ${{ github.workspace }}/${{ matrix.sclang }}
       TEST_LIST_PROTO: ${{ github.workspace }}/testsuite/scripts/test_run_proto_gha.scd
@@ -702,12 +575,12 @@ jobs:
             s3-create-latest-link: true # create link to pointing to the "latest" build
 
     if: github.repository_owner == 'supercollider' && github.event_name != 'pull_request' # run in the main repo, but not on pull requests
-    needs: [lint, macOS, Windows]
+    needs: [lint, version-getter, macOS, Windows]
     runs-on: ubuntu-latest
     name: 'deploy ${{ matrix.artifact-suffix }} to s3'
     env:
       INSTALL_PATH: ${{ github.workspace }}/build/Install
-      ARTIFACT_FILE: SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}${{ matrix.artifact-extension }}
+      ARTIFACT_FILE: SuperCollider-${{ needs.version-getter.outputs.sc-version }}-${{ matrix.artifact-suffix }}${{ matrix.artifact-extension }}
       UPLOAD_TO_S3: ${{ (secrets.S3_ACCESS_KEY_ID != 0) && !startsWith(github.ref, 'refs/tags/') }}
       S3_CREATE_LATEST_LINK: ${{ matrix.s3-create-latest-link && (secrets.S3_ACCESS_KEY_ID != 0) && startsWith(github.ref, 'refs/heads/') }}
       S3_ARTIFACT_PATH: ${{ github.workspace }}/build/s3-upload
@@ -775,7 +648,7 @@ jobs:
   # release - list of files uploaded to GH release is specified in the *upload* step
   deploy_gh:
     if: startsWith(github.ref, 'refs/tags/') # run on tagged commits
-    needs: [lint, macOS, Windows]
+    needs: [lint, version-getter, macOS, Windows]
     runs-on: ubuntu-latest
     name: 'deploy release'
     env:
