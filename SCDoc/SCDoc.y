@@ -63,7 +63,7 @@ static inline bool stringEqual(const char * a, const char * b)
 // single line body tags that take text
 %token CLASSTREE COPYMETHOD KEYWORD PRIVATE
 // single line structural tags that take text, with children
-%token SECTION SUBSECTION METHOD ARGUMENT
+%token SECTION SUBSECTION SUBSUBSECTION METHOD ARGUMENT
 // single line structural tags with no text, with children
 %token DESCRIPTION CLASSMETHODS INSTANCEMETHODS EXAMPLES RETURNS DISCUSSION
 // nestable range tags with no text, with children
@@ -183,27 +183,27 @@ optsubsubsections: subsubsections
 subsubsections: subsubsections subsubsection { $$ = doc_node_add_child($1,$2); }
               | subsubsection { $$ = doc_node_make("(SUBSUBSECTIONS)",NULL,$1); }
               | body { $$ = doc_node_make_take_children("(SUBSUBSECTIONS)",NULL,$1); }
-; 
+;
 
-subsubsection: METHOD methnames optMETHODARGS eol methodbody
-    {
-        $2->id = "METHODNAMES";
-        $$ = doc_node_make(method_type,$3,$2);
-        doc_node_add_child($$, $5);
-//        doc_node_add_child($2, $3);
-    }
+subsubsection: SUBSUBSECTION words2 eol optbody { $$ = doc_node_make_take_children("SUBSUBSECTION", $2, $4); }
+             | METHOD methnames optMETHODARGS eol methodbody
+               {
+                 $2->id = "METHODNAMES";
+                 $$ = doc_node_make(method_type,$3,$2);
+                 doc_node_add_child($$, $5);
+               }
              | COPYMETHOD words eol {
-                if ( !(strchr($2, ' ')) ) {
-                  yyerror("COPYMETHOD requires 2 arguments (class name and method name)");
-                  YYERROR;
-                }
+               if ( !(strchr($2, ' ')) ) {
+                 yyerror("COPYMETHOD requires 2 arguments (class name and method name)");
+                 YYERROR;
+               }
 
-                $$ = doc_node_make(
-                stringEqual(method_type, "CMETHOD") ? "CCOPYMETHOD"
-                                                    : (stringEqual(method_type, "IMETHOD") ? "ICOPYMETHOD"
-                                                                                           : "COPYMETHOD"),
-                $2, NULL
-                ); }
+               $$ = doc_node_make(
+               stringEqual(method_type, "CMETHOD") ? "CCOPYMETHOD"
+                                                   : (stringEqual(method_type, "IMETHOD") ? "ICOPYMETHOD"
+                                                                                          : "COPYMETHOD"),
+               $2, NULL
+               ); }
              | PRIVATE commalist eoleof { $$ = doc_node_make_take_children( stringEqual(method_type, "CMETHOD") ? "CPRIVATE"
                                                                                                                 : "IPRIVATE",
                 NULL, $2); }
@@ -448,4 +448,3 @@ void scdocerror(const char *str)
         fprintf(stderr,"  %s\n-------------------\n", txt);
 */
 }
-
