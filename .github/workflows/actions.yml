@@ -196,19 +196,19 @@ jobs:
       matrix:
         include:
 
-          - job-name: 'universal'
-            os-version: '12'
-            xcode-version: '13.4.1'
-            deployment-target: '10.14'
-            cmake-architectures: 'x86_64;arm64'
-            use-syslibs: false
-            shared-libscsynth: false
-            system-portaudio: true
-            build-libsndfile: false
-            build-readline: false
-            build-fftw: false
-            artifact-suffix: 'macOS-universal'
-            verify-app: true
+          # - job-name: 'universal'
+          #   os-version: '12'
+          #   xcode-version: '13.4.1'
+          #   deployment-target: '10.14'
+          #   cmake-architectures: 'x86_64;arm64'
+          #   use-syslibs: false
+          #   shared-libscsynth: false
+          #   system-portaudio: true
+          #   build-libsndfile: false
+          #   build-readline: false
+          #   build-fftw: false
+          #   artifact-suffix: 'macOS-universal'
+          #   verify-app: true
 
           - job-name: 'x64 legacy'
             os-version: '12'
@@ -573,7 +573,7 @@ jobs:
           - name: macOS
             runs-on: macos-12
             sclang: 'build/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang'
-            artifact-suffix: macOS-universal
+            artifact-suffix: macOS-x64-legacy
             artifact-extension: '.dmg'
 
           - name: Linux
