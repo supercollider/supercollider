@@ -291,7 +291,7 @@ jobs:
     name: 'deploy release'
     env:
       INSTALL_PATH: ${{ github.workspace }}/Install
-      ARTIFACT_FILE_PREFIX: 'SuperCollider-${{ needs.lint.outputs.sc-version }}'
+      ARTIFACT_FILE_PREFIX: 'SuperCollider-${{ needs.version-getter.outputs.sc-version }}'
     steps:
       - name: download artifacts
         uses: actions/download-artifact@v4
