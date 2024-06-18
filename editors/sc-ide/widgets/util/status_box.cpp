@@ -31,7 +31,7 @@ StatusLabel::StatusLabel(QWidget* parent): QLabel(parent) {
     setTextColor(Qt::white);
 
     QFont font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
-    font.setPointSize(font.pointSize() + 3);
+    font.setPointSize(font.pointSize());
     font.setStyleHint(QFont::Monospace);
     font.setBold(true);
     setFont(font);
