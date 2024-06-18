@@ -37,4 +37,4 @@ __pycache__
 .*.sw?
 
 # vs code files
-.vscode
+.vscode/settings.json
