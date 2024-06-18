@@ -4,6 +4,7 @@
 		"ms-vscode.cpptools-extension-pack",
 		"josetr.cmake-language-support-vscode",
 		"github.vscode-github-actions",
+		"EditorConfig.EditorConfig",
 		// syntax highlighting
 		"jatinchowdhury18.vscode-supercollider",
 	],
