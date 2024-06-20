@@ -1494,6 +1494,8 @@ PyrClass* makeIntrinsicClass(PyrSymbol* className, PyrSymbol* superClassName, in
     SetInt(&metaclassobj->classFlags, slotRawInt(&metaclassobj->classFlags) | classIsIntrinsic);
 
     if (metaSuperClassName && classClassNumInstVars) {
+        assert(!metaclassobj->iprototype.isNil());
+        assert(!metaSuperClass->iprototype.isNil());
         memcpy(slotRawObject(&metaclassobj->iprototype)->slots, slotRawObject(&metaSuperClass->iprototype)->slots,
                sizeof(PyrSlot) * classClassNumInstVars);
         memcpy(slotRawSymbolArray(&metaclassobj->instVarNames)->symbols,
@@ -2371,7 +2373,7 @@ void nilSlots(PyrSlot* slot, int size) { fillSlots(slot, size, &o_nil); }
 
 void zeroSlots(PyrSlot* slot, int size) {
     PyrSlot zero;
-    SetTagRaw(&zero, 0);
+    SetRaw(&zero, 0);
     SetRaw(&zero, 0.0);
     fillSlots(slot, size, &zero);
 }

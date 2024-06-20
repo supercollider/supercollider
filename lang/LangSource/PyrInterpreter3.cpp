@@ -2497,12 +2497,12 @@ HOT void Interpret(VMGlobals* g) {
         case 209: // opNot
         handle_op_209:
             if (IsTrue(sp)) {
-                SetTagRaw(sp, tagFalse);
+                SetRaw(sp, false);
 #if TAILCALLOPTIMIZE
                 g->tailCall = 0;
 #endif
             } else if (IsFalse(sp)) {
-                SetTagRaw(sp, tagTrue);
+                SetRaw(sp, true);
 #if TAILCALLOPTIMIZE
                 g->tailCall = 0;
 #endif
@@ -2512,7 +2512,7 @@ HOT void Interpret(VMGlobals* g) {
         case 210: // opIsNil
         handle_op_210:
             if (IsNil(sp)) {
-                SetTagRaw(sp, tagTrue);
+                SetRaw(sp, true);
             } else {
                 slotCopy(sp, &gSpecialValues[svFalse]);
             }
@@ -2525,7 +2525,7 @@ HOT void Interpret(VMGlobals* g) {
             if (NotNil(sp)) {
                 slotCopy(sp, &gSpecialValues[svTrue]);
             } else {
-                SetTagRaw(sp, tagFalse);
+                SetRaw(sp, false);
             }
 #if TAILCALLOPTIMIZE
             g->tailCall = 0;
