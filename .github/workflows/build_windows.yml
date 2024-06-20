@@ -66,8 +66,8 @@ jobs:
       LIBS_DOWNLOAD_PATH: ${{ github.workspace }}/../3rd-party
       VCVARS_SCRIPT_PATH: "C:/Program Files (x86)/Microsoft Visual Studio/${{ matrix.msvc-year }}/Enterprise/VC/Auxiliary/Build/${{ matrix.vcvars-script }}"
       FFTW_INSTALL_DIR: "C:/Program Files/fftw"
-      ARTIFACT_FILE: "SuperCollider-${{ needs.version-getter.outputs.sc-version }}-${{ matrix.artifact-suffix }}"
-      INSTALLER_FILE: "SuperCollider-${{ needs.version-getter.outputs.sc-version }}-${{ matrix.installer-suffix }}"
+      ARTIFACT_FILE: "SuperCollider-${{ inputs.sc-version }}-${{ matrix.artifact-suffix }}"
+      INSTALLER_FILE: "SuperCollider-${{ inputs.sc-version }}-${{ matrix.installer-suffix }}"
     steps:
       - uses: actions/checkout@v4
         with:
