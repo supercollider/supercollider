@@ -250,7 +250,7 @@ The number of times to check for a successful boot.
 argument:: onFailure
 A function to evaluate after the server fails to boot. If onFailure is not given, an error message is posted. Providing a function suppresses the error message. If you want to supply a function and print the normal error message, make sure that your function returns "false," e.g. code::s.doWhenBooted(onFailure: { ... custom action...; false })::.
 argument:: clock
-The default link::Classes/Clock:: is link::Classes/AppClock::. Use link::Classes/SystemClock:: or link::Classes/TempoClock:: if time accuracy is important.
+If left empty, link::Classes/AppClock:: will be used.
 
 discussion::
 When using the default clock of code::.waitForBoot:: and code::.doWhenBooted::, the pair of braces surrounding the curly bracket can be omitted:
@@ -260,14 +260,13 @@ s.waitForBoot({ ... })
 s.doWhenBooted { ... }
 ::
 
-To play sound or music with more precise time control, the fourth argument clock should be set, and then link::Overviews/GUI-Classes##GUI classes:: should be used via code::defer:: as in the form of a function by enclosing it with a pair of curly braces.
+To play with precise time control, the fourth argument clock should be set to a precise clock (see above), and then link::Overviews/GUI-Classes##GUI classes:: should be wrapped in a code::defer { ... }::.
 
 code::
 (
 t = TempoClock;
 t.tempo = 1;
 
-// s.doWhenBooted ({ // s.boot should be evaluated separately when using s.doWhenbooted.
 s.waitForBoot({
 	var win, routine;
 	defer {
