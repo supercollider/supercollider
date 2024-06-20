@@ -215,6 +215,41 @@ TestCoreUGens : UnitTest {
 		];
 
 		//////////////////////////////////////////
+		// Delay1, Delay2
+		// More test in test_delay1_2_predelayValues
+		[\ar, \kr].do{ |rate|
+			tests.add(
+				("Delay1." ++ rate ++ " first frame is 0 at .ar and matches the input at .kr") -> {
+					var dc, imp, target;
+					dc = DC.perform(rate, 1);       // all 1's
+					imp = Impulse.perform(rate, 0); // single impulse on first sample
+					target = switch(rate,
+						\ar, dc - imp,              // subtracted impulse zeros out the the first sample of DC(1)
+						\kr, dc
+					);
+					// target is equivalent to DC(1) delayed by 1 sample
+					Delay1.perform(rate, dc) - target
+				}
+			);
+			tests.add(
+				("Delay2." ++ rate ++ " first 2 frames are 0 at .ar and match the input at .kr") -> {
+					// as Delay1, but with two consecutive impulses
+					// to cancel the first two samples of DC(1)
+					var dc, imp, delimp, target;
+					dc = DC.perform(rate, 1);           // all 1's
+					imp = Impulse.perform(rate, 0);     // single impulse on first sample
+					delimp = Delay1.perform(rate, imp); // single impulse on second sample
+					target = switch(rate,
+						\ar, dc - imp - delimp,         // subtracted impulse zeros out the the first sample of DC(1)
+						\kr, dc
+					);
+					// target is equivalent to DC(1) delayed by 2 samples
+					Delay2.perform(rate, dc) - target
+				}
+			);
+		};
+
+		//////////////////////////////////////////
 		// reversible unary ops:
 
 		[
@@ -618,6 +653,73 @@ TestCoreUGens : UnitTest {
 		this.assert(testAudioRate.value, report:true, onFailure:"test_out_ugens: failed with audio rate ugens");
 		this.assert(testControlRate.value, report:true, onFailure:"test_out_ugens: failed with control rate ugens");
 
+	}
+
+	test_delay1_2_predelayValues {
+		var tolerance = -100.dbamp;
+		var testDur = 0.01;
+		var dcInputVal = 0.4;
+		var testParams = [
+			// [ugen, inputVal, x1 (, x2)]
+			[Delay1, dcInputVal],       // default: no x1 arg specified
+			[Delay1, dcInputVal, 0.5],
+
+			[Delay2, dcInputVal],       // default: no x1 or x2 arg specified
+			[Delay2, dcInputVal, 0.3],  // no x2 specified
+			[Delay2, dcInputVal, 0.3, 0.6],
+		];
+
+		server.bootSync;
+
+		testParams.do{ |params|
+			var ugen, inVal, xArgs, numPredelaySamples;
+			#ugen, inVal = params[0..1];
+			xArgs = params[2..];
+			numPredelaySamples = switch(ugen, Delay1, { 1 }, Delay2, { 2 });
+
+			[\ar, \kr].do{ |rate|
+				var condvar = CondVar();
+				{
+					ugen.perform(rate,
+						DC.perform(rate, inVal), 1, 0, *xArgs // in, mul, add, x1 (, x2)
+					)
+				}.loadToFloatArray(testDur, server, { |data|
+					var errmsg, target;
+
+					if(xArgs.size == 0) {
+						// no args specified, check defaults
+						switch(rate,
+							\ar, {
+								target = 0.0 ! numPredelaySamples;
+								errmsg = "%.ar: predelay sample% should default to 0.0.";
+							},
+							\kr, {
+								target = inVal ! numPredelaySamples;
+								errmsg = "%.kr: predelay sample% should defaults to the input value (%).";
+							}
+						);
+						errmsg = errmsg.format(ugen, if(ugen == Delay2){ "s" }{ "" }, inVal);
+					} {
+						// x1/x2 args are specified, partially or fully
+						target = switch(rate,
+							\ar, { xArgs.extend(numPredelaySamples, 0.0).reverse }, // reverse: output order is [x2, x1]
+							\kr, { xArgs.extend(numPredelaySamples, inVal).reverse }
+						);
+						errmsg = format(
+							"%.%: when x1% (%) is a number, the corresponding predelay sample equals that number.",
+							ugen, rate, if(ugen == Delay2){ " or x2" }{ "" }, xArgs, inVal
+						);
+					};
+
+					this.assertArrayFloatEquals(
+						data.keep(numPredelaySamples), target, errmsg, within: tolerance, report: true
+					);
+					condvar.signalOne;
+				});
+
+				condvar.wait;
+			};
+		}
 	}
 
 	test_binaryValue_isUniform {
