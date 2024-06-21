@@ -89,4 +89,29 @@ TestVolume : UnitTest {
 		s.quit.remove;
 	}
 
+	test_resetVolumeAfterKill {
+		var s = Server(thisMethod.name);
+
+		s.options.bindAddress = "0.0.0.0"; // allow connections from any address
+		s.options.maxLogins = 2; // set to 2 clients
+
+		this.bootServer(s);
+
+		0.2.wait;
+		// create ampSynth
+		s.volume = -3;
+
+		0.2.wait;
+		// kill ampSynth irregularly
+		s.sendMsg("n_free", s.volume.ampSynth.nodeID);
+
+		0.2.wait;
+		this.assertFloatEquals(s.volume.volume, 0,
+			"server should reset volume level when ampSynth dies irregularly."
+		);
+
+		s.quit.remove;
+	}
+
+
 }

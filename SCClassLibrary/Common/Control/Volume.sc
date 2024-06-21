@@ -6,7 +6,7 @@ Volume {
 
 	var <ampSynth, <numOutputChannels, <defName, updateFunc, initFunc;
 	var <>window;
-	var <group, <ampSynthRunning = false, <listener;
+	var <group, <listener;
 
 	*new { | server, startBus = 0, numChannels, min = -90, max = 6, persist = false |
 		^super.newCopyArgs(server ?? { Server.default }, startBus, numChannels, min, max, persist).init;
@@ -27,14 +27,14 @@ Volume {
 		};
 
 		initFunc = {
-			ampSynthRunning = false;
+			ampSynth.isPlaying = false;
 			server.sendMsg(*group.newMsg(RootNode(server), \addToTail));
 			this.sendSynthDef;
 
 			// only create synth now if it won't be created by ServerTree
 			if (persist.not) { this.updateSynth };
 
-			// only start listener is multiple clients expected
+			// only start listener to volume settings if multiple clients expected
 			if (server.options.maxLogins > 1) {
 				this.startListener
 			}
@@ -42,7 +42,7 @@ Volume {
 		ServerBoot.add(initFunc, server);
 
 		updateFunc = {
-			ampSynthRunning = false;
+			ampSynth.isPlaying = false;
 			if(persist) { this.updateSynth }
 		};
 
@@ -64,12 +64,13 @@ Volume {
 				if (inlag.equalWithPrecision(lag).not) {
 					lag = inlag;
 				};
+				// triggers when gate closed, so we know ampSynth ends
 				if (ingate <= 0.0) {
-					ampSynthRunning = false;
+					ampSynth.isPlaying = false;
 					volume = invol;
 					this.changed(\amp, volume);
 				} {
-					ampSynthRunning = true;
+					ampSynth.isPlaying = true;
 				};
 				if (inbus != startBus) {
 					startBus = inbus;
@@ -109,7 +110,7 @@ Volume {
 
 	numChannels { ^numChannels ? server.options.numOutputBusChannels }
 	numChannels_ { |num|
-		if(ampSynthRunning and: { num != this.numChannels }) {
+		if(ampSynth.isPlaying and: { num != this.numChannels }) {
 			"Change in number of channels will not take effect until volume is reset to 0dB.".warn;
 		};
 		numChannels = num;
@@ -121,7 +122,7 @@ Volume {
 
 		if(active) {
 			if(server.hasBooted) {
-				if(ampSynthRunning.not) {
+				if(ampSynth.isPlaying.not) {
 					// Synth.after(server.defaultGroup, defName,
 					// [\volumeAmp, amp, \volumeLag, lag, \bus, startBus])
 
@@ -133,15 +134,21 @@ Volume {
 						*[\volumeAmp, amp, \volumeLag, lag, \bus, startBus]
 					);
 
-					ampSynthRunning = true;
+					// also catches stray endings of ampSynth
+					ampSynth.onFree {
+						// "ampSynth was freed".postln;
+						this.volume = 0;
+						ampSynth.isPlaying = false;
+					};
+					ampSynth.isPlaying = true;
 				} {
 					ampSynth.set(\volumeAmp, amp);
 				}
 			}
 		} {
-			if(ampSynthRunning) {
+			if(ampSynth.isPlaying) {
 				ampSynth.set(\volumeAmp, 1).release;
-				ampSynthRunning = false
+				ampSynth.isPlaying = false
 			}
 		}
 	}
@@ -164,7 +171,7 @@ Volume {
 
 	freeSynth {
 		ampSynth.release;
-		ampSynthRunning = false;
+		ampSynth.isPlaying = false;
 	}
 
 	// sets volume back to 1 - removes the synth
