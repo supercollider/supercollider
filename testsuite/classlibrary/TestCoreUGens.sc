@@ -55,6 +55,19 @@ TestCoreUGens : UnitTest {
 			"Latch applied to LFPulse.kr on its own changes is no-op" -> {n=LFPulse.kr(23, 0.5); n - Latch.kr(n, HPZ1.kr(n).abs)},
 			"Gate applied to LFPulse.ar on its own changes is no-op" -> {n=LFPulse.ar(23, 0.5); n - Gate.ar(n, HPZ1.ar(n).abs)},
 			"Gate applied to LFPulse.kr on its own changes is no-op" -> {n=LFPulse.kr(23, 0.5); n - Gate.kr(n, HPZ1.kr(n).abs)},
+			"T2A should recover an ar signal passed through T2K" -> {
+				// note this freq has to be less than half critical sampling at control rate
+				// so that the kr signal goes to zero between frames so it's interpreted
+				// as a trigger by T2A (otherwise it's just a DC kr signal, which isn't a trigger)
+				var trigFreq = server.sampleRate / (server.options.blockSize) / 2;
+				var arTrig = Impulse.ar(trigFreq);
+				arTrig - T2A.ar(T2K.kr(arTrig))
+			},
+			"T2A with offset should recover a delayed ar signal passed through T2K" -> {
+				var trigFreq = server.sampleRate / (server.options.blockSize) / 2;
+				var arTrig = Delay2.ar(Impulse.ar(trigFreq));
+				arTrig - T2A.ar(T2K.kr(arTrig), offset: 2)
+			},
 
 			//////////////////////////////////////////
 			// Linear-to-exponential equivalences:
