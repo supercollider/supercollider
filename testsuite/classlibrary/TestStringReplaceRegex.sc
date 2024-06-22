@@ -27,4 +27,13 @@ TestStringReplaceRegex : UnitTest {
 			"hello world"
 		)
 	}
+	test_no_replace {
+        this.assertEquals("hello".replaceRegexp("w", ""), "hello");
+    }
+    test_wrong_args {
+        this.assertException({"hello".replaceRegexp(nil, "foo")}, PrimitiveFailedError);
+    }
+    test_invalid_regex {
+        this.assertException({"hello".replaceRegexp("\\a[\o", "foo").postln}, PrimitiveFailedError);
+    }
 }
