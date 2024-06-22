@@ -16,7 +16,7 @@ link::https://baryon.supercollider.online::
 
 section::Preliminary stages
 
-To use Quark, you shoud install git software.
+To use Quark, you shoud install git software from link::https://git-scm.com::.
 list::
 ##Windows users can download and install the appropriate installation file for their environment from the above web page.
 ##Linux users can copy the appropriate terminal commands for their environment and run them in a terminal window.
