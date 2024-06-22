@@ -54,7 +54,8 @@ Function : AbstractFunction {
 		^this.primitiveFailed
 	}
 	functionPerformList { |... args, kwargs|
-	    ^this.performArgsAndKwArgs(args[0], args[1..], kwargs)
+        _ObjectPerformList;
+        this.primitiveFailed
 	}
 
 	valueWithEnvir { arg envir;
