@@ -38,4 +38,20 @@ TestKwargs : UnitTest {
             (selector: \bar, args: [1, 2], kwargs: [a: 3, b: 4])
         )
     }
+
+    test_function_perform_list {
+        var f = {|a, b, c... args, kwargs| (a: a, b: b, c: c, args: args, kwargs: kwargs) };
+        this.assertEquals(
+            f.(1, *[2, 3, 4], foo: 10),
+            (a: 1, b: 2, c: 3, args: [4], kwargs: [\foo, 10])
+        );
+        this.assertEquals(
+            f.performList(\value, 1, [2, 3, 4], foo: 10),
+            (a: 1, b: 2, c: 3, args: [4], kwargs: [\foo, 10])
+        );
+        this.assertEquals(
+            f.functionPerformList(\value, 1, [2, 3, 4], foo: 10),
+            (a: 1, b: 2, c: 3, args: [4], kwargs: [\foo, 10])
+        );
+    }
 }
