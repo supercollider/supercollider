@@ -1026,6 +1026,10 @@ int objectPerformArgsAndKwArgs(struct VMGlobals* g, int numArgsPushed) {
 
     const auto argsSize = argsArray ? argsArray->size : 0;
     const auto kwSize = kwargsArray ? kwargsArray->size : 0;
+    if (kwSize % 2 == 1) {
+        error("Should be an even number of keyword arguments as they are Symbol value pairs.\n");
+        return errFailed;
+    }
 
     if (argsSize == 0 && kwSize == 0) {
         g->sp -= 3;
@@ -1041,13 +1045,22 @@ int objectPerformArgsAndKwArgs(struct VMGlobals* g, int numArgsPushed) {
         slotCopy(writingSlot, &argsArray->slots[i]);
         writingSlot++;
     }
+    long numFailedKwArgs = 0;
     for (size_t i { 0 }; i < kwSize; ++i) {
+        if (i % 2 == 0) {
+            if (NotSym(&kwargsArray->slots[i])) {
+                post("WARNING: Keyword arguments must be a key-value pair array, where the key is a Symbol.\n");
+                i += 1; // Skips the next value.
+                numFailedKwArgs += 1;
+                continue;
+            }
+        }
         slotCopy(writingSlot, &kwargsArray->slots[i]);
         writingSlot++;
     }
 
     g->sp = receiverSlot + argsSize + kwSize;
-    sendMessage(g, selector, argsSize + kwSize + 1, kwSize / 2);
+    sendMessage(g, selector, argsSize + kwSize + 1, (kwSize / 2) - numFailedKwArgs);
     g->numpop = 0;
     return errNone;
 }
