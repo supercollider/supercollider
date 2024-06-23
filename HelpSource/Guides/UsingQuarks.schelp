@@ -136,7 +136,7 @@ You can update all installed Quarks by evaluating the following code:
 code::
 Quarks.all.do{ |quark| quark.update() };
 ::
-or by pressing the 'Check for updates' button after evaluating the following code::
+or by pressing the 'Check for updates' button after evaluating the following code:
 code::
 Quarks.gui
 ::
