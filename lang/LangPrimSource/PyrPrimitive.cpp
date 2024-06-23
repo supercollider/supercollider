@@ -1204,118 +1204,6 @@ int objectPerformWithKeys(VMGlobals* g, int numArgsPushed, int numKeyArgsPushed)
     return errNone;
 }
 
-int objectPerformListWithKeys(struct VMGlobals* g, int numArgsPushed, int numKeyArgsPushed) {
-    // Right now the stack should looks like (optional arrayArg)
-    //      receiver selector arg1 ...argN [arrayArg] kwName1 kwValue1 ...kwNameN kwValueN
-    // or
-    //      receiver arrayArg kwName1 kwValue1 ...kwNameN kwValueN
-    // In the second case, arrayArg must have a symbol first
-    //
-    // We need to expand the arrayArg and remove the selector
-    //      receiver arg1 ...argN arrayArg1 ...arrayArgN kwName1 kwValue1 ...kwNameN kwValueN
-
-    const auto receiverSlot = g->sp - numArgsPushed + 1;
-    const auto selectorSlot = receiverSlot + 1;
-    const auto maybeListSlot = g->sp - (numKeyArgsPushed * 2);
-
-
-    // Lots of little functions...
-
-    const auto notAnArrayEasyReturn = [&]() {
-        return numKeyArgsPushed == 0 ? objectPerform(g, numArgsPushed)
-                                     : objectPerformWithKeys(g, numArgsPushed, numKeyArgsPushed);
-    };
-
-    const auto tryGetArray = [](PyrSlot* slot) -> std::tuple<PyrObject*, bool> {
-        if (NotObj(slot)) {
-            return { nullptr, false };
-        } else if (slotRawObject(slot)->classptr == class_list) { // cast List to Array
-            auto* t = slotRawObject(slot)->slots;
-            if (NotObj(t) || slotRawObject(t)->classptr != class_array) {
-                error("List array not an Array.\n");
-                dumpObjectSlot(slot);
-                return { nullptr, true };
-            }
-            return { slotRawObject(t), false };
-        } else if (slotRawObject(slot)->classptr == class_array) {
-            return { slotRawObject(slot), false };
-        } else {
-            return { nullptr, false };
-        }
-    };
-
-    const auto removeKeyArgsToTemporary = [](VMGlobals*& g, int numKeyArgsPushed) -> PyrSlot* {
-        if (numKeyArgsPushed > 0) {
-            const auto numKeyArgPairs = numKeyArgsPushed * 2;
-            auto tempKeywords = numKeyArgPairs < temporaryKeywordStackCapacity ? temporaryKeywordStack
-                                                                               : new PyrSlot[numKeyArgsPushed * 2];
-            std::copy(g->sp + 1 - numKeyArgPairs, g->sp + 1, tempKeywords);
-            g->sp -= numKeyArgPairs;
-            return tempKeywords;
-        }
-        return nullptr;
-    };
-
-    const auto pushKeyArgsFromTemp = [](VMGlobals*& g, const PyrSlot* tempKeywords, int numKeyArgsPushed) {
-        if (numKeyArgsPushed > 0) {
-            const auto numKeyArgPairs = numKeyArgsPushed * 2;
-            std::copy(tempKeywords, tempKeywords + numKeyArgPairs + 1, g->sp + 1);
-            g->sp += numKeyArgsPushed * 2;
-            if (tempKeywords != temporaryKeywordStack)
-                delete[] tempKeywords;
-        }
-    };
-
-    const auto maybeExpandStackUpdatePtr = [](VMGlobals*& g, int arraySize, PyrSlot* ptr) -> PyrSlot* {
-        if (arraySize < 0)
-            return ptr; // nothing to expand
-        auto stack = g->gc->Stack();
-        const int currentSize = static_cast<int>(g->sp - stack->slots + 1);
-        const int capacity = static_cast<int>(ARRAYMAXINDEXSIZE(stack));
-        const int needed = currentSize + arraySize + 64; // 64 allow extra for normal stack operators
-        if (needed <= capacity)
-            return ptr;
-        const auto ptrDistance = std::distance(g->sp, ptr);
-        reallocStack(g, needed, currentSize);
-        return g->sp + ptrDistance;
-    };
-
-    // Actual logic.
-    if (NotSym(selectorSlot)) {
-        error("First argument must be a Symbol");
-        return errWrongType;
-    }
-
-    const auto selector = slotRawSymbol(selectorSlot);
-
-    const auto [array, err] = tryGetArray(maybeListSlot);
-    if (err)
-        return errWrongType;
-    if (!array)
-        return notAnArrayEasyReturn();
-
-    const auto tempKeywords = removeKeyArgsToTemporary(g, numKeyArgsPushed);
-
-    // copy normal args next to receiver, overwriting the selector
-    std::copy(receiverSlot + 2, g->sp + 1, receiverSlot + 1);
-    g->sp -= 1;
-
-    const auto newReceiverSlot = maybeExpandStackUpdatePtr(g, array->size, receiverSlot);
-
-    // expand array out last item
-    std::copy(array->slots, array->slots + array->size, g->sp);
-    g->sp += array->size - 1; // remove array
-
-    pushKeyArgsFromTemp(g, tempKeywords, numKeyArgsPushed);
-
-    const auto finalNumArgs = std::distance(newReceiverSlot, g->sp) + 1;
-    sendMessage(g, selector, finalNumArgs, numKeyArgsPushed);
-    g->numpop = 0;
-    return errNone;
-}
-
-int objectPerformList(struct VMGlobals* g, int numArgsPushed) { return objectPerformListWithKeys(g, numArgsPushed, 0); }
-
 
 int objectSuperPerform(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *recvrSlot, *selSlot, *listSlot;
@@ -1457,58 +1345,139 @@ int objectSuperPerformWithKeys(VMGlobals* g, int numArgsPushed, int numKeyArgsPu
 }
 
 
-int objectSuperPerformList(struct VMGlobals* g, int numArgsPushed) {
-    PyrSlot *recvrSlot, *selSlot, *listSlot;
-    PyrSlot *pslot, *qslot;
-    PyrSymbol* selector;
-    int m, mmax, numargslots;
-    PyrObject* array;
+template <class F, class G>
+int performListTemplate(struct VMGlobals* g, int numArgsPushed, int numKeyArgsPushed, F&& notAnArrayEasyReturn,
+                        G&& fullReturnCallSendMessage) {
+    // Right now the stack should looks like (optional arrayArg)
+    //      receiver selector arg1 ...argN [arrayArg] kwName1 kwValue1 ...kwNameN kwValueN
+    // or
+    //      receiver arrayArg kwName1 kwValue1 ...kwNameN kwValueN
+    // In the second case, arrayArg must have a symbol first
+    //
+    // We need to expand the arrayArg and remove the selector
+    //      receiver arg1 ...argN arrayArg1 ...arrayArgN kwName1 kwValue1 ...kwNameN kwValueN
 
-    recvrSlot = g->sp - numArgsPushed + 1;
-    selSlot = recvrSlot + 1;
-    listSlot = g->sp;
-    numargslots = numArgsPushed - 3;
-    if (NotSym(selSlot)) {
-        error("Selector not a Symbol :\n");
+    const auto receiverSlot = g->sp - numArgsPushed + 1;
+    const auto selectorSlot = receiverSlot + 1;
+    const auto maybeListSlot = g->sp - (numKeyArgsPushed * 2);
+
+    // Lots of little functions...
+    const auto tryGetArray = [](PyrSlot* slot) -> std::tuple<PyrObject*, bool> {
+        if (NotObj(slot)) {
+            return { nullptr, false };
+        } else if (slotRawObject(slot)->classptr == class_list) { // cast List to Array
+            auto* t = slotRawObject(slot)->slots;
+            if (NotObj(t) || slotRawObject(t)->classptr != class_array) {
+                error("List array not an Array.\n");
+                dumpObjectSlot(slot);
+                return { nullptr, true };
+            }
+            return { slotRawObject(t), false };
+        } else if (slotRawObject(slot)->classptr == class_array) {
+            return { slotRawObject(slot), false };
+        } else {
+            return { nullptr, false };
+        }
+    };
+
+    const auto removeKeyArgsToTemporary = [](VMGlobals*& g, int numKeyArgsPushed) -> PyrSlot* {
+        if (numKeyArgsPushed > 0) {
+            const auto numKeyArgPairs = numKeyArgsPushed * 2;
+            auto tempKeywords = numKeyArgPairs < temporaryKeywordStackCapacity ? temporaryKeywordStack
+                                                                               : new PyrSlot[numKeyArgsPushed * 2];
+            std::copy(g->sp + 1 - numKeyArgPairs, g->sp + 1, tempKeywords);
+            g->sp -= numKeyArgPairs;
+            return tempKeywords;
+        }
+        return nullptr;
+    };
+
+    const auto pushKeyArgsFromTemp = [](VMGlobals*& g, const PyrSlot* tempKeywords, int numKeyArgsPushed) {
+        if (numKeyArgsPushed > 0) {
+            const auto numKeyArgPairs = numKeyArgsPushed * 2;
+            std::copy(tempKeywords, tempKeywords + numKeyArgPairs + 1, g->sp + 1);
+            g->sp += numKeyArgsPushed * 2;
+            if (tempKeywords != temporaryKeywordStack)
+                delete[] tempKeywords;
+        }
+    };
+
+    const auto maybeExpandStackUpdatePtr = [](VMGlobals*& g, int arraySize, PyrSlot* ptr) -> PyrSlot* {
+        if (arraySize < 0)
+            return ptr; // nothing to expand
+        auto stack = g->gc->Stack();
+        const int currentSize = static_cast<int>(g->sp - stack->slots + 1);
+        const int capacity = static_cast<int>(ARRAYMAXINDEXSIZE(stack));
+        const int needed = currentSize + arraySize + 64; // 64 allow extra for normal stack operators
+        if (needed <= capacity)
+            return ptr;
+        const auto ptrDistance = std::distance(g->sp, ptr);
+        reallocStack(g, needed, currentSize);
+        return g->sp + ptrDistance;
+    };
+
+    // Actual logic.
+    if (NotSym(selectorSlot)) {
+        error("First argument must be a Symbol");
         return errWrongType;
     }
-    selector = slotRawSymbol(selSlot);
-    if (NotObj(listSlot)) {
-        return objectPerform(g, numArgsPushed);
-    }
-    if (slotRawObject(listSlot)->classptr == class_array) {
-    doarray:
-        pslot = recvrSlot;
-        if (numargslots > 0) {
-            qslot = selSlot;
-            for (m = 0; m < numargslots; ++m)
-                slotCopy(++pslot, ++qslot);
-        } else
-            numargslots = 0;
-        array = slotRawObject(listSlot);
-        qslot = array->slots - 1;
-        for (m = 0, mmax = array->size; m < mmax; ++m)
-            slotCopy(++pslot, ++qslot);
-    } else if (slotRawObject(listSlot)->classptr == class_list) {
-        listSlot = slotRawObject(listSlot)->slots;
-        if (NotObj(listSlot) || slotRawObject(listSlot)->classptr != class_array) {
-            error("List array not an Array.\n");
-            dumpObjectSlot(listSlot);
-            return errWrongType;
-        }
-        goto doarray;
-    } else {
-        return objectSuperPerform(g, numArgsPushed);
-    }
-    g->sp += array->size - 2;
-    numArgsPushed = numargslots + array->size + 1;
-    // now the stack looks just like it would for a normal message send
 
-    sendSuperMessage(g, selector, numArgsPushed, 0);
+    const auto selector = slotRawSymbol(selectorSlot);
+
+    const auto [array, err] = tryGetArray(maybeListSlot);
+    if (err)
+        return errWrongType;
+    if (!array)
+        return std::forward<F>(notAnArrayEasyReturn)(g, numArgsPushed, numKeyArgsPushed);
+
+    const auto tempKeywords = removeKeyArgsToTemporary(g, numKeyArgsPushed);
+
+    // copy normal args next to receiver, overwriting the selector
+    std::copy(receiverSlot + 2, g->sp + 1, receiverSlot + 1);
+    g->sp -= 1;
+
+    const auto newReceiverSlot = maybeExpandStackUpdatePtr(g, array->size, receiverSlot);
+
+    // expand array out last item
+    std::copy(array->slots, array->slots + array->size, g->sp);
+    g->sp += array->size - 1; // remove array
+
+    pushKeyArgsFromTemp(g, tempKeywords, numKeyArgsPushed);
+
+    const auto finalNumArgs = std::distance(newReceiverSlot, g->sp) + 1;
+    std::forward<G>(fullReturnCallSendMessage)(g, selector, finalNumArgs, numKeyArgsPushed);
     g->numpop = 0;
     return errNone;
 }
 
+int objectPerformListWithKeys(struct VMGlobals* g, int numArgsPushed, int numKeyArgsPushed) {
+    return performListTemplate(
+        g, numArgsPushed, numKeyArgsPushed,
+        [](struct VMGlobals* g, int numArgs, int numKeyArgs) -> int {
+            return numKeyArgs == 0 ? objectPerform(g, numArgs) : objectPerformWithKeys(g, numArgs, numKeyArgs);
+        },
+        [](struct VMGlobals* g, PyrSymbol* selector, int numArgs, int numKeyArgs) -> void {
+            sendMessage(g, selector, numArgs, numKeyArgs);
+        });
+}
+
+int objectPerformList(struct VMGlobals* g, int numArgsPushed) { return objectPerformListWithKeys(g, numArgsPushed, 0); }
+
+int objectSuperPerformListWithKeys(struct VMGlobals* g, int numArgsPushed, int numKeyArgs) {
+    return performListTemplate(
+        g, numArgsPushed, numKeyArgs,
+        [](struct VMGlobals* g, int numArgs, int numKeyArgs) -> int {
+            return numKeyArgs == 0 ? objectSuperPerform(g, numArgs)
+                                   : objectSuperPerformWithKeys(g, numArgs, numKeyArgs);
+        },
+        [](struct VMGlobals* g, PyrSymbol* selector, int numArgs, int numKeyArgs) -> void {
+            sendSuperMessage(g, selector, numArgs, numKeyArgs);
+        });
+}
+
+int objectSuperPerformList(struct VMGlobals* g, int numArgsPushed) {
+    return objectSuperPerformListWithKeys(g, numArgsPushed, 0);
+}
 
 int objectPerformSelList(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *recvrSlot, *selSlot, *listSlot;
@@ -3781,7 +3750,9 @@ void initPrimitives() {
 
     definePrimitiveWithKeys(base, index, "_SuperPerform", objectSuperPerform, objectSuperPerformWithKeys, 2, 1);
     index += 2;
-    definePrimitive(base, index++, "_SuperPerformList", objectSuperPerformList, 2, 1);
+    definePrimitiveWithKeys(base, index++, "_SuperPerformList", objectSuperPerformList, objectSuperPerformListWithKeys,
+                            2, 1);
+    index += 2;
     definePrimitive(base, index++, "_ObjectPerformMsg", objectPerformSelList, 2, 0);
     // definePrimitive(base, index++, "_ArrayPerformMsg", arrayPerformMsg, 1, 1);
     definePrimitive(base, index++, "_ObjectString", prObjectString, 1, 0);
