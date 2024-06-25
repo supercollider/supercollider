@@ -1,0 +1,70 @@
+name: Test Linux
+on:
+  workflow_call:
+    inputs:
+      artifact-file:
+        required: true
+        type: string
+
+jobs:
+  test-linux:
+    runs-on: ubuntu-22.04
+    env:
+      INSTALL_PATH: ${{ github.workspace }}/build/Install
+      ARTIFACT_FILE: ${{ inputs.artifact-file }}
+      TESTS_PATH: ${{ github.workspace }}/testsuite/classlibrary
+      SCLANG: ${{ github.workspace }}/build/Install/bin/sclang
+      TEST_LIST_PROTO: ${{ github.workspace }}/testsuite/scripts/test_run_proto_gha.scd
+      TEST_LIST_RESULT: ${{ github.workspace }}/testsuite/scripts/run/gha_result.scxtar
+      SCRIPT_RUN_TESTS: ${{ github.workspace }}/testsuite/scripts/sclang_test_runner.scd
+      SCRIPT_ADD_PATH: ${{ github.workspace }}/testsuite/scripts/add_include_path.scd
+      SCRIPT_PRINT_RESULTS: ${{ github.workspace }}/testsuite/scripts/print_results.scd
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false # don't need submodules for testing
+
+      - name: download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_FILE }}
+          path: ${{ env.INSTALL_PATH }}
+
+      - name: Extract artifact
+        run: |
+          cd "$INSTALL_PATH"
+          echo Contents of `pwd`:
+          ls
+          unzip $ARTIFACT_FILE.zip
+
+      - name: setup environment
+        run: |
+          # install dependencies
+          sudo apt-get update
+          sudo apt-get install --yes libsndfile1 libavahi-client-dev libfftw3-dev libicu-dev libudev-dev qtbase5-dev qtwebengine5-dev jackd1 socat
+
+          # add bin to PATH so that scsynth can be found
+          echo "$INSTALL_PATH/bin" >> $GITHUB_PATH
+
+          # start jack
+          jackd --no-realtime --silent -d dummy &
+
+          # start virtual display server
+          export DISPLAY=:99
+          echo "DISPLAY=$DISPLAY" >> $GITHUB_ENV
+          Xvfb $DISPLAY -screen 0 1024x768x16 &
+
+      - name: run tests
+        shell: bash
+        continue-on-error: true
+        run: |
+          # add path
+          $SCLANG $SCRIPT_ADD_PATH $TESTS_PATH
+          # run tests
+          timeout 1200 $SCLANG $SCRIPT_RUN_TESTS $TEST_LIST_PROTO $TEST_LIST_RESULT
+
+      - name: post test results
+        shell: bash
+        run: |
+          $SCLANG $SCRIPT_PRINT_RESULTS $TEST_LIST_RESULT

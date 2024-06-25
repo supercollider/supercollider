@@ -1,0 +1,63 @@
+name: Test Mac OS
+on:
+  workflow_call:
+    inputs:
+      artifact-file:
+        required: true
+        type: string
+
+jobs:
+  test-macos:
+    runs-on: macos-12
+    env:
+      INSTALL_PATH: ${{ github.workspace }}/build/Install
+      ARTIFACT_FILE: ${{ inputs.artifact-file }}
+      TESTS_PATH: ${{ github.workspace }}/testsuite/classlibrary
+      SCLANG: ${{ github.workspace }}/build/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
+      TEST_LIST_PROTO: ${{ github.workspace }}/testsuite/scripts/test_run_proto_gha.scd
+      TEST_LIST_RESULT: ${{ github.workspace }}/testsuite/scripts/run/gha_result.scxtar
+      SCRIPT_RUN_TESTS: ${{ github.workspace }}/testsuite/scripts/sclang_test_runner.scd
+      SCRIPT_ADD_PATH: ${{ github.workspace }}/testsuite/scripts/add_include_path.scd
+      SCRIPT_PRINT_RESULTS: ${{ github.workspace }}/testsuite/scripts/print_results.scd
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false # don't need submodules for testing
+
+      - name: download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_FILE }}
+          path: ${{ env.INSTALL_PATH }}
+
+      - name: Extract artifact
+        run: |
+          cd "$INSTALL_PATH"
+          echo Contents of `pwd`:
+          ls
+          hdiutil attach $ARTIFACT_FILE
+          echo "mkdir SuperCollider"
+          mkdir SuperCollider
+          cp -R /Volumes/SuperCollider/* SuperCollider/
+
+      - name: Setup environment
+        env:
+          HOMEBREW_NO_ANALYTICS: 1
+          HOMEBREW_NO_AUTO_UPDATE: 1
+          HOMEBREW_NO_INSTALL_CLEANUP: 1
+        run: brew install coreutils # to get 'timeout' utility
+
+      - name: Run tests
+        shell: bash
+        continue-on-error: true
+        run: |
+          # add path
+          $SCLANG $SCRIPT_ADD_PATH $TESTS_PATH
+          # run tests
+          timeout 1200 $SCLANG $SCRIPT_RUN_TESTS $TEST_LIST_PROTO $TEST_LIST_RESULT
+
+      - name: Post test results
+        shell: bash
+        run: |
+          $SCLANG $SCRIPT_PRINT_RESULTS $TEST_LIST_RESULT
