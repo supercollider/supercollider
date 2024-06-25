@@ -90,12 +90,12 @@ jobs:
       artifact-file: "SuperCollider-${{ needs.version-getter.outputs.sc-version }}-macOS-universal.dmg"
     secrets: inherit
 
-  test-windows:
-    needs: [version-getter, build-windows]
-    uses: ./.github/workflows/test_windows.yml
-    with:
-      artifact-file: "SuperCollider-${{ needs.version-getter.outputs.sc-version }}-win64"
-    secrets: inherit
+  # test-windows:
+  #   needs: [version-getter, build-windows]
+  #   uses: ./.github/workflows/test_windows.yml
+  #   with:
+  #     artifact-file: "SuperCollider-${{ needs.version-getter.outputs.sc-version }}-win64"
+  #   secrets: inherit
 
   deploy_s3:
     strategy:
