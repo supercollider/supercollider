@@ -1,0 +1,67 @@
+name: Release on Github
+on:
+  push:
+    tags:
+      - Version-[0-9]+.[0-9]+.[0-9]+*
+
+jobs:
+  version-getter:
+    runs-on: ubuntu-22.04
+    outputs:
+      sc-version: ${{ steps.set-version.outputs.version }}
+
+    steps:
+      - name: set version string for artifacts
+        id: set-version
+        run: |
+          SC_VERSION="${${{ github.ref_name }}##Version-}"
+          echo "version=$SC_VERSION" >> "$GITHUB_OUTPUT"
+
+  build-linux:
+    needs: [version-getter]
+    uses: ./.github/workflows/build_linux.yml
+    with:
+      sc-version: ${{ needs.version-getter.outputs.sc-version }}
+    secrets: inherit
+
+  build-macos:
+    needs: [version-getter]
+    uses: ./.github/workflows/build_macos.yml
+    with:
+      sc-version: ${{ needs.version-getter.outputs.sc-version }}
+    secrets: inherit
+
+  build-windows:
+    needs: [version-getter]
+    uses: ./.github/workflows/build_windows.yml
+    with:
+      sc-version: ${{ needs.version-getter.outputs.sc-version }}
+    secrets: inherit
+
+  github-release:
+    name: "Create GitHub release"
+    needs: [version-getter, build-linux, build-macos, build-windows]
+    runs-on: ubuntu-latest
+    env:
+      INSTALL_PATH: ${{ github.workspace }}/Install
+      ARTIFACT_FILE_PREFIX: SuperCollider-${{ needs.version-getter.outputs.sc-version }}
+    steps:
+      - name: Download release artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ${{ env.INSTALL_PATH }} # no "name" paramter - download all artifacts
+
+      - name: Create and upload release files
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: |
+            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-x64.dmg/*
+            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-universal.dmg/*
+            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-arm64.dmg/*
+            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-x64-legacy.dmg/*
+            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win32-installer/*
+            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win64-installer/*
+            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win32/*
+            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win64/*
+          draft: true
