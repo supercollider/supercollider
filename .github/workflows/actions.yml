@@ -13,7 +13,8 @@ on:
       - 'sounds/**'
       - '*.md'
   schedule:
-    - cron:  '0 0 * * 0' # run weekly to refresh cache
+    - cron: '0 0 * * 0' # run weekly to refresh cache
+
 jobs:
   lint:
     runs-on: ubuntu-22.04
@@ -61,138 +62,46 @@ jobs:
       sc-version: ${{ needs.version-getter.outputs.sc-version }}
     secrets: inherit
 
-  macOS:
+  build-macos:
     needs: [lint, version-getter]
     uses: ./.github/workflows/build_macos.yml
     with:
       sc-version: ${{ needs.version-getter.outputs.sc-version }}
     secrets: inherit
 
-  Windows:
+  build-windows:
     needs: [lint, version-getter]
     uses: ./.github/workflows/build_windows.yml
     with:
       sc-version: ${{ needs.version-getter.outputs.sc-version }}
     secrets: inherit
 
-  test:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
+  test-linux:
+    needs: [version-getter, build-linux]
+    uses: ./.github/workflows/test_linux.yml
+    with:
+      artifact-file: "SuperCollider-${{ needs.version-getter.outputs.sc-version }}-linux-jammy-gcc12"
+    secrets: inherit
 
-          - name: macOS
-            runs-on: macos-12
-            sclang: 'build/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang'
-            artifact-suffix: macOS-universal
-            artifact-extension: '.dmg'
+  test-macos:
+    needs: [version-getter, build-macos]
+    uses: ./.github/workflows/test_macos.yml
+    with:
+      artifact-file: "SuperCollider-${{ needs.version-getter.outputs.sc-version }}-macOS-universal.dmg"
+    secrets: inherit
 
-          - name: Linux
-            runs-on: ubuntu-22.04
-            sclang: 'build/Install/bin/sclang'
-            artifact-suffix: linux-jammy-gcc12
-
-          # - name: Windows
-          #   runs-on: windows-2022
-          #   sclang: 'build/Install/SuperCollider/sclang'
-          #   artifact-suffix: win64
-
-    needs: [version-getter, build-linux, macOS, Windows] # unfortunately we can't use matrix expression here to make Linux test depend only on Linux build
-    runs-on: '${{ matrix.runs-on }}'
-    name: 'test on ${{ matrix.name }}'
-    env:
-      INSTALL_PATH: ${{ github.workspace }}/build/Install
-      ARTIFACT_FILE: 'SuperCollider-${{ needs.version-getter.outputs.sc-version }}-${{ matrix.artifact-suffix }}${{ matrix.artifact-extension }}'
-      TESTS_PATH: ${{ github.workspace }}/testsuite/classlibrary
-      SCLANG: ${{ github.workspace }}/${{ matrix.sclang }}
-      TEST_LIST_PROTO: ${{ github.workspace }}/testsuite/scripts/test_run_proto_gha.scd
-      TEST_LIST_RESULT: ${{ github.workspace }}/testsuite/scripts/run/gha_result.scxtar
-      SCRIPT_RUN_TESTS: ${{ github.workspace }}/testsuite/scripts/sclang_test_runner.scd
-      SCRIPT_ADD_PATH: ${{ github.workspace }}/testsuite/scripts/add_include_path.scd
-      SCRIPT_PRINT_RESULTS: ${{ github.workspace }}/testsuite/scripts/print_results.scd
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: false # don't need submodules for testing
-      - name: download artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ env.ARTIFACT_FILE }}
-          path: ${{ env.INSTALL_PATH }}
-      - name: extract artifact
-        shell: bash
-        run: |
-          cd $INSTALL_PATH
-          echo Contents of `pwd`:
-          ls
-          if [[ ${{ runner.os }} == "macOS" ]]; then
-            hdiutil attach $ARTIFACT_FILE
-            echo "mkdir SuperCollider"
-            mkdir SuperCollider
-            cp -R /Volumes/SuperCollider/* SuperCollider/
-          else
-            unzip $ARTIFACT_FILE.zip
-          fi
-      - name: setup Linux environment
-        if: runner.os == 'Linux'
-        run: |
-          # install dependencies
-          sudo apt-get update
-          sudo apt-get install --yes libsndfile1 libavahi-client-dev libfftw3-dev libicu-dev libudev-dev qtbase5-dev qtwebengine5-dev jackd1 socat
-
-          # add bin to PATH so that scsynth can be found
-          echo "$INSTALL_PATH/bin" >> $GITHUB_PATH
-
-          # start jack
-          jackd --no-realtime --silent -d dummy &
-
-          # start virtual display server
-          export DISPLAY=:99
-          echo "DISPLAY=$DISPLAY" >> $GITHUB_ENV
-          Xvfb $DISPLAY -screen 0 1024x768x16 &
-      - name: setup macOS environment
-        if: runner.os == 'macOS'
-        env:
-          HOMEBREW_NO_ANALYTICS: 1
-          HOMEBREW_NO_AUTO_UPDATE: 1
-          HOMEBREW_NO_INSTALL_CLEANUP: 1
-        run: brew install coreutils # to get 'timeout' utility
-      - name: setup Windows environment
-        if: runner.os == 'Windows'
-        shell: bash
-        run: |
-          # install jack
-          # even though SC on Windows doesn't use JACK directly
-          # it will use JackRouter ASIO device
-          curl -O -J -L https://github.com/jackaudio/jack2-releases/releases/download/v1.9.22/jack2-win64-v1.9.22.exe
-
-          echo "installing JACK2"
-          ./jack2-win64-v1.9.22.exe //TYPE="router" //SILENT //SUPPRESSMSGBOXES
-
-          # add bin to PATH so that scsynth can be found
-          echo "$INSTALL_PATH/SuperCollider" >> $GITHUB_PATH
-
-          # start jack
-          /c/Program\ Files/JACK2/jackd.exe --no-realtime -d dummy &
-      - name: run tests
-        shell: bash
-        continue-on-error: true
-        run: |
-          # add path
-          $SCLANG $SCRIPT_ADD_PATH $TESTS_PATH
-          # run tests
-          timeout 1200 $SCLANG $SCRIPT_RUN_TESTS $TEST_LIST_PROTO $TEST_LIST_RESULT
-      - name: post test results
-        shell: bash
-        run: |
-          $SCLANG $SCRIPT_PRINT_RESULTS $TEST_LIST_RESULT
+  # test-windows:
+  #   needs: [version-getter, build-windows]
+  #   uses: ./.github/workflows/test_windows.yml
+  #   with:
+  #     artifact-file: "SuperCollider-${{ needs.version-getter.outputs.sc-version }}-win64"
+  #   secrets: inherit
 
   deploy_s3:
     strategy:
       fail-fast: false
       matrix:
         include:
-
           - artifact-suffix: macOS-universal
             s3-os-name: osx
             s3-artifact-suffx: ''
@@ -213,7 +122,7 @@ jobs:
             s3-create-latest-link: true # create link to pointing to the "latest" build
 
     if: github.repository_owner == 'supercollider' && github.event_name != 'pull_request' # run in the main repo, but not on pull requests
-    needs: [lint, version-getter, macOS, Windows]
+    needs: [lint, version-getter, build-macos, build-windows]
     runs-on: ubuntu-latest
     name: 'deploy ${{ matrix.artifact-suffix }} to s3'
     env:
@@ -286,7 +195,7 @@ jobs:
   # release - list of files uploaded to GH release is specified in the *upload* step
   deploy_gh:
     if: startsWith(github.ref, 'refs/tags/') # run on tagged commits
-    needs: [lint, version-getter, macOS, Windows]
+    needs: [lint, version-getter, build-macos, build-windows]
     runs-on: ubuntu-latest
     name: 'deploy release'
     env:
