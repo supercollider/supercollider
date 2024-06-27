@@ -104,7 +104,7 @@ s.waitForBoot {
 		.icon_(~startIcon)
 		.action_({
 			if (~synth.isNil) {
-				~synth = { |f| SinOsc.ar(f) * 0.1 }.play(args:[\f, ~freq]);
+				~synth = { |f| SinOsc.ar(f) * 0.1 }.play(args: [\f, ~freq]);
 				~synth.onFree { ~synth = nil };
 				~play.icon = ~stopIcon;
 			} {

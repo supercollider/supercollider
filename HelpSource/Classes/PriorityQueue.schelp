@@ -45,7 +45,7 @@ p.put(0.5, \c);
 p.put(0.2, \d);
 p.put(1.0, \e);
 
-while ({ p.notEmpty },{
+while ({ p.notEmpty }, {
 	[p.topPriority, p.pop].postln;
 });
 
@@ -56,11 +56,11 @@ p.pop.postln;
 
 )
 
-[ 0.1, a ]
-[ 0.2, d ]
-[ 0.5, c ]
-[ 1, e ]
-[ 2, b ]
+[0.1, a]
+[0.2, d]
+[0.5, c]
+[1, e]
+[2, b]
 nil
 nil
 nil

@@ -24,13 +24,13 @@ This value will be added to the output.
 Examples::
 
 code::
-{ Hasher.ar(Line.ar(0,1,1), 0.2) }.play;
+{ Hasher.ar(Line.ar(0, 1, 1), 0.2) }.play;
 
 // Even adding a small amount to the input can result in a very different output. Compare these two examples:
 (
 {
 	SinOsc.ar(
-		Hasher.kr(MouseX.kr(0,10).round(1), 300, 500)
+		Hasher.kr(MouseX.kr(0, 10).round(1), 300, 500)
 	) * 0.1
 }.play;
 )
@@ -38,7 +38,7 @@ code::
 (
 {
 	SinOsc.ar(
-		Hasher.kr(MouseX.kr(0,10).round(1) + 0.0001, 300, 500)
+		Hasher.kr(MouseX.kr(0, 10).round(1) + 0.0001, 300, 500)
 	) * 0.1
 }.play;
 )
@@ -47,7 +47,7 @@ code::
 (
 {
 	SinOsc.ar(
-		Hasher.kr(MouseX.kr(0,10), 300, 500)
+		Hasher.kr(MouseX.kr(0, 10), 300, 500)
 	) * 0.1
 }.play;
 )
