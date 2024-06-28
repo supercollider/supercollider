@@ -83,8 +83,30 @@ SCDocHTMLRenderer {
 
 		// paragraph, line height:
 		.replace("&lt;p&gt;", "\n<p>\n")
-		.replace("&lt;p style='line-height:", "<p style='line-height:")
-		.replace("&lt;/p&gt;", "\n</p>\n")
+		//.replace("&lt;p style='line-height:", "<p style='line-height:")
+		.replace("&lt;p style='", "<p style='")
+		.replace("&lt;/p&gt;", "</p>\n")
+
+		// various space:
+		.replace("&amp;hsp;",    "&#x3164;")
+		.replace("&amp;#x20;",   "&#x20;"  ) // space.
+		.replace("&amp;#32;",    "&#32;"   ) // space.
+		.replace("&amp;hairsp;", "&hairsp;") // hair space. &#8202;
+		.replace("&amp;#8239;",  "&#8239;" ) // narrow no-break space.
+		.replace("&amp;ensp;",   "&ensp;"  ) // en space. &#8194;
+		.replace("&amp;emsp;",   "&emsp;"  ) // em space. &#8195;
+		.replace("&amp;emsp16;", "&#8198;" ) // 6-per-em space.
+		.replace("&amp;emsp14;", "&emsp14;") // 4-per-em space. &#8197;
+		.replace("&amp;emsp13;", "&emsp13;") // 3-per-em space. &#8196;
+		.replace("&amp;thinsp;", "&thinsp;") // thin space. &#8201;
+		.replace("&amp;nbsp;",   "&nbsp;"  ) // non breaking space. &#160;
+		.replace("&amp;puncsp;", "&puncsp;") // punctuation space. &#8200;
+		.replace("&amp;numsp;",  "&numsp;" ) // figure space. &#8199;
+		.replace("&amp;#x3164;", "&#x3164;") // Hangul Filler.
+
+		// span
+		.replace("&lt;span style", "<span  style")
+		.replace("&lt;/span&gt;", "</span>")
 
 		// horizontal line:
 		.replace("&lt;hr&gt;", "<hr>")
