@@ -42,7 +42,6 @@ Volume {
 		ServerBoot.add(initFunc, server);
 
 		updateFunc = {
-			ampSynth.isPlaying = false;
 			if(persist) { this.updateSynth }
 		};
 
@@ -66,7 +65,6 @@ Volume {
 				};
 				// triggers when gate closed, so we know ampSynth ends
 				if (ingate <= 0.0) {
-					ampSynth.isPlaying = false;
 					volume = invol;
 					this.changed(\amp, volume);
 				} {
@@ -138,7 +136,6 @@ Volume {
 					ampSynth.onFree {
 						// "ampSynth was freed".postln;
 						this.volume = 0;
-						ampSynth.isPlaying = false;
 					};
 					ampSynth.isPlaying = true;
 				} {
@@ -148,7 +145,6 @@ Volume {
 		} {
 			if(ampSynth.isPlaying) {
 				ampSynth.set(\volumeAmp, 1).release;
-				ampSynth.isPlaying = false
 			}
 		}
 	}
@@ -171,7 +167,6 @@ Volume {
 
 	freeSynth {
 		ampSynth.release;
-		ampSynth.isPlaying = false;
 	}
 
 	// sets volume back to 1 - removes the synth
