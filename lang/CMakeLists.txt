@@ -49,6 +49,7 @@ set(sclang_sources
 	LangPrimSource/PyrPlatformPrim.cpp
 	LangPrimSource/PyrStringPrim.cpp
 	LangPrimSource/PyrSymbolPrim.cpp
+        LangPrimSource/PyrGit.cpp
 	LangPrimSource/PyrUnixPrim.cpp
 	LangPrimSource/PyrSerialPrim.cpp
 	LangSource/AdvancingAllocPool.cpp
@@ -243,6 +244,12 @@ endif()
 
 target_link_libraries(libsclang boost_thread_lib boost_system_lib boost_regex_lib boost_filesystem_lib)
 target_include_directories(libsclang PUBLIC ${boost_include_dirs})
+
+if (NOT WIN32)
+    target_link_libraries(libsclang libgit2 libgit2package util llhttp xdiff ntlmclient)
+else ()
+    target_link_libraries(libsclang libgit2 libgit2package util llhttp xdiff)
+endif ()
 
 if (SCLANG_SERVER)
 	target_link_libraries(libsclang libscsynth)

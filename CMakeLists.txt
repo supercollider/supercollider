@@ -465,6 +465,7 @@ endif()
 add_subdirectory(tools)
 add_subdirectory(external_libraries)
 
+
 if(NOT YAMLCPP_FOUND)
   set(YAMLCPP_LIBRARY yaml)
 endif()
@@ -490,7 +491,6 @@ add_subdirectory(server)
 add_subdirectory(lang)
 add_subdirectory(platform)
 add_subdirectory(editors)
-add_subdirectory(libgit2)
 
 if(UNIX AND NOT APPLE)
     install(DIRECTORY include/common include/plugin_interface include/server include/lang
