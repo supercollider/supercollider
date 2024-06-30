@@ -490,6 +490,7 @@ add_subdirectory(server)
 add_subdirectory(lang)
 add_subdirectory(platform)
 add_subdirectory(editors)
+add_subdirectory(libgit2)
 
 if(UNIX AND NOT APPLE)
     install(DIRECTORY include/common include/plugin_interface include/server include/lang
