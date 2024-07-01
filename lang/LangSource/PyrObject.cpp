@@ -19,10 +19,9 @@
 */
 
 #include <atomic>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include <limits.h>
+#include <cstdlib>
+#include <cstring>
+#include <climits>
 #include "GC.h"
 #include "PyrMessage.h"
 #include "PyrInterpreter.h"
@@ -32,14 +31,12 @@
 #include "PyrLexer.h"
 #include "InitAlloc.h"
 #include "Hash.h"
-#include "SC_Constants.h"
 #include "SC_Alloca.h"
 #include "SC_Lock.h"
 
 #include <set>
 #include <limits>
 
-#include <memory>
 #include <boost/range/irange.hpp>
 
 #define BOOST_THREAD_VERSION 4

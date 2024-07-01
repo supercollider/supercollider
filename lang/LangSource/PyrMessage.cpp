@@ -25,13 +25,12 @@
 #include "PyrListPrim.h"
 #include "PyrSymbol.h"
 #include "GC.h"
-#include <stdlib.h>
-#include <assert.h>
-#include <optional>
 #include "PredefinedSymbols.h"
 #include "PyrObjectProto.h"
 #include "SCBase.h"
-#include "PyrListPrim.h"
+
+#include <optional>
+#include <csetjmp>
 
 #define DEBUGMETHODS 0
 #define METHODMETER 0
@@ -264,9 +263,9 @@ lookup_again:
 
     case methPrimitive: {
         if (numKeyArgsPushed > 0)
-            doPrimitiveWithKeys(g, method, numArgsPushed, numKeyArgsPushed);
+            doPrimitiveWithKeys(g, method, static_cast<int>(numArgsPushed), static_cast<int>(numKeyArgsPushed));
         else
-            doPrimitive(g, method, numArgsPushed);
+            doPrimitive(g, method, static_cast<int>(numArgsPushed));
 
         return;
     }
@@ -332,7 +331,7 @@ bool tryUniqueMethod(VMGlobals* g, PyrMethod* meth, PyrSlot* receiverSlot, PyrSl
     ++slot2;
     slotCopy(selectorSlot, receiverSlot);
     slotCopy(receiverSlot, slot2);
-    blockValueWithKeys(g, numArgsPushed + 1, numKeyArgsPushed);
+    blockValueWithKeys(g, static_cast<int>(numArgsPushed + 1), static_cast<int>(numKeyArgsPushed));
     return true;
 }
 
@@ -383,60 +382,12 @@ inline PyrFrame* createFrameToCall(VMGlobals* g, PyrBlock* block) {
     return frame;
 }
 
-
-class AllocArrayIfWrittenTo {
-public:
-    AllocArrayIfWrittenTo() = delete;
-    AllocArrayIfWrittenTo(PyrObject* default_resource, long size, VMGlobals* g):
-        array(default_resource),
-        size(size),
-        g(g) {}
-    AllocArrayIfWrittenTo(AllocArrayIfWrittenTo&&) = default;
-    AllocArrayIfWrittenTo(const AllocArrayIfWrittenTo&) = default;
-    AllocArrayIfWrittenTo& operator=(AllocArrayIfWrittenTo&&) = default;
-    AllocArrayIfWrittenTo& operator=(const AllocArrayIfWrittenTo&) = default;
-    ~AllocArrayIfWrittenTo() = default;
-
-    void append(const PyrSlot* obj) {
-        if (!hasBeenWrittenTo) {
-            array = newPyrArray(g->gc, static_cast<int>(size), 0, false);
-            arrayWritePtr = array->slots;
-            hasBeenWrittenTo = true;
-        }
-        slotCopy(arrayWritePtr, obj);
-        ++arrayWritePtr;
-    }
-    void copyInto(const PyrSlot* first, const PyrSlot* last) {
-        if (!hasBeenWrittenTo) {
-            array = newPyrArray(g->gc, static_cast<int>(size), 0, false);
-            arrayWritePtr = array->slots;
-            hasBeenWrittenTo = true;
-        }
-        std::copy(first, last, array->slots);
-    }
-
-    PyrObject* getArray() {
-        if (!hasBeenWrittenTo)
-            return array;
-        array->size = static_cast<int>(std::distance(array->slots, arrayWritePtr));
-        return array;
-    }
-
-private:
-    bool hasBeenWrittenTo = false;
-    PyrObject* array;
-    PyrSlot* arrayWritePtr = nullptr;
-    long size;
-    VMGlobals* g;
-};
-
-
 void kwArgMismatchErrorMethod(const char* argName, void* ptr) {
     auto meth = reinterpret_cast<PyrMethod*>(ptr);
     post("WARNING: keyword arg '%s' not found in call to %s:%s\n", argName,
          slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name);
 }
-void kwArgMismatchErrorBlock(const char* argName, void* ptr) {
+void kwArgMismatchErrorBlock(const char* argName, void*) {
     post("WARNING: keyword arg '%s' not found in call to function.\n", argName);
 }
 
@@ -591,7 +542,6 @@ HOT void returnFromBlock(VMGlobals* g) {
     PyrBlock* block;
     PyrMethod* meth;
     PyrMethodRaw* methraw;
-    PyrMethodRaw* blockraw;
 
     // if (gTraceInterpreter) postfl("->returnFromBlock\n");
     // printf("->returnFromBlock\n");
@@ -605,7 +555,6 @@ HOT void returnFromBlock(VMGlobals* g) {
     returnFrame = slotRawFrame(&curframe->caller);
     if (returnFrame) {
         block = slotRawBlock(&curframe->method);
-        blockraw = METHRAW(block);
 
         g->frame = returnFrame;
         g->ip = (unsigned char*)slotRawPtr(&returnFrame->ip);
@@ -806,5 +755,5 @@ int keywordFixStack(VMGlobals* g, PyrMethod* meth, PyrMethodRaw* methraw, long a
     }
 
     g->sp += numArgsPushed - allArgsPushed;
-    return numArgsPushed;
+    return static_cast<int>(numArgsPushed);
 }

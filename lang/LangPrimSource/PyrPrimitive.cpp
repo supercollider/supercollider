@@ -18,38 +18,34 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
 #include "PyrKernel.h"
 #include "PyrObject.h"
 #include "PyrPrimitive.h"
 #include "PyrPrimitiveProto.h"
 #include "PyrSignal.h"
-#include "PyrSched.h"
 #include "PyrSignalPrim.h"
-#include "PyrFilePrim.h"
 #include "PyrMathPrim.h"
 #include "PyrListPrim.h"
 #include "Opcodes.h"
-#include "SC_InlineUnaryOp.h"
 #include "SC_InlineBinaryOp.h"
 #include "PyrMessage.h"
 #include "PyrParseNode.h"
 #include "PyrLexer.h"
 #include "PyrKernelProto.h"
 #include "PyrInterpreter.h"
-#include "PyrObjectProto.h"
 #include "PyrArchiverT.h"
 #include "PyrDeepCopier.h"
 #include "PyrDeepFreezer.h"
-//#include "Wacom.h"
 #include "InitAlloc.h"
 #include "SC_AudioDevicePrim.hpp"
 #include "SC_LanguageConfig.hpp"
 #include "SC_Filesystem.hpp"
 #include "SC_Version.hpp"
+
 #include <map>
+#include <cstdlib>
+#include <cstring>
+#include <csetjmp>
 
 #ifdef _WIN32
 #    include <direct.h>
