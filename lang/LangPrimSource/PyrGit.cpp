@@ -4,8 +4,7 @@
 #include "VMGlobals.h"
 #include "PyrObject.h"
 #include "SC_LanguageClient.h"
-
-#include "git2.h"
+#include "include/git2.h"
 
 
 int prGitInit(struct VMGlobals* g, int numArgsPushed) {

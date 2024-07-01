@@ -11,6 +11,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     LangPrimSource
 
                     ${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
+        ${CMAKE_SOURCE_DIR}/external_libraries/libgit
                     LangSource/Bison
 
                     ${YAMLCPP_INCLUDE_DIR}
