@@ -245,11 +245,12 @@ endif()
 target_link_libraries(libsclang boost_thread_lib boost_system_lib boost_regex_lib boost_filesystem_lib)
 target_include_directories(libsclang PUBLIC ${boost_include_dirs})
 
-if (NOT WIN32)
-    target_link_libraries(libsclang libgit2 libgit2package util llhttp xdiff ntlmclient)
-else ()
-    target_link_libraries(libsclang libgit2 libgit2package util llhttp xdiff)
-endif ()
+
+target_include_directories(libsclang PRIVATE ${LIBGIT2_INCLUDES} ${LIBGIT2_DEPENDENCY_INCLUDES})
+target_include_directories(libsclang SYSTEM PRIVATE ${LIBGIT2_SYSTEM_INCLUDES})
+
+target_link_libraries(libsclang libgit2package)
+
 
 if (SCLANG_SERVER)
 	target_link_libraries(libsclang libscsynth)
