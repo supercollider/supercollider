@@ -249,10 +249,20 @@ target_link_libraries(libsclang boost_thread_lib boost_system_lib boost_regex_li
 target_include_directories(libsclang PUBLIC ${boost_include_dirs})
 
 
-target_include_directories(libsclang PUBLIC ${LIBGIT2_INCLUDES} ${LIBGIT2_DEPENDENCY_INCLUDES})
-target_include_directories(libsclang SYSTEM PRIVATE ${LIBGIT2_SYSTEM_INCLUDES})
+#target_include_directories(libsclang PUBLIC ${LIBGIT2_INCLUDES} ${LIBGIT2_DEPENDENCY_INCLUDES})
+#target_include_directories(libsclang SYSTEM PRIVATE ${LIBGIT2_SYSTEM_INCLUDES})
 
-target_link_libraries(libsclang libgit2package)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LIBGIT2 REQUIRED IMPORTED_TARGET libgit2)
+set_property(TARGET libgit2package PROPERTY BUILD_FUZZERS OFF)
+set_property(TARGET libgit2package PROPERTY BUILD_EXAMPLES OFF)
+set_property(TARGET libgit2package PROPERTY BUILD_CLI OFF)
+set_property(TARGET libgit2package PROPERTY BUILD_SHARED_LIBS OFF)
+set_property(TARGET libgit2 PROPERTY BUILD_FUZZERS OFF)
+set_property(TARGET libgit2 PROPERTY BUILD_EXAMPLES OFF)
+set_property(TARGET libgit2 PROPERTY BUILD_CLI OFF)
+set_property(TARGET libgit2 PROPERTY BUILD_SHARED_LIBS OFF)
+target_link_libraries(libsclang PkgConfig::LIBGIT2)
 
 
 if (SCLANG_SERVER)
