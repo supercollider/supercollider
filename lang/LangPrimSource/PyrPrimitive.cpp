@@ -1353,9 +1353,7 @@ int performListTemplate(struct VMGlobals* g, int numArgsPushed, int numKeyArgsPu
     // We need to expand the arrayArg and remove the selector
     //      receiver arg1 ...argN arrayArg1 ...arrayArgN kwName1 kwValue1 ...kwNameN kwValueN
 
-    const auto receiverSlot = g->sp - numArgsPushed + 1;
-    const auto selectorSlot = receiverSlot + 1;
-    const auto maybeListSlot = g->sp - (numKeyArgsPushed * 2);
+    auto receiverSlot = g->sp - numArgsPushed + 1;
 
     // Lots of little functions...
     const auto tryGetArray = [](PyrSlot* slot) -> std::tuple<PyrObject*, bool> {
@@ -1377,48 +1375,34 @@ int performListTemplate(struct VMGlobals* g, int numArgsPushed, int numKeyArgsPu
     };
 
     const auto removeKeyArgsToTemporary = [](VMGlobals*& g, int numKeyArgsPushed) -> PyrSlot* {
-        if (numKeyArgsPushed > 0) {
-            const auto numKeyArgPairs = numKeyArgsPushed * 2;
-            auto tempKeywords = numKeyArgPairs < temporaryKeywordStackCapacity ? temporaryKeywordStack
-                                                                               : new PyrSlot[numKeyArgsPushed * 2];
-            std::copy(g->sp + 1 - numKeyArgPairs, g->sp + 1, tempKeywords);
-            g->sp -= numKeyArgPairs;
-            return tempKeywords;
-        }
-        return nullptr;
+        if (numKeyArgsPushed <= 0)
+            return nullptr;
+        const auto numKeyArgPairs = numKeyArgsPushed * 2;
+        auto tempKeywords =
+            numKeyArgPairs < temporaryKeywordStackCapacity ? temporaryKeywordStack : new PyrSlot[numKeyArgsPushed * 2];
+        std::copy(g->sp + 1 - numKeyArgPairs, g->sp + 1, tempKeywords);
+        g->sp -= numKeyArgPairs;
+        return tempKeywords;
     };
 
     const auto pushKeyArgsFromTemp = [](VMGlobals*& g, const PyrSlot* tempKeywords, int numKeyArgsPushed) {
-        if (numKeyArgsPushed > 0) {
-            const auto numKeyArgPairs = numKeyArgsPushed * 2;
-            std::copy(tempKeywords, tempKeywords + numKeyArgPairs + 1, g->sp + 1);
-            g->sp += numKeyArgsPushed * 2;
-            if (tempKeywords != temporaryKeywordStack)
-                delete[] tempKeywords;
-        }
+        if (numKeyArgsPushed <= 0)
+            return;
+        const auto numKeyArgPairs = numKeyArgsPushed * 2;
+        std::copy(tempKeywords, tempKeywords + numKeyArgPairs + 1, g->sp + 1);
+        g->sp += numKeyArgsPushed * 2;
+        if (tempKeywords != temporaryKeywordStack)
+            delete[] tempKeywords;
     };
 
-    const auto maybeExpandStackUpdatePtr = [](VMGlobals*& g, int arraySize, PyrSlot* ptr) -> PyrSlot* {
-        if (arraySize < 0)
-            return ptr; // nothing to expand
-        auto stack = g->gc->Stack();
-        const int currentSize = static_cast<int>(g->sp - stack->slots + 1);
-        const int capacity = static_cast<int>(ARRAYMAXINDEXSIZE(stack));
-        const int needed = currentSize + arraySize + 64; // 64 allow extra for normal stack operators
-        if (needed <= capacity)
-            return ptr;
-        const auto ptrDistance = std::distance(g->sp, ptr);
-        reallocStack(g, needed, currentSize);
-        return g->sp + ptrDistance;
-    };
 
     // Actual logic.
-    if (NotSym(selectorSlot)) {
+    if (NotSym(receiverSlot + 1)) {
         error("First argument must be a Symbol");
         return errWrongType;
     }
-
-    const auto selector = slotRawSymbol(selectorSlot);
+    const auto selector = slotRawSymbol(receiverSlot + 1);
+    const auto maybeListSlot = g->sp - (numKeyArgsPushed * 2);
 
     const auto [array, err] = tryGetArray(maybeListSlot);
     if (err)
@@ -1428,11 +1412,20 @@ int performListTemplate(struct VMGlobals* g, int numArgsPushed, int numKeyArgsPu
 
     const auto tempKeywords = removeKeyArgsToTemporary(g, numKeyArgsPushed);
 
+    if (array->size > 0) {
+        auto stack = g->gc->Stack();
+        int stackDepth = g->sp - stack->slots + 1;
+        int stackSize = ARRAYMAXINDEXSIZE(stack);
+        int stackNeeded = stackDepth + array->size + 64; // 64 to allow extra for normal stack operations.
+        if (stackNeeded > stackSize) {
+            reallocStack(g, stackNeeded, stackDepth);
+            receiverSlot = g->sp - numArgsPushed + 1;
+        }
+    }
+
     // copy normal args next to receiver, overwriting the selector
     std::copy(receiverSlot + 2, g->sp + 1, receiverSlot + 1);
     g->sp -= 1;
-
-    const auto newReceiverSlot = maybeExpandStackUpdatePtr(g, array->size, receiverSlot);
 
     // expand array out last item
     std::copy(array->slots, array->slots + array->size, g->sp);
@@ -1440,7 +1433,7 @@ int performListTemplate(struct VMGlobals* g, int numArgsPushed, int numKeyArgsPu
 
     pushKeyArgsFromTemp(g, tempKeywords, numKeyArgsPushed);
 
-    const auto finalNumArgs = std::distance(newReceiverSlot, g->sp) + 1;
+    const auto finalNumArgs = std::distance(receiverSlot, g->sp) + 1;
     std::forward<G>(fullReturnCallSendMessage)(g, selector, finalNumArgs, numKeyArgsPushed);
     g->numpop = 0;
     return errNone;
