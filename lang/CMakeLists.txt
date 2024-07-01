@@ -1,4 +1,3 @@
-
 include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/include/lang
                     ${CMAKE_SOURCE_DIR}/include/plugin_interface
@@ -11,7 +10,10 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     LangPrimSource
 
                     ${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
-        ${CMAKE_SOURCE_DIR}/external_libraries/libgit
+
+        ${CMAKE_SOURCE_DIR}/external_libraries/libgit/include
+        ${LIBGIT2_INCLUDES}
+
                     LangSource/Bison
 
                     ${YAMLCPP_INCLUDE_DIR}
@@ -247,7 +249,7 @@ target_link_libraries(libsclang boost_thread_lib boost_system_lib boost_regex_li
 target_include_directories(libsclang PUBLIC ${boost_include_dirs})
 
 
-target_include_directories(libsclang PRIVATE ${LIBGIT2_INCLUDES} ${LIBGIT2_DEPENDENCY_INCLUDES})
+target_include_directories(libsclang PUBLIC ${LIBGIT2_INCLUDES} ${LIBGIT2_DEPENDENCY_INCLUDES})
 target_include_directories(libsclang SYSTEM PRIVATE ${LIBGIT2_SYSTEM_INCLUDES})
 
 target_link_libraries(libsclang libgit2package)
