@@ -1341,40 +1341,61 @@ int objectSuperPerformWithKeys(VMGlobals* g, int numArgsPushed, int numKeyArgsPu
 }
 
 
-template <class F, class G>
-int performListTemplate(struct VMGlobals* g, int numArgsPushed, int numKeyArgsPushed, F&& notAnArrayEasyReturn,
-                        G&& fullReturnCallSendMessage) {
-    // Right now the stack should looks like (optional arrayArg)
-    //      receiver selector arg1 ...argN [arrayArg] kwName1 kwValue1 ...kwNameN kwValueN
-    // or
-    //      receiver arrayArg kwName1 kwValue1 ...kwNameN kwValueN
-    // In the second case, arrayArg must have a symbol first
+// Implementation of performList, superPerformList, performListWithKeys, ....
+// The two templates here should be callables
+template <class EasyReturn, class FullReturn>
+int performListTemplate(struct VMGlobals* g, int numArgsPushed, int numKeyArgsPushed, EasyReturn&& notAnArrayEasyReturn,
+                        FullReturn&& fullReturnCallSendMessage) {
+    // Right now the stack should looks like...
+    //      receiver selector [arg1 ...argN] [arrayArg] [kwName1 kwValue1 ...kwNameN kwValueN]
+    //    Where square brackets are optional, but there must be either [arg1...argN] or [arrayArg] (or both).
     //
     // We need to expand the arrayArg and remove the selector
     //      receiver arg1 ...argN arrayArg1 ...arrayArgN kwName1 kwValue1 ...kwNameN kwValueN
 
-    auto receiverSlot = g->sp - numArgsPushed + 1;
+    static_assert(std::is_invocable<EasyReturn, VMGlobals*, int, int>::value,
+                  "Easy return function must be callable with VMGlobals, int, int.");
+    static_assert(std::is_invocable_r<int, EasyReturn, VMGlobals*, int, int>::value,
+                  "Easy return function must return an int.");
 
-    // Lots of little functions...
-    const auto tryGetArray = [](PyrSlot* slot) -> std::tuple<PyrObject*, bool> {
-        if (NotObj(slot)) {
-            return { nullptr, false };
-        } else if (slotRawObject(slot)->classptr == class_list) { // cast List to Array
-            auto* t = slotRawObject(slot)->slots;
+    static_assert(std::is_invocable<FullReturn, VMGlobals*, PyrSymbol*, int, int>::value,
+                  "Full return function must be callable with VMGlobals, PyrSymbol*, int, int.");
+    static_assert(std::is_invocable_r<void, FullReturn, VMGlobals*, PyrSymbol*, int, int>::value,
+                  "Full return function must return void.");
+
+
+    auto receiverSlot = g->sp - numArgsPushed + 1;
+    int rollingNumArgsOnStack = numArgsPushed;
+
+    if (NotSym(receiverSlot + 1)) {
+        error("First argument must be a Symbol");
+        return errWrongType;
+    }
+    const auto selector = slotRawSymbol(receiverSlot + 1);
+
+    PyrObject* array;
+    {
+        const auto maybeListSlot = g->sp - (numKeyArgsPushed * 2);
+        if (NotObj(maybeListSlot)) {
+            return std::forward<EasyReturn>(notAnArrayEasyReturn)(g, numArgsPushed, numKeyArgsPushed);
+        } else if (slotRawObject(maybeListSlot)->classptr == class_list) { // cast List to Array
+            auto* t = slotRawObject(maybeListSlot)->slots;
             if (NotObj(t) || slotRawObject(t)->classptr != class_array) {
                 error("List array not an Array.\n");
-                dumpObjectSlot(slot);
-                return { nullptr, true };
+                dumpObjectSlot(maybeListSlot);
+                return errWrongType;
             }
-            return { slotRawObject(t), false };
-        } else if (slotRawObject(slot)->classptr == class_array) {
-            return { slotRawObject(slot), false };
-        } else {
-            return { nullptr, false };
+            array = slotRawObject(t);
+        } else if (slotRawObject(maybeListSlot)->classptr == class_array) {
+            array = slotRawObject(maybeListSlot);
+        } else { // An object, but not an Array nor List.
+            return std::forward<EasyReturn>(notAnArrayEasyReturn)(g, numArgsPushed, numKeyArgsPushed);
         }
-    };
+    }
+    assert(array);
 
-    const auto removeKeyArgsToTemporary = [](VMGlobals*& g, int numKeyArgsPushed) -> PyrSlot* {
+    // Put keyword into temporary storage, return nullptr if none exist
+    const auto tempKeywords = [&]() -> PyrSlot* {
         if (numKeyArgsPushed <= 0)
             return nullptr;
         const auto numKeyArgPairs = numKeyArgsPushed * 2;
@@ -1382,59 +1403,46 @@ int performListTemplate(struct VMGlobals* g, int numArgsPushed, int numKeyArgsPu
             numKeyArgPairs < temporaryKeywordStackCapacity ? temporaryKeywordStack : new PyrSlot[numKeyArgsPushed * 2];
         std::copy(g->sp + 1 - numKeyArgPairs, g->sp + 1, tempKeywords);
         g->sp -= numKeyArgPairs;
+        rollingNumArgsOnStack -= numKeyArgPairs;
         return tempKeywords;
-    };
+    }();
 
-    const auto pushKeyArgsFromTemp = [](VMGlobals*& g, const PyrSlot* tempKeywords, int numKeyArgsPushed) {
-        if (numKeyArgsPushed <= 0)
-            return;
-        const auto numKeyArgPairs = numKeyArgsPushed * 2;
-        std::copy(tempKeywords, tempKeywords + numKeyArgPairs + 1, g->sp + 1);
-        g->sp += numKeyArgsPushed * 2;
-        if (tempKeywords != temporaryKeywordStack)
-            delete[] tempKeywords;
-    };
-
-
-    // Actual logic.
-    if (NotSym(receiverSlot + 1)) {
-        error("First argument must be a Symbol");
-        return errWrongType;
-    }
-    const auto selector = slotRawSymbol(receiverSlot + 1);
-    const auto maybeListSlot = g->sp - (numKeyArgsPushed * 2);
-
-    const auto [array, err] = tryGetArray(maybeListSlot);
-    if (err)
-        return errWrongType;
-    if (!array)
-        return std::forward<F>(notAnArrayEasyReturn)(g, numArgsPushed, numKeyArgsPushed);
-
-    const auto tempKeywords = removeKeyArgsToTemporary(g, numKeyArgsPushed);
-
+    // realloc stack if needed.
     if (array->size > 0) {
         auto stack = g->gc->Stack();
-        int stackDepth = g->sp - stack->slots + 1;
-        int stackSize = ARRAYMAXINDEXSIZE(stack);
+        int stackDepth = static_cast<int>(g->sp - stack->slots + 1);
+        int stackSize = static_cast<int>(ARRAYMAXINDEXSIZE(stack));
         int stackNeeded = stackDepth + array->size + 64; // 64 to allow extra for normal stack operations.
+        assert(stackDepth >= 0);
+        assert(stackSize >= 0);
+        assert(stackNeeded >= 0);
         if (stackNeeded > stackSize) {
             reallocStack(g, stackNeeded, stackDepth);
-            receiverSlot = g->sp - numArgsPushed + 1;
+            receiverSlot = g->sp - rollingNumArgsOnStack + 1;
         }
     }
 
-    // copy normal args next to receiver, overwriting the selector
+    // copy remaining args next to receiver, overwriting the selector
     std::copy(receiverSlot + 2, g->sp + 1, receiverSlot + 1);
     g->sp -= 1;
+    rollingNumArgsOnStack -= 1;
 
     // expand array out last item
     std::copy(array->slots, array->slots + array->size, g->sp);
     g->sp += array->size - 1; // remove array
+    rollingNumArgsOnStack += array->size - 1;
 
-    pushKeyArgsFromTemp(g, tempKeywords, numKeyArgsPushed);
+    // Put keywords back onto stack any were present.
+    if (numKeyArgsPushed > 0) {
+        const auto numKeyArgPairs = numKeyArgsPushed * 2;
+        std::copy(tempKeywords, tempKeywords + numKeyArgPairs + 1, g->sp + 1);
+        g->sp += numKeyArgsPushed * 2;
+        rollingNumArgsOnStack += numKeyArgsPushed * 2;
+        if (tempKeywords != temporaryKeywordStack)
+            delete[] tempKeywords;
+    }
 
-    const auto finalNumArgs = std::distance(receiverSlot, g->sp) + 1;
-    std::forward<G>(fullReturnCallSendMessage)(g, selector, finalNumArgs, numKeyArgsPushed);
+    std::forward<FullReturn>(fullReturnCallSendMessage)(g, selector, rollingNumArgsOnStack, numKeyArgsPushed);
     g->numpop = 0;
     return errNone;
 }
