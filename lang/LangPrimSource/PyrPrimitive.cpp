@@ -977,7 +977,7 @@ int blockValueEnvirWithKeys(VMGlobals* g, int allArgsPushed, int numKeyArgsPushe
     return errNone;
 }
 
-int objectPerformArgsAndKwArgs(struct VMGlobals* g, int numArgsPushed) {
+int objectPerformArgs(struct VMGlobals* g, int numArgsPushed) {
     auto receiverSlot = g->sp - numArgsPushed + 1;
     auto selectorSlot = receiverSlot + 1;
     auto argsArraySlot = selectorSlot + 1;
@@ -991,7 +991,7 @@ int objectPerformArgsAndKwArgs(struct VMGlobals* g, int numArgsPushed) {
     if (!IsSym(selectorSlot)) {
         char str[128];
         slotString(selectorSlot, str);
-        post("performArgsAndKwArgs 'selector' must be either a Symbol, received: '%s'", str);
+        post("performArgs 'selector' must be either a Symbol, received: '%s'", str);
         return errWrongType;
     }
     auto selector = slotRawSymbol(selectorSlot);
@@ -1004,7 +1004,7 @@ int objectPerformArgsAndKwArgs(struct VMGlobals* g, int numArgsPushed) {
     else {
         char str[128];
         slotString(argsArraySlot, str);
-        post("performArgsAndKwArgs 'args' must be either nil or an Array, received: '%s'", str);
+        post("performArgs 'args' must be either nil or an Array, received: '%s'", str);
         return errWrongType;
     }
 
@@ -1016,14 +1016,14 @@ int objectPerformArgsAndKwArgs(struct VMGlobals* g, int numArgsPushed) {
     else {
         char str[128];
         slotString(kwargsArraySlot, str);
-        post("performArgsAndKwArgs 'kwargs' must be either nil or an Array, received: '%s'", str);
+        post("performArgs 'kwargs' must be either nil or an Array, received: '%s'", str);
         return errWrongType;
     }
 
     const auto argsSize = argsArray ? argsArray->size : 0;
     const auto kwSize = kwargsArray ? kwargsArray->size : 0;
     if (kwSize % 2 == 1) {
-        error("Should be an even number of keyword arguments as they are Symbol value pairs.\n");
+        error("WARNING: Keyword arguments must be a key-value pair array, where the key is a Symbol.\n");
         return errFailed;
     }
 
@@ -3732,7 +3732,7 @@ void initPrimitives() {
     definePrimitive(base, index++, "_NotIdentical", objectNotIdentical, 2, 0);
     definePrimitiveWithKeys(base, index, "_ObjectPerform", objectPerform, objectPerformWithKeys, 2, 1);
     index += 2;
-    definePrimitive(base, index++, "_ObjectPerformArgsAndKwArgs", objectPerformArgsAndKwArgs, 4, 0);
+    definePrimitive(base, index++, "_ObjectPerformArgs", objectPerformArgs, 4, 0);
 
     definePrimitiveWithKeys(base, index, "_ObjectPerformList", objectPerformList, objectPerformListWithKeys, 2, 1);
     index += 2;

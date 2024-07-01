@@ -541,10 +541,10 @@ IdentityDictionary : Dictionary {
 
 	doesNotUnderstand { |selector... args, kwargs|
 		if (know.not) {
-            ^super.performArgsAndKwArgs(\doesNotUnderstand, args, kwargs)
+            ^super.performArgs(\doesNotUnderstand, args, kwargs)
 		};
         this[selector] !? { |func|
-            ^func.performArgsAndKwArgs(\functionPerformList, [\value, this] ++ args, kwargs);
+            ^func.performArgs(\functionPerformList, [\value, this] ++ args, kwargs);
         };
 
         if (selector.isSetter) {
@@ -557,7 +557,7 @@ IdentityDictionary : Dictionary {
         };
 
         this[\forward] !? { |func|
-            ^func.performArgsAndKwArgs(\functionPerformList, [\value, this, selector] ++ args, kwargs);
+            ^func.performArgs(\functionPerformList, [\value, this, selector] ++ args, kwargs);
         };
 
         ^nil

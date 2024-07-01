@@ -76,8 +76,8 @@ Object {
 	respondsTo { arg aSymbol; _ObjectRespondsTo; ^this.primitiveFailed }
 
     // args and kwargs should be arrays here, not variable arguments!
-	performArgsAndKwArgs { |selector, args, kwargs|
-		_ObjectPerformArgsAndKwArgs;
+	performArgs { |selector, args, kwargs|
+		_ObjectPerformArgs;
 		^this.primitiveFailed
 	}
 	performMsg { |msg|
@@ -112,7 +112,7 @@ Object {
 
 	tryPerform { |  ... args, kwargs|
 		^if(this.respondsTo(args[0]), {
-			this.performArgsAndKwArgs(args[0],  args[1..], kwargs)
+			this.performArgs(args[0],  args[1..], kwargs)
 		})
 	}
 
@@ -135,7 +135,7 @@ Object {
 			val !? { args[i] = val };
 		};
 
-		^this.performArgsAndKwArgs(selector, args);
+		^this.performArgs(selector, args);
 	}
 
 	performKeyValuePairs { |selector, pairs|
