@@ -2,7 +2,7 @@
     "version": 3,
     "configurePresets": [
         {
-            "name": "macOS base",
+            "name": "macOS-Xcode-base",
             "hidden": true,
             "binaryDir": "${sourceDir}/build/",
             "generator": "Xcode",
@@ -11,18 +11,22 @@
             }
         },
         {
-            "inherits": "macOS base",
-            "name": "macOS_supernova",
-            "displayName": "macOS with supernova",
+            "inherits": "macOS-Xcode-base",
+            "name": "macOS-Xcode-wo-supernova",
+            "displayName": "macOS without supernova via Xcode",
+            "description": "macOS without supernova via Xcode",
             "cacheVariables": {
-                "SUPERNOVA": "ON"
+                "SUPERNOVA": "OFF"
             }
         },
         {
-            "inherits": "macOS base",
-            "name": "macOS",
-            "displayName": "macOS without supernova",
-            "description": "macOS without supernova"
+            "inherits": "macOS-Xcode-base",
+            "name": "macOS-Xcode",
+            "displayName": "macOS with supernova via Xcode (default macOS build)",
+            "description": "macOS with supernova via Xcode (default macOS build)",
+            "cacheVariables": {
+                "SUPERNOVA": "ON"
+            }
         }
     ]
 }
