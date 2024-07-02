@@ -983,15 +983,10 @@ int objectPerformArgs(struct VMGlobals* g, int numArgsPushed) {
     auto argsArraySlot = selectorSlot + 1;
     auto kwargsArraySlot = argsArraySlot + 1;
 
-
-    // Pull selector off the stack.
-    // Copy contents of arguments arrays onto the stack.
-    // Call sendMessage.
-
     if (!IsSym(selectorSlot)) {
         char str[128];
         slotString(selectorSlot, str);
-        post("performArgs 'selector' must be either a Symbol, received: '%s'", str);
+        post("performArgs 'selector' must be either a Symbol, received: '%s'\n", str);
         return errWrongType;
     }
     auto selector = slotRawSymbol(selectorSlot);
@@ -1004,7 +999,7 @@ int objectPerformArgs(struct VMGlobals* g, int numArgsPushed) {
     else {
         char str[128];
         slotString(argsArraySlot, str);
-        post("performArgs 'args' must be either nil or an Array, received: '%s'", str);
+        post("performArgs 'args' must be either nil or an Array, received: '%s'\n", str);
         return errWrongType;
     }
 
@@ -1016,16 +1011,12 @@ int objectPerformArgs(struct VMGlobals* g, int numArgsPushed) {
     else {
         char str[128];
         slotString(kwargsArraySlot, str);
-        post("performArgs 'kwargs' must be either nil or an Array, received: '%s'", str);
+        post("performArgs 'kwargs' must be either nil or an Array, received: '%s'\n", str);
         return errWrongType;
     }
 
     const auto argsSize = argsArray ? argsArray->size : 0;
     const auto kwSize = kwargsArray ? kwargsArray->size : 0;
-    if (kwSize % 2 == 1) {
-        error("WARNING: Keyword arguments must be a key-value pair array, where the key is a Symbol.\n");
-        return errFailed;
-    }
 
     if (argsSize == 0 && kwSize == 0) {
         g->sp -= 3;
@@ -1034,29 +1025,33 @@ int objectPerformArgs(struct VMGlobals* g, int numArgsPushed) {
         return errNone;
     }
 
-    // overwrite the selector
-    auto writingSlot = selectorSlot;
+    if (argsSize > 0)
+        std::copy(argsArray->slots, argsArray->slots + argsSize, selectorSlot);
 
-    for (size_t i { 0 }; i < argsSize; ++i) {
-        slotCopy(writingSlot, &argsArray->slots[i]);
-        writingSlot++;
-    }
-    long numFailedKwArgs = 0;
-    for (size_t i { 0 }; i < kwSize; ++i) {
-        if (i % 2 == 0) {
+    if (kwSize > 0) {
+        if (kwSize % 2 == 1) {
+            error("WARNING: Keyword arguments must be a key-value pair array, where the key is a Symbol.\n");
+            return errFailed;
+        }
+        bool kwargsFailed = false;
+        for (uint32 i = 0; i < kwSize; i += 2) {
             if (NotSym(&kwargsArray->slots[i])) {
-                post("WARNING: Keyword arguments must be a key-value pair array, where the key is a Symbol.\n");
-                i += 1; // Skips the next value.
-                numFailedKwArgs += 1;
-                continue;
+                char str[128];
+                slotString(kwargsArraySlot, str);
+                post("WARNING: Keyword arguments must be a key-value pair array, where the key is a Symbol.\n"
+                     "Expected a Symbol got '%s'.\n",
+                     str);
+                kwargsFailed = true;
             }
         }
-        slotCopy(writingSlot, &kwargsArray->slots[i]);
-        writingSlot++;
+        if (kwargsFailed)
+            return errWrongType;
+
+        std::copy(kwargsArray->slots, kwargsArray->slots + kwSize, selectorSlot + argsSize);
     }
 
     g->sp = receiverSlot + argsSize + kwSize;
-    sendMessage(g, selector, argsSize + kwSize + 1, (kwSize / 2) - numFailedKwArgs);
+    sendMessage(g, selector, argsSize + kwSize + 1, (kwSize / 2));
     g->numpop = 0;
     return errNone;
 }
