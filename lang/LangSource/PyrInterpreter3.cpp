@@ -699,7 +699,7 @@ HOT void Interpret(VMGlobals* g) {
             if (classobj) {
                 ++sp;
                 SetObject(sp, classobj);
-            } else {
+            } else [[unlikely]] {
                 postfl("Execution warning: Class '%s' not found\n",
                        slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[op2])->name);
                 slotCopy(++sp, &gSpecialValues[svNil]);
@@ -1758,7 +1758,7 @@ HOT void Interpret(VMGlobals* g) {
                     if (IsFloat(&vars[1])) {
                         // coerce to int
                         SetInt(&vars[1], (int32)(slotRawFloat(&vars[1])));
-                    } else {
+                    } else [[unlikely]] {
                         error("Integer-for : endval not a SimpleNumber.\n");
 
                         slotCopy(++sp, &g->receiver);
@@ -1809,7 +1809,7 @@ HOT void Interpret(VMGlobals* g) {
                 // Detect case of a zero-valued stepval argument, which
                 // would result in an infinite loop.
                 if ((IsFloat(vars + 2) && slotRawFloat(&vars[2]) == 0.0)
-                    || (IsInt(vars + 2) && slotRawInt(&vars[2]) == 0)) {
+                    || (IsInt(vars + 2) && slotRawInt(&vars[2]) == 0)) [[unlikely]] {
                     error("Integer-forBy: zero-valued stepval argument.\n");
                     slotCopy(++sp, &g->receiver);
                     numArgsPushed = 1;
@@ -1831,7 +1831,7 @@ HOT void Interpret(VMGlobals* g) {
                     SetFloat(&vars[4], (double)(slotRawInt(&g->receiver)));
                 } else {
                     int tag = GetTag(&vars[1]);
-                    if ((tag != tagInt) || NotInt(&vars[2])) {
+                    if ((tag != tagInt) || NotInt(&vars[2])) [[unlikely]] {
                         error("Integer-forBy : endval or stepval not an Integer or Float.\n");
 
                         slotCopy(++sp, &g->receiver);
@@ -1944,7 +1944,7 @@ HOT void Interpret(VMGlobals* g) {
             case 13: {
                 PyrSlot* vars = g->frame->vars;
 
-                if (IsNil(&vars[1])) {
+                if (IsNil(&vars[1])) [[unlikely]] {
                     error("Dictionary-keysValuesArrayDo: first argument should not be nil.\n");
 
                     slotCopy(++sp, &g->receiver);
@@ -2162,7 +2162,7 @@ HOT void Interpret(VMGlobals* g) {
                         SetFloat(&vars[4], slotRawInt(&vars[0]));
                     } else if (IsFloat(vars + 0)) {
                         SetFloat(&vars[4], slotRawFloat(&vars[0]));
-                    } else {
+                    } else [[unlikely]] {
                     bailFromNumberSeries:
                         error("Number-forSeries : first, second or last not an Integer or Float.\n");
 
@@ -2179,8 +2179,9 @@ HOT void Interpret(VMGlobals* g) {
                             SetFloat(vars + 2, kBigBigFloat);
                         else if (IsInt(vars + 2))
                             SetFloat(&vars[2], slotRawInt(&vars[2]));
-                        else if (!IsFloat(vars + 2))
+                        else if (!IsFloat(vars + 2)) [[unlikely]] {
                             goto bailFromNumberSeries;
+                        }
 
                         if (slotRawFloat(&vars[4]) < slotRawFloat(&vars[2]))
                             SetFloat(vars + 1, 1.);
@@ -2189,9 +2190,9 @@ HOT void Interpret(VMGlobals* g) {
                     } else {
                         if (IsInt(vars + 1))
                             SetFloat(&vars[1], slotRawInt(&vars[1]));
-                        else if (!IsFloat(vars + 1))
+                        else if (!IsFloat(vars + 1)) [[unlikely]] {
                             goto bailFromNumberSeries;
-
+                        }
                         if (IsNil(vars + 2)) {
                             if (slotRawFloat(&vars[1]) < slotRawFloat(&vars[4]))
                                 SetFloat(vars + 2, kSmallSmallFloat);
@@ -2199,8 +2200,9 @@ HOT void Interpret(VMGlobals* g) {
                                 SetFloat(vars + 2, kBigBigFloat);
                         } else if (IsInt(vars + 2))
                             SetFloat(&vars[2], slotRawInt(&vars[2]));
-                        else if (!IsFloat(vars + 2))
+                        else if (!IsFloat(vars + 2)) [[unlikely]] {
                             goto bailFromNumberSeries;
+                        }
                         SetFloat(vars + 1, slotRawFloat(&vars[1]) - slotRawFloat(&vars[4]));
                     }
                 }
@@ -2874,10 +2876,10 @@ HOT void Interpret(VMGlobals* g) {
             ip = g->ip;
             dispatch_opcode;
         }
-        case 255: // opcTailCallReturnFromMethod
-        handle_op_255:
+            [[likely]] case 255 : // opcTailCallReturnFromMethod
+                                  handle_op_255 :
 #if TAILCALLOPTIMIZE
-            g->tailCall = 1;
+                g->tailCall = 1;
 #endif
             dispatch_opcode;
 
@@ -3054,7 +3056,7 @@ HOT void Interpret(VMGlobals* g) {
             size_t index = slotRawInt(&classobj->classIndex) + selector->u.index;
             PyrMethod* meth = gRowTable[index];
 
-            if (UNLIKELY(slotRawSymbol(&meth->name) != selector)) {
+            if (slotRawSymbol(&meth->name) != selector) [[unlikely]] {
                 g->sp = sp;
                 g->ip = ip;
                 doesNotUnderstandWithKeys(g, selector, numArgsPushed, numKeyArgsPushed);
