@@ -303,7 +303,7 @@ inline void PyrGC::ToGrey2(PyrObjectHdr* obj) {
 }
 
 inline PyrObject* PyrGC::Allocate(size_t inNumBytes, int32 sizeclass, bool inRunCollection) {
-    if (inRunCollection && mNumToScan >= kScanThreshold)
+    if (inRunCollection && mNumToScan >= kScanThreshold) [[unlikely]]
         Collect();
     else {
         if (inRunCollection)
@@ -315,7 +315,7 @@ inline PyrObject* PyrGC::Allocate(size_t inNumBytes, int32 sizeclass, bool inRun
     GCSet* gcs = mSets + sizeclass;
 
     PyrObject* obj = (PyrObject*)gcs->mFree;
-    if (!IsMarker(obj)) {
+    if (!IsMarker(obj)) [[likely]] {
         // from free list
         gcs->mFree = obj->next;
         assert(obj->obj_sizeclass == sizeclass);
