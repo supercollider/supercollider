@@ -890,7 +890,7 @@ int blockValueArrayEnvir(struct VMGlobals* g, int numArgsPushed) {
     }
 }
 
-std::tuple<PyrFrame*, PyrBlock*> buildFrameForBlockPrims(VMGlobals* g, PyrSlot* args) {
+HOT std::tuple<PyrFrame*, PyrBlock*> buildFrameForBlockPrims(VMGlobals* g, PyrSlot* args) {
     auto closure = (PyrClosure*)slotRawObject(args);
     auto block = slotRawBlock(&closure->block);
     auto methraw = METHRAW(block);
