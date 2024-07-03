@@ -191,8 +191,6 @@ jobs:
 
           if $SHARED_LIBSCSYNTH; then EXTRA_CMAKE_FLAGS="-DLIBSCSYNTH=ON $EXTRA_CMAKE_FLAGS"; fi
 
-          if [[ -z "${{ matrix.qt-version }}" ]]; then EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=`brew --prefix qt@5` $EXTRA_CMAKE_FLAGS"; fi
-
           if [[ "${{ matrix.verify-app }}" == "true" ]]; then EXTRA_CMAKE_FLAGS="-DSC_VERIFY_APP=ON $EXTRA_CMAKE_FLAGS"; fi
 
           if [[ "${{ matrix.system-portaudio }}" == "false" ]]; then EXTRA_CMAKE_FLAGS="-DSYSTEM_PORTAUDIO=OFF $EXTRA_CMAKE_FLAGS"; fi

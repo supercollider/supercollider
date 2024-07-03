@@ -27,6 +27,10 @@ if(SC_USE_QTWEBENGINE)
     )
 endif()
 
+if(APPLE)
+	include("${CMAKE_SOURCE_DIR}/cmake_modules/FindQt5PrefixApple.cmake")
+endif()
+
 find_package(
     Qt5 ${REQUIRED_QT_VERSION}
     COMPONENTS

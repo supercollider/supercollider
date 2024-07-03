@@ -70,9 +70,9 @@ Build instructions
     cd SuperCollider
     mkdir -p build
     cd build
-    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt@5`  ..
+    cmake -G Xcode ..
     # or, if you want to build with supernova:
-    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt@5` -DSUPERNOVA=ON ..
+    cmake -G Xcode -DSUPERNOVA=ON ..
     # then start the build
     cmake --build . --target install --config RelWithDebInfo
 
@@ -95,15 +95,15 @@ More info on *supernova* can be found in the section **Frequently used cmake set
 
 ##### Prepare for building by making a configuration file:
 
-    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt@5`  ..
+    cmake -G Xcode ..
 
 (The `..` at the end is easy to miss. Don't forget it!)
 
-This specifies to cmake that we will be using Xcode to build. It also specifies the location of qt so that the complier/linker can find it.
-Use `brew info` to confirm you are referring to the correct version of Qt.
+This specifies to cmake that we will be using Xcode to build.
+The compiler/linker will search for Qt via brew.
 
 If you are not using the Homebrew install then you should substitute the path to the parent folder of the bin/include/lib folders in that
-Qt tree.
+Qt tree by inserting the argument `-DQT5_PREFIX=/path/to/my/qt` before `..`.
 
 ##### Build
 
@@ -249,6 +249,10 @@ Common arguments to control the build configuration are:
     `-DREADLINE_INCLUDE_DIR='/path/to/readline/include'`
     `-DREADLINE_LIBRARY='/path/to/readline/lib/libreadline.dylib'`
 
+  * Homebrew installations of qt5 should be detected automatically.
+    To link a non-homebrew version of qt5, you can use:
+
+    `-DQT5_PREFIX_PATH='/path/to/qt5'`
 
 Using cmake with Xcode or QtCreator
 -----------------------------------
