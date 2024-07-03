@@ -1,3 +1,4 @@
+// #include <iostream>
 #include "PyrSlot.h"
 #include "PyrObject.h"
 #include "PyrKernel.h"
@@ -76,4 +77,36 @@ void PyrSlotTest() {
         assert(!s.isFalse());
         assert(s.getObjectHdr() == nullptr);
     }
+
+    {
+        const auto r = PyrSlot::make(1.0 / 0.0);
+        assert(r.isDouble());
+        assert(r.getDouble() == 1.0 / 0.0);
+    }
+    {
+        const auto r = PyrSlot::make(-1.0 / 0.0);
+        assert(r.isDouble());
+        assert(r.getDouble() == -1.0 / 0.0);
+    }
+    {
+        const auto r = PyrSlot::make(-0.0 / 0.0);
+        assert(r.isDouble());
+        const auto d = r.getDouble();
+        assert(std::isnan(r.getDouble()));
+    }
+    {
+        const auto r = PyrSlot::make(0.0 / 0.0);
+        assert(r.isDouble());
+        assert(std::isnan(r.getDouble()));
+    }
+
+    /* tested, this works
+    std::cout << "doing long test.\n";
+    for(int32 i = std::numeric_limits<int32>::min(); i < std::numeric_limits<int32>::max(); ++i){
+        const auto r =  PyrSlot::make(i);
+        assert(r.isInt());
+        assert(r.getInt() == i);
+    }
+    std::cout << "done long test.\n";
+    */
 }
