@@ -18,6 +18,9 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+
+// Note: For some reason Signals are PyrObjects, this seems incorrect and they should be PyrFloatArrays instead.
+
 /*
     compound formulas :
     amclip	out = B<=0 ? 0 : A*B;		// two quadrant amplitude modulation
@@ -425,8 +428,6 @@ PyrObject* signal_excess_xx(VMGlobals* g, PyrObject* ina, PyrObject* inb) {
 
 bool signal_equal_xx(VMGlobals* g, PyrObject* ina, PyrObject* inb) {
     if (ina->size != inb->size)
-        return false;
-    if (slotRawSymbol(&ina->slots[kSignalRate]) != slotRawSymbol(&inb->slots[kSignalRate]))
         return false;
     float* a = (float*)(ina->slots);
     float* b = (float*)(inb->slots);
