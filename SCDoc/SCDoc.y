@@ -193,17 +193,17 @@ subsubsection: SUBSUBSECTION words2 eol optbody { $$ = doc_node_make_take_childr
                  doc_node_add_child($$, $5);
                }
              | COPYMETHOD words eol {
-               if ( !(strchr($2, ' ')) ) {
-                 yyerror("COPYMETHOD requires 2 arguments (class name and method name)");
-                 YYERROR;
-               }
+                if ( !(strchr($2, ' ')) ) {
+                  yyerror("COPYMETHOD requires 2 arguments (class name and method name)");
+                  YYERROR;
+                }
 
-               $$ = doc_node_make(
-               stringEqual(method_type, "CMETHOD") ? "CCOPYMETHOD"
+                $$ = doc_node_make(
+                stringEqual(method_type, "CMETHOD") ? "CCOPYMETHOD"
                                                    : (stringEqual(method_type, "IMETHOD") ? "ICOPYMETHOD"
                                                                                           : "COPYMETHOD"),
-               $2, NULL
-               ); }
+                $2, NULL
+                ); }
              | PRIVATE commalist eoleof { $$ = doc_node_make_take_children( stringEqual(method_type, "CMETHOD") ? "CPRIVATE"
                                                                                                                 : "IPRIVATE",
                 NULL, $2); }
