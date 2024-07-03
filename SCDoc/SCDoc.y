@@ -200,8 +200,8 @@ subsubsection: SUBSUBSECTION words2 eol optbody { $$ = doc_node_make_take_childr
 
                 $$ = doc_node_make(
                 stringEqual(method_type, "CMETHOD") ? "CCOPYMETHOD"
-                                                   : (stringEqual(method_type, "IMETHOD") ? "ICOPYMETHOD"
-                                                                                          : "COPYMETHOD"),
+                                                    : (stringEqual(method_type, "IMETHOD") ? "ICOPYMETHOD"
+                                                                                           : "COPYMETHOD"),
                 $2, NULL
                 ); }
              | PRIVATE commalist eoleof { $$ = doc_node_make_take_children( stringEqual(method_type, "CMETHOD") ? "CPRIVATE"
