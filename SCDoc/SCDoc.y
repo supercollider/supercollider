@@ -187,11 +187,12 @@ subsubsections: subsubsections subsubsection { $$ = doc_node_add_child($1,$2); }
 
 subsubsection: SUBSUBSECTION words2 eol optbody { $$ = doc_node_make_take_children("SUBSUBSECTION", $2, $4); }
              | METHOD methnames optMETHODARGS eol methodbody
-               {
-                 $2->id = "METHODNAMES";
-                 $$ = doc_node_make(method_type,$3,$2);
-                 doc_node_add_child($$, $5);
-               }
+    {
+        $2->id = "METHODNAMES";
+        $$ = doc_node_make(method_type,$3,$2);
+        doc_node_add_child($$, $5);
+//        doc_node_add_child($2, $3);
+    }
              | COPYMETHOD words eol {
                 if ( !(strchr($2, ' ')) ) {
                   yyerror("COPYMETHOD requires 2 arguments (class name and method name)");
