@@ -156,7 +156,12 @@ template <typename T> struct MaybePadPointerTo64Bits {
 #if POINTER_NEEDS_PADDING
         return ptr; // If there is padding, the tag hasn't tainted the pointer, return it.
 #else
-        return reinterpret_cast<T>(reinterpret_cast<uintptr_t>(ptr) & Masks::pointer);
+        const auto r = reinterpret_cast<uintptr_t>(ptr);
+        if (r & (1ULL << 47)) {
+            return reinterpret_cast<T>(r | (~Masks::pointer));
+        } else {
+            return reinterpret_cast<T>(r & Masks::pointer);
+        }
 #endif
     }
 
@@ -225,7 +230,7 @@ private:
         return (source & bits) == bits;
     }
     [[nodiscard]] inline static constexpr uint16_t getTagAsU16(uint64_t t) noexcept {
-        return static_cast<uint16_t>(t >> 48);
+        return static_cast<uint16_t>(t >> (64 - 16));
     }
     [[nodiscard]] inline constexpr bool isBoxed() const noexcept { return bitsAreSet(u_raw, Masks::boxed); }
     template <uint64_t T> [[nodiscard]] inline constexpr bool tagChecker() const noexcept {
@@ -296,45 +301,59 @@ public:
         return u_int.value;
     }
     [[nodiscard]] void* getPtr() const noexcept {
-        assert(isPtr());
-        return u_ptr.getPtr();
+        if (isPtr())
+            return u_ptr.getPtr();
+        assert(isNil() || (isInt() && getInt() == 0));
+        return nullptr;
     }
     [[nodiscard]] struct PyrObjectHdr* getObjectHdr() const noexcept {
         assert(isObjectHdr());
         return u_objectHeader.getPtr();
     }
     [[nodiscard]] struct PyrSymbol* getSymbol() const noexcept {
-        assert(isSymbol());
-        return u_symbol.getPtr();
+        if (isSymbol())
+            return u_symbol.getPtr();
+        assert(isNil() || (isInt() && getInt() == 0) || (isDouble() && getDouble() == 0));
+        return nullptr;
     }
     template <typename T> [[nodiscard]] T* getPyrObject() const noexcept {
         // types are incomplete here so can't check...
         // static_assert(std::is_base_of<PyrObjectHdr, T>::value, "Type must derive from PyrObjectHeader");
+        assert(isBoxed());
         if (isObjectHdr())
             return reinterpret_cast<T*>(u_objectHeader.getPtr());
-        assert(isNil() || (isInt() && getInt() == 0));
+        assert(isNil() || (isInt() && getInt() == 0) || (isDouble() && getDouble() == 0));
         return nullptr;
     }
 
     [[nodiscard]] HOT int getTag() const noexcept {
         switch (getTagAsU16(u_raw)) {
         case getTagAsU16(Tags::symTag):
+            assert(isSymbol());
             return tagSym;
         case getTagAsU16(Tags::intTag):
+            assert(isInt());
             return tagInt;
         case getTagAsU16(Tags::charTag):
+            assert(isChar());
             return tagChar;
         case getTagAsU16(Tags::objHdrTag):
+            assert(isObjectHdr());
             return tagObj;
         case getTagAsU16(Tags::ptrTag):
+            assert(isPtr());
             return tagPtr;
         case getTagAsU16(Tags::nilTag):
+            assert(isNil());
             return tagNil;
         case getTagAsU16(Tags::trueTag):
+            assert(isTrue());
             return tagTrue;
         case getTagAsU16(Tags::falseTag):
+            assert(isFalse());
             return tagFalse;
         default:
+            assert(isDouble());
             return tagFloat;
         }
     }
@@ -401,10 +420,7 @@ template <typename numeric_type> [[nodiscard]] inline int slotVal(PyrSlot* slot,
     return errNone;
 }
 
-[[nodiscard]] inline void* slotRawPtr(PyrSlot* slot) noexcept {
-    assert(slot->isPtr());
-    return slot->getPtr();
-}
+[[nodiscard]] inline void* slotRawPtr(PyrSlot* slot) noexcept { return slot->getPtr(); }
 
 [[nodiscard]] inline struct PyrBlock* slotRawBlock(const PyrSlot* slot) noexcept {
     return slot->getPyrObject<PyrBlock>();
