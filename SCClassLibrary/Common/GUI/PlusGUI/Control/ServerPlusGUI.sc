@@ -102,7 +102,7 @@
 		};
 
 		w.view.keyDownAction = { arg view, char, modifiers;
-			// if any modifiers except shift key are pressed, skip action
+				// if any modifiers except shift key are pressed, skip action
 			if(modifiers & 16515072 == 0) {
 
 				case
@@ -259,26 +259,26 @@
 		};
 
 		if(isLocal or: { options.remoteControlVolume }) {
-			{
-				var volSpec, currentVolume;
-				var volumeSlider, muteButton, muteActions, volController;
+		{
+			var volSpec, currentVolume;
+			var volumeSlider, muteButton, muteActions, volController;
 
-				currentVolume = this.volume.volume;
+			currentVolume = this.volume.volume;
 
-				muteActions = [{this.unmute}, {this.mute}];
-				volSpec = [volume.min, volume.max, \db].asSpec;
+			muteActions = [{this.unmute}, {this.mute}];
+			volSpec = [volume.min, volume.max, \db].asSpec;
 
-				gui.staticText.new(w, Rect(0,0, 44, 18))
+			gui.staticText.new(w, Rect(0,0, 44, 18))
 				.font_(font)
 				.string_("volume:");
 
-				muteButton = gui.button.new(w, Rect(0, 0, 20, 18))
+			muteButton = gui.button.new(w, Rect(0, 0, 20, 18))
 				.font_(font)
 				.canFocus_(false)
 				.states_([
 					["M"],
 					["M", nil, faintRed]
-				])
+					])
 				.action_({arg me;
 					if(this.serverRunning) {
 						muteActions[me.value].value;
@@ -288,7 +288,7 @@
 					}
 				});
 
-				volumeNum = gui.numberBox.new(w, Rect(0, 0, 28, 18))
+			volumeNum = gui.numberBox.new(w, Rect(0, 0, 28, 18))
 				.font_(font)
 				.value_(currentVolume)
 				.align_(\center)
@@ -297,9 +297,9 @@
 					newdb = me.value.clip(-90, 6);
 					this.volume_(newdb);
 					volumeSlider.value_(volSpec.unmap(newdb));
-				});
+					});
 
-				volumeSlider = gui.slider.new(w, Rect(0, 0, 172, 18))
+			volumeSlider = gui.slider.new(w, Rect(0, 0, 172, 18))
 				.value_(volSpec.unmap(currentVolume).round(0.1))
 				.onClose_{volController.remove}
 				.action_({arg me;
@@ -307,7 +307,7 @@
 					newdb = volSpec.map(me.value).round(0.1);
 					this.volume_(newdb);
 					volumeNum.value_(newdb);
-				})
+					})
 				.keyDownAction_({arg slider, char, modifiers, unicode, keycode;
 					if (char == $], { slider.increment; });
 					if (char == $[, { slider.decrement; });
@@ -334,23 +334,23 @@
 					volumeSlider.value_(volSpec.unmap(volume.volume));
 				})
 
-			}.value;
+		}.value;
 		};
 
 		w.front;
 
 		serverController = SimpleController(this)
-		.put(\serverRunning, {	if(this.serverRunning, running, stopped) })
-		.put(\counts,{
-			countsViews.at(0).string = statusWatcher.avgCPU.round(0.1);
-			countsViews.at(1).string = statusWatcher.peakCPU.round(0.1);
-			countsViews.at(2).string = statusWatcher.numUGens;
-			countsViews.at(3).string = statusWatcher.numSynths;
-			countsViews.at(4).string = statusWatcher.numGroups;
-			countsViews.at(5).string = statusWatcher.numSynthDefs;
-		})
-		.put(\bundling, bundling)
-		.put(\default, showDefault);
+			.put(\serverRunning, {	if(this.serverRunning, running, stopped) })
+			.put(\counts,{
+				countsViews.at(0).string = statusWatcher.avgCPU.round(0.1);
+				countsViews.at(1).string = statusWatcher.peakCPU.round(0.1);
+				countsViews.at(2).string = statusWatcher.numUGens;
+				countsViews.at(3).string = statusWatcher.numSynths;
+				countsViews.at(4).string = statusWatcher.numGroups;
+				countsViews.at(5).string = statusWatcher.numSynthDefs;
+			})
+			.put(\bundling, bundling)
+			.put(\default, showDefault);
 		if(isLocal){
 			serverController.put(\cmdPeriod, {
 				recorder.setProperty(\value, 0)
