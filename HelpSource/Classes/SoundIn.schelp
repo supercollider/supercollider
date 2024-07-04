@@ -31,5 +31,5 @@ code::
 { SoundIn.ar([0, 1]) }.play;
 
 // scope input; silent output
-{ Amplitude.kr(SoundIn.ar(0)); }.scope;
+{ Amplitude.kr(SoundIn.ar(0)) }.scope;
 ::

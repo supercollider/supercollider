@@ -57,7 +57,7 @@ s.quit; // quit the server and observe the post
 s.boot;
 ServerBoot.remove(f, \default); // remove it again
 s.quit;
-s.boot;// no post.
+s.boot; // no post.
 ServerBoot.add(f, Server.internal);
 Server.internal.quit;
 Server.internal.boot;

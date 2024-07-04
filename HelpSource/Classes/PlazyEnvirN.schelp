@@ -20,12 +20,12 @@ A link::Classes/Function:: that returns a pattern or any other valid pattern inp
 
 code::
 (
-f = { arg g=0, h=0, dur=1;
+f = { |g = 0, h = 0, dur = 1|
 	Pbind(\degree, Pseq([g, g, h, g, h], 2), \dur, Pseries(dur, 0.1))
 };
 // compare:
-a = Pchain(PlazyEnvirN(f), (g: [1, 2], h: 3, dur:0.2)).trace(\degree).asStream;
-c = Pchain(Plazy(f), (g: [1, 2], h: 3, dur:0.2)).asStream;
+a = Pchain(PlazyEnvirN(f), (g: [1, 2], h: 3, dur: 0.2)).trace(\degree).asStream;
+c = Pchain(Plazy(f), (g: [1, 2], h: 3, dur: 0.2)).asStream;
 )
 
 a.nextN(4);
@@ -38,13 +38,13 @@ Examples::
 code::
 (
 SynthDef(\help_sinegrain,
-	{ arg out=0, freq=440, sustain=0.05, pan=0;
+	{ |out = 0, freq = 440, sustain = 0.05, pan = 0|
 		var env;
 		env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction: Done.freeSelf);
 		Out.ar(out, Pan2.ar(SinOsc.ar(freq, 0, env), pan))
 	}).add;
 
-a = PlazyEnvirN({ arg g=0, h=0, dur=1;
+a = PlazyEnvirN({ |g = 0, h = 0, dur = 1|
 	postf("g: %, h: %, dur: %\n", g, h, dur);
 
 	Pbind(
@@ -56,8 +56,8 @@ a = PlazyEnvirN({ arg g=0, h=0, dur=1;
 )
 
 // different variants
-(a <> (g: 0, h: 3, dur:0.2)).play; // single stream
-(a <> (g: [0, 4], h: [3, -1], dur:0.2)).play; // same durations, two streams
+(a <> (g: 0, h: 3, dur: 0.2)).play; // single stream
+(a <> (g: [0, 4], h: [3, -1], dur: 0.2)).play; // same durations, two streams
 (a <> (g: [0, 4], h: [3, -1], dur: [0.2, 0.3])).play; // different durations, two streams
 ::
 
