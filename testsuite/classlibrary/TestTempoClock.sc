@@ -56,6 +56,23 @@ TestTempoClock : UnitTest {
 		)
 	}
 
+	// note: *not* assertFloatEquals
+	// because inf - inf < within is always false,
+	// while inf == inf is always true
+	test_beats2secs_handlesInf {
+		this.assertEquals(
+			clock.beats2secs(inf), inf,
+			"TempoClock:beats2secs should return inf for 'inf' beats"
+		)
+	}
+
+	test_secs2beats_handlesInf {
+		this.assertEquals(
+			clock.secs2beats(inf), inf,
+			"TempoClock:secs2beats should return inf for 'inf' beats"
+		)
+	}
+
 	test_beatsPerBar_defaultIs4 {
 		this.assertEquals(
 			clock.beatsPerBar, 4,

@@ -31,10 +31,10 @@ code::
 q = 10;
 w = Window.new;
 
-h = HLayoutView(w,Rect(0,0,300,300));
+h = HLayoutView(w, Rect(0, 0, 300, 300));
 
-Array.fill(q,{ arg i;
-    Slider(h,Rect(0,0,20,75)).value_(i / q)
+Array.fill(q, { |i|
+    Slider(h, Rect(0, 0, 20, 75)).value_(i / q)
 });
 h.background_(Color.rand);
 
@@ -49,17 +49,17 @@ code::
 q = 8;
 w = Window.new;
 
-h = HLayoutView(w,Rect(0,0,300,300));
+h = HLayoutView(w, Rect(0, 0, 300, 300));
 h.background = Color.rand;
 h.resize = 5; // elastic
 
-Array.fill(q,{ arg i;
+Array.fill(q, { |i|
     var s;
-    s = Slider(h,Rect(0,0,20,75)).background_(Color.grey.alpha_(0.4));
+    s = Slider(h, Rect(0, 0, 20, 75)).background_(Color.grey.alpha_(0.4));
     s.value = i / q;
     s
 });
-StaticText(h, Rect(0,0,105,20)).background_(Color.rand).string_(" Some Example\n Text");
+StaticText(h, Rect(0, 0, 105, 20)).background_(Color.rand).string_(" Some Example\n Text");
 w.front
 )
 ::
@@ -71,18 +71,18 @@ code::
 q = 10;
 w = Window.new;
 
-h = HLayoutView(w,Rect(0,0,300,300));
+h = HLayoutView(w, Rect(0, 0, 300, 300));
 h.resize = 5; // elastic
 h.background = Color.rand;
 
-Array.fill(q,{ arg i;
+Array.fill(q, { |i|
     var s;
-    s = Slider(h,Rect(0,0,20,75));
+    s = Slider(h, Rect(0, 0, 20, 75));
     s.resize = 5; // elastic
     s.value = i / q;
     s
 });
-StaticText(h, Rect(0,0,105,20)).background_(Color.rand).string_(" Some Example\n Text");
+StaticText(h, Rect(0, 0, 105, 20)).background_(Color.rand).string_(" Some Example\n Text");
 
 w.front
 )
@@ -95,23 +95,23 @@ code::
 q = 5;
 w = Window.new;
 
-h = HLayoutView(w,Rect(0,0,300,300));
+h = HLayoutView(w, Rect(0, 0, 300, 300));
 h.background = Color.rand;
 h.resize = 5; // elastic
 
-Array.fill(q,{ arg i;
+Array.fill(q, { |i|
     var s;
-    s = Slider(h,Rect(0,0,20,75));
+    s = Slider(h, Rect(0, 0, 20, 75));
     s.value = i / 5;
-    if(i < 2,{
+    if(i < 2, {
         s.resize = 5; // some elastic
-        s.setProperty(\minWidth,20);
-    },{
+        s.setProperty(\minWidth, 20);
+    }, {
         s.resize = 1; // some not elastic
     });
     s
 });
-StaticText(h, Rect(0,0,105,20)).background_(Color.rand).string_(" Some Example\n Text");
+StaticText(h, Rect(0, 0, 105, 20)).background_(Color.rand).string_(" Some Example\n Text");
 
 w.front
 )
@@ -122,16 +122,16 @@ code::
 q = 5;
 w = Window.new;
 
-h = HLayoutView(w,Rect(0,0,300,300));
+h = HLayoutView(w, Rect(0, 0, 300, 300));
 h.resize = 5; // elastic
 h.background = Color.rand;
-Array.fill(q,{ arg i;
+Array.fill(q, { |i|
     var s;
-    s = Slider(h,Rect(0,0,20,75));
+    s = Slider(h, Rect(0, 0, 20, 75));
     s.value = i / 5;
     s.resize = 5;
-    s.setProperty(\minWidth,20);
-    s.setProperty(\maxWidth,40);
+    s.setProperty(\minWidth, 20);
+    s.setProperty(\maxWidth, 40);
     s
 });
 
@@ -146,20 +146,20 @@ code::
 q = 5;
 w = Window.new;
 
-h = HLayoutView(w,Rect(0,0,300,300));
+h = HLayoutView(w, Rect(0, 0, 300, 300));
 h.resize = 5; // elastic
 
-Array.fill(q,{ arg i;
+Array.fill(q, { |i|
     var s;
-    s =     StaticText(h,120@20).string_("Some short text which wraps around");
+    s =     StaticText(h, 120@20).string_("Some short text which wraps around");
 
     s.resize = 5;
-    s.setProperty(\minWidth,10);
-    s.setProperty(\maxWidth,120);
+    s.setProperty(\minWidth, 10);
+    s.setProperty(\maxWidth, 120);
 
     // not working
-    s.setProperty(\maxHeight,10);
-    s.setProperty(\minHeight,10);
+    s.setProperty(\maxHeight, 10);
+    s.setProperty(\minHeight, 10);
 
     s.background = Color.white;
     s
@@ -176,11 +176,11 @@ code::
 q = 10;
 w = Window.new;
 
-h = HLayoutView(w,Rect(0,0,300,300));
-h.setProperty(\spacing,0);
+h = HLayoutView(w, Rect(0, 0, 300, 300));
+h.setProperty(\spacing, 0);
 
-Array.fill(q,{
-    Slider(h,Rect(0,0,20,75))
+Array.fill(q, {
+    Slider(h, Rect(0, 0, 20, 75))
 });
 
 w.front

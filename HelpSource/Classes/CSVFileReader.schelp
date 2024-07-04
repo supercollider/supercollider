@@ -43,7 +43,7 @@ f.close;
 // write a test file with numbers:
 f = File("CSVReadTestNum.sc", "w");
 
-(1..10).do { |n| f.write(n.asString ++ ","); };
+(1..10).do { |n| f.write(n.asString ++ ",") };
 f.close;
 )
 
@@ -58,7 +58,7 @@ x = CSVFileReader.readInterpret("CSVReadTestNum.sc").postcs;
 f = File("CSVReadTestNum.sc", "w");
 
 (1..100).do { |n|
-	f.write(n.asString ++ if (n % 10 != 0, ",", Char.nl)); };
+	f.write(n.asString ++ if (n % 10 != 0, ",", Char.nl)) };
 f.close;
 )
 

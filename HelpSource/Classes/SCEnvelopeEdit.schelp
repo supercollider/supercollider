@@ -168,7 +168,7 @@ Routine({
 			x.env.levels ++
 			x.env.times ++
 			x.env.curves)).flatten;
-		s.sendBundle(s.latency, [\s_new, "sineBlip", -1, 1, 1, \freq, exprand(4e3,11e3)] ++ par);
+		s.sendBundle(s.latency, [\s_new, "sineBlip", -1, 1, 1, \freq, exprand(4e3, 11e3)] ++ par);
 		0.04.wait;
 	});
 }).play;

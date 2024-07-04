@@ -64,6 +64,6 @@ CODE::
 (
 var w = Window().front;
 var c = CheckBox(w, Rect(10, 10, 50, 50), "test");
-c.action_{ | v | v.value.postln };
+c.action_{ |v| v.value.postln };
 )
 ::

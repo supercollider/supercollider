@@ -330,7 +330,7 @@ SynthDefControl : SynthControl {
 		NodeProxy.buildProxy = proxy;
 		synthDef = source.buildForProxy(proxy, channelOffset, orderIndex);
 		NodeProxy.buildProxyControl = outerDefControl;
-		outerBuildProxy = outerBuildProxy;
+		NodeProxy.buildProxy = outerBuildProxy;
 
 		rate = synthDef.rate;
 		numChannels = synthDef.numChannels;

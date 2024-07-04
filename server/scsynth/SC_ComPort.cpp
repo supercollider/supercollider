@@ -514,9 +514,7 @@ template <typename T, typename... Args> static bool protectedOpenPort(const char
         }
     } catch (const std::exception& exc) {
         scprintf("\n*** ERROR: failed to open %s socket: %s\n", socketType, exc.what());
-    } catch (...) {
-        scprintf("\n*** ERROR: failed to open %s socket: Unknown error\n", socketType);
-    }
+    } catch (...) { scprintf("\n*** ERROR: failed to open %s socket: Unknown error\n", socketType); }
     return false;
 }
 

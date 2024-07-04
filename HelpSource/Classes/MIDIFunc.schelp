@@ -211,16 +211,16 @@ EXAMPLES::
 code::
 MIDIIn.connectAll
 
-a = MIDIFunc.cc({arg ...args; args.postln}, 1); // match cc 1
+a = MIDIFunc.cc({ |...args| args.postln }, 1); // match cc 1
 a.free; // cleanup
 
-b = MIDIFunc.cc({arg ...args; args.postln}, 1, 1); // match cc1, chan 1
+b = MIDIFunc.cc({ |...args| args.postln }, 1, 1); // match cc1, chan 1
 b.free; // cleanup
 
-c = MIDIFunc.cc({arg ...args; args.postln}, (1..10)); // match cc 1-10
+c = MIDIFunc.cc({ |...args| args.postln }, (1..10)); // match cc 1-10
 c.free; // cleanup
 
-n = MIDIFunc.noteOn({arg ...args; args.postln}); // match any noteOn
+n = MIDIFunc.noteOn({ |...args| args.postln }); // match any noteOn
 n.free; // cleanup
 
 MIDIIn.doNoteOnAction(1, 1, 64, 64); // spoof a note on

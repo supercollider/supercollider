@@ -178,7 +178,7 @@ o.numOutputBusChannels = 6; // The next time it boots, this will take effect
 
 // specify a device
 
-o.device ="MOTU Traveler"; 	// use a specific soundcard
+o.device = "MOTU Traveler"; 	// use a specific soundcard
 o.device = nil;			// use the system default soundcard
 
 // finally, boot the server
