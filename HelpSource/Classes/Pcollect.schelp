@@ -18,19 +18,19 @@ A link::Classes/Pattern::.
 examples::
 code::
 (
-a = Pcollect( { |item| item * 3 }, Pseq( #[ 1, 2, 3 ], inf ) );
+a = Pcollect({ |item| item * 3 }, Pseq(#[1, 2, 3], inf));
 x = a.asStream;
-9.do( { x.next.postln; } );
+9.do({ x.next.postln });
 )
 ::
 
 The message code::collect:: returns a Pcollect when passed to a pattern. Note that because the pattern is converted to a link::Classes/Stream:: (more precisely a link::Classes/FuncStream::) the collect function is evaluated for one item each time the message code::next:: is passed.
 code::
 (
-a = Pseq( #[ 1, 2, 3 ], inf ).collect( { arg item; item * 3 } );
+a = Pseq(#[1, 2, 3], inf).collect({ |item| item * 3 });
 a.postln;
 
 x = a.asStream;
-9.do( { x.next.postln; } );
+9.do({ x.next.postln });
 )
 ::

@@ -330,18 +330,14 @@ bool define_unit(const char* inUnitClassName, size_t inAllocSize, UnitCtorFunc i
     try {
         nova::sc_factory->register_ugen(inUnitClassName, inAllocSize, inCtor, inDtor, inFlags);
         return true;
-    } catch (...) {
-        return false;
-    }
+    } catch (...) { return false; }
 }
 
 bool define_bufgen(const char* name, BufGenFunc func) {
     try {
         nova::sc_factory->register_bufgen(name, func);
         return true;
-    } catch (...) {
-        return false;
-    }
+    } catch (...) { return false; }
 }
 
 bool define_unitcmd(const char* unitClassName, const char* cmdName, UnitCmdFunc inFunc) {

@@ -9,8 +9,8 @@ subsection::See also
 
 list::
 ## link::Classes/EnvirGui::,
-## link::Classes/TdefGui::, link::Classes/TdefAllGui::, ( link::Classes/TaskProxyGui:: )	// TdefGui replaces obsolete TdefEditor
-## link::Classes/PdefGui::, link::Classes/PdefAllGui::, ( link::Classes/TaskProxyAllGui:: )	// PdefGui replaces obsolete PdefEditor
+## link::Classes/TdefGui::, link::Classes/TdefAllGui::, (link::Classes/TaskProxyGui::)	// TdefGui replaces obsolete TdefEditor
+## link::Classes/PdefGui::, link::Classes/PdefAllGui::, (link::Classes/TaskProxyAllGui::)	// PdefGui replaces obsolete PdefEditor
 ## link::Classes/NdefGui::, link::Classes/MonitorGui::, link::Classes/NdefParamGui:: 	// replace NodeProxyEditor, ProxyMonitorGui
 ## link::Classes/ProxyMixer::
 ## link::Classes/NdefMixer::
@@ -43,7 +43,7 @@ argument::parent
 a parent view on which to display. If nil, a new window is created; strong::parent:: can also be an existing window or a composite view.
 
 argument::bounds
-a desired size and position where to display a JITGui. Can be nil, a link::Classes/Point::, or a link::Classes/Rect::. JITGuis know their minimum size ( strong::minSize:: ), and if bounds is nil, minSize is used. if bounds is a point or rect, it will be set to at least minSize. With a rect one can also supply a position where to display. If a point,shown size is the maximum of bounds and minSize.
+a desired size and position where to display a JITGui. Can be nil, a link::Classes/Point::, or a link::Classes/Rect::. JITGuis know their minimum size (strong::minSize::), and if bounds is nil, minSize is used. if bounds is a point or rect, it will be set to at least minSize. With a rect one can also supply a position where to display. If a point, shown size is the maximum of bounds and minSize.
 
 argument::makeSkip
 A flag whether to make a skipjack. (If the gui is on its own window,

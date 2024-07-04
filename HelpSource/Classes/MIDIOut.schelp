@@ -31,7 +31,7 @@ definitionList::
 method::newByName
 Searches for the MIDI output device, by a name found in the code::MIDIClient.destinations:: array. This is safer then depending on the index which will change if your studio setup changes. It is also Linux compatible.
 code::
-//list connected out ports with names:
+// list connected out ports with names:
 MIDIClient.init;
 MIDIClient.destinations;
 ::
@@ -39,7 +39,7 @@ MIDIClient.destinations;
 method::findPort
 Searches for a connected MIDIEndPoint by name.
 code::
-//list connected out ports with names:
+// list connected out ports with names:
 MIDIClient.init;
 MIDIClient.destinations;
 ::
@@ -88,9 +88,9 @@ m.allNotesOff(16);
 
 
 MIDIIn.connect; // 1 port midi interface
-MIDIIn.sysex = { arg uid, packet; [uid,packet].postln };
-MIDIIn.sysrt = { arg src, chan, val;  [src, chan, val].postln; };
-MIDIIn.smpte = { arg src, chan, val;  [src, chan, val].postln; };
+MIDIIn.sysex = { |uid, packet| [uid, packet].postln };
+MIDIIn.sysrt = { |src, chan, val|  [src, chan, val].postln };
+MIDIIn.smpte = { |src, chan, val|  [src, chan, val].postln };
 
 m.sysex(Int8Array[0xF0, 0, 0, 27, 11, 0, 0xF7])
 
@@ -173,13 +173,13 @@ Open the Audio MIDI Setup application. Double-click on IAC Driver and check "dev
 
 reinitialize:
 
-MIDIClient.init(numIns,numOuts)
+MIDIClient.init(numIns, numOuts)
 
 The IAC Bus will now appear in MIDIClient.destinations. It will appear first, which means that any code that you have written that addresses the first physical bus as 0 will now have to be changed.
 
 For this reason, it is always safer to find the port by name :
 code::
-MIDIOut.newByName("RemoteSL IN","Port 1");
+MIDIOut.newByName("RemoteSL IN", "Port 1");
 ::
 The IAC Bus will now also appear to other applications.
 

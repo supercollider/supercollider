@@ -9,7 +9,7 @@ Print out the results of a stream while returning the original values.
 Tracing a pattern is most commonly done by using the strong::.trace:: method directly on the pattern like this:
 
 code::
-Pbind(\degree, Pwhite(0,10)).trace.play
+Pbind(\degree, Pwhite(0, 10)).trace.play
 ::
 
 CLASSMETHODS::
@@ -48,7 +48,7 @@ EXAMPLES::
 code::
 (
 // An event pattern playing random scale degrees
-p = Pbind(\dur, 0.125, \degree, Pwhite(0,10));
+p = Pbind(\dur, 0.125, \degree, Pwhite(0, 10));
 
 // Se what the value of the scale degrees are using trace
 Ptrace(p, \degree, prefix: "Current scale degree: ").play

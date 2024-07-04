@@ -1,7 +1,7 @@
 TITLE:: StackNumberAllocator
 summary:: consecutive number allocator
 categories:: Control
-related:: Classes/ContiguousBlockAllocator,Classes/PowerOfTwoAllocator
+related:: Classes/ContiguousBlockAllocator, Classes/PowerOfTwoAllocator
 DESCRIPTION::
 Number allocator within a specified range.
 
@@ -32,7 +32,7 @@ ARGUMENT::inIndex
 EXAMPLES::
 
 code::
-o = StackNumberAllocator(0,100);
+o = StackNumberAllocator(0, 100);
 o.alloc // return the next value (evaluate multiple times)
 
 o.init // reset counter

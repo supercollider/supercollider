@@ -28,7 +28,7 @@ Examples::
 
 code::
 w = Window.new;
-w.layout = HLayout( TextView().string_("One"), TextView().string_("Two") );
+w.layout = HLayout(TextView().string_("One"), TextView().string_("Two"));
 w.layout.spacing = 20;
 w.layout.margins = [10, 30, 10, 30];
 w.front;

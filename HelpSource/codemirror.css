@@ -158,7 +158,6 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #a22;}
 .CodeMirror {
   position: relative;
   overflow: hidden;
-  background: white;
 }
 
 .CodeMirror-scroll {
@@ -344,3 +343,9 @@ div.CodeMirror-dragcursors {
 
 /* Help users use markselection to safely style text background */
 span.CodeMirror-selectedtext { background: none; }
+
+/* makes cursor visible across all themes */
+.CodeMirror-cursor {
+  border-left: 1px solid white;
+  border-right: 1px solid black;
+}

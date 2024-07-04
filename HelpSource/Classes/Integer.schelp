@@ -6,7 +6,7 @@ description::
 A 32 bit integer. Integer inherits most of its behaviour from its superclass.
 
 note::
-A 32 bit signed integer can represent values in the range -2147483648 to 2147483647. Adding up further returns in a wrapped result, so that and 2147483647+1= -2147483648. For a larger range, one can use link::Classes/Float::, which is 64 bit and supports many (but not all) numerical methods that int does.
+A 32 bit signed integer can represent values in the range -2147483648 to 2147483647. Adding up further returns in a wrapped result, so that and 2147483647+1 = -2147483648. For a larger range, one can use link::Classes/Float::, which is 64 bit and supports many (but not all) numerical methods that int does.
 ::
 
 
@@ -108,7 +108,7 @@ method:: asStringToBase
 returns:: a string with code::width::-rightmost digits in base code::base::.
 discussion::
 code::
-15.asStringToBase(3,5); // returns 00120
+15.asStringToBase(3, 5); // returns 00120
 ::
 
 method:: asUnicode
@@ -180,7 +180,7 @@ method:: nthPrime
 returns:: the nth prime number. The receiver must be from 0 to 6541.
 discussion::
 code::
-[0,1,2,3,4,5].collect({ arg i; i.nthPrime; }).postln;
+[0, 1, 2, 3, 4, 5].collect({ |i| i.nthPrime }).postln;
 ::
 
 method:: prevPrime
@@ -236,9 +236,9 @@ LIST::
 The result is an Integer only if both code::lo:: and code::hi:: are Integers.
 discussion::
 code::
-4.clip(2,5); // returns 4
-0.clip(2,5); // returns 2
-7.clip(2,5); // returns 5
+4.clip(2, 5); // returns 4
+0.clip(2, 5); // returns 2
+7.clip(2, 5); // returns 5
 ::
 
 method:: factorial
@@ -255,7 +255,7 @@ Folds in to a value between code::lo:: and code::hi::.
 returns:: an Integer between code::lo:: and code::hi::.
 discussion::
 code::
-(0..12).fold(0,3); // returns [ 0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 2, 1, 0 ]
+(0..12).fold(0, 3); // returns [0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 2, 1, 0]
 ::
 
 method:: log2Ceil
@@ -272,7 +272,7 @@ Wraps in to a value between code::lo:: and code::hi::.
 returns:: an Integer between code::lo:: and code::hi::.
 discussion::
 code::
-(0..12).wrap(0,3); // returns [ 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0 ]
+(0..12).wrap(0, 3); // returns [0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0]
 ::
 
 subsection:: Range Limiting
@@ -301,7 +301,7 @@ method:: generate
 returns:: calls code::function.value(receiver):: but returns the receiver.
 discussion::
 code::
-f = { arg i; "foo".postln; i*2 }
+f = { |i| "foo".postln; i*2 }
 3.generate(f) // returns 3 but the function f is executed
 f.value(3) // returns 6
 ::

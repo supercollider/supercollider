@@ -10,13 +10,13 @@ A UnaryOpStream is created as a result of a unary math operation on a Stream. It
 Examples::
 
 code::
-x = Routine { 6.do { arg i; i.yield; } }.squared;
+x = Routine { 6.do { |i| i.yield } }.squared;
 x.dump;
 ::
 
 code::
 (
-x = Routine { 6.do { arg i; i.yield; } }.squared;
+x = Routine { 6.do { |i| i.yield } }.squared;
 x.next.postln;
 x.next.postln;
 x.next.postln;

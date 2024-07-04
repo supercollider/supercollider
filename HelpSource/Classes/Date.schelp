@@ -29,7 +29,7 @@ d == e; // true
 )
 ::
 
-## The most typical usage is to create a Date from a year/month/day and possibly hour/minute/second.  All of these properties (except teletype::year::) have default values (teletype::month=1::, teletype::day=1::, teletype::hour=0::, teletype::minute=0::, teletype::second=0::). teletype::rawSeconds:: is computed based on the other properties. There is no default year -- if no teletype::year:: is provided, an error is thrown.
+## The most typical usage is to create a Date from a year/month/day and possibly hour/minute/second.  All of these properties (except teletype::year::) have default values (teletype::month = 1::, teletype::day = 1::, teletype::hour = 0::, teletype::minute = 0::, teletype::second = 0::). teletype::rawSeconds:: is computed based on the other properties. There is no default year -- if no teletype::year:: is provided, an error is thrown.
 
 code::
 Date(1969, 7, 20, 20, 18); // -> Sun Jul 20 20:18:00 1969
@@ -106,9 +106,9 @@ code::
 (
 var a = Date.seed;
 thisThread.randSeed = a;
-20.do { [1,0].choose.post }; "".postln;
+20.do { [1, 0].choose.post }; "".postln;
 thisThread.randSeed = a;
-25.do { [1,0].choose.post }; "".postln;
+25.do { [1, 0].choose.post }; "".postln;
 )
 ::
 
@@ -165,7 +165,7 @@ If the instance properties (teletype::year::, teletype::month::, teletype::day::
 code::
 // Simple date/time offsetting can be performed:
 d = Date(2017, 9, 30, 10, 30); // -> Sat Sep 30 10:30:00 2017
-[d.dayOfWeek, d.rawSeconds]; // -> [ 6, 1506760200 ]
+[d.dayOfWeek, d.rawSeconds]; // -> [6, 1506760200]
 d.hour = d.hour - 13; // -> Sat Sep 30 -03:30:00 2017
 d.month = d.month + 4; // -> Sat ??? 30 -03:30:00 2017
 d.minute = d.minute + 200; // -> Sat ??? 30 -03:230:00 2017
@@ -173,7 +173,7 @@ d.rawSeconds; // hasn't changed: still 1506760200
 
 // Now resolve everything back into reasonable ranges, applying the offsets:
 d.resolve; // -> Tue Jan 30 00:50:00 2018
-[d.dayOfWeek, d.rawSeconds]; // -> [ 2, 1517269800 ]
+[d.dayOfWeek, d.rawSeconds]; // -> [2, 1517269800]
 ::
 
 note::
@@ -274,7 +274,7 @@ definitionList::
 || Replaced by the time in a.m. and p.m. notation; in the POSIX locale this shall be equivalent to %I :%M :%S%p. [ tm_hour, tm_min, tm_sec]
 
 ## %R
-|| Replaced by the time in 24-hour notation (%H : %M ). [ tm_hour, tm_min]
+|| Replaced by the time in 24-hour notation (%H : %M). [ tm_hour, tm_min]
 
 ## %S
 || Replaced by the second as a decimal number [00,60]. [ tm_sec]
@@ -283,7 +283,7 @@ definitionList::
 || Replaced by a <tab>.
 
 ## %T
-|| Replaced by the time ( %H : %M : %S ). [ tm_hour, tm_min, tm_sec]
+|| Replaced by the time ( %H : %M : %S). [ tm_hour, tm_min, tm_sec]
 
 ## %u
 || Replaced by the weekday as a decimal number [1,7], with 1 representing Monday. [ tm_wday]
@@ -313,7 +313,7 @@ definitionList::
 || Replaced by the year as a decimal number (for example, 1997). [ tm_year]
 
 ## %z
-|| Replaced by the offset from UTC in the ISO 8601:2000 standard format ( +hhmm or -hhmm ), or by no characters if no timezone is determinable. For example, "-0430" means 4 hours 30 minutes behind UTC (west of Greenwich). If tm_isdst is zero, the standard time offset is used. If tm_isdst is greater than zero, the daylight savings time offset is used. If tm_isdst is negative, no characters are returned. [ tm_isdst]
+|| Replaced by the offset from UTC in the ISO 8601:2000 standard format ( +hhmm or -hhmm), or by no characters if no timezone is determinable. For example, "-0430" means 4 hours 30 minutes behind UTC (west of Greenwich). If tm_isdst is zero, the standard time offset is used. If tm_isdst is greater than zero, the daylight savings time offset is used. If tm_isdst is negative, no characters are returned. [ tm_isdst]
 
 ## %Z
 || Replaced by the timezone name or abbreviation, or by no bytes if no timezone information exists. [ tm_isdst]

@@ -70,7 +70,7 @@ subsection::What happens if you stop and start the task too quickly?
 code::
 (
 t = Task({
-	50.do({ arg i;
+	50.do({ |i|
 		i.squared.postln;
 		0.5.wait;
 	});
@@ -87,9 +87,9 @@ t.stop;
 (
 t = Task({
 	["go", thisThread.clock.beats].postln;
-	inf.do({ arg i;
+	inf.do({ |i|
 		2.wait;
-		[ "wake up", i ].postln;
+		["wake up", i].postln;
 	});
 });
 
@@ -104,8 +104,8 @@ fork {
 };
 )
 
-[ go, 1702.114411906 ]
-[ go, 1704.114411906 ]
+[go, 1702.114411906]
+[go, 1704.114411906]
 ::
 
 Based on the forked thread, you would expect the second "go" line of output to occur 0.2 seconds after the first, but in fact it happens two seconds later (the same amount of time the task waits between iterations). This is because the task must not schedule itself on the clock more than once. When the task is stopped, it remains scheduled until it wakes up again (based on its wait time). If, during this interval, the task were restarted, there would be two references to the task in the scheduler queue -- a situation that is irrecoverable short of stopping everything with command-period.
@@ -116,9 +116,9 @@ code::
 (
 r = Routine({
 	["go", thisThread.clock.beats].postln;
-	inf.do({ arg i;
+	inf.do({ |i|
 		2.wait;
-		[ "wake up", i ].postln;
+		["wake up", i].postln;
 	});
 });
 

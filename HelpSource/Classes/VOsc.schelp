@@ -78,12 +78,12 @@ s.waitForBoot({
 	~bufs = Buffer.allocConsecutive(numBufs, s, 1024, 1);
 	s.sync;
 
-	~bufs.do({ arg buf, i;
+	~bufs.do({ |buf, i|
 		var n, a;
 
 		// generate array of harmonic amplitudes
 		n = (i+1)**2;
-		a = Array.fill(n, { arg j; ((n-j)/n).squared.round(0.001) });
+		a = Array.fill(n, { |j| ((n-j)/n).squared.round(0.001) });
 
 		// fill table
 		// argument '7': flag for the \sine1 wave fill method
@@ -98,19 +98,19 @@ s.waitForBoot({
 
 // play the synth, indexing into the buffers with MouseX
 (
-x = SynthDef("help-VOsc",{ arg out = 0, bufoffset = 0;
+x = SynthDef("help-VOsc", { |out = 0, bufoffset = 0|
 	// mouse x controls the wavetable position
 	var bufindex = MouseX.kr(0, ~bufs.size - 1) + bufoffset;
 
 	Out.ar(out,
 		VOsc.ar(bufindex, [120, 121], 0, 0.3)
 	)
-}).play(s,[\out, 0, \bufoffset, ~bufs.first.bufnum]);
+}).play(s, [\out, 0, \bufoffset, ~bufs.first.bufnum]);
 )
 
 // fill the buffers with new harmonics on-the-fly
 (
-~bufs.do({ arg buf, i;
+~bufs.do({ |buf, i|
 	var a;
 	a = Array.fill(i, 0) ++ [0.5, 1, 0.5];
 	s.performList(\sendMsg, \b_gen, buf.bufnum, \sine1, 7, a);
@@ -119,17 +119,17 @@ x = SynthDef("help-VOsc",{ arg out = 0, bufoffset = 0;
 
 // new harmonics...
 (
-~bufs.do({ arg buf, i;
-	var a = Array.fill(32,0);
-	12.do({ arg i; a.put(32.rand, 1) });
+~bufs.do({ |buf, i|
+	var a = Array.fill(32, 0);
+	12.do({ |i| a.put(32.rand, 1) });
 	s.performList(\sendMsg, \b_gen, buf.bufnum, \sine1, 7, a);
 });
 )
 
 // new harmonics...
 (
-~bufs.do({ arg buf, i;
-	var a = Array.fill((i+1)**2, { arg j; 1.0.rand2 });
+~bufs.do({ |buf, i|
+	var a = Array.fill((i+1)**2, { |j| 1.0.rand2 });
 	s.performList(\sendMsg, \b_gen, buf.bufnum, \sine1, 7, a);
 });
 )

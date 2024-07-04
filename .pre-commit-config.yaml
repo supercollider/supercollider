@@ -1,0 +1,24 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.3.0
+    hooks:
+    -   id: check-merge-conflict
+    -   id: check-case-conflict
+-   repo: local
+    hooks:
+    -   id: clang_format
+        name: Format C++ code
+        entry: python tools/clang-format.py format
+        pass_filenames: false
+        types_or:
+          - "c++"
+        language: python
+        additional_dependencies: ['clang-format==14.0.6']
+    -   id: clang_lint
+        name: Lint C++ code
+        entry: python tools/clang-format.py lint
+        pass_filenames: false
+        types_or:
+          - "c++"
+        language: python
+        additional_dependencies: ['clang-format==14.0.6']
