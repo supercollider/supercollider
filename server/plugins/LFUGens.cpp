@@ -289,9 +289,6 @@ void Linen_Ctor(Linen* unit);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-// in, rate, depth, rateVariation, depthVariation
-// 0   1     2      3              4
-
 void Vibrato_next(Vibrato* unit, int inNumSamples) {
     float* out = ZOUT(0);
     float* in = ZIN(0);
@@ -402,23 +399,30 @@ void Vibrato_next(Vibrato* unit, int inNumSamples) {
 
 void Vibrato_Ctor(Vibrato* unit) {
     unit->mFreqMul = 4.0 * SAMPLEDUR;
-    unit->mPhase = 4.0 * sc_wrap(ZIN0(7), 0.f, 1.f) - 1.0;
+    const double initPhase = unit->mPhase = 4.0 * sc_wrap(ZIN0(7), 0.f, 1.f) - 1.0;
 
     RGen& rgen = *unit->mParent->mRGen;
     float rate = ZIN0(1) * unit->mFreqMul;
     float depth = ZIN0(2);
     float rateVariation = ZIN0(5);
     float depthVariation = ZIN0(6);
-    unit->mFreq = rate * (1.f + rateVariation * rgen.frand2());
-    unit->m_scaleA = depth * (1.f + depthVariation * rgen.frand2());
-    unit->m_scaleB = depth * (1.f + depthVariation * rgen.frand2());
+    float initFreq = unit->mFreq = rate * (1.f + rateVariation * rgen.frand2());
+    float initScaleA = unit->m_scaleA = depth * (1.f + depthVariation * rgen.frand2());
+    float initScaleB = unit->m_scaleB = depth * (1.f + depthVariation * rgen.frand2());
     unit->m_delay = (int)(ZIN0(3) * SAMPLERATE);
     unit->m_attack = (int)(ZIN0(4) * SAMPLERATE);
     unit->m_attackSlope = 1. / (double)(1 + unit->m_attack);
     unit->m_attackLevel = unit->m_attackSlope;
     unit->trig = 0.0f;
     SETCALC(Vibrato_next);
+
     Vibrato_next(unit, 1);
+
+    unit->mPhase = initPhase;
+    unit->mFreq = initFreq;
+    unit->m_scaleA = initScaleA;
+    unit->m_scaleB = initScaleB;
+    unit->trig = 0.0f;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -471,10 +475,13 @@ void LFPulse_Ctor(LFPulse* unit) {
     }
 
     unit->mFreqMul = unit->mRate->mSampleDur;
-    unit->mPhase = ZIN0(1);
-    unit->mDuty = ZIN0(2);
+    double initPhase = unit->mPhase = ZIN0(1);
+    float initDuty = unit->mDuty = ZIN0(2);
 
     LFPulse_next_k(unit, 1);
+
+    unit->mPhase = initPhase;
+    unit->mDuty = initDuty;
 }
 
 
@@ -515,9 +522,11 @@ void LFSaw_Ctor(LFSaw* unit) {
         SETCALC(LFSaw_next_k);
 
     unit->mFreqMul = 2.0 * unit->mRate->mSampleDur;
-    unit->mPhase = ZIN0(1);
+    double initPhase = unit->mPhase = ZIN0(1);
 
     LFSaw_next_k(unit, 1);
+
+    unit->mPhase = initPhase;
 }
 
 
@@ -579,11 +588,12 @@ void LFPar_Ctor(LFPar* unit) {
         SETCALC(LFPar_next_k);
 
     unit->mFreqMul = 4.0 * unit->mRate->mSampleDur;
-    unit->mPhase = ZIN0(1);
+    double initPhase = unit->mPhase = ZIN0(1);
 
     LFPar_next_k(unit, 1);
-}
 
+    unit->mPhase = initPhase;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -625,9 +635,11 @@ void LFCub_Ctor(LFCub* unit) {
         SETCALC(LFCub_next_k);
 
     unit->mFreqMul = 2.0 * unit->mRate->mSampleDur;
-    unit->mPhase = ZIN0(1) + 0.5;
+    double initPhase = unit->mPhase = ZIN0(1) + 0.5;
 
     LFCub_next_k(unit, 1);
+
+    unit->mPhase = initPhase;
 }
 
 
@@ -664,9 +676,12 @@ void LFTri_Ctor(LFTri* unit) {
     }
 
     unit->mFreqMul = 4.0 * unit->mRate->mSampleDur;
-    unit->mPhase = ZIN0(1);
+
+    double initPhase = unit->mPhase = sc_wrap(static_cast<double>(ZIN0(1)), 0.0, 4.0);
 
     LFTri_next_k(unit, 1);
+
+    unit->mPhase = initPhase;
 }
 
 
@@ -1401,7 +1416,7 @@ FLATTEN void Line_next_nova_64(Line* unit, int inNumSamples) {
 void Line_Ctor(Line* unit) {
 #ifdef NOVA_SIMD
     if (BUFLENGTH == 64)
-        SETCALC(Line_next_nova);
+        SETCALC(Line_next_nova_64);
     else if (boost::alignment::is_aligned(BUFLENGTH, 16))
         SETCALC(Line_next_nova);
     else
@@ -1419,7 +1434,6 @@ void Line_Ctor(Line* unit) {
     } else {
         unit->mLevel = start;
         unit->mSlope = (end - start) / unit->mCounter;
-        unit->mLevel += unit->mSlope;
     }
     unit->mEndLevel = end;
     ZOUT0(0) = unit->mLevel;
@@ -1528,7 +1542,7 @@ void XLine_Ctor(XLine* unit) {
         ZOUT0(0) = start;
         unit->mCounter = counter;
         unit->mGrowth = pow(end / start, 1.0 / counter);
-        unit->mLevel = start * unit->mGrowth;
+        unit->mLevel = start;
     }
 }
 

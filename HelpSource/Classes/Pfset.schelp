@@ -12,9 +12,9 @@ classmethods::
 method:: new
 
 argument:: func
-Use environment variable syntax (e.g., code:: ~x = 0 ::) to store values in the internal environment. These values are copied into the event prototype before running the supplied pattern. 
+Use environment variable syntax (e.g., code:: ~x = 0 ::) to store values in the internal environment. These values are copied into the event prototype before running the supplied pattern.
 argument:: pattern
-An event pattern (such as link::Classes/Pbind::). 
+An event pattern (such as link::Classes/Pbind::).
 argument:: cleanupFunc
 Optional. A function to evaluate when the pattern is stopped, or when the supplied pattern runs out of values. For example, if you loaded a link::Classes/Buffer:: in the initializer function, you could free it in the code::cleanupFunc::.
 
@@ -28,7 +28,7 @@ a = Pfset({
 	~detune = rrand(0, 30);
 }, Pbind(\dur, 0.5));
 x = a.asStream;
-9.do({ x.next(Event.new).postln; });
+9.do({ x.next(Event.new).postln });
 )
 ::
 
@@ -40,7 +40,7 @@ a = Pfset({
 	~dur = 0.3;
 }, Pbind(\dur, 0.5));
 x = a.asStream;
-9.do({ x.next(Event.new).postln; });
+9.do({ x.next(Event.new).postln });
 )
 ::
 
@@ -48,7 +48,7 @@ Sound example
 code::
 (
 SynthDef(\sinegrain,
-	{ arg out = 0, freq = 440, sustain = 0.02;
+	{ |out = 0, freq = 440, sustain = 0.02|
 		var env;
 		env = EnvGen.kr(Env.perc(0.001, sustain), 1, doneAction: Done.freeSelf);
 		Out.ar(out, SinOsc.ar(freq, 0, env * 0.1))
@@ -57,7 +57,7 @@ SynthDef(\sinegrain,
 
 (
 a = Pbind(\dur, 0.5, \instrument, \sinegrain, \x, Pfunc { rrand(500, 600) });
-a = Pfset({ ~freq = { ~x.postln * 2 }; ~legato = 3; },  a);
+a = Pfset({ ~freq = { ~x.postln * 2 }; ~legato = 3 }, a);
 a.play;
 )
 ::

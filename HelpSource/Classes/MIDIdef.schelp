@@ -191,10 +191,10 @@ EXAMPLES::
 
 code::
 MIDIIn.connectAll
-MIDIdef.cc(\test1, {arg ...args; args.postln}, 1); // match cc 1
-MIDIdef.cc(\test2, {arg ...args; args.postln}, 1, 1); // match cc1, chan 1
-MIDIdef.cc(\test3, {arg ...args; args.postln}, (1..10)); // match cc 1-10
-MIDIdef.noteOn(\test4, {arg ...args; args.postln}); // match any noteOn
+MIDIdef.cc(\test1, { |...args| args.postln }, 1); // match cc 1
+MIDIdef.cc(\test2, { |...args| args.postln }, 1, 1); // match cc1, chan 1
+MIDIdef.cc(\test3, { |...args| args.postln }, (1..10)); // match cc 1-10
+MIDIdef.noteOn(\test4, { |...args| args.postln }); // match any noteOn
 
 MIDIIn.doNoteOnAction(1, 1, 64, 64); // spoof a note on
 MIDIIn.doControlAction(1, 1, 1, 64); // spoof a cc
