@@ -316,8 +316,8 @@
 					if (unicode == 16rF701, { slider.decrement; });
 					if (unicode == 16rF702, { slider.decrement; });
 					nil;
-				});
-				volController = SimpleController(volume)
+					});
+			volController = SimpleController(volume)
 				.put(\amp, {|changer, what, vol|
 					{
 						volumeNum.value_(vol.round(0.01));
