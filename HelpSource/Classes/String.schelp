@@ -199,13 +199,17 @@ Instance of String {    (0x1525795a8, gc=54, fmt=07, flg=10, set=02)
 may be different as the value represented here when one evaluating the same code. N.B.: Their values are determined by evaluating the code code::~string_a = "hi":: and code::~string_b = "hi"::, not by evaluating the code code::~string_a.dump:: and code::~string_b.dump::. (see: link::Classes/Object#-dump::.)
 
 The hexadecimal digits addresses indicate the address on virtual memory.
-The address of the object associated with the variable code::~string_a:: is as follows:
+
+list::
+## The address of the object associated with the variable code::~string_a:: is as follows:
 teletype::
 0x1533d23b8
 ::
-The address of the object associated with the variable code::~string_b:: is as follows:
+
+## The address of the object associated with the variable code::~string_b:: is as follows:
 teletype::
 0x1525795a8
+::
 ::
 
 When two objects are identical, their emphasis::identity hash table indices:: are equal and identical, i.e. the same object always results in the same emphasis::identity hash index::.
@@ -817,7 +821,7 @@ Make a directory from the given path location.
 method::pathMatch
 Returns an link::Classes/Array:: containing all paths matching this String. Wildcards apply, non-recursive.
 code::
-Post << ("Help" +/+ "*").pathMatch;
+Post << ("Help/*").pathMatch;
 ::
 
 method::load
@@ -1105,4 +1109,3 @@ method::bounds
 Tries to return a link::Classes/Rect:: with the size needed to fit this string if drawn with given font.
 argument:: font
 A link::Classes/Font::
-
