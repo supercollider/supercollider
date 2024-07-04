@@ -777,9 +777,7 @@ void init_OSC(int port) {
 
     try {
         gUDPport.reset(new InPort::UDP(port, HandlerType::OSC));
-    } catch (std::exception const& e) {
-        postfl("No networking: %s", e.what());
-    }
+    } catch (std::exception const& e) { postfl("No networking: %s", e.what()); }
 }
 
 int prOpenOSCUDPPort(VMGlobals* g, int numArgsPushed);

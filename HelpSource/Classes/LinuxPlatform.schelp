@@ -29,4 +29,4 @@ method:: getTerminalEmulatorCmd
 scans the system for a supported terminal emulator. This method runs synchronously, and could block other scheduled operations while searching. If you rely on link::Classes/String#-runInTerminal::, it is recommended to run this method before you start scheduling Patterns or Routines, or to set link::#*runInTerminalCmd:: manually.
 returns:: command to invoke a terminal emulator, to be used as link::Classes/LinuxPlatform#*runInTerminalCmd::
 
-KEYWORD:: jack,linux
+KEYWORD:: jack, linux

@@ -30,7 +30,7 @@ code::
 (
 {
 	var in, chain, realcutoff, estcutoff;
-	realcutoff = MouseX.kr(0.00001,22050);
+	realcutoff = MouseX.kr(0.00001, 22050);
 	in = LPF.ar(WhiteNoise.ar, realcutoff);
 	chain = FFT(LocalBuf(2048), in);
 	estcutoff = Lag.kr(SpecPcile.kr(chain, 0.9), 1);
@@ -46,9 +46,9 @@ code::
 (
 {
 	var in, chain, perc;
-	in = SoundIn.ar([0,1]).mean;
+	in = SoundIn.ar([0, 1]).mean;
 	chain = FFT(LocalBuf(2048), in);
-	//Out.ar(0, in * 0.1);
+	// Out.ar(0, in * 0.1);
 	perc = SpecPcile.kr(chain, 0.5);
 	Out.kr(0, perc * 22050.0.reciprocal);
 	Out.ar(1, LPF.ar(WhiteNoise.ar, perc)); // outputting to right channel

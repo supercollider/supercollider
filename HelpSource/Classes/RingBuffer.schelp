@@ -64,19 +64,19 @@ r.add(\one);
 r.add(\two);
 r.add(\three);
 r.readable;
-r.do{ | x | x.postln};
+r.do{ |x| x.postln };
 
 
 r = RingBuffer(12, Int16Array);
-r.writable.do{ | i | r.add(i + 1 * 100) };
+r.writable.do{ |i| r.add(i + 1 * 100) };
 r.array;
-r.readable;  //11
-r.writable;  //0 = full
+r.readable;  // 11
+r.writable;  // 0 = full
 r.pop;
 r.pop;
 r.pop;
-r.readable;  //8
-r.writable;  //3
+r.readable;  // 8
+r.writable;  // 3
 
 
 (
@@ -87,7 +87,7 @@ Routine({
 	while { m.isClosed.not } {
 		if(r.writable == 0, { r.pop });
 		r.add(sin(thisThread.seconds).abs);
-		r.do{ | v, i |
+		r.do{ |v, i|
 			m.index = i;
 			m.currentvalue = v;
 		};

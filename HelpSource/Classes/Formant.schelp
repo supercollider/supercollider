@@ -37,7 +37,7 @@ Examples::
 
 code::
 // modulate fundamental frequency, formant freq stays constant
-{ Formant.ar(XLine.kr(400,1000, 8), 2000, 800, 0.125) }.play
+{ Formant.ar(XLine.kr(400, 1000, 8), 2000, 800, 0.125) }.play
 
 // modulate formant frequency, fundamental freq stays constant
 { Formant.ar(200, XLine.kr(400, 4000, 8), 200, 0.125) }.play
