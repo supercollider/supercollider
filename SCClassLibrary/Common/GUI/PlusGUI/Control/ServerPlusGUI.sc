@@ -24,7 +24,6 @@ ServerTreeView {
 			window = parent
 		};
 		viewParent = window;
-		if(window.view.respondsTo(\hasHorizontalScroller_)) { window.view.hasHorizontalScroller_(false) };
 		window.view.background_(Color.grey(0.9));
 		treeViewStatus = StaticText(window, Rect(tabSize, 0, window.bounds.width - (tabSize * 2) + 1, tabSize))
 		.string_(" STOPPED")
