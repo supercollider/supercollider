@@ -821,7 +821,7 @@ Make a directory from the given path location.
 method::pathMatch
 Returns an link::Classes/Array:: containing all paths matching this String. Wildcards apply, non-recursive.
 code::
-Post << ("Help/*").pathMatch;
+Post << "Help/*".pathMatch;
 ::
 
 method::load
