@@ -938,14 +938,13 @@ teletype::
 ::
 They are two different objects allocated at different addresses in virtual memory:
 
-table::
-##
+list::
+## code::~array_a::
 
-table::
-##
 code::
 ~array_a.dump
 ::
+
 post window returns:
 teletype::
 Instance of Array {    (0x1256a70b8, gc=38, fmt=01, flg=00, set=02)
@@ -957,11 +956,8 @@ Instance of Array {    (0x1256a70b8, gc=38, fmt=01, flg=00, set=02)
 ::
 
 The first two parts of the parenthesis pair above, i.e. teletype::0x1256a70b8:: and teletype::gc=38::, may be different when evaluating the code code::a.dump::, but their values are determined when evaluating the code code::~array_b = [1, 2]::. (see: link::#-dump::)
-::
 
-table::
-##
-
+##  code::~array_b::
 code::
 ~array_b.dump
 ::
@@ -981,19 +977,17 @@ The first two parts of the parenthesis pair above, i.e. teletype::0x152d02da8:: 
 
 The hexadecimal digits addresses indicate the address on virtual memory.
 
-table::
-##
-The address of the object associated with the variable code::~array_a:::
-||
-The address of the object associated with the variable code::~array_b:::
-##
+list::
+## The address of the object associated with the variable code::~array_a:::
+
 teletype::
 0x1256a70b8
 ::
-||
+
+## The address of the object associated with the variable code::~array_b:::
+
 teletype::
 0x152d02da8
-::
 ::
 ::
 
