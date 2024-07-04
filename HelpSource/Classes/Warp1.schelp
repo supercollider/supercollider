@@ -58,15 +58,15 @@ x = { |envbuf = -1|
 	// control pitch with MouseX
 	pitch = MouseX.kr(0.5, 2);
 	Warp1.ar(
-		numChannels:1,
-		bufnum:b,
-		pointer:pointer,
-		freqScale:pitch,
-		windowSize:0.1,
-		envbufnum:envbuf,
-		overlaps:8,
-		windowRandRatio:0.1,
-		interp:2
+		numChannels: 1,
+		bufnum: b,
+		pointer: pointer,
+		freqScale: pitch,
+		windowSize: 0.1,
+		envbufnum: envbuf,
+		overlaps: 8,
+		windowRandRatio: 0.1,
+		interp: 2
 	)
 }.play
 

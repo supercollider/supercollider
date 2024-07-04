@@ -143,18 +143,18 @@ An IdentityDictionary with a set of parameters to match.
 EXAMPLES::
 
 code::
-b = HIDProto.newFromDict( ( path: "/dev/hidraw2" ) );
+b = HIDProto.newFromDict((path: "/dev/hidraw2"));
 
-a = HIDFunc.usage( { |...args| args.postln; }, \X, deviceInfo: b );
+a = HIDFunc.usage({ |...args| args.postln }, \X, deviceInfo: b);
 a.free
 
-b = HIDProto.newType( \Mouse, \GenericDesktop );
+b = HIDProto.newType(\Mouse, \GenericDesktop);
 
-a = HIDFunc.usage( { |...args| args.postln; }, \X, deviceInfo: b );
+a = HIDFunc.usage({ |...args| args.postln }, \X, deviceInfo: b);
 a.free;
 
-b = HIDProto.newProduct( "USB Mouse", "Logitech" );
+b = HIDProto.newProduct("USB Mouse", "Logitech");
 
-a = HIDFunc.usage( { |...args| args.postln; }, \X, deviceInfo: b );
+a = HIDFunc.usage({ |...args| args.postln }, \X, deviceInfo: b);
 a.free;
 ::

@@ -46,14 +46,14 @@ subsection:: Keydown Bubbling
 
 Key actions "bubble up" to the parent view if a view does not define one itself. In the following example, a and b do not have keyDown actions themselves, so the key event is passed to c, the parent, which defines the key down action. d's parent is the SCTopView, which has no key down action. See also link::Classes/View::.
 code::
-( //Click on the different views and hit keys on the keyboard.
+( // Click on the different views and hit keys on the keyboard.
 
 w = Window.new;
 
 c = CompositeView(w, Rect(0, 0, 200, 200)).background_(Color.grey.alpha_(0.3));
 
-a = Slider2D(c,Rect(0, 0, 100, 100)).background_(Color.rand);
-b = Slider2D(c,Rect(100, 100, 100, 100)).background_(Color.rand);
+a = Slider2D(c, Rect(0, 0, 100, 100)).background_(Color.rand);
+b = Slider2D(c, Rect(100, 100, 100, 100)).background_(Color.rand);
 
 w.front;
 
@@ -62,7 +62,7 @@ c.keyDownAction = {
 };
 
 // d is on window w, not on composite view c
-d = Slider2D(w,Rect(200, 200, 100, 100));
+d = Slider2D(w, Rect(200, 200, 100, 100));
 d.background = Color.black;
 )
 ::
@@ -74,14 +74,14 @@ code::
 (
 a = Window.new;
 
-b = CompositeView(a,Rect(0, 0, 500, 500));
+b = CompositeView(a, Rect(0, 0, 500, 500));
 b.decorator = FlowLayout(b.bounds);
-//b.addFlowLayout; // you can also write this for convenience
+// b.addFlowLayout; // you can also write this for convenience
 
 // adding views to b automatically use the decorator
 // no need to use parent.decorator.place
-c = Slider2D(b,Rect(0, 0, 100, 100)); // size matters
-d = Slider2D(b,Rect(0, 0, 100, 100)); // origin doesn't
+c = Slider2D(b, Rect(0, 0, 100, 100)); // size matters
+d = Slider2D(b, Rect(0, 0, 100, 100)); // origin doesn't
 
 a.front;
 )
@@ -95,17 +95,17 @@ b = CompositeView(a, Rect(0, 0, 500, 500));
 
 b.decorator = FlowLayout(Rect(0, 0, 500, 500));
 
-Slider2D(b,Rect(0, 0, 100, 100)).background_(Color.rand);
+Slider2D(b, Rect(0, 0, 100, 100)).background_(Color.rand);
 CompositeView(b, Rect(0, 0, 70, 100)); // just used for spacing
-Slider2D(b,Rect(0, 0, 100, 100)).background_(Color.rand);
-Slider2D(b,Rect(0, 0, 100, 100)).background_(Color.rand);
+Slider2D(b, Rect(0, 0, 100, 100)).background_(Color.rand);
+Slider2D(b, Rect(0, 0, 100, 100)).background_(Color.rand);
 
 b.decorator.nextLine;
 
 Slider2D(b, Rect(0, 0, 100, 100)).background_(Color.rand);
 Slider2D(b, Rect(0, 0, 100, 100)).background_(Color.rand);
 CompositeView(b, Rect(0, 0, 70, 100)); // just used for spacing
-Slider2D(b,Rect(0,0,100,100)).background_(Color.rand);
+Slider2D(b, Rect(0, 0, 100, 100)).background_(Color.rand);
 
 a.front;
 )
@@ -122,25 +122,25 @@ q = 3;
 
 b = Button(a, Rect(0, 0, 160, 20));
 
-b.states = Array.fill(q, { arg i;
+b.states = Array.fill(q, { |i|
 	[i.asString, Color.white, colors.wrapAt(i)]
 });
 
-b.action = { arg butt;
+b.action = { |butt|
 	p.visible = false;
 	p = c.at(butt.value);
 	p.visible = true;
 };
 
-c = Array.fill(q, { arg i;
+c = Array.fill(q, { |i|
 	b = CompositeView(a, Rect(0, 25, 300, 300));
 	b.background = colors[i].alpha_(0.2);
 	b.visible = false;
 	b;
 });
 
-5.do{ arg i; Slider(c[0], Rect(10, i * 30 + 10, 150, 25)).value_(1.0.rand) };
-5.do{ arg i; Slider(c[1], Rect(i * 30 + 10, 10, 25, 150)).value_(1.0.rand) };
+5.do{ |i| Slider(c[0], Rect(10, i * 30 + 10, 150, 25)).value_(1.0.rand) };
+5.do{ |i| Slider(c[1], Rect(i * 30 + 10, 10, 25, 150)).value_(1.0.rand) };
 Slider2D(c[2], Rect(10, 10, 155, 150)).x_(1.0.rand).y_(1.0.rand);
 
 p = c.at(0); // previous
@@ -160,15 +160,15 @@ v = CompositeView.new(w, w.view.bounds.insetBy(10)).background_(Color.rand);
 v.decorator = FlowLayout(v.bounds);
 
 l = "SUPERCOLLIDER".scramble;
-t = Array.fill(9, {arg i; var n, r, q;
+t = Array.fill(9, { |i| var n, r, q;
 	n = CompositeView.new(v, Rect(20, 20, 121, 121)).background_(Color.rand);
-	q = StaticText(n, n.bounds.moveTo(0,0).insetBy(25)).string_(l[i]).align_(\center);
+	q = StaticText(n, n.bounds.moveTo(0, 0).insetBy(25)).string_(l[i]).align_(\center);
 	q.enabled = true;
 	q.font = Font("Geneva", 10);
 	q.background_(Color.rand);
 	q.mouseDownAction = {
 		n.background_(Color.rand);
-		q.font=q.font.size_(5 + q.font.size + 7 % 60)
+		q.font = q.font.size_(5 + q.font.size + 7 % 60)
 	};
 });
 )

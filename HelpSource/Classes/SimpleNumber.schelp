@@ -338,7 +338,7 @@ method:: excess
 Returns the difference of the receiver and its clipped form.
 discussion::
 code::
-(a - clip2(a,b))
+(a - clip2(a, b))
 ::
 
 method:: madd
@@ -357,7 +357,7 @@ method:: isStrictlyPositive
 Answer if the number is > 0.
 
 method:: booleanValue
-returns:: true, if strictly positive ( > 0), otherwise false (see link::Classes/Boolean::)
+returns:: true, if strictly positive (> 0), otherwise false (see link::Classes/Boolean::)
 
 method:: isNaN
 method:: ==
@@ -579,18 +579,18 @@ code::
 ::
 
 method:: scurve
-Map receiver in the onto an S-curve bound to [0,1].
+Map receiver in the onto an S-curve bound to [0, 1].
 Implements:
 teletype::
 this * this * (3.0 - (2.0 * this))
 ::
-with teletype::this:: clipped to [0,1].
+with teletype::this:: clipped to [0, 1].
 code::
-((-100..200) / 100 ).collect(_.scurve).plot
+((-100..200) / 100).collect(_.scurve).plot
 ::
 
 method:: ramp
-Map the receiver onto a ramp starting at code::0.0::, ending at code::1.0::, effectively clipping the receiver at [0,1].
+Map the receiver onto a ramp starting at code::0.0::, ending at code::1.0::, effectively clipping the receiver at [0, 1].
 discussion::
 code::
 (
@@ -623,7 +623,7 @@ the value is truncated to an integer and used as an index into an octave repeati
 code::
 (
 l = [0, 1, 5, 9, 11]; // pentatonic scale
-(1, 2..15).collect{|i|
+(1, 2..15).collect{ |i|
 	i.degreeToKey(l, 12)
 };
 )
@@ -1251,7 +1251,7 @@ Requires code::a:: > 0, 0 < code::x:: < 1, and 0 <= code::q:: <= 1.
 
 method:: ibetaDerivative
 Returns the partial derivative with respect to code::x:: of the incomplete
-beta function code::ibeta(a,b,x)::.
+beta function code::ibeta(a, b, x)::.
 
 
 subsection:: Error Functions
@@ -1327,7 +1327,7 @@ method:: sphericalHarmonic
 Returns the (code::Complex::) value of the Spherical Harmonic.
 
 code::theta:: is taken as the polar (colatitudinal) coordinate within code::[0, pi]::,
-and code::phi:: as the azimuthal (longitudinal) coordinate within code::[0,2pi]::.
+and code::phi:: as the azimuthal (longitudinal) coordinate within code::[0, 2pi]::.
 
 See boost documentation for further information, including a note about the
 Condon-Shortley phase term of code::(-1)^m::.
@@ -1588,7 +1588,7 @@ Take a tour of link::Guides/Tour-of-Special-Functions#Exponential Integrals#Expo
 method:: expintEn
 Returns the exponential integral En of code::z::.
 
-Requires that when code::n == 1::, code::z !=0::.
+Requires that when code::n == 1::, code::z != 0::.
 
 method:: expintEi
 Returns the exponential integral of code::z::.

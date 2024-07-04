@@ -3780,12 +3780,6 @@ void PyrBlockNode::compile(PyrSlot* slotResult) {
         compileErrors++;
     }
 
-    if (numArgs > 255) {
-        error("Too many arguments in function definition (> 255).\n");
-        nodePostErrorLine((PyrParseNode*)mArglist->mVarDefs);
-        compileErrors++;
-    }
-
     numSlots = numArgs + funcVarArgs + numVars;
     methraw->frameSize = (numSlots + FRAMESIZE) * sizeof(PyrSlot);
     if (numSlots) {

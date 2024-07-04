@@ -246,9 +246,7 @@ void SC_BelaDriver::BelaAudioCallback(BelaContext* belaContext) {
         if (mWorld->mBelaScope)
             mWorld->mBelaScope->logBuffer();
 
-    } catch (std::exception& exc) {
-        scprintf("SC_BelaDriver: exception in real time: %s\n", exc.what());
-    } catch (...) {
+    } catch (std::exception& exc) { scprintf("SC_BelaDriver: exception in real time: %s\n", exc.what()); } catch (...) {
         scprintf("SC_BelaDriver: unknown exception in real time\n");
     }
 
