@@ -48,8 +48,8 @@ code::
 // write a sine oscillator's output to a pin
 
 (
-SynthDef("help-AnalogOut",{ arg out=0;
-    AnalogOut.ar( 0 , SinOsc.ar( 10 ) );
+SynthDef("help-AnalogOut", { |out = 0|
+    AnalogOut.ar(0, SinOsc.ar(10));
 }).play;
 )
 ::

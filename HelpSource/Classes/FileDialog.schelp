@@ -100,7 +100,7 @@ FileDialog({ |paths|
 (
 FileDialog({ |path|
 	postln("Selected file:" + path);
-	postln("File type is:" + File.type(path)); },
+	postln("File type is:" + File.type(path)) },
 	fileMode: 0,
 	stripResult: true,
 	path: Platform.userAppSupportDir);

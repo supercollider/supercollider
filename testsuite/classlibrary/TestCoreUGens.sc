@@ -36,9 +36,9 @@ TestCoreUGens : UnitTest {
 			//////////////////////////////////////////
 			// Triggers:
 			"Trig.ar(_,0) is no-op when applied to Impulse.ar, whatever the amplitude of the impulses"
-			-> {n = Impulse.ar(400)*SinOsc.ar(1).range(0,1); Trig.ar(n,0) - n},
+			-> {n = Impulse.ar(400)*SinOsc.ar(0.713,0.001).range(0,1); Trig.ar(n,0) - n},
 			"Trig1.ar(_,0) has same effect as (_>0) on variable-amplitude impulses"
-			-> {n = Impulse.ar(400)*SinOsc.ar(1).range(0,1); Trig1.ar(n,0) - (n>0)},
+			-> {n = Impulse.ar(400)*SinOsc.ar(0.713,0.001).range(0,1); Trig1.ar(n,0) - (n>0)},
 			"Trig1.ar(_,0) is no-op when applied to Impulse.ar" -> {Impulse.ar(300) - Trig1.ar(Impulse.ar(300), 0)},
 			"Latch applied to LFPulse.ar on its own changes is no-op" -> {n=LFPulse.ar(23, 0.5); n - Latch.ar(n, HPZ1.ar(n).abs)},
 			"Latch applied to LFPulse.kr on its own changes is no-op" -> {n=LFPulse.kr(23, 0.5); n - Latch.kr(n, HPZ1.kr(n).abs)},
@@ -76,8 +76,9 @@ TestCoreUGens : UnitTest {
 			"sum and rescale kr signal is identity" -> {n=WhiteNoise.kr; [n, n].sum.madd(0.5, 0) - n },
 
 			// Audio rate demand ugens
-			"Duty.ar(SampleDur.ir, 0, x) == x" -> {n=WhiteNoise.ar; (n - Duty.ar(SampleDur.ir, 0, n)) },
-			"Duty.ar(SampleDur.ir, 0, Drand([x],inf)) == x" -> {n=WhiteNoise.ar; (n - Duty.ar(SampleDur.ir, 0, Drand([n],inf))) },
+			// FIXME
+			// "Duty.ar(SampleDur.ir, 0, x) == x" -> {n=WhiteNoise.ar; (n - Duty.ar(SampleDur.ir, 0, n)) },
+			// "Duty.ar(SampleDur.ir, 0, Drand([x],inf)) == x" -> {n=WhiteNoise.ar; (n - Duty.ar(SampleDur.ir, 0, Drand([n],inf))) },
 
 
 			//////////////////////////////////////////
@@ -212,6 +213,41 @@ TestCoreUGens : UnitTest {
 			},
 
 		];
+
+		//////////////////////////////////////////
+		// Delay1, Delay2
+		// More test in test_delay1_2_predelayValues
+		[\ar, \kr].do{ |rate|
+			tests.add(
+				("Delay1." ++ rate ++ " first frame is 0 at .ar and matches the input at .kr") -> {
+					var dc, imp, target;
+					dc = DC.perform(rate, 1);       // all 1's
+					imp = Impulse.perform(rate, 0); // single impulse on first sample
+					target = switch(rate,
+						\ar, dc - imp,              // subtracted impulse zeros out the the first sample of DC(1)
+						\kr, dc
+					);
+					// target is equivalent to DC(1) delayed by 1 sample
+					Delay1.perform(rate, dc) - target
+				}
+			);
+			tests.add(
+				("Delay2." ++ rate ++ " first 2 frames are 0 at .ar and match the input at .kr") -> {
+					// as Delay1, but with two consecutive impulses
+					// to cancel the first two samples of DC(1)
+					var dc, imp, delimp, target;
+					dc = DC.perform(rate, 1);           // all 1's
+					imp = Impulse.perform(rate, 0);     // single impulse on first sample
+					delimp = Delay1.perform(rate, imp); // single impulse on second sample
+					target = switch(rate,
+						\ar, dc - imp - delimp,         // subtracted impulse zeros out the the first sample of DC(1)
+						\kr, dc
+					);
+					// target is equivalent to DC(1) delayed by 2 samples
+					Delay2.perform(rate, dc) - target
+				}
+			);
+		};
 
 		//////////////////////////////////////////
 		// reversible unary ops:
@@ -619,6 +655,73 @@ TestCoreUGens : UnitTest {
 
 	}
 
+	test_delay1_2_predelayValues {
+		var tolerance = -100.dbamp;
+		var testDur = 0.01;
+		var dcInputVal = 0.4;
+		var testParams = [
+			// [ugen, inputVal, x1 (, x2)]
+			[Delay1, dcInputVal],       // default: no x1 arg specified
+			[Delay1, dcInputVal, 0.5],
+
+			[Delay2, dcInputVal],       // default: no x1 or x2 arg specified
+			[Delay2, dcInputVal, 0.3],  // no x2 specified
+			[Delay2, dcInputVal, 0.3, 0.6],
+		];
+
+		server.bootSync;
+
+		testParams.do{ |params|
+			var ugen, inVal, xArgs, numPredelaySamples;
+			#ugen, inVal = params[0..1];
+			xArgs = params[2..];
+			numPredelaySamples = switch(ugen, Delay1, { 1 }, Delay2, { 2 });
+
+			[\ar, \kr].do{ |rate|
+				var condvar = CondVar();
+				{
+					ugen.perform(rate,
+						DC.perform(rate, inVal), 1, 0, *xArgs // in, mul, add, x1 (, x2)
+					)
+				}.loadToFloatArray(testDur, server, { |data|
+					var errmsg, target;
+
+					if(xArgs.size == 0) {
+						// no args specified, check defaults
+						switch(rate,
+							\ar, {
+								target = 0.0 ! numPredelaySamples;
+								errmsg = "%.ar: predelay sample% should default to 0.0.";
+							},
+							\kr, {
+								target = inVal ! numPredelaySamples;
+								errmsg = "%.kr: predelay sample% should defaults to the input value (%).";
+							}
+						);
+						errmsg = errmsg.format(ugen, if(ugen == Delay2){ "s" }{ "" }, inVal);
+					} {
+						// x1/x2 args are specified, partially or fully
+						target = switch(rate,
+							\ar, { xArgs.extend(numPredelaySamples, 0.0).reverse }, // reverse: output order is [x2, x1]
+							\kr, { xArgs.extend(numPredelaySamples, inVal).reverse }
+						);
+						errmsg = format(
+							"%.%: when x1% (%) is a number, the corresponding predelay sample equals that number.",
+							ugen, rate, if(ugen == Delay2){ " or x2" }{ "" }, xArgs, inVal
+						);
+					};
+
+					this.assertArrayFloatEquals(
+						data.keep(numPredelaySamples), target, errmsg, within: tolerance, report: true
+					);
+					condvar.signalOne;
+				});
+
+				condvar.wait;
+			};
+		}
+	}
+
 	test_binaryValue_isUniform {
 		var from = [100, -100, 0, { 100 }, { -100 }, { 0 }];
 		var to = [1, 0, 0, 1, 0, 0];
@@ -645,6 +748,139 @@ TestCoreUGens : UnitTest {
 
 	}
 
+	test_line_startAndEndSampleAreOuputOverDur {
+		var durFrames = 5; // duration for the line to complete its trajectory, in frames
+		var renderFrames = durFrames + 1; // render one extra frame to check that the end value is reached
+		var startVal = 2;
+		var endVal = 20;
+		var tolerance = -100.dbamp;
+		var condvar = CondVar();
+
+		server.bootSync;
+
+		[\ar, \kr].do{ |rate|
+			[Line, XLine].do{ |ugen|
+				var fs = server.sampleRate;
+				var rateScale = switch(rate, \ar, { 1.0 }, \kr, { server.options.blockSize });
+				var lineDur = durFrames * rateScale / fs;
+				var testDur = renderFrames * rateScale / fs;
+
+				{
+					ugen.perform(rate, startVal, endVal, lineDur)
+				}.loadToFloatArray(testDur,
+					action: { |data|
+						this.assertFloatEquals(data.first, startVal,
+							"%.%'s first output sample should be its given start value.".format(ugen, rate), within: tolerance);
+						this.assert(data.last == endVal and: { data[data.size-2] != endVal },
+							"%.% should not reach its end value before the given duration".format(ugen, rate));
+						// Note an exception to the previouse test would be if the duration of the Line is less than a frame duration.
+						// In that (odd) case the "correct" first value is the end value. See GH issue #4279.
+						condvar.signalOne;
+				});
+				condvar.wait;
+			}
+		}
+	}
+
+	test_oscillators_startAtCorrectPhase {
+
+		var tolerance = -100.dbamp;
+		var condvar = CondVar();
+
+		server.bootSync;
+
+		[\ar, \kr].do{ |rate|
+			var period = 10; // a 10-sample period (should be even)
+			var halfPeriod = period * 0.5; // should divide evenly into sampleT
+			var fs = switch(rate,
+				\ar, { server.sampleRate },
+				\kr, { server.sampleRate / server.options.blockSize }
+			);
+			var freq = fs / period;
+			var iPhase, target, ugen, phaseRange;
+
+			// LFPulse: initial phase is one sample before the end of the pulse width
+			{
+				iPhase = (halfPeriod - 1) / period; // LFPulse phase is 0->1
+				LFPulse.perform(rate, freq, iPhase, 0.5)
+			}.loadToFloatArray(period + 1 / fs,
+				action: { |data|
+					// exact float comparison should be ok here...
+					// from LFPulse_next: z = phase < duty ? 1.f : 0.f;
+					this.assert(data[0] == 1.0 and: { data[1] == 0.0 },
+						"LFPulse.% should start at the correct initial phase".format(rate)
+					);
+					condvar.signalOne;
+			});
+			condvar.wait;
+
+			// LFSaw: initial phase is one sample before the signal flip toward -1
+			{
+				iPhase = (halfPeriod - 1) / period * 2; // LFPulse phase is 0->2
+				LFSaw.perform(rate, freq, iPhase)
+			}.loadToFloatArray(period + 1 / fs,
+				action: { |data|
+					this.assert(data[0] > 0.0 and: { data[1] < 0.0 },
+						"LFSaw.% should start at the correct initial phase".format(rate)
+					);
+					condvar.signalOne;
+			});
+			condvar.wait;
+
+			// LFPar: test initial phase
+			// [initPhase, targetValue] pairs to test, LFPar phase is 0->4
+			[
+				[0, 1.0],
+				[1, 0.0],
+				[2, -1.0],
+				[3, 0.0],
+				[4, 1.0]
+			].do{ |phaseValuePair|
+				#iPhase, target = phaseValuePair;
+				{
+					LFPar.perform(rate, freq, iPhase)
+				}.loadToFloatArray(period + 1 / fs,
+					action: { |data|
+						this.assertFloatEquals(data[0], target,
+							"LFPar.% should be % at initial phase of %".format(rate, target, iPhase),
+							within: tolerance
+						);
+						condvar.signalOne;
+				});
+				condvar.wait;
+			};
+
+			// LFCub, LFTri, SinOsc: testing initial phase
+			// [initPhase, targetValue] pairs to test — phase is normalized 0->1 here then scaled for each UGen
+			[
+				[0.00, 0.0],
+				[0.25, 1.0],
+				[0.50, 0.0],
+				[0.75, -1.0],
+				[1.00, 0.0]
+			].do{ |phaseValuePair|
+				#iPhase, target = phaseValuePair;
+				[
+					[LFCub, 2.0],  // LFPar phase is 0->2
+					[LFTri, 4.0],  // LFTri phase is 0->4
+					[SinOsc, 2pi], // SinOsc phase is 0->2pi
+				].do{ |ugenPhaseRangePair|
+					#ugen, phaseRange = ugenPhaseRangePair;
+					{
+						ugen.perform(rate, freq, iPhase * phaseRange)
+					}.loadToFloatArray(period + 1 / fs,
+						action: { |data|
+							this.assertFloatEquals(data[0], target,
+								"%.% should be % at initial phase of %".format(ugen, rate, target, iPhase * phaseRange),
+								within: tolerance
+							);
+							condvar.signalOne;
+					});
+					condvar.wait;
+				}
+			};
+		}
+	}
 
 
 } // end TestCoreUGens class

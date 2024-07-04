@@ -133,7 +133,7 @@ d = SynthDef(\demoWrapping, { |out|
 
 d.allControlNames;
 ::
-Prints: code:: [ ControlName  P 0 out control 0, ControlName  P 1 freq control 0 ] ::.
+Prints: code:: [ControlName  P 0 out control 0, ControlName  P 1 freq control 0] ::.
 
 The outer function declares the argument 'out', and the wrapped function has 'freq' as its argument. The resulting SynthDef has both arguments as controls, exactly as if the outer function included both as arguments.
 
@@ -235,10 +235,10 @@ code::
 // make a simple def and send it to the server
 
 s.boot;
-SynthDef(\SimpleSine, {|freq = 440, out| Out.ar(out, SinOsc.ar(freq, 0, 0.2)) }).add;
+SynthDef(\SimpleSine, { |freq = 440, out| Out.ar(out, SinOsc.ar(freq, 0, 0.2)) }).add;
 
 // the above is essentially the same as the following:
-d = SynthDef(\SimpleSine, {|freq = 440, out| Out.ar(out, SinOsc.ar(freq, 0, 0.2)) });
+d = SynthDef(\SimpleSine, { |freq = 440, out| Out.ar(out, SinOsc.ar(freq, 0, 0.2)) });
 d.add;
 
 // now make a synth from it, using the default value for freq, then another with a different value
@@ -251,15 +251,15 @@ x.set(\freq, 880);
 x.free; y.free;
 
 // using the play convenience method
-x = SynthDef(\SimpleSine, {|freq = 440, out| Out.ar(out, SinOsc.ar(freq, 0, 0.2)) }).play
+x = SynthDef(\SimpleSine, { |freq = 440, out| Out.ar(out, SinOsc.ar(freq, 0, 0.2)) }).play
 x.free;
 ::
 
 subsection:: Argument Rates
 code::
 (
-SynthDef(\trigTest1, { |out, t_trig=0, freq=440| // t_trig creates a TrigControl
-	Out.ar(out, SinOsc.ar(freq+[0,1], 0, Decay2.kr(t_trig, 0.005, 1.0)));
+SynthDef(\trigTest1, { |out, t_trig = 0, freq = 440| // t_trig creates a TrigControl
+	Out.ar(out, SinOsc.ar(freq+[0, 1], 0, Decay2.kr(t_trig, 0.005, 1.0)));
 }, [0, 0, 4]		// lag the freq by 4 seconds (the second arg), but not t_trig (won't work anyway)
 ).add;
 )
@@ -274,7 +274,7 @@ y.free;
 // event to \t_trig in the synth.
 (
 Pmono(\trigTest1, *[
-	trig: Prand([0, 1], inf),  // for random trigger, use trig, not t_trig
+	trig: Prand([0, 1], inf), // for random trigger, use trig, not t_trig
 	freq: Pwhite(lo: 220, hi: 440, length: 10),
 	dur: 1
 ]).play;
@@ -295,8 +295,8 @@ y.free;
 
 // This second version makes trig a \tr arg by specifying it in the rates array.
 (
-SynthDef(\trigTest2, { |out, trig=0, freq=440|
-	Out.ar(out, SinOsc.ar(freq+[0,1], 0, Decay2.kr(trig, 0.005, 1.0)));
+SynthDef(\trigTest2, { |out, trig = 0, freq = 440|
+	Out.ar(out, SinOsc.ar(freq+[0, 1], 0, Decay2.kr(trig, 0.005, 1.0)));
 	}, [0, \tr, 4]		// lag the freq (lagtime: 4s), \tr creates a TrigControl for trig
 ).add;
 )
@@ -304,7 +304,7 @@ SynthDef(\trigTest2, { |out, trig=0, freq=440|
 // There is a different way of writing the same thing using NamedControls
 (
 SynthDef(\trigTest2, { |out|
-	Out.ar(out, SinOsc.ar(\freq.kr(440, 4) + [0,1], 0, Decay2.kr(\trig.tr, 0.005, 1.0)));
+	Out.ar(out, SinOsc.ar(\freq.kr(440, 4) + [0, 1], 0, Decay2.kr(\trig.tr, 0.005, 1.0)));
 }).add;
 )
 
@@ -315,12 +315,12 @@ z = Synth(\trigTest2);
 z.set(\trig, 1); 				// you can do this multiple times
 z.set(\trig, 1, \freq, 220); 	// hear how the freq lags
 z.set(\trig, 1, \freq, 880);
-z.free; //free the synth
+z.free; // free the synth
 
 // Use trig in Pbind and Pmono
 (
 Pmono(\trigTest2, *[
-	trig: Prand([0, 1], inf),  // for random trigger, use trig, not t_trig
+	trig: Prand([0, 1], inf), // for random trigger, use trig, not t_trig
 	freq: Pwhite(lo: 220, hi: 440, length: 10),
 	dur: 1
 ]).play;
@@ -358,7 +358,7 @@ SynthDef(\arrayarg, { |out, amp = 0.1, gate = 1|
 	var env, sines;
 	var freqs = NamedControl.kr(\freqs, [300, 400, 500, 600]);
 	env = Linen.kr(gate, 0.1, 1, 1, 2) * amp;
-	sines = SinOsc.ar(freqs +.t [0,0.5]).cubed.sum; // A mix of 4 oscillators
+	sines = SinOsc.ar(freqs +.t [0, 0.5]).cubed.sum; // A mix of 4 oscillators
 	Out.ar(out, sines * env);
 }, [0, 0.1, 0]).add;
 )
@@ -379,14 +379,14 @@ fork {
 
 	2.wait;
 	10.do {
-		z.setn(\freqs, {exprand(200,800.0)} ! 4);
+		z.setn(\freqs, { exprand(200, 800.0) } ! 4);
 		(2 ** (0..3).choose * 0.2).wait;
 	};
 
 	z.set(\amp, -40.dbamp);
 
 	10.do {
-		z.setn(\freqs, {exprand(200,800.0)} ! 4);
+		z.setn(\freqs, { exprand(200, 800.0) } ! 4);
 		(2 ** (0..3).choose * 0.2).wait;
 	};
 	2.wait;
@@ -407,7 +407,7 @@ code::
 // the basic wrapper
 ~makeEffect = { |name, func, lags, numChannels = 2|
 
-	SynthDef(name, { | i_bus = 0, gate = 1, wet = 1|
+	SynthDef(name, { |i_bus = 0, gate = 1, wet = 1|
 		var in, sound, env, lfo;
 		in = In.ar(i_bus, numChannels);
 		env = Linen.kr(gate, 2, 1, 2, 2); // fade in the effect
@@ -418,7 +418,7 @@ code::
 		sound = SynthDef.wrap(func, lags, [in, env]);
 
 		XOut.ar(i_bus, wet * env, sound);
-	}, [0, 0, 0.1] ).add;
+	}, [0, 0, 0.1]).add;
 
 };
 )
@@ -431,27 +431,27 @@ code::
 	lfo = LFNoise1.kr(rate, depth * ffreq, ffreq);
 	RLPF.ar(in, lfo, rq, 10).distort * 0.15;
 },
-[0.1, 0.1, 0.1, 0.1],  // lags for rate ffreq, depth and rq
+[0.1, 0.1, 0.1, 0.1], // lags for rate ffreq, depth and rq
 2	// numChannels
 );
 )
 
 // now make a simple reverb
 (
-~makeEffect.value(\reverb, {|in, env|
+~makeEffect.value(\reverb, { |in, env|
 	// in and env come from the wrapper.
 	var input;
 	input = in;
-	16.do({ input = AllpassC.ar(input, 0.04, Rand(0.001,0.04), 3)});
+	16.do({ input = AllpassC.ar(input, 0.04, Rand(0.001, 0.04), 3) });
 	input
 },
-nil,  // no lags
+nil, // no lags
 2	// numChannels
 );
 )
 
 // something to process
-x = { { Decay2.ar(Dust2.ar(3), mul: PinkNoise.ar(0.2)) } ! 2}.play;
+x = { { Decay2.ar(Dust2.ar(3), mul: PinkNoise.ar(0.2)) } ! 2 }.play;
 
 y = Synth.tail(s, \wah);
 z = Synth.tail(s, \reverb, [\wet, 0.5]);
@@ -472,7 +472,7 @@ code::
 // and interchangeability. 'gate' is particularly useful, as it allows for Node's release
 // method.
 (
-SynthDef(\synthDefTest, {|out, gate=1, freq=440|
+SynthDef(\synthDefTest, { |out, gate = 1, freq = 440|
 	// doneAction: Done.freeSelf frees the synth when EnvGen is done
 	Out.ar(out, SinOsc.ar(freq) * EnvGen.kr(Env.asr(0.1, 0.3, 1.3), gate, doneAction: Done.freeSelf));
 }).store; // use store for compatibility with pattern example below
@@ -481,7 +481,7 @@ SynthDef(\synthDefTest, {|out, gate=1, freq=440|
 x = Synth(\synthDefTest, [\out, 0]); // play out through hardware output bus 0 (see Out.help)
 x.release; // releases and frees the synth (if doneAction is > 2; see EnvGen)
 
-//equivalent:
+// equivalent:
 
 x = Synth(\synthDefTest); // out defaults to zero, if no default arg is given.
 x.set(\gate, 0);
@@ -490,20 +490,20 @@ x.set(\gate, 0);
 x = Synth(\synthDefTest);
 x.set(\gate, -5); // 4 second release
 
-//equivalent:
+// equivalent:
 x = Synth(\synthDefTest);
 x.release(4);
 
 // if the out arg is used in a standard way, it can always be changed without knowing the synth def
 x = Synth(\synthDefTest, [\out, 0]);
-x.set(\out, 1); //play through channel 1
+x.set(\out, 1); // play through channel 1
 x.release;
 
 // Another good example of this is with patterns, which can use gate to release notes
 (
 Pbind(
 	\instrument, \synthDefTest,
-	\freq, Pseq([500, 600, Prand([200, 456, 345],1)], inf),
+	\freq, Pseq([500, 600, Prand([200, 456, 345], 1)], inf),
 	\legato, Pseq([1.5, 0.2], inf),
 	\dur, 0.4,
 	\out, Pseq([0, 1], inf)
@@ -532,9 +532,9 @@ code::
 ~def = SynthDef(\argumentExample, {
 	var sig;
 	sig = SinOsc.ar(
-		\freq.kr(spec:ControlSpec(20, 20000)),
+		\freq.kr(spec: ControlSpec(20, 20000)),
 		0,
-		\amp.kr(spec:ControlSpec(0, 1));
+		\amp.kr(spec: ControlSpec(0, 1));
 	);
 	Out.ar(0, sig);
 });

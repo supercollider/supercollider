@@ -1,14 +1,26 @@
-Delay1 : PureUGen {
+Delay1 : Filter {
 
-	*ar { arg in = 0.0, mul = 1.0, add = 0.0;
-		^this.multiNew('audio', in).madd(mul, add)
-	}
-	*kr { arg in = 0.0, mul = 1.0, add = 0.0;
-		^this.multiNew('control', in).madd(mul, add)
-	}
+    *ar { arg in = 0.0, mul = 1.0, add = 0.0, x1 = 0.0;
+        ^this.multiNew('audio', in, x1).madd(mul, add)
+    }
+
+    // Unlike *ar, x1 defaults to the first sample of the input value
+    *kr { arg in = 0.0, mul = 1.0, add = 0.0, x1 = (in);
+        ^this.multiNew('control', in, x1).madd(mul, add)
+    }
 }
 
-Delay2 : Delay1 { }
+Delay2 : Filter {
+
+    *ar { arg in = 0.0, mul = 1.0, add = 0.0, x1 = 0.0, x2 = 0.0;
+        ^this.multiNew('audio', in, x1, x2).madd(mul, add)
+    }
+
+    // Unlike *ar, x1 and x2 default to first sample of the input value
+    *kr { arg in = 0.0, mul = 1.0, add = 0.0, x1 = (in), x2 = (in);
+        ^this.multiNew('control', in, x1, x2).madd(mul, add)
+    }
+}
 
 ///////////////////////////////////////
 

@@ -294,6 +294,7 @@ b = Buffer.loadCollection(s, a);
 
 // test it
 b.get(20000, { |msg| (msg == a[20000]).postln });
+
 // play it
 x = { PlayBuf.ar(1, b, BufRateScale.kr(b), loop: 0) * 0.5 }.play;
 b.free; x.free;
@@ -585,7 +586,7 @@ A valid OSC message or a Function which will return one. A Function will be pass
 discussion::
 code::
 s.boot;
-//create with cueSoundFile class method
+// create with cueSoundFile class method
 b = Buffer.cueSoundFile(s, Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff", 0, 1);
 x = { DiskIn.ar(1, b) }.play;
 b.close;	// must call close in between cueing
@@ -836,6 +837,19 @@ argument:: maxval
 the maximum value in the plot
 argument:: separately
 a boolean whether to use separate display ranges or a single shared range.
+argument:: parent
+Either a link::Classes/Window:: or link::Classes/View:: may be passed in - then the plot is embedded. Otherwise a new link::Classes/Window:: is created.
+code::
+(
+s.waitForBoot {
+	var w = Window("parent");
+	var buf = Buffer.read(s, Platform.resourceDir +/+ "sounds/sinedPink.aiff");
+	s.sync;
+	buf.plot(parent: w);
+	w.front
+}
+)
+::
 discussion::
 code::
 s.boot;
