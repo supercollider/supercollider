@@ -339,4 +339,24 @@ TestLinkClock : UnitTest {
 		clock1.stop;
 		clock2.stop;
 	}
+
+	test_beats2secs_handlesInf {
+		var clock = LinkClock.new;
+		this.assertEquals(
+			clock.beats2secs(inf), inf,
+			"LinkClock:beats2secs should return inf for 'inf' beats"
+		);
+		clock.stop;
+	}
+
+	test_secs2beats_handlesInf {
+		var clock = LinkClock.new;
+		this.assertEquals(
+			clock.secs2beats(inf), inf,
+			"LinkClock:secs2beats should return inf for 'inf' beats"
+		);
+		clock.stop;
+	}
+
+
 }

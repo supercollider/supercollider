@@ -1,15 +1,12 @@
 class:: Decay
 summary:: Exponential decay
-related:: Classes/Decay2
+related:: Classes/Decay2, Classes/Integrator
 categories:: UGens>Filters>Linear, UGens>Envelopes
 
 Description::
 
-This is essentially the same as  link::Classes/Integrator::  except that
-instead of supplying the coefficient directly, it is calculated from a 60
-dB decay time. This is the time required for the integrator to lose 99.9%
-of its value or -60dB. This is useful for exponential decaying envelopes
-triggered by impulses.
+An integrating filter which, if given an impulse, will produce an exponentially decaying envelope.
+code::Decay:: is essentially the same as link::Classes/Integrator::, but instead of specifying the integration coefficient directly, it is calculated from the strong::decayTime::—the time required for input signal to attentuate 60 dB, or decay to 99.9% of its value.
 
 classmethods::
 
@@ -19,18 +16,78 @@ argument::in
 The input signal.
 
 argument::decayTime
-60 dB decay time in seconds.
+The time it takes for the input signal to decay 60 dB.
 
 argument::mul
+The output will be multiplied by this value.
 
 argument::add
+This value will be added to the output.
 
 Examples::
 
 code::
-plot({ Decay.ar(Impulse.ar(1), 0.01) });
-
-// used as an envelope
-play({ Decay.ar(Impulse.ar(XLine.kr(1,50,20), 0.25), 0.2, PinkNoise.ar, 0) });
+// Plot the exponentially decaying envelope
+(
+var t60 = 0.1; // decayTime
+plot({ Decay.ar(Impulse.ar(0), t60) }, t60);
+)
 ::
 
+code::
+// Used as an evelope generator
+(
+play({
+    Decay.ar(
+        in: Impulse.ar(XLine.kr(5,50,10), 0.25),
+        decayTime: 0.2,
+        mul: FSinOsc.ar(300)
+    )
+})
+)
+::
+
+As can be heard in the previous example, when code::Decay:: is used as a modulator, its immediate onset can lead to discontinuities and audible clicks. This can be seen in the waveform:
+
+code::
+(
+plot({
+    Decay.ar(
+        in: Impulse.ar(50),
+        decayTime: 0.015,
+        mul: FSinOsc.ar(370)
+    )
+}, 0.1, bounds: Rect(50,50,1200,400))
+)
+::
+
+link::Classes/Decay2:: allows for onset control, as shown below:
+
+code::
+(
+var t60, riseScale, riseFac, normFac;
+
+t60 = 0.3; // decay time
+
+// Onset control and normalization factor for Decay2
+// (See Decay2 Help doc for more info)
+riseScale = 0.3;
+riseFac = riseScale / (2 - riseScale);
+normFac = riseFac.pow(riseFac / (riseFac - 1)) / (1 - riseFac);
+
+// Compare Decay (blue) and Decay2 (red)
+plot({
+    var imp = Impulse.ar(0);
+    [
+        Decay.ar(imp, t60),
+        Decay2.ar(imp,
+            attackTime: t60 * riseFac,
+            decayTime: t60,
+            mul: normFac
+        )
+    ]
+}, duration: t60/2)
+.plotColor_([Color.blue, Color.red])
+.superpose_(true)
+)
+::

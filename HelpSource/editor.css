@@ -6,7 +6,8 @@ textarea.editor {
     height: auto;
     padding: 0 1em;
     margin-top: 1em;
-    border-left: 2px solid #e1e1e1;
+    border-left: 2px solid var(--color-cm-border);
+    background-color: var(--color-cm-background);
     font-size: 1em;
     line-height: normal;
 }
@@ -20,20 +21,26 @@ textarea.editor {
 .CodeMirror-line::selection,
 .CodeMirror-line > span::selection,
 .CodeMirror-line > span > span::selection { 
-    background: rgba(248, 162, 0, 0.5) !important;
+    /* a selection within an IDE not just covers the background but
+    also changes the text color, allowing e.g. for inversion.
+    This is not possible via CodeMirror, see 
+    https://github.com/codemirror/codemirror5/issues/1212#issuecomment-13047835
+    */
+    background-color:  var(--color-cm-selection) !important;
+    opacity: 20% !important;
 }
 
 @keyframes text-flash {
     0% { 
-        background: rgba(248, 162, 0, 0);
+        background: rgba(0, 0, 0, 0);
         color: black;
     }
     40% { 
-        background: rgba(248, 162, 0, 1); 
+        background: var(--color-cm-evaluated); 
         color: black,
     }
     100% { 
-        background: rgba(248, 162, 0, 0); 
+        background: rgba(0, 0, 0, 0); 
         color: black;
     }
 }
@@ -43,19 +50,22 @@ textarea.editor {
 }
 
 /* syntax hightlighting */
-.cm-s-default .cm-keyword { color: #0000e6; font-weight: bold; }
-.cm-s-default .cm-built-in { color: #3333bf; }
-.cm-s-default .cm-number { color: #980099; }
-.cm-s-default .cm-symbol { color: #007300; }
-.cm-s-default .cm-class { color: #0000d2; }
-.cm-s-default .cm-primitive { color: #0000d2; }
-.cm-s-default .cm-char { color: #007300; }
-.cm-s-default .cm-env-var { color: #8c4614; }
-.cm-s-default .cm-comment { color: #bf0000; }
-.cm-s-default .cm-string { color: #5f5f5f; }
-.cm-s-default .cm-text { color: #000000; }
+/* keyword can be "var" which is like the class color in the IDE */
+.cm-s-default .cm-keyword { color: var(--color-cm-class); font-weight: bold; }
+.cm-s-default .cm-built-in { color: var(--color-cm-built-in); }
+.cm-s-default .cm-number { color: var(--color-cm-number); }
+.cm-s-default .cm-symbol { color: var(--color-cm-symbol); }
+.cm-s-default .cm-class { color: var(--color-cm-class); }
+.cm-s-default .cm-primitive { color: var(--color-cm-primitive); }
+.cm-s-default .cm-char { color: var(--color-cm-char); }
+.cm-s-default .cm-env-var { color: var(--color-cm-env-var); }
+/* used to be red */
+.cm-s-default .cm-comment { color: var(--color-cm-comment); }
+.cm-s-default .cm-string { color: var(--color-cm-string); }
+.cm-s-default .cm-text { color: var(--color-cm-text); }
 
 @media print {
+    /* legacy colors */
     .cm-s-default .cm-keyword { color: #0000e6; font-weight: bold; }
     .cm-s-default .cm-built-in { color: #3333bf; font-weight: bold; }
     .cm-s-default .cm-number { color: #980099; }

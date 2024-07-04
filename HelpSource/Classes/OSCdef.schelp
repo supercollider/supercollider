@@ -108,9 +108,9 @@ EXAMPLES::
 code::
 n = NetAddr("127.0.0.1", 57120); // local machine
 
-OSCdef(\test, {|msg, time, addr, recvPort| \unmatching.postln}, '/chat', n); // def style
-OSCdef.newMatching(\test2, {|msg, time, addr, recvPort| \matching.postln}, '/chat', n); // path matching
-OSCdef(\test3, {|msg, time, addr, recvPort| \oneShot.postln}, '/chat', n).oneShot; // once only
+OSCdef(\test, { |msg, time, addr, recvPort| \unmatching.postln }, '/chat', n); // def style
+OSCdef.newMatching(\test2, { |msg, time, addr, recvPort| \matching.postln }, '/chat', n); // path matching
+OSCdef(\test3, { |msg, time, addr, recvPort| \oneShot.postln }, '/chat', n).oneShot; // once only
 
 
 m = NetAddr("127.0.0.1", 57120); // loopback
@@ -130,9 +130,9 @@ AbstractResponderFunc.allDisabled
 
 // change funcs
 OSCdef(\test).enable;
-OSCdef(\test, {|msg, time, addr, recvPort| 'Changed Unmatching'.postln}, '/chat', n); // replace at key \test
+OSCdef(\test, { |msg, time, addr, recvPort| 'Changed Unmatching'.postln }, '/chat', n); // replace at key \test
 m.sendMsg("/chat", "Hello App 1");
-OSCdef(\test).add(f = {\foo.postln}); // add another func
+OSCdef(\test).add(f = { \foo.postln }); // add another func
 m.sendMsg("/chat", "Hello App 1");
 OSCdef(\test).clear; // remove all functions
 m.sendMsg("/chat", "Hello App 1");
@@ -148,7 +148,7 @@ x.release(3);
 
 // Args for which nil is passed will use the old values. While this facilitates swapping only parts of an OSCdef, such as the function, it also means you will have to free and recreate an OSCdef to remove parts.
 
-OSCdef(\argtest, {|msg ... args| msg[1].postln}, '/hey', argTemplate: ['you']);
+OSCdef(\argtest, { |msg ... args| msg[1].postln }, '/hey', argTemplate: ['you']);
 m.sendMsg("/hey", "you"); // oscdef will respond
 m.sendMsg("/hey", "there"); // oscdef will not respond, filtered out by argTemplate
 
@@ -157,7 +157,7 @@ m.sendMsg("/hey", "you"); // oscdef will respond
 m.sendMsg("/hey", "there"); // oscdef will not respond, still filtered out by argTemplate
 
 OSCdef(\argtest).free; // in order to get rid of the argTemplate, free the def...
-OSCdef(\argtest, {|msg ... args| msg[1].postln}, '/hey'); // ... and recreate it.
+OSCdef(\argtest, { |msg ... args| msg[1].postln }, '/hey'); // ... and recreate it.
 m.sendMsg("/hey", "you"); // oscdef will respond
 m.sendMsg("/hey", "there"); // oscdef will respond
 

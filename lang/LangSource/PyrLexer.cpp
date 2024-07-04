@@ -2125,8 +2125,7 @@ bool passOne_ProcessOneFile(const bfs::path& path) {
         PyrSymbol* fileSym = getsym(path_c_str);
         fileSym->u.source = nullptr;
         if (startLexer(fileSym, path, -1, -1, -1)) {
-            while (parseOneClass(fileSym)) {
-            };
+            while (parseOneClass(fileSym)) {};
             finiLexer();
         } else {
             error("file '%s' open failed\n", path_c_str);
@@ -2286,8 +2285,6 @@ SCLANG_DLLEXPORT_C void runLibrary(PyrSymbol* selector) {
             post("caught exception in runLibrary\n");
         }
         error(ex.what());
-    } catch (...) {
-        postfl("DANGER: OUT of MEMORY. Operation failed.\n");
-    }
+    } catch (...) { postfl("DANGER: OUT of MEMORY. Operation failed.\n"); }
     g->canCallOS = false;
 }
