@@ -200,7 +200,112 @@ A String containing the resulting file's path.
 
 subsection::Equality and Identity
 
-Equality, queried with code::==:: or code::!=::, is whether the values or contents of two objects are the same by comparing the values, contents or emphasis::hash table indecise::. Identity, queried by code::===:: or code::!==::, is whether two objects refer to the same object by comparing the emphasis::identity hash table indecise:: or virtual memory addresses.
+Equally asks if the value of two objects is equal.
+Identity asks if they are the same object.
+There are a few classes of object where only one instance exists and is shared between all uses (a singleton).
+These objects include Symbols and numbers.
+
+Equality, tested for with code::==:: or code::!=:: is a relation between objects.
+So code::a == b:: is true when the object in the variable a and the object in b are equivalent in some essential aspect.
+Two strings, for example, are equal when they have the same characters in the same order.
+Identity, by contrast, is a relation that every object has to itself. So code::a === b:: is true only when the the variables a and b both contain the same object.
+
+code::
+// Strings, written with double quotes, are the same from the perspective of equality.
+// However, they are always different from the perspective of identity:
+"we are all the same" == "we are all the same" // true
+"we are all the same" === "we are all the same" // false: same, but not identical
+
+// Symbols, written with single quotes or following \ without spaces, are special:
+// There is only one of each.
+// Two representations of the same symbol are identical:
+'we are all the same' == 'we are all the same' // true
+'we are all the same' === 'we are all the same' // true
+::
+
+note::
+The relationship between link::#-equality:: and link::#-hash::, and link::#-identity:: and link::#-identityHash:::
+
+list::
+##link::Classes/Symbol:::
+
+The link::#-hash:: and link::#-identityHash:: methods return the same emphasis::hash table index:::
+
+list::
+##code::
+'we are all the same'.hash
+::
+teletype::
+-> 1592359842
+::
+
+##code::
+'we are all the same'.identityHash
+::
+teletype::
+-> 1592359842
+::
+
+##code::
+'we are all the same'.hash ==  'we are all the same'.identityHash
+::
+teletype::
+-> true
+::
+
+##code::
+'we are all the same'.hash === 'we are all the same'.identityHash
+::
+teletype::
+-> true
+::
+::
+
+##link::Classes/String::
+
+The link::#-hash:: and link::#-identityHash:: methods return the different emphasis::hash table index:::
+The link::#-hash:: method returns always the same emphasis::hash table index::, while link::#-identityHash:: method returns always the same emphasis::hash table index:::
+
+list::
+##code::
+"we are all the same".hash
+::
+returns always the following result:
+teletype::
+-> 1592359842
+::
+
+##code::
+"we are all the same".identityHash
+::
+returns new values each time it is evaluated:
+
+for example:
+teletype::
+-> -527806384
+::
+teletype::
+-> 1088233360
+::
+
+##code::
+"we are all the same".hash ==  "we are all the same".identityHash
+::
+teletype::
+-> false
+::
+
+##code::
+"we are all the same".hash === "we are all the same".identityHash
+::
+teletype::
+-> false
+::
+::
+::
+::
+
+
 
 method::==
 
@@ -238,7 +343,7 @@ code::
 'worth trying' === 'worth trying'; // identical (symbols are unique)
 ::
 
-The low information of the link::Classes/Symbol:: class instances, returned by the code::.dump:: method (see: link::#-dump::), shows only its class and its value (symbol) because it is unique:
+The detailed low level representation of the link::Classes/Symbol:: class instances, returned by the code::.dump:: method (see: link::#-dump::), shows only its class and its value (symbol) because it is unique:
 code::
 'worth trying'.dump
 ::
@@ -247,36 +352,9 @@ teletype::
 -> worth trying
 ::
 
-Also, the link::#-hash:: and link::#-identityHash:: methods return the same emphasis::hash table index:::
-
-code::
-'worth trying'.hash
-::
-teletype::
--> 1726909008
-::
-
-code::
-'worth trying'.identityHash
-::
-teletype::
--> 1726909008
-::
-
-code::
-'worth trying'.hash ==  'worth trying'.identityHash
-::
-teletype::
--> true
-::
-code::
-'worth trying'.hash === 'worth trying'.identityHash
-::
-teletype::
--> true
-::
-
+Discussion::
 For details on the identity of link::Classes/Integer::, link::Classes/Float::, link::Classes/Array:: and link::Classes/String::, see the link::#equality & identity discussion#Discussion section in the ==(obj) method::.
+
 
 method::!=
 
