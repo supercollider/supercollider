@@ -893,17 +893,18 @@ subsection:: Testing
 
 method:: ==
 
-Overridden by the need to check for equality of each element with its integer index as independent of identity. See link::Classes/Object#Equality and Identity::.
+Returns true if each element is equal with its corresponding element in the receiver. See link::Classes/Object#Equality and Identity::.
 
 Discussion::
+Evaluate this code first to compare equality test and identity test:
 code::
-~array_a = [1, 2]; ~array_b = [1, 2] // Evaluate this code first!
+~array_a = [1, 2]; ~array_b = [1, 2]
 ::
 
 list::
 ## Equality:
 code::
-~array_a == ~array_b // checking for equlity
+~array_a == ~array_b // checking for equality
 ::
 teletype::
 -> true
@@ -945,7 +946,7 @@ code::
 ~array_a.dump
 ::
 
-post window returns:
+returns:
 teletype::
 Instance of Array {    (0x1256a70b8, gc=38, fmt=01, flg=00, set=02)
   indexed slots [2]
@@ -962,7 +963,7 @@ code::
 ~array_b.dump
 ::
 
-post window returns:
+returns:
 teletype::
 Instance of Array {    (0x152d02da8, gc=70, fmt=01, flg=00, set=02)
   indexed slots [2]
