@@ -367,7 +367,7 @@ void prepareArgsForExecute(VMGlobals* g, PyrBlock* block, PyrFrame* callFrame, l
                            long numKwArgsSupplied, bool isMethod, PyrObject* optionalEnvirLookup) {
     // There are some instances where the proto is a nullptr.
     // There is nothing this function can do in that case.
-    if (!IsObj(&block->prototypeFrame)) [[unlikely]]
+    if (!IsObj(&block->prototypeFrame))
         return;
     PyrObject* proto = slotRawObject(&block->prototypeFrame);
 
@@ -385,7 +385,7 @@ void prepareArgsForExecute(VMGlobals* g, PyrBlock* block, PyrFrame* callFrame, l
     PyrSlot* pushedArgs = g->sp - (totalSuppliedArgs - 1);
     PyrSlot* pushedKeywords = g->sp - (numKwArgsSupplied * 2 - 1);
 
-    if (methNumActualArgs == 0) [[unlikely]] {
+    if (methNumActualArgs == 0) {
         std::copy(proto->slots, proto->slots + methNumVariables, outCallFrameStack);
         return;
     }
@@ -422,13 +422,12 @@ void prepareArgsForExecute(VMGlobals* g, PyrBlock* block, PyrFrame* callFrame, l
                   outCallFrameStack + numNormalArgsAdded);
 
         // This is the only case where the optional environment is used to lookup arguments.
-        if (optionalEnvirLookup) [[unlikely]]
+        if (optionalEnvirLookup)
             for (auto i = numNormalArgsAdded; i < methNumNormArgs; ++i) {
                 PyrSlot keyslot;
                 SetSymbol(&keyslot, methArgNames[i]);
                 identDict_lookupNonNil(optionalEnvirLookup, &keyslot, calcHash(&keyslot), &outCallFrameStack[i]);
             }
-    } else [[likely]] {
     }
 
     // Deal with the keywords.
@@ -437,9 +436,9 @@ void prepareArgsForExecute(VMGlobals* g, PyrBlock* block, PyrFrame* callFrame, l
         PyrSlot* argValue = pushedKeywords + i + 1;
 
         // If found in method.
-        if (const auto argIndex = findKeywordArgIndex(argKeyword); argIndex.has_value()) [[likely]] {
+        if (const auto argIndex = findKeywordArgIndex(argKeyword); argIndex.has_value()) {
             // Greater than the number of normal args passed in by user, add it.
-            if (*argIndex >= numNormalArgsAdded) [[likely]] {
+            if (*argIndex >= numNormalArgsAdded) {
                 outCallFrameStack[*argIndex] = *argValue;
                 continue;
             } else {
@@ -473,13 +472,13 @@ void prepareArgsForExecute(VMGlobals* g, PyrBlock* block, PyrFrame* callFrame, l
     }
 
     // Put var arg array or default on stack.
-    if (methHasVarArg) [[unlikely]] {
+    if (methHasVarArg) {
         SetObject(outCallFrameStack + methNumNormArgs,
                   variableArgumentsArray ? variableArgumentsArray : slotRawObject(&proto->slots[methNumNormArgs]));
     }
 
     // Put var kwarg array or default on stack.
-    if (methHasKwArg) [[unlikely]] {
+    if (methHasKwArg) {
         if (keywordArgumentsArray) {
             keywordArgumentsArray->size = keywordArgumentSize;
             SetObject(outCallFrameStack + methNumNormArgs + 1, keywordArgumentsArray);
