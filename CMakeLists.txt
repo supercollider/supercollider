@@ -8,7 +8,12 @@ endif()
 
 include(SCVersion.txt)
 # CMake versions can only consist of digits and periods, so don't use _TWEAK
-project(SuperCollider VERSION ${SC_VERSION_MAJOR}.${SC_VERSION_MINOR}.${SC_VERSION_PATCH})
+if(STANDALONE)
+	project("SuperCollider-Standalone" VERSION ${SC_VERSION_MAJOR}.${SC_VERSION_MINOR}.${SC_VERSION_PATCH})
+else()
+	project(SuperCollider VERSION ${SC_VERSION_MAJOR}.${SC_VERSION_MINOR}.${SC_VERSION_PATCH})
+endif()
+
 
 if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 	set(LINUX 1)
@@ -291,6 +296,8 @@ endif()
 
 option(SC_ABLETON_LINK "Build with Ableton Link support" ON)
 
+option(STANDALONE "Build SuperCollider Standalone" OFF)
+
 if(APPLE)
     # codesigning used to break increamental builds in Xcode 11+, but it's now fixed
     option(SC_DISABLE_XCODE_CODESIGNING "Disable codesigning in XCode" OFF)
@@ -559,6 +566,9 @@ if(NOT APPLE)
 	install(DIRECTORY examples DESTINATION ${auxresourcesdir})
 elseif(APPLE)
 	install(DIRECTORY examples DESTINATION ${auxresourcesdir})
+	if(STANDALONE)
+		install(DIRECTORY Standalone DESTINATION ${auxresourcesdir})
+	endif()
 endif()
 
 if (WIN32)

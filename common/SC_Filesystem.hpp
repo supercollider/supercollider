@@ -59,6 +59,9 @@
 /// Name of the folder used for system and user extensions.
 #define SC_FOLDERNAME_EXTENSIONS "Extensions"
 
+/// Name of the folder used for standalone resources
+#define SC_FOLDERNAME_STANDALONE "Standalone"
+
 /// Name of "SuperCollider" folder. Could probably pop this up another level of importance.
 #define SC_FOLDERNAME_APPLICATION_NAME "SuperCollider"
 
@@ -108,6 +111,8 @@ public:
     enum class DirName {
         SystemAppSupport,
         SystemExtension,
+        StandaloneExtension,
+        Standalone,
         UserHome,
         UserAppSupport,
         UserExtension,
@@ -245,6 +250,10 @@ private:
             return defaultSystemAppSupportDirectory();
         case DirName::SystemExtension:
             return defaultSystemExtensionDirectory();
+        case DirName::StandaloneExtension:
+            return defaultStandaloneExtensionDirectory();
+        case DirName::Standalone:
+            return defaultStandaloneDirectory();
         case DirName::UserHome:
             return defaultUserHomeDirectory();
         case DirName::UserAppSupport:
@@ -269,6 +278,7 @@ private:
     static Path defaultUserAppSupportDirectory();
     static Path defaultUserConfigDirectory();
     static Path defaultResourceDirectory();
+    static Path defaultStandaloneDirectory();
 
 #ifdef _WIN32
     // this function has no analogue on other OSs, yet.
@@ -277,6 +287,11 @@ private:
 
     static Path defaultSystemExtensionDirectory() {
         const Path& p = defaultSystemAppSupportDirectory();
+        return p.empty() ? p : p / SC_FOLDERNAME_EXTENSIONS;
+    }
+
+    static Path defaultStandaloneExtensionDirectory() {
+        const Path& p = defaultStandaloneDirectory();
         return p.empty() ? p : p / SC_FOLDERNAME_EXTENSIONS;
     }
 

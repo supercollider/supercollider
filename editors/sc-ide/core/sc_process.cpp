@@ -145,6 +145,10 @@ void ScProcess::startLanguage(void) {
     sclangArguments << "-i"
                     << "scqt";
 
+#ifdef STANDALONE
+    sclangArguments << "-a";
+#endif
+
     if (!workingDirectory.isEmpty())
         setWorkingDirectory(workingDirectory);
 

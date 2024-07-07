@@ -64,6 +64,8 @@ public:
     bool getExcludeDefaultPaths() const { return mExcludeDefaultPaths; }
     void setExcludeDefaultPaths(bool value);
 
+    void setUseStandalonePaths(bool value);
+
     static bool readLibraryConfigYAML(const Path&, bool standalone);
     static bool writeLibraryConfigYAML(const Path&);
     static void freeLibraryConfig();

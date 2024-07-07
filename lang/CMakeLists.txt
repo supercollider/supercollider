@@ -268,6 +268,11 @@ if (SC_ABLETON_LINK)
 	add_definitions(-DSC_ABLETON_LINK)
 endif()
 
+if (STANDALONE)
+	message(STATUS "Compiling SuperCollider Standalone")
+	add_compile_definitions(STANDALONE)
+endif()
+
 ## external libraries
 if(READLINE_FOUND)
     message(STATUS "Compiling with Readline support")

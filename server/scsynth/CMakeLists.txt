@@ -262,6 +262,10 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	target_link_libraries(libscsynth rt)
 endif()
 
+if (STANDALONE)
+	add_compile_definitions(STANDALONE)
+endif()
+
 add_executable(scsynth
     scsynth_main.cpp
 

@@ -553,11 +553,16 @@ SCDoc {
 					};
 				}
 			};
-			rootPaths = if(LanguageConfig.excludeDefaultPaths) {
-				[]
-			} {
-				[thisProcess.platform.userExtensionDir, thisProcess.platform.systemExtensionDir]
-			};
+            rootPaths = if(Platform.isStandalone) {
+                [thisProcess.platform.standaloneDir +/+ "Extensions"]
+            } {
+                if(LanguageConfig.excludeDefaultPaths) {
+                    []
+                } {
+                    [thisProcess.platform.userExtensionDir, thisProcess.platform.systemExtensionDir]
+                };
+            };
+            
 			rootPaths = rootPaths.addAll(LanguageConfig.includePaths);
 			rootPaths.do {|dir|
 				find.(PathName(dir));
