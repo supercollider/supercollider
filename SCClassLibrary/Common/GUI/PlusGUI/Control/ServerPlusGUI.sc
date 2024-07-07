@@ -360,9 +360,9 @@
 		this.startAliveThread;
 	}
 
-	plotTree {|interval=0.5, bounds=(Rect(128, 64, 400, 400))|
+	plotTree {|interval=0.5|
 		var onClose, window = Window.new(name.asString + "Node Tree",
-			bounds,
+			Rect(128, 64, 400, 400),
 			scroll:true
 		).front;
 		window.view.hasHorizontalScroller_(false).background_(Color.grey(0.9));
