@@ -846,6 +846,17 @@ SCDocHTMLRenderer {
 					stream << "</div>";
 				};
 			},
+			\SUBSUBSECTION, {
+				stream << "<h4><a class='anchor' name='" << this.escapeSpacesInAnchor(node.text)
+				<< "'>" << this.escapeSpecialChars(node.text) << "</a></h4>\n";
+				if(node.makeDiv.isNil) {
+					this.renderChildren(stream, node);
+				} {
+					stream << "<div id='" << node.makeDiv << "'>";
+					this.renderChildren(stream, node);
+					stream << "</div>";
+				};
+			},
 			{
 				"SCDoc: In %\n"
 				"  Unknown SCDocNode id: %".format(currDoc.fullPath, node.id).warn;
@@ -908,6 +919,11 @@ SCDocHTMLRenderer {
 					},
 					\SUBSECTION, {
 						stream << "<li class='toc2'><a href='#" << this.escapeSpacesInAnchor(n.text) << "'>"
+						<< this.escapeSpecialChars(n.text) << "</a></li>\n";
+						this.renderTOC(stream, n);
+					},
+					\SUBSUBSECTION, {
+						stream << "<li class='toc3'><a href='#" << this.escapeSpacesInAnchor(n.text) << "'>"
 						<< this.escapeSpecialChars(n.text) << "</a></li>\n";
 						this.renderTOC(stream, n);
 					}
