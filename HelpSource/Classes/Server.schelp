@@ -587,6 +587,7 @@ Show input/output level meters.
 
 method:: plotTree
 Plot the node/group tree. As link::#-queryAllNodes:: but graphical.
+
 argument:: interval
 Polling interval.
 
