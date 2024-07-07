@@ -32,6 +32,7 @@ A PyrSlot is an 8-byte value which is either a double precision float or a
 #include <type_traits>
 #include <cassert>
 #include <cstring>
+#include <cmath>
 #include "SC_Endian.h"
 #include "PyrErrors.h"
 #include "function_attributes.h"
@@ -118,6 +119,8 @@ struct Tags {
     static constexpr uint64_t nilTag = 0x7FF9000000000000;
     static constexpr uint64_t falseTag = 0xFFFD000000000000;
 };
+
+static constexpr uint64_t safeNaN = 0x7FF8000000000001;
 
 
 template <typename T> struct PadValueTo64Bits {
@@ -215,7 +218,17 @@ private:
     struct PrivateTag {};
     constexpr PyrSlot(PrivateTag, uint64_t raw) noexcept: u_raw(raw) {}
     constexpr PyrSlot(PrivateTag, uint64_t tag, uint64_t raw) noexcept: u_raw(tag | raw) {}
-    constexpr PyrSlot(PrivateTag, double d) noexcept: u_double(d) {}
+    // This must be a valid double, or not a nan that is used as a tag.
+    constexpr PyrSlot(PrivateTag, double d) noexcept: u_double(d) {
+        assert([&]() -> bool {
+            if (std::isnan(d)) {
+                const auto bits = details::bit_cast<uint64_t>(d);
+                const auto t = PyrSlot(PrivateTag {}, bits);
+                return t.isDouble();
+            } else
+                return true;
+        }());
+    }
 
     // The held types, note, they should all be 64-bits in size.
     uint64_t u_raw;
@@ -257,7 +270,15 @@ public:
         return lhs.u_raw == rhs.u_raw;
     }
 
-    [[nodiscard]] constexpr static PyrSlot make(double d) noexcept { return { PrivateTag(), d }; }
+    [[nodiscard]] constexpr static PyrSlot make(double d) noexcept {
+        // There are many safe nan values, but a few are not safe.
+        // The server's Convolution3 is a known source of unsafe nans.
+        // Supercollider VM itself does not generate unsafe nans.
+        // Therefore, it might be possible to remove this check from here and place it at external boundaries instead.
+        if (std::isnan(d))
+            return { PrivateTag {}, details::safeNaN };
+        return { PrivateTag(), d };
+    }
     [[nodiscard]] static PyrSlot make(char c) noexcept {
         return { PrivateTag(), Tags::charTag, static_cast<uint64_t>(details::bit_cast<uint8_t>(c)) };
     }
