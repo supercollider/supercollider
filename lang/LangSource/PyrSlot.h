@@ -216,10 +216,10 @@ private:
     template <typename T> using MaybePadPointerTo64Bits = details::MaybePadPointerTo64Bits<T>;
 
     struct PrivateTag {};
-    constexpr PyrSlot(PrivateTag, uint64_t raw) noexcept: u_raw(raw) {}
-    constexpr PyrSlot(PrivateTag, uint64_t tag, uint64_t raw) noexcept: u_raw(tag | raw) {}
+    PyrSlot(PrivateTag, uint64_t raw) noexcept: u_raw(raw) {}
+    PyrSlot(PrivateTag, uint64_t tag, uint64_t raw) noexcept: u_raw(tag | raw) {}
     // This must be a valid double, or not a nan that is used as a tag.
-    constexpr PyrSlot(PrivateTag, double d) noexcept: u_double(d) {
+    PyrSlot(PrivateTag, double d) noexcept: u_double(d) {
         assert([&]() -> bool {
             if (std::isnan(d)) {
                 const auto bits = details::bit_cast<uint64_t>(d);
@@ -245,18 +245,18 @@ private:
     [[nodiscard]] inline static constexpr uint16_t getTagAsU16(uint64_t t) noexcept {
         return static_cast<uint16_t>(t >> (64 - 16));
     }
-    [[nodiscard]] inline constexpr bool isBoxed() const noexcept { return bitsAreSet(u_raw, Masks::boxed); }
-    template <uint64_t T> [[nodiscard]] inline constexpr bool tagChecker() const noexcept {
+    [[nodiscard]] inline bool isBoxed() const noexcept { return bitsAreSet(u_raw, Masks::boxed); }
+    template <uint64_t T> [[nodiscard]] inline bool tagChecker() const noexcept {
         return getTagAsU16(u_raw) == getTagAsU16(T);
     }
 
 public:
-    constexpr PyrSlot() noexcept: u_raw(Tags::nilTag) {}
+    PyrSlot() noexcept: u_raw(Tags::nilTag) {}
     ~PyrSlot() noexcept = default;
-    constexpr PyrSlot(PyrSlot&&) noexcept = default;
-    constexpr PyrSlot(const PyrSlot&) noexcept = default;
-    constexpr PyrSlot& operator=(PyrSlot&&) noexcept = default;
-    constexpr PyrSlot& operator=(const PyrSlot&) noexcept = default;
+    PyrSlot(PyrSlot&&) noexcept = default;
+    PyrSlot(const PyrSlot&) noexcept = default;
+    PyrSlot& operator=(PyrSlot&&) noexcept = default;
+    PyrSlot& operator=(const PyrSlot&) noexcept = default;
 
     [[nodiscard]] friend bool operator==(PyrSlot lhs, PyrSlot rhs) noexcept {
         if (lhs.isDouble()) {
@@ -270,7 +270,7 @@ public:
         return lhs.u_raw == rhs.u_raw;
     }
 
-    [[nodiscard]] constexpr static PyrSlot make(double d) noexcept {
+    [[nodiscard]] static PyrSlot make(double d) noexcept {
         // There are many safe nan values, but a few are not safe.
         // The server's Convolution3 is a known source of unsafe nans.
         // Supercollider VM itself does not generate unsafe nans.
@@ -294,10 +294,8 @@ public:
     [[nodiscard]] static PyrSlot make(void* o) {
         return { PrivateTag(), Tags::ptrTag, static_cast<uint64_t>(reinterpret_cast<uintptr_t>(o)) };
     }
-    [[nodiscard]] constexpr static PyrSlot make(PyrNil) noexcept { return {}; }
-    [[nodiscard]] constexpr static PyrSlot make(bool b) noexcept {
-        return { PrivateTag(), b ? Tags::trueTag : Tags::falseTag };
-    }
+    [[nodiscard]] static PyrSlot make(PyrNil) noexcept { return {}; }
+    [[nodiscard]] static PyrSlot make(bool b) noexcept { return { PrivateTag(), b ? Tags::trueTag : Tags::falseTag }; }
 
     [[nodiscard]] bool isDouble() const noexcept { return !isBoxed(); }
     [[nodiscard]] bool isChar() const noexcept { return tagChecker<Tags::charTag>(); }
