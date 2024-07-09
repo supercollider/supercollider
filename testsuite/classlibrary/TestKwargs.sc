@@ -54,4 +54,45 @@ TestKwargs : UnitTest {
             (a: 1, b: 2, c: 3, args: [4], kwargs: [\foo, 10])
         );
     }
+
+    test_wrappers {
+        var inlined = { |func|
+        	{ |...args, kwargs|
+        		func.performArgs(\value, args, kwargs)
+        	}
+        };
+        var asVar = { |func|
+        	{ |...args, kwargs|
+        		var val = func.performArgs(\value, args, kwargs);
+        		val
+        	}
+        };
+
+        this.assertEquals(
+         inlined.({ |a, b=100, c| [a, b, c] }).([1, 2]),
+         [[1, 2], 100, nil]
+        );
+        this.assertEquals(
+         asVar.({ |a, b=100, c| [a, b, c] }).([1, 2]),
+         [[1, 2], 100, nil]
+        );
+
+        this.assertEquals(
+         inlined.({ |a, b=100, c| [a, b, c] }).([1, 2], 42),
+         [[1, 2], 42, nil]
+        );
+        this.assertEquals(
+         asVar.({ |a, b=100, c| [a, b, c] }).([1, 2], 42),
+         [[1, 2], 42, nil]
+        );
+
+        this.assertEquals(
+         inlined.({ |a, b=100, c| [a, b, c] }).([1, 2], 42, c: 23),
+         [[1, 2], 42, 23]
+        );
+        this.assertEquals(
+         asVar.({ |a, b=100, c| [a, b, c] }).([1, 2], 42, c: 23),
+         [[1, 2], 42, 23]
+        );
+    }
 }
