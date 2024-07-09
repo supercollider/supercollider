@@ -147,7 +147,7 @@ struct PyrBlock : public PyrObjectHdr {
     PyrSlot rawData1;
     PyrSlot rawData2;
     PyrSlot code; // byte codes, nil if inlined
-    PyrSlot selectors; // method selectors, class names, closures table
+    PyrSlot selectors; // method selectors, class names, closures table, stores literals in methReturnLiteral methods.
     PyrSlot constants; // floating point constants table (to alleviate the literal table problem)
     PyrSlot prototypeFrame; // prototype of an activation frame
     PyrSlot contextDef; // ***defining block context

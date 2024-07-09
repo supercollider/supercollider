@@ -19,10 +19,9 @@
 */
 
 #include <atomic>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include <limits.h>
+#include <cstdlib>
+#include <cstring>
+#include <climits>
 #include "GC.h"
 #include "PyrMessage.h"
 #include "PyrInterpreter.h"
@@ -32,14 +31,12 @@
 #include "PyrLexer.h"
 #include "InitAlloc.h"
 #include "Hash.h"
-#include "SC_Constants.h"
 #include "SC_Alloca.h"
 #include "SC_Lock.h"
 
 #include <set>
 #include <limits>
 
-#include <memory>
 #include <boost/range/irange.hpp>
 
 #define BOOST_THREAD_VERSION 4
@@ -153,6 +150,7 @@ PyrSymbol* s_next;
 PyrSymbol* s_env;
 PyrSymbol *s_new, *s_ref, *s_value, *s_at, *s_put;
 PyrSymbol *s_performList, *s_superPerformList;
+PyrSymbol* s_performArgs;
 PyrSymbol *s_series, *s_copyseries, *s_putseries;
 PyrSymbol *s_envirGet, *s_envirPut;
 PyrSymbol *s_synth, *s_environment, *s_event;
@@ -260,6 +258,7 @@ void initSymbols() {
     s_value = getsym("value");
     s_performList = getsym("performList");
     s_superPerformList = getsym("superPerformList");
+    s_performArgs = getsym("performArgs");
     s_at = getsym("at");
     s_put = getsym("put");
     s_prstart = getsym("prStart");

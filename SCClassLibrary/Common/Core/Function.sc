@@ -53,9 +53,9 @@ Function : AbstractFunction {
 		// unsupplied argument names are looked up in the currentEnvironment
 		^this.primitiveFailed
 	}
-	functionPerformList { arg selector, arglist;
-		_ObjectPerformList;
-		^this.primitiveFailed
+	functionPerformList { |... args, kwargs|
+        _ObjectPerformList;
+        this.primitiveFailed
 	}
 
 	valueWithEnvir { arg envir;

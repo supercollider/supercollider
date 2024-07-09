@@ -174,11 +174,18 @@ SCDocHTMLRenderer {
 		var res = "";
 		var value;
 		var l = m.argNames;
-		var last = l.size-1;
+		var last = l.size - m.varArgsValue;
 		l.do {|a,i|
-			if (i>0) { //skip 'this' (first arg)
-				if(i==last and: {m.varArgs}) {
-					res = res ++ " <span class='argstr'>" ++ "... " ++ a;
+			if (i > 0) { //skip 'this' (first arg)
+				if(i >= last and: {m.hasVarArgs}) {
+					if(i == last){
+						if(i != 0){
+							res = res ++ " "
+						};
+						res = res ++ "<span class='argstr'>" ++ "... " ++ a
+					} {
+						res = res ++ ", <span class='argstr'>" ++ "... " ++ a
+					}
 				} {
 					if (i>1) { res = res ++ ", " };
 					res = res ++ "<span class='argstr'>" ++ a;
@@ -749,7 +756,11 @@ SCDocHTMLRenderer {
 				stream << "<tr><td class='argumentname'>";
 				if(node.text.isNil) {
 					currentMethod !? {
-						if(currentMethod.varArgs and: {currArg==(currentMethod.argNames.size-1)}) {
+						if(currentMethod.hasVarArgs
+							and: {
+								currArg == (currentMethod.argNames.size - (currentMethod.hasKwArgs.if({2}, {1})))
+							}
+						) {
 							stream << "... ";
 						};
 						stream << if(currArg < currentMethod.argNames.size) {
@@ -766,11 +777,12 @@ SCDocHTMLRenderer {
 					stream << if(currentMethod.isNil or: {currArg < currentMethod.argNames.size}) {
 						currentMethod !? {
 							f = currentMethod.argNames[currArg].asString;
-							if(
-								(z = if(currentMethod.varArgs and: {currArg==(currentMethod.argNames.size-1)})
-										{"... "++f} {f}
-								) != node.text;
-							) {
+							z = if(currentMethod.hasVarArgs and: {currArg == ( currentMethod.argNames.size - currentMethod.varArgsValue)}) {
+								"... " ++ f
+							} {
+								f
+							};
+							if(z != node.text) {
 								"SCDoc: In %\n"
 								"  Method %% has arg named '%', but doc has 'argument:: %'.".format(
 									currDoc.fullPath,

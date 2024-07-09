@@ -187,7 +187,7 @@ send_normal_2:
         return errFailed; // arguments remain on the stack
 
     msg = gSpecialBinarySelectors[g->primitiveIndex];
-    sendMessage(g, msg, 2);
+    sendMessage(g, msg, 2, 0);
     return errNone;
 }
 
@@ -233,7 +233,7 @@ send_normal_2:
         return errFailed; // arguments remain on the stack
 
     msg = gSpecialBinarySelectors[g->primitiveIndex];
-    sendMessage(g, msg, 2);
+    sendMessage(g, msg, 2, 0);
     return errNone;
 }
 
@@ -279,7 +279,7 @@ send_normal_2:
         return errFailed; // arguments remain on the stack
 
     msg = gSpecialBinarySelectors[g->primitiveIndex];
-    sendMessage(g, msg, 2);
+    sendMessage(g, msg, 2, 0);
     return errNone;
 }
 
