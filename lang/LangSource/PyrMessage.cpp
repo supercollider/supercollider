@@ -473,8 +473,10 @@ void prepareArgsForExecute(VMGlobals* g, PyrBlock* block, PyrFrame* callFrame, l
 
     // Put var arg array or default on stack.
     if (methHasVarArg) {
-        SetObject(outCallFrameStack + methNumNormArgs,
-                  variableArgumentsArray ? variableArgumentsArray : slotRawObject(&proto->slots[methNumNormArgs]));
+        if (variableArgumentsArray)
+            SetObject(outCallFrameStack + methNumNormArgs, variableArgumentsArray);
+        else
+            slotCopy(outCallFrameStack + methNumNormArgs, proto->slots + methNumNormArgs);
     }
 
     // Put var kwarg array or default on stack.
@@ -483,7 +485,7 @@ void prepareArgsForExecute(VMGlobals* g, PyrBlock* block, PyrFrame* callFrame, l
             keywordArgumentsArray->size = keywordArgumentSize;
             SetObject(outCallFrameStack + methNumNormArgs + 1, keywordArgumentsArray);
         } else {
-            SetObject(outCallFrameStack + methNumNormArgs + 1, slotRawObject(&proto->slots[methNumNormArgs + 1]));
+            slotCopy(outCallFrameStack + methNumNormArgs + 1, proto->slots + methNumNormArgs + 1);
         }
     }
 
