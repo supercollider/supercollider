@@ -2794,51 +2794,6 @@ std::tuple<int, std::vector<std::string>> PyrCollToVectorStdString(PyrObject* co
     return make_tuple(errNone, std::move(strings));
 }
 
-static int hashPtr(void* ptr) {
-    int32 hashed_part = int32((size_t)ptr & 0xffffffff);
-    return Hash(hashed_part);
-}
-
-int calcHash(PyrSlot* a);
-int calcHash(PyrSlot* a) {
-    int hash;
-    switch (GetTag(a)) {
-    case tagObj:
-        hash = hashPtr(slotRawObject(a));
-        break;
-    case tagInt:
-        hash = Hash(slotRawInt(a));
-        break;
-    case tagChar:
-        hash = Hash(slotRawChar(a) & 255);
-        break;
-    case tagSym:
-        hash = slotRawSymbol(a)->hash;
-        break;
-    case tagNil:
-        hash = 0xA5A5A5A5;
-        break;
-    case tagFalse:
-        hash = 0x55AA55AA;
-        break;
-    case tagTrue:
-        hash = 0x69696969;
-        break;
-    case tagPtr:
-        hash = hashPtr(slotRawPtr(a));
-        break;
-    default:
-        // hash for a double
-        union {
-            int32 i[2];
-            double d;
-        } u;
-        u.d = slotRawFloat(a);
-        hash = Hash(u.i[0] + Hash(u.i[1]));
-    }
-    return hash;
-}
-
 void InstallFinalizer(VMGlobals* g, PyrObject* inObj, int slotIndex, ObjFuncPtr inFunc) {
     PyrObject* finalizer = g->gc->NewFinalizer(inFunc, inObj, false);
     SetObject(inObj->slots + slotIndex, finalizer);

@@ -263,7 +263,6 @@ void fillSlots(PyrSlot* slot, int size, PyrSlot* fillslot);
 void nilSlots(PyrSlot* slot, int size);
 void zeroSlots(PyrSlot* slot, int size);
 
-int calcHash(PyrSlot* a);
 int getIndexedFloat(struct PyrObject* obj, int index, float* value);
 int getIndexedDouble(struct PyrObject* obj, int index, double* value);
 

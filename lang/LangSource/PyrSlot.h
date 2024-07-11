@@ -36,6 +36,8 @@ A PyrSlot is an 8-byte value which is either a double precision float or a
 #include "SC_Endian.h"
 #include "PyrErrors.h"
 #include "function_attributes.h"
+#include "Hash.h"
+#include "PyrSymbol.h"
 
 // TODO: are all these necessary? Or does the pointer size suffice?
 #if (__SIZEOF_POINTER__ == 8) || defined(__x86_64__) || defined(_M_X64) || defined(__LP64__) || defined(_WIN64)
@@ -45,6 +47,15 @@ A PyrSlot is an 8-byte value which is either a double precision float or a
 #    define POINTER_NEEDS_PADDING 1
 #else
 #    error "no PyrSlot imlementation for this platform"
+#endif
+
+// https://stackoverflow.com/questions/60802864/emulating-gccs-builtin-unreachable-in-visual-studio
+#ifdef __GNUC__ // GCC 4.8+, Clang, Intel and other compilers compatible with GCC
+[[noreturn]] inline __attribute__((always_inline)) void unreachable() { __builtin_unreachable(); }
+#elif defined(_MSC_VER) // MSVC
+[[noreturn]] __forceinline void unreachable() { __assume(false); }
+#else // ???
+inline void unreachable() {}
 #endif
 
 // On 64-bit systems the pointer is assumed to fit into 48 bits.
@@ -168,6 +179,8 @@ template <typename T> struct MaybePadPointerTo64Bits {
 #endif
     }
 
+    [[nodiscard]] int32 getPtrAsInt32() const noexcept { return static_cast<int32>(reinterpret_cast<uintptr_t>(ptr)); }
+
 #if POINTER_NEEDS_PADDING && (BYTE_ORDER == LITTLE_ENDIAN)
     int32_t padding;
 #endif
@@ -258,7 +271,8 @@ public:
     PyrSlot& operator=(PyrSlot&&) noexcept = default;
     PyrSlot& operator=(const PyrSlot&) noexcept = default;
 
-    [[nodiscard]] friend bool operator==(PyrSlot lhs, PyrSlot rhs) noexcept {
+    [[nodiscard]] friend inline bool operator==(PyrSlot lhs, PyrSlot rhs) noexcept {
+        // This is identity, not equality in supercollider.
         if (lhs.isDouble()) {
             // Doubles have odd comparison rules...
             if (rhs.isDouble())
@@ -270,7 +284,7 @@ public:
         return lhs.u_raw == rhs.u_raw;
     }
 
-    [[nodiscard]] static PyrSlot make(double d) noexcept {
+    [[nodiscard]] inline static PyrSlot make(double d) noexcept {
         // There are many safe nan values, but a few are not safe.
         // The server's Convolution3 is a known source of unsafe nans.
         // Supercollider VM itself does not generate unsafe nans.
@@ -279,63 +293,65 @@ public:
             return { PrivateTag {}, details::safeNaN };
         return { PrivateTag(), d };
     }
-    [[nodiscard]] static PyrSlot make(char c) noexcept {
+    [[nodiscard]] inline static PyrSlot make(char c) noexcept {
         return { PrivateTag(), Tags::charTag, static_cast<uint64_t>(details::bit_cast<uint8_t>(c)) };
     }
-    [[nodiscard]] static PyrSlot make(struct PyrObjectHdr* o) {
+    [[nodiscard]] inline static PyrSlot make(struct PyrObjectHdr* o) {
         return { PrivateTag(), Tags::objHdrTag, static_cast<uint64_t>(reinterpret_cast<uintptr_t>(o)) };
     }
-    [[nodiscard]] static PyrSlot make(struct PyrSymbol* o) {
+    [[nodiscard]] inline static PyrSlot make(struct PyrSymbol* o) {
         return { PrivateTag(), Tags::symTag, static_cast<uint64_t>(reinterpret_cast<uintptr_t>(o)) };
     }
-    [[nodiscard]] static PyrSlot make(int32_t i) {
+    [[nodiscard]] inline static PyrSlot make(int32_t i) {
         return { PrivateTag(), Tags::intTag, static_cast<uint64_t>(details::bit_cast<uint32_t>(i)) };
     }
-    [[nodiscard]] static PyrSlot make(void* o) {
+    [[nodiscard]] inline static PyrSlot make(void* o) {
         return { PrivateTag(), Tags::ptrTag, static_cast<uint64_t>(reinterpret_cast<uintptr_t>(o)) };
     }
-    [[nodiscard]] static PyrSlot make(PyrNil) noexcept { return {}; }
-    [[nodiscard]] static PyrSlot make(bool b) noexcept { return { PrivateTag(), b ? Tags::trueTag : Tags::falseTag }; }
+    [[nodiscard]] inline static PyrSlot make(PyrNil) noexcept { return {}; }
+    [[nodiscard]] inline static PyrSlot make(bool b) noexcept {
+        return { PrivateTag(), b ? Tags::trueTag : Tags::falseTag };
+    }
 
-    [[nodiscard]] bool isDouble() const noexcept { return !isBoxed(); }
-    [[nodiscard]] bool isChar() const noexcept { return tagChecker<Tags::charTag>(); }
-    [[nodiscard]] bool isInt() const noexcept { return tagChecker<Tags::intTag>(); }
-    [[nodiscard]] bool isPtr() const noexcept { return tagChecker<Tags::ptrTag>(); }
-    [[nodiscard]] bool isObjectHdr() const noexcept { return tagChecker<Tags::objHdrTag>(); }
-    [[nodiscard]] bool isSymbol() const noexcept { return tagChecker<Tags::symTag>(); }
-    [[nodiscard]] bool isNil() const noexcept { return u_raw == Tags::nilTag; }
-    [[nodiscard]] bool isTrue() const noexcept { return u_raw == Tags::trueTag; }
-    [[nodiscard]] bool isFalse() const noexcept { return u_raw == Tags::falseTag; }
+    [[nodiscard]] bool inline isDouble() const noexcept { return !isBoxed(); }
+    [[nodiscard]] inline bool isChar() const noexcept { return tagChecker<Tags::charTag>(); }
+    [[nodiscard]] inline bool isInt() const noexcept { return tagChecker<Tags::intTag>(); }
+    [[nodiscard]] inline bool isPtr() const noexcept { return tagChecker<Tags::ptrTag>(); }
+    [[nodiscard]] inline bool isObjectHdr() const noexcept { return tagChecker<Tags::objHdrTag>(); }
+    [[nodiscard]] inline bool isSymbol() const noexcept { return tagChecker<Tags::symTag>(); }
+    [[nodiscard]] inline bool isNil() const noexcept { return u_raw == Tags::nilTag; }
+    [[nodiscard]] inline bool isTrue() const noexcept { return u_raw == Tags::trueTag; }
+    [[nodiscard]] inline bool isFalse() const noexcept { return u_raw == Tags::falseTag; }
 
-    [[nodiscard]] double getDouble() const noexcept {
+    [[nodiscard]] inline double getDouble() const noexcept {
         assert(isDouble());
         return u_double;
     }
-    [[nodiscard]] char getChar() const noexcept {
+    [[nodiscard]] inline char getChar() const noexcept {
         assert(isChar());
         return u_char.value;
     }
-    [[nodiscard]] int32_t getInt() const noexcept {
+    [[nodiscard]] inline int32_t getInt() const noexcept {
         assert(isInt());
         return u_int.value;
     }
-    [[nodiscard]] void* getPtr() const noexcept {
+    [[nodiscard]] inline void* getPtr() const noexcept {
         if (isPtr())
             return u_ptr.getPtr();
         assert(isNil() || (isInt() && getInt() == 0));
         return nullptr;
     }
-    [[nodiscard]] struct PyrObjectHdr* getObjectHdr() const noexcept {
+    [[nodiscard]] inline struct PyrObjectHdr* getObjectHdr() const noexcept {
         assert(isObjectHdr());
         return u_objectHeader.getPtr();
     }
-    [[nodiscard]] struct PyrSymbol* getSymbol() const noexcept {
+    [[nodiscard]] inline struct PyrSymbol* getSymbol() const noexcept {
         if (isSymbol())
             return u_symbol.getPtr();
         assert(isNil() || (isInt() && getInt() == 0) || (isDouble() && getDouble() == 0));
         return nullptr;
     }
-    template <typename T> [[nodiscard]] T* getPyrObject() const noexcept {
+    template <typename T> [[nodiscard]] inline T* getPyrObject() const noexcept {
         // types are incomplete here so can't check...
         // static_assert(std::is_base_of<PyrObjectHdr, T>::value, "Type must derive from PyrObjectHeader");
         assert(isBoxed());
@@ -346,39 +362,62 @@ public:
     }
 
     [[nodiscard]] HOT int getTag() const noexcept {
-        switch (getTagAsU16(u_raw)) {
-        case getTagAsU16(Tags::symTag):
-            assert(isSymbol());
-            return tagSym;
-        case getTagAsU16(Tags::intTag):
-            assert(isInt());
-            return tagInt;
-        case getTagAsU16(Tags::charTag):
-            assert(isChar());
-            return tagChar;
-        case getTagAsU16(Tags::objHdrTag):
-            assert(isObjectHdr());
-            return tagObj;
-        case getTagAsU16(Tags::ptrTag):
-            assert(isPtr());
-            return tagPtr;
-        case getTagAsU16(Tags::nilTag):
-            assert(isNil());
-            return tagNil;
-        case getTagAsU16(Tags::trueTag):
-            assert(isTrue());
-            return tagTrue;
-        case getTagAsU16(Tags::falseTag):
-            assert(isFalse());
-            return tagFalse;
-        default:
-            assert(isDouble());
+        if (isDouble()) {
             return tagFloat;
+        } else {
+            switch (getTagAsU16(u_raw)) {
+            case getTagAsU16(Tags::nilTag):
+                return tagNil;
+            case getTagAsU16(Tags::symTag):
+                return tagSym;
+            case getTagAsU16(Tags::intTag):
+                return tagInt;
+            case getTagAsU16(Tags::charTag):
+                return tagChar;
+            case getTagAsU16(Tags::objHdrTag):
+                return tagObj;
+            case getTagAsU16(Tags::ptrTag):
+                return tagPtr;
+            case getTagAsU16(Tags::trueTag):
+                return tagTrue;
+            case getTagAsU16(Tags::falseTag):
+                return tagFalse;
+            default:
+                unreachable();
+            }
         }
     }
 
     // getClass is implemented over in PyrObject.h as it needs access to gTagClassTable.
     inline struct PyrClass* getClass();
+
+    [[nodiscard]] inline int32_t hash() const noexcept {
+        switch (getTagAsU16(u_raw)) {
+        case getTagAsU16(Tags::symTag):
+            return static_cast<int32>(getSymbol()->hash);
+        case getTagAsU16(Tags::intTag):
+            return Hash(getInt());
+        case getTagAsU16(Tags::nilTag):
+            return static_cast<int32>(0xA5A5A5A5);
+        case getTagAsU16(Tags::charTag):
+            return Hash(u_char.value & 255);
+        case getTagAsU16(Tags::objHdrTag):
+            return Hash(u_objectHeader.getPtrAsInt32());
+        case getTagAsU16(Tags::ptrTag):
+            return Hash(u_ptr.getPtrAsInt32());
+        case getTagAsU16(Tags::trueTag):
+            return 0x69696969;
+        case getTagAsU16(Tags::falseTag):
+            return 0x55AA55AA;
+        default:
+            union {
+                int32 i[2];
+                double d;
+            } u;
+            u.d = u_double;
+            return Hash(u.i[0] + Hash(u.i[1]));
+        }
+    }
 };
 
 static_assert(sizeof(PyrSlot) == sizeof(double));
@@ -401,6 +440,8 @@ static_assert(sizeof(PyrSlot) == sizeof(double));
 [[nodiscard]] inline bool NotFloat(const PyrSlot* slot) noexcept { return !slot->isDouble(); }
 [[nodiscard]] inline bool IsPtr(const PyrSlot* slot) noexcept { return slot->isPtr(); }
 [[nodiscard]] inline bool NotPtr(const PyrSlot* slot) noexcept { return !slot->isPtr(); }
+
+[[nodiscard]] inline int32 calcHash(const PyrSlot* slot) noexcept { return slot->hash(); }
 
 inline void SetInt(PyrSlot* slot, int32_t value) noexcept { *slot = PyrSlot::make(value); }
 inline void SetObject(PyrSlot* slot, struct PyrObjectHdr* value) noexcept { *slot = PyrSlot::make(value); }
