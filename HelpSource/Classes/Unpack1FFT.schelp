@@ -4,7 +4,7 @@ categories:: UGens>FFT, UGens>Demand
 related:: Classes/PackFFT, Classes/UnpackFFT, Guides/FFT-Overview
 
 
-Unpack1FFT(chain, bufsize, binindex, whichmeasure=0)
+Unpack1FFT(chain, bufsize, binindex, whichmeasure = 0)
 
 description::
 Takes an FFT chain and extracts a single scalar value as a demand-rate stream. To call it, a "demander" is needed, which fires whenever the FFT chain fires - this is normally achieved using link::Classes/PackFFT:: but can also be done using link::Classes/Demand::.

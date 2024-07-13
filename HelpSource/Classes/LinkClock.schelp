@@ -178,9 +178,9 @@ Examples::
 code::
 (
 s.waitForBoot({
-	SynthDef(\click, { |freq=400, amp=0.2|
+	SynthDef(\click, { |freq = 400, amp = 0.2|
 		var sig = SinOsc.ar(freq, 0.5pi) *
-			Env.perc(0.001,0.06).ar(Done.freeSelf, levelScale: amp);
+			Env.perc(0.001, 0.06).ar(Done.freeSelf, levelScale: amp);
 		OffsetOut.ar(0, sig.dup)
 	}).add;
 });
@@ -242,7 +242,7 @@ win.onClose = { task.stop; controller.remove };
 
 // patterns automatically apply server latency,
 // so this should be in sync
-p = Pbind(\instrument, \click, \freq, Pseq([900, Pn(400,3)], inf)).play(l, quant:4);
+p = Pbind(\instrument, \click, \freq, Pseq([900, Pn(400, 3)], inf)).play(l, quant: 4);
 
 // In Tasks, you should handle latency yourself:
 (

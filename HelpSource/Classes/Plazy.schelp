@@ -21,18 +21,18 @@ code::
 a = Plazy({
 	var x, y;
 	x = Array.series(rrand(2, 4), [1, 100].choose, 1);
-	Pshuf(x,1);
+	Pshuf(x, 1);
 });
 x = Pn(a, inf).asStream;
 30.do({ x.next.postln });
 )
 
 
-//Plazy used to produce a sequence of pitches:
+// Plazy used to produce a sequence of pitches:
 
 (
 SynthDef(\help_sinegrain,
-	{ arg out=0, freq=440, sustain=0.05;
+	{ |out = 0, freq = 440, sustain = 0.05|
 		var env;
 		env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction: Done.freeSelf);
 		Out.ar(out, SinOsc.ar(freq, 0, env))
@@ -44,7 +44,7 @@ a = Plazy({
 	var x, y;
 	x = Array.series(rrand(2, 4), [1, 5].choose, 1);
 	x.put(x.size.rand, 8+0.1.rand2);
-	Pseq(x,1);
+	Pseq(x, 1);
 });
 x = Pn(a, inf).asStream;
 

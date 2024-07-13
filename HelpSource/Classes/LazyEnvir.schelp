@@ -71,7 +71,7 @@ code::
 // making a pattern space using LazyEnvir
 
 a = LazyEnvir.new;
-a.proxyClass=\PatternProxy;
+a.proxyClass = \PatternProxy;
 
 a.push;
 

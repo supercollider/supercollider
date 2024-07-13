@@ -15,7 +15,7 @@ n.parent.alwaysOnTop_(true); // show mixer in front of IDE
 
 s.boot;
 // if you have JITLibExtensions installed, try ProxyMeter to see the proxy levels:
-if (\ProxyMeter.asClass.notNil) { ProxyMeter.addMixer(n); };
+if (\ProxyMeter.asClass.notNil) { ProxyMeter.addMixer(n) };
 
 
 "bcdefghijk".do { |k| Ndef(k.asSymbol).ar };
@@ -24,9 +24,9 @@ if (\ProxyMeter.asClass.notNil) { ProxyMeter.addMixer(n); };
 
 "abcdefghijk".do { |k| Ndef(k.asSymbol).playN };
 (
-Ndef(\aaaaaa, { |freq=250, intv=19, timescale=1, curve=0, loopnode=0|
+Ndef(\aaaaaa, { |freq = 250, intv = 19, timescale = 1, curve = 0, loopnode = 0|
 	var env = EnvGen.kr(
-		Env({ 1.0.rand2 }!11, {1.0.rand}!10, curve, releaseNode: 9, loopNode: loopnode),
+		Env({ 1.0.rand2 }!11, { 1.0.rand }!10, curve, releaseNode: 9, loopNode: loopnode),
 		timeScale: timescale);
 	var pitch = (env * [1, 0.33, -1] * intv).midiratio * freq;
 	Splay.ar(Formant.ar(pitch, pitch.scramble * 2, pitch.scramble)) * 0.1;

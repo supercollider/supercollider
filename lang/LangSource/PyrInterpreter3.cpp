@@ -383,7 +383,7 @@ static bool initAwakeMessage(VMGlobals* g) {
     g->gc->GCWrite(g->thread, slot + 3);
 
     // start it
-    sendMessage(g, s_awake, 4);
+    sendMessage(g, s_awake, 4, 0);
 
     return g->method != nullptr;
 }
@@ -412,7 +412,7 @@ bool initInterpreter(VMGlobals* g, PyrSymbol* selector, int numArgsPushed) {
     slotCopy(&g->receiver, slot);
 
     // start it
-    sendMessage(g, selector, numArgsPushed);
+    sendMessage(g, selector, numArgsPushed, 0);
 
     return g->method != nullptr;
 }
@@ -437,7 +437,7 @@ static void StoreToImmutableA(VMGlobals* g, PyrSlot*& sp, unsigned char*& ip) {
     post("StoreToImmutableA\n");
     dumpObjectSlot(sp - 1);
     dumpObjectSlot(sp);
-    sendMessage(g, getsym("immutableError"), 2);
+    sendMessage(g, getsym("immutableError"), 2, 0);
     sp = g->sp;
     ip = g->ip;
 }
@@ -451,7 +451,7 @@ void StoreToImmutableB(VMGlobals* g, PyrSlot*& sp, unsigned char*& ip) {
     dumpObjectSlot(sp - 1);
     dumpObjectSlot(sp);
     PyrSymbol* selector = getsym("immutableError");
-    sendMessage(g, selector, 2);
+    sendMessage(g, selector, 2, 0);
     sp = g->sp;
     ip = g->ip;
 }
@@ -2907,7 +2907,7 @@ HOT void Interpret(VMGlobals* g) {
             if (UNLIKELY(meth == nullptr || (slotRawSymbol(&meth->name) != selector))) {
                 g->sp = sp;
                 g->ip = ip;
-                doesNotUnderstand(g, selector, numArgsPushed);
+                doesNotUnderstand(g, selector, numArgsPushed, 0);
                 sp = g->sp;
                 ip = g->ip;
             } else {
@@ -2916,7 +2916,7 @@ HOT void Interpret(VMGlobals* g) {
                 case methNormal: /* normal msg send */
                     g->sp = sp;
                     g->ip = ip;
-                    executeMethod(g, meth, numArgsPushed);
+                    executeMethod(g, meth, numArgsPushed, 0);
                     sp = g->sp;
                     ip = g->ip;
                     break;
@@ -3057,7 +3057,7 @@ HOT void Interpret(VMGlobals* g) {
             if (UNLIKELY(slotRawSymbol(&meth->name) != selector)) {
                 g->sp = sp;
                 g->ip = ip;
-                doesNotUnderstandWithKeys(g, selector, numArgsPushed, numKeyArgsPushed);
+                doesNotUnderstand(g, selector, numArgsPushed, numKeyArgsPushed);
                 sp = g->sp;
                 ip = g->ip;
             } else {
@@ -3067,7 +3067,7 @@ HOT void Interpret(VMGlobals* g) {
                 case methNormal: /* normal msg send */
                     g->sp = sp;
                     g->ip = ip;
-                    executeMethodWithKeys(g, meth, numArgsPushed, numKeyArgsPushed);
+                    executeMethod(g, meth, numArgsPushed, numKeyArgsPushed);
                     sp = g->sp;
                     ip = g->ip;
                     break;

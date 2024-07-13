@@ -42,14 +42,14 @@ code::
 // change a parameter
 (
 Pbind(
-	\note,  Pseg( Pseq([1, 5],inf), Pseq([4, 1],inf), \linear),
+	\note, Pseg(Pseq([1, 5], inf), Pseq([4, 1], inf), \linear),
 	\dur, 0.1
 ).play;
 )
 
 (
 Pbind(
-	\freq,  Pseg( Pseq([400, 1500], inf), Pseq([4, 4],inf), Pseq([\linear, \exp],inf)),
+	\freq, Pseg(Pseq([400, 1500], inf), Pseq([4, 4], inf), Pseq([\linear, \exp], inf)),
 	\dur, 0.1
 ).play;
 )

@@ -19,6 +19,7 @@
 */
 
 #include "status_box.hpp"
+#include <QtGui/qfontdatabase.h>
 
 namespace ScIDE {
 
@@ -29,7 +30,8 @@ StatusLabel::StatusLabel(QWidget* parent): QLabel(parent) {
     setBackground(Qt::black);
     setTextColor(Qt::white);
 
-    QFont font("Monospace");
+    QFont font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    font.setPointSize(font.pointSize());
     font.setStyleHint(QFont::Monospace);
     font.setBold(true);
     setFont(font);
