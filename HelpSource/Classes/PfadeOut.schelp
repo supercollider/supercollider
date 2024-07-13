@@ -36,10 +36,10 @@ EXAMPLES::
 CODE::
 (
 // Create a pattern that you want to fade
-var pat = Pbind(\dur, 0.125, \degree, Pwhite(1,10));
+var pat = Pbind(\dur, 0.125, \degree, Pwhite(1, 10));
 
 // Fade it out over 30 beats
-pat = PfadeOut.new(pattern:pat, fadeTime:30.0, holdTime:1.0, tolerance:0.0001);
+pat = PfadeOut.new(pattern: pat, fadeTime: 30.0, holdTime: 1.0, tolerance: 0.0001);
 
 // Play it
 pat.play;

@@ -21,6 +21,7 @@
 
 #pragma once
 
+#include <type_traits>
 #include "SC_Types.h"
 #include "SC_SndBuf.h"
 
@@ -91,8 +92,13 @@ enum { kUnitDef_CantAliasInputsToOutputs = 1 };
         ClearUnitOnMemFailed                                                                                           \
     }
 
+template <typename ToType, typename Value>
+[[nodiscard]] inline constexpr auto copyAndCastToTypeOfFirstArg(const ToType&, const Value& value) noexcept {
+    using TargetT = std::remove_cv_t<std::remove_reference_t<ToType>>;
+    return static_cast<TargetT>(value);
+}
 // calculate a slope for control rate interpolation to audio rate.
-#define CALCSLOPE(next, prev) ((next - prev) * sc_typeof_cast(next) unit->mRate->mSlopeFactor)
+#define CALCSLOPE(next, prev) ((next - prev) * copyAndCastToTypeOfFirstArg(next, unit->mRate->mSlopeFactor))
 
 // get useful values
 #define SAMPLERATE (unit->mRate->mSampleRate)

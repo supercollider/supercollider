@@ -40,16 +40,16 @@ Examples::
 code::
 
 
-{SinOscFB.ar(440,MouseX.kr(0,4))*0.1}.play
+{ SinOscFB.ar(440, MouseX.kr(0, 4))*0.1 }.play
 
 
-{SinOscFB.ar(MouseY.kr(10,1000,'exponential'),MouseX.kr(0.5pi,pi))*0.1}.play
+{ SinOscFB.ar(MouseY.kr(10, 1000, 'exponential'), MouseX.kr(0.5pi, pi))*0.1 }.play
 
 
-{SinOscFB.ar(100*SinOscFB.ar(MouseY.kr(1,1000,'exponential'))+200,MouseX.kr(0.5pi,pi))*0.1}.play
+{ SinOscFB.ar(100*SinOscFB.ar(MouseY.kr(1, 1000, 'exponential'))+200, MouseX.kr(0.5pi, pi))*0.1 }.play
 
 
 // Scope the wave form
-{ SinOscFB.ar([400,301], MouseX.kr(0,4),0.3); }.scope;
+{ SinOscFB.ar([400, 301], MouseX.kr(0, 4), 0.3) }.scope;
 
 ::

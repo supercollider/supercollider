@@ -23,13 +23,13 @@ code::
 var a, b;
 a = Pn(Pseq(#[1, 2, 3], 1), 4);	// repeat pattern four times
 b = a.asStream;
-16.do({ b.next.postln; });
+16.do({ b.next.postln });
 )
 
 // sound example
 (
 SynthDef(\help_sinegrain,
-	{ arg out=0, freq=440, sustain=0.05;
+	{ |out = 0, freq = 440, sustain = 0.05|
 		var env;
 		env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction: Done.freeSelf);
 		Out.ar(out, SinOsc.ar(freq, 0, env))

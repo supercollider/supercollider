@@ -16,12 +16,6 @@
 		'skipReason': "UnitTest fails when run in GHA (FIXME)",
 	),
 	(
-		'suite': "TestCoreUGens",
-		'skip': "true",
-		'test': "test_ugen_generator_equivalences",
-		'skipReason': "UnitTest has bugs (FIXME)",
-	),
-	(
 		'suite': "TestDocument",
 		'test': "*",
 		'skip': "true",

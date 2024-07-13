@@ -61,8 +61,8 @@ METHOD:: new
     Example:
 code::
 s.boot
-{SinOsc.ar([330,440], 0, 0.4)}.play;
-Stethoscope(s,2);
+{ SinOsc.ar([330, 440], 0, 0.4) }.play;
+Stethoscope(s, 2);
 ::
 
 
@@ -81,7 +81,7 @@ METHOD:: ugenScopes
 
 code::
 s.boot
-{[SinOsc.ar.scope,WhiteNoise.ar(0.5).scope]*0.1}.scope(2);
+{ [SinOsc.ar.scope, WhiteNoise.ar(0.5).scope]*0.1 }.scope(2);
 Stethoscope.ugenScopes; // returns the ugen scopes
 ::
 
@@ -215,7 +215,7 @@ s.boot;
 {
     SinOsc.ar([225, 450, 900], 0, 0.2)
     + LPF.ar(
-        LFPulse.ar(226 * [1, 2, 5],[0,0.1,0.1],0.2, 0.2),
+        LFPulse.ar(226 * [1, 2, 5], [0, 0.1, 0.1], 0.2, 0.2),
         MouseX.kr(20, 10000, 1)
         )
 }.scope;
@@ -223,10 +223,10 @@ s.boot;
 
 // server.scope only changes the properies explicitly given:
 
-s.scope(numChannels:5);
-s.scope(index:12);
-s.scope(zoom:4);
-s.scope(index:0);
+s.scope(numChannels: 5);
+s.scope(index: 12);
+s.scope(zoom: 4);
+s.scope(index: 0);
 
 s.scopeWindow.size = 600;
 s.scopeWindow.size = 222;
@@ -268,7 +268,7 @@ You can pass your own view in to add a stethoscope to it:
 code::
 w = Window.new("my own scope", Rect(20, 20, 400, 500));
 w.view.decorator = FlowLayout(w.view.bounds);
-c = Stethoscope.new(s, view:w.view);
+c = Stethoscope.new(s, view: w.view);
 w.onClose = { c.free }; // don't forget this
 w.front;
 ::

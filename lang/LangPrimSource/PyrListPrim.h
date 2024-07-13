@@ -25,6 +25,7 @@ void initArrayPrimitives();
 
 int prArrayMultiChanExpand(VMGlobals* g, int numArgsPushed);
 
+bool identDict_lookupNonNil(PyrObject* dict, PyrSlot* key, int hash, PyrSlot* result);
 int arrayAtIdentityHash(PyrObject* array, PyrSlot* key);
 int arrayAtIdentityHashInPairs(PyrObject* array, PyrSlot* key);
 int arrayAtIdentityHashInPairsWithHash(PyrObject* array, PyrSlot* key, int hash);

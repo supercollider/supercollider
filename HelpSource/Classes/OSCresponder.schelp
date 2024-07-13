@@ -34,7 +34,7 @@ An OSC command eg. code::'/done'::.
 argument::action
 A link::Classes/Function:: that will be evaluated when a cmd of that name is received from addr. arguments: time, theResponder, message, addr
 note::
-OSCresponder evaluates its function in the system process. In order to access the application process (e.g. for GUI access ) use { ... }.defer; within the action function, e.g., code:: { |time, resp, msg| { gui.value_(msg[3]) }.defer } ::
+OSCresponder evaluates its function in the system process. In order to access the application process (e.g. for GUI access) use { ... }.defer; within the action function, e.g., code:: { |time, resp, msg| { gui.value_(msg[3]) }.defer } ::
 ::
 
 Examples::
