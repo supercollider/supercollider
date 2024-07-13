@@ -61,7 +61,7 @@ a.respondsTo(\flop) // false: Maybe constructs a placeholder instead
 b = Maybe(a.flop);
 b.value; // => nil
 a.value = [1, 2, [2, 3]];
-b.value;	// => [ [ 1, 2, 2 ], [ 1, 2, 3 ] ]
+b.value;	// => [[1, 2, 2], [1, 2, 3]]
 ::
 
 Examples::
@@ -85,13 +85,13 @@ code::
 ~b = Set[4, 5];
 ~c = ~a union: ~b; // union of the two sets (note that the shortcut | does not work here.).
 ~d = ~a sect: ~b; // intersection of a and b
-~c.postcs;""; // post the whole construction
-~d.postcs;"";
-~c.value; // Set[ 4, 0, 5, 7 ]
-~d.value; // Set[ 4, 5 ]
+~c.postcs; ""; // post the whole construction
+~d.postcs; "";
+~c.value; // Set[4, 0, 5, 7]
+~d.value; // Set[4, 5]
 ~b = Set[4, 5, 13, 0];
 ~c.value;
-~d.value; // Set[ 4, 0, 5 ]
+~d.value; // Set[4, 0, 5]
 ~b.source.add(~w); // add another placeholder
 ~c.value; // it is part of the union.
 ~d.value; // but not part of the intersection
@@ -135,7 +135,7 @@ f.(12)
 ~faculty = { |x| if(x == 1) { 1 } { x * ~faculty.apply(x - 1) } };
 ~faculty.(12)
 
-/*// safety (not yet implemented)
+/* // safety (not yet implemented)
 Maybe.maxDepth = 1e2; // higher depth is risky..
 ~faculty = { |x| x * ~faculty.apply(x - 1) }; // infinite recursion
 ~faculty.(12)
@@ -176,7 +176,7 @@ Maybe.maxDepth = nil; // unsafe again.*/
 ~x = [600, 1000];
 
 (~a + 1).value(~b); // 2003
-(~a + 1).value(~x); // [ 603, 1003 ]
+(~a + 1).value(~x); // [603, 1003]
 (~a + 1).value({ 8 }); // binary op func.
 (~a + 1).value({ 5 + 3 }).value // 11
 
@@ -205,14 +205,14 @@ Maybe.maxDepth = nil; // unsafe again.*/
 
 
 // function composition
-~a = {|x| x + 1 };
+~a = { |x| x + 1 };
 ~v = ~a <> ~a <> ~a; // same as: { ~a.(~a.(~a)) }
 ~v.value(0); // => 3
 
-~a = {|x| x + 2 };
+~a = { |x| x + 2 };
 ~v.value(0); // transparent. => 6
 
-// {|x| x }.valueEnvir // doesn't work with current implementation of Function:valueEnvir
+// { |x| x }.valueEnvir // doesn't work with current implementation of Function:valueEnvir
 
 
 // calculations with functions:
@@ -231,8 +231,8 @@ Maybe.maxDepth = nil; // unsafe again.*/
 ~a = { |ff| { [600, 800] } + { ff + 2 + ~c } };
 
 ~x = ~a.value(8);
-~x.value; // return [ 610, 810 ]
+~x.value; // return [610, 810]
 
 ~c = { [10, -10].rand };
-~x.value; // return random between [ 610..620, 800..810 ]
+~x.value; // return random between [610..620, 800..810]
 ::

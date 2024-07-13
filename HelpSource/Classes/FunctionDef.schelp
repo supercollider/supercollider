@@ -131,11 +131,11 @@ a.interpret.value(4, 5)
 // use as a macro: multichannel expansion like in flop
 f = { |x, y = 1| if(x > 0) { 1 } { 0 } * y }; // some function
 // generate the body of a function that has a free and yet undefined variable "func"
-// -> "{ arg x, y = 1; ([x, y]).flop.collect { |x| func.valueArray(x) } }"
+// -> "{ |x, y = 1| ([x, y]).flop.collect { |x| func.valueArray(x) } }"
 a = f.def.makeFuncModifierString({ |str| str ++ ".flop.collect { |x| func.valueArray(x) }" });
 // wrap that body into a function that takes "func" as argument and returns the function above
 // now we have a valid code for a function:
-// -> "{ |func| { arg x, y = 1; [x, y].flop.collect { |x| func.valueArray(x) } } }"
+// -> "{ |func| { |x, y = 1| [x, y].flop.collect { |x| func.valueArray(x) } } }"
 b = "{ |func| % }".format(a);
 // interpret the code to a function
 g = b.interpret;
@@ -145,7 +145,7 @@ h = g.value(f);
 f.([1, 0], [6, 7]); // does not work
 h.([1, 0], [6, 7]); // [6, 0]
 // and the new function supports the same keywords arguments:
-h.(x:(-2..2), y:(-2..2));
+h.(x: (-2..2), y: (-2..2));
 
 // this functionality is implemented for function in the method "flop"
 h = f.flop;

@@ -11,7 +11,7 @@ method::new
 argument::clock
 A clock, like SystemClock.
 argument::drift
-If code::true::, link::#-sched:: will schedule tasks relative to the current absolute time ( link::Classes/Process#*elapsedTime#Main.elapsedTime:: ), otherwise to the current logical time of the scheduler ( link::#-seconds:: ).
+If code::true::, link::#-sched:: will schedule tasks relative to the current absolute time (link::Classes/Process#*elapsedTime#Main.elapsedTime::), otherwise to the current logical time of the scheduler (link::#-seconds::).
 argument::recursive
 Sets link::#-recursive::.
 
@@ -63,7 +63,7 @@ a.advance(2);
 a.advance(2);
 
 // the beats, seconds and clock are passed into the task function:
-a.sched(1, { arg beats, secs, clock; [beats, secs, clock].postln });
+a.sched(1, { |beats, secs, clock| [beats, secs, clock].postln });
 a.advance(1);
 
 // the scheduling is relative to "now":
@@ -77,7 +77,7 @@ a.advance(2);
 a.advance(2);
 
 // play a Routine or a task:
-a.play(Routine { 5.do { arg i; i.postln; 1.yield } });
+a.play(Routine { 5.do { |i| i.postln; 1.yield } });
 a.advance(0.9);
 ::
 
