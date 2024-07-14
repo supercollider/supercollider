@@ -191,7 +191,7 @@ function fixTOC() {
         var indexes_menu = $("<div>", {class: "submenu"}).hide()
             .appendTo(li);
 
-        var nav_items = ["Documents", "Classes", "ClassTree", "Methods"];
+        var nav_items = ["Documents", "Classes", "Methods"];
         nav_items.forEach(function (item) {
             $("<a>", {
                 text: item,
