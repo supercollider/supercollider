@@ -49,9 +49,12 @@ List : SequenceableCollection {
 	addFirst { arg item; array = array.addFirst(item); }
 	insert { arg index, item; array = array.insert(index, item); }
 	clipInsert { arg index, item;
-		var lastIndex = this.size - 1;
+		var lastIndex = array.size - 1;
 		index = if(index > lastIndex) { lastIndex } { index };
-		array = array.insert(index, item)[0..lastIndex] }
+		this.insert(index, item);
+		array.removeAt(lastIndex + 1);
+		array
+	}
 	removeAt { arg index; ^array.removeAt(index); }
 	pop { ^array.pop }
 	first { if (this.size > 0, { ^array.at(0) }, { ^nil }) }
