@@ -247,6 +247,30 @@ y.postln;
 )
 ::
 
+method::clipInsert
+Inserts the item into the contents of the receiver, maintaining the size of the receiver. This method may return a new ArrayedCollection. For this reason, you should always assign the result of code::insert:: to a variable - never depend on add changing the receiver.
+code::
+~array = [10, 20, 30]
+~array_modified = ~array.clipInsert(0, 1)
+~array
+~array_modified
+
+~array = [10, 20, 30]
+~array_modified = ~array.clipInsert(1, 1)
+~array
+~array_modified
+
+~array = [10, 20, 30]
+~array_modified = ~array.clipInsert(2, 1)
+~array
+~array_modified
+
+~array = [10, 20, 30]
+~array_modified = ~array.clipInsert(3, 1)
+~array
+~array_modified
+::
+
 method::move
 Moves an item from one position to another.
 

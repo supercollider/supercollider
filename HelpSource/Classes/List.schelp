@@ -100,6 +100,31 @@ Inserts the strong::item:: at the beginning of the List.
 
 method::insert
 Inserts the strong::item:: into the contents of the List at the indicated strong::index::.
+code::
+~list = List[10, 20, 30, 40]
+~list.insert(0, 1)
+~list
+::
+
+method::clipInsert
+Inserts the strong::item:: into the contents of the List at the indicated strong::index::, maintaining the size of the List.
+code::
+~list = List[10, 20, 30, 40]
+~list.clipInsert(0, 1)
+~list
+
+~list = List[10, 20, 30, 40]
+~list.clipInsert(2, 1)
+~list
+
+~list = List[10, 20, 30, 40]
+~list.clipInsert(3, 1)
+~list
+
+~list = List[10, 20, 30, 40]
+~list.clipInsert(10, 1)
+~list
+::
 
 method::pop
 Remove and return the last element of the List.
