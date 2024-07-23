@@ -106,23 +106,23 @@ code::
 ~list
 ::
 
-method::clipInsert
-Inserts the strong::item:: into the contents of the List at the indicated strong::index::, maintaining the size of the List.
+method::clipInsertKeepSize
+Inserts the strong::item:: into the contents of the List at the indicated strong::index::, maintaining the size of the List. Also values for index greater than the size of the ArrayedCollection will be clipped to the last index.
 code::
 ~list = List[10, 20, 30, 40]
-~list.clipInsert(0, 1)
+~list.clipInsertKeepSize(0, 1)
 ~list
 
 ~list = List[10, 20, 30, 40]
-~list.clipInsert(2, 1)
+~list.clipInsertKeepSize(2, 1)
 ~list
 
 ~list = List[10, 20, 30, 40]
-~list.clipInsert(3, 1)
+~list.clipInsertKeepSize(3, 1)
 ~list
 
 ~list = List[10, 20, 30, 40]
-~list.clipInsert(10, 1)
+~list.clipInsertKeepSize(10, 1)
 ~list
 ::
 
