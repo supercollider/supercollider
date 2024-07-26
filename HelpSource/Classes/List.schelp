@@ -116,10 +116,6 @@ code::
 ~list = List[10, 20, 30, 40]
 ~list.insertKeepSize(3, 1)
 ~list
-
-~list = List[10, 20, 30, 40]
-~list.insertKeepSize(10, 1)
-~list
 ::
 
 method::clipInsertKeepSize

@@ -259,11 +259,6 @@ code::
 ~array_modified = ~array.insertKeepSize(2, 1)
 ~array
 ~array_modified
-
-~array = [10, 20, 30]
-~array_modified = ~array.insertKeepSize(3, 1)
-~array
-~array_modified
 ::
 
 method::clipInsertKeepSize
