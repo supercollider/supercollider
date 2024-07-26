@@ -81,6 +81,8 @@ copymethod:: ArrayedCollection -put
 
 copymethod:: ArrayedCollection -insert
 
+copymethod:: ArrayedCollection -insertKeepSize
+
 copymethod:: ArrayedCollection -clipInsertKeepSize
 
 copymethod:: ArrayedCollection -clipAt

@@ -247,16 +247,30 @@ y.postln;
 )
 ::
 
-method::clipInsertKeepSize
-Same as link::#-insert::, but values for index greater than the size of the ArrayedCollection will be clipped to the last index, and it maintains the size of the receiver.
+method::insertKeepSize
+Same as link::#-insert::, but it maintains the size of the receiver.
 code::
 ~array = [10, 20, 30]
-~array_modified = ~array.clipInsertKeepSize(0, 1)
+~array_modified = ~array.insertKeepSize(0, 1)
 ~array
 ~array_modified
 
 ~array = [10, 20, 30]
-~array_modified = ~array.clipInsertKeepSize(1, 1)
+~array_modified = ~array.insertKeepSize(2, 1)
+~array
+~array_modified
+
+~array = [10, 20, 30]
+~array_modified = ~array.insertKeepSize(3, 1)
+~array
+~array_modified
+::
+
+method::clipInsertKeepSize
+Same as link::#-insertKeepSize::, but values for index greater than the size of the ArrayedCollection will be clipped to the last index.
+code::
+~array = [10, 20, 30]
+~array_modified = ~array.clipInsertKeepSize(0, 1)
 ~array
 ~array_modified
 

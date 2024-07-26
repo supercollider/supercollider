@@ -183,6 +183,10 @@ ArrayedCollection : SequenceableCollection {
 		_ArrayInsert
 		^this.primitiveFailed;
 	}
+	insertKeepSize { arg index, item;
+		var lastIndex = this.size - 1;
+		^this.insert(index, item)[0..lastIndex]
+	}
 	clipInsertKeepSize { arg index, item;
 		var lastIndex = this.size - 1;
 		index = if(index > lastIndex) { lastIndex } { index };
