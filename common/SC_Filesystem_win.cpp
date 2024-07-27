@@ -135,7 +135,7 @@ Path SC_Filesystem::defaultUserHomeDirectory() {
 Path SC_Filesystem::defaultUserAppSupportDirectory() {
     PWSTR wptr = nullptr;
     const HRESULT hr = SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, nullptr, &wptr);
-    return FAILED(hr) ? Path() : Path(wptr) / SC_FOLDERNAME_APPLICATION_NAME;
+    return FAILED(hr) ? Path() : Path(wptr) / SC_FOLDERNAME_APPLICATION_NAME / SC_VersionString() / SC_BuildString();
 }
 
 Path SC_Filesystem::defaultUserConfigDirectory() { return defaultUserAppSupportDirectory(); }

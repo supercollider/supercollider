@@ -168,11 +168,11 @@ Path SC_Filesystem::defaultUserAppSupportDirectory() {
     // see http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
     const char* home = getenv("XDG_DATA_HOME");
     if (home)
-        return Path(home) / SC_FOLDERNAME_APPLICATION_NAME;
+        return Path(home) / SC_FOLDERNAME_APPLICATION_NAME / SC_VersionString() / SC_BuildString();
 
     const Path& p = defaultUserHomeDirectory();
     // "/Users/[username]/Library/Application Support/[SuperCollider]"
-    return p.empty() ? p : p / LIBRARY_DIR_NAME / APPLICATION_SUPPORT_DIR_NAME / getBundleName();
+    return p.empty() ? p : p / LIBRARY_DIR_NAME / APPLICATION_SUPPORT_DIR_NAME / getBundleName() / SC_VersionString() / SC_BuildString();
 }
 
 Path SC_Filesystem::defaultUserConfigDirectory() {

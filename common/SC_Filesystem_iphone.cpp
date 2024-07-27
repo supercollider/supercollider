@@ -102,7 +102,7 @@ Path SC_Filesystem::defaultUserHomeDirectory() {
 Path SC_Filesystem::defaultUserAppSupportDirectory() {
     // Note: I have not added XDG support here because that seems highly unlikely on iPhone. -BH
     const Path& p = defaultUserHomeDirectory();
-    return p.empty() ? p : p / DOCUMENTS_DIR_NAME;
+    return p.empty() ? p : p / DOCUMENTS_DIR_NAME / SC_VersionString() / SC_BuildString();
 }
 
 Path SC_Filesystem::defaultUserConfigDirectory() {

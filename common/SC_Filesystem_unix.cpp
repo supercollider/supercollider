@@ -109,10 +109,10 @@ Path SC_Filesystem::defaultUserHomeDirectory() {
 Path SC_Filesystem::defaultUserAppSupportDirectory() {
     const char* xdg_data_home = getenv("XDG_DATA_HOME");
     if (xdg_data_home)
-        return Path(xdg_data_home) / SC_FOLDERNAME_APPLICATION_NAME;
+        return Path(xdg_data_home) / SC_FOLDERNAME_APPLICATION_NAME / SC_VersionString() / SC_BuildString();
 
     const Path& p = defaultUserHomeDirectory();
-    return p.empty() ? p : p / DOT_LOCAL / SHARE_DIR_NAME / SC_FOLDERNAME_APPLICATION_NAME;
+    return p.empty() ? p : p / DOT_LOCAL / SHARE_DIR_NAME / SC_FOLDERNAME_APPLICATION_NAME / SC_VersionString() / SC_BuildString();
 }
 
 Path SC_Filesystem::defaultUserConfigDirectory() {
