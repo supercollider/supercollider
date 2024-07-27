@@ -172,9 +172,9 @@ You will likely see (the grandpa referred to earlier):
 
     C:\Users\<USERNAME>\AppData
 
-The userAppSupportDir is in the subfolder `Local\SuperCollider`:
+The userAppSupportDir is in the subfolder `Local\SuperCollider\<version>\<build>`:
 
-    C:\Users\<USERNAME>\AppData\Local\SuperCollider
+    C:\Users\<USERNAME>\AppData\Local\SuperCollider\<version>\<build>
 
 This folder is user writable and *not* deleted by uninstalling. Therefore your
 settings, quarks, and plugins persist through updates. This is usually good,
