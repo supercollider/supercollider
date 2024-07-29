@@ -27,6 +27,7 @@ UGenResourceManagerSimple : UGenResourceManager {
 
 UGenResourceManagerWithNonCausalModes : UGenResourceManager {
 	var previousStateDependentUGens;
+	var previousLastGroup;
 	var currentMode;
 	var all;
 
@@ -34,7 +35,7 @@ UGenResourceManagerWithNonCausalModes : UGenResourceManager {
 	var nameOfModeGetter;
 
 	*new { |nonCausalModes, nameOfModeGetter|
-		^super.newCopyArgs(nil, \initial, Set.new, nonCausalModes.asArray, nameOfModeGetter.asSymbol)
+		^super.newCopyArgs(nil, nil, \initial, Set.new, nonCausalModes.asArray, nameOfModeGetter.asSymbol)
 	}
 
 	add { |ugen|
@@ -53,6 +54,7 @@ UGenResourceManagerWithNonCausalModes : UGenResourceManager {
 
 		nonCausalModes.do({ |m|
 			if(currentMode == m and: {ugen.perform(nameOfModeGetter) == m}){
+				previousLastGroup.do( _.createWeakConnectionTo(ugen) );
 				^previousStateDependentUGens = previousStateDependentUGens.add(ugen); // no edge needed here.
 			}
 		});
@@ -60,6 +62,9 @@ UGenResourceManagerWithNonCausalModes : UGenResourceManager {
 		// add connections for everything else.
 		previousStateDependentUGens.do( _.createWeakConnectionTo(ugen) );
 		previousStateDependentUGens.do {|p| all.add(p) };
+
+		previousLastGroup = previousStateDependentUGens;
+
 		previousStateDependentUGens = [ugen];
 		currentMode = ugen.perform(nameOfModeGetter);
 	}
