@@ -1,11 +1,11 @@
 /*
-	Osc - oscillator
-	arguments :
-		bufnum - an index to a buffer
-		freq - frequency in cycles per second
-		pm - phase modulation
-		mul - multiply by signal or scalar
-		add - add to signal or scalar
+Osc - oscillator
+arguments :
+bufnum - an index to a buffer
+freq - frequency in cycles per second
+pm - phase modulation
+mul - multiply by signal or scalar
+add - add to signal or scalar
 */
 
 Osc : PureUGen {
@@ -104,16 +104,40 @@ LFSaw : PureUGen {
 	}
 }
 
-LFPar : LFSaw {
+LFPar : PureUGen {
+	*ar {
+		arg freq = 440.0, iphase = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('audio', freq, iphase).madd(mul, add)
+	}
+	*kr {
+		arg freq = 440.0, iphase = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('control', freq, iphase).madd(mul, add)
+	}
 }
 
-LFCub : LFSaw {
+LFCub : PureUGen {
+	*ar {
+		arg freq = 440.0, iphase = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('audio', freq, iphase).madd(mul, add)
+	}
+	*kr {
+		arg freq = 440.0, iphase = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('control', freq, iphase).madd(mul, add)
+	}
 }
 
-LFTri : LFSaw {
+LFTri : PureUGen {
+	*ar {
+		arg freq = 440.0, iphase = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('audio', freq, iphase).madd(mul, add)
+	}
+	*kr {
+		arg freq = 440.0, iphase = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('control', freq, iphase).madd(mul, add)
+	}
 }
 
-LFGauss : UGen {
+LFGauss : PureUGen {
 	*ar {
 		arg duration = 1, width = 0.1, iphase = 0.0, loop = 1, doneAction = 0;
 		^this.multiNew('audio', duration, width, iphase, loop, doneAction)
@@ -179,20 +203,11 @@ SyncSaw : PureUGen {
 	}
 }
 
-//
-//TPulse : UGen {//exception in GrafDef_Load: UGen 'TPulse' not installed.
-//	*ar {
-//		arg trig = 0.0, freq = 440.0, width = 0.5, mul = 1.0, add = 0.0;
-//		^this.multiNew('audio', trig, freq, width).madd(mul, add)
-//	}
-//	*kr {
-//		arg trig = 0.0, freq = 440.0, width = 0.5, mul = 1.0, add = 0.0;
-//		^this.multiNew('control', trig, freq, width).madd(mul, add)
-//	}
-//	signalRange { ^\unipolar }
-//}
 
-Index : PureUGen {
+Index : UGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\read }
+
 	*ar {
 		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', bufnum, in).madd(mul, add)
@@ -203,25 +218,94 @@ Index : PureUGen {
 	}
 }
 
-FoldIndex : Index {
+FoldIndex : UGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\read }
+
+	*ar {
+		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('audio', bufnum, in).madd(mul, add)
+	}
+	*kr {
+		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('control', bufnum, in).madd(mul, add)
+	}
 }
 
-WrapIndex : Index {
+WrapIndex : UGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\read }
+
+	*ar {
+		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('audio', bufnum, in).madd(mul, add)
+	}
+	*kr {
+		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('control', bufnum, in).madd(mul, add)
+	}
 }
 
-IndexInBetween : Index {
+IndexInBetween : UGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\read }
+
+	*ar {
+		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('audio', bufnum, in).madd(mul, add)
+	}
+	*kr {
+		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('control', bufnum, in).madd(mul, add)
+	}
 }
 
-DetectIndex : Index {
+DetectIndex : UGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\read }
+
+	*ar {
+		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('audio', bufnum, in).madd(mul, add)
+	}
+	*kr {
+		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('control', bufnum, in).madd(mul, add)
+	}
 }
 
-Shaper : Index {
+Shaper : UGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\read }
+
+	*ar {
+		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('audio', bufnum, in).madd(mul, add)
+	}
+	*kr {
+		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('control', bufnum, in).madd(mul, add)
+	}
 }
 
-IndexL : Index {
+IndexL : UGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\read }
+
+	*ar {
+		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('audio', bufnum, in).madd(mul, add)
+	}
+	*kr {
+		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('control', bufnum, in).madd(mul, add)
+	}
 }
 
-DegreeToKey : PureUGen {
+DegreeToKey : UGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\read }
+
 	*ar {
 		arg bufnum, in = 0.0, octave = 12.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', bufnum, in, octave).madd(mul, add)
@@ -303,12 +387,12 @@ SelectXFocus {
 Vibrato : PureUGen {
 	*ar {
 		arg freq = 440.0, rate = 6, depth = 0.02, delay = 0.0, onset = 0.0,
-				rateVariation = 0.04, depthVariation = 0.1, iphase = 0.0, trig = 0.0;
+		rateVariation = 0.04, depthVariation = 0.1, iphase = 0.0, trig = 0.0;
 		^this.multiNew('audio', freq, rate, depth, delay, onset, rateVariation, depthVariation, iphase, trig)
 	}
 	*kr {
 		arg freq = 440.0, rate = 6, depth = 0.02, delay = 0.0, onset = 0.0,
-				rateVariation = 0.04, depthVariation = 0.1, iphase = 0.0, trig = 0.0;
+		rateVariation = 0.04, depthVariation = 0.1, iphase = 0.0, trig = 0.0;
 		^this.multiNew('control', freq, rate, depth, delay, onset, rateVariation, depthVariation, iphase, trig)
 	}
 }

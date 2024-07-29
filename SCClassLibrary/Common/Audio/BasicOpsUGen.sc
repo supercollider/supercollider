@@ -3,15 +3,8 @@
 BasicOpUGen : UGen {
 	var <operator;
 
-//	writeName { arg file;
-//		var name, opname;
-//		name = this.class.name.asString;
-//		opname = operator.asString;
-//		file.putInt8(name.size + opname.size + 1);
-//		file.putString(name);
-//		file.putInt8(0);
-//		file.putString(opname);
-//	}
+	resourceManagers { ^[] }
+
 	operator_ { arg op;
 		operator = op;
 		specialIndex = operator.specialIndex;
@@ -40,7 +33,6 @@ BasicOpUGen : UGen {
 }
 
 UnaryOpUGen : BasicOpUGen {
-
 	*new { arg selector, a;
 		^this.multiNew('audio', selector, a)
 	}
@@ -49,10 +41,6 @@ UnaryOpUGen : BasicOpUGen {
 		this.operator = theOperator;
 		rate = theInput.rate;
 		inputs = theInput.asArray;
-	}
-
-	optimizeGraph {
-		super.performDeadCodeElimination
 	}
 }
 
@@ -104,9 +92,6 @@ BinaryOpUGen : BasicOpUGen {
 	}
 
 	optimizeGraph {
-		//this.constantFolding;
-
-
 		if (super.performDeadCodeElimination) {
 			^this
 		};
@@ -409,7 +394,8 @@ BinaryOpUGen : BasicOpUGen {
 	}
 }
 
-MulAdd : UGen {
+MulAdd : PureUGen {
+	resourceManagers { ^[] }
 	*new { arg in, mul = 1.0, add = 0.0;
 		var args =  [in, mul, add].asUGenInput(this);
 		var rate = args.rate;
@@ -455,7 +441,8 @@ MulAdd : UGen {
 	}
 }
 
-Sum3 : UGen {
+Sum3 : PureUGen {
+	resourceManagers { ^[] }
 	*new { arg in0, in1, in2;
 		^this.multiNew(nil, in0, in1, in2)
 	}
@@ -474,7 +461,7 @@ Sum3 : UGen {
 	}
 }
 
-Sum4 : UGen {
+Sum4 : PureUGen {
 	*new { arg in0, in1, in2, in3;
 		^this.multiNew(nil, in0, in1, in2, in3)
 	}

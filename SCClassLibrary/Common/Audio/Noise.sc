@@ -1,22 +1,26 @@
 /*
-	Noise Generators
+Noise Generators
 
-	WhiteNoise.ar(mul, add)
-	BrownNoise.ar(mul, add)
-	PinkNoise.ar(mul, add)
-	Crackle.ar(chaosParam, mul, add)
-	LFNoise0.ar(freq, mul, add)
-	LFNoise1.ar(freq, mul, add)
-	LFNoise2.ar(freq, mul, add)
-	Dust.ar(density, mul, add)
-	Dust2.ar(density, mul, add)
+WhiteNoise.ar(mul, add)
+BrownNoise.ar(mul, add)
+PinkNoise.ar(mul, add)
+Crackle.ar(chaosParam, mul, add)
+LFNoise0.ar(freq, mul, add)
+LFNoise1.ar(freq, mul, add)
+LFNoise2.ar(freq, mul, add)
+Dust.ar(density, mul, add)
+Dust2.ar(density, mul, add)
 
-	White, Brown, Pink generators have no modulatable parameters
-	other than multiply and add inputs.
+White, Brown, Pink generators have no modulatable parameters
+other than multiply and add inputs.
 
 */
 
-RandSeed : WidthFirstUGen {
+
+RandSeed : UGen {
+	resourceManagers { ^[UGenRandomResourceManager] }
+	randomAccessType { ^\seed }
+
 	*ar { arg trig = 0.0, seed=56789;
 		this.multiNew('audio', trig, seed)
 		^0.0		// RandSeed has no output
@@ -31,7 +35,10 @@ RandSeed : WidthFirstUGen {
 	}
 }
 
-RandID : WidthFirstUGen {
+RandID : UGen {
+	resourceManagers { ^[UGenRandomResourceManager] }
+	randomAccessType { ^\seed }
+
 	// choose which random number generator to use for this synth .
 	*kr { arg id=0;
 		this.multiNew('control', id)
@@ -45,6 +52,9 @@ RandID : WidthFirstUGen {
 
 
 Rand : UGen {
+	resourceManagers { ^[UGenRandomResourceManager] }
+	randomAccessType { ^\gen }
+
 	// uniform distribution
 	*new { arg lo = 0.0, hi = 1.0;
 		^this.multiNew('scalar', lo, hi)
@@ -52,6 +62,9 @@ Rand : UGen {
 }
 
 IRand : UGen {
+	resourceManagers { ^[UGenRandomResourceManager] }
+	randomAccessType { ^\gen }
+
 	// uniform distribution of integers
 	*new { arg lo = 0, hi = 127;
 		^this.multiNew('scalar', lo, hi)
@@ -60,6 +73,9 @@ IRand : UGen {
 
 
 TRand : UGen {
+	resourceManagers { ^[UGenRandomResourceManager] }
+	randomAccessType { ^\gen }
+
 	// uniform distribution
 	*ar { arg lo = 0.0, hi = 1.0, trig = 0.0;
 		^this.multiNew('audio', lo, hi, trig)
@@ -70,6 +86,9 @@ TRand : UGen {
 }
 
 TIRand : UGen {
+	resourceManagers { ^[UGenRandomResourceManager] }
+	randomAccessType { ^\gen }
+
 	// uniform distribution of integers
 	*kr { arg lo = 0, hi = 127, trig = 0.0;
 		^this.multiNew('control', lo, hi, trig)
@@ -79,6 +98,9 @@ TIRand : UGen {
 
 
 LinRand : UGen {
+	resourceManagers { ^[UGenRandomResourceManager] }
+	randomAccessType { ^\gen }
+
 	// linear distribution
 	// if minmax <= 0 then skewed towards lo.
 	// else skewed towards hi.
@@ -88,6 +110,9 @@ LinRand : UGen {
 }
 
 NRand : UGen {
+	resourceManagers { ^[UGenRandomResourceManager] }
+	randomAccessType { ^\gen }
+
 	// sum of N uniform distributions.
 	// n = 1 : uniform distribution - same as Rand
 	// n = 2 : triangular distribution
@@ -99,6 +124,9 @@ NRand : UGen {
 }
 
 ExpRand : UGen {
+	resourceManagers { ^[UGenRandomResourceManager] }
+	randomAccessType { ^\gen }
+
 	// exponential distribution
 	*new { arg lo = 0.01, hi = 1.0;
 		^this.multiNew('scalar', lo, hi)
@@ -106,6 +134,9 @@ ExpRand : UGen {
 }
 
 TExpRand : UGen {
+	resourceManagers { ^[UGenRandomResourceManager] }
+	randomAccessType { ^\gen }
+
 	// uniform distribution
 	*ar { arg lo = 0.01, hi = 1.0, trig = 0.0;
 		^this.multiNew('audio', lo, hi, trig)
@@ -117,6 +148,9 @@ TExpRand : UGen {
 
 
 CoinGate : UGen {
+	resourceManagers { ^[UGenRandomResourceManager] }
+	randomAccessType { ^\gen }
+
 	*ar { arg prob, in;
 		^this.multiNew('audio', prob, in)
 	}
@@ -126,6 +160,9 @@ CoinGate : UGen {
 }
 
 TWindex : UGen {
+	resourceManagers { ^[UGenRandomResourceManager] }
+	randomAccessType { ^\gen }
+
 	*ar {
 		arg in, array, normalize=0;
 		^this.multiNewList(['audio', in, normalize] ++ array)
@@ -137,6 +174,8 @@ TWindex : UGen {
 }
 
 WhiteNoise : UGen {
+	resourceManagers { ^[UGenRandomResourceManager] }
+	randomAccessType { ^\gen }
 
 	*ar { arg mul = 1.0, add = 0.0;
 		// support this idiom from SC2.
@@ -153,26 +192,95 @@ WhiteNoise : UGen {
 			^this.multiNew('control').madd(mul, add)
 		});
 	}
-
 }
 
-BrownNoise : WhiteNoise {
+BrownNoise : UGen {
+	resourceManagers { ^[UGenRandomResourceManager] }
+	randomAccessType { ^\gen }
+
+	*ar { arg mul = 1.0, add = 0.0;
+		// support this idiom from SC2.
+		if (mul.isArray, {
+			^{ this.multiNew('audio') }.dup(mul.size).madd(mul, add)
+		},{
+			^this.multiNew('audio').madd(mul, add)
+		});
+	}
+	*kr { arg mul = 1.0, add = 0.0;
+		if (mul.isArray, {
+			^{ this.multiNew('control') }.dup(mul.size).madd(mul, add)
+		},{
+			^this.multiNew('control').madd(mul, add)
+		});
+	}
 }
 
-PinkNoise : WhiteNoise {
+PinkNoise : UGen {
+	resourceManagers { ^[UGenRandomResourceManager] }
+	randomAccessType { ^\gen }
+
+	*ar { arg mul = 1.0, add = 0.0;
+		// support this idiom from SC2.
+		if (mul.isArray, {
+			^{ this.multiNew('audio') }.dup(mul.size).madd(mul, add)
+		},{
+			^this.multiNew('audio').madd(mul, add)
+		});
+	}
+	*kr { arg mul = 1.0, add = 0.0;
+		if (mul.isArray, {
+			^{ this.multiNew('control') }.dup(mul.size).madd(mul, add)
+		},{
+			^this.multiNew('control').madd(mul, add)
+		});
+	}
 }
 
-ClipNoise : WhiteNoise {
+ClipNoise : UGen {
+	resourceManagers { ^[UGenRandomResourceManager] }
+	randomAccessType { ^\gen }
+
+	*ar { arg mul = 1.0, add = 0.0;
+		// support this idiom from SC2.
+		if (mul.isArray, {
+			^{ this.multiNew('audio') }.dup(mul.size).madd(mul, add)
+		},{
+			^this.multiNew('audio').madd(mul, add)
+		});
+	}
+	*kr { arg mul = 1.0, add = 0.0;
+		if (mul.isArray, {
+			^{ this.multiNew('control') }.dup(mul.size).madd(mul, add)
+		},{
+			^this.multiNew('control').madd(mul, add)
+		});
+	}
 }
 
-GrayNoise : WhiteNoise {
+GrayNoise : UGen {
+	resourceManagers { ^[UGenRandomResourceManager] }
+	randomAccessType { ^\gen }
+
+	*ar { arg mul = 1.0, add = 0.0;
+		// support this idiom from SC2.
+		if (mul.isArray, {
+			^{ this.multiNew('audio') }.dup(mul.size).madd(mul, add)
+		},{
+			^this.multiNew('audio').madd(mul, add)
+		});
+	}
+	*kr { arg mul = 1.0, add = 0.0;
+		if (mul.isArray, {
+			^{ this.multiNew('control') }.dup(mul.size).madd(mul, add)
+		},{
+			^this.multiNew('control').madd(mul, add)
+		});
+	}
 }
-
-
-//NoahNoise : WhiteNoise {
-//}
 
 Crackle : UGen {
+	resourceManagers { ^[UGenRandomResourceManager] }
+	randomAccessType { ^\gen }
 
 	*ar { arg chaosParam=1.5, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', chaosParam).madd(mul, add)
@@ -183,6 +291,8 @@ Crackle : UGen {
 }
 
 Logistic : UGen {
+	resourceManagers { ^[UGenRandomResourceManager] }
+	randomAccessType { ^\gen }
 
 	*ar { arg chaosParam=3.0, freq = 1000.0, init= 0.5, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', chaosParam, freq, init).madd(mul, add)
@@ -191,19 +301,10 @@ Logistic : UGen {
 		^this.multiNew('control', chaosParam, freq, init).madd(mul, add)
 	}
 }
-/* not installed
-Rossler : UGen {
-
-	*ar { arg chaosParam=1.5, dt = 0.04, mul = 1.0, add = 0.0;
-		^this.multiNew('audio', chaosParam, dt).madd(mul, add)
-	}
-	*kr { arg chaosParam=1.5, dt = 0.04, mul = 1.0, add = 0.0;
-		^this.multiNew('control', chaosParam, dt).madd(mul, add)
-	}
-}
-*/
 
 LFNoise0 : UGen {
+	resourceManagers { ^[UGenRandomResourceManager] }
+	randomAccessType { ^\gen }
 
 	*ar { arg freq=500.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', freq).madd(mul, add)
@@ -213,28 +314,18 @@ LFNoise0 : UGen {
 	}
 }
 
-LFNoise1 : LFNoise0 {
-}
-
-LFNoise2 : LFNoise0 {
-}
-
-LFClipNoise : LFNoise0 {
-}
-
-LFDNoise0 : LFNoise0 {
-}
-
-LFDNoise1 : LFNoise0 {
-}
-
-LFDNoise3 : LFNoise0 {
-}
-
-LFDClipNoise : LFNoise0 {
-}
+LFNoise1 : LFNoise0 { }
+LFNoise2 : LFNoise0 { }
+LFClipNoise : LFNoise0 { }
+LFDNoise0 : LFNoise0 { }
+LFDNoise1 : LFNoise0 { }
+LFDNoise3 : LFNoise0 { }
+LFDClipNoise : LFNoise0 { }
 
 Hasher : UGen {
+	resourceManagers { ^[UGenRandomResourceManager] }
+	randomAccessType { ^\gen }
+
 	*ar { arg in = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in).madd(mul, add)
 	}
@@ -242,12 +333,15 @@ Hasher : UGen {
 		^this.multiNew('control', in).madd(mul, add)
 	}
 	checkInputs {
-    if(rate == \audio) { ^this.checkSameRateAsFirstInput; };
-    ^this.checkValidInputs;
+		if(rate == \audio) { ^this.checkSameRateAsFirstInput; };
+		^this.checkValidInputs;
 	}
 }
 
 MantissaMask : UGen {
+	resourceManagers { ^[UGenRandomResourceManager] }
+	randomAccessType { ^\gen }
+
 	*ar { arg in = 0.0, bits=3, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in, bits).madd(mul, add)
 	}
@@ -257,6 +351,8 @@ MantissaMask : UGen {
 }
 
 Dust : UGen {
+	resourceManagers { ^[UGenRandomResourceManager] }
+	randomAccessType { ^\gen }
 
 	*ar { arg density = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', density).madd(mul, add)
@@ -269,6 +365,9 @@ Dust : UGen {
 }
 
 Dust2 : UGen {
+	resourceManagers { ^[UGenRandomResourceManager] }
+	randomAccessType { ^\gen }
+
 	*ar { arg density = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', density).madd(mul, add)
 	}

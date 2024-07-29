@@ -15,8 +15,7 @@ represent the interpolation method used between function iterations.
 
 */
 
-ChaosGen : UGen {
-}
+ChaosGen : PureUGen { }
 
 // General Quadratic Map
 QuadN : ChaosGen {

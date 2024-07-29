@@ -1,13 +1,15 @@
 /*
- * BELAUGens to access the analog and digital I/O
- *  created by nescivi, (c) 2016
- *  https://www.nescivi.eu
- */
+* BELAUGens to access the analog and digital I/O
+*  created by nescivi, (c) 2016
+*  https://www.nescivi.eu
+*/
 
 /* input: id of analog pin to read; can be modulated at audiorate
- * output: value of analog analogPin
- */
+* output: value of analog analogPin
+*/
 MultiplexAnalogIn : UGen {
+	resourceManagers { ^[UGenAnalogResourceManager] }
+	analogAccessType { ^\read }
 	signalRange { ^\unipolar }
 
 	*ar { arg analogPin = 0, muxChannel = 0, mul = 1.0, add = 0.0;
@@ -20,9 +22,11 @@ MultiplexAnalogIn : UGen {
 
 
 /* input: id of analog pin to read; can be modulated at audiorate
- * output: value of analog analogPin
- */
+* output: value of analog analogPin
+*/
 AnalogIn : UGen {
+	resourceManagers { ^[UGenAnalogResourceManager] }
+	analogAccessType { ^\read }
 	signalRange { ^\unipolar }
 
 	*ar { arg analogPin = 0, mul = 1.0, add = 0.0;
@@ -34,10 +38,13 @@ AnalogIn : UGen {
 }
 
 /* input 1: id of analog pin to read; can be modulated at audiorate
- * input 2: value to write out
- * output: none
- */
+* input 2: value to write out
+* output: none
+*/
 AnalogOut : UGen {
+	resourceManagers { ^[UGenAnalogResourceManager] }
+	analogAccessType { ^\write }
+
 	*ar { arg analogPin = 0, output = 0, mul = 1.0, add = 0.0;
 		this.multiNew('audio', analogPin, output).madd(mul,add);
 		^0.0;
@@ -51,9 +58,11 @@ AnalogOut : UGen {
 }
 
 /* input: id of digital pin to read; cannot be modulated
- * output: value of digital pin
- */
+* output: value of digital pin
+*/
 DigitalIn : UGen {
+	resourceManagers { ^[UGenAnalogResourceManager] }
+	analogAccessType { ^\read }
 	signalRange { ^\unipolar }
 
 	*ar { arg digitalPin = 0, mul = 1.0, add = 0.0;
@@ -65,10 +74,13 @@ DigitalIn : UGen {
 }
 
 /* input 1: id of digital pin to read; cannot be modulated
- * input 2: value to write out
- * output: none
- */
+* input 2: value to write out
+* output: none
+*/
 DigitalOut : UGen {
+	resourceManagers { ^[UGenAnalogResourceManager] }
+	analogAccessType { ^\write }
+
 	*ar { arg digitalPin = 0, output = 0, mul = 1.0, add = 0.0;
 		this.multiNew('audio', digitalPin, output).madd(mul,add);
 		^0.0;
@@ -82,11 +94,13 @@ DigitalOut : UGen {
 }
 
 /* input 1: id of digital pin to read; cannot be modulated
- * input 2: value to write out
- * input 3: pin mode ( < 0.5 = input, otherwise output)
- * output: value of digital pin (last read value)
- */
+* input 2: value to write out
+* input 3: pin mode ( < 0.5 = input, otherwise output)
+* output: value of digital pin (last read value)
+*/
 DigitalIO : UGen {
+	resourceManagers { ^[UGenAnalogResourceManager] }
+	analogAccessType { ^\readAndWrite }
 	signalRange { ^\unipolar }
 
 	*ar { arg digitalPin = 0, output = 0, pinMode = 0, mul = 1.0, add = 0.0;
@@ -98,9 +112,11 @@ DigitalIO : UGen {
 }
 
 /* input 1: channel offset
- * input 2: array of signals to scope
- */
+* input 2: array of signals to scope
+*/
 BelaScopeOut : AbstractOut {
+	// TODO: is the default resourceManager (bus/write) of AbstractOut correct here? Do the outputs sum together, or replace?
+
 	*ar {
 		arg offset = 0, channelsArray;
 		channelsArray = this.replaceZeroesWithSilence(channelsArray.asUGenInput(this).asArray);

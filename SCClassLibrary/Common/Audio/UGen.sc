@@ -6,15 +6,27 @@ UGen : AbstractFunction {
 
 	var <>synthIndex = -1, <>specialIndex=0;
 
-	var <>antecedents, <>descendants, <>widthFirstAntecedents; // topo sorting
+	var <>antecedents, <>descendants, <>weakAntecedents, <>weakDescendants, <>widthFirstAntecedents; // topo sorting
 
 	// instance creation
 	*new1 { arg rate ... args;
 		if (rate.isKindOf(Symbol).not) { Error("rate must be Symbol.").throw };
-		^super.new.rate_(rate).addToSynth.init( *args )
+		^super.new
+		.rate_(rate)
+		.antecedents_(Set())
+		.descendants_(Set())
+		.weakAntecedents_(Set())
+		.weakDescendants_(Set())
+		.addToSynth
+		.init( *args )
 	}
 	*newFromDesc { arg rate, numOutputs, inputs, specialIndex;
-		^super.new.rate_(rate).inputs_(inputs).specialIndex_(specialIndex)
+		^super.new.rate_(rate)
+		.antecedents_(Set())
+		.descendants_(Set())
+		.weakAntecedents_(Set())
+		.weakDescendants_(Set())
+		.inputs_(inputs).specialIndex_(specialIndex)
 	}
 	*multiNew { arg ... args;
 		^this.multiNewList(args);
@@ -36,6 +48,15 @@ UGen : AbstractFunction {
 			results.put(i, this.multiNewList(newArgs));
 		});
 		^results
+	}
+
+	// should return an Array of zero or more UGenResourceManagers, or nil if entering panic mode (see UGenResourceManager).
+	resourceManagers { ^nil	}
+
+	createWeakConnectionTo { |ugen|
+		[\createWeakConnectionTo, this, ugen].postln;
+		this.weakDescendants.add(ugen);
+		ugen.weakAntecedents.add(this);
 	}
 
 	init { arg ... theInputs;
@@ -508,31 +529,6 @@ UGen : AbstractFunction {
 		}
 	}
 
-	initTopoSort {
-		inputs.do({ arg input;
-			if (input.isKindOf(UGen), {
-				antecedents.add(input.source);
-				input.source.descendants.add(this);
-			});
-		});
-
-		widthFirstAntecedents.do({ arg ugen;
-			antecedents.add(ugen);
-			ugen.descendants.add(this);
-		})
-	}
-
-	makeAvailable {
-		if (antecedents.size == 0, {
-			synthDef.available = synthDef.available.add(this);
-		});
-	}
-
-	removeAntecedent { arg ugen;
-		antecedents.remove(ugen);
-		this.makeAvailable;
-	}
-
 	schedule { arg outStack;
 		descendants.reverseDo({ arg ugen;
 			ugen.removeAntecedent(this);
@@ -540,34 +536,22 @@ UGen : AbstractFunction {
 		^outStack.add(this);
 	}
 
-	optimizeGraph {}
-
 	dumpName {
 		^synthIndex.asString ++ "_" ++ this.class.name.asString
 	}
 
-	performDeadCodeElimination {
-		if (descendants.size == 0) {
-			this.inputs.do {|a|
-				if (a.isKindOf(UGen)) {
-					a.descendants.remove(this);
-					a.optimizeGraph
-				}
-			};
-			buildSynthDef.removeUGen(this);
-			^true;
-		};
-		^false
-	}
+	// TODO: delete
+	performDeadCodeElimination { }
+	initTopoSort { }
+	makeAvailable { }
+	removeAntecedent { }
+	optimizeGraph { }
 }
 
-// ugen which has no side effect and can therefore be considered for a dead code elimination
-// read access to buffers/busses are allowed
-
+// Don't use
 PureUGen : UGen {
-	optimizeGraph {
-		super.performDeadCodeElimination
-	}
+	resourceManagers { ^[] }
+	optimizeGraph { }
 }
 
 MultiOutUGen : UGen {
@@ -604,13 +588,13 @@ MultiOutUGen : UGen {
 }
 
 PureMultiOutUGen : MultiOutUGen {
-	optimizeGraph {
-		super.performDeadCodeElimination
-	}
+	optimizeGraph { }
+	resourceManagers { ^[] }
 }
 
 OutputProxy : UGen {
 	var <>source, <>outputIndex, <>name;
+
 	*new { arg rate, itsSourceUGen, index;
 		^super.new1(rate, itsSourceUGen, index)
 	}
@@ -618,6 +602,7 @@ OutputProxy : UGen {
 		synthDef = buildSynthDef;
 	}
 	init { arg argSource, argIndex;
+		super.init(argSource, argIndex);
 		source = argSource;
 		outputIndex = argIndex;
 		synthIndex = source.synthIndex;

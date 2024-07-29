@@ -1,4 +1,5 @@
 DiskOut : UGen {
+	resourceManagers { ^[UGenDickResourceManager] }
 	*ar { arg bufnum, channelsArray;
 		^this.multiNewList(['audio', bufnum] ++ channelsArray.asArray)
 	}
@@ -16,6 +17,7 @@ DiskOut : UGen {
 }
 
 DiskIn : MultiOutUGen {
+	resourceManagers { ^[UGenDickResourceManager] }
 	*ar { arg numChannels, bufnum, loop = 0;
 		^this.multiNew('audio', numChannels, bufnum, loop)
 	}
@@ -25,7 +27,10 @@ DiskIn : MultiOutUGen {
 	}
 }
 
+// TODO: Review this, I'm not too sure what it does.
 VDiskIn : MultiOutUGen {
+	resourceManagers { ^[UGenDickResourceManager] }
+
 	*ar { arg numChannels, bufnum, rate = 1, loop = 0, sendID = 0;
 		^this.multiNew('audio', numChannels, bufnum, rate, loop, sendID)
 	}

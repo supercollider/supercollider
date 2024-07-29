@@ -31,6 +31,8 @@ GrainFM : MultiOutUGen {
 }
 
 GrainBuf : MultiOutUGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\read }
 
 	*ar { arg numChannels = 1, trigger = 0, dur = 1, sndbuf, rate = 1, pos = 0, interp = 2,
 		pan = 0, envbufnum = -1, maxGrains = 512, mul = 1, add = 0;
@@ -46,7 +48,7 @@ GrainBuf : MultiOutUGen {
 	argNamesInputsOffset { ^2 }
 }
 
-GrainIn : MultiOutUGen {
+GrainIn : PureMultiOutUGen {
 
 	*ar	{ arg numChannels = 1, trigger = 0, dur = 1, in, pan = 0, envbufnum = -1, maxGrains = 512,
 		mul = 1, add = 0;
@@ -63,6 +65,9 @@ GrainIn : MultiOutUGen {
 }
 
 Warp1 : MultiOutUGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\read }
+
 	*ar	{ arg numChannels = 1, bufnum = 0, pointer = 0, freqScale = 1,
 		windowSize = 0.2, envbufnum = -1, overlaps = 8, windowRandRatio = 0.0, interp = 1,
 		mul = 1, add = 0;

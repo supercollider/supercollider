@@ -12,8 +12,7 @@ Demand : MultiOutUGen {
 	checkInputs { ^this.checkSameRateAsFirstInput }
 }
 
-Duty : UGen {
-
+Duty : PureUGen {
 	*ar { arg dur = 1.0, reset = 0.0, level = 1.0, doneAction = 0;
 		^this.multiNew('audio', dur, reset, doneAction, level)
 	}
@@ -41,21 +40,20 @@ TDuty : Duty {
 	}
 }
 
-DemandEnvGen : UGen {
-
+DemandEnvGen : PureUGen {
 	*kr { arg level, dur, shape = 1, curve = 0, gate = 1.0, reset = 1.0,
-				levelScale = 1.0, levelBias = 0.0, timeScale = 1.0, doneAction=0;
+		levelScale = 1.0, levelBias = 0.0, timeScale = 1.0, doneAction=0;
 		^this.multiNew('control', level, dur, shape, curve, gate, reset,
-				levelScale, levelBias, timeScale, doneAction)
+			levelScale, levelBias, timeScale, doneAction)
 	}
 	*ar { arg level, dur, shape = 1, curve = 0, gate = 1.0, reset = 1.0,
-				levelScale = 1.0, levelBias = 0.0, timeScale = 1.0, doneAction=0;
-					if(gate.rate === 'audio' or: { reset.rate === 'audio' }) {
-						if(gate.rate !== 'audio') { gate = K2A.ar(gate) };
-						if(reset.rate !== 'audio') { reset = K2A.ar(reset) };
-					};
+		levelScale = 1.0, levelBias = 0.0, timeScale = 1.0, doneAction=0;
+		if(gate.rate === 'audio' or: { reset.rate === 'audio' }) {
+			if(gate.rate !== 'audio') { gate = K2A.ar(gate) };
+			if(reset.rate !== 'audio') { reset = K2A.ar(reset) };
+		};
 		^this.multiNew('audio', level, dur, shape, curve, gate, reset,
-				levelScale, levelBias, timeScale, doneAction)
+			levelScale, levelBias, timeScale, doneAction)
 	}
 }
 
@@ -81,24 +79,34 @@ DUGen : UGen {
 }
 
 Dseries : DUGen {
+	resourceManagers { ^[] }
+
 	*new { arg start = 1, step = 1, length = inf;
 		^this.multiNew('demand', length, start, step)
 	}
 }
 
 Dgeom : DUGen {
+	resourceManagers { ^[] }
+
 	*new { arg start = 1, grow = 2, length = inf;
 		^this.multiNew('demand', length, start, grow)
 	}
 }
 
 Dbufrd : DUGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\read }
+
 	*new { arg bufnum = 0, phase = 0.0, loop = 1.0;
 		^this.multiNew('demand', bufnum, phase, loop)
 	}
 }
 
 Dbufwr : DUGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\write }
+
 	*new { arg input = 0.0, bufnum = 0, phase = 0.0, loop = 1.0;
 		^this.multiNew('demand', bufnum, phase, input, loop)
 	}
@@ -110,13 +118,24 @@ ListDUGen : DUGen {
 	}
 }
 
-Dseq : ListDUGen {}
-Dser : ListDUGen {}
-Dshuf : ListDUGen {}
-Drand : ListDUGen {}
-Dxrand : ListDUGen {}
+Dseq : ListDUGen {
+	resourceManagers { ^[] }
+}
+Dser : ListDUGen {
+	resourceManagers { ^[] }
+}
+Dshuf : ListDUGen {
+	resourceManagers { ^[] }
+}
+Drand : ListDUGen {
+	resourceManagers { ^[] }
+}
+Dxrand : ListDUGen {
+	resourceManagers { ^[] }
+}
 
 Dwrand : DUGen {
+	resourceManagers { ^[] }
 	*new { arg list, weights, repeats = 1;
 		var size = list.size;
 		weights = weights.extend(size, 0.0);
@@ -125,6 +144,7 @@ Dwrand : DUGen {
 }
 
 Dswitch1 : DUGen {
+	resourceManagers { ^[] }
 	*new { arg list, index;
 		^this.multiNewList(['demand', index] ++ list)
 	}
@@ -133,6 +153,9 @@ Dswitch1 : DUGen {
 Dswitch : Dswitch1 {}
 
 Dwhite : DUGen {
+	resourceManagers { ^[UGenRandomResourceManager] }
+	randomAccessType { ^\gen }
+
 	*new { arg lo = 0.0, hi = 1.0, length = inf;
 		^this.multiNew('demand', length, lo, hi)
 	}
@@ -141,6 +164,8 @@ Dwhite : DUGen {
 Diwhite : Dwhite {}
 
 Dbrown : DUGen {
+	resourceManagers { ^[UGenRandomResourceManager] }
+	randomAccessType { ^\gen }
 	*new { arg lo = 0.0, hi = 1.0, step = 0.01, length = inf;
 		^this.multiNew('demand', length, lo, hi, step)
 	}
@@ -150,6 +175,9 @@ Dibrown : Dbrown {}
 
 Dstutter : DUGen {
 	classvar suggestNew;
+
+	resourceManagers { ^[UGenRandomResourceManager] }
+	randomAccessType { ^\gen }
 
 	*initClass {
 		suggestNew = { |n, in|
@@ -165,24 +193,28 @@ Dstutter : DUGen {
 }
 
 Ddup : DUGen {
+	resourceManagers { ^[] }
 	*new { |n, in|
 		^this.multiNew('demand', n, in)
 	}
 }
 
 Dconst : DUGen {
+	resourceManagers { ^[] }
 	*new { arg sum, in, tolerance = 0.001;
 		^this.multiNew('demand', sum, in, tolerance);
 	}
 }
 
 Dreset : DUGen {
+	resourceManagers { ^[] }
 	*new { arg in, reset = 0.0;
 		^this.multiNew('demand', in, reset)
 	}
 }
 
 Dpoll : DUGen {
+	resourceManagers { ^[] }
 	*new { arg in, label, run = 1, trigid = -1;
 		^this.multiNew('demand', in, label, run, trigid)
 	}
@@ -197,7 +229,11 @@ Dpoll : DUGen {
 // behave as identical in multiple uses
 
 Dunique : UGen {
+	// TODO: This class needs revisting and should call createWeakConnectionTo as needed.
+
 	var <protected, buffer, writer, iwr;
+
+	resourceManagers { ^[] }
 
 	*new { arg source, maxBufferSize = 1024, protected = true;
 		^super.new.init(source, maxBufferSize, protected)

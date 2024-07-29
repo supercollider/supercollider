@@ -1,3 +1,106 @@
+UGenResourceManager {
+	add { |ugen| this.subclassResponsibility(thisMethod) }
+	panic { |ugen| this.subclassResponsibility(thisMethod) }
+	getAll { this.subclassResponsibility(thisMethod) }
+}
+
+UGenResourceManagerSimple : UGenResourceManager {
+	var previousStateDependentUGen;
+	var all;
+
+	*new {  ^super.newCopyArgs(nil, Set.new) }
+
+	add { |ugen|
+		previousStateDependentUGen !? { |p|
+			p.createWeakConnectionTo(ugen);
+			all.add(p);
+		};
+		previousStateDependentUGen = ugen;
+	}
+
+	panic { |ugen|
+		this.add(ugen)
+	}
+
+	getAll { ^all }
+}
+
+UGenResourceManagerWithNonCausalModes : UGenResourceManager {
+	var previousStateDependentUGens;
+	var currentMode;
+	var all;
+
+	var nonCausalModes;
+	var nameOfModeGetter;
+
+	*new { |nonCausalModes, nameOfModeGetter|
+		^super.newCopyArgs(nil, \initial, Set.new, nonCausalModes.asArray, nameOfModeGetter.asSymbol)
+	}
+
+	add { |ugen|
+		if (currentMode == \initial) {
+			currentMode = ugen.perform(nameOfModeGetter);
+			^previousStateDependentUGens = [ugen];
+		};
+
+		if (currentMode == \panic) {
+			previousStateDependentUGens.do( _.createWeakConnectionTo(ugen) );
+			currentMode = ugen.perform(nameOfModeGetter);
+			previousStateDependentUGens.do {|p| all.add(p) }
+			^previousStateDependentUGens = [ugen];
+		};
+
+
+		nonCausalModes.do({ |m|
+			if(currentMode == m and: {ugen.perform(nameOfModeGetter) == m}){
+				^previousStateDependentUGens = previousStateDependentUGens.add(ugen); // no edge needed here.
+			}
+		});
+
+		// add connections for everything else.
+		previousStateDependentUGens.do( _.createWeakConnectionTo(ugen) );
+		previousStateDependentUGens.do {|p| all.add(p) };
+		previousStateDependentUGens = [ugen];
+		currentMode = ugen.perform(nameOfModeGetter);
+	}
+
+	panic { |ugen|
+		previousStateDependentUGens.do( _.createWeakConnectionTo(ugen) );
+		previousStateDependentUGens.do {|p| all.add(p) };
+		previousStateDependentUGens = [ugen];
+		currentMode = \panic;
+	}
+
+	getAll { ^all }
+}
+
+
+///
+
+UGenMessageResourceManager : UGenResourceManagerSimple {}
+
+UGenBufferResourceManager : UGenResourceManagerWithNonCausalModes {
+	*new { ^super.new([\read], \bufferAccessType) }
+}
+
+UGenBusResourceManager : UGenResourceManagerWithNonCausalModes {
+	*new { ^super.new([\read, \write], \busAccessType) }
+}
+
+UGenRandomResourceManager : UGenResourceManagerWithNonCausalModes {
+	*new { ^super.new([\gen], \randomAccessType) }
+}
+
+UGenAnalogResourceManager : UGenResourceManagerWithNonCausalModes {
+	// here, writes are sequential because I am assuming they overwrite their output
+	// --- this is not mentioned in the help file.
+	*new { ^super.new([\read], \analogAccessType) }
+}
+
+UGenDickResourceManager : UGenResourceManagerSimple {}
+
+///
+
 SynthDef {
 	var <>name, <>func;
 
@@ -13,7 +116,6 @@ SynthDef {
 	// topo sort
 	var <>available;
 	var <>variants;
-	var <>widthFirstUGens;
 	var rewriteInProgress;
 
 	var <>desc, <>metadata;
@@ -21,9 +123,11 @@ SynthDef {
 	classvar <synthDefDir;
 	classvar <>warnAboutLargeSynthDefs = false;
 
+	var <>resourceManagers;
+
 	*synthDefDir_ { arg dir;
 		if (dir.last.isPathSeparator.not )
-			{ dir = dir ++ thisProcess.platform.pathSeparator };
+		{ dir = dir ++ thisProcess.platform.pathSeparator };
 		synthDefDir = dir;
 	}
 
@@ -33,9 +137,25 @@ SynthDef {
 		synthDefDir.mkdir;
 	}
 
+	*newForSynthDesc {
+		^super.new()
+		.resourceManagers_(
+			UGenResourceManager.allSubclasses.select{|m| m.allSubclasses.isNil }.collect({ |m|
+				m -> m.new
+			}).asEvent
+		)
+	}
 	*new { arg name, ugenGraphFunc, rates, prependArgs, variants, metadata;
-		^super.newCopyArgs(name.asSymbol).variants_(variants).metadata_(metadata ?? {()}).children_(Array.new(64))
-			.build(ugenGraphFunc, rates, prependArgs)
+		^super.newCopyArgs(name.asSymbol)
+		.variants_(variants)
+		.metadata_(metadata ?? {()})
+		.children_(Array.new(64))
+		.resourceManagers_(
+			UGenResourceManager.allSubclasses.select{|m| m.allSubclasses.isNil }.collect({ |m|
+				m -> m.new
+			}).asEvent
+		)
+		.build(ugenGraphFunc, rates, prependArgs)
 	}
 
 	storeArgs { ^[name, func] }
@@ -46,7 +166,7 @@ SynthDef {
 			this.buildUgenGraph(ugenGraphFunc, rates, prependArgs);
 			this.finishBuild;
 			func = ugenGraphFunc;
-			this.class.changed(\synthDefReady, this);
+			// this.class.changed(\synthDefReady, this); borken
 		} {
 			UGen.buildSynthDef = nil;
 		}
@@ -123,7 +243,7 @@ SynthDef {
 			{
 				if (lag.isNumber and: { lag != 0 }) {
 					Post << "WARNING: lag value "<< lag <<" for i-rate arg '"
-						<< name <<"' will be ignored.\n";
+					<< name <<"' will be ignored.\n";
 				};
 				this.addIr(name, value);
 			}
@@ -131,7 +251,7 @@ SynthDef {
 			{
 				if (lag.isNumber and: { lag != 0 }) {
 					Post << "WARNING: lag value "<< lag <<" for trigger arg '"
-						<< name <<"' will be ignored.\n";
+					<< name <<"' will be ignored.\n";
 				};
 				this.addTr(name, value);
 			}
@@ -139,7 +259,7 @@ SynthDef {
 			{
 				if (lag.isNumber and: { lag != 0 }) {
 					Post << "WARNING: lag value "<< lag <<" for audio arg '"
-						<< name <<"' will be ignored.\n";
+					<< name <<"' will be ignored.\n";
 				};
 				this.addAr(name, value);
 			}
@@ -266,32 +386,22 @@ SynthDef {
 		controlUGens.isArray.if({
 			controlUGens.do({arg thisCtrl;
 				thisCtrl.name_(cn.name);
-				})
-			}, {
+			})
+		}, {
 			controlUGens.name_(cn.name)
-			});
+		});
 	}
 
 	finishBuild {
-		this.addCopiesIfNeeded;
-		this.optimizeGraph;
+
 		this.collectConstants;
 		this.checkInputs;// will die on error
 
-		// re-sort graph. reindex.
-		this.topologicalSort;
 		this.indexUGens;
 		UGen.buildSynthDef = nil;
 	}
 
-	addCopiesIfNeeded {
-		// could also have PV_UGens store themselves in a separate collection
-		widthFirstUGens.do({|child|
-			if(child.isKindOf(PV_ChainUGen), {
-				child.addCopiesIfNeeded;
-			});
-		});
-	}
+
 
 	asBytes {
 		var stream = CollStream.on(Int8Array.new(256));
@@ -314,7 +424,9 @@ SynthDef {
 			// actual error, not just warning as in .send and .load,
 			// because you might try to write the file somewhere other than
 			// the default location - could be fatal later, so crash now
-			MethodError("This SynthDef (%) was reconstructed from a .scsyndef file. It does not contain all the required structure to write back to disk. File was not written."
+			MethodError("This SynthDef (%) was reconstructed from a .scsyndef file. "
+				"It does not contain all the required structure to write back to disk. "
+				"File was not written."
 				.format(name), this).throw
 		}
 	}
@@ -426,39 +538,22 @@ SynthDef {
 		^true
 	}
 
-
 	// UGens do these
 	addUGen { arg ugen;
 		if (rewriteInProgress.isNil) {
 			// we don't add ugens, if a rewrite operation is in progress
 			ugen.synthIndex = children.size;
-			ugen.widthFirstAntecedents = widthFirstUGens.copy;
 			children = children.add(ugen);
+			if(ugen.resourceManagers.isNil){
+				resourceManagers.do( _.panic(ugen) );
+			} {
+				ugen.resourceManagers.asArray.do({|r|
+					resourceManagers.at(r).add(ugen)
+				});
+			};
 		}
 	}
-	removeUGen { arg ugen;
-		// lazy removal: clear entry and later remove all nil enties
-		children[ugen.synthIndex] = nil;
-	}
-	replaceUGen { arg a, b;
-		if (b.isKindOf(UGen).not) {
-			Error("replaceUGen assumes a UGen").throw;
-		};
 
-		b.widthFirstAntecedents = a.widthFirstAntecedents;
-		b.descendants = a.descendants;
-		b.synthIndex = a.synthIndex;
-
-		children[a.synthIndex] = b;
-
-		children.do { arg item, i;
-			if (item.notNil) {
-				item.inputs.do { arg input, j;
-					if (input === a) { item.inputs[j] = b };
-				};
-			};
-		};
-	}
 	addConstant { arg value;
 		if (constantSet.includes(value).not) {
 			constantSet.add(value);
@@ -494,40 +589,9 @@ SynthDef {
 		};
 	}
 
-	initTopoSort {
-		available = nil;
-		children.do { arg ugen;
-			ugen.antecedents = Set.new;
-			ugen.descendants = Set.new;
-		};
-		children.do { arg ugen;
-			// this populates the descendants and antecedents
-			ugen.initTopoSort;
-		};
-		children.reverseDo { arg ugen;
-			ugen.descendants = ugen.descendants.asArray.sort(
-								{ arg a, b; a.synthIndex < b.synthIndex }
-							);
-			ugen.makeAvailable; // all ugens with no antecedents are made available
-		};
-	}
-	cleanupTopoSort {
-		children.do { arg ugen;
-			ugen.antecedents = nil;
-			ugen.descendants = nil;
-			ugen.widthFirstAntecedents = nil;
-		};
-	}
-	topologicalSort {
-		var outStack;
-		this.initTopoSort;
-		while { available.size > 0 }
-		{
-			outStack = available.pop.schedule(outStack);
-		};
-		children = outStack;
-		this.cleanupTopoSort;
-	}
+
+
+
 	indexUGens {
 		children.do { arg ugen, i;
 			ugen.synthIndex = i;
@@ -567,9 +631,6 @@ SynthDef {
 			each.value.sendMsg("/d_free", name)
 		};
 	}
-
-
-	// methods for special optimizations
 
 	// only send to servers
 	send { arg server, completionMsg;
@@ -681,15 +742,15 @@ SynthDef {
 	// to get the synthdef to the server
 
 	loadReconstructed { arg server, completionMsg;
-			"SynthDef (%) was reconstructed from a .scsyndef file, "
-			"it does not contain all the required structure to send back to the server."
-				.format(name).warn;
-			if(server.isLocal) {
-				"Loading from disk instead.".postln;
-				server.sendBundle(nil, ["/d_load", metadata[\loadPath], completionMsg]);
-			} {
-				MethodError("Server is remote, cannot load from disk.", this).throw;
-			};
+		"SynthDef (%) was reconstructed from a .scsyndef file, "
+		"it does not contain all the required structure to send back to the server."
+		.format(name).warn;
+		if(server.isLocal) {
+			"Loading from disk instead.".postln;
+			server.sendBundle(nil, ["/d_load", metadata[\loadPath], completionMsg]);
+		} {
+			MethodError("Server is remote, cannot load from disk.", this).throw;
+		};
 
 	}
 
@@ -699,8 +760,8 @@ SynthDef {
 		if(File.exists(path).not) {
 			this.store(libname, dir, completionMsg, mdPlugin);
 		} {
-				// load synthdesc from disk
-				// because SynthDescLib still needs to have the info
+			// load synthdesc from disk
+			// because SynthDescLib still needs to have the info
 			lib = SynthDescLib.getLib(libname);
 			lib.read(path);
 		};
@@ -708,7 +769,6 @@ SynthDef {
 
 	play { arg target,args,addAction=\addToHead;
 		var synth, msg;
-//		this.deprecated(thisMethod, Function.findRespondingMethodFor(\play));
 		target = target.asTarget;
 		synth = Synth.basicNew(name,target.server);
 		msg = synth.newMsg(target, args, addAction);
@@ -716,4 +776,12 @@ SynthDef {
 		^synth
 	}
 
+
+	// TODO: delete
+	removeUGen {  }
+	replaceUGen {  }
+	initTopoSort { }
+	cleanupTopoSort { }
+	topologicalSort { }
+	addCopiesIfNeeded { }
 }

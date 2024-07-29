@@ -5,6 +5,8 @@ InfoUGenBase : UGen {
 }
 
 BufInfoUGenBase : UGen {
+	resourceManagers { ^[UGenBusResourceManager] }
+	busAccessType { ^\read }
 	*kr { arg bufnum;
 		^this.multiNew('control', bufnum)
 	}

@@ -1,5 +1,6 @@
-Trig1 : UGen {
 
+
+Trig1 : PureUGen {
 	*ar { arg in = 0.0, dur = 0.1;
 		^this.multiNew('audio', in, dur)
 	}
@@ -14,6 +15,8 @@ Trig : Trig1 {
 
 
 SendTrig : UGen {
+	resourceManagers { ^[UGenMessageResourceManager] }
+
 	*ar { arg in = 0.0, id = 0, value = 0.0;
 		this.multiNew('audio', in, id, value);
 		^0.0		// SendTrig has no output
@@ -28,6 +31,8 @@ SendTrig : UGen {
 }
 
 SendReply : SendTrig {
+	resourceManagers { ^[UGenMessageResourceManager] }
+
 	*kr { arg trig = 0.0, cmdName = '/reply', values, replyID = -1;
 		if(values.containsSeqColl.not) { values = values.bubble };
 		[trig, cmdName, values, replyID].flop.do { |args|
@@ -50,12 +55,17 @@ SendReply : SendTrig {
 	}
 }
 
-TDelay : Trig1 {
-	checkInputs { ^this.checkSameRateAsFirstInput }
+TDelay : PureUGen {
+	*ar { arg in = 0.0, dur = 0.1;
+		^this.multiNew('audio', in, dur)
+	}
+	*kr { arg in = 0.0, dur = 0.1;
+		^this.multiNew('control', in, dur)
+	}
+	signalRange { ^\unipolar }
 }
 
-Latch : UGen {
-
+Latch : PureUGen {
 	*ar { arg in = 0.0, trig = 0.0;
 		^this.multiNew('audio', in, trig)
 	}
@@ -65,11 +75,17 @@ Latch : UGen {
 
 }
 
-Gate : Latch {
+Gate : PureUGen {
+	*ar { arg in = 0.0, trig = 0.0;
+		^this.multiNew('audio', in, trig)
+	}
+	*kr { arg in = 0.0, trig = 0.0;
+		^this.multiNew('control', in, trig)
+	}
+
 }
 
-PulseCount : UGen {
-
+PulseCount : PureUGen {
 	*ar { arg trig = 0.0, reset = 0.0;
 		^this.multiNew('audio', trig, reset)
 	}
@@ -79,7 +95,39 @@ PulseCount : UGen {
 	checkInputs { ^this.checkSameRateAsFirstInput }
 }
 
-Peak : UGen {
+Peak : PureUGen {
+	*ar { arg in = 0.0, trig = 0.0;
+		^this.multiNew('audio', in, trig)
+	}
+	*kr { arg in = 0.0, trig = 0.0;
+		^this.multiNew('control', in, trig)
+	}
+	checkInputs {
+		if (rate == 'control' && inputs.at(0).rate == 'audio', {
+			^this.checkValidInputs
+		}, {
+			^this.checkSameRateAsFirstInput
+		});
+	}
+}
+
+RunningMin  : PureUGen {
+	*ar { arg in = 0.0, trig = 0.0;
+		^this.multiNew('audio', in, trig)
+	}
+	*kr { arg in = 0.0, trig = 0.0;
+		^this.multiNew('control', in, trig)
+	}
+	checkInputs {
+		if (rate == 'control' && inputs.at(0).rate == 'audio', {
+			^this.checkValidInputs
+		}, {
+			^this.checkSameRateAsFirstInput
+		});
+	}
+}
+
+RunningMax : PureUGen {
 	*ar { arg in = 0.0, trig = 0.0;
 		^this.multiNew('audio', in, trig)
 	}
@@ -96,15 +144,7 @@ Peak : UGen {
 }
 
 
-RunningMin : Peak {
-}
-
-RunningMax : Peak {
-}
-
-
-Stepper : UGen {
-
+Stepper : PureUGen {
 	*ar { arg trig=0, reset=0, min=0, max=7, step=1, resetval;
 		^this.multiNew('audio', trig, reset, min, max, step, resetval ? min)
 	}
@@ -115,8 +155,7 @@ Stepper : UGen {
 }
 
 
-PulseDivider : UGen {
-
+PulseDivider : PureUGen {
 	*ar { arg trig = 0.0, div = 2.0, start = 0.0;
 		^this.multiNew('audio', trig, div, start)
 	}
@@ -126,24 +165,30 @@ PulseDivider : UGen {
 
 }
 
-SetResetFF : PulseCount {
+SetResetFF  : PureUGen {
+	*ar { arg trig=0, reset=0, min=0, max=7, step=1, resetval;
+		^this.multiNew('audio', trig, reset, min, max, step, resetval ? min)
+	}
+	*kr { arg trig=0, reset=0, min=0, max=7, step=1, resetval;
+		^this.multiNew('control', trig, reset, min, max, step, resetval ? min)
+	}
+	checkInputs { ^this.checkSameRateAsFirstInput }
 	signalRange { ^\unipolar }
 }
 
-ToggleFF : UGen {
 
+ToggleFF : PureUGen {
 	*ar { arg trig = 0.0;
 		^this.multiNew('audio', trig)
 	}
 	*kr { arg trig = 0.0;
 		^this.multiNew('control', trig)
 	}
-
 	signalRange { ^\unipolar }
 }
 
 
-ZeroCrossing : UGen {
+ZeroCrossing : PureUGen {
 	*ar { arg in = 0.0;
 		^this.multiNew('audio', in)
 	}
@@ -153,7 +198,7 @@ ZeroCrossing : UGen {
 	checkInputs { ^this.checkSameRateAsFirstInput }
 }
 
-Timer : UGen {
+Timer : PureUGen {
 	// output is the time between two triggers
 	*ar { arg trig = 0.0;
 		^this.multiNew('audio', trig)
@@ -164,7 +209,7 @@ Timer : UGen {
 	checkInputs { ^this.checkSameRateAsFirstInput }
 }
 
-Sweep : UGen {
+Sweep : PureUGen {
 	// output sweeps up in value at rate per second
 	// the trigger resets to zero
 	*ar { arg trig = 0.0, rate = 1.0;
@@ -175,7 +220,7 @@ Sweep : UGen {
 	}
 }
 
-Phasor : UGen {
+Phasor : PureUGen {
 	*ar { arg trig = 0.0, rate = 1.0, start = 0.0, end = 1.0, resetPos = 0.0;
 		^this.multiNew('audio', trig, rate, start, end, resetPos)
 	}
@@ -184,8 +229,7 @@ Phasor : UGen {
 	}
 }
 
-PeakFollower : UGen {
-
+PeakFollower : PureUGen {
 	*ar { arg in = 0.0, decay = 0.999;
 		^this.multiNew('audio', in, decay)
 	}
@@ -194,11 +238,10 @@ PeakFollower : UGen {
 	}
 }
 
-Pitch : MultiOutUGen {
-
+Pitch : PureMultiOutUGen {
 	*kr { arg in = 0.0, initFreq = 440.0, minFreq = 60.0, maxFreq = 4000.0,
-			execFreq = 100.0, maxBinsPerOctave = 16, median = 1,
-			ampThreshold = 0.01, peakThreshold = 0.5, downSample = 1, clar=0;
+		execFreq = 100.0, maxBinsPerOctave = 16, median = 1,
+		ampThreshold = 0.01, peakThreshold = 0.5, downSample = 1, clar=0;
 		^this.multiNew('control', in, initFreq, minFreq, maxFreq, execFreq,
 			maxBinsPerOctave, median, ampThreshold, peakThreshold, downSample, clar)
 	}
@@ -208,7 +251,7 @@ Pitch : MultiOutUGen {
 	}
 }
 
-InRange : UGen {
+InRange : PureUGen {
 	*ar { arg in = 0.0, lo = 0.0, hi = 1.0;
 		^this.multiNew('audio', in, lo, hi)
 	}
@@ -220,7 +263,7 @@ InRange : UGen {
 	}
 }
 
-InRect : UGen {
+InRect : PureUGen {
 	*ar { arg x = 0.0, y = 0.0, rect;
 		^this.multiNew('audio', x, y, rect.left, rect.top,
 			rect.right, rect.bottom)
@@ -242,12 +285,52 @@ InRect : UGen {
 //	}
 //}
 
-Fold : InRange {}
-Clip : InRange {}
-Wrap : InRange {}
-Schmidt : InRange {}
+Fold : PureUGen {
+	*ar { arg in = 0.0, lo = 0.0, hi = 1.0;
+		^this.multiNew('audio', in, lo, hi)
+	}
+	*kr { arg in = 0.0, lo = 0.0, hi = 1.0;
+		^this.multiNew('control', in, lo, hi)
+	}
+	*ir { arg in = 0.0, lo = 0.0, hi = 1.0;
+		^this.multiNew('scalar', in, lo, hi)
+	}
+}
+Clip : PureUGen {
+	*ar { arg in = 0.0, lo = 0.0, hi = 1.0;
+		^this.multiNew('audio', in, lo, hi)
+	}
+	*kr { arg in = 0.0, lo = 0.0, hi = 1.0;
+		^this.multiNew('control', in, lo, hi)
+	}
+	*ir { arg in = 0.0, lo = 0.0, hi = 1.0;
+		^this.multiNew('scalar', in, lo, hi)
+	}
+}
+Wrap : PureUGen {
+	*ar { arg in = 0.0, lo = 0.0, hi = 1.0;
+		^this.multiNew('audio', in, lo, hi)
+	}
+	*kr { arg in = 0.0, lo = 0.0, hi = 1.0;
+		^this.multiNew('control', in, lo, hi)
+	}
+	*ir { arg in = 0.0, lo = 0.0, hi = 1.0;
+		^this.multiNew('scalar', in, lo, hi)
+	}
+}
+Schmidt : PureUGen {
+	*ar { arg in = 0.0, lo = 0.0, hi = 1.0;
+		^this.multiNew('audio', in, lo, hi)
+	}
+	*kr { arg in = 0.0, lo = 0.0, hi = 1.0;
+		^this.multiNew('control', in, lo, hi)
+	}
+	*ir { arg in = 0.0, lo = 0.0, hi = 1.0;
+		^this.multiNew('scalar', in, lo, hi)
+	}
+}
 
-ModDif : UGen {
+ModDif : PureUGen {
 	*ar { arg x = 0.0, y = 0.0, mod = 1.0;
 		^this.multiNew('audio', x, y, mod)
 	}
@@ -259,7 +342,7 @@ ModDif : UGen {
 	}
 }
 
-MostChange : UGen {
+MostChange : PureUGen {
 	*ar { arg a = 0.0, b = 0.0;
 		^this.multiNew('audio', a, b)
 	}
@@ -268,10 +351,16 @@ MostChange : UGen {
 	}
 }
 
-LeastChange : MostChange {}
+LeastChange : PureUGen {
+	*ar { arg a = 0.0, b = 0.0;
+		^this.multiNew('audio', a, b)
+	}
+	*kr { arg a = 0.0, b = 0.0;
+		^this.multiNew('control', a, b)
+	}
+}
 
-LastValue : UGen {
-
+LastValue : PureUGen {
 	*ar { arg in=0.0, diff=0.01;
 		^this.multiNew('audio', in, diff)
 	}
@@ -281,6 +370,7 @@ LastValue : UGen {
 }
 
 SendPeakRMS : UGen {
+	resourceManagers { ^[UGenMessageResourceManager] }
 
 	*kr { arg sig, replyRate = 20.0, peakLag = 3, cmdName = '/reply', replyID = -1;
 		this.new1('control', sig.asArray, replyRate, peakLag, cmdName, replyID);
@@ -295,9 +385,9 @@ SendPeakRMS : UGen {
 	*new1 { arg rate, sig, replyRate, peakLag, cmdName, replyID;
 		var ascii = cmdName.ascii;
 		var args = [rate, replyRate, peakLag, replyID, sig.size]
-			.addAll(sig.flatten)
-			.add(ascii.size)
-			.addAll(ascii);
+		.addAll(sig.flatten)
+		.add(ascii.size)
+		.addAll(ascii);
 		^super.new1(*args);
 	}
 

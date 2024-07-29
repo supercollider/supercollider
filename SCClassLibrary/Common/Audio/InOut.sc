@@ -39,6 +39,8 @@ ControlName {
 
 Control : MultiOutUGen {
 	var <values;
+	resourceManagers { ^[UGenBusResourceManager] }
+	busAccessType { ^\read }
 
 	*names { arg names;
 		var synthDef, index;
@@ -86,6 +88,8 @@ Control : MultiOutUGen {
 
 AudioControl : MultiOutUGen {
 	var <values;
+	resourceManagers { ^[UGenBusResourceManager] }
+	busAccessType { ^\read }
 
 	*names { arg names;
 		var synthDef, index;
@@ -164,6 +168,8 @@ LagControl : Control {
 
 AbstractIn : MultiOutUGen {
 	*isInputUGen { ^true }
+	resourceManagers { ^[UGenBusResourceManager] }
+	busAccessType { ^\read }
 }
 
 In : AbstractIn {
@@ -224,6 +230,9 @@ InTrig : AbstractIn {
 }
 
 AbstractOut : UGen {
+	resourceManagers { ^[UGenBusResourceManager] }
+	busAccessType { ^\write }
+
 	numOutputs { ^0 }
 	writeOutputSpecs {}
 	checkInputs {
@@ -266,7 +275,9 @@ Out : AbstractOut {
 	writesToBus { ^true }
 }
 
-ReplaceOut : Out {}
+ReplaceOut : Out {
+	busAccessType { ^\overwrite }
+}
 OffsetOut : Out {
 	*kr { ^this.shouldNotImplement(thisMethod) }
 }
@@ -287,6 +298,7 @@ LocalOut : AbstractOut {
 
 
 XOut : AbstractOut {
+	busAccessType { ^\blend }
 	*ar { arg bus, xfade, channelsArray;
 		channelsArray = this.replaceZeroesWithSilence(channelsArray.asUGenInput(this).asArray);
 		this.multiNewList(['audio', bus, xfade] ++ channelsArray)

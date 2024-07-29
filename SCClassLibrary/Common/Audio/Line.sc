@@ -1,4 +1,4 @@
-Line : UGen {
+Line : PureUGen {
 	*ar { arg start=0.0, end = 1.0, dur = 1.0, mul = 1.0, add = 0.0, doneAction = 0;
 		^this.multiNew('audio', start, end, dur, doneAction).madd(mul, add)
 	}
@@ -7,7 +7,7 @@ Line : UGen {
 	}
 }
 
-XLine : UGen {
+XLine : PureUGen {
 	*ar { arg start=1.0, end = 2.0, dur = 1.0, mul = 1.0, add = 0.0, doneAction = 0;
 		^this.multiNew('audio', start, end, dur, doneAction).madd(mul, add)
 	}

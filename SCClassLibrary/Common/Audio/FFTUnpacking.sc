@@ -15,14 +15,12 @@ UnpackFFT : MultiOutUGen {
 
 Unpack1FFT : UGen {
 	*new { | chain, bufsize, binindex, whichmeasure=0 |
-		//("bufsize:"+bufsize).postln;
 		^this.multiNew('demand', chain, bufsize, binindex, whichmeasure);
 	}
 }
 
 // This does the demanding, to push the data back into an FFT buffer.
 PackFFT : PV_ChainUGen {
-
 	*new { | chain, bufsize, magsphases, frombin=0, tobin, zeroothers=0 |
 		tobin = tobin ?? {bufsize/2};
 		^this.multiNewList(['control', chain, bufsize, frombin, tobin, zeroothers, magsphases.size] ++ magsphases.asArray)
@@ -78,39 +76,12 @@ PV_ChainUGen : WidthFirstUGen {
 		^PackFFT(this, numframes, magsphases, frombin, tobin, zeroothers);
 	}
 
-	addCopiesIfNeeded {
-		var directDescendants, frames, buf, copy;
-		// find UGens that have me as an input
-		directDescendants = buildSynthDef.children.select ({ |child|
-			var inputs;
-			child.isKindOf(PV_Copy).not and: { child.isKindOf(WidthFirstUGen) } and: {
-				inputs = child.inputs;
-				inputs.notNil and: { inputs.includes(this) }
-			}
-		});
-		if(directDescendants.size > 1, {
-			// insert a PV_Copy for all but the last one
-			directDescendants.drop(-1).do({|desc|
-				desc.inputs.do({ arg input, j;
-					if (input === this, {
-						frames = this.fftSize;
-						frames.widthFirstAntecedents = nil;
-						buf = LocalBuf(frames);
-						buf.widthFirstAntecedents = nil;
-						copy = PV_Copy(this, buf);
-						copy.widthFirstAntecedents = widthFirstAntecedents ++ [buf];
-						desc.inputs[j] = copy;
-						buildSynthDef.children = buildSynthDef.children.drop(-3).insert(this.synthIndex + 1, frames);
-						buildSynthDef.children = buildSynthDef.children.insert(this.synthIndex + 2, buf);
-						buildSynthDef.children = buildSynthDef.children.insert(this.synthIndex + 3, copy);
-						buildSynthDef.indexUGens;
-					});
-				});
-			});
-		});
-	}
+
 
 	// return a BufFrames
 	// any PV UGens which don't take the chain as first arg will need to override
 	fftSize { ^inputs[0].fftSize }
+
+	// TODO: rewrite this.
+	addCopiesIfNeeded {}
 }
