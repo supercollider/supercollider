@@ -214,7 +214,7 @@ switch(value,
 	testvalue2, trueFunction2,
 	...
 	testvalueN, trueFunctionN,
-	defaultFunction // defaultbody can be omitted.
+	defaultFunction // defaultFunction can be omitted.
 );
 ::
 
