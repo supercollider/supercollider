@@ -210,11 +210,11 @@ switch(value)
 { defaultbody }; // defaultbody can be omitted.
 
 switch(value,
-        testvalue1, trueFunction1,
-        testvalue2, trueFunction2,
-        ...
-        testvalueN, trueFunctionN,
-        defaultFunction
+	testvalue1, trueFunction1,
+	testvalue2, trueFunction2,
+	...
+	testvalueN, trueFunctionN,
+	defaultFunction // defaultbody can be omitted.
 );
 ::
 
@@ -249,12 +249,12 @@ code::
 var x, z;
 z = [0, 1, 1.1, 1.3, 1.5, 2];
 x = switch(z.choose)
-	{1}   { \no }
-	{1.1} { \wrong }
-	{1.3} { \wrong }
-	{1.5} { \wrong }
-	{2}   { \wrong }
-	{0}   { \true };
+{1}   { \no }
+{1.1} { \wrong }
+{1.3} { \wrong }
+{1.5} { \wrong }
+{2}   { \wrong }
+{0}   { \true };
 x.postln;
 )
 ::
@@ -264,8 +264,19 @@ Inlined vs non-inlined comparison:
 code::
 (
 switch(1.0)
-	{ 1 } { "yes" }
+{ 1 } { "yes" }
+{ "no" }
+)
+
+-> no
+::
+
+code::
+(
+switch(1.0,
+	{ 1 }, { "yes" },
 	{ "no" }
+)
 )
 
 -> no
@@ -277,8 +288,8 @@ code::
 (
 // 'var x' prevents inlining
 switch(1.0)
-	{ 1 } { var x; "yes" }
-	{ "no" }
+{ 1 } { var x; "yes" }
+{ "no" }
 )
 
 WARNING: Float:switch is unsafe, rounding via Float:asInteger:switch
