@@ -10,6 +10,8 @@
 */
 
 PSinGrain : UGen {
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
 	*ar { arg freq = 440.0, dur = 0.2, amp = 0.1;
 		^this.multiNew('audio', freq, dur, amp)
 	}

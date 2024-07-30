@@ -26,7 +26,9 @@ Delay2 : Filter {
 
 // these delays use real time allocated memory.
 
-DelayN : PureUGen {
+DelayN : UGen {
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
 
 	*ar { arg in = 0.0, maxdelaytime = 0.2, delaytime = 0.2, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in.asAudioRateInput, maxdelaytime, delaytime).madd(mul, add)
@@ -40,7 +42,9 @@ DelayL : DelayN { }
 DelayC : DelayN { }
 
 
-CombN : PureUGen {
+CombN : UGen {
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
 
 	*ar { arg in = 0.0, maxdelaytime = 0.2, delaytime = 0.2, decaytime = 1.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in.asAudioRateInput(this), maxdelaytime, delaytime, decaytime).madd(mul, add)
@@ -62,6 +66,9 @@ AllpassC : CombN { }
 // these delays use shared buffers.
 
 BufDelayN : UGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\read }
+	hasObservableEffect { ^false }
 
 	*ar { arg buf = 0, in = 0.0, delaytime = 0.2, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', buf, in.asAudioRateInput(this), delaytime).madd(mul, add)
@@ -76,6 +83,9 @@ BufDelayC : BufDelayN { }
 
 
 BufCombN : UGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\read }
+	hasObservableEffect { ^false }
 
 	*ar { arg buf = 0, in = 0.0, delaytime = 0.2, decaytime = 1.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', buf, in.asAudioRateInput(this), delaytime, decaytime).madd(mul, add)
@@ -89,21 +99,11 @@ BufAllpassN : BufCombN { }
 BufAllpassL : BufCombN { }
 BufAllpassC : BufCombN { }
 
-///////////////////////////////////////
-
-/*
-GrainTap : MultiOutUGen {
-	*ar { arg grainDur = 0.2, pchRatio = 1.0,
-			pchDispersion = 0.0, timeDispersion = 0.0, overlap = 2.0, mul = 1.0, add = 0.0;
-		^this.multiNew('audio', grainDur, pchRatio,
-			pchDispersion, timeDispersion, overlap).madd(mul, add)
-	}
-}
-*/
-
-///////////////////////////////////////
-
 DelTapWr : UGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\write }
+	hasObservableEffect { ^true }
+
 	*ar { arg buffer, in;
 		^this.multiNew('audio', buffer, in.asAudioRateInput(this))
 	}
@@ -114,6 +114,10 @@ DelTapWr : UGen {
 }
 
 DelTapRd : UGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\read }
+	hasObservableEffect { ^false }
+
 	*ar { arg buffer, phase, delTime, interp = 1, mul = 1, add = 0;
 		^this.multiNew('audio', buffer, phase, delTime, interp).madd(mul, add)
 	}

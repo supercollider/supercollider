@@ -4,6 +4,7 @@ BasicOpUGen : UGen {
 	var <operator;
 
 	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
 
 	operator_ { arg op;
 		operator = op;
@@ -59,7 +60,6 @@ BinaryOpUGen : BasicOpUGen {
 		^\scalar
 	}
 	*new1 { arg rate, selector, a, b;
-
 		// eliminate degenerate cases
 		if (selector == '*', {
 			if (a == 0.0, { ^0.0 });
@@ -396,6 +396,8 @@ BinaryOpUGen : BasicOpUGen {
 
 MulAdd : PureUGen {
 	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
+
 	*new { arg in, mul = 1.0, add = 0.0;
 		var args =  [in, mul, add].asUGenInput(this);
 		var rate = args.rate;
@@ -441,8 +443,10 @@ MulAdd : PureUGen {
 	}
 }
 
-Sum3 : PureUGen {
+Sum3 : UGen {
 	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
+
 	*new { arg in0, in1, in2;
 		^this.multiNew(nil, in0, in1, in2)
 	}
@@ -461,7 +465,10 @@ Sum3 : PureUGen {
 	}
 }
 
-Sum4 : PureUGen {
+Sum4 : UGen {
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
+
 	*new { arg in0, in1, in2, in3;
 		^this.multiNew(nil, in0, in1, in2, in3)
 	}

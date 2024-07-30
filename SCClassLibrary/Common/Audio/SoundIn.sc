@@ -1,4 +1,7 @@
 SoundIn  {
+	resourceManagers { ^[UGenBusResourceManager] }
+	busAccessType { ^\read }
+	hasObservableEffect { ^false }
 
 	*ar { arg bus = 0, mul=1.0, add=0.0;
 		var chanOffset;
@@ -18,7 +21,5 @@ SoundIn  {
 		})
 	}
 
-	*channelOffset {
-		^NumOutputBuses.ir
-	}
+	*channelOffset { ^NumOutputBuses.ir }
 }

@@ -20,6 +20,7 @@ other than multiply and add inputs.
 RandSeed : UGen {
 	resourceManagers { ^[UGenRandomResourceManager] }
 	randomAccessType { ^\seed }
+	hasObservableEffect { ^true }
 
 	*ar { arg trig = 0.0, seed=56789;
 		this.multiNew('audio', trig, seed)
@@ -38,6 +39,7 @@ RandSeed : UGen {
 RandID : UGen {
 	resourceManagers { ^[UGenRandomResourceManager] }
 	randomAccessType { ^\seed }
+	hasObservableEffect { ^true }
 
 	// choose which random number generator to use for this synth .
 	*kr { arg id=0;
@@ -54,6 +56,7 @@ RandID : UGen {
 Rand : UGen {
 	resourceManagers { ^[UGenRandomResourceManager] }
 	randomAccessType { ^\gen }
+	hasObservableEffect { ^false }
 
 	// uniform distribution
 	*new { arg lo = 0.0, hi = 1.0;
@@ -64,6 +67,7 @@ Rand : UGen {
 IRand : UGen {
 	resourceManagers { ^[UGenRandomResourceManager] }
 	randomAccessType { ^\gen }
+	hasObservableEffect { ^false }
 
 	// uniform distribution of integers
 	*new { arg lo = 0, hi = 127;
@@ -75,6 +79,7 @@ IRand : UGen {
 TRand : UGen {
 	resourceManagers { ^[UGenRandomResourceManager] }
 	randomAccessType { ^\gen }
+	hasObservableEffect { ^false }
 
 	// uniform distribution
 	*ar { arg lo = 0.0, hi = 1.0, trig = 0.0;
@@ -88,6 +93,7 @@ TRand : UGen {
 TIRand : UGen {
 	resourceManagers { ^[UGenRandomResourceManager] }
 	randomAccessType { ^\gen }
+	hasObservableEffect { ^false }
 
 	// uniform distribution of integers
 	*kr { arg lo = 0, hi = 127, trig = 0.0;
@@ -100,6 +106,7 @@ TIRand : UGen {
 LinRand : UGen {
 	resourceManagers { ^[UGenRandomResourceManager] }
 	randomAccessType { ^\gen }
+	hasObservableEffect { ^false }
 
 	// linear distribution
 	// if minmax <= 0 then skewed towards lo.
@@ -112,6 +119,7 @@ LinRand : UGen {
 NRand : UGen {
 	resourceManagers { ^[UGenRandomResourceManager] }
 	randomAccessType { ^\gen }
+	hasObservableEffect { ^false }
 
 	// sum of N uniform distributions.
 	// n = 1 : uniform distribution - same as Rand
@@ -126,6 +134,7 @@ NRand : UGen {
 ExpRand : UGen {
 	resourceManagers { ^[UGenRandomResourceManager] }
 	randomAccessType { ^\gen }
+	hasObservableEffect { ^false }
 
 	// exponential distribution
 	*new { arg lo = 0.01, hi = 1.0;
@@ -136,6 +145,7 @@ ExpRand : UGen {
 TExpRand : UGen {
 	resourceManagers { ^[UGenRandomResourceManager] }
 	randomAccessType { ^\gen }
+	hasObservableEffect { ^false }
 
 	// uniform distribution
 	*ar { arg lo = 0.01, hi = 1.0, trig = 0.0;
@@ -150,6 +160,7 @@ TExpRand : UGen {
 CoinGate : UGen {
 	resourceManagers { ^[UGenRandomResourceManager] }
 	randomAccessType { ^\gen }
+	hasObservableEffect { ^false }
 
 	*ar { arg prob, in;
 		^this.multiNew('audio', prob, in)
@@ -162,6 +173,7 @@ CoinGate : UGen {
 TWindex : UGen {
 	resourceManagers { ^[UGenRandomResourceManager] }
 	randomAccessType { ^\gen }
+	hasObservableEffect { ^false }
 
 	*ar {
 		arg in, array, normalize=0;
@@ -176,6 +188,7 @@ TWindex : UGen {
 WhiteNoise : UGen {
 	resourceManagers { ^[UGenRandomResourceManager] }
 	randomAccessType { ^\gen }
+	hasObservableEffect { ^false }
 
 	*ar { arg mul = 1.0, add = 0.0;
 		// support this idiom from SC2.
@@ -197,6 +210,7 @@ WhiteNoise : UGen {
 BrownNoise : UGen {
 	resourceManagers { ^[UGenRandomResourceManager] }
 	randomAccessType { ^\gen }
+	hasObservableEffect { ^false }
 
 	*ar { arg mul = 1.0, add = 0.0;
 		// support this idiom from SC2.
@@ -218,6 +232,7 @@ BrownNoise : UGen {
 PinkNoise : UGen {
 	resourceManagers { ^[UGenRandomResourceManager] }
 	randomAccessType { ^\gen }
+	hasObservableEffect { ^false }
 
 	*ar { arg mul = 1.0, add = 0.0;
 		// support this idiom from SC2.
@@ -239,6 +254,7 @@ PinkNoise : UGen {
 ClipNoise : UGen {
 	resourceManagers { ^[UGenRandomResourceManager] }
 	randomAccessType { ^\gen }
+	hasObservableEffect { ^false }
 
 	*ar { arg mul = 1.0, add = 0.0;
 		// support this idiom from SC2.
@@ -260,6 +276,7 @@ ClipNoise : UGen {
 GrayNoise : UGen {
 	resourceManagers { ^[UGenRandomResourceManager] }
 	randomAccessType { ^\gen }
+	hasObservableEffect { ^false }
 
 	*ar { arg mul = 1.0, add = 0.0;
 		// support this idiom from SC2.
@@ -281,6 +298,7 @@ GrayNoise : UGen {
 Crackle : UGen {
 	resourceManagers { ^[UGenRandomResourceManager] }
 	randomAccessType { ^\gen }
+	hasObservableEffect { ^false }
 
 	*ar { arg chaosParam=1.5, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', chaosParam).madd(mul, add)
@@ -293,6 +311,7 @@ Crackle : UGen {
 Logistic : UGen {
 	resourceManagers { ^[UGenRandomResourceManager] }
 	randomAccessType { ^\gen }
+	hasObservableEffect { ^false }
 
 	*ar { arg chaosParam=3.0, freq = 1000.0, init= 0.5, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', chaosParam, freq, init).madd(mul, add)
@@ -305,6 +324,7 @@ Logistic : UGen {
 LFNoise0 : UGen {
 	resourceManagers { ^[UGenRandomResourceManager] }
 	randomAccessType { ^\gen }
+	hasObservableEffect { ^false }
 
 	*ar { arg freq=500.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', freq).madd(mul, add)
@@ -325,6 +345,7 @@ LFDClipNoise : LFNoise0 { }
 Hasher : UGen {
 	resourceManagers { ^[UGenRandomResourceManager] }
 	randomAccessType { ^\gen }
+	hasObservableEffect { ^false }
 
 	*ar { arg in = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in).madd(mul, add)
@@ -341,6 +362,7 @@ Hasher : UGen {
 MantissaMask : UGen {
 	resourceManagers { ^[UGenRandomResourceManager] }
 	randomAccessType { ^\gen }
+	hasObservableEffect { ^false }
 
 	*ar { arg in = 0.0, bits=3, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in, bits).madd(mul, add)
@@ -353,6 +375,7 @@ MantissaMask : UGen {
 Dust : UGen {
 	resourceManagers { ^[UGenRandomResourceManager] }
 	randomAccessType { ^\gen }
+	hasObservableEffect { ^false }
 
 	*ar { arg density = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', density).madd(mul, add)
@@ -367,6 +390,7 @@ Dust : UGen {
 Dust2 : UGen {
 	resourceManagers { ^[UGenRandomResourceManager] }
 	randomAccessType { ^\gen }
+	hasObservableEffect { ^false }
 
 	*ar { arg density = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', density).madd(mul, add)

@@ -1,5 +1,8 @@
+// Writes to disk
 DiskOut : UGen {
-	resourceManagers { ^[UGenDickResourceManager] }
+	resourceManagers { ^[UGenDiskResourceManager] }
+	hasObservableEffect { ^true }
+
 	*ar { arg bufnum, channelsArray;
 		^this.multiNewList(['audio', bufnum] ++ channelsArray.asArray)
 	}
@@ -16,8 +19,11 @@ DiskOut : UGen {
 	}
 }
 
+// Plays from disk
 DiskIn : MultiOutUGen {
-	resourceManagers { ^[UGenDickResourceManager] }
+	resourceManagers { ^[UGenDiskResourceManager] }
+	hasObservableEffect { ^false }
+
 	*ar { arg numChannels, bufnum, loop = 0;
 		^this.multiNew('audio', numChannels, bufnum, loop)
 	}
@@ -27,9 +33,9 @@ DiskIn : MultiOutUGen {
 	}
 }
 
-// TODO: Review this, I'm not too sure what it does.
 VDiskIn : MultiOutUGen {
-	resourceManagers { ^[UGenDickResourceManager] }
+	resourceManagers { ^[UGenDiskResourceManager] }
+	hasObservableEffect { ^false }
 
 	*ar { arg numChannels, bufnum, rate = 1, loop = 0, sendID = 0;
 		^this.multiNew('audio', numChannels, bufnum, rate, loop, sendID)

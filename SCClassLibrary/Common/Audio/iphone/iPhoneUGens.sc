@@ -1,4 +1,7 @@
 AccelerometerX : UGen {
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
+
 	// warp 0 = linear
 	// warp 1 = exponential
 	*kr {

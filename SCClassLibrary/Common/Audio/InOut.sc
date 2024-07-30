@@ -41,6 +41,7 @@ Control : MultiOutUGen {
 	var <values;
 	resourceManagers { ^[UGenBusResourceManager] }
 	busAccessType { ^\read }
+	hasObservableEffect { ^true } // controls alter the synthdef
 
 	*names { arg names;
 		var synthDef, index;
@@ -90,6 +91,7 @@ AudioControl : MultiOutUGen {
 	var <values;
 	resourceManagers { ^[UGenBusResourceManager] }
 	busAccessType { ^\read }
+	hasObservableEffect { ^true } // controls alter the synthdef
 
 	*names { arg names;
 		var synthDef, index;
@@ -167,9 +169,10 @@ LagControl : Control {
 }
 
 AbstractIn : MultiOutUGen {
-	*isInputUGen { ^true }
+	*isInputUGen { ^true } // TODO: this is only used in SynthDesc - it is unnecessary for this to be in Object as well.
 	resourceManagers { ^[UGenBusResourceManager] }
 	busAccessType { ^\read }
+	hasObservableEffect { ^false }
 }
 
 In : AbstractIn {
@@ -232,6 +235,8 @@ InTrig : AbstractIn {
 AbstractOut : UGen {
 	resourceManagers { ^[UGenBusResourceManager] }
 	busAccessType { ^\write }
+	hasObservableEffect { ^true }
+
 
 	numOutputs { ^0 }
 	writeOutputSpecs {}
@@ -299,6 +304,7 @@ LocalOut : AbstractOut {
 
 XOut : AbstractOut {
 	busAccessType { ^\blend }
+
 	*ar { arg bus, xfade, channelsArray;
 		channelsArray = this.replaceZeroesWithSilence(channelsArray.asUGenInput(this).asArray);
 		this.multiNewList(['audio', bus, xfade] ++ channelsArray)

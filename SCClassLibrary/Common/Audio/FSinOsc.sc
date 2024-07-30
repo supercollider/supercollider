@@ -9,7 +9,10 @@
 	wave at a fixed frequency.
 */
 
-FSinOsc : PureUGen {
+FSinOsc : UGen {
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
+
 	*ar { arg freq=440.0, iphase = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', freq, iphase).madd(mul, add)
 	}
@@ -19,7 +22,10 @@ FSinOsc : PureUGen {
 }
 
 
-Klang : PureUGen {
+Klang : UGen {
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
+
 	*ar { arg specificationsArrayRef, freqscale = 1.0, freqoffset = 0.0;
 		specificationsArrayRef = specificationsArrayRef.multichannelExpandRef(2);
 			^this.multiNewList(['audio', freqscale,
@@ -42,7 +48,10 @@ Klang : PureUGen {
 	argNamesInputsOffset { ^2 }
 }
 
-Klank : PureUGen {
+Klank : UGen {
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
+
 	*ar { arg specificationsArrayRef, input, freqscale = 1.0, freqoffset = 0.0, decayscale = 1.0;
 			specificationsArrayRef = specificationsArrayRef.multichannelExpandRef(2);
 			^this.multiNewList(['audio',  input, freqscale,
@@ -65,7 +74,9 @@ Klank : PureUGen {
 	argNamesInputsOffset { ^2 }
 }
 
-DynKlank : PureUGen {
+DynKlank : UGen {
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
 
 	*ar { arg specificationsArrayRef, input, freqscale = 1.0, freqoffset = 0.0, decayscale = 1.0;
 		^this.multiNew(\audio, specificationsArrayRef, input, freqscale, freqoffset, decayscale)
@@ -87,7 +98,9 @@ DynKlank : PureUGen {
 	}
 }
 
-DynKlang : PureUGen {
+DynKlang : UGen {
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
 
 	*ar { arg specificationsArrayRef, freqscale = 1.0, freqoffset = 0.0;
 		^this.multiNew(\audio, specificationsArrayRef, freqscale, freqoffset);
@@ -109,7 +122,10 @@ DynKlang : PureUGen {
 }
 
 
-Blip : PureUGen {
+Blip : UGen {
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
+
 	*ar { arg freq=440.0, numharm = 200.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', freq, numharm).madd(mul, add)
 	}
@@ -118,7 +134,10 @@ Blip : PureUGen {
 	}
 }
 
-Saw : PureUGen {
+Saw : UGen {
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
+
 	*ar { arg freq=440.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', freq).madd(mul, add)
 	}
@@ -127,7 +146,10 @@ Saw : PureUGen {
 	}
 }
 
-Pulse : PureUGen {
+Pulse : UGen {
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
+
 	*ar { arg freq=440.0, width = 0.5, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', freq, width).madd(mul, add)
 	}

@@ -5,6 +5,10 @@ Magical UGens for treating FFT data as demand-rate streams.
 
 // Actually this just wraps up a bundle of Unpack1FFT UGens
 UnpackFFT : MultiOutUGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\write }
+	hasObservableEffect { ^true }
+
 	*new { | chain, bufsize, frombin=0, tobin |
 		var upperlimit = bufsize/2;
 		tobin = if(tobin.isNil, upperlimit, {tobin.min(upperlimit)});
@@ -14,6 +18,10 @@ UnpackFFT : MultiOutUGen {
 }
 
 Unpack1FFT : UGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\write }
+	hasObservableEffect { ^true }
+
 	*new { | chain, bufsize, binindex, whichmeasure=0 |
 		^this.multiNew('demand', chain, bufsize, binindex, whichmeasure);
 	}
@@ -21,6 +29,10 @@ Unpack1FFT : UGen {
 
 // This does the demanding, to push the data back into an FFT buffer.
 PackFFT : PV_ChainUGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\write }
+	hasObservableEffect { ^true }
+
 	*new { | chain, bufsize, magsphases, frombin=0, tobin, zeroothers=0 |
 		tobin = tobin ?? {bufsize/2};
 		^this.multiNewList(['control', chain, bufsize, frombin, tobin, zeroothers, magsphases.size] ++ magsphases.asArray)

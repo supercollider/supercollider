@@ -8,7 +8,10 @@ mul - multiply by signal or scalar
 add - add to signal or scalar
 */
 
-Osc : PureUGen {
+Osc : UGen {
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
+
 	*ar {
 		arg bufnum, freq=440.0, phase=0.0, mul=1.0, add=0.0;
 		^this.multiNew('audio', bufnum, freq, phase).madd(mul, add)
@@ -19,7 +22,10 @@ Osc : PureUGen {
 	}
 }
 
-SinOsc : PureUGen {
+SinOsc : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+
 	*ar {
 		arg freq=440.0, phase=0.0, mul=1.0, add=0.0;
 		^this.multiNew('audio', freq, phase).madd(mul, add)
@@ -30,7 +36,10 @@ SinOsc : PureUGen {
 	}
 }
 
-SinOscFB : PureUGen {
+SinOscFB : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+
 	*ar {
 		arg freq=440.0, feedback=0.0, mul=1.0, add=0.0;
 		^this.multiNew('audio', freq, feedback).madd(mul, add)
@@ -41,7 +50,10 @@ SinOscFB : PureUGen {
 	}
 }
 
-OscN : PureUGen {
+OscN : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+
 	*ar {
 		arg bufnum, freq=440.0, phase=0.0, mul=1.0, add=0.0;
 		^this.multiNew('audio', bufnum, freq, phase).madd(mul, add)
@@ -53,7 +65,10 @@ OscN : PureUGen {
 }
 
 
-VOsc : PureUGen {
+VOsc : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+
 	*ar {
 		arg bufpos, freq=440.0, phase=0.0, mul=1.0, add=0.0;
 		^this.multiNew('audio', bufpos, freq, phase).madd(mul, add)
@@ -64,7 +79,10 @@ VOsc : PureUGen {
 	}
 }
 
-VOsc3 : PureUGen {
+VOsc3 : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+
 	*ar {
 		arg bufpos, freq1=110.0, freq2=220.0, freq3=440.0, mul=1.0, add=0.0;
 		^this.multiNew('audio', bufpos, freq1, freq2, freq3).madd(mul, add)
@@ -75,7 +93,10 @@ VOsc3 : PureUGen {
 	}
 }
 
-COsc : PureUGen {
+COsc : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+
 	*ar {
 		arg bufnum, freq=440.0, beats=0.5, mul=1.0, add=0.0;
 		^this.multiNew('audio', bufnum, freq, beats).madd(mul, add)
@@ -86,14 +107,20 @@ COsc : PureUGen {
 	}
 }
 
-Formant : PureUGen {
+Formant : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+
 	*ar {
 		arg fundfreq = 440.0, formfreq = 1760.0, bwfreq = 880.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', fundfreq, formfreq, bwfreq).madd(mul, add)
 	}
 }
 
-LFSaw : PureUGen {
+LFSaw : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+
 	*ar {
 		arg freq = 440.0, iphase = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', freq, iphase).madd(mul, add)
@@ -104,7 +131,10 @@ LFSaw : PureUGen {
 	}
 }
 
-LFPar : PureUGen {
+LFPar : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+
 	*ar {
 		arg freq = 440.0, iphase = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', freq, iphase).madd(mul, add)
@@ -115,7 +145,10 @@ LFPar : PureUGen {
 	}
 }
 
-LFCub : PureUGen {
+LFCub : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+
 	*ar {
 		arg freq = 440.0, iphase = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', freq, iphase).madd(mul, add)
@@ -126,7 +159,10 @@ LFCub : PureUGen {
 	}
 }
 
-LFTri : PureUGen {
+LFTri : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+
 	*ar {
 		arg freq = 440.0, iphase = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', freq, iphase).madd(mul, add)
@@ -137,7 +173,10 @@ LFTri : PureUGen {
 	}
 }
 
-LFGauss : PureUGen {
+LFGauss : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+
 	*ar {
 		arg duration = 1, width = 0.1, iphase = 0.0, loop = 1, doneAction = 0;
 		^this.multiNew('audio', duration, width, iphase, loop, doneAction)
@@ -156,7 +195,10 @@ LFGauss : PureUGen {
 
 }
 
-LFPulse : PureUGen {
+LFPulse : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+
 	*ar {
 		arg freq = 440.0, iphase = 0.0, width = 0.5, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', freq, iphase, width).madd(mul, add)
@@ -168,7 +210,10 @@ LFPulse : PureUGen {
 	signalRange { ^\unipolar }
 }
 
-VarSaw : PureUGen {
+VarSaw : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+
 	*ar {
 		arg freq = 440.0, iphase = 0.0, width = 0.5, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', freq, iphase, width).madd(mul, add)
@@ -179,7 +224,10 @@ VarSaw : PureUGen {
 	}
 }
 
-Impulse : PureUGen {
+Impulse : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+
 	*ar {
 		arg freq = 440.0, phase = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', freq, phase).madd(mul, add)
@@ -192,7 +240,10 @@ Impulse : PureUGen {
 }
 
 
-SyncSaw : PureUGen {
+SyncSaw : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+
 	*ar {
 		arg syncFreq = 440.0, sawFreq = 440.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', syncFreq, sawFreq).madd(mul, add)
@@ -207,6 +258,7 @@ SyncSaw : PureUGen {
 Index : UGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\read }
+	hasObservableEffect { ^false }
 
 	*ar {
 		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
@@ -221,6 +273,7 @@ Index : UGen {
 FoldIndex : UGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\read }
+	hasObservableEffect { ^false }
 
 	*ar {
 		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
@@ -235,6 +288,7 @@ FoldIndex : UGen {
 WrapIndex : UGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\read }
+	hasObservableEffect { ^false }
 
 	*ar {
 		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
@@ -249,6 +303,7 @@ WrapIndex : UGen {
 IndexInBetween : UGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\read }
+	hasObservableEffect { ^false }
 
 	*ar {
 		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
@@ -263,6 +318,7 @@ IndexInBetween : UGen {
 DetectIndex : UGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\read }
+	hasObservableEffect { ^false }
 
 	*ar {
 		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
@@ -277,6 +333,7 @@ DetectIndex : UGen {
 Shaper : UGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\read }
+	hasObservableEffect { ^false }
 
 	*ar {
 		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
@@ -291,6 +348,7 @@ Shaper : UGen {
 IndexL : UGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\read }
+	hasObservableEffect { ^false }
 
 	*ar {
 		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
@@ -305,6 +363,7 @@ IndexL : UGen {
 DegreeToKey : UGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\read }
+	hasObservableEffect { ^false }
 
 	*ar {
 		arg bufnum, in = 0.0, octave = 12.0, mul = 1.0, add = 0.0;
@@ -316,7 +375,10 @@ DegreeToKey : UGen {
 	}
 }
 
-Select : PureUGen {
+Select : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+
 	*ar {
 		arg which, array;
 		^this.multiNewList(['audio', which] ++ array)
@@ -384,7 +446,10 @@ SelectXFocus {
 	}
 }
 
-Vibrato : PureUGen {
+Vibrato : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+
 	*ar {
 		arg freq = 440.0, rate = 6, depth = 0.02, delay = 0.0, onset = 0.0,
 		rateVariation = 0.04, depthVariation = 0.1, iphase = 0.0, trig = 0.0;
@@ -417,5 +482,4 @@ TWChoose {
 	*kr { arg trig, array, weights, normalize=0;
 		^Select.kr(TWindex.kr(trig, weights, normalize), array)
 	}
-
 }

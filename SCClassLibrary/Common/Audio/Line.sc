@@ -1,4 +1,7 @@
-Line : PureUGen {
+Line : UGen {
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
+
 	*ar { arg start=0.0, end = 1.0, dur = 1.0, mul = 1.0, add = 0.0, doneAction = 0;
 		^this.multiNew('audio', start, end, dur, doneAction).madd(mul, add)
 	}
@@ -7,7 +10,10 @@ Line : PureUGen {
 	}
 }
 
-XLine : PureUGen {
+XLine : UGen {
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
+
 	*ar { arg start=1.0, end = 2.0, dur = 1.0, mul = 1.0, add = 0.0, doneAction = 0;
 		^this.multiNew('audio', start, end, dur, doneAction).madd(mul, add)
 	}
@@ -16,8 +22,11 @@ XLine : PureUGen {
 	}
 }
 
-LinExp : PureUGen {
+LinExp : UGen {
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
 	checkInputs { ^this.checkSameRateAsFirstInput }
+
 	*ar { arg in=0.0, srclo = 0.0, srchi = 1.0, dstlo = 1.0, dsthi = 2.0;
 		^this.multiNew('audio', in, srclo, srchi, dstlo, dsthi)
 	}
@@ -41,7 +50,10 @@ LinLin {
 	}
 }
 
-AmpComp : PureUGen {
+AmpComp : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+
 	*ir { arg freq = 60.midicps, root = 60.midicps, exp = 0.3333;
 		^this.multiNew('scalar', freq, root, exp)
 	}
@@ -66,13 +78,19 @@ AmpCompA : AmpComp {
 	}
 }
 
-K2A : PureUGen { // control rate to audio rate converter
+K2A : UGen { // control rate to audio rate converter
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+
 	*ar { arg in = 0.0;
 		^this.multiNew('audio', in)
 	}
 }
 
-A2K : PureUGen { // audio rate to control rate converter. only needed in specific cases
+A2K : UGen { // audio rate to control rate converter. only needed in specific cases
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+
 	*kr { arg in = 0.0;
 		^this.multiNew('control', in)
 	}
@@ -93,7 +111,10 @@ T2A : K2A { // control rate to audio rate trigger converter.
 	}
 }
 
-DC : PureMultiOutUGen {
+DC : MultiOutUGen {
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
+
 	*ar { arg in=0.0;
 		^this.multiNew('audio', in)
 	}

@@ -50,11 +50,17 @@ UGen : AbstractFunction {
 		^results
 	}
 
-	// should return an Array of zero or more UGenResourceManagers, or nil if entering panic mode (see UGenResourceManager).
+	//// Begin required interface for synthdef.
+
+	// Should return an Array of zero or more UGenResourceManagers, or nil if entering panic mode (see UGenResourceManager).
 	resourceManagers { ^nil	}
 
+	// Outputs to buffer, bus, sends a message, or does something observable by others.
+	hasObservableEffect { ^true }
+
+	//// End required interface for synthdef.
+
 	createWeakConnectionTo { |ugen|
-		[\createWeakConnectionTo, this, ugen].postln;
 		this.weakDescendants.add(ugen);
 		ugen.weakAntecedents.add(this);
 	}
@@ -490,6 +496,7 @@ UGen : AbstractFunction {
 				^\ir
 			},{
 				^\new
+
 			});
 		});
 		if(rate == \demand, { ^\new });
@@ -548,10 +555,10 @@ UGen : AbstractFunction {
 	optimizeGraph { }
 }
 
-// Don't use
+// Don't use, instead specify these manual.
 PureUGen : UGen {
 	resourceManagers { ^[] }
-	optimizeGraph { }
+	hasObservableEffect { ^false }
 }
 
 MultiOutUGen : UGen {
@@ -587,9 +594,11 @@ MultiOutUGen : UGen {
 
 }
 
+// Don't use, instead specify these manual.
 PureMultiOutUGen : MultiOutUGen {
 	optimizeGraph { }
 	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
 }
 
 OutputProxy : UGen {

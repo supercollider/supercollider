@@ -10,6 +10,7 @@
 MultiplexAnalogIn : UGen {
 	resourceManagers { ^[UGenAnalogResourceManager] }
 	analogAccessType { ^\read }
+	hasObservableEffect { ^true }
 	signalRange { ^\unipolar }
 
 	*ar { arg analogPin = 0, muxChannel = 0, mul = 1.0, add = 0.0;
@@ -27,6 +28,7 @@ MultiplexAnalogIn : UGen {
 AnalogIn : UGen {
 	resourceManagers { ^[UGenAnalogResourceManager] }
 	analogAccessType { ^\read }
+	hasObservableEffect { ^false }
 	signalRange { ^\unipolar }
 
 	*ar { arg analogPin = 0, mul = 1.0, add = 0.0;
@@ -44,6 +46,7 @@ AnalogIn : UGen {
 AnalogOut : UGen {
 	resourceManagers { ^[UGenAnalogResourceManager] }
 	analogAccessType { ^\write }
+	hasObservableEffect { ^true }
 
 	*ar { arg analogPin = 0, output = 0, mul = 1.0, add = 0.0;
 		this.multiNew('audio', analogPin, output).madd(mul,add);
@@ -63,6 +66,7 @@ AnalogOut : UGen {
 DigitalIn : UGen {
 	resourceManagers { ^[UGenAnalogResourceManager] }
 	analogAccessType { ^\read }
+	hasObservableEffect { ^false }
 	signalRange { ^\unipolar }
 
 	*ar { arg digitalPin = 0, mul = 1.0, add = 0.0;
@@ -79,6 +83,7 @@ DigitalIn : UGen {
 */
 DigitalOut : UGen {
 	resourceManagers { ^[UGenAnalogResourceManager] }
+	hasObservableEffect { ^true }
 	analogAccessType { ^\write }
 
 	*ar { arg digitalPin = 0, output = 0, mul = 1.0, add = 0.0;
@@ -101,6 +106,7 @@ DigitalOut : UGen {
 DigitalIO : UGen {
 	resourceManagers { ^[UGenAnalogResourceManager] }
 	analogAccessType { ^\readAndWrite }
+	hasObservableEffect { ^true }
 	signalRange { ^\unipolar }
 
 	*ar { arg digitalPin = 0, output = 0, pinMode = 0, mul = 1.0, add = 0.0;

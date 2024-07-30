@@ -1,4 +1,7 @@
 Hilbert : MultiOutUGen {
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
+
 	*ar { arg in, mul = 1, add = 0;
 		^this.multiNew('audio', in).madd(mul, add);
 	}
@@ -14,7 +17,12 @@ Hilbert : MultiOutUGen {
 // 2048, better results, more delay
 // 1024, less delay, little choppier results
 
+// TODO: should this inherit from UGen as it is a psuedo ugen
 HilbertFIR : UGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\read }
+	hasObservableEffect { ^false }
+
 	*ar { arg in, buffer;
 		var fft, delay;
 		fft = FFT(buffer, in);
@@ -30,19 +38,15 @@ HilbertFIR : UGen {
 // to Hilbert.ar
 
 FreqShift : UGen {
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
+
 	*ar {
 		arg in,			// input signal
 		freq = 0.0,		// shift, in cps
 		phase = 0.0,	// phase of SSB
 		mul = 1.0,
 		add = 0.0;
-//		var shifts;
-//		freq = freq.asArray;
-//		shifts = Array.fill(freq.size, {arg i;
-//			// multiply by quadrature
-//			// and add together. . .
-//			 (Hilbert.ar(in) * SinOsc.ar(freq[i], (phase + [ 0.5*pi, 0.0 ]))).sum});
-//		^(shifts).madd(mul, add)
 		^this.multiNew('audio', in, freq, phase).madd(mul, add)
 	}
 }

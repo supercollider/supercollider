@@ -1,4 +1,6 @@
 IEnvGen : UGen { // envelope index generator
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
 
 	*ar { arg envelope, index, mul = 1, add = 0;
 		envelope = this.convertEnv(envelope);

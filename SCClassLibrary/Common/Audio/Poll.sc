@@ -1,4 +1,7 @@
 Poll : UGen {
+	resourceManagers { ^[] }
+	hasObservableEffect { ^true }
+
 	*ar { arg trig, in, label, trigid = -1;
 		this.multiNewList(['audio', trig, in, label, trigid]);
 		^in;

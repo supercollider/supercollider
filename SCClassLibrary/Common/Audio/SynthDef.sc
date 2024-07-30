@@ -1,111 +1,3 @@
-UGenResourceManager {
-	add { |ugen| this.subclassResponsibility(thisMethod) }
-	panic { |ugen| this.subclassResponsibility(thisMethod) }
-	getAll { this.subclassResponsibility(thisMethod) }
-}
-
-UGenResourceManagerSimple : UGenResourceManager {
-	var previousStateDependentUGen;
-	var all;
-
-	*new {  ^super.newCopyArgs(nil, Set.new) }
-
-	add { |ugen|
-		previousStateDependentUGen !? { |p|
-			p.createWeakConnectionTo(ugen);
-			all.add(p);
-		};
-		previousStateDependentUGen = ugen;
-	}
-
-	panic { |ugen|
-		this.add(ugen)
-	}
-
-	getAll { ^all }
-}
-
-UGenResourceManagerWithNonCausalModes : UGenResourceManager {
-	var previousStateDependentUGens;
-	var previousLastGroup;
-	var currentMode;
-	var all;
-
-	var nonCausalModes;
-	var nameOfModeGetter;
-
-	*new { |nonCausalModes, nameOfModeGetter|
-		^super.newCopyArgs(nil, nil, \initial, Set.new, nonCausalModes.asArray, nameOfModeGetter.asSymbol)
-	}
-
-	add { |ugen|
-		if (currentMode == \initial) {
-			currentMode = ugen.perform(nameOfModeGetter);
-			^previousStateDependentUGens = [ugen];
-		};
-
-		if (currentMode == \panic) {
-			previousStateDependentUGens.do( _.createWeakConnectionTo(ugen) );
-			currentMode = ugen.perform(nameOfModeGetter);
-			previousStateDependentUGens.do {|p| all.add(p) }
-			^previousStateDependentUGens = [ugen];
-		};
-
-
-		nonCausalModes.do({ |m|
-			if(currentMode == m and: {ugen.perform(nameOfModeGetter) == m}){
-				previousLastGroup.do( _.createWeakConnectionTo(ugen) );
-				^previousStateDependentUGens = previousStateDependentUGens.add(ugen); // no edge needed here.
-			}
-		});
-
-		// add connections for everything else.
-		previousStateDependentUGens.do( _.createWeakConnectionTo(ugen) );
-		previousStateDependentUGens.do {|p| all.add(p) };
-
-		previousLastGroup = previousStateDependentUGens;
-
-		previousStateDependentUGens = [ugen];
-		currentMode = ugen.perform(nameOfModeGetter);
-	}
-
-	panic { |ugen|
-		previousStateDependentUGens.do( _.createWeakConnectionTo(ugen) );
-		previousStateDependentUGens.do {|p| all.add(p) };
-		previousStateDependentUGens = [ugen];
-		currentMode = \panic;
-	}
-
-	getAll { ^all }
-}
-
-
-///
-
-UGenMessageResourceManager : UGenResourceManagerSimple {}
-
-UGenBufferResourceManager : UGenResourceManagerWithNonCausalModes {
-	*new { ^super.new([\read], \bufferAccessType) }
-}
-
-UGenBusResourceManager : UGenResourceManagerWithNonCausalModes {
-	*new { ^super.new([\read, \write], \busAccessType) }
-}
-
-UGenRandomResourceManager : UGenResourceManagerWithNonCausalModes {
-	*new { ^super.new([\gen], \randomAccessType) }
-}
-
-UGenAnalogResourceManager : UGenResourceManagerWithNonCausalModes {
-	// here, writes are sequential because I am assuming they overwrite their output
-	// --- this is not mentioned in the help file.
-	*new { ^super.new([\read], \analogAccessType) }
-}
-
-UGenDickResourceManager : UGenResourceManagerSimple {}
-
-///
-
 SynthDef {
 	var <>name, <>func;
 
@@ -128,6 +20,9 @@ SynthDef {
 	classvar <synthDefDir;
 	classvar <>warnAboutLargeSynthDefs = false;
 
+
+	var <>effectiveUGens; // private, don't access.
+
 	var <>resourceManagers;
 
 	*synthDefDir_ { arg dir;
@@ -144,6 +39,7 @@ SynthDef {
 
 	*newForSynthDesc {
 		^super.new()
+		.effectiveUGens_([])
 		.resourceManagers_(
 			UGenResourceManager.allSubclasses.select{|m| m.allSubclasses.isNil }.collect({ |m|
 				m -> m.new
@@ -155,6 +51,7 @@ SynthDef {
 		.variants_(variants)
 		.metadata_(metadata ?? {()})
 		.children_(Array.new(64))
+		.effectiveUGens_([])
 		.resourceManagers_(
 			UGenResourceManager.allSubclasses.select{|m| m.allSubclasses.isNil }.collect({ |m|
 				m -> m.new
@@ -549,13 +446,14 @@ SynthDef {
 			// we don't add ugens, if a rewrite operation is in progress
 			ugen.synthIndex = children.size;
 			children = children.add(ugen);
-			if(ugen.resourceManagers.isNil){
-				resourceManagers.do( _.panic(ugen) );
-			} {
-				ugen.resourceManagers.asArray.do({|r|
-					resourceManagers.at(r).add(ugen)
-				});
+
+            if (ugen.hasObservableEffect){
+                effectiveUGens = effectiveUGens.add(ugen)
 			};
+
+			ugen.resourceManagers
+                !? { |m| m.asArray.do({|r| resourceManagers.at(r).add(ugen) }) }
+                ?? { resourceManagers.do( _.panic(ugen) ) };
 		}
 	}
 
@@ -588,13 +486,12 @@ SynthDef {
 			this.indexUGens
 		};
 	}
+
 	collectConstants {
 		children.do { arg ugen;
 			ugen.collectConstants;
 		};
 	}
-
-
 
 
 	indexUGens {

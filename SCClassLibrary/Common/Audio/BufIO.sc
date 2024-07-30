@@ -1,6 +1,7 @@
 PlayBuf : MultiOutUGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\read }
+	hasObservableEffect { ^false }
 
 	*ar { arg numChannels, bufnum=0, rate=1.0, trigger=1.0, startPos=0.0, loop = 0.0, doneAction=0;
 		^this.multiNew('audio', numChannels, bufnum, rate, trigger, startPos, loop, doneAction)
@@ -20,6 +21,7 @@ PlayBuf : MultiOutUGen {
 TGrains : MultiOutUGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\read }
+	hasObservableEffect { ^false }
 
 	*ar { arg numChannels, trigger=0, bufnum=0, rate=1, centerPos=0,
 		dur=0.1, pan=0, amp=0.1, interp=4;
@@ -37,6 +39,7 @@ TGrains : MultiOutUGen {
 BufRd : MultiOutUGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\read }
+	hasObservableEffect { ^false }
 
 	*ar { arg numChannels, bufnum=0, phase=0.0, loop=1.0, interpolation=2;
 		^this.multiNew('audio', numChannels, bufnum, phase, loop, interpolation)
@@ -61,6 +64,7 @@ BufRd : MultiOutUGen {
 BufWr : UGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\write }
+	hasObservableEffect { ^true }
 
 	*ar { arg inputArray, bufnum=0, phase=0.0, loop=1.0;
 		^this.multiNewList(['audio', bufnum, phase,
@@ -88,6 +92,7 @@ BufWr : UGen {
 RecordBuf : UGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\write }
+	hasObservableEffect { ^true }
 
 	*ar { arg inputArray, bufnum=0, offset=0.0, recLevel=1.0, preLevel=0.0,
 		run=1.0, loop=1.0, trigger=1.0, doneAction=0;
@@ -108,6 +113,7 @@ RecordBuf : UGen {
 ScopeOut : UGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\read }
+	hasObservableEffect { ^false }
 
 	*ar { arg inputArray , bufnum=0;
 		this.multiNewList(['audio', bufnum] ++ inputArray.asArray);
@@ -122,6 +128,7 @@ ScopeOut : UGen {
 ScopeOut2 : UGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\read }
+	hasObservableEffect { ^false }
 
 	*ar { arg inputArray, scopeNum=0, maxFrames = 4096, scopeFrames;
 		this.multiNewList(['audio', scopeNum, maxFrames, scopeFrames ? maxFrames] ++ inputArray.asArray);
@@ -136,6 +143,7 @@ ScopeOut2 : UGen {
 Tap : UGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\read }
+	hasObservableEffect { ^false }
 
 	*ar { arg bufnum = 0, numChannels = 1, delaytime = 0.2;
 		var scale = BufRateScale.kr(bufnum);
@@ -145,7 +153,8 @@ Tap : UGen {
 }
 
 LocalBuf : WidthFirstUGen {
-	resourceManagers { ^[] } // this depends on nothing, and is depended by its usage in code.
+	resourceManagers { ^[] } // This depends on nothing, and is depended by its usage in code.
+	hasObservableEffect { ^false } // If you don't use the buffer, it can be deleted.
 
 	*new { arg numFrames = 1, numChannels = 1;
 		^this.multiNew('scalar', numChannels, numFrames)
@@ -184,6 +193,9 @@ LocalBuf : WidthFirstUGen {
 }
 
 MaxLocalBufs : UGen {
+	hasObservableEffect { ^false }
+	resourceManagers { ^[] }
+
 	*new {
 		^this.multiNew('scalar', 0);
 	}
@@ -195,6 +207,7 @@ MaxLocalBufs : UGen {
 SetBuf : WidthFirstUGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\write }
+	hasObservableEffect { ^true }
 
 	*new { arg buf, values, offset = 0;
 		values = values.asArray;
@@ -205,6 +218,7 @@ SetBuf : WidthFirstUGen {
 ClearBuf : WidthFirstUGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\write }
+	hasObservableEffect { ^true }
 
 	*new { arg buf;
 		^this.multiNew('scalar', buf)

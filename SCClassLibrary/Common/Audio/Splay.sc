@@ -1,7 +1,8 @@
 Splay : UGen {
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
 
 	*new1 { arg rate, spread = 1, level = 1, center = 0.0, levelComp = true ... inArray;
-
 		var n = max(2, inArray.size);
 		var n1 = n - 1;
 		var positions = ((0 .. n1) * (2 / n1) - 1) * spread + center;
@@ -19,7 +20,6 @@ Splay : UGen {
 
 	*kr { arg inArray, spread = 1, level = 1, center = 0.0, levelComp = true;
 		^this.multiNewList([\control, spread, level, center, levelComp] ++ inArray)
-
 	}
 
 	*ar { arg inArray, spread = 1, level = 1, center = 0.0, levelComp = true;
@@ -35,9 +35,10 @@ Splay : UGen {
 
 
 SplayAz : UGen {
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
 
 	*kr { arg numChans = 4, inArray, spread = 1, level = 1, width = 2, center = 0.0, orientation = 0.5, levelComp = true;
-
 		var n = max(1, inArray.size);
 		var pos = if(n == 1) { center } { [ center - spread, center + spread ].resamp1(n) };
 		if (levelComp) { level = level * n.reciprocal.sqrt };
@@ -45,7 +46,6 @@ SplayAz : UGen {
 	}
 
 	*ar { arg numChans = 4, inArray, spread = 1, level = 1, width = 2, center = 0.0, orientation = 0.5, levelComp = true;
-
 		var n = max(1, inArray.size);
 		var normalizedSpread = spread * (n - 1 / n);
 		var pos = if(n == 1) { center } { [ center - normalizedSpread, center + normalizedSpread ].resamp1(n) };
@@ -57,5 +57,4 @@ SplayAz : UGen {
 	*arFill { arg numChans = 4, n, function, spread = 1, level = 1, width = 2, center = 0.0, orientation = 0.5, levelComp = true;
 		^this.ar(numChans, function ! n, spread, level, width, center, orientation, levelComp)
 	}
-
 }

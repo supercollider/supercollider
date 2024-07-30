@@ -1,4 +1,7 @@
 Amplitude : UGen {
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
+
 	*ar { arg in = 0.0, attackTime = 0.01, releaseTime = 0.01, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in, attackTime, releaseTime).madd(mul, add)
 	}
@@ -8,6 +11,9 @@ Amplitude : UGen {
 }
 
 Compander : UGen {
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
+
 	*ar { arg in = 0.0, control = 0.0, thresh = 0.5, slopeBelow = 1.0, slopeAbove = 1.0,
 		clampTime = 0.01, relaxTime = 0.1, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in, control, thresh, slopeBelow, slopeAbove,
@@ -21,6 +27,9 @@ Compander : UGen {
 // clamping will not lag the attacks in the input sound
 
 CompanderD : UGen {
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
+
 	*ar { arg in = 0.0, thresh = 0.5, slopeBelow = 1.0, slopeAbove = 1.0,
 		clampTime = 0.01, relaxTime = 0.01, mul = 1.0, add = 0.0;
 
@@ -31,7 +40,9 @@ CompanderD : UGen {
 
 
 Normalizer : UGen {
-	var buffer;
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
+
 	*ar { arg in = 0.0, level = 1.0, dur = 0.01;
 		^this.multiNew('audio', in, level, dur)
 	}
