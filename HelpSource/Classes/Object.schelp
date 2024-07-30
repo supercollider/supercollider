@@ -50,29 +50,36 @@ method::newCopyArgs
 
 Creates a new instance and copies the arguments to the instance variables in the order that the variables were defined.
 
-Importantly, super class constructors and NOT called, but the first values will be copied.
-Think of instance variables as entries in an array,
-the super class's instance variables are at the beginning and the child class's at the end,
-this method only copies the arguments into that array.
+Importantly, superclass constructors are NOT called, but the values are still placed in the superclass's instance variables.
 
 code::
 MyClass {
 	var a, b, c;
     // Will copy arg1, arg2, arg3 to variables a, b, c.
 	*new { |arg1, arg2, arg3| ^super.newCopyArgs(arg1, arg2, arg3) }
+	*newKw { |arg1| ^super.newCopyArgs(arg1, c: 10) }
 	value { ^[a, b, c] }
 }
-MyClass(1, 2, 3).() == [1, 2, 3]
+MyClass.new(1, 2, 3).value() == [1, 2, 3];
+MyClass.newKw(1).value() == [1, nil, 10];
 ::
 
+Example of inheritance.
 code::
-MyClass {
+Base {
 	var a, b, c;
-    // Also supports keyword arguments, unassigned variables default to nil.
-	*new { |arg1| ^super.newCopyArgs(arg1, c: 10) }
-	value { ^[a, b, c] }
+	*new { ^\didNotCallBase } // This is NEVER called
 }
-MyClass(1).() == [1, nil, 10]
+
+Derived : Base {
+    var d, e, f;
+    *new { |d, e, f| ^super.newCopyArgs(1, 2, 3, d, e, f) }
+    *newKw { |d, e, f| ^super.newCopyArgs(c: 3, d: d, e: e, f: f) }
+	value { ^[a, b, c, d, e, f] }
+}
+
+Derived.new(10, 11, 12).value() == [1, 2, 3, 10, 11, 12];
+Derived.newKw(10, 11, 12).value() == [nil, nil, 3, 10, 11, 12];
 ::
 
 
