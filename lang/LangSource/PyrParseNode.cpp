@@ -1455,7 +1455,12 @@ void PyrMethodNode::compile(PyrSlot* result) {
                     PyrCallNode* cnode;
                     PyrClass* specialClass = nullptr;
                     cnode = (PyrCallNode*)xnode;
-                    methType = compareCallArgs(this, cnode, &specialIndex, &specialClass);
+                    // The optimization breaks when there are keyword arguments in the call.
+                    if (cnode->mKeyarglist) {
+                        methType = methNormal;
+                    } else {
+                        methType = compareCallArgs(this, cnode, &specialIndex, &specialClass);
+                    }
                     if (methType != methNormal) {
                         methraw->specialIndex = specialIndex;
                         method->selectors = cnode->mSelector->mSlot;
