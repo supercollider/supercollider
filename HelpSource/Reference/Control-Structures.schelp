@@ -207,7 +207,7 @@ switch(value)
 { testvalue3 } { truebody3 }
 { testvalue4 } { truebody4 }
 ...
-{ defaultbody };
+{ defaultbody }; // defaultbody can be omitted.
 
 switch(value,
         testvalue1, trueFunction1,
@@ -288,23 +288,56 @@ WARNING: Float:switch is unsafe, rounding via Float:asInteger:switch
 
 method:: case
 
-Function implements a case method which allows for conditional evaluation with multiple cases. Since the receiver represents the first case this can be simply written as pairs of test functions and corresponding functions to be evaluated if true. Case is inlined and is therefore just as efficient as nested if statements.
+Function implements a case method which allows for conditional evaluation with multiple cases. Since the receiver represents the first case this can be simply written as pairs of test functions and corresponding functions to be evaluated if true. Case can be used as inlined and not inlined. Inlined Case and is therefore just as efficient as nested if statements.
 
 discussion::
+Syntax
+code::
+// not inlined:
+case
+{ testFunction1 } { trueFunction1 }
+{ testFunction2 } { trueFunction2 }
+...
+{ defaultFunction }; // defaultFunction can be omitted.
+
+// inlined:
+case(
+	{ testFunction1 } { trueFunction1 }
+	{ testFunction2 } { trueFunction2 }
+	...
+	{ defaultFunction }; // defaultFunction can be omitted.
+)
+::
+
 Example
 code::
 (
 var i, x, z;
 z = [0, 1, 1.1, 1.3, 1.5, 2];
 i = z.choose;
-x = case
-	{ i == 1 }   { \no }
-	{ i == 1.1 } { \wrong }
-	{ i == 1.3 } { \wrong }
-	{ i == 1.5 } { \wrong }
-	{ i == 2 }   { \wrong }
-	{ i == 0 }   { \true };
+x = case(
+{ i == 1 }   { \no }
+{ i == 1.1 } { \wrong }
+{ i == 1.3 } { \wrong }
+{ i == 1.5 } { \wrong }
+{ i == 2 }   { \wrong }
+{ i == 0 }   { \true }
+);
 x.postln;
+)
+::
+or
+code::
+(
+var i, x, z;
+z = [0, 1, 2];
+i = z.choose;
+x = case(
+	{ i == 2 }, { \wrong },
+	{ i == 0 }, { \true },
+	{ \defaultFunction }
+);
+[i, x].postln;
 )
 ::
 
@@ -315,7 +348,7 @@ discussion::
 Example
 code::
 try {
-	...code... 
+	...code...
 } { |error|
 	...exception handler...
 };
