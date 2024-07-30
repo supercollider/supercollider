@@ -271,17 +271,6 @@ switch(1.0)
 -> no
 ::
 
-code::
-(
-switch(1.0,
-	{ 1 }, { "yes" },
-	{ "no" }
-)
-)
-
--> no
-::
-
 The identity comparison code::1.0 === 1:: is false: while 1.0 and 1 represent the same numeric value, one is floating point and the other is an integer, so they cannot be identical.
 
 code::
