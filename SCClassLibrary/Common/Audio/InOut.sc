@@ -84,7 +84,6 @@ Control : MultiOutUGen {
 		^this.initOutputs(values.size, rate)
 	}
 	*isControlUGen { ^true }
-
 }
 
 AudioControl : MultiOutUGen {
@@ -236,7 +235,6 @@ AbstractOut : UGen {
 	resourceManagers { ^[UGenBusResourceManager] }
 	busAccessType { ^\write }
 	hasObservableEffect { ^true }
-
 
 	numOutputs { ^0 }
 	writeOutputSpecs {}

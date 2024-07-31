@@ -92,10 +92,6 @@ BinaryOpUGen : BasicOpUGen {
 	}
 
 	optimizeGraph {
-		if (super.performDeadCodeElimination) {
-			^this
-		};
-
 		if (operator == '+') {
 			this.optimizeAdd;
 			^this;

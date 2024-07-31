@@ -1,203 +1,78 @@
-UGen : AbstractFunction {
-	classvar <>buildSynthDef; // the synth currently under construction
-	var <>synthDef;
-	var <>inputs;
-	var <>rate = 'audio';
+// UGenBuiltInMethods contains common methods (usually mathematical) that UGen implements.
+// This helps keep the UGen class easier to read.
 
-	var <>synthIndex = -1, <>specialIndex=0;
+UGenBuiltInMethods : AbstractFunction {
+	rate { this.subclassResponsibility(thisMethod) }
 
-	var <>antecedents, <>descendants, <>weakAntecedents, <>weakDescendants, <>widthFirstAntecedents; // topo sorting
-	var <depth = 0;
+	signalRange { ^\bipolar }
 
-    *new {
-        ^super.new()
-		.antecedents_([])
-		.descendants_([])
-		.weakAntecedents_([])
-		.weakDescendants_([])
-    }
-	// instance creation
-	*new1 { arg rate ... args;
-		if (rate.isKindOf(Symbol).not) { Error("rate must be Symbol.").throw };
-		^super.new
-		.rate_(rate)
-		.antecedents_([])
-		.descendants_([])
-		.weakAntecedents_([])
-		.weakDescendants_([])
-		.addToSynth
-		.init( *args )
-	}
-	*newFromDesc { arg rate, numOutputs, inputs, specialIndex;
-		^super.new.rate_(rate)
-		.antecedents_([])
-		.descendants_([])
-		.weakAntecedents_([])
-		.weakDescendants_([])
-		.specialIndex_(specialIndex)
-		.inputs_(inputs)
-	}
-	*multiNew { arg ... args;
-		^this.multiNewList(args);
-	}
-
-	*multiNewList { arg args;
-		var size = 0, newArgs, results;
-		args = args.asUGenInput(this);
-		args.do({ arg item;
-			(item.class == Array).if({ size = max(size, item.size) });
-		});
-		if (size == 0) { ^this.new1( *args ) };
-		newArgs = Array.newClear(args.size);
-		results = Array.newClear(size);
-		size.do({ arg i;
-			args.do({ arg item, j;
-				newArgs.put(j, if (item.class == Array, { item.wrapAt(i) },{ item }));
-			});
-			results.put(i, this.multiNewList(newArgs));
-		});
-		^results
-	}
-
-	//// Begin required interface for synthdef.
-
-	// Should return an Array of zero or more UGenResourceManagers, or nil if entering panic mode (see UGenResourceManager).
-	resourceManagers { ^nil	}
-
-	// Outputs to buffer, bus, sends a message, or does something observable by others.
-	hasObservableEffect { ^true }
-
-	//// End required interface for synthdef.
-
-	createWeakConnectionTo { |ugen|
-		this.weakDescendants = this.weakDescendants.add(ugen);
-		ugen.weakAntecedents = ugen.weakAntecedents.add(this);
-	}
-	createConnectionTo {|ugen|
-        this.descendants = this.descendants.add(ugen);
-        ugen.antecedents = ugen.antecedents.add(this);
-	}
-
-    // Other classes override init and return different classes,
-    //    this causes all manner of headaches in the constructors,
-    //    be warned!
-	init { arg ... theInputs;
-		// store the inputs as an array
-		inputs = theInputs;
-		^this;
-	}
-	copy {
-		// you can't really copy a UGen without disturbing the Synth.
-		// Usually you want the same object. This makes .dup work
-		^this
-	}
-
-	madd { arg mul = 1.0, add = 0.0;
-		^MulAdd(this, mul, add);
-	}
-	range { arg lo = 0.0, hi = 1.0;
-		var mul, add;
-		if (this.signalRange == \bipolar, {
-			mul = (hi - lo) * 0.5;
-			add = mul + lo;
-		},{
-			mul = (hi - lo) ;
-			add = lo;
-		});
-		^MulAdd(this, mul, add);
-	}
-	exprange { arg lo = 0.01, hi = 1.0;
+	madd { |mul = 1.0, add = 0.0| ^MulAdd(this, mul, add) }
+	unipolar { |mul = 1| ^this.range(0, mul) }
+	bipolar { |mul = 1| ^this.range(mul.neg, mul) }
+	degrad { ^this * 0.01745329251994329547 /* degree * (pi/180) */ }
+	raddeg { ^this * 57.29577951308232286465 /* radian * (180/pi) */ }
+	minNyquist { ^min(this, SampleRate.ir * 0.5) }
+	range { |lo = 0.0, hi = 1.0|
 		^if (this.signalRange == \bipolar) {
-			this.linexp(-1, 1, lo, hi, nil)
+			var mul = (hi - lo) * 0.5;
+			var add = mul + lo;
+            MulAdd(this, mul, add)
 		} {
-			this.linexp(0, 1, lo, hi, nil)
-		};
+            MulAdd(this, hi - lo, lo)
+		}
 	}
-
-	curverange { arg lo = 0.00, hi = 1.0, curve = -4;
-		^if (this.signalRange == \bipolar) {
-			this.lincurve(-1, 1, lo, hi, curve, nil)
-		} {
-			this.lincurve(0, 1, lo, hi, curve, nil)
-		};
+	exprange { |lo = 0.01, hi = 1.0|
+        ^this.linexp((this.signalRange == \bipolar).if(-1, 0), 1, lo, hi, nil)
 	}
-
-	unipolar { arg mul = 1;
-		^this.range(0, mul)
+	curverange { |lo = 0.00, hi = 1.0, curve = -4|
+        ^this.lincurve((this.signalRange == \bipolar).if(-1, 0), 1, lo, hi, curve, nil)
 	}
-
-	bipolar { arg mul = 1;
-		^this.range(mul.neg, mul)
-	}
-
-	clip { arg lo = 0.0, hi = 1.0;
-		^if(rate == \demand){
+	clip { |lo = 0.0, hi = 1.0|
+		^if(this.rate == \demand){
 			max(lo, min(hi, this))
 		}{
-			Clip.perform(Clip.methodSelectorForRate(rate), this, lo, hi)
+			Clip.perform(Clip.methodSelectorForRate(this.rate), this, lo, hi)
 		}
 	}
-
-	fold { arg lo = 0.0, hi = 0.0;
-		^if(rate == \demand) {
-			this.notYetImplemented(thisMethod)
-		} {
-			Fold.perform(Fold.methodSelectorForRate(rate), this, lo, hi)
-		}
+	fold { |lo = 0.0, hi = 0.0|
+		if(this.rate == \demand) { this.notYetImplemented(thisMethod) };
+		^Fold.perform(Fold.methodSelectorForRate(this.rate), this, lo, hi)
 	}
-	wrap { arg lo = 0.0, hi = 1.0;
-		^if(rate == \demand) {
-			this.notYetImplemented(thisMethod)
-		} {
-			Wrap.perform(Wrap.methodSelectorForRate(rate), this, lo, hi)
-		}
+	wrap { |lo = 0.0, hi = 1.0|
+		if(this.rate == \demand) { this.notYetImplemented(thisMethod) };
+        ^Wrap.perform(Wrap.methodSelectorForRate(this.rate), this, lo, hi)
 	}
 
-	degrad {
-		// degree * (pi/180)
-		^this * 0.01745329251994329547
-	}
 
-	raddeg {
-		// radian * (180/pi)
-		^this * 57.29577951308232286465
-	}
-
-	blend { arg that, blendFrac = 0.5;
+	blend { |that, blendFrac = 0.5|
 		var pan;
-		^if (rate == \demand || that.rate == \demand) {
-			this.notYetImplemented(thisMethod)
-		} {
-			pan = blendFrac.linlin(0.0, 1.0, -1, 1);
-			if (rate == \audio) {
-				^XFade2.ar(this, that, pan)
-			};
+		if (this.rate == \demand || that.rate == \demand) { this.notYetImplemented(thisMethod) };
 
-			if (that.rate == \audio) {
-				^XFade2.ar(that, this, pan.neg)
-			};
+        pan = blendFrac.linlin(0.0, 1.0, -1, 1);
 
-			^LinXFade2.perform(LinXFade2.methodSelectorForRate(rate), this, that, pan)
-		}
+        if (this.rate == \audio) { ^XFade2.ar(this, that, pan) };
+
+        if (that.rate == \audio) { ^XFade2.ar(that, this, pan.neg) };
+
+        ^LinXFade2.perform(LinXFade2.methodSelectorForRate(this.rate), this, that, pan)
 	}
 
-	minNyquist { ^min(this, SampleRate.ir * 0.5) }
 
-	lag { arg t1=0.1, t2;
+	lag { |t1 = 0.1, t2|
 		^if(t2.isNil) {
 			Lag.multiNew(this.rate, this, t1)
 		} {
 			LagUD.multiNew(this.rate, this, t1, t2)
 		}
 	}
-	lag2 { arg t1=0.1, t2;
+	lag2 { |t1 = 0.1, t2|
 		^if(t2.isNil) {
 			Lag2.multiNew(this.rate, this, t1)
 		} {
 			Lag2UD.multiNew(this.rate, this, t1, t2)
 		}
 	}
-	lag3 { arg t1=0.1, t2;
+	lag3 { arg t1 = 0.1, t2;
 		^if(t2.isNil) {
 			Lag3.multiNew(this.rate, this, t1)
 		} {
@@ -329,69 +204,220 @@ UGen : AbstractFunction {
 
 	binaryValue { ^this.sign.max(0) }
 
-
 	// Note that this differs from |==| for other AbstractFunctions
-	// Other AbstractFunctions write '|==|' into the compound function
-	// for the sake of their 'storeOn' (compile string) representation.
-	// For UGens, scsynth does not support |==| (same handling --> error).
-	// So here, we use '==' which scsynth does understand.
-	// Also, BinaryOpUGen doesn't write a compile string.
-	|==| { |that|
-		^this.composeBinaryOp('==', that)
-	}
-	prReverseLazyEquals { |that|
-		// commutative, so it's OK to flip the operands
-		^this.composeBinaryOp('==', that)
+    // Other AbstractFunctions write '|==|' into the compound function
+    // for the sake of their 'storeOn' (compile string) representation.
+    // For UGens, scsynth does not support |==| (same handling --> error).
+    // So here, we use '==' which scsynth does understand.
+    // Also, BinaryOpUGen doesn't write a compile string.
+    |==| { |that|
+        ^this.composeBinaryOp('==', that)
+    }
+    prReverseLazyEquals { |that|
+        // commutative, so it's OK to flip the operands
+        ^this.composeBinaryOp('==', that)
+    }
+
+    sanitize {
+        ^Sanitize.perform(this.methodSelectorForRate, this);
+    }
+
+    @ { arg y; ^Point.new(this, y) } // dynamic geometry support
+
+	poll { |trig = 10, label, trigid = -1| ^Poll(trig, this, label, trigid) }
+
+	dpoll { |label, run = 1, trigid = -1| ^Dpoll(this, label, run, trigid) }
+
+	checkBadValues { |id = 0, post = 2|
+		// add the UGen to the tree but keep "this" as the output
+		CheckBadValues.perform(this.methodSelectorForRate, this, id, post);
 	}
 
-	sanitize {
-		^Sanitize.perform(this.methodSelectorForRate, this);
+	degreeToKey { | scale, stepsPerOctave = 12| ^DegreeToKey.kr(scale, this, stepsPerOctave) }
+
+	// complex support
+	asComplex { ^Complex.new(this, 0.0) }
+	performBinaryOpOnComplex { |aSelector, aComplex| ^aComplex.perform(aSelector, this.asComplex) }
+
+	if { |trueUGen, falseUGen| ^(this * (trueUGen - falseUGen)) + falseUGen }
+
+	rateNumber {
+		if (this.rate == \audio, { ^2 });
+		if (this.rate == \control, { ^1 });
+		if (this.rate == \demand, { ^3 });
+		^0 // scalar
+	}
+	methodSelectorForRate {
+        ^switch (this.rate)
+        { \audio } { \ar }
+        { \control } { \kr }
+        { \demand } { \new }
+        { \scalar } { if(this.class.respondsTo(\ir)) { \ir }{ \new } }
+        { nil }
 	}
 
-	signalRange { ^\bipolar }
-	@ { arg y; ^Point.new(this, y) } // dynamic geometry support
+	// PRIVATE
+	// function composition
+	composeUnaryOp { |aSelector| ^UnaryOpUGen.new(aSelector, this) }
+	reverseComposeBinaryOp { |aSelector, aUGen| ^BinaryOpUGen.new(aSelector, aUGen, this) }
+	composeNAryOp { |aSelector, anArgList| ^thisMethod.notYetImplemented }
+	composeBinaryOp { |aSelector, anInput|
+		if (anInput.isValidUGenInput) {
+			^BinaryOpUGen.new(aSelector, this, anInput)
+		} {
+			^anInput.performBinaryOpOnUGen(aSelector, this);
+		}
+	}
+}
 
-	addToSynth {
-		synthDef = buildSynthDef;
-		if (synthDef.notNil, { synthDef.addUGen(this) });
+UGen : UGenBuiltInMethods {
+	classvar <>buildSynthDef; // the synth currently under construction
+
+	var <>synthDef; // The Current active synthdef.
+	var <>inputs;
+	var <>rate = 'audio';
+	var <>synthIndex = -1; // The order in the synthdef, not set until the synthdef compilation is complete, do not use.
+	var <>specialIndex = 0; // TODO: what does this do?
+	var <>antecedents, <>descendants, <>weakAntecedents, <>weakDescendants; // Graph edges. Set in initEdges due to weird issue with init.
+	var <depth = 0; // How many children are above it in the graph.
+
+    // backwards compatibility
+	widthFirstAntecedents {
+        Error("UGen:widthFirstAntecedents has been removed as it was broken, please use createWeakConnectionTo\n").throw
+	}
+	widthFirstAntecedents_ { this.widthFirstAntecedents }
+
+    *new { ^super.new() }
+
+	*new1 { |rate ... args|
+		if (rate.isKindOf(Symbol).not) { Error("rate must be Symbol.").throw };
+		^super.new.rate_(rate).addToSynth.init(*args)
 	}
 
-	collectConstants {
-		inputs.do({ arg input;
-			if (input.isNumber, { synthDef.addConstant(input.asFloat)  });
+	*newFromDesc { |rate, numOutputs, inputs, specialIndex|
+		if (rate.isKindOf(Symbol).not) { Error("rate must be Symbol.").throw };
+		^super.new.rate_(rate).specialIndex_(specialIndex).inputs_(inputs)
+	}
+
+	*multiNew { |... args| ^this.multiNewList(args) }
+
+	*multiNewList { arg args;
+		var size = 0, newArgs, results;
+		args = args.asUGenInput(this);
+		args.do({ arg item;
+			(item.class == Array).if({ size = max(size, item.size) });
 		});
+		if (size == 0) { ^this.new1( *args ) };
+		newArgs = Array.newClear(args.size);
+		results = Array.newClear(size);
+		size.do({ arg i;
+			args.do({ arg item, j;
+				newArgs.put(j, if (item.class == Array, { item.wrapAt(i) },{ item }));
+			});
+			results.put(i, this.multiNewList(newArgs));
+		});
+		^results
 	}
+
+    // Other classes override init and return different classes,
+    //    this causes all manner of headaches in the constructors,
+    //    be warned!
+	init { | ... theInputs| inputs = theInputs }
 
 	isValidUGenInput { ^true }
 	asUGenInput { ^this }
 	asControlInput { Error("can't set a control to a UGen").throw }
 	numChannels { ^1 }
+	copy { ^this }
+	outputIndex { ^0 } // TODO: what does this do?
+	writesToBus { ^false } // TODO: what does this do?
+	isUGen { ^true }  // TODO: duh, why is this needed?
+	name { ^this.class.name.asString }
+	dumpName { ^"%_%".format(synthIndex, this.name) }
+	numInputs { ^inputs.size }
+	numOutputs { ^1 }
+	addToSynth { (synthDef = buildSynthDef) !? _.addUGen(this) }
+	checkInputs { ^this.checkValidInputs } // Choose a input validation strategy, see below for options.
 
+    /// --- Required meta-info. All UGens should specify these two methods.
+	resourceManagers { ^nil	} // Should return an Array of zero or more UGenResourceManagers, or nil if entering panic mode (see UGenResourceManager).
+	hasObservableEffect { ^true } // Outputs to buffer, bus, sends a message, or does something else observable.
 
-	checkInputs { ^this.checkValidInputs }
+    // Inputs do this.
+	createConnectionTo {|ugen|
+        this.descendants = this.descendants.add(ugen);
+        ugen.antecedents = ugen.antecedents.add(this);
+	}
+	// Creates a weak edge between two ugens. Weak edges are used to indicate IO and other resource ordering.
+	createWeakConnectionTo { |ugen|
+		this.weakDescendants = this.weakDescendants.add(ugen);
+		ugen.weakAntecedents = ugen.weakAntecedents.add(this);
+	}
+
+    // Edges cannot be made as we go along because the init method is overridden in some classes to return a class that IS NOT a UGen.
+    // To fix this, you'd have to change Control and OutputProxy.
+    // Do not override this method.
+	initEdges {
+	    depth = 0;
+	    antecedents ?? { antecedents = [] };
+	    descendants ?? { descendants = [] };
+	    weakAntecedents ?? { weakAntecedents = [] };
+	    weakDescendants ?? { weakDescendants = [] };
+    	inputs.do({ arg input;
+    		if (input.isKindOf(UGen), {
+    			antecedents = antecedents.add(input.source);
+    			input.source.descendants = input.source.descendants.add(this);
+                depth = max(depth, input.depth + 1);
+    		});
+    	});
+    	weakAntecedents.do({ |a|
+            depth = max(depth, a.depth + 1);
+    	});
+    	antecedents.sort({|l, r| l.depth > r.depth });
+    	weakAntecedents.sort({|l, r| l.depth > r.depth });
+    }
+
+    // Helper accessor for inputs
+	argNamesInputsOffset { ^1 } // ignores first input
+    argNameForInputAt { arg i;
+        var method = this.class.class.findMethod(this.methodSelectorForRate);
+        if(method.isNil or: {method.argNames.isNil},{ ^nil });
+        ^method.argNames.at(i + this.argNamesInputsOffset)
+    }
+
+    dumpArgs {
+        " ARGS:".postln;
+        inputs.do{ |in, index|
+            ("   " ++ (this.argNameForInputAt(index) ? index.asString) ++ ":" + in + in.class).postln
+        };
+    }
+
+    // Stores all constants in the synthdef so they can be deduplicated
+	collectConstants {
+         inputs.select(_.isNumber).do{ |input| synthDef.addConstant(input.asFloat) }
+	}
+
+	/// Input validation techniques, only one of these methods is active at a time.
 	checkValidInputs {
 		inputs.do({arg in,i;
 			var argName;
-			if(in.isValidUGenInput.not,{
+			if(in.isValidUGenInput.not) {
 				argName = this.argNameForInputAt(i) ? i;
 				^"arg: '" ++ argName ++ "' has bad input:" + in;
-			})
+			}
 		});
 		^nil
 	}
-
 	checkNInputs { arg n;
 		if (rate == 'audio') {
 			n.do {| i |
 				if (inputs.at(i).rate != 'audio') {
-					//"failed".postln;
-					^("input " ++ i ++ " is not audio rate: " + inputs.at(i) + inputs.at(0).rate);
+					^("input " ++ i ++ " is not audio rate: " + inputs.at(i) + inputs.at(0).rate)
 				};
 			};
 		};
 		^this.checkValidInputs
 	}
-
 	checkSameRateAsFirstInput {
 		if (rate !== inputs.at(0).rate) {
 			^("first input is not" + rate + "rate: " + inputs.at(0) + inputs.at(0).rate);
@@ -399,142 +425,14 @@ UGen : AbstractFunction {
 		^this.checkValidInputs
 	}
 
-	argNameForInputAt { arg i;
-		var method = this.class.class.findMethod(this.methodSelectorForRate);
-		if(method.isNil or: {method.argNames.isNil},{ ^nil });
-		^method.argNames.at(i + this.argNamesInputsOffset)
-	}
-	argNamesInputsOffset { ^1 }
-	dumpArgs {
-		" ARGS:".postln;
-		inputs.do({ arg in,ini;
-			("   " ++ (this.argNameForInputAt(ini) ? ini.asString)++":" + in + in.class).postln
-		});
-	}
-	degreeToKey { arg scale, stepsPerOctave=12;
-		^DegreeToKey.kr(scale, this, stepsPerOctave)
-	}
 
-	outputIndex { ^0 }
-	writesToBus { ^false } // TODO: what does this do?
-	isUGen { ^true }
-
-	poll { arg trig = 10, label, trigid = -1;
-		^Poll(trig, this, label, trigid)
-	}
-
-	dpoll { arg label, run = 1, trigid = -1;
-		^Dpoll(this, label, run, trigid)
-	}
-
-	checkBadValues { arg id = 0, post = 2;
-		// add the UGen to the tree but keep "this" as the output
-		CheckBadValues.perform(this.methodSelectorForRate, this, id, post);
-	}
-
-	*methodSelectorForRate { arg rate;
-		if(rate == \audio,{ ^\ar });
-		if(rate == \control, { ^\kr });
-		if(rate == \scalar, {
-			if(this.respondsTo(\ir),{
-				^\ir
-			},{
-				^\new
-			});
-		});
-		if(rate == \demand, { ^\new });
-		^nil
-	}
-
-	*replaceZeroesWithSilence { arg array;
-		// this replaces zeroes with audio rate silence.
-		// sub collections are deep replaced
-		var numZeroes, silentChannels, pos = 0;
-
-		numZeroes = array.count({ arg item; item == 0.0 });
-		if (numZeroes == 0, { ^array });
-
-		silentChannels = Silent.ar(numZeroes).asCollection;
-		array.do({ arg item, i;
-			var res;
-			if (item == 0.0, {
-				array.put(i, silentChannels.at(pos));
-				pos = pos + 1;
-			}, {
-				if(item.isSequenceableCollection, {
-					res = this.replaceZeroesWithSilence(item);
-					array.put(i, res);
-				});
-			});
-		});
-		^array;
-	}
-
-
-	// PRIVATE
-	// function composition
-	composeUnaryOp { arg aSelector;
-		^UnaryOpUGen.new(aSelector, this)
-	}
-	composeBinaryOp { arg aSelector, anInput;
-		if (anInput.isValidUGenInput, {
-			^BinaryOpUGen.new(aSelector, this, anInput)
-		},{
-			^anInput.performBinaryOpOnUGen(aSelector, this);
-		});
-	}
-	reverseComposeBinaryOp { arg aSelector, aUGen;
-		^BinaryOpUGen.new(aSelector, aUGen, this)
-	}
-	composeNAryOp { arg aSelector, anArgList;
-		^thisMethod.notYetImplemented
-	}
-
-	// complex support
-
-	asComplex { ^Complex.new(this, 0.0) }
-	performBinaryOpOnComplex { arg aSelector, aComplex; ^aComplex.perform(aSelector, this.asComplex) }
-
-	if { arg trueUGen, falseUGen;
-		^(this * (trueUGen - falseUGen)) + falseUGen;
-	}
-
-	rateNumber {
-		if (rate == \audio, { ^2 });
-		if (rate == \control, { ^1 });
-		if (rate == \demand, { ^3 });
-		^0 // scalar
-	}
-	methodSelectorForRate {
-		if(rate == \audio,{ ^\ar });
-		if(rate == \control, { ^\kr });
-		if(rate == \scalar, {
-			if(this.class.respondsTo(\ir),{
-				^\ir
-			},{
-				^\new
-
-			});
-		});
-		if(rate == \demand, { ^\new });
-		^nil
-	}
-	writeInputSpec { arg file, synthDef;
+    /// --- Writing to file.
+	writeInputSpec { |file, synthDef|
 		file.putInt32(synthIndex);
 		file.putInt32(this.outputIndex);
 	}
-	writeOutputSpec { arg file;
-		file.putInt8(this.rateNumber);
-	}
-	writeOutputSpecs { arg file;
-		this.writeOutputSpec(file);
-	}
-	numInputs { ^inputs.size }
-	numOutputs { ^1 }
-
-	name {
-		^this.class.name.asString;
-	}
+	writeOutputSpec { |file| file.putInt8(this.rateNumber) }
+	writeOutputSpecs { |file| this.writeOutputSpec(file) }
 	writeDef { arg file;
 		try {
 			file.putPascalString(this.name);
@@ -553,42 +451,49 @@ UGen : AbstractFunction {
 		}
 	}
 
-	schedule { arg outStack;
-		descendants.reverseDo({ arg ugen;
-			ugen.removeAntecedent(this);
-		});
-		^outStack.add(this);
+	/// --- TODO: decide if these should be deleted or not
+	performDeadCodeElimination {
+        Error("UGen:performDeadCodeElimination has been removed as the previous SynthDef compiler was broken. This happens automatically now.\n".format(thisMethod)).throw
+	}
+	initTopoSort { Error("% has been removed as the previous SynthDef compiler was broken\n".format(thisMethod)).throw }
+	makeAvailable { Error("% has been removed as the previous SynthDef compiler was broken\n".format(thisMethod)).throw }
+	removeAntecedent { Error("% has been removed as the previous SynthDef compiler was broken\n".format(thisMethod)).throw }
+	optimizeGraph { Error("% has been removed as the previous SynthDef compiler was broken\n".format(thisMethod)).throw }
+	schedule { Error("% has been removed as the previous SynthDef compiler was broken\n".format(thisMethod)).throw }
+
+	/// --- Class methods
+	*methodSelectorForRate { |rate|
+        ^switch (rate)
+        { \audio } { \ar }
+        { \control } { \kr }
+        { \demand } { \new }
+        { \scalar } { if(this.respondsTo(\ir)) { \ir }{ \new } }
+        { nil }
 	}
 
-	dumpName {
-		^synthIndex.asString ++ "_" ++ this.class.name.asString
-	}
+    *replaceZeroesWithSilence { arg array;
+        // this replaces zeroes with audio rate silence.
+        // sub collections are deep replaced
+        var numZeroes, silentChannels, pos = 0;
 
-    // These cannot be made as we go along because the init method is overridden in some classes to return a class that IS NOT a UGen.
-    // To fix this, you'd have to change Control and OutputProxy.
-    // Do not override this method.
-	initEdges {
-	    depth = 0;
-    	inputs.do({ arg input;
-    		if (input.isKindOf(UGen), {
-    			antecedents = antecedents.add(input.source);
-    			input.source.descendants = input.source.descendants.add(this);
-                depth = max(depth, input.depth + 1);
-    		});
-    	});
-    	weakAntecedents.do({ |a|
-            depth = max(depth, a.depth + 1);
-    	});
-    	antecedents.sort({|l, r| l.depth > r.depth });
-    	weakAntecedents.sort({|l, r| l.depth > r.depth });
+        numZeroes = array.count({ arg item; item == 0.0 });
+        if (numZeroes == 0, { ^array });
+
+        silentChannels = Silent.ar(numZeroes).asCollection;
+        array.do({ arg item, i;
+            var res;
+            if (item == 0.0, {
+                array.put(i, silentChannels.at(pos));
+                pos = pos + 1;
+            }, {
+                if(item.isSequenceableCollection, {
+                    res = this.replaceZeroesWithSilence(item);
+                    array.put(i, res);
+                });
+            });
+        });
+        ^array;
     }
-
-	// TODO: delete
-	performDeadCodeElimination { }
-	initTopoSort { }
-	makeAvailable { }
-	removeAntecedent { }
-	optimizeGraph { }
 }
 
 // Don't use, instead specify these manual.
@@ -601,11 +506,9 @@ MultiOutUGen : UGen {
 	// a class for UGens with multiple outputs
 	var <channels;
 
-	*newFromDesc { arg rate, numOutputs, inputs;
-		^super.new.rate_(rate).inputs_(inputs).initOutputs(numOutputs, rate)
-	}
+	*newFromDesc { |rate, numOutputs, inputs| ^super.new.rate_(rate).inputs_(inputs).initOutputs(numOutputs, rate) }
 
-	initOutputs { arg numChannels, rate;
+	initOutputs { |numChannels, rate|
 		if(numChannels.isInteger.not or: { numChannels < 1 }, {
 			Error("%: numChannels must be a nonzero positive integer, but received (%)."
               .format(this, numChannels)).throw
@@ -620,19 +523,19 @@ MultiOutUGen : UGen {
 	}
 
 	numOutputs { ^channels.size }
-	writeOutputSpecs { arg file;
-		channels.do({ arg output; output.writeOutputSpec(file); });
-	}
-	synthIndex_ { arg index;
-		synthIndex = index;
-		channels.do({ arg output; output.synthIndex_(index); });
+
+	writeOutputSpecs { |file|
+		channels.do{ |output| output.writeOutputSpec(file) }
 	}
 
+	synthIndex_ { |index|
+		synthIndex = index;
+		channels.do{ |output| output.synthIndex_(index) };
+	}
 }
 
 // Don't use, instead specify these manual.
 PureMultiOutUGen : MultiOutUGen {
-	optimizeGraph { }
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
 }
@@ -640,12 +543,10 @@ PureMultiOutUGen : MultiOutUGen {
 OutputProxy : UGen {
 	var <>source, <>outputIndex, <>name;
 
-	*new { arg rate, itsSourceUGen, index;
-		^super.new1(rate, itsSourceUGen, index)
-	}
-	addToSynth {
-		synthDef = buildSynthDef;
-	}
+	*new { |rate, itsSourceUGen, index| ^super.new1(rate, itsSourceUGen, index) }
+
+	addToSynth { synthDef = buildSynthDef }
+
 	init { arg argSource, argIndex;
 		super.init(argSource, argIndex);
 		source = argSource;
@@ -653,32 +554,26 @@ OutputProxy : UGen {
 		synthIndex = source.synthIndex;
 	}
 
-	dumpName {
-		^this.source.dumpName ++ "[" ++ outputIndex ++ "]"
-	}
+	dumpName { ^this.source.dumpName ++ "[" ++ outputIndex ++ "]" }
 
 	controlName {
 		var counter = 0, index = 0;
 
-		this.synthDef.children.do({
-			arg ugen;
-			if(this.source.synthIndex == ugen.synthIndex,
-				{ index = counter + this.outputIndex; });
-			if(ugen.isKindOf(Control),
-				{ counter = counter + ugen.channels.size; });
-		});
+		this.synthDef.children.do{ |ugen|
+			if(this.source.synthIndex == ugen.synthIndex) {
+                index = counter + this.outputIndex
+			};
+			if(ugen.isKindOf(Control)){
+				counter = counter + ugen.channels.size
+            };
+		};
 
-		^synthDef.controlNames.detect({ |c| c.index == index });
+		^synthDef.controlNames.detect{ |c| c.index == index }
 	}
 
-	spec_{ arg spec;
-		var controlName, name;
-		controlName = this.controlName;
-		if (this.controlName.notNil) {
-			controlName.spec = spec;
-		} {
-			"Cannot set spec on a non-Control".error;
+	spec_{ |spec|
+		this.controlName !? { this.controlName.spec = spec } ?? {
+            Error("Cannot set spec on a non-Control").throw
 		}
 	}
-
 }
