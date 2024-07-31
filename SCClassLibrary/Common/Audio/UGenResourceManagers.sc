@@ -1,4 +1,8 @@
 UGenResourceManager {
+    classvar allResourceManagers;
+    *register { |resourceManager| allResourceManagers = allResourceManagers.add(resourceManager) }
+    *createNewInstances { ^allResourceManagers.collect({|m| m -> m.new }).asEvent }
+
 	add { |ugen| this.subclassResponsibility(thisMethod) }
 	panic { |ugen| this.subclassResponsibility(thisMethod) }
 	getAll { this.subclassResponsibility(thisMethod) }
@@ -87,24 +91,32 @@ UGenResourceManagerWithNonCausalModes : UGenResourceManager {
 	}
 }
 
-UGenMessageResourceManager : UGenResourceManagerSimple {}
+UGenMessageResourceManager : UGenResourceManagerSimple {
+    *initClass { UGenResourceManager.register(this) }
+}
 
 UGenBufferResourceManager : UGenResourceManagerWithNonCausalModes {
+    *initClass { UGenResourceManager.register(this) }
 	*new { ^super.new([\read], \bufferAccessType) }
 }
 
 UGenBusResourceManager : UGenResourceManagerWithNonCausalModes {
+    *initClass { UGenResourceManager.register(this) }
 	*new { ^super.new([\read, \write], \busAccessType) }
 }
 
 UGenRandomResourceManager : UGenResourceManagerWithNonCausalModes {
+    *initClass { UGenResourceManager.register(this) }
 	*new { ^super.new([\gen], \randomAccessType) }
 }
 
 UGenAnalogResourceManager : UGenResourceManagerWithNonCausalModes {
+    *initClass { UGenResourceManager.register(this) }
 	// here, writes are sequential because I am assuming they overwrite their output
 	// --- this is not mentioned in the help file.
 	*new { ^super.new([\read], \analogAccessType) }
 }
 
-UGenDiskResourceManager : UGenResourceManagerSimple {}
+UGenDiskResourceManager : UGenResourceManagerSimple {
+    *initClass { UGenResourceManager.register(this) }
+}

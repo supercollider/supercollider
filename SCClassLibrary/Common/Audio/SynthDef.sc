@@ -24,12 +24,14 @@ SynthDefTopologicalSort {
 }
 
 SynthDef {
-	var <>name, <>func;
+	var <>name;
+	var <>func;
 
 	var <>controls, <>controlNames; // ugens add to this
 	var <>allControlNames;
 	var <>controlIndex=0;
-	var <>children;
+
+	var <>children; // TODO: remove, no longer needed
 
 	var <>constants;
 	var <>constantSet;
@@ -38,34 +40,31 @@ SynthDef {
 	var <>variants;
 	var rewriteInProgress;
 
-	var <>desc, <>metadata;
+	var <>desc;
+	var <>metadata;
 
 	classvar <synthDefDir;
 	classvar <>warnAboutLargeSynthDefs = false;
 
-	var <>effectiveUGens; // private, don't access.
-	var <>resourceManagers; // private, don't access.
+	var <>effectiveUGens; // Private, don't access. These are the ends of the graph, the Outs, BufWrs, et cetera.
+	var <>resourceManagers; // Private, don't access.
 
 	*synthDefDir_ { arg dir;
-		if (dir.last.isPathSeparator.not )
-		{ dir = dir ++ thisProcess.platform.pathSeparator };
+		if (dir.last.isPathSeparator.not ) {
+            dir = dir ++ thisProcess.platform.pathSeparator
+		};
 		synthDefDir = dir;
 	}
 
 	*initClass {
 		synthDefDir = Platform.userAppSupportDir ++ "/synthdefs/";
-		// Ensure exists:
-		synthDefDir.mkdir;
+		synthDefDir.mkdir; // Ensure exists:
 	}
 
 	*newForSynthDesc {
 		^super.new()
 		.effectiveUGens_([])
-		.resourceManagers_(
-			UGenResourceManager.allSubclasses.select{|m| m.allSubclasses.isNil }.collect({ |m|
-				m -> m.new
-			}).asEvent
-		)
+		.resourceManagers_(UGenResourceManager.createNewInstances)
 	}
 	*new { arg name, ugenGraphFunc, rates, prependArgs, variants, metadata;
 		^super.newCopyArgs(name.asSymbol)
@@ -73,11 +72,7 @@ SynthDef {
 		.metadata_(metadata ?? {()})
 		.children_(Array.new(64))
 		.effectiveUGens_([])
-		.resourceManagers_(
-			UGenResourceManager.allSubclasses.select{|m| m.allSubclasses.isNil }.collect({ |m|
-				m -> m.new
-			}).asEvent
-		)
+		.resourceManagers_(UGenResourceManager.createNewInstances)
 		.build(ugenGraphFunc, rates, prependArgs)
 	}
 
