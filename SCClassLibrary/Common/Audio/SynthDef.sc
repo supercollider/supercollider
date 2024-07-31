@@ -1,3 +1,28 @@
+SynthDefTopologicalSort {
+    classvar roots;
+    classvar visited;
+    classvar out;
+
+    *new { |inroots|
+        roots = inroots;
+        visited = Set();
+        out = Array(roots.size * 10);
+        roots.do( SynthDefTopologicalSort.prVisit(_) );
+        ^out
+    }
+
+    *prVisit { |u|
+        if(u.isKindOf(Number)) { ^nil };
+
+        if (visited.includes(u).not){
+            u.antecedents.do( SynthDefTopologicalSort.prVisit(_) );
+            u.weakAntecedents.do( SynthDefTopologicalSort.prVisit(_) );
+            visited.add(u);
+            out = out.add(u);
+        }
+    }
+}
+
 SynthDef {
 	var <>name, <>func;
 
@@ -10,8 +35,6 @@ SynthDef {
 	var <>constantSet;
 	var <>maxLocalBufs;
 
-	// topo sort
-	var <>available;
 	var <>variants;
 	var rewriteInProgress;
 
@@ -20,10 +43,8 @@ SynthDef {
 	classvar <synthDefDir;
 	classvar <>warnAboutLargeSynthDefs = false;
 
-
 	var <>effectiveUGens; // private, don't access.
-
-	var <>resourceManagers;
+	var <>resourceManagers; // private, don't access.
 
 	*synthDefDir_ { arg dir;
 		if (dir.last.isPathSeparator.not )
@@ -295,7 +316,8 @@ SynthDef {
 	}
 
 	finishBuild {
-
+        children.do(_.initEdges); // necessary because of borked init method in UGen
+        children = SynthDefTopologicalSort(effectiveUGens.reverse);
 		this.collectConstants;
 		this.checkInputs;// will die on error
 
@@ -440,7 +462,6 @@ SynthDef {
 		^true
 	}
 
-	// UGens do these
 	addUGen { arg ugen;
 		if (rewriteInProgress.isNil) {
 			// we don't add ugens, if a rewrite operation is in progress
@@ -464,35 +485,11 @@ SynthDef {
 		};
 	}
 
-
-	// multi channel expansion causes a non optimal breadth-wise ordering of the graph.
-	// the topological sort below follows branches in a depth first order,
-	// so that cache performance of connection buffers is optimized.
-
-	optimizeGraph {
-		var oldSize;
-		this.initTopoSort;
-
-		rewriteInProgress = true;
-		children.copy.do { arg ugen;
-			ugen.optimizeGraph;
-		};
-		rewriteInProgress = nil;
-
-		// fixup removed ugens
-		oldSize = children.size;
-		children.removeEvery(#[nil]);
-		if (oldSize != children.size) {
-			this.indexUGens
-		};
-	}
-
 	collectConstants {
 		children.do { arg ugen;
 			ugen.collectConstants;
 		};
 	}
-
 
 	indexUGens {
 		children.do { arg ugen, i;
@@ -686,4 +683,5 @@ SynthDef {
 	cleanupTopoSort { }
 	topologicalSort { }
 	addCopiesIfNeeded { }
+	optimizeGraph { }
 }

@@ -7,26 +7,35 @@ UGen : AbstractFunction {
 	var <>synthIndex = -1, <>specialIndex=0;
 
 	var <>antecedents, <>descendants, <>weakAntecedents, <>weakDescendants, <>widthFirstAntecedents; // topo sorting
+	var <depth = 0;
 
+    *new {
+        ^super.new()
+		.antecedents_([])
+		.descendants_([])
+		.weakAntecedents_([])
+		.weakDescendants_([])
+    }
 	// instance creation
 	*new1 { arg rate ... args;
 		if (rate.isKindOf(Symbol).not) { Error("rate must be Symbol.").throw };
 		^super.new
 		.rate_(rate)
-		.antecedents_(Set())
-		.descendants_(Set())
-		.weakAntecedents_(Set())
-		.weakDescendants_(Set())
+		.antecedents_([])
+		.descendants_([])
+		.weakAntecedents_([])
+		.weakDescendants_([])
 		.addToSynth
 		.init( *args )
 	}
 	*newFromDesc { arg rate, numOutputs, inputs, specialIndex;
 		^super.new.rate_(rate)
-		.antecedents_(Set())
-		.descendants_(Set())
-		.weakAntecedents_(Set())
-		.weakDescendants_(Set())
-		.inputs_(inputs).specialIndex_(specialIndex)
+		.antecedents_([])
+		.descendants_([])
+		.weakAntecedents_([])
+		.weakDescendants_([])
+		.specialIndex_(specialIndex)
+		.inputs_(inputs)
 	}
 	*multiNew { arg ... args;
 		^this.multiNewList(args);
@@ -61,13 +70,21 @@ UGen : AbstractFunction {
 	//// End required interface for synthdef.
 
 	createWeakConnectionTo { |ugen|
-		this.weakDescendants.add(ugen);
-		ugen.weakAntecedents.add(this);
+		this.weakDescendants = this.weakDescendants.add(ugen);
+		ugen.weakAntecedents = ugen.weakAntecedents.add(this);
+	}
+	createConnectionTo {|ugen|
+        this.descendants = this.descendants.add(ugen);
+        ugen.antecedents = ugen.antecedents.add(this);
 	}
 
+    // Other classes override init and return different classes,
+    //    this causes all manner of headaches in the constructors,
+    //    be warned!
 	init { arg ... theInputs;
 		// store the inputs as an array
 		inputs = theInputs;
+		^this;
 	}
 	copy {
 		// you can't really copy a UGen without disturbing the Synth.
@@ -399,7 +416,7 @@ UGen : AbstractFunction {
 	}
 
 	outputIndex { ^0 }
-	writesToBus { ^false }
+	writesToBus { ^false } // TODO: what does this do?
 	isUGen { ^true }
 
 	poll { arg trig = 10, label, trigid = -1;
@@ -546,6 +563,25 @@ UGen : AbstractFunction {
 	dumpName {
 		^synthIndex.asString ++ "_" ++ this.class.name.asString
 	}
+
+    // These cannot be made as we go along because the init method is overridden in some classes to return a class that IS NOT a UGen.
+    // To fix this, you'd have to change Control and OutputProxy.
+    // Do not override this method.
+	initEdges {
+	    depth = 0;
+    	inputs.do({ arg input;
+    		if (input.isKindOf(UGen), {
+    			antecedents = antecedents.add(input.source);
+    			input.source.descendants = input.source.descendants.add(this);
+                depth = max(depth, input.depth + 1);
+    		});
+    	});
+    	weakAntecedents.do({ |a|
+            depth = max(depth, a.depth + 1);
+    	});
+    	antecedents.sort({|l, r| l.depth > r.depth });
+    	weakAntecedents.sort({|l, r| l.depth > r.depth });
+    }
 
 	// TODO: delete
 	performDeadCodeElimination { }

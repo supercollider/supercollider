@@ -256,7 +256,7 @@ AbstractOut : UGen {
 		^this.checkValidInputs
 	}
 
-	*isOutputUGen { ^true }
+	*isOutputUGen { ^true } // TODO: what does this do? Who uses it?
 	*numFixedArgs { ^this.subclassResponsibility(thisMethod) }
 
 	numAudioChannels {
