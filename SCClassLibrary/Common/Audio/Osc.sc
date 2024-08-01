@@ -174,7 +174,7 @@ LFTri : UGen {
 }
 
 LFGauss : UGen {
-    resourceManagers { ^[] }
+	resourceManagers { ^if(this.hasObservableEffect) { [UGenDoneResourceManager] } { [] } }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(4) }
 
 	*ar {

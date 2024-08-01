@@ -95,6 +95,10 @@ UGenMessageResourceManager : UGenResourceManagerSimple {
     *initClass { UGenResourceManager.register(this) }
 }
 
+UGenDoneResourceManager : UGenResourceManagerSimple {
+    *initClass { UGenResourceManager.register(this) }
+}
+
 UGenBufferResourceManager : UGenResourceManagerWithNonCausalModes {
     *initClass { UGenResourceManager.register(this) }
 	*new { ^super.new([\read], \bufferAccessType) }

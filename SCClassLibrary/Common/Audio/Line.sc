@@ -1,5 +1,5 @@
 Line : UGen {
-	resourceManagers { ^[] }
+	resourceManagers { ^if(this.hasObservableEffect) { [UGenDoneResourceManager] } { [] } }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(3) }
 
 	*ar { arg start=0.0, end = 1.0, dur = 1.0, mul = 1.0, add = 0.0, doneAction = 0;
@@ -11,7 +11,7 @@ Line : UGen {
 }
 
 XLine : UGen {
-	resourceManagers { ^[] }
+	resourceManagers { ^if(this.hasObservableEffect) { [UGenDoneResourceManager] } { [] } }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(3) }
 
 	*ar { arg start=1.0, end = 2.0, dur = 1.0, mul = 1.0, add = 0.0, doneAction = 0;

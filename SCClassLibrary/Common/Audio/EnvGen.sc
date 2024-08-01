@@ -82,7 +82,7 @@ Free : UGen {
 }
 
 EnvGen : UGen { // envelope generator
-	resourceManagers { ^[] }
+	resourceManagers { ^if(this.hasObservableEffect) { [UGenDoneResourceManager] } { [] } }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(4) }
 
 	*ar { arg envelope, gate = 1.0, levelScale = 1.0, levelBias = 0.0, timeScale = 1.0, doneAction = 0;
@@ -115,7 +115,7 @@ EnvGen : UGen { // envelope generator
 }
 
 Linen : UGen {
-	resourceManagers { ^[] }
+	resourceManagers { ^if(this.hasObservableEffect) { [UGenDoneResourceManager] } { [] } }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(4) }
 
 	*kr { arg gate = 1.0, attackTime = 0.01, susLevel = 1.0, releaseTime = 1.0, doneAction = 0;

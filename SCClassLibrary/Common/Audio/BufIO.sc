@@ -1,5 +1,11 @@
 PlayBuf : MultiOutUGen {
-	resourceManagers { ^[UGenBufferResourceManager] }
+	resourceManagers {
+        ^if(this.hasObservableEffect){
+            [UGenBufferResourceManager, UGenDoneResourceManager]
+        } {
+            [UGenBufferResourceManager]
+        }
+    }
 	bufferAccessType { ^\read }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(6) }
 
@@ -90,7 +96,13 @@ BufWr : UGen {
 }
 
 RecordBuf : UGen {
-	resourceManagers { ^[UGenBufferResourceManager] }
+	resourceManagers {
+        ^if(this.hasObservableEffect){
+            [UGenBufferResourceManager, UGenDoneResourceManager]
+        } {
+            [UGenBufferResourceManager]
+        }
+    }
 	bufferAccessType { ^\write }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(7) }
 
