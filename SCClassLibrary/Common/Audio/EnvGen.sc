@@ -18,7 +18,7 @@ Done : UGen {
 	const <freeSelfResumeNext = 15;
 
 	resourceManagers { ^[] }
-	hasObservableEffect { ^false }
+	hasObservableEffect { ^true } // While this might not always be true, it simplifies things.
 
 	*kr { arg src;
 		^this.multiNew('control', src)
@@ -83,7 +83,7 @@ Free : UGen {
 
 EnvGen : UGen { // envelope generator
 	resourceManagers { ^[] }
-	hasObservableEffect { ^false }
+	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(4) }
 
 	*ar { arg envelope, gate = 1.0, levelScale = 1.0, levelBias = 0.0, timeScale = 1.0, doneAction = 0;
 		envelope = this.convertEnv(envelope);
@@ -105,8 +105,7 @@ EnvGen : UGen { // envelope generator
 		^env.asMultichannelArray.collect(_.reference).unbubble
 	}
 	*new1 { arg rate, gate, levelScale, levelBias, timeScale, doneAction, envArray;
-		^super.new.rate_(rate).addToSynth.init([gate, levelScale, levelBias, timeScale, doneAction]
-			++ envArray.dereference);
+		^super.new.rate_(rate).inputs_([gate, levelScale, levelBias, timeScale, doneAction] ++ envArray.dereference).addToSynth
 	}
 	init { arg theInputs;
 		// store the inputs as an array
@@ -117,7 +116,7 @@ EnvGen : UGen { // envelope generator
 
 Linen : UGen {
 	resourceManagers { ^[] }
-	hasObservableEffect { ^false }
+	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(4) }
 
 	*kr { arg gate = 1.0, attackTime = 0.01, susLevel = 1.0, releaseTime = 1.0, doneAction = 0;
 		^this.multiNew('control', gate, attackTime, susLevel, releaseTime, doneAction)

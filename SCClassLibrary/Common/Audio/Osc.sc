@@ -175,7 +175,7 @@ LFTri : UGen {
 
 LFGauss : UGen {
     resourceManagers { ^[] }
-    hasObservableEffect { ^false }
+	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(4) }
 
 	*ar {
 		arg duration = 1, width = 0.1, iphase = 0.0, loop = 1, doneAction = 0;

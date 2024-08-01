@@ -17,7 +17,7 @@ Demand : MultiOutUGen {
 
 Duty : UGen {
 	resourceManagers { ^[] }
-	hasObservableEffect { ^false }
+	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(2) }
 
 	*ar { arg dur = 1.0, reset = 0.0, level = 1.0, doneAction = 0;
 		^this.multiNew('audio', dur, reset, doneAction, level)
@@ -48,7 +48,7 @@ TDuty : Duty {
 
 DemandEnvGen : UGen {
 	resourceManagers { ^[] }
-	hasObservableEffect { ^false }
+	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(9) }
 
 	*kr { arg level, dur, shape = 1, curve = 0, gate = 1.0, reset = 1.0,
 		levelScale = 1.0, levelBias = 0.0, timeScale = 1.0, doneAction=0;

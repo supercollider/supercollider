@@ -1,7 +1,7 @@
 PlayBuf : MultiOutUGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\read }
-	hasObservableEffect { ^false }
+	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(6) }
 
 	*ar { arg numChannels, bufnum=0, rate=1.0, trigger=1.0, startPos=0.0, loop = 0.0, doneAction=0;
 		^this.multiNew('audio', numChannels, bufnum, rate, trigger, startPos, loop, doneAction)
@@ -92,7 +92,7 @@ BufWr : UGen {
 RecordBuf : UGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\write }
-	hasObservableEffect { ^true }
+	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(7) }
 
 	*ar { arg inputArray, bufnum=0, offset=0.0, recLevel=1.0, preLevel=0.0,
 		run=1.0, loop=1.0, trigger=1.0, doneAction=0;

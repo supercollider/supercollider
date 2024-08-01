@@ -290,8 +290,9 @@ UGen : UGenBuiltInMethods {
     *new { ^super.new() }
 
 	*new1 { |rate ... args|
+	    // If you override this method, you MUST ensure that the inputs are set before calling addToSynth.
 		if (rate.isKindOf(Symbol).not) { Error("rate must be Symbol.").throw };
-		^super.new.rate_(rate).addToSynth.init(*args)
+		^super.new.rate_(rate).inputs_(args).addToSynth.init(*args)
 	}
 
 	*newFromDesc { |rate, numOutputs, inputs, specialIndex|
@@ -345,6 +346,9 @@ UGen : UGenBuiltInMethods {
     /// --- Required meta-info. All UGens should specify these two methods.
 	resourceManagers { ^nil	} // Should return an Array of zero or more UGenResourceManagers, or nil if entering panic mode (see UGenResourceManager).
 	hasObservableEffect { ^true } // Outputs to buffer, bus, sends a message, or does something else observable.
+	implHasObservableEffectViaDoneAction { |index|
+		^inputs.at(index).isNumber.not or: { inputs.at(index) != Done.none }
+	}
 
     // `a.createConnectionTo(ugen: b)` creates an edge a -> b
 	createConnectionTo {|ugen|
