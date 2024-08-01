@@ -38,7 +38,9 @@ Set : Collection {
 			array.put(index, nil);
 			size = size - 1;
 			this.fixCollisionsFrom(index);
+			^item
 		});
+		^nil
 	}
 	choose {
 		var index, val;
