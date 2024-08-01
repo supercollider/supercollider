@@ -5,6 +5,7 @@ BasicOpUGen : UGen {
 
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	nameForDisplay { ^super.name ++ operator }
 
 	operator_ { arg op;
 		operator = op;
@@ -46,9 +47,7 @@ UnaryOpUGen : BasicOpUGen {
 }
 
 BinaryOpUGen : BasicOpUGen {
-	*new { arg selector, a, b;
-		^this.multiNew('audio', selector, a, b)
-	}
+	*new { |selector, a, b| ^this.multiNew('audio', selector, a, b) }
 
 	determineRate { arg a, b;
 		if (a.rate == \demand, { ^\demand });
@@ -59,29 +58,35 @@ BinaryOpUGen : BasicOpUGen {
 		if (b.rate == \control, { ^\control });
 		^\scalar
 	}
-	*new1 { arg rate, selector, a, b;
-		// eliminate degenerate cases
-		if (selector == '*', {
-			if (a == 0.0, { ^0.0 });
-			if (b == 0.0, { ^0.0 });
-			if (a == 1.0, { ^b });
-			if (a == -1.0, { ^b.neg });
-			if (b == 1.0, { ^a });
-			if (b == -1.0, { ^a.neg });
-		},{
-		if (selector == '+', {
-			if (a == 0.0, { ^b });
-			if (b == 0.0, { ^a });
-		},{
-		if (selector == '-', {
-			if (a == 0.0, { ^b.neg });
-			if (b == 0.0, { ^a });
-		},{
-		if (selector == '/', {
-			if (b == 1.0, { ^a });
-			if (b == -1.0, { ^a.neg });
-		})})})});
 
+	*new1 { |rate, selector, a, b|
+		// eliminate simple cases
+		case
+		{ selector == '*' } {
+			if (a == 0.0) { ^0.0 };
+			if (b == 0.0) { ^0.0 };
+			if (a == 1.0) { ^b };
+			if (a == -1.0) { ^b.neg };
+			if (b == 1.0) { ^a };
+			if (b == -1.0) { ^a.neg };
+			// TODO: review these
+			if (b == 2.0) { ^super.new1(rate, '+', a, a) }; // prefer additions, they are easier to optimise
+			if (a == 2.0) { ^super.new1(rate, '+', b, b) };
+		}
+		{ selector == '+' } {
+			if (a == 0.0) { ^b };
+			if (b == 0.0) { ^a };
+		}
+		{ selector == '-' } {
+			if (a == 0.0) { ^b.neg };
+			if (b == 0.0) { ^a };
+			if (a === b) { ^0.0 };  // TODO: review
+		}
+		{ selector == '/' } {
+			if (b == 1.0) { ^a };
+			if (b == -1.0) { ^a.neg };
+			if (a === b) { ^1.0 }; // TODO: what if it is zero?
+		};
 		^super.new1(rate, selector, a, b)
 	}
 
@@ -91,62 +96,7 @@ BinaryOpUGen : BasicOpUGen {
 		inputs = [a, b];
 	}
 
-	optimizeGraph {
-		if (operator == '+') {
-			this.optimizeAdd;
-			^this;
-		};
-
-		if (operator == '-') {
-			this.optimizeSub
-		};
-	}
-
-	optimizeAdd {
-		var optimizedUGen;
-
-		// create a Sum3 if possible.
-		optimizedUGen = this.optimizeToSum3;
-
-		// create a Sum4 if possible.
-		if (optimizedUGen.isNil) {
-			optimizedUGen = this.optimizeToSum4
-		};
-
-		// create a MulAdd if possible.
-		if (optimizedUGen.isNil) {
-			optimizedUGen = this.optimizeToMulAdd
-		};
-
-		// optimize negative additions
-		if (optimizedUGen.isNil) {
-			optimizedUGen = this.optimizeAddNeg
-		};
-
-		if (optimizedUGen.notNil) {
-			synthDef.replaceUGen(this, optimizedUGen);
-			optimizedUGen.optimizeGraph
-		};
-	}
-
-	// 'this' = old ugen being replaced
-	// replacement = this's replacement
-	// deletedUnit = auxiliary unit being removed, not replaced
-	optimizeUpdateDescendants { |replacement, deletedUnit|
-		var replaceFunc = { |ugen|
-			var desc = ugen.tryPerform(\descendants);
-			desc.add(replacement).remove(this);
-			desc.remove(deletedUnit);
-		};
-		replacement.inputs.do { |in|
-			replaceFunc.value(in);
-			if(in.isKindOf(OutputProxy)) {
-				replaceFunc.value(in.source);
-			};
-		};
-	}
-
-	optimizeAddNeg {
+	optimizeAddNeg { // TODO: this moves to UnaryOp
 		var a, b, replacement;
 		#a, b = inputs;
 		if(a === b) { ^nil };  // non optimizable edge case.
@@ -176,102 +126,72 @@ BinaryOpUGen : BasicOpUGen {
 		^nil
 	}
 
-	optimizeToMulAdd {
-		var a, b, replacement;
-		#a, b = inputs;
-		if(a === b) { ^nil };
 
-		if (a.isKindOf(BinaryOpUGen) and: { a.operator == '*'
-			and: { a.descendants.size == 1 }})
-		{
-			if (MulAdd.canBeMulAdd(a.inputs[0], a.inputs[1], b)) {
-				buildSynthDef.removeUGen(a);
-				replacement = MulAdd.new(a.inputs[0], a.inputs[1], b).descendants_(descendants);
-				this.optimizeUpdateDescendants(replacement, a);
-				^replacement
-			};
+	optimise {
+	    // Rules:
+	    //   Match on the type of operator.
+	    //   Try to apply an optimisation.
+	    //   If it works, return a SynthDefOptimisationResult.
+	    //   The SynthDefOptimiser will call this method again, so order inside the case blocks matters.
 
-			if (MulAdd.canBeMulAdd(a.inputs[1], a.inputs[0], b)) {
-				buildSynthDef.removeUGen(a);
-				replacement = MulAdd.new(a.inputs[1], a.inputs[0], b).descendants_(descendants);
-				this.optimizeUpdateDescendants(replacement, a);
-				^replacement
-			};
-		};
+	    case
+	    { operator == '*' } {
+	        var result = SynthDefOptimisationResult();
+	        var addDescendants = descendants.select { |d| d.isKindOf(BinaryOpUGen) and: { d.operator == '+' }};
+	        if (addDescendants.isEmpty.not){
+                addDescendants.do{ |adder|
+                    var addValue = adder.inputs.select({|i| i != this })[0];
+                    MulAdd.maybeGetMulAddOrder(inputs[0], inputs[1], addValue) !? { |mulAddOrder|
+                        var muladd = MulAdd.newDuringOptimisation(*mulAddOrder);
+                        adder.replaceWith(with: muladd);
+                        result.addUGen(muladd, 2);
+                    }
+                };
+                this.tryDisconnect;
+                result.returnNilIfEmpty !? { |r| ^r };
+	        }
+	    }
 
-		if (b.isKindOf(BinaryOpUGen) and: { b.operator == '*'
-			and: { b.descendants.size == 1 }})
-		{
-			if (MulAdd.canBeMulAdd(b.inputs[0], b.inputs[1], a)) {
-				buildSynthDef.removeUGen(b);
-				replacement = MulAdd.new(b.inputs[0], b.inputs[1], a).descendants_(descendants);
-				this.optimizeUpdateDescendants(replacement, b);
-				^replacement
-			};
+	    { operator == '+' } {
+            var result = SynthDefOptimisationResult();
+            var desc;
 
-			if (MulAdd.canBeMulAdd(b.inputs[1], b.inputs[0], a)) {
-				buildSynthDef.removeUGen(b);
-				replacement = MulAdd.new(b.inputs[1], b.inputs[0], a).descendants_(descendants);
-				this.optimizeUpdateDescendants(replacement, b);
-				^replacement
-			};
-		};
-		^nil
+            // Get Sum3 descendants and create a Sum4
+            desc = descendants.select { |d| d.isKindOf(Sum3) };
+            if(desc.isEmpty.not){
+                desc.do { |sum3|
+                    var otherValues = sum3.inputs.select({|i| i !== this });
+                    // sometimes this can be repeated, make sure there are two arguments
+                    otherValues = if(otherValues.size == 1) { otherValues[0]!2 } { otherValues };
+                    otherValues.debug("otherValues") !? {
+                        var sum4 = Sum4.newDuringOptimisation(inputs[0], inputs[1], *otherValues);
+                        sum3.replaceWith(with: sum4);
+                        result.addUGen(sum4, 2);
+                    }
+                };
+                this.tryDisconnect;
+                result.returnNilIfEmpty !? { |r| ^r };
+            };
+
+            // Get + descendants and create a Sum3
+            desc = descendants.select { |d| d.isKindOf(BinaryOpUGen) and: { d.operator == '+' }};
+            if (desc.isEmpty.not){
+                desc.do{ |childAdder|
+                    childAdder.inputs.select({|i| i != this })[0] !? { |otherValue|
+                        var sum3 = Sum3.newDuringOptimisation(inputs[0], inputs[1], otherValue);
+                        childAdder.replaceWith(with: sum3);
+                        result.addUGen(sum3, 2);
+                    };
+                };
+                this.tryDisconnect;
+                result.returnNilIfEmpty !? { |r| ^r };
+            }
+	    }
+	    ^nil
 	}
 
-	optimizeToSum3 {
-		var a, b, replacement;
-		#a, b = inputs;
-		if(a.rate == \demand or: { b.rate == \demand }) { ^nil };
 
-		if (a.isKindOf(BinaryOpUGen) and: { a.operator == '+'
-			and: { a.descendants.size == 1 }}) {
-			buildSynthDef.removeUGen(a);
-			if(a === b) {
-				replacement = Sum4(a.inputs[0], a.inputs[0], a.inputs[1], a.inputs[1])
-				.descendants_(descendants);
-			} {
-				replacement = Sum3(a.inputs[0], a.inputs[1], b).descendants_(descendants);
-			};
-			this.optimizeUpdateDescendants(replacement, a);
-			^replacement;
-		};
-
-		if (b.isKindOf(BinaryOpUGen) and: { b.operator == '+'
-			and: { b.descendants.size == 1 }}) {
-			buildSynthDef.removeUGen(b);
-			// we do not need the a === b check here
-			// if a === b, then the 'a' branch above must have handled it
-			replacement = Sum3(b.inputs[0], b.inputs[1], a).descendants_(descendants);
-			this.optimizeUpdateDescendants(replacement, b);
-			^replacement;
-		};
-		^nil
-	}
-
-	optimizeToSum4 {
-		var a, b, replacement;
-		#a, b = inputs;
-		if(a === b) { ^nil };
-		if(a.rate == \demand or: { b.rate == \demand }) { ^nil };
-
-		if (a.isKindOf(Sum3) and: { a.descendants.size == 1 }) {
-			buildSynthDef.removeUGen(a);
-			replacement = Sum4(a.inputs[0], a.inputs[1], a.inputs[2], b).descendants_(descendants);
-			this.optimizeUpdateDescendants(replacement, a);
-			^replacement;
-		};
-
-		if (b.isKindOf(Sum3) and: { b.descendants.size == 1 }) {
-			buildSynthDef.removeUGen(b);
-			replacement = Sum4(b.inputs[0], b.inputs[1], b.inputs[2], a).descendants_(descendants);
-			this.optimizeUpdateDescendants(replacement, b);
-			^replacement;
-		};
-		^nil
-	}
-
-	optimizeSub {
+	optimizeSub { // TODO: move this to UnaryOp
 		var a, b, replacement;
 		#a, b = inputs;
 
@@ -288,114 +208,14 @@ BinaryOpUGen : BasicOpUGen {
 		};
 		^nil
 	}
-
-	constantFolding {
-		var a, b, aa, bb, cc, dd, temp, ac_ops, value;
-
-		// associative & commutative operators
-		ac_ops = #['+','*','min','max','&&','||'];
-
-		if (ac_ops.includes(operator).not) { ^this };
-
-		#a, b = inputs;
-		if (a.isKindOf(BinaryOpUGen) and: { operator == a.operator
-			and: { b.isKindOf(BinaryOpUGen) and: { operator == b.operator } }}) {
-			#aa, bb = a.inputs;
-			#cc, dd = b.inputs;
-			if (aa.isKindOf(SimpleNumber)) {
-				if (cc.isKindOf(SimpleNumber)) {
-					b.inputs[0] = bb;
-					this.inputs[0] = aa.perform(operator, cc);
-					synthDef.removeUGen(a);
-				}{
-				if (dd.isKindOf(SimpleNumber)) {
-					b.inputs[1] = bb;
-					this.inputs[0] = aa.perform(operator, dd);
-					synthDef.removeUGen(a);
-				}}
-			}{
-			if (bb.isKindOf(SimpleNumber)) {
-				if (cc.isKindOf(SimpleNumber)) {
-					b.inputs[0] = aa;
-					this.inputs[0] = bb.perform(operator, cc);
-					synthDef.removeUGen(a);
-				}{
-				if (dd.isKindOf(SimpleNumber)) {
-					b.inputs[1] = aa;
-					this.inputs[0] = bb.perform(operator, dd);
-					synthDef.removeUGen(a);
-				}}
-			}};
-
-		};
-		#a, b = inputs;
-		if (a.isKindOf(BinaryOpUGen) and: { operator == a.operator }) {
-			#aa, bb = a.inputs;
-			if (b.isKindOf(SimpleNumber)) {
-				if (aa.isKindOf(SimpleNumber)) {
-					buildSynthDef.removeUGen(a);
-					this.inputs[0] = aa.perform(operator, b);
-					this.inputs[1] = bb;
-					^this
-				};
-				if (bb.isKindOf(SimpleNumber)) {
-					buildSynthDef.removeUGen(a);
-					this.inputs[0] = bb.perform(operator, b);
-					this.inputs[1] = aa;
-					^this
-				};
-			};
-			// percolate constants upward so that a subsequent folding may occur
-			if (aa.isKindOf(SimpleNumber)) {
-				this.inputs[1] = aa;
-				a.inputs[0] = b;
-			}{
-			if (bb.isKindOf(SimpleNumber)) {
-				this.inputs[1] = bb;
-				a.inputs[1] = b;
-			}};
-		};
-		#a, b = inputs;
-		if (b.isKindOf(BinaryOpUGen) and: { operator == b.operator }) {
-			#cc, dd = b.inputs;
-			if (a.isKindOf(SimpleNumber)) {
-				if (cc.isKindOf(SimpleNumber)) {
-					buildSynthDef.removeUGen(b);
-					this.inputs[0] = a.perform(operator, cc);
-					this.inputs[1] = dd;
-					^this
-				};
-				if (dd.isKindOf(SimpleNumber)) {
-					buildSynthDef.removeUGen(b);
-					this.inputs[0] = a.perform(operator, dd);
-					this.inputs[1] = cc;
-					^this
-				};
-			};
-			// percolate constants upward so that a subsequent folding may occur
-			if (cc.isKindOf(SimpleNumber)) {
-				this.inputs[0] = cc;
-				b.inputs[0] = a;
-			}{
-			if (dd.isKindOf(SimpleNumber)) {
-				this.inputs[0] = dd;
-				b.inputs[1] = a;
-			}};
-		};
-		#a, b = inputs;
-		if (a.isKindOf(SimpleNumber) and: { b.isKindOf(SimpleNumber) }) {
-			synthDef.replaceUGen(this, a.perform(operator, b));
-			synthDef.removeUGen(this);
-		};
-	}
 }
 
-MulAdd : PureUGen {
+MulAdd : UGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
 
 	*new { arg in, mul = 1.0, add = 0.0;
-		var args =  [in, mul, add].asUGenInput(this);
+		var args = [in, mul, add].asUGenInput(this);
 		var rate = args.rate;
 		^this.multiNewList([rate] ++ args)
 	}
@@ -419,13 +239,18 @@ MulAdd : PureUGen {
 		if (this.canBeMulAdd(mul, in, add)) {
 			^super.new1(rate, mul, in, add)
 		};
-		^( (in * mul) + add)
+		^(in * mul) + add
 	}
 	init { arg in, mul, add;
 		inputs = [in, mul, add];
 		rate = inputs.rate;
 	}
 
+    *maybeGetMulAddOrder { |in, mul, add|
+        if(MulAdd.canBeMulAdd(in, mul, add)) { ^[in, mul, add] };
+        if(MulAdd.canBeMulAdd(mul, in, add)) { ^[mul, in, add] };
+        ^nil
+    }
 	*canBeMulAdd { arg in, mul, add;
 		// see if these inputs satisfy the constraints of a MulAdd ugen.
 		if (in.rate == \audio, { ^true });
@@ -455,7 +280,7 @@ Sum3 : UGen {
 
 		argArray = [in0, in1, in2];
 		rate = argArray.rate;
-		sortedArgs = argArray.sort {|a b| a.rate < b.rate};
+		sortedArgs = argArray.sort {|a, b| a.rate < b.rate};
 
 		^super.new1(rate, *sortedArgs)
 	}

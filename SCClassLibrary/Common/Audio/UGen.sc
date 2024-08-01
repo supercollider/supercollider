@@ -281,11 +281,11 @@ UGen : UGenBuiltInMethods {
 	var <>antecedents, <>descendants, <>weakAntecedents, <>weakDescendants; // Graph edges. Set in initEdges due to weird issue with init.
 	var <depth = 0; // How many children are above it in the graph.
 
-    // backwards compatibility
-	widthFirstAntecedents {
-        Error("UGen:widthFirstAntecedents has been removed as it was broken, please use createWeakConnectionTo\n").throw
-	}
-	widthFirstAntecedents_ { this.widthFirstAntecedents }
+    *newDuringOptimisation { |...args, kwargs|
+        var ret = this.performArgs(\new, args, kwargs);
+        UGen.prInitEdgesRecursive(ret);
+        ^ret;
+    }
 
     *new { ^super.new() }
 
@@ -333,7 +333,10 @@ UGen : UGenBuiltInMethods {
 	writesToBus { ^false } // TODO: what does this do?
 	isUGen { ^true }  // TODO: duh, why is this needed?
 	name { ^this.class.name.asString }
+	nameForDisplay { ^this.name }
 	dumpName { ^"%_%".format(synthIndex, this.name) }
+	asString { ^this.dumpName }
+	printOn { |stream| stream << this.asString }
 	numInputs { ^inputs.size }
 	numOutputs { ^1 }
 	addToSynth { (synthDef = buildSynthDef) !? _.addUGen(this) }
@@ -343,15 +346,64 @@ UGen : UGenBuiltInMethods {
 	resourceManagers { ^nil	} // Should return an Array of zero or more UGenResourceManagers, or nil if entering panic mode (see UGenResourceManager).
 	hasObservableEffect { ^true } // Outputs to buffer, bus, sends a message, or does something else observable.
 
-    // Inputs do this.
+    // `a.createConnectionTo(ugen: b)` creates an edge a -> b
 	createConnectionTo {|ugen|
         this.descendants = this.descendants.add(ugen);
         ugen.antecedents = ugen.antecedents.add(this);
 	}
-	// Creates a weak edge between two ugens. Weak edges are used to indicate IO and other resource ordering.
+
+	replaceInputAt { |index, with|
+	    var old = inputs[index];
+	    old.descendants.remove(this);
+        this.antecedents.remove(old);
+	    inputs[index] = with;
+	    with.createConnectionTo(this);
+	}
+
+	// Creates a weak edge between two ugens. Weak edges are used to indicate IO and other resource orderings.
 	createWeakConnectionTo { |ugen|
 		this.weakDescendants = this.weakDescendants.add(ugen);
 		ugen.weakAntecedents = ugen.weakAntecedents.add(this);
+	}
+
+	replaceWith { |with|
+	    descendants.do { |d|
+	        d.inputs.indexOfAll(this).reverseDo { |i|
+                d.replaceInputAt(index: i, with: with)
+	        }
+	    };
+	    this.descendants = [];
+	    with.weakDescendants = with.weakDescendants ++ this.weakDescendants;
+	    with.weakAntecedents = with.weakAntecedents ++ this.weakAntecedents;
+	    this.inputs.do{ |i| if (i.isKindOf(UGen)) { i.descendants.remove(this) } };
+	    this.antecedents = [];
+	}
+
+    // This is called inside the topological sort.
+    // It can't be called sooner because the optimisations changes things.
+	sortAntecedents {
+    	antecedents.sort{ |l, r| if(l.depth != r.depth) { l.depth > r.depth } { l.synthIndex < r.synthIndex } };
+    	weakAntecedents.sort{ |l, r| if(l.depth != r.depth) { l.depth > r.depth } { l.synthIndex < r.synthIndex } };
+	}
+
+    tryDisconnect {
+        if (descendants.isEmpty and: {this.hasObservableEffect.not}){
+            this.inputs.do {|i| if(i.isKindOf(UGen)){ i.descendants.remove(this) } };
+            this.inputs = [];
+            this.descendants = [];
+            this.antecedents = [];
+            if(this.hasObservableEffect.not){
+                buildSynthDef.children.remove(this)
+            };
+        }
+    }
+
+	getAllDescendantsAtLevel { |level| // Level should be greater than 1.
+	    if(level <= 1) {
+	        ^this.descendants
+	    } {
+	        ^this.descendants.inject(this.descendants, {|arr, d| arr ++ d.getAllDescendantsAtLevel(level - 1) })
+	    }
 	}
 
     // Edges cannot be made as we go along because the init method is overridden in some classes to return a class that IS NOT a UGen.
@@ -359,23 +411,29 @@ UGen : UGenBuiltInMethods {
     // Do not override this method.
 	initEdges {
 	    depth = 0;
-	    antecedents ?? { antecedents = [] };
-	    descendants ?? { descendants = [] };
-	    weakAntecedents ?? { weakAntecedents = [] };
-	    weakDescendants ?? { weakDescendants = [] };
-    	inputs.do({ arg input;
-    		if (input.isKindOf(UGen), {
+	    antecedents = antecedents.asArray; // Could be nil.
+	    descendants = descendants.asArray;
+	    weakAntecedents = weakAntecedents.asArray;
+	    weakDescendants = weakDescendants.asArray;
+    	inputs.do{ |input|
+    		if (input.isKindOf(UGen)) {
     			antecedents = antecedents.add(input.source);
     			input.source.descendants = input.source.descendants.add(this);
                 depth = max(depth, input.depth + 1);
-    		});
-    	});
-    	weakAntecedents.do({ |a|
-            depth = max(depth, a.depth + 1);
-    	});
-    	antecedents.sort({|l, r| l.depth > r.depth });
-    	weakAntecedents.sort({|l, r| l.depth > r.depth });
+    		}
+    	};
+    	weakAntecedents.do{ |a| depth = max(depth, a.depth + 1) };
+    	^this
     }
+
+
+    // This method should ONLY look at inputs (direct antecedents) but may look at all descendants.
+    // It must return a SynthDefOptimisationResult or a nil if no optimisation has occurred.
+    // No attempt to delete UGens should be made, unless they have an observable effect (like Out),
+    //    in which case it should be added to the result as an observableUGenReplacement.
+    // To remove UGens without an observable effect, simply remove all their connections.
+    // The depth of the descendants that have been removed should be returned in the result.
+    optimise { ^nil }
 
     // Helper accessor for inputs
 	argNamesInputsOffset { ^1 } // ignores first input
@@ -460,6 +518,8 @@ UGen : UGenBuiltInMethods {
 	removeAntecedent { Error("% has been removed as the previous SynthDef compiler was broken\n".format(thisMethod)).throw }
 	optimizeGraph { Error("% has been removed as the previous SynthDef compiler was broken\n".format(thisMethod)).throw }
 	schedule { Error("% has been removed as the previous SynthDef compiler was broken\n".format(thisMethod)).throw }
+	widthFirstAntecedents { Error("UGen:widthFirstAntecedents has been removed as it was broken, please use createWeakConnectionTo\n").throw }
+	widthFirstAntecedents_ { this.widthFirstAntecedents }
 
 	/// --- Class methods
 	*methodSelectorForRate { |rate|
@@ -493,6 +553,19 @@ UGen : UGenBuiltInMethods {
             });
         });
         ^array;
+    }
+    *prInitEdgesRecursive { |ugen|
+        // All this mess is caused by OutputProxy not returning a UGen in its constructor.
+        if (ugen.isKindOf(UGen)){
+            ^ugen.initEdges
+        };
+        if(ugen.isKindOf(Collection)){
+            ^ugen.do( UGen.prInitEdgesRecursive(_) )
+        };
+        if (ugen.isKindOf(Number)) {
+            ^nil
+        };
+        Error("Expected a UGen, Number, or Collection thereof, recieved a %".format(ugen)).throw
     }
 }
 

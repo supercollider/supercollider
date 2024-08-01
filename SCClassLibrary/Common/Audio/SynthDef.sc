@@ -3,22 +3,106 @@ SynthDefTopologicalSort {
     classvar visited;
     classvar out;
 
-    *new { |inroots|
-        roots = inroots;
+    *new { |inRoots|
+        var return;
+        roots = inRoots;
         visited = Set();
         out = Array(roots.size * 10);
-        roots.do( SynthDefTopologicalSort.prVisit(_) );
-        ^out
+        roots.do(SynthDefTopologicalSort.prVisit(_));
+        // clean up
+        return = out;
+        roots = nil;
+        visited = nil;
+        out = nil;
+        ^return;
     }
 
     *prVisit { |u|
-        if(u.isKindOf(Number)) { ^nil };
-
-        if (visited.includes(u).not){
+        if (u.isKindOf(UGen) and: { visited.includes(u).not }){
+            visited.add(u);
+            u.sortAntecedents;
             u.antecedents.do( SynthDefTopologicalSort.prVisit(_) );
             u.weakAntecedents.do( SynthDefTopologicalSort.prVisit(_) );
-            visited.add(u);
             out = out.add(u);
+        }
+    }
+}
+
+SynthDefUGenOccurrenceTracker {
+    classvar roots;
+    classvar visited;
+    classvar out;
+    classvar rollingArray;
+    classvar depth;
+
+    *new { |inRoots, inDepth|
+        var return;
+        roots = inRoots;
+        visited = Set();
+        out = Bag();
+        depth = inDepth;
+        rollingArray = Array();
+        roots.do( SynthDefUGenOccurrenceTracker.prVisit(_) );
+        return = out;
+        roots = nil;
+        visited = nil;
+        out = nil;
+        ^return.contents;
+    }
+
+    *prVisit { |u|
+        if (u.isKindOf(UGen) and: { visited.includes(u).not }){
+            visited.add(u);
+            rollingArray = rollingArray.add(u);
+            if(rollingArray.size >= depth) {
+                out.add(rollingArray[rollingArray.size - depth .. rollingArray.size].collect(_.nameForDisplay));
+            };
+            u.antecedents.do( SynthDefUGenOccurrenceTracker.prVisit(_) );
+            rollingArray.pop;
+        }
+    }
+}
+
+SynthDefOptimisationResult {
+    var <>maxDepthOfOperation = 1; // Integer greater than 0.
+    var <>newUGens; // Array of UGens.
+    var <>observableUGenReplacements; // An Array of Associations, or nil
+
+    addUGen { |u, atDepth|
+       newUGens = newUGens.add(u);
+       maxDepthOfOperation = max(maxDepthOfOperation, atDepth);
+    }
+    returnNilIfEmpty { ^newUGens !? { this } }
+}
+
+SynthDefOptimiser {
+    var roots;
+    var toVisit;
+
+    *new { |inRoots| super.newCopyArgs(inRoots, inRoots).prMain }
+    prMain { while {toVisit.isEmpty.not} { this.prOpt } }
+    prOpt {
+        var visitSet = toVisit.as(IdentitySet);
+        var current;
+
+        // remove duplicate, keep order.
+        toVisit = toVisit.select{|i| visitSet.remove(i).isNil.not };
+
+        current = toVisit.pop;
+        current.optimise !? { |res|
+            var visitSet;
+            res.observableUGenReplacements !? { |replacements|
+                replacements.do{ |r|
+                    roots.remove(r.key);
+                    roots.add(r.value);
+                }
+            };
+
+            toVisit = toVisit ++ res.newUGens.inject([], { |set, u|
+                set ++ [u] ++ u.getAllDescendantsAtLevel(res.maxDepthOfOperation).reverse
+            });
+        } ?? {
+            current.antecedents.do{ |a| toVisit.add(a) }
         }
     }
 }
@@ -82,9 +166,10 @@ SynthDef {
 		protect {
 			this.initBuild;
 			this.buildUgenGraph(ugenGraphFunc, rates, prependArgs);
+			rewriteInProgress = true;
 			this.finishBuild;
+			rewriteInProgress = nil;
 			func = ugenGraphFunc;
-			// this.class.changed(\synthDefReady, this); borken
 		} {
 			UGen.buildSynthDef = nil;
 		}
@@ -106,6 +191,7 @@ SynthDef {
 		this.writeDefFile(dir, false, mdPlugin)
 	}
 
+
 	initBuild {
 		UGen.buildSynthDef = this;
 		constants = Dictionary.new;
@@ -114,6 +200,7 @@ SynthDef {
 		controlIndex = 0;
 		maxLocalBufs = nil;
 	}
+
 	buildUgenGraph { arg func, rates, prependArgs;
 		var result;
 		// save/restore controls in case of *wrap
@@ -128,8 +215,8 @@ SynthDef {
 		controlNames = saveControlNames
 
 		^result
-
 	}
+
 	addControlsFromArgsOfFunc { arg func, rates, skipArgs=0;
 		var def, names, values,argNames, specs;
 
@@ -312,6 +399,9 @@ SynthDef {
 
 	finishBuild {
         children.do(_.initEdges); // necessary because of borked init method in UGen
+
+        SynthDefOptimiser(effectiveUGens);
+
         children = SynthDefTopologicalSort(effectiveUGens.reverse);
 		this.collectConstants;
 		this.checkInputs;// will die on error
@@ -457,16 +547,16 @@ SynthDef {
 		^true
 	}
 
-	addUGen { arg ugen;
+	addUGen { |ugen|
+        ugen.synthIndex = children.size;
+        children = children.add(ugen);
+
+        if (ugen.hasObservableEffect){
+            effectiveUGens = effectiveUGens.add(ugen)
+        };
+
+        // It is the optimiser's responsibility to add the weak edges.
 		if (rewriteInProgress.isNil) {
-			// we don't add ugens, if a rewrite operation is in progress
-			ugen.synthIndex = children.size;
-			children = children.add(ugen);
-
-            if (ugen.hasObservableEffect){
-                effectiveUGens = effectiveUGens.add(ugen)
-			};
-
 			ugen.resourceManagers
                 !? { |m| m.asArray.do({|r| resourceManagers.at(r).add(ugen) }) }
                 ?? { resourceManagers.do( _.panic(ugen) ) };

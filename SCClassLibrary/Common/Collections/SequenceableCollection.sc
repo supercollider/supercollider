@@ -246,6 +246,12 @@ SequenceableCollection : Collection {
 		^nil
 	}
 
+	indexOfAll { |item|
+		var out = [];
+		this.do{ |elem, i| if (item === elem) { out = out.add(i) } };
+		^out
+	}
+
 	indexOfEqual { arg item, offset=0;
 		(this.size - offset).do ({ arg i;
 			i = i + offset;
