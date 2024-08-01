@@ -104,7 +104,7 @@ RecordBuf : UGen {
         }
     }
 	bufferAccessType { ^\write }
-	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(7) }
+	hasObservableEffect { ^true }
 
 	*ar { arg inputArray, bufnum=0, offset=0.0, recLevel=1.0, preLevel=0.0,
 		run=1.0, loop=1.0, trigger=1.0, doneAction=0;
