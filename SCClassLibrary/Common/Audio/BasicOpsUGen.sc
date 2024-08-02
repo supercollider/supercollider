@@ -309,6 +309,49 @@ Sum3 : UGen {
 
 		^super.new1(rate, *sortedArgs)
 	}
+
+	optimise {
+		var desc;
+
+		// Sum3(a, b, c) + d => Sum4(a, b, c, d)
+		desc = descendants.select { |d| d.isKindOf(BinaryOpUGen) and: { d.operator == '+' } };
+		if(desc.isEmpty.not){
+			var result = SynthDefOptimisationResult();
+			desc.do { |add|
+				var otherValues = add.inputs.select{|i| i !== this };
+				// if Sum3(a, b, c) + Sum3(a, b, c) then the optimisation cannot be applied
+				if (otherValues.isEmpty.not){
+					var sum4 = Sum4.newDuringOptimisation(inputs[0], inputs[1], inputs[2], otherValues[0]);
+					add.replaceWith(with: sum4);
+					add.tryDisconnect;
+					result.addUGen(sum4, 1);
+				}
+			};
+			result.returnNilIfEmpty !? { |r| ^r };
+		};
+
+		// Sum3(a, b, c) - a => (b + c)
+		desc = descendants.select { |d| d.isKindOf(BinaryOpUGen) and: { d.operator == '-' } };
+		if(desc.isEmpty.not){
+			var result = SynthDefOptimisationResult();
+			desc.do { |minus|
+				var otherValues = minus.inputs.select{|i| i !== this };
+				// if Sum3(a, b, c) - Sum3(a, b, c) then the optimisation cannot be applied (handled by BinaryOpUGen)
+				if ((otherValues.size == 1) and: { inputs.includes(otherValues[0]) }) {
+					var inputCopy = inputs.copy;
+					var add;
+					inputCopy.remove(otherValues[0]);
+					add = BinaryOpUGen.newDuringOptimisation('+', inputCopy[0], inputCopy[1]);
+					minus.replaceWith(with: add);
+					minus.tryDisconnect;
+					result.addUGen(add, 1);
+				}
+			};
+			result.returnNilIfEmpty !? { |r| ^r };
+		};
+
+		^nil;
+	}
 }
 
 Sum4 : UGen {
@@ -333,4 +376,33 @@ Sum4 : UGen {
 
 		^super.new1(rate, *sortedArgs)
 	}
+	optimise {
+		var desc;
+
+		// Sum4(a, b, c, d) - a => Sum3(b, c, d)
+		desc = descendants.select { |d| d.isKindOf(BinaryOpUGen) and: { d.operator == '-' } };
+		if(desc.isEmpty.not){
+			var result = SynthDefOptimisationResult();
+			desc.do { |minus|
+				var otherValues = minus.inputs.select{|i| i !== this };
+				// if Sum4(a, b, c, d) - Sum4(a, b, c, d) then the optimisation cannot be applied (handled by BinaryOpUGen)
+				if ((otherValues.size == 1) and: { inputs.includes(otherValues[0]) }) {
+					var inputCopy = inputs.copy;
+					var sum3;
+					inputCopy.remove(otherValues[0]);
+					sum3 = Sum3.newDuringOptimisation(inputCopy[0], inputCopy[1], inputCopy[2]);
+					minus.replaceWith(with: sum3);
+					minus.tryDisconnect;
+					result.addUGen(sum3, 1);
+				}
+			};
+			result.returnNilIfEmpty !? { |r| ^r };
+		};
+
+		^nil;
+	}
 }
+
+
+
+
