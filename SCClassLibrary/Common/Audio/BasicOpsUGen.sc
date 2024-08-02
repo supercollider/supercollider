@@ -44,6 +44,31 @@ UnaryOpUGen : BasicOpUGen {
 		rate = theInput.rate;
 		inputs = theInput.asArray;
 	}
+
+	optimise {
+		case
+		{ operator == 'neg' } {
+			var result = SynthDefOptimisationResult();
+			var desc;
+
+			// a - b.neg => a + b
+			desc = descendants.select { |d| d.isKindOf(BinaryOpUGen) and: { d.operator == '-' }};
+			if (desc.isEmpty.not){
+				desc.do{ |minus|
+					var others = minus.inputs.select{|i| i != this };
+					// b.neg - b.neg is handled inside BinaryOpUgen and can't happen (size would be 0)
+					if (others.size == 1){
+						var add = BinaryOpUGen.newDuringOptimisation('+', others[0], inputs[0]);
+						minus.replaceWith(with: add);
+						result.addUGen(add, 2);
+						minus.tryDisconnect;
+					}
+				};
+				result.returnNilIfEmpty !? { |r| ^r };
+			}
+		};
+		^nil
+	}
 }
 
 BinaryOpUGen : BasicOpUGen {
