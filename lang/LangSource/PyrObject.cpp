@@ -2792,13 +2792,13 @@ std::tuple<int, std::vector<std::string>> PyrCollToVectorStdString(PyrObject* co
     return make_tuple(errNone, std::move(strings));
 }
 
-static int hashPtr(void* ptr) {
+static int hashPtr(const void* ptr) {
     int32 hashed_part = int32((size_t)ptr & 0xffffffff);
     return Hash(hashed_part);
 }
 
 int calcHash(PyrSlot* a);
-int calcHash(PyrSlot* a) {
+int calcHash(const PyrSlot* a) {
     int hash;
     switch (GetTag(a)) {
     case tagObj:
