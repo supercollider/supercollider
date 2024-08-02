@@ -19,6 +19,7 @@ Done : UGen {
 
 	resourceManagers { ^[] }
 	hasObservableEffect { ^true } // While this might not always be true, it simplifies things.
+	canBeReplacedByIdenticalCall { ^true }
 
 	*kr { arg src;
 		^this.multiNew('control', src)
@@ -26,8 +27,9 @@ Done : UGen {
 }
 
 FreeSelf : UGen {
-	resourceManagers { ^[] }
-	hasObservableEffect { ^true } // Changes the state of the synth
+	resourceManagers { ^[UGenDoneResourceManager] }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*kr { arg in;
 		this.multiNew('control', in);
@@ -36,8 +38,9 @@ FreeSelf : UGen {
 }
 
 PauseSelf : UGen {
-	resourceManagers { ^[] }
-	hasObservableEffect { ^true } // Changes the state of the synth
+	resourceManagers { ^[UGenDoneResourceManager] }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*kr { arg in;
 		this.multiNew('control', in);
@@ -46,8 +49,9 @@ PauseSelf : UGen {
 }
 
 FreeSelfWhenDone : UGen {
-	resourceManagers { ^[] }
-	hasObservableEffect { ^true } // Changes the state of the synth
+	resourceManagers { ^[UGenDoneResourceManager] }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*kr { arg src;
 		^this.multiNew('control', src)
@@ -55,8 +59,9 @@ FreeSelfWhenDone : UGen {
 }
 
 PauseSelfWhenDone : UGen {
-	resourceManagers { ^[] }
-	hasObservableEffect { ^true } // Changes the state of the synth
+	resourceManagers { ^[UGenDoneResourceManager] }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*kr { arg src;
 		^this.multiNew('control', src)
@@ -64,8 +69,9 @@ PauseSelfWhenDone : UGen {
 }
 
 Pause : UGen {
-	resourceManagers { ^[] }
-	hasObservableEffect { ^true } // Changes the state of the synth
+	resourceManagers { ^[UGenDoneResourceManager] }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*kr { arg gate, id;
 		^this.multiNew('control', gate, id)
@@ -73,8 +79,9 @@ Pause : UGen {
 }
 
 Free : UGen {
-	resourceManagers { ^[] }
-	hasObservableEffect { ^true } // Changes the state of the synth
+	resourceManagers { ^[UGenDoneResourceManager] }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*kr { arg trig, id;
 		^this.multiNew('control', trig, id)
@@ -84,6 +91,7 @@ Free : UGen {
 EnvGen : UGen { // envelope generator
 	resourceManagers { ^if(this.hasObservableEffect) { [UGenDoneResourceManager] } { [] } }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(4) }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg envelope, gate = 1.0, levelScale = 1.0, levelBias = 0.0, timeScale = 1.0, doneAction = 0;
 		envelope = this.convertEnv(envelope);
@@ -117,6 +125,7 @@ EnvGen : UGen { // envelope generator
 Linen : UGen {
 	resourceManagers { ^if(this.hasObservableEffect) { [UGenDoneResourceManager] } { [] } }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(4) }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*kr { arg gate = 1.0, attackTime = 0.01, susLevel = 1.0, releaseTime = 1.0, doneAction = 0;
 		^this.multiNew('control', gate, attackTime, susLevel, releaseTime, doneAction)

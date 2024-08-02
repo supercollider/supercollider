@@ -1,6 +1,7 @@
 Filter : UGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	checkInputs { ^this.checkSameRateAsFirstInput }
 }
@@ -305,17 +306,6 @@ Formlet : Filter {
 		^this.multiNew('control', in, freq, attacktime, decaytime).madd(mul, add)
 	}
 }
-
-// the doneAction arg lets you cause the EnvGen to stop or end the
-// synth without having to use a PauseSelfWhenDone or FreeSelfWhenDone ugen.
-// It is more efficient to use a doneAction.
-// doneAction = 0   do nothing when the envelope has ended.
-// doneAction = 1   pause the synth running, it is still resident.
-// doneAction = 2   remove the synth and deallocate it.
-// doneAction = 3   remove and deallocate both this synth and the preceeding node.
-// doneAction = 4   remove and deallocate both this synth and the following node.
-// doneAction = 5   remove and deallocate this synth and free all children in the preceeding group (if it is a group).
-// doneAction = 6   remove and deallocate this synth and free all children in the following group (if it is a group).
 
 DetectSilence : Filter {
 	resourceManagers { ^if(this.hasObservableEffect) { [UGenDoneResourceManager] } { [] } }

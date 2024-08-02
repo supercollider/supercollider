@@ -1,6 +1,7 @@
 Hilbert : MultiOutUGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg in, mul = 1, add = 0;
 		^this.multiNew('audio', in).madd(mul, add);
@@ -22,6 +23,7 @@ HilbertFIR : UGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\read }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg in, buffer;
 		var fft, delay;
@@ -40,6 +42,7 @@ HilbertFIR : UGen {
 FreqShift : UGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar {
 		arg in,			// input signal

@@ -8,6 +8,7 @@ UnpackFFT : MultiOutUGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\write }
 	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*new { | chain, bufsize, frombin=0, tobin |
 		var upperlimit = bufsize/2;
@@ -21,6 +22,7 @@ Unpack1FFT : UGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\write }
 	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*new { | chain, bufsize, binindex, whichmeasure=0 |
 		^this.multiNew('demand', chain, bufsize, binindex, whichmeasure);
@@ -32,6 +34,7 @@ PackFFT : PV_ChainUGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\write }
 	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*new { | chain, bufsize, magsphases, frombin=0, tobin, zeroothers=0 |
 		tobin = tobin ?? {bufsize/2};

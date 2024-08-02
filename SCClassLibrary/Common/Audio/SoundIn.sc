@@ -2,6 +2,7 @@ SoundIn  {
 	resourceManagers { ^[UGenBusResourceManager] }
 	busAccessType { ^\read }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg bus = 0, mul=1.0, add=0.0;
 		var chanOffset;

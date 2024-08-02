@@ -12,6 +12,7 @@
 FSinOsc : UGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg freq=440.0, iphase = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', freq, iphase).madd(mul, add)
@@ -25,6 +26,7 @@ FSinOsc : UGen {
 Klang : UGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg specificationsArrayRef, freqscale = 1.0, freqoffset = 0.0;
 		specificationsArrayRef = specificationsArrayRef.multichannelExpandRef(2);
@@ -51,6 +53,7 @@ Klang : UGen {
 Klank : UGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg specificationsArrayRef, input, freqscale = 1.0, freqoffset = 0.0, decayscale = 1.0;
 			specificationsArrayRef = specificationsArrayRef.multichannelExpandRef(2);
@@ -77,6 +80,7 @@ Klank : UGen {
 DynKlank : UGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg specificationsArrayRef, input, freqscale = 1.0, freqoffset = 0.0, decayscale = 1.0;
 		^this.multiNew(\audio, specificationsArrayRef, input, freqscale, freqoffset, decayscale)
@@ -101,6 +105,7 @@ DynKlank : UGen {
 DynKlang : UGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg specificationsArrayRef, freqscale = 1.0, freqoffset = 0.0;
 		^this.multiNew(\audio, specificationsArrayRef, freqscale, freqoffset);
@@ -125,6 +130,7 @@ DynKlang : UGen {
 Blip : UGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg freq=440.0, numharm = 200.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', freq, numharm).madd(mul, add)
@@ -137,6 +143,7 @@ Blip : UGen {
 Saw : UGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg freq=440.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', freq).madd(mul, add)
@@ -149,6 +156,7 @@ Saw : UGen {
 Pulse : UGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg freq=440.0, width = 0.5, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', freq, width).madd(mul, add)

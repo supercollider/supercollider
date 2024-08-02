@@ -1,6 +1,7 @@
 Pan2 : MultiOutUGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg in, pos = 0.0, level = 1.0;
 		^this.multiNew('audio', in, pos, level )
@@ -24,6 +25,7 @@ LinPan2 : Pan2 {}
 Pan4 : MultiOutUGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg in, xpos = 0.0, ypos = 0.0, level = 1.0;
 		^this.multiNew('audio', in, xpos, ypos, level )
@@ -43,6 +45,7 @@ Pan4 : MultiOutUGen {
 Balance2 : MultiOutUGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg left, right, pos = 0.0, level = 1.0;
 		^this.multiNew('audio', left, right, pos, level )
@@ -64,6 +67,7 @@ Balance2 : MultiOutUGen {
 Rotate2 : MultiOutUGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg x, y, pos = 0.0;
 		^this.multiNew('audio', x, y, pos )
@@ -85,6 +89,7 @@ Rotate2 : MultiOutUGen {
 PanB : MultiOutUGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg in, azimuth=0, elevation=0, gain=1;
 		^this.multiNew('audio', in, azimuth, elevation, gain )
@@ -104,6 +109,7 @@ PanB : MultiOutUGen {
 PanB2 : MultiOutUGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg in, azimuth=0, gain=1;
 		^this.multiNew('audio', in, azimuth, gain )
@@ -123,6 +129,7 @@ PanB2 : MultiOutUGen {
 BiPanB2 : MultiOutUGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg inA, inB, azimuth, gain=1;
 		^this.multiNew('audio', inA, inB, azimuth, gain )
@@ -142,6 +149,7 @@ BiPanB2 : MultiOutUGen {
 DecodeB2 : MultiOutUGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg numChans, w, x, y, orientation = 0.5;
 		^this.multiNew('audio', numChans, w, x, y, orientation = 0.5 )
@@ -160,6 +168,7 @@ DecodeB2 : MultiOutUGen {
 PanAz : MultiOutUGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg numChans, in, pos = 0.0, level = 1.0, width = 2.0, orientation = 0.5;
 		^this.multiNew('audio', numChans, in, pos, level, width, orientation )
@@ -179,6 +188,7 @@ PanAz : MultiOutUGen {
 XFade2 : UGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	// equal power two channel cross fade
 	*ar { arg inA, inB = 0.0, pan = 0.0, level = 1.0;
@@ -193,6 +203,7 @@ XFade2 : UGen {
 LinXFade2 : UGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	// linear two channel cross fade
 	*ar { arg inA, inB = 0.0, pan = 0.0, level = 1.0;

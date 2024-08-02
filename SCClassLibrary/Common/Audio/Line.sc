@@ -1,6 +1,7 @@
 Line : UGen {
 	resourceManagers { ^if(this.hasObservableEffect) { [UGenDoneResourceManager] } { [] } }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(3) }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg start=0.0, end = 1.0, dur = 1.0, mul = 1.0, add = 0.0, doneAction = 0;
 		^this.multiNew('audio', start, end, dur, doneAction).madd(mul, add)
@@ -13,6 +14,7 @@ Line : UGen {
 XLine : UGen {
 	resourceManagers { ^if(this.hasObservableEffect) { [UGenDoneResourceManager] } { [] } }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(3) }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg start=1.0, end = 2.0, dur = 1.0, mul = 1.0, add = 0.0, doneAction = 0;
 		^this.multiNew('audio', start, end, dur, doneAction).madd(mul, add)
@@ -26,6 +28,7 @@ LinExp : UGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
 	checkInputs { ^this.checkSameRateAsFirstInput }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg in=0.0, srclo = 0.0, srchi = 1.0, dstlo = 1.0, dsthi = 2.0;
 		^this.multiNew('audio', in, srclo, srchi, dstlo, dsthi)
@@ -53,6 +56,7 @@ LinLin {
 AmpComp : UGen {
     resourceManagers { ^[] }
     hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ir { arg freq = 60.midicps, root = 60.midicps, exp = 0.3333;
 		^this.multiNew('scalar', freq, root, exp)
@@ -81,6 +85,7 @@ AmpCompA : AmpComp {
 K2A : UGen { // control rate to audio rate converter
     resourceManagers { ^[] }
     hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg in = 0.0;
 		^this.multiNew('audio', in)
@@ -90,6 +95,7 @@ K2A : UGen { // control rate to audio rate converter
 A2K : UGen { // audio rate to control rate converter. only needed in specific cases
     resourceManagers { ^[] }
     hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*kr { arg in = 0.0;
 		^this.multiNew('control', in)
@@ -114,6 +120,7 @@ T2A : K2A { // control rate to audio rate trigger converter.
 DC : MultiOutUGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg in=0.0;
 		^this.multiNew('audio', in)

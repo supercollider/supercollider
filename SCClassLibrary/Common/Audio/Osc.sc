@@ -11,6 +11,7 @@ add - add to signal or scalar
 Osc : UGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar {
 		arg bufnum, freq=440.0, phase=0.0, mul=1.0, add=0.0;
@@ -25,6 +26,7 @@ Osc : UGen {
 SinOsc : UGen {
     resourceManagers { ^[] }
     hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar {
 		arg freq=440.0, phase=0.0, mul=1.0, add=0.0;
@@ -39,6 +41,7 @@ SinOsc : UGen {
 SinOscFB : UGen {
     resourceManagers { ^[] }
     hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar {
 		arg freq=440.0, feedback=0.0, mul=1.0, add=0.0;
@@ -53,6 +56,7 @@ SinOscFB : UGen {
 OscN : UGen {
     resourceManagers { ^[] }
     hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar {
 		arg bufnum, freq=440.0, phase=0.0, mul=1.0, add=0.0;
@@ -68,6 +72,7 @@ OscN : UGen {
 VOsc : UGen {
     resourceManagers { ^[] }
     hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar {
 		arg bufpos, freq=440.0, phase=0.0, mul=1.0, add=0.0;
@@ -82,6 +87,7 @@ VOsc : UGen {
 VOsc3 : UGen {
     resourceManagers { ^[] }
     hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar {
 		arg bufpos, freq1=110.0, freq2=220.0, freq3=440.0, mul=1.0, add=0.0;
@@ -96,6 +102,7 @@ VOsc3 : UGen {
 COsc : UGen {
     resourceManagers { ^[] }
     hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar {
 		arg bufnum, freq=440.0, beats=0.5, mul=1.0, add=0.0;
@@ -110,6 +117,7 @@ COsc : UGen {
 Formant : UGen {
     resourceManagers { ^[] }
     hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar {
 		arg fundfreq = 440.0, formfreq = 1760.0, bwfreq = 880.0, mul = 1.0, add = 0.0;
@@ -120,6 +128,7 @@ Formant : UGen {
 LFSaw : UGen {
     resourceManagers { ^[] }
     hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar {
 		arg freq = 440.0, iphase = 0.0, mul = 1.0, add = 0.0;
@@ -134,6 +143,7 @@ LFSaw : UGen {
 LFPar : UGen {
     resourceManagers { ^[] }
     hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar {
 		arg freq = 440.0, iphase = 0.0, mul = 1.0, add = 0.0;
@@ -148,6 +158,7 @@ LFPar : UGen {
 LFCub : UGen {
     resourceManagers { ^[] }
     hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar {
 		arg freq = 440.0, iphase = 0.0, mul = 1.0, add = 0.0;
@@ -162,6 +173,7 @@ LFCub : UGen {
 LFTri : UGen {
     resourceManagers { ^[] }
     hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar {
 		arg freq = 440.0, iphase = 0.0, mul = 1.0, add = 0.0;
@@ -176,6 +188,7 @@ LFTri : UGen {
 LFGauss : UGen {
 	resourceManagers { ^if(this.hasObservableEffect) { [UGenDoneResourceManager] } { [] } }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(4) }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar {
 		arg duration = 1, width = 0.1, iphase = 0.0, loop = 1, doneAction = 0;
@@ -198,6 +211,7 @@ LFGauss : UGen {
 LFPulse : UGen {
     resourceManagers { ^[] }
     hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar {
 		arg freq = 440.0, iphase = 0.0, width = 0.5, mul = 1.0, add = 0.0;
@@ -213,6 +227,7 @@ LFPulse : UGen {
 VarSaw : UGen {
     resourceManagers { ^[] }
     hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar {
 		arg freq = 440.0, iphase = 0.0, width = 0.5, mul = 1.0, add = 0.0;
@@ -227,6 +242,7 @@ VarSaw : UGen {
 Impulse : UGen {
     resourceManagers { ^[] }
     hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar {
 		arg freq = 440.0, phase = 0.0, mul = 1.0, add = 0.0;
@@ -243,6 +259,7 @@ Impulse : UGen {
 SyncSaw : UGen {
     resourceManagers { ^[] }
     hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar {
 		arg syncFreq = 440.0, sawFreq = 440.0, mul = 1.0, add = 0.0;
@@ -259,6 +276,7 @@ Index : UGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\read }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar {
 		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
@@ -274,6 +292,7 @@ FoldIndex : UGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\read }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar {
 		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
@@ -289,6 +308,7 @@ WrapIndex : UGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\read }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar {
 		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
@@ -304,6 +324,7 @@ IndexInBetween : UGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\read }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar {
 		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
@@ -319,6 +340,7 @@ DetectIndex : UGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\read }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar {
 		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
@@ -334,6 +356,7 @@ Shaper : UGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\read }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar {
 		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
@@ -349,6 +372,7 @@ IndexL : UGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\read }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar {
 		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
@@ -364,6 +388,7 @@ DegreeToKey : UGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\read }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar {
 		arg bufnum, in = 0.0, octave = 12.0, mul = 1.0, add = 0.0;
@@ -378,6 +403,7 @@ DegreeToKey : UGen {
 Select : UGen {
     resourceManagers { ^[] }
     hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar {
 		arg which, array;
@@ -449,6 +475,7 @@ SelectXFocus {
 Vibrato : UGen {
     resourceManagers { ^[] }
     hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^false } // Vibrato uses noise (variation).
 
 	*ar {
 		arg freq = 440.0, rate = 6, depth = 0.02, delay = 0.0, onset = 0.0,

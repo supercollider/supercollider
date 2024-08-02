@@ -1,6 +1,7 @@
 Demand : MultiOutUGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg trig, reset, demandUGens;
 		^this.multiNewList(['audio', trig, reset] ++ demandUGens.asArray)
@@ -18,6 +19,7 @@ Demand : MultiOutUGen {
 Duty : UGen {
 	resourceManagers { ^if(this.hasObservableEffect) { [UGenDoneResourceManager] } { [] } }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(2) }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg dur = 1.0, reset = 0.0, level = 1.0, doneAction = 0;
 		^this.multiNew('audio', dur, reset, doneAction, level)
@@ -49,6 +51,7 @@ TDuty : Duty {
 DemandEnvGen : UGen {
 	resourceManagers { ^if(this.hasObservableEffect) { [UGenDoneResourceManager] } { [] } }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(9) }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*kr { arg level, dur, shape = 1, curve = 0, gate = 1.0, reset = 1.0,
 		levelScale = 1.0, levelBias = 0.0, timeScale = 1.0, doneAction=0;
@@ -69,6 +72,7 @@ DemandEnvGen : UGen {
 DUGen : UGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	// some n-ary op special cases
 	linlin { arg inMin, inMax, outMin, outMax, clip=\minmax;
@@ -105,6 +109,7 @@ Dgeom : DUGen {
 Dbufrd : DUGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\read }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*new { arg bufnum = 0, phase = 0.0, loop = 1.0;
 		^this.multiNew('demand', bufnum, phase, loop)
@@ -115,6 +120,7 @@ Dbufwr : DUGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\write }
 	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*new { arg input = 0.0, bufnum = 0, phase = 0.0, loop = 1.0;
 		^this.multiNew('demand', bufnum, phase, input, loop)
@@ -152,6 +158,7 @@ Dswitch : Dswitch1 {}
 Dwhite : DUGen {
 	resourceManagers { ^[UGenRandomResourceManager] }
 	randomAccessType { ^\gen }
+	canBeReplacedByIdenticalCall { ^false } // Randomness is not identical
 
 	*new { arg lo = 0.0, hi = 1.0, length = inf;
 		^this.multiNew('demand', length, lo, hi)
@@ -163,6 +170,7 @@ Diwhite : Dwhite {}
 Dbrown : DUGen {
 	resourceManagers { ^[UGenRandomResourceManager] }
 	randomAccessType { ^\gen }
+	canBeReplacedByIdenticalCall { ^false }
 
 	*new { arg lo = 0.0, hi = 1.0, step = 0.01, length = inf;
 		^this.multiNew('demand', length, lo, hi, step)
@@ -200,12 +208,18 @@ Dconst : DUGen {
 }
 
 Dreset : DUGen {
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^false }
+
 	*new { arg in, reset = 0.0;
 		^this.multiNew('demand', in, reset)
 	}
 }
 
 Dpoll : DUGen {
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^false }
+
 	*new { arg in, label, run = 1, trigid = -1;
 		^this.multiNew('demand', in, label, run, trigid)
 	}
@@ -217,6 +231,7 @@ Dpoll : DUGen {
 	}
 }
 
+// TODO: what does this comment refer to?
 // behave as identical in multiple uses
 
 Dunique : UGen {

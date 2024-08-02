@@ -8,6 +8,8 @@ PlayBuf : MultiOutUGen {
     }
 	bufferAccessType { ^\read }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(6) }
+	canBeReplacedByIdenticalCall { ^true }
+
 
 	*ar { arg numChannels, bufnum=0, rate=1.0, trigger=1.0, startPos=0.0, loop = 0.0, doneAction=0;
 		^this.multiNew('audio', numChannels, bufnum, rate, trigger, startPos, loop, doneAction)
@@ -28,6 +30,7 @@ TGrains : MultiOutUGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\read }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg numChannels, trigger=0, bufnum=0, rate=1, centerPos=0,
 		dur=0.1, pan=0, amp=0.1, interp=4;
@@ -46,6 +49,7 @@ BufRd : MultiOutUGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\read }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg numChannels, bufnum=0, phase=0.0, loop=1.0, interpolation=2;
 		^this.multiNew('audio', numChannels, bufnum, phase, loop, interpolation)
@@ -71,6 +75,7 @@ BufWr : UGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\write }
 	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg inputArray, bufnum=0, phase=0.0, loop=1.0;
 		^this.multiNewList(['audio', bufnum, phase,
@@ -105,6 +110,7 @@ RecordBuf : UGen {
     }
 	bufferAccessType { ^\write }
 	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg inputArray, bufnum=0, offset=0.0, recLevel=1.0, preLevel=0.0,
 		run=1.0, loop=1.0, trigger=1.0, doneAction=0;
@@ -122,10 +128,12 @@ RecordBuf : UGen {
 	}
 }
 
+// TODO: What does this class do?
 ScopeOut : UGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
-	bufferAccessType { ^\read }
-	hasObservableEffect { ^false }
+	bufferAccessType { ^\scopeOut }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^false }
 
 	*ar { arg inputArray , bufnum=0;
 		this.multiNewList(['audio', bufnum] ++ inputArray.asArray);
@@ -139,8 +147,9 @@ ScopeOut : UGen {
 
 ScopeOut2 : UGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
-	bufferAccessType { ^\read }
-	hasObservableEffect { ^false }
+	bufferAccessType { ^\scopeOut2 }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^false }
 
 	*ar { arg inputArray, scopeNum=0, maxFrames = 4096, scopeFrames;
 		this.multiNewList(['audio', scopeNum, maxFrames, scopeFrames ? maxFrames] ++ inputArray.asArray);
@@ -156,6 +165,7 @@ Tap : UGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\read }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg bufnum = 0, numChannels = 1, delaytime = 0.2;
 		var scale = BufRateScale.kr(bufnum);
@@ -167,6 +177,7 @@ Tap : UGen {
 LocalBuf : WidthFirstUGen {
 	resourceManagers { ^[] } // This depends on nothing, and is depended by its usage in code.
 	hasObservableEffect { ^false } // If you don't use the buffer, it can be deleted.
+	canBeReplacedByIdenticalCall { ^false }
 
 	*new { arg numFrames = 1, numChannels = 1;
 		^this.multiNew('scalar', numChannels, numFrames)
@@ -205,8 +216,9 @@ LocalBuf : WidthFirstUGen {
 }
 
 MaxLocalBufs : UGen {
-	hasObservableEffect { ^false }
 	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*new {
 		^this.multiNew('scalar', 0);
@@ -220,6 +232,7 @@ SetBuf : WidthFirstUGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\write }
 	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*new { arg buf, values, offset = 0;
 		values = values.asArray;
@@ -231,6 +244,7 @@ ClearBuf : WidthFirstUGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\write }
 	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*new { arg buf;
 		^this.multiNew('scalar', buf)

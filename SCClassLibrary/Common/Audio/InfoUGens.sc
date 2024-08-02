@@ -1,6 +1,7 @@
 InfoUGenBase : UGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ir { ^this.multiNew('scalar') }
 }
@@ -9,6 +10,7 @@ BufInfoUGenBase : UGen {
 	resourceManagers { ^[UGenBusResourceManager] }
 	busAccessType { ^\read }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*kr { |bufnum| ^this.multiNew('control', bufnum) }
 

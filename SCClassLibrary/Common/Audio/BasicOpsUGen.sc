@@ -5,7 +5,8 @@ BasicOpUGen : UGen {
 
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
-	nameForDisplay { ^super.name ++ operator }
+	canBeReplacedByIdenticalCall { ^true }
+	nameForDisplay { ^(super.name ++ operator).asSymbol }
 
 	operator_ { arg op;
 		operator = op;
@@ -153,91 +154,76 @@ BinaryOpUGen : BasicOpUGen {
 
 
 	optimise {
-	    // Rules:
-	    //   Match on the type of operator.
-	    //   Try to apply an optimisation.
-	    //   If it works, return a SynthDefOptimisationResult.
-	    //   The SynthDefOptimiser will call this method again, so order inside the case blocks matters.
+		// Rules:
+		//   Match on the type of operator.
+		//   Try to apply an optimisation.
+		//   If it works, return a SynthDefOptimisationResult.
+		//   The SynthDefOptimiser will call this method again, so order inside the case blocks matters.
 
-	    case
-	    { operator == '*' } {
-	        var result = SynthDefOptimisationResult();
-	        var addDescendants = descendants.select { |d| d.isKindOf(BinaryOpUGen) and: { d.operator == '+' }};
-	        if (addDescendants.isEmpty.not){
-                addDescendants.do{ |adder|
-                    var addValue = adder.inputs.select({|i| i != this })[0];
-                    MulAdd.maybeGetMulAddOrder(inputs[0], inputs[1], addValue) !? { |mulAddOrder|
-                        var muladd = MulAdd.newDuringOptimisation(*mulAddOrder);
-                        adder.replaceWith(with: muladd);
-                        result.addUGen(muladd, 2);
-                    }
-                };
-                this.tryDisconnect;
-                result.returnNilIfEmpty !? { |r| ^r };
-	        }
-	    }
+		case
+		{ operator == '*' } {
+			var result = SynthDefOptimisationResult();
+			var addDescendants = descendants.select { |d| d.isKindOf(BinaryOpUGen) and: { d.operator == '+' }};
+			if (addDescendants.isEmpty.not){
+				addDescendants.do{ |adder|
+					var addValue = adder.inputs.select({|i| i != this })[0];
+					MulAdd.maybeGetMulAddOrder(inputs[0], inputs[1], addValue) !? { |mulAddOrder|
+						var muladd = MulAdd.newDuringOptimisation(*mulAddOrder);
+						adder.replaceWith(with: muladd);
+						result.addUGen(muladd, 2);
+					}
+				};
+				this.tryDisconnect;
+				result.returnNilIfEmpty !? { |r| ^r };
+			}
+		}
 
-	    { operator == '+' } {
-            var result = SynthDefOptimisationResult();
-            var desc;
+		{ operator == '+' } {
+			var result = SynthDefOptimisationResult();
+			var desc;
 
-            // Get Sum3 descendants and create a Sum4
-            desc = descendants.select { |d| d.isKindOf(Sum3) };
-            if(desc.isEmpty.not){
-                desc.do { |sum3|
-                    var otherValues = sum3.inputs.select({|i| i !== this });
-                    // sometimes this can be repeated, make sure there are two arguments
-                    otherValues = if(otherValues.size == 1) { otherValues[0]!2 } { otherValues };
-                    otherValues.debug("otherValues") !? {
-                        var sum4 = Sum4.newDuringOptimisation(inputs[0], inputs[1], *otherValues);
-                        sum3.replaceWith(with: sum4);
-                        result.addUGen(sum4, 2);
-                    }
-                };
-                this.tryDisconnect;
-                result.returnNilIfEmpty !? { |r| ^r };
-            };
+			// Get Sum3 descendants and create a Sum4
+			desc = descendants.select { |d| d.isKindOf(Sum3) };
+			if(desc.isEmpty.not){
+				desc.do { |sum3|
+					var otherValues = sum3.inputs.select({|i| i !== this });
+					// sometimes this can be repeated, make sure there are two arguments
+					otherValues = if(otherValues.size == 1) { otherValues[0]!2 } { otherValues };
+					otherValues !? {
+						var sum4 = Sum4.newDuringOptimisation(inputs[0], inputs[1], *otherValues);
+						sum3.replaceWith(with: sum4);
+						result.addUGen(sum4, 2);
+					}
+				};
+				this.tryDisconnect;
+				result.returnNilIfEmpty !? { |r| ^r };
+			};
 
-            // Get + descendants and create a Sum3
-            desc = descendants.select { |d| d.isKindOf(BinaryOpUGen) and: { d.operator == '+' }};
-            if (desc.isEmpty.not){
-                desc.do{ |childAdder|
-                    childAdder.inputs.select({|i| i != this })[0] !? { |otherValue|
-                        var sum3 = Sum3.newDuringOptimisation(inputs[0], inputs[1], otherValue);
-                        childAdder.replaceWith(with: sum3);
-                        result.addUGen(sum3, 2);
-                    };
-                };
-                this.tryDisconnect;
-                result.returnNilIfEmpty !? { |r| ^r };
-            }
-	    }
-	    ^nil
-	}
-
-
-	optimizeSub { // TODO: move this to UnaryOp
-		var a, b, replacement;
-		#a, b = inputs;
-
-		if (b.isKindOf(UnaryOpUGen) and: { b.operator == 'neg' and: { b.descendants.size == 1 } }) {
-			// a - b.neg -> a + b
-			buildSynthDef.removeUGen(b);
-
-			replacement = BinaryOpUGen('+', a, b.inputs[0]);
-			replacement.descendants = descendants;
-			this.optimizeUpdateDescendants(replacement, b);
-
-			synthDef.replaceUGen(this, replacement);
-			replacement.optimizeGraph  // not called from optimizeAdd; no need to return ugen here
-		};
+			// Get + descendants and create a Sum3
+			desc = descendants.select { |d| d.isKindOf(BinaryOpUGen) and: { d.operator == '+' }};
+			if (desc.isEmpty.not){
+				desc.do{ |childAdder|
+					childAdder.inputs.select({|i| i != this })[0] !? { |otherValue|
+						var sum3 = Sum3.newDuringOptimisation(inputs[0], inputs[1], otherValue);
+						childAdder.replaceWith(with: sum3);
+						result.addUGen(sum3, 2);
+					};
+				};
+				this.tryDisconnect;
+				result.returnNilIfEmpty !? { |r| ^r };
+			}
+		}
 		^nil
 	}
+
+
+
 }
 
 MulAdd : UGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*new { arg in, mul = 1.0, add = 0.0;
 		var args = [in, mul, add].asUGenInput(this);
@@ -257,6 +243,8 @@ MulAdd : UGen {
 		if (noadd, { ^in * mul });
 		if (minus, { ^add - in });
 		if (nomul, { ^in + add });
+		if (mul == 2.0) { ^in + in + add };
+		if (in == 2.0) { ^mul + mul + add };
 
 		if (this.canBeMulAdd(in, mul, add)) {
 			^super.new1(rate, in, mul, add)
@@ -271,20 +259,19 @@ MulAdd : UGen {
 		rate = inputs.rate;
 	}
 
-    *maybeGetMulAddOrder { |in, mul, add|
-        if(MulAdd.canBeMulAdd(in, mul, add)) { ^[in, mul, add] };
-        if(MulAdd.canBeMulAdd(mul, in, add)) { ^[mul, in, add] };
-        ^nil
-    }
+	*maybeGetMulAddOrder { |in, mul, add|
+		if(MulAdd.canBeMulAdd(in, mul, add)) { ^[in, mul, add] };
+		if(MulAdd.canBeMulAdd(mul, in, add)) { ^[mul, in, add] };
+		^nil
+	}
 	*canBeMulAdd { arg in, mul, add;
 		// see if these inputs satisfy the constraints of a MulAdd ugen.
-		if (in.rate == \audio, { ^true });
+		if (in.rate == \audio) { ^true };
 		if (in.rate == \control
 			and: { mul.rate == \control || { mul.rate == \scalar }}
-			and: { add.rate == \control || { add.rate == \scalar }},
-		{
-			^true
-		});
+			and: { add.rate == \control || { add.rate == \scalar }})
+		{ ^true };
+
 		^false
 	}
 }
@@ -292,21 +279,18 @@ MulAdd : UGen {
 Sum3 : UGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
-	*new { arg in0, in1, in2;
-		^this.multiNew(nil, in0, in1, in2)
-	}
+	*new { |in0, in1, in2| ^this.multiNew(nil, in0, in1, in2) }
 
-	*new1 { arg dummyRate, in0, in1, in2;
+	*new1 { |dummyRate, in0, in1, in2|
 		var argArray, rate, sortedArgs;
 		if (in2 == 0.0) { ^(in0 + in1) };
 		if (in1 == 0.0) { ^(in0 + in2) };
 		if (in0 == 0.0) { ^(in1 + in2) };
-
 		argArray = [in0, in1, in2];
 		rate = argArray.rate;
 		sortedArgs = argArray.sort {|a, b| a.rate < b.rate};
-
 		^super.new1(rate, *sortedArgs)
 	}
 
@@ -357,6 +341,7 @@ Sum3 : UGen {
 Sum4 : UGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*new { arg in0, in1, in2, in3;
 		^this.multiNew(nil, in0, in1, in2, in3)

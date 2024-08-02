@@ -1,6 +1,7 @@
 CheckBadValues : UGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^true } // Never delete this.
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar {arg in = 0.0, id = 0, post = 2;
 		^this.multiNew('audio', in, id, post);
@@ -21,6 +22,7 @@ CheckBadValues : UGen {
 Sanitize : UGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { |in = 0.0, replace = 0.0|
 		^this.multiNew('audio', in, replace);

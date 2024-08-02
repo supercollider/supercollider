@@ -1,6 +1,7 @@
 Splay : UGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*new1 { arg rate, spread = 1, level = 1, center = 0.0, levelComp = true ... inArray;
 		var n = max(2, inArray.size);
@@ -37,6 +38,7 @@ Splay : UGen {
 SplayAz : UGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*kr { arg numChans = 4, inArray, spread = 1, level = 1, width = 2, center = 0.0, orientation = 0.5, levelComp = true;
 		var n = max(1, inArray.size);

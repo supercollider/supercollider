@@ -18,6 +18,7 @@ represent the interpolation method used between function iterations.
 ChaosGen : UGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 }
 
 // General Quadratic Map

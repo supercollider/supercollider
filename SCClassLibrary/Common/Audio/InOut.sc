@@ -42,6 +42,7 @@ Control : MultiOutUGen {
 	resourceManagers { ^[UGenBusResourceManager] }
 	busAccessType { ^\read }
 	hasObservableEffect { ^true } // controls alter the synthdef
+	canBeReplacedByIdenticalCall { ^false }
 
 	*names { arg names;
 		var synthDef, index;
@@ -91,6 +92,7 @@ AudioControl : MultiOutUGen {
 	resourceManagers { ^[UGenBusResourceManager] }
 	busAccessType { ^\read }
 	hasObservableEffect { ^true } // controls alter the synthdef
+	canBeReplacedByIdenticalCall { ^false }
 
 	*names { arg names;
 		var synthDef, index;
@@ -172,6 +174,7 @@ AbstractIn : MultiOutUGen {
 	resourceManagers { ^[UGenBusResourceManager] }
 	busAccessType { ^\read }
 	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 }
 
 In : AbstractIn {
@@ -235,31 +238,29 @@ AbstractOut : UGen {
 	resourceManagers { ^[UGenBusResourceManager] }
 	busAccessType { ^\write }
 	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^false }
 
 	numOutputs { ^0 }
-	writeOutputSpecs {}
+	writeOutputSpecs { }
 	checkInputs {
-		if (rate == 'audio', {
-			for(this.class.numFixedArgs, inputs.size - 1, { arg i;
-				if (inputs.at(i).rate != 'audio', {
-					^(" input at index " + i +
-						"(" + inputs.at(i) + ") is not audio rate");
-				});
-			});
-		}, {
-			if(inputs.size <= this.class.numFixedArgs, {
+		if (rate == 'audio') {
+			for(this.class.numFixedArgs, inputs.size - 1) { arg i;
+				if (inputs.at(i).rate != 'audio') {
+					^(" input at index " + i + "(" + inputs.at(i) + ") is not audio rate");
+				};
+			};
+		} {
+			if(inputs.size <= this.class.numFixedArgs) {
 				^"missing input at index 1"
-			})
-		});
+			}
+		};
 		^this.checkValidInputs
 	}
 
 	*isOutputUGen { ^true } // TODO: what does this do? Who uses it?
 	*numFixedArgs { ^this.subclassResponsibility(thisMethod) }
 
-	numAudioChannels {
-		^inputs.size - this.class.numFixedArgs
-	}
+	numAudioChannels { ^inputs.size - this.class.numFixedArgs }
 
 	writesToBus { ^this.subclassResponsibility(thisMethod) }
 }
@@ -279,6 +280,7 @@ Out : AbstractOut {
 }
 
 ReplaceOut : Out {
+	canBeReplacedByIdenticalCall { ^true }
 	busAccessType { ^\overwrite }
 }
 OffsetOut : Out {
