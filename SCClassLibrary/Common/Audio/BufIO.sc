@@ -1,11 +1,11 @@
 PlayBuf : MultiOutUGen {
 	resourceManagers {
-        ^if(this.hasObservableEffect){
-            [UGenBufferResourceManager, UGenDoneResourceManager]
-        } {
-            [UGenBufferResourceManager]
-        }
-    }
+		^if(this.hasObservableEffect){
+			[UGenBufferResourceManager, UGenDoneResourceManager]
+		} {
+			[UGenBufferResourceManager]
+		}
+	}
 	bufferAccessType { ^\read }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(6) }
 	canBeReplacedByIdenticalCall { ^true }
@@ -102,12 +102,12 @@ BufWr : UGen {
 
 RecordBuf : UGen {
 	resourceManagers {
-        ^if(this.hasObservableEffect){
-            [UGenBufferResourceManager, UGenDoneResourceManager]
-        } {
-            [UGenBufferResourceManager]
-        }
-    }
+		^if(this.hasObservableEffect){
+			[UGenBufferResourceManager, UGenDoneResourceManager]
+		} {
+			[UGenBufferResourceManager]
+		}
+	}
 	bufferAccessType { ^\write }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
@@ -126,6 +126,16 @@ RecordBuf : UGen {
 			++ inputArray.asArray
 		)
 	}
+
+	coerceInputs {
+		(inputs.size - 7).do { |i|
+			if (inputs[i + 8].isKindOf(Number)) {
+				var dc = DC.newDuringOptimisation(this.rate, inputs[i + 8]).debug("newDC");
+				this.replaceInputAt(i + 8, dc);
+			}
+		}
+	}
+
 }
 
 // TODO: What does this class do?

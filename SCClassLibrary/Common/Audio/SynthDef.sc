@@ -257,7 +257,8 @@ SynthDef {
 			children.do(_.initEdges); // Necessary because of borked init method in UGen.
 
 			if (enableOptimisationRewrite){
-				effectiveUGens = SynthDefOptimiser(effectiveUGens)
+				effectiveUGens = SynthDefOptimiser(effectiveUGens);
+				children.do(_.coerceInputs);
 			};
 			if (enableOptimisationCommonCodeElimination){
 				SynthDefCommonExpressionEliminator(effectiveUGens)
