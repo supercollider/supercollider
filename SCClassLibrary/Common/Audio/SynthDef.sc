@@ -132,7 +132,8 @@ SynthDefCommonExpressionEliminator {
 						possibleReplacement.tryDisconnect;
 						ar[current.getIdenticalInputs] = current;
 
-						current.descendants.do{ |a| toVisit = toVisit.add(a) }
+						// Would be nice to avoid this somehow
+						toVisit = toVisit.addAll(current.descendants);
 					}
 				} {
 					ar.put(current.getIdenticalInputs, current);
