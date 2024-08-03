@@ -273,6 +273,7 @@ SynthDef {
 			this.checkInputs; // Throws when invalid inputs are found.
 
 			children.do { | ugen, i| ugen.synthIndex = i }; // Reindex UGens.
+			children.do(_.onFinialisedSynthDef);
 		} {
 			rewriteInProgress = nil;
 			UGen.buildSynthDef = nil;

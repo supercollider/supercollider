@@ -357,6 +357,9 @@ UGen : UGenBuiltInMethods {
 	// Choose a input validation strategy, see below for options.
 	checkInputs { ^this.checkValidInputs }
 
+	// Called once the synthdef has finished compiling and this UGen is present in the graph.
+	onFinialisedSynthDef { }
+
 	///////////////// HELPER METHODS FOR HAS OBSERVABLE EFFECT
 
 	// Helper for hasObservableEffect when there is a doneAction
