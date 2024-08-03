@@ -276,15 +276,26 @@ UGen : UGenBuiltInMethods {
 	var <>synthDef; // The Current active synthdef.
 	var <>inputs;
 	var <>rate = 'audio';
-	var <>synthIndex = -1; // The order in the synthdef, not set until the synthdef compilation is complete, do not use.
+
+	// The order in the synthdef, not set until the synthdef compilation is complete.
+	var <>synthIndex = -1;
+
 	var <>specialIndex = 0; // TODO: what does this do?
-	var <>antecedents, <>descendants, <>weakAntecedents, <>weakDescendants; // Graph edges. Set in initEdges due to weird issue with init.
+
+	// Graph edges. Set in initEdges due to weird issue with init.
+	var <>antecedents, <>descendants, <>weakAntecedents, <>weakDescendants;
 	var <depth = 0; // How many children are above it in the graph.
 
 	///////////////// CONSTRUCTORS
 
-	*newDuringOptimisation { |...args, kwargs|
-		var ret = this.performArgs(\new, args, kwargs);
+	*newDuringOptimisation { |rate ...args|
+		var ret = this.performList(\new1, rate, args);
+		UGen.prInitEdgesRecursive(ret);
+		^ret;
+	}
+
+	*multiNewDuringOptimisation { |...args|
+		var ret = this.perform(\multiNew, *args);
 		UGen.prInitEdgesRecursive(ret);
 		^ret;
 	}
@@ -306,7 +317,9 @@ UGen : UGenBuiltInMethods {
 		var size = 0, newArgs, results;
 		args = args.asUGenInput(this);
 		args.do{ |item| if (item.class == Array) { size = max(size, item.size) } };
-		if (size == 0) { ^this.new1( *args ) };
+		if (size == 0) {
+			^this.new1( *args )
+		};
 		newArgs = Array.newClear(args.size);
 		results = Array.newClear(size);
 		size.do{ |i|
@@ -328,7 +341,6 @@ UGen : UGenBuiltInMethods {
 
 	////// REQUIRED meta-info. All UGens should specify these three methods.
 	////// Defaults are provided here, but each UGen should specifiy them to be clear.
-
 	// 1. Return an Array of zero or more UGenResourceManagers, or nil if entering panic mode (see UGenResourceManager).
 	// Maintains IO ordering under topological sort.
 	resourceManagers { ^nil	}
@@ -343,6 +355,8 @@ UGen : UGenBuiltInMethods {
 	// UGens that rely on randomness should set this to be false.
 	canBeReplacedByIdenticalCall { ^false }
 
+	////// Other methods for UGen authors.
+
 	// Graph optimisations, replace patterns of UGens with others, optional.
 	// This method should ONLY look at inputs (direct antecedents) but may look at all descendants.
 	// The optimiser runs from output to input, walking 'up' the graph.
@@ -354,7 +368,13 @@ UGen : UGenBuiltInMethods {
 	//    this will force the optimiser to re-evaluate those descendants before continuing upwards.
 	optimise { ^nil }
 
+
+	// Attempt to convert inputs. For example, turning the scalar '0' into DC.ar(0).
+	// If an invalid state is found, one may throw, or catch it in checkInputs (or both).
+	coerceInputs { }
+
 	// Choose a input validation strategy, see below for options.
+	// Should not change the UGen, only throw when a mistake has been found.
 	checkInputs { ^this.checkValidInputs }
 
 	// Called once the synthdef has finished compiling and this UGen is present in the graph.
@@ -466,8 +486,8 @@ UGen : UGenBuiltInMethods {
 	getIdenticalInputs {
 		^[inputs, weakAntecedents, weakDescendants]
 	}
-	asString { ^this.dumpName }
-	printOn { |stream| stream << this.asString }
+	//asString { ^this.dumpName }
+	//printOn { |stream| stream << this.asString }
 	numInputs { ^inputs.size }
 	numOutputs { ^1 }
 
@@ -487,16 +507,21 @@ UGen : UGenBuiltInMethods {
 	// Replaces an input at index with.
 	replaceInputAt { |index, with|
 		var old = inputs[index];
-		old.descendants.remove(this);
+		with = if (with.isKindOf(OutputProxy)) { with.source } { with };
+
+		if (old.isKindOf(UGen)) {
+			old.descendants.remove(this)
+		};
 		this.antecedents.remove(old);
 		inputs[index] = with;
-		if(with.isKindOf(UGen)){
+		if(with.isKindOf(UGen)) {
 			with.createConnectionTo(this)
-		}
+		};
 	}
 
 	// Creates a weak edge between two ugens. Weak edges are used to indicate IO and other resource orderings.
 	createWeakConnectionTo { |ugen|
+		ugen = if (ugen.isKindOf(OutputProxy)) { ugen.source } { ugen };
 		this.weakDescendants = this.weakDescendants.add(ugen);
 		ugen.weakAntecedents = ugen.weakAntecedents.add(this);
 	}
@@ -504,6 +529,12 @@ UGen : UGenBuiltInMethods {
 	// This is called inside the topological sort.
 	// It can't be called sooner because the optimisations changes things.
 	sortAntecedents {
+		// Could be nil.
+		antecedents = antecedents.asArray;
+		descendants = descendants.asArray;
+		weakAntecedents = weakAntecedents.asArray;
+		weakDescendants = weakDescendants.asArray;
+
 		antecedents.sort{ |l, r| if(l.depth != r.depth) { l.depth > r.depth } { l.synthIndex < r.synthIndex } };
 		weakAntecedents.sort{ |l, r| if(l.depth != r.depth) { l.depth > r.depth } { l.synthIndex < r.synthIndex } };
 	}

@@ -190,8 +190,13 @@ SynthDef {
 	var <>desc;
 	var <>metadata;
 
-	var <>effectiveUGens; // Private, don't access. These are the ends of the graph, the Outs, BufWrs, et cetera.
-	var <>resourceManagers; // Private, don't access. This stores all resource managers in an Event<Class, UGenResourceManager>.
+	// Private, don't access.
+	// These are the ends of the graph, the Outs, BufWrs, et cetera.
+	var <>effectiveUGens;
+
+	// Private, don't access.
+	// This stores all resource managers in an Event<Class, UGenResourceManager>.
+	var <>resourceManagers;
 
 	*synthDefDir_ { |dir|
 		if (dir.last.isPathSeparator.not ) { dir = dir ++ thisProcess.platform.pathSeparator };

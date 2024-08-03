@@ -58,12 +58,11 @@ UnaryOpUGen : BasicOpUGen {
 			}};
 			if (desc.isEmpty.not){
 				desc.do{ |minus|
-					var others = minus.inputs.select{|i| i != this };
-					if (others.size == 1){
-						var add = BinaryOpUGen.newDuringOptimisation('+', others[0], inputs[0]);
+					var other = minus.inputs[0];
+					if (other != this) {
+						var add = BinaryOpUGen.newDuringOptimisation(this.rate, '+', other, inputs[0]);
 						minus.replaceWith(with: add);
 						result.addUGen(add, 2);
-						minus.tryDisconnect;
 					}
 				};
 				result.returnNilIfEmpty !? { |r| ^r };
@@ -75,13 +74,10 @@ UnaryOpUGen : BasicOpUGen {
 			};
 			if (desc.isEmpty.not){
 				desc.do{ |add|
-					var others = add.inputs.select{|i| i != this };
-					case
-					// a + b.neg => a - b
-					{ others.size == 1}{
-						var minus = BinaryOpUGen.newDuringOptimisation('-', others[0], inputs[0]);
+					var other = add.inputs[0];
+					if (other != this) {
+						var minus = BinaryOpUGen.newDuringOptimisation(this.rate, '-', other, inputs[0]);
 						add.replaceWith(with: minus);
-
 						result.addUGen(minus, 2);
 						add.tryDisconnect;
 					}
@@ -188,7 +184,7 @@ BinaryOpUGen : BasicOpUGen {
 				addDescendants.do{ |adder|
 					var addValue = adder.inputs.select({|i| i != this })[0];
 					MulAdd.maybeGetMulAddOrder(inputs[0], inputs[1], addValue) !? { |mulAddOrder|
-						var muladd = MulAdd.newDuringOptimisation(*mulAddOrder);
+						var muladd = MulAdd.newDuringOptimisation(this.rate, *mulAddOrder);
 						adder.replaceWith(with: muladd);
 						result.addUGen(muladd, 2);
 					}
@@ -210,7 +206,7 @@ BinaryOpUGen : BasicOpUGen {
 					// sometimes this can be repeated, make sure there are two arguments
 					otherValues = if(otherValues.size == 1) { otherValues[0]!2 } { otherValues };
 					otherValues !? {
-						var sum4 = Sum4.newDuringOptimisation(inputs[0], inputs[1], *otherValues);
+						var sum4 = Sum4.newDuringOptimisation(this.rate, inputs[0], inputs[1], *otherValues);
 						sum3.replaceWith(with: sum4);
 						result.addUGen(sum4, 2);
 					}
@@ -224,7 +220,7 @@ BinaryOpUGen : BasicOpUGen {
 			if (desc.isEmpty.not){
 				desc.do{ |childAdder|
 					childAdder.inputs.select({|i| i != this })[0] !? { |otherValue|
-						var sum3 = Sum3.newDuringOptimisation(inputs[0], inputs[1], otherValue);
+						var sum3 = Sum3.newDuringOptimisation(this.rate, inputs[0], inputs[1], otherValue);
 						childAdder.replaceWith(with: sum3);
 						result.addUGen(sum3, 2);
 					};
@@ -322,7 +318,7 @@ Sum3 : UGen {
 				var otherValues = add.inputs.select{|i| i !== this };
 				// if Sum3(a, b, c) + Sum3(a, b, c) then the optimisation cannot be applied
 				if (otherValues.isEmpty.not){
-					var sum4 = Sum4.newDuringOptimisation(inputs[0], inputs[1], inputs[2], otherValues[0]);
+					var sum4 = Sum4.newDuringOptimisation(this.rate, inputs[0], inputs[1], inputs[2], otherValues[0]);
 					add.replaceWith(with: sum4);
 					add.tryDisconnect;
 					result.addUGen(sum4, 1);
@@ -342,7 +338,7 @@ Sum3 : UGen {
 					var inputCopy = inputs.copy;
 					var add;
 					inputCopy.remove(otherValues[0]);
-					add = BinaryOpUGen.newDuringOptimisation('+', inputCopy[0], inputCopy[1]);
+					add = BinaryOpUGen.newDuringOptimisation(this.rate, '+', inputCopy[0], inputCopy[1]);
 					minus.replaceWith(with: add);
 					minus.tryDisconnect;
 					result.addUGen(add, 1);
@@ -392,7 +388,7 @@ Sum4 : UGen {
 					var inputCopy = inputs.copy;
 					var sum3;
 					inputCopy.remove(otherValues[0]);
-					sum3 = Sum3.newDuringOptimisation(inputCopy[0], inputCopy[1], inputCopy[2]);
+					sum3 = Sum3.newDuringOptimisation(this.rate, inputCopy[0], inputCopy[1], inputCopy[2]);
 					minus.replaceWith(with: sum3);
 					minus.tryDisconnect;
 					result.addUGen(sum3, 1);
