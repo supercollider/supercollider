@@ -53,16 +53,37 @@ UnaryOpUGen : BasicOpUGen {
 			var desc;
 
 			// a - b.neg => a + b
-			desc = descendants.select { |d| d.isKindOf(BinaryOpUGen) and: { d.operator == '-' }};
+			desc = descendants.select { |d|
+				d.isKindOf(BinaryOpUGen) and: { d.operator == '-'
+			}};
 			if (desc.isEmpty.not){
 				desc.do{ |minus|
 					var others = minus.inputs.select{|i| i != this };
-					// b.neg - b.neg is handled inside BinaryOpUgen and can't happen (size would be 0)
 					if (others.size == 1){
 						var add = BinaryOpUGen.newDuringOptimisation('+', others[0], inputs[0]);
 						minus.replaceWith(with: add);
 						result.addUGen(add, 2);
 						minus.tryDisconnect;
+					}
+				};
+				result.returnNilIfEmpty !? { |r| ^r };
+			};
+
+
+			desc = descendants.select { |d|
+				d.isKindOf(BinaryOpUGen) and: { d.operator == '+' }
+			};
+			if (desc.isEmpty.not){
+				desc.do{ |add|
+					var others = add.inputs.select{|i| i != this };
+					case
+					// a + b.neg => a - b
+					{ others.size == 1}{
+						var minus = BinaryOpUGen.newDuringOptimisation('-', others[0], inputs[0]);
+						add.replaceWith(with: minus);
+
+						result.addUGen(minus, 2);
+						add.tryDisconnect;
 					}
 				};
 				result.returnNilIfEmpty !? { |r| ^r };
@@ -95,7 +116,6 @@ BinaryOpUGen : BasicOpUGen {
 			if (a == -1.0) { ^b.neg };
 			if (b == 1.0) { ^a };
 			if (b == -1.0) { ^a.neg };
-			// TODO: review these
 			if (b == 2.0) { ^super.new1(rate, '+', a, a) }; // prefer additions, they are easier to optimise
 			if (a == 2.0) { ^super.new1(rate, '+', b, b) };
 		}
@@ -106,12 +126,13 @@ BinaryOpUGen : BasicOpUGen {
 		{ selector == '-' } {
 			if (a == 0.0) { ^b.neg };
 			if (b == 0.0) { ^a };
-			if (a === b) { ^0.0 };  // TODO: review
+			if (a === b) { ^0.0 };
 		}
 		{ selector == '/' } {
 			if (b == 1.0) { ^a };
 			if (b == -1.0) { ^a.neg };
-			if (a === b) { ^1.0 }; // TODO: what if it is zero?
+			// TODO: what if it is zero?
+			if (a === b) { ^1.0 };
 		};
 		^super.new1(rate, selector, a, b)
 	}
@@ -151,7 +172,6 @@ BinaryOpUGen : BasicOpUGen {
 		};
 		^nil
 	}
-
 
 	optimise {
 		// Rules:
@@ -215,9 +235,6 @@ BinaryOpUGen : BasicOpUGen {
 		}
 		^nil
 	}
-
-
-
 }
 
 MulAdd : UGen {

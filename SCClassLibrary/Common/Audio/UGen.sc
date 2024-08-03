@@ -376,11 +376,12 @@ UGen : UGenBuiltInMethods {
 			}
 		};
 		this.descendants = [];
-		with.weakDescendants = with.weakDescendants.addAll(this.weakDescendants);
-		with.weakAntecedents = with.weakAntecedents.addAll(this.weakAntecedents);
-		with.weakDescendants.removeIdenticalDuplicates;
-		with.weakAntecedents.removeIdenticalDuplicates;
-
+		if (with.isKindOf(UGen)){
+			with.weakDescendants = with.weakDescendants.addAll(this.weakDescendants);
+			with.weakAntecedents = with.weakAntecedents.addAll(this.weakAntecedents);
+			with.weakDescendants.removeIdenticalDuplicates;
+			with.weakAntecedents.removeIdenticalDuplicates;
+		};
 		this.weakDescendants.do{ |w| w.weakAntecedents.remove(this) };
 		this.weakAntecedents.do{ |w| w.weakDescendants.remove(this) };
 		this.inputs.do{ |i|
@@ -486,7 +487,9 @@ UGen : UGenBuiltInMethods {
 		old.descendants.remove(this);
 		this.antecedents.remove(old);
 		inputs[index] = with;
-		with.createConnectionTo(this);
+		if(with.isKindOf(UGen)){
+			with.createConnectionTo(this)
+		}
 	}
 
 	// Creates a weak edge between two ugens. Weak edges are used to indicate IO and other resource orderings.

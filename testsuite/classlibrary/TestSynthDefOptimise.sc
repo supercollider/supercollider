@@ -24,7 +24,10 @@ TestSynthDefOptimise : UnitTest {
 				outputs = outputs.collect { |x| if(x.rate != \audio) { K2A.ar(x) } { x } }
 			};
 
-			RecordBuf.perform(RecordBuf.methodSelectorForRate(defRate), outputs, bufnum, loop: 0, doneAction: 2);
+			RecordBuf.perform(
+				RecordBuf.methodSelectorForRate(defRate),
+				outputs, bufnum, loop: 0, doneAction: 2
+			);
 		};
 
 		var withDef = SynthDef(\with, func).add;
@@ -71,9 +74,9 @@ TestSynthDefOptimise : UnitTest {
 
 		cond.wait { counter == 0 };
 
-		^(withResult - withoutResult).collect({|r|
+		^(withResult.debug("With") - withoutResult.debug("Without")).collect({|r|
 			var er = r.abs > threshold.dbamp;
-			if (er) { r.abs.debug("ERROR") };
+			// if (er) { r.abs.debug("ERROR") };
 			er
 		}).any{|v| v }.not
 	}
@@ -156,15 +159,63 @@ TestSynthDefOptimise : UnitTest {
 
 	test_compare_arithmetic {
 		this.assert(
-			TestSynthDefOptimise.compare({ |a = 2, b = 3, c = 4, d = 5| a + b + c + d }, server, threshold: -120),
+			TestSynthDefOptimise.compare({ LFPar.ar - SinOsc.ar().neg }, server, threshold: -120),
+			"Negation: a - b.neg => a + b."
+		);
+		this.assert(
+			TestSynthDefOptimise.compare({ LFPar.ar + SinOsc.ar().neg }, server, threshold: -120),
+			"Negation - a + b.neg => a - b."
+		);
+		this.assert(
+			TestSynthDefOptimise.compare({
+				var a = SinOsc.ar().neg;
+				a + a
+			}, server, threshold: -120),
+			"Negation - same this addition"
+		);
+		this.assert(
+			TestSynthDefOptimise.compare({
+				var a = SinOsc.ar().neg;
+				a - a
+			}, server, threshold: -120),
+			"Negation - same this subtraction"
+		);
+		this.assert(
+			TestSynthDefOptimise.compare({
+				var a = SinOsc.ar();
+				a.neg + a.neg
+			}, server, threshold: -120),
+			"Negation - different this addition"
+		);
+		this.assert(
+			TestSynthDefOptimise.compare({
+				var a = SinOsc.ar();
+				a.neg - a.neg
+			}, server, threshold: -120),
+			"Negation - different this subtraction"
+		);
+		this.assert(
+			TestSynthDefOptimise.compare(
+				{ |a = 2, b = 3, c = 4, d = 5| a + b + c + d },
+				server,
+				threshold: -120
+			),
 			"Sum4 optimisation."
 		);
 		this.assert(
-			TestSynthDefOptimise.compare({ |a = 2, b = 3, c = 4| SinOsc.ar + a + b + c }, server, threshold: -120),
+			TestSynthDefOptimise.compare(
+				{ |a = 2, b = 3, c = 4| SinOsc.ar + a + b + c },
+				server,
+				threshold: -120
+			),
 			"Sum4 optimisation with SinOsc."
 		);
 		this.assert(
-			TestSynthDefOptimise.compare({ |a = 2, b = 3| SinOsc.ar * a + b }, server, threshold: -120),
+			TestSynthDefOptimise.compare(
+				{ |a = 2, b = 3| SinOsc.ar * a + b },
+				server,
+				threshold: -120
+			),
 			"MulAdd optimisation."
 		);
 		this.assert(

@@ -106,7 +106,9 @@ SynthDefOptimiser {
 				}
 			};
 			res.newUGens.do{ |u|
-				toVisit = toVisit.addAll(u.getAllDescendantsAtLevel(res.maxDepthOfOperation))
+				if (u.isKindOf(UGen)){
+					toVisit = toVisit.addAll(u.getAllDescendantsAtLevel(res.maxDepthOfOperation))
+				}
 			};
 		} ?? {
 			current.antecedents.do{ |a| toVisit = toVisit.add(a) }
