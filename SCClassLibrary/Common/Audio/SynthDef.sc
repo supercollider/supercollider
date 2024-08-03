@@ -23,7 +23,12 @@ SynthDefTopologicalSort {
 			u.sortAntecedents;
 			u.antecedents.do( SynthDefTopologicalSort.prVisit(_) );
 			u.weakAntecedents.do( SynthDefTopologicalSort.prVisit(_) );
-			out = out.add(u);
+
+			// This case is a little bit of a hack,
+			//    because removing weakAntecedents that don't have descendants is costly if done elsewhere.
+			if (u.hasObservableEffect or: {u.descendants.isEmpty.not}){
+				out = out.add(u)
+			}
 		}
 	}
 }
@@ -55,7 +60,10 @@ SynthDefUGenOccurrenceTracker {
 			visited.add(u);
 			rollingArray = rollingArray.add(u);
 			if(rollingArray.size >= depth) {
-				out.add(rollingArray[rollingArray.size - depth .. rollingArray.size].collect(_.nameForDisplay));
+				out.add(
+					rollingArray[rollingArray.size - depth .. rollingArray.size]
+					.collect(_.nameForDisplay)
+				)
 			};
 			u.antecedents.do( SynthDefUGenOccurrenceTracker.prVisit(_) );
 			rollingArray.pop;
@@ -128,12 +136,13 @@ SynthDefCommonExpressionEliminator {
 				var possibleReplacement = ar[current.getIdenticalInputs];
 				if (possibleReplacement.isNil.not) {
 					if (possibleReplacement != current) {
-						possibleReplacement.replaceWith(current, ignoreWeak: true);
+						possibleReplacement.replaceWith(current);
 						possibleReplacement.tryDisconnect;
 						ar[current.getIdenticalInputs] = current;
 
 						// Would be nice to avoid this somehow
 						toVisit = toVisit.addAll(current.descendants);
+						toVisit = toVisit.addAll(current.weakDescendants);
 					}
 				} {
 					ar.put(current.getIdenticalInputs, current);
@@ -141,7 +150,7 @@ SynthDefCommonExpressionEliminator {
 			}
 		};
 
-		current.antecedents.do{ |a| toVisit = toVisit.add(a) }
+		toVisit = toVisit.addAll(current.antecedents);
 	}
 }
 
@@ -253,7 +262,7 @@ SynthDef {
 			};
 			if (enableOptimisationSorting) {
 				// Does dead code elimination as a side effect.
-				children = SynthDefTopologicalSort(effectiveUGens.reverse);
+				children = SynthDefTopologicalSort(effectiveUGens.reverse)
 			};
 
 			children.do( _.collectConstants );

@@ -289,8 +289,6 @@ UGen : UGenBuiltInMethods {
 		^ret;
 	}
 
-	*new { ^super.new() }
-
 	*new1 { |rate ... args|
 		// If you override this method, you MUST ensure that the inputs are set before calling addToSynth.
 		if (rate.isKindOf(Symbol).not) { Error("rate must be Symbol.").throw };
@@ -362,36 +360,40 @@ UGen : UGenBuiltInMethods {
 	///////////////// HELPER METHODS FOR HAS OBSERVABLE EFFECT
 
 	// Helper for hasObservableEffect when there is a doneAction
-	implHasObservableEffectViaDoneAction { |index| ^inputs.at(index).isNumber.not or: { inputs.at(index) != Done.none } }
+	implHasObservableEffectViaDoneAction { |index|
+		^inputs.at(index).isNumber.not or: { inputs.at(index) != Done.none }
+	}
 
 	///////////////// HELPER METHODS FOR OPTIMISE
 
-	replaceWith { |with, ignoreWeak = false|
+	replaceWith { |with|
 		if (this === with) {
 			Error("Cannot call replaceWith on this").throw
 		};
 		descendants.reverse.do { |d|
 			d.inputs.indexOfAll(this).reverseDo { |i|
-                d.replaceInputAt(index: i, with: with)
-            }
+				d.replaceInputAt(index: i, with: with)
+			}
 		};
 		this.descendants = [];
-		if(ignoreWeak) {
-            with.weakDescendants = with.weakDescendants ++ this.weakDescendants;
-            with.weakAntecedents = with.weakAntecedents ++ this.weakAntecedents;
-		};
+		with.weakDescendants = with.weakDescendants.addAll(this.weakDescendants);
+		with.weakAntecedents = with.weakAntecedents.addAll(this.weakAntecedents);
+		with.weakDescendants.removeIdenticalDuplicates;
+		with.weakAntecedents.removeIdenticalDuplicates;
+
+		this.weakDescendants.do{ |w| w.weakAntecedents.remove(this) };
+		this.weakAntecedents.do{ |w| w.weakDescendants.remove(this) };
 		this.inputs.do{ |i|
-            case
-            { i.isKindOf(OutputProxy)} {
-                i.source.descendants.remove(this);
-            }
-            { i.isKindOf(UGen) } {
-                i.descendants.remove(this)
-            }
-        };
+			case
+			{ i.isKindOf(OutputProxy)} {
+				i.source.descendants.remove(this);
+			}
+			{ i.isKindOf(UGen) } {
+				i.descendants.remove(this)
+			}
+		};
 		this.inputs = [];
 		this.antecedents = [];
-
 		this.weakDescendants = [];
 		this.weakAntecedents = [];
 	}
@@ -454,8 +456,8 @@ UGen : UGenBuiltInMethods {
 	hasIdenticalInputsAndResourceOrdering { |other|
 		^(this !== other)
 		and: { inputs == other.inputs }
-	    and: { weakAntecedents == other.weakAntecedents }
-	    and: { weakDescendants == other.weakDescendants }
+		and: { weakAntecedents == other.weakAntecedents }
+		and: { weakDescendants == other.weakDescendants }
 	}
 	getIdenticalInputs {
 		^[inputs, weakAntecedents, weakDescendants]
