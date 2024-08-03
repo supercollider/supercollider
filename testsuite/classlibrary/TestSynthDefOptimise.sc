@@ -147,13 +147,15 @@ TestSynthDefOptimise : UnitTest {
 
 	setUp {
 		server = Server(this.class.name);
-		server.options.memSize = 1024;
+		server.options.memSize = 8192 * 4;
 		server.options.blockSize = 64;
 		this.bootServer(server);
 		server.sync;
 	}
+
 	tearDown {
 		Buffer.freeAll;
+		server.sync;
 		server.quit.remove;
 	}
 
@@ -285,6 +287,57 @@ TestSynthDefOptimise : UnitTest {
 			}, server, threshold: -96, forceDontPrint: true),
 			"A big graph - tw 0011 (f0)."
 		);
+
+	}
+
+
+	test_compare_real_world {
+		var b;
+
+		// https://github.com/thormagnusson/sctweets/tree/master
+		this.assert(
+			TestSynthDefOptimise.compare({
+				Mix.fill(9,{
+					var i = Impulse.ar(0.4)!2;
+					CombC.ar(i, 1, Select.ar(Impulse.kr(50), (55 + Scale.aeolian.degrees).collect{ |x| DC.ar(1 / x.midicps) }), 3 )
+				}).sum
+			}, server, threshold: -96, forceDontPrint: true),
+			"thormagnusson - Aeolian Strings 1"
+		);
+
+		this.assert(
+			TestSynthDefOptimise.compare({
+				Mix.fill(20, {
+					var i = Impulse.ar(5)!2;
+					CombC.ar(i, 1, Select.ar(Impulse.kr(0, 5, i), (77 + [0, 3, 7, 10, 12]).collect{ |x| DC.ar(1 / x.midicps)}), 0.3 )
+				}).sum
+			}, server, threshold: -96, forceDontPrint: true),
+			"thormagnusson - Aeolian Strings 2"
+		);
+
+		this.assert(
+			TestSynthDefOptimise.compare({
+				({
+					var a = SinOsc;
+					var l = LFPar;
+					a.ar(666 * a.ar(l.ar(l.ar(0.5)) * 9) * RLPF.ar(Saw.ar(9), l.ar(0.5).range(9,999), l.ar(2))).cubed
+				}!2).sum
+			}, server, threshold: -96, forceDontPrint: true),
+			"thormagnusson - Arguing Osc"
+		);
+
+
+		b = Buffer.read(server, "sounds/a11wlk01.wav");
+		server.sync;
+		this.assert(
+			TestSynthDefOptimise.compare({
+				var t = Impulse.kr(5);
+				var p = PlayBuf.ar(1, b, 1, t, Demand.kr(t, 0, Dseq(1e3*[103, 41, 162, 15, 141, 52, 124, 190], 4)))!2;
+				p.sum
+			}, server, threshold: -96, forceDontPrint: true),
+			"Nathaniel Virgo - sc-140"
+		);
+
 
 	}
 

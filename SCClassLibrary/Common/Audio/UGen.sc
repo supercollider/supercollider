@@ -394,7 +394,14 @@ UGen : UGenBuiltInMethods {
 			Error("Cannot call replaceWith on this").throw
 		};
 		descendants.reverse.do { |d|
-			d.inputs.indexOfAll(this).reverseDo { |i|
+			var indexes = [];
+			d.inputs.do { |in, i|
+				in = if(in.isKindOf(OutputProxy)) { in.source } { in };
+				if (in === this) {
+					indexes = indexes.add(i);
+				}
+			};
+			indexes.reverseDo { |i|
 				d.replaceInputAt(index: i, with: with)
 			}
 		};
@@ -477,15 +484,7 @@ UGen : UGenBuiltInMethods {
 	name { ^this.class.name.asString }
 	nameForDisplay { ^this.name.asSymbol }
 	dumpName { ^"%_%".format(synthIndex, this.name) }
-	hasIdenticalInputsAndResourceOrdering { |other|
-		^(this !== other)
-		and: { inputs == other.inputs }
-		and: { weakAntecedents == other.weakAntecedents }
-		and: { weakDescendants == other.weakDescendants }
-	}
-	getIdenticalInputs {
-		^[inputs, weakAntecedents, weakDescendants]
-	}
+	getIdenticalInputs { ^[rate, inputs, weakAntecedents, weakDescendants] }
 	//asString { ^this.dumpName }
 	//printOn { |stream| stream << this.asString }
 	numInputs { ^inputs.size }
@@ -507,7 +506,6 @@ UGen : UGenBuiltInMethods {
 	// Replaces an input at index with.
 	replaceInputAt { |index, with|
 		var old = inputs[index];
-		with = if (with.isKindOf(OutputProxy)) { with.source } { with };
 
 		if (old.isKindOf(UGen)) {
 			old.descendants.remove(this)
