@@ -223,8 +223,9 @@ OrderedIdentitySet : IdentitySet {
 	}
 
 	remove { arg item;
-		super.remove(item);
+		var out = super.remove(item);
 		items.remove(item);
+		^out
 	}
 	sort { arg func;
 		items.sort(func)

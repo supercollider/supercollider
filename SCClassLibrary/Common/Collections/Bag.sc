@@ -17,7 +17,7 @@ Bag : Collection {
 		});
 	}
 	remove { arg item, count=1;
-		var newCount;
+		var newCount, out;
 		if ( this.includes(item), {
 			newCount = contents.at(item) - count;
 			if (newCount <= 0, {
@@ -25,7 +25,9 @@ Bag : Collection {
 			},{
 				contents.put(item, newCount);
 			});
+			^item
 		});
+		^nil
 	}
 
 	// accessing
