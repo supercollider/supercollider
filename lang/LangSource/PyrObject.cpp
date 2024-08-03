@@ -2797,7 +2797,7 @@ static int hashPtr(const void* ptr) {
     return Hash(hashed_part);
 }
 
-int calcHash(PyrSlot* a);
+int calcHash(const PyrSlot* a);
 int calcHash(const PyrSlot* a) {
     int hash;
     switch (GetTag(a)) {

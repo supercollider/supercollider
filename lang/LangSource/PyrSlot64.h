@@ -218,7 +218,11 @@ inline int slotSymbolVal(PyrSlot* slot, PyrSymbol** symbol) {
 }
 
 /* raw access functions */
-inline void* slotRawPtr(const PyrSlot* slot) {
+inline void* slotRawPtr(PyrSlot* slot) {
+    assert(IsPtr(slot) || (slot->u.ptr == NULL && IsNil(slot)));
+    return slot->u.ptr;
+}
+inline const void* slotRawPtr(const PyrSlot* slot) {
     assert(IsPtr(slot) || (slot->u.ptr == NULL && IsNil(slot)));
     return slot->u.ptr;
 }
