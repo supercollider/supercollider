@@ -82,6 +82,10 @@ TestSynthDefOptimise : UnitTest {
 		this.bootServer(server);
 		server.sync;
 	}
+	tearDown {
+		Buffer.freeAll;
+		server.quit.remove;
+	}
 
 	test_compare_arithmetic {
 		this.assert(
