@@ -3,7 +3,7 @@
 
 // Depreciated, do not use.
 WidthFirstUGen : UGen {
-	addCopiesIfNeeded { } // TODO: add depreciated warning
+	addCopiesIfNeeded { }
 }
 
 FFT : PV_ChainUGen {

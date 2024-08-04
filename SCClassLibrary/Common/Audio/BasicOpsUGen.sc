@@ -54,8 +54,8 @@ UnaryOpUGen : BasicOpUGen {
 
 			// a - b.neg => a + b
 			desc = descendants.select { |d|
-				d.isKindOf(BinaryOpUGen) and: { d.operator == '-'
-			}};
+				d.isKindOf(BinaryOpUGen) and: { d.operator == '-' }
+			};
 			if (desc.isEmpty.not){
 				desc.do{ |minus|
 					var other = minus.inputs[0];
@@ -137,36 +137,6 @@ BinaryOpUGen : BasicOpUGen {
 		this.operator = theOperator;
 		rate = this.determineRate(a, b);
 		inputs = [a, b];
-	}
-
-	optimizeAddNeg { // TODO: this moves to UnaryOp
-		var a, b, replacement;
-		#a, b = inputs;
-		if(a === b) { ^nil };  // non optimizable edge case.
-
-		if (b.isKindOf(UnaryOpUGen) and: { b.operator == 'neg' and: { b.descendants.size == 1 } }) {
-			// a + b.neg -> a - b
-			buildSynthDef.removeUGen(b);
-			replacement = a - b.inputs[0];
-			// this is the first time the dependants logic appears. It's repeated below.
-			// We will remove 'this' from the synthdef, and replace it with 'replacement'.
-			// 'replacement' should then have all the same descendants as 'this'.
-			replacement.descendants = descendants;
-			// drop 'this' and 'b' from all of replacement's inputs' descendant lists
-			// so that future optimizations decide correctly
-			this.optimizeUpdateDescendants(replacement, b);
-			^replacement
-		};
-
-		if (a.isKindOf(UnaryOpUGen) and: { a.operator == 'neg' and: { a.descendants.size == 1 } }) {
-			// a.neg + b -> b - a
-			buildSynthDef.removeUGen(a);
-			replacement = b - a.inputs[0];
-			replacement.descendants = descendants;
-			this.optimizeUpdateDescendants(replacement, a);
-			^replacement
-		};
-		^nil
 	}
 
 	optimise {
