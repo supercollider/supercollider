@@ -106,11 +106,11 @@ PV_ChainUGen : UGen {
 		if (desc.size > 1) {
 			var result = SynthDefOptimisationResult();
 			var first = desc[0];
-			desc.debug("desc").drop(-1).do { |d|
+			desc.drop(-1).do { |d|
 				var newBuffer = LocalBuf.newDuringOptimisation(\audio, this.fftSize);
 				var newCopy = PV_Copy.newDuringOptimisation(\audio, this, newBuffer);
 
-				var d_in = d.inputs.indexOf(this.debug("this"));
+				var d_in = d.inputs.indexOf(this);
 				d.replaceInputAt(d_in, newCopy);
 
 				newCopy.createWeakConnectionTo(first); // ensures copy happens before the other buffer operation.
