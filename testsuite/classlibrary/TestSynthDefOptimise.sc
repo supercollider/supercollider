@@ -6,7 +6,7 @@
 // What is important is that the optimisation results in the same sound/output as the unoptimised version.
 
 TestSynthDefOptimise : UnitTest {
-	classvar printUGenGraphs = true;
+	classvar printUGenGraphs = false;
 	var server;
 
 	*compare { |f, server, threshold, forceDontPrint=false|
@@ -48,6 +48,8 @@ TestSynthDefOptimise : UnitTest {
 		var counter = 2;
 		var cond = CondVar();
 
+		var r;
+
 		var withResult, withoutResult;
 		if (printUGenGraphs and: { forceDontPrint.not }){
 			"\nWith Optimisations' UGen Graph.".postln;
@@ -74,11 +76,14 @@ TestSynthDefOptimise : UnitTest {
 
 		cond.wait { counter == 0 };
 
-		^(withResult.debug("With") - withoutResult.debug("Without")).collect({|r|
-			var er = r.abs > threshold.dbamp;
-			// if (er) { r.abs.debug("ERROR") };
-			er
-		}).any{|v| v }.not
+		r = withResult - withoutResult;
+		r = r.select(_ > threshold.dbamp);
+		r.sort{ |l, r| l > r }; // bigest first;
+
+		if (r.isEmpty) { ^true };
+
+		r[0..10].debug("ERROR: lastest difference");
+		^false;
 	}
 
 	*compareNOutputs { |n, f, server, threshold, forceDontPrint=false|
@@ -112,6 +117,8 @@ TestSynthDefOptimise : UnitTest {
 
 		var withResult, withoutResult;
 
+		var r;
+
 		if (printUGenGraphs and: { forceDontPrint.not }){
 			"\nWith Optimisations' UGen Graph.".postln;
 			withDef.dumpUGens;
@@ -138,11 +145,14 @@ TestSynthDefOptimise : UnitTest {
 		cond.wait { counter == 0 };
 		server.freeAll;
 
-		^(withResult - withoutResult).collect({|r|
-			var er = r.abs > threshold.dbamp;
-			//if (er) { r.abs.debug("ERROR") };
-			er
-		}).any{|v| v }.not
+		r = withResult - withoutResult;
+		r = r.select(_ > threshold.dbamp);
+		r.sort{ |l, r| l > r }; // bigest first;
+
+		if (r.isEmpty) { ^true };
+
+		r[0..10].debug("ERROR: lastest difference");
+		^false;
 	}
 
 	setUp {
@@ -273,21 +283,54 @@ TestSynthDefOptimise : UnitTest {
 			}, server, threshold: -120),
 			"Replaceing negation with add"
 		);
+
+	}
+
+	test_pv {
+		var b = Buffer.read(server, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+		server.sync;
+
 		this.assert(
 			TestSynthDefOptimise.compare({
-				// tw 0011 (f0)
-				var s = { |o, i|
-					SinOsc.ar(
-						[i, i + 0.0001] ** 2 * f.value(o, i - 1),
-						f.value(o, i - 1) * 0.0001) * f.value(o, i - 1
-					)
-				};
-				var f = { |o, i| if(i > 0, { s.value(o, i) }, o)};
-				(f.value(60, 6) / 60).sum
-			}, server, threshold: -96, forceDontPrint: true),
-			"A big graph - tw 0011 (f0)."
+				var inA, chainA, inB, chainB, chain ;
+				inA = PlayBuf.ar(1, b.bufnum, BufRateScale.kr(b.bufnum), loop: 0);
+				inB =  PlayBuf.ar(1, b.bufnum, BufRateScale.kr(b.bufnum) * 0.5, loop: 0);
+				chainA = FFT(LocalBuf(2048), inA);
+				chainB = FFT(LocalBuf(2048), inB);
+				chain = PV_Add(chainA, chainB);
+				(0.1 * IFFT(chain).dup).sum
+			}, server, threshold: -120),
+			"PV_Add help example"
 		);
 
+		this.assert(
+			TestSynthDefOptimise.compare({
+				var fftsize = 1024;
+				var in, chain, in2, chain2, out;
+				in = PlayBuf.ar(1, b, BufRateScale.kr(b), loop: 0);
+				chain = FFT(LocalBuf(fftsize), in);
+
+				// JMcC babbling brook
+				in2 = ({
+					RHPF.ar(OnePole.ar(BrownNoise.ar, 0.99), LPF.ar(BrownNoise.ar, 14)
+						* 400 + 500, 0.03, 0.003) }!2)
+				+ ({ RHPF.ar(OnePole.ar(BrownNoise.ar, 0.99), LPF.ar(BrownNoise.ar, 20)
+					* 800 + 1000, 0.03, 0.005) }!2
+				) * 4;
+				chain2 = FFT(LocalBuf(fftsize), in2);
+
+				chain = chain.pvcalc2(chain2, fftsize, { |mags, phases, mags2, phases2|
+					[
+						mags * mags2 / 10,
+						phases2 + phases
+					]
+				}, frombin: 0, tobin: 125, zeroothers: 0);
+
+				out = IFFT(chain);
+				(0.5 * out.dup).sum
+			}, server, threshold: -96),
+			"pvcalc2 help example"
+		);
 	}
 
 
@@ -327,7 +370,7 @@ TestSynthDefOptimise : UnitTest {
 		);
 
 
-		b = Buffer.read(server, "sounds/a11wlk01.wav");
+		b = Buffer.read(server, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 		server.sync;
 		this.assert(
 			TestSynthDefOptimise.compare({
@@ -336,6 +379,20 @@ TestSynthDefOptimise : UnitTest {
 				p.sum
 			}, server, threshold: -96, forceDontPrint: true),
 			"Nathaniel Virgo - sc-140"
+		);
+
+		this.assert(
+			TestSynthDefOptimise.compare({
+				var s = { |o, i|
+					SinOsc.ar(
+						[i, i + 0.0001] ** 2 * f.value(o, i - 1),
+						f.value(o, i - 1) * 0.0001) * f.value(o, i - 1
+					)
+				};
+				var f = { |o, i| if(i > 0, { s.value(o, i) }, o)};
+				(f.value(60, 6) / 60).sum
+			}, server, threshold: -96, forceDontPrint: true),
+			"A big graph - tw 0011 (f0)."
 		);
 
 
