@@ -9,8 +9,22 @@ TestSynthDefOptimise : UnitTest {
 	classvar printUGenGraphs = false;
 	var server;
 
-	*compare { |f, server, threshold, forceDontPrint=false|
-		var func = { |bufnum|
+	setUp {
+		server = Server(this.class.name);
+		server.options.memSize = 8192 * 4;
+		server.options.blockSize = 64;
+		this.bootServer(server);
+		server.sync;
+	}
+
+	tearDown {
+		Buffer.freeAll;
+		server.sync;
+		server.quit.remove;
+	}
+
+	*compare_create_synth_def { |method, name, f|
+		^SynthDef.perform(method, name, { |bufnum|
 			var outputs = SynthDef.wrap(f);
 			var numOutputs, defRate;
 			if(outputs.isValidUGenInput.not) {
@@ -19,6 +33,9 @@ TestSynthDefOptimise : UnitTest {
 			};
 			outputs = UGen.replaceZeroesWithSilence(outputs.asArray);
 			numOutputs = outputs.size.max(1);
+			if(numOutputs != 1) {
+				Error("TestSynthDefOptimise.compare only works on mono signals").throw
+			};
 			defRate = outputs.rate;
 			if(defRate == \audio) {
 				outputs = outputs.collect { |x| if(x.rate != \audio) { K2A.ar(x) } { x } }
@@ -28,21 +45,34 @@ TestSynthDefOptimise : UnitTest {
 				RecordBuf.methodSelectorForRate(defRate),
 				outputs, bufnum, loop: 0, doneAction: 2
 			);
-		};
+		}).dumpUGens
+	}
 
-		var withDef = SynthDef(\with, func).add;
-		var withoutDef = SynthDef.newWithoutOptimisations(\without, func).add;
+	*compare_a_b { |withopts, withoutopts, server, threshold, forceDontPrint=false, duration=0.01|
+		var a = TestSynthDefOptimise.compare_create_synth_def(\new, \a, withopts).add;
+		var b = TestSynthDefOptimise.compare_create_synth_def(\new, \b, withoutopts).add;
 
-		var withBuf = Buffer.alloc(server, 0.01 * server.sampleRate);
-		var withoutBuf = Buffer.alloc(server, 0.01 * server.sampleRate);
+		^TestSynthDefOptimise.compare_engine(server, threshold, a, b, forceDontPrint, duration)
+	}
+
+	*compare_new_old { |f, server, threshold, forceDontPrint=false, duration=0.01|
+		var withDef = TestSynthDefOptimise.compare_create_synth_def(\new, \with, f).add;
+		var withoutDef = TestSynthDefOptimise.compare_create_synth_def(\newWithoutOptimisations, \without, f).add;
+
+		^TestSynthDefOptimise.compare_engine(server, threshold, withDef, withoutDef, forceDontPrint, duration)
+	}
+
+	*compare_engine { |server, threshold, defa, defb, forceDontPrint=false, duration=0.01|
+		var withBuf = Buffer.alloc(server, duration * server.sampleRate);
+		var withoutBuf = Buffer.alloc(server, duration * server.sampleRate);
 
 		var s = server.sync;
 
 		var withSynth, withoutSynth;
 
 		var bind = server.bind {
-			withSynth = Synth(\with, [\bufnum, withBuf]);
-			withoutSynth = Synth(\without, [\bufnum, withoutBuf]);
+			withSynth = Synth(defa.name, [\bufnum, withBuf]);
+			withoutSynth = Synth(defb.name, [\bufnum, withoutBuf]);
 		};
 
 		var counter = 2;
@@ -52,10 +82,10 @@ TestSynthDefOptimise : UnitTest {
 
 		var withResult, withoutResult;
 		if (printUGenGraphs and: { forceDontPrint.not }){
-			"\nWith Optimisations' UGen Graph.".postln;
-			withDef.dumpUGens;
-			"\nWithout Optimisations' UGen Graph.".postln;
-			withoutDef.dumpUGens;
+			"\nA' UGen Graph.".postln;
+			defa.dumpUGens;
+			"\nB UGen Graph.".postln;
+			defb.dumpUGens;
 		};
 
 		OSCFunc({
@@ -86,128 +116,98 @@ TestSynthDefOptimise : UnitTest {
 		^false;
 	}
 
-	*compareNOutputs { |n, f, server, threshold, forceDontPrint=false|
-		var recordingFunc = { |bufnum, offest|
-			var outputs = In.ar(offest, n);
-			RecordBuf.ar(outputs, bufnum, loop: 0, doneAction: 2);
-		};
-
-		var cleanSlateDef = SynthDef(\cleanSlate, { ReplaceOut.ar(0, DC.ar(0).dup(n * 2)) }).add;
-		var withDef = SynthDef(\with, f).add;
-		var withoutDef = SynthDef.newWithoutOptimisations(\without, f).add;
-		var recorder = SynthDef(\recorder, recordingFunc).add;
-
-		var withBuf = Buffer.alloc(server, 0.01 * server.sampleRate, numChannels: n);
-		var withoutBuf = Buffer.alloc(server, 0.01 * server.sampleRate, numChannels: n);
-
-		var s = server.sync;
-
-		var withSynth, withRecord, withoutSynth, withoutRecord, cleanSlate;
-
-		var bind = server.bind {
-			cleanSlate = Synth(\cleanSlate);
-			withSynth = Synth.after(cleanSlate, \with, [\offset, 0]);
-			withoutSynth = Synth.after(withSynth, \without, [\offset, n]);
-			withRecord = Synth.after(withoutSynth, \recorder, [\bufnum, withBuf, \offset, 0]);
-			withoutRecord = Synth.after(withRecord, \recorder, [\bufnum, withoutBuf, \offest, n]);
-		};
-
-		var counter = 2;
-		var cond = CondVar();
-
-		var withResult, withoutResult;
-
-		var r;
-
-		if (printUGenGraphs and: { forceDontPrint.not }){
-			"\nWith Optimisations' UGen Graph.".postln;
-			withDef.dumpUGens;
-			"\nWithout Optimisations' UGen Graph.".postln;
-			withoutDef.dumpUGens;
-		};
-
-		OSCFunc({
-			withBuf.loadToFloatArray(action: { |ar|
-				withResult = ar;
-				counter = counter - 1;
-				cond.signalOne;
-			});
-		}, '/n_end', server.addr, nil, [withRecord.nodeID]).oneShot;
-
-		OSCFunc({
-			withoutBuf.loadToFloatArray(action: { |ar|
-				withoutResult = ar;
-				counter = counter - 1;
-				cond.signalOne;
-			});
-		}, '/n_end', server.addr, nil, [withoutRecord.nodeID]).oneShot;
-
-		cond.wait { counter == 0 };
-		server.freeAll;
-
-		r = withResult - withoutResult;
-		r = r.select(_ > threshold.dbamp);
-		r.sort{ |l, r| l > r }; // bigest first;
-
-		if (r.isEmpty) { ^true };
-
-		r[0..10].debug("ERROR: lastest difference");
-		^false;
-	}
-
-	setUp {
-		server = Server(this.class.name);
-		server.options.memSize = 8192 * 4;
-		server.options.blockSize = 64;
-		this.bootServer(server);
+	test_pv_opts {
+		var b = Buffer.read(server, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 		server.sync;
-	}
 
-	tearDown {
-		Buffer.freeAll;
-		server.sync;
-		server.quit.remove;
+		this.assert(
+			TestSynthDefOptimise.compare_a_b(
+				{
+					var chain = FFT(LocalBuf(1024), Saw.ar(220));
+					chain = PV_Add(PV_BinShift(chain, 2), PV_BinShift(chain, 1, 5));
+					IFFT(chain)
+				},
+				{
+					var chain = FFT(LocalBuf(1024), Saw.ar(220));
+					var chain2 = PV_Copy(chain, LocalBuf(1024));
+					chain = PV_Add(PV_BinShift(chain, 2), PV_BinShift(chain2, 1, 5));
+					IFFT(chain)
+				},
+				server,
+				threshold: -120,
+				duration: 0.1
+			),
+			"Test PV auto PV_Copy simple"
+		);
+
+		this.assert(
+			TestSynthDefOptimise.compare_a_b(
+				{
+					var chain = FFT(LocalBuf(512), Saw.ar(220));
+					var chainB = PV_Add(PV_BinShift(chain, 2), PV_BinShift(chain, 1, 5));
+					chainB = PV_Add(PV_BinShift(chainB, 2), PV_BinShift(chain, 1, -5));
+					chainB = PV_Add(PV_BinShift(chainB, 0.5), PV_BinShift(chain, 1, 15));
+					IFFT(chainB)
+				},
+				{
+					var chainA1 = FFT(LocalBuf(512), Saw.ar(220));
+					var chainA2 = PV_Copy(chainA1, LocalBuf(512));
+					var chainA3 = PV_Copy(chainA1, LocalBuf(512));
+					var chainA4 = PV_Copy(chainA1, LocalBuf(512));
+
+					var chainB = PV_Add(PV_BinShift(chainA1, 2), PV_BinShift(chainA2, 1, 5));
+					chainB = PV_Add(PV_BinShift(chainB, 2), PV_BinShift(chainA3, 1, -5));
+					chainB = PV_Add(PV_BinShift(chainB, 0.5), PV_BinShift(chainA4, 1, 15));
+
+					IFFT(chainB)
+				},
+				server,
+				threshold: -120,
+				duration: 0.1
+			),
+			"Test PV auto PV_Copy Harder"
+		);
 	}
 
 	test_compare_arithmetic {
 		this.assert(
-			TestSynthDefOptimise.compare({ LFPar.ar - SinOsc.ar().neg }, server, threshold: -120),
+			TestSynthDefOptimise.compare_new_old({ LFPar.ar - SinOsc.ar().neg }, server, threshold: -120),
 			"Negation: a - b.neg => a + b."
 		);
 		this.assert(
-			TestSynthDefOptimise.compare({ LFPar.ar + SinOsc.ar().neg }, server, threshold: -120),
+			TestSynthDefOptimise.compare_new_old({ LFPar.ar + SinOsc.ar().neg }, server, threshold: -120),
 			"Negation - a + b.neg => a - b."
 		);
 		this.assert(
-			TestSynthDefOptimise.compare({
+			TestSynthDefOptimise.compare_new_old({
 				var a = SinOsc.ar().neg;
 				a + a
 			}, server, threshold: -120),
 			"Negation - same this addition"
 		);
 		this.assert(
-			TestSynthDefOptimise.compare({
+			TestSynthDefOptimise.compare_new_old({
 				var a = SinOsc.ar().neg;
 				a - a
 			}, server, threshold: -120),
 			"Negation - same this subtraction"
 		);
 		this.assert(
-			TestSynthDefOptimise.compare({
+			TestSynthDefOptimise.compare_new_old({
 				var a = SinOsc.ar();
 				a.neg + a.neg
 			}, server, threshold: -120),
 			"Negation - different this addition"
 		);
 		this.assert(
-			TestSynthDefOptimise.compare({
+			TestSynthDefOptimise.compare_new_old({
 				var a = SinOsc.ar();
 				a.neg - a.neg
 			}, server, threshold: -120),
 			"Negation - different this subtraction"
 		);
 		this.assert(
-			TestSynthDefOptimise.compare(
+			TestSynthDefOptimise.compare_new_old(
 				{ |a = 2, b = 3, c = 4, d = 5| a + b + c + d },
 				server,
 				threshold: -120
@@ -215,7 +215,7 @@ TestSynthDefOptimise : UnitTest {
 			"Sum4 optimisation."
 		);
 		this.assert(
-			TestSynthDefOptimise.compare(
+			TestSynthDefOptimise.compare_new_old(
 				{ |a = 2, b = 3, c = 4| SinOsc.ar + a + b + c },
 				server,
 				threshold: -120
@@ -223,7 +223,7 @@ TestSynthDefOptimise : UnitTest {
 			"Sum4 optimisation with SinOsc."
 		);
 		this.assert(
-			TestSynthDefOptimise.compare(
+			TestSynthDefOptimise.compare_new_old(
 				{ |a = 2, b = 3| SinOsc.ar * a + b },
 				server,
 				threshold: -120
@@ -231,13 +231,13 @@ TestSynthDefOptimise : UnitTest {
 			"MulAdd optimisation."
 		);
 		this.assert(
-			TestSynthDefOptimise.compare({ |a = 2, b = 3, c = 4, d = 10|
+			TestSynthDefOptimise.compare_new_old({ |a = 2, b = 3, c = 4, d = 10|
 				SinOsc.ar * 2 + a * b + c * a + c + b + d * SinOsc.ar(22)
 			}, server, threshold: -120),
 			"Larger BinaryOpUGen optimisation test."
 		);
 		this.assert(
-			TestSynthDefOptimise.compare({ |a = 2, b = 3, c = 4|
+			TestSynthDefOptimise.compare_new_old({ |a = 2, b = 3, c = 4|
 				var sig1 = SinOsc.ar; // dead code
 				var sig2;
 				sig1 = a + b;
@@ -248,42 +248,41 @@ TestSynthDefOptimise : UnitTest {
 			"Complex BinaryOpUgen."
 		);
 		this.assert(
-			TestSynthDefOptimise.compare({ |a = 2, b = 3, c = 4|
+			TestSynthDefOptimise.compare_new_old({ |a = 2, b = 3, c = 4|
 				SinOsc.ar(123, 0.2, 2.0, 1.0)
 			}, server, threshold: -120),
 			"MulAdd in UGen replace * 2 with adds."
 		);
 		this.assert(
-			TestSynthDefOptimise.compare({ |a = 2, b = 3, c = 4|
+			TestSynthDefOptimise.compare_new_old({ |a = 2, b = 3, c = 4|
 				Sum3(a, b, c) - a
 			}, server, threshold: -120),
 			"Removing values from Sum3 - 1."
 		);
 		this.assert(
-			TestSynthDefOptimise.compare({ |a = 2, b = 3, c = 4|
+			TestSynthDefOptimise.compare_new_old({ |a = 2, b = 3, c = 4|
 				Sum3(a, b, c) - a + Sum3(a, b, c) - b + Sum3(a, b, c) - c
 			}, server, threshold: -120),
 			"Removing values from Sum3 - 2."
 		);
 		this.assert(
-			TestSynthDefOptimise.compare({ |a = 2, b = 3, c = 4, d = 5|
+			TestSynthDefOptimise.compare_new_old({ |a = 2, b = 3, c = 4, d = 5|
 				Sum4(a, b, c, d) - a
 			}, server, threshold: -120),
 			"Removing values from Sum4 - 1."
 		);
 		this.assert(
-			TestSynthDefOptimise.compare({ |a = 2, b = 3, c = 4, d = 5|
+			TestSynthDefOptimise.compare_new_old({ |a = 2, b = 3, c = 4, d = 5|
 				Sum4(a, b, c, d) - a + Sum4(a, b, c, d) - b + Sum4(a, b, c, d) - c + Sum4(a, b, c, d) - d
 			}, server, threshold: -120),
 			"Removing values from Sum4 - 2."
 		);
 		this.assert(
-			TestSynthDefOptimise.compare({ |a = 2, b = 3, c = 4, d = 5|
+			TestSynthDefOptimise.compare_new_old({ |a = 2, b = 3, c = 4, d = 5|
 				a - b.neg
 			}, server, threshold: -120),
 			"Replaceing negation with add"
 		);
-
 	}
 
 	test_pv {
@@ -291,7 +290,7 @@ TestSynthDefOptimise : UnitTest {
 		server.sync;
 
 		this.assert(
-			TestSynthDefOptimise.compare({
+			TestSynthDefOptimise.compare_new_old({
 				var inA, chainA, inB, chainB, chain ;
 				inA = PlayBuf.ar(1, b.bufnum, BufRateScale.kr(b.bufnum), loop: 0);
 				inB =  PlayBuf.ar(1, b.bufnum, BufRateScale.kr(b.bufnum) * 0.5, loop: 0);
@@ -304,7 +303,7 @@ TestSynthDefOptimise : UnitTest {
 		);
 
 		this.assert(
-			TestSynthDefOptimise.compare({
+			TestSynthDefOptimise.compare_new_old({
 				var fftsize = 1024;
 				var in, chain, in2, chain2, out;
 				in = PlayBuf.ar(1, b, BufRateScale.kr(b), loop: 0);
@@ -334,12 +333,14 @@ TestSynthDefOptimise : UnitTest {
 	}
 
 
+
+
 	test_compare_real_world {
 		var b;
 
 		// https://github.com/thormagnusson/sctweets/tree/master
 		this.assert(
-			TestSynthDefOptimise.compare({
+			TestSynthDefOptimise.compare_new_old({
 				Mix.fill(9,{
 					var i = Impulse.ar(0.4)!2;
 					CombC.ar(i, 1, Select.ar(Impulse.kr(50), (55 + Scale.aeolian.degrees).collect{ |x| DC.ar(1 / x.midicps) }), 3 )
@@ -349,7 +350,7 @@ TestSynthDefOptimise : UnitTest {
 		);
 
 		this.assert(
-			TestSynthDefOptimise.compare({
+			TestSynthDefOptimise.compare_new_old({
 				Mix.fill(20, {
 					var i = Impulse.ar(5)!2;
 					CombC.ar(i, 1, Select.ar(Impulse.kr(0, 5, i), (77 + [0, 3, 7, 10, 12]).collect{ |x| DC.ar(1 / x.midicps)}), 0.3 )
@@ -359,7 +360,7 @@ TestSynthDefOptimise : UnitTest {
 		);
 
 		this.assert(
-			TestSynthDefOptimise.compare({
+			TestSynthDefOptimise.compare_new_old({
 				({
 					var a = SinOsc;
 					var l = LFPar;
@@ -373,7 +374,7 @@ TestSynthDefOptimise : UnitTest {
 		b = Buffer.read(server, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 		server.sync;
 		this.assert(
-			TestSynthDefOptimise.compare({
+			TestSynthDefOptimise.compare_new_old({
 				var t = Impulse.kr(5);
 				var p = PlayBuf.ar(1, b, 1, t, Demand.kr(t, 0, Dseq(1e3*[103, 41, 162, 15, 141, 52, 124, 190], 4)))!2;
 				p.sum
@@ -382,7 +383,7 @@ TestSynthDefOptimise : UnitTest {
 		);
 
 		this.assert(
-			TestSynthDefOptimise.compare({
+			TestSynthDefOptimise.compare_new_old({
 				var s = { |o, i|
 					SinOsc.ar(
 						[i, i + 0.0001] ** 2 * f.value(o, i - 1),
@@ -400,7 +401,7 @@ TestSynthDefOptimise : UnitTest {
 
 	test_io {
 		this.assert(
-			TestSynthDefOptimise.compare({
+			TestSynthDefOptimise.compare_new_old({
 				var n = 5;
 				var sig = SinOsc.ar(19000!n);
 				var in;
@@ -436,7 +437,7 @@ TestSynthDefOptimise : UnitTest {
 		);
 
 		this.assert(
-			TestSynthDefOptimise.compare({
+			TestSynthDefOptimise.compare_new_old({
 				var n = 10;
 				var sig = SinOsc.ar(19000!n);
 				var in;
@@ -472,50 +473,7 @@ TestSynthDefOptimise : UnitTest {
 		);
 	}
 
-	test_compare_outputs {
-		this.assert(
-			TestSynthDefOptimise.compareNOutputs(10,
-				{ |offset|
-					var sig = SinOsc.ar;
-					Out.ar(offset, sig!10);
-				},
-				server, threshold: -90
-			),
-			"Basic outputs."
-		);
-		this.assert(
-			TestSynthDefOptimise.compareNOutputs(10,
-				{ |offset|
-					var sig = SinOsc.ar;
-					var in;
-					// Should remain
-					Out.ar(offset, sig!10);
-					Out.ar(offset, sig!10);
-					Out.ar(offset, sig!10);
 
-					sig = LFPar.ar(500!10);
-
-					sig = (sig * 2 + SinOsc.ar) / sig;
-
-					// Could be removed
-					in = In.ar(offset, 10);
-					in = In.ar(offset, 10);
-					in = In.ar(offset, 10);
-					in = In.ar(offset, 10);
-
-					Out.ar(offset, sig * sig);
-
-					// Could be removed
-					ReplaceOut.ar(offset, in * sig);
-					ReplaceOut.ar(offset, in * sig);
-					ReplaceOut.ar(offset, in * sig);
-					ReplaceOut.ar(offset, in * sig);
-				},
-				server, threshold: -90
-			),
-			"Interleaved ins and outs."
-		);
-	}
 }
 
 

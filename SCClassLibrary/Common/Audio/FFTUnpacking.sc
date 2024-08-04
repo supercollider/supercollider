@@ -91,6 +91,11 @@ PV_ChainUGen : UGen {
 		^PackFFT(this, numframes, magsphases, frombin, tobin, zeroothers);
 	}
 
+	// Return a BufFrames.
+	// Travels up the chain until an FFT or FFTTrigger is reached, these classes must override this method, ending the recursion.
+	// If this is called inside the optimisation path, you must call initEdges on the result.
+	fftSize { ^inputs[0].fftSize }
+
 	optimise {
 		var desc = descendants.select { |d|
 			// Get all descendants that write (not *just* read) to a buffer that aren't PV_Copy.
@@ -103,15 +108,17 @@ PV_ChainUGen : UGen {
 			}
 		};
 
+		desc = desc.removeIdenticalDuplicates;
+
 		if (desc.size > 1) {
 			var result = SynthDefOptimisationResult();
 			var first = desc[0];
 			desc.drop(-1).do { |d|
-				var newBuffer = LocalBuf.newDuringOptimisation(\audio, this.fftSize);
+				var newBuffer = LocalBuf(this.fftSize.initEdges).initEdges;
 				var newCopy = PV_Copy.newDuringOptimisation(\audio, this, newBuffer);
 
-				var d_in = d.inputs.indexOf(this);
-				d.replaceInputAt(d_in, newCopy);
+				var d_in = d.inputs.indexOfAll(this);
+				d_in.do { |di| d.replaceInputAt(di, newCopy) };
 
 				newCopy.createWeakConnectionTo(first); // ensures copy happens before the other buffer operation.
 
@@ -122,41 +129,4 @@ PV_ChainUGen : UGen {
 		};
 		^nil;
 	}
-	//
-	// addCopiesIfNeeded {
-	// 	var directDescendants, frames, buf, copy;
-	// 	// find UGens that have me as an input
-	// 	directDescendants = buildSynthDef.children.select ({ |child|
-	// 		var inputs;
-	// 		child.isKindOf(PV_Copy).not and: { child.isKindOf(WidthFirstUGen) } and: {
-	// 			inputs = child.inputs;
-	// 			inputs.notNil and: { inputs.includes(this) }
-	// 		}
-	// 	});
-	// 	if(directDescendants.size > 1, {
-	// 		// insert a PV_Copy for all but the last one
-	// 		directDescendants.drop(-1).do({|desc|
-	// 			desc.inputs.do({ arg input, j;
-	// 				if (input === this, {
-	// 					frames = this.fftSize;
-	// 					frames.widthFirstAntecedents = nil;
-	// 					buf = LocalBuf(frames);
-	// 					buf.widthFirstAntecedents = nil;
-	// 					copy = PV_Copy(this, buf);
-	// 					copy.widthFirstAntecedents = widthFirstAntecedents ++ [buf];
-	// 					desc.inputs[j] = copy;
-	// 					buildSynthDef.children = buildSynthDef.children.drop(-3).insert(this.synthIndex + 1, frames);
-	// 					buildSynthDef.children = buildSynthDef.children.insert(this.synthIndex + 2, buf);
-	// 					buildSynthDef.children = buildSynthDef.children.insert(this.synthIndex + 3, copy);
-	// 					buildSynthDef.indexUGens;
-	// 				});
-	// 			});
-	// 		});
-	// 	});
-	// }
-
-	// return a BufFrames
-	// any PV UGens which don't take the chain as first arg will need to override
-	fftSize { ^inputs[0].fftSize }
-
 }

@@ -19,6 +19,20 @@ FFT : PV_ChainUGen {
 	fftSize { ^BufFrames.ir(inputs[0]) }
 }
 
+// Prepares a buffer for FFT, but doesn't read from an audio stream.
+FFTTrigger : PV_ChainUGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\write }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
+
+	*new { | buffer, hop = 0.5, polar = 0.0|
+		^this.multiNew('control', buffer, hop, polar)
+	}
+
+	fftSize { ^BufFrames.ir(inputs[0]) }
+}
+
 IFFT : UGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
 	bufferAccessType { ^\read }
@@ -370,14 +384,4 @@ PV_BinScramble : PV_ChainUGen {
 	}
 }
 
-// Prepares a buffer for FFT, but doesn't read from an audio stream.
-FFTTrigger : PV_ChainUGen {
-	resourceManagers { ^[UGenBufferResourceManager] }
-	bufferAccessType { ^\write }
-	hasObservableEffect { ^true }
-	canBeReplacedByIdenticalCall { ^true }
 
-	*new { | buffer, hop = 0.5, polar = 0.0|
-		^this.multiNew('control', buffer, hop, polar)
-	}
-}

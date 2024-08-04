@@ -649,7 +649,7 @@ SynthDef {
 					if (in.respondsTo(\dumpName)) { in.dumpName }{ in };
 				};
 			};
-			[ugen.dumpName, ugen.rate, inputs, ugen.antecedents, ugen.descendants].postln;
+			[ugen.dumpName, ugen.rate, inputs, ugen.antecedents, ugen.descendants, ugen.weakAntecedents, ugen.weakDescendants].postln;
 		};
 	}
 
