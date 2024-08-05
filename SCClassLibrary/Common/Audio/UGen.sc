@@ -384,6 +384,7 @@ UGen : UGenBuiltInMethods {
 	///////////////// HELPER METHODS FOR OPTIMISE
 
 	replaceWith { |with|
+		var withNoOutputProxy = if (with.isKindOf(OutputProxy)) { with.source } { with };
 		if (this === with) {
 			Error("Cannot call replaceWith on this").throw
 		};
@@ -396,7 +397,7 @@ UGen : UGenBuiltInMethods {
 				}
 			};
 			indexes.reverseDo { |i|
-				d.replaceInputAt(index: i, with: with)
+				d.replaceInputAt(index: i, with: withNoOutputProxy)
 			}
 		};
 		this.descendants = [];
