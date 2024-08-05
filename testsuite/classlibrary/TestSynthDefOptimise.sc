@@ -396,7 +396,28 @@ TestSynthDefOptimise : UnitTest {
 			"A big graph - tw 0011 (f0)."
 		);
 
+		this.assert(
+			TestSynthDefOptimise.compare_new_old({
+				var sig, chain;
 
+				// The original sound source
+				sig = [2076, 2457, 2337, 1949, 2477, 2229, 3859].collect {|f|
+					SinOsc.ar(f, 0, 2 * Decay.ar(Impulse.ar(1), 0.1)).tanh
+				}.sum;
+
+				chain = sig;    // Start with the original signal
+
+				[
+					[0.156, 0.0863], [0.1133, 0.1258], [0.0785, 0.1674],
+					[0.0104, 0.1523], [0.1664, 0.1706], [0.1784, 0.1117], [0.1432, 0.1894]
+				].do {|p|
+					chain = LeakDC.ar(AllpassL.ar(LPF.ar(chain * 0.9, 3000), 0.2, p, 3));
+				};
+
+				Limiter.ar(sig+chain).flat.sum;    // dry + wet
+			}, server, threshold: -96, forceDontPrint: true),
+			"Example from tour of UGens."
+		);
 	}
 
 	test_io {
