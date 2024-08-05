@@ -480,8 +480,6 @@ UGen : UGenBuiltInMethods {
 	nameForDisplay { ^this.name.asSymbol }
 	dumpName { ^"%_%".format(synthIndex, this.name) }
 	getIdenticalInputs { ^[rate, inputs, weakAntecedents, weakDescendants] }
-	//asString { ^this.dumpName }
-	//printOn { |stream| stream << this.asString }
 	numInputs { ^inputs.size }
 	numOutputs { ^1 }
 
