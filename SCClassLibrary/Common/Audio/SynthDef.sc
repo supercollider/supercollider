@@ -80,24 +80,57 @@ SynthDefOptimisationResult {
 		newUGens = newUGens.add(u);
 		maxDepthOfOperation = max(maxDepthOfOperation, atDepth);
 	}
+	addConstantsDescendants { |descendants|
+		newUGens.addAll(descendants.asArray);
+		maxDepthOfOperation = max(maxDepthOfOperation, 0);
+	}
 	returnNilIfEmpty { ^newUGens !? { this } }
 }
 
-SynthDefOptimiser {
+SynthDefOptimiseAndCSE {
 	var roots;
 	var toVisit;
+	var common;
 
-	*new { |inRoots| ^super.newCopyArgs(inRoots, inRoots.copy).prMain }
+	*new { |inRoots| ^super.newCopyArgs(inRoots.copy, inRoots.copy, IdentityDictionary()).prMain }
 
 	prMain {
 		while {toVisit.isEmpty.not} { this.prOpt };
 		^roots
 	}
+
 	prOpt {
 		var current;
 		toVisit.removeIdenticalDuplicates;
 
 		current = toVisit.pop;
+
+		// CSE
+		if (current.canBeReplacedByIdenticalCall){
+			var ar = common[current.nameForDisplay];
+
+			if(ar.isNil) {
+				common[current.nameForDisplay] = Dictionary[current.getIdenticalInputs -> current];
+			} {
+				var possibleReplacement = ar[current.getIdenticalInputs];
+				if (possibleReplacement.isNil.not) {
+					if (possibleReplacement != current) {
+						possibleReplacement.replaceWith(current);
+						possibleReplacement.tryDisconnect;
+						ar[current.getIdenticalInputs] = current;
+
+						toVisit = toVisit.addAll(current.descendants);
+						toVisit = toVisit.addAll(current.weakDescendants);
+
+						^nil // stop handling the current and go to descendants.
+					}
+				} {
+					ar.put(current.getIdenticalInputs, current);
+				}
+			}
+		};
+
+		// Rewrites
 		current.optimise !? { |res|
 			res.observableUGenReplacements !? { |replacements|
 				replacements.do{ |r|
@@ -116,54 +149,12 @@ SynthDefOptimiser {
 	}
 }
 
-SynthDefCommonExpressionEliminator {
-	var toVisit;
-	var common;
-
-	*new { |inRoots| super.newCopyArgs(inRoots.copy, IdentityDictionary()).prMain }
-
-	prMain { while {toVisit.isEmpty.not} { this.prOpt } }
-
-	prOpt {
-		var current;
-		toVisit.removeIdenticalDuplicates;
-
-		current = toVisit.pop;
-		if (current.canBeReplacedByIdenticalCall){
-			var ar = common[current.nameForDisplay];
-
-			if(ar.isNil) {
-				common[current.nameForDisplay] = Dictionary[current.getIdenticalInputs -> current];
-			} {
-				var possibleReplacement = ar[current.getIdenticalInputs];
-				if (possibleReplacement.isNil.not) {
-					if (possibleReplacement != current) {
-						possibleReplacement.replaceWith(current);
-						possibleReplacement.tryDisconnect;
-						ar[current.getIdenticalInputs] = current;
-
-						// Would be nice to avoid this somehow
-						toVisit = toVisit.addAll(current.descendants);
-						toVisit = toVisit.addAll(current.weakDescendants);
-					}
-				} {
-					ar.put(current.getIdenticalInputs, current);
-				}
-			}
-		};
-
-		toVisit = toVisit.addAll(current.antecedents);
-	}
-}
-
-
 SynthDef {
 	classvar <synthDefDir;
 	classvar <>warnAboutLargeSynthDefs = false;
 
-	classvar <>enableOptimisationRewrite = true;
-	classvar <>enableOptimisationSorting = true;
-	classvar <>enableOptimisationCommonCodeElimination = true;
+	classvar <>enableSorting = true;
+	classvar <>enableOptimisations = true;
 
 	var <>name;
 	var <>func;
@@ -226,13 +217,11 @@ SynthDef {
 
 	*newWithoutOptimisations { |name, ugenGraphFunc, rates, prependArgs, variants, metadata|
 		var out;
-		var sorting = SynthDef.enableOptimisationSorting;
-		var cce = SynthDef.enableOptimisationCommonCodeElimination;
-		var rewrite = SynthDef.enableOptimisationRewrite;
+		var sorting = SynthDef.enableSorting;
+		var opts = SynthDef.enableOptimisations;
 
-		SynthDef.enableOptimisationSorting = false;
-		SynthDef.enableOptimisationCommonCodeElimination = false;
-		SynthDef.enableOptimisationRewrite = false;
+		SynthDef.enableSorting = false;
+		SynthDef.enableOptimisations = false;
 
 		out = super.newCopyArgs(name.asSymbol, ugenGraphFunc)
 		.variants_(variants)
@@ -242,9 +231,8 @@ SynthDef {
 		.resourceManagers_(UGenResourceManager.createNewInstances)
 		.build(rates, prependArgs);
 
-		SynthDef.enableOptimisationSorting = sorting;
-		SynthDef.enableOptimisationCommonCodeElimination = cce;
-		SynthDef.enableOptimisationRewrite = rewrite;
+		SynthDef.enableSorting = sorting;
+		SynthDef.enableOptimisations = opts;
 
 		^out;
 	}
@@ -264,17 +252,10 @@ SynthDef {
 
 			rewriteInProgress = true;
 			children.do(_.initEdges); // Necessary because of borked init method in UGen.
-
-			if (enableOptimisationRewrite){
-				effectiveUGens = SynthDefOptimiser(effectiveUGens);
-				children.do(_.coerceInputs);
+			if (enableOptimisations){
+				effectiveUGens = SynthDefOptimiseAndCSE(effectiveUGens);
 			};
-			if (enableOptimisationCommonCodeElimination){
-				SynthDefCommonExpressionEliminator(effectiveUGens)
-			};
-			if (enableOptimisationSorting
-				or: {enableOptimisationRewrite}
-				or: {enableOptimisationCommonCodeElimination}) {
+			if (enableSorting or: {enableOptimisations}) {
 				// Does dead code elimination as a side effect.
 				children = SynthDefTopologicalSort(effectiveUGens.reverse)
 			};
@@ -285,6 +266,9 @@ SynthDef {
 
 			children.do { | ugen, i| ugen.synthIndex = i }; // Reindex UGens.
 			children.do(_.onFinialisedSynthDef);
+
+
+
 		} {
 			rewriteInProgress = nil;
 			UGen.buildSynthDef = nil;
