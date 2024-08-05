@@ -186,9 +186,9 @@ BinaryOpUGen : BasicOpUGen {
 				^result;
 			};
 			// 0 + a => a
-			if (inputs[0] == 0){
-				result.addUGen(inputs[1], 1);
-				this.replaceWith(inputs[1]);
+			if (inputs[1] == 0){
+				result.addUGen(inputs[0], 1);
+				this.replaceWith(inputs[0]);
 				^result;
 			};
 
