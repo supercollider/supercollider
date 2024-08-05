@@ -6,7 +6,7 @@ UGenBuiltInMethods : AbstractFunction {
 
 	signalRange { ^\bipolar }
 
-	madd { |mul = 1.0, add = 0.0| ^MulAdd(this, mul, add) }
+	madd { |mul = 1.0, add = 0.0| ^ this * mul + add; }
 	unipolar { |mul = 1| ^this.range(0, mul) }
 	bipolar { |mul = 1| ^this.range(mul.neg, mul) }
 	degrad { ^this * 0.01745329251994329547 /* degree * (pi/180) */ }
@@ -16,9 +16,9 @@ UGenBuiltInMethods : AbstractFunction {
 		^if (this.signalRange == \bipolar) {
 			var mul = (hi - lo) * 0.5;
 			var add = mul + lo;
-			MulAdd(this, mul, add)
+			this * mul + add;
 		} {
-			MulAdd(this, hi - lo, lo)
+			this * (hi - lo) + lo
 		}
 	}
 	exprange { |lo = 0.01, hi = 1.0|
@@ -100,15 +100,9 @@ UGenBuiltInMethods : AbstractFunction {
 
 	prune { arg min, max, type;
 		switch(type,
-			\minmax, {
-				^this.clip(min, max);
-			},
-			\min, {
-				^this.max(min);
-			},
-			\max, {
-				^this.min(max);
-			}
+			\minmax, { ^this.clip(min, max) },
+			\min, { ^this.max(min) },
+			\max, { ^this.min(max) }
 		);
 		^this
 	}
