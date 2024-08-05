@@ -226,6 +226,10 @@ SynthDef {
 
 	*newWithoutOptimisations { |name, ugenGraphFunc, rates, prependArgs, variants, metadata|
 		var out;
+		var sorting = SynthDef.enableOptimisationSorting;
+		var cce = SynthDef.enableOptimisationCommonCodeElimination;
+		var rewrite = SynthDef.enableOptimisationRewrite;
+
 		SynthDef.enableOptimisationSorting = false;
 		SynthDef.enableOptimisationCommonCodeElimination = false;
 		SynthDef.enableOptimisationRewrite = false;
@@ -238,9 +242,9 @@ SynthDef {
 		.resourceManagers_(UGenResourceManager.createNewInstances)
 		.build(rates, prependArgs);
 
-		SynthDef.enableOptimisationSorting = true;
-		SynthDef.enableOptimisationCommonCodeElimination = true;
-		SynthDef.enableOptimisationRewrite = true;
+		SynthDef.enableOptimisationSorting = sorting;
+		SynthDef.enableOptimisationCommonCodeElimination = cce;
+		SynthDef.enableOptimisationRewrite = rewrite;
 
 		^out;
 	}
@@ -268,7 +272,9 @@ SynthDef {
 			if (enableOptimisationCommonCodeElimination){
 				SynthDefCommonExpressionEliminator(effectiveUGens)
 			};
-			if (enableOptimisationSorting) {
+			if (enableOptimisationSorting
+				or: {enableOptimisationRewrite}
+				or: {enableOptimisationCommonCodeElimination}) {
 				// Does dead code elimination as a side effect.
 				children = SynthDefTopologicalSort(effectiveUGens.reverse)
 			};
