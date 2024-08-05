@@ -533,11 +533,9 @@ UGen : UGenBuiltInMethods {
 	}
 
 	getAllDescendantsAtLevel { |level| // Level should be greater than 1.
-		if(level <= 1) {
-			^this.descendants
-		} {
-			^this.descendants.inject(this.descendants, {|arr, d| arr ++ d.getAllDescendantsAtLevel(level - 1) })
-		}
+		case { level <= 0 } { ^[this] }
+		{ level == 1 } { ^this.descendants };
+		^this.descendants.inject(this.descendants, {|arr, d| arr ++ d.getAllDescendantsAtLevel(level - 1) })
 	}
 
 	// Edges cannot be made as we go along because the init method is overridden in some classes to return a class that IS NOT a UGen.
