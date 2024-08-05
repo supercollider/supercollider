@@ -116,58 +116,7 @@ TestSynthDefOptimise : UnitTest {
 		^false;
 	}
 
-	test_pv_opts {
-		var b = Buffer.read(server, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
-		server.sync;
 
-		this.assert(
-			TestSynthDefOptimise.compare_a_b(
-				{
-					var chain = FFT(LocalBuf(1024), Saw.ar(220));
-					chain = PV_Add(PV_BinShift(chain, 2), PV_BinShift(chain, 1, 5));
-					IFFT(chain)
-				},
-				{
-					var chain = FFT(LocalBuf(1024), Saw.ar(220));
-					var chain2 = PV_Copy(chain, LocalBuf(1024));
-					chain = PV_Add(PV_BinShift(chain, 2), PV_BinShift(chain2, 1, 5));
-					IFFT(chain)
-				},
-				server,
-				threshold: -120,
-				duration: 0.1
-			),
-			"Test PV auto PV_Copy simple"
-		);
-
-		this.assert(
-			TestSynthDefOptimise.compare_a_b(
-				{
-					var chain = FFT(LocalBuf(512), Saw.ar(220));
-					var chainB = PV_Add(PV_BinShift(chain, 2), PV_BinShift(chain, 1, 5));
-					chainB = PV_Add(PV_BinShift(chainB, 2), PV_BinShift(chain, 1, -5));
-					chainB = PV_Add(PV_BinShift(chainB, 0.5), PV_BinShift(chain, 1, 15));
-					IFFT(chainB)
-				},
-				{
-					var chainA1 = FFT(LocalBuf(512), Saw.ar(220));
-					var chainA2 = PV_Copy(chainA1, LocalBuf(512));
-					var chainA3 = PV_Copy(chainA1, LocalBuf(512));
-					var chainA4 = PV_Copy(chainA1, LocalBuf(512));
-
-					var chainB = PV_Add(PV_BinShift(chainA1, 2), PV_BinShift(chainA2, 1, 5));
-					chainB = PV_Add(PV_BinShift(chainB, 2), PV_BinShift(chainA3, 1, -5));
-					chainB = PV_Add(PV_BinShift(chainB, 0.5), PV_BinShift(chainA4, 1, 15));
-
-					IFFT(chainB)
-				},
-				server,
-				threshold: -120,
-				duration: 0.1
-			),
-			"Test PV auto PV_Copy Harder"
-		);
-	}
 
 	test_compare_arithmetic {
 		this.assert(
@@ -285,6 +234,8 @@ TestSynthDefOptimise : UnitTest {
 		);
 	}
 
+
+
 	test_pv {
 		var b = Buffer.read(server, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 		server.sync;
@@ -332,6 +283,59 @@ TestSynthDefOptimise : UnitTest {
 		);
 	}
 
+
+	test_pv_opts {
+		var b = Buffer.read(server, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+		server.sync;
+
+		this.assert(
+			TestSynthDefOptimise.compare_a_b(
+				{
+					var chain = FFT(LocalBuf(1024), Saw.ar(220));
+					chain = PV_Add(PV_BinShift(chain, 2), PV_BinShift(chain, 1, 5));
+					IFFT(chain)
+				},
+				{
+					var chain = FFT(LocalBuf(1024), Saw.ar(220));
+					var chain2 = PV_Copy(chain, LocalBuf(1024));
+					chain = PV_Add(PV_BinShift(chain, 2), PV_BinShift(chain2, 1, 5));
+					IFFT(chain)
+				},
+				server,
+				threshold: -120,
+				duration: 0.1
+			),
+			"Test PV auto PV_Copy simple"
+		);
+
+		this.assert(
+			TestSynthDefOptimise.compare_a_b(
+				{
+					var chain = FFT(LocalBuf(512), Saw.ar(220));
+					var chainB = PV_Add(PV_BinShift(chain, 2), PV_BinShift(chain, 1, 5));
+					chainB = PV_Add(PV_BinShift(chainB, 2), PV_BinShift(chain, 1, -5));
+					chainB = PV_Add(PV_BinShift(chainB, 0.5), PV_BinShift(chain, 1, 15));
+					IFFT(chainB)
+				},
+				{
+					var chainA1 = FFT(LocalBuf(512), Saw.ar(220));
+					var chainA2 = PV_Copy(chainA1, LocalBuf(512));
+					var chainA3 = PV_Copy(chainA1, LocalBuf(512));
+					var chainA4 = PV_Copy(chainA1, LocalBuf(512));
+
+					var chainB = PV_Add(PV_BinShift(chainA1, 2), PV_BinShift(chainA2, 1, 5));
+					chainB = PV_Add(PV_BinShift(chainB, 2), PV_BinShift(chainA3, 1, -5));
+					chainB = PV_Add(PV_BinShift(chainB, 0.5), PV_BinShift(chainA4, 1, 15));
+
+					IFFT(chainB)
+				},
+				server,
+				threshold: -120,
+				duration: 0.1
+			),
+			"Test PV auto PV_Copy Harder"
+		);
+	}
 
 
 
@@ -418,6 +422,84 @@ TestSynthDefOptimise : UnitTest {
 			}, server, threshold: -96, forceDontPrint: true),
 			"Example from tour of UGens."
 		);
+
+
+		this.assert(
+			TestSynthDefOptimise.compare_new_old({ |amp=0.2|
+				var snd, noi;
+				var coeff = {|freq| exp(-2pi * (freq * SampleDur.ir))};
+				snd = SinOsc.ar([49, 98, 196]).sum * 2.0;
+				snd = Clip.ar(snd, -0.9, 0.9);
+				snd = OnePole.ar(snd, coeff.(50));
+				snd = HPF.ar(snd, 20);
+				noi = HPF.ar(OnePole.ar(Saw.ar, coeff.(100)), 500);
+				noi = noi * EnvGen.ar(Env.linen(0.010, 0.005, 0.005));
+				snd = snd * EnvGen.ar(Env.linen(0.010, 1.090, 0.200), doneAction: Done.freeSelf);
+				snd = snd + noi;
+				snd = snd * amp;
+				snd.asArray.flat.sum
+			}, server, threshold: -96, forceDontPrint: true),
+			"gosub — https://sccode.org/1-5i2"
+		);
+
+
+
+		this.assert(
+			TestSynthDefOptimise.compare_new_old({
+				|pitch=440, freq=70, addFreq=17, attack=1, release = 12|
+				var sig, sig1, saws, env, shapeEnv, local, local2;
+				sig = Mix.new(
+					Array.fill(8,
+						{SinOsc.ar(freq + addFreq, 0.95, 0.03)})
+				);
+
+				env = EnvGen.kr(Env.perc(attack, release ), doneAction:2);
+				sig1 = sig + (sig *
+					Mix.new(
+						Array.fill(8,
+							{SinOsc.ar(0.02, 0.7, LFNoise1.kr(0.02, 0.08))}))
+				);
+
+				sig = sig * env;
+				sig1 = sig1 * env;
+
+				sig = PitchShift.ar(sig, 0.1, SinOsc.kr(pitch, 3.2, 0.9, 3));
+				sig1 = PitchShift.ar(sig1, 0.1, SinOsc.kr(pitch, 0, 0.9, 3));
+
+				saws = Mix.new(
+					Array.fill(8,
+						{LFSaw.ar(\sawFreq.ir(4000) + addFreq, 0.9, 0.02)})
+				);
+				shapeEnv = EnvGen.kr(Env([0.1, 0.02, 0.8, 0.0], [1, 5, 3 , 2]));
+
+				saws = saws * shapeEnv;
+				saws = saws * env;
+
+				local = LocalIn.ar(2) + [sig+sig1, sig1+sig];
+				local = DelayN.ar(local, 0.8, [0.3, 0.33]);
+				local2 = LocalIn.ar(2) + [saws, saws];
+				local2 = DelayN.ar(local2, 0.8, [0.02, 0.02]);
+				local = local + local2;
+
+				local = Compander.ar(
+					local, local,
+					0.2, slopeBelow: 1.3,
+					slopeAbove: 0.1,
+					clampTime:0.1,
+					relaxTime:0.01);
+				local = local.tanh;
+				local = HPF.ar(local, 70);
+				//local = BRF.ar(local, 260);
+				LocalOut.ar(local * 0.8);
+				local.asArray.flat.sum;
+			}, server, threshold: -96, forceDontPrint: true),
+			"iakamuri — https://sccode.org/1-5hW"
+		);
+
+
+
+
+
 	}
 
 	test_io {
@@ -492,6 +574,16 @@ TestSynthDefOptimise : UnitTest {
 			}, server, threshold: -70),
 			"Interleaved ins and outs - n = 10"
 		);
+
+/*
+		this.assert(
+			TestSynthDefOptimise.compare_new_old({
+				var out = Fb1({ |in, out| (in[0] * 0.05) + (out[1] * 0.95) }, SinOsc.ar, leakDC: false);
+				Out.ar(0, out)
+			}, server, threshold: -70),
+			"Fb1 OnePole"
+		);
+*/
 	}
 
 
