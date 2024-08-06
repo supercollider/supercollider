@@ -252,6 +252,7 @@ SynthDef {
 
 			rewriteInProgress = true;
 			children.do(_.initEdges); // Necessary because of borked init method in UGen.
+
 			if (enableOptimisations){
 				effectiveUGens = SynthDefOptimiseAndCSE(effectiveUGens);
 			};
@@ -267,8 +268,8 @@ SynthDef {
 			children.do { | ugen, i| ugen.synthIndex = i }; // Reindex UGens.
 			children.do(_.onFinialisedSynthDef);
 
-
-
+			// Please note, this event should NOT be used inside UGens, instead, onFinialisedSynthDef should be used.
+			this.class.changed(\synthDefReady, this);
 		} {
 			rewriteInProgress = nil;
 			UGen.buildSynthDef = nil;
