@@ -13,6 +13,7 @@ TestSynthDefOptimise : UnitTest {
 		server = Server(this.class.name);
 		server.options.memSize = 8192 * 4;
 		server.options.blockSize = 64;
+		server.options.numWireBufs = 256;
 		this.bootServer(server);
 		server.sync;
 	}
@@ -45,7 +46,7 @@ TestSynthDefOptimise : UnitTest {
 				RecordBuf.methodSelectorForRate(defRate),
 				outputs, bufnum, loop: 0, doneAction: 2
 			);
-		}).dumpUGens
+		})
 	}
 
 	*compare_a_b { |withopts, withoutopts, server, threshold, forceDontPrint=false, duration=0.01|
@@ -496,10 +497,30 @@ TestSynthDefOptimise : UnitTest {
 			"iakamuri — https://sccode.org/1-5hW"
 		);
 
+/*
+		this.assert(
+			TestSynthDefOptimise.compare_new_old({
+				var out = Fb1({ |in, out| (in[0] * 0.05) + (out[1] * 0.95) }, SinOsc.ar, leakDC: false);
+				Out.ar(0, out)
+			}, server, threshold: -70),
+			"Daniel Mayer --- Fb1 OnePole"
+		);
 
 
-
-
+		this.assert(
+			TestSynthDefOptimise.compare_new_old({ |out, freq = 440, detun = 1.01, gate = 1, amp = 0.1,
+				ffreq = 2000, rq = 1,
+				wtPos = 0, squeeze = 0, offset = 0|
+				var numOscs = 15;
+				var sig = MultiWtOsc.ar(freq, wtPos, squeeze, offset, b,
+					numOscs: numOscs, detune: detun);
+				sig = RLPF.ar(sig, ffreq, rq);
+				sig = sig * EnvGen.kr(Env.adsr, gate, doneAction: 2);
+				Out.ar(out, sig.asArray.flat.sum);
+			}, server, threshold: -70),
+			"James Harkin --- ddwWavetable quark"
+		);
+		*/
 	}
 
 	test_io {
@@ -575,18 +596,8 @@ TestSynthDefOptimise : UnitTest {
 			"Interleaved ins and outs - n = 10"
 		);
 
-/*
-		this.assert(
-			TestSynthDefOptimise.compare_new_old({
-				var out = Fb1({ |in, out| (in[0] * 0.05) + (out[1] * 0.95) }, SinOsc.ar, leakDC: false);
-				Out.ar(0, out)
-			}, server, threshold: -70),
-			"Fb1 OnePole"
-		);
-*/
+
 	}
-
-
 }
 
 
