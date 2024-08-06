@@ -47,6 +47,21 @@ UnaryOpUGen : BasicOpUGen {
 	}
 
 	optimise {
+		if (inputs[0].source.isKindOf(DC) and: { inputs[0].source.rate == this.rate }) {
+			var result = SynthDefOptimisationResult();
+			this.replaceInputAt(0, inputs[0].source.inputs[0]);
+			result.addUGen(this, 1);
+			^result;
+		};
+
+		if (inputs[0].isKindOf(Number)) {
+			var result = SynthDefOptimisationResult();
+			var answer = inputs[0].perform(this.operator);
+			result.addConstantsDescendants(this.descendants);
+			this.replaceWith(answer);
+			^result;
+		};
+
 		case
 		{ operator == 'neg' } {
 			var result = SynthDefOptimisationResult();
@@ -119,6 +134,28 @@ BinaryOpUGen : BasicOpUGen {
 		//   If it works, return a SynthDefOptimisationResult.
 		//   The SynthDefOptimiser will call this method again, so order inside the case blocks matters.
 
+		// Remove all DC inputs in favour of constants as they can be optimised further.
+		if (inputs.any({ |in| in.source.isKindOf(DC) })) {
+			var result = SynthDefOptimisationResult();
+			inputs.size.do { |i|
+				var in = inputs[i];
+				if (in.source.isKindOf(DC) and: { in.source.rate == this.rate }) {
+					this.replaceInputAt(i, in.inputs[0]);
+					result.addUGen(this, 1);
+				}
+			};
+			^result;
+		};
+
+		if (inputs[0].isKindOf(Number) and: { inputs[1].isKindOf(Number) }) {
+			var result = SynthDefOptimisationResult();
+			var answer = inputs[0].perform(this.operator, inputs[1]);
+			result.addConstantsDescendants(this.descendants);
+
+			this.replaceWith(answer);
+			^result;
+		};
+
 		case
 		{ operator == '*' } {
 			var result = SynthDefOptimisationResult();
@@ -185,13 +222,13 @@ BinaryOpUGen : BasicOpUGen {
 				this.replaceWith(inputs[1]);
 				^result;
 			};
+
 			// 0 + a => a
 			if (inputs[1] == 0){
 				result.addUGen(inputs[0], 1);
 				this.replaceWith(inputs[0]);
 				^result;
 			};
-
 
 			// Get Sum3 descendants and create a Sum4
 			desc = descendants.select { |d| d.isKindOf(Sum3) };
@@ -222,9 +259,26 @@ BinaryOpUGen : BasicOpUGen {
 				};
 				this.tryDisconnect;
 				result.returnNilIfEmpty !? { |r| ^r };
-			};
-
+			}
 		}
+
+		{ operator == '-' } {
+			var result = SynthDefOptimisationResult();
+			var desc;
+
+			// 0 - a => a
+			if (inputs[0] == 0){
+				result.addUGen(inputs[1], 1);
+				this.replaceWith(inputs[1]);
+				^result;
+			};
+			// 0 - a => a
+			if (inputs[1] == 0){
+				result.addUGen(inputs[0], 1);
+				this.replaceWith(inputs[0]);
+				^result;
+			}
+		};
 		^nil
 	}
 }
@@ -447,9 +501,6 @@ Sum3 : UGen {
 				^result
 			}
 		};
-
-
-
 		^nil;
 	}
 }
@@ -541,8 +592,6 @@ Sum4 : UGen {
 				^result
 			}
 		};
-
-
 		^nil;
 	}
 }
