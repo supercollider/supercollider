@@ -54,6 +54,9 @@ SynthDefUGenOccurrenceTracker {
 		out = nil;
 		^return.contents;
 	}
+	*tally { |inRoots, inDepth|
+		^SynthDefUGenOccurrenceTracker.new(inRoots, inDepth).asAssociations.sort({ |l, r| l.value > r.value })
+	}
 
 	*prVisit { |u|
 		if (u.isKindOf(UGen) and: { visited.includes(u).not }){
@@ -62,7 +65,7 @@ SynthDefUGenOccurrenceTracker {
 			if(rollingArray.size >= depth) {
 				out.add(
 					rollingArray[rollingArray.size - depth .. rollingArray.size]
-					.collect(_.nameForDisplay)
+					.collect(_.nameForDisplay).reverse
 				)
 			};
 			u.antecedents.do( SynthDefUGenOccurrenceTracker.prVisit(_) );
