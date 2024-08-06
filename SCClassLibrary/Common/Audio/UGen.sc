@@ -500,6 +500,7 @@ UGen : UGenBuiltInMethods {
 	getIdenticalInputs { ^[rate, inputs, weakAntecedents, weakDescendants] }
 	numInputs { ^inputs.size }
 	numOutputs { ^1 }
+	source { ^this } // OutputProxy holds another UGen.
 
 	// This method should only be overriden in OutputProxy.
 	// It is fragile so don't override this as a UGen author.
@@ -517,23 +518,20 @@ UGen : UGenBuiltInMethods {
 	// Replaces an input at index with.
 	replaceInputAt { |index, with|
 		var old = inputs[index];
-
 		if (old.isKindOf(UGen)) {
 			old.descendants.remove(this)
 		};
-		this.antecedents.remove(old);
+		this.antecedents.remove(old.source);
 		inputs[index] = with;
 		if(with.isKindOf(UGen)) {
-			var withNoOutputProxy = if (with.isKindOf(OutputProxy)) { with.source } { with };
-			withNoOutputProxy.createConnectionTo(this)
+			with.source.createConnectionTo(this)
 		};
 	}
 
 	// Creates a weak edge between two ugens. Weak edges are used to indicate IO and other resource orderings.
 	createWeakConnectionTo { |ugen|
-		ugen = if (ugen.isKindOf(OutputProxy)) { ugen.source } { ugen };
-		this.weakDescendants = this.weakDescendants.add(ugen);
-		ugen.weakAntecedents = ugen.weakAntecedents.add(this);
+		this.weakDescendants = this.weakDescendants.add(ugen.source);
+		ugen.source.weakAntecedents = ugen.source.weakAntecedents.add(this);
 	}
 
 	// This is called inside the topological sort.
