@@ -96,7 +96,7 @@ PV_ChainUGen : UGen {
 	// If this is called inside the optimisation path, you must call initEdges on the result.
 	fftSize { ^inputs[0].fftSize }
 
-	optimise {
+	optimize {
 		var desc = descendants.select { |d|
 			// Get all descendants that write (not *just* read) to a buffer that aren't PV_Copy.
 			// This will incorrectly select UGens that read and write to different buffers but don't write to this buffer,

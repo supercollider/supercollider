@@ -63,7 +63,7 @@ BufRd : MultiOutUGen {
 		^this.initOutputs(argNumChannels, rate);
 	}
 
-	optimise {
+	optimize {
 		var result = SynthDefOptimisationResult();
 		this.coerceInputFromScalarToDC(2, result); // phase
 		^result.returnNilIfEmpty;
@@ -95,7 +95,7 @@ BufWr : UGen {
 			loop] ++ inputArray.asArray)
 	}
 
-	optimise {
+	optimize {
 		var result = SynthDefOptimisationResult();
 
 		this.coerceInputFromScalarToDC(1, result); // phase
@@ -145,7 +145,7 @@ RecordBuf : UGen {
 		)
 	}
 
-	optimise {
+	optimize {
 		var result = SynthDefOptimisationResult();
 		// For each inputs, turn it into a DC if it is a number
 		(inputs.size - 7).do { |i|

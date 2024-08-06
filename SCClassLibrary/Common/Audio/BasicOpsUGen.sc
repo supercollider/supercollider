@@ -46,7 +46,7 @@ UnaryOpUGen : BasicOpUGen {
 		inputs = theInput.asArray;
 	}
 
-	optimise {
+	optimize {
 		if (inputs[0].source.isKindOf(DC) and: { inputs[0].source.rate == this.rate }) {
 			var result = SynthDefOptimisationResult();
 			this.replaceInputAt(0, inputs[0].source.inputs[0]);
@@ -127,14 +127,14 @@ BinaryOpUGen : BasicOpUGen {
 		inputs = [a, b];
 	}
 
-	optimise {
+	optimize {
 		// Rules:
 		//   Match on the type of operator.
 		//   Try to apply an optimisation.
 		//   If it works, return a SynthDefOptimisationResult.
-		//   The SynthDefOptimiser will call this method again, so order inside the case blocks matters.
+		//   The SynthDefoptimizer will call this method again, so order inside the case blocks matters.
 
-		// Remove all DC inputs in favour of constants as they can be optimised further.
+		// Remove all DC inputs in favour of constants as they can be optimized further.
 		if (inputs.any({ |in| in.source.isKindOf(DC) })) {
 			var result = SynthDefOptimisationResult();
 			inputs.size.do { |i|
@@ -323,7 +323,7 @@ MulAdd : UGen {
 		^false
 	}
 
-	optimise {
+	optimize {
 		// 0 * a + b => b
 		if (inputs[0] == 0){
 			var result = SynthDefOptimisationResult();
@@ -427,7 +427,7 @@ Sum3 : UGen {
 		^super.new1(rate, *sortedArgs)
 	}
 
-	optimise {
+	optimize {
 		var desc;
 
 		// Sum3(a, b, c) + d => Sum4(a, b, c, d)
@@ -522,7 +522,7 @@ Sum4 : UGen {
 		^super.new1(rate, *sortedArgs)
 	}
 
-	optimise {
+	optimize {
 		var desc;
 
 		// Sum4(a, b, c, d) - a => Sum3(b, c, d)

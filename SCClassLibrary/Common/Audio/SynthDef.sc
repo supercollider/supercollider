@@ -90,7 +90,7 @@ SynthDefOptimisationResult {
 	returnNilIfEmpty { ^newUGens !? { this } }
 }
 
-SynthDefOptimiseAndCSE {
+SynthDefOptimizeAndCSE {
 	var roots;
 	var toVisit;
 	var common;
@@ -135,7 +135,7 @@ SynthDefOptimiseAndCSE {
 
 		// Rewrites
 		if (current.hasObservableEffect or: { current.descendants.isEmpty.not }) {
-			current.optimise !? { |res|
+			current.optimize !? { |res|
 				res.observableUGenReplacements !? { |replacements|
 					replacements.do{ |r|
 						roots.remove(r.key);
@@ -262,7 +262,7 @@ SynthDef {
 			children.do(_.initEdges); // Necessary because of borked init method in UGen.
 
 			if (enableOptimisations){
-				effectiveUGens = SynthDefOptimiseAndCSE(effectiveUGens);
+				effectiveUGens = SynthDefOptimizeAndCSE(effectiveUGens);
 			};
 			if (enableSorting or: {enableOptimisations}) {
 				// Does dead code elimination as a side effect.
@@ -274,9 +274,9 @@ SynthDef {
 			this.checkInputs; // Throws when invalid inputs are found.
 
 			children.do { | ugen, i| ugen.synthIndex = i }; // Reindex UGens.
-			children.do(_.onFinialisedSynthDef);
+			children.do(_.onFinalizedSynthDef);
 
-			// Please note, this event should NOT be used inside UGens, instead, onFinialisedSynthDef should be used.
+			// Please note, this event should NOT be used inside UGens, instead, onFinalizedSynthDef should be used.
 			this.class.changed(\synthDefReady, this);
 		} {
 			rewriteInProgress = nil;
@@ -622,7 +622,7 @@ SynthDef {
 			effectiveUGens = effectiveUGens.add(ugen)
 		};
 
-		// It is the optimiser's responsibility to add the weak edges.
+		// It is the optimizer's responsibility to add the weak edges.
 		if (rewriteInProgress.isNil) {
 			// If not nil, get each active manager and add the UGen,
 			//    otherwise call panic on all resourceManagers, adding the UGen to all resource orders.

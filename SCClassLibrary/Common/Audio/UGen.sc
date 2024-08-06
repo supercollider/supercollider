@@ -362,21 +362,21 @@ UGen : UGenBuiltInMethods {
 
 	// Graph optimisations, replace patterns of UGens with others, optional.
 	// This method should ONLY look at inputs (direct antecedents) but may look at all descendants.
-	// The optimiser runs from output to input, walking 'up' the graph.
+	// The optimizer runs from output to input, walking 'up' the graph.
 	// It must return a SynthDefOptimisationResult or a nil if no optimisation has occurred.
 	// No attempt to delete UGens should be made, unless they have an observable effect (like Out),
 	//    in which case it should be added to the result as an observableUGenReplacement.
 	// To remove UGens without an observable effect, do nothing, the sort removes dead code automatically.
 	// The depth of the descendants that have been removed should be returned in the result,
-	//    this will force the optimiser to re-evaluate those descendants before continuing upwards.
-	optimise { ^nil }
+	//    this will force the optimizer to re-evaluate those descendants before continuing upwards.
+	optimize { ^nil }
 
 	// Choose a input validation strategy, see below for options.
 	// Should not change the UGen, only throw when a mistake has been found.
 	checkInputs { ^this.checkValidInputs }
 
 	// Called once the synthdef has finished compiling and this UGen is present in the graph.
-	onFinialisedSynthDef { }
+	onFinalizedSynthDef { }
 
 	///////////////// HELPER METHODS FOR HAS OBSERVABLE EFFECT
 
