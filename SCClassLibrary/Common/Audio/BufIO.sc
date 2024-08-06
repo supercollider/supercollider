@@ -62,6 +62,13 @@ BufRd : MultiOutUGen {
 		inputs = theInputs;
 		^this.initOutputs(argNumChannels, rate);
 	}
+
+	optimise {
+		var result = SynthDefOptimisationResult();
+		this.coerceInputFromScalarToDC(2, result); // phase
+		^result.returnNilIfEmpty;
+	}
+
 	argNamesInputsOffset { ^2 }
 	checkInputs {
 		if (rate == 'audio' and: {inputs.at(1).rate != 'audio'}, {
@@ -82,10 +89,21 @@ BufWr : UGen {
 			loop] ++ inputArray.asArray)
 
 	}
+
 	*kr { arg inputArray, bufnum=0, phase=0.0, loop=1.0;
 		^this.multiNewList(['control', bufnum, phase,
 			loop] ++ inputArray.asArray)
 	}
+
+	optimise {
+		var result = SynthDefOptimisationResult();
+
+		this.coerceInputFromScalarToDC(1, result); // phase
+		(inputs.size - 2).do { |i| this.coerceInputFromScalarToDC(3 + i, result) }; // audio array
+
+		^result.returnNilIfEmpty;
+	}
+
 	checkInputs {
 		if (rate == 'audio') {
 			if(inputs.at(1).rate != 'audio') {

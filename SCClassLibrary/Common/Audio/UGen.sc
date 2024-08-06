@@ -376,12 +376,13 @@ UGen : UGenBuiltInMethods {
 
 	///////////////// HELPER METHODS FOR OPTIMISE
 
-	coerceInputFromScalarToDC { |inputIndex, results|
+	coerceInputFromScalarToDC { |inputIndex, results, rate|
 		var in = inputs[inputIndex];
 		var found = false;
+		rate = rate ?? { this.rate };
 		case
 		{in.isKindOf(Number)} {
-			var dc = DC.newDuringOptimisation(this.rate, in);
+			var dc = DC.newDuringOptimisation(rate, in);
 			this.replaceInputAt(inputIndex, dc);
 			results.addUGen(this, 0);
 			found = true;

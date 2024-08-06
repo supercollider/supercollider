@@ -36,6 +36,8 @@ All UGen's must inherit from link::Classes/UGen:: and be named exactly the same 
 
 The UGen should implement the code::*.ar:: and code::*.kr:: methods as necessary, calling code::super.multiNew(rate, arg1, arg2 ...)::.
 
+Please note, if the server side implementation is set to only accepts audio rate inputs then a conversion from scalar numbers to audio rate DC must be provided, see link::#optimize::.
+
 Here is a basic example.
 
 code::
@@ -46,9 +48,14 @@ MyUGen : UGen {
 ::
 
 
-However, this implementation does not participate in any of the optimisation link::Classes/SynthDef:: offers, of which there are three.
+
+However, this implementation does not participate in any of the optimisation link::Classes/SynthDef:: offers,
+of which there are three.
 While all these methods can be omitted for backwards compatibility, there will be a serious performance hit.
 It is best to find a UGen in the class library that is close to your UGen and see how it implements these three methods.
+
+It is also possible to implement custom optimizations, this is discussed after.
+
 
 subsection:: Has Observable Effect
 
@@ -160,6 +167,46 @@ list::
 
 The default for this method is to return code::nil::, which causes all resource managers to enter 'panic' mode, preserving the order.
 This is done for backwards compatibility.
+
+
+subsection:: Optimization and Combinations of Rates
+
+The method code::optimize:: is used to make substitution in the link::Classes/SynthDef:: graph.
+Most of the time this is not needed by UGen authors — see link::Classes/SynthDef#optimize:: for more information —
+however, there is one exception.
+
+If your UGen doesn't provide a way to handle control rate inputs it is necessary to perform a conversion from scalar number to audio rate link::Classes/DC::.
+An example of a UGen in the class library that does this is link::Classes/RecordBuf:: by using the convenience method code::this.coerceInputFromScalarToDC::.
+
+code::
+MyRecorder : UGen {
+    resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\write }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
+
+	*ar { |inputArray, bufnum = 0| ^this.multiNewList(['audio', bufnum] ++ inputArray ) }
+
+	optimize {
+        var result = SynthDefOptimisationResult();
+        this.coerceInputFromScalarToDC(1, result);
+        ^result.returnNilIfEmpty;
+	}
+}
+::
+
+This allows the user to write 'code::MyRecorder.ar(0, \buf.kr)::', but more importantly,
+it allows other optimizations to be applied uniformly.
+An example of where this would unexpectedly fail is when multiplying by zero,
+as the optimizer known that the result is always zero as makes a substitution on the users behalf.
+Therefore, it is necessary to implement this if your UGen does not support control rate inputs, even in the audio rate path.
+
+While it is possible to perform other types of optimizations on the rate, please refrain from doing so without good reason,
+as it can make things confusing for the user. Prefer only converting scalar inputs to link::Classes/DC:: inputs.
+
+To avoid having to write this method, it is best to check each input's rate inside the server side code during construction.
+
+If there are certain combinations of rates that are not allowed, then a link::Classes/UGen#checkInputs:: method is provided where this can be implemented.
 
 section:: Basics of Server–side UGens
 
