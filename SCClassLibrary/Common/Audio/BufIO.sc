@@ -127,15 +127,14 @@ RecordBuf : UGen {
 		)
 	}
 
-	coerceInputs {
+	optimise {
+		var result = SynthDefOptimisationResult();
+		// For each inputs, turn it into a DC if it is a number
 		(inputs.size - 7).do { |i|
-			if (inputs[i + 8].isKindOf(Number)) {
-				var dc = DC.newDuringOptimisation(this.rate, inputs[i + 8]).debug("newDC");
-				this.replaceInputAt(i + 8, dc);
-			}
-		}
+			this.coerceInputFromScalarToDC(8 + i, result)
+		};
+		^result.returnNilIfEmpty;
 	}
-
 }
 
 // TODO: What does this class do?

@@ -325,11 +325,9 @@ UGen : UGenBuiltInMethods {
 		^results
 	}
 
-
 	// Other classes override init and return different classes,
 	//    this causes all manner of headaches in the constructors,  be warned!
 	init { |... theInputs| inputs = theInputs }
-
 
 	///////////////// OVERIDEABLE INTERFACE FOR UGEN AUTHORS
 
@@ -362,11 +360,6 @@ UGen : UGenBuiltInMethods {
 	//    this will force the optimiser to re-evaluate those descendants before continuing upwards.
 	optimise { ^nil }
 
-
-	// Attempt to convert inputs. For example, turning the scalar '0' into DC.ar(0).
-	// If an invalid state is found, one may throw, or catch it in checkInputs (or both).
-	coerceInputs { }
-
 	// Choose a input validation strategy, see below for options.
 	// Should not change the UGen, only throw when a mistake has been found.
 	checkInputs { ^this.checkValidInputs }
@@ -382,6 +375,19 @@ UGen : UGenBuiltInMethods {
 	}
 
 	///////////////// HELPER METHODS FOR OPTIMISE
+
+	coerceInputFromScalarToDC { |inputIndex, results|
+		var in = inputs[inputIndex];
+		var found = false;
+		case
+		{in.isKindOf(Number)} {
+			var dc = DC.newDuringOptimisation(this.rate, in);
+			this.replaceInputAt(inputIndex, dc);
+			results.addUGen(this, 0);
+			found = true;
+		}
+		^found
+	}
 
 	replaceWith { |with|
 		var withNoOutputProxy = if (with.isKindOf(OutputProxy)) { with.source } { with };
@@ -506,7 +512,8 @@ UGen : UGenBuiltInMethods {
 		this.antecedents.remove(old);
 		inputs[index] = with;
 		if(with.isKindOf(UGen)) {
-			with.createConnectionTo(this)
+			var withNoOutputProxy = if (with.isKindOf(OutputProxy)) { with.source } { with };
+			withNoOutputProxy.createConnectionTo(this)
 		};
 	}
 
