@@ -134,21 +134,26 @@ SynthDefOptimiseAndCSE {
 		};
 
 		// Rewrites
-		current.optimise !? { |res|
-			res.observableUGenReplacements !? { |replacements|
-				replacements.do{ |r|
-					roots.remove(r.key);
-					roots.add(r.value);
-				}
-			};
-			res.newUGens.do{ |u|
-				if (u.isKindOf(UGen)){
-					toVisit = toVisit.addAll(u.getAllDescendantsAtLevel(res.maxDepthOfOperation))
-				}
-			};
-		} ?? {
-			current.antecedents.do{ |a| toVisit = toVisit.add(a) }
-		}
+		if (current.hasObservableEffect or: { current.descendants.isEmpty.not }) {
+			current.optimise !? { |res|
+				res.observableUGenReplacements !? { |replacements|
+					replacements.do{ |r|
+						roots.remove(r.key);
+						roots.add(r.value);
+					}
+				};
+				res.newUGens.do{ |u|
+					if (u.isKindOf(UGen)){
+						toVisit = toVisit.addAll(u.getAllDescendantsAtLevel(res.maxDepthOfOperation))
+					}
+				};
+				^nil
+			}
+		};
+
+		current.antecedents.do{ |a| toVisit = toVisit.add(a) };
+		^nil
+
 	}
 }
 
