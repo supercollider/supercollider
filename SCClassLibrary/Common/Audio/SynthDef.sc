@@ -84,7 +84,7 @@ SynthDefOptimisationResult {
 		maxDepthOfOperation = max(maxDepthOfOperation, atDepth);
 	}
 	addConstantsDescendants { |descendants|
-		newUGens.addAll(descendants.asArray);
+		newUGens = (newUGens ?? {[]}).addAll(descendants.asArray); // nil addAll is broken #6414
 		maxDepthOfOperation = max(maxDepthOfOperation, 0);
 	}
 	returnNilIfEmpty { ^newUGens !? { this } }
@@ -98,7 +98,10 @@ SynthDefOptimizeAndCSE {
 	*new { |inRoots| ^super.newCopyArgs(inRoots.copy, inRoots.copy, IdentityDictionary()).prMain }
 
 	prMain {
-		while {toVisit.isEmpty.not} { this.prOpt };
+		while {toVisit.isEmpty.not} {
+			//UGen.buildSynthDef.dumpUGens;
+			this.prOpt
+		};
 		^roots
 	}
 
@@ -106,7 +109,7 @@ SynthDefOptimizeAndCSE {
 		var current;
 		toVisit.removeIdenticalDuplicates;
 
-		current = toVisit.pop;
+		current = toVisit.pop.source;
 
 		// CSE
 		if (current.canBeReplacedByIdenticalCall){
@@ -136,22 +139,29 @@ SynthDefOptimizeAndCSE {
 		// Rewrites
 		if (current.hasObservableEffect or: { current.descendants.isEmpty.not }) {
 			current.optimize !? { |res|
-				res.observableUGenReplacements !? { |replacements|
-					replacements.do{ |r|
-						roots.remove(r.key);
-						roots.add(r.value);
-					}
-				};
-				res.newUGens.do{ |u|
-					if (u.isKindOf(UGen)){
-						toVisit = toVisit.addAll(u.getAllDescendantsAtLevel(res.maxDepthOfOperation))
-					}
-				};
-				^nil
-			}
-		};
 
-		current.antecedents.do{ |a| toVisit = toVisit.add(a) };
+				if (res.newUGens.isNil.not) {
+					var ref = Ref([]);
+
+					res.observableUGenReplacements !? { |replacements|
+						replacements.do{ |r|
+							roots.remove(r.key);
+							roots.add(r.value);
+						}
+					};
+
+					res.newUGens.do{ |u|
+						if (u.isKindOf(UGen)){
+							u.source.getAllDescendantsAtLevel(res.maxDepthOfOperation, ref)
+						}
+					};
+					toVisit = toVisit.addAll(ref.get);
+					^nil
+				}
+			};
+		};
+		toVisit = toVisit.addAll(current.antecedents);
+
 		^nil
 
 	}

@@ -211,13 +211,13 @@ TestSynthDefOptimise : UnitTest {
 		);
 		this.assert(
 			TestSynthDefOptimise.compare_new_old({ |a = 2, b = 3, c = 4|
-				Sum3(a, b, c) - a + Sum3(a, b, c) - b + Sum3(a, b, c) - c
+				(a + b + c) - a + (a + b + c) - b + (a + b + c) - c
 			}, server, threshold: -120),
 			"Removing values from Sum3 - 2."
 		);
 		this.assert(
 			TestSynthDefOptimise.compare_new_old({ |a = 2, b = 3, c = 4, d = 5|
-				Sum4(a, b, c, d) - a
+				(a + b + c + d) - a
 			}, server, threshold: -120),
 			"Removing values from Sum4 - 1."
 		);
@@ -341,7 +341,7 @@ TestSynthDefOptimise : UnitTest {
 
 
 	test_compare_real_world {
-		var b;
+		var a, b;
 
 		// https://github.com/thormagnusson/sctweets/tree/master
 		this.assert(
@@ -497,30 +497,44 @@ TestSynthDefOptimise : UnitTest {
 			"iakamuri — https://sccode.org/1-5hW"
 		);
 
-/*
+		/*
 		this.assert(
-			TestSynthDefOptimise.compare_new_old({
-				var out = Fb1({ |in, out| (in[0] * 0.05) + (out[1] * 0.95) }, SinOsc.ar, leakDC: false);
-				Out.ar(0, out)
-			}, server, threshold: -70),
-			"Daniel Mayer --- Fb1 OnePole"
+		TestSynthDefOptimise.compare_new_old({
+		Fb1({ |in, out| (in[0] * 0.05) + (out[1] * 0.95) }, SinOsc.ar, leakDC: false);
+		}, server, threshold: -70),
+		"Daniel Mayer --- Fb1 OnePole"
 		);
 
 
 		this.assert(
-			TestSynthDefOptimise.compare_new_old({ |out, freq = 440, detun = 1.01, gate = 1, amp = 0.1,
-				ffreq = 2000, rq = 1,
-				wtPos = 0, squeeze = 0, offset = 0|
-				var numOscs = 15;
-				var sig = MultiWtOsc.ar(freq, wtPos, squeeze, offset, b,
-					numOscs: numOscs, detune: detun);
-				sig = RLPF.ar(sig, ffreq, rq);
-				sig = sig * EnvGen.kr(Env.adsr, gate, doneAction: 2);
-				Out.ar(out, sig.asArray.flat.sum);
-			}, server, threshold: -70),
-			"James Harkin --- ddwWavetable quark"
+		TestSynthDefOptimise.compare_new_old({ |out, freq = 440, detun = 1.01, gate = 1, amp = 0.1,
+		ffreq = 2000, rq = 1,
+		wtPos = 0, squeeze = 0, offset = 0|
+		var numOscs = 15;
+		var sig = MultiWtOsc.ar(freq, wtPos, squeeze, offset, b,
+		numOscs: numOscs, detune: detun);
+		sig = RLPF.ar(sig, ffreq, rq);
+		sig = sig * EnvGen.kr(Env.adsr, gate, doneAction: 2);
+		sig.asArray.flat.sum;
+		}, server, threshold: -70),
+		"James Harkin --- ddwWavetable quark"
 		);
+
+
+		this.assert(
+		TestSynthDefOptimise.compare_new_old({
+		var o = DXEnvFan.ar(
+		Dseq((0..29), inf),
+		size: 30,
+		fadeTime: 0.005
+		) * 0.25;
+		o.asArray.flat.sum
+		}, server, threshold: -70),
+		"Daniel Mayer --- DXEnvFan 1"
+		);
+
 		*/
+
 	}
 
 	test_io {

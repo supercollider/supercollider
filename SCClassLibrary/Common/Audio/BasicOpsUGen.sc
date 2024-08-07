@@ -8,6 +8,8 @@ BasicOpUGen : UGen {
 	canBeReplacedByIdenticalCall { ^true }
 	nameForDisplay { ^(super.name ++ operator).asSymbol }
 
+
+
 	operator_ { arg op;
 		operator = op;
 		specialIndex = operator.specialIndex;
@@ -47,20 +49,6 @@ UnaryOpUGen : BasicOpUGen {
 	}
 
 	optimize {
-		if (inputs[0].source.isKindOf(DC) and: { inputs[0].source.rate == this.rate }) {
-			var result = SynthDefOptimisationResult();
-			this.replaceInputAt(0, inputs[0].source.inputs[0]);
-			result.addUGen(this, 1);
-			^result;
-		};
-
-		if (inputs[0].isKindOf(Number)) {
-			var result = SynthDefOptimisationResult();
-			var answer = inputs[0].perform(this.operator);
-			result.addConstantsDescendants(this.descendants);
-			this.replaceWith(answer);
-			^result;
-		};
 
 		case
 		{ operator == 'neg' } {
@@ -72,18 +60,20 @@ UnaryOpUGen : BasicOpUGen {
 				d.isKindOf(BinaryOpUGen) and: { d.operator == '-' }
 			};
 			if (desc.isEmpty.not){
-				desc.do{ |minus|
+				desc.do { |minus|
 					var other = minus.inputs[0];
 					if (other != this) {
-						var add = BinaryOpUGen.newDuringOptimisation(this.rate, '+', other, inputs[0]);
-						minus.replaceWith(with: add);
-						result.addUGen(add, 2);
+						var new = BinaryOpUGen.newDuringOptimisation(this.rate, '+', inputs[0], other);
+						minus.tryGetReplaceForThis(new, result, 1) !? { |add|
+							minus.replaceWith(add)
+						}
 					}
 				};
 				result.returnNilIfEmpty !? { |r| ^r };
 			};
 
 
+			// a + b.neg => b - a
 			desc = descendants.select { |d|
 				d.isKindOf(BinaryOpUGen) and: { d.operator == '+' }
 			};
@@ -91,10 +81,10 @@ UnaryOpUGen : BasicOpUGen {
 				desc.do{ |add|
 					var other = add.inputs[0];
 					if (other != this) {
-						var minus = BinaryOpUGen.newDuringOptimisation(this.rate, '-', other, inputs[0]);
-						add.replaceWith(with: minus);
-						result.addUGen(minus, 2);
-						add.tryDisconnect;
+						var new = BinaryOpUGen.newDuringOptimisation(this.rate, '-', other, inputs[0]);
+						add.tryGetReplaceForThis(new, result, 1) !? { |minus|
+							add.replaceWith(minus)
+						}
 					}
 				};
 				result.returnNilIfEmpty !? { |r| ^r };
@@ -102,6 +92,7 @@ UnaryOpUGen : BasicOpUGen {
 		};
 		^nil
 	}
+
 }
 
 BinaryOpUGen : BasicOpUGen {
@@ -127,158 +118,170 @@ BinaryOpUGen : BasicOpUGen {
 		inputs = [a, b];
 	}
 
-	optimize {
-		// Rules:
-		//   Match on the type of operator.
-		//   Try to apply an optimisation.
-		//   If it works, return a SynthDefOptimisationResult.
-		//   The SynthDefoptimizer will call this method again, so order inside the case blocks matters.
+	optimizeMul {
+		var result = SynthDefOptimisationResult();
+		var desc;
 
-		// Remove all DC inputs in favour of constants as they can be optimized further.
-		if (inputs.any({ |in| in.source.isKindOf(DC) })) {
-			var result = SynthDefOptimisationResult();
-			inputs.size.do { |i|
-				var in = inputs[i];
-				if (in.source.isKindOf(DC) and: { in.source.rate == this.rate }) {
-					this.replaceInputAt(i, in.inputs[0]);
-					result.addUGen(this, 1);
+		// 1 * a => a
+		if (UGen.numericallyEquivalent(inputs[0], 1)){
+			this.tryGetReplaceForThis(inputs[1], result, 2) !? { |re|
+				this.replaceWith(re);
+				^result
+			}
+		};
+		// a * 1 => a
+		if (UGen.numericallyEquivalent(inputs[1], 1)){
+			this.tryGetReplaceForThis(inputs[0], result, 2) !? { |re|
+				this.replaceWith(re);
+				^result
+			}
+		};
+		// (a * 0) | (0 * a) => 0
+		if (UGen.numericallyEquivalent(inputs[0], 0) or: { UGen.numericallyEquivalent(inputs[1], 0) }){
+			this.tryGetReplaceForThis(0, result, 2) !? { |re|
+				this.replaceWith(re);
+				^result
+			}
+		};
+		// a * -1 => a.neg
+		if (UGen.numericallyEquivalent(inputs[0], -1)){
+			var new = UnaryOpUGen.newDuringOptimisation(this.rate, 'neg', inputs[1]);
+			this.tryGetReplaceForThis(new, result, 1) !? { |re|
+				this.replaceWith(re);
+				^result
+			}
+
+		};
+		// -1 * a => a.neg
+		if (UGen.numericallyEquivalent(inputs[1], -1)){
+			var new = UnaryOpUGen.newDuringOptimisation(this.rate, 'neg', inputs[0]);
+			this.tryGetReplaceForThis(new, result, 1) !? { |re|
+				this.replaceWith(re);
+				^result
+			}
+		};
+		// a * b + c => MulAdd(a, b, c);
+		desc = descendants.select { |d| d.isKindOf(BinaryOpUGen) and: { d.operator == '+' }};
+		if (desc.isEmpty.not){
+			desc.do{ |adder|
+				var addValue = adder.inputs.select({|i| i != this })[0];
+				MulAdd.maybeGetMulAddOrder(inputs[0], inputs[1], addValue) !? { |mulAddOrder|
+					var new = MulAdd.newDuringOptimisation(this.rate, *mulAddOrder);
+					adder.tryGetReplaceForThis(new, result, 2) !? { |re|
+						adder.replaceWith(re);
+					}
 				}
 			};
-			^result;
+			this.tryDisconnect;
+			result.returnNilIfEmpty !? { |r| ^r };
+		};
+		^nil
+	}
+
+	optimizeAdd {
+		var result = SynthDefOptimisationResult();
+		var desc;
+		// 0 + a => a
+		if (UGen.numericallyEquivalent(inputs[0], 0)){
+			this.tryGetReplaceForThis(inputs[1], result, 1) !? { |re|
+				this.replaceWith(re);
+				^result
+			}
+		};
+		// a + 0 => a
+		if (UGen.numericallyEquivalent(inputs[1], 0)){
+			this.tryGetReplaceForThis(inputs[0], result, 1) !? { |re|
+				this.replaceWith(re);
+				^result
+			}
 		};
 
-		if (inputs[0].isKindOf(Number) and: { inputs[1].isKindOf(Number) }) {
-			var result = SynthDefOptimisationResult();
-			var answer = inputs[0].perform(this.operator, inputs[1]);
-			result.addConstantsDescendants(this.descendants);
+		// Get Sum3 descendants and create a Sum4
+		desc = descendants.select { |d| d.isKindOf(Sum3) };
+		if(desc.isEmpty.not){
+			desc.do { |sum3|
+				var otherValues = sum3.inputs.select({|i| i !== this });
+				// sometimes this can be repeated, make sure there are two arguments
+				otherValues = if(otherValues.size == 1) { otherValues[0]!2 } { otherValues };
+				otherValues !? {
+					var sum4 = Sum4.newDuringOptimisation(this.rate, inputs[0], inputs[1], *otherValues);
+					sum3.tryGetReplaceForThis(sum4, result, 2) !? { |re|
+						sum3.replaceWith(re);
+					}
+				}
+			};
+			result.returnNilIfEmpty !? { |r| ^r };
+		};
+		// Get + descendants and create a Sum3
+		desc = descendants.select { |d| d.isKindOf(BinaryOpUGen) and: { d.operator == '+' }};
+		if (desc.isEmpty.not){
+			desc.do{ |childAdder|
+				childAdder.inputs.select({|i| i != this })[0] !? { |otherValue|
+					var sum3 = Sum3.newDuringOptimisation(this.rate, inputs[0], inputs[1], otherValue);
+					childAdder.tryGetReplaceForThis(sum3, result, 2) !? { |re|
+						childAdder.replaceWith(re);
+					}
+				};
+			};
+			result.returnNilIfEmpty !? { |r| ^r };
+		};
 
-			this.replaceWith(answer);
-			^result;
+		^nil
+	}
+
+	optimizeSubtract {
+		var result = SynthDefOptimisationResult();
+		var desc;
+		// 0 - a => a.neg
+		if (UGen.numericallyEquivalent(inputs[0], 0)){
+			var new = UnaryOpUGen.newDuringOptimisation(this.rate, 'neg', inputs[1]);
+			this.tryGetReplaceForThis(new, result, 1) !? { |re|
+				this.replaceWith(re);
+				^result
+			}
+		};
+		// a - 0 => a
+		if (UGen.numericallyEquivalent(inputs[1], 0)){
+			this.tryGetReplaceForThis(inputs[0], result, 1) !? { |re|
+				this.replaceWith(re);
+				^result
+			}
+		};
+		^nil
+	}
+
+	optimize {
+		var i;
+		if (inputs.any { |in, ini| i = ini; in.source.isKindOf(DC) } ) {
+			if (inputs[1 - i].rate == this.rate) {
+				var results;
+				this.replaceInputAt(i, inputs[i].source.inputs[0]);
+				results = SynthDefOptimisationResult();
+				results.addUGen(this, 1);
+				^results;
+			}
+		};
+
+		if (inputs.every({|in| (in.isKindOf(UGen) and: {in.source.isKindOf(DC)} ) or: { in.isKindOf(Number) }})) {
+			var result = SynthDefOptimisationResult();
+			var numbers = inputs.collect{ |in|
+				if (in.isKindOf(UGen) and: {in.source.isKindOf(DC)}) {
+					in.source.inputs[0]
+				} {
+					in
+				}
+			};
+			var answer = numbers[0].perform(this.operator, numbers[1]);
+			this.tryGetReplaceForThis(answer, result, 1) !? { |replacement|
+				this.replaceWith(replacement);
+				^result
+			}
 		};
 
 		case
-		{ operator == '*' } {
-			var result = SynthDefOptimisationResult();
-			var desc;
-
-			// a * 1 => a
-			if (inputs[0] == 1){
-				result.addUGen(inputs[1], 1);
-				this.replaceWith(inputs[1]);
-				^result;
-			};
-			// 1 * a => a
-			if (inputs[1] == 1){
-				result.addUGen(inputs[0], 1);
-				this.replaceWith(inputs[0]);
-				^result;
-			};
-
-			// (a * 0) | (0 * a) => 0
-			if (inputs[0] == 0 or: { inputs[1] == 0 }){
-				result.addConstantsDescendants(this.descendants);
-				this.replaceWith(0);
-				^result;
-			};
-
-			// a * -1 => a.neg
-			if (inputs[0] == -1){
-				var new = UnaryOpUGen.newDuringOptimisation(this.rate, 'neg', inputs[1]);
-				this.replaceWith(new);
-				result.addUGen(new, 1);
-				^result;
-			};
-			// -1 * a => a.neg
-			if (inputs[1] == -1){
-				var new = UnaryOpUGen.newDuringOptimisation(this.rate, 'neg', inputs[0]);
-				this.replaceWith(new);
-				result.addUGen(new, 1);
-				^result;
-			};
-
-			// a + b * c => MulAdd(a, b, c);
-			desc = descendants.select { |d| d.isKindOf(BinaryOpUGen) and: { d.operator == '+' }};
-			if (desc.isEmpty.not){
-				desc.do{ |adder|
-					var addValue = adder.inputs.select({|i| i != this })[0];
-					MulAdd.maybeGetMulAddOrder(inputs[0], inputs[1], addValue) !? { |mulAddOrder|
-						var muladd = MulAdd.newDuringOptimisation(this.rate, *mulAddOrder);
-						adder.replaceWith(with: muladd);
-						result.addUGen(muladd, 2);
-					}
-				};
-				this.tryDisconnect;
-				result.returnNilIfEmpty !? { |r| ^r };
-			}
-		}
-
-		{ operator == '+' } {
-			var result = SynthDefOptimisationResult();
-			var desc;
-
-			// 0 + a => a
-			if (inputs[0] == 0){
-				result.addUGen(inputs[1], 1);
-				this.replaceWith(inputs[1]);
-				^result;
-			};
-
-			// 0 + a => a
-			if (inputs[1] == 0){
-				result.addUGen(inputs[0], 1);
-				this.replaceWith(inputs[0]);
-				^result;
-			};
-
-			// Get Sum3 descendants and create a Sum4
-			desc = descendants.select { |d| d.isKindOf(Sum3) };
-			if(desc.isEmpty.not){
-				desc.do { |sum3|
-					var otherValues = sum3.inputs.select({|i| i !== this });
-					// sometimes this can be repeated, make sure there are two arguments
-					otherValues = if(otherValues.size == 1) { otherValues[0]!2 } { otherValues };
-					otherValues !? {
-						var sum4 = Sum4.newDuringOptimisation(this.rate, inputs[0], inputs[1], *otherValues);
-						sum3.replaceWith(with: sum4);
-						result.addUGen(sum4, 2);
-					}
-				};
-				this.tryDisconnect;
-				result.returnNilIfEmpty !? { |r| ^r };
-			};
-
-			// Get + descendants and create a Sum3
-			desc = descendants.select { |d| d.isKindOf(BinaryOpUGen) and: { d.operator == '+' }};
-			if (desc.isEmpty.not){
-				desc.do{ |childAdder|
-					childAdder.inputs.select({|i| i != this })[0] !? { |otherValue|
-						var sum3 = Sum3.newDuringOptimisation(this.rate, inputs[0], inputs[1], otherValue);
-						childAdder.replaceWith(with: sum3);
-						result.addUGen(sum3, 2);
-					};
-				};
-				this.tryDisconnect;
-				result.returnNilIfEmpty !? { |r| ^r };
-			}
-		}
-
-		{ operator == '-' } {
-			var result = SynthDefOptimisationResult();
-			var desc;
-
-			// 0 - a => a
-			if (inputs[0] == 0){
-				result.addUGen(inputs[1], 1);
-				this.replaceWith(inputs[1]);
-				^result;
-			};
-			// 0 - a => a
-			if (inputs[1] == 0){
-				result.addUGen(inputs[0], 1);
-				this.replaceWith(inputs[0]);
-				^result;
-			}
-		};
+		{ operator == '*' } { this.optimizeMul !? {|r| ^r } }
+		{ operator == '+' } { this.optimizeAdd !? {|r| ^r } }
+		{ operator == '-' } { this.optimizeSubtract !? {|r| ^r } }
 		^nil
 	}
 }
@@ -293,6 +296,7 @@ MulAdd : UGen {
 		var rate = args.rate;
 		^this.multiNewList([rate] ++ args)
 	}
+
 	*new1 { arg rate, in, mul, add;
 		if (this.canBeMulAdd(in, mul, add)) {
 			^super.new1(rate, in, mul, add)
@@ -302,6 +306,7 @@ MulAdd : UGen {
 		};
 		^(in * mul) + add
 	}
+
 	init { arg in, mul, add;
 		inputs = [in, mul, add];
 		rate = inputs.rate;
@@ -312,6 +317,7 @@ MulAdd : UGen {
 		if(MulAdd.canBeMulAdd(mul, in, add)) { ^[mul, in, add] };
 		^nil
 	}
+
 	*canBeMulAdd { arg in, mul, add;
 		// see if these inputs satisfy the constraints of a MulAdd ugen.
 		if (in.rate == \audio) { ^true };
@@ -324,67 +330,62 @@ MulAdd : UGen {
 	}
 
 	optimize {
-		// 0 * a + b => b
-		if (inputs[0] == 0){
+		// (0 * a + b) | (a * 0 + b) => b
+		if (inputs[0] == 0 or: { inputs[1] == 0 }){
 			var result = SynthDefOptimisationResult();
-			this.replaceWith(inputs[2]);
-			result.addUGen(inputs[2], 1);
-			^result;
+			this.tryGetReplaceForThis(inputs[2], result, 2) !? { |re|
+				this.replaceWith(re);
+				^result
+			}
 		};
-		// a * 0 + b => b
-		if (inputs[1] == 0){
-			var result = SynthDefOptimisationResult();
-			this.replaceWith(inputs[2]);
-			result.addUGen(inputs[2], 1);
-			^result;
-		};
-
 
 		// -1 * a + b => b - a
 		if (inputs[0] == -1){
 			var result = SynthDefOptimisationResult();
 			var new = BinaryOpUGen.newDuringOptimisation(this.rate, '-', inputs[2], inputs[1]);
-			this.replaceWith(new);
-			result.addUGen(new, 1);
-			^result;
+			this.tryGetReplaceForThis(new, result, 1) !? { |re|
+				this.replaceWith(re);
+				^result
+			}
 		};
 		// a * -1 + b => b - a
 		if (inputs[1] == -1){
 			var result = SynthDefOptimisationResult();
 			var new = BinaryOpUGen.newDuringOptimisation(this.rate, '-', inputs[2], inputs[0]);
-			this.replaceWith(new);
-			result.addUGen(new, 1);
-			^result;
+			this.tryGetReplaceForThis(new, result, 1) !? { |re|
+				this.replaceWith(re);
+				^result
+			}
 		};
 
 		// 1 * a + b => a + b
 		if (inputs[0] == 1){
 			var result = SynthDefOptimisationResult();
 			var new = BinaryOpUGen.newDuringOptimisation(this.rate, '+', inputs[1], inputs[2]);
-			this.replaceWith(new);
-			result.addUGen(new, 1);
-			^result;
+			this.tryGetReplaceForThis(new, result, 1) !? { |re|
+				this.replaceWith(re);
+				^result
+			}
 		};
 		// a * 1 + b => a + b
 		if (inputs[1] == 1){
 			var result = SynthDefOptimisationResult();
 			var new = BinaryOpUGen.newDuringOptimisation(this.rate, '+', inputs[0], inputs[2]);
-			this.replaceWith(new);
-			result.addUGen(new, 1);
-			^result;
+			this.tryGetReplaceForThis(new, result, 1) !? { |re|
+				this.replaceWith(re);
+				^result
+			}
 		};
-
-
 		// 2 * a + b => b
 		if (inputs[0] == 0){
 			var result = SynthDefOptimisationResult();
 			var new1 = BinaryOpUGen.newDuringOptimisation(this.rate, '+', inputs[1], inputs[1]);
 			var new2 = BinaryOpUGen.newDuringOptimisation(this.rate, '+', new1, inputs[2]);
 
-			result.addUGen(new1, 1);
-			result.addUGen(new2, 1);
-			this.replaceWith(new2);
-			^result;
+			this.tryGetReplaceForThis(new2, result, 1) !? { |re|
+				this.replaceWith(re);
+				^result
+			}
 		};
 		// a * 2 + b => b
 		if (inputs[1] == 0){
@@ -392,19 +393,20 @@ MulAdd : UGen {
 			var new1 = BinaryOpUGen.newDuringOptimisation(this.rate, '+', inputs[0], inputs[0]);
 			var new2 = BinaryOpUGen.newDuringOptimisation(this.rate, '+', new1, inputs[2]);
 
-			result.addUGen(new1, 1);
-			result.addUGen(new2, 1);
-			this.replaceWith(new2);
-			^result;
+			this.tryGetReplaceForThis(new2, result, 1) !? { |re|
+				this.replaceWith(re);
+				^result
+			}
 		};
 
 		// a * b + 0 => a * b
 		if (inputs[2] == 0){
 			var result = SynthDefOptimisationResult();
 			var new = BinaryOpUGen.newDuringOptimisation(this.rate, '*', inputs[0], inputs[1]);
-			this.replaceWith(new);
-			result.addUGen(new, 1);
-			^result;
+			this.tryGetReplaceForThis(new, result, 1) !? { |re|
+				this.replaceWith(re);
+				^result
+			}
 		};
 
 
@@ -439,9 +441,9 @@ Sum3 : UGen {
 				// if Sum3(a, b, c) + Sum3(a, b, c) then the optimisation cannot be applied
 				if (otherValues.isEmpty.not){
 					var sum4 = Sum4.newDuringOptimisation(this.rate, inputs[0], inputs[1], inputs[2], otherValues[0]);
-					add.replaceWith(with: sum4);
-					add.tryDisconnect;
-					result.addUGen(sum4, 1);
+					add.tryGetReplaceForThis(sum4, result, 1) !? { |re|
+						add.replaceWith(re);
+					}
 				}
 			};
 			result.returnNilIfEmpty !? { |r| ^r };
@@ -459,9 +461,9 @@ Sum3 : UGen {
 					var add;
 					inputCopy.remove(otherValues[0]);
 					add = BinaryOpUGen.newDuringOptimisation(this.rate, '+', inputCopy[0], inputCopy[1]);
-					minus.replaceWith(with: add);
-					minus.tryDisconnect;
-					result.addUGen(add, 1);
+					minus.tryGetReplaceForThis(add, result, 1) !? { |re|
+						minus.replaceWith(re)
+					}
 				}
 			};
 			result.returnNilIfEmpty !? { |r| ^r };
@@ -470,10 +472,10 @@ Sum3 : UGen {
 		if (inputs.every(_ === inputs[0])){
 			var result = SynthDefOptimisationResult();
 			var newMul = BinaryOpUGen.newDuringOptimisation(this.rate, '*', inputs[0], 3);
-			this.replaceWith(with: newMul);
-			this.tryDisconnect;
-			result.addUGen(newMul, 1);
-			^result
+			this.tryGetReplaceForThis(newMul, result, 1) !? { |re|
+				this.replaceWith(re);
+				^result
+			}
 		};
 
 		if (inputs.any(_ == 0)){
@@ -481,24 +483,25 @@ Sum3 : UGen {
 			case
 			{ nonZero.size == 0 } {
 				var result = SynthDefOptimisationResult();
-				result.addConstantsDescendants(this.descendants);
-				this.replaceWith(0);
-				^result;
+				this.tryGetReplaceForThis(0, result, 1) !? { |re|
+					this.replaceWith(re);
+					^result
+				}
 			}
 			{ nonZero.size == 1 } {
 				var result = SynthDefOptimisationResult();
-				this.replaceWith(with: nonZero[0]);
-				this.tryDisconnect;
-				result.addUGen(nonZero[0], 1);
-				^result
+				this.tryGetReplaceForThis(nonZero[0], result, 1) !? { |re|
+					this.replaceWith(re);
+					^result
+				}
 			}
 			{ nonZero.size == 2 } {
 				var result = SynthDefOptimisationResult();
 				var new = BinaryOpUGen.newDuringOptimisation(this.rate, '+', nonZero[0], nonZero[1]);
-				this.replaceWith(with: new);
-				this.tryDisconnect;
-				result.addUGen(new, 1);
-				^result
+				this.tryGetReplaceForThis(new, result, 1) !? { |re|
+					this.replaceWith(re);
+					^result
+				}
 			}
 		};
 		^nil;
@@ -537,9 +540,10 @@ Sum4 : UGen {
 					var sum3;
 					inputCopy.remove(otherValues[0]);
 					sum3 = Sum3.newDuringOptimisation(this.rate, inputCopy[0], inputCopy[1], inputCopy[2]);
-					minus.replaceWith(with: sum3);
-					minus.tryDisconnect;
-					result.addUGen(sum3, 1);
+					minus.tryGetReplaceForThis(sum3, result, 1) !? { |re|
+						minus.replaceWith(re);
+						result
+					}
 				}
 			};
 			result.returnNilIfEmpty !? { |r| ^r };
@@ -548,11 +552,11 @@ Sum4 : UGen {
 		// Sum4(a, a, a, a) => a * 4
 		if (inputs.every(_ === inputs[0])){
 			var result = SynthDefOptimisationResult();
-			var newMul = BinaryOpUGen.newDuringOptimisation(this.rate, '*', inputs[0], 4);
-			this.replaceWith(with: newMul);
-			this.tryDisconnect;
-			result.addUGen(newMul, 1);
-			result.returnNilIfEmpty !? { |r| ^r };
+			var new = BinaryOpUGen.newDuringOptimisation(this.rate, '*', inputs[0], 4);
+			this.tryGetReplaceForThis(new, result, 1) !? { |re|
+				this.replaceWith(re);
+				^result
+			}
 		};
 
 		// Sum4(a, 0, 0, 0) => a
@@ -564,32 +568,33 @@ Sum4 : UGen {
 			case
 			{ nonZero.size == 0 } {
 				var result = SynthDefOptimisationResult();
-				result.addConstantsDescendants(this.descendants);
-				this.replaceWith(0);
-				^result;
+				this.tryGetReplaceForThis(0, result, 1) !? { |re|
+					this.replaceWith(re);
+					^result
+				}
 			}
 			{ nonZero.size == 1 } {
 				var result = SynthDefOptimisationResult();
-				this.replaceWith(with: nonZero[0]);
-				this.tryDisconnect;
-				result.addUGen(nonZero[0], 1);
-				^result
+				this.tryGetReplaceForThis(nonZero[0], result, 1) !? { |re|
+					this.replaceWith(re);
+					^result
+				}
 			}
 			{ nonZero.size == 2 } {
 				var result = SynthDefOptimisationResult();
 				var new = BinaryOpUGen.newDuringOptimisation(this.rate, '+', nonZero[0], nonZero[1]);
-				this.replaceWith(with: new);
-				this.tryDisconnect;
-				result.addUGen(new, 1);
-				^result
+				this.tryGetReplaceForThis(new, result, 1) !? { |re|
+					this.replaceWith(re);
+					^result
+				}
 			}
 			{ nonZero.size == 3 } {
 				var result = SynthDefOptimisationResult();
 				var new = Sum3.newDuringOptimisation(this.rate, nonZero[0], nonZero[1], nonZero[2]);
-				this.replaceWith(with: new);
-				this.tryDisconnect;
-				result.addUGen(new, 1);
-				^result
+				this.tryGetReplaceForThis(new, result, 1) !? { |re|
+					this.replaceWith(re);
+					^result
+				}
 			}
 		};
 		^nil;

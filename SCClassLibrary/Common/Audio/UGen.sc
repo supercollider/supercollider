@@ -9,13 +9,9 @@ UGenBuiltInMethods : AbstractFunction {
 	madd { |mul = 1.0, add = 0.0|
 		// Please note this optimisation drastically reduces the number of UGens.
 		^if (mul == 1) {
-			if (add == 0)
-			{ this }
-			{ this + add }
+			if (add == 0) { this } { this + add }
 		} {
-			if (add == 0)
-			{ this * mul }
-			{ this * mul + add }
+			if (add == 0) { this * mul } { this * mul + add }
 		}
 	}
 	unipolar { |mul = 1| ^this.range(0, mul) }
@@ -291,6 +287,31 @@ UGen : UGenBuiltInMethods {
 	var <>antecedents, <>descendants, <>weakAntecedents, <>weakDescendants;
 	var <depth = 0; // How many children are above it in the graph.
 
+	*numericallyEquivalent { |lhs, rhsNumber|
+		if (lhs == rhsNumber) { ^true };
+		if (lhs.source.isKindOf(DC)) { ^lhs.source.inputs[0] == rhsNumber };
+		^false
+	}
+
+	// gathers descendants that match predicate into array,
+	//    when this chain of matching descendants ends, the action is called.
+	depthFirstDescent { |predicate, action, arrayref|
+		var hasCalled = false;
+		arrayref = arrayref ?? {Ref([])};
+		arrayref.set(  arrayref.get.add(this) );
+		descendants.do { |d|
+			if (predicate.(d)) {
+				d.depthFirstDescent(predicate, action, arrayref);
+			} {
+				if (hasCalled.not) {
+					action.(arrayref.get);
+					hasCalled = true;
+				}
+			}
+		};
+		arrayref.get.pop;
+	}
+
 	///////////////// CONSTRUCTORS
 
 	*newDuringOptimisation { |rate ...args|
@@ -401,12 +422,42 @@ UGen : UGenBuiltInMethods {
 		^found
 	}
 
-	replaceWith { |with|
-		var withNoOutputProxy = if (with.isKindOf(OutputProxy)) { with.source } { with };
-		if (this === with) {
-			Error("Cannot call replaceWith on this").throw
+	tryGetReplaceForThis { |other, results, depth|
+		var safe = if (other.isKindOf(OutputProxy)) { other.source } { other };
+		if (this === other or: {this === safe}) { Error("Cannot tryGetReplaceForThis with this").throw };
+
+		case { safe.isKindOf(Number) } {
+			case { this.rate == \control} {
+				results.addConstantsDescendants(this.descendants);
+				safe = DC.newDuringOptimisation(\control, safe);
+				results.addUGen(safe, depth)
+			} { this.rate == \audio } {
+				results.addConstantsDescendants(this.descendants);
+				safe = DC.newDuringOptimisation(\audio, safe);
+				results.addUGen(safe, depth)
+			} {
+				^nil // cannot replace demand rate (or any of the other rates) with a number.
+			}
+		} { safe.rate != this.rate } {
+			// Rate system is a mess, only allow audio and control replacements to be safe.
+			if (safe.rate != \audio or: {safe.rate != \control} or: {this.rate != \audio} or: {this.rate != \control}) {
+				^nil
+			};
+			results.addUGen(other, 0);
+			if ( this.rate == \audio) {
+				safe = K2A.newDuringOptimisation(\audio, safe);
+			} {
+				safe = A2K.newDuringOptimisation(\control, safe);
+			};
+			results.addUGen(safe, depth)
+		} {
+			results.addUGen(other, depth);
 		};
-		descendants.reverse.do { |d|
+		^safe
+	}
+
+	replaceWith { |with|
+		this.descendants.reverse.do { |d|
 			var indexes = [];
 			d.inputs.do { |in, i|
 				in = if(in.isKindOf(OutputProxy)) { in.source } { in };
@@ -415,9 +466,10 @@ UGen : UGenBuiltInMethods {
 				}
 			};
 			indexes.reverseDo { |i|
-				d.replaceInputAt(index: i, with: withNoOutputProxy)
+				d.replaceInputAt(i, with: with)
 			}
 		};
+
 		this.descendants = [];
 		if (with.isKindOf(UGen)){
 			with.weakDescendants = with.weakDescendants.addAll(this.weakDescendants);
@@ -428,21 +480,19 @@ UGen : UGenBuiltInMethods {
 		this.weakDescendants.do{ |w| w.weakAntecedents.remove(this) };
 		this.weakAntecedents.do{ |w| w.weakDescendants.remove(this) };
 		this.inputs.do{ |i|
-			case
-			{ i.isKindOf(OutputProxy)} {
-				i.source.descendants.remove(this);
-			}
-			{ i.isKindOf(UGen) } {
-				i.descendants.remove(this)
+			if (i.source.isKindOf(UGen)) {
+				i.source.descendants.remove(this)
 			}
 		};
+
 		this.inputs = [];
 		this.antecedents = [];
 		this.weakDescendants = [];
 		this.weakAntecedents = [];
+		this.tryDisconnect;
 	}
 
-	// This is unnecessary to call, but offers a small performance improvement during optimisation.
+	// This is unnecessary to call, but offers a small performance improvement during optimization.
 	tryDisconnect {
 		if (descendants.isEmpty and: {this.hasObservableEffect.not}){
 			this.inputs.do {|i| if(i.isKindOf(UGen)){ i.descendants.remove(this) } };
@@ -501,6 +551,9 @@ UGen : UGenBuiltInMethods {
 	numInputs { ^inputs.size }
 	numOutputs { ^1 }
 	source { ^this } // OutputProxy holds another UGen.
+	//asString { this.dumpName }
+	printOn { |p| p << "%_%".format(synthIndex, this.name) }
+
 
 	// This method should only be overriden in OutputProxy.
 	// It is fragile so don't override this as a UGen author.
@@ -514,6 +567,7 @@ UGen : UGenBuiltInMethods {
 		this.descendants = this.descendants.add(ugen);
 		ugen.antecedents = ugen.antecedents.add(this);
 	}
+
 
 	// Replaces an input at index with.
 	replaceInputAt { |index, with|
@@ -547,10 +601,13 @@ UGen : UGenBuiltInMethods {
 		weakAntecedents.sort{ |l, r| if(l.depth != r.depth) { l.depth > r.depth } { l.synthIndex < r.synthIndex } };
 	}
 
-	getAllDescendantsAtLevel { |level| // Level should be greater than 1.
-		case { level <= 0 } { ^[this] }
-		{ level == 1 } { ^this.descendants };
-		^this.descendants.inject(this.descendants, {|arr, d| arr ++ d.getAllDescendantsAtLevel(level - 1) })
+	getAllDescendantsAtLevel { |level, arrayRef| // Level should be greater than 1.
+		var realThis = this.source;
+		if (realThis.descendants.isNil or: {realThis.descendants.isEmpty} or: { level <= 0 }) {
+			arrayRef.set(arrayRef.get.add(realThis));
+		} {
+			realThis.descendants.do({|desc| desc.getAllDescendantsAtLevel(level - 1, arrayRef) })
+		};
 	}
 
 	// Edges cannot be made as we go along because the init method is overridden in some classes to return a class that IS NOT a UGen.
