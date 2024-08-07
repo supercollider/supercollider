@@ -49,6 +49,19 @@ UnaryOpUGen : BasicOpUGen {
 	}
 
 	optimize {
+		if ((inputs[0].isKindOf(UGen) and: {inputs[0].source.isKindOf(DC)} ) or: { inputs[0].isKindOf(Number) }) {
+			var result = SynthDefOptimisationResult();
+			var number =  if (inputs[0].isKindOf(UGen) and: {inputs[0].source.isKindOf(DC)}) {
+				inputs[0].source.inputs[0]
+			} {
+				inputs[0]
+			};
+			var answer = number.perform(this.operator);
+			this.tryGetReplaceForThis(answer, result, 1) !? { |replacement|
+				this.replaceWith(replacement);
+				^result
+			}
+		};
 
 		case
 		{ operator == 'neg' } {
@@ -136,9 +149,25 @@ BinaryOpUGen : BasicOpUGen {
 				^result
 			}
 		};
+		// 2 * a => a + a
+		if (UGen.numericallyEquivalent(inputs[0], 2)){
+			var new = BinaryOpUGen.newDuringOptimisation(this.rate, '+', inputs[1], inputs[1]);
+			this.tryGetReplaceForThis(new, result, 2) !? { |re|
+				this.replaceWith(re);
+				^result
+			}
+		};
+		// a * 2 => a + a
+		if (UGen.numericallyEquivalent(inputs[1], 2)){
+			var new = BinaryOpUGen.newDuringOptimisation(this.rate, '+', inputs[0], inputs[0]);
+			this.tryGetReplaceForThis(new, result, 2) !? { |re|
+				this.replaceWith(re);
+				^result
+			}
+		};
 		// (a * 0) | (0 * a) => 0
 		if (UGen.numericallyEquivalent(inputs[0], 0) or: { UGen.numericallyEquivalent(inputs[1], 0) }){
-			this.tryGetReplaceForThis(0, result, 2) !? { |re|
+			this.tryGetReplaceForThis(0, result, 1) !? { |re|
 				this.replaceWith(re);
 				^result
 			}
@@ -272,9 +301,11 @@ BinaryOpUGen : BasicOpUGen {
 				}
 			};
 			var answer = numbers[0].perform(this.operator, numbers[1]);
-			this.tryGetReplaceForThis(answer, result, 1) !? { |replacement|
-				this.replaceWith(replacement);
-				^result
+			if(answer.isNaN.not){ // let the server deal with it.
+				this.tryGetReplaceForThis(answer, result, 1) !? { |replacement|
+					this.replaceWith(replacement);
+					^result
+				}
 			}
 		};
 

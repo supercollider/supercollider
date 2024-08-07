@@ -14,14 +14,14 @@ TestSynthDefOptimise : UnitTest {
 		server.options.memSize = 8192 * 4;
 		server.options.blockSize = 64;
 		server.options.numWireBufs = 256;
-		this.bootServer(server);
-		server.sync;
+		server.bootSync;
 	}
 
 	tearDown {
 		Buffer.freeAll;
 		server.sync;
-		server.quit.remove;
+		server.quit;
+		server.remove;
 	}
 
 	*compare_create_synth_def { |method, name, f|
