@@ -541,6 +541,8 @@ argument:: maxval
 See link::Reference/plot::
 argument:: separately
 See link::Reference/plot::
+argument:: parent
+See link::Reference/plot::
 
 returns:: a link::Classes/Plotter::
 
