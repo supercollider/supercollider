@@ -1,43 +1,43 @@
 [SuperCollider](https://supercollider.github.io/) [![Build Status](https://github.com/supercollider/supercollider/actions/workflows/actions.yml/badge.svg?branch=develop)](https://github.com/supercollider/supercollider/actions/workflows/actions.yml)
 =========================
 
-**SuperCollider** is a platform for audio synthesis and algorithmic composition, widely used by musicians, artists, and researchers working with sound. It consists of:
+**SuperCollider** is a comprehensive platform for audio synthesis and algorithmic composition, used by musicians, artists, and researchers working with sound. It comprises:
 
-- **scsynth**, a real-time audio server equipped with hundreds of unit generators ("UGens") for audio analysis, synthesis, and processing.
-- **supernova**, an alternative server to scsynth that supports parallel DSP on multi-core processors.
-- **sclang**, an interpreted programming language designed to control the servers.
-- **scide**, an integrated development environment (IDE) for sclang, featuring an integrated help system.
+- **scsynth**, a real-time audio server featuring numerous unit generators ("UGens") for audio analysis, synthesis, and processing.
+- **supernova**, an alternative server to scsynth, designed to support parallel DSP on multi-core processors.
+- **sclang**, an interpreted programming language tailored to control the servers.
+- **scide**, an integrated development environment (IDE) for sclang, which includes a built-in help system.
 
-sclang includes its own package manager, called Quarks, while both scsynth and supernova support third-party plugins through C and C++ APIs.
+sclang also includes a package manager called Quarks, while both scsynth and supernova support third-party plugins via C and C++ APIs.
 
-SuperCollider is developed in C++17 and utilizes several third-party libraries, including Qt and Boost. It is compatible with Windows, macOS, various Linux and BSD distributions, Raspberry Pi, and BeagleBone Black.
+SuperCollider is developed using C++17 and relies on several third-party libraries, including Qt and Boost. It is compatible with Windows, macOS, various Linux and BSD distributions, Raspberry Pi, and BeagleBone Black.
 
 Install
 -------
 
-macOS and Windows builds for stable releases are provided at our [downloads page][downloads page]. See the [macOS README](README_MACOS.md) and [Windows README](README_WINDOWS.md) for instructions on usage, and how to build SC yourself.
+For stable releases, macOS and Windows builds are available on our [downloads page][downloads page]. Please refer to the [macOS README](README_MACOS.md) and [Windows README](README_WINDOWS.md) for installation and build instructions.
 
-To get the latest stable version, Linux users will need to build SuperCollider themselves. See the [Linux README](README_LINUX.md) for instructions.
+Linux users can build SuperCollider from source to obtain the latest stable version. Detailed instructions are provided in the [Linux README](README_LINUX.md).
 
-See the [Raspberry Pi](README_RASPBERRY_PI.md) and [BeagleBone Black](README_BEAGLEBONE_BLACK.md) READMEs for instructions on building on those platforms.
+Instructions for building SuperCollider on Raspberry Pi and BeagleBone Black can be found in the [Raspberry Pi](README_RASPBERRY_PI.md) and [BeagleBone Black](README_BEAGLEBONE_BLACK.md) READMEs, respectively.
 
 [downloads page]: https://supercollider.github.io/downloads
 
-### Platform support
+### Platform Support
 
-SuperCollider is tested with:
-- Windows 10 (32- and 64-bit) and MSVC 2019
-- macOS 12 and Xcode 13.4.1
-- Ubuntu 22.04 and gcc 12
+SuperCollider is tested on:
+- Windows 10 (32- and 64-bit) with MSVC 2019
+- macOS 12 with Xcode 13.4.1
+- Ubuntu 22.04 with gcc 12
 
-SuperCollider is known to support these platforms:
+SuperCollider is known to support the following platforms:
 - Windows Vista, 7, 8, 10, 11
 - macOS 10.14-12.x
 - Ubuntu 18.04-22.04
 
-We also provide a legacy macOS binary for macOS 10.11 and above using Qt 5.9.
+A legacy macOS binary is available for macOS 10.11 and later, using Qt 5.9.
 
-SuperCollider has guaranteed support for:
+Supported platforms with guaranteed compatibility include:
 - Windows 10, 11
 - MSVC 2017, 2019
 - macOS 11, 12
@@ -50,16 +50,14 @@ SuperCollider has guaranteed support for:
 - clang >= 11
 - Qt >= 5.11
 
-For more information on platform support guarantees, see the [project
-Wiki](https://github.com/supercollider/supercollider/wiki/Platform-Support).
+For further details on platform support guarantees, please visit the [project Wiki](https://github.com/supercollider/supercollider/wiki/Platform-Support).
 
 Learn
 -----
 
-The official docs can be viewed in the SuperCollider IDE's built-in documentation browser. You can also view them online at [doc.sccode.org](http://doc.sccode.org/).
+Access the official documentation through the SuperCollider IDE's built-in browser or online at [doc.sccode.org](http://doc.sccode.org/).
 
-We recommend the following resources for learning SC:
-
+Recommended resources for learning SC include:
 - [A Gentle Introduction to SuperCollider](https://works.bepress.com/bruno-ruviaro/3/), a free ebook by Bruno Ruviaro
 - [Eli Fieldsteel's video tutorials](https://www.youtube.com/playlist?list=PLPYzvS8A_rTaNDweXe6PX4CXSGq4iEWYC)
 - [Getting Started with SC](http://doc.sccode.org/Tutorials/Getting-Started/00-Getting-Started-With-SC.html)
@@ -68,11 +66,11 @@ We recommend the following resources for learning SC:
 
 Discuss
 -------
-You can join our forum at [scsynth.org][Discourse] or our [Slack channel][Slack].
+Join our community on [scsynth.org][Discourse] or our [Slack channel][Slack].
 
-You can also view the archives for the old mailing lists at [sc-users][sc-users archives] and [sc-dev][sc-dev archives].
+You can also explore the archives of our old mailing lists at [sc-users][sc-users archives] and [sc-dev][sc-dev archives].
 
-Please read our adopted [code of conduct](CODE_OF_CONDUCT.md), which applies to all the above communities.
+Please review our [code of conduct](CODE_OF_CONDUCT.md) which applies to all community interactions.
 
 [list signup]: http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx
 [sc-users archives]: https://www.listarc.bham.ac.uk/lists/sc-users/
@@ -83,25 +81,25 @@ Please read our adopted [code of conduct](CODE_OF_CONDUCT.md), which applies to 
 Contribute
 ----------
 
-Development of SuperCollider happens here on GitHub, and we are grateful to the community for contributing bugfixes and improvements. Read below to learn how you can take part in improving SuperCollider.
+SuperCollider's development takes place on GitHub, and we value contributions from the community. To get involved, read the following:
 
 ### [Code of Conduct](CODE_OF_CONDUCT.md)
 
-Please read our adopted [code of conduct](CODE_OF_CONDUCT.md) before contributing, so that you can understand what actions will and will not be tolerated.
+Before contributing, please review our [code of conduct](CODE_OF_CONDUCT.md) to understand the expected behavior and community standards.
 
 ### [Contributing Guide](https://github.com/supercollider/supercollider/wiki)
 
-Read our [contributing guide](https://github.com/supercollider/supercollider/wiki) to learn about our development process, how to propose bugfixes and improvements, and how to build and test your changes.
+Our [contributing guide](https://github.com/supercollider/supercollider/wiki) provides details on our development process, how to propose bug fixes and improvements, and how to build and test your changes.
 
 ### Good First Issues
 
-To help you get your feet wet and get you familiar with our contribution process, we have a list of [good first issues](https://github.com/supercollider/supercollider/labels/good%20first%20issue) that contain bugs which have a relatively limited scope. This is a great place to get started. You can also ask on our developer's mailing list, on [Slack][Slack], or on the [forum][Discourse].
+For newcomers, we offer a list of [good first issues](https://github.com/supercollider/supercollider/labels/good%20first%20issue) featuring manageable bugs to help you get started. You can also seek guidance on our developer mailing list, [Slack][Slack], or the [forum][Discourse].
 
 ### Requests for Comment
 
-SuperCollider uses a Requests for Comment (RFC) system to propose, design, and discuss 'big' changes. Submitting a new RFC or discussing an existing one is a great way to get involved, especially if you are looking for a way to contribute that doesn't involve writing code or using a terminal. You can learn more at the [RFC repository](https://github.com/supercollider/rfcs).
+SuperCollider employs a Requests for Comment (RFC) system to propose and discuss significant changes. Engaging with an existing RFC or submitting a new one is a great way to contribute, especially if you prefer not to code. More information is available at the [RFC repository](https://github.com/supercollider/rfcs).
 
 License
 -------
 
-SuperCollider is free software available under Version 3 the GNU General Public License. See [COPYING](COPYING) for details.
+SuperCollider is licensed under Version 3 of the GNU General Public License. For more details, see [COPYING](COPYING).
