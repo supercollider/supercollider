@@ -1,16 +1,16 @@
 [SuperCollider](https://supercollider.github.io/) [![Build Status](https://github.com/supercollider/supercollider/actions/workflows/actions.yml/badge.svg?branch=develop)](https://github.com/supercollider/supercollider/actions/workflows/actions.yml)
 =========================
 
-**SuperCollider** is a platform for audio synthesis and algorithmic composition, used by musicians, artists, and researchers working with sound. It consists of:
+**SuperCollider** is a platform for audio synthesis and algorithmic composition, widely used by musicians, artists, and researchers working with sound. It consists of:
 
-- **scsynth**, a real-time audio server with hundreds of unit generators ("UGens") for audio analysis, synthesis, and processing
-- **supernova**, an alternative server to scsynth with support for parallel DSP on multi-core processors
-- **sclang**, an interpreted programming language that controls the servers
-- **scide**, an editing environment for sclang with an integrated help system
+- **scsynth**, a real-time audio server equipped with hundreds of unit generators ("UGens") for audio analysis, synthesis, and processing.
+- **supernova**, an alternative server to scsynth that supports parallel DSP on multi-core processors.
+- **sclang**, an interpreted programming language designed to control the servers.
+- **scide**, an integrated development environment (IDE) for sclang, featuring an integrated help system.
 
-sclang comes with its own package manager, called Quarks. scsynth and supernova both support third-party plugins via C and C++ APIs.
+sclang includes its own package manager, called Quarks, while both scsynth and supernova support third-party plugins through C and C++ APIs.
 
-SuperCollider is written in C++17 using several third-party libraries, including Qt and Boost. It can be used on Windows, macOS, a variety of Linux and BSD distributions, Raspberry Pi, and BeagleBone Black.
+SuperCollider is developed in C++17 and utilizes several third-party libraries, including Qt and Boost. It is compatible with Windows, macOS, various Linux and BSD distributions, Raspberry Pi, and BeagleBone Black.
 
 Install
 -------
