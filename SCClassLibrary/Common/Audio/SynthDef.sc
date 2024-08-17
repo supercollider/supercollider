@@ -113,17 +113,19 @@ SynthDefOptimizeAndCSE {
 
 		// CSE
 		if (current.canBeReplacedByIdenticalCall){
-			var ar = common[current.nameForDisplay];
+			var n = current.nameForDisplay;
+			var ar = common[n];
 
 			if(ar.isNil) {
-				common[current.nameForDisplay] = Dictionary[current.getIdenticalInputs -> current];
+				common[n] = Dictionary[current.getIdenticalInputs -> current];
 			} {
-				var possibleReplacement = ar[current.getIdenticalInputs];
+				var idIns = current.getIdenticalInputs;
+				var possibleReplacement = ar[idIns];
 				if (possibleReplacement.isNil.not) {
 					if (possibleReplacement != current) {
 						possibleReplacement.replaceWith(current);
 						possibleReplacement.tryDisconnect;
-						ar[current.getIdenticalInputs] = current;
+						ar[idIns] = current;
 
 						toVisit = toVisit.addAll(current.descendants);
 						toVisit = toVisit.addAll(current.weakDescendants);
@@ -131,7 +133,7 @@ SynthDefOptimizeAndCSE {
 						^nil // stop handling the current and go to descendants.
 					}
 				} {
-					ar.put(current.getIdenticalInputs, current);
+					ar.put(idIns, current);
 				}
 			}
 		};
@@ -156,14 +158,14 @@ SynthDefOptimizeAndCSE {
 						}
 					};
 					toVisit = toVisit.addAll(ref.get);
-					^nil
+					^nil // recur on newly added
 				}
 			};
 		};
+
+		// no opts
 		toVisit = toVisit.addAll(current.antecedents);
-
 		^nil
-
 	}
 }
 
