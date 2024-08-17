@@ -108,11 +108,10 @@ TestSynthDefOptimise : UnitTest {
 		cond.wait { counter == 0 };
 
 		r = withResult - withoutResult;
-		r = r.select(_ > threshold.dbamp);
-		r.sort{ |l, r| l > r }; // bigest first;
-
+		r = r.select({ |v| v.abs > threshold.dbamp });
 		if (r.isEmpty) { ^true };
 
+		r.sort{ |l, r| l > r }; // bigest first;
 		r[0..10].debug("ERROR: lastest difference");
 		^false;
 	}
