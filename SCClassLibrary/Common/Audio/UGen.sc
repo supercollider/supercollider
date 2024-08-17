@@ -423,37 +423,40 @@ UGen : UGenBuiltInMethods {
 	}
 
 	tryGetReplaceForThis { |other, results, depth|
-		var safe = if (other.isKindOf(OutputProxy)) { other.source } { other };
-		if (this === other or: {this === safe}) { Error("Cannot tryGetReplaceForThis with this").throw };
-
-		case { safe.isKindOf(Number) } {
+		case
+		{ this === other } {
+			Error("Cannot tryGetReplaceForThis with this").throw
+		}
+		{ other.isKindOf(Number) } {
 			case { this.rate == \control} {
 				results.addConstantsDescendants(this.descendants);
-				safe = DC.newDuringOptimisation(\control, safe);
-				results.addUGen(safe, depth)
+				other = DC.newDuringOptimisation(\control, other);
+				results.addUGen(other, depth)
 			} { this.rate == \audio } {
 				results.addConstantsDescendants(this.descendants);
-				safe = DC.newDuringOptimisation(\audio, safe);
-				results.addUGen(safe, depth)
+				other = DC.newDuringOptimisation(\audio, other);
+				results.addUGen(other, depth)
 			} {
 				^nil // cannot replace demand rate (or any of the other rates) with a number.
 			}
-		} { safe.rate != this.rate } {
+		}
+		{ other.rate != this.rate } {
 			// Rate system is a mess, only allow audio and control replacements to be safe.
-			if (safe.rate != \audio or: {safe.rate != \control} or: {this.rate != \audio} or: {this.rate != \control}) {
+			if (other.rate != \audio or: {other.rate != \control} or: {this.rate != \audio} or: {this.rate != \control}) {
 				^nil
 			};
 			results.addUGen(other, 0);
 			if ( this.rate == \audio) {
-				safe = K2A.newDuringOptimisation(\audio, safe);
+				other = K2A.newDuringOptimisation(\audio, other);
 			} {
-				safe = A2K.newDuringOptimisation(\control, safe);
+				other = A2K.newDuringOptimisation(\control, other);
 			};
-			results.addUGen(safe, depth)
+			results.addUGen(other, depth)
 		} {
 			results.addUGen(other, depth);
 		};
-		^safe
+
+		^other
 	}
 
 	replaceWith { |with|
