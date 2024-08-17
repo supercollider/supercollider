@@ -338,6 +338,35 @@ TestSynthDefOptimise : UnitTest {
 		);
 	}
 
+	test_outputproxies {
+		this.assert(
+			TestSynthDefOptimise.compare_new_old({
+				(\inputs.ar([2, 3, 4, 5, 6]) * 1).sum;
+			}, server, threshold: -180),
+			"Replacing output proxies --- 1 "
+		);
+		this.assert(
+			TestSynthDefOptimise.compare_new_old({
+				var ins = \inputs.ar([2, 3, 4, 5, 6]);
+				(ins * 2 + 0).sum
+			}, server, threshold: -180),
+			"Replacing output proxies --- 2 "
+		);
+		this.assert(
+			TestSynthDefOptimise.compare_new_old({
+				var ins = \inputs.ar([2, 3, 4, 5, 6]);
+				(ins * 0 + 1).sum
+			}, server, threshold: -180),
+			"Replacing output proxies --- 3 "
+		);
+		this.assert(
+			TestSynthDefOptimise.compare_new_old({
+				Env.adsr(\atk.kr(0.0001), \dec.kr(0.001), \sus.kr(0.0014), \rel.kr(0.0005)).ar.asArray.flat.sum;
+			}, server, threshold: -180),
+			"Replacing output proxies in Env."
+		);
+	}
+
 
 
 	test_compare_real_world {
