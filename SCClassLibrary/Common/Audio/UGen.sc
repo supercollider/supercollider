@@ -288,9 +288,8 @@ UGen : UGenBuiltInMethods {
 	var <depth = 0; // How many children are above it in the graph.
 
 	*numericallyEquivalent { |lhs, rhsNumber|
-		if (lhs == rhsNumber) { ^true };
 		if (lhs.source.isKindOf(DC)) { ^lhs.source.inputs[0] == rhsNumber };
-		^false
+		^lhs == rhsNumber
 	}
 
 	// gathers descendants that match predicate into array,
@@ -550,7 +549,20 @@ UGen : UGenBuiltInMethods {
 	name { ^this.class.name.asString }
 	nameForDisplay { ^this.name.asSymbol }
 	dumpName { ^"%_%".format(synthIndex, this.name) }
-	getIdenticalInputs { ^[rate, inputs, weakAntecedents, weakDescendants] }
+	getIdenticalInputs {
+		//^NestedArrayWithIdenticalContent[
+		//	rate,
+		//	NestedArrayWithIdenticalContent.newFrom(inputs),
+		//	NestedArrayWithIdenticalContent.newFrom(weakAntecedents),
+		//	//weakDescendants // Should not be needed, if weakAntecedents are the same, then weakDescendants are too.
+		//]
+		^[
+			rate,
+			inputs,
+			weakAntecedents,
+			//weakDescendants // Should not be needed, if weakAntecedents are the same, then weakDescendants are too.
+		]
+	}
 	numInputs { ^inputs.size }
 	numOutputs { ^1 }
 	source { ^this } // OutputProxy holds another UGen.

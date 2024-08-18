@@ -95,50 +95,46 @@ SynthDefOptimizeAndCSE {
 	var toVisit;
 	var common;
 
-	*new { |inRoots| ^super.newCopyArgs(inRoots.copy, inRoots.copy, IdentityDictionary()).prMain }
+	*new { |inRoots| ^super.newCopyArgs(inRoots.copy, inRoots.copy, IdentityDictionary(512)).prMain }
 
 	prMain {
 		while {toVisit.isEmpty.not} {
-			//UGen.buildSynthDef.dumpUGens;
 			this.prOpt
 		};
 		^roots
 	}
 
-	prOpt {
-		var current;
-		toVisit.removeIdenticalDuplicates;
-
-		current = toVisit.pop.source;
-
-		// CSE
+	prCSE { |current|
 		if (current.canBeReplacedByIdenticalCall){
 			var n = current.nameForDisplay;
 			var ar = common[n];
 
 			if(ar.isNil) {
-				common[n] = Dictionary[current.getIdenticalInputs -> current];
+				common[n] = Dictionary(32);
+				common[n][current.getIdenticalInputs] = current;
 			} {
 				var idIns = current.getIdenticalInputs;
-				var possibleReplacement = ar[idIns];
+				var possibleReplacement = ar.at(idIns);
 				if (possibleReplacement.isNil.not) {
 					if (possibleReplacement != current) {
 						possibleReplacement.replaceWith(current);
 						possibleReplacement.tryDisconnect;
-						ar[idIns] = current;
+
+						ar.put(idIns, current);
 
 						toVisit = toVisit.addAll(current.descendants);
 						toVisit = toVisit.addAll(current.weakDescendants);
 
-						^nil // stop handling the current and go to descendants.
+						^true // stop handling the current and go to descendants.
 					}
 				} {
 					ar.put(idIns, current);
 				}
 			}
 		};
-
-		// Rewrites
+		^false
+	}
+	prRewrite { |current|
 		if (current.hasObservableEffect or: { current.descendants.isEmpty.not }) {
 			current.optimize !? { |res|
 
@@ -158,10 +154,21 @@ SynthDefOptimizeAndCSE {
 						}
 					};
 					toVisit = toVisit.addAll(ref.get);
-					^nil // recur on newly added
+					^true // recur on newly added
 				}
 			};
 		};
+		^false
+	}
+	prOpt {
+		var current;
+		toVisit.removeIdenticalDuplicates;
+
+		current = toVisit.pop.source;
+
+		// CSE
+		if (this.prCSE(current)) { ^nil };
+		if (this.prRewrite(current)) { ^nil };
 
 		// no opts
 		toVisit = toVisit.addAll(current.antecedents);

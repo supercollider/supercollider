@@ -362,7 +362,7 @@ MulAdd : UGen {
 
 	optimize {
 		// (0 * a + b) | (a * 0 + b) => b
-		if (inputs[0] == 0 or: { inputs[1] == 0 }){
+		if (UGen.numericallyEquivalent(inputs[0], 0) or: { UGen.numericallyEquivalent(inputs[1], 0) }){
 			var result = SynthDefOptimisationResult();
 			this.tryGetReplaceForThis(inputs[2], result, 2) !? { |re|
 				this.replaceWith(re);
@@ -371,7 +371,7 @@ MulAdd : UGen {
 		};
 
 		// -1 * a + b => b - a
-		if (inputs[0] == -1){
+		if (UGen.numericallyEquivalent(inputs[0], -1)){
 			var result = SynthDefOptimisationResult();
 			var new = BinaryOpUGen.newDuringOptimisation(this.rate, '-', inputs[2], inputs[1]);
 			this.tryGetReplaceForThis(new, result, 1) !? { |re|
@@ -380,7 +380,7 @@ MulAdd : UGen {
 			}
 		};
 		// a * -1 + b => b - a
-		if (inputs[1] == -1){
+		if (UGen.numericallyEquivalent(inputs[1], -1)){
 			var result = SynthDefOptimisationResult();
 			var new = BinaryOpUGen.newDuringOptimisation(this.rate, '-', inputs[2], inputs[0]);
 			this.tryGetReplaceForThis(new, result, 1) !? { |re|
@@ -390,7 +390,7 @@ MulAdd : UGen {
 		};
 
 		// 1 * a + b => a + b
-		if (inputs[0] == 1){
+		if (UGen.numericallyEquivalent(inputs[0], 1)){
 			var result = SynthDefOptimisationResult();
 			var new = BinaryOpUGen.newDuringOptimisation(this.rate, '+', inputs[1], inputs[2]);
 			this.tryGetReplaceForThis(new, result, 1) !? { |re|
@@ -399,7 +399,7 @@ MulAdd : UGen {
 			}
 		};
 		// a * 1 + b => a + b
-		if (inputs[1] == 1){
+		if (UGen.numericallyEquivalent(inputs[1], -1)){
 			var result = SynthDefOptimisationResult();
 			var new = BinaryOpUGen.newDuringOptimisation(this.rate, '+', inputs[0], inputs[2]);
 			this.tryGetReplaceForThis(new, result, 1) !? { |re|
@@ -408,7 +408,7 @@ MulAdd : UGen {
 			}
 		};
 		// 2 * a + b => b
-		if (inputs[0] == 0){
+		if (UGen.numericallyEquivalent(inputs[0], 2)){
 			var result = SynthDefOptimisationResult();
 			var new1 = BinaryOpUGen.newDuringOptimisation(this.rate, '+', inputs[1], inputs[1]);
 			var new2 = BinaryOpUGen.newDuringOptimisation(this.rate, '+', new1, inputs[2]);
@@ -419,7 +419,7 @@ MulAdd : UGen {
 			}
 		};
 		// a * 2 + b => b
-		if (inputs[1] == 0){
+		if (UGen.numericallyEquivalent(inputs[1], 2)){
 			var result = SynthDefOptimisationResult();
 			var new1 = BinaryOpUGen.newDuringOptimisation(this.rate, '+', inputs[0], inputs[0]);
 			var new2 = BinaryOpUGen.newDuringOptimisation(this.rate, '+', new1, inputs[2]);
@@ -431,7 +431,7 @@ MulAdd : UGen {
 		};
 
 		// a * b + 0 => a * b
-		if (inputs[2] == 0){
+		if (UGen.numericallyEquivalent(inputs[2], 0)){
 			var result = SynthDefOptimisationResult();
 			var new = BinaryOpUGen.newDuringOptimisation(this.rate, '*', inputs[0], inputs[1]);
 			this.tryGetReplaceForThis(new, result, 1) !? { |re|
