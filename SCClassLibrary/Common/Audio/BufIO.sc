@@ -97,10 +97,10 @@ BufWr : UGen {
 
 	optimize {
 		var result = SynthDefOptimisationResult();
-
-		this.coerceInputFromScalarToDC(1, result); // phase
-		(inputs.size - 2).do { |i| this.coerceInputFromScalarToDC(3 + i, result) }; // audio array
-
+		if (this.rate == \audio){
+			this.coerceInputFromScalarToDC(1, result); // phase
+			(inputs.size - 2).do { |i| this.coerceInputFromScalarToDC(3 + i, result) }; // audio array
+		};
 		^result.returnNilIfEmpty;
 	}
 
@@ -148,8 +148,10 @@ RecordBuf : UGen {
 	optimize {
 		var result = SynthDefOptimisationResult();
 		// For each inputs, turn it into a DC if it is a number
-		(inputs.size - 7).do { |i|
-			this.coerceInputFromScalarToDC(8 + i, result)
+		if (this.rate == \audio){
+			(inputs.size - 7).do { |i|
+				this.coerceInputFromScalarToDC(8 + i, result)
+			};
 		};
 		^result.returnNilIfEmpty;
 	}
