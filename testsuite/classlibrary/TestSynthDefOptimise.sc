@@ -381,6 +381,17 @@ TestSynthDefOptimise : UnitTest {
 			}, server, threshold: -180),
 			"Replacing output proxies in Env."
 		);
+		this.assert(
+			TestSynthDefOptimise.compare_new_old({
+				var r = ReplaceOut.ar(0, WhiteNoise.ar);
+				var sig0 = In.ar(0);
+				var sig1 = In.ar(0);
+				Out.ar(0, sig0);
+				Out.ar(0, sig1);
+				In.ar(0);
+			}, server, threshold: -120),
+			"Joining Inputs and preserving IO ordering."
+		);
 	}
 
 
