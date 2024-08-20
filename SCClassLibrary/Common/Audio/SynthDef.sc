@@ -21,8 +21,8 @@ SynthDefTopologicalSort {
 		if (u.isKindOf(UGen) and: { visited.includes(u).not }){
 			visited.add(u);
 			u.sortAntecedents;
-			u.antecedents.do( SynthDefTopologicalSort.prVisit(_) );
 			u.weakAntecedents.do( SynthDefTopologicalSort.prVisit(_) );
+			u.antecedents.do( SynthDefTopologicalSort.prVisit(_) );
 
 			// This case is a little bit of a hack,
 			//    because removing weakAntecedents that don't have descendants is costly if done elsewhere.
