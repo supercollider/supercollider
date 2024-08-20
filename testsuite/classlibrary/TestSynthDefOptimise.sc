@@ -234,6 +234,23 @@ TestSynthDefOptimise : UnitTest {
 		);
 	}
 
+	test_demand {
+		this.assert(
+			TestSynthDefOptimise.compare_new_old({
+				var d = Dseries(0, 1, inf);
+				Demand.ar(Impulse.ar(10000), 0, d) + Demand.ar(Impulse.ar(10000), 0, d)
+			}, server, threshold: -120),
+			"Demand 1"
+		);
+		this.assert(
+			TestSynthDefOptimise.compare_new_old({
+				var d = Dseries(0, 1, inf);
+				var i = Impulse.ar(10000);
+				Demand.ar(i, 0, d) + Demand.ar(i, 0, d)
+			}, server, threshold: -120),
+			"Demand 2 "
+		);
+	}
 
 
 	test_pv {

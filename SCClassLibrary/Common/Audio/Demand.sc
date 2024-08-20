@@ -1,7 +1,7 @@
 Demand : MultiOutUGen {
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
-	canBeReplacedByIdenticalCall { ^true }
+	canBeReplacedByIdenticalCall { ^false }
 
 	*ar { arg trig, reset, demandUGens;
 		^this.multiNewList(['audio', trig, reset] ++ demandUGens.asArray)
@@ -19,7 +19,7 @@ Demand : MultiOutUGen {
 Duty : UGen {
 	resourceManagers { ^if(this.hasObservableEffect) { [UGenDoneResourceManager] } { [] } }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(2) }
-	canBeReplacedByIdenticalCall { ^true }
+	canBeReplacedByIdenticalCall { ^false }
 
 	*ar { arg dur = 1.0, reset = 0.0, level = 1.0, doneAction = 0;
 		^this.multiNew('audio', dur, reset, doneAction, level)
