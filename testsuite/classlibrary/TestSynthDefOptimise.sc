@@ -383,7 +383,7 @@ TestSynthDefOptimise : UnitTest {
 		);
 		this.assert(
 			TestSynthDefOptimise.compare_new_old({
-				var r = ReplaceOut.ar(0, WhiteNoise.ar);
+				var r = ReplaceOut.ar(0, SinOsc.ar(12000));
 				var sig0 = In.ar(0);
 				var sig1 = In.ar(0);
 				Out.ar(0, sig0);
