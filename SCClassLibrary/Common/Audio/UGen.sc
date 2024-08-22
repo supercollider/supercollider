@@ -321,6 +321,7 @@ UGen : UGenBuiltInMethods {
 
 	*multiNewDuringOptimisation { |...args|
 		var ret = this.perform(\multiNew, *args);
+		UGen.prInitEdgesRecursive(ret.source);
 		UGen.prInitEdgesRecursive(ret);
 		^ret;
 	}
@@ -413,7 +414,7 @@ UGen : UGenBuiltInMethods {
 		rate = rate ?? { this.rate };
 		case
 		{in.isKindOf(Number)} {
-			var dc = DC.newDuringOptimisation(rate, in);
+			var dc = DC.multiNewDuringOptimisation(rate, in);
 			this.replaceInputAt(inputIndex, dc);
 			results.addUGen(this, 0);
 			found = true;
@@ -423,29 +424,32 @@ UGen : UGenBuiltInMethods {
 
 	tryGetReplaceForThis { |other, results, depth|
 		case
-		{ this === other } {
+		{ this.source === other.source } {
 			Error("Cannot tryGetReplaceForThis with this").throw
 		}
 		{ other.isKindOf(Number) } {
-			case { this.rate == \control} {
+			case
+			{ other.isNaN } { ^nil } // do nothing, let server deal with this
+
+			{ this.rate == \control} {
 				results.addConstantsDescendants(this.descendants);
-				other = DC.newDuringOptimisation(\control, other);
+				other = DC.multiNewDuringOptimisation(\control, other);
 				results.addUGen(other, depth)
 			} { this.rate == \audio } {
 				results.addConstantsDescendants(this.descendants);
-				other = DC.newDuringOptimisation(\audio, other);
+				other = DC.multiNewDuringOptimisation(\audio, other);
 				results.addUGen(other, depth)
 			} {
 				^nil // cannot replace demand rate (or any of the other rates) with a number.
 			}
 		}
 		{ other.rate != this.rate } {
-			// Rate system is a mess, only allow audio and control replacements to be safe.
+			// Rate system is complex, only allow audio and control replacements to be safe.
 			if (other.rate != \audio or: {other.rate != \control} or: {this.rate != \audio} or: {this.rate != \control}) {
 				^nil
 			};
-			results.addUGen(other, 0);
-			if ( this.rate == \audio) {
+			results.addUGen(other, 1);
+			if (this.rate == \audio) {
 				other = K2A.newDuringOptimisation(\audio, other);
 			} {
 				other = A2K.newDuringOptimisation(\control, other);
@@ -462,16 +466,16 @@ UGen : UGenBuiltInMethods {
 		this.descendants.reverse.do { |d|
 			var indexes = [];
 			d.inputs.do { |in, i|
-				in = if(in.isKindOf(OutputProxy)) { in.source } { in };
-				if (in === this) {
-					indexes = indexes.add(i);
-				}
+				if (in.source === this) { indexes = indexes.add(i) }
 			};
-			indexes.reverseDo { |i|
-				d.replaceInputAt(i, with: with)
-			}
+			indexes.reverseDo { |i| d.replaceInputAt(i, with: with) }
 		};
+		this.prCleanUpAfterReplaceWith(with);
 
+	}
+
+	// Protected, used in MultiOutUGen
+	prCleanUpAfterReplaceWith { |with|
 		this.descendants = [];
 		if (with.isKindOf(UGen)){
 			with.weakDescendants = with.weakDescendants.addAll(this.weakDescendants);
@@ -550,18 +554,7 @@ UGen : UGenBuiltInMethods {
 	nameForDisplay { ^this.name.asSymbol }
 	dumpName { ^"%_%".format(synthIndex, this.name) }
 	getIdenticalInputs {
-		//^NestedArrayWithIdenticalContent[
-		//	rate,
-		//	NestedArrayWithIdenticalContent.newFrom(inputs),
-		//	NestedArrayWithIdenticalContent.newFrom(weakAntecedents),
-		//	//weakDescendants // Should not be needed, if weakAntecedents are the same, then weakDescendants are too.
-		//]
-		^[
-			rate,
-			inputs,
-			weakAntecedents,
-			//weakDescendants // Should not be needed, if weakAntecedents are the same, then weakDescendants are too.
-		]
+		^[rate, inputs, weakAntecedents]
 	}
 	numInputs { ^inputs.size }
 	numOutputs { ^1 }
@@ -579,22 +572,20 @@ UGen : UGenBuiltInMethods {
 
 	// `a.createConnectionTo(ugen: b)` creates the edge a -> b
 	createConnectionTo {|ugen|
-		this.descendants = this.descendants.add(ugen);
-		ugen.antecedents = ugen.antecedents.add(this);
+		if (ugen.source != this) { // No connections from multiout to outputproxy
+			this.descendants = this.descendants.add(ugen);
+			ugen.antecedents = ugen.antecedents.add(this);
+		}
 	}
 
 
 	// Replaces an input at index with.
 	replaceInputAt { |index, with|
 		var old = inputs[index];
-		if (old.isKindOf(UGen)) {
-			old.descendants.remove(this)
-		};
+		if (old.isKindOf(UGen)) { old.descendants.remove(this) };
 		this.antecedents.remove(old.source);
 		inputs[index] = with;
-		if(with.isKindOf(UGen)) {
-			with.source.createConnectionTo(this)
-		};
+		if(with.isKindOf(UGen)) { with.source.createConnectionTo(this) };
 	}
 
 	// Creates a weak edge between two ugens. Weak edges are used to indicate IO and other resource orderings.
@@ -637,7 +628,9 @@ UGen : UGenBuiltInMethods {
 		inputs.do{ |input|
 			if (input.isKindOf(UGen)) {
 				antecedents = antecedents.add(input.source);
-				input.source.descendants = input.source.descendants.add(this);
+				if (input != this.source) { // No connections from multiout to outputproxy
+					input.source.descendants = input.source.descendants.add(this);
+				};
 				depth = max(depth, input.depth + 1);
 			}
 		};
@@ -773,6 +766,29 @@ MultiOutUGen : UGen {
 		synthIndex = index;
 		channels.do{ |output| output.synthIndex_(index) };
 	}
+
+	replaceWith { |with|
+		if (with.isKindOf(MultiOutUGen).not){
+			Error("can only replace multi outs with mulitouts").throw
+		};
+		if (with.channels.size != this.channels.size){
+			Error("multiouts must be the same size").throw
+		};
+
+		this.descendants.reverse.do { |d|
+			var indexes = [];
+			d.inputs.do { |in, i|
+				if (in.isKindOf(OutputProxy) and: { in.source === this }) {
+					indexes = indexes.add([i, in.outputIndex])
+				}
+			};
+			indexes.reverseDo { |i|
+				d.replaceInputAt(i[0], with: with.channels[i[1]])
+			}
+		};
+		this.prCleanUpAfterReplaceWith(with);
+
+	}
 }
 
 // Don't use, instead specify these manual.
@@ -788,6 +804,7 @@ OutputProxy : UGen {
 	*new { |rate, itsSourceUGen, index| ^super.new1(rate, itsSourceUGen, index) }
 
 	addToSynth { synthDef = buildSynthDef }
+	printOn { |p| p << "%_%[%]".format(synthIndex, source.name, outputIndex) }
 
 	init { arg argSource, argIndex;
 		super.init(argSource, argIndex);
@@ -817,5 +834,10 @@ OutputProxy : UGen {
 		this.controlName !? { this.controlName.spec = spec } ?? {
 			Error("Cannot set spec on a non-Control").throw
 		}
+	}
+
+	initEdges {
+		source.initEdges;
+		super.initEdges;
 	}
 }
