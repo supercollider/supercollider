@@ -334,7 +334,7 @@ BinaryOpUGen : BasicOpUGen {
 		};
 
 		// If scalar or DC, actually do the maths.
-		if (inputs.every({|in| (in.isKindOf(UGen) and: {in.source.isKindOf(DC)} ) or: { in.isKindOf(Number) }})) {
+		if (inputs.every({|in| (in.isKindOf(UGen) and: {in.source.isKindOf(DC) and: {in.source.inputs[0].isKindOf(Number) }} ) or: { in.isKindOf(Number) }})) {
 			var result = SynthDefOptimisationResult();
 			var numbers = inputs.collect{ |in|
 				if (in.isKindOf(UGen) and: {in.source.isKindOf(DC)}) {
