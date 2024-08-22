@@ -207,6 +207,48 @@ BinaryOpUGen : BasicOpUGen {
 		^nil
 	}
 
+	optimizeDiv {
+		var result = SynthDefOptimisationResult();
+		var desc;
+
+		// 1 / a => a.reciprocal
+		if (UGen.numericallyEquivalent(inputs[0], 1)){
+			var new = UnaryOpUGen.newDuringOptimisation(this.rate, 'reciprocal', inputs[1]);
+			this.tryGetReplaceForThis(new, result, 2) !? { |re|
+				this.replaceWith(re);
+				^result
+			}
+		};
+		// a / 1 => a
+		if (UGen.numericallyEquivalent(inputs[1], 1)){
+			this.tryGetReplaceForThis(inputs[0], result, 2) !? { |re|
+				this.replaceWith(re);
+				^result
+			}
+		};
+
+		// a / 2 => a * 0.5  // More optimisations are possible with mul
+		if (UGen.numericallyEquivalent(inputs[1], 2)){
+			var new = BinaryOpUGen.newDuringOptimisation(this.rate, '*', inputs[0], 0.5);
+			this.tryGetReplaceForThis(new, result, 2) !? { |re|
+				this.replaceWith(re);
+				^result
+			}
+		};
+
+		// a / -1 => a.neg
+		if (UGen.numericallyEquivalent(inputs[0], -1)){
+			var new = UnaryOpUGen.newDuringOptimisation(this.rate, 'neg', inputs[1]);
+			this.tryGetReplaceForThis(new, result, 1) !? { |re|
+				this.replaceWith(re);
+				^result
+			}
+
+		};
+
+		^nil
+	}
+
 	optimizeAdd {
 		var result = SynthDefOptimisationResult();
 		var desc;
@@ -280,17 +322,18 @@ BinaryOpUGen : BasicOpUGen {
 	}
 
 	optimize {
+		// Turn DC into constants
 		var i;
 		if (inputs.any { |in, ini| i = ini; in.source.isKindOf(DC) } ) {
 			if (inputs[1 - i].rate == this.rate) {
-				var results;
+				var results = SynthDefOptimisationResult();
 				this.replaceInputAt(i, inputs[i].source.inputs[0]);
-				results = SynthDefOptimisationResult();
 				results.addUGen(this, 1);
 				^results;
 			}
 		};
 
+		// If scalar or DC, actually do the maths.
 		if (inputs.every({|in| (in.isKindOf(UGen) and: {in.source.isKindOf(DC)} ) or: { in.isKindOf(Number) }})) {
 			var result = SynthDefOptimisationResult();
 			var numbers = inputs.collect{ |in|
@@ -313,6 +356,7 @@ BinaryOpUGen : BasicOpUGen {
 		{ operator == '*' } { this.optimizeMul !? {|r| ^r } }
 		{ operator == '+' } { this.optimizeAdd !? {|r| ^r } }
 		{ operator == '-' } { this.optimizeSubtract !? {|r| ^r } }
+		{ operator == '/' } { this.optimizeDiv !? {|r| ^r } }
 		^nil
 	}
 }
@@ -361,6 +405,24 @@ MulAdd : UGen {
 	}
 
 	optimize {
+
+		// If scalar or DC, actually do the maths.
+		if (inputs.every({|in| (in.isKindOf(UGen) and: {in.source.isKindOf(DC)} ) or: { in.isKindOf(Number) }})) {
+			var result = SynthDefOptimisationResult();
+			var numbers = inputs.collect{ |in|
+				if (in.isKindOf(UGen) and: {in.source.isKindOf(DC)}) {
+					in.source.inputs[0]
+				} {
+					in
+				}
+			};
+			var answer = numbers[0] * numbers[1] + numbers[2];
+			this.tryGetReplaceForThis(answer, result, 1) !? { |replacement|
+				this.replaceWith(replacement);
+				^result
+			}
+		};
+
 		// (0 * a + b) | (a * 0 + b) => b
 		if (UGen.numericallyEquivalent(inputs[0], 0) or: { UGen.numericallyEquivalent(inputs[1], 0) }){
 			var result = SynthDefOptimisationResult();
@@ -463,6 +525,23 @@ Sum3 : UGen {
 	optimize {
 		var desc;
 
+		// If scalar or DC, actually do the maths.
+		if (inputs.every({|in| (in.isKindOf(UGen) and: {in.source.isKindOf(DC)} ) or: { in.isKindOf(Number) }})) {
+			var result = SynthDefOptimisationResult();
+			var numbers = inputs.collect{ |in|
+				if (in.isKindOf(UGen) and: {in.source.isKindOf(DC)}) {
+					in.source.inputs[0]
+				} {
+					in
+				}
+			};
+			var answer = numbers[0] + numbers[1] + numbers[2];
+			this.tryGetReplaceForThis(answer, result, 1) !? { |replacement|
+				this.replaceWith(replacement);
+				^result
+			}
+		};
+
 		// Sum3(a, b, c) + d => Sum4(a, b, c, d)
 		desc = descendants.select { |d| d.isKindOf(BinaryOpUGen) and: { d.operator == '+' } };
 		if(desc.isEmpty.not){
@@ -558,6 +637,23 @@ Sum4 : UGen {
 
 	optimize {
 		var desc;
+
+		// If scalar or DC, actually do the maths.
+		if (inputs.every({|in| (in.isKindOf(UGen) and: {in.source.isKindOf(DC)} ) or: { in.isKindOf(Number) }})) {
+			var result = SynthDefOptimisationResult();
+			var numbers = inputs.collect{ |in|
+				if (in.isKindOf(UGen) and: {in.source.isKindOf(DC)}) {
+					in.source.inputs[0]
+				} {
+					in
+				}
+			};
+			var answer = numbers[0] + numbers[1] + numbers[2] + numbers[3];
+			this.tryGetReplaceForThis(answer, result, 1) !? { |replacement|
+				this.replaceWith(replacement);
+				^result
+			}
+		};
 
 		// Sum4(a, b, c, d) - a => Sum3(b, c, d)
 		desc = descendants.select { |d| d.isKindOf(BinaryOpUGen) and: { d.operator == '-' } };
