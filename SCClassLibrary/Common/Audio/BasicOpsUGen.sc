@@ -193,7 +193,7 @@ BinaryOpUGen : BasicOpUGen {
 		desc = descendants.select { |d| d.isKindOf(BinaryOpUGen) and: { d.operator == '+' }};
 		if (desc.isEmpty.not){
 			desc.do{ |adder|
-				var addValue = adder.inputs.select({|i| i != this })[0];
+				var addValue = adder.inputs.select({|i| i !== this })[0];
 				MulAdd.maybeGetMulAddOrder(inputs[0], inputs[1], addValue) !? { |mulAddOrder|
 					var new = MulAdd.newDuringOptimisation(this.rate, *mulAddOrder);
 					adder.tryGetReplaceForThis(new, result, 2) !? { |re|
@@ -204,6 +204,62 @@ BinaryOpUGen : BasicOpUGen {
 			this.tryDisconnect;
 			result.returnNilIfEmpty !? { |r| ^r };
 		};
+
+
+		// Sum3(a * b, c, d) => MulAdd(a, b, c) + d;
+		desc = descendants.select( _.isKindOf(Sum3) );
+		if (desc.size > 1){
+			var bag = IdentityBag();
+			desc.do { |sum3|
+				// add both 'c' and 'd' to the bag.
+				sum3.inputs.select({|i| i !== this }).do(bag.add(_));
+			};
+
+			desc.do{ |sum3|
+				var sum = sum3.inputs.select({|i| i !== this });
+				if (sum.size == 2){
+					var toExtract, other;
+					if (bag.itemCount(sum[0]) > bag.itemCount(sum[1])) { toExtract = sum[0]; other = sum.wrapAt(1) } { toExtract = sum.wrapAt(1); other = sum[0] };
+
+					MulAdd.maybeGetMulAddOrder(inputs[0], inputs[1], toExtract) !? { |mulAddOrder|
+						var new = MulAdd.newDuringOptimisation(this.rate, *mulAddOrder);
+						var newAdd = BinaryOpUGen.newDuringOptimisation(sum3.rate, '+', new, other);
+						sum3.tryGetReplaceForThis(newAdd, result, 2) !? { |re|
+							sum3.replaceWith(newAdd);
+						}
+					}
+				}
+			};
+			this.tryDisconnect;
+			result.returnNilIfEmpty !? { |r| ^r };
+		};
+
+		// Sum4(a * b, c, d, e) => Sum3(MulAdd(a, b, c) + d, e);
+		desc = descendants.select( _.isKindOf(Sum4) );
+		if (desc.size > 1){
+			var bag = IdentityBag();
+			desc.do { |sum4|
+				// add 'c', 'd', and 'e' to the bag.
+				sum4.inputs.select({|i| i !== this }).do(bag.add(_));
+			};
+
+			desc.do{ |sum4|
+				var sum = sum4.inputs.select({|i| i !== this });
+				if(sum.size == 3){
+					sum = sum.collect({|s| [s, bag.itemCount(s)] }).sort({|l, r| l[1] > r[1] }).collect(_.at(0));
+					MulAdd.maybeGetMulAddOrder(inputs[0], inputs[1], sum[0]) !? { |mulAddOrder|
+						var new = MulAdd.newDuringOptimisation(this.rate, *mulAddOrder);
+						var newAdd = Sum3.newDuringOptimisation(sum4.rate, new, sum[1], sum[2]);
+						sum4.tryGetReplaceForThis(newAdd, result, 2) !? { |re|
+							sum4.replaceWith(newAdd);
+						}
+					}
+				}
+			};
+			this.tryDisconnect;
+			result.returnNilIfEmpty !? { |r| ^r };
+		};
+
 		^nil
 	}
 
@@ -405,7 +461,6 @@ MulAdd : UGen {
 	}
 
 	optimize {
-
 		// If scalar or DC, actually do the maths.
 		if (inputs.every({|in| (in.isKindOf(UGen) and: {in.source.isKindOf(DC)} ) or: { in.isKindOf(Number) }})) {
 			var result = SynthDefOptimisationResult();
@@ -501,7 +556,6 @@ MulAdd : UGen {
 				^result
 			}
 		};
-
 
 		^nil
 	}
