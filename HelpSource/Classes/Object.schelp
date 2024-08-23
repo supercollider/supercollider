@@ -494,6 +494,27 @@ a = { |a, b, c| postf("% plus % plus % is %\n", a, b, c, a + b + c); "" };
 a.performList(\value, [1, 2, 3]);
 ::
 
+method::performArgs
+Like link::#-perform::, but allows you to pass a key-value array of keyword arguments.
+Useful in link::#-doesNotUnderstand:: and other places where you might accept a variety of keyword arguments.
+
+argument::selector
+A link::Classes/Symbol:: of the method name.
+
+argument::args
+An link::Classes/Array:: of the arguments.
+
+argument::kwArgs
+An link::Classes/Array:: of keyword-argument pairs.
+
+Example
+code::
+x.performArgs(\foo, [1, 2], [\bar, 10]);
+// is equivalent to...
+x.foo(1, 2, bar: 10);
+::
+
+
 method::performMsg
 
 The argument must be a List or Array whose first element is a Symbol representing a method selector. The remaining elements are unpacked and passed as arguments to the method named by the selector.
