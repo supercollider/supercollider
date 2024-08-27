@@ -123,4 +123,10 @@
 		'skip': "true",
 		'skipReason': "Requires ALSA kernel module, not allowed in GHA",
 	),
+	(
+		'suite': "TestUGen_RTAlloc",
+		'test': "test_allUGens",
+		'skip': "true",
+		'skipReason': "RT memory allocation seems to be unreliable - see GH issue #6410",
+	),
 ]
