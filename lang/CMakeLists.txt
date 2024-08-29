@@ -172,9 +172,9 @@ endif(WIN32)
 
 if(SC_HIDAPI)
     list(APPEND sclang_sources LangPrimSource/SC_HID_api.cpp)
+	find_package(hidapi REQUIRED)
     include_directories(
-        ${CMAKE_SOURCE_DIR}/external_libraries/hidapi/hidapi
-        ${CMAKE_SOURCE_DIR}/external_libraries/hidapi/hidapi_parser
+        ${CMAKE_SOURCE_DIR}/external_libraries/hidapi
     )
     add_definitions(-DSC_HIDAPI)
 endif(SC_HIDAPI)
@@ -231,14 +231,7 @@ endif()
 
 if(SC_HIDAPI)
   target_compile_definitions(libsclang PRIVATE HAVE_HIDAPI)
-  target_link_libraries( libsclang hidapi hidapi_parser )
-
-  if(${CMAKE_SYSTEM_NAME} MATCHES "Linux" AND HID_HIDRAW)
-    target_link_libraries( libsclang ${UDEV_LIBRARIES})
-  endif()
-  if(HID_LIBUSB)
-    target_link_libraries( libsclang ${LIBUSB_1_LIBRARIES})
-  endif()
+  target_link_libraries( libsclang hidapi::hidapi hidapi_parser)
 endif()
 
 target_link_libraries(libsclang boost_thread_lib boost_system_lib boost_regex_lib boost_filesystem_lib)
@@ -326,7 +319,7 @@ if (FFTW3F_FOUND)
 endif()
 
 if (WIN32 AND SC_HIDAPI)
-	target_link_libraries(libsclang wsock32 ws2_32 portmidi iphlpapi hid)
+	target_link_libraries(libsclang wsock32 ws2_32 portmidi iphlpapi hidapi::windows)
 elseif(WIN32)
 	target_link_libraries(libsclang wsock32 ws2_32 portmidi iphlpapi)
 endif()
