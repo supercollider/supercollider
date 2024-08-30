@@ -269,6 +269,64 @@ public:
 
 }
 
+
+int prString_ReplaceRegex(struct VMGlobals* g, int numArgsPushed) {
+    // caches the last 64 boost:regex instances.
+    static detail::regex_lru_cache regex_lru_cache(boost::regex_constants::ECMAScript | boost::regex_constants::nosubs);
+
+
+    PyrSlot* slot_this = g->sp - 2; // source string
+    PyrSlot* slot_regex = g->sp - 1; // find
+    PyrSlot* slot_replace = g->sp; // replace with
+
+    // slot one does not need to be checked as this method should only be called from methods in String,
+    //    or children thereof.
+    if (!isKindOfSlot(slot_regex, class_string)) {
+        SetNil(slot_this);
+        return errWrongType;
+    }
+    if (!isKindOfSlot(slot_replace, class_string)) {
+        SetNil(slot_this);
+        return errWrongType;
+    }
+
+    try {
+        const auto& pattern = regex_lru_cache.get_regex(slotRawString(slot_regex)->s, slotRawString(slot_regex)->size);
+
+        const char* source_start = slotRawString(slot_this)->s;
+        const int source_size = slotRawString(slot_this)->size;
+
+        if (source_size < 0) { // size is signed
+            SetNil(slot_this);
+            error("String has negative size\n");
+            return errFailed;
+        }
+
+        std::string out {};
+        // PyrStrings are not null terminated so a copy is needed.
+        const auto [replaceError, replace] = slotStrStdStrVal(slot_replace);
+        if (replaceError != errNone) {
+            SetNil(slot_this);
+            return replaceError;
+        }
+
+        boost::regex_replace(std::back_inserter(out), source_start, source_start + source_size, pattern, replace);
+
+        if (out.size() > std::numeric_limits<decltype(PyrObjectHdr {}.size)>::max()) {
+            SetNil(slot_this);
+            error("String too big\n");
+            return errNone;
+        }
+        SetObject(slot_this, newPyrStringN(g->gc, static_cast<int>(out.size()), 0, true));
+        std::copy(out.begin(), out.end(), slotRawString(slot_this)->s);
+        return errNone;
+    } catch (const std::exception& e) {
+        postfl("Warning: Exception in _String_ReplaceRegex -%s\n", e.what());
+        SetNil(slot_this);
+        return errFailed;
+    };
+}
+
 int prString_Regexp(struct VMGlobals* g, int numArgsPushed) {
     /* not reentrant */
     static detail::regex_lru_cache regex_lru_cache(boost::regex_constants::ECMAScript | boost::regex_constants::nosubs);
@@ -1002,4 +1060,5 @@ void initStringPrimitives() {
     definePrimitive(base, index++, "_String_EscapeChar", prString_EscapeChar, 2, 0);
     definePrimitive(base, index++, "_String_ParseYAML", prString_ParseYAML, 1, 0);
     definePrimitive(base, index++, "_String_ParseYAMLFile", prString_ParseYAMLFile, 1, 0);
+    definePrimitive(base, index++, "_String_ReplaceRegex", prString_ReplaceRegex, 3, 0);
 }
