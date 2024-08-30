@@ -1,5 +1,7 @@
 var storage;
 var menubar;
+var yPosBeforeClick;
+var toggleButtonStatus = false;
 
 function addInheritedMethods() {
     if(! /\/Classes\/[^\/]+/.test(window.location.pathname)) return; // skip this if not a class doc
@@ -84,6 +86,25 @@ function create_menubar_item(text, link, post_processing) {
 escape_regexp = function(str) {
   var specials = new RegExp("[.*+?|()\\[\\]{}\\\\]", "g"); // .*+?|()[]{}\
   return str.replace(specials, "\\$&");
+}
+
+function toggleCodeLineNumbers() {
+    var editorTextareas = $("textarea.editor");
+    toggleButtonStatus = !toggleButtonStatus;
+    localStorage.setItem('showCodeLineNumbers', toggleButtonStatus);
+    if (toggleButtonStatus) {
+        $(".CodeMirror").addClass("show-line-numbers");
+        editorTextareas.each(function() {
+            var codeMirrorInstance = this.editor;
+            codeMirrorInstance.setOption("lineNumbers", true);
+        });
+    } else {
+        $(".CodeMirror").removeClass("show-line-numbers");
+        editorTextareas.each(function() {
+            var codeMirrorInstance = this.editor;
+            codeMirrorInstance.setOption("lineNumbers", false);
+        });
+    }
 }
 
 var toc_items;
@@ -214,7 +235,6 @@ function buildThemeSwitcher() {
         const themesMenu = $("<div>", { class: "submenu" }).hide()
             .appendTo(li);
 
-
         themeNames.forEach(function (themeName) {
             var themeLink = $("<a>", {
                 text: themeName,
@@ -225,6 +245,27 @@ function buildThemeSwitcher() {
             });
             themeLink.appendTo(themesMenu);
         });
+
+        var locCheckbox = $("<input>", {
+            type: "checkbox",
+            id: "show-loc-numbers",
+            name: "show-loc-numbers"
+        });
+        var locLabel = $("<label>", {
+            for: "show-loc-numbers",
+            text: "Show LOC numbers"
+        });
+        var locWrapper = $("<div>").append(locCheckbox, locLabel);
+        locCheckbox.on("change", function() {
+            yPosBeforeClick = window.scrollY;
+            toggleCodeLineNumbers();
+            setTimeout(function() {
+                if (yPosBeforeClick != window.scrollY) {
+                    window.scrollTo(0, yPosBeforeClick);
+                }
+            }, 0);
+        });
+        themesMenu.append(locWrapper);
 
         a.on("click", function (e) {
             e.preventDefault();
@@ -255,6 +296,15 @@ function applyTheme(theme=null) {
     
     cssThemeTag.href = `${scriptLocation.split('/').slice(0, -1).join("/")}/themes/${themeName}.css`;
 }
+
+// Load saved settings on page load
+$(document).ready(function() {
+    var showCodeLineNumbers = localStorage.getItem('showCodeLineNumbers') === 'true';
+    $("#show-loc-numbers").prop('checked', showCodeLineNumbers);
+    if (showCodeLineNumbers) {
+        toggleCodeLineNumbers();
+    }
+});
 
 // scdoc.js is loaded after css themes so it's safe to call it here:
 // run immediately, don't wait for document load, to prevent "unstyled flash"
