@@ -48,4 +48,3 @@ SynthDef(\mousexyb, { |out = 0|
 x = Synth.new(\mousexyb);
 x.free;
 ::
-

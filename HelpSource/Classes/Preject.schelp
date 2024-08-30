@@ -38,4 +38,3 @@ x = a.asStream;
 9.do({ x.next.postln });
 )
 ::
-

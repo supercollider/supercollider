@@ -176,4 +176,3 @@ Following the argument declarations are the variable declarations. These may be 
 code::
 var level=0, slope=1, curve=1;
 ::
-

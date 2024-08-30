@@ -25,4 +25,3 @@ Examples::
 code::
 { ClipNoise.ar(0.2) }.play;
 ::
-

@@ -72,4 +72,3 @@ y = Synth(\readFilt, [\buffer, b, \cin, c]);
 x.free;
 b.free;
 ::
-

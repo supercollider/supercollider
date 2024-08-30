@@ -495,4 +495,3 @@ nocommawords      ::= nocommawords TEXT
                     | URL
 commalist         ::= { nocommawords COMMA } nocommawords
 ::
-

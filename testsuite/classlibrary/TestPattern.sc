@@ -245,4 +245,3 @@ TestPattern : UnitTest {
 
 
 }
-
