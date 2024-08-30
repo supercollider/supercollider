@@ -57,6 +57,10 @@ TestNodeProxy_Server : UnitTest {
 	test_synthDef_isReleased_afterFree {
 		var numBefore, numAfter;
 
+		// make sure state is synced
+		// see https://github.com/supercollider/supercollider/pull/6213#issuecomment-2320933394
+		server.sync;
+
 		// here we have to make sure that the statusWatcher.numSynthDefs is correct
 		// before the experiment, so we force the otherwise regular update ...
 		server.sendStatusMsg;
