@@ -3,17 +3,7 @@ summary:: How to use alternative punctuation marks for non-code text to improve 
 categories:: HelpSystem
 related:: Guides/WritingHelp, Classes/SCDoc, Classes/SCDocHTMLRenderer
 
-
-
-
-
-
-
-
-
-
 section:: Overview
-
 
 Various punctuation marks can be used for non-code text to make the document more reader friendly:
 
@@ -60,7 +50,6 @@ table::
 Jack/a''/s and Jill/a''/s children
 ::
 
-
 table::
 ## strong::Examples 4. Various brackets::
 
@@ -86,19 +75,7 @@ réduite/s)/
 ::
 ::
 
-
-
-
-
-
-
-
-
 section:: Various quotation marks
-
-
-
-
 
 subsection:: Quotation marks
 
@@ -157,7 +134,6 @@ code::
 ||
 /lr"/
 ::
-
 
 DOUBLE LOW-9 QUOTATION MARK
 
@@ -330,13 +306,7 @@ code::
 ::
 ::
 
-
-
-
-
-
 subsection:: Quotation dash
-
 
 list::
 
@@ -353,17 +323,7 @@ code::
 ::
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Ellipsis
-
 
 Midline horizontal ellipsis and horizontal ellipsis are definable, but may change automatically depending on the character set around the ellipsis, fonts or operating system language.
 
@@ -393,17 +353,7 @@ code::
 ::
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Apostrophe
-
 
 list::
 
@@ -420,17 +370,7 @@ code::
 ::
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Various brackets with predefined font size
-
 
 The following brackets make themselves and the text within smaller and are useful when the text is written in non-Roman alphabets:
 list::
@@ -476,4 +416,3 @@ code::
 /s(//s)/
 ::
 ::
-
