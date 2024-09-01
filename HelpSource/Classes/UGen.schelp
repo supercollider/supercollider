@@ -293,7 +293,7 @@ code::
 ::
 
 method:: curvelin
-Wraps the receiver so that a  curve-like exponential input range is mapped to a linear output range.
+Wraps the receiver so that a curve-like exponential input range is mapped to a linear output range.
 discussion::
 inMin and inMax may be zero and of the different sign. For clip argument, see code::linlin:: above.
 code::
