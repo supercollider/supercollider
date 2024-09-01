@@ -254,7 +254,7 @@ code::
 
 method:: linexp
 
-Wraps the receiver so that a linear inputrange is mapped to an exponential output range.
+Wraps the receiver so that a linear input range is mapped to an exponential output range.
 discussion::
 outMin and outMax must be nonzero and of the same sign. For clip argument, see code::linlin:: above.
 code::
@@ -263,7 +263,7 @@ code::
 
 method:: explin
 
-Wraps the receiver so that an exponential inputrange is mapped to a linear output range.
+Wraps the receiver so that an exponential input range is mapped to a linear output range.
 discussion::
 inMin and inMax must be nonzero and of the same sign. For clip argument, see code::linlin:: above.
 code::
@@ -272,7 +272,7 @@ code::
 
 method:: expexp
 
-Wraps the receiver so that an exponential inputrange is mapped to an exponential output range.
+Wraps the receiver so that an exponential input range is mapped to an exponential output range.
 discussion::
 outMin, outMax, inMin and inMax must be nonzero and of the same sign. For clip argument, see code::linlin:: above.
 code::
@@ -281,7 +281,7 @@ code::
 
 method:: lincurve
 
-Wraps the receiver so that a linear inputrange is mapped to a curve-like exponential output range.
+Wraps the receiver so that a linear input range is mapped to a curve-like exponential output range.
 discussion::
 outMin and outMax may be zero and of the different sign. For clip argument, see code::linlin:: above.
 code::
@@ -293,7 +293,7 @@ code::
 ::
 
 method:: curvelin
-Wraps the receiver so that a  curve-like exponential inputrange is mapped to a linear output range.
+Wraps the receiver so that a  curve-like exponential input range is mapped to a linear output range.
 discussion::
 inMin and inMax may be zero and of the different sign. For clip argument, see code::linlin:: above.
 code::
