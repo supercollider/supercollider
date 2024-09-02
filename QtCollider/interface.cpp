@@ -32,6 +32,7 @@
 
 #ifdef SC_USE_QTWEBENGINE
 #    include <QWebEngineSettings>
+#    include <QWebEngineProfile>
 #endif
 
 #ifdef Q_WS_X11
@@ -91,7 +92,7 @@ void QtCollider::init() {
 
 #ifdef SC_USE_QTWEBENGINE
         // Enable javascript localStorage for WebViews
-        QWebEngineSettings::defaultSettings()->setAttribute(QWebEngineSettings::LocalStorageEnabled, true);
+        QWebEngineProfile::defaultProfile()->settings()->setAttribute(QWebEngineSettings::LocalStorageEnabled, true);
 #endif
 
         // NOTE: Qt may tamper with the C language locale, affecting POSIX number-string conversions.

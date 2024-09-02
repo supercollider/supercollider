@@ -25,14 +25,21 @@
 #    include "../widgets/web_page.hpp"
 #    include <QWebEnginePage>
 #    include <QWebEngineSettings>
-#    include <QWebEngineContextMenuData>
 #    include <QAction>
 #    include <QMenu>
 #    include <QShortcut>
 #    include <QKeyEvent>
 #    include <QApplication>
 #    include <QStyle>
-#    include <QWebEngineCallback>
+
+#    if (QT_VERSION < QT_VERSION_CHECK(6, 2, 0))
+#        include <QWebEngineCallback>
+#        include <QWebEngineContextMenuData>
+#    else
+#        include <QWebEngineContextMenuRequest>
+#        include <QWebEngineView>
+#        include <QWebEngineFindTextResult>
+#    endif
 
 namespace QtCollider {
 
@@ -200,18 +207,30 @@ void WebView::onPageReload() { Q_EMIT(reloadTriggered(url())); }
 void WebView::contextMenuEvent(QContextMenuEvent* event) {
     QMenu menu;
 
+#    if (QT_VERSION < QT_VERSION_CHECK(6, 2, 0))
     const QWebEngineContextMenuData& contextData = page()->contextMenuData();
-
     if (!contextData.linkUrl().isEmpty()) {
+#    else
+    auto contextData = this->lastContextMenuRequest();
+    if (!contextData->linkUrl().isEmpty()) {
+#    endif
         menu.addAction(pageAction(QWebEnginePage::CopyLinkToClipboard));
         menu.addSeparator();
     }
 
+#    if (QT_VERSION < QT_VERSION_CHECK(6, 2, 0))
     if (contextData.isContentEditable() || !contextData.selectedText().isEmpty()) {
+#    else
+    if (contextData->isContentEditable() || !contextData->selectedText().isEmpty()) {
+#    endif
         menu.addAction(pageAction(QWebEnginePage::Copy));
-        if (contextData.isContentEditable()) {
+#    if (QT_VERSION < QT_VERSION_CHECK(6, 2, 0))
+        if (contextData.isContentEditable())
+#    else
+        if (contextData->isContentEditable())
+#    endif
             menu.addAction(pageAction(QWebEnginePage::Paste));
-        }
+
         menu.addSeparator();
     }
 
@@ -227,7 +246,12 @@ void WebView::contextMenuEvent(QContextMenuEvent* event) {
 bool WebView::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::KeyPress) {
         // takes ownership of newEvent
-        QApplication::postEvent(this, new QKeyEvent(*static_cast<QKeyEvent*>(event)));
+#    if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+        auto newEvent = new QKeyEvent(*static_cast<QKeyEvent*>(event));
+#    else
+        auto newEvent = static_cast<QKeyEvent*>(event->clone());
+#    endif
+        QApplication::postEvent(this, newEvent);
     }
 
     event->ignore();
