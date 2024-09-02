@@ -207,6 +207,7 @@ endif()
 
 if(WIN32)
     target_link_libraries(libsupernova wsock32 ws2_32 winmm)
+    target_compile_definitions(libsupernova PUBLIC UNICODE _UNICODE)
 endif()
 
 

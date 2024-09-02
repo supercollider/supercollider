@@ -23,6 +23,7 @@
 #    include <dlfcn.h>
 #elif defined(_WIN32)
 #    include "SC_Win32Utils.h"
+#    include "SC_Codecvt.hpp"
 #endif
 
 #include <boost/filesystem.hpp>
@@ -313,14 +314,14 @@ void sc_ugen_factory::load_plugin(boost::filesystem::path const& path) {
 
     // std::cout << "try open plugin: " << path << std::endl;
     const char* filename = path.string().c_str();
-    HINSTANCE hinstance = LoadLibrary(path.string().c_str());
+    HINSTANCE hinstance = LoadLibraryW(path.wstring().c_str());
     if (!hinstance) {
-        char* s;
+        wchar_t* s;
         DWORD lastErr = GetLastError();
-        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                      nullptr, lastErr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&s, 0, NULL);
+        FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                       nullptr, lastErr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (wchar_t*)&s, 0, NULL);
 
-        std::cout << "Cannot open plugin: " << path << s << std::endl;
+        std::cout << "Cannot open plugin: " << path << SC_Codecvt::utf16_wcstr_to_utf8_string(s).c_str() << std::endl;
         LocalFree(s);
         return;
     }
@@ -347,11 +348,11 @@ void sc_ugen_factory::load_plugin(boost::filesystem::path const& path) {
 
     void* ptr = (void*)GetProcAddress(hinstance, "load");
     if (!ptr) {
-        char* s;
-        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                      nullptr, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&s, 0, NULL);
+        wchar_t* s;
+        FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                       nullptr, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (wchar_t*)&s, 0, NULL);
 
-        std::cout << "*** ERROR: GetProcAddress err " << s << std::endl;
+        std::cout << "*** ERROR: GetProcAddress err " << SC_Codecvt::utf16_wcstr_to_utf8_string(s).c_str() << std::endl;
         LocalFree(s);
 
         FreeLibrary(hinstance);
