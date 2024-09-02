@@ -52,14 +52,6 @@ void win32_ExtractContainingFolder(char* folder, const char* pattern, int maxCha
         folder[0] = 0;
 }
 
-void win32_GetKnownFolderPath(int folderId, char* dest, int size) {
-    // Use a temporary buffer, as SHGetFolderLocation() requires it
-    // to be at least MAX_PATH size, but destination size may be less
-    char buf[MAX_PATH];
-    SHGetFolderPath(NULL, folderId, NULL, 0, buf);
-    strncpy(dest, buf, size);
-}
-
 char* win32_basename(char* path) {
     int pathLen = strlen(path);
     int lastPathSepFoundPos = -1;

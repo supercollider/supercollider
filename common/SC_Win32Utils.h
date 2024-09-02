@@ -56,7 +56,6 @@ typedef int pid_t;
 void win32_ReplaceCharInString(char* string, int len, char src, char dst);
 // Finds the parent folder of a specified path pattern (including trailing slash)
 void win32_ExtractContainingFolder(char* folder, const char* pattern, int maxChars);
-void win32_GetKnownFolderPath(int folderId, char* dest, int size);
 void win32_synctimes();
 char* win32_basename(char* path);
 char* win32_dirname(char* path);
