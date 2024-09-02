@@ -18,6 +18,13 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+
+// NOTE: Signals do something silly and dangerous with the PyrSlot to cut space by a factor of a half.
+// A slot is the size of a double, twice the size of a float, by signals hold floats.
+// They are (potentially) the only type in supercollider that exposes a float to the user.
+// They squish two float into the slot, which means you cannot use tags to test what type the slot holds.
+// None of the methods in PyrSlot can be used here as the contents of the PyrSlot is just raw memory to the Signal.
+
 /*
     compound formulas :
     amclip	out = B<=0 ? 0 : A*B;		// two quadrant amplitude modulation
@@ -425,8 +432,6 @@ PyrObject* signal_excess_xx(VMGlobals* g, PyrObject* ina, PyrObject* inb) {
 
 bool signal_equal_xx(VMGlobals* g, PyrObject* ina, PyrObject* inb) {
     if (ina->size != inb->size)
-        return false;
-    if (slotRawSymbol(&ina->slots[kSignalRate]) != slotRawSymbol(&inb->slots[kSignalRate]))
         return false;
     float* a = (float*)(ina->slots);
     float* b = (float*)(inb->slots);

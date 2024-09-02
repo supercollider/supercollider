@@ -71,6 +71,7 @@ set(sclang_sources
 	LangSource/SimpleStack.cpp
 	LangSource/VMGlobals.cpp
 	LangSource/dumpByteCodes.cpp
+        LangSource/pyslottest.cpp
 
 	${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_Filesystem_win.cpp

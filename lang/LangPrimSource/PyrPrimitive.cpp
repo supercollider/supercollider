@@ -95,7 +95,7 @@ int getPrimitiveNumArgs(int index) { return gPrimitiveTable.table[index].numArgs
 
 PyrSymbol* getPrimitiveName(int index) { return gPrimitiveTable.table[index].name; }
 
-int slotStrLen(PyrSlot* slot) {
+int slotStrLen(PyrSlot* slot) noexcept {
     if (IsSym(slot))
         return slotRawSymbol(slot)->length;
     if (isKindOfSlot(slot, class_string))

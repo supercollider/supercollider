@@ -20,7 +20,12 @@
 
 #include "SC_LanguageClient.h"
 
+#include "PyrSlot.h"
+
 int main(int argc, char** argv) {
+    // TODO jordan: temporary move to tests
+    PyrSlotTest();
+
     SC_LanguageClient* client = createLanguageClient("sclang");
     if (!client)
         return 1;
