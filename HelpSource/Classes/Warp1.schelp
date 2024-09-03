@@ -10,7 +10,7 @@ private:: categories
 
 method:: ar
 argument::numChannels
-the number of channels in the soundfile used in bufnum.
+the number of channels in the soundfile used in bufnum. Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.
 
 argument::bufnum
 the buffer number of a mono soundfile.
@@ -58,15 +58,15 @@ x = { |envbuf = -1|
 	// control pitch with MouseX
 	pitch = MouseX.kr(0.5, 2);
 	Warp1.ar(
-		numChannels:1,
-		bufnum:b,
-		pointer:pointer,
-		freqScale:pitch,
-		windowSize:0.1,
-		envbufnum:envbuf,
-		overlaps:8,
-		windowRandRatio:0.1,
-		interp:2
+		numChannels: 1,
+		bufnum: b,
+		pointer: pointer,
+		freqScale: pitch,
+		windowSize: 0.1,
+		envbufnum: envbuf,
+		overlaps: 8,
+		windowRandRatio: 0.1,
+		interp: 2
 	)
 }.play
 
@@ -101,4 +101,3 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff");
 )
 b.free;
 ::
-

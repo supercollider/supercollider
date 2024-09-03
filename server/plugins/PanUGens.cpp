@@ -1302,7 +1302,7 @@ void PanAz_Dtor(PanAz* unit) {
 void PanAz_next_ak(PanAz* unit, int inNumSamples) {
     float pos = ZIN0(1);
     float level = ZIN0(2);
-    float width = ZIN0(3);
+    float width = std::abs(ZIN0(3));
     float orientation = ZIN0(4);
 
     int numOutputs = unit->mNumOutputs;
@@ -1347,7 +1347,7 @@ void PanAz_next_ak(PanAz* unit, int inNumSamples) {
 FLATTEN void PanAz_next_ak_nova(PanAz* unit, int inNumSamples) {
     float pos = ZIN0(1);
     float level = ZIN0(2);
-    float width = ZIN0(3);
+    float width = std::abs(ZIN0(3));
     float orientation = ZIN0(4);
 
     int numOutputs = unit->mNumOutputs;
@@ -1389,7 +1389,7 @@ FLATTEN void PanAz_next_ak_nova(PanAz* unit, int inNumSamples) {
 
 void PanAz_next_aa(PanAz* unit, int inNumSamples) {
     float level = ZIN0(2);
-    float width = ZIN0(3);
+    float width = std::abs(ZIN0(3));
     float orientation = ZIN0(4);
 
     int numOutputs = unit->mNumOutputs;

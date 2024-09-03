@@ -16,12 +16,6 @@
 		'skipReason': "UnitTest fails when run in GHA (FIXME)",
 	),
 	(
-		'suite': "TestCoreUGens",
-		'skip': "true",
-		'test': "test_ugen_generator_equivalences",
-		'skipReason': "UnitTest has bugs (FIXME)",
-	),
-	(
 		'suite': "TestDocument",
 		'test': "*",
 		'skip': "true",
@@ -128,5 +122,11 @@
 		'test': "test_linuxRealtimeCodesAreCorrect",
 		'skip': "true",
 		'skipReason': "Requires ALSA kernel module, not allowed in GHA",
+	),
+	(
+		'suite': "TestUGen_RTAlloc",
+		'test': "test_allUGens",
+		'skip': "true",
+		'skipReason': "RT memory allocation seems to be unreliable - see GH issue #6410",
 	),
 ]

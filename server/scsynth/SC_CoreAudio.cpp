@@ -107,13 +107,7 @@ static void syncOSCOffsetWithTimeOfDay() {
 }
 
 static void resyncThreadFunc() {
-#    ifdef NOVA_TT_PRIORITY_RT
-    std::pair<int, int> priorities = nova::thread_priority_interval_rt();
-    nova::thread_set_priority_rt((priorities.first + priorities.second) / 2);
-#    else
-    std::pair<int, int> priorities = nova::thread_priority_interval();
-    nova::thread_set_priority(priorities.second);
-#    endif
+    /* keep the default thread priority */
 
     while (true) {
         sleep(20);
@@ -345,12 +339,10 @@ SC_AudioDriver::~SC_AudioDriver() {
 }
 
 void SC_AudioDriver::RunThread() {
+    /* NB: on macOS we just keep the default thread priority */
 #ifdef NOVA_TT_PRIORITY_RT
-    std::pair<int, int> priorities = nova::thread_priority_interval_rt();
-    nova::thread_set_priority_rt((priorities.first + priorities.second) / 2);
-#else
-    std::pair<int, int> priorities = nova::thread_priority_interval();
-    nova::thread_set_priority(priorities.second);
+    int priority = nova::thread_priority_interval_rt().first;
+    nova::thread_set_priority_rt(priority);
 #endif
 
     TriggersFifo* trigfifo = &mWorld->hw->mTriggers;
@@ -1406,9 +1398,7 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData, AudioBufferList
             }
             oscTime = mOSCbuftime = nextTime;
         }
-    } catch (std::exception& exc) {
-        scprintf("exception in real time: %s\n", exc.what());
-    } catch (...) {
+    } catch (std::exception& exc) { scprintf("exception in real time: %s\n", exc.what()); } catch (...) {
         scprintf("unknown exception in real time\n");
     }
     int64 systemTimeAfter = AudioGetCurrentHostTime();
@@ -1762,9 +1752,7 @@ bool SC_CoreAudioDriver::DriverStart() {
                 return false;
             }
         }
-    } catch (...) {
-        scprintf("exception in SC_CoreAudioDriver::DriverStart\n");
-    }
+    } catch (...) { scprintf("exception in SC_CoreAudioDriver::DriverStart\n"); }
     if (mWorld->mVerbosity >= 1) {
         scprintf("<-SC_CoreAudioDriver::DriverStart\n");
     }
@@ -2133,9 +2121,7 @@ void SC_iCoreAudioDriver::Run(const AudioBufferList* inInputData, AudioBufferLis
             }
             oscTime = mOSCbuftime = nextTime;
         }
-    } catch (std::exception& exc) {
-        scprintf("exception in real time: %s\n", exc.what());
-    } catch (...) {
+    } catch (std::exception& exc) { scprintf("exception in real time: %s\n", exc.what()); } catch (...) {
         scprintf("unknown exception in real time\n");
     }
 
@@ -2386,9 +2372,7 @@ bool SC_iCoreAudioDriver::DriverStart() {
     try {
         OSStatus ret = AUGraphStart(graph);
         AudioOutputUnitStart(inputUnit);
-    } catch (...) {
-        scprintf("exception in SC_CoreAudioDriver::DriverStart\n");
-    }
+    } catch (...) { scprintf("exception in SC_CoreAudioDriver::DriverStart\n"); }
     if (mWorld->mVerbosity >= 0) {
         scprintf("<-SC_CoreAudioDriver::DriverStart\n");
     }

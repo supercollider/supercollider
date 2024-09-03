@@ -3,7 +3,7 @@ categories:: Language, Common methods
 summary:: common unary and binary operators
 related:: Reference/Adverbs
 
-SuperCollider supports operator overloading. Operators can thus be applied to a variety of different objects; Numbers, Ugens, Collections, and so on. When operators are applied to ugens they result in link::Classes/BinaryOpUGen::s or link::Classes/UnaryOpUGen::s, through the methods of link::Classes/AbstractFunction::.
+SuperCollider supports operator overloading. Operators can thus be applied to a variety of different objects; Numbers, UGens, Collections, and so on. When operators are applied to UGens they result in link::Classes/BinaryOpUGen::s or link::Classes/UnaryOpUGen::s, through the methods of link::Classes/AbstractFunction::.
 
 This is a list of some of the common unary and binary operators that are implemented by several classes.
 See the specific classes for details and other operators.
@@ -437,7 +437,7 @@ method:: <!
 Return first argument.
 
 code::
-// this is useful when two ugens need to be called, but only one of their outputs is needed
+// this is useful when two UGens need to be called, but only one of their outputs is needed
 (
 {
 	var a, b, c;

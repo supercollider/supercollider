@@ -59,6 +59,7 @@ typedef union {
 const unsigned int kSCNameLen = 8;
 const unsigned int kSCNameByteLen = 8 * sizeof(int32);
 
+// Do not use this. C casting is bad and causes many subtle issues.
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
 #    define sc_typeof_cast(x) (decltype(x))
 #elif defined(__GNUC__)

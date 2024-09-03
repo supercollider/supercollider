@@ -65,8 +65,8 @@ code::
 // write a sine oscillator's output to a pin, and read the pin value at other times
 
 (
-SynthDef("help-DigitalIO",{ arg out=0;
-    DigitalIO.ar( 0, SinOsc.ar( 10 ),LFPulse.kr( 0.1 ) ).poll;
+SynthDef("help-DigitalIO", { |out = 0|
+    DigitalIO.ar(0, SinOsc.ar(10), LFPulse.kr(0.1)).poll;
 }).play;
 )
 

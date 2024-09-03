@@ -53,6 +53,8 @@ set(libsupernova_src
     server/node_graph.cpp
     server/server.cpp
     server/server_args.cpp
+
+    utilities/hardware_topology.cpp
 )
 
 if(APPLE)
@@ -79,8 +81,8 @@ else()
   add_library (libsupernova STATIC ${libsupernova_src})
 endif()
 
-if(CMAKE_COMPILER_IS_CLANG AND CMAKE_CXX_COMPILER_VERSION MATCHES "^[456]\\.")
-    message(STATUS "clang version is 4, 5, or 6, linking to libatomic")
+if(LINUX AND CMAKE_COMPILER_IS_CLANG)
+    message(STATUS "Clang on Linux detected, linking to libatomic")
     target_link_libraries(libsupernova atomic)
 endif()
 if(NOT WIN32)
@@ -207,6 +209,7 @@ endif()
 
 if(WIN32)
     target_link_libraries(libsupernova wsock32 ws2_32 winmm)
+    target_compile_definitions(libsupernova PUBLIC UNICODE _UNICODE)
 endif()
 
 

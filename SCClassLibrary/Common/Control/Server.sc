@@ -38,6 +38,7 @@ ServerOptions {
 
 	var <>memoryLocking;
 	var <>threads; // for supernova
+	var <>threadPinning; // for supernova
 	var <>useSystemClock;  // for supernova
 
 	var <numPrivateAudioBusChannels;
@@ -88,6 +89,7 @@ ServerOptions {
 				remoteControlVolume: false,
 				memoryLocking: false,
 				threads: nil,
+				threadPinning: nil, // default value chosen by Supernova
 				useSystemClock: true,
 				numPrivateAudioBusChannels: 1020, // see corresponding setter method below
 				reservedNumAudioBusChannels: 0,
@@ -215,8 +217,13 @@ ServerOptions {
 			o = o ++ " -L";
 		});
 		if (threads.notNil, {
-			if (Server.program.asString.endsWith("supernova")) {
+			if (Server.program.asString.contains("supernova")) {
 				o = o ++ " -T " ++ threads;
+			}
+		});
+		if (threadPinning.notNil, {
+			if (Server.program.asString.contains("supernova")) {
+				o = o ++ " -y " ++ threadPinning.asBoolean.asInteger;
 			}
 		});
 		if (useSystemClock, {
@@ -786,18 +793,18 @@ Server {
 		condition.wait
 	}
 
-	waitForBoot { |onComplete, limit = 100, onFailure|
+	waitForBoot { |onComplete, limit = 100, onFailure, clock|
 		// onFailure.true: why is this necessary?
 		// this.boot also calls doWhenBooted.
 		// doWhenBooted prints the normal boot failure message.
 		// if the server fails to boot, the failure error gets posted TWICE.
 		// So, we suppress one of them.
 		if(this.serverRunning.not) { this.boot(onFailure: true) };
-		this.doWhenBooted(onComplete, limit, onFailure);
+		this.doWhenBooted(onComplete, limit, onFailure, clock);
 	}
 
-	doWhenBooted { |onComplete, limit=100, onFailure|
-		statusWatcher.doWhenBooted(onComplete, limit, onFailure)
+	doWhenBooted { |onComplete, limit=100, onFailure, clock|
+		statusWatcher.doWhenBooted(onComplete, limit, onFailure, clock)
 	}
 
 	ifRunning { |func, failFunc|

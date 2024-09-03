@@ -61,7 +61,7 @@ method:: widget
 Returns the active widget. Subclasses will typically refer to it or ignore it, e.g.:
 code::
 MyEZClass{
-	myOtherMethods{}
+	myOtherMethods{ }
 	....
 	listView{ ^widget }
 }
