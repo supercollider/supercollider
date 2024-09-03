@@ -59,8 +59,6 @@ PostWindow::PostWindow(QWidget* parent): QPlainTextEdit(parent) {
     applySettings(Main::settings());
 }
 
-// Use QT QAction to setup post window functionalities
-// PostDocklet() is responsible for creating associated widgets if needed
 void PostWindow::createActions(Settings::Manager* settings) {
     QAction* action;
     OverridingAction* ovrAction;
@@ -357,7 +355,7 @@ PostDocklet::PostDocklet(QWidget* parent): Docklet(tr("Post window"), parent) {
     mPostWindow = new PostWindow;
     setWidget(mPostWindow);
 
-    // Map QActions to the QToolBar to add associated widgets to the post window
+    // This adds the QAction defined in PostWindow::createActions to the toolbar attached to the post window.
     toolBar()->addAction(mPostWindow->mActions[PostWindow::AutoScroll]);
     toolBar()->addAction(mPostWindow->mActions[PostWindow::Clear]);
 
