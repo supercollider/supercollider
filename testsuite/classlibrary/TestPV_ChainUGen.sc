@@ -4,6 +4,8 @@ UnitTest.gui
 */
 TestPV_ChainUGen : UnitTest {
 
+classvar <>server;
+
 // This test manually creates an FFT frame equivalent to pure white noise, 
 // on which certain ugens' action should be a no-op
 test_whiteframe_noop {
@@ -11,6 +13,11 @@ test_whiteframe_noop {
 	
 	// Every real is 1.0, every imag is 0.0. same as every mag is 1.0, every phase is 0.0.
 	fakeframe = ([1,1] ++ {[1,0]}.dup(511)).flat;
+
+	// reuse server across tests
+	server = Server(this.class.name);
+	this.bootServer(server);
+	server.sync;
 	
 	// All of these should be no-ops when applied to a faked frame with reals all 1 and imags all 0:
 	this.pv_equivalencetests_common(fakeframe,
@@ -40,7 +47,9 @@ test_whiteframe_noop {
 			"PV_MagFreeze"  -> {|f| PV_MagFreeze(f, Line.kr(-1, 1, 0.05))},
 			"PV_BinScramble"-> {|f| PV_BinScramble(f, 0)},
 		],
-		fakeframe, "No-op unity-frame test on %");
+		fakeframe, "No-op unity-frame test on %", server);
+
+	server.quit;
 }
 
 
@@ -52,6 +61,10 @@ test_whiteframe_zeroing {
 	// NOTE: Here we actually set the DC and nyqquist to zero, not one, 
 	//  because many ugens simply don't bother to touch them.
 	fakeframe = ([0,0] ++ {[1,0]}.dup(511)).flat;
+
+	server = Server(this.class.name);
+	this.bootServer(server);
+	server.sync;
 	
 	// All of these should be no-ops when applied to a faked frame with reals all 1 and imags all 0:
 	this.pv_equivalencetests_common(fakeframe,
@@ -65,28 +78,41 @@ test_whiteframe_zeroing {
 			"PV_BrickWall"  -> {|f| PV_BrickWall(f, 1)},
 			"PV_RandComb"   -> {|f| PV_RandComb(f, 1)},
 		],
-		0, "% can be used to produce silence");
+		0, "% can be used to produce silence", server);
+	
+	server.quit;
 }
 
 // The main engine that is used to push a fake fft frame through a ugen:
-pv_equivalencetests_common { |fakeframe, tests, equaltothis, message|
-	var s = Server(this.class.name), b, c = CondVar(), synth;
-	this.bootServer(s);
+pv_equivalencetests_common { |fakeframe, tests, equaltothis, message, server|
+	var buffer;
+	var synth;
+
 	tests.keysValuesDo{|name, func|
-		b = Buffer.sendCollection(s, fakeframe);
-		s.sync;
-		synth = {var f; f = FFTTrigger(b); func.value(f); Line.ar(0, 0, 0.05, doneAction: Done.freeSelf)}.play(s);
+		var condition = CondVar();
+		var finished = false;
+
+		buffer = Buffer.sendCollection(server, fakeframe);
+		server.sync;
+		synth = {
+			var f = FFTTrigger(buffer);
+			func.value(f);
+			Line.ar(0, 0, 0.05, doneAction: Done.freeSelf)
+		}.play(server);
+
 		synth.waitForFree;
-		b.loadToFloatArray(action: { |data|
+
+		buffer.loadToFloatArray(action: { |data|
 			this.assertArrayFloatEquals(data, equaltothis, message.format(name), within: 0.001, report: true);
-			c.signalOne;
+			finished = true;
+			condition.signalOne;
 		});
-		c.waitFor(3);
-		b.free;
+
+		condition.waitFor(3.0, {finished == true});
+		buffer.free;
 	};
-	s.sync;
-	s.quit;
-	s.remove;
+	server.sync;
+	server.remove;
 }
 
 
