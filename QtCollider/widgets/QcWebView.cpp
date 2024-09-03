@@ -198,7 +198,13 @@ void WebView::findText(const QString& searchText, bool reversed, QcCallback* cb)
     if (!cb) {
         QWebEngineView::findText(searchText, flags);
     } else {
+#    if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
         QWebEngineView::findText(searchText, flags, cb->asFunctor());
+#    else
+        QWebEngineView::findText(searchText, flags, [cb](const QWebEngineFindTextResult& result) {
+            cb->asFunctor()(result.numberOfMatches() > 0);
+        });
+#    endif
     }
 }
 
