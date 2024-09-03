@@ -603,6 +603,11 @@ static const double dInfinity = std::numeric_limits<double>::infinity();
 
 // Convert raw OSC message to Array.
 static PyrObject* ConvertOSCMessage(int inSize, const char* inData) {
+    if ((inSize & 3) != 0) {
+        // OSC messages
+        throw std::runtime_error("Bad OSC message size");
+    }
+
     const char* cmdName = inData;
     int cmdNameLen = OSCstrlen(cmdName);
     sc_msg_iter msg(inSize - cmdNameLen, inData + cmdNameLen);
@@ -683,6 +688,12 @@ static PyrObject* ConvertOSCMessage(int inSize, const char* inData) {
 
 // Convert raw OSC bundle to Array ([time, elements...]).
 static PyrObject* ConvertOSCBundle(int inSize, const char* inData) {
+    // OSC bundles must have at least 16 bytes (#bundle + timetag)
+    if (inSize < 16 || (inSize & 3) != 0) {
+        // OSC messages
+        throw std::runtime_error("Bad OSC bundle size");
+    }
+
     int64 oscTime = OSCtime(inData + 8);
     const char* data = inData + 16;
     const char* dataEnd = inData + inSize;
@@ -691,7 +702,7 @@ static PyrObject* ConvertOSCBundle(int inSize, const char* inData) {
     int numElements = 0;
     for (const char* ptr = data; ptr < dataEnd;) {
         int32 size = OSCint(ptr);
-        if (size > 0) {
+        if (size > 0 && (size & 3) == 0) {
             ptr += sizeof(int32) + size;
             numElements++;
         } else {
