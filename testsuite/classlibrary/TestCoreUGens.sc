@@ -363,7 +363,7 @@ TestCoreUGens : UnitTest {
 
 		server.bootSync;
 		tests.keysValuesDo{|name, func|
-			func.loadToFloatArray(0.1, server, { |data|
+			func.loadToFloatArray(0.01, server, { |data|
 				this.assertArrayFloatEquals(data, 0, name.quote, report: true);
 				completed = completed + 1;
 				condvar.signalOne;
