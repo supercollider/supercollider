@@ -54,7 +54,7 @@ elseif(AUDIOAPI STREQUAL portaudio AND SYSTEM_PORTAUDIO)
       message(FATAL_ERROR "Portaudio selected as audio API, but development files not found")
     endif()
 elseif(AUDIOAPI STREQUAL bela)
-    # The Bela lib will have its own set of libraries and includes
+    # The Bela lib will have its own set of libraries and includes
     # However, the Bela audio backend for SC has some direct calls to Xenomai
     # Therefore we need to get flags for those as well
     find_package(Xenomai REQUIRED)
