@@ -38,6 +38,7 @@ ServerOptions {
 
 	var <>memoryLocking;
 	var <>threads; // for supernova
+	var <>threadPinning; // for supernova
 	var <>useSystemClock;  // for supernova
 
 	var <numPrivateAudioBusChannels;
@@ -88,6 +89,7 @@ ServerOptions {
 				remoteControlVolume: false,
 				memoryLocking: false,
 				threads: nil,
+				threadPinning: nil, // default value chosen by Supernova
 				useSystemClock: true,
 				numPrivateAudioBusChannels: 1020, // see corresponding setter method below
 				reservedNumAudioBusChannels: 0,
@@ -215,8 +217,13 @@ ServerOptions {
 			o = o ++ " -L";
 		});
 		if (threads.notNil, {
-			if (Server.program.asString.endsWith("supernova")) {
+			if (Server.program.asString.contains("supernova")) {
 				o = o ++ " -T " ++ threads;
+			}
+		});
+		if (threadPinning.notNil, {
+			if (Server.program.asString.contains("supernova")) {
+				o = o ++ " -y " ++ threadPinning.asBoolean.asInteger;
 			}
 		});
 		if (useSystemClock, {
