@@ -97,13 +97,13 @@ public:
                     // avoid creating a QVariant<QVariant>
                     args << QVariant(type, argData[i + 1]).value<QVariant>();
 #else
-                    args << QVariant::fromValue(argData[i + 1]).value<QVariant>();
+                    args << QVariant(QMetaType(type), argData[i + 1]).value<QVariant>();
 #endif
                 } else {
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
                     args << QVariant(type, argData[i + 1]);
 #else
-                    args << QVariant::fromValue(argData[i + 1]);
+                    args << QVariant(QMetaType(type), (argData[i + 1]));
 #endif
                 }
             }
