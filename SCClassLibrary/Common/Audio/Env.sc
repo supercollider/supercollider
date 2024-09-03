@@ -321,7 +321,7 @@ Env {
 	circle { arg timeFromLastToFirst = 0.0, curve = \lin;
 		var first0Then1;
 		if(UGen.buildSynthDef.isNil) { ^this };
-		first0Then1 = Latch.kr(1.0, Impulse.kr(0.0));
+		first0Then1 = Latch.kr(1.0, Delay1.kr(Impulse.kr(0.0)));
 		if(releaseNode.isNil) {
 			levels = [0.0] ++ levels ++ 0.0;
 			curves = [curve] ++ curves.asArray.wrapExtend(times.size) ++ \lin;
