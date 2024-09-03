@@ -368,7 +368,6 @@ TestCoreUGens : UnitTest {
 				completed = completed + 1;
 				condvar.signalOne;
 			});
-			rrand(0.06, 0.15).wait;
 		};
 
 		condvar.waitFor(1, { completed == tests.size });
