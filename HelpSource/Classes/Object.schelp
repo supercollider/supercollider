@@ -504,7 +504,7 @@ A link::Classes/Symbol:: of the method name.
 argument::args
 An link::Classes/Array:: of the arguments.
 
-argument::kwArgs
+argument::kwargs
 An link::Classes/Array:: of keyword-argument pairs.
 
 Example
