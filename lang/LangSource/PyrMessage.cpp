@@ -440,7 +440,7 @@ void prepareArgsForExecute(VMGlobals* g, PyrBlock* block, PyrFrame* callFrame, l
             // Greater than the number of normal args passed in by user, add it.
             // SC docs show that in the case of colliding args, the last one added should always be the result.
             outCallFrameStack[*argIndex] = *argValue;
-            if (*argIndex > numNormalArgsAdded) {
+            if (*argIndex < numNormalArgsAdded) {
                 // Already pushed, duplicate keyword found, ignore value, post warning.
                 if (!isMethod) {
                     post("Duplicate keyword '%s' at position %d found in function call\n", argKeyword->name, *argIndex);
