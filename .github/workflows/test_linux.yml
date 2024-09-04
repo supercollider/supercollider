@@ -67,4 +67,4 @@ jobs:
       - name: Post test results
         shell: bash
         run: |
-          $SCLANG $SCRIPT_PRINT_RESULTS $TEST_LIST_RESULT
+          timeout 1m $SCLANG $SCRIPT_PRINT_RESULTS $TEST_LIST_RESULT
