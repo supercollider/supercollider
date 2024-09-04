@@ -437,11 +437,11 @@ void prepareArgsForExecute(VMGlobals* g, PyrBlock* block, PyrFrame* callFrame, l
 
         // If found in method.
         if (const auto argIndex = findKeywordArgIndex(argKeyword); argIndex.has_value()) {
-            // Greater than the number of normal args passed in by user, add it.
-            // SC docs show that in the case of colliding args, the last one added should always be the result.
             outCallFrameStack[*argIndex] = *argValue;
+
+            // SC docs show that in the case of colliding args, the last one added should always be the result.
             if (*argIndex < numNormalArgsAdded) {
-                // Already pushed, duplicate keyword found, ignore value, post warning.
+                // Already pushed, duplicate keyword found, update value, post warning.
                 if (!isMethod) {
                     post("Duplicate keyword '%s' at position %d found in function call\n", argKeyword->name, *argIndex);
                 } else {
