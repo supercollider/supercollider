@@ -8,7 +8,7 @@ SuperCollider provides some useful classes to automate processes. Some of them a
 
 strong::QT rendering system is unavailable within the context of clock associated threads::. In other words, you cannot 'directly' modify a widget within a link::Classes/Routine:: or a link::Classes/Task::.
 
-Instead, you need to defer the modification by strong::encapsulating it in a deferred function::, that will be executed once SuperCollider resume its main context. Doing otherwise will crash the program :
+Instead, you need to defer the modification by strong::encapsulating it in a deferred function::, that will be executed once SuperCollider resume its main context, see link::Classes/Function#-defer::. Doing otherwise will crash the program :
 
 code::
 (
