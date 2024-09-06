@@ -545,4 +545,4 @@ section::Conclusion
 
 This has been a long tutorial, but with those basic concepts, you should now be able to manipulate every QT Class without much difficulties.
 
-The next tutorial in this serie is a tour of common things you might want to implement when using QT (for example an interface with tabs, allowing you to switch between different views). Like we did here, it is about using basic QT Components to create interfaces. You can access it here : link::Tutorials/QT/compose_complex_view::.
+The next tutorial in this series is a tour of common things you might want to implement when using Qt, for example an interface with tabs, allowing you to switch between different views. Like we did here, it is about using basic Qt Components to create interfaces. You can access it here : link::Tutorials/Qt/compose_complex_view::.
