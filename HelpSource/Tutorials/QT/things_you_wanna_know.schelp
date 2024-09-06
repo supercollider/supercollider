@@ -50,7 +50,7 @@ section:: Pen usage and resource management
 
 The link::Classes/Pen:: class allows the user to define a custom code::drawFunc:: to a link::Classes/View::.
 
-link::Classes/Pen:: usage is a strong::two-steps process:: : the user strong::first 'describes' the shape:: he wants to draw (using methods such as code::fillRect:: or code::lineTo::), strong::then renders the shape::, using either code::fill::, code::stroke::, or code::fillStroke::.
+link::Classes/Pen:: usage is a strong::two-steps process:: : the user strong::first 'describes' the shape:: they want to draw (using methods such as code::fillRect:: or code::lineTo::), strong::then renders the shape::, using either code::fill::, code::stroke::, or code::fillStroke::.
 
 Depending on the hardware, strong::when drawing very complex shapes:: (for a example a million lines), strong::some issues might arise:: :
 
