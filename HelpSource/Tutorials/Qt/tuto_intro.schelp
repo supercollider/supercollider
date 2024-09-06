@@ -1,6 +1,6 @@
-title:: QT : Tutorial introduction
-summary:: QT Tutorial overview
-categories:: Tutorials>QT
+title:: Qt: Tutorial introduction
+summary:: Qt Tutorial overview
+categories:: Tutorials>Qt
 
 section:: About
 
@@ -13,8 +13,8 @@ The goal of this tutorial series is to strong::provide the basics of Qt manipula
 section:: Tutorial organisation
 
 list::
-## 1. link::Tutorials/QT/create_window:: : basics of window creation.
-## 2. link::Tutorials/QT/create_simple_instrument_view:: : interfacing a synth (keyboard and volume slider), and introduction to the layout system.
-## 3. link::Tutorials/QT/compose_complex_view:: : documented examples about composed views : a slider with editable text, a tab system, and a minimize system.
-## A. link::Tutorials/QT/things_you_wanna_know:: : miscellaneaous warnings and hints about QT usage.
+## 1. link::Tutorials/Qt/create_window::: basics of window creation.
+## 2. link::Tutorials/Qt/create_simple_instrument_view::: interfacing a synth (keyboard and volume slider), and introduction to the layout system.
+## 3. link::Tutorials/Qt/compose_complex_view::: documented examples about composed views: a slider with editable text, a tab system, and a minimize system.
+## A. link::Tutorials/Qt/things_you_wanna_know::: miscellaneaous warnings and hints about Qt usage.
 ::

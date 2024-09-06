@@ -1,12 +1,12 @@
-title:: QT : Interfacing an instrument with a View
+title:: Qt: Interfacing an instrument with a View
 summary:: Creating a view that interacts with a Synth, introduction to Layouts
-categories:: Tutorials>QT
+categories:: Tutorials>Qt
 
 section:: What is this tutorial about?
 
-This is a tutorial to get started using SuperCollider's QT implementation to strong::create views and make them interact with a Synth::.
+This is a tutorial to get started using SuperCollider's Qt implementation to strong::create views and make them interact with a Synth::.
 
-It covers those topics :
+It covers those topics:
 
 list::
 ## Create a keyboard from a list of midi notes
@@ -34,13 +34,13 @@ SynthDef(\instrView, { |out = 0, amp = 0.25, freq = 440, dur = 1.0|
 )
 ::
 
-You can try the synth using :
+You can try the synth using:
 
 code::
 Synth(\instrView)
 ::
 
-We'll start with the following code :
+We'll start with the following code:
 
 code::
 (
@@ -57,7 +57,7 @@ window.front;
 )
 ::
 
-If this code does not make sense to you, you can find more explanations about it in link::Tutorials/QT/create_window::.
+If this code does not make sense to you, you can find more explanations about it in link::Tutorials/Qt/create_window::.
 
 section:: Connecting the button
 
@@ -93,7 +93,7 @@ section:: Adding several buttons at once
 
 We now have a keyboard, but not a very good one ! It only has one key... I'd say that might be enough, but that's quite uncommon.
 
-So let's strong::add a second key:: :
+So let's strong::add a second key:::
 
 code::
 (
@@ -119,7 +119,7 @@ window.front;
 
 As you can see, strong::the Layout has arranged everything automatically::.
 
-But strong::copy-pasting is not a good way to add:: keys. Instead, we can just ask SC to create a button 8 times :
+But strong::copy-pasting is not a good way to add:: keys. Instead, we can just ask SC to create a button 8 times:
 
 code::
 (
@@ -142,7 +142,7 @@ window.front;
 )
 ::
 
-Those buttons feels too small. This is because link::Classes/Button:: strong::has a low default maximum height::. We can change it by reassigning it :
+Those buttons feels too small. This is because link::Classes/Button:: strong::has a low default maximum height::. We can change it by reassigning it:
 
 code::
 (
@@ -167,7 +167,7 @@ window.front;
 
 So now we have 8 buttons, but they all make the same sound. That's doesn't sounds like much progress to me.
 
-We can strong::change the Synth parameter by modifying its arguments:: :
+We can strong::change the Synth parameter by modifying its arguments:::
 
 code::
 Synth(\instrView, [\freq, 660]);
@@ -176,13 +176,13 @@ Synth(\instrView, [\freq, 660]);
 We just need to introduce this inside the loop that creates the buttons.
 But instead of asking SC to do this 8 times, it will do it for a collection of frequencies instead.
 
-We can strong::transform a set of midi notes into frequencies and map them to the buttons:: :
+We can strong::transform a set of midi notes into frequencies and map them to the buttons:::
 
 code::
 (
 var window = Window();
 var layout = HLayout();
-// Getting the C Major Scale, as frequencies, using MIDI notation :
+// Getting the C Major Scale, as frequencies, using MIDI notation:
 var frequencies = [60, 62, 64, 65, 67, 69, 71, 72].midicps;
 
 // For every frequency...
@@ -208,7 +208,7 @@ window.front;
 section:: How HLayout and VLayout works
 
 Now that we have a keyboard, we'd like to strong::implement a volume slider:: to the view.
-We can do this by inserting a link::Classes/Slider:: to the layout :
+We can do this by inserting a link::Classes/Slider:: to the layout:
 
 code::
 (
@@ -246,7 +246,7 @@ This is why the Slider has been pushed all the way to the right. With this divis
 
 But you cannot order views vertically. For this, you need to create a link::Classes/VLayout::, which in turns, cannot order views horizontally. strong::To mix horizontal and vertical division of the Window, you will need to insert some layouts inside other layouts.::
 
-Let's see an example about layout hierarchy. Execute the following code before reading it to get a visual idea about how it functions :
+Let's see an example about layout hierarchy. Execute the following code before reading it to get a visual idea about how it functions:
 
 code::
 (
@@ -259,19 +259,19 @@ var topButton = Button().string_("top").maxHeight_(200);
 var leftButton = Button().string_("left").maxHeight_(200);
 var rightButton = Button().string_("right").maxHeight_(200);
 
-// The window is divided vertically, using a VLayout :
+// The window is divided vertically, using a VLayout:
 window.layout_(firstLayout);
 
-// We're adding two objects, this will split the window in two :
+// We're adding two objects, this will split the window in two:
 
-// This will cover the top side of the window :
+// This will cover the top side of the window:
 firstLayout.add(topButton);
 
-// This will cover the bottom side of the window :
+// This will cover the bottom side of the window:
 firstLayout.add(secondLayout);
 
 // The bottom of the screen is a HLayout, so it's subdivided horizontally
-// In two, because we add two objects :
+// In two, because we add two objects:
 secondLayout.add(leftButton);
 secondLayout.add(rightButton);
 
@@ -284,7 +284,7 @@ It can take some time to get accustomed to this logic.
 
 section:: Back to connecting the slider
 
-Let's adapt our previous code to place the slider on top of the piano :
+Let's adapt our previous code to place the slider on top of the piano:
 
 code::
 (
@@ -313,7 +313,7 @@ window.front;
 )
 ::
 
-The slider is crushing everything ! It's because it is not on the right direction. We can fix this with the code::.orientation:: method. Then we can also reduce its maximum height with code::.maxHeight:: so it takes less space :
+The slider is crushing everything ! It's because it is not on the right direction. We can fix this with the code::.orientation:: method. Then we can also reduce its maximum height with code::.maxHeight:: so it takes less space:
 
 code::
 (
@@ -341,7 +341,7 @@ window.front;
 )
 ::
 
-So far, we only changed its graphical properties, but the slider didn't have any code::action::. It's time to strong::connect it:: :
+So far, we only changed its graphical properties, but the slider didn't have any code::action::. It's time to strong::connect it:::
 
 code::
 (
@@ -390,12 +390,12 @@ window.front;
 In this case, the code::action:: function of the Slider will assign the sliders value to a variable called code::volume::.
 When a key from our 'piano' is pressed, it now also checks this variable to pass the right volume as argument, when executing the Synth command.
 
-But how did the slider know what values were expected by the volume parameter ? Well it didn't. We were only lucky : strong::a Sliders values spans between 0 and 1::, which is the correct setting for the volume.
+But how did the slider know what values were expected by the volume parameter ? Well it didn't. We were only lucky: strong::a Sliders values spans between 0 and 1::, which is the correct setting for the volume.
 
 section:: Adapting the Slider to the correct value (mapping)
 
 But what if we want to control other ranges ?
-We can use code::.linlin:: or code::.linexp:: to map the sliders value, which is between 0 and 1, to a value between 0.1 and 2. We'll use this to new value to control the duration of the percussive enveloppe :
+We can use code::.linlin:: or code::.linexp:: to map the sliders value, which is between 0 and 1, to a value between 0.1 and 2. We'll use this to new value to control the duration of the percussive enveloppe:
 
 code::
 (
@@ -451,7 +451,7 @@ window.front;
 )
 ::
 
-Alternatively, we can use a ControlSpec to do the same thing :
+Alternatively, we can use a ControlSpec to do the same thing:
 
 code::
 var dur = 1;
@@ -465,7 +465,7 @@ var durSlider = Slider()
 
 section::Adding text, and specifying views ratios
 
-The last thing to do is to label our controls. It is easy to remember what the keyboard does, but the sliders could use some indications. We will use a link::Class/StaticText:: for this, configuring its string, and its alignment.
+The last thing to do is to label our controls. It is easy to remember what the keyboard does, but the sliders could use some indications. We will use a link::Classes/StaticText:: for this, configuring its string, and its alignment.
 
 code::
 (
@@ -515,11 +515,11 @@ frequencies.do({ |frequency|
 	pianoLayout.add(button);
 });
 
-// Inserting the volume text before the volume slider :
+// Inserting the volume text before the volume slider:
 windowLayout.add(volumeText, 1);
 windowLayout.add(volumeSlider, 3);
 // Inserting the duration text before the durationslider,
-// after the volume slider :
+// after the volume slider:
 windowLayout.add(durText, 1);
 windowLayout.add(durSlider, 3);
 
@@ -529,7 +529,7 @@ window.front;
 )
 ::
 
-You can see that when adding the views inside the layouts, I also specified a number. This is called strong::assigning a 'stretch':: to a view :
+You can see that when adding the views inside the layouts, I also specified a number. This is called strong::assigning a 'stretch':: to a view:
 
 code::
 windowLayout.add(volumeSlider, stretch: 3);
@@ -543,6 +543,6 @@ Note that strong::the minimum and maximum size of a view are also taken into acc
 
 section::Conclusion
 
-This has been a long tutorial, but with those basic concepts, you should now be able to manipulate every QT Class without much difficulties.
+This has been a long tutorial, but with those basic concepts, you should now be able to manipulate every Qt Class without much difficulties.
 
-The next tutorial in this series is a tour of common things you might want to implement when using Qt, for example an interface with tabs, allowing you to switch between different views. Like we did here, it is about using basic Qt Components to create interfaces. You can access it here : link::Tutorials/Qt/compose_complex_view::.
+The next tutorial in this series is a tour of common things you might want to implement when using Qt, for example an interface with tabs, allowing you to switch between different views. Like we did here, it is about using basic Qt Components to create interfaces. You can access it here: link::Tutorials/Qt/compose_complex_view::.

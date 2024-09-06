@@ -1,10 +1,10 @@
-title:: QT : Create a Window
-summary:: How to create a window, insert widgets and map keyboard inputs to it with SuperCollider / QT.
-categories:: Tutorials>QT
+title:: Qt: Create a Window
+summary:: How to create a window, insert widgets and map keyboard inputs to it with SuperCollider / Qt.
+categories:: Tutorials>Qt
 
 section:: Creating and manipulating a Window
 
-To strong::create:: a link::Classes/Window:: in SuperCollider, simply execute the following code :
+To strong::create:: a link::Classes/Window:: in SuperCollider, simply execute the following code:
 
 code::
 (
@@ -15,7 +15,7 @@ win.front;
 
 The first command creates the window, and the second tells your graphical system to display it.
 
-You can customize its name, position and size directly when creating it :
+You can customize its name, position and size directly when creating it:
 
 code::
 (
@@ -25,7 +25,7 @@ window.front;
 )
 ::
 
-You can also toggle its strong::fullscreen:: mode :
+You can also toggle its strong::fullscreen:: mode:
 
 code::
 (
@@ -36,13 +36,13 @@ window.front;
 ::
 
 If you executed the previous example, you might have noticed that closing it can be difficult, because it doesn't show its top menu, and doesn't respond to keyboard inputs.
-To strong::close every window:: that SuperCollider created using code, simply execute the following command :
+To strong::close every window:: that SuperCollider created using code, simply execute the following command:
 
 code::
 Window.closeAll;
 ::
 
-If you stored your window in a global variable, you can also strong::close it directly:: :
+If you stored your window in a global variable, you can also strong::close it directly:::
 
 code::
 ~window.close;
@@ -51,7 +51,7 @@ code::
 Once closed, you need to recreate it, because it has been completely deleted.
 
 note::
-The following code can be useful when developping graphical interfaces :
+The following code can be useful when developping graphical interfaces:
 
 code::
 (
@@ -66,7 +66,7 @@ Every time you hit strong::ctrl + shift + .::, this will close the window you're
 
 section:: Inserting and positionning views
 
-Once you've created the window, you can strong::add:: a link::Classes/View:: strong::directly:: into it, by passing the window as parent argument when creating the link::Classes/View:: :
+Once you've created the window, you can strong::add:: a link::Classes/View:: strong::directly:: into it, by passing the window as parent argument when creating the link::Classes/View:::
 
 code::
 (
@@ -77,7 +77,7 @@ window.front;
 )
 ::
 
-When doing so, strong::you are responsible for:: setting your link::Classes/View:: at strong::the right position and size:: :
+When doing so, strong::you are responsible for:: setting your link::Classes/View:: at strong::the right position and size:::
 
 code::
 (
@@ -91,7 +91,7 @@ window.front;
 )
 ::
 
-If you'd rather use strong::automatic positionning:: and strong::automatic resizing:: when the window is redimensionned, you should use a link::Classes/Layout:: :
+If you'd rather use strong::automatic positionning:: and strong::automatic resizing:: when the window is redimensionned, you should use a link::Classes/Layout:::
 
 code::
 (
@@ -124,7 +124,7 @@ link::Classes/Window:: 'inherits' from the link::Classes/UserView:: strong::acti
 
 Another way to interact with the window using the keyboard, which might be preferable, is to assign a function to code::View.globalKeyDownAction::.
 
-code::View.globalKeyDownAction:: strong::will be executed whenever a keyboard input is received:: (regardless of current focus), and strong::allows an action to take place in response:: to the keyboard event, for example closing the window :
+code::View.globalKeyDownAction:: strong::will be executed whenever a keyboard input is received:: (regardless of current focus), and strong::allows an action to take place in response:: to the keyboard event, for example closing the window:
 
 code::
 (
@@ -136,10 +136,10 @@ View.globalKeyDownAction = {
 
 	switch(keycode)
 
-	// if the keycode is 65307 (ESC) : close the window
+	// if the keycode is 65307 (ESC): close the window
 	{ 65307 } { window.close; }
 
-	// if the keycode is 102 (f) : toggle full screen ON / OFF
+	// if the keycode is 102 (f): toggle full screen ON / OFF
 	{ 102 } {
 		fullScreenActive = fullScreenActive.not;
 		if(fullScreenActive)
@@ -153,7 +153,7 @@ window.front;
 ::
 
 note::
-Using a link::Classes/FunctionList:: with code::View.globalKeyDownAction:: allows to incrementally build up keyboard input response :
+Using a link::Classes/FunctionList:: with code::View.globalKeyDownAction:: allows to incrementally build up keyboard input response:
 code::
 (
 var window = Window();
@@ -177,4 +177,4 @@ Section:: And that's it!
 
 With the ability to strong::create a window::, strong::insert views inside:: and make it strong::respond to keyboard inputs::, you're set to go forward in your SuperCollider graphical experimentations.
 
-The next section of this tutorial is : link::Tutorials/Qt/create_simple_instrument_view::. It starts from the previous examples and talks about connecting a button and a slider to a synth, and about the layout system.
+The next section of this tutorial is: link::Tutorials/Qt/create_simple_instrument_view::. It starts from the previous examples and talks about connecting a button and a slider to a synth, and about the layout system.

@@ -1,14 +1,14 @@
-title:: QT : Things you probably want to know
-summary:: Miscellaneous things you probably want to know about QT.
-categories:: Tutorials>QT
+title:: Qt: Things you probably want to know
+summary:: Miscellaneous things you probably want to know about Qt.
+categories:: Tutorials>Qt
 
 section:: Rendering isn't always available
 
-SuperCollider provides some useful classes to automate processes. Some of them are associated to a link::Classes/Clock:: : mainly link::Classes/Routine:: and link::Classes/Task::.
+SuperCollider provides some useful classes to automate processes. Some of them are associated to a link::Classes/Clock::: mainly link::Classes/Routine:: and link::Classes/Task::.
 
-strong::QT rendering system is unavailable within the context of clock associated threads::. In other words, you cannot 'directly' modify a widget within a link::Classes/Routine:: or a link::Classes/Task::.
+strong::Qt rendering system is unavailable within the context of clock associated threads::. In other words, you cannot 'directly' modify a widget within a link::Classes/Routine:: or a link::Classes/Task::.
 
-Instead, you need to defer the modification by strong::encapsulating it in a deferred function::, that will be executed once SuperCollider resume its main context, see link::Classes/Function#-defer::. Doing otherwise will crash the program :
+Instead, you need to defer the modification by strong::encapsulating it in a deferred function::, that will be executed once SuperCollider resume its main context, see link::Classes/Function#-defer::. Doing otherwise will crash the program:
 
 code::
 (
@@ -19,7 +19,7 @@ var value = 0;
 var routine = Routine({
 	loop {
 		value = 101.rand / 100;
-		// Interacting with a widget from within a routine :
+		// Interacting with a widget from within a routine:
 		// instructions must be nested in a function, and deferred
 		{ slider.value_(value); }.defer;
 		0.5.wait;
@@ -40,7 +40,7 @@ win.front;
 )
 ::
 
-section:: QT limitations
+section:: Qt limitations
 
 This remark mostly concerns debugging and understanding issues. Since strong::Qt is a third-party library integrated within SuperCollider::, some of its limitations are unrelated to SuperCollider itself.
 
@@ -50,9 +50,9 @@ section:: Pen usage and resource management
 
 The link::Classes/Pen:: class allows the user to define a custom code::drawFunc:: to a link::Classes/View::.
 
-link::Classes/Pen:: usage is a strong::two-steps process:: : the user strong::first 'describes' the shape:: they want to draw (using methods such as code::fillRect:: or code::lineTo::), strong::then renders the shape::, using either code::fill::, code::stroke::, or code::fillStroke::.
+link::Classes/Pen:: usage is a strong::two-steps process::: the user strong::first 'describes' the shape:: they want to draw (using methods such as code::fillRect:: or code::lineTo::), strong::then renders the shape::, using either code::fill::, code::stroke::, or code::fillStroke::.
 
-Depending on the hardware, strong::when drawing very complex shapes:: (for a example a million lines), strong::some issues might arise:: :
+Depending on the hardware, strong::when drawing very complex shapes:: (for a example a million lines), strong::some issues might arise:::
 
 Drawing instructions are cached until they are drawn. This means that calling code::lineTo:: a million times before calling code::stroke:: might saturate the computers RAM before the code::stroke:: instruction effectively takes place and frees the cached instructions.
 
