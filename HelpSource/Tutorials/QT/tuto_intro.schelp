@@ -6,7 +6,7 @@ section:: About
 
 SuperCollider's language, strong::sclang::, provides some Classes dedicated to Graphical User Interfaces (GUIs) creation, which allow you to create your own graphical interfaces.
 
-In the underlying architecture, GUI Classes are created using a strong::third-party library dedicated to this purpose::, which is called strong::QT::. QT is supported by the most common Operating Systems, which allows cross-platform development. strong::scide::, the default IDE, is based on QT.
+In the underlying architecture, GUI Classes are created using a strong::third-party library dedicated to this purpose::, which is called strong::Qt::. Qt is supported by the most common Operating Systems, which allows cross-platform development. strong::scide::, the default IDE, is based on Qt.
 
 The goal of this tutorial serie is to strong::provide the basics of QT manipulation:: within the scope of sclang. It is designed to be accessible to beginners, and follows a step-by-step progression, illustrated with examples.
 
