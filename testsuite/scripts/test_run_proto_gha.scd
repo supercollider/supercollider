@@ -96,7 +96,7 @@
 	(
 		'suite': "TestUGen_RTAlloc",
 		'test': "test_FFT",
-		'skip': "true",
+		'skip': "false",
 		'skipReason': "UnitTest fails (FIXME)",
 	),
 	(
@@ -126,7 +126,7 @@
 	(
 		'suite': "TestUGen_RTAlloc",
 		'test': "test_allUGens",
-		'skip': "true",
+		'skip': "false",
 		'skipReason': "RT memory allocation seems to be unreliable - see GH issue #6410",
 	),
 ]
