@@ -4,6 +4,7 @@ TestUGen_RTAlloc : UnitTest {
 
 	setUp {
 		server = Server(this.class.name);
+		server.options.sampleRate = 48000;
 		server.options.memSize = 1024;
 		server.options.blockSize = 64;
 		this.bootServer(server);
@@ -119,7 +120,7 @@ TestUGen_RTAlloc : UnitTest {
 		this.assertAllocPass("Convolution2", { Convolution2.ar(DC.ar(1), LocalBuf(256).set(1), 1, 64) });
 		this.assertAllocPass("Convolution2L", { Convolution2L.ar(DC.ar(1), LocalBuf(256).set(1), 1, 64) });
 		this.assertAllocPass("Convolution3", { Convolution3.ar(DC.ar(1), LocalBuf(256).set(1), 1, 64) });
-		this.assertAllocPass("StereoConvolution2L", { 
+		this.assertAllocPass("StereoConvolution2L", {
 			var k = LocalBuf(64).set(1); StereoConvolution2L.ar(DC.ar(1), k, k, 1, 64)
 		});
 		this.assertAllocPass("GrainBuf", { GrainBuf.ar(1, 1, 1, LocalBuf(1).set(1), maxGrains: 2)});
@@ -175,7 +176,7 @@ TestUGen_RTAlloc : UnitTest {
 		this.assertAllocFail("RunningSum", { RunningSum.ar(DC.ar(1), 2**20) });
 		this.assertAllocFail("PitchShift", { PitchShift.ar(SinOsc.ar, 100) });
 		// alloc big buffer via very small minFreq
-		this.assertAllocFail("Pitch", { K2A.ar(Pitch.kr(SinOsc.ar, minFreq:1e-5)[0]).round });
+		this.assertAllocFail("Pitch", { K2A.ar(Pitch.kr(SinOsc.ar, minFreq: 0.1)[0]).round });
 		this.assertAllocFail("Limiter", { Limiter.ar(DC.ar(1), dur: 100) });
 		this.assertAllocFail("Normalizer", { Normalizer.ar(DC.ar(1), dur: 100) });
 
@@ -183,7 +184,7 @@ TestUGen_RTAlloc : UnitTest {
 		this.assertAllocFail("Convolution2", { Convolution2.ar(DC.ar(1), LocalBuf(256).set(1), 1, 2**20) });
 		this.assertAllocFail("Convolution2L", { Convolution2L.ar(DC.ar(1), LocalBuf(256).set(1), 1, 2**20) });
 		this.assertAllocFail("Convolution3", { Convolution3.ar(DC.ar(1), LocalBuf(256).set(1), 1, 2**20) });
-		this.assertAllocFail("StereoConvolution2L", { 
+		this.assertAllocFail("StereoConvolution2L", {
 			var k = LocalBuf(64).set(1); StereoConvolution2L.ar(DC.ar(1), k, k, 1, 2**20)
 		});
 		// grain UGens: allocFail with high maxGrains
