@@ -25,7 +25,7 @@ jobs:
             build-readline: false
             build-fftw: false
             artifact-suffix: "macOS-universal"
-            verify-app: false
+            verify-app: true
 
           - job-name: "x64 legacy"
             os-version: "12"
