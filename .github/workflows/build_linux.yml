@@ -13,78 +13,80 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - job-name: "focal gcc7"
-            os-version: "20.04"
-            c-compiler: "gcc-7"
-            cxx-compiler: "g++-7"
-            use-syslibs: false
-            shared-libscsynth: false
 
-          - job-name: "focal gcc9 shared libscsynth"
-            os-version: "20.04"
+          - job-name: ""
+            os-version: "22.04"
             c-compiler: "gcc-9"
             cxx-compiler: "g++-9"
             use-syslibs: false
-            shared-libscsynth: true
-
-          - job-name: "jammy gcc10 use system libraries"
-            os-version: "22.04"
-            c-compiler: "gcc-10"
-            cxx-compiler: "g++-10"
-            use-syslibs: true
             shared-libscsynth: false
 
-          - job-name: "jammy gcc11"
+          - job-name: ""
             os-version: "22.04"
             c-compiler: "gcc-11"
             cxx-compiler: "g++-11"
             use-syslibs: false
             shared-libscsynth: false
 
-          - job-name: "jammy gcc12"
+          - job-name: ""
             os-version: "22.04"
             c-compiler: "gcc-12"
             cxx-compiler: "g++-12"
             use-syslibs: false
             shared-libscsynth: false
-            artifact-suffix: "linux-jammy-gcc12" # set if needed - will trigger artifact upload
+            artifact-suffix: "ubuntu-22.04-gcc12" # will trigger artifact upload; after changing this update the test-linux artifact-file in actions.yml
 
-          - job-name: "focal clang7"
-            os-version: "20.04"
-            c-compiler: "clang-7"
-            cxx-compiler: "clang++-7"
-            use-syslibs: false
+          - job-name: "use system libraries"
+            os-version: "24.04"
+            c-compiler: "gcc-13"
+            cxx-compiler: "g++-13"
+            use-syslibs: true
             shared-libscsynth: false
 
-          - job-name: "focal clang11"
-            os-version: "20.04"
+          - job-name: "shared libscsynth"
+            os-version: "24.04"
+            c-compiler: "gcc-14"
+            cxx-compiler: "g++-14"
+            use-syslibs: false
+            shared-libscsynth: true
+            
+          - job-name: ""
+            os-version: "22.04"
             c-compiler: "clang-11"
             cxx-compiler: "clang++-11"
             use-syslibs: false
             shared-libscsynth: false
 
-          - job-name: "focal clang12"
-            os-version: "20.04"
-            c-compiler: "clang-12"
-            cxx-compiler: "clang++-12"
+          - job-name: ""
+            os-version: "24.04"
+            c-compiler: "clang-15"
+            cxx-compiler: "clang++-15"
             use-syslibs: false
             shared-libscsynth: false
 
-          - job-name: "jammy clang13"
-            os-version: "22.04"
-            c-compiler: "clang-13"
-            cxx-compiler: "clang++-13"
-            use-syslibs: false
-            shared-libscsynth: false
+            # clang 16-18 disabled due to incompatible boost code - re-enable after updating bundled boost > ~1.80
+          # - job-name: ""
+          #   os-version: "24.04"
+          #   c-compiler: "clang-16"
+          #   cxx-compiler: "clang++-16"
+          #   use-syslibs: false
+          #   shared-libscsynth: false
 
-          - job-name: "jammy clang14"
-            os-version: "22.04"
-            c-compiler: "clang-14"
-            cxx-compiler: "clang++-14"
-            use-syslibs: false
-            shared-libscsynth: false
+          # - job-name: ""
+          #   os-version: "24.04"
+          #   c-compiler: "clang-17"
+          #   cxx-compiler: "clang++-17"
+          #   use-syslibs: false
+          #   shared-libscsynth: false
 
-    name: Linux ${{ matrix.job-name }}
+          # - job-name: ""
+          #   os-version: "24.04"
+          #   c-compiler: "clang-18"
+          #   cxx-compiler: "clang++-18"
+          #   use-syslibs: false
+          #   shared-libscsynth: false
+
+    name: Ubuntu ${{ matrix.os-version }} ${{ matrix.c-compiler }} ${{ matrix.job-name }}
     env:
       BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install

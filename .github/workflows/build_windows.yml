@@ -49,7 +49,7 @@ jobs:
 
           - job-name: "64-bit MinGW"
             fftw-arch: "x64"
-            os-version: "2019"
+            os-version: "2022"
             qt-version: "5.15.2"
             qt-arch: "win64_mingw81"
             fftw-url: "ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip"
