@@ -30,7 +30,7 @@ jobs:
           - job-name: "x64 legacy"
             os-version: "12"
             xcode-version: "13.4.1"
-            qt-version: "5.9.9" # will use qt from aqtinstall
+            qt-version: "5.15.2" # will use qt from aqtinstall
             deployment-target: "10.15"
             cmake-architectures: x86_64
             use-syslibs: false
