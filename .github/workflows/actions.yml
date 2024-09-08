@@ -80,7 +80,7 @@ jobs:
     needs: [version-getter, build-linux]
     uses: ./.github/workflows/test_linux.yml
     with:
-      artifact-file: "SuperCollider-${{ needs.version-getter.outputs.sc-version }}-linux-jammy-gcc12"
+      artifact-file: "SuperCollider-${{ needs.version-getter.outputs.sc-version }}-ubuntu-22.04-gcc12"
     secrets: inherit
 
   test-macos:
