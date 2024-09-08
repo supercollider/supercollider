@@ -90,8 +90,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/Library/Caches/ccache
-          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ matrix.cmake-architectures }}-${{ steps.current-date.outputs.stamp }}
-          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ matrix.cmake-architectures }}-
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ matrix.cmake-architectures }}-${{ steps.current-date.outputs.stamp }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ matrix.cmake-architectures }}-
 
       - name: cleanup homebrew downloads # always remove existing downloads first, as we bring back relevant downloads from cache
         run: rm -rf $(brew --cache)
