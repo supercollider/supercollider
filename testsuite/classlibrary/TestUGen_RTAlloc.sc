@@ -1,16 +1,20 @@
 TestUGen_RTAlloc : UnitTest {
 
-	var server;
+	classvar server;
 
-	setUp {
-		server = Server(this.class.name);
+	*initClass {
+		passVerbosity = UnitTest.brief;
+	}
+
+	*setUpClass {
+		server = Server(this.name);
 		server.options.sampleRate = 48000;
 		server.options.memSize = 1024;
 		server.options.blockSize = 64;
-		this.bootServer(server);
+		server.bootSync;
 	}
 
-	tearDown {
+	*tearDownClass {
 		server.quit.remove;
 	}
 
@@ -32,8 +36,7 @@ TestUGen_RTAlloc : UnitTest {
 			this.assert(false, "% allocPass test should complete".format(name))
 		} {
 			this.assert(out.sum != 0,
-				"% allocPass test should produce non-zero output".format(name),
-				// out == 0 // report only if assert fails
+				"% allocPass test should produce non-zero output".format(name)
 			);
 		};
 	}
@@ -44,8 +47,7 @@ TestUGen_RTAlloc : UnitTest {
 			this.assert(false, "% allocFail test should complete".format(name))
 		} {
 			this.assertEquals(out.sum, 0,
-				"% allocFail test should produce zero output".format(name),
-				// out != 0 // report only if assert fails
+				"% allocFail test should produce zero output".format(name)
 			);
 		};
 	}
