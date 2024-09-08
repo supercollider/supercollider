@@ -86,10 +86,11 @@ TestUGen_RTAlloc : UnitTest {
 
 	test_allocFail_continueProcessing_otherNodes {
 		var output = nil;
-		var memFill = { DelayN.ar(Silent.ar, this.memSizeSeconds * 2) }.play(server);
+		var dummyOutBus = Bus.audio(server, 1);
+		var memFill = { DelayN.ar(Silent.ar, this.memSizeSeconds * 2) }.play(server, dummyOutBus);
 		server.sync;
 		output = this.awaitSynthOutput { DC.ar(1) };
-		memFill.free;
+		memFill.free; dummyOutBus.free;
 		this.assertEquals(output[0], 1.0,
 			"a failed RTAlloc should not block other nodes in the processing chain")
 	}
