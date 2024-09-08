@@ -101,7 +101,7 @@ ControlSpec : Spec {
 		if(this.range < this.step) {
 			// Warning user when step exceeds range,
 			// returning median value
-			"ControlSpec step is exceeding it's range.".warn;
+			"ControlSpec step is exceeding its range.".warn;
 			^(this.minval + (this.range / 2))
 		} {
 			value = warp.map(value.clip(0.0, 1.0));
