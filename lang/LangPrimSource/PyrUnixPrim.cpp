@@ -197,7 +197,7 @@ int prArrayPOpen(struct VMGlobals* g, int numArgsPushed) {
 
     pid_t pid;
     FILE* stream;
-    std::tie(pid, stream) = sc_popen_argv(strings, "r");
+    std::tie(pid, stream) = sc_popen_argv(std::move(strings), "r");
     if (stream != nullptr) {
         SC_Thread thread(std::bind(string_popen_thread_func, pid, stream, IsTrue(postOutputSlot)));
         thread.detach();

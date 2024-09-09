@@ -27,6 +27,7 @@ Primitives for File i/o.
 #include "GC.h"
 #include "PyrKernel.h"
 #include "PyrPrimitive.h"
+#include "PyrSlot64.h"
 #include "PyrSymbol.h"
 #include "PyrFilePrim.h"
 #include "ReadWriteMacros.h"
@@ -49,6 +50,7 @@ Primitives for File i/o.
 
 /* C++ stdlib headers */
 #include <tuple>
+#include <array>
 
 /* boost headers */
 #include <boost/filesystem.hpp>
@@ -1352,6 +1354,53 @@ int prPipeOpen(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
+int prPipeOpenArgvReadWrite(struct VMGlobals* g, int numArgsPushed) {
+    PyrSlot* callerSlot = g->sp - 1;
+    PyrSlot* argsSlot = g->sp - 0;
+
+    // argsSlot must be an object
+    if (NotObj(argsSlot))
+        return errWrongType;
+
+    PyrObject* argsColl = slotRawObject(argsSlot);
+
+    // argsColl must be a collection
+    if (!(slotRawInt(&argsColl->classptr->classFlags) & classHasIndexableInstances))
+        return errNotAnIndexableObject;
+
+    // collection must contain at least one string: the path of executable to run
+    if (argsColl->size < 1)
+        return errFailed;
+
+    auto [error, strings] = PyrCollToVectorStdString(argsColl);
+    if (error != errNone)
+        return error;
+
+    auto [pid, files] = sc_popen_argv_twoway(std::move(strings));
+
+    PyrObject* result = newPyrArray(g->gc, 3, 0, true); // runGC = true
+    SetObject(callerSlot, result);
+
+    SetInt(&result->slots[0], pid);
+
+    if (files[0] == nullptr) {
+        SetNil(&result->slots[1]);
+    } else {
+        SetPtr(&result->slots[1], files[0]);
+    }
+
+    if (files[1] == nullptr) {
+        SetNil(&result->slots[2]);
+    } else {
+        SetPtr(&result->slots[2], files[1]);
+    }
+
+    result->size = 3;
+
+    return errNone;
+}
+
+
 int prPipeOpenArgv(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* callerSlot = g->sp - 2;
     PyrSlot* argsSlot = g->sp - 1;
@@ -1393,7 +1442,7 @@ int prPipeOpenArgv(struct VMGlobals* g, int numArgsPushed) {
 
     pid_t pid;
     FILE* file;
-    std::tie(pid, file) = sc_popen_argv(strings, mode);
+    std::tie(pid, file) = sc_popen_argv(std::move(strings), mode);
 
     if (file != nullptr) {
         SetPtr(&pfile->fileptr, file);
@@ -1409,7 +1458,6 @@ int prPipeClose(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* b;
     PyrFile* pfile;
     FILE* file;
-    pid_t pid;
 
     a = g->sp - 1;
     b = g->sp;
@@ -1417,14 +1465,19 @@ int prPipeClose(struct VMGlobals* g, int numArgsPushed) {
     file = (FILE*)slotRawPtr(&pfile->fileptr);
     if (file == nullptr)
         return errNone;
-    pid = (pid_t)slotRawInt(b);
+
+    int err;
+    if (IsNil(b)) {
+        err = sc_fclose(file);
+    } else {
+        const auto pid = (pid_t)slotRawInt(b);
+        err = sc_pclose(file, pid);
+    }
 
     SetPtr(&pfile->fileptr, nullptr);
-    int perr = sc_pclose(file, pid);
-    SetInt(a, perr);
-    if (perr == -1)
-        return errFailed;
-    return errNone;
+    SetInt(a, err);
+
+    return (err == 0) ? errNone : errFailed;
 }
 
 //----------------------------------------------------------------------------//
@@ -1858,6 +1911,7 @@ void initFilePrimitives() {
 
     definePrimitive(base, index++, "_PipeOpen", prPipeOpen, 3, 0);
     definePrimitive(base, index++, "_PipeOpenArgv", prPipeOpenArgv, 3, 0);
+    definePrimitive(base, index++, "_PipeOpenArgvReadWrite", prPipeOpenArgvReadWrite, 2, 0);
     definePrimitive(base, index++, "_PipeClose", prPipeClose, 2, 0);
 
     definePrimitive(base, index++, "_FileDelete", prFileDelete, 2, 0);

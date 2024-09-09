@@ -24,23 +24,66 @@
 #    include <array>
 #    include <string>
 
-std::tuple<pid_t, FILE*> sc_popen(std::string&& command, const std::string& type) {
+std::vector<char*> stringsToArgv(const std::vector<std::string>& strings) {
+    std::vector<char*> argv(strings.size() + 1);
+    for (int i = 0; i < strings.size(); ++i) {
+        // execv wants argv as char *const argv[] - need to make the pointer const
+        argv[i] = const_cast<char*>(strings[i].data());
+    }
+    argv[strings.size()] = nullptr;
+    return argv;
+}
+
+std::tuple<pid_t, FILE*> sc_popen(std::string command, const std::string& type) {
     std::vector<std::string> argv;
     argv.emplace_back("/bin/sh");
     argv.emplace_back("-c");
     argv.push_back(std::move(command));
-    return sc_popen_argv(argv, type);
+    return sc_popen_argv(std::move(argv), type);
 }
 
-std::tuple<pid_t, FILE*> sc_popen_argv(const std::vector<std::string>& strings, const std::string& type) {
-    std::vector<char*> argv(strings.size() + 1);
-    for (int i = 0; i < strings.size(); ++i) {
-        // execv wants argv as char *const argv[]
-        // need to make the pointer const
-        argv[i] = const_cast<char*>(strings[i].data());
-    }
-    argv[strings.size()] = nullptr;
+std::tuple<pid_t, FILE*> sc_popen_argv(std::vector<std::string> strings, const std::string& type) {
+    const auto argv = stringsToArgv(strings);
     return sc_popen_c_argv(argv[0], argv.data(), type.c_str());
+}
+
+std::tuple<pid_t, std::array<FILE*, 2>> sc_popen_argv_twoway(std::vector<std::string> args) {
+    auto argv = stringsToArgv(args);
+    const char* filename = argv[0];
+
+    int readPipe[2];
+    int writePipe[2];
+
+    pipe(readPipe);
+    pipe(writePipe);
+
+    const pid_t pid = fork();
+    if (pid == 0) { // CHILD PROCESS
+        // close the ends of the pipes used by parent
+        close(readPipe[0]);
+        close(writePipe[1]);
+
+        // replace stdin and stdout with the pipes
+        close(STDIN_FILENO);
+        close(STDOUT_FILENO);
+        dup2(writePipe[0], STDIN_FILENO);
+        dup2(readPipe[1], STDOUT_FILENO);
+
+        execvp(filename, argv.data());
+        exit(127);
+
+    } else { // PARENT PROCESS
+
+        // close the ends of the pipes used by child
+        close(readPipe[1]);
+        close(writePipe[0]);
+
+        // open other ends of pipes
+        FILE* readFD = fdopen(readPipe[0], "r");
+        FILE* writeFD = fdopen(writePipe[1], "w");
+
+        return std::make_tuple(pid, std::array<FILE*, 2> { readFD, writeFD });
+    }
 }
 
 std::tuple<pid_t, FILE*> sc_popen_c_argv(const char* filename, char* const argv[], const char* type) {
@@ -119,16 +162,20 @@ std::tuple<pid_t, FILE*> sc_popen_c_argv(const char* filename, char* const argv[
  */
 int sc_pclose(FILE* iop, pid_t mPid) {
     int pstat = 0;
-    pid_t pid;
+    pid_t pid { -1 };
 
-    (void)fclose(iop);
+    (void)sc_fclose(iop);
 
-    do {
-        pid = wait4(mPid, &pstat, 0, (struct rusage*)0);
-    } while (pid == -1 && errno == EINTR);
+    if (mPid) {
+        do {
+            pid = wait4(mPid, &pstat, 0, (struct rusage*)0);
+        } while (pid == -1 && errno == EINTR);
+    }
 
     return (pid == -1 ? -1 : pstat);
 }
+
+int sc_fclose(FILE* iop) { return fclose(iop); }
 
 #else
 #    include <numeric>
