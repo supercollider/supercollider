@@ -131,7 +131,7 @@ jobs:
         run: sudo apt-get install --yes libboost-thread-dev libboost-system-dev libboost-filesystem-dev libboost-regex-dev libboost-test-dev libboost-program-options-dev libyaml-cpp-dev
 
       - name: install qt from apt
-        run: sudo apt-get install qtbase5-dev qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5svg5-dev libqt5websockets5-dev qtwebengine5-dev
+        run: sudo apt-get install --yes qt6-base-dev qt6-base-dev-tools qt6-tools-dev qt6-tools-dev-tools qt6-declarative-dev libqt6gui6 libqt6printsupport6 libqt6svgwidgets6 libqt6websockets6-dev libqt6webenginecore6 qt6-webengine-dev qt6-webengine-dev-tools libqt6core5compat6-dev libqt6webchannel6-dev libqt6opengl6-dev libqt6svg6-dev linguist-qt6 qt6-l10n-tools  libglx-dev libgl1-mesa-dev libvulkan-dev libxkbcommon-dev libxcb-xkb-dev
 
       - name: configure
         run: |
