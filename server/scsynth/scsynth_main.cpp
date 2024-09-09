@@ -37,6 +37,10 @@
 #    include <unistd.h> // for _POSIX_MEMLOCK
 #    include <sys/wait.h>
 #endif
+#ifdef __EMSCRIPTEN__
+#    include <emscripten.h>
+#endif
+
 
 #ifdef __COBALT__
 #    include "XenomaiLock.h"
@@ -152,6 +156,11 @@ void Usage() {
     }                                                                                                                  \
     i += n;
 
+#ifdef __EMSCRIPTEN__
+void em_loop() {
+    // scprintf("<loop>\n");
+}
+#endif
 
 int scsynth_main(int argc, char** argv) {
     startServerBootDelayWarningTimer();
@@ -447,7 +456,6 @@ int scsynth_main(int argc, char** argv) {
     }
 
     stopServerBootDelayWarningTimer();
-
     if (options.mVerbosity >= 0) {
 #ifdef NDEBUG
         scprintf("SuperCollider 3 server ready.\n");
@@ -457,9 +465,16 @@ int scsynth_main(int argc, char** argv) {
     }
     fflush(stdout);
 
+#ifdef __EMSCRIPTEN__
+    // scprintf("emscripten_set_main_loop\n");
+    emscripten_set_main_loop(em_loop, 0, 0);
+    return 0;
+
+#else
     EventLoop::run([world]() { World_WaitForQuit(world, true); });
 
     return 0;
+#endif
 }
 
 #ifdef _WIN32

@@ -20,6 +20,8 @@ if(NOT SYSTEM_BOOST) # we compile boost ourselves
 		aux_source_directory(boost/libs/thread/src/win32/ boost_thread_platform )
 	elseif(PTHREADS_FOUND)
 		aux_source_directory(boost/libs/thread/src/pthread/ boost_thread_platform )
+	elseif(EMSCRIPTEN)
+		aux_source_directory(boost/libs/thread/src/pthread/ boost_thread_platform )
 	else()
 		message(SEND_ERROR "we need to implement boost_thread")
 	endif()
@@ -46,6 +48,11 @@ if(NOT SYSTEM_BOOST) # we compile boost ourselves
 
 		set_property(TARGET boost_program_options_lib boost_system_lib boost_filesystem_lib
 					 APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
+	endif()
+
+	if(EMSCRIPTEN)
+		set_property(TARGET boost_program_options_lib boost_system_lib boost_filesystem_lib
+					 APPEND PROPERTY COMPILE_FLAGS "-pthread -s USE_PTHREADS=1 -s WASM=1")
 	endif()
 
 	add_library(boost_thread_lib STATIC EXCLUDE_FROM_ALL ${boost_thread_src} ${boost_thread_platform})
