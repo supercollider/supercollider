@@ -145,5 +145,5 @@ int main(int argc, char* argv[]) {
 #ifdef SC_USE_QTWEBENGINE
     HelpBrowserWebSocketServices hbServices(win->helpBrowserDocklet()->browser());
 #endif
-    app.exec();
+    return app.exec();
 }
