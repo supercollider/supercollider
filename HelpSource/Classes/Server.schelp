@@ -394,6 +394,13 @@ s.queryAllNodes; // note the root node (ID 0) and the default group (ID 1)
 s.quit;
 ::
 
+method:: rtMemoryStatus
+Queries the server for the amount of currently free real-time memory
+argument:: action
+a Function that will be evaluated when the server responds, with the current
+amount of free RT memory and the size of largest continuous block (both in bytes) passed as
+arguments. The default action prints a message.
+
 method:: peakCPU, avgCPU
 Get peak and average CPU usage.
 
