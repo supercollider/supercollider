@@ -27,7 +27,7 @@ TestUGen_RTAlloc : UnitTest {
 		var cond = CondVar(), synthOutput = nil;
 		var runtimeSeconds = runtimeSamples / server.sampleRate;
 		// allow extra timeout for longer tests (e.g. testFFT with big memSize)
-		if (runtimeSeconds > timeout) { 
+		if (runtimeSeconds > timeout) {
 			timeout = runtimeSeconds + timeout
 		};
 		synthFn.loadToFloatArray(runtimeSeconds, server) { |out|
@@ -72,16 +72,24 @@ TestUGen_RTAlloc : UnitTest {
 		var output = this.awaitSynthOutput {
 			DelayN.ar(DC.ar(1), this.memSizeSeconds * 2)
 		};
-		this.assertEquals(output[0], 0.0,
-			"a failed RTAlloc should clear unit outputs")
+		if (output.isNil) {
+			this.assert(false, "test should complete")
+		} {
+			this.assertEquals(output[0], 0.0,
+				"a failed RTAlloc should clear unit outputs")
+		}
 	}
 
 	test_allocFail_continueProcessing_sameNode {
 		var output = this.awaitSynthOutput {
 			DelayN.ar(DC.ar(1), this.memSizeSeconds * 2); DC.ar(1)
 		};
-		this.assertEquals(output[0], 1.0,
-			"a failed RTAlloc should not block other units in the same node")
+		if (output.isNil) {
+			this.assert(false, "test should complete")
+		} {
+			this.assertEquals(output[0], 1.0,
+				"a failed RTAlloc should not block other units in the same node")
+		}
 	}
 
 	test_allocFail_continueProcessing_otherNodes {
@@ -91,16 +99,24 @@ TestUGen_RTAlloc : UnitTest {
 		server.sync;
 		output = this.awaitSynthOutput { DC.ar(1) };
 		memFill.free; dummyOutBus.free;
-		this.assertEquals(output[0], 1.0,
-			"a failed RTAlloc should not block other nodes in the processing chain")
+		if (output.isNil) {
+			this.assert(false, "test should complete")
+		} {
+			this.assertEquals(output[0], 1.0,
+				"a failed RTAlloc should not block other nodes in the processing chain")
+		}
 	}
 
 	test_allocFail_setDoneFlag {
 		var output = this.awaitSynthOutput {
 			K2A.ar(Done.kr(DelayN.ar(Silent.ar, this.memSizeSeconds * 2)))
 		};
-		this.assert(output[0] > 0,
-			"a failed RTAlloc should set the Done flag")
+		if (output.isNil) {
+			this.assert(false, "test should complete")
+		} {
+			this.assert(output[0] > 0,
+				"a failed RTAlloc should set the Done flag")
+		}
 	}
 
 	// TEST ALL UGENS
@@ -120,7 +136,7 @@ TestUGen_RTAlloc : UnitTest {
 
 		var convBufFrames = blockSize * 8;
 		var convBuf = Buffer.loadCollection(server, 1!convBufFrames);
-		
+
 		var testArgs = [
 			["AllpassC", { AllpassC.ar(DC.ar(1), allocSeconds, 0) }],
 			["AllpassL", { AllpassL.ar(DC.ar(1), allocSeconds, 0) }],
@@ -269,7 +285,7 @@ TestUGen_RTAlloc : UnitTest {
 		if (out.isNil) {
 			this.assert(false, "successful alloc test should complete (fftSize: %)".format(fftSize));
 		} {
-			// FFT returns a stream of -1, except when a spectral frame is ready, 
+			// FFT returns a stream of -1, except when a spectral frame is ready,
 			this.assert(out.any(_ > 0), "should return a valid bufnum (bufnum: %)".format(out));
 		};
 		// FFT should return always -1 when alloc fails
