@@ -64,9 +64,9 @@ jobs:
       BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
       HOMEBREW_NO_ANALYTICS: 1
+      HOMEBREW_NO_ENV_HINTS: 1
       HOMEBREW_NO_AUTO_UPDATE: 1
       HOMEBREW_NO_INSTALL_CLEANUP: 1
-      HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
       USE_SYSLIBS: ${{ matrix.use-syslibs }}
       SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
       ARTIFACT_FILE: "SuperCollider-${{ inputs.sc-version }}-${{ matrix.artifact-suffix }}.dmg"
@@ -130,13 +130,15 @@ jobs:
 
           # install universal versions of homebrew libraries
           if [[ "${{ matrix.cmake-architectures }}" != "x86_64" ]]; then
+              UNIVERSAL_PACKAGES=
+              if [[ "${{ matrix.build-libsndfile }}" != "true" ]]; then UNIVERSAL_PACKAGES="libsndfile $UNIVERSAL_PACKAGES"; fi
+              if [[ "${{ matrix.build-readline }}" != "true" ]]; then UNIVERSAL_PACKAGES="readline $UNIVERSAL_PACKAGES"; fi
+              if [[ "${{ matrix.build-fftw }}" != "true" ]]; then UNIVERSAL_PACKAGES="fftw $UNIVERSAL_PACKAGES"; fi
+              if [[ "${{ matrix.system-portaudio }}" != "false" ]]; then UNIVERSAL_PACKAGES="portaudio $UNIVERSAL_PACKAGES"; fi
               echo "Downloading script for creating universal binaries from homebrew packages"
-              curl -O -J -L https://gist.githubusercontent.com/dyfer/6c83905d4593750105897e51e87ec345/raw/1f89f2fe767a2e637387e74f0c8dcc86a0963f60/brew-install-universal.sh
+              curl --no-progress-meter -O -J -L https://gist.githubusercontent.com/dyfer/6c83905d4593750105897e51e87ec345/raw/98e073d755cc3ca8426e20c30f51e9bac2bc9858/brew-install-universal.sh
               chmod +x brew-install-universal.sh
-              if [[ "${{ matrix.build-libsndfile }}" != "true" ]]; then ./brew-install-universal.sh libsndfile; fi
-              if [[ "${{ matrix.build-readline }}" != "true" ]]; then ./brew-install-universal.sh readline; fi
-              if [[ "${{ matrix.build-fftw }}" != "true" ]]; then ./brew-install-universal.sh fftw; fi
-              if [[ "${{ matrix.system-portaudio }}" != "false" ]]; then ./brew-install-universal.sh portaudio; fi
+              ./brew-install-universal.sh $UNIVERSAL_PACKAGES
           fi
 
       - name: install libsndfile # to make it compatible with older OSes (lower deployment target)
