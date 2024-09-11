@@ -72,24 +72,18 @@ TestUGen_RTAlloc : UnitTest {
 		var output = this.awaitSynthOutput {
 			DelayN.ar(DC.ar(1), this.memSizeSeconds * 2)
 		};
-		if (output.isNil) {
-			this.assert(false, "test should complete")
-		} {
-			this.assertEquals(output[0], 0.0,
-				"a failed RTAlloc should clear unit outputs")
-		}
+		this.assert(output.notNil, "test should complete", onFailure: \stop);
+		this.assertEquals(output[0], 0.0,
+			"a failed RTAlloc should clear unit outputs")
 	}
 
 	test_allocFail_continueProcessing_sameNode {
 		var output = this.awaitSynthOutput {
 			DelayN.ar(DC.ar(1), this.memSizeSeconds * 2); DC.ar(1)
 		};
-		if (output.isNil) {
-			this.assert(false, "test should complete")
-		} {
-			this.assertEquals(output[0], 1.0,
-				"a failed RTAlloc should not block other units in the same node")
-		}
+		this.assert(output.notNil, "test should complete", onFailure: \stop);
+		this.assertEquals(output[0], 1.0,
+			"a failed RTAlloc should not block other units in the same node")
 	}
 
 	test_allocFail_continueProcessing_otherNodes {
@@ -99,24 +93,18 @@ TestUGen_RTAlloc : UnitTest {
 		server.sync;
 		output = this.awaitSynthOutput { DC.ar(1) };
 		memFill.free; dummyOutBus.free;
-		if (output.isNil) {
-			this.assert(false, "test should complete")
-		} {
-			this.assertEquals(output[0], 1.0,
-				"a failed RTAlloc should not block other nodes in the processing chain")
-		}
+		this.assert(output.notNil, "test should complete", onFailure: \stop);
+		this.assertEquals(output[0], 1.0,
+			"a failed RTAlloc should not block other nodes in the processing chain")
 	}
 
 	test_allocFail_setDoneFlag {
 		var output = this.awaitSynthOutput {
 			K2A.ar(Done.kr(DelayN.ar(Silent.ar, this.memSizeSeconds * 2)))
 		};
-		if (output.isNil) {
-			this.assert(false, "test should complete")
-		} {
-			this.assert(output[0] > 0,
-				"a failed RTAlloc should set the Done flag")
-		}
+		this.assert(output.notNil, "test should complete", onFailure: \stop);
+		this.assert(output[0] > 0,
+			"a failed RTAlloc should set the Done flag")
 	}
 
 	// TEST ALL UGENS
@@ -189,7 +177,8 @@ TestUGen_RTAlloc : UnitTest {
 
 		server.sync; // for convBuf;
 
-		testArgs.collect { |args| { this.assertAllocPass(*args) } }.fork;
+		// testArgs.collect { |args| { this.assertAllocPass(*args) } }.fork;
+		testArgs.do { |args| this.assertAllocPass(*args) };
 
 		convBuf.free;
 	}
@@ -237,11 +226,9 @@ TestUGen_RTAlloc : UnitTest {
 			// GVerb needs more tests, as it can fail multiple ways
 			// memSizeSeconds * 340 produces an allocation of memSizeFloats floats
 			["GVerb", { GVerb.ar(DC.ar(1), 1, maxroomsize: this.memSizeSeconds * 340) }],
-		];
 
-		// convolution ugens in separate batch, otherwise server crashes
-		var convTestArgs = [
-			// Convolution UGens don't need a valid buffer when allocation fails
+			// Convolution UGens don't need a valid 
+			// note: when trying to run tests in parallel, these required a separate batch or would crash the server
 			["Convolution", { Convolution.ar(DC.ar(1), DC.ar(1), allocSamples) }],
 			["Convolution2", { Convolution2.ar(DC.ar(1), -1, 0, allocSamples) }],
 			["Convolution2L", { Convolution2L.ar(DC.ar(1), -1, 0, allocSamples) }],
@@ -250,27 +237,19 @@ TestUGen_RTAlloc : UnitTest {
 			["PartConv", { PartConv.ar(DC.ar(1), allocSamples, -1) }, server.options.blockSize * 2],
 		];
 
-		testArgs.collect { |args| { this.assertAllocFail(*args) } }.fork;
-		convTestArgs.do {{ |args| this.assertAllocFail(*args) }}.fork;
-
+		// testArgs.collect { |args| { this.assertAllocFail(*args) } }.fork;
+		testArgs.do { |args| this.assertAllocFail(*args) };
 	}
 
 	// special test for LocalBuf alloc
 	test_LocalBuf {
 		var out = this.awaitSynthOutput({ K2A.ar(LocalBuf(1)) });
-		if (out.isNil) {
-			this.assert(false, "successful alloc test should complete");
-		} {
-			var bufnum = out[0];
-			this.assert(bufnum > -1, "should allocate a valid LocalBuf (bufnum: %)".format(bufnum));
-		};
+		this.assert(out.notNil, "successful alloc test should complete", onFailure: \stop);
+		this.assert(out[0] > -1, "should allocate a valid LocalBuf (bufnum: %)".format(out[0]));
 
 		out = this.awaitSynthOutput({ K2A.ar(LocalBuf(this.memSizeFloats * 10)) });
-		if (out.isNil) {
-			this.assert(false, "failed alloc test should complete");
-		} {
-			this.assertEquals(out[0], -1, "should return -1 on alloc fail");
-		};
+		this.assert(out.notNil, "failed alloc test should complete", onFailure: \stop);
+		this.assertEquals(out[0], -1, "should return -1 on alloc fail");
 	}
 
 	// FFT UGens: test RTAlloc success and fail
@@ -282,22 +261,20 @@ TestUGen_RTAlloc : UnitTest {
 		var blockSize = server.options.blockSize;
 		var fftSize = blockSize;
 		var out = this.awaitSynthOutput({ FFT(LocalBuf(fftSize), DC.ar(1), hop:1) });
-		if (out.isNil) {
-			this.assert(false, "successful alloc test should complete (fftSize: %)".format(fftSize));
-		} {
-			// FFT returns a stream of -1, except when a spectral frame is ready,
-			this.assert(out.any(_ > 0), "should return a valid bufnum (bufnum: %)".format(out));
-		};
+		this.assert(out.notNil, 
+			"successful alloc test should complete (fftSize: %)".format(fftSize),
+			onFailure: \stop);
+		this.assert(out.any(_ > 0), "should return a valid bufnum (bufnum: %)".format(out));
+
 		// FFT should return always -1 when alloc fails
 		// - alloc half of memSize, so that LocalBuf can succeed, but FFT can fail
 		fftSize = nextPowerOfTwo(this.memSizeFloats * 0.5);
 		// - use hop = blockSize / fftSize to make FFT output frames every blockSize
 		out = this.awaitSynthOutput({ FFT(LocalBuf(fftSize), DC.ar(1), hop: blockSize / fftSize) });
-		if (out.isNil) {
-			this.assert(false, "failed alloc test should complete (fftSize: %)".format(fftSize));
-		} {
-			this.assert(out.every(_ == -1), "should only return -1 on alloc fail");
-		}
+		this.assert(out.notNil,
+			"failed alloc test should complete (fftSize: %)".format(fftSize),
+			onFailure: \stop);
+		this.assert(out.every(_ == -1), "should only return -1 on alloc fail");
 	}
 
 	// PV_UGens
@@ -315,9 +292,7 @@ TestUGen_RTAlloc : UnitTest {
 				this.assert(false, "% successful alloc test should complete".format(ugen));
 			} {
 				var noneIsInvalid = out.drop(1).any(_ == (-1)).not;
-				this.assert(noneIsInvalid,
-					"% successful alloc should return a valid bufnum".format(ugen)
-				);
+				this.assert(noneIsInvalid, "% successful alloc should return a valid bufnum".format(ugen));
 			};
 		};
 
@@ -327,9 +302,7 @@ TestUGen_RTAlloc : UnitTest {
 				this.assert(false, "% failed alloc test should complete".format(ugen));
 			} {
 				var allInvalid = out.drop(1).every(_ == (-1));
-				this.assert(allInvalid,
-					"% should only return -1 on alloc fail".format(ugen)
-				);
+				this.assert(allInvalid, "% should only return -1 on alloc fail".format(ugen));
 			};
 		};
 
