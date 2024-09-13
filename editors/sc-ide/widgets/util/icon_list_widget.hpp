@@ -23,6 +23,7 @@
 #include <QListWidget>
 #include <QStyledItemDelegate>
 #include <QPainter>
+#include <QListWidget>
 
 namespace ScIDE {
 

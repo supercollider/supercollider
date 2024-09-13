@@ -126,7 +126,7 @@ void Document::setIndentWidth(int numSpaces) {
     mIndentWidth = numSpaces;
 
     QFontMetricsF fontMetrics(mDoc->defaultFont());
-    qreal tabStop = fontMetrics.width(' ') * numSpaces;
+    qreal tabStop = fontMetrics.horizontalAdvance(' ') * numSpaces;
 
     QTextOption options = mDoc->defaultTextOption();
 
@@ -752,7 +752,7 @@ void DocumentManager::handleOpenFileScRequest(const QString& data) {
             open(QString(path.c_str()), position, selectionLength, true, id.c_str(), false);
         }
     } catch (std::exception const& e) {
-        qWarning() << "DocumentManager::" << __FUNCTION__ << ": could not handle request:" << e.what() << endl;
+        qWarning() << "DocumentManager::" << __FUNCTION__ << ": could not handle request:" << e.what() << "\n";
         return;
     }
 }
@@ -780,7 +780,7 @@ void DocumentManager::handleGetDocTextScRequest(const QString& data) {
             }
         }
     } catch (std::exception const& e) {
-        qWarning() << "DocumentManager::" << __FUNCTION__ << ": could not handle request:" << e.what() << endl;
+        qWarning() << "DocumentManager::" << __FUNCTION__ << ": could not handle request:" << e.what() << "\n";
         return;
     }
 }

@@ -259,7 +259,7 @@ void QWidgetProxy::performDrag() {
 bool QWidgetProxy::preProcessEvent(QObject* o, QEvent* e, EventHandlerData& eh, QList<QVariant>& args) {
     // NOTE We assume that qObject need not be checked here, as we wouldn't get events if
     // it wasn't existing
-    int acquired_globalEventMask = _globalEventMask.load();
+    int acquired_globalEventMask = _globalEventMask.loadRelaxed();
 
     switch (eh.type) {
     case QEvent::KeyPress:
@@ -340,7 +340,7 @@ bool QWidgetProxy::interpretMouseEvent(QObject* o, QEvent* e, QList<QVariant>& a
         case Qt::RightButton:
             button = 1;
             break;
-        case Qt::MidButton:
+        case Qt::MiddleButton:
             button = 2;
             break;
         default:
@@ -370,7 +370,7 @@ bool QWidgetProxy::interpretMouseWheelEvent(QObject* o, QEvent* e, QList<QVarian
     QWheelEvent* we = static_cast<QWheelEvent*>(e);
 
     QWidget* w = widget();
-    QPoint pt = _mouseEventWidget == w ? we->pos() : _mouseEventWidget->mapTo(w, we->pos());
+    QPointF pt = _mouseEventWidget == w ? we->position() : _mouseEventWidget->mapTo(w, we->position().toPoint());
 
     // only hi-res trackpads return pixelDelta everything else uses angleDelta..
     QPointF delta = we->pixelDelta().isNull() ? we->angleDelta() / 8.f // scaled to return steps of 15

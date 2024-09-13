@@ -27,7 +27,7 @@
 #include <QPainter>
 #include <QStyleOption>
 #include <QDockWidget>
-#include <QStyleOptionTabV3>
+#include <QStyleOptionTab>
 #include <QTabBar>
 #include <QToolButton>
 #include <QLayout>

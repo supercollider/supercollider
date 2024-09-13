@@ -55,7 +55,6 @@
 #include <QApplication>
 #include <QDesktopServices>
 #include <QStandardPaths>
-#include <QDesktopWidget>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QGridLayout>
