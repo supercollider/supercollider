@@ -110,6 +110,8 @@ int prFileDeleteAll(struct VMGlobals* g, int numArgsPushed) {
 
 std::time_t to_time_t(std::filesystem::file_time_type file_time) {
     using namespace std::chrono;
+    // in case of C++20 update, consider
+    // https://stackoverflow.com/questions/61030383/how-to-convert-stdfilesystemfile-time-type-to-time-t
     auto sctp = time_point_cast<system_clock::duration>(file_time - std::filesystem::file_time_type::clock::now()
                                                         + system_clock::now());
     return system_clock::to_time_t(sctp);
