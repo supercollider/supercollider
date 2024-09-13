@@ -17,7 +17,7 @@ Bag : Collection {
 		});
 	}
 	remove { arg item, count=1;
-		var newCount, out;
+		var newCount;
 		if ( this.includes(item), {
 			newCount = contents.at(item) - count;
 			if (newCount <= 0, {
