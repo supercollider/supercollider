@@ -162,7 +162,7 @@ jobs:
 
       - name: install system libraries
         if: env.USE_SYSLIBS == 'true'
-        run: brew install yaml-cpp boost@1.76
+        run: brew install yaml-cpp boost
 
       - name: install qt from homebrew
         if: matrix.cmake-architectures == 'x86_64' && !matrix.qt-version
@@ -189,7 +189,7 @@ jobs:
 
           EXTRA_CMAKE_FLAGS=
 
-          if $USE_SYSLIBS; then EXTRA_CMAKE_FLAGS="-DSYSTEM_BOOST=ON -DSYSTEM_YAMLCPP=ON -DBoost_INCLUDE_DIR=/usr/local/opt/boost@1.76/include $EXTRA_CMAKE_FLAGS"; fi
+          if $USE_SYSLIBS; then EXTRA_CMAKE_FLAGS="-DSYSTEM_BOOST=ON -DSYSTEM_YAMLCPP=ON $EXTRA_CMAKE_FLAGS"; fi
 
           if $SHARED_LIBSCSYNTH; then EXTRA_CMAKE_FLAGS="-DLIBSCSYNTH=ON $EXTRA_CMAKE_FLAGS"; fi
 
