@@ -59,13 +59,13 @@
 
 #include "SCDocPrim.h"
 
-#include <boost/filesystem/path.hpp> // path
+#include <filesystem>
 
 #ifdef __clang__
 #    pragma clang diagnostic ignored "-Warray-bounds"
 #endif
 
-namespace bfs = boost::filesystem;
+namespace fs = std::filesystem;
 
 int yyparse();
 
@@ -3120,7 +3120,7 @@ static int prLanguageConfig_addLibraryPath(struct VMGlobals* g, int numArgsPushe
     if (error)
         return errWrongType;
 
-    const bfs::path& native_path = SC_Codecvt::utf8_str_to_path(path);
+    const fs::path& native_path = SC_Codecvt::utf8_str_to_path(path);
     if (pathType == includePaths)
         gLanguageConfig->addIncludedDirectory(native_path);
     else
@@ -3144,7 +3144,7 @@ static int prLanguageConfig_removeLibraryPath(struct VMGlobals* g, int numArgsPu
     if (error)
         return errWrongType;
 
-    const bfs::path& native_path = SC_Codecvt::utf8_str_to_path(path);
+    const fs::path& native_path = SC_Codecvt::utf8_str_to_path(path);
     if (pathType == includePaths)
         gLanguageConfig->removeIncludedDirectory(native_path);
     else
@@ -3175,7 +3175,7 @@ static int prLanguageConfig_getCurrentConfigPath(struct VMGlobals* g, int numArg
 
 static int prLanguageConfig_writeConfigFile(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* fileString = g->sp;
-    bfs::path config_path;
+    fs::path config_path;
 
     if (NotNil(fileString)) {
         char path[MAXPATHLEN];

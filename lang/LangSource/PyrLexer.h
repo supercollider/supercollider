@@ -25,7 +25,7 @@
 #include "PyrSymbol.h"
 #include "SC_Export.h"
 #include "SCBase.h"
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 
 extern int charno, lineno, linepos;
 extern int* linestarts;
@@ -78,10 +78,10 @@ void startLexerCmdLine(char* textbuf, int textbuflen);
 int yylex();
 void yyerror(const char* s);
 void fatal();
-bool isValidSourceFileName(const boost::filesystem::path& path);
-bool passOne_ProcessOneFile(const boost::filesystem::path& path);
+bool isValidSourceFileName(const std::filesystem::path& path);
+bool passOne_ProcessOneFile(const std::filesystem::path& path);
 
-boost::filesystem::path relativeToCompileDir(const boost::filesystem::path&);
+std::filesystem::path relativeToCompileDir(const std::filesystem::path&);
 
 void initLexer();
 

@@ -45,13 +45,14 @@ Primitives for String.
 #include <boost/regex.hpp>
 #include <boost/intrusive/list.hpp>
 #include <boost/intrusive/unordered_set.hpp>
-#include <boost/filesystem/fstream.hpp> // ifstream
-#include <boost/filesystem/path.hpp> // path
+
+#include <fstream>
+#include <filesystem>
 
 #include <yaml-cpp/yaml.h>
 
 using namespace std;
-namespace bfs = boost::filesystem;
+namespace fs = std::filesystem;
 
 int prStringAsSymbol(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
@@ -589,9 +590,9 @@ int prString_PathMatch(struct VMGlobals* g, int numArgsPushed) {
     }
 
     // read all paths into a vector
-    std::vector<bfs::path> paths;
+    std::vector<fs::path> paths;
     while (true) {
-        const bfs::path& matched_path = SC_Filesystem::globNext(glob);
+        const fs::path& matched_path = SC_Filesystem::globNext(glob);
         if (matched_path.empty())
             break;
         else
@@ -887,7 +888,7 @@ int prString_StandardizePath(struct VMGlobals* g, int /* numArgsPushed */) {
     if (err != errNone)
         return err;
 
-    bfs::path p = SC_Codecvt::utf8_str_to_path(ipath);
+    fs::path p = SC_Codecvt::utf8_str_to_path(ipath);
     p = SC_Filesystem::instance().expandTilde(p);
     bool isAlias;
     p = SC_Filesystem::resolveIfAlias(p, isAlias);
@@ -1028,8 +1029,8 @@ int prString_ParseYAMLFile(struct VMGlobals* g, int numArgsPushed) {
 
     string str((const char*)slotRawString(arg)->s, slotRawString(arg)->size);
 
-    const bfs::path& path = SC_Codecvt::utf8_str_to_path(str);
-    bfs::ifstream fin(path);
+    const fs::path& path = SC_Codecvt::utf8_str_to_path(str);
+    std::ifstream fin(path);
     YAML::Node doc = YAML::Load(fin);
     yaml_traverse(g, doc, nullptr, arg);
 

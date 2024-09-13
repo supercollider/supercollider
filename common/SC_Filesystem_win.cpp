@@ -30,8 +30,7 @@
 #    include "SC_Filesystem.hpp"
 #    include "SC_Codecvt.hpp"
 
-// boost
-#    include <boost/filesystem/operations.hpp> // is_directory
+#    include <filesystem>
 
 // system
 #    include <Shlobj.h> // SHGetKnownFolderPath
@@ -63,12 +62,12 @@ SC_Filesystem::Glob* SC_Filesystem::makeGlob(const char* pattern) {
     Glob* glob = new Glob;
 
     // use make_preferred() to change / -> \ on Windows
-    boost::filesystem::path path = SC_Codecvt::utf8_str_to_path(pattern).make_preferred();
+    std::filesystem::path path = SC_Codecvt::utf8_str_to_path(pattern).make_preferred();
 
     // remove a trailing backslash. Even if searching with 'foo/.', this will
     // change to 'foo' harmlessly. Use has_parent_path() because otherwise '.'
     // (referring to the CWD) won't be recognized as a valid query.
-    if (path.filename_is_dot() && path.has_parent_path())
+    if (path.filename() == "." && path.has_parent_path())
         path = path.parent_path();
 
     // expand to home directory, if path starts with tilde
@@ -104,14 +103,14 @@ Path SC_Filesystem::globNext(Glob* glob) {
 
         if (!::FindNextFileW(glob->mHandle, &glob->mEntry))
             glob->mAtEnd = true;
-    } while (glob->mFilename.filename_is_dot() || glob->mFilename.filename_is_dot_dot());
+    } while (glob->mFilename.filename() == "." || glob->mFilename.filename() == "..");
 
     // add preferred separator (L'\\') for directories on Windows, to match
     // POSIX globbing. boost::filesystem::is_directory won't work for this because
     // in the case of input '.' and '..', the filename here is just a single folder,
     // not a relative path, and so can't be correctly identified. Plus, it's faster
     // to check the attributes than to make another system call.
-    return isDirectory ? glob->mFilename += boost::filesystem::path::preferred_separator : glob->mFilename;
+    return isDirectory ? glob->mFilename += std::filesystem::path::preferred_separator : glob->mFilename;
 }
 
 //============= PRIVATE METHODS ==============//
