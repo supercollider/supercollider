@@ -55,4 +55,3 @@ SynthDef("help-MultiplexAnalogIn", { |out = 0|
 }).play;
 )
 ::
-

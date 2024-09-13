@@ -40,4 +40,3 @@ s.sendMsg(\s_new, \a, 1001, 0, 0);
 
 s.sendMsg(\n_set, 1002, \t_t, 1);
 ::
-

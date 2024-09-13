@@ -59,4 +59,3 @@ code::
 
 { LFDClipNoise.ar(XLine.kr(1000, 20000, 10), 0.1) }.scope;
 ::
-

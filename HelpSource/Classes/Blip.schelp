@@ -46,4 +46,3 @@ code::
 // modulate numharmonics
 { Blip.ar(200, Line.kr(1, 100, 20), 0.2) }.play;
 ::
-

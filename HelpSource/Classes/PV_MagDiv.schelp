@@ -49,4 +49,3 @@ SynthDef("help-magMul2", { |out = 0, soundBufnum = 0|
 
 c.free;
 ::
-
