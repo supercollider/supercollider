@@ -1020,10 +1020,8 @@ template <bool realtime> void handle_rtMemoryStatus(endpoint_ptr const& endpoint
         typedef osc::int32 i32;
 
         osc::OutboundPacketStream p(buffer, 4096);
-        p << osc::BeginMessage("/rtMemoryStatus.reply")
-            << (i32) (rt_pool.get_pool_size() - rt_pool.get_used_size())
-            << (i32) rt_pool.get_max_size()
-            << osc::EndMessage;
+        p << osc::BeginMessage("/rtMemoryStatus.reply") << (i32)(rt_pool.get_pool_size() - rt_pool.get_used_size())
+          << (i32)rt_pool.get_max_size() << osc::EndMessage;
         endpoint->send(p.Data(), p.Size());
     });
 }
