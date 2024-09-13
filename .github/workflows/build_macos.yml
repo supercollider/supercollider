@@ -14,8 +14,8 @@ jobs:
       matrix:
         include:
           - job-name: "universal"
-            os-version: "12"
-            xcode-version: "13.4.1"
+            os-version: "13"
+            xcode-version: "14.1"
             deployment-target: "10.15"
             cmake-architectures: "x86_64;arm64"
             use-syslibs: false
