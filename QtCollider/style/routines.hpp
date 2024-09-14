@@ -160,7 +160,7 @@ void drawSunken(QPainter* p, const QPalette& plt, const ShapeT& shape, const QCo
     // shadow
 
     QColor c2 = color;
-    c2.setAlpha(150);
+    c2.setAlpha(color.alpha() * 0.5);
     p->setPen(Qt::NoPen);
     p->setBrush(c2);
     shape.draw(p, shape._rect.adjusted(2, 2, -2, -2));
