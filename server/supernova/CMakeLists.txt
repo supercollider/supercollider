@@ -198,7 +198,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     target_link_libraries(libsupernova rt)
 endif()
 
-target_link_libraries(libsupernova boost_system_lib boost_filesystem_lib boost_program_options_lib)
+target_link_libraries(libsupernova boost_system_lib boost_program_options_lib)
 target_include_directories(libsupernova PUBLIC ${boost_include_dirs})
 
 if(CMAKE_COMPILER_IS_GNUCXX)
