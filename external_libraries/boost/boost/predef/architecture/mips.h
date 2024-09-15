@@ -66,6 +66,16 @@ http://en.wikipedia.org/wiki/MIPS_architecture[MIPS] architecture.
 #   define BOOST_ARCH_MIPS_AVAILABLE
 #endif
 
+#if BOOST_ARCH_MIPS
+#   if BOOST_ARCH_MIPS >= BOOST_VERSION_NUMBER(3,0,0)
+#       undef BOOST_ARCH_WORD_BITS_64
+#       define BOOST_ARCH_WORD_BITS_64 BOOST_VERSION_NUMBER_AVAILABLE
+#   else
+#       undef BOOST_ARCH_WORD_BITS_32
+#       define BOOST_ARCH_WORD_BITS_32 BOOST_VERSION_NUMBER_AVAILABLE
+#   endif
+#endif
+
 #define BOOST_ARCH_MIPS_NAME "MIPS"
 
 #endif

@@ -12,21 +12,21 @@
 namespace boost{ namespace math{ namespace tools{ namespace detail{
 
 template <class T, class U, class V>
-inline V evaluate_rational_c_imp(const T*, const U*, const V&, const boost::integral_constant<int, 0>*) BOOST_MATH_NOEXCEPT(V)
+inline V evaluate_rational_c_imp(const T*, const U*, const V&, const std::integral_constant<int, 0>*) BOOST_MATH_NOEXCEPT(V)
 {
    return static_cast<V>(0);
 }
 
 template <class T, class U, class V>
-inline V evaluate_rational_c_imp(const T* a, const U* b, const V&, const boost::integral_constant<int, 1>*) BOOST_MATH_NOEXCEPT(V)
+inline V evaluate_rational_c_imp(const T* a, const U* b, const V&, const std::integral_constant<int, 1>*) BOOST_MATH_NOEXCEPT(V)
 {
    return static_cast<V>(a[0]) / static_cast<V>(b[0]);
 }
 
 template <class T, class U, class V>
-inline V evaluate_rational_c_imp(const T* a, const U* b, const V& x, const boost::integral_constant<int, 2>*) BOOST_MATH_NOEXCEPT(V)
+inline V evaluate_rational_c_imp(const T* a, const U* b, const V& x, const std::integral_constant<int, 2>*) BOOST_MATH_NOEXCEPT(V)
 {
-   if(x <= 1)
+   if((-1 <= x) && (x <= 1))
      return static_cast<V>((a[1] * x + a[0]) / (b[1] * x + b[0]));
    else
    {
@@ -36,9 +36,9 @@ inline V evaluate_rational_c_imp(const T* a, const U* b, const V& x, const boost
 }
 
 template <class T, class U, class V>
-inline V evaluate_rational_c_imp(const T* a, const U* b, const V& x, const boost::integral_constant<int, 3>*) BOOST_MATH_NOEXCEPT(V)
+inline V evaluate_rational_c_imp(const T* a, const U* b, const V& x, const std::integral_constant<int, 3>*) BOOST_MATH_NOEXCEPT(V)
 {
-   if(x <= 1)
+   if((-1 <= x) && (x <= 1))
      return static_cast<V>(((a[2] * x + a[1]) * x + a[0]) / ((b[2] * x + b[1]) * x + b[0]));
    else
    {
@@ -48,9 +48,9 @@ inline V evaluate_rational_c_imp(const T* a, const U* b, const V& x, const boost
 }
 
 template <class T, class U, class V>
-inline V evaluate_rational_c_imp(const T* a, const U* b, const V& x, const boost::integral_constant<int, 4>*) BOOST_MATH_NOEXCEPT(V)
+inline V evaluate_rational_c_imp(const T* a, const U* b, const V& x, const std::integral_constant<int, 4>*) BOOST_MATH_NOEXCEPT(V)
 {
-   if(x <= 1)
+   if((-1 <= x) && (x <= 1))
      return static_cast<V>((((a[3] * x + a[2]) * x + a[1]) * x + a[0]) / (((b[3] * x + b[2]) * x + b[1]) * x + b[0]));
    else
    {
@@ -60,9 +60,9 @@ inline V evaluate_rational_c_imp(const T* a, const U* b, const V& x, const boost
 }
 
 template <class T, class U, class V>
-inline V evaluate_rational_c_imp(const T* a, const U* b, const V& x, const boost::integral_constant<int, 5>*) BOOST_MATH_NOEXCEPT(V)
+inline V evaluate_rational_c_imp(const T* a, const U* b, const V& x, const std::integral_constant<int, 5>*) BOOST_MATH_NOEXCEPT(V)
 {
-   if(x <= 1)
+   if((-1 <= x) && (x <= 1))
      return static_cast<V>(((((a[4] * x + a[3]) * x + a[2]) * x + a[1]) * x + a[0]) / ((((b[4] * x + b[3]) * x + b[2]) * x + b[1]) * x + b[0]));
    else
    {

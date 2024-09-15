@@ -3,8 +3,16 @@
 # (See accompanying file LICENSE_1_0.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
 
+ECHO "error: This module (predef/check/predef.jam) is OBSOLETE. Use predef/tools/check/predef.jam instead." ;
+
 # Hack, to reload check/predef.jam at its new location.
 import modules ;
+local _loading_ = [ modules.peek modules : .loading ] ;
+if $(_loading_[-1]) = $(_loading_[-2])
+{
+    ECHO "error: Recursive loading of this module (predef/check/predef.jam) attempted. The predef/tools/check/predef.jam file is missing." ;
+    EXIT ;
+}
 local _loaded_ ;
 for local _module_ in [ modules.peek modules : .loaded ]
 {

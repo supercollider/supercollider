@@ -24,7 +24,7 @@
 #include <boost/mpl/if.hpp>
 #include <boost/integer/common_factor_rt.hpp>
 #include <boost/chrono/detail/scan_keyword.hpp>
-#include <boost/utility/enable_if.hpp>
+#include <boost/core/enable_if.hpp>
 #include <boost/chrono/detail/no_warning/signed_unsigned_cmp.hpp>
 
 namespace boost
@@ -52,7 +52,7 @@ private:
 
     template <class Period>
         string_type short_name(Period) const
-            {return ::boost::ratio_string<Period, CharT>::short_name() + short_seconds_;}
+            {return ::boost::ratio_string<Period, CharT>::symbol() + short_seconds_;}
 
     string_type short_name(ratio<1>) const    {return short_seconds_;}
     string_type short_name(ratio<60>) const   {return short_minutes_;}
@@ -60,7 +60,7 @@ private:
 
     template <class Period>
         string_type long_name(Period) const
-            {return ::boost::ratio_string<Period, CharT>::long_name() + long_seconds_;}
+            {return ::boost::ratio_string<Period, CharT>::prefix() + long_seconds_;}
 
     string_type long_name(ratio<1>) const    {return long_seconds_;}
     string_type long_name(ratio<60>) const   {return long_minutes_;}

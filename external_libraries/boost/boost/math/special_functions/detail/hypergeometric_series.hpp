@@ -10,7 +10,10 @@
 #ifndef BOOST_MATH_DETAIL_HYPERGEOMETRIC_SERIES_HPP
 #define BOOST_MATH_DETAIL_HYPERGEOMETRIC_SERIES_HPP
 
+#include <cmath>
+#include <cstdint>
 #include <boost/math/tools/series.hpp>
+#include <boost/math/special_functions/gamma.hpp>
 #include <boost/math/special_functions/trunc.hpp>
 #include <boost/math/policies/error_handling.hpp>
 
@@ -184,13 +187,10 @@
   inline T sum_pFq_series(detail::hypergeometric_pFq_generic_series_term<T, p, q>& term, const Policy& pol)
   {
     BOOST_MATH_STD_USING
-    boost::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
-#if BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
-    const T zero = 0;
-    const T result = boost::math::tools::sum_series(term, boost::math::policies::get_epsilon<T, Policy>(), max_iter, zero);
-#else
+    std::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
+
     const T result = boost::math::tools::sum_series(term, boost::math::policies::get_epsilon<T, Policy>(), max_iter);
-#endif
+
     policies::check_series_iterations<T>("boost::math::hypergeometric_pFq_generic_series<%1%>(%1%,%1%,%1%)", max_iter, pol);
     return result;
   }
@@ -210,7 +210,7 @@
   }
 
   template <class T, class Policy>
-  inline T log_pochhammer(T z, unsigned n, const Policy pol, int* s = 0)
+  inline T log_pochhammer(T z, unsigned n, const Policy pol, int* s = nullptr)
   {
      BOOST_MATH_STD_USING
 #if 0
@@ -239,7 +239,7 @@
            return r;
         }
         int s1, s2;
-        T r = boost::math::lgamma(T(z + n), &s1, pol) - boost::math::lgamma(z, &s2, pol);
+        auto r = static_cast<T>(boost::math::lgamma(T(z + n), &s1, pol) - boost::math::lgamma(z, &s2, pol));
         if(s)
            *s = s1 * s2;
         return r;
@@ -247,16 +247,16 @@
   }
 
   template <class T, class Policy>
-  inline T hypergeometric_1F1_generic_series(const T& a, const T& b, const T& z, const Policy& pol, int& log_scaling, const char* function)
+  inline T hypergeometric_1F1_generic_series(const T& a, const T& b, const T& z, const Policy& pol, long long& log_scaling, const char* function)
   {
      BOOST_MATH_STD_USING
      T sum(0), term(1), upper_limit(sqrt(boost::math::tools::max_value<T>())), diff;
      T lower_limit(1 / upper_limit);
      unsigned n = 0;
-     int log_scaling_factor = itrunc(boost::math::tools::log_max_value<T>()) - 2;
+     long long log_scaling_factor = lltrunc(boost::math::tools::log_max_value<T>()) - 2;
      T scaling_factor = exp(T(log_scaling_factor));
      T term_m1 = 0;
-     int local_scaling = 0;
+     long long local_scaling = 0;
      //
      // When a is very small, then (a+n)/n => 1 faster than
      // z / (b+n) => 1, as a result the series starts off
@@ -290,7 +290,7 @@
         int s1, s2;
         term = log_pochhammer(a, summit_location, pol, &s1) + summit_location * log(z) - log_pochhammer(b, summit_location, pol, &s2) - lgamma(T(summit_location + 1), pol);
         //std::cout << term << " " << log_pochhammer(boost::multiprecision::mpfr_float(a), summit_location, pol, &s1) + summit_location * log(boost::multiprecision::mpfr_float(z)) - log_pochhammer(boost::multiprecision::mpfr_float(b), summit_location, pol, &s2) - lgamma(boost::multiprecision::mpfr_float(summit_location + 1), pol) << std::endl;
-        local_scaling = itrunc(term);
+        local_scaling = lltrunc(term);
         log_scaling += local_scaling;
         term = s1 * s2 * exp(term - local_scaling);
         //std::cout << term << " " << exp(log_pochhammer(boost::multiprecision::mpfr_float(a), summit_location, pol, &s1) + summit_location * log(boost::multiprecision::mpfr_float(z)) - log_pochhammer(boost::multiprecision::mpfr_float(b), summit_location, pol, &s2) - lgamma(boost::multiprecision::mpfr_float(summit_location + 1), pol) - local_scaling) << std::endl;
@@ -300,7 +300,7 @@
         summit_location = 0;
 
      T saved_term = term;
-     int saved_scale = local_scaling;
+     long long saved_scale = local_scaling;
 
      do
      {
@@ -340,7 +340,7 @@
         n = summit_location;
         term *= (b + (n - 1)) * n / ((a + (n - 1)) * z);
         --n;
-        
+
         do
         {
            sum += term;
