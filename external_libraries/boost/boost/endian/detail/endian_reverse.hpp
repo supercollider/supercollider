@@ -8,14 +8,11 @@
 #include <boost/endian/detail/integral_by_size.hpp>
 #include <boost/endian/detail/intrinsic.hpp>
 #include <boost/endian/detail/is_scoped_enum.hpp>
-#include <boost/type_traits/is_integral.hpp>
-#include <boost/type_traits/is_same.hpp>
-#include <boost/type_traits/enable_if.hpp>
-#include <boost/type_traits/is_class.hpp>
-#include <boost/type_traits/integral_constant.hpp>
-#include <boost/static_assert.hpp>
-#include <boost/cstdint.hpp>
+#include <boost/endian/detail/is_integral.hpp>
+#include <boost/endian/detail/static_assert.hpp>
 #include <boost/config.hpp>
+#include <type_traits>
+#include <cstdint>
 #include <cstddef>
 #include <cstring>
 
@@ -47,12 +44,12 @@ namespace detail
 //  -- intrinsic approach suggested by reviewers, and by David Stone, who provided
 //     his Boost licensed macro implementation (detail/intrinsic.hpp)
 
-inline uint8_t BOOST_CONSTEXPR endian_reverse_impl( uint8_t x ) BOOST_NOEXCEPT
+inline std::uint8_t BOOST_CONSTEXPR endian_reverse_impl( std::uint8_t x ) BOOST_NOEXCEPT
 {
     return x;
 }
 
-inline uint16_t BOOST_ENDIAN_CONSTEXPR endian_reverse_impl( uint16_t x ) BOOST_NOEXCEPT
+inline std::uint16_t BOOST_ENDIAN_CONSTEXPR endian_reverse_impl( std::uint16_t x ) BOOST_NOEXCEPT
 {
 #ifdef BOOST_ENDIAN_NO_INTRINSICS
 
@@ -65,11 +62,11 @@ inline uint16_t BOOST_ENDIAN_CONSTEXPR endian_reverse_impl( uint16_t x ) BOOST_N
 #endif
 }
 
-inline uint32_t BOOST_ENDIAN_CONSTEXPR endian_reverse_impl( uint32_t x ) BOOST_NOEXCEPT
+inline std::uint32_t BOOST_ENDIAN_CONSTEXPR endian_reverse_impl( std::uint32_t x ) BOOST_NOEXCEPT
 {
 #ifdef BOOST_ENDIAN_NO_INTRINSICS
 
-    uint32_t step16 = x << 16 | x >> 16;
+    std::uint32_t step16 = x << 16 | x >> 16;
     return ((step16 << 8) & 0xff00ff00) | ((step16 >> 8) & 0x00ff00ff);
 
 #else
@@ -79,12 +76,12 @@ inline uint32_t BOOST_ENDIAN_CONSTEXPR endian_reverse_impl( uint32_t x ) BOOST_N
 #endif
 }
 
-inline uint64_t BOOST_ENDIAN_CONSTEXPR endian_reverse_impl( uint64_t x ) BOOST_NOEXCEPT
+inline std::uint64_t BOOST_ENDIAN_CONSTEXPR endian_reverse_impl( std::uint64_t x ) BOOST_NOEXCEPT
 {
 #ifdef BOOST_ENDIAN_NO_INTRINSICS
 
-    uint64_t step32 = x << 32 | x >> 32;
-    uint64_t step16 = (step32 & 0x0000FFFF0000FFFFULL) << 16 | (step32 & 0xFFFF0000FFFF0000ULL) >> 16;
+    std::uint64_t step32 = x << 32 | x >> 32;
+    std::uint64_t step16 = (step32 & 0x0000FFFF0000FFFFULL) << 16 | (step32 & 0xFFFF0000FFFF0000ULL) >> 16;
     return (step16 & 0x00FF00FF00FF00FFULL) << 8 | (step16 & 0xFF00FF00FF00FF00ULL) >> 8;
 
 #else
@@ -94,27 +91,27 @@ inline uint64_t BOOST_ENDIAN_CONSTEXPR endian_reverse_impl( uint64_t x ) BOOST_N
 # endif
 }
 
-#if defined(BOOST_HAS_INT128)
+#if defined(__SIZEOF_INT128__)
 
-inline uint128_type BOOST_ENDIAN_CONSTEXPR endian_reverse_impl( uint128_type x ) BOOST_NOEXCEPT
+inline __uint128_t BOOST_ENDIAN_CONSTEXPR endian_reverse_impl( __uint128_t x ) BOOST_NOEXCEPT
 {
-    return endian_reverse_impl( static_cast<uint64_t>( x >> 64 ) ) |
-        static_cast<uint128_type>( endian_reverse_impl( static_cast<uint64_t>( x ) ) ) << 64;
+    return endian_reverse_impl( static_cast<std::uint64_t>( x >> 64 ) ) |
+        static_cast<__uint128_t>( endian_reverse_impl( static_cast<std::uint64_t>( x ) ) ) << 64;
 }
 
 #endif
 
 // is_endian_reversible
 
-template<class T> struct is_endian_reversible: boost::integral_constant<bool,
-    (boost::is_integral<T>::value && !boost::is_same<T, bool>::value) || is_scoped_enum<T>::value>
+template<class T> struct is_endian_reversible: std::integral_constant<bool,
+    (is_integral<T>::value && !std::is_same<T, bool>::value) || is_scoped_enum<T>::value>
 {
 };
 
 // is_endian_reversible_inplace
 
-template<class T> struct is_endian_reversible_inplace: boost::integral_constant<bool,
-    boost::is_integral<T>::value || boost::is_enum<T>::value || boost::is_same<T, float>::value || boost::is_same<T, double>::value>
+template<class T> struct is_endian_reversible_inplace: std::integral_constant<bool,
+    is_integral<T>::value || std::is_enum<T>::value || std::is_same<T, float>::value || std::is_same<T, double>::value>
 {
 };
 
@@ -124,10 +121,10 @@ template<class T> struct is_endian_reversible_inplace: boost::integral_constant<
 //   T is non-bool integral or scoped enumeration type
 
 template<class T> inline BOOST_CONSTEXPR
-    typename enable_if_< !is_class<T>::value, T >::type
+    typename std::enable_if< !std::is_class<T>::value, T >::type
     endian_reverse( T x ) BOOST_NOEXCEPT
 {
-    BOOST_STATIC_ASSERT( detail::is_endian_reversible<T>::value );
+    BOOST_ENDIAN_STATIC_ASSERT( detail::is_endian_reversible<T>::value );
 
     typedef typename detail::integral_by_size< sizeof(T) >::type uintN_t;
 
@@ -138,10 +135,10 @@ template<class T> inline BOOST_CONSTEXPR
 //   T is integral, enumeration, float or double
 
 template<class T> inline
-    typename enable_if_< !is_class<T>::value >::type
+    typename std::enable_if< !std::is_class<T>::value >::type
     endian_reverse_inplace( T & x ) BOOST_NOEXCEPT
 {
-    BOOST_STATIC_ASSERT( detail::is_endian_reversible_inplace<T>::value );
+    BOOST_ENDIAN_STATIC_ASSERT( detail::is_endian_reversible_inplace<T>::value );
 
     typename detail::integral_by_size< sizeof(T) >::type x2;
 
@@ -155,7 +152,7 @@ template<class T> inline
 // Default implementation for user-defined types
 
 template<class T> inline
-    typename enable_if_< is_class<T>::value >::type
+    typename std::enable_if< std::is_class<T>::value >::type
     endian_reverse_inplace( T & x ) BOOST_NOEXCEPT
 {
     x = endian_reverse( x );

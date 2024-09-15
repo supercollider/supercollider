@@ -76,7 +76,7 @@ namespace boost { namespace program_options { namespace detail {
             const std::set<std::string>& allowed_options,
             bool allow_unregistered = false);
 
-        virtual ~common_config_file_iterator() {}
+        BOOST_DEFAULTED_FUNCTION(virtual ~common_config_file_iterator(), {})
 
     public: // Method required by eof_iterator
         

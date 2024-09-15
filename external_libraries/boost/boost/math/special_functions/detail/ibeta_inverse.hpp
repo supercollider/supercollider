@@ -15,6 +15,8 @@
 #include <boost/math/special_functions/erf.hpp>
 #include <boost/math/tools/roots.hpp>
 #include <boost/math/special_functions/detail/t_distribution_inv.hpp>
+#include <boost/math/special_functions/fpclassify.hpp>
+#include <boost/math/tools/precision.hpp>
 
 namespace boost{ namespace math{ namespace detail{
 
@@ -25,23 +27,16 @@ namespace boost{ namespace math{ namespace detail{
 template <class T>
 struct temme_root_finder
 {
-   temme_root_finder(const T t_, const T a_) : t(t_), a(a_) {}
+   temme_root_finder(const T t_, const T a_) : t(t_), a(a_) {
+      BOOST_MATH_ASSERT(
+         math::tools::epsilon<T>() <= a && !(boost::math::isinf)(a));
+   }
 
    boost::math::tuple<T, T> operator()(T x)
    {
       BOOST_MATH_STD_USING // ADL of std names
 
       T y = 1 - x;
-      if(y == 0)
-      {
-         T big = tools::max_value<T>() / 4;
-         return boost::math::make_tuple(static_cast<T>(-big), static_cast<T>(-big));
-      }
-      if(x == 0)
-      {
-         T big = tools::max_value<T>() / 4;
-         return boost::math::make_tuple(static_cast<T>(-big), big);
-      }
       T f = log(x) + a * log(y) + t;
       T f1 = (1 / x) - (a / (y));
       return boost::math::make_tuple(f, f1);
@@ -115,13 +110,21 @@ T temme_method_1_ibeta_inverse(T a, T b, T z, const Policy& pol)
    T c = -exp(-eta_2 / 2);
    T x;
    if(eta_2 == 0)
-      x = 0.5;
+      x = static_cast<T>(0.5f);
    else
       x = (1 + eta * sqrt((1 + c) / eta_2)) / 2;
-
-   BOOST_ASSERT(x >= 0);
-   BOOST_ASSERT(x <= 1);
-   BOOST_ASSERT(eta * (x - 0.5) >= 0);
+   //
+   // These are post-conditions of the method, but the addition above
+   // may result in us being out by 1ulp either side of the boundary,
+   // so just check that we're in bounds and adjust as needed.
+   // See https://github.com/boostorg/math/issues/961
+   //
+   if (x < 0)
+      x = 0;
+   else if (x > 1)
+      x = 1;
+   
+   BOOST_MATH_ASSERT(eta * (x - 0.5) >= 0);
 #ifdef BOOST_INSTRUMENT
    std::cout << "Estimating x with Temme method 1: " << x << std::endl;
 #endif
@@ -368,11 +371,11 @@ T temme_method_3_ibeta_inverse(T a, T b, T p, T q, const Policy& pol)
    T e2 = (28 * w_4 + 131 * w_3 + 402 * w_2 + 581 * w + 208) * (w - 1) / (1620 * w1 * w_3);
    e2 -= (35 * w_6 - 154 * w_5 - 623 * w_4 - 1636 * w_3 - 3983 * w_2 - 3514 * w - 925) * d / (12960 * w1_2 * w_4);
    e2 -= (2132 * w_7 + 7915 * w_6 + 16821 * w_5 + 35066 * w_4 + 87490 * w_3 + 141183 * w_2 + 95993 * w + 21640) * d_2  / (816480 * w_5 * w1_3);
-   e2 -= (11053 * w_8 + 53308 * w_7 + 117010 * w_6 + 163924 * w_5 + 116188 * w_4 - 258428 * w_3 - 677042 * w_2 - 481940 * w - 105497) * d_3 / (14696640 * w1_4 * w_6);
+   e2 -= (11053 * w_8 + 53308 * w_7 + 117010 * w_6 + 163924 * w_5 + 116188 * w_4 - 258428 * w_3 - 677042 * w_2 - 481940 * w - 105497) * d_3 / (T(14696640) * w1_4 * w_6);
 
    T e3 = -((3592 * w_7 + 8375 * w_6 - 1323 * w_5 - 29198 * w_4 - 89578 * w_3 - 154413 * w_2 - 116063 * w - 29632) * (w - 1)) / (816480 * w_5 * w1_2);
-   e3 -= (442043 * w_9 + 2054169 * w_8 + 3803094 * w_7 + 3470754 * w_6 + 2141568 * w_5 - 2393568 * w_4 - 19904934 * w_3 - 34714674 * w_2 - 23128299 * w - 5253353) * d / (146966400 * w_6 * w1_3);
-   e3 -= (116932 * w_10 + 819281 * w_9 + 2378172 * w_8 + 4341330 * w_7 + 6806004 * w_6 + 10622748 * w_5 + 18739500 * w_4 + 30651894 * w_3 + 30869976 * w_2 + 15431867 * w + 2919016) * d_2 / (146966400 * w1_4 * w_7);
+   e3 -= (442043 * w_9 + T(2054169) * w_8 + T(3803094) * w_7 + T(3470754) * w_6 + T(2141568) * w_5 - T(2393568) * w_4 - T(19904934) * w_3 - T(34714674) * w_2 - T(23128299) * w - T(5253353)) * d / (T(146966400) * w_6 * w1_3);
+   e3 -= (116932 * w_10 + 819281 * w_9 + T(2378172) * w_8 + T(4341330) * w_7 + T(6806004) * w_6 + T(10622748) * w_5 + T(18739500) * w_4 + T(30651894) * w_3 + T(30869976) * w_2 + T(15431867) * w + T(2919016)) * d_2 / (T(146966400) * w1_4 * w_7);
    //
    // Combine eta0 and the error terms to compute eta (Second equation p155):
    //
@@ -402,6 +405,10 @@ T temme_method_3_ibeta_inverse(T a, T b, T p, T q, const Policy& pol)
    T lower = eta < mu ? cross : 0;
    T upper = eta < mu ? 1 : cross;
    T x = (lower + upper) / 2;
+
+   // Early exit for cases with numerical precision issues.
+   if (cross == 0 || cross == 1) { return cross; }
+   
    x = tools::newton_raphson_iterate(
       temme_root_finder<T>(u, mu), x, lower, upper, policies::digits<T, Policy>() / 2);
 #ifdef BOOST_INSTRUMENT
@@ -421,7 +428,7 @@ struct ibeta_roots
       BOOST_MATH_STD_USING // ADL of std names
 
       BOOST_FPU_EXCEPTION_GUARD
-      
+
       T f1;
       T y = 1 - x;
       T f = ibeta_imp(a, b, x, Policy(), invert, true, &f1) - target;
@@ -491,7 +498,7 @@ T ibeta_inv_imp(T a, T b, T p, T q, const Policy& pol, T* py)
    T x = 0; // Set to a safe zero to avoid a
    // MSVC 2005 warning C4701: potentially uninitialized local variable 'x' used
    // But code inspection appears to ensure that x IS assigned whatever the code path.
-   T y; 
+   T y;
 
    // For some of the methods we can put tighter bounds
    // on the result than simply [0,1]:
@@ -631,14 +638,33 @@ T ibeta_inv_imp(T a, T b, T p, T q, const Policy& pol, T* py)
             // Try and compute the easy way first:
             //
             T bet = 0;
-            if(b < 2)
-               bet = boost::math::beta(a, b, pol);
+            if (b < 2)
+            {
+#ifndef BOOST_MATH_NO_EXCEPTIONS
+               try
+#endif
+               {
+                  bet = boost::math::beta(a, b, pol);
+
+                  typedef typename Policy::overflow_error_type overflow_type;
+
+                  BOOST_MATH_IF_CONSTEXPR(overflow_type::value != boost::math::policies::throw_on_error)
+                     if(bet > tools::max_value<T>())
+                        bet = tools::max_value<T>();
+               }
+#ifndef BOOST_MATH_NO_EXCEPTIONS
+               catch (const std::overflow_error&)
+               {
+                  bet = tools::max_value<T>();
+               }
+#endif
+            }
             if(bet != 0)
             {
                y = pow(b * q * bet, 1/b);
                x = 1 - y;
             }
-            else 
+            else
                y = 1;
             if(y > 1e-5)
             {
@@ -673,7 +699,40 @@ T ibeta_inv_imp(T a, T b, T p, T q, const Policy& pol, T* py)
          invert = !invert;
          xs = 1 - xs;
       }
-      T xg = pow(a * p * boost::math::beta(a, b, pol), 1/a);
+      if ((a < tools::min_value<T>()) && (b > tools::min_value<T>()))
+      {
+         if (py)
+         {
+            *py = invert ? 0 : 1;
+         }
+         return invert ? 1 : 0; // nothing interesting going on here.
+      }
+      //
+      // The call to beta may overflow, plus the alternative using lgamma may do the same
+      // if T is a type where 1/T is infinite for small values (denorms for example).
+      //
+      T bet = 0;
+      T xg;
+      bool overflow = false;
+#ifndef BOOST_MATH_NO_EXCEPTIONS
+      try {
+#endif
+         bet = boost::math::beta(a, b, pol);
+#ifndef BOOST_MATH_NO_EXCEPTIONS
+      }
+      catch (const std::runtime_error&)
+      {
+         overflow = true;
+      }
+#endif
+      if (overflow || !(boost::math::isfinite)(bet))
+      {
+         xg = exp((boost::math::lgamma(a + 1, pol) + boost::math::lgamma(b, pol) - boost::math::lgamma(a + b, pol) + log(p)) / a);
+         if (xg > 2 / tools::epsilon<T>())
+            xg = 2 / tools::epsilon<T>();
+      }
+      else
+         xg = pow(a * p * bet, 1/a);
       x = xg / (1 + xg);
       y = 1 / (1 + xg);
       //
@@ -768,9 +827,36 @@ T ibeta_inv_imp(T a, T b, T p, T q, const Policy& pol, T* py)
          std::swap(p, q);
          invert = !invert;
       }
-      if(pow(p, 1/a) < 0.5)
+      if (a < tools::min_value<T>())
       {
-         x = pow(p * a * boost::math::beta(a, b, pol), 1 / a);
+         // Avoid spurious overflows for denorms:
+         if (p < 1)
+         {
+            x = 1;
+            y = 0;
+         }
+         else
+         {
+            x = 0;
+            y = 1;
+         }
+      }
+      else if(pow(p, 1/a) < 0.5)
+      {
+#ifndef BOOST_MATH_NO_EXCEPTIONS
+         try 
+         {
+#endif
+            x = pow(p * a * boost::math::beta(a, b, pol), 1 / a);
+            if ((x > 1) || !(boost::math::isfinite)(x))
+               x = 1;
+#ifndef BOOST_MATH_NO_EXCEPTIONS
+         }
+         catch (const std::overflow_error&)
+         {
+            x = 1;
+         }
+#endif
          if(x == 0)
             x = boost::math::tools::min_value<T>();
          y = 1 - x;
@@ -778,7 +864,20 @@ T ibeta_inv_imp(T a, T b, T p, T q, const Policy& pol, T* py)
       else /*if(pow(q, 1/b) < 0.1)*/
       {
          // model a distorted quarter circle:
-         y = pow(1 - pow(p, b * boost::math::beta(a, b, pol)), 1/b);
+#ifndef BOOST_MATH_NO_EXCEPTIONS
+         try 
+         {
+#endif
+            y = pow(1 - pow(p, b * boost::math::beta(a, b, pol)), 1/b);
+            if ((y > 1) || !(boost::math::isfinite)(y))
+               y = 1;
+#ifndef BOOST_MATH_NO_EXCEPTIONS
+         }
+         catch (const std::overflow_error&)
+         {
+            y = 1;
+         }
+#endif
          if(y == 0)
             y = boost::math::tools::min_value<T>();
          x = 1 - y;
@@ -823,6 +922,8 @@ T ibeta_inv_imp(T a, T b, T p, T q, const Policy& pol, T* py)
       if(x < lower)
          x = lower;
    }
+   std::uintmax_t max_iter = policies::get_max_root_iterations<Policy>();
+   std::uintmax_t max_iter_used = 0;
    //
    // Figure out how many digits to iterate towards:
    //
@@ -838,23 +939,22 @@ T ibeta_inv_imp(T a, T b, T p, T q, const Policy& pol, T* py)
       // thrash around and convergence may be slow in this case.
       // Try 3/4 of machine epsilon:
       //
-      digits *= 3;  
+      digits *= 3;
       digits /= 2;
    }
    //
    // Now iterate, we can use either p or q as the target here
    // depending on which is smaller:
    //
-   boost::uintmax_t max_iter = policies::get_max_root_iterations<Policy>();
    x = boost::math::tools::halley_iterate(
       boost::math::detail::ibeta_roots<T, Policy>(a, b, (p < q ? p : q), (p < q ? false : true)), x, lower, upper, digits, max_iter);
-   policies::check_root_iterations<T>("boost::math::ibeta<%1%>(%1%, %1%, %1%)", max_iter, pol);
+   policies::check_root_iterations<T>("boost::math::ibeta<%1%>(%1%, %1%, %1%)", max_iter + max_iter_used, pol);
    //
    // We don't really want these asserts here, but they are useful for sanity
    // checking that we have the limits right, uncomment if you suspect bugs *only*.
    //
-   //BOOST_ASSERT(x != upper);
-   //BOOST_ASSERT((x != lower) || (x == boost::math::tools::min_value<T>()) || (x == boost::math::tools::epsilon<T>()));
+   //BOOST_MATH_ASSERT(x != upper);
+   //BOOST_MATH_ASSERT((x != lower) || (x == boost::math::tools::min_value<T>()) || (x == boost::math::tools::epsilon<T>()));
    //
    // Tidy up, if we "lower" was too high then zero is the best answer we have:
    //
@@ -868,7 +968,7 @@ T ibeta_inv_imp(T a, T b, T p, T q, const Policy& pol, T* py)
 } // namespace detail
 
 template <class T1, class T2, class T3, class T4, class Policy>
-inline typename tools::promote_args<T1, T2, T3, T4>::type  
+inline typename tools::promote_args<T1, T2, T3, T4>::type
    ibeta_inv(T1 a, T2 b, T3 p, T4* py, const Policy& pol)
 {
    static const char* function = "boost::math::ibeta_inv<%1%>(%1%,%1%,%1%)";
@@ -876,9 +976,9 @@ inline typename tools::promote_args<T1, T2, T3, T4>::type
    typedef typename tools::promote_args<T1, T2, T3, T4>::type result_type;
    typedef typename policies::evaluation<result_type, Policy>::type value_type;
    typedef typename policies::normalise<
-      Policy, 
-      policies::promote_float<false>, 
-      policies::promote_double<false>, 
+      Policy,
+      policies::promote_float<false>,
+      policies::promote_double<false>,
       policies::discrete_quantile<>,
       policies::assert_undefined<> >::type forwarding_policy;
 
@@ -903,30 +1003,30 @@ inline typename tools::promote_args<T1, T2, T3, T4>::type
 }
 
 template <class T1, class T2, class T3, class T4>
-inline typename tools::promote_args<T1, T2, T3, T4>::type  
+inline typename tools::promote_args<T1, T2, T3, T4>::type
    ibeta_inv(T1 a, T2 b, T3 p, T4* py)
 {
    return ibeta_inv(a, b, p, py, policies::policy<>());
 }
 
 template <class T1, class T2, class T3>
-inline typename tools::promote_args<T1, T2, T3>::type 
+inline typename tools::promote_args<T1, T2, T3>::type
    ibeta_inv(T1 a, T2 b, T3 p)
 {
    typedef typename tools::promote_args<T1, T2, T3>::type result_type;
-   return ibeta_inv(a, b, p, static_cast<result_type*>(0), policies::policy<>());
+   return ibeta_inv(a, b, p, static_cast<result_type*>(nullptr), policies::policy<>());
 }
 
 template <class T1, class T2, class T3, class Policy>
-inline typename tools::promote_args<T1, T2, T3>::type 
+inline typename tools::promote_args<T1, T2, T3>::type
    ibeta_inv(T1 a, T2 b, T3 p, const Policy& pol)
 {
    typedef typename tools::promote_args<T1, T2, T3>::type result_type;
-   return ibeta_inv(a, b, p, static_cast<result_type*>(0), pol);
+   return ibeta_inv(a, b, p, static_cast<result_type*>(nullptr), pol);
 }
 
 template <class T1, class T2, class T3, class T4, class Policy>
-inline typename tools::promote_args<T1, T2, T3, T4>::type 
+inline typename tools::promote_args<T1, T2, T3, T4>::type
    ibetac_inv(T1 a, T2 b, T3 q, T4* py, const Policy& pol)
 {
    static const char* function = "boost::math::ibetac_inv<%1%>(%1%,%1%,%1%)";
@@ -934,9 +1034,9 @@ inline typename tools::promote_args<T1, T2, T3, T4>::type
    typedef typename tools::promote_args<T1, T2, T3, T4>::type result_type;
    typedef typename policies::evaluation<result_type, Policy>::type value_type;
    typedef typename policies::normalise<
-      Policy, 
-      policies::promote_float<false>, 
-      policies::promote_double<false>, 
+      Policy,
+      policies::promote_float<false>,
+      policies::promote_double<false>,
       policies::discrete_quantile<>,
       policies::assert_undefined<> >::type forwarding_policy;
 
@@ -961,18 +1061,18 @@ inline typename tools::promote_args<T1, T2, T3, T4>::type
 }
 
 template <class T1, class T2, class T3, class T4>
-inline typename tools::promote_args<T1, T2, T3, T4>::type 
+inline typename tools::promote_args<T1, T2, T3, T4>::type
    ibetac_inv(T1 a, T2 b, T3 q, T4* py)
 {
    return ibetac_inv(a, b, q, py, policies::policy<>());
 }
 
 template <class RT1, class RT2, class RT3>
-inline typename tools::promote_args<RT1, RT2, RT3>::type 
+inline typename tools::promote_args<RT1, RT2, RT3>::type
    ibetac_inv(RT1 a, RT2 b, RT3 q)
 {
    typedef typename tools::promote_args<RT1, RT2, RT3>::type result_type;
-   return ibetac_inv(a, b, q, static_cast<result_type*>(0), policies::policy<>());
+   return ibetac_inv(a, b, q, static_cast<result_type*>(nullptr), policies::policy<>());
 }
 
 template <class RT1, class RT2, class RT3, class Policy>
@@ -980,7 +1080,7 @@ inline typename tools::promote_args<RT1, RT2, RT3>::type
    ibetac_inv(RT1 a, RT2 b, RT3 q, const Policy& pol)
 {
    typedef typename tools::promote_args<RT1, RT2, RT3>::type result_type;
-   return ibetac_inv(a, b, q, static_cast<result_type*>(0), pol);
+   return ibetac_inv(a, b, q, static_cast<result_type*>(nullptr), pol);
 }
 
 } // namespace math

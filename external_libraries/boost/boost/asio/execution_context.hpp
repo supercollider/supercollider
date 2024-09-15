@@ -2,7 +2,7 @@
 // execution_context.hpp
 // ~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -20,7 +20,6 @@
 #include <stdexcept>
 #include <typeinfo>
 #include <boost/asio/detail/noncopyable.hpp>
-#include <boost/asio/detail/variadic_templates.hpp>
 
 #include <boost/asio/detail/push_options.hpp>
 
@@ -225,8 +224,6 @@ public:
   template <typename Service>
   friend Service& use_service(io_context& ioc);
 
-#if defined(GENERATING_DOCUMENTATION)
-
   /// Creates a service object and adds it to the execution_context.
   /**
    * This function is used to add a service to the execution_context.
@@ -241,27 +238,6 @@ public:
    */
   template <typename Service, typename... Args>
   friend Service& make_service(execution_context& e, Args&&... args);
-
-#elif defined(BOOST_ASIO_HAS_VARIADIC_TEMPLATES)
-
-  template <typename Service, typename... Args>
-  friend Service& make_service(execution_context& e,
-      BOOST_ASIO_MOVE_ARG(Args)... args);
-
-#else // defined(BOOST_ASIO_HAS_VARIADIC_TEMPLATES)
-
-  template <typename Service>
-  friend Service& make_service(execution_context& e);
-
-#define BOOST_ASIO_PRIVATE_MAKE_SERVICE_DEF(n) \
-  template <typename Service, BOOST_ASIO_VARIADIC_TPARAMS(n)> \
-  friend Service& make_service(execution_context& e, \
-      BOOST_ASIO_VARIADIC_MOVE_PARAMS(n)); \
-  /**/
-  BOOST_ASIO_VARIADIC_GENERATE(BOOST_ASIO_PRIVATE_MAKE_SERVICE_DEF)
-#undef BOOST_ASIO_PRIVATE_MAKE_SERVICE_DEF
-
-#endif // defined(BOOST_ASIO_HAS_VARIADIC_TEMPLATES)
 
   /// (Deprecated: Use make_service().) Add a service object to the
   /// execution_context.

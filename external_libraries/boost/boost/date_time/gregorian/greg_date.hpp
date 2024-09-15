@@ -74,18 +74,8 @@ namespace gregorian {
     {}
     //! Constructor for infinities, not a date, max and min date
     BOOST_CXX14_CONSTEXPR explicit date(special_values sv):
-      date_time::date<date, gregorian_calendar, date_duration>(date_rep_type::from_special(sv))
-    {
-      if (sv == min_date_time)
-      {
-        *this = date(1400, 1, 1);
-      }
-      if (sv == max_date_time)
-      {
-        *this = date(9999, 12, 31);
-      }
-
-    }
+      date_time::date<date, gregorian_calendar, date_duration>(from_special_adjusted(sv))
+    {}
     //!Return the Julian Day number for the date.
     BOOST_CXX14_CONSTEXPR date_int_type julian_day() const
     {
@@ -105,7 +95,7 @@ namespace gregorian {
       ymd_type ymd = year_month_day();
       return gregorian_calendar::modjulian_day_number(ymd);
     }
-    //!Return the iso 8601 week number 1..53
+    //!Return the ISO 8601 week number 1..53
     BOOST_CXX14_CONSTEXPR int week_number() const
     {
       ymd_type ymd = year_month_day();
@@ -129,6 +119,15 @@ namespace gregorian {
 
    private:
 
+    BOOST_CXX14_CONSTEXPR date_rep_type from_special_adjusted(special_values sv)
+    {
+      switch (sv)
+      {
+        case min_date_time: return gregorian_calendar::day_number(ymd_type(1400, 1, 1));
+        case max_date_time: return gregorian_calendar::day_number(ymd_type(9999, 12, 31));
+        default: return date_rep_type::from_special(sv);
+      }
+    }
   };
 
   inline BOOST_CXX14_CONSTEXPR
