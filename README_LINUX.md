@@ -6,7 +6,7 @@ Build requirements
 
 These are strict requirements for scsynth and supernova:
 
-- A C++ compiler with C++17 support. SuperCollider guarantees support for [gcc][gcc] >= 8.1 and [clang][clang] >= 3.9.
+- A C++ compiler with C++17 support. 
 - [cmake][cmake] >= 3.12: Cross-platform build system.
 - [libsndfile][libsndfile] >= 1.0: Soundfile I/O.
 - [libjack][libjack]: Development headers for the JACK Audio Connection Kit.
@@ -31,7 +31,7 @@ Recommended packages
 
 For sclang and scide:
 
-- [Qt][Qt] >= 5.7 with QtWebEngine and QtWebSockets: Cross-platform GUI library, required for the IDE and for sclang's Qt GUI kit. It's best to get the latest Qt 5.x version.
+- [Qt][Qt] >= 6.2 with QtWebEngine and QtWebSockets: Cross-platform GUI library, required for the IDE and for sclang's Qt GUI kit.
 - [git][git]: Required for sclang's Quarks system.
 - [ALSA][ALSA]: Linux sound library, required for sclang MIDI support.
 - [libudev][libudev]: Device manager library, required for HID support.
@@ -79,48 +79,33 @@ sudo dnf install emacs # if building with the sc-el backend (default)
 Installing Qt
 -------------
 
-**Qt 5.7 or later** is required to be able to run the SuperCollider IDE and sclang's Qt GUI system. This may be a little complicated since some versions of some Linux distributions are stuck with old Qt versions.
+**Qt 6.2 or later** is required to be able to run the SuperCollider IDE and sclang's Qt GUI system.
 
 ### Installing Qt on recent Debian-like operating systems
 
-Depending on your Debian flavor and version, your distribution's PPA may be stuck in an old version of Qt. Try this command to query the Qt version available to you:
+Try this command to query the Qt6 version available to you:
 
-    apt-cache policy qt5-default
+    apt-cache policy qt6-base-dev
 
-If this displays version 5.7 or later, installing Qt is easy:
+If this displays version 6.2 or later, you can install Qt6 using `apt`. Please note that this list of packages might not be complete, as it hasn't been revised for Qt6.
 
-    sudo apt-get install qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtwebengine5-dev libqt5svg5-dev libqt5websockets5-dev
+    sudo apt-get install qt6-base-dev qt6-base-dev-tools qt6-tools-dev qt6-tools-dev-tools libqt6websockets6-dev libqt6webenginecore6 qt6-webengine-dev qt6-webengine-dev-tools libqt6svgwidgets6
 
 If you are on Ubuntu, check the sections below. If these instructions don't work, you will have to use the official Qt installer.
 
-### Installing Qt on Ubuntu Bionic, Focal, or Jammy
+### Installing Qt on Ubuntu 22.04, 24.04
 
-On Ubuntu 18.04 (Bionic), 20.04 (Focal), and 22.04 (Jammy) Qt5 is available in the system's package manager. The following should install the correct packages:
+On 22.04 and 24.04 Qt6 is available in the system's package manager. The following should install the correct packages:
 
-    sudo apt-get install qtbase5-dev qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5svg5-dev libqt5websockets5-dev qtwebengine5-dev
+    sudo apt-get install qt6-base-dev qt6-base-dev-tools qt6-tools-dev qt6-tools-dev-tools qt6-declarative-dev libqt6gui6 libqt6printsupport6 libqt6svgwidgets6 libqt6websockets6-dev libqt6webenginecore6 qt6-webengine-dev qt6-webengine-dev-tools libqt6core5compat6-dev libqt6webchannel6-dev libqt6opengl6-dev libqt6svg6-dev linguist-qt6 qt6-l10n-tools  libglx-dev libgl1-mesa-dev libvulkan-dev libxkbcommon-dev libxcb-xkb-dev
 
-### Installing Qt on Ubuntu Trusty or Xenial
-
-If you are on Ubuntu 14.04 (Trusty) or 16.04 (Xenial), [Stephan Binner's Launchpad PPAs][Stephan Binner's Launchpad PPAs] allow for simple installation of new Qt versions.
-
-On Xenial:
-
-    sudo apt-add-repository ppa:beineri/opt-qt-5.11.0-xenial
-    sudo apt-get update
-    sudo apt-get install qt511base qt511location qt511tools qt511webchannel qt511xmlpatterns qt511svg qt511webengine qt511websockets
-
-On Trusty, only Qt 5.10 and below are available:
-
-    sudo apt-add-repository ppa:beineri/opt-qt-5.10.1-trusty
-    sudo apt-get update
-    sudo apt-get install qt510base qt510location qt510tools qt510webchannel qt510xmlpatterns qt510svg qt510webengine qt510websockets
-
-[Stephan Binner's Launchpad PPAs]: https://launchpad.net/~beineri
 
 ### Installing Qt on Fedora
 
+Please note, this list has not been tested after upgrading to Qt6. Additional packages may be needed.
+
 ```sh
-sudo dnf install qt5-qtbase-devel qt5-qtsvg-devel qt5-qtwebengine-devel qt5-linguist qt5-qtwebsockets-devel
+sudo dnf install qt6-qtbase-devel qt6-qtsvg-devel qt6-qtwebengine-devel qt6-linguist qt6-qtwebsockets-devel
 ```
 
 ### Installing Qt using the official installer
@@ -174,14 +159,13 @@ We will cover a few important settings. There are others, which you can view wit
 
 #### Nonstandard Qt locations
 
-If you are installing sclang with GUI features and the IDE, and you installed Qt using the official Qt installer or the Trusty/Xenial PPAs, you will need to tell SuperCollider where Qt is. To do so:
+If you are installing sclang with GUI features and the IDE, and you installed Qt using the official Qt installer, you will need to tell SuperCollider where Qt is. To do so:
 
-    cmake -DCMAKE_PREFIX_PATH=/path/to/qt5 ..
+    cmake -DCMAKE_PREFIX_PATH=/path/to/qt6 ..
 
-The location of `/path/to/qt5` will depend on how you installed Qt:
+The location of `/path/to/qt6` will depend on how you installed Qt:
 
 - If you downloaded Qt from the Qt website, the path is two directories down from the top-level unpacked Qt directory, in a folder called `gcc`: `Qt/5.11.0/gcc_64/` (64-bit Linux) or `Qt/5.11.0/gcc/` (32-bit). By default, the Qt installer places `Qt/` in your home directory.
-- If you used the Trusty/Xenial PPA's described above, the path is `/opt/qt511` or `/opt/qt510` (depending on which version you installed).
 
 If you want to build without Qt entirely, run
 
