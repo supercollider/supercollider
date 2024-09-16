@@ -91,7 +91,7 @@ window.front;
 )
 ::
 
-If you'd rather use strong::automatic positionning:: and strong::automatic resizing:: when the window is redimensionned, you should use a link::Classes/Layout:::
+If you'd rather use strong::automatic positioning:: and strong::automatic resizing:: when the window is re-sized, you should use a link::Classes/Layout:::
 
 code::
 (
