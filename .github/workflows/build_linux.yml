@@ -64,27 +64,26 @@ jobs:
             use-syslibs: false
             shared-libscsynth: false
 
-            # clang 16-18 disabled due to incompatible boost code - re-enable after updating bundled boost > ~1.80
-          # - job-name: ""
-          #   os-version: "24.04"
-          #   c-compiler: "clang-16"
-          #   cxx-compiler: "clang++-16"
-          #   use-syslibs: false
-          #   shared-libscsynth: false
+          - job-name: ""
+            os-version: "24.04"
+            c-compiler: "clang-16"
+            cxx-compiler: "clang++-16"
+            use-syslibs: false
+            shared-libscsynth: false
 
-          # - job-name: ""
-          #   os-version: "24.04"
-          #   c-compiler: "clang-17"
-          #   cxx-compiler: "clang++-17"
-          #   use-syslibs: false
-          #   shared-libscsynth: false
+          - job-name: ""
+            os-version: "24.04"
+            c-compiler: "clang-17"
+            cxx-compiler: "clang++-17"
+            use-syslibs: false
+            shared-libscsynth: false
 
-          # - job-name: ""
-          #   os-version: "24.04"
-          #   c-compiler: "clang-18"
-          #   cxx-compiler: "clang++-18"
-          #   use-syslibs: false
-          #   shared-libscsynth: false
+          - job-name: ""
+            os-version: "24.04"
+            c-compiler: "clang-18"
+            cxx-compiler: "clang++-18"
+            use-syslibs: false
+            shared-libscsynth: false
 
     name: Ubuntu ${{ matrix.os-version }} ${{ matrix.c-compiler }} ${{ matrix.job-name }}
     env:

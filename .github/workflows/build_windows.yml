@@ -21,31 +21,42 @@ jobs:
             qt-arch: "win32_msvc2019"
             fftw-url: "ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll32.zip"
             cmake-generator: "Visual Studio 16 2019"
-            msvc-year: "2019"
-            vcvars-script: "vcvars32.bat"
+            vcvars-script-path: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars32.bat"
             vcpkg-triplet: x86-windows-release
             use-qtwebengine: "ON" # might need to be turned off for MinGW
             qt-modules: "qtwebengine"
-            artifact-suffix: "win32" # set if needed - will trigger artifact upload
-            create-installer: ${{ startsWith(github.ref, 'refs/tags/') }}
-            installer-suffix: "win32-installer"
+            # artifact-suffix: "win32" # set if needed - will trigger artifact upload
+            # create-installer: ${{ startsWith(github.ref, 'refs/tags/') }}
+            # installer-suffix: "win32-installer"
 
-          - job-name: "64-bit"
+          - job-name: "64-bit MSVC 2022"
             fftw-arch: "x64"
             cmake-arch: "x64"
-            os-version: "2019"
-            qt-version: "6.7.2"
+            os-version: "2022"
+            qt-version: "6.7.3"
             qt-arch: "win64_msvc2019_64"
             fftw-url: "ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip"
-            cmake-generator: "Visual Studio 16 2019"
-            msvc-year: "2019"
-            vcvars-script: "vcvars64.bat"
+            cmake-generator: "Visual Studio 17 2022"
+            vcvars-script-path: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
             vcpkg-triplet: x64-windows-release
             use-qtwebengine: "ON" # might need to be turned off for MinGW
             qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning qt5compat'
             artifact-suffix: "win64" # set if needed - will trigger artifact upload
             create-installer: ${{ startsWith(github.ref, 'refs/tags/') }}
             installer-suffix: "win64-installer"
+
+          - job-name: "64-bit MSVC 2019"
+            fftw-arch: "x64"
+            cmake-arch: "x64"
+            os-version: "2019"
+            qt-version: "6.7.3"
+            qt-arch: "win64_msvc2019_64"
+            fftw-url: "ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip"
+            cmake-generator: "Visual Studio 16 2019"
+            vcvars-script-path: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+            vcpkg-triplet: x64-windows-release
+            use-qtwebengine: "ON" # might need to be turned off for MinGW
+            qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning qt5compat'
 
           - job-name: "64-bit MinGW"
             fftw-arch: "x64"
@@ -64,7 +75,6 @@ jobs:
       BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
       LIBS_DOWNLOAD_PATH: ${{ github.workspace }}/../3rd-party
-      VCVARS_SCRIPT_PATH: "C:/Program Files (x86)/Microsoft Visual Studio/${{ matrix.msvc-year }}/Enterprise/VC/Auxiliary/Build/${{ matrix.vcvars-script }}"
       FFTW_INSTALL_DIR: "C:/Program Files/fftw"
       ARTIFACT_FILE: "SuperCollider-${{ inputs.sc-version }}-${{ matrix.artifact-suffix }}"
       INSTALLER_FILE: "SuperCollider-${{ inputs.sc-version }}-${{ matrix.installer-suffix }}"
@@ -90,8 +100,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/AppData/Local/ccache # updated in ccache 4.7, see https://github.com/ccache/ccache/issues/1023
-          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.qt-arch }}-${{ matrix.qt-version }}-${{ steps.current-date.outputs.stamp }}
-          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.qt-arch }}-${{ matrix.qt-version }}-
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.qt-arch }}-${{ steps.current-date.outputs.stamp }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.qt-arch }}-
 
       - name: install qt using aqtinstall
         uses: jurplel/install-qt-action@v3
@@ -100,7 +110,7 @@ jobs:
           version: ${{ matrix.qt-version }}
           arch: ${{ matrix.qt-arch }}
           cache: true
-          cache-key-prefix: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.qt-version }}-qt${{ matrix.qt-arch }}
+          cache-key-prefix: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.qt-version }}-qt${{ matrix.qt-arch }}-${{ matrix.qt-modules }}
 
       - name: install ccache
         shell: bash
@@ -125,11 +135,11 @@ jobs:
           7z x fftw.zip -y
 
       - name: create fftw msvc library
-        if: matrix.vcvars-script
+        if: matrix.vcvars-script-path
         shell: cmd
         working-directory: ${{ env.FFTW_INSTALL_DIR }}
         run: |
-          call "%VCVARS_SCRIPT_PATH%"
+          call "${{ matrix.vcvars-script-path }}"
           lib.exe /machine:${{ matrix.fftw-arch }} /def:libfftw3f-3.def
 
       - name: install asio sdk
