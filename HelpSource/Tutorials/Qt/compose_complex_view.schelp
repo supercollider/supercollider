@@ -235,7 +235,7 @@ This is possible because strong::a layout redraws its children when their visibi
 
 The window is first split vertically in two: a main view, and a small menu that 'contains' hidden views. This menu is only visible when it is non-empty.
 
-For each of our subviews (in our example, a link::Classes/MultiSliderView:: and a link::Classes/StaticText::), we are creating two link::Classes/Button::s: one that hides the view, and is situated in the same layout as the view it is hidding, and one inside the menu, that displays it back. They control the views visibility, and they also control the visibility of the menu.
+For each of our subviews (in our example, a link::Classes/MultiSliderView:: and a link::Classes/StaticText::), we are creating two link::Classes/Button::s: one that hides the view, and is situated in the same layout as the view it is hiding, and one inside the menu, that displays it back. They control the views visibility, and they also control the visibility of the menu.
 
 code::
 (
