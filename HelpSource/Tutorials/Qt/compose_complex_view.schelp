@@ -329,7 +329,7 @@ mainView.layout.add(textView, 1);
 // Add the 'show' button to the visibility view
 visibilityView.layout.add(textShowButton);
 
-// Agencing the top level
+// Constructing the top level
 window.layout_(
 	VLayout()
 	.add(mainView)
