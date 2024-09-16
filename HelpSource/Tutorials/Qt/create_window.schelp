@@ -111,7 +111,7 @@ window.front;
 )
 ::
 
-See link::Classes/Layout:: for more informations about this organisation method. The layout system is also discussed in the next tutorial of this serie.
+See link::Classes/Layout:: for more information about this organisation method. The layout system is also discussed in the next tutorial of this series.
 
 note::
 Adding a link::Classes/StackLayout:: as primary Layout for a Window allows to easily switch between different Views, in other words, different interfaces.
