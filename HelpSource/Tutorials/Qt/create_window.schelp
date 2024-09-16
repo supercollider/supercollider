@@ -51,7 +51,7 @@ code::
 Once closed, you need to recreate it, because it has been completely deleted.
 
 note::
-The following code can be useful when developping graphical interfaces:
+The following code can be useful when developing graphical interfaces:
 
 code::
 (
