@@ -5,6 +5,11 @@ on:
       sc-version:
         required: true
         type: string
+  workflow_dispatch:
+    inputs:
+      sc-version:
+        required: true
+        type: string
 
 jobs:
   build-windows:
