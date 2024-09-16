@@ -341,7 +341,7 @@ window.layout_(
 visibilityView.visible_(false);
 
 
-// --- Here's the visibilty logic: ---
+// --- Here's the visibility logic: ---
 // When the hide button is pressed
 multiSliderHideButton.action_({
 	// Hide the view
