@@ -518,7 +518,7 @@ frequencies.do({ |frequency|
 // Inserting the volume text before the volume slider:
 windowLayout.add(volumeText, 1);
 windowLayout.add(volumeSlider, 3);
-// Inserting the duration text before the durationslider,
+// Inserting the duration text before the duration slider,
 // after the volume slider:
 windowLayout.add(durText, 1);
 windowLayout.add(durSlider, 3);
