@@ -266,7 +266,7 @@ TestCoreUGens : UnitTest {
 			[\squared, \sqrt],
 			[\cubed, { |x| x ** (1/3) }],
 			[\exp, \log],
-			[\midicps, \cpsmidi],
+			[\midicps, \cpsmidi], // this test currently limits passing tolerance for all tests
 			[\midiratio, \ratiomidi],
 			[\dbamp, \ampdb],
 			[\octcps, \cpsoct],
@@ -312,7 +312,9 @@ TestCoreUGens : UnitTest {
 
 		tests.keysValuesDo { |name, func, i|
 			func.loadToFloatArray(testDur, server, { |data|
-				this.assertArrayFloatEquals(data, 0, name.quote, within: 0.001, report: true);
+				this.assertArrayFloatEquals(data, 0, name.quote,
+					within: -90.dbamp, // could go to -100 if not for midicps(cpsmidi()) test
+					report: true);
 				completed = completed + 1;
 				cond.signalOne;
 			});
@@ -351,7 +353,7 @@ TestCoreUGens : UnitTest {
 			});
 			server.sync;
 		};
-		"timing out after % sec\n".postf(tests.size * testDur);
+
 		testsFinished = cond.waitFor((1.5 * tests.size * testDur).max(minTimeOut), { completed == tests.size });
 		this.assert(testsFinished, "TIMEOUT: exact_convergence tests", report: false);
 	}
