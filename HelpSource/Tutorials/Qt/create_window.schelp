@@ -64,7 +64,7 @@ window.front;
 Every time you hit strong::ctrl + shift + .::, this will close the window you're currently creating, if it is still open, preventing the accumulation of windows during development process.
 ::
 
-section:: Inserting and positionning views
+section:: Inserting and positioning views
 
 Once you've created the window, you can strong::add:: a link::Classes/View:: strong::directly:: into it, by passing the window as parent argument when creating the link::Classes/View:::
 
