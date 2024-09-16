@@ -11,7 +11,7 @@ It covers those topics:
 list::
 ## Create a keyboard from a list of midi notes
 ## Create a volume slider, and a duration slider
-## Use the layout system so widgets are displayed following a grid
+## Use the layout system so widgets are arranged in a grid pattern
 ::
 
 section:: Setup
@@ -87,7 +87,7 @@ window.front;
 )
 ::
 
-As we already knew the command to play the synth, we just have to strong::configure the button to execute this command when it is pressed::.  It is also posting a message to the console, which might be useful for debugging purposes.
+As we already knew the command to play the synth, we just have to strong::configure the button to evaluate this command when it is pressed::.  It is also posting a message to the console, which might be useful for debugging purposes.
 
 section:: Adding several buttons at once
 
@@ -165,9 +165,9 @@ window.front;
 )
 ::
 
-So now we have 8 buttons, but they all make the same sound. That's doesn't sounds like much progress to me.
+So we now have 8 buttons, but they all make the same sound. That's doesn't sounds like much progress to me.
 
-We can strong::change the Synth parameter by modifying its arguments:::
+We can strong::change the Synth parameters by modifying its arguments:::
 
 code::
 Synth(\instrView, [\freq, 660]);
@@ -240,13 +240,13 @@ For now, strong::the Window is only containing a:: link::Classes/HLayout::.
 
 strong::The HLayout divides the Window horizontally::, as if it was a succession of columns.
 
-Inside those columns, strong::it will distribute the views one by one, from left to right::.
+strong::It will distribute the views inside those columns, one by one, from left to right::.
 
-This is why the Slider has been pushed all the way to the right. With this division, you can add things to the left, to the right, and between the columns.
+This is why the Slider has been pushed all the way to the right. With this division, you can add things to the left, to the right, and between columns.
 
 But you cannot order views vertically. For this, you need to create a link::Classes/VLayout::, which in turns, cannot order views horizontally. strong::To mix horizontal and vertical division of the Window, you will need to insert some layouts inside other layouts.::
 
-Let's see an example about layout hierarchy. Execute the following code before reading it to get a visual idea about how it functions:
+Let's see an example about layout hierarchy. Execute the following code before reading it to get a visual idea about the way it works:
 
 code::
 (
@@ -341,7 +341,7 @@ window.front;
 )
 ::
 
-So far, we only changed its graphical properties, but the slider didn't have any code::action::. It's time to strong::connect it:::
+So far, we changed its graphical properties, but the slider do not have any code::action::. It's time to strong::connect it:::
 
 code::
 (
@@ -388,9 +388,9 @@ window.front;
 ::
 
 In this case, the code::action:: function of the Slider will assign the sliders value to a variable called code::volume::.
-When a key from our 'piano' is pressed, it now also checks this variable to pass the right volume as argument, when executing the Synth command.
+When a key from our 'piano' is pressed, it will also check this variable to pass the right volume as argument, when evaluating the Synth command.
 
-But how did the slider know what values were expected by the volume parameter ? Well it didn't. We were only lucky: strong::a Sliders values spans between 0 and 1::, which is the correct setting for the volume.
+But how did the slider know what values were expected by the volume parameter ? Well it didn't. We were only lucky: strong::Sliders value spans between 0 and 1::, which is the correct setting for the volume.
 
 section:: Adapting the Slider to the correct value (mapping)
 
