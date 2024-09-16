@@ -39,7 +39,7 @@ TestCoreUGens : UnitTest {
 			"Line.kr can match LFSaw.kr" -> {Line.kr(0,1,1) - LFSaw.kr(0.5)},
 			"Line can match crossfaded DC" -> {Line.ar(0,1,1) - LinXFade2.ar(DC.ar(0), DC.ar(1), Line.ar(-1,1,1))},
 			// (Integrator goes a bit off ramp cos of roundoff error accumulations)
-			"Line.ar can match integrated DC" -> {Line.ar(0,1,1) - Integrator.ar(DC.ar(SampleDur.ir))},
+			"Line.ar can match integrated DC" -> {Line.ar(SampleDur.ir,1,1) - Integrator.ar(DC.ar(SampleDur.ir))},
 			"Line.ar can match EnvGen.ar with slope Env" -> {Line.ar - EnvGen.ar(Env([0,1],[1]))},
 
 			//////////////////////////////////////////
