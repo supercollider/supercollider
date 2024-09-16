@@ -120,7 +120,7 @@ Adding a link::Classes/StackLayout:: as primary Layout for a Window allows to ea
 
 section:: Keyboard input
 
-link::Classes/Window:: 'inherits' from the link::Classes/UserView:: strong::action:: system. It can respond to mouse and keyboards event. See the link::Classes/UserView:: help file for more informations about this.
+link::Classes/Window:: 'inherits' from the link::Classes/UserView:: strong::action:: system. It can respond to mouse and keyboards event. See the link::Classes/UserView:: help file for more information about this.
 
 Another way to interact with the window using the keyboard, which might be preferable, is to assign a function to code::View.globalKeyDownAction::.
 
