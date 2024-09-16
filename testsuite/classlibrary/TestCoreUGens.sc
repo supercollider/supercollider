@@ -275,18 +275,14 @@ TestCoreUGens : UnitTest {
 			[\tan, \atan]
 		].do { |selectors|
 			[selectors, selectors.reverse].do { |pair|
-				tests = tests.add(
-					"x == %(%(x)) [control rate]".format(*pair) -> {
-						var n = WhiteNoise.kr.range(0.3, 0.9);
-						n - pair[1].applyTo(pair[0].applyTo(n))
-					}
-				);
-				tests = tests.add(
-					"x == %(%(x)) [audio rate]".format(*pair) -> {
-						var n = WhiteNoise.ar.range(0.3, 0.9);
-						n - pair[1].applyTo(pair[0].applyTo(n))
-					}
-				)
+				[\ar, \kr].do{ |rate|
+					tests.add(
+						"x == %(%(x)) [%]".format(pair[0], pair[1], rate) -> {
+							var n = WhiteNoise.perform(rate).range(0.3, 0.9);
+							n - pair[1].applyTo(pair[0].applyTo(n))
+						}
+					);
+				}
 			}
 		};
 
@@ -296,26 +292,19 @@ TestCoreUGens : UnitTest {
 		[
 			[DelayN, BufDelayN],
 			[DelayL, BufDelayL],
-			//	[DelayC, BufDelayC] // not equivalent, FIXME
+			// [DelayC, BufDelayC] // not equivalent, FIXME
 		].do { |classes|
-			tests = tests.add(
-				"% == % [control rate]".format(classes[0], classes[1]) -> {
-					var sig = SinOsc.ar + 1;
-					var delayTime = WhiteNoise.kr.range(0, 0.002);
-					var delay = classes[0].ar(sig, 0.02, delayTime);
-					var bufdelay = classes[1].ar(LocalBuf.new(0.02 * SampleRate.ir * 2), sig, delayTime);
-					delay - bufdelay
-				}
-			);
-			tests = tests.add(
-				"% == % [audio rate]".format(classes[0], classes[1]) -> {
-					var sig = SinOsc.ar + 1;
-					var delayTime = WhiteNoise.ar.range(0, 0.002);
-					var delay = classes[0].ar(sig, 0.02, delayTime);
-					var bufdelay = classes[1].ar(LocalBuf.new(0.02 * SampleRate.ir * 2), sig, delayTime);
-					delay - bufdelay
-				}
-			);
+			[\ar, \kr].do{ |rate|
+				tests.add(
+					"% == % [%]".format(classes[0], classes[1], rate) -> {
+						var sig = SinOsc.perform(rate) + 1;
+						var delayTime = WhiteNoise.perform(rate).range(0, 0.005);
+						var delay = classes[0].perform(rate, sig, 0.02, delayTime);
+						var bufdelay = classes[1].perform(rate, LocalBuf.new(0.02 * SampleRate.ir * 2), sig, delayTime);
+						delay - bufdelay
+					}
+				);
+			}
 		};
 
 		server.bootSync;
