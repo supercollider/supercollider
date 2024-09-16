@@ -383,5 +383,3 @@ PV_BinScramble : PV_ChainUGen {
 		^this.multiNew('control', buffer, wipe, width, trig)
 	}
 }
-
-

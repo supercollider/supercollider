@@ -470,4 +470,3 @@ list::
 for audio rate. Putting LocalIn and LocalOut in a pseudo-UGen is a bad idea, as it could interfere with other feedback
 loops in the SynthDef.
 ::
-
