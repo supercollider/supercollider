@@ -14,8 +14,8 @@ jobs:
       matrix:
         include:
           - job-name: "universal"
-            os-version: "12"
-            xcode-version: "13.4.1"
+            os-version: "13"
+            xcode-version: "14.1"
             qt-version: '6.7.2' # will use qt from aqtinstall
             qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning qt5compat'
             deployment-target: "12"
@@ -30,8 +30,8 @@ jobs:
             verify-app: false # verify_app doesn't work properly with qt's rpaths
 
           - job-name: "x64 legacy"
-            os-version: "12"
-            xcode-version: "13.4.1"
+            os-version: "13"
+            xcode-version: "14.1"
             qt-version: "5.15.2" # will use qt from aqtinstall
             qt-modules: 'qtwebengine'
             deployment-target: "10.15"
@@ -45,8 +45,8 @@ jobs:
             artifact-suffix: "macOS-x64-legacy" # set if needed - will trigger artifact upload
 
           - job-name: "x64 use system libraries"
-            os-version: "12"
-            xcode-version: "13.4.1"
+            os-version: "13"
+            xcode-version: "14.1"
             deployment-target: ""
             cmake-architectures: x86_64
             use-syslibs: true
@@ -54,8 +54,8 @@ jobs:
             verify-app: false # verify app also doesn't work with homebrew's qt6
 
           - job-name: "x64 shared libscsynth"
-            os-version: "12"
-            xcode-version: "13.4.1"
+            os-version: "13"
+            xcode-version: "14.1"
             deployment-target: ""
             cmake-architectures: x86_64
             use-syslibs: false
@@ -147,7 +147,7 @@ jobs:
       - name: install libsndfile # to make it compatible with older OSes (lower deployment target)
         if: matrix.build-libsndfile == true && matrix.vcpkg-triplet
         run: |
-          brew uninstall --ignore-dependencies libsndfile libvorbis libogg flac opus
+          brew unlink libsndfile libvorbis libogg flac opus || true
           vcpkg install libsndfile --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
 
       - name: install readline # to allow cross-compiling
