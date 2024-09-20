@@ -2562,7 +2562,8 @@ static bool EnvGen_initSegment(EnvGen* unit, int& counter, double& level, double
 
     // Carry the rounding error forward to be absorbed in the next segments
     double stageDurInSamples = dur * SAMPLERATE + unit->m_stageResidual;
-    int32 stageDurInSamples_floor = (int32)stageDurInSamples;
+    int32 stageDurInSamples_floor = static_cast<int32>(stageDurInSamples);
+    double counter_forGrowCalc = sc_max(1.0, stageDurInSamples);
     counter = sc_max(1, stageDurInSamples_floor);
     unit->m_stageResidual = stageDurInSamples - counter;
 
@@ -2641,6 +2642,7 @@ static bool check_gate(EnvGen* unit, float prevGate, float gate, int& counter, d
         return false;
     } else if (gate <= -1.f && prevGate > -1.f) {
         // forced release: jump to last segment overriding its duration
+        printf("check_gate: forced release\n");
         double dur = -gate - 1.f;
         counter = (int32)(dur * SAMPLERATE);
         counter = sc_max(1, counter) + counterOffset;
@@ -2650,6 +2652,7 @@ static bool check_gate(EnvGen* unit, float prevGate, float gate, int& counter, d
         unit->m_stageResidual = 0.0;
         return false;
     } else if (prevGate > 0.f && gate <= 0.f && unit->m_releaseNode >= 0 && !unit->m_released) {
+        printf("check_gate: close\n");
         counter = counterOffset;
         unit->m_stage = unit->m_releaseNode - 1;
         unit->m_released = true;
