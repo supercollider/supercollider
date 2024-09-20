@@ -94,6 +94,7 @@ jobs:
           restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ matrix.cmake-architectures }}-
 
       - name: cleanup homebrew downloads # always remove existing downloads first, as we bring back relevant downloads from cache
+        continue-on-error: true # even if this fails for some reason, we shouldn't stop
         run: rm -rf $(brew --cache)
 
       - name: cache homebrew downloads
