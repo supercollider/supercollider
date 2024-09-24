@@ -928,14 +928,12 @@ TestCoreUGens : UnitTest {
 			// EnvGen, standard Env and using Env:*circle and Env:-circle
 			target = 42; // first output sample should be the first level of the Env
 			[
-				Env([target, target*100], period_sec),
-				Env([target, target*100], period_sec).circle(period_sec),
-				Env.circle([target, target*100], [period_sec, period_sec])
-			].do{ |env, i|
-				{
-					EnvGen.perform(rate, env);
-				}.loadToFloatArray(period_sec * 1.5, server, { |data|
-					data.postln;
+				{ EnvGen.perform(rate, Env([target, target*100], period_sec)) },
+				// circular envs have to be instantiated from within the function in order for them to be interpreted as dynamic UGen inputs
+				{ EnvGen.perform(rate, Env([target, target*100], period_sec).circle(period_sec)) },
+				{ EnvGen.perform(rate, Env.circle([target, target*100], [period_sec, period_sec])) },
+			].do{ |testFunc, i|
+				testFunc.loadToFloatArray(period_sec * 1.5, server, { |data|
 					this.assertFloatEquals(data[0], target,
 						"EnvGen's first sample, should be its first level [%, env %]".format(rate, i),
 						within: tolerance, report: false
