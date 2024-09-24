@@ -39,8 +39,8 @@ SuperCollider is known to support these platforms:
 SuperCollider has guaranteed support for:
 - Windows 10, 11
 - MSVC 2019, 2022
-- macOS 13, 14
-- Xcode 14-15
+- macOS 13-15
+- Xcode 14-16
 - Debian >= 11
 - Ubuntu 22.04, 24.04
 - Fedora 36, 37
