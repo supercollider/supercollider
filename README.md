@@ -49,6 +49,8 @@ SuperCollider has guaranteed support for:
 - clang >= 11
 - Qt >= 6.2
 
+There is still limited support for Qt 5.15. Further details are described in [README_MACOS.md](README_MACOS.md).
+
 For more information on platform support guarantees, see the [project
 Wiki](https://github.com/supercollider/supercollider/wiki/Platform-Support).
 
