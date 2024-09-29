@@ -507,6 +507,10 @@ Choose an element from the collection at random.
 code::
 [1, 2, 3, 4].choose;
 ::
+There's an optional argument for specifying relative weights with a list. The length of both lists must be equal.
+code::
+[110, 220, 330, 440].choose([1, 3, 1, 2.5]);
+::
 
 method::wchoose
 Choose an element from the collection at random using a list of probabilities or weights. The weights must sum to 1.0.
