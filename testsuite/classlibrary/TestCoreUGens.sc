@@ -28,7 +28,8 @@ TestCoreUGens : UnitTest {
 	test_ugen_generator_equivalences {
 		var cond = CondVar();
 		var completed = 0;
-		var n, v, tests, testDur, testsFinished;
+		var blockSize, sampleRate;
+		var n, v, tests, testDur, numTests, testsFinished;
 
 		// These pairs should generate the same shapes, so subtracting should give zero.
 		// Of course there's some rounding error due to floating-point accuracy.
@@ -260,7 +261,6 @@ TestCoreUGens : UnitTest {
 
 		//////////////////////////////////////////
 		// reversible unary ops:
-
 		[
 			[\reciprocal, \reciprocal],
 			[\squared, \sqrt],
@@ -288,7 +288,6 @@ TestCoreUGens : UnitTest {
 
 		//////////////////////////////////////////
 		// delays/bufdelays:
-
 		[
 			[DelayN, BufDelayN],
 			[DelayL, BufDelayL],
@@ -307,8 +306,13 @@ TestCoreUGens : UnitTest {
 			}
 		};
 
+		//////////////////////////////////////////
+		// Run tests:
 		server.bootSync;
-		testDur = defaultNumBlocksToTest * server.options.blockSize / server.sampleRate;
+		blockSize = server.options.blockSize;
+		sampleRate = server.sampleRate;
+		testDur = defaultNumBlocksToTest * blockSize / sampleRate;
+		numTests = tests.size;
 
 		tests.keysValuesDo { |name, func, i|
 			func.loadToFloatArray(testDur, server, { |data|
@@ -321,7 +325,7 @@ TestCoreUGens : UnitTest {
 			server.sync;
 		};
 
-		testsFinished = cond.waitFor((1.5 * tests.size * testDur).max(minTimeOut), { completed == tests.size });
+		testsFinished = cond.waitFor((1.5 * numTests * testDur).max(minTimeOut), { completed == numTests });
 		this.assert(testsFinished, "TIMEOUT: ugen_generator_equivalences tests", report: false);
 	}
 
@@ -609,17 +613,19 @@ TestCoreUGens : UnitTest {
 				var val = Pitch.kr(son, initFreq: fromFreq).at(0);
 				var dev = (freq-val).abs;
 				// normalize deviation by 10% of the target frequency
-				dev = dev /  (freq / 10);
+				dev = dev / (freq / 10);
 				// [freq, val, dev] // for plotting/debugging
 			}//.plot(testDur, separately: true); // <-to observe/debug
 		];
 
 		server.bootSync;
 
-		tests.keysValuesDo{|text, func|
+		tests.keysValuesDo{ |text, func|
 			func.loadToFloatArray(testDur, server, { |pitchDeviation|
-				this.assertArrayFloatEquals(pitchDeviation, 0.0, text,
-					within: 1.0); // deviation should be less than 1.0 (dev is normalized to 10% of target freq)
+				this.assertArrayFloatEquals(
+					pitchDeviation, 0.0, text,
+					within: 1.0 // deviation should be less than 1.0 (dev is normalized to 10% of target freq)
+				);
 				completed = completed + 1;
 				cond.signalOne;
 			});
