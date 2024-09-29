@@ -30,6 +30,7 @@ TestCoreUGens : UnitTest {
 		var completed = 0;
 		var blockSize, sampleRate;
 		var n, v, tests, testDur, numTests, testsFinished;
+		var sampleDursToTest; // for Env/Line equivalence tests
 
 		// These pairs should generate the same shapes, so subtracting should give zero.
 		// Of course there's some rounding error due to floating-point accuracy.
@@ -327,6 +328,46 @@ TestCoreUGens : UnitTest {
 
 		testsFinished = cond.waitFor((1.5 * numTests * testDur).max(minTimeOut), { completed == numTests });
 		this.assert(testsFinished, "TIMEOUT: ugen_generator_equivalences tests", report: false);
+
+
+		// Other equivalence tests that don't use the batch test parameters above:
+
+		//////////////////////////////////////////
+		// Equivalence of linear Env and Line, with short duration and fast phase change.
+		// In response to errors found in "m_grow" (step size) calculation in EnvGen,
+		// in particular with small env segment sizes.
+		sampleDursToTest = (2 .. 15);
+		numTests = sampleDursToTest.size * 2; // * 2: tests performed at ar and kr
+		completed = 0; // reset counter
+
+		[\ar, \kr].do { |rate|
+			sampleDursToTest.do{ |numSamps|
+				var sampleDur = switch(rate,
+					\ar, { 1 / sampleRate },
+					\kr, { blockSize / sampleRate }
+				);
+				var lineDur = numSamps * sampleDur;
+
+				{   // ensure values change enough to meaningfully exceed 'within' threshold
+					EnvGen.perform(rate, Env([1.5, 100], lineDur)) -
+					Line.perform(rate, 1.5, 100, lineDur)
+				}.loadToFloatArray(testDur, server, { |data|
+					this.assertArrayFloatEquals(data, 0,
+						"EnvGen should be equal to Line over short durations [% samples] with fast phase change. [%]".format(numSamps, rate),
+						within: -90.dbamp, report: true
+					);
+					completed = completed + 1;
+					cond.signalOne;
+				});
+				server.sync;
+			}
+		};
+
+		testsFinished = cond.waitFor(
+			(1.5 * numTests * sampleDursToTest.maxItem / server.sampleRate).max(minTimeOut),
+			{ completed == numTests }
+		);
+		this.assert(testsFinished, "TIMEOUT: ugen_generator_equivalences EnvGen/Line tests", report: false);
 	}
 
 	test_exact_convergence {
