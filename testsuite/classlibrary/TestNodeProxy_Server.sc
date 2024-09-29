@@ -68,13 +68,17 @@ TestNodeProxy_Server : UnitTest {
 		server.sync;
 		proxy.source = nil;
 
+		// ... we give the server some time to catch up? ...
+		// see https://github.com/supercollider/supercollider/issues/6438
+		0.1.wait;
+
 		// ... and also afterwards, we force an update
 		server.sync;
 		server.sendStatusMsg;
 		numAfter = server.statusWatcher.numSynthDefs;
 
 		this.assertEquals(numBefore, numAfter,
-			"Removing the  NodeProxy source function should remove SynthDef from server"
+			"Removing the NodeProxy source function should remove SynthDef from server (was %, is %)".format(numBefore, numAfter)
 		);
 	}
 
