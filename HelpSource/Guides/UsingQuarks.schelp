@@ -5,7 +5,29 @@ related:: Classes/Quarks, Classes/Quark, Classes/Git
 
 Quarks are packages of SuperCollider code containing classes, extension methods, documentation and server UGen plugins. The Quarks class manages downloading these packages and installing or uninstalling them.
 
-section:: Installing quarks
+warning::
+As individual users or groups develop their own Quark for different purposes, it is possible that installing multiple packages could cause problems because they conflict with each other. We therefore recommend that you select and install only the packages that you need. It may also be helpful to install one Quark package at a time, which should make it easier to troubleshoot problems as they arise.
+::
+
+note::
+If you have trouble finding the Quarks package you need, you may find the Quarks package information in the following encyclopaedia useful:
+link::https://baryon.supercollider.online::
+::
+
+section::Preliminary stages
+
+Quarks installation depends on emphasis::git:: version-control software. Detailed installation instructions may be found at link::https://git-scm.com::.
+
+list::
+##Windows users can download and install the appropriate installation file for their environment from link::https://git-scm.com/download/win::.
+##Linux users can copy the appropriate terminal commands from link::https://git-scm.com/download/linux:: for their environment and run them in a terminal window.
+##For Mac users, we recommend installing git from Homebrew, as described at link::https://git-scm.com/download/mac::. If you are unsure whether you have Homebrew installed, follow the instructions for installing Homebrew first. You may also need to install 'Xcode Command Line Tools' if a window pops up asking you to install it.
+::
+
+
+
+section:: Installing/uninstalling/updating quarks
+
 
 subsection::using the GUI
 
@@ -106,6 +128,18 @@ The Quarks interface can only work if SuperCollider is compiled and running, so 
 If you are using the SC IDE then open strong::Preferences > Interpreter:: and remove the paths from the Include Paths.
 
 You can also manually edit teletype::sclang_config.yaml::
+
+
+subsection::Updating Quarks
+
+You can update all installed Quarks by evaluating the following code:
+code::
+Quarks.all.do{ |quark| quark.update() };
+::
+or by pressing the 'Check for updates' button after evaluating the following code:
+code::
+Quarks.gui
+::
 
 
 
