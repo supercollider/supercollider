@@ -335,6 +335,10 @@ if (GC_SANITYCHECK)
 	target_compile_definitions(libsclang PUBLIC GC_SANITYCHECK)
 endif()
 
+if(MSVC)
+    target_compile_definitions(libsclang PUBLIC HAVE_ISXDIGIT) # needed for MSVC 2022
+endif()
+
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	target_link_libraries(libsclang rt)
 endif()
