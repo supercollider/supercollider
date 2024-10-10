@@ -648,7 +648,7 @@ Object {
 
 	fuzzyEqual { arg that, precision=1.0; ^max(0.0, 1.0 - (abs(this - that)/precision)) }
 
-	isUGen { ^false }
+	isUGen { ^false } // TODO: could this be removed and replaced with isKindOf(UGen), as this is only used in BelaUGens?
 	numChannels { ^1 }
 
 	pair { arg that; ^[this, that] }

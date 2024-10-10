@@ -1,4 +1,7 @@
 GrainSin : MultiOutUGen {
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar	{ arg numChannels = 1, trigger = 0, dur = 1, freq = 440, pan = 0, envbufnum = -1,
 		maxGrains = 512, mul = 1, add = 0;
@@ -15,6 +18,9 @@ GrainSin : MultiOutUGen {
 }
 
 GrainFM : MultiOutUGen {
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar	{ arg numChannels = 1, trigger = 0, dur = 1, carfreq = 440, modfreq = 200, index = 1,
 		pan = 0, envbufnum = -1, maxGrains = 512, mul = 1, add = 0;
@@ -31,6 +37,10 @@ GrainFM : MultiOutUGen {
 }
 
 GrainBuf : MultiOutUGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\read }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg numChannels = 1, trigger = 0, dur = 1, sndbuf, rate = 1, pos = 0, interp = 2,
 		pan = 0, envbufnum = -1, maxGrains = 512, mul = 1, add = 0;
@@ -47,6 +57,9 @@ GrainBuf : MultiOutUGen {
 }
 
 GrainIn : MultiOutUGen {
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar	{ arg numChannels = 1, trigger = 0, dur = 1, in, pan = 0, envbufnum = -1, maxGrains = 512,
 		mul = 1, add = 0;
@@ -63,6 +76,11 @@ GrainIn : MultiOutUGen {
 }
 
 Warp1 : MultiOutUGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\read }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar	{ arg numChannels = 1, bufnum = 0, pointer = 0, freqScale = 1,
 		windowSize = 0.2, envbufnum = -1, overlaps = 8, windowRandRatio = 0.0, interp = 1,
 		mul = 1, add = 0;
@@ -76,5 +94,4 @@ Warp1 : MultiOutUGen {
 	}
 
 	argNamesInputsOffset { ^2 }
-
 }
