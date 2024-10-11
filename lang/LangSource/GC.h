@@ -303,9 +303,20 @@ inline void PyrGC::ToGrey2(PyrObjectHdr* obj) {
 }
 
 inline PyrObject* PyrGC::Allocate(size_t inNumBytes, int32 sizeclass, bool inRunCollection) {
-    if (inRunCollection && mNumToScan >= kScanThreshold)
+    // When allocating a large number of objects, mNumToScan (int32) can overflow.
+    // This usually happens when creating temporary frames, which might not be collected until later.
+    // This is designed to force collection when there might be a large number of temporary objects.
+    // The threshold is somewhat arbitrary and could be made larger, but it is better to be safe than fast,
+    // and sclang is not designed nor optimized to process large amounts of data.
+    const bool aboveTemporaryObjectLimit = mNumToScan > 5'000'000;
+
+    // All allocations should set inRunCollection to true, but some types of methods do not as a part of an
+    // optimization. Don't scan an insignificant amount of memory, wait until above kScanThreshold.
+    const bool shouldCollect = inRunCollection && mNumToScan >= kScanThreshold;
+
+    if (aboveTemporaryObjectLimit || shouldCollect) {
         Collect();
-    else {
+    } else {
         if (inRunCollection)
             mUncollectedAllocations = 0;
         else
