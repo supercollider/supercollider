@@ -319,7 +319,7 @@ TestCoreUGens : UnitTest {
 			func.loadToFloatArray(testDur, server, { |data|
 				this.assertArrayFloatEquals(data, 0, name.quote,
 					within: -90.dbamp, // could go to -100 if not for midicps(cpsmidi()) test
-					report: true);
+					report: false);
 				completed = completed + 1;
 				cond.signalOne;
 			});
@@ -354,7 +354,7 @@ TestCoreUGens : UnitTest {
 				}.loadToFloatArray(testDur, server, { |data|
 					this.assertArrayFloatEquals(data, 0,
 						"EnvGen should be equal to Line over short durations [% samples] with fast phase change. [%]".format(numSamps, rate),
-						within: -90.dbamp, report: true
+						within: -90.dbamp, report: false
 					);
 					completed = completed + 1;
 					cond.signalOne;
@@ -392,7 +392,7 @@ TestCoreUGens : UnitTest {
 
 		tests.keysValuesDo{ |text, func|
 			func.loadToFloatArray(testDur, server, { |data|
-				this.assertArrayFloatEquals(data, 0, text.quote, within: 0.0, report: true);
+				this.assertArrayFloatEquals(data, 0, text.quote, within: 0.0, report: false);
 				completed = completed + 1;
 				cond.signalOne;
 			});
@@ -420,7 +420,7 @@ TestCoreUGens : UnitTest {
 
 		tests.keysValuesDo{|name, func|
 			func.loadToFloatArray(testDur, server, { |data|
-				this.assertArrayFloatEquals(data, 0, name.quote, report: true);
+				this.assertArrayFloatEquals(data, 0, name.quote, report: false);
 				completed = completed + 1;
 				cond.signalOne;
 			});
@@ -514,7 +514,7 @@ TestCoreUGens : UnitTest {
 
 			this.assert(results.every(_ == results[0]),
 				"Impulse.%: all rate combinations of identical unmodulated input values should have identical output".format(rate),
-				report: true);
+				report: false);
 		};
 
 		/* Tests in response to historical bugs */
@@ -525,8 +525,8 @@ TestCoreUGens : UnitTest {
 		{ Impulse.kr(frq, 3.8) }.loadToFloatArray(
 			frq.reciprocal, // render one freq period (should contain only 1 impulse)
 			server, { |arr|
-				this.assert(arr.sum == 1.0, "Impulse.kr: phase that is far out-of-range should wrap immediately in-range, and not cause multiple impulses to fire.", report: true);
-				this.assert(arr[0] != 1.0, "Impulse.kr: a phase offset other than 0 or 1 should not produce an impulse on the first output sample.", report: true);
+				this.assert(arr.sum == 1.0, "Impulse.kr: phase that is far out-of-range should wrap immediately in-range, and not cause multiple impulses to fire.", report: false);
+				this.assert(arr[0] != 1.0, "Impulse.kr: a phase offset other than 0 or 1 should not produce an impulse on the first output sample.", report: false);
 				cond.signalOne;
 			}
 		);
@@ -540,7 +540,7 @@ TestCoreUGens : UnitTest {
 					frq.reciprocal, // 1 freq period
 					server, { |arr|
 						this.assert(arr[0] == 1.0,
-							"Impulse.%: initial phase of % should produce and impulse on the first frame.".format(rate, phs), report: true);
+							"Impulse.%: initial phase of % should produce and impulse on the first frame.".format(rate, phs), report: false);
 						cond.signalOne;
 					}
 				);
@@ -555,7 +555,7 @@ TestCoreUGens : UnitTest {
 				3 * server.options.blockSize / server.sampleRate, // 3 blocks
 				server, { |arr|
 					this.assert(arr[0] == 1.0 and: { arr.sum == 1.0 },
-						"Impulse.%: freq = 0 should produce a single impulse on the first frame and no more.".format(rate), report: true);
+						"Impulse.%: freq = 0 should produce a single impulse on the first frame and no more.".format(rate), report: false);
 					cond.signalOne;
 				}
 			);
@@ -569,7 +569,7 @@ TestCoreUGens : UnitTest {
 				server, { |arr|
 					arr = arr.clump(2).flop; // de-interleave
 					this.assertArrayFloatEquals(arr[0], arr[1],
-						"Impulse.%: positive and negative frequencies should produce the same output.".format(rate), report: true);
+						"Impulse.%: positive and negative frequencies should produce the same output.".format(rate), report: false);
 					cond.signalOne;
 				}
 			);
@@ -806,7 +806,7 @@ TestCoreUGens : UnitTest {
 					};
 
 					this.assertArrayFloatEquals(
-						data.keep(numPredelaySamples), target, errmsg, within: tolerance, report: true
+						data.keep(numPredelaySamples), target, errmsg, within: tolerance, report: false
 					);
 					cond.signalOne;
 				});
@@ -883,6 +883,7 @@ TestCoreUGens : UnitTest {
 		var completed = 0;
 		var testsFinished = false;
 		var cond = CondVar();
+		var tolerance = -100.dbamp;
 
 		server.bootSync;
 		[\ar, \kr].do { |rate|
@@ -907,7 +908,7 @@ TestCoreUGens : UnitTest {
 
 						this.assertFloatEquals(dataEndVal, envEndVal,
 							"EnvGen should not arrive late to its end value [dur % samples, %]".format(numSamps, rate),
-							within: -90.dbamp, report: false
+							within: tolerance, report: false
 						);
 
 						this.assert(dataEndVal != priorToEndVal,
