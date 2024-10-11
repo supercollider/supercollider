@@ -876,6 +876,60 @@ TestCoreUGens : UnitTest {
 		}
 	}
 
+	test_env_endsAtCorrectSample {
+
+		var sampleDursToTest = (2 .. 27) ++ 63 ++ (64, 64+23 .. 256); // mix of below and over block size
+		var numTests = sampleDursToTest.size * 2; // * 2: tests performed at ar and kr
+		var completed = 0;
+		var testsFinished = false;
+		var cond = CondVar();
+
+		server.bootSync;
+		[\ar, \kr].do { |rate|
+			sampleDursToTest.do{ |numSamps|
+				var sampleDur = switch(rate,
+					\ar, { 1 / server.sampleRate },
+					\kr, { server.options.blockSize / server.sampleRate }
+				);
+				// Render a couple extra samples to observe position of Env's end value.
+				// Must be >1 to avoid loadToFloatArray truncating last sample (floating point rounding error)
+				var excessSamples = 2;
+				var lineDur = numSamps * sampleDur;
+				var renderDur = (numSamps + excessSamples) * sampleDur;
+				var envEndVal = 100;
+
+				{   // ensure values change enough to meaningfully exceed 'within' threshold
+					EnvGen.perform(rate, Env([1.5, envEndVal], lineDur))
+				}.loadToFloatArray(renderDur, server,
+					{ |data|
+						var dataEndVal = data[numSamps];
+						var priorToEndVal = data[numSamps-1];
+
+						this.assertFloatEquals(dataEndVal, envEndVal,
+							"EnvGen should not arrive late to its end value [dur % samples, %]".format(numSamps, rate),
+							within: -90.dbamp, report: false
+						);
+
+						this.assert(dataEndVal != priorToEndVal,
+							"EnvGen should not arrive early to its end value [dur % samples, %]".format(numSamps, rate),
+							report: false
+						);
+
+						completed = completed + 1;
+						cond.signalOne;
+					}
+				);
+				server.sync;
+			}
+		};
+
+		testsFinished = cond.waitFor(
+			(1.5 * numTests * sampleDursToTest.maxItem / server.sampleRate).max(minTimeOut),
+			{ completed == numTests }
+		);
+		this.assert(testsFinished, "TIMEOUT: test_env_endsAtCorrectSample", report: false);
+	}
+
 	test_oscillators_startAtCorrectPhase {
 
 		var tolerance = -100.dbamp;
