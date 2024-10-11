@@ -2487,12 +2487,12 @@ void EnvGen_Ctor(EnvGen* unit) {
         if (INRATE(0) == calc_FullRate) {
             SETCALC(EnvGen_next_aa);
         } else {
-#ifdef NOVA_SIMD
-            if (boost::alignment::is_aligned(BUFLENGTH, 16))
-                SETCALC(EnvGen_next_ak_nova);
-            else
-#endif
-                SETCALC(EnvGen_next_ak);
+            //#ifdef NOVA_SIMD
+            //            if (boost::alignment::is_aligned(BUFLENGTH, 16))
+            //                SETCALC(EnvGen_next_ak_nova);
+            //            else
+            //#endif
+            SETCALC(EnvGen_next_ak);
         }
     } else {
         SETCALC(EnvGen_next_k);
@@ -2689,8 +2689,8 @@ static inline bool EnvGen_nextSegment(EnvGen* unit, int& counter, double& level)
         printf("stage: last stage completed, doing doneAction\n");
         counter = INT_MAX;
         unit->m_shape = 0;
-        //        level = unit->m_endLevel; // don't update yet, the current level hasn't been written out by `perform`
-        //        yet
+        //                level = unit->m_endLevel; // don't update yet, the current level hasn't been written out by
+        //                `perform` yet
         unit->mDone = true;
         int doneAction = (int)ZIN0(kEnvGen_doneAction);
         DoneAction(doneAction, unit);
@@ -2838,9 +2838,11 @@ static inline void EnvGen_perform(EnvGen* unit, float*& out, double& level, int 
 
 
 void EnvGen_next_k(EnvGen* unit, int inNumSamples) {
+    printf("EnvGen_next_k\n");
     float gate = ZIN0(kEnvGen_gate);
     int counter = unit->m_counter;
     double level = unit->m_level;
+    printf("\tcounter: %d\n", counter);
 
     check_gate(unit, unit->m_prevGate, gate, counter, level);
     unit->m_prevGate = gate;
@@ -2868,6 +2870,7 @@ void EnvGen_next_k(EnvGen* unit, int inNumSamples) {
 }
 
 void EnvGen_next_ak(EnvGen* unit, int inNumSamples) {
+    printf("EnvGen_next_ak\n");
     float* out = ZOUT(0);
     float gate = ZIN0(kEnvGen_gate);
     int counter = unit->m_counter;
@@ -2882,6 +2885,14 @@ void EnvGen_next_ak(EnvGen* unit, int inNumSamples) {
             bool success = EnvGen_nextSegment(unit, counter, level);
             if (!success)
                 return;
+            if (unit->mDone) {
+                // We've reached the end of the last stage,
+                // write out the previously-advanced level value
+                EnvGen_perform(unit, out, level, 1);
+                // and advance to the end level for samples thereafter
+                level = unit->m_endLevel;
+                remain -= 1;
+            }
         }
 
         int nsmps = sc_min(remain, counter);
@@ -2897,16 +2908,19 @@ void EnvGen_next_ak(EnvGen* unit, int inNumSamples) {
 
 #ifdef NOVA_SIMD
 FLATTEN void EnvGen_next_ak_nova(EnvGen* unit, int inNumSamples) {
+    printf("EnvGen_next_ak_nova\n");
     float* out = ZOUT(0);
     float gate = ZIN0(kEnvGen_gate);
     int counter = unit->m_counter;
     double level = unit->m_level;
+    printf("\tcounter: %d\n", counter);
 
     check_gate(unit, unit->m_prevGate, gate, counter, level);
     unit->m_prevGate = gate;
 
     int remain = inNumSamples;
     if (counter > inNumSamples) {
+        printf("counter: %d, inNumSamples %d\n", counter, inNumSamples);
         switch (unit->m_shape) {
         case shape_Step:
         case shape_Hold:
@@ -2937,10 +2951,21 @@ FLATTEN void EnvGen_next_ak_nova(EnvGen* unit, int inNumSamples) {
             bool success = EnvGen_nextSegment(unit, counter, level);
             if (!success)
                 return;
+            if (unit->mDone) {
+                // We've reached the end of the last stage,
+                // write out the previously-advanced level value
+                EnvGen_perform(unit, out, level, 1);
+                // and advance to the end level for samples thereafter
+                level = unit->m_endLevel;
+                remain -= 1;
+            }
         }
 
         int nsmps = sc_min(remain, counter);
+        printf("remain: %d, nsamps %d\n", remain, nsmps);
+        printf("this level: %.4f\n", level);
         EnvGen_perform(unit, out, level, nsmps);
+        printf("next level: %.4f\n", level);
 
         remain -= nsmps;
         counter -= nsmps;
@@ -2953,6 +2978,7 @@ FLATTEN void EnvGen_next_ak_nova(EnvGen* unit, int inNumSamples) {
 
 
 void EnvGen_next_aa(EnvGen* unit, int inNumSamples) {
+    printf("EnvGen_next_aa\n");
     float* out = ZOUT(0);
     float* gatein = ZIN(kEnvGen_gate);
     int counter = unit->m_counter;
