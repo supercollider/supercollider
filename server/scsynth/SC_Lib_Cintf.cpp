@@ -85,6 +85,7 @@ void read_section(const struct mach_header* mhp, unsigned long slide, const char
 }
 #endif
 
+#ifdef STATIC_PLUGINS
 extern void IO_Load(InterfaceTable* table);
 extern void Osc_Load(InterfaceTable* table);
 extern void Delay_Load(InterfaceTable* table);
@@ -107,8 +108,16 @@ extern void DynNoise_Load(InterfaceTable* table);
 extern void FFT_UGens_Load(InterfaceTable* table);
 extern void iPhone_Load(InterfaceTable* table);
 
+extern void DiskIO_Unload(void);
+extern void UIUGens_Unload(void);
+#endif // STATIC_PLUGINS
 
 void deinitialize_library() {
+#ifdef STATIC_PLUGINS
+    DiskIO_Unload();
+    UIUGens_Unload();
+#endif // STATIC_PLUGINS
+
 #ifdef _WIN32
     for (void* ptrhinstance : open_handles) {
         HINSTANCE hinstance = (HINSTANCE)ptrhinstance;
@@ -117,8 +126,8 @@ void deinitialize_library() {
             UnLoadPlugInFunc unloadFunc = (UnLoadPlugInFunc)ptr;
             (*unloadFunc)();
         }
+        FreeLibrary(hinstance);
     }
-    // FreeLibrary dlclose(handle);
 #else
     for (void* handle : open_handles) {
         void* ptr = dlsym(handle, "unload");
@@ -126,10 +135,12 @@ void deinitialize_library() {
             UnLoadPlugInFunc unloadFunc = (UnLoadPlugInFunc)ptr;
             (*unloadFunc)();
         }
+        dlclose(handle);
     }
 #endif
     open_handles.clear();
 }
+
 void initialize_library(const char* uGensPluginPath) {
     gCmdLib = new HashTable<SC_LibCmd, Malloc>(&gMalloc, 64, true);
     gUnitDefLib = new HashTable<UnitDef, Malloc>(&gMalloc, 512, true);
