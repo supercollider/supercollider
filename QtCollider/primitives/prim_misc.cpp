@@ -90,9 +90,14 @@ QC_LANG_PRIMITIVE(Qt_StringBounds, 2, PyrSlot* r, PyrSlot* a, VMGlobals* g) {
 }
 
 QC_LANG_PRIMITIVE(Qt_AvailableFonts, 0, PyrSlot* r, PyrSlot* a, VMGlobals* g) {
-    QFontDatabase database;
     QVariantList list;
-    Q_FOREACH (QString family, database.families())
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+    QFontDatabase database;
+    auto families = database.families();
+#else
+    auto families = QFontDatabase::families();
+#endif
+    Q_FOREACH (QString family, families)
         list << family;
     QtCollider::set(r, list);
     return errNone;

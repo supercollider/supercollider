@@ -130,11 +130,7 @@ void Document::setIndentWidth(int numSpaces) {
 
     QTextOption options = mDoc->defaultTextOption();
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
     options.setTabStopDistance(tabStop);
-#else
-    options.setTabStop(tabStop);
-#endif
 
     mDoc->setDefaultTextOption(options);
 }
@@ -434,7 +430,11 @@ Document* DocumentManager::documentForId(const QByteArray docID) {
 
 QString DocumentManager::decodeDocument(const QByteArray& bytes) {
     QTextStream stream(bytes);
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     stream.setCodec("UTF-8");
+#else
+    stream.setEncoding(QStringConverter::Utf8);
+#endif
     stream.setAutoDetectUnicode(true);
     return stream.readAll();
 }

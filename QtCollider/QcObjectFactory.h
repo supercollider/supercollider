@@ -54,7 +54,7 @@ static void qcNoConstructorMsg(const QMetaObject* metaObject, int argc, QtCollid
         if (type) {
             if (i > 0)
                 str += ", ";
-            str += QMetaType::typeName(type->id());
+            str += QMetaType(type->id()).name();
         } else
             break;
     }

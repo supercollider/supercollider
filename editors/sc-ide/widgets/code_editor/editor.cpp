@@ -652,8 +652,13 @@ void GenericCodeEditor::mousePressEvent(QMouseEvent* e) {
 
         Main::evaluateCodeIfCompiled(QStringLiteral("Document.findByQUuid(\'%1\').mouseDown(%2, %3, %4, %5, 1)")
                                          .arg(mDoc->id().constData())
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
                                          .arg(e->x())
                                          .arg(e->y())
+#else
+                                         .arg(e->position().x())
+                                         .arg(e->position().y())
+#endif
                                          .arg(e->modifiers())
                                          .arg(button),
                                      true);
@@ -681,8 +686,13 @@ void GenericCodeEditor::mouseDoubleClickEvent(QMouseEvent* e) {
 
         Main::evaluateCodeIfCompiled(QStringLiteral("Document.findByQUuid(\'%1\').mouseDown(%2, %3, %4, %5, 2)")
                                          .arg(mDoc->id().constData())
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
                                          .arg(e->x())
                                          .arg(e->y())
+#else
+                                         .arg(e->position().x())
+                                         .arg(e->position().y())
+#endif
                                          .arg(e->modifiers())
                                          .arg(button),
                                      true);
@@ -710,8 +720,13 @@ void GenericCodeEditor::mouseReleaseEvent(QMouseEvent* e) {
 
         Main::evaluateCodeIfCompiled(QStringLiteral("Document.findByQUuid(\'%1\').mouseUp(%2, %3, %4, %5)")
                                          .arg(mDoc->id().constData())
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
                                          .arg(e->x())
                                          .arg(e->y())
+#else
+                                         .arg(e->position().x())
+                                         .arg(e->position().y())
+#endif
                                          .arg(e->modifiers())
                                          .arg(button),
                                      true);

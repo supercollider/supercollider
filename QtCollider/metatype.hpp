@@ -130,14 +130,14 @@ public:
 
     QGenericArgument toGenericArgument() {
         if (mType)
-            return QGenericArgument(QMetaType::typeName(mType->id()), mData);
+            return QGenericArgument(QMetaType(mType->id()).name(), mData);
         else
             return QGenericArgument();
     }
 
     QGenericReturnArgument toGenericReturnArgument() {
         if (mType)
-            return QGenericReturnArgument(QMetaType::typeName(mType->id()), mData);
+            return QGenericReturnArgument(QMetaType(mType->id()).name(), mData);
         else
             return QGenericReturnArgument();
     }

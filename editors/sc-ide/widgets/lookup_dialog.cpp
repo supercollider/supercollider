@@ -126,7 +126,11 @@ void GenericLookupDialog::currentChanged(const QModelIndex& item, const QModelIn
     file.close();
 
     QTextStream stream(bytes);
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     stream.setCodec("UTF-8");
+#else
+    stream.setEncoding(QStringConverter::Utf8);
+#endif
     stream.setAutoDetectUnicode(true);
 
     mPreviewDocument->setTextInRange(stream.readAll(), 0, -1);
