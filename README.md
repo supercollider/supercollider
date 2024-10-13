@@ -26,29 +26,30 @@ See the [Raspberry Pi](README_RASPBERRY_PI.md) and [BeagleBone Black](README_BEA
 ### Platform support
 
 SuperCollider is tested with:
-- Windows 10 (32- and 64-bit) and MSVC 2019
-- macOS 12 and Xcode 13.4.1
+- Windows 10 64-bit and MSVC 2019
+- macOS 13 and Xcode 14.1
 - Ubuntu 22.04 and gcc 12
 
 SuperCollider is known to support these platforms:
-- Windows Vista, 7, 8, 10, 11
-- macOS 10.15-12.x
-- Ubuntu 20.04-22.04
+- Windows 10, 11
+- macOS 11-15
+- Ubuntu 22.04-24.04
 
-We also provide a legacy macOS binary for macOS 10.15 and above using Qt 5.9.
 
 SuperCollider has guaranteed support for:
 - Windows 10, 11
-- MSVC 2017, 2019
-- macOS 11, 12
-- Xcode 11-13
+- MSVC 2019, 2022
+- macOS 13-15
+- Xcode 14-16
 - Debian >= 11
-- Ubuntu 20.04, 22.04
+- Ubuntu 22.04, 24.04
 - Fedora 36, 37
 - Arch Linux
 - gcc >= 9
 - clang >= 11
-- Qt >= 5.11
+- Qt >= 6.2
+
+There is still limited support for Qt 5.15. Further details are described in [README_MACOS.md](README_MACOS.md).
 
 For more information on platform support guarantees, see the [project
 Wiki](https://github.com/supercollider/supercollider/wiki/Platform-Support).
