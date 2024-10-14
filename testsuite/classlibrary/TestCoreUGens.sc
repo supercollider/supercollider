@@ -18,21 +18,49 @@ TestCoreUGens : UnitTest {
 
 	setUp {
 		server = Server(this.class.name);
+		server.options.protocol = \tcp
+
 	}
 
 	tearDown {
-		server.quit;
+		var cond = CondVar();
+		var done = false;
+		server.quit(onComplete: {
+			done = true;
+			cond.signalAll;
+		});
+		cond.wait { done };
 		server.remove;
 	}
 
-	test_ugen_generator_equivalences {
+	run_buffer_tests_in_parallel { |name, argNames, args, funcProducer, testDur, actionWithArray|
 		var cond = CondVar();
 		var completed = 0;
-		var n, v, tests, testDur, testsFinished;
+		args.do { |currentArgs|
+			var namedArgs = [argNames, currentArgs].flop.flatten;
+			funcProducer.performArgs(\value, [], namedArgs)
+			.loadToFloatArray(testDur, server, { |arr|
+				actionWithArray.performArgs(\value, [arr], namedArgs);
+				completed = completed + 1;
+				cond.signalOne;
+			});
+			if ( server.options.protocol != \tcp ){ server.sync };
+		};
+
+		this.assert(
+			cond.waitFor((1.5 * args.size * testDur).max(minTimeOut), { completed == args.size });,
+			"TIMEOUT: " ++ name,
+			report: false
+		);
+	}
+
+
+	test_ugen_generator_equivalences {
+		var n, v;
 
 		// These pairs should generate the same shapes, so subtracting should give zero.
 		// Of course there's some rounding error due to floating-point accuracy.
-		tests = Dictionary[
+		var tests = IdentityDictionary[
 			//////////////////////////////////////////
 			// Ramp generators:
 			"Line.ar can match LFSaw.ar" -> {Line.ar(0,1,1) - LFSaw.ar(0.5)},
@@ -318,30 +346,25 @@ TestCoreUGens : UnitTest {
 			);
 		};
 
+
+		/////////////////////
+		// Run test
 		server.bootSync;
-		testDur = defaultNumBlocksToTest * server.options.blockSize / server.sampleRate;
-
-		tests.keysValuesDo { |name, func, i|
-			func.loadToFloatArray(testDur, server, { |data|
-				this.assertArrayFloatEquals(data, 0, name.quote, within: 0.001, report: true);
-				completed = completed + 1;
-				cond.signalOne;
-			});
-			server.sync;
-		};
-
-		testsFinished = cond.waitFor((1.5 * tests.size * testDur).max(minTimeOut), { completed == tests.size });
-		this.assert(testsFinished, "TIMEOUT: ugen_generator_equivalences tests", report: false);
+		this.run_buffer_tests_in_parallel(
+			name: thisMethod.name,
+			argNames: [\name, \func],
+			args: tests.asPairs.clump(2),
+			funcProducer: { |name, func| func },
+			testDur: defaultNumBlocksToTest * server.options.blockSize / server.sampleRate,
+			actionWithArray: { |arr, name, func|
+				this.assertArrayFloatEquals(arr, 0, name.quote, within: 0.001, report: true);
+			}
+		);
 	}
 
 	test_exact_convergence {
-		var cond = CondVar();
-		var completed = 0;
-		var n, v, tests, testDur, testsFinished;
-
 		// Tests for things that should converge exactly to zero
-		tests = Dictionary[
-
+		var tests = Dictionary[
 			//////////////////////////////////////////
 			// Pan2 amplitude convergence to zero test, unearthed by JH on sc-dev 2009-10-19.
 			"Pan2.ar(ar, 0, kr) should converge properly to zero when amp set to zero" -> {
@@ -352,47 +375,33 @@ TestCoreUGens : UnitTest {
 		];
 
 		server.bootSync;
-		testDur = defaultNumBlocksToTest * server.options.blockSize / server.sampleRate;
-
-		tests.keysValuesDo{ |text, func|
-			func.loadToFloatArray(testDur, server, { |data|
-				this.assertArrayFloatEquals(data, 0, text.quote, within: 0.0, report: true);
-				completed = completed + 1;
-				cond.signalOne;
-			});
-			server.sync;
-		};
-		"timing out after % sec\n".postf(tests.size * testDur);
-		testsFinished = cond.waitFor((1.5 * tests.size * testDur).max(minTimeOut), { completed == tests.size });
-		this.assert(testsFinished, "TIMEOUT: exact_convergence tests", report: false);
+		this.run_buffer_tests_in_parallel(
+			name: thisMethod.name,
+			argNames: [\name, \func],
+			args: tests.asPairs.clump(2),
+			funcProducer: { |name, func| func },
+			testDur: defaultNumBlocksToTest * server.options.blockSize / server.sampleRate,
+			actionWithArray: { |arr, name, func|
+				this.assertArrayFloatEquals(arr, 0, name.quote, within: 0.0, report: true);
+			}
+		);
 	}
 
 
 	test_muladd {
-		var cond = CondVar();
-		var completed = 0;
-		var n, v, tests, testDur, testsFinished;
-
-		tests = Dictionary[];
-		[[\ar,\kr], [2,0,5], [\ar,\kr], [2,0,5], [\ar,\kr], [2,0,5]].allTuples.do{|tup|
-			tests["%%.madd(%%, %%)".format(*tup)] =
-			"{DC.%(%).madd(DC.%(%), DC.%(%)) - (% * % + %)}".format(*(tup ++ tup[1,3..])).interpret;
-		};
-
 		server.bootSync;
-		testDur = defaultNumBlocksToTest * server.options.blockSize / server.sampleRate;
-
-		tests.keysValuesDo{|name, func|
-			func.loadToFloatArray(testDur, server, { |data|
-				this.assertArrayFloatEquals(data, 0, name.quote, report: true);
-				completed = completed + 1;
-				cond.signalOne;
-			});
-			server.sync;
-		};
-
-		testsFinished = cond.waitFor((1.5 * tests.size * testDur).max(minTimeOut), { completed == tests.size });
-		this.assert(testsFinished, "TIMEOUT: muladd tests", report: false);
+		this.run_buffer_tests_in_parallel(
+			name: thisMethod.name,
+			argNames: [\rate1, \val1, \rate2, \val2, \rate3, \val3],
+			args: [[\ar, \kr], [2, 0, 5], [\ar, \kr], [2, 0, 5], [\ar, \kr], [2, 0, 5]].allTuples,
+			funcProducer: { |rate1, val1, rate2, val2, rate3, val3|
+				{ DC.perform(rate1, val1).madd(DC.perform(rate2, val2), DC.perform(rate3, val3)) - (val1 * val2 + val3) }
+			},
+			testDur: defaultNumBlocksToTest * server.options.blockSize / server.sampleRate,
+			actionWithArray: { |arr, rate1, val1, rate2, val2, rate3, val3|
+				this.assertArrayFloatEquals(arr, 0, "%%.madd(%%, %%)".format(rate1, val1, rate2, val2, rate3, val3), report: true)
+			}
+		);
 	}
 
 
@@ -428,7 +437,7 @@ TestCoreUGens : UnitTest {
 				recBuf.loadToFloatArray(action: { |renderedData|
 					// the data recorded to renderedData should be exactly the same as the original data
 					this.assertArrayFloatEquals(renderedData - data, 0,
-						"data->loadCollection->PlayBuf->RecordBuf->loadToFloatArray->data (% channels)".format(numchans), report: false);
+						"data->loadCollection->PlayBuf->RecordBuf->loadToFloatArray->data (% channels)".format(numchans), report: true);
 					dataBuf.free;
 					recBuf.free;
 					completed = completed + 1;
@@ -441,104 +450,149 @@ TestCoreUGens : UnitTest {
 		this.assert(completed == tests.size, "TIMEOUT: bufugens tests", report: false);
 	}
 
-	test_impulse {
-		var blockRate, funcs, results, frq, phs, testDur, testsFinished;
-		var rates = [\kr,\ar];
-		var cond = CondVar();
-		var numBlocksToTest = 5;
 
-		server.bootSync;
 
-		blockRate = server.sampleRate / server.options.blockSize;
-		frq = blockRate * 2.123; // impulses per block
-		phs = 0;
 
-		rates.do{ |rate|
-			var completed = 0;
 
-			funcs = [{DC.ar(frq)}, {DC.kr(frq)}, frq].collect({ |in0|
-				[{DC.ar(phs)}, {DC.kr(phs)}, phs].collect{ |in1|
-					{ Impulse.perform(rate, in0, in1) }
-				}
-			}).flat;
-			results = Array.newClear(funcs.size);
+	impulse_identity {
+		var blockRate = server.sampleRate / server.options.blockSize;
+		var freq = blockRate * 2.123;
+		var testDur = 5 * blockRate.reciprocal;
 
-			testDur = numBlocksToTest * blockRate.reciprocal;
+		var args = [
+			[\kr, \ar],  // rates
+			[{ DC.ar(freq) }, { DC.kr(freq) }, freq], // freqs
+			[{ DC.ar(0) }, { DC.kr(0) }, 0] // phase
+		].allTuples;
 
-			funcs.do{ |func, i|
-				func.loadToFloatArray(testDur, server, { |arr|
-					results[i] = arr;
-					completed = completed + 1;
-					cond.signalOne;
-				});
-				server.sync;
-			};
-			testsFinished = cond.waitFor((1.5 * funcs.size * testDur).max(minTimeOut), { completed == funcs.size });
-			this.assert(testsFinished, "TIMEOUT: impulse tests", report: false);
+		var results = (\ar: Array.newClear(args.size / 2), \kr: Array.newClear(args.size / 2) );
+		var result_counter = (\ar: 0, \kr: 0);
 
-			this.assert(results.every(_ == results[0]),
-				"Impulse.%: all rate combinations of identical unmodulated input values should have identical output".format(rate),
-				report: true);
-		};
-
-		/* Tests in response to historical bugs */
-
-		// Phase wrapping, initial phase offset
-		// https://github.com/supercollider/supercollider/pull/2864#issuecomment-299860789
-		frq = 50;
-		{ Impulse.kr(frq, 3.8) }.loadToFloatArray(
-			frq.reciprocal, // render one freq period (should contain only 1 impulse)
-			server, { |arr|
-				this.assert(arr.sum == 1.0, "Impulse.kr: phase that is far out-of-range should wrap immediately in-range, and not cause multiple impulses to fire.", report: true);
-				this.assert(arr[0] != 1.0, "Impulse.kr: a phase offset other than 0 or 1 should not produce an impulse on the first output sample.", report: true);
-				cond.signalOne;
+		this.run_buffer_tests_in_parallel(
+			name: thisMethod.name,
+			argNames: [\irate, \ifreq, \iphase],
+			args: args,
+			funcProducer: { |irate, ifreq, iphase|
+				{ Impulse.perform(irate, ifreq, iphase) }
+			},
+			testDur: testDur,
+			actionWithArray: { |arr, irate, ifreq, iphase|
+				results[irate][result_counter[irate]] = arr;
+				result_counter[irate] = result_counter[irate] + 1;
 			}
 		);
-		cond.wait;
 
-		// Phase offset of 0,1,-1 should be equal on first sample
-		rates.do{ |rate|
-			var phases = [0, 1, -1];
-			phases.do{ |phs|
-				{ Impulse.perform(rate, frq, phs) }.loadToFloatArray(
-					frq.reciprocal, // 1 freq period
-					server, { |arr|
-						this.assert(arr[0] == 1.0,
-							"Impulse.%: initial phase of % should produce and impulse on the first frame.".format(rate, phs), report: true);
-						cond.signalOne;
-					}
-				);
-				cond.wait;
+		this.assert(
+			results[\ar].every(_ == results[\ar][0]),
+			"Impulse.ar: all rate combinations of identical unmodulated input values should have identical output",
+			report: true
+		);
+		this.assert(
+			results[\kr].every(_ == results[\kr][0]),
+			"Impulse.ar: all rate combinations of identical unmodulated input values should have identical output",
+			report: true
+		);
+	}
+
+	impulse_phase_wrapping {
+		// Phase wrapping, initial phase offset
+		// https://github.com/supercollider/supercollider/pull/2864#issuecomment-299860789
+		var freq = 50;
+		this.run_buffer_tests_in_parallel(
+			name: thisMethod.name,
+			argNames: [\freq],
+			args: [freq],
+			funcProducer: { |freq|
+				{ Impulse.kr(freq, 3.8) }
+			},
+			testDur: freq.reciprocal,
+			actionWithArray: { |arr|
+				this.assert(arr.sum == 1.0, "Impulse.kr: phase that is far out-of-range should wrap immediately in-range, and not cause multiple impulses to fire.", report: true);
+				this.assert(arr[0] != 1.0, "Impulse.kr: a phase offset other than 0 or 1 should not produce an impulse on the first output sample.", report: true);
 			}
-		};
+		);
+	}
 
+	impulse_inital_phase {
+		var freq = 50;
+		this.run_buffer_tests_in_parallel(
+			name: thisMethod.name,
+			argNames: [\rate, \phase],
+			args: [[\ar, \kr], [0, 1, -1]].allTuples,
+			funcProducer: { |rate, phase|
+				{ Impulse.perform(rate, freq, phase) }
+			},
+			testDur: freq.reciprocal,
+			actionWithArray: { |arr, rate, phase|
+				this.assert(arr[0] == 1.0, "Impulse.%: initial phase of % should produce and impulse on the first frame.".format(rate, phase), report: true);
+			}
+		);
+	}
+
+	impulse_first_sample_is_one {
 		// Freq = 0 should produce a single impulse on first frame
 		// https://github.com/supercollider/supercollider/pull/4150#issuecomment-582905976
-		rates.do{ |rate|
-			{ Impulse.perform(rate, 0) }.loadToFloatArray(
-				3 * server.options.blockSize / server.sampleRate, // 3 blocks
-				server, { |arr|
-					this.assert(arr[0] == 1.0 and: { arr.sum == 1.0 },
-						"Impulse.%: freq = 0 should produce a single impulse on the first frame and no more.".format(rate), report: true);
-					cond.signalOne;
-				}
-			);
-			cond.wait;
+		this.run_buffer_tests_in_parallel(
+			name: thisMethod.name,
+			argNames: [\rate],
+			args: [\ar, \kr],
+			funcProducer: { |rate|
+				{ Impulse.perform(rate, 0) }
+			},
+			testDur: 3 * server.options.blockSize / server.sampleRate, // 3 blocks
+			actionWithArray: { |arr, rate|
+				this.assert(
+					arr[0] == 1.0 and: { arr.sum == 1.0 },
+					"Impulse.%: freq = 0 should produce a single impulse on the first frame and no more.".format(rate),
+					report: true
+				);
+			}
+		);
+	}
+	impulse_symmetrical_about_zero {
+		this.run_buffer_tests_in_parallel(
+			name: thisMethod.name,
+			argNames: [\rate],
+			args: [\ar, \kr],
+			funcProducer: { |rate|
+				{ Impulse.perform(rate, 100 * [1, -1]) }
+			},
+			testDur: 5 * 50.reciprocal,
+			actionWithArray: { |arr, rate|
+				arr = arr.clump(2).flop; // de-interleave
+				this.assertArrayFloatEquals(arr[0], arr[1],
+					"Impulse.%: positive and negative frequencies should produce the same output.".format(rate),
+					report: true
+				);
+			}
+		);
+	}
+
+	test_impulse {
+		var blank__ = server.bootSync;
+
+		var blockRate = server.sampleRate / server.options.blockSize;
+
+		var cond = CondVar();
+		var condCount = 0;
+		var condRelease = { |f|
+			f.();
+			condCount = condCount + 1;
+			cond.signalOne;
 		};
 
-		// Positive and negative freqs should produce the same output
-		rates.do{ |rate|
-			{ Impulse.perform(rate, 100 * [1,-1]) }.loadToFloatArray(
-				5 * frq.reciprocal,
-				server, { |arr|
-					arr = arr.clump(2).flop; // de-interleave
-					this.assertArrayFloatEquals(arr[0], arr[1],
-						"Impulse.%: positive and negative frequencies should produce the same output.".format(rate), report: true);
-					cond.signalOne;
-				}
-			);
-			cond.wait;
-		};
+		var tests = [
+			{ this.impulse_identity() },
+			{ this.impulse_phase_wrapping() },
+			{ this.impulse_inital_phase() },
+			{ this.impulse_first_sample_is_one() },
+			{ this.impulse_symmetrical_about_zero() },
+		];
+
+		tests.do { |f| fork { condRelease.(f) } };
+
+		// 5 is just a guess here.
+		this.assert(cond.waitFor(5, { condCount == tests.size }), "TIMEOUT: " ++ thisMethod.name, false);
 	}
 
 	test_demand {
@@ -553,7 +607,6 @@ TestCoreUGens : UnitTest {
 			if(nodesToFree.indexOf(message[1]).notNil) {
 				nodesToFree.removeAt(nodesToFree.indexOf(message[1]))
 			};
-			nodesToFree.postln;
 		}, \n_end, server.addr).oneShot;
 
 		dutyDur = 0.05;
@@ -591,9 +644,7 @@ TestCoreUGens : UnitTest {
 	}
 
 	test_pitchtrackers {
-		var tests, testsFinished;
-		var cond = CondVar();
-		var completed = 0;
+		var tests;
 		var fromFreq = 100;
 		var toFreq = 4000;
 		// a shorter duration requires higher error threshold for Pitch (faster phase/freq change)
@@ -625,21 +676,24 @@ TestCoreUGens : UnitTest {
 
 		server.bootSync;
 
-		tests.keysValuesDo{|text, func|
-			func.loadToFloatArray(testDur, server, { |pitchDeviation|
-				this.assertArrayFloatEquals(pitchDeviation, 0.0, text,
-					within: 1.0); // deviation should be less than 1.0 (dev is normalized to 10% of target freq)
-				completed = completed + 1;
-				cond.signalOne;
-			});
-			server.sync;
-		};
+		this.run_buffer_tests_in_parallel(
+			name: thisMethod.name,
+			testDur: testDur,
 
-		testsFinished = cond.waitFor((1.5 * testDur * tests.size).max(minTimeOut), { completed == tests.size });
-		this.assert(testsFinished, "TIMEOUT: pitchtrackers tests", report: false);
+			argNames: [\name, \func],
+			args: tests.asPairs.clump(2),
+
+			funcProducer: { |name, func| func },
+
+			actionWithArray: { |arr, name, func|
+				// deviation should be less than 1.0 (dev is normalized to 10% of target freq)
+				this.assertArrayFloatEquals(arr, 0.0, name, within: 1.0);
+			}
+		);
 	}
 
 	test_out_ugens {
+		// This does not actually test the server side UGens, just the language building of them.
 		var testAudioRate, testControlRate;
 
 		testControlRate = {
@@ -714,6 +768,10 @@ TestCoreUGens : UnitTest {
 		var dcInputVal = 0.4;
 		var testParams, testDur;
 
+		var cond = CondVar();
+		var condCount = 0;
+		var numTests;
+
 		testParams = [
 			// [ugen, inputVal, x1 (, x2)]
 			[Delay1, dcInputVal],       // default: no x1 arg specified
@@ -728,20 +786,18 @@ TestCoreUGens : UnitTest {
 		testDur = defaultNumBlocksToTest * server.options.blockSize / server.sampleRate;
 
 		testParams.do{ |params|
-			var ugen, inVal, xArgs, numPredelaySamples;
-			#ugen, inVal = params[0..1];
-			xArgs = params[2..];
-			numPredelaySamples = switch(ugen, Delay1, { 1 }, Delay2, { 2 });
+			var ugen = params[0];
+			var inVal = params[1];
+			var xArgs = params[2..];
+			var numPredelaySamples = switch(ugen, Delay1, { 1 }, Delay2, { 2 });
 
 			[\ar, \kr].do{ |rate|
-				var cond = CondVar();
 				{
 					ugen.perform(rate,
 						DC.perform(rate, inVal), 1, 0, *xArgs // in, mul, add, x1 (, x2)
 					)
 				}.loadToFloatArray(testDur, server, { |data|
 					var errmsg, target;
-
 					if(xArgs.size == 0) {
 						// no args specified, check defaults
 						switch(rate,
@@ -770,12 +826,15 @@ TestCoreUGens : UnitTest {
 					this.assertArrayFloatEquals(
 						data.keep(numPredelaySamples), target, errmsg, within: tolerance, report: true
 					);
+					condCount = condCount + 1;
 					cond.signalOne;
 				});
-
-				cond.wait;
 			};
-		}
+		};
+
+		numTests = testParams.size * 2;
+
+		this.assert(cond.waitFor(numTests, { condCount == numTests}), "TIMEOUT: " ++ thisMethod.name);
 	}
 
 	test_binaryValue_isUniform {
@@ -783,6 +842,7 @@ TestCoreUGens : UnitTest {
 		var to = [1, 0, 0, 1, 0, 0];
 		var text = ["positive", "negative", "zero", "positive valued function", "negative valued function", "zero valued function"];
 		var cond = CondVar();
+		var condCount = 0;
 		var testDur;
 
 		server.bootSync;
@@ -796,10 +856,12 @@ TestCoreUGens : UnitTest {
 
 			{ DC.ar(from[i]).binaryValue }.loadToFloatArray(testDur, server, { |data|
 				this.assertFloatEquals(data[0], to[i],"% signal should correspond to %".format(text[i], to[i]), within: 0.1, report: false);
+				condCount = condCount + 1;
 				cond.signalOne;
 			});
-			cond.wait;
 		};
+
+		this.assert(cond.waitFor(from.size, { condCount == from.size }), "TIMEOUT: " ++ thisMethod.name);
 	}
 
 	test_line_startAndEndSampleAreOuputOverDur {
@@ -809,6 +871,7 @@ TestCoreUGens : UnitTest {
 		var endVal = 20;
 		var tolerance = -100.dbamp;
 		var cond = CondVar();
+		var condCount = 0;
 
 		server.bootSync;
 
@@ -830,110 +893,128 @@ TestCoreUGens : UnitTest {
 						"%.% should not reach its end value before the given duration".format(ugen, rate), report: false);
 					// Note an exception to the previouse test would be if the duration of the Line is less than a frame duration.
 					// In that (odd) case the "correct" first value is the end value. See GH issue #4279.
-
+					condCount = condCount + 1;
 					cond.signalOne;
 				});
-				cond.wait;
 			}
-		}
+		};
+
+		this.assert(cond.waitFor(4, { condCount == 4 }), "TIMEOUT: " ++ thisMethod.name);
+
 	}
 
 	test_oscillators_startAtCorrectPhase {
-
 		var tolerance = -100.dbamp;
+		var period = 10; // oscillator period, in samples (should be even)
+
 		var cond = CondVar();
+		var condCount = 0;
 
 		server.bootSync;
 
 		[\ar, \kr].do{ |rate|
-			var period, freq, halfPeriod, iPhase, target, ugen, phaseRange;
+			var iPhase, target, ugen, phaseRange;
 			var fs = switch(rate,
 				\ar, { server.sampleRate },
 				\kr, { server.sampleRate / server.options.blockSize }
 			);
 
-			period = 10; // oscillator period, in samples (should be even)
-			freq = fs / period;
-			halfPeriod = period / 2;
+			var freq = fs / period;
+			var halfPeriod = period / 2;
 
-			// LFPulse: initial phase is one sample before the end of the pulse width
 			{
-				iPhase = (halfPeriod - 1) / period; // LFPulse phase is 0->1
-				LFPulse.perform(rate, freq, iPhase, 0.5)
-			}.loadToFloatArray(period + 1 / fs, server, { |data|
-				// exact float comparison should be ok here...
-				// from LFPulse_next: z = phase < duty ? 1.f : 0.f;
-				this.assert(data[0] == 1.0 and: { data[1] == 0.0 },
-					"LFPulse.% should start at the correct initial phase".format(rate), report: false
-				);
-				cond.signalOne;
-			});
-			cond.wait;
-
-			// LFSaw: initial phase is one sample before the signal flip toward -1
-			{
-				iPhase = (halfPeriod - 1) / period * 2; // LFPulse phase is 0->2
-				LFSaw.perform(rate, freq, iPhase)
-			}.loadToFloatArray(period + 1 / fs, server, { |data|
-				this.assert(data[0] > 0.0 and: { data[1] < 0.0 },
-					"LFSaw.% should start at the correct initial phase".format(rate), report: false
-				);
-				cond.signalOne;
-			});
-			cond.wait;
-
-			// LFPar: test initial phase
-			// [initPhase, targetValue] pairs to test, LFPar phase is 0->4
-			[
-				[0, 1.0],
-				[1, 0.0],
-				[2, -1.0],
-				[3, 0.0],
-				[4, 1.0]
-			].do{ |phaseValuePair|
-				#iPhase, target = phaseValuePair;
+				// LFPulse: initial phase is one sample before the end of the pulse width
 				{
-					LFPar.perform(rate, freq, iPhase)
+					iPhase = (halfPeriod - 1) / period; // LFPulse phase is 0->1
+					LFPulse.perform(rate, freq, iPhase, 0.5)
 				}.loadToFloatArray(period + 1 / fs, server, { |data|
-					this.assertFloatEquals(data[0], target,
-						"LFPar.% should be % at initial phase of %".format(rate, target, iPhase),
-						within: tolerance, report: false
-					);
-					cond.signalOne;
-				});
-				cond.wait;
-			};
+					// exact float comparison should be ok here...
+					// from LFPulse_next: z = phase < duty ? 1.f : 0.f;
 
-			// LFCub, LFTri, SinOsc: testing initial phase
-			// [initPhase, targetValue] pairs to test — phase is normalized 0->1 here then scaled for each UGen
-			[
-				[0.00, 0.0],
-				[0.25, 1.0],
-				[0.50, 0.0],
-				[0.75, -1.0],
-				[1.00, 0.0]
-			].do{ |phaseValuePair|
-				#iPhase, target = phaseValuePair;
+					this.assert(data[0] == 1.0 and: { data[1] == 0.0 },
+						"LFPulse.% should start at the correct initial phase".format(rate), report: true
+					);
+					condCount = condCount + 1;
+					cond.signalOne;
+				})
+			}.fork;
+
+
+			{
+				// LFSaw: initial phase is one sample before the signal flip toward -1
+				{
+					iPhase = (halfPeriod - 1) / period * 2; // LFPulse phase is 0->2
+					LFSaw.perform(rate, freq, iPhase)
+				}.loadToFloatArray(period + 1 / fs, server, { |data|
+					this.assert(data[0] > 0.0 and: { data[1] < 0.0 },
+						"LFSaw.% should start at the correct initial phase".format(rate), report: true
+					);
+					condCount = condCount + 1;
+					cond.signalOne;
+
+				});
+			}.fork;
+
+			{
+				// LFPar: test initial phase
+				// [initPhase, targetValue] pairs to test, LFPar phase is 0->4
 				[
-					[LFCub, 2.0],  // LFPar phase is 0->2
-					[LFTri, 4.0],  // LFTri phase is 0->4
-					[SinOsc, 2pi], // SinOsc phase is 0->2pi
-				].do{ |ugenPhaseRangePair|
-					#ugen, phaseRange = ugenPhaseRangePair;
+					[0, 1.0],
+					[1, 0.0],
+					[2, -1.0],
+					[3, 0.0],
+					[4, 1.0]
+				].do{ |phaseValuePair|
+					var t;
+					#iPhase, target = phaseValuePair;
+					t = target;
 					{
-						ugen.perform(rate, freq, iPhase * phaseRange)
+						LFPar.perform(rate, freq, iPhase)
 					}.loadToFloatArray(period + 1 / fs, server, { |data|
-						this.assertFloatEquals(data[0], target,
-							"%.% should be % at initial phase of %".format(ugen, rate, target, iPhase * phaseRange),
-							within: tolerance, report: false
+						this.assertFloatEquals(data[0], t,
+							"LFPar.% should be % at initial phase of %".format(rate, t, iPhase),
+							within: tolerance, report: true
 						);
+						condCount = condCount + 1;
 						cond.signalOne;
 					});
-					cond.wait;
-				}
-			};
-		}
+				};
+			}.fork;
+
+			{
+				// LFCub, LFTri, SinOsc: testing initial phase
+				// [initPhase, targetValue] pairs to test — phase is normalized 0->1 here then scaled for each UGen
+				[
+					[0.00, 0.0],
+					[0.25, 1.0],
+					[0.50, 0.0],
+					[0.75, -1.0],
+					[1.00, 0.0]
+				].do{ |phaseValuePair|
+					var t;
+					#iPhase, target = phaseValuePair;
+					t = target;
+					[
+						[LFCub, 2.0],  // LFPar phase is 0->2
+						[LFTri, 4.0],  // LFTri phase is 0->4
+						[SinOsc, 2pi], // SinOsc phase is 0->2pi
+					].do{ |ugenPhaseRangePair|
+						#ugen, phaseRange = ugenPhaseRangePair;
+						{
+							ugen.perform(rate, freq, iPhase * phaseRange)
+						}.loadToFloatArray(period + 1 / fs, server, { |data|
+							this.assertFloatEquals(data[0], t,
+								"%.% should be % at initial phase of %".format(ugen, rate, t, iPhase * phaseRange),
+								within: tolerance, report: true
+							);
+							condCount = condCount + 1;
+							cond.signalOne;
+						});
+					}
+				};
+			}.fork;
+		};
+
+		this.assert(cond.waitFor(1, { condCount == 44 }), "TIMEOUT: " ++ thisMethod.name, report: true);
 	}
-
-
 } // end TestCoreUGens class
