@@ -87,7 +87,7 @@ jobs:
     needs: [version-getter, build-macos]
     uses: ./.github/workflows/test_macos.yml
     with:
-      artifact-file: "SuperCollider-${{ needs.version-getter.outputs.sc-version }}-macOS-universal.dmg"
+      artifact-file: "SuperCollider-${{ needs.version-getter.outputs.sc-version }}-macOS-x64.dmg"
     secrets: inherit
 
   # test-windows:
@@ -102,18 +102,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - artifact-suffix: macOS-universal
+          - artifact-suffix: macOS-x64
             s3-os-name: osx
             s3-artifact-suffx: ''
             s3-artifact-extension: 'dmg'
             artifact-extension: '.dmg' # for download-artifacts action, for non-zip only, should include `.`
-            s3-create-latest-link: true # create link to pointing to the "latest" build; activate only one per branch per s3-os-name
-
-          - artifact-suffix: win32
-            s3-os-name: win32
-            s3-artifact-suffx: ''
-            s3-artifact-extension: 'zip'
-            s3-create-latest-link: true # create link to pointing to the "latest" build
+            s3-create-latest-link: true # create link to pointing to the "latest" build; activate only one per branch per s3-os-name  
 
           - artifact-suffix: win64
             s3-os-name: win64
@@ -214,9 +208,7 @@ jobs:
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-universal.dmg/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-arm64.dmg/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-x64-legacy.dmg/*
-            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win32-installer/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win64-installer/*
-            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win32/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win64/*
           draft: true
         env:
