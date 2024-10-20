@@ -1,44 +1,47 @@
 if(NOT READLINE_INCLUDE_DIR OR NOT READLINE_LIBRARY)
-    find_path(READLINE_INCLUDE_DIR readline/readline.h)
-    find_library(READLINE_LIBRARY NAMES readline)
-endif()
-
-if(APPLE)
-    # look in homebrew paths
-    execute_process(COMMAND brew --prefix readline OUTPUT_VARIABLE READLINE_BREW_PREFIX)
-    if (READLINE_BREW_PREFIX)
-        string(STRIP ${READLINE_BREW_PREFIX} READLINE_BREW_PREFIX)
-        message(STATUS "Found a homebrew install of readline ${READLINE_BREW_PREFIX}")
-        set(READLINE_INCLUDE_DIR ${READLINE_BREW_PREFIX}/include)
-        set(READLINE_LIBRARY ${READLINE_BREW_PREFIX}/lib/libreadline.dylib)
+    if(APPLE)
+        execute_process(COMMAND brew --prefix readline OUTPUT_VARIABLE READLINE_BREW_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
+        find_path(READLINE_INCLUDE_DIR 
+            NAMES readline/readline.h
+            HINTS "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/include" # vcpkg
+                "${READLINE_BREW_PREFIX}/include" # homebrew
+                "/opt/local/include" # macports
+            NO_CMAKE_SYSTEM_PATH # we don't want the old readline shipped with macOS
+        )
+        find_library(READLINE_LIBRARY 
+            NAMES readline
+            HINTS "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/lib"
+                "${READLINE_BREW_PREFIX}/lib"
+                "/opt/local/lib"
+            NO_CMAKE_SYSTEM_PATH
+        )
+    elseif(WIN32)
+        find_path(READLINE_INCLUDE_DIR
+            NAMES readline/readline.h
+            HINTS "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/include"
+                "$ENV{ProgramW6432}/GnuWin32/include"
+                "$ENV{ProgramFiles}/GnuWin32/include"
+        )
+        find_library(READLINE_LIBRARY
+            NAMES readline6 readline5 readline libreadline6 libreadline5 libreadline
+            HINTS "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/lib"
+                "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/bin"
+                "$ENV{ProgramW6432}/GnuWin32/lib"
+                "$ENV{ProgramW6432}/GnuWin32/bin"
+                "$ENV{ProgramFiles}/GnuWin32/lib"
+                "$ENV{ProgramFiles}/GnuWin32/bin"
+        )
+        find_path(READLINE_LIBRARY_DIR
+            NAMES readline5.dll libreadline5.dll readline6.dll libreadline6.dll readline.dll libreadline.dll
+            HINTS "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/bin"
+                "$ENV{ProgramW6432}/GnuWin32/bin"
+                "$ENV{ProgramFiles}/GnuWin32/bin"
+            PATH_SUFFIXES "bin"
+        )
+    else()
+        find_path(READLINE_INCLUDE_DIR readline/readline.h)
+        find_library(READLINE_LIBRARY NAMES readline)
     endif()
-endif()
-
-if(WIN32)
-    find_path(READLINE_INCLUDE_DIR
-        NAMES readline/readline.h
-        HINTS "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/include"
-          "$ENV{ProgramW6432}/GnuWin32/include"
-          "$ENV{ProgramFiles}/GnuWin32/include"
-
-    )
-    find_library(READLINE_LIBRARY
-        NAMES readline6 readline5 readline libreadline6 libreadline5 libreadline
-        HINTS "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/lib"
-          "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/bin"
-          "$ENV{ProgramW6432}/GnuWin32/lib"
-          "$ENV{ProgramW6432}/GnuWin32/bin"
-          "$ENV{ProgramFiles}/GnuWin32/lib"
-          "$ENV{ProgramFiles}/GnuWin32/bin"
-    )
-
-    find_path(READLINE_LIBRARY_DIR
-        NAMES readline5.dll libreadline5.dll readline6.dll libreadline6.dll readline.dll libreadline.dll
-        HINTS "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/bin"
-          "$ENV{ProgramW6432}/GnuWin32/bin"
-          "$ENV{ProgramFiles}/GnuWin32/bin"
-        PATH_SUFFIXES "bin"
-    )
 endif()
 
 if (READLINE_INCLUDE_DIR AND READLINE_LIBRARY)
@@ -81,5 +84,7 @@ if (READLINE_FOUND)
 else ()
   if (READLINE_FIND_REQUIRED)
     message(FATAL_ERROR "Could not find GNU Readline")
+  else ()
+    message(STATUS "Readline not found, building without readline support")
   endif ()
 endif ()
