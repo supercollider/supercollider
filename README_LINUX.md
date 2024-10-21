@@ -97,7 +97,7 @@ If you are on Ubuntu, check the sections below. If these instructions don't work
 
 On 22.04 and 24.04 Qt6 is available in the system's package manager. The following should install the correct packages:
 
-    sudo apt-get install qt6-base-dev qt6-base-dev-tools qt6-tools-dev qt6-tools-dev-tools qt6-declarative-dev libqt6gui6 libqt6printsupport6 libqt6svgwidgets6 libqt6websockets6-dev libqt6webenginecore6 qt6-webengine-dev qt6-webengine-dev-tools libqt6core5compat6-dev libqt6webchannel6-dev libqt6opengl6-dev libqt6svg6-dev linguist-qt6 qt6-l10n-tools  libglx-dev libgl1-mesa-dev libvulkan-dev libxkbcommon-dev libxcb-xkb-dev
+    sudo apt-get install qt6-base-dev qt6-base-dev-tools qt6-tools-dev qt6-tools-dev-tools qt6-declarative-dev libqt6gui6 libqt6printsupport6 libqt6svgwidgets6 libqt6websockets6-dev libqt6webenginecore6 libqt6webenginecore6-bin qt6-webengine-dev qt6-webengine-dev-tools libqt6core5compat6-dev libqt6webchannel6-dev libqt6opengl6-dev libqt6svg6-dev linguist-qt6 qt6-l10n-tools  libglx-dev libgl1-mesa-dev libvulkan-dev libxkbcommon-dev libxcb-xkb-dev
 
 
 ### Installing Qt on Fedora
