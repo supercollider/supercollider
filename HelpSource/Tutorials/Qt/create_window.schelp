@@ -131,8 +131,7 @@ code::
 var window = Window();
 var fullScreenActive = false;
 
-View.globalKeyDownAction = {
-	|view, char, mod, unicode, keycode, key|
+View.globalKeyDownAction = { |view, char, mod, unicode, keycode, key|
 
 	switch(keycode)
 
@@ -160,8 +159,7 @@ var window = Window();
 
 View.globalKeyDownAction = FunctionList();
 
-View.globalKeyDownAction.addFunc({
-	|view, char, mod, unicode, keycode, key|
+View.globalKeyDownAction.addFunc({ |view, char, mod, unicode, keycode, key|
 
 	switch(keycode)
 	// if the keycode is 65307, i.e. ESC, close the window
