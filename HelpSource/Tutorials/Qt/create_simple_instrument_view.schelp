@@ -4,9 +4,9 @@ categories:: Tutorials>Qt
 
 section:: What is this tutorial about?
 
-This is a tutorial to get started using SuperCollider's Qt implementation to strong::create views and make them interact with a Synth::.
+This is a tutorial to get started using SuperCollider's Qt implementation to create views and make them interact with a link::Classes/Synth::.
 
-It covers those topics:
+It covers the following topics:
 
 list::
 ## Create a keyboard from a list of midi notes
@@ -17,9 +17,16 @@ list::
 section:: Setup
 
 
-You will need to strong::boot the Server::, to strong::load the SynthDef:: we will be using in this tutorial. It is a simple sine wave with a percussive enveloppe. We can control its frequency, its volume and its duration.
+You will need to boot the link::Classes/Server:: and add a link::Classes/SynthDef:: to it which we will be using in this tutorial.
+
+The SynthDef is a simple sine wave with a percussive envelope.
+
+We will control the frequency, volume and the duration of a link::Classes/Synth::.
 
 code::
+// make sure the server is booted:
+s.boot;
+// add our SynthDef to the server:
 (
 SynthDef(\instrView, { |out = 0, amp = 0.25, freq = 440, dur = 1.0|
 	var snd, env;
@@ -40,7 +47,7 @@ code::
 Synth(\instrView)
 ::
 
-We'll start with the following code:
+We'll start with the following code which is not yet connected to our synth and will therefore not yield any sound yet:
 
 code::
 (
@@ -172,7 +179,7 @@ Synth(\instrView, [\freq, 660]);
 We just need to introduce this inside the loop that creates the buttons.
 But instead of asking SC to do this 8 times, it will do it for a collection of frequencies instead.
 
-We can strong::transform a set of midi notes into frequencies and map them to the buttons:::
+We can strong::transform a set of MIDI notes into frequencies and map them to the buttons:::
 
 code::
 (
@@ -391,7 +398,7 @@ But how did the slider know what values were expected by the volume parameter ? 
 section:: Adapting the Slider to the correct value (mapping)
 
 But what if we want to control other ranges ?
-We can use code::.linlin:: or code::.linexp:: to map the sliders value, which is between 0 and 1, to a value between 0.1 and 2. We'll use this to new value to control the duration of the percussive enveloppe:
+We can use code::.linlin:: or code::.linexp:: to map the sliders value, which is between 0 and 1, to a value between 0.1 and 2. We'll use this to new value to control the duration of the percussive envelope:
 
 code::
 (
@@ -447,7 +454,7 @@ window.front;
 )
 ::
 
-Alternatively, we can use a ControlSpec to do the same thing:
+Alternatively, we can use a link::Classes/ControlSpec:: to do the same thing:
 
 code::
 var dur = 1;

@@ -44,7 +44,7 @@ section:: Qt limitations
 
 This remark mostly concerns debugging and understanding issues. Since strong::Qt is a third-party library integrated within SuperCollider::, some of its limitations are unrelated to SuperCollider itself.
 
-As an example, Qt5 link::Classes/QImage:: has a strict pixel limit and cannot exceed 32767x32767 pixels. This 'issue' being only related to Qt, it is documented on Qt sources/forums, but not on SuperCollider sources/forums. In other words, working with Qt within the context of SuperCollider might also include using Qts documentation directly.
+As an example, at the time of writing this, Qt link::Classes/QImage:: has a strict pixel limit and cannot exceed 32767x32767 pixels. This 'issue' being only related to Qt, it is documented on Qt sources/forums, but not on SuperCollider sources/forums. In other words, working with Qt within the context of SuperCollider might also include using Qts documentation directly.
 
 section:: Pen usage and resource management
 
