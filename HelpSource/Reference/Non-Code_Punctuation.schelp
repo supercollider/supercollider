@@ -1,0 +1,418 @@
+TITLE::Non-code punctuation marks and symbols
+summary:: How to use alternative punctuation marks for non-code text to improve readability
+categories:: HelpSystem
+related:: Guides/WritingHelp, Classes/SCDoc, Classes/SCDocHTMLRenderer
+
+section:: Overview
+
+Various punctuation marks can be used for non-code text to make the document more reader friendly:
+
+table::
+## strong::Examples 1. Various quotation marks::
+
+list::
+## Andreas asked me: /ql"/Have you read the /ql'/EU Expansion/qr'/ article?/qr"/
+## Andreas fragte mich: /ll"/Hast du den Artikel /ll'/EU-Erweiterung/lr'/ gelesen?/lr"/
+## Andreas fragte mich: /p>>/Hast du den Artikel /p>/EU-Erweiterung/p</ gelesen?/p<</
+## « Voulez-vous un sandwich, Henri ? »
+::
+/m(//q-/ From Wikipedia article "Quotation mark
+"/m)/
+::
+
+table::
+## strong::Examples 2. Various ellipses::
+note::
+Midline horizontal ellipsis and horizontal ellipsis are definable, but may change automatically depending on the character set around the ellipsis, fonts or operating system language.
+::
+
+list::
+## /ue.../ Jack and Jill
+
+/m(/horizontal ellipsis is used/m)/
+
+## /me.../ Jack and Jill
+
+/m(/midline horizontal ellipsis is used/m)/
+
+## /ue.../ 잭과 질
+
+/m(/horizontal ellipsis is used/m)/
+## /me.../ 잭과 질
+
+/m(/midline horizontal ellipsis is used/m)/
+::
+::
+
+table::
+## strong::Examples 3. Apostrophe::
+
+Jack/a''/s and Jill/a''/s children
+::
+
+table::
+## strong::Examples 4. Various brackets::
+
+list::
+## This is /m<</The SuperCollider Book/m>>/.
+## This is /m</The SuperCollider Book/m>/.
+## This is /n<</The SuperCollider Book/n>>/.
+## This is /n</The SuperCollider Book/n>/.
+## This is /c</The SuperCollider Book/c>/.
+## This is /w</The SuperCollider Book/w>/.
+::
+::
+
+table::
+## strong::Examples 5. Various brackets with predefined font size::
+
+list::
+## akousmatikós /s(/lἀκουσματικός/s)/
+## reduced listening /s(/l'écoute
+réduite/s)/
+## Pierre Schaeffer 'Études de bruits' /f(/1948/f)/.
+## SuperCollider /m(/a cross-platform environment for audio synthesis and algorithmic composition used by musicians, artists and researchers working with sound/m)/ can be installed and run on Linux, macOS and Windows, as well as microcomputers such as Raspberry Pi and BeagleBone Black.
+::
+::
+
+section:: Various quotation marks
+
+subsection:: Quotation marks
+
+list::
+
+##SINGLE QUOTATION
+
+table::
+## code to show || result
+##
+code::
+/ql'/
+::
+||
+/ql'/
+##
+code::
+/qr'/
+::
+||
+/qr'/
+::
+
+## DOUBLE QUOTATION
+
+table::
+## code to show || result
+##
+code::
+/ql"/
+::
+||
+/ql"/
+##
+code::
+/qr"/
+::
+||
+/qr"/
+::
+
+## LOW-9 QUOTATION MARK
+
+table::
+## code to show || result
+##
+code::
+/ll"/
+::
+||
+/ll"/
+##
+code::
+/lr"/
+::
+||
+/lr"/
+::
+
+DOUBLE LOW-9 QUOTATION MARK
+
+table::
+## code to show || result
+##
+code::
+/ll'/
+::
+||
+/ll'/
+##
+code::
+/lr'/
+::
+||
+/lr'/
+::
+
+## POINTING ANGLE
+
+table::
+## code to show || result
+##
+code::
+/p</
+::
+||
+/p</
+##
+code::
+/p>/
+::
+||
+/p>/
+::
+
+## POINTING DOUBLE ANGLE
+
+table::
+## code to show || result
+##
+code::
+/p<</
+::
+||
+/p<</
+##
+code::
+/p>>/
+::
+||
+/p>>/
+::
+
+## MATHEMATICAL ANGLE BRACKET
+
+table::
+## code to show || result
+##
+code::
+/m</
+::
+||
+/m</
+##
+code::
+/m>/
+::
+||
+/m>/
+::
+
+## MATHEMATICAL DOUBLE ANGLE BRACKET
+
+table::
+## code to show || result
+##
+code::
+/m<</
+::
+||
+/m<</
+##
+code::
+/m>>/
+::
+||
+/m>>/
+::
+
+## ANGLE BRACKET
+
+emphasis::If these symbols are problematic with some font due to spacing, use mathematical double angle.::
+
+table::
+## code to show || result
+##
+code::
+/n</
+::
+||
+/n</
+##
+code::
+/n>/
+::
+||
+/n>/
+::
+
+## DOUBLE ANGLE BRACKET
+
+emphasis::If these symbols are problematic with some font due to spacing, use mathematical angle.::
+
+table::
+## code to show || result
+##
+code::
+/n<</
+::
+||
+/n<</
+##
+code::
+/n>>/
+::
+||
+/n>>/
+::
+
+## CORNER BRACKET
+
+emphasis::These symbols can be problematic with some font due to spacing.::
+
+table::
+## code to show || result
+##
+code::
+/c</
+::
+||
+/c</
+##
+code::
+/c>/
+::
+||
+/c>/
+::
+
+## WHITE CORNER BRACKET
+
+emphasis::These symbols can be problematic with some font due to spacing.::
+
+table::
+## code to show || result
+##
+code::
+/w</
+::
+||
+/w</
+##
+code::
+/w>/
+::
+||
+/w>/
+::
+::
+
+subsection:: Quotation dash
+
+list::
+
+## QUOTATIOM DASH /m(/dashHORIZONTAL BAR/m)/
+
+table::
+## code to show || result
+##
+code::
+/q-/
+::
+||
+/q-/
+::
+::
+
+section:: Ellipsis
+
+Midline horizontal ellipsis and horizontal ellipsis are definable, but may change automatically depending on the character set around the ellipsis, fonts or operating system language.
+
+list::
+## MIDLINE HORIZONTAL ELLIPSIS
+
+table::
+## code to show || result
+##
+code::
+/me.../
+::
+||
+/me.../
+::
+
+## HORIZONTAL ELLIPSIS
+
+table::
+## code to show || result
+##
+code::
+/ue.../
+::
+||
+/ue.../
+::
+::
+
+section:: Apostrophe
+
+list::
+
+## MODIFIER LETTER APOSTROPHE
+
+table::
+## code to show || result
+##
+code::
+/a''/
+::
+||
+/a''/
+::
+::
+
+section:: Various brackets with predefined font size
+
+The following brackets make themselves and the text within smaller and are useful when the text is written in non-Roman alphabets:
+list::
+## ❪❫: MEDIUM FLATTENED LEFT PARENTHESIS ORNAMENT.
+
+0.85em. It can be used for year for example.
+
+table::
+## code to show || result
+##
+code::
+/f(//f)/
+::
+||
+/f(//f)/
+::
+
+## ❨❩: MEDIUM LEFT PARENTHESIS ORNAMENT
+
+0.85em. It can be used for explanatory text for example.
+
+table::
+## code to show || result
+##
+code::
+/m(//m)/
+::
+||
+/m(//m)/
+::
+
+## ❲❳: LIGHT TORTOISE SHELL BRACKET ORNAMENT
+
+0.71em. It can be used for the origin of the word.
+
+table::
+## code to show || result
+##
+code::
+/s(//s)/
+::
+||
+/s(//s)/
+::
+::
