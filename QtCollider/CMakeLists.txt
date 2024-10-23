@@ -16,7 +16,7 @@ set(
 
 # find Qt6 or Qt5
 find_package(QT NAMES Qt6 ${REQUIRED_QT_VERSION} QUIET COMPONENTS Core)
-if (NOT Qt6_FOUND)
+if (NOT QT_FOUND)
     set(REQUIRED_QT_VERSION 5.15)
     find_package(QT NAMES Qt5 ${REQUIRED_QT_VERSION} QUIET COMPONENTS Core)
 endif()
