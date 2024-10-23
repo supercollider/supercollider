@@ -25,6 +25,8 @@ table::
 ## space || run, if not running already
 ## . (period) || stop
 ## M || toggle screen size
+
+(The Scope window adjusts its position to not exceed screen boundaries when resized.)
 ## + / - || zoom horizontally
 ## * / _ || zoom vertically
 ## S || change style between parallel and overlay
