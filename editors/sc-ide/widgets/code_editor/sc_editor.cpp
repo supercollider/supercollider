@@ -770,8 +770,8 @@ void ScCodeEditor::triggerAutoCompletion() { mAutoCompleter->triggerCompletion()
 void ScCodeEditor::triggerMethodCallAid() { mAutoCompleter->triggerMethodCallAid(); }
 
 static bool isSingleLineComment(QTextBlock const& block) {
-    static QRegExp commentRegex("^\\s*//.*");
-    return commentRegex.exactMatch(block.text());
+    static QRegularExpression commentRegex("^\\s*//.*");
+    return commentRegex.match(block.text()).hasMatch();
 }
 
 static bool isSingleLineComment(QTextCursor const& selection) {

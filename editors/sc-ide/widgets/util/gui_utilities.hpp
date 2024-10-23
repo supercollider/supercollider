@@ -21,23 +21,27 @@
 #pragma once
 
 #include <QPlainTextEdit>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QTextBlock>
 
 namespace ScIDE {
 
 // match words, environment variable and symbols
 inline QString tokenInStringAt(int position, const QString& source) {
-    const QRegExp wordRegexp("(~?|\\\\?)\\w+");
+    const QRegularExpression wordRegexp("(~?|\\\\?)\\w+");
 
     int offset = 0;
     while (offset <= position) {
-        int index = wordRegexp.indexIn(source, offset);
-        if (index == -1)
+        QRegularExpressionMatch match = wordRegexp.match(source, offset);
+        if (!match.hasMatch())
             break;
-        int len = wordRegexp.matchedLength();
+
+        int index = match.capturedStart();
+        int len = match.capturedLength();
+
         if (index <= position && index + len >= position)
-            return wordRegexp.cap(0);
+            return match.captured(0);
+
         offset = index + len;
     }
 

@@ -29,7 +29,7 @@
 #include <QAction>
 #include <QMenu>
 #include <QToolButton>
-#include <QRegExp>
+#include <QRegularExpression>
 
 namespace ScIDE {
 
@@ -62,7 +62,7 @@ public:
     bool matchCase() const { return mMatchCaseAction->isChecked(); }
     bool asRegExp() const { return mRegExpAction->isChecked(); }
     bool wholeWords() const { return mWholeWordAction->isChecked(); }
-    QRegExp regexp();
+    QRegularExpression regexp();
     QTextDocument::FindFlags flags();
 
     QAction* action(ActionRole role) { return mActions[role]; }
