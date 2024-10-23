@@ -350,10 +350,12 @@ SequenceableCollection : Collection {
 		^this.species.fill(newSize, { |i| this.blendAt(i * factor) })
 	}
 
-	remove { arg item;
+	removeAt { |index| ^this.subclassResponsibility(thisMethod) }
+	remove { |item|
 		var index = this.indexOf(item);
 		^if ( index.notNil, {
 			this.removeAt(index);
+			^item
 		},{
 			nil
 		});
