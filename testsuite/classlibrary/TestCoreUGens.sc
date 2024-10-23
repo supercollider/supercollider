@@ -53,6 +53,19 @@ TestCoreUGens : UnitTest {
 			"Latch applied to LFPulse.kr on its own changes is no-op" -> {n=LFPulse.kr(23, 0.5); n - Latch.kr(n, HPZ1.kr(n).abs)},
 			"Gate applied to LFPulse.ar on its own changes is no-op" -> {n=LFPulse.ar(23, 0.5); n - Gate.ar(n, HPZ1.ar(n).abs)},
 			"Gate applied to LFPulse.kr on its own changes is no-op" -> {n=LFPulse.kr(23, 0.5); n - Gate.kr(n, HPZ1.kr(n).abs)},
+			"T2A should recover an ar signal passed through T2K" -> {
+				// note this freq has to be less than half critical sampling at control rate
+				// so that the kr signal goes to zero between frames so it's interpreted
+				// as a trigger by T2A (otherwise it's just a DC kr signal, which isn't a trigger)
+				var trigFreq = server.sampleRate / (server.options.blockSize) / 2;
+				var arTrig = Impulse.ar(trigFreq);
+				arTrig - T2A.ar(T2K.kr(arTrig))
+			},
+			"T2A with offset should recover a delayed ar signal passed through T2K" -> {
+				var trigFreq = server.sampleRate / (server.options.blockSize) / 2;
+				var arTrig = Delay2.ar(Impulse.ar(trigFreq));
+				arTrig - T2A.ar(T2K.kr(arTrig), offset: 2)
+			},
 
 			//////////////////////////////////////////
 			// Linear-to-exponential equivalences:
@@ -846,7 +859,7 @@ TestCoreUGens : UnitTest {
 		server.bootSync;
 
 		[\ar, \kr].do{ |rate|
-			var period, freq, halfPeriod, iPhase, target, ugen, phaseRange;
+			var period, freq, halfPeriod, iPhase, maxIdx, target, ugen, phaseRange;
 			var fs = switch(rate,
 				\ar, { server.sampleRate },
 				\kr, { server.sampleRate / server.options.blockSize }
@@ -883,15 +896,15 @@ TestCoreUGens : UnitTest {
 			cond.wait;
 
 			// LFPar: test initial phase
-			// [initPhase, targetValue] pairs to test, LFPar phase is 0->4
+			// [initPhase, firstValue] pairs to test, LFPar phase is 0->4
 			[
 				[0, 1.0],
 				[1, 0.0],
 				[2, -1.0],
 				[3, 0.0],
 				[4, 1.0]
-			].do{ |phaseValuePair|
-				#iPhase, target = phaseValuePair;
+			].do{ |pair|
+				#iPhase, target = pair;
 				{
 					LFPar.perform(rate, freq, iPhase)
 				}.loadToFloatArray(period + 1 / fs, server, { |data|
@@ -905,15 +918,15 @@ TestCoreUGens : UnitTest {
 			};
 
 			// LFCub, LFTri, SinOsc: testing initial phase
-			// [initPhase, targetValue] pairs to test — phase is normalized 0->1 here then scaled for each UGen
+			// [initPhase, firstValue] pairs to test — phase is normalized 0->1 here then scaled for each UGen
 			[
 				[0.00, 0.0],
 				[0.25, 1.0],
 				[0.50, 0.0],
 				[0.75, -1.0],
 				[1.00, 0.0]
-			].do{ |phaseValuePair|
-				#iPhase, target = phaseValuePair;
+			].do{ |pair|
+				#iPhase, target = pair;
 				[
 					[LFCub, 2.0],  // LFPar phase is 0->2
 					[LFTri, 4.0],  // LFTri phase is 0->4
@@ -932,6 +945,30 @@ TestCoreUGens : UnitTest {
 					cond.wait;
 				}
 			};
+
+			// VarSaw: testing initial phase
+			period = 10; // ensure even
+			freq = fs / period;
+			[   // pairs of initial phase and corresponding index of the signal maximum
+				[0.0, period / 2],  // max occurs in the middle
+				[0.5, 0],           // max occurs at the beginning
+				[1.0, period / 2]   // iphase:0.0 == iphase:1.0
+			].do{ |pair|
+				#iPhase, maxIdx = pair;
+				{
+					VarSaw.perform(rate, freq, iPhase, 0.5) // width must be 0.5 for this test
+				}.loadToFloatArray(freq.reciprocal,         // must be one period only
+					action: { |data|
+						this.assertEquals(data.indexOf(data.maxItem), maxIdx,
+							"VarSaw.% should start correct phase (initPhase: %, maxIdx: %)".format(rate, iPhase, maxIdx)
+						);
+						cond.signalOne;
+					}
+				);
+				cond.wait;
+			};
+
+			// more phase tests here...
 		}
 	}
 

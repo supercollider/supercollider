@@ -10,7 +10,13 @@ classmethods::
 method:: kr
 
 argument:: in
-input signal.
+An audio rate input signal.
+
+discussion::
+note::
+During initialization of the UGen graph, teletype::T2K:: will not forward a trigger to downstream UGens if a trigger is received after the first sample in the first block.
+Once running, however, its first output sample will be a trigger if one is received within the first block.
+::
 
 examples::
 code::
