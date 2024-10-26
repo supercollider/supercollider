@@ -12,8 +12,6 @@ on:
       - 'HelpSource/**'
       - 'sounds/**'
       - '*.md'
-  schedule:
-    - cron: '0 0 * * 0' # run weekly to refresh cache
 
 jobs:
   lint:
