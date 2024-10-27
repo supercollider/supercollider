@@ -50,7 +50,7 @@ method::newCopyArgs
 
 Creates a new instance and copies the arguments to the instance variables in the order that the variables were defined.
 
-Importantly, superclass constructors are NOT called, but the values are still placed in the superclass's instance variables.
+Importantly, superclass constructors are NOT called, but the values are directly placed in the superclass's instance variables.
 
 code::
 MyClass {
