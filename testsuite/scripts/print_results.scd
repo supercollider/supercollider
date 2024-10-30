@@ -99,7 +99,7 @@ if(failed > 0) {
 	failedList.do({ |str| str.postln; });
 	"".postln;
 	"\t----------------------------------------".postln;
-	"\t%, %, out of %".format(makeRed.("% TESTS FAILED".format(failed)), makeYellow.("% skipped".format(skipped)), passed + skipped + failed).postln;
+	"\t%, %, out of %".format(makeRed.("% TEST% FAILED".format(failed, (failed > 1).if({"S"},{""}))), makeYellow.("% skipped".format(skipped)), passed + skipped + failed).postln;
 	"\t----------------------------------------".postln;
 } {
 	"".postln;
