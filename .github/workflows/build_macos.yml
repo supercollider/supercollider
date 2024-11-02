@@ -17,7 +17,7 @@ jobs:
             os-version: "15"
             xcode-version: "16.0"
             qt-version: "6.7.3" # will use qt from aqtinstall
-            qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning qt5compat'
+            qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
             deployment-target: "11"
             cmake-architectures: "arm64"
             homebrew-packages: "libsndfile readline fftw portaudio"
@@ -30,7 +30,7 @@ jobs:
             os-version: "13"
             xcode-version: "15.2"
             qt-version: "6.7.3" # will use qt from aqtinstall
-            qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning qt5compat'
+            qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
             deployment-target: "11"
             cmake-architectures: "x86_64"
             homebrew-packages: "libsndfile readline fftw portaudio"
