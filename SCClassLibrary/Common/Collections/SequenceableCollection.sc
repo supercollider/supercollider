@@ -350,7 +350,7 @@ SequenceableCollection : Collection {
 		^this.species.fill(newSize, { |i| this.blendAt(i * factor) })
 	}
 
-	removeAt { |index| ^this.subclassResponsibility(thisMethod) }
+	removeAt { |index| this.subclassResponsibility(thisMethod) }
 	remove { |item|
 		var index = this.indexOf(item);
 		^if ( index.notNil, {
