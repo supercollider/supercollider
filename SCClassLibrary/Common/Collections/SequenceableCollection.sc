@@ -355,7 +355,7 @@ SequenceableCollection : Collection {
 		var index = this.indexOf(item);
 		^if ( index.notNil, {
 			this.removeAt(index);
-			^item
+			item
 		},{
 			nil
 		});
