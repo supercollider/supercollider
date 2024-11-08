@@ -338,6 +338,9 @@ OSCdef : OSCFunc {
 		var objs = all.copy;
 		objs.do(_.free)
 	}
+
+	// TODO: can this be implemented?
+	gui { ^this.notYetImplemented(thisMethod) }
 }
 
 
@@ -1024,6 +1027,9 @@ MIDIdef : MIDIFunc {
 		var objs = all.copy;
 		objs.do(_.free)
 	}
+
+	// TODO: is it possible to implement this?
+	gui { ^this.notYetImplemented(thisMethod) }
 }
 
 

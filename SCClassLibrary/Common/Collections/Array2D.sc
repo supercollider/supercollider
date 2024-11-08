@@ -22,6 +22,12 @@ Array2D : Collection {
 	}
 	with { arg aarray;	array = aarray; }
 
+	isAssociationArray { ^false }
+
+	// Array2D is always rectangular so this means creating nils entries or removing other data.
+	add { this.shouldNotImplement(thisMethod) }
+	remove { this.shouldNotImplement(thisMethod) }
+
 	do { arg func;
 		array.do(func)
 	}

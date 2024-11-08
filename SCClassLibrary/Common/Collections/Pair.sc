@@ -98,4 +98,8 @@ Pair : Collection {
 	storeOn { arg stream;
 		stream << this.class.name << "(" <<<* this.storeArgs << ")"
 	}
+
+	add { ^this.shouldNotImplement(thisMethod) }
+	remove { ^this.shouldNotImplement(thisMethod) }
+	isAssociationArray { ^false }
 }
