@@ -407,7 +407,8 @@ public:
 #ifdef USE_RENDEZVOUS
         if (world->mRendezvous) {
             SC_Thread thread(boost::bind(PublishPortToRendezvous, kSCRendezvous_TCP,
-                        inPortNum == 0 ? acceptor.local_endpoint().port() : inPortNum));
+                                         inPortNum == 0 ? acceptor.local_endpoint().port() : inPortNum));
+
             mRendezvousThread = std::move(thread);
         }
 #endif
