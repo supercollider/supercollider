@@ -285,4 +285,7 @@ Pipe : UnixFILE {
 		_PipeOpenArgv
 		^this.primitiveFailed
 	}
+
+	// TODO: does this make sense?
+	pos_ { ^this.notYetImplemented(thisMethod) }
 }

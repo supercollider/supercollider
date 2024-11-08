@@ -30,6 +30,8 @@ Bag : Collection {
 		^nil
 	}
 
+	isAssociationArray { ^false }
+
 	// accessing
 	at { ^this.shouldNotImplement(thisMethod) }
 	atFail { ^this.shouldNotImplement(thisMethod) }

@@ -57,4 +57,9 @@ Polar : Number {
 		stream << "Polar(" << rho << ", " << theta << ")";
 	}
 	storeArgs { ^[rho,theta] }
+
+	mod { ^this.shouldNotImplement(thisMethod) }
+	div { ^this.shouldNotImplement(thisMethod) }
+	< { ^this.shouldNotImplement(thisMethod) }
+	pow { ^this.shouldNotImplement(thisMethod) }
 }

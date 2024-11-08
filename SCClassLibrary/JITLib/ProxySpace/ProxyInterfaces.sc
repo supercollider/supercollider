@@ -420,4 +420,8 @@ SynthDefControl : SynthControl {
 		^synthDef.specs
 	}
 
+	// TODO: can play and stop be implemented, if not, perhaps they should go in SynthControl?
+	play { this.notYetImplemented(thisMethod) }
+	stop { this.notYetImplemented(thisMethod) }
+
 }

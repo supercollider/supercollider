@@ -101,4 +101,6 @@ Pair : Collection {
 	storeOn { arg stream;
 		stream << this.class.name << "(" <<<* this.storeArgs << ")"
 	}
+
+	isAssociationArray { ^false }
 }

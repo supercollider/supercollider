@@ -167,6 +167,9 @@ ControlSpec : Spec {
 		^minval.sign != maxval.sign
 	}
 
+	// TODO: what does this method do, can it be shouldNotImplement?
+	defaultControl { ^this.notYetImplemented(thisMethod) }
+
 	setFrom {
 		|otherSpec|
 
