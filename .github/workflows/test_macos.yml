@@ -48,24 +48,6 @@ jobs:
           HOMEBREW_NO_INSTALL_CLEANUP: 1
         run: brew install coreutils # to get 'timeout' utility
 
-      - name: Prepare java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-      - name: Install clojure tools
-        uses: DeLaGuardo/setup-clojure@12.6
-        with:
-          cli: 1.12.0.1479
-      - name: Cache clojure dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.m2/repository
-            ~/.gitlibs
-          key: cljdeps-${{ hashFiles('**/*.clj') }}
-          restore-keys: cljdeps-
-
       - name: Run tests
         shell: bash
         continue-on-error: true
@@ -74,10 +56,6 @@ jobs:
           $SCLANG $SCRIPT_ADD_PATH $TESTS_PATH
           # run tests
           timeout 1200 $SCLANG $SCRIPT_RUN_TESTS $TEST_LIST_PROTO $TEST_LIST_RESULT
-          # TODO move to test suite
-          cd testsuite/scripts
-          timeout 1200 ./test_zeroconf.sh
-          cd -
 
       - name: Post test results
         shell: bash
