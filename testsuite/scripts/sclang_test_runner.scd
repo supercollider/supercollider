@@ -1,15 +1,28 @@
-// this script is meant to be run with two arguments: path to test prototype indicating tests to be run, and path to test result
+// this script is meant to be run with four arguments:
+// 1. path to test prototype indicating tests to be run
+// 2. path to test result
+// 3. which partition of the tests should be run (zero based)
+// 4. the number of test partitions
 (
 ~exitWhenDone = false;
 if(thisProcess.argv.size > 0) {
 	"passed args: %".format(thisProcess.argv).postln;
 	~testProto = thisProcess.argv[0];
 	~testResult = thisProcess.argv[1];
+  if(thisProcess.argv.size > 2) {
+    ~thisClump = thisProcess.argv[2].asInteger();
+    ~nClumps = thisProcess.argv[3].asInteger();
+  } {
+    ~thisClump = 0;
+    ~nClumps = 1;
+  };
 	~exitWhenDone = true;
 } {
 	~testProto = PathName(thisProcess.nowExecutingPath).pathOnly +/+ "test_run_proto_gha.scd";
 	// ~testProto = PathName(thisProcess.nowExecutingPath).pathOnly +/+ "test_run_proto_all.scd"; // for testing
 	~testResult = PathName(thisProcess.nowExecutingPath).pathOnly +/+ "run" +/+ "test_result.scxtar";
+	~thisClump = 0;
+	~nClumps = 1;
 };
 
 if(File.exists(~testProto).not) {
@@ -18,6 +31,7 @@ if(File.exists(~testProto).not) {
 
 "~testProto path: %".format(~testProto).postln;
 "~testResult path: %".format(~testResult).postln;
+"clump % of %".format(~thisClump, ~nClumps).postln;
 
 ~verboseSetup = false; // true or false
 
@@ -62,6 +76,11 @@ if(File.exists(~testProto).not) {
 
 	testsDict;
 };
+
+~selectThisTestClump = {|tests,thisClump,nClumps|
+  tests.clump(tests.size()/nClumps).at(thisClump) ?? #[];
+};
+
 
 ~testrun = {|protoFile, resultFile|
 	var tests = ~getTestRecord.(protoFile);
@@ -143,6 +162,10 @@ if(File.exists(~testProto).not) {
 	// test_record["tests"] = tests;
 	// ~writeResult.(tests, file);
 	~verboseSetup.if({"After exclude: ".post; tests.do(_.postln)});
+
+  tests = ~selectThisTestClump.(tests, ~thisClump, ~nClumps);
+
+	~verboseSetup.if({"After clump: ".post; tests.do(_.postln)});
 
 	"\n\n\t*** Running the tests ***\n\n".post;
 
