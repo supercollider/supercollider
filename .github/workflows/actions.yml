@@ -14,8 +14,12 @@ on:
       - '*.md'
 
 env:
-  # number of jobs to split each test suite into
-  NCLUMPS: 5
+  # tests are deterministically split for each OS. this configuration determines
+  # how many jobs to use.
+  # - n-clumps: number of jobs to split (must be positive)
+  # - clumps-matrix: an array [0..(n-clumps)-1]
+  #   - must be internally consistent with n-clumps, this is not checked anywhere else!
+  TEST_CONFIG: '{"n-clumps":5, "clumps-matrix":[0,1,2,3,4]}'
 
 jobs:
   lint:
@@ -44,15 +48,7 @@ jobs:
     runs-on: ubuntu-22.04
     outputs:
       sc-version: ${{ steps.set-version.outputs.version }}
-      n-clumps: ${{ steps.set-test-clumps.outputs.n-clumps }}
-      test-clumps-matrix: ${{ steps.set-test-clumps.outputs.test-clumps-matrix }}
-
     steps:
-      - uses: actions/checkout@v4
-        with:
-          sparse-checkout: testsuite/scripts/setup_test_clumps_output.sh
-          sparse-checkout-cone-mode: false
-
       - name: set version string for artifacts
         id: set-version
         run: |
@@ -63,9 +59,6 @@ jobs:
             SC_VERSION=$GITHUB_SHA
           fi
           echo "version=$SC_VERSION" >> $GITHUB_OUTPUT
-      - name: set test clumps
-        id: set-test-clumps
-        run: ./testsuite/scripts/setup_test_clumps_output.sh
 
   build-linux:
     needs: [lint, version-getter]
@@ -93,8 +86,7 @@ jobs:
     uses: ./.github/workflows/test_linux.yml
     with:
       artifact-file: "SuperCollider-${{ needs.version-getter.outputs.sc-version }}-ubuntu-22.04-gcc12"
-      test-clumps-matrix: ${{ needs.version-getter.outputs.test-clumps-matrix }}
-      n-clumps: ${{ needs.version-getter.outputs.n-clumps }}
+      test-config: ${{ env.TEST_CONFIG }}
     secrets: inherit
 
   test-macos:
@@ -102,8 +94,7 @@ jobs:
     uses: ./.github/workflows/test_macos.yml
     with:
       artifact-file: "SuperCollider-${{ needs.version-getter.outputs.sc-version }}-macOS-x64.dmg"
-      test-clumps-matrix: ${{ needs.version-getter.outputs.test-clumps-matrix }}
-      n-clumps: ${{ needs.version-getter.outputs.n-clumps }}
+      test-config: ${{ env.TEST_CONFIG }}
     secrets: inherit
 
   # test-windows:
@@ -111,8 +102,7 @@ jobs:
   #   uses: ./.github/workflows/test_windows.yml
   #   with:
   #     artifact-file: "SuperCollider-${{ needs.version-getter.outputs.sc-version }}-win64"
-  #     test-clumps-matrix: ${{ needs.version-getter.outputs.test-clumps-matrix }}
-  #     n-clumps: ${{ needs.version-getter.outputs.n-clumps }}
+  #     test-config: ${{ env.TEST_CONFIG }}
   #   secrets: inherit
 
   deploy_s3:

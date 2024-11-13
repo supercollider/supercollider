@@ -5,10 +5,7 @@ on:
       artifact-file:
         required: true
         type: string
-      test-clumps-matrix:
-        required: true
-        type: string
-      n-clumps:
+      test-config:
         required: true
         type: string
 
@@ -18,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        this-clump: ${{ fromJSON(inputs.test-clumps-matrix) }}
+        this-clump: ${{ fromJSON(inputs.test-config).clumps-matrix }}
     env:
       INSTALL_PATH: ${{ github.workspace }}/build/Install
       ARTIFACT_FILE: ${{ inputs.artifact-file }}
@@ -72,7 +69,7 @@ jobs:
           # add path
           $SCLANG $SCRIPT_ADD_PATH $TESTS_PATH
           # run tests
-          timeout 1200 $SCLANG $SCRIPT_RUN_TESTS $TEST_LIST_PROTO $TEST_LIST_RESULT ${{ matrix.this-clump }} ${{ inputs.n-clumps }}
+          timeout 1200 $SCLANG $SCRIPT_RUN_TESTS $TEST_LIST_PROTO $TEST_LIST_RESULT ${{ matrix.this-clump }} ${{ fromJSON(inputs.test-config).n-clumps }}
 
       - name: Post test results
         shell: bash
