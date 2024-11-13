@@ -19,7 +19,7 @@ if(thisProcess.argv.size > 0) {
 	} {
 		~thisClump = 0;
 		~nClumps = 1;
-  };
+	};
 	~exitWhenDone = true;
 } {
 	~testProto = PathName(thisProcess.nowExecutingPath).pathOnly +/+ "test_run_proto_gha.scd";
