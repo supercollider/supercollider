@@ -1,6 +1,13 @@
 title:: GUI: Create a Window
 summary:: How to create a window, insert widgets and map keyboard inputs to it with SuperCollider.
 categories:: Tutorials>GUI
+related:: Tutorials/GUI/create_simple_instrument_view, Tutorials/GUI/compose_complex_view
+
+section:: GUI Tutorial
+This helpfile is part of a link::Tutorials/GUI/tutorial_intro##GUI tutorial::.
+
+It is the first part of a beginner's introduction to SuperCollider's GUI system. Second part covers
+ link::Tutorials/GUI/create_simple_instrument_view##interfacing a synth with a GUI interface::, while third part talks about link::Tutorials/GUI/compose_complex_view##composing views with basic GUI components::.
 
 section:: Creating and manipulating a Window
 

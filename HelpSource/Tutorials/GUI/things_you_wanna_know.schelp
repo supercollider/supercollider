@@ -2,6 +2,9 @@ title:: GUI: Things you probably want to know
 summary:: Miscellaneous things you probably want to know about SuperCollider's GUI system.
 categories:: Tutorials>GUI
 
+section:: GUI Tutorial
+This helpfile is part of a link::Tutorials/GUI/tutorial_intro##GUI tutorial::.
+
 section:: Rendering isn't always available
 
 SuperCollider provides some useful classes to automate processes. Some of them are associated to a link::Classes/Clock::: mainly link::Classes/Routine:: and link::Classes/Task::.

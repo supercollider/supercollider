@@ -1,6 +1,13 @@
 title:: GUI: Interfacing an instrument with a View
 summary:: Creating a view that interacts with a Synth, introduction to Layouts
 categories:: Tutorials>GUI
+related:: Tutorials/GUI/create_window, Tutorials/GUI/compose_complex_view
+
+section:: GUI Tutorial
+This helpfile is part of a link::Tutorials/GUI/tutorial_intro##GUI tutorial::.
+
+It is the second part of a beginner's introduction to SuperCollider's GUI system. First part covers
+ link::Tutorials/GUI/create_window##creating a window::, while third part talks about link::Tutorials/GUI/compose_complex_view##composing views with basic GUI components::.
 
 section:: What is this tutorial about?
 
