@@ -10,7 +10,7 @@
 set -euo pipefail
 
 
-if [ $NCLUMPS -lt 0 ]; then
+if [ $NCLUMPS -lt 1 ]; then
   echo "Clumps must be positive"
   exit 1
 fi
