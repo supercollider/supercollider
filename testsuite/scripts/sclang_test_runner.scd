@@ -167,7 +167,7 @@ if(File.exists(~testProto).not) {
 	// ~writeResult.(tests, file);
 	~verboseSetup.if({"After exclude: ".post; tests.do(_.postln)});
 
-  tests = ~selectThisTestClump.(tests, ~thisClump, ~nClumps);
+	tests = ~selectThisTestClump.(tests, ~thisClump, ~nClumps);
 
 	~verboseSetup.if({"After clump: ".post; tests.do(_.postln)});
 
