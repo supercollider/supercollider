@@ -40,15 +40,7 @@ jobs:
     runs-on: ubuntu-22.04
     outputs:
       sc-version: ${{ steps.set-version.outputs.version }}
-      n-clumps: ${{ steps.set-test-clumps.outputs.n-clumps }}
-      test-clumps-matrix: ${{ steps.set-test-clumps.outputs.test-clumps-matrix }}
-
     steps:
-      - uses: actions/checkout@v4
-        with:
-          sparse-checkout: testsuite/scripts/setup_test_clumps_output.sh
-          sparse-checkout-cone-mode: false
-
       - name: set version string for artifacts
         id: set-version
         run: |
@@ -59,9 +51,6 @@ jobs:
             SC_VERSION=$GITHUB_SHA
           fi
           echo "version=$SC_VERSION" >> $GITHUB_OUTPUT
-      - name: set test clumps
-        id: set-test-clumps
-        run: ./testsuite/scripts/setup_test_clumps_output.sh
 
   build-linux:
     needs: [lint, version-getter]
