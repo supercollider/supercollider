@@ -36,17 +36,19 @@ jobs:
         env:
           FULL_CHECK: 1
 
-  setup:
+  version-getter:
     runs-on: ubuntu-22.04
     outputs:
       sc-version: ${{ steps.set-version.outputs.version }}
-      # tests are deterministically split for each OS. this configuration determines
-      # how many jobs to use.
-      # - n-clumps: number of jobs to split (must be positive)
-      # - clumps-matrix: an array [0..(n-clumps)-1]
-      #   - must be internally consistent with n-clumps, this is not checked anywhere else!
-      test-config: '{"n-clumps":5, "clumps-matrix":[0,1,2,3,4]}'
+      n-clumps: ${{ steps.set-test-clumps.outputs.n-clumps }}
+      test-clumps-matrix: ${{ steps.set-test-clumps.outputs.test-clumps-matrix }}
+
     steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: testsuite/scripts/setup_test_clumps_output.sh
+          sparse-checkout-cone-mode: false
+
       - name: set version string for artifacts
         id: set-version
         run: |
@@ -57,50 +59,50 @@ jobs:
             SC_VERSION=$GITHUB_SHA
           fi
           echo "version=$SC_VERSION" >> $GITHUB_OUTPUT
+      - name: set test clumps
+        id: set-test-clumps
+        run: ./testsuite/scripts/setup_test_clumps_output.sh
 
   build-linux:
-    needs: [lint, setup]
+    needs: [lint, version-getter]
     uses: ./.github/workflows/build_linux.yml
     with:
-      sc-version: ${{ needs.setup.outputs.sc-version }}
+      sc-version: ${{ needs.version-getter.outputs.sc-version }}
     secrets: inherit
 
   build-macos:
-    needs: [lint, setup]
+    needs: [lint, version-getter]
     uses: ./.github/workflows/build_macos.yml
     with:
-      sc-version: ${{ needs.setup.outputs.sc-version }}
+      sc-version: ${{ needs.version-getter.outputs.sc-version }}
     secrets: inherit
 
   build-windows:
-    needs: [lint, setup]
+    needs: [lint, version-getter]
     uses: ./.github/workflows/build_windows.yml
     with:
-      sc-version: ${{ needs.setup.outputs.sc-version }}
+      sc-version: ${{ needs.version-getter.outputs.sc-version }}
     secrets: inherit
 
   test-linux:
-    needs: [setup, build-linux]
+    needs: [version-getter, build-linux]
     uses: ./.github/workflows/test_linux.yml
     with:
-      artifact-file: "SuperCollider-${{ needs.setup.outputs.sc-version }}-ubuntu-22.04-gcc12"
-      test-config: ${{ needs.setup.test-config }}
+      artifact-file: "SuperCollider-${{ needs.version-getter.outputs.sc-version }}-ubuntu-22.04-gcc12"
     secrets: inherit
 
   test-macos:
-    needs: [setup, build-macos]
+    needs: [version-getter, build-macos]
     uses: ./.github/workflows/test_macos.yml
     with:
-      artifact-file: "SuperCollider-${{ needs.setup.outputs.sc-version }}-macOS-x64.dmg"
-      test-config: ${{ needs.setup.test-config }}
+      artifact-file: "SuperCollider-${{ needs.version-getter.outputs.sc-version }}-macOS-x64.dmg"
     secrets: inherit
 
   # test-windows:
-  #   needs: [setup, build-windows]
+  #   needs: [version-getter, build-windows]
   #   uses: ./.github/workflows/test_windows.yml
   #   with:
-  #     artifact-file: "SuperCollider-${{ needs.setup.outputs.sc-version }}-win64"
-  #     test-config: ${{ needs.setup.test-config }}
+  #     artifact-file: "SuperCollider-${{ needs.version-getter.outputs.sc-version }}-win64"
   #   secrets: inherit
 
   deploy_s3:
@@ -122,12 +124,12 @@ jobs:
             s3-create-latest-link: true # create link to pointing to the "latest" build
 
     if: github.repository_owner == 'supercollider' && github.event_name != 'pull_request' # run in the main repo, but not on pull requests
-    needs: [lint, setup, build-macos, build-windows]
+    needs: [lint, version-getter, build-macos, build-windows]
     runs-on: ubuntu-latest
     name: 'deploy ${{ matrix.artifact-suffix }} to s3'
     env:
       INSTALL_PATH: ${{ github.workspace }}/build/Install
-      ARTIFACT_FILE: SuperCollider-${{ needs.setup.outputs.sc-version }}-${{ matrix.artifact-suffix }}${{ matrix.artifact-extension }}
+      ARTIFACT_FILE: SuperCollider-${{ needs.version-getter.outputs.sc-version }}-${{ matrix.artifact-suffix }}${{ matrix.artifact-extension }}
       UPLOAD_TO_S3: ${{ (secrets.S3_ACCESS_KEY_ID != 0) && !startsWith(github.ref, 'refs/tags/') }}
       S3_CREATE_LATEST_LINK: ${{ matrix.s3-create-latest-link && (secrets.S3_ACCESS_KEY_ID != 0) && startsWith(github.ref, 'refs/heads/') }}
       S3_ARTIFACT_PATH: ${{ github.workspace }}/build/s3-upload
@@ -195,12 +197,12 @@ jobs:
   # release - list of files uploaded to GH release is specified in the *upload* step
   deploy_gh:
     if: startsWith(github.ref, 'refs/tags/') # run on tagged commits
-    needs: [lint, setup, build-macos, build-windows]
+    needs: [lint, version-getter, build-macos, build-windows]
     runs-on: ubuntu-latest
     name: 'deploy release'
     env:
       INSTALL_PATH: ${{ github.workspace }}/Install
-      ARTIFACT_FILE_PREFIX: 'SuperCollider-${{ needs.setup.outputs.sc-version }}'
+      ARTIFACT_FILE_PREFIX: 'SuperCollider-${{ needs.version-getter.outputs.sc-version }}'
     steps:
       - name: download artifacts
         uses: actions/download-artifact@v4
