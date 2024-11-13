@@ -1,10 +1,10 @@
-title:: Qt: Interfacing an instrument with a View
+title:: GUI: Interfacing an instrument with a View
 summary:: Creating a view that interacts with a Synth, introduction to Layouts
-categories:: Tutorials>Qt
+categories:: Tutorials>GUI
 
 section:: What is this tutorial about?
 
-This is a tutorial to get started using SuperCollider's Qt implementation to create views and make them interact with a link::Classes/Synth::.
+This is a tutorial to get started using SuperCollider's GUI system to create views and make them interact with a link::Classes/Synth::.
 
 It covers the following topics:
 
@@ -64,7 +64,7 @@ window.front;
 )
 ::
 
-If this code does not make sense to you, you can find more explanations about it in link::Tutorials/Qt/create_window::.
+If this code does not make sense to you, you can find more explanations about it in link::Tutorials/GUI/create_window::.
 
 section:: Connecting the button
 
@@ -546,6 +546,6 @@ Note that strong::the minimum and maximum size of a view are also taken into acc
 
 section::Conclusion
 
-This has been a long tutorial, but with those basic concepts, you should now be able to manipulate every Qt Class without much difficulties.
+This has been a long tutorial, but with those basic concepts, you should now be able to manipulate every GUI Class without much difficulties.
 
-The next tutorial in this series is a tour of common things you might want to implement when using Qt, for example an interface with tabs, allowing you to switch between different views. Like we did here, it is about using basic Qt Components to create interfaces. You can access it here: link::Tutorials/Qt/compose_complex_view::.
+The next tutorial in this series is a tour of common things you might want to implement when using GUI, for example an interface with tabs, allowing you to switch between different views. Like we did here, it is about using basic GUI components to create interfaces. You can access it here: link::Tutorials/GUI/compose_complex_view::.

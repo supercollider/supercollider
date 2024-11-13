@@ -1,6 +1,6 @@
-title:: Qt: Create a Window
-summary:: How to create a window, insert widgets and map keyboard inputs to it with SuperCollider / Qt.
-categories:: Tutorials>Qt
+title:: GUI: Create a Window
+summary:: How to create a window, insert widgets and map keyboard inputs to it with SuperCollider.
+categories:: Tutorials>GUI
 
 section:: Creating and manipulating a Window
 
@@ -175,4 +175,4 @@ Section:: And that's it!
 
 With the ability to strong::create a window::, strong::insert views inside:: and make it strong::respond to keyboard inputs::, you're well set to go forward in your SuperCollider graphical experiments.
 
-The next section of this tutorial is: link::Tutorials/Qt/create_simple_instrument_view::. It starts from the previous examples and talks about connecting a button and a slider to a synth, and about the layout system.
+The next section of this tutorial is: link::Tutorials/GUI/create_simple_instrument_view::. It starts from the previous examples and talks about connecting a button and a slider to a synth, and about the layout system.

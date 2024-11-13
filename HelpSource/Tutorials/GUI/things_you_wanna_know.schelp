@@ -1,6 +1,6 @@
-title:: Qt: Things you probably want to know
-summary:: Miscellaneous things you probably want to know about Qt.
-categories:: Tutorials>Qt
+title:: GUI: Things you probably want to know
+summary:: Miscellaneous things you probably want to know about SuperCollider's GUI system.
+categories:: Tutorials>GUI
 
 section:: Rendering isn't always available
 

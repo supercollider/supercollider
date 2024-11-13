@@ -1,12 +1,12 @@
-title:: Qt: Composing views with basic components
-summary:: General examples about composing views with Qt basic GUI components.
-categories:: Tutorials>Qt
+title:: GUI: Composing views with basic components
+summary:: General examples about composing views with basic GUI components.
+categories:: Tutorials>GUI
 
 section:: What is this tutorial about?
 
-This tutorial presents strong::different interfaces you might need to construct:: when working with Qt, strong::and discuss their particularities::. If you need a more detailed tutorial about the basics of view composition, you should read link::Tutorials/Qt/create_simple_instrument_view:: first.
+This tutorial presents strong::different interfaces you might need to construct:: when working with SuperCollider's GUI system, strong::and discuss their particularities::. If you need a more detailed tutorial about the basics of view composition, you should read link::Tutorials/GUI/create_simple_instrument_view:: first.
 
-strong::SuperCollider, via Qt, implements different GUI components that allow you to compose complex softwares interfaces.::
+strong::SuperCollider implements different GUI components that allow you to compose complex softwares interfaces.::
 
 The list of those components is available in the documentation, by selecting strong::Browse > GUI > Views::.
 
@@ -70,7 +70,7 @@ section::Centralizing Views actions with a single Function
 
 This example is the continuation of the previous one, and explains why strong::UI components shouldn't be directly responsible for the action they ultimately perform::. It also talks briefly about focus and keyboard input response.
 
-One of the strong::common mistake when starting using Qt is to use a View's action function as if it was effectively the function responsible for modifying the software::. Even if it works reliably if there is only one View associated with the algorithm, this tends to decrease code readability. When several Views are tied to the same algorithm, this almost always introduces issues, as one can see in the previous example.
+One of the strong::common mistake when starting using SuperCollider's GUI system is to use a View's action function as if it was effectively the function responsible for modifying the software::. Even if it works reliably if there is only one View associated with the algorithm, this tends to decrease code readability. When several Views are tied to the same algorithm, this almost always introduces issues, as one can see in the previous example.
 
 The next example shows strong::how to centralize the algorithm in a single:: link::Classes/Function::, which is responsible for applying the modification to the software, then update the Views accordingly. In this context, strong::View's action functions are only responsible to convert the data they provide to the right format, then to call the centralizing function::.
 
