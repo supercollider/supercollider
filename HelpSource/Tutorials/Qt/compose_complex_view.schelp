@@ -175,6 +175,11 @@ window.front;
 )
 ::
 
+NOTE::
+There are several other ways to interface algorithms with graphical user interfaces. One of the most widely spread is the link::https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller##Model-View-Controller design pattern::.
+
+::
+
 section::Creating a Tab View
 
 An interface that provides a simple tab system, like one would find in a web browser, allowing to switch between several web pages.
