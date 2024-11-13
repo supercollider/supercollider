@@ -66,6 +66,7 @@ jobs:
       - name: set test clumps
         id: set-test-clumps
         run: ./testsuite/scripts/setup_test_clumps_output.sh
+
   build-linux:
     needs: [lint, version-getter]
     uses: ./.github/workflows/build_linux.yml

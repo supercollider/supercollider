@@ -1,20 +1,24 @@
 // this script is meant to be run with four arguments:
 // 1. path to test prototype indicating tests to be run
+// - default: "./test_run_proto_gha.scd"
 // 2. path to test result
+// - default: "./test_result.scxtar"
 // 3. which partition of the tests should be run (zero based)
+// - default: 0
 // 4. the number of test partitions
+// - default: 1 (must provide if partition provided)
 (
 ~exitWhenDone = false;
 if(thisProcess.argv.size > 0) {
 	"passed args: %".format(thisProcess.argv).postln;
 	~testProto = thisProcess.argv[0];
 	~testResult = thisProcess.argv[1];
-  if(thisProcess.argv.size > 2) {
-    ~thisClump = thisProcess.argv[2].asInteger();
-    ~nClumps = thisProcess.argv[3].asInteger();
-  } {
-    ~thisClump = 0;
-    ~nClumps = 1;
+	if(thisProcess.argv.size > 2) {
+		~thisClump = thisProcess.argv[2].asInteger();
+		~nClumps = thisProcess.argv[3].asInteger();
+	} {
+		~thisClump = 0;
+		~nClumps = 1;
   };
 	~exitWhenDone = true;
 } {
