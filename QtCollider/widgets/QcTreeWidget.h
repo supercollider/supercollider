@@ -56,7 +56,7 @@ public:
 
     Q_OBJECT
     Q_PROPERTY(QVariantList columns READ columns WRITE setColumns)
-# if (QT_VERSION < QT_VERSION_CHECK(6, 2, 0))
+#if (QT_VERSION < QT_VERSION_CHECK(6, 2, 0))
     Q_PROPERTY(QcTreeWidget::ItemPtr currentItem READ currentItem WRITE setCurrentItem);
 
 public:
