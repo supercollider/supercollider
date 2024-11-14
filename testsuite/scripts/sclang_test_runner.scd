@@ -30,7 +30,7 @@ thisClump ?? {
 	nClumps = 1;
 };
 
-if(0>thisClump || thisClump>=nClumps) {
+if((0>thisClump) || (thisClump>=nClumps)) {
 	var msg="Invalid clumps! % %".format(thisClump, nClumps);
 	if(~exitWhenDone) {
 		msg.postln; 2.exit; this.halt;
@@ -97,7 +97,6 @@ if(nClumps > 1) {
 ~selectThisTestClump = {|tests,thisClump,nClumps|
 	tests.sort.clump(tests.size()/nClumps).at(thisClump) ?? #[];
 };
-
 
 ~testrun = {|protoFile, resultFile|
 	var tests = ~getTestRecord.(protoFile);
