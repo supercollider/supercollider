@@ -11,7 +11,7 @@ method::isOpen
 Returns whether the file is open. An open request can fail if a file cannot be found for example. This method lets you test that the open call succeeded.
 
 method::pos
-Answer the current file position
+Return the current file position
 
 argument::offset
 an offset in bytes.

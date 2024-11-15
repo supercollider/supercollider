@@ -34,19 +34,19 @@ Exponentiation.
 subsection:: Polar Coordinate Support
 
 method:: rho
-Answer the polar radius of the number.
+Return the polar radius of the number.
 
 method:: theta
-Answer the polar angle of the number.
+Return the polar angle of the number.
 
 
 subsection:: Complex Number Support
 
 method:: real
-Answer the real part of the number.
+Return the real part of the number.
 
 method:: imag
-Answer the imaginary part of the number.
+Return the imaginary part of the number.
 
 
 subsection:: Conversion

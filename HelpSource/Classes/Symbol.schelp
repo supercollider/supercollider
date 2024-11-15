@@ -102,7 +102,7 @@ Convert to an Integer
 
 method::asClass
 
-Answer the Class named by the receiver.
+Return the Class named by the receiver.
 
 method::asSetter
 

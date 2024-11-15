@@ -140,7 +140,7 @@ True = enabled, false = disabled.
 returns:: Boolean.
 
 METHOD:: clock
-Answers with the clock being controlled by this instance.
+Return with the clock being controlled by this instance.
 
 note:: You cannot change the associated clock object. You should instead link::Classes/MeterSync#-free:: this instance, and create a new instance for the other clock. ::
 

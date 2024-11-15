@@ -33,19 +33,19 @@ Rotate by pi.
 subsection:: Conversion
 
 method:: magnitude
-Answer the radius.
+Return the radius.
 
 method:: angle
-Answer the angle in radians
+Return the angle in radians
 
 method:: phase
-Answer the angle in radians
+Return the angle in radians
 
 method:: real
-Answer the real part.
+Return the real part.
 
 method:: imag
-Answer the imaginary part.
+Return the imaginary part.
 
 method:: asComplex
 Convert to Complex

@@ -36,11 +36,11 @@ instancemethods::
 
 method::dereference
 
-Answer the value. This message is also defined in class Object where it just returns the receiver.  Therefore anything.dereference will remove a Ref if there is one. This is slightly different than the value message, because value will also cause functions to evaluate themselves whereas dereference will not.
+Return the value. This message is also defined in class Object where it just returns the receiver.  Therefore anything.dereference will remove a Ref if there is one. This is slightly different than the value message, because value will also cause functions to evaluate themselves whereas dereference will not.
 
 method::asRef
 
-Answers the receiver. In class Object this message is defined to create a Ref of the object.
+Return the receiver. In class Object this message is defined to create a Ref of the object.
 
 method::value
 
