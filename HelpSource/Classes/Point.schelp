@@ -27,7 +27,7 @@ Sets the point x and y values.
 subsection:: Testing
 
 method::==
-Answers a Boolean whether the receiver equals the argument.
+Return a Boolean whether the receiver equals the argument.
 
 method::hash
 Returns a hash value for the receiver.

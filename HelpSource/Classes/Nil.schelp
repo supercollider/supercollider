@@ -24,13 +24,13 @@ private::do, reverseDo, pairsDo, collect, select, reject, detect, collectAs, sel
 
 
 method::isNil
-Answers true because this is nil. In class link::Classes/Object:: this message is defined to answer false.
+Return true because this is nil. In class link::Classes/Object:: this message is defined to answer false.
 code::
 [1, 2, nil, 3].collect(_.isNil);
 ::
 
 method::notNil
-Answer false. In class link::Classes/Object:: this message answers true.
+Return false. In class link::Classes/Object:: this message answers true.
 code::
 [1, 2, nil, 3].collect(_.notNil);
 ::

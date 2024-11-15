@@ -73,7 +73,7 @@ INSTANCEMETHODS::
 subsection::Accessing
 
 method::size
-Answers the number of objects contained in the Collection.
+Return the number of objects contained in the Collection.
 code::
 List[1, 2, 3, 4].size;
 ::
@@ -100,7 +100,7 @@ List[1, 2].addAll(List[3, 4]);
 ::
 
 method::remove
-Remove anObject from the receiver. Answers the removed object.
+Remove anObject from the receiver. Returns the removed object.
 code::
 (
 var a;
@@ -130,7 +130,7 @@ List[1, 2, 3, 2, 3, 2, 3, 4].removeEvery(List[2, 3]);
 ::
 
 method::removeAllSuchThat
-Remove all items in the receiver for which function answers link::Classes/True::. The function is passed two arguments, the item and an integer index. Answers the objects which have been removed.
+Remove all items in the receiver for which function answers link::Classes/True::. The function is passed two arguments, the item and an integer index. Returns the objects which have been removed.
 code::
 (
 var a;
@@ -199,28 +199,28 @@ List[1, 2, 3, 4].do({ |item, i| item.postln });
 ::
 
 method::collect
-Answer a new collection which consists of the results of strong::function:: evaluated for each item in the collection. The function is passed two arguments, the item and an integer index.
+Return a new collection which consists of the results of strong::function:: evaluated for each item in the collection. The function is passed two arguments, the item and an integer index.
 code::
 List[1, 2, 3, 4].collect({ |item, i| item + 10 });
 ::
 If you want to control what type of collection is returned, use link::#-collectAs::(function, class).
 
 method::select
-Answer a new collection which consists of all items in the receiver for which strong::function:: answers link::Classes/True::. The function is passed two arguments, the item and an integer index.
+Return a new collection which consists of all items in the receiver for which strong::function:: answers link::Classes/True::. The function is passed two arguments, the item and an integer index.
 code::
 List[1, 2, 3, 4].select({ |item, i| item.even });
 ::
 If you want to control what type of collection is returned, use link::#-selectAs::(function, class).
 
 method::reject
-Answer a new collection which consists of all items in the receiver for which strong::function:: answers link::Classes/False::. The function is passed two arguments, the item and an integer index.
+Return a new collection which consists of all items in the receiver for which strong::function:: answers link::Classes/False::. The function is passed two arguments, the item and an integer index.
 code::
 List[1, 2, 3, 4].reject({ |item, i| item.even });
 ::
 If you want to control what type of collection is returned, use link::#-rejectAs::(function, class).
 
 method::detect
-Answer the first item in the receiver for which strong::function:: answers link::Classes/True::. The function is passed two arguments, the item and an integer index.
+Return the first item in the receiver for which strong::function:: answers link::Classes/True::. The function is passed two arguments, the item and an integer index.
 code::
 List[1, 2, 3, 4].detect({ |item, i| item.even });
 ::
@@ -292,40 +292,40 @@ List[1, 2, 3, 4].every({ |item, i| item.even });
 ::
 
 method::count
-Answer the number of items for which strong::function:: answers link::Classes/True::. The function is passed two arguments, the item and an integer index.
+Return the number of items for which strong::function:: answers link::Classes/True::. The function is passed two arguments, the item and an integer index.
 code::
 List[1, 2, 3, 4].count({ |item, i| item.even });
 ::
 
 method::occurrencesOf
-Answer the number of items in the receiver which are equal to anObject.
+Return the number of items in the receiver which are equal to anObject.
 code::
 List[1, 2, 3, 3, 4, 3, 4, 3].occurrencesOf(3);
 ::
 
 method::sum
-Answer the sum of the results of strong::function:: evaluated for each item in the receiver. The function is passed two arguments, the item and an integer index.
+Return the sum of the results of strong::function:: evaluated for each item in the receiver. The function is passed two arguments, the item and an integer index.
 code::
 List[1, 2, 3, 4].sum;
 (0..8).sum { |i| 1 / (2 ** i) };
 ::
 
 method::maxItem
-Answer the maximum of the results of strong::function:: evaluated for each item in the receiver. The function is passed two arguments, the item and an integer index.
+Return the maximum of the results of strong::function:: evaluated for each item in the receiver. The function is passed two arguments, the item and an integer index.
 If function is nil, then answer the maximum of all items in the receiver.
 code::
 List[1, 2, 3, 4].maxItem({ |item, i| item + 10 });
 ::
 
 method::minItem
-Answer the minimum of the results of strong::function:: evaluated for each item in the receiver. The function is passed two arguments, the item and an integer index.
+Return the minimum of the results of strong::function:: evaluated for each item in the receiver. The function is passed two arguments, the item and an integer index.
 If function is nil, then answer the minimum of all items in the receiver.
 code::
 List[1, 2, 3, 4].minItem({ |item, i| item + 10 });
 ::
 
 method::maxIndex
-Answer the index of the maximum of the results of strong::function:: evaluated for each item in the receiver. The function is passed two arguments, the item and an integer index.
+Return the index of the maximum of the results of strong::function:: evaluated for each item in the receiver. The function is passed two arguments, the item and an integer index.
 If function is nil, then answer the maximum of all items in the receiver.
 code::
 List[1, 2, 3, 4].maxIndex({ |item, i| item + 10 });
@@ -333,7 +333,7 @@ List[1, 2, 3, 4].maxIndex({ |item, i| item + 10 });
 ::
 
 method::minIndex
-Answer the index of the minimum of the results of strong::function:: evaluated for each item in the receiver. The function is passed two arguments, the item and an integer index.
+Return the index of the minimum of the results of strong::function:: evaluated for each item in the receiver. The function is passed two arguments, the item and an integer index.
 If function is nil, then answer the minimum of all items in the receiver.
 code::
 List[1, 2, 3, 4].minIndex({ |item, i| item + 10 });
@@ -378,49 +378,49 @@ r.next; // nil.
 subsection::Conversion
 
 method::asBag
-Answer a link::Classes/Bag:: to which all items in the receiver have been added.
+Return a link::Classes/Bag:: to which all items in the receiver have been added.
 code::
 List[1, 2, 3, 4].asBag;
 ::
 
 method::asList
-Answer a link::Classes/List:: to which all items in the receiver have been added.
+Return a link::Classes/List:: to which all items in the receiver have been added.
 code::
 Set[1, 2, 3, 4].asList;
 ::
 
 method::asSet
-Answer a link::Classes/Set:: to which all items in the receiver have been added.
+Return a link::Classes/Set:: to which all items in the receiver have been added.
 code::
 List[1, 2, 3, 4].asSet;
 ::
 
 method::asSortedList
-Answer a link::Classes/SortedList:: to which all items in the receiver have been added.
+Return a link::Classes/SortedList:: to which all items in the receiver have been added.
 code::
 List[2, 1, 4, 3].asSortedList;
 ::
 
 method::asDict
-Answer a corresponding dictionary. This is part of the link::Reference/Key-Value-Pairs:: interface.
+Return a corresponding dictionary. This is part of the link::Reference/Key-Value-Pairs:: interface.
 argument::mergeFunc
 Use this function to decide what to do with duplicate keys.
 argument::class
 The class of the dictionary to be returned. By default this is an link::Classes/IdentityDictionary::.
 
 method::asAssociations
-Answer an array of link::Classes/Association::s. If the first item of the list is already an associiation, return itself.  This is part of the link::Reference/Key-Value-Pairs:: interface.
+Return an array of link::Classes/Association::s. If the first item of the list is already an associiation, return itself.  This is part of the link::Reference/Key-Value-Pairs:: interface.
 argument::class
 The class of the collection to be returned. By default this is an link::Classes/Array::.
 
 method::asPairs
-Answer an array with alternating key value pairs, like code::[\freq, 1848, \amp, 0.2]::. This is part of the link::Reference/Key-Value-Pairs:: interface.
+Return an array with alternating key value pairs, like code::[\freq, 1848, \amp, 0.2]::. This is part of the link::Reference/Key-Value-Pairs:: interface.
 argument::class
 The class of the collection to be returned. By default this is an link::Classes/Array::.
 
 
 method::asEvent
-Answer an link::Classes/Event::: with the key value pairs. See link::Reference/Key-Value-Pairs::.
+Return an link::Classes/Event::: with the key value pairs. See link::Reference/Key-Value-Pairs::.
 
 
 method::asDictWith

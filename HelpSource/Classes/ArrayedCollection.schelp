@@ -393,7 +393,7 @@ code::
 ::
 
 method::collect
-Answer a new collection which consists of the results of function evaluated for each item in the collection. The function is passed two arguments, the item and an integer index. See link::Classes/Collection:: helpfile for examples.
+Return a new collection which consists of the results of function evaluated for each item in the collection. The function is passed two arguments, the item and an integer index. See link::Classes/Collection:: helpfile for examples.
 
 method::deepCollect
 The same as link::#-collect::, but can look inside sub-arrays up to the specified strong::depth::.

@@ -173,7 +173,7 @@ method:: abs
 returns:: absolute value.
 
 method:: sign
-returns:: Answer -1 if negative, +1 if positive or 0 if zero.
+returns:: Return -1 if negative, +1 if positive or 0 if zero.
 
 method:: ceil
 returns:: next larger integer.

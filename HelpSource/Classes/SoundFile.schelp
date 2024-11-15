@@ -148,7 +148,7 @@ A flag to indicate whether the buffer will be closed after playback is finished.
 subsection::Read/Write
 
 method::openRead
-Read the header of a file. Answers a link::Classes/Boolean:: whether the read was successful. Sets the link::#-numFrames::, link::#-numChannels:: and link::#-sampleRate::. Does strong::not:: set the link::#-headerFormat:: and link::#-sampleFormat::.
+Read the header of a file. Returns a link::Classes/Boolean:: whether the read was successful. Sets the link::#-numFrames::, link::#-numChannels:: and link::#-sampleRate::. Does strong::not:: set the link::#-headerFormat:: and link::#-sampleFormat::.
 
 argument::pathName
 a link::Classes/String:: specifying the path name of the file to read.
@@ -164,7 +164,7 @@ The raw array must be a link::Classes/FloatArray::. Regardless of the sample for
 The size of the FloatArray determines the maximum number of single samples (not sample frames) that will be read. If there are not enough samples left in the file, the size of the array after the readData call will be less than the original size.
 
 method::openWrite
-Write the header of a file. Answers a link::Classes/Boolean:: whether the write was successful.
+Write the header of a file. Returns a link::Classes/Boolean:: whether the write was successful.
 
 argument::pathName
 a link::Classes/String:: specifying the path name of the file to write.

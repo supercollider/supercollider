@@ -69,7 +69,7 @@ subsection::Class Membership
 
 method::class
 
-Answer the class of the receiver.
+Return the class of the receiver.
 
 code::
 5.class;
@@ -77,7 +77,7 @@ code::
 
 method::respondsTo
 
-Answer a link::Classes/Boolean:: whether the receiver understands the message selector.
+Return a link::Classes/Boolean:: whether the receiver understands the message selector.
 
 code::
 5.respondsTo('+'); // true
@@ -90,7 +90,7 @@ A selector name. Must be a link::Classes/Symbol::.
 
 method::isKindOf
 
-Answer a Boolean indicating whether the receiver is a direct or indirect instance of aClass. Use of this message in code must be questioned, because it often indicates a missed opportunity to exploit object polymorphism.
+Return a Boolean indicating whether the receiver is a direct or indirect instance of aClass. Use of this message in code must be questioned, because it often indicates a missed opportunity to exploit object polymorphism.
 
 code::
 5.isKindOf(Number); // true
@@ -99,7 +99,7 @@ code::
 
 method::isMemberOf
 
-Answer a Boolean whether the receiver is a direct instance of aClass. Use of this message in code is almost always a design mistake.
+Return a Boolean whether the receiver is a direct instance of aClass. Use of this message in code is almost always a design mistake.
 
 code::
 5.isMemberOf(Number); // false
@@ -298,7 +298,7 @@ a.compareObject(b, [\list]); // false
 
 method::hash
 
-Answer a code used to index into a hash table. This is used by Dictionary and Set and their subclasses to implement fast object lookup.  Objects which are equal == should have the same hash values. Whenever == is overridden in a class, hash should be overridden as well.
+Return a code used to index into a hash table. This is used by Dictionary and Set and their subclasses to implement fast object lookup.  Objects which are equal == should have the same hash values. Whenever == is overridden in a class, hash should be overridden as well.
 
 code::
 a = "worth trying"; b = "worth trying";
@@ -308,7 +308,7 @@ b.hash;
 
 method::identityHash
 
-Answer a code used to index into a hash table. This method is implemented by a primitive and is not overridden. Objects which are identical === should have the same hash values.
+Return a code used to index into a hash table. This method is implemented by a primitive and is not overridden. Objects which are identical === should have the same hash values.
 
 code::
 a = "worth trying"; b = "worth trying";
@@ -340,23 +340,23 @@ subsection::Testing
 
 method::isNil
 
-Answer a Boolean indicating whether the receiver is nil.
+Return a Boolean indicating whether the receiver is nil.
 
 method::notNil
 
-Answer a Boolean indicating whether the receiver is not nil.
+Return a Boolean indicating whether the receiver is not nil.
 
 method::isNumber
 
-Answer a Boolean indicating whether the receiver is an instance of Number.
+Return a Boolean indicating whether the receiver is an instance of Number.
 
 method::isInteger
 
-Answer a Boolean indicating whether the receiver is an instance of Integer.
+Return a Boolean indicating whether the receiver is an instance of Integer.
 
 method::isFloat
 
-Answer a Boolean indicating whether the receiver is an instance of Float.
+Return a Boolean indicating whether the receiver is an instance of Float.
 
 method::?
 
