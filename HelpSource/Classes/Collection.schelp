@@ -322,7 +322,7 @@ math::
 ::
 
 method::mean
-Answer the arithmetic mean of the results of the sum with an optional function argument. See link::#-sum:: for optional function argument.
+Answer the arithmetic mean of the results of the sum with an optional strong::function:: argument. See link::#-sum:: for optional function argument.
 discussion::
 If there is no strong::function:: argument, it can be expressed mathematically as follows:
 code::
