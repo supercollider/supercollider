@@ -3,7 +3,7 @@ categories::Collections>Ordered
 summary:: Abstract superclass of Collections of fixed maximum size
 
 DESCRIPTION::
-ArrayedCollection is an abstract class, a subclass of SequenceableCollections whose elements are held in a vector of slots. Instances of ArrayedCollection have a fixed maximum size beyond which they may not grow.
+ArrayedCollection is an abstract class, a subclass of SequenceableCollections whose elements are held in a vector of slots, indexable by integers starting from 0. Instances of ArrayedCollection have a fixed maximum size beyond which they may not grow.
 
 Its principal subclasses are link::Classes/Array:: (for holding objects), and link::Classes/RawArray::, from which link::Classes/Int8Array::, link::Classes/FloatArray::, link::Classes/Signal:: etc. inherit.
 
@@ -67,7 +67,7 @@ code::
 ::
 
 method::at
-Return the item at strong::index::.
+Return the item at strong::index::, which is specified as an integer starting from 0.
 
 The index can also be an Array of indices to extract specified elements. Example:
 code::
@@ -105,13 +105,13 @@ method::plot
 Plot values in a GUI window.  See link::Reference/plot:: for more details. When the receiver contains code::nil:: items, the plot fails with an error.
 
 method::swap
-Swap the values at indices i and j.
+Swap the values at indices i and j, both specified as integers starting from 0.
 code::
 [1, 2, 3].swap(0, 2).postln;
 ::
 
 method::put
-Put strong::item:: at strong::index::, replacing what is there.
+Put strong::item:: at strong::index::, specified as an integer starting from 0, replacing what is there.
 
 method::clipPut
 Same as link::#-put::, but values for strong::index:: greater than the size of the ArrayedCollection will be clipped to the last index.
@@ -153,7 +153,7 @@ y.indexOfGreaterThan(70);
 ::
 
 method::removeAt
-Remove and return the element at strong::index::, shrinking the size of the ArrayedCollection.
+Remove and return the element at strong::index::, specified as an integer starting from 0, shrinking the size of the ArrayedCollection.
 code::
 y = [1, 2, 3];
 y.removeAt(1);
@@ -235,7 +235,7 @@ z.fill([1, 2, 3, 4]).postln;
 ::
 
 method::insert
-Inserts the item into the contents of the receiver. This method may return a new ArrayedCollection. For this reason, you should always assign the result of code::insert:: to a variable - never depend on add changing the receiver.
+Inserts the item into the contents of the receiver at the specified index, which is an integer starting from 0. This method may return a new ArrayedCollection. For this reason, you should always assign the result of code::insert:: to a variable - never depend on add changing the receiver.
 code::
 (
 // in this case a new object is returned
@@ -248,7 +248,7 @@ y.postln;
 ::
 
 method::move
-Moves an item from one position to another.
+Moves an item from one position to another. – Both code::fromIndex:: and code::toIndex:: arguments are specified as integers starting from 0.
 
 code::
 [10, 20, 1000, 40, 50].move(2, 0) // move 1000 to index 0
@@ -298,7 +298,7 @@ code::
 ::
 
 method::copyRange
-Return a new ArrayedCollection which is a copy of the indexed slots of the receiver from strong::start:: to strong::end::. If strong::end:: < strong::start::, an empty ArrayedCollection is returned.
+Return a new ArrayedCollection which is a copy of the indexed slots of the receiver from strong::start:: to strong::end::. – Both start and end are specified as integers starting from 0. If strong::end:: < strong::start::, an empty ArrayedCollection is returned.
 code::
 (
 var y, z;
@@ -311,7 +311,7 @@ y.postln;
 warning:: code::x.copyRange(a, b):: is strong::not:: equivalent to code::x[a..b]::. The latter compiles to link::#-copySeries::, which has different behavior when strong::end:: < strong::start::. ::
 
 method::copySeries
-Return a new ArrayedCollection consisting of the values starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::. If strong::second:: is code::nil::, a step of 1 or -1 is used as appropriate.
+Return a new ArrayedCollection consisting of the values starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::. – All indices (first, second, last) are specified as integers starting from 0. If strong::second:: is code::nil::, a step of 1 or -1 is used as appropriate.
 
 code::x.copySeries(a, nil, c):: is equivalent to code::x[a..c]::, and code::x.copySeries(a, b, c):: is equivalent to code::x[a, b..c]::
 
@@ -345,7 +345,7 @@ y.postln;
 ::
 
 method::putSeries
-Put strong::value:: at every index starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::.
+Put strong::value:: at every index starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::. – All indices (first, second, last) are specified as integers starting from 0.
 code::x.putSeries(a, b, c, val):: can also be written as code::x[a, b..c] = val::
 code::
 (
@@ -405,7 +405,7 @@ a.deepCollect(3, { |item| item.isArray }).postln;
 ::
 
 method::windex
-Interprets the array as a list of probabilities which should sum to 1.0 and returns a random index value based on those probabilities.
+Interprets the array as a list of probabilities which should sum to 1.0 and returns a random index value based on those probabilities. The random index is taken from the receiver's index, starting from 0.
 code::
 (
 Array.fill(10, {
