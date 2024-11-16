@@ -321,8 +321,24 @@ math::
 \text{Sum} \{ x_0, x_1, \ldots, x_n \} = \sum_{i=0}^{n} x_i
 ::
 
+method::product
+Answer the product of the items in the collection, optionally applying a function to each item before multiplication. See link::#-sum:: for optional strong::function:: argument.
+discussion::
+If there is no strong::function:: argument, it can be expressed mathematically as follows:
+code::
+[\x_0, \x_1, ..., \x_n].product // This is conceptual. Do not evaluate.
+// _0, _1 and _n indicate the index of the element.
+::
+math::
+\text{Product} \{ x_0, x_1, \ldots, x_n \} = \prod_{i=0}^{n} x_i
+::
+Example:
+code::
+[1, 2, 3, 4].product
+::
+
 method::mean
-Answer the arithmetic mean of the results of the sum with an optional strong::function:: argument. See link::#-sum:: for optional function argument.
+Answer the arithmetic mean of the results of the sum with an optional function argument. See link::#-sum:: for optional strong::function:: argument.
 discussion::
 If there is no strong::function:: argument, it can be expressed mathematically as follows:
 code::
@@ -331,6 +347,10 @@ code::
 ::
 math::
 \text{Mean}\{ x_0, x_1, \ldots, x_n \} = \frac{\sum_{i=0}^{n} x_i}{n+1}
+::
+Example:
+code::
+[1, 2, 3, 4].mean
 ::
 
 method::maxItem
