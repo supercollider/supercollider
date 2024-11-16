@@ -304,10 +304,33 @@ List[1, 2, 3, 3, 4, 3, 4, 3].occurrencesOf(3);
 ::
 
 method::sum
-Answer the sum of the results of strong::function:: evaluated for each item in the receiver. The function is passed two arguments, the item and an integer index.
+Answer the sum of all items or the results of the optional strong::function:: argument evaluated for each item in the receiver. The function is passed two arguments, the item and an integer index.
 code::
 List[1, 2, 3, 4].sum;
+
 (0..8).sum { |i| 1 / (2 ** i) };
+// Only item is used as index is not used in the function.
+::
+discussion::
+If there is no strong::function:: argument, it can be expressed mathematically as follows:
+code::
+[\x_0, \x_1, ..., \x_n].sum // This is conceptual. Do not evaluate.
+// _0, _1 and _n indicate the index of the element.
+::
+math::
+\text{Sum} \{ x_0, x_1, \ldots, x_n \} = \sum_{i=0}^{n} x_i
+::
+
+method::mean
+Answer the arithmetic mean of the results of the sum with an optional function argument. See link::#-sum:: for optional function argument.
+discussion::
+If there is no strong::function:: argument, it can be expressed mathematically as follows:
+code::
+[\x_0, \x_1, ..., \x_n].mean // This is conceptual. Do not evaluate.
+// _0, _1 and _n indicate the index of the element.
+::
+math::
+\text{Mean}\{ x_0, x_1, \ldots, x_n \} = \frac{\sum_{i=0}^{n} x_i}{n+1}
 ::
 
 method::maxItem
