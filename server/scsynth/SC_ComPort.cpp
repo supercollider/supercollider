@@ -258,13 +258,15 @@ public:
         udpSocket.open(protocol);
 
         udpSocket.bind(ip::udp::endpoint(boost::asio::ip::address::from_string(bindTo), inPortNum));
+        if (inPortNum == 0)
+            mPortNum = udpSocket.local_endpoint().port();
 
         boost::asio::socket_base::send_buffer_size option(65536);
         udpSocket.set_option(option);
 
 #ifdef USE_RENDEZVOUS
         if (world->mRendezvous) {
-            SC_Thread thread(boost::bind(PublishPortToRendezvous, kSCRendezvous_UDP, sc_htons(mPortNum)));
+            SC_Thread thread(boost::bind(PublishPortToRendezvous, kSCRendezvous_UDP, mPortNum));
             mRendezvousThread = std::move(thread);
         }
 #endif
@@ -404,7 +406,9 @@ public:
 
 #ifdef USE_RENDEZVOUS
         if (world->mRendezvous) {
-            SC_Thread thread(boost::bind(PublishPortToRendezvous, kSCRendezvous_TCP, sc_htons(inPortNum)));
+            SC_Thread thread(boost::bind(PublishPortToRendezvous, kSCRendezvous_TCP,
+                                         inPortNum == 0 ? acceptor.local_endpoint().port() : inPortNum));
+
             mRendezvousThread = std::move(thread);
         }
 #endif
