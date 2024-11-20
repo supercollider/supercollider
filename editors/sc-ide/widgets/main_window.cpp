@@ -508,6 +508,9 @@ void MainWindow::createMenus() {
     // On Mac, create a parent-less menu bar to be shared by all windows:
 #ifdef Q_OS_MAC
     menuBar = new QMenuBar(0);
+    // icons in menu bars impacts the performance on (intel) macs considerably
+    // while switching windows, therefore we de-activate those. (#6523)
+    QApplication::instance()->setAttribute(Qt::AA_DontShowIconsInMenus, true);
 #else
     menuBar = this->menuBar();
 #endif
