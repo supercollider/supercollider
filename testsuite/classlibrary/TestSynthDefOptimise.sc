@@ -140,6 +140,7 @@ TestSynthDefOptimise : UnitTest {
 
 
 
+
 	test_compare_arithmetic {
 		this.compare_optimization_levels({ LFPar.ar - SinOsc.ar().neg }, server, threshold: -120,
 			msg: "Negation: a - b.neg => a + b."
@@ -573,8 +574,36 @@ TestSynthDefOptimise : UnitTest {
 		"Daniel Mayer --- DXEnvFan 1"
 		);
 
-		*/
 
+				Fb1_ODEdef(\izhikevich, { |t, y, a=0.02, b=0.2, i=0|
+			[
+				{ y[0] * (0.04 * y[0] + 5.0) + 140 - y[1] + i },
+				{ a * (b * y[0] - y[1]) }
+			]
+		}, 0, [-50.0, 1.0], 1, 1);
+
+
+		// Single IZ unit
+		this.compare_optimization_levels({
+			var env = EnvGate.new;
+			var inleft = \inleft.ar(0.0, 0.0);
+			var inright = \inright.ar(0.0, 0.0);
+			var a = \a.kr(0.02, 0.05, spec: [0.0, 1.0, \lin, 0, 0.02]);
+			var b = \b.kr(0.2, 0.05, spec: [0.0, 1.0, \lin, 0, 0.2]);
+			var c = \c.kr(-65.0, 0.05, spec: [-70, -30.0, \lin, 0, -65]);
+			var d = \d.kr(8.0, 0.05, spec: [0.0, 10.0, \lin, 0, 8.0]);
+			var alpha = \alpha.kr(0.0, 0.05, spec: [-1.0, 1.0, \lin, 0, 0.0]);
+			var beta = \beta.kr(0.0, 0.05, spec: [-1.0, 1.0, \lin, 0, 0.0]);
+			var i0 = \i0.kr(3.0, 0.05, spec: [0.0, 10.0, \lin, 0, 3.0]);
+			var tm = \tm.kr(1000, 0.1, spec: [1, 4000, \lin, 0, 1000]);
+			var eq = Fb1_ODE.ar(\izhikevich,
+				[a, b,(inleft*alpha)+(inright*beta)+i0],tm, 0, [-50.0, 2.0],
+				compose: { |y| Select.kr(y[0] > 30.0, [y, [c, y[1]+d]]);}
+			);
+			Out.ar(\out.kr, eq[0]*0.01)
+		}, server, threshold: -96,
+		msg: "FB1 telephon");
+		*/
 	}
 
 	test_io {
