@@ -91,11 +91,14 @@ SynthDefOptimisationResult {
 }
 
 SynthDefOptimizeAndCSE {
+	var doCSE, doRewrite;
 	var roots;
 	var toVisit;
 	var common;
 
-	*new { |inRoots| ^super.newCopyArgs(inRoots.copy, inRoots.copy, IdentityDictionary(512)).prMain }
+	*new { |inRoots, doCSE, doRewrite|
+		^super.newCopyArgs(doCSE.asBoolean, doRewrite.asBoolean, inRoots.copy, inRoots.copy, IdentityDictionary(512)).prMain
+	}
 
 	prMain {
 		while {toVisit.isEmpty.not} {
@@ -167,8 +170,12 @@ SynthDefOptimizeAndCSE {
 		current = toVisit.pop.source;
 
 		// CSE
-		if (this.prCSE(current)) { ^nil };
-		if (this.prRewrite(current)) { ^nil };
+		if (doCSE) {
+			if (this.prCSE(current)) { ^nil };
+		};
+		if (doRewrite){
+			if (this.prRewrite(current)) { ^nil }
+		};
 
 		// no opts
 		toVisit = toVisit.addAll(current.antecedents);
@@ -176,12 +183,23 @@ SynthDefOptimizeAndCSE {
 	}
 }
 
+SynthDefOptimizations {
+	var <sorting;
+	var <cse;
+	var <rewrite;
+
+	*all { ^super.newCopyArgs(true, true, true) }
+	*none { ^super.newCopyArgs(false, false, false) }
+	*onlySorting { ^super.newCopyArgs(true, false, false) }
+	*cseAndSorting { ^super.newCopyArgs(true, true, false) }
+	*sortingAndRewrite { ^super.newCopyArgs(true, false, true) }
+}
+
 SynthDef {
 	classvar <synthDefDir;
 	classvar <>warnAboutLargeSynthDefs = false;
 
-	classvar <>enableSorting = true;
-	classvar <>enableOptimisations = true;
+	classvar <optimizations;
 
 	var <>name;
 	var <>func;
@@ -221,9 +239,15 @@ SynthDef {
 		synthDefDir = dir;
 	}
 
+	*setOptimizations { |opts|
+		if (opts.isKindOf(SynthDefOptimizations).not) { Error("opts should be a SynthDefOptimizations").throw };
+		optimizations = opts;
+	}
+
 	*initClass {
 		synthDefDir = Platform.userAppSupportDir ++ "/synthdefs/";
 		synthDefDir.mkdir;
+		optimizations = SynthDefOptimizations.all;
 	}
 
 	*newForSynthDesc {
@@ -242,13 +266,11 @@ SynthDef {
 		.build(rates, prependArgs)
 	}
 
-	*newWithoutOptimisations { |name, ugenGraphFunc, rates, prependArgs, variants, metadata|
+	*newWithOptimizations { |newOptimizations, name, ugenGraphFunc, rates, prependArgs, variants, metadata|
 		var out;
-		var sorting = SynthDef.enableSorting;
-		var opts = SynthDef.enableOptimisations;
-
-		SynthDef.enableSorting = false;
-		SynthDef.enableOptimisations = false;
+		var opts = optimizations;
+		if (newOptimizations.isKindOf(SynthDefOptimizations).not) { Error("newOptimizations should be a SynthDefOptimizations").throw };
+		SynthDef.setOptimizations(newOptimizations);
 
 		out = super.newCopyArgs(name.asSymbol, ugenGraphFunc)
 		.variants_(variants)
@@ -258,8 +280,7 @@ SynthDef {
 		.resourceManagers_(UGenResourceManager.createNewInstances)
 		.build(rates, prependArgs);
 
-		SynthDef.enableSorting = sorting;
-		SynthDef.enableOptimisations = opts;
+		SynthDef.setOptimizations(opts);
 
 		^out;
 	}
@@ -280,10 +301,9 @@ SynthDef {
 			rewriteInProgress = true;
 			children.do(_.initEdges); // Necessary because of borked init method in UGen.
 
-			if (enableOptimisations){
-				effectiveUGens = SynthDefOptimizeAndCSE(effectiveUGens);
-			};
-			if (enableSorting or: {enableOptimisations}) {
+			effectiveUGens = SynthDefOptimizeAndCSE(effectiveUGens, optimizations.cse, optimizations.rewrite);
+
+			if (optimizations.sorting) {
 				// Does dead code elimination as a side effect.
 				children = SynthDefTopologicalSort(effectiveUGens.reverse)
 			};
