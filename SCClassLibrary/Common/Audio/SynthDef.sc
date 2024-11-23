@@ -97,6 +97,7 @@ SynthDefOptimizeAndCSE {
 	var common;
 
 	*new { |inRoots, doCSE, doRewrite|
+		if ( (doCSE.not) and: { doRewrite.not} ){ ^inRoots.copy };
 		^super.newCopyArgs(doCSE.asBoolean, doRewrite.asBoolean, inRoots.copy, inRoots.copy, IdentityDictionary(512)).prMain
 	}
 
