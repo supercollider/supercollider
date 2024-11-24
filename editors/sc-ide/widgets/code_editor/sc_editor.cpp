@@ -595,6 +595,7 @@ void ScCodeEditor::indentCurrentRegion() { indent(currentRegion()); }
 void ScCodeEditor::indent(EditBlockMode editBlockMode) { indent(textCursor(), editBlockMode); }
 
 void ScCodeEditor::indent(const QTextCursor& selection, EditBlockMode editBlockMode) {
+    static QString plainMultilineCommentBegin = QString("*/");
     if (selection.isNull())
         return;
 
@@ -613,6 +614,8 @@ void ScCodeEditor::indent(const QTextCursor& selection, EditBlockMode editBlockM
     int global_level = 0;
     int blockNum = 0;
     bool in_string = false;
+    bool in_comment = false;
+
     QTextBlock block = QPlainTextEdit::document()->begin();
     while (block.isValid()) {
         int initialStackSize = stack.size();
@@ -622,6 +625,8 @@ void ScCodeEditor::indent(const QTextCursor& selection, EditBlockMode editBlockM
         TextBlockData* data = static_cast<TextBlockData*>(block.userData());
         if (data) {
             int count = data->tokens.size();
+            in_comment = data->isInMultilineComment;
+
             for (int idx = 0; idx < count; ++idx) {
                 const Token& token = data->tokens[idx];
                 switch (token.type) {
@@ -658,7 +663,11 @@ void ScCodeEditor::indent(const QTextCursor& selection, EditBlockMode editBlockM
                 indentLevel = initialStackSize;
             else
                 indentLevel = 0;
-            block = indent(block, indentLevel);
+            // lexer does not detect "/*" as in comment, therefore we check if the current
+            // block is equal to it. If so, also do not indent the multi-line comment start
+            if (!in_comment and block.text() != plainMultilineCommentBegin) {
+                block = indent(block, indentLevel);
+            }
         }
 
         if (blockNum == endBlockNum)
