@@ -665,7 +665,7 @@ void ScCodeEditor::indent(const QTextCursor& selection, EditBlockMode editBlockM
                 indentLevel = 0;
             // lexer does not detect "/*" as in comment, therefore we check if the current
             // block is equal to it. If so, also do not indent the multi-line comment start
-            if (!in_comment and block.text() != plainMultilineCommentBegin) {
+            if (!in_comment && block.text() != plainMultilineCommentBegin) {
                 block = indent(block, indentLevel);
             }
         }
