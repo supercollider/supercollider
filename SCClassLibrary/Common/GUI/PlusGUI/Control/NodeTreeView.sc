@@ -252,4 +252,5 @@ NodeTreeView : View {
 			penPos = penPos + (margins * 2);
 		};
 	}
+	
 }
