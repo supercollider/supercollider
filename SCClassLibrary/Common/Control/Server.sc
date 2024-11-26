@@ -374,7 +374,6 @@ Server {
 	*initClass {
 		Class.initClassTree(ServerOptions);
 		Class.initClassTree(NotificationCenter);
-		Class.initClassTree(ServerNodeTree);
 		named = IdentityDictionary.new;
 		all = Set.new;
 

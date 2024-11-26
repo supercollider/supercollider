@@ -95,7 +95,7 @@ NodeTreeView : View {
 	}
 
 	prNodeAsDrawCommand { |node, parent, xIndex|
-		var command = ();
+		var command = IdentityDictionary();
 		command[\type] = node[\type];
 		command[\id] = node[\id];
 		command[\xIndex] = xIndex;

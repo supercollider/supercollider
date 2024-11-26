@@ -94,15 +94,15 @@ ServerNodeTree {
 	}
 
 	// Called when all children in group have been processed
-	prFinalyzeGroup { |parentList, index|
+	prFinalizeGroup { |parentList, index|
 		var group = parentList.last;
 		group.removeAt(\nChildren);
 		parentList.pop;
 		// Check if this node is last child in parent,
-		// and finalyze parent if needed
+		// and finalize parent if needed
 		if(parentList.size > 0) {
 			if(parentList.last[\children].size == parentList.last[\nChildren]) {
-				index = this.prFinalyzeGroup(parentList, index);
+				index = this.prFinalizeGroup(parentList, index);
 			};
 		};
 		^(index + 2)
@@ -110,7 +110,7 @@ ServerNodeTree {
 
 	// Convert integer array representation of a node into readable format
 	prAnalyzeNode { |msg, index, nodes, parentList|
-		var node = Dictionary();
+		var node = IdentityDictionary();
 		// Check if we're not finished:
 		if(index < (msg.size - 1)) {
 			if(msg[index + 1] == -1) {
@@ -143,7 +143,7 @@ ServerNodeTree {
 				if(parentList.size > 0) {
 					if(parentList.last[\children].size == parentList.last[\nChildren]) {
 						// /!\ DO NOT UPDATE INDEX HERE
-						this.prFinalyzeGroup(parentList, index);
+						this.prFinalizeGroup(parentList, index);
 					};
 				};
 			} {
@@ -165,7 +165,7 @@ ServerNodeTree {
 				if(node[\nChildren] > 0) {
 					index = index + 2;
 				} {
-					index = this.prFinalyzeGroup(parentList, index);
+					index = this.prFinalizeGroup(parentList, index);
 				};
 			};
 			index = this.prAnalyzeNode(
@@ -180,7 +180,7 @@ ServerNodeTree {
 
 	// Recursively convert osc message into readable format
 	prFormatNodeTree {
-		var nodes = List(0);
+		var nodes = List();
 		var parentList = List(0);
 		// Format tree datas
 		this.prAnalyzeNode(
