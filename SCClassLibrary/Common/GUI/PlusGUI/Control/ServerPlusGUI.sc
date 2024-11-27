@@ -361,11 +361,28 @@
 	}
 
 	plotTree { |interval = 0.3, displayControls = true|
-		var window, nodeTreeView;
+		var window, button, nodeTreeView;
 		window = Window(
 			name.asString + "Node Tree",
 			Rect(128, 64, 400, 400)
 		);
+		button = Button()
+		.action_({
+			nodeTreeView.displayControls_(
+				nodeTreeView.displayControls.not
+			);
+			if(nodeTreeView.displayControls) {
+				button.string_("hide controls");
+			} {
+				button.string_("show controls");
+			};
+		})
+		.maxHeight_(24);
+		if(displayControls) {
+			button.string_("hide controls");
+		} {
+			button.string_("show controls");
+		};
 		nodeTreeView = NodeTreeView(this)
 		.refreshRate_(interval)
 		.displayControls_(displayControls);
@@ -373,7 +390,8 @@
 			VLayout()
 			.margins_(0)
 			.spacing_(0)
-			.add(nodeTreeView)
+			.add(button, 1)
+			.add(nodeTreeView, 9)
 		);
 		window.front;
 	}
