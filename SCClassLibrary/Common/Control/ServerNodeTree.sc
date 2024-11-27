@@ -95,7 +95,7 @@ ServerNodeTree {
 				node[\type] = \synth;
 				node[\id] = msg[index];
 				node[\name] = msg[index + 2];
-				node[\controls] = List(0);
+				node[\controls] = List();
 				if(parentList.size == 0) {
 					// If parent list size is nil, this is a root node
 					nodes.add(node);
@@ -127,7 +127,7 @@ ServerNodeTree {
 				// Node is a group:
 				node[\type] = \group;
 				node[\id] = msg[index];
-				node[\children] = List(0);
+				node[\children] = List();
 				node[\nChildren] = msg[index + 1];
 				if(parentList.size == 0) {
 					// If parent list size is nil, this is a root node
@@ -158,7 +158,7 @@ ServerNodeTree {
 	// Recursively convert osc message into readable format
 	prFormatNodeTree {
 		var nodes = List();
-		var parentList = List(0);
+		var parentList = List();
 		// Format tree datas
 		this.prAnalyzeNode(
 			currentMsg,

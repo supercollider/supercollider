@@ -104,7 +104,7 @@ NodeTreeView : View {
 		if(node[\type] == \group) {
 			var prevParent = parent;
 			parent = command;
-			command[\children] = List(0);
+			command[\children] = List();
 			node[\children].do({ |node|
 				this.prNodeAsDrawCommand(node, parent, xIndex);
 			});
@@ -116,7 +116,7 @@ NodeTreeView : View {
 			};
 		} {
 			command[\name] = node[\name];
-			command[\controls] = List(0);
+			command[\controls] = List();
 			if(displayControls and: { node[\controls].size > 0 }) {
 				command[\height] = command[\height] + margins;
 				node[\controls].do({ |pair|
