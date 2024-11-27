@@ -24,7 +24,7 @@ Sets or gets wether to display synths controls.
 METHOD:: refreshRate
 Sets or gets the time interval between interface refreshes, expressed in seconds. Please note that this does not query the node tree (so it shouldn't be lower than Server's link::Classes/ServerNodeTree::'s refresh rate).
 
-private:: prNodeAsDrawCommand, prConstructDrawCommands, prDrawCommand, prClearDrawCommand
+private:: prNodeAsDrawCommand, prConstructDrawCommands, prDrawCommand
 
 EXAMPLES::
 

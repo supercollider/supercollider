@@ -134,12 +134,7 @@ NodeTreeView : View {
 	}
 
 	prConstructDrawCommands {
-		if(drawCommands.notNil) {
-			drawCommands.do({ |command|
-				this.prClearDrawCommand(command);
-			});
-		};
-		drawCommands = List(0);
+		drawCommands = List();
 		xIndex = 1;
 		nodeTree.do({ |node|
 			this.prNodeAsDrawCommand(node, nil, xIndex);
@@ -147,16 +142,6 @@ NodeTreeView : View {
 		viewHeight = 0;
 		drawCommands.do({ |command| viewHeight = viewHeight + command[\height]; });
 		viewHeight = viewHeight + ((drawCommands.size + 1) * margins);
-	}
-
-	prClearDrawCommand { |command|
-		if(command[\type] == \group) {
-			command[\children].do({ |child| this.prClearDrawCommand(child); });
-			command[\children].clear;
-		} {
-			command[\controls].clear;
-		};
-		command.clear;
 	}
 
 	prDrawCommand { |command, view|

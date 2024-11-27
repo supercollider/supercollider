@@ -33,7 +33,7 @@ ServerNodeTree {
 					// Only catch relevant messages
 					// (root node and controls enabled)
 					if((msg[1] == 1) and: { msg[2] == 0 }) {
-						this.prClearNodeTree;
+						currentNodeTree = nil;
 						currentMsg = msg;
 					};
 				},
@@ -69,29 +69,6 @@ ServerNodeTree {
 	}
 
 	/*    PRIVATE METHODS    */
-
-	prClearNodeTree {
-		if(currentNodeTree.notNil) {
-			currentNodeTree.do({ |node|
-				this.prClearNodeDict(node);
-			});
-			currentNodeTree = nil;
-		};
-	}
-
-	// This allows to clear a node dict recursively
-	prClearNodeDict { |node|
-		if(node[\type] == \synth) {
-			node[\controls].clear;
-			node.clear;
-		} {
-			node[\children].do({ |child|
-				this.prClearNodeDict(child);
-			});
-			node[\children].clear;
-			node.clear;
-		};
-	}
 
 	// Called when all children in group have been processed
 	prFinalizeGroup { |parentList, index|
