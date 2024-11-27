@@ -35,3 +35,4 @@ METHOD:: stop
 Stops the updating thread and frees the link::Classes/OSCFunc::.
 
 private:: prClearNodeTree, prClearNodeDict, prFinalizeGroup, prAnalyzeNode, prFormatNodeTree
+
