@@ -1,7 +1,7 @@
 class:: Server
 summary:: Object representing a server application
 categories:: Server>Abstractions
-related:: Guides/Server-Guide, Guides/MultiClient_Setups, Classes/ServerOptions, Reference/Server-Architecture, Reference/Server-Command-Reference, Classes/ServerStatusWatcher, Reference/AudioDeviceSelection
+related:: Guides/Server-Guide, Guides/MultiClient_Setups, Classes/ServerOptions, Reference/Server-Architecture, Reference/Server-Command-Reference, Classes/ServerStatusWatcher, Reference/AudioDeviceSelection, Classes/ServerNodeTree
 
 description::
 
@@ -394,6 +394,28 @@ s.queryAllNodes; // note the root node (ID 0) and the default group (ID 1)
 s.quit;
 ::
 
+method:: getNodeTree
+Returns a link::Classes/List:: of link::Classes/IdentityDictionary:: representing root nodes of the Server's current node tree.
+
+Group nodes are represented with the following keys:
+table::
+## \type || \group
+## \id || group's id
+## \children || a list containing children nodes
+::
+
+Synth nodes are represented with the following keys:
+table::
+## \type || \synth
+## \id || synth's id
+## \name || SynthDef's name
+## \controls || a list containing synth's controls, represented as array pairs: [\symbol, value]
+::
+
+warning::
+Internally, this method uses a link::Classes/ServerNodeTree:: to regularily update Server's node tree representation. Calling code::getNodeTree:: does not query node tree again, but returns its most recent query. As such, node tree data might be outdated. By default, it updates every 200ms.
+::
+
 method:: rtMemoryStatus
 Queries the server for the amount of currently free real-time memory
 argument:: action
@@ -632,24 +654,13 @@ method:: meter
 Show input/output level meters.
 
 method:: plotTree
-Plot the node/group tree. As link::#-queryAllNodes:: but graphical.
+Plot the Server's node tree, using a link::Classes/NodeTreeView::. As link::#-getNodeTree::, but graphical.
 
 argument:: interval
-Polling interval.
+View's refresh interval. This is not the rate at which node tree is polled, which depends on Server's link::Classes/ServerNodeTree::.
 
-method:: plotTreeView
-Plot the node/group tree graphically on a given view.
-
-argument:: interval
-Polling interval.
-
-argument:: parent
-Parent view.
-
-argument:: actionIfFail
-Function to be evaluated in case communication with the server cannot be established.
-
-returns:: Function to be evaluated in order to clean up all actions performed inside the method. To be called for instance by the onClose method of the enclosing window.
+argument:: displayControls
+Wether to display synths controls.
 
 subsection:: Recording Support
 
