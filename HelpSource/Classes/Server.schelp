@@ -660,7 +660,7 @@ argument:: interval
 View's refresh interval. This is not the rate at which node tree is polled, which depends on Server's link::Classes/ServerNodeTree::.
 
 argument:: displayControls
-Wether to display synths controls.
+Whether to display synths controls.
 
 subsection:: Recording Support
 
