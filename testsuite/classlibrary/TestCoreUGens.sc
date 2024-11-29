@@ -879,18 +879,19 @@ TestCoreUGens : UnitTest {
 	test_env_endsAtCorrectSample {
 
 		var sampleDursToTest = (2 .. 27) ++ 63 ++ (64, 64+23 .. 256); // mix of below and over block size
-		var numTests = sampleDursToTest.size * 2 * 2; // * 2 different envs, * 2 different rates
+		var numTests = sampleDursToTest.size * 3 * 2; // * 3 different envs, * 2 different rates
 		var completed = 0;
 		var testsFinished = false;
 		var cond = CondVar();
 		var tolerance = -100.dbamp;
 		var envEndVal = 100;
 
-		// Test 2 different env shapes, ar & kr rates, multiple durations
+		// Test different env shapes, ar & kr rates, multiple durations
 		server.bootSync;
 		[   // arguments to pass to Env: levels, durFactor, curve
-			[ [1.5, envEndVal], 1, \lin ], // single segment env
-			[ [1.5, 10, envEndVal], [1/3, 2/3], [\lin, \sin] ] // multisegment env
+			[ [1.5, envEndVal], 1, \sin ], // single segment env
+			[ [1.5, 10, envEndVal], [1/3, 2/3], [\lin, \lin] ], // multisegment env
+			[ [1.5, 10, envEndVal], [1/3, 2/3], [\lin, \sin] ] // multisegment env, mixed curves
 		].do{ |envSpec, envi|
 
 			[\ar, \kr].do { |rate|
@@ -907,9 +908,8 @@ TestCoreUGens : UnitTest {
 					var lineDur = numSamps * sampleDur;
 					var renderDur = (numSamps + excessSamples) * sampleDur;
 
-
 					{   // ensure values change enough to meaningfully exceed 'within' threshold
-						(envSpec[1] * lineDur).postln;
+						("lineDur and segment lengths: % %\n").postf(lineDur, envSpec[1] * lineDur);
 						EnvGen.perform(rate, Env(envSpec[0], envSpec[1] * lineDur, envSpec[2]))
 					}.loadToFloatArray(renderDur, server,
 						{ |data|
@@ -917,12 +917,12 @@ TestCoreUGens : UnitTest {
 							var priorToEndVal = data[numSamps-1];
 
 							this.assertFloatEquals(dataEndVal, envEndVal,
-								"EnvGen should not arrive late to its end value [dur % samples, %, env %]".format(numSamps, rate, envi),
+								"EnvGen should not arrive late to its end value [dur % samples, %, which env %]".format(numSamps, rate, envi),
 								within: tolerance, report: false
 							);
 
 							this.assert(dataEndVal != priorToEndVal,
-								"EnvGen should not arrive early to its end value [dur % samples, %, env %]".format(numSamps, rate, envi),
+								"EnvGen should not arrive early to its end value [dur % samples, %, which env %, third/second to last samps: [%, %]]".format(numSamps, rate, envi, data[numSamps-2], priorToEndVal),
 								report: false
 							);
 
