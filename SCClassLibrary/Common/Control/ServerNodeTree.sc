@@ -5,11 +5,11 @@ ServerNodeTree {
 	var currentMsg, currentNodeTree = nil;
 	var <running = false;
 	var oscResp;
-	
+
 	*new { |server|
 		^super.new.init(server)
 	}
-	
+
 	init { |parentServer|
 		server = parentServer;
 	}
@@ -56,7 +56,7 @@ ServerNodeTree {
 			};
 		};
 		updateFunc.value;
-		CmdPeriod.remove(updateFunc);
+		CmdPeriod.add(updateFunc);
 	}
 
 	stop {
@@ -166,11 +166,8 @@ ServerNodeTree {
 			nodes,
 			parentList
 		);
-		// Useless, if parentList isn't empty right now,
-		// node tree is totally wrong
-		parentList.clear;
 		currentNodeTree = nodes;
 	}
-	
+
 }
 
