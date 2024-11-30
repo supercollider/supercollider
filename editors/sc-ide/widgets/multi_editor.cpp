@@ -560,18 +560,18 @@ void MultiEditor::createActions() {
 
     mActions[NextDocument] = action = new QAction(tr("Next Document"), this);
 #ifndef Q_OS_MAC
-    action->setShortcut(tr("Alt+Right", "Next Document"));
+    action->setShortcut(tr("Ctrl+Tab", "Next Document"));
 #else
-    action->setShortcut(tr("Ctrl+Alt+Right", "Next Document"));
+    action->setShortcut(tr("Meta+Tab", "Next Document"));
 #endif
     connect(action, SIGNAL(triggered()), this, SLOT(showNextDocument()));
     settings->addAction(action, "editor-document-next", editorCategory);
 
     mActions[PreviousDocument] = action = new QAction(tr("Previous Document"), this);
 #ifndef Q_OS_MAC
-    action->setShortcut(tr("Alt+Left", "Previous Document"));
+    action->setShortcut(tr("Ctrl+Shift+Tab", "Previous Document"));
 #else
-    action->setShortcut(tr("Ctrl+Alt+Left", "Previous Document"));
+    action->setShortcut(tr("Meta+Shift+Tab", "Previous Document"));
 #endif
     connect(action, SIGNAL(triggered()), this, SLOT(showPreviousDocument()));
     settings->addAction(action, "editor-document-previous", editorCategory);
