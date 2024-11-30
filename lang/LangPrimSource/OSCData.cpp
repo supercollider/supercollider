@@ -862,9 +862,8 @@ void init_OSC(int port) {
 #endif
 
     startAsioThread();
-
     try {
-        gUDPport.reset(new InPort::UDP(port, HandlerType::OSC));
+        gUDPport = std::make_unique<InPort::UDP>(port, HandlerType::OSC);
     } catch (std::exception const& e) { postfl("No networking: %s", e.what()); }
 }
 
@@ -923,6 +922,10 @@ void closeAllCustomPorts() {
 
 void cleanup_OSC() {
     postfl("cleaning up OSC\n");
+
+    // NOTE: the socket must be destroyed *before* the IO service.
+    // We cannot rely on the global object destructor because the order would be undefined.
+    gUDPport = nullptr;
 
     stopAsioThread();
 
