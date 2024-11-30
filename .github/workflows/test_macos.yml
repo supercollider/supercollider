@@ -8,7 +8,7 @@ on:
 
 jobs:
   test-macos:
-    runs-on: macos-12
+    runs-on: macos-15
     env:
       INSTALL_PATH: ${{ github.workspace }}/build/Install
       ARTIFACT_FILE: ${{ inputs.artifact-file }}
