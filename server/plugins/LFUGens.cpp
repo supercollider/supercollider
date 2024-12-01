@@ -2563,7 +2563,7 @@ static bool EnvGen_initSegment(EnvGen* unit, int& counter, double& level, double
     // Carry the rounding error forward to be absorbed in the next stage
     double stageDurInSamples = dur * SAMPLERATE + unit->m_stageResidual;
     int32 stageDurInSamples_floor = static_cast<int32>(stageDurInSamples);
-    double counter_forGrowCalc = sc_max(1.0, stageDurInSamples);
+    double counter_fractional = sc_max(1.0, stageDurInSamples);
     counter = sc_max(1, stageDurInSamples_floor);
     unit->m_stageResidual = stageDurInSamples - counter;
 
@@ -2579,15 +2579,15 @@ static bool EnvGen_initSegment(EnvGen* unit, int& counter, double& level, double
     } break;
     case shape_Linear: {
         // unit->m_grow = (endLevel - level) / (counter); // assumes the previous endlevel was reached
-        unit->m_grow = (endLevel - level) / counter_forGrowCalc;
+        unit->m_grow = (endLevel - level) / counter_fractional;
         // unit->m_grow = (endLevel - previousEndLevel) / counter_forGrowCalc;
     } break;
     case shape_Exponential: {
-        unit->m_grow = pow(endLevel / level, 1.0 / counter_forGrowCalc);
+        unit->m_grow = pow(endLevel / level, 1.0 / counter_fractional);
     } break;
     case shape_Sine: {
 //        double w = pi / counter;
-        double w = pi / counter_forGrowCalc;
+        double w = pi / counter_fractional;
 
         unit->m_a2 = (endLevel + level) * 0.5;
         unit->m_b1 = 2. * cos(w);
