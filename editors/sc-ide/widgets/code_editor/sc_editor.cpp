@@ -595,7 +595,6 @@ void ScCodeEditor::indentCurrentRegion() { indent(currentRegion()); }
 void ScCodeEditor::indent(EditBlockMode editBlockMode) { indent(textCursor(), editBlockMode); }
 
 void ScCodeEditor::indent(const QTextCursor& selection, EditBlockMode editBlockMode) {
-    static QString plainMultilineCommentBegin = QString("*/");
     if (selection.isNull())
         return;
 
@@ -665,7 +664,7 @@ void ScCodeEditor::indent(const QTextCursor& selection, EditBlockMode editBlockM
                 indentLevel = 0;
             // lexer does not detect "/*" as in comment, therefore we check if the current
             // block is equal to it. If so, also do not indent the multi-line comment start
-            if (!in_comment && block.text() != plainMultilineCommentBegin) {
+            if (!in_comment && block.text() != "/*") {
                 block = indent(block, indentLevel);
             }
         }
