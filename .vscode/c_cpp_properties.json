@@ -2,27 +2,7 @@
     "configurations": [
         {
             "name": "Mac",
-            "includePath": [
-                "${workspaceFolder}/common/**",
-                "${workspaceFolder}/editors/sc-ide/**",
-                "${workspaceFolder}/external_libraries/**",
-                "${workspaceFolder}/include/**",
-                "${workspaceFolder}/lang/**",
-                "${workspaceFolder}/platform/mac/**",
-                "${workspaceFolder}/QtCollider/**",
-                "${workspaceFolder}/SCDoc/**",
-                "${workspaceFolder}/server/**"
-            ],
-
-            "defines": [],
-            "macFrameworkPath": [
-                "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks",
-                "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks"
-            ],
-            "compilerPath": "/usr/bin/clang",
-            "cStandard": "c17",
             "cppStandard": "c++17",
-            "intelliSenseMode": "macos-clang-x64",
             "configurationProvider": "ms-vscode.cmake-tools"
         }
     ],
