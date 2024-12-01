@@ -9,6 +9,10 @@ on:
 jobs:
   test-windows:
     runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix:
+        test-clump: [0,1,2,3,4]
     env:
       INSTALL_PATH: ${{ github.workspace }}/build/Install
       ARTIFACT_FILE: ${{ inputs.artifact-file }}
@@ -61,7 +65,7 @@ jobs:
           # add path
           $SCLANG $SCRIPT_ADD_PATH $TESTS_PATH
           # run tests
-          timeout 1200 $SCLANG $SCRIPT_RUN_TESTS $TEST_LIST_PROTO $TEST_LIST_RESULT
+          timeout 1200 $SCLANG $SCRIPT_RUN_TESTS $TEST_LIST_PROTO $TEST_LIST_RESULT ${{ strategy.job-index }} ${{ strategy.job-total }}
 
       - name: Post test results
         shell: bash

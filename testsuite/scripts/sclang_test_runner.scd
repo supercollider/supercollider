@@ -1,15 +1,42 @@
-// this script is meant to be run with two arguments: path to test prototype indicating tests to be run, and path to test result
+// this script is meant to be run with four arguments:
+// 1. path to test prototype indicating tests to be run
+// - default: "./test_run_proto_gha.scd"
+// 2. path to test result
+// - default: "./test_result.scxtar"
+// 3. which partition of the tests should be run (zero based)
+// - default: 0
+// 4. the number of test partitions
+// - default: 1 (must provide if partition provided)
 (
+var thisClump, nClumps;
 ~exitWhenDone = false;
 if(thisProcess.argv.size > 0) {
 	"passed args: %".format(thisProcess.argv).postln;
 	~testProto = thisProcess.argv[0];
 	~testResult = thisProcess.argv[1];
+	if(thisProcess.argv.size > 2) {
+		thisClump = thisProcess.argv[2].asInteger();
+		nClumps = thisProcess.argv[3].asInteger();
+	};
 	~exitWhenDone = true;
 } {
 	~testProto = PathName(thisProcess.nowExecutingPath).pathOnly +/+ "test_run_proto_gha.scd";
 	// ~testProto = PathName(thisProcess.nowExecutingPath).pathOnly +/+ "test_run_proto_all.scd"; // for testing
 	~testResult = PathName(thisProcess.nowExecutingPath).pathOnly +/+ "run" +/+ "test_result.scxtar";
+};
+
+thisClump ?? {
+	thisClump = 0;
+	nClumps = 1;
+};
+
+if((0>thisClump) || (thisClump>=nClumps)) {
+	var msg="Invalid clumps! % %".format(thisClump, nClumps);
+	if(~exitWhenDone) {
+		msg.postln; 2.exit; this.halt;
+	} {
+		Error(msg).throw;
+	};
 };
 
 if(File.exists(~testProto).not) {
@@ -18,6 +45,10 @@ if(File.exists(~testProto).not) {
 
 "~testProto path: %".format(~testProto).postln;
 "~testResult path: %".format(~testResult).postln;
+
+if(nClumps > 1) {
+	"dividing test suite into % clumps and testing clump index %".format(nClumps, thisClump).postln;
+};
 
 ~verboseSetup = false; // true or false
 
@@ -61,6 +92,10 @@ if(File.exists(~testProto).not) {
 	};
 
 	testsDict;
+};
+
+~selectThisTestClump = {|tests,thisClump,nClumps|
+	tests.sort.clump(tests.size()/nClumps).at(thisClump) ?? #[];
 };
 
 ~testrun = {|protoFile, resultFile|
@@ -143,6 +178,10 @@ if(File.exists(~testProto).not) {
 	// test_record["tests"] = tests;
 	// ~writeResult.(tests, file);
 	~verboseSetup.if({"After exclude: ".post; tests.do(_.postln)});
+
+	tests = ~selectThisTestClump.(tests, thisClump, nClumps);
+
+	~verboseSetup.if({"After clump: ".post; tests.do(_.postln)});
 
 	"\n\n\t*** Running the tests ***\n\n".post;
 
