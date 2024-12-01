@@ -85,7 +85,7 @@ jobs:
     needs: [version-getter, build-macos]
     uses: ./.github/workflows/test_macos.yml
     with:
-      artifact-file: "SuperCollider-${{ needs.version-getter.outputs.sc-version }}-macOS-x64.dmg"
+      artifact-file: "SuperCollider-${{ needs.version-getter.outputs.sc-version }}-macOS-arm64.dmg"
     secrets: inherit
 
   # test-windows:
