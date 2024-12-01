@@ -48,6 +48,9 @@ jobs:
           HOMEBREW_NO_INSTALL_CLEANUP: 1
         run: brew install coreutils # to get 'timeout' utility
 
+      - name: Grant microphone access # solution from https://github.com/actions/runner-images/issues/9330#issuecomment-1938616628
+        run: sqlite3 $HOME/Library/Application\ Support/com.apple.TCC/TCC.db "INSERT OR IGNORE INTO access VALUES ('kTCCServiceMicrophone','/usr/local/opt/runner/provisioner/provisioner',1,2,4,1,NULL,NULL,0,'UNUSED',NULL,0,1687786159,NULL,NULL,'UNUSED',1687786159);"
+
       - name: Run tests
         shell: bash
         continue-on-error: true
