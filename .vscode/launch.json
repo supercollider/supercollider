@@ -1,134 +1,25 @@
 {
-    // see https://github.com/microsoft/vscode-cmake-tools/blob/main/docs/debug-launch.md
+    // see https://vector-of-bool.github.io/docs/vscode-cmake-tools/debugging.html
     "version": "0.2.0",
     "configurations": [
-        // sclang target
+        // lldb/macOS configurations
         {
+            "name": "lldb: attach",
             "type": "lldb",
             "request": "attach",
-            "name": "macOS: sclang attach (lldb)",
-            "program": "${workspaceFolder}/build/lang/Debug/sclang",
+            "program": "${command:cmake.launchTargetPath}",
             "waitFor": true,
         },
         {
-            "name": "macOS: sclang launch (lldb)",
+            "name": "lldb: launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/lang/Debug/sclang",
+            "program": "${command:cmake.launchTargetPath}",
             "args": [],
             "stopAtEntry": true,
-            "cwd": "${fileDirname}",
+            "cwd": "${workspaceFolder}",
             "environment": [],
-            "externalConsole": true,
             "MIMode": "lldb",
-        },
-        // scsynth target
-        {
-            "type": "lldb",
-            "request": "attach",
-            "name": "macOS: scsynth attach (lldb)",
-            "program": "${workspaceFolder}/build/server/scsynth/Debug/scsynth",
-            "waitFor": true,
-        },
-        {
-            "name": "macOS: scsynth launch (lldb)",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/build/server/scsynth/Debug/scsynth",
-            "args": [
-                "-u", "57110"
-            ],
-            "stopAtEntry": true,
-            "cwd": "${fileDirname}",
-            "environment": [],
-            "externalConsole": false,
-            "MIMode": "lldb"
-        },
-        // supernova target
-        {
-            "type": "lldb",
-            "request": "attach",
-            "name": "macOS: supernova attach (lldb)",
-            "program": "${workspaceFolder}/build/server/supernova/Debug/supernova",
-            "waitFor": true,
-        },
-        {
-            "name": "macOS: supernova launch (lldb)",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/build/server/supernova/Debug/supernova",
-            "stopAtEntry": true,
-            "cwd": "${fileDirname}",
-            "environment": [],
-            "externalConsole": false,
-            "MIMode": "lldb"
-        },
-        // Qt IDE target
-        {
-            "type": "lldb",
-            "request": "attach",
-            "name": "macOS: Qt IDE attach (lldb)",
-            "program": "${workspaceFolder}/build/editors/sc-ide/Debug/SuperCollider.app/Contents/MacOS/SuperCollider",
-            "waitFor": true,
-        },
-        {
-            "name": "macOS: Qt IDE launch (lldb)",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/build/editors/sc-ide/Debug/SuperCollider.app/Contents/MacOS/SuperCollider",
-            "stopAtEntry": true,
-            "cwd": "${fileDirname}",
-            "environment": [],
-            "externalConsole": false,
-            "MIMode": "lldb"
-        },
-        // install target 
-        {
-            "type": "lldb",
-            "request": "attach",
-            "name": "macOS: sclang [install] attach (lldb)",
-            "program": "${workspaceFolder}/build/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang",
-            "waitFor": true,
-        },
-        {
-            "name": "macOS: sclang [install] launch (lldb)",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/build/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang",
-            "args": [],
-            "stopAtEntry": true,
-            "cwd": "${fileDirname}",
-            "environment": [],
-            "externalConsole": true,
-            "MIMode": "lldb"
-        },
-        {
-            "type": "lldb",
-            "request": "attach",
-            "name": "macOS: IDE [install] attach (lldb)",
-            "program": "${workspaceFolder}/build/Install/SuperCollider/SuperCollider.app/Contents/MacOS/SuperCollider",
-            "waitFor": true,
-        },
-        {
-            "type": "lldb",
-            "request": "attach",
-            "name": "macOS: scsynth [install] attach (lldb)",
-            "program": "${workspaceFolder}/build/Install/SuperCollider/SuperCollider.app/Contents/Resources/scsynth",
-            "waitFor": true,
-        },
-        {
-            "name": "macOS: scsynth [install] launch (lldb)",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/build/Install/SuperCollider/SuperCollider.app/Contents/Resources/scsynth",
-            "args": [
-                "-u", "57110"
-            ],
-            "stopAtEntry": true,
-            "cwd": "${fileDirname}",
-            "environment": [],
-            "externalConsole": true,
-            "MIMode": "lldb"
         },
     ]
 }

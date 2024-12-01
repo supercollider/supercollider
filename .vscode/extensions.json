@@ -2,7 +2,7 @@
 	"recommendations": [
 		"ms-vscode.cpptools",
 		"ms-vscode.cpptools-extension-pack",
-		"josetr.cmake-language-support-vscode",
+    "ms-vscode.cmake-tools",
 		"github.vscode-github-actions",
 		"EditorConfig.EditorConfig",
 		// syntax highlighting
