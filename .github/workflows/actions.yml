@@ -78,21 +78,21 @@ jobs:
     needs: [version-getter, build-linux]
     uses: ./.github/workflows/test_linux.yml
     with:
-      artifact-file: "SuperCollider-${{ needs.version-getter.outputs.sc-version }}-ubuntu-22.04-gcc12"
+      sc-version: ${{ needs.version-getter.outputs.sc-version }}
     secrets: inherit
 
   test-macos:
     needs: [version-getter, build-macos]
     uses: ./.github/workflows/test_macos.yml
     with:
-      artifact-file: "SuperCollider-${{ needs.version-getter.outputs.sc-version }}-macOS-arm64.dmg"
+      sc-version: ${{ needs.version-getter.outputs.sc-version }}
     secrets: inherit
 
   # test-windows:
   #   needs: [version-getter, build-windows]
   #   uses: ./.github/workflows/test_windows.yml
   #   with:
-  #     artifact-file: "SuperCollider-${{ needs.version-getter.outputs.sc-version }}-win64"
+  #     sc-version: ${{ needs.version-getter.outputs.sc-version }}
   #   secrets: inherit
 
   deploy_s3:
