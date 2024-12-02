@@ -2596,7 +2596,7 @@ static bool EnvGen_initSegment(EnvGen* unit, int& counter, double& level, double
         level = unit->m_a2 - unit->m_y1;
     } break;
     case shape_Welch: {
-        double w = (pi * 0.5) / counter;
+        double w = (pi * 0.5) / counter_fractional;
 
         unit->m_b1 = 2. * cos(w);
 
@@ -2614,23 +2614,23 @@ static bool EnvGen_initSegment(EnvGen* unit, int& counter, double& level, double
     case shape_Curve: {
         if (fabs(curve) < 0.001) {
             unit->m_shape = 1; // shape_Linear
-            unit->m_grow = (endLevel - level) / counter;
+            unit->m_grow = (endLevel - level) / counter_fractional;
         } else {
             double a1 = (endLevel - level) / (1.0 - exp(curve));
             unit->m_a2 = level + a1;
             unit->m_b1 = a1;
-            unit->m_grow = exp(curve / counter);
+            unit->m_grow = exp(curve / counter_fractional);
         }
     } break;
     case shape_Squared: {
         unit->m_y1 = sqrt(level);
         unit->m_y2 = sqrt(endLevel);
-        unit->m_grow = (unit->m_y2 - unit->m_y1) / counter;
+        unit->m_grow = (unit->m_y2 - unit->m_y1) / counter_fractional;
     } break;
     case shape_Cubed: {
         unit->m_y1 = pow(level, 1.0 / 3.0);
         unit->m_y2 = pow(endLevel, 1.0 / 3.0);
-        unit->m_grow = (unit->m_y2 - unit->m_y1) / counter;
+        unit->m_grow = (unit->m_y2 - unit->m_y1) / counter_fractional;
     } break;
     };
     return true;
