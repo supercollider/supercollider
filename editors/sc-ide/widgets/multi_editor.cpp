@@ -968,12 +968,16 @@ void MultiEditor::updateTabsOrder(QList<Document*> docOrder) {
 
 void MultiEditor::showNextDocument() {
     int currentIndex = mTabs->currentIndex();
-    mTabs->setCurrentIndex(qMin(currentIndex + 1, mTabs->count() - 1));
+    mTabs->setCurrentIndex((currentIndex + 1) % mTabs->count());
 }
 
 void MultiEditor::showPreviousDocument() {
     int currentIndex = mTabs->currentIndex();
-    mTabs->setCurrentIndex(qMax(0, currentIndex - 1));
+    if (currentIndex == 0) {
+        mTabs->setCurrentIndex(mTabs->count() - 1);
+    } else {
+        mTabs->setCurrentIndex(currentIndex - 1);
+    }
 }
 
 void MultiEditor::switchDocument() {
