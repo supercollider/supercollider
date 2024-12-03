@@ -20,6 +20,7 @@
 
 #pragma once
 
+#include <QGestureEvent>
 #include <QPlainTextEdit>
 #include <QGraphicsScene>
 #include <QList>
@@ -64,6 +65,7 @@ public:
 
     void showPosition(int charPosition, int selectionLength = 0);
     QString symbolUnderCursor();
+    bool gestureEvent(QGestureEvent* event);
     int inactiveFadeAlpha() { return mInactiveFadeAlpha; }
 
 protected:

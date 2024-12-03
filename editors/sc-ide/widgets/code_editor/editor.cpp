@@ -30,6 +30,7 @@
 
 #include <QApplication>
 #include <QDebug>
+#include <QGestureEvent>
 #include <QGraphicsView>
 #include <QKeyEvent>
 #include <QPainter>
@@ -100,6 +101,9 @@ GenericCodeEditor::GenericCodeEditor(Document* doc, QWidget* parent):
     doc->setLastActiveEditor(this);
 
     applySettings(Main::settings());
+
+    grabGesture(Qt::PinchGesture);
+    setAttribute(Qt::WA_AcceptTouchEvents);
 }
 
 GenericCodeEditor::~GenericCodeEditor() {
@@ -457,6 +461,23 @@ QString GenericCodeEditor::symbolUnderCursor() {
     return tokenInStringAt(position, blockString);
 }
 
+bool GenericCodeEditor::gestureEvent(QGestureEvent* event) {
+    if (QGesture* pinch = event->gesture(Qt::PinchGesture)) {
+        auto* pinchGesture = static_cast<QPinchGesture*>(pinch);
+        if (pinchGesture->state() == Qt::GestureUpdated) {
+            qreal scaleFactor = pinchGesture->scaleFactor();
+            if (scaleFactor >= 1.0) {
+                // some magic number - 2 seems to "feel good"
+                zoomFont(2);
+            } else {
+                zoomFont(-2);
+            }
+        }
+        return true;
+    }
+    return false;
+}
+
 bool GenericCodeEditor::event(QEvent* event) {
     switch (event->type()) {
     case QEvent::ShortcutOverride: {
@@ -470,6 +491,9 @@ bool GenericCodeEditor::event(QEvent* event) {
             return true;
         }
         break;
+    }
+    case QEvent::Gesture: {
+        return gestureEvent(static_cast<QGestureEvent*>(event));
     }
     default:
         break;
@@ -855,7 +879,7 @@ void GenericCodeEditor::resetFontSize() { mDoc->resetDefaultFont(); }
 void GenericCodeEditor::zoomFont(int steps) {
     QFont currentFont = mDoc->defaultFont();
     const int newSize = currentFont.pointSize() + steps;
-    if (newSize <= 0)
+    if (newSize <= 7 || newSize >= 50)
         return;
     currentFont.setPointSize(newSize);
     mDoc->setDefaultFont(currentFont);
