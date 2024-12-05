@@ -104,10 +104,6 @@ if (${CMAKE_COMPILER_IS_GNUCXX})
 
     add_compile_options(
         -Werror=return-type      # Error out if function definitions lack a return type
-        # GCC 14 has made -Wincompatible-pointer-types an error by default and as a
-        # consequence, some external C would fail to compile. This is a temporary fix!
-        # Ideally, the affected dependencies should be fixed upstream.
-        -Wno-error=incompatible-pointer-types
         -fschedule-insns2        # Optimize instruction scheduling
         -fomit-frame-pointer     # Optimize by omitting the frame pointer where possible
         -fno-math-errno          # Optimize math functions by not setting errno
