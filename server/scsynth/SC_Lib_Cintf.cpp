@@ -115,7 +115,7 @@ extern void UIUGens_Unload(void);
 #endif // STATIC_PLUGINS
 
 void deinitialize_library() {
-#ifdef STATIC_PLUGINS
+#if defined(STATIC_PLUGINS) && !defined(NO_LIBSNDFILE)
     DiskIO_Unload();
     UIUGens_Unload();
 #endif // STATIC_PLUGINS

@@ -40,7 +40,7 @@ if(NOT SYSTEM_BOOST) # we compile boost ourselves
 	target_include_directories(boost_regex_lib PUBLIC boost)
 
 	if(EMSCRIPTEN)
-		set_property(TARGET boost_program_options_lib boost_system_lib boost_filesystem_lib
+		set_property(TARGET boost_program_options_lib boost_system_lib 
 					 APPEND PROPERTY COMPILE_FLAGS "-pthread -s USE_PTHREADS=1 -s WASM=1")
 	endif()
 
