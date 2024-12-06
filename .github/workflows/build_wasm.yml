@@ -1,0 +1,66 @@
+name: Build wasm
+on:
+  workflow_call:
+    inputs:
+      sc-version:
+        required: true
+        type: string
+
+jobs:
+  build-wasm:
+    runs-on: ubuntu-24.04
+    name: WASM
+
+    env:
+      BUILD_PATH: ${{ github.workspace }}/build
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      
+      - name: Setup emsdk
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 3.1.53
+          actions-cache-folder: 'emsdk-cache'
+      
+      - name: Verify emsdk
+        run: emcc -v
+
+      - name: install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes build-essential cmake pkg-config libjack-jackd2-dev libsndfile1-dev libasound2-dev libavahi-client-dev libreadline6-dev libfftw3-dev libicu-dev libxt-dev libudev-dev ccache clang-14 libc++-14-dev libc++abi-14-dev
+
+      - name: configure
+        run: |
+          mkdir $BUILD_PATH && cd $BUILD_PATH
+          emcmake cmake \
+            -DSC_EL=no \
+            -DSUPERNOVA=no \
+            -DSC_HIDAPI=no \
+            -DNO_LIBSNDFILE=yes \
+            -DSC_QT=no \
+            -DNO_AVAHI=yes \
+            -DSC_ABLETON_LINK=no \
+            -DCMAKE_BUILD_TYPE="Release" \
+            -Wno-dev \
+            -DSSE=no \
+            -DSSE2=no \
+            -DNO_X11=yes \
+            ..
+
+      - name: build
+        run: |
+          cd $BUILD_PATH
+          emmake cmake --build . --target scsynth
+
+      - name: create archive
+        run: cd $BUILD_PATH/server/scsynth && zip --symlinks -r scsynth_wasm.zip .
+        
+      - name: upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: scsynth_wasm.zip
+          path: ${{ env.BUILD_PATH }}/server/scsynth/scsynth_wasm.zip
