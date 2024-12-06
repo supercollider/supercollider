@@ -392,3 +392,19 @@ endif()
 if(${JACK_USE_METADATA_API})
 	target_compile_definitions(libscsynth PUBLIC "-DSC_JACK_USE_METADATA_API")
 endif()
+
+# use dedicated output directory for wasm build which includes files to get things running
+if (EMSCRIPTEN)
+	set(WASM_SCSYNTH_OUTPUT_DIR "${CMAKE_BINARY_DIR}/wasm/scsynth")
+	set_target_properties(scsynth PROPERTIES
+		RUNTIME_OUTPUT_DIRECTORY "${WASM_SCSYNTH_OUTPUT_DIR}"
+	)
+	set(WASM_PLATFORM_DIR "${CMAKE_SOURCE_DIR}/platform/wasm")
+    add_custom_target(copy_wasm_platform_files ALL
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+                "${WASM_PLATFORM_DIR}"
+                "${WASM_SCSYNTH_OUTPUT_DIR}"
+        COMMENT "Copying wasm platform files to wasm build directory"
+    )
+	add_dependencies(scsynth copy_wasm_platform_files)
+endif()

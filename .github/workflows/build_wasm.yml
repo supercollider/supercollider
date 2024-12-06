@@ -57,7 +57,7 @@ jobs:
           emmake cmake --build . --target scsynth
 
       - name: create archive
-        run: cd $BUILD_PATH/server/scsynth && zip --symlinks -r scsynth_wasm.zip .
+        run: cd $BUILD_PATH/wasm && zip --symlinks -r scsynth_wasm.zip .
         
       - name: upload artifacts
         uses: actions/upload-artifact@v4
