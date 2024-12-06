@@ -55,7 +55,7 @@ The following limitations are currently in place:
 Some UGens seem broken, for example `NumOutputBuses` (and consequently the `SoundIn` pseudo-UGen). Using it causes a
 runtime error:
 
-```
+```javascript
 Uncaught RuntimeError: function signature mismatch
     at Graph_FirstCalc(Graph*) (http://127.0.0.1:8000/scsynth.wasm:wasm-function[2686]:0x70b98)
     at Group_Calc (http://127.0.0.1:8000/scsynth.wasm:wasm-function[2367]:0x59ef2)
@@ -70,53 +70,67 @@ which corresponds to a segfault on the desktop. The reason might be a 32-bit inc
 
 ## Building
 
+> Building the wasm version of _scsynth_ is only necessary if you want to develop and improve the wasm build of scsynth.
+> It is perfectly fine to use the compiled files available via GitHub as everything is statically linked and the wasm binary will run on any wasm runtime.
+
 One needs to install [emscripten](https://emscripten.org), see
 [download instructions](https://emscripten.org/docs/getting_started/downloads.html).
 The installation described there should work:
 
-    $ ./emsdk install latest
-    $ ./emsdk activate latest
-    $ source ./emsdk_env.sh
+```shell
+./emsdk install latest
+./emsdk activate latest
+source ./emsdk_env.sh
+```
 
-Then you prefix `cmake` by `emcmake`, e.g.:
+Refer to the CI file `/.github/workflows/build_wasm.yml` for the currently tested version which is guaranteed to work.
 
-    $ emcmake cmake -DSC_EL=no -DSUPERNOVA=no ... -s USE_PTHREADS=1 -s WASM=1 --target scsynth ..
+To configure the build prefix `cmake` with `emcmake` and postfix any arguments, e.g. run the following command in a `build` directory.
 
-The full set of flags and settings for emcmake can be seen in the provided build scripts:
+```shell
+emcmake cmake \
+    -DSC_EL=no \
+    -DSUPERNOVA=no \
+    -DSC_HIDAPI=no \
+    -DNO_LIBSNDFILE=yes \
+    -DSC_QT=no \
+    -DNO_AVAHI=yes \
+    -DSC_ABLETON_LINK=no \
+    -DCMAKE_BUILD_TYPE="Release" \
+    -Wno-dev \
+    -DSSE=no \
+    -DSSE2=no \
+    -DNO_X11=yes \
+    ..
+```
 
-- `./wasm/configure.sh` runs emcmake with reasonable parameters
-- `./wasm/make.sh` runs the 'make' task for target 'scsynth'.
+To build `scsynth` via Emscripten use
 
-Both scripts are called subsequently when running `build.sh`. For example:
+```shell
+emmake cmake --build . --target scsynth
+```
 
-    $ mkdir build
-    $ cd build
-    $ ../wasm/build.sh
+which will write all necessary files to `<you_build_directory>/wasm/scsynth`.
 
-Technically, what is built is `server/scsynth/scsynth.*` with a runtime library `*.js`, the actual binary `*.wasm`
-and a wrapping HTML `*.html`. The standard plugins (UGens) are statically linked and thus available.
-
-When successful, the `make.sh` script also takes care of copying the .js and .wasm files emitted by the process
-from `server/scsynth/` to `../wasm/`. In other words, the `wasm` directory contains everything necessary to
-execute scsynth in the browser (see section 'Running').
-
-_Note:_ Sometimes, when running `make.sh` for a while, there appears an error:
-
-> System LLVM compiler cannot be used to build with Emscripten! Check
-
-The reason for this is unclear at the moment -- removing and recreating the `build` directory and running the full
-build again "solves" this.
+Technically, what is built is a runtime library `scsynth.js` and the actual binary `scsynth.wasm`.
+The standard plugins (UGens) are statically linked and thus available.
 
 ## Running
 
-The file `wasm/index.html` takes care of loading scsynth. It can be used as a template for more customised running.
-To use this index, start a local webserver inside the `wasm` directory, for example:
+The wasm build of _scsynth_ relies on [SharedArrayBuffers](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer) which are turned off by default on most browsers.
+In order to activate this functionality it is necessary to set the HTTP headers
 
-    $ cd ../wasm/
-    $ python -m SimpleHTTPServer
+```http
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Embedder-Policy: require-corp
+```
 
-Then open the server's address, e.g. `127.0.0.1:8000`. in the browser (note: if you use `0.0.0.0`, Chromium will
-not allow microphone access).
+via a file server when serving the files to a browser.
+
+A simply python script `static_dev_server.py` is provided in the build directory to start a local web server on <http://127.0.0.1:8000> with the necessary headers set.
+
+> This script should __not__ be used to serve the files via the internet because the basic Python http server is not considered safe and can introduce security problems.
+> Use an nginx or apache web server with the appropriate headers set if the files should be accessible via the internet.
 
 Emscripten uses a JavaScript object named `Module` to contain all information on the wasm binary. For example,
 `Module.arguments` can be used to specify the command line arguments for scsynth. By default, we set
@@ -127,58 +141,80 @@ If you want to access the microphone input, you would set for example `-i 2`.
 
 The `index.html` includes a [JavaScript OSC library](https://github.com/colinbdclark/osc.js) and defines a few utility functions:
 
-    sendOSC(name, args...)
+```javascript
+sendOSC(name, args...)
 
-    sendOSC_t(name, typeTags, args...)
+sendOSC_t(name, typeTags, args...)
+```
 
 They can be used to talk to the server after it has been booted. For example, you can print the node tree:
 
-    sendOSC("/g_dumpTree", 0, 1)
+```javascript
+sendOSC("/g_dumpTree", 0, 1)
+```
 
 or
 
-    sendOSC_t("/g_dumpTree", "ii", 0, 1)
+```javascript
+sendOSC_t("/g_dumpTree", "ii", 0, 1)
+```
 
 Some of the SuperCollider OSC API works with either float `"f"` or int `"i"` arguments, and the `sendOSC` treats all numbers
 as floats. However, some commands do not work properly without int arguments, therefore it is preferred to use the
 `sendOSC_t` function and explicitly specifiy the type tags.
 
-    d_bubbles()
+```javascript
+d_bubbles()
+```
 
 Sends a `/d_recv` command with the well-known `"AnalogBubbles"` example by James McCartney. You can then start a synth using:
 
-    s_bubbles()
+```javascript
+s_bubbles()
+```
 
 which is equivalent to:
 
-    sendOSC_t("/s_new", "siii", "AnalogBubbles", 1000, 1, 0)
+```javascript
+sendOSC_t("/s_new", "siii", "AnalogBubbles", 1000, 1, 0)
+```
 
 If you want to use other synthdefs, you have to compile them to their binary blobs (as `Uint8rray`) and send them like this:
 
-    sendOSC_t("/d_recv", "b", blob)
+```javascript
+sendOSC_t("/d_recv", "b", blob)
+```
 
 The blob can be obtained for example from sclang:
 
-    SynthDef("gcd", {
-	    var mx = LFNoise1.kr(0.1).range(-20, 20);
-        var my = LFNoise1.kr(0.1).range(-20, 20);
-        var sn = SinOsc.ar(SinOsc.kr(0.1) * 20 lcm: [mx, my] * 30 + 500) * 0.1;
-	    Out.ar(0, sn);
-    }).asBytes.printOn(Post); nil
+```supercollider
+SynthDef("gcd", {
+    var mx = LFNoise1.kr(0.1).range(-20, 20);
+    var my = LFNoise1.kr(0.1).range(-20, 20);
+    var sn = SinOsc.ar(SinOsc.kr(0.1) * 20 lcm: [mx, my] * 30 + 500) * 0.1;
+    Out.ar(0, sn);
+}).asBytes.printOn(Post); nil
+```
 
 Copying the result from the post window and replacing `Int8Array[ ... ]` by `Uint8Array.from([ ... ])`.
 
 To enable OSC dump:
 
-    dumpOSC(1)
+```javascript
+dumpOSC(1)
+```
 
 To set controls on a synth:
 
-    sendOSC_t("/n_set", "isf", 1000, "freq2", 444.1)
+```javascript
+sendOSC_t("/n_set", "isf", 1000, "freq2", 444.1)
+```
 
 To free the synth:
 
-    sendOSC_t("/n_free", "i", 1000)
+```javascript
+sendOSC_t("/n_free", "i", 1000)
+```
 
 See the 'Server Command Reference' help file for an overview of OSC commands.
 
@@ -201,22 +237,28 @@ OSC interface, more viable candidates may be:
 scsynth.wasm is started with a port number (defaults to 57110) for OSC communication.
 The interface is available through `Module.oscDriver`:
 
-    var od = Module.oscDriver;
-    od[server].receive(client, data);
+```javascript
+var od = Module.oscDriver;
+od[server].receive(client, data);
+```
 
 Where `client` and `server` are virtual port numbers, for example `57120` and `57110` respectively. The client or source port number
 allows to receive OSC replies from the server. To do so, an OSC end-point function must be registered:
 
-    od[57120] = { receive: function(server, data) { console.log("Received data from " + server) }};
+```javascript
+od[57120] = { receive: function(server, data) { console.log("Received data from " + server) }};
+```
 
 The OSC data is always a plain `Uint8Array` which must be properly encoded and decoded, for example in JavaScript using the
 [osc.js](https://github.com/colinbdclark/osc.js/) library mentioned above (`osc.writePacket()`, `osc.readPacket()`). You can
 look at the definition of `sendOSC_t` in `index.html` to see how package encoding works. For example:
 
-    od[57120] = { receive: function(addr, data) {
-      var msg = osc.readPacket(data, {});
-      console.log("REPLY from " + addr + ": " + JSON.stringify(msg, null, 4));
-    }};
+```javascript
+od[57120] = { receive: function(addr, data) {
+    var msg = osc.readPacket(data, {});
+    console.log("REPLY from " + addr + ": " + JSON.stringify(msg, null, 4));
+}};
+```
 
 ## Source Code
 
