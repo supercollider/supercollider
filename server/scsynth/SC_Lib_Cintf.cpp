@@ -100,9 +100,9 @@ extern void Pan_Load(InterfaceTable* table);
 extern void Reverb_Load(InterfaceTable* table);
 extern void Trigger_Load(InterfaceTable* table);
 extern void UnaryOp_Load(InterfaceTable* table);
-#ifndef NO_LIBSNDFILE
+#    ifndef NO_LIBSNDFILE
 extern void DiskIO_Load(InterfaceTable* table);
-#endif
+#    endif
 extern void Test_Load(InterfaceTable* table);
 extern void PhysicalModeling_Load(InterfaceTable* table);
 extern void Demand_Load(InterfaceTable* table);

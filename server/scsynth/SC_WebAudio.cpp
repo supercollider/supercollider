@@ -267,9 +267,7 @@ void SC_WebAudioDriver::WaRun() {
 
     } catch (std::exception& exc) {
         scprintf("%s: exception in real time: %s\n", kWebAudioIdent, exc.what());
-    } catch (...) {
-        scprintf("%s: unknown exception in real time\n", kWebAudioIdent);
-    }
+    } catch (...) { scprintf("%s: unknown exception in real time\n", kWebAudioIdent); }
 
     // TODO: how to measure CPU usage?
 
