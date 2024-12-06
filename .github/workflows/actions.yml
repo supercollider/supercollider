@@ -66,6 +66,13 @@ jobs:
     with:
       sc-version: ${{ needs.version-getter.outputs.sc-version }}
     secrets: inherit
+  
+  build-wasm:
+    needs: [lint, version-getter]
+    uses: ./.github/workflows/build_wasm.yml
+    with:
+      sc-version: ${{ needs.version-getter.outputs.sc-version }}
+    secrets: inherit
 
   build-windows:
     needs: [lint, version-getter]
