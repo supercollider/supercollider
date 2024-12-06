@@ -293,9 +293,6 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	target_link_libraries(libscsynth rt)
 endif()
 
-if (EMSCRIPTEN)
-	set(CMAKE_EXECUTABLE_SUFFIX ".html")
-endif()
 
 add_executable(scsynth
     scsynth_main.cpp
