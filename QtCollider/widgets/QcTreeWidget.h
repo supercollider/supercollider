@@ -140,4 +140,4 @@ private:
     bool _emitAction;
 };
 
-Q_DECLARE_METATYPE(QcTreeWidget::ItemPtr);
+Q_DECLARE_METATYPE(QtCollider::SafePtr<QcTreeWidget::Item>);
