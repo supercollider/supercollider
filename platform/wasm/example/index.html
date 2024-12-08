@@ -1,61 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>scsynth.wasm</title>
-    <link rel="stylesheet" href="style.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>scysnth.wasm</title> 
     <script src="osc.min.js" type="text/javascript"></script>
-</head>
 
+    <style>
+        :root {
+            --color-bg: #000;
+            --color-text: #ccc;
+            --color-accent: #555;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body, html, button, textarea, a, input {
+            margin: 0;
+            padding: 0;
+            font-family: monospace;
+            color: var(--color-text);
+            background-color: var(--color-bg);
+            line-height: 1.0;
+            font-size: x-large;
+        }
+
+        .wrapper {
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2, h3, h4, h5, p {
+            margin-block-start: 0;
+            margin-block-end: 0;
+        }
+
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+
+            .controls {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+        }
+
+        input, textarea {
+            width: 100%;
+        }
+
+        .fullwidth {
+            width: 100%;
+            display: flex;
+        }
+
+        button {
+            outline: 2;
+            border-radius: 1px;
+            border: 2px solid var(--color-accent);
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            padding: 5px 10px;
+        }
+
+        input {
+            outline: 0;
+            border-width: 0 0 2px;
+            border-color: var(--color-accent);
+        }
+
+        h2.section-header {
+            margin: 30px 0;
+        }
+    </style>
+</head>
 <body>
     <div class="wrapper">
-        <div style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 50px;">
-            <div>
-                <h1>scsynth</h1>
-            </div>
-
-            <div class="controls" style="display: flex;">
-                <button onclick="bootScsynth(0, 2);" id="boot">Boot</button>
-                <button onclick="playGcd();">Play gcd</button>
-                <button onclick="oscClient?.cmdPeriod();">CmdPeriod</button>
+        <div class="header">
+            <h2>scsynth</h2>
+            <div class="controls">
+                <button onclick="bootScsynth(0, 2);" id="boot">boot</button>
+                <button onclick="playGcd();">play gcd</button>
+                <button onclick="oscClient?.cmdPeriod();">cmdperiod</button>
             </div>
         </div>
-        
-        <div class="input" style="display: flex; flex-direction: row; margin-top: 50px;">
-            <div style="width: 20%;">
-                <h2>Input</h2>
-            </div>
-            <div style="width: 80%;">
+
+        <div>
+            <h2 class="section-header">input</h2>
+            <div>
                 <p>
-                    <b>OSC message</b><br/>
-                    See <a href="https://docs.supercollider.online/Reference/Server-Command-Reference.html" target="_blank">server command reference</a>.<br/>
-                    Format: address tags arguments<br/>
-                    E.g. /s_new siii gcd 1000 1 0
+                    <b>OSC message</b><br />
+                    see <a href="https://docs.supercollider.online/Reference/Server-Command-Reference.html" target="_blank">server command reference</a>.<br />
+                    format: address tags arguments<br />
+                    e.g. /s_new siii gcd 1000 1 0
                 </p>
-                <div style="display: flex;">
-                    <input type="text" style="flex-grow: 1;" onkeydown="if(event.key === 'Enter') sendOsc();" id="oscMessage">
+                <div class="fullwidth">
+                    <input type="text" onkeydown="if(event.key === 'Enter') sendOsc();" id="oscMessage">
                     <button onclick="sendOsc()">Send</button>
                 </div>
-
                 <p style="margin-top: 25px;">
-                    <b>UInt8 array</b><br/>
-                    Add SynthDef by using ".asBytes.cs" on a SynthDef in sclang.
+                    <b>UInt8 array</b><br />
+                    Add SynthDef by using .asBytes.cs on a SynthDef in sclang.
                 </p>
-                <div style="display: flex;">
-                    <input type="text" style="flex-grow: 1;" onkeydown="if(event.key === 'Enter') sendByteArray();" id="byteArray">
+                <div class="fullwidth">
+                    <input type="text" onkeydown="if(event.key === 'Enter') sendByteArray();" id="byteArray">
                     <button onclick="sendByteArray()">Send</button>
                 </div>
             </div>
         </div>
 
-        <div id="output" style="display: flex; flex-direction: row; margin-top: 50px;">
-            <div style="width: 20%;">
-                <h2>Console</h2>
-            </div>
-            <div style="width: 80%;">
-                <textarea id="console" rows="16" readonly></textarea>
+        <div>
+            <h2 class="section-header">console</h2>
+            <div class="fullwidth">
+                <textarea id="console" rows="16" readonly style="width: 100%;"></textarea>
             </div>
         </div>
     </div>
@@ -63,5 +128,4 @@
     <script src="scsynth_demo.js" type="text/javascript"></script>
     <script async type="text/javascript" src="scsynth.js"></script>
 </body>
-
 </html>
