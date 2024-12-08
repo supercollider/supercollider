@@ -115,108 +115,9 @@ which will write all necessary files to `<you_build_directory>/wasm/scsynth`.
 Technically, what is built is a runtime library `scsynth.js` and the actual binary `scsynth.wasm`.
 The standard plugins (UGens) are statically linked and thus available.
 
-## Running
+## Example
 
-The wasm build of _scsynth_ relies on [SharedArrayBuffers](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer) which are turned off by default on most browsers.
-In order to activate this functionality it is necessary to set the HTTP headers
-
-```http
-Cross-Origin-Opener-Policy: same-origin
-Cross-Origin-Embedder-Policy: require-corp
-```
-
-via a file server when serving the files to a browser.
-
-A simply python script `static_dev_server.py` is provided in the build directory to start a local web server on <http://127.0.0.1:8000> with the necessary headers set.
-
-> This script should __not__ be used to serve the files via the internet because the basic Python http server is not considered safe and can introduce security problems.
-> Use an nginx or apache web server with the appropriate headers set if the files should be accessible via the internet.
-
-Emscripten uses a JavaScript object named `Module` to contain all information on the wasm binary. For example,
-`Module.arguments` can be used to specify the command line arguments for scsynth. By default, we set
-`-u 57110 -D 0 -i 0 -o 2`; scsynth.wasm uses the UDP switch to open an OSC communication for the client. This is not
-a regular UDP connection, but a more simple mechanism (see 'Clients' section). The `-D 0` switch prevents scsynth
-from trying to initially "load" synthdefs from a file system which does not exist in this way in the browser.
-If you want to access the microphone input, you would set for example `-i 2`.
-
-The `index.html` includes a [JavaScript OSC library](https://github.com/colinbdclark/osc.js) and defines a few utility functions:
-
-```javascript
-sendOSC(name, args...)
-
-sendOSC_t(name, typeTags, args...)
-```
-
-They can be used to talk to the server after it has been booted. For example, you can print the node tree:
-
-```javascript
-sendOSC("/g_dumpTree", 0, 1)
-```
-
-or
-
-```javascript
-sendOSC_t("/g_dumpTree", "ii", 0, 1)
-```
-
-Some of the SuperCollider OSC API works with either float `"f"` or int `"i"` arguments, and the `sendOSC` treats all numbers
-as floats. However, some commands do not work properly without int arguments, therefore it is preferred to use the
-`sendOSC_t` function and explicitly specifiy the type tags.
-
-```javascript
-d_bubbles()
-```
-
-Sends a `/d_recv` command with the well-known `"AnalogBubbles"` example by James McCartney. You can then start a synth using:
-
-```javascript
-s_bubbles()
-```
-
-which is equivalent to:
-
-```javascript
-sendOSC_t("/s_new", "siii", "AnalogBubbles", 1000, 1, 0)
-```
-
-If you want to use other synthdefs, you have to compile them to their binary blobs (as `Uint8rray`) and send them like this:
-
-```javascript
-sendOSC_t("/d_recv", "b", blob)
-```
-
-The blob can be obtained for example from sclang:
-
-```supercollider
-SynthDef("gcd", {
-    var mx = LFNoise1.kr(0.1).range(-20, 20);
-    var my = LFNoise1.kr(0.1).range(-20, 20);
-    var sn = SinOsc.ar(SinOsc.kr(0.1) * 20 lcm: [mx, my] * 30 + 500) * 0.1;
-    Out.ar(0, sn);
-}).asBytes.printOn(Post); nil
-```
-
-Copying the result from the post window and replacing `Int8Array[ ... ]` by `Uint8Array.from([ ... ])`.
-
-To enable OSC dump:
-
-```javascript
-dumpOSC(1)
-```
-
-To set controls on a synth:
-
-```javascript
-sendOSC_t("/n_set", "isf", 1000, "freq2", 444.1)
-```
-
-To free the synth:
-
-```javascript
-sendOSC_t("/n_free", "i", 1000)
-```
-
-See the 'Server Command Reference' help file for an overview of OSC commands.
+See the `<your_build_directory>/wasm/scsynth/example` directory for an example how to use the wasm binary within a website.
 
 ## Clients
 
@@ -234,7 +135,7 @@ OSC interface, more viable candidates may be:
   run in the browser as well
 - [Processing](https://processing.org/) may also be an interesting option to communicate with scsynth.wasm.
 
-scsynth.wasm is started with a port number (defaults to 57110) for OSC communication.
+scsynth.wasm is started with a port number (defaults to `57110`) for OSC communication.
 The interface is available through `Module.oscDriver`:
 
 ```javascript
@@ -251,10 +152,11 @@ od[57120] = { receive: function(server, data) { console.log("Received data from 
 
 The OSC data is always a plain `Uint8Array` which must be properly encoded and decoded, for example in JavaScript using the
 [osc.js](https://github.com/colinbdclark/osc.js/) library mentioned above (`osc.writePacket()`, `osc.readPacket()`). You can
-look at the definition of `sendOSC_t` in `index.html` to see how package encoding works. For example:
+look at the definition of `ScWasmOscClient.sendOscMessage` in `scsynth_demo.js` within the example directory to see how package encoding works. For example:
 
 ```javascript
 od[57120] = { receive: function(addr, data) {
+    // `osc` is a global variable of the osc package
     var msg = osc.readPacket(data, {});
     console.log("REPLY from " + addr + ": " + JSON.stringify(msg, null, 4));
 }};

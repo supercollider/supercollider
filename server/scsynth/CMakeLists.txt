@@ -399,11 +399,11 @@ if (EMSCRIPTEN)
 	set_target_properties(scsynth PROPERTIES
 		RUNTIME_OUTPUT_DIRECTORY "${WASM_SCSYNTH_OUTPUT_DIR}"
 	)
-	set(WASM_PLATFORM_DIR "${CMAKE_SOURCE_DIR}/platform/wasm")
+	set(WASM_PLATFORM_EXAMPLE_DIR "${CMAKE_SOURCE_DIR}/platform/wasm/example")
     add_custom_target(copy_wasm_platform_files ALL
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-                "${WASM_PLATFORM_DIR}"
-                "${WASM_SCSYNTH_OUTPUT_DIR}"
+                "${WASM_PLATFORM_EXAMPLE_DIR}"
+                "${WASM_SCSYNTH_OUTPUT_DIR}/example"
         COMMENT "Copying wasm platform files to wasm build directory"
     )
 	add_dependencies(scsynth copy_wasm_platform_files)
