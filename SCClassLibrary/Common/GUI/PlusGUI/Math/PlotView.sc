@@ -1290,8 +1290,8 @@ Plotter {
 		depth = array.maxDepth;
 		hasSubArrays = depth > 1;
 
-		if(depth > 2) {
-			"Cannot currently plot an array with more than 2 dimensions".warn;
+		if(depth > 3) {
+			"Cannot currently plot an array with more than 3 dimensions".warn;
 			^nil
 		};
 
