@@ -204,22 +204,15 @@ static void tcp_reply_func(struct ReplyAddress* addr, char* msg, int size) {
 static void web_reply_func(struct ReplyAddress* addr, char* msg, int size) {
     // clang-format off
     MAIN_THREAD_EM_ASM({
-        var clientPort  = $0;
-        var od          = Module.oscDriver;
-        var ep          = od ? od[clientPort] : undefined;
-        var rcv         = ep ? ep['receive' ] : undefined;
-        if (typeof rcv == 'function') {
-            var serverPort  = $1;
-            var ptr         = $2;
-            var dataSize    = $3;
-            var data        = new Uint8Array(Module.HEAPU8.buffer, ptr, dataSize);
-            try {
-                rcv(serverPort, data);
-            } catch (e) {
-                console.log("Error in OSC reply handler: ", e.message);
-            }
-        }
-    }, addr->mPort, addr->mSocket, msg, size);
+        if (typeof Module.oscReceiver == 'function') {
+            let msgPointer = $0;
+            let msgSize = $1;
+            let data = new Uint8Array(Module.HEAPU8.buffer, msgPointer, msgSize);
+            Module.oscReceiver(data);
+        } else {
+            console.log("Dropped OSC reply b/c Module.oscReceiver is not a function.");
+        };
+    }, msg, size);
     // clang-format on
 }
 #endif

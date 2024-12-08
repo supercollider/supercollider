@@ -62,6 +62,19 @@ To build such a binary OSC message a [JavaScript OSC library](https://github.com
 This binary OSC message is not transferred to scsynth.wasm via an UDP port but via a function call.
 The function is located at `Module.oscDriver[57110].receive` and implemented in `server/scsynth/SC_ComPort.cpp`, where `57110` is the UDP port number specified through the arguments prior.
 
+### OSC reply
+
+In order to receive OSC messages from the server it is possible to register a callback to `Module` like
+
+```javascript
+// data is an Uint8Array with the binary content of the OSC message
+Module.oscReceiver = function(data) {
+    // parse binary OSC message to JS object via osc library
+    let msg = osc.readMessage(data);
+    console.log(msg);
+}
+```
+
 ### Javascript number vs OSC types
 
 Javascript uses `Number` to represent numerical data which does not distinguish between float and integer.
