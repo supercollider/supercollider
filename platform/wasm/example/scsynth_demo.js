@@ -198,11 +198,26 @@ function printToWebsiteConsole(text) {
   }
 };
 
+function printToWebsiteOscConsole(oscMessage) {
+  const oscConsoleOutput = /** @type {HTMLTextAreaElement | null} */ (document.getElementById("console-osc"));
+  if (oscConsoleOutput !== null) {
+    oscConsoleOutput.value += `${oscMessage.address}: ${oscMessage.args}\n`;
+    // follow scrolling to bottom
+    oscConsoleOutput.scrollTop = oscConsoleOutput.scrollHeight;
+  }
+}
+
 // overloading callbacks of the wasm module - see
 // https://emscripten.org/docs/api_reference/module.html
 var Module = {
   print: function (text) {printToWebsiteConsole(text)},
   printErr: function (text) {printToWebsiteConsole(`ERROR: ${text}`)},
+  oscReceiver: function (data) {
+    //@ts-ignore osc is globally available
+    let oscMessage = osc.readMessage(data);
+    console.log(oscMessage);
+    printToWebsiteOscConsole(oscMessage);
+  }
 };
 
 window.onerror = function (event) {
