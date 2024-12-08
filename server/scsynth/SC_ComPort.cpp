@@ -502,7 +502,7 @@ public:
             var serverPort      = $0;
             var maxNumBytes     = $1;
             if (!Module.oscDriver) Module.oscDriver = {};
-            var self            = Module.web_in_port();
+            var self            = Module.webInPort();
             var od              = Module.oscDriver;
             var ep              = {};
             ep.instance         = self;
@@ -513,13 +513,13 @@ public:
                 var sz = data.byteLength;
                 if (sz < maxNumBytes) {
                     ep.byteBuf.set(data);
-                    ep.instance.Receive(addr, sz);
+                    ep.instance.receive(addr, sz);
                 } else {
                     throw new Error('oscDriver.send: message size exceeded: ' + sz);
                 }
             };
             od[serverPort]      = ep;
-            self.InitBuffer(ep.bufPtr);
+            self.initBuffer(ep.bufPtr);
 
         }, inPortNum, kTextBufSize);
         // clang-format on
@@ -532,7 +532,7 @@ public:
         // clang-format off
         EM_ASM({
             var serverPort  = $0;
-            var od          = Module.oscDriver;
+            var od          = this.oscDriver;
             var ep          = od ? od[server] : undefined;
             if (ep) {
                 if (ep.bufPtr) {
@@ -597,9 +597,9 @@ extern "C" SC_WebInPort* web_in_port() {
 
 EMSCRIPTEN_BINDINGS(Web_Audio) {
     emscripten::class_<SC_WebInPort>("SC_WebInPort")
-        .function("Receive", &SC_WebInPort::Receive, emscripten::allow_raw_pointers())
-        .function("InitBuffer", &SC_WebInPort::InitBuffer, emscripten::allow_raw_pointers());
-    emscripten::function("web_in_port", &web_in_port, emscripten::allow_raw_pointers());
+        .function("receive", &SC_WebInPort::Receive, emscripten::allow_raw_pointers())
+        .function("initBuffer", &SC_WebInPort::InitBuffer, emscripten::allow_raw_pointers());
+    emscripten::function("webInPort", &web_in_port, emscripten::allow_raw_pointers());
 }
 
 #endif
