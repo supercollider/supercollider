@@ -121,8 +121,8 @@ See the `<your_build_directory>/wasm/scsynth/example` directory for an example h
 
 ## Clients
 
-A [client](https://supercollider.github.io/community/systems-interfacing-with-sc) currently has to communicate to scsynth via 
-the `Module` JavaScript object, and while in the future an `sclang.wasm` is possible, clients for now are to be running in 
+A [client](https://supercollider.github.io/community/systems-interfacing-with-sc) currently has to communicate to scsynth via
+a JavaScript method, and while in the future an `sclang.wasm` is possible, clients for now are to be running in
 JavaScript (or be written in a language that can compile to JavaScript). While one can write directly JS code that uses the
 OSC interface, more viable candidates may be:
 
@@ -136,15 +136,15 @@ OSC interface, more viable candidates may be:
 - [Processing](https://processing.org/) may also be an interesting option to communicate with scsynth.wasm.
 
 scsynth.wasm is started with a port number (defaults to `57110`) for OSC communication.
-The interface is available through `Module.oscDriver`:
+The interface is available through `scsynth.oscDriver`:
 
 ```javascript
-var od = Module.oscDriver;
-od[server].receive(client, data);
+var od = scsynth.oscDriver;
+scsynth[57110].receive(client, data);
 ```
 
-Where `client` and `server` are virtual port numbers, for example `57120` and `57110` respectively. The client or source port number
-allows to receive OSC replies from the server. To do so, an OSC end-point function must be registered:
+The client or source port number allows to receive OSC replies from the server.
+To do so, an OSC end-point function must be registered:
 
 ```javascript
 od[57120] = { receive: function(server, data) { console.log("Received data from " + server) }};
@@ -152,7 +152,7 @@ od[57120] = { receive: function(server, data) { console.log("Received data from 
 
 The OSC data is always a plain `Uint8Array` which must be properly encoded and decoded, for example in JavaScript using the
 [osc.js](https://github.com/colinbdclark/osc.js/) library mentioned above (`osc.writePacket()`, `osc.readPacket()`). You can
-look at the definition of `ScWasmOscClient.sendOscMessage` in `scsynth_demo.js` within the example directory to see how package encoding works. For example:
+look at the definition of `OscClient.sendOscMessage` in `scsynth_demo.js` within the example directory to see how package encoding works. For example:
 
 ```javascript
 od[57120] = { receive: function(addr, data) {

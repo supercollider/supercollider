@@ -43,9 +43,9 @@ class OscMessageTagged {
  * A basic "OSC client" to communicate with a provided `scsynth.wasm` instance
  */
 class OscClient {
-  constructor() {
+  constructor(endPoint) {
     // @todo pass osc endpoint explicitly
-    this.endPoint = Module.oscDriver[57110];
+    this.endPoint = endPoint;
     this.receiver = null;
     if(this.endPoint) {
       this.receiver = this.endPoint['receive'];
@@ -96,10 +96,12 @@ class OscClient {
   }
 }
 
+// website dependent code
+
 // init global variable which will hold the OSC client after booting
 let oscClient = /** @type OscClient | null */ null;
-
-// website dependent code
+// will store the scsynth module after booting
+let scsynth = null;
 
 /**
  * Gets called when clicked on the boot button.
@@ -107,22 +109,31 @@ let oscClient = /** @type OscClient | null */ null;
  * - Starts scsynth.wasm with the provided arguments
  * - Inits the oscClient with the boot menu
  */
-function bootScsynth() {
+async function bootScsynth() {
   const numInputsElement = /** @type {HTMLInputElement | null} */ (document.getElementById("inputs"));
   const numOutputsElement = /** @type {HTMLInputElement | null} */ (document.getElementById("outputs"));
 
-  // @ts-ignore Proivded by scsynth.js - see `platform/wasm/pre.js` for implementation
-  let arguments = new ScSynthArguments();
-  if (numInputsElement) {
-    arguments.numInputs = Number(numInputsElement.value);
-  }
-  if (numOutputsElement) {
-    arguments.numOutputs = Number(numOutputsElement.value);
-  }
+  // @ts-ignore - proivded by scsynth.js - see `platform/wasm/pre.js` for implementation
+  let arguments = new ScsynthArguments({
+    numInputs: Number(numInputsElement?.value ?? "0"),
+    numOutputs: Number(numOutputsElement?.value ?? "2"),
+  });
 
-  Module.callMain(arguments.toArgList());
+  // @ts-ignore - provided by scsynth.js
+  scsynth = await createScsynth({
+    arguments: arguments.toArgList(),
+    print: function (text) {printToWebsiteConsole(text)},
+    printErr: function (text) {printToWebsiteConsole(`ERROR: ${text}`)},
+    oscReceiver: function (data) {
+      //@ts-ignore osc is globally available
+      let oscMessage = osc.readMessage(data);
+      printToWebsiteOscConsole(oscMessage);
+    }
+  });
 
-  oscClient = new OscClient();
+  oscClient = new OscClient(
+    scsynth.oscDriver[arguments.udpPort],
+  );
 
   disableBootButton();
 }
@@ -206,19 +217,6 @@ function printToWebsiteOscConsole(oscMessage) {
     oscConsoleOutput.scrollTop = oscConsoleOutput.scrollHeight;
   }
 }
-
-// overloading callbacks of the wasm module - see
-// https://emscripten.org/docs/api_reference/module.html
-var Module = {
-  print: function (text) {printToWebsiteConsole(text)},
-  printErr: function (text) {printToWebsiteConsole(`ERROR: ${text}`)},
-  oscReceiver: function (data) {
-    //@ts-ignore osc is globally available
-    let oscMessage = osc.readMessage(data);
-    console.log(oscMessage);
-    printToWebsiteOscConsole(oscMessage);
-  }
-};
 
 window.onerror = function (event) {
   alert("Exception thrown, see JavaScript console");

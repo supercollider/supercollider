@@ -1,5 +1,7 @@
 # scsynth wasm example
 
+> !!! The JS interface is not final and subject to change !!!
+
 This example shows how to use scsynth.wasm on a website.
 It is not intended to provide an comprehensive library to interact with scsynth.wasm within JavaScript but tries to explain all necessary steps to get things running.
 
@@ -29,29 +31,29 @@ python3 static_dev_server.py
 > This script should __not__ be used to serve the files via the internet because the basic Python http server is not considered safe and can introduce security problems.
 > Use an nginx or apache web server with the appropriate headers set if the files should be accessible via the internet.
 
-## Module
+## The scsynth module
 
-Emscripten uses a JavaScript object named `Module` to contain all information on the wasm binary, see [the Emscripten documentation of `Module`](https://emscripten.org/docs/api_reference/module.html) for further information.
-
-`scsynth.js` includes the JavaScript class `ScSynthArguments` (see `platform/wasm/pre.js` for its definition) to manage the command line arguments and provides some defaults.
-An object of this class with its default parameters is attached to `Module.arguments` but can be overwritten before booting like this:
+Emscripten generates a factory function `createScsynth` in `scsynth.js` which will return an instance of scsynth.
+It also includes the JavaScript class `ScSynthArguments` (see `platform/wasm/pre.js` for its definition) to manage the command line arguments to spawn scsynth.
 
 ```javascript
 let arguments = ScSynthArguments(
     // use microphone input via the browser
     numInputs=1,
+    numOutputs=2,
 );
+
 // cli arguments need to be a list
-Module['arguments'] = arguments.toArgList();
+let scsynth = createScsynth({
+    // arguments need to be a list
+    arguments: arguments.toArgList(),
+});
 ```
 
-> `loadSynthDefs` is set to `false` (aka `0` within cli) because `scsynth.wasm` has (yet) no concept of a filesystem.
+See [the Emscripten documentation of `Module`](https://emscripten.org/docs/api_reference/module.html) for further information what methods and arguments are available for an Emscripten module.
 
-To start scsynth call
+> `loadSynthDefs` must be set to `false` (aka `0` within cli) because `scsynth.wasm` has (yet) no concept of a filesystem.
 
-```javascript
-Module.callMain(arguments.toArgList());
-```
 
 ## OSC communication
 
@@ -60,15 +62,15 @@ Instead we pass the binary content of an OSC message to `scsynth.wasm` through a
 To build such a binary OSC message a [JavaScript OSC library](https://github.com/colinbdclark/osc.js) is included in `index.html`.
 
 This binary OSC message is not transferred to scsynth.wasm via an UDP port but via a function call.
-The function is located at `Module.oscDriver[57110].receive` and implemented in `server/scsynth/SC_ComPort.cpp`, where `57110` is the UDP port number specified through the arguments prior.
+The function is located at `scsynth.oscDriver[57110].receive` and implemented in `server/scsynth/SC_ComPort.cpp`, where `57110` is the UDP port number specified through the arguments prior.
 
 ### OSC reply
 
-In order to receive OSC messages from the server it is possible to register a callback to `Module` like
+In order to receive OSC messages from the server it is possible to register a callback to `scsynth` like
 
 ```javascript
 // data is an Uint8Array with the binary content of the OSC message
-Module.oscReceiver = function(data) {
+scsynth.oscReceiver = function(data) {
     // parse binary OSC message to JS object via osc library
     let msg = osc.readMessage(data);
     console.log(msg);

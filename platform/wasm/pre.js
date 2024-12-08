@@ -1,11 +1,13 @@
 //@ts-check
 
+// everything in this file will be prepended to scsynth.js
+
 /**
  * A wrapper class for scsynth command line arguments.
  * For details see https://docs.supercollider.online/Classes/ServerOptions.html
  */
-class ScSynthArguments {
-  constructor(
+class ScsynthArguments {
+  constructor({
       numInputs=0,
       numOutputs=2,
       udpPort=57110,
@@ -19,7 +21,7 @@ class ScSynthArguments {
       realTimeMemorySize=8192,
       numWireBufs=64,
       numRandomSeeds=64,
-    ) {
+    }) {
     this.numInputs = numInputs;
     this.numOutputs = numOutputs;
     this.udpPort = udpPort;
@@ -56,16 +58,4 @@ class ScSynthArguments {
       "-D", this.loadSynthDefs ? "1" : "0",
     ]
   }
-}
-
-// see https://emscripten.org/docs/api_reference/module.html
-// for emscripten Module API
-
-// prevent from booting at loading b/c
-Module['noInitialRun'] = true;
-
-// attach default arguments to module
-let moduleArguments = Module['arguments'];
-if (!Module['arguments']) {
-  Module['arguments'] = (new ScSynthArguments()).toArgList();
 }
