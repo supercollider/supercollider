@@ -135,32 +135,9 @@ OSC interface, more viable candidates may be:
   run in the browser as well
 - [Processing](https://processing.org/) may also be an interesting option to communicate with scsynth.wasm.
 
-scsynth.wasm is started with a port number (defaults to `57110`) for OSC communication.
-The interface is available through `scsynth.oscDriver`:
+One passes OSC messages to scsynth.wasm via a JavaScript function 
+The interface is available through `scsynth.oscEndpoint.send` for sending OSC messages to the server and `scsynth.oscReceive` for receiving messages from the server which can be set to a callback accepting the binary content of an OSC message as its sole parameter.
 
-```javascript
-var od = scsynth.oscDriver;
-scsynth[57110].receive(client, data);
-```
-
-The client or source port number allows to receive OSC replies from the server.
-To do so, an OSC end-point function must be registered:
-
-```javascript
-od[57120] = { receive: function(server, data) { console.log("Received data from " + server) }};
-```
-
-The OSC data is always a plain `Uint8Array` which must be properly encoded and decoded, for example in JavaScript using the
-[osc.js](https://github.com/colinbdclark/osc.js/) library mentioned above (`osc.writePacket()`, `osc.readPacket()`). You can
-look at the definition of `OscClient.sendOscMessage` in `scsynth_demo.js` within the example directory to see how package encoding works. For example:
-
-```javascript
-od[57120] = { receive: function(addr, data) {
-    // `osc` is a global variable of the osc package
-    var msg = osc.readPacket(data, {});
-    console.log("REPLY from " + addr + ": " + JSON.stringify(msg, null, 4));
-}};
-```
 
 ## Source Code
 

@@ -43,15 +43,15 @@ class OscMessageTagged {
  * A basic "OSC client" to communicate with a provided `scsynth.wasm` instance
  */
 class OscClient {
-  constructor(endPoint) {
+  constructor(endpoint) {
     // @todo pass osc endpoint explicitly
-    this.endPoint = endPoint;
-    this.receiver = null;
-    if(this.endPoint) {
-      this.receiver = this.endPoint['receive'];
-    } else {
-      alert("Failed to setup OSC client because endPoint is missing!");
-    }
+    this.endpoint = endpoint;
+    // this.receiver = null;
+    // if(this.endPoint) {
+    //   this.receiver = this.endPoint['receive'];
+    // } else {
+    //   alert("Failed to setup OSC client because endPoint is missing!");
+    // }
   }
 
   /**
@@ -67,9 +67,7 @@ class OscClient {
       address: oscMessage.address,
       args: oscMessage.values
     }, {metadata: true});
-    if(this.receiver) {
-      this.receiver(57120, data);
-    }
+    this.endpoint.send(data);
   };
 
   /**
@@ -132,7 +130,7 @@ async function bootScsynth() {
   });
 
   oscClient = new OscClient(
-    scsynth.oscDriver[arguments.udpPort],
+    scsynth.sendOscEndpoint,
   );
 
   disableBootButton();

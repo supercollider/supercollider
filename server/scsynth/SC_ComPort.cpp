@@ -197,7 +197,7 @@ static void tcp_reply_func(struct ReplyAddress* addr, char* msg, int size) {
 #ifdef __EMSCRIPTEN__
 
 // this is always called on the same thread, although different
-// from the main thread. In order to access `Module` and do
+// from the main thread. In order to access `scysnth`/`this` and do
 // anything useful on the JS side, execution has to be deferred
 // to the main thread. The blocking function `MAIN_THREAD_EM_ASM`
 // is used so that the `msg` can be safely used without copying.
@@ -210,7 +210,7 @@ static void web_reply_func(struct ReplyAddress* addr, char* msg, int size) {
             let data = new Uint8Array(Module.HEAPU8.buffer, msgPointer, msgSize);
             Module.oscReceiver(data);
         } else {
-            console.log("Dropped OSC reply b/c Module.oscReceiver is not a function.");
+            console.log("Dropped OSC reply b/c oscReceiver method is not declared.");
         };
     }, msg, size);
     // clang-format on
@@ -498,30 +498,30 @@ public:
         SC_WebInPort::current = this;
 
         // clang-format off
-        EM_ASM({
-            var serverPort      = $0;
-            var maxNumBytes     = $1;
-            if (!Module.oscDriver) Module.oscDriver = {};
-            var self            = Module.webInPort();
-            var od              = Module.oscDriver;
-            var ep              = {};
-            ep.instance         = self;
-            ep.bufPtr           = Module._malloc(maxNumBytes);
-            ep.byteBuf          = new Uint8Array(Module.HEAPU8.buffer, ep.bufPtr, maxNumBytes);
-            ep.receive = function(addr, data) {
-                if (!addr) addr = 0;
-                var sz = data.byteLength;
-                if (sz < maxNumBytes) {
-                    ep.byteBuf.set(data);
-                    ep.instance.receive(addr, sz);
-                } else {
-                    throw new Error('oscDriver.send: message size exceeded: ' + sz);
-                }
-            };
-            od[serverPort]      = ep;
-            self.initBuffer(ep.bufPtr);
+        // Module is our instance!
+        EM_ASM({(
+            const maxNumBytes = $0;
 
-        }, inPortNum, kTextBufSize);
+            const bufPtr = Module._malloc(maxNumBytes);
+
+            const endPoint = {
+                _instance: Module.webInPort(),
+                _bufPtr: bufPtr,
+                _byteBuf: new Uint8Array(Module.HEAPU8.buffer, bufPtr, maxNumBytes),
+                send: function(data) {
+                    const size = data.byteLength;
+                    if (size < maxNumBytes) {
+                        this._byteBuf.set(data);
+                        this._instance.receive(size);
+                    } else {
+                        throw new Error(`OSC message size exceeded ${size} of allowed ${maxNumBytes}`);
+                    }
+                },
+            };
+            endPoint._instance.initBuffer(bufPtr);
+            // attach it to the scsynth module
+            Module.sendOscEndpoint = endPoint;
+        )}, kTextBufSize);
         // clang-format on
 
         SC_WebInPort::current = NULL;
@@ -552,9 +552,9 @@ public:
         this->mBufPtr = reinterpret_cast<char*>(bufPtr);
     }
 
-    void Receive(int remotePort, int bytes_transferred) {
+    void Receive(int bytes_transferred) {
 #    ifdef SC_WEB_IN_PORT_DEBUG
-        scprintf("%s: Receive(%d, %d).\n", kWebInPortIdent, remotePort, bytes_transferred);
+        scprintf("%s: Receive(%d, %d).\n", kWebInPortIdent, bytes_transferred);
 #    endif
 
         if (mWorld->mDumpOSC)
@@ -564,7 +564,7 @@ public:
 
         packet->mReplyAddr.mProtocol = kWeb;
         packet->mReplyAddr.mAddress = boost::asio::ip::make_address("127.0.0.1"); // not used
-        packet->mReplyAddr.mPort = remotePort;
+        packet->mReplyAddr.mPort = 57120; // necessary hardcoded value, not relevant for us
         packet->mReplyAddr.mSocket = mPortNum;
         packet->mReplyAddr.mReplyFunc = web_reply_func;
         packet->mReplyAddr.mReplyData = NULL;
@@ -588,7 +588,7 @@ public:
 SC_WebInPort* SC_WebInPort::current = NULL;
 
 // function callable from JS to obtain the singleton instance
-extern "C" SC_WebInPort* web_in_port() {
+extern "C" SC_WebInPort* webInPort() {
     if (SC_WebInPort::current == NULL) {
         throw std::runtime_error("SC_WebInPort: instance currently not set\n");
     }
@@ -599,7 +599,7 @@ EMSCRIPTEN_BINDINGS(Web_Audio) {
     emscripten::class_<SC_WebInPort>("SC_WebInPort")
         .function("receive", &SC_WebInPort::Receive, emscripten::allow_raw_pointers())
         .function("initBuffer", &SC_WebInPort::InitBuffer, emscripten::allow_raw_pointers());
-    emscripten::function("webInPort", &web_in_port, emscripten::allow_raw_pointers());
+    emscripten::function("webInPort", &webInPort, emscripten::allow_raw_pointers());
 }
 
 #endif

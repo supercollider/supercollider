@@ -62,11 +62,12 @@ Instead we pass the binary content of an OSC message to `scsynth.wasm` through a
 To build such a binary OSC message a [JavaScript OSC library](https://github.com/colinbdclark/osc.js) is included in `index.html`.
 
 This binary OSC message is not transferred to scsynth.wasm via an UDP port but via a function call.
-The function is located at `scsynth.oscDriver[57110].receive` and implemented in `server/scsynth/SC_ComPort.cpp`, where `57110` is the UDP port number specified through the arguments prior.
+The function is located at `scsynth.oscEndpoint.send` and accepts the binary content of an OSC messsage as a single argument.
+It is implemented in `server/scsynth/SC_ComPort.cpp`.
 
 ### OSC reply
 
-In order to receive OSC messages from the server it is possible to register a callback to `scsynth` like
+Receiving OSC messages from the scsynth is possible by declaring a callabck function at `scsynth.oscReceiver` which takes the binary content of the OSC message as its parameter.
 
 ```javascript
 // data is an Uint8Array with the binary content of the OSC message
