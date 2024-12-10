@@ -112,14 +112,14 @@ async function bootScsynth() {
   const numOutputsElement = /** @type {HTMLInputElement | null} */ (document.getElementById("outputs"));
 
   // @ts-ignore - proivded by scsynth.js - see `platform/wasm/pre.js` for implementation
-  let arguments = new ScsynthArguments({
+  let arguments = buildScsynthArguments({
     numInputs: Number(numInputsElement?.value ?? "0"),
     numOutputs: Number(numOutputsElement?.value ?? "2"),
   });
 
   // @ts-ignore - provided by scsynth.js
   scsynth = await createScsynth({
-    arguments: arguments.toArgList(),
+    arguments,
     print: function (text) {printToWebsiteConsole(text)},
     printErr: function (text) {printToWebsiteConsole(`ERROR: ${text}`)},
     oscReceiver: function (data) {
