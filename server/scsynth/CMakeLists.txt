@@ -133,6 +133,7 @@ if(AUDIOAPI STREQUAL bela)
 endif()
 
 if (EMSCRIPTEN)
+	list(APPEND scsynth_sources SC_Wasm.cpp)
 	# the plugins are linked statically, their sources must be included
 	set(plugin_sources_abs "")
 	set(plugin_sources_rel ${plugin_sources}

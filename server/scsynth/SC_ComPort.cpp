@@ -47,11 +47,6 @@
 #    include "Rendezvous.h"
 #endif
 
-#ifdef __EMSCRIPTEN__
-#    include <emscripten.h>
-#    include <emscripten/bind.h>
-#endif
-
 
 bool ProcessOSCPacket(World* inWorld, OSC_Packet* inPacket);
 
@@ -193,29 +188,6 @@ static void tcp_reply_func(struct ReplyAddress* addr, char* msg, int size) {
     if (errc)
         printf("%s\n", errc.message().c_str());
 }
-
-#ifdef __EMSCRIPTEN__
-
-// this is always called on the same thread, although different
-// from the main thread. In order to access `scysnth`/`this` and do
-// anything useful on the JS side, execution has to be deferred
-// to the main thread. The blocking function `MAIN_THREAD_EM_ASM`
-// is used so that the `msg` can be safely used without copying.
-static void web_reply_func(struct ReplyAddress* addr, char* msg, int size) {
-    // clang-format off
-    MAIN_THREAD_EM_ASM({
-        if (typeof Module.oscReceiver == 'function') {
-            let msgPointer = $0;
-            let msgSize = $1;
-            let data = new Uint8Array(Module.HEAPU8.buffer, msgPointer, msgSize);
-            Module.oscReceiver(data);
-        } else {
-            console.log("Dropped OSC reply b/c oscReceiver method is not declared.");
-        };
-    }, msg, size);
-    // clang-format on
-}
-#endif
 
 class SC_UdpInPort {
     struct World* mWorld;
@@ -471,139 +443,6 @@ public:
 SC_TcpConnection::~SC_TcpConnection() { mParent->connectionDestroyed(); }
 
 
-#ifdef __EMSCRIPTEN__
-
-// #define SC_WEB_IN_PORT_DEBUG
-
-static const char* kWebInPortIdent = "SC_WebInPort";
-
-class SC_WebInPort {
-    struct World* mWorld;
-    int mPortNum;
-    std::string mBindTo;
-    char* mBufPtr;
-
-public:
-    SC_WebInPort(struct World* world, std::string bindTo, int inPortNum):
-        mWorld(world),
-        mPortNum(inPortNum),
-        mBindTo(bindTo) {
-#    ifdef SC_WEB_IN_PORT_DEBUG
-        scprintf("%s: new ip %s port %d.\n", kWebInPortIdent, bindTo.c_str(), inPortNum);
-#    endif
-
-        if (SC_WebInPort::current != NULL) {
-            throw std::runtime_error("SC_WebInPort: concurrent modification\n");
-        }
-        SC_WebInPort::current = this;
-
-        // clang-format off
-        // Module is our instance!
-        EM_ASM({(
-            const maxNumBytes = $0;
-
-            const bufPtr = Module._malloc(maxNumBytes);
-
-            const endPoint = {
-                _instance: Module.webInPort(),
-                _bufPtr: bufPtr,
-                _byteBuf: new Uint8Array(Module.HEAPU8.buffer, bufPtr, maxNumBytes),
-                send: function(data) {
-                    const size = data.byteLength;
-                    if (size < maxNumBytes) {
-                        this._byteBuf.set(data);
-                        this._instance.receive(size);
-                    } else {
-                        throw new Error(`OSC message size exceeded ${size} of allowed ${maxNumBytes}`);
-                    }
-                },
-            };
-            endPoint._instance.initBuffer(bufPtr);
-            // attach it to the scsynth module
-            Module.sendOscEndpoint = endPoint;
-        )}, kTextBufSize);
-        // clang-format on
-
-        SC_WebInPort::current = NULL;
-    }
-
-    ~SC_WebInPort() {
-        mBufPtr = NULL;
-        // clang-format off
-        EM_ASM({
-            var serverPort  = $0;
-            var od          = this.oscDriver;
-            var ep          = od ? od[server] : undefined;
-            if (ep) {
-                if (ep.bufPtr) {
-                    Module._free(ep.bufPtr);
-                }
-                od[serverPort] = undefined;
-            }
-        }, mPortNum);
-        // clang-format on
-    }
-
-    void InitBuffer(uintptr_t bufPtr) {
-#    ifdef SC_WEB_IN_PORT_DEBUG
-        scprintf("%s: InitBuffer.\n", kWebInPortIdent);
-#    endif
-        // cf. https://stackoverflow.com/questions/20355880/#27364643
-        this->mBufPtr = reinterpret_cast<char*>(bufPtr);
-    }
-
-    void Receive(int bytes_transferred) {
-#    ifdef SC_WEB_IN_PORT_DEBUG
-        scprintf("%s: Receive(%d, %d).\n", kWebInPortIdent, bytes_transferred);
-#    endif
-
-        if (mWorld->mDumpOSC)
-            dumpOSC(mWorld->mDumpOSC, bytes_transferred, mBufPtr);
-
-        OSC_Packet* packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
-
-        packet->mReplyAddr.mProtocol = kWeb;
-        packet->mReplyAddr.mAddress = boost::asio::ip::make_address("127.0.0.1"); // not used
-        packet->mReplyAddr.mPort = 57120; // necessary hardcoded value, not relevant for us
-        packet->mReplyAddr.mSocket = mPortNum;
-        packet->mReplyAddr.mReplyFunc = web_reply_func;
-        packet->mReplyAddr.mReplyData = NULL;
-
-        packet->mSize = bytes_transferred;
-
-        bool ok = UnrollOSCPacket(mWorld, bytes_transferred, mBufPtr, packet);
-
-#    ifdef SC_WEB_IN_PORT_DEBUG
-        scprintf("%s: Receive result %d.\n", kWebInPortIdent, ok);
-#    endif
-
-        if (!ok)
-            free(packet);
-    }
-
-    // access to instances via temporary singleton which is needed from JS.
-    static SC_WebInPort* current;
-};
-
-SC_WebInPort* SC_WebInPort::current = NULL;
-
-// function callable from JS to obtain the singleton instance
-extern "C" SC_WebInPort* webInPort() {
-    if (SC_WebInPort::current == NULL) {
-        throw std::runtime_error("SC_WebInPort: instance currently not set\n");
-    }
-    return SC_WebInPort::current;
-}
-
-EMSCRIPTEN_BINDINGS(Web_Audio) {
-    emscripten::class_<SC_WebInPort>("SC_WebInPort")
-        .function("receive", &SC_WebInPort::Receive, emscripten::allow_raw_pointers())
-        .function("initBuffer", &SC_WebInPort::InitBuffer, emscripten::allow_raw_pointers());
-    emscripten::function("webInPort", &webInPort, emscripten::allow_raw_pointers());
-}
-
-#endif
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 static void asioFunction() {
@@ -683,13 +522,7 @@ template <typename T, typename... Args> static bool protectedOpenPort(const char
 }
 
 SCSYNTH_DLLEXPORT_C int World_OpenUDP(struct World* inWorld, const char* bindTo, int inPort) {
-#ifdef __EMSCRIPTEN__
-    // when running in the browser, a special 'web' protocol is used in place of 'udp'.
-    // that way scsynth can be started as usual with the '-u' switch
-    return protectedOpenPort<SC_WebInPort>("Web", inWorld, bindTo, inPort);
-#else
     return protectedOpenPort<SC_UdpInPort>("UDP", inWorld, bindTo, inPort);
-#endif
 }
 
 SCSYNTH_DLLEXPORT_C int World_OpenTCP(struct World* inWorld, const char* bindTo, int inPort, int inMaxConnections,

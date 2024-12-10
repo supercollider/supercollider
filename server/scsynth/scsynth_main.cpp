@@ -39,6 +39,7 @@
 #endif
 #ifdef __EMSCRIPTEN__
 #    include <emscripten.h>
+#    include "SC_Wasm.cpp"
 #endif
 
 
@@ -61,11 +62,13 @@ void Usage() {
 
     scprintf("supercollider_synth  options:\n"
              "   -v print the supercollider version and exit\n"
+#ifndef __EMSCRIPTEN__
              "   -u <udp-port-number> a port number 1-65535. Set to 0 to bind a free port.\n"
              "   -t <tcp-port-number> a port number 1-65535. Set to 0 to bind a free port.\n"
              "   -B <bind-to-address>\n"
              "          Bind the UDP or TCP socket to this address.\n"
              "          Default 127.0.0.1. Set to 0.0.0.0 to listen on all interfaces.\n"
+#endif
              "   -c <number-of-control-bus-channels> (default %d)\n"
              "   -a <number-of-audio-bus-channels>   (default %d)\n"
              "   -i <number-of-input-bus-channels>   (default %d)\n"
@@ -79,6 +82,7 @@ void Usage() {
              "   -m <real-time-memory-size>          (default %d)\n"
              "   -w <number-of-wire-buffers>         (default %d)\n"
              "   -r <number-of-random-seeds>         (default %d)\n"
+#ifndef __EMSCRIPTEN__
              "   -D <load synthdefs? 1 or 0>         (default %d)\n"
              "   -R <publish to Rendezvous? 1 or 0>  (default %d)\n"
              "   -l <max-logins>                     (default %d)\n"
@@ -89,6 +93,7 @@ void Usage() {
              "          The default is no password.\n"
              "          UDP ports never require passwords, so for security use TCP.\n"
              "   -N <cmd-filename> <input-filename> <output-filename> <sample-rate> <header-format> <sample-format>\n"
+#endif
 #ifdef __APPLE__
              "   -s <safety-clip-threshold>          (default %d)\n"
              "          absolute amplitude value output signals will be clipped to.\n"
@@ -113,25 +118,30 @@ void Usage() {
 #if (_POSIX_MEMLOCK - 0) >= 200112L
              "   -L enable memory locking\n"
 #endif
+#ifndef __EMSCRIPTEN__
              "   -H <hardware-device-name>\n"
+#endif
              "   -V <verbosity>\n"
              "          0 is normal behaviour.\n"
              "          -1 suppresses informational messages.\n"
              "          -2 suppresses informational and many error messages, as well as\n"
              "             messages from Poll.\n"
              "          The default is 0.\n"
-#ifdef _WIN32
+#ifndef __EMSCRIPTEN__
+#    ifdef _WIN32
              "   -U <ugen-plugins-path>\n"
              "          A list of paths separated by `;`.\n"
-#else
+#    else
              "   -U <ugen-plugins-path>\n"
              "          A list of paths separated by `:`.\n"
-#endif
+#    endif
              "          If specified, standard paths are NOT searched for plugins.\n"
              "   -P <restricted-path>    \n"
              "          if specified, prevents file-accessing OSC commands from\n"
              "          accessing files outside <restricted-path>.\n"
-             "\nTo quit, send a 'quit' command via UDP or TCP, or press ctrl-C.\n\n",
+             "\nTo quit, send a 'quit' command via UDP or TCP, or press ctrl-C.\n\n"
+#endif
+             "",
              defaultOptions.mNumControlBusChannels, defaultOptions.mNumAudioBusChannels,
              defaultOptions.mNumInputBusChannels, defaultOptions.mNumOutputBusChannels, defaultOptions.mBufLength,
              defaultOptions.mPreferredHardwareBufferFrameSize, defaultOptions.mPreferredSampleRate,
@@ -442,6 +452,7 @@ int scsynth_main(int argc, char** argv) {
 #endif
     }
 
+#ifndef __EMSCRIPTEN__
     if (udpPortNum >= 0) {
         if (!World_OpenUDP(world, bindTo.c_str(), udpPortNum)) {
             World_Cleanup(world, true);
@@ -454,6 +465,9 @@ int scsynth_main(int argc, char** argv) {
             return 1;
         }
     }
+#else
+    SC_WasmBinding* wasmBinding = new SC_WasmBinding(world);
+#endif
 
     stopServerBootDelayWarningTimer();
     if (options.mVerbosity >= 0) {
@@ -466,15 +480,11 @@ int scsynth_main(int argc, char** argv) {
     fflush(stdout);
 
 #ifdef __EMSCRIPTEN__
-    // scprintf("emscripten_set_main_loop\n");
     emscripten_set_main_loop(em_loop, 0, 0);
-    return 0;
-
 #else
     EventLoop::run([world]() { World_WaitForQuit(world, true); });
-
-    return 0;
 #endif
+    return 0;
 }
 
 #ifdef _WIN32

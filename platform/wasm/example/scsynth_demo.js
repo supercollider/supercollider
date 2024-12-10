@@ -67,7 +67,7 @@ class OscClient {
       address: oscMessage.address,
       args: oscMessage.values
     }, {metadata: true});
-    this.endpoint.send(data);
+    scsynth.sendOscMessage(data);
   };
 
   /**
