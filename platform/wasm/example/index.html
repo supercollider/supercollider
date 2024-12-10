@@ -50,11 +50,16 @@
                 display: flex;
                 flex-wrap: wrap;
                 gap: 10px;
+                align-items: center;
             }
         }
 
         input, textarea {
             width: 100%;
+        }
+
+        input.channel {
+            width: auto;
         }
 
         .fullwidth {
@@ -86,7 +91,11 @@
     <div class="wrapper">
         <div class="header">
             <h2>scsynth</h2>
-            <div class="controls">
+            <div class="controls" class>
+                Inputs:
+                <input type="number" class="channel" id="num-inputs"  value="0" min="0" max="2" step="1">
+                Outputs:
+                <input type="number" class="channel" id="num-outputs" value="2" min="0" max="2" step="1">
                 <button onclick="bootScsynth(0, 2);" id="boot">boot</button>
                 <button onclick="playGcd();">play gcd</button>
                 <button onclick="cmdPeriod();">cmdperiod</button>

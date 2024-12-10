@@ -13,8 +13,8 @@ async function bootScsynth() {
     console.log("Already booted");
     return;
   };
-  const numInputsElement = /** @type {HTMLInputElement | null} */ (document.getElementById("inputs"));
-  const numOutputsElement = /** @type {HTMLInputElement | null} */ (document.getElementById("outputs"));
+  const numInputsElement = /** @type {HTMLInputElement | null} */ (document.getElementById("num-inputs"));
+  const numOutputsElement = /** @type {HTMLInputElement | null} */ (document.getElementById("num-outputs"));
 
   // @ts-ignore - proivded by scsynth.js - see `platform/wasm/pre.js` for implementation
   const arguments = buildScsynthArguments({
