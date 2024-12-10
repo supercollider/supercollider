@@ -134,6 +134,7 @@ endif()
 
 if (EMSCRIPTEN)
 	list(APPEND scsynth_sources SC_Wasm.cpp)
+	list(APPEND scsynth_sources SC_WasmOscBuilder.cpp)
 	# the plugins are linked statically, their sources must be included
 	set(plugin_sources_abs "")
 	set(plugin_sources_rel ${plugin_sources}
@@ -309,6 +310,7 @@ if(AUDIOAPI STREQUAL bela)
 endif()
 
 if (EMSCRIPTEN)
+	target_link_libraries(libscsynth oscpack)
 	set_target_properties(libscsynth boost_system_lib PROPERTIES LINK_FLAGS "-s USE_PTHREADS=1 -s WASM=1 -pthread -s DISABLE_EXCEPTION_CATCHING=0")
 	set_target_properties(scsynth PROPERTIES LINK_FLAGS "-s MODULARIZE=1 -s EXPORT_NAME=\"'createScsynth'\" -s USE_PTHREADS=1 -s WASM=1 -pthread --bind -s DISABLE_EXCEPTION_CATCHING=0 -s INITIAL_MEMORY=67108864 -s EXPORTED_RUNTIME_METHODS=[\"ccall\",\"callMain\"] -s ALLOW_MEMORY_GROWTH=1 -s EXPORTED_FUNCTIONS=[\"_malloc\",\"_main\"] -s MALLOC=emmalloc --extern-pre-js ${CMAKE_SOURCE_DIR}/platform/wasm/pre.js")
 	set_property(TARGET scsynth libscsynth APPEND PROPERTY COMPILE_FLAGS "-pthread -DSTATIC_PLUGINS")

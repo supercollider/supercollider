@@ -3,6 +3,7 @@
 #    include "SC_World.h"
 #    include "SC_ReplyImpl.hpp"
 #    include "SC_ComPort.cpp"
+#    include "SC_WasmOscBuilder.cpp"
 #    include <emscripten.h>
 #    include <iostream>
 #    include <emscripten/bind.h>
@@ -107,6 +108,19 @@ bool sendOscMessage(const emscripten::val& uint8Array) {
 // static exports to javascript via embind
 EMSCRIPTEN_BINDINGS(Web_Audio) {
     emscripten::function("sendOscMessage", &sendOscMessage, emscripten::allow_raw_pointers());
+
+    // osc helper
+    emscripten::class_<OscMessageBuilder>("OscMessage")
+        .constructor<>()
+        .function("beginMessage", &OscMessageBuilder::beginMessage)
+        .function("endMessage", &OscMessageBuilder::endMessage)
+        .function("beginBundle", &OscMessageBuilder::beginBundle)
+        .function("endBundle", &OscMessageBuilder::endBundle)
+        .function("addBlob", &OscMessageBuilder::addBlob)
+        .function("addInt", &OscMessageBuilder::addInt)
+        .function("addFloat", &OscMessageBuilder::addFloat)
+        .function("addString", &OscMessageBuilder::addString)
+        .function("getData", &OscMessageBuilder::getData, emscripten::allow_raw_pointers());
 }
 
 #endif
