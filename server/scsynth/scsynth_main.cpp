@@ -417,6 +417,12 @@ int scsynth_main(int argc, char** argv) {
             Usage();
         }
     }
+
+#ifdef __EMSCRIPTEN__
+    // filesystem is not implemented yet for wasm
+    options.mLoadGraphDefs = 0;
+#endif
+
     if (udpPortNum == -1 && tcpPortNum == -1 && options.mRealTime) {
         scprintf("ERROR: There must be a -u and/or a -t options, or -N for nonrealtime.\n");
         Usage();
