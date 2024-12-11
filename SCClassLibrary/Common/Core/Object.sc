@@ -80,6 +80,10 @@ Object {
 		_ObjectPerformArgs;
 		^this.primitiveFailed
 	}
+	superPerformArgs { |selector, args, kwargs|
+		_ObjectSuperPerformArgs;
+		^this.primitiveFailed
+	}
 	performMsg { |msg|
 		_ObjectPerformMsg;
 		^this.primitiveFailed
