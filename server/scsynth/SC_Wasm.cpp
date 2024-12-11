@@ -11,8 +11,6 @@
 
 namespace scsynth {
 
-static void webReplyFunc(struct ReplyAddress* addr, char* msg, int size);
-
 /**
  * We have to interact with the world via OSC, but as we are
  * not allowed to open a network socket in the browser context so we instead
@@ -42,7 +40,7 @@ public:
         packet->mReplyAddr.mAddress = boost::asio::ip::make_address("127.0.0.1"); // not used
         packet->mReplyAddr.mPort = 57120; // necessary hardcoded value, not relevant for us
         packet->mReplyAddr.mSocket = 57110; // not used
-        packet->mReplyAddr.mReplyFunc = webReplyFunc;
+        packet->mReplyAddr.mReplyFunc = replyReceiver;
         packet->mReplyAddr.mReplyData = nullptr;
 
         bool ok = UnrollOSCPacket(mWorld, length, mBufPtr, packet);
@@ -83,16 +81,6 @@ private:
 // this will be initiated/set by the SC_WasmBinding constructor
 // which will be called by scynth_main
 SC_WasmBinding* SC_WasmBinding::current = nullptr;
-
-
-// static function which will dispatch to the SC_WasmBinding instance
-static void webReplyFunc(struct ReplyAddress* addr, char* msg, int size) {
-    if (SC_WasmBinding::current == nullptr) {
-        throw std::runtime_error("SC_WasmBinding has not been initiated!\n");
-    }
-    SC_WasmBinding::current->replyReceiver(addr, msg, size);
-}
-
 }
 
 using namespace scsynth;
