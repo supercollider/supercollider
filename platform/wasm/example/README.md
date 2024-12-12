@@ -1,11 +1,11 @@
 # scsynth wasm example
 
-> !!! The JS interface is not final and subject to change !!!
+> __The JS interface is currently not considered stable and subject to change w/o prior notice!__
 
 This example shows how to use scsynth.wasm on a website.
-It is not intended to provide an comprehensive library to interact with scsynth.wasm within JavaScript but tries to explain all necessary steps to get things running.
+Use this as a starting block to integrate scsynth into your website or web project.
 
-Before starting, copy (or symlink) the compiled files `scsynth.js` and `scsynth.wasm` from the build directory `wasm/scsynth` to this folder.
+__Before starting, copy (or symlink) the compiled files `scsynth.js` and `scsynth.wasm` from the build directory `wasm/scsynth` to this folder.__
 
 ## Serving the files
 
@@ -19,77 +19,79 @@ Cross-Origin-Embedder-Policy: require-corp
 
 via a file server when serving the files to a browser.
 
-A simply python script `static_dev_server.py` is provided in the build directory.
-To start a local web server on <http://127.0.0.1:8000> with the necessary headers set run
+A simply python script `static_dev_server.py` is provided with this example which serves the current directory with the appropriate headers.
+To use this script to expose the files on <http://127.0.0.1:8000> run
 
 ```shell
 python3 static_dev_server.py
 ```
 
-> If get a 404 concerning `scsynth.js` be shure you have copied the compiled `scsynth.js` and `scsynth.wasm` to the example folder via e.g. `cp ../*.{js,wasm} .`.
+> If get a 404 concerning `scsynth.js` in the browser be shure you have copied the compiled `scsynth.js` and `scsynth.wasm` to the example folder via e.g. `cp ../*.{js,wasm} .`.
 
 > This script should __not__ be used to serve the files via the internet because the basic Python http server is not considered safe and can introduce security problems.
 > Use an nginx or apache web server with the appropriate headers set if the files should be accessible via the internet.
+>
+> For nginx the config could look something like
+>
+> ```nginx
+> server {
+>   server_name my-address.com;
+>
+>   # Path to the root directory for serving static files
+>   root /home/user/supercollider_wasm_files;
+>
+>   # URL prefix where the static files are located
+>   location / {
+>       # Set the default index file
+>       index index.html;
+>
+>       # Set additional HTTP headers
+>       add_header Cross-Origin-Embedder-Policy "require-corp";
+>       add_header Cross-Origin-Opener-Policy "same-origin";
+>
+>       types {
+>           application/wasm wasm;
+>           text/html html;
+>           application/javascript js;
+>           text/css css;
+>           default text/plain;
+>       }
+>   }
+>   # use certbot to convert this to HTTPS which is necessary!!!
+>   listen 80;
+> }
+> ```
 
 ## The scsynth module
 
 Emscripten generates a factory function `createScsynth` in `scsynth.js` which will return an instance of scsynth.
-It also includes the JavaScript class `ScSynthArguments` (see `platform/wasm/pre.js` for its definition) to manage the command line arguments to spawn scsynth.
+It also includes the JavaScript function `buildScsynthArguments` (see `platform/wasm/pre.js` for its definition) which is a helper function to easily construct the CLI arguments.
 
 ```javascript
-let arguments = ScSynthArguments(
-    // use microphone input via the browser
-    numInputs=1,
-    numOutputs=2,
-);
-
-// cli arguments need to be a list
-let scsynth = createScsynth({
-    // arguments need to be a list
-    arguments: arguments.toArgList(),
-});
+// needs to be called from within an async function
+async function startScsynth() {
+    const argumenents = buildScsynthArguments({
+        numInputs: 1,
+        numOutputs: 2,
+    });
+    scsynth = await createScsynth({
+        arguments,
+    });
+};
 ```
 
 See [the Emscripten documentation of `Module`](https://emscripten.org/docs/api_reference/module.html) for further information what methods and arguments are available for an Emscripten module.
 
-> `loadSynthDefs` must be set to `false` (aka `0` within cli) because `scsynth.wasm` has (yet) no concept of a filesystem.
-
-
 ## OSC communication
 
-Although `scsynth.wasm` uses the UDP argument to open an OSC communication for the client it is not a regular UDP connection because the browser is not allowed to open an UDP port.
-Instead we pass the binary content of an OSC message to `scsynth.wasm` through a JavaScript function.
-To build such a binary OSC message a [JavaScript OSC library](https://github.com/colinbdclark/osc.js) is included in `index.html`.
+Scsynth interacts with the outside world through OSC messages which normally get send via UDP.
+As it is not allowed to open an UDP socket within a browser context/sandbox scysnth.wasm instead exposes the sending and receiving OSC API through JavaScript.
 
-This binary OSC message is not transferred to scsynth.wasm via an UDP port but via a function call.
-The function is located at `scsynth.oscEndpoint.send` and accepts the binary content of an OSC messsage as a single argument.
-It is implemented in `server/scsynth/SC_ComPort.cpp`.
+The [`Uint8Array`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array) byte array of an OSC messages must be passed as an argument to `scysnth.sendOscMessage`.
+OSC replies from the server can be received by setting a callabck at `scsynth.receiveOscMessage` which accepts the byte array as a single argument.
 
-### OSC reply
-
-Receiving OSC messages from the scsynth is possible by declaring a callabck function at `scsynth.oscReceiver` which takes the binary content of the OSC message as its parameter.
-
-```javascript
-// data is an Uint8Array with the binary content of the OSC message
-scsynth.oscReceiver = function(data) {
-    // parse binary OSC message to JS object via osc library
-    let msg = osc.readMessage(data);
-    console.log(msg);
-}
-```
-
-### Javascript number vs OSC types
-
-Javascript uses `Number` to represent numerical data which does not distinguish between float and integer.
-As it is necessary to distinguish between float and integer when communicating with scsynth (e.g. a group number must be an integer, but a frequency may be a float) it is necessary to provide the [OSC tags](https://opensoundcontrol.stanford.edu/spec-1_0.html) for each argument.
-
-`scsynth_demo.js` provides two data classes for the construction of OSC messages, `OscMessage` for implicit tags (which will turn every number into a float) and `OscMessageTagged`.
-
-To e.g. print the current node tree use
-
-```javascript
-oscClient.sendOscMessage(new OscMessageTagged("g_dumpTree", ["i", "i"], 0, 1));
-```
+To construct and parse OSC messages the class `scsynth.OscMessage` and the function `scsynth.parseOscMessage` can be used.
+Take a look at `scysnth_demo.js` for their API.
 
 ## Add a SynthDef
 
@@ -112,17 +114,17 @@ SynthDef(\gcd, {
 Copying the result from the post window and replacing `Int8Array[ ... ]` by `new Uint8Array([ ... ])` and send the OSC message to the server.
 
 ```javascript
-oscClient.addSynthDef(new Uint8Array([ ... ]));
+scsynth.sendOscMessage(
+    new scsynth.OscMessage().beginMessage("/d_recv").addBlob(myUint8Array).endMessage().getData()
+);
 ```
 
 To play this SynthDef as a Synth use
 
 ```javascript
-oscClient.sendOscMessage(new OscMessageTagged(
-    "/s_new", // address
-    ["s", "i", "i", "i"], // tags
-    "gcd", 1000, 1, 0, // message values
-));
+scsynth.sendOscMessage(
+    new scsynth.OscMessage().beginMessage("/s_new").addString("gcd").addInt(1000).addInt(1).addInt(0).endMessage().getData()
+);
 ```
 
 See the [_Server Command Reference_](https://docs.supercollider.online/Reference/Server-Command-Reference.html) for a comprehensive overview of available OSC commands on scsynth.
