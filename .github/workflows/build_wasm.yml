@@ -63,4 +63,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: scsynth_wasm.zip
-          path: ${{ env.BUILD_PATH }}/scsynth_wasm.zip
+          path: ${{ env.BUILD_PATH }}/wasm/scsynth_wasm.zip
