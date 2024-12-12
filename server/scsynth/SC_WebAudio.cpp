@@ -50,7 +50,7 @@ static double waOscTimeSeconds() { return OSCTime(getTime()) * kOSCtoSecs; }
 void initializeScheduler() {}
 
 // to be able to see runtime exception text in the browser
-extern "C" void EMSCRIPTEN_KEEPALIVE print_error_to_console(intptr_t pointer) {
+extern "C" void EMSCRIPTEN_KEEPALIVE printErrorToConsole(intptr_t pointer) {
     auto error = reinterpret_cast<std::runtime_error*>(pointer);
     scprintf("%s\n", error->what());
 }
@@ -110,15 +110,15 @@ EMSCRIPTEN_BINDINGS(Web_Audio) {
 SC_AudioDriver* SC_NewAudioDriver(struct World* inWorld) {
     // set up exception error printing function
     // clang-format off
-    EM_ASM({
+    EM_ASM({(
         window.onerror = function(message, url, line, column, e) {
             if (typeof e == 'number') { // e is a pointer to std:runtime_error
-                Module.ccall('print_error_to_console', 'number', ['number'], [e]);
+                Module.ccall('printErrorToConsole', 'number', ['number'], [e]);
             }
         }
-    });
-// clang-format on
-return new SC_WebAudioDriver(inWorld);
+    )});
+    // clang-format on
+    return new SC_WebAudioDriver(inWorld);
 }
 
 SC_WebAudioDriver::SC_WebAudioDriver(struct World* inWorld): SC_AudioDriver(inWorld), mMaxOutputLatency(0.0) {
@@ -133,21 +133,19 @@ SC_WebAudioDriver::~SC_WebAudioDriver() {
     mBufOutPtr = NULL;
     SC_WebAudioDriver::instance = NULL;
     // clang-format off
-    EM_ASM({
-        var ad = Module.audioDriver; 
-        if (ad) {
-            if (ad.context) {
-                ad.context.close();
-            }
-            if (ad.bufInPtr) {
-                Module._free(ad.bufInPtr);
-            }
-            if (ad.bufOutPtr) {
-                Module._free(ad.bufOutPtr);
-            }
-            Module.audioDriver = undefined;
-        }
-    });
+    EM_ASM({(
+        const audioDriver = Module.audioDriver; 
+
+        audioDriver?.context?.close();
+        if(audioDriver.bufInPtr) {
+            Module._free(audioDriver.bufInPtr);
+        };
+        if(audioDriver.bufOutPtr) {
+            Module._free(audioDriver.bufOutPtr);
+        };
+
+        Module.audioDriver = null;
+    )});
     // clang-format on
 }
 
@@ -286,89 +284,120 @@ bool SC_WebAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) {
     scprintf("%s: DriverSetup.\n", kWebAudioIdent);
 #endif
 
+    // this could be converted to C++ domain, see
+    // https://emscripten.org/docs/porting/connecting_cpp_and_javascript/embind.html#using-val-to-transliterate-javascript-to-c
     // clang-format off
-    int res = EM_ASM_INT({
-        var AudioContext = window.AudioContext || window.webkitAudioContext;
-        if (!AudioContext) return -1;
-        var bufSizePref     = $0;   // mPreferredHardwareBufferFrameSize
-        var sr              = $1;   // mPreferredSampleRate
-        var numInSC         = $2;   // mWorld->mNumInputs
-        var numOutSC        = $3;   // mWorld->mNumOutputs
-        if (!Module.audioDriver) Module.audioDriver = {};
-        var ad              = Module.audioDriver;
-        var opt             = {};
-        if (sr) opt.sampleRate = sr;
-        ad.context          = new AudioContext(opt);
-        ad.inChanCount      = numInSC;
+    int res = EM_ASM_INT({(
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext){
+            return -1;
+        };
+        const bufSizePref = $0; // mPreferredHardwareBufferFrameSize
+        const preferredSampleRate = $1; // mPreferredSampleRate
+        const numInSC = $2; // mWorld->mNumInputs
+        const numOutSC = $3; // mWorld->mNumOutputs
+        if (!Module.audioDriver) {
+            Module.audioDriver = {};
+        }
+        const audioDriver = Module.audioDriver;
+        const opt = {};
+        if (preferredSampleRate) {
+            opt.sampleRate = sr;
+        };
+        audioDriver.context = new AudioContext(opt);
+        audioDriver.inChanCount = numInSC;
         // note: Firefox and Chrome behave differently. In Firefox,
         // input can be captured without requiring a connection
         // to AudioContext; but in Chrome, a connection
         // to audioContext.destination must always be made.
         // Therefore, ensure there is at least one output channel
         // on the script processor, even if it stays silent.
-        ad.outChanCount     = Math.max(1, numOutSC);
+        audioDriver.outChanCount = Math.max(1, numOutSC);
         // note: using zero buffer size gives us default buffer size;
-        ad.proc             = ad.context.createScriptProcessor(bufSizePref, ad.inChanCount, ad.outChanCount);
-        ad.bufSize          = ad.proc.bufferSize;
-        ad.sampleRate       = ad.context.sampleRate;
-        var bytesPerChan    = ad.bufSize * Float32Array.BYTES_PER_ELEMENT;
-        var numInBytes      = ad.inChanCount  * bytesPerChan;
-        var numOutBytes     = ad.outChanCount * bytesPerChan;
-        ad.bufInPtr         = Module._malloc(numInBytes );
-        ad.bufOutPtr        = Module._malloc(numOutBytes);
-        ad.floatBufIn       = [];
-        ad.floatBufOut      = [];
-        ad.connected        = false;
-        for (var ch = 0; ch < ad.inChanCount; ch++) {
-            ad.floatBufIn [ch] = new Float32Array(Module.HEAPU8.buffer, ad.bufInPtr  + (ch * bytesPerChan), ad.bufSize);
+        audioDriver.proc = audioDriver.context.createScriptProcessor(
+            bufSizePref,
+            audioDriver.inChanCount,
+            audioDriver.outChanCount
+        );
+        audioDriver.bufSize = audioDriver.proc.bufferSize;
+        audioDriver.sampleRate = audioDriver.context.sampleRate;
+
+        const bytesPerChan = audioDriver.bufSize * Float32Array.BYTES_PER_ELEMENT;
+        const numInBytes = audioDriver.inChanCount  * bytesPerChan;
+        const numOutBytes = audioDriver.outChanCount * bytesPerChan;
+
+        audioDriver.bufInPtr = Module._malloc(numInBytes );
+        audioDriver.bufOutPtr = Module._malloc(numOutBytes);
+        audioDriver.floatBufIn = [];
+        audioDriver.floatBufOut = [];
+        audioDriver.connected = false;
+
+        for (var channel = 0; channel < audioDriver.inChanCount; channel++) {
+            audioDriver.floatBufIn [channel] = new Float32Array(
+                Module.HEAPU8.buffer,
+                audioDriver.bufInPtr + (channel * bytesPerChan),
+                audioDriver.bufSize
+            );
         }
-        for (var ch = 0; ch < ad.outChanCount; ch++) {
-            ad.floatBufOut[ch] = new Float32Array(Module.HEAPU8.buffer, ad.bufOutPtr + (ch * bytesPerChan), ad.bufSize);
+        for (var channel = 0; channel < audioDriver.outChanCount; channel++) {
+            audioDriver.floatBufOut[channel] = new Float32Array(
+                Module.HEAPU8.buffer,
+                audioDriver.bufOutPtr + (channel * bytesPerChan),
+                audioDriver.bufSize
+            );
         }
-        var self            = Module.audio_driver();
-        var latency         = ad.context.baseLatency || 0.0;
-        self.WaInitBuffers(ad.bufInPtr, ad.inChanCount, ad.bufOutPtr, ad.outChanCount, 
-            ad.bufSize, ad.sampleRate, latency);
-        ad.proc.onaudioprocess = function(ev) {
-            var bufSize = ad.bufSize;
-            var bIn     = ev.inputBuffer;
+
+        const self = Module.audio_driver();
+        const latency = audioDriver.context.baseLatency || 0.0;
+        self.WaInitBuffers(
+            audioDriver.bufInPtr,
+            audioDriver.inChanCount,
+            audioDriver.bufOutPtr,
+            audioDriver.outChanCount, 
+            audioDriver.bufSize,
+            audioDriver.sampleRate,
+            latency
+        );
+        // see https://developer.mozilla.org/en-US/docs/Web/API/AudioProcessingEvent
+        audioDriver.proc.onaudioprocess = function(ev) {
+            const bufSize = audioDriver.bufSize;
+            const bIn = ev.inputBuffer;
             if (bIn) { // inputBuffer is null when inChanCount is zero!
-                var bInSC   = ad.floatBufIn;
-                var numIn   = Math.min(bIn.numberOfChannels, ad.inChanCount);
-                for (var ch = 0; ch < numIn; ch++) {
+                const bInSC = audioDriver.floatBufIn;
+                const numIn = Math.min(bIn.numberOfChannels, audioDriver.inChanCount);
+                for (var channel = 0; channel < numIn; channel++) {
                     // note: cannot use `copyFromChannel` because running under `SharedArrayBuffer` 
                     // bIn.copyFromChannel(bInSC[ch], ch, 0);
-                    var aBuf = bIn.getChannelData(ch);
-                    bInSC[ch].set(aBuf);
+                    const aBuf = bIn.getChannelData(channel);
+                    bInSC[channel].set(aBuf);
                 }
             }
             self.WaRun();
-            var bOut    = ev.outputBuffer;
-            var bOutSC  = ad.floatBufOut;
-            var numOut  = Math.min(bOut.numberOfChannels, ad.outChanCount);
-            for (var ch = 0; ch < numOut; ch++) {
+            const bOut = ev.outputBuffer;
+            const bOutSC = audioDriver.floatBufOut;
+            const numOut = Math.min(bOut.numberOfChannels, audioDriver.outChanCount);
+            for (var channel = 0; channel < numOut; channel++) {
                 // note: cannot use `copyToChannel` because running under `SharedArrayBuffer` 
                 // bOut.copyToChannel(bOutSC[ch], ch, 0);
-                var aBuf = bOut.getChannelData(ch);
-                aBuf.set(bOutSC[ch]);
+                const aBuf = bOut.getChannelData(channel);
+                aBuf.set(bOutSC[channel]);
             }
         };
         // connect input (asynchronous)
-        if (ad.inChanCount > 0) {
-            var md      = window.navigator.mediaDevices;
-            var req     = md.getUserMedia({ audio: true });
-            req.then(function(ms) {
-                ad.input = ad.context.createMediaStreamSource(ms);
-                if (ad.connected) { // if already running, connect immediately
-                    ad.input.connect(ad.proc);
+        if (audioDriver.inChanCount > 0) {
+            const mediaDevices = window.navigator.mediaDevices;
+            // see https://developer.mozilla.org/en-US/docs/Web/API/MediaStream
+            mediaDevices.getUserMedia({ audio: true }).then(function(mediaStream) {
+                audioDriver.input = audioDriver.context.createMediaStreamSource(ms);
+                if (audioDriver.connected) { // if already running, connect immediately
+                    audioDriver.input.connect(audioDriver.proc);
                 }
             }).catch(function(err) {
-                console.log("Error: could not obtain audio input device - " + err.name + "; " + err.message);
+                console.log(`Error: could not obtain audio input device - ${err.name}: ${err.message}`);
             });
         }
-
         return 0;
-    }, mPreferredHardwareBufferFrameSize, mPreferredSampleRate, mWorld->mNumInputs, mWorld->mNumOutputs);
+    )}, mPreferredHardwareBufferFrameSize, mPreferredSampleRate, mWorld->mNumInputs, mWorld->mNumOutputs);
     // clang-format on
 
     if (res != 0)
@@ -385,18 +414,18 @@ bool SC_WebAudioDriver::DriverStart() {
 #endif
 
     // clang-format off
-    int res = EM_ASM_INT({
-        var ad = Module.audioDriver;
-        if (!ad) return -1;
-      
-        ad.connected = true;
-        if (ad.input) {
-            ad.input.connect(ad.proc);
+    int res = EM_ASM_INT({(
+        const audioDriver = Module.audioDriver;
+        if(audioDriver === null) {
+            return -1;
+        };
+        audioDriver.connected = true;
+        if (audioDriver.input) {
+            audioDriver.input.connect(audioDriver.proc);
         }
-        ad.proc.connect(ad.context.destination);
-
+        audioDriver.proc.connect(audioDriver.context.destination);
         return 0;
-    });
+    )});
     // clang-format on
 
     mDLL.Reset(mSampleRate, mNumSamplesPerCallback, SC_TIME_DLL_BW, waOscTimeSeconds());
@@ -410,14 +439,14 @@ bool SC_WebAudioDriver::DriverStop() {
 
     // clang-format off
     int res = EM_ASM_INT({
-        var ad = Module.audioDriver;
-        if (!ad) return -1;
-
-        ad.connected = false;
-        ad.proc.disconnect(ad.context.destination);
-        if (ad.input) {
-            ad.input.disconnect(ad.proc);
+        const audioDriver = Module.audioDriver;
+        if(audioDriver === null) {
+            return -1;
         }
+
+        audioDriver.connected = false;
+        audioDriver.proc.disconnect(audioDriver.context.destination);
+        audioDriver.input?.disconnect(audioDriver.proc);
 
         return 0;
     });
