@@ -122,7 +122,7 @@ function sendByteArray() {
 function printToWebsiteConsole(text) {
   const consoleOutput = /** @type {HTMLTextAreaElement | null} */ (document.getElementById("console"));
   if (consoleOutput !== null) {
-    consoleOutput.value += text + "\n";
+    consoleOutput.value += `${text}\n`;
     // follow scrolling to bottom
     consoleOutput.scrollTop = consoleOutput.scrollHeight;
   }
@@ -131,7 +131,7 @@ function printToWebsiteConsole(text) {
 function printToWebsiteOscConsole(text) {
   const oscConsoleOutput = /** @type {HTMLTextAreaElement | null} */ (document.getElementById("console-osc"));
   if (oscConsoleOutput !== null) {
-    oscConsoleOutput.value += text;
+    oscConsoleOutput.value += `${text}\n`; 
     // follow scrolling to bottom
     oscConsoleOutput.scrollTop = oscConsoleOutput.scrollHeight;
   }
