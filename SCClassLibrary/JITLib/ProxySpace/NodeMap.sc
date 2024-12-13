@@ -226,15 +226,6 @@ NodeProxyPartMap {
 
 }
 
-+ NodeProxy {
-
-	partMap { |indices|
-		^NodeProxyPartMap(this, indices)
-	}
-
-	proxyNeedsWakeUp { ^true }
-	proxyToWakeUp { ^this }
-}
 
 + Object {
 
