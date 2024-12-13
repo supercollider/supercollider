@@ -75,9 +75,9 @@
 
 #include "server_shm.hpp"
 
-#include <boost/filesystem/path.hpp> // path
+#include <filesystem>
 
-namespace bfs = boost::filesystem;
+namespace fs = std::filesystem;
 
 InterfaceTable gInterfaceTable;
 PrintFunc gPrint = nullptr;
@@ -271,7 +271,7 @@ void World_LoadGraphDefs(World* world) {
             GraphDef_Define(world, list);
         }
     } else {
-        bfs::path path = SC_Filesystem::instance().getDirectory(DirName::UserAppSupport) / "synthdefs";
+        fs::path path = SC_Filesystem::instance().getDirectory(DirName::UserAppSupport) / "synthdefs";
         if (world->mVerbosity > 0)
             scprintf("Loading synthdefs from default path: %s\n", SC_Codecvt::path_to_utf8_str(path).c_str());
         list = GraphDef_LoadDir(world, path, list);
@@ -477,8 +477,7 @@ World* World_New(WorldOptions* inOptions) {
         scprintf("Exception in World_New: %s\n", exc.what());
         World_Cleanup(world, true);
         return nullptr;
-    } catch (...) {
-    }
+    } catch (...) {}
     return world;
 }
 
@@ -765,9 +764,7 @@ void World_WaitForQuit(struct World* inWorld, bool unload_plugins) {
     try {
         inWorld->hw->mQuitProgram->wait();
         World_Cleanup(inWorld, unload_plugins);
-    } catch (std::exception& exc) {
-        scprintf("Exception in World_WaitForQuit: %s\n", exc.what());
-    } catch (...) {
+    } catch (std::exception& exc) { scprintf("Exception in World_WaitForQuit: %s\n", exc.what()); } catch (...) {
     }
 }
 

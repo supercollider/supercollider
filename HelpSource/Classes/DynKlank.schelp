@@ -67,7 +67,7 @@ code::
 {	var freqs, ringtimes;
 	freqs = [800, 1071, 1153, 1723] * MouseX.kr(0.5, 2, 1);
 	ringtimes = [1, 1, 1, 1] * MouseY.kr(0.1, 10, 1);
-	DynKlank.ar(`[freqs, nil, ringtimes ], Impulse.ar(2, 0, 0.1))
+	DynKlank.ar(`[freqs, nil, ringtimes], Impulse.ar(2, 0, 0.1))
 }.play;
 )
 
@@ -77,7 +77,7 @@ SynthDef('help-dynKlank', { |out|
 	var freqs, ringtimes, signal;
 	freqs = Control.names([\freqs]).kr([800, 1071, 1153, 1723]);
 	ringtimes = Control.names([\ringtimes]).kr([1, 1, 1, 1]);
-	signal = DynKlank.ar(`[freqs, nil, ringtimes ], Impulse.ar(2, 0, 0.1));
+	signal = DynKlank.ar(`[freqs, nil, ringtimes], Impulse.ar(2, 0, 0.1));
 	Out.ar(out, signal);
 }).add;
 )
@@ -85,8 +85,8 @@ SynthDef('help-dynKlank', { |out|
 a = Synth('help-dynKlank');
 
 a.setn(\freqs, Array.rand(4, 500, 2000));
-a.setn(\ringtimes, Array.rand(4, 0.2, 4) );
-a.setn(\ringtimes, Array.rand(4, 0.02, 0.4) );
+a.setn(\ringtimes, Array.rand(4, 0.2, 4));
+a.setn(\ringtimes, Array.rand(4, 0.02, 0.4));
 
 // create multichannel controls directly with literal arrays:
 (
@@ -107,5 +107,3 @@ a.setn(\amps, Array.exprand(4, 0.01, 1));
 { Out.kr(102, MouseX.kr(1, 2) * Array.rand(4, 500, 2000)) }.play;
 a.mapn(\freqs, 102, 4);
 ::
-
-

@@ -255,19 +255,6 @@ class allocator
    //!Never throws
    const_pointer address(const_reference value) const
    {  return const_pointer(boost::addressof(value));  }
-
-   //!Constructs an object
-   //!Throws if T's constructor throws
-   //!For backwards compatibility with libraries using C++03 allocators
-   template<class P>
-   void construct(const pointer &ptr, BOOST_FWD_REF(P) p)
-   {  ::new((void*)ipcdetail::to_raw_pointer(ptr), boost_container_new_t()) value_type(::boost::forward<P>(p));  }
-
-   //!Destroys object. Throws if object's
-   //!destructor throws
-   void destroy(const pointer &ptr)
-   {  BOOST_ASSERT(ptr != 0); (*ptr).~value_type();  }
-
 };
 
 //!Equality test for same type

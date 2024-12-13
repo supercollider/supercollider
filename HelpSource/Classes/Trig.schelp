@@ -35,4 +35,3 @@ code::
 { Trig.ar(Dust.ar(4), 0.1) }.play
 
 ::
-

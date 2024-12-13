@@ -163,9 +163,9 @@ EnvironmentRedirect {
 
 	printOn { | stream |
 		if (stream.atLimit) { ^this };
-		stream << this.class.name << "[ " ;
+		stream << this.class.name << "[" ;
 		envir.printItemsOn(stream);
-		stream << " ]" ;
+		stream << "]" ;
 	}
 
 	linkDoc { arg doc;

@@ -56,9 +56,8 @@ d = SynthDef("help-MostChange", { |out, freq = 440|
 )
 
 d.set(\freq, 800);
-d.set(\freq, 800); //nothing changed
+d.set(\freq, 800); // nothing changed
 d.set(\freq, 900);
 d.free;
 
 ::
-

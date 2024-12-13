@@ -82,7 +82,7 @@ namespace posix_time {
     return ss.str();
   }
 
-  //! Time duration in iso format -hhmmss,fffffff Example: 10:09:03,0123456
+  //! Time duration in ISO 8601 format -hhmmss.fffffff. Example: 10:09:03.0123456
   /*!\ingroup time_format
    */
   inline
@@ -173,7 +173,7 @@ namespace posix_time {
     return std::string("[" + d1 + "/" + d2 +"]");
   }
 
-  //! Convert iso short form YYYYMMDDTHHMMSS where T is the date-time separator
+  //! Convert ISO 8601 short form YYYYMMDDTHHMMSS where T is the date-time separator
   /*!\ingroup time_format
    */
   inline

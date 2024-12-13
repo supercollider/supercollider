@@ -12,8 +12,6 @@
 
 #include <boost/config.hpp>
 
-#include <boost/system/api_config.hpp> 
-
 // This header implements separate compilation features as described in
 // http://www.boost.org/more/separate_compilation.html
 
@@ -47,22 +45,6 @@
 // And include the header that does the work:
 //
 #include <boost/config/auto_link.hpp>
-
-// We also need to autolink to the Chrono library; even though
-// it's not used in the interface, and no Chrono header is included,
-// it's used in the implementation and is necessary in order to link
-
-#if !defined(BOOST_CHRONO_NO_LIB)
-
-#if defined(BOOST_ALL_DYN_LINK) || defined(BOOST_CHRONO_DYN_LINK)
-#  define BOOST_DYN_LINK
-#endif
-
-#define BOOST_LIB_NAME boost_chrono
-
-#include <boost/config/auto_link.hpp>
-
-#endif // !defined(BOOST_CHRONO_NO_LIB)
 
 #endif  // auto-linking disabled
 

@@ -92,7 +92,7 @@ Point {
 	}
 
 	printOn { arg stream;
-		stream << this.class.name << "( " << x << ", " << y << " )";
+		stream << this.class.name << "(" << x << ", " << y << ")";
 	}
 	storeArgs { ^[x,y] }
 }

@@ -2,7 +2,7 @@
 // detail/winsock_init.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -48,7 +48,7 @@ protected:
   BOOST_ASIO_DECL static void throw_on_error(data& d);
 };
 
-template <int Major = 2, int Minor = 0>
+template <int Major = 2, int Minor = 2>
 class winsock_init : private winsock_init_base
 {
 public:

@@ -57,7 +57,7 @@ int asCompileString(PyrSlot* slot, char* str);
 int slotIntVal(PyrSlot* slot, int* value);
 int slotFloatVal(PyrSlot* slot, float* value);
 int slotDoubleVal(PyrSlot* slot, double* value);
-int slotStrVal(PyrSlot* slot, char* str, int maxlen);
+int slotStrVal(PyrSlot* slot, char* str, size_t maxSize);
 std::tuple<int, std::string> slotStdStrVal(PyrSlot* slot);
 std::tuple<int, std::string> slotStrStdStrVal(PyrSlot* slot);
 int slotStrLen(PyrSlot* slot);

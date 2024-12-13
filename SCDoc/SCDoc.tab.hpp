@@ -1,8 +1,9 @@
-/* A Bison parser, made by GNU Bison 3.0.4.  */
+/* A Bison parser, made by GNU Bison 3.8.2.  */
 
 /* Bison interface for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2021 Free Software Foundation,
+   Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -15,7 +16,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -30,7 +31,12 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-#pragma once
+/* DO NOT RELY ON FEATURES THAT ARE NOT DOCUMENTED in the manual,
+   especially those whose name start with YY_ or yy_.  They are
+   private implementation details that can be changed or removed.  */
+
+#ifndef YY_SCDOC_SCDOC_TAB_HPP_INCLUDED
+# define YY_SCDOC_SCDOC_TAB_HPP_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -39,82 +45,88 @@
 extern int scdocdebug;
 #endif
 
-/* Token type.  */
+/* Token kinds.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
   enum yytokentype
   {
-    END = 0,
-    CLASS = 258,
-    TITLE = 259,
-    SUMMARY = 260,
-    RELATED = 261,
-    CATEGORIES = 262,
-    REDIRECT = 263,
-    CLASSTREE = 264,
-    COPYMETHOD = 265,
-    KEYWORD = 266,
-    PRIVATE = 267,
-    SECTION = 268,
-    SUBSECTION = 269,
-    METHOD = 270,
-    ARGUMENT = 271,
-    DESCRIPTION = 272,
-    CLASSMETHODS = 273,
-    INSTANCEMETHODS = 274,
-    EXAMPLES = 275,
-    RETURNS = 276,
-    DISCUSSION = 277,
-    LIST = 278,
-    TREE = 279,
-    NUMBEREDLIST = 280,
-    DEFINITIONLIST = 281,
-    TABLE = 282,
-    FOOTNOTE = 283,
-    NOTE = 284,
-    WARNING = 285,
-    CODE = 286,
-    LINK = 287,
-    ANCHOR = 288,
-    SOFT = 289,
-    IMAGE = 290,
-    TELETYPE = 291,
-    STRONG = 292,
-    EMPHASIS = 293,
-    CODEBLOCK = 294,
-    TELETYPEBLOCK = 295,
-    TAGSYM = 296,
-    BARS = 297,
-    HASHES = 298,
-    TEXT = 299,
-    URL = 300,
-    COMMA = 301,
-    METHODNAME = 302,
-    METHODARGS = 303,
-    NEWLINE = 304,
-    EMPTYLINES = 305,
-    BAD_METHODNAME = 306,
-    START_FULL = 307,
-    START_PARTIAL = 308,
-    START_METADATA = 309
+    YYEMPTY = -2,
+    END = 0,                       /* "end of file"  */
+    YYerror = 256,                 /* error  */
+    YYUNDEF = 257,                 /* "invalid token"  */
+    CLASS = 258,                   /* CLASS  */
+    TITLE = 259,                   /* TITLE  */
+    SUMMARY = 260,                 /* SUMMARY  */
+    RELATED = 261,                 /* RELATED  */
+    CATEGORIES = 262,              /* CATEGORIES  */
+    REDIRECT = 263,                /* REDIRECT  */
+    CLASSTREE = 264,               /* CLASSTREE  */
+    COPYMETHOD = 265,              /* COPYMETHOD  */
+    KEYWORD = 266,                 /* KEYWORD  */
+    PRIVATE = 267,                 /* PRIVATE  */
+    SECTION = 268,                 /* SECTION  */
+    SUBSECTION = 269,              /* SUBSECTION  */
+    SUBSUBSECTION = 270,           /* SUBSUBSECTION  */
+    METHOD = 271,                  /* METHOD  */
+    ARGUMENT = 272,                /* ARGUMENT  */
+    DESCRIPTION = 273,             /* DESCRIPTION  */
+    CLASSMETHODS = 274,            /* CLASSMETHODS  */
+    INSTANCEMETHODS = 275,         /* INSTANCEMETHODS  */
+    EXAMPLES = 276,                /* EXAMPLES  */
+    RETURNS = 277,                 /* RETURNS  */
+    DISCUSSION = 278,              /* DISCUSSION  */
+    LIST = 279,                    /* LIST  */
+    TREE = 280,                    /* TREE  */
+    NUMBEREDLIST = 281,            /* NUMBEREDLIST  */
+    DEFINITIONLIST = 282,          /* DEFINITIONLIST  */
+    TABLE = 283,                   /* TABLE  */
+    FOOTNOTE = 284,                /* FOOTNOTE  */
+    NOTE = 285,                    /* NOTE  */
+    WARNING = 286,                 /* WARNING  */
+    CODE = 287,                    /* CODE  */
+    LINK = 288,                    /* LINK  */
+    ANCHOR = 289,                  /* ANCHOR  */
+    SOFT = 290,                    /* SOFT  */
+    IMAGE = 291,                   /* IMAGE  */
+    TELETYPE = 292,                /* TELETYPE  */
+    MATH = 293,                    /* MATH  */
+    STRONG = 294,                  /* STRONG  */
+    EMPHASIS = 295,                /* EMPHASIS  */
+    CODEBLOCK = 296,               /* "CODE block"  */
+    TELETYPEBLOCK = 297,           /* "TELETYPE block"  */
+    MATHBLOCK = 298,               /* "MATH block"  */
+    TAGSYM = 299,                  /* "::"  */
+    BARS = 300,                    /* "||"  */
+    HASHES = 301,                  /* "##"  */
+    TEXT = 302,                    /* "text"  */
+    URL = 303,                     /* URL  */
+    COMMA = 304,                   /* COMMA  */
+    METHODNAME = 305,              /* "method name"  */
+    METHODARGS = 306,              /* "arguments string"  */
+    NEWLINE = 307,                 /* "newline"  */
+    EMPTYLINES = 308,              /* "empty lines"  */
+    BAD_METHODNAME = 309,          /* "bad method name"  */
+    START_FULL = 310,              /* START_FULL  */
+    START_PARTIAL = 311,           /* START_PARTIAL  */
+    START_METADATA = 312           /* START_METADATA  */
   };
+  typedef enum yytokentype yytoken_kind_t;
 #endif
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-
 union YYSTYPE
 {
-#line 55 "SCDoc.y" /* yacc.c:1915  */
+#line 55 "SCDoc.y"
 
     intptr_t i;
     const char *id;
     char *str;
     DocNode *doc_node;
 
-#line 117 "SCDoc.tab.hpp" /* yacc.c:1915  */
-};
+#line 128 "SCDoc.tab.hpp"
 
+};
 typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
@@ -137,4 +149,8 @@ struct YYLTYPE
 
 extern YYSTYPE scdoclval;
 extern YYLTYPE scdoclloc;
+
 int scdocparse (void);
+
+
+#endif /* !YY_SCDOC_SCDOC_TAB_HPP_INCLUDED  */

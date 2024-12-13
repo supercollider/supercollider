@@ -152,9 +152,7 @@ public:
         } catch (std::exception& ex) {
             error(ex.what());
             err = errFailed;
-        } catch (...) {
-            err = errFailed;
-        }
+        } catch (...) { err = errFailed; }
         // postfl("<-readArchive\n");
         return err;
     }

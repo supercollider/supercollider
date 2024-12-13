@@ -26,7 +26,7 @@ examples::
 
 code::
 (
-d = { arg amp=1.0;
+d = { |amp = 1.0|
 	var in1, in2;
 	in1 = LFNoise0.ar(800, amp);
 	in2 = SinOsc.ar(800);
@@ -44,7 +44,7 @@ the control that changed least is used as output:
 
 code::
 (
-d = { arg freq=440;
+d = { |freq = 440|
 	var internalFreq;
 	internalFreq = LFNoise0.ar(0.3, 300, 800);
 	SinOsc.ar(
@@ -57,4 +57,3 @@ d.set(\freq, 800);
 d.set(\freq, 900);
 d.free;
 ::
-

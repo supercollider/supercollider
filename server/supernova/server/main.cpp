@@ -25,7 +25,7 @@
 #include "SC_Win32Utils.h"
 #include "SC_ServerBootDelayWarning.h"
 
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 #include <boost/algorithm/string.hpp>
 
 #include "server.hpp"
@@ -67,6 +67,10 @@ const char pathSeparator[] = ";";
 using namespace nova;
 using namespace std;
 using DirName = SC_Filesystem::DirName;
+
+namespace nova {
+void parse_hardware_topology(void);
+}
 
 namespace {
 
@@ -320,9 +324,10 @@ void lock_memory(server_arguments const& args) {
 } /* namespace */
 
 int supernova_main(int argc, char* argv[]) {
-    drop_rt_scheduling(); // when being called from sclang, we inherit a low rt-scheduling priority. but we don't want
-                          // it!
+    drop_rt_scheduling(); // when being called from sclang, we inherit a low rt-scheduling priority.
+                          // but we don't want it!
     enable_core_dumps();
+    parse_hardware_topology();
 
     server_arguments::initialize(argc, argv);
     server_arguments const& args = server_arguments::instance();

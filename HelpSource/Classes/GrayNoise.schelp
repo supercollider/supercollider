@@ -26,7 +26,7 @@ Examples::
 code::
 
 (
-SynthDef("help-GrayNoise", { arg out=0;
+SynthDef("help-GrayNoise", { |out = 0|
 	Out.ar(out,
 		GrayNoise.ar(0.1)
 	)
@@ -34,4 +34,3 @@ SynthDef("help-GrayNoise", { arg out=0;
 )
 
 ::
-

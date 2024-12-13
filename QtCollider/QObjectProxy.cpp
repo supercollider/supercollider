@@ -87,7 +87,7 @@ static bool serializeSignature(QVarLengthArray<char, 512>& dst, const char* meth
     int i;
     for (i = 0; i < argc; ++i) {
         int typeId = argv[i].type()->id();
-        const char* typeName = QMetaType::typeName(typeId);
+        const char* typeName = QMetaType(typeId).name();
         int len = qstrlen(typeName);
         if (len <= 0) {
             qcErrorMsg("Could not get argument type name.");

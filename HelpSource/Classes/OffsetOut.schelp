@@ -6,7 +6,7 @@ categories::  UGens>InOut
 
 Description::
 
-Output signal to a bus,  the sample offset within the bus is kept
+Output signal to a bus, the sample offset within the bus is kept
 exactly; i.e. if the synth is scheduled to be started part way through a
 control cycle, OffsetOut will maintain the correct offset by buffering
 the output and delaying it until the exact time that the synth was
@@ -49,17 +49,17 @@ code::
 
 (
 SynthDef("help-OffsetOut",
-	{ arg out=0, freq=440, dur=0.05;
+	{ |out = 0, freq = 440, dur = 0.05|
 		var env;
 		env = EnvGen.kr(Env.perc(0.01, dur, 0.2), doneAction: Done.freeSelf);
 		OffsetOut.ar(out, SinOsc.ar(freq, 0, env))
 }).send(s);
 
 SynthDef("help-Out",
-	{ arg out=0, freq=440, dur=0.05;
+	{ |out = 0, freq = 440, dur = 0.05|
 		var env;
 		env = EnvGen.kr(Env.perc(0.01, dur, 0.2), doneAction: Done.freeSelf);
-		//compare to Out:
+		// compare to Out:
 		Out.ar(out, SinOsc.ar(freq, 0, env))
 }).send(s);
 )
@@ -87,18 +87,17 @@ Routine({
 
 
 
-SynthDef("trig1",{
-	var gate,tone;
-	gate = Trig1.ar(1.0,t);
-	tone = In.ar(10,1); // tone comes in normally
+SynthDef("trig1", {
+	var gate, tone;
+	gate = Trig1.ar(1.0, t);
+	tone = In.ar(10, 1); // tone comes in normally
 	// but is then delayed when by the OffsetOut
 	OffsetOut.ar(0,
 		tone * EnvGen.ar(
-				Env([0,0.1,0.1,0],[0.01,1.0,0.01],[-4,4],2),
-				gate,doneAction: Done.freeSelf
+				Env([0, 0.1, 0.1, 0], [0.01, 1.0, 0.01], [-4, 4], 2),
+				gate, doneAction: Done.freeSelf
 			)
 	)
 })
 
 ::
-

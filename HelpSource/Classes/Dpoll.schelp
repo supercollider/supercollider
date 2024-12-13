@@ -47,7 +47,7 @@ code::
 	}.play
 )
 
-{ Duty.kr(0.5, 0, Dpoll(( Dseries(0, 1, inf) + _ ).dup, ("value" + _).dup)); 0.0 }.play;
+{ Duty.kr(0.5, 0, Dpoll((Dseries(0, 1, inf) + _).dup, ("value" + _).dup)); 0.0 }.play;
 
 
 // the message dpoll(label, run, trigid) is a shorthand:
@@ -55,4 +55,3 @@ code::
 { Duty.kr(0.5, 0, Dseries(0, 1, inf).dpoll); 0.0 }.play;
 { Duty.ar(0.5, 0, SinOsc.ar(0.1).dpoll); 0.0 }.play;
 ::
-

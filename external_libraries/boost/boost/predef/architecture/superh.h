@@ -60,6 +60,19 @@ If available versions [1-5] are specifically detected.
 #   define BOOST_ARCH_SH_AVAILABLE
 #endif
 
+#if BOOST_ARCH_SH
+#   if BOOST_ARCH_SH >= BOOST_VERSION_NUMBER(5,0,0)
+#       undef BOOST_ARCH_WORD_BITS_64
+#       define BOOST_ARCH_WORD_BITS_64 BOOST_VERSION_NUMBER_AVAILABLE
+#   elif BOOST_ARCH_SH >= BOOST_VERSION_NUMBER(3,0,0)
+#       undef BOOST_ARCH_WORD_BITS_32
+#       define BOOST_ARCH_WORD_BITS_32 BOOST_VERSION_NUMBER_AVAILABLE
+#   else
+#       undef BOOST_ARCH_WORD_BITS_16
+#       define BOOST_ARCH_WORD_BITS_16 BOOST_VERSION_NUMBER_AVAILABLE
+#   endif
+#endif
+
 #define BOOST_ARCH_SH_NAME "SuperH"
 
 #endif

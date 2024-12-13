@@ -39,19 +39,19 @@ examples::
 
 code::
 
-//this is a one minute pop song; you should load something equivalent for testing
+// this is a one minute pop song; you should load something equivalent for testing
 d = Buffer.read(s, "/Volumes/data/stevebeattrack/samples/100.wav");
 
 
-//you can also test at 48000 and it should work
+// you can also test at 48000 and it should work
 (
-a = SynthDef(\help_beattrack, { |out, vol=1.0, beepvol=1.0, lock=0|
+a = SynthDef(\help_beattrack, { |out, vol = 1.0, beepvol = 1.0, lock = 0|
 	var in, fft, resample;
 	var trackb, trackh, trackq, tempo;
 	var bsound, hsound, qsound, beep;
 
-	in = PlayBuf.ar(1,d, BufRateScale.kr(d),1,0,1);
-	//in = SoundIn.ar(0);
+	in = PlayBuf.ar(1, d, BufRateScale.kr(d), 1, 0, 1);
+	// in = SoundIn.ar(0);
 
 	fft = FFT(LocalBuf(1024), in); // for sampling rates 44100 and 48000
 
@@ -64,14 +64,14 @@ a = SynthDef(\help_beattrack, { |out, vol=1.0, beepvol=1.0, lock=0|
 }).play
 )
 
-a.set(\vol,0.0);
-a.set(\vol,1.0);
+a.set(\vol, 0.0);
+a.set(\vol, 1.0);
 
-a.set(\beepvol,1.0);
-a.set(\beepvol,0.0);
+a.set(\beepvol, 1.0);
+a.set(\beepvol, 0.0);
 
-a.set(\lock,1); //fix it rigidly from current phase/period solution
-a.set(\lock,0); //unfix, back to tracking
+a.set(\lock, 1); // fix it rigidly from current phase/period solution
+a.set(\lock, 0); // unfix, back to tracking
 ::
 
 track audio in (try clapping a beat or beatboxing, but allow up to 6 seconds for tracking to begin) and spawning stuff at quarters, eighths and sixteenths:
@@ -91,10 +91,9 @@ SynthDef(\help_beattrack2, { |out|
 
 	hsound = Pan2.ar(BPF.ar(WhiteNoise.ar * Decay.kr(trackh, 0.05), 3000, 0.66), -0.5);
 
-	qsound = Pan2.ar(HPF.ar(WhiteNoise.ar * Decay.kr(trackq, 0.05),5000), 0.5);
+	qsound = Pan2.ar(HPF.ar(WhiteNoise.ar * Decay.kr(trackq, 0.05), 5000), 0.5);
 
 	Out.ar(out, bsound + hsound + qsound);
 }).play;
 )
 ::
-

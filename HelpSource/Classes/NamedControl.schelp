@@ -24,8 +24,7 @@ code::\symbol.ar(values, lags, spec):: is a synonym.
 
 method:: kr
 add a new instance of link::Classes/Control:: (kr) with given name and default values.
-If lags are given, apply a link::Classes/Lag:: UGen to it. If fixedLag is set to true, create a link::Classes/LagControl::
-(lags cannot be modulated then, but fewer UGens are required).
+If lags are given, apply a link::Classes/Lag:: UGen to it. If fixedLag is set to true, create a link::Classes/LagControl:: (lags cannot be modulated then, but fewer UGens are required).
 discussion::
 code::\symbol.kr(values, lags, fixedLag, spec):: is a synonym.
 
@@ -43,8 +42,7 @@ code::\symbol.tr(values, lags, spec):: is a synonym.
 
 method:: new
 add a new instance with the given rate, name and default values.
-If lags are given, apply a link::Classes/Lag:: UGen to it. If fixedLag is set to true, create a link::Classes/LagControl::
-(lags cannot be modulated then, but fewer UGens are required).
+If lags are given, apply a link::Classes/Lag:: UGen to it. If fixedLag is set to true, create a link::Classes/LagControl:: (lags cannot be modulated then, but fewer UGens are required).
 
 Examples::
 code::
@@ -123,7 +121,7 @@ code::
 (
 q = ();
 q.makeEnv = { |q, env, doneAction = 0| EnvGen.kr(env, NamedControl.kr(\gate, 1), doneAction: doneAction) };
-q.chooseNoise = { [ {PinkNoise.ar}, {WhiteNoise.ar}, {LFNoise2.ar(Rand(100, 1000))}].choose.value};
+q.chooseNoise = { [{ PinkNoise.ar }, { WhiteNoise.ar }, { LFNoise2.ar(Rand(100, 1000)) }].choose.value };
 q.filterInput = { |q, in| [
 	{ BPF.ar(in * 15, NamedControl.kr(\freq, 800), 0.2) },
 	{ RHPF.ar(in, NamedControl.kr(\freq, 800, 0.2), 0.2) }
@@ -155,4 +153,3 @@ a = {
 a.set(\freq, 6000); // set filter frequency
 a.set(\gate, -3); // release in 3 seconds
 ::
-

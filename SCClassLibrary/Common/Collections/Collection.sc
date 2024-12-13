@@ -683,15 +683,15 @@ Collection {
 
 	printOn { | stream |
 		if (stream.atLimit) { ^this };
-		stream << this.class.name << "[ " ;
+		stream << this.class.name << "[" ;
 		this.printItemsOn(stream);
-		stream << " ]" ;
+		stream << "]" ;
 	}
 	storeOn { | stream |
 		if (stream.atLimit) { ^this };
-		stream << this.class.name << "[ " ;
+		stream << this.class.name << "[" ;
 		this.storeItemsOn(stream);
-		stream << " ]" ;
+		stream << "]" ;
 	}
 	storeItemsOn { | stream |
 		var addComma = false;

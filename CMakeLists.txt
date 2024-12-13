@@ -96,20 +96,32 @@ endif(WIN32)
 # Compiler flags etc
 
 if (${CMAKE_COMPILER_IS_GNUCXX})
-	exec_program(${CMAKE_CXX_COMPILER} ARGS -dumpversion OUTPUT_VARIABLE _gcc_version)
+    execute_process(
+            COMMAND ${CMAKE_CXX_COMPILER} -dumpversion
+            OUTPUT_VARIABLE _gcc_version
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
 
-	add_definitions("-fschedule-insns2" "-fomit-frame-pointer")
-
-	add_definitions("-Wreturn-type")
+    add_compile_options(
+        -Werror=return-type      # Error out if function definitions lack a return type
+        -fschedule-insns2        # Optimize instruction scheduling
+        -fomit-frame-pointer     # Optimize by omitting the frame pointer where possible
+        -fno-math-errno          # Optimize math functions by not setting errno
+        -fno-signaling-nans      # Assume no signaling NaNs for better optimization
+        -fsigned-zeros           # Maintain distinction between -0.0 and +0.0
+        -fno-associative-math    # Prevent reordering of floating-point operations
+    )
 
 	if(${_gcc_version} VERSION_LESS 4.8)
 		message(FATAL_ERROR "SuperCollider requires at least gcc-4.8 when compiled with gcc.")
 	endif()
 
-	add_definitions("-fno-math-errno -fno-signaling-nans -fsigned-zeros -fno-associative-math")
-
 	if(APPLE)
-		exec_program(${CMAKE_CXX_COMPILER} ARGS --version OUTPUT_VARIABLE _gcc_version_info)
+        execute_process(
+                COMMAND ${CMAKE_CXX_COMPILER} --version
+                OUTPUT_VARIABLE _gcc_version_info
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
 		if ("${_gcc_version_info}" MATCHES "Apple")
 			add_definitions("-fpascal-strings")
 		endif()
@@ -188,10 +200,10 @@ option(FINAL_BUILD "Build as single source file." OFF)
 
 option(FFT_GREEN "Use internal 'Green' FFT lib rather than FFTW. (Not recommended.)" OFF)
 
-if(NOT ${CMAKE_SYSTEM_PROCESSOR} MATCHES "^arm|aarch64")
+if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "^AMD64|EM64T|x86_64|X86|i386|i686")
     option(SSE "Compile with support for SSE instructions." ON)
     option(SSE2 "Compile with support for SSE2 instructions." ON)
-else() # ARM platforms do not have SSE
+else() # non-x86 platforms do not have SSE
     set(SSE OFF)
     set(SSE2 OFF)
 endif()
@@ -253,7 +265,11 @@ endif()
 
 option(SC_SYMLINK_CLASSLIB "Place a symlink of SCCLassLibrary instead of copying" OFF)
 
-option(SC_CLANG_USES_LIBSTDCPP "Use libstdc++ with clang instead of libc++" OFF)
+if(LINUX)
+    option(SC_CLANG_USES_LIBSTDCPP "Use libstdc++ with clang instead of libc++" ON)
+else()
+    option(SC_CLANG_USES_LIBSTDCPP "Use libstdc++ with clang instead of libc++" OFF)
+endif()
 
 option(SYSTEM_ABLETON_LINK "Use link from system" OFF)
 option(SYSTEM_BOOST   "Use boost libraries from system" OFF)
@@ -312,9 +328,6 @@ if(SYSTEM_BOOST)
         add_library(boost_system_lib SHARED IMPORTED)
         set_property(TARGET boost_system_lib PROPERTY IMPORTED_LOCATION
           ${Boost_SYSTEM_LIBRARY})
-        add_library(boost_filesystem_lib SHARED IMPORTED)
-        set_property(TARGET boost_filesystem_lib PROPERTY IMPORTED_LOCATION
-          ${Boost_FILESYSTEM_LIBRARY})
         add_library(boost_program_options_lib SHARED IMPORTED)
         set_property(TARGET boost_program_options_lib PROPERTY
           IMPORTED_LOCATION ${Boost_PROGRAM_OPTIONS_LIBRARY})
@@ -396,8 +409,8 @@ if(MSVC)
     set(${flag} "${${flag}} /wd4996") # The POSIX name for this item is deprecated.
   endforeach()
 
-# this flag causes MSVC to correctly report __cplusplus, which prevents a compiler error 
-# caused by some versions of libsndfile's C++ header redefining nullptr as NULL. 
+# this flag causes MSVC to correctly report __cplusplus, which prevents a compiler error
+# caused by some versions of libsndfile's C++ header redefining nullptr as NULL.
 # See https://devblogs.microsoft.com/cppblog/msvc-now-correctly-reports-__cplusplus/
   add_compile_options("/Zc:__cplusplus")
 

@@ -3,55 +3,73 @@ summary:: Gaussian function oscillator
 categories:: UGens>Generators>Deterministic
 
 description::
-A non-band-limited gaussian function oscillator. Output ranges from strong::minval:: to 1.
+A non-band-limited gaussian function oscillator.
 
-LFGauss implements the formula:
-code::
-f(x) = exp(squared(x - iphase) / (-2.0 * squared(width)))
+teletype::LFGauss:: implements the formula:
+teletype::
+f(x) = exp((x - iphase)^2 / (-2.0 * width^2))
 ::
-where x is to vary in the range -1 to 1 over the period dur. strong::minval:: is the initial value at -1.
+where teletype::x:: in this context is the phase, which cycles in a range teletype::-1:: to teletype::1:: over the period strong::duration::.
+The Gaussian function in this form is a bell-shaped link::https://mathworld.wolfram.com/ApodizationFunction.html##apodization function::, making it convenient for use as an envelope.
+
+Its minimum value occurs when the phase teletype::x = -1:: and teletype::x = 1::, and its maximum occurs when teletype::x = 0::.
 
 classmethods::
 method:: ar, kr
 
 argument:: duration
-duration of one full cycle ( for strong::freq:: input: strong::dur = 1 / freq:: )
+Duration of one cycle, in seconds. (Hint: strong::duration:: teletype::= 1/frequency::). Default: teletype::1::
 argument:: width
-relative width of the bell. Best to keep below 0.25 when used as envelope. (default: 0.1)
-argument:: iphase
-initial offset (default: 0)
-argument:: loop
-if loop is > 0, UGen oscillates. Otherwise it calls doneAction after one cycle (default: 1)
-argument:: doneAction
-doneAction, which is evaluated after cycle completes (2 frees the synth, default: 0).
-See link::Classes/Done:: for more detail.
+The width of the bell curve (its standard deviation).
 
+Practically speaking, a strong::width:: teletype::<= 0.25:: will give minimum values near, but not equal to, zero.
+
+The bell curve becomes broader with increasing strong::width::. Beyond roughly teletype::>= 0.25:: the function has the appearance of being truncated, or, when strong::loop:: teletype::= 1::, the cycles begin to "overlap".
+Default: teletype::0.1::
+argument:: iphase
+Initial offset phase offset in the range teletype::[-1, 1]::. Default: 0
+argument:: loop
+If strong::loop:: teletype::> 0::, the function repeats. Otherwise, it calls strong::doneAction:: after one cycle. Default: 1
+argument:: doneAction
+A teletype::doneAction:: value, which is evaluated at the end of a cycle (if strong::loop:: teletype::= 0::). teletype::2:: frees the synth. Default: teletype::0:: (continues running).
+See link::Classes/Done#Actions:: for more options.
+
+discussion::
+By default, the maximum value of teletype::LFGauss:: is teletype::1::.
+The minimum value will depend on the strong::width::, and can by inspected with link::#-minval::.
+
+The function can be mapped to a specified range with link::#-range::, which can be useful when using teletype::LFGauss:: as an envelope that may need to span a range of, e.g., teletype::[0, 1]::.
+
+See the examples below for understanding and manipulating the link::#Min and max values, curve width::.
 
 instancemethods::
+
 method::minval
 
-Returns the lowest value for the given parameters, which is code::exp(1.0 / (-2.0 * squared(width)))::
+Returns the function's lowest value for the given strong::width:: parameter, which is teletype::exp(1.0 / (-2.0 * width^2))::.
 
 method::range
 
-Scales the output to the given range. This can be convenient when using LFGauss as an envelope (see example below).
+Scales the output to the given range. This can be convenient when using teletype::LFGauss:: as an envelope (see link::#examples:: below).
 
 code::
-{ LFGauss.ar(0.01, 0.6).range }.plot;
-{ LFGauss.ar(0.01, 0.6) }.plot; // starts at about 0.25
+// high width, curve minimum around is 0.25
+{ LFGauss.ar(0.01, 0.6) }.plot;
+// use .range to map the same function to a specified range
+{ LFGauss.ar(0.01, 0.6).range(0, 2) }.plot;
 ::
 
 examples::
 
-subsection:: Some plots
+subsection:: Example plots
 
 code::
-s.boot ;
+s.boot;
 
 // a 0.1 second grain
 { LFGauss.ar(0.1, 0.12) }.plot(0.1);
 
-// shifting left
+// shift a half-cycle left
 { LFGauss.ar(0.1, 0.12, -1, loop: 0) }.plot(0.1);
 
 // moving further away from the center
@@ -61,18 +79,19 @@ s.boot ;
 { LFGauss.ar(0.065, 0.12, 0, loop: 1) }.plot(0.3);
 ::
 
-subsection:: Some calculations
+subsection:: Min and max values, curve width
 
-assuming iphase = 0:
+link::#-minval:: for a given strong::width:: (assuming strong::iphase:: teletype::= 0::) is:
 
-strong::minval:: for a given width:
-code::minval = exp(-1.0 / (2.0 * squared(width)))::
+teletype::minval = exp(-1.0 / (2.0 * squared(width)))::
 
-strong::width:: for a given minval:
-code::width = sqrt(-1.0 / log(minval))::
+strong::width:: for a given link::#-minval:: is:
 
-strong::width at half maximum (0.5):::
-code::(2 * sqrt(2 * log(2)) * width) = ca. 2.355 * width::
+teletype::width = sqrt(-1.0 / log(minval))::
+
+strong::width:: at half of the maximum value(teletype::0.5::) is:
+
+teletype::(2 * sqrt(2 * log(2)) * width) = ca. 2.355 * width::
 
 code::
 // minval for a width of 0.1:
@@ -80,7 +99,7 @@ code::
 
 // maximum width for a beginning at -60dB:
 // we want the beginning small enough to avoid clicks
-sqrt(-1 / ( 2 * log(-60.dbamp))) // 0.269
+sqrt(-1 / (2 * log(-60.dbamp))) // 0.269
 
 // minval for width of 0.25
 (exp(1 / (-2.0 * squared(0.25)))).ampdb // -70dB
@@ -88,9 +107,8 @@ sqrt(-1 / ( 2 * log(-60.dbamp))) // 0.269
 // maximum is always 1:
 { LFGauss.ar(0.1, XLine.kr(1, 0.03, 1), 0, loop: 1) }.plot(1);
 
-// a gauss curve in sclang:
+// a gaussian curve in sclang:
 (0..1000).normalize(-1, 1).collect(_.gaussCurve(1, 0, 0.1)).plot;
-
 
 // rescale the function to the range 0..1
 (
@@ -132,62 +150,58 @@ code::
 // for very small width we are "approaching" a dirac function
 { LFGauss.ar(0.01, SampleDur.ir * MouseX.kr(10, 3000, 1)) * 0.2 }.play;
 
-// dur and width can be modulated at audio rate
-(
-{ 	var dur = SinOsc.ar(MouseX.kr(2, 1000, 1) * [1, 1.1]).range(0.0006, 0.01);
+( // dur and width can be modulated at audio rate
+{
+	var dur = SinOsc.ar(MouseX.kr(2, 1000, 1) * [1, 1.1]).range(0.0006, 0.01);
 	var width = SinOsc.ar(0.5 * [1, 1.1]).range(0.01, 0.3);
 	LFGauss.ar(dur, width) * 0.2
 }.play
-);
+)
 
-
-// several frequencies and widths combined
-(
+( // several frequencies and widths combined
 {
 	var mod = LFGauss.ar(MouseX.kr(1, 0.07, 1), 1 * (MouseY.kr(1, 3) ** (-1..-6)));
 	var carr = SinOsc.ar(200 * (1.3 ** (0..5)));
 	(carr * mod).sum * 0.1
-}.play;
+}.play
 )
 
-// test spectrum
-(
+( // test spectrum
 {
 	var son = LeakDC.ar(LFGauss.ar(0.005, 0.2));
 	BPF.ar(son * 3, MouseX.kr(60, 2000, 1), 0.05)
-}.play;
+}.play
 )
 ::
 
 subsection:: Gabor Grain
 
 note::
-The gaussian function doesn't start with 0 – it asymptotically approaches it at code::-inf:: and code::inf::. When using it as an envelope, it has to start at some smaller value, and it has an offset for this value. You can remove this offset by explicitly setting the strong::range::, e.g. to code::0..1:: (this is the default).
+The gaussian function doesn't start with teletype::0:: – it asymptotically approaches it at teletype::-inf:: and teletype::inf::. When using it as an envelope, it has to start at some smaller value, and it has an offset for this value. You can remove this offset by explicitly setting the link::#-range::, e.g. to teletype::[0, 1]:: (this is the default).
 ::
 
 
 
 code::
+// first, visualize LFGauss as a granular envelope on a sine oscillator
 (
 var freq = 1000;
 var ncycles = 10;
 var width = 0.25;
 var dur = ncycles / freq;
 {
-
 	var env = LFGauss.ar(dur, width, loop: 0, doneAction: Done.freeSelf).range;
 	var son = FSinOsc.ar(freq, 0.5pi, env);
 	son
 }.plot(dur);
 )
 
-
+// ... now as a SynthDef
 (
-SynthDef(\gabor, { |out, i_freq = 440, i_sustain = 1, i_pan = 1, i_amp = 0.1, i_width = 0.25 |
+SynthDef(\gabor, { |out, i_freq = 440, i_sustain = 1, i_pan = 1, i_amp = 0.1, i_width = 0.25|
 	var env = LFGauss.ar(i_sustain, i_width, loop: 0, doneAction: Done.freeSelf).range;
 	var son = FSinOsc.ar(i_freq, 0.5pi, env);
 	OffsetOut.ar(out, Pan2.ar(son, i_pan, i_amp));
-
 }).add;
 )
 
@@ -196,7 +210,7 @@ SynthDef(\gabor, { |out, i_freq = 440, i_sustain = 1, i_pan = 1, i_amp = 0.1, i_
 Pdef(\x,
 	Pbind(
 		\instrument, \gabor,
-		\freq, Pbrown(step:0.01).linexp(0, 1, 100, 14000),
+		\freq, Pbrown(step: 0.01).linexp(0, 1, 100, 14000),
 		\dur, Pbrown().linexp(0, 1, 0.004, 0.02),
 		\legato, Pbrown(1, 3, 0.1, inf),
 		\pan, Pwhite() * Pbrown()
@@ -217,13 +231,13 @@ Pdef(\x,
 ).play
 )
 
-// compare with sine grain.
+// compare with sine grain:
+// evaluate this SynthDef and re-run the above Pdefs
 (
-SynthDef(\gabor, { |out, i_freq = 440, i_sustain = 1, i_pan = 1, i_amp = 0.1, i_width=0.25 |
+SynthDef(\gabor, { |out, i_freq = 440, i_sustain = 1, i_pan = 1, i_amp = 0.1, i_width = 0.25|
 	var env = EnvGen.ar(Env.sine(i_sustain * i_width), doneAction: Done.freeSelf);
 	var son = FSinOsc.ar(i_freq, 0.5pi, env);
 	OffsetOut.ar(out, Pan2.ar(son, i_pan, i_amp));
-
 }).add;
 )
 ::

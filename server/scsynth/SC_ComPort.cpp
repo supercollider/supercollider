@@ -258,13 +258,15 @@ public:
         udpSocket.open(protocol);
 
         udpSocket.bind(ip::udp::endpoint(boost::asio::ip::address::from_string(bindTo), inPortNum));
+        if (inPortNum == 0)
+            mPortNum = udpSocket.local_endpoint().port();
 
         boost::asio::socket_base::send_buffer_size option(65536);
         udpSocket.set_option(option);
 
 #ifdef USE_RENDEZVOUS
         if (world->mRendezvous) {
-            SC_Thread thread(boost::bind(PublishPortToRendezvous, kSCRendezvous_UDP, sc_htons(mPortNum)));
+            SC_Thread thread(boost::bind(PublishPortToRendezvous, kSCRendezvous_UDP, mPortNum));
             mRendezvousThread = std::move(thread);
         }
 #endif
@@ -404,7 +406,9 @@ public:
 
 #ifdef USE_RENDEZVOUS
         if (world->mRendezvous) {
-            SC_Thread thread(boost::bind(PublishPortToRendezvous, kSCRendezvous_TCP, sc_htons(inPortNum)));
+            SC_Thread thread(boost::bind(PublishPortToRendezvous, kSCRendezvous_TCP,
+                                         inPortNum == 0 ? acceptor.local_endpoint().port() : inPortNum));
+
             mRendezvousThread = std::move(thread);
         }
 #endif
@@ -443,12 +447,10 @@ SC_TcpConnection::~SC_TcpConnection() { mParent->connectionDestroyed(); }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 static void asioFunction() {
+    /* NB: on macOS we just keep the default thread priority */
 #ifdef NOVA_TT_PRIORITY_RT
-    std::pair<int, int> priorities = nova::thread_priority_interval_rt();
-    nova::thread_set_priority_rt((priorities.first + priorities.second) / 2);
-#else
-    std::pair<int, int> priorities = nova::thread_priority_interval();
-    nova::thread_set_priority(priorities.second);
+    int priority = nova::thread_priority_interval_rt().first;
+    nova::thread_set_priority_rt(priority);
 #endif
 
     boost::asio::io_service::work work(ioService);
@@ -516,9 +518,7 @@ template <typename T, typename... Args> static bool protectedOpenPort(const char
         }
     } catch (const std::exception& exc) {
         scprintf("\n*** ERROR: failed to open %s socket: %s\n", socketType, exc.what());
-    } catch (...) {
-        scprintf("\n*** ERROR: failed to open %s socket: Unknown error\n", socketType);
-    }
+    } catch (...) { scprintf("\n*** ERROR: failed to open %s socket: Unknown error\n", socketType); }
     return false;
 }
 

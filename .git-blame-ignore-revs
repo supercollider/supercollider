@@ -1,0 +1,9 @@
+# .git-blame-ignore-revs
+# see https://docs.github.com/en/repositories/working-with-files/using-files/viewing-a-file#ignore-commits-in-the-blame-view
+
+# clang-14 update
+2027bac572540fc82f24306ea4f91798c795e50b
+# clang formatting
+f806ace7bd8565dd174e7d47a1b32aaa4175a46e
+# single blank line as file ending in sc files https://github.com/supercollider/supercollider/pull/6346
+004109ed1d299a1baf14c1e8d0faca12ed14fd42

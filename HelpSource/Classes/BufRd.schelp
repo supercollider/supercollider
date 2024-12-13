@@ -22,7 +22,7 @@ integer. The architecture of the SynthDef cannot change after it
 is compiled.
 note::
 If you supply a  code::bufnum::  of a buffer that has a
-different  code::numChannels::  then you have specified to
+different  code::numChannels:: than you have specified to
 the BufRd, it will post a warning and output the channels it can.
 ::
 
@@ -54,24 +54,24 @@ s = Server.local;
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 )
 
-//use any AUDIO rate ugen as an index generator
+// use any AUDIO rate ugen as an index generator
 
 { BufRd.ar(1, b, SinOsc.ar(0.1) * BufFrames.ir(b)) }.play;
 { BufRd.ar(1, b, LFNoise1.ar(1) * BufFrames.ir(b)) }.play;
 { BufRd.ar(1, b, LFNoise1.ar(10) * BufFrames.ir(b)) }.play;
 { BufRd.ar(1, b, LFTri.ar(0.1) + LFTri.ar(0.23) * BufFrames.ir(b)) }.play;
 // original duration
-{ BufRd.ar(1, b, LFSaw.ar(BufDur.ir(b).reciprocal).range(0, BufFrames.ir(b)) ) }.play;
+{ BufRd.ar(1, b, LFSaw.ar(BufDur.ir(b).reciprocal).range(0, BufFrames.ir(b))) }.play;
 
 
-//use a phasor index into the file
+// use a phasor index into the file
 
 { BufRd.ar(1, b, Phasor.ar(0, BufRateScale.kr(b), 0, BufFrames.kr(b))) }.play;
 
 
-//change rate and interpolation
+// change rate and interpolation
 (
-x = { arg rate=1, inter=2;
+x = { |rate = 1, inter = 2|
 	BufRd.ar(1, b, Phasor.ar(0, BufRateScale.kr(b) * rate, 0, BufFrames.kr(b)), 1, inter)
 }.play;
 )
@@ -82,19 +82,19 @@ x.set(\inter, 1);
 x.set(\inter, 0);
 
 
-//write into the buffer with a BufWr
+// write into the buffer with a BufWr
 (
-y = { arg rate=1;
+y = { |rate = 1|
 	var in;
 	in = SinOsc.ar(LFNoise1.kr(2, 300, 400), 0, 0.1);
 	BufWr.ar(in, b, Phasor.ar(0, BufRateScale.kr(b) * rate, 0, BufFrames.kr(b)));
-	0.0 //quiet
+	0.0 // quiet
 }.play;
 )
 
-//read it with a BufRd
+// read it with a BufRd
 (
-x = { arg rate=1;
+x = { |rate = 1|
 	BufRd.ar(1, b, Phasor.ar(0, BufRateScale.kr(b) * rate, 0, BufFrames.kr(b)))
 }.play;
 )
@@ -108,4 +108,3 @@ x.set(\rate, 2);
 b.free
 
 ::
-

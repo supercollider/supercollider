@@ -36,6 +36,11 @@ http://en.wikipedia.org/wiki/System/370[System/370] architecture.
 #   define BOOST_ARCH_SYS370_AVAILABLE
 #endif
 
+#if BOOST_ARCH_SYS370
+#   undef BOOST_ARCH_WORD_BITS_32
+#   define BOOST_ARCH_WORD_BITS_32 BOOST_VERSION_NUMBER_AVAILABLE
+#endif
+
 #define BOOST_ARCH_SYS370_NAME "System/370"
 
 #endif

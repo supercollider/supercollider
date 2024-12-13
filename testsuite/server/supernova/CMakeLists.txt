@@ -29,5 +29,9 @@ foreach(test ${simple_tests})
 
   target_link_libraries(${test_name} boost_test libsupernova boost_thread_lib)
 
+  if(LINUX AND CMAKE_COMPILER_IS_CLANG)
+    target_link_libraries(${test_name} atomic)
+  endif()
+
   add_test(${test_name}_run ${EXECUTABLE_OUTPUT_PATH}/${test_name})
 endforeach(test)

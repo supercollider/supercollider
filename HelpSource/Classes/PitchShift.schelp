@@ -39,15 +39,11 @@ code::pitchRatio:: .
 
 argument::timeDispersion
 
-A random offset of from zero to
-
-code::timeDispersion::  seconds is added to the
+A random offset from zero to code::timeDispersion:: seconds is added to the
 delay of each grain. Use of some dispersion can alleviate a hard
 comb filter effect due to uniform grain placement. It can also be
 an effect in itself.
-code::timeDispersion::  can be
-no larger than
-code::windowSize:: .
+code::timeDispersion:: can be no larger than code::windowSize::.
 
 
 argument::mul
@@ -67,7 +63,7 @@ code::
 (
 play({
 	z = Blip.ar(800, 6, 0.1);
-	PitchShift.ar(z, 0.02, Line.kr(0.1,4,20), 0, 0.0001)
+	PitchShift.ar(z, 0.02, Line.kr(0.1, 4, 20), 0, 0.0001)
 }))
 
 (
@@ -76,7 +72,7 @@ play({
 	PitchShift.ar(
 		SoundIn.ar([0, 1]),	// stereo audio input
 		0.1, 			// grain size
-		MouseX.kr(0,2),	// mouse x controls pitch shift ratio
+		MouseX.kr(0, 2),	// mouse x controls pitch shift ratio
 		0, 				// pitch dispersion
 		0.004			// time dispersion
 	)
@@ -92,7 +88,7 @@ play({
 		SoundIn.ar([0, 1]),
 		grainSize,
 		1,						// nominal pitch rate = 1
-		MouseX.kr(0,1), 			// pitch dispersion
+		MouseX.kr(0, 1), 			// pitch dispersion
 		MouseY.kr(0, grainSize)	// time dispersion
 	)
 }))

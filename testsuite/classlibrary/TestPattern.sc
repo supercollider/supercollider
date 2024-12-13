@@ -69,6 +69,9 @@ TestPattern : UnitTest {
 		};
 		var identical = [
 			Pbind(\x, 7) <> (y:  8),
+			Pbind(x: 7, y: 8),
+			Pbind(\x, 7, y: 8),
+			Pbind(\y, 8, x: 7),
 			Pbind(\y, 8) <> (x:  7),
 			Pbind(\x, 7, \y, 8),
 			Pn((x: 7, y: 8)),
@@ -245,4 +248,3 @@ TestPattern : UnitTest {
 
 
 }
-

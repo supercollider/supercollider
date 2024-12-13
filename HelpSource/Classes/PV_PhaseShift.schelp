@@ -32,7 +32,7 @@ code::
 s.boot;
 
 (
-SynthDef("help-phaseShift", { arg out=0;
+SynthDef("help-phaseShift", { |out = 0|
         var in, chain;
         in = SinOsc.ar(500);
         chain = FFT(LocalBuf(2048), in);
@@ -41,4 +41,3 @@ SynthDef("help-phaseShift", { arg out=0;
 }).play(s);
 )
 ::
-

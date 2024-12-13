@@ -92,7 +92,7 @@ private:
     void createActions(Settings::Manager*);
     void updateActionShortcuts(Settings::Manager*);
     void zoomFont(int steps);
-    QTextCharFormat formatForPostLine(QStringRef line);
+    QTextCharFormat formatForPostLine(QString line);
 
     QAction* mActions[ActionCount];
     /*

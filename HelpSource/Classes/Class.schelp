@@ -1,5 +1,5 @@
 class::Class
-summary::A Class describes the structure and implementation of a set objects which are its instances.
+summary::A Class describes the structure and implementation of a set of objects which are its instances.
 categories::Core>Kernel, Language>OOP
 related:: Guides/WritingClasses, Reference/Classes
 
@@ -166,4 +166,3 @@ An Array of the initial values of class variables.
 method::filenameSymbol
 
 A Symbol which is a path to the file which defines the Class.
-

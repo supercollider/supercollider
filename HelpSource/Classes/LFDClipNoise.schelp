@@ -11,7 +11,7 @@ by the  code::freq::  argument, with two differences:
 list::
 ## no time quantization
 ## fast recovery from low freq values footnote::
-link::Classes/LFClipNoise:: , as well as  link::Classes/LFNoise0:: ,
+link::Classes/LFClipNoise::, as well as  link::Classes/LFNoise0::,
 link::Classes/LFNoise1::  and  link::Classes/LFNoise2::  quantize to the
 nearest integer division of the samplerate, and they poll the
 code::freq::  argument only when scheduled; thus they often
@@ -20,7 +20,7 @@ seem to hang when freqs get very low.
 ::
 
 If you don't need very high or very low freqs, or use fixed freqs,
-link::Classes/LFDClipNoise::  is more efficient.
+link::Classes/LFClipNoise::  is more efficient.
 
 
 classmethods::
@@ -42,9 +42,9 @@ code::
 // try wiggling the mouse quickly;
 // LFNoise frequently seems stuck, LFDNoise changes smoothly.
 
-{ LFClipNoise.ar(MouseX.kr(0.1, 1000, 1), 0.1)  }.play
+{ LFClipNoise.ar(MouseX.kr(0.1, 1000, 1), 0.1) }.play
 
-{ LFDClipNoise.ar(MouseX.kr(0.1, 1000, 1), 0.1)  }.play
+{ LFDClipNoise.ar(MouseX.kr(0.1, 1000, 1), 0.1) }.play
 
 // silent for 2 secs before going up in freq
 
@@ -59,4 +59,3 @@ code::
 
 { LFDClipNoise.ar(XLine.kr(1000, 20000, 10), 0.1) }.scope;
 ::
-

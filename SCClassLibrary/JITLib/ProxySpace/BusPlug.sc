@@ -305,10 +305,10 @@ BusPlug : AbstractFunction {
 		if(this.isNeutral.not) { ^bus.scope(bufsize, zoom) } { "Can't scope unintitialized bus".warn }
 	}
 
-	plot { | duration = 0.01, bounds, minval, maxval, separately = false |
+	plot { | duration = 0.01, bounds, minval, maxval, separately = false, parent |
 		^if(this.isNeutral.not) {
 			this.wakeUp;
-			bus.plot(duration, bounds, minval, maxval, separately);
+			bus.plot(duration, bounds, minval, maxval, separately, parent);
 		} { "Can't plot unintitialized bus".warn; nil }
 	}
 

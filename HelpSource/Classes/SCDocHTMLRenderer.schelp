@@ -1,12 +1,14 @@
 class:: SCDocHTMLRenderer
 summary:: Render SCDoc markup text to HTML
 categories:: HelpSystem
-related:: Classes/SCDoc, Guides/WritingHelp, Reference/SCDocSyntax
+related:: Classes/SCDoc, Guides/WritingHelp, Reference/SCDocSyntax, Reference/SCDocStyling
 
 description::
 This class is part of the SCDoc help system, and handles the rendering of the parsed document tree into HTML output.
 
 In normal cases you won't need to use this class directly, link::Classes/SCDoc:: uses this class by default to render help files.
+
+For CSS styling, see link::Reference/SCDocStyling::.
 
 classmethods::
 
@@ -39,5 +41,4 @@ Returns:: A link::Classes/String:: representing the arguments (with defaults) fo
 section:: CSS styling
 The rendered HTML reads the global style from teletype::scdoc.css::, but also reads teletype::frontend.css:: and teletype::custom.css:: (in that order) if available, to enable specific frontends and users to override the CSS.
 
-So to customise the CSS, the user can create a teletype::custom.css:: in their link::Classes/SCDoc#*helpTargetDir:: or at the root of any HelpSource directory (for example in teletype::YourExtension/HelpSource/custom.css:: ).
-
+So to customise the CSS, the user can create a teletype::custom.css:: in their link::Classes/SCDoc#*helpTargetDir:: or at the root of any HelpSource directory (for example in teletype::YourExtension/HelpSource/custom.css::).

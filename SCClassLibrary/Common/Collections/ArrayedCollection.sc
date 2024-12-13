@@ -321,15 +321,17 @@ ArrayedCollection : SequenceableCollection {
 	}
 
 	// concepts borrowed from J programming language
+	isRectangular {
+	    _ArrayIsRectangular
+		^this.primitiveFailed
+	}
 	rank {
-		// rank is the number of dimensions in a multidimensional array.
-		// see also Object-rank
-		// this assumes every element has the same rank
-		^1 + this.first.rank
+        // precondition: isRectangular
+        ^1 + this.first.rank
 	}
 	shape {
-		// this assumes every element has the same shape
-		^[this.size] ++ this[0].shape
+        // precondition: isRectangular
+        ^[this.size] ++ this[0].shape
 	}
 	reshape { arg ... shape;
 		var size = shape.product;
@@ -452,11 +454,13 @@ ArrayedCollection : SequenceableCollection {
 }
 
 RawArray : ArrayedCollection {
-	// species { ^this.class }
 	archiveAsCompileString { ^true }
 	archiveAsObject { ^true }
 
 	rate { ^\scalar }
+	isRectangular { ^true }
+	shape { ^[this.size] }
+	rank { ^1 }
 
 	readFromStream { |stream, method|
 		if(method.notNil) {
@@ -481,6 +485,11 @@ Int8Array[int8] : RawArray {
 
 	readFromStream { |stream|
 		super.readFromStream(stream, \getInt8);
+	}
+
+	parseOSC {
+		_OSCBytes_Array
+		^this.primitiveFailed
 	}
 }
 

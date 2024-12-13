@@ -173,10 +173,10 @@ subsection:: Basic Example
 code::
 (
 var window, size = 32; // try different sizes - from 15 to 200 or more!
-window = Window.new("Knob", Rect(640,630,270,70)).front;
+window = Window.new("Knob", Rect(640, 630, 270, 70)).front;
 k = Knob.new(window, Rect(20, 10, size, size));
-k.action_({|v,x,y,m| postf("action func called: %\n", v.value); });
-//k.color[1] = Color.gray(alpha:0);
+k.action_({ |v, x, y, m| postf("action func called: %\n", v.value) });
+// k.color[1] = Color.gray(alpha: 0);
 )
 
 k.value
@@ -219,13 +219,13 @@ Center mode is useful for pan or eq gain control etc.
 code::
 (
 var window;
-window = Window.new("Pan Knob", Rect(640,630,270,70)).front;
-k = Knob.new(window, Rect(20,10,36,36));
-k.action_({|v,x,y,m| \pan.asSpec.map(v.value).postln; })
+k = Knob.new(window, Rect(20, 10, 36, 36));
+window = Window.new("Pan Knob", Rect(640, 630, 270, 70)).front;
+k.action_({ |v, x, y, m| \pan.asSpec.map(v.value).postln })
 //  .mode_(\horiz)
     .centered_(false)
     .value_(\pan.asSpec.unmap(0)); // 0.5
-//k.color[1] = Color.gray(alpha:0);
+// k.color[1] = Color.gray(alpha: 0);
 )
 k.centered
 k.centered = true
@@ -240,10 +240,10 @@ link::#-step:: only affects the 'horiz' and 'vert' modes:
 code::
 (
 var window, midispec;
-midispec = [0,127,'linear',1].asSpec;
-window = Window.new("step Knob", Rect(640,630,270,70)).front;
-k = Knob.new(window, Rect(20,10,32,32));
-k.action_({|v,x,y,m| midispec.map(v.value).postln; })
+k = Knob.new(window, Rect(20, 10, 32, 32));
+midispec = [0, 127, 'linear', 1].asSpec;
+window = Window.new("step Knob", Rect(640, 630, 270, 70)).front;
+k.action_({ |v, x, y, m| midispec.map(v.value).postln })
        .value_(midispec.unmap(0));
 
 k.mode = \vert;
@@ -262,17 +262,17 @@ subsection:: mouseOverAction
 code::
 (
 var size = 28;
-w = Window.new("Knobs", Rect(250,500,270,70));
-w.acceptsMouseOver=true; // must be true in parent window!
+w = Window.new("Knobs", Rect(250, 500, 270, 70));
+w.acceptsMouseOver = true; // must be true in parent window!
 w.view.decorator = FlowLayout(w.view.bounds);
 h = StaticText(w, 150 @ 10);
 w.view.decorator.nextLine;
 k = Array(8);
-8.do({|item, i|
+8.do({ |item, i|
     var knob;
     knob = Knob.new(w, size @ size)
-        .action_({|v,x,y,m| h.string = "val: " ++ v.value.asString; })
-        .mouseOverAction_({|v,x,y| h.string = "val: " ++ v.value.asString; });
+        .action_({ |v, x, y, m| h.string = "val: " ++ v.value.asString })
+        .mouseOverAction_({ |v, x, y| h.string = "val: " ++ v.value.asString });
 
     k = k.add(knob);
 });
@@ -287,22 +287,22 @@ subsection:: Drag and Drop
 code::
 (
 var w, txt, size = 36;
-w = Window.new("Knobs", Rect(400,400,250,100)).front;
-w.acceptsMouseOver=true;
+w = Window.new("Knobs", Rect(400, 400, 250, 100)).front;
+w.acceptsMouseOver = true;
 w.view.decorator = FlowLayout(w.view.bounds).gap_(10 @ 10).margin_(10 @10);
 txt = StaticText(w, 200 @ 14);
 w.view.decorator.nextLine;
 
 k = Knob(w, size @ size);
-k.action = {arg v,x,y;  v.value.postln; txt.string_("value: " ++ v.value); };
-k.mouseOverAction = {|v| txt.string_("value: " ++ v.value); };
+k.action = { |v, x, y|  v.value.postln; txt.string_("value: " ++ v.value) };
+k.mouseOverAction = { |v| txt.string_("value: " ++ v.value) };
 
 j = Knob(w, size @ size);
-j.action = {arg v,x,y;  j.value.postln; txt.string_("value: " ++ v.value); };
-j.mouseOverAction = { txt.string_("value: " ++ j.value); };
+j.action = { |v, x, y|  j.value.postln; txt.string_("value: " ++ v.value) };
+j.mouseOverAction = { txt.string_("value: " ++ j.value) };
 
 n = NumberBox(w, 100 @ 20);
-//n.setProperty(\boxColor,Color.grey(alpha:0.0));
+// n.setProperty(\boxColor, Color.grey(alpha: 0.0));
 n.value = 0.0;
 )
 
@@ -314,9 +314,9 @@ k.canReceiveDragHandler = { View.currentDrag.isFloat }; // accept only if drag i
 
 k.receiveDragHandler = { ("value dropped in: " ++ View.currentDrag).postln }
 
-k.receiveDragHandler = { k.valueAction = View.currentDrag.clip(0.0, 1.0); }
+k.receiveDragHandler = { k.valueAction = View.currentDrag.clip(0.0, 1.0) }
 
-k.beginDragAction = { ("drag out -> " ++ k.value).postln; }
+k.beginDragAction = { ("drag out -> " ++ k.value).postln }
 
-k.beginDragAction = { k.value.asFloat; }
+k.beginDragAction = { k.value.asFloat }
 ::

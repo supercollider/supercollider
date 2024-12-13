@@ -177,7 +177,7 @@ Order : SequenceableCollection {
 
 	storeOn { arg stream;
 		stream << this.class.name;
-		stream << ".newFromIndices( " <<<* [ array, indices ] << " )";
+		stream << ".newFromIndices(" <<<* [array, indices] << ")";
 	}
 }
 
@@ -430,9 +430,9 @@ SparseArray : Order {
 
 	storeOn { | stream |
 		if (stream.atLimit) { ^this };
-		stream << this.class.name << "[ " ;
+		stream << this.class.name << "[" ;
 		this.storeItemsOn(stream);
-		stream << " ]" ;
+		stream << "]" ;
 	}
 
 	// private implementation

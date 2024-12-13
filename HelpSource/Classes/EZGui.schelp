@@ -61,7 +61,7 @@ method:: widget
 Returns the active widget. Subclasses will typically refer to it or ignore it, e.g.:
 code::
 MyEZClass{
-	myOtherMethods{}
+	myOtherMethods{ }
 	....
 	listView{ ^widget }
 }
@@ -99,4 +99,3 @@ Only defined by some subclasses. Sets the code::resize::  and code::align:: of a
 
 method:: prMakeMarginGap
 Called in the init method of all subclasses. Sets the margin and gap of code::view::. By default, it tries to get its parent's gap, otherwise it defaults to code::2@2::. Setting code::argGap:: overrides these.
-

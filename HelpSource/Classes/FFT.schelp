@@ -92,7 +92,7 @@ code::
 (
 {
 	var in, chain;
-	in = SinOsc.ar(SinOsc.kr(SinOsc.kr(0.08,0,6,6.2).squared, 0, 100, 800));
+	in = SinOsc.ar(SinOsc.kr(SinOsc.kr(0.08, 0, 6, 6.2).squared, 0, 100, 800));
 	chain = FFT(LocalBuf(2048), in);
 	IFFT(chain)
 }.play;
@@ -101,8 +101,8 @@ code::
 (
 {
 	var in, chain;
-	in = SinOsc.ar(SinOsc.kr(SinOsc.kr(0.08,0,6,6.2).squared, 0, 100,800));
-	//in = WhiteNoise.ar(0.2);
+	in = SinOsc.ar(SinOsc.kr(SinOsc.kr(0.08, 0, 6, 6.2).squared, 0, 100, 800));
+	// in = WhiteNoise.ar(0.2);
 	chain = FFT(LocalBuf(2048), in);
 	chain = PV_MagAbove(chain, 310);
 	0.5 * IFFT(chain);
@@ -134,8 +134,8 @@ code::
 	var in, chain;
 	in = WhiteNoise.ar(0.2);
 	chain = FFT(LocalBuf(2048), in);
-	chain = PV_RectComb(chain, 8, LFTri.kr(0.097,0,0.4,0.5),
-		LFTri.kr(0.24,0,-0.5,0.5));
+	chain = PV_RectComb(chain, 8, LFTri.kr(0.097, 0, 0.4, 0.5),
+		LFTri.kr(0.24, 0, -0.5, 0.5));
 	IFFT(chain)
 }.play;
 )
@@ -143,10 +143,10 @@ code::
 (
 {
 	var in, chain;
-	in = SinOsc.ar(LFNoise1.kr(5.2,250,400));
+	in = SinOsc.ar(LFNoise1.kr(5.2, 250, 400));
 	chain = FFT(LocalBuf(2048), in);
 	// moves in and out of freeze
-	chain = PV_MagFreeze(chain, SinOsc.kr(0.2) );
+	chain = PV_MagFreeze(chain, SinOsc.kr(0.2));
 	0.5 * IFFT(chain);
 }.play;
 )
@@ -157,13 +157,12 @@ code::
 (
 {
 	var in, chain;
-	in = SinOsc.ar(LFNoise1.kr([5.2, 3.3],250,400));
+	in = SinOsc.ar(LFNoise1.kr([5.2, 3.3], 250, 400));
 	chain = FFT({ LocalBuf(2048) } ! 2, in); // we need two buffers for stereo input.
 	// moves in and out of freeze
-	chain = PV_MagFreeze(chain, SinOsc.kr([0.2, 0.3]) );
+	chain = PV_MagFreeze(chain, SinOsc.kr([0.2, 0.3]));
 	0.5 * IFFT(chain);
 }.play;
 )
 
 ::
-

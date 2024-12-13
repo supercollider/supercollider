@@ -1,7 +1,7 @@
 class::AbstractFunction
 summary::An object which responds to a set of messages that represent mathematical functions
 categories::Core>Kernel
-related::Classes/UGen,Classes/Pattern,Classes/Function,Overviews/Operators
+related::Classes/UGen, Classes/Pattern, Classes/Function, Overviews/Operators
 
 description::
 
@@ -491,7 +491,7 @@ code::
 (
 var f, g, product;
 f = { SinOsc.ar(400) };
-g = { LFPulse.kr(8)  };
+g = { LFPulse.kr(8) };
 product = f * g * 0.1;
 { Pan2.ar(product, SinOsc.kr(0.3)) }.play;
 )
@@ -501,19 +501,19 @@ method::sampled
 Sample a function.
 discussion::
 code::
-//sample a function
+// sample a function
 f = { |x| sin(3*x)*cos(8*x) }
-f.plotGraph(from:0,to:2);
-f.sampled(10,0,2).plotGraph(from:0,to:2);
-f.sampled(80,0,2).plotGraph(from:0,to:2);
+f.plotGraph(from: 0, to: 2);
+f.sampled(10, 0, 2).plotGraph(from: 0, to: 2);
+f.sampled(80, 0, 2).plotGraph(from: 0, to: 2);
 
-//on complicated functions a sampled function is less cpy heavy.
-f = { |x| 60.collect{ 2**((x-rrand(0.0,1.0))) }.sum/60 };
-f.plotGraph(from:0,to:1);
+// on complicated functions a sampled function is less cpy heavy.
+f = { |x| 60.collect{ 2**((x-rrand(0.0, 1.0))) }.sum/60 };
+f.plotGraph(from: 0, to: 1);
 g = f.sampled(200);
-g.plotGraph(from:0,to:1);
-{ 200.collect{ f.(rand(0.0,1.0)) } }.bench;
-{ 200.collect{ g.(rand(0.0,1.0)) } }.bench;
+g.plotGraph(from: 0, to: 1);
+{ 200.collect{ f.(rand(0.0, 1.0)) } }.bench;
+{ 200.collect{ g.(rand(0.0, 1.0)) } }.bench;
 ::
 
 method::plotGraph
@@ -540,6 +540,8 @@ See link::Reference/plot::
 argument:: maxval
 See link::Reference/plot::
 argument:: separately
+See link::Reference/plot::
+argument:: parent
 See link::Reference/plot::
 
 returns:: a link::Classes/Plotter::
@@ -610,16 +612,16 @@ y.value;
 code::
 // arguments are passed into both functions
 
-y = { |x=0| x } + { 1.0.rand };
+y = { |x = 0| x } + { 1.0.rand };
 y.value(10);
 
 
-y = { |x=0| x * 3 } + { |x=0| x + 1.0.rand };
+y = { |x = 0| x * 3 } + { |x = 0| x + 1.0.rand };
 y.value(10);
 
 y.postcs;
 
-y = { |x=0| x * 3 } + { |x=0| x + 1.0.rand } * { |x=0| [50, 100].choose + x } + 1.0;
+y = { |x = 0| x * 3 } + { |x = 0| x + 1.0.rand } * { |x = 0| [50, 100].choose + x } + 1.0;
 y.value(10);
 ::
 
@@ -630,7 +632,7 @@ code::
 Environment.use {
 	~y = 10;
 	~x = 2;
-	~z = { |x=8| x } + { |y=0| y + 1.0.rand };
+	~z = { |x = 8| x } + { |y = 0| y + 1.0.rand };
 	~z.valueEnvir;
 }
 )

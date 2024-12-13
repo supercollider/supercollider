@@ -26,10 +26,9 @@ The input signal.
 Examples::
 
 code::
-//Compare:
+// Compare:
 
 { WhiteNoise.ar(0.25) }.play;
 
 { BPZ2.ar(WhiteNoise.ar(0.25)) }.play;
 ::
-
