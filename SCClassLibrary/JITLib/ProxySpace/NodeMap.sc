@@ -219,16 +219,13 @@ NodeProxyPartMap {
 
 
 + BusPlug {
-
 	asOSCArgEmbeddedArray { |array|
 		^this.asControlInput.asOSCArgEmbeddedArray(array)
 	}
-
 }
 
 
 + Object {
-
 	wakeUpToBundle {}
 	proxyNeedsWakeUp { ^false }
 }
