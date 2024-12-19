@@ -154,7 +154,7 @@ protected:
     boost::asio::io_context mIoContext;
 
 private:
-    boost::asio::io_context::work mWork;
+    boost::asio::executor_work_guard<boost::asio::io_context::executor_type> mWork;
     boost::asio::basic_waitable_timer<std::chrono::system_clock> mTimer;
 
     // input io service

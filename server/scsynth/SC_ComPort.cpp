@@ -453,7 +453,8 @@ static void asioFunction() {
     nova::thread_set_priority_rt(priority);
 #endif
 
-    boost::asio::io_context::work work(ioContext);
+    boost::asio::executor_work_guard<boost::asio::io_context::executor_type> work =
+        boost::asio::make_work_guard(ioContext);
     ioContext.run();
 }
 

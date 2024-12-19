@@ -75,7 +75,7 @@ SC_TerminalClient::SC_TerminalClient(const char* name):
     SC_LanguageClient(name),
     mReturnCode(0),
     mUseReadline(false),
-    mWork(mIoContext),
+    mWork(boost::asio::make_work_guard(mIoContext)),
     mTimer(mIoContext),
 #ifndef _WIN32
     mStdIn(mInputContext, STDIN_FILENO)
@@ -614,7 +614,8 @@ void SC_TerminalClient::inputThreadFn() {
 
     startInputRead();
 
-    boost::asio::io_context::work work(mInputContext);
+    boost::asio::executor_work_guard<boost::asio::io_context::executor_type> work =
+        boost::asio::make_work_guard(mInputContext);
     mInputContext.run();
 }
 
