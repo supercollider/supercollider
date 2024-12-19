@@ -257,7 +257,7 @@ public:
         BOOST_AUTO(protocol, ip::udp::v4());
         udpSocket.open(protocol);
 
-        udpSocket.bind(ip::udp::endpoint(boost::asio::ip::address::from_string(bindTo), inPortNum));
+        udpSocket.bind(ip::udp::endpoint(boost::asio::ip::make_address(bindTo), inPortNum));
         if (inPortNum == 0)
             mPortNum = udpSocket.local_endpoint().port();
 
@@ -400,7 +400,7 @@ class SC_TcpInPort {
 public:
     SC_TcpInPort(struct World* world, const std::string& bindTo, int inPortNum, int inMaxConnections, int inBacklog):
         mWorld(world),
-        acceptor(ioContext, boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(bindTo), inPortNum)),
+        acceptor(ioContext, boost::asio::ip::tcp::endpoint(boost::asio::ip::make_address(bindTo), inPortNum)),
         mAvailableConnections(inMaxConnections) {
         // FIXME: backlog???
 
