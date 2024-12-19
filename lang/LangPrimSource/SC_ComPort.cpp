@@ -46,12 +46,12 @@ void ProcessRawMessage(std::unique_ptr<char[]> inData, size_t inSize, ReplyAddre
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 SC_Thread gAsioThread;
-boost::asio::io_service ioService;
+boost::asio::io_context ioContext;
 
 
 static void asioFunction() {
-    boost::asio::io_service::work work(ioService);
-    ioService.run();
+    boost::asio::io_context::work work(ioContext);
+    ioContext.run();
 }
 
 void startAsioThread() {
@@ -60,7 +60,7 @@ void startAsioThread() {
 }
 
 void stopAsioThread() {
-    ioService.stop();
+    ioContext.stop();
     gAsioThread.join();
 }
 
@@ -110,8 +110,8 @@ template <> struct MessageHandler<HandlerType::Raw> {
 
 namespace Detail {
 
-TCPConnection::TCPConnection(boost::asio::io_service& ioService, int portNum, HandlerType handlerType):
-    mSocket(ioService),
+TCPConnection::TCPConnection(boost::asio::io_context& ioContext, int portNum, HandlerType handlerType):
+    mSocket(ioContext),
     mOSCMsgLength(0),
     mPortNum(portNum) {
     initHandler(handlerType);
@@ -186,7 +186,7 @@ void TCPConnection::handleMsgReceived(const boost::system::error_code& error, si
 
 namespace InPort {
 
-UDP::UDP(int inPortNum, HandlerType handlerType, int portsToCheck): mPortNum(inPortNum), mUdpSocket(ioService) {
+UDP::UDP(int inPortNum, HandlerType handlerType, int portsToCheck): mPortNum(inPortNum), mUdpSocket(ioContext) {
     using namespace boost::asio;
 
     BOOST_AUTO(protocol, ip::udp::v4());
@@ -271,7 +271,7 @@ UDPCustom::UDPCustom(int inPortNum, HandlerType handlerType): UDP(inPortNum, han
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 TCP::TCP(int inPortNum, int inMaxConnections, int inBacklog, HandlerType handlerType):
-    mAcceptor(ioService, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), inPortNum)),
+    mAcceptor(ioContext, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), inPortNum)),
     mPortNum(inPortNum),
     mHandlerType(handlerType) {
     // FIXME: handle max connections
@@ -281,7 +281,7 @@ TCP::TCP(int inPortNum, int inMaxConnections, int inBacklog, HandlerType handler
 }
 
 void TCP::startAccept() {
-    const auto newConnection = std::make_shared<Detail::TCPConnection>(ioService, mPortNum, mHandlerType);
+    const auto newConnection = std::make_shared<Detail::TCPConnection>(ioContext, mPortNum, mHandlerType);
 
     mAcceptor.async_accept(newConnection->getSocket(),
                            [this, newConnection](auto error) { handleAccept(newConnection, error); });
@@ -300,7 +300,7 @@ void TCP::handleAccept(Detail::TCPConnection::pointer newConnection, const boost
 namespace OutPort {
 
 TCP::TCP(unsigned long inAddress, int inPort, HandlerType handlerType, ClientNotifyFunc notifyFunc, void* clientData):
-    mSocket(ioService),
+    mSocket(ioContext),
     mEndpoint(boost::asio::ip::address_v4(inAddress), inPort),
     mClientNotifyFunc(notifyFunc),
     mClientData(clientData) {

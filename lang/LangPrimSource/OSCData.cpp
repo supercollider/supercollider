@@ -934,7 +934,7 @@ void cleanup_OSC() {
 #endif
 }
 
-extern boost::asio::io_service ioService;
+extern boost::asio::io_context ioContext;
 
 static int prGetHostByName(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;

@@ -30,7 +30,6 @@
 #    define BOOST_ASIO_HAS_STD_STRING_VIEW 1
 #endif
 
-#include <boost/asio/io_service.hpp>
 #include <boost/asio/ip/udp.hpp>
 
 #include "branch_hints.hpp"
@@ -56,8 +55,8 @@ public:
             name_thread("Network Receive");
 
             sem.post();
-            io_service::work work(io_service_);
-            io_service_.run();
+            io_context::work work(io_context_);
+            io_context_.run();
         });
         sem.wait();
     }
@@ -65,20 +64,20 @@ public:
     ~network_thread(void) {
         if (!thread_.joinable())
             return;
-        io_service_.stop();
+        io_context_.stop();
         thread_.join();
     }
 
-    io_service& get_io_service(void) { return io_service_; }
+    io_context& get_io_context(void) { return io_context_; }
 
     void send_udp(const char* data, unsigned int size, udp::endpoint const& receiver) {
-        udp::socket socket(io_service_);
+        udp::socket socket(io_context_);
         socket.open(udp::v4());
         socket.send_to(boost::asio::buffer(data, size), receiver);
     }
 
 protected:
-    io_service io_service_;
+    io_context io_context_;
 
 private:
     semaphore sem;
