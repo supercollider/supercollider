@@ -51,6 +51,7 @@ set(sclang_sources
 	LangPrimSource/PyrSymbolPrim.cpp
 	LangPrimSource/PyrUnixPrim.cpp
 	LangPrimSource/PyrSerialPrim.cpp
+    LangPrimSource/SC_WebSocket.cpp
 	LangSource/AdvancingAllocPool.cpp
 	LangSource/ByteCodeArray.cpp
 	LangSource/DumpParseNode.cpp
