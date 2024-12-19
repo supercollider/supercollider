@@ -360,19 +360,19 @@ void SC_TerminalClient::onLibraryStartup() {
 void SC_TerminalClient::sendSignal(Signal sig) {
     switch (sig) {
     case sig_input:
-        mIoContext.post(boost::bind(&SC_TerminalClient::interpretInput, this));
+        boost::asio::post(boost::bind(&SC_TerminalClient::interpretInput, this));
         break;
 
     case sig_recompile:
-        mIoContext.post(boost::bind(&SC_TerminalClient::recompileLibrary, this));
+        boost::asio::post(boost::bind(&SC_TerminalClient::recompileLibrary, this));
         break;
 
     case sig_sched:
-        mIoContext.post(boost::bind(&SC_TerminalClient::tick, this, boost::system::error_code()));
+        boost::asio::post(boost::bind(&SC_TerminalClient::tick, this, boost::system::error_code()));
         break;
 
     case sig_stop:
-        mIoContext.post(boost::bind(&SC_TerminalClient::stopMain, this));
+        boost::asio::post(boost::bind(&SC_TerminalClient::stopMain, this));
         break;
     }
 }
