@@ -240,6 +240,38 @@ q.y = q.x * q.n;	// shorter way to do the same (pseudo-methods)
 q.y;			// [100, 200, 300]
 ::
 
+subsection::Syntax subtleties
+
+Events have a very special meaning in a musical context within SuperCollider, especially when it comes to sequencing with Patterns. Nevertheless, as the class inherits from link::Classes/IdentityDictionary::, it is often used as a convenient-to-type replacement for (Identity)Dictionary-like objects:
+
+code::
+e = (a: 5, b: 7, c: 9);
+::
+
+As one can see the syntax very much reminds of the declaration of keyword arguments in function or method calls. However, there is a subtle difference:
+
+code::
+e = (a: 10); // -> ('a': 10)
+f = (a : 10); // -> nil
+              // ERROR: Primitive '_IdentDict_Put' failed.
+::
+
+Though the above declartion of code::f:: failed it's strong::not:: a syntax error:
+
+code::
+a = "abracadabra";
+f = (a : 10); // -> ("abracadabra": 10)
+::
+
+A declaration like code::(a: 5, c: 7):: constitutes an Event whose link::Classes/Dictionary#-keys#keys:: can be queried as a link::Classes/Set:: of link::Classes/Symbol::s and its link::Classes/Dictionary#-values#values:: as a link::Classes/List:: of values. Adding a space after a key and before the colon, however, breaks that rule in a way that sclang now regards the key as a emphasis::variable name::. Nevertheless, the same rules apply here as for all other Events or IdentityDictionaries: Values emphasis::must:: must be queried under a key emphasis::identical:: to the one it has been declared with:
+
+code::
+f["abracadabra"]; // -> nil - "abracadabra" is equal to the string stored in a, not identical
+f[a];             // -> 10
+::
+
+This may not be common practice but possibly worth mentioning and in some cases even come handy.
+
 subsection::Event for specifying different things to happen
 
 Event provides a link::#defaultParentEvent:: that defines a variety of different event types and provides a complete set of default key/value pairs for each type. The type is determined by the value of the key strong::\type:: which defaults to strong::\note::. Note events create synths on the server.
