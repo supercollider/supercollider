@@ -50,16 +50,19 @@ CLASSMETHODS::
 method:: forServer
 Make an NdefMixer that follows the specific server given. This becomes relevant when Ndef.clear is used:
 code::
-x = NdefMixer.new(s, 5); //
+// NdefMixer as before
+x = NdefMixer.new(s, 5);
+// NdefMixer that has a server to follow
 y = NdefMixer.forServer(s, 5).moveTo(10, 50);
-Ndef(\foo, {SinOsc.ar}); // m gets updated
-// Clear all proxyspaces in Ndef.all, and replace with new ones
+
+Ndef(\foo, {SinOsc.ar}); // both show foo
+// Clear all proxyspaces in Ndef.all, and replace with new ones:
 Ndef.clear; // -> foo disappears on both.
 // running foo it again, it does not show on x,
-// because m is still holding on to the old proxyspace;
-// but because y follows the server, it shows there:
+// because x is still holding on to its old proxyspace;
+// it does show on y, because y follows its server:
 Ndef(\foo, {SinOsc.ar});
-x.server; // x does not know its server
+x.server; // x does not have its server
 y.server; // y does.
 ::
 
