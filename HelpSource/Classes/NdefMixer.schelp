@@ -3,20 +3,23 @@ summary:: mix control for an Ndef proxyspace
 categories:: JITLib>GUI, Live Coding
 related:: Classes/ProxyMixer, Classes/JITGui, Classes/NdefGui
 
+
 description::
 
-NdefMixer is nearly identical to link::Classes/ProxyMixer::, except that it looks at the proxyspaces for each server that code::Ndef.all:: contains.
+NdefMixer is nearly identical to link::Classes/ProxyMixer::, except that it looks at the proxyspaces for each server that code::Ndef.all:: contains, and that it can be set to always follow a specific server.
 
-Examples::
+subsection:: First examples
 
 code::
 n = NdefMixer(s);
 n.parent.alwaysOnTop_(true); // show mixer in front of IDE
 
+// variant that follows specified server even after Ndef.clear:
+n = NdefMixer.forServer(s);
+
 s.boot;
 // if you have JITLibExtensions installed, try ProxyMeter to see the proxy levels:
 if (\ProxyMeter.asClass.notNil) { ProxyMeter.addMixer(n) };
-
 
 "bcdefghijk".do { |k| Ndef(k.asSymbol).ar };
 
@@ -42,3 +45,47 @@ n.editGui.object_(Ndef(\aaaaaa));
 
 NdefMixer(Server.internal, 24);
 ::
+
+CLASSMETHODS::
+method:: forServer
+Make an NdefMixer that follows the specific server given. This becomes relevant when Ndef.clear is used:
+code::
+x = NdefMixer.new(s, 5); //
+y = NdefMixer.forServer(s, 5).moveTo(10, 50);
+Ndef(\foo, {SinOsc.ar}); // m gets updated
+// Clear all proxyspaces in Ndef.all, and replace with new ones
+Ndef.clear; // -> foo disappears on both.
+// running foo it again, it does not show on x,
+// because m is still holding on to the old proxyspace;
+// but because y follows the server, it shows there:
+Ndef(\foo, {SinOsc.ar});
+x.server; // x does not know its server
+y.server; // y does.
+::
+
+argument::server
+the server to follow
+
+argument::numItems
+how many slots for proxies to make
+
+argument::parent
+which parent view or window to show the mixer on
+
+argument::bounds
+bounds within which to show the mixer
+
+argument::makeSkip
+flag whether to make a skipjack for this mixer
+
+argument::options
+options for configuring the mixer
+
+INSTANCEMETHODS::
+
+method:: server
+setting this server veriable explicitly will tell the NdefMixer to follow this server even when its proxyspace changes, for example when Ndef.clear is used.
+
+method:: object
+obj can be a server name, a server, or a proxyspace.
+
