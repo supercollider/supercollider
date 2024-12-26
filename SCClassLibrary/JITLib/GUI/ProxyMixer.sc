@@ -380,10 +380,42 @@ ProxyMixer : JITGui {
 }
 
 NdefMixer : ProxyMixer {
-	object_ { |obj|
-		obj = Server.named.at(obj) ? obj;
-		if (obj.isKindOf(Server)) {
-				super.object_(Ndef.dictFor(obj));
+
+	var <server;
+
+	*forServer { |server, numItems = 16, parent, bounds, makeSkip = true, options|
+		var proxyspace = Ndef.dictFor(server ? Server.default);
+		^super.new(server, numItems, parent, bounds, makeSkip, options).server_(server);
+	}
+	// if server.notNil, always watch proxyspace of that server
+	server_ { |inServer|
+		if (inServer.notNil) {
+			server = inServer;
+			this.object_(Ndef.dictFor(inServer))
 		}
+	}
+
+	object_ { |obj|
+		// can be server name (symbol)
+		if (obj.isKindOf(Symbol)) {
+			obj = Server.named.at(obj);
+		};
+		// or a server
+		if (obj.isKindOf(Server)) {
+			super.object_(Ndef.dictFor(obj));
+		} {
+			// or a proxyspace or nil
+			super.object_(obj)
+		}
+	}
+
+	checkUpdate {
+		// if server exists, stick with server's proxyspace
+		if (this.server.notNil) {
+			if (this.object != Ndef.dictFor(this.server)) {
+				this.server_(this.server)
+			}
+		};
+		super.checkUpdate
 	}
 }
