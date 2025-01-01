@@ -44,6 +44,13 @@ Release dates of 3.x versions:
 - 3.12: 2021-08-02
 - 3.13: 2023-02-19
 
+3.13.1 (2024-11-29)
+===================
+
+### sclang: Fixed
+
+Linux only: Reverted memory allocation bug when using HID, see <https://github.com/supercollider/supercollider/issues/6016>
+
 3.13.0 (2023-02-19)
 ===================
 
