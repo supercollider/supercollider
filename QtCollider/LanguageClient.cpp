@@ -70,7 +70,7 @@ void LangClient::customEvent(QEvent* e) {
 
     case Event_SCRequest_Work:
         QApplication::removePostedEvents(this, Event_SCRequest_Work);
-        mIoService.poll();
+        mIoContext.poll();
         break;
     case Event_SCRequest_Quit: {
         int code = static_cast<SCRequestEvent*>(e)->data.toInt();

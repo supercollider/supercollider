@@ -745,7 +745,7 @@ static PyrObject* ConvertReplyAddress(ReplyAddress* inReply) {
     VMGlobals* g = gMainVMGlobals;
     PyrObject* obj = instantiateObject(g->gc, s_netaddr->u.classobj, 2, true, false);
     PyrSlot* slots = obj->slots;
-    SetInt(slots + 0, inReply->mAddress.to_v4().to_ulong());
+    SetInt(slots + 0, inReply->mAddress.to_v4().to_uint());
     SetInt(slots + 1, inReply->mPort);
     return obj;
 }
@@ -934,7 +934,7 @@ void cleanup_OSC() {
 #endif
 }
 
-extern boost::asio::io_service ioService;
+extern boost::asio::io_context ioContext;
 
 static int prGetHostByName(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;

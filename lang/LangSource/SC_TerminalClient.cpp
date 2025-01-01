@@ -75,12 +75,12 @@ SC_TerminalClient::SC_TerminalClient(const char* name):
     SC_LanguageClient(name),
     mReturnCode(0),
     mUseReadline(false),
-    mWork(mIoService),
-    mTimer(mIoService),
+    mWork(boost::asio::make_work_guard(mIoContext)),
+    mTimer(mIoContext),
 #ifndef _WIN32
-    mStdIn(mInputService, STDIN_FILENO)
+    mStdIn(mInputContext, STDIN_FILENO)
 #else
-    mStdIn(mInputService, GetStdHandle(STD_INPUT_HANDLE))
+    mStdIn(mInputContext, GetStdHandle(STD_INPUT_HANDLE))
 #endif
 {
 }
@@ -360,19 +360,19 @@ void SC_TerminalClient::onLibraryStartup() {
 void SC_TerminalClient::sendSignal(Signal sig) {
     switch (sig) {
     case sig_input:
-        mIoService.post(boost::bind(&SC_TerminalClient::interpretInput, this));
+        boost::asio::post(boost::bind(&SC_TerminalClient::interpretInput, this));
         break;
 
     case sig_recompile:
-        mIoService.post(boost::bind(&SC_TerminalClient::recompileLibrary, this));
+        boost::asio::post(boost::bind(&SC_TerminalClient::recompileLibrary, this));
         break;
 
     case sig_sched:
-        mIoService.post(boost::bind(&SC_TerminalClient::tick, this, boost::system::error_code()));
+        boost::asio::post(boost::bind(&SC_TerminalClient::tick, this, boost::system::error_code()));
         break;
 
     case sig_stop:
-        mIoService.post(boost::bind(&SC_TerminalClient::stopMain, this));
+        boost::asio::post(boost::bind(&SC_TerminalClient::stopMain, this));
         break;
     }
 }
@@ -447,7 +447,7 @@ void SC_TerminalClient::tick(const boost::system::error_code& error) {
     }
 }
 
-void SC_TerminalClient::commandLoop() { mIoService.run(); }
+void SC_TerminalClient::commandLoop() { mIoContext.run(); }
 
 void SC_TerminalClient::daemonLoop() { commandLoop(); }
 
@@ -614,8 +614,9 @@ void SC_TerminalClient::inputThreadFn() {
 
     startInputRead();
 
-    boost::asio::io_service::work work(mInputService);
-    mInputService.run();
+    boost::asio::executor_work_guard<boost::asio::io_context::executor_type> work =
+        boost::asio::make_work_guard(mInputContext);
+    mInputContext.run();
 }
 
 
@@ -662,7 +663,7 @@ void SC_TerminalClient::startInput() {
 }
 
 void SC_TerminalClient::endInput() {
-    mInputService.stop();
+    mInputContext.stop();
     mStdIn.cancel();
 #ifdef _WIN32
     // Note this breaks Windows XP compatibility, since this function is only defined in Vista and later
