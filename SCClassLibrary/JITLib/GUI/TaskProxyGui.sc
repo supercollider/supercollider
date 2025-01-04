@@ -244,7 +244,7 @@ TaskProxyGui : JITGui {
 		try {
             doc.front;
             doc.promptToSave = false;
-            doc.bounds_(bounds ? Rect(0, 400, 400, 200))
+            doc.bounds_(bounds ?? { Rect(0, 400, 400, 200) })
         };
 	}
 
