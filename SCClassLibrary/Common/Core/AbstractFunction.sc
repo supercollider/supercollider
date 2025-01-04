@@ -241,8 +241,8 @@ UnaryOpFunction : AbstractFunction {
 	*new { arg selector, a;
 		^super.newCopyArgs(selector, a)
 	}
-	value { arg ... args;
-		^a.valueArray(args).perform(selector)
+	value { | ... args, kwargs |
+		^a.performArgs(\value, args, kwargs).perform(selector)
 	}
 	valueArray { arg args;
 		^a.valueArray(args).perform(selector)
@@ -269,8 +269,8 @@ BinaryOpFunction : AbstractFunction {
 	*new { arg selector, a, b, adverb;
 		^super.newCopyArgs(selector, a, b, adverb)
 	}
-	value { arg ... args;
-		^a.valueArray(args).perform(selector, b.valueArray(args), adverb)
+	value { | ... args, kwargs |
+		^a.performArgs(\value, args, kwargs).perform(selector, b.performArgs(\value, args, kwargs), adverb)
 	}
 	valueArray { arg args;
 		^a.valueArray(args).perform(selector, b.valueArray(args), adverb)
@@ -298,8 +298,8 @@ NAryOpFunction : AbstractFunction {
 	*new { arg selector, a, arglist;
 		^super.newCopyArgs(selector, a, arglist)
 	}
-	value { arg ... args;
-		^a.valueArray(args).performList(selector, arglist.collect(_.valueArray(args)))
+	value { | ... args, kwargs |
+		^a.performArgs(\value, args, kwargs).performList(selector, arglist.collect(_.performArgs(\value, args, kwargs)))
 	}
 	valueArray { arg args;
 		^a.valueArray(args).performList(selector, arglist.collect(_.valueArray(args)))
@@ -339,8 +339,8 @@ FunctionList : AbstractFunction {
 		array = array.replace(find, replace);
 	}
 
-	value { arg ... args;
-		var res = array.collectCopy(_.valueArray(args));
+	value { | ... args, kwargs |
+		var res = array.collectCopy(_.performArgs(\value, args, kwargs));
 		^if(flopped) { res.flop } { res }
 	}
 	valueArray { arg args;
