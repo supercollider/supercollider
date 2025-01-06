@@ -1,10 +1,9 @@
 WebSocketServer {
     var <hostname;
     var <port;
+    var <>socket; // holds the pointer to our websocket
     var <>onConnection;
-
-    var socket; // holds the pointer to our websocket
-    var connections;
+    var <>connections;
 
     classvar <>all;
 
@@ -26,7 +25,14 @@ WebSocketServer {
         ^this.primitiveFailed;
     }
 
-    stop {
+	stop {
+		connections.do({|connection|
+			connection.close;
+		});
+		this.prStop;
+	}
+
+    prStop {
         _WebSocketServer_Stop
         ^this.primitiveFailed;
     }
@@ -36,6 +42,7 @@ WebSocketServer {
         var webSocketServer = all[port];
         WebSocketConnection.all[newConnection.beastSessionPtr] = newConnection;
         if(webSocketServer.notNil, {
+            webSocketServer.connections = webSocketServer.connections.add(newConnection);
             webSocketServer.onConnection.value(newConnection);
         });
     }
@@ -44,6 +51,7 @@ WebSocketServer {
 // this gets initiated from c++ - do not create this yourself
 WebSocketConnection {
     var <>beastSessionPtr; // do not modify!
+	var <>closed = false; // also managed by c++
     var <>onMessage; // set this as a callback
     var <>onDisconnect; // set this as a callback
 
@@ -57,7 +65,7 @@ WebSocketConnection {
 
     // this gets called from c++
     *prReceiveMessage { |ptr, message|
-        var connection = all.values[0]; // @todo fix this all[ptr];
+        var connection = all[ptr]; // @todo fix this all[ptr];
         if(connection.notNil, {
             connection.onMessage.value(message);
         });
@@ -71,12 +79,37 @@ WebSocketConnection {
         all[ptr] = nil;
     }
 
-    sendMessage {|msg|
-        _WebSocketConnection_SendMessage
+    prSendRawMessage {|msg|
+        _WebSocketConnection_SendRawMessage
         ^this.primitiveFailed;
     }
 
-    disconnect {
+    prSendStringMessage {|msg|
+        _WebSocketConnection_SendStringMessage
+        ^this.primitiveFailed;
+    }
+
+    sendMessage {|msg|
+        if(closed, {
+            "Can not send a message on a closed connection".warn;
+            ^this;
+        });
+        if(msg.isKindOf(String), {
+            ^this.prSendStringMessage(msg);
+        });
+        if(msg.isKindOf(Int8Array), {
+            ^this.prSendRawMessage(msg);
+        });
+        "Message type '%' is unsupported".format(msg.class).warn;
+    }
+
+	close {
+		if(closed.not, {
+			this.prClose;
+		});
+	}
+
+    prClose {
         _WebSocketConnection_Close
         ^this.primitiveFailed;
     }
@@ -97,8 +130,14 @@ WebSocketNetAddr : NetAddr {
 	    webSocketConnection = connection;
 	    webSocketConnection.onMessage = {|m|
             m = Int8Array.newFrom(m).parseOSC;
-            OSCFunc.defaultDispatcher.value(m, thisProcess.tick, ~net, 57120);
-            OSCFunc.defaultMatchingDispatcher.value(m, thisProcess.tick, ~net, 57120);
+			thisProcess.recvOSCmessage(
+				time: thisProcess.tick, // @todo really?
+				replyAddr: this,
+				recvPort: NetAddr.langPort,
+				msg: m,
+			);
+			// OSCFunc.defaultDispatcher.value(m, thisProcess.tick, ~net, 57120);
+			// OSCFunc.defaultMatchingDispatcher.value(m, thisProcess.tick, ~net, 57120);
 	    };
 	}
 
