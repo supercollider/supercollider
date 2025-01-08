@@ -1,13 +1,13 @@
 UnaryOpFunctionProxy : UnaryOpFunction {
 
-	valueFuncProxy { | args |
-		^this.reduceFuncProxy(args)
+	valueFuncProxy { | args, kwargs |
+		^this.reduceFuncProxy(args, true, kwargs)
 	}
 	reduceFuncProxy { | args, protect=true, kwargs |
 		^a.reduceFuncProxy(args, protect, kwargs).perform(selector)
 	}
-	value { | ... args |
-		^this.reduceFuncProxy(args)
+	value { | ... args, kwargs |
+		^this.reduceFuncProxy(args, true, kwargs)
 	}
 	valueArray { | args |
 		^this.reduceFuncProxy(args)
