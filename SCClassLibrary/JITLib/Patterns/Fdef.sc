@@ -14,8 +14,8 @@ Maybe : Ref {
 
 	clear { value = nil }
 
-	value { |... args|
-		^this.reduceFuncProxy(args)
+	value { |... args, kwargs|
+		^this.reduceFuncProxy(args, true, kwargs)
 	}
 	valueArray { |args|
 		^this.reduceFuncProxy(args)
@@ -33,8 +33,8 @@ Maybe : Ref {
 	}
 
 	// this allows recursion
-	apply { |... args|
-		^this.reduceFuncProxy(args, false)
+	apply { |... args, kwargs|
+		^this.reduceFuncProxy(args, false, kwargs)
 	}
 	// function composition
 	o { |... args|
@@ -115,25 +115,25 @@ Maybe : Ref {
 
 	// used by AbstractFunction:reduceFuncProxy
 	// to prevent reduction of enclosed functions
-	valueFuncProxy { |args|
+	valueFuncProxy { |args, kwargs|
 		if(verbose and: { value.isNil }) {
 			("Maybe: incomplete definition: %\n").postf(this.infoString(args))
 		};
 		^this.catchRecursion {
-			(value ? defaultValue).valueFuncProxy(args)
+			(value ? defaultValue).valueFuncProxy(args, kwargs)
 		}
 	}
 
-	reduceFuncProxy { |args, protect=true|
+	reduceFuncProxy { |args, protect=true, kwargs|
 		if(verbose and: { value.isNil }) {
 			("Maybe: incomplete definition: %\n").postf(this.infoString(args))
 		};
 
 		^if(protect.not) {
-			(value ? defaultValue).reduceFuncProxy(args)
+			(value ? defaultValue).reduceFuncProxy(args, protect, kwargs)
 		} {
 			this.catchRecursion {
-				(value ? defaultValue).reduceFuncProxy(args)
+				(value ? defaultValue).reduceFuncProxy(args, protect, kwargs)
 			}
 		}
 	}

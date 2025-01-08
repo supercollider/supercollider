@@ -3,8 +3,8 @@ UnaryOpFunctionProxy : UnaryOpFunction {
 	valueFuncProxy { | args |
 		^this.reduceFuncProxy(args)
 	}
-	reduceFuncProxy { | args |
-		^a.reduceFuncProxy(args).perform(selector)
+	reduceFuncProxy { | args, protect=true, kwargs |
+		^a.reduceFuncProxy(args, protect, kwargs).perform(selector)
 	}
 	value { | ... args |
 		^this.reduceFuncProxy(args)
@@ -35,15 +35,14 @@ UnaryOpFunctionProxy : UnaryOpFunction {
 
 BinaryOpFunctionProxy : BinaryOpFunction {
 
-	valueFuncProxy { | args |
-		^this.reduceFuncProxy(args)
+	valueFuncProxy { | args, kwargs |
+		^this.reduceFuncProxy(args, true, kwargs)
 	}
-	reduceFuncProxy { | args |
-		^a.reduceFuncProxy(args)
-		.perform(selector, b.reduceFuncProxy(args), adverb)
+	reduceFuncProxy { | args, protect=true, kwargs |
+		^perform(a.reduceFuncProxy(args, protect, kwargs), selector, b.reduceFuncProxy(args, protect, kwargs), adverb)
 	}
-	value { | ... args |
-		^this.reduceFuncProxy(args)
+	value { | ... args, kwargs |
+		^this.reduceFuncProxy(args, true, kwargs)
 	}
 	valueArray { | args |
 		^this.reduceFuncProxy(args)
@@ -71,14 +70,14 @@ BinaryOpFunctionProxy : BinaryOpFunction {
 
 NAryOpFunctionProxy : NAryOpFunction {
 
-	reduceFuncProxy { | args |
-		^a.reduceFuncProxy(args).performList(selector, arglist.collect(_.reduceFuncProxy(args)))
+	reduceFuncProxy { | args, protect = true, kwargs |
+		^a.reduceFuncProxy(args, protect, kwargs).performList(selector, arglist.collect(_.reduceFuncProxy(args, protect, kwargs)))
 	}
 	valueFuncProxy { | args |
 		^this.reduceFuncProxy(args)
 	}
-	value { | ... args |
-		^this.reduceFuncProxy(args)
+	value { | ... args, kwargs |
+		^this.reduceFuncProxy(args, true, kwargs)
 	}
 	valueArray { | args |
 		^this.reduceFuncProxy(args)
@@ -104,16 +103,19 @@ NAryOpFunctionProxy : NAryOpFunction {
 
 }
 
-// maybe make it an abstract function object.
+// this proxy is built on function proxiy composition
 NAryValueProxy : NAryOpFunctionProxy {
 
 	*new { | receiver, args |
 		^super.new(nil, receiver, args ? [])
 	}
-	reduceFuncProxy { | args |
-		^a.reduceFuncProxy(arglist.collect(_.reduceFuncProxy(args)))
+	reduceFuncProxy { | args, protect = true, kwargs |
+		// kwargs are only passed to each proxy: keyword compositon isn't supported
+		^a.reduceFuncProxy(
+			arglist.collect(_.reduceFuncProxy(args, protect, kwargs))
+		)
 	}
 	storeOn { | stream |
-		stream << "o(" <<< a << "," <<<* arglist << ")" // is it always so?
+		stream << "o(" <<< a << "," <<<* arglist << ")"
 	}
 }
