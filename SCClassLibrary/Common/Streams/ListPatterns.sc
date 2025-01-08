@@ -410,7 +410,6 @@ Pwalk : ListPattern {
 				stepDir = step * direction;  // apply to this step
 			});
 			index = (index + stepDir) % list.size;
-			// inval = list[index].embedInStream(inval);  // get value/stream out
 		});
 
 		^inval;
