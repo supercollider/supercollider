@@ -2,10 +2,10 @@
 
 CallOnce : Thunk {
 
-	value { |... args, kwargs| ^this.prEvaluate(\valueArray, args, kwargs) }
-	valueArray { |... args| ^this.prEvaluate(\valueArray, *args) }
+	value { |... args, kwargs|  ^this.prEvaluate(\value, args, kwargs) }
+	valueArray { |... args| ^this.prEvaluate(\valueArray, args) }
 	valueEnvir { |... args| ^this.prEvaluate(\valueArrayEnvir, args) }
-	valueArrayEnvir { |... args| ^this.prEvaluate(\valueArrayEnvir, *args) }
+	valueArrayEnvir { |... args| ^this.prEvaluate(\valueArrayEnvir, args) }
 
 	prEvaluate { |selector, args, kwargs|
 		^value ?? {
@@ -14,6 +14,7 @@ CallOnce : Thunk {
 			value
 		}
 	}
+
 }
 
 
