@@ -41,6 +41,9 @@ If code::clear:: was called previously, the code::value:: call has no side-effec
 argument::  ... args
 Arguments to use in the call to the wrapped function, if the call happens. If code::didEvaluate:: already returns code::true:: (before the current call to code::value::) then the current code::args:: are irrelevant because the wrapped function is not called anymore.
 
+argument:: kwargs
+Array of key-value pairs for keyword arguments. See link::Classes/Function#-value::.
+
 returns::
 list::
 ## code::nil:: if code::clear:: was called on the CallOnce before any calls to code::value::, otherwise
