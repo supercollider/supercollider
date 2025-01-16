@@ -22,6 +22,7 @@
 
 #include "util/docklet.hpp"
 #include <QAction>
+#include <QGestureEvent>
 #include <QPlainTextEdit>
 
 namespace ScIDE {
@@ -75,6 +76,8 @@ public slots:
     void openDefinition();
     void openCommandLine();
     void findReferences();
+
+    bool gestureEvent(QGestureEvent* event);
 
 protected:
     virtual bool event(QEvent*);

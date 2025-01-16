@@ -55,6 +55,9 @@ PostWindow::PostWindow(QWidget* parent): QPlainTextEdit(parent) {
 
     connect(this, SIGNAL(scrollToBottomRequest()), this, SLOT(scrollToBottom()), Qt::QueuedConnection);
 
+    grabGesture(Qt::PinchGesture);
+    setAttribute(Qt::WA_AcceptTouchEvents);
+
     applySettings(Main::settings());
 }
 
@@ -249,7 +252,7 @@ void PostWindow::zoomOut(int steps) { zoomFont(-steps); }
 void PostWindow::zoomFont(int steps) {
     QFont currentFont = font();
     const int newSize = currentFont.pointSize() + steps;
-    if (newSize <= 0)
+    if (newSize <= 7 || newSize >= 50)
         return;
     currentFont.setPointSize(newSize);
     setFont(currentFont);
@@ -270,6 +273,10 @@ bool PostWindow::event(QEvent* event) {
             event->accept();
             return true;
         }
+        break;
+    }
+    case QEvent::Gesture: {
+        return gestureEvent(static_cast<QGestureEvent*>(event));
         break;
     }
     default:
@@ -329,6 +336,24 @@ QMimeData* PostWindow::createMimeDataFromSelection() const {
     QMimeData* data = new QMimeData;
     data->setText(textCursor().selection().toPlainText());
     return data;
+}
+
+
+bool PostWindow::gestureEvent(QGestureEvent* event) {
+    if (QGesture* pinch = event->gesture(Qt::PinchGesture)) {
+        auto* pinchGesture = static_cast<QPinchGesture*>(pinch);
+        if (pinchGesture->state() == Qt::GestureUpdated) {
+            qreal scaleFactor = pinchGesture->scaleFactor();
+            if (scaleFactor >= 1.0) {
+                // same as document zoom steps in editor.cpp
+                zoomFont(2);
+            } else {
+                zoomFont(-2);
+            }
+        }
+        return true;
+    }
+    return false;
 }
 
 bool PostWindow::openDocumentation() { return Main::openDocumentation(symbolUnderCursor()); }
