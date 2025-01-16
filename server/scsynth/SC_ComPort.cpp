@@ -145,7 +145,7 @@ static bool UnrollOSCPacket(World* inWorld, int inSize, char* inData, OSC_Packet
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 SC_Thread gAsioThread;
-boost::asio::io_service ioService;
+boost::asio::io_context ioContext;
 
 const int kTextBufSize = 65536;
 
@@ -252,12 +252,12 @@ public:
         mWorld(world),
         mPortNum(inPortNum),
         mbindTo(bindTo),
-        udpSocket(ioService) {
+        udpSocket(ioContext) {
         using namespace boost::asio;
         BOOST_AUTO(protocol, ip::udp::v4());
         udpSocket.open(protocol);
 
-        udpSocket.bind(ip::udp::endpoint(boost::asio::ip::address::from_string(bindTo), inPortNum));
+        udpSocket.bind(ip::udp::endpoint(boost::asio::ip::make_address(bindTo), inPortNum));
         if (inPortNum == 0)
             mPortNum = udpSocket.local_endpoint().port();
 
@@ -282,9 +282,9 @@ public:
     typedef boost::shared_ptr<SC_TcpConnection> pointer;
     boost::asio::ip::tcp::socket socket;
 
-    SC_TcpConnection(struct World* world, boost::asio::io_service& ioService, class SC_TcpInPort* parent):
+    SC_TcpConnection(struct World* world, boost::asio::io_context& ioContext, class SC_TcpInPort* parent):
         mWorld(world),
-        socket(ioService),
+        socket(ioContext),
         mParent(parent) {}
 
     ~SC_TcpConnection();
@@ -400,7 +400,7 @@ class SC_TcpInPort {
 public:
     SC_TcpInPort(struct World* world, const std::string& bindTo, int inPortNum, int inMaxConnections, int inBacklog):
         mWorld(world),
-        acceptor(ioService, boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(bindTo), inPortNum)),
+        acceptor(ioContext, boost::asio::ip::tcp::endpoint(boost::asio::ip::make_address(bindTo), inPortNum)),
         mAvailableConnections(inMaxConnections) {
         // FIXME: backlog???
 
@@ -419,7 +419,7 @@ public:
     void startAccept() {
         if (mAvailableConnections > 0) {
             --mAvailableConnections;
-            SC_TcpConnection::pointer newConnection(new SC_TcpConnection(mWorld, ioService, this));
+            SC_TcpConnection::pointer newConnection(new SC_TcpConnection(mWorld, ioContext, this));
 
             acceptor.async_accept(
                 newConnection->socket,
@@ -453,8 +453,9 @@ static void asioFunction() {
     nova::thread_set_priority_rt(priority);
 #endif
 
-    boost::asio::io_service::work work(ioService);
-    ioService.run();
+    boost::asio::executor_work_guard<boost::asio::io_context::executor_type> work =
+        boost::asio::make_work_guard(ioContext);
+    ioContext.run();
 }
 
 void startAsioThread() {
@@ -463,7 +464,7 @@ void startAsioThread() {
 }
 
 void stopAsioThread() {
-    ioService.stop();
+    ioContext.stop();
     gAsioThread.join();
 }
 

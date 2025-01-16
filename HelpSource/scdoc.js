@@ -205,6 +205,7 @@ const themeNames = [
     "dark",
     "default",
     "dracula",
+    "monokai",
     "solarizedDark",
     "solarizedLight"
 ];

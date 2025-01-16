@@ -745,7 +745,7 @@ static PyrObject* ConvertReplyAddress(ReplyAddress* inReply) {
     VMGlobals* g = gMainVMGlobals;
     PyrObject* obj = instantiateObject(g->gc, s_netaddr->u.classobj, 2, true, false);
     PyrSlot* slots = obj->slots;
-    SetInt(slots + 0, inReply->mAddress.to_v4().to_ulong());
+    SetInt(slots + 0, inReply->mAddress.to_v4().to_uint());
     SetInt(slots + 1, inReply->mPort);
     return obj;
 }
@@ -862,9 +862,8 @@ void init_OSC(int port) {
 #endif
 
     startAsioThread();
-
     try {
-        gUDPport.reset(new InPort::UDP(port, HandlerType::OSC));
+        gUDPport = std::make_unique<InPort::UDP>(port, HandlerType::OSC);
     } catch (std::exception const& e) { postfl("No networking: %s", e.what()); }
 }
 
@@ -924,6 +923,10 @@ void closeAllCustomPorts() {
 void cleanup_OSC() {
     postfl("cleaning up OSC\n");
 
+    // NOTE: the socket must be destroyed *before* the IO service.
+    // We cannot rely on the global object destructor because the order would be undefined.
+    gUDPport = nullptr;
+
     stopAsioThread();
 
 #ifdef _WIN32
@@ -931,7 +934,7 @@ void cleanup_OSC() {
 #endif
 }
 
-extern boost::asio::io_service ioService;
+extern boost::asio::io_context ioContext;
 
 static int prGetHostByName(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
