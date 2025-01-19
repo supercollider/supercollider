@@ -3,7 +3,7 @@ summary:: Prototype HID element to match with HIDFunc
 categories:: External Control>HID
 related:: Classes/HIDFunc, Classes/HIDdef, Classes/HIDProto, Classes/HID, Classes/HIDElement, Classes/HIDInfo, Guides/Working_with_HID
 
-DESCRIPTION::
+description::
 Human input devices can be used as controllers for making music. This class can be used in conjunction with link::Classes/HIDFunc:: or link::Classes/HIDdef:: to match incoming messages with a particular link::Classes/HID:: device.
 
 HIDElementProto has all the variables that specify an HID element. The more of these variables you specify, the more need to be matched when filtering the incoming HID data.
@@ -11,37 +11,31 @@ HIDElementProto has all the variables that specify an HID element. The more of t
 
 CLASSMETHODS::
 
-METHOD:: new
-Create a new instance of HIDElementProto.
+method::new
+creates a new instance of HIDElementProto.
 
-METHOD:: newType
-Create a new instance of HIDElementProto based on usage id and usage page id of the element.
-
-ARGUMENT:: uName
+method::newType
+creates a new instance of HIDElementProto based on usage id and usage page id of the element.
+argument::uName
 Name of the usage ID to match
-
-ARGUMENT:: pName
+argument::pName
 Name of the usage page to match
 
 returns:: an HIDElementProto
 
 
-METHOD:: newTypeID
-Create a new instance of HIDElementProto based on usage id and usage page id of the element.
-
-ARGUMENT:: uID
+method::newTypeID
+creates a new instance of HIDElementProto based on usage id and usage page id of the element.
+argument::uID
 Usage ID to match
-
-ARGUMENT:: pID
+argument::pID
 Usage page ID to match
 
 returns:: an HIDElementProto
 
-METHOD:: newFromDict
-Create a new instance of HIDElementProto based on an IdentityDictionary with a set of parameters to match.
-
-
-ARGUMENT:: dict
+method::newFromDict
+creates a new instance of HIDElementProto based on an IdentityDictionary with a set of parameters to match.
+argument::dict
 An IdentityDictionary with a set of parameters to match. The keys in the dictionary should be one of the instance variables of HIDElementProto.
 
 returns:: an HIDElementProto
@@ -50,98 +44,92 @@ returns:: an HIDElementProto
 
 INSTANCEMETHODS::
 
-SUBSECTION:: Instance variables that can be used to match a device
 
-METHOD:: id
+subsection:: Instance variables that can be used to match a device
+
+method::id
 The element index that should be matched. This index may vary between operating systems (see also link::Classes/HIDElement::).
 
 
-METHOD:: usageName
+method::usageName
 The usage name of the element to match (see also link::Classes/HIDElement::).
 
-METHOD:: pageName
+method::pageName
 The usage page name of the element to match (see also link::Classes/HIDElement::).
 
-METHOD:: usage
+method::usage
 The usage index of the element to match (see also link::Classes/HIDElement::).
 
-METHOD:: usagePage
+method::usagePage
 The usage page index of the element to match (see also link::Classes/HIDElement::).
 
 
-METHOD:: usageMin
+method::usageMin
 The minimum usage index of the element to match (see also link::Classes/HIDElement::).
 
 
-METHOD:: usageMax
+method::usageMax
 The maximum usage index of the element to match (see also link::Classes/HIDElement::).
 
 
 
-METHOD:: type
+method::type
 The type of the element to match (see also link::Classes/HIDElement::).
 
 
-METHOD:: typeSpec
+method::typeSpec
 The typeSpec of the element to match (see also link::Classes/HIDElement::).
 
 
-METHOD:: ioType
+method::ioType
 The IO type of the element to match - input (1), output (2) or feature (3) (see also link::Classes/HIDElement::).
 
 
-METHOD:: iotypeName
+method::iotypeName
 The IO type of the element to match - code::\input::, code::\output:: or code::\feature:: (see also link::Classes/HIDElement::).
 
 
-SUBSECTION:: Methods to match
+subsection:: Methods to match
 
-METHOD:: matches
+method::matches
 Match the argument with the template.
-
-
-ARGUMENT:: ele
+argument::ele
 An instance of HIDElement
 
 returns:: a Boolean indicating whether the incoming HID matches the template
 
 
-METHOD:: shouldMatch
+method::shouldMatch
 The variables that should be matched when filtering
 
 returns:: a Set with variable names.
 
 
-SUBSECTION:: Methods to add matching parameters
+subsection:: Methods to add matching parameters
 
-METHOD:: addTypeMatch
-Add a match for usage name and usage page name of the element.
-
-ARGUMENT:: uName
+method::addTypeMatch
+adds a match for usage name and usage page name of the element.
+argument::uName
 The usage name to match
-
-ARGUMENT:: pName
+argument::pName
 The page name to match
 
-METHOD:: addTypeIDMatch
-Add a match for usage id and usage page id of the element.
-
-ARGUMENT:: uID
+method::addTypeIDMatch
+adds a match for usage id and usage page id of the element.
+argument::uID
 The usage id to match
-
-ARGUMENT:: pID
+argument::pID
 The usage page id to match
 
 
-METHOD:: addDictionaryMatch
-Add an IdentityDictionary with a set of parameters to match. The keys in the dictionary should be one of the instance variables of HIDElementProto.
-
-ARGUMENT:: dict
+method::addDictionaryMatch
+adds an IdentityDictionary with a set of parameters to match. The keys in the dictionary should be one of the instance variables of HIDElementProto.
+argument::dict
 An IdentityDictionary with a set of parameters to match.
 
 
 
-EXAMPLES::
+examples::
 
 code::
 // create an prototype element with usageName \X

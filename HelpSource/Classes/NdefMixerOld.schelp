@@ -4,15 +4,15 @@ categories:: JITLib>GUI
 related:: Classes/NdefMixer
 
 description::
-
 For more details see: link::Classes/ProxyMixer::
 
 ClassMethods::
 
-subsection::Creation
+
+subsection:: Creation
 
 method::new
-Return a new window for a given server.
+returns a new window for a given server.
 
 code::
 // ndef mxers for other servers
@@ -20,26 +20,22 @@ n = NdefMixer(\internal);
 n = NdefMixer(\localhost);
 n = NdefMixer(\trala);		// fails, no such server
 ::
-
 argument::server
 Server object (link::Classes/Server::) or server name (link::Classes/Symbol::)
-
 argument::nProxies
 an Integer.
-
 argument::title
 a String.
-
 argument::bounds
 a Rect.
 
 InstanceMethods::
 
 method::proxyspace
-Return the proxyspace.
+returns the proxyspace.
 
 
-Examples::
+examples::
 
 code::
 n = NdefMixer(s);		// for the default server

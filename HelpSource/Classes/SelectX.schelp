@@ -7,11 +7,10 @@ description::
 The output is mixed from an array of inputs, performing an equal power crossfade between two adjacent channels.
 
 classmethods::
-method:: ar, kr
-
-argument:: which
-argument:: array
-argument:: wrap
+method::ar, kr
+argument::which
+argument::array
+argument::wrap
 wrap does not work yet.
 
 examples::

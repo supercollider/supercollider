@@ -3,11 +3,11 @@ summary:: A layout that distributes views in a horizontal line
 categories:: GUI>Layout
 related:: Classes/LineLayout, Classes/VLayout, Classes/GridLayout, Classes/StackLayout, Guides/GUI-Layout-Management
 
-DESCRIPTION::
+description::
 See documentation of superclass link::Classes/LineLayout:: for details.
 
 
-EXAMPLES::
+examples::
 code::
 
 // simple example

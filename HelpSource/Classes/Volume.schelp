@@ -6,41 +6,41 @@ description::
 Internally used by Server. When volume value != 0 dB or muted, a server's volume object will create a synth for controlling the volume on the main outputs for the number of channels given.
 
 classmethods::
-method:: new
-Create and return a new instance of Volume for a given server,
+method::new
+creates and returns a new instance of Volume for a given server,
 ranging from code::startBus:: over code::numChans:: (usually the server's number of output bus channels).
-argument:: server
+argument::server
 a server
-argument:: startBus
+argument::startBus
 start bus
-argument:: numChannels
+argument::numChannels
 number of channels
-argument:: min
+argument::min
 minimum volume in decibel
-argument:: max
+argument::max
 minimum volume in decibel
-argument:: persist
+argument::persist
 whether to persist a reset
 
 instancemethods::
 
-method:: mute
+method::mute
 mute output
 
-method:: unmute
+method::unmute
 unmute output
 
-method:: volume
-set the volume (in db)
+method::volume
+sets the volume (in db)
 
-method:: lag
-set the lag time that dampens volume changes
+method::lag
+sets the lag time that dampens volume changes
 
-method:: setVolumeRange
-set the volume range
+method::setVolumeRange
+sets the volume range
 
-method:: gui
-create a volume gui.
+method::gui
+creates a volume gui.
 
 examples::
 code::

@@ -1,16 +1,14 @@
 class:: DC
-summary:: Create a constant amplitude signal
+summary:: Creates a constant amplitude signal
 related:: Classes/LeakDC
 categories::  UGens>Generators>Single-value
 
-Description::
-
+description::
 This UGen simply outputs the initial value you give it.
 
 classmethods::
 
 method::ar, kr
-
 argument::in
 constant value to output, cannot be modulated, set at initialisation time
 

@@ -6,17 +6,14 @@ categories:: Streams-Patterns-Events>Patterns>Repetition
 ClassMethods::
 
 method::new
-
 argument::pattern
 the pattern to repeat
-
 argument::repeats
 Repeats the enclosed pattern strong::repeats:: times.
-
 argument::key
-If strong::key:: is non-nil, it sets the value of that key to true whenever it restarts the pattern. This can be used to advance Patterns enclosed by link::Classes/Pgate::.
+If strong::key:: is code::non-nil::, it sets the value of that key to code::true:: whenever it restarts the pattern. This can be used to advance Patterns enclosed by link::Classes/Pgate::.
 
-Examples::
+examples::
 
 code::
 (

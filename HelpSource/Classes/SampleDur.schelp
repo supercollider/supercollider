@@ -4,9 +4,8 @@ related:: Classes/ControlRate, Classes/RadiansPerSample, Classes/SampleRate, Cla
 categories::  UGens>Info
 
 
-Description::
-
-Returns the current sample duration of the server.
+description::
+returns the current sample duration of the server.
 Equivalent to 1/SampleRate.
 
 

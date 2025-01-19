@@ -1,10 +1,9 @@
 class:: LocalIn
-summary:: Define and read from buses local to a synth.
+summary:: defines and reads from buses local to a synth.
 related:: Classes/LocalOut
 categories::  UGens>InOut
 
-Description::
-
+description::
 LocalIn defines buses that are local to the enclosing synth. These are
 like the global buses, but are more convenient if you want to implement a
 self contained effect that uses a feedback processing loop.
@@ -26,19 +25,15 @@ See the resonator example below.
 classmethods::
 
 method::ar, kr
-
 argument::numChannels
-
 The number of channels (i.e. adjacent buses) to read in. You
 cannot modulate this number by assigning it to an argument in a
 SynthDef.
-
 argument::default
-
 The initial value written to the bus once, so that it can be used before overwriting it with LocalOut. An array can be passed in to specify different values for each channel.
 
 
-Examples::
+examples::
 
 code::
 (

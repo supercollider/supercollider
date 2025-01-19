@@ -4,7 +4,6 @@ related:: Classes/Pspawner, Classes/Spawner
 categories:: Streams-Patterns-Events>Patterns>Parallel
 
 description::
-
 Pspawn is a pattern-based version of link::Classes/Pspawner::. Where Pspawner uses a Routine-style function to determine when and how to spawn child patterns into the result stream, Pspawn uses an event pattern to determine the actions to take.
 
 Recommended to read the link::Classes/Pspawner:: help file to become familiar with pattern spawning capabilities.
@@ -41,7 +40,8 @@ table::
 ## A link::Classes/Symbol:: : code::\scaleUp:: || The pattern is looked up in the event's 'dict'.
 ::
 
-subsection::Using references to protect patterns from embedding
+
+subsection:: Using references to protect patterns from embedding
 
 Normally, when a pattern appears inside another pattern, the subpattern is embedded in the main output stream. It is not visible to the outside world as a pattern in itself; only its values appear.
 
@@ -60,14 +60,12 @@ Hint: link::Classes/Pfunc:: is another good way to wrap patterns, because it sim
 ClassMethods::
 
 method::new
-
 argument::pattern
 An event pattern (typically link::Classes/Pbind::) encapsulating the desired spawning behavior. Parameters in this event are described below.
-
 argument::spawnProtoEvent
 The event prototype against which the pattern is evaluated. Good for giving default values that should apply to all spawning (parent) events.
 
-Examples::
+examples::
 
 code::
 // Play overlapping major scales, up and down

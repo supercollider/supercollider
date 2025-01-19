@@ -3,24 +3,24 @@ summary:: a simple gui for Pdefns
 categories:: JITLib>GUI, Live Coding
 related:: Classes/Pdefn, Classes/PdefnAllGui, Classes/TdefAllGui
 
-DESCRIPTION::
+description::
 PdefnGui displays a PdefnGui, and allows editing and evaluating its code.
 
 
 CLASSMETHODS::
 
-METHOD:: observedClass
+method::observedClass
 Pdefn
 
 INSTANCEMETHODS::
 
 strong::JITGui methods: ::
-METHOD:: accepts
-test whether object can be displayed
+method::accepts
+tests whether object can be displayed
 
-METHOD:: getState, checkUpdate
+method::getState, checkUpdate
 
-EXAMPLES::
+examples::
 
 code::
 g = PdefnGui();

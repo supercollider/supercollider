@@ -8,41 +8,37 @@ ClassMethods::
 private::initClass
 
 method::new
-create new net address.
+creates new net address.
 note::To send messages internally, loopback IP is used: "127.0.0.1"::
-
 argument::hostname
 a link::Classes/String::, either an IP number (e.g. "192.168.34.56") or a hostname such as "otherHost.local".
-
 argument::port
 a port number, like 57110.
 
 method::fromIP
-create new net address using an integer IP number.
+creates new net address using an integer IP number.
 
 method::langPort
-Get the port sclang is currently listening on (may change after a recompile).
+gets the port sclang is currently listening on (may change after a recompile).
 
 method::localAddr
-Get a NetAddr which corresponds to localhost and the port sclang is listening on.
+gets a NetAddr which corresponds to localhost and the port sclang is listening on.
 
 method::disconnectAll
-close all TCP connections.
+closes all TCP connections.
 
 method::broadcastFlag
-Get or set the broadcast flag (whether or not broadcast messages can be sent).
+gets/sets the broadcast flag (whether or not broadcast messages can be sent).
 
 method::matchLangIP
-Test an IP address to see if it matches that of one of the NICs on this computer.
-
+tests an IP address to see if it matches that of one of the NICs on this computer.
 argument::ipstring
 A link::Classes/String:: to test containing an IP number in dot decimal notation (e.g. "192.168.34.56").
 
-returns::A link::Classes/Boolean:: indicating whether a match was found.
+returns:: A link::Classes/Boolean:: indicating whether a match was found.
 
 method::connections
-
-returns::A copy of the link::Classes/IdentityDictionary:: with all open TCP connections.
+returns:: A copy of the link::Classes/IdentityDictionary:: with all open TCP connections.
 
 InstanceMethods::
 
@@ -67,19 +63,18 @@ n.sendMsg(*~msg);
 ::
 
 method::sendBundle
-send a bundle with timestamp to the addr.
+sends a bundle with timestamp to the addr.
 
 method::sendRaw
-send a raw message without timestamp to the addr.
+sends a raw message without timestamp to the addr.
 
 method::connect
-open TCP connection.
-
+opens TCP connection.
 argument::disconnectHandler
 called when the connection is closed (either by the client or by the server).
 
 method::disconnect
-close TCP connection.
+closes TCP connection.
 
 method::ip
 returns the ip number (as a link::Classes/String::).
@@ -89,10 +84,10 @@ n.ip;
 ::
 
 method::isLocal
-Test if this NetAddr ip number matches that of one of this hosts NICs, or the loopback address.
-returns::A link::Classes/Boolean::.
+tests if this NetAddr ip number matches that of one of this hosts NICs, or the loopback address.
+returns:: A link::Classes/Boolean::.
 
-Examples::
+examples::
 
 code::
 n = NetAddr("127.0.0.1", 57120); // 57120 is sclang default port

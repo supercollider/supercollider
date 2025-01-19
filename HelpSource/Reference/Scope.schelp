@@ -10,14 +10,14 @@ code::
 (
 var makeCounter;
 makeCounter = { arg curVal=0, stepVal=1;
-     // return a function :
+     // returns a function :
     {
         var temp;
         // temp is local to this function, curVal & stepVal in the
         // enclosing function are referred to here within.
         temp = curVal;
         curVal = curVal + stepVal;
-        temp                       // return result
+        temp                       // returns result
     }
 };
 

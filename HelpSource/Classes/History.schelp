@@ -4,7 +4,6 @@ related:: Classes/Archive
 categories:: Streams-Patterns-Events
 
 description::
-
 History stores all code strings as they are being evaluated, in order to reuse code written earlier, to forward code to other players, or to store, reproduce, edit and analyse live-coded performances. It records every evaluated code string into a singleton instance of History - code::History.current::.
 
 First examples:
@@ -89,22 +88,23 @@ the currently recorded lines in History.current.
 lineShorts is a copy with shortened strings for display.
 
 method::makeWin
-make a HistoryGui for History.current.
+makes a HistoryGui for History.current.
 argument: where
 a point that sets left top of the HistoryGui window,
 argument: numItems
 the number of lines in the textview
 
-subsection::Configuration
+
+subsection:: Configuration
 
 method::keepsLog
-get and set flag whether to log History to a file.
+gets and set flag whether to log History to a file.
 
 method::verbose
-get and set flag whether to post debug messages from History operations.
+gets and set flag whether to post debug messages from History operations.
 
 method::recordLocally
-get and set flag to turn recording local code evaluation on and off
+gets and set flag to turn recording local code evaluation on and off
 
 method::localOff, localOn
 convenience to turn recording of local code evaluation on and off
@@ -113,55 +113,57 @@ method::forwardFunc
 a function to run on incoming new lines, can be used to send code by network.
 See the Utopia quark for examples of networking code history.
 
-subsection::Save and load history logs
+
+subsection:: Save and load history logs
 
 method::showLogFolder
-open folder where logfiles are stored
+opens folder where logfiles are stored
 
 method::showLogFile
-open current log file
+opens current log file
 
 method::saveCS
 store history as one compileString.
 
 method::loadCS
-load a history from (compilestring) file.
+loads a history from (compilestring) file.
 
 method::saveStory
 store in a file, in historical order as individual code snippets.
 
 method::loadStory
-read history into current, from a file in story format.
+reads history into current, from a file in story format.
 
 method::rewrite
-Write a properly formatted code file from a history.
+writes a properly formatted code file from a history.
 argument::path
 The filename is the original name with "_rewritten." appended.
 argument::open
-If open is true (default: true), open a text window with the string.
+If open is code::true:: (default: true), opens a text window with the string.
 
 method::readFromDoc
-read in a history from a code file created with .rewrite
+reads in a history from a code file created with .rewrite
 
 
 subsection:: Editing history
 method::clear
-remove all items from (current) history.
+removes all items from (current) history.
 
 method::enter
-add an entry to (current) history by hand.
+adds an entry to (current) history by hand.
 
 method::drop
-drop the newest num lines from history. if n is negative, drop the oldest n lines.
+drops the newest num lines from history. if n is negative, drop the oldest n lines.
 
 method::keep
-keep only the newest num lines from history. if n is negative, keep the oldest n lines.
+keeps only the newest num lines from history. if n is negative, keeps the oldest n lines.
 
 method::removeAt
-remove a specific line
+removes a specific line
 
 method::removeLast
-remove last line from history
+removes last line from history
+
 
 subsection:: Repeating history
 Repeating history can have different uses:
@@ -169,11 +171,11 @@ A. Reconstruction, e.g. redoing a history of coding steps as closely as possible
 or replaying a full performance as closely as possible; here, all errors are important and should be handled individually.
 B. Experimental live performance, e.g. replaying snippets from a recorded networked live-coding show in nonlinear orders; here, errors will occur more often because the current state will not always fit with what a particular line would require. Thus, one will likely prefer the robustness to just keep going.
 
-method:: ignoreErrors
+method::ignoreErrors
 global flag whether evaluating code lines via History will ignore errors or stop and throw them.
 
 method::eval
-evaluate codeString, and optionally, use ignoreError to override global ignoreErrors flag.
+evaluates codeString, and optionally, use ignoreError to override global ignoreErrors flag.
 
 code::
 History.ignoreErrors = true;
@@ -184,13 +186,13 @@ History.eval("1.blonk", false); 123; // throws error and stops, code after it ne
 ::
 
 method::evalLineAt
-evaluate the line at index in History.current.lines
+evaluates the line at index in History.current.lines
 
 method::play
-play back current history from start to end line, per default verbose.
+plays back current history from start to end line, per default verbose.
 
 method::stop
-stop current history playback.
+stops current history playback.
 
 
 subsection:: Date, time, string functions
@@ -199,11 +201,10 @@ method::formatTime
 method::unformatTime
 method::shorten
 method::prettyString
-
 private:: checkPath
 
 method::new
-create a new instance containing the lines given.
+creates a new instance containing the lines given.
 
 InstanceMethods::
 
@@ -216,7 +217,7 @@ method::isCurrent
 flag whether this history is History.current
 
 method::makeCurrent
-make this history History.current
+makes this history History.current
 
 method::player
 the player task for ths history
@@ -225,15 +226,15 @@ method::keys
 all keys of code authors in this history
 
 method::addLine
-add a line to history with current time, id, and code string
+adds a line to history with current time, id, and code string
 
 
 method::indicesFor
-find line indices created by keys and containing string. used for filtering.
+finds line indices created by keys and containing string. used for filtering.
 
 private:: matchKeys, matchString, storyString
 
-Examples::
+examples::
 
 code::
 // same as first example:

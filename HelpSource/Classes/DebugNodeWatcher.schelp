@@ -9,7 +9,7 @@ n_go n_end n_off n_on
 
 For debugging, it can be useful to see every node start and end. It doesn't require registration, reacts to each message.
 
-Examples::
+examples::
 
 code::
 s.boot;

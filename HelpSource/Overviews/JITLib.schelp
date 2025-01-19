@@ -2,7 +2,8 @@ title:: JITLib
 summary:: An overview of the Just In Time programming library
 categories:: JITLib, Tutorials>JITLib, Live Coding
 
-section::Introduction
+
+section:: Introduction
 
 emphasis::"Passenger to taxtidriver: take me to number 37. I'll give you the street name when we are there."::
 footnote::An austrian math teacher's joke::
@@ -14,8 +15,9 @@ emphasis::Just in time programming:: (or: emphasis::conversational programming, 
 
 	Being a dynamic programming language, SuperCollider provides several possibilities for modification of a running program - this library extends, unifies and develops them, mainly by providing abstract placeholders, called emphasis::proxies::, which can be used in calculations and modified at runtime.
 
-	subsection::Overview
-	JITLib consists of a number of strong::placeholders:: (server side and client side emphasis::proxies::) and strong::schemes of access::footnote::They have in common that they treat assignment as a method. In such a way, they are an extension of the assignment implementation in Smalltalk-72, which makes "=" a message sent to the receiving object.::.
+
+subsection:: Overview
+JITLib consists of a number of strong::placeholders:: (server side and client side emphasis::proxies::) and strong::schemes of access::footnote::They have in common that they treat assignment as a method. In such a way, they are an extension of the assignment implementation in Smalltalk-72, which makes "=" a message sent to the receiving object.::.
 These two aspects of space corresponding to emphasis::inclusion:: and emphasis::reference::, depend on their context - here the placeholders are like roles which have a certain behaviour and can be fulfilled by certain objects.
 It is useful to be aware of the three aspects of such a placeholder: a certain set of elements can be their strong::source::, they can be used in a set of strong::contexts:: and have a default source, if none is given.
 
@@ -35,7 +37,7 @@ code::
 ::
 
 
-section::Tutorial: Interactive Programming with SuperCollider and jitlib
+section:: Tutorial: Interactive Programming with SuperCollider and jitlib
 
 This tutorial focusses on some basic concepts used in JITLib. There are many possibilities,
 such as server messaging and pattern proxies which are not covered in tutorial form presently.
@@ -51,7 +53,7 @@ definitionList::
 ::
 
 
-section::Overview of the different classes and techniques
+section:: Overview of the different classes and techniques
 
 list::
 ## strong::Defs::: One way or style of access is the def-classes (Pdef, Ndef etc.). It binds a symbol to an object in a specific way:
@@ -93,7 +95,7 @@ server side: link::Classes/NodeProxy::
 ::
 
 
-section::Tutorials
+section:: Tutorials
 
 definitionList::
 ## link::Tutorials/JITLib/proxyspace_examples:: || (a broad variety of inputs and uses)
@@ -108,7 +110,8 @@ definitionList::
 ## link::Reference/NodeProxy_roles:: || (adverbial syntax for NodeProxy sources)
 ::
 
-section::Networking
+
+section:: Networking
 
 list::
 ## in remote and local networks thanks to sc-architecture node proxies can be strong::used on any server::, as long as it notifies the client and has a correctly initialized default node.
@@ -120,7 +123,8 @@ list::
 	::
 ::
 
-section::See also these related useful classes:
+
+section:: See also these related useful classes:
 
 definitionList::
 ## link::Classes/BusPlug:: || (listener on a bus)

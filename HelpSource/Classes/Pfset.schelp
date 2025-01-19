@@ -9,13 +9,12 @@ Good for setting default values or loading server objects.
 
 classmethods::
 
-method:: new
-
-argument:: func
+method::new
+argument::func
 Use environment variable syntax (e.g., code:: ~x = 0 ::) to store values in the internal environment. These values are copied into the event prototype before running the supplied pattern.
-argument:: pattern
+argument::pattern
 An event pattern (such as link::Classes/Pbind::).
-argument:: cleanupFunc
+argument::cleanupFunc
 Optional. A function to evaluate when the pattern is stopped, or when the supplied pattern runs out of values. For example, if you loaded a link::Classes/Buffer:: in the initializer function, you could free it in the code::cleanupFunc::.
 
 

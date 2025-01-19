@@ -1,14 +1,14 @@
 title::matchItem
 categories::Common methods
-summary::test if object fulfils a constraint
+summary:: test if object fulfils a constraint
 
 Implemented by: link::Classes/Object::, link::Classes/Collection::, link::Classes/Nil::, link::Classes/Function::
 
-method:: matchItem(item)
-
+method::matchItem(item)
 matchItem(item) may be passed to different objects that behave as constraints. More Objects may be conceived to implement matchItem to extend the interface.
 
 See also: link::Classes/Dictionary#-matchAt::.
+
 
 section:: Object-matchItem
 Test if strong::item:: is identical to strong::object::.
@@ -19,21 +19,24 @@ a.any { |x| x.matchItem(5) }; // false
 a.any { |x| x.matchItem("wort") }; // false, because "wort" == "wort" but not identical.
 ::
 
-section::Collection-matchItem
+
+section:: Collection-matchItem
 Test if strong::item:: is included in strong::collection::.
 code::
 a = [1, 2, 3, "wort", "1", [pi, 2pi]];
 a.any { |x| x.matchItem(pi) }; // true
 ::
 
-section::Nil-matchItem
-returns true (link::Classes/Nil:: serves as a "joker", a stand-in for anything).
+
+section:: Nil-matchItem
+Returns code::true:: (link::Classes/Nil:: serves as a "joker", a stand-in for anything).
 code::
 a = [nil, 1, 2, 3, "wort", "1", [pi, 2pi]];
 a.any { |x| x.matchItem(10000.rand) }; // true always
 ::
 
-section::Function-matchItem
+
+section:: Function-matchItem
 Test strong::item:: by passing it to a function which should return a link::Classes/Boolean::.
 code::
 a = [10, 20, 30, { |item| item.isPrime }];

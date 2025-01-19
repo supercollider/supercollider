@@ -5,7 +5,9 @@ categories:: FAQ
 
 anchor::ERROR Primitive BasicNew failed Index not an Integer::
 
-SECTION:: ERROR: Primitive 'BasicNew' failed. Index not an Integer
+
+section:: ERROR: Primitive 'BasicNew' failed. Index not an Integer
+
 
 subsection:: If you're writing a SynthDef
 
@@ -22,6 +24,7 @@ SynthDef(\thiswillfail, { |out=0, numChannels=2|
 
 It fails because we're trying to make the number of pink noise generators involved, actually changeable.
 You can't do that - when the SynthDef is compiled, the language needs to know strong::exactly:: how many UGens will be involved and how they are connected. This is because a SynthDef represents an efficient fixed-layout synth that the server can instantiate.
+
 
 subsection:: So what to do instead?
 
@@ -55,7 +58,9 @@ Then you'd need to invoke code::\simplepink_4:: or whatever, as appropriate.
 
 anchor::Language (client) Issues::
 
-SECTION:: Language (client) issues
+
+section:: Language (client) issues
+
 
 subsection:: Calling gui primitives from a SystemClock routine
 
@@ -109,7 +114,9 @@ code::
 
 anchor::SynthDef Issues::
 
-SECTION:: SynthDef Issues
+
+section:: SynthDef Issues
+
 
 subsection:: "If" statements inside a SynthDef
 
@@ -132,6 +139,7 @@ SynthDef(\kablooie, { |x = 0|
 
 This should be the first clue that Boolean logic in the server is a very different animal from the so-called "normal" use of conditionals on the client side (in the language).
 
+
 subsection:: What is a Boolean in the server?
 
 In fact, there is no such thing. The server handles floating-point numbers. It doesn't have strong::true:: or strong::false:: entities.
@@ -140,6 +148,7 @@ Since everything in the server is a number, the result of the comparison must al
 
 - code::True:: is represented by 1.0
 - code::False:: is represented by 0.0
+
 
 subsection:: Why is x > 0 "non-Boolean" in the "test"?
 
@@ -174,15 +183,16 @@ code::
 if (aBinaryOpUGen) { ... } { ... };
 ::
 
-To do this, the language must know which function (true or false) to execute. But there is no way to know which one the BinaryOpUGen will be.
+To do this, the language must know which function (code::true:: or false) to execute. But there is no way to know which one the BinaryOpUGen will be.
 So, SuperCollider throws an error.
+
 
 subsection:: If you can't branch, what good is a comparison in the server?
 
 Comparisons have a lot of uses, actually.
 
 - strong::Choosing one of two signals::: This is the closest we can get to strong::if-then-else:: in the server. Both strong::then:: and strong::else:: must be running continuously. That's a requirement of how the server works: the number and arrangement of unit generators within a single Synth cannot change. Instead, you can choose strong::which of those signals makes it downstream::. One will be used and the other ignored.
-Since true is 1 and false is 0, you can use a conditional to index into an array using Select.
+Since code::true:: is 1 and code::false:: is 0, you can use a conditional to index into an array using Select.
 
 code::
 Select.kr(aKrSignal > anotherKrSignal, [false_signal, true_signal]);
@@ -197,7 +207,7 @@ SendTrig.kr(amplitude > 0.2, 0, amplitude);
 ::
 
 - strong::Passing or suppressing triggers::: You might need to generate triggers continuously, but permit the triggers to take effect only when a condition is met. Multiplication handles this nicely:
-strong::condition * trigger::. Since the condition evaluates as 0 when false, the trigger will be replaced by 0 and nothing happens, as desired.
+strong::condition * trigger::. Since the condition evaluates as 0 when code::false::, the trigger will be replaced by 0 and nothing happens, as desired.
 
 For a simple case, let's refine the mic amplitude example by suppressing triggers that occur within 1/4 second after the previous.
 
@@ -211,23 +221,24 @@ var mic = In.ar(8, 1),
 SendTrig.kr(filteredTrig, 0, amplitude);
 ::
 
+
 subsection:: Logical operators: And, Or, Not, Xor
 
 Logical operators have simple arithmetic equivalents.
 
-- strong::And = multiplication::: strong::(x > 0) * (y > 0):: means both conditions must be true (nonzero) for the result to be nonzero.
+- strong::And = multiplication::: strong::(x > 0) * (y > 0):: means both conditions must be code::true:: (nonzero) for the result to be nonzero.
 
 - strong::Or = addition::: strong::(x > 0) + (y > 0):: means nonzero in either condition is enough to make the result nonzero.
 
 NOTE::
-If both are true, then the result will be 2, not 1. In some cases, the 2 may not be acceptable. That can be fixed by wrapping the Or in another comparison -- strong::((x > 0) + (y > 0)) > 0:: -- because 2 > 0 evaluates to 1!
+If both are code::true::, then the result will be 2, not 1. In some cases, the 2 may not be acceptable. That can be fixed by wrapping the Or in another comparison -- strong::((x > 0) + (y > 0)) > 0:: -- because 2 > 0 evaluates to 1!
 ::
 
 -  strong::Not::: I prefer to negate a condition by comparing it to zero:
 strong::condition <= 0::. 0 <= 0 is 1 (i.e., not 0), and 1 <= 0 is 0 (not 1).
 If you're certain the logical expression will only ever be 0 or 1 exactly, you can also negate by subtraction: strong::1 - condition::.
 
-- strong::Xor::: Exclusive-or is true if one or the other condition is true, but not both. We can add the two conditions and compare it to 1. The syntax is a little bit tricky because code::==:: doesn't turn into a BinaryOpUGen automatically.
+- strong::Xor::: Exclusive-or is code::true:: if one or the other condition is code::true::, but not both. We can add the two conditions and compare it to 1. The syntax is a little bit tricky because code::==:: doesn't turn into a BinaryOpUGen automatically.
 We have to create the BinaryOpUGen by hand.
 
 code::
@@ -259,6 +270,7 @@ Routine({
 }).play
 ::
 
+
 subsection:: FAILURE /s_new alloc failed, increase server's memory allocation
 
 strong::What it means::: While initializing the unit generators in a new Synth node, the server ran out of real-time memory.
@@ -288,6 +300,7 @@ strong::Alternate solution::: For delay units, you may use preallocated delay bu
 code::BufDelayN::, code::BufDelayL::, code::BufDelayC::, code::BufCombL:: etc.
 code::Buffer.alloc():: does not use the real-time pool and is not subject to the memSize limitation. This approach will not help with FFT units.
 
+
 subsection:: Array arguments
 
 Sometimes, you need to send an array to a series of Control inputs in a SynthDef (often called "_array arguments_").
@@ -316,6 +329,7 @@ SynthDef(\xyz, {
     // ...
 });
 ::
+
 
 subsection:: Why does it have to be a literal array?
 
@@ -347,7 +361,9 @@ code::a is: [ an OutputProxy, an OutputProxy, an OutputProxy, an OutputProxy, an
 
 anchor::Server Issues::
 
-SECTION:: Server issues
+
+section:: Server issues
+
 
 subsection:: How to trigger a function from the server
 
@@ -382,6 +398,7 @@ o = OSCdef(\bleepResponder, { |msg|
 a.free; o.remove;
 ::
 
+
 subsection:: Helpfile references:
 
 - link::Classes/SendTrig::, link::Classes/SendReply::
@@ -400,7 +417,9 @@ You can also kill scsynth using a terminal or your operating system's task manag
 
 anchor::Other Issues::
 
-SECTION:: Other issues
+
+section:: Other issues
+
 
 subsection:: Error while loading shared libraries: libsclang.so: cannot open shared object file
 

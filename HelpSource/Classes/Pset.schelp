@@ -4,7 +4,6 @@ related:: Classes/Pbindf, Classes/Psetp
 categories:: Streams-Patterns-Events>Patterns>Filter
 
 description::
-
 Pset sets a value in an event stream. It acts like one key in a link::Classes/Pbindf::.
 code::
 (
@@ -18,17 +17,14 @@ x = a.asStream;
 ClassMethods::
 
 method::new
-
 argument::name
 the key.
-
 argument::value
 can be a pattern or a stream. The resulting stream ends when that incoming stream ends.
-
 argument::pattern
 the pattern.
 
-Examples::
+examples::
 
 code::
 // Pset overrides incoming values:

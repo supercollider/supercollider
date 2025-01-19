@@ -7,7 +7,7 @@ This is a better pitch follower than link::Classes/ZeroCrossing::, but more cost
 
 classmethods::
 private:: categories
-method:: kr
+method::kr
 argument::in
 argument::initFreq
 argument::minFreq
@@ -19,7 +19,6 @@ argument::ampThreshold
 argument::peakThreshold
 argument::downSample
 argument::clar
-
 discussion::
 The pitch follower executes periodically at the rate specified by code::execFreq:: in cps. code::execFreq:: is clipped to be between code::minFreq:: and code::maxFreq::. First it detects whether the input peak to peak amplitude is above the code::ampThreshold::.
 If it is not then no pitch estimation is performed, code::hasFreq:: is set to zero and code::freq:: is held at its previous value. It performs an autocorrelation on the input and looks for the first peak after the peak around the lag of zero that is above code::peakThreshold:: times the amplitude of the peak at lag zero.
@@ -34,7 +33,7 @@ The autocorrelation is done coarsely at first using a maximum of code::maxBinsPe
 
 The three values around the peak are used to find a fractional lag value for the pitch. If the pitch frequency is higher than code::maxFreq::, or if no peak is found above code::minFreq::, then code::hasFreq:: is set to zero and code::freq:: is held at its previous value.
 
-It is possible to put a median filter of length code::median:: on the output estimation so that outliers and jitter can be eliminated. This will however add latency to the pitch estimation for new pitches, because the median filter will have to become half filled with new values before the new one becomes the median value.
+It is possible to put a median filter of length code::median:: on the output estimation so that outliers and jitter can be eliminated. This will, however, add latency to the pitch estimation for new pitches, because the median filter will have to become half filled with new values before the new one becomes the median value.
 If median is set to one then that is equivalent to no filter, which is the default.
 
 When an in range peak is found, it is inserted into the median filter, a new pitch is read out of the median filter and output as code::freq::, and code::hasFreq:: is set to one.

@@ -3,9 +3,8 @@ summary:: Current number of samples in buffer.
 related:: Classes/BufChannels, Classes/BufDur, Classes/BufFrames, Classes/BufRateScale, Classes/BufSampleRate
 categories::  UGens>Buffer>Info
 
-Description::
-
-Returns the current number of allocated samples. A sample is not the same as a frame (compare with link::Classes/BufFrames::); a frame includes the samples in each channel of the buffer. Only for a mono buffer are samples the same as frames.
+description::
+returns the current number of allocated samples. A sample is not the same as a frame (compare with link::Classes/BufFrames::); a frame includes the samples in each channel of the buffer. Only for a mono buffer are samples the same as frames.
 code::
 samples = frames * numChannels
 ::
@@ -14,7 +13,6 @@ samples = frames * numChannels
 classmethods::
 
 method::kr, ir
-
 argument::bufnum
 Buffer index.
 

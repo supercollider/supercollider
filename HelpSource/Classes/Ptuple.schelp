@@ -1,23 +1,20 @@
 class:: Ptuple
-summary:: combine a list of streams to a stream of lists
+summary:: combines a list of streams to a stream of lists
 related:: Classes/Ppar
 categories:: Streams-Patterns-Events>Patterns>List
 
 description::
-
-At each iteration, Ptuple returns a tuple (array) combining the output of each of the patterns in the list. When any of the patterns returns a nil, Ptuple ends that 'repeat' and restarts all of the streams.
+At each iteration, Ptuple returns a tuple (array) combining the output of each of the patterns in the list. When any of the patterns returns a code::nil::, Ptuple ends that 'repeat' and restarts all of the streams.
 
 ClassMethods::
 
 method::new
-
 argument::list
 an link::Classes/Array:: of patterns.
-
 argument::repeats
 an link::Classes/Integer:: or inf.
 
-Examples::
+examples::
 
 code::
 (

@@ -3,8 +3,7 @@ summary:: A gui for History objects
 categories:: GUI>Interfaces
 related:: Classes/History
 
-DESCRIPTION::
-
+description::
 HistoryGui allows easy access to History as it happens: one can read recent lines, when they were written and by whom; one can search for text strings and by author names; and one can quickly grab lines of code for rewriting. Apart from documenting just in time programming sessions, all of this can be useful in live coding performances. See e.g. the system developed by powerbooks_unplugged, in the Quark called Republic.
 
 The gui elements in detail:
@@ -41,23 +40,23 @@ g.postDoc(2);
 ClassMethods::
 
 method::docHeight
-get and set the height of the text window opened by HistoryGui
+gets and set the height of the text window opened by HistoryGui
 method::docTitle
-get and set the title of the text window opened by HistoryGui
+gets and set the title of the text window opened by HistoryGui
 
 method::new
-create a new HistoryGui
-argument:: object
+creates a new HistoryGui
+argument::object
 the history
-argument:: numItems
+argument::numItems
 the number of lines in the TextView above
-argument:: parent
+argument::parent
 a parent window or view in which to place new HistoryGui
-argument:: bounds
+argument::bounds
 bounds for new HistoryGui, constrained by its minSize.
-argument:: makeSkip
+argument::makeSkip
 flag whether to create a skipjack for the HistoryGui.
-argument:: options
+argument::options
 options to set for the HistoryGui (inherited from JITGui).
 
 
@@ -65,6 +64,8 @@ InstanceMethods::
 
 private:: accepts, checkUpdate, getState, makeViews, setDefaults, postInlined
 private:: updateBinVal, updateFunc, updateLines, updateVal, alignDoc
+
+
 subsection:: views
 method::textV
 top: the TextView for the selected line
@@ -78,16 +79,17 @@ reset all views
 method::showLineAt
 show the line at that index in History.lines in the TextView.
 
+
 subsection:: 'doc'-related
 method::doc
 the external text window made by HistoryGui to show codelines on.
 This is still called doc because it used to be a Document in pre-Qt times.
 
 method::findDoc
-find an open a re-usable text window, or make a new one
+finds an open a re-usable text window, or make a new one
 
-method:: docFlag
-get or set the symbol for the doc strategy to use:
+method::docFlag
+gets/sets the symbol for the doc strategy to use:
 code::\sameDoc:: tries to re-use a single text window,
 code::\newDoc:: always makes a new one (and keep track of old docs)
 
@@ -95,13 +97,13 @@ method::oldDocs
 list of previous text windows (docs) opened
 
 method::postDoc
-find the codeline at index in History, and post it on the textwindow
+finds the codeline at index in History, and post it on the textwindow
 
 method::setDocStr
-set the string of the current textwindow
+sets the string of the current textwindow
 
 method::rip
-create a new textwindow with currently selected line
+creates a new textwindow with currently selected line
 
 
 subsection:: filtering
@@ -123,16 +125,16 @@ method::filteredShorts
 the current filtered short lines for gui display
 
 method:.setKeyFilter
-set the key(s) to filter for, and perform filtering
+Sets the key(s) to filter for, and perform filtering
 
 method::setStrFilter
-set the string to filter for, and perform filtering
+sets the string to filter for, and perform filtering
 
 method::stickMode
 stickMode 0 means top, i.e. select top when new lines come in;
 stickMode 1 means keep, i.e. keep current line selected after new lines come in.
 
-EXAMPLES::
+examples::
 
 code::
 (

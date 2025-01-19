@@ -4,8 +4,7 @@ related:: Classes/LocalIn
 categories::  UGens>InOut
 
 
-Description::
-
+description::
 LocalOut writes to buses that are local to the enclosing synth. The buses
 should have been defined by a  link::Classes/LocalIn::  ugen. The
 code::channelsArray::  must be the same number of channels
@@ -29,14 +28,12 @@ alignment is required. See the resonator example below.
 classmethods::
 
 method::ar, kr
-
 argument::channelsArray
-
 An Array of channels or single output to write out. You cannot
 change the size of this once a SynthDef has been built.
 
 
-Examples::
+examples::
 
 code::
 

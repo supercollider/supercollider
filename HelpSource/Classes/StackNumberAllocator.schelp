@@ -2,38 +2,35 @@ TITLE:: StackNumberAllocator
 summary:: consecutive number allocator
 categories:: Control
 related:: Classes/ContiguousBlockAllocator, Classes/PowerOfTwoAllocator
-DESCRIPTION::
+description::
 Number allocator within a specified range.
 
 CLASSMETHODS::
 
-METHOD:: new
-make a new instance, with lo and hi values.
-
-ARGUMENT:: lo
+method::new
+makes a new instance, with lo and hi values.
+argument::lo
 initial value
-
-ARGUMENT:: hi
+argument::hi
 maximum
 
 INSTANCEMETHODS::
 
-METHOD:: init
+method::init
 Reset allocator to its initial state.
 
-METHOD:: alloc
-Allocate next number. After hi value returns nil.
+method::alloc
+allocates next number. After hi value returns code::nil::.
 
-METHOD:: free
-Set the next value of the allocator to the arbitrary TELETYPE::inIndex:: (could be any object). Then continue with the counter.
+method::free
+sets the next value of the allocator to the arbitrary TELETYPE::inIndex:: (could be any object). Then continue with the counter.
+argument::inIndex
 
-ARGUMENT::inIndex
-
-EXAMPLES::
+examples::
 
 code::
 o = StackNumberAllocator(0, 100);
-o.alloc // return the next value (evaluate multiple times)
+o.alloc // returns the next value (evaluate multiple times)
 
 o.init // reset counter
 o.alloc // 0

@@ -45,8 +45,8 @@ MyClass { // : Object is implied
 This is why in the above example, the message code::new:: can be called without being explicitly defined in the class.
 
 
-
 section:: Methods
+
 
 subsection:: Instance Methods
 
@@ -123,7 +123,7 @@ MyClass.classMethod // posts "hello class"
 ::
 
 
-subsection::Overriding methods (overloading)
+subsection:: Overriding methods (overloading)
 
 To change the behaviour inherited from the superclass, methods can be overridden. Note that an object looks always for
 the method it has defined first and then looks in the superclass. Here code::MyClass.value(2):: will return 6, not 4:
@@ -156,7 +156,6 @@ MyClass : SomeSuperclass {
 	}
 }
 ::
-
 
 
 section:: Instances
@@ -234,13 +233,12 @@ MyClass {
 ::
 
 
-
-
-section::Alternatives to inheritance
+section:: Alternatives to inheritance
 
 Overreliance on inheritance is usually a design flaw. Inheritance is mainly a way to organise code, and shouldn't be mistaken for a categorisation of objects. Two objects may respond to a message in different ways (polymorphism), and objects delegate control to ther objects they hold in their instance variables (object composition).
 
-subsection::Polymorphism
+
+subsection:: Polymorphism
 
 See also: link::Guides/Polymorphism::
 
@@ -259,7 +257,7 @@ a.value; // returns 1
 ::
 
 
-subsection::Object Composition
+subsection:: Object Composition
 Often, an object passes control to one of the objects it has in its instance variables. Because these objects can be of any kind, this is a very flexible way to achieve a wide range of functionalities. For example, a link::Classes/Button:: has an code::action:: instance variable, which may hold anything that responds to the message code::value::.
 
 code::
@@ -283,7 +281,8 @@ b.value(8);
 Often, variables like code::action:: above are filled with custom objects that belong to code::MyClass::. Thus, one will write many small classes that can be well combined in such a way. This is called "pluggable behavior".
 
 
-section::Variables
+section:: Variables
+
 
 subsection:: Initializing variables directly
 
@@ -335,6 +334,7 @@ MyClass : SomeSuperclass {
 
 
 ::
+
 
 subsection:: Getters and Setters
 
@@ -396,7 +396,7 @@ MyClass {
 A setter method should always return the receiver. This allows us to be sure that several setters can chained up.
 
 
-subsection::Constants
+subsection:: Constants
 Constants are variables, that, well, don't vary. They can only be assigned initially.
 
 code::
@@ -406,6 +406,7 @@ MyClass {
 
 MyClass.zero // returns 0
 ::
+
 
 section:: External method files
 
@@ -443,7 +444,9 @@ a = MyClass[1, 2, 3];
 a.allOfThem; // [1, 2, 3]
 ::
 
+
 section:: Printing to string
+
 
 subsection:: Printing custom messages to post window
 
@@ -467,6 +470,7 @@ MyTestPoint {
 code::
 a = MyTestPoint(2, 3)
 ::
+
 
 subsection:: Defining custom asCompileString behaviour
 
@@ -510,7 +514,8 @@ code::
 MyTestPoint(2, 3).asCompileString;
 ::
 
-section::Private Methods
+
+section:: Private Methods
 
 Private methods are marked by a prefix code::pr::, e.g. code::prBundleSize::. This is just a strong::naming convention::; the message can still be called from anywhere. It is recommended to stick to convention and only call private methods from within the class that defines them.
 

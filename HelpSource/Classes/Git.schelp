@@ -3,7 +3,7 @@ summary:: git interface
 categories:: Frontends
 related:: Classes/Quarks, Classes/Quark
 
-DESCRIPTION::
+description::
 An interface to the git toolchain. For more information on git, see link::http://git.io::.
 
 
@@ -11,31 +11,32 @@ CLASSMETHODS::
 
 
 
-METHOD:: new
+method::new
 creates a new instance of code::Git::, pointing to an existing local git repository.
-argument:: localPath
+argument::localPath
 path to the git repository.
 
 
-METHOD:: isGit
+method::isGit
 returns code::true::, if a local directory is a git repository.
-argument:: localPath
+argument::localPath
 
-METHOD:: checkForGit
+method::checkForGit
 returns code::true::, if the git toolchain is found on the system.
 
 
 INSTANCEMETHODS::
 
+
 subsection:: info
 
-METHOD:: branch
+method::branch
 returns:: current branch name.
 
-METHOD:: remote, url
+method::remote, url
 returns:: url of the first remote that it finds.
 
-METHOD:: remoteAsHttpUrl
+method::remoteAsHttpUrl
 Detects if the remote URI starts with code::"git@":: or code::"git:":: and remodels it to a valid code::"https":: URI. Otherwise, it returns the unaltered remote.
 
 code::
@@ -54,48 +55,47 @@ Git().url_("fooBar").remoteAsHttpUrl;
 
 returns:: remote URI formatted for code::http:: respectively code::https:: requests.
 
-METHOD:: remoteLatest
+method::remoteLatest
 returns:: hash of latest commit on the remote
 
-METHOD:: localPath
+method::localPath
 returns:: path to local repository
 
-METHOD:: tag
+method::tag
 returns:: currently checked out tag
 
-METHOD:: tags
+method::tags
 returns:: avaliable tags
 
-METHOD:: sha
+method::sha
 returns:: hash of the currently checked out version
 
-METHOD:: shaForTag
-argument:: tag
+method::shaForTag
+argument::tag
 one of the tags returned by link::#-tags::
 returns:: hash of the given tag
 
 
-METHOD:: isDirty
+method::isDirty
 returns:: code::true:: if there are local changes
-
 
 
 subsection:: perform actions on remote
 
-METHOD:: fetch
+method::fetch
 perform a fetch from remote
 
 
-METHOD:: checkout
+method::checkout
 perform a checkout from remote with argument code::refspec::
-argument:: refspec
+argument::refspec
 
-METHOD:: pull
+method::pull
 perform a pull from remote
 
-METHOD:: clone
+method::clone
 perform a clone from url into link::#-localPath::
-argument:: url
+argument::url
 the url of the remotes
 
 
@@ -103,7 +103,7 @@ PRIVATE:: git, refspec
 
 
 
-EXAMPLES::
+examples::
 
 code::
 // create a Git that points to a Quark directory
@@ -115,9 +115,9 @@ g = Git("/path/to/local/repo");
 // get all available tags
 g.tags;
 
-// return local path
+// returns local path
 g.localPath;
 
-// return url
+// returns url
 g.url;
 ::

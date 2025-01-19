@@ -1,23 +1,20 @@
 class:: Pkey
-summary:: access a key in an event stream
+summary:: accesses a key in an event stream
 related:: Classes/Penvir
 categories:: Streams-Patterns-Events>Patterns>Data Sharing
 
 description::
-
 Pkey simplifies backward access to values in an event being processed by link::Classes/Pbind:: or another event pattern.
 
 ClassMethods::
 
 method::new
-
 argument::key
 The name of the event variable to read from.
-
 argument::repeats
 The number of items returned before finishing. Using code::nil::, the default value, makes the stream infinite.
 
-Examples::
+examples::
 
 code::
 // \b should thus take twice the value of \a in each event:

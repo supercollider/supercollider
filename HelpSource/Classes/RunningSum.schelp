@@ -6,7 +6,7 @@ description::
 A running sum over a user specified number of samples, useful for running RMS power windowing.
 
 classmethods::
-method:: ar, kr
+method::ar, kr
 argument::in
 Input signal
 argument::numsamp

@@ -2,8 +2,7 @@ class:: Sweep
 summary:: Triggered linear ramp
 categories::  UGens>Triggers
 
-Description::
-
+description::
 Starts a linear raise by rate/sec from zero when trig input crosses from
 non-positive to positive.
 
@@ -15,18 +14,13 @@ classmethods::
 private:: categories
 
 method::ar, kr
-
 argument::trig
-
 triggers when trig input crosses from non-positive to positive.
-
-
 argument::rate
-
 rate/sec raise rate
 
 
-Examples::
+examples::
 
 code::
 // using sweep to modulate sine frequency

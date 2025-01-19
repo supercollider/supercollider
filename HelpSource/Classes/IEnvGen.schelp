@@ -9,15 +9,13 @@ Envelope generator for polling values from an envelope. IEnvGen plays back break
 classmethods::
 private:: categories, new1
 
-method:: ar, kr
-
-argument:: envelope
+method::ar, kr
+argument::envelope
 an instance of Env (this is static for the life of the UGen)
-argument:: index
+argument::index
 a point to access within the Env
-argument:: mul
-argument:: add
-
+argument::mul
+argument::add
 instancemethods::
 private:: init, argNamesInputsOffset, convertEnv
 

@@ -6,25 +6,19 @@ categories:: Streams-Patterns-Events>Patterns>List
 ClassMethods::
 
 method::new
-
 argument::list
-
 argument::repeats
 number of segments.
-
 argument::len
 length of each segment.
-
 argument::step
 how far to step the start of each segment from previous. step can be negative.
-
 argument::start
 what index to start at.
-
 argument::wrapAtEnd
-if true (default), indexing wraps around if goes past beginning or end. If false, the pattern stops if it hits a nil element or goes outside the list bounds.
+if code::true:: (default), indexing wraps around if goes past beginning or end. If code::false::, the pattern stops if it hits a code::nil:: element or goes outside the list bounds.
 
-Examples::
+examples::
 
 code::
 (

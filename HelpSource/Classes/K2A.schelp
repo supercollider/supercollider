@@ -4,8 +4,7 @@ related:: Classes/A2K
 categories::  UGens>Conversion
 
 
-Description::
-
+description::
 To be able to play a control rate UGen into an audio rate UGen,
 sometimes the rate must be converted. K2A converts via linear
 interpolation.
@@ -14,11 +13,10 @@ interpolation.
 classmethods::
 
 method::ar
-
 argument::in
 The input signal.
 
-Examples::
+examples::
 
 code::
 { K2A.ar(WhiteNoise.kr(0.3)) }.scope;

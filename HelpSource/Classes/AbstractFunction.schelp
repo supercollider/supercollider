@@ -1,10 +1,9 @@
 class::AbstractFunction
-summary::An object which responds to a set of messages that represent mathematical functions
+summary:: An object which responds to a set of messages that represent mathematical functions
 categories::Core>Kernel
 related::Classes/UGen, Classes/Pattern, Classes/Function, Overviews/Operators
 
 description::
-
 An AbstractFunction is an object which responds to a set of messages that represent
 mathematical functions. Subclasses override a smaller set of messages to respond
 to the mathematical functions.
@@ -24,7 +23,8 @@ To see which classes implement a specific method, see that method in the generat
 
 instanceMethods::
 
-subsection::Unary Messages
+
+subsection:: Unary Messages
 
 The following messages return an object which represents a delayed unary operation, i.e. an operation on one object. For example, the reciprocal of a function will result in a new function that, when called, returns the reciprocal of the evaluation of the operand.
 
@@ -73,7 +73,7 @@ a = Pgeom(1, 1.2, inf).floor; a.asStream.nextN(8);
 { a = SinOsc.ar(150) * 1.5; [a, a.ceil, a.floor, a.frac] }.plot.superpose_(true);
 ::
 method::sign
-Returns a function that returns -1 if receiver returns a negative number, 1 if positive, and 0 if zero.
+returns a function that returns -1 if receiver returns a negative number, 1 if positive, and 0 if zero.
 code::
 a = { 10.0.rand2.postln }; b = a.sign; b.value;
 { a = LFNoise1.ar(1500) * 1.5; [a, a.sign] }.plot;
@@ -97,7 +97,7 @@ a = Pseries(0, 1, inf).sqrt; a.asStream.nextN(8);
 { a = LFNoise1.ar(1500); [a, a.sqrt] }.plot;
 ::
 method::exp
-Returns e to the power of this.
+returns e to the power of this.
 code::
 a = { |x| x + 1 }; b = a.exp; [a.value(1), b.value(1)];
 a = Pseries(0, 0.25, inf).exp; a.asStream.nextN(8);
@@ -152,7 +152,8 @@ method::isStrictlyPositive
 method::rho
 method::theta
 
-subsection::Binary Messages
+
+subsection:: Binary Messages
 
 The following messages return an object which represents a delayed binary operation, i.e. an operation between two objects. For example, adding two functions will result in a new function that, when called, adds the results of the evaluation of the two operands.
 
@@ -305,7 +306,6 @@ b = a +>> 2;
 b.value.asBinaryDigits.join;
 ::
 method::ring1
-
 (a * b) + a
 
 code::
@@ -318,7 +318,6 @@ ring1(a, b) * 0.1 }.play;
 )
 ::
 method::ring2
-
 ((a*b) + a + b)
 
 code::
@@ -330,7 +329,6 @@ ring2(a, b) * 0.1 }.play;
 )
 ::
 method::ring3
-
 (a * a * b)
 
 code::
@@ -342,7 +340,6 @@ ring3(a, b) * 0.1 }.play;
 )
 ::
 method::ring4
-
 ((a*a *b) - (a*b*b))
 
 code::
@@ -354,7 +351,6 @@ ring4(a, b) * 0.1 }.play;
 )
 ::
 method::difsqr
-
 (a*a) - (b*b)
 
 code::
@@ -366,7 +362,6 @@ difsqr(a, b) * 0.1 }.play;
 )
 ::
 method::sumsqr
-
 (a*a) + (b*b)
 
 code::
@@ -378,7 +373,6 @@ sumsqr(a, b) * 0.1 }.play;
 )
 ::
 method::sqrdif
-
 (a - b) ** 2
 
 code::
@@ -390,7 +384,6 @@ ring4(a, b) * 0.1 }.play;
 )
 ::
 method::sqrsum
-
 (a + b) ** 2
 
 code::
@@ -402,7 +395,6 @@ sqrsum(a, b) * 0.1 }.play;
 )
 ::
 method::absdif
-
 (a - b).abs
 
 code::
@@ -427,7 +419,7 @@ method::clip2
 clips receiver to +/- aNumber
 
 method::excess
-Returns the difference of the receiver and its clipped form.
+returns the difference of the receiver and its clipped form.
 method::<!
 method::rrand
 code::
@@ -448,6 +440,7 @@ method::bitXor
 method::bitHammingDistance
 method::@
 
+
 subsection:: Messages with more arguments (n-ary Operators)
 
 The following messages return an object which represents a delayed n-ary operation, i.e. an operation between several objects (often three). For example, rescaling a function with linlin will result in a new function that, when called, scales the results of the evaluation of all operands.
@@ -465,10 +458,10 @@ method::linexp
 method::explin
 method::expexp
 
+
 subsection:: other
 
 method::applyTo
-
 Interface that allows us to combine selectors (Symbols) and Functions. Sends valueArray(args) to this.
 discussion::
 code::
@@ -483,7 +476,6 @@ f.choose.postcs.applyTo(3, 4);
 ::
 
 method::asUGenInput
-
 returns:: the result of sending the value(for) message to this.
 discussion::
 code::
@@ -519,29 +511,27 @@ g.plotGraph(from: 0, to: 1);
 method::plotGraph
 Sample the function with n points, in the range [from, to], and plot it in a Plotter.
 Returns a link::Classes/Plotter::.
-
-argument:: n
+argument::n
 Number of values displayed in the plot window (500 by default).
-argument:: from
+argument::from
 Minimum value passed to the function.
-argument:: to
+argument::to
 Maximum value passed to the function.
-
-argument:: name
+argument::name
 See link::Reference/plot::
-argument:: bounds
+argument::bounds
 See link::Reference/plot::
-argument:: discrete
+argument::discrete
 See link::Reference/plot::
-argument:: numChannels
+argument::numChannels
 See link::Reference/plot::
-argument:: minval
+argument::minval
 See link::Reference/plot::
-argument:: maxval
+argument::maxval
 See link::Reference/plot::
-argument:: separately
+argument::separately
 See link::Reference/plot::
-argument:: parent
+argument::parent
 See link::Reference/plot::
 
 returns:: a link::Classes/Plotter::
@@ -556,7 +546,8 @@ code::
 { |x| x.squared }.plotGraph(n: 200, from: -1, to: 1).domainSpecs_([-1, 1, \lin].asSpec).refresh;
 ::
 
-subsection::Function Composition
+
+subsection:: Function Composition
 
 When unary, binary or n-ary operators are applied to an abstract function, it returns an object that represents
 this operation, without evaluating the function: link::Classes/UnaryOpFunction::, link::Classes/BinaryOpFunction::, link::Classes/NAryOpFunction::.

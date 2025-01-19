@@ -7,16 +7,15 @@ description::
 This is essentially the same as link::Classes/Lag:: except that you can supply a different 60 dB time for when the signal goes up, from when the signal goes down. This is useful for smoothing out control signals, where "fade in" should be different from "fade out".
 
 classmethods::
-method:: ar, kr
-
-argument:: in
+method::ar, kr
+argument::in
 input signal.
-argument:: lagTimeU
+argument::lagTimeU
 60 dB lag time in seconds for the upgoing signal.
-argument:: lagTimeD
+argument::lagTimeD
 60 dB lag time in seconds for the downgoing signal.
-argument:: mul
-argument:: add
+argument::mul
+argument::add
 
 examples::
 code::

@@ -9,31 +9,30 @@ Optional arguments are spread and center, and equal power levelCompensation.
 The formula for the stereo position is ((0 .. (n - 1)) * (2 / (n - 1)) - 1) * spread + center
 
 classmethods::
-method:: ar, kr
-argument:: inArray
+method::ar, kr
+argument::inArray
 The array of channels to be distributed over the two stereo pairs
-argument:: spread
+argument::spread
 For spread = 0, all channels end up in the centre, for 1, they have maximum distribution
-argument:: level
+argument::level
 An amplitude multiplier for all channels
-argument:: center
+argument::center
 Shift the centre of the distribution.
-argument:: levelComp
+argument::levelComp
 
-
-method:: arFill
+method::arFill
 In analogy to Mix:arFill, this method takes a function that produces the channels. The counting index is passed to it.
-argument:: n
+argument::n
 Number of channels
-argument:: function
+argument::function
 Function to return each channel
-argument:: spread
+argument::spread
 For spread = 0, all channels end up in the centre, for 1, they have maximum distribution
-argument:: level
+argument::level
 An amplitude multiplier for all channels
-argument:: center
+argument::center
 Shift the centre of the distribution.
-argument:: levelComp
+argument::levelComp
 
 examples::
 

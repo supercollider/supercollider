@@ -6,20 +6,16 @@ categories:: Streams-Patterns-Events>Patterns>Language Control
 ClassMethods::
 
 method::new
-
 argument::condition
 A pattern or stream returning a link::Classes/Boolean:: value.
-
 argument::iftrue
-This stream is evaluated if the link::Classes/Boolean:: is true.
-
+This stream is evaluated if the link::Classes/Boolean:: is code::true::.
 argument::iffalse
-This stream is evaluated if the link::Classes/Boolean:: is false.
-
+This stream is evaluated if the link::Classes/Boolean:: is code::false::.
 argument::default
-This value (not stream) is returned if "iftrue" or "iffalse" return nil at any time.
+This value (not stream) is returned if "iftrue" or "iffalse" returns code::nil:: at any time.
 
-Examples::
+examples::
 
 code::
 p = Pif(Pfunc({ 0.3.coin }), Pwhite(0, 9, inf), Pwhite(100, 109, inf)).asStream;

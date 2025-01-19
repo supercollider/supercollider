@@ -13,12 +13,11 @@ If code::normalize:: is set to 1 the weights are continuously normalized (this i
 TWChoose is a composite of link::Classes/TWindex:: and link::Classes/Select::.
 
 classmethods::
-method:: ar, kr
-
-argument:: trig
-argument:: array
-argument:: weights
-argument:: normalize
+method::ar, kr
+argument::trig
+argument::array
+argument::weights
+argument::normalize
 
 examples::
 code::

@@ -7,16 +7,15 @@ description::
 The output is mixed from an array of inputs, linearly interpolating from a number of adjacent channels. A focus argument allows to control how many adjacent sources are mixed.
 
 classmethods::
-method:: ar, kr
-
-argument:: which
+method::ar, kr
+argument::which
 Index of the selected input, which is also the center of the selection for a focus > 0.
-argument:: array
+argument::array
 A collection of inputs.
-argument:: focus
+argument::focus
 The "fuzziness" of the selection: the larger the focus, the less adjacent inputs are mixed in.
-argument:: wrap
-If set to true, index will wrap around the array of inputs (see also: link::Classes/Array#-wrapAt::).
+argument::wrap
+If set to code::true::, index will wrap around the array of inputs (see also: link::Classes/Array#-wrapAt::).
 
 code::
 (

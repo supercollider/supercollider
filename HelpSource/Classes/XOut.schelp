@@ -4,9 +4,8 @@ related:: Classes/OffsetOut, Classes/Out, Classes/ReplaceOut
 categories::  UGens>InOut
 
 
-Description::
-
-Send signal to a bus, crossfading with previous contents.
+description::
+sends signal to a bus, crossfading with previous contents.
 code::xfade::  is a level for the crossfade between what
 is on the bus and what you are sending. The algorithm is equivalent to this:
 
@@ -22,17 +21,14 @@ buses and how they are used.
 classmethods::
 
 method::ar, kr
-
 argument::bus
 The index of the bus to write out to. The lowest numbers are written to the audio hardware.
-
 argument::xfade
 Crossfade level.
-
 argument::channelsArray
 An Array of channels or single output to write out. You cannot change the size of this once a SynthDef has been built.
 
-Examples::
+examples::
 
 code::
 

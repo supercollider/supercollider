@@ -4,8 +4,7 @@ related:: Classes/ControlRate, Classes/RadiansPerSample, Classes/SampleDur, Clas
 categories::  UGens>Info
 
 
-Description::
-
+description::
 When a synth is created from a time stamped osc-bundle, it starts
 calculation at the next possible block (normally 64 samples). Using an
 OffsetOut UGen, one can delay the audio so that it matches sample
@@ -22,7 +21,7 @@ classmethods::
 
 method::ir
 
-Examples::
+examples::
 
 code::
 

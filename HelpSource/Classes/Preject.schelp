@@ -4,17 +4,16 @@ categories:: Streams-Patterns-Events>Patterns>Filter
 related:: Classes/Pselect, Classes/Pcollect, Classes/Collection#-reject
 
 description::
-Preject filters the source strong::pattern:: using strong::func::. Values for which strong::func:: returns true will not be returned by Preject.
+Preject filters the source strong::pattern:: using strong::func::. Values for which strong::func:: Returns code::true:: will not be returned by Preject.
 
 This is the pattern library's equivalent of link::Classes/Collection#-reject::.
 
 classmethods::
 
-method:: new
-argument:: func
-A link::Classes/Function::. The function used to reject values. It should take a single parameter (the next value from code::pattern::), and return a boolean.
-
-argument:: pattern
+method::new
+argument::func
+A link::Classes/Function::. The function used to reject values. It should take a single parameter (the next value from code::pattern::), and returns a boolean.
+argument::pattern
 The link::Classes/Pattern:: to be filtered.
 
 

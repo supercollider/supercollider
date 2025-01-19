@@ -8,73 +8,74 @@ Users will not normally directly create instances of EZLists, but only use it th
 
 classmethods::
 
-method:: new
-
+method::new
 instancemethods::
+
 
 subsection:: Building and Changing the List
 
-method:: globalAction
-Set/get the global function to be performed in addition to the item functions: code:: { |listObj| value } ::.
+method::globalAction
+sets/gets the global function to be performed in addition to the item functions: code:: { |listObj| value } ::.
 
-method:: items
-Set/get an link::Classes/Array:: of Associations including the labels and the item functions: code:: ['label' -> { |listObj| value }, ] ::.
+method::items
+sets/gets an link::Classes/Array:: of Associations including the labels and the item functions: code:: ['label' -> { |listObj| value }, ] ::.
 discussion::
 In menus, the macOS graphics system gives special meanings to some characters. See link::Classes/PopUpMenu:: ; Or and link::Classes/Array:: link::Classes/Symbol::s (if you are only using code::globalAction::). link::Classes/Array::s of link::Classes/Symbol::s will get converted into and array of link::Classes/Association::s with and empty link::Classes/Function:: code:: ['label' -> { }, ] ::.
 
-method:: item
-Returns:: the item label of the current selection.
+method::item
+returns:: the item label of the current selection.
 
-method:: itemFunc
-Returns:: the item function of the current selection.
+method::itemFunc
+returns:: the item function of the current selection.
 
-method:: addItem
-Adds an item.
-argument:: name
+method::addItem
+adds an item.
+argument::name
 An instance of link::Classes/String:: or link::Classes/Symbol::. The name of the list/menu item.
-argument:: action
+argument::action
 An instance of link::Classes/Function::.
 
-method:: insertItem
+method::insertItem
 Inserts a list/menu item at index position.
-argument:: index
+argument::index
 An link::Classes/Integer::. The index where to insert an item.
-argument:: name
+argument::name
 An instance of link::Classes/String:: or link::Classes/Symbol::. The name of the list/menu item.
-argument:: action
+argument::action
 An instance of link::Classes/Function::.
 
-method:: replaceItemAt
+method::replaceItemAt
 Replace a list/menu item at index position.
-argument:: index
+argument::index
 An link::Classes/Integer::. The index where to insert an item.
-argument:: name
-An instance of link::Classes/String:: or link::Classes/Symbol::. The name of the list/menu item. Default is the current item label.
-argument:: action
-An instance of link::Classes/Function::. Default is the current item action.
+argument::name
+An instance of link::Classes/String:: or link::Classes/Symbol::. The name of the list/menu item. The default is the current item label.
+argument::action
+An instance of link::Classes/Function::. The default is the current item action.
 
-method:: removeItemAt
-Removes a list/menu item at index position.
-argument:: index
+method::removeItemAt
+removes a list/menu item at index position.
+argument::index
 An link::Classes/Integer::. The index where to remove an item.
 
-method:: remove
-Removes both the view, label and the list/menu from the parent view.
+method::remove
+removes both the view, label and the list/menu from the parent view.
+
 
 subsection:: Accessing Values
 
-method:: value
-Gets/sets the list/menu to the index at value. Does not perform the action.
-argument:: val
+method::value
+gets/sets the list/menu to the index at value. Does not perform the action.
+argument::val
 An link::Classes/Integer::.
 
-method:: valueAction
-Sets the value and performs the action at the index value and the global action.
-argument:: val
+method::valueAction
+sets the value and performs the action at the index value and the global action.
+argument::val
 An link::Classes/Integer::.
 
-method:: doAction
+method::doAction
 Performs the action at the current index and the global action.
 
-method:: initViews
+method::initViews
 Called by init and overridden by all subclasses. This is where the class specific views are built.

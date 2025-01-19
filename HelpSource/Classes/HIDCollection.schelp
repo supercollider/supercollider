@@ -3,7 +3,7 @@ summary:: A class describing a group of elements of an HID device
 categories::  External Control>HID
 related:: Classes/HID, Guides/Working_with_HID, Classes/HIDElement, Classes/HIDUsage
 
-DESCRIPTION::
+description::
 An HIDCollection defines a group of controls on a low level of the HID device, i.e. the device reports these groups. The main use to access it is to retrieve information about what kind of function the HID device performs, e.g. a GamePad, a Joystick or a Mouse.
 
 This class is populated with information read from the device, and represents some of the internal information of the device.
@@ -16,75 +16,74 @@ PRIVATE::new
 INSTANCEMETHODS::
 PRIVATE::printOn
 
-METHOD:: postCollection
+method::postCollection
 Post a human readable description of the collection to the post window.
 
 
-METHOD:: usage
+method::usage
 Retrieve the usage index of this collection.
 
 returns:: a Number - the usage index of this collection
 
 
-METHOD:: usagePage
+method::usagePage
 Retrieve the usage page index of this collection.
 
 returns:: a Number- the usage page index
 
 
-METHOD:: usageName
+method::usageName
 Retrieve the usage name of this collection. The name is looked up from the standardized HID usage tables using the usage page index.
 
 returns:: a String - the usage name
 
-METHOD:: pageName
+method::pageName
 Retrieve the page name of this collection. The name is looked up from the standardized HID usage tables using the usage page index.
 
 returns:: a String - the usage page name
 
 
-METHOD:: type
+method::type
 The type of collection.
 
 returns:: a number describing the type of collection.
 
 
-METHOD:: device
-Get the device to which this collection belongs.
+method::device
+gets the device to which this collection belongs.
 NOTE:: do not set this as a user!::
 
 returns:: an instance of HID
 
 
-METHOD:: id
+method::id
 Index of this collection
 
 returns:: a Number
 
-METHOD:: parent
+method::parent
 Index of the parent of this collection.
 
 returns:: a Number
 
-METHOD:: numElements
+method::numElements
 Number of elements in this collection
 
 returns:: a Number
 
-METHOD:: firstElement
-
+method::firstElement
 The first element that is part of this collection.
 
 returns:: a Number - an index indicating the first element
 
 
 
-METHOD:: numCollections
+method::numCollections
 Number of (child) collections in this collection
 
 returns:: a Number
 
-METHOD:: firstCollection
+method::firstCollection
 The first collection that is part of this collection.
 
 returns:: a Number - an index indicating the first collection

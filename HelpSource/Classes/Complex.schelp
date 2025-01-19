@@ -3,16 +3,16 @@ summary:: complex number
 categories:: Math
 related::Classes/Polar, Classes/SimpleNumber, Classes/Float, Classes/Integer
 
-DESCRIPTION::
+description::
 A class representing complex numbers.
 Note that this is a simplified representation of a complex number, which does not implement the full mathematical notion of a complex number.
 
 CLASSMETHODS::
-method:: new
-Create a new complex number with the given real and imaginary parts.
-argument:: real
+method::new
+creates a new complex number with the given real and imaginary parts.
+argument::real
 the real part
-argument:: imag
+argument::imag
 the imaginary part
 
 returns:: a new instance of Complex.
@@ -25,49 +25,50 @@ a.imag;
 
 INSTANCEMETHODS::
 
+
 subsection:: math support
-method:: real
+method::real
 The real part of the number.
 
-method:: imag
+method::imag
 The imaginary part of the number.
 
-method:: conjugate
+method::conjugate
 the complex conjugate.
 discussion::
 code::
 Complex(2, 9).conjugate
 ::
 
-method:: +
+method::+
 Complex addition.
 discussion::
 code::
 Complex(2, 9) + Complex(-6, 2)
 ::
 
-method:: -
+method::-
 Complex subtraction
 discussion::
 code::
 Complex(2, 9) - Complex(-6, 2)
 ::
 
-method:: *
+method::*
 Complex multiplication
 discussion::
 code::
 Complex(2, 9) * Complex(-6, 2)
 ::
 
-method:: /
+method::/
 Complex division.
 discussion::
 code::
 Complex(2, 9) / Complex(-6, 2)
 ::
 
-method:: exp
+method::exp
 Complex exponentiation with base e.
 discussion::
 code::
@@ -77,21 +78,21 @@ code::
 exp(Complex(0, pi)) == -1 // Euler's formula: true
 ::
 
-method:: squared
+method::squared
 Complex self multiplication.
 discussion::
 code::
 squared(Complex(2, 1))
 ::
 
-method:: cubed
+method::cubed
 complex triple self multiplication.
 discussion::
 code::
 cubed(Complex(2, 1))
 ::
 
-method:: sqrt
+method::sqrt
 Complex square root
 discussion::
 returns the principal root
@@ -102,8 +103,8 @@ Complex(4, 1.neg).sqrt
 Complex(4, 1.neg).pow(2.reciprocal)
 ::
 
-method:: **
-method:: pow
+method::**
+method::pow
 Complex exponentiation
 discussion::
 not implemented for all combinations - some are mathematically ambiguous.
@@ -118,14 +119,14 @@ Complex(2, 9) ** 1.2 // not defined
 ::
 
 
-method:: <
+method::<
 the comparison of just the real parts.
 discussion::
 code::
 Complex(2, 9) < Complex(5, 1);
 ::
 
-method:: ==
+method::==
 the comparison assuming that the reals (floats) are fully embedded in the complex numbers
 discussion::
 code::
@@ -133,14 +134,14 @@ Complex(1, 0) == 1;
 Complex(1, 5) == Complex(1, 5);
 ::
 
-method:: neg
+method::neg
 negation of both parts
 discussion::
 code::
 Complex(2, 9).neg
 ::
 
-method:: reciprocal
+method::reciprocal
 the reciprocal of a complex number
 discussion::
 code::
@@ -148,57 +149,56 @@ Complex(3, 4).reciprocal
 1 / Complex(3, 4) // same, but less efficient
 ::
 
-method:: abs
+method::abs
 the absolute value of a complex number is its magnitude.
 discussion::
 code::
 Complex(3, 4).abs
 ::
 
-method:: magnitude
+method::magnitude
 distance to the origin.
 
-method:: magnitudeApx
+method::magnitudeApx
 
-method:: rho
+method::rho
 the distance to the origin.
 
-method:: angle, phase, theta
+method::angle, phase, theta
 the angle in radians.
 
 
 subsection:: conversion
-method:: asPoint
+method::asPoint
 Convert to a link::Classes/Point::.
 
-method:: asPolar
+method::asPolar
 Convert to a Polar
 
-method:: asInteger
+method::asInteger
 real part as link::Classes/Integer::.
 
-method:: asFloat
+method::asFloat
 real part as link::Classes/Float::.
 
-method:: asComplex
+method::asComplex
 returns this
 
 
 subsection:: misc
-method:: coerce
-method:: hash
+method::coerce
+method::hash
 a hash value
-method:: printOn
-print this on given stream
-method:: performBinaryOpOnSignal
-method:: performBinaryOpOnComplex
-method:: performBinaryOpOnSimpleNumber
-method:: performBinaryOpOnUGen
+method::printOn
+prints this on given stream
+method::performBinaryOpOnSignal
+method::performBinaryOpOnComplex
+method::performBinaryOpOnSimpleNumber
+method::performBinaryOpOnUGen
 
 
 
-
-EXAMPLES::
+examples::
 
 Basic example:
 code::

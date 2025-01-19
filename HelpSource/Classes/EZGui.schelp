@@ -9,47 +9,48 @@ Users will not normally directly create instances of EZGui, but only use it thro
 
 instancemethods::
 
+
 subsection:: Accessing Instance Variables
 
-method:: view
-Returns the enclosing link::Classes/CompositeView::.
+method::view
+returns the enclosing link::Classes/CompositeView::.
 
-method:: bounds
-Returns the bounds of the enclosing link::Classes/CompositeView::.
+method::bounds
+returns the bounds of the enclosing link::Classes/CompositeView::.
 
-method:: label
-Sets/gets it the label. Will add the label view if none was initially created.
-argument:: string
+method::label
+sets/gets it the label. Will add the label view if none was initially created.
+argument::string
 An Instance of link::Classes/String::.
 
-method:: window
-Returns the window if you used the popUp window function.
+method::window
+returns the window if you used the popUp window function.
 
 
 subsection:: Accessing GUI options
 
-method:: alwaysOnTop
-Makes the popup window always on top, if there is one.
-argument:: bool
-An Instance of link::Classes/Boolean::. Default is false.
+method::alwaysOnTop
+makes the popup window always on top, if there is one.
+argument::bool
+An Instance of link::Classes/Boolean::. The default is code::false::.
 
-method:: visible
-Sets/gets it the component views are visible.
-argument:: bool
-An Instance of link::Classes/Boolean::. Default is true.
+method::visible
+sets/gets it the component views are visible.
+argument::bool
+An Instance of link::Classes/Boolean::. The default is code::true::.
 
-method:: enabled
-Sets/gets if the list is enabled.
-argument:: bool
-An Instance of link::Classes/Boolean::. Default is true.
+method::enabled
+sets/gets if the list is enabled.
+argument::bool
+An Instance of link::Classes/Boolean::. The default is code::true::.
 
-method:: onClose
-Sets/gets the onClose function of either code::view:: or code::window::, depending on whether the EZ view used a popup window.
-argument:: func
+method::onClose
+sets/gets the onClose function of either code::view:: or code::window::, depending on whether the EZ view used a popup window.
+argument::func
 An Instance of link::Classes/Function:: or link::Classes/FunctionList::.
 
-method:: font
-argument:: font
+method::font
+argument::font
 An instance of link::Classes/Font::.
 
 
@@ -57,8 +58,8 @@ subsection:: Subclassing
 
 EZGui provides a standard and basic tools for most EZ classes. If you make a new EZ class, then subclass EZGui, and override the necessary methods. If your class only has a label and a widget, chances are, you need to override nothing, but only need to write the  new and init class methods. See existing subclasses of EZGui for examples of this. You may also want to override the following:
 
-method:: widget
-Returns the active widget. Subclasses will typically refer to it or ignore it, e.g.:
+method::widget
+returns the active widget. Subclasses will typically refer to it or ignore it, e.g.:
 code::
 MyEZClass{
 	myOtherMethods{ }
@@ -67,35 +68,35 @@ MyEZClass{
 }
 ::
 
-method:: action
-Gets/sets the action of the EZ class instance.
-argument:: func
+method::action
+gets/sets the action of the EZ class instance.
+argument::func
 An Instance of link::Classes/Function:: or link::Classes/FunctionList::.
 
-method:: value
-Gets/sets the value of the code::widget::. Does not perform the action.
-argument:: val
+method::value
+gets/sets the value of the code::widget::. Does not perform the action.
+argument::val
 An integer.
 
-method:: valueAction
-Gets/sets the value of the widget. Performs do action.
-argument:: val
+method::valueAction
+gets/sets the value of the widget. Performs do action.
+argument::val
 An integer.
 
-method:: doAction
+method::doAction
 Performs code::this.action.value(this)::.
 
 
 subsection:: Internal Utilities
 
-method:: prSubViewBounds
+method::prSubViewBounds
 This calculates the bounds of the subviews and the gaps. It returns an array of Rects, which depends on how many subview there are. Subclasses override this if they have more than one widget.
 
-method:: prMakeView
+method::prMakeView
 Called by init. Returns code::[view, bounds]::. The container is either the enclosing Container, or a pop up window with a container.
 
-method:: prSetViewParams
+method::prSetViewParams
 Only defined by some subclasses. Sets the code::resize::  and code::align:: of all the views, according to the state of code::layout::.
 
-method:: prMakeMarginGap
+method::prMakeMarginGap
 Called in the init method of all subclasses. Sets the margin and gap of code::view::. By default, it tries to get its parent's gap, otherwise it defaults to code::2@2::. Setting code::argGap:: overrides these.

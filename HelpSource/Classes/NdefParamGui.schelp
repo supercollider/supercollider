@@ -4,17 +4,17 @@ categories:: JITLib>GUI, Live Coding
 related:: Classes/EZText, Classes/NdefGui, Classes/EnvirGui
 
 description::
-
-NdefParamGui displays all settings and mappings of a nodeproxy, so one can change them flexibly. Single number get displayed with an link::Classes/EZSlider::, and anything else is shown as an link::Classes/EZText:: (a text field). Its main use is within link::Classes/NdefGui::.
+NdefParamGui displays all settings and mappings of a nodeproxy, so one can change them flexibly. Single number gets displayed with an link::Classes/EZSlider::, and anything else is shown as an link::Classes/EZText:: (a text field). Its main use is within link::Classes/NdefGui::.
 
 It inherits some useful methods from link::Classes/EnvirGui::.
 
 ClassMethods::
 
-subsection::Creation
+
+subsection:: Creation
 
 method::new
-create a new NdefParamGui
+creates a new NdefParamGui
 
 code::
 // simple example - see also NdefGui!
@@ -53,22 +53,16 @@ Ndef(\a).map(\freqs, Ndef(\lfos))
 
 g.parent.close
 ::
-
 argument::object
 the nodeproxy whose settings are to be displayed.
-
 argument::numItems
 the number of items to display. If an envir is given, and no num, num is envir.size.
-
 argument::parent
 the parent view to display in; if none is given, a new window is created.
-
 argument::bounds
 the bounds within which to display; if none is given, bounds are calculated.
-
 argument::makeSkip
-flag whether to make a skipjack to manage updates of the envirgui. default is true.
-
+flag whether to make a skipjack to manage updates of the envirgui. The default is code::true::.
 argument::options
 a list of additional information, e.g. flags about optional buttons.
 
@@ -81,7 +75,7 @@ code::
 g.name = "Yoohoo";
 ::
 
-Examples::
+examples::
 
 code::
 	// put an NdefParamGui in an existing window - margin becomes 0@0

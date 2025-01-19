@@ -4,14 +4,12 @@ related:: Classes/K2A
 categories::  UGens>Conversion
 
 
-Description::
-
+description::
 Audio to control rate converter. Only needed in specific cases.
 
 
 classmethods::
 
 method::kr
-
 argument::in
 The input signal.

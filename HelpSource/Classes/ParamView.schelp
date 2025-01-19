@@ -3,7 +3,7 @@ summary:: show a parameter of a JITLib process
 categories:: JITLib
 related:: Classes/JITGui, Overviews/JITLib
 
-DESCRIPTION::
+description::
 ParamView displays a parameter value, and switches representation as appropriate for value: A single number is shown by an EZSlider, a pair of numbers by an EZRanger, and anything else as code on an EZText.
 
 First examples:
@@ -40,63 +40,63 @@ w.addFlowLayout;
 
 CLASSMETHODS::
 
-METHOD:: new
-create a new ParamView with
-ARGUMENT:: parent
+method::new
+creates a new ParamView with
+argument::parent
 the parent window or view
-ARGUMENT:: bounds
+argument::bounds
 the bounds of the view
-ARGUMENT:: label
+argument::label
 a label to display
-ARGUMENT:: spec
+argument::spec
 a controlspec for the value
-ARGUMENT:: action
+argument::action
 an action to do when the value changes
-ARGUMENT:: initVal
+argument::initVal
 an initial value
-ARGUMENT:: initAction
+argument::initAction
 a boolean whether to perform the action on init.
 
 
 INSTANCEMETHODS::
 
-METHOD:: label
-get and set the view's label
+method::label
+gets and set the view's label
 
-METHOD:: spec
-get and set the view's control spec
+method::spec
+gets and set the view's control spec
 
-METHOD:: action
-get and set the paramview's action
+method::action
+gets and set the paramview's action
 
 private:: zone, zones
 
-METHOD:: ezviews, slider, ranger, textview
+method::ezviews, slider, ranger, textview
 the 3 ezviews between which the ParamView switches
 
-METHOD:: currview
+method::currview
 the currently shown view of these
 
-METHOD:: value
-get and set value
+method::value
+gets and set value
 
-METHOD:: valueAction
-get and set value and do action
+method::valueAction
+gets and set value and do action
 
-METHOD:: doAction
+method::doAction
 do the view's action
 
-METHOD:: viewType
-get and set the view's type:
+method::viewType
+gets and set the view's type:
 0 is single number -> EZSlider,
 1 is pair of numbers -> EZRanger,
 2 is anything else
 
-METHOD:: valueType
+method::valueType
 determine viewType for a given value
 
 
-METHOD:: background
-get and set background color
+method::background
+gets and set background color
 
 private:: init

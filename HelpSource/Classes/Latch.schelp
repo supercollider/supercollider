@@ -3,24 +3,21 @@ summary:: Sample and hold
 related:: Classes/Gate
 categories::  UGens>Triggers
 
-Description::
+description::
 Holds input signal value when triggered. Latch will output 0 until it receives its first trigger.
 
 
 classmethods::
 
 method::ar, kr
-
 argument::in
 The input signal.
-
 argument::trig
-
 Trigger. Trigger can be any signal. A trigger happens when the
 signal changes from non-positive to positive.
 
 
-Examples::
+examples::
 
 code::
 { Blip.ar(Latch.ar(WhiteNoise.ar, Impulse.ar(9)) * 400 + 500, 4, 0.2) }.play;

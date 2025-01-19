@@ -4,8 +4,7 @@ related:: Classes/Pmul, Classes/Paddp
 categories:: Streams-Patterns-Events>Patterns>Math
 
 description::
-
-Adds a value to a named value in an event pattern or stream until it ends. Repeats this with new values until the value stream ends.
+adds a value to a named value in an event pattern or stream until it ends. Repeats this with new values until the value stream ends.
 
 ClassMethods::
 
@@ -17,7 +16,7 @@ The value, pattern, stream or array to multiply with. The resulting stream ends 
 argument::pattern
 The event pattern or stream within which to multiply the new values.
 
-Examples::
+examples::
 
 code::
 (

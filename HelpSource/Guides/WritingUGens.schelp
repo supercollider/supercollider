@@ -17,6 +17,7 @@ processing operations can require a lot of code. You don't have an instant live 
 easily crash the server. SuperCollider's UGens are stable and well-tested, and custom UGens are best viewed as a last
 resort for when the limitations of SC are impassable.
 
+
 section:: Pseudo-UGens
 
 Before we proceed to the real UGens, we'll take a quick detour for the sake of completeness. A pseudo-UGen is a bit of
@@ -48,6 +49,7 @@ for audio rate. Putting LocalIn and LocalOut in a pseudo-UGen is a bad idea, as 
 loops in the SynthDef.
 ::
 
+
 section:: Basics of UGens
 
 A (real) UGen needs two components: a plugin for the server, and a class for the language. The class goes in an ordinary
@@ -72,6 +74,7 @@ class files in the same location, the class file and the library file can go in 
 Plug-ins are loaded during the startup of the server, so it will have to be restarted after (re-)compiling a
 plugin. If you modify the plugin file but not the class file, you don't need to reboot the interpreter.
 
+
 section:: FAUST
 
 FAUST footnote::http://faust.grame.fr/:: is an open source DSP language that describes real-time audio units. It can
@@ -85,6 +88,7 @@ take advantage of all of the server's features, such as accessing Buffers or ran
 featuring very complex logic are difficult or impossible to write in FAUST. Furthermore, the FAUST compiler is quite
 intelligent but it might not always offer the best efficiency in its results. If a UGen you are developing hits these
 limitations, it is time to move on to handwritten C++.
+
 
 section:: Example Plugins
 
@@ -100,10 +104,12 @@ audio rate.
 MySaw introduces states and multiple calculation functions. AnalogEcho introduces real-time memory management through
 internal buffers, and demonstrates how to do cubic interpolation from an array of samples.
 
+
 section:: Anatomy of a UGen
 
 The SC source code has a header file, code::include/plugin_interface/SC_PlugIn.h::, that gives you your interface to the server
 architecture as well as a bunch of helper functions. These are documented at link::Reference/ServerPluginAPI::.
+
 
 subsection:: The Entry Point
 
@@ -133,12 +139,14 @@ list::
 ## The unit generator destructor is named code::PluginName_Dtor::
 ::
 
+
 subsection:: The Exit Point
 
 The optional code::PluginUnload():: macro exports a function that is called when the library is deinitialized,
 right before it is unloaded. This is only required in rare cases, typically for resource cleanup that cannot be safely done
 in a global object destructor. For example, the DiskIO UGens and UI UGens in code::DiskIO_UGens.cpp:: resp. code::UIUGens.cpp::
 use the unload function to safely join their worker threads.
+
 
 subsection:: The Calculation Function
 
@@ -155,12 +163,14 @@ Phasor_next_aa, Phasor_next_ak, Phasor_next_ka, and Phasor_next_kk. You don't ne
 UGens, however. For example, link::Classes/FreeVerb:: has only one calculation function. Who would want a control-rate
 reverb?
 
+
 subsection:: Building Unit Generator Plugins
 
 The most portable way to build plugins is using cmake footnote::http://www.cmake.org::, a cross-platform build
 system.
 
 The examples in the example repository contain code::CMakeLists.txt:: files.
+
 
 section:: Coding Guidelines
 
@@ -175,6 +185,7 @@ definitionList::
                          particular, system calls should be avoided. If synchronization with other threads is required, this has to be
                          done in a lock-free manner.
 ::
+
 
 subsection:: Memory Allocation
 Do not allocate memory from the OS via code::malloc:: / code::free:: or code::new::/ code::delete::. Instead you should use the real-time memory allocator via code::RTAlloc:: / code::RTFree::.
@@ -252,6 +263,7 @@ namespace MyUnit {
 }
 ::
 
+
 subsection:: Thread Safety
 
 There are two different implementations of the SuperCollider server. strong::scsynth:: is the traditional server and
@@ -269,6 +281,7 @@ definitionList::
     code::LOCK_:: macros, which are defined in SC_Unit.h. As exception, buffers in the wavetable format are not required to be
     locked.
 ::
+
 
 subsection:: Deadlock Prevention
 

@@ -1,9 +1,9 @@
 CLASS::IdentitySet
-summary::a set according to identity
+summary:: a set according to identity
 related::Classes/List, Classes/Dictionary
 categories::Collections>Unordered
 
-DESCRIPTION::
+description::
 An IdentitySet is a collection of objects, no two of which are the same object (aka. "identical").
 Most of its methods are inherited (see link::Classes/Collection:: and link::Classes/Set:: classes).
 The contents of an IdentitySet are unordered. You must not depend on the order of items in an IdentitySet.
@@ -14,10 +14,11 @@ by fast primitives.
 
 INSTANCEMETHODS::
 
-subsection::Adding and Removing
+
+subsection:: Adding and Removing
 
 method::add
-Add anObject to the IdentitySet. An object which is equal to an object already in the IdentitySet will not be added.
+adds anObject to the IdentitySet. An object which is equal to an object already in the IdentitySet will not be added.
 code::
 IdentitySet[1, 2, 3].add(4);
 IdentitySet[1, 2, 3].add(3);
@@ -29,30 +30,32 @@ IdentitySet['abc', 'def', 'ghi'].add('jkl');
 ::
 
 method::remove
-Remove anObject from the IdentitySet.
+removes anObject from the IdentitySet.
 code::
 IdentitySet[1, 2, 3].remove(3);
 ::
 
-subsection::Iteration
+
+subsection:: Iteration
 
 method::do
-Evaluates function for each item in the IdentitySet. You must not depend on the order of items. The function is passed two arguments, the item and an integer index.
+evaluates function for each item in the IdentitySet. You must not depend on the order of items. The function is passed two arguments, the item and an integer index.
 code::
 IdentitySet[1, 2, 3, 300].do { |item, i| item.postln };
 ::
 
-subsection::Finding an element
+
+subsection:: Finding an element
 
 method::findMatch
-Returns item if it is in the collection, otherwise returns nil.
+returns item if it is in the collection, otherwise returns code::nil::.
 code::
 a = IdentitySet[1, 2, 3, 300];
 a.findMatch(1);
 a.findMatch(1.5);
 ::
 
-EXAMPLES::
+examples::
 
 code::
 // scanFor is fairly efficient. compare the following benchmarks:

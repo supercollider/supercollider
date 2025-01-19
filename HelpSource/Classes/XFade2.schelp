@@ -4,36 +4,24 @@ related:: Classes/LinXFade2
 categories::  UGens>Multichannel>Select
 
 
-Description::
-
+description::
 Two channel equal power crossfader.
 
 
 classmethods::
 
 method::ar, kr
-
 argument::inA
-
 Input signal A.
-
-
 argument::inB
-
 Input signal B.
-
-
 argument::pan
-
 Crossfade position from -1 to +1.
-
-
 argument::level
-
 A control rate level input.
 
 
-Examples::
+examples::
 
 code::
 

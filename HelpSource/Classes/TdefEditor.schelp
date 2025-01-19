@@ -4,7 +4,6 @@ categories:: JITLib>GUI, Live Coding
 related:: Classes/TdefGui
 
 description::
-
 warning::
 has been rewritten and renamed link::Classes/TdefGui::, which has largely the same functionality, but is more consistent and more flexible. There are some changes to the *new method:
 

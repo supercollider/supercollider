@@ -3,10 +3,9 @@ summary:: Convert to a valid Node Target
 categories:: Server>Nodes
 related:: Classes/Node
 
-method:: asTarget
-
+method::asTarget
 The classes listed below implement the method code::asTarget::. This is used widely in the link::Classes/Node:: classes ( link::Classes/Group:: and link::Classes/Synth:: ) to convert non-Node objects to an appropriate target.
-This allows nil and instances of link::Classes/Server:: to be used as targets. This can be useful when writing classes which create nodes internally, but in most cases there should be little need to call asTarget in normal use.
+This allows code::nil:: and instances of link::Classes/Server:: to be used as targets. This can be useful when writing classes which create nodes internally, but in most cases there should be little need to call asTarget in normal use.
 
 For an updated list of which classes that implements code::asTarget::, see asTarget in link::Overviews/Methods#asTarget::
 

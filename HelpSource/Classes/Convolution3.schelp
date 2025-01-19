@@ -3,7 +3,7 @@ summary:: Time based convolver.
 related:: Classes/Convolution, Classes/Convolution2, Classes/Convolution2L
 categories::  UGens>Convolution
 
-Description::
+description::
 Strict convolution with fixed kernel which can be updated using a trigger signal. The convolution is performed in the time domain.
 
 
@@ -16,19 +16,13 @@ classmethods::
 private:: categories
 
 method::ar, kr
-
 argument::in
 processing target
-
 argument::kernel
 buffer index for the fixed kernel, may be modulated in combination with the trigger
-
 argument::trigger
 update the kernel on a change from <=0 to >0
-
 argument::framesize
 maximum size of the buffer containing the kernel
-
-argument:: mul
-
-argument:: add
+argument::mul
+argument::add

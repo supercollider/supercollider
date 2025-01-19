@@ -2,6 +2,7 @@ title:: Keyboard Shortcuts
 summary:: Keyboard shortcuts for SuperCollider
 categories:: Frontends
 
+
 section:: Language-Specific Commands
 
 note:: For shortcuts bindings of teletype::ScIDE::, please consult the menu and/or the shortcut configuration menu.::
@@ -139,6 +140,7 @@ table::
 || C-c C-p p
 ::
 
+
 section:: Files
 table::
 ## strong::Functions::
@@ -183,7 +185,8 @@ table::
 || E
 ::
 
-section::Text Editing
+
+section:: Text Editing
 table::
 ## strong::Functions::
 || strong::macOS::
@@ -281,7 +284,8 @@ table::
 ||
 ::
 
-section::Formatting
+
+section:: Formatting
 table::
 ## strong::Functions::
 || strong::macOS::

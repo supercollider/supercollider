@@ -3,9 +3,8 @@ summary:: Single random number generator.
 related:: Classes/ExpRand, Classes/IRand, Classes/LinRand, Classes/NRand, Classes/TExpRand, Classes/TIRand, Classes/TRand
 categories:: UGens>Random
 
-Description::
-
-Generates a single random float value in uniform distribution from
+description::
+generates a single random float value in uniform distribution from
 code::lo::  to  code::hi:: . It generates
 this when the SynthDef first starts playing, and remains fixed for
 the duration of the synth's existence.
@@ -14,14 +13,12 @@ the duration of the synth's existence.
 classmethods::
 
 method::new
-
 argument::lo
 Lower limit of the output range.
-
 argument::hi
 Upper limit of the output range.
 
-Examples::
+examples::
 
 code::
 

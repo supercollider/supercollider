@@ -3,8 +3,7 @@ summary:: synchronise and limit pattern duration
 related:: Classes/Pfindur
 categories:: Streams-Patterns-Events>Patterns>Repetition
 
-Description::
-
+description::
 Psync behaves somewhat like link::Classes/Pfindur:: -- it has a teletype::maxdur:: argument that limits the total duration of the event stream.
 
 The difference is in what happens if the event pattern stops on its own before teletype::maxdur:: is reached. If the total duration of the event pattern is shorter than the given maximum duration:
@@ -25,23 +24,18 @@ teletype::maxdur:: may be omitted. If the Pbind stops by itself, the rest will b
 ClassMethods::
 
 method::new
-
 argument::pattern
 a pattern that returns events.
-
 argument::quant
 rounding factor for total duration (effectively a "bar length")
-
 argument::maxdur
 maximum duration
-
 argument::tolerance
 threshhold that the stream must exceed maxdur to be ended.
-
 argument::mindur
 guarantees that the total duration is no less than a given limit, independent of the quant value.
 
-Examples::
+examples::
 
 code::
 (

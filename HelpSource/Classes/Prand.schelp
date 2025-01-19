@@ -4,23 +4,22 @@ related:: Classes/Pxrand, Classes/Pwrand
 categories:: Streams-Patterns-Events>Patterns>List
 
 description::
-
 Embed one item from the list at random for each repeat.
 
-Examples::
+examples::
 
 code::
 (
 var a, b;
-a = Prand([1, 2, 3, 4, 5], 6);	// return 6 items
+a = Prand([1, 2, 3, 4, 5], 6);	// returns 6 items
 b = a.asStream;
 7.do({ b.next.postln });
 )
 
-// return also a subpattern:
+// returns also a subpattern:
 (
 var a, b;
-a = Prand([1, Pseq([10, 20, 30]), 2, 3, 4, 5], 6);	// return 6 items
+a = Prand([1, Pseq([10, 20, 30]), 2, 3, 4, 5], 6);	// returns 6 items
 b = a.asStream;
 7.do({ b.next.postln });
 )

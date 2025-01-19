@@ -1,5 +1,5 @@
 class::Char
-summary::ASCII character
+summary:: ASCII character
 related::Classes/String
 categories:: Core
 
@@ -52,70 +52,57 @@ A string containing all characters allowed in a binary operator: code::"!@%&*-+=
 instancemethods::
 private:: archiveAsCompileString
 
-subsection::conversion
+
+subsection:: conversion
 
 method::hash
-
 returns:: the hash value of the receiver.
 
 method::ascii
-
 returns:: the integer ASCII value of a Char.
 
 method::digit
-
 returns:: an integer value from 0 to 9 for chars $0 to $9, and values 10 to 35 for chars $a to $z
 or $A to $Z.
 
 method::asAscii
-
 returns:: the object itself.
 
 method::asUnicode
-
 returns:: the object itself.
 
 method::toUpper
-
 returns:: the upper case version of a char. Nonalphabetic chars return themselves.
 
 method::toLower
-
 returns:: a lower case version of a char. Nonalphabetic chars return themselves.
+
 
 subsection:: Testing
 
 method::isAlpha
-
 returns:: whether the char is an alphabetic character.
 
 method::isAlphaNum
-
 returns:: whether the char is an alphabetic or numeric character.
 
 method::isPrint
-
 returns:: whether the char is printable.
 
 method::isPunct
-
 returns:: whether the char is a punctuation character.
 
 method::isControl
-
-returns:: true if the char is a control character.
+returns:: code::true:: if the char is a control character.
 
 method::isSpace
-
-returns:: true if the char is white space: any of code::[$ , $\f, $\n, $\r, $\t, $\v]::.
+returns:: code::true:: if the char is white space: any of code::[$ , $\f, $\n, $\r, $\t, $\v]::.
 
 method::isDecDigit
-
-returns:: true if the char is a decimal digit $0 to $9.
+returns:: code::true:: if the char is a decimal digit $0 to $9.
 
 method::isFileSafe
-
-returns:: true if the char is safe for use in a filename.
+returns:: code::true:: if the char is safe for use in a filename.
 Excludes the path separators / and :
 discussion::
 code::
@@ -126,29 +113,22 @@ code::
 ::
 
 method::isLower
-
-returns:: true if the char is a lowercase letter.
+returns:: code::true:: if the char is a lowercase letter.
 
 method::isUpper
-
-returns:: true if the char is a uppercase letter.
+returns:: code::true:: if the char is a uppercase letter.
 
 method::isPathSeparator
-
-returns:: true if the char is one of the platform specific path separators.
+returns:: code::true:: if the char is one of the platform specific path separators.
 
 method::isVowel
-
-returns:: true if the char is a vowel.
+returns:: code::true:: if the char is a vowel.
 
 method::++
-
 returns:: teletype::this.asString ++ that::
 
 method::<
-
 returns:: TELETYPE::this.ascii < aChar.ascii::
 
 method::==
-
-returns:: True if the receiver equals the argument.
+returns:: code::true:: if the receiver equals the argument.

@@ -8,7 +8,7 @@ SynthDefs can be precompiled and saved to disk. Any def saved in the synthdefs/ 
 
 SynthDefs can also be compiled and loaded into the link::Classes/Server:: without writing them to disk. This can be done while performing.
 
-The downside of this is that precompiled SynthDefs lack some of the programmatic flexibility that was one of SC2's great strengths. Much of this flexibility is gained back however, through the ability to set and change arguments (which you build into your emphasis::ugenGraphFunc::), and through new UGens such as link::Classes/Rand:: and link::Classes/TRand::.
+The downside of this is that precompiled SynthDefs lack some of the programmatic flexibility that was one of SC2's great strengths. Much of this flexibility is gained back, however, through the ability to set and change arguments (which you build into your emphasis::ugenGraphFunc::), and through new UGens such as link::Classes/Rand:: and link::Classes/TRand::.
 
 When maximum flexibility is required, it is still possible to compile and send SynthDefs 'on the fly', albeit with SC2-like CPU spikes and a small amount of messaging latency.
 

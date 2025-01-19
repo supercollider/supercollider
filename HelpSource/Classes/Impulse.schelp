@@ -4,25 +4,21 @@ related:: Classes/Blip
 categories::  UGens>Generators>Deterministic
 
 
-Description::
+description::
 Outputs non-bandlimited single sample impulses.
 
 
 classmethods::
 
 method::ar, kr
-
 argument::freq
 Frequency in Hertz. strong::freq:: may be negative.
-
 argument::phase
 Phase offset in cycles (0..1). Staying in this range offers a slight efficiency
 advantage, though phase offsets outside this range are supported and wrapped
 internally.
-
 argument::mul
 The output will be multiplied by this value.
-
 argument::add
 This value will be added to the output.
 
@@ -65,7 +61,7 @@ code::
 ::
 
 
-Examples::
+examples::
 
 code::
 { Impulse.ar(800, 0.0, 0.5, 0) }.play

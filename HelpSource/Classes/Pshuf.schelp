@@ -4,10 +4,9 @@ related:: Classes/Prand
 categories:: Streams-Patterns-Events>Patterns>List
 
 description::
+returns a shuffled version of the strong::list:: item by item, with n strong::repeats::.
 
-Returns a shuffled version of the strong::list:: item by item, with n strong::repeats::.
-
-Examples::
+examples::
 
 code::
 (

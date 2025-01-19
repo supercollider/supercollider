@@ -7,7 +7,7 @@ You can see which classes implement a specific method by clicking on the method 
 There are a number of methods that incrementally build up (or reduce down) collections like arrays or events. Nil responds by creating a collection, so that variables do not need to be initialized. Nil is just the "ground" (default case) from which the rest is bootstrapped.
 
 method::add
-Returns an array with the value. This makes it unnecessary to initialize when adding to a variable.
+returns an array with the value. This makes it unnecessary to initialize when adding to a variable.
 code::
 x = nil;
 x = x.add(8);  // returns an array
@@ -15,7 +15,7 @@ x = x.add(7); // appends to the array
 ::
 
 method::addAll
-Returns an array with all the values. This makes it unnecessary to initialize when adding to a variable.
+returns an array with all the values. This makes it unnecessary to initialize when adding to a variable.
 code::
 x = nil;
 x = x.addAll([0, 2, 1, 2]);  // returns an array
@@ -23,7 +23,7 @@ x = x.addAll(7); // single objects are converted to an array and appended
 ::
 
 method::remove
-For nil, it just returns nil. This makes it unnecessary to initialize when removing from a variable and adding to it again.
+For code::nil::, it just returns code::nil::. This makes it unnecessary to initialize when removing from a variable and adding to it again.
 code::
 x = nil;
 x.remove(1); // stays nil, returns nil
@@ -33,7 +33,7 @@ x;
 ::
 
 method::++
-Returns an array with all the values. This makes it unnecessary to initialize when adding to a variable.
+returns an array with all the values. This makes it unnecessary to initialize when adding to a variable.
 code::
 x = nil;
 x = x ++ [7, 8, 9]; // returns the receiver
@@ -42,7 +42,7 @@ x = x ++ [3, 0, 1, 2]; // adds to the array
 note:: Note that, unlike with addAll, the second operand must be a collection in order to function in this way.::
 
 method::addFunc
-Returns a function or a FunctionList.
+returns a function or a FunctionList.
 This method is used to add multiple functions to already existing ones.
 code::
 f = nil;
@@ -77,12 +77,12 @@ method::transformEvent
 This method is used to operate on events which are passed through the system as an argument.
 
 code::
-// for Nil: return the argument unmodified (an event).
+// for Nil: returns the argument unmodified (an event).
 nil.transformEvent((x: 8));
-// for Dictionary (and thus for Event): add to the argument.
+// for Dictionary (and thus for Event): adds to the argument.
 (y: 100, z: 1).transformEvent((x: 8));
-// for Association: add the association to the event
+// for Association: adds the association to the event
 (\a -> \x).transformEvent((x: 8));
-// for Function: use the function receive the event as argument.
+// for Function: uses the function receive the event as argument.
 { |event| event.use { ~x = ~x + 1 }; event }.transformEvent((x: 8));
 ::

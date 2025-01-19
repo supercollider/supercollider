@@ -9,10 +9,10 @@ In difference to Dswitch1, Dswitch embeds all items of
 an input demand ugen first before looking up the next index.
 
 classmethods::
-method:: new
-argument:: list
+method::new
+argument::list
 array of values or other ugens
-argument:: index
+argument::index
 which of the inputs to return
 discussion::
 structurally related: link::Classes/Pswitch::

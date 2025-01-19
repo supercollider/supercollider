@@ -3,20 +3,20 @@ summary:: Print the current output value of a demand rate UGen
 categories:: UGens>Demand, UGens>Info
 
 description::
-Print the current output value of a demand rate UGen.
+prints the current output value of a demand rate UGen.
 WARNING:: Printing values from the Server in intensive for the CPU. Poll should be used for debugging purposes. ::
 
 classmethods::
 private:: new1
 
-method:: new
-argument:: in
+method::new
+argument::in
 ugen to poll values from
-argument:: label
+argument::label
 a label string
-argument:: run
+argument::run
 active if 1, inactive if 0. can be a demand ugen (default: 1)
-argument:: trigid
+argument::trigid
 discussion::
 the print-out is in the form: code:: label: value block offset: offset. ::
 

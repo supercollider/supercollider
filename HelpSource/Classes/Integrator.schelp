@@ -3,8 +3,7 @@ summary:: A leaky integrator.
 categories::  UGens>Filters>Linear, UGens>Maths
 
 
-Description::
-
+description::
 Integrates an input signal with a leak. The formula implemented is:
 
 code::
@@ -15,28 +14,17 @@ out(0) = in(0) + (coef * out(-1))
 classmethods::
 
 method::ar, kr
-
 argument::in
-
 The input signal.
-
-
 argument::coef
-
 Leak coefficient.
-
-
 argument::mul
-
 Output will be multiplied by this value.
-
-
 argument::add
-
 This value will be added to the output.
 
 
-Examples::
+examples::
 
 code::
 

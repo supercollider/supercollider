@@ -4,14 +4,15 @@ categories:: JITLib>GUI, Live Coding
 related:: Classes/EZText, Classes/TdefGui, Classes/PdefGui
 
 description::
-EnvirGui displays all keys and values of an environment, so one can change them flexibly. Single number get displayed with an link::Classes/EZSlider::, pairs of numbers with an link::Classes/EZRanger::, and anything else is shown as an link::Classes/EZText:: (a text field).
+EnvirGui displays all keys and values of an environment, so one can change them flexibly. Single number gets displayed with an link::Classes/EZSlider::, pairs of numbers with an link::Classes/EZRanger::, and anything else is shown as an link::Classes/EZText:: (a text field).
 
 ClassMethods::
 
-subsection::Creation
+
+subsection:: Creation
 
 method::new
-create a new EnvirGui
+creates a new EnvirGui
 NdefParamGui
 code::
 // simple example
@@ -35,28 +36,23 @@ g.envir.removeAt(\u)
 g.envir.removeAt(\v)
 g.close;
 ::
-
 argument::object
 the envir to display
-
 argument::numItems
 the number of items to display. If an envir is given, and no num, num is envir.size.
-
 argument::parent
 the parent view to display in; if none is given, a new window is created.
-
 argument::bounds
 the bounds within which to display; if none is given, bounds are calculated.
-
 argument::makeSkip
 flag whether to make a skipjack to manage updates of the envirgui.
-
 argument::options
 configuration options
 
 InstanceMethods::
 
-subsection::Instance Variables
+
+subsection:: Instance Variables
 
 method::numItems
 how many envir items to display
@@ -87,15 +83,15 @@ method::keysRotation
 if the size of envir exceeds numItems, the keys displayed can be rotated: e.g. with 10 keys displayed on 5 paramViews, keysRotation 0 means show keys (0..4), keysRotation 2 means show keys (2..6), etc.
 
 strong::gui elements present if requested in options::
-method:: docBut, knowBut, parentBut, protoBut
+method::docBut, knowBut, parentBut, protoBut
 
-subsection::Some Methods
+
+subsection:: Some Methods
 
 method::object
-set the environment to show
-
+sets the environment to show
 argument::obj
-can be nil, a dictionary, an environment, or an event.
+can be code::nil::, a dictionary, an environment, or an event.
 
 code::
 g = EnvirGui((freq: 120, \amp: 0.2, \pan: -0.5), 12, nil, bounds: Rect(20, 400, 220, 100));
@@ -126,15 +122,13 @@ g.getSpec(\iFrek, 500);		// no global spec, so make a new one:
 g.specs;			// and keep it here
 g.envir.put(\iFrek, 500);
 ::
-
 argument::key
 the parameter name for which to find a spec
-
 argument::value
 the current value of that param, which is used when guessing specs.
 
 method::putSpec
-add a spec for a given key, or (if it is a global key) override a global spec with a local one:
+adds a spec for a given key, or (if it is a global key) override a global spec with a local one:
 
 code::
 // set a desired range and warp:
@@ -147,20 +141,20 @@ g.putSpec(\freq, \freq);
 g.putSpec(\freq, [10, 1000, \exp]);
 g.object_((freq: 200, iFrek: 20));
 
-// if needed, clear specs by hand when switching objects
+// if needed, clears specs by hand when switching objects
 g.specs.clear; g.object_((freq: 200, iFrek: 20));
 
 g.close
 ::
 
 strong:: Keys with technical names can be replaced in the display with clearer names:
-method:: replaceKeys
+method::replaceKeys
 the current list of keys to replace
-method:: addReplaceKey
-add a key to replace and its replacer key
-method:: removeReplaceKey
-remove a replacer key
-method:: showKeyFor
+method::addReplaceKey
+adds a key to replace and its replacer key
+method::removeReplaceKey
+removes a replacer key
+method::showKeyFor
 show
 
 code::
@@ -188,11 +182,11 @@ g.highlight(0, ">>_", Color.green(1, 0.6));
 ::
 
 method::unhighlight
-remove highlighting at an index
+removes highlighting at an index
 g.unhighlight(0);
 
 
-subsection::Some internal methods
+subsection:: Some internal methods
 
 method::setByKeys
 update the widgets for the current keys
@@ -202,22 +196,21 @@ method::showFields
 show (num) active fields, make others invisible.
 
 method::useRanger
-set and get whether arrays of 2 number values should be displayed with EZRangers.
+sets and gets whether arrays of 2 number values should be displayed with EZRangers.
 
 
 strong::methods that make gui elements: ::
-method:: makeViews
-method:: makeOptionalViews
+method::makeViews
+method::makeOptionalViews
 the method that makes all views specified in the options
-method:: makeNameView, makeKnowBut, makeDocBut, makeClrBut, makeProtoBut, makeParentBut
+method::makeNameView, makeKnowBut, makeDocBut, makeClrBut, makeProtoBut, makeParentBut
 the methods that make the individual elements as specified
 
 strong::standard JITGui methods: ::
 method::accepts, setDefaults, getState, checkUpdate, updateButtons
-
 private:: clearFields, updateViewSpecs, viewForParam
 
-Examples::
+examples::
 
 code::
 	// Setting envir variables in a Tdef:

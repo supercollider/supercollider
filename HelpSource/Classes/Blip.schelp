@@ -4,8 +4,7 @@ related:: Classes/Impulse
 categories::  UGens>Generators>Deterministic
 
 
-Description::
-
+description::
 Band Limited ImPulse generator. All harmonics have equal amplitude.
 This is the equivalent of 'buzz' in  emphasis::MusicN:: languages.
 
@@ -26,18 +25,14 @@ amplitudes or for long periods.
 classmethods::
 
 method::ar
-
 argument::freq
 Frequency in Hertz.
-
 argument::numharm
 Number of harmonics. This may be lowered internally if it would cause aliasing.
-
 argument::mul
-
 argument::add
 
-Examples::
+examples::
 
 code::
 // modulate frequency

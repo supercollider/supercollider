@@ -3,7 +3,7 @@ summary:: Select output from an array of inputs.
 categories:: UGens>Multichannel>Select
 related:: Classes/SelectX, Classes/SelectXFocus, Classes/LinSelectX
 
-Description::
+description::
 The output is selected from an array of inputs.
 
 note:: All the UGens are continuously running. This may not be the most efficient
@@ -17,18 +17,13 @@ this is more efficient than reading from a buffer.
 classmethods::
 
 method::ar, kr
-
 argument::which
-
 Integer index
-
-
 argument::array
-
 Input array of signals
 
 
-Examples::
+examples::
 
 code::
 (

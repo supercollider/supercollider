@@ -4,22 +4,19 @@ related:: Classes/Pgpar, Classes/Ptpar, Classes/Pbus, Classes/Pgroup
 categories:: Streams-Patterns-Events>Patterns>Parallel
 
 description::
-
 Similar to link::Classes/Pgpar:: but with additional timing offsets.
 
 ClassMethods::
 
 method::new
-
 argument::list
 list of pairs of times and patterns or streams: [time, pat, time, pat ..].
 
 note:: times are in beats and depend on the tempo of the link::Classes/TempoClock:: in use.::
-
 argument::repeats
 repeat the whole pattern n times.
 
-Examples::
+examples::
 
 code::
 // synthdef

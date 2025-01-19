@@ -1,9 +1,9 @@
 CLASS::Array2D
-summary::two-dimensional array
+summary:: two-dimensional array
 related::Classes/Array
 categories::Collections>Ordered
 
-DESCRIPTION::
+description::
 Represents a two-dimensional array of data. The number of rows and columns is fixed.
 
 note:: It is possible to implement a similar behaviour using an "array-of-arrays" - see the examples towards the bottom of this page for comparison.::
@@ -11,7 +11,7 @@ note:: It is possible to implement a similar behaviour using an "array-of-arrays
 CLASSMETHODS::
 
 method::new
-Create an array of the specified size.
+creates an array of the specified size.
 code::
 a = Array2D.new(3, 4);
 a[2, 2] = 1;
@@ -31,27 +31,27 @@ INSTANCEMETHODS::
 private::printOn, storeOn
 
 method::at
-Get a value from the array.
+gets a value from the array.
 code::
 a.at(2, 3);
 a[2, 3];
 ::
 
 method::put
-Put a value into the array.
+puts a value into the array.
 code::
 a.put(2, 3, 72);
 a[2, 3] = 72;
 ::
 
 method::colsDo
-Iterate over the columns. Each column will be passed to strong::func:: in turn.
+iterates over the columns. Each column will be passed to strong::func:: in turn.
 code::
 a.colsDo(_.postln);
 ::
 
 method::rowsDo
-Iterate over the rows. Each row will be passed to strong::func:: in turn.
+iterates over the rows. Each row will be passed to strong::func:: in turn.
 code::
 a.rowsDo(_.postln);
 ::
@@ -69,14 +69,14 @@ a.rowAt(2);
 ::
 
 method::asArray
-Return a flat array containing the elements.
+returns a flat array containing the elements.
 code::
 a.postln;
 a.asArray.postln;
 ::
 returns:: link::Classes/Array::
 
-EXAMPLES::
+examples::
 
 code::
 // "a" is an array-of-arrays

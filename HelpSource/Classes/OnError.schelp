@@ -9,4 +9,4 @@ OnError registers functions to perform an action when an error occurs.
 ClassMethods::
 
 method::run
-Call the object in order.
+calls the object in order.

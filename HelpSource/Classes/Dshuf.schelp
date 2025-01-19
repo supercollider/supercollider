@@ -3,10 +3,10 @@ summary:: Demand rate random sequence generator
 categories:: UGens>Demand, UGens>Random
 
 classmethods::
-method:: new
-argument:: list
+method::new
+argument::list
 array of values or other ugens
-argument:: repeats
+argument::repeats
 number of repeats
 discussion::
 structurally related: link::Classes/Pshuf::

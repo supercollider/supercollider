@@ -3,10 +3,11 @@ summary:: Record to a soundfile to disk.
 related:: Classes/RecordBuf, Classes/DiskIn, Classes/VDiskIn
 categories::  UGens>InOut, UGens>Buffer
 
-Description::
+description::
 Record to a soundfile to disk. Uses a link::Classes/Buffer::.
 
 See link::Classes/RecordBuf:: for recording into a buffer in memory.
+
 
 subsection:: Disk recording procedure
 
@@ -34,12 +35,10 @@ classmethods::
 private:: categories
 
 method::ar
-
 argument::bufnum
 The number of the buffer to write to (prepared with /b-write or
 Buffer.write)
 Note:: The Buffer's numFrames must be a power of two and is recommended to be at least 65536 -- preferably 131072 or 262144. Smaller buffer sizes mean more frequent disk access, which can cause glitches. ::
-
 argument::channelsArray
 The Array of channels to write to the file.
 Note:: The number of channels in the buffer and the channelsArray must be the same, otherwise DiskOut will fail silently (and not write anything to your file). ::
@@ -49,7 +48,7 @@ returns:: The number of frames written to disk.
 instancemethods::
 private:: checkInputs
 
-Examples::
+examples::
 code::
 s.boot; // start the server
 (
@@ -72,6 +71,7 @@ SynthDef("help-Diskin-2chan", { |out, bufnum = 0|
 }).add;
 )
 ::
+
 
 subsection:: Object Style
 code::
@@ -103,6 +103,7 @@ b = Buffer.cueSoundFile(s, "~/diskouttest.wav".standardizePath, 0, 2, completion
 )
 x.free; b.close; b.free; // cleanup
 ::
+
 
 subsection:: Messaging Style
 code::

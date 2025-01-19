@@ -4,8 +4,7 @@ related:: Classes/Formlet, Classes/RHPF, Classes/RLPF, Classes/Ringz
 categories::  UGens>Filters>Linear
 
 
-Description::
-
+description::
 This is the same as  link::Classes/Ringz::, except that it has a constant gain at 0 dB instead of being constant skirt.
 
 It is a two pole resonant filter with zeroes at
@@ -21,37 +20,24 @@ Based on  emphasis::K. Steiglitz, "A Note on Constant-Gain Digital Resonators", 
 classmethods::
 
 method::ar, kr
-
 argument::in
-
 The input signal.
-
-
 argument::freq
-
 Resonant frequency in Hertz.
 WARNING: due to the nature of its implementation frequency values close to 0 may cause glitches and/or extremely loud audio artifacts!
-
 argument::bwr
-
 Bandwidth ratio (reciprocal of Q). rq = bandwidth / centerFreq.
 
 
 The reciprocal of Q is used rather than Q because it saves a
 divide operation inside the unit generator.
-
-
 argument::mul
-
 Output will be multiplied by this value.
-
-
 argument::add
-
 This value will be added to the output.
 
 
-Examples::
+examples::
 
 code::
 

@@ -4,8 +4,7 @@ related:: Classes/FOS
 categories::  UGens>Filters>Linear
 
 
-Description::
-
+description::
 A standard second order filter section. Filter coefficients are given
 directly rather than calculated for you. Formula is equivalent to:
 
@@ -19,31 +18,22 @@ out(i) = (a0 * in(i)) + (a1 * in(i-1)) + (a2 * in(i-2)) + (b1 * out(i-1)) + (b2 
 classmethods::
 
 method::ar, kr
-
 argument::in
-
 signal input
-
 argument::a0
 See formula above.
-
 argument::a1
 See formula above.
-
 argument::a2
 See formula above.
-
 argument::b1
 See formula above.
-
 argument::b2
 See formula above.
-
 argument::mul
-
 argument::add
 
-Examples::
+examples::
 
 code::
 

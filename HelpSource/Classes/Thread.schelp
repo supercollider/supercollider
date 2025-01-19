@@ -1,10 +1,9 @@
 class::Thread
-summary::The context of code evaluation
+summary:: The context of code evaluation
 categories::Core>Kernel
 related:: Classes/Routine
 
 description::
-
 note:: A SuperCollider Thread is strong::not an operating system thread::. Although they
 have some conceptual similarities, they do not correspond.
 ::
@@ -36,8 +35,7 @@ list::
 ## own link::#-exceptionHandler#exception handler::
 ::
 
-method:: thisThread
-
+method::thisThread
 The global pseudo-variable code::thisThread:: always represents the current Thread, i.e.
 the context in which the current code is running. It can be either the
 link::Classes/Process#-mainThread#main Thread:: or the link::Classes/Routine:: running the
@@ -55,25 +53,21 @@ thisThread.clock;
 classMethods::
 
 method::new
-
-Creates an instance of Thread, passing it the Function with code to run.
+creates an instance of Thread, passing it the Function with code to run.
 
 note:: There is no good use in instantiating a Thread, because this class offers no method
 of starting the given Function. Instead, use the Thread's subclass
 link::Classes/Routine::. The only purpose of this constructor is for Routine to call it
 within its own constructor.
 ::
-
-
 argument::func
 A Function with code for the Thread to run.
-
 argument::stackSize
 Call stack size (an Integer).
 
 instanceMethods::
 
-method:: parent
+method::parent
 The parent Thread that started or resumed this Thread.
 
 discussion::
@@ -88,7 +82,7 @@ list::
 
 
 method::beats
-Get or set the current logical time of the Thread in beats. This will be the same
+gets/sets the current logical time of the Thread in beats. This will be the same
 as the time in seconds, unless this Thread's link::#-clock#clock:: is
 link::Classes/TempoClock::, and the clock's link::Classes/TempoClock#-tempo#tempo::
  is other than code::1::.
@@ -118,7 +112,7 @@ method or link::#-seconds::). It may be useful to change the strong::current:: T
 time in order to manipulate behavior of streams that use the current logical time for
 their operation (e.g. streams created by link::Classes/Pstep:: and
 link::Classes/Pseg:: patterns). This will affect all code running within the current
-Thread, as well as any child Threads, due to logical time inheritance. Note however
+Thread, as well as any child Threads, due to logical time inheritance. Note, however,
 that changing strong::another:: Thread's time will have no effect, because the time
 will be overridden by inheritance as soon as the Thread is run; likewise, any changes
 to the current Thread's time only have effect until the Thread is suspended
@@ -127,7 +121,7 @@ to the current Thread's time only have effect until the Thread is suspended
 See also: link::Classes/Clock#Scheduling and Threads::.
 
 method::seconds
-Get or set the current logical time of the Thread in seconds.
+gets/sets the current logical time of the Thread in seconds.
 
 Setting code::seconds:: also sets link::#-beats:: to
 code::thisThread.clock.secs2beats(seconds)::.
@@ -135,7 +129,7 @@ code::thisThread.clock.secs2beats(seconds)::.
 See link::#-beats:: for general discussion on Threads and logical time.
 
 method::clock
-Get or set the Thread's associated link::Classes/Clock::.
+gets/sets the Thread's associated link::Classes/Clock::.
 
 discussion::
 
@@ -160,7 +154,7 @@ strong::another:: Thread's clock will have no effect on code running on it.
 
 See also: link::Classes/Clock#Scheduling and Threads::.
 
-method:: deferAwayFrom
+method::deferAwayFrom
 Executes a given function, guaranteeing that it will not execute on the same thread as code::this::. That is:
 
 list::
@@ -169,18 +163,15 @@ list::
 ::
 
 This method interface is designed to be used with function-call syntax, e.g. code::deferAwayFrom(aThread) { ... function body ... }::.
-
-argument:: func
+argument::func
 The function to evaluate. It will not be passed any argument values.
-
-argument:: delta
+argument::delta
 A time delta in seconds. Normally, the default 0 will be used.
 
 method::isPlaying
-Returns:: true if it is playing.
+returns:: code::true:: if it is playing.
 
 method::state
-
 The internal state values for a Thread instance can be polled:
 table::
 ## 0 || not started
@@ -188,12 +179,13 @@ table::
 ## 8 || stopped
 ::
 
-subsection::Seeding the random number generator
+
+subsection:: Seeding the random number generator
 
 see also: link::Reference/randomSeed::
 
 method::randSeed
-Set the random number generator seed using a single integer.
+sets the random number generator seed using a single integer.
 discussion::
 Example:
 code::
@@ -202,8 +194,7 @@ g = thisThread.randSeed = 4;
 ::
 
 method::randData
-
-Get or set the three integer array which defines the internal basis for the random number generator.  You can use this to get back the exact same random number sequence, and it provides a mechanism for automatic replay for generative music.
+gets/sets the three integer array which defines the internal basis for the random number generator.  You can use this to get back the exact same random number sequence, and it provides a mechanism for automatic replay for generative music.
 discussion::
 Example:
 code::

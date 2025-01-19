@@ -4,21 +4,17 @@ related:: Classes/Pbindf, Classes/Pset
 categories:: Streams-Patterns-Events>Patterns>Filter
 
 description::
-
-Sets a value in an event stream until it ends, repeats this with new values until the value stream ends.
+sets a value in an event stream until it ends, repeats this with new values until the value stream ends.
 
 ClassMethods::
 
 method::new
-
 argument::name
-
 argument::value
 can be a pattern, a stream or an array. The resulting stream ends when that incoming stream ends.
-
 argument::pattern
 
-Examples::
+examples::
 
 code::
 (

@@ -2,6 +2,7 @@ title:: Assignment Statements
 categories:: Language
 summary:: assigning values to variables
 
+
 section:: Single Assignment
 
 A single assignment assigns the value of an expression on the right hand side to a variable on the left hand side. A single assignment is in the form:
@@ -44,6 +45,7 @@ code::
 )
 ::
 
+
 section:: Multiple Assignment
 
 A multiple assignment statement assigns the elements of a link::Classes/Collection:: which is the result of an expression on the right hand side, to a list of variables on the left hand side.
@@ -69,6 +71,7 @@ code::
 
 Multiple assignment is implemented using the 'at' method and the 'copyToEnd' method.
 Your right hand side expression can return any object that responds to these messages.
+
 
 section:: Instance Variable Assignment
 

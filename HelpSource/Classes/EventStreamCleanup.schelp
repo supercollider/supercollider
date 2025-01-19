@@ -2,7 +2,7 @@ TITLE:: EventStreamCleanup
 summary:: Helper class that collects information about internal state of streams that needs to be released
 categories::Streams-Patterns-Events
 
-DESCRIPTION::
+description::
 Event streams created by objects like link::Classes/Pmono:: or link::Classes/Pfx:: are special: when they start, they create some state (like a new synth) that is present over the whole period of the stream, or at least over several events. When such a stream ends, it releases this state. There are other streams, however, strong::that may stop their input stream at any time:: (e.g.  link::Classes/Pfindur:: or link::Classes/Pdef::). Them the state of any stream buried in the hierarchy of input streams must be released by them. EventStreamCleanup collects the cleanup functions and can run them when the stream is cut.
 
 Note::So all event patterns that can end a subpattern (and streams respectively) have to use an EventStreamCleanup.::
@@ -54,55 +54,49 @@ Pn(x).play; // loop it.
 
 CLASSMETHODS::
 
-METHOD:: new
-Create a new instance.
+method::new
+creates a new instance.
 
 INSTANCEMETHODS::
 
-METHOD:: addFunction
-Add a new cleanup function which will be called when the stream is made to end somewhere downstreams. This is called only in patterns that create resources that need to be released (e.g. link::Classes/Pmono:: or link::Classes/Pfx::).
-
-ARGUMENT:: event
+method::addFunction
+adds a new cleanup function which will be called when the stream is made to end somewhere downstreams. This is called only in patterns that create resources that need to be released (e.g. link::Classes/Pmono:: or link::Classes/Pfx::).
+argument::event
 The outevent that is passed on downstreams and which communicates to any stream-ending pattern what needs to be done to release the resources. strong::It must be yielded after update!::
-
-ARGUMENT:: function
+argument::function
 The function that is called for cleanup. E.g. code::{ group.free }::.
 
-RETURNS:: a link::Classes/CallOnce:: that executes the cleanup code::function:: at most once. Should it be necessary to execute the cleanup outside of the control of code::EventStreamCleanup::, the CallOnce returned should be used instead of the original code::function::, so that other referents are informed of the execution of the cleanup.
+returns:: a link::Classes/CallOnce:: that executes the cleanup code::function:: at most once. Should it be necessary to execute the cleanup outside of the control of code::EventStreamCleanup::, the CallOnce returned should be used instead of the original code::function::, so that other referents are informed of the execution of the cleanup.
 
-METHOD:: update
+method::update
 For every new event, the cleanup must be updated to receive information from any input stream further up. This method is called from all streams that may stop early (e.g. link::Classes/Pmono:: or link::Classes/Pfindur::).
-
-ARGUMENT:: event
+argument::event
 The outevent from the input stream. strong::It must be yielded after update!::
 
-METHOD:: exit
-Run all functions that have been collected over time, adding appropriate information to the event, in case it is passed on as an inevent.
-
-ARGUMENT:: event
+method::exit
+runs all functions that have been collected over time, adding appropriate information to the event, in case it is passed on as an inevent.
+argument::event
 The inevent that is passed through to the outer stream
-
-ARGUMENT:: freeNodes
+argument::freeNodes
 Used internally.
 
 returns:: An event. In embedInStream, this event must be returned (code:: ^cleanup.exit(inevent) ::)
 
-METHOD:: functions
+method::functions
 A collections of cleanup functions.
 
-METHOD:: clear
+method::clear
 Empty the cleanup functions, without evaluating them.
 
-METHOD:: terminate
-Run all functions that have been collected over time without adding information to an event.
-
-ARGUMENT:: freeNodes
+method::terminate
+runs all functions that have been collected over time without adding information to an event.
+argument::freeNodes
 Used internally.
 
 
 
 
-EXAMPLES::
+examples::
 code::
 // some code from the class library
 

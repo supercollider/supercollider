@@ -4,32 +4,23 @@ related:: Classes/BiPanB2, Classes/DecodeB2, Classes/PanB, Classes/Rotate2
 categories::  UGens>Multichannel>Ambisonics
 
 
-Description::
-
+description::
 Encodes a mono signal to 2-dimensional ambisonic B-format.
 
 
 classmethods::
 
 method::ar, kr
-
 argument::in
-
 The input signal.
-
-
 argument::azimuth
-
 Position around the circle from -1 to +1. -1 is behind, -0.5 is
 left, 0 is forward, +0.5 is right, +1 is behind.
-
-
 argument::gain
-
 Amplitude control.
 
 
-Examples::
+examples::
 
 code::
 

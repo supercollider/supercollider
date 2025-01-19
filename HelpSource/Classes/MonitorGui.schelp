@@ -4,10 +4,10 @@ categories:: JITLib>GUI, Live Coding
 related:: Classes/NodeProxy, Classes/Ndef, Classes/JITGui, Classes/NdefGui
 
 description::
-
 MonitorGui displays the state of a link::Classes/NodeProxy::'s link::Classes/Monitor::. It is used in link::Classes/NdefGui::, link::Classes/ProxyMixer::, and link::Classes/NdefMixer::.
 
-subsection::First examples
+
+subsection:: First examples
 
 code::
 s.boot;
@@ -38,10 +38,10 @@ ClassMethods::
 
 private::initClass
 
-subsection::Creation
+
+subsection:: Creation
 
 method::new
-
 code::
 g = MonitorGui(Ndef(\a));	// barebones
 (
@@ -63,30 +63,27 @@ MonitorGui.new(Ndef(\a), options: [\name, \fade])
 	// all of 'em
 MonitorGui.new(Ndef(\a), options: [\level, \name, \fade])
 ::
-
 argument::object
-the nodeproxy whose monitor state will be shown, or nil.
-
+the nodeproxy whose monitor state will be shown, or code::nil::.
 argument::parent
-a parent view where MonitorGui is to be shown. If nil, a window is made.
-
+a parent view where MonitorGui is to be shown. If code::nil::, a window is made.
 argument::bounds
 bounds where the view (or window) will be shown.
-
 argument::makeSkip
 a flag whether to create and start a link::Classes/SkipJack:: for auto-updating.
-
 argument::options
 an array of symbols for options of what to display.
 
-subsection::Class Variables
+
+subsection:: Class Variables
 
 method::lastOutBus
-the highest outbus number to allow. Default is 99.
+the highest outbus number to allow. The default is 99.
 
 InstanceMethods::
 
-subsection::Instance Variables
+
+subsection:: Instance Variables
 
 method::config
 some information on what to display
@@ -103,7 +100,8 @@ a numberbox to set output routing
 method::fadeBox
 a numberbox for setting monitor fadeTime.
 
-subsection::Some Methods
+
+subsection:: Some Methods
 
 strong::Making various gui elements: ::
 
@@ -112,17 +110,16 @@ method::makeVol
 method::makeNameView
 method::makePlayOut
 method::makeFade
-
 strong::Standard JITGui methods: ::
 
 method::setDefaults
-create default layout sizes
+creates default layout sizes
 
 method::accepts
-accepts nil or NodeProxy
+accepts code::nil:: or link::Classes/NodeProxy::
 
 method::getState
-get the object's current state
+gets the object's current state
 
 method::checkUpdate
 compare previous state with current state, and update gui elements.

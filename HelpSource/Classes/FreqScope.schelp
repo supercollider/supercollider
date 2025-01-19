@@ -16,18 +16,18 @@ table::
 
 ClassMethods::
 
-method:: new
-argument:: width
+method::new
+argument::width
 Default value is 512.
-argument:: height
+argument::height
 Default value is 300.
-argument:: busNum
+argument::busNum
 The number of the audio link::Classes/Bus:: to be monitored.
-argument:: scopeColor
+argument::scopeColor
 An instance of link::Classes/Color::. The drawing color of the scope.
-argument:: bgColor
+argument::bgColor
 An instance of link::Classes/Color::. The background color of the scope.
-argument:: server
+argument::server
 the server whose buses to show on scope.
 discussion::
 Example:
@@ -50,21 +50,23 @@ FreqScope.new(400, 200, 0, server: s);
 { Blip.ar(200, Line.kr(1, 100, 10), 0.2) }.play(s);
 ::
 
+
 subsection:: Subclassing and Internal Methods
 
 The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
 
-method:: scopeOpen
-Returns a link::Classes/Boolean::, whether the scope is open.
+method::scopeOpen
+returns a link::Classes/Boolean::, whether the scope is open.
 
 InstanceMethods::
+
 
 subsection:: Subclassing and Internal Methods
 
 The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
 
 method::window
-Returns the window in which the link::Classes/FreqScopeView:: is placed.
+returns the window in which the link::Classes/FreqScopeView:: is placed.
 
-method:: scope
-Returns the link::Classes/FreqScopeView::.
+method::scope
+returns the link::Classes/FreqScopeView::.

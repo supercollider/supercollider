@@ -4,10 +4,9 @@ related:: Classes/PstepNadd
 categories:: Streams-Patterns-Events>Patterns>Time
 
 description::
+combines an arbitrary number of patterns by evaluating a function (depth first traversal). When a stream ends it is recreated from its pattern until the top stream ends.
 
-Combines an arbitrary number of patterns by evaluating a function (depth first traversal). When a stream ends it is recreated from its pattern until the top stream ends.
-
-Examples::
+examples::
 
 code::
 (

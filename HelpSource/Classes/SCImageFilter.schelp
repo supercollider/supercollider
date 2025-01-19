@@ -3,8 +3,7 @@ summary:: filter class to use with SCImage
 categories:: GUI>Views
 related:: Classes/SCImage, Classes/SCImageKernel
 
-DESCRIPTION::
-
+description::
 currently this class represents the CoreImage Filters you can apply to a SCImage. All the built-in filters and docs: http://developer.apple.com/documentation/GraphicsImaging/Reference/CoreImageFilterReference/Reference/reference.html
 
 CLASSMETHODS::
@@ -20,15 +19,13 @@ f.attributes;
 f = SCImageFilter.new(\CIStarShineGenerator, [\center, [200, 200], \radius, 200*0.05]);
 f.values; //
 ::
-
-ARGUMENT::filterName
+argument::filterName
 The filter name link::Classes/Symbol:: or link::Classes/String::
-
-ARGUMENT::args
+argument::args
 The filter name link::Classes/Symbol:: or link::Classes/String::
 
 METHOD::filterCategories
-Returns a Dictionary containing all the filters associated by categories.
+returns a Dictionary containing all the filters associated by categories.
 code::
 // getting filter categories (dictionary)
 (
@@ -85,7 +82,7 @@ f.radius_(200*0.05);
 ::
 
 METHOD::attributeRange
-get the numerical range and the default Value for an attribute. returns an Array as code::[min, max, default]::. min, max, or default may be a link::Classes/Float::, a link::Classes/Color::, an link::Classes/Array:: or link::Classes/Nil::.
+gets the numerical range and the default Value for an attribute. returns an Array as code::[min, max, default]::. min, max, or default may be a link::Classes/Float::, a link::Classes/Color::, an link::Classes/Array:: or link::Classes/Nil::.
 code::
 // a SCImageFilter
 f = SCImageFilter.new(\CIFlashTransition);
@@ -120,7 +117,7 @@ code::
 ::
 
 METHOD::set
-set the attributes for this SCImageFilter
+sets the attributes for this SCImageFilter
 code::
 (
 	f = SCImageFilter.new(\CIStarShineGenerator);
@@ -130,12 +127,11 @@ code::
 ::
 
 METHOD::enable
-enable or not the Filter when applied to a SCImage.
+enables or not the Filter when applied to a SCImage.
+argument::value
+If this is code::false::, applying the filter will do nothing.
 
-ARGUMENT::value
-If this is false, applying the filter will do nothing.
-
-EXAMPLES::
+examples::
 
 code::
 // thor's fast experimentation request

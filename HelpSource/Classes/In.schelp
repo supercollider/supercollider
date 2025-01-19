@@ -4,8 +4,7 @@ related:: Classes/InFeedback, Classes/LagIn, Classes/SoundIn
 categories::  UGens>InOut
 
 
-Description::
-
+description::
 In.ar and In.kr read signals from audio and control buses, respectively. (See the link::Tutorials/Getting-Started/11-Busses##Busses:: chapter of the link::Tutorials/Getting-Started/00-Getting-Started-With-SC##Getting Started:: tutorial series for details on buses.)
 
 In.ar and In.kr behave slightly differently with respect to signals left on the bus in the previous calculation cycle.
@@ -36,20 +35,15 @@ deals with this issue see  link::Classes/SoundIn:: .
 classmethods::
 
 method::ar, kr
-
 argument::bus
-
 The index of the bus to read in from.
-
-
 argument::numChannels
-
 The number of channels (i.e. adjacent buses) to read in. You
 cannot modulate this number by assigning it to an argument in a
 SynthDef.
 
 
-Examples::
+examples::
 
 read from an audio bus:
 code::

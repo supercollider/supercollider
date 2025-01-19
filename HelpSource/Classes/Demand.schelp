@@ -3,8 +3,7 @@ summary:: Demand results from demand rate UGens.
 related:: Classes/Duty, Classes/TDuty
 categories:: UGens>Demand
 
-Description::
-
+description::
 When there is a trigger at the trig input, a value is demanded each UGen
 in the list and output. The unit generators in the list should be
 'demand' rate.
@@ -16,14 +15,11 @@ classmethods::
 private:: categories
 
 method::ar, kr
-
 argument::trig
 Trigger. Can be any signal. A trigger happens when the signal
 changes from non-positive to positive.
-
 argument::reset
 Trigger. Resets the list of UGens when triggered.
-
 argument::demandUGens
 List of demand-rate UGens to get values from. When the shortest stream ends, this ugen will set the link::Classes/Done##'done' flag::.
 
@@ -53,7 +49,7 @@ Demand.kr(t, 0, [a, b]).poll(t)
 ::
 
 
-Examples::
+examples::
 
 code::
 

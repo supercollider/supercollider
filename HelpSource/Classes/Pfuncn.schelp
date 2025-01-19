@@ -4,15 +4,15 @@ categories:: Streams-Patterns-Events>Patterns>Function
 related:: Classes/Pfunc, Classes/FuncStream
 
 description::
-Returns a stream that returns values from the code::func::.
+returns a stream that returns values from the code::func::.
 
 
 classmethods::
 
-method:: new
-argument:: func
+method::new
+argument::func
 Stream function. In an event stream receives the current link::Classes/Event:: as argument.
-argument:: repeats
+argument::repeats
 End after this number of times.
 
 

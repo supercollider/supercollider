@@ -3,8 +3,7 @@ summary:: Set of colors used by the GUI
 categories::  GUI>Accessories
 
 
-Description::
-
+description::
 QPalette is a strong::set of colors:: that the GUI system uses to draw the views. The colors are organized into three strong::color groups:: (active, inactive and disabled) used according to the state of the views drawn, and each group containing one color assigned to each of the various strong::color roles:: (window, windowText, button, buttonText, etc.), used to draw distinct elements of the views. See link::Reference/palette_color_roles:: and link::Reference/palette_color_groups:: for details.
 
 A palette can be assigned to the whole GUI using link::Classes/QtGUI#*palette::, or to a particular view using link::Classes/View#-palette::. Views will inherit a palette from their parent, and ultimately QtGUI, unless a palette is explicitly assigned to them. Moreover, when setting a palette on a view, it will be combined with the inherited one, overriding only those colors that have been explicitly set on the palette (see link::#-hasColor::). Hence, assigning a new and unmodified palette will reset all the colors to the inherited ones.
@@ -19,24 +18,24 @@ Note that in Qt GUI most color-related methods of views (like link::Classes/Wind
 
 CLASSMETHODS::
 
-METHOD:: new
+method::new
 	Instantiates a new palette, equivalent to the global palette assigned to QtGUI. All colors are considered to not be set (see link::#-hasColor::).
 
-METHOD:: auto
+method::auto
 	Instantiates a new palette, with colors automatically derived from the given colors for 'button' and 'window' color roles. All colors are considered to be set (see link::#-hasColor::).
 
-	argument:: buttonColor
+	argument::buttonColor
 		The Color assigned to the button role.
-	argument:: windowColor
+	argument::windowColor
 		The Color assigned to the window role.
 
-METHOD:: light
+method::light
 	A predefined palette using light colors. All colors are considered to be set (see link::#-hasColor::).
 
-METHOD:: dark
+method::dark
 	A predefined palette using dark colors. All colors are considered to be set (see link::#-hasColor::).
 
-METHOD:: system
+method::system
 	The native system palette. All colors are considered to be set (see link::#-hasColor::).
 
 
@@ -50,53 +49,53 @@ PRIVATE:: prColor
 PRIVATE:: prSetColor
 PRIVATE:: prHasColor
 
-METHOD:: color
+method::color
 	Returns the color assigned to a color role within a color group.
-	argument:: role
+	argument::role
 		A symbol among link::Reference/palette_color_roles::.
-	argument:: group
-		A symbol among link::Reference/palette_color_groups::, or nil, in which case the current color group is used.
+	argument::group
+		A symbol among link::Reference/palette_color_groups::, or code::nil::, in which case the current color group is used.
 
-METHOD:: setColor
+method::setColor
 	Assigns a color to a color role within a color group.
 
-	argument:: color
+	argument::color
 		A Color.
-	argument:: role
+	argument::role
 		A symbol among link::Reference/palette_color_roles::.
-	argument:: group
-		A symbol among link::Reference/palette_color_groups::, or nil, in which case the color will be assigned to all groups.
+	argument::group
+		A symbol among link::Reference/palette_color_groups::, or code::nil::, in which case the color will be assigned to all groups.
 
-METHOD:: hasColor
+method::hasColor
 	Whether the color belonging to a color role and group has been set on this QPalette instance.
 
-	When setting a palette on a view, only colors for which this methods returns true will be changed, others will be inherited from the parent view (or QtGUI if this view has no parent).
+	When setting a palette on a view, only colors for which this methods Returns code::true:: will be changed, others will be inherited from the parent view (or QtGUI if this view has no parent).
 
-	argument:: role
+	argument::role
 		A symbol among link::Reference/palette_color_roles::.
-	argument:: group
+	argument::group
 		A symbol among link::Reference/palette_color_groups::.
 
-METHOD:: window
+method::window
 	Convenience method to get or set the color for the 'window' role.
 
-METHOD:: windowText
+method::windowText
 	Convenience method to get or set the color for the 'windowText' role.
 
-METHOD:: button
+method::button
 	Convenience method to get or set the color for the 'button' role.
 
-METHOD:: buttonText
+method::buttonText
 	Convenience method to get or set the color for the 'buttonText' role.
 
-METHOD:: base
+method::base
 	Convenience method to get or set the color for the 'base' role.
 
-METHOD:: baseText
+method::baseText
 	Convenience method to get or set the color for the 'baseText' role.
 
-METHOD:: highlight
+method::highlight
 	Convenience method to get or set the color for the 'highlight' role.
 
-METHOD:: highlightText
+method::highlightText
 	Convenience method to get or set the color for the 'highlightText' role.

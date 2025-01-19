@@ -1,5 +1,5 @@
 class::Function
-summary::Implements a function
+summary:: Implements a function
 categories::Core>Kernel
 related::Classes/FunctionDef
 
@@ -30,9 +30,10 @@ code::
 ((lambda (x) x) 1) // Lisp
 ::
 
+
 subsection:: Related Keywords
 
-method:: thisFunction
+method::thisFunction
 The global pseudo-variable code::thisFunction:: always evaluates to the current
 enclosing Function.
 
@@ -51,21 +52,20 @@ private::new
 
 instancemethods::
 
-subsection::Access
+
+subsection:: Access
 
 method::def
-
-Get the definition (FunctionDef) of the Function.
+gets the definition (FunctionDef) of the Function.
 
 method::isClosed
+returns code::true:: if the function is closed, i.e. has no external references and can thus be converted to a compile string safely.
 
-returns true if the function is closed, i.e. has no external references and can thus be converted to a compile string safely.
 
-subsection::Evaluation
+subsection:: Evaluation
 
 method::value
-
-Evaluates the FunctionDef referred to by the Function. The Function is passed the args given.
+evaluates the FunctionDef referred to by the Function. The Function is passed the args given.
 
 code::
 { |a, b| (a * b).postln }.value(3, 10);
@@ -73,8 +73,7 @@ code::
 ::
 
 method::valueArray
-
-Evaluates the FunctionDef referred to by the Function. If the last argument is an Array or List, then it is unpacked and appended to the other arguments (if any) to the Function. If the last argument is not an Array or List then this is the same as the 'value' method.
+evaluates the FunctionDef referred to by the Function. If the last argument is an Array or List, then it is unpacked and appended to the other arguments (if any) to the Function. If the last argument is not an Array or List, then this is the same as the 'value' method.
 
 code::
 { |a, b, c| ((a * b) + c).postln }.valueArray([3, 10, 7]);
@@ -93,7 +92,6 @@ code::
 ::
 
 method::valueEnvir
-
 As value above. Unsupplied argument names are looked up in the current Environment.
 
 code::
@@ -107,13 +105,11 @@ Environment.use({
 ::
 
 method::valueArrayEnvir
-
-Evaluates the FunctionDef referred to by the Function. If the last argument is an Array or List, then it is unpacked and appended to the other arguments (if any) to the Function. If the last argument is not an Array or List then this is the same as the 'value' method. Unsupplied argument names are looked up in the current Environment.
+evaluates the FunctionDef referred to by the Function. If the last argument is an Array or List, then it is unpacked and appended to the other arguments (if any) to the Function. If the last argument is not an Array or List, then this is the same as the 'value' method. Unsupplied argument names are looked up in the current Environment.
 
 
 method::valueWithEnvir
-
-Evaluate the function, using arguments from the supplied environment. This is slightly faster than valueEnvir and does not require replacing the currentEnvironment.
+evaluates the function, using arguments from the supplied environment. This is slightly faster than valueEnvir and does not require replacing the currentEnvironment.
 
 code::
 (
@@ -123,29 +119,24 @@ e = Environment.make({ ~a = 3; ~b = 10 });
 ::
 
 method::functionPerformList
-
 For Function, this behaves the same as valueArray(arglist). It is used  where Functions and other objects should behave differently to value, such as in the object prototyping implementation of Environment.
 
 
 method::performWithEnvir
-
 code::
 a = { |a, b, c| postf("% plus % plus % is %\n", a, b, c, a + b + c); "" };
 a.performWithEnvir(\value, (a: 1, c: 3, d: 4, b: 2));
 ::
-
 argument::selector
 A Symbol representing a method selector.
 argument::envir
 The remaining arguments derived from the environment and passed as arguments to the method named by the selector.
 
 method::performKeyValuePairs
-
 code::
 a = { |a, b, c| postf("% plus % plus % is %\n", a, b, c, a + b + c); "" };
 a.performKeyValuePairs(\value, [\a, 1, \b, 2, \c, 3, \d, 4]);
 ::
-
 argument::selector
 A Symbol representing a method selector.
 argument::pairs
@@ -153,7 +144,6 @@ Array or List with key-value pairs.
 
 
 method::loop
-
 Repeat this function. Useful with Task and Clocks.
 
 code::
@@ -163,7 +153,6 @@ t.stop;
 ::
 
 method::defer
-
 Delay the evaluation of this Function by code::delta:: in seconds on AppClock.
 
 This is equivalent to code::AppClock.sched(0, function):: unless code::delta:: is code::nil::. In that case the function is only scheduled if current code is not running on AppClock, otherwise the function is evaluated immediately.
@@ -185,8 +174,7 @@ fork { // schedules on a TempoClock
 ::
 
 method::dup
-
-Return an Array consisting of the results of n evaluations of this Function.
+returns an Array consisting of the results of n evaluations of this Function.
 
 code::
 x = { 4.rand }.dup(4);
@@ -194,7 +182,6 @@ x.postln;
 ::
 
 method::!
-
 equivalent to dup(n)
 
 code::
@@ -203,15 +190,13 @@ x.postln;
 ::
 
 method::sum
-
-return the sum of n values produced.
+returns the sum of n values produced.
 
 code::
 { 4.rand }.sum(8);
 ::
 
 method::choose
-
 evaluates the function. This makes it polymorphic to SequenceableCollection, Bag and Set.
 
 code::
@@ -219,23 +204,20 @@ code::
 ::
 
 method::bench
-
-Returns the amount of time this function takes to evaluate. print is a boolean indicating whether the result is posted. The default is true.
+returns the amount of time this function takes to evaluate. print is a boolean indicating whether the result is posted. The default is code::true::.
 
 code::
 { 1000000.do({ 1.0.rand }) }.bench;
 ::
 
 method::fork
-
-Returns a Routine using the receiver as it's function, and plays it in a TempoClock.
+returns a Routine using the receiver as it's function, and plays it in a TempoClock.
 
 code::
 { 4.do({ "Threading...".postln; 1.wait }) }.fork;
 ::
 
 method::forkIfNeeded
-
 If needed, creates a new Routine to evaluate the function in, if the message is called within a routine already, it simply evaluates it.
 
 code::
@@ -245,7 +227,6 @@ f.forkIfNeeded;
 ::
 
 method::block
-
 Break from a loop. Calls the receiver with an argument which is a function that returns from the method block. To exit the loop, call .value on the function passed in. You can pass a value to this function and that value will be returned from the block method.
 
 code::
@@ -258,8 +239,7 @@ block { |break|
 ::
 
 method::thunk
-
-Return a Thunk, which is an unevaluated value that can be used in calculations
+returns a Thunk, which is an unevaluated value that can be used in calculations
 
 code::
 x = thunk { 4.rand };
@@ -268,8 +248,7 @@ x.value;
 ::
 
 method::flop
-
-Return a function that, when evaluated with nested arguments, does multichannel expansion by evaluating the receiver function for each channel. A flopped function responds like the "map" function in languages like Lisp. The new function always returns an array.
+returns a function that, when evaluated with nested arguments, does multichannel expansion by evaluating the receiver function for each channel. A flopped function responds like the "map" function in languages like Lisp. The new function always returns an array.
 
 code::
 // multichannel expansion for if, here to protect from division by zero:
@@ -285,8 +264,7 @@ f.("hello", "world"); // -> [hello world]
 ::
 
 method::flop1
-
-Same as link::#flop::, return only an array if the arguments also contains an array. This can be used to implement link::Guides/Multichannel-Expansion::.
+Same as link::#flop::, returns only an array if the arguments also contains an array. This can be used to implement link::Guides/Multichannel-Expansion::.
 
 code::
 // multichannel expansion for if, here to protect from division by zero:
@@ -305,12 +283,10 @@ f.("hello", "world"); // -> hello world
 
 
 method::envirFlop
-
 This method is kept for backward compatibility. Use code::flop:: instead.
 
 
 method::inEnvir
-
 returns an "environment-safe" function. See Environment for more details.
 Note that the function returned takes no keyword arguments.
 
@@ -336,7 +312,6 @@ e.use { e.f };
 
 
 method::inEnvirWithArgs
-
 Like link::#inEnvir::, but returns a function which takes keyword arguments.
 Building this function makes a call to the interpreter and is less efficient than inEnvir
 
@@ -348,8 +323,7 @@ f.value(how: "I really", end: "done!");
 
 
 method::case
-
-Function implements a case method which allows for conditional evaluation with multiple cases. Since the receiver represents the first case this can be simply written as pairs of test functions and corresponding functions to be evaluated if true. Unlike Object-switch, this is inlined and is therefore just as efficient as nested if statements.
+Function implements a case method which allows for conditional evaluation with multiple cases. Since the receiver represents the first case this can be simply written as pairs of test functions and corresponding functions to be evaluated if code::true::. Unlike Object-switch, this is inlined and is therefore just as efficient as nested if statements.
 
 code::
 (
@@ -368,7 +342,6 @@ x.postln;
 ::
 
 method::matchItem
-
 Interface shared with other classes that implements pattern matching. See also: matchItem.
 Function.matchItem evaluates the function with the item as argument, expecting a Boolean as reply.
 
@@ -380,8 +353,7 @@ code::
 
 
 method::performDegreeToKey
-
-use a function as a conversion from scale degree to note number. See also SequenceableCollection and Scale
+uses a function as a conversion from scale degree to note number. See also SequenceableCollection and Scale
 
 code::
 // a strange mapping
@@ -396,41 +368,37 @@ Pbind(
 )
 ::
 
-subsection::Exception Handling
+
+subsection:: Exception Handling
 
 For the following two methods a return ^ inside of the receiver itself cannot be caught. Returns in methods called by the receiver are OK.
 
-See also link::#Exception Handling Examples:: and link::Classes/Exception:: for more information on how to handle exceptions.
+See also link::#Exception Handling examples:: and link::Classes/Exception:: for more information on how to handle exceptions.
 
 method::try
-
-Executes the receiver. If an exception is thrown the catch function handler is executed with the error as an argument. handler itself can rethrow the error if desired.
+Executes the receiver. If an exception is thrown, the catch function handler is executed with the error as an argument. handler itself can rethrow the error if desired.
 
 method::protect
+Executes the receiver. The cleanup function handler is executed with an error as an argument, or code::nil:: if there was no error. The error continues to be in effect.
 
-Executes the receiver. The cleanup function handler is executed with an error as an argument, or nil if there was no error. The error continues to be in effect.
 
 subsection:: Scheduling
 
 
-method:: awake
-
+method::awake
 This method is called by a link::Classes/Clock:: on which the function was
 scheduled when its scheduling time is up. It calls link::#-value::, passing
 on the scheduling time in beats as an argument.
-
-argument:: beats
+argument::beats
 The scheduling time in beats. This is equal to the current logical time
 (link::Classes/Thread#-beats::).
-
-argument:: seconds
+argument::seconds
 The scheduling time in seconds. This is equal to the current logical time
 (link::Classes/Thread#-seconds::).
-
-argument:: clock
+argument::clock
 The clock on which the object was scheduled.
 
-returns::
+returns:: 
 The value returned by the function's link::#-value::. A caller clock uses
 this value to reschedule the function.
 
@@ -439,27 +407,21 @@ code::
 AppClock.play({ "And again".postln; 2 });
 ::
 
-subsection::Audio
+
+subsection:: Audio
 
 method::play
-
-Play a Synth from UGens returned by the function. The function arguments become controls that can be set afterwards.
+plays a Synth from UGens returned by the function. The function arguments become controls that can be set afterwards.
 
 This works as follows: play wraps the UGens in a SynthDef and sends it to the target. When this asynchronous command is completed, it creates one synth from this definition.
-
-
 argument::target
 A Node, Server, or Nil. A Server will be converted to the default group of that server. Nil will be converted to the default group of the default Server.
-
 argument::outbus
 A bus number that determines the output channel. This is equivalent to code::Out.ar(outbus, signal)::. The default is 0.
-
 argument::fadeTime
 Crossfade time for attack and release of the synth. The default is 0.02 seconds, which is just enough to avoid a click.
-
 argument::addAction
 The add action for the synth.  For a list of valid addActions see link::Classes/Synth::
-
 argument::args
 An array of key value pairs of control names and control values which are used when starting the synth.
 
@@ -493,13 +455,11 @@ Function.play is often more convenient than SynthDef.play, particularly for shor
 
 
 method::scope
-
 As play above, and calls Server-scope to open a scope window in which to view the output.
 
 code::
 { FSinOsc.ar(440, 0, 0.3) }.scope(1)
 ::
-
 argument::numChannels
 The number of channels to display in the scope window, starting from outbus. It automatically reflects the number of channels.
 argument::outbus
@@ -512,7 +472,6 @@ argument::zoom
 A zoom value for the scope's X axis. Larger values show more. The default is 1.
 
 method::plot
-
 note::See link::Reference/plot:: for a general reference on plotting::
 
 
@@ -523,9 +482,6 @@ code::
 
 { { |i| SinOsc.ar(1 + i) }.dup(7) }.plot(1);
 ::
-
-
-
 argument::duration
 The duration of the function to plot in seconds. The default is 0.01.
 argument::target
@@ -536,16 +492,15 @@ var synth = { Out.ar(99, SinOsc.ar([300, 700])) }.play;
 { In.ar(99, 2) }.plot(0.02, synth);
 )
 ::
-
 argument::bounds
 An instance of Rect or Point indicating the bounds of the plot window.
 argument::minval
 the minimum value in the plot. If not specified, the signal's minimum is used.
 argument::maxval
 the maximum value in the plot. If not specified, the signal's maximum is used.
-argument:: separately
+argument::separately
 If set to code::true::, for multichannel signals use separate value display ranges, unless minval or maxval is specified already.
-argument:: parent
+argument::parent
 Either a link::Classes/Window:: or link::Classes/View:: may be passed in - then the plot is embedded. Otherwise a new link::Classes/Window:: is created.
 code::
 (
@@ -556,16 +511,12 @@ var w = Window("The parent of a plotter").front;
 
 method::asBuffer
 Calculates duration in seconds worth of the output of this function asynchronously, and returns it in a link::Classes/Buffer:: of the number of channels. This method immediately returns a buffer, which takes code::duration:: seconds to become filled with data asynchronously. Then the action function is called.
-
 argument::duration
 The duration of the function to plot in seconds. The default is 0.01.
-
 argument::target
 The synth or group after which the synth runs (see link::Reference/asTarget::). The default is the default group of code::Server.default::.
-
 argument::action
 A function that is called when the buffer is filled. It is passed the buffer as argument.
-
 argument::fadeTime
 A fade in and out time in seconds. Only when greater than zero, an envelope is applied to the signal to avoid clicks (default: 0).
 
@@ -579,15 +530,12 @@ b.plot; // after 3 seconds, you can see it.
 ::
 
 
-method:: loadToFloatArray
-Write a UGen function to a file and then load it into a FloatArray.
-
-argument:: duration
+method::loadToFloatArray
+writes a UGen function to a file and then load it into a FloatArray.
+argument::duration
 Amount of data to record in seconds
-
 argument::target
 A server, synth, or group where to place the synth that plays the function
-
 argument::action
 A function to call when writing is finished.
 
@@ -603,22 +551,17 @@ z = { WhiteNoise.ar * 0.1 }.play; // play some noise
 a.postln;
 ::
 
-method:: getToFloatArray
+method::getToFloatArray
 Stream the function audio values to the client using a series of getn messages and put the results into a FloatArray.
-
-argument:: duration
+argument::duration
 Amount of data to record in seconds
-
 argument::target
 A server, synth, or group where to place the synth that plays the function
-
 argument::action
 A function to call when writing is finished.
-
-argument:: wait
+argument::wait
 The amount of time in seconds to wait between sending getn messages. Longer times are safer. The default is 0.01 seconds which seems reliable under normal circumstances. A setting of 0 is not recommended.
-
-argument:: timeout
+argument::timeout
 The amount of time in seconds after which to post a warning if all replies have not yet been received. the default is 3.
 
 discussion::
@@ -634,12 +577,10 @@ a.plot;
 ::
 
 
-subsection::Conversion
+subsection:: Conversion
 
 method::asSynthDef
-
-Returns a SynthDef based on this Function, adding a Linen and an Out ugen if needed.
-
+returns a SynthDef based on this Function, adding a Linen and an Out ugen if needed.
 argument::rates
 An Array of rates and lagtimes for the function's arguments (see SynthDef for more details).
 argument::prependArgs
@@ -652,7 +593,6 @@ argument::name
 the name of the SynthDef
 
 method::asDefName
-
 Performs asSynthDef (see above), sends the resulting def to the local server and returns the SynthDefs name. This is asynchronous.
 
 code::
@@ -661,12 +601,10 @@ y = Synth(x);
 ::
 
 method::asRoutine
-
-Returns a Routine using this as its func argument.
+returns a Routine using this as its func argument.
 
 method::r
-
-Returns a Routine using this as its func argument.
+returns a Routine using this as its func argument.
 
 code::
 a = r { 5.do { |i| i.rand.yield } };
@@ -674,8 +612,7 @@ a.nextN(8);
 ::
 
 method::p
-
-Returns a Prout using this as its func argument.
+returns a Prout using this as its func argument.
 
 code::
 a = p { 5.do { |i| i.rand.yield } };
@@ -689,33 +626,31 @@ code::
 Pbind(\degree, p { :[x, y].postln, x<-(0..10), y<-(0..10), (x + y).isPrime }, \dur, 0.3).play;
 ::
 
+
 subsection:: Bela
 
-method:: belaScope
+method::belaScope
 Like link::Classes/Function#-scope::, plays and scopes this Function, but using Bela's Oscilloscope (see link::Classes/BelaScope:: for required setup).
 This Function's output bus is monitored right after the generated Synth.
-
-argument:: scopeChannel
+argument::scopeChannel
 Bela's oscilloscope channel to start scoping on. This has to be a non-negative number, and can't be changed after scoping starts.
-
-argument:: target
+argument::target
 A Node, Server, or Nil. A Server will be converted to the default group of that server. Nil will be converted to the default group of the default Server.
 note:: this Function's play target needs to be on a Server that supports BelaScope::
-
-argument:: numChannels
+argument::numChannels
 Number of channels to scope, from this Function's output channels. Defaults to this Function's output channels.
-
-argument:: outbus
-argument:: fadeTime
-argument:: addAction
-argument:: args
+argument::outbus
+argument::fadeTime
+argument::addAction
+argument::args
 See link::Classes/Function#-scope::
 
 returns:: Like link::Classes/Function#-play::, a Synth playing this function. When that synth is freed, so will be its monitor.
 
 examples::
 
-subsection::Exception Handling Examples
+
+subsection:: Exception Handling Examples
 
 code::
 // no exception handler

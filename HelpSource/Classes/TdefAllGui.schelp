@@ -4,37 +4,32 @@ categories:: JITLib>GUI, Live Coding
 related:: Classes/TdefGui, Classes/PdefGui, Classes/PdefAllGui
 
 description::
-
 TdefAllGui uses link::Classes/TdefGui:: views to display all Tdefs, or a selection.
 
 Overview: link::Overviews/JITLib::
 
 ClassMethods::
 
-subsection::Creation
+
+subsection:: Creation
 
 method::new
-
 argument::numItems
 the maximum number of Pdefs that can be shown.
-
 argument::parent
-a parent view on which to display. If nil, a new window is created; strong::parent:: can also be an existing window or a composite view.
-
+a parent view on which to display. If code::nil::, a new window is created; strong::parent:: can also be an existing window or a composite view.
 argument::bounds
-a desired size and position where to display a JITGui. can be nil, a link::Classes/Point::, or a link::Classes/Rect::. JITGuis know their minimum size (strong::minSize::), and if bounds is nil, minSize is used. if bounds is a point or rect, it will be set to at least minSize. With a rect one can also supply a position where to display. If a point, shown size is the maximum of bounds and minSize.
-
+a desired size and position where to display a JITGui. can be code::nil::, a link::Classes/Point::, or a link::Classes/Rect::. JITGuis know their minimum size (strong::minSize::), and if code::bounds:: argument is code::nil::, minSize is used. if code::bounds:: argument is a point or rect, it will be set to at least minSize. With a rect one can also supply a position where to display. If a point, shown size is the maximum of code::bounds:: argument and minSize.
 argument::makeSkip
 ///// Not Done Yet, but on the list
 
 A flag whether to make a skipjack.
-
 argument::options
 ///// Not Done Yet, but on the list
 
 the only option for PdefAllGui will be [\makeEdit]. adding a "front" PdefGui that also shows the front Pdef's envir.
 
-Examples::
+examples::
 
 code::
 (

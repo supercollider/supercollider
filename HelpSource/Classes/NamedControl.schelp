@@ -4,7 +4,6 @@ summary:: Named reference to a control
 related:: Classes/ControlName, Classes/Control
 
 description::
-
 A NamedControl directly combines a ControlName and a Control UGen conveniently. Also this makes it safe even if several identical controls exist (see example below).
 
 There are syntax shortcuts that generate NamedControls from the name:
@@ -16,35 +15,35 @@ code::
 ::
 
 ClassMethods::
-method:: ar
-add a new instance of link::Classes/AudioControl:: with given name and default values.
+method::ar
+adds a new instance of link::Classes/AudioControl:: with given name and default values.
 If lags are given, apply a Lag UGen to it.
 discussion::
 code::\symbol.ar(values, lags, spec):: is a synonym.
 
-method:: kr
-add a new instance of link::Classes/Control:: (kr) with given name and default values.
-If lags are given, apply a link::Classes/Lag:: UGen to it. If fixedLag is set to true, create a link::Classes/LagControl:: (lags cannot be modulated then, but fewer UGens are required).
+method::kr
+adds a new instance of link::Classes/Control:: (kr) with given name and default values.
+If lags are given, apply a link::Classes/Lag:: UGen to it. If fixedLag is set to code::true::, create a link::Classes/LagControl:: (lags cannot be modulated then, but fewer UGens are required).
 discussion::
 code::\symbol.kr(values, lags, fixedLag, spec):: is a synonym.
 
-method:: ir
-add a new instance of link::Classes/Control:: (ir) with given name and default values.
+method::ir
+adds a new instance of link::Classes/Control:: (ir) with given name and default values.
 If lags are given, apply a link::Classes/Lag:: UGen to it.
 discussion::
 code::\symbol.ir(values, lags, spec):: is a synonym.
 
-method:: tr
-add a new instance of link::Classes/TrigControl:: with given name and default values.
+method::tr
+adds a new instance of link::Classes/TrigControl:: with given name and default values.
 If lags are given, apply a link::Classes/Lag:: UGen to it.
 discussion::
 code::\symbol.tr(values, lags, spec):: is a synonym.
 
-method:: new
-add a new instance with the given rate, name and default values.
-If lags are given, apply a link::Classes/Lag:: UGen to it. If fixedLag is set to true, create a link::Classes/LagControl:: (lags cannot be modulated then, but fewer UGens are required).
+method::new
+adds a new instance with the given rate, name and default values.
+If lags are given, apply a link::Classes/Lag:: UGen to it. If fixedLag is set to code::true::, create a link::Classes/LagControl:: (lags cannot be modulated then, but fewer UGens are required).
 
-Examples::
+examples::
 code::
 // use NamedControl to create a number of multichannel controls:
 
@@ -55,6 +54,7 @@ a.setn(\freq, [0, 2, 5].midiratio * 400);
 // synonymous:
 a = { SinOsc.ar(\freq.kr([300, 330, 370], [1, 0.3, 0.02])).sum * 0.1 }.play;
 ::
+
 
 subsection:: Multiple usage of the same name
 
@@ -83,6 +83,7 @@ a = {
 a.set(\freq, 1220);
 a.set(\freq, 120);
 ::
+
 
 subsection:: Comparison with direct use of Controls
 
@@ -114,6 +115,7 @@ a = {
 a.set(\freq, 1220);
 a.set(\freq, 120);
 ::
+
 
 subsection:: Using dictionary with functions to build SynthDefs
 Here is a basic example using a dictionary with functions that can be combined to build SynthDefs.

@@ -3,8 +3,7 @@ summary:: Shift and stretch bin position.
 related:: Classes/FFT, Classes/IFFT, Classes/PV_MagShift
 categories:: UGens>FFT
 
-Description::
-
+description::
 Shift and scale the positions of the bins. Can be used as a very crude
 frequency shifter/scaler.
 
@@ -12,27 +11,17 @@ frequency shifter/scaler.
 classmethods::
 
 method::new
-
 argument::buffer
-
 FFT buffer.
-
-
 argument::stretch
-
 Scale bin location by factor.
-
-
 argument::shift
-
 Add an offset to bin position.
-
 argument::interp
-
 Set to 0 (default) for no interpolation, or 1 to linear-interpolate between bins.
 
 
-Examples::
+examples::
 
 code::
 

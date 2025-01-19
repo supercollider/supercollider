@@ -4,26 +4,20 @@ related:: Classes/Free
 categories::  UGens>Synth control
 
 
-Description::
-
+description::
 When triggered, pauses a node.
 
 
 classmethods::
 
 method::kr
-
 argument::gate
-
 When gate is 0, node is paused, when 1 it runs.
-
-
 argument::id
-
 Node to be paused.
 
 
-Examples::
+examples::
 
 code::
 

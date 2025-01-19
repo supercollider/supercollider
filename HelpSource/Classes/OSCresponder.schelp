@@ -24,19 +24,16 @@ ClassMethods::
 private::initClass
 
 method::new
-
 argument::addr
-The address the responder strong::receives from:: (an instance of link::Classes/NetAddr::, e.g. code::Server.default.addr::). An address of nil will respond to messages from anywhere. An address with a port of nil will respond to messages from any port from that specific IP.
-
+The address the responder strong::receives from:: (an instance of link::Classes/NetAddr::, e.g. code::Server.default.addr::). An address of code::nil:: will respond to messages from anywhere. An address with a port of code::nil:: will respond to messages from any port from that specific IP.
 argument::cmdName
 An OSC command eg. code::'/done'::.
-
 argument::action
 A link::Classes/Function:: that will be evaluated when a cmd of that name is received from addr. arguments: time, theResponder, message, addr
 note::
 OSCresponder evaluates its function in the system process. In order to access the application process (e.g. for GUI access) use { ... }.defer; within the action function, e.g., code:: { |time, resp, msg| { gui.value_(msg[3]) }.defer } ::
 ::
 
-Examples::
+examples::
 
 see link::Classes/OSCresponderNode::.

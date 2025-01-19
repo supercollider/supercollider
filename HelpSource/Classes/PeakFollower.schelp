@@ -4,8 +4,7 @@ related:: Classes/Peak
 categories::  UGens>Analysis>Amplitude
 
 
-Description::
-
+description::
 Outputs the peak amplitude of the signal received at the input. If level
 is below maximum, the level decreases by the factor given in
 code::decay:: .
@@ -20,18 +19,13 @@ link::Classes/RunningMin::  and  link::Classes/RunningMax::  UGens.
 classmethods::
 
 method::ar, kr
-
 argument::in
-
 The input signal.
-
-
 argument::decay
-
 Decay factor.
 
 
-Examples::
+examples::
 
 code::
 

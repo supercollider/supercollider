@@ -20,9 +20,9 @@ ClassMethods::
 private::initClass
 
 method::add
-Add a spec to the global spec dictionary. The item will be converted to a spec using .asSpec.
+adds a spec to the global spec dictionary. The item will be converted to a spec using .asSpec.
 
-Examples::
+examples::
 
 code::
 Spec.add(\helpExp, ControlSpec(0.01, 1.0, \exp));

@@ -14,24 +14,21 @@ http://c4dm.eecs.qmul.ac.uk/papers/2007/StowellPlumbley07-icmc.pdf
 classmethods::
 private:: categories
 
-method:: kr
-
-argument:: chain
+method::kr
+argument::chain
 an FFT chain.
-argument:: threshold
+argument::threshold
 the detection threshold, typically between 0 and 1, although in rare cases you may find values outside this range useful.
-argument:: odftype
+argument::odftype
 chooses which emphasis::onset detection function:: is used. In many cases the default will be fine. More choices are listed below.
 
 The remaining args are all tweak factors, explained below in section Advanced features:
-
-argument:: relaxtime
-argument:: floor
-argument:: mingap
-argument:: medianspan
-argument:: whtype
-argument:: rawodf
-
+argument::relaxtime
+argument::floor
+argument::mingap
+argument::medianspan
+argument::whtype
+argument::rawodf
 Discussion::
 
 	The following choices are available for code::odftype:: :
@@ -53,6 +50,7 @@ The onset detection should work well for a general range of monophonic and polyp
 
 Which onset detection function should you choose? The differences aren't large, so I'd recommend you stick with the default code::\rcomplex:: unless you find specific problems with it. Then maybe try code::\wphase::. The code::\mkl:: type is a bit different from the others so maybe try that too. They all have slightly different characteristics, and in tests perform at a similar quality level.
 
+
 subsection:: Advanced features
 
 Further options are available, which you are welcome to explore if you want. They are numbers that modulate the behaviour of the onset detector:
@@ -60,7 +58,7 @@ Further options are available, which you are welcome to explore if you want. The
 list::
 ## strong::relaxtime:: and strong::floor:: are parameters to the whitening process used, a kind of normalisation of the FFT signal. (Note: in \mkl mode these are not used.)
 	list::
-	## strong::relaxtime:: specifies the time (in seconds) for the normalisation to "forget" about a recent onset. If you find too much re-triggering (e.g. as a note dies away unevenly) then you might wish to increase this value.
+	## strong::relaxtime:: specifies the time (in seconds) for the normalisation to "forget" about a recent onset. If you find too much re-triggering (e.g. as a note dies away unevenly), then you might wish to increase this value.
 	## strong::floor:: is a lower limit, connected to the idea of how quiet the sound is expected to get without becoming indistinguishable from noise. For some cleanly-recorded classical music with wide dynamic variations, I found it helpful to go down as far as 0.000001.
 	::
 ## strong::mingap:: specifies a minimum gap (in FFT frames) between onset detections, a brute-force way to prevent too many doubled detections.

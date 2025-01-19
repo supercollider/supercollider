@@ -4,8 +4,7 @@ related:: Classes/LFClipNoise, Classes/LFDNoise0, Classes/LFDNoise1, Classes/LFD
 categories::  UGens>Generators>Stochastic
 
 
-Description::
-
+description::
 Like link::Classes/LFClipNoise::, it generates the values -1 or +1 at a rate given
 by the  code::freq::  argument, with two differences:
 list::
@@ -26,17 +25,14 @@ link::Classes/LFClipNoise::  is more efficient.
 classmethods::
 
 method::ar, kr
-
 argument::freq
 Approximate rate at which to generate random values.
-
 argument::mul
 Output will be multiplied by this value.
-
 argument::add
 This value will be added to the output.
 
-Examples::
+examples::
 
 code::
 // try wiggling the mouse quickly;

@@ -1,9 +1,9 @@
 CLASS::AppClock
 categories::Scheduling>Clocks
-summary::Clock running on main application thread
+summary:: Clock running on main application thread
 related::Classes/SystemClock, Classes/TempoClock
 
-DESCRIPTION::
+description::
 SystemClock is more accurate, but cannot call GUI primitives.
 
 You will need to use the link::Classes/SystemClock:: to get accurate/musical scheduling.
@@ -15,7 +15,7 @@ CLASSMETHODS::
 private::initClass, prSchedNotify
 
 method::sched
-The float you return specifies the delta to resched the function for. Returning nil will stop the task from being rescheduled.
+The float you return specifies the delta to resched the function for. Returning code::nil:: will stop the task from being rescheduled.
 code::
 (
 AppClock.sched(0.0, { |time|
@@ -33,7 +33,6 @@ AppClock.sched(2.0, { "It is now % sec later".format(Main.elapsedTime - t).postl
 ::
 
 method::schedAbs
-
 Schedules a task to be performed at a particular time. Because code::AppClock:: is not intended to schedule with high precision, this time is approximate.
 
 When the scheduling time is up, the task's code::awake:: method is called. If the method
@@ -53,7 +52,7 @@ AppClock.schedAbs(t + 1.0, { "It is now % sec later".format(Main.elapsedTime - t
 
 
 method::clear
-Clear the AppClock's scheduler to stop it.
+clears the AppClock's scheduler to stop it.
 code::
 AppClock.clear;
 ::

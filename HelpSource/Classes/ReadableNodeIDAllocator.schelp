@@ -3,7 +3,7 @@ summary:: an allocator for nodeIDs with human-readable ownership
 categories:: Control
 related:: Classes/Server, Guides/MultiClient_Setups
 
-DESCRIPTION::
+description::
 In multi-client setups, it is useful to know which client created which nodeIDs on a shared server. ReadableNodeIDAllocator provides that facility by using a decimal prefix based on the clientID.
 
 
@@ -31,13 +31,13 @@ r.defaultGroupID;
 
 CLASSMETHODS::
 
-METHOD:: new
-make a new instance for given clientID, offset for lowest temporary id, and
-argument:: clientID
+method::new
+makes a new instance for given clientID, offset for lowest temporary id, and
+argument::clientID
 the clientID for which to create an offset/prefix
-argument:: lowestTempID
+argument::lowestTempID
 the offset for the lowest temporary id
-argument:: numClients
+argument::numClients
 the number of clients for which to split the number range
 
 code::
@@ -49,37 +49,37 @@ a = ReadableNodeIDAllocator(11, 1000, 12);
 
 INSTANCEMETHODS::
 
-METHOD:: clientID
+method::clientID
 the clientID for which to create an offset/prefix
 
-METHOD:: numClients
+method::numClients
 the number of clients for which to split the number range
 
-METHOD:: lowestTempID
-the offset from where temporary nodeID begin
+method::lowestTempID
+the offset from where temporary nodeID begins
 
-METHOD:: idOffset
+method::idOffset
 the offset from where nodeID range begins
 
-METHOD:: maxPermID
+method::maxPermID
 the highest permanent nodeID
 
-METHOD:: numIDs
+method::numIDs
 the number of IDs before the allocator will wrap
 
-METHOD:: alloc
-allocate next temporary nodeID
+method::alloc
+allocates next temporary nodeID
 
-METHOD:: allocPerm
-allocate next permanent nodeID
+method::allocPerm
+allocates next permanent nodeID
 
-METHOD:: freePerm
-free a permanent nodeID
-argument:: id
+method::freePerm
+frees a permanent nodeID
+argument::id
 
-METHOD:: isPerm
-test whether num is in the allocator's range of permanent numbers
-argument:: num
+method::isPerm
+tests whether num is in the allocator's range of permanent numbers
+argument::num
 
-METHOD:: reset
+method::reset
 reset allocator to initial state

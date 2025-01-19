@@ -1,24 +1,24 @@
 CLASS::SortedList
-summary::a Collection whose items are kept in a sorted order.
+summary:: a Collection whose items are kept in a sorted order.
 categories::Collections>Ordered
 
 CLASSMETHODS::
 
 method::new
-Creates a SortedList with the initial capacity given by strong::size:: and a comparison strong::function::. The SortedList can contain equal / identical elements more than once.
+creates a SortedList with the initial capacity given by strong::size:: and a comparison strong::function::. The SortedList can contain equal / identical elements more than once.
 
 INSTANCEMETHODS::
 
 private::indexForInserting
 
 method::add
-Adds an item in the SortedList at the correct position.
+adds an item in the SortedList at the correct position.
 code::
 SortedList[1, 2, 5, 6].add(4).postln;
 ::
 
 method::addAll
-Adds all the items in the collection into the SortedList.
+adds all the items in the collection into the SortedList.
 code::
 SortedList[1, 2, 5, 6].addAll([0, 3, 4, 7]).postln;
 ::

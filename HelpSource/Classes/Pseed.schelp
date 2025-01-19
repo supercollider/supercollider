@@ -4,13 +4,11 @@ related:: Reference/randomSeed
 categories:: Streams-Patterns-Events>Patterns>Language Control
 
 description::
-
-Set the random generator seed of the resulting stream.
+sets the random generator seed of the resulting stream.
 
 ClassMethods::
 
 method::new
-
 argument::randSeed
 integer number, pattern or stream that returns an integer number.
 
@@ -26,10 +24,9 @@ Pseed(1000, Pwhite(1, 10, 3)).asStream.nextN(10);
 Pseed(Pn(1000, 1), Pwhite(1, 10, 3)).asStream.nextN(10);
 ::
 ::
-
 argument::pattern
 
-Examples::
+examples::
 
 code::
 a = Pseed(1972, Prand([1, 2, 3], inf));

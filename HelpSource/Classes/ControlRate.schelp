@@ -4,21 +4,19 @@ related:: Classes/RadiansPerSample, Classes/SampleDur, Classes/SampleRate, Class
 categories::  UGens>Info
 
 
-Description::
-
-Get the current control rate of the server.
+description::
+gets the current control rate of the server.
 
 
 classmethods::
 
 method::ir
-
-returns::
+returns:: 
 The current control rate of the server.
 
 equivalent to 1 / link::Classes/ControlDur::
 
-Examples::
+examples::
 code::
 { ControlRate.ir.poll }.play;
 ::

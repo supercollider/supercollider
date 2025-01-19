@@ -4,36 +4,21 @@ related:: Classes/LinLin
 categories::  UGens>Maths
 
 
-Description::
-
+description::
 Converts a linear range of values to an exponential range of values.
 
 classmethods::
 
 method::ar, kr
-
 argument::in
-
 The input signal to convert.
-
-
 argument::srclo
-
 Lower limit of input range.
-
-
 argument::srchi
-
 Upper limit of input range.
-
-
 argument::dstlo
-
 Lower limit of output range.
-
-
 argument::dsthi
-
 Upper limit of output range.
 
 discussion::
@@ -41,7 +26,7 @@ The code::dstlo::  and  code::dsthi::  arguments
 must be nonzero and have the same sign.
 
 
-Examples::
+examples::
 
 code::
 // compare:

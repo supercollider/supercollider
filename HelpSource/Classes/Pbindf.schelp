@@ -4,7 +4,6 @@ related:: Classes/Pattern, Classes/Event, Classes/Pbind, Classes/Pchain
 categories:: Streams-Patterns-Events>Patterns>Composition
 
 description::
-
 Pbindf adds several value streams into one existing event stream. Each value stream is assigned to one or more keys in the resulting event stream, overriding any values from the input stream.
 
 The patterns bound to keys are referred to as value patterns and the Pbindf itself is termed an emphasis::event pattern::.
@@ -14,7 +13,7 @@ ClassMethods::
 method::new
 The arguments to Pbindf is the initial pattern followed by an alternating sequence of keys and patterns. A pattern can also be bound to an array of keys. In this case, the pattern must specify a sequence whose elements are arrays with at least as many elements as there are keys.
 
-Examples::
+examples::
 
 code::
 (

@@ -8,17 +8,13 @@ models the impacts of a bouncing object that is reflected by a vibrating surface
 
 classmethods::
 
-method:: ar, kr
-
+method::ar, kr
 argument::in
 modulated surface level
-
 argument::g
 gravity
-
 argument::damp
 damping on impact
-
 argument::friction
 proximity from which on attraction to surface starts
 

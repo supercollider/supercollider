@@ -17,7 +17,7 @@ instancemethods::
 private::addCopiesIfNeeded
 
 method::fftSize
-Returns the FFT chain buffer's size.
+returns the FFT chain buffer's size.
 
 code::
 (
@@ -30,17 +30,14 @@ code::
 ::
 
 
-method:: pvcalc
+method::pvcalc
 pvcalc applies a function to the frequency-domain data of an FFT chain. See link::#-pvcollect:: below for discussion of efficiency considerations. See also link::#-pvcalc2:: below, and link::Classes/UnpackFFT::.
 
 code::
 chain = chain.pvcalc(numframes, func, frombin, tobin, zeroothers)
 ::
-
-
 argument::numframes
 Number of FFT frames to process
-
 argument::func
 The function that takes two arrays as inputs  (code::magnitude::, and code::phase::) and returns a resulting pair of arrays code::[magnitude, phase]::.
 code::
@@ -49,17 +46,11 @@ code::
 	[mags.reverse, phases.reverse] // e.g. upside-down spectrum
 }
 ::
-
 argument::frombin
-
 Range start (optional)
-
 argument::tobin
-
 Range end (optional)
-
 argument::zeroothers
-
 If set to 1 then bins outside of the range being processed are silenced.
 
 
@@ -70,13 +61,10 @@ The method pvcalc2 is just like link::#-pvcalc:: but can combine two FFT chains.
 code::
 chain = chain.pvcalc2(chain2, numframes, func, frombin, tobin, zeroothers)
 ::
-
 argument::chain2
 The second FFT chain.
-
 argument::numframes
 Number of FFT frames to process
-
 argument::func
 The function that takes four arrays as inputs (magnitudes1, phases1, magnitudes2, phases2) and returns a resulting pair of arrays code::[magnitude, phase]::.
 code::
@@ -85,31 +73,23 @@ code::
 	[magnitudes1, phases2] // e.g. use the magnitudes of one, ane the phases of the other
 }
 ::
-
 argument::frombin
-
 Range start (optional)
-
 argument::tobin
-
 Range end (optional)
-
 argument::zeroothers
-
 If set to 1 then bins outside of the range being processed are silenced.
 
 
 
-method:: pvcollect
+method::pvcollect
 Process each bin of an FFT chain, separately, by applying a function to each bin of an FFT chain.
 
 code::
 chain = chain.pvcollect(numframes, func, frombin, tobin, zeroothers)
 ::
-
 argument::numframes
 Number of FFT frames to process
-
 argument::func
 The function that processes each bin. It should be a function that takes code:: magnitude, phase, bin, index :: as inputs and returns a resulting array code::[magnitude, phase]::.
 code::
@@ -121,17 +101,11 @@ code::
 ::
 
 The strong::bin:: is the integer bin number, starting at 0 for DC, while strong::index:: is the iteration number, always starting with 0. You can optionally ignore the phase and only return a single (magnitude) value, in which case the phase is assumed to be left unchanged.
-
 argument::frombin
-
 Range start (optional)
-
 argument::tobin
-
 Range end (optional)
-
 argument::zeroothers
-
 If set to 1 then bins outside of the range being processed are silenced.
 
 
@@ -150,7 +124,8 @@ list::
 ## If you find yourself calling pvcollect on an FFT chain more than once in series, you should definitely try to combine your processing into a single pvcollect function, to avoid unnecessary unpacking-then-packing-then-unpacking-then-packing.
 ::
 
-Examples::
+examples::
+
 
 subsection:: pvcalc
 code::
@@ -175,6 +150,7 @@ c.free; c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 }.play
 )
 ::
+
 
 subsection:: pvcalc2
 code::
@@ -208,6 +184,7 @@ x = {
 }.play
 )
 ::
+
 
 subsection:: pvcollect
 code::

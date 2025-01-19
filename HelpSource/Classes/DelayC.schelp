@@ -4,8 +4,7 @@ related:: Classes/DelayL, Classes/DelayN, Classes/BufDelayC
 categories::  UGens>Delays
 
 
-Description::
-
+description::
 Simple delay line with cubic interpolation. See also
 link::Classes/DelayN::  which uses no interpolation, and
 link::Classes/DelayL::  which uses linear interpolation. Cubic
@@ -18,13 +17,10 @@ The term "delay" is often used in electronic music to refer to a delay line with
 classmethods::
 
 method::ar, kr
-
 argument::in
 The input signal.
-
 argument::maxdelaytime
 The maximum delay time in seconds. used to initialize the delay buffer size.
-
 argument::delaytime
 Delay time in seconds.
 
@@ -33,7 +29,7 @@ note::
 DelayC needs at least 4 samples buffer. Therefore the minimum code::maxdelaytime:: and code::delaytime:: must be code::SampleDur.ir * 4::.
 ::
 
-Examples::
+examples::
 code::
 (
 // Dust randomly triggers Decay to create an exponential

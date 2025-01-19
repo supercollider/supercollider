@@ -4,7 +4,6 @@ related:: Classes/Event, Classes/Pbind
 categories:: Streams-Patterns-Events
 
 description::
-
 An EventStreamPlayer is used by link::Classes/Event:: based Patterns.
 
 The EventStreamPlayer holds a stream which returns a series of Events, and a protoEvent. At each call to next, it copies the protoEvent, passes that to the stream, and calls strong::play:: on the link::Classes/Event:: returned.
@@ -25,13 +24,10 @@ InstanceMethods::
 private::prStop, prNext
 
 method::play
-
 argument::argClock
 (optional) Override the clock assigned in Task.new.
-
 argument::doReset
-If true, the task will start over from the beginning. Default is false (task will resume where it was when it was last stopped).
-
+If code::true::, the task will start over from the beginning. The default is code::false:: (task will resume where it was when it was last stopped).
 argument::quant
 See the link::Classes/Quant:: helpfile.
 
@@ -42,16 +38,15 @@ method::resume
 Resume the task where it left off.
 
 method::pause
-Stop playing now.
+stops playing now.
 
 method::stop
-Stop playing now. (Pause and stop have the same implementation.)
+stops playing now. (Pause and stop have the same implementation.)
 
 method::reset
-Set the stream to restart from the beginning the next time it's played.
+sets the stream to restart from the beginning the next time it's played.
 
 method::reschedule
-
 Switch the Task to a different clock, or a different time, without stopping. See link::Classes/Routine#-reschedule:: for complete documentation.
 
 NOTE:: Rescheduling an EventStreamPlayer from within the pattern itself is currently not supported.

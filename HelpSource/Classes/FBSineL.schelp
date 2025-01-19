@@ -24,20 +24,20 @@ plot(size.collect { xi = sin((im * yi) + (fb * xi)); yi = (a * yi + c) % 2pi; xi
 ::
 
 classmethods::
-method:: ar
-argument:: freq
+method::ar
+argument::freq
 Iteration frequency in Hertz
-argument:: im
+argument::im
 Index multiplier amount
-argument:: fb
+argument::fb
 Feedback amount
-argument:: a
+argument::a
 Phase multiplier amount
-argument:: c
+argument::c
 Phase increment amount
-argument:: xi
+argument::xi
 Initial value of x
-argument:: yi
+argument::yi
 Initial value of y
 
 examples::

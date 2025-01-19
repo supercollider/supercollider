@@ -4,7 +4,6 @@ categories:: GUI>Views
 related:: Classes/FlowView, Classes/FlowLayout
 
 description::
-
 note::
 In Qt GUI, every view can be a parent to other views, so CompositeView redirects to the same class as link::Classes/View:: - you can use the latter equivalently.
 ::
@@ -21,6 +20,7 @@ private:: key
 
 
 examples::
+
 
 subsection:: Coordinate System
 
@@ -41,6 +41,7 @@ w.front;
 c.bounds_(Rect(100, 0, 300, 300)); // contents adjust since coords are relative
 c.resize_(6); // contents adjust since coords are relative
 ::
+
 
 subsection:: Keydown Bubbling
 
@@ -66,6 +67,7 @@ d = Slider2D(w, Rect(200, 200, 100, 100));
 d.background = Color.black;
 )
 ::
+
 
 subsection:: Decorators
 
@@ -111,6 +113,7 @@ a.front;
 )
 ::
 
+
 subsection:: Hiding / Swapping
 
 You can stack CompositeViews on top of each other and use a button show only one of them:
@@ -149,6 +152,7 @@ p.visible = true; // show first one
 a.front;
 )
 ::
+
 
 subsection:: Nested Example
 

@@ -3,7 +3,6 @@ summary:: a reference to a value
 categories:: Core
 
 description::
-
 A Ref holds an object which may be retrieved and altered with the messages value and value_(obj).
 The backquote code:: ` :: is a unary operator that is equivalent to calling code::Ref.new(obj)::.
 
@@ -23,8 +22,7 @@ Ref is also used as a quoting device to protect against multi channel expansion 
 classmethods::
 
 method::new
-
-create a Ref of an object.
+creates a Ref of an object.
 discussion::
 Another syntax:
 
@@ -35,34 +33,27 @@ code::
 instancemethods::
 
 method::dereference
-
-Return the value. This message is also defined in class Object where it just returns the receiver.  Therefore anything.dereference will remove a Ref if there is one. This is slightly different than the value message, because value will also cause functions to evaluate themselves whereas dereference will not.
+returns the value. This message is also defined in class Object where it just returns the receiver.  Therefore anything.dereference will remove a Ref if there is one. This is slightly different than the value message, because value will also cause functions to evaluate themselves whereas dereference will not.
 
 method::asRef
-
-Return the receiver. In class Object this message is defined to create a Ref of the object.
+returns the receiver. In class Object this message is defined to create a Ref of the object.
 
 method::value
-
-Get or set the value.
+gets/sets the value.
 
 method::get
-
-Returns value.
+returns value.
 
 method::set
-
-Sets value.
+sets value.
 
 method::at
-
-Returns code::value.at(index)::
+returns code::value.at(index)::
 
 method::put
 Executes value.put(index, value)
 
 method::seq
-
 this method is used to return values from within a Routine definition
 
 discussion::
@@ -71,16 +62,16 @@ code::
 ::
 
 method::asUGenInput
-
-Returns the Ref - this prevents multi-channel expansion in a SynthDef
+returns the Ref - this prevents multi-channel expansion in a SynthDef
 
 method::asControlInput
+returns the value - this is used when sending a Ref as a control value to a server Node.
 
-Returns the value - this is used when sending a Ref as a control value to a server Node.
 
-section::Typical uses of Ref:
+section:: Typical uses of Ref:
 
-subsection::preventing multi-channel expansion
+
+subsection:: preventing multi-channel expansion
 
 Consult link::Guides/Multichannel-Expansion:: for details on multi-channel expansion in SynthDefs.
 
@@ -126,7 +117,6 @@ code::
 
 method::multichannelExpandRef
 This method is called internally on inputs to UGens that take multidimensional arrays, like link::Classes/Klank:: and it allows proper multichannel expansion even in those cases. For SequenceableCollection, this returns the collection itself, assuming that it contains already a number of Refs.
-
 argument::rank
 The depth at which the list is expanded. For instance the Klank spec has a rank of 2.
 code::

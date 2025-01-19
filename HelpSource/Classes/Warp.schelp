@@ -21,7 +21,7 @@ private::initClass
 InstanceMethods::
 
 method::map
-Maps and constrains a strong::value:: between 0 and 1 to the output domain.
+maps and constrains a strong::value:: between 0 and 1 to the output domain.
 
 method::unmap
 in the output domain to a value in the range between 0 and 1.

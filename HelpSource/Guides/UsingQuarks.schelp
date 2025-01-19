@@ -5,9 +5,11 @@ related:: Classes/Quarks, Classes/Quark, Classes/Git
 
 Quarks are packages of SuperCollider code containing classes, extension methods, documentation and server UGen plugins. The Quarks class manages downloading these packages and installing or uninstalling them.
 
+
 section:: Installing quarks
 
-subsection::using the GUI
+
+subsection:: using the GUI
 
 You can install Quarks using the interface:
 
@@ -26,7 +28,7 @@ Quarks.addFolder("~/supercollider/quarks");
 ::
 
 
-subsection::by name
+subsection:: by name
 
 You can (un)install a Quark by name:
 
@@ -35,7 +37,8 @@ Quarks.install("MathLib");
 Quarks.uninstall("MathLib");
 ::
 
-subsection::by git URL
+
+subsection:: by git URL
 
 code::
 Quarks.install("https://github.com/supercollider-quarks/MathLib.git");
@@ -43,7 +46,8 @@ Quarks.install("https://github.com/supercollider-quarks/MathLib.git");
 Quarks.uninstall("https://github.com/supercollider-quarks/MathLib.git");
 ::
 
-subsection::from a local folder
+
+subsection:: from a local folder
 
 and you can install any local folder:
 
@@ -64,7 +68,8 @@ Now each quark inside that folder will appear on the GUI for you to un/install.
 
 If you wish to be able to uninstall local quarks, but still see them in the GUI, it is highly recommended to collect your local quark directories under a single primary directory. Then, use link::Classes/Quarks#*addFolder:: to add the primary directory. code::addFolder:: does not add individual quark directories.
 
-subsection::Recompile the class library
+
+subsection:: Recompile the class library
 
 After installing or uninstalling you need to strong::Language > Recompile Class Library::
 
@@ -76,7 +81,7 @@ Quarks.clear
 ::
 
 
-subsection::Internals
+subsection:: Internals
 
 When you install one it is cloned using git into:
 
@@ -106,7 +111,6 @@ The Quarks interface can only work if SuperCollider is compiled and running, so 
 If you are using the SC IDE then open strong::Preferences > Interpreter:: and remove the paths from the Include Paths.
 
 You can also manually edit teletype::sclang_config.yaml::
-
 
 
 section:: Saving and Loading sets of Quarks
@@ -173,7 +177,8 @@ git init
 
 Bitbucket offers free hosting for private repositories, and you can setup your own git host on any machine that you have SSH access to.  But you don't even need an externally hosted repository to use git.
 
-Hard drives die, backups fail, people make mistakes. If you keep a copy on bitbucket then your work is that much safer.
+Hard drives die, backups fail, people make mistakes. If you keep a copy on bitbucket, then your work is that much safer.
+
 
 section:: Publishing a Quark
 
@@ -191,7 +196,8 @@ code::
 quarkname=https://github.com/author/quarkname
 ::
 
-subsection::Migrated Quarks from SVN
+
+subsection:: Migrated Quarks from SVN
 
 I (felix) migrated the old SVN repository to github and preserved all the commits and authorship.
 You may find your old work in one of these quarks:
@@ -202,9 +208,11 @@ Contact me to transfer ownership to your own github account. You may also just f
 
 Quarks with spaces in the name had to have those spaces removed. Quarks nested inside other quarks (dewdrop_lib) are now un-nested.
 
-subsection::git branches
 
-Releases are specified with a git tag which refers to a specific commit regardless of what branch it is on. The default branch is master, but the branch does not really matter, only the tag. If you are not tagging specific releases then Quarks will fetch the master branch.
+subsection:: git branches
+
+Releases are specified with a git tag which refers to a specific commit regardless of what branch it is on. The default branch is master, but the branch does not really matter, only the tag. If you are not tagging specific releases, then Quarks will fetch the master branch.
+
 
 section:: Quark file
 
@@ -261,7 +269,8 @@ Bjorklund
 cruciallib@tags/4.1.4
 ::
 
-subsection::Hooks
+
+subsection:: Hooks
 
 note::
 Introduced in SuperCollider 3.13 and therefore only available if running at least this version.
@@ -299,11 +308,13 @@ code::
 )
 ::
 
-subsection::Deprecated/ignored fields
+
+subsection:: Deprecated/ignored fields
 
 teletype::path:: was used for SVN
 
 teletype::helpdoc:: specifies an html help file in the Quark. It will still work and will load the helpfile, but schelp is preferred.
+
 
 section:: Contributing fixes to a quark
 
@@ -320,6 +331,7 @@ and submit a pull request to the repository owner.
 There is a git extension that is quite useful for working with github repositories is https://hub.github.com
 
 If you use Quarks.gui you should now be able to see both the downloaded version of the quark and also your own cloned version.
+
 
 section:: Offline Usage
 

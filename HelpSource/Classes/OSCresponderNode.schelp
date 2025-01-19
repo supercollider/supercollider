@@ -19,9 +19,10 @@ Messages from external clients that should be processed by OSCresponders must be
 
 See link::Guides/OSC_communication:: for more details.
 
-Examples::
+examples::
 
-subsection::Setting up OSCresponderNode for listening to a remote application
+
+subsection:: Setting up OSCresponderNode for listening to a remote application
 
 code::
 // example: two SuperCollider apps communicating
@@ -45,7 +46,8 @@ m.sendBundle(0.0, ["/chat", "Hello App 1"], ["/chat", "Hallo Wurld"]);
 o.remove;
 ::
 
-subsection::Listening to data from _any_ client
+
+subsection:: Listening to data from _any_ client
 
 code::
 // same as above, but we set the address to nil so we can receive from anywhere
@@ -55,7 +57,8 @@ o = OSCresponderNode(nil, '/test', { |t, r, msg| msg.postln }).add;
 o.remove;
 ::
 
-subsection::Listening to data from _any_ client, but from a specific host
+
+subsection:: Listening to data from _any_ client, but from a specific host
 
 code::
 // same as above, but we use a NetAddr with a port of nil, so we can receive from a specific host, but from any port
@@ -65,7 +68,8 @@ o = OSCresponderNode(n, '/test', { |t, r, msg| msg.postln }).add;
 o.remove;
 ::
 
-subsection::Listening to data from the server
+
+subsection:: Listening to data from the server
 
 code::
 // example from SendTrig
@@ -95,7 +99,8 @@ b.remove;
 x.free;
 ::
 
-subsection::Watching for something specific
+
+subsection:: Watching for something specific
 
 code::
 // end of group message
@@ -117,7 +122,8 @@ g.free;
 a.remove;
 ::
 
-subsection::Watching for errors
+
+subsection:: Watching for errors
 
 code::
 // example from ServerErrorGui in crucial lib

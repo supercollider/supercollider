@@ -1,5 +1,5 @@
 class::RefCopy
-summary::a reference to the copy of a value
+summary:: a reference to the copy of a value
 categories::Core
 
 description::

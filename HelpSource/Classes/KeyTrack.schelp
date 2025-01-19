@@ -8,15 +8,12 @@ A (12TET major/minor) key tracker based on a pitch class profile of energy acros
 
 classmethods::
 
-method:: kr
-
-argument:: chain
+method::kr
+argument::chain
 [fft] Audio input to track. This must have been pre-analysed by a 4096 size FFT. No other FFT sizes are valid except as noted below.
-
-argument:: keydecay
+argument::keydecay
 [sk] Number of seconds for the influence of a window on the final key decision to decay by 40dB (to 0.01 its original value).
-
-argument:: chromaleak
+argument::chromaleak
 [sk] Each frame, the chroma values are set to the previous value multiplied by the chromadecay. 0.0 will start each frame afresh with no memory.
 
 examples::

@@ -6,6 +6,7 @@ related:: Classes/EnvelopeView
 description::
 An editable Envelope view.
 
+
 subsection:: Some Important Issues Regarding SCEnvelopeEdit
 
 The breakpoints are color coded as follows:
@@ -18,49 +19,49 @@ table::
 
 classmethods::
 
-method:: new
-argument:: parent
+method::new
+argument::parent
 The parent view.
-argument:: bounds
+argument::bounds
 An instance of link::Classes/Rect::, or a link::Classes/Point:: indicating code::width@height::.
-argument:: env
+argument::env
 The envelope. An instance of link::Classes/Env::.
-argument:: pointsPerSegment
-The resolution in points per segment. Default value is 10.
+argument::pointsPerSegment
+The resolution in points per segment. The default value is 10.
 
-method:: paletteExample
-argument:: parent
-argument:: bounds
+method::paletteExample
+argument::parent
+argument::bounds
+
 
 subsection:: Subclassing and Internal Methods
 
 The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
 
-method:: viewClass
-
+method::viewClass
 instancemethods::
 
-method:: refresh
+method::refresh
 If the link::Classes/Env:: object is modified directly, this needs to be called to update the GUI.
 
 maxLevel
 Changes maximum level shown in editor.
-argument:: level
+argument::level
 An instance of link::Classes/Float::.
 
-method:: minLevel
+method::minLevel
 Changes minimum level shown in editor.
-argument:: level
+argument::level
 An instance of link::Classes/Float::.
 
-method:: minTime
+method::minTime
 Changes minimum time (sec) shown in editor. Negative times are okay because link::Classes/Env:: uses inter-node durations.
-argument:: sec
+argument::sec
 An instance of link::Classes/Float::. Seconds.
 
-method:: maxTime
+method::maxTime
 Changes maximum time (sec) shown in editor.
-argument:: sec
+argument::sec
 An instance of link::Classes/Float::. Seconds.
 
 
@@ -68,39 +69,38 @@ subsection:: Subclassing and Internal Methods
 
 The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
 
-method:: defaultMouseDownAction
-argument:: x
-argument:: y
-argument:: modifiers
-argument:: buttonNumber
-argument:: clickCount
+method::defaultMouseDownAction
+argument::x
+argument::y
+argument::modifiers
+argument::buttonNumber
+argument::clickCount
 
+method::env
+argument::e
 
-method:: env
-argument:: e
+method::addBreakPoint
+argument::level
 
-method:: addBreakPoint
-argument:: level
+method::insertAtTime
+argument::time
+argument::level
 
-method:: insertAtTime
-argument:: time
-argument:: level
+method::pointsPerSegment
 
-method:: pointsPerSegment
+method::initSCEnvelopeEdit
+argument::argEnv
+argument::argPPS
+argument::setMinMax
 
-method:: initSCEnvelopeEdit
-argument:: argEnv
-argument:: argPPS
-argument:: setMinMax
+method::redraw
 
-method:: redraw
+method::updateAll
 
-method:: updateAll
+method::updateSegment
+argument::segNum
 
-method:: updateSegment
-argument:: segNum
-
-method:: clear
+method::clear
 
 examples::
 

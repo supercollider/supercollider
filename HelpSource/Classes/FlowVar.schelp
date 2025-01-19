@@ -3,8 +3,7 @@ summary:: A place holder, which when accessed pauses a thread until the place ho
 categories::Scheduling
 related:: Classes/Ref, Classes/Thunk, Classes/Condition, Classes/Routine
 
-DESCRIPTION::
-
+description::
 
 code::
 (
@@ -23,21 +22,18 @@ a.value = 2;
 
 CLASSMETHODS::
 
-METHOD:: new
-Return a new instance,
-
-ARGUMENT:: inVal
+method::new
+returns a new instance,
+argument::inVal
 If a value is given here, the FlowVar will not block execution.
 
 
 INSTANCEMETHODS::
 
 
-METHOD:: value
-Set the value bound to the FlowVar.
+method::value
+sets the value bound to the FlowVar.
 
 The getter returns the value bound to the FlowVar. If the value is not yet available, hold execution (this requires the method to be called from within a link::Classes/Routine:: or similar thread.).
-
-
-ARGUMENT:: inVal
+argument::inVal
 Any object.

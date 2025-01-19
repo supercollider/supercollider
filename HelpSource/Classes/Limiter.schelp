@@ -4,8 +4,7 @@ related:: Classes/Amplitude, Classes/Compander, Classes/CompanderD, Classes/Norm
 categories:: UGens>Dynamics
 
 
-Description::
-
+description::
 Limits the input amplitude to the given level. Limiter will not overshoot
 like  link::Classes/Compander::  will, but it needs to look ahead in the
 audio. Thus there is a delay equal to twice the value of the
@@ -16,13 +15,10 @@ Limiter, unlike Compander, is completely transparent for an in range signal.
 classmethods::
 
 method::ar
-
 argument::in
 The signal to be processed.
-
 argument::level
 The peak output amplitude level to which to normalize the input.
-
 argument::dur
 aka lookAheadTime.
 The buffer delay time. Shorter times will produce smaller delays
@@ -30,7 +26,7 @@ and quicker transient response times, but may introduce amplitude
 modulation artifacts.
 
 
-Examples::
+examples::
 
 code::
 (

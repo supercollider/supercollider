@@ -15,16 +15,16 @@ a.asOSCArgArray;
 InstanceMethods::
 
 method::set
-set arguments of a node
+sets arguments of a node
 
 method::unset
-remove settings
+removes settings
 
 method::unmap
-remove mappings
+removes mappings
 
 method::at
-return setting at that key.
+returns setting at that key.
 
 method::sendToNode
 apply a setting to a node by sending a bundle
@@ -33,10 +33,10 @@ method::send
 apply a setting to a node by sending a bundle
 
 method::addToBundle
-add all my messages to the bundle
+adds all my messages to the bundle
 
 method::addToEvent
-add all my values to the event
+adds all my values to the event
 
 method::asOSCArgArray
 returns the arguments for an OSC message.
@@ -46,19 +46,19 @@ returns the arguments for an OSC message to unmap any mapped controls.
 
 method::setMsg
 returns the OSC message for setting a synth
-argument:: target
+argument::target
 a group, synth, or server to use as a nodeID to set.
 
 method::get
 Kept for backward compatibility.
 
 method::clear
-Remove all settings and clear cache
+removes all settings and clears cache
 
 
 private::updateArgs, upToDate
 
-Examples::
+examples::
 
 code::
 

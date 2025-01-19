@@ -6,15 +6,15 @@ description::
 This object can be held by a client and have its value set without otherwise having to store the details about where the node's input is.
 
 classmethods::
-method:: new
-argument:: node
+method::new
+argument::node
 The node to encapsulate
-argument:: index
+argument::index
 The index to encapsulate
 
 instancemethods::
-method:: value
-set the value
+method::value
+sets the value
 
 
 examples::

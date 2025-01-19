@@ -4,8 +4,7 @@ related:: Classes/OnePole
 categories::  UGens>Filters>Linear
 
 
-Description::
-
+description::
 A one zero filter. Implements the formula:
 
 code::
@@ -18,14 +17,9 @@ out(i) = ((1 - abs(coef)) * in(i)) + (coef * in(i-1)).
 classmethods::
 
 method::ar, kr
-
 argument::in
-
 The input signal.
-
-
 argument::coef
-
 Feed forward coefficient.
 
 
@@ -45,19 +39,13 @@ link::Classes/Delay1::).
 
 
 -1 makes an inverted single sample delay.
-
-
 argument::mul
-
 Output will be multiplied by this value.
-
-
 argument::add
-
 This value will be added to the output.
 
 
-Examples::
+examples::
 
 code::
 

@@ -6,7 +6,7 @@ categories:: Control
 ClassMethods::
 
 method::new
-Create a new Date with the given properties (all are Integer values, except teletype::rawSeconds::, which is a Float). These arguments are also the names of instance variables of the Date object.
+creates a new Date with the given properties (all are Integer values, except teletype::rawSeconds::, which is a Float). These arguments are also the names of instance variables of the Date object.
 
 The constructor initializes the instance in one of the following ways (in order of priority):
 
@@ -19,7 +19,7 @@ Date.new;
 Date.localtime;
 ::
 
-## If a teletype::rawSeconds:: argument is specified, it is used to set (overwrite) all the other properties (teletype::year::, teletype::month::, teletype::day::, teletype::hour::, teletype::minute::, teletype::second::, teletype::dayOfWeek::), regardless of whether they are nil or not.
+## If a teletype::rawSeconds:: argument is specified, it is used to set (overwrite) all the other properties (teletype::year::, teletype::month::, teletype::day::, teletype::hour::, teletype::minute::, teletype::second::, teletype::dayOfWeek::), regardless of whether they are code::nil:: or not.
 
 code::
 (
@@ -61,7 +61,7 @@ Date(2017, 10, 31, dayOfWeek: 0).dayOfWeek; // calculated to be 2 (Tuesday), not
 ::
 
 method::fromString
-Create a new Date object from a date/time string, which is parsed according to the provided format string.
+creates a new Date object from a date/time string, which is parsed according to the provided format string.
 
 code::
 Date.fromString("2017-10-25 [13:25:55]", "%Y-%m-%d [%H:%M:%S]");
@@ -74,17 +74,15 @@ var d = Date.fromString(stampString, "%y%m%d_%H%M%S");
 (stampString + "-->" + d).postln;
 )
 ::
-
-argument:: string
+argument::string
 The date/time string to parse, for example teletype::"2017-10-25 13:25:55"::.
-
-argument:: format
+argument::format
 The format to use to parse the date string. Note that the supported input formats are slightly different from those of the link::#-format:: (output) method. In particular, some of the "combined" formats (such as teletype::%F:: or teletype::%T::) are not supported for input, you must expand them out (teletype::"%F":: -> teletype::"%Y-%m-%d":: and teletype::"%T":: -> teletype::"%H:%M:%S"::).  The full list of supported input format flags may be found link::http://www.boost.org/doc/libs/1_63_0/doc/html/date_time/date_time_io.html##here::.
 
 To parse the above example string, you would use teletype::"%Y-%m-%d %H:%M:%S"::.
 
 method::getDate
-Get current date from system and create a date object from it.
+gets current date from system and creates a date object from it.
 code::
 (
 var a = Date.getDate;
@@ -95,13 +93,13 @@ a
 ::
 
 method::localtime
-Get current localized time from system and create a date object from it.
+gets current localized time from system and creates a date object from it.
 
 method::gmtime
-Get current strong::Greenwich Mean Time (GMT):: from system and create a date object from it.
+gets current strong::Greenwich Mean Time (GMT):: from system and creates a date object from it.
 
 method::seed
-Get current date and return a value suitable for seeding a random number generator. See also link::Reference/randomSeed##randomSeed::.
+gets current date and returns a value suitable for seeding a random number generator. See also link::Reference/randomSeed##randomSeed::.
 code::
 (
 var a = Date.seed;
@@ -115,7 +113,7 @@ thisThread.randSeed = a;
 InstanceMethods::
 
 method::rawSeconds
-Get or set the receiver's raw time in seconds (relative to the "epoch" of January 1, 1970).
+gets/sets the receiver's raw time in seconds (relative to the "epoch" of January 1, 1970).
 
 If you modify this property, the other properties will not update. See note at link::#-resolve:: -- there is no "resolveFromRawSeconds" method, but you can generate a new self-consistent Date instance by passing the teletype::rawSeconds:: as an argument to link::#*new::.
 
@@ -131,10 +129,10 @@ var loadedDate = Date.fromString(savedDateStr, "%Y%m%d_%H%M%S").postln;
 ::
 
 method::localtime
-Set the receiver's time to current localtime.
+sets the receiver's time to current localtime.
 
 method::gmtime
-Set the receiver's time to current strong::Greenwich Mean Time (GMT)::.
+sets the receiver's time to current strong::Greenwich Mean Time (GMT)::.
 
 method::dayStamp
 Obtain a string with the year, month and day in the format strong::YYMMDD::.
@@ -155,7 +153,7 @@ method::asctime
 Obtain a string in the format WeekdayName MonthName Time Year.
 
 method::asString
-Returns asctime.
+returns asctime.
 
 method::resolve
 Resolve any inconsistencies in the Date object, updating all the fields (in particular teletype::dayOfWeek:: and teletype::rawSeconds::) as necessary.
@@ -338,7 +336,7 @@ Date(2005, 2, 13) >= Date(2005, 2, 13);
 
 method::==
 method::!=
-Test whether two Dates are equal/unequal, based on their rawSeconds.
+tests whether two Dates are equal/unequal, based on their rawSeconds.
 code::
 Date(2016, 11, 4) == Date(2016, 10, 4 + 31);
 Date(2016) != Date(2017);

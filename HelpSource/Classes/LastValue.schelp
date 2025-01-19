@@ -4,26 +4,20 @@ related:: Classes/LeastChange, Classes/MostChange
 categories::  UGens>Triggers
 
 
-Description::
-
+description::
 Output the last value before the input changed more than a threshold.
 
 
 classmethods::
 
 method::ar, kr
-
 argument::in
-
 The input signal.
-
-
 argument::diff
-
 Difference threshold.
 
 
-Examples::
+examples::
 
 code::
 d = { |freq = 440| SinOsc.ar(LastValue.ar(freq, 20), 0, 0.2) }.play;
@@ -36,7 +30,7 @@ d.set(\freq, 695);
 d.free;
 ::
 
-Return the difference between current and the last changed:
+Returns the difference between current and the last changed:
 code::
 (
 d = { |out = 0, val = 1|

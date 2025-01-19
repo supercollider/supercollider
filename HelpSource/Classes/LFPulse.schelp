@@ -1,5 +1,5 @@
 class::LFPulse
-summary::pulse oscillator
+summary:: pulse oscillator
 categories::UGens>Generators>Deterministic
 related::Classes/LFSaw
 
@@ -9,20 +9,14 @@ A non-band-limited pulse oscillator. Outputs a high value of one and a low value
 classmethods::
 
 method::ar, kr
-
 argument::freq
 frequency in Hertz
-
 argument::iphase
 initial phase offset in cycles (0..1)
-
 argument::width
 pulse width duty cycle from zero to one.
-
 argument::mul
-
 argument::add
-
 instancemethods::
 private::signalRange
 

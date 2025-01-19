@@ -9,22 +9,20 @@ Layout is the abstract superclass of all layouts. Any layout can be installed on
 
 InstanceMethods::
 
-Method:: spacing
+method::spacing
 The amount of empty pixels left between the managed views.
-
-argument:: spacing
+argument::spacing
 An integer representing the spacing in pixels.
 
 
-Method:: margins
+method::margins
 The amount of empty pixels left between the edges of the parent view and the managed children.
-
-argument:: margins
+argument::margins
 An array of four integers defining margins in the following order: left margin, top margin, right margin, bottom margin; or an array of two integers applied to left/right margin and top/bottom margin respectively; or a single integer applied to all margins.
 
 
 
-Examples::
+examples::
 
 code::
 w = Window.new;

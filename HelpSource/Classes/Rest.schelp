@@ -3,7 +3,7 @@ summary:: Represents a rest in event patterns
 categories:: Streams-Patterns-Events
 related:: Classes/Pbind, Classes/Event, Classes/AbstractFunction
 
-DESCRIPTION::
+description::
 A Rest may be used in event patterns to indicate that the resulting event should be a rest (i.e., silent). It should be used in one of the child patterns belonging to a Pbind, for instance.
 
 code::
@@ -13,6 +13,7 @@ code::
 // intersperse pauses in pattern
 Pbind(\note, Pseq([0, 4, 7, 11], inf), \dur, Pseq([2, 1, Rest(1)], inf) / 5).play;
 ::
+
 
 subsection:: Expressing rests in event patterns
 
@@ -42,10 +43,9 @@ private:: processRest
 private:: embedInStream
 private:: asStream
 
-METHOD:: new
-Create an instance of Rest, with a value to be used in the resulting rest event.
-
-argument:: value
+method::new
+creates an instance of Rest, with a value to be used in the resulting rest event.
+argument::value
 The Rest instance's numeric value, to be used in math operations. Note that a Rest's value is ignored for most Event keys (assuming the Event does nothing in response to code::.play::). If a Rest appears in a rhythm key (code::dur:: or code::delta::), then the number is the time until the next event. Consequently, numeric Rests are often used for duration -- but there is no requirement that a Rest's value must be a duration.
 
 discussion::
@@ -69,8 +69,8 @@ private:: asStream
 private:: asControlInput
 private:: playAndDelta
 
-METHOD:: isRest
-returns true
+method::isRest
+returns code::true::
 
 METHOD::unwrapBoolean
 returns the value.
@@ -88,7 +88,7 @@ b = a.collect { |x| if(x > 2) { x / 2 } { x } };
 b.asStream.nextN(8)
 ::
 
-EXAMPLES::
+examples::
 
 
 Using Rest instances in a pitch stream

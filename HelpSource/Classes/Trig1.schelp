@@ -4,8 +4,7 @@ related:: Classes/Trig
 categories::  UGens>Triggers
 
 
-Description::
-
+description::
 When a nonpositive to positive transition occurs at the input, Trig1
 outputs 1 for the specified duration, otherwise outputs 0.
 
@@ -13,19 +12,14 @@ outputs 1 for the specified duration, otherwise outputs 0.
 classmethods::
 
 method::ar, kr
-
 argument::in
-
 Trigger. Trigger can be any signal. A trigger happens when the
 signal changes from non-positive to positive.
-
-
 argument::dur
-
 Duration of the trigger output.
 
 
-Examples::
+examples::
 
 code::
 

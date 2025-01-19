@@ -7,14 +7,12 @@ categories:: Streams-Patterns-Events
 ClassMethods::
 
 method::new
-
 argument::pattern
 a pattern or stream to be buffered.
-
 argument::connected
-if true it will call the next stream value for each time next is called. if false it returns the last value.
+if code::true:: it will call the next stream value for each time next is called. if code::false::, it returns the last value.
 
-Examples::
+examples::
 
 code::
 a = Pseq([1, 2, 3], inf);

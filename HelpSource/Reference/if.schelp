@@ -3,9 +3,10 @@ categories::Core, Common methods
 related:: Reference/Control-Structures
 summary:: conditional execution
 
-method:: if
+method::if
 
-section::example
+
+section:: example
 code::
 if ( [false, true].choose,				// Boolean expression (chooses one at random)
 	{ "expression was true".postln },	// true function
@@ -30,6 +31,7 @@ code::
 	}.play
 )
 ::
+
 
 section:: optimization
 

@@ -3,21 +3,18 @@ summary:: Shift phase by 270 degrees.
 related:: Classes/FFT, Classes/IFFT, Classes/PV_PhaseShift, Classes/PV_PhaseShift90, Classes/PV_Diffuser
 categories:: UGens>FFT
 
-Description::
-
+description::
 Shift phase of all bins by 270 degrees.
 
 
 classmethods::
 
 method::new
-
 argument::buffer
-
 FFT buffer.
 
 
-Examples::
+examples::
 
 code::
 

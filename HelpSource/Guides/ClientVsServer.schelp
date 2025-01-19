@@ -15,6 +15,7 @@ image::structureEn.png#Figure 1. Structure of the SuperCollider application::
 
 The SuperCollider application is thus made up of two distinct, autonomous, components, a server and a client. For the first we have a choice between scsynth (SC-synthesizer) and supernova, and for the second we have sclang (SC-language).
 
+
 section:: Description
 
 The SuperCollider application makes use of client/server architecture which separates two functions, respectively one providing and the other requesting services. The client and the server communicate through a network.
@@ -66,7 +67,7 @@ In this case many server operations are hidden. To understand the  passages invo
 
 The OOP-style also has a small amount of overhead. It requires clientside CPU cycles and memory to create and manipulate an object. Normally this is not significant, but there may be times when you would prefer to use the less elegant, and less expensive first method, for instance when creating large numbers of grains which will simply play and then deallocate themselves.
 
-Thus it is possible to create synth nodes on the server without actually creating Synth objects, providing you are willing to do the required housekeeping yourself. The same is true of group nodes, buffers, and buses. A more detailed discussion of these concepts can be found in the link::Guides/NodeMessaging:: helpfile.
+Thus it is possible to create synth nodes on the server without actually creating Synth objects, providing you are willing to do the required housekeeping yourself. The same is code::true:: of group nodes, buffers, and buses. A more detailed discussion of these concepts can be found in the link::Guides/NodeMessaging:: helpfile.
 
 In conclusion, the crucial thing to remember is the distinction between things like nodes, busses, buffers, and servers and the objects that represent them in the language app (i.e. instances of link::Classes/Node::, link::Classes/Bus::, link::Classes/Buffer::, and link::Classes/Server::; these are referred to as 'Server Abstraction Objects'). Keeping these conceptually distinct will help avoid much confusion.
 
@@ -86,11 +87,12 @@ definitionlist::
 ## asynchronous execution || In some cases the client might need to know that a task on the server (for instance processing a large sound file) has been completed before continuing with another task. Since some tasks take an arbitrary length of time to complete, a reply mechanism is necessary. This can add some complexity to your code, but is in principle not an issue. (See link::Classes/OSCFunc:: and link::Classes/OSCdef::.) Some server abstraction objects such as link::Classes/Buffer:: provide for this automatically through 'action' functions which wait for completion before executing.
 ::
 
+
 section:: A final remark for the advanced reader
 
 Apart from sclang, it is possible to control the server from any other client which provides for OSC messaging (e.g. from Java, Python, Max/MSP, etc.). For networking, see link::Reference/Server-Architecture::, link::Classes/NetAddr::, link::Classes/OSCFunc::.
 
-In general however, sclang is the preferable way to communicate with the server for three reasons:
+In general, however, sclang is the preferable way to communicate with the server for three reasons:
 list::
 ## it gives you the expressive power of the SuperCollider language;
 ## the language is explicitly fitted to the server's needs (and, more importantly, to musician's ones)

@@ -6,17 +6,14 @@ categories:: Streams-Patterns-Events>Patterns>Filter
 ClassMethods::
 
 method::new
-
 argument::pattern
 the pattern.
-
 argument::func
 A link::Classes/Function:: that modifies the enclosed pattern and embeds it in the stream.
-
 argument::repeats
 the number of repeats.
 
-Examples::
+examples::
 
 code::
 (

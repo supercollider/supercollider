@@ -16,15 +16,14 @@ This UGen is commonly not used directly. Its main purpose is as a component in l
 classmethods::
 private:: categories
 
-method:: new
-
-argument:: chain
+method::new
+argument::chain
 an FFT chain
-argument:: bufsize
+argument::bufsize
 the size of the expected input FFT frames
-argument:: binindex
+argument::binindex
 the integer index of the bin you want to query
-argument:: whichmeasure
+argument::whichmeasure
 0 for magnitude and 1 for phase. None of these arguments can be modulated.
 
 discussion::

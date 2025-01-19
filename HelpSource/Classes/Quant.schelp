@@ -1,8 +1,8 @@
 CLASS::Quant
 categories::Scheduling
-summary::encapsulate quantization issues associated with EventStreamPlayer and TempoClock
+summary:: encapsulate quantization issues associated with EventStreamPlayer and TempoClock
 
-DESCRIPTION::
+description::
 Represents the standard scheduling model for Routines, Tasks and Patterns. A Quant object stores the parameters needed to calculate the precise time when a Routine/Task/Pattern will start playing on a specified TempoClock.
 
 The standard scheduling model uses quant and phase to locate the starting time. They are evaluated with reference to the TempoClock's baseBarBeat, which is normally zero but is updated when you change the clock's meter using the clock's setMeterAtBeat method. Thus scheduling still makes sense even after a meter change. See the link::Classes/TempoClock:: help file for details on its representation of time.
@@ -10,7 +10,7 @@ The standard scheduling model uses quant and phase to locate the starting time. 
 CLASSMETHODS::
 
 method::new
-Explicitly create an instance of Quant, which may be used and reused. Phase and offset may be nil, in which case they are treated as 0. If quant is nil, it will schedule for the current time exactly.
+Explicitly creates an instance of Quant, which may be used and reused. Phase and offset may be code::nil::, in which case they are treated as 0. If quant is code::nil::, it will schedule for the current time exactly.
 
 INSTANCEMETHODS::
 
@@ -23,7 +23,7 @@ An offset to push the scheduling time into the middle of the bar. +1 is one beat
 method::timingOffset
 For use with patterns only -- this enables patterns to run slightly ahead of their sounding time on the clock, giving you control over the order in which threads execute.
 
-EXAMPLES::
+examples::
 
 definitionlist::
 ## quant = 1 || schedule for the next whole beat
@@ -39,7 +39,8 @@ definitionlist::
 ::
 Every point in time can be precisely identified this way, and it can be related back easily to the Western concept of meter or time signature.
 
-subsection::Automatic instantiation
+
+subsection:: Automatic instantiation
 
 Certain objects convert themselves into Quant objects when used with link::Classes/Routine#-play::, link::Classes/Task#-play:: or link::Classes/Pattern#-play::.
 
@@ -58,7 +59,8 @@ code::
 Routine({ ... }).play(quant: 4.0):: vs. code::Routine({ ... }).play(quant: Quant(4.0))
 ::
 
-subsection::Timing offset in Patterns
+
+subsection:: Timing offset in Patterns
 
 In some cases, you might want two patterns that are sounding at the same time to evaluate in a specific order -- for instance, the second pattern might depend upon data calculated by the first. If they are scheduled on the clock for exactly the same time, you have no control over the order of execution: the second pattern might evaluate first, in which case it would be using stale data for the pattern that should have run first.
 
@@ -80,15 +82,16 @@ q = Pbind(\freq, 880, \pan, 1, \delta, 0.5, \sustain, 0.1).play(quant: [2, 0, 0.
 p.stop; q.stop;
 ::
 
-subsection::Extensibility: adding custom scheduling models
+
+subsection:: Extensibility: adding custom scheduling models
 
 While the standard scheduling model should be sufficient for most uses, the point of using an object to encapsulate scheduling details is that you can use a different object to schedule Routines or Patterns differently. (Users are not forced to use the standard scheduling model in every case.)
 
 If it's a kind of scheduling you expect to use often, you can create a subclass of Quant that implements the following methods:
 
-*new(...): create a new instance, with whatever arguments you need
+*new(...): creates a new instance, with whatever arguments you need
 
-nextTimeOnGrid(clock): calculate the exact beat number on the clock
+nextTimeOnGrid(clock): calculates the exact beat number on the clock
 
 Your class should also have methods asQuant, offset and offset_. If your class is a subclass of Quant, it will inherit those methods automatically.
 

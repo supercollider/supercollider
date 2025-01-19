@@ -20,21 +20,19 @@ instantiate a new proxy that listens to the in proxy.
 InstanceMethods::
 
 method::open
-open new file and initialize buffer on server
+opens new file and initialize buffer on server
 
 method::record
 start the recording synth.
-
 argument::paused
-if paused is false start recording immediately.
-
+if paused is code::false:: start recording immediately.
 argument::clock
 optional - the clock to use for scheduling recording ...
 argument::quant
-... if a non-nil quant is given.
+... if a code::non-nil::, quant is given.
 
 method::close
-stop recording, close file
+stops recording, close file
 
 method::isRecording
 see if recording right now
@@ -42,7 +40,7 @@ see if recording right now
 method::wakeUp
 until the proxy is not used by any output (either .play or .ar/.kr) it is not running on the server. you can wake it up to force it playing.
 
-Examples::
+examples::
 
 code::
 s.boot;
@@ -64,7 +62,8 @@ a.close;
 a.stop;
 ::
 
-subsection::recording from some bus
+
+subsection:: recording from some bus
 
 code::
 a = Bus.audio(s, 2);
@@ -86,7 +85,8 @@ n.unpause;
 n.close;
 ::
 
-subsection::instance creation from an existent node proxy
+
+subsection:: instance creation from an existent node proxy
 
 code::
 b = NodeProxy.audio(s, 2);
@@ -113,7 +113,8 @@ r.close;
 b.stop; // stop listen to b
 ::
 
-subsection::instance creation from an existent node proxy again
+
+subsection:: instance creation from an existent node proxy again
 
 code::
 b = NodeProxy.audio(s, 2);
@@ -126,7 +127,8 @@ r.close; // end recording, close file
 b.stop;	// stop listen
 ::
 
-subsection::recording from other sources
+
+subsection:: recording from other sources
 
 code::
 s.boot;

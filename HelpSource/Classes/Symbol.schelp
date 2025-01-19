@@ -1,5 +1,5 @@
 class::Symbol
-summary::a unique name for something
+summary:: a unique name for something
 categories::Core
 
 description::
@@ -14,7 +14,8 @@ Good uses of symbols include symbolic constant values and link::Classes/Dictiona
 
 Symbols are represented syntactically as literals which are described in link::Reference/Literals#Symbols::.
 
-subsection::Creating a Symbol
+
+subsection:: Creating a Symbol
 
 A symbol can be written by surrounding characters by single quotes (may include whitespace):
 
@@ -33,11 +34,11 @@ private::new
 
 instancemethods::
 
-subsection::Testing
+
+subsection:: Testing
 
 method::isClassName
-
-Answer whether the symbol can be a class name. This does not say if the class exists.
+Answers whether the symbol can be a class name. This does not say if the class exists.
 
 code::
 \Array.isClassName;
@@ -45,32 +46,28 @@ code::
 ::
 
 method::isMetaClassName
-
-Answer whether the symbol can be meta class name. This does not say if the class exists.
+Answers whether the symbol can be meta class name. This does not say if the class exists.
 
 code::
 \Meta_Array.isMetaClassName;
 ::
 
 method::isSetter
-
-Answer whether the symbol has a trailing underscore.
+Answers whether the symbol has a trailing underscore.
 
 code::
 'action_'.isSetter;
 ::
 
 method::isPrimitiveName
-
-Answer whether the symbol is a valid primitive name
+Answers whether the symbol is a valid primitive name
 
 code::
 '_SymbolIsClassName'.isPrimitiveName;
 ::
 
 method::isPrefix
-
-Answer whether the symbol is a prefix of another one
+Answers whether the symbol is a prefix of another one
 
 code::
 'a'.isPrefix('all'); // true
@@ -78,57 +75,48 @@ code::
 ::
 
 method::isIdentifier
-
-Return true if the symbol is a valid variable name, or equivalently a valid method name in the two
+returns code::true:: if the symbol is a valid variable name, or equivalently a valid method name in the two
 most common method call syntaxes (code::foo.bar():: and code::bar(foo)::). A valid identifier
 contains only alphanumeric characters and underscores, and the first character must be a lowercase
 letter.
 
 method::isBinaryOp
-
-Return true if the symbol is a valid binary operator. A valid binary operator contains only the
+returns code::true:: if the symbol is a valid binary operator. A valid binary operator contains only the
 symbols code::!@%&*-+=|<>?/::, does not start with 'code:://::' or 'code::/*::', and is not the
 string 'code::=::'.
 
-subsection::Conversion
+
+subsection:: Conversion
 
 method::asString
-
 Convert to a String
 
 method::asInteger
-
 Convert to an Integer
 
 method::asClass
-
-Return the Class named by the receiver.
+returns the Class named by the receiver.
 
 method::asSetter
-
-Return a symbol with a trailing underscore added.
+returns a symbol with a trailing underscore added.
 
 method::asGetter
-
-Return a symbol with a trailing underscore removed.
+returns a symbol with a trailing underscore removed.
 
 method::ascii
-
-return the ascii codes as an array
+returns the ascii codes as an array
 
 method::asSpec
-
 Convert to a ControlSpec
 
 method::asTuning
-
 Convert to a Tuning
 
 method::asScale
-
 Convert to a Scale
 
-subsection::Environments
+
+subsection:: Environments
 
 Symbols are used as keys to look up objects in dictionaries and environments, but also in arrays.
 See link::Classes/IdentityDictionary::, link::Classes/Environment::, link::Classes/Event::
@@ -140,12 +128,10 @@ a.at(\commune);
 ::
 
 method::envirPut
-
-put a value to the current environment using receiver as key
+puts a value to the current environment using receiver as key
 
 method::envirGet
-
-return a value from the current environment using receiver as key
+returns a value from the current environment using receiver as key
 discussion::
 code::
 \foo.envirPut(100);
@@ -153,15 +139,15 @@ code::
 \foo.envirPut(nil);
 ::
 
-subsection::Math
+
+subsection:: Math
 
 Symbols respond to all unary and binary math operations by returning themselves. The result of any math operation between a Number or other math object and a Symbol is to return the Symbol. This allows for example operations on lists of notes which contain 'rest's to preserve the rests.
 
 code::Pseq([1, 3, \rest, 2, 4] + 8);::
 
 method::applyTo
-
-Use the symbol as a method selector and perform the message on firstArg, with args as arguments. This is used for mixing functions with method selectors (see also: Function).
+uses the symbol as a method selector and perform the message on firstArg, with args as arguments. This is used for mixing functions with method selectors (see also: Function).
 discussion::
 code::
 '%'.applyTo(2553, 345);
@@ -169,14 +155,13 @@ code::
 ::
 
 
-subsection::Synthesis
+subsection:: Synthesis
 
 Inside SynthDefs and UGen functions, symbols can be used to conveniently specify control inputs of different rates and with lags (see:  NamedControl, ControlName, and Control).
 
 
 method::kr
-
-Return a control rate NamedControl input with a default value (val), and if supplied, with a lag. If val is an array, the control will be multichannel.
+returns a control rate NamedControl input with a default value (val), and if supplied, with a lag. If val is an array, the control will be multichannel.
 A link::Classes/ControlSpec:: provided to the code::spec:: parameter will be written into the spec metadata for the current synth.
 
 discussion::
@@ -190,16 +175,13 @@ a.release;
 ::
 
 method::ar
-
-Return an audio rate NamedControl input with a default value (val), and if supplied, with a lag. If val is an array, the control will be multichannel.
+returns an audio rate NamedControl input with a default value (val), and if supplied, with a lag. If val is an array, the control will be multichannel.
 
 method::ir
-
-Return an initialization rate NamedControl input with a default value (val). If val is an array, the control will be multichannel.
+returns an initialization rate NamedControl input with a default value (val). If val is an array, the control will be multichannel.
 
 method::tr
-
-Return a TrigControl input with a default value (val). If val is an array, the control will be multichannel.
+returns a TrigControl input with a default value (val). If val is an array, the control will be multichannel.
 discussion::
 code::
 a = { Ringz.ar(T2A.ar(\trig.tr), \freq.kr(500, 1), 0.8) }.play;

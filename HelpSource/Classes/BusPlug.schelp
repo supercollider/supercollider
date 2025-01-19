@@ -19,16 +19,16 @@ ClassMethods::
 
 
 method::new
-Create a new (neutral) instance on the given server.
+creates a new (neutral) instance on the given server.
 
 method::for
-Create an instance with a given link::Classes/Bus::.
+creates an instance with a given link::Classes/Bus::.
 
 method::audio
-Create a new audio rate instance on the given server.
+creates a new audio rate instance on the given server.
 
 method::control
-Create a new control rate instance on the given server.
+creates a new control rate instance on the given server.
 
 method::defaultNumAudio
 Default number of channels when initializing in audio rate and no specific number is given (default: 2).
@@ -44,20 +44,19 @@ InstanceMethods::
 private::makeBusArg, prepareForProxySynthDef, wakeUpToBundle, playNToBundle, playToBundle, newMonitorToBundle, clock
 
 method::server
-Return the server that the BusPlug runs on.
+returns the server that the BusPlug runs on.
 
 method::clear
-Free the bus, end the monitor.
+frees the bus, end the monitor.
 
 
-subsection::Making copies
+subsection:: Making copies
 
 method::copy
 copies the hidden internal state to make the new BusPlug independent of the old, running on a new link::Classes/Bus::. By design, the link::Classes/Monitor:: is copied, but is not running (use play to start it in the same configuration). If needed, you can also copy the link::Classes/Monitor:: only (see: link::Classes/NodeProxy#-copy::).
 
 method::copyState
-Copy the internal settings of one proxy into another. Old state is cleared, the bus is freed.
-
+copies the internal settings of one proxy into another. Old state is cleared, the bus is freed.
 argument::proxy
 The object whose internal state is being copied.
 
@@ -67,30 +66,28 @@ Determines how to behave when link::#-initBus:: is called.
 Current options:
 list::
 ## teletype::nil:: Once initialized, keep the same bus - this is the default
-## teletype::\static:: Same as nil, but allows you to override the default in instances
+## teletype::\static:: Same as code::nil::, but allows you to override the default in instances
 ## teletype::\elastic:: On a change, shrink and grow according to need, replace bus. Monitoring is adjusted.
 ## teletype::\expanding:: On a change, only grow according to need, replace bus. Monitoring is adjusted.
 ::
 
-subsection::In UGen graphs and Patterns
+
+subsection:: In UGen graphs and Patterns
 
 method::ar, kr
-Return a link to numChannels of my output. If uninitialized, creates a matching bus. Normally, strong::ar defaults to stereo, kr to mono::. This can be set in the classvars: link::#*defaultNumAudio::, link::#*defaultNumControl::
+returns a link to numChannels of my output. If uninitialized, creates a matching bus. Normally, strong::ar defaults to stereo, kr to mono::. This can be set in the classvars: link::#*defaultNumAudio::, link::#*defaultNumControl::
 
 For consistency, it always returns an array of signals when no numChannels are given. To make it a single ugen output, use code::numChannels = 1:: . See also: link::Classes/InBus::.
-
 argument::numChannels
 Number of channels returned. If the receiver is neutral or reshaping is elastic, initialize it to this number. If this is more than the available channels, use the clip behaviour (below). If set to code::1::, it will return an instance of link::Classes/InBus::, otherwise an Array of one or more instances of InBus.
-
 argument::offset
 Channel offset when reading a bus that has more channels than numChannels, cross fading between adjacent channels.
-
 argument::clip
 If set to 'wrap', exceeding channels will wrap around, if set to 'clip', repeat the last one.
 
 
 method::asUGenInput
-Returns the appropriate output to read from the BusPlug bus (an link::Classes/InBus:: UGen)
+returns the appropriate output to read from the BusPlug bus (an link::Classes/InBus:: UGen)
 code::
 b = BusPlug.new;
 { Blip.ar(b + 5) }.play;
@@ -98,7 +95,7 @@ b.bus.set(12);
 ::
 
 method::embedInStream
-Returns the map argument for the bus, if the bus has multiple channels, it will return an array of map args.
+returns the map argument for the bus, if the bus has multiple channels, it will return an array of map args.
 code::
 b = BusPlug.new;
 x = Pbind(\z, b).asStream;
@@ -108,115 +105,97 @@ x.next(()); // returns map arguments for the audio rate bus
 ::
 
 method::asControlInput
-Returns the map argument for the bus, just like link::#-embedInStream::
+returns the map argument for the bus, just like link::#-embedInStream::
 
-subsection::Monitoring and Routing
+
+subsection:: Monitoring and Routing
 
 method::isPlaying
-Returns true if server is running and bus not nil. link::Classes/NodeProxy:: this returns true if the group is playing.
+returns code::true:: if server is running and bus not code::nil::. link::Classes/NodeProxy:: this Returns code::true:: if the group is playing.
 
 method::isMonitoring
-Returns true if monitor is playing
+returns code::true:: if monitor is playing
 
 method::play
-Play from a bus index with a number of channels to another index with a number of channels, within a link::Classes/Group:: (i.e. a target group or server).
-
+plays from a bus index with a number of channels to another index with a number of channels, within a link::Classes/Group:: (i.e. a target group or server).
 argument::out
 bus index
-
 argument::numChannels
 number of channels to output. If BusPlug is neutral or reshaping is elastic, initialize it to this number. If this is more than the available channels, wrap around. If this is not given, and reshaping is elastic, it will automatically expand.
-
 argument::group
 target link::Classes/Group:: or link::Classes/Server:: in which to play the monitor synths.
-
 argument::multi
-keep old playback links and add new one
-
+Keeps old playback links and adds new one
 argument::vol
 overall volume  at which to monitor
-
 argument::fadeTime
 fade in / fade out time
-
-argument:: addAction
+argument::addAction
 Where in the node tree to play the monitor synths
 
 
 
 
 method::playN
-Play back on non-contiguous channels. See: link::Classes/Monitor:: and link::Reference/playN::
-
+plays back on non-contiguous channels. See: link::Classes/Monitor:: and link::Reference/playN::
 argument::outs
 array of destination channels (or single value)
-
-
 argument::amps
 array of amplitudes for each channel (or single value)
-
 argument::ins
 array of source channel offsets within the bus (or single value)
-
-argument:: vol
+argument::vol
 Overall volume (multiplied by amps)
-
-argument:: fadeTime
+argument::fadeTime
 array of fadeTimes (or single value) for fade in / fade out
-
-argument:: group
+argument::group
 target link::Classes/Group:: or link::Classes/Server:: in which to play the monitor synths.
-
-argument:: addAction
+argument::addAction
 Where in the node tree to play the monitor synths
 
 
 
 method::stop
-stop to play out public channels.
-
+stops to play out public channels.
 argument::fadeTime
 decay time for this action
-
 argument::reset
-if set to true, reset all monitor state. Otherwise, the previous play arguments are kept.
+if set to code::true::, reset all monitor state. Otherwise, the previous play arguments are kept.
 
 
 method::monitor
 returns the current monitor (see link::Classes/Monitor::)
 
 
-
-
-subsection::Bus changes
+subsection:: Bus changes
 These methods are a little numerous, because they are important for implementing link::Classes/NodeProxy:: behavior. Mostly the methods link::#-bus:: and link::#-initBus:: will be sufficient in normal use.
 
 note::The old bus is freed when a new bus is made.::
 
 method::isNeutral
-Returns true if no bus has been initialized so far.
+returns code::true:: if no bus has been initialized so far.
 
 method::bus
-Set or get the bus. If BusPlug monitor is playing, restart the monitor to adequately play back the new bus.
+sets/gets the bus. If BusPlug monitor is playing, restart the monitor to adequately play back the new bus.
 
 method::setBus
-set the bus object by passing a link::Classes/Bus::.
+sets the bus object by passing a link::Classes/Bus::.
 note::you have to stop and play explicitly::
 
 method::defineBus
-make a new bus for the BusPlug with a given rate and number of channels.
+makes a new bus for the BusPlug with a given rate and number of channels.
 
 method::initBus
-Make a new bus only if necessary. This depends on the current bus and the link::#-reshaping:: mode.
+makes a new bus only if necessary. This depends on the current bus and the link::#-reshaping:: mode.
 
-returns::Boolean (true if successful).
-
-
+returns:: Boolean (code::true:: if successful).
 
 
 
 
-Examples::
+
+
+examples::
 
 code::
 // using as a control bus listener

@@ -4,17 +4,16 @@ related:: Classes/BufChannels, Classes/BufDur, Classes/BufFrames, Classes/BufRat
 categories::  UGens>Buffer>Info
 
 
-Description::
-Returns the buffer's current sample rate.
+description::
+returns the buffer's current sample rate.
 
 classmethods::
 
 method::kr, ir
-
 argument::bufnum
 Buffer index.
 
-returns::
+returns:: 
 the buffer's current sample rate.
 
 discussion::
@@ -24,7 +23,7 @@ Since a buffer can be reallocated at any time, using
 code::.ir::  will not track the changes.
 ::
 
-Examples::
+examples::
 
 code::
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");

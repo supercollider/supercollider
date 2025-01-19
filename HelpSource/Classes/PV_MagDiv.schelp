@@ -8,12 +8,12 @@ Divides magnitudes of two inputs and keeps the phases of the first input.
 classmethods::
 private:: categories
 
-method:: new
-argument:: bufferA
+method::new
+argument::bufferA
 fft buffer A.
-argument:: bufferB
+argument::bufferB
 fft buffer B.
-argument:: zeroed
+argument::zeroed
 number to use when bins are zeroed out, i.e. causing division by zero (defaults to 0.0001)
 
 examples::

@@ -9,9 +9,8 @@ Given an link::Classes/FFT:: strong::chain::, this measures the emphasis::spectr
 This can be a useful indicator of the perceptual emphasis::brightness:: of a signal.
 
 classmethods::
-method:: kr
-
-argument:: buffer
+method::kr
+argument::buffer
 an link::Classes/FFT:: chain.
 
 examples::

@@ -4,8 +4,7 @@ related:: Classes/Pseg
 categories:: Streams-Patterns-Events>Patterns>Time
 
 description::
-
-Pstep is a "sample and hold" pattern: The value returned by teletype::next:: is held at each value in teletype::levels:: for the corresponding duration in teletype::durs::. This cycling is similar to link::Classes/Ptuple::, in that the current repeat ends when eiher pattern returns nil.
+Pstep is a "sample and hold" pattern: The value returned by teletype::next:: is held at each value in teletype::levels:: for the corresponding duration in teletype::durs::. This cycling is similar to link::Classes/Ptuple::, in that the current repeat ends when eiher pattern returns code::nil::.
 
 Pstep measures elapsed time using the thread's logical time. That is, it assumes it will be evaluated only exactly when needed, not before.
 
@@ -14,18 +13,15 @@ See link::Classes/Pseg:: for a pattern whose value changes like an link::Classes
 ClassMethods::
 
 method::new
-Create an instance of Pstep.
-
+creates an instance of Pstep.
 argument::levels
 A number, collection, or link::Classes/Pattern:: that returns the levels.
-
 argument::durs
 A number, collection, or link::Classes/Pattern:: that returns segments durations in beats.
-
 argument::repeats
 An integer, or teletype::inf::.
 
-Examples::
+examples::
 
 code::
 (

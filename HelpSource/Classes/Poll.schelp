@@ -4,15 +4,14 @@ summary:: Print the current output value of a UGen
 related:: Classes/SendTrig, Classes/OSCFunc
 
 description::
-
-Print the current output value of a UGen, useful for debugging SynthDefs.
+prints the current output value of a UGen, useful for debugging SynthDefs.
 
 WARNING:: Printing values from the Server in intensive for the CPU. Poll should be used for debugging purposes.::
 
 classmethods::
 private:: categories, new, new1
 
-method:: ar, kr
+method::ar, kr
 argument::trig
 a non-positive to positive transition telling Poll to return a value
 argument::in

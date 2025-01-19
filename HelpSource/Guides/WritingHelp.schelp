@@ -3,6 +3,7 @@ summary:: Get started with writing help
 categories:: HelpSystem
 related:: Reference/SCDocSyntax, Classes/SCDoc
 
+
 section:: Writing new help
 The simplest way is to look at an existing help file or class document, and read this document and link::Reference/SCDocSyntax::
 
@@ -28,15 +29,18 @@ section:: Introduction
 This is a nice document...
 blah blah blah..
 
+
 subsection:: Details
 
 Some details..
 ::
 
+
 subsection:: Documenting new classes
 When you navigate to an undocumented class, it will contain an schelp template that can be filled in and saved to HelpSource/Classes/ClassName.schelp.
 
 A list of all undocumented classes can be seen here: link::Browse#Undocumented classes:: (auto-generated).
+
 
 section:: Directory layout
 The help system uses different folders under HelpSource depending on document kind:
@@ -56,12 +60,14 @@ note:: It's important that the document is put in the right folder. For Classes,
 
 All .schelp files will be parsed and rendered to an equal directory layout in the help target directory. Any other files, like images or ready-made HTML files, will just be copied.
 
+
 section:: Class reference
 Class reference has some special tags and a more strict structure. Normal text should be written inside the special top-level sections DESCRIPTION, CLASSMETHODS, INSTANCEMETHODS and EXAMPLES.
 
 Named subsections can be used under each of the above mentioned top-level sections.
 
 Also named sections can be used, but they will be put after all above top-level sections.
+
 
 subsection:: Methods and arguments
 Methods are documented like this:
@@ -99,8 +105,8 @@ If a longer discussion is needed, use the teletype::discussion\:::: tag. This is
 
 Setters are handled automagically, when documenting a setter/getter, use only the getter name (no underscore) and describe both setter and getter as a single property, example:
 teletype::
-method:: helpSourceDir
-set or get the help source directory
+method::helpSourceDir
+sets/gets the help source directory
 ::
 
 Methods get an anchor name automatically, prefixed with teletype::*:: for class methods and teletype::-:: for instance methods. For example, to link to the teletype::foo:: class method, use teletype:: link\::#*foo\:: ::.
@@ -114,10 +120,12 @@ SCDoc generates docs for all undocumented methods. To ignore private methods, ad
 
 Extensions can add methods to existing class docs, see the link::#Extensions:: section below.
 
+
 subsection:: Copy methods from other class
 You can use teletype:: copymethod\:: ClassName, methodName :: to copy the documentation of a method from another helpfile to this one.
 
 teletype::methodName:: must be prefixed with teletype::*:: (asterix) for class methods and teletype::-:: (dash) for instance methods.
+
 
 subsection:: Redirect classes
 Some classes uses the code::*doesNotUnderstand:: trick to redirect to another implementing class. To document such classes, you need to add this tag in the header:
@@ -125,6 +133,7 @@ teletype::
 redirect:: implClass
 ::
 Where teletype::implClass:: is the name of the class variable holding the implementing class.
+
 
 subsection:: Example
 
@@ -136,27 +145,24 @@ summary:: pulse oscillator
 categories:: UGens>Generators>Deterministic, UGens>Oscillators
 related:: Classes/LFSaw
 
-DESCRIPTION::
+description::
 A non-band-limited pulse oscillator. Outputs a high value of one and a low value of zero.
 
 CLASSMETHODS::
 private:: categories
 
-METHOD:: ar, kr
-
+method::ar, kr
 argument::freq
 frequency in Hertz
-
 argument::iphase
 initial phase offset in cycles ( 0..1 )
-
 argument::width
 pulse width duty cycle from zero to one.
 
-returns::
+returns:: 
 An UGen.
 
-EXAMPLES::
+examples::
 
 a plot:
 code:: { LFPulse.ar(Line.kr(100, 800, 0.1)) }.plot(0.1); ::
@@ -164,6 +170,7 @@ code:: { LFPulse.ar(Line.kr(100, 800, 0.1)) }.plot(0.1); ::
 50 Hz wave:
 code:: { LFPulse.ar(50) * 0.1 }.play; ::
 ::
+
 
 section:: Categories
 Try to find good categories for the doc you are writing/converting. If a suitable category already exists, you should use that. See the link::Browse##Document Browser:: (auto-generated) for existing categories.
@@ -175,11 +182,13 @@ Ball.categories
 
 Documents can exist in multiple categories, and also have hierarchical categories, like Sequencing>Patterns.
 
+
 section:: Cross-document linking
 To link another document, use teletype:: link\::Path/To/Document\:: :: where the path is relative to link::Classes/SCDoc#*helpTargetDir:: and the document filename is with no extension. Example:
 teletype::
 Also take a look at link::Classes/SinOsc:: and link::Reference/Literals::
 ::
+
 
 subsection:: Methods
 To link to a specific class method, append code::#*methodName:: or to an instance method, append code::#-methodName:::
@@ -195,6 +204,7 @@ teletype::
 For all implementations of play, see link::Overviews/Methods#play::
 ::
 
+
 section:: Making the document findable by Search
 The link::Search:: page can match on document title/filename, summary, non-private methods, and categories.
 If you mention something that should match in search but is not one of the above, you can explicitly add it with the keyword tag:
@@ -202,7 +212,10 @@ teletype::
 keyword:: someKeyWords
 ::
 
+
 section:: Extensions
+
+
 subsection:: Quarks and extensions
 Each extension should have their own HelpSource folder with files that should be included in the help system.
 
@@ -222,6 +235,7 @@ All helpfiles contained in a quark will automatically get a category "Quarks>Nam
 
 If you want to set a main help file for the quark, set code::\schelp:: in the Quark directory file to the path for the help file relative to teletype::HelpSource:: and without the teletype::.schelp:: extension. Example: code::\schelp: "Guides/MyGuide"::
 
+
 subsection:: Method extensions
 An extension that adds methods to existing classes should document these in code::Classes/TheClass.ext.schelp::, only including the relevant bits (no title, summary, categories, etc..)
 
@@ -229,15 +243,17 @@ Example: Classes/String.ext.schelp
 teletype::
 INSTANCEMETHODS::
 
+
 subsection:: Extensions by SCDoc
 
-method:: stripWhiteSpace
+method::stripWhiteSpace
 strips whitespace at the beginning and end of the string
 returns:: the stripped string
 ::
 
 The contents are inserted into the right spot (section, subsection, etc).
 It works for all kind of sections, for example one can add a subsection to code::DESCRIPTION\:::: with additional information, or add another top-level section, etc.
+
 
 section:: Links
 
@@ -247,7 +263,7 @@ The code::link\:::: tag is used for cross-reference between docs. It uses a simp
 code::
 See also link::Classes/SinOsc:: for a nice oscillator.
 Or take a look at link::Browse#UGens:: for a full list.
-The link::Overviews/Methods#play#play method:: is often very useful.
+The link::Overviews/Methods#play#play method::is often very useful.
 ::
 
 Anchors can be inserted manually with code::anchor\::name\:::: and referenced like this: code::
@@ -284,6 +300,7 @@ For more filters, see link::Browse#UGens>Filters::
 ::
 Renders as: For more filters, see link::Browse#UGens>Filters::
 
+
 section:: Contributing with documentation
 
 The easiest way to contribute to the documentation is:
@@ -304,9 +321,11 @@ The easiest way to contribute to the documentation is:
     ::
     5. Submit your pull request through github, from your branch doc_updates to SuperCollider develop
 
-section::Working with legacy documentation
+
+section:: Working with legacy documentation
 
 Here is some information for working with documentation that is written in legacy format or syntax.
+
 
 subsection:: News in SC 3.5.2
 SCDoc was rewritten and the parser implemented in C++ for speed and stability in 3.5.2.
@@ -320,6 +339,7 @@ list::
 ## The teletype::CLASS\:::: tag is deprecated, just use teletype::TITLE\:::: instead also for class reference docs.
 ## The argument name given to the teletype::ARGUMENT\:::: tag is now optional. If not given, SCDoc will auto-fill the real argument name.
 ::
+
 
 subsection:: Converting old helpfiles
 There is no automated process for this, but for most help files it's really simple to do it manually:

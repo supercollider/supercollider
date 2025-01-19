@@ -1,9 +1,9 @@
 CLASS::Event
-summary::an environment that represents an action
+summary:: an environment that represents an action
 related::Classes/Pattern, Classes/Environment, Classes/IdentityDictionary
 categories::Collections>Unordered, Streams-Patterns-Events>Events
 
-DESCRIPTION::
+description::
 An Event specifies an action to be taken in response to a link::#-play:: message. Its key/value pairs specify the parameters of that action. Event inherits most of its methods from its superclasses, especially from link::Classes/Dictionary::. For the usage and meaning of the code::parent:: and code::proto:: events, see link::Classes/IdentityDictionary::.
 
 code::
@@ -23,7 +23,8 @@ CLASSMETHODS::
 
 private::initClass
 
-subsection::Class variables
+
+subsection:: Class variables
 
 method::parentEvents
 An extendible IdentityDictionary of useful parent events.
@@ -31,10 +32,11 @@ An extendible IdentityDictionary of useful parent events.
 method::partialEvents
 An extendible IdentityDictionary of Events that define the default values and functions for different aspects of note generation (timing, volume, pitch, server to use, etc).
 
-subsection::Creation methods
+
+subsection:: Creation methods
 
 method::new
-create an event with initial size strong::n::.
+creates an event with initial size strong::n::.
 argument::n
 Initial size.
 argument::proto
@@ -45,23 +47,19 @@ argument::know
 If strong::know:: is set to link::Classes/True::, the event will respond to appropriate message calls. See link::Classes/Environment:: for more details.
 
 method::default
-Returns an empty event with link::#defaultParentEvent:: as parent.
+returns an empty event with link::#defaultParentEvent:: as parent.
 
 method::silent
-Returns an event that describes a pause of strong::dur:: duration.
+returns an event that describes a pause of strong::dur:: duration.
 
 
 
 method::addEventType
 Event types define alternate play functions and parent events that are selected by the value of strong::~type::.
-
-
 argument::type
 A name (usually a symbol) for the event type, which can be used to select it
-
 argument::func
 A function which optionally takes the server as a first argument
-
 argument::parentEvent
 An event with default values which is used to override the parent event. If code::parentEvent:: in turn has no parent, its default parent event is set.
 
@@ -120,11 +118,9 @@ Event.partialEvents.playerEvent.parentTypes
 
 
 method::addParentType
-Define an alternative parent that is chosen on the basis of strong::~type::. It allows you to change the defaults of an existing event type function.
-
+defines an alternative parent that is chosen on the basis of strong::~type::. It allows you to change the defaults of an existing event type function.
 argument::type
 A name (usually a symbol) for the event type, which can be used to select it
-
 argument::parentEvent
 An event with default values which is used to override the parent event. If code::parentEvent:: in turn has no parent, its default parent event is set.
 
@@ -139,14 +135,12 @@ Pbind(\degree, Pseq([0, 1, 2, 3, 4, 4, 5, 5, 5, 5, 4, 2, 3, 2, 3, 1], inf), \dur
 ::
 
 method::removeEventType
-Remove an event type function from the collection. If there is an associated event type parent, this will be removed also.
-
+removes an event type function from the collection. If there is an associated event type parent, this will be removed also.
 argument::type
 A name (usually a symbol) for the event type.
 
 method::removeParentType
-Remove a parent event associated with an event type.
-
+removes a parent event associated with an event type.
 argument::type
 A name (usually a symbol) for the event type.
 
@@ -163,48 +157,49 @@ Event.makeDefaultSynthDef; // reset default
 INSTANCEMETHODS::
 
 method::play
-Play the event. This evaluates the function at strong::\play::.
+plays the event. This evaluates the function at strong::\play::.
 code::
 (freq: 800).play;
 (play: {  "I rather do something else: ".post; ~x.postln }, x: 800.rand).play;
 ::
 
 method::delta
-Returns the inter onset time - the time delay until the next event in a sequence. This usually depends on strong::\dur:: and strong::\stretch::, but may be overridden by specifying strong::\delta:: directly.
+returns the inter onset time - the time delay until the next event in a sequence. This usually depends on strong::\dur:: and strong::\stretch::, but may be overridden by specifying strong::\delta:: directly.
 code::
 Pn((dur: 2, freq: 8000)).play;
 ::
 
 method::next
-Combines an event given in the argument with the current event. This is used to enable events to be composed.
+combines an event given in the argument with the current event. This is used to enable events to be composed.
 code::
 (a: 6, b: 7).next((c: 100));
 ::
 
-copymethod:: Dictionary -embedInStream
+copymethod::Dictionary -embedInStream
 
 method::playAndDelta
 Used by link::Classes/EventStreamPlayer:: to play Events and obtain a time increment.
 
 method::isRest
-Returns strong::true:: if the event will be played as a rest, and strong::false:: otherwise. See link::Classes/Rest:: for a more complete discussion of rests in event patterns.
+returns strong::true:: if the event will be played as a rest, and strong::false:: otherwise. See link::Classes/Rest:: for a more complete discussion of rests in event patterns.
 
 method::asUGenInput
-Calls link::#-asControlInput::.
+calls link::#-asControlInput::.
 
 method::asControlInput
-Enables events to represent the server resources they created in an Event.
+enables events to represent the server resources they created in an Event.
 
-subsection::Methods that allow Events to provide user control for Synths on Groups
+
+subsection:: Methods that allow Events to provide user control for Synths on Groups
 
 method::synth
-Makes the event a control interface to the resultant link::Classes/Synth:: when played.
+makes the event a control interface to the resultant link::Classes/Synth:: when played.
 
 method::group
-Makes the event a control interface to the resultant link::Classes/Group:: when played. This is experimental, does not work consistently yet.
+makes the event a control interface to the resultant link::Classes/Group:: when played. This is experimental, does not work consistently yet.
 
 method::stop
-Free the link::Classes/Synth:: or link::Classes/Group::.
+frees the link::Classes/Synth:: or link::Classes/Group::.
 
 method::pause
 Pause the link::Classes/Synth:: or link::Classes/Group::.
@@ -216,7 +211,7 @@ method::release
 Release the link::Classes/Synth:: or link::Classes/Group::.
 
 method::set
-Set a control value in the link::Classes/Synth:: or link::Classes/Group::.
+sets a control value in the link::Classes/Synth:: or link::Classes/Group::.
 (key1, val1, ....)
 code::
 a = (note: 2).play;
@@ -225,11 +220,12 @@ a.release;
 ::
 
 
-SECTION::Basic Usage
+section:: Basic Usage
 
 Events can be written as a series of key value pairs enclosed in parentheses. Empty parentheses will create an empty event. They may be also used for object prototyping - see link::Classes/Environment:: for more details.
 
-subsection::Event as a name space for keeping objects
+
+subsection:: Event as a name space for keeping objects
 
 Because of this simple syntax, Events are often used as name space for keeping objects:
 code::
@@ -240,7 +236,8 @@ q.y = q.x * q.n;	// shorter way to do the same (pseudo-methods)
 q.y;			// [100, 200, 300]
 ::
 
-subsection::Event for specifying different things to happen
+
+subsection:: Event for specifying different things to happen
 
 Event provides a link::#defaultParentEvent:: that defines a variety of different event types and provides a complete set of default key/value pairs for each type. The type is determined by the value of the key strong::\type:: which defaults to strong::\note::. Note events create synths on the server.
 code::
@@ -250,7 +247,8 @@ code::
 ::
 Per default, the play message derives its behaviour from the link::#defaultParentEvent::, which provides many default values, such as default instrument (\default), note (0), legato (0.8) and so on. Depending on the event type, these may differ completely and need not even represent a sound.
 
-subsection::Events and SynthDefs
+
+subsection:: Events and SynthDefs
 
 The key used to select what synthdef is to be played is strong::\instrument::. In order to use a link::Classes/SynthDef:: with an Event, send it an strong::add:: message. This creates a description of the SynthDef that the event can consult to determine its control names. The values of these names in the event are used when the event is played. (See link::Classes/SynthDesc:: for details.)
 code::
@@ -274,7 +272,8 @@ note::
 The use of link::Classes/OffsetOut:: in the SynthDef prevents irregularities that can result from the interaction of the timing of a sequence of notes and the control rate of the Server.
 ::
 
-subsection::Multi-channel Expansion
+
+subsection:: Multi-channel Expansion
 
 If a key relevant to the action is assigned an link::Classes/Array::, the action is repeated on each element of the array:
 code::
@@ -301,7 +300,8 @@ code::
 
 In the \note event, all keys multichannel expand apart from: \instrument, \dur, \delta, \strum.
 
-subsection::Arrayed Arguments
+
+subsection:: Arrayed Arguments
 
 It is possible to assign an array to one of a link::Classes/SynthDef::'s control names. For example:
 code::
@@ -325,11 +325,12 @@ code::
 (instrument: \test, note: [[0, 2, 4], [6, 8, 10]]).play;
 ::
 
-subsection::Events and Patterns
+
+subsection:: Events and Patterns
 
 Events are closely integrated with the Patterns library. Different patterns can be bound to different keys (or collections of keys) to specify the resultant music. See the help files link::Classes/Pattern:: and link::Classes/Pbind:: and the tutorials link::Tutorials/Streams-Patterns-Events4:: and link::Tutorials/Streams-Patterns-Events5:: for more details on Patterns.
 
-Patterns that return events may be played on a clock: dur specifies the time between two subsequent events.
+Patterns that returns events may be played on a clock: dur specifies the time between two subsequent events.
 code::
 // Pseq returns one item in the list after the other
 (
@@ -376,7 +377,8 @@ Pbind(*[
 )
 ::
 
-subsection::Event's play method
+
+subsection:: Event's play method
 
 When an Event (or any other link::Classes/Environment::) receives a code::use(function):: message, it sets itself to be currentEnvironment, evaluates the function, and restores the original value of currentEnvironment. This allows the function to access and alter the contents of the event using the following shortcuts:
 code::~keyName:: which is equivalent to	code::currentEnvironment.at(keyName):: and
@@ -396,13 +398,15 @@ code::
 (a: 6, b: 7, play: { (~a * ~b).postln }).play;
 ::
 
-subsection::Timing control with Event's delta method
 
-Events also specify timing within a link::Classes/Pattern::. Event's code::delta:: method returns the value of code::~delta:: or, if that is nil, code::~dur * ~stretch::.
+subsection:: Timing control with Event's delta method
+
+Events also specify timing within a link::Classes/Pattern::. Event's code::delta:: method returns the value of code::~delta:: or, if that is code::nil::, code::~dur * ~stretch::.
 
 Patterns are played by link::Classes/TempoClock::s, which have their own tempo controls. This tempo which can be controlled through code::~tempo:: in the event. Changes to the tempo affect everything else scheduled by the TempoClock, so code::tempo:: provides a global tempo control while code::stretch:: provides a control limited to the one pattern.
 
-subsection::The structure of defaultParentEvent
+
+subsection:: The structure of defaultParentEvent
 
 method::defaultParentEvent
 The default event used in most cases. This is a private class variable. See link::#*default::.
@@ -418,7 +422,8 @@ bufferEvent	// buffers on the server
 midiEvent	// defines the sending of midi messages
 ::
 
-subsection::Useful keys for notes
+
+subsection:: Useful keys for notes
 
 Using Events is largely a matter of overwriting keys. Here is a list of keys useful for defining notes with their default values, grouped by the partialEvent within which they are defined.
 
@@ -524,6 +529,7 @@ IMAGE::Event-default-note.png::
 
 ::
 
-subsection::Event types
+
+subsection:: Event types
 
 An Event responds to a play message by evaluating code::~play:: in the event, which by default uses the event's type to define the action to be performed. See link::Overviews/Event_types::.

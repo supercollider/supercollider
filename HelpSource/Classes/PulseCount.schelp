@@ -4,27 +4,21 @@ related:: Classes/Stepper
 categories::  UGens>Triggers
 
 
-Description::
-
+description::
 Each trigger increments a counter which is output as a signal.
 
 
 classmethods::
 
 method::ar, kr
-
 argument::trig
-
 Trigger. Trigger can be any signal. A trigger happens when the
 signal changes from non-positive to positive.
-
-
 argument::reset
-
 Resets the counter to zero when triggered.
 
 
-Examples::
+examples::
 
 code::
 

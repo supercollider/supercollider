@@ -4,10 +4,9 @@ related:: Classes/Pdfsm
 categories:: Streams-Patterns-Events>Patterns>List>Indexing
 
 description::
-
 Every state consists of an item and an array of integer indices of possible strong::next states::. The initial state is chosen at random from the array of strong::entry states::. That chosen state's item is returned, and the next state is chosen from its array of possible strong::next states::. When the end state is chosen, the stream ends.
 
-Examples::
+examples::
 
 definitionList::
 ## list:

@@ -4,8 +4,7 @@ related:: Classes/Out, Classes/ReplaceOut, Classes/XOut
 categories::  UGens>InOut
 
 
-Description::
-
+description::
 Output signal to a bus, the sample offset within the bus is kept
 exactly; i.e. if the synth is scheduled to be started part way through a
 control cycle, OffsetOut will maintain the correct offset by buffering
@@ -30,20 +29,15 @@ buses and how they are used.
 classmethods::
 
 method::ar
-
 argument::bus
-
 The index of the bus to write out to. The lowest numbers are
 written to the audio hardware.
-
-
 argument::channelsArray
-
 An Array of channels or single output to write out. You cannot
 change the size of this once a SynthDef has been built.
 
 
-Examples::
+examples::
 
 code::
 

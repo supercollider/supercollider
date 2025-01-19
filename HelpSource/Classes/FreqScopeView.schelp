@@ -25,12 +25,12 @@ classmethods::
 
 private::initClass
 
-method:: new
-argument:: parent
+method::new
+argument::parent
 The parent view.
-argument:: bounds
+argument::bounds
 An instance of link::Classes/Rect::, or a link::Classes/Point:: indicating code::width@height::.
-argument:: server
+argument::server
 The server to be shown in scope.
 
 discussion::
@@ -51,17 +51,17 @@ w.front;
 )
 ::
 
-method:: response
-Create a scope in a special frequency-response mode. This uses FFT-based spectral division to estimate the frequency response of some effect, on the assumption that the signal to bus1 is transformed to the signal at bus2 by some linear time-invariant process.
-argument:: parent
+method::response
+creates a scope in a special frequency-response mode. This uses FFT-based spectral division to estimate the frequency response of some effect, on the assumption that the signal to bus1 is transformed to the signal at bus2 by some linear time-invariant process.
+argument::parent
 The parent view.
-argument:: bounds
+argument::bounds
 An instance of link::Classes/Rect::, or a link::Classes/Point:: indicating code::width@height::.
-argument:: bus1
+argument::bus1
 The bus on which the "pre" signal is found.
-argument:: bus2
+argument::bus2
 The bus on which the "post" signal is found.
-argument:: freqMode
+argument::freqMode
 Linear (0) or log(1) frequency mode. Defaults to 1.
 discussion::
 Example:
@@ -85,69 +85,72 @@ Median.scopeResponse // nonlinear, and therefore interesting
 gain: MouseY.kr(4, 0)) }.scopeResponse
 ::
 
+
 subsection:: Subclassing and Internal Methods
 
 The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
 
 instancemethods::
 
-method:: kill
+method::kill
 Very important. This must be run when the parent window is closed to avoid problems. It also frees the buffers that the scope allocated and stops the FFT analysis synth.
 
-method:: active
+method::active
 Turn the scope on or off.
-argument:: bool
+argument::bool
 An instance of link::Classes/Boolean::.
 
-method:: freqMode
-argument:: mode
+method::freqMode
+argument::mode
 0 = linear, 1 = logarithmic.
 
-method:: inBus
+method::inBus
 The bus to listen on.
-argument:: num
+argument::num
 An audio link::Classes/Bus:: number.
 
-method:: dbRange
-Get/set the amplitude range.
-argument:: db
+method::dbRange
+gets/sets the amplitude range.
+argument::db
 A link::Classes/Number::.
 
-method:: special
-Put the scope into a special mode using a user-specified link::Classes/SynthDef::. Note that only very particular SynthDefs should be used, namely ones that are derived from the code::\freqScope0:: or code::\freqScope1:: SynthDefs. Most users will not need to use this method directly, but it can be used to provide a customised analysis shown in the scope.
-argument:: defname
+method::special
+puts the scope into a special mode using a user-specified link::Classes/SynthDef::. Note that only very particular SynthDefs should be used, namely ones that are derived from the code::\freqScope0:: or code::\freqScope1:: SynthDefs. Most users will not need to use this method directly, but it can be used to provide a customised analysis shown in the scope.
+argument::defname
 Name of the link::Classes/SynthDef:: you wish to use.
-argument:: extraArgs
+argument::extraArgs
 Extra arguments that you may wish to pass to the synth.
 
+
 subsection:: instance variables
-method:: server
+method::server
 the server that is freqscoped
-method:: synth
+method::synth
 the synth running the freqscope analysis
-method:: scope
+method::scope
 the scopeview that shows the running analysis
-method:: scopebuf
+method::scopebuf
 the buffer used by the scope
+
 
 subsection:: Internal Methods
 
 The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these in subclasses as needed.
 
-method:: initFreqScope
+method::initFreqScope
 initialize and show on parent view
-method:: doesNotUnderstand
+method::doesNotUnderstand
 redirects methods to scope view variable
 
-method:: start
-method:: allocBuffers
-method:: freeBuffers
-method:: bufSize
-method:: doOnServerQuit
-method:: doOnServerTree
-method:: shmScopeAvailable
-method:: specialSynthArgs
-method:: specialSynthDef
+method::start
+method::allocBuffers
+method::freeBuffers
+method::bufSize
+method::doOnServerQuit
+method::doOnServerTree
+method::shmScopeAvailable
+method::specialSynthArgs
+method::specialSynthDef
 
 examples::
 

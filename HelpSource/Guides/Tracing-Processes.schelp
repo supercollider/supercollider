@@ -5,6 +5,7 @@ related:: Guides/Debugging-tips
 
 What goes on in a running system? In SC, various methods help to get information about processes on different levels: server side and client side (in sclang).
 
+
 section:: Tracing sclang processes
 
 In order to know more about objects as they are created by processes like tasks or even simply by evaluating a bit of code, one can insert messages like postln and postcs anywhere in the code.
@@ -52,6 +53,7 @@ code::
 var n = 3;
 (1..n).do { |num| { num.rand }.dup(200).postcs };
 ::
+
 
 subsection:: Streams, tasks and routines
 in streams, tasks and routines, this works just as well:
@@ -110,6 +112,7 @@ Pbind(
 	\dur, Pwhite(0.2, 0.4, inf)
 ).trace([\degree, \dur], prefix: ["degree ", "dur "]).play
 ::
+
 
 section:: Tracing server processes
 

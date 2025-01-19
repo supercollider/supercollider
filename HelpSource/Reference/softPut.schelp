@@ -11,19 +11,19 @@ list::
 ::
 Typical uses would be switching to a new preset, then using a faderbox, and avoiding sudden controller jumps that could occur (soft takeover).
 
-method:: softPut (param, val, within = 0.025, lastVal, mapped = true, spec)
-argument:: param
+method::softPut (param, val, within = 0.025, lastVal, mapped = true, spec)
+argument::param
 the name of the parameter (key) to set
-argument:: val
+argument::val
 the value to set the param to (can be mapped or unmapped)
-argument:: within
+argument::within
 the normalized range within which the set is accepted - default is 0.025
-argument:: mapped
+argument::mapped
 a flag whether strong::val:: is mapped (within the range of param.asSpec) or unmapped (0.0-1.0)
-argument:: lastVal
+argument::lastVal
 the previous value that a control has set - see last examples.
-argument:: spec
-a link::Classes/ControlSpec:: can be passed in. if nil, param.asSpec is used.
+argument::spec
+a link::Classes/ControlSpec:: can be passed in. if code::nil::, param.asSpec is used.
 note::
 if no spec is given, or no value exists yet, softSet simply allows setting.
 ::

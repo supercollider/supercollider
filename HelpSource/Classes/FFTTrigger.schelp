@@ -5,12 +5,12 @@ categories:: UGens>FFT
 classmethods::
 private:: categories
 
-method:: new
-argument:: buffer
+method::new
+argument::buffer
 a buffer to condition for FFT use
-argument:: hop
+argument::hop
 the hop size for timing triggers (defaults to 0.5)
-argument:: polar
+argument::polar
 a flag. If 0.0, the buffer will be prepared for complex data, if > 0.0, polar data is set up.
 
 examples::

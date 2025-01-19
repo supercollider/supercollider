@@ -10,11 +10,12 @@ Users will not normally directly create instances of SCDragView, but only use it
 
 instancemethods::
 
+
 subsection:: Subclassing and Internal Methods
 
 The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
 
-method:: defaultGetDrag
+method::defaultGetDrag
 The method called by default when initiating a drag. Returns object.
 
 

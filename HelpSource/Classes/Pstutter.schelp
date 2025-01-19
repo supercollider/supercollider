@@ -26,12 +26,11 @@ ClassMethods::
 method::new
 argument::n
 The number of repeats for each new element. n may be a pattern, so the number of times can vary each iteration.
-
 argument::pattern
 the pattern to repeat.
 returns:: link::Classes/Pdup::
 
-Examples::
+examples::
 
 
 code::

@@ -4,7 +4,7 @@ categories:: JITLib>Environments, Live Coding
 related:: Classes/Fdef, Overviews/JITLib
 
 description::
-A Maybe object can contain either nil or some other object, and allows to construct calculations without knowing this other object yet. If the calculation fails, due to a loop or a not yet defined object, Maybe returns nil.
+A Maybe object can contain either code::nil:: or some other object, and allows to construct calculations without knowing this other object yet. If the calculation fails, due to a loop or a not yet defined object, Maybe returns code::nil::.
 
 The name strong::Maybe:: stems from the programming language Haskell, where it represents a somewhat similar entity. See also: link::Classes/Fdef::
 
@@ -28,10 +28,9 @@ code::
 ClassMethods::
 
 method::new
-create a new instance
-
+creates a new instance
 argument::thing
-an object or nil.
+an object or code::nil::.
 code::
 a = Maybe.new;
 b = Maybe(a + 6);
@@ -43,13 +42,13 @@ b.value; // => 7
 InstanceMethods::
 
 method::source
-return or set the contained object
+returns or sets the contained object
 
 method::value
-set the contained object or return the source, or the value of the contained object, if it is a Maybe. If there is a recursion, return nil.
+sets the contained object, or returns the source or the value of the contained object, if it is a Maybe. If there is a recursion, returns code::nil::.
 
 method::apply
-return the value, or the value of the contained object, if it is a Maybe. This method allows recursion, so that recursive calculations can be made.
+returns the value, or the value of the contained object, if it is a Maybe. This method allows recursion, so that recursive calculations can be made.
 
 method::doesNotUnderstand
 (called by any message that Maybe doesn't understand.)
@@ -64,7 +63,7 @@ a.value = [1, 2, [2, 3]];
 b.value;	// => [[1, 2, 2], [1, 2, 3]]
 ::
 
-Examples::
+examples::
 
 code::
 // the following examples use a LazyEnvir with a Maybe as a proxy class.
@@ -219,11 +218,11 @@ Maybe.maxDepth = nil; // unsafe again.*/
 ~c = 0;
 ~a = { |ff| { ff = ff + 1; ~c + ff + 2 + ~c } };
 ~x = ~a.value(8);
-~x.value; // return 11, 12, 13...
+~x.value; // returns 11, 12, 13...
 ~x.value;
 ~x.value;
 ~c = 100;
-~x.value; // return 214, 215 ...
+~x.value; // returns 214, 215 ...
 ~x.value;
 
 // binary op functions:
@@ -231,8 +230,8 @@ Maybe.maxDepth = nil; // unsafe again.*/
 ~a = { |ff| { [600, 800] } + { ff + 2 + ~c } };
 
 ~x = ~a.value(8);
-~x.value; // return [610, 810]
+~x.value; // returns [610, 810]
 
 ~c = { [10, -10].rand };
-~x.value; // return random between [610..620, 800..810]
+~x.value; // returns random between [610..620, 800..810]
 ::

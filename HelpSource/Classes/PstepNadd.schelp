@@ -4,10 +4,9 @@ related:: Classes/Pstep3add
 categories:: Streams-Patterns-Events>Patterns>Time
 
 description::
+combines an arbitrary number of patterns by summing (depth first traversal). When a stream ends it is recreated from its pattern until the top stream ends.
 
-Combines an arbitrary number of patterns by summing (depth first traversal). When a stream ends it is recreated from its pattern until the top stream ends.
-
-Examples::
+examples::
 
 code::
 // comparing PstepNadd and Pstep3add (test)
@@ -18,7 +17,7 @@ y = Pstep3add(Pseq([1, 2, 3]), Pseq([10, 20, 30, 40]), Pseq([100, 200, 300])).as
 50.do({ [x.next, y.next].postln });
 )
 
-// pattern return stream until the longest stream ended
+// pattern returns stream until the longest stream ended
 (
 x = PstepNadd(
 		Plazy({ "pattern1.asStream".postln; Pseq([1, 2, 3], 2) }),

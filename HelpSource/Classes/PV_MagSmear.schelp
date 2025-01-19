@@ -2,27 +2,21 @@ class:: PV_MagSmear
 summary:: Average magnitudes across bins.
 categories:: UGens>FFT
 
-Description::
-
+description::
 Average a bin's magnitude with its neighbors.
 
 
 classmethods::
 
 method::new
-
 argument::buffer
-
 FFT buffer.
-
-
 argument::bins
-
 Number of bins to average on each side of bin. As this number
 rises, so will CPU usage.
 
 
-Examples::
+examples::
 
 code::
 

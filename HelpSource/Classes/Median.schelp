@@ -3,40 +3,28 @@ summary:: Median filter.
 categories::  UGens>Filters>Nonlinear
 
 
-Description::
-
-Returns the median of the last length input points. This non-linear
+description::
+returns the median of the last length input points. This non-linear
 filter is good at reducing impulse noise from a signal.
 
 
 classmethods::
 
 method::ar, kr
-
 argument::length
-
 Number of input points in which to find the median. Must be an
 odd number from 1 to 31. If
 code::length::  is 1
 then Median has no effect.
-
-
 argument::in
-
 The input signal.
-
-
 argument::mul
-
 Output will be multiplied by this value.
-
-
 argument::add
-
 This value will be added to the output.
 
 
-Examples::
+examples::
 
 code::
 

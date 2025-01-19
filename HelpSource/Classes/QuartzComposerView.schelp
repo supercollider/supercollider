@@ -4,7 +4,7 @@ categories:: GUI>Views
 
 NOTE:: code::QuartzComposerView:: is deprecated in SC 3.13 and won't be available in subsequent versions that will use Qt 6.x. ::
 
-DESCRIPTION::
+description::
 QuartzComposerView allows for the rendering of Quartz Composer Compositions within SC on macOS. Quartz Composer is a visual programming environment for processing and rendering graphical data, which is distributed free of charge as part of Apple's XCode Development Tools. QC is highly optimised to work with the macOS graphics system, and in general should be more efficient than Pen. For more information on QC see: https://developer.apple.com/library/mac/documentation/GraphicsImaging/Conceptual/QuartzComposerUserGuide/qc_intro/qc_intro.html and http://en.wikipedia.org/wiki/Quartz_Composer
 
 You can access input and output ports using the methods setInputValue, getInputValue and getOutputValue, or (do to a slight of hand in the implementation, using the port keys as getters and setters directly. The following two lines of code are thus equivalent:
@@ -18,15 +18,15 @@ myQCView.valueIn = 1;
 INSTANCEMETHODS::
 
 METHOD::path
-Get or set the path of the currently composition as a link::Classes/String::.
+gets/sets the path of the currently composition as a link::Classes/String::.
 
 METHOD::inputKeys
-Get the keys of the current composition's input ports.
+gets the keys of the current composition's input ports.
 
 returns:: An link::Classes/Array:: of link::Classes/Symbol::s.
 
 METHOD::outputKeys
-Get the keys of the current composition's output ports.
+gets the keys of the current composition's output ports.
 
 returns:: An link::Classes/Array:: of link::Classes/Symbol::s.
 
@@ -34,38 +34,34 @@ METHOD::start
 Start rendering the loaded composition.
 
 METHOD::stop
-Stop rendering the loaded composition.
+stops rendering the loaded composition.
 
 METHOD::setInputValue
-Set the value of the input port specified by key.
-
+sets the value of the input port specified by key.
 argument::key
 A link::Classes/String:: or link::Classes/Symbol:: matching the port's key.
-
 argument::value
-The type of value must correspond to the type of the port, but Floats, Integers, and Booleans are converted if needed. (true = 1, false = 0)
+The type of value must correspond to the type of the port, but Floats, Integers, and Booleans are converted if needed. (code::true:: = 1, false = 0)
 
 METHOD::getInputValue
-Get the current value of an input port. The type of object returned will correspond to the port's type.
-
+gets the current value of an input port. The type of object returned will correspond to the port's type.
 argument::key
 A link::Classes/String:: or link::Classes/Symbol:: matching the port's key.
 
 METHOD::getOutputValue
-Get the current value of an output port. The type of object returned will correspond to the port's type.
-
+gets the current value of an output port. The type of object returned will correspond to the port's type.
 argument::key
 A link::Classes/String:: or link::Classes/Symbol:: matching the port's key.
 
 METHOD::maxFPS
-Set the maximum frames per second at which the composition will render.
+sets the maximum frames per second at which the composition will render.
 argument::rate
 A link::Classes/Float:: or link::Classes/Integer:: specifying the desired max frame rate. A value of 0 indicates no limit.
 
 METHOD::openInQC
-Open the currently loaded composition in Quartz Composer. You will need to reload the composition into the view before any saved changes take effect.
+opens the currently loaded composition in Quartz Composer. You will need to reload the composition into the view before any saved changes take effect.
 
-EXAMPLES::
+examples::
 
 code::
 ////////// Simple example

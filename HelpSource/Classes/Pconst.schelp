@@ -4,7 +4,6 @@ related:: Classes/Pfindur, Classes/Pfin, Classes/Pfinval
 categories:: Streams-Patterns-Events>Patterns>Repetition
 
 description::
-
 Similar to link::Classes/Pfindur::, but works with the value directly.
 
 note::
@@ -16,7 +15,7 @@ ClassMethods::
 method::new
 Embeds elements of the strong::pattern:: into the stream until the sum comes close enough to strong::sum::. At that point, the difference between the specified sum and the actual running sum is embedded.
 
-Examples::
+examples::
 
 code::
 (

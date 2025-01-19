@@ -1,5 +1,5 @@
 class:: Plambda
-summary:: create a scope (namespace) for enclosed streams
+summary:: creates a scope (namespace) for enclosed streams
 related:: Classes/Penvir, Classes/Pkey
 categories:: Streams-Patterns-Events>Patterns>Data Sharing
 
@@ -10,14 +10,12 @@ Used in combination with link::Classes/Plet:: and link::Classes/Pget::, it allow
 ClassMethods::
 
 method::new
-
 argument::pattern
 an event stream.
-
 argument::scope
-an event with default bindings (can be nil).
+an event with default bindings (can be code::nil::).
 
-Examples::
+examples::
 
 code::
 /*

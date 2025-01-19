@@ -3,10 +3,10 @@ summary:: Demand rate input replicator
 categories:: UGens>Demand
 
 classmethods::
-method:: new
-argument:: n
+method::new
+argument::n
 number of repeats (can be a demand ugen)
-argument:: in
+argument::in
 input ugen
 discussion::
 structurally related: link::Classes/Pdup::

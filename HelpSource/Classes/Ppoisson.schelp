@@ -6,14 +6,12 @@ categories:: Streams-Patterns-Events>Patterns>Random
 ClassMethods::
 
 method::new
-
 argument::mean
 The mean of the distribution.
-
 argument::length
 Number of values produced.
 
-Examples::
+examples::
 
 code::
 (

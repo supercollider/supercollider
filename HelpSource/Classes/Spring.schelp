@@ -8,14 +8,11 @@ models the force of a resonating spring
 
 classmethods::
 
-method:: ar, kr
-
+method::ar, kr
 argument::in
 modulated input force
-
 argument::spring
 spring constant (incl. mass)
-
 argument::damp
 damping
 

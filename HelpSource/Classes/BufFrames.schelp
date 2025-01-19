@@ -3,13 +3,12 @@ summary:: Current number of frames allocated in the buffer.
 related:: Classes/BufChannels, Classes/BufDur, Classes/BufRateScale, Classes/BufSampleRate, Classes/BufSamples
 categories::  UGens>Buffer>Info
 
-Description::
-Get the current number of allocated frames.
+description::
+gets the current number of allocated frames.
 
 classmethods::
 
 method::kr, ir
-
 argument::bufnum
 Buffer index.
 
@@ -22,7 +21,7 @@ Since a buffer can be reallocated at any time, using
 code::.ir::  will not track the changes.
 ::
 
-Examples::
+examples::
 
 code::
 

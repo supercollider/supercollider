@@ -4,7 +4,10 @@ categories:: Internals
 
 Although much of SuperCollider's functionality is implemented in the SuperCollider language itself, for reasons of efficiency, some functionality is implemented in 'back end' C++ functions called 'primitives'. This document provides guidance to members of the SC development community on writing primitives.
 
+
 section:: Example
+
+
 subsection:: SuperCollider code
 
 Primitive calls are preceded with an underscore, so for example code::_myPrimitiveName::. Here is an example call to a primitive in an SC class:
@@ -72,9 +75,10 @@ prOpenUDPPort {|portNum|
 }
 ::
 
+
 subsection:: Define your primitive
 
-In your primitive source code define the primitive:
+In your primitive source code, define the primitive:
 
 teletype::
 void initCocoaFilePrimitives()
@@ -102,6 +106,7 @@ to include the receiver which is passed in as the first argument.
 
 (TODO varArgs ...)
 
+
 subsection:: Write your primitive
 
 teletype::g->sp:: is the top of the stack and is the last argument pushed.
@@ -128,6 +133,7 @@ This example does not set the receiver, so the primitive returns the original re
 
 section:: Guidelines
 
+
 subsection:: Creating objects in primitives, and GC safety
 
 SuperCollider uses a garbage collector to manage memory allocation and collection where needed.footnote::Some SC language objects, such as numbers, boolean types, chars, and symbols are stored directly within a PyrSlot, and do not require allocation. (Symbols are a special case: A reference to a location in the global symbol table is stored, where each defined symbol is permanently stored.):: In order to meet the requirements of good real time performance, a small and bounded amount of garbage collection may be triggered each time an object is created. This consists of incrementally examining all objects and determining if they are reachable (see below) or not. Unreachable objects may have their memory reallocated to new objects.
@@ -153,7 +159,7 @@ list::
 
 SC provides a number of functions which create new objects. These include teletype::instantiateObject::, teletype::newPyrObject::, teletype::newPyrString::, and teletype::newPyrArray::. Before any calls to such functions it is crucial that all previously created objects have been made reachable. If this is not done, it is possible that such objects will be marked as strong::free::. Since a freed object's memory may not be immediately reused, problems may not arise at the time your primitive is called, leading to extremely hard to find bugs.
 
-Alternatively, most object creation functions include a teletype::bool runGC:: argument. If set to false, this will guarantee that the garbage collector does not run on this allocation. While not ideal, as it is best that GC activity is amortised to the extent possible, this option is safe, since the status of any previously created objects will not be changed.
+Alternatively, most object creation functions include a teletype::bool runGC:: argument. If set to code::false::, this will guarantee that the garbage collector does not run on this allocation. While not ideal, as it is best that GC activity is amortised to the extent possible, this option is safe, since the status of any previously created objects will not be changed.
 
 The following two examples are both safe:
 definitionlist::
@@ -165,7 +171,7 @@ SetObject(arg, array1); // make the array reachable on the stack
 PyrObject *array2 = newPyrArray(g->gc, 2, 0, true);
 ...
 ::
-##Set teletype::runGC:: to false:
+##Set teletype::runGC:: to code::false:::
 ||teletype::
 PyrSlot *arg = g->sp;
 // runGC = true
@@ -175,7 +181,7 @@ PyrObject *array2 = newPyrArray(g->gc, 2, 0, false);
 ...
 ::
 ::
-One caveat: When making a new object reachable by storing it on the stack, you must ensure that you are not overwriting objects that will be needed later in the primitive. If this is done the receiver may be collected on any future allocations. One solution is to strong::push:: the object onto the stack, and then pop it when finished, e.g.:
+One caveat: When making a new object reachable by storing it on the stack, you must ensure that you are not overwriting objects that will be needed later in the primitive. If this is done, the receiver may be collected on any future allocations. One solution is to strong::push:: the object onto the stack, and then pop it when finished, e.g.:
 teletype::
 PyrSlot *receiver = g->sp;    // get the receiver
 PyrObject *result = newPyrArray(g->gc, 2, 0, true); // create the empty array `result`
@@ -207,7 +213,7 @@ static PyrInt8Array* MsgToInt8Array ( sc_msg_iter& msg, bool runGC )
 }
 ::
 
-Setting an object into another object's internal slot (e.g. with teletype::SetObject:: or teletype::slotCopy::) also requires care. If the parent object is emphasis::black:: (reachable and examined), the GC needs to be notified of the change. For this reason, you must usually call teletype::g->gc->GCWrite(parentObject, childObject):: after using one of these methods. The emphasis::only:: exceptions to this rule are cases in which the parent object is known to be white (unexamined). This will be true if:
+Setting an object into another object's internal slot (e.g. with teletype::SetObject:: or teletype::slotCopy::) also requires care. If the parent object is emphasis::black:: (reachable and examined), the GC needs to be notified of the change. For this reason, you must usually call teletype::g->gc->GCWrite(parentObject, childObject):: after using one of these methods. The emphasis::only:: exceptions to this rule are cases in which the parent object is known to be white (unexamined). This will be code::true:: if:
 list::
 ##It is the last created object, or
 ##Any subsequently created objects were allocated with teletype::runGC = false:: (i.e. the GC cannot have run in the interim), emphasis::and::
@@ -309,7 +315,7 @@ int prMyPrimitive(struct VMGlobals* g, int numArgsPushed)
 
     PyrObject *array = newPyrArray(g->gc, 2, 0, true);
     // array->size = 0 at creation; max size is 2
-    SetObject(arg, array); // return value
+    SetObject(arg, array); // returns value
 
     // NOTE: array is now reachable on the stack, since arg refers to g->sp
 
@@ -336,12 +342,14 @@ For example the code::File:: and code::SCWindow:: classes do this by storing the
 strong::Failing to observe the above two points can result in very hard to find bugs.::
 ::
 
+
 subsection:: Type safety
 Since SC is dynamically typed, you cannot rely on any of the arguments being of the class you expect. You should check every argument to make sure it is the correct type.
 
 One way to do this is by using teletype::isKindOfSlot::. If you just want a numeric value, you can use teletype::slotIntVal::, teletype::slotFloatVal::, or teletype::slotDoubleVal:: which will return an error if the value is not a numeric type. Similarly there is teletype::slotStringVal::.
 
 It is safe to assume that the receiver will be of the correct type because this is ensured by the method dispatch mechanism.
+
 
 section:: FAQ
 

@@ -4,9 +4,8 @@ related:: Classes/BrownNoise, Classes/GrayNoise, Classes/ClipNoise, Classes/Whit
 categories::  UGens>Generators>Stochastic
 
 
-Description::
-
-Generates noise whose spectrum falls off in power by 3 dB per octave, which gives equal power over the span of each octave.
+description::
+generates noise whose spectrum falls off in power by 3 dB per octave, which gives equal power over the span of each octave.
 This version is band-limited to 8 octaves.
 
 Internally, this UGen calculates its output by means of the Voss-McCartney algorithm.
@@ -20,14 +19,12 @@ The values produced by this UGen were observed to lie with very high probability
 classmethods::
 
 method::ar, kr
-
 argument::mul
 Output will be multiplied by this value.
-
 argument::add
 This value will be added to the output.
 
-Examples::
+examples::
 
 code::
 

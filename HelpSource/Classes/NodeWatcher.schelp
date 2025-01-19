@@ -23,31 +23,29 @@ ClassMethods::
 private::initClass
 
 method::new
-Create a new instance listening to the server's address
+creates a new instance listening to the server's address
 
 method::newFrom
-Create a new instance listening to the server's address. If there is one present already return that one.
+creates a new instance listening to the server's address. If there is one present already, returns that one.
 
 method::register
-
 argument::node
 Can be a Group or a Synth. The NodeWatcher is created internally.
-
 argument::assumePlaying
-If true, the node's strong::isPlaying:: field is set to true.
+If code::true::, the node's strong::isPlaying:: field is set to code::true::.
 
 method::unregister
-Remove the node from the list of nodes. This happens also when a node is freed.
+removes the node from the list of nodes. This happens also when a node is freed.
 
 InstanceMethods::
 
 method::start
-Add the OSCFunc to listen to the address.
+adds the OSCFunc to listen to the address.
 
 method::stop
-Remove the OSCFunc to stop listen to the address.
+removes the OSCFunc to stop listen to the address.
 
-Examples::
+examples::
 
 code::
 (

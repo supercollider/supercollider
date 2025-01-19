@@ -1,9 +1,9 @@
 CLASS::Scale
-summary::represents a musical scale
+summary:: represents a musical scale
 related::Classes/Tuning
 categories::Math, Tuning
 
-DESCRIPTION::
+description::
 Scale supports arbitrary octave divisions and ratios, and (in conjunction with link::Classes/Tuning::) can generate pitch information in various ways, including as input to Patterns.
 
 code::
@@ -26,7 +26,8 @@ a.ratios.collect(_.round(0.001));	// [1, 1.125, 1.2, 1.333, 1.5, 1.667, 1.875]
 Pbind(\scale, a, \degree, Pseq((0..7) ++ (6..0) ++ [\rest], 1), \dur, 0.25).play;
 ::
 
-subsection::Creation
+
+subsection:: Creation
 
 strong::*major, *minor, *dorian, *chromatic, *todi, *hijaz, *partch_o1, etc.::
 
@@ -52,7 +53,7 @@ Scale.at(\catastrophic); // access the scale
 ::
 
 method::at
-Access from the scale repository.
+accesses from the scale repository.
 code::
 Scale.all.put(\catastrophic, Scale([0, 0.01, 0.04, 11.2]));
 Scale.at(\ionian);
@@ -60,7 +61,7 @@ Scale.newFromKey(\ionian); // access a copy of the scale for modification
 ::
 
 method::choose
-Creates a random scale from the library, constrained by size and pitchsPerOctave if desired.
+creates a random scale from the library, constrained by size and pitchsPerOctave if desired.
 code::
 Scale.choose;		// could be anything
 Scale.choose(7);	// will be a seven-note scale in its default tuning (could be any)
@@ -72,7 +73,7 @@ a.tuning.name;
 ::
 
 method::new
-Creates a Scale from scratch. strong::degrees:: should be an array of Integers or scale name. If strong::pitchesPerOctave:: is nil, will guess the most appropriate number based on degrees. strong::tuning:: can be an instance of link::Classes/Tuning:: or a symbol; if nil, will be equal temperament of pitchesPerOctave. Specify strong::descDegrees:: if the Scale should play differently when descending than when ascending; otherwise it should be nil.
+creates a Scale from scratch. strong::degrees:: should be an array of Integers or scale name. If strong::pitchesPerOctave:: is code::nil::, will guess the most appropriate number based on degrees. strong::tuning:: can be an instance of link::Classes/Tuning:: or a symbol; if code::nil::, will be equal temperament of pitchesPerOctave. Specify strong::descDegrees:: if the Scale should play differently when descending than when ascending; otherwise it should be code::nil::.
 code::
 Scale.new(#[0, 1, 3, 6, 8, 10, 11], name: "My ET12");		// will be in ET12
 Scale.new(#[0, 3, 7, 10, 15, 19, 22], name: "My Quarter-Tone");	// will be in ET24
@@ -80,26 +81,25 @@ Scale.new(#[0, 6, 17, 21, 30, 39], 43, \partch, "My Partch");
 ::
 
 method::chromatic
-
-Returns a chromatic scale for a specific tuning.
+returns a chromatic scale for a specific tuning.
 
 INSTANCEMETHODS::
 
 private::storeOn, storedKey, storeArgs, printOn
 
 method::tuning
-Sets or gets the tuning of the Scale.
+sets/gets the tuning of the Scale.
 argument::inTuning
 can be either an instance of link::Classes/Tuning:: or a symbol matching a library tuning.
 
 method::semitones
-Returns a tuned array of semitone values. link::#-as::(Array) is equivalent; link::#-as::(List) returns it as a list, etc.
+returns a tuned array of semitone values. link::#-as::(Array) is equivalent; link::#-as::(List) returns it as a list, etc.
 
 method::cents
-Returns a tuned array of cent values.
+returns a tuned array of cent values.
 
 method::ratios
-Returns a tuned array of ratios.
+returns a tuned array of ratios.
 
 method::as
 Converting. For example code::as(Array)::, code::as(List):: and code::as(LocalBuf):: which is useful for server-side work.
@@ -128,7 +128,7 @@ r.free;
 ::
 
 method::size
-Returns the length of the scale.
+returns the length of the scale.
 code::
 Scale.ionian.size; // 7
 Scale.minorPentatonic.size; // 5
@@ -137,7 +137,7 @@ Scale.partch_o1.size; // 6
 ::
 
 method::pitchesPerOctave
-Returns the size of the pitch class set from which the tuning is drawn.
+returns the size of the pitch class set from which the tuning is drawn.
 code::
 Scale.ionian.pitchesPerOctave; // 12
 Scale.minorPentatonic.pitchesPerOctave; // 12
@@ -167,20 +167,20 @@ a.wrapAt(7);	// 0
 ::
 
 method::degreeToFreq
-Returns a frequency based on current tuning and rootFreq argument.
+returns a frequency based on current tuning and rootFreq argument.
 code::
 Scale.major.degreeToFreq(2, 60.midicps, 1);		// 659.25511...
 Scale.major(\just).degreeToFreq(2, 60.midicps, 1);	// 654.06391...
 ::
 
 method::degreeToRatio
-Returns a ratio based on current tuning.
+returns a ratio based on current tuning.
 code::
 Scale.major.degreeToRatio(2, 1).round(0.001);		// 2.52
 Scale.major(\just).degreeToRatio(2, 1).round(0.001);	// 2.5
 ::
 
-EXAMPLES::
+examples::
 
 code::
 (

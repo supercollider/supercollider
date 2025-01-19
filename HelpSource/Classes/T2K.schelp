@@ -7,9 +7,8 @@ description::
 Converts audio rate trigger into control rate trigger, using the maximum trigger in the input during each control period.
 
 classmethods::
-method:: kr
-
-argument:: in
+method::kr
+argument::in
 input signal.
 
 examples::

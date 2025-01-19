@@ -2,8 +2,7 @@ CLASS:: TreeView
 summary:: A view displaying a tree of items with columns
 categories:: GUI>Views
 
-DESCRIPTION::
-
+description::
 A view that displays a hierarchy of items. It is divided into rows and column: each row represents an item, and each column represents a different data field of the items.
 
 The items are represented in code by instances of link::Classes/TreeViewItem::, returned by the various TreeView methods. Top level items are added via the TreeView interface, while child items are added via the TreeViewItem interface, which also allows to manipulate items in more detail after their creation.
@@ -23,103 +22,102 @@ PRIVATE:: prForEachColumnDataPair
 PRIVATE:: prValidItem
 
 
-SUBSECTION:: Data
+subsection:: Data
 
-METHOD:: columns
+method::columns
 	Gets or sets the number of columns (data fields) and their names. When setting a smaller number of columns than the current the extra columns will be removed, and hence all the data stored stored in those columns.
 
-	ARGUMENT::
+	argument::
 		An array of Strings for column names.
 
-METHOD:: numColumns
+method::numColumns
 	The total number of columns (data fields).
 
-METHOD:: addItem
-	Append a new top-level item.
+method::addItem
+	Appends a new top-level item.
 
-	ARGUMENT:: strings
-		An array of Strings (or nil), each for the text of one data field.
-	RETURNS::
+	argument::strings
+		An array of Strings (or code::nil::), each for the text of one data field.
+	returns:: 
 		An instance of TreeViewItem representing the new item.
 
-METHOD:: insertItem
+method::insertItem
 	Insert a new top-level item at code::index::.
 
-	ARGUMENT:: index
+	argument::index
 		The position at which to insert the item.
-	ARGUMENT:: strings
-		An array of Strings (or nil), each for the text of one data field.
-	RETURNS::
+	argument::strings
+		An array of Strings (or code::nil::), each for the text of one data field.
+	returns:: 
 		An instance of TreeViewItem representing the new item.
 
-METHOD:: removeItem
+method::removeItem
 	Remove the given code::item::. After the item is removed, any usage of the related TreeViewItems will have no effect.
 
-	ARGUMENT::
+	argument::
 		An instance of TreeViewItem.
 
-METHOD:: numItems
+method::numItems
 	The total number of items.
 
-METHOD:: clear
+method::clear
     Removes all items.
 
-METHOD:: currentItem
+method::currentItem
 	Gets or sets the currently selected item.
 
-	ARGUMENT::
+	argument::
 		An instance of TreeViewItem.
-	RETURNS::
-		An instance of TreeViewItem or nil, if no current item.
+	returns:: 
+		An instance of TreeViewItem or code::nil::, if no current item.
 
-METHOD:: itemAt
+method::itemAt
 	The item at code::index::.
 
-METHOD:: childAt
+method::childAt
 	Alias for link::#-itemAt::, provided for compatibility with TreeViewItem.
 
-METHOD:: addChild
+method::addChild
 	Alias for link::#-addItem::, provided for compatibility with TreeViewItem.
 
-METHOD:: insertChild
+method::insertChild
 	Alias for link::#-addChild::, provided for compatibility with TreeViewItem.
 
-SUBSECTION:: Appearance
 
-METHOD:: sort
+subsection:: Appearance
+
+method::sort
 	Sort items by data in code::column::. This works regardless of link::#-canSort::.
 
 	NOTE:: Sorting has no effect on the logical order of the items, it only affects how they are displayed. ::
 
-	ARGUMENT:: column
+	argument::column
 		The integer column index to sort by.
-	ARGUMENT:: descending
+	argument::descending
 		Whether to sort in descending or ascending fashion. The default is ascending.
 
-METHOD:: columnWidth
-
-	ARGUMENT:: column
+method::columnWidth
+	argument::column
 		The integer index of a column
-	RETURNS::
+	returns:: 
 		Integer width of column in pixels. If code::column:: is not in the range
 		code::0..(numColumns-1)::, returns code::-1::.
 
-METHOD:: setColumnWidth
-
-Sets the width of a column. The rightmost column must extend at least to the right bound of the
+method::setColumnWidth
+sets the width of a column. The rightmost column must extend at least to the right bound of the
 TreeView.
 
-	ARGUMENT:: column
+	argument::column
 		The integer index of the column to modify
-	ARGUMENT:: width
+	argument::width
 		Integer width in pixels
 
 PRIVATE:: background
 
 
-SUBSECTION:: Interaction
+subsection:: Interaction
 
-METHOD:: canSort
+method::canSort
 	Whether the user can sort the items by clicking on a column header.
 
 	When setting to code::true::, the items will be sorted immediately according to the current sorting column. While code::true::, the view will also automatically sort new items.
@@ -129,18 +127,16 @@ METHOD:: canSort
 	See also: link::#-sort::.
 
 
+subsection:: Actions
 
-
-SUBSECTION:: Actions
-
-METHOD:: itemPressedAction
+method::itemPressedAction
 	The object to be evaluated when a mouse button is pressed on an item, passing this view as the argument.
 
-METHOD:: onItemChanged
+method::onItemChanged
 	The object to be evaluated whenever the current item changes, passing this view as the argument.
 
 
-EXAMPLES::
+examples::
 
 CODE::
 

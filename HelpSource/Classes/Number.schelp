@@ -7,86 +7,87 @@ Number represents a mathematical quantity.
 
 instancemethods::
 
+
 subsection:: Math
 
-method:: +
+method::+
 Addition.
 
-method:: -
+method::-
 Subtraction.
 
-method:: *
+method::*
 Multiplication.
 
-method:: /
+method::/
 Division.
 
-method:: div
+method::div
 Integer division.
 
-method:: %
+method::%
 Modulo.
 
-method:: **
+method::**
 Exponentiation.
 
 
 subsection:: Polar Coordinate Support
 
-method:: rho
-Return the polar radius of the number.
+method::rho
+returns the polar radius of the number.
 
-method:: theta
-Return the polar angle of the number.
+method::theta
+returns the polar angle of the number.
 
 
 subsection:: Complex Number Support
 
-method:: real
-Return the real part of the number.
+method::real
+returns the real part of the number.
 
-method:: imag
-Return the imaginary part of the number.
+method::imag
+returns the imaginary part of the number.
 
 
 subsection:: Conversion
 
-method:: @
-Create a new link::Classes/Point:: whose x coordinate is the receiver and whose y coordinate is aNumber.
+method::@
+creates a new link::Classes/Point:: whose x coordinate is the receiver and whose y coordinate is aNumber.
 
-method:: complex
-Create a new link::Classes/Complex:: number whose real part is the receiver with the given imaginary part.
+method::complex
+creates a new link::Classes/Complex:: number whose real part is the receiver with the given imaginary part.
 
-method:: polar
-Create a new link::Classes/Polar:: number whose radius is the receiver with the given angle.
+method::polar
+creates a new link::Classes/Polar:: number whose radius is the receiver with the given angle.
 
 
 subsection:: Iteration
 
-method:: for
-Calls strong::function:: for numbers from this up to endval, inclusive, stepping each time by 1.
-argument:: endValue
+method::for
+calls strong::function:: for numbers from this up to endval, inclusive, stepping each time by 1.
+argument::endValue
 a link::Classes/Number::.
-argument:: function
+argument::function
 a link::Classes/Function:: which is passed two arguments, the first which is an number from this to
-argument:: endval, and the second which is a number from zero to the number of iterations minus one.
+argument::endval, and the second which is a number from zero to the number of iterations minus one.
 
-method:: forBy
-Calls strong::function:: for numbers from this up to endval stepping each time by step.
-argument:: endValue
+method::forBy
+calls strong::function:: for numbers from this up to endval stepping each time by step.
+argument::endValue
 a link::Classes/Number::.
-argument:: stepValue
+argument::stepValue
 a link::Classes/Number::.
-argument:: function
+argument::function
 a link::Classes/Function:: which is passed two arguments, the first which is an number from this to
 endval, and the second which is a number from zero to the number of iterations minus one.
 
-method:: forSeries
-Calls strong::function:: for numbers from this up to endval stepping each time by a step specified by second.
-argument:: second
+method::forSeries
+calls strong::function:: for numbers from this up to endval stepping each time by a step specified by second.
+argument::second
 a link::Classes/Number::.
-argument:: last
+argument::last
 a link::Classes/Number::.
-argument:: function
+argument::function
 a link::Classes/Function:: which is passed two arguments, the first which is an number from this to
 endval, and the second which is a number from zero to the number of iterations minus one.

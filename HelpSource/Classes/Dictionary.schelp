@@ -1,11 +1,11 @@
 CLASS::Dictionary
-summary::associative collection mapping keys to values
+summary:: associative collection mapping keys to values
 related::Classes/Environment, Classes/Event
 categories::Collections>Unordered
 
-DESCRIPTION::
+description::
 A Dictionary is an associative collection mapping keys to values.
-Two keys match if they are strong::equal::. (i.e. == returns true.)
+Two keys match if they are strong::equal::. (i.e. == Returns code::true::.)
 
 The contents of a Dictionary are strong::unordered::. You must not depend on the order of items in a Dictionary.
 You must only rely on equality for the keys. E.g. symbols and strings can both be used as keys because the matching is done by equality (==) and not by identity (===). For identity matching, where strings can not be used as keys, see: link::Classes/IdentityDictionary:: and link::Classes/Event::.
@@ -25,10 +25,10 @@ d.keys; // Set[]
 CLASSMETHODS::
 
 method::new
-Creates a Dictionary with an initial capacity for strong::n:: key value mappings.
+creates a Dictionary with an initial capacity for strong::n:: key value mappings.
 
 method::newFrom
-Creates a new Dictionary from another collection.
+creates a new Dictionary from another collection.
 code::
 d = Dictionary.newFrom([\a, 1, \b, 2, \c, 4]);
 ::
@@ -47,10 +47,11 @@ d = Dictionary[\a -> 1];
 
 INSTANCEMETHODS::
 
-subsection::Adding and Removing
+
+subsection:: Adding and Removing
 
 method::add
-Add strong::anAssociation:: to the Dictionary. If the key value pair already exists in the Dictionary, the key's value will be replaced.
+adds strong::anAssociation:: to the Dictionary. If the key value pair already exists in the Dictionary, the key's value will be replaced.
 code::
 (
 d = Dictionary.new;
@@ -61,7 +62,7 @@ d.add(\monkey -> 2).postln;	// Replaces the value for the key monkey with 2
 ::
 
 method::put
-Associate two objects and add them to the Dictionary.
+associates two objects and adds them to the Dictionary.
 code::
 d = Dictionary.new;
 d.put("abc", 10);
@@ -76,65 +77,66 @@ argument::value
 an object
 
 method::removeAt
-Remove the key and the value associated with it from the Dictionary.
+removes the key and the value associated with it from the Dictionary.
 code::
 d = Dictionary[\monkey -> 99];
 d.removeAt(\monkey);
 ::
 
 method::putAll
-Add all items of each argument to the dictionary.
+adds all items of each argument to the dictionary.
 code::
 d = Dictionary.new;
 d.putAll(Dictionary[\hello -> 9, \whello -> "world"], Dictionary["abd" -> 6]);
 ::
-argument:: ... dictionaries
+argument::... dictionaries
 any Object that responds to keysValuesDo (usually a Dictionary).
 
 method::putPairs
-Add all items to the dictionary, using them as key and value pairwise.
+adds all items to the dictionary, using them as key and value pairwise.
 code::
 d = Dictionary.new;
 d.putPairs([\hello, 10, \whello, "lord", "abc", 7]);
 ::
 
-subsection::Accessing
+
+subsection:: Accessing
 
 method::at
-Access the value associated with the key.
+accesses the value associated with the key.
 code::
 d = Dictionary[\robot -> 99];
 d.at(\robot);	// Get the value associated with key
 d[\robot];	// different syntax, same behaviour
-d.at(\monkey);	// Key doesn't exist: return Nil
+d.at(\monkey);	// Key doesn't exist: returns Nil
 ::
 
 method::atFail
-Access the value associated with the key. If the key does not exist, return the result of teletype::function::.
+accesses the value associated with the key. If the key does not exist, returns the result of teletype::function::.
 
 method::keys
-Return a link::Classes/Set:: of all keys.
+returns a link::Classes/Set:: of all keys.
 code::
 d = Dictionary.newFrom([\hello, 9, \whello, "world"]);
 d.keys;
 ::
 
 method::values
-Return a link::Classes/List:: of all values.
+returns a link::Classes/List:: of all values.
 code::
 d = Dictionary.newFrom([\hello, 9, \whello, "world"]);
 d.values;
 ::
 
 method::atAll
-Return an link::Classes/Array:: of all values for the given keys.
+returns an link::Classes/Array:: of all values for the given keys.
 code::
 d = Dictionary.newFrom([\hello, 9, \whello, "world", \z, 99, \c, 0.33]);
 d.atAll([\hello, \z, \hello, \c, \whello]);
 ::
 
 method::getPairs
-Return an link::Classes/Array:: with all keys and values pairwise.
+returns an link::Classes/Array:: with all keys and values pairwise.
 
 discussion::
 
@@ -143,7 +145,7 @@ d = Dictionary.newFrom([\hello, 9, \whello, 77, \z, 99]);
 d.getPairs;
 ::
 
-Note that, unlike link::#-asPairs::, getPairs will return nil with an empty Dictionary.
+Note that, unlike link::#-asPairs::, getPairs will return code::nil:: with an empty Dictionary.
 
 code::
 d = Dictionary.new;
@@ -151,14 +153,14 @@ d.getPairs;
 ::
 
 method::associationAt
-Access the link::Classes/Association:: that has the given key. Element is checked for equality (not identity).
+accesses the link::Classes/Association:: that has the given key. Element is checked for equality (not identity).
 code::
 d = Dictionary["robot" -> 99];
 d.associationAt("robot");	// Get the value associated with key
 ::
 
 method::findKeyForValue
-Try to find a given value and return its key. Element is checked for equality (not identity).
+Try to find a given value and returns its key. Element is checked for equality (not identity).
 code::
 d = Dictionary.newFrom([\hello, 1, \whello, 77]);
 d.findKeyForValue(1);
@@ -166,14 +168,14 @@ d.findKeyForValue(1);
 
 method::matchAt
 The dictionary's keys are used as conditions against which the arbitrary item is matched. See: link::Reference/matchItem::
-Returns the associated value or nil if no key is matching the item.
+Returns the associated value or code::nil:: if no key is matching the item.
 note::
 if an item matches multiple criteria, the value returned is arbitrary. This is because a dictionary is an unordered collection. It's the user's responsibility to make sure that criteria are mutually exclusive.
 ::
 list::
 ## If the key is an object, the item will be matched by identity (if key === item, the value will be returned).
 ## If the key is a collection, the item is matched if it's contained in the collection.
-## If the key is a function, the function is evaluated with the item as an argument and the item is matched if the function returns true.
+## If the key is a function, the function is evaluated with the item as an argument and the item is matched if the function Returns code::true::.
 ::
 code::
 (
@@ -193,7 +195,7 @@ d.matchAt(\abc)
 ::
 
 method::trueAt
-Returns link::Classes/True:: if the item's teletype::booleanValue:: at the key is teletype::true::, otherwise teletype::false::.
+returns link::Classes/True:: if the item's teletype::booleanValue:: at the key is teletype::true::, otherwise teletype::false::.
 
 code::
 // using binary value equivalents
@@ -212,27 +214,28 @@ d.trueAt(\bar) // false (d[\bar] is nil)
 ::
 
 method::falseAt
-Returns link::Classes/True:: if the item's teletype::booleanValue:: at the key is teletype::false::, otherwise teletype::true::.
+returns link::Classes/True:: if the item's teletype::booleanValue:: at the key is teletype::false::, otherwise teletype::true::.
 See link::#-trueAt:: for examples.
 
 
-subsection::Testing
+subsection:: Testing
 
 method::includes
-Returns true if the specified item is stored in the Dictionary as a value. Element is checked for equality (not for identity). For identity matching see subclasses: link::Classes/IdentityDictionary:: or link::Classes/Event::.
+returns code::true:: if the specified item is stored in the Dictionary as a value. Element is checked for equality (not for identity). For identity matching see subclasses: link::Classes/IdentityDictionary:: or link::Classes/Event::.
 code::
 var d = Dictionary.newFrom([\a, "hey", \b, "hello"]);
 d.includes("hey").postln; // -> true
 ::
 
 method::includesKey
-Returns true if the specified item is stored in the Dictionary as a key. Element is checked for equality (not for identity). For identity matching see subclasses: link::Classes/IdentityDictionary:: or link::Classes/Event::.
+returns code::true:: if the specified item is stored in the Dictionary as a key. Element is checked for equality (not for identity). For identity matching see subclasses: link::Classes/IdentityDictionary:: or link::Classes/Event::.
 code::
 var d = Dictionary.newFrom(["hey", 1, "hello", 2]);
 d.includesKey("hey").postln; // -> true
 ::
 
-subsection::Iteration/Enumeration
+
+subsection:: Iteration/Enumeration
 Most methods for iteration work analogously to Dictionary's superclasses, see e.g. link::Classes/Collection::.
 
 method::do, collect, reject, select
@@ -246,14 +249,14 @@ d.select { |item| item.size > 4 };
 ::
 
 method::keysValuesDo
-Iterate over the associations, and evaluate the function for each, passing key and value as argument.
+iterates over the associations, and evaluate the function for each, passing key and value as argument.
 code::
 d = Dictionary[\a -> "hello", \b -> "robot", \c -> [1, 2, 3]];
 d.keysValuesDo { |key, value| postln("the key: " ++ key ++ " the value: " ++ value) };
 ::
 
 method::keysValuesChange
-Iterate over the associations, and evaluate the function for each, passing key and value as argument. Replace the value with the return value from the function (similar to link::#-collect::, but modifies the dictionary strong::in place::).
+iterates over the associations, and evaluate the function for each, passing key and value as argument. Replace the value with the return value from the function (similar to link::#-collect::, but modifies the dictionary strong::in place::).
 code::
 d = Dictionary[\a -> "hello", \b -> "robot", \c -> [1, 2, 3]];
 d.keysValuesChange { |key, value| "the key: " ++ key ++ " the value: " ++ value };
@@ -261,33 +264,34 @@ d;
 ::
 
 method::keysDo
-Iterate over the associations, and evaluate the function for each, passing key as argument.
+iterates over the associations, and evaluate the function for each, passing key as argument.
 code::
 d = Dictionary[\a -> "hello", \b -> "robot", \c -> [1, 2, 3]];
 d.keysDo { |key| postln("the key: " ++ key) };
 ::
 
 method::associationsDo
-Iterate over the associations, and evaluate the function for each.
+iterates over the associations, and evaluate the function for each.
 code::
 d = Dictionary[\a -> "hello", \b -> "robot", \c -> [1, 2, 3]];
 d.associationsDo { |assoc| postln("the association: " ++ assoc) };
 ::
 
 method::pairsDo
-Iterate over the associations, and evaluate the function for each, passing key and value as argument. Identical to link::#-keysValuesDo::
+iterates over the associations, and evaluate the function for each, passing key and value as argument. Identical to link::#-keysValuesDo::
 
 method::invert
-Return a new dictionary with all the values as keys and vice versa.
+returns a new dictionary with all the values as keys and vice versa.
 code::
 d = Dictionary[\a -> "hello", \b -> "robot", \c -> [1, 2, 3]];
 d.invert;
 ::
 
-subsection::Other instance methods
+
+subsection:: Other instance methods
 
 method::order
-Return an array of keys which corresponds to the order of the values of the dictionary.
+returns an array of keys which corresponds to the order of the values of the dictionary.
 code::
 d = Dictionary[\a -> 5, \b -> 7, \c -> 1, \d -> 0];
 d.order;
@@ -295,14 +299,14 @@ d.atAll(d.order);	// returns items in order
 ::
 
 method::powerset
-Return the set of all subsets: here an array of all sub-dictionaries.
+returns the set of all subsets: here an array of all sub-dictionaries.
 code::
 d = Dictionary[\a -> 5, \b -> 7, \c -> 1, \d -> 0];
 d.powerset;
 ::
 
 method::merge
-Combine two dictionaries into a new one by applying a function to each value. If strong::fill:: is true (default: true), values missing from one of them are kept as they are.
+combines two dictionaries into a new one by applying a function to each value. If strong::fill:: is code::true:: (default: true), values missing from one of them are kept as they are.
 code::
 d = Dictionary[\a -> 5, \b -> 7, \d -> 0];
 e = Dictionary[\a -> 3, \b -> -3, \c -> 1];
@@ -317,7 +321,7 @@ argument::fill
 a link::Classes/Boolean::.
 
 method::blend
-Blend two dictionaries into a new one by interpolating each value. If strong::fill:: is true (default: true), values missing from one of them are kept as they are.
+blends two dictionaries into a new one by interpolating each value. If strong::fill:: is code::true:: (default: true), values missing from one of them are kept as they are.
 code::
 d = Dictionary[\a -> 5, \b -> 7, \d -> 0];
 e = Dictionary[\a -> 3, \b -> -3, \c -> 1];
@@ -338,21 +342,21 @@ argument::specs
 a dictionary of link::Classes/Spec::s that are applied to each before blending.
 
 method::asSortedArray
-Return the values in a sorted array of key value pairs. Sorted by key.
+returns the values in a sorted array of key value pairs. Sorted by key.
 code::
 d = Dictionary[\a -> 5, \b -> 7, \c -> 1, \d -> 0];
 d.asSortedArray;
 ::
 
 method::asDict
-If no arguments are passed, return itself.  This is part of the link::Reference/Key-Value-Pairs:: interface.
+If no arguments are passed, returns itself.  This is part of the link::Reference/Key-Value-Pairs:: interface.
 argument::mergeFunc
 This argument is not used, but exists to make the method compatible with link::Classes/Collection#-asDict::.
 argument::class
 A dictionary class to convert to, if given (conversion is done via code::newFrom::).
 
 method::asPairs
-Return the values in an array of alternating key value pairs, like code::[\freq, 1848, \amp, 0.2]::.  This is part of the link::Reference/Key-Value-Pairs:: interface.
+returns the values in an array of alternating key value pairs, like code::[\freq, 1848, \amp, 0.2]::.  This is part of the link::Reference/Key-Value-Pairs:: interface.
 argument::class
 The class of the collection to be returned. By default this is an link::Classes/Array::.
 
@@ -375,11 +379,10 @@ See link::#-asPairs::.
 
 
 method::embedInStream
-
 argument::event
 The inval, usually in an event stream. See also link::Classes/Event::.
 
-If the event is not nil, yields a copy, adding all the elements of the receiver event (this leaves the receiver unchanged). If it is nil, return the receiver.
+If the event is not code::nil::, yields a copy, adding all the elements of the receiver event (this leaves the receiver unchanged). If it is code::nil::, returns the receiver.
 
 Because this pattern is mostly used in the context of events, the following code examples use the shortcut for the subclass link::Classes/Event:: instead of the Dictionary.
 
@@ -432,13 +435,15 @@ d.rout.((z: 1, a: 0));
 d.rout.(());
 ::
 
-SECTION::Overview
 
-subsection::The Difference between Dictionary, IdentityDictionary, Environment, and Event
+section:: Overview
+
+
+subsection:: The Difference between Dictionary, IdentityDictionary, Environment, and Event
 
 Often, the subclass link::Classes/Event:: is used as an IdentityDictionary, because there is a syntactical shortcut:
 code::
-a = (foo: 7);	// return a new Event.
+a = (foo: 7);	// returns a new Event.
 a.put(\foo, 2.718);
 a.at(\foo);
 a[\foo] = 3.5;	// different syntax for put

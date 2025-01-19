@@ -4,8 +4,7 @@ related:: Classes/NumAudioBuses, Classes/NumControlBuses, Classes/NumBuffers, Cl
 categories::  UGens>Info
 
 
-Description::
-
+description::
 Number of currently running synths.
 
 
@@ -13,7 +12,7 @@ classmethods::
 
 method::ir
 
-Examples::
+examples::
 
 code::
 

@@ -3,7 +3,7 @@ summary:: The default dispatcher for MIDIFunc's and MIDIdef's set to respond to 
 categories:: External Control>MIDI>Dispatchers
 related:: Classes/MIDIFunc, Classes/MIDIdef, Classes/AbstractWrappingDispatcher, Classes/AbstractDispatcher, Classes/MIDIMessageDispatcher, Classes/AbstractMessageMatcher, Classes/MIDIFuncSrcMessageMatcher, Classes/MIDIFuncChanMessageMatcher, Classes/MIDIFuncChanArrayMessageMatcher, Classes/MIDIFuncSrcMessageMatcherNV, Classes/MIDIFuncBothMessageMatcher, Classes/MIDIFuncBothCAMessageMatcher, Guides/MIDI
 
-DESCRIPTION::
+description::
 MIDIMessageDispatcherNV is used to dispatch incoming MIDI touch, program, and bend messages to matching functions. Normally users should not have to create or message instances of this class directly.
 
 
@@ -12,28 +12,23 @@ CLASSMETHODS::
 
 INSTANCEMETHODS::
 
-METHOD:: getKeysForFuncProxy
-Get the keys at which a responder func's functions are stored in this dispatcher's active dictionary. The keys will be MIDI channels.
-
-argument:: funcProxy
+method::getKeysForFuncProxy
+gets the keys at which a responder func's functions are stored in this dispatcher's active dictionary. The keys will be MIDI channels.
+argument::funcProxy
 The link::Classes/MIDIFunc:: or link::Classes/MIDIdef:: whose keys should be returned.
 
 returns:: An link::Classes/Array:: containing the funcProxy's channel number as an link::Classes/Integer::.
 
-METHOD:: value
+method::value
 Attempt to match an incoming MIDI message with this dispatcher's responder funcs, and evaluate their functions for all matches found.
-
-argument:: src
+argument::src
 The UID of the source of the MIDI message as an link::Classes/Integer::.
-
-argument:: chan
+argument::chan
 The channel number of the MIDI message as an link::Classes/Integer::. Note this should be in the range 0-15.
-
-argument:: val
+argument::val
 The message value (e.g. velocity, etc.) of the MIDI message as an link::Classes/Integer::. Note this should be in the range 0-127.
 
-METHOD:: wrapFunc
+method::wrapFunc
 Called internally to wrap functions in message matcher objects, if needed.
-
-argument:: funcProxy
+argument::funcProxy
 An instance of link::Classes/MIDIFunc:: or link::Classes/MIDIdef:: whose function(s) are to be wrapped.

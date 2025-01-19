@@ -6,12 +6,12 @@ categories:: Streams-Patterns-Events>Patterns>List
 description::
 Like link::Classes/Prand::, returns one item from the list at random for each repeat, but Pxrand never repeats the same element twice in a row.
 
-Examples::
+examples::
 
 code::
 (
 var a, b;
-a = Pxrand.new(#[1, 2, 3], 10);	// return 10 items
+a = Pxrand.new(#[1, 2, 3], 10);	// returns 10 items
 b = a.asStream;
 11.do({ b.next.postln });
 )

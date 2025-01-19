@@ -8,12 +8,12 @@ FlowLayout is a decorator which automatically arranges views inside a container 
 
 classmethods::
 
-method:: new
-argument:: bounds
+method::new
+argument::bounds
 An instance of link::Classes/Rect::. Normally set to the code::parent.bounds::.
-argument:: margin
+argument::margin
 An instance of link::Classes/Point::. The horizontal and vertical inner margins, within which the parent's subviews are placed.
-argument:: gap
+argument::gap
 An instance of link::Classes/Point::. The horizontal and vertical layout gap between the subviews.
 
 discussion::
@@ -37,9 +37,10 @@ w.addFlowLayout(10@10, 20@5); // a shortcut method, see SCContainerView
 
 instancemethods::
 
+
 subsection:: Accessing Instance Variables
 
-method:: nextLine
+method::nextLine
 Forces the decorator to start a new line:
 code::
 (
@@ -52,8 +53,8 @@ w.front;
 )
 ::
 
-method:: indentedRemaining
-Returns and instance of link::Classes/Rect::. This is a very useful method which tells you how much space is left in a row, before the next row starts. The height of code::indentedRemaining::, is the full height remaining in the FlowLayout.
+method::indentedRemaining
+returns and instance of link::Classes/Rect::. This is a very useful method which tells you how much space is left in a row, before the next row starts. The height of code::indentedRemaining::, is the full height remaining in the FlowLayout.
 code::
 (
 // normally you will only use the width of indentedRemaining
@@ -79,22 +80,22 @@ w.front;
 )
 ::
 
-method:: bounds
+method::bounds
 The outer bounds in which the decorator places the subviews in the parent view.
-argument:: b
+argument::b
 An instance of link::Classes/Rect::.
 
-method:: innerBounds
-Returns the bounds inset by margin.
+method::innerBounds
+returns the bounds inset by margin.
 
-method:: gap
+method::gap
 The horizontal and vertical layout gap between the subviews.
-argument:: arg1
+argument::arg1
 An instance of link::Classes/Point::.
 
-method:: margin
+method::margin
 The horizontal and vertical inner margins, within which the parent's subviews are placed.
-argument:: arg1
+argument::arg1
 An instance of link::Classes/Point::.
 
 
@@ -102,9 +103,9 @@ subsection:: Subclassing and Internal Methods
 
 The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
 
-method:: left
-Get the current left indentation or manually set it.
-argument:: arg1
+method::left
+gets the current left indentation or manually set it.
+argument::arg1
 A number.
 discussion::
 code::
@@ -118,9 +119,9 @@ w.front;
 )
 ::
 
-method:: top
-Get the current top indentation or manually set it.
-argument:: arg1
+method::top
+gets the current top indentation or manually set it.
+argument::arg1
 A number.
 discussion::
 code::
@@ -135,12 +136,12 @@ w.front;
 )
 ::
 
-method:: shift
-Set the current left and top indentation (see above).
+method::shift
+sets the current left and top indentation (see above).
 
-method:: maxHeight
-Get/set maximium height of the subviews in the current position.
-argument:: arg1
+method::maxHeight
+gets/sets maximium height of the subviews in the current position.
+argument::arg1
 A number.
 discussion::
 code::
@@ -156,9 +157,9 @@ w.front;
 )
 ::
 
-method:: maxRight
-Get/set maximium right of the subviews in the current position.
-argument:: arg1
+method::maxRight
+gets/sets maximium right of the subviews in the current position.
+argument::arg1
 A number.
 discussion::
 code::
@@ -174,8 +175,8 @@ w.front;
 )
 ::
 
-method:: currentBounds
-Gets a link::Classes/Rect:: with code::bounds.width:: and code::height = top + maxHeight::.
+method::currentBounds
+gets a link::Classes/Rect:: with code::bounds.width:: and code::height = top + maxHeight::.
 discussion::
 code::
 (
@@ -191,8 +192,8 @@ w.front;
 )
 ::
 
-method:: used
-Gets a link::Classes/Rect:: with the space actually used.
+method::used
+gets a link::Classes/Rect:: with the space actually used.
 discussion::
 code::
 (
@@ -208,5 +209,5 @@ w.front;
 )
 ::
 
-method:: reset
+method::reset
 Resets the layout mechanism to 0,0.

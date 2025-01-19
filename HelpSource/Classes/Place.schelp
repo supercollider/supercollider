@@ -4,10 +4,9 @@ related:: Classes/Ppatlace
 categories:: Streams-Patterns-Events>Patterns>List
 
 description::
+returns elements in the list. If an element is an array itself, it embeds the first element when it comes by first time, the second element when it comes by the second time... The nth when it comes by the nth time.
 
-Returns elements in the list. If an element is an array itself, it embeds the first element when it comes by first time, the second element when it comes by the second time... The nth when it comes by the nth time.
-
-Examples::
+examples::
 
 code::
 (

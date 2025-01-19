@@ -4,8 +4,7 @@ related:: Classes/Peak, Classes/PeakFollower, Classes/OSCFunc
 categories::  UGens>Analysis>Amplitude
 
 
-DESCRIPTION::
-
+description::
 The SendPeakRMS unit generator computes peak and power of a signal and sends the
 computed values back to the clients. It does not produce any output.
 
@@ -16,39 +15,28 @@ private:: new1
 
 
 method::ar, kr
-
 Unlike with other unit generators, the code::ar:: and code::kr:: methods do not
 specify the rate of the computation, but the granularity. When the SendPeakRMS ugen
 is instantiated with code::kr::, the reply rate is quantized to control-rate
 blocks.
-
 argument::sig
-
 The input signal.
-
 argument::replyRate
-
 Float or Integer. Specifies the number of replies that are sent to the clients
 per second.
-
 argument::peakLag
-
 Float or Integer. Lag time, which is applied to the peak values. This option is
 commonly used for GUI VU meters.
-
 argument::cmdName
-
 Symbol or String. Address pattern for reply message.
-
 argument::replyID
-
 Integer ID (similar to link::Classes/SendTrig::).
 
 INSTANCEMETHODS::
 private:: numOutputs, writeOutputSpecs
 
 
-EXAMPLES::
+examples::
 
 code::
 (

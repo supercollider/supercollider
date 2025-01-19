@@ -5,6 +5,7 @@ related:: Classes/Server, Classes/TempoClock
 
 To ensure correct timing of events on the server, OSC messages may be sent with a time stamp, indicating the precise time the sound is expected to hit the hardware output.
 
+
 section:: Latency
 
 In the SuperCollider language, the time stamp is generated behind the scenes based on a parameter called "latency."

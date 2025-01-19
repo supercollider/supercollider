@@ -12,7 +12,8 @@ For more examples see: link::Tutorials/JITLib/proxyspace_examples::, link::Tutor
 
 For GUI overview, see link::Classes/ProxyMixer::. See link::Classes/NodeProxy:: for many relevant methods.
 
-subsection::First Example
+
+subsection:: First Example
 
 code::
 s.boot;
@@ -36,16 +37,14 @@ ClassMethods::
 
 private::initClass
 
-subsection::Creation
+
+subsection:: Creation
 
 method::new
-
 argument::server
 a link::Classes/Server:: object. Note that on remote computers the clock must be in sync.
-
 argument::name
 a link::Classes/Symbol::. If a name is given, the proxy space is strong::stored:: in code::ProxySpace.all:: under this name.
-
 argument::clock
 for event-based or beat-sync playing use a link::Classes/TempoClock::.
 
@@ -58,21 +57,19 @@ method::pop
 restore the previous currentEnvironment
 
 method::clearAll
-clear all registered spaces
+clears all registered spaces
 
 InstanceMethods::
 
-subsection::Play back and access
+
+subsection:: Play back and access
 
 method::play
 returns a group that plays the link::Classes/NodeProxy:: at that strong::key::.
-
 argument::key
 a link::Classes/Symbol::
-
 argument::out
 output channel offset
-
 argument::numChannels
 play this number of channels.
 
@@ -86,57 +83,60 @@ method::wakeUp
 when the proxyspace is created without a running server this method can be used. To run it (internally this is done by link::#-play:: as well).
 
 method::fadeTime
-set the fadetime of all proxies as well as the default fade time
+sets the fadetime of all proxies as well as the default fade time
 
 method::clock
-set the clock of all proxies as well as the default clock.
+sets the clock of all proxies as well as the default clock.
 
 method::quant
-set the quant of all proxies as well as the default quant.
+sets the quant of all proxies as well as the default quant.
 
 method::free
-free all proxies (i.e. free also the groups, do not stop the monitors)
+frees all proxies (i.e. free also the groups, do not stop the monitors)
 
 method::release
 release all proxies (i.e. keep the groups running)
 
 method::stop
-stop all proxies (stop only monitors, do not stop synths)
+stops all proxies (stop only monitors, do not stop synths)
 
 method::end
 end all proxies (free and stop the monitors)
 
 method::clear
-clear all proxies and remove them from the environment. This frees all buses. If a fadeTime is given, first fade out, then clear.
+clears all proxies and remove them from the environment. This frees all buses. If a fadeTime is given, first fades out, then clears.
 
 method::add
-add the ProxySpace to the repository (name required)
+adds the ProxySpace to the repository (name required)
 
 method::remove
-remove the ProxySpace from the repository
+removes the ProxySpace from the repository
 
-subsection::Setting the sources
+
+subsection:: Setting the sources
 
 The strong::rate:: and strong::numChannels:: of the link::Classes/NodeProxy:: determined in a lazy way from the first object put into this environment (see helpfile). Once it is created it can only be set to a function that returns the same rate and a number of channels equal to the intial one or smaller. For details, see link::Tutorials/JITLib/the_lazy_proxy::.
 
 method::put
-Gets the NodeProxy at strong::key:: (if none exists, returns a new one) and sets its source to strong::obj::. For how this works, see also link::Classes/LazyEnvir:: and link::Classes/NodeProxy::.
+gets the NodeProxy at strong::key:: (if none exists, returns a new one) and sets its source to strong::obj::. For how this works, see also link::Classes/LazyEnvir:: and link::Classes/NodeProxy::.
 
 method::at
-Return the proxy source object at that key.
+returns the proxy source object at that key.
 
-subsection::garbage collecting
+
+subsection:: garbage collecting
 
 method::clean
-free and remove all proxies that are not needed in order to play the ones passed in with 'exclude'. if none are passed in, all proxies that are monitoring (with the .play message) are kept as well as their parents etc.
+frees and remove all proxies that are not needed in order to play the ones passed in with 'exclude'. if none are passed in, all proxies that are monitoring (with the .play message) are kept as well as their parents etc.
 
 method::reduce
-free all proxies that are not needed in order to play the ones passed in with 'to'. if none are passed in, all proxies that are monitored (with the play message) are kept as well as their parents etc.
+frees all proxies that are not needed in order to play the ones passed in with 'to'. if none are passed in, all proxies that are monitored (with the play message) are kept as well as their parents etc.
 
-subsection::making copies
+
+subsection:: making copies
 
 method::copy
-Copies the environment into a new one, with each proxy being copied as well (See: link::Classes/NodeProxy#-copy::). Also the instance variables that determine the ProxySpace behaviour are included, such as server, fadeTime, quant, reshaping (this happens in the code::copyState:: method).
+copies the environment into a new one, with each proxy being copied as well (See: link::Classes/NodeProxy#-copy::). Also the instance variables that determine the ProxySpace behaviour are included, such as server, fadeTime, quant, reshaping (this happens in the code::copyState:: method).
 
 code::
 p = ProxySpace.push(s.boot);
@@ -156,22 +156,18 @@ p.end; q.end;
 ::
 
 
-subsection::Writing code
+subsection:: Writing code
 
 method::document
 creates a new document with the current proxyspace state. This does not allow open functions as proxy sources. see: link::Tutorials/JITLib/jitlib_asCompileString::.
-
 argument::keys
 list of keys to document a subset of proxies
-
 argument::onlyAudibleOutput
 a boolean.
-
 argument::includeSettings
 a boolean.
 
 method::asCode
-
 If proxyspace is globally accessible, this posts a code string that can access it.
 
 code::
@@ -185,7 +181,7 @@ Ndef.all[\localhost]; // access that proxyspace
 Ndef.all[\localhost].asCode; // posts as valid code
 ::
 
-Examples::
+examples::
 
 code::
 // ProxySpace returns instances of NodeProxy:

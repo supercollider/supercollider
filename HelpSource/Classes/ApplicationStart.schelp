@@ -4,7 +4,6 @@ related:: Classes/StartUp, Classes/ServerBoot
 categories:: Control, Platform>macOS
 
 description::
-
 Available in macOS SuperCollider.app only.
 
 ApplicationStart allows you to register functions or objects to perform an action only  on application start.
@@ -18,12 +17,12 @@ method::add
 Registers an object or function. Objects will be receive a strong::doOnApplcationStart:: message on application start. Functions will be evaluated.
 
 method::remove
-Removes a function that was previously registered.
+removes a function that was previously registered.
 
 method::run
-Evaluates the functions or objects in order.
+evaluates the functions or objects in order.
 
-Examples::
+examples::
 
 code::
 SomeStartClass {

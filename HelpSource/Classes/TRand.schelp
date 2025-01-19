@@ -4,9 +4,8 @@ related:: Classes/ExpRand, Classes/IRand, Classes/LinRand, Classes/NRand, Classe
 categories:: UGens>Random, UGens>Triggers
 
 
-Description::
-
-Generates a random float value in uniform distribution from
+description::
+generates a random float value in uniform distribution from
 code::lo::  to  code::hi::  each time the
 trigger signal changes from nonpositive to positive values.
 
@@ -14,20 +13,16 @@ trigger signal changes from nonpositive to positive values.
 classmethods::
 
 method::ar, kr
-
 argument::lo
 Lower limit of the output range.
-
 argument::hi
 Upper limit of the output range.
-
 argument::trig
-
 The trigger. Trigger can be any signal. A trigger happens when
 the signal changes from non-positive to positive.
 
 
-Examples::
+examples::
 
 code::
 

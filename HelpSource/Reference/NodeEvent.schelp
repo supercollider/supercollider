@@ -17,36 +17,38 @@ g.release;
 g.stop;
 ::
 
-subsection::Interface
 
-method:: play
+subsection:: Interface
+
+method::play
 starts synth or group, returns this.delta
-method:: stop
+method::stop
 if ev[\hasGate] == true set gate to 0, otherwise frees the node
-method:: pause
+method::pause
 disables the node
-method:: resume
+method::resume
 reenables the node
-method:: set ( key, value)
+method::set ( key, value)
 sets control identified by key to value
-method:: split
+method::split
 returns an array of events, one for each synth or group specified by the receiver
-method:: map (key, busID)
+method::map (key, busID)
 maps control to control bus
-method:: before (nodeID)
+method::before (nodeID)
 moves to immediately before nodeID
-method:: after (nodeID)
+method::after (nodeID)
 moves to immediately after nodeID
-method:: headOf (nodeID)
+method::headOf (nodeID)
 moves to immediately to head of nodeID
-method:: tailOf (nodeID)
+method::tailOf (nodeID)
 moves to immediately to tail of nodeID
+
 
 subsection:: Multi-channel expansion
 With the exception of ~server, ~latency, and ~instrument any key in the event can have an array as a
 value and the standard rules of multi-channel expansion will be followed.
 
-Examples::
+examples::
 
 code::
 // Here is a simple example of its use:

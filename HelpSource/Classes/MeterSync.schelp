@@ -3,8 +3,7 @@ summary:: Synchronize barlines of SuperCollider LinkClock peers
 categories:: Scheduling>Clocks
 related:: Classes/LinkClock
 
-DESCRIPTION::
-
+description::
 This class implements additional network messaging, beyond the Ableton Link protocol, to ensure that SuperCollider link::Classes/LinkClock:: peers follow the same meter (beatsPerBar) and barlines as other LinkClock peers.
 
 This class, or the associated methods link::Classes/LinkClock#-enableMeterSync:: and link::Classes/LinkClock#-disableMeterSync::, should be used for performances where all linked machines should follow the same meter emphasis::and:: the meter will change during the performance.
@@ -16,7 +15,7 @@ In theory, MeterSync may be used with any SuperCollider clock that answers the m
 note:: This class considers only the barline positions of SuperCollider LinkClock peers! Other Link-capable applications do not implement this protocol. ::
 
 
-Subsection:: Background
+subsection:: Background
 
 SuperCollider defines emphasis::meter:: using two numbers:
 
@@ -38,41 +37,35 @@ code::MeterSync:: resolves this by querying other SuperCollider Link peers for t
 
 CLASSMETHODS::
 
-METHOD:: new
-Returns a new instance, associated with a specific clock object.
-
-ARGUMENT:: clock
+method::new
+returns a new instance, associated with a specific clock object.
+argument::clock
 The clock which this instance controls.
-
-ARGUMENT:: id
+argument::id
 Optional. An integer, uniquely identifying this instance. If not provided, a random integer will be chosen.
-
-ARGUMENT:: ports
+argument::ports
 Optional. An array of port numbers to which sync messages will be sent. (sclang instances normally use port 57120, but if that port is in use, they will try 57121 and so on, successively. The default here is to try all of 57120-57127.)
 
 
 INSTANCEMETHODS::
 
-METHOD:: free
+method::free
 Release this instance, disabling metric sync for the associated clock.
 
 
-METHOD:: resyncMeter
+method::resyncMeter
 Adjust the clock's barline position to match other SuperCollider peers on the network.
-
-ARGUMENT:: round
+argument::round
 Optional. Force a specific subdivision: round = 1 assumes quarter-notes as the metric base; round = 0.5 assumes eighth-notes (e.g. 5/8 time). If not provided, it will be calculated based on the incoming beatsPerBar values from other peers.
-
-ARGUMENT:: verbose
-Boolean. If false, suppress information messages.
+argument::verbose
+Boolean. If code::false::, suppress information messages.
 
 returns:: The instance.
 
 
-METHOD:: queryMeter
+method::queryMeter
 Query metrical information from other peers, and collect the results. Normally, you should not need to call this method. It is provided in case you want to verify sync, or implement a custom behavior.
-
-ARGUMENT:: action
+argument::action
 A function to evaluate, after the results have been obtained. Results are passed to this function as an argument: a List of Events containing:
 
 list::
@@ -82,32 +75,28 @@ list::
 ## baseBarBeat: The remote clock's metrical base.
 ## beatInBar: The remote clock's metrical position within the bar.
 ## queriedAtBeat: The emphasis::querying:: clock's query time, in beats.
-## syncMeter: Boolean. If true, the remote clock is syncing barlines. If false, the remote clock has an answering MeterSync object, but it is disabled.
+## syncMeter: Boolean. If code::true::, the remote clock is syncing barlines. If code::false::, the remote clock has an answering MeterSync object, but it is disabled.
 ::
-
-ARGUMENT:: timeout
+argument::timeout
 Float. A number of seconds to wait for replies. (It will always wait for the entire timeout period. LinkClock knows its link::Classes/LinkClock#-numPeers::, but only SuperCollider peers will answer queries, and there is no way to know how many of the peers are SuperCollider.)
 
 returns:: The instance. Replies are asynchronous; use the code::action:: function to respond.
 
-METHOD:: id
-Get the integer ID uniquely identifying this instance. The ID is set at initialization time (link::Classes/LinkClock#-enableMeterSync:: or link::#*new::). To change it, free the current instance and create a new one.
+method::id
+gets the integer ID uniquely identifying this instance. The ID is set at initialization time (link::Classes/LinkClock#-enableMeterSync:: or link::#*new::). To change it, free the current instance and create a new one.
 
-METHOD:: ports
-Get the array of ports to which sync messages will be sent. The ports are set at initialization time (link::Classes/LinkClock#-enableMeterSync:: or link::#*new::). To change them, free the current instance and create a new one.
+method::ports
+gets the array of ports to which sync messages will be sent. The ports are set at initialization time (link::Classes/LinkClock#-enableMeterSync:: or link::#*new::). To change them, free the current instance and create a new one.
 
 returns:: An array of integer port numbers.
 
-METHOD:: adjustMeterBase
+method::adjustMeterBase
 A convenience method to adjust the clock's baseBarBeat, given the local metrical position and the remote metrical position. Normally, you do not need to call this method. It is provided in case you do your own analysis of link::Classes/MeterSync#-queryMeter:: results and you want to adjust barlines in your own way.
-
-ARGUMENT:: localBeats
+argument::localBeats
 The local clock's beats. Usually this should be derived from code::result[index][\queriedAtBeat]:: (where code::result:: comes from link::Classes/MeterSync#-queryMeter::). Strongly recommended to use this instead of code::clock.beats::, because the query time does not add the timeout.
-
-ARGUMENT:: remoteBeats
+argument::remoteBeats
 The local clock's beats. Usually this should be derived from code::result[index][\beats]::.
-
-ARGUMENT:: round
+argument::round
 Optional. Force a specific subdivision: round = 1 (the default) assumes quarter-notes as the metric base; round = 0.5 assumes eighth-notes (e.g. 5/8 time).
 
 returns:: The instance.
@@ -131,31 +120,30 @@ m.queryMeter({ |result|
 l.stop;  // cleans up 'm' automatically
 ::
 
-METHOD:: enabled
-Enable or disable meter sync. If disabled, this instance will no longer respond to meter changes from peers. It will still answer queryMeter, with code::'syncMeter': false:: in the reply (so you can filter the queryMeter results accordingly).
-
-ARGUMENT:: bool
-True = enabled, false = disabled.
+method::enabled
+enables/disables meter sync. If disabled, this instance will no longer respond to meter changes from peers. It will still answer queryMeter, with code::'syncMeter': false:: in the reply (so you can filter the queryMeter results accordingly).
+argument::bool
+code::true:: = enabled, code::false:: = disabled.
 
 returns:: Boolean.
 
-METHOD:: clock
-Return the clock being controlled by this instance.
+method::clock
+returns the clock being controlled by this instance.
 
 note:: You cannot change the associated clock object. You should instead link::Classes/MeterSync#-free:: this instance, and create a new instance for the other clock. ::
 
 
-METHOD:: repeats
-Get or set the number of repeats for OSC messaging.
+method::repeats
+gets/sets the number of repeats for OSC messaging.
 
 UDP does not detect failure to deliver messages; therefore, messages may be lost. If that happens, LinkClock peers may fail to synchronize properly and link::#-resyncMeter:: may be unable to recover. To prevent this, sync messages are sent 'repeats' times. The default is 4.
 
-METHOD:: delta
-Get or set the number of seconds between OSC messaging repeats.
+method::delta
+gets/sets the number of seconds between OSC messaging repeats.
 
 private:: prBroadcast, update, init, prSetMeterAtBeat, prGetMeter
 
-EXAMPLES::
+examples::
 
 code::
 l = LinkClock.new.latency_(s.latency).enableMeterSync;

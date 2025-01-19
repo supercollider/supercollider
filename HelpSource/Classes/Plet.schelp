@@ -1,9 +1,9 @@
 TITLE:: Plet
-summary:: Define a value within the scope (namespace) of a Plambda
+summary:: defines a value within the scope (namespace) of a Plambda
 categories:: Streams-Patterns-Events>Patterns>Data Sharing
 related:: Classes/Plambda, Classes/Pget
 
-DESCRIPTION::
+description::
 link::Classes/Plet::/link::Classes/Pget:: are used to share data between patterns inside of a link::Classes/Plambda::
 
 Plet defines a variable containing a pattern or data for sharing within the scope of a link::Classes/Plambda::. 
@@ -12,35 +12,31 @@ Using the link::Classes/Pget:: class, the contents of this variable can then be 
 
 CLASSMETHODS::
 
-METHOD:: new
-
-ARGUMENT:: key
+method::new
+argument::key
 The name of the variable
-
-ARGUMENT:: pattern
+argument::pattern
 The contents of the variable
-
-ARGUMENT:: return
-If return is nil, the pattern will be returned.
-If not nil, the contents of the return argument will be returned while the variable defined by the Plet will be set to the value of pattern
+argument::return
+If return is code::nil::, the pattern will be returned.
+If not code::nil::, the contents of the return argument will be returned while the variable defined by the Plet will be set to the value of pattern
 
 INSTANCEMETHODS::
 
-METHOD:: storeArgs
+method::storeArgs
 
-METHOD:: embedInStream
+method::embedInStream
+argument::inval
 
-ARGUMENT:: inval
+method::pattern
 
-METHOD:: pattern
+method::silent
 
-METHOD:: silent
+method::key
 
-METHOD:: key
+method::return
 
-METHOD:: return
-
-EXAMPLES::
+examples::
 
 code::
 (

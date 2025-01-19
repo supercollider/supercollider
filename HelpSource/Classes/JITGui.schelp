@@ -5,7 +5,8 @@ categories:: JITLib>GUI, Live Coding
 description::
 Proxies for synths, tasks and patterns as implemented in JITLib are extremely flexible. Having guis that represent their changeable states makes it easier to understand what is going on, especially when using multiple proxies together. JITGuis follow a special strategy described below.
 
-subsection::See also
+
+subsection:: See also
 
 list::
 ## link::Classes/EnvirGui::,
@@ -20,10 +21,11 @@ ClassMethods::
 
 private::initClass
 
-subsection::Creation
+
+subsection:: Creation
 
 method::new
-Create a new JITGui that will be watching an object and displaying its state.
+creates a new JITGui that will be watching an object and displaying its state.
 
 code::
 g = JITGui.new(nil, 0);		// make a JITGui
@@ -32,29 +34,24 @@ g.object = (key: \otto); 	// if the object understands .key, key gets shown as n
 g.object = Pseq([1, 2, 3], inf);
 g.close;
 ::
-
 argument::object
 the object to watch
-
 argument::numItems
 the number of display items to use, e.g. how many fields for text display, or how many sliders for single-number parameters.
-
 argument::parent
-a parent view on which to display. If nil, a new window is created; strong::parent:: can also be an existing window or a composite view.
-
+a parent view on which to display. If code::nil::, a new window is created; strong::parent:: can also be an existing window or a composite view.
 argument::bounds
-a desired size and position where to display a JITGui. Can be nil, a link::Classes/Point::, or a link::Classes/Rect::. JITGuis know their minimum size (strong::minSize::), and if bounds is nil, minSize is used. if bounds is a point or rect, it will be set to at least minSize. With a rect one can also supply a position where to display. If a point, shown size is the maximum of bounds and minSize.
-
+a desired size and position where to display a JITGui. Can be code::nil::, a link::Classes/Point::, or a link::Classes/Rect::. JITGuis know their minimum size (strong::minSize::), and if bounds is code::nil::, minSize is used. if bounds is a point or rect, it will be set to at least minSize. With a rect one can also supply a position where to display. If a point, shown size is the maximum of bounds and minSize.
 argument::makeSkip
 A flag whether to make a skipjack. (If the gui is on its own window,
 it typically uses one, if the JITGui is part of a larger gui, that gui may take care of updating.)
-
 argument::options
 a list of additional information, such as flags about optional buttons. (This is used in some subclasses.)
 
 InstanceMethods::
 
-subsection::Accessing Instance Variables
+
+subsection:: Accessing Instance Variables
 
 code::
 g.dump;
@@ -121,30 +118,32 @@ method::hasWindow
 
 a flag whether the JITGui has made its own window, and thus owns it.
 
-subsection::Instance Methods
+
+subsection:: Instance Methods
 
 method::object
-put an object in the gui - if the gui accepts it.
+puts an object in the gui - if the gui accepts it.
 
 method::accepts
-test whether obj is a valid object to show in a JITGui. In strong::JITGui:: itself, all objects are accepted, in the subclasses, strong::obj:: can either be nil or a specific class, such as link::Classes/Tdef::, link::Classes/Pdef::, link::Classes/Ndef::
+tests whether obj is a valid object to show in a JITGui. In strong::JITGui:: itself, all objects are accepted, in the subclasses, strong::obj:: can either be code::nil:: or a specific class, such as link::Classes/Tdef::, link::Classes/Pdef::, link::Classes/Ndef::
 
 method::name
-set the text of the link::#-nameView:: and the window (if it link::#-hasWindow::)
+sets the text of the link::#-nameView:: and the window (if it link::#-hasWindow::)
 
 method::getName
-ask the object its name, or return code::'_anon_'::
+asks the object its name, or returns code::'_anon_'::
 
 method::winName
-return a suitable name for a window: "JITGui_objname"
+returns a suitable name for a window: "JITGui_objname"
 
 method::moveTo
-if it has its own window, one can move it to some specific location.
+If it has its own window, one can move it to some specific location.
 
 method::close
-close its window.
+closes its window.
 
-subsection::How JITGuis work
+
+subsection:: How JITGuis work
 
 A JITGui watches the state of its object by calling its (the gui's) link::#-getState:: method at appropriate intervals (skipjack.dt). It compares the new state of the object with the previous state stored in link::#-prevState::. When something has changed, only the gui elements concerned are updated.
 
@@ -155,7 +154,8 @@ list::
 ## Only the JITGui knows about its object, so there is no dependancy administration to take care of.
 ::
 
-subsection::1 - Methods that subclasses should implement
+
+subsection:: 1 - Methods that subclasses should implement
 
 You can write your own subclasses to JITGui very efficiently by implementing appropriate variants of the following methods in your class. For examples of these methods, see link::Classes/TdefGui::, link::Classes/EnvirGui::, link::Classes/NdefGui::.
 
@@ -166,17 +166,19 @@ method::accepts
 a test whether strong::obj:: can be shown in the particular kind of JITGui. Subclasses of JITGui are made for special objects, e.g. Pdefs, so they should test whether obj is the right kind.
 
 method::makeViews
-create all the views of the jitGui inside the zone.
+creates all the views of the jitGui inside the zone.
 
-subsection::2 - For updating the JITGui, overwrite these methods
+
+subsection:: 2 - For updating the JITGui, overwrite these methods
 
 method::getState
-ask the object for all aspects of its current state that will be displayed.
+asks the object for all aspects of its current state that will be displayed.
 
 method::checkUpdate
-get the object's current state with link::#-prevState::, compare it with prevState, update all gui elements that need to be changed, and store the new state as prevState. This method is called in the skipJack.
+gets the object's current state with link::#-prevState::, compare it with prevState, update all gui elements that need to be changed, and store the new state as prevState. This method is called in the skipJack.
 
-subsection::3 - More methods you may want to overwrite if required
+
+subsection:: 3 - More methods you may want to overwrite if required
 
 method::calcBounds
 how to calculate the bounds for the zone in which to display
@@ -196,7 +198,7 @@ a method for generating a name for the JITGui's window.
 method::makeScroller
 Some objects may have more elements to display than the gui has slots, e.g. a link::Classes/ProxySpace:: can have more proxies than the mixer has numItems. Then, only link::#-numItems:: elements are shown, and the others can be scrolled to with link::#-scroller:: - an link::Classes/EZScroller:: next to the slot elements. The makeScroller method should knows where in the zone to put the scroller.
 
-Examples::
+examples::
 
 code::
     // typically, only subclasses of JITGui are used,

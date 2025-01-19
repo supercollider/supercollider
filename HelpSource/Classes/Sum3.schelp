@@ -3,12 +3,11 @@ summary:: Sum three signals
 categories:: UGens>Algebraic
 related:: Classes/Mix
 
-DESCRIPTION::
+description::
 Sum three signals. Internal ugen to efficiently mix three signals. Should be used via link::Classes/Mix::.
 
 CLASSMETHODS::
 private:: new1
 
-METHOD:: new
-
+method::new
 Construct UGen.

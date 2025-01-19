@@ -3,7 +3,7 @@ summary:: Instead of subclassing a (Q/SC)View, this is a proxy/adapter object th
 categories:: GUI
 related:: Classes/View
 
-DESCRIPTION::
+description::
 When writing gui widgets it is sometimes not desirable to subclass a view class. Its preferable to write a class that acts like a View and is used where Views normally are used but isn't a direct subclass of a View class.
 
 In the View hierarchy it is not possible to subclass an View class because under the hood there is always a strict relationship between the View subclass and its paired C++ class.  The C++ class makes the actual view, the SC class is an interface to that C++ object.
@@ -24,8 +24,8 @@ Historical note: this class was originally in the cruciallib.  ObjectGui is a su
 
 CLASSMETHODS::
 
-METHOD:: consumeKeyDowns
-global preference variable: if true then subclasses that do not set a keyDownAction do NOT bubble up keyDown events by default.
+method::consumeKeyDowns
+global preference variable: if code::true:: then subclasses that do not set a keyDownAction do NOT bubble up keyDown events by default.
 
 returns:: The result of calling the method on the proxied view
 
@@ -33,135 +33,114 @@ returns:: The result of calling the method on the proxied view
 INSTANCEMETHODS::
 
 
-METHOD:: view
-get or set the view for which this object is a proxy/adapter.
-
-argument:: v
+method::view
+gets/sets the view for which this object is a proxy/adapter.
+argument::v
 the view: a link::Classes/View::
 
 returns:: The result of calling the method on the proxied view
 
 
-METHOD:: doesNotUnderstand
+method::doesNotUnderstand
 Messages that are not understood by the view holder are forwarded to the proxied view.  So when the interpreter is told to send a message to a view holder object and that message is not understood, it calls doesNotUnderstand
-
-argument:: selector
+argument::selector
 The message that was not understood
-
-argument::  ... args
+argument::... args
 The arguments that were supplied
 
 returns:: the result of calling the method on the proxied view
 
 
-METHOD:: viewDidClose
+method::viewDidClose
 Unsets the view variable. After the view is closed (removed from the window) then all calls to the view holder will fail, and should fail as there is no view anymore.  You can check viewHolder.isClosed if you are unsure
 
 returns:: this
 
-METHOD:: remove
-Removes the view from the window if it has not already been removed.
+method::remove
+removes the view from the window if it has not already been removed.
 
 returns:: this
 
-METHOD:: action
+method::action
 This method is forwarded to the view
-
-argument:: f
-
+argument::f
 
 returns:: The result of calling the method on the proxied view
 
-METHOD:: doAction
+method::doAction
 This method is forwarded to the view
 
 returns:: The result of calling the method on the proxied view
 
-METHOD:: keyDownAction
+method::keyDownAction
 This method is forwarded to the view
-
-argument:: f
-
+argument::f
 
 returns:: The result of calling the method on the proxied view
 
-METHOD:: keyDownResponder
+method::keyDownResponder
 This method is forwarded to the view.  Note: this is a cruciallib convention and will be deprecated here.
 
 returns:: The result of calling the method on the proxied view
 
-METHOD:: enableKeyDowns
+method::enableKeyDowns
 This method is forwarded to the view. Note: this is a cruciallib convention and will be deprecated here.
 
 returns:: The result of calling the method on the proxied view
 
-METHOD:: asView
+method::asView
 returns the view
 
 returns:: the view
 
-METHOD:: bounds
+method::bounds
 This method is forwarded to the view
-
-argument:: b
-
+argument::b
 
 returns:: The result of calling the method on the proxied view
 
-METHOD:: resize
+method::resize
 This method is forwarded to the view
-
-argument:: r
-
+argument::r
 
 returns:: The result of calling the method on the proxied view
 
-METHOD:: enabled
+method::enabled
 This method is forwarded to the view
-
-argument:: b
-
+argument::b
 
 returns:: The result of calling the method on the proxied view
 
-METHOD:: refresh
+method::refresh
 This method is forwarded to the view
 
 returns:: The result of calling the method on the proxied view
 
-METHOD:: background
+method::background
 This method is forwarded to the view
-
-argument:: b
-
+argument::b
 
 returns:: The result of calling the method on the proxied view
 
-METHOD:: focus
+method::focus
 This method is forwarded to the view
-
-argument:: flag
-
+argument::flag
 
 returns:: The result of calling the method on the proxied view
 
-METHOD:: visible
+method::visible
 This method is forwarded to the view
-
-argument:: boo
-
+argument::boo
 
 returns:: The result of calling the method on the proxied view
 
-METHOD:: isClosed
+method::isClosed
 This method is forwarded to the view
 
 returns:: The result of calling the method on the proxied view
 
-METHOD:: font
+method::font
 This method is forwarded to the view
-
-argument:: f
-
+argument::f
 
 returns:: The result of calling the method on the proxied view

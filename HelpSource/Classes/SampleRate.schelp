@@ -4,16 +4,15 @@ related:: Classes/ControlRate, Classes/RadiansPerSample, Classes/SampleDur, Clas
 categories::  UGens>Info
 
 
-Description::
-
-Returns the current sample rate of the server.
+description::
+returns the current sample rate of the server.
 
 
 classmethods::
 
 method::ir
 
-Examples::
+examples::
 
 code::
 

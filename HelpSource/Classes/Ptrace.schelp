@@ -3,8 +3,8 @@ summary:: Print out the results of a stream
 related:: Classes/Stream, Classes/FilterPattern
 categories:: Streams-Patterns-Events>Patterns
 
-DESCRIPTION::
-Print out the results of a stream while returning the original values.
+description::
+prints out the results of a stream while returning the original values.
 
 Tracing a pattern is most commonly done by using the strong::.trace:: method directly on the pattern like this:
 
@@ -14,18 +14,14 @@ Pbind(\degree, Pwhite(0, 10)).trace.play
 
 CLASSMETHODS::
 
-METHOD:: new
-
-ARGUMENT:: pattern
+method::new
+argument::pattern
 printOn this stream (default: link::Classes/Post::).
-
-ARGUMENT:: key
+argument::key
 when streaming events, post only this key.
-
-ARGUMENT:: printStream
+argument::printStream
 (describe argument here)
-
-ARGUMENT:: prefix
+argument::prefix
 string added to the printout to separate different streams.
 
 returns:: Original values
@@ -33,17 +29,14 @@ returns:: Original values
 
 INSTANCEMETHODS::
 
-METHOD:: storeArgs
+method::storeArgs
 
-METHOD:: embedInStream
+method::embedInStream
+argument::inval
 
+method::key
 
-ARGUMENT:: inval
-
-METHOD:: key
-
-
-EXAMPLES::
+examples::
 
 code::
 (

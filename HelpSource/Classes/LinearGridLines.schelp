@@ -3,10 +3,10 @@ summary:: Calculates the numerical values suitable for linearly-spaced grid line
 categories:: GUI>Accessories
 related:: Classes/GridLines, Classes/AbstractGridLines, Classes/ExponentialGridLines, Classes/DrawGrid, Classes/ControlSpec, Classes/Plotter, Reference/plot
 
-DESCRIPTION::
+description::
 code::LinearGridLines:: is a strategy object that finds suitable intervals for plotting grid lines and labels. The values span the range defined by a corresponding link::Classes/ControlSpec::. Most of the functionality of code::LinearGridLines:: is inherited from its superclass, link::Classes/AbstractGridLines::. The instance methods are used by link::Classes/DrawGrid:: (which is in turn used by link::Classes/Plotter::) which handles the drawing of the lines and labels.
 
-code::LinearGridLines:: isn't usually instantiated directly, but rather by the link::Classes/GridLines:: factory class or the link::Classes/ControlSpec#-grid:: method which return the appropriate code::AbstractGridLines:: subclassfor the given spec.
+code::LinearGridLines:: isn't usually instantiated directly, but rather by the link::Classes/GridLines:: factory class or the link::Classes/ControlSpec#-grid:: method which returns the appropriate code::AbstractGridLines:: subclass for the given spec.
 
 code::
 (
@@ -21,15 +21,13 @@ DrawGrid.test(linGrid, expGrid);
 
 CLASSMETHODS::
 
-COPYMETHOD:: AbstractGridLines *new
-
+COPYmethod::AbstractGridLines *new
 INSTANCEMETHODS::
 
-COPYMETHOD:: AbstractGridLines -spec
-COPYMETHOD:: AbstractGridLines -asGrid
-COPYMETHOD:: AbstractGridLines -niceNum
-COPYMETHOD:: AbstractGridLines -looseRange
-COPYMETHOD:: AbstractGridLines -getParams
-COPYMETHOD:: AbstractGridLines -formatLabel
-
+COPYmethod::AbstractGridLines -spec
+COPYmethod::AbstractGridLines -asGrid
+COPYmethod::AbstractGridLines -niceNum
+COPYmethod::AbstractGridLines -looseRange
+COPYmethod::AbstractGridLines -getParams
+COPYmethod::AbstractGridLines -formatLabel
 private:: prCheckWarp, ideals

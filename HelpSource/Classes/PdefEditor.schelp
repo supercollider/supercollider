@@ -4,7 +4,6 @@ categories:: JITLib>GUI, Live Coding
 related:: Classes/PdefGui
 
 description::
-
 warning::
 has been rewritten and renamed link::Classes/PdefGui::, which has largely the same functionality, but is more consistent and more flexible. There are some changes to the strong::*new:: method:
 

@@ -1,13 +1,14 @@
 CLASS::Clock
 categories::Scheduling>Clocks
-summary::abstract superclass for clocks
+summary:: abstract superclass for clocks
 related::Classes/AppClock, Classes/SystemClock, Classes/TempoClock
 
-DESCRIPTION::
+description::
 Clock is an abstract class: it only defines an abstract set of methods that
 all clocks should implement. See its subclasses: link::Classes/SystemClock::,
 link::Classes/TempoClock::, link::Classes/AppClock:: for specific
 implementations.
+
 
 subsection:: Scheduling
 
@@ -21,6 +22,7 @@ link::Classes/Object#-awake#awake:: method is evaluated. If the value returned b
 this method is a number, the task is automatically strong::rescheduled:: for the
 time equal to its last scheduled time plus the return value (in
 link::Classes/TempoClock#-beats#beats::).
+
 
 subsection:: Useful Tasks
 
@@ -44,12 +46,13 @@ turn starting or resuming the Routine's Function.
 do something useful aside from returning a new value in a stream.
 ::
 
+
 subsection:: Scheduling and Threads
 
 Whenever a task is awaken, its code::awake:: method is called in the context of
 the link::Classes/Process#-mainThread#main thread::. Just before that, the main
 thread's link::Classes/Thread#-beats#logical time:: is set to the scheduling
 time of the awaken task, and its link::Classes/Thread#-clock#clock:: is set to
-the scheduling clock. Note however that if the task is a link::Classes/Routine::
+the scheduling clock. Note, however, that if the task is a link::Classes/Routine::
  it will then immediately start or resume its Function, setting itself as the
 link::Classes/Thread#.thisThread#current thread::.

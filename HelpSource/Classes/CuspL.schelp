@@ -21,7 +21,7 @@ plot(size.collect { xi = a - (b * sqrt(abs(xi))) });
 
 classmethods::
 
-method:: ar
+method::ar
 argument::freq
 Iteration frequency in Hertz
 argument::a

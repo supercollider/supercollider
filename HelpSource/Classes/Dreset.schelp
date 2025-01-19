@@ -6,10 +6,10 @@ description::
 The reset of a demand ugen can be controlled "from the outside" by the reset input of the link::Classes/Demand:: or link::Classes/Duty:: UGen, which consumes the chain of demands. Dreset allows to reset a subset of the chain internally.
 
 classmethods::
-method:: new
-argument:: in
+method::new
+argument::in
 a demand UGen, producing values which are passed through
-argument:: reset
+argument::reset
 a demand or any other UGen. When crossing from nonpositive to positive, it resets the first argument.
 
 examples::

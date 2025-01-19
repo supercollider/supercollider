@@ -68,7 +68,7 @@ SystemClock.play(r);
 
 Note that this implementation avoids one of the stranger aspects of the SC2 approach: The need to start a Synth to schedule time-based behavior, even if no audio is involved.
 
-Both link::Classes/SystemClock:: and link::Classes/AppClock:: (a less accurate version which can call Cocoa primitives) have only class methods. Thus one does not create instances of them. If you need to have an individual clock to manipulate (for instance to manipulate the tempi of different sequences of events) you can use link::Classes/TempoClock::.
+Both link::Classes/SystemClock:: and link::Classes/AppClock:: (a less accurate version which can call Cocoa primitives) have only class methods. Thus one does not create instances of them. If you need to have an individual clock to manipulate (for instance to manipulate the tempi of different sequences of events), you can use link::Classes/TempoClock::.
 
 A simple SC2 Spawn example is shown below, followed by its translation into SC3 style code.
 

@@ -4,19 +4,16 @@ related:: Classes/InRange, Classes/Schmidt
 categories::  UGens>Maths
 
 
-Description::
+description::
 A pair of signals x and y are treated as a point (x, y) in 2-D; if they fall within the bounds of the rectangle, then this UGen outputs a one; else it outputs zero.
 
 
 classmethods::
 method::ar, kr
-
 argument::x
 X component signal
-
 argument::y
 Y component signal
-
 argument::rect
 A link::Classes/Rect:: which defines the rectangular region to monitor; note that Rects are in screen co-ordinates, so the top is smaller than the bottom. The Rect is created once and cannot be modulated.
 

@@ -1,9 +1,9 @@
 CLASS::Int32Array
-summary::an array whose indexed slots are all of the same type
+summary:: an array whose indexed slots are all of the same type
 related::Classes/FloatArray, Classes/Int8Array, Classes/Int16Array, Classes/DoubleArray, Classes/SymbolArray
 categories::Collections>Ordered
 
-DESCRIPTION::
+description::
 These classes implement arrays whose indexed slots are all of the same type.
 list::
 ## Int8Array - 8 bit integer

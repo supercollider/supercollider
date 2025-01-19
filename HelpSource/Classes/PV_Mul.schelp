@@ -3,8 +3,7 @@ summary:: Complex multiply.
 related:: Classes/FFT, Classes/IFFT, Classes/PV_Add, Classes/PV_CopyPhase, Classes/PV_MagMul, Classes/PV_Max, Classes/PV_Min
 categories:: UGens>FFT
 
-Description::
-
+description::
 Complex Multiplication:
 
 code::
@@ -18,14 +17,12 @@ code::
 classmethods::
 
 method::new
-
 argument::bufferA
 FFT buffer A.
-
 argument::bufferB
 FFT buffer B.
 
-Examples::
+examples::
 
 code::
 

@@ -1,9 +1,10 @@
 TITLE:: Making Standalone Applications
-SUMMARY:: A guide to making SuperCollider-based applications by 'exporting' existing SuperCollider app configurations and projects.
+summary:: A guide to making SuperCollider-based applications by 'exporting' existing SuperCollider app configurations and projects.
 CATEGORIES:: Platform>macOS, Tutorials
 KEYWORD:: standalones, stand-alones
 
 NOTE:: The concept of standalone applications is mainly relevant on macOS. On linux, Miguel Negrão and Fredrik Olofsson have created similar ways of packing versions of SC3 into independent setups. ::
+
 
 section:: Introduction
 
@@ -13,6 +14,7 @@ One can package performance setups, installation pieces, software synthesis inst
 This is useful for distributing applications to the general public, or for creating special-purpose applications for your own use. There is one important restriction: the entire application must be open-source and comply with the GNU General Public License.
 
 On macOS, applications are special directories with an ".app" extension, known as emphasis::bundles::. SuperCollider emphasis::standalone applications:: are bundles that contain your SuperCollider code, as well as a renamed copy of SuperCollider itself that  runs your code.
+
 
 section:: Practical Guide
 
@@ -41,6 +43,7 @@ code::
 Self-built SC versions may assume their code:: Platform.userAppSupportDir :: is called code::.../SuperCollider/ :: and not the name of the newly made app.
 ::
 
+
 subsection:: How this guide works
 
 This guide is a set of scripts for creating a SuperCollider-based Standalone app in a few basic steps:
@@ -63,6 +66,7 @@ numberedlist::
 ## test and adapt until it does what you want
 ::
 
+
 subsection:: What to prepare
 
 list::
@@ -75,6 +79,7 @@ and a working startup file. (can be a very simple test setup)
 
 ## when you get to the wakeup kiss, share and enjoy!
 ::
+
 
 subsection:: Naming, copying, and fixing up the new app
 
@@ -163,6 +168,7 @@ NOTE:: THIS SHOULD END WITH ~newAppName! If it has the original ~thisAppName (th
 So, delete the app again, and start over using a recommended version of SC3 (see tested list on top)!
 
 ::
+
 
 subsection:: Adaptation to the project
 

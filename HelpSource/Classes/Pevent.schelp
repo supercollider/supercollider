@@ -33,12 +33,10 @@ By contrast to Pchain, Pevent uses an  link::Classes/Event#*default:: if nothing
 
 ClassMethods::
 
-method:: new
-
+method::new
 argument::pattern
 pattern or stream that returns or modifies events.
-
-argument:: event
+argument::event
 an event with objects to embed.  If none is provided, it uses link::Classes/Event#*default::.
 
 examples::

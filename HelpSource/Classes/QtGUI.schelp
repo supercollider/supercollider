@@ -3,7 +3,6 @@ summary:: Top-level controls for Qt GUI
 categories:: GUI
 
 description::
-
 QtGUI provides top-level control for the Qt GUI bindings and some platform-level functionality.
 
 classmethods::
@@ -16,52 +15,42 @@ private:: userView, dragSource, dragSink, dragBoth, dialog, ezScroller, ezSlider
 private:: ezNumber, ezRanger, hLayout, vLayout, gridLayout, stackLayout, pen, font, image, qcView
 private:: notImplemented, stop, id
 
-method:: availableStyles
+method::availableStyles
+returns an array of all available styles on this platform. For use with link::#-style::.
 
-Returns an array of all available styles on this platform. For use with link::#-style::.
+method::cursorPosition
+gets the current position of the cursor as a link::Classes/Point::.
 
-method:: cursorPosition
-
-Gets the current position of the cursor as a link::Classes/Point::.
-
-method:: debugLevel
-
-Gets or sets the verbosity level for debug output from "QtCollider" code. SuperCollider must have
+method::debugLevel
+gets/sets the verbosity level for debug output from "QtCollider" code. SuperCollider must have
 been built in debug mode for messages to appear. Valid values are -1 (none), 0 (warnings only,
 default), 1 (most messages), and 2 (verbose). Values outside this range are effectively clipped.
 
-method:: focusView
+method::focusView
+gets the currently focused view.
 
-Gets the currently focused view.
+method::palette
+gets/sets the link::Classes/QPalette:: used for GUI display.
 
-method:: palette
-
-Gets or sets the link::Classes/QPalette:: used for GUI display.
-
-method:: selectedText
-
-Gets the selected text in the currently focused view. If there is no such string then return
+method::selectedText
+gets the selected text in the currently focused view. If there is no such string then returns
 empty string.
 
 Internally, first calls code::selectedText:: if that method is available; otherwise, calls
 code::selectedString:: if that method is available. Otherwise, returns empty string.
 
-method:: stringBounds
-
-Returns a link::Classes/Rect:: representing the size of the smallest rectangle that could contain a
+method::stringBounds
+returns a link::Classes/Rect:: representing the size of the smallest rectangle that could contain a
 given string rendered with the given font.
 
 code::
 QtGUI.stringBounds("hellooo", Font(Font.defaultSansFace, 100))
 ::
-
-argument:: aString
+argument::aString
 A link::Classes/String:: to render.
-
-argument:: aFont
+argument::aFont
 An instance of link::Classes/Font::.
 
-method:: style
-
-Gets or sets the current GUI style. The given style must be a link::Classes/String:: or
+method::style
+gets/sets the current GUI style. The given style must be a link::Classes/String:: or
 link::Classes/Symbol:: that names one of the styles returned by link::#-availableStyles::.

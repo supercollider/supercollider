@@ -2,11 +2,14 @@ title:: News in 3.5
 summary:: A summary of news in SC 3.5
 categories:: News
 
-SECTION:: Language-side news
+
+section:: Language-side news
+
 
 subsection:: Qt GUI
 A new cross-platform GUI kit intended to replace Cocoa and an alternative to SwingOSC.
 See link::Guides/News-Qt-GUI:: for more.
+
 
 subsection:: SCDoc
 A new help-system provides consistent documentation with good introspection and easy link::Search##searching:: and link::Browse##browsing::.
@@ -20,15 +23,18 @@ Also a new method link::Classes/Help#*methodArgs:: returns a human-readable stri
 In SuperCollider version 3.5.2, SCDoc has been rewritten and the parser is now implemented in C++ for speed and stability.
 The syntax has gotten stricter, and it will throw errors or warnings if there are faults in the documentation. See link::Guides/WritingHelp#News in SC 3.5.2:: for some important changes to keep in mind.
 
+
 subsection:: OSC and MIDI responders
 The new link::Classes/OSCFunc:: and link::Classes/MIDIFunc:: provides better alternatives to the old link::Classes/OSCresponderNode:: and link::Classes/NoteOnResponder::, etc.
 
 OSCFunc can receive on any port, not only the main code::NetAddr.langPort::.
 
+
 subsection:: New Location of Startup file
 
 The link::Reference/StartupFile##sclang startup file:: has moved to code::Platform.userConfigDir +/+ "startup.scd"::.
 Old platform-specific startup file locations have been deprecated. The new startup file is plain-text, rtf is not supported.
+
 
 subsection:: Language configuration files
 
@@ -36,23 +42,30 @@ The Linux-only library configuration file has been deprecated. It is replaced by
 file, which is located at code::Platform.userConfigDir +/+ "sclang_conf.yaml" :: . It can be configured via the
 link::Classes/LanguageConfig:: class.
 
+
 subsection:: Sced3
 The GEdit plugin sced has been updated to support GEdit version 3.
+
 
 subsection:: WiiMote
 code::WiiMote.discover:: now returns the device object, or nil if it failed.
 
+
 subsection:: Bus-asMap in patterns
 Bus-asMap symbols are now allowed in code::\freq:: and friends in patterns.
+
 
 subsection:: Warn on classlib overwrites
 Warnings are posted when extensions overwrites methods in main class lib, unless the extensions are put in a subfolder named "SystemOverwrites".
 
+
 subsection:: Filesystem utils
 New cross-platform filesystem utilities: link::Classes/File#*copy::, link::Classes/File#*mtime::, link::Classes/File#*mkdir::, link::Classes/File#*realpath::, link::Classes/File#*type::, link::Classes/File#*fileSize::
 
+
 subsection:: String-openTextFile
 link::Classes/String#-openTextFile:: now works also on frontends without link::Classes/Document:: support. It falls back to link::Classes/String#-openOS:: to open the file with the default application for that file type.
+
 
 subsection:: Optional trailing comma
 It was already allowed to have a trailing comma in arrays: code::[1,2,3,]::,
@@ -68,35 +81,43 @@ Pbind(
 myFunc.value(1, 2, 3,);
 ::
 
+
 subsection:: Various bugfixes
 A lot of bugs has been fixed, for example: String regexp primitives, multichannel wrappers of SequenceableCollection, CoinGate.ar, T2K, WiiMote, SynthDesc.
+
 
 subsection:: Interpreter Performance Improvements
 
 The sclang now uses token threading footnote::http://www.complang.tuwien.ac.at/forth/threaded-code.html:: instead of one huge switch statement for bytecode dispatching.
 
+
 subsection:: PriorityQueue stable order
 
 The link::Classes/PriorityQueue:: now provides a stable heap order: items of the same time value will have a FIFO order.
 
+
 subsection:: plot improvements
 
 link::Reference/plot:: has been changed to use the link::Classes/Plotter:: class, which was formerly used by the code::plot2:: methods. code::plot2:: has been deprecated, the old behavior is still available via the code::plotOld:: methods, which have also been deprecated.
+
 
 subsection:: UI deprecated
 
 The UI class has been deprecated. Its functionality is now provided by the link::Classes/ShutDown:: and
 link::Classes/OnError:: classes.
 
+
 subsection:: Panner and XFade classes deprecated
 
 The Panner and XFade classes that been used internally are now deprecated. UGens are better off, implementing the
 code::checkInputs:: explicitly.
 
+
 subsection:: Quark files outside DIRECTORY
 
 teletype::*.quark:: files are now allowed to be within the quark itself rather than in the DIRECTORY.
 This allows manually installed quarks to be easily managed by link::Classes/Quarks#*gui::
+
 
 subsection:: New error marker
 Instead of the non-cross-platform bullet-character (•), the error token in error messages are now underlined with teletype::^^^:: characters instead.
@@ -109,7 +130,9 @@ teletype::
       ^^^^^^
 ::
 
-SECTION:: Server-side news
+
+section:: Server-side news
+
 
 subsection:: Bitwise ops
 The bitwise operators code::&:: (and), code::|:: (or), code:: xor: :: (xor), code::<<:: (left shift) and code::>>:: (right shift) are now supported server-side on audio and control signals. Example:
@@ -132,20 +155,26 @@ play {
 )
 ::
 
+
 subsection:: VarLag UGen
 The new link::Classes/VarLag:: UGen provides the same functionality as Lag but with linear and other curves.
+
 
 subsection:: DelTapWr/DelTapRd UGens
 The new link::Classes/DelTapRd:: and link::Classes/DelTapWr:: UGen can be used to easily implement multitap delays.
 
+
 subsection:: Node-onFree
 A new method link::Classes/Node#-onFree:: runs a function when node finished playing.
+
 
 subsection:: LocalIn initial value
 link::Classes/LocalIn:: now has an input for initial value.
 
+
 subsection:: Close buffers on free
 teletype::/b_free:: also free's soundfile if open (like teletype::/b_close::)
+
 
 subsection:: More done flags
 link::Classes/Demand::, link::Classes/VDiskIn:: and link::Classes/DiskIn:: now sets done flag (to be used by link::Classes/Done:: or link::Classes/FreeSelfWhenDone::)
@@ -156,10 +185,12 @@ subsection:: Shared Memory Server Interface
 A shared-memory interface to the server has been introduced. This allows scoping and synchronous control bus access
 for local clients.
 
+
 subsection:: HPF/RHPF internal precision
 
 The recursive filter loop for link::Classes/HPF:: and link::Classes/RHPF:: has been changed to double-precision in
 order to avoid quantization noise. Pieces that depend on the quantization noise can make use of the GlitchUGens provided in sc3-plugins, which implement the old behavior.
+
 
 subsection:: Plugin entry point
 
@@ -167,10 +198,12 @@ Plugins should use the teletype::PluginLoad:: macro as entry point instead of im
 This allows ABI version checks and ensures that the entry point function is correctly exported from the shared library.
 See link::Guides/WritingUGens:: for details.
 
+
 subsection:: New FFT Plugin API
 
 A new FFT API for server plugins has been introduced: this simplifies writing FFT ugens in a cross-platform manner,
 since no external FFT libraries are required.
+
 
 subsection:: Supernova
 

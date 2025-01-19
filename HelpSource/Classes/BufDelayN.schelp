@@ -4,8 +4,7 @@ related:: Classes/BufDelayC, Classes/BufDelayL, Classes/DelayN
 categories::  UGens>Delays>Buffer
 
 
-Description::
-
+description::
 Simple delay line with no interpolation which uses a buffer for its
 internal memory. See also  link::Classes/BufDelayL::  which uses linear
 interpolation, and  link::Classes/BufDelayC::  which uses cubic
@@ -16,27 +15,21 @@ than linear, but more accurate.
 classmethods::
 
 method::ar, kr
-
 argument::buf
 Buffer number.
 
 note:: The buffers provided to any of the BufDelay units must be one channel. If you want to delay a multichannel signal, you must provide as many separate (one-channel) buffers as there are input channels.::
-
 argument::in
 The input signal.
-
 argument::delaytime
 Delay time in seconds.
-
 argument::mul
-
 argument::add
-
 discussion::
 Warning:: For reasons of efficiency, the effective buffer size is limited to the previous power of two. So, if 44100 samples are allocated, the maximum delay would be 32768 samples.
 ::
 
-Examples::
+examples::
 
 code::
 

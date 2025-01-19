@@ -9,7 +9,7 @@ keeps a reference to a link::Classes/Pbind:: in which single keys can be replace
 ClassMethods::
 
 method::new
-create a new instance of PbindProxy with the given patternpairs
+creates a new instance of PbindProxy with the given patternpairs
 
 InstanceMethods::
 
@@ -17,18 +17,18 @@ method::source
 returns the wrapper for the Pbind
 
 method::set
-set the given patternpairs.
+sets the given patternpairs.
 
 method::at
-return a pattern at that key. this can be used to set quant value individually, so different elementary patterns can be quantized differently.
+returns a pattern at that key. this can be used to set quant value individually, so different elementary patterns can be quantized differently.
 code::
 x.at(\freq).quant = 2;
 ::
 
 method::quant
-set the quant of all elementary patterns, or return the quant value of the source pattern.
+sets the quant of all elementary patterns, or returns the quant value of the source pattern.
 
-Examples::
+examples::
 
 code::
 (

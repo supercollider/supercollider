@@ -1,9 +1,9 @@
 CLASS::List
-summary::list of items of variable size
+summary:: list of items of variable size
 related::Classes/Array
 categories::Collections>Ordered
 
-DESCRIPTION::
+description::
 List is a subclass of SequenceableCollection with unlimited growth in size. Although not a subclass of link::Classes/Array:: or its superclass link::Classes/ArrayedCollection:: it uses an Array in its implementation and is in many cases interchangeable with one. (List implements many of the same methods as Array.)
 
 Arrays have a fixed maximum size. If you add beyond that size a new Array is created and returned, but you must use an assignment statement or the new array will be lost. (See the link::Classes/Array:: helpfile.) List has no size limitation and is thus more flexible, but has slightly more overhead.
@@ -21,24 +21,24 @@ Many of List's methods are inherited from link::Classes/SequenceableCollection::
 CLASSMETHODS::
 
 method::new
-Creates a List with the initial capacity given by strong::size::.
+creates a List with the initial capacity given by strong::size::.
 
 method::newClear
-Creates a List with the initial capacity given by strong::size:: and slots filled with nil.
+creates a List with the initial capacity given by strong::size:: and slots filled with code::nil::.
 
 method::copyInstance
-Creates a List by copying strong::aList::'s array variable.
+creates a List by copying strong::aList::'s array variable.
 
 method::newUsing
-Creates a List using strong::anArray::.
+creates a List using strong::anArray::.
 
 INSTANCEMETHODS::
 
 method::asArray
-Returns a new link::Classes/Array:: based upon this List.
+returns a new link::Classes/Array:: based upon this List.
 
 method::array
-Returns the List's Array, allowing it to be manipulated directly. This should only be necessary for exotic manipulations not implemented in List or its superclasses.
+returns the List's Array, allowing it to be manipulated directly. This should only be necessary for exotic manipulations not implemented in List or its superclasses.
 code::
 (
 x = List[1, 2, 3];
@@ -48,10 +48,10 @@ x.postln;
 ::
 
 method::array
-Sets the List's Array.
+sets the List's Array.
 
 method::at
-Return the item at strong::index::.
+returns the item at strong::index::.
 code::
 List[1, 2, 3].at(0).postln;
 ::
@@ -81,7 +81,7 @@ y.foldAt(5).postln; // this returns the value at index 1
 ::
 
 method::put
-Put strong::item:: at strong::index::, replacing what is there.
+puts strong::item:: at strong::index::, replacing what is there.
 
 method::clipPut
 Same as link::#-put::, but values for strong::index:: greater than the size of the List will be clipped to the last index.
@@ -93,7 +93,7 @@ method::foldPut
 Same as link::#-put::, but values for strong::index:: greater than the size of the List will be folded back.
 
 method::add
-Adds an strong::item:: to the end of the List.
+adds an strong::item:: to the end of the List.
 
 method::addFirst
 Inserts the strong::item:: at the beginning of the List.
@@ -102,13 +102,13 @@ method::insert
 Inserts the strong::item:: into the contents of the List at the indicated strong::index::.
 
 method::pop
-Remove and return the last element of the List.
+removes and returns the last element of the List.
 
 method::grow
 Increase the size of the List by strong::sizeIncrease:: number of slots.
 
 method::removeAt
-Remove and return the element at strong::index::, shrinking the size of the List.
+removes and returns the element at strong::index::, shrinking the size of the List.
 code::
 y = List[1, 2, 3];
 y.removeAt(1);
@@ -126,26 +126,24 @@ z.fill([1, 2, 3, 4]).postln;
 )
 ::
 
-method::do
-Iterate over the elements in order, calling the function for each element. The function is passed two arguments, the element and an index.
+Iterates over the elements in order, calling the function for each element. The function is passed two arguments, the element and an index.
 code::
 List['a', 'b', 'c'].do({ |item, i| [i, item].postln });
 ::
 
-method::reverseDo
-Iterate over the elements in reverse order, calling the function for each element. The function is passed two arguments, the element and an index.
+Iterates over the elements in reverse order, calling the function for each element. The function is passed two arguments, the element and an index.
 code::
 List['a', 'b', 'c'].reverseDo({ |item, i| [i, item].postln });
 ::
 
 method::pairsDo
-Calls function for each subsequent pair of elements in the List. The function is passed the two elements and an index.
+calls function for each subsequent pair of elements in the List. The function is passed the two elements and an index.
 code::
 List[1, 2, 3, 4, 5, 6].pairsDo({ |a, b| [a, b].postln });
 ::
 
 method::copyRange
-Return a new List which is a copy of the indexed slots of the receiver from start to end.
+returns a new List which is a copy of the indexed slots of the receiver from start to end.
 code::
 (
 var y, z;
@@ -157,7 +155,7 @@ y.postln;
 ::
 
 method::copySeries
-Return a new List consisting of the values starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::.
+returns a new List consisting of the values starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::.
 code::
 (
 var y, z;
@@ -168,7 +166,7 @@ y.postln;
 ::
 
 method::putSeries
-Put strong::value:: at every index starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::.
+puts strong::value:: at every index starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::.
 code::
 (
 var y, z;
@@ -179,7 +177,7 @@ y.postln;
 ::
 
 method::reverse
-Return a new List whose elements are reversed.
+returns a new List whose elements are reversed.
 code::
 (
 var y, z;
@@ -191,44 +189,44 @@ y.postln;
 ::
 
 method::scramble
-Returns a new List whose elements have been scrambled. The receiver is unchanged.
+returns a new List whose elements have been scrambled. The receiver is unchanged.
 code::
 List[1, 2, 3, 4, 5, 6].scramble.postln;
 ::
 
 method::mirror
-Return a new List which is the receiver made into a palindrome. The receiver is unchanged.
+returns a new List which is the receiver made into a palindrome. The receiver is unchanged.
 code::
 List[1, 2, 3, 4].mirror.postln;
 ::
 
 method::mirror1
-Return a new List which is the receiver made into a palindrome with the last element removed. This is useful if the list will be repeated cyclically, the first element will not get played twice. The receiver is unchanged.
+returns a new List which is the receiver made into a palindrome with the last element removed. This is useful if the list will be repeated cyclically, the first element will not get played twice. The receiver is unchanged.
 code::
 List[1, 2, 3, 4].mirror1.postln;
 ::
 
 method::mirror2
-Return a new List which is the receiver concatenated with a reversal of itself. The center element is duplicated. The receiver is unchanged.
+returns a new List which is the receiver concatenated with a reversal of itself. The center element is duplicated. The receiver is unchanged.
 code::
 List[1, 2, 3, 4].mirror2.postln;
 ::
 
 method::stutter
-Return a new List whose elements are repeated strong::n:: times. The receiver is unchanged.
+returns a new List whose elements are repeated strong::n:: times. The receiver is unchanged.
 note::It is recommended to use code::dupEach:: instead. This method is retained for backwards compatibility.::
 code::
 List[1, 2, 3].stutter(2).postln;
 ::
 
 method::dupEach
-Return a new List whose elements are repeated strong::n:: times. The receiver is unchanged.
+returns a new List whose elements are repeated strong::n:: times. The receiver is unchanged.
 code::
 List[1, 2, 3].dupEach(2).postln;
 ::
 
 method::rotate
-Return a new List whose elements are in rotated order. Negative strong::n:: values rotate left, positive strong::n:: values rotate right. The receiver is unchanged.
+returns a new List whose elements are in rotated order. Negative strong::n:: values rotate left, positive strong::n:: values rotate right. The receiver is unchanged.
 code::
 List[1, 2, 3, 4, 5].rotate(1).postln;
 List[1, 2, 3, 4, 5].rotate(-1).postln;
@@ -236,7 +234,7 @@ List[1, 2, 3, 4, 5].rotate(3).postln;
 ::
 
 method::pyramid
-Return a new List whose elements have been reordered via one of 10 "counting" algorithms. The algorithms are numbered 1 through 10. Run the examples to see the algorithms.
+returns a new List whose elements have been reordered via one of 10 "counting" algorithms. The algorithms are numbered 1 through 10. Run the examples to see the algorithms.
 code::
 List[1, 2, 3, 4].pyramid(1).postln;
 
@@ -248,7 +246,7 @@ List[1, 2, 3, 4].pyramid(1).postln;
 ::
 
 method::lace
-Returns a new List whose elements are interlaced sequences of the elements of the receiver's subcollections, up to size strong::length::. The receiver is unchanged.
+returns a new List whose elements are interlaced sequences of the elements of the receiver's subcollections, up to size strong::length::. The receiver is unchanged.
 code::
 (
 x = List[[1, 2, 3], 6, List["foo", 'bar']];
@@ -259,7 +257,7 @@ y.postln;
 ::
 
 method::permute
-Returns a new List whose elements are the strong::nthPermutation:: of the elements of the receiver. The receiver is unchanged.
+returns a new List whose elements are the strong::nthPermutation:: of the elements of the receiver. The receiver is unchanged.
 code::
 (
 x = List[1, 2, 3];
@@ -268,7 +266,7 @@ x = List[1, 2, 3];
 ::
 
 method::wrapExtend
-Returns a new List whose elements are repeated sequences of the receiver, up to size strong::length::. The receiver is unchanged.
+returns a new List whose elements are repeated sequences of the receiver, up to size strong::length::. The receiver is unchanged.
 code::
 (
 x = List[1, 2, 3, "foo", 'bar'];
@@ -290,7 +288,7 @@ y.postln;
 ::
 
 method::slide
-Return a new List whose elements are repeated subsequences from the receiver. Easier to demonstrate than explain.
+returns a new List whose elements are repeated subsequences from the receiver. Easier to demonstrate than explain.
 code::
 List[1, 2, 3, 4, 5, 6].slide(3, 1).postcs;
 List[1, 2, 3, 4, 5, 6].slide(3, 2).postcs;

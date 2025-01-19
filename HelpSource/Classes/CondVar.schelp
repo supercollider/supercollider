@@ -1,13 +1,13 @@
 class::CondVar
 categories::Scheduling
-summary::Condition variable: block one or more threads until some condition is true
+summary:: Condition variable: block one or more threads until some condition is true
 
 CondVar is a strong::condition variable::, a low-level synchronization tool which allows one or more threads to wait
-until some condition becomes true. Although it has "variable" in the name, a condition variable doesn't wrap a variable
+until some condition becomes code::true::. Although it has "variable" in the name, a condition variable doesn't wrap a variable
 like, for example, link::Classes/FlowVar:: does. The condition referred to here is totally external to the CondVar
 object, and can be any arbitrary state in your code. CondVar supports two fundamental operations: waiting and
-signalling.  Waiting means suspending execution of the current thread until the relevant condition becomes true at some
-point in the future. Signalling means indicating to other threads that the condition is now true, and that they should
+signalling.  Waiting means suspending execution of the current thread until the relevant condition becomes code::true:: at some
+point in the future. Signalling means indicating to other threads that the condition is now code::true::, and that they should
 continue executing.
 
 When waiting on a CondVar, you may optionally pass a predicate (an object, usually a Function, that returns a
@@ -17,8 +17,8 @@ list::
 ## Manually checking your condition
 
 	numberedlist::
-	## First, check the condition in case it is already true.
-	## If the condition is false, call wait or waitFor without a predicate. This suspends execution of the current thread.
+	## First, check the condition in case it is already code::true::.
+	## If the condition is code::false::, call wait or waitFor without a predicate. This suspends execution of the current thread.
 	## When the CondVar is signalled or a timeout expires, the thread continues execution. You should then check the
 		condition again, and continue waiting if it is not satisfied.
 	::
@@ -85,7 +85,7 @@ fork {
 )
 ::
 
-Internally, CondVar is little more than a queue of threads which are waiting for the condition to become true. When
+Internally, CondVar is little more than a queue of threads which are waiting for the condition to become code::true::. When
 signaling, you have the choice of waking only the next waiting thread on the queue, if one exists (code::signalOne::),
 or waking all waiting threads in the queue (code::signalAll::).
 
@@ -101,8 +101,7 @@ unnecessary.
 classmethods::
 
 method::new
-
-Create a new instance.
+creates a new instance.
 
 instancemethods::
 
@@ -110,17 +109,14 @@ private::prSleepThread, prWakeThread, prRemoveWaitingThread, prConvertTimeoutBea
 private::prWait, prWaitFor
 
 method::wait
-
 The behavior depends on whether a code::predicate:: is given. If no code::predicate:: is given, this method simply
 blocks the current thread until it is woken by code::signalOne:: or code::signalAll::. Otherwise, this method is
 equivalent to code::while { predicate.value.not } { cond.wait }::. In other words, the thread only blocks if the
-predicate is false, otherwise it blocks and only resumes once the thread has been signalled and the predicate is true.
+predicate is code::false::, otherwise it blocks and only resumes once the thread has been signalled and the predicate is code::true::.
 
 This method must only be called within a link::Classes/Routine:: or Routine wrapper (for example, link::Classes/Task::
 or link::Classes/Tdef::).
-
 argument::predicate
-
 A condition to be checked before blocking, and before resuming after being woken by code::signalOne:: or
 code::signalAll::. If code::predicate.value.not:: is code::true::, execution resumes.  Typically, this is a Function
 that returns a Boolean.
@@ -129,19 +125,18 @@ code::predicate:: is always executed on the thread which called code::wait::. If
 exception, the exception will propagate up on the thread which called code::wait::, and the thread will no longer be
 waiting on this CondVar.
 
-When code::wait:: returns, the predicate was true. It may not be true later, for instance if it depends on external
+When code::wait:: returns, the predicate was code::true::. It may not be code::true:: later, for instance if it depends on external
 factors such as the system time or the state of the server.
 
-returns::this object
+returns:: this object
 
 method::waitFor
-
 Similar to code::wait::, but the thread will also be unblocked if the relative timeout code::timeoutBeats:: expires.
 
 If code::predicate:: is code::nil::, this method blocks the current thread until it is woken by code::signalOne:: or
 code::signalAll::, or the timeout expires. If code::predicate:: is not code::nil::, this method returns immediately if
-code::predicate.value:: is true, and otherwise blocks either until the timeout expires, or until the thread is woken by
-code::signalOne:: or code::signalAll:: and code::predicate.value:: is true.
+code::predicate.value:: is code::true::, and otherwise blocks either until the timeout expires, or until the thread is woken by
+code::signalOne:: or code::signalAll:: and code::predicate.value:: is code::true::.
 
 Because the interpreter's thread scheduler is not preemptive, an expiring timeout will only wake the thread if other
 threads are idle. You are not guaranteed that the thread will be woken close to the timeout duration expiring, or even
@@ -149,20 +144,16 @@ that it will be woken at all. This could happen, for example, if some other thre
 yields.
 
 This method must only be called within a link::Classes/Routine:: or Routine wrapper (for example, link::Classes/Task:: or link::Classes/Tdef::).
-
 argument::timeoutBeats
-
 A duration in beats to wait before timing out. This value is converted according to the following rules: if its class is
 Integer or Float, it remainds unchanged; otherwise, if it responds to code::asInteger::, this method is called;
 otherwise, if it responds to code::asFloat::, this method is called. After this, if the resulting value is not an
 Integer or a Float, an error is thrown. An error is also thrown if the resulting value is code::inf:: or not a number
 (NaN).  If the resulting value is less than or equal to 0, code::waitFor:: returns the result of code::predicate.value::
-immediately if code::predicate:: is not nil and code::false:: otherwise.
+immediately if code::predicate:: is not code::nil:: and code::false:: otherwise.
 
 These strict checks are made to protect the thread which handles timeouts.
-
 argument::predicate
-
 A condition to be checked before blocking, and before resuming after being woken by code::signalOne:: or
 code::signalAll:: or a timeout. Typically, this is a Function that returns a Boolean.
 
@@ -170,38 +161,36 @@ code::predicate:: is always executed on the thread which called code::wait::. If
 exception, the exception will propagate up on the thread which called code::wait::, and the thread will no longer be
 waiting on this CondVar.
 
-returns::
+returns:: 
 
 If the thread was woken because the timeout expired, then returns code::predicate.value:: if one was given and
 code::false:: if code::predicate:: was code::nil::.  Otherwise, returns code::true::.
 
-In other words, if code::predicate:: is non-nil, a return value of code::true:: means that code::predicate.value:: was
-true when the thread resumed.
+In other words, if code::predicate:: is code::non-nil::, a return value of code::true:: means that code::predicate.value:: was
+code::true:: when the thread resumed.
 
 method::signalOne
-
 Wakes one thread waiting on this Condition. Threads are woken in the order in which they called code::wait:: or
 code::waitFor::. If a thread is woken and was waiting with a predicate, and that predicate is still code::false::, it
 will code::wait:: again and be placed at the end of the queue of threads waiting on this CondVar. Another thread will
 not be woken in that case.
 
-returns::this object
+returns:: this object
 
 method::signalAll
-
 Wakes all threads waiting on this Condition. Threads are woken in the order in which they called code::wait:: or
 code::waitFor::. If threads were waiting with predicates and their predicates are still code::false:: after being woken,
 they will block again in the same order as before this method was called.
 
-returns::this object
+returns:: this object
 
 method::shallowCopy, copy, deepCopy
-
-Throws a code::ShouldNotImplementError::; CondVars cannot be copied, shallow copied, or deep copied.
+These throw a code::ShouldNotImplementError::; code::CondVar::s cannot be copied, shallow copied, or deep copied.
 
 examples::
 
-subsection::Simple interactive example
+
+subsection:: Simple interactive example
 
 code::
 (
@@ -227,7 +216,8 @@ Routine {
 c.signalOne;
 ::
 
-subsection::Producer-consumer queue: single producer, single consumer
+
+subsection:: Producer-consumer queue: single producer, single consumer
 
 The following example shows a CondVar used to manage a simple producer-consumer queue with one consumer and one producer.
 
@@ -300,7 +290,8 @@ fork {
 )
 ::
 
-subsection::Producer-consumer queue: multiple producers, multiple consumers
+
+subsection:: Producer-consumer queue: multiple producers, multiple consumers
 
 Here is another producer-consumer example with multiple producers and multiple consumers. Note how easily the code above
 can be generalized.
@@ -362,9 +353,10 @@ numConsumers.do { |index|
 )
 ::
 
-subsection::Using timeouts
 
-Sometimes, you want to wait on an external condition that may never come true, or you want to do something else in case
+subsection:: Using timeouts
+
+Sometimes, you want to wait on an external condition that may never come code::true::, or you want to do something else in case
 you've been waiting for a long time. This is a good place to use code::waitFor::. In our example, we're using a Routine
 that sometimes fails to set the desired condition to simulate this "unreliable" task. Some practical examples of this
 might be a long asynchronous task on the server or in a call to unixCmd that doesn't finish in time, or doesn't produce
@@ -397,7 +389,7 @@ fork {
 )
 ::
 
-We can also rewrite this example so that we get signalled no matter what, but the condition might still not come true.
+We can also rewrite this example so that we get signalled no matter what, but the condition might still not come code::true::.
 
 code::
 (

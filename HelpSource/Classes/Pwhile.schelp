@@ -8,10 +8,10 @@ Repeatedly strong::embed:: a link::Classes/Stream:: while the result of code::fu
 
 classmethods::
 
-method:: new
-argument:: func
+method::new
+argument::func
 Stream function. In an event stream receives the current link::Classes/Event:: as argument.
-argument:: pattern
+argument::pattern
 A link::Classes/Pattern::.
 
 

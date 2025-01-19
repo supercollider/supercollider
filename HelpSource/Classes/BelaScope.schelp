@@ -2,12 +2,13 @@ class:: BelaScope
 summary:: Bela's Oscilloscope interface
 categories::  UGens>Bela
 
-Description::
+description::
 note::
 This UGen only works on Bela
 ::
 Allows to scope signals on Bela's built-in Oscilloscope, which can be accessed from Bela's web interface.
 It is not needed to interact directly with this class, as UGens, Arrays, Busses, Functions and Servers can be scoped via their .belaScope() method.
+
 
 subsection:: Setup
 
@@ -20,17 +21,16 @@ It represents the maximum number of channels that is possible to scope on that s
 If set <= 0, the server won't instantiate any Scope object, and any attempt to instantiate a BelaScope from sclang will throw an error.
 ::
 
+
 subsection:: Usage
 Once a Bela server is started with options.belaMaxScopeChannels > 0, it is possible to scope UGens and Busses using their .belaScope() methods. See examples below.
 
 classmethods::
 
 method::scope
-Send an array of UGen data to Bela's oscilloscope.
-
+sends an array of UGen data to Bela's oscilloscope.
 argument::channelOffset
 Bela's oscilloscope channel to start scoping on. This has to be a non-negative number, and can't be changed after scoping starts.
-
 argument::signals
 Array of UGens to scope
 
@@ -50,16 +50,12 @@ method::monitorBus
 Scope a Bus on Bela's oscilloscope
 argument::channelOffset
 Bela's oscilloscope channel to start scoping on. This has to be a non-negative number, and can't be changed after scoping starts.
-
 argument::busindex
 Index of the audio bus to scope
-
 argument::numChannels
 Number of bus channels to scope
-
 argument::target
 Bela's SuperCollider server, or any node on that server. The bus is monitored strong::after:: this target, or after this server's link::Classes/RootNode:: if a server is provided as target.
-
 argument::rate
 A symbol. The default is code::\audio::. Anything else will use control rate.
 
@@ -74,7 +70,7 @@ BelaScope.monitorBus(3, 4, 2, ~belaServer)
 Bus(\audio, 4, 2, ~belaServer).belaScope(3)
 ::
 
-Examples::
+examples::
 
 code::
 ~belaServer = Server.remote(\Bela, NetAddr("192.168.6.2", 57110));

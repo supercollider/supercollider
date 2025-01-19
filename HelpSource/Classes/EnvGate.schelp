@@ -9,24 +9,19 @@ Convenience class for an envelope generator combining fadeTime and gate argument
 ClassMethods::
 
 method::new
-Returns an link::Classes/EnvGen::.
-
+returns an link::Classes/EnvGen::.
 argument::i_level
 initial level of envelope (if set to 1, it starts open)
-
 argument::gate
-a gate input. if nil, EnvGate creates a link::Classes/NamedControl:: named 'gate'
-
+a gate input. if code::nil::, EnvGate creates a link::Classes/NamedControl:: named 'gate'
 argument::fadeTime
-an input for both attack and decay time. if nil, EnvGate creates a link::Classes/NamedControl:: named 'fadeTime' (default time: 0.02)
-
+an input for both attack and decay time. if code::nil::, EnvGate creates a link::Classes/NamedControl:: named 'fadeTime' (default time: 0.02)
 argument::doneAction
 doneAction of the link::Classes/EnvGen::
-
 argument::curve
 envelope curve
 
-Examples::
+examples::
 
 code::
 a = { LPF.ar(Saw.ar(200), 600) * EnvGate.new }.play;

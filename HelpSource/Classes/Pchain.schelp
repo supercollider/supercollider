@@ -4,7 +4,6 @@ related:: Classes/Pbindf
 categories:: Streams-Patterns-Events>Patterns>Composition
 
 description::
-
 definitionList::
 ## Pchain(pattern1, pattern2, ... patternN) || pattern1 <- pattern2 <- ...patternN
 ::
@@ -14,16 +13,15 @@ Values produced by the stream of strong::pattern2:: are used as inval to the str
 ClassMethods::
 
 method::new
-
-argument:: ... patterns
+argument::... patterns
 The patterns to be chained up.
 
 InstanceMethods::
 
 method::<>
-Add another pattern to the chain.
+adds another pattern to the chain.
 
-Examples::
+examples::
 
 code::
 (
@@ -61,7 +59,8 @@ Pchain(a, b, c).trace.play;
 )
 ::
 
-section::pattern composition
+
+section:: pattern composition
 
 pattern <> pattern <> pattern
 

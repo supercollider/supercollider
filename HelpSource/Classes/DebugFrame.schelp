@@ -2,7 +2,7 @@ class:: DebugFrame
 summary:: A representation of the call frame
 categories::  Core
 
-Description::
+description::
 A representation of the call frame.
 Can be used to reconstruct a backtrace by using link::#-caller::.
 
@@ -13,11 +13,11 @@ see the implementation of link::Classes/Exception#-reportError:: where a call to
 
 Instancemethods::
 
-method:: functionDef
-Returns a link::Classes/FunctionDef:: or a link::Classes/Method:: of the current function or method.
+method::functionDef
+returns a link::Classes/FunctionDef:: or a link::Classes/method::of the current function or method.
 
-method:: caller
-Returns another link::Classes/DebugFrame:: for the function that called this function.
+method::caller
+returns another link::Classes/DebugFrame:: for the function that called this function.
 
 discussion::
 Can be used to make a back trace, but watch out for function inlining.
@@ -40,8 +40,8 @@ while{ debugFrame.isNil.not }{
 )
 ::
 
-method:: args
-Returns an link::Classes/Array:: of the argument's values, if there are no arguments, returns a link::Classes/Nil::.
+method::args
+returns an link::Classes/Array:: of the argument's values, if there are no arguments, returns a link::Classes/Nil::.
 This does not contain the argument names, which must be accessed through the link::#-functionDef::.
 
 
@@ -53,7 +53,7 @@ code::
 { |a, b, c = 1| thisFunction.getBackTrace }.(2, 3, c: 4).args == [2, 3, 4];
 ::
 
-method:: vars
+method::vars
 Same as link::#-args:: but for the variables.
 discussion::
 code::
@@ -62,8 +62,8 @@ code::
 { var a, b = 1; thisFunction.getBackTrace }.().vars == [nil, 1]
 ::
 
-method:: address
-Returns a link::Classes/RawPointer::, rarely useful.
+method::address
+returns a link::Classes/RawPointer::, rarely useful.
 
-method:: context
-Returns another link::Classes/DebugFrame:: of the compiling context, rarely useful.
+method::context
+returns another link::Classes/DebugFrame:: of the compiling context, rarely useful.

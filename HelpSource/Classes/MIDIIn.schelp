@@ -16,7 +16,8 @@ Certain MIDI messages are supported only through MIDIIn. These are: sysex, sysrt
 
 See the link::Guides/UsingMIDI:: helpfile for practical considerations and techniques for using MIDI in SC.
 
-subsection::The MIDIIn class
+
+subsection:: The MIDIIn class
 
 MIDIIn links MIDI input received from the operating system to a set of user defined functions. Only one set of MIDI input handling functions can be active at a time, they are stored in the following class variables:
 
@@ -38,51 +39,39 @@ MIDIClient.sources;
 ::
 
 method::addFuncTo
-Add a link::Classes/Function:: or similar object to be evaluated whenever a particular MIDI message is received. This method is preferable to the setters below, since it will not overwrite any existing functions.
-
+adds a link::Classes/Function:: or similar object to be evaluated whenever a particular MIDI message is received. This method is preferable to the setters below, since it will not overwrite any existing functions.
 argument::what
 A link::Classes/Symbol:: indicating the message type to wait for, one of code::'noteOn':: code::'noteOff'::, code::'polytouch'::, code::'control'::, code::'program'::, code::'touch'::, code::'bend'::, code::'sysex'::, code::'sysrt'::, code::'smpte'::, or code::'invalid':: (for invalid sysex messages).
-
 argument::func
 A link::Classes/Function:: or similar object to be evaluated when a message of the specified type is received. See the setters below for the arguments which will be passed at evaluation time.
 
 method::removeFuncFrom
-Remove a link::Classes/Function:: or similar object from the list of those to be evaluated whenever a particular MIDI message is received. This method is preferable to the setters below, since it will leave any existing functions in place.
-
+removes a link::Classes/Function:: or similar object from the list of those to be evaluated whenever a particular MIDI message is received. This method is preferable to the setters below, since it will leave any existing functions in place.
 argument::what
 A link::Classes/Symbol:: indicating the message type, one of code::'noteOn':: code::'noteOff'::, code::'polytouch'::, code::'control'::, code::'program'::, code::'touch'::, code::'bend'::, code::'sysex'::, code::'sysrt'::, code::'smpte'::, or code::'invalid':: (for invalid sysex messages).
-
 argument::func
 The link::Classes/Function:: or similar object to be removed.
 
 method::replaceFuncTo
 Replace a link::Classes/Function:: or similar object in the list to be evaluated whenever a particular MIDI message is received with another one. This method is preferable to the setters below, since it will not overwrite any existing functions.
-
 argument::what
 A link::Classes/Symbol:: indicating the message type to wait for, one of code::'noteOn':: code::'noteOff'::, code::'polytouch'::, code::'control'::, code::'program'::, code::'touch'::, code::'bend'::, code::'sysex'::, code::'sysrt'::, code::'smpte'::, or code::'invalid':: (for invalid sysex messages).
-
 argument::func
 The link::Classes/Function:: or similar object to be replaced.
-
 argument::newFunc
 A link::Classes/Function:: or similar object to be evaluated when a message of the specified type is received. See the setters below for the arguments which will be passed at evaluation time.
 
 
 method::noteOnZeroAsNoteOff
-
 By default this flag is code::true:: and SuperCollider interprets incoming MIDI noteOn message with velocity 0 as noteOff messages. In case you do not want this automatic translation, you can set this flag to code::false::
 
 
 method::connectAll
-
 Connect to all possible MIDI inputs.
-
 argument::verbose
-
-If set to true (default) it will print out the ports found in MIDIClient.init.
+If set to code::true:: (default) it will print out the ports found in MIDIClient.init.
 
 method::disconnectAll
-
 Disconnect from all MIDI inputs.
 
 
@@ -216,9 +205,10 @@ definitionList::
 ## data || 0 - 15 (4bits)
 ::
 
-Examples::
+examples::
 
-subsection::Quick start for 1 port
+
+subsection:: Quick start for 1 port
 code::
 (
 MIDIIn.connect;	// init for one port midi interface
@@ -260,7 +250,8 @@ MIDIIn.removeFuncFrom(\smpte, ~smpte);
 )
 ::
 
-subsection::Quick start for 2 or more ports
+
+subsection:: Quick start for 2 or more ports
 code::
 (
 	var inPorts = 2;
@@ -272,7 +263,8 @@ code::
 )
 ::
 
-subsection::example with sound
+
+subsection:: example with sound
 code::
 MIDIIn.connect;
 s.boot;
@@ -319,7 +311,8 @@ MIDIIn.removeFuncFrom(\noteOff, ~noteOff);
 MIDIIn.removeFuncFrom(\bend, ~bend);
 ::
 
-subsection::writing to the bus rather than directly to the synth
+
+subsection:: writing to the bus rather than directly to the synth
 code::
 // i used this and got acceptable latency for triggering synths live.
 // The latency might actually be less than sc2, but i haven't used it enough
@@ -380,7 +373,8 @@ MIDIIn.removeFuncFrom(\control, ~control);
 MIDIIn.removeFuncFrom(\bend, ~bend);
 ::
 
-subsection::Keyboard Split for two voices
+
+subsection:: Keyboard Split for two voices
 code::
 // pbend to cutoff, mod to rez, 7 to amp
 // - matrix6k@somahq.com

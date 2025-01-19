@@ -4,7 +4,6 @@ related:: Classes/Pfx, Classes/Pfxb, Classes/Pgroup
 categories:: Streams-Patterns-Events>Patterns>Server Control
 
 description::
-
 Starts a new group and plays the pattern in this group, on a private bus. The group and the bus is released when the stream has ended.
 
 This is useful in order to isolate a link::Classes/Pfx::.
@@ -12,22 +11,17 @@ This is useful in order to isolate a link::Classes/Pfx::.
 ClassMethods::
 
 method::new
-
 argument::pattern
-
 argument::dur
 delay to allow inner patterns to decay.
-
 argument::fadeTime
 fading out the inner pattern after dur over this time.
-
 argument::numChannels
 number of channels of the bus (should match the synthdef).
-
 argument::rate
 bus rate.
 
-Examples::
+examples::
 
 code::
 (

@@ -6,7 +6,7 @@ categories:: Streams-Patterns-Events>Patterns>Math
 description::
 Note: this is equivalent to pattern.wrap(lo, hi)
 
-Examples::
+examples::
 
 code::
 (

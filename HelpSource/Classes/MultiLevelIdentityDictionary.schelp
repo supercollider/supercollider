@@ -1,9 +1,9 @@
 CLASS::MultiLevelIdentityDictionary
-summary::tree of dictionaries
+summary:: tree of dictionaries
 related:: Classes/IdentityDictionary
 categories:: Collections>Unordered
 
-DESCRIPTION::
+description::
 A tree of IdentityDictionaries. Addresses within the tree are specified with a series of keys. link::Classes/Library:: is its most useful subclass.
 
 INSTANCEMETHODS::
@@ -11,10 +11,10 @@ INSTANCEMETHODS::
 private::add, remove, removeFail, prChooseFrom, prPutTree, leaves, prNestedValuesFromDict, prRemoveAtPathRecursive, storeOn, printOn
 
 method::at
-Retrieves a leaf node or nil if not found.
+Retrieves a leaf node or code::nil:: if not found.
 
 method::put
-Puts the item as a leaf node, internally creating new branches as needed to accommodate the list of keys.
+puts the item as a leaf node, internally creating new branches as needed to accommodate the list of keys.
 
 method::choose
 Choose a branch at each level, descend the tree until a leaf is chosen.
@@ -34,12 +34,12 @@ putTree(key1, [
 ::
 
 method::removeAt
-Remove only the item located by the path.
+removes only the item located by the path.
 
 method::removeEmptyAt
-Remove the item located by the path. This might make the item's parent dictionary empty. In that case, it will remove the parent and continue up the chain, removing empty dictionaries as it goes. This is slower but cleaner.
+removes the item located by the path. This might make the item's parent dictionary empty. In that case, it will remove the parent and continue up the chain, removing empty dictionaries as it goes. This is slower but cleaner.
 
-EXAMPLES::
+examples::
 
 code::
 // Example of the difference between removeAt and removeEmptyAt

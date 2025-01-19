@@ -13,14 +13,12 @@ ClassMethods::
 private::initClass
 
 method::new
-
 argument::key
-if no instance exists with this name, create a new one, otherwise return the existing one.
-
+if no instance exists with this name, creates a new one, otherwise returns the existing one.
 argument::val
 If a link::Classes/Function:: is given, replace the old function with the new one.
 
-Examples::
+examples::
 
 code::
 Fdef(\x, { 8 + 9 });

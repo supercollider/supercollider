@@ -5,9 +5,10 @@ related::Classes/Function
 
 description::
 
+
 subsection:: Related Keywords
 
-method:: thisFunctionDef
+method::thisFunctionDef
 The global pseudo-variable code::thisFunctionDef:: always evaluates to the
 current enclosing FunctionDef.
 
@@ -15,75 +16,66 @@ See also: link::Classes/Function#.thisFunction#thisFunction::
 
 instanceMethods::
 
-subsection::Accessing
+
+subsection:: Accessing
 
 Even though it is possible to change the values in the various arrays that define the FunctionDef,
 you should not do it, unless you like to crash.
 
 method::code
-
-Get the byte code array.
+gets the byte code array.
 
 code::
 { |a = 9, b = 10, c| a + b }.def.code;
 ::
 
 method::sourceCode
-
-Get the source code string.
+gets the source code string.
 code::
 { |a = 9, b = 10, c| a + b }.def.sourceCode.postcs;
 ::
 
 method::context
-
-Get the enclosing FunctionDef or Method.
+gets the enclosing FunctionDef or Method.
 
 method::findReferences
-
-return a list of all references to a given symbol.
+returns a list of all references to a given symbol.
 
 method::argNames
-
-Get the Array of Symbols of the argument names.
+gets the Array of Symbols of the argument names.
 
 code::
 { |a = 9, b = 10, c| a + b }.def.argNames;
 ::
 method::prototypeFrame
-
-Get the array of default values for argument and temporary variables.
+gets the array of default values for argument and temporary variables.
 
 code::
 { |a = 9, b = 10, c| a + b }.def.prototypeFrame;
 ::
 method::varNames
-
-Get the Array of Symbols of the local variable names.
+gets the Array of Symbols of the local variable names.
 
 code::
 { |a = 9, b = 10, c| var x = 9; a + b + x }.def.varNames;
 ::
 method::argumentString
-
-Return a string that contains all argument names and their default values for embedding in a string.
-If there are no arguments, it returns nil.
+returns a string that contains all argument names and their default values for embedding in a string.
+If there are no arguments, it returns code::nil::.
 
 code::
 { |a = 9, b = 10, c| a + b }.def.argumentString; // "a = 9, b = 10, c"
 { "nothing to see here" }.def.argumentString; // nil
 ::
-
 argument::withDefaultValues
-If set to false, no default values are appended
+If set to code::false::, no default values are appended
 
 code::
  // "a, b, c"
 { |a = 9, b = 10, c| a + b }.def.argumentString(withDefaultValues: false);
 ::
-
 argument::withEllipsis
-If set to true, ellipsis characters (code::" ... "::) are appended
+If set to code::true::, ellipsis characters (code::" ... "::) are appended
 
 code::
 // "a = 9, b = 10 ... c"
@@ -91,9 +83,8 @@ code::
 // "a = 9, b = 10, c"
 { |a = 9, b = 10 ... c| a + b }.def.argumentString(withEllipsis: false);
 ::
-
 argument::asArray
-If set to true, return the string for an array that represents all arguments. The other arguments are set to false.
+If set to code::true::, returns the string for an array that represents all arguments. The other arguments are set to code::false::.
 
 code::
 // "[a, b] ++ c"
@@ -103,22 +94,19 @@ code::
 
 
 method::makeEnvirFromArgs
-
-Get the Array of Symbols of the local variable names.
+gets the Array of Symbols of the local variable names.
 
 code::
 { |a = 9, b = 10, c| a + b }.def.makeEnvirFromArgs;
 ::
 
-subsection::Generating Strings
+
+subsection:: Generating Strings
 
 method::makeFuncModifierString
-
-Return a string that can be interpreted as code for a new function which extracts the arguments from the receiver. This can be used to build a hygienic macro which returns a function with valid keyword arguments, instead of just anonymously forwarding the arguments, like in code::{ |...args| func.valueArray(args) }::.
+returns a string that can be interpreted as code for a new function which extracts the arguments from the receiver. This can be used to build a hygienic macro which returns a function with valid keyword arguments, instead of just anonymously forwarding the arguments, like in code::{ |...args| func.valueArray(args) }::.
 
 For an implementation example link::Classes/Function#flop:: (as below).
-
-
 argument::modifier
 A function to which a string is passed that represents the array of all arguments. It should return a string that can be interpreted.
 
@@ -153,8 +141,7 @@ h.([1, 0], [6, 7]); // [6, 0]
 ::
 
 
-subsection::Utilities
+subsection:: Utilities
 
 method::dumpByteCodes
-
 "Disassemble" and post the FunctionDef's byte code instructions to the text window.

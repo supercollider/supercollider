@@ -3,8 +3,8 @@ summary:: Buffer writing oscillator.
 related:: Classes/BufRd
 categories::  UGens>Buffer
 
-Description::
-Write to a buffer at an index.
+description::
+writes to a buffer at an index.
 
 note:: BufWr (in difference to  link::Classes/BufRd::) does not do multichannel expansion, because input is an array. ::
 
@@ -12,24 +12,20 @@ classmethods::
 private:: categories
 
 method::ar, kr
-
 argument::inputArray
 Input UGens (channelArray).
-
 argument::bufnum
 The index of the buffer to use.
-
 argument::phase
 Modulateable index into the buffer (has to be audio rate).
 Warning:: The phase argument only offers precision for addressing 2**24 samples (about 6.3 minutes at 44100Hz) ::
-
 argument::loop
-1 means true, 0 means false. This is modulateable.
+1 means code::true::, 0 means code::false::. This is modulateable.
 
 instancemethods::
 private:: checkInputs
 
-Examples::
+examples::
 
 code::
 

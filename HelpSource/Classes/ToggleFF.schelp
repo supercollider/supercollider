@@ -4,21 +4,18 @@ related:: Classes/SetResetFF
 categories::  UGens>Triggers
 
 
-Description::
-
+description::
 Toggles between 0 and 1 upon receiving a trigger.
 
 
 classmethods::
 
 method::ar, kr
-
 argument::trig
-
 Trigger input.
 
 
-Examples::
+examples::
 
 code::
 

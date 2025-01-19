@@ -1,13 +1,15 @@
 TITLE:: Multi-client Setups
-SUMMARY:: How to set up and shared servers for multiple clients in SuperCollider
+summary:: How to set up and shared servers for multiple clients in SuperCollider
 CATEGORIES:: Server>Architecture, Tutorials
 related:: Classes/ServerOptions, Classes/Server
 KEYWORD:: server, multi-client
+
 
 section:: Multi client-server setups - discussion and tests
 
 OSC communication between SC and its sound server offers many options for network music: Multiple computers can run both supercollider and associated sound servers.
 For clarity, the "server process" refers to a running scsynth or supernova process. The "server object" AKA "client" is the server's representation in sclang, such as code::Server.local, s, Server(\elsewhere, NetAddr("163.234.56.78"))::.
+
 
 subsection:: What are clientIDs, and how do servers get them?
 
@@ -31,6 +33,7 @@ list::
 ## In case the client was already registered and tries to register again (after a reboot or network problem), scsynth sends back a failed message AND the clientID this client had earlier, and the client will use that clientID.
 ## [After pull request #3181] scsynth also sends back the maxLogins value it was started with, so clients can also adjust their internal allocator settings to it.
 ::
+
 
 subsection:: Code examples and tests
 
@@ -69,6 +72,7 @@ s.userSpecifiedClientID;
 r.userSpecifiedClientID;
 
 ::
+
 
 subsection:: Separate defaultGroups
 
@@ -166,6 +170,7 @@ Ndef(\x).filter(10, { |in| Ringz.ar(in, [600, 800], 0.03) }).play;
 Ndef(\x).end(3);
 
 ::
+
 
 subsection:: Bus channel and buffer numbers
 The allocators for audio and control busses and for buffers split the full number range of scsynth evenly for the number of clients expected.

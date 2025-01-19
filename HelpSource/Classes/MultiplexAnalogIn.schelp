@@ -4,9 +4,8 @@ related:: Classes/AnalogIn, Classes/AnalogOut, Classes/DigitalIn, Classes/Digita
 categories::  UGens>Bela
 
 
-Description::
-
-Reads analog data from a multiplexed analog input of the Bela board, with the additional Multiplexer board.
+description::
+reads analog data from a multiplexed analog input of the Bela board, with the additional Multiplexer board.
 
 note::
 This UGen only works on Bela
@@ -15,34 +14,22 @@ This UGen only works on Bela
 classmethods::
 
 method::ar
-
 argument::analogPin
-
 Analog pin number to read. Pin numbers begin at 0. This value can be modulated at audiorate.
-
 argument::muxChannel
-
 Multiplex channel to read. Pin numbers begin at 0. This value can be modulated at audiorate.
-
 argument::mul
-
 argument::add
 
 method::kr
-
 argument::analogPin
-
 Analog pin number to read. Pin numbers begin at 0.
-
 argument::muxChannel
-
 Multiplex channel to read. Pin numbers begin at 0.
-
 argument::mul
-
 argument::add
 
-Examples::
+examples::
 
 code::
 // modulate frequency of a sine oscillator

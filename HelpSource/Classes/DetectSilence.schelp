@@ -3,8 +3,7 @@ summary:: Detect when input falls below an amplitude threshold
 categories::  UGens>Synth control, UGens>Analysis>Amplitude
 
 
-Description::
-
+description::
 When the absolute value of the input signal remains below the threshold for a given window of time, output 1. Otherwise, output 0. If the output transitions from 0 to 1, doneAction is also evaluated.
 
 code::
@@ -21,36 +20,25 @@ warning:: DetectSilence can be tricky with multi-channel input! See below. ::
 classmethods::
 
 method::ar, kr
-
 argument::in
-
 The input signal.
-
-
 argument::amp
-
 When input falls below this for long enough, evaluate
 
 code::doneAction:: .
-
-
 argument::time
-
 The minimum duration for which input must fall below
 
 code::amp::  before this triggers.
-
-
 argument::doneAction
-
 An integer representing the doneAction. See
 
 link::Classes/Done::  for more detail.
 
-returns::
+returns:: 
 This UGen outputs 1 if silence is detected, otherwise 0.
 
-Examples::
+examples::
 
 code::
 
@@ -79,7 +67,8 @@ Task({
 
 ::
 
-section::DetectSilence and multiple inputs
+
+section:: DetectSilence and multiple inputs
 
 Be careful feeding multiple inputs into DetectSilence, since multichannel expansion can lead to confusing behavior. This code
 

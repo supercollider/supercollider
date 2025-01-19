@@ -3,6 +3,7 @@ summary:: Reference for writing unit generators
 categories:: Internals
 related:: Guides/WritingUGens
 
+
 section:: Input rates
 
 These four constants identify the calculation rates of inputs in SuperCollider.
@@ -20,6 +21,7 @@ definitionlist::
 ## code::calc_DemandRate::
 || Demand rate.
 ::
+
 
 section:: UGen basics
 
@@ -65,6 +67,7 @@ definitionlist::
 ## code::FULLBUFLENGTH::
 ||
 ::
+
 
 section:: Buffers
 
@@ -118,6 +121,7 @@ ACQUIRE_BUS_CONTROL(index)
 RELEASE_BUS_CONTROL(index)
 ::
 
+
 section:: RGen
 
 RGen is a pseudorandom number generator API. Most ugen developers are not interested in seeding their own RGens and
@@ -129,10 +133,10 @@ RGen& rgen = *unit->mParent->mRGen;
 
 definitionlist::
 ## code::uint32 RGen\::trand()::
-|| Return a uniformly distributed random 32-bit integer.
+|| Returns a uniformly distributed random 32-bit integer.
 
 ## code::double RGen\::drand()::
-|| Return a uniformly distributed random double in [0,1).
+|| Returns a uniformly distributed random double in [0,1).
 
 ## code::float RGen\::frand()::
 || Random float in [0,1).
@@ -193,6 +197,7 @@ technically a shifted and stretched order-3 Irwin-Hall distribution. ::
 ## code::double RGen\::sum3rand(double scale)::
 || Double version of code::RGen\::fsum3rand::.
 ::
+
 
 section:: Unary operators
 
@@ -271,6 +276,7 @@ feedback to safeguard from pathological behavior. (Note lack of sc_ prefix.)
 || Fold code::x:: around ±1, folding only once.
 ::
 
+
 section:: Binary operators
 
 definitionlist::
@@ -323,6 +329,7 @@ list::
 ## code::sc_atan2(a, b):: (legacy -- use code::std\::atan2::)
 ::
 
+
 section:: Constants
 
 The following constants are doubles:
@@ -354,6 +361,7 @@ list::
 ## code::truncFloat:: = 3 * 2^22 (used to truncate precision)
 ::
 
+
 section:: Unroll macros
 
 The macros in this section are legacy features. They are seen in many of SuperCollider's built-in ugens, and are
@@ -363,7 +371,7 @@ especially since they make debugging difficult.
 
 definitionlist::
 ## code::LOOP(length, stmt)::
-|| Execute code code::stmt::, code::length:: times.
+|| Executes code code::stmt::, code::length:: times.
 
 ## code::LOOP1(length, stmt)::
 || A faster drop-in alternative to code::LOOP::, which assumes that code::length > 0:: so a branch instruction is saved.
@@ -396,5 +404,5 @@ definitionlist::
 || Does nothing.
 
 ## code::ZOFF::
-|| Return 1.
+|| Returns 1.
 ::

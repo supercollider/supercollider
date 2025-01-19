@@ -3,21 +3,18 @@ summary:: Multiply magnitudes by noise.
 related:: Classes/FFT, Classes/IFFT
 categories:: UGens>FFT
 
-Description::
-
+description::
 Magnitudes are multiplied with noise.
 
 
 classmethods::
 
 method::new
-
 argument::buffer
-
 FFT buffer.
 
 
-Examples::
+examples::
 
 code::
 

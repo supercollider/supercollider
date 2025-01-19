@@ -23,10 +23,10 @@ e.at(\x).value; // the value is 12
 InstanceMethods::
 
 method::put
-Sets the value of the reference at key.
+sets the value of the reference at key.
 
 method::at
-Returns a reference to the object at key.
+returns a reference to the object at key.
 
 code::
 l = LazyEnvir.push;
@@ -58,13 +58,13 @@ l = LazyEnvir.push;
 ::
 
 method::copy
-Copies the environment into a new one, with each placeholder being copied as well.
+copies the environment into a new one, with each placeholder being copied as well.
 
 method::localPut
-Sets the value of the key directly. This method is mainly used internally.
+sets the value of the key directly. This method is mainly used internally.
 
 method::proxyClass
-Specify what placeholder object the environment uses by supplying a class name (link::Classes/Symbol::). The default is a link::Classes/Maybe::. Any object that responds to the methods source, source_ and clear can be a placeholder.
+specifies what placeholder object the environment uses by supplying a class name (link::Classes/Symbol::). The default is a link::Classes/Maybe::. Any object that responds to the methods source, source_ and clear can be a placeholder.
 
 code::
 
@@ -92,7 +92,7 @@ a.pop;
 ::
 
 method::removeAt
-Removes the placeholder from the environment and clears it.
+removes the placeholder from the environment and clears it.
 
 method::makeProxy
-Returns a new placeholder object. This is used internally and can be overridden to implement other lazy environments.
+returns a new placeholder object. This is used internally and can be overridden to implement other lazy environments.

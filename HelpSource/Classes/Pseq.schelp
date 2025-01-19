@@ -4,10 +4,9 @@ related:: Classes/Pser
 categories:: Streams-Patterns-Events>Patterns>List
 
 description::
-
 Cycles over a list of values. The repeats variable gives the number of times to repeat the entire list.
 
-Examples::
+examples::
 
 code::
 (

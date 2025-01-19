@@ -7,11 +7,10 @@ description::
 The output is mixed from an array of inputs, linearly interpolating from two adjacent channels.
 
 classmethods::
-method:: ar, kr
-
-argument:: which
-argument:: array
-argument:: wrap
+method::ar, kr
+argument::which
+argument::array
+argument::wrap
 
 examples::
 code::

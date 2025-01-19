@@ -3,15 +3,16 @@ summary:: An oscilloscope
 categories:: GUI>Interfaces
 related:: Classes/ScopeView, Classes/FreqScope
 
-DESCRIPTION::
-
+description::
 Stethoscope provides a complete oscilloscope GUI. It displays a window containing a bus-plotting link::Classes/ScopeView:: and an interface to configure the plotting and choose among the buses.
 
-SUBSECTION:: Creation by message .scope
+
+subsection:: Creation by message .scope
 
 Several classes provide a convenient 'scope' method that creates a Stethoscope to display their data. See for example: link::Classes/Server#-scope::, link::Classes/Bus#-scope::, link::Classes/Function#-scope::.
 
-SUBSECTION:: Keyboard shortcuts
+
+subsection:: Keyboard shortcuts
 
 The following keyboard shortcuts may be used when focused on the Stethoscope display:
 
@@ -36,26 +37,25 @@ CLASSMETHODS::
 
 PRIVATE:: key
 
-METHOD:: new
+method::new
+    Creates a Stethoscope, either as a window, or placed on a given parent view.
 
-    Create a Stethoscope, either as a window, or placed on a given parent view.
-
-    argument:: server
+    argument::server
         A valid Server (either a local or the internal server), or code::nil::, in which case the code::Server.default:: is used.
-    argument:: numChannels
-        An integer. Default value is 2.
-    argument:: index
-        The offset index. An Integer. Default is nil.
-    argument:: bufsize
-        The size of the analysis buffer. Default is 4096. See also link::#-bufsize::.
-    argument:: zoom
-        Horizontal magnification of the displayed wave. Default is 1. See also link::#-xZoom::.
-    argument:: rate
-        \audio or \control. Default is \audio.
-    argument:: view
-        The optional parent view. Default is nil. If nil, then it will open in its own Window.
-    argument:: bufnum
-        The id number of the Buffer to analyze. Default value is nil. If nil, then a Buffer of size bufSize is allocated.
+    argument::numChannels
+        An integer. The default value is 2.
+    argument::index
+        The offset index. An Integer. The default is code::nil::.
+    argument::bufsize
+        The size of the analysis buffer. The default is 4096. See also link::#-bufsize::.
+    argument::zoom
+        Horizontal magnification of the displayed wave. The default is 1. See also link::#-xZoom::.
+    argument::rate
+        \audio or \control. The default is \audio.
+    argument::view
+        The optional parent view. The default is code::nil::. If code::nil::, then it will open in its own Window.
+    argument::bufnum
+        The id number of the Buffer to analyze. The default value is code::nil::. If code::nil::, then a Buffer of size bufSize is allocated.
 
     discussion:
     Example:
@@ -66,17 +66,15 @@ Stethoscope(s, 2);
 ::
 
 
-METHOD:: isValidServer
-
+method::isValidServer
     Tests whether Stethoscope can operate on the given server (any local server. See link::Classes/Server#-isLocal::).
 
     argument::
         A link::Classes/Server::.
-    returns::
+    returns:: 
         A Boolean.
 
-METHOD:: ugenScopes
-
+method::ugenScopes
     Returns an array of the running ugen scopes.
 
 code::
@@ -85,11 +83,10 @@ s.boot
 Stethoscope.ugenScopes; // returns the ugen scopes
 ::
 
-METHOD:: tileBounds
-
+method::tileBounds
     A utility method used by link::Classes/UGen#-scope:: to tile scope windows.
 
-    returns::
+    returns:: 
         A Rect.
 
 
@@ -97,30 +94,30 @@ METHOD:: tileBounds
 INSTANCEMETHODS::
 
 
-SUBSECTION:: Data
+subsection:: Data
 
-METHOD:: server
+method::server
     The server on which the scope operates.
 
-METHOD:: rate
+method::rate
     Whether to operate on audio or control busses.
     argument::
         One of the two symbols: code::\audio:: or code::\control::.
 
-METHOD:: index
+method::index
     The starting index of the busses to scope.
     argument::
         An Integer.
 
-METHOD:: numChannels
+method::numChannels
     The amount of adjacent busses to scope (from link::#-index:: on).
     argument::
         An Integer.
 
-METHOD:: bufsize
+method::bufsize
    Defines the maximum allowed link::#-cycle::.
 
-METHOD:: cycle
+method::cycle
     note:: Only available in Qt GUI ::
 
     The exact scoping period, in signal frames. Reciprocal to what is also known as emphasis::sweep speed:: in analog oscilloscopes. It is dynamically adjustable while the scope is running.
@@ -129,16 +126,17 @@ METHOD:: cycle
 
     If you are scoping a periodic signal, setting code::cycle:: to match the signal's period will keep the waveform locked in place.
 
-SUBSECTION:: Display
 
-METHOD:: window
+subsection:: Display
+
+method::window
     The (parent) Window of the scope.
 
-METHOD:: bounds
+method::bounds
     The position and size of the window. The position is relative to the bottom-left corner of the screen.
     argument::
         A link::Classes/Rect::, or any object responding to the link::Search#asRect#.asRect:: method. The width less than 264 will be changed to 264, the minimum width.
-    returns::
+    returns:: 
         A Rect.
 code::
 s.scope.bounds_(Rect(100, 200, 500, 600));
@@ -150,19 +148,18 @@ s.scope.bounds_(Rect(0, 0, 500, 600));
 s.scope.bounds_(500@600);
 ::
 
-METHOD:: size
+method::size
     Sets the width and the height of the scope window.
     argument::
         An Integer (the window is square).
 
-METHOD:: toggleSize
-
+method::toggleSize
     Toggle between small and large size.
 
-METHOD:: zoom
+method::zoom
     A synonym for link::#-xZoom::.
 
-METHOD:: xZoom
+method::xZoom
     Magnifies the displayed wave horizontally to the given factor.
 
     This sets link::#-cycle:: to code::1024 * xZoom.reciprocal::.
@@ -170,13 +167,13 @@ METHOD:: xZoom
     argument::
         A Float.
 
-METHOD:: yZoom
+method::yZoom
     Magnifies the displayed wave vertically to the given factor.
 
     argument::
         A Float.
 
-METHOD:: style
+method::style
     The plotting style:
     list::
     ## 0 = the channels are vertically spaced
@@ -188,27 +185,28 @@ METHOD:: style
         One of the above Integers.
         
         
-SUBSECTION:: Operation
 
-METHOD:: run
 
+subsection:: Operation
+
+method::run
     Starts the scope, if not already running.
 
-METHOD:: quit
-
+method::quit
     Closes the window, and cleans up any used synths and buffers.
 
-SUBSECTION:: Convenience
 
-METHOD:: setProperties
+subsection:: Convenience
 
+method::setProperties
     Sets several properties at once: link::#-numChannels::, link::#-index::, link::#-bufsize::, link::#-zoom::, and link::#-rate::.
 
 
 
-EXAMPLES::
+examples::
 
-SUBSECTION:: A step-by-step example
+
+subsection:: A step-by-step example
 code::
 s.boot;
 (
@@ -247,7 +245,8 @@ c.scope;
 // fact that ScopeOut.kr doesn't work yet.)
 ::
 
-SUBSECTION:: Multi-channel Lissajou plots
+
+subsection:: Multi-channel Lissajou plots
 code::
 (
 { 
@@ -262,7 +261,8 @@ c.scopeView.waveColors = [Color.red, Color.red, Color.cyan, Color.cyan, Color.wh
 c.style = 2;
 ::
 
-SUBSECTION:: Embedded use
+
+subsection:: Embedded use
 You can pass your own view in to add a stethoscope to it:
 
 code::

@@ -9,7 +9,7 @@ code::
 Synth.play({ SinOsc.ar(440, 0, 0.5) }); // in SC3 just a wrapper for Function.play with fewer args
 ::
 
-Both of these will create synth nodes on the default server. Note that neither requires the use of an code::Out.ar:: link::Classes/UGen::; they simply output to the first audio bus. One can however add an link::Classes/Out:: to Function.play in order to specify.
+Both of these will create synth nodes on the default server. Note that neither requires the use of an code::Out.ar:: link::Classes/UGen::; they simply output to the first audio bus. One can, however, add an link::Classes/Out:: to Function.play in order to specify.
 
 code::
 Synth.play({ Out.ar(1, SinOsc.ar(440, 0, 0.5)) });

@@ -16,15 +16,14 @@ list::
 ::
 
 classmethods::
-method:: ar, kr
-
-argument:: trig
+method::ar, kr
+argument::trig
 a non-positive to positive transition triggers a message.
-argument:: cmdName
+argument::cmdName
 a string or symbol, as a message name.
-argument:: values
+argument::values
 array of ugens, or valid ugen inputs.
-argument:: replyID
+argument::replyID
 integer id (similar to link::Classes/SendTrig::).
 
 examples::
@@ -79,7 +78,8 @@ OSCdef(\listener, { |msg|
 ~mySynth.set(\rate, 10); // slow it down...
 ::
 
-subsection::Identitying the time a message was sent
+
+subsection:: Identitying the time a message was sent
 
 Sometimes, we need to know when a message was sent. Because code::SendReply:: can send only messages (which have no timestamp) and no bundles (which have), we can't use the code::time:: argument of the link::Classes/OSCdef::'s function. Instead, you can send a time stamp with the data, by using the link::Classes/Sweep:: UGen.
 

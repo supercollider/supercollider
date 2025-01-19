@@ -35,7 +35,7 @@ method::numChannels
 The number of channels.
 returns:: an link::Classes/Integer::
 
-method:: spec
+method::spec
 The link::Classes/ControlSpec:: for this control. If set, it will be added to the specs metadata for the current SynthDef.at
 
 code::

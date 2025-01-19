@@ -3,16 +3,15 @@ summary:: Search a buffer for a value
 categories:: UGens>Buffer
 
 description::
-Search a buffer for a value.
+searches a buffer for a value.
 
 classmethods::
-method:: ar, kr
-
-argument:: bufnum
+method::ar, kr
+argument::bufnum
 index of the buffer
-argument:: in
+argument::in
 the input signal.
-returns::
+returns:: 
 index
 
 examples::

@@ -3,8 +3,7 @@ summary:: Complex plane attack.
 related:: Classes/FFT, Classes/IFFT
 categories:: UGens>FFT
 
-Description::
-
+description::
 Applies the conformal mapping
 
 code::
@@ -24,7 +23,7 @@ code::
 |a| < 1
 ::
 but
-you can of course try bigger values to make it really noisy.
+you can, of course, try bigger values to make it really noisy.
 
 code::
 a = 0
@@ -39,23 +38,15 @@ See  link::http://mathworld.wolfram.com/ConformalMapping.html:: .
 classmethods::
 
 method::new
-
 argument::buffer
-
 FFT buffer.
-
-
 argument::areal
-
 Real part of a.
-
-
 argument::aimag
-
 Imaginary part of a.
 
 
-Examples::
+examples::
 
 code::
 

@@ -4,26 +4,25 @@ categories:: GUI>Accessories
 related:: Classes/Color, Classes/HiliteGradient
 
 description::
-
 note:: The use of Gradient is strong::not supported yet::. When Gradient is used in place of Color, the average gradient color will be used instead. ::
 
 classmethods::
 
-method:: new
-argument:: color1
+method::new
+argument::color1
 An instance of link::Classes/Color::.
-argument:: color2
+argument::color2
 An instance of link::Classes/Color::.
-argument:: direction
-code::\h:: or code::\v:: for horizontal and vertical respectively. Default value is code::\h::.
-argument:: steps
-The resolution of the gradient. Default value is 64.
+argument::direction
+code::\h:: or code::\v:: for horizontal and vertical respectively. The default value is code::\h::.
+argument::steps
+The resolution of the gradient. The default value is 64.
 
 instancemethods::
 
-method:: at
+method::at
 Retrieve the colour at position code::pos::, typically a value between zero and one. code::at(0):: is code::color1::, and code::at(1):: is code::color2::.
-argument:: pos
+argument::pos
 
 examples::
 code::

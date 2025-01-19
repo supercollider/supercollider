@@ -1,9 +1,9 @@
 TITLE:: Operand
-summary::Idempotent wrapper around math operations
+summary:: Idempotent wrapper around math operations
 categories:: Core
 related:: Classes/AbstractFunction, Classes/Maybe, Classes/Ref, Classes/Rest
 
-DESCRIPTION::
+description::
 If you need to ensure that math operations always return the result wrapped in a specific object, you can use Operand or subclass from it.
 For some practical examples, see its subclass link::Classes/Rest::. If you need to keep nested operations, use link::Classes/Maybe::.
 
@@ -26,9 +26,9 @@ c.value; // [6, 8, 10]
 
 CLASSMETHODS::
 
-METHOD:: new
-argument:: value
-Return a new instance of Operand, using an arbitrary object as value.
+method::new
+argument::value
+Returns a new instance of Operand, using an arbitrary object as value.
 
 code::
 a = Operand(1) + 7; // returns Operand(8)
@@ -42,8 +42,8 @@ INSTANCEMETHODS::
 
 PRIVATE:: composeBinaryOp, composeNAryOp, composeUnaryOp, performBinaryOpOnComplex, performBinaryOpOnSeqColl, performBinaryOpOnSignal, performBinaryOpOnSimpleNumber, reverseComposeBinaryOp
 
-METHOD:: value
-Set or return the current value.
+method::value
+sets/returns the current value.
 
 code::
 a = Operand(2) ** 8;
@@ -52,27 +52,27 @@ a.value = 78;
 a.value; // 78
 ::
 
-METHOD:: ==
-argument:: obj
+method::==
+argument::obj
 An Operand is equal to another one if their value are equal.
 code::
 Operand(1) == Operand(1);
 Operand(1) + 2 == Operand(3);
 ::
 
-METHOD:: hash
+method::hash
 Two instances with the same value return the same hash value.
 code::
 Set[Operand(1), Operand(1)] == Set[Operand(1)] // true
 ::
 
-METHOD:: dereferenceOperand
+method::dereferenceOperand
 This method is called to avoid nesting. You may override it in subclasses to perform actions on resulting values.
 code::Operand(Operand(1)) // Operand(1)::.
 
 
 
-EXAMPLES::
+examples::
 
 code::
 // you could make a class that always converts values to integers:

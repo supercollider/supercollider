@@ -5,6 +5,7 @@ categories:: GUI>Views
 description::
 A multi-state button.
 
+
 subsection:: Some Important Issues Regarding Button
 
 Failure to set any states at all results in an invisible button.
@@ -15,10 +16,10 @@ If the drag contains a number, then code::valueAction_():: is performed using th
 
 classmethods::
 
-method:: new
-argument:: parent
+method::new
+argument::parent
 The parent view.
-argument:: bounds
+argument::bounds
 An instance of link::Classes/Rect::, or a link::Classes/Point:: indicating code::width@height::.
 discussion::
 Example:
@@ -44,9 +45,9 @@ instancemethods::
 
 private::prDoAction
 
-method:: states
+method::states
 An array of labels and colors defining the states of the button.
-argument:: stateArray
+argument::stateArray
 An link::Classes/Array:: of arrays of the form code:: [[String, strColor, bgColor], ....] ::
 
 code::
@@ -70,18 +71,18 @@ a.action = { |view|
 );
 ::
 
-method:: value
-Sets or returns the index of the current state. This will strong::not:: evaluate the function assigned to strong::action:: (see link::Classes/View::).
-argument:: argVal
+method::value
+sets/returns the index of the current state. This will strong::not:: evaluate the function assigned to strong::action:: (see link::Classes/View::).
+argument::argVal
 The index of an item in the states array.
 
-method:: valueAction
-Sets the button to display the item at index strong::anInt:: of the states array, and evaluates strong::action:: (see link::Classes/View::), if the value has changed.
-argument:: anInt
+method::valueAction
+sets the button to display the item at index strong::anInt:: of the states array, and evaluates strong::action:: (see link::Classes/View::), if the value has changed.
+argument::anInt
 The index of an item in the states array.
 
-method:: string
-Sets or gets the text of the currently active state.
+method::string
+sets/gets the text of the currently active state.
 code::
 (
 w = Window("but", Rect(300, 300, 200, 200)).front;
@@ -90,9 +91,9 @@ b.string = "hello button";
 )
 ::
 
-method:: font
-Sets the Font of the button. Default value is the default font: Font.default .
-argument:: aFont
+method::font
+sets the Font of the button. The default value is the default font: Font.default .
+argument::aFont
 An instance of link::Classes/Font::.
 
 
@@ -100,12 +101,12 @@ subsection:: Subclassing and Internal Methods
 
 The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
 
-method:: doAction
+method::doAction
 The method called by the primitive upon releasing the mouse.
-argument:: modifiers
+argument::modifiers
 A key modifier number, which is passed to the strong::action:: as its second argument upon mouse-releasing the button.
 
-method:: defaultKeyDownAction
+method::defaultKeyDownAction
 discussion::
 The default keydown actions are:
 table::
@@ -117,18 +118,18 @@ table::
 ::
 To change these use code::defaultKeyDownAction_::, see link::Classes/View::.
 
-method:: properties
+method::properties
 A list of properties to which this view responds. See link::Classes/View::.
-returns::
+returns:: 
 [\bounds, \visible, \enabled, \canFocus, \resize, \background, \minWidth, \maxWidth, \minHeight, \maxHeight, \value, \font, \states, \focusColor]
 
-method:: defaultGetDrag
+method::defaultGetDrag
 The method called by default when initiating a drag strong::from:: a Button. Returns the same as link::#-value::.
 
-method:: defaultCanReceiveDrag
+method::defaultCanReceiveDrag
 The method called by default when attempting to drop a drag in this object. By default, Button will respond only to drags where the drag contains a link::Classes/Number:: or link::Classes/Function::.
 
-method:: defaultReceiveDrag
+method::defaultReceiveDrag
 The default method called when a drag has been received. If the drag contains a number, then action is set to the current drag. Otherwise code::valueAction_():: is performed using the code::currentDrag::.
 
 examples::

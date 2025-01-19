@@ -2,8 +2,7 @@ CLASS:: ListView
 summary:: A view displaying a list of text items.
 categories:: GUI>Views
 
-DESCRIPTION::
-
+description::
 A view that displays a list of text items and allows one or more of them to be selected, depending on link::#-selectionMode::.
 
 In default selection mode (single item selection), clicking on an item will select it, and pressing the up or down arrow keys will move selection to previous or next item, respectively. Other selection modes allow more complex interaction.
@@ -21,66 +20,62 @@ PRIVATE:: key
 INSTANCEMETHODS::
 
 
+subsection:: Data
 
-SUBSECTION:: Data
-
-METHOD:: items
+method::items
 	The list of items displayed by the view.
 
 	argument::
 		An Array of Strings, each String defining the text to represent an item.
 
-METHOD:: clear
+method::clear
     Removes all items.
 
-METHOD:: value
-	The index of the current item, or nil when there is no current item. Note that this may be different than link::#-selection:: when link::#-selectionMode:: allows multiple items to be selected.
+method::value
+	The index of the current item, or code::nil:: when there is no current item. Note that this may be different than link::#-selection:: when link::#-selectionMode:: allows multiple items to be selected.
 
 	argument::
-		An Integer or nil.
+		An Integer or code::nil::.
 
-METHOD:: valueAction
+method::valueAction
 	Sets link::#-value:: and triggers the link::#-action::.
 
-METHOD:: selection
+method::selection
 	An array of all selected indexes. When setting selection, either an array or a single integer may be used.
 
 	Note that this may be different than link::#-value:: when link::#-selectionMode:: allows multiple items to be selected. When setting selection in single-item selection mode, only the last index will remain selected.
 
 
-SUBSECTION:: Appearance
+subsection:: Appearance
 
-METHOD:: colors
+method::colors
 	The background colors of the items.
 
 	argument::
 		An Array of Colors, one Color for each item.
 
-METHOD:: stringColor
+method::stringColor
 	The color used to display all the text of all unselected items.
 
 	argument::
 		A Color.
 
-METHOD:: selectedStringColor
+method::selectedStringColor
 	The color used to display the selected item's text.
 
 	argument::
 		A Color.
 
-METHOD:: hiliteColor
+method::hiliteColor
 	The color used to indicate the selected item (aside from the color of its text).
 
 	argument::
 		A Color.
 
 
+subsection:: Interaction
 
-
-SUBSECTION:: Interaction
-
-METHOD:: selectionMode
-
+method::selectionMode
 	The allowed mode of item selection, according to the following table:
 
 	table::
@@ -96,21 +91,18 @@ METHOD:: selectionMode
 		One of the Symbols listed in the table above.
 
 
+subsection:: Actions
 
-SUBSECTION:: Actions
-
-METHOD:: action
+method::action
 	The action object evaluated whenever the user changes the emphasis::current:: item, i.e. when link::#-value:: changes as a result of GUI interaction.
 
-METHOD:: selectionAction
-
+method::selectionAction
 The action object evaluated whenever link::#-selection:: changes.
 
-METHOD:: enterKeyAction
+method::enterKeyAction
 	The action object evaluated whenever the user presses the Enter (Return) key.
 
-METHOD:: defaultKeyDownAction
-
+method::defaultKeyDownAction
 	Implements the default effects of key presses as follows:
 
 	table::
@@ -126,22 +118,22 @@ METHOD:: defaultKeyDownAction
 	::
 
 
+subsection:: Drag and drop
 
-SUBSECTION:: Drag and drop
-
-METHOD:: defaultGetDrag
-	returns::
+method::defaultGetDrag
+	returns:: 
 		The link::#-value::.
 
-METHOD:: defaultCanReceiveDrag
-	returns::
-		True if the current drag data is a number.
+method::defaultCanReceiveDrag
+	returns:: 
+		code::true:: if the current drag data is a number.
 
-METHOD:: defaultReceiveDrag
+method::defaultReceiveDrag
 	Sets link::#-valueAction:: to the current drag data.
 
 
-EXAMPLES::
+examples::
+
 
 subsection:: Basic Example
 

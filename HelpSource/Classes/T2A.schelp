@@ -7,11 +7,10 @@ description::
 Converts control rate trigger into audio rate trigger (maximally one per control period).
 
 classmethods::
-method:: ar
-
-argument:: in
+method::ar
+argument::in
 input signal.
-argument:: offset
+argument::offset
 sample offset within control period.
 
 examples::

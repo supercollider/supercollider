@@ -3,36 +3,24 @@ summary:: Make gaps in spectrum.
 related:: Classes/FFT, Classes/IFFT, Classes/PV_RectComb2
 categories:: UGens>FFT
 
-Description::
-
-Makes a series of gaps in a spectrum.
+description::
+makes a series of gaps in a spectrum.
 
 
 classmethods::
 
 method::new
-
 argument::buffer
-
 FFT buffer.
-
-
 argument::numTeeth
-
 Number of teeth in the comb.
-
-
 argument::phase
-
 Starting phase of comb pulse.
-
-
 argument::width
-
 Pulse width of the comb.
 
 
-Examples::
+examples::
 
 code::
 

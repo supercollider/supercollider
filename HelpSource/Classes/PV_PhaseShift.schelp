@@ -3,29 +3,21 @@ summary:: Shift phase.
 related:: Classes/FFT, Classes/IFFT, Classes/PV_PhaseShift90, Classes/PV_PhaseShift270, Classes/PV_Diffuser
 categories:: UGens>FFT
 
-Description::
-
+description::
 Shift phase of all bins.
 
 
 classmethods::
 
 method::new
-
 argument::buffer
-
 FFT buffer.
-
-
 argument::shift
-
 Phase shift in radians.
-
 argument::integrate
-
 If greater than zero, integrate the phase-shift across calls (for an accumulating phase shift).
 
-Examples::
+examples::
 
 code::
 

@@ -2,7 +2,7 @@ class:: BelaScopeOut
 summary:: Bela's Oscilloscope interface
 categories::  UGens>Bela
 
-Description::
+description::
 note::
 This UGen only works on Bela
 ::

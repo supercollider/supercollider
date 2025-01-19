@@ -4,10 +4,9 @@ related:: Classes/Place
 categories:: Streams-Patterns-Events>Patterns>List
 
 description::
-
 Similar to link::Classes/Place::, but the list is an array of streams or patterns. The results of each stream will be output in turn.
 
-Examples::
+examples::
 
 code::
 p = Ppatlace([Pwhite(1, 5, 5), Pgeom(10, 1.01, 10)], inf);

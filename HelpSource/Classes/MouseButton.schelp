@@ -4,31 +4,22 @@ related:: Classes/KeyState, Classes/MouseX, Classes/MouseY
 categories::  UGens>User interaction
 
 
-Description::
-
+description::
 Mouse button UGen.
 
 
 classmethods::
 
 method::kr
-
 argument::minval
-
 Value when the button is not pressed.
-
-
 argument::maxval
-
 Value when the button is pressed.
-
-
 argument::lag
-
 Lag factor.
 
 
-Examples::
+examples::
 
 code::
 

@@ -12,30 +12,30 @@ For CSS styling, see link::Reference/SCDocStyling::.
 
 classmethods::
 
-method:: renderOnStream
+method::renderOnStream
 Renders a parsed document as HTML onto given stream.
-argument:: stream
+argument::stream
 A stream, for example a link::Classes/File:: instance.
-argument:: doc
+argument::doc
 An instance of link::Classes/SCDocEntry::
-argument:: root
+argument::root
 An instance of link::Classes/SCDocNode::
 
-method:: renderToFile
-Opens a file and passes it to link::#*renderOnStream::
+method::renderToFile
+opens a file and passes it to link::#*renderOnStream::
 
-method:: htmlForLink
-Create a html string for the given scdoc link.
-argument:: link
+method::htmlForLink
+creates a html string for the given scdoc link.
+argument::link
 An scdoc link, such as a document key like "Classes/SinOsc", or an URL, or link to other file installed with the help.
-argument:: escape
+argument::escape
 a boolean to set whether to escape special characters.
-returns::
+returns:: 
 A String
 
-method:: makeArgString
+method::makeArgString
 Used internally.
-Returns:: A link::Classes/String:: representing the arguments (with defaults) for a link::Classes/Method::.
+returns:: A link::Classes/String:: representing the arguments (with defaults) for a link::Classes/Method::.
 
 
 section:: CSS styling

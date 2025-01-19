@@ -4,27 +4,22 @@ related:: Classes/Pnaryop, Classes/Punop, Classes/BinaryOpFunction
 categories:: Streams-Patterns-Events>Patterns>Math
 
 description::
-
-Returns a stream that applies the binary operator to the stream values of the receiver. Usually, this is the result of applying a binary operator (i.e. a method with one argument) to a pattern.
+returns a stream that applies the binary operator to the stream values of the receiver. Usually, this is the result of applying a binary operator (i.e. a method with one argument) to a pattern.
 
 Examples of binary operators are: +, -, /, *, min, max, hypot ...
 
 ClassMethods::
 
 method::new
-
 argument::operator
 operator to be applied
-
 argument::a
 a pattern (or compatible pattern input)
-
 argument::b
 a pattern (or compatible pattern input)
-
 argument::adverb
 
-Examples::
+examples::
 
 code::
 (

@@ -33,12 +33,9 @@ combined using math operations and "filtered".
 classMethods::
 
 method::new
-
-Creates an instance of Routine, passing it the Function with code to run.
-
+creates an instance of Routine, passing it the Function with code to run.
 argument::func
 A Function with code for the Thread to run.
-
 argument::stackSize
 Call stack size (an Integer).
 
@@ -59,7 +56,6 @@ a = r { 1.yield; 2.yield };
 instanceMethods::
 
 method::next
-
 This method performs differently according to the Routine's state:
 list::
 ## Starts the Routine, if it has not been started yet or it has been
@@ -81,7 +77,7 @@ Time: Just before code::next:: is called, code::thisThread:: points either to an
 
 Synonyms for code::next:: are link::#-value:: and link::#-resume::.
 
-returns::
+returns:: 
 list::
 ## Either the value that the Routine yields (the Object on which
 link::Classes/Object#-yield#yield:: is called within the Routine Function),
@@ -139,21 +135,17 @@ r = Routine { |inval|
 ::
 
 method::value
-
 Equivalent to link::#-next::.
 
 method::resume
-
 Equivalent to link::#-next::.
 
 method::stop
-
 Equivalent to the Routine Function reaching its end or returning: after this, the Routine
 will never run again (the link::#-next:: method has no effect and returns code::nil::),
 unless link::#-reset:: is called.
 
 method::reset
-
 Causes the Routine to start from the beginning next time link::#-next:: is called.
 
 discussion::
@@ -168,19 +160,16 @@ See also: link::Classes/Object#-yield::, link::Classes/Object#-alwaysYield::
 
 
 method::play
-
 Schedules the Routine on the given link::Classes/Clock::, at a time specified by code::quant::. At that time, the Routine will wake up (by calling link::Classes/Routine#-awake::), setting the clock and time and evaluating the Routine. If the Routine yields a number, this number of beats will be added to the current time and the Routine will be rescheduled. (This behavior is compatible with scheduling a link::Classes/Stream:: or a link::Classes/Function::.)
-
 argument::clock
 a Clock, TempoClock by default
-
 argument::quant
 see the link::Classes/Quant:: helpfile
 
 discussion::
-using link::Classes/Object#-idle:: within a routine, return values until this time is over. Time is measured relative to the thread's clock.
+using link::Classes/Object#-idle:: within a routine, returns values until this time is over. Time is measured relative to the thread's clock.
 code::
-// for 6 seconds, return 200, then continue
+// for 6 seconds, returns 200, then continues
 (
 r = Routine {
 		199.yield;
@@ -217,14 +206,11 @@ fork {
 );
 ::
 
-method:: reschedule
-
+method::reschedule
 If a Routine is currently scheduled on a clock, it will be expected to "awake" at a specific time, on a specific clock. code::reschedule:: allows you to change to a different clock or to a later time.
-
-argument:: argClock
+argument::argClock
 The new clock on which to run the Routine. If code::nil::, the routine's clock will not be changed. (Note: Currently incompatible with link::Classes/AppClock::; rescheduling depends upon the method code::schedAbs::, which AppClock does not implement.)
-
-argument:: quant
+argument::quant
 A quantization specifier, identifying a time emphasis::later:: than the next-scheduled time. If code::nil::, the current value of code::nextBeat:: will be used.
 
 discussion::
@@ -298,38 +284,33 @@ t.stop;
 u.stop;
 ::
 
-method:: awake
-
+method::awake
 This method is called by a link::Classes/Clock:: on which the Routine was scheduled
 when its scheduling time is up. It calls link::#-next::, passing on the scheduling
 time in beats as an argument. The value returned by code::next:: (the value yielded
 by the Routine) will in turn be returned by this method, thus determining the time
 which the Routine will be rescheduled for.
-
-argument:: inBeats
+argument::inBeats
 The scheduling time in beats. This is equal to the current logical time
 (link::Classes/Thread#-beats::).
-
-argument:: inSeconds
+argument::inSeconds
 The scheduling time in seconds. This is equal to the current logical time
 (link::Classes/Thread#-seconds::).
-
-argument:: inClock
+argument::inClock
 The clock which awoke the Routine.
 
 
-method:: p
-
+method::p
 Convert the routine to a (subclass of) link::Classes/Pattern::.
 
-returns::
+returns:: 
 
 A link::Classes/Prout:: that (in response to code::asStream::) acts as a generator of independent copies of the original routine (the receiver of code::p::).
 
 
 discussion::
 
-Any subclass of Pattern returns a Stream in response to code::asStream::. However, the exact subclass of Stream returned depends on the class of the Pattern. In particular, a Prout returns a Routine in response to code::asStream::. Thus, a way to make an independent copy of a Routine is to make a Prout from it with the method code::p::, and then create a new Routine from this Prout. In the example immediately below, this second step is done explicitly by calling code::asStream::, but in the context of passing arguments to other Patterns, this latter step usually happens automatically, as shown in later examples.
+Any subclass of link::Classes/Pattern:: returns a link::Classes/Stream:: in response to code::asStream::. However, the exact subclass of link::Classes/Stream:: returned depends on the class of the link::Classes/Pattern::. In particular, a link::Classes/Prout:: returns a link::Classes/Routine:: in response to code::asStream::. Thus, a way to make an independent copy of a link::Classes/Routine:: is to make a Prout from it with the method code::p::, and then creates a new link::Classes/Routine:: from this link::Classes/Prout::. In the example immediately below, this second step is done explicitly by calling code::asStream::, but in the context of passing arguments to other link::Classes/Pattern::s, this latter step usually happens automatically, as shown in later examples.
 
 code::
 (
@@ -366,7 +347,7 @@ Ptuple([(:2..5), (:2..5)]).asStream.all.postln;
 )
 ::
 
-In the following example, directly reusing the same Routine object twice in a code::Pseq:: fails to duplicate its output, because the first embedding fully consumes the routine's (non-nil) output.
+In the following example, directly reusing the same Routine object twice in a code::Pseq:: fails to duplicate its output, because the first embedding fully consumes the routine's (code::non-nil::) output.
 
 code::
 (
@@ -384,7 +365,7 @@ Pseq([(:2..6), (:2..6)]).asStream.all.postln;
 ::
 
 
-subsection::Accessible instance variables
+subsection:: Accessible instance variables
 
 Routine inherits from link::Classes/Thread::, which allows access to some of its state:
 
@@ -409,15 +390,12 @@ r.clock;
 ::
 
 method::beats
-
 returns:: The elapsed beats (logical time) of the routine. The beats do not proceed when the routine is not playing.
 
 method::seconds
-
 returns:: The elapsed seconds (logical time) of the routine. The seconds do not proceed when the routine is not playing, it is the converted beat value.
 
 method::clock
-
 returns:: The thread's clock. If it has not played, it is the SystemClock.
 
 examples::
@@ -549,7 +527,7 @@ w.drawFunc = Routine {
 				((size * (j % 9)) - 10) @ (size * (j div: 9))
 			);
 		};
-		0.yield // stop here, return something unimportant
+		0.yield // stops here, returns something unimportant
 	}
 };
 

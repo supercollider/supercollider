@@ -4,7 +4,6 @@ related:: Classes/Pfindur, Classes/Pfin, Classes/Pconst
 categories:: Streams-Patterns-Events>Patterns>Repetition
 
 description::
-
 note::
 Pfinval is not appropriate for wrapping link::Classes/Pmono::, link::Classes/Pfx:: etc. For these types of event patterns, you should use link::Classes/Pfin::.
 ::
@@ -14,7 +13,7 @@ ClassMethods::
 method::new
 Embeds strong::count:: elements of the strong::pattern:: into the stream.
 
-Examples::
+examples::
 
 code::
 (

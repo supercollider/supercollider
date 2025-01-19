@@ -2,26 +2,22 @@ class:: Hasher
 summary:: Scrambled value with a hash function.
 categories::  UGens>Filters>Nonlinear, UGens>Random
 
-Description::
-
-Returns a unique output value from -1 to +1 for each input value
+description::
+returns a unique output value from -1 to +1 for each input value
 according to a hash function. The same input value will always produce
 the same output value. The input need not be in the range -1 to +1.
 
 classmethods::
 
 method::ar, kr
-
 argument::in
 The input signal.
-
 argument::mul
 Output will be multiplied by this value.
-
 argument::add
 This value will be added to the output.
 
-Examples::
+examples::
 
 code::
 { Hasher.ar(Line.ar(0, 1, 1), 0.2) }.play;

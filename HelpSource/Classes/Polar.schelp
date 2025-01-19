@@ -8,47 +8,48 @@ Represents polar coordinates.
 
 classmethods::
 
-method:: new
-Create a new polar coordinate with the given radius, rho, and angle in radians, theta.
+method::new
+creates a new polar coordinate with the given radius, rho, and angle in radians, theta.
 
 
 
 instancemethods::
 
+
 subsection:: Math
-method:: +, -, *, /
+method::+, -, *, /
 The math operations of addition, subtraction, multiplication and division are accomplished by
 first converting to complex numbers.
 
-method:: scale
+method::scale
 Scale the radius by some value.
 
-method:: rotate
+method::rotate
 Rotate the angle by some value.
 
-method:: neg
+method::neg
 Rotate by pi.
 
 
 subsection:: Conversion
 
-method:: magnitude
-Return the radius.
+method::magnitude
+returns the radius.
 
-method:: angle
-Return the angle in radians
+method::angle
+returns the angle in radians
 
-method:: phase
-Return the angle in radians
+method::phase
+returns the angle in radians
 
-method:: real
-Return the real part.
+method::real
+returns the real part.
 
-method:: imag
-Return the imaginary part.
+method::imag
+returns the imaginary part.
 
-method:: asComplex
+method::asComplex
 Convert to Complex
 
-method:: asPoint
+method::asPoint
 Convert to Point

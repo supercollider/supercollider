@@ -4,14 +4,14 @@ categories:: JITLib>Patterns, Live Coding
 related:: Classes/Pdefn
 
 description::
-Keeps a reference to a stream that can be replaced while playing. Multiple streams are thus handled without creating dependencies.
+keeps a reference to a stream that can be replaced while playing. Multiple streams are thus handled without creating dependencies.
 
 ClassMethods::
 
 private::at, hasGlobalDictionary, parallelise, postRepository, removeAll, basicNew, clear, event
 
 method::new
-create a new instance with a pattern (the source). the pattern should be a emphasis::value pattern:: (see link::Classes/Pdefn::).
+creates a new instance with a pattern (the source). the pattern should be a emphasis::value pattern:: (see link::Classes/Pdefn::).
 
 for event pattern proxy, see: link::Classes/EventPatternProxy::. instead of a pattern, a strong::function:: can be passed in, creating a routine.
 
@@ -19,7 +19,7 @@ method::default
 a default source, if none is given. the default is 1.0 (it is not 0.0 in order to make it safe for durations)
 
 method::defaultQuant
-set the default quantization value for the class. (default: nil)
+sets the default quantization value for the class. (default: nil)
 
 method::defaultValue
 a default return value, if no source is given. the default is 1.0 (it is not 0.0 in order to make it safe for durations). This is used in link::#-endless::.
@@ -27,7 +27,7 @@ a default return value, if no source is given. the default is 1.0 (it is not 0.0
 InstanceMethods::
 
 method::asStream
-Return a link::Classes/Stream:: from this pattern. One pattern proxy can be used to produce any number of independent streams.
+returns a link::Classes/Stream:: from this pattern. One pattern proxy can be used to produce any number of independent streams.
 
 code::
 a = PatternProxy.new;
@@ -50,13 +50,10 @@ c.next;
 
 method::embedInStream
 Given a link::Classes/Stream:: like e.g. link::Classes/Routine::, yield all values from the pattern in the proxy before continuing. One pattern proxy can be used to produce values for any number of independent streams.
-
 argument::inval
 The inval is passed into all substreams and can be used to control how they behave from the outside.
-
 argument::embed
 See link::Classes/Object#-streamArg:: for explanation.
-
 argument::default
 Replacement for code::nil:: outputs of the source pattern. One use case is link::#-endless::.
 
@@ -71,13 +68,13 @@ r.nextN(12); // the next 12 values from r
 
 
 method::source
-set the source. If a quantization is given, schedule this change to the next beat
+sets the source. If a quantization is given, schedule this change to the next beat
 
 method::clear
-set the source to nil
+sets the source to code::nil::
 
 method::quant
-set or get the quantization value
+sets/gets the quantization value
 
 method::condition
 provide a condition under which the pattern is switched when a new one is inserted. the stream value and a count is passed into the function. the methods strong::count_(n):: simply counts up to n and switches the pattern then
@@ -85,7 +82,8 @@ provide a condition under which the pattern is switched when a new one is insert
 method::embedInStream
 just like any pattern, embeds itself in stream
 
-subsection::Methods implemented for subclasses
+
+subsection:: Methods implemented for subclasses
 
 PatternProxy implements some methods for the benefits of its subclasses link::Classes/Pdefn:: / link::Classes/Pdef:: / link::Classes/Tdef:: which are not useful for link::Classes/PatternProxy:: and link::Classes/TaskProxy::.
 
@@ -93,12 +91,12 @@ method::envir
 provide a default environment for the proxy. If given, it is used as an environment for the routine function. When set for the first time, the routine pattern is rebuilt.
 
 method::set
-set arguments in the environment. If there is none, it is created and the pattern is rebuilt.
+sets arguments in the environment. If there is none, it is created and the pattern is rebuilt.
 
 method::endless
 returns a Prout that plays the proxy endlessly, replacing strong::nil:: with a strong::default:: value (1). This allows to create streams that idle on until a new pattern is inserted.
 
-Examples::
+examples::
 
 code::
 a = PatternProxy(Pseq([1, 2, 3], inf));

@@ -3,7 +3,7 @@ summary:: Demand rate white noise random generator.
 related:: Classes/Dwhite, Classes/Demand, Classes/Duty, Classes/TDuty
 categories:: UGens>Demand
 
-Description::
+description::
 link::Classes/Dwhite::  returns numbers in the continuous range between
 code::lo::  and  code::hi:: .
 Diwhite returns integer values.
@@ -19,23 +19,15 @@ equivalents.
 classmethods::
 
 method::new
-
 argument::lo
-
 Minimum value.
-
-
 argument::hi
-
 Maximum value.
-
-
 argument::length
-
 Number of values to create.
 
 
-Examples::
+examples::
 
 code::
 

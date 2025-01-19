@@ -1,37 +1,35 @@
 TITLE::PfadeOut
-SUMMARY::Fade an event pattern out
+summary:: Fade an event pattern out
 CATEGORIES::Streams-Patterns-Events>Patterns>Filter
 RELATED::Classes/PfadeIn
 
 CLASSMETHODS::
 METHOD::new
-ARGUMENT::pattern
+argument::pattern
 The pattern to fade out. Must be an event pattern that plays a synth with the code::\amp:: parameter.
-ARGUMENT::fadeTime
+argument::fadeTime
 The time it will take to fade.
-
-ARGUMENT::holdTime
-
-ARGUMENT::tolerance
+argument::holdTime
+argument::tolerance
 The tolerance for the rounding of elapsed time used when setting the amplitude
 of the input pattern.
 
 INSTANCEMETHODS::
 METHOD::fadeTime
-Get or set the fadetime
+gets/sets the fadetime
 
 METHOD::holdTime
-Get or set the hold time
+gets/sets the hold time
 
 METHOD::tolerance
-Get or set the tolerance used when rounding the internal time.
+gets/sets the tolerance used when rounding the internal time.
 
 METHOD::embedInStream
-ARGUMENT::inval
+argument::inval
 
 METHOD::storeArgs
 
-EXAMPLES::
+examples::
 
 CODE::
 (

@@ -7,4 +7,4 @@ categories:: Control
 ClassMethods::
 
 method::removeAll
-Remove all items from registry.
+removes all items from registry.

@@ -4,7 +4,6 @@ related:: Classes/Pmul, Classes/Pmulp
 categories:: Streams-Patterns-Events>Patterns>Math
 
 description::
-
 Multiplies with a value in an event, strong::before it is passed up:: the stream. To multiply with the value after it has been passed down, use link::Classes/Pmul::.
 
 code::
@@ -29,15 +28,12 @@ x = a.asStream;
 ClassMethods::
 
 method::new
-
 argument::name
-
 argument::value
 can be a pattern or a stream. The resulting stream ends when that incoming stream ends.
-
 argument::pattern
 
-Examples::
+examples::
 
 code::
 (

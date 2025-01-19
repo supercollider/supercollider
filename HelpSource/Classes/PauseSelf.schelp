@@ -4,8 +4,7 @@ related:: Classes/FreeSelf
 categories::  UGens>Synth control
 
 
-Description::
-
+description::
 Pause enclosing synth when input signal crosses from non-positive to
 positive.
 
@@ -13,13 +12,11 @@ positive.
 classmethods::
 
 method::kr
-
 argument::in
-
 The input signal.
 
 
-Examples::
+examples::
 
 code::
 

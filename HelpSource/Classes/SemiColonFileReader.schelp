@@ -8,7 +8,7 @@ SemiColonFileReader reads semi-colon delimited files into 2D arrays.
 
 For tab delimited files use link::Classes/TabFileReader::. For comma-separated files use link::Classes/CSVFileReader::. For space-delimited files, or custom delimiters, use link::Classes/FileReader::.
 
-Examples::
+examples::
 
 code::
 (

@@ -12,13 +12,13 @@ private:: new
 instancemethods::
 private:: printOn
 
-method:: rate
+method::rate
 A link::Classes/Symbol:: for the rate.
 
-method:: numberOfChannels
+method::numberOfChannels
 The number of channels.
 
-method:: startingChannel
+method::startingChannel
 This can either be a link::Classes/String::, a link::Classes/Float:: or an link::Classes/UGen::.
 table::
 ## String || The name of the control that provides the bus index
@@ -26,5 +26,5 @@ table::
 ## UGen || The UGen providing the bus index
 ::
 
-method:: type
+method::type
 The class of the input/output ugen, like link::Classes/In::, link::Classes/Out::, link::Classes/ReplaceOut::, etc.

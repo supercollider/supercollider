@@ -1,6 +1,6 @@
 class::False
 categories::Core
-summary::false logical value
+summary:: false logical value
 
 description::
 see link::Classes/Boolean::

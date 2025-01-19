@@ -4,9 +4,8 @@ related:: Classes/Linen, Classes/Env
 categories::  UGens>Envelopes
 
 
-Description::
-
-Plays back break point envelopes. The envelopes are instances of the
+description::
+plays back break point envelopes. The envelopes are instances of the
 link::Classes/Env:: class. The envelope and the arguments for  code::levelScale::,
 code::levelBias::, and  code::timeScale:: are polled when the EnvGen is
 triggered, and at the start of a new envelope segment. All values remain constant
@@ -21,18 +20,13 @@ classmethods::
 private::convertEnv
 
 method::ar, kr
-
 argument::envelope
-
 An link::Classes/Env:: instance, or an Array of Controls.
 (See link::Classes/Control::  and the example below for how to use
 this.)
 
 The envelope is polled when the EnvGen is triggered, and at the start of a new envelope segment. The Env inputs can be other UGens.
-
-
 argument::gate
-
 This triggers the envelope and holds it open while > 0. If the
 Env is fixed-length (e.g. Env.linen, Env.perc), the gate argument
 is used as a simple trigger. If it is an sustaining envelope
@@ -40,27 +34,19 @@ is used as a simple trigger. If it is an sustaining envelope
 gate becomes 0, at which point is released.
 
 If strong::gate:: < 0, force release with time code:: -1.0 - gate ::. See link::#Forced release:: below.
-
 argument::levelScale
-
 The levels of the breakpoints are multiplied by this value. This
 value can be modulated, but is only sampled at the start of a new
 envelope segment.
-
 argument::levelBias
-
 This value is added as an offset to the levels of the breakpoints.
 This value can be modulated, but is only sampled at the start of a
 new envelope segment.
-
 argument::timeScale
-
 The durations of the segments are multiplied by this value. This
 value can be modulated, but is only sampled at the start of a new
 envelope segment.
-
 argument::doneAction
-
 An integer representing an action to be executed when the env is
 finished playing. This can be used to free the enclosing synth,
 etc. See link::Classes/Done::  for more detail.
@@ -102,7 +88,7 @@ code::
 )
 ::
 
-Examples::
+examples::
 
 code::
 // retriggered envelope by Dust
@@ -172,6 +158,7 @@ a.set(\doneAction, 2, \gate, 0); // set doneAction to two to let the synth free 
 a.free; // alternatively, free it directly.
 ::
 
+
 subsection:: Specifying an envelope for each new synth
 code::
 (
@@ -196,6 +183,7 @@ Synth(\help_Env_newClear, [\gate, 1, \env, Env({ rrand(60, 70).midicps } ! 4, [1
 (instrument: \help_Env_newClear, gate: 1, env: Env({ rrand(60, 70).midicps } ! 4, [1, 1, 1], \exp)).play;
 
 ::
+
 
 subsection:: Forced release
 If the gate of an EnvGen is set to -1 or below, then the envelope will cutoff immediately.
@@ -241,6 +229,7 @@ d.release(2);
 d.release();
 ::
 
+
 subsection:: Fast triggering tests
 code::
 (
@@ -262,6 +251,7 @@ code::
 }.play;
 )
 ::
+
 
 subsection:: Modulating the levelScale
 code::
@@ -290,7 +280,8 @@ code::
 )
 ::
 
-subsection::More examples
+
+subsection:: More examples
 
 For more information about the emphasis::control bus mapping:: used in the line code::a = Synth(\sine, [freq: f.asMap]);::, see link::Classes/Node#-map:: and link::Classes/Bus#-asMap::.
 

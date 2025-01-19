@@ -3,32 +3,23 @@ summary:: Pass random bins.
 related:: Classes/PV_RandWipe
 categories:: UGens>FFT
 
-Description::
-
-Randomly clear bins.
+description::
+Randomly clears bins.
 
 
 classmethods::
 
 method::new
-
 argument::buffer
-
 FFT buffer.
-
-
 argument::wipe
-
 Clears bins from input in a random order as wipe goes from 0 to
 1.
-
-
 argument::trig
-
 A trigger, that selects a new random ordering.
 
 
-Examples::
+examples::
 
 code::
 

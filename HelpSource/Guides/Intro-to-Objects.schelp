@@ -3,6 +3,7 @@ summary:: Introduction to objects and messages
 categories:: Language>OOP
 related:: Reference/Classes, Classes/Class, Classes/Object, Reference/Messages, Guides/Polymorphism
 
+
 section:: Objects and Messages
 
 The SuperCollider language is an object oriented language. All entities in the language are objects.
@@ -23,6 +24,7 @@ The advantage to this is that the client does not depend on the object's impleme
 
 See link::Reference/Messages:: for more information about messages.
 
+
 section:: Classes, Instance Variables, Methods
 
 An object's class contains the description of the object's data and operations. A class also describes how to create an object which is an instance of that class.
@@ -37,6 +39,7 @@ A class contains a method definition for each message to which its instances res
 Others ask the receiver to make some change to its internal state. Still others may ask the receiver to return some computed value.
 
 See link::Reference/Classes:: for more details about instance and class variables and methods.
+
 
 section:: Summary of Terminology
 definitionlist::

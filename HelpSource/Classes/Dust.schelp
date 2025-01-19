@@ -4,25 +4,21 @@ related:: Classes/Dust2
 categories::  UGens>Generators>Stochastic
 
 
-Description::
-
-Generates random impulses from 0 to +1.
+description::
+generates random impulses from 0 to +1.
 
 
 classmethods::
 
 method::ar, kr
-
 argument::density
 Average number of impulses per second.
-
 argument::mul
 Output will be multiplied by this value.
-
 argument::add
 This value will be added to the output.
 
-Examples::
+examples::
 
 code::
 

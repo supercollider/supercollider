@@ -4,8 +4,7 @@ related:: Classes/Lag, Classes/VarLag, Classes/Slew
 categories::  UGens>Filters>Linear
 
 
-Description::
-
+description::
 Break a continuous signal into linearly interpolated segments with specific durations.
 
 Feeding Ramp with noise is similar to link::Classes/LFNoise1::
@@ -22,28 +21,17 @@ For smoothing out control signals, take a look at link::Classes/Lag:: and link::
 classmethods::
 
 method::ar, kr
-
 argument::in
-
 The input signal.
-
-
 argument::lagTime
-
 segment duration in seconds.
-
-
 argument::mul
-
 Output will be multiplied by this value.
-
-
 argument::add
-
 This value will be added to the output.
 
 
-Examples::
+examples::
 
 code::
 s.boot;

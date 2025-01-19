@@ -4,8 +4,7 @@ related:: Classes/Tap
 categories::  UGens>Buffer, UGens>Delays>Buffer
 
 
-Description::
-
+description::
 This is a wrapper which creates a multiple tap delay line using
 link::Classes/RecordBuf::  and  link::Classes/PlayBuf:: .
 
@@ -16,29 +15,22 @@ buffer if this happens. ::
 classmethods::
 
 method::ar
-
 argument::timesArray
 A Ref to an Array of delay times in seconds.
-
 argument::levelsArray
 A Ref to an Array of amplitudes.
-
 argument::in
 The input signal.
-
 argument::mul
 Output will be multiplied by this value.
-
 argument::add
 This value will be added to the output.
-
 argument::bufnum
-
 The number of the buffer to use for the delay. This must be at
 least as long as the longest tap time.
 
 
-Examples::
+examples::
 
 code::
 

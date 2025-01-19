@@ -2,13 +2,13 @@ CLASS::Harmonics
 summary:: Convenient factory for filling buffers with harmonics on the server
 categories:: Collections, Server, UGens>Buffer
 
-DESCRIPTION::
+description::
 Harmonics objects are convenient factories for creating Arrays that are used to fill buffers using the b_gen sine fill commands on the server.
 
 CLASSMETHODS::
 
 method::new
-Create a new Harmonics array of size. Nothing is filled in for you, until instance methods are applied.
+creates a new Harmonics array of size. Nothing is filled in for you, until instance methods are applied.
 code::
 a = Harmonics.new(16);	// just returns an instance of Harmonics with size
 ::
@@ -54,7 +54,7 @@ y.free;
 ::
 
 method::formant
-Create a formant like structure.
+creates a formant like structure.
 code::
 a.formant(6, 3);
 
@@ -76,7 +76,7 @@ y.free;
 ::
 
 method::cutoff
-Returns 1.0 to the nth place, fills the rest with 0.0
+returns 1.0 to the nth place, fills the rest with 0.0
 code::
 a.cutoff(3);
 
@@ -124,6 +124,6 @@ b.sine2(a.ramp(1.0, 1.0), a.pulse(7, 0.5pi, 3, 0.5, 0.1).postln, true, true, tru
 y.free;
 ::
 
-method:: rand, exprand, linrand
-method:: rand2
-method:: coin
+method::rand, exprand, linrand
+method::rand2
+method::coin

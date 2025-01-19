@@ -3,13 +3,12 @@ summary:: Current duration of soundfile in buffer.
 related:: Classes/BufChannels, Classes/BufFrames, Classes/BufRateScale, Classes/BufSampleRate, Classes/BufSamples
 categories::  UGens>Buffer>Info
 
-Description::
-Get the current duration of soundfile.
+description::
+gets the current duration of soundfile.
 
 classmethods::
 
 method::kr, ir
-
 argument::bufnum
 Buffer index.
 
@@ -22,7 +21,7 @@ Since a buffer can be reallocated at any time, using
 code::.ir::  will not track the changes.
 ::
 
-Examples::
+examples::
 
 code::
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");

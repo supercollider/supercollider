@@ -1,8 +1,8 @@
 CLASS:: LanguageConfig
-summary:: Access and modify interpreter configuration
+summary:: Accesses and modifies interpreter configuration
 categories:: Language
 
-DESCRIPTION::
+description::
 The LanguageConfig class provides access to the interpreter configuration.
 
 
@@ -18,12 +18,12 @@ definitionList::
 
 CLASSMETHODS::
 
-METHOD:: store
+method::store
 Store the current configuration to file. Throws an error if the config file cannot be opened or if
 writing fails.
-
-argument:: file
+argument::file
 Path to the configuration file to store. If the value is code::nil:: it defaults to currently used configuration file, as specified in the IDE preferences, or by the code::sclang -l "/path/to/sclang_conf.yaml":: argument. By default this is code::Platform.userConfigDir +/+ "sclang_conf.yaml"::
+
 
 subsection:: Library Path Handling
 
@@ -31,38 +31,39 @@ The language configuration mechanism provides a way to add or exclude specific p
 
 note::Changes to the class library paths won't have any effect before the configuration file is stored and the class library is recompiled.::
 
-METHOD:: includePaths
-Return the class library include paths.
+method::includePaths
+returns the class library include paths.
 
-METHOD:: addIncludePath
-Add new class library include path.
+method::addIncludePath
+adds new class library include path.
 
-METHOD:: removeIncludePath
-Remove path from class library include paths.
+method::removeIncludePath
+removes path from class library include paths.
 
-METHOD:: excludePaths
-Return the class library exclude paths.
+method::excludePaths
+returns the class library exclude paths.
 
-METHOD:: addExcludePath
-Add new class library exclude path.
+method::addExcludePath
+adds new class library exclude path.
 
-METHOD:: removeExcludePath
-Remove path from class library exclude paths.
+method::removeExcludePath
+removes path from class library exclude paths.
 
-METHOD:: currentPath
-Return the current config file path.
+method::currentPath
+returns the current config file path.
 
-METHOD:: excludeDefaultPaths
-Get or set whether default class library paths are included.
+method::excludeDefaultPaths
+gets/sets whether default class library paths are included.
 
 note::
 If sclang is started with -a the class library paths are excluded and this value is ignored. The default class library paths are Platform.classLibraryDir, and the system and user extensions directories.
 ::
 
+
 subsection:: Compiler Warnings
 
-METHOD:: postInlineWarnings
-Get or set the compiler flag, whether warnings should be posted if a FunctionDef cannot be inlined.
+method::postInlineWarnings
+gets/sets the compiler flag, whether warnings should be posted if a FunctionDef cannot be inlined.
 
 code::
 LanguageConfig.postInlineWarnings_(true) // warn

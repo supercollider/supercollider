@@ -5,12 +5,12 @@ related:: Classes/Dbufwr
 
 classmethods::
 
-method:: new
-argument:: bufnum
+method::new
+argument::bufnum
 buffer number to read from
-argument:: phase
+argument::phase
 index into the buffer
-argument:: loop
+argument::loop
 when phase exceeds number of frames in buffer, loops when set to 1 (default :1)
 discussion::
 all inputs can be either demand ugen or any other ugen.

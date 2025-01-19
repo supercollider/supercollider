@@ -2,6 +2,7 @@ title:: List Comprehensions
 categories:: Language, Collections
 summary:: list comprehensions and generator expressions
 
+
 section:: Introduction
 
 List comprehensions are a syntactic feature of functional programming languages like Miranda, Haskell, and Erlang which were later copied into Python.
@@ -26,6 +27,7 @@ all(Routine.new({ (1..5).do {|x| (1..x).do {|y| if ((x+y).isPrime) {[x,y].yield}
 In the list comprehension compiler, simple series like code::(1..5):: and code::(1..x):: are treated as special cases and implemented as loops rather than making a collection.
 
 A list comprehension in SC is really a link::Classes/Routine::. You can use the code::all:: message to collect all of the Routine's results into a list.
+
 
 section:: A few examples
 code::
@@ -73,6 +75,7 @@ all {:[y, z], x<-(0..30), var y = x.nthPrime, var z = 2 ** y - 1, z.asInteger.is
 [ [ 11, 2047 ], [ 23, 8388607 ], [ 29, 536870911 ] ] // mersenne numbers which are no primes
 ::
 
+
 section:: Qualifier Clauses
 
 A list comprehension begins with code:: {: :: and contains a body followed by several qualifier clauses separated by commas.
@@ -80,6 +83,7 @@ code::
 {: body , qualifiers }
 ::
 There are several types of qualifier clauses that can appear after the body.
+
 
 subsection:: generator clause
 
@@ -123,6 +127,7 @@ all {: x, x <- (1..3), y <- (1..4-x) }
 [ 1, 1, 1, 2, 2, 3 ]
 ::
 
+
 subsection:: guard clause
 
 A guard clause is simply an expression. It should return a boolean value.
@@ -148,6 +153,7 @@ all {: [x,y], x <- (0..10), (x % 5 == 0) || x.isPowerOfTwo, y <- (1..2), (x+y).e
 [ [ 0, 2 ], [ 1, 1 ], [ 2, 2 ], [ 4, 2 ], [ 5, 1 ], [ 8, 2 ], [ 10, 2 ] ]
 ::
 
+
 subsection:: var clause
 
 A var clause lets you create a new variable binding that you can use in your expressions.
@@ -162,6 +168,7 @@ all {: z, x <- (1..20), var z = (x*x-x) div: 2, z.odd }
 [ 1, 3, 15, 21, 45, 55, 91, 105, 153, 171 ]
 ::
 
+
 subsection:: side effect clause
 
 This clause lets you insert code to do some side effect like printing.
@@ -172,9 +179,10 @@ code::
 all {: z, x <- (1..20), var z = (x*x-x) div: 2, :: [x,z].postln, z.even }
 ::
 
+
 subsection:: termination clause
 
-The termination clause is for stopping further searching for results. Once the expression becomes false,
+The termination clause is for stopping further searching for results. Once the expression becomes code::false::,
 the routine halts.
 code::
 :while expr
@@ -189,6 +197,7 @@ using a termination clause. this one stops searching, so does less work than the
 code::
 all {: z, x <- (1..20), var z = (x*x-x) div: 2,  :: [x,z].postln, :while z < 50 }
 ::
+
 
 section:: Constrained Search
 
@@ -254,6 +263,7 @@ code::
 
 <termination> ::= ":while" <exprseq>
 ::
+
 
 section:: Code Generation
 

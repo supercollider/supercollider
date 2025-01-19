@@ -3,7 +3,6 @@ summary:: Base class for filter UGens
 categories:: UGens>Filters
 
 description::
-
 "Filter" is an abstract class - in other words, a class that you do not use directly. Instead, use one of its subclasses. Many common filters inherit from this abstract class, including LPF, HPF, MoogFF, Ringz, Integrator, Median, LeakDC... and many more.
 
 The Filter class also provides a simple way to visualise the frequency-wise effect of applying a filter, see code::scopeResponse:: below.
@@ -11,7 +10,7 @@ The Filter class also provides a simple way to visualise the frequency-wise effe
 classmethods::
 private:: categories
 
-method:: scopeResponse
+method::scopeResponse
 Provides a simple way to visualise the frequency-wise effect of applying a filter
 discussion::
 code::

@@ -8,10 +8,10 @@ The input signal value is used as an index into the table, with linear interpola
 Out of range index values are clipped to the valid range.
 
 classmethods::
-method:: ar, kr
-argument:: bufnum
+method::ar, kr
+argument::bufnum
 index of the buffer.
-argument:: in
+argument::in
 the input signal.
 
 examples::

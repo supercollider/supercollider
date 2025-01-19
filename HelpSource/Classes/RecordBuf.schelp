@@ -3,11 +3,11 @@ summary:: Record or overdub into a Buffer.
 related:: Classes/PlayBuf
 categories::  UGens>Buffer
 
-Description::
+description::
 Records input into a link::Classes/Buffer::.
 
 If recLevel is 1.0 and preLevel is 0.0 then the new input overwrites the
-old data. If they are both 1.0 then the new data is added to the existing
+old data. If they are both 1.0, then the new data is added to the existing
 data. (Any other settings are also valid.)
 
 note:: The number of channels must be fixed for the SynthDef, it cannot vary depending on which buffer you use. ::
@@ -15,37 +15,28 @@ note:: The number of channels must be fixed for the SynthDef, it cannot vary dep
 classmethods::
 
 method::ar, kr
-
 argument::inputArray
 An Array of input channels.
-
 argument::bufnum
 The index of the buffer to use.
-
 argument::offset
 An offset into the buffer in samples.
-
 argument::recLevel
 Value to multiply by input before mixing with existing data.
-
 argument::preLevel
 Value to multiply to existing data in buffer before mixing with input.
-
 argument::run
 If zero, then recording stops, otherwise recording proceeds.
-
 argument::loop
 If zero then don't loop, otherwise do. This is modulatable.
-
 argument::trigger
 a trigger causes a jump to the start of the Buffer. A trigger
 occurs when a signal changes from negative value to positive
 value.
-
-argument:: doneAction
+argument::doneAction
 an integer representing an action to be executed when the buffer is finished recording. This can be used to free the enclosing synth, etc. See link::Classes/Done:: for more detail. code::doneAction:: is only evaluated if loop is 0.
 
-Examples::
+examples::
 
 code::
 // Execute the following in order

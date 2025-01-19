@@ -6,29 +6,29 @@ description::
 Magnitudes represent values along a linear continuum which can be compared against each other.
 
 instancemethods::
-method:: <
+method::<
 returns:: a link::Classes/Boolean:: whether the receiver is less than strong::aMagnitude::.
 
-method:: <=
+method::<=
 returns:: a link::Classes/Boolean:: whether the receiver is less than or equal to strong::aMagnitude::.
 
-method:: >
+method::>
 returns:: a link::Classes/Boolean:: whether the receiver is greater than strong::aMagnitude::.
 
-method:: >=
+method::>=
 returns:: a link::Classes/Boolean:: whether the receiver is greater than or equal to strong::aMagnitude::.
 
-method:: min
+method::min
 returns:: the minimum of the receiver and aMagnitude.
 
-method:: max
+method::max
 returns:: the maximum of the receiver and aMagnitude.
 
-method:: clip
+method::clip
 If the receiver is less than minVal then answer minVal, else if the receiver is greater than maxVal then answer maxVal, else answer the receiver.
 
-method:: inclusivelyBetween
+method::inclusivelyBetween
 returns:: whether the receiver is greater than or equal to minVal and less than or equal to maxVal.
 
-method:: exclusivelyBetween
+method::exclusivelyBetween
 returns:: whether the receiver is greater than minVal and less than maxVal.

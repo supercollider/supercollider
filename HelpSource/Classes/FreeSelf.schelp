@@ -4,21 +4,19 @@ related:: Classes/PauseSelf, Classes/Free
 categories::  UGens>Synth control
 
 
-Description::
-Free enclosing synth when input signal crosses from non-positive to
+description::
+frees enclosing synth when input signal crosses from non-positive to
 positive.
 
 
 classmethods::
 
 method::kr
-
 argument::in
-
 The input signal.
 
 
-Examples::
+examples::
 
 code::
 (

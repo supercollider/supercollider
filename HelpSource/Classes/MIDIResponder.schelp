@@ -19,7 +19,8 @@ definitionList::
 ## link::Classes/ProgramChangeResponder:: || Respond to programchange messages
 ::
 
-subsection::Creation and initialization
+
+subsection:: Creation and initialization
 
 list::
 ## CCResponder(function, src, chan, num, value, install = true, swallowEvent = false)
@@ -34,7 +35,7 @@ definitionList::
 
 ## function || The function to execute when the incoming MIDI event matches the responder. The function takes the arguments src, chan, A, B (or for Bend, ProgramChange and Touch: src, chan, value).
 
-## src || If a number is given, the responder will fire only for messages coming in from this port. The number may be the system UID (obtained from MIDIClient.sources[index].uid) or the index itself. If nil, the responder will match any port.
+## src || If a number is given, the responder will fire only for messages coming in from this port. The number may be the system UID (obtained from MIDIClient.sources[index].uid) or the index itself. If code::nil::, the responder will match any port.
 
 ## chan || The MIDI channel(s) to match.
 
@@ -44,19 +45,19 @@ definitionList::
 
 ## veloc || The velocities to match.
 
-## install || If true, install the responder automatically so it is active and ready to respond. If false, then it will be inactive.
+## install || If code::true::, install the responder automatically so it is active and ready to respond. If code::false::, then it will be inactive.
 
-## swallowEvent || If true, then if the midi event is matched, cease testing any further responders. eg. if a CCResponder matches port, chan and num, and swallowEvent is set to true, then no further CCResponders will be offered the chance to respond to the event. The event is "swallowed". By default this is false. Note that doing this will prevent any other responders of this type from responding, including ones added behind the scenes in classes. Note also that this functionality is sensitive to the order in which responders are added. 
+## swallowEvent || If code::true::, then if the midi event is matched, cease testing any further responders. eg. if a CCResponder matches port, chan and num, and swallowEvent is set to code::true::, then no further CCResponders will be offered the chance to respond to the event. The event is "swallowed". By default this is code::false::. Note that doing this will prevent any other responders of this type from responding, including ones added behind the scenes in classes. Note also that this functionality is sensitive to the order in which responders are added. 
 
 ::
 
 Any of the matching values may be one of the following:
 
 definitionList::
-## Nil || Match anything. eg. if chan is nil, then respond to any MIDI channel.
+## Nil || Match anything. eg. if code::chan:: is code::nil::, then respond to any MIDI channel.
 ## Integer || Match only this specific number.
 ## Array || Match any item in the array. Any kind of link::Classes/Collection:: will work here.
-## Function || Evaluate the function with the incoming value as the argument. The function should return true or false.
+## Function || Evaluate the function with the incoming value as the argument. The function should return code::true:: or code::false::.
 ::
 
 For instance, the following example would respond to note on messages from any port, channels 2 and 7 only, even numbered note numbers only, and only velocity values greater than 50.
@@ -70,7 +71,8 @@ NoteOnResponder({ |src, chan, num, vel| [src, chan, num, vel].postln },
 
 MIDIResponders automatically initialize the MIDIClient with 1 standard device. This means the first time you install any MIDIResponder, it will make sure that MIDI has been initialized. If you have more devices or a specific setup, simply initialize the MIDIClient yourself before using any MIDIResponders.
 
-subsection::Removal
+
+subsection:: Removal
 
 Just call .remove on the responder.
 code::

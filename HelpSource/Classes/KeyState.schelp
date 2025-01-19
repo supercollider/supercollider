@@ -4,7 +4,7 @@ related:: Classes/MouseButton, Classes/MouseX, Classes/MouseY
 categories::  UGens>User interaction
 
 
-Description::
+description::
 Respond to the state of a key.
 
 note::
@@ -16,25 +16,21 @@ KeyState, as the latter will be altered by any keystrokes.
 classmethods::
 
 method::kr
-
 argument::keycode
 The keycode value of the key to check. This corresponds to the
 keycode values passed into the keyDownActions of SCViews. See the
 example below.
-
 argument::minval
 The value to output when the key is not pressed.
-
 argument::maxval
 The value to output  when the key is pressed.
-
 argument::lag
 A lag factor.
 
 instancemethods::
 private:: signalRange
 
-Examples::
+examples::
 
 code::
 s.boot;

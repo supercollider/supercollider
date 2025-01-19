@@ -4,8 +4,8 @@ related:: Classes/Clip, Classes/Wrap
 categories::  UGens>Maths
 
 
-Description::
-Returns the minimum difference of two values in modulo arithmetics. On a circle, there are two distances between two points. This UGen returns the smaller value of the two.
+description::
+returns the minimum difference of two values in modulo arithmetics. On a circle, there are two distances between two points. This UGen returns the smaller value of the two.
 
 code::
 { var a = Line.ar(0, 4, 0.01), d = ModDif.ar(a); [a, d] }.plot;
@@ -18,13 +18,10 @@ code::
 classmethods::
 
 method::ar, kr, ir
-
 argument::x
 First input value
-
 argument::y
 Second input value
-
 argument::mod
 Modulo (maximum value, double of the maximal difference).
 

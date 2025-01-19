@@ -3,8 +3,9 @@ summary:: Superclass of layouts that distribute views in a line
 categories:: GUI>Layout
 related:: Classes/HLayout, Classes/VLayout, Classes/GridLayout, Classes/StackLayout, Guides/GUI-Layout-Management
 
-DESCRIPTION::
+description::
 This is an abstract superclass of link::Classes/HLayout:: and link::Classes/VLayout:: which distribute views in a horizontal or vertical line, respectively.
+
 
 subsection:: Fine tuning
 
@@ -12,9 +13,10 @@ Each item can be assigned a strong::stretch factor:: and an strong::alignment:: 
 
 The strong::stretch factor:: only affects distribution in the direction of the layout (vertical or horizontal). All items have a stretch factor of 0 by default, so only their own preferences will determine space distribution. As soon as an item is assigned a stretch factor higher than 0, the space will be redistributed according to proportions of stretch factors.
 
+
 subsection:: Leaving empty space
 
-An empty space with an arbitrary stretch factor may be inserted using nil in place of an item in combination with the stretch factor. Similarly, an empty space of fixed size may be inserted using an integer in place of an item. See link::#*new#constructor:: and link::#-add:: for details.
+An empty space with an arbitrary stretch factor may be inserted using code::nil:: in place of an item in combination with the stretch factor. Similarly, an empty space of fixed size may be inserted using an integer in place of an item. See link::#*new#constructor:: and link::#-add:: for details.
 
 
 CLASSMETHODS::
@@ -22,11 +24,9 @@ CLASSMETHODS::
 PRIVATE:: layoutClass
 PRIVATE:: parse
 
-METHOD:: new
-
-Create a link::Classes/HLayout:: or a link::Classes/VLayout:: and immediately fill it with items given as arguments. (Note that LineLayout is an abstract class and can not be instantiated, but HLayout and VLayout inherit this constructor).
-
-argument:: ... items
+method::new
+creates a link::Classes/HLayout:: or a link::Classes/VLayout:: and immediately fill it with items given as arguments. (Note that LineLayout is an abstract class and can not be instantiated, but HLayout and VLayout inherit this constructor).
+argument::... items
 Each item can be a strong::view::, a strong::layout::, strong::nil:: (for stretchable empty space) or an strong::Integer:: (for fixed-size empty space).
 
 discussion::
@@ -52,35 +52,28 @@ w.front;
 
 INSTANCEMETHODS::
 
-METHOD:: add
-Add an item to the right or the bottom end of the line, for HLayout and VLayout respectively.
-
-argument:: item
+method::add
+adds an item to the right or the bottom end of the line, for HLayout and VLayout respectively.
+argument::item
 The item can be a strong::view::, a strong::layout::, an strong::Integer:: (specifying amount in pixels of empty space) or strong::nil:: (for stretchable empty space).
-
-argument:: stretch
+argument::stretch
 An integer stretch factor.
-
-argument:: align
+argument::align
 A symbol expressing the alignment. See link::Reference/gui_alignments:: for possible values.
 
 discussion::
 If the item is a stretchable empty space (nil) the align argument will have no effect; if the item is a fixed-size empty space (an Integer) both stretch and align arguments will have no effect.
 
 
-METHOD:: insert
+method::insert
 Insert an item at a specific position.
-
-argument:: item
+argument::item
 The item can be a strong::view::, a strong::layout::, an strong::Integer:: (specifying amount in pixels of empty space) or strong::nil:: (for stretchable empty space).
-
-argument:: index
+argument::index
 The integer position among current items at which to insert the new item. If index is smaller than 0 or larger than the current amount of items, the new item will always be added to the end of the line.
-
-argument:: stretch
+argument::stretch
 An integer stretch factor.
-
-argument:: align
+argument::align
 A symbol expressing the alignment. See link::Reference/gui_alignments:: for possible values.
 
 discussion::
@@ -88,28 +81,24 @@ If the item is a stretchable empty space (nil) the align argument will have no e
 
 
 
-METHOD:: setStretch
-Set stretch factor of an item contained in the layout.
-
-argument:: item
+method::setStretch
+sets stretch factor of an item contained in the layout.
+argument::item
 A view or layout managed by this layout, or an Integer index of an item.
-
-argument:: stretch
+argument::stretch
 An integer stretch factor.
 
 
 
-METHOD:: setAlignment
-Set alignment of an item contained in the layout.
-
-argument:: item
+method::setAlignment
+sets alignment of an item contained in the layout.
+argument::item
 A view or a layout managed by this layout, or an Integer index of an item.
-
-argument:: align
+argument::align
 A symbol expressing the alignment. See link::Reference/gui_alignments:: for possible values.
 
 
-EXAMPLES::
+examples::
 
 Try resizing the window created by the following code.
 

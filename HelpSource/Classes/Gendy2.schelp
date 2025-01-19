@@ -4,8 +4,7 @@ related:: Classes/Gendy1, Classes/Gendy3
 categories::  UGens>Generators>Stochastic
 
 
-Description::
-
+description::
 See  link::Classes/Gendy1::  help file for background. This variant of
 GENDYN is closer to that presented in emphasis::Hoffmann, Peter. (2000) The New GENDYN Program. Computer Music Journal 24:2, pp 31-38::.
 
@@ -20,10 +19,7 @@ SuperCollider implementation by Nick Collins
 classmethods::
 
 method::ar, kr
-
-
 argument::ampdist
-
 Choice of probability distribution for the next perturbation of
 the amplitude of a control point.
 
@@ -40,84 +36,52 @@ table::
 
 Where the sinus (Xenakis' name) is in this implementation taken
 as sampling from a third party oscillator. See example below.
-
 argument::durdist
-
 Choice of distribution for the perturbation of the current inter
 control point duration.
-
 argument::adparam
-
 A parameter for the shape of the amplitude probability
 distribution, requires values in the range 0.0001 to 1 (there are
 safety checks in the code so don't worry too much if you want to
 modulate!).
-
 argument::ddparam
-
 A parameter for the shape of the duration probability
 distribution, requires values in the range 0.0001 to 1.
-
-
 argument::minfreq
-
 Minimum allowed frequency of oscillation for the Gendy1
 oscillator, so gives the largest period the duration is allowed
 to take on.
-
-
 argument::maxfreq
-
 Maximum allowed frequency of oscillation for the Gendy1
 oscillator, so gives the smallest period the duration is allowed
 to take on.
-
-
 argument::ampscale
-
 Normally 0.0 to 1.0, multiplier for the distribution's delta
 value for amplitude. An ampscale of 1.0 allows the full range
 of  -1 to 1 for a change of amplitude.
-
-
 argument::durscale
-
 Normally 0.0 to 1.0, multiplier for the distribution's delta
 value for duration. An ampscale of 1.0 allows the full range of
 -1 to 1 for a change of duration.
-
-
 argument::initCPs
-
 Initialise the number of control points in the memory.
 Xenakis specifies 12. There would be this number of control
 points per cycle of the oscillator, though the oscillator's
 period will constantly change due to the duration distribution.
-
-
 argument::knum
-
 Current number of utilised control points, allows modulation.
-
-
 argument::a
-
 Parameter for Lehmer random number generator perturbed by
 Xenakis as in
 
 code::
 ((old*a)+c)%1.0
 ::
-
 argument::c
-
 Parameter for Lehmer random number generator perturbed by
 Xenakis.
-
-
 argument::mul
 Output will be multiplied by this value.
-
 argument::add
 This value will be added to the output.
 
@@ -125,7 +89,7 @@ discussion::
 All parameters can be modulated at control rate except for code::initCPs:: which is used only at initialisation.
 
 
-Examples::
+examples::
 warning::
 if you have lots of CPs and you have fast frequencies, the CPU cost goes up a lot because a new CP move happens every sample!
 ::

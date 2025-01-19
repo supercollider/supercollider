@@ -7,12 +7,11 @@ note::It is recommended to use link::Classes/Psubdivide:: instead. This class is
 warning::PdurStutter will return link::Classes/Psubdivide::::
 
 description::
-
 A filter pattern designed for a stream of float durations.
 
 Subdivides each duration by each stutter and yields that value stutter times. A stutter of 0 will skip the duration value, a stutter of 1 yields the duration value unaffected.
 
-Examples::
+examples::
 
 code::
 (

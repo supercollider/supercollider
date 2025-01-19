@@ -3,34 +3,27 @@ summary:: Phase modulation oscillator pair.
 categories::  UGens>Generators>Deterministic
 
 
-Description::
-
+description::
 Phase modulation sine oscillator pair.
 
 
 classmethods::
 
 method::ar, kr
-
 argument::carfreq
 Carrier frequency in cycles per second.
-
 argument::modfreq
 Modulator frequency in cycles per second.
-
 argument::pmindex
 The modulation index, representing the ratio of modulator deviation to modulator frequency. Higher values generally produce denser spectra.
-
 argument::modphase
 A modulation input for the modulator's phase in radians.
-
 argument::mul
 Output will be multiplied by this value.
-
 argument::add
 This value will be added to the output.
 
-Examples::
+examples::
 
 code::
 

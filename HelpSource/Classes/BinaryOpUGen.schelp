@@ -20,12 +20,12 @@ classmethods::
 private:: new1
 
 method::new
-return a new instance that applies the operator code::selector:: to the UGens code::a:: and code::b:: normally, this is implicitly called when applying an operator to a link::Classes/UGen::.
-argument:: selector
+returns a new instance that applies the operator code::selector:: to the UGens code::a:: and code::b:: normally, this is implicitly called when applying an operator to a link::Classes/UGen::.
+argument::selector
 The selector symbol for the binary operator
-argument:: a
+argument::a
 left operand
-argument:: b
+argument::b
 right operand
 returns:: A new instance of BinaryOpUGen
 
@@ -49,7 +49,8 @@ b.operator; // +
 )
 ::
 
-subsection::The comparison operators
+
+subsection:: The comparison operators
 
 The operators code:: >, >=, <, <= :: are particularly useful for triggering. They should not be confused with their use in conditionals. Compare:
 

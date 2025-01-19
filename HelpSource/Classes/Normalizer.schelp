@@ -4,8 +4,7 @@ related:: Classes/Amplitude, Classes/Compander, Classes/CompanderD, Classes/Limi
 categories:: UGens>Dynamics
 
 
-Description::
-
+description::
 Normalizes the input amplitude to the given level. Normalizer will not
 overshoot like  link::Classes/Compander::  will, but it needs to look
 ahead in the audio. Thus there is a delay equal to twice the value
@@ -15,21 +14,17 @@ of the  code::dur::  parameter.
 classmethods::
 
 method::ar
-
 argument::in
 The signal to be processed.
-
 argument::level
 The peak output amplitude level to which to normalize the input.
-
 argument::dur
-
 The buffer delay time. Shorter times will produce smaller delays
 and quicker transient response times, but may introduce amplitude
 modulation artifacts.
 
 
-Examples::
+examples::
 
 code::
 

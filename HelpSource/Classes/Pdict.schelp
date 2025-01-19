@@ -6,7 +6,7 @@ related:: Classes/Pbind
 description::
 A general purpose lookup stream.
 
-Examples::
+examples::
 
 code::
 SynthDescLib.read;

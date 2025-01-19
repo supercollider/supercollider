@@ -1,9 +1,9 @@
 TITLE:: FileDialog
-summary:: Operating system interface for Open file, save file, select directory dialogs
+summary:: Operating system interface for open file, save file, select directory dialogs
 categories:: GUI>Accessories
 related:: Classes/Dialog, Classes/File
 
-DESCRIPTION::
+description::
 This is the interface for your standard operating system modal file dialogs to open files, save files and select directories.
 
 link::Classes/Dialog:: has functions built on top of FileDialog that may be more convenient to use.
@@ -13,19 +13,16 @@ CLASSMETHODS::
 
 PRIVATE:: qtClass
 
-METHOD:: new
-Create and display a dialog.
-
-ARGUMENT:: okFunc
+method::new
+creates and display a dialog.
+argument::okFunc
 Handler function evaluated when the user clicks "Open" or "Save".
 This function receives different arguments depending on the value of code::stripResult::. By default
 (code::stripResult: false::), code::okFunc:: is passed an array of selected paths. Otherwise, the
 paths are passed as separate arguments, one for each path.
-
-ARGUMENT:: cancelFunc
+argument::cancelFunc
 Handler function evaluated when the user clicks "Cancel". Receives no arguments.
-
-ARGUMENT:: fileMode
+argument::fileMode
 An integer that determines the type of dialog.
 
 These values correspond directly to values of QFileDialog\::FileMode in the Qt class.
@@ -38,8 +35,7 @@ list::
 ::
 
 0 or 3 implies that the user can type in a new file name.
-
-ARGUMENT:: acceptMode
+argument::acceptMode
 An integer that determines whether the dialog is for opening or saving files. Note that this doesn't
 actually open or save a file; you'll need to do that in your code::okFunc::. This only affects
 appearance of the dialog.
@@ -50,26 +46,24 @@ list::
 ## 0 Opening
 ## 1 Saving
 ::
-
-ARGUMENT:: stripResult
+argument::stripResult
 A boolean. If code::true::, selected paths are passed individually as arguments to code::okFunc::.
 Otherwise, they are passed as an array in a single argument (the default).
 
 list::
-## false: okFunc(paths)
-## true: okFunc(path1, path2, path3)
+## code::false::: code::okFunc(paths)::
+## code::true::: code::okFunc(path1, path2, path3)::
 ::
-
-ARGUMENT:: path
+argument::path
 A string. The dialog will initially display the contents of this path. The default is the current
 user's home directory.
 
 returns:: a FileDialog
 
-EXAMPLES::
+examples::
 
 code::
-// By default, the selected paths are passed to okFunc as an array.
+// By default, the selected paths are passed to code::okFunc:: as an array.
 (
 FileDialog({ |paths|
 	postln("Selected path:" + paths[0]);

@@ -3,9 +3,11 @@ summary:: tips on debugging synthdefs, client code and more
 categories:: Language, Debugging
 related:: Guides/Understanding-Errors
 
+
 section:: Debugging synthdefs
 
 The challenge in debugging synthdefs is the invisibility of the server's operations. There are a handful of techniques to expose the output of various UGens.
+
 
 subsection:: SendTrig / OSCFunc
 
@@ -57,6 +59,7 @@ o.free;  // when done, you need to clean up the OSCFunc
 // plot as two channels: frequencies in the top graph, amps in the bottom
 l.flat.plot(numChannels: 2);
 ::
+
 
 subsection:: Polling
 
@@ -113,6 +116,7 @@ code::
 { LFNoise1.ar.poll; }.play;
 ::
 
+
 subsection:: Trace control signals using a control bus
 
 Another technique to watch control values is to output the signal to a control-rate bus. Then you can access the bus using link::Classes/Bus#-get:: or link::Classes/Bus#-getSynchronous::. Saving the values into an Array or List is a little more straightforward with getSynchronous.
@@ -143,6 +147,7 @@ r = fork { loop { b.get({ |value| l.add(value) }); 0.1.wait } };
 ::
 
 note::This approach is not valid for audio buses, because the data move too quickly to support 'get'.::
+
 
 subsection:: Server-side trace
 
@@ -234,7 +239,7 @@ Two problems leap out from the trace: first, there are six channels of the outpu
 
 Note that there are no out of range signals prior to each Resonz. Looking at the Resonz inputs, we see that the frequency input is negative, which will blow up most digital filters.
 
-The resonance frequency derives from multiplying an array by a LFNoise1. Tracing back (the red, italicized numbers), the LFNoise1 is outputting a negative number, where we expected it to be 0.5..1.5. But, the mul and add inputs are reversed!
+The resonance frequency derives from multiplying an array by a LFNoise1. Tracing back (the red, italicized numbers), the LFNoise1 is outputting a negative number, where we expected it to be 0.5..1.5. But, the code::mul:: and code::add:: inputs are reversed!
 
 If you look very carefully at the trace, you will see another problem relating to multichannel expansion. The two components of the detuned sawtooth go into alternate Resonz'es, where we expected both to go, combined, into every Resonz. To fix it, the sawtooths need to be mixed as well.
 code::
@@ -249,6 +254,7 @@ a = Synth(\resonz);
 a.trace;
 a.free;
 ::
+
 
 section:: Debugging client-to-server communication
 
@@ -279,9 +285,11 @@ a.free;
 		[ 11, 1001 ]
 ::
 
+
 section:: Debugging client code
 
 SuperCollider does not have a step trace function, which makes debugging on the client side tougher, but not impossible.
+
 
 subsection:: Errors
 
@@ -295,6 +303,7 @@ Exception.debug = true;		// enable
 Exception.debug = false;	// disable
 ::
 In most cases, this will give you more information than a regular error dump. Usually the regular error dump is sufficient. If you are using Environments or prototype-style programming, the graphic inspector is indispensable.
+
 
 subsection:: Debug output using post statements
 
@@ -341,6 +350,7 @@ code::
 ::
 By sprinkling these throughout your code, especially at the beginnings of functions or methods, the debugging output can give you a partial trace of which code blocks get visited in what order.
 
+
 subsection:: dumpBackTrace
 
 If you discover that a particular method or function is being entered but you don't know how it got there, you can use the code::.dumpBackTrace:: method on any object. You'll get what looks like an error dump, but without the error. Execution continues normally after the stack dump.
@@ -375,6 +385,7 @@ This tells you that the function came from interpreting a closed FunctionDef (au
 
 In a method definition, it's recommended to use code::this.dumpBackTrace::; in a free-standing function, there is no "this" so you should pick some arbitrary object.
 
+
 subsection:: Tracing streams
 
 To see the results of a pattern, use the .trace method. Each output value from the pattern gets posted to the main output.
@@ -386,6 +397,7 @@ p = Pbind(\degree, Pwalk((0..14), Pdup(Pwhite(1, 4, inf), Prand(#[-2, -1, 1, 2],
 
 p.stop;
 ::
+
 
 subsection:: Debugging infinite loops or recursion
 code::
@@ -412,7 +424,7 @@ code::
 i = 0;
 while (i < 10) { i.postln; i = i+1 }; 	// crash
 ::
-While loop syntax is different in SuperCollider from C. The above loop means to check whether i < 10 once, at the beginning of the loop, then loop if the value is true. Since the loop condition is evaluated only once, it never changes, so the loop never stops. The loop condition should be written inside a function, to wit:
+While loop syntax is different in SuperCollider from C. The above loop means to check whether i < 10 once, at the beginning of the loop, then loop if the value is code::true::. Since the loop condition is evaluated only once, it never changes, so the loop never stops. The loop condition should be written inside a function, to wit:
 code::
 i = 0;
 while { i < 10 } { i.postln; i = i+1 };
@@ -447,6 +459,7 @@ code::
 a = 0;
 SystemClock.sched(2, { a.postln; nil });
 ::
+
 
 subsection:: Removing debugging statements
 

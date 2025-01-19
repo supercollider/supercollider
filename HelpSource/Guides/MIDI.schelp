@@ -3,9 +3,11 @@ summary:: about MIDI
 related:: Guides/UsingMIDI, Classes/MIDIFunc, Classes/MIDIdef
 categories:: External Control>MIDI
 
+
 section:: Practical usage overview
 
-Begin with the link::Guides/UsingMIDI:: help file.
+Begins with the link::Guides/UsingMIDI:: help file.
+
 
 subsection:: Receiving MIDI input
 
@@ -24,9 +26,11 @@ You need to do this once after launching SuperCollider, or recompiling the class
 
 There are some examples in the wild using the MIDIIn class directly to receive MIDI. This is not recommended for normal use. The exceptions are sysex (system exclusive) and sysrt (MIDI clock) messages, which are currently supported only by MIDIIn. See the example below.
 
+
 subsection:: Sending MIDI output
 
 See the link::Classes/MIDIOut:: help file for details.
+
 
 section:: Summary of MIDI classes
 
@@ -40,7 +44,7 @@ definitionlist::
 ::
 
 
-Examples::
+examples::
 
 MIDI input:
 

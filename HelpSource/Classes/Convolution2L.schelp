@@ -3,7 +3,7 @@ summary:: Real-time convolver with linear interpolation
 related:: Classes/Convolution, Classes/Convolution2, Classes/Convolution3, Classes/StereoConvolution2L
 categories::  UGens>FFT, UGens>Convolution
 
-Description::
+description::
 Strict convolution with fixed kernel which can be updated using a trigger signal. There is a linear crossfade between the buffers upon change.
 
 See emphasis:: Steven W Smith, The Scientist and Engineer's Guide to Digital Signal Processing: chapter 18:: -
@@ -13,16 +13,12 @@ classmethods::
 private:: categories
 
 method::ar
-
 argument::in
 processing target
-
 argument::kernel
 buffer index for the fixed kernel, may be modulated in combination with the trigger
-
 argument::trigger
 update the kernel on a change from <=0 to >0
-
 argument::framesize
 size of FFT frame, must be a power of two (512, 1024, 2048, 4096 are standard choices).
 Convolution uses twice this number internally.
@@ -30,16 +26,12 @@ Note that the convolution gets progressively more expensive to run for higher po
 The maximum value you can use is 2^16 = 16384.
 (This upper limit is half of "SC_FFT_MAXSIZE" defined in the SC source code.)
 Larger convolutions than this can be done using link::Classes/PartConv::.
-
-
 argument::crossfade
 The number of periods over which a crossfade is made. The default is 1. This must be an integer.
-
 argument::mul
-
 argument::add
 
-Examples::
+examples::
 
 code::
 // allocate three buffers

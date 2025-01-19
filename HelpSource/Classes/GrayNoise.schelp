@@ -4,9 +4,8 @@ related:: Classes/BrownNoise, Classes/ClipNoise, Classes/PinkNoise, Classes/Whit
 categories::  UGens>Generators>Stochastic
 
 
-Description::
-
-Generates noise which results from flipping random bits in a word.
+description::
+generates noise which results from flipping random bits in a word.
 This type of noise has a high RMS level relative to its peak to peak
 level. The spectrum is emphasized towards lower frequencies.
 
@@ -14,14 +13,12 @@ level. The spectrum is emphasized towards lower frequencies.
 classmethods::
 
 method::ar, kr
-
 argument::mul
 Output will be multiplied by this value.
-
 argument::add
 This value will be added to the output.
 
-Examples::
+examples::
 
 code::
 

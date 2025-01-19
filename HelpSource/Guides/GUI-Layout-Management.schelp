@@ -74,6 +74,7 @@ x.resizeTo(100,100);
 // The view did not allow a smaller size than minSize.
 ::
 
+
 subsection:: Automatic and dynamic space distribution
 
 A layout strong::automatically:: distributes its space among its items, possibly in strong::unequal:: parts, based on the intrinsic preferences and constraints of views described above. Moreover, views also have intrinsic preferences as to whether they profit from being extended horizontally or vertically, or whether they prefer their size to be fixed in a certain direction. This is also taken into account by a layout.
@@ -98,7 +99,9 @@ w = Window.new(bounds:Rect(100,100,300,80)).layout_(
 )
 ::
 
+
 section:: User customization
+
 
 subsection:: Stretch factors
 
@@ -114,6 +117,7 @@ w = Window.new(bounds:Rect(100,100,400,80)).layout_(
 ).front;
 )
 ::
+
 
 subsection:: Size constraints
 
@@ -145,6 +149,7 @@ w = Window.new(bounds:Rect(100,100,200,200)).layout_(
 )
 ::
 
+
 subsection:: Alignment
 
 The combination of size constraints and preferences of all items in a layout hierarchy may result in a larger amount of space given to an item than its own constraints allow. In that case the item will only grow up to its maximum allowed size, and its position within its extra available space may be controlled by user by assigning alignment to an item.
@@ -166,9 +171,11 @@ section:: View vs. layout hierarchies
 
 A layout starts to operate on the space that a view occupies from the moment it is installed on that view on. However, it will not automatically affect child views that where created before the layout was. For views to be managed by a layout they have to be created as children of a view after the layout has been installed on it, or they have to be explicitly inserted into the layout via layout's constructor or its instance methods for this purpose.
 
+
 subsection:: View constructed with a parent
 
 When a view is created with another view as parent it will implicitly become subject to the management of the parent's layout - it will be inserted into the layout in some default way. However, layouts like link::Classes/GridLayout:: have a complex space distribution pattern and so you will need to use their dedicated methods to specify exactly what place in the layout's distribution pattern a view will occupy.
+
 
 subsection:: View explicitly inserted into a layout
 

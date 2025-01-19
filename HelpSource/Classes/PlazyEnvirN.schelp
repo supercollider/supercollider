@@ -4,8 +4,7 @@ related:: Classes/Plazy, Classes/PlazyEnvir, Classes/Pfunc
 categories:: Streams-Patterns-Events>Patterns>Function
 
 description::
-
-Evaluates a function that returns a pattern and embeds it in a stream.
+evaluates a function that returns a pattern and embeds it in a stream.
 list::
 ## In difference to link::Classes/Plazy::, the function is evaluated using the environment passed in by the stream.
 ## In difference to link::Classes/PlazyEnvir::, PlayzEnvirN expands to strong::multiple parallel patterns:: if the function arguments receive multiple channels. This works only with event streams.
@@ -14,7 +13,6 @@ list::
 ClassMethods::
 
 method::new
-
 argument::func
 A link::Classes/Function:: that returns a pattern or any other valid pattern input.
 
@@ -33,7 +31,7 @@ c.nextN(4); // no degrees, because stream ends
 ::
 
 
-Examples::
+examples::
 
 code::
 (

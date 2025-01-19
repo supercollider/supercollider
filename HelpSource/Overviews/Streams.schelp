@@ -3,6 +3,7 @@ summary:: Patterns/Streams Help overview
 categories:: Streams-Patterns-Events
 related:: Classes/Stream, Classes/Pattern
 
+
 section:: Some tutorials
 
 definitionlist::
@@ -23,15 +24,19 @@ definitionlist::
 ## link::Classes/Pattern:: || Pattern class helpfile
 ::
 
+
 section:: Specific classes
+
 
 subsection:: ListPatterns
 
 classtree::ListPattern
 
+
 subsection:: FilterPatterns
 
 classtree::FilterPattern
+
 
 subsection:: event stream specific filter patterns
 
@@ -46,6 +51,7 @@ list::
 ## link::Classes/Pfindur::
 ::
 
+
 subsection:: other Patterns
 
 list::
@@ -57,6 +63,7 @@ list::
 ## link::Classes/PstepNadd::
 ## link::Classes/PstepNfunc::
 ::
+
 
 subsection:: Streams
 

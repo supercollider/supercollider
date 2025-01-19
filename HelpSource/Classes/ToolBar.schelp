@@ -3,7 +3,7 @@ summary:: An inline button bar populated by MenuActions
 categories:: GUI
 related:: Classes/Menu, Classes/MenuAction, Classes/MainMenu
 
-DESCRIPTION::
+description::
 A ToolBar is similar to a link::Classes/Menu::, with several key differences:
 LIST::
 	## ToolBars act as regular link::Classes/View::s, and can be placed in layouts or in other views.
@@ -25,22 +25,22 @@ View().fixedWidth_(300).layout_(HLayout(
 
 CLASSMETHODS::
 
-METHOD:: new
+method::new
 	Create a new ToolBar containing one or more actions.
 
-	ARGUMENT::
+	argument::
 		One or more link::Classes/MenuAction::
 
 INSTANCEMETHODS::
 
-METHOD:: orientation
+method::orientation
 	The horizontal or vertical orientation of the ToolBar
-	ARGUMENT::
+	argument::
 		A link::Classes/QOrientation::
 
-METHOD:: toolButtonStyle
+method::toolButtonStyle
 	Controls whether the toolbar shows icons, text, or both.
-	ARGUMENT::
+	argument::
 		An integer; one of the values of link::Classes/QToolButtonStyle::.
 	DISCUSSION::
 		CODE::
@@ -59,7 +59,7 @@ METHOD:: toolButtonStyle
 )
 		::
 
-EXAMPLES::
+examples::
 
 code::
 (

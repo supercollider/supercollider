@@ -8,14 +8,12 @@ InstanceMethods::
 private::prGetLine, addOpenFile
 
 method::isOpen
-Returns whether the file is open. An open request can fail if a file cannot be found for example. This method lets you test that the open call succeeded.
+returns whether the file is open. An open request can fail if a file cannot be found for example. This method lets you test that the open call succeeded.
 
 method::pos
-Return the current file position
-
+returns the current file position
 argument::offset
 an offset in bytes.
-
 argument::origin
 one of the following link::Classes/Integer::s:
 definitionList::
@@ -25,8 +23,7 @@ definitionList::
 ::
 
 method::write
-Writes an item to the file.
-
+writes an item to the file.
 argument::item
 one of the following:
 definitionList::
@@ -42,50 +39,50 @@ method::getLine
 reads and returns a link::Classes/String:: up to lesser of next newline or 1023 chars.
 
 method::getChar
-read one byte and return as a link::Classes/Char::.
+reads one byte and returns as a link::Classes/Char::.
 
 method::getInt8
-read one byte and return as a link::Classes/Integer::.
+reads one byte and returns as a link::Classes/Integer::.
 
 method::getInt16
-read two bytes and return as an link::Classes/Integer::.
+reads two bytes and returns as an link::Classes/Integer::.
 
 method::getInt32
-read four bytes and return as an link::Classes/Integer::.
+reads four bytes and returns as an link::Classes/Integer::.
 
 method::getFloat
-read four bytes and return as a link::Classes/Float::.
+reads four bytes and returns as a link::Classes/Float::.
 
 method::getDouble
-read eight bytes and return as a link::Classes/Float::.
+reads eight bytes and returns as a link::Classes/Float::.
 
 method::getPascalString
-Reads the next byte as an unsigned integer N, then reads the following N bytes and returns them as a link::Classes/String::.
+reads the next byte as an unsigned integer N, then reads the following N bytes and returns them as a link::Classes/String::.
 
 method::putChar
-write a link::Classes/Char:: as one byte.
+writes a link::Classes/Char:: as one byte.
 
 method::putInt8
-write an link::Classes/Integer:: as one byte. That is a signed link::Classes/Integer:: value between -128 and 127.
+writes an link::Classes/Integer:: as one byte. That is a signed link::Classes/Integer:: value between -128 and 127.
 
 method::putInt16
-write an link::Classes/Integer:: as two bytes.
+writes an link::Classes/Integer:: as two bytes.
 
 method::putInt32
-write an link::Classes/Integer:: as four bytes.
+writes an link::Classes/Integer:: as four bytes.
 
 method::putFloat
-write a link::Classes/Float:: as four bytes.
+writes a link::Classes/Float:: as four bytes.
 
 method::putDouble
-write a link::Classes/Float:: as eight bytes.
+writes a link::Classes/Float:: as eight bytes.
 
 method::putString
-write a null terminated link::Classes/String::.
+writes a null terminated link::Classes/String::.
 
 method::putPascalString
-Writes code::aString:: preceded by its length represented as a single byte.
+Writess code::aString:: preceded by its length represented as a single byte.
 Throws an error if code::aString:: is longer than 255 characters.
 
 method::putString0
-Writes code::aString:: followed by a zero byte, like a null-terminated C string.
+writes code::aString:: followed by a zero byte, like a null-terminated C string.

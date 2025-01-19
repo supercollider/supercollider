@@ -4,23 +4,19 @@ related:: Classes/Ppoisson
 categories:: Streams-Patterns-Events>Patterns>Random
 
 description::
-
 This pattern uses the Box-Muller transform to generate a gaussian distribution from uniformly distributed values: code::sqrt(-2 * log(1.0.rand)) * sin(2pi.rand)::
 
 ClassMethods::
 
 method::new
-
 argument::mean
 The mean of the distribution.
-
 argument::dev
 The spread of values around the mean (standard deviation).
-
 argument::length
 Number of values produced.
 
-Examples::
+examples::
 
 code::
 (

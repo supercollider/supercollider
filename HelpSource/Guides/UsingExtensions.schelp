@@ -8,7 +8,6 @@ single folder containing all three (for convenient addition or removal), or any 
 platform-specific extension directories in order to be included.
 
 
-
 section:: Platform Specific Directories
 
 You can install extensions simply by copying the extensions to the following location. There are different directories
@@ -28,6 +27,7 @@ table::
 ## Linux   || /usr/share/SuperCollider/Extensions/
 ## Windows || %PROGRAMDATA%/SuperCollider/Extensions/
 ::
+
 
 section:: How Extensions Folders Should be Organised
 

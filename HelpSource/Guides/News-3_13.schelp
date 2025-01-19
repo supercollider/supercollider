@@ -10,7 +10,8 @@ We now also provide a universal build for both x86_64 and arm64 Apple machines.
 
 Below you can find a more complete list of changes in this version. A big thank you to all developers for your contributions!
 
-section::  General
+
+section:: General
 
 Countless improvements to help files and documentation (@elifieldsteel, @JaimeClover, @DoHITB, @jamshark70, @heretogo, @capital-G, @alexhughk, @chris75vie, @forrcaho, @paum3, @avdrd, @wolfgangschaltung, @telephon, @redFrik, @madskjeldgaard, @mxw, @dyfer, @tdug, @mtmccrea, @prko, @mjsyts, @grirgz, @chkworks, @balzss, @hectorgonzalezo, @michelestew, @mttvn, @pearcemerritt, @mlang)
 
@@ -36,18 +37,22 @@ Updates and fixes for the automated build system (GitHub Actions):
 @dyfer in https://github.com/supercollider/supercollider/pull/5889, 
 @dyfer in https://github.com/supercollider/supercollider/pull/5776.
 
-section::  General: Added
+
+section:: General: Added
 
 Universal macOS build for both Intel x86_64 and Apple arm64 CPUs by @dyfer in https://github.com/supercollider/supercollider/pull/5953
 
 Better description in the about dialog for tagged builds by @dyfer in https://github.com/supercollider/supercollider/pull/5697 and https://github.com/supercollider/supercollider/pull/5739
 
-section::  General: Changed
+
+section:: General: Changed
 
 Update sc-el submodule to latest version by @jxa in https://github.com/supercollider/supercollider/pull/5600
 
 The regular release macOS build now supports macOS 10.14 and up (previously supported 10.13). The legacy build is still provided supporting macOS 10.10 and up.
-section::  General: Fixed
+
+
+section:: General: Fixed
 
 Remove spurious Qt dependencies by @marcan in https://github.com/supercollider/supercollider/pull/4991
 
@@ -59,17 +64,21 @@ Build on OpenBSD by @ibz in https://github.com/supercollider/supercollider/pull/
 
 Find JACK using cmake's FindPkgConfig by @dvzrv in https://github.com/supercollider/supercollider/pull/5680
 
-section::  sclang: Added
+
+section:: sclang: Added
 Ability to set scrollPosition of QWebView by @paum3 in https://github.com/supercollider/supercollider/pull/5483
 
 Interactive Command line interface on Windows using Readline by @dyfer in https://github.com/supercollider/supercollider/pull/5712
 
 Support for MPEG formats by @dyfer in https://github.com/supercollider/supercollider/pull/5786
 
-section::  sclang: Changed
+
+section:: sclang: Changed
 
 code:: Signal -thresh :: by @elgiano in https://github.com/supercollider/supercollider/pull/5432
-section::  sclang: Fixed
+
+
+section:: sclang: Fixed
 
 Stretch behaviour in QcRangeSlider by @miriamvoth in https://github.com/supercollider/supercollider/pull/5595
 
@@ -83,7 +92,8 @@ UdpInPort error reporting by @jamshark70 in https://github.com/supercollider/sup
 
 Parsing block arguments by @nilninull in https://github.com/supercollider/supercollider/pull/5522
 
-section::  Class library: Added
+
+section:: Class library: Added
 
 Support for code:: kitty :: and code:: alacritty :: Linux terminals by @madskjeldgaard in https://github.com/supercollider/supercollider/pull/5548
 
@@ -105,7 +115,8 @@ Vim-like keyshortcuts in HelpBrowser by @paum3 in https://github.com/supercollid
 
 Add hooks to the code::Quark:: class by @capital-G and @telephon in https://github.com/supercollider/supercollider/pull/5907
 
-section::  Class library: Changed
+
+section:: Class library: Changed
 
 Refactor functionality: code:: connectToServerAddr :: by @telephon in https://github.com/supercollider/supercollider/pull/5569
 
@@ -127,11 +138,13 @@ HistoryGui: improve display readability by @adcxyz in https://github.com/superco
 
 Create only a single server meter by default by @telephon in https://github.com/supercollider/supercollider/pull/5908
 
-section::  Class library: Deprecated
+
+section:: Class library: Deprecated
 
 QuartzComposerView by @dyfer in https://github.com/supercollider/supercollider/pull/5710
 
-section::  Class library: Fixed
+
+section:: Class library: Fixed
 
 Prevent possible infinite recursion in code:: *initClassTree :: by @jamshark70 in https://github.com/supercollider/supercollider/pull/5575
 
@@ -193,7 +206,8 @@ Make code:: Rest :: accepted by Patterns by @olafklingt in https://github.com/su
 
 code:: Buffer *cueSoundFile ::: keep code:: path :: value by @telephon in https://github.com/supercollider/supercollider/pull/5937
 
-section::  scsynth and supernova: Added
+
+section:: scsynth and supernova: Added
 
 Support for MPEG formats by @dyfer in https://github.com/supercollider/supercollider/pull/5786
 
@@ -201,7 +215,8 @@ Option for LIB_SUFFIX in the CMake build system by @tdug in https://github.com/s
 
 Error warnings and /fail replies to /d_load and /d_loadDir (scsynth) by @muellmusik in https://github.com/supercollider/supercollider/pull/5244
 
-section::  scsynth and supernova: Fixed
+
+section:: scsynth and supernova: Fixed
 
 Make code:: /g_head :: always fire an code:: /n_move :: reply (scsynth) by @Sciss in https://github.com/supercollider/supercollider/pull/5580
 
@@ -223,10 +238,13 @@ Behavior of .sqrt and .reciprocal operations on the server on Apple M1 CPUs by @
 
 OffsetOut_Ctor error in supernova on Windows by @Spacechild1 in https://github.com/supercollider/supercollider/pull/5902
 
-section::  UGens: Added
+
+section:: UGens: Added
 
 Argument code:: binout :: to code:: SpecPcile :: by @woolgathering in https://github.com/supercollider/supercollider/pull/5097
-section::  UGens: Changed
+
+
+section:: UGens: Changed
 
 code:: Impulse :: is now initialized correctly such that:
 LIST::
@@ -251,7 +269,8 @@ code:: Integrator :: Ctor passes through the first sample only by @jamshark70 in
 
 code:: PanAz ::, due to fixing leaks and imprecisions by @elgiano in https://github.com/supercollider/supercollider/pull/4971
 
-section::  UGens: Fixed
+
+section:: UGens: Fixed
 code:: Tap :: samplerate compensation by @morfant in https://github.com/supercollider/supercollider/pull/5606
 
 Audio rate versions of triggered random ugens by @telephon in https://github.com/supercollider/supercollider/pull/5344

@@ -4,12 +4,12 @@ categories:: UGens>Demand, UGens>Random
 related:: Classes/Demand
 
 classmethods::
-method:: new
-argument:: list
+method::new
+argument::list
 array of values or other ugens
-argument:: weights
+argument::weights
 array of values (should sum up to 1.0)
-argument:: repeats
+argument::repeats
 number of values to return
 discussion::
 structurally related: link::Classes/Pwrand::, link::Classes/TWindex::, link::Classes/TWChoose::

@@ -1,6 +1,6 @@
 class::True
 categories::Core
-summary::true logical value
+summary:: true logical value
 
 description::
 see link::Classes/Boolean::

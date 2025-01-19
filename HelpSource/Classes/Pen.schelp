@@ -11,51 +11,52 @@ The following methods must be called within a link::Classes/Window#-drawFunc:: o
 classmethods::
 private:: prAddAnnularWedge, prAddArc, prDrawImage, prSetFont, prTileImage
 
+
 subsection:: Construct path
 The following methods define paths. You will need to call link::#*stroke:: or link::#*fill:: to actually draw them.
 
-method:: moveTo
+method::moveTo
 Move the Pen to point.
-argument:: point
+argument::point
 An instance of link::Classes/Point::
 
-method:: lineTo
+method::lineTo
 Draw a line (define a path) from the current position to point.
-argument:: point
+argument::point
 An instance of link::Classes/Point::
 
-method:: line
+method::line
 Draw a line (define a path) from p1 to p2. Current position will be p2.
-argument:: p1
+argument::p1
 An instance of link::Classes/Point::
-argument:: p2
+argument::p2
 An instance of link::Classes/Point::
 
-method:: curveTo
+method::curveTo
 Draws a cubic bezier curve from the current position to point.
 strong::cpoint1:: and strong::cpoint2:: are control points determining the curve's curvature.
-argument:: endPoint
+argument::endPoint
 An instance of link::Classes/Point::
-argument:: cPoint1
+argument::cPoint1
 An instance of link::Classes/Point::
-argument:: cPoint2
+argument::cPoint2
 An instance of link::Classes/Point::
 
-method:: quadCurveTo
+method::quadCurveTo
 Draws a quad bezier curve from the current position to point.
 strong::cpoint:: is a control point determining the curve's curvature.
-argument:: endPoint
+argument::endPoint
 An instance of link::Classes/Point::
-argument:: cPoint
+argument::cPoint
 An instance of link::Classes/Point::
 
-method:: arcTo
+method::arcTo
 Draws an arc of a circle using a radius and tangent points.
-argument:: point1
+argument::point1
 The end point of the first tangent line. Its start point is the current position. An instance of link::Classes/Point::
-argument:: point2
+argument::point2
 The end point of the second tangent line. Its start point is point1. An instance of link::Classes/Point::
-argument:: radius
+argument::radius
 The radius of the arc.
 discussion::
 example:
@@ -77,7 +78,7 @@ w.drawFunc = { |v|
 )
 ::
 
-method:: addArc
+method::addArc
 Draw an arc around the link::Classes/Point:: strong::center::, at strong::radius:: number of pixels. strong::startAngle:: and strong::arcAngle:: refer to the starting angle and the extent of the arc, and are in radians [0..2pi].
 discussion::
 example:
@@ -98,7 +99,7 @@ w.refresh;
 )
 ::
 
-method:: addWedge
+method::addWedge
 Draw a wedge around the link::Classes/Point:: strong::center::, at strong::radius:: number of pixels. strong::startAngle:: and strong::sweepLength:: refer to the starting angle and the extent of the arc, and are in radians [0..2pi].
 discussion::
 example:
@@ -119,7 +120,7 @@ w.refresh;
 )
 ::
 
-method:: addAnnularWedge
+method::addAnnularWedge
 Draw an annular wedge around the link::Classes/Point:: strong::center::, from strong::innerRadius:: to strong::outerRadius:: in pixels. strong::startAngle:: and strong::sweepLength:: refer to the starting angle and the extent of the arc, and are in radians [0..2pi].
 discussion::
 example:
@@ -146,8 +147,8 @@ w.refresh;
 )
 ::
 
-method:: addRect
-Adds a link::Classes/Rect:: to the drawing.
+method::addRect
+adds a link::Classes/Rect:: to the drawing.
 discussion::
 example:
 code::
@@ -168,13 +169,13 @@ w.refresh;
 )
 ::
 
-method:: addOval
-Adds an Oval shape that fits inside the link::Classes/Rect:: to the current path.
+method::addOval
+adds an Oval shape that fits inside the link::Classes/Rect:: to the current path.
 
 
 subsection:: Draw the path
 
-method:: stroke
+method::stroke
 Outline the previous defined path.
 discussion::
 example:
@@ -200,7 +201,7 @@ w.refresh;
 )
 ::
 
-method:: fill
+method::fill
 Fill the previous defined path.
 discussion::
 example:
@@ -226,9 +227,9 @@ w.refresh;
 )
 ::
 
-method:: draw
+method::draw
 Draw the previous defined path using any of the following options:
-argument:: style
+argument::style
 table::
 ## 0 || fill
 ## 1 || fill using even-odd rule
@@ -260,28 +261,29 @@ w.refresh;
 )
 ::
 
-method:: fillStroke
+method::fillStroke
 Fill and stroke the current path. Shortcut to the draw(3) method.
 
 
 subsection:: Construct and draw
 These methods do not require separate calls to link::#*stroke:: or link::#*fill::.
 
-method:: strokeRect
+method::strokeRect
 Strokes a link::Classes/Rect:: into the window.
 
-method:: fillRect
+method::fillRect
 Draws a filled link::Classes/Rect:: into the window.
 
-method:: strokeOval
+method::strokeOval
 Strokes an oval into the window.
 
-method:: fillOval
+method::fillOval
 Draws a filled oval into the window.
+
 
 subsection:: Gradients
 
-method:: fillAxialGradient
+method::fillAxialGradient
 Fills an Axial gradient.
 discussion::
 example:
@@ -297,7 +299,7 @@ w.refresh;
 )
 ::
 
-method:: fillRadialGradient
+method::fillRadialGradient
 Fills a Radial gradient.
 discussion::
 example:
@@ -314,11 +316,12 @@ w.refresh;
 )
 ::
 
+
 subsection:: Graphics State Methods
 
 The following commands transform the graphics state, i.e. they effect all subsequent drawing commands. These transformations are cumulative, i.e. each command applies to the previous graphics state, not the original one.
 
-method:: translate
+method::translate
 Translate the coordinate system to have its origin moved by x,y
 discussion::
 example:
@@ -359,7 +362,7 @@ w.refresh;
 )
 ::
 
-method:: scale
+method::scale
 Scales subsequent drawing. x and y are scaling factors (i.e. 1 is normal, 2 is double size, etc.).
 discussion::
 example:
@@ -384,7 +387,7 @@ w.refresh;
 )
 ::
 
-method:: skew
+method::skew
 Skews subsequent drawing. x and y are skewing factors (i.e. 1 is normal).
 discussion::
 example:
@@ -409,7 +412,7 @@ w.refresh;
 )
 ::
 
-method:: rotate
+method::rotate
 Rotates subsequent drawing around the link::Classes/Point:: code::x@y:: by the amount strong::angle:: in radians [0..2pi].
 discussion::
 example:
@@ -439,18 +442,17 @@ w.refresh;
 )
 ::
 
-method:: matrix
-Gets or sets the coordinate system transformation matrix.
+method::matrix
+gets/sets the coordinate system transformation matrix.
 
 See link::#Matrix example:: for an example.
-
-argument:: matrixArray
+argument::matrixArray
 An array of the form code::[zoomX, shearingY, shearingX, zoomY, translateX, translateY]::
 
-method:: width
-Sets the width of the Pen for the whole stroke
+method::width
+sets the width of the Pen for the whole stroke
 
-method:: use
+method::use
 Draw function, and then revert to the previous graphics state. This allows you to make complex transformations of the graphics state without having to explicitly revert to get back to 'normal'.
 discussion::
 example:
@@ -490,24 +492,24 @@ w.refresh
 )
 ::
 
-method:: path
-Make a path, consisting of the drawing made in function.
+method::path
+makes a path, consisting of the drawing made in function.
 note::
 Unfortunately not working for now...
 (there's no Pen.endPath which currently is used in this method)
 ::
 
-method:: beginPath
+method::beginPath
 Discard any previous path.
 
-method:: beginTransparencyLayer
-Begins a new transparency layer. Transparency layers are useful when you want to apply an effect to a group of objects or create a composite graphic. See link::#Transparency layer example::.
+method::beginTransparencyLayer
+begins a new transparency layer. Transparency layers are useful when you want to apply an effect to a group of objects or create a composite graphic. See link::#Transparency layer example::.
 
-method:: endTransparencyLayer
+method::endTransparencyLayer
 Ends the current transparency layer.
 
-method:: clip
-Use the previously defined path as a clipping path.
+method::clip
+uses the previously defined path as a clipping path.
 discussion::
 example:
 code::
@@ -542,7 +544,7 @@ w.refresh;
 )
 ::
 
-method:: smoothing
+method::smoothing
 Turns on/off anti-aliasing.
 discussion::
 example:
@@ -568,20 +570,20 @@ w.drawFunc = { |v|
 )
 ::
 
-method:: setShadow
+method::setShadow
 Will fill the current path with a shadow.
 You should use this option between Pen.push / Pen.pop (or Pen.use)
 
-method:: joinStyle
-Set the lines joining style according to the defined options:
+method::joinStyle
+sets the lines joining style according to the defined options:
 table::
 ## 0 || miter
 ## 1 || round
 ## 2 || bevel
 ::
 
-method:: capStyle
-Set the lines joining style according to the defined options:
+method::capStyle
+sets the lines joining style according to the defined options:
 table::
 ## 0 || butt
 ## 1 || round
@@ -616,18 +618,18 @@ w.refresh;
 )
 ::
 
-method:: alpha
-Set the opacity level.
+method::alpha
+sets the opacity level.
 
-method:: blendMode
-Set the blending mode to use.
+method::blendMode
+sets the blending mode to use.
 See link::#Blending modes:: for more information.
 
-method:: lineDash
-Set the line dash pattern.
+method::lineDash
+sets the line dash pattern.
 pattern should be a link::Classes/FloatArray:: of values that specify the lengths of the painted segments and not painted segments.
 
-method:: drawImage
+method::drawImage
 Draw a bitmap image using the Image class.
 discussion::
 example:
@@ -727,6 +729,7 @@ w.drawFunc = {
 
 )
 ::
+
 
 subsection:: Animation
 
@@ -876,6 +879,7 @@ w.drawFunc = {
 )
 ::
 
+
 subsection:: Matrix example
 code::
 (
@@ -940,6 +944,7 @@ name = #[zoomX, shearingY, shearingX, zoomY, translateX, translateY];
 w.refresh;
 )
 ::
+
 
 subsection:: Transparency layer example
 code::
@@ -1015,6 +1020,7 @@ w.drawFunc = {
 w.refresh;
 )
 ::
+
 
 subsection:: Blending modes
 code::

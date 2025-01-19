@@ -4,35 +4,27 @@ related:: Classes/Ppoisson
 categories:: Streams-Patterns-Events>Patterns>Random
 
 description::
-
-Creates an integral table on instantiation (cpu intensive) which is then used by the streams to generate random values efficiently.
+creates an integral table on instantiation (cpu intensive) which is then used by the streams to generate random values efficiently.
 
 ClassMethods::
 
 method::new
-
 argument::distribution
 desired probability distribution (histogram).
-
 argument::lo
 lower bound of the resulting values.
-
 argument::hi
 upper bound of the resulting values.
-
 argument::length
 number of values to repeat.
-
 argument::tableSize
 resample table to this size. If the size of the distribution is smaller than 64, it is (linearly) resampled to this minimum size.
-
 argument::distribution
 set the distribution, the table is recalculated.
-
 argument::tableSize
 set the resample size, the table is recalculated.
 
-Examples::
+examples::
 
 code::
 // a consistency test

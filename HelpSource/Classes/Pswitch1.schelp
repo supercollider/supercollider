@@ -8,7 +8,7 @@ ClassMethods::
 method::new
 Pswitch1 chooses elements from the strong::list:: by a stream of indices (strong::which::) and embeds them in the stream. If the element is itself a pattern, it embeds only one of its values for each index, and thus switches between all patterns in the list.
 
-Examples::
+examples::
 
 code::
 (

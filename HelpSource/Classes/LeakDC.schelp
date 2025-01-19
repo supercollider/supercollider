@@ -4,35 +4,23 @@ related:: Classes/DC
 categories::  UGens>Filters>Linear
 
 
-Description::
-
+description::
 This is a linear filter that removes DC bias from a signal. Specifically, this is a one-pole highpass filter implementing the formula code:: y[n] = x[n] - x[n-1] + coef * y[n-1] ::. The frequency response of this filter is dependent on the sample rate of the server and the calculation rate of the UGen.
 
 classmethods::
 
 method::ar, kr
-
 argument::in
-
 The input signal.
-
-
 argument::coef
-
 Leak coefficient.
-
-
 argument::mul
-
 Output will be multiplied by this value.
-
-
 argument::add
-
 This value will be added to the output.
 
 
-Examples::
+examples::
 
 code::
 (

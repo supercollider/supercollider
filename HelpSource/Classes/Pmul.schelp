@@ -6,17 +6,14 @@ categories:: Streams-Patterns-Events>Patterns>Math
 ClassMethods::
 
 method::new
-
 argument::name
 the key
-
 argument::value
 can be a pattern or a stream. The resulting stream ends when that incoming stream ends.
-
 argument::pattern
 the pattern
 
-Examples::
+examples::
 
 code::
 (

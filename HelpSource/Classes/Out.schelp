@@ -4,9 +4,8 @@ related:: Classes/OffsetOut, Classes/ReplaceOut, Classes/XOut
 categories::  UGens>InOut
 
 
-Description::
-
-Write a signal to a bus.
+description::
+writes a signal to a bus.
 
 
 Note that using the Bus class to allocate a multichannel bus simply
@@ -32,20 +31,15 @@ buses and how they are used.
 classmethods::
 
 method::ar, kr
-
 argument::bus
-
 The index of the bus to write out to. The lowest numbers are
 written to the audio hardware.
-
-
 argument::channelsArray
-
 An Array of channels or single output to write out. You cannot
 change the size of this once a SynthDef has been built.
 
 
-Examples::
+examples::
 
 code::
 

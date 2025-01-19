@@ -4,8 +4,7 @@ related:: Classes/Hilbert, Classes/HilbertFIR
 categories::  UGens>Filters>Nonlinear, UGens>Filters>Pitch
 
 
-Description::
-
+description::
 FreqShift implements single sideband amplitude modulation, also known as
 frequency shifting, but not to be confused with pitch shifting. Frequency
 shifting moves all the components of a signal by a fixed amount but does
@@ -15,22 +14,16 @@ not preserve the original harmonic relationships.
 classmethods::
 
 method::ar
-
 argument::in
 The input signal.
-
 argument::freq
 Amount of shift in cycles per second.
-
 argument::phase
 Phase of the frequency shift (0..2pi).
-
 argument::mul
-
 argument::add
 
-
-Examples::
+examples::
 
 code::
 // shifting a 100Hz tone by 1 Hz rising to 500Hz
@@ -51,6 +44,7 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 // shifting bandpassed noise
 { FreqShift.ar(BPF.ar(WhiteNoise.ar(0.2), 1000, 0.001), LFNoise0.kr(5.5, 1000), 0, [32, 32]) }.play(s);
 ::
+
 
 subsection:: More Examples
 send a SynthDef, run the routine then send a different SynthDef

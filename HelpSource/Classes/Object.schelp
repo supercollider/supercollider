@@ -12,8 +12,7 @@ classmethods::
 private:: prNewCopyArgs, prNew
 
 method::readArchive
-
-Read in an object from a text archive.
+reads in an object from a text archive.
 
 code::
 (
@@ -38,17 +37,14 @@ f = { num + 2 };
 f.writeArchive(PathName.tmp ++ "myFunc"); // fails
 )
 ::
-
 argument::pathname
 A String containing the archive file's path.
 
 method::new
-
-Create a new instance. The creation of new instances of any Object actually happens in this method (or with code::newCopyArgs::) when it is called by a child class. See link::Guides/WritingClasses::.
+creates a new instance. The creation of new instances of any Object actually happens in this method (or with code::newCopyArgs::) when it is called by a child class. See link::Guides/WritingClasses::.
 
 method::newCopyArgs
-
-Creates a new instance and copies the arguments to the instance variables in the order that the variables were defined. If the superclass's code::new:: method requires arguments, the first arguments passed to code::newCopyArgs:: will be passed on to that method, and the following arguments will be copied to this class's instance variables. Class variables are ignored.
+creates a new instance and copies the arguments to the instance variables in the order that the variables were defined. If the superclass's code::new:: method requires arguments, the first arguments passed to code::newCopyArgs:: will be passed on to that method, and the following arguments will be copied to this class's instance variables. Class variables are ignored.
 
 code::
 MyClass {
@@ -65,32 +61,28 @@ MyClass {
 instancemethods::
 private::addFunc, addFuncTo, removeFunc, removeFuncFrom
 
-subsection::Class Membership
+
+subsection:: Class Membership
 
 method::class
-
-Return the class of the receiver.
+returns the class of the receiver.
 
 code::
 5.class;
 ::
 
 method::respondsTo
-
-Return a link::Classes/Boolean:: whether the receiver understands the message selector.
+returns a link::Classes/Boolean:: whether the receiver understands the message selector.
 
 code::
 5.respondsTo('+'); // true
 5.respondsTo('indexOf'); // false
 ::
-
-
 argument::aSymbol
 A selector name. Must be a link::Classes/Symbol::.
 
 method::isKindOf
-
-Return a Boolean indicating whether the receiver is a direct or indirect instance of aClass. Use of this message in code must be questioned, because it often indicates a missed opportunity to exploit object polymorphism.
+returns a Boolean indicating whether the receiver is a direct or indirect instance of aClass. Use of this message in code must be questioned, because it often indicates a missed opportunity to exploit object polymorphism.
 
 code::
 5.isKindOf(Number); // true
@@ -98,22 +90,21 @@ code::
 ::
 
 method::isMemberOf
-
-Return a Boolean whether the receiver is a direct instance of aClass. Use of this message in code is almost always a design mistake.
+returns a Boolean whether the receiver is a direct instance of aClass. Use of this message in code is almost always a design mistake.
 
 code::
 5.isMemberOf(Number); // false
 5.isMemberOf(Integer); // true
 ::
 
-subsection::Accessing
+
+subsection:: Accessing
 
 method::size
-
 Different classes respond to this message differently. Object always returns 0.
 
 method::rank
-Returns the number of dimensions the value has.
+returns the number of dimensions the value has.
 A single value (scalar) has rank of zero.
 See link::Classes/ArrayedCollection#-rank:: for cases where this is useful.
 
@@ -121,33 +112,30 @@ method::shape
 For a multidimensional array,
 returns an array of the number of elements along each consecutive dimension,
 see link::Classes/ArrayedCollection#-shape::.
-For a scalar value (most objects) returns nil.
+For a scalar value (most objects) returns code::nil::.
 
-subsection::Copying
+
+subsection:: Copying
 
 method::copy
-
-Make a copy of the receiver. The implementation of this message depends on the object's class.  In class Object, copy calls shallowCopy.
+makes a copy of the receiver. The implementation of this message depends on the object's class.  In class link::Classes/Object::, copy calls shallowCopy.
 
 method::shallowCopy
-
-Makes a copy of the object. The copy's named and indexed instance variables refer to the same objects as the receiver.
+makes a copy of the object. The copy's named and indexed instance variables refer to the same objects as the receiver.
 
 method::deepCopy
-
 Recursively copies the object and all of the objects contained in the instance variables, and so on down the structure. This method works with cyclic graphs.
 
 method::copyImmutable
+If object is immutable then returns a shallow copy, else returns receiver.
 
-If object is immutable then return a shallow copy, else return receiver.
 
-subsection::Conversion
+subsection:: Conversion
 
 To convert an object of a certain class into a similar object of another class, Object provides a number of methods.
 
 method::as
-
-Returns a similar new Object of a different class.
+returns a similar new Object of a different class.
 
 code::
 [1, 2, 3].as(Set);
@@ -155,8 +143,7 @@ Pwhite(0.0, 1.0, 10).as(Set);
 ::
 
 method::asArray
-
-Returns an Array with the receiver, unless it is an Array already.
+returns an Array with the receiver, unless it is an Array already.
 
 code::
 [1, 2, 3].asArray;
@@ -164,8 +151,7 @@ code::
 ::
 
 method::asCompileString
-
-Returns a String that can be interpreted to reconstruct a copy of the receiver. For the complementary method, see link::Classes/String#-interpret::.
+returns a String that can be interpreted to reconstruct a copy of the receiver. For the complementary method, see link::Classes/String#-interpret::.
 
 code::
 a = { 10.do { 10.postln } };
@@ -174,11 +160,9 @@ a.postcs;
 ::
 
 method::asInt
-
 Deprecated. Use code::asInteger:: instead.
 
 method::cs
-
 Shorthand for link::#-asCompileString::.
 
 code::
@@ -186,23 +170,21 @@ code::
 "Strings don't post with surrounding quotes.".cs;
 ::
 
-subsection::Archiving
 
-Object implements methods for writing and retrieving objects from disk. Note that you cannot archive instances of Thread and its subclasses (i.e. Routine), or open Functions (i.e., a Function which refers to variables from outside its own scope).
+subsection:: Archiving
+
+Object implements methods for writing and retrieving objects from disk. Note that you cannot archive instances of link::Classes/Thread:: and its subclasses (i.e. link::Classes/Routine::), or open link::Reference/Functions:: (i.e., a link::Classes/Function:: which refers to variables from outside its own scope).
 
 method::writeArchive
-
-Write an object to disk as a text archive.
-
+writes an object to disk as a text archive.
 argument::pathname
 A String containing the resulting file's path.
 
 
-subsection::Equality and Identity
+subsection:: Equality and Identity
 
 method::==
-
-Answer whether the receiver equals anotherObject. The definition of equality depends on the class of the receiver. The default implementation in Object is to answer if the two objects are identical.
+Answers whether the receiver equals anotherObject. The definition of equality depends on the class of the receiver. The default implementation in Object is to answer if the two objects are identical.
 
 note:: Whenever == is overridden in a class, hash should be overridden as well.::
 
@@ -217,8 +199,7 @@ a === b; // not identical
 
 
 method::===
-
-Answer whether the receiver is the exact same object as anotherObject.
+Answers whether the receiver is the exact same object as anotherObject.
 
 code::
 5.0 === 5; // false
@@ -227,15 +208,12 @@ code::
 ::
 
 method::!=
-
-Answer whether the receiver does not equal anotherObject. The default implementation in Object is to determine '==' for the two operands and negate this result. (see below).
+Answers whether the receiver does not equal anotherObject. The default implementation in Object is to determine '==' for the two operands and negate this result. (see below).
 
 method::!==
-
-Answer whether the receiver is not identical to anotherObject.
+Answers whether the receiver is not identical to anotherObject.
 
 method::|==|
-
 A lazy equality operator. For typical object types, code::|==|:: behaves the same as link::Classes/Object#-==::. For link::Classes/AbstractFunction:: and its subclasses (including link::Classes/Pattern:: and link::Classes/UGen::), it does not perform the equality check immediately, but rather composes an equality operation to be performed at the time of evaluating the resulting function or stream.
 
 code::
@@ -249,12 +227,10 @@ Pseq([1], inf) |==| 1  // a Pbinop
 ::
 
 method::|!=|
-
 A lazy inequality operator, defined as code::not(this |==| that)::. See link::Classes/Object#-|==|::.
 
-method:: fuzzyEqual
-
-Returns the degree of equality between two objects with regard to a given precision. The compared objects must support teletype::.max::, subtraction, and division.
+method::fuzzyEqual
+returns the degree of equality between two objects with regard to a given precision. The compared objects must support teletype::.max::, subtraction, and division.
 
 code::
 5.0.fuzzyEqual(5.0, 0.5);  // 1.0 - full equality
@@ -287,8 +263,7 @@ postf(
 returns:: A link::Classes/Float:: in the range code::0.0:: to code::1.0::.
 
 method::compareObject
-
-Tests if two Objects (of the same class) are the same in a certain respect: It returns true if instVarNames are equal in both. If none are given, all instance variables are tested (see also: link::#-instVarHash::)
+tests if two Objects (of the same class) are the same in a certain respect: It Returns code::true:: if instVarNames are equal in both. If none are given, all instance variables are tested (see also: link::#-instVarHash::)
 
 code::
 a = Pseq([1, 2, 3], inf); b = Pseq([100, 200, 300], inf);
@@ -297,8 +272,7 @@ a.compareObject(b, [\list]); // false
 ::
 
 method::hash
-
-Return a code used to index into a hash table. This is used by Dictionary and Set and their subclasses to implement fast object lookup.  Objects which are equal == should have the same hash values. Whenever == is overridden in a class, hash should be overridden as well.
+returns a code used to index into a hash table. This is used by Dictionary and Set and their subclasses to implement fast object lookup.  Objects which are equal == should have the same hash values. Whenever == is overridden in a class, hash should be overridden as well.
 
 code::
 a = "worth trying"; b = "worth trying";
@@ -307,8 +281,7 @@ b.hash;
 ::
 
 method::identityHash
-
-Return a code used to index into a hash table. This method is implemented by a primitive and is not overridden. Objects which are identical === should have the same hash values.
+returns a code used to index into a hash table. This method is implemented by a primitive and is not overridden. Objects which are identical === should have the same hash values.
 
 code::
 a = "worth trying"; b = "worth trying";
@@ -317,8 +290,7 @@ b.identityHash;
 ::
 
 method::instVarHash
-
-Returns a combined hash value for the object's instance variables and the object's class. If none are given, all instance variables are tested (see also: link::#-compareObject::).
+returns a combined hash value for the object's instance variables and the object's class. If none are given, all instance variables are tested (see also: link::#-compareObject::).
 
 
 code::
@@ -336,46 +308,38 @@ b.instVarHash([\list]);
 ::
 
 
-subsection::Testing
+subsection:: Testing
 
 method::isNil
-
-Return a Boolean indicating whether the receiver is nil.
+returns a Boolean indicating whether the receiver is code::nil::.
 
 method::notNil
-
-Return a Boolean indicating whether the receiver is not nil.
+returns a Boolean indicating whether the receiver is not code::nil::.
 
 method::isNumber
-
-Return a Boolean indicating whether the receiver is an instance of Number.
+returns a Boolean indicating whether the receiver is an instance of Number.
 
 method::isInteger
-
-Return a Boolean indicating whether the receiver is an instance of Integer.
+returns a Boolean indicating whether the receiver is an instance of Integer.
 
 method::isFloat
-
-Return a Boolean indicating whether the receiver is an instance of Float.
+returns a Boolean indicating whether the receiver is an instance of Float.
 
 method::?
-
-If the receiver is nil then answer anObject, otherwise answer the receiver.
+If the receiver is code::nil:: then answers anObject, otherwise answers the receiver.
 
 method::??
-
-If the receiver is nil, evaluate the link::Classes/Function:: and return the result.
+If the receiver is code::nil::, evaluates the link::Classes/Function:: and returns the result.
 
 method::!?
-
-If the receiver is not nil, evaluate the link::Classes/Function:: passing in the receiver as argument and return the result, otherwise return nil.
+If the receiver is not code::nil::, evaluates the link::Classes/Function:: passing in the receiver as argument and returns the result, otherwise returns code::nil::.
 
 note::
 The function will be inlined if it contains no variables or arguments.
 ::
 
 discussion::
-This method allow building up chains of actions to be performed on an object (possibly across several methods) without having to check if the object is nil or not. After all the desired actions are performed, link::#-??:: can be used to check if result the result is nil and supply a default value in that case.
+This method allow building up chains of actions to be performed on an object (possibly across several methods) without having to check if the object is code::nil:: or not. After all the desired actions are performed, link::#-??:: can be used to check if result the result is code::nil:: and supply a default value in that case.
 
 Examples:
 code::
@@ -383,7 +347,7 @@ x !? (_ * 3) ?? { "It was a nil, so I give a default value".postln; Point(1, 1) 
 ::
 With code::x = nil::, this will result in:
 teletype::
-It was a nil, so I give a default value
+It was a code::nil::, so I give a default value
 Point(1, 1)
 ::
 But if code::x = Point(3, 4)::, the result will be:
@@ -391,7 +355,7 @@ teletype::
 Point(9, 12)
 ::
 
-Nested nil checks:
+Nested code::nil:: checks:
 code::
 (
 x = nil;
@@ -412,8 +376,7 @@ x !? { |x| y !? { |y| z !? {  |z| x.rho * y.rho * z.rho } } }
 Results in teletype::87.321245982865::
 
 method::pointsTo
-
-Returns true if receiver has a direct reference to obj.
+returns code::true:: if receiver has a direct reference to obj.
 
 code::
 a = 9;
@@ -424,8 +387,7 @@ c.pointsTo(a); // false
 ::
 
 method::mutable
-
-Returns true if receiver is mutable.
+returns code::true:: if receiver is mutable.
 
 code::
 a = #[1, 2, 3]; b = [1, 2, 3];
@@ -434,12 +396,10 @@ b.mutable; // true
 ::
 
 method::frozen
-
-Returns true if receiver is frozen.
+returns code::true:: if receiver is frozen.
 
 method::switch
-
-Object implements a switch method which allows for conditional evaluation with multiple cases. These are implemented as pairs of test objects (tested using if this == test.value) and corresponding functions to be evaluated if true. In order for switch to be inlined (and thus be as efficient as nested if statements) the matching values must be literal Integers, Floats, Chars, Symbols and the functions must have no variables or arguments.
+Object implements a switch method which allows for conditional evaluation with multiple cases. These are implemented as pairs of test objects (tested using if this == test.value) and corresponding functions to be evaluated if code::true::. In order for switch to be inlined (and thus be as efficient as nested if statements) the matching values must be literal Integers, Floats, Chars, Symbols and the functions must have no variables or arguments.
 
 discussion::
 code::
@@ -474,19 +434,18 @@ x.postln;
 )
 ::
 
-subsection::Messaging
+
+subsection:: Messaging
 
 Instead of directly sending a method to an object, a method may be invoked given a method selector only (a Symbol). The other arguments may be provided by passing them directly, from an environment. If it is not known whether the receiver implements the method, tryPerform only sends if it does, and superPerform invokes the method of the superclass.
 
 
 method::perform
-
 The selector argument must be a Symbol. Sends the method named by the selector with the given arguments to the receiver.
 
 If the first argument is an Array or List, this method behaves like code::performMsg::. However, this usage is discouraged, and code::performMsg:: ought to be used instead.
 
 method::performList
-
 The selector argument must be a Symbol. Sends the method named by the selector with the given arguments to the receiver. If the last argument is a List or an Array, then its elements are unpacked and passed as arguments.
 
 code::
@@ -497,13 +456,10 @@ a.performList(\value, [1, 2, 3]);
 method::performArgs
 Like link::#-perform::, but allows you to pass a key-value array of keyword arguments.
 Useful in link::#-doesNotUnderstand:: and other places where you might accept a variety of keyword arguments.
-
 argument::selector
 A link::Classes/Symbol:: of the method name.
-
 argument::args
 An link::Classes/Array:: of the arguments.
-
 argument::kwargs
 An link::Classes/Array:: of keyword-argument pairs.
 
@@ -516,7 +472,6 @@ x.foo(1, 2, bar: 10);
 
 
 method::performMsg
-
 The argument must be a List or Array whose first element is a Symbol representing a method selector. The remaining elements are unpacked and passed as arguments to the method named by the selector.
 
 code::
@@ -525,10 +480,9 @@ a.performMsg([\value, 1, 2, 3]);
 ::
 
 method::performWithEnvir
-
-argument:: selector
+argument::selector
 A Symbol representing a method selector.
-argument:: envir
+argument::envir
 The remaining arguments derived from the environment and passed as arguments to the method named by the selector.
 discussion::
 code::
@@ -537,10 +491,9 @@ a.performWithEnvir(\value, (a: 1, c: 3, d: 4, b: 2));
 ::
 
 method::performKeyValuePairs
-
-argument:: selector
+argument::selector
 A Symbol representing a method selector.
-argument:: pairs
+argument::pairs
 Array or List with key-value pairs.
 discussion::
 code::
@@ -549,13 +502,12 @@ a.performKeyValuePairs(\value, [\a, 1, \b, 2, \c, 3, \d, 4]);
 ::
 
 method::tryPerform
-
-Like 'perform', but tryPerform passes the method to the receiver only if the receiver understands the method name. If the receiver doesn't implement that method, the result is nil. Note that this does not catch errors like 'try' does (see Exception). If the receiver does have a matching method but that method throws an error, execution will halt. But, 'tryPerform' is faster than 'try'.
+Like 'perform', but tryPerform passes the method to the receiver only if the receiver understands the method name. If the receiver doesn't implement that method, the result is code::nil::. Note that this does not catch errors like 'try' does (see Exception). If the receiver does have a matching method but that method throws an error, execution will halt. But, 'tryPerform' is faster than 'try'.
 
 code::
 (a: 1, b: 2, c: 3).tryPerform(\keysValuesDo, { |key, value| [key, value].postln });
 
-// Set does not understand keysValuesDo -- result is nil
+// Set does not understand keysValuesDo -- result is code::nil::
 Set[1, 2, 3].tryPerform(\keysValuesDo, { |key, value| [key, value].postln });
 
 // Error occurs within keysValuesDo -- error is thrown back to halt execution
@@ -563,24 +515,21 @@ Set[1, 2, 3].tryPerform(\keysValuesDo, { |key, value| [key, value].postln });
 ::
 
 method::superPerform
-
 Like perform, superPerform calls a method, however it calls the method on the superclass.
 selector: A Symbol representing a method selector.
 args: Method arguments.
 
 
 method::superPerformList
-
 Like performList, superPerformList calls a method, however it calls the method on the superclass.
 selector: A Symbol representing a method selector.
 args: Method arguments. If the last argument is a List or an Array, then its elements are unpacked and passed as arguments.
 
 method::multiChannelPerform
 Perform selector with multichannel expansion. See also: link::Guides/Multichannel-Expansion::.
-
-argument:: selector
+argument::selector
 A Symbol representing a method selector.
-argument:: ... args
+argument::... args
 Method arguments which, if they contain an array, will call the method multiple times for each sub-element.
 discussion::
 code::
@@ -590,13 +539,13 @@ a.multiChannelPerform(\value, [1, 10, 100, 1000], [2, 7, 9], [3, 7]);
 ["foo", "bar"].multiChannelPerform('++', ["l", "bro", "t"]);
 ::
 
-subsection::Unique Methods
+
+subsection:: Unique Methods
 
 Method definitions not yet implemented may be added to an Object instance.
 
 method::addUniqueMethod
-
-Add a unique method.
+adds a unique method.
 
 code::
 a = 5;
@@ -605,8 +554,7 @@ a.sayHello;
 ::
 
 method::removeUniqueMethod
-
-Remove a unique method.
+removes a unique method.
 
 code::
 a.removeUniqueMethod(\sayHello);
@@ -614,56 +562,46 @@ a.sayHello;
 ::
 
 method::removeUniqueMethods
+removes all unique methods of an Object.
 
-Remove all unique methods of an Object.
 
-subsection::Dependancy
+subsection:: Dependancy
 
 method::addDependant
-
-Add aDependant to the receiver's list of dependants.
+adds aDependant to the receiver's list of dependants.
 
 method::removeDependant
-
-Remove aDependant from the receiver's list of dependants.
+removes aDependant from the receiver's list of dependants.
 
 method::dependants
-
-Returns an IdentitySet of all dependants of the receiver.
+returns an IdentitySet of all dependants of the receiver.
 
 method::changed
-
 Notify the receiver's dependants that the receiver has changed. The object making the change should be passed as theChanger.
 
 method::update
-
 An object upon which the receiver depends has changed. theChanged is the object that changed and theChanger is the object that made the change.
 
 method::release
+removes all dependants of the receiver. Any object that has had dependants added must be released in order for it or its dependants to get garbage collected.
 
-Remove all dependants of the receiver. Any object that has had dependants added must be released in order for it or its dependants to get garbage collected.
 
-subsection::Error Support
+subsection:: Error Support
 
 Object implements a number of methods which throw instances of Error. A number of methods (e.g. doesNotUnderstand) are 'private' and do not normally need to be called directly in user code. Others, such as those documented below can be useful for purposes such as object oriented design (e.g. to define an abstract interface which will be implemented in subclasses) and deprecation of methods. The reserved keyword thisMethod can be used to refer to the enclosing method. See also Method and Function (for exception handling).
 
 method::doesNotUnderstand
-
 argument::selector
 The method that was called.
-
 argument::... args
 An link::Classes/Array:: of arguments.
-
 argument::kwargs
 An link::Classes/Array:: of keyword argument pairs.
 
 method::throw
-
 Throws the receiver as an Exception, which may or may not be caught and handled by any enclosing Function.
 
 method::subclassResponsibility
-
 Throws a SubclassResponsibilityError. Use this to indicate that this method should be defined in all subclasses of the receiver.
 
 discussion::
@@ -674,11 +612,9 @@ someMethod {
 ::
 
 method::shouldNotImplement
-
 Throws a ShouldNotImplementError. Use this to indicate that this inherited method should not be defined or used in the receiver.
 
 method::deprecated
-
 Throws a DeprecatedError. Use this to indicate that the enclosing method has been replaced by a better one (possibly in another class), and that it will likely be removed in the future. Unlike other errors, DeprecatedError only halts execution if code::Error.debug == true::. In all cases it posts a warning indicating that the method is deprecated and what is the recommended alternative.
 
 discussion::
@@ -695,46 +631,41 @@ foo {
 }
 ::
 
-subsection::Printing and Introspection
+
+subsection:: Printing and Introspection
 
 method::post
-
-Print a string representation of the receiver to the post window.
+prints a string representation of the receiver to the post window.
 code::
 "hello".post; "hello".post; "";
 ::
 
 method::postln
-
-Print a string representation of the receiver followed by a newline.
+prints a string representation of the receiver followed by a newline.
 code::
 "hello".postln; "hello".postln; "";
 ::
 
 method::postc
-
-Print a string representation of the receiver preceded by comments.
+prints a string representation of the receiver preceded by comments.
 code::
 "hello".postc; "hello".postc; "";
 ::
 
 method::postcln
-
-Print a string representation of the receiver preceded by comments, followed by a newline.
+prints a string representation of the receiver preceded by comments, followed by a newline.
 code::
 "hello".postcln; "hello".postcln; "";
 ::
 
 method::postcs
-
-Print the compile string representation of the receiver, followed by a newline.
+prints the compile string representation of the receiver, followed by a newline.
 code::
 "hello".postcs; "hello".postcs; "";
 ::
 
 method::dump
-
-Print a detailed low level representation of the receiver to the post window.
+prints a detailed low level representation of the receiver to the post window.
 Any object understands this method (this means metaclasses, classes and their instances). Note that in link::Classes/List:: class, this method dumps the list's internal array.
 
 code::
@@ -851,10 +782,10 @@ Instance of Set {    (0x1489e2068, gc=A4, fmt=00, flg=00, set=02)
 ::
 ::
 
-subsection::System Information
+
+subsection:: System Information
 
 method::gcInfo
-
 Posts garbage collector information in a table format.
 
 discussion::
@@ -890,10 +821,10 @@ tot bwf t sz: 174215  65476 7876722   8116413   341832120
 
 You can also query the amount of free memory with code::Object.totalFree:: and dump the currently grey objects with code::Object.dumpGrey::. More memory status methods are: largestFreeBlock, gcDumpSet, and gcSanity.
 
-subsection::Iteration
+
+subsection:: Iteration
 
 method::do
-
 Object evaluates the function with itself as an argument, returning the result. Different classes respond to this message differently.
 discussion::
 code::
@@ -904,12 +835,10 @@ f = { |x, i| [x, i].postln };
 ::
 
 method::generate
-
 Object iterates by the message do, sent to the receiver.
 This method is used internally by list comprehensions.
 
 method::dup
-
 Duplicates the receiver n times, returning an array of n copies. Different classes respond to this message differently.  The shortcut "!" can be used in place.
 discussion::
 code::
@@ -921,64 +850,51 @@ x[0][0] === x[1][0] // true: doesn't deepCopy receiver
 { 1.0.rand }.dup(5) // other objects respond differently to dup
 ::
 
+
 subsection:: Scheduling
 
-method:: awake
-
+method::awake
 This method is called by a link::Classes/Clock:: on which the object was
 scheduled when its scheduling time is up. It calls link::#-next::, passing
 on the scheduling time in beats as an argument.
-
-argument:: beats
+argument::beats
 The scheduling time in beats. This is equal to the current logical time
 (link::Classes/Thread#-beats::).
-
-argument:: seconds
+argument::seconds
 The scheduling time in seconds. This is equal to the current logical time
 (link::Classes/Thread#-seconds::).
-
-argument:: clock
+argument::clock
 The clock on which the object was scheduled.
 
 
 subsection:: Stream Support
 
-method:: next
-
+method::next
 Does nothing; simply returns the object itself.
 
-method:: reset
-
+method::reset
 Does nothing; simply returns the object itself.
 
 
-
-
-
-subsection::Routine Support
+subsection:: Routine Support
 
 Objects support the basic interface of Stream, just returning itself in response to the following messages:
 next, reset, stop, free, clear, removedFromScheduler, asStream.
 
 method::yield
-
 Must be called from inside a Routine. Yields control to the calling thread. The receiver is the result passed to the calling thread's method. The result of yield will be the value passed to the Routine's next method the next time it is called.
 
 method::yieldAndReset
-
 Must be called from inside a Routine. Yields control to the calling thread. The receiver is the result passed to the calling thread's method. The Routine is reset so that the next time it is called, it will start from the beginning. yieldAndReset never returns within the Routine.
 
 method::alwaysYield
-
 Must be called from inside a Routine. Yields control to the calling thread. The receiver is the result passed to the calling thread's method. The Routine, when called subsequently will always yield the receiver until it is reset. alwaysYield never returns within the Routine.
 
 method::embedInStream
-
 Yields the receiver
 
 method::idle
-
-within a routine, return values (the receiver) until this time is over. (see also link::Classes/Routine#-play::)
+within a routine, returns values (the receiver) until this time is over. (see also link::Classes/Routine#-play::)
 Time is measured relative to the thread's clock.
 code::
 a = Routine { 1.yield; 0.idle(3); 400.yield };
@@ -986,15 +902,13 @@ fork { loop { a.next.postln; 0.5.wait } };
 ::
 
 method::iter
-
-Returns a link::Classes/OneShotStream:: with the receiver as return value.
+returns a link::Classes/OneShotStream:: with the receiver as return value.
 code::
 a = 9.iter;
 a.nextN(4);
 ::
 
 method::cyc
-
 Embeds the receiver in the stream n times (default: inf), each time resetting it.
 code::
 a = 9.cyc(2);
@@ -1002,15 +916,13 @@ a.nextN(4);
 ::
 
 method::fin
-
-Calls next with the receiver n times only (default: 1), yielding the result.
+calls next with the receiver n times only (default: 1), yielding the result.
 code::
 a = (10..0).iter.fin(2);
 a.nextN(4);
 ::
 
 method::repeat
-
 Repeatedly embeds the receiver in the stream using a Pn (may thus be used for patterns and other objects alike)
 code::
 a = (0..3).iter.repeat(2);
@@ -1018,7 +930,6 @@ a.nextN(9)
 ::
 
 method::loop
-
 Indefinitely embeds the receiver in the stream
 
 code::
@@ -1026,16 +937,11 @@ a = (0..3).iter.loop;
 a.nextN(9)
 ::
 
-method:: nextN
-
-Returns an array with the results of calling link::#-next:: a given number of times
-
-argument:: n
-
+method::nextN
+returns an array with the results of calling link::#-next:: a given number of times
+argument::n
 Number of message calls
-
-argument:: inval
-
+argument::inval
 argument passed to the next message
 
 code::
@@ -1048,7 +954,7 @@ method::streamArg
 
 	This method allows to switch between the two behaviors. For efficiency, the subclasses link::Classes/Pattern:: and link::Classes/Stream:: implement this method simply as "asStream".
 	argument::embed
-	If set to true, the object embeds itself into the stream (and thus return only once). If set to false, it returns itself forever. For simplicity, subclasses implement this method without this switch.
+	If set to code::true::, the object embeds itself into the stream (and thus return only once). If set to code::false::, it returns itself forever. For simplicity, subclasses implement this method without this switch.
 
 
 code::
@@ -1073,16 +979,16 @@ method::addFuncTo
 method::removeFunc
 method::removeFuncFrom
 
-
 The messages link::Classes/Function#-addFunc::  link::Classes/Function#-addFuncTo::, link::Classes/Function#-removeFunc::, link::Classes/Function#-removeFuncFrom:: are supported by Object.
 
 method::instill
 method::obtain
 The messages link::Classes/SequenceableCollection#-instill:: and link::Classes/SequenceableCollection#-obtain::, are supported by Object.
 
+
 subsection:: Math Support
 method::blend
-Lineraly interpolate between this and argument
+Lineraly interpolates between this and argument
 code::
 blend(10, 100, 0.3);
 blend([1, 2, 3], [1, 3, 4], 0.5);

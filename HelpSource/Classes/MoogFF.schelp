@@ -13,18 +13,17 @@ Ported to C++ for SuperCollider by Dan Stowell
 ::
 
 classmethods::
-method:: ar, kr
-
-argument:: in
+method::ar, kr
+argument::in
 the input signal.
-argument:: freq
+argument::freq
 the cutoff frequency.
-argument:: gain
+argument::gain
 the filter resonance gain, between zero and 4.
-argument:: reset
+argument::reset
 when greater than zero, this will reset the state of the digital filters at the beginning of a computational block.
-argument:: mul
-argument:: add
+argument::mul
+argument::add
 
 examples::
 code::

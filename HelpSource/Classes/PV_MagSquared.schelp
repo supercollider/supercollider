@@ -3,8 +3,7 @@ summary:: Square magnitudes.
 related:: Classes/FFT, Classes/IFFT
 categories:: UGens>FFT
 
-Description::
-
+description::
 Squares the magnitudes and renormalizes to previous peak. This makes weak
 bins weaker.
 
@@ -12,13 +11,11 @@ bins weaker.
 classmethods::
 
 method::new
-
 argument::buffer
-
 FFT buffer.
 
 
-Examples::
+examples::
 
 code::
 

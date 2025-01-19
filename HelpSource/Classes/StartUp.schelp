@@ -17,12 +17,12 @@ method::defer
 Registers an object or function to be evaluated after startup is finished, or immediately, if this has happened already.
 
 method::remove
-Removes an object that was previously registered.
+removes an object that was previously registered.
 
 method::run
-Call the object in order.
+calls the object in order.
 
-Examples::
+examples::
 
 code::
 *initClass {

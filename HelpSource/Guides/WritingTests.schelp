@@ -12,10 +12,12 @@ list::
 ## run UnitTests
 ::
 
+
 section:: install a sourcecode version of SuperCollider
 
 Download or clone SuperCollider from github: https://github.com/supercollider/supercollider.
 It is not needed to compile SuperCollider from its sources, you can instead use a pre-compiled binary and include the relevant folders (code::SCClassLibrary, HelpSource, testsuite/classlibrary:: in your environment. See below for an example.
+
 
 section:: Change your environment to include only core library functionality
 

@@ -4,8 +4,7 @@ related:: Classes/LFPar, Classes/LFPulse, Classes/LFSaw, Classes/LFTri
 categories::  UGens>Generators>Deterministic
 
 
-Description::
-
+description::
 A sine like shape made of two cubic pieces. Smoother than
 link::Classes/LFPar:: .
 
@@ -13,22 +12,16 @@ link::Classes/LFPar:: .
 classmethods::
 
 method::ar, kr
-
 argument::freq
 Frequency in Hertz.
-
 argument::iphase
-
 Initial phase offset. For efficiency reasons this is a value ranging from 0 to 2.
-
-
 argument::mul
 Output will be multiplied by this value.
-
 argument::add
 This value will be added to the output.
 
-Examples::
+examples::
 
 code::
 { LFCub.ar(LFCub.kr(LFCub.kr(0.2, 0, 8, 10), 0, 400, 800), 0, 0.1) }.play

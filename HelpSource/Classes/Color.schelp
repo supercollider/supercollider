@@ -8,36 +8,36 @@ An object which stores red, green, blue, and alpha values in instance variables,
 
 classmethods::
 
-method:: new
-Create a new instance with float values.
-argument:: red
+method::new
+creates a new instance with float values.
+argument::red
 An instance of link::Classes/Float:: between 0 and 1.
-argument:: green
+argument::green
 An instance of link::Classes/Float:: between 0 and 1.
-argument:: blue
+argument::blue
 An instance of link::Classes/Float:: between 0 and 1.
-argument:: alpha
+argument::alpha
 An instance of link::Classes/Float:: between 0 and 1.
 
-method:: new255
-Create a new instance from 8-bit integer values between 0 and 255.
-argument:: red
+method::new255
+creates a new instance from 8-bit integer values between 0 and 255.
+argument::red
 An instance of link::Classes/Integer:: between 0 and 255.
-argument:: green
+argument::green
 An link::Classes/Integer:: between 0 and 255.
-argument:: blue
+argument::blue
 An link::Classes/Integer:: between 0 and 255.
-argument:: alpha
+argument::alpha
 An link::Classes/Integer:: between 0 and 255.
 
-method:: fromArray
+method::fromArray
 Same as code::Color.new(*array)::.
-argument:: array
+argument::array
 An instance of link::Classes/Array::. 1-4 values between 0 and 1. See link::#*new::.
 
-method:: fromHexString
-Creates a new instance from a hex color string.
-argument:: string
+method::fromHexString
+creates a new instance from a hex color string.
+argument::string
 A link::Classes/String::.
 discussion::
 The string should be a 6 character web color, or a 3 character CSS style color. A preceding # is optional.
@@ -45,194 +45,194 @@ code::
 Color.fromHexString("#FF6600");
 ::
 
-method:: black
+method::black
 Nothing is darker.
 
-method:: white
+method::white
 Nothing is lighter.
 
-method:: clear
+method::clear
 Nothing is more clear.
 
-method:: gray
+method::gray
 American shades of grey.
-argument:: gray
+argument::gray
 Shades between 0 (black) and 1 (white) as link::Classes/Float::.
-argument:: alpha
+argument::alpha
 Transparency of gray between 0 and 1 as link::Classes/Float::.
 
-method:: grey
+method::grey
 British shades of grey.
-argument:: grey
+argument::grey
 Shades between 0 (black) and 1 (white) as link::Classes/Float::.
-argument:: alpha
+argument::alpha
 Transparency of grey between 0 and 1 as link::Classes/Float::.
 
-method:: red, green, blue, cyan, magenta, yellow
-Create a new red, green, blue, cyan, magenta or yellow Color.
-argument:: val
+method::red, green, blue, cyan, magenta, yellow
+creates a new red, green, blue, cyan, magenta or yellow Color.
+argument::val
 An instance of link::Classes/Float:: between 0 and 1, where 1 is the bright, fully saturated color, and 0 is black.
-argument:: alpha
+argument::alpha
 Transparency between 0 and 1 as link::Classes/Float::.
 
-method:: rand
+method::rand
 A random RGB Color where the colors are randomly chosen between code::lo:: and code::hi::. See link::#*new::.
-argument:: lo
+argument::lo
 An instance of link::Classes/Float:: between 0 and 1.
-argument:: hi
+argument::hi
 An instance of link::Classes/Float:: between 0 and 1.
 
-method:: hsv
-Maps hsv and alpha values to rgb between 0 and 1.
-argument:: hue
+method::hsv
+maps hsv and alpha values to rgb between 0 and 1.
+argument::hue
 link::Classes/Float:: between 0 and 0.999.
-argument:: sat
+argument::sat
 link::Classes/Float:: between 0 and 1.
-argument:: val
+argument::val
 link::Classes/Float:: between 0 and 1.
-argument:: alpha
+argument::alpha
 link::Classes/Float:: between 0 and 1.
 
 
 instancemethods::
 private:: printOn, hash
 
-method:: red, green, blue, alpha
-Get/set one of the instance variables, code::red::, code::green::, code::blue::, or code::alpha::.
-returns::
+method::red, green, blue, alpha
+gets/sets one of the instance variables, code::red::, code::green::, code::blue::, or code::alpha::.
+returns:: 
 An instance of link::Classes/Float:: between 0 and 1.
 
-method:: hexString
-Returns a link::Classes/String:: containing a 6 character web color code, preceded by a #.
+method::hexString
+returns a link::Classes/String:: containing a 6 character web color code, preceded by a #.
 code::
 Color(1.0, 0.4).hexString;
 ::
 
-method:: ==
+method::==
 Binary operator.
 code::
-// returns true
+// Returns code::true::
 Color.new255(0, 0, 255, 255) == Color.new(0, 0, 1, 1)
 ::
 
-method:: scaleByAlpha
-Returns a Color, where code::red::, code::green::, and code::blue:: are scaled by the code::alpha:: value, and alpha is set to 1.
+method::scaleByAlpha
+returns a Color, where code::red::, code::green::, and code::blue:: are scaled by the code::alpha:: value, and alpha is set to 1.
 code::
-// returns true:
+// Returns code::true:::
 Color(1, 0.5, 1, 0.5).scaleByAlpha == Color(0.5, 0.25, 0.5, 1)
 ::
 
-method:: blend
+method::blend
 Interpolates the code::red::, code::green::, code::blue::, and code::alpha:: values of two Colors, linearly weighting between the first and the second.
-argument:: that
+argument::that
 A second Color.
-argument:: blend
+argument::blend
 0 means only this, while 1 means only that.
 
-method:: vary
-Returns a random variation of a Color.
-argument:: val
+method::vary
+returns a random variation of a Color.
+argument::val
 Varies the RGB values +- this amount.
-argument:: lo
+argument::lo
 Low-clips the RGB variation here.
-argument:: hi
+argument::hi
 High-clips the RGB variation here.
-argument:: alphaVal
+argument::alphaVal
 Varies the alpha value +/- this amount, and clips it between 0 and 1.
 
-method:: complementary
-Returns the complementary color.
+method::complementary
+returns the complementary color.
 code::
-// returns true:
+// Returns code::true:::
 Color(1, 0.5, 1, 0.5).complementary == Color(0.0, 0.5, 0.0, 0.5)
 ::
 
-method:: multiply
-argument:: aColor
+method::multiply
+argument::aColor
 An instance of Color.
-argument:: opacity
-A value between 0 and 1. Default value is 1.0.
+argument::opacity
+A value between 0 and 1. The default value is 1.0.
 
-method:: divide
-argument:: aColor
+method::divide
+argument::aColor
 An instance of Color.
-argument:: opacity
-A value between 0 and 1. Default value is 1.0.
+argument::opacity
+A value between 0 and 1. The default value is 1.0.
 
-method:: subtract
-argument:: aColor
+method::subtract
+argument::aColor
 An instance of Color.
-argument:: opacity
-A value between 0 and 1. Default value is 1.0.
+argument::opacity
+A value between 0 and 1. The default value is 1.0.
 
-method:: add
-argument:: aColor
+method::add
+argument::aColor
 An instance of Color.
-argument:: opacity
-A value between 0 and 1. Default value is 1.0.
+argument::opacity
+A value between 0 and 1. The default value is 1.0.
 
-method:: symmetricDifference
-argument:: aColor
+method::symmetricDifference
+argument::aColor
 An instance of Color.
-argument:: opacity
-A value between 0 and 1. Default value is 1.0.
+argument::opacity
+A value between 0 and 1. The default value is 1.0.
 
-method:: screen
-argument:: aColor
+method::screen
+argument::aColor
 An instance of Color.
-argument:: opacity
-A value between 0 and 1. Default value is 1.0.
+argument::opacity
+A value between 0 and 1. The default value is 1.0.
 
-method:: lighten
-argument:: aColor
+method::lighten
+argument::aColor
 An instance of Color.
-argument:: opacity
-A value between 0 and 1. Default value is 1.0.
+argument::opacity
+A value between 0 and 1. The default value is 1.0.
 
-method:: darken
-argument:: aColor
+method::darken
+argument::aColor
 An instance of Color.
-argument:: opacity
-A value between 0 and 1. Default value is 1.0.
+argument::opacity
+A value between 0 and 1. The default value is 1.0.
 
-method:: hueBlend
-argument:: aColor
+method::hueBlend
+argument::aColor
 An instance of Color.
-argument:: blend
-A value between 0 and 1. Default value is 0.
+argument::blend
+A value between 0 and 1. The default value is 0.
 
-method:: saturationBlend
-argument:: aColor
+method::saturationBlend
+argument::aColor
 An instance of Color.
-argument:: blend
-A value between 0 and 1. Default value is 0.
+argument::blend
+A value between 0 and 1. The default value is 0.
 
-method:: valueBlend
-argument:: aColor
+method::valueBlend
+argument::aColor
 An instance of Color.
-argument:: blend
-A value between 0 and 1. Default value is 0.
+argument::blend
+A value between 0 and 1. The default value is 0.
 
-method:: asHSV
-Returns an array with code::[hue, saturation, value, alpha]::, as values between 0 and 1.
+method::asHSV
+returns an array with code::[hue, saturation, value, alpha]::, as values between 0 and 1.
 
-method:: asArray
-Returns an array with code::[red, green, blue, alpha]::, as values between 0 and 1.
+method::asArray
+returns an array with code::[red, green, blue, alpha]::, as values between 0 and 1.
 
-method:: storeArgs
-Returns an array with code::[red, green, blue, alpha]::.
+method::storeArgs
+returns an array with code::[red, green, blue, alpha]::.
 
-method:: setStroke
+method::setStroke
 For use with link::Classes/Pen::. Sets the code::stroke:: of link::Classes/Pen:: to this.
 
-method:: setFill
+method::setFill
 For use with link::Classes/Pen::. Sets the code::fill:: of link::Classes/Pen:: to this.
 
-method:: set
+method::set
 For use with link::Classes/Pen::. Sets the code::stroke:: and code::fill:: of link::Classes/Pen:: to this.
 
-method:: round
-Round the color.
+method::round
+rounds the color.
 
 examples::
 code::
@@ -259,6 +259,7 @@ w.drawFunc = {
 w.refresh;
 )
 ::
+
 
 section:: X-windows colors
 code::

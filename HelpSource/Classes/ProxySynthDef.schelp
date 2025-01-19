@@ -11,35 +11,27 @@ for inner workings see link::Tutorials/JITLib/jitlib_fading::
 ClassMethods::
 
 method::new
-
 argument::name
 like in link::Classes/SynthDef::. todo: add variants.
-
 argument::func
 like in link::Classes/SynthDef::. todo: add variants.
-
 argument::rates
 like in link::Classes/SynthDef::. todo: add variants.
-
 argument::prependArgs
 like in link::Classes/SynthDef::. todo: add variants.
-
 argument::makeFadeEnv
-if true it constructs a fader envelope and adds controls for gate and fadeTime
-
+if code::true:: it constructs a fader envelope and adds controls for gate and fadeTime
 argument::channelOffset
 a constant offset that is added to the out number
-
 argument::chanConstraint
 max numChannels for the synthdef. If ugenfunc returns a larger array, it wraps
-
 argument::rateConstraint
 a symbol like \audio, \control or \scalar.
 
 method::sampleAccurate
-always use link::Classes/OffsetOut::, if set to true (default: false)
+always use link::Classes/OffsetOut::, if set to code::true:: (default: false)
 
-Examples::
+examples::
 
 code::
 a = ProxySynthDef("xtest", { SinOsc.ar(400) * 0.1 });

@@ -34,6 +34,7 @@ BusPlug.defaultReshaping = \elastic;
 
 section:: Behavior Changes
 
+
 subsection:: Changes in pattern proxies (Pdef/Pdefn/Tdef and respective parent classes)
 
 list::
@@ -41,6 +42,7 @@ list::
 ## In the pattern system, the role of a non-pattern object is ambiguous: in some cases, when used as an input of a pattern, it will return itself endlessly (e.g. in a link::Classes/Pbind:: value). In other cases (e.g. as an element of a link::Classes/Pseq:: list), they are used only once and give way to the next element. Pattern proxies should actually behave the same dependent on their input. This means that asStream and embedInStream have to be implemented slightly differently: all pattern proxies now behave to asStream and embedInStream like their respective source objects. E.g. code::Pdefn(\x, 800); Pbindef(\freq, Pdefn(\x)):: will loop 800, while code::Pseq([Pdefn(\x), 900]):: will return first 800, then 900.
 
 ::
+
 
 subsection:: Changes in node proxy (NodeProxy, Ndef, BusPlug)
 
@@ -50,14 +52,15 @@ list::
 ## when setting the source of a node proxy to a number or an array of numbers, the bus is set by a precompiled synth def, which is much more efficient and consistent than building one. This means the source can be now set to a number/array liberally at higher rates (e.g. Ndef(\x, [100, 200])).
 ## For implementation reasons, it is now not possible anymore to add up numbers in a single node proxy. One slot will overwrite the next. E.g. code::Ndef(\x)[0] = 100; Ndef(\x)[1] = 200;:: the output will be 200 and not (as ist used to be) 300.
 ## play (Monitor) can now map from any number of channels to any number of channels
-## play and playN  (Monitor) previously passed arguments are kept and can be partially overridden by new ones (the message clear removes them).
+## play and playN  (Monitor) previously passed arguments are kept and can be partially overridden by new ones (the message code::clear:: removes them).
 ## nodeProxy.value(n) (e.g. code::SinOsc.ar(Ndef(\x)::) will keep the rate the proxy already has).
-## using code::x.ar(n):: and code::x.kr(n):: will automatically expand when code::n:: is nil. It remains fixed if n is given.
+## using code::x.ar(n):: and code::x.kr(n):: will automatically expand when code::n:: is code::nil::. It remains fixed if n is given.
 ## code::nodeProxy.ar(n):: / code::nodeProxy.kr(n):: if no code::n:: is given, they will now always return an array, code::nodeProxy.value(x):: returns an array, if no input is given. This is for general consistency: a few ugens expect an array as an input, and as the numChannels of a proxy can change now, this has to be specified. In order to have a UGen and not an array, use code::nodeProxy.ar(1)::, or code::nodeProxy.kr(1)::, respectively.
-## unlike it was before, code::x.ar(n, offset):: will now wrap around the available proxy bus channels. There is a third argument (wrap), when set to false, it will clip instead
+## unlike it was before, code::x.ar(n, offset):: will now wrap around the available proxy bus channels. There is a third argument (wrap), when set to code::false::, it will clip instead
 ## a third argument, clip, was added to ar/kr: code::x.ar(n, offset, clip)::. When set to \wrap it will extend the output size of the existing channels by wrapping (the default is \wrap). Set it to \clip if you want to keep it in range by repeating the last value.
 ## InBus is more flexible and logical in terms of multichannel expansion now and has a helpfile
 ::
+
 
 subsection:: New functionality
 
@@ -68,6 +71,7 @@ list::
 ## NodeProxy can be used as argument in a Synth directly, it will either return its bus index or by asMap its bus mapping argument. Note that when reshaping is allowed, the synth won't update automatically. You can register a dependency on \bus.
 ## node proxies and pattern proxies can be copied now: this will copy the hidden internal state to make the copy independent, but will keep the reference to the source object. In NodeProxy, the rendered SynthDef is cached, which makes the copy efficient. A ProxySpace or LazyEnvir can be copied and then modified independently.
 ::
+
 
 subsection:: NodeProxy elastic behavior setting
 
@@ -82,10 +86,11 @@ list::
 ## by default, reshaping is code::nil:: (no automatic reshaping). Apart from this, currently, there is code::\elastic::: both shrink and grow and change rate, and code::\expanding::: only grow, but also adjust rate.
 ::
 
+
 subsection:: A few minor changes
 
 list::
-## An empty function / or a function returning nil to a node proxy will not fail, but simply play a synth without output
+## An empty function / or a function returning code::nil:: to a node proxy will not fail, but simply play a synth without output
 ## when trying to play control rate proxy, just warn and don't throw an error
 ## the source of a proxy is built when it is inserted, not only when the server is running. This allows to know its number of channels independently of the server running.
 ## bus is freed after fadeTime as to avoid a too early reuse.
@@ -102,10 +107,11 @@ list::
 ## Some methods, like setSourceLikeInPbind and prFadeTime were not necessary anymore.
 ::
 
+
 section:: Bugs fixed
 
 list::
-## Pattern Proxies sometimes didn't embed correctly when quant was not nil (fixed)
+## Pattern Proxies sometimes didn't embed correctly when quant was not code::nil:: (fixed)
 ## The node order of node proxies relative to each other was wrong when starting them from each other (fixed)
 ## setting the source of a NodeProxy many times at once failed to release the respective synths (fixed)
 ## using group-dependent event patterns (like Pfxb) in NodeProxy assigned them the wrong group (fixed)
@@ -149,6 +155,7 @@ Ndef(\y, { Impulse.ar([1, 2/3, 4/6, 2, 9/8] * 100 * DelayC.ar(Ndef.ar(\aa) + 1, 
 Ndef(\x, { Splay.ar(Resonz.ar(SplayAz.ar(4, Ndef.ar(\y)), [600, 720, 320, 780] * (Ndef.ar(\aa).lag(0.01) * 0.3 + 1), 0.01, 100)).distort });
 
 ::
+
 
 section:: Tests for NodeProxy and Monitor
 
@@ -1198,7 +1205,8 @@ Ndef(\x, Instr(\sin));// not correct yet, should be 2.
 
 ::
 
-section::Tests for PatternProxy
+
+section:: Tests for PatternProxy
 
 code::
 // general rule: proxy should behave (in streams and patterns) like the object it holds

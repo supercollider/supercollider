@@ -3,8 +3,7 @@ summary:: image component
 categories:: GUI>Views
 related:: Classes/View
 
-DESCRIPTION::
-
+description::
 Image enables the drawing of images in the SuperCollider GUI.
 
 
@@ -13,9 +12,8 @@ CLASSMETHODS::
 PRIVATE::initClass, prFromWindowRect, prFreeAll
 
 METHOD::new
-Creates a new Image instance. "multiple" here stands for multiple arguments.
-
-ARGUMENT::multiple
+creates a new Image instance. "multiple" here stands for multiple arguments.
+argument::multiple
 Any of the following:
 list::
 ## link::Classes/Number:: to create an strong::empty:: image of size multiple as width and height
@@ -44,23 +42,21 @@ i.plot;
 i.free;
 ::
 ::
-
-ARGUMENT::height
+argument::height
 If strong::multiple:: is a number, then this argument indicates the height of the new image.
 
 
 METHOD::color
-Creates a new Image instance filled with the specified color.
+creates a new Image instance filled with the specified color.
 code::
 i = Image.color(400, 200, Color.blue(0.9, 0.1));
 i.plot(freeOnClose: true);
 ::
-
-ARGUMENT::... args
+argument::... args
 Multiple arguments. the last argument should be a valid link::Classes/Color::
 
 METHOD::open
-Creates a new Image instance from the local file at strong::path::.
+creates a new Image instance from the local file at strong::path::.
 code::
 (
 i = Image.open(SCDoc.helpSourceDir +/+ "images/Swamp.png");
@@ -70,7 +66,7 @@ i.url.postln;
 ::
 
 METHOD::openSVG
-Creates a new Image instance from the local SVG file at strong::path::.
+creates a new Image instance from the local SVG file at strong::path::.
 code::
 (
 i = Image.openSVG(SCDoc.helpSourceDir +/+ "images/plugin.svg", 200@200);
@@ -78,11 +74,9 @@ i.plot(freeOnClose: true);
 i.url.postln;
 )
 ::
-
-ARGUMENT::path
+argument::path
 A String containing the SVG file's path.
-
-ARGUMENT::size
+argument::size
 A link::Classes/Size::. SVG contents will be drawn into an image of this size. If not provided, suggested size provided by SVG will be used.
 
 
@@ -96,7 +90,7 @@ w = i.plot(freeOnClose: true);
 ::
 
 METHOD::fromImage
-Creates a new Image instance from another Image.
+creates a new Image instance from another Image.
 code::
 i = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
 j = Image.fromImage(i);
@@ -107,7 +101,7 @@ j.dump;
 ::
 
 METHOD::fromWindow
-Creates a new Image from a portion of a Window. this can be used to capture either a window or a specific View.
+creates a new Image from a portion of a Window. this can be used to capture either a window or a specific View.
 
 code::
 // WINDOW Example:
@@ -156,27 +150,26 @@ code::
 	i.plot(freeOnClose: true);
 )
 ::
-
-ARGUMENT::window
+argument::window
 the Window object.
-
-ARGUMENT::rect
+argument::rect
 optional. the constrained rect to capture inside the Window. By default, it is the window size.
 
 METHOD::closeAllPlotWindows
-Close all the Image plot windows currently opened.
+closes all the Image plot windows currently opened.
 
 METHOD::colorToPixel
 Convert a link::Classes/Color:: into a pixel datatype suitable for setting pixel data in the Image class.
-RETURNS:: A 32bit packed Integer in the RGBA format.
+returns:: A 32bit packed Integer in the RGBA format.
 
 METHOD::pixelToColor
 Convert a 32bit packed Integer in the RGBA format into a link::Classes/Color::
-RETURNS:: A link::Classes/Color::
+returns:: A link::Classes/Color::
 
 PRIVATE::newEmpty, prFormats
 
-SUBSECTION::Class variables and attributes
+
+subsection:: Class variables and attributes
 
 METHOD::formats
 returns all the valid image formats as an link::Classes/Array::
@@ -203,7 +196,7 @@ Image.resizeModes;
 ::
 
 METHOD::allPlotWindows
-Returns an array of all the Image plot windows currently opened.
+returns an array of all the Image plot windows currently opened.
 code::
 Image.allPlotWindows
 ::
@@ -213,7 +206,8 @@ INSTANCEMETHODS::
 
 PRIVATE::prLockFocus, prDrawAtPoint, prSync, prApplyFilters, prTileInRect, prUpdatePixelsInRect, prGetPixel, prInit, prSetInterpolation, prFree, prSetPixel, prLoadPixels, prSetBackground, prApplyKernel, prUpdatePixels, prWriteToFile, prUnlockFocus, prInitFromURL, prSetColor, prGetColor, prSetName, prGetInterpolation, prDrawInRect, prNewEmpty, prNewFromWindow, prNewPath, prNewSVG, prNewURL, prSetPainter, prSetSize, prTransferPixels, prUnsetPainter
 
-SUBSECTION::commons / general attributes
+
+subsection:: commons / general attributes
 
 METHOD::width
 returns or set the width of the receiver
@@ -222,7 +216,7 @@ METHOD::height
 returns or set the height of the receiver
 
 METHOD::setSize
-set the size of the receiver
+sets the size of the receiver
 
 METHOD::bounds
 returns the bounds of the receiver.
@@ -252,7 +246,7 @@ a.close; w.close; i.free;
 ::
 
 METHOD::url
-returns or set the url of the receiver. Returning only if any where supplied at creation, otherwise returns nil. Setting may be used for different purpose but try to supply a valid one since it is used for archiving the image as an object.
+returns or set the url of the receiver. Returning only if any where supplied at creation, otherwise returns code::nil::. Setting may be used for different purpose but try to supply a valid one since it is used for archiving the image as an object.
 code::
 i = Image.new("http://www.google.com/intl/en_ALL/images/logo.gif");
 i.url;
@@ -261,7 +255,7 @@ i.free;
 ::
 
 METHOD::interpolation
-get or set the level of interpolation used when rendering the image - it has not effect when the Image is accelerated. see link::#*interpolations:: for a valid range of values.
+gets/sets the level of interpolation used when rendering the image - it has not effect when the Image is accelerated. see link::#*interpolations:: for a valid range of values.
 code::
 (
 i = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
@@ -282,10 +276,11 @@ w.refresh;
 i.free;
 ::
 
-SUBSECTION::saving and archiving
+
+subsection:: saving and archiving
 
 METHOD::write
-write the Image to a file.
+writes the Image to a file.
 code::
 i = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
 i.dump
@@ -308,17 +303,15 @@ i = Object.readArchive("~/Desktop/my_image.scd".standardizePath);
 i.plot;
 i.free;
 ::
-
-ARGUMENT::path
+argument::path
 the location where to save it
-
-ARGUMENT::format
-(optional) format to use. see Image.formats for supported formats. If nil, it will get the format depending on the path extension.
-
-ARGUMENT::quality
+argument::format
+(optional) format to use. see Image.formats for supported formats. If code::nil::, it will get the format depending on the path extension.
+argument::quality
 The quality factor must be in the range 0 to 100 or -1. Specify 0 to obtain small compressed files, 100 for large uncompressed files, and -1 (the default) to use the default settings.
 
-SUBSECTION::rendering
+
+subsection:: rendering
 
 METHOD::plot
 plots the image in a Window.
@@ -334,20 +327,15 @@ i.free;
 // other option - image will be automatically freed when closed
 Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png").plot("Hello", freeOnClose: true);
 ::
-
-ARGUMENT::name
-the title of the Window. may be nil.
-
-ARGUMENT::bounds
-the bounds of the Window. may be nil.
-
-ARGUMENT::freeOnClose
+argument::name
+the title of the Window. may be code::nil::.
+argument::bounds
+the bounds of the Window. may be code::nil::.
+argument::freeOnClose
 flag to tell if the Window should free the Image when closed.
-
-ARGUMENT::background
+argument::background
 additional background to apply to the Window. may be useful for artifacts due to alpha / compositing...
-
-ARGUMENT::showInfo
+argument::showInfo
 shows pixel coordinates while the mouse is over the image's plot window.
 
 METHOD::draw
@@ -462,17 +450,13 @@ code::
 	});
 )
 ::
-
-ARGUMENT::point
+argument::point
 the link::Classes/Point:: where to draw it
-
-ARGUMENT::fromRect
+argument::fromRect
 the portion of the Image to use
-
-ARGUMENT::operation
+argument::operation
 the compositing operation to use. code::'sourceOver':: is the default.
-
-ARGUMENT::fraction
+argument::fraction
 the opacity to use, ranging from 0.0 (fully transparent) to 1.0 (fully opaque)
 
 METHOD::drawInRect
@@ -491,17 +475,13 @@ code::
 	});
 )
 ::
-
-ARGUMENT::rect
+argument::rect
 the link::Classes/Rect:: where to draw it
-
-ARGUMENT::fromRect
+argument::fromRect
 the portion of the Image to use
-
-ARGUMENT::operation
+argument::operation
 the compositing operation to use. code::'sourceOver':: is the default.
-
-ARGUMENT::fraction
+argument::fraction
 the opacity to use, ranging from 0.0 (fully transparent) to 1.0 (fully opaque)
 
 METHOD::tileInRect
@@ -520,23 +500,20 @@ w.drawFunc_({
 });
 )
 ::
-
-ARGUMENT::rect
+argument::rect
 the link::Classes/Rect:: where to draw it
-
-ARGUMENT::fromRect
+argument::fromRect
 the portion of the Image to use
-
-ARGUMENT::operation
+argument::operation
 the compositing operation to use. code::'sourceOver':: is the default.
 NOTE::
 Compositing operations are currently disabled for tileInRect
 ::
-
-ARGUMENT::opacity
+argument::opacity
 the opacity to use, ranging from 0.0 (fully transparent) to 1.0 (fully opaque)
 
-SUBSECTION::Instance Methods / accessing and setting pixels
+
+subsection:: Instance Methods / accessing and setting pixels
 
 METHOD::setPixel
 fill a pixel located at x @ y.
@@ -548,12 +525,11 @@ w.refresh;
 ("pixel at 0 @ 0:"+Image.pixelToColor(i.getPixel(0, 0)).asArray).postln;
 i.free;
 ::
-
-ARGUMENT::rgbaInteger
+argument::rgbaInteger
 an 32 bit link::Classes/Integer:: containing color information packed as 8bit RGBA
-ARGUMENT::x
+argument::x
 the x position of the pixel in the image
-ARGUMENT::y
+argument::y
 the y position of the pixel in the image
 
 METHOD::getPixel
@@ -613,12 +589,11 @@ retrieve or set all the pixels of the receiver.
 NOTE::
 Careful: the returned Array is a link::Classes/Int32Array:: of size receiver.width * receiver.height containing all pixel values as 32bit Integer. See link::#*colorToPixel:: and link::#*pixelToColor::.
 ::
-
-ARGUMENT::array
+argument::array
 an link::Classes/Int32Array:: of size receiver.width * receiver.height containing all pixel values as 32bit Integer
 
 METHOD::loadPixels
-load all the pixels of the receiver in an array. it is better and faster to call this function instead of link::#-pixels:: if you plan to retrieve frequently the pixel data (since it won't allocate a new array everytime !)
+loads all the pixels of the receiver in an array. it is better and faster to call this function instead of link::#-pixels:: if you plan to retrieve frequently the pixel data (since it won't allocate a new array everytime !)
 code::
 // exec one line at a time
 (
@@ -639,18 +614,15 @@ i.loadPixels(p);
 i.free;
 p;
 ::
-
-ARGUMENT::array
+argument::array
 the array that will be filled. Should be an link::Classes/Int32Array:: of size receiver.width * receiver.height.
-
-ARGUMENT::region
-the targeted rectangular region. (nil by default, meaning full size)
-
-ARGUMENT::start
+argument::region
+the targeted rectangular region. (code::nil:: by default, meaning full size)
+argument::start
 the start index of the array.
 
 METHOD::setPixels
-set the pixels in a specific portion of the receiver.
+sets the pixels in a specific portion of the receiver.
 code::
 
 (
@@ -676,19 +648,16 @@ w = i.plot(freeOnClose: true);
 i.pixels.postln;
 )
 ::
-
-ARGUMENT::array
+argument::array
 an link::Classes/Int32Array:: of size strong::rect::.width * strong::rect::.height containing all pixel values as 32bit Integer
-
-ARGUMENT::region
-a rectangle defining the portion to update in the receiver. By default strong::rect:: is nil, meaning full image size.
-
-ARGUMENT::start
+argument::region
+a rectangle defining the portion to update in the receiver. By default strong::rect:: is code::nil::, meaning full image size.
+argument::start
 the array start index.
 
 
 METHOD::pixelRatio
-Get/set pixel ratio of the image.
+gets/sets pixel ratio of the image.
 
 This does NOT affect the content of the image, only how it is interpreted when it is drawn onto a View or another Image.
 For example, in a high DPI context, the pixel ratio of a View might be 2. When drawing an image with a pixelRatio of 1, each pixel of the image will fill a 2x2 area of the View. If both the Image and the View had a pixel ratio of 2, each pixel would be 1:1 with pixels in the View.

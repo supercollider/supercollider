@@ -4,7 +4,7 @@ categories:: UGens>Analysis
 related:: Classes/BeatTrack, Classes/Loudness, Classes/Onsets, Classes/Pitch, Classes/KeyTrack
 
 description::
-Generates a set of MFCCs; these are obtained from a band-based frequency representation (using the Mel scale by default), and then a discrete cosine transform (DCT). The DCT is an efficient approximation for principal components analysis, so that it allows a compression, or reduction of dimensionality, of the data, in this case reducing 42 band readings to a smaller set of MFCCs. A small number of features (the coefficients) end up describing the spectrum. The MFCCs are commonly used as timbral descriptors.
+generates a set of MFCCs; these are obtained from a band-based frequency representation (using the Mel scale by default), and then a discrete cosine transform (DCT). The DCT is an efficient approximation for principal components analysis, so that it allows a compression, or reduction of dimensionality, of the data, in this case reducing 42 band readings to a smaller set of MFCCs. A small number of features (the coefficients) end up describing the spectrum. The MFCCs are commonly used as timbral descriptors.
 
 Output values are somewhat normalised for the range 0.0 to 1.0, but there are no guarantees on exact conformance to this. Commonly, the first coefficient will be the highest value.
 
@@ -12,12 +12,11 @@ Output values are somewhat normalised for the range 0.0 to 1.0, but there are no
 note::Drafts of an MFCC UGen were prepared by both Dan Stowell and Nick Collins; their various ideas are combined here in a cross platform compatible UGen. Mel scale spacing with triangular crossfade overlap is used by default for the bands, approximately tracking the human critical band spacing and bandwidth. Variants such as BFCC (Bark) and EFCC (ERB) given similar results in practice; the Mel scale as used here is the standard as adapted from the speech recognition literature and now applied in music information retrieval.::
 
 classmethods::
-method:: kr
-
-argument:: chain
+method::kr
+argument::chain
 [fft] Audio input to track, which has been pre-analysed by the FFT UGen; see examples below for the expected FFT size.
-argument:: numcoeff
-[s] Number of coefficients, defaults to 13, maximum of 42; more efficient to use less of course!
+argument::numcoeff
+[s] Number of coefficients, defaults to 13, maximum of 42; more efficient to use less, of course!
 
 returns:: code::#coeff1, coeff2, ...::
 

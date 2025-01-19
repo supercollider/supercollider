@@ -2,8 +2,9 @@ title:: Resize behaviour
 summary:: Resize behavior for View and its subclasses
 categories:: GUI
 
+
 section:: Description
-method:: resize
+method::resize
 The link::Classes/View#-resize:: method takes nine different values as argument defining the behavior of the view when the containing window is resized. Each view responds relatively to the stretches of its parent view.
 
 table::
@@ -25,6 +26,7 @@ list::
 ## 8 - horizontally elastic, fixed to bottom
 ## 9 - fixed to right, fixed to bottom
 ::
+
 
 section:: Examples
 

@@ -4,7 +4,6 @@ categories:: JITLib>GUI
 related:: Classes/ProxySpace, Classes/NodeProxyEditor
 
 description::
-
 warning::
 ProxyMixer has been updated - some little adaptations to existing uses may be needed. If you like, you can also replace "ProxyMixer" with "ProxyMixerOld" to keep using the old style of ProxyMixer.
 ::
@@ -17,23 +16,20 @@ ClassMethods::
 
 private::initClass
 
-subsection::Creation
+
+subsection:: Creation
 
 method::new
-
 argument::proxyspace
 a link::Classes/ProxySpace::
-
 argument::nProxies
 the maximum number of proxies you plan to use
-
 argument::title
 window title
-
 argument::where
 window bounds
 
-Examples::
+examples::
 
 code::
 p = ProxySpace.push(s.boot, \p);

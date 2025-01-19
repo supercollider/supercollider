@@ -4,19 +4,15 @@ related:: Classes/Pfsm
 categories:: Streams-Patterns-Events>Patterns>List>Indexing
 
 description::
-
 Lindenmayer system pattern for selfsimilar structures. Its strong::dictionary (or event):: maps one element to an array of child elements. The algorithm replaces iteratively (strong::levels:: deep) elements by arrays of elements starting with the values in the strong::pattern::.
 
 ClassMethods::
 
 method::new
-
 argument::pattern
 starting value
-
 argument::dict
 a dictionary or an event.
-
 argument::levels
 number of levels
 
@@ -28,7 +24,7 @@ IdentityDictionary[
 ]
 ::
 
-Examples::
+examples::
 
 The examples use the code::():: shortcut for link::Classes/Event::.
 

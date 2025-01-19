@@ -1,5 +1,5 @@
 class:: SpecPcile
-summary:: Find a percentile of FFT magnitude spectrum
+summary:: Finds a percentile of FFT magnitude spectrum
 categories:: UGens>FFT
 related:: Classes/SpecCentroid, Classes/SpecFlatness
 
@@ -13,13 +13,12 @@ The optional third argument strong::interpolate:: (code::ir::) specifies whether
 Optional fourth argument is strong::binout:: (code::ir::) specifies whether to output the bin number instead of the frequency (default 0, set to 1 to enable). If interpolate is enabled, linear interpolation on the bin number is performed.
 
 classmethods::
-method:: kr
-
-argument:: buffer
+method::kr
+argument::buffer
 an link::Classes/FFT:: chain.
-argument:: fraction
-argument:: interpolate
-argument:: binout
+argument::fraction
+argument::interpolate
+argument::binout
 
 examples::
 

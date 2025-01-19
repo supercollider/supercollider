@@ -11,6 +11,7 @@ NOTE::For external HID devices it is recommended to use the link::Classes/HID:: 
 
 NOTE: if you have trouble opening a device, e.g. when you get the message code::ERROR: LID: Could not open device::, please check the link::Guides/LID_permissions::
 
+
 subsection:: First example:
 
 code::
@@ -38,7 +39,8 @@ CLASSMETHODS::
 
 private:: prStartEventLoop, prStopEventLoop
 
-SUBSECTION:: Finding devices
+
+subsection:: Finding devices
 
 An example of finding a device:
 
@@ -54,51 +56,43 @@ LID.postAvailable;
 LID.findBy(2, 10) // by vendor and product
 ::
 
-METHOD:: findAvailable
+method::findAvailable
 queries the operating system which LID devices are attached to the system and can be accessed. When using LID this is the first method you need to execute, before you can access any device.
-
-ARGUMENT:: name
+argument::name
 The basic path to look for, by default this is code::"event"::. See also code::deviceRoot::.
 
 returns:: an IdentityDictionary of available devices
 
-METHOD:: deviceRoot
-
+method::deviceRoot
 This is the base path where to look for devices. By default this is: code::"/dev/input"::. With code::findAvailable:: this is extended with the code::name:: that is passed in, which has as a default code::"event"::. Hence, by default we look for devices that match the path: code::"/dev/input/event*"::.
 
 See below for some link::#Opening devices with alternative deviceRoot::
 
-METHOD:: available
+method::available
 A dictionary of available devices, or rather info about them in an instance of LINK::Classes/LIDInfo::, populated by the method findAvailable
 
 returns:: an IdentityDictionary
 
-METHOD:: postAvailable
+method::postAvailable
 posts a human readable list of available LID devices and their properties (see also LINK::Classes/LIDInfo::)
 
 
-METHOD:: findBy
-Find devices in the available device dictionary by specifying one or more characteristics of the device
-
-ARGUMENT:: vendorID
+method::findBy
+finds devices in the available device dictionary by specifying one or more characteristics of the device
+argument::vendorID
 The vendor ID of the device, this is a number encoded by the device itself.
-
-ARGUMENT:: productID
+argument::productID
 The product ID of the device, this is a number encoded by the device itself.
-
-ARGUMENT:: path
+argument::path
 The path of the device, this is a path defined by the operating system.
-
-ARGUMENT:: version
+argument::version
 The version of the device.
-
-ARGUMENT:: physical
+argument::physical
 The physical location of the device, this is a path defined by the operating system.
-
-ARGUMENT:: unique
+argument::unique
 A unique identifier for the device, defined by the operating system.
 
-returns:: an IdentityDictionary of devices the match the search query, or nil if no arguments are given
+returns:: an IdentityDictionary of devices the match the search query, or code::nil:: if no arguments are given
 
 code::
 LID.findBy(2); // by vendorID
@@ -115,44 +109,42 @@ LID.findBy(unique: "") // argument is converted to symbol for check
 LID.findBy(2, 10, "/dev/input/event4", 0x0000, 'synaptics-pt/serio0/input0')
 ::
 
-SUBSECTION:: Opening devices
 
-METHOD:: open
-Open a device with a given vendorID and product ID. For arguments description see link::#*findBy::.
+subsection:: Opening devices
+
+method::open
+opens a device with a given vendorID and product ID. For arguments description see link::#*findBy::.
 The method will call the method code::findBy:: and use the first available result as the device to open.
 
 returns:: The LID device - an instance of code::LID::.
 
 
-METHOD:: new
+method::new
 Same as code::LID.openPath::.
 
 
-METHOD:: openPath
-Open a device using its path in the operating system.
-
-ARGUMENT:: path
+method::openPath
+opens a device using its path in the operating system.
+argument::path
 The path in the operating system, e.g. code::"/dev/input/event4"::
 
 returns:: The LID device - an instance of code::LID::.
 
-METHOD:: openAt
-Open a device using its index in the dictionary of available devices
-
-ARGUMENT:: index
+method::openAt
+opens a device using its index in the dictionary of available devices
+argument::index
 The index into the dictionary of available devices
 
 returns:: The LID device - an instance of code::LID::.
 
 
-METHOD:: openDevices
+method::openDevices
 A dictionary of the opened devices
 
 returns:: an IdentityDictionary
 
 
-
-SUBSECTION:: Adding functions to LID events
+subsection:: Adding functions to LID events
 
 Whenever data comes in from an opened LID device, there are two types of actions fired. An action for the incoming element data and an action for the device, indicating that there has been a change in one of the elements. In most cases you will want to use the first action; only in cases where the order of parsing the element data is important, you may want to use the second type - e.g. when dealing with very accurately timed button press combinations.
 
@@ -164,48 +156,44 @@ LIST::
 ::
 
 
-METHOD:: debug
-When set to true, the incoming data from any opened LID device will be printed to the post window.
+method::debug
+When set to code::true::, the incoming data from any opened LID device will be printed to the post window.
 
-METHOD:: action
-Set or get the action to be performed upon receiving element data from any device. The function will be passed the following arguments: the value (mapped between 0 and 1), the raw value, element usage page, the element usage, the element id, the device id, the device (an instance of LID).
-
-ARGUMENT:: function
+method::action
+sets/gets the action to be performed upon receiving element data from any device. The function will be passed the following arguments: the value (mapped between 0 and 1), the raw value, element usage page, the element usage, the element id, the device id, the device (an instance of LID).
+argument::function
 The function to be performed upon receiving element data from the device
 
-METHOD:: addRecvFunc
-add a function to the internal FunctionList that will be evaluated whenever element data comes in from an open device. The arguments passed to the function are as defined above.
+method::addRecvFunc
+adds a function to the internal FunctionList that will be evaluated whenever element data comes in from an open device. The arguments passed to the function are as defined above.
 Use this method if you want to add actions to LID functions from classes you write, so that you still keep the option to add an action on the fly from user code.
-
-ARGUMENT:: function
+argument::function
 The function to be added to the list.
 
 
-METHOD:: removeRecvFunc
-remove a function to the internal FunctionList that will be evaluated whenever data comes in from a device.
-
-
-ARGUMENT:: function
+method::removeRecvFunc
+removes a function to the internal FunctionList that will be evaluated whenever data comes in from a device.
+argument::function
 The function to remove from the list, this must be a reference to the Function that was originally added to the list
 
 
-SUBSECTION:: Managing the LID subsystem
+subsection:: Managing the LID subsystem
 
 The following methods are used internally to initialize and finalize the LID subsystem, but in rare cases you may wish to manage these methods manually.
 
-METHOD:: initializeLID
+method::initializeLID
 Initialize the LID subsystem, this method is called automatically when calling the method findAvailable.
 
 
-METHOD:: running
-Indicates whether or not the LID subsystem is running.
+method::running
+indicates whether or not the LID subsystem is running.
 
 
-METHOD:: closeAll
+method::closeAll
 This method is called automatically upon Shutdown, if the LID subsystem was initialized. It can be stopped manually, in order to save system resources. This method will close all opened LID devices.
 
 
-SUBSECTION:: Creating specs for devices
+subsection:: Creating specs for devices
 
 Device specs are mappings between event codes and symbolic control names. New specs can be added to LID.specs via LID>>*register.
 
@@ -242,24 +230,22 @@ LID.register('Logitech WingMan RumblePad', (
 ::
 
 
-METHOD:: register
+method::register
 This will register the spec for the specified device. If the device was opened and did not use the spec before, it will use this spec. See also link::Classes/LID#*specs::.
-
-ARGUMENT:: name
+argument::name
 The name of the device to register it for.
-
-ARGUMENT:: spec
+argument::spec
 The spec to be added. This should be an IdentityDictionary.
 
 
-METHOD:: specs
+method::specs
 This returns the specs that have been registered.
 
 
-METHOD:: mouseDeviceSpec
+method::mouseDeviceSpec
 This returns a default spec for a mouse device; any mouse, trackball, trackpad or trackpoint should be able to use this spec.
 
-METHOD:: keyboardDeviceSpec
+method::keyboardDeviceSpec
 This returns a default spec for a keyboard device; any keyboard or numpad should be able to use this spec.
 
 
@@ -269,11 +255,11 @@ INSTANCEMETHODS::
 private:: prClose, prEventCodeSupported, prEventTypeSupported, prGetAbsInfo, prGetInfo, prGetKeyState, prGrab, prHandleEvent, prInit, prOpen, prReadError, prSetLedState, prSetMscState, getAbsInfo, getKeyState, getLEDState, setLEDState, setMSCState
 
 
-METHOD:: close
-Close the LID device, closing a device is asynchronous. You can set a closeAction (see below), which will be performed when the device closes.
+method::close
+closes the LID device, closing a device is asynchronous. You can set a closeAction (see below), which will be performed when the device closes.
 
-METHOD:: isOpen
-Returns true if the device is open, false if the device was closed.
+method::isOpen
+returns code::true:: if the device is open, code::false:: if the device was closed.
 
 CODE::
 d.isOpen;
@@ -282,32 +268,30 @@ d.isOpen;
 ::
 
 
+subsection:: Posting human readable information about the device
 
-SUBSECTION:: Posting human readable information about the device
-
-METHOD:: postInfo
+method::postInfo
 Post the LIDInfo of this device in a human readable format. See also link::Classes/LIDInfo::.
 
-METHOD:: postSlots
+method::postSlots
 Post information about all the slots of this device in a human readable format
 
-METHOD:: dumpCaps
+method::dumpCaps
 Post the list of available capabilities in a human readable format
 
-METHOD:: makeGui
-Create a link::Classes/LIDGui:: for the device.
+method::makeGui
+creates a link::Classes/LIDGui:: for the device.
+
 
 subsection:: Accessing slots
 
 Device capabilities are reported as event type and event code mappings. Event type and event code constants can be found in code::/usr/include/linux/input.h::
 
 METHOD::slot
-Access a slot by its evtType and evtCode. See also link::Classes/LIDSlot::
-
-ARGUMENT:: evtType
+accesses a slot by its evtType and evtCode. See also link::Classes/LIDSlot::
+argument::evtType
 The eventType to access the slot.
-
-ARGUMENT:: evtCode
+argument::evtCode
 The eventCode to access the slot.
 
 
@@ -315,17 +299,16 @@ METHOD::at
 If a code::spec:: is defined for this device, then you can use a controlName to look up a slot.
 
 
-METHOD:: spec
+method::spec
 The IdentityDictionary that maps labels for slots to slot indices.
-
-ARGUMENT:: forceLookup
-If set to true, this will force the dictionary to be reinitialised with the registered spec for this device.
+argument::forceLookup
+If set to code::true::, this will force the dictionary to be reinitialised with the registered spec for this device.
 
 
 subsection:: Adding functionality to the device
 
-METHOD:: debug
-When set to true, the incoming data from this LID device will be printed to the post window.
+method::debug
+When set to code::true::, the incoming data from this LID device will be printed to the post window.
 
 
 CODE::
@@ -334,7 +317,7 @@ d.debug_(false);
 ::
 
 
-METHOD:: closeAction
+method::closeAction
 Function to be performed when device is closed.
 
 CODE::
@@ -342,15 +325,16 @@ d.closeAction_({ "hey, I got closed!".postln });
 d.close;
 ::
 
-METHOD:: action
-Set or get the action to be performed upon receiving data from the device. The function will be passed in the evtType, the evtCode, the value (mapped according to the slot's spec), and the raw value.
+method::action
+sets/gets the action to be performed upon receiving data from the device. The function will be passed in the evtType, the evtCode, the value (mapped according to the slot's spec), and the raw value.
 
 CODE::
 d.action_({ |...args| ("my action" + args).postln });
 d.action_(nil);
 ::
 
-SUBSECTION:: Properties of the device
+
+subsection:: Properties of the device
 
 METHOD::slots
 An IdentityDictionary holding all the slots, i.e. controls, of the device
@@ -362,29 +346,30 @@ CODE::
 d.path;
 ::
 
-METHOD:: info
+method::info
 Retrieve the LIDInfo of this device
 
 CODE::
 d.info;
 ::
 
-METHOD:: vendor
+method::vendor
 Retrieve the vendor id of this device
 
 CODE::
 d.vendor;
 ::
 
-METHOD:: product
+method::product
 Retrieve the product id of this device
 
 CODE::
 d.product;
 ::
 
-METHOD:: caps
+method::caps
 The list of available capabilities.
+
 
 subsection:: Grabbing devices
 
@@ -404,10 +389,11 @@ METHOD::ungrab
 Release the device to use it no longer exclusively for SC.
 
 METHOD::isGrabbed
-Check whether the device is grabbed.
+checks whether the device is grabbed.
 
 
 examples::
+
 
 subsection:: Finding and opening the device
 
@@ -423,6 +409,7 @@ d.postSlots;
 d.debug_(true); // wiggle a little and see the data coming in
 d.debug_(false);
 ::
+
 
 subsection:: Event actions (raw events)
 The device's 'action' instance variable can be used for event notifications. it is passed the event type, code and current value.
@@ -440,9 +427,10 @@ code::
 d.closeAction = { "device was detached".postln };
 ::
 
+
 subsection:: Event actions (raw slot events)
 
-When 'action' is nil, actions can be bound to specific events.
+When 'action' is code::nil::, actions can be bound to specific events.
 code::
 (
 d.slot(0x0002, 0x0001).action = { |slot|
@@ -520,6 +508,6 @@ You can query another name than "/event" by passing an argument. (the search wil
 code::
 LID.findAvailable("mouse");
 ::
-Note:: this is likely to give the info that the devices could not be opened, as "mouse" uses another interface (you can of course access mice via the "event" interface) ::
+Note:: this is likely to give the info that the devices could not be opened, as "mouse" uses another interface (you can, of course, access mice via the "event" interface) ::
 
 Note:: if you cannot open the devices at all, please look in the helpfile for: link::Guides/LID_permissions:: ::

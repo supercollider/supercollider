@@ -4,7 +4,6 @@ related:: Classes/Warp
 categories:: Control, Spec
 
 description::
-
 The original, and most common spec (see link::Classes/Spec::). A ControlSpec is used by GUI sliders and knobs to specify the range and curve of the controls. ControlSpec may be used in many ways to map from linear 0..1 range to your desired range and back.
 
 The most common way to create a ControlSpec is by
@@ -17,34 +16,26 @@ ClassMethods::
 private::initClass
 
 method::new
-
 argument::minval
 The minimum value of the range.
-
 argument::maxval
 The maximium value of the range.
-
 argument::warp
 a link::Classes/Warp::, a symbol (e.g. \lin or \exponential: Default value is \lin), or something else that returns a Warp when sent the message .asWarp. A CurveWarp is defined by a number.
-
 argument::step
 The smallest possible increment.
-
 argument::default
 The default value.
-
 argument::units
 The units, e.g. "hz". Used by some gui's as a unit label.
-
 argument::grid
-
 InstanceMethods::
 
 method::map
-Maps and constrains a strong::value:: between 0 and 1 to the range between minval and maxval.
+maps and constrains a strong::value:: between 0 and 1 to the range between minval and maxval.
 
 method::unmap
-Maps and constrains a strong::value:: between minval and maxval to the range between 0 and 1.
+maps and constrains a strong::value:: between minval and maxval to the range between 0 and 1.
 code::
 g = ControlSpec(0.01, 2000, \exp, 0.1, 220, "Hz");
 g.map(0.5); // convert from [0..1] to [0.01..2000]
@@ -61,21 +52,21 @@ method::clipHi
 The higher of maxval and minval.
 
 method::constrain
-Returns code::value.asFloat.clip(clipLo, clipHi).round(step)::.
+returns code::value.asFloat.clip(clipLo, clipHi).round(step)::.
 
 method::range
-Returns code::maxval - minval::.
+returns code::maxval - minval::.
 
 method::guessNumberStep
 Used for EZ GUI classes for guessing a sensible strong::step:: if none is specified.
 
 method::gridClass
-Returns the link::Classes/AbstractGridLines:: subclass corresponding to the current spec, in particular its warp behavior.
+returns the link::Classes/AbstractGridLines:: subclass corresponding to the current spec, in particular its warp behavior.
 
 method::grid
-Get/set an instance of the link::Classes/AbstractGridLines:: subclass that describes the range and warp behavior of the current spec, e.g. for use by link::Classes/DrawGrid:: for drawing grids in link::Classes/Plotter::.
+gets/sets an instance of the link::Classes/AbstractGridLines:: subclass that describes the range and warp behavior of the current spec, e.g. for use by link::Classes/DrawGrid:: for drawing grids in link::Classes/Plotter::.
 
-Examples::
+examples::
 
 code::
 g = ControlSpec(0.01, 2000, \exp, 0.1, 220, "Hz");

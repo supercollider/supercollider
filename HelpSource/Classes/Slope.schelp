@@ -11,7 +11,7 @@ out[i] = (in[i] - in[i-1]) * sampling_rate
 ::
 
 classmethods::
-method:: ar, kr
+method::ar, kr
 argument::in
 Input signal to measure.
 argument::mul

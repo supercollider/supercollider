@@ -5,8 +5,7 @@ related:: Classes/DynKlank, Classes/Klang
 categories:: UGens>Generators>Deterministic, UGens>Filters>Linear
 
 
-Description::
-
+description::
 Klank is a bank of fixed frequency resonators which can be used to
 simulate the resonant modes of an object. Each mode is given a ring time,
 which is the time for the mode to decay by 60 dB.
@@ -21,26 +20,21 @@ Klank is a bank of Ringz filters. link::Classes/Formlet:: is equivalent to code:
 classmethods::
 
 method::ar
-
 argument::specificationsArrayRef
 A link::Classes/Ref:: to an link::Classes/Array:: of three Arrays:
 
 definitionlist::
 ## frequencies: || An Array of filter frequencies.
-## amplitudes: || an Array of filter amplitudes, or nil. If nil, then amplitudes default to 1.0.
+## amplitudes: || an Array of filter amplitudes, or code::nil::. If code::nil::, then amplitudes default to 1.0.
 ## ring times: || an Array of 60 dB decay times in seconds for the filters.
 ::
-All subarrays, if not nil, should have the same length.
-
+All subarrays, if not code::nil::, should have the same length.
 argument::input
 The excitation input to the resonant filter bank.
-
 argument::freqscale
 A scale factor multiplied by all frequencies at initialization time.
-
 argument::freqoffset
 An offset added to all frequencies at initialization time.
-
 argument::decayscale
 A scale factor multiplied by all ring times at initialization time.
 
@@ -49,7 +43,7 @@ The parameters in code::specificationsArrayRef:: can't be changed after it has b
 For a modulatable but less efficient version, see link::Classes/DynKlank::.
 
 
-Examples::
+examples::
 
 Four resonators each at maximum amplitude of 1.0 and ring times of 1 second, different exciters and no scaling:
 Note:: Watch the ` before the opening bracket of the parameter array! Also see link::Guides/Multichannel-Expansion::::

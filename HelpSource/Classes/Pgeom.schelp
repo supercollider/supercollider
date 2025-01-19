@@ -4,23 +4,19 @@ related:: Classes/Pseries
 categories:: Streams-Patterns-Events>Patterns>List
 
 description::
-
-Returns a stream that behaves like a geometric series.
+returns a stream that behaves like a geometric series.
 
 ClassMethods::
 
 method::new
-
 argument::start
 start value.
-
 argument::grow
 multiplication factor.
-
 argument::length
 number of values produced.
 
-Examples::
+examples::
 
 code::
 (

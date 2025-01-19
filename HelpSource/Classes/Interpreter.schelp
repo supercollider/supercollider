@@ -19,7 +19,8 @@ private::new
 
 instanceMethods::
 
-subsection::Accessing
+
+subsection:: Accessing
 
 In the interpreter, code::this:: refers to the interpreter itself, e.g.: code::this.postln::
 
@@ -45,8 +46,7 @@ note::Use these variables with a bit of extra care – as they are global, they 
 
 
 method::clearAll
-
-set the values of the variables code::a:: through code::z:: to nil.
+sets the values of the variables code::a:: through code::z:: to code::nil::.
 
 code::
 x = 123;
@@ -55,27 +55,25 @@ this.clearAll;
 x.postln;
 ::
 
-subsection::Compile & Interpret
+
+subsection:: Compile & Interpret
 
 method::interpret
-
-Compile and execute a link::Classes/String::.
+compiles and executes a link::Classes/String::.
 
 code::
 this.interpret("(123 + 4000).postln");
 ::
 
 method::interpretPrint
-
-Compile and execute a link::Classes/String::, printing the result.
+compiles and executes a link::Classes/String::, printing the result.
 
 code::
 this.interpretPrint("123 + 4000");
 ::
 
 method::compile
-
-Compile a String and return a link::Classes/Function::.
+compiles a String and returns a link::Classes/Function::.
 
 code::
 (
@@ -86,20 +84,17 @@ z.value;
 ::
 
 method::compileFile
-
-Reads the file at pathName, compiles it and returns a Function.
+reads the file at pathName, compiles it and returns a Function.
 The file must contain a valid SuperCollider expression, naturally.
 This will not compile class definitions, only expressions.
 
 method::executeFile
-
-Reads the file at pathName, compiles it and executes it, returning the result.
+reads the file at pathName, compiles it and executes it, returning the result.
 The file must contain a valid SuperCollider expression, naturally.
 This will not compile class definitions, only expressions.
 
 method::cmdLine
-
-Returns the previously interpreted code.
+returns the previously interpreted code.
 
 code::
 1 + 2;
@@ -107,7 +102,6 @@ this.cmdLine
 ::
 
 method::codeDump
-
 this interpreter variable can be set to evaluate a function with any successfully compiled code.
 see e.g. the class History.
 
@@ -121,7 +115,6 @@ codeDump = nil; // reset to nil.
 ::
 
 method::preProcessor
-
 If this is set to a function, all interactively executed code is piped through it before parsing and
 interpreting. This is mostly used for developing domain-specific live coding languages that piggyback
 off the SuperCollider editing environment.
@@ -139,9 +132,7 @@ preProcessor = nil; // reset to nil.
 ::
 
 method::a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z
-
 Global variables ("interpreter variables") for interactive programming (see link::#Accessing::).
 
 method::functionCompileContext
-
 The compiler uses this method as a virtual context in which to compile code.

@@ -4,8 +4,7 @@ related:: Classes/PeakFollower
 categories::  UGens>Analysis>Amplitude
 
 
-Description::
-
+description::
 Outputs the peak amplitude of the signal received at the input. When
 a trigger occurs at the  code::reset::  input, the maximum
 output value is reset to the current value.
@@ -20,17 +19,13 @@ link::Classes/RunningMin::  and  link::Classes/RunningMax::  UGens.
 classmethods::
 
 method::ar, kr
-
 argument::in
-
 The input signal.
-
 argument::trig
-
 Trigger. Resets the output value to the current input value. A trigger happens when the signal changes from non-positive to positive.
 
 
-Examples::
+examples::
 
 code::
 

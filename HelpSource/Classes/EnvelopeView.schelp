@@ -3,21 +3,22 @@ summary:: A configurable view with nodes and connections
 categories:: GUI>Views
 related:: Classes/MultiSliderView, Classes/SCEnvelopeEdit
 
-DESCRIPTION::
-
+description::
 A view which can graphically display nodes at x/y coordinates, connection lines, cross-connections, node markers, and labels. All of the values for these are stored in arrays. While this view is typically used to make editable envelopes interfaces, it can be used to draw very complex interconnection graphs as well.
 
-You can make the view display an link::Classes/Env:: using link::#-setEnv::. Note however that the view will work on a copy of the data of the Env object, therefore moving the nodes through the view will have no effect on the Env.
+You can make the view display an link::Classes/Env:: using link::#-setEnv::. Note, however, that the view will work on a copy of the data of the Env object, therefore moving the nodes through the view will have no effect on the Env.
 
 You can also define nodes with arrays of x and y values using link::#-value::, and the connections using link::#-connect::.
 
-SUBSECTION:: Appearance
+
+subsection:: Appearance
 
 The view supports two strong::display styles::: the default one draws nodes as small dots, with labels next to them, while another style draws nodes as rounded rectangles with labels drawn inside. See link::#-style::.
 
 A strong::label:: for each of the nodes can be set using link::#-strings:: and link::#-setString::.
 
-SUBSECTION:: Interaction
+
+subsection:: Interaction
 
 Nodes can be selected and moved using mouse. Shift-clicking a node will add it to the selection.
 
@@ -31,9 +32,10 @@ Node selection can also be changed programmatically using link::#-index::, link:
 
 INSTANCEMETHODS::
 
-SUBSECTION:: Data
 
-METHOD:: setEnv
+subsection:: Data
+
+method::setEnv
 	Sets an link::Classes/Env:: to be displayed by the view. The view will extract data from the Env object to display (times, values and curve types).
 
 	Any nodes existent prior to calling this method will be removed.
@@ -42,7 +44,7 @@ METHOD:: setEnv
 		An Env.
 
 
-METHOD:: value
+method::value
 	code::value:: retrieves the node positions, returning an array in the format of the Argument below. code::value_(anArray):: Sets the positions of the nodes, creating them if not existent.
 
 	If there were already existent nodes and their amount is different than the amount of x/y pairs in the argument, nodes will be added or removed (in order of creation reversed) until the amounts match, and then the new values will be applied.
@@ -50,35 +52,35 @@ METHOD:: value
 	argument::
 		An Array containing two other Arrays, of which one contains the horizontal and the other the vertical position of the new nodes. The values must be between 0 and 1. For example: code:: [[x1, x2, x3, ...], [y1, y2, y3, ...]] ::
 
-METHOD:: valueAction
+method::valueAction
 	Sets link::#-value:: to the argument and triggers the link::#-action::.
 
-METHOD:: x
+method::x
 	The horizontal position of the emphasis::current:: node.
 
 	argument::
 		A Float between 0 and 1.
 
-METHOD:: y
+method::y
 	The vertical position of the emphasis::current:: node.
 
 	argument::
 		A Float between 0 and 1.
 
-METHOD:: currentvalue
+method::currentvalue
 	Synonym for link::#-y::.
 
-METHOD:: curves
+method::curves
 	The shapes of connections between nodes. See below for the valid objects that describe a shape.
 
 	If a single shape is given, it will be applied to all the existing nodes. If an Array of shapes is given, each of its elements will be applied to an existing node, in order of index.
 
-	A connection curve shape applied to a node will determine the shape of the connections originating at that node. If no connections have been created using link::#-connect::, the origin node of a connection is the one with lower index. If there are such connections however, their origin is the node that was passed as the first argument to link::#-connect::.
+	A connection curve shape applied to a node will determine the shape of the connections originating at that node. If no connections have been created using link::#-connect::, the origin node of a connection is the one with lower index. If there are such connections, however, their origin is the node that was passed as the first argument to link::#-connect::.
 
 	argument::
 		The valid objects to describe a shape are listed in link::Classes/Env#*new::. The argument can be either a single, or an Array of those values.
 
-METHOD:: strings
+method::strings
 	The labels of the nodes.
 
 	note:: In order for the labels to be visible, you might need to ensure that the link::#-strokeColor:: contrasts the link::#-fillColor:: (depending on how the view draws the nodes and the labels).
@@ -87,7 +89,7 @@ METHOD:: strings
 	argument::
 		An Array of Strings.
 
-METHOD:: setString
+method::setString
 	Sets the label of the node at the given index.
 
 	note:: In order for the label to be visible, you might need to ensure that the link::#-strokeColor:: contrasts the link::#-fillColor:: (depending on how the view draws the nodes and the labels).::
@@ -98,59 +100,58 @@ METHOD:: setString
 	argument::string
 		A String.
 
-METHOD:: setFillColor
+method::setFillColor
 	Sets the color used to draw the inside of the node at the given index.
 
-	argument:: index
+	argument::index
 		An Integer.
-	argument:: color
+	argument::color
 		A Color.
 
-METHOD:: setThumbWidth
+method::setThumbWidth
 	Sets the width of the node at the given index.
 
     NOTE:: For compatibility with existing code, this will set the link::#-style:: to strong::'rects'::. ::
 
-	argument:: index
+	argument::index
 		An Integer.
-	argument:: width
+	argument::width
 		An Integer.
 
-METHOD:: setThumbHeight
+method::setThumbHeight
 	Sets the height of the node at the given index.
 
     NOTE:: For compatibility with existing code, this will set the link::#-style:: to strong::'rects'::. ::
 
-	argument:: index
+	argument::index
 		An Integer.
-	argument:: height
+	argument::height
 		An Integer.
 
-METHOD:: setThumbSize
+method::setThumbSize
 	Sets both width and height of the node at the given index to code::size::.
 
-	argument:: index
+	argument::index
 		An Integer.
-	argument:: size
+	argument::size
 		An Integer.
 
 
-METHOD:: connect
+method::connect
 	Removes any connections created when the link::#-value:: was set, and then creates new ones from the node at index given in the first argument to each of the nodes at indexes given in the second argument.
 
-	argument:: source
+	argument::source
 		An Integer - the index of the node to become one end of all the new connections.
-	argument:: targets
+	argument::targets
 		An Array of Integers - indexes of nodes, each to become the second end to a new connection created.
 
-METHOD:: selection
+method::selection
 	Returns an array of indexes of all selected nodes.
 
 
-SUBSECTION:: Appearance
+subsection:: Appearance
 
-METHOD:: style
-
+method::style
 
     One of the following drawing styles:
 
@@ -169,32 +170,32 @@ METHOD:: style
 
     returns:: An integer 0 or 1.
 
-METHOD:: drawLines
+method::drawLines
 	Whether to draw the connections between the nodes.
 
 	argument::
 		A Boolean.
 
-METHOD:: drawRects
+method::drawRects
 	Whether to draw the nodes
 
 	argument::
 		A Boolean.
 
 
-METHOD:: gridOn
+method::gridOn
 	Whether to draw the grid.
 
 	argument::
 		A Boolean.
 
-METHOD:: grid
+method::grid
 	The resolution of the grid.
 
 	argument::
 		A Point of which x and y correspond to grid spacing on the horizontal and the vertical axis, respectively. If one of the two is 0, the grid on that axis will not be drawn.
 
-METHOD:: thumbWidth
+method::thumbWidth
     Sets the width of all nodes.
 
     NOTE:: For compatibility with existing code, this will set the link::#-style:: to strong::'rects'::. ::
@@ -202,7 +203,7 @@ METHOD:: thumbWidth
 	argument::
 		An Integer.
 
-METHOD:: thumbHeight
+method::thumbHeight
     Sets the height of all nodes.
 
     NOTE:: For compatibility with existing code, this will set the link::#-style:: to strong::'rects'::. ::
@@ -210,42 +211,41 @@ METHOD:: thumbHeight
 	argument::
 		An Integer.
 
-METHOD:: thumbSize
+method::thumbSize
 	Sets both link::#-thumbWidth:: and link::#-thumbHeight:: to the argument.
 
-METHOD:: strokeColor
+method::strokeColor
 	The color used to draw the connections and the node labels.
 
 	argument::
 		A Color.
 
-METHOD:: fillColor
+method::fillColor
 	The default color used to draw the nodes. If the color of a specific node has been set using link::#-setFillColor::, it will take precedence.
 
 	argument::
 		A Color.
 
-METHOD:: selectionColor
+method::selectionColor
 	The color of a node when it is selected.
 
 	argument::
 		A Color.
 
 
-METHOD:: gridColor
+method::gridColor
 	The color of the grid.
 
 	argument::
 		A Color.
 
-METHOD:: colors
+method::colors
 	Sets the link::#-strokeColor:: and the link::#-fillColor:: to the arguments, respectively.
 
 
+subsection:: Interaction
 
-SUBSECTION:: Interaction
-
-METHOD:: index
+method::index
 	The index of the emphasis::current:: node, i.e. the node affected by link::#-x:: and link::#-y:: methods.
 
     This is the selected node with lowest index, or -1 if no selection.
@@ -253,17 +253,17 @@ METHOD:: index
 	argument::
 		An Integer.
 
-METHOD:: lastIndex
+method::lastIndex
     The last node selected, regardless of the current state of selection, or -1 if no node has yet been selected.
 
 
-METHOD:: selectIndex
+method::selectIndex
 	Selects the node at given index and makes it the current one, i.e. link::#-currentvalue:: will relate to that node. As a special case, if the argument is -1 all nodes will be deselected.
 
 	argument::
 		An Integer.
 
-METHOD:: deselectIndex
+method::deselectIndex
 	Deselects the node at given index.
 
 	note:: Not available in strong:: Cocoa GUI ::. ::
@@ -271,29 +271,28 @@ METHOD:: deselectIndex
 	argument::
 		An Integer.
 
-METHOD:: editable
+method::editable
 	Whether any node is editable.
 
 	argument::
 		A Boolean.
 
-METHOD:: setEditable
+method::setEditable
 	Sets whether the node at given index is editable. Regardless of this, no node will be editable unless link::#-editable:: is code::true::.
 
-	argument:: index
+	argument::index
 		An Integer.
 
-	argument:: flag
+	argument::flag
 		A Boolean.
 
-METHOD:: step
+method::step
 	Makes the nodes snap (i.e. quantized) to the nearest multiple of the argument. Unless this is larger than 0, nodes will not be movable using keyboard.
 
 	argument::
 		A Float.
 
-METHOD:: keepHorizontalOrder
-
+method::keepHorizontalOrder
 	Whether the position of nodes on the horizontal axis shall be restricted by their immediate neighbours (in order of their index).
 
 	Setting this to code::true:: will immediately modify the positions of existing nodes to match the order.
@@ -301,8 +300,7 @@ METHOD:: keepHorizontalOrder
 	argument::
 		A Boolean.
 
-METHOD:: elasticSelection
-
+method::elasticSelection
 	Whether the relative positions of nodes within the selection can change when the selection is moved using mouse or keyboard, in order to adapt to obstacles (the view bounds or, in case link::#-keepHorizontalOrder:: is code::true::, a neighbour node).
 
 	If this is code::false::, movement of multiple nodes will be blocked altogether when an obstacles is met, otherwise only the individual nodes will be blocked at their obstacles.
@@ -311,39 +309,36 @@ METHOD:: elasticSelection
 		A Boolean.
 
 
-SUBSECTION:: Actions
+subsection:: Actions
 
-METHOD:: action
+method::action
 	The action object evaluated whenever the user moves a node.
 
-METHOD:: metaAction
+method::metaAction
 	The action object evaluated whenever the user moves a node while the Ctrl key is pressed.
 
-METHOD:: defaultKeyDownAction
-
+method::defaultKeyDownAction
     Implements the default behavior on key presses.
 
     The default behavior is defined in the C++ implementation of the view instead of this method. See link::Classes/View#Key and mouse event processing:: for explanation of how to override the behavior.
 
 
+subsection:: Drag and drop
 
-
-SUBSECTION:: Drag and drop
-
-METHOD:: defaultGetDrag
-	returns::
+method::defaultGetDrag
+	returns:: 
 		The link::#-value::.
 
-METHOD:: defaultCanReceiveDrag
-	returns::
-		True for any drag data, but the data should be in the same format as link::#-value::.
+method::defaultCanReceiveDrag
+	returns:: 
+		code::true:: for any drag data, but the data should be in the same format as link::#-value::.
 
-METHOD:: defaultReceiveDrag
+method::defaultReceiveDrag
 	If the drag data is of the acceptable form (see link::#-defaultCanReceiveDrag:: above), sets link::#-value:: using that data.
 
 
 
-EXAMPLES::
+examples::
 
 Use as envelope view
 code::

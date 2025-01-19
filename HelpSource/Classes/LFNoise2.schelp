@@ -4,9 +4,8 @@ related:: Classes/LFClipNoise, Classes/LFDClipNoise, Classes/LFDNoise0, Classes/
 categories::  UGens>Generators>Stochastic
 
 
-Description::
-
-Generates quadratically interpolated random values at a rate given by
+description::
+generates quadratically interpolated random values at a rate given by
 the nearest integer division of the sample rate by the
 code::freq::  argument.
 
@@ -17,17 +16,14 @@ quadratic interpolation means that the noise values can occasionally extend beyo
 classmethods::
 
 method::ar, kr
-
 argument::freq
 Approximate rate at which to generate random values.
-
 argument::mul
 Output will be multiplied by this value.
-
 argument::add
 This value will be added to the output.
 
-Examples::
+examples::
 
 code::
 { LFNoise2.ar(1000, 0.25) }.play;

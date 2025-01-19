@@ -4,9 +4,8 @@ related:: Classes/AnalogOut, Classes/DigitalIn, Classes/DigitalOut, Classes/Digi
 categories::  UGens>Bela
 
 
-Description::
-
-Read a DC-coupled analog input connected to a sensor (e.g.: a potentiometer or CV in).
+description::
+reads a DC-coupled analog input connected to a sensor (e.g.: a potentiometer or CV in).
 
 note::
 This UGen only works on Bela
@@ -15,26 +14,18 @@ This UGen only works on Bela
 classmethods::
 
 method::ar
-
 argument::analogPin
-
 Analog pin number to read. Pin numbers begin at 0. This value can be modulated at audiorate.
-
 argument::mul
-
 argument::add
 
 method::kr
-
 argument::analogPin
-
 Analog pin number to read. Pin numbers begin at 0.
-
 argument::mul
-
 argument::add
 
-Examples::
+examples::
 
 code::
 // modulate frequency of a sine oscillator

@@ -4,22 +4,17 @@ related:: Classes/Ptime, Classes/Pstep, Classes/Env
 categories:: Streams-Patterns-Events>Patterns>Time
 
 description::
-
 Pseg defines a function of time as a breakpoint envelope using the same parameters as link::Classes/Env::. These patterns can be used to describe tempo or dynamic variations independent of the rhythmic patterns that express them.
 
 ClassMethods::
 
 method::new
-
 argument::levels
 A link::Classes/Pattern:: that returns the levels. The first level is the initial value of the envelope, all subsequent values are interpolated.
-
 argument::durs
 A link::Classes/Pattern:: that returns segments durations in beats.
-
 argument::curves
 a link::Classes/Symbol::, link::Classes/Float::, or an link::Classes/Array:: of those. Determines the shape of the segments.
-
 argument::repeats
 a number.
 
@@ -36,7 +31,7 @@ table::
 ## an link::Classes/Array:: of symbols or floats || || curvature values for each segment.
 ::
 
-Examples::
+examples::
 
 code::
 // change a parameter

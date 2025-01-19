@@ -4,10 +4,10 @@ categories:: UGens>Info
 related:: Classes/ControlRate
 
 description::
-Returns the current block duration of the server in seconds. Equivalent to  1 / link::Classes/ControlRate::.
+returns the current block duration of the server in seconds. Equivalent to  1 / link::Classes/ControlRate::.
 
 classmethods::
-method:: ir
+method::ir
 
 examples::
 code::

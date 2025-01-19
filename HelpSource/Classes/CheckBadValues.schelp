@@ -7,12 +7,12 @@ This link::Classes/UGen:: tests for infinity, NaN (not a number), and denormals.
 
 classmethods::
 
-method:: ar, kr
-argument:: in
+method::ar, kr
+argument::in
 the link::Classes/UGen:: whose output is to be tested.
-argument:: id
+argument::id
 an id number to identify this link::Classes/UGen::. The default is 0.
-argument:: post
+argument::post
 One of three post modes:
 
 list::

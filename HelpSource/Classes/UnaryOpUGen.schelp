@@ -19,11 +19,10 @@ See link::Overviews/Operators:: for an overview of common operators.
 classmethods::
 
 method::new
-return a new instance that applies the operator code::selector:: to the ugen code::a::
-
-argument:: selector
+returns a new instance that applies the operator code::selector:: to the ugen code::a::
+argument::selector
 The selector symbol for the unary operator
-argument:: a
+argument::a
 operand
 
 examples::

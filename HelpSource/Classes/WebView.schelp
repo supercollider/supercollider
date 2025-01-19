@@ -2,246 +2,248 @@ class:: WebView
 summary:: Web page display and browser
 categories:: GUI>Views
 
-DESCRIPTION::
-
+description::
 WebView displays web pages and provides all the standard browsing functionality.
 
-Since the Qt WebEngine dependency is hefty and difficult to install on some systems, it is possible for sclang to have been built without WebView support (using the CMake flag code:: -DSC_USE_QTWEBENGINE=OFF :: at compile). If so, attempting to invoke this class will throw an error.
+Since the Qt WebEngine dependency is hefty and difficult to install on some systems, it is possible for sclang to have been built without WebView support (using the CMake flag code:: -DSC_USE_QTWEBENGINE=OFF :: at compile time). If so, attempting to invoke this class will throw an error.
 
 CLASSMETHODS::
 
 PRIVATE:: key
 
-METHOD:: clearCache
-
+method::clearCache
   Clears the cache for all browser instances.
 
-METHOD:: setUrlHandler
+method::setUrlHandler
+    Sets or clears a function to handle a specific URL prefix (e.g. mail://)
 
-    Set or clear a function to handle a specific URL prefix (e.g. mail://)
-
-    Argument:: prefix
+    argument::prefix
         URL prefix. For mail:///, use the string "mail" (do not append "://")
 
-    Argument:: function
+    argument::function
         Function to execute when any WebView loads a URL with this prefix. First argument is the URL.
 
 
 INSTANCEMETHODS::
 
-SUBSECTION:: Navigation
 
-METHOD:: url
+subsection:: Navigation
+
+method::url
     Gets the current URL, or navigates to a new one. This is equivalent to entering a URL in a browser's URL box.
 
-METHOD:: navigate
+method::navigate
     Navigate to a url. This is equivalent to clicking a link on a page - after a navigate call, back will return you to the previous page.
 
-METHOD:: back
+method::back
     Navigates to the previous page in history.
 
-METHOD:: forward
+method::forward
     Navigates to the next page in history.
 
-METHOD:: findText
+method::findText
     Finds and selects the next instance of given text on the current page. When the given text changes, the search starts anew.
 
-    Argument::
+    argument::
         The text to find; a String.
-    Argument::
+    argument::
         Whether to search in reverse direction; a Boolean.
-    Argument::
+    argument::
         A function, called when the operation is finished. If the text was found this function is passed code::true::, otherwise code::false::.
 
-METHOD:: triggerPageAction
+method::triggerPageAction
     Trigger an action on the current page. Possible actions include: reload, select all, copy, undo, redo (see link::Classes/QWebPageAction::)
 
-    Argument::
+    argument::
         A QWebPageAction.
-    Argument::
+    argument::
         A Boolean to enable or disable the action (applies to only some actions).
 
-SUBSECTION:: Data
 
-METHOD:: setHtml
+subsection:: Data
+
+method::setHtml
     Set the HTML displayed in the view.
 
-    Argument::
+    argument::
         A String.
-    Argument::
+    argument::
         A url. The browser will interpret this to be the current page location.
 
-METHOD:: setContent
+method::setContent
     Set the raw content of a web view. This can be used to display binary data such as image / movie files.
 
-    Argument::
+    argument::
         An Int8Array containing data.
-    Argument::
+    argument::
         A mime type, of the form e.g. "image/jpeg"
-    Argument::
+    argument::
         A url. The browser will interpret this to be the current page location.
 
-METHOD:: setAttribute
+method::setAttribute
     Set a QWebAttribute for the view. Attributes can affect behavior such as caching, auto-loading images, file url access, etc.
 
-    Argument::
+    argument::
         A QWebAttribute.
-    Argument::
+    argument::
         A Boolean.
 
-METHOD:: testAttribute
+method::testAttribute
     Check the enablement state of a QWebAttribute.
 
-    Argument::
+    argument::
         A QWebAttribute.
-    Returns::
+    returns:: 
         A Boolean.
 
-METHOD:: resetAttribute
+method::resetAttribute
     Reset the enablement state of a QWebAttribute.
 
-    Argument::
+    argument::
         A QWebAttribute.
 
-METHOD:: toPlainText
+method::toPlainText
     Convert the page to plain text.
-    Argument::
+    argument::
         A callback function. Called with the resulting plain text string when the operation is finished.
 
-METHOD:: toHtml
+method::toHtml
     Fetch the HTML of the current page.
-    Argument::
+    argument::
         A callback function. Called with the resulting HTML string when the operation is finished.
 
-METHOD:: title
+method::title
     The title of the current page.
-    Returns:: A String.
+    returns:: A String.
 
-METHOD:: requestedUrl
+method::requestedUrl
     The requested url for the current page.
-    Returns:: A String.
+    returns:: A String.
 
-METHOD:: selectedText
+method::selectedText
     The currently selected text.
-    Returns:: A String.
+    returns:: A String.
 
-SUBSECTION:: Behavior and appearance
 
-METHOD:: audioMuted
-    Get or set audio mute setting for the view;
-    Argument::
+subsection:: Behavior and appearance
+
+method::audioMuted
+    Gets/sets audio mute setting for the view;
+    argument::
         A Boolean.
 
-METHOD:: contentsSize
-    Get the size of the current content.
-    Returns::
+method::contentsSize
+    Gets the size of the current content.
+    returns:: 
         A Point
 
-METHOD:: scrollPosition
-    Get or sets the scroll position of the current page.
-    Returns::
+method::scrollPosition
+    Gets/sets the scroll position of the current page.
+    returns:: 
         A Point
 
-METHOD:: hasSelection
+method::hasSelection
     Returns whether the page has a text selection.
-    Returns::
+    returns:: 
         A Boolean.
 
-METHOD:: enterInterpretsSelection
+method::enterInterpretsSelection
     Whether pressing Ctrl+Return or Ctrl+Enter while some text is selected should evaluate the selection as SuperCollider code.
-    Argument::
+    argument::
         A Boolean.
 
-METHOD:: setFontFamily
+method::setFontFamily
     Sets a specific font family to be used in place of a CSS-specified generic font family.
-    Argument::
+    argument::
         The CSS generic font family to assign a font to; one of link::Classes/QWebFontFamily::
-    Argument::
+    argument::
         A font family name to be assigned to the generic family; a String.
 
-METHOD:: zoom
+method::zoom
     Gets or sets the zoom level on a page.
-    Argument::
+    argument::
         A Number, where 1.0 is the default zoom.
 
-METHOD:: editable
-    Get or set whether the entire web page is editable.
-    Argument::
+method::editable
+    Gets/sets whether the entire web page is editable.
+    argument::
         A Boolean.
 
-METHOD:: pageBackgroundColor
-    Get or set the default background color of web pages.
-    Argument::
+method::pageBackgroundColor
+    Gets/sets the default background color of web pages.
+    argument::
         A Color.
 
-SUBSECTION:: Actions
 
-METHOD:: onAudioMutedChanged
+subsection:: Actions
+
+method::onAudioMutedChanged
     Sets the object to be evaluated when the mute setting of the view has changed.
 
-METHOD:: onRecentlyAudibleChanged
+method::onRecentlyAudibleChanged
     Sets the object to be evaluated when the page has started or stopped playing audio.
 
-METHOD:: onContentsSizeChanged
+method::onContentsSizeChanged
     Sets the object to be evaluated when the contents size of the view has changed
 
-METHOD:: onScrollPositionChanged
+method::onScrollPositionChanged
     Sets the object to be evaluated when the scroll position on a page has changed.
 
-METHOD:: onSelectionChanged
+method::onSelectionChanged
     Sets the object to be evaluated when the text selection on a page has changed.
 
-METHOD:: onJavaScriptMsg
+method::onJavaScriptMsg
     Sets the object to be evaluated when a javascript console message is posted.
 
-METHOD:: onLinkHovered
+method::onLinkHovered
     Sets the object to be evaluated when a the mouse rolls over a link.
 
-METHOD:: onTitleChanged
+method::onTitleChanged
     Sets the object to be evaluated when the title of the displayed page changes.
 
-METHOD:: onUrlChanged
+method::onUrlChanged
     Sets the object to be evaluated when the url of the displayed page changes.
 
-METHOD:: onLoadProgress
+method::onLoadProgress
     Sets the object to be evaluated with load progress updates.
 
-METHOD:: onLoadStarted
+method::onLoadStarted
     Sets the object to be evaluated when a page load begins.
 
-METHOD:: onLoadFinished
+method::onLoadFinished
     Sets the object to be evaluated when a page has loaded successfully, passing the view as the argument.
 
-METHOD:: onLoadFailed
+method::onLoadFailed
     Sets the object to be evaluated when a page has failed to load, passing the view as the argument.
 
-METHOD:: overrideNavigation
-    When true, page navigation requests will not be handled. Use in combination with onLinkActivated to provide custom navigation behavior.
+method::overrideNavigation
+    When code::true::, page navigation requests will not be handled. Use in combination with onLinkActivated to provide custom navigation behavior.
 
-METHOD:: onLinkActivated
+method::onLinkActivated
     Sets the object to be evaluated when the user triggers a link. Arguments are: a URL, a QWebPageNavigationType, a bool (page is opening in current view).
 
-    When this is set to other than nil, WebView will stop handling clicked links altogether. Setting this to nil will restore WebView link handling again.
+    When this is set to other than code::nil::, WebView will stop handling clicked links altogether. Setting this to code::nil:: will restore WebView link handling again.
     Note: for specialty behavior when clicking on links, it is much better to use setUrlHandler in most cases.
 
-METHOD:: onReloadTriggered
+method::onReloadTriggered
     Sets the object to be evaluated whenever a page reload is requested, passing the view and the URL to be reloaded (as String) as the arguments.
 
-SUBSECTION:: JavaScript
 
-METHOD:: runJavaScript
+subsection:: JavaScript
+
+method::runJavaScript
     Evaluates the given JavaScript code in the context of the current page.
-    Argument::
+    argument::
         A String.
-    Argument::
+    argument::
         A function to be called when execution is complete, with the result as first argument.
-        NOTE:: javascript code can correctly return Numbers, Strings and Arrays, but it can't currently pass javascript Objects to sclang. It is possible however to use JSON serialization to acheive this: ::
+        NOTE:: javascript code can correctly return Numbers, Strings and Arrays, but it can't currently pass javascript Objects to sclang. It is possible, however, to use JSON serialization to acheive this: ::
         CODE::
 // passing a nested object from javascript to sclang:
 WebView().runJavaScript("JSON.stringify({ a: [1,2,3], b: { ba: 1, bb: 'yeah' } })"){ |res| res.parseJSON.postln }
 ::
 
-EXAMPLES::
+examples::
 CODE::
 // A simple web browser
 (

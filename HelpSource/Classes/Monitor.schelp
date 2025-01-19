@@ -20,32 +20,23 @@ private::warnPlayN
 InstanceMethods::
 
 method::play
-Plays from a bus index with a number of channels to another index with a number of channels, within a target group, or a server.
-
+plays from a bus index with a number of channels to another index with a number of channels, within a target group, or a server.
 argument::fromIndex
 bus index from which to read
-
 argument::fromNumChannels
 number of channels to read from.
-
 argument::toIndex
 bus index to which to write.
-
 argument::toNumChannels
 number of channels to write. If this number is larger or smaller than fromNumChannels, wrap around. If nothing is given, uses fromNumChannels.
-
 argument::target
 where to send the synths to (default: server default group)
-
 argument::multi
-keep old links and add new one: this allows you to add layer after layer, otherwise free the previous mapping (false by default).
-
+Keep old links and add new one: this allows you to add layer after layer, otherwise free the previous mapping (code::false:: by default).
 argument::volume
 volume at which to monitor
-
 argument::fadeTime
 specifies the fade in and fade out time
-
 argument::addAction
 where, relative to the target to place the monitor group.
 
@@ -72,7 +63,7 @@ x.stop;
 
 
 method::playN
-Plays from an array of bus indices to another array of bus indices with an array of amplitudes, within a target group, or a server.
+plays from an array of bus indices to another array of bus indices with an array of amplitudes, within a target group, or a server.
 
 note::
 The arguments strong::out::, strong::amp:: and strong::in:: can be nested arrays. see also link::Reference/playN::
@@ -80,30 +71,22 @@ The arguments strong::out::, strong::amp:: and strong::in:: can be nested arrays
 The three arguments out, amp, and in will wrap if they do not have the same size, like this:
 code::  [[0, 1], [0.1], [3, 4, 5]].flop ::
 ::
-
 argument::out
 array of destination channels.
-
 argument::amp
 array of amplitudes for each channel
-
 argument::in
 array of source channels
-
 argument::vol
 global scaling value for amplitudes
-
 argument::fadeTime
 specifies the fade in and fade out time
-
 argument::target
 where to play (default: server default group)
-
 argument::addAction
 where, relative to the target to place the monitor group.
-
 argument::multi
-keep old links and add new one: this allows you to add layer after layer, otherwise free ther previous mapping (false by default).
+keep old links and add new one: this allows you to add layer after layer, otherwise free ther previous mapping (code::false:: by default).
 
 code::
 // examples: args are // outs, amps, ins, vol, fadeTime
@@ -130,7 +113,7 @@ x.playN(vol: 0.0, fadeTime: 4);
 
 
 method::stop
-Stops within the fadeTime.
+stops within the fadeTime.
 note::this keeps all the settings, so when using code::play:: next time, it will play in the same configuration, overriding only values provided.::
 code::
 { Out.ar(87, SinOsc.ar(MouseX.kr(340, 1000, 1) * [1, 2, 3], 0, 0.2)) }.play;
@@ -138,17 +121,16 @@ x = Monitor.new.play(87, 3, 0, fadeTime: 3);
 x.stop;
 x.play;
 ::
-
 argument::argFadeTime
 The time for fading out all routing synths.
 
 method::clear
-Stops within the fadeTime.
+stops within the fadeTime.
 note::unlike code::stop::, this removes all the settings.::
 
 
 method::vol
-Set the volume.
+sets the volume.
 code::
 { Out.ar(87, SinOsc.ar(MouseX.kr(340, 1000, 1) * [1, 2, 3], 0, 0.2)) }.play;
 x = Monitor.new.play(87, 3, 0, fadeTime: 3);
@@ -158,37 +140,37 @@ x.stop;
 
 
 method::out
-Set or get the first output index.
+sets/gets the first output index.
 
 method::outs
-Set or get the array of output bus indices.
+sets/gets the array of output bus indices.
 
 method::ins
-Set or get the array of input bus indices.
+sets/gets the array of input bus indices.
 
 method::amps
-Set the array of amplitudes.
+sets the array of amplitudes.
 
 method::fadeTimes
-Set or get the array of fadeTimes.
+sets/gets the array of fadeTimes.
 
 method::fadeTime
-Set one single fadeTime for the next transition (may be a stop or a new play).
+sets one single fadeTime for the next transition (may be a stop or a new play).
 
 method::isPlaying
-Returns true if the group is still playing.
+returns code::true:: if the group is still playing.
 
 method::group
-Return the group in which all mapping synths are running.
+returns the group in which all mapping synths are running.
 
 method::numChannels
-Return the number of input channels.
+returns the number of input channels.
 
 method::copy
-Return a copy of the receiver, with the same channel setting, but not running. You can run it with the settings by sending it the link::#-play:: message, and pass in any modifications you want to make.
+returns a copy of the receiver, with the same channel setting, but not running. You can run it with the settings by sending it the link::#-play:: message, and pass in any modifications you want to make.
 
 
 method::playToBundle
-Adds all playing osc messages to a bundle, passed as an argument. The bundle object should implement the method strong::.add::
+adds all playing osc messages to a bundle, passed as an argument. The bundle object should implement the method strong::.add::
 
 private::hasSeriesOuts, newGroupToBundle, playNBusToBundle, playNToBundle, stopToBundle, updateDefault, usedPlayN

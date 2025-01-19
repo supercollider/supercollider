@@ -4,10 +4,9 @@ related:: Classes/Pseries
 categories:: Streams-Patterns-Events>Patterns
 
 description::
-
 A pattern that returns the difference between the current and previous values of an enclosed pattern.
 
-Examples::
+examples::
 
 code::
 p = Pbind(

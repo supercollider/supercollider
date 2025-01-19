@@ -3,8 +3,7 @@ summary:: Trigger delay.
 categories::  UGens>Triggers, UGens>Delays
 
 
-Description::
-
+description::
 Delays a trigger by a given time. Any triggers which arrive in the time
 between an input trigger and its delayed output, are ignored.
 
@@ -12,18 +11,13 @@ between an input trigger and its delayed output, are ignored.
 classmethods::
 
 method::ar, kr
-
 argument::in
-
 Input trigger signal.
-
-
 argument::dur
-
 Delay time in seconds.
 
 
-Examples::
+examples::
 
 code::
 

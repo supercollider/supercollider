@@ -3,26 +3,20 @@ summary:: Random phase shifting.
 related:: Classes/FFT, Classes/IFFT, Classes/PV_PhaseShift, Classes/PV_PhaseShift90, Classes/PV_PhaseShift270
 categories:: UGens>FFT
 
-Description::
-
-Adds a different constant random phase shift to each bin. When triggered, it selects a new set of random phases.
+description::
+adds a different constant random phase shift to each bin. When triggered, it selects a new set of random phases.
 
 
 classmethods::
 
 method::new
-
 argument::buffer
-
 FFT buffer.
-
-
 argument::trig
-
 A trigger, that selects a new set of random values.
 
 
-Examples::
+examples::
 
 code::
 

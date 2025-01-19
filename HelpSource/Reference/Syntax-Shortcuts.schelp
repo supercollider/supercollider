@@ -3,6 +3,7 @@ summary:: syntactic sugar
 categories:: Language
 related:: Overviews/SymbolicNotations
 
+
 section:: Introduction
 
 This file shows a number of syntax equivalences in the compiler.
@@ -36,7 +37,9 @@ collect((1..10), _.squared);  // function call syntax
 
 You could even start expanding out the equivalent of (1..10) which is really a shortcut for code:: series(1, nil, 10) ::. This could also be written code:: 1.series(nil,10) ::. This adds another 26 variations to the 13 variations above.
 
+
 section:: Defining functions and classes
+
 
 subsection:: shorter argument lists in definitions
 table::
@@ -48,6 +51,7 @@ table::
 note::
 When using the new code::||:: syntax, the default value needs to be enclosed in parenthesis if it's not a literal.
 ::
+
 
 subsection:: partial application
 table::
@@ -61,6 +65,7 @@ table::
 note::
 There are some limitations to the extent of the surrounding expression that code::_:: can capture. See link::Reference/Partial-Application:: for details.
 ::
+
 
 subsection:: defining instance variable accessor methods
 table::
@@ -78,6 +83,7 @@ Thing { var <>x; }
 
 section:: Sending messages, calling functions, and instantiating objects
 
+
 subsection:: function-call and receiver notations
 table::
 ## instead of writing: || you can write:
@@ -85,11 +91,13 @@ table::
 ## code:: f(g(x)) :: || code:: x.g.f ::
 ::
 
+
 subsection:: calling the 'value' method
 table::
 ## instead of writing: || you can write:
 ## code:: f.value(x) :: || code:: f.(x) ::
 ::
+
 
 subsection:: instantiate object
 table::
@@ -97,18 +105,19 @@ table::
 ## code:: Point.new(3, 4) :: || code:: Point(3, 4) ::
 ::
 
+
 subsection:: calling an instance variable setter method
 table::
 ## instead of writing: || you can write:
 ## code:: p.x_(y) :: || code:: p.x = y :: or code:: x(p) = y ::
 ::
 
+
 subsection:: calling performList
 table::
 ## instead of writing: || you can write:
 ## code:: object.performList(\method, a, b, array) :: || code:: object.method(a, b, *array) ::
 ::
-
 
 
 subsection:: moving blocks out of argument lists (trailing-block arguments)
@@ -143,6 +152,7 @@ do(6, _.postln) // valid
 6 do: _.postln  // valid
 ::
 ::
+
 
 subsection:: use a selector (method name) as a binary operator
 table::
@@ -202,12 +212,14 @@ var a = (_+_) ! [3, 3];
 
 section:: Collections
 
-subsection:: create a collection
+
+subsection:: creating a collection
 table::
 ## instead of writing: || you can write:
 ## code:: Set.new.add(3).add(4).add(5) :: || code:: Set[3, 4, 5] ::
 ## code:: Array[3, 4, 5] :: || code:: [3, 4, 5] ::
 ::
+
 
 subsection:: indexing elements
 table::
@@ -216,6 +228,7 @@ table::
 ## code:: z.put(i, y) :: || code:: z[i] = y ::
 ::
 
+
 subsection:: accessing subranges of Arrays
 table::
 ## instead of writing: || you can write:
@@ -223,6 +236,7 @@ table::
 ## code:: a.copyToEnd(4) :: || code:: a[4..] ::
 ## code:: a.copyFromStart(4) :: || code:: a[..4] ::
 ::
+
 
 subsection:: creating arithmetic series
 table::
@@ -246,11 +260,13 @@ code::
 {: x, x <- (1..), x.isPrime }.nextN(10);
 ::
 
+
 subsection:: creating Events
 table::
 ## instead of writing: || you can write:
 ## code:: Event[\a -> 1, \b -> 2] :: || code:: (a: 1, b: 2) ::
 ::
+
 
 subsection:: creating Arrays with key-value pairs
 table::
@@ -258,7 +274,9 @@ table::
 ## code:: [\a, 1, \b, 2] :: || code:: [a: 1, b: 2] ::
 ::
 
+
 section:: Other shortcuts
+
 
 subsection:: multiple assignment
 table::
@@ -266,12 +284,14 @@ table::
 ## code:: x = z.at(0); y = z.at(1); :: || code:: # x, y = z; ::
 ::
 
+
 subsection:: accessing environment variables
 table::
 ## instead of writing: || you can write:
 ## code:: 'myName'.envirGet :: || code:: ~myName ::
 ## code:: 'myName'.envirPut(9) :: || code:: ~myName = 9 ::
 ::
+
 
 subsection:: shorthand for Symbols
 table::
@@ -281,6 +301,7 @@ table::
 note::
 The shorthand only admits a subset of the symbols that may be enclosed in single quotes. See link::Reference/Literals#Symbols:: for details.
 ::
+
 
 subsection:: creating a Ref
 table::

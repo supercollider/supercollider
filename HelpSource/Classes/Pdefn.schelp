@@ -17,7 +17,8 @@ It is very similar to link::Classes/PatternProxy::.
 
 Pdefn can be used to store value patterns globally (for strong::event patterns::, see link::Classes/Pdef::). Overview: link::Overviews/JITLib::
 
-subsection::First Example
+
+subsection:: First Example
 
 code::
 s.boot;
@@ -38,17 +39,14 @@ method::all
 A global link::Classes/IdentityDictionary:: with all proxies.
 
 
-
-subsection::Creation
+subsection:: Creation
 
 method::new
 Store the pattern in a global dictionary under key, replacing its pattern with the new one. If the pattern is a strong::function::, Pdefn creates a link::Classes/Prout:: with this function, passing in the envir, if given(see below).
 
 Using strong::*new(key):: you can access the pattern at that key (if none is given, a default silent event is created)
-
 argument::key
 An identifier for the proxy. Usually, it is a link::Classes/Symbol::. The key transparently accesses the global link::Classes/IdentityDictionary::.
-
 argument::item
 An object for (re)defining the source of the proxy. If code::nil::, the proxy is returned unmodified.
 
@@ -61,7 +59,7 @@ Pdefn(\x).asStream.nextN(20); // ... play one event stream
 Pdefn(\x).source.postcs; // ... and inspect the event pattern itself.
 
 
-// function as an argument, create a new pattern each time it is called
+// function as an argument. Create a new pattern each time it is called
 Pdefn(\x, { Pseq({ 10.rand } ! 8) });
 Pn(Pdefn(\x)).asStream.nextN(16);
 
@@ -75,21 +73,22 @@ method::default
 Default source, if none is given. The default is a Pattern that returns 1.0 (This is 1 and not 0 to avoid deadlocks when used as a duration pattern. In a sense, 1 is just as generic as 0).
 
 method::removeAll
-Remove all proxies from the global dictionary (link::#*all::)
+removes all proxies from the global dictionary (link::#*all::)
 
 method::clear
-Clear all proxies, setting their source to silence.
+clears all proxies, setting their source to silence.
 
 method::all
-Set or return the environment (link::Classes/IdentityDictionary::) that stores all Pdefns.
+sets/returns the environment (link::Classes/IdentityDictionary::) that stores all Pdefns.
 
 InstanceMethods::
 
 private::prAdd
 
-Examples::
+examples::
 
-subsection::Pdefn in expressions
+
+subsection:: Pdefn in expressions
 
 code::
 Pdefn(\c, Pdefn(\a) + Pdefn(\b));
@@ -113,7 +112,8 @@ Pdefn(\c, Pdefn(\a) * Pdefn(\b) - Pdefn(\a)); // (re)define Pdefn(\c)
 Pdefn(\a, Prand([1, 4, 2], inf)); // (re)define Pdefn(\a)
 ::
 
-subsection::Embedding Pdefn in other patterns
+
+subsection:: Embedding Pdefn in other patterns
 
 code::
 Pdefn(\x, Pseq([1, 2, 3], inf));
@@ -166,7 +166,8 @@ Pdefn(\deg, Plazy { var pat;
 )
 ::
 
-subsection::Timing
+
+subsection:: Timing
 
 When does the definition change?
 
@@ -191,7 +192,8 @@ Pdefn(\deg, {
 )
 ::
 
-subsection::update condition
+
+subsection:: update condition
 
 In order to be able to switch to a new pattern under a certain condition, the instance variable strong::condition:: can be set to a function that returns a boolean. Value and a count index are passed to the function. The condition is always valid for the strong::next pattern:: inserted. For stuck conditions, the strong::reset:: message can be used.
 
@@ -207,7 +209,8 @@ Pdefn(\x, Pseq((7..0), inf)).condition_({ |val, i| i.postln % 8 == 0 });
 Pdefn(\x, Pseq((7..0), inf)).count(8);
 ::
 
-subsection::Reset
+
+subsection:: Reset
 
 code::
 // reset to change immediately:
@@ -216,7 +219,8 @@ Pdefn(\x).reset;
 Pdefn(\x).stop;
 ::
 
-subsection::Functions as arguments to Pdefn
+
+subsection:: Functions as arguments to Pdefn
 
 code::
 Pdefn(\deg, { loop { yield(0.1.rand.round(0.01) + [2, 3, 9].choose) } });
@@ -228,7 +232,8 @@ Pdefn(\deg, Prout { loop { yield(0.1.rand.round(0.01) + [2, 3, 9].choose) } });
 // this is not exactly true, see below..
 ::
 
-subsection::The (inner) environment
+
+subsection:: The (inner) environment
 
 code::
 // set() creates a local environment that overrides the outer currentEnvironment
@@ -271,7 +276,7 @@ Pdefn(\z).envir; // post the envir
 
 // if you want to keep using the currentEnvironment at the same time,
 // assign the currentEnvironment to the envir's parent (or proto) field
-// (this shouldn't be a proxy space of course.)
+// (this shouldn't be a proxy space, of course.)
 
 Pdefn(\z).envir.parent = currentEnvironment;
 ~a = 9;

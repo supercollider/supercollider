@@ -3,6 +3,7 @@ summary:: a guide to understanding errors
 related:: Guides/Debugging-tips
 categories:: Language, Debugging
 
+
 section:: Reading error dumps
 
 When sc3 reports an error to the user, there are usually three parts:
@@ -114,6 +115,7 @@ There may be a bug in the method, or you may have thought the method took a cert
 
 If you double click on the construction "ClassName-methodName" in the call stack, the whole thing is selected. Then you can press cmd-J to open the method definition and look at the source code.
 
+
 section:: Error objects and error handling
 
 sc3 implements error reporting using Error objects, which are instances of the class Error or one of its subclasses.
@@ -171,7 +173,9 @@ try { 1+Point(0, 0) } { 2*5 }
 10
 ::
 
+
 section:: Common primitive errors
+
 
 subsection:: operation cannot be called from this Process.
 
@@ -182,6 +186,7 @@ Solution: write your GUI updates as follows. defer schedules the function on App
 code::
 { myGUIObject.value_(newValue) }.defer;
 ::
+
 
 subsection:: Attempted write to immutable object.
 code::
@@ -199,6 +204,7 @@ code::
 [ 0, 3, 2 ]
 ::
 
+
 subsection:: Index not an Integer.
 code::
 #[0, 1, 2].at(\1)
@@ -214,6 +220,7 @@ code::
 1
 ::
 note:: if the object cannot be converted into an integer, you'll get a "Does not understand" error! ::
+
 
 subsection:: Index out of range.
 code::
@@ -249,6 +256,7 @@ a = Array.newClear(4);
 a.put(3, 1);
 [ nil, nil, nil, 1 ]
 ::
+
 
 section:: A common warning
 code::

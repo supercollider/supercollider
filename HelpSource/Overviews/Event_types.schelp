@@ -28,7 +28,7 @@ Event.addEventType(\test, { "Your word is: ".post; ~word.scramble.postln });
 ::
 
 
-section::Currently existing event types:
+section:: Currently existing event types:
 Note:: this documentation is incomplete. ::
 
 definitionlist::
@@ -119,7 +119,8 @@ m = MIDIOut(0);
 
 ::
 
-subsection::Some event types are used internally, e.g.:
+
+subsection:: Some event types are used internally, e.g.:
 definitionlist::
 ## monoNote || used by Pmono
 ## monoSet || used by Pmono

@@ -3,9 +3,8 @@ summary:: Sum of uniform distributions.
 related:: Classes/ExpRand, Classes/IRand, Classes/LinRand, Classes/Rand, Classes/TExpRand, Classes/TIRand, Classes/TRand
 categories:: UGens>Random
 
-Description::
-
-Generates a single random float value in a sum of
+description::
+generates a single random float value in a sum of
 code::n::  uniform distributions from
 code::lo::  to  code::hi:: .
 
@@ -13,15 +12,11 @@ code::lo::  to  code::hi:: .
 classmethods::
 
 method::new
-
 argument::lo
 Lower limit of the output range.
-
 argument::hi
 Upper limit of the output range.
-
 argument::n
-
 table::
 
 ## n = 1: || Uniform distribution - same as link::Classes/Rand::.
@@ -37,7 +32,7 @@ code::n::  increases, distribution converges
 towards gaussian.
 
 
-Examples::
+examples::
 
 code::
 

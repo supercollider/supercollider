@@ -3,26 +3,20 @@ summary:: Pass bins below a threshold.
 related:: Classes/FFT, Classes/IFFT, Classes/PV_MagAbove, Classes/PV_LocalMax, Classes/PV_MagClip
 categories:: UGens>FFT
 
-Description::
-
+description::
 Passes only bins whose magnitude is below a threshold.
 
 
 classmethods::
 
 method::new
-
 argument::buffer
-
 FFT buffer.
-
-
 argument::threshold
-
 Magnitude threshold.
 
 
-Examples::
+examples::
 
 code::
 

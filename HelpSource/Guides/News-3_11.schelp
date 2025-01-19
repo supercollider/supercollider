@@ -6,9 +6,11 @@ STRONG:: New feature:: - Ableton Link support. See link::#sclang: Added::
 
 Documentation improvements (#4759, #4732, #4744, #4697, #4326, #4673, #4610, #4515, #4389, #4355, #4333, #4222, #4198, #4144, #4123, #4148, #4140, #4080, #4078, #4057, #4016, #4027, #3925, #3953, #3954, #3912, #3929)
 
+
 section:: General: Added
 
 Added NOVA_SIMD build option for cookiecutter based plugin development (#4354)
+
 
 section:: General: Changed
 
@@ -30,11 +32,13 @@ Templates for pull requests have been updated (#4272)
 
 macOS builds now require >= 10.10. Documentation and travis builds are updated to reflect this (#4068)
 
+
 section:: General: Fixed
 
 Fixed linking issues for supernova on macOS (#4764)
 
 Fixed build issues when using system boost or yaml-cpp (#4185)
+
 
 section:: scsynth and supernova: Added
 
@@ -42,11 +46,13 @@ macOS: Added cocoa event loop to scsynth and supernova to allow future work on V
 
 Added a missing flag for no buffer aliasing to the plugin interface (#4356)
 
+
 section:: scsynth and supernova: Changed
 
 Replaced a magic number used by the clock (#4714)
 
 supernova now has more deterministic ordering of OSC messages in asynchronous requests (#4460)
+
 
 section:: scsynth and supernova: Fixed
 
@@ -60,11 +66,13 @@ Prevented coreaudio from resampling audio stream when using portaudio on macOS (
 
 Fixed an erroneous include  that stopped supernova from compiling in some cases (#4018)
 
+
 section:: UGens: Fixed
 
 Fixed an issue with the Done flags on EnvGen (#4789)
 
 Fixed an issue with EnvGen gating non-gated envelopes (#4436)
+
 
 section:: sclang: Added
 
@@ -73,6 +81,7 @@ Ableton Link support is here! Check the LinkClock class for more information.
 
 Add PortAudio bindings to allow listing audio devices on Windows (#4742).
 
+
 section:: sclang: Fixed
 
 Fixed an issue where TCP connections were not closed properly when recompiling the class library (#4518)
@@ -80,6 +89,7 @@ Fixed an issue where TCP connections were not closed properly when recompiling t
 Fixed code:: LanguageConfig :: sometimes storing in the wrong location (#4680)
 
 Fixed an number of garbage collection related issues that would sometimes render the interpreter unstable (#4192)
+
 
 section:: Class library: Added
 
@@ -99,6 +109,7 @@ Added code:: String.parseJSON :: and code:: String.parseJSONFile :: as an alias 
 
 Added code:: debug :: method to code:: UnitTest ::(#3623)
 
+
 section:: Class library: Changed
 
 Improvements to drag functionality with Ndef params (#4093)
@@ -115,6 +126,7 @@ UnitTest methods are now isolated from each other (#3836)
 
 Increased the maximum number of attempts for TCP connection to server (#4481)
 
+
 section:: Class library: Deprecated
 
 code:: String.scDir :: is deprecated (#4374). Please use code:: Platform.resourceDir :: instead.
@@ -124,6 +136,7 @@ code:: PlotView.plotColors :: is deprecated (#4678). Please use code:: plotColor
 As part of version reforming, code:: Main.scVersionPostfix :: has been deprecated (#4706).  Please use code:: Main.scVersionTweak :: instead
 
 code:: Object.asInt :: is deprecated (#4089). Please use code:: Object.asInteger :: instead.
+
 
 section:: Class library: Fixed
 
@@ -175,15 +188,18 @@ Fixed an issue with code:: Menu.insertAction :: not invoking properly (#3871)
 
 Fixed an issue with code:: UnitTest :: where code:: runAll :: could be inherited by individual tests (#4722)
 
+
 section:: IDE & SCDoc: Added
 
 Help Browser now supports executing code regions (#3904)
+
 
 section:: IDE & SCDoc: Changed
 
 sc-ide is now built as a static library (#4628)
 
 Improved a number of style issues in the Help Browser (#3881)
+
 
 section:: IDE & SCDoc: Fixed
 

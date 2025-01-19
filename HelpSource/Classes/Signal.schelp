@@ -1,9 +1,9 @@
 CLASS::Signal
-summary::Sampled audio buffer
+summary:: Sampled audio buffer
 related::Classes/Wavetable
 categories:: Collections>Ordered
 
-DESCRIPTION::
+description::
 A Signal is a FloatArray that represents a sampled function of time buffer.  Signals support math operations.
 
 CLASSMETHODS::
@@ -27,9 +27,9 @@ the number of samples in the Signal.
 argument::amplitudes
 an link::Classes/Array:: of amplitudes for each Chebyshev polynomial beginning with order 1.
 argument::normalize
-a link::Classes/Boolean:: indicating whether to normalize the resulting Signal. If the zeroOffset argument is true, the normalization is done for use as a transfer function, using link::Classes/Signal#-normalizeTransfer#normalizeTransfer::, otherwise it just uses link::Classes/Signal#-normalize#normalize:: to make the absolute peak value 1.  Default is true.
+a link::Classes/Boolean:: indicating whether to normalize the resulting Signal. If the zeroOffset argument is code::true::, the normalization is done for use as a transfer function, using link::Classes/Signal#-normalizeTransfer#normalizeTransfer::, otherwise it just uses link::Classes/Signal#-normalize#normalize:: to make the absolute peak value 1.  Default is code::true::.
 argument::zeroOffset
-a link::Classes/Boolean:: indicating whether to offset the middle of each polynomial to zero. If true, then a zero input will always result in a zero output when used as a link::Classes/Shaper##waveshaper::. If false, then the "raw" (unshifted) Chebyshev polynomials are used. Default is false.
+a link::Classes/Boolean:: indicating whether to offset the middle of each polynomial to zero. If code::true::, then a zero input will always result in a zero output when used as a link::Classes/Shaper##waveshaper::. If code::false::, then the "raw" (unshifted) Chebyshev polynomials are used. The default is code::false::.
 discussion::
 note::
 In previous versions, chebyFill always offset the curves to ensure the center value was zero. The zeroOffset argument was added in version 3.7, and the default behavior was changed, so that it no longer offsets.
@@ -135,7 +135,6 @@ Signal.fftCosTable(512).plot;
 ::
 
 method::hammingWindow_old
-
 This used to be code:: Signal.hammingWindow ::, but the coefficients were incorrect (making it a different window in the generalized Hamming window family). It is provided to assist in porting code to 3.11 and later.
 
 INSTANCEMETHODS::
@@ -151,13 +150,13 @@ Signal.sineFill(512, [1]).plot("Signal 1", Rect(50, 50, 150, 450));
 For details, see link::Reference/plot::
 
 method::play
-Loads the signal into a buffer on the server and plays it. Returns the buffer so you can free it again.
+loads the signal into a buffer on the server and plays it. Returns the buffer so you can free it again.
 code::
 b = Signal.sineFill(512, [1]).play(true, 0.2);
 b.free;	// free the buffer again.
 ::
 argument::loop
-A link::Classes/Boolean:: whether to loop the entire signal or play it once. Default is false.
+A link::Classes/Boolean:: whether to loop the entire signal or play it once. The default is code::false::.
 argument::mul
 volume at which to play it, 0.2 by default.
 argument::numChannels
@@ -167,7 +166,6 @@ the server on which to load the signal into a buffer.
 
 method::waveFill
 Fill the Signal with a function evaluated over an interval.
-
 argument::function
 a function that should calculate the value of a sample.
 code::
@@ -196,9 +194,6 @@ a.waveFill({ |x, prev, i| [x, prev, i].postln; sin(x).max(0) }, 0, 3pi);
 a.plot;
 )
 ::
-
-
-
 argument::start
 the starting value of the interval.
 argument::end
@@ -231,7 +226,7 @@ a.offset(0.5); a;
 ::
 
 method::peak
-Return the peak absolute value of a Signal.
+returns the peak absolute value of a Signal.
 code::
 Signal[1, 2, -3, 2.5].peak;
 ::
@@ -272,13 +267,13 @@ a.fade(6, 9, 1, 0);	// fade out
 ::
 
 method::integral
-Return the integral of a signal.
+returns the integral of a signal.
 code::
 Signal[1, 2, 3, 4].integral;
 ::
 
 method::overDub
-Add a signal to myself starting at the index. If the other signal is too long only the first part is overdubbed.
+adds a signal to myself starting at the index. If the other signal is too long, only the first part is overdubbed.
 code::
 a = Signal.fill(10, 100);
 a.overDub(Signal[1, 2, 3, 4], 3);
@@ -301,7 +296,7 @@ a.overDub(Signal[1, 2, 3, 4, 5, 6, 7, 8], -2);
 ::
 
 method::overWrite
-Write a signal to myself starting at the index. If the other signal is too long only the first part is overdubbed.
+writes a signal to myself starting at the index. If the other signal is too long, only the first part is overdubbed.
 code::
 a = Signal.fill(10, 100);
 a.overWrite(Signal[1, 2, 3, 4], 3);
@@ -324,7 +319,7 @@ a.overWrite(Signal[1, 2, 3, 4, 5, 6, 7, 8], -2);
 ::
 
 method::blend
-Blend two signals by some proportion.
+blends two signals by some proportion.
 code::
 Signal[1, 2, 3, 4].blend(Signal[5, 5, 5, 0], 0);
 Signal[1, 2, 3, 4].blend(Signal[5, 5, 5, 0], 0.2);
@@ -333,7 +328,8 @@ Signal[1, 2, 3, 4].blend(Signal[5, 5, 5, 0], 1);
 Signal[1, 2, 3, 4].blend(Signal[5, 5, 5, 0], 2);
 ::
 
-subsection::Fourier Transform
+
+subsection:: Fourier Transform
 
 method::fft
 Perform an FFT on a real and imaginary signal in place. See also the class method link::#*fftCosTable::.
@@ -404,7 +400,8 @@ ifft = complex.real.ifft(complex.imag, cosTable);
 )
 ::
 
-subsection::Unary Messages
+
+subsection:: Unary Messages
 
 Signal will respond to unary operators by returning a new Signal.
 code::
@@ -415,7 +412,8 @@ x = Signal.sineFill(512, [0, 0, 0, 1]);
 
 method::neg, abs, sign, squared, cubed, sqrt, exp, log, log2, log10, sin, cos, tan, asin, acos, atan, sinh, cosh, tanh, distort, softclip, isPositive, isNegative, isStrictlyPositive
 
-subsection::Binary Messages
+
+subsection:: Binary Messages
 
 Signal will respond to binary operators by returning a new Signal.
 code::
@@ -432,9 +430,8 @@ note::
 Before SuperCollider 3.13 this function was implemented incorrectly, evaluating the square of provided threshold. This behavior is now fixed, but note that older code might give different results.
 ::
 method::+, -, *, /, div, pow, mod, min, max, ring1, ring2, ring3, ring4, difsqr, sumsqr, sqrdif, absdif, amclip, scaleneg, clip2, wrap2, excess
-method:: %, **
-method:: <!
-
+method::%, **
+method::<!
 code::
 // these fail for Signal but work for FloatArray:
 Signal[0, 0.5, 1] pow: 2;

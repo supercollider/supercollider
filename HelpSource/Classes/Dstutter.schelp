@@ -7,10 +7,10 @@ note::It is recommended to use link::Classes/Ddup:: instead. This class is retai
 warning::Dstutter will return link::Classes/Ddup::::
 
 classmethods::
-method:: new
-argument:: n
+method::new
+argument::n
 number of repeats (can be a demand ugen)
-argument:: in
+argument::in
 input ugen
 returns:: link::Classes/Ddup::
 

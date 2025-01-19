@@ -4,8 +4,7 @@ related:: Classes/NumAudioBuses, Classes/NumBuffers, Classes/NumInputBuses, Clas
 categories::  UGens>Info
 
 
-Description::
-
+description::
 Number of control busses.
 
 

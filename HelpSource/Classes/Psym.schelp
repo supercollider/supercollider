@@ -9,19 +9,17 @@ for non-event patterns see link::Classes/Pnsym::. Overview: link::Overviews/JITL
 ClassMethods::
 
 method::new
-
 argument::pattern
 a pattern that returns symbols or characters. Arrays are converted to parallel patterns (link::Classes/Ppar::).
-
 argument::dict
 the dictionary to be used for lookup. By default, this is code::Pdef.all::, so one can embed Pdefs by name.
 
 InstanceMethods::
 
 method::dict
-set the dictionary to be used.
+sets the dictionary to be used.
 
-Examples::
+examples::
 
 code::
 (

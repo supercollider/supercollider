@@ -4,8 +4,7 @@ related:: Classes/RunningMax, Classes/RunningSum
 categories::  UGens>Maths
 
 
-Description::
-
+description::
 Outputs the minimum value received at the input. When a trigger occurs at
 the reset input, the minimum output value is reset to the current value.
 
@@ -13,18 +12,13 @@ the reset input, the minimum output value is reset to the current value.
 classmethods::
 
 method::ar, kr
-
 argument::in
-
 The input signal.
-
-
 argument::trig
-
 Resets the output value to the current input value. A trigger happens when the signal changes from non-positive to positive.
 
 
-Examples::
+examples::
 
 code::
 

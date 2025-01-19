@@ -3,20 +3,18 @@ summary:: Brown Noise.
 related:: Classes/ClipNoise, Classes/GrayNoise, Classes/PinkNoise, Classes/WhiteNoise
 categories::  UGens>Generators>Stochastic
 
-Description::
-Generates noise whose spectrum falls off in power by 6 dB per octave.
+description::
+generates noise whose spectrum falls off in power by 6 dB per octave.
 
 classmethods::
 
 method::ar, kr
-
 argument::mul
 Output will be multiplied by this value.
-
 argument::add
 This value will be added to the output.
 
-Examples::
+examples::
 
 compare:
 code::

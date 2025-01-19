@@ -9,6 +9,7 @@ Information is also stored on its outputs and inputs and whether it has a gate c
 
 SynthDescs are needed by the event stream system, so when using link::Classes/Pbind::, the instruments' default parameters are derived from the SynthDesc.
 
+
 subsection:: Creation
 SynthDescs are created by link::Classes/SynthDescLib::, by reading a compiled synth def file.
 code::
@@ -35,6 +36,7 @@ code::
 SynthDescLib.global.browse;
 ::
 
+
 section:: SynthDescs and SynthDef metadata
 
 Metadata associated with a link::Classes/SynthDef:: consists of an link::Classes/Event:: (a syntactically shorter form of an identity dictionary) containing information about the SynthDef that is useful to the client, and which cannot be inferred from the binary .scsyndef stream.
@@ -43,11 +45,13 @@ For example, by listing argument names and link::Classes/ControlSpec::s under th
 
 Currently only the 'specs' key is reserved. Other keys may be used as needed for specific applications. As the use of SynthDef metadata evolves, other keys may be standardized.
 
+
 subsection:: Creation and access
-Metadata are specified when creating a link::Classes/SynthDef::. If the SynthDef is .store'd (or .add'd) into a SynthDescLib, the metadata become part of the SynthDesc as well. Thereafter, the metadata can be accessed through SynthDescLib:
+Metadata are specified when creating a link::Classes/SynthDef::. If the SynthDef is code::.store::d (or code::.add::ed) into a SynthDescLib, the metadata become part of the SynthDesc as well. Thereafter, the metadata can be accessed through SynthDescLib:
 code::
 SynthDescLib.global[\synthDefName].metadata
 ::
+
 
 subsection:: Persistence and metadata plug-ins
 Storing a SynthDef into the library with .store persists the SynthDef on disk. Metadata may also be persisted at the same time by using the appropriate metadata plug-in class. The plug-in is responsible for writing a separate metadata file into the synthdefs directory, and reading the file back at the same time that a SynthDesc is created for a .scsyndef file using SynthDesc.read or SynthDescLib.global.read.
@@ -65,6 +69,7 @@ SynthDesc.mdPlugin = ... plug-in class name ...;
 ::
 Metadata are not written when using code::SynthDef().load(server)::. This is because SynthDesc exists to describe a SynthDef to the client, whereas SynthDef is really just an abstraction to create a link::Classes/UGen:: graph for the server. Metadata are also not written for code::SynthDef().add::, because in the normal case, nothing is persisted to disk. (If the SynthDef is very large and a disk file is required, then the metadata will persist along with the .scsyndef file.)
 
+
 subsection:: Automatic population
 You may write a function to populate entries into the metadata automatically, based on the SynthDesc object. This function executes when reading a SynthDesc from disk, when using .add, and before writing a metadata file (in .store).
 code::
@@ -73,13 +78,16 @@ SynthDesc.populateMetadataFunc = { |synthdesc|
 };
 ::
 
+
 subsection:: Synchronization
 Whenever a .scsyndef file is written, any existing metadata files will be deleted so that a new .scsyndef file will not exist on disk with out-of-date metadata.
+
 
 subsection:: Reading
 When reading a SynthDesc, metadata files will be checked and one will be read, regardless of format. (Even if the default SynthDesc.mdPlugin is different from the file format on disk, the disk file will be read using the appropriate plug-in anyway.)
 
 There should be only one metadata file at a time. However, in the case of conflicts, the default SynthDesc.mdPlugin will be preferred. The file extension identifies the format.
+
 
 subsection:: Metadata Examples
 code::
@@ -133,15 +141,15 @@ e[\mdDemo].makeWindow;
 classmethods::
 private:: initClass
 
-method:: read
-Adds all synthDescs in a path to a dict. You should not use this method or *readFile to read SynthDescs into a SynthDescLib. Use link::Classes/SynthDescLib#read:: or link::Classes/SynthDescLib#readStream:: instead.
+method::read
+adds all synthDescs in a path to a dict. You should not use this method or *readFile to read SynthDescs into a SynthDescLib. Use link::Classes/SynthDescLib#read:: or link::Classes/SynthDescLib#readStream:: instead.
 
 instancemethods::
 
-method:: name
+method::name
 returns:: the name of the SynthDef
 
-method:: controls
+method::controls
 returns:: an array of instances of link::Classes/ControlName::, each of which
 have the following fields: name, index, rate, defaultValue
 discussion::
@@ -149,35 +157,34 @@ code::
 SynthDescLib.global.at(\default).controlNames.postln;
 ::
 
-method:: controlDict
+method::controlDict
 An link::Classes/IdentityDictionary:: of the link::Classes/ControlName::'s, indexed by name.
 This can be used for fast lookup of control index by name, for example to set a specific element of a multichannel control.
 
-method:: controlNames
+method::controlNames
 returns:: an array of Strings with the names of controls
 
-method:: outputs
+method::outputs
 returns:: an array of link::Classes/IODesc:: that describes the available outputs.
 
-method:: inputs
+method::inputs
 returns:: an array of link::Classes/IODesc:: that describes the available inputs.
 
-copymethod:: SynthDef -specs
+copymethod::SynthDef -specs
 
-method:: hasGate
-is true if the Synthdef has a gate input
+method::hasGate
+returns code::true:: if the Synthdef has a gate input
 
-method:: canFreeSynth
-is true if the link::Classes/Synth:: can free itself (via some means, usually a doneAction)
+method::canFreeSynth
+returns code::true:: if the link::Classes/Synth:: can free itself (via some means, usually a doneAction)
 discussion::
 This can be used to decide if to remove a Synth directly via free-message.
 code::
 SynthDescLib.global.at(\default).canFreeSynth;
 ::
 
-method:: outputData
-
-Returns an array of events with information about any UGens that write to a bus (such as link::Classes/Out:: etc.). This includes the rate and number of channels of the UGen. If its first input is a control, also the corresponding control name is provided.
+method::outputData
+returns an array of events with information about any UGens that write to a bus (such as link::Classes/Out:: etc.). This includes the rate and number of channels of the UGen. If its first input is a control, also the corresponding control name is provided.
 
 code::
 a = SynthDef(\x, { |out, freq = 440| Out.ar(out, SinOsc.ar(freq)) }).add;
@@ -186,7 +193,7 @@ a = SynthDef(\x, { |out, freq = 440| Out.ar(out + 7, SinOsc.ar(freq)) }).add; //
 a.desc.outputData;
 ::
 
-method:: msgFunc
+method::msgFunc
 the function which is used to create an array of arguments for
 playing a synth def in patterns
 discussion::

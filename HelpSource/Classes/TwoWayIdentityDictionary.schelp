@@ -1,9 +1,9 @@
 CLASS::TwoWayIdentityDictionary
-summary::associative collection mapping keys to values and back
+summary:: associative collection mapping keys to values and back
 related::Classes/IdentityDictionary
 categories::Collections>Unordered
 
-DESCRIPTION::
+description::
 Similar to link::Classes/IdentityDictionary::, but allows to go efficiently from element to key and back. The contents of a TwoWayIdentityDictionary are strong::unordered::. You must not depend on the order of items.
 
 INSTANCEMETHODS::
@@ -11,9 +11,9 @@ INSTANCEMETHODS::
 private::init
 
 method::getID
-Find the key for a given object. If object is not element of the dictionary, it returns nil.
+finds the key for a given object. If object is not element of the dictionary, it returns code::nil::.
 
-EXAMPLES::
+examples::
 
 code::
 a = TwoWayIdentityDictionary.new;

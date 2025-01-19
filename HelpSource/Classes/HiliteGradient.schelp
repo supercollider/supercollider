@@ -10,17 +10,17 @@ note:: The use of HiliteGradient is strong::not supported yet in Qt GUI::. When 
 
 classmethods::
 
-method:: new
-argument:: color1
+method::new
+argument::color1
 An instance of Color.
-argument:: color2
+argument::color2
 An instance of Color.
-argument:: direction
-code::\h:: or code::\v:: for horizontal and vertical respectively. Default value is code::\v::.
-argument:: steps
-The resolution of the gradient. Default value is 64.
-argument:: frac
-The center of the gradient. Default value is 0.33, i.e. off center toward the top on a vertical gradient.
+argument::direction
+code::\h:: or code::\v:: for horizontal and vertical respectively. The default value is code::\v::.
+argument::steps
+The resolution of the gradient. The default value is 64.
+argument::frac
+The center of the gradient. The default value is 0.33, i.e. off center toward the top on a vertical gradient.
 
 examples::
 code::

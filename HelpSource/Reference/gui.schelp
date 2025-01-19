@@ -1,9 +1,9 @@
 title:: gui
 categories:: GUI, Common methods
-summary:: Create a Graphical User Interface
+summary:: Creates a Graphical User Interface
 related:: Classes/ObjectGui
 
-method:: gui
+method::gui
 The code::gui:: message is of common use in SC. It originated in the crucial library where it is used to create an link::Classes/ObjectGui:: or an ObjectGui subclass as part of a Model View Controller system.
 
 The implementation and accepted arguments to .gui varies.  This helpfile explains the default behavior of Object and hence of all Object subclasses that haven't implemented their own .gui method. This helpfile and the implementation come from the original crucial library.
@@ -42,7 +42,7 @@ list::
 ##  CompositeVIew
 ##  HLayoutView
 ##  VLayoutView
-##  nil (which will create a Window with a FlowView on it) 
+##  code::nil:: (which will create a Window with a FlowView on it) 
 ::
 ## bounds ||
 list::
@@ -65,8 +65,7 @@ code::
 ::
 
 
-method:: guiClass
-
+method::guiClass
 Each class can specify an associated guiClass, which is a subclass of ObjectGui.
 Writing useful subclasses is the purpose of the ObjectGui system and many can be found in the crucial library.
 

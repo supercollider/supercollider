@@ -2,9 +2,8 @@ title:: loop / repeat
 summary:: Repeat stuff
 categories::Core,Common methods
 
-method:: loop, repeat
-
-Create an object that behaves like a stream that returns values for a limited (or infinite) number of times.
+method::loop, repeat
+creates an object that behaves like a stream that returns values for a limited (or infinite) number of times.
 
 For a full list of implementing classes, see link::Overviews/Methods#loop:: and link::Overviews/Methods#repeat::
 

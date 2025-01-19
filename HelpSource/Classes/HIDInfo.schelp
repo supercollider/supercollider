@@ -3,7 +3,7 @@ summary:: This class contains the basic information about an HID device to acces
 categories:: External Control>HID
 related:: Classes/HID, Guides/Working_with_HID
 
-DESCRIPTION::
+description::
 This class contains the basic information about an HID device to access and open it.
 The class is mostly used internally and rarely accessed directly by the user.
 
@@ -17,57 +17,57 @@ INSTANCEMETHODS::
 
 PRIVATE::printOn, setUsageAndPage
 
-METHOD:: open
-Open the device that is described by this HIDInfo
+method::open
+opens the device that is described by this HIDInfo
 
 returns:: an HID - the device
 
-METHOD:: postInfo
+method::postInfo
 post the HIDInfo in a human readable way
 
 
-METHOD:: path
+method::path
 The path of the device, this is a path defined by the operating system, and thus not the same across platforms, but essential to distinguish devices with the same vendor and product ID from each other.
 
-METHOD:: vendorID
+method::vendorID
 The vendor ID of the device, this is a number encoded by the device itself, and the same across platforms.
 
-METHOD:: productID
+method::productID
 The product ID of the device, this is a number encoded by the device itself, and the same across platforms.
 
-METHOD:: vendorName
+method::vendorName
 The vendor name of the device, this is a string encoded by the device itself, and the same across platforms.
 
-METHOD:: productName
+method::productName
 The product name of the device, this is a string encoded by the device itself, and the same across platforms.
 
-METHOD:: serialNumber
+method::serialNumber
 The serial number of the device. This is dependent on the operating system, e.g. on Linux it is not set.
 
-METHOD:: releaseNumber
+method::releaseNumber
 The release number of the device, this is a number encoded by the device itself, and the same across platforms.
 
-METHOD:: interfaceNumber
+method::interfaceNumber
 Type of interface of the device, can be an index standing for USB, Bluetooth, etc.
 
 
-METHOD:: usage
+method::usage
 Retrieve the usage index of this collection.
 
 returns:: a Number - the usage index of this collection
 
-METHOD:: usagePage
+method::usagePage
 Retrieve the usage page index of this collection.
 
 returns:: a Number- the usage page index
 
-METHOD:: usageName
+method::usageName
 Retrieve the usage name of this collection. The name is looked up from the standardized HID usage tables using the usage page index.
 
 returns:: a String - the usage name
 
 
-METHOD:: pageName
+method::pageName
 Retrieve the page name of this collection. The name is looked up from the standardized HID usage tables using the usage page index.
 
 returns:: a String - the usage page name

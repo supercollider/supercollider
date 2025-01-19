@@ -8,10 +8,10 @@ Modifies each value by passing it to the function. This is the pattern library's
 
 classmethods::
 
-method:: new
-argument:: func
+method::new
+argument::func
 A link::Classes/Function::. Receives values from code::pattern::.
-argument:: pattern
+argument::pattern
 A link::Classes/Pattern::.
 
 

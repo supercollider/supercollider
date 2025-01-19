@@ -2,8 +2,7 @@ CLASS:: PopUpMenu
 summary:: A view displaying a text item selectable from a drop-down menu.
 categories:: GUI>Views
 
-DESCRIPTION::
-
+description::
 When clicked, this view opens a menu containing several text items, then closes the menu and displays one of the items after it is selected.
 
 CLASSMETHODS::
@@ -16,87 +15,83 @@ PRIVATE:: key
 INSTANCEMETHODS::
 
 
+subsection:: Data
 
-SUBSECTION:: Data
-
-METHOD:: items
+method::items
 	The list of items displayed in a menu when the view is clicked.
 
 	argument::
 		An Array of Strings or Symbols.
 
-METHOD:: clear
+method::clear
  Removes all items.
 
-METHOD:: item
+method::item
 	The currently selected item.
 
-	returns::
+	returns:: 
 		A String.
 
-METHOD:: value
+method::value
 	The index of the currently selected item.
 
 	argument::
-		An integer, or nil meaning no selected item.
+		An integer, or code::nil:: meaning no selected item.
 
-METHOD:: valueAction
+method::valueAction
 	Sets link::#-value:: and triggers link::#-action::.
 
 	argument::
-		An integer, or nil meaning no selected item.
+		An integer, or code::nil:: meaning no selected item.
 
 
+subsection:: Appearance
 
-SUBSECTION:: Appearance
-
-METHOD:: stringColor
+method::stringColor
 	The color used to display text.
 
 	argument::
 		A Color.
 
-METHOD:: background
+method::background
 	Setting this variable colors the area of the view under the text with the given color.
 
 	argument::
 		A Color.
 
 
+subsection:: Interaction
 
-SUBSECTION:: Interaction
-
-METHOD:: allowsReselection
-	Determines whether the action is triggered when selecting already selected item. Defaults to false.
+method::allowsReselection
+	Determines whether the action is triggered when selecting already selected item. Defaults to code::false::.
 
 	argument::
 		A Boolean.
 
 
+subsection:: Actions
 
-SUBSECTION:: Actions
-
-METHOD:: action
+method::action
 	The action object evaluated whenever the user changes the selected item from the menu. See link::#-allowsReselection:: for customization.
 
 
+subsection:: Drag and drop
 
-SUBSECTION:: Drag and drop
-
-METHOD:: defaultGetDrag
-	returns::
+method::defaultGetDrag
+	returns:: 
 		The link::#-value::.
 
-METHOD:: defaultCanReceiveDrag
-	returns::
-		True if the current drag data is a number.
+method::defaultCanReceiveDrag
+	returns:: 
+		code::true:: if the current drag data is a number.
 
-METHOD:: defaultReceiveDrag
+method::defaultReceiveDrag
 	Sets link::#-valueAction:: to the current drag data.
 
 
 
-EXAMPLES::
+examples::
+
 
 subsection:: Basic Example
 
@@ -124,6 +119,7 @@ m.item;    // returns the String or Symbol of the current item
 m.value_(2);  // changes the displayed item, but does not evaluate the action
 m.valueAction_(3); // evaluates the action.
 ::
+
 
 subsection:: Sound Example
 

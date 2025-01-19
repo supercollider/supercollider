@@ -4,7 +4,6 @@ categories:: JITLib>GUI, Live Coding
 related:: Classes/NdefGui
 
 description::
-
 warning::
 NodeProxyEditor has been rewritten and renamed link::Classes/NdefGui::, which has the same functionality, but is both more consistent and more flexible. There are some changes to the strong::*new:: method:
 
@@ -32,12 +31,13 @@ ClassMethods::
 
 private::initClass
 
-subsection::Creation
+
+subsection:: Creation
 
 method::new
-Returns a new instance for a given proxy. If a window (win) or a composite view is given, it uses this.
+returns a new instance for a given proxy. If a window (win) or a composite view is given, it uses this.
 
-Examples::
+examples::
 
 code::
 	// preparation
@@ -143,7 +143,8 @@ Spec.add(\intv, ControlSpec(0, 24, \lin, 0.01, 0)); n.fullUpdate;
 ~test.set(\freq, rrand(200, 500), \intv, rrand(-5.5, 5.5));
 ::
 
-subsection::You can drag and drop proxies between NodeProxyEditors
+
+subsection:: You can drag and drop proxies between NodeProxyEditors
 
 code::
 (

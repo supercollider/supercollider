@@ -7,19 +7,14 @@ Tracks the relative amplitude of a signal, using an envelope follower algorithm.
 
 classmethods::
 
-method:: ar, kr
-
+method::ar, kr
 argument::in
 Input signal
-
 argument::attackTime
 20dB convergence time for following attacks.
-
 argument::releaseTime
 20dB convergence time for following decays.
-
 argument::mul
-
 argument::add
 
 examples::

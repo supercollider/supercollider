@@ -6,12 +6,11 @@ description::
 Triggers when a value changes.
 
 classmethods::
-method:: ar, kr
+method::ar, kr
 A special case fixed filter.
-
-argument:: input
+argument::input
 signal input
-argument:: threshold
+argument::threshold
 threshold
 
 discussion::

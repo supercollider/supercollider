@@ -4,32 +4,26 @@ related:: Classes/LFCub, Classes/LFPar, Classes/LFPulse, Classes/LFTri, Classes/
 categories::  UGens>Generators>Deterministic
 
 
-Description::
-
+description::
 A non-band-limited sawtooth oscillator. Output ranges from -1 to +1.
 
 
 classmethods::
 
 method::ar, kr
-
 argument::freq
 Frequency in Hertz.
-
 argument::iphase
-
 Initial phase offset. For efficiency reasons this is a value
 ranging from 0 to 2.
 Note:: enter "1" for an initial phase of 0 radians.
 A value of 0 would start the cycle at pi radians. See the example below.::
-
 argument::mul
 Output will be multiplied by this value.
-
 argument::add
 This value will be added to the output.
 
-Examples::
+examples::
 
 code::
 { LFSaw.ar(500, 1, 0.1) }.play

@@ -4,30 +4,23 @@ related:: Classes/Lag, Classes/Ramp, Classes/Slew
 categories::  UGens>Filters>Linear
 
 
-Description::
+description::
 Similar to link::Classes/Lag:: but with other curve shapes than exponential.
 A change on the input will take the specified time to reach the new value.
 Useful for smoothing out control (not audio) signals.
 
-warning:: code::VarLag.ar:: currently accepts audio-rate input, but the underlying implementation treats the input as control rate. Effectively, then, the "sampling rate" of VarLag's input is code::ControlRate.ir:: or code::server.sampleRate / server.options.blockSize::, and the maximum safe frequency to feed into VarLag is half of this. VarLag does not currently yield correct results for full-bandwidth audio-rate signals. Use code::VarLag.ar:: at your own risk.::
+warning:: code::VarLag.ar:: currently accepts audio-rate input, but the underlying implementation treats the input as control rate. Effectively, then, the "sampling rate" of code::VarLag::'s input is code::ControlRate.ir:: or code::server.sampleRate / server.options.blockSize::, and the maximum safe frequency to feed into code::VarLag:: is half of this. code::VarLag:: does not currently yield correct results for full-bandwidth audio-rate signals. Use code::VarLag.ar:: at your own risk.::
 
 classmethods::
 
 method::ar, kr
-
 argument::in
-
 The input signal.
-
-
 argument::time
-
 Lag time in seconds.
-
 argument::curvature
 Control curvature if strong::warp:: input is 5 (default).
 0 means linear, positive and negative numbers curve the segment up and down.
-
 argument::warp
 Determines the shape. The possible values are:
 table::
@@ -45,21 +38,15 @@ All values above will ignore strong::curvature:: input.
 note::
 When controlling this from the outside, use code::Env.shapeNumber(symbol):: to get the numeric value for each shape.
 ::
-
 argument::start
 Initial value. If not specified, same as the input signal.
-
 argument::mul
-
 Output will be multiplied by this value.
-
-
 argument::add
-
 This value will be added to the output.
 
 
-Examples::
+examples::
 
 code::
 (

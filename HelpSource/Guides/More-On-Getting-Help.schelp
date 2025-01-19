@@ -9,6 +9,7 @@ Listed below are a few techniques for tracking down documentation and functional
 
 NB: Be sure to check out the Further Info section at the bottom of this page.
 
+
 section:: Basics
 
 As you've probably already learned selecting any text and pressing Cmd-d will open the corresponding helpfile. Usually helpfiles are either concept related, or document particular classes. In the SC language classes begin with capital letters. Try Cmd-d on the following (double click on the first word; the stuff after the two slashes is a comment):
@@ -25,6 +26,7 @@ In addition there are a many helpfiles which explain important concepts. See the
 Much documentation contains hypertext links to other helpfiles. Click the link to open the corresponding helpfile.
 
 Note that many helpful methods print information to the 'post window'. Unless you have explicitly changed it (see the Window menu) this is the window which opened when you launched. Pressing Cmd-\ will bring the current post window to the front.
+
 
 section:: Tracking Down Information
 
@@ -71,7 +73,7 @@ code::
 asStream
 Window
 ::
-In the resulting window selecting any class and method and pressing Cmd-j will take you to that method definition in that class definition. For example try selecting Pattern-select in the window resulting from the previous example. Note that SC supports defining methods in separate files, so a class' methods may be defined in more than one place. If you try Cmd-j on the following you will see that it will open a file called dumpFullInterface.sc rather than one called Class.sc (its main class definition file). The + Class {.... syntax indicates that these are additional methods.
+In the resulting window selecting any class and method and pressing Cmd-j will take you to that method definition in that class definition. For example try selecting Pattern-select in the window resulting from the previous example. Note that SC supports defining methods in separate files, so a class' methods may be defined in more than one place. If you try Cmd-j on the following, you will see that it will open a file called teletype::dumpFullInterface.sc:: rather than one called teletype::Class.sc:: (its main class definition file). The code::+ Class {....:: syntax indicates that these are additional methods.
 code::
 Class-dumpFullInterface
 ::
@@ -84,6 +86,7 @@ code::
 Array.helpFileForMethod('select'); // this will open the Collection helpfile; scroll down for select
 ::
 In general poking around can be a good way to learn about how things work. See link::Guides/Internal-Snooping:: for more advanced information about how to look 'under the hood.'
+
 
 section:: For Further Info
 

@@ -4,8 +4,7 @@ related:: Classes/BPZ2, Classes/HPZ2, Classes/LPZ2
 categories::  UGens>Filters>Linear
 
 
-Description::
-
+description::
 A special case fixed filter. Implements the formula:
 
 code::
@@ -19,13 +18,11 @@ This filter cuts out frequencies around ½ of the Nyquist frequency.
 classmethods::
 
 method::ar, kr
-
 argument::in
-
 The input signal.
 
 
-Examples::
+examples::
 
 code::
 // Compare:

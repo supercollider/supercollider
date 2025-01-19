@@ -2,7 +2,7 @@ title:: play
 summary:: Start a process
 categories:: Common methods
 
-method:: play
+method::play
 The code::play:: message is of common use in sc. Different objects respond to it in various
 ways, but the simple meaning is: strong::start a process::.
 It is usually implemented by objects in contributed libraries as well.
@@ -12,8 +12,10 @@ the message was sent to.
 
 opposite: code::stop::
 
+
 section:: Clocks, Routines, Streams and Patterns
 For a full list of which classes that implements code::play::, see link::Overviews/Methods#play::
+
 
 subsection:: clock.play (stream)
 returns: the clock
@@ -25,6 +27,7 @@ SystemClock.play(r);
 ::
 See link::Classes/Clock#*play::
 
+
 subsection:: routine.play (clock)
 returns: the routine
 code::
@@ -32,14 +35,16 @@ Routine.new({ "...playing".postln; 1.wait; "ok, that was it".postln }).play;
 ::
 See link::Classes/Routine#-play::
 
+
 subsection:: stream.play (clock)
 returns: the stream
 
-the stream will loop until it returns nil
+the stream will loop until it returns code::nil::
 code::
 FuncStream({ "ok, that was it".postln; 1 }).play;
 ::
 See link::Classes/FuncStream#-play::
+
 
 subsection:: pausestream.play (clock) / task.play (clock)
 returns: the stream
@@ -56,6 +61,7 @@ a.stop;
 ::
 See link::Classes/Stream#-play:: and link::Classes/Task#-play::
 
+
 subsection:: pattern.play (clock, protoEvent)
 returns: an link::Classes/EventStreamPlayer::
 code::
@@ -67,6 +73,7 @@ Pseq([
 )
 ::
 See link::Classes/Pattern#-play::
+
 
 section:: Playing single Synths from SynthDefs on the server
 
@@ -81,6 +88,7 @@ list::
 Also note that they should not be used in quickly running automated processes,
 as there are more efficient alternatives ( see link::Guides/SynthDefsVsSynths:: )
 ::
+
 
 subsection:: function.play (target, outbus, fadeTime, addAction, args)
 
@@ -111,6 +119,7 @@ a = { |freq = 500| HPF.ar(PinkNoise.ar([1, 1] * 0.4), freq) }.play(args: [\freq,
 { Out.ar(1, PinkNoise.ar(0.1)) }.play;
 { XOut.ar(0, MouseX.kr(0,1), PinkNoise.ar(0.1*[1,1])) }.play; // mouse x controls level
 ::
+
 
 subsection:: synthDef.play (target, args, addAction)
 returns: a link::Classes/Synth::

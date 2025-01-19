@@ -4,7 +4,7 @@ related:: Classes/FFT, Guides/FFT-Overview
 categories::  UGens>FFT
 
 
-Description::
+description::
 The inverse fast fourier transform converts from frequency content to a
 signal.
 
@@ -14,29 +14,25 @@ classmethods::
 
 method::new, ar, kr
 returns a time domain signal from converting the FFT frequency domain signal chain. The *new method is equivalent to the *ar message returns an audio rate signal.
-
 argument::buffer
-
 The FFT "chain" signal coming originally from an FFT UGen, perhaps via other PV UGens.
-
-argument:: wintype
+argument::wintype
 Defines how the data is windowed:
 table::
 ## -1 || strong::rectangular:: windowing, simple but typically not recommended;
 ## 0 || (the default) strong::Sine:: windowing, typically recommended for phase-vocoder work;
 ## 1 || strong::Hann:: windowing, typically recommended for analysis work.
 ::
-
-argument:: winsize
+argument::winsize
 Can be used to account for zero-padding, in the same way as the link::Classes/FFT:: UGen.
 
-returns::
+returns:: 
 The emphasis::time-domain:: audio signal.
 
 discussion::
 The IFFT UGen converts the FFT data in-place (in the original FFT buffer) and overlap-adds the result to produce a continuous signal at its output.
 
-Examples::
+examples::
 
 code::
 

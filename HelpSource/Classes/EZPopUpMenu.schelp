@@ -4,48 +4,37 @@ categories:: GUI>EZ-GUI
 related:: Classes/PopUpMenu
 
 description::
-EZPopUpMenu is wrapper class which creates an (optional) label and a popUpMenu. It includes per item actions as well as a global action which are both evaluated upon selection of an item. Convenience methods for inserting and deleting menu items are also included . If the parent is nil, then EZPopUpMenu will create its own window.See link::Classes/EZGui:: and link::Classes/EZLists:: for all of the options.
+EZPopUpMenu is wrapper class which creates an (optional) label and a popUpMenu. It includes per item actions as well as a global action which are both evaluated upon selection of an item. Convenience methods for inserting and deleting menu items are also included . If the parent is code::nil::, then EZPopUpMenu will create its own window.See link::Classes/EZGui:: and link::Classes/EZLists:: for all of the options.
+
 
 subsection:: Some Important Issues Regarding EZPopUpMenu
 The convenience methods for EZPopUpMenu require that the items array is an array of associations of labels and functions, not like in link::Classes/PopUpMenu::, where items is simply an array of strings. If code::label:: is code::nil::, then no staticText is created.
 
 classmethods::
-method:: new
-
-argument:: parentView
-The parent view or window. If the parent is nil, then EZPopUpMenu will create its own link::Classes/Window::, and place it conveniently on the screen if the bounds are a link::Classes/Point::. If the bounds are a link::Classes/Rect::, then the link::Classes/Rect:: determines the window bounds.
-
-argument:: bounds
-An instance of link::Classes/Rect:: or link::Classes/Point::. Default value is code::160@22::.
-
-argument:: label
-The label. Default value is code::nil::. If code::nil::, then no link::Classes/StaticText:: is created.
-
-argument:: items
+method::new
+argument::parentView
+The parent view or window. If the parent is code::nil::, then EZPopUpMenu will create its own link::Classes/Window::, and place it conveniently on the screen if the bounds are a link::Classes/Point::. If the bounds are a link::Classes/Rect::, then the link::Classes/Rect:: determines the window bounds.
+argument::bounds
+An instance of link::Classes/Rect:: or link::Classes/Point::. The default value is code::160@22::.
+argument::label
+The label. The default value is code::nil::. If code::nil::, then no link::Classes/StaticText:: is created.
+argument::items
 Default value is code::nil::. An link::Classes/Array:: of link::Classes/Association::s code:: ['label' -> { |menuObj| value }, ] ::. Or and link::Classes/Array:: link::Classes/Symbol::s (if you are only using code::globalAction::).
-
-argument:: globalAction
+argument::globalAction
 A global function to be performed in addition to the item functions code:: { |menuObj| value } ::.
-
-argument:: initVal
-Initial value of the menu, i.e. the index selected. Default value is 0.
-
-argument:: initAction
-An instance of link::Classes/Boolean::. Performs the action at code::initVal:: on creation of the menu, plus the code::globalAction::. Default value is code::false::.
-
-argument:: labelWidth
+argument::initVal
+Initial value of the menu, i.e. the index selected. The default value is 0.
+argument::initAction
+An instance of link::Classes/Boolean::. Performs the action at code::initVal:: on creation of the menu, plus the code::globalAction::. The default value is code::false::.
+argument::labelWidth
 Default value is 80.
-
-argument:: labelHeight
+argument::labelHeight
 Default value is 20. Not used if layout is code::\horz::.
-
-argument:: layout
-code::\vert:: or code::\horz::. default is code::\horz::.
-
-argument:: gap
+argument::layout
+code::\vert:: or code::\horz::. The default is code::\horz::.
+argument::gap
 A link::Classes/Point::. By default, the view tries to get its parent's code::gap::, otherwise it defaults to code::2@2::. Setting it overrides these.
-
-argument:: margin
+argument::margin
 A link::Classes/Point::. This will inset the bounds occupied  by the subviews of view.
 
 discussion::
@@ -86,23 +75,24 @@ g.value = 0;
 
 instancemethods::
 
+
 subsection:: Changing Appearance
 
-method:: setColors
-argument:: stringBackground
+method::setColors
+argument::stringBackground
 An instance of link::Classes/Color::. The code::background:: of the label and unit views.
-argument:: stringColor
+argument::stringColor
 An instance of link::Classes/Color::. The code::stringColor:: of the label and unit views.
-argument:: menuBackground
+argument::menuBackground
 An instance of link::Classes/Color::. The code::background:: of the menu.
-argument:: menuStringColor
+argument::menuStringColor
 An instance of link::Classes/Color::. The code::stringColor:: of the menu.
-argument:: background
+argument::background
 An instance of link::Classes/Color::. The code::background:: of the list view.
 
-method:: font
-Set the link::Classes/Font:: used by all the views.
-argument:: font
+method::font
+sets the link::Classes/Font:: used by all the views.
+argument::font
 An instance of link::Classes/Font::.
 
 examples::

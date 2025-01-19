@@ -19,7 +19,7 @@ store the pattern in the global dictionary of link::Classes/Pdef:: under key. (i
 
 Using strong::*new(key):: you can access the pattern at that key (if none is there, a default pattern is created). see link::Classes/Pdef::.
 
-Examples::
+examples::
 
 code::
 (

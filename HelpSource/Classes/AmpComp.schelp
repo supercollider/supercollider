@@ -4,8 +4,7 @@ related:: Classes/AmpCompA
 categories::  UGens>Analysis>Amplitude
 
 
-Description::
-
+description::
 Implements the (optimized) formula:
 
 code::
@@ -20,27 +19,19 @@ compensates.
 classmethods::
 
 method::ar, kr, ir
-
 argument::freq
-
 Input frequency value. For freq == root, the output is 1.0.
-
-
 argument::root
-
 Root freq relative to which the curve is calculated
 (usually lowest freq).
-
-
 argument::exp
-
 Exponent: how steep the curve decreases for increasing freq.
 
 discussion::
 Note that for frequencies very much smaller than root the amplitudes can become very high.
 In this case limit the freq with code::freq.max(minval)::, or use AmpCompA.
 
-Examples::
+examples::
 
 code::
 // compare a sine without compensation

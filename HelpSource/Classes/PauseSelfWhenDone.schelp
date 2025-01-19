@@ -4,15 +4,12 @@ related:: Classes/Done, Classes/FreeSelfWhenDone
 categories::  UGens>Synth control, UGens>Undocumented
 
 
-Description::
-
+description::
 FIXME: PauseSelfWhenDone description.
 
 
 classmethods::
 
 method::kr
-
 argument::src
-
 FIXME: explain parameter src.

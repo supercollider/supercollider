@@ -4,8 +4,7 @@ related:: Classes/RandID
 categories::  UGens>Generators>Stochastic, UGens>Random
 
 
-Description::
-
+description::
 When the trigger signal changes from nonpositive to positive, the synth's
 random generator seed is reset to the given value. All synths that use
 the same random number generator reproduce the same sequence of numbers
@@ -19,17 +18,13 @@ link::Reference/randomSeed:: for the client side equivalent.
 classmethods::
 
 method::kr, ir
-
 argument::trig
-
 The trigger. Trigger can be any signal. A trigger happens when
 the signal changes from non-positive to positive.
-
-
 argument::seed
 The random seed.
 
-Examples::
+examples::
 
 code::
 

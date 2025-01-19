@@ -18,12 +18,12 @@ For a complete list of historical gui classes and their redirects, see link::Ove
 
 classmethods::
 
-method:: new
+method::new
 
-method:: makeGUI
+method::makeGUI
 
-method:: initClass
-Sets the code::skin:: to default values on compile.
+method::initClass
+sets the code::skin:: to default values on compile.
 code::
 fontSpecs: ["Helvetica", 10],
 fontColor: Color.black,
@@ -36,69 +36,68 @@ margin: 2@2,
 buttonHeight: 16
 ::
 
-method:: add
+method::add
 
-method:: qt
-Makes QtGUI the current scheme and returns it. Subsequent GUI object calls to GUI are delegated to Qt. Returns the current (Qt) scheme.
+method::qt
+makes QtGUI the current scheme and returns it. Subsequent GUI object calls to GUI are delegated to Qt. Returns the current (Qt) scheme.
 
-method:: fromID
+method::fromID
 Changes the current scheme and returns the new scheme.
-argument:: id
+argument::id
 A link::Classes/Symbol::. The identifier of the scheme to use.
 
 
-method:: current
-
-Returns the current scheme. This is useful for objects that, upon instantiation, wish to store the then-current scheme, so as to be able to consistently use the same scheme in future method calls.
+method::current
+returns the current scheme. This is useful for objects that, upon instantiation, wish to store the then-current scheme, so as to be able to consistently use the same scheme in future method calls.
 
 Note:: the caller shouldn't make any assumptions about the nature (the class) of the returned object, so that the actual implementation (an Event) may change in the future. ::
 
 
-method:: get
-Returns the scheme for a given identifier. Does not switch the current scheme.
-argument:: id
+method::get
+returns the scheme for a given identifier. Does not switch the current scheme.
+argument::id
 A link::Classes/Symbol::. The identifier of the scheme to retrieve, such as returned by calling code::aScheme.id::.
 
-method:: set
+method::set
 Changes the current scheme.
-argument:: aScheme
+argument::aScheme
 An instance of link::Classes/Symbol::. The scheme to use as current scheme.
 
-method:: use
+method::use
 Executes a function body, temporarily setting the current GUI scheme. This is useful inside view's action functions in order to make this function use the GUI scheme that was originally used for the view of the action, even if the scheme has been switched meanwhile.
-argument:: aScheme
+argument::aScheme
 The scheme to use during the function execution.
-argument:: func
+argument::func
 An Instance of link::Classes/Function::.
 
-method:: useID
+method::useID
 Same as code::use:: but using a scheme's id as first argument.
-argument:: id
+argument::id
 The id of the scheme to use during the function execution.
-argument:: func
+argument::func
 A body to execute.
 
-method:: add
+method::add
 Registers a new scheme. This is typically called by external libraries in their startup procedure. If a scheme with the same identifier (code::scheme.id::) exists, it is overwritten.
-argument:: aScheme
+argument::aScheme
 The scheme to add.
 
-method:: doesNotUnderstand
+method::doesNotUnderstand
 All method calls are mapped to the current scheme, so that for example code::GUI.button:: can be used and is delegated to the button association of the current scheme.
-argument:: selector
-argument:: ... args
+argument::selector
+argument::... args
 
-method:: setSkin
-argument:: skinName
+method::setSkin
+argument::skinName
 
-method:: scheme
+method::scheme
 A class variable. Returns the current scheme.
 
-method:: schemes
+method::schemes
 A class variable. Returns an link::Classes/IdentityDictionary:: of registered schemes.
 
-method:: skin
+method::skin
 A class variable. Returns the current skin.
 
-method:: skins
+method::skins
 A class variable. Returns an link::Classes/IdentityDictionary:: of registered skins.

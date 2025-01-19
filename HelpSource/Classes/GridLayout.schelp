@@ -3,8 +3,7 @@ summary:: A layout that organizes views in a grid
 categories:: GUI>Layout
 related:: Classes/HLayout, Classes/VLayout, Classes/StackLayout, Guides/GUI-Layout-Management
 
-DESCRIPTION::
-
+description::
 GridLayout distributes its space into a strong::grid of rows and columns::, where each item can occupy strong::one or more cells::.
 
 You can construct the layout in two ways using link::#*rows:: and link::#*columns::. In the former constructor you pass arrays of items by rows, and in the latter by columns. Items can also be added later using link::#-add:: and link::#-addSpanning::. To remove an item, simply use link::Classes/View#-remove:: for views, or link::Classes/QObject#-destroy:: for views or layouts.
@@ -12,6 +11,7 @@ You can construct the layout in two ways using link::#*rows:: and link::#*column
 It is possible to add more than one view into the same cell. The last added view will be the top-most. However, it is most probably more convenient to use a link::Classes/StackLayout:: for that purpose.
 
 The layout manages the grid size automatically: you can add an item at any row and cell number. When items are added or removed, the grid will re-adjust according to the last occupied row and column.
+
 
 subsection:: Fine tuning
 
@@ -22,6 +22,7 @@ Each row or column can be assigned a strong::stretch factor:: using link::#-setR
 Each row or column can also be assigned a strong::minimum:: size using link::#-setMinRowHeight:: and link::#-setMinColumnWidth::, to override the size constraints imposed by the contained views.
 
 In addition to adjusting the spacing between cells using link::Classes/Layout#-spacing:: you can control the spacing between rows and between columns separately using link::#-hSpacing:: and link::#-vSpacing::.
+
 
 subsection:: Leaving empty space
 
@@ -34,12 +35,10 @@ CLASSMETHODS::
 PRIVATE:: key
 PRIVATE:: qtClass
 
-METHOD:: rows
-
+method::rows
     Creates a GridLayout and fills each row with an array of items given as arguments.
 
-    argument:: ... rows
-
+    argument::... rows
     Each argument is an Array of items to form a consecutive row. An item can be a strong::view::, another strong::layout::, or strong::nil:: for an empty cell.
 
     discussion::
@@ -59,12 +58,10 @@ w = Window().layout_(GridLayout.rows(
 )
 ::
 
-METHOD:: columns
-
+method::columns
     Creates a GridLayout and fills each column with an array of items given as arguments.
 
-    argument:: ... cols
-
+    argument::... cols
     Each argument is an Array of items to form a consecutive column. An item can be a strong::view::, another strong::layout::, or strong::nil:: for an empty cell.
 
     discussion::
@@ -75,112 +72,101 @@ METHOD:: columns
 
 INSTANCEMETHODS::
 
-METHOD:: add
-
+method::add
     Adds an item into the cell at specified row and column.
 
-    argument:: item
+    argument::item
     The item can be a strong::view:: or another strong::layout::.
 
-    argument:: row
+    argument::row
     The row index.
 
-    argument:: column
+    argument::column
     The column index.
 
-    argument:: align
-    A symbol denoting the alignment, or nil. See link::Reference/gui_alignments:: for possible values.
+    argument::align
+    A symbol denoting the alignment, or code::nil::. See link::Reference/gui_alignments:: for possible values.
 
-METHOD:: addSpanning
-
+method::addSpanning
     Adds an item into the grid so as to occupy several cells.
 
-    argument:: item
+    argument::item
     The item can be a strong::view:: or another strong::layout::.
 
-    argument:: row
+    argument::row
     The row index.
 
-    argument:: column
+    argument::column
     The column index.
 
-    argument:: rowSpan
+    argument::rowSpan
     The amount of cells to occupy in vertical direction.
 
-    argument:: columnSpan
+    argument::columnSpan
     The amount of cells to occupy in horizontal direction.
 
-    argument:: align
-    A symbol denoting the alignment, or nil. See link::Reference/gui_alignments:: for possible values.
+    argument::align
+    A symbol denoting the alignment, or code::nil::. See link::Reference/gui_alignments:: for possible values.
 
-METHOD:: hSpacing
-
+method::hSpacing
     The spacing between columns, in Integer amount of pixels.
 
-METHOD:: vSpacing
-
+method::vSpacing
     The spacing between rows, in Integer amount of pixels.
 
-METHOD:: setRowStretch
-
+method::setRowStretch
     Sets the stretch factor of a row. By default rows have a stretch factor of 0. If a larger factor is assigned to a row, rows will get their space redistributed according to the relative proportions of their factors.
 
-    argument:: row
+    argument::row
     The index of a row.
 
-    argument:: factor
+    argument::factor
     An Integer.
 
-METHOD:: setColumnStretch
-
+method::setColumnStretch
     Sets the stretch factor of a column. By default columns have a stretch factor of 0. If a larger factor is assigned to a column, columns will get their space redistributed according to the relative proportions of their factors.
 
-    argument:: column
+    argument::column
     The index of a column.
 
-    argument:: factor
+    argument::factor
     An Integer.
 
-METHOD:: setAlignment
-
+method::setAlignment
     Sets the alignment of an item managed by the layout.
 
-    argument:: item
+    argument::item
     A view or a layout managed by this layout, or a Point of which x denotes the column index and y the row index of an item.
 
-    argument:: align
+    argument::align
     A symbol denoting the alignment. See link::Reference/gui_alignments:: for possible values.
 
-METHOD:: minRowHeight
-
+method::minRowHeight
     Gets the minimum height assigned to a row.
 
-    argument:: row
+    argument::row
     The index of a row.
 
-METHOD:: setMinRowHeight
-
+method::setMinRowHeight
     Sets the minimum height of row.
 
-    argument:: row
+    argument::row
     The index of a row.
 
-    argument:: height
+    argument::height
     An Integer amount of pixels.
 
-METHOD:: minColumnWidth
-
+method::minColumnWidth
     Gets the minimum width assigned to a column.
 
-    argument:: column
+    argument::column
     The index of a column.
 
-METHOD:: setMinColumnWidth
-
+method::setMinColumnWidth
     Sets the minimum width of a column.
 
-    argument:: column
+    argument::column
     The index of a column.
 
-    argument:: width
+    argument::width
     An Integer amount of pixels.

@@ -13,15 +13,12 @@ ClassMethods::
 private::connectByUID, disconnectByUID
 
 method::new
-
-Create a new MIDIOut instance. Note that this method is not safe for cross-platform usage with Linux, because the meaning of the teletype::port:: argument is different. See link::#Linux specific: Connecting and disconnecting ports:: for details.
-
+creates a new MIDIOut instance. Note that this method is not safe for cross-platform usage with Linux, because the meaning of the teletype::port:: argument is different. See link::#Linux specific: Connecting and disconnecting ports:: for details.
 argument::port
 definitionList::
 ## macOS, Windows || The index of the MIDIEndPoint in the code::MIDIClient.destinations:: array.
 ## Linux || The output port number. teletype::MIDIEndPoint("SuperCollider", "out0"):: is port 0; teletype::"out1":: is port 1. In Linux, this argument has no connection at all to code::MIDIClient.destinations::.
 ::
-
 argument::uid
 definitionList::
 ## macOS / Windows || uid is optional; if specified, it should be the uid of that port ie. MIDIClient.destinations[port].uid. If you don't provide a uid, the correct uid will be filled in for you (easier).
@@ -29,7 +26,7 @@ definitionList::
 ::
 
 method::newByName
-Searches for the MIDI output device, by a name found in the code::MIDIClient.destinations:: array. This is safer then depending on the index which will change if your studio setup changes. It is also Linux compatible.
+searches for the MIDI output device, by a name found in the code::MIDIClient.destinations:: array. This is safer then depending on the index which will change if your studio setup changes. It is also Linux compatible.
 code::
 // list connected out ports with names:
 MIDIClient.init;
@@ -37,7 +34,7 @@ MIDIClient.destinations;
 ::
 
 method::findPort
-Searches for a connected MIDIEndPoint by name.
+searches for a connected MIDIEndPoint by name.
 code::
 // list connected out ports with names:
 MIDIClient.init;
@@ -49,14 +46,13 @@ Linux only. MacOS does not need to connect. On Linux it is an optional feature (
 
 InstanceMethods::
 method::sysex
-Sends a sysex command represented as an link::Classes/Int8Array:: to the device.
+sends a sysex command represented as an link::Classes/Int8Array:: to the device.
 
 note::
 The method call should contain a full sysex message. In other words,
 it should start with 0xF0 (240 or -16) and end with 0xF7 (247 or -9).
 ::
-
-argument:: packet
+argument::packet
 An Int8Array of data bytes to be sent.
 
 code::
@@ -75,7 +71,7 @@ note::
 On Linux, there seems to be an ALSA or kernel bug if the latency is larger than 0, for some Linux kernels. If MIDIOut does not seem to work, set the latency to 0.
 ::
 
-Examples::
+examples::
 
 code::
 MIDIClient.init;
@@ -101,7 +97,8 @@ m.continue
 m.stop
 ::
 
-subsection::Using patterns for sending MIDI events
+
+subsection:: Using patterns for sending MIDI events
 
 code::
 MIDIClient.init;
@@ -117,7 +114,8 @@ a = Pbind(\degree, Prand([1, 2, 3, [0, 5]], inf), \bend, Pwhite(0, 76, inf));
 
 See link::Tutorials/A-Practical-Guide/PG_08_Event_Types_and_Parameters#MIDI output:: for a list of midi commands supported by the 'midi' event type.
 
-subsection::Linux specific: Connecting and disconnecting ports
+
+subsection:: Linux specific: Connecting and disconnecting ports
 
 In Linux, the MIDIOut architecture is different from other operating systems.
 
@@ -167,9 +165,9 @@ list::
 ::
 
 
-subsection::macOS specific: Sending MIDI to other applications
+subsection:: macOS specific: Sending MIDI to other applications
 
-Open the Audio MIDI Setup application. Double-click on IAC Driver and check "device is online".
+Opens the Audio MIDI Setup application. Double-click on IAC Driver and check "device is online".
 
 reinitialize:
 
@@ -188,7 +186,8 @@ MIDIMonitor (freeware) can be very useful for troubleshooting:
 
 http://www.snoize.com/MIDIMonitor/
 
-subsection::Sysex example
+
+subsection:: Sysex example
 
 a machinedrum manual say sysex commands should be formatted like this...
 code::

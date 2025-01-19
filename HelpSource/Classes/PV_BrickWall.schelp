@@ -3,22 +3,16 @@ summary:: Zero bins.
 related:: Classes/FFT, Classes/IFFT
 categories:: UGens>FFT
 
-Description::
-
-Clears bins above or below a cutoff point.
+description::
+clears bins above or below a cutoff point.
 
 
 classmethods::
 
 method::new
-
 argument::buffer
-
 FFT buffer.
-
-
 argument::wipe
-
 Can range between -1 and +1.
 
 
@@ -36,7 +30,7 @@ code::wipe::  < 0 then it acts like a low
 pass filter, clearing bins from the top down.
 
 
-Examples::
+examples::
 
 code::
 

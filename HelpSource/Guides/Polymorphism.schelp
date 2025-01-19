@@ -3,6 +3,7 @@ summary:: the ability of different classes to respond to a message in different 
 categories:: Language>OOP
 related:: Reference/Messages, Reference/Classes, Guides/Intro-to-Objects
 
+
 section:: Introduction
 
 Polymorphism is the ability of different classes to respond to a message in different ways. A message generally has some underlying meaning and it is the responsibility of each class to respond in a way appropriate to that meaning.
@@ -17,6 +18,7 @@ definitionlist::
 ::
 
 Let's look at how these classes implement the value message.
+
 
 subsection:: Object
 
@@ -34,6 +36,7 @@ code::
 //etc...
 ::
 
+
 subsection:: Function
 In class link::Classes/Function:: the value method is a primitive:
 code::
@@ -44,11 +47,12 @@ value { arg ... args;
 }
 ::
 
-code::_FunctionValue:: is a C code primitive, so it is not possible to know just by looking at it what it does. However what it does is to evaluate the function and return the result.
+code::_FunctionValue:: is a C code primitive, so it is not possible to know just by looking at it what it does. However, what it does is to evaluate the function and return the result.
 code::
 { 5.squared }.postln;			// posts Instance of Function
 { 5.squared }.value.postln;		// posts 25
 ::
+
 
 subsection:: Ref
 The link::Classes/Ref:: class provides a way to create an indirect reference to an object. It can be used to pass a value by reference. Ref objects have a single instance variable called code::value::.
@@ -98,13 +102,16 @@ Ref.new(123).value.postln;
 Ref.new(123).dereference.postln;
 ::
 
+
 section:: Play
 Yet another example of polymorphism is play. Many different kinds of objects know how to play themselves.
+
 
 subsection:: Function
 code::
 { PinkNoise.ar(0.1) }.play;
 ::
+
 
 subsection:: AppClock
 code::
@@ -126,6 +133,7 @@ AppClock.play(r);
 )
 ::
 
+
 subsection:: SynthDef
 code::
 (
@@ -135,10 +143,12 @@ x = SynthDef("Help-SynthDef", { arg out=0;
 )
 ::
 
+
 subsection:: Pattern
 code::
 Pbind(\degree, Pseq([0, 1, 2, 3],inf)).play;
 ::
+
 
 section:: Conclusion
 Polymorphism allows you to write code that does not assume anything about the implementation of an object, but rather asks the object to "do what I mean" and have the object respond appropriately.

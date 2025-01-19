@@ -4,8 +4,7 @@ related:: Classes/RHPF, Classes/RLPF, Classes/Resonz, Classes/Ringz
 categories::  UGens>Filters>Linear
 
 
-Description::
-
+description::
 This is a resonant filter whose impulse response is like that of a sine
 wave with a  link::Classes/Decay2::  envelope over it. It is possible to
 control the attacktime and decaytime.
@@ -27,29 +26,22 @@ The amplitude of the resulting signal depends on the server's sample rate. See l
 classmethods::
 
 method::ar, kr
-
 argument::in
 The input signal.
-
 argument::freq
 Resonant frequency in Hertz.
-
 argument::attacktime
 60 dB attack time in seconds.
-
 argument::decaytime
 60 dB decay time in seconds.
-
 argument::mul
-
 argument::add
-
 discussion::
 Note that if attacktime == decaytime then the signal cancels out and if
 attacktime > decaytime then the impulse response is inverted.
 
 
-Examples::
+examples::
 
 code::
 { Formlet.ar(Impulse.ar(20, 0.5), 1000, 0.01, 0.1) }.play;

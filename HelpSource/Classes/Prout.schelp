@@ -4,7 +4,6 @@ related:: Classes/Routine
 categories:: Streams-Patterns-Events>Patterns>Function
 
 description::
-
 note that there is a shortcut to create a Prout:
 
 code::p(func)::
@@ -12,12 +11,11 @@ code::p(func)::
 ClassMethods::
 
 method::new
-Returns a routine from the function.
-
+returns a routine from the function.
 argument::routineFunc
 routine function.
 
-Examples::
+examples::
 
 code::
 (

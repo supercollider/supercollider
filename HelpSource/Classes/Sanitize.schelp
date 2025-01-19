@@ -9,9 +9,8 @@ See also link::Classes/CheckBadValues::, which allows you to discriminate specif
 
 classmethods::
 
-method:: ar, kr
-argument:: in
+method::ar, kr
+argument::in
 Input signal to sanitize.
-
-argument:: replace
+argument::replace
 The signal that replaces bad values.

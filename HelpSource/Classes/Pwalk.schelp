@@ -6,24 +6,20 @@ categories:: Streams-Patterns-Events>Patterns>List
 ClassMethods::
 
 method::new
-
 argument::list
 The items to be walked over.
-
 argument::stepPattern
 Returns integers that will be used to increment the index into list.
-
 argument::directionPattern
 Used to determine the behavior at boundaries. When the index crosses a boundary, the next direction is drawn from this stream: 1 means use stepPattern as is, -1 means go in the reverse direction. Common patterns:
 definitionList::
 ## 1 || always wrap around to the other boundary.
 ## Pseq([1, -1], inf) || go forward first, then backward, then forward again.
 ::
-
 argument::startPos
 Where to start in the list.
 
-Examples::
+examples::
 
 code::
 (

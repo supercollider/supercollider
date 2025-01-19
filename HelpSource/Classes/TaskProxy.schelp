@@ -4,32 +4,32 @@ categories:: JITLib>Patterns, Live Coding
 related:: Classes/Tdef
 
 description::
-Keeps a reference to a task (time pattern) that can be replaced while playing. It plays on when the old stream ended and a new stream is set and schedules the changes to the beat.
+keeps a reference to a task (time pattern) that can be replaced while playing. It plays on when the old stream ended and a new stream is set and schedules the changes to the beat.
 
 ClassMethods::
 
 method::new
-create a new instance with a function (the source). the source should be a strong::routine function:: (see link::Classes/Tdef::) or a strong::pattern:: of time values.
+creates a new instance with a function (the source). the source should be a strong::routine function:: (see link::Classes/Tdef::) or a strong::pattern:: of time values.
 
 method::default
 a default source, if none is given. the default is a loop that does nothing with a 1.0 beat wait time.
 
 method::defaultQuant
-set the default quantization value for the class. (default: 1.0). can be a pair [quant, offset]
+sets the default quantization value for the class. (default: 1.0). can be a pair [quant, offset]
 
 InstanceMethods::
 
 method::source
-set the source. If a quantization is given, schedule this change to the next beat the object is a strong::routine function::, which is evaluated in a protected way, so that failure will notify the proxy that it has stopped. The object can also be a strong::pattern:: of time values.
+sets the source. If a quantization is given, schedule this change to the next beat the object is a strong::routine function::, which is evaluated in a protected way, so that failure will notify the proxy that it has stopped. The object can also be a strong::pattern:: of time values.
 
 method::clear
-set the source to nil
+sets the source to code::nil::
 
 method::clock
-get or set the instance's default clock, used by link::#-play:: if no other clock is specified. Defaults to TempoClock.default.
+gets/sets the instance's default clock, used by link::#-play:: if no other clock is specified. Defaults to TempoClock.default.
 
 method::quant
-get or set the quantization value. can be a pair [quant, offset]
+gets/sets the quantization value. can be a pair [quant, offset]
 
 method::condition
 provide a condition under which the pattern is switched when a new one is inserted. the stream value and a count is passed into the function. the methods strong::count_(n):: simply counts up to n and switches the pattern then
@@ -41,30 +41,29 @@ method::envir
 provide a default environment for the proxy. If given, it is used as an environment for the routine function. When set for the first time, the routine pattern is rebuilt.
 
 method::set
-set arguments in the environment. If there is none, it is created and the routine pattern is rebuilt.
+sets arguments in the environment. If there is none, it is created and the routine pattern is rebuilt.
 
 method::endless
 returns a link::Classes/Prout:: that plays the proxy endlessly, replacing strong::nil:: with a strong::default:: value (1 s. wait time). This allows to create streams that idle on until a new pattern is inserted.
 
-subsection::a) using it as stream reference
+
+subsection:: a) using it as stream reference
 
 method::source
-set the routine function / pattern (internally done by *new(key, obj)
+sets the routine function / pattern (internally done by *new(key, obj)
 
 method::embedInStream
 just like any stream, embeds itself in stream
 
-subsection::b) using it as EventStreamPlayer
+
+subsection:: b) using it as EventStreamPlayer
 
 method::play
 starts the TaskProxy and creates a player. if you want to play multiple instances, use strong::.playOnce(clock, protoEvent, quant)::
-
 argument::argClock
-which clock to use. if nil then use this instance's link::#-clock::, which in turn defaults to TempoClock.default.
-
+which clock to use. if code::nil::, then use this instance's link::#-clock::, which in turn defaults to TempoClock.default.
 argument::doReset
 A link::Classes/Boolean::
-
 argument::quant
 can be an array of [quant, phase]
 
@@ -72,17 +71,18 @@ method::stop
 stops the player
 
 method::player
-the current player (if the TaskProxy is simply used in other streams this is nil)
+the current player (if the TaskProxy is simply used in other streams this is code::nil::)
 
 method::pause, resume, reset
 perform player method
 
 method::isPlaying
-returns true if TaskProxy is running. if a TaskProxy is playing and its stream ends, it will schedule a stream for playing as soon as a new one is assigned to it.
+returns code::true:: if TaskProxy is running. if a TaskProxy is playing and its stream ends, it will schedule a stream for playing as soon as a new one is assigned to it.
 
-Examples::
+examples::
 
-subsection::a) using TaskProxy as a player
+
+subsection:: a) using TaskProxy as a player
 
 code::
 // create an empty Tdef and play it.
@@ -185,7 +185,8 @@ x.stop;
 y.stop;
 ::
 
-subsection::b) embedding TaskProxy into other Tasks / Routines
+
+subsection:: b) embedding TaskProxy into other Tasks / Routines
 
 code::
 (
@@ -209,7 +210,7 @@ c.source = { var z; z = Synth(\default, [\freq, 300]); 1.5.wait; z.release }; //
 r.reset;
 r.play;
 
-// of course TaskProxies can be used in other Tdefs:
+//, of course TaskProxies can be used in other Tdefs:
 (
 b = TaskProxy.new;
 b.source = {

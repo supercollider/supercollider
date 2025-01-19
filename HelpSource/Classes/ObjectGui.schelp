@@ -3,7 +3,7 @@ summary:: Controller class for MVC architecture, superclass for all XYZGui class
 related:: Reference/gui
 categories:: GUI
 
-DESCRIPTION::
+description::
 In the MVC architecture this is the Controller, which creates Views for manipulating the properties of your Model, and receives messages from the View and enacts the changes on the Model.
 
 Each class specifies its Gui class via the guiClass method.
@@ -26,15 +26,14 @@ gui = guiClass.new(theModel);
 gui.gui(parent, bounds);
 ::
 
-In addition to those steps the model/gui dependencies are managed, defaults (nil parent or nil bounds) are managed and when the window or parent view is closed then dependencies are safely managed.
+In addition to those steps the model/gui dependencies are managed, defaults (code::nil:: parent or code::nil:: bounds) are managed and when the window or parent view is closed then dependencies are safely managed.
 
 
 CLASSMETHODS::
 
-METHOD:: new
-Create a gui controller object but does not yet create the views / window.  Call .gui to create the views.
-
-argument:: model
+method::new
+creates a gui controller object but does not yet create the views / window.  Calls code::.gui:: to create the views.
+argument::model
 The model is the object that the GUI is a graphical interface for.
 
 returns:: the ObjectGui or subclass object
@@ -42,99 +41,84 @@ returns:: the ObjectGui or subclass object
 
 INSTANCEMETHODS::
 
-METHOD:: guiBody
+method::guiBody
 When implementing subclasses this is the primary and often the only method that needs to be implemented.  The ObjectGui parent class takes care of setting up all windows and dependencies and then the guiBody method adds views to the layout.  It is normal to declare instance variables in the ObjectGui subclass that are used to store the widgets so they can be updated later.
-
-argument:: layout
+argument::layout
 Usually a FlowView : a parent view with a FlowLayout to add views to.
-
-argument:: bounds
-nil or a Rect.
-
-argument:: ... args
+argument::bounds
+code::nil:: or a link::Classes/Rect::.
+argument::... args
 More args may be passed here.
 
 returns:: this
 
-METHOD:: update
+method::update
 When the model is changed and the .changed method is called then .update is called on all dependants including this gui object.  Update the views you have placed in the guiBody.
-
-argument:: theChanged
+argument::theChanged
 The model.  Within your gui class the model is already in the instance variable 'model'.
-
-argument:: theChanger
+argument::theChanger
 Depends on the conventions of how .changed was called.  If an object called someModel.changed(this) then it is supplying itself as the changer and will be passed through here.  Sometimes a flag is used: someModel.changed('points') and the gui may know of and participate in that convention.  Sometimes no changer is passed in.
 
 
-METHOD:: gui
+method::gui
 The standard method to create a view / window.  Usually you call yourModel.gui(parent, bounds) and this creates the gui (of the related ObjectGui subclass) and then theObjectGui.gui(parent, bounds) is called, forwarding the arguments.  So this method is what receives the forwarded (parent, bounds) from the initial call to theModel.gui(parent, bounds). Usually you do not call this manually and would avoid reimplementing it.
-
-argument:: parent
+argument::parent
 parent view : nil, a Window, a FlowView or any other usable container view.
-
-argument:: bounds
-nil or a Rect.  The default of nil will offer the entire bounds to the guiBody method and then shrink the view size afterwards to the exact size of the contents that were actually added.
-
-argument::  ... args
+argument::bounds
+code::nil:: or a Rect.  The default of code::nil:: will offer the entire bounds to the guiBody method and then shrink the view size afterwards to the exact size of the contents that were actually added.
+argument::... args
 More args may be passed into theModel.gui(parent, bounds, anArg, moreArg) and will be forwarded to guiBody.
 
 returns:: this
 
-METHOD:: guify
+method::guify
 This converts a supplied parent and bounds into a usable parent container view on a window.  It creates a window if needed.
-
-argument:: parent
-parent view or nil
-
-argument:: bounds
-desired bounds or nil
-
-argument:: title
+argument::parent
+parent view or code::nil::
+argument::bounds
+desired bounds or code::nil::
+argument::title
 window title IF a new window is being created.  if there is a parent view then title is ignored.
 
 returns:: converted parent
 
 
-METHOD:: model
-set a new model. This allows to use a single gui and dynamically swap in a different model of the same class.  The old model releases the gui as a dependant and the new model adds the gui as a dependent.  Then the views are updated.
-
-argument:: newModel
+method::model
+sets a new model. This allows to use a single gui and dynamically swap in a different model of the same class.  The old model releases the gui as a dependant and the new model adds the gui as a dependent.  Then the views are updated.
+argument::newModel
 The new object
 
 returns:: (returnvalue)
 
-METHOD:: dragSource
+method::dragSource
 The default implementation of writeName places a nameplate on the gui that is draggable.  This method is an accessor for that dragSource object.
 
 returns:: a GUi.dragSource
 
-METHOD:: viewDidClose
+method::viewDidClose
 This is called when the parent view closes. It releases dependants.
 
 returns:: this
 
-METHOD:: background
+method::background
 Each ObjectGui subclass may implement a default background color.
 
 returns:: a color
 
-METHOD:: writeName
+method::writeName
 ObjectGui by default makes a nameplate with the name of the model.  Implement this in subclasses if a different name style or no nameplate is desired.  Note: this may change in the near future.  So many classes override this to shut off the name.
-
-argument:: layout
+argument::layout
 The layout to place the nameplate on.  Probably the same as is being passed to guiBody
 
-METHOD:: prWriteName
+method::prWriteName
 The default write name implementation.  You could call this from a subclass if you are primarily implementing writeName to customize what name is shown or to add other items to that area.
-
-argument:: layout
+argument::layout
 the layout
-
-argument:: name
+argument::name
 the string to display
 
 
-EXAMPLES::
+examples::
 
 code::
 

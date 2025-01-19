@@ -13,18 +13,17 @@ heads might interfere in unintended ways. Use a slightly larger buffer if this h
 classmethods::
 private:: categories
 
-method:: ar, kr
-
-argument:: buffer
+method::ar, kr
+argument::buffer
 buffer where DelTapWr has written signal.  Max delay time is based on buffer size.
-argument:: phase
+argument::phase
 the current phase of the DelTapWr UGen. This is the output of DelTapWr.
-argument:: delTime
+argument::delTime
 A delay time in seconds.
-argument:: interp
+argument::interp
 the kind of interpolation to be used. 1 is none, 2 is linear, 4 is cubic.
-argument:: mul
-argument:: add
+argument::mul
+argument::add
 
 examples::
 See link::Classes/DelTapWr#examples:: for examples.

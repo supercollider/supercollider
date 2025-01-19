@@ -4,8 +4,7 @@ related:: Classes/In, Classes/LagIn, Classes/LocalIn
 categories::  UGens>InOut
 
 
-Description::
-
+description::
 When the various output UGens (link::Classes/Out::,
 link::Classes/OffsetOut::, link::Classes/XOut::) write data to a bus,
 they mix it with any data from the current cycle, but overwrite any data
@@ -59,20 +58,15 @@ The second example below demonstrates this issue.
 classmethods::
 
 method::ar
-
 argument::bus
-
 The index of the bus to read in from.
-
-
 argument::numChannels
-
 The number of channels (i.e. adjacent buses) to read in. The
 default is 1. You cannot modulate this number by assigning it to
 an argument in a SynthDef.
 
 
-Examples::
+examples::
 audio feedback modulation:
 code::
 (

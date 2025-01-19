@@ -2,6 +2,7 @@ title:: Node Messaging
 summary:: Messaging Nodes with OSC
 categories:: Server>Nodes, External Control>OSC
 
+
 section:: Introduction
 The most direct and fast way to send commands to the server is to send messages to the link::Classes/Server:: object, if you are within sc-lang.  If you are in a shell you can use sendOSC (available from CNMAT).
 
@@ -12,10 +13,11 @@ list::
 ## link::Tutorials/Server_Tutorial::
 ::
 
+
 section:: Messaging nodes
 When creating nodes on the server (synths and groups) the only things we need to know are the nodeID and the server (its address to be precise).
 
-In order to communicate with a synth, one sends messages with its nodeID. If you do not intend to communicate with the node after its creation (and the node will cause itself to end without external messaging), the node id can be set to -1, which is the server's equivalent to nil.
+In order to communicate with a synth, one sends messages with its nodeID. If you do not intend to communicate with the node after its creation (and the node will cause itself to end without external messaging), the node id can be set to -1, which is the server's equivalent to code::nil::.
 
 As soon as you want to pass around the reference to a certain node, assuming that you might not have only one server, it can be useful to create a link::Classes/Synth:: or link::Classes/Group:: object. These objects also respond to messages, and when needed can be used to obtain the state of the server side node.
 
@@ -99,6 +101,7 @@ x.set(\freq, 1500);
 x.free;
 ::
 
+
 section:: Argument lists in node messages
 
 Several node messages accept lists of values to map onto the controls of Synth nodes, as in some of the examples already given:
@@ -140,7 +143,8 @@ SynthDescLib.global[\controlList].controls.do(_.postln); ""
 
 Prior to SuperCollider 3.3, the only way to set array arguments by name was using n_setn (or Node's setn method). Beginning in version 3.3, array arguments can be included in s_new or n_set messages transparently.
 
-subsection::Messaging style
+
+subsection:: Messaging style
 note the characters $[ and $] delimiting the array in the list:
 code::
 n = s.nextNodeID;
@@ -148,7 +152,8 @@ s.sendMsg(\s_new, \controlList, n, 0, 0, \detune, $[, 0.95, 1.005, $], \freq, 22
 s.sendMsg(\n_set, n, \gate, 0);
 ::
 
-subsection::Object style
+
+subsection:: Object style
 the Node object automatically inserts $[ and $] for you:
 code::
 n = Synth(\controlList, [\detune, [0.95, 1.005], \freq, 220]);
@@ -156,7 +161,8 @@ n.set(\detune, [0.99, 1.01]);
 n.release;
 ::
 
-subsection::Event style
+
+subsection:: Event style
 Supplying an array for an argument in an event already has another meaning: multichannel expansion, in which a separate node is created for each array item. If all items of the array should be sent to the same node, then the array argument should be enclosed in another array level:
 code::
 (instrument: \controlList, freq: 220, detune: [[0.95, 1.005]], sustain: 2).play;

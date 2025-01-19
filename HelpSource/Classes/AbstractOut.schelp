@@ -6,6 +6,6 @@ classmethods::
 private:: categories
 
 instancemethods::
-method:: numOutputs
-returns::
+method::numOutputs
+returns:: 
 number of output buses (default: 0, overridden in subclasses)

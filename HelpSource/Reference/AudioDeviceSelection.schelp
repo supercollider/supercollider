@@ -11,6 +11,7 @@ note::
 Device selection won't take effect until the server is (re)booted.
 ::
 
+
 section:: macOS
 
 By default the server will boot to your system's default audio devices. If you want to explicitly tell the server to use the internal soundcard, you need to specify both input and output device. The following example comes from a MacBook Pro:
@@ -31,6 +32,7 @@ ServerOptions.inDevices; // input devices
 ServerOptions.outDevices; // output devices
 ::
 
+
 subsection:: Sample rate mismatch
 
 One possible reason why a server may fail to boot is a mismatch between input and output devices' sample rates, which may occur when using a different device for input and output (which is the case when using a Mac's internal soundcard). If the server fails to boot due to sample rate mismatch, an error will be posted accordingly.
@@ -39,6 +41,7 @@ You should set both input and output devices' sample rate to the same value. You
 code::
 "open -a 'Audio MIDI Setup'".unixCmd; // execute this to launch it
 ::
+
 
 subsection:: Aggregate device
 
@@ -71,6 +74,7 @@ section:: Linux
 
 By default, SuperCollider on Linux uses JACK, and the audio device selection is managed by the JACK server. teletype::ServerOptions:: cannot override JACK's selection of audio hardware.
 
+
 subsection:: Setup with JACK server
 The SuperCollider server is considered a JACK emphasis::client::. In the following section, the term emphasis::client:: will refer to the SuperCollider server, from the perspective of JACK.
 
@@ -84,6 +88,7 @@ code::
 Server.default.options.device = "JACKServerName:scsynthName";
 ::
 A code::nil:: device is equivalent to code::Server.default.options.device = "default:SuperCollider";::
+
 
 subsection:: Jack Environment variables
 
@@ -109,6 +114,7 @@ export SC_JACK_DEFAULT_INPUTS="system"
 export SC_JACK_DEFAULT_OUTPUTS="system"
 ::
 
+
 section:: Windows
 
 By default the server will boot to your system's default audio devices using teletype::MME:: driver (which usually means higher latency).
@@ -130,6 +136,7 @@ Partial device name matching is supported in Windows (though not in macOS).
 
 note:: Leaving the code::sampleRate:: (e.g. code::Server.default.options.sampleRate::) as code::nil:: for an code::ASIO:: device will likely result in setting the hardware to run at 44100 Hz.::
 
+
 subsection:: Choosing the device and the API
 list::
 ##If you need to specify the device, you will need to do so for both input and output (setting both code::.inDevice::, as well as code::.outDevice::), unless you use ASIO
@@ -137,6 +144,7 @@ list::
 ##Both input and output device should use the same sample rate (although some APIs might provide resampling). This can be set in Windows's Audio Control Panel.
 ::
 The following list provides basic reference for different APIs. The most recommended APIs are listed first.
+
 
 subsection:: List of available APIs
 definitionlist::
@@ -191,6 +199,7 @@ o = Server.default.options;
 o.device = "ASIO : UMC ASIO Driver";
 Server.default.reboot;
 ::
+
 
 subsection:: ASIO4ALL
 If you are using an internal soundcard or a device which does not come with an ASIO driver, an alternative is to use ASIO4ALL. It is a virtual ASIO driver, communicating with the soundcard using Windows' native APIs. It might provide better performance with built-in soundcards and it should allow for multichannel operation with such devices (if supported by the hardware). Use a web search engine to find a download link.

@@ -24,47 +24,47 @@ For a raw array of 64-bit floats, use link::Classes/DoubleArray::.
 
 ClassMethods::
 
-method:: from32Bits
+method::from32Bits
 returns:: a new Float from a 32-bit word.
 
-method:: from64Bits
+method::from64Bits
 returns:: a new Float from a 64-bit word.
 
 InstanceMethods::
 
-method:: do
+method::do
 iterates a link::Classes/Function:: from code::0:: to code::this-1::. See also: link::Classes/Integer#-do::, link::Classes/Collection#-do::
-argument:: function
+argument::function
 The function to iterate.
 
-method:: reverseDo
+method::reverseDo
 iterates function from this-1 to 0
-argument:: function
+argument::function
 The function to iterate.
 
-method:: clip
-Return this if lo <= this <= hi, otherwise return the nearest boundary: lo if this < lo, hi if this > hi.
-argument:: lo
+method::clip
+returns this if lo <= this <= hi, otherwise returns the nearest boundary: lo if this < lo, hi if this > hi.
+argument::lo
 The low threshold of clipping.
-argument:: hi
+argument::hi
 The high threshold of clipping.
 
-method:: fold
+method::fold
 Fold this to [lo, hi].
-argument:: lo
+argument::lo
 The low threshold of folding.
-argument:: hi
+argument::hi
 The high threshold of folding.
 
-method:: wrap
+method::wrap
 Wrap this around [lo, hi) such that it falls in range. Equivalent to (this % (hi - lo)) + lo.
-argument:: lo
+argument::lo
 The low threshold (inclusive) of wrapping.
-argument:: hi
+argument::hi
 The high threshold (exclusive) of wrapping.
 
-method:: coin
-Let emphasis::x:: be the receiver clipped to the range [0, 1]. With probability emphasis::x::, return true. With probability 1 - emphasis::x::, return false.
+method::coin
+Lets emphasis::x:: be the receiver clipped to the range [0, 1]. With probability emphasis::x::, returns code::true::. With probability 1 - emphasis::x::, returns code::false::.
 
 returns:: a link::Classes/Boolean::
 discussion::
@@ -74,24 +74,24 @@ code::
 See also: link::Guides/Randomness::
 
 method::xrand2
-returns::a random float from this.neg to this, excluding the value exclude.
+returns:: a random float from this.neg to this, excluding the value exclude.
 
-method:: isFloat
+method::isFloat
 returns:: code::true:: since this is a Float.
 
-method:: asFloat
+method::asFloat
 returns:: code::this:: since this is a Float.
 
-method:: as32Bits
+method::as32Bits
 returns:: an Integer which is the bit pattern of this as a 32bit single precision float
 
-method:: high32Bits
+method::high32Bits
 returns:: an Integer which is the bit pattern of high 32-bits of the 64-bit double precision floating point value
 
-method:: low32Bits
+method::low32Bits
 returns:: an Integer which is the bit pattern of high 32-bits of the 64-bit double precision floating point value
 
-method:: asCompileString
+method::asCompileString
 returns:: a string that when interpreted matches the receiver, if the number is within the range given in code::storeOn::.
 
 code::
@@ -99,8 +99,8 @@ a = 2.81882773638;
 a.asCompileString.interpret == a;
 ::
 
-method:: asStringPrec
-Returns a string representation of the number, with the desired precision (i.e. number of significant figures).
+method::asStringPrec
+returns a string representation of the number, with the desired precision (i.e. number of significant figures).
 discussion::
 code::
 // example:
@@ -112,8 +112,7 @@ pi.asStringPrec(6)
 7.4.asStringPrec(50)
 ::
 
-method:: dump
-
+method::dump
 code::
 -1.0.dump
 ::
@@ -137,7 +136,8 @@ class   decmial          significant part      exponent part
         representation   (mantissa)            with sign bit
 ::
 
-subsection::Using Floats as replacement for Integers
+
+subsection:: Using Floats as replacement for Integers
 
 In SuperCollider, Floats are 64-bit wide. Because  an link::Classes/Integer::  is 32-bit, it can only capture integers in the range code::-2147483648 .. +2147483647::, or about code:: 2 x 10^9 ::.
 

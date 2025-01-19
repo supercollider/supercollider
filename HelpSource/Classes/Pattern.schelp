@@ -5,7 +5,8 @@ categories:: Streams-Patterns-Events>Patterns
 
 description::
 
-subsection::Patterns versus Streams
+
+subsection:: Patterns versus Streams
 
 strong::Pattern:: is an abstract class that is the base for the Patterns library. These classes form a rich and concise score language for music. The series of help files entitled link::Tutorials/Streams-Patterns-Events1:: gives a detailed introduction. This attempts a briefer characterization.
 
@@ -17,7 +18,8 @@ The difference between a Pattern and a Stream is similar to the difference betwe
 
 Patterns are defined in terms of other Patterns rather than in terms of specific values. This allows a Pattern of arbitrary complexity to be substituted for a single value anywhere within a Pattern definition. A comparison between a Stream definition and a Pattern will help illustrate the usefulness of Patterns.
 
-subsection::example 1 - Pseq vs. Routine
+
+subsection:: example 1 - Pseq vs. Routine
 
 The Pattern class strong::Pseq(array, repetitions):: defines a Pattern that will create a Stream that iterates an array. The class strong::Routine(func, stackSize):: defines a single Stream, the function that runs within that stream is defined to perform the array iteration.
 
@@ -36,7 +38,8 @@ code::
 )
 ::
 
-subsection::example 2 - Nesting patterns
+
+subsection:: example 2 - Nesting patterns
 
 In example 1, there is little difference between using link::Classes/Pseq:: and link::Classes/Routine::. But Pseq actually iterates its array as a collection of emphasis::patterns to be embedded::, allowing another Pseq to replace any of the values in the array. The Routine, on the other hand, needs to be completely redefined.
 
@@ -57,7 +60,8 @@ code::
 )
 ::
 
-subsection::example 3 - Stream-embedInStream
+
+subsection:: example 3 - Stream-embedInStream
 
 The message code::embedInStream:: is what allows Patterns to do this kind of nesting. Most objects
 (such as the number 3 below) respond to code::embedInStream:: by yielding themselves once and returning. Streams respond to embedInStream by iterating themselves to completion, effectively "taking over" the calling stream for that time.
@@ -80,11 +84,13 @@ note::
 For reasons of efficiency, the implementation of code::embedInStream:: assumes that it is called from within a link::Classes/Routine::. Consequently, code::embedInStream:: should never be called from within the function that defines a link::Classes/FuncStream:: or a link::Classes/Pfunc:: (the pattern that creates FuncStreams).
 ::
 
-subsection::Event Patterns
+
+subsection:: Event Patterns
 
 An link::Classes/Event:: is a link::Classes/Environment:: with a 'play' method. Typically, an Event consists of a collection of key/value pairs that determine what the play method actually does. The values may be any object including functions defined in terms of other named attributes. Changing those values can generate a succession of sounds sometimes called 'music'... The pattern link::Classes/Pbind:: connects specific patterns with specific names. Consult its help page for details.
 
-subsection::Playing Event Patterns
+
+subsection:: Playing Event Patterns
 
 The link::#-play:: method does not return the pattern itself. Instead, it returns the link::Classes/EventStreamPlayer:: object that actually runs the pattern. Control instructions -- stop, pause, resume, play, reset -- should be addressed to the EventStreamPlayer. (The same pattern can play many times simultaneously, using different EventStreamPlayers.)
 
@@ -97,7 +103,8 @@ p = Pbind(...).play;
 p.stop;	// DOES stop because p is the EventStreamPlayer
 ::
 
-subsection::Recording Event Patterns
+
+subsection:: Recording Event Patterns
 
 Patterns may be recorded in realtime or non-realtime. See the method link::#-record:: for realtime recording.
 
@@ -106,7 +113,7 @@ For non-realtime recording see the link::Classes/Score:: helpfile, especially "c
 InstanceMethods::
 
 method::asStream
-Return a link::Classes/Stream:: from this pattern. One pattern can be used to produce any number of independent streams.
+returns a link::Classes/Stream:: from this pattern. One pattern can be used to produce any number of independent streams.
 
 code::
 a = Pgeom(1, Pwhite(1.01, 1.2), inf);
@@ -124,7 +131,6 @@ c.next;
 
 method::embedInStream
 Given a link::Classes/Stream:: like e.g. link::Classes/Routine::, yield all values from this pattern before continuing. One pattern can be used to produce values for any number of independent streams.
-
 argument::inval
 The inval is passed into all substreams and can be used to control how they behave from the outside.
 
@@ -136,53 +142,39 @@ r.nextN(12); // the next 12 values from r
 
 
 method::play
-
 argument::clock
 The tempo clock that will run the pattern. If omitted, TempoClock.default is used.
-
 argument::protoEvent
 The event prototype that will be fed into the pattern stream on each iteration. If omitted, event.default is used.
-
 argument::quant
 see the link::Classes/Quant:: helpfile.
 
 method::record
-Opens a disk file for recording and plays the pattern into it.
-
+opens a disk file for recording and plays the pattern into it.
 argument::path
 Disk location for the recorded file. If not given, a filename is generated for you and placed in the default recording directory: code::thisProcess.platform.recordingsDir::.
-
 argument::headerFormat
 File format, defaults to link::Classes/Server#-recHeaderFormat##server.recHeaderFormat:: - see link::Classes/SoundFile:: for supported header and sample formats.
-
 argument::sampleFormat
 Sample format, defaults to link::Classes/Server#-recSampleFormat##server.recSampleFormat::.
-
 argument::numChannels
 Number of channels to record, default 2.
-
 argument::dur
-How long to run the pattern before stopping. If nil (default), the pattern will run until it finishes on its own; then recording stops. Or, use cmd-period to stop the recording. If a number is given, the pattern will run for that many beats and then stop (using link::Classes/Pfindur::), ending the recording as well.
-
+How long to run the pattern before stopping. If code::nil:: (default), the pattern will run until it finishes on its own; then recording stops. Or, use cmd-period to stop the recording. If a number is given, the pattern will run for that many beats and then stop (using link::Classes/Pfindur::), ending the recording as well.
 argument::fadeTime
 How many beats to allow after the last event before stopping the recording. Default = 0.2.
-
 argument::clock
 Which clock to use for play. Uses TempoClock.default if not otherwise specified.
-
 argument::protoEvent
 Which event prototype to use for play. Falls back to Event.default if not otherwise specified.
-
 argument::server
 Which server to play and record. Server.default if not otherwise specified.
-
 argument::out
 Output bus to hear the pattern while recording, default = 0.
-
 argument::outNumChannels
 the number of out channels to play to the recorder. If larger than numChannels, outNumChannels will wrap .
 
-Examples::
+examples::
 
 Below are brief examples for most of the classes derived from Pattern. These examples all rely on the patterns assigned to the Interpreter variable p, q, and r in the first block of code.
 
@@ -218,7 +210,8 @@ r = Pset(\freq, Pseq([500, 600, 700], 2), q);
 )
 ::
 
-subsection::EVENT PATTERNS - patterns that generate or require event streams
+
+subsection:: EVENT PATTERNS - patterns that generate or require event streams
 
 code::
 // Pbind(ArrayOfPatternPairs)
@@ -306,7 +299,8 @@ Pn(Psync(
 Ppar([Plag(1.2, Pn(p, 4)), Pn(Pbindf(q, \ctranspose, -24), 5)]).play
 ::
 
-subsection::GENERAL PATTERNS that work with both event and value streams
+
+subsection:: GENERAL PATTERNS that work with both event and value streams
 
 code::
 // Ptrace(pattern, key, printStream) - print the contents of a pattern
@@ -434,7 +428,8 @@ Preject({ |inval| inval.at(\degree) != 0 }, q).play(quant: 0)
 Ppatmod(p, { |oldPat| [p, q, r].choose }, inf).play
 ::
 
-subsection::VALUE PATTERNS: these patterns define or act on streams of numbers
+
+subsection:: VALUE PATTERNS: these patterns define or act on streams of numbers
 
 code::
 // Env as a pattern

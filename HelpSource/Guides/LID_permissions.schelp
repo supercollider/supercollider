@@ -3,6 +3,7 @@ summary:: Details how to configure your computer to set the permissions to acces
 categories:: External Control>HID
 related:: Guides/HID_permissions, Classes/LID
 
+
 section:: On Linux
 
 You will have to set the permissions with udev to be correct, create a file in the folder: code:: /etc/udev/rules.d/ ::, and name it (e.g.) code:: 90-lid-permissions.rules ::

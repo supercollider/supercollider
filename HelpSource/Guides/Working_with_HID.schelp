@@ -3,11 +3,13 @@ summary:: A guide to using HID devices for control input
 categories:: External Control>HID
 related:: Classes/HID, Classes/HIDFunc
 
+
 section:: Introduction
 
 Human input devices can be used as controllers for making music. The HID and HIDFunc classes provides you with access to them in a simple and transparent way.
 
 The development of this SuperCollider implementation of HID access was funded by the SuperCollider community and BEK, Bergen Elektronisk Kunst, Bergen, Norway, http://www.bek.no
+
 
 subsection:: What are HID devices?
 
@@ -29,6 +31,7 @@ LIST::
 ::
 
 When you want to use an HID, you will initially want to explore the device and check out its capabilities, and then write some code that you can reuse every time you want to start using your instrument.
+
 
 section:: Exploring HID
 
@@ -67,6 +70,7 @@ You can always check which devices have already been opened by SuperCollider wit
 
 code:: HID.openDevices; ::
 
+
 subsection:: Exploring HID control data
 
 If you have enabled debugging of the HID input data, and you move one of the controls on your device, you will get an output similar to this:
@@ -88,7 +92,7 @@ The EMPHASIS::raw value:: is the value as it comes in - it is not scaled in anyw
 
 The EMPHASIS::array value:: is only of importance for those elements which can represent multiple usages, such as from keyboards. In that case it indicates the key that is pressed, and by adding this number to the usage of the element you know which function the key has.
 
-With the debugging method code::HIDFunc.trace( true ):: the data will be printed in a different way:
+With the debugging method code::HIDFunc.trace(true):: the data will be printed in a different way:
 
 code::
 HID Element Data:	devid: 0, elid: 18
@@ -168,6 +172,7 @@ code::
 ~myhid.close;
 ::
 
+
 section:: A simple example
 
 code::
@@ -184,6 +189,7 @@ Ndef( \sinewave ).play;
 HIDdef.usage( \freq, { |value| Ndef( \sinewave ).set( \freq, ~freqRange.map( value ) ); }, \X );
 HIDdef.usage( \amp, { |value| Ndef( \sinewave ).set( \amp, value ); }, \Y );
 ::
+
 
 section:: Finding a device automatically again after it is detached
 

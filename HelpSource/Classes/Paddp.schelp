@@ -1,11 +1,10 @@
 class:: Paddp
-summary:: add each value of a pattern to the value at a key in event stream
+summary:: adds each value of a pattern to the value at a key in event stream
 related:: Classes/Padd, Classes/Pmulp
 categories:: Streams-Patterns-Events>Patterns>Math
 
 description::
-
-Adds a value to a named value in an event pattern or stream until it ends. Repeats this with new values until the value stream ends.
+adds a value to a named value in an event pattern or stream until it ends. Repeats this with new values until the value stream ends.
 
 ClassMethods::
 
@@ -17,7 +16,7 @@ The value, pattern, stream or array to add. The resulting stream ends when this 
 argument::pattern
 The event pattern or stream within which to add the new values.
 
-Examples::
+examples::
 
 code::
 (

@@ -3,51 +3,47 @@ summary:: QPen PDF export and printing of vector graphics
 categories:: GUI>Accessories
 related:: Classes/Pen
 
-DESCRIPTION::
+description::
 QPenPrinter allows Pen to operate on a printer device. The graphics can be exported to PDF by using "print to file" as printer device.
 
 CLASSMETHODS::
 private:: qtClass
 
 
-METHOD:: new
-Create a new QPenPrinter object.
+method::new
+creates a new QPenPrinter object.
 
 returns:: an instance of QPenPrinter
 
-METHOD:: print
+method::print
 Convenience function to show a print dialog and print.
-
-argument:: printFunc
+argument::printFunc
 A link::Classes/Function:: to be evaluated when the user presses "Print", with the printer object as Pen painter target.
 See strong::aPrintFunc:: in link::#-print:: below.
-
-argument:: cancelFunc
+argument::cancelFunc
 An optional link::Classes/Function:: to be evaluated if the user presses "Cancel".
 
 
 INSTANCEMETHODS::
 private:: init
 
+
 subsection:: Printing
 
-METHOD:: showDialog
+method::showDialog
 Shows a Print Dialog to allow the user to configure the printer object. This is asynchronous and the method will return immediately.
 When the user presses the "Print" button, strong::aOkFunc:: is called with this QPenPrinter object as argument.
-
-argument:: aOkFunc
+argument::aOkFunc
 A link::Classes/Function:: to be evaluated when the user presses "Print".
-
-argument:: aCancelFunc
+argument::aCancelFunc
 An optional link::Classes/Function:: to be evaluated if the user presses "Cancel".
 
 
-METHOD:: print
+method::print
 This method does the actual printing or PDF export. It evaluates strong::aPrintFunc:: with the printer object as Pen painter target. This QPenPrinter object is passed as the argument.
 
 All the ordinary link::Classes/Pen:: commands can be used inside the function.
-
-argument:: aPrintFunc
+argument::aPrintFunc
 A link::Classes/Function:: to be evaluated to draw the graphics.
 
 discussion::
@@ -58,20 +54,20 @@ This method is typically called from within the strong::aOkFunc:: of link::#-sho
 The point at (0@0) will coincide with the origin of link::#-pageRect::, which is offset by the page margins. So you don't need to translate the Pen.
 
 
-METHOD:: newPage
+method::newPage
 Starts a new page. Typically called within the strong::aPrintFunc:: of link::#-print::.
 
 
 subsection:: Properties
 
-METHOD:: paperRect
-Get the paper bounds.
+method::paperRect
+gets the paper bounds.
 
 returns:: a link::Classes/Rect::
 
 
-METHOD:: pageRect
-Get the page bounds, which is the printable area and usually smaller than link::#-paperRect:: due to margins.
+method::pageRect
+gets the page bounds, which is the printable area and usually smaller than link::#-paperRect:: due to margins.
 
 returns:: a link::Classes/Rect::
 
@@ -79,8 +75,8 @@ discussion::
 The strong::origin:: of the Rect is relative to the paper, and will be non-zero due to margins.
 
 
-METHOD:: pageSize
-Get the page size as a Size.
+method::pageSize
+gets the page size as a Size.
 
 returns:: a link::Classes/Size::
 
@@ -92,22 +88,23 @@ Pen.scale(x, x);
 // ... draw stuff here ...
 ::
 
+
 subsection:: Page range
 The methods below returns the page range selected by the user. Page number starts at 1. When both methods returns 0 it means "print all pages".
 
-METHOD:: fromPage
-Get the start page.
+method::fromPage
+gets the start page.
 
 returns:: an link::Classes/Integer::
 
-METHOD:: toPage
-Get the end page.
+method::toPage
+gets the end page.
 
 returns:: an link::Classes/Integer::
 
 
 
-EXAMPLES::
+examples::
 
 Simple usage:
 code::

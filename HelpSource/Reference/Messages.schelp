@@ -3,12 +3,14 @@ summary:: Method calls, sending messages to objects
 categories:: Language>OOP
 related:: Reference/Classes, Classes/Class, Classes/Object, Guides/Intro-to-Objects, Guides/Polymorphism
 
+
 section:: Introduction
 
 Sending messages is the way things get done in an object oriented language. A message consists of a message selector which names the type of operation, a receiver to which the message is sent and in some cases a list of arguments which give additional information pertaining to the operation.
 A message always returns a result. The kind of result depends on the kind of message. In the default case, the return value is the receiver itself.
 
 Messages may be written using binary operators, functional notation or receiver notation.
+
 
 section:: Binary operator messages
 
@@ -31,6 +33,7 @@ code::
 10 rrand: 100
 ::
 
+
 section:: Operator Precedence
 
 There is none. All binary operators have the same level of precedence and associate from left to right.
@@ -48,6 +51,7 @@ code::
 ::
 Therefore it is usually better style to fully parenthesize your expressions.
 
+
 section:: Functional notation messages
 
 The message selector precedes the parenthesized argument list. The first argument in the list is actually
@@ -56,6 +60,7 @@ code::
 sin(x)      // sine of x
 max(a, b)   // maximum of a and b
 ::
+
 
 section:: Receiver notation messages
 
@@ -93,9 +98,10 @@ f(a, b).g(c)
 a.f(b).g(c)
 ::
 
+
 section:: Default Argument Values
 
-You may call a function or method with more or fewer arguments than it was declared to accept. If fewer arguments are passed, those arguments not passed are set to a default value if one is given in the method or function definition, or otherwise to nil.
+You may call a function or method with more or fewer arguments than it was declared to accept. If fewer arguments are passed, those arguments not passed are set to a default value if one is given in the method or function definition, or otherwise to code::nil::.
 If too many arguments are passed, the excess arguments are either collected into an Array or ignored depending on whether or not the function or method has an ellipsis argument (explained in link::Reference/Functions::).
 When calling a method or function with zero arguments you can omit the parentheses:
 code::
@@ -109,6 +115,7 @@ z = x.value(10, 5);     // z is set to 15. (a is 10, b is 5)
 z = x.value(10, 5, 9);  // z is set to 15. (a is 10, b is 5, 9 is ignored)
 ::
 
+
 section:: Keyword Arguments
 
 Arguments to Methods may be specified by the name by which they are declared in a method's definition. Such arguments are called keyword arguments.
@@ -120,7 +127,7 @@ keywordWarnings(false)
 ::
 If a keyword argument and a positional argument specify the same argument, then the keyword argument value overrides the positional argument value.
 
-For example the code::ar:: class method of the SinOsc class takes arguments named freq, phase, mul, and add in that order. All of the following are legal calls to that method.
+For example the code::ar:: class method of the link::Classes/SinOsc:: class takes arguments named code::freq::, code::phase::, code::mul::, and code::add:: in that order. All of the following are legal calls to that method.
 code::
 SinOsc.ar(800, pi, 0.2, 0); // all normal arguments: freq, phase, mul, add
 
@@ -145,6 +152,8 @@ You may also use keyword arguments when using the 'perform' method.
 code::
 SinOsc.perform('ar', phase: pi, mul: 0.2, freq: 800);
 ::
+
+
 subsection:: Cost of using keyword arguments
 
 When using keyword arguments there is a runtime cost to do the matching that you should be aware of. The cost can be worth the convenience when speed is not critical.

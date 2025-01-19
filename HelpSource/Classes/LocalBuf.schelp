@@ -1,22 +1,22 @@
 class:: LocalBuf
-summary:: Allocate a buffer local to the synth
+summary:: Allocates a buffer local to the synth
 categories:: UGens>Buffer
 related:: Classes/Buffer, Classes/SetBuf, Classes/ClearBuf
 
 classmethods::
 private:: categories, new1
 
-method:: new
-Allocate a local buffer
-argument:: numFrames
+method::new
+allocates a local buffer
+argument::numFrames
 number of frames (default: 1)
-argument:: numChannels
+argument::numChannels
 number of channels for multiple channel buffers (default: 1)
 returns:: a new buffer – the ugen outputs its buffer number and can thus be used in any other ugen that requires a buffer number input.
 
-method:: newFrom
-Allocates a new buffer from a given list of values
-argument:: list
+method::newFrom
+allocates a new buffer from a given list of values
+argument::list
 The list may be two-dimensional for numChannels > 1.
 It is then reshaped into the buffer's current format by flattening.
 returns:: a new buffer
@@ -27,8 +27,8 @@ code::
 ::
 
 instancemethods::
-method:: set
-set the buffer slots with a list of values.
+method::set
+sets the buffer slots with a list of values.
 discussion::
 If list is smaller than numFrames, it will only set
 part of the buffer. The list may be two-dimensional for numChannels > 1.
@@ -48,11 +48,11 @@ SynthDescLib.at(\bigLocalBuf).constants;
 // prints: FloatArray[1, 88200, 0, 0.75, 0.5, 0.25]
 ::
 
-method:: clear
-set the buffer slot to zero.
+method::clear
+sets the buffer slot to zero.
 discussion::
 This is important when randomly accessing buffer slots
-(e.g. with a BufRd) or not overwriting them. Clear is not an efficient real time operation
+(e.g. with a BufRd) or not overwriting them. The method code::clear:: is not an efficient real time operation
 for larger buffers, so it should be only used when really needed - but then it is essential:
 a LocalBuf is "created" in each new synth, and it may reuse old space. So if an older
 synth has already ended, this part of memory may be the same as the new synth's.

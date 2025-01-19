@@ -4,8 +4,7 @@ related:: Classes/COsc, Classes/OscN, Classes/VOsc, Classes/VOsc3, Classes/Wavet
 categories::  UGens>Generators>Deterministic
 
 
-Description::
-
+description::
 Linear interpolating wavetable lookup oscillator with frequency and
 phase modulation inputs.
 
@@ -17,7 +16,7 @@ efficiently by the Oscillator. The buffer size must be a power of 2.
 
 This can be achieved by creating a Buffer object and sending it one of
 the "b_gen" messages (link::Classes/Buffer#-sine1::, link::Classes/Buffer#-sine2::, link::Classes/Buffer#-sine3::) with the wavetable flag set
-to true.
+to code::true::.
 
 
 This can also be achieved by creating a link::Classes/Signal:: object and sending it
@@ -27,24 +26,19 @@ the 'asWavetable' message, thereby creating a Wavetable object in the required f
 classmethods::
 
 method::ar, kr
-
 argument::bufnum
 Buffer index.
-
 argument::freq
 Frequency in Hertz.
-
 argument::phase
 Phase offset or modulator in radians.
-(Note: phase values should be within the range +-8pi. If your phase values are larger then simply use code::.mod(2pi):: to wrap them.)
-
+(Note: phase values should be within the range +-8pi. If your phase values are larger, then simply use code::.mod(2pi):: to wrap them.)
 argument::mul
 Output will be multiplied by this value.
-
 argument::add
 This value will be added to the output.
 
-Examples::
+examples::
 
 code::
 

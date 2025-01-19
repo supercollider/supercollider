@@ -4,22 +4,19 @@ related:: Classes/Ppar
 categories:: Streams-Patterns-Events>Patterns>Parallel
 
 description::
-
 Embeds several event streams so that they form a single output stream with all their events in temporal order, providing a global strong::offset:: for each. When one stream ends, the other streams are further embedded until all have ended.
 
 ClassMethods::
 
 method::new
-
 argument::list
 list of pairs of times and patterns: [time, pat, time, pat ..].
 
 note:: times are in beats and depend on the tempo of the link::Classes/TempoClock:: in use.::
-
 argument::repeats
 repeat the whole pattern n times.
 
-Examples::
+examples::
 
 code::
 // see the delta values in the resulting events

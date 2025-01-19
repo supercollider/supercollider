@@ -11,18 +11,17 @@ Unlike Klang, parameters in code::specificationsArrayRef:: can be changed after 
 classmethods::
 private:: categories
 
-method:: ar, kr
-
-argument:: specificationsArrayRef
+method::ar, kr
+argument::specificationsArrayRef
 a Ref to an Array of three Arrays:
 definitionlist::
 ## frequencies || an Array of oscillator frequencies.
-## amplitudes || an Array of oscillator amplitudes, or nil. If nil, then amplitudes default to 1.0
-## phases || an Array of initial phases, or nil. If nil, then phases default to 0.0
+## amplitudes || an Array of oscillator amplitudes, or code::nil::. If code::nil::, then amplitudes default to 1.0
+## phases || an Array of initial phases, or code::nil::. If code::nil::, then phases default to 0.0
 ::
-argument:: freqscale
+argument::freqscale
 a scale factor multiplied by all frequencies at initialization time.
-argument:: freqoffset
+argument::freqoffset
 an offset added to all frequencies at initialization time.
 
 examples::

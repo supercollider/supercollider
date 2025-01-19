@@ -23,14 +23,14 @@ plot(size.collect { yi = yi + (k * sin(xi)) % 2pi; xi = (xi + yi) % 2pi; xi - pi
 ::
 
 classmethods::
-method:: ar
-argument:: freq
+method::ar
+argument::freq
 Iteration frequency in Hertz
-argument:: k
+argument::k
 Perturbation amount
-argument:: xi
+argument::xi
 Initial value of x
-argument:: yi
+argument::yi
 Initial value of y
 
 examples::

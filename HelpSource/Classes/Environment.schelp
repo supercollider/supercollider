@@ -3,7 +3,7 @@ related::Classes/Event, Classes/IdentityDictionary
 categories::Collections>Unordered
 summary:: A dictionary which can serve as a 'name space' for functions
 
-DESCRIPTION::
+description::
 An Environment is an IdentityDictionary with additional features that allow it to serve as a 'name space' within which functions can be defined and/or evaluated.
 
 CLASSMETHODS::
@@ -11,10 +11,10 @@ method::stack
 Maintains a stack of Environments accessed by link::#*push:: and link::#*pop::.
 
 method::make
-Creates a new Environment and sends make message.
+creates a new Environment and sends make message.
 
 method::use
-Creates a new Environment and sends use message.
+creates a new Environment and sends use message.
 
 method::push
 Saves link::#currentEnvironment:: on the stack.
@@ -25,10 +25,10 @@ Restores link::#currentEnvironment:: from the stack.
 INSTANCEMETHODS::
 
 method::make
-Evaluates the function within the environment, returns the environment.
+evaluates the function within the environment, returns the environment.
 
 method::use
-Evaluates the function within the environment, returns the return value of the function.
+evaluates the function within the environment, returns the return value of the function.
 
 method::push
 Saves the receiver on the stack.
@@ -47,15 +47,15 @@ argument::doc
 The document to unlink from, defaults to the current document (link::Classes/Document#*current::). If the document has focus or no document is given, the environment is popped immediately.
 
 
-SECTION::PseudoVariables (global variables)
+section:: PseudoVariables (global variables)
 These are not methods, but global variables.
 
 warning::In general, you should not manipulate these variables directly. Instead, use the link::#-use::, link::#-push:: and link::#*pop:: methods.::
 
-method:: currentEnvironment
+method::currentEnvironment
 determines environment used by "~" syntax, link::#valueEnvir::, and link::#valueArrayEnvir::
 
-method:: topEnvironment
+method::topEnvironment
 initial value of link::#currentEnvironment::. code::~environmentVariables:: placed here can be used as "global variables," as long as the topEnvironment remains the currentEnvironment.
 
 code::
@@ -77,25 +77,27 @@ e.push;  // make 'e' the currentEnvironment
 currentEnvironment;  // this is 'e' and contains only ~def
 topEnvironment;  // still has ~abc
 
-e.pop;  // return to the previous currentEnvironment
+e.pop;  // returns to the previous currentEnvironment
 
 ~abc  // it's back!
 ::
 
 Thus, ~abc is not truly a global variable because it is inaccessible if its environment is not current.
 
-SECTION::Related Messages
 
-method:: valueEnvir (arg1, arg2...)
+section:: Related Messages
+
+method::valueEnvir (arg1, arg2...)
 evaluates a function, looking up unspecified arguments in link::#currentEnvironment::
 
-method:: valueArrayEnvir (argArray)
+method::valueArrayEnvir (argArray)
 same as link::#valueEnvir::, but with arguments in an array
 
 
-SECTION::Overview
+section:: Overview
 
-subsection::topEnvironment, currentEnvironment, make and use
+
+subsection:: topEnvironment, currentEnvironment, make and use
 
 When SuperCollider starts, it creates an Environment that it stores in the pseudovariables link::#topEnvironment:: and link::#currentEnvironment::. The link::#topEnvironment:: provides a universally accessible collection of named values similar to the link::Classes/Interpreter:: variables a, b, c, ....
 
@@ -123,7 +125,8 @@ a.use({
 ::
 evaluates the function within that environment.
 
-subsection::valueEnvir and valueArrayEnvir
+
+subsection:: valueEnvir and valueArrayEnvir
 
 When Functions are evaluated with link::#valueEnvir:: and link::#valueArrayEnvir:: unspecified arguments are looked up in the current Environment.
 If the argument is not found in the Environment its default value is used.
@@ -187,7 +190,8 @@ orc = Environment.make {
 )
 ::
 
-subsection::Environments and asynchronous functions
+
+subsection:: Environments and asynchronous functions
 
 Local variables declared in functions, and class and instance variables, use lexical scope. That is, the context in which they are understood depends on where the declaration is read during compilation. Asynchronous functions -- any function that will execute outside (later than) the current execution flow -- carry their lexically scoped variables with them.
 code::
@@ -207,11 +211,12 @@ e = (a: "got it", f: { { ~a.postln }.inEnvir.defer(0.5) });
 e.use { e.f };
 ::
 
-subsection::Using Environments as object prototypes
 
-Environment's strong::know:: variable holds a link::Classes/Boolean:: value controlling whether the Environment may be used as an object prototype or not. If strong::know:: is true, any messages sent to the Environment that it does not already understand will be relayed into items in the Environment. (If false, not-understood messages will produce a standard "does not understand" error message.)
+subsection:: Using Environments as object prototypes
 
-The default for know is false for Environment, and true for link::Classes/Event::.
+Environment's strong::know:: variable holds a link::Classes/Boolean:: value controlling whether the Environment may be used as an object prototype or not. If strong::know:: is code::true::, any messages sent to the Environment that it does not already understand will be relayed into items in the Environment. (If code::false::, not-understood messages will produce a standard "does not understand" error message.)
+
+The default for code::know:: method is code::false:: for Environment, and code::true:: for link::Classes/Event::.
 code::
 e = Environment[
 	'someVariable' -> 5,

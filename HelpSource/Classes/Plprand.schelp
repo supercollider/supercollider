@@ -6,17 +6,14 @@ categories:: Streams-Patterns-Events>Patterns>Random
 ClassMethods::
 
 method::new
-
 argument::lo
 lower boundary of values.
-
 argument::hi
 upper boundary of values.
-
 argument::length
 number of values produced.
 
-Examples::
+examples::
 
 code::
 (

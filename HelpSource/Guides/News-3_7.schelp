@@ -7,7 +7,7 @@ related::Guides/News-3_6, Guides/News-3_5, Guides/Debugging-tips
 In addition to the new features and changes described here, there are STRONG::many bugfixes and interesting improvements::, a full list of which can be found in CHANGELOG.md.
 
 
-SECTION::SuperCollider IDE
+section:: SuperCollider IDE
 
 LIST::
 ##Menu entries for Recording, scope and server inspection
@@ -17,7 +17,8 @@ LIST::
 ##Autosave feature
 ::
 
-SECTION::SuperCollider Language
+
+section:: SuperCollider Language
 
 
 
@@ -31,13 +32,12 @@ LIST::
 ::
 
 
-SUBSECTION::External Interfacing
+subsection:: External Interfacing
 
 There is an entirely new HID (Human Interface Device) implementation: see link::Guides/Working_with_HID:: that works cross platform (Linux and macOS thus far). This deprecates the GeneralHID interface. Also the link::Classes/LID:: interface has been updated to match the API of the new HID implementation.
 
 
-
-SUBSECTION::New methods and classes
+subsection:: New methods and classes
 
 LIST::
 ##link::Classes/Collection#-collectCopy::, link::Classes/Collection#-collectInPlace::
@@ -46,7 +46,8 @@ LIST::
 ##link::Classes/Server#*remote:: Create a new Server instance corresponding to a server app running on a separate machine.
 ::
 
-SUBSECTION::Deprecated classes and methods
+
+subsection:: Deprecated classes and methods
 LIST::
 ##TuningInfo
 ##ScaleInfo
@@ -57,21 +58,22 @@ LIST::
 ::
 
 
-
-SECTION::SuperCollider Server
+section:: SuperCollider Server
 
 Apart from UDP, the TCP-protocol is now supported.
 
 When mapping controls of synths to busses, their number of channels is limited to the number of control channels, avoiding a "spill-over" of mappings.
 
-SUBSECTION::List of new UGens
+
+subsection:: List of new UGens
 
 LIST::
 ##NodeID (UGen that returns the current node id)
 ##LINK::Classes/Dconst::
 ::
 
-SUBSECTION::Improved or corrected behavior
+
+subsection:: Improved or corrected behavior
 LIST::
 ##LINK::Classes/LinXFade2:: (correct fading direction)
 ##LINK::Classes/LFPulse:: (when width = 0.5, return exactly as many 0 as 1)
@@ -84,7 +86,7 @@ LIST::
 ::
 
 
-SUBSECTION::More operators work uniformly across sclang and scserver
+subsection:: More operators work uniformly across sclang and scserver
 
 The following operators have been added as UGens and work the same as in sclang:
 
@@ -97,7 +99,7 @@ TABLE::
 See link::Overviews/Operators::
 
 
-SECTION:: Known Issues
+section:: Known Issues
 
 While much has improved and many bugs from 3.6 have been fixed, there are still many known issues. For a complete list see: link::https://github.com/supercollider/supercollider/issues/::
 

@@ -3,6 +3,7 @@ summary:: Catalog of symbolic notations in SuperCollider
 categories:: Language
 related:: Overviews/Operators, Reference/Syntax-Shortcuts
 
+
 section:: Arithmetic operators
 
 Math operators apply to many classes, including arrays and other collections.
@@ -22,6 +23,7 @@ definitionlist::
 ## code:: number ** number :: || exponentiation
 ::
 
+
 section:: Bitwise arithmetic
 definitionlist::
 ## code:: number & number :: || bitwise and
@@ -30,6 +32,7 @@ definitionlist::
 ## code:: number >> number :: || bitwise right shift
 ## code:: number +>> number :: || unsigned bitwise right shift
 ::
+
 
 section:: Logical operators
 definitionlist::
@@ -81,7 +84,7 @@ a != 1 or: { "second condition".postln; [true, false].choose }
 second condition
 true
 ::
-In this case, the second condition will cause an error if a is nil, because nil does not understand addition. a.notNil is a safeguard to ensure the second condition makes sense.
+In this case, the second condition will cause an error if a is code::nil::, because code::nil:: does not understand addition. a.notNil is a safeguard to ensure the second condition makes sense.
 code::
 a = nil;
 a.notNil and: { "second condition".postln; (a = a+1) < 5 }
@@ -93,6 +96,7 @@ second condition
 false
 ::
 
+
 section:: Array and Collection operators
 
 definitionlist::
@@ -103,6 +107,7 @@ definitionlist::
 ## code:: collection @|@ integer :: || collection/array indexing: .foldAt(int)
 ## code:: collection |@| integer :: || collection/array indexing: .clipAt(int)
 ::
+
 
 section:: Set operators
 definitionlist::
@@ -132,6 +137,7 @@ a -- b
 Set[ 2, 9, 3, 4, 8 ]
 ::
 
+
 section:: Geometry operators
 definitionlist::
 ## code:: number @ number :: || make a link::Classes/Point:: of two numbers
@@ -150,6 +156,7 @@ Rect(left, top, right-left, bottom-top)
 ## code:: rect & rect :: || intersection of two rectangles
 ## code:: rect | rect :: || union of two rectangles (returns a Rect whose boundaries exactly encompass both Rects)
 ::
+
 
 section:: IOStream operators
 definitionlist::
@@ -177,11 +184,12 @@ Post <<< "a string"
 ## code:: stream <<<* collection :: || add each item's compile string to the stream.
 ::
 
+
 section:: Conditional execution operators
 definitionlist::
-## code:: object ? object :: || nil check (no .value)
-## code:: object ?? function :: || nil check (.value, function is inlined)
-If the object is nil, the second expression's value will be used; otherwise, it will be the first object.
+## code:: object ? object :: || code::nil:: check (no .value)
+## code:: object ?? function :: || code::nil:: check (.value, function is inlined)
+If the object is code::nil::, the second expression's value will be used; otherwise, it will be the first object.
 code::
 a = [nil, 5];
 
@@ -204,7 +212,7 @@ slider = slider ? Slider.new(parent, Rect(0, 0, 100, 20));
 ::
 , a new slider would be created even if it is not needed, or used.
 
-## code:: object !? function :: || execute function if object is not nil.
+## code:: object !? function :: || execute function if object is not code::nil::.
 code::
 a = [10, nil].choose;
 a !? { "ran func".postln };
@@ -224,6 +232,7 @@ f.value(2)
 7
 ::
 ::
+
 
 section:: Miscellaneous operators
 definitionlist::
@@ -267,6 +276,7 @@ f.([10, 75, 512]);
 ::
 ::
 
+
 section:: Symbolic notations to define literals/other objects
 definitionlist::
 ## code:: $ :: || character prefix: code:: "ABC".at(0) == $A ::
@@ -298,6 +308,7 @@ definitionlist::
 ## code:: (_ * 2) :: || define a function code:: { |a| a * 2 } :: (see link::Reference/Partial-Application::)
 ::
 
+
 section:: Argument definition
 definitionlist::
 ## code:: |a, b, c| :: || define function/method arguments
@@ -305,6 +316,7 @@ definitionlist::
 ## code:: #a, b, c = myArray ::|| assign consecutive elements of myArray to multiple variables
 ## code:: #a, b ... c = myArray :: || assign first two elements to a and b; the rest as an array into c
 ::
+
 
 section:: Where f is a function
 definitionlist::
@@ -322,6 +334,7 @@ f.(a: 2, b: 4);
 ## code:: obj1 method: obj2 :: || same as code::obj1.method(obj2):: or code::method(obj1, obj2)::.
 This works only with single-argument methods like binary operators.
 ::
+
 
 section:: Class and instance variable access
 
@@ -342,10 +355,11 @@ code::
 These notations do not apply to variables defined within methods.
 
 definitionlist::
-## code:: ^someExpression :: || Inside a method definition: return the expression's value to the caller
-## code:: instVar_ { } :: || define a setter for an instance variable
-## code:: myObject.instVar = x; :: || invoke the setter: code:: (myObject.instVar_(x); x) ::
+## code:: ^someExpression :: || Inside a method definition: returns the expression's value to the caller
+## code:: instVar_ { } :: || defines a setter for an instance variable
+## code:: myObject.instVar = x; :: || invokes the setter: code:: (myObject.instVar_(x); x) ::
 ::
+
 
 section:: Array series and indexing
 definitionlist::
@@ -359,10 +373,11 @@ definitionlist::
 ## code:: a[..j] :: || same as code:: a.copySeries(0, j) ::
 ## code:: a[j..] :: || same as code:: a.copySeries(i, a.size-1) :: (this is OK--Array is finite)
 
-## code:: ~ :: || access an environment variable
+## code:: ~ :: || accesses an environment variable
 ## code:: ~abc :: || compiles to code:: \abc.envirGet ::
 ## code:: ~abc = value :: || compiles to code:: \abc.envirPut(value) ::
 ::
+
 
 section:: Adverbs to math operators
 (see link::Reference/Adverbs:: )

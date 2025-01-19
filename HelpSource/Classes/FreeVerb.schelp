@@ -8,18 +8,17 @@ Coded from experiments with faust.
 
 classmethods::
 
-method:: ar
-argument:: in
+method::ar
+argument::in
 input signal.
-argument:: mix
+argument::mix
 dry/wet balance. range 0..1.
-argument:: room
+argument::room
 room size. rage 0..1.
-argument:: damp
+argument::damp
 Reverb HF damp. range 0..1.
-argument:: mul
-argument:: add
-
+argument::mul
+argument::add
 discussion::
 Valid parameter range from 0 to 1. Values outside this range are clipped by the UGen.
 

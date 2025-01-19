@@ -4,8 +4,7 @@ related:: Classes/SharedIn
 categories::  UGens>InOut
 
 
-Description::
-
+description::
 warning::
 SharedIn has been deprecated. Synchronous access to busses on local servers is possible via
 link::Classes/Bus#-getSynchronous:: and link::Classes/Bus#-setSynchronous::
@@ -22,19 +21,14 @@ link::Classes/SendTrig:: with an link::Classes/OSCFunc::.
 classmethods::
 
 method::kr
-
 argument::bus
-
 The index of the shared control bus to write to.
-
-
 argument::channelsArray
-
 An Array of channels or single output to write out. You cannot
 change the size of this once a SynthDef has been built.
 
 
-Examples::
+examples::
 
 code::
 

@@ -9,4 +9,4 @@ Common superclass to operations on UGens
 instancemethods::
 
 method::operator
-set or get the operator
+sets/gets the operator

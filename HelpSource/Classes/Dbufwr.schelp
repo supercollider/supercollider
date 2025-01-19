@@ -5,14 +5,14 @@ related:: Classes/Dbufrd
 
 classmethods::
 
-method:: new
-argument:: input
+method::new
+argument::input
 single channel input
-argument:: bufnum
+argument::bufnum
 buffer number to write to (single channel buffer)
-argument:: phase
+argument::phase
 index into the buffer
-argument:: loop
+argument::loop
 when phase exceeds number of frames in buffer, loops when set to 1 (default :1)
 discussion::
 all inputs can be either demand ugen or any other ugen.

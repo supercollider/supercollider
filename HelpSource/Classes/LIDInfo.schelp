@@ -3,7 +3,7 @@ summary:: Helper class for LID to hold the information about an LID device.
 categories:: Platform>Linux, External Control>HID
 related:: Classes/LID
 
-DESCRIPTION::
+description::
 This class contains the basic information about an LID device to access and open it.
 The class is mostly used internally and rarely accessed directly by the user.
 
@@ -12,37 +12,37 @@ This class is populated with information read from the device, and represents so
 
 INSTANCEMETHODS::
 
-METHOD:: open
-Open the device that is described by this LIDInfo
+method::open
+opens the device that is described by this LIDInfo
 
 returns:: an LID - the device
 
-METHOD:: postInfo
+method::postInfo
 post the LIDInfo in a human readable way
 
-METHOD:: findArgs
+method::findArgs
 An Array of the arguments that can be passed into code::LID.findBy:: to find this device.
 
-METHOD:: name
+method::name
 The name of the device, as reported by the device itself.
 
-METHOD:: vendorID
+method::vendorID
 The vendor ID of the device, this is a number encoded by the device itself.
 
-METHOD:: productID
+method::productID
 The product ID of the device, this is a number encoded by the device itself.
 
-METHOD:: path
+method::path
 The path of the device, this is a path defined by the operating system, essential to distinguish devices with the same vendor and product ID from each other.
 
-METHOD:: version
+method::version
 The version number of the device.
 
-METHOD:: physical
+method::physical
 The physical location of the device, as defined by the operating system.
 
-METHOD:: unique
+method::unique
 The unique identifier of the device, as defined by the operating system.
 
-METHOD:: bustype
+method::bustype
 The bustype of this device

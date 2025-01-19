@@ -9,17 +9,14 @@ method::new
 note::
 lo and hi should both be positive or negative (their range should not cross 0).
 ::
-
 argument::lo
 lower boundary of values.
-
 argument::hi
 upper boundary of values
-
 argument::length
 number of values produced.
 
-Examples::
+examples::
 
 code::
 (

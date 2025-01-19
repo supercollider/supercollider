@@ -13,14 +13,11 @@ code::"open -a 'Audio MIDI Setup'".unixCmd; // execute this to launch it::
 ::
 
 classmethods::
-method:: ar
-
-argument:: bus
+method::ar
+argument::bus
 the channel (or array of channels) to read in. These start at 0, which will correspond to the first audio input.
-
-argument:: mul
-
-argument:: add
+argument::mul
+argument::add
 
 examples::
 code::

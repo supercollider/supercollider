@@ -4,31 +4,22 @@ related:: Classes/Balance2, Classes/LinPan2, Classes/Pan4, Classes/PanAz
 categories::  UGens>Multichannel>Panners
 
 
-Description::
-
+description::
 Two channel equal power panner. Pan2 takes the square root of the linear scaling factor going from 1 (left or right) to 0.5.sqrt (~=0.707) in the center, which is about 3dB reduction. With linear panning (LinPan2) the signal is lowered as it approaches center using a straight line from 1 (left or right) to 0.5 (center) for a 6dB reduction in the middle. A problem inherent to linear panning is that the perceived volume of the signal drops in the middle. Pan2 solves this.
 
 
 classmethods::
 
 method::ar, kr
-
 argument::in
-
 The input signal.
-
-
 argument::pos
-
 Pan position, -1 is left, +1 is right.
-
-
 argument::level
-
 A control rate level input.
 
 
-Examples::
+examples::
 code::
 // hear the difference, LinPan having a slight drop in the middle...
 { LinPan2.ar(SinOsc.ar(440), Line.kr(-1, 1, 5)) }.play

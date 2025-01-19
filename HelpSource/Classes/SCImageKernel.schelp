@@ -3,8 +3,7 @@ summary:: kernel class to use with SCImage
 categories:: GUI>Views
 related:: Classes/SCImage, Classes/SCImageFilter
 
-DESCRIPTION::
-
+description::
 code::// very experimental :)::
 
 Currently this class represents the CoreImage strong::CIKernel:: you can apply to a link::Classes/SCImage::. The Kernel language is a subset of the OpenGL Shading Language. more information about the Kernel Language can be found here : http://developer.apple.com/documentation/GraphicsImaging/Reference/CIKernelLangRef/Introduction/chapter_1_section_1.html
@@ -26,34 +25,31 @@ CLASSMETHODS::
 
 METHOD::new
 creates a new SCImageKernel
-
-ARGUMENT::shader
-optional. the shader code string. nil by default
-
-ARGUMENT::values
-optional. the values that match the kernel proc function defined in the shader string. nil by default
-
-ARGUMENT::bounds
-optional. not used for now. nil by default
+argument::shader
+optional. the shader code string. code::nil:: by default
+argument::values
+optional. the values that match the kernel proc function defined in the shader string. code::nil:: by default
+argument::bounds
+optional. not used for now. code::nil:: by default
 
 INSTANCEMETHODS::
 
 METHOD::shader
-get or set the shader string.
+gets/sets the shader string.
 
 METHOD::values
-get or set the values array. When setting the object indexes in the values Array must match the argument declaration order as defined in the main emphasis::kernel vec4 routine::. See link::#examples:: for more info.
+gets/sets the values array. When setting the object indexes in the values Array must match the argument declaration order as defined in the main emphasis::kernel vec4 routine::. See link::#examples:: for more info.
 
 METHOD::isValid
 very basic verification to tell if all arguments of the shader are set.
 
 METHOD::compile
-compile the SCImageKernel object (and cache it).
+compiles the SCImageKernel object (and cache it).
 NOTE::
 when rendered the first time, the kernel object is always compiled first. If you plan to change the shader string after, you must explicitely compile it to make it effective.
 ::
 
-EXAMPLES::
+examples::
 
 code::
 /**** Kernels ****/
@@ -80,7 +76,7 @@ kernel vec4 _invertColor(sampler source)
 // the argument order should be kept in the array
 // here we need only the "sampler" argument which should be as the translation table informs you a SCImage
 // the signature of the Kernel function is normally 'kernel vec4'
-// you can of course add other functions in the shader
+// you can, of course, add other functions in the shader
 k.values_([a]);
 
 k.isValid.postln; // is it ok

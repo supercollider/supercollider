@@ -2,8 +2,7 @@ class:: OutputProxy
 summary:: Place holder for multiple outputs
 categories:: UGens>Base
 
-Description::
-
+description::
 OutputProxy is used by some UGens as a place holder for multiple outputs.
 There is no reason for a user to create an OutputProxy directly.
 
@@ -19,7 +18,7 @@ private:: categories
 
 InstanceMethods::
 
-method:: source
+method::source
 The UGen that is the source for this OutputProxy.
 discussion::
 code::

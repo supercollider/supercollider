@@ -4,8 +4,7 @@ related:: Classes/HPZ1
 categories::  UGens>Filters>Linear
 
 
-Description::
-
+description::
 A special case fixed filter. Implements the formula:
 code::
 out(i) = 0.5 * (in(i) + in(i-1))
@@ -16,23 +15,15 @@ which is a two point averager.
 classmethods::
 
 method::ar, kr
-
 argument::in
-
 The input signal.
-
-
 argument::mul
-
 Output will be multiplied by this value.
-
-
 argument::add
-
 This value will be added to the output.
 
 
-Examples::
+examples::
 
 code::
 // Compare:

@@ -3,7 +3,7 @@ summary:: run test scripts
 categories:: Testing
 related:: Classes/UnitTest, Classes/UnitTestResult
 
-DESCRIPTION::
+description::
 In order to make sure a method works correctly, a test can be implemented that assures the correct behavior.
 
 It is a common practice to write tests to clarify how an object should respond, and it may avoid inconsistencies on the long run.
@@ -18,7 +18,6 @@ code::UnitTestScript:: mimics some of the behavior of link::Classes/Method::, to
 
 
 
-
 CLASSMETHODS::
 PRIVATE:: initClass, findTestScripts, new, findTestMethods, allScripts, runTest
 
@@ -26,7 +25,7 @@ INSTANCEMETHODS::
 
 PRIVATE:: name, path, init, runScript
 
-EXAMPLES::
+examples::
 
 An example script
 

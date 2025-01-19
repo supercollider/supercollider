@@ -4,8 +4,7 @@ categories::  UGens>Triggers
 related:: Classes/OSCFunc, Classes/SendReply
 
 
-Description::
-
+description::
 On receiving a trigger (a non-positive to positive transition), send a
 trigger message from the server back to the client.
 
@@ -34,25 +33,17 @@ which is the originator of this message.
 classmethods::
 
 method::ar, kr
-
 argument::in
-
 The trigger.
-
-
 argument::id
-
 An integer that will be passed with the trigger message. This is
 useful if you have more than one SendTrig in a SynthDef.
-
-
 argument::value
-
 A UGen or float that will be polled at the time of trigger, and
 its value passed with the trigger message.
 
 
-Examples::
+examples::
 
 code::
 

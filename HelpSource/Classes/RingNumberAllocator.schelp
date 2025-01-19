@@ -1,37 +1,35 @@
 TITLE:: RingNumberAllocator
-SUMMARY:: cyclic number allocator within a specified range
+summary:: cyclic number allocator within a specified range
 CATEGORIES:: Undocumented classes
 RELATED:: Classes/ContiguousBlockAllocator, Classes/PowerOfTwoAllocator, Classes/StackNumberAllocator
 
-DESCRIPTION::
+description::
 Continuously cycles through the range of numbers, starting over from the beginning once the end of the range is reached.
 
 CLASSMETHODS::
 
-METHOD:: new
-make a new instance, with lo and hi values.
-
-ARGUMENT:: lo
+method::new
+makes a new instance, with lo and hi values.
+argument::lo
 initial value
-
-ARGUMENT:: hi
+argument::hi
 maximum
 
 
 
 INSTANCEMETHODS::
 
-METHOD:: alloc
-Allocate next number. After hi value returns lo.
+method::alloc
+allocates next number. After hi value returns lo.
 
 returns:: (describe returnvalue here)
 
-METHOD:: init
+method::init
 Reset allocator to its initial state.
 
 
 
-EXAMPLES::
+examples::
 
 code::
 a = RingNumberAllocator.new(3, 5)

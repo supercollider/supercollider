@@ -4,8 +4,7 @@ related:: Classes/Control, Classes/TrigControl
 categories::  UGens>Synth control
 
 
-Description::
-
+description::
 code::Control:: ugen with fixed-time lags.
 
 classmethods::
@@ -13,11 +12,7 @@ classmethods::
 private::ir
 
 method::kr
-
 argument::values
-
 Initial value (code::Float:: or code::Array:: of Floats).
-
 argument::lags
-
 Lag times (code::Float:: or code::Array:: of Floats).

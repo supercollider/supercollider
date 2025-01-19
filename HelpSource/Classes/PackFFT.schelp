@@ -11,26 +11,20 @@ Most people won't need to use this directly - instead, use pvcollect, pvcalc, or
 classmethods::
 private:: categories
 
-method:: new
-
-argument:: chain
+method::new
+argument::chain
 The link::Classes/FFT:: chain
-
-argument:: bufsize
+argument::bufsize
 FFT buffer size
-
-argument:: magsphases
+argument::magsphases
 The input data should be a flat array containing magnitude and phase of all bins in ascending order.
 e.g. code:: [mag0, phase0, mag1, phase1, mag2, phase2, ... magN, phaseN] ::
 This input is typically demand-rate.
-
-argument:: frombin
+argument::frombin
 restricts the frequency band
-
-argument:: tobin
+argument::tobin
 restricts the frequency band
-
-argument:: zeroothers
+argument::zeroothers
 set to 1 to zero all the magnitudes outside the restricted frequency band
 
 discussion::

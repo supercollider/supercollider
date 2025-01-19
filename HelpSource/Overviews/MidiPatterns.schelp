@@ -47,7 +47,8 @@ p = Pbind(
 p.stop;
 ::
 
-SECTION:: \noteOn and \noteOff
+
+section:: \noteOn and \noteOff
 
 The most common midi commands are \noteOn and \noteOff. They are used to play
 notes. \noteOff is automatically transmitted after the note duration when you
@@ -72,7 +73,8 @@ p = Pbind(
 p.stop;
 ::
 
-SECTION:: control change
+
+section:: control change
 
 Send control change messages.
 
@@ -94,7 +96,8 @@ p = Pbind(
 p.stop;
 ::
 
-SECTION:: \polyTouch
+
+section:: \polyTouch
 
 CODE::
 p = Pbind(
@@ -112,7 +115,8 @@ p = Pbind(
 )
 ::
 
-SECTION:: \program
+
+section:: \program
 
 CODE::
 p = Pbind(
@@ -129,7 +133,8 @@ p = Pbind(
 )
 ::
 
-SECTION:: \touch
+
+section:: \touch
 
 Emit after touch messages.
 
@@ -148,7 +153,8 @@ p = Pbind(
 )
 ::
 
-SECTION:: \bend
+
+section:: \bend
 
 CODE::
 p = Pbind(
@@ -165,7 +171,8 @@ p = Pbind(
 )
 ::
 
-SECTION:: \sysex
+
+section:: \sysex
 
 Send a sysex message.
 

@@ -9,9 +9,8 @@ Given an link::Classes/FFT:: strong::chain:: this calculates the emphasis::Spect
 The measure is calculated linearly. For some applications you may wish to convert the value to a decibel scale - an example of such conversion is shown below.
 
 classmethods::
-method:: kr
-
-argument:: buffer
+method::kr
+argument::buffer
 an link::Classes/FFT:: chain.
 
 examples::

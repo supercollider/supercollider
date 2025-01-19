@@ -3,21 +3,19 @@ summary:: Wave shaper.
 related:: Classes/Index, Classes/WrapIndex, Classes/Wavetable
 categories::  UGens>Buffer
 
-Description::
+description::
 Performs waveshaping on the input signal by indexing into the table.
 
 classmethods::
 method::ar, kr
-
 argument::bufnum
 The number of a buffer filled in wavetable format containing the
 transfer function.
-
 argument::in
 The input signal.
 
 
-Examples::
+examples::
 code::
 s.boot;
 
@@ -38,7 +36,7 @@ b.free;
 
 image::chebyshevpolynomials.png::
 
-Wave shaping transfer functions are typically designed by using Chebyshev polynomials to control which harmonics are generated when a cosine wave is passed in. The implementation in SuperCollider compensates for the DC offset due to even polynomial terms, making sure that when 0 is put into the transfer function, you get 0 out. By default, normalization is set to true, which avoids output overload. If you want to construct a transfer function without this, you need to be careful with the final output scaling, since it could easily overload the -1 to 1 range for audio.
+Wave shaping transfer functions are typically designed by using Chebyshev polynomials to control which harmonics are generated when a cosine wave is passed in. The implementation in SuperCollider compensates for the DC offset due to even polynomial terms, making sure that when 0 is put into the transfer function, you get 0 out. By default, normalization is set to code::true::, which avoids output overload. If you want to construct a transfer function without this, you need to be careful with the final output scaling, since it could easily overload the -1 to 1 range for audio.
 code::
 // I want the first harmonic at 0.25 amplitude, second at 0.5, third at 0.25
 b = Buffer.alloc(s, 512, 1, { |buf| buf.chebyMsg([0.25, 0.5, 0.25], false) });

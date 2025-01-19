@@ -3,6 +3,7 @@ summary:: lambda expressions
 categories:: Language
 related:: Classes/Function, Classes/AbstractFunction, Classes/FunctionDef
 
+
 section:: Introduction
 
 A link::Classes/Function:: is an expression which defines operations to be performed when it is sent the code::value:: message. In functional languages, a function would be known as a lambda expression.
@@ -22,7 +23,7 @@ f.value(4, 5).postln;
 f.value(10, 200).postln;
 ::
 
-An empty function returns the value nil when evaluated.
+An empty function returns the value code::nil:: when evaluated.
 code::
 {}.value.postln;
 ::
@@ -32,11 +33,12 @@ The following figure depicts an empty function, input without output, output wit
 
 image::functions.png#Functions::
 
+
 section:: Arguments
 
 An argument list immediately follows the open curly bracket of a function definition. An argument list either begins with the reserved word code::arg::, or is contained between two vertical bars. If a function takes no arguments, then the argument list may be omitted.
 
-Names of arguments in the list may be initialized to a default value using the following syntax forms. Arguments which are not explicitly initialized will be set to nil if no value is passed for them.
+Names of arguments in the list may be initialized to a default value using the following syntax forms. Arguments which are not explicitly initialized will be set to code::nil:: if no value is passed for them.
 
 "arg" style, default value is a literal:
 code::{ arg x = 1; .... } :: link::#[1]::
@@ -88,9 +90,11 @@ code::
 See link::Reference/Literals:: for more information.
 
 anchor::[1]::
+
+
 subsection:: [1] Literal argument defaults
 
-Argument defaults that are literals are stored as part of the link::Classes/FunctionDef::. Arguments passed at runtime -- including nil -- always override the defaults:
+Argument defaults that are literals are stored as part of the link::Classes/FunctionDef::. Arguments passed at runtime -- including code::nil:: -- always override the defaults:
 
 code::
 f = { arg x = 1; x };
@@ -102,9 +106,11 @@ f.value(nil);  // prints nil
 ::
 
 anchor::[2]::
+
+
 subsection:: [2] Expression argument defaults
 
-Since expressions are evaluated when the function is called, they cannot be stored in the link::Classes/FunctionDef::. They are executed only if the passed-in value is nil.
+Since expressions are evaluated when the function is called, they cannot be stored in the link::Classes/FunctionDef::. They are executed only if the passed-in value is code::nil::.
 
 code::
 f = { arg x = 10.rand; x };
@@ -115,7 +121,7 @@ f.value;   // prints a number 0-9
 f.value(nil);   // prints a number 0-9!
 ::
 
-This means you can use expression-style to define a default that cannot be overridden by nil.
+This means you can use expression-style to define a default that cannot be overridden by code::nil::.
 
 code::
 f = { arg x = (3); x };
@@ -168,6 +174,7 @@ code::
 	x
 };
 ::
+
 
 section:: Variables
 
