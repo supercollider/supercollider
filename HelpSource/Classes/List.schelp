@@ -126,12 +126,14 @@ z.fill([1, 2, 3, 4]).postln;
 )
 ::
 
-Iterates over the elements in order, calling the function for each element. The function is passed two arguments, the element and an index.
+method::do
+iterates over the elements in order, calling the function for each element. The function is passed two arguments, the element and an index.
 code::
 List['a', 'b', 'c'].do({ |item, i| [i, item].postln });
 ::
 
-Iterates over the elements in reverse order, calling the function for each element. The function is passed two arguments, the element and an index.
+method::reverseDo
+iterates over the elements in reverse order, calling the function for each element. The function is passed two arguments, the element and an index.
 code::
 List['a', 'b', 'c'].reverseDo({ |item, i| [i, item].postln });
 ::

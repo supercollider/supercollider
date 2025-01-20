@@ -27,7 +27,8 @@ returns the size when linking across.
 method::depth
 returns the size when linking down.
 
-Iterates over the two elements.
+method::do
+iterates over the two elements.
 
 Traverse
 Same like: link::#-depthFirstPreOrderTraversal::
