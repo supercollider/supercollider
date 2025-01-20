@@ -351,7 +351,9 @@ PostDocklet::PostDocklet(QWidget* parent): Docklet(tr("Post window"), parent) {
     mPostWindow = new PostWindow;
     setWidget(mPostWindow);
 
+    // This adds the QAction defined in PostWindow::createActions to the toolbar attached to the post window.
     toolBar()->addAction(mPostWindow->mActions[PostWindow::AutoScroll]);
+    toolBar()->addAction(mPostWindow->mActions[PostWindow::Clear]);
 
     // connect(this, SIGNAL(topLevelChanged(bool)), this, SLOT(onFloatingChanged(bool)));
 }

@@ -837,13 +837,14 @@ TestCoreUGens : UnitTest {
 		server.bootSync;
 
 		[\ar, \kr].do{ |rate|
-			var period, freq, halfPeriod, iPhase, target, ugen, phaseRange;
+			var period, period_sec, freq, halfPeriod, iPhase, target, ugen, phaseRange;
 			var fs = switch(rate,
 				\ar, { server.sampleRate },
 				\kr, { server.sampleRate / server.options.blockSize }
 			);
 
 			period = 10; // oscillator period, in samples (should be even)
+			period_sec = period / fs; // oscillator period, in seconds
 			freq = fs / period;
 			halfPeriod = period / 2;
 
@@ -923,6 +924,26 @@ TestCoreUGens : UnitTest {
 					cond.wait;
 				}
 			};
+
+			// EnvGen, standard Env and using Env:*circle and Env:-circle
+			target = 42; // first output sample should be the first level of the Env
+			[
+				Env([target, target*100], period_sec),
+				Env([target, target*100], period_sec).circle(period_sec),
+				Env.circle([target, target*100], [period_sec, period_sec])
+			].do{ |env, i|
+				{
+					EnvGen.perform(rate, env);
+				}.loadToFloatArray(period_sec * 1.5, server, { |data|
+					data.postln;
+					this.assertFloatEquals(data[0], target,
+						"EnvGen's first sample, should be its first level [%, env %]".format(rate, i),
+						within: tolerance, report: false
+					);
+					cond.signalOne;
+				});
+				cond.wait;
+			}
 		}
 	}
 

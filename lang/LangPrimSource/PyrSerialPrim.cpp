@@ -49,7 +49,7 @@
 using boost::uint8_t;
 using boost::asio::serial_port;
 
-extern boost::asio::io_service ioService; // defined in SC_ComPort.cpp
+extern boost::asio::io_context ioContext; // defined in SC_ComPort.cpp
 
 /**
  * \brief Serial port abstraction
@@ -104,7 +104,7 @@ public:
      */
     SerialPort(PyrObject* obj, const char* serialport, const Options& options):
         m_obj(obj),
-        m_port(ioService, serialport),
+        m_port(ioContext, serialport),
         m_options(options),
         m_rxErrors(0) {
         using namespace boost::asio;
