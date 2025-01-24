@@ -479,7 +479,40 @@ code::
 
 method::binaryValue
 
-outputs 1, representing code::true:: for positive, 0 for negative or zero input values.
+outputs teletype::1::, representing teletype::true:: for positive, teletype::0::, representing teletype::false:: for negative or zero input values.
+
+
+method::isPositive
+
+outputs teletype::1::, representing teletype::true:: for positive or zero, teletype::0:: representing teletype::false:: for negative input values
+
+
+method::isStrictlyPOsitive
+
+teletype::true:: for positive, teletype::0::, representing teletype::false:: for negative or zero input values.
+
+
+method::isNegative
+
+outputs teletype::1::, representing teletype::true:: for negative, teletype::0:: representing teletype::false:: for positive or zero input values.
+
+
+method::|==|
+
+outputs teletype::1::, representing teletype::true::, when the receiver and argument signal coincide. Note that this may be ambivalent in many cases, because of floating point arithmetic. A special sign is needed, because code::==:: compares the UGen objects, and not the signal they produce.
+
+code::
+// an example of floating point relevance for the |==| operator.
+// the rounded signal will match at some point, but not the direct signal
+(
+{
+	var a = Line.ar(0, 1, 0.008);
+	var b = a |==| 0.5;
+	var c = a.round(0.01) |==| 0.5;
+	[a, Trig1.ar(b, 0.001), Trig1.ar(c, 0.001)]
+}.plot
+)
+::
 
 
 method::@
