@@ -1,15 +1,22 @@
-class:: Pdrop
+title:: Pdrop
 summary:: skips (drops) the first n events from a pattern
-related:: Classes/Pclutch
 categories:: Streams-Patterns-Events>Patterns
+related:: Classes/Pclutch
+
 
 description::
+
+
 Skips an initial (count) number of events from a pattern.
 
-ClassMethods::
+
+classmethods::
+
 
 method::new
+
 drops strong::count:: elements of the strong::pattern:: from the stream.
+
 
 examples::
 

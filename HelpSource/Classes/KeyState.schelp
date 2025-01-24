@@ -1,10 +1,12 @@
-class:: KeyState
-summary:: Respond to the state of a key
+title:: KeyState
+summary:: responds to the state of a key
+categories:: UGens>User interaction
 related:: Classes/MouseButton, Classes/MouseX, Classes/MouseY
-categories::  UGens>User interaction
 
 
 description::
+
+
 Respond to the state of a key.
 
 note::
@@ -13,22 +15,32 @@ helpful to select a GUI window rather than an SC document when using
 KeyState, as the latter will be altered by any keystrokes.
 ::
 
+
 classmethods::
 
+
 method::kr
+
 argument::keycode
-The keycode value of the key to check. This corresponds to the
+the keycode value of the key to check. This corresponds to the
 keycode values passed into the keyDownActions of SCViews. See the
 example below.
+
 argument::minval
-The value to output when the key is not pressed.
+the value to output when the key is not pressed.
+
 argument::maxval
-The value to output  when the key is pressed.
+the value to output  when the key is pressed.
+
 argument::lag
-A lag factor.
+a lag factor.
+
 
 instancemethods::
+
+
 private:: signalRange
+
 
 examples::
 

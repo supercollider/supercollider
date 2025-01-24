@@ -1,19 +1,26 @@
-class:: PV_CopyPhase
-summary:: Copies magnitudes and phases.
-related:: Classes/FFT, Classes/IFFT, Classes/PV_Add, Classes/PV_MagMul, Classes/PV_Max, Classes/PV_Min, Classes/PV_Mul
+title:: PV_CopyPhase
+summary:: copies magnitudes and phases
 categories:: UGens>FFT
+related:: Classes/FFT, Classes/IFFT, Classes/PV_Add, Classes/PV_MagMul, Classes/PV_Max, Classes/PV_Min, Classes/PV_Mul
+
 
 description::
+
+
 combines magnitudes of first input and phases of the second input.
 
 
 classmethods::
 
+
 method::new
+
 argument::bufferA
 FFT buffer A.
+
 argument::bufferB
 FFT buffer B.
+
 
 examples::
 

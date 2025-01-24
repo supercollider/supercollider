@@ -1,9 +1,11 @@
-class:: DegreeToKey
-summary:: Convert signal to modal pitch.
-categories::  UGens>Conversion
+title:: DegreeToKey
+summary:: converts signal to modal pitch
+categories:: UGens>Conversion
 
 
 description::
+
+
 The input signal value is truncated to an integer value and used as an
 index into an octave repeating table of note values. Indices wrap around
 the table and shift octaves as they do.
@@ -11,18 +13,24 @@ the table and shift octaves as they do.
 
 classmethods::
 
+
 method::ar, kr
+
 argument::bufnum
-Index of the buffer which contains the steps for each scale
+index of the buffer which contains the steps for each scale
 degree.
+
 argument::in
-The input signal.
+the input signal.
+
 argument::octave
-The number of steps per octave in the scale.
+the number of steps per octave in the scale.
+
 argument::mul
-Output will be multiplied by this value.
+output will be multiplied by this value.
+
 argument::add
-This value will be added to the output.
+this value will be added to the output.
 
 
 examples::

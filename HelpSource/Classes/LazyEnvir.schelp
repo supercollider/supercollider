@@ -1,15 +1,20 @@
-class:: LazyEnvir
+title:: LazyEnvir
 summary:: lazy environment
 categories:: JITLib>Environments, Live Coding, Collections>Unordered
 related:: Classes/Maybe, Classes/Fdef, Classes/Environment, Classes/ProxySpace, Overviews/JITLib
 
+
 description::
+
+
 Environment with deferred evaluation and default values.
 
 Consequently, calculations can be done with nonexisting objects which can then be assigned later.
 Per default, a LazyEnvir returns instances of link::Classes/Maybe::. See also link::Classes/Fdef::.
 
-note::While the method put is treated as transparent and implicitly creates a placeholder, all other methods, like at, collect, do, etc. pass the placeholder. In order to retrieve the object itself, use .source - in order to reduce it to a value, use: value::
+note::
+While the method put is treated as transparent and implicitly creates a placeholder, all other methods, like at, collect, do, etc. pass the placeholder. In order to retrieve the object itself, use .source - in order to reduce it to a value, use: code::value::.
+::
 
 code::
 e = LazyEnvir.new;
@@ -20,12 +25,17 @@ e.use { ~y = 5; ~z = 7 };
 e.at(\x).value; // the value is 12
 ::
 
-InstanceMethods::
+
+instancemethods::
+
 
 method::put
+
 sets the value of the reference at key.
 
+
 method::at
+
 returns a reference to the object at key.
 
 code::
@@ -57,13 +67,19 @@ l = LazyEnvir.push;
 )
 ::
 
+
 method::copy
+
 copies the environment into a new one, with each placeholder being copied as well.
 
+
 method::localPut
+
 sets the value of the key directly. This method is mainly used internally.
 
+
 method::proxyClass
+
 specifies what placeholder object the environment uses by supplying a class name (link::Classes/Symbol::). The default is a link::Classes/Maybe::. Any object that responds to the methods source, source_ and clear can be a placeholder.
 
 code::
@@ -91,8 +107,12 @@ z.next;
 a.pop;
 ::
 
+
 method::removeAt
+
 removes the placeholder from the environment and clears it.
 
+
 method::makeProxy
+
 returns a new placeholder object. This is used internally and can be overridden to implement other lazy environments.

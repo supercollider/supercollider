@@ -1,9 +1,12 @@
-TITLE:: ServerMeterView
-summary:: A GUI widget that displays input/output levels
+title:: ServerMeterView
+summary:: a GUI widget that displays input/output levels
 categories:: GUI>Views
 related:: Classes/ScopeView, Classes/FreqScopeView, Classes/ServerMeter
 
+
 description::
+
+
 A link::Classes/ServerMeterView:: is a modular widget for showing the volume levels of inputs/outputs on the server. link::Classes/ServerMeterView:: can be embedded inside of your custom graphical user interfaces just like a button or slider.
 
 note::
@@ -11,63 +14,96 @@ If you are looking for a quick input/output levels display without having to bui
 ::
 
 
+classmethods::
 
-CLASSMETHODS::
 
 method::height
+
 gets the height in pixels of the standard link::Classes/ServerMeterView:: widget
 
-returns:: an link::Classes/Integer::
+returns::
+
+an link::Classes/Integer::
+
 
 method::getWidth
+
 gets the width in pixels of a link::Classes/ServerMeterView:: widget with the given number of inputs and outputs
+
 argument::numIns
 number of inputs used to calculate the width
+
 argument::numOuts
 number of outputs used to calculate the width
+
 argument::server
 the server
 
-returns:: an link::Classes/Integer::
+returns::
+
+an link::Classes/Integer::
+
 
 method::new
+
 creates a new link::Classes/ServerMeterView:: instance
+
 argument::aserver
-The link::Classes/Server:: whose inputs/outputs will be monitored
+the link::Classes/Server:: whose inputs/outputs will be monitored
+
 argument::parent
-The parent link::Classes/View:: or link::Classes/Window:: where the new link::Classes/ServerMeterView:: will be embedded.
+the parent link::Classes/View:: or link::Classes/Window:: where the new link::Classes/ServerMeterView:: will be embedded.
+
 argument::leftUp
-Where to position the new link::Classes/ServerMeterView:: inside the parent. strong::leftUp:: must be a link::Classes/Point::, describing where to place the upper left corner of the new link::Classes/ServerMeterView::.
+where to position the new link::Classes/ServerMeterView:: inside the parent. strong::leftUp:: must be a link::Classes/Point::, describing where to place the upper left corner of the new link::Classes/ServerMeterView::.
+
 argument::numIns
-The number of inputs to monitor
+the number of inputs to monitor
+
 argument::numOuts
-The number of outputs to monitor
+the number of outputs to monitor
 
-returns:: A new link::Classes/ServerMeterView::
+returns::
+
+a new link::Classes/ServerMeterView::
 
 
-INSTANCEMETHODS::
+instancemethods::
+
 
 method::view
+
 gets the link::Classes/CompositeView:: used to construct the various elements of the link::Classes/ServerMeterView:: widget
 
-returns:: a link::Classes/CompositeView::
+returns::
+
+a link::Classes/CompositeView::
+
 
 method::remove
+
 removes this link::Classes/ServerMeterView:: from its parent view (if any) and then destroys it. Once this method is called you can no longer use this link::Classes/ServerMeterView::.
 
+
 method::start
+
 enables the monitoring of input/outputs
 
-returns:: this link::Classes/ServerMeterView::
+returns::
+
+this link::Classes/ServerMeterView::
+
 
 method::stop
+
 disables the monitoring of input/outputs
 
-returns:: this link::Classes/ServerMeterView::
+returns::
+
+this link::Classes/ServerMeterView::
 
 
-PRIVATE:: setSynthFunc, startResponders, init
+private:: setSynthFunc, startResponders, init
 
 
 examples::

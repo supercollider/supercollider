@@ -1,9 +1,12 @@
-class:: ApplicationStart
-summary:: register functions to be evaluated on Application start
-related:: Classes/StartUp, Classes/ServerBoot
+title:: ApplicationStart
+summary:: registers functions to be evaluated on Application start
 categories:: Control, Platform>macOS
+related:: Classes/StartUp, Classes/ServerBoot
+
 
 description::
+
+
 Available in macOS SuperCollider.app only.
 
 ApplicationStart allows you to register functions or objects to perform an action only  on application start.
@@ -11,16 +14,24 @@ The functions will be evaluated last; After the library has been compiled, the s
 
 See also link::Classes/StartUp:: for functions that are evaluated emphasis::every:: time the ClassLibrary is recompiled.
 
-ClassMethods::
+
+classmethods::
+
 
 method::add
-Registers an object or function. Objects will be receive a strong::doOnApplcationStart:: message on application start. Functions will be evaluated.
+
+registers an object or function. Objects will be receive a strong::doOnApplcationStart:: message on application start. Functions will be evaluated.
+
 
 method::remove
+
 removes a function that was previously registered.
 
+
 method::run
+
 evaluates the functions or objects in order.
+
 
 examples::
 

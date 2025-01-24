@@ -1,44 +1,67 @@
-CLASS::Interval
+title:: Interval
 summary:: range of integers
 categories:: Math
 
+
 description::
+
+
 An Interval is a range of integers from a starting value to an ending value by some step value.
 
-CLASSMETHODS::
+
+classmethods::
+
 
 method::new
+
 creates a new Interval.
+
 code::
 Interval(10, 30, 4);
 10 to: 30; // the message to creates an interval with step 1
 ::
 
-INSTANCEMETHODS::
+
+instancemethods::
+
 
 method::start
-The starting value of the interval.
+
+the starting value of the interval.
+
 
 method::end
-The ending value of the interval.
+
+the ending value of the interval.
+
 
 method::step
-The step value of the interval.
+
+the step value of the interval.
+
 
 method::size
+
 returns the number of items in the interval.
+
 code::
 Interval(10, 30, 4).size.postln;
 ::
 
+
 method::at
+
 returns the indexed item in the interval.
+
 code::
 Interval(10, 30, 4).at(3).postln;
 ::
 
+
 method::do
+
 evaluates function for each item in the interval. The function is passed two arguments, the item and an integer index.
+
 code::
 Interval(10, 30, 4).do({ |item, i| item.postln });
 ::

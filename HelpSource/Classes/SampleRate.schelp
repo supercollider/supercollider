@@ -1,16 +1,20 @@
-class:: SampleRate
-summary:: Server sample rate.
+title:: SampleRate
+summary:: server sample rate
+categories:: UGens>Info
 related:: Classes/ControlRate, Classes/RadiansPerSample, Classes/SampleDur, Classes/SubsampleOffset
-categories::  UGens>Info
 
 
 description::
+
+
 returns the current sample rate of the server.
 
 
 classmethods::
 
+
 method::ir
+
 
 examples::
 

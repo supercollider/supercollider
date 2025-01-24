@@ -1,24 +1,31 @@
-class:: XFade2
-summary:: Equal power two channel cross fade.
+title:: XFade2
+summary:: equal power two channel cross fade
+categories:: UGens>Multichannel>Select
 related:: Classes/LinXFade2
-categories::  UGens>Multichannel>Select
 
 
 description::
+
+
 Two channel equal power crossfader.
 
 
 classmethods::
 
+
 method::ar, kr
+
 argument::inA
-Input signal A.
+input signal A.
+
 argument::inB
-Input signal B.
+input signal B.
+
 argument::pan
-Crossfade position from -1 to +1.
+crossfade position from -1 to +1.
+
 argument::level
-A control rate level input.
+a control rate level input.
 
 
 examples::

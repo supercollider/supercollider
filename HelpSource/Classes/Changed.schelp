@@ -1,27 +1,40 @@
-class:: Changed
+title:: Changed
+summary:: triggers when a value changes
 categories:: UGens>Triggers, UGens>Filters>Linear
-summary:: Triggers when a value changes
+
 
 description::
+
+
 Triggers when a value changes.
 
+
 classmethods::
+
+
 method::ar, kr
-A special case fixed filter.
+
+a special case fixed filter.
+
 argument::input
 signal input
+
 argument::threshold
 threshold
 
 discussion::
 Implements the formula:
+
 code::
 out(i) = abs(in(i) - in(i-1)) > thresh
 ::
 
+
 examples::
 
+
 detect changes in a signal:
+
 code::
 (
 {

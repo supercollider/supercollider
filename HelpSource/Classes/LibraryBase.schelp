@@ -1,31 +1,48 @@
-CLASS::LibraryBase
-summary:: Abstract global storage class
+title:: LibraryBase
+summary:: abstract global storage class
 categories:: Collections
 
+
 description::
+
+
 Base class for link::Classes/Library:: and link::Classes/Archive::
 
 There is only one global instance: Archive.global, or Library.global, which is initialized automatically in the subclasses.
 
-CLASSMETHODS::
+
+classmethods::
+
 
 method::global
+
 Subclass responsibility
 
+
 method::clear
+
 clears the dictionary
 
+
 method::at
+
 accesses the dictionary at a path with keys. The keys may be any object, but are usually link::Classes/Symbol::s.
 
+
 method::put
-Store an object in the dictionary at a path, given as a list of keys and the object to be stored as last argument. The keys may be any object, but are usually link::Classes/Symbol::s.
+
+stores an object in the dictionary at a path, given as a list of keys and the object to be stored as last argument. The keys may be any object, but are usually link::Classes/Symbol::s.
+
 
 method::atList
+
 accesses the dictionary at a path, given as a list of keys. The keys may be any object, but are usually link::Classes/Symbol::s.
 
+
 method::putList
-Store an object in the dictionary at a path, given as a list of keys and the object to be stored as last argument. The keys may be any object, but are usually link::Classes/Symbol::s.
+
+stores an object in the dictionary at a path, given as a list of keys and the object to be stored as last argument. The keys may be any object, but are usually link::Classes/Symbol::s.
+
 
 examples::
 

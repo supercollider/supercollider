@@ -1,9 +1,12 @@
-class:: LinRand
-summary:: Skewed random number generator.
-related:: Classes/ExpRand, Classes/IRand, Classes/NRand, Classes/Rand, Classes/TExpRand, Classes/TIRand, Classes/TRand
+title:: LinRand
+summary:: skewed random number generator
 categories:: UGens>Random
+related:: Classes/ExpRand, Classes/IRand, Classes/NRand, Classes/Rand, Classes/TExpRand, Classes/TIRand, Classes/TRand
+
 
 description::
+
+
 generates a single random float value in linear distribution from
 code::lo::  to  code::hi::, skewed towards
 code::lo::  if  code::minmax::  < 0, otherwise
@@ -12,13 +15,18 @@ skewed towards  code::hi:: .
 
 classmethods::
 
+
 method::new
+
 argument::lo
-Lower limit of the output range.
+lower limit of the output range.
+
 argument::hi
-Upper limit of the output range.
+upper limit of the output range.
+
 argument::minmax
-The output is skewed towards code::lo:: if code::minmax:: < 0, otherwise skewed towards code::hi::.
+the output is skewed towards code::lo:: if code::minmax:: < 0, otherwise skewed towards code::hi::.
+
 
 examples::
 

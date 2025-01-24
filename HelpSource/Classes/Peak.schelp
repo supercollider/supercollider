@@ -1,10 +1,12 @@
-class:: Peak
-summary:: Track peak signal amplitude.
+title:: Peak
+summary:: tracks peak signal amplitude
+categories:: UGens>Analysis>Amplitude
 related:: Classes/PeakFollower
-categories::  UGens>Analysis>Amplitude
 
 
 description::
+
+
 Outputs the peak amplitude of the signal received at the input. When
 a trigger occurs at the  code::reset::  input, the maximum
 output value is reset to the current value.
@@ -13,16 +15,19 @@ output value is reset to the current value.
 Internally, the absolute value of the signal is used, to prevent
 underreporting the peak value if there is a negative DC offset. To obtain
 the minimum and maximum values of the signal as is, use the
-link::Classes/RunningMin::  and  link::Classes/RunningMax::  UGens.
+link::Classes/RunningMin:: and link::Classes/RunningMax::  UGens.
 
 
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-The input signal.
+the input signal.
+
 argument::trig
-Trigger. Resets the output value to the current input value. A trigger happens when the signal changes from non-positive to positive.
+trigger. Resets the output value to the current input value. A trigger happens when the signal changes from non-positive to positive.
 
 
 examples::

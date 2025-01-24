@@ -1,133 +1,196 @@
-TITLE:: HIDProto
-summary:: Prototype HID device to match with HIDFunc
+title:: HIDProto
+summary:: prototype HID device to match with HIDFunc
 categories:: External Control>HID
-related::  Classes/HIDFunc, Classes/HIDdef, Classes/HIDElementProto, Classes/HID, Classes/HIDInfo, Guides/Working_with_HID
+related:: Classes/HIDFunc, Classes/HIDdef, Classes/HIDElementProto, Classes/HID, Classes/HIDInfo, Guides/Working_with_HID
+
 
 description::
+
+
 Human input devices can be used as controllers for making music. This class can be used in conjunction with link::Classes/HIDFunc:: or link::Classes/HIDdef:: to match incoming messages with a particular link::Classes/HID:: device.
 
 HIDProto has all the variables that specify an HID device. The more of these variables you specify, the more need to be matched when filtering the incoming HID data.
 
-CLASSMETHODS::
+
+classmethods::
+
 
 method::new
+
 creates a new instance of HIDProto.
 
 
 method::newType
-creates a new instance of HIDProto based on usage and usagePage of the device.
-argument::uName
-Name of the usage id
-argument::pName
-Name of the usage page id
 
-returns:: an HIDProto
+creates a new instance of HIDProto based on usage and usagePage of the device.
+
+argument::uName
+name of the usage id
+
+argument::pName
+name of the usage page id
+
+returns::
+
+an HIDProto
+
 
 method::newProduct
-creates a new instance of HIDProto based on the product information.
-argument::pName
-The product name to match.
-argument::vName
-The vendor name to match.
 
-returns:: an HIDProto
+creates a new instance of HIDProto based on the product information.
+
+argument::pName
+the product name to match.
+
+argument::vName
+the vendor name to match.
+
+returns::
+
+an HIDProto
 
 
 method::newFromDict
+
 creates a new instance of HIDProto based on an IdentityDictionary with a set of parameters to match.
+
 argument::dict
-An IdentityDictionary with a set of parameters to match. The keys in the dictionary should be one of the instance variables of HIDProto.
+an IdentityDictionary with a set of parameters to match. The keys in the dictionary should be one of the instance variables of HIDProto.
 
-returns:: an HIDProto
+returns::
+
+an HIDProto
 
 
-INSTANCEMETHODS::
+instancemethods::
 
-PRIVATE:: init
+
+private:: init
 
 
 subsection:: Instance variables that can be used to match a device
 
+
 method::id
-The device id that should be matched. This is dependent on the order of opening HID devices.
+
+the device id that should be matched. This is dependent on the order of opening HID devices.
+
 
 method::productName
-The product name to match (see also link::Classes/HIDInfo::).
+
+the product name to match (see also link::Classes/HIDInfo::).
+
 
 method::vendorName
-The vendor name to match (see also link::Classes/HIDInfo::).
+
+the vendor name to match (see also link::Classes/HIDInfo::).
+
 
 method::productID
-The product id to match (see also link::Classes/HIDInfo::).
+
+the product id to match (see also link::Classes/HIDInfo::).
+
 
 method::vendorID
-The vendor id to match (see also link::Classes/HIDInfo::).
+
+the vendor id to match (see also link::Classes/HIDInfo::).
+
 
 method::interfaceNumber
-The interface number to match (see also link::Classes/HIDInfo::).
+
+the interface number to match (see also link::Classes/HIDInfo::).
+
 
 method::releaseNumber
-The release number to match (see also link::Classes/HIDInfo::).
+
+the release number to match (see also link::Classes/HIDInfo::).
 
 
 method::serialNumber
-The serial number to match (see also link::Classes/HIDInfo::).
+
+the serial number to match (see also link::Classes/HIDInfo::).
+
 
 method::path
-The path to match (see also link::Classes/HIDInfo::).
 
+the path to match (see also link::Classes/HIDInfo::).
 
 
 method::usage
-The usage ID of the device to match (see also link::Classes/HIDInfo::).
+
+the usage ID of the device to match (see also link::Classes/HIDInfo::).
+
 
 method::usagePage
-The usage page ID of the device to match (see also link::Classes/HIDInfo::).
+
+the usage page ID of the device to match (see also link::Classes/HIDInfo::).
+
 
 method::usageName
-The usage name of the device to match (see also link::Classes/HIDInfo::).
+
+the usage name of the device to match (see also link::Classes/HIDInfo::).
+
 
 method::pageName
-The page name of the device to match (see also link::Classes/HIDInfo::).
+
+the page name of the device to match (see also link::Classes/HIDInfo::).
 
 
 subsection:: Methods to match
 
-method::matches
-Match the argument with the template.
-argument::hid
-An instance of HID.
 
-returns:: a Boolean indicating whether the incoming HID matches the template
+method::matches
+
+matches the argument with the template.
+
+argument::hid
+an instance of HID.
+
+returns::
+
+a Boolean indicating whether the incoming HID matches the template
+
 
 method::shouldMatch
-The variables that should be matched when filtering
 
-returns:: a Set with variable names.
+the variables that should be matched when filtering
+
+returns::
+
+a Set with variable names.
 
 
 subsection:: Methods to add matching parameters
 
 
 method::addTypeMatch
+
 adds a match for usage name and usage page name of the device.
+
 argument::uName
-The usage name to match
+the usage name to match
+
 argument::pName
-The page name to match
+the page name to match
+
 
 method::addProductMatch
+
 adds a match for product name and vendor name of the device.
+
 argument::pName
-The product name to match
+the product name to match
+
 argument::vName
-The vendor name to match
+the vendor name to match
 
 
 method::addDictionaryMatch
+
 adds an IdentityDictionary with a set of parameters to match. The keys in the dictionary should be one of the instance variables of HIDProto.
+
 argument::dict
-An IdentityDictionary with a set of parameters to match.
+an IdentityDictionary with a set of parameters to match.
 
 
 examples::

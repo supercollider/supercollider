@@ -1,11 +1,15 @@
-class::Error
-categories::Core
-summary:: superclass of all Errors
+title:: Error
+summary:: Superclass of all Errors
+categories:: Core
+
 
 description::
+
+
 Error and its subclasses separate different types of error is that can occur in the SuperCollider program into distinct classes, so that they can be reported differently to the user.
 
 Anywhere that an error must be reported to the user and execution must stop, an error object must be created and thrown.
+
 code::
 (
 var file, path = "betcha-this-file-doesnt-exist.txt";
@@ -28,6 +32,7 @@ Throwing an error object gives the caller the opportunity to catch, and possibly
 
 
 subsection:: Error hierarchy
+
 
 The following error classes exist in the main library.
 

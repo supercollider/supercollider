@@ -1,20 +1,28 @@
-class:: Pbeta
+title:: Pbeta
 summary:: random values that follow a Eulerian Beta Distribution
 categories:: Streams-Patterns-Events>Patterns>Random
 
-ClassMethods::
+
+classmethods::
+
 
 method::new
+
 argument::lo
 lower boundary of values.
+
 argument::hi
 upper boundary of values.
+
 argument::prob1
-The probability that a value will occur near lo. <1, probability of a value near lo increases. =1, uniform dist. >1 will create a bounded Gaussian-like distribution.
+the probability that a value will occur near lo. <1, probability of a value near lo increases. =1, uniform dist. >1 will create a bounded Gaussian-like distribution.
+
 argument::prob2
-The probability that a value will occur near hi. <1, probability of a value near lo increases. =1, uniform dist. >1 will create a bounded Gaussian-like distribution.
+the probability that a value will occur near hi. <1, probability of a value near lo increases. =1, uniform dist. >1 will create a bounded Gaussian-like distribution.
+
 argument::length
 number of values produced (default: inf).
+
 
 examples::
 

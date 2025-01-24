@@ -1,21 +1,30 @@
-class:: Hasher
-summary:: Scrambled value with a hash function.
-categories::  UGens>Filters>Nonlinear, UGens>Random
+title:: Hasher
+summary:: scrambled value with a hash function
+categories:: UGens>Filters>Nonlinear, UGens>Random
+
 
 description::
+
+
 returns a unique output value from -1 to +1 for each input value
 according to a hash function. The same input value will always produce
 the same output value. The input need not be in the range -1 to +1.
 
+
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-The input signal.
+the input signal.
+
 argument::mul
-Output will be multiplied by this value.
+output will be multiplied by this value.
+
 argument::add
-This value will be added to the output.
+this value will be added to the output.
+
 
 examples::
 

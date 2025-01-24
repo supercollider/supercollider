@@ -1,10 +1,12 @@
-class:: OnePole
-summary:: One pole filter.
+title:: OnePole
+summary:: one pole filter
+categories:: UGens>Filters>Linear
 related:: Classes/OneZero
-categories::  UGens>Filters>Linear
 
 
 description::
+
+
 A one pole filter. Implements the formula:
 
 code::
@@ -16,15 +18,20 @@ out(i) = ((1 - abs(coef)) * in(i)) + (coef * out(i-1)).
 
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-The input signal.
+the input signal.
+
 argument::coef
-Feedback coefficient. Should be between -1 and +1
+feedback coefficient. Should be between -1 and +1
+
 argument::mul
-Output will be multiplied by this value.
+output will be multiplied by this value.
+
 argument::add
-This value will be added to the output.
+this value will be added to the output.
 
 
 examples::

@@ -1,15 +1,18 @@
 title:: Event types
-summary:: Different ways that an Event can "play"
+summary:: different ways that an Event can "play"
 categories:: Streams-Patterns-Events>Events
 related:: Classes/Event
 
 
-An link::Classes/Event:: responds to a code::play:: message by evaluating ~play in the event, and the default behaviour of ~play is determined by the value of ~type.footnote::To see how event types are normally invoked, here is a slightly simplified version of the default definition of  ~play as defined in the Event class:
+An link::Classes/Event:: responds to a code::play:: message by evaluating ~play in the event, and the default behaviour of ~play is determined by the value of ~type.footnote::
+
+To see how event types are normally invoked, here is a slightly simplified version of the default definition of  ~play as defined in the Event class:
 
 code::{ ~eventTypes[~type].value(server); }::
 
-The function uses the value of ~type to select a function from the Dictionary held in ~eventTypes. ::
+The function uses the value of ~type to select a function from the Dictionary held in ~eventTypes.
 
+::
 
 code::
 a = (play: { ~word.scramble.postln }, word: "hello word");
@@ -29,7 +32,10 @@ Event.addEventType(\test, { "Your word is: ".post; ~word.scramble.postln });
 
 
 section:: Currently existing event types:
-Note:: this documentation is incomplete. ::
+
+note::
+this documentation is incomplete.
+::
 
 definitionlist::
 
@@ -53,6 +59,7 @@ fork { 10.do { (type: \set, id: a[\id], \degree: [0, 5, 8, 11].choose).play; 0.3
 
 ## group || creates a new group
 optional parameters:
+
 table::
 ## ~id || node ID, or node object
 ## ~group || outer group id or object
@@ -60,6 +67,7 @@ table::
 ::
 
 Example:
+
 code::
 (type: \group, id: 2).play					// create a group with nodeID 2
 (type: \note, freq: 500, group: 2).play		// play a synth in that group
@@ -68,6 +76,7 @@ code::
 
 ## midi || send note parameters to midi device
 parameters:
+
 table::
 ## ~midicmd || A Symbol, for the MIDI command to issue
 ## ~midiout || A MIDIOut object
@@ -83,6 +92,7 @@ See link::Tutorials/A-Practical-Guide/PG_08_Event_Types_and_Parameters#MIDI outp
 ## rest || do nothing for a specified amount of time
 
 ## composite || perform any number of event types, given as ~types
+
 code::
 MIDIClient.init;
 m = MIDIOut(0);
@@ -121,6 +131,7 @@ m = MIDIOut(0);
 
 
 subsection:: Some event types are used internally, e.g.:
+
 definitionlist::
 ## monoNote || used by Pmono
 ## monoSet || used by Pmono

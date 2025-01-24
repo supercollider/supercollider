@@ -1,33 +1,49 @@
-class:: MulAdd
-categories:: UGens>Maths
+title:: MulAdd
 summary:: multiplies and adds to a signal
+categories:: UGens>Maths
+
 
 description::
+
+
 Multiplies the signal by mul and adds add. This UGen is very efficient (it performs various optimisation checks, for example). It is used very heavily throughout SuperCollider to perform multiply and add operations on the server; in fact it is  what "really" performs the code::mul:: and code::add:: arguments found in many UGens.
 
 See also the discussion of code::mul:: and code::add:: arguments in the link::Classes/UGen:: help file.
 
+
 classmethods::
+
+
 private:: new1
 
+
 method::new
+
 argument::in
-input signal
+input signal.
+
 argument::mul
-multiply with this value
+multiplies with this value
+
 argument::add
-add this value
+adds this value
 
 discussion::
 Same as:
+
 code::
 in.madd(mul, add)
 ::
 
+
 instancemethods::
+
+
 private:: init
 
+
 examples::
+
 code::
 s.boot;
 
@@ -46,4 +62,5 @@ x = { SinOsc.ar(440, 0) * 0.1 + 0.05 }.play(s);
 x.trace;
 x.free;
 ::
+
 (Note: the "trace" message is described in the helpfile for link::Classes/Node::.)

@@ -1,23 +1,32 @@
-class:: BRF
-summary:: 2nd order Butterworth band reject filter.
+title:: BRF
+summary:: 2nd order Butterworth band reject filter
+categories:: UGens>Filters>Linear
 related:: Classes/BPF, Classes/HPF, Classes/LPF
-categories::  UGens>Filters>Linear
 
 
 description::
+
+
 A second order band reject filter.
 
 
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-The input signal.
+the input signal.
+
 argument::freq
-Cutoff frequency in Hertz.
-WARNING: due to the nature of its implementation frequency values close to 0 may cause glitches and/or extremely loud audio artifacts!
+cutoff frequency in Hertz.
+
+warning::
+Due to the nature of its implementation frequency values close to 0 may cause glitches and/or extremely loud audio artifacts!
+::
+
 argument::rq
-The reciprocal of Q (bandwidth / cutoffFreq).
+the reciprocal of Q: teletype::bandwidth / cutoffFreq::.
 
 
 examples::

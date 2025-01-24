@@ -1,9 +1,12 @@
-CLASS:: UserView
-summary:: A custom drawn view using Pen
+title:: UserView
+summary:: a custom drawn view using Pen
 categories:: GUI>Views
 related:: Classes/Pen
 
+
 description::
+
+
 An empty view on which you can draw using the link::Classes/Pen:: class.
 
 This view displays and does nothing by itself, but allows you to define how it will be drawn, and expects you to define its entire mode of interaction using mouse, key, and drag and drop actions.
@@ -14,36 +17,45 @@ This class offers convenient mechanisms for creating animations, that is, to aut
 
 For a guide to using this view, see link::Guides/GUI-Introduction#Custom views::.
 
-note:: Older tutorials might recommend subclassing UserView. Don't do that. Use composition, not inheritance. Make the UserView a property of your custom view class. ::
-
-CLASSMETHODS::
-
-PRIVATE:: key
+note::
+Older tutorials might recommend subclassing UserView. Don't do that. Use composition, not inheritance. Make the UserView a property of your custom view class.
+::
 
 
+classmethods::
 
-INSTANCEMETHODS::
+
+private:: key
+
+
+instancemethods::
 
 
 subsection:: Drawing
 
+
 method::drawFunc
+
 	Sets the Function to evaluate whenever the view is asked to redraw itself. This may be, for example, due to being hidden and shown again, being resized, another view moving on top of it, or after the link::Classes/View#-refresh:: method has been called.
 
 	Within that Function you are allowed to use the link::Classes/Pen:: class to draw within the bounds of the view. All the coordinates given to the methods of Pen are relative to the top-left corner of the view. Usage of Pen is not allowed outside of that Function.
 
 	The Function will be passed this view as the argument when evaluated.
+
 argument::
 	A Function.
 
 
 method::background
+
 	Sets the color used to fill the whole area occupied by the view below the drawing done in link::#-drawFunc::. You can set the background at any moment, even within the code::drawFunc::, but any drawing done in that Function will always be displayed on top of the background.
 
 	argument::
 		A Color.
 
+
 method::drawingEnabled
+
 	Whether the link::#-drawFunc:: will be called when the view is redrawing itself. Note that link::#-background:: will be painted regardless of this variable.
 
 	The default value is code::true::.
@@ -51,7 +63,9 @@ method::drawingEnabled
 	argument::
 		A Boolean.
 
+
 method::clearOnRefresh
+
 	Whether the view shall clear the last drawing done in link::#-drawFunc:: before being redrawn.
 
 	If this is code::false::, the view will continuously draw on top of all the previous drawing whenever it is redrawn, until link::#-clearDrawing:: is called.
@@ -61,13 +75,17 @@ method::clearOnRefresh
 	argument::
 		A Boolean.
 
+
 method::clearDrawing
+
 	If link::#-clearOnRefresh:: is code::false::, you can call this method to manually clear any drawing done in link::#-drawFunc:: so far.
 
 
 subsection:: Animation
 
+
 method::animate
+
 	Whether the view shall redraw itself internally at a regular time interval (frame rate). See link::#-frameRate:: for the way to adjust that interval.
 
 	The default value is code::false::.
@@ -75,18 +93,23 @@ method::animate
 	argument::
 		A Boolean.
 
-method::frameRate
-	The interval at which the view regularly redraws itself, if link::#-animate:: is code::true::. You can change the desired frame rate by setting this variable.
 
+method::frameRate
+
+	The interval at which the view regularly redraws itself, if link::#-animate:: is code::true::. You can change the desired frame rate by setting this variable.
 
 	The default frame rate is 60fps.
 
-	note:: Getting the value of this variable will return the average actual frame rate. If it is lower than the desired frame rate set as described above, that implies that the view tries but does not manage to redraw itself at that frame rate. The reason may typically be that the drawing defined in link::#-drawFunc:: is computationally too demanding for the system.
+	note::
+	Getting the value of this variable will return the average actual frame rate. If it is lower than the desired frame rate set as described above, that implies that the view tries but does not manage to redraw itself at that frame rate. The reason may typically be that the drawing defined in link::#-drawFunc:: is computationally too demanding for the system.
 	::
+
 argument::fps
 	A Float defining the interval between frames of animation, in frames per second.
 
+
 method::frame
+
 	The count of frames drawn while link::#-animate:: is code::true::; it will increase by 1 every time the view is redrawn.
 
 	If animation is stopped and started again (by setting code::animate:: to code::false:: and then code::true:: again), the frame count is restarted.
@@ -96,16 +119,20 @@ method::frame
 
 subsection:: Actions
 
+
 	The UserView by itself does not respond to any interaction by the user. You can define the modes of interaction entirely on your own using mouse and keyboard actions. See link::Guides/GUI-Introduction#Actions and hooks: Make that button do something!#Actions and Hooks:: for detailed explanation.
 
 	Note that there is no default mode of interaction with the UserView, so link::Classes/View#-action:: will never be triggered, if you don't implement that yourself.
 
+
 examples::
+
 
 'Introduction to GUI' contains an link::Guides/GUI-Introduction#Custom views#example:: with elaborate explanation on how to use UserView. Below are further examples.
 
 
 subsection:: Basic Usage
+
 
 Resize the window or click on the UserView to refresh the drawing:
 
@@ -157,6 +184,7 @@ w.refresh;
 
 
 subsection:: Responding to mouse clicks and movement
+
 
 Using link::Classes/View#Mouse actions#mouse actions:: you can make UserView change the way it is drawn in response to mouse interaction. The sequence of examples below will guide you through the various possibilities.
 
@@ -351,6 +379,7 @@ w.front;
 
 subsection:: Animation
 
+
 The following is an animation with mouse interaction. Click and drag in the view to move the center of the rotating object.
 
 code::
@@ -467,7 +496,9 @@ x.animate = true
 
 subsection:: Usage of refreshInRect(aRect)
 
-note:: This functionality is only available in strong::Cocoa GUI:: ::
+note::
+This functionality is only available in strong::Cocoa GUI::.
+::
 
 The code::refreshInRect:: method constrains the receiver's refresh area to the rectangle passed in aRect. You may use Quartz Debug's flash screen updates to see the refresh area of the view
 

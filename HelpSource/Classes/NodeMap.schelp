@@ -1,9 +1,12 @@
-class:: NodeMap
-summary:: store control values and bus mappings
+title:: NodeMap
+summary:: storescontrol values and bus mappings
 categories:: JITLib>NodeProxy, Server>Nodes, Server>Abstractions
 related:: Classes/Bus
 
+
 description::
+
+
 Object to store control values and bus mappings independently of a specific node.
 
 code::
@@ -12,51 +15,80 @@ a.set(\freq, [446, 662], \amp, 0.2, \out, Bus.audio(s));
 a.asOSCArgArray;
 ::
 
-InstanceMethods::
+
+instancemethods::
+
 
 method::set
+
 sets arguments of a node
 
+
 method::unset
+
 removes settings
 
+
 method::unmap
+
 removes mappings
 
+
 method::at
+
 returns setting at that key.
 
+
 method::sendToNode
-apply a setting to a node by sending a bundle
+
+applies a setting to a node by sending a bundle
+
 
 method::send
-apply a setting to a node by sending a bundle
+
+applies a setting to a node by sending a bundle
+
 
 method::addToBundle
+
 adds all my messages to the bundle
 
+
 method::addToEvent
+
 adds all my values to the event
 
+
 method::asOSCArgArray
+
 returns the arguments for an OSC message.
 
+
 method::unmapArgsToBundle
+
 returns the arguments for an OSC message to unmap any mapped controls.
 
+
 method::setMsg
+
 returns the OSC message for setting a synth
+
 argument::target
 a group, synth, or server to use as a nodeID to set.
 
+
 method::get
-Kept for backward compatibility.
+
+kept for backward compatibility.
+
 
 method::clear
+
 removes all settings and clears cache
 
 
-private::updateArgs, upToDate
+private:: updateArgs, upToDate
+
 
 examples::
 

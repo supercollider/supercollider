@@ -1,5 +1,5 @@
 title:: SuperCollider IDE
-summary:: A guide to the cross-platform SuperCollider coding environment
+summary:: a guide to the cross-platform SuperCollider coding environment
 categories:: Frontends
 keyword:: scide
 keyword:: editor
@@ -14,7 +14,9 @@ It runs equally well and looks almost the same on macOS, Linux and Windows 7. (I
 
 section:: Overview
 
-note:: Throughout this document, strong::Ctrl:: indicates the modifier key for keyboard shortcuts that is used on Linux and Windows platforms. strong::On macOS, use Cmd instead::.::
+note::
+Throughout this document, strong::Ctrl:: indicates the modifier key for keyboard shortcuts that is used on Linux and Windows platforms. strong::On macOS, use Cmd instead::.
+::
 
 Here is an annotated screenshot describing various components of the IDE.
 Click link::Guides/sc_ide_overview.png##here:: for a natural-size version.
@@ -42,6 +44,7 @@ will display the related document in the editor. The tabs can be drag-and-droppe
 
 subsection:: Docklets
 
+
 Around the central area described above, there are strong::dock areas:: where various other panels called strong::docklets:: are displayed. They are named so, because they can be moved around to different positions in the dock areas, or even be undocked to float above the main window, and they may also be hidden. You can show or hide each of the available docklets via the menu strong::View > Docklets::.
 
 Here is a list of available docklets:
@@ -66,9 +69,11 @@ list::
 
 section:: Getting help
 
+
 All the help options are accessible via the main menu under Help.
 
 The keyboard shortcut strong::Ctrl+D:: (as in Documentation) is the most handy way to get help. It will navigate the Help Browser to a help page related to the text around the cursor:
+
 list::
 ## If the cursor is at a class or a method name, its documentation will be displayed.
 ## If there is no class or method matching the text at the cursor, the help search results will be displayed for the text.
@@ -85,6 +90,7 @@ Using the strong::Ctrl+F:: shortcut while the Help Browser is focused, you are s
 
 
 section:: Starting up the system
+
 
 There is no SuperCollider fun without two crucial components:
 
@@ -109,6 +115,7 @@ section:: Code editor
 
 
 subsection:: Evaluating code
+
 
 To evaluate code, use one of the following keyboard commands:
 
@@ -143,11 +150,13 @@ To quickly evaluate a portion of code, you can also double-click on any bracket 
 
 To strong::stop:: any running code, use the strong::Ctrl+.:: shortcut (Ctrl+Period). This will stop all the code scheduled on the link::Tutorials/Getting-Started/14-Scheduling-Events##clocks::, as well as all the sound processes on the audio server.
 
-note:: If some code goes into a strong::infinite loop without a pause::, using Ctrl+. will not help to stop it. In this case, you will need to restart the interpreter (see link::#Starting up the system::).
+note::
+If some code goes into a strong::infinite loop without a pause::, using Ctrl+. will not help to stop it. In this case, you will need to restart the interpreter (see link::#Starting up the system::).
 ::
 
 
 subsection:: Automatic indentation
+
 
 The editor helps you by automatically indenting lines according to opening and closing brackets as you type. With every new line, the indentation will be increased if there is an opening bracket on the previous line. As you continue to type closing brackets, the indentation will decrease to align with the matching opening brackets.
 
@@ -160,6 +169,7 @@ The indentation can either use strong::tab characters or spaces::, which you can
 
 subsection:: Automatic completion
 
+
 As you type, the editor will try to find possible continuations of your code, and pop up a list of suggestions, so you can quickly insert one instead of typing the whole text. This is called emphasis::autocompletion:: and is a great aid towards writing code faster and with less errors.
 
 In general, this works for class and method names. These are the things that the editor can autocomplete:
@@ -167,28 +177,36 @@ In general, this works for class and method names. These are the things that the
 list::
 
 ## strong::Class names::
+
 code::
 Sin<...>
 ::
+
 When you have typed at least 3 letters of a class name, a list of classes beginning with these letters will be shown.
 
 ## strong::Method names following class names::
+
 code::
 Array.<...>
 ::
+
 When you type a dot after a class name, a list of methods of that class will be shown.
 
 ## strong::Method names following literals and built-ins::
+
 code::
 123.<...>
 currentEnvironment.<...>
 ::
+
 When you type a dot after a literal (number, string, symbol, etc.) or a built-in (currentEnvironment, thisProcess, etc.), a list of instance methods of their classes will be shown.
 
 ## strong::Method names following a variable name::
+
 code::
 value.lin<...>
 ::
+
 When you type a dot and 3 letters after a variable, a list of all methods of all classes starting with these letters will be shown (because the class of the variable is not known).
 ::
 
@@ -201,16 +219,20 @@ If the autocompletion menu is not shown, you can show it using strong::Ctrl+Spac
 
 subsection:: Method call assistance
 
+
 The editor helps you when writing arguments of a method by showing you a complete list of the method's arguments and their default values, as long as it manages to figure out exactly which method that is. This is called emphasis::method call assistance::. It helps you to know exactly which argument you are typing, and reduces the need to look into documentation.
 
 The assistance is activated as soon as you type an opening parenthesis after a method name, at which point a box containing the arguments will pop up. However, if the class of the method is not known, first a menu of classes that implement the method will be shown, and after you select one of the classes using the arrow keys or the Page Up and Page Down keys, and press Return, the box with arguments will pop up.
 
 So, for example, in the following cases method call assistance will pop up immediately:
+
 code::
 SinOsc.ar(
 123.forBy(
 ::
+
 ...while in the following cases, you will first need to select a class, because the class is not known:
+
 code::
 min(
 x.play(
@@ -222,11 +244,13 @@ If method call assistance is not shown, you can activate it using strong::Ctrl+S
 
 section:: Tool panels
 
+
 All tool panels are listed and may be activated via the main menu strong::View > Tool Panels::. To close the
 currently displayed panel, press strong::Escape::.
 
 
 subsection:: Find and Replace
+
 
 Shortcuts: Find: strong::Ctrl+F:: / Replace: strong::Ctrl+R::
 
@@ -255,12 +279,14 @@ We will not go here into details about regular expression. To learn more, we wou
 
 subsection:: Go-To-Line
 
+
 Shortcut: strong::Ctrl+L::
 
 Using the Go-To-Line tool, you can quickly jump to a line in the current document, by number. Just enter the line number and press Return.
 
 
 subsection:: Comand Line
+
 
 Shortcut: strong::Ctrl+E::
 
@@ -271,16 +297,19 @@ Use the Up and Down arrow keys to navigate through the strong::history:: of eval
 
 section:: Class library navigation
 
+
 Often it is very useful to be able to jump directly to a place in a file, where a particular class or method is implemented, or to find all the places where a class or a method name is used. The IDE offers practical ways to achieve that.
 
 
 subsection:: Look up implementations
+
 
 The strong::Ctrl+I:: shortcut with the text cursor at a method or a class name will open a dialog with a list of places where that method or class is implemented. By selecting one of the entries and pressing Return, the IDE will open the file and position the text cursor at the location you are looking for.
 
 Note that the Ctrl+I shortcut works in various places in the IDE, wherever there may be code: the Editor, the Command Line, the Post Window, or the Help Browser. It will always use the text around the cursor or the selected text (if any) to look for a method or a class with a matching name.
 
 The list in the dialog is formed as follows:
+
 list::
 ## If you are looking up a class name, the class and all its methods including those of its superclasses will be listed.
 ## If you are looking up a method name, all the methods of all classes with that name will be listed.
@@ -294,6 +323,7 @@ The strong::Ctrl+Shift+I:: shortcut will open the dialog empty, regardless of po
 
 subsection:: Look up references
 
+
 The strong::Ctrl+U:: shortcut will open a dialog similar to the one described above, except that it will list places where a method or a class with a particular name is emphasis::used::. Note that this only searches class files in the class library, not regular code files.
 
 Just as the Ctrl+I shortcut described above, Ctrl+U will work at any place in the IDE where there may be code.
@@ -302,6 +332,7 @@ The strong::Ctrl+Shift+U:: shortcut will open the dialog empty, regardless of po
 
 
 section:: Sessions
+
 
 Sessions preserve the state of the IDE at the time of quitting, so next time you use it you can resume with the same arrangement of open documents and link::#Docklets#docklets:: automatically.
 
@@ -321,13 +352,14 @@ By default, the IDE starts with the strong::last session:: used before closing, 
 section:: Various handy shortcuts
 
 definitionlist::
-## Focus Post Window: Ctrl+P ||  Gives focus to the Post Window. Then you can use arrow keys and Page Up / Page Down to scroll through output from the interpreter. Press Tab to return to the Code Editor.
+## Focus Post Window: Ctrl+P ||  Gives focus to the Post Window. Then you can use arrow keys and page up/down keys to scroll through output from the interpreter. Press Tab to return to the Code Editor.
 ## Clear Post Window: Ctrl+Shift+P || Clears the Post Window contents.
 ## Enlarge/Shrink Font: Ctrl++ / Ctrl+- || Enlarges or shrinks font in Code Editor, Post Window, or Help Browser.
 ::
 
 
 section:: Customization
+
 
 Many customization options are available in the IDE configuration dialog, accessible via "Edit > Preferences" menu action.
 

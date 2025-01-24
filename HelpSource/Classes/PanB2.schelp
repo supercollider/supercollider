@@ -1,23 +1,29 @@
-class:: PanB2
-summary:: 2D Ambisonic B-format panner.
+title:: PanB2
+summary:: 2D Ambisonic B-format panner
+categories:: UGens>Multichannel>Ambisonics
 related:: Classes/BiPanB2, Classes/DecodeB2, Classes/PanB, Classes/Rotate2
-categories::  UGens>Multichannel>Ambisonics
 
 
 description::
+
+
 Encodes a mono signal to 2-dimensional ambisonic B-format.
 
 
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-The input signal.
+the input signal.
+
 argument::azimuth
-Position around the circle from -1 to +1. -1 is behind, -0.5 is
+position around the circle from -1 to +1. -1 is behind, -0.5 is
 left, 0 is forward, +0.5 is right, +1 is behind.
+
 argument::gain
-Amplitude control.
+amplitude control.
 
 
 examples::

@@ -1,7 +1,8 @@
-class:: FilterPattern
+title:: FilterPattern
 summary:: abstract class that holds a pattern to be modified
-related:: Classes/ListPattern
 categories:: Streams-Patterns-Events>Patterns>Filter
+related:: Classes/ListPattern
+
 
 examples::
 

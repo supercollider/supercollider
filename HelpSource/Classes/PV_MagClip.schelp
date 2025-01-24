@@ -1,19 +1,25 @@
-class:: PV_MagClip
-summary:: Clip bins to a threshold.
-related:: Classes/FFT, Classes/IFFT, Classes/PV_MagAbove, Classes/PV_LocalMax, Classes/PV_MagBelow
+title:: PV_MagClip
+summary:: clip bins to a threshold
 categories:: UGens>FFT
+related:: Classes/FFT, Classes/IFFT, Classes/PV_MagAbove, Classes/PV_LocalMax, Classes/PV_MagBelow
+
 
 description::
+
+
 Clips bin magnitudes to a maximum threshold.
 
 
 classmethods::
 
+
 method::new
+
 argument::buffer
 FFT buffer.
+
 argument::threshold
-Magnitude threshold.
+magnitude threshold.
 
 
 examples::

@@ -1,9 +1,12 @@
-class:: SCImageKernel
+title:: SCImageKernel
 summary:: kernel class to use with SCImage
 categories:: GUI>Views
 related:: Classes/SCImage, Classes/SCImageFilter
 
+
 description::
+
+
 code::// very experimental :)::
 
 Currently this class represents the CoreImage strong::CIKernel:: you can apply to a link::Classes/SCImage::. The Kernel language is a subset of the OpenGL Shading Language. more information about the Kernel Language can be found here : http://developer.apple.com/documentation/GraphicsImaging/Reference/CIKernelLangRef/Introduction/chapter_1_section_1.html
@@ -21,33 +24,50 @@ table::
 ## __table || link::Classes/SCImage:: (basically the __table modifier just use Images as a data providers - LUT)
 ::
 
-CLASSMETHODS::
 
-METHOD::new
+classmethods::
+
+
+method::new
+
 creates a new SCImageKernel
+
 argument::shader
-optional. the shader code string. code::nil:: by default
+optional. the shader code string. code::nil:: by default.
+
 argument::values
-optional. the values that match the kernel proc function defined in the shader string. code::nil:: by default
+optional. the values that match the kernel proc function defined in the shader string. code::nil:: by default.
+
 argument::bounds
-optional. not used for now. code::nil:: by default
+optional. not used for now. code::nil:: by default.
 
-INSTANCEMETHODS::
 
-METHOD::shader
+instancemethods::
+
+
+method::shader
+
 gets/sets the shader string.
 
-METHOD::values
+
+method::values
+
 gets/sets the values array. When setting the object indexes in the values Array must match the argument declaration order as defined in the main emphasis::kernel vec4 routine::. See link::#examples:: for more info.
 
-METHOD::isValid
+
+method::isValid
+
 very basic verification to tell if all arguments of the shader are set.
 
-METHOD::compile
+
+method::compile
+
 compiles the SCImageKernel object (and cache it).
-NOTE::
+
+note::
 when rendered the first time, the kernel object is always compiled first. If you plan to change the shader string after, you must explicitely compile it to make it effective.
 ::
+
 
 examples::
 

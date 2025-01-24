@@ -1,92 +1,143 @@
-class:: Point
+title:: Point
 summary:: Cartesian point
-related:: Classes/Polar, Classes/Complex
 categories:: Geometry
+related:: Classes/Polar, Classes/Complex
+
 
 description::
+
+
 defines a point on the Cartesian plane.
+
 
 classmethods::
 
+
 method::new
+
 defines a new point.
+
 
 instancemethods::
 
 
 subsection:: Accessing
 
+
 method::x
+
 gets/sets the x coordinate value.
 
+
 method::y
+
 gets/sets the y coordinate value.
 
+
 method::set
+
 sets the point x and y values.
 
 
 subsection:: Testing
 
+
 method::==
+
 returns a Boolean whether the receiver equals the argument.
 
+
 method::hash
+
 returns a hash value for the receiver.
 
 
 subsection:: Math
 
+
 method::+
-Addition.
+
+addition.
+
 
 method::-
-Subtraction.
+
+subtraction.
+
 
 method::*
-Multiplication.
+
+multiplication.
+
 
 method::/
-Division.
+
+division.
+
 
 method::translate
-Addition by a Point.
+
+addition by a Point.
+
 
 method::scale
-Multiplication by a Point.
+
+multiplication by a Point.
+
 
 method::rotate
-Rotation about the origin by the angle given in radians.
+
+rotation about the origin by the angle given in radians.
+
 
 method::abs
-Absolute value of the point.
+
+absolute value of the point.
+
 
 method::rho
+
 returns the polar coordinate radius of the receiver.
 
+
 method::theta
+
 returns the polar coordinate angle of the receiver.
 
+
 method::dist
+
 returns the distance from the receiver to aPoint.
 
+
 method::transpose
+
 returns a Point whose x and y coordinates are swapped.
 
+
 method::round
+
 rounds the coordinate values to a multiple of quantum.
 
+
 method::trunc
+
 truncates the coordinate values to a multiple of quantum.
 
 
 subsection:: Conversion
 
+
 method::asPoint
+
 returns the receiver.
 
+
 method::asComplex
+
 returns a complex number with x as the real part and y as the imaginary part.
 
+
 method::asString
+
 returns a string representing the receiver.

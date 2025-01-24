@@ -1,20 +1,25 @@
-class:: Pause
-summary:: When triggered, pauses a node.
+title:: Pause
+summary:: when triggered, pauses a node
+categories:: UGens>Synth control
 related:: Classes/Free
-categories::  UGens>Synth control
 
 
 description::
+
+
 When triggered, pauses a node.
 
 
 classmethods::
 
+
 method::kr
+
 argument::gate
-When gate is 0, node is paused, when 1 it runs.
+when gate is 0, node is paused, when 1 it runs.
+
 argument::id
-Node to be paused.
+node to be paused.
 
 
 examples::

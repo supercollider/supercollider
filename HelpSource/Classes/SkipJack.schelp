@@ -1,9 +1,12 @@
-class:: SkipJack
-summary:: A utility for background tasks that survive cmd-period
+title:: SkipJack
+summary:: a utility for background tasks that survive cmd-period
 categories:: Scheduling, JITLib>GUI
 related:: Classes/CmdPeriod
 
+
 description::
+
+
 SkipJack is a utility to run a function in the background repeatedly, that survive cmd-period.
 
 A typical use is with a window displaying the state of some objects every now and then. (This is better in some cases than
@@ -11,71 +14,115 @@ updating the GUI at every change. If the changes happen fast, you don't choke yo
 
 But SkipJack is useful whenever you need a periodic function to run in the background and not go away if the user hits cmd-period.
 
-ClassMethods::
 
-private::initClass
+classmethods::
+
+
+private:: initClass
+
 
 method::new
+
 argument::updateFunc
-A link::Classes/Function:: to repeat in the background.
+a link::Classes/Function:: to repeat in the background.
+
 argument::dt
-The time interval at which to repeat. It can also be a stream or a function that returns a number.
+the time interval at which to repeat. It can also be a stream or a function that returns a number.
+
 argument::stopTest
-A test whether to stop the task now. Usually a Function.
+a test whether to stop the task now. Usually a Function.
+
 argument::name
-A name for this skipjack. Used for posting information and in the link::#*stop:: classmethod.
+a name for this skipjack. Used for posting information and in the link::#*stop:: classmethod.
+
 argument::clock
-The clock that plays the task. The default is link::Classes/AppClock::, so SkipJack can call GUI primitives. If you need more precise timing, you can supply your own clock, and use defer only where necessary.
+the clock that plays the task. The default is link::Classes/AppClock::, so SkipJack can call GUI primitives. If you need more precise timing, you can supply your own clock, and use defer only where necessary.
+
 argument::autostart
-When code::true:: (default) SkipJack starts automatically as it is created.
+when code::true:: (default) SkipJack starts automatically as it is created.
+
 
 method::stop
+
 stops a skipjack by name.
 
+
 method::stopAll
+
 stops all skipjacks.
 
+
 method::defaultClock
-The default clock (AppClock)
+
+the default clock (AppClock)
+
 
 method::verbose
-When code::true::, SkipJack posts messages when it starts, stops or restarts.
+
+when code::true::, SkipJack posts messages when it starts, stops or restarts.
+
 
 method::all
-The global set of all skipjacks.
 
-Instancemethods::
+the global set of all skipjacks.
+
+
+instancemethods::
+
+
 private:: cmdPeriod
 
+
 method::dt
+
 gets/sets the time interval.
 
+
 method::task
-The internal Routine that wraps updateFunc.
+
+the internal Routine that wraps updateFunc.
+
 
 method::name
-The name of this skipjack.
+
+the name of this skipjack.
+
 
 method::stopTest
-The current stopTest. (see argument in link::#*new::)
+
+the current stopTest. (see argument in link::#*new::)
+
 
 method::start
-Start this skipjack.
+
+starts this skipjack.
+
 
 method::play
-Same as code::start::
+
+same as code::start::
+
 
 method::stop
+
 stops this skipjack.
 
+
 method::clock
+
 gets/sets the clock used. This will only be updated when the skipjack restarts.
 
+
 method::updateFunc
-The updateFunc set by the argument to link::#*new::
+
+the updateFunc set by the argument to link::#*new::
+
 
 examples::
+
+
 Simple example:
+
 code::
 w = SkipJack({ "watch...".postln }, 0.5, name: "test");
 SkipJack.verbose = true;    // post stop/wakeup logs
@@ -90,6 +137,7 @@ w.stop;
 ::
 
 Using stopTest:
+
 code::
 a = 5;
 w = SkipJack({ "watch...".postln }, 0.5, { a == 10 }, "test");
@@ -97,6 +145,7 @@ a = 10;	// fulfill stopTest
 ::
 
 Typical use: SkipJack updates a window displaying the state of some objects every now and then.
+
 code::
 (
 d = (a: 12, b: 24);
@@ -123,6 +172,7 @@ d.win.close;    // when window closes, SkipJack stops.
 ::
 
 If you need to get rid of an unreachable skipjack:
+
 code::
 SkipJack({ "unreachable, unkillable...".postln }, name: "jack");
 

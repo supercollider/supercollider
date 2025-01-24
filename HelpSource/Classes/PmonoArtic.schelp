@@ -1,9 +1,12 @@
-class:: PmonoArtic
+title:: PmonoArtic
 summary:: partly monophonic event stream
-related:: Classes/Pbind, Classes/Pmono
 categories:: Streams-Patterns-Events>Patterns>Event
+related:: Classes/Pbind, Classes/Pmono
+
 
 description::
+
+
 Like link::Classes/Pmono::, PmonoArtic plays one synth at a time (where successive events change the parameters of the existing synth node). PmonoArtic, however, allows events to re-articulate and supports staccato in the middle of a monophonic phrase.
 
 If an event specifies a 'sustain' value shorter than the event delta, it means the synth should not sustain all the way through to the next event. In that case, the node will be released according to 'sustain' and the next event will start a new synth.
@@ -11,6 +14,7 @@ If an event specifies a 'sustain' value shorter than the event delta, it means t
 If sustain >= delta, the synth will play through and its parameters will change (just like link::Classes/Pmono::).
 
 Since sustain is calculated as code::~dur * ~legato::, this means code::~legato < 1.0:: causes re-articulation while code::~legato >= 1.0:: causes a slur.
+
 
 examples::
 

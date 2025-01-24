@@ -1,18 +1,23 @@
-CLASS:: Stethoscope
-summary:: An oscilloscope
+title:: Stethoscope
+summary:: an oscilloscope
 categories:: GUI>Interfaces
 related:: Classes/ScopeView, Classes/FreqScope
 
+
 description::
+
+
 Stethoscope provides a complete oscilloscope GUI. It displays a window containing a bus-plotting link::Classes/ScopeView:: and an interface to configure the plotting and choose among the buses.
 
 
 subsection:: Creation by message .scope
 
+
 Several classes provide a convenient 'scope' method that creates a Stethoscope to display their data. See for example: link::Classes/Server#-scope::, link::Classes/Bus#-scope::, link::Classes/Function#-scope::.
 
 
 subsection:: Keyboard shortcuts
+
 
 The following keyboard shortcuts may be used when focused on the Stethoscope display:
 
@@ -33,11 +38,15 @@ table::
 ## Shift+A || allocate buffer size so it fills the screen (to next power of two) (this can be dangerous, might crash)
 ::
 
-CLASSMETHODS::
 
-PRIVATE:: key
+classmethods::
+
+
+private:: key
+
 
 method::new
+
     Creates a Stethoscope, either as a window, or placed on a given parent view.
 
     argument::server
@@ -59,6 +68,7 @@ method::new
 
     discussion:
     Example:
+
 code::
 s.boot
 { SinOsc.ar([330, 440], 0, 0.4) }.play;
@@ -67,6 +77,7 @@ Stethoscope(s, 2);
 
 
 method::isValidServer
+
     Tests whether Stethoscope can operate on the given server (any local server. See link::Classes/Server#-isLocal::).
 
     argument::
@@ -74,7 +85,9 @@ method::isValidServer
     returns:: 
         A Boolean.
 
+
 method::ugenScopes
+
     Returns an array of the running ugen scopes.
 
 code::
@@ -83,42 +96,57 @@ s.boot
 Stethoscope.ugenScopes; // returns the ugen scopes
 ::
 
+
 method::tileBounds
+
     A utility method used by link::Classes/UGen#-scope:: to tile scope windows.
 
     returns:: 
         A Rect.
 
 
-
-INSTANCEMETHODS::
+instancemethods::
 
 
 subsection:: Data
 
+
 method::server
+
     The server on which the scope operates.
 
+
 method::rate
+
     Whether to operate on audio or control busses.
     argument::
         One of the two symbols: code::\audio:: or code::\control::.
 
+
 method::index
+
     The starting index of the busses to scope.
     argument::
         An Integer.
 
+
 method::numChannels
+
     The amount of adjacent busses to scope (from link::#-index:: on).
     argument::
         An Integer.
 
+
 method::bufsize
+
    Defines the maximum allowed link::#-cycle::.
 
+
 method::cycle
-    note:: Only available in Qt GUI ::
+
+    note::
+    Only available in Qt GUI
+    ::
 
     The exact scoping period, in signal frames. Reciprocal to what is also known as emphasis::sweep speed:: in analog oscilloscopes. It is dynamically adjustable while the scope is running.
 
@@ -129,37 +157,51 @@ method::cycle
 
 subsection:: Display
 
+
 method::window
+
     The (parent) Window of the scope.
 
+
 method::bounds
+
     The position and size of the window. The position is relative to the bottom-left corner of the screen.
     argument::
         A link::Classes/Rect::, or any object responding to the link::Search#asRect#.asRect:: method. The width less than 264 will be changed to 264, the minimum width.
     returns:: 
         A Rect.
+
 code::
 s.scope.bounds_(Rect(100, 200, 500, 600));
 s.scope.bounds_([100, 200, 500, 600]);
 s.scope.bounds_(Size(500, 600));
 ::
+
 code::
 s.scope.bounds_(Rect(0, 0, 500, 600));
 s.scope.bounds_(500@600);
 ::
 
+
 method::size
+
     Sets the width and the height of the scope window.
     argument::
         An Integer (the window is square).
 
+
 method::toggleSize
+
     Toggle between small and large size.
 
+
 method::zoom
+
     A synonym for link::#-xZoom::.
 
+
 method::xZoom
+
     Magnifies the displayed wave horizontally to the given factor.
 
     This sets link::#-cycle:: to code::1024 * xZoom.reciprocal::.
@@ -167,13 +209,17 @@ method::xZoom
     argument::
         A Float.
 
+
 method::yZoom
+
     Magnifies the displayed wave vertically to the given factor.
 
     argument::
         A Float.
 
+
 method::style
+
     The plotting style:
     list::
     ## 0 = the channels are vertically spaced
@@ -189,24 +235,30 @@ method::style
 
 subsection:: Operation
 
+
 method::run
+
     Starts the scope, if not already running.
 
+
 method::quit
+
     Closes the window, and cleans up any used synths and buffers.
 
 
 subsection:: Convenience
 
-method::setProperties
-    Sets several properties at once: link::#-numChannels::, link::#-index::, link::#-bufsize::, link::#-zoom::, and link::#-rate::.
 
+method::setProperties
+
+    Sets several properties at once: link::#-numChannels::, link::#-index::, link::#-bufsize::, link::#-zoom::, and link::#-rate::.
 
 
 examples::
 
 
 subsection:: A step-by-step example
+
 code::
 s.boot;
 (
@@ -247,6 +299,7 @@ c.scope;
 
 
 subsection:: Multi-channel Lissajou plots
+
 code::
 (
 { 
@@ -263,6 +316,8 @@ c.style = 2;
 
 
 subsection:: Embedded use
+
+
 You can pass your own view in to add a stethoscope to it:
 
 code::

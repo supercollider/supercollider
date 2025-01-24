@@ -1,15 +1,18 @@
 title:: FFT Overview
-summary:: Overview of the Fast Fourier Transform (FFT) UGens
+summary:: overview of the Fast Fourier Transform (FFT) UGens
 categories:: UGens>FFT
 related:: Classes/FFT, Classes/IFFT
 
 
 section:: FFT and IFFT
 
+
 SuperCollider implements a number of UGens supporting Fast Fourier Transform (FFT) based processing. The most basic of these are FFT and IFFT (inverse-FFT) which convert data between the time and frequency domains:
+
 code::
 chain = FFT(buffer, input)
 ::
+
 code::
 output = IFFT(chain)
 ::
@@ -20,13 +23,14 @@ FFT requires a link::Classes/Buffer:: or link::Classes/LocalBuf::. The buffer's 
 
 section:: How FFT UGens communicate
 
+
 link::Classes/FFT:: stores spectral data in the buffer, in the following format:
 
 table::
 ## DC || nyquist || real 1f || imag 1f || real 2f || imag 2f ||  ... || real (N-1)f ||  imag (N-1)f
 ::
 
-where code::f:: is the frequency corresponding to the window size, and code::N:: is the window size / 2.
+where code::f:: is the frequency corresponding to the window size, and code::N:: is teletype::the window size / 2::.
 
 
 
@@ -52,10 +56,10 @@ b.free; // free the buffer again
 
 section:: Phase Vocoder UGens and Spectral Processing
 
+
 In between an FFT and an IFFT one can chain together a number of Phase Vocoder UGens (i.e. code::PV_...::) to manipulate blocks of spectral data before reconversion. The process of buffering the appropriate amount of audio, windowing, conversion, overlap-add, etc. is handled automatically.
 
 See link::#PV and FFT UGens in the Standard Library:: for a list of UGens.
-
 
 code::
 (
@@ -88,7 +92,9 @@ For more examples, see link::#Multichannel Expansion with FFT UGens::
 
 subsection:: Parallel FFT chains
 
+
 PV UGens write their output data emphasis:: in place ::, i.e. back into the same buffer from which they read. PV UGens which require two buffers write their data into the first buffer, usually called 'bufferA'.
+
 code::
 
 (
@@ -131,9 +137,12 @@ d.free;
 
 subsection:: Copying FFT chains
 
+
 Because each PV UGen overwrites the output of the previous one, it is necessary to copy the data to an additional buffer at the desired point in the chain in order to do parallel processing of input without using multiple FFT UGens. link::Classes/PV_Copy:: allows for this.
 
-note::As of SC 3.7 instances of PV_Copy are added automatically where necessary for parallel processing. Existing code explicitly using PV_Copy should continue to work.::
+note::
+As of SC 3.7 instances of PV_Copy are added automatically where necessary for parallel processing. Existing code explicitly using PV_Copy should continue to work.
+::
 
 code::
 
@@ -175,6 +184,7 @@ x = { var inA, chainA, chainB;
 
 subsection:: Plotting magnitudes
 
+
 Note that PV UGens convert as needed between cartesian (complex) and polar representations, therefore when using multiple PV UGens it may be impossible to know in which form the values will be at any given time. FFT produces complex output (see above). The following, however, returns a reliable magnitude plot:
 
 code::
@@ -210,6 +220,7 @@ x.free;
 
 subsection:: UGen access to FFT data
 
+
 It is possible to manipulate the FFT data directly within a synth graph (if there doesn't already exist a PV UGen which will do what you want), using the methods pvcalc, pvcalc2, pvcollect. Here's an example which uses the  methods link::Classes/SequenceableCollection#-clump:: and link::Classes/SequenceableCollection#-flop:: to rearrange the order of the spectral bins:
 
 code::
@@ -237,6 +248,7 @@ section:: Multichannel Expansion with FFT UGens
 
 
 Care must be taken when using multichannel expansion with FFT UGens, as they require separate buffers. Code such as this can be deceptive:
+
 code::
 chain = FFT(bufnum, { WhiteNoise.ar(0.2) }.dup);
 ::
@@ -278,12 +290,14 @@ b.free;
 ::
 
 Note that dup on a UGen just makes a reference to that UGen, because UGen defines -copy to simply return the receiver. (See link::Classes/UGen:: for more detail.)
+
 code::
 a = SinOsc.ar;
 a.dup[1] === a
 
 true
 ::
+
 Code like code::IFFT(chain).dup:: is found throughout the PV help files , and is just a convenient way to copy a mono signal to stereo, without further computation.
 
 See also link::Guides/Multichannel-Expansion::.
@@ -291,7 +305,9 @@ See also link::Guides/Multichannel-Expansion::.
 
 section:: PV and FFT UGens in the Standard Library
 
+
 The following PV UGens are included in the standard SC distribution:
+
 definitionlist::
 ## link::Classes/FFT:: || Fast Fourier Transform
 ## link::Classes/IFFT:: || Inverse Fast Fourier Transform
@@ -328,4 +344,5 @@ definitionlist::
 ## link::Classes/PV_RectComb2:: || make gaps in spectrum
 ## link::Classes/UnpackFFT::, link::Classes/PackFFT::, link::Classes/Unpack1FFT:: || "unpacking" components used in pvcalc, pvcalc2, pvcollect (can also be used on their own)
 ::
+
 For a full list of FFT UGens, see strong::UGens>FFT:: in the link::Browse#UGens>FFT:: page.

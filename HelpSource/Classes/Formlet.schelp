@@ -1,15 +1,18 @@
-class:: Formlet
-summary:: FOF-like filter.
+title:: Formlet
+summary:: FOF-like filter
+categories:: UGens>Filters>Linear
 related:: Classes/RHPF, Classes/RLPF, Classes/Resonz, Classes/Ringz
-categories::  UGens>Filters>Linear
 
 
 description::
+
+
 This is a resonant filter whose impulse response is like that of a sine
 wave with a  link::Classes/Decay2::  envelope over it. It is possible to
 control the attacktime and decaytime.
 
 Formlet is equivalent to:
+
 code::
 Ringz(in, freq, decaytime) - Ringz(in, freq, attacktime)
 ::
@@ -18,24 +21,32 @@ The great advantage to this filter over FOF is that there is no limit to
 the number of overlapping grains since the grain is just the impulse
 response of the filter.
 
-Note::
+note::
 The amplitude of the resulting signal depends on the server's sample rate. See link::Classes/Ringz#Interaction with sample rate#Ringz: Interaction with sample rate:: for details.
 ::
 
 
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-The input signal.
+the input signal.
+
 argument::freq
-Resonant frequency in Hertz.
+resonant frequency in Hertz.
+
 argument::attacktime
 60 dB attack time in seconds.
+
 argument::decaytime
 60 dB decay time in seconds.
+
 argument::mul
+
 argument::add
+
 discussion::
 Note that if attacktime == decaytime then the signal cancels out and if
 attacktime > decaytime then the impulse response is inverted.

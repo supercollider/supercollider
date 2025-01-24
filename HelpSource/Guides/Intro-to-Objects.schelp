@@ -1,10 +1,11 @@
 title:: Introduction to Objects
-summary:: Introduction to objects and messages
+summary:: introduction to objects and messages
 categories:: Language>OOP
 related:: Reference/Classes, Classes/Class, Classes/Object, Reference/Messages, Guides/Polymorphism
 
 
 section:: Objects and Messages
+
 
 The SuperCollider language is an object oriented language. All entities in the language are objects.
 An object is something that has data, representing the object's state, and a set of operations that can be performed on the object. All objects are instances of some class which describes the structure of the object and its operations.
@@ -27,6 +28,7 @@ See link::Reference/Messages:: for more information about messages.
 
 section:: Classes, Instance Variables, Methods
 
+
 An object's class contains the description of the object's data and operations. A class also describes how to create an object which is an instance of that class.
 
 An object's data is contained in its instance variables. These are named variables that describe the object's state.
@@ -42,6 +44,7 @@ See link::Reference/Classes:: for more details about instance and class variable
 
 
 section:: Summary of Terminology
+
 definitionlist::
 ## object || something that has data, representing the object's state, and a set of operations that can be performed on the object.
 ## message || a request for an object to perform an operation.

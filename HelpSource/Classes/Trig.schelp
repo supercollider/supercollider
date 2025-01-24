@@ -1,10 +1,12 @@
-class:: Trig
-summary:: Timed trigger.
+title:: Trig
+summary:: timed trigger
+categories:: UGens>Triggers
 related:: Classes/Trig1
-categories::  UGens>Triggers
 
 
 description::
+
+
 When a nonpositive to positive transition occurs at the input, Trig
 outputs the level of the triggering input for the specified duration,
 otherwise it outputs zero.
@@ -12,12 +14,15 @@ otherwise it outputs zero.
 
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-Trigger. Trigger can be any signal. A trigger happens when the
+trigger. Trigger can be any signal. A trigger happens when the
 signal changes from non-positive to positive.
+
 argument::dur
-Duration of the trigger output.
+duration of the trigger output.
 
 
 examples::

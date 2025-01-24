@@ -1,13 +1,15 @@
-class:: NodeProxyEditor
+title:: NodeProxyEditor
 summary:: editor for a nodeproxy - replaced by NdefGui!
 categories:: JITLib>GUI, Live Coding
 related:: Classes/NdefGui
 
+
 description::
+
 warning::
 NodeProxyEditor has been rewritten and renamed link::Classes/NdefGui::, which has the same functionality, but is both more consistent and more flexible. There are some changes to the strong::*new:: method:
 
-definitionList::
+definitionlist::
 ## instead of || *new(proxy, nSliders = 16, parent, extras = [\CLR, \reset, \scope, \doc, \end, \fade], monitor, sinks, morph)
 ## NdefGui uses || *new(object, numItems = 0, parent, bounds, makeSkip, options)
 ::
@@ -22,20 +24,25 @@ NodeProxyEditor provides controls for handling and editing a node proxy and its 
 list::
 ## sliders for numerical settings
 ## mapping of kr proxies to parameters
-## optional controls for playing / monitoring
+## optional controls for playing and monitoring
 ::
 
 link::Classes/NodeProxy:: and link::Classes/Ndef:: implement an strong::edit:: message, which returns a link::Classes/NodeProxyEditor::. Overview: link::Overviews/JITLib::
 
-ClassMethods::
 
-private::initClass
+classmethods::
+
+
+private:: initClass
 
 
 subsection:: Creation
 
+
 method::new
+
 returns a new instance for a given proxy. If a window (win) or a composite view is given, it uses this.
+
 
 examples::
 

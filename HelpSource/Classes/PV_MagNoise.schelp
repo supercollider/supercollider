@@ -1,15 +1,20 @@
-class:: PV_MagNoise
-summary:: Multiply magnitudes by noise.
-related:: Classes/FFT, Classes/IFFT
+title:: PV_MagNoise
+summary:: multiplies magnitudes by noise
 categories:: UGens>FFT
+related:: Classes/FFT, Classes/IFFT
+
 
 description::
+
+
 Magnitudes are multiplied with noise.
 
 
 classmethods::
 
+
 method::new
+
 argument::buffer
 FFT buffer.
 

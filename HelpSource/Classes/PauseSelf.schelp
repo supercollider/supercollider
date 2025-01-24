@@ -1,19 +1,23 @@
-class:: PauseSelf
-summary:: When triggered, pause enclosing synth.
+title:: PauseSelf
+summary:: when triggered, pause enclosing synth
+categories:: UGens>Synth control
 related:: Classes/FreeSelf
-categories::  UGens>Synth control
 
 
 description::
+
+
 Pause enclosing synth when input signal crosses from non-positive to
 positive.
 
 
 classmethods::
 
+
 method::kr
+
 argument::in
-The input signal.
+the input signal.
 
 
 examples::

@@ -1,12 +1,14 @@
-class:: Pevent
-summary:: Provide an inval for an event stream.
-related:: Classes/Pkey, Classes/Pchain
+title:: Pevent
+summary:: provides an inval for an event stream
 categories:: Streams-Patterns-Events>Patterns
+related:: Classes/Pkey, Classes/Pchain
 
 This pattern is mainly used in two cases:
+
 definitionlist::
 ## using an event pattern as a stream directly
 ||
+
 code::
 a = Pbind(\note, Prand([1, 2, 3], inf)).asStream;
 a.next; // returns nil
@@ -16,9 +18,11 @@ a.next; // returns an event
 
 ## setting some default values before they are processed by the pattern
 ||
+
 code::
 Pevent(Pbind(\harmonic, Pseq([24, 25, 29, 30], inf)), (octave: 3, dur: 0.2)).trace.play;
 ::
+
 ::
 
 Pevent is a simpler form of link::Classes/Pchain::, so that these are equivalent:
@@ -31,13 +35,18 @@ pattern <> event
 
 By contrast to Pchain, Pevent uses an  link::Classes/Event#*default:: if nothing is provided.
 
-ClassMethods::
+
+classmethods::
+
 
 method::new
+
 argument::pattern
 pattern or stream that returns or modifies events.
+
 argument::event
 an event with objects to embed.  If none is provided, it uses link::Classes/Event#*default::.
+
 
 examples::
 

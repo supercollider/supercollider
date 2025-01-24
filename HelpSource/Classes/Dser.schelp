@@ -1,9 +1,12 @@
-class:: Dser
-summary:: Demand rate sequence generator.
-related:: Classes/Demand, Classes/Drand, Classes/Dseq, Classes/Duty, Classes/Dxrand, Classes/TDuty
+title:: Dser
+summary:: demand rate sequence generator
 categories:: UGens>Demand
+related:: Classes/Demand, Classes/Drand, Classes/Dseq, Classes/Duty, Classes/Dxrand, Classes/TDuty
+
 
 description::
+
+
 Demand rate sequence generator.
 
 See link::Classes/Pser:: for structurally related equivalent.
@@ -11,11 +14,14 @@ See link::Classes/Pser:: for structurally related equivalent.
 
 classmethods::
 
+
 method::new
+
 argument::list
-An array of values or other UGens.
+an array of values or other UGens.
+
 argument::repeats
-Number of values to return.
+number of values to return.
 
 
 examples::

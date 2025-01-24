@@ -1,21 +1,28 @@
-class:: Pwhile
-summary:: While a condition holds, repeatedly embed stream
+title:: Pwhile
+summary:: while a condition holds, repeatedly embed stream
 categories:: Streams-Patterns-Events>Patterns>Language Control
 
+
 description::
+
+
 Repeatedly strong::embed:: a link::Classes/Stream:: while the result of code::func:: is code::true::.
 
 
 classmethods::
 
+
 method::new
+
 argument::func
-Stream function. In an event stream receives the current link::Classes/Event:: as argument.
+stream function. In an event stream receives the current link::Classes/Event:: as argument.
+
 argument::pattern
-A link::Classes/Pattern::.
+a link::Classes/Pattern::.
 
 
 examples::
+
 code::
 (
 z = true;

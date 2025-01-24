@@ -1,11 +1,12 @@
-TITLE:: Multi-client Setups
-summary:: How to set up and shared servers for multiple clients in SuperCollider
-CATEGORIES:: Server>Architecture, Tutorials
+title:: Multi-client Setups
+summary:: how to set up and shared servers for multiple clients in SuperCollider
+categories:: Server>Architecture, Tutorials
 related:: Classes/ServerOptions, Classes/Server
-KEYWORD:: server, multi-client
+keyword:: server, multi-client
 
 
 section:: Multi client-server setups - discussion and tests
+
 
 OSC communication between SC and its sound server offers many options for network music: Multiple computers can run both supercollider and associated sound servers.
 For clarity, the "server process" refers to a running scsynth or supernova process. The "server object" AKA "client" is the server's representation in sclang, such as code::Server.local, s, Server(\elsewhere, NetAddr("163.234.56.78"))::.
@@ -13,8 +14,10 @@ For clarity, the "server process" refers to a running scsynth or supernova proce
 
 subsection:: What are clientIDs, and how do servers get them?
 
+
 When more than one user plays on a given server,
 some resources need to be shared between users/clients:
+
 list::
 ## permanent and temporary nodeIDs (handled by Server:nodeAllocator),
 ## private control and audio bus channels (handled by Server:audioBusAllocator, Server:controlBusAllocator)
@@ -26,6 +29,7 @@ This sharing is handled by declaring how many clients/users are expected to logi
 The most common case is that there is only a single user/client, who always gets clientID 0, and control of all available resources (i.e. the full number range of every allocator).
 
 When multiple clients log in, this is what happens:
+
 list::
 ## On startup, scsynth (the server process) is started with a fixed limit of maxLogins.
 ## When a local or remote server object/client has no user-specified clientID, scsynth sends back the next free clientID, and the client uses that clientID.
@@ -36,6 +40,7 @@ list::
 
 
 subsection:: Code examples and tests
+
 
 Recommended usage for multiple clients on the same server is to use identical options settings for all clients, and logging into the scsynth process from different sclang instances, which are typically on different laptops.
 
@@ -76,6 +81,7 @@ r.userSpecifiedClientID;
 
 subsection:: Separate defaultGroups
 
+
 For info on what a default group is, see link::Reference/default_group::.
 
 Every client registering with a server has its own defaultGroup. All nodes belonging to one client are in its defaultGroup and can be specifically addressed, so that a client can release only one's own nodes, and leave those of other clients on this server untouched.
@@ -86,6 +92,7 @@ code::s.defaultGroups;::
 
 
 subsection:: Easy-to-trace nodeIDs
+
 
 For details on node allocation, see NodeIDAllocator and ReadableNodeIDAllocator class and help files.
 The scheme from NodeIDAllocator is also followed by many non-sclang clients allocation ranges; in networks with these, NodeIDAllocator will be the safe choice.
@@ -173,6 +180,8 @@ Ndef(\x).end(3);
 
 
 subsection:: Bus channel and buffer numbers
+
+
 The allocators for audio and control busses and for buffers split the full number range of scsynth evenly for the number of clients expected.
 
 code::
@@ -226,6 +235,7 @@ r.bufferAllocator.size;
 
 subsection:: Configuring CmdPeriod behavior
 
+
 In networked performances, it is useful that clients have well-chosen
 emergency access to 'their' sounds on a remote server; and it may make sense to give the local client more emergency power. Both can be configured easily.
 
@@ -274,6 +284,7 @@ because their defaultGroups are gone too!
 
 Thus, the local client should reconstruct them,
 so the other clients can pick up playing again:
+
 code::
 // - easiest option:
 s.tree = { s.sendDefaultGroups; };
@@ -300,9 +311,10 @@ CmdPeriod.add(~freeMyGroupX);
 
 CmdPeriod.remove(~freeMyGroupX);
 
-strong::Symmetrical / democratic setups::
+strong::Symmetrical/democratic setups::
 
 The home client on the machine where scsynth runs may want to be just like the others. It is simple to make the home client more polite:
+
 code::
 // first, disable general freeAll:
 CmdPeriod.freeServers = false;
@@ -321,9 +333,11 @@ CmdPeriod.run; // simulate CmdPeriod key action
 CmdPeriod.remove(~freeMyGroupS); // cleanup
 s.freeAll;
 ::
+
 strong::More power to all::
 
 In a less polite symmetrical setup, CmdPeriod stops all sounds on all clients, but keeps all defaultGroups running.
+
 code::
 ~myserver = s; // s on home machine, remote client on others
 ~myserver.sendDefaultGroups;

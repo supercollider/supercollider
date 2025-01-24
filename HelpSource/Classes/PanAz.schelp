@@ -1,41 +1,51 @@
-class:: PanAz
-summary:: Azimuth panner
+title:: PanAz
+summary:: azimuth panner
+categories:: UGens>Multichannel>Panners
 related:: Classes/Balance2, Classes/LinPan2, Classes/Pan2, Classes/Pan4
-categories::  UGens>Multichannel>Panners
 
 
 description::
+
+
 Multichannel equal power panner.
 
 
 classmethods::
 
+
 method::ar, kr
+
 argument::numChans
-Number of output channels. Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.
+number of output channels. Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.
+
 argument::in
-The input signal.
+the input signal.
+
 argument::pos
 pan position (code::kr:: or code::ar::). Channels are evenly spaced over a cyclic period of code::2.0:: in pos with code::0.0:: equal to channel zero and code::2.0/numChans:: equal to channel 1, code::4.0/numChans:: equal to channel 2, etc.
 
 
 Thus all channels will be cyclically panned through if a bipolar sawtooth wave from code::-1:: to code::+1:: is used to modulate the pos.
+
 argument::level
-A control rate level input.
+a control rate level input.
+
 argument::width
-The width of the panning envelope.
+the width of the panning envelope.
 Nominally this is code::2.0:: which pans between pairs of adjacent speakers.
 Values greater than code::2:: will spread the pan over greater numbers of speakers.
 Values less than code::1:: will leave silent gaps between speakers.
 The absolute of this value is taken as negative values have no meaning (a width of code::-1:: is the same as a width of code::1::).
+
 argument::orientation
-Should be code::0:: if the front is a vertex of the spanning polygon.
+should be code::0:: if the front is a vertex of the spanning polygon.
 The first speaker will be directly in front. Should be code::0.5:: if the front
 bisects a side of the spanning polygon.
 Then the first speaker will be the one left of center.
 
 
 section:: Comparison to Pan2
+
 
 Despite a certain similarity, link::Classes/Pan2:: and link::Classes/PanAz:: with 2 channels behave differently.
 
@@ -83,7 +93,9 @@ code::
 )
 ::
 
+
 examples::
+
 
 Five channel circular panning with first channel on the left
 

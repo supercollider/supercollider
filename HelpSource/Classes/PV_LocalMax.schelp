@@ -1,19 +1,25 @@
-class:: PV_LocalMax
-summary:: Pass bins which are a local maximum.
-related:: Classes/FFT, Classes/IFFT, Classes/PV_MagAbove, Classes/PV_MagBelow, Classes/PV_MagClip
+title:: PV_LocalMax
+summary:: passes bins which are a local maximum
 categories:: UGens>FFT
+related:: Classes/FFT, Classes/IFFT, Classes/PV_MagAbove, Classes/PV_MagBelow, Classes/PV_MagClip
+
 
 description::
+
+
 Passes only bins whose magnitude is above a threshold and above their nearest neighbors.
 
 
 classmethods::
 
+
 method::new
+
 argument::buffer
 FFT buffer.
+
 argument::threshold
-Magnitude threshold.
+magnitude threshold.
 
 
 examples::

@@ -1,142 +1,204 @@
-CLASS::SequenceableCollection
-summary:: Abstract superclass of integer indexable collections
-categories::Collections>Ordered
+title:: SequenceableCollection
+summary:: abstract superclass of integer indexable collections
+categories:: Collections>Ordered
+
 
 description::
+
+
 SequenceableCollection is a subclass of Collection whose elements can be indexed by an Integer. It has many useful subclasses; link::Classes/Array:: and link::Classes/List:: are amongst the most commonly used.
 
-CLASSMETHODS::
+
+classmethods::
+
 
 copymethod::Collection *fill
 
+
 method::series
-Fill a SequenceableCollection with an arithmetic series.
+
+fills a SequenceableCollection with an arithmetic series.
+
 code::
 Array.series(5, 10, 2);
 ::
 
+
 method::geom
-Fill a SequenceableCollection with a geometric series.
+
+fills a SequenceableCollection with a geometric series.
+
 code::
 Array.geom(5, 1, 3);
 ::
 
+
 method::fib
-Fill a SequenceableCollection with a fibonacci series.
+
+fills a SequenceableCollection with a fibonacci series.
+
 code::
 Array.fib(5);
 Array.fib(5, 2, 32); // start from 32 with step 2.
 ::
+
 argument::size
 the number of values in the collection
+
 argument::a
 the starting step value
+
 argument::b
 the starting value
 
+
 method::rand
-Fill a SequenceableCollection with random values in the range strong::minVal:: to strong::maxVal::.
+
+fills a SequenceableCollection with random values in the range strong::minVal:: to strong::maxVal::.
+
 code::
 Array.rand(8, 1, 100);
 ::
 
+
 method::rand2
-Fill a SequenceableCollection with random values in the range -strong::val:: to +strong::val::.
+
+fills a SequenceableCollection with random values in the range -strong::val:: to +strong::val::.
+
 code::
 Array.rand2(8, 100);
 ::
 
+
 method::linrand
-Fill a SequenceableCollection with random values in the range strong::minVal:: to strong::maxVal:: with a linear distribution.
+
+fills a SequenceableCollection with random values in the range strong::minVal:: to strong::maxVal:: with a linear distribution.
+
 code::
 Array.linrand(8, 1, 100);
 ::
 
+
 method::exprand
-Fill a SequenceableCollection with random values in the range strong::minVal:: to strong::maxVal:: with exponential distribution.
+
+fills a SequenceableCollection with random values in the range strong::minVal:: to strong::maxVal:: with exponential distribution.
+
 code::
 Array.exprand(8, 1, 100);
 ::
 
+
 method::interpolation
-Fill a SequenceableCollection with the interpolated values between the strong::start:: and strong::end:: values.
+
+fills a SequenceableCollection with the interpolated values between the strong::start:: and strong::end:: values.
+
 code::
 Array.interpolation(5, 3.2, 20.5);
 ::
 
 
-
-INSTANCEMETHODS::
+instancemethods::
 
 
 method::|@|
+
 synonym for link::Classes/ArrayedCollection#-clipAt::.
+
 code::
 [3, 4, 5]|@|6;
 ::
 
+
 method::@@
+
 synonym for link::Classes/ArrayedCollection#-wrapAt::.
+
 code::
 [3, 4, 5]@@6;
 [3, 4, 5]@@ -1;
 [3, 4, 5]@@[6, 8]
 ::
 
+
 method::@|@
+
 synonym for link::Classes/ArrayedCollection#-foldAt::.
+
 code::
 [3, 4, 5]@|@[6, 8];
 ::
 
+
 method::first
+
 returns the first element of the collection.
+
 code::
 [3, 4, 5].first;
 ::
 
+
 method::last
+
 returns the last element of the collection.
+
 code::
 [3, 4, 5].last;
 ::
 
+
 method::putFirst, putLast
-Place strong::item:: at the first / last index in the collection. Note that if the collection is empty (and therefore has no indexed slots) the item will not be added.
+
+places strong::item:: at the first/last index in the collection. Note that if the collection is empty (and therefore has no indexed slots) the item will not be added.
+
 code::
 [3, 4, 5].putFirst(100);
 [3, 4, 5].putLast(100);
 ::
 
+
 method::indexOf
+
 returns the index of an strong::item:: in the collection, or code::nil:: if not found. Elements are checked for identity (not for equality).
+
 code::
 [3, 4, 100, 5].indexOf(100);
 [3, 4, \foo, \bar].indexOf(\foo);
 ::
 
+
 method::indexOfEqual
+
 returns the index of something in the collection that equals the strong::item::, or code::nil:: if not found.
+
 code::
 [3, 4, "foo", "bar"].indexOfEqual("foo");
 ::
 
+
 method::indicesOfEqual
+
 returns an array of indices of things in the collection that equal the strong::item::, or code::nil:: if not found.
+
 code::
 y = [7, 8, 7, 6, 5, 6, 7, 6, 7, 8, 9];
 y.indicesOfEqual(7);
 y.indicesOfEqual(5);
 ::
 
+
 method::indexOfGreaterThan
+
 returns the first index containing an strong::item:: which is greater than strong::item::.
+
 code::
 y = List[10, 5, 77, 55, 12, 123];
 y.indexOfGreaterThan(70);
 ::
 
+
 method::selectIndices
+
 returns a new collection of same type as receiver which consists of all indices of those elements of the receiver for which function answers code::true::. The function is passed two arguments, the item and an integer index.
 
 code::
@@ -145,7 +207,9 @@ code::
 
 If you want to control what type of collection is returned, use link::#-selectIndicesAs::
 
+
 method::selectIndicesAs
+
 returns a new collection of type emphasis::class:: which consists of all indices of those elements of the receiver for which function answers code::true::. The function is passed two arguments, the item and an integer index.
 
 code::
@@ -154,6 +218,7 @@ code::
 
 
 method::rejectIndices
+
 returns a new collection of same type as receiver which consists of all indices of those elements of the receiver for which function answers code::false::. The function is passed two arguments, the item and an integer index.
 
 code::
@@ -162,7 +227,9 @@ code::
 
 If you want to control what type of collection is returned, use link::#-rejectIndicesAs::
 
+
 method::rejectIndicesAs
+
 returns a new collection of type emphasis::class:: which consists of all indices of those elements of the receiver for which function answers code::false::. The function is passed two arguments, the item and an integer index.
 
 code::
@@ -173,42 +240,60 @@ copymethod::Collection -maxIndex
 
 copymethod::Collection -minIndex
 
+
 method::find
-If the strong::sublist:: exists in the receiver (in the specified order), at an offset greater than or equal to the initial strong::offset::, then returns the starting index.  The sublist must be of the same kind (class) as the list to search in.
+
+if the strong::sublist:: exists in the receiver (in the specified order), at an offset greater than or equal to the initial strong::offset::, then returns the starting index.  The sublist must be of the same kind (class) as the list to search in.
 Elements are checked for equality (not for identity).
+
 code::
 y = [7, 8, 7, 6, 5, 6, 7, 6, 7, 8, 9];
 y.find([7, 6, 5]);
 ::
 
+
 method::findAll
-Similar to link::#-find:: but returns an array of all the indices at which the sequence is found.
+
+similar to link::#-find:: but returns an array of all the indices at which the sequence is found.
+
 code::
 y = [7, 8, 7, 6, 5, 6, 7, 6, 7, 8, 9];
 y.findAll([7, 6]);
 ::
 
+
 method::indexIn
+
 returns the closest index of the value in the collection (collection must be sorted).
+
 code::
 [2, 3, 5, 6].indexIn(5.2);
 ::
 
+
 method::indexInBetween
+
 returns a linearly interpolated float index for the value (collection must be sorted). Inverse operation is link::#-blendAt::.
+
 code::
 x = [2, 3, 5, 6].indexInBetween(5.2);
 [2, 3, 5, 6].blendAt(x);
 ::
 
+
 method::blendAt
+
 returns a linearly interpolated value between the two closest indices. Inverse operation is link::#-indexInBetween::.
+
 code::
 x = [2, 5, 6].blendAt(0.4);
 ::
 
+
 method::copyRange
+
 returns a new SequenceableCollection which is a copy of the indexed slots of the receiver from strong::start:: to strong::end::. If strong::end:: < strong::start::, an empty collection is returned.
+
 code::
 (
 var y, z;
@@ -218,34 +303,53 @@ z.postln;
 y.postln;
 )
 ::
-warning:: code::x.copyRange(a, b):: is strong::not:: equivalent to code::x[a..b]::. The latter compiles to link::Classes/ArrayedCollection#-copySeries::, which has different behavior when strong::end:: < strong::start::. ::
+
+warning::
+code::x.copyRange(a, b):: is strong::not:: equivalent to code::x[a..b]::. The latter compiles to link::Classes/ArrayedCollection#-copySeries::, which has different behavior when strong::end:: < strong::start::.
+::
+
 
 method::copyToEnd
+
 returns a new SequenceableCollection which is a copy of the indexed slots of the receiver from strong::start:: to the end of the collection.
 code::x.copyToEnd(a):: can also be written as code::x[a..]::
 
+
 method::copyFromStart
+
 returns a new SequenceableCollection which is a copy of the indexed slots of the receiver from the start of the collection to strong::end::.
 code::x.copyFromStart(a):: can also be written as code::x[..a]::
 
+
 method::remove
+
 removes strong::item:: from collection. Elements are checked for identity (not for equality).
 
+
 method::take
+
 removes and returns strong::item:: from collection. The last item in the collection will move to occupy the vacated slot (and the collection size decreases by one). See also takeAt, defined for link::Classes/ArrayedCollection#-takeAt::. Elements are checked for identity (not for equality).
-warning:: code::take(item):: works on Arrays but not on Lists, because the internally called method code::takeAt(item):: is not defined for Lists. ::
+
+warning::
+code::take(item):: works on link::Classes/Array::s but not on link::Classes/List::s, because the internally called method code::takeAt(item):: is not defined for link::Classes/List::s.
+::
+
 code::
 a = [11, 12, 13, 14, 15];
 a.take(12);
 a;
 ::
 
+
 method::obtain
-Retrieve an element from a given index (like link::Classes/SequenceableCollection#-at::). This method is also implemented in link::Classes/Object::, so that you can use it in situations where you don't want to know if the receiver is a collection or not. See also: link::Classes/SequenceableCollection#-instill::
+
+retrieves an element from a given index (like link::Classes/SequenceableCollection#-at::). This method is also implemented in link::Classes/Object::, so that you can use it in situations where you don't want to know if the receiver is a collection or not. See also: link::Classes/SequenceableCollection#-instill::
+
 argument::index
-The index at which to look for an element
+the index at which to look for an element
+
 argument::default
-If index exceeds collection size, or receiver is code::nil::, returns this instead
+if index exceeds collection size, or receiver is code::nil::, returns this instead
 
 code::
 (
@@ -260,14 +364,19 @@ b.obtain(2, 1);
 c.obtain(2, 1);
 ::
 
+
 method::instill
+
 puts an element at a given index (like link::Classes/SequenceableCollection#-put::). This method is also implemented in link::Classes/Object::, so that you can use it in situations where you don't want to know if the receiver is a collection or not. It will always return a new collection. See also: link::Classes/SequenceableCollection#-obtain::
+
 argument::index
-The index at which to put the item
+the index at which to put the item
+
 argument::item
-The object to put into the new collection
+the object to put into the new collection
+
 argument::default
-If the index exceeds the current collection's size, extend the collection with this element
+if the index exceeds the current collection's size, extend the collection with this element
 
 code::
 (
@@ -283,40 +392,55 @@ c.instill(2, -1);
 c.instill(2, -1, 0);
 ::
 
+
 method::keep
+
 keeps the first strong::n:: items of the array. If strong::n:: is negative, keep the last -strong::n:: items.
+
 code::
 a = [1, 2, 3, 4, 5];
 a.keep(3);
 a.keep(-3);
 ::
 
+
 method::drop
+
 drops the first strong::n:: items of the array. If strong::n:: is negative, drop the last -strong::n:: items.
+
 code::
 a = [1, 2, 3, 4, 5];
 a.drop(3);
 a.drop(-3);
 ::
 
+
 method::join
+
 returns a link::Classes/String:: formed by connecting all the elements of the receiver, with strong::joiner:: inbetween. See also link::Classes/String#-split:: as the complementary operation.
+
 code::
 ["m", "ss", "ss", "pp", ""].join("i").postcs;
 "mississippi".split("i").postcs;
 ::
 
+
 method::flat
+
 returns a collection from which all nesting has been flattened.
+
 code::
 [[1, 2, 3], [[4, 5], [[6]]]].flat; // [1, 2, 3, 4, 5, 6]
 [1, 2, [3, 4, [5, 6, [7, 8, [9, 0]]]]].flat; // [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
 ::
 
+
 method::flatten
+
 returns a collection from which strong::numLevels:: of nesting has been flattened.
+
 argument::numLevels
-Specifies how many levels downward (inward) to flatten. Zero returns the original.
+specifies how many levels downward (inward) to flatten. Zero returns the original.
 
 code::
 a = [1, 2, [3, 4, [5, 6, [7, 8, [9, 0]]]]];
@@ -328,9 +452,11 @@ a.flatten(4); // [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
 
 
 method::flatten2
-A symmetric version of link::#-flatten::. For a negative code::numLevels::, it flattens starting from the innermost arrays.
+
+a symmetric version of link::#-flatten::. For a negative code::numLevels::, it flattens starting from the innermost arrays.
+
 argument::numLevels
-Specifies how many levels downward (inward) or upward (outward) to flatten.
+specifies how many levels downward (inward) or upward (outward) to flatten.
 
 code::
 a = [1, 2, [3, 4, [5, 6, [7, 8, [9, 0]]]]];
@@ -346,11 +472,12 @@ a.flatten2(-4); // [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
 ::
 
 
-
 method::flatBelow
-Flatten all subarrays deeper than strong::level::.
+
+flattens all subarrays deeper than strong::level::.
+
 argument::level
-Specifies from what level onward to flatten.
+specifies from what level onward to flatten.
 level 0 is outermost, so flatBelow(0) is like flat.
 
 code::
@@ -367,15 +494,18 @@ a.flatBelow((a.maxDepth - 1) - 2);
 ::
 
 
-
 method::flop
-Invert rows and columns in a two dimensional Collection (turn inside out). See also: link::Classes/Function::.
+
+inverts rows and columns in a two dimensional Collection (turn inside out). See also: link::Classes/Function::.
+
 code::
 [[1, 2, 3], [4, 5, 6]].flop;
 [[1, 2, 3], [4, 5, 6], [7, 8]].flop; // shorter array wraps
 [].flop; // result is always 2-d.
 ::
+
 Note that the innermost arrays are not copied:
+
 code::
 a = [1, 2];
 x = [[[a, 5], [a, 10]], [[a, 50, 60]]].flop;
@@ -385,7 +515,9 @@ x // pi is everywhere
 
 
 method::flopWith
-Flop with a user defined function. Can be used to collect over several collections in parallel.
+
+flops with a user defined function. Can be used to collect over several collections in parallel.
+
 code::
 [[1, 2, 3], [4, 5, 6]].flopWith(_+_);
 [[1, 2, 3], 1, [7, 8]].flopWith{ |a, b, c| a+b+c }; // shorter array wraps
@@ -393,11 +525,15 @@ code::
 // typical use case (pseudocode)
 [synths, buffers].flopWith{ |a, b| a.set(\buf, b) }
 ::
+
 argument::func
-A function taking as many arguments as elements in the array.
+a function taking as many arguments as elements in the array.
+
 
 method::flopTogether
-Invert rows and columns in a an array of dimensional Collections (turn inside out), so that they all match up in size, but remain separated.
+
+inverts rows and columns in a an array of dimensional Collections (turn inside out), so that they all match up in size, but remain separated.
+
 code::
 (
 a = flopTogether(
@@ -413,9 +549,11 @@ a.collect(_.shape) // shapes can be different
 
 
 method::flopDeep
-Fold dimensions in a multi-dimensional Collection (turn inside out).
+
+folds dimensions in a multi-dimensional Collection (turn inside out).
+
 argument::rank
-The depth (dimension) from which the array is inverted inside-out.
+the depth (dimension) from which the array is inverted inside-out.
 
 code::
 [[1, 2, 3], [[41, 52], 5, 6]].flopDeep(2);
@@ -428,7 +566,9 @@ code::
 [[]].flopDeep(4);
 ::
 
-note::Note that, just like in flop, the innermost arrays (deeper than rank) are not copied.::
+note::
+Note that, just like in flop, the innermost arrays (deeper than rank) are not copied.
+::
 
 code::
 a = [1, 2];
@@ -437,10 +577,13 @@ a[0] = pi;
 x // pi is everywhere
 ::
 
+
 method::maxSizeAtDepth
+
 returns the maximum size of all subarrays at a certain depth (dimension)
+
 argument::rank
-The depth at which the size of the arrays is measured
+the depth at which the size of the arrays is measured
 
 code::
 [[1, 2, 3], [[41, 52], 5, 6], 1, 2, 3].maxSizeAtDepth(2);
@@ -451,19 +594,25 @@ code::
 [[]].maxSizeAtDepth(1);
 ::
 
+
 method::maxDepth
+
 returns the maximum depth of all subarrays.
+
 argument::max
-Internally used only.
+internally used only.
 
 code::
 [[1, 2, 3], [[41, 52], 5, 6], 1, 2, 3].maxDepth
 ::
 
+
 method::isSeries
+
 returns code::true:: if the collection is an arithmetic series.
+
 argument::step
-Step size to look for. If none is given, any step size will match.
+step size to look for. If none is given, any step size will match.
 
 code::
 [0, 1, 2, 3, 4, 5].isSeries; // true
@@ -475,41 +624,59 @@ code::
 [] // true (empty sequence)
 ::
 
+
 method::resamp0
+
 returns a new Collection of the desired length, with values resampled evenly-spaced from the receiver without interpolation.
+
 code::
 [1, 2, 3, 4].resamp0(12);
 [1, 2, 3, 4].resamp0(2);
 ::
 
+
 method::resamp1
+
 returns a new Collection of the desired length, with values resampled evenly-spaced from the receiver with linear interpolation.
+
 code::
 [1, 2, 3, 4].resamp1(12);
 [1, 2, 3, 4].resamp1(3);
 ::
 
+
 method::choose
-Choose an element from the collection at random.
+
+chooses an element from the collection at random.
+
 code::
 [1, 2, 3, 4].choose;
 ::
 
+
 method::wchoose
-Choose an element from the collection at random using a list of probabilities or weights. The weights must sum to 1.0.
+
+chooses an element from the collection at random using a list of probabilities or weights. The weights must sum to 1.0.
+
 code::
 [1, 2, 3, 4].wchoose([0.1, 0.2, 0.3, 0.4]);
 ::
 
+
 method::sort
-Sort the contents of the collection using the comparison function argument. The function should take two elements as arguments and return code::true:: if the first argument should be sorted before the second argument. If the function is code::nil::, the following default function is used. { |a, b| a <= b }
+
+sorts the contents of the collection using the comparison function argument. The function should take two elements as arguments and return code::true:: if the first argument should be sorted before the second argument. If the function is code::nil::, the following default function is used. { |a, b| a <= b }
+
 code::
 [6, 2, 1, 7, 5].sort;
 [6, 2, 1, 7, 5].sort({ |a, b| a > b }); // reverse sort
 ::
 
+
 method::sortBy
-Sort the contents of the collection using the key strong::key::, which is assumed to be found inside each element of the receiver.
+
+sorts the contents of the collection using the key strong::key::, which is assumed to be found inside each element of the receiver.
+
 code::
 (
 a = [
@@ -524,70 +691,101 @@ a.sortBy(\b);
 a.sortBy(\c);
 ::
 
+
 method::order
+
 returns an array of indices that would sort the collection into order. strong::function:: is treated the same way as for the link::#-sort:: method.
+
 code::
 [6, 2, 1, 7, 5].order;
 ::
 
+
 method::swap
-Swap two elements in the collection at indices strong::i:: and strong::j::.
+
+swaps two elements in the collection at indices strong::i:: and strong::j::.
+
 
 method::pairsDo
+
 calls function for each subsequent pair of elements in the SequentialCollection. The function is passed the two elements and an index.
+
 code::
 [1, 2, 3, 4, 5].pairsDo({ |a, b| [a, b].postln });
 ::
 
+
 method::doAdjacentPairs
+
 calls function for every adjacent pair of elements in the SequenceableCollection. The function is passed the two adjacent elements and an index.
+
 code::
 [1, 2, 3, 4, 5].doAdjacentPairs({ |a, b| [a, b].postln });
 ::
 
+
 method::separate
-Separates the collection into sub-collections by calling the function for each adjacent pair of elements. If the function Returns code::true::, then a separation is made between the elements.
+
+separates the collection into sub-collections by calling the function for each adjacent pair of elements. If the function Returns code::true::, then a separation is made between the elements.
+
 code::
 [1, 2, 3, 5, 6, 8, 10].separate({ |a, b| (b - a) > 1 }).postcs;
 ::
 
+
 method::clump
-Separates the collection into sub-collections by separating every groupSize elements.
+
+separates the collection into sub-collections by separating every groupSize elements.
+
 code::
 [1, 2, 3, 4, 5, 6, 7, 8].clump(3).postcs;
 ::
 
+
 method::clumps
-Separates the collection into sub-collections by separating elements into groupings whose size is given by integers in the groupSizeList.
+
+separates the collection into sub-collections by separating elements into groupings whose size is given by integers in the groupSizeList.
+
 code::
 [1, 2, 3, 4, 5, 6, 7, 8].clumps([1, 2]).postcs;
 ::
 
+
 method::curdle
-Separates the collection into sub-collections by randomly separating elements according to the given probability.
+
+separates the collection into sub-collections by randomly separating elements according to the given probability.
+
 code::
 [1, 2, 3, 4, 5, 6, 7, 8].curdle(0.3).postcs;
 ::
 
+
 method::integrate
+
 returns a collection with the incremental sums of all elements.
+
 code::
 [3, 4, 1, 1].integrate;
 ::
 
+
 method::differentiate
+
 returns a collection with the pairwise difference between all elements.
+
 code::
 [3, 4, 1, 1].differentiate;
 ::
 
+
 method::reduce
-Applies the method named by operator to the first and second elements of the collection, and then applies the method to the result and to the third element of the collection, then applies the method to the result and to the fourth element of the collection, and so on, until the end of the array.
+
+applies the method named by operator to the first and second elements of the collection, and then applies the method to the result and to the third element of the collection, then applies the method to the result and to the fourth element of the collection, and so on, until the end of the array.
 
 If the collection contains only one element, it is returned as the result. If the collection is empty, returns code::nil::.
-argument::operator
-May be a link::Classes/Function:: (taking two or three arguments) or a link::Classes/Symbol:: (method selector).
 
+argument::operator
+may be a link::Classes/Function:: (taking two or three arguments) or a link::Classes/Symbol:: (method selector).
 
 code::
 [3, 4, 5, 6].reduce('*'); // this is the same as [3, 4, 5, 6].product
@@ -595,8 +793,9 @@ code::
 ["d", "e", (0..9), "h"].reduce('++'); // concatenation
 [3, 4, 5, 6].reduce({ |a, b| sin(a) * sin(b) }); // product of sines
 ::
+
 argument::adverb
-An optional adverb to be used together with the operator (see link::Reference/Adverbs::). If the operator is a functions, the adverb is passed as a third argument.
+an optional adverb to be used together with the operator (see link::Reference/Adverbs::). If the operator is a functions, the adverb is passed as a third argument.
 
 code::
 // compare:
@@ -605,15 +804,20 @@ code::
 [[1, 2], [10, 20, 30], [1000, 2000]].reduce('+', 'x') // but you can combine more
 ::
 
+
 method::convertDigits
+
 returns an integer resulting from interpreting the elements as digits to a given base (default 10). See also asDigits in link::Classes/Integer#-asDigits:: for the complementary method.
+
 code::
 [1, 0, 0, 0].convertDigits;
 [1, 0, 0, 0].convertDigits(2);
 [1, 0, 0, 0].convertDigits(3);
 ::
 
+
 method::hammingDistance
+
 returns the count of array elements that are not equal in identical positions. http://en.wikipedia.org/wiki/Hamming_distance
 
 The collections are not wrapped - if one array is shorter than the other, the difference in size should be included in the count.
@@ -625,9 +829,13 @@ code::
 
 
 subsection:: Fuzzy comparisons
+
+
 With fuzzy comparisons, the arrays do not need to match exactly. We can check how similar they are, and make decisions based on that. This is the magic behind autocorrection.
 
+
 method::editDistance
+
 returns the minimum number of changes to modify this teletype::SequenceableCollection:: into the other teletype::SequenceableCollection::.
 A change can be: an addition, a deletion, or a substitution.
 This is known as the Levenshtein Distance and is implemented in SuperCollider using the Wagner–Fischer algorithm.
@@ -663,10 +871,12 @@ code::
 note::
 Specifying a teletype::compareFunc:: will bypass the primitive and may take significantly longer to execute for larger arrays.
 ::
+
 argument::other
-The teletype::SequenceableCollection:: to compare against
+the teletype::SequenceableCollection:: to compare against
+
 argument::compareFunc
-An optional comparison function to use for each element. It will be provided two arguments, and the function must return a boolean as to whether or not they are the same. The default value is teletype::nil::, which will use strong::identity:: (not equality) to compare elements.
+an optional comparison function to use for each element. It will be provided two arguments, and the function must return a boolean as to whether or not they are the same. The default value is teletype::nil::, which will use strong::identity:: (not equality) to compare elements.
 
 code::
 [1, 2, 3, 4].editDistance([2, 3, 4, 5], { |a, b|
@@ -674,33 +884,43 @@ code::
 });
 ::
 
+
 method::similarity
+
 returns a value between 0 and 1 representing the percentage similarity between this teletype::SequenceableCollection:: and the other teletype::SequenceableCollection::.
 
 A value of 1 means they are exactly the same, a value of 0 means they are completely different.
 This is calculated based on the link::#-editDistance::
+
 code::
 "hello".similarity("hello"); // 1
 "hello".similarity("asdf"); // 0
 "word".similarity("wodr"); // 0.5
 ::
-argument::other
-The code::SequenceableCollection:: to compare against
-argument::compareFunc
-An optional compareFunc to be used to calculate the edit distance (see link::#-editDistance::)
 
-private::prEditDistance
-private::prLevenshteinDistance
+argument::other
+the code::SequenceableCollection:: to compare against
+
+argument::compareFunc
+an optional compareFunc to be used to calculate the edit distance (see link::#-editDistance::)
+
+private:: prEditDistance
+private:: prLevenshteinDistance
 
 
 subsection:: Math Support - Unary Messages
 
+
 All of the following messages send the message link::#-performUnaryOp:: to the receiver with the unary message selector as an argument.
+
 
 method::neg, reciprocal, bitNot, abs, asFloat, ceil, floor, frac, sign, squared, cubed, sqrt, exp, midicps, cpsmidi, midiratio, ratiomidi, ampdb, dbamp, octcps, cpsoct, log, log2, log10, sin, cos, tan, asin, acos, atan, sinh, cosh, tanh, rand, rand2, linrand, bilinrand, sum3rand, distort, softclip, coin, even, odd, isPositive, isNegative, isStrictlyPositive, real, imag, magnitude, magnitudeApx, phase, angle, rho, theta, asFloat, asInteger
 
+
 method::performUnaryOp
+
 creates a new collection of the results of applying the selector to all elements in the receiver.
+
 code::
 [1, 2, 3, 4].neg;
 [1, 2, 3, 4].reciprocal;
@@ -709,14 +929,20 @@ code::
 
 subsection:: Math Support - Binary Messages
 
+
 All of the following messages send the message link::#-performBinaryOp:: to the receiver with the binary message selector and the second operand as arguments.
+
 
 method::+, -, *, /, div, min, max, <, <=, >, >=, bitXor, lcm, gcd, round, trunc, atan2, hypot, ring1, ring2, ring3, ring4, difsqr, sumsqr, sqrdif, absdif, amclip, scaleneg, clip2, excess, rrand, exprand
 
+
 method::%, **, &, |, >>, +>>, <!
 
+
 method::performBinaryOp
+
 creates a new collection of the results of applying the selector with the operand to all elements in the receiver. If the operand is a collection, then elements of that collection are paired with elements of the receiver.
+
 code::
 ([1, 2, 3, 4] * 10);
 ([1, 2, 3, 4] * [4, 5, 6, 7]);
@@ -724,6 +950,7 @@ code::
 
 
 subsection:: Math Support - Special Functions
+
 
 A variety of Special Functions are supplied by the Boost C++ library. The library's
 link::http://www.boost.org/doc/libs/1_66_0/libs/math/doc/html/special.html##online documentation::
@@ -733,20 +960,24 @@ here match closely with those found in the source library, as do argument names.
 Below you'll find descriptions of the functions and their bounds, but for
 visualizing the functions, have a look in link::Guides/Tour-of-Special-Functions::.
 
-note::The following methods are documented slightly clearer in
+note::
+The following methods are documented slightly clearer in
 link::Classes/SimpleNumber#Special Functions:: using functional notation.
 As of this writing, a bug in the help file formatting misleadingly documents
 the methods in receiver notation (methods preceded by code::.::), but should
 be read to suggests the usage: code::foo([a], [b])::. The equivalent receiver
 notation is: code::[a].foo([b])::. Note that those methods with only one argument erroneously omit that
 argument from the argument list; each element in the collection is implicitly
-passed as the method's argument, e.g. code::foo([a]):: or code::[a].foo::::
+passed as the method's argument, e.g. code::foo([a]):: or code::[a].foo::.
+::
 
-warning::Many of the functions are only valid in certain numerical ranges. For the most part, error handling
+warning::
+Many of the functions are only valid in certain numerical ranges. For the most part, error handling
 happens in the underlying boost functions. While these errors are often obtuse, you'll usually find
 a useful message at the end of the error regarding proper ranges and the erroneous value supplied.
 Refer to the online documentation for more detailed descriptions, and the
-link::Guides/Tour-of-Special-Functions:: for plots showing ranges and asymptotes.::
+link::Guides/Tour-of-Special-Functions:: for plots showing ranges and asymptotes.
+::
 
 copymethod::SimpleNumber -bernouliB2n
 copymethod::SimpleNumber -tangentT2n
@@ -874,19 +1105,27 @@ copymethod::SimpleNumber -owensT
 
 
 subsection:: Multichannel wrappers
+
+
 All of the following messages are performed on the elements of this collection, using link::Classes/Object#-multiChannelPerform::.
 
 The result depends on the objects in the collection, but the main use case is for link::Classes/UGen::s.
 
 See also link::Guides/Multichannel-Expansion::
 
+
 method::clip, wrap, fold, prune, linlin, linexp, explin, expexp, lincurve, curvelin, bilin, biexp, range, exprange, unipolar, bipolar, lag, lag2, lag3, lagud, lag2ud, lag3ud, varlag, slew, blend, checkBadValues
+
 calls code:: this.multiChannelPerform(selector, *args) :: where selector is the name of the message.
 
+
 method::multichannelExpandRef
-This method is called internally on inputs to UGens that take multidimensional arrays, like link::Classes/Klank:: and it allows proper multichannel expansion even in those cases. For SequenceableCollection, this returns the collection itself, assuming that it contains already a number of Refs. See link::Classes/Ref:: for the corresponding method implementation.
+
+this method is called internally on inputs to UGens that take multidimensional arrays, like link::Classes/Klank:: and it allows proper multichannel expansion even in those cases. For SequenceableCollection, this returns the collection itself, assuming that it contains already a number of Refs. See link::Classes/Ref:: for the corresponding method implementation.
+
 argument::rank
-The depth at which the list is expanded. For instance the Klank spec has a rank of 2. For more examples, see link::Classes/SequenceableCollection#-flopDeep::
+the depth at which the list is expanded. For instance the Klank spec has a rank of 2. For more examples, see link::Classes/SequenceableCollection#-flopDeep::
+
 code::
 `([[[100, 200], 500], nil, [[[0.01, 0.3], 0.8]]]).multichannelExpandRef(2);
 [`[[100, 200], nil, [0.2, 0.8]], `[[130, 202], nil, [0.2, 0.5]]].multichannelExpandRef(2);
@@ -894,17 +1133,24 @@ code::
 
 
 subsection:: Rhythm-lists
+
+
 method::convertRhythm
-Convert a rhythm-list to durations.
+
+converts a rhythm-list to durations.
+
 discussion::
 supports a variation of Mikael Laurson's rhythm list RTM-notation. footnote::
-see Laurson and Kuuskankare's 2003, "From RTM-notation to ENP-score-notation"
+
+See Laurson and Kuuskankare's 2003, "From RTM-notation to ENP-score-notation"
 http://jim2003.agglo-montbeliard.fr/articles/laurson.pdf
+
 ::
 
 The method converts a collection of the form code:: [beat-count, [rtm-list], repeats] :: to a link::Classes/List:: of link::Classes/Float::s. A negative integer within the rtm-list equates to a value tied over to the duration following. The method is recursive in that any subdivision within the rtm-list can itself be a nested convertRhythm collection (see example below). The repeats integer has a default value of 1.
 
 If the divisions in the rtm-list are events, the event durations are interpreted as relative durations, and a list of events is returned.
+
 code::
 // using numbers as score
 [3, [1, 2, 1], 1].convertRhythm; // List[0.75, 1.5, 0.75]
@@ -920,24 +1166,36 @@ Pbind(\degree, Pseries(0, 1, inf), \dur, Pseq([2, [1, [1, [2, 1, 1, -1]]], 2].co
 
 subsection:: Starting UNIX processes
 
-private::prUnixCmd
+
+private:: prUnixCmd
+
 
 method::unixCmd
-Execute a UNIX command strong::asynchronously::. This object should be an array of strings where the first string is the path to the executable to be run and all other strings are passed as arguments to the executable. This method starts the process directly without using a shell.
+
+executes a UNIX command strong::asynchronously::. This object should be an array of strings where the first string is the path to the executable to be run and all other strings are passed as arguments to the executable. This method starts the process directly without using a shell.
+
 argument::action
-A link::Classes/Function:: that is called when the process has exited. It is passed two arguments: the exit code and pid of the exited process.
+a link::Classes/Function:: that is called when the process has exited. It is passed two arguments: the exit code and pid of the exited process.
+
 argument::postOutput
-A link::Classes/Boolean:: that controls whether or not the output of the process is displayed in the post window.
-returns:: 
-An link::Classes/Integer:: - the pid of the newly created process. Use link::Classes/Integer#-pidRunning:: to test if a process is alive.
+a link::Classes/Boolean:: that controls whether or not the output of the process is displayed in the post window.
+
+returns::
+
+an link::Classes/Integer:: - the pid of the newly created process. Use link::Classes/Integer#-pidRunning:: to test if a process is alive.
+
 discussion::
 Example:
+
 code::
 ["ls", "/"].unixCmd;
 ::
 
+
 method::unixCmdGetStdOut
-Similar to link::#-unixCmd:: except that the stdout of the process is returned (strong::synchronously::) rather than sent to the post window. This object should be an array of strings where the first string is the path to the executable to be run and all other strings are passed as arguments to the executable. This method starts the process directly without using a shell.
+
+similar to link::#-unixCmd:: except that the stdout of the process is returned (strong::synchronously::) rather than sent to the post window. This object should be an array of strings where the first string is the path to the executable to be run and all other strings are passed as arguments to the executable. This method starts the process directly without using a shell.
+
 code::
 ~listing = ["ls", "/"].unixCmdGetStdOut; // Grab
 ~listing.reverse.as(Array).dupEach.join.postln; // Mangle

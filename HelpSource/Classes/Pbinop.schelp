@@ -1,23 +1,33 @@
-class:: Pbinop
+title:: Pbinop
 summary:: binary operator pattern
-related:: Classes/Pnaryop, Classes/Punop, Classes/BinaryOpFunction
 categories:: Streams-Patterns-Events>Patterns>Math
+related:: Classes/Pnaryop, Classes/Punop, Classes/BinaryOpFunction
+
 
 description::
+
+
 returns a stream that applies the binary operator to the stream values of the receiver. Usually, this is the result of applying a binary operator (i.e. a method with one argument) to a pattern.
 
-Examples of binary operators are: +, -, /, *, min, max, hypot ...
+Examples of binary operators are: code::+::, code::-::, code::/::, code::*::, code::min::, code::max::, code::hypot::, ...
 
-ClassMethods::
+
+classmethods::
+
 
 method::new
+
 argument::operator
 operator to be applied
+
 argument::a
 a pattern (or compatible pattern input)
+
 argument::b
 a pattern (or compatible pattern input)
+
 argument::adverb
+
 
 examples::
 

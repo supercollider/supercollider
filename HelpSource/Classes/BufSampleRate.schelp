@@ -1,27 +1,35 @@
-class:: BufSampleRate
-summary:: Buffer sample rate.
+title:: BufSampleRate
+summary:: Buffer sample rate
+categories:: UGens>Buffer>Info
 related:: Classes/BufChannels, Classes/BufDur, Classes/BufFrames, Classes/BufRateScale, Classes/BufSamples
-categories::  UGens>Buffer>Info
 
 
 description::
+
+
 returns the buffer's current sample rate.
+
 
 classmethods::
 
+
 method::kr, ir
+
 argument::bufnum
 Buffer index.
 
-returns:: 
+returns::
+
 the buffer's current sample rate.
 
 discussion::
+
 warning::
-The  code::.ir::  method is not the safest choice.
+The code::.ir:: method is not the safest choice.
 Since a buffer can be reallocated at any time, using
-code::.ir::  will not track the changes.
+code::.ir:: will not track the changes.
 ::
+
 
 examples::
 

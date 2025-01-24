@@ -1,24 +1,35 @@
-class:: TBall
+title:: TBall
 summary:: physical model of bouncing object
 categories:: UGens>Filters>Nonlinear, UGens>Generators>PhysicalModels
 related:: Classes/Ball, Classes/Spring
 
+
 description::
+
+
 models the impacts of a bouncing object that is reflected by a vibrating surface
+
 
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-modulated surface level
+modulated surface level.
+
 argument::g
-gravity
+gravity.
+
 argument::damp
-damping on impact
+damping on impact.
+
 argument::friction
-proximity from which on attraction to surface starts
+proximity from which on attraction to surface starts.
+
 
 examples::
+
 code::
 // mouse x controls switch of level
 // mouse y controls gravity

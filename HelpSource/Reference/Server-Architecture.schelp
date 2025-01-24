@@ -4,10 +4,14 @@ categories:: Server>Architecture
 related:: Classes/Server, Reference/Server-Command-Reference, Reference/AudioDeviceSelection
 
 copyright © 2002 James McCartney
-note:: Converted to new help system 2010 by Jonatan Liljedahl. Some stuff in this doc are outdated. ::
+
+note::
+Converted to new help system 2010 by Jonatan Liljedahl. Some stuff in this doc are outdated.
+::
 
 
 section:: Introduction
+
 
 The SuperCollider 3 Synth Server is a simple but powerful synthesis engine. While synthesis is running, new modules can be created, destroyed and repatched, sample buffers can be created and reallocated. Effects processes can be created and patched into a signal flow dynamically at scheduled times.  All running modules are ordered in a tree of nodes that define an order of execution. Patching between modules is done through global audio and control buses.
 
@@ -20,40 +24,58 @@ section:: Main Design Concepts
 
 
 subsection:: Node
+
+
 A Node is an addressable node in a tree of nodes run by the synth engine. There are two types, Synths and Groups. The tree defines the order of execution of all Synths. All nodes have an integer ID.
 
 
 subsection:: Group
+
+
 A Group is a collection of Nodes represented as a linked list. A new Node may be added to the head or tail of the group. The Nodes within a Group may be controlled together. The Nodes in a Group may be both Synths and other Groups. At startup there is a top level group with an ID of zero that defines the root of the tree. If the server was booted from within SCLang (as opposed to from the command line), there will also be a 'default group' with an ID of 1 which is the default target for all new Nodes. See link::Classes/RootNode:: and link::Reference/default_group:: for more info.
 
 
 subsection:: Synth
+
+
 A Synth is a collection of unit generators that run together. They can be addressed and controlled by commands to the synthesis engine. They read input and write output to global audio and control buses. Synths can have their own local controls that are set via commands to the server.
 
 
 subsection:: Synth Definition
+
+
 Synths are created from Synth Definitions. Synth Definition files are created by the SuperCollider language application and are loaded into the synth server. Synth Definitions are referred to by name.
 
 
 subsection:: Audio Buses
+
+
 Synths send audio signals to each other via a single global array of audio buses.  Audio buses are indexed by integers beginning with zero. Using buses rather than connecting synths to each other directly allows synths to connect themselves to the community of other synths without having to know anything about them specifically. The lowest numbered buses get written to the audio hardware outputs. Immediately following the output buses are the input buses, read from the audio hardware inputs. The number of bus channels defined as inputs and outputs do not have to match that of the hardware.
 
 
 subsection:: Control Buses
+
+
 Synths can send control signals to each other via a single global array of control buses.  Buses are indexed by integers beginning with zero.
 
 
 subsection:: Buffers
+
+
 Buffers are arrays of 32 bit floating point values with a small descriptive header. Buffers are stored in a single global array indexed by integers beginning with zero. Buffers may be safely allocated, loaded and freed while synthesis is running, even while unit generators are using them. Buffers are used for wave tables, sample buffers, delay lines, envelopes, or for any other need which can use an array of floating point values. Sound files may be loaded into or written from buffers.
 
 
 subsection:: Unit Generator Definitions
+
+
 Unit Generator Definitions are plug-ins loaded automatically when the program starts. They are binary code libraries that are used as building blocks by Synths to build synthesis algorithms. Unit Generator Definitions have names that match the names of SuperCollider language classes used in building Synth Definitions.
 
 
 section:: Command Line Arguments
 
+
 One of -u or -t must be supplied. Both may be supplied.
+
 definitionlist::
 ## -u udp-port-number
 || a port number 0-65535.
@@ -115,8 +137,9 @@ definitionlist::
 ## -H device-name
 ## -H input-device-name output-device-name
 || name of the hardware I/O device. If not provided, the default device is used. See link::Reference/AudioDeviceSelection:: for more details.
+
 note::
-To specify only input device and use default output, or only output device and use default input, use an empty string: code::'-H "" output-device-name':: or code::'-H input-device-name ""'::
+To specify only input device and use default output, or only output device and use default input, use an empty string: code::'-H "" output-device-name':: or code::'-H input-device-name ""'::.
 ::
 
 ## -I input-streams-enable-string
@@ -139,6 +162,7 @@ The output file's sample rate is specified by sample-rate. The output file heade
 
 
 subsection:: Example
+
 code::
 scsynth -u 57117 >synth_log &
 
@@ -157,11 +181,15 @@ scsynth -N score.osc _ out.aiff 48000 AIFF int24
 
 section:: Binary Format of Messages
 
+
 Messages are similar in format to Open Sound Control messages, except that pattern matching of the command name is not performed. When streamed via TCP, messages are each preceded by a 32 bit integer giving the length in bytes of the message. UDP datagrams contain this length information already.
 
 
 subsection:: Types
+
+
 All values are in network byte order.
+
 table::
 ## long || a 64 bit integer. Used for time stamps only.
 ## int || a 32 bit integer.
@@ -173,7 +201,10 @@ table::
 
 
 subsection:: Tags
+
+
 Command arguments have single character tags which occur in a tag string to identify their types.
+
 table::
 ## 'i' || an int
 ## 'f' || a float
@@ -185,7 +216,10 @@ table::
 
 
 subsection:: Command
+
+
 a Command consists of:
+
 table::
 ## string || the command name. See the Command Reference below.
 ## string || a string with tags defined by the types of the arguments to follow. The tag string begins with a comma ',' character.
@@ -194,7 +228,10 @@ table::
 
 
 subsection:: Bundle
+
+
 a Bundle consists of:
+
 table::
 ## time stamp || long. Time stamps are in the same format as defined by Open Sound Control :  The top 32 bits are seconds since 1900 and the lower 32 bits represent the 32 bit fraction of one second.
 ## ... || a series of Commands each preceded by a 32-bit integer byte length.
@@ -202,6 +239,8 @@ table::
 
 
 subsection:: Message
+
+
 a Message consists of:
 
 definitionlist::
@@ -218,6 +257,7 @@ definitionlist::
 
 
 section:: Glossary
+
 definitionlist::
 ## buffer || a header and array of floating point sample data. Buffers are used for sound files, delay lines, arrays of global controls, and arrays of inter-synth patch points.
 

@@ -1,24 +1,35 @@
-class:: PV_Copy
-summary:: Copies an FFT buffer
+title:: PV_Copy
+summary:: copies an FFT buffer
 categories:: UGens>FFT
 
+
 description::
+
+
 copies the spectral frame in code::bufferA:: to code::bufferB::. This allows for parallel processing of spectral data without the need for multiple FFT UGens. Further it allows to extract data at a given point in the FFT chain e.g. for monitoring purposes. 
 
-note::As of SC 3.7 instances of PV_Copy are added automatically where necessary for parallel processing. Please see link::Guides/FFT-Overview:: for the current implementation. 
+note::
+As of SC 3.7 instances of PV_Copy are added automatically where necessary for parallel processing. Please see link::Guides/FFT-Overview:: for the current implementation. 
 
-This document is provided for legacy purposes only. Existing code explicitly using PV_Copy should continue to work.::
+This document is provided for legacy purposes only. Existing code explicitly using PV_Copy should continue to work.
+::
+
 
 classmethods::
+
+
 method::new
+
 argument::bufferA
 source buffer.
+
 argument::bufferB
 destination buffer.
 
 note:: 
 code::bufferA:: and code::bufferB:: must be the same size.
 ::
+
 
 examples::
 

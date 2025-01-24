@@ -1,11 +1,13 @@
-TITLE:: ReadableNodeIDAllocator
+title:: ReadableNodeIDAllocator
 summary:: an allocator for nodeIDs with human-readable ownership
 categories:: Control
 related:: Classes/Server, Guides/MultiClient_Setups
 
-description::
-In multi-client setups, it is useful to know which client created which nodeIDs on a shared server. ReadableNodeIDAllocator provides that facility by using a decimal prefix based on the clientID.
 
+description::
+
+
+In multi-client setups, it is useful to know which client created which nodeIDs on a shared server. ReadableNodeIDAllocator provides that facility by using a decimal prefix based on the clientID.
 
 code::
 // default server uses a ReadableNodeIDAllocator
@@ -29,14 +31,20 @@ r.defaultGroupID;
 3.do { r.nextNodeID.postln };
 ::
 
-CLASSMETHODS::
+
+classmethods::
+
 
 method::new
+
 makes a new instance for given clientID, offset for lowest temporary id, and
+
 argument::clientID
 the clientID for which to create an offset/prefix
+
 argument::lowestTempID
 the offset for the lowest temporary id
+
 argument::numClients
 the number of clients for which to split the number range
 
@@ -47,39 +55,64 @@ a = ReadableNodeIDAllocator(11, 1000, 12);
 3.do { a.alloc.postln };
 ::
 
-INSTANCEMETHODS::
+
+instancemethods::
+
 
 method::clientID
+
 the clientID for which to create an offset/prefix
 
+
 method::numClients
+
 the number of clients for which to split the number range
 
+
 method::lowestTempID
+
 the offset from where temporary nodeID begins
 
+
 method::idOffset
+
 the offset from where nodeID range begins
 
+
 method::maxPermID
+
 the highest permanent nodeID
 
+
 method::numIDs
+
 the number of IDs before the allocator will wrap
 
+
 method::alloc
+
 allocates next temporary nodeID
 
+
 method::allocPerm
+
 allocates next permanent nodeID
 
+
 method::freePerm
+
 frees a permanent nodeID
+
 argument::id
 
+
 method::isPerm
+
 tests whether num is in the allocator's range of permanent numbers
+
 argument::num
 
+
 method::reset
-reset allocator to initial state
+
+resets allocator to initial state

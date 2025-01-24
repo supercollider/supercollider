@@ -1,25 +1,34 @@
-class:: PV_RectComb2
-summary:: Make gaps in spectrum.
-related:: Classes/FFT, Classes/IFFT, Classes/PV_RectComb
+title:: PV_RectComb2
+summary:: makes gaps in spectrum
 categories:: UGens>FFT
+related:: Classes/FFT, Classes/IFFT, Classes/PV_RectComb
+
 
 description::
+
+
 Alternates blocks of bins between the two inputs.
 
 
 classmethods::
 
+
 method::new
+
 argument::bufferA
 FFT buffer A.
+
 argument::bufferB
 FFT buffer B.
+
 argument::numTeeth
-Number of teeth in the comb.
+number of teeth in the comb.
+
 argument::phase
-Starting phase of comb pulse.
+starting phase of comb pulse.
+
 argument::width
-Pulse width of the comb.
+pulse width of the comb.
 
 
 examples::

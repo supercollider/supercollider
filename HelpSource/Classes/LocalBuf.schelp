@@ -1,38 +1,62 @@
-class:: LocalBuf
-summary:: Allocates a buffer local to the synth
+title:: LocalBuf
+summary:: allocates a buffer local to the synth
 categories:: UGens>Buffer
 related:: Classes/Buffer, Classes/SetBuf, Classes/ClearBuf
 
+
 classmethods::
+
+
 private:: categories, new1
 
+
 method::new
+
 allocates a local buffer
+
 argument::numFrames
 number of frames (default: 1)
+
 argument::numChannels
 number of channels for multiple channel buffers (default: 1)
-returns:: a new buffer – the ugen outputs its buffer number and can thus be used in any other ugen that requires a buffer number input.
+
+returns::
+
+a new buffer – the ugen outputs its buffer number and can thus be used in any other ugen that requires a buffer number input.
+
 
 method::newFrom
+
 allocates a new buffer from a given list of values
+
 argument::list
-The list may be two-dimensional for numChannels > 1.
+the list may be two-dimensional for numChannels > 1.
 It is then reshaped into the buffer's current format by flattening.
-returns:: a new buffer
+
+returns::
+
+a new buffer
+
 discussion::
 Since newFrom is called by the as message, one may thus convert an array to a LocalBuf:
+
 code::
 [1, 2, 3].as(LocalBuf)
 ::
 
+
 instancemethods::
+
+
 method::set
+
 sets the buffer slots with a list of values.
+
 discussion::
 If list is smaller than numFrames, it will only set
 part of the buffer. The list may be two-dimensional for numChannels > 1.
 offset is the starting index (default: 0)
+
 warning::
 SynthDef permits a maximum of 65536 (2**16) unique constant values in one definition. A very large array of distinct values can corrupt the SynthDef's binary format. If you need a large buffer to be pre-initialized with signal data, it is strongly recommended to use link::Classes/Buffer:: instead.
 ::
@@ -48,8 +72,11 @@ SynthDescLib.at(\bigLocalBuf).constants;
 // prints: FloatArray[1, 88200, 0, 0.75, 0.5, 0.25]
 ::
 
+
 method::clear
+
 sets the buffer slot to zero.
+
 discussion::
 This is important when randomly accessing buffer slots
 (e.g. with a BufRd) or not overwriting them. The method code::clear:: is not an efficient real time operation
@@ -57,7 +84,9 @@ for larger buffers, so it should be only used when really needed - but then it i
 a LocalBuf is "created" in each new synth, and it may reuse old space. So if an older
 synth has already ended, this part of memory may be the same as the new synth's.
 
+
 examples::
+
 code::
 // example: FFT
 

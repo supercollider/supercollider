@@ -6,19 +6,22 @@ related:: Guides/WritingHelp, Classes/SCDoc, Classes/SCDocHTMLRenderer
 
 section:: Introduction
 
+
 This document specifies the syntax and link::#Grammar:: of the link::Classes/SCDoc:: markup language.
 code::SCDoc Markup:: is used in SuperCollider mainly for helpfiles.
 It is a syntax that features semantic a semantic level specific to the requirements of SuperCollider.
 
-note::A guide to writing help can be found at link::Guides/WritingHelp::.::
+note::
+A guide to writing help can be found at link::Guides/WritingHelp::.
+::
 
 
 section:: Specification
 
+
 A document is split into a header section and a body. The header contains only header tags, which are not allowed in the document body.
 
 SCDoc documents consist of EMPHASIS::tags:: and EMPHASIS::text::.
-
 
 list::
 ## Tags consists of single words ending with teletype::\:::: (double-colon).
@@ -32,6 +35,8 @@ list::
 
 
 subsection:: Header tags
+
+
 Header tags take the remaining text in their definition line as their argument.
 They expect no end-tag.
 
@@ -74,6 +79,7 @@ summary:: SCDoc markup language syntax
 teletype:: REDIRECT\:: :: name
 || For class redirect systems, specify the name of the instance variable holding the implementing class.
 Example:
+
 teletype::
 redirect:: implClass
 ::
@@ -85,10 +91,15 @@ teletype:: CLASS\:: :: name
 
 
 subsection:: Section tags
+
+
 A document can be divided into sections and subsections. Section bodies consist of everything that follows its section tag until another section tag of same or higher level.
 
 Sections have a link anchor with the same name as the section.
-note::Method tags also create such anchors. The methodname then is prefixed with teletype::*:: (class methods) or teletype::-:: (instance methods).::
+
+note::
+Method tags also create such anchors. The methodname then is prefixed with teletype::*:: (class methods) or teletype::-:: (instance methods).
+::
 
 Structural tags at the same level in the hierarchy may be functionally equivalent but treated differently for rendering or querying purposes.
 For example teletype::examples\:::: is equivalent to teletype::section\:::: but imply particular formatting or specially identify the examples section for customised uses like concatenating all examples for classes with a given parent class.
@@ -96,6 +107,7 @@ For example teletype::examples\:::: is equivalent to teletype::section\:::: but 
 Structural tags can have child elements, for example the items in a list or the subsections and prose in a section.
 
 Level 1 (highest):
+
 definitionlist::
 ## keyword:: section\::
 teletype:: SECTION\:: :: name
@@ -104,6 +116,7 @@ teletype:: SECTION\:: :: name
 teletype::
 section:: Introduction
 ::
+
 ## keyword:: description\::
 teletype:: DESCRIPTION\:: ::
 ## keyword:: classmethods\::
@@ -116,30 +129,41 @@ teletype:: EXAMPLES\:: ::
 ::
 
 Level 2:
+
 definitionlist::
 ## keyword:: subsection\::
 teletype:: SUBSECTION\:: :: name
 || A named subsection. The name should be plain text and can not contain any tags. Example:
+
 teletype::
 
 
 subsection:: Some more info
+
+
 ::
+
 ::
 
 Level 3:
+
 definitionlist::
 ## keyword:: subsubsection\::
 teletype:: SUBSUBSECTION\:: :: name
 || A named subsubsection. The name should be plain text and can not contain any tags. Example:
+
 teletype::
 subsubsection:: Some more detailed info
 ::
+
 ::
 
 
 subsection:: Method tags
+
+
 These are level 3 subsections:
+
 definitionlist::
 ## keyword:: method\::
 teletype:: METHOD\:: :: methodname(s) [argstring]
@@ -147,17 +171,21 @@ teletype:: METHOD\:: :: methodname(s) [argstring]
 
 note::
 If multiple methods are documented as a group, the methods must have the same argument name signature for existing arguments. For example, grouping the following methods would be ok:
+
 teletype::
 foo (a, b)
 bar (a, b, c)
 zoo (a)
 ::
+
 But not:
+
 teletype::
 foo (a, x)
 bar (a, b, c)
 zoo (y)
 ::
+
 ::
 
 Following the method tag should come a short description of the method, and optional description of the arguments and return value. See the link::#tags allowed inside a method::section below.
@@ -177,11 +205,13 @@ teletype:: COPYMETHOD\:: :: classname methodname
 teletype::
 copymethod::SinOsc *ar
 ::
+
 ::
 
 anchor::tags allowed inside a method::
 Inside a method section, the following optional tags are allowed, in the order given below.
 These tags are level 4 subsections.
+
 definitionlist::
 ## keyword:: argument\::
 teletype:: ARGUMENT\:: :: [argname]
@@ -197,20 +227,26 @@ teletype:: DISCUSSION\:: ::
 || This optional section can contain a more detailed discussion and code examples related to this method.
 ::
 
-
 teletype::
 method::ar, kr
-This is a nice method, try it out!
+
+this is a nice method, try it out!
+
 argument::freq
-The frequency of this thing as a floating point value.
+the frequency of this thing as a floating point value.
+
 argument::amp
-The amplitude, be careful. Goes to 11.
-returns:: 
-An UGen.
+the amplitude, be careful. Goes to 11.
+
+returns::
+
+a UGen.
 ::
 
 
 subsection:: Modal tags
+
+
 These tags enclose a text and ends with a single teletype::\:::: (double-colon) end-tag.
 The enclosed text can not contain any other tags.
 
@@ -253,12 +289,15 @@ teletype:: IMAGE\:: ::
 teletype::
 image::foo.png::
 ::
+
 Optionally an image caption can be given:
+
 teletype::
 image::foo.png#Figure 1::
 ::
 
 And, the image can be clickable and link to another page:
+
 teletype::
 image::foo.png#click this image#Classes/SinOsc::
 ::
@@ -268,9 +307,11 @@ Just leave the caption empty if you want a link but no caption.
 ## keyword:: math\::
 teletype:: MATH\:: ::
 || Converts LaTeX code into an inline formula. E.g.
+
 teletype::
 math::\frac{\pi}{2}::
 ::
+
 becomes math::\frac{\pi}{2}:: embedded within a line of text.
 ::
 
@@ -298,28 +339,35 @@ teletype:: TELETYPE\:: ::
 ## keyword:: math\::
 teletype:: MATH\:: ::
 || Renders LaTeX code in display style. E.g.
+
 teletype::
 math::
 \int_0^{2\pi}\sin(x)~dx = 0
 \::
 ::
+
 becomes
 math::
 \int_0^{2\pi}\sin(x)~dx = 0
 ::
+
 which is separated from the text through a block.
 For specifics check out the used rendering engine kaTeX at https://katex.org
 ::
 
 
 subsection:: Lists and tables
+
+
 List items, table rows and definition terms are denoted with teletype::##:: (double-hash).
 Table cells and definition descriptions are denoted with teletype::||:: (double-bar).
 Lists and tables can be nested, and ends with the end-tag.
+
 definitionlist::
 ## keyword:: table\::
 teletype:: TABLE\:: ::
 || Create a table. Example:
+
 teletype::
 table::
     ## a 1 || a 2 || a 3
@@ -327,7 +375,9 @@ table::
     ## c 1 || c 2 || c 3
 \::
 ::
+
 Renders:
+
 table::
 ## a 1 || a 2 || a 3
 ## b 1 || b 2 || b 3
@@ -337,6 +387,7 @@ table::
 ## keyword:: definitionlist\::
 teletype:: DEFINITIONLIST\:: ::
 || A definition list item consists of one or more terms prefixed with teletype::##:: followed by a description prefixed with teletype::||::. Example:
+
 teletype::
 definitionlist::
  	## foo
@@ -346,6 +397,7 @@ definitionlist::
  	|| A very nice computer software.
 \::
 ::
+
 ## keyword:: list\::
 teletype:: LIST\:: ::
 || Create a simple bulleted list. Items are prefixed with teletype::##::
@@ -359,21 +411,33 @@ teletype:: TREE\:: ::
 
 
 subsection:: Notes and warnings
+
+
 These can have other tags in them, and ends with the end-tag.
+
 definitionlist::
 ## keyword:: note\::
 teletype:: NOTE\:: ::
 || Create a NOTE box with important content.
-note:: like this ::
+
+note::
+like this.
+::
+
 ## keyword:: warning\::
 teletype:: WARNING\:: ::
 || Create a WARNING box with very important content.
-warning:: like this ::
+
+warning::
+like this
+::
+
 ## keyword:: footnote\::
 teletype:: FOOTNOTE\:: ::
 || Create a footnote which will be rendered at the end of the document.
 At the position of the FOOTNOTE tag, the footnote number will be rendered with a link to the footnote.
 Example:
+
 teletype::
 Hello I'm a geek footnote::
 According to http://en.wikipedia.org/wiki/Geek the word geek is a slang term, with different
@@ -381,6 +445,7 @@ meanings ranging from "a computer expert or enthusiast" to "a carnival performer
 sensationally morbid or disgusting acts"
 \::
 ::
+
 The result looks like this:
 Hello I'm a geek footnote::
 According to http://en.wikipedia.org/wiki/Geek the word geek is a slang term, with different meanings ranging from "a computer expert or enthusiast" to "a carnival performer who performs sensationally morbid or disgusting acts"
@@ -390,6 +455,7 @@ According to http://en.wikipedia.org/wiki/Geek the word geek is a slang term, wi
 
 
 subsection:: Other tags
+
 definitionlist::
 ## keyword:: keyword\::
 teletype:: KEYWORD\:: :: keyword(s)
@@ -402,7 +468,10 @@ teletype:: CLASSTREE\:: :: classname
 
 
 section:: Grammar
+
+
 The following is an exact specification of the grammar:
+
 teletype::
 start             ::= document
 document          ::= START_FULL dochead optsections

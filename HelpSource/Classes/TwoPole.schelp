@@ -1,27 +1,35 @@
-class:: TwoPole
-summary:: Two pole filter.
+title:: TwoPole
+summary:: two pole filter
+categories:: UGens>Filters>Linear
 related:: Classes/TwoZero
-categories::  UGens>Filters>Linear
 
 
 description::
+
+
 A two pole filter. This provides lower level access to setting of pole
 location. For general purposes  link::Classes/Resonz::  is better.
 
 
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-The input signal.
+the input signal.
+
 argument::freq
-Frequency of pole angle.
+frequency of pole angle.
+
 argument::radius
-Radius of pole. Should be between 0 and +1.
+radius of pole. Should be between 0 and +1.
+
 argument::mul
-Output will be multiplied by this value.
+output will be multiplied by this value.
+
 argument::add
-This value will be added to the output.
+this value will be added to the output.
 
 
 examples::

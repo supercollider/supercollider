@@ -1,43 +1,65 @@
-CLASS::Pair
+title:: Pair
 summary:: LISP-like two element cells
 categories:: Collections>Ordered
 
+
 description::
+
 note::
 Implementation incomplete. See link::Guides/J-concepts-in-SC:: for similar functionality.
 ::
 
 Most methods are inherited from the superclasses.
 
-CLASSMETHODS::
+
+classmethods::
+
 
 method::new
+
 returns new instance.
 
+
 method::newFrom
-Convert collection (e.g. arrays of arrays) to pairs.
 
-INSTANCEMETHODS::
+converts collection (e.g. arrays of arrays) to pairs.
 
-private::storeOn, printOn, storeArgs
+
+instancemethods::
+
+
+private:: storeOn, printOn, storeArgs
+
 
 method::size
+
 returns the size when linking across.
 
+
 method::depth
+
 returns the size when linking down.
 
+
 method::do
+
 iterates over the two elements.
 
-Traverse
-Same like: link::#-depthFirstPreOrderTraversal::
+
+method::traverse
+
+same like: link::#-depthFirstPreOrderTraversal::
+
 
 method::depthFirstPreOrderTraversal
-Traverse the data structure first link down, then across (see link::#examples::).
+
+traverses the data structure first link down, then across (see link::#examples::).
+
 
 method::depthFirstPostOrderTraversal
-Traverse the data structure from bottom up (see link::#examples::).
+
+traverses the data structure from bottom up (see link::#examples::).
+
 
 examples::
 

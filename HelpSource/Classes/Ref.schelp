@@ -1,8 +1,11 @@
-class:: Ref
+title:: Ref
 summary:: a reference to a value
 categories:: Core
 
+
 description::
+
+
 A Ref holds an object which may be retrieved and altered with the messages value and value_(obj).
 The backquote code:: ` :: is a unary operator that is equivalent to calling code::Ref.new(obj)::.
 
@@ -19,10 +22,14 @@ x.value.doSomething;	// retrieve value and use it
 
 Ref is also used as a quoting device to protect against multi channel expansion in certain UGens that require Arrays.
 
+
 classmethods::
 
+
 method::new
+
 creates a Ref of an object.
+
 discussion::
 Another syntax:
 
@@ -30,41 +37,63 @@ code::
 `5
 ::
 
+
 instancemethods::
 
+
 method::dereference
+
 returns the value. This message is also defined in class Object where it just returns the receiver.  Therefore anything.dereference will remove a Ref if there is one. This is slightly different than the value message, because value will also cause functions to evaluate themselves whereas dereference will not.
 
+
 method::asRef
+
 returns the receiver. In class Object this message is defined to create a Ref of the object.
 
+
 method::value
+
 gets/sets the value.
 
+
 method::get
+
 returns value.
 
+
 method::set
+
 sets value.
 
+
 method::at
+
 returns code::value.at(index)::
 
+
 method::put
-Executes value.put(index, value)
+
+executes value.put(index, value)
+
 
 method::seq
+
 this method is used to return values from within a Routine definition
 
 discussion::
+
 code::
 { this.value = output.embedInStream(this.value) }
 ::
 
+
 method::asUGenInput
+
 returns the Ref - this prevents multi-channel expansion in a SynthDef
 
+
 method::asControlInput
+
 returns the value - this is used when sending a Ref as a control value to a server Node.
 
 
@@ -72,6 +101,7 @@ section:: Typical uses of Ref:
 
 
 subsection:: preventing multi-channel expansion
+
 
 Consult link::Guides/Multichannel-Expansion:: for details on multi-channel expansion in SynthDefs.
 
@@ -116,9 +146,12 @@ code::
 
 
 method::multichannelExpandRef
-This method is called internally on inputs to UGens that take multidimensional arrays, like link::Classes/Klank:: and it allows proper multichannel expansion even in those cases. For SequenceableCollection, this returns the collection itself, assuming that it contains already a number of Refs.
+
+this method is called internally on inputs to UGens that take multidimensional arrays, like link::Classes/Klank:: and it allows proper multichannel expansion even in those cases. For SequenceableCollection, this returns the collection itself, assuming that it contains already a number of Refs.
+
 argument::rank
-The depth at which the list is expanded. For instance the Klank spec has a rank of 2.
+the depth at which the list is expanded. For instance the Klank spec has a rank of 2.
+
 code::
 `([[[100, 200], 500], nil, [[[0.01, 0.3], 0.8]]]).multichannelExpandRef(2);
 [`[[100, 200], nil, [0.2, 0.8]], `[[130, 202], nil, [0.2, 0.5]]].multichannelExpandRef(2);

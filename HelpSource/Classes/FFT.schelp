@@ -1,13 +1,17 @@
-class:: FFT
-summary:: Fast Fourier Transform
-related:: Classes/IFFT, Guides/FFT-Overview
+title:: FFT
+summary:: fast Fourier transform
 categories:: UGens>FFT
+related:: Classes/IFFT, Guides/FFT-Overview
+
 
 description::
+
+
 The fast fourier transform analyzes the frequency content of a signal, which can be useful for audio analysis or for frequency-domain sound processing (phase vocoder).
 
 note::
-FFT and link::Classes/IFFT:: UGens require a buffer to store the frequency-domain data. This buffer must have exactly one channel. emphasis::Multichannel buffers are never supported.::
+FFT and link::Classes/IFFT:: UGens require a buffer to store the frequency-domain data. This buffer must have exactly one channel. emphasis::Multichannel buffers are never supported.
+::
 
 To do FFT processing on a multichannel signal, provide an array of mono buffers, one for each channel. Then, FFT/IFFT will perform link::Guides/Multichannel-Expansion::, to process each channel separately.
 
@@ -26,30 +30,40 @@ fft = FFT(LocalBuf(2048.dup(2), 1), aStereoSignal);
 See also link::Guides/FFT-Overview#Multichannel Expansion with FFT UGens::.
 ::
 
+
 classmethods::
 
+
 method::new
+
 argument::buffer
-A buffer to store spectral data. The buffer's size must
+a buffer to store spectral data. The buffer's size must
 correspond to a power of 2. LocalBuf is useful here, because processes should not share data between synths. (Note: most PV UGens operate on this data in place. Use PV_Copy for parallel processing.)
+
 argument::in
-The signal to be analyzed. The signal's rate determines the rate at which the input is read.
+the signal to be analyzed. The signal's rate determines the rate at which the input is read.
+
 argument::hop
-The amount of offset from the beginning of one FFT analysis frame to the next, measured in multiples of the analysis frame size. This can range between 1.0 and values close to (but larger than) 0.0, and the default is 0.5 (meaning each frame has a 50% overlap with the preceding/following frames).
+the amount of offset from the beginning of one FFT analysis frame to the next, measured in multiples of the analysis frame size. This can range between 1.0 and values close to (but larger than) 0.0, and the default is 0.5 (meaning each frame has a 50% overlap with the preceding/following frames).
+
 argument::wintype
-Defines how the data is windowed:
+defines how the data is windowed:
+
 table::
 ## -1 || strong::rectangular:: windowing, simple but typically not recommended;
 ## 0 || (the default) strong::Sine:: windowing, typically recommended for phase-vocoder work;
 ## 1 || strong::Hann:: windowing, typically recommended for analysis work.
 ::
-argument::active
-A simple control allowing FFT analysis to be active (>0) or inactive (<=0). This is mainly useful for signal analysis processes which are only intended to analyse at specific times rather than continuously
-argument::winsize
-The windowed audio frames are usually the same size as the buffer. If you wish the FFT to be zero-padded, then you can specify a window size smaller than the actual buffer size (e.g. window size 1024 with buffer size 2048). Both values must still be a power of two. Leave this at its default of zero for no zero-padding.
 
-returns:: 
-The FFT chain
+argument::active
+a simple control allowing FFT analysis to be active (>0) or inactive (<=0). This is mainly useful for signal analysis processes which are only intended to analyse at specific times rather than continuously
+
+argument::winsize
+the windowed audio frames are usually the same size as the buffer. If you wish the FFT to be zero-padded, then you can specify a window size smaller than the actual buffer size (e.g. window size 1024 with buffer size 2048). Both values must still be a power of two. Leave this at its default of zero for no zero-padding.
+
+returns::
+
+the FFT chain
 
 discussion::
 Only the first two arguments are required. The remaining arguments allow for custom FFT analyses for specialised situations.

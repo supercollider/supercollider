@@ -1,9 +1,12 @@
-class:: SpecPcile
-summary:: Finds a percentile of FFT magnitude spectrum
+title:: SpecPcile
+summary:: finds a percentile of FFT magnitude spectrum
 categories:: UGens>FFT
 related:: Classes/SpecCentroid, Classes/SpecFlatness
 
+
 description::
+
+
 Given an link::Classes/FFT:: chain this calculates the cumulative distribution of the frequency spectrum, and outputs the frequency value which corresponds to the desired percentile.
 
 For example, to find the frequency at which 90% of the spectral energy lies below that frequency, you want the 90-percentile, which means the value of emphasis::fraction:: should be 0.9. The 90-percentile or 95-percentile is often used as a measure of strong::spectral roll-off::.
@@ -12,13 +15,21 @@ The optional third argument strong::interpolate:: (code::ir::) specifies whether
 
 Optional fourth argument is strong::binout:: (code::ir::) specifies whether to output the bin number instead of the frequency (default 0, set to 1 to enable). If interpolate is enabled, linear interpolation on the bin number is performed.
 
+
 classmethods::
+
+
 method::kr
+
 argument::buffer
 an link::Classes/FFT:: chain.
+
 argument::fraction
+
 argument::interpolate
+
 argument::binout
+
 
 examples::
 

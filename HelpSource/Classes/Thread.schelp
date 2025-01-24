@@ -1,10 +1,13 @@
-class::Thread
-summary:: The context of code evaluation
-categories::Core>Kernel
+title:: Thread
+summary:: the context of code evaluation
+categories:: Core>Kernel
 related:: Classes/Routine
 
+
 description::
-note:: A SuperCollider Thread is strong::not an operating system thread::. Although they
+
+note::
+A SuperCollider Thread is strong::not an operating system thread::. Although they
 have some conceptual similarities, they do not correspond.
 ::
 
@@ -28,6 +31,7 @@ accessed using link::#thisThread::, while a Thread's parent may be accessed
 using link::#-parent::.
 
 A Thread has
+
 list::
 ## associated link::#-beats#logical time::
 ## an associated link::#-clock#Clock::
@@ -35,8 +39,10 @@ list::
 ## own link::#-exceptionHandler#exception handler::
 ::
 
+
 method::thisThread
-The global pseudo-variable code::thisThread:: always represents the current Thread, i.e.
+
+the global pseudo-variable code::thisThread:: always represents the current Thread, i.e.
 the context in which the current code is running. It can be either the
 link::Classes/Process#-mainThread#main Thread:: or the link::Classes/Routine:: running the
 current code.
@@ -50,31 +56,41 @@ thisThread.seconds;
 thisThread.clock;
 ::
 
-classMethods::
+
+classmethods::
+
 
 method::new
+
 creates an instance of Thread, passing it the Function with code to run.
 
-note:: There is no good use in instantiating a Thread, because this class offers no method
+note::
+There is no good use in instantiating a Thread, because this class offers no method
 of starting the given Function. Instead, use the Thread's subclass
 link::Classes/Routine::. The only purpose of this constructor is for Routine to call it
 within its own constructor.
 ::
-argument::func
-A Function with code for the Thread to run.
-argument::stackSize
-Call stack size (an Integer).
 
-instanceMethods::
+argument::func
+a Function with code for the Thread to run.
+
+argument::stackSize
+call stack size (an Integer).
+
+
+instancemethods::
+
 
 method::parent
-The parent Thread that started or resumed this Thread.
+
+the parent Thread that started or resumed this Thread.
 
 discussion::
 
 The parent Thread's execution is blocked until the child Thread finishes or is suspended.
 
 When a child Thread is started or resumed, it inherits certain aspects from its parent:
+
 list::
 ## associated link::#-clock#Clock::
 ## associated link::#-beats#logical time::
@@ -82,6 +98,7 @@ list::
 
 
 method::beats
+
 gets/sets the current logical time of the Thread in beats. This will be the same
 as the time in seconds, unless this Thread's link::#-clock#clock:: is
 link::Classes/TempoClock::, and the clock's link::Classes/TempoClock#-tempo#tempo::
@@ -93,6 +110,7 @@ code:: thisThread.clock.beats2secs(beats) ::.
 discussion::
 
 There are several sources of logical time:
+
 list::
 ## When code is run from the code editor, the command line, or in response to OSC
 and MIDI messages, the link::Classes/Process#-mainThread#main Thread::'s logical time is
@@ -120,7 +138,9 @@ to the current Thread's time only have effect until the Thread is suspended
 
 See also: link::Classes/Clock#Scheduling and Threads::.
 
+
 method::seconds
+
 gets/sets the current logical time of the Thread in seconds.
 
 Setting code::seconds:: also sets link::#-beats:: to
@@ -128,12 +148,15 @@ code::thisThread.clock.secs2beats(seconds)::.
 
 See link::#-beats:: for general discussion on Threads and logical time.
 
+
 method::clock
+
 gets/sets the Thread's associated link::Classes/Clock::.
 
 discussion::
 
 There are several ways a Clock becomes associated with a Thread:
+
 list::
 ## When code is run from the code editor, the command line, or in response to OSC and
 MIDI messages, the link::Classes/Process#-mainThread#main Thread::'s clock is set to
@@ -154,8 +177,10 @@ strong::another:: Thread's clock will have no effect on code running on it.
 
 See also: link::Classes/Clock#Scheduling and Threads::.
 
+
 method::deferAwayFrom
-Executes a given function, guaranteeing that it will not execute on the same thread as code::this::. That is:
+
+executes a given function, guaranteeing that it will not execute on the same thread as code::this::. That is:
 
 list::
 ## If code::delta > 0:: (the function should evaluate later), defer to link::Classes/AppClock::.
@@ -163,16 +188,25 @@ list::
 ::
 
 This method interface is designed to be used with function-call syntax, e.g. code::deferAwayFrom(aThread) { ... function body ... }::.
+
 argument::func
-The function to evaluate. It will not be passed any argument values.
+the function to evaluate. It will not be passed any argument values.
+
 argument::delta
-A time delta in seconds. Normally, the default 0 will be used.
+a time delta in seconds. Normally, the default 0 will be used.
+
 
 method::isPlaying
-returns:: code::true:: if it is playing.
+
+returns::
+
+code::true:: if it is playing.
+
 
 method::state
-The internal state values for a Thread instance can be polled:
+
+the internal state values for a Thread instance can be polled:
+
 table::
 ## 0 || not started
 ## 7 || running
@@ -182,25 +216,35 @@ table::
 
 subsection:: Seeding the random number generator
 
+
 see also: link::Reference/randomSeed::
 
+
 method::randSeed
+
 sets the random number generator seed using a single integer.
+
 discussion::
 Example:
+
 code::
 g = thisThread.randSeed = 4;
 10.do{ 1.0.rand2.postln };
 ::
 
+
 method::randData
+
 gets/sets the three integer array which defines the internal basis for the random number generator.  You can use this to get back the exact same random number sequence, and it provides a mechanism for automatic replay for generative music.
+
 discussion::
 Example:
+
 code::
 g = thisThread.randData;
 10.do{ 1.0.rand2.postln };
 ::
+
 code::
 // each time the seed is reset, the random number generation should give the same sequence
 thisThread.randData_(Int32Array[-662787342, 1546785953, 1661466823]);

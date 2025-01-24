@@ -1,14 +1,19 @@
-class:: BinaryOpUGen
-summary:: Apply a binary operation to the values of an input UGen
-related:: Classes/UnaryOpUGen, Classes/BinaryOpFunction, Classes/Pbinop, Overviews/Operators
+title:: BinaryOpUGen
+summary:: applies a binary operation to the values of an input UGen
 categories:: UGens>Algebraic
+related:: Classes/UnaryOpUGen, Classes/BinaryOpFunction, Classes/Pbinop, Overviews/Operators
+
 
 description::
+
+
 BinaryOpUGens are created as the result of a binary operator applied to a link::Classes/UGen::.
+
 code::
 (SinOsc.ar(200) * ClipNoise.ar).dump;
 (SinOsc.ar(200).thresh(0.5)).dump;
 ::
+
 The use of the binary operators code::*:: and code::thresh:: above each instantiate a BinaryOpUGen. The operators themselves  (which are methods) are not to be confused with the resulting BinaryOpUGen (which is an object). The unary and binary operators are defined in link::Classes/UGen::'s superclass link::Classes/AbstractFunction::, which creates the
 BinaryOpUGen as a result of the operation.
 
@@ -16,21 +21,36 @@ When operating on UGens instead of numbers, what results is not a result of the 
 
 See link::Overviews/Operators:: for an overview of common operators.
 
+
 classmethods::
+
+
 private:: new1
 
+
 method::new
+
 returns a new instance that applies the operator code::selector:: to the UGens code::a:: and code::b:: normally, this is implicitly called when applying an operator to a link::Classes/UGen::.
+
 argument::selector
-The selector symbol for the binary operator
+the selector symbol for the binary operator
+
 argument::a
 left operand
+
 argument::b
 right operand
-returns:: A new instance of BinaryOpUGen
+
+returns::
+
+a new instance of BinaryOpUGen
+
 
 instancemethods::
+
+
 private:: init, optimizeGraph, constantFolding
+
 
 examples::
 
@@ -51,6 +71,7 @@ b.operator; // +
 
 
 subsection:: The comparison operators
+
 
 The operators code:: >, >=, <, <= :: are particularly useful for triggering. They should not be confused with their use in conditionals. Compare:
 

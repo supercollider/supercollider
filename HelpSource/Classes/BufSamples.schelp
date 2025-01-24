@@ -1,10 +1,14 @@
-class:: BufSamples
-summary:: Current number of samples in buffer.
+title:: BufSamples
+summary:: current number of samples in buffer
+categories:: UGens>Buffer>Info
 related:: Classes/BufChannels, Classes/BufDur, Classes/BufFrames, Classes/BufRateScale, Classes/BufSampleRate
-categories::  UGens>Buffer>Info
+
 
 description::
+
+
 returns the current number of allocated samples. A sample is not the same as a frame (compare with link::Classes/BufFrames::); a frame includes the samples in each channel of the buffer. Only for a mono buffer are samples the same as frames.
+
 code::
 samples = frames * numChannels
 ::
@@ -12,18 +16,23 @@ samples = frames * numChannels
 
 classmethods::
 
+
 method::kr, ir
+
 argument::bufnum
 Buffer index.
 
 discussion::
+
 warning::
-The  code::.ir::  method is not the safest choice.
+The code::.ir:: method is not the safest choice.
 Since a buffer can be reallocated at any time, using
-code::.ir::  will not track the changes.
+code::.ir:: will not track the changes.
 ::
 
+
 examples::
+
 code::
 // example; this buffer is mono, so the number of samples matches the number of frames
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");

@@ -1,20 +1,25 @@
-class:: LastValue
-summary:: Output the last value before the input changed
+title:: LastValue
+summary:: outputs the last value before the input changed
+categories:: UGens>Triggers
 related:: Classes/LeastChange, Classes/MostChange
-categories::  UGens>Triggers
 
 
 description::
+
+
 Output the last value before the input changed more than a threshold.
 
 
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-The input signal.
+the input signal.
+
 argument::diff
-Difference threshold.
+difference threshold.
 
 
 examples::
@@ -31,6 +36,7 @@ d.free;
 ::
 
 Returns the difference between current and the last changed:
+
 code::
 (
 d = { |out = 0, val = 1|

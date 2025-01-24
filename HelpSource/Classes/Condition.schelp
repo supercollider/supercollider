@@ -1,37 +1,54 @@
-CLASS::Condition
-categories::Scheduling
-summary:: Block the execution of a thread
+title:: Condition
+summary:: block the execution of a thread
+categories:: Scheduling
 
-CLASSMETHODS::
+
+classmethods::
+
 
 method::new
+
 creates a new instance, set the strong::test:: variable.
 
-INSTANCEMETHODS::
+
+instancemethods::
+
 
 method::test
-Answers whether the condition will block or not (boolean).
+
+answers whether the condition will block or not (boolean).
+
 
 method::wait
+
 waits until the condition is code::true:: and signalled. This only works in a Routine. This method yields a symbol (\hang), so that the clock doesn't reschedule the Routine.
+
 code::
 c = Condition(false); fork { 0.5.wait; "started ...".postln; c.wait;  "... and finished.".postln };
 c.test = true;
 c.signal;
 ::
 
+
 method::hang
+
 waits for strong::value:: time, regardless of test. This only works in a Routine. This method yields a symbol (\hang), so that the clock doesn't reschedule the Routine.
+
 code::
 c = Condition.new; fork { 0.5.wait; "started ...".postln; c.hang;  "... and finished.".postln };
 c.unhang;
 ::
 
+
 method::signal
-If link::#-test:: is code::true::, reschedule blocked threads.
+
+if link::#-test:: is code::true::, reschedule blocked threads.
+
 
 method::unhang
-Resume threads.
+
+resumes threads.
+
 
 examples::
 
@@ -98,6 +115,7 @@ c.unhang;
 ::
 
 Waiting for Synths to end (waitForFree) uses a Condition implicitly:
+
 code::
 (
 SynthDef(\help, { |out|

@@ -1,10 +1,12 @@
-class:: FreqShift
-summary:: Frequency Shifter.
+title:: FreqShift
+summary:: frequency shifter
+categories:: UGens>Filters>Nonlinear, UGens>Filters>Pitch
 related:: Classes/Hilbert, Classes/HilbertFIR
-categories::  UGens>Filters>Nonlinear, UGens>Filters>Pitch
 
 
 description::
+
+
 FreqShift implements single sideband amplitude modulation, also known as
 frequency shifting, but not to be confused with pitch shifting. Frequency
 shifting moves all the components of a signal by a fixed amount but does
@@ -13,23 +15,30 @@ not preserve the original harmonic relationships.
 
 classmethods::
 
+
 method::ar
+
 argument::in
-The input signal.
+the input signal.
+
 argument::freq
-Amount of shift in cycles per second.
+amount of shift in cycles per second.
+
 argument::phase
-Phase of the frequency shift (0..2pi).
+phase of the frequency shift (0..2pi).
+
 argument::mul
+
 argument::add
+
 
 examples::
 
 code::
-// shifting a 100Hz tone by 1 Hz rising to 500Hz
+// shifting a 100 Hz tone by 1 Hz rising to 500 Hz
 { FreqShift.ar(SinOsc.ar(100), XLine.kr(1, 500, 5), 0, [0.1, 0.1]) }.play(s);
 
-// shifting a complex tone by 1 Hz rising to 500Hz
+// shifting a complex tone by 1 Hz rising to 500 Hz
 { FreqShift.ar(Klang.ar(`[[101, 303, 606, 808]]), XLine.kr(1, 500, 10), 0, [0.1, 0.1]) }.play(s);
 
 // modulating shift and phase
@@ -47,6 +56,8 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 
 subsection:: More Examples
+
+
 send a SynthDef, run the routine then send a different SynthDef
 
 code::

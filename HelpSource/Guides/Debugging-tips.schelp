@@ -6,17 +6,21 @@ related:: Guides/Understanding-Errors
 
 section:: Debugging synthdefs
 
+
 The challenge in debugging synthdefs is the invisibility of the server's operations. There are a handful of techniques to expose the output of various UGens.
 
 
-subsection:: SendTrig / OSCFunc
+subsection:: SendTrig and OSCFunc
+
 
 SendTrig is originally intended to send a trigger message back to the client, so the client can take further action on the server. However, it can be used to send any numeric value back to the client, which can then be printed out.
 
 To print out the values, you need to create an OSCFunc as follows:
+
 code::
 o = OSCFunc({ |msg| msg.postln }, '/tr', s.addr);
 ::
+
 Each line of output is an array with four values: code:: ['/tr', defNode, id (from SendTrig), value (from SendTrig)] ::.
 
 code::
@@ -62,6 +66,7 @@ l.flat.plot(numChannels: 2);
 
 
 subsection:: Polling
+
 
 Polling allows you to debug a SynthDef by printing samples of a UGen's output to the post window. To do this, use the .poll method (a shorthand for the Poll UGen), which prints 10 times per second by default.
 
@@ -119,6 +124,7 @@ code::
 
 subsection:: Trace control signals using a control bus
 
+
 Another technique to watch control values is to output the signal to a control-rate bus. Then you can access the bus using link::Classes/Bus#-get:: or link::Classes/Bus#-getSynchronous::. Saving the values into an Array or List is a little more straightforward with getSynchronous.
 
 code::
@@ -146,10 +152,13 @@ code::
 r = fork { loop { b.get({ |value| l.add(value) }); 0.1.wait } };
 ::
 
-note::This approach is not valid for audio buses, because the data move too quickly to support 'get'.::
+note::
+This approach is not valid for audio buses, because the data move too quickly to support 'get'.
+::
 
 
 subsection:: Server-side trace
+
 
 The code::/n_trace:: message causes the server to print a list of all the UGens in the node as well as their input and output values.
 
@@ -157,6 +166,7 @@ It takes some practice to read a synthdef trace, but it's the ultimate source of
 
 For a concrete example, let's look at a synthdef that doesn't work. The intent is to generate a detuned sawtooth wave and run it through a set of parallel resonant filters whose cut-off frequencies are modulating randomly.
 We run the synth and generate the trace (reproduced below).
+
 code::
 SynthDef(\resonz, { |out, freq = 440|
 	var	sig, ffreq;
@@ -242,6 +252,7 @@ Note that there are no out of range signals prior to each Resonz. Looking at the
 The resonance frequency derives from multiplying an array by a LFNoise1. Tracing back (the red, italicized numbers), the LFNoise1 is outputting a negative number, where we expected it to be 0.5..1.5. But, the code::mul:: and code::add:: inputs are reversed!
 
 If you look very carefully at the trace, you will see another problem relating to multichannel expansion. The two components of the detuned sawtooth go into alternate Resonz'es, where we expected both to go, combined, into every Resonz. To fix it, the sawtooths need to be mixed as well.
+
 code::
 SynthDef(\resonz, { |out, freq = 440|
 	var	sig, ffreq;
@@ -258,9 +269,11 @@ a.free;
 
 section:: Debugging client-to-server communication
 
+
 Some bugs result from OSC messages to the server being constructed incorrectly. Julian Rohrhuber's DebugNetAddr is a convenient way to capture messages. The class may be downloaded from: http://swiki.hfbk-hamburg.de:8888/MusicTechnology/710 .
 
 To use it, you need to quit the currently running local server, then create a new server using a DebugNetAddr instead of a regular NetAddr. Messages will be dumped into a new document window.
+
 code::
 s.quit;
 
@@ -288,35 +301,44 @@ a.free;
 
 section:: Debugging client code
 
+
 SuperCollider does not have a step trace function, which makes debugging on the client side tougher, but not impossible.
 
 
 subsection:: Errors
+
 
 Learning how to read SuperCollider error output is absolutely essential. Error dumps often (though not always) contain a great deal of information: what the action was, which objects are being acted upon, and how the flow of execution reached that point.
 
 See the link::Guides/Understanding-Errors:: help file for a tutorial.
 
 There's also a graphic Inspector for error dumps, which is enabled with the following command:
+
 code::
 Exception.debug = true;		// enable
 Exception.debug = false;	// disable
 ::
+
 In most cases, this will give you more information than a regular error dump. Usually the regular error dump is sufficient. If you are using Environments or prototype-style programming, the graphic inspector is indispensable.
 
 
 subsection:: Debug output using post statements
 
+
 The most common approach is to insert statements to print the values of variables and expressions. Since the normal printing methods don't change the value of an expression, they can be placed in the middle of the statement without altering the processing flow. There's no significant difference between:
+
 code::
 if(a > 0) { positive.value(a) };
 ::
+
 and
+
 code::
 if((a > 0).postln) { positive.value(a) };
 ::
 
 Common methods to use are:
+
 code::
 .postln
 .postcs		// post the object as a compile string
@@ -344,16 +366,20 @@ The caller argument is optional; however, it's very helpful for tracing the orig
 Another advantage of .debug is that it's easier to search for them in your source code and remove them later.
 
 To print multiple values at one time, wrap them in an array before using .debug or .postcs. Note that if any of the array members are collections, postln will hide them behind the class name: "an Array, a Dictionary" etc. Use postcs if you expect to be posting collections.
+
 code::
 [val1, val2, val3].debug(\myMethod);
 [\callerTag, val1, val2, val3].postcs;
 ::
+
 By sprinkling these throughout your code, especially at the beginnings of functions or methods, the debugging output can give you a partial trace of which code blocks get visited in what order.
 
 
 subsection:: dumpBackTrace
 
+
 If you discover that a particular method or function is being entered but you don't know how it got there, you can use the code::.dumpBackTrace:: method on any object. You'll get what looks like an error dump, but without the error. Execution continues normally after the stack dump.
+
 code::
 (
 var	positiveFunc;
@@ -381,6 +407,7 @@ CALL STACK:
 		arg this = <instance of Main>
 50
 ::
+
 This tells you that the function came from interpreting a closed FunctionDef (automatically created when evaluating a block of code).
 
 In a method definition, it's recommended to use code::this.dumpBackTrace::; in a free-standing function, there is no "this" so you should pick some arbitrary object.
@@ -388,7 +415,9 @@ In a method definition, it's recommended to use code::this.dumpBackTrace::; in a
 
 subsection:: Tracing streams
 
+
 To see the results of a pattern, use the .trace method. Each output value from the pattern gets posted to the main output.
+
 code::
 s.boot;
 SynthDescLib.global.read;
@@ -400,36 +429,47 @@ p.stop;
 
 
 subsection:: Debugging infinite loops or recursion
+
 code::
 while(true);
 ::
+
 This is a bad idea. It will lock up SuperCollider and you will have to force quit. Sometimes this happens in your code and the reason isn't obvious. Debugging these situations is very painful because you might have to force quit, relaunch SuperCollider, and reload your code just to try again.
+
 code::
 f = { |func| func.value(func) };
 f.value(f);
 ::
+
 Infinite recursion, on the other hand, is more likely to cause SuperCollider to quit unexpectedly when the execution stack runs out of space.
 
 In macOS, inserting "post" or "debug" calls will not help with infinite loops or recursion, because posted output is held in a buffer until execution is complete. If execution never completes, you never see the output.
 
 One useful approach is to insert statements that will cause execution to halt. The easiest is .halt, but it provides you with no information about where or how it stopped, or how it got there. If you want a more descriptive message, make up an error and throw it:
+
 code::
 Error("myFunction-halt").throw;
 ::
+
 When debugging code that crashes, place a line like this somewhere in the code. If you get the error output, you know that the infinite loop is happening after the error--so move the error.throw later and try again.
 If it crashes, you know the infinite loop is earlier. Eventually, after a lot of heartache, you can zero in on the location.
 
 Here is a rogues' gallery of infinite loop gotchas--things that don't look like infinite loops, but they will kill your code quicker than you can wish you hadn't just pushed the enter key:
+
 code::
 i = 0;
 while (i < 10) { i.postln; i = i+1 }; 	// crash
 ::
+
 While loop syntax is different in SuperCollider from C. The above loop means to check whether i < 10 once, at the beginning of the loop, then loop if the value is code::true::. Since the loop condition is evaluated only once, it never changes, so the loop never stops. The loop condition should be written inside a function, to wit:
+
 code::
 i = 0;
 while { i < 10 } { i.postln; i = i+1 };
 ::
+
 Routines and empty arrays:
+
 code::
 a = Array.new;
 r = Routine({
@@ -439,22 +479,28 @@ r = Routine({
 });
 r.next;	// crash
 ::
+
 This looks pretty innocent: iterate repeatedly over an array and yield each item successively. But, if the array is empty, the do loop never executes and yield never gets called. So, the outer loop{} runs forever, doing nothing.
 
 Recursion is often used to walk through a tree structure. Tree structures are usually finite--no matter which branch you go down, eventually you will reach the end. If you have a data structure that is self-referential, you can easily get infinite recursion:
+
 code::
 a = (1..10);
 a.put(5, a);	// now one of the items of a is a itself
 a.postcs;		// crash--postcs has to walk through the entire collection, which loops on itself
 ::
+
 Self-referential data structures are sometimes an indication of poor design. If this is the case, avoid them.
+
 code::
 a = 0;
 SystemClock.sched(2, { a.postln });	// crashes when scheduler fires the function
 ::
+
 When a scheduled function executes, if it returns a number, the function will be rescheduled for now + the number. If the number is 0, it is effectively the same as an infinite loop.
 
 To fix it, make sure the function returns a non-number.
+
 code::
 a = 0;
 SystemClock.sched(2, { a.postln; nil });
@@ -463,7 +509,9 @@ SystemClock.sched(2, { a.postln; nil });
 
 subsection:: Removing debugging statements
 
+
 Use formatting to help your eye locate debugging statements when it's time to remove them. SuperCollider code is usually indented. If you write your debugging statements fully left-justified, they're much easier to see.
+
 code::
 a = Array.new;
 r = Routine({

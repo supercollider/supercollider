@@ -1,28 +1,45 @@
-class:: Dpoll
-summary:: Print the current output value of a demand rate UGen
+title:: Dpoll
+summary:: prints the current output value of a demand rate UGen
 categories:: UGens>Demand, UGens>Info
 
+
 description::
+
+
 prints the current output value of a demand rate UGen.
-WARNING:: Printing values from the Server in intensive for the CPU. Poll should be used for debugging purposes. ::
+
+warning::
+Printing values from the Server in intensive for the CPU. Poll should be used for debugging purposes.
+::
+
 
 classmethods::
+
+
 private:: new1
 
+
 method::new
+
 argument::in
-ugen to poll values from
+UGen to poll values from
+
 argument::label
 a label string
+
 argument::run
 active if 1, inactive if 0. can be a demand ugen (default: 1)
+
 argument::trigid
+
 discussion::
-the print-out is in the form: code:: label: value block offset: offset. ::
+the print-out is in the form: code::label: value block offset: offset::.
 
 structurally related: link::Classes/Poll::
 
+
 examples::
+
 code::
 
 { Duty.kr(0.5, 0, Dpoll(Dseries(0, 1, inf) * 2)); 0.0 }.play;

@@ -1,32 +1,45 @@
-class:: UnixFILE
-summary:: An abstract class
-related:: Classes/File, Classes/Pipe
+title:: UnixFILE
+summary:: an abstract class
 categories:: Files
+related:: Classes/File, Classes/Pipe
 
-InstanceMethods::
 
-private::prGetLine, addOpenFile
+instancemethods::
+
+
+private:: prGetLine, addOpenFile
+
 
 method::isOpen
+
 returns whether the file is open. An open request can fail if a file cannot be found for example. This method lets you test that the open call succeeded.
 
+
 method::pos
+
 returns the current file position
+
 argument::offset
 an offset in bytes.
+
 argument::origin
 one of the following link::Classes/Integer::s:
-definitionList::
+
+definitionlist::
 ## 0 || seek from beginning of file.
 ## 1 || seek from current position in file.
 ## 2 || seek from end of file.
 ::
 
+
 method::write
+
 writes an item to the file.
+
 argument::item
 one of the following:
-definitionList::
+
+definitionlist::
 ## link::Classes/Float:: ||
 ## link::Classes/Integer:: ||
 ## link::Classes/Char:: ||
@@ -35,54 +48,88 @@ definitionList::
 ## link::Classes/RawArray:: || write the bytes from any RawArray in big endian.
 ::
 
+
 method::getLine
+
 reads and returns a link::Classes/String:: up to lesser of next newline or 1023 chars.
 
+
 method::getChar
+
 reads one byte and returns as a link::Classes/Char::.
 
+
 method::getInt8
+
 reads one byte and returns as a link::Classes/Integer::.
 
+
 method::getInt16
+
 reads two bytes and returns as an link::Classes/Integer::.
 
+
 method::getInt32
+
 reads four bytes and returns as an link::Classes/Integer::.
 
+
 method::getFloat
+
 reads four bytes and returns as a link::Classes/Float::.
 
+
 method::getDouble
+
 reads eight bytes and returns as a link::Classes/Float::.
 
+
 method::getPascalString
+
 reads the next byte as an unsigned integer N, then reads the following N bytes and returns them as a link::Classes/String::.
 
+
 method::putChar
+
 writes a link::Classes/Char:: as one byte.
 
+
 method::putInt8
+
 writes an link::Classes/Integer:: as one byte. That is a signed link::Classes/Integer:: value between -128 and 127.
 
+
 method::putInt16
+
 writes an link::Classes/Integer:: as two bytes.
 
+
 method::putInt32
+
 writes an link::Classes/Integer:: as four bytes.
 
+
 method::putFloat
+
 writes a link::Classes/Float:: as four bytes.
 
+
 method::putDouble
+
 writes a link::Classes/Float:: as eight bytes.
 
+
 method::putString
+
 writes a null terminated link::Classes/String::.
 
+
 method::putPascalString
-Writess code::aString:: preceded by its length represented as a single byte.
+
+writess code::aString:: preceded by its length represented as a single byte.
 Throws an error if code::aString:: is longer than 255 characters.
 
+
 method::putString0
+
 writes code::aString:: followed by a zero byte, like a null-terminated C string.

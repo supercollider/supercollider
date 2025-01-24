@@ -1,10 +1,12 @@
-class:: Convolution
-summary:: Real-time convolver.
+title:: Convolution
+summary:: real-time convolver
+categories:: UGens>FFT, UGens>Convolution
 related:: Classes/Convolution2, Classes/Convolution2L, Classes/Convolution3
-categories::  UGens>FFT, UGens>Convolution
 
 
 description::
+
+
 Strict convolution of two continuously changing inputs. Also see
 link::Classes/Convolution2::  for a cheaper CPU cost alternative for the
 case of a fixed kernel which can be changed with a trigger message.
@@ -16,22 +18,28 @@ Smith.
 
 classmethods::
 
+
 method::ar
+
 argument::in
-Processing target.
+processing target.
+
 argument::kernel
-Processing kernel.
+processing kernel.
+
 argument::framesize
-Size of FFT frame, must be a power of two (512, 1024, 2048, 4096 are standard choices).
+size of FFT frame, must be a power of two (512, 1024, 2048, 4096 are standard choices).
 Convolution uses twice this number internally.
 Note that the convolution gets progressively more expensive to run for higher powers!
 The maximum value you can use is 2^16 = 16384.
 (This upper limit is half of "SC_FFT_MAXSIZE" defined in the SC source code.)
 Larger convolutions than this can be done using link::Classes/PartConv::.
+
 argument::mul
-Output will be multiplied by this value.
+output will be multiplied by this value.
+
 argument::add
-This value will be added to the output.
+this value will be added to the output.
 
 
 examples::

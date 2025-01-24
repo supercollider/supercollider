@@ -1,10 +1,12 @@
-class:: OneZero
-summary:: One zero filter.
+title:: OneZero
+summary:: one zero filter
+categories:: UGens>Filters>Linear
 related:: Classes/OnePole
-categories::  UGens>Filters>Linear
 
 
 description::
+
+
 A one zero filter. Implements the formula:
 
 code::
@@ -16,11 +18,14 @@ out(i) = ((1 - abs(coef)) * in(i)) + (coef * in(i-1)).
 
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-The input signal.
+the input signal.
+
 argument::coef
-Feed forward coefficient.
+feed forward coefficient.
 
 
 +0.5 makes a two point averaging filter
@@ -39,10 +44,12 @@ link::Classes/Delay1::).
 
 
 -1 makes an inverted single sample delay.
+
 argument::mul
-Output will be multiplied by this value.
+output will be multiplied by this value.
+
 argument::add
-This value will be added to the output.
+this value will be added to the output.
 
 
 examples::

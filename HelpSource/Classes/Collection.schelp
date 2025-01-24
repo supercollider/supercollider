@@ -1,43 +1,58 @@
-CLASS::Collection
-summary:: Abstract superclass of all collections
-related::Classes/List, Classes/Array, Classes/Dictionary, Classes/Bag, Classes/Set, Classes/SortedList
-categories::Collections
+title:: Collection
+summary:: abstract superclass of all collections
+categories:: Collections
+related:: Classes/List, Classes/Array, Classes/Dictionary, Classes/Bag, Classes/Set, Classes/SortedList
+
 
 description::
+
+
 Collection is an abstract class. You do not create direct instances of Collection.
 There are many types of Collections including link::Classes/List::, link::Classes/Array::, link::Classes/Dictionary::, link::Classes/Bag::, link::Classes/Set::, link::Classes/SortedList::, etc. See link::Overviews/Collections:: for a complete class tree.
 
-CLASSMETHODS::
+
+classmethods::
+
 
 method::newFrom
+
 creates a new Collection from another collection. This supports the interface for the method "as".
+
 code::
 Array.newFrom(Set[4, 2, 1]);
 Set.newFrom(Array[4, 2, 1]);
 [1, 2, 3, 4, 3, 2].as(Set); // as(someClass) calls someClass.newFrom(this)
 ::
 
+
 method::with
+
 creates a new Collection from the args.
+
 code::
 Array.with(4, 2, 1);
 ::
 
+
 method::fill
+
 creates a Collection of the given size, the elements of which are determined by evaluation the given function. The function is passed the index as an argument.
+
 code::
 Array.fill(4, { |i| i * 2 });
 Bag.fill(14, { |i| i.rand });
 ::
+
 argument::size
-The size of the collection which is returned. If code::nil::, it returns an empty collection. If an array of sizes is given, the resulting collection has the appropriate dimensions (see: link::#*fillND).
+the size of the collection which is returned. If code::nil::, it returns an empty collection. If an array of sizes is given, the resulting collection has the appropriate dimensions (see: link::#*fillND).
 ::
 
 code::
 Array.fill([2, 2, 3], { |i, j, k|  i * 100 + (j * 10) + k });
 ::
+
 argument::function
-The function which is called for each new element - the index is passed in as a first argument. The function be anything that responds to the message "value".
+the function which is called for each new element - the index is passed in as a first argument. The function be anything that responds to the message "value".
 
 code::
 Array.fill(10, { |i| 2 ** i });
@@ -45,40 +60,56 @@ Array.fill(10, Pxrand([0, 1, 2], inf).iter);
 Array.fill(10, 7); // an object that doesn't respond with a new value is just repeatedly added.
 ::
 
+
 method::fill2D
+
 creates a 2 dimensional Collection of the given sizes. The items are determined by evaluation of the supplied function. The function is passed row and column indexes as arguments. See link::Guides/J-concepts-in-SC::
+
 code::
 Array.fill2D(2, 4, 0);
 Array.fill2D(3, 4, { |r, c| r*c+c });
 ::
 
+
 method::fill3D
+
 creates a 3 dimensional Collection of the given sizes. The items are determined by evaluation of the supplied function. The function is passed plane, row and column indexes as arguments. See link::Guides/J-concepts-in-SC::
+
 code::
 Array.fill3D(2, 3, 4, { |p, r, c| p });
 ::
 
+
 method::fillND
+
 creates a N dimensional Collection where N is the size of the array strong::dimensions::. The items are determined by evaluation of the supplied function. The function is passed N number of indexes as arguments. See link::Guides/J-concepts-in-SC::
+
 code::
 Array.fillND([4, 4], { |a, b| a+b });				// 2D
 Array.fillND([4, 4, 4], { |a, b, c| a+b*c });		// 3D
 Array.fillND([1, 2, 3, 4], { |a, b, c, d| b+d });	// 4D
 ::
 
-INSTANCEMETHODS::
+
+instancemethods::
 
 
 subsection:: Accessing
 
+
 method::size
+
 returns the number of objects contained in the Collection.
+
 code::
 List[1, 2, 3, 4].size;
 ::
 
+
 method::isEmpty
-Answers whether the receiver contains no objects.
+
+answers whether the receiver contains no objects.
+
 code::
 List[].isEmpty;
 ::
@@ -86,20 +117,29 @@ List[].isEmpty;
 
 subsection:: Adding and Removing
 
+
 method::add
+
 adds anObject to the receiver.
+
 code::
 List[1, 2].add(3);
 ::
 
+
 method::addAll
+
 adds all items in aCollection to the receiver.
+
 code::
 List[1, 2].addAll(List[3, 4]);
 ::
 
+
 method::remove
+
 removes anObject from the receiver. Returns the removed object.
+
 code::
 (
 var a;
@@ -109,27 +149,40 @@ a;
 )
 ::
 
+
 method::removeAll
+
 removes all items in aCollection from the receiver.
+
 code::
 List[1, 2, 3, 4].removeAll(List[2, 3]);
 ::
-note::that multiple items in the receiver will not necessarily be removed
+
+note::
+Multiple items in the receiver will not necessarily be removed:
+
 code::
 ~closet = [\hat, \hat, \hat, \coat, \coat, \shoe, \shoe];
 ~closet.removeAll([\hat, \coat, \shoe, \shoe]); // Doesn't empty the closet, just removes what we wanted to
 ::
+
 See link::#-removeEvery:: for a related method that removes all occurrences.
 ::
 
+
 method::removeEvery
+
 removes all occurrences of the items in aCollection from the receiver.
+
 code::
 List[1, 2, 3, 2, 3, 2, 3, 4].removeEvery(List[2, 3]);
 ::
 
+
 method::removeAllSuchThat
+
 removes all items in the receiver for which function answers link::Classes/True::. The function is passed two arguments, the item and an integer index. Returns the objects which have been removed.
+
 code::
 (
 var a;
@@ -139,16 +192,22 @@ a;
 )
 ::
 
+
 method::putEach
+
 puts the values in the corresponding indices given by keys. If one of the two argument arrays is longer, then it will wrap.
+
 code::
 y = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 y.putEach([4, 7], [\smelly, \head]);
 y.putEach([2, 3, 5, 6], \wotsits);
 ::
 
+
 method::atAll
+
 returns a collection of all the items for the keys.
+
 code::
 y = [\a, \b, \c];
 y.atAll([0, 2]);
@@ -157,14 +216,20 @@ y.atAll([0, 2]);
 
 subsection:: Testing
 
+
 method::includes
-Answers whether anObject is contained in the receiver.
+
+answers whether anObject is contained in the receiver.
+
 code::
 List[1, 2, 3, 4].includes(3);
 ::
 
+
 method::includesEqual
-Answers whether anObject is contained in the receiver. In contrast to link::#-includes:: this tests for equality - not identity.
+
+answers whether anObject is contained in the receiver. In contrast to link::#-includes:: this tests for equality - not identity.
+
 code::
 List["a", "b", "c"].includesEqual("c");  // true
 List["a", "b", "c"].includes("c");       // false
@@ -172,19 +237,27 @@ List[List[1, 2], List[3, 4]].includesEqual(List[3, 4]);  // true
 List[List[1, 2], List[3, 4]].includes(List[3, 4]);       // false
 ::
 
+
 method::includesAny
-Answers whether any item in aCollection is contained in the receiver.
+
+answers whether any item in aCollection is contained in the receiver.
+
 code::
 List[1, 2, 3, 4].includesAny(List[4, 5]);
 ::
 
+
 method::includesAll
-Answers whether all items in aCollection are contained in the receiver.
+
+answers whether all items in aCollection are contained in the receiver.
+
 code::
 List[1, 2, 3, 4].includesAll(List[4, 5]);
 ::
 
+
 method::matchItem
+
 returns link::Classes/True:: if this includes the strong::item::.
 
 See also link::Reference/matchItem::.
@@ -192,48 +265,72 @@ See also link::Reference/matchItem::.
 
 subsection:: Iteration
 
+
 method::do
+
 evaluates strong::function:: for each item in the collection. The function is passed two arguments, the item and an integer index.
+
 code::
 List[1, 2, 3, 4].do({ |item, i| item.postln });
 ::
 
+
 method::collect
+
 returns a new collection which consists of the results of strong::function:: evaluated for each item in the collection. The function is passed two arguments, the item and an integer index.
+
 code::
 List[1, 2, 3, 4].collect({ |item, i| item + 10 });
 ::
+
 If you want to control what type of collection is returned, use link::#-collectAs::(function, class).
 
+
 method::select
+
 returns a new collection which consists of all items in the receiver for which strong::function:: answers link::Classes/True::. The function is passed two arguments, the item and an integer index.
+
 code::
 List[1, 2, 3, 4].select({ |item, i| item.even });
 ::
+
 If you want to control what type of collection is returned, use link::#-selectAs::(function, class).
 
+
 method::reject
+
 returns a new collection which consists of all items in the receiver for which strong::function:: answers link::Classes/False::. The function is passed two arguments, the item and an integer index.
+
 code::
 List[1, 2, 3, 4].reject({ |item, i| item.even });
 ::
+
 If you want to control what type of collection is returned, use link::#-rejectAs::(function, class).
 
+
 method::detect
+
 returns the first item in the receiver for which strong::function:: answers link::Classes/True::. The function is passed two arguments, the item and an integer index.
+
 code::
 List[1, 2, 3, 4].detect({ |item, i| item.even });
 ::
 
+
 method::detectIndex
-Similar to link::#-detect:: but returns the index instead of the item itself.
+
+similar to link::#-detect:: but returns the index instead of the item itself.
+
 code::
 List[1, 2, 3, 4].detectIndex({ |item, i| item.even });
 ::
 
+
 method::inject
-In functional programming, the operation known as a left fold.
+
+in functional programming, the operation known as a left fold.
 inject takes an initial value and a function and combines the elements of the collection by applying the function to the accumulated value and an element from the collection starting from the first element in the collection. The strong::function:: takes two arguments and returns the new value. The accumulated value is initialized to strong::initialValue::.
+
 code::
 [1, 2, 3, 4, 5].inject(0, _+_); // 15
 
@@ -246,16 +343,21 @@ code::
 [1, 2, 3, 4, 5].inject([], { |a, b| a ++ a ++ b });
 ::
 
+
 method::injectr
-In functional programming, the operation known as a right fold.
+
+in functional programming, the operation known as a right fold.
 inject takes an initial value and a function and combines the elements of the collection by applying the function to the accumulated value and an element from the collection starting from the last element in the collection. The strong::function:: takes two arguments and returns the new value. The accumulated value is initialized to strong::initialValue::.
+
 code::
 [1, 2, 3, 4, 5].injectr([], _++_); // [5, 4, 3, 2, 1]
 
 [1, 2, 3, 4, 5].inject([], _++_); // [1, 2, 3, 4, 5]
 ::
 
+
 method::collectInPlace
+
 iterates over the collection and replace each item with a new one, returned by the function. This can be useful when one wants to aviod creating a new array in memory. In most cases, it is better to use link::#-collect::.
 
 code::
@@ -269,8 +371,10 @@ a.collect { |x| 2 ** x };
 a; // remains unchanged
 ::
 
+
 method::collectCopy
-Like link::#-collect::, but the collection is copied before iteration. This is recommended wherever the function may change the collection itself.
+
+like link::#-collect::, but the collection is copied before iteration. This is recommended wherever the function may change the collection itself.
 
 code::
 a = [1, 5, 2, 3, 4];
@@ -279,71 +383,101 @@ a;
 b;
 ::
 
+
 method::any
-Answers whether strong::function:: answers link::Classes/True:: for any item in the receiver. The function is passed two arguments, the item and an integer index.
+
+answers whether strong::function:: answers link::Classes/True:: for any item in the receiver. The function is passed two arguments, the item and an integer index.
+
 code::
 List[1, 2, 3, 4].any({ |item, i| item.even });
 ::
 
+
 method::every
-Answers whether strong::function:: answers link::Classes/True:: for every item in the receiver. The function is passed two arguments, the item and an integer index.
+
+answers whether strong::function:: answers link::Classes/True:: for every item in the receiver. The function is passed two arguments, the item and an integer index.
+
 code::
 List[1, 2, 3, 4].every({ |item, i| item.even });
 ::
 
+
 method::count
+
 returns the number of items for which strong::function:: answers link::Classes/True::. The function is passed two arguments, the item and an integer index.
+
 code::
 List[1, 2, 3, 4].count({ |item, i| item.even });
 ::
 
+
 method::occurrencesOf
+
 returns the number of items in the receiver which are equal to anObject.
+
 code::
 List[1, 2, 3, 3, 4, 3, 4, 3].occurrencesOf(3);
 ::
 
+
 method::sum
+
 returns the sum of the results of strong::function:: evaluated for each item in the receiver. The function is passed two arguments, the item and an integer index.
+
 code::
 List[1, 2, 3, 4].sum;
 (0..8).sum { |i| 1 / (2 ** i) };
 ::
 
+
 method::maxItem
+
 returns the maximum of the results of strong::function:: evaluated for each item in the receiver. The function is passed two arguments, the item and an integer index.
 If function is code::nil::, then answer the maximum of all items in the receiver.
+
 code::
 List[1, 2, 3, 4].maxItem({ |item, i| item + 10 });
 ::
 
+
 method::minItem
+
 returns the minimum of the results of strong::function:: evaluated for each item in the receiver. The function is passed two arguments, the item and an integer index.
 If function is code::nil::, then answer the minimum of all items in the receiver.
+
 code::
 List[1, 2, 3, 4].minItem({ |item, i| item + 10 });
 ::
 
+
 method::maxIndex
+
 returns the index of the maximum of the results of strong::function:: evaluated for each item in the receiver. The function is passed two arguments, the item and an integer index.
 If function is code::nil::, then answer the maximum of all items in the receiver.
+
 code::
 List[1, 2, 3, 4].maxIndex({ |item, i| item + 10 });
 [3.2, 12.2, 13, 0.4].maxIndex;
 ::
 
+
 method::minIndex
+
 returns the index of the minimum of the results of strong::function:: evaluated for each item in the receiver. The function is passed two arguments, the item and an integer index.
 If function is code::nil::, then answer the minimum of all items in the receiver.
+
 code::
 List[1, 2, 3, 4].minIndex({ |item, i| item + 10 });
 List[3.2, 12.2, 13, 0.4].minIndex;
 ::
 
+
 method::maxSizeAtDepth
+
 returns the maximum size of all subcollections at a certain depth (dimension)
+
 argument::rank
-The depth at which the size of the collection is measured
+the depth at which the size of the collection is measured
 
 code::
 Set[Set[1, 2, 3], [Set[41, 52], 5, 6], 1, 2, 3].maxSizeAtDepth(2);
@@ -354,17 +488,23 @@ Set[[]].maxSizeAtDepth(0);
 Set[[]].maxSizeAtDepth(1);
 ::
 
+
 method::maxDepth
+
 returns the maximum depth of all subcollections.
+
 argument::max
-Internally used only.
+internally used only.
 
 code::
 Set[Set[1, 2, 3], Set[Set[41, 52], 5, 6], 1, 2, 3].maxDepth
 ::
 
+
 method::iter
+
 returns a link::Classes/Routine:: that returns the elements one by one.
+
 code::
 r = Set[10, 2, -3, -4].iter;
 r.next;
@@ -376,58 +516,84 @@ r.next; // nil.
 
 subsection:: Conversion
 
+
 method::asBag
+
 returns a link::Classes/Bag:: to which all items in the receiver have been added.
+
 code::
 List[1, 2, 3, 4].asBag;
 ::
 
+
 method::asList
+
 returns a link::Classes/List:: to which all items in the receiver have been added.
+
 code::
 Set[1, 2, 3, 4].asList;
 ::
 
+
 method::asSet
+
 returns a link::Classes/Set:: to which all items in the receiver have been added.
+
 code::
 List[1, 2, 3, 4].asSet;
 ::
 
+
 method::asSortedList
+
 returns a link::Classes/SortedList:: to which all items in the receiver have been added.
+
 code::
 List[2, 1, 4, 3].asSortedList;
 ::
 
+
 method::asDict
+
 returns a corresponding dictionary. This is part of the link::Reference/Key-Value-Pairs:: interface.
+
 argument::mergeFunc
-Use this function to decide what to do with duplicate keys.
+uses this function to decide what to do with duplicate keys.
+
 argument::class
-The class of the dictionary to be returned. By default this is an link::Classes/IdentityDictionary::.
+the class of the dictionary to be returned. By default this is an link::Classes/IdentityDictionary::.
+
 
 method::asAssociations
+
 returns an array of link::Classes/Association::s. If the first item of the list is already an associiation, returns itself.  This is part of the link::Reference/Key-Value-Pairs:: interface.
+
 argument::class
-The class of the collection to be returned. By default this is an link::Classes/Array::.
+the class of the collection to be returned. By default this is an link::Classes/Array::.
+
 
 method::asPairs
+
 returns an array with alternating key value pairs, like code::[\freq, 1848, \amp, 0.2]::. This is part of the link::Reference/Key-Value-Pairs:: interface.
+
 argument::class
-The class of the collection to be returned. By default this is an link::Classes/Array::.
+the class of the collection to be returned. By default this is an link::Classes/Array::.
 
 
 method::asEvent
+
 returns an link::Classes/Event::: with the key value pairs. See link::Reference/Key-Value-Pairs::.
 
 
 method::asDictWith
+
 used internally by code::asDict::.
 
 
 method::powerset
+
 returns all possible combinations of the collection's elements.
+
 code::
 Set[1, 2, 3].powerset;
 
@@ -445,15 +611,20 @@ u.(n.(n.(a))) == n.(a); // two - one == one
 u.(u.(n.(n.(a)))) == u.(n.(a)); // two - two == one - one
 ::
 
+
 method::flopDict
-Takes a collection of dictionaries and returns a single dictionary with arrays of all dictionaries' elements.
+
+takes a collection of dictionaries and returns a single dictionary with arrays of all dictionaries' elements.
 If unbubble is link::Classes/True:: (default), and if one element is singular, the array is replaced by this element.
+
 code::
 [(degree: 7, x: 4), (degree: 8, x: 5), (degree: -2, dur: 2.5)].flopDict;
 [(degree: 7, x: 4), (degree: 8, x: 5), (degree: -2, dur: 2.5)].flopDict(false);
 ::
 
+
 method::histo
+
 returns a histogram of the collection by counting the number of values that fall into each of the strong::steps:: subdivisions (default: 100) between strong::min:: and strong::max::.
 If not provided, strong::min:: and strong::max:: default to the smallest and largest value in the collection, respectively.
 If there are any values outside this range, it posts a note.
@@ -463,6 +634,7 @@ See also: link::Classes/Collection#-plotHisto::.
 code::
 { 1.0.linrand }.dup(10000).histo(1000).plot(discrete: true);
 ::
+
 code::
 (
 var data, steps = 15;
@@ -485,9 +657,12 @@ data.histo(steps).plot(minval: 0)
 { 15.0.rand + 3 }.dup(100).plotHisto(15);
 ::
 
+
 method::invert
-Subtractively invert a collection about a value (default: sum of minimal and maximum value).
+
+subtractively invert a collection about a value (default: sum of minimal and maximum value).
 It can be used to invert a pitch list about a given axis.
+
 code::
 [0, 1, 4, 7].invert(0);
 [0, 1, 2, 3].invert(1);
@@ -501,52 +676,75 @@ code::
 
 subsection:: Writing to streams
 
+
 method::printOn
+
 prints a representation of the collection to a stream.
 
+
 method::storeOn
+
 writes a compilable representation of the collection to a stream.
 
+
 method::printItemsOn
+
 prints a comma separated compilable representation of the items in the collection to a stream.
 
+
 method::storeItemsOn
+
 writes a comma separated compilable representation of the items in the collection to a stream.
 
 
 subsection:: Set specific operations
 
+
 method::sect
+
 returns the set theoretical intersection of this and strong::that::.
+
 code::
 a = [1, 2, 3]; b = [2, 3, 4, 5];
 sect(a, b);
 ::
 
+
 method::union
+
 returns the set theoretical union of this and strong::that::.
+
 code::
 a = [1, 2, 3]; b = [2, 3, 4, 5];
 union(a, b);
 ::
 
+
 method::difference
+
 returns the set of all items which are elements of this, but not of strong::that::.
+
 code::
 a = [1, 2, 3]; b = [2, 3, 4, 5];
 difference(a, b);
 ::
 
+
 method::symmetricDifference
+
 returns the set of all items which are not elements of both  this and strong::that::.
 this -- that
+
 code::
 a = [1, 2, 3]; b = [2, 3, 4, 5];
 symmetricDifference(a, b);
 ::
 
+
 method::isSubsetOf
+
 returns link::Classes/True:: if all elements of this are also elements of strong::that::
+
 code::
 a = Set[1, 2, 3, 4];
 Set[1, 2].isSubsetOf(a); // true

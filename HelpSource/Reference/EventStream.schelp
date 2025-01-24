@@ -1,7 +1,7 @@
 title:: Event Stream
+summary:: a Stream that returns Events when called
 categories:: Streams-Patterns-Events
 related:: Classes/Stream, Classes/Event
-summary:: A Stream that returns Events when called
 
 An event stream is a normal link::Classes/Stream:: that returns events when called. (see class link::Classes/Event::). Usually, an event stream requires an event to be passed in, often the default event is used:
 

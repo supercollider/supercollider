@@ -1,10 +1,11 @@
 title:: Server Plugin API
-summary:: Reference for writing unit generators
+summary:: reference for writing unit generators
 categories:: Internals
 related:: Guides/WritingUGens
 
 
 section:: Input rates
+
 
 These four constants identify the calculation rates of inputs in SuperCollider.
 
@@ -24,6 +25,7 @@ definitionlist::
 
 
 section:: UGen basics
+
 
 These helper macros assume that there is a ugen object called code::unit:: in the local scope.
 
@@ -124,6 +126,7 @@ RELEASE_BUS_CONTROL(index)
 
 section:: RGen
 
+
 RGen is a pseudorandom number generator API. Most ugen developers are not interested in seeding their own RGens and
 would prefer to draw from a global RGen instance supplied by SuperCollider. This can be retrieved with the code:
 
@@ -161,8 +164,12 @@ definitionlist::
 
 ## code::float RGen\::fsum3rand()::
 || A crude but fast approximation to a Gaussian distribution. Results are always in the range (-1,1). The variance is
-1/6 and the standard deviation is 0.41. footnote:: The formula is code::(rand() + rand() + rand() - 1.5) * 2/3::,
-technically a shifted and stretched order-3 Irwin-Hall distribution. ::
+1/6 and the standard deviation is 0.41. footnote:: 
+
+The formula is code::(rand() + rand() + rand() - 1.5) * 2/3::,
+technically a shifted and stretched order-3 Irwin-Hall distribution.
+
+::
 
 ## code::int32 RGen\::irand(int32 scale)::
 || Random int in [0,scale).
@@ -332,6 +339,7 @@ list::
 
 section:: Constants
 
+
 The following constants are doubles:
 
 list::
@@ -363,6 +371,7 @@ list::
 
 
 section:: Unroll macros
+
 
 The macros in this section are legacy features. They are seen in many of SuperCollider's built-in ugens, and are
 intended to provide more efficient alternatives to the standard code::for (int i = 0; i < inNumSamples; i++) { out[i]

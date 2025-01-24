@@ -1,24 +1,31 @@
-class:: Delay1
-summary:: Single sample delay.
+title:: Delay1
+summary:: single sample delay
+categories:: UGens>Delays
 related:: Classes/Delay2, Classes/TDelay
-categories::  UGens>Delays
 
 
 description::
+
+
 Delays the input by one audio frame or control period.
 
 
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-The input signal.
+the input signal.
+
 argument::mul
-The output will be multiplied by this value.
+the output will be multiplied by this value.
+
 argument::add
-This value will be added to the output.
+this value will be added to the output.
+
 argument::x1
-The sample value preceding the delayed input, which is the value of the first output sample.
+the sample value preceding the delayed input, which is the value of the first output sample.
 This can be a numeric value or a code::UGen::.
 
 note::
@@ -28,6 +35,7 @@ At control rate, the default value is set to the first sample of strong::in::, i
 
 discussion::
 The output sequence is:
+
 teletype::
 out[0] = in[-1] = x1
 out[1] = in[0]

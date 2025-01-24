@@ -1,61 +1,90 @@
-CLASS:: RingBuffer
-summary:: Fixed size ringbuffer
-CATEGORIES:: Collections>Ordered
-RELATED:: Classes/LinkedList
+title:: RingBuffer
+summary:: fixed size ringbuffer
+categories:: Collections>Ordered
+related:: Classes/LinkedList
+
 
 description::
+
+
 A circular buffer that holds a fixed-size collection. Can be used as a queue.
 
 
-CLASSMETHODS::
+classmethods::
+
 
 method::new
+
 creates a new buffer.
+
 argument::size
-Initial size. The collection will be able to hold one minus this number of values.
+initial size. The collection will be able to hold one minus this number of values.
+
 argument::collectionClass
-Defaults to the LINK::Classes/Array:: class.
+defaults to the link::Classes/Array:: class.
 
 
-INSTANCEMETHODS::
+instancemethods::
+
 
 method::array
-The collection.
+
+the collection.
+
 
 method::readPos
-Current read position.
+
+current read position.
+
 
 method::writePos
-Current write position.
+
+current write position.
+
 
 method::maxSize
-Maximum capacity.
+
+maximum capacity.
+
 
 method::size
-Alias of LINK::#-readable::.
+
+alias of link::#-readable::.
+
 
 method::readable
-Number of readble items.
+
+number of readble items.
+
 
 method::writable
-Number of writable items.
+
+number of writable items.
+
 
 method::add
-adds value and increase LINK::#-writePos::. Do nothing if no items can be written.
+
+adds value and increase link::#-writePos::. Do nothing if no items can be written.
+
 
 method::pop
-returns next readable item and increase LINK::#-readPos::. Returns CODE::nil:: if no items can be read.
+
+returns next readable item and increase link::#-readPos::. Returns code::nil:: if no items can be read.
+
 
 method::overwrite
-adds value and increase LINK::#-writePos:: by overwriting oldest readable item.
+
+adds value and increase link::#-writePos:: by overwriting oldest readable item.
+
 
 method::do
+
 iterates over the currently readable items.
 
 
 examples::
 
-CODE::
+code::
 
 r = RingBuffer(4);
 r.add(\one);

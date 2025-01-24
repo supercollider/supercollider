@@ -1,15 +1,20 @@
-class:: PV_PhaseShift90
-summary:: Shift phase by 90 degrees.
-related:: Classes/FFT, Classes/IFFT, Classes/PV_PhaseShift, Classes/PV_PhaseShift270, Classes/PV_Diffuser
+title:: PV_PhaseShift90
+summary:: shifts phase by 90 degrees
 categories:: UGens>FFT
+related:: Classes/FFT, Classes/IFFT, Classes/PV_PhaseShift, Classes/PV_PhaseShift270, Classes/PV_Diffuser
+
 
 description::
+
+
 Shift phase of all bins by 90 degrees.
 
 
 classmethods::
 
+
 method::new
+
 argument::buffer
 FFT buffer.
 

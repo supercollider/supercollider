@@ -1,23 +1,31 @@
-class:: PV_BinScramble
-summary:: Scramble bins.
+title:: PV_BinScramble
+summary:: scramble bins
 categories:: UGens>FFT
 
+
 description::
+
+
 Randomizes the order of the bins. The trigger will select a new random ordering.
 
 
 classmethods::
 
+
 method::new
+
 argument::buffer
 FFT buffer.
+
 argument::wipe
-Scrambles more bins as wipe moves from 0 to 1.
+scrambles more bins as wipe moves from 0 to 1.
+
 argument::width
-A value from zero to one, indicating the maximum randomized
+a value from zero to one, indicating the maximum randomized
 distance of a bin from its original location in the spectrum.
+
 argument::trig
-A trigger, that selects a new random ordering.
+a trigger, that selects a new random ordering.
 
 
 examples::

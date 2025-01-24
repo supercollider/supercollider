@@ -1,16 +1,20 @@
-class:: StreamClutch
+title:: StreamClutch
 summary:: buffers a streamed value
-related:: Classes/Routine, Classes/FuncStream, Classes/EventStreamPlayer
 categories:: Streams-Patterns-Events
+related:: Classes/Routine, Classes/FuncStream, Classes/EventStreamPlayer
 
 
-ClassMethods::
+classmethods::
+
 
 method::new
+
 argument::pattern
 a pattern or stream to be buffered.
+
 argument::connected
 if code::true:: it will call the next stream value for each time next is called. if code::false::, it returns the last value.
+
 
 examples::
 

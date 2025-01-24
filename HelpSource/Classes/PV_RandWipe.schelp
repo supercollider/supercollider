@@ -1,24 +1,32 @@
-class:: PV_RandWipe
-summary:: Crossfade in random bin order.
-related:: Classes/PV_RandComb
+title:: PV_RandWipe
+summary:: crossfade in random bin order
 categories:: UGens>FFT
+related:: Classes/PV_RandComb
+
 
 description::
+
+
 Crossfades between two sounds by copying bins in a random order.
 
 
 classmethods::
 
+
 method::new
+
 argument::bufferA
 FFT buffer A.
+
 argument::bufferB
 FFT buffer B.
+
 argument::wipe
-Copies bins from bufferB in a random order as wipe goes from 0
+copies bins from bufferB in a random order as wipe goes from 0
 to 1.
+
 argument::trig
-A trigger, that selects a new random ordering.
+a trigger, that selects a new random ordering.
 
 
 examples::

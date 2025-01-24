@@ -1,5 +1,5 @@
 title:: Using Extensions
-summary:: Using Extensions
+summary:: using Extensions
 categories:: Internals
 related:: Guides/WritingUGens, Guides/UsingQuarks, Guides/WritingClasses
 
@@ -10,11 +10,13 @@ platform-specific extension directories in order to be included.
 
 section:: Platform Specific Directories
 
+
 You can install extensions simply by copying the extensions to the following location. There are different directories
 for per-user and system-wide extensions that apply to all users.. The locations can be obtained by running
 code::Platform.userExtensionDir:: and code::Platform.systemExtensionDir::.
 
 Typical user-specific extensions directories:
+
 table::
 ## macOS   || ~/Library/Application Support/SuperCollider/Extensions/
 ## Linux   || ~/.local/share/SuperCollider/Extensions/
@@ -22,6 +24,7 @@ table::
 ::
 
 Typical system-wide extension directories:
+
 table::
 ## macOS   || /Library/Application Support/SuperCollider/Extensions/
 ## Linux   || /usr/share/SuperCollider/Extensions/
@@ -30,6 +33,7 @@ table::
 
 
 section:: How Extensions Folders Should be Organised
+
 
 Class files and UGen plugins are recognised by their file extensions. Anything placed within a folder named 
 teletype::ignore/:: (case insensitive) will be ignored when compiling the class library or loading plugins.

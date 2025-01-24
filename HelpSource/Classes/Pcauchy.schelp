@@ -1,17 +1,23 @@
-class:: Pcauchy
+title:: Pcauchy
 summary:: random values that follow a Cauchy Distribution
-related:: Classes/BrownNoise, Classes/Pbrown
 categories:: Streams-Patterns-Events>Patterns>Random
+related:: Classes/BrownNoise, Classes/Pbrown
 
-ClassMethods::
+
+classmethods::
+
 
 method::new
+
 argument::mean
-The mean of the distribution.
+the mean of the distribution.
+
 argument::spread
-The horizontal dispersion of the random values. The distribution is unbounded.
+the horizontal dispersion of the random values. The distribution is unbounded.
+
 argument::length
-Number of values produced.
+number of values produced.
+
 
 examples::
 

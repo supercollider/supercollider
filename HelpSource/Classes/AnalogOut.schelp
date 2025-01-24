@@ -1,33 +1,47 @@
-class:: AnalogOut
-summary:: Write data to an analog output
+title:: AnalogOut
+summary:: writes data to an analog output
+categories:: UGens>Bela
 related:: Classes/AnalogIn, Classes/DigitalIn, Classes/DigitalOut, Classes/DigitalIO
-categories::  UGens>Bela
 
 
 description::
+
+
 writes an output to a DC-coupled analog output (e.g.: CV out).
 
 note::
-This UGen only works on Bela
+This UGen only works on Bela.
 ::
+
 
 classmethods::
 
+
 method::ar
+
 argument::analogPin
-Analog pin number to read. Pin numbers begin at 0. This value can be modulated at audiorate.
+analog pin number to read. Pin numbers begin at 0. This value can be modulated at audiorate.
+
 argument::output
-Value to write out to the pin.
+value to write out to the pin.
+
 argument::mul
+
 argument::add
 
+
 method::kr
+
 argument::analogPin
-Analog pin number to read. Pin numbers begin at 0.
+analog pin number to read. Pin numbers begin at 0.
+
 argument::output
-Value to write out to the pin.
+value to write out to the pin.
+
 argument::mul
+
 argument::add
+
 
 examples::
 

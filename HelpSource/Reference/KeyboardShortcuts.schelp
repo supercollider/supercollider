@@ -1,17 +1,28 @@
 title:: Keyboard Shortcuts
-summary:: Keyboard shortcuts for SuperCollider
+summary:: keyboard shortcuts for SuperCollider
 categories:: Frontends
 
 
 section:: Language-Specific Commands
 
-note:: For shortcuts bindings of teletype::ScIDE::, please consult the menu and/or the shortcut configuration menu.::
+note::
+For shortcuts bindings of teletype::ScIDE::, please consult the menu and/or the shortcut configuration menu.
+::
 
 table::
 ## strong::Functions::
 || strong::macOS::
-|| strong::Vim (scvim):: footnote::http://www.neisis.net/%7Ealex/scvim::
-|| strong::Emacs (scel):: footnote:: link::Reference/EmacsEditor:: ::
+|| strong::Vim (scvim):: footnote::
+
+http://www.neisis.net/%7Ealex/scvim
+
+::
+
+|| strong::Emacs (scel):: footnote::
+
+link::Reference/EmacsEditor::
+
+::
 
 ## Interpret Selection
 || enter, ctl-c, ctl-return, shift-return
@@ -142,6 +153,7 @@ table::
 
 
 section:: Files
+
 table::
 ## strong::Functions::
 || strong::macOS::
@@ -187,6 +199,7 @@ table::
 
 
 section:: Text Editing
+
 table::
 ## strong::Functions::
 || strong::macOS::
@@ -286,6 +299,7 @@ table::
 
 
 section:: Formatting
+
 table::
 ## strong::Functions::
 || strong::macOS::
@@ -328,13 +342,13 @@ table::
 ||
 || (select text and) M-;
 
-## Indent / Shift left (move selected text by one tab)
+## Indent/Shift left (move selected text by one tab)
 || cmd-[
 ||
 ||
 || TAB (auto-aligns tabs according to code)
 
-## Unindent / Shift right (by one tab)
+## Unindent/Shift right (by one tab)
 || cmd-]
 ||
 ||

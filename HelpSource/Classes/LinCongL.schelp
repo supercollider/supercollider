@@ -1,9 +1,12 @@
-class:: LinCongL
-summary:: Linear congruential chaotic generator
+title:: LinCongL
+summary:: linear congruential chaotic generator
 categories:: UGens>Generators>Chaotic
 related:: Classes/LinCongC, Classes/LinCongN
 
+
 description::
+
+
 A linear-interpolating sound generator based on the difference equation:
 
 teletype::
@@ -21,20 +24,30 @@ plot(size.collect { xi = (a * xi + c) % m });
 )
 ::
 
+
 classmethods::
+
+
 method::ar
+
 argument::freq
-Iteration frequency in Hertz
+iteration frequency in Hertz
+
 argument::a
-Multiplier amount
+multiplier amount
+
 argument::c
-Increment amount
+increment amount
+
 argument::m
-Modulus amount
+modulus amount
+
 argument::xi
-Initial value of x
+initial value of x
+
 
 examples::
+
 code::
 // default initial params
 { LinCongL.ar(MouseX.kr(20, SampleRate.ir)) * 0.2 }.play(s);

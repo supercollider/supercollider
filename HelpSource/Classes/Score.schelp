@@ -1,9 +1,12 @@
-class:: Score
+title:: Score
 summary:: score of timed OSC commands
-related:: Guides/Non-Realtime-Synthesis
 categories:: Control, Server>NRT, External Control>OSC
+related:: Guides/Non-Realtime-Synthesis
+
 
 description::
+
+
 Score encapsulates a list of timed OSC commands and provides some methods for using it, as well as support for the creation of binary OSC files for non-realtime synthesis. See link::Guides/Non-Realtime-Synthesis:: for more details.
 
 The list should be in the following format, with times in ascending order. Bundles are okay.
@@ -22,90 +25,140 @@ For NRT synthesis the final event should a dummy event, after which synthesis wi
 
 Score scheduling defaults to link::Classes/TempoClock::. A setting of code::TempoClock.default.tempo = 1 :: (60 beats per minute), may be used to express score events in seconds if desired.
 
-ClassMethods::
 
-private::initClass
+classmethods::
+
+
+private:: initClass
+
 
 method::new
+
 returns a new Score object with the supplied list.
+
 argument::list
 can be an link::Classes/Array::, a link::Classes/List::, or similar object.
 
+
 method::newFromFile
+
 as link::#*new::, but reads the list in from a text file.
+
 argument::path
 a link::Classes/String:: indicating the path of the file. The file must contain a valid SC expression.
 
+
 method::play
+
 as link::#*new:: but immediately plays it. (See also the instance method below.)
+
 argument::list
 the list.
+
 argument::server
-If no value is supplied it will play on the default link::Classes/Server::.
+if no value is supplied it will play on the default link::Classes/Server::.
+
 
 method::playFromFile
+
 as link::#*play::, but reads the list from a file.
 
+
 method::write
+
 a convenience method to create a binary OSC file for NRT synthesis. Does not create an instance.
+
 argument::list
 the list.
+
 argument::oscFilePath
 a link::Classes/String:: containing the desired path of the OSC file.
+
 argument::clock
-Use clock as a tempo base. code::TempoClock.default:: is used if clock is code::nil::.
+uses clock as a tempo base. code::TempoClock.default:: is used if clock is code::nil::.
+
 
 method::writeFromFile
+
 as link::#*write:: but reads the list from a file.
+
 argument::path
 a path to a file with a list.
+
 argument::oscFilePath
 a link::Classes/String:: containing the desired path of the OSC file.
+
 argument::clock
-Use clock as a tempo base. code::TempoClock.default:: is used if clock is code::nil::.
+uses clock as a tempo base. code::TempoClock.default:: is used if clock is code::nil::.
+
 
 method::recordNRT
+
 a convenience method to synthesize strong::list:: in non-realtime. This method writes an OSC file to strong::oscFilePath:: (you have to do your own cleanup if desired) and then starts a server app to synthesize it. For details on valid headerFormats and sampleFormats see link::Classes/SoundFile::. Use code::TempoClock.default:: as a tempo base. Does not return an instance.
+
 argument::list
 the list.
+
 argument::oscFilePath
 the path to which the binary OSC file will be written.
+
 argument::outputFilePath
 the path of the resultant soundfile.
+
 argument::inputFilePath
 an optional path for an input soundfile.
+
 argument::sampleRate
 the sample rate at which synthesis will occur.
+
 argument::headerFormat
 the header format of the output file. The default is 'AIFF'.
+
 argument::sampleFormat
 the sample format of the output file. The default is 'int16'.
+
 argument::options
 an instance of link::Classes/ServerOptions::. If not supplied, the options of the default link::Classes/Server:: will be used.
-argument::completionString
-argument::duration
-argument::action
-A function to be evaluated once the NRT server has finished rendering its score.
 
-InstanceMethods::
+argument::completionString
+
+argument::duration
+
+argument::action
+a function to be evaluated once the NRT server has finished rendering its score.
+
+
+instancemethods::
+
 
 method::play
+
 plays the list on strong::server::, use strong::clock:: as a tempo base and quantize start time to strong::quant::. If strong::server:: is code::nil::, then on the default server. code::TempoClock.default:: if strong::clock:: is code::nil::. now if strong::quant:: is 0.
 
+
 method::stop
+
 stops playing.
 
+
 method::write
+
 creates a binary OSC file for NRT synthesis from the list. Use strong::clock:: as a tempo base. code::TempoClock.default:: if strong::clock:: is code::nil::.
 
+
 method::score
+
 gets/sets the list.
 
+
 method::add
+
 adds bundle to the list.
 
+
 method::addSystemSynthDefs
-Some code requires a number of SynthDefs that are assumed to exist on the server (link::Classes/SystemSynthDefs::). When booting a server in realtime mode, they are sent automatically. In non-realtime mode, they need to be added to the score explicitly:
+
+some code requires a number of SynthDefs that are assumed to exist on the server (link::Classes/SystemSynthDefs::). When booting a server in realtime mode, they are sent automatically. In non-realtime mode, they need to be added to the score explicitly:
 
 code::
 x = Score.new;
@@ -115,13 +168,19 @@ x.score
 
 
 method::sort
-sort the score time order. This is recommended to do strong::before recordNRT or write:: when you are not sure about the packet order.
+
+sorts the score time order. This is recommended to do strong::before recordNRT or write:: when you are not sure about the packet order.
+
 
 method::recordNRT
+
 synthesize the score in non-realtime. For details of the arguments see link::#*recordNRT:: above.
 
+
 method::saveToFile
-save the score list as a text file to strong::path::.
+
+saves the score list as a text file to strong::path::.
+
 
 examples::
 

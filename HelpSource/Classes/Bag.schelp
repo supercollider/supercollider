@@ -1,32 +1,49 @@
-CLASS::Bag
-summary:: Unordered collection of objects
-related::Classes/IdentityBag, Classes/Set
-categories::Collections>Unordered
+title:: Bag
+summary:: unordered collection of objects
+categories:: Collections>Unordered
+related:: Classes/IdentityBag, Classes/Set
+
 
 description::
+
+
 A Bag is an unordered collection of objects. In some languages it is referred to as a counted set. A Bag keeps track of the number of times objects are inserted and requires that objects be removed the same number of times. There is only one instance of an object in a Bag even if the object has been added to the Bag multiple times (test is for strong::equality::)
 
 Most of Bag's methods are inherited from Collection.
 The contents of a Bag are unordered. You must not depend on the order of items in a set.
 
-CLASSMETHODS::
+
+classmethods::
+
 
 method::new
+
 creates a Bag with an initial capacity for strong::n:: objects.
 
-INSTANCEMETHODS::
 
-private::setDictionary
+instancemethods::
+
+
+private:: setDictionary
+
 
 method::contents
+
 returns the dictionary that stores the objects in pairs (obj -> numberOfObjects)
+
 code::
 Bag["a", "b", "c", "c"].contents;
 ::
-returns:: link::Classes/Dictionary::
+
+returns::
+
+link::Classes/Dictionary::
+
 
 method::itemCount
-Count the number of strong::item::s.
+
+counts the number of strong::item::s.
+
 code::
 Bag[1, 2, 2, 3, 300, 2].itemCount(2);
 ::
@@ -34,8 +51,11 @@ Bag[1, 2, 2, 3, 300, 2].itemCount(2);
 
 subsection:: Adding and Removing
 
+
 method::add
+
 adds an object to the Bag. A Bag may contain multiple entries of the same object.
+
 code::
 Bag[1, 2, 3].add(4).postln;
 
@@ -46,8 +66,11 @@ Bag["abc", "def", "ghi"].add("jkl").postln;
 Bag["abc", "def", "ghi"].add("def").postln;
 ::
 
+
 method::remove
+
 removes an object from the Bag.
+
 code::
 Bag[1, 2, 3].remove(3).postln;
 ::
@@ -55,20 +78,27 @@ Bag[1, 2, 3].remove(3).postln;
 
 subsection:: Iteration
 
+
 method::do
+
 evaluates strong::function:: for each item in the Bag.
 The function is passed two arguments, the item and an integer index.
+
 code::
 Bag[1, 2, 3, 300].do({ |item, i| item.postln });
 
 Bag[1, 2, 2, 3, 300].do({ |item, i| item.postln });
 ::
+
 argument::function
 args to function: item, i
 
+
 method::countsDo
+
 evaluates strong::function:: for each unique item in the Bag along with that item's count.
 The function is passed two arguments, the item, the quantity of that item in the Bag and an integer index.
+
 code::
 Bag[1, 2, 3, 300].countsDo({ |item, count, i| [item, count].postln });
 
@@ -78,17 +108,25 @@ Bag[1, 2, 2, 3, 300].countsDo({ |item, count, i| [item, count].postln });
 
 subsection:: Testing
 
+
 method::includes
-Answers whether an object is contained in the Bag.
+
+answers whether an object is contained in the Bag.
+
 code::
 Bag[1, 2, 3, 4].includes(3);
 ::
-returns:: link::Classes/Boolean::
+
+returns::
+
+link::Classes/Boolean::
+
 
 examples::
 
 
 subsection:: Difference between Bag and IdentityBag:
+
 code::
 // the two strings are equal, but not identical
 "something" == "something"; // true

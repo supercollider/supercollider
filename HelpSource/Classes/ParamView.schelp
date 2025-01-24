@@ -1,12 +1,16 @@
-TITLE:: ParamView
-summary:: show a parameter of a JITLib process
+title:: ParamView
+summary:: shows a parameter of a JITLib process
 categories:: JITLib
 related:: Classes/JITGui, Overviews/JITLib
 
+
 description::
+
+
 ParamView displays a parameter value, and switches representation as appropriate for value: A single number is shown by an EZSlider, a pair of numbers by an EZRanger, and anything else as code on an EZText.
 
 First examples:
+
 code::
 
 w = Window("test", Rect(20, 820, 400, 100)).front;
@@ -38,65 +42,96 @@ w.addFlowLayout;
 
 ::
 
-CLASSMETHODS::
+
+classmethods::
+
 
 method::new
+
 creates a new ParamView with
+
 argument::parent
 the parent window or view
+
 argument::bounds
 the bounds of the view
+
 argument::label
 a label to display
+
 argument::spec
 a controlspec for the value
+
 argument::action
 an action to do when the value changes
+
 argument::initVal
 an initial value
+
 argument::initAction
 a boolean whether to perform the action on init.
 
 
-INSTANCEMETHODS::
+instancemethods::
+
 
 method::label
-gets and set the view's label
+
+gets and sets the view's label
+
 
 method::spec
-gets and set the view's control spec
+
+gets and sets the view's control spec
+
 
 method::action
-gets and set the paramview's action
+
+gets and sets the paramview's action
 
 private:: zone, zones
 
+
 method::ezviews, slider, ranger, textview
+
 the 3 ezviews between which the ParamView switches
 
+
 method::currview
+
 the currently shown view of these
 
+
 method::value
-gets and set value
+
+gets and sets value
+
 
 method::valueAction
-gets and set value and do action
+
+gets and sets value and do action
+
 
 method::doAction
-do the view's action
+
+does the view's action
+
 
 method::viewType
-gets and set the view's type:
+
+gets and sets the view's type:
 0 is single number -> EZSlider,
 1 is pair of numbers -> EZRanger,
 2 is anything else
 
+
 method::valueType
+
 determine viewType for a given value
 
 
 method::background
-gets and set background color
+
+gets and sets background color
 
 private:: init

@@ -1,9 +1,12 @@
-class:: Maybe
+title:: Maybe
 summary:: referentially transparent proxy object
 categories:: JITLib>Environments, Live Coding
 related:: Classes/Fdef, Overviews/JITLib
 
+
 description::
+
+
 A Maybe object can contain either code::nil:: or some other object, and allows to construct calculations without knowing this other object yet. If the calculation fails, due to a loop or a not yet defined object, Maybe returns code::nil::.
 
 The name strong::Maybe:: stems from the programming language Haskell, where it represents a somewhat similar entity. See also: link::Classes/Fdef::
@@ -23,14 +26,20 @@ code::
 	}
 }
 ::
+
 ::
 
-ClassMethods::
+
+classmethods::
+
 
 method::new
+
 creates a new instance
+
 argument::thing
 an object or code::nil::.
+
 code::
 a = Maybe.new;
 b = Maybe(a + 6);
@@ -39,21 +48,31 @@ a.value = 1;
 b.value; // => 7
 ::
 
-InstanceMethods::
+
+instancemethods::
+
 
 method::source
+
 returns or sets the contained object
 
+
 method::value
+
 sets the contained object, or returns the source or the value of the contained object, if it is a Maybe. If there is a recursion, returns code::nil::.
 
+
 method::apply
+
 returns the value, or the value of the contained object, if it is a Maybe. This method allows recursion, so that recursive calculations can be made.
 
+
 method::doesNotUnderstand
+
 (called by any message that Maybe doesn't understand.)
 
 returns a composition function that, when evaluated, returns the value.
+
 code::
 a = Maybe.new;
 a.respondsTo(\flop) // false: Maybe constructs a placeholder instead
@@ -62,6 +81,7 @@ b.value; // => nil
 a.value = [1, 2, [2, 3]];
 b.value;	// => [[1, 2, 2], [1, 2, 3]]
 ::
+
 
 examples::
 

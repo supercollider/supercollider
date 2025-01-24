@@ -1,9 +1,11 @@
-class:: OSCpathResponder
-summary:: client side network responder
-related:: Classes/OSCFunc, Classes/OSCdef, Guides/OSC_communication, Classes/OSCresponderNode
+title:: OSCpathResponder
+summary:: client-side network responder
 categories:: External Control>OSC
+related:: Classes/OSCFunc, Classes/OSCdef, Guides/OSC_communication, Classes/OSCresponderNode
+
 
 description::
+
 note::
 This class is deprecated and will be removed in a future version of SC. Use link::Classes/OSCFunc:: and link::Classes/OSCdef:: instead. They are faster, safer, and have more logical argument order than the old responder classes, and they support pattern matching and custom listening ports. Use of the older classes OSCresponder, OSCresponderNode, and OSCpathResponder can be unsafe, since responders in user and class code can override each other unintentionally.
 
@@ -21,6 +23,7 @@ See link::Guides/OSC_communication:: for more details.
 
 subsection:: Command paths
 
+
 OSC commands sometimes include additional parameters to specify the right responder.
 
 For example code::/tr:: commands, which are generated on the server by the link::Classes/SendTrig:: UGen, create an OSC packet consisting of: code:: [/tr, nodeID, triggerID, value] ::.
@@ -32,22 +35,30 @@ To create an OSCpathResponder for a specific trigger, the strong::cmdName:: para
 
 subsection:: Path defaults
 
+
 Any element of the command path array can be set to code::nil:: to create a responder that will handle multiple command paths.
 
 For example, setting the commandpath: code:: ['/tr', nil, triggerID] :: makes a responder that responds to code::/tr:: messages from any Synth but with a specific triggerID.
 
-ClassMethods::
+
+classmethods::
+
 
 method::new
+
 argument::addr
-An instance of link::Classes/NetAddr::, usually obtained from your server: server-addr. An address of code::nil:: will respond to messages from anywhere.
+an instance of link::Classes/NetAddr::, usually obtained from your server: server-addr. An address of code::nil:: will respond to messages from anywhere.
+
 argument::cmdPath
-A command path, such as ['\c_set', bus index].
+a command path, such as ['\c_set', bus index].
+
 argument::action
-A link::Classes/Function:: that will be evaluated when a cmd of that name is received from addr. arguments: time, theResponder, message
+a link::Classes/Function:: that will be evaluated when a cmd of that name is received from addr. arguments: time, theResponder, message
+
 note::
-OSCresponderNode evaluates its function in the system process. In order to access the application process (e.g. for GUI access) use { ... }.defer; within the action function, e.g., code:: { |time, resp, msg| { gui.value_(msg[3]) }.defer } ::
+OSCresponderNode evaluates its function in the system process. In order to access the application process (e.g. for GUI access) use code::{ ... }.defer;:: within the action function, e.g., code::{ |time, resp, msg| { gui.value_(msg[3]) }.defer }::.
 ::
+
 
 examples::
 

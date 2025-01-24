@@ -1,13 +1,17 @@
-class:: ScrollView
-summary:: A container view that can scroll its contents
+title:: ScrollView
+summary:: a container view that can scroll its contents
 categories:: GUI>Views
 related:: Classes/CompositeView
 
+
 description::
+
+
 A container view which allows the user to scroll across contents when they exceed the view's bounds.
 
 
 subsection:: The canvas
+
 
 The view places the children onto a emphasis::canvas::, which may then be scrolled. The child views' position is always relative to the canvas, and thus not affected by scrolling.
 
@@ -19,15 +23,19 @@ Exceptionally though, you can strong::replace the canvas:: with any other view (
 subsection:: Restrictions
 
 note::
+
 list::
 ## The link::Classes/View#-resize:: mode of the children is ignored.
 ## One should not use a decorator such as FlowLayout directly on a ScrollView, only on a container view placed within it.
 ::
+
 ::
 
 
-CLASSMETHODS::
-PRIVATE::key
+classmethods::
+
+
+private:: key
 
 
 INSTANCEMETHODS::
@@ -35,7 +43,9 @@ INSTANCEMETHODS::
 
 subsection:: Geometry
 
+
 method::canvas
+
 returns the current canvas that carries the child views, or replaces it with another.
 
 By default, the canvas is a subclass of QObject, and hence does not allow the type of manipulations that views do. However, it can only be replaced with a subclass of View, which greatly extends the possibilities, including the use of layouts on the canvas.
@@ -46,36 +56,51 @@ See the link::#examples#example:: below.
 
 Once the canvas is replaced, new views constructed with the ScrollView as the parent will end up as children of the canvas view, equivalent to constructing them with the canvas as the parent, or inserting them into the layout installed on the canvas.
 
-warning:: Replacing the canvas will remove and destroy all the views placed on the previous one! ::
+warning::
+Replacing the canvas will remove and destroy all the views placed on the previous one!
+::
+
 
 method::innerBounds
+
 returns either the rectangle corresponding to the size of the canvas, or the visible area of the ScrollView's background, whichever is larger. The position of the rectangle is always 0@0.
 
 See the link::#description#discussion:: above regarding the size of the canvas.
 
-returns:: A Rect.
+returns::
+
+a Rect.
+
 
 method::visibleOrigin
+
 gets the position on the canvas corresponding to its upper-left-most visible point, or moves the canvas so as to leave the given point on it at the top-left corner of the visible bounds, if possible.
+
 argument::
-A Point.
+a Point.
 
 
 subsection:: Behavior
 
+
 method::autohidesScrollers
+
 sets/gets whether the view hides one or another scrollbar if the contents do not exceed the view's bounds in the scrollbar's direction.
 
 If link::#-hasHorizontalScroller:: or link::#-hasVerticalScroller:: is set to code::false::, the respective scrollbar will always be hidden, regardless of this policy.
 
 Defaults to strong::true::.
 
+
 method::hasHorizontalScroller
+
 sets/gets whether the view has the horizontal scrollbar. If this is code::true::, the scrollbar may still be hidden if link::#-autohidesScrollers:: allows so; however, if this is code::false:: the scrollbar will never be shown.
 
 Defaults to strong::true::.
 
+
 method::hasVerticalScroller
+
 sets/gets whether the view has the vertical scrollbar. If this is code::true::, the scrollbar may still be hidden if link::#-autohidesScrollers:: allows so; however, if this it code::false:: the scrollbar will never be shown.
 
 Defaults to strong::true::.
@@ -83,7 +108,9 @@ Defaults to strong::true::.
 
 subsection:: Appearance
 
+
 method::hasBorder
+
 sets/gets whether the view draws its border.
 
 Defaults to strong::true::.
@@ -91,8 +118,11 @@ Defaults to strong::true::.
 
 subsection:: Actions
 
+
 method::action
+
 sets/gets the object to be evaluated when the user moves the scrollbars, or when link::#-visibleOrigin:: is set.
+
 
 examples::
 
@@ -209,5 +239,7 @@ f.drawFunc = {
 w.front;
 )
 ::
-Note:: Apparently a method 'autoScrolls' was planned but not implemented yet; its doc said that it sets or gets whether the view scrolls automatically when you drag on a child view past the edge of visible bounds.
+
+note::
+Apparently a method 'autoScrolls' was planned but not implemented yet; its doc said that it sets or gets whether the view scrolls automatically when you drag on a child view past the edge of visible bounds.
 ::

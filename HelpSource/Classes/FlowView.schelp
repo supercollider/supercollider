@@ -1,10 +1,14 @@
-CLASS:: FlowView
+title:: FlowView
 summary:: CompositeView with a FlowLayout as decorator
 categories:: GUI>Views
 related:: Classes/FlowLayout, Classes/CompositeView
 
+
 description::
+
+
 In the simplest respect, this is a lazy contraction of this:
+
 code::
 w = GUI.window.new;
 w.view.decorator = FlowLayout.new(w.bounds);
@@ -12,6 +16,7 @@ w.front;
 ::
 
 link::Classes/FlowView:: adds some features to this setup.
+
 code::
 (
 f = FlowView.new;
@@ -30,28 +35,39 @@ GUI.slider.new(f, Rect(0, 0, 100, 100));
 ::
 
 
-CLASSMETHODS::
+classmethods::
+
 
 method::new
+
 argument::parent
-Parent widget.
+parent widget.
+
 argument::bounds
-An instance of link::Classes/Rect::, or a link::Classes/Point:: indicating width@height.
+an instance of link::Classes/Rect::, or a link::Classes/Point:: indicating width@height.
+
 argument::margin
 ...
+
 argument::gap
 ...
+
 argument::windowTitle
-Title of the window.
+title of the window.
 
 
-INSTANCEMETHODS::
+instancemethods::
+
 
 method::startRow
-Start a new row.
+
+starts a new row.
+
 
 method::indentedRemaining
-The maximum space that is left, starting at the current cursor position.
+
+the maximum space that is left, starting at the current cursor position.
+
 code::
 (
 f = FlowView.new;
@@ -87,9 +103,12 @@ GUI.slider.new(f, f.indentedRemaining)
 	.background = Color.blue(alpha: 0.2)
 )
 ::
+
 
 method::used
-The area used so far, rounded up to the nearest rectangle plus margin.
+
+the area used so far, rounded up to the nearest rectangle plus margin.
+
 code::
 (
 w = GUI.window.new;
@@ -128,8 +147,11 @@ GUI.compositeView.new(w, f.used)
 )
 ::
 
+
 method::flow
-Insert a sub flow view into the current view.
+
+inserts a sub flow view into the current view.
+
 code::
 (
 f = FlowView.new;
@@ -143,13 +165,18 @@ g = f.flow({ |g|
 }).background_(Color.black); // shrinks to fit the contents afterwards
 )
 ::
+
 argument::func
 (describe argument here)
+
 argument::bounds
 (describe argument here)
 
+
 method::comp
-Insert a sub composite view into the current view.
+
+inserts a sub composite view into the current view.
+
 code::
 (
 f = FlowView.new;
@@ -166,8 +193,10 @@ f.startRow;
 "Back to flowing".gui(f);
 )
 ::
+
 argument::func
 (describe argument here)
+
 argument::bounds
 (describe argument here)
 

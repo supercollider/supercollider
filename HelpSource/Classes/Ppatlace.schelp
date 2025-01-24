@@ -1,10 +1,14 @@
-class:: Ppatlace
+title:: Ppatlace
 summary:: interlace streams
-related:: Classes/Place
 categories:: Streams-Patterns-Events>Patterns>List
+related:: Classes/Place
+
 
 description::
+
+
 Similar to link::Classes/Place::, but the list is an array of streams or patterns. The results of each stream will be output in turn.
+
 
 examples::
 
@@ -35,7 +39,6 @@ nil
 Note that the Ppatlace has an infinite number of repeats, but the resulting stream is finite because the member streams are all finite. When the first stream (Pwhite) comes to an end, it is skipped and you see only the second stream until it stops.
 
 If even one member stream is infinite and Ppatlace has infinite repeats, the Ppatlace stream will also be infinite.
-
 
 code::
 // Ppatlace as a sequence of pitches:

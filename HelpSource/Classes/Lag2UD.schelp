@@ -1,21 +1,32 @@
-class:: Lag2UD
-summary:: Exponential lag
+title:: Lag2UD
+summary:: exponential lag
 categories:: UGens>Filters
 related:: Classes/Lag, Classes/Lag2, Classes/Lag3, Classes/LagUD, Classes/Lag3UD
 
+
 description::
+
+
 Lag2 is equivalent to Lag.kr(Lag.kr(in, time), time), thus resulting in a smoother transition. This saves on CPU as you only have to calculate the decay factor once instead of twice. See link::Classes/Lag:: for more details.
 
+
 classmethods::
+
+
 method::ar, kr
+
 argument::in
 input signal.
+
 argument::lagTimeU
 60 dB lag time in seconds for the upgoing signal.
+
 argument::lagTimeD
 60 dB lag time in seconds for the downgoing signal.
 
+
 examples::
+
 code::
 // used to lag pitch
 (

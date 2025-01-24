@@ -1,43 +1,58 @@
-class:: Pdfsm
+title:: Pdfsm
 summary:: deterministic finite state machine
-related:: Classes/Pfsm
 categories:: Streams-Patterns-Events>Patterns>List>Indexing
+related:: Classes/Pfsm
+
 
 description::
+
+
 Pdfsm is a deterministic finite state machine with signal input (written by by ccos).
 
-ClassMethods::
+
+classmethods::
+
 
 method::new
+
 argument::list
 a list consisting of the stream which gives input signals to determine state transitions, and then dictionary entries, one for each state, mapping the destination state and yield streams to those input signals.
+
 argument::startState
 an integer index for the state to start with.
+
 argument::repeats
 an integer giving the number of times the pattern should cycle. A cycle ends when the strong::signal stream:: ends or code::nil:: is given for the destination state to a signal value, see below.
 
+
 examples::
 
-definitionList::
+definitionlist::
 ## list structure:
 || [
-definitionList::
+
+definitionlist::
 ## signal stream || can be a stream of anything which can serve as a key for an associative collection. integers, symbols, etc... asStream is called on this for each repeat.
 ## states || states should be an instance of link::Classes/IdentityDictionary::, link::Classes/Event:: or some other associative collection.
 ::
+
 ## ] ||
 ## list syntax:
 || [
-definitionList::
+
+definitionlist::
 ## signal stream, ||
 ## ( // state 0, ||
-definitionList::
+
+definitionlist::
 ## signal value : [destination state, returns stream or pattern], ||
 ## signal value : [destination state, returns stream or pattern] ||
 ::
+
 ## ), ||
 ## ... // state 1 ... N ||
 ::
+
 ## ] ||
 ::
 

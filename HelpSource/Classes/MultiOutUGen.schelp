@@ -1,18 +1,28 @@
-class:: MultiOutUGen
+title:: MultiOutUGen
 summary:: Superclass for all UGens with multiple outputs
 categories:: UGens>Base
 related:: Classes/OutputProxy
 
+
 description::
+
+
 This is a superclass for all UGens with multiple outputs.
 MultiOutUGen creates the link::Classes/OutputProxy:: ugens needed for the multiple outputs.
 
+
 classmethods::
+
+
 private:: categories
+
 
 instancemethods::
 
+
 method::initOutputs
+
 creates an array of OutputProxies for the outputs.
+
 argument::numChannels
-Number of outputs. Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.
+number of outputs. Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.

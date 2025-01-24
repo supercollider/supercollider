@@ -1,16 +1,19 @@
-class:: MIDIResponder
-summary:: Register multiple functions to be evaluated when MIDI events occur
-related:: Classes/MIDIFunc, Classes/MIDIdef, Classes/MIDIIn, Guides/MIDI, Guides/UsingMIDI
+title:: MIDIResponder
+summary:: registers multiple functions to be evaluated when MIDI events occur
 categories:: External Control>MIDI
+related:: Classes/MIDIFunc, Classes/MIDIdef, Classes/MIDIIn, Guides/MIDI, Guides/UsingMIDI
+
 
 description::
-note:: SC 3.5 added the link::Classes/MIDIFunc:: and link::Classes/MIDIdef:: classes. These are faster, and aim to have a more convenient, logical and consistent interface, which shares a common design with link::Classes/OSCFunc:: and link::Classes/OSCdef::. They also provide support for all MIDI message types.::
+
+note::
+SC 3.5 added the link::Classes/MIDIFunc:: and link::Classes/MIDIdef:: classes. These are faster, and aim to have a more convenient, logical and consistent interface, which shares a common design with link::Classes/OSCFunc:: and link::Classes/OSCdef::. They also provide support for all MIDI message types.::
 
 MIDIResponder is an emphasis::abstract:: class. Its subclasses allow functions to be registered to respond to midi events.
 
 Read the general help file here and then see the individual help files.
 
-definitionList::
+definitionlist::
 ## link::Classes/CCResponder:: || Respond to control messages
 ## link::Classes/NoteOnResponder:: || Respond to note-on messages
 ## link::Classes/NoteOffResponder:: || Respond to note-off messages
@@ -31,7 +34,7 @@ list::
 ## ProgramChangeResponder(function, src, chan, value, install = true)
 ::
 
-definitionList::
+definitionlist::
 
 ## function || The function to execute when the incoming MIDI event matches the responder. The function takes the arguments src, chan, A, B (or for Bend, ProgramChange and Touch: src, chan, value).
 
@@ -53,7 +56,7 @@ definitionList::
 
 Any of the matching values may be one of the following:
 
-definitionList::
+definitionlist::
 ## Nil || Match anything. eg. if code::chan:: is code::nil::, then respond to any MIDI channel.
 ## Integer || Match only this specific number.
 ## Array || Match any item in the array. Any kind of link::Classes/Collection:: will work here.
@@ -61,6 +64,7 @@ definitionList::
 ::
 
 For instance, the following example would respond to note on messages from any port, channels 2 and 7 only, even numbered note numbers only, and only velocity values greater than 50.
+
 code::
 NoteOnResponder({ |src, chan, num, vel| [src, chan, num, vel].postln },
 	nil,	// any port
@@ -74,7 +78,9 @@ MIDIResponders automatically initialize the MIDIClient with 1 standard device. T
 
 subsection:: Removal
 
+
 Just call .remove on the responder.
+
 code::
 c = CCResponder({ ... }, num: 1);	// respond to any modwheel
 
@@ -82,6 +88,7 @@ c.remove;		// stop this responder
 ::
 
 Or remove all of a specific class:
+
 code::
 CCResponder.removeAll
 NoteOnResponder.removeAll
@@ -92,6 +99,7 @@ ProgramChange.removeAll
 ::
 
 or remove all midi responders in all classes:
+
 code::
 MIDIResponder.removeAll
 ::

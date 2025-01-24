@@ -1,26 +1,34 @@
-class:: LinLin
-summary:: Map a linear range to another linear range
+title:: LinLin
+summary:: maps a linear range to another linear range
+categories:: UGens>Maths
 related:: Classes/LinExp
-categories::  UGens>Maths
 
 
 description::
+
+
 maps a linear range of values to another linear range of values.
 
 
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-The input signal to convert.
+the input signal to convert.
+
 argument::srclo
-Lower limit of input range.
+lower limit of input range.
+
 argument::srchi
-Upper limit of input range.
+upper limit of input range.
+
 argument::dstlo
-Lower limit of output range.
+lower limit of output range.
+
 argument::dsthi
-Upper limit of output range.
+upper limit of output range.
 
 
 examples::

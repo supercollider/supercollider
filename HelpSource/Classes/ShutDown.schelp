@@ -1,12 +1,18 @@
-class:: ShutDown
-summary:: register functions to be evaluated before system shuts down
-related:: Classes/StartUp, Classes/ServerQuit, Classes/ServerTree, Classes/CmdPeriod
+title:: ShutDown
+summary:: registers functions to be evaluated before system shuts down
 categories:: Control
+related:: Classes/StartUp, Classes/ServerQuit, Classes/ServerTree, Classes/CmdPeriod
+
 
 description::
+
+
 ShutDown registers functions to perform an action before system shut down.
 
-ClassMethods::
+
+classmethods::
+
 
 method::run
+
 calls the object in order.

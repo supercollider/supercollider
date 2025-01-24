@@ -1,10 +1,12 @@
-class:: BufAllpassC
-summary:: Buffer based all pass delay line with cubic interpolation.
+title:: BufAllpassC
+summary:: Buffer based all pass delay line with cubic interpolation
+categories:: UGens>Delays>Buffer
 related:: Classes/BufAllpassL, Classes/BufAllpassN, Classes/AllpassC
-categories::  UGens>Delays>Buffer
 
 
 description::
+
+
 All pass delay line with cubic interpolation which uses a buffer for its
 internal memory. See also  link::Classes/BufAllpassN::  which uses no
 interpolation, and  which  link::Classes/BufAllpassL::  uses linear
@@ -14,20 +16,27 @@ than linear, but more accurate.
 
 classmethods::
 
+
 method::ar
+
 argument::buf
 Buffer number.
+
 argument::in
-The input signal.
+the input signal.
+
 argument::delaytime
-Delay time in seconds.
+delay time in seconds.
+
 argument::decaytime
-Time for the echoes to decay by 60 decibels. If this time is negative, then the feedback coefficient will be negative, thus emphasizing only odd harmonics at an octave lower.
+time for the echoes to decay by 60 decibels. If this time is negative, then the feedback coefficient will be negative, thus emphasizing only odd harmonics at an octave lower.
 
 discussion::
+
 warning::
 For reasons of efficiency, the effective buffer size is limited to the previous power of two. So, if 44100 samples are allocated, the maximum delay would be 32768 samples.
 ::
+
 
 examples::
 

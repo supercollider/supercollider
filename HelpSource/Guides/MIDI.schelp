@@ -1,15 +1,17 @@
 title:: MIDI
 summary:: about MIDI
-related:: Guides/UsingMIDI, Classes/MIDIFunc, Classes/MIDIdef
 categories:: External Control>MIDI
+related:: Guides/UsingMIDI, Classes/MIDIFunc, Classes/MIDIdef
 
 
 section:: Practical usage overview
+
 
 Begins with the link::Guides/UsingMIDI:: help file.
 
 
 subsection:: Receiving MIDI input
+
 
 link::Classes/MIDIFunc:: and link::Classes/MIDIdef:: are the standard, recommended way to receive MIDI note on/off, controller, pitch bend, aftertouch, poly-touch and program change messages.
 
@@ -29,6 +31,7 @@ There are some examples in the wild using the MIDIIn class directly to receive M
 
 subsection:: Sending MIDI output
 
+
 See the link::Classes/MIDIOut:: help file for details.
 
 
@@ -45,6 +48,7 @@ definitionlist::
 
 
 examples::
+
 
 MIDI input:
 

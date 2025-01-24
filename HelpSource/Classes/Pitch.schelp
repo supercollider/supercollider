@@ -1,24 +1,44 @@
-class:: Pitch
-summary:: Autocorrelation pitch follower
+title:: Pitch
+summary:: autocorrelation pitch follower
 categories:: UGens>Analysis>Pitch
 
+
 description::
+
+
 This is a better pitch follower than link::Classes/ZeroCrossing::, but more costly of CPU. For most purposes the default settings can be used and only code::in:: needs to be supplied. Pitch returns two values (via an link::Classes/Array:: of OutputProxys, see the link::Classes/OutputProxy:: help file), a code::freq:: which is the pitch estimate and code::hasFreq::, which tells whether a pitch was found. Some vowels are still problematic, for instance a wide open mouth sound somewhere between a low pitched short 'a' sound as in 'sat', and long 'i' sound as in 'fire', contains enough overtone energy to confuse the algorithm.
 
+
 classmethods::
+
+
 private:: categories
+
+
 method::kr
+
 argument::in
+
 argument::initFreq
+
 argument::minFreq
+
 argument::maxFreq
+
 argument::execFreq
+
 argument::maxBinsPerOctave
+
 argument::median
+
 argument::ampThreshold
+
 argument::peakThreshold
+
 argument::downSample
+
 argument::clar
+
 discussion::
 The pitch follower executes periodically at the rate specified by code::execFreq:: in cps. code::execFreq:: is clipped to be between code::minFreq:: and code::maxFreq::. First it detects whether the input peak to peak amplitude is above the code::ampThreshold::.
 If it is not then no pitch estimation is performed, code::hasFreq:: is set to zero and code::freq:: is held at its previous value. It performs an autocorrelation on the input and looks for the first peak after the peak around the lag of zero that is above code::peakThreshold:: times the amplitude of the peak at lag zero.
@@ -44,8 +64,12 @@ Until Pitch finds a pitch for the first time, it will output code::initFreq::.
 
 None of these settings are time variable.
 
+
 instancemethods::
+
+
 private:: init
+
 
 examples::
 
@@ -101,7 +125,7 @@ Miller Puckette, The Theory and Technique of Electronic Music, p. 126
 http://crca.ucsd.edu/~msp/techniques/latest/book.pdf
 http://crca.ucsd.edu/~msp/techniques/latest/book-html/node77.html#sect5.ringmod
 
-andreavalle
+Andrea Valle
 
 */
 

@@ -1,10 +1,12 @@
-class:: RandID
-summary:: Set the synth's random generator ID.
+title:: RandID
+summary:: sets the synth's random generator ID
+categories:: UGens>Generators>Stochastic, UGens>Random
 related:: Classes/RandSeed
-categories::  UGens>Generators>Stochastic, UGens>Random
 
 
 description::
+
+
 Choose which random number generator to use for this synth.
 All synths that use the same generator reproduce the same sequence
 of numbers when the same seed is set again.
@@ -12,9 +14,12 @@ of numbers when the same seed is set again.
 
 classmethods::
 
+
 method::kr, ir
+
 argument::id
-The random number generator ID.
+the random number generator ID.
+
 
 examples::
 

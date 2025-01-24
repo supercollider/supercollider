@@ -1,10 +1,12 @@
-class:: DelayL
-summary:: Simple delay line with linear interpolation.
+title:: DelayL
+summary:: simple delay line with linear interpolation
+categories:: UGens>Delays
 related:: Classes/DelayC, Classes/DelayN, Classes/BufDelayL
-categories::  UGens>Delays
 
 
 description::
+
+
 Simple delay line with linear interpolation. See also
 link::Classes/DelayN::  which uses no interpolation, and
 link::Classes/DelayC::  which uses cubic interpolation. Cubic
@@ -16,17 +18,24 @@ The term "delay" is often used in electronic music to refer to a delay line with
 
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-The input signal.
+the input signal.
+
 argument::maxdelaytime
-The maximum delay time in seconds. used to initialize the delay buffer size.
+the maximum delay time in seconds. used to initialize the delay buffer size.
+
 argument::delaytime
-Delay time in seconds.
+delay time in seconds.
+
 argument::mul
-Output will be multiplied by this value.
+output will be multiplied by this value.
+
 argument::add
-This value will be added to the output.
+this value will be added to the output.
+
 
 examples::
 

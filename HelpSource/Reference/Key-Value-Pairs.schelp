@@ -1,14 +1,15 @@
 title:: Key Value Pairs
-summary:: An interface for translating between three common data structures: Dictionaries, Arrays of Associations and of Pairs
+summary:: an interface for translating between three common data structures: Dictionaries, Arrays of Associations and of Pairs
 categories:: Collections, Interfaces
-related::Classes/IdentityDictionary, Classes/Array, Classes/Association
+related:: Classes/IdentityDictionary, Classes/Array, Classes/Association
 
 
 section:: Motivation
 
+
 There are three very similar ways to represent maps between keys and values, each of which have a specific purpose:
 
-TABLE::
+table::
 ## key value pairs || common representation of arguments || code::[\freq, 452, \amp, 0.2]::
 ## collections of associations || ordering, array and collection methods || code::[0 -> [1, 2, 3], 1 -> [2, 1]]::
 ## dictionaries: fast lookup || event compatibility || code::(instrument: \sine, freq: 561)::
@@ -16,7 +17,7 @@ TABLE::
 
 To make it easy to translate between these purposes and representations, there is a uniform set of methods:
 
-TABLE::
+table::
 ##code::asPairs:: || returns an array of key value pairs
 ##code::asAssociations:: || returns an array of associations
 ##code::asDict:: || returns an IdentityDictionary.
@@ -25,7 +26,7 @@ TABLE::
 
 section:: Examples
 
-CODE::
+code::
 
 // The following all return [\freq, 452, \amp, 0.2]
 
@@ -51,9 +52,10 @@ CODE::
 
 section:: Mapping Parameters
 
+
 The method code::asDict:: optionally takes a code::mergeFunc:: and a code::class:: argument.
 
-CODE::
+code::
  // IdentityDictionary[ (a -> 1), (c -> 3), (b -> 2) ]
 [\a, 1, \a, 3, \b, 2, \c, 3, \c, 7].asDict;
 
@@ -68,12 +70,14 @@ CODE::
 ::
 
 The method code::asEvent:: is a shortcut:
-CODE::
+
+code::
 [\freq, 100, \amp, 0.1].asEvent // ( 'amp': 0.1, 'freq': 100 )
 ::
 
 The methods code::asAssociations:: and code::asPairs:: optionally take a code::class:: argument.
-CODE::
+
+code::
 // SortedList[ (a -> 1871), (b -> 1848), (c -> 1789) ]
 (c:1789, b:1848, a:1871).asAssociations(SortedList);
 

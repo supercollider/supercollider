@@ -1,26 +1,34 @@
-class:: TwoZero
-summary:: Two zero filter.
+title:: TwoZero
+summary:: two zero filter
+categories:: UGens>Filters>Linear
 related:: Classes/TwoPole
-categories::  UGens>Filters>Linear
 
 
 description::
+
+
 A two zero filter.
 
 
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-The input signal.
+the input signal.
+
 argument::freq
-Frequency of zero angle.
+frequency of zero angle.
+
 argument::radius
-Radius of zero.
+radius of zero.
+
 argument::mul
-Output will be multiplied by this value.
+output will be multiplied by this value.
+
 argument::add
-This value will be added to the output.
+this value will be added to the output.
 
 
 examples::

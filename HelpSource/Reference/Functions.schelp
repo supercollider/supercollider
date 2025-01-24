@@ -6,8 +6,10 @@ related:: Classes/Function, Classes/AbstractFunction, Classes/FunctionDef
 
 section:: Introduction
 
+
 A link::Classes/Function:: is an expression which defines operations to be performed when it is sent the code::value:: message. In functional languages, a function would be known as a lambda expression.
 Function definitions are enclosed in curly brackets code::{}::. Argument declarations, if any, follow the open bracket. Variable declarations follow argument declarations. An expression follows the declarations.
+
 code::
 { arg a, b, c;  var d;   d = a * b; c + d }
 ::
@@ -17,6 +19,7 @@ Functions are not evaluated immediately when they occur in code, but are passed 
 A function may be evaluated by passing it the code::value:: message and a list of arguments.
 
 When evaluated, the function returns the value of its expression.
+
 code::
 f = { arg a, b; a + b };
 f.value(4, 5).postln;
@@ -24,6 +27,7 @@ f.value(10, 200).postln;
 ::
 
 An empty function returns the value code::nil:: when evaluated.
+
 code::
 {}.value.postln;
 ::
@@ -35,6 +39,7 @@ image::functions.png#Functions::
 
 
 section:: Arguments
+
 
 An argument list immediately follows the open curly bracket of a function definition. An argument list either begins with the reserved word code::arg::, or is contained between two vertical bars. If a function takes no arguments, then the argument list may be omitted.
 
@@ -58,6 +63,7 @@ code::{ |x = (10.rand)| ... } :: link::#[2]::
 If the last argument in the list is preceded by three dots (an ellipsis), then all the remaining arguments that were passed will be assigned to that variable as an link::Classes/Array::. Arguments must be separated by commas.
 
 examples:
+
 code::
 { arg a, b, c=3; } // is equivalent to:
 
@@ -69,11 +75,13 @@ code::
 ::
 
 If you want all the arguments put in an Array
+
 code::
 arg ... z;
 ::
 
 In general arguments may be initialized to literals or expressions, but in the case of Function:play or SynthDef:play, they may only be initialized to literals.
+
 code::
 // this is okay:
 
@@ -94,6 +102,7 @@ anchor::[1]::
 
 subsection:: [1] Literal argument defaults
 
+
 Argument defaults that are literals are stored as part of the link::Classes/FunctionDef::. Arguments passed at runtime -- including code::nil:: -- always override the defaults:
 
 code::
@@ -109,6 +118,7 @@ anchor::[2]::
 
 
 subsection:: [2] Expression argument defaults
+
 
 Since expressions are evaluated when the function is called, they cannot be stored in the link::Classes/FunctionDef::. They are executed only if the passed-in value is code::nil::.
 
@@ -177,6 +187,7 @@ code::
 
 
 section:: Variables
+
 
 Following the argument declarations are the variable declarations. These may be declared in any order. Variable lists are preceded by the reserved word code::var::. There can be multiple var declaration lists if necessary. Variables may be initialized to default values in the same way as arguments. Variable declarations lists may not contain an ellipsis.
 

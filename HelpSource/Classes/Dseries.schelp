@@ -1,9 +1,12 @@
-class:: Dseries
-summary:: Demand rate arithmetic series UGen.
-related:: Classes/Demand, Classes/Dgeom, Classes/Duty, Classes/TDuty
+title:: Dseries
+summary:: demand rate arithmetic series UGen
 categories:: UGens>Demand
+related:: Classes/Demand, Classes/Dgeom, Classes/Duty, Classes/TDuty
+
 
 description::
+
+
 Demand rate arithmetic series UGen.
 
 See link::Classes/Pseries:: for structurally related equivalent.
@@ -11,13 +14,17 @@ See link::Classes/Pseries:: for structurally related equivalent.
 
 classmethods::
 
+
 method::new
+
 argument::start
-Start value. Can be a number or any other UGen.
+start value. Can be a number or any other UGen.
+
 argument::step
-Step value. Can be a number or any other UGen.
+step value. Can be a number or any other UGen.
+
 argument::length
-Number of values to create.  Can be a number or any other UGen.
+number of values to create.  Can be a number or any other UGen.
 
 
 examples::

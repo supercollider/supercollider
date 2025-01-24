@@ -1,10 +1,14 @@
-class:: Pwrap
-summary:: constrain the range of output values by wrapping
-related:: Classes/SimpleNumber
+title:: Pwrap
+summary:: constrains the range of output values by wrapping
 categories:: Streams-Patterns-Events>Patterns>Math
+related:: Classes/SimpleNumber
+
 
 description::
+
+
 Note: this is equivalent to pattern.wrap(lo, hi)
+
 
 examples::
 

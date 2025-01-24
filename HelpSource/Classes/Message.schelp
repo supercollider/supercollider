@@ -1,36 +1,55 @@
-TITLE:: Message
-summary:: A message to an object
+title:: Message
+summary:: a message to an object
 categories:: Language
 related:: Classes/MethodQuote
 
+
 description::
+
+
 A message to an object, to be evaluated later.
 
-CLASSMETHODS::
+
+classmethods::
+
 
 method::new
+
 argument::receiver
 the receiver of the message
+
 argument::selector
 the method to be called
+
 argument::args
 arguments to the call
 
-INSTANCEMETHODS::
+
+instancemethods::
+
 
 method::receiver
+
 the object to which the message is relayed
 
+
 method::selector
+
 the method to be called
 
+
 method::args
+
 the arguments to the call
 
+
 method::value
+
 sends the message to the receiver and call the selector with the arguments
+
 argument::... moreArgs
 private:: storeArgs
+
 
 examples::
 

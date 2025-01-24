@@ -1,18 +1,26 @@
-class:: Ppar
+title:: Ppar
 summary:: embed event streams in parallel
-related:: Classes/Ptpar, Classes/Pgpar, Classes/Pbus, Classes/Pgroup
 categories:: Streams-Patterns-Events>Patterns>Parallel
+related:: Classes/Ptpar, Classes/Pgpar, Classes/Pbus, Classes/Pgroup
+
 
 description::
+
+
 Embeds several event streams so that they form a single output stream with all their events in temporal order. When one stream ends, the other streams are further embedded until all have ended.
 
-ClassMethods::
+
+classmethods::
+
 
 method::new
+
 argument::list
 list of patterns or streams.
+
 argument::repeats
-repeat the whole pattern n times.
+repeats the whole pattern n times.
+
 
 examples::
 

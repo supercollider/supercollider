@@ -1,10 +1,14 @@
-class:: Prand
+title:: Prand
 summary:: embed values randomly chosen from a list
-related:: Classes/Pxrand, Classes/Pwrand
 categories:: Streams-Patterns-Events>Patterns>List
+related:: Classes/Pxrand, Classes/Pwrand
+
 
 description::
+
+
 Embed one item from the list at random for each repeat.
+
 
 examples::
 

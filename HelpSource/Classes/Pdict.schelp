@@ -1,10 +1,14 @@
-class:: Pdict
+title:: Pdict
 summary:: pattern that embeds patterns from a dictionary
 categories:: JITLib>Patterns, Live Coding
 related:: Classes/Pbind
 
+
 description::
+
+
 A general purpose lookup stream.
+
 
 examples::
 

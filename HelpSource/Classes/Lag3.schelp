@@ -1,10 +1,12 @@
-class:: Lag3
-summary:: Exponential lag
+title:: Lag3
+summary:: exponential lag
+categories:: UGens>Filters>Linear
 related:: Classes/Lag, Classes/Lag2, Classes/Ramp, Classes/Lag3UD
-categories::  UGens>Filters>Linear
 
 
 description::
+
+
 Lag3 is equivalent to code:: Lag.kr(Lag.kr(Lag.kr(in, time), time), time) ::, thus
 resulting in a smoother transition. This saves on CPU as you only have to
 calculate the decay factor once instead of three times. See
@@ -13,15 +15,20 @@ link::Classes/Lag::  for more details.
 
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-The input signal.
+the input signal.
+
 argument::lagTime
 60 dB lag time in seconds.
+
 argument::mul
-Output will be multiplied by this value.
+output will be multiplied by this value.
+
 argument::add
-This value will be added to the output.
+this value will be added to the output.
 
 
 examples::

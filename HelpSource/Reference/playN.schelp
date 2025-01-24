@@ -3,7 +3,9 @@ summary:: distribute audio over multiple non-adjacent channels
 categories:: JITLib>NodeProxy
 related:: Classes/Monitor, Classes/Bus, Classes/NodeProxy, Classes/Ndef, Classes/ProxySpace
 
+
 method::playN
+
 playN is a multichannel play method for link::Classes/Monitor:: and link::Classes/NodeProxy:: (see also: link::Classes/ProxySpace::, link::Classes/Ndef::) that supports playing proxy outputs over strong::non-adjacent channels::; somewhat like a splitter/line mixer.
 
 code::

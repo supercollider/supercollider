@@ -6,11 +6,13 @@ related:: Reference/Messages, Reference/Classes, Guides/Intro-to-Objects
 
 section:: Introduction
 
+
 Polymorphism is the ability of different classes to respond to a message in different ways. A message generally has some underlying meaning and it is the responsibility of each class to respond in a way appropriate to that meaning.
 
 For example, the code::value:: message means "give me the effective value of this object".
 
 The value method is implemented by these classes (among others):
+
 definitionlist::
 ## Function : || this.value(args)
 ## Object : || this.value()
@@ -22,11 +24,15 @@ Let's look at how these classes implement the value message.
 
 subsection:: Object
 
+
 Here's the value method in class link::Classes/Object:: :
+
 code::
 value { ^this }
 ::
+
 It simply returns itself. Since all classes inherit from class Object this means that unless a class overrides code::value::, the object will respond to code::value:: by returning itself.
+
 code::
 5.postln;			// posts itself
 5.value.postln;		// value returns itself
@@ -38,7 +44,10 @@ code::
 
 
 subsection:: Function
+
+
 In class link::Classes/Function:: the value method is a primitive:
+
 code::
 value { arg ... args;
     _FunctionValue
@@ -48,6 +57,7 @@ value { arg ... args;
 ::
 
 code::_FunctionValue:: is a C code primitive, so it is not possible to know just by looking at it what it does. However, what it does is to evaluate the function and return the result.
+
 code::
 { 5.squared }.postln;			// posts Instance of Function
 { 5.squared }.value.postln;		// posts 25
@@ -55,8 +65,11 @@ code::
 
 
 subsection:: Ref
+
+
 The link::Classes/Ref:: class provides a way to create an indirect reference to an object. It can be used to pass a value by reference. Ref objects have a single instance variable called code::value::.
 The code::value:: method returns the value of the instance variable code::value::. Here is a part of the class definition for Ref:
+
 code::
 Ref : AbstractFunction
 {
@@ -79,7 +92,9 @@ Ref : AbstractFunction
     }
 }
 ::
+
 Here is how it responds :
+
 code::
 Ref.new(123).postln;
 Ref.new(123).value.postln;
@@ -88,10 +103,12 @@ Ref.new(123).value.postln;
 Ref also implements a message called code::dereference:: which is another good example of polymorphism. As implemented in Ref, dereference just returns the value instance variable which is no different than what the value method does.
 So what is the need for it? That is explained by how other classes respond to dereference. The dereference message means "remove any Ref that contains you".
 In class Object dereference returns the object itself, again just like the value message. The difference is that no other classes override this method. So that dereference of a Function is still the Function.
+
 definitionlist::
 ## Object : || this.dereference()
 ## Ref : || this.dereference()
 ::
+
 code::
 5.value.postln;
 { 5.squared }.value.postln;
@@ -104,16 +121,20 @@ Ref.new(123).dereference.postln;
 
 
 section:: Play
+
+
 Yet another example of polymorphism is play. Many different kinds of objects know how to play themselves.
 
 
 subsection:: Function
+
 code::
 { PinkNoise.ar(0.1) }.play;
 ::
 
 
 subsection:: AppClock
+
 code::
 (
 var w, r;
@@ -135,6 +156,7 @@ AppClock.play(r);
 
 
 subsection:: SynthDef
+
 code::
 (
 x = SynthDef("Help-SynthDef", { arg out=0;
@@ -145,10 +167,13 @@ x = SynthDef("Help-SynthDef", { arg out=0;
 
 
 subsection:: Pattern
+
 code::
 Pbind(\degree, Pseq([0, 1, 2, 3],inf)).play;
 ::
 
 
 section:: Conclusion
+
+
 Polymorphism allows you to write code that does not assume anything about the implementation of an object, but rather asks the object to "do what I mean" and have the object respond appropriately.

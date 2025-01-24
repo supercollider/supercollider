@@ -1,27 +1,35 @@
-TITLE:: Git
+title:: Git
 summary:: git interface
 categories:: Frontends
 related:: Classes/Quarks, Classes/Quark
 
+
 description::
+
+
 An interface to the git toolchain. For more information on git, see link::http://git.io::.
 
 
-CLASSMETHODS::
-
+classmethods::
 
 
 method::new
+
 creates a new instance of code::Git::, pointing to an existing local git repository.
+
 argument::localPath
 path to the git repository.
 
 
 method::isGit
+
 returns code::true::, if a local directory is a git repository.
+
 argument::localPath
 
+
 method::checkForGit
+
 returns code::true::, if the git toolchain is found on the system.
 
 
@@ -30,14 +38,24 @@ INSTANCEMETHODS::
 
 subsection:: info
 
+
 method::branch
-returns:: current branch name.
+
+returns::
+
+current branch name.
+
 
 method::remote, url
-returns:: url of the first remote that it finds.
+
+returns::
+
+URL of the first remote that it finds.
+
 
 method::remoteAsHttpUrl
-Detects if the remote URI starts with code::"git@":: or code::"git:":: and remodels it to a valid code::"https":: URI. Otherwise, it returns the unaltered remote.
+
+detects if the remote URI starts with code::"git@":: or code::"git:":: and remodels it to a valid code::"https":: URI. Otherwise, it returns the unaltered remote.
 
 code::
 // git-style remote URI's are transformed to https
@@ -53,54 +71,92 @@ Git().url_("http://foo.org/bar").remoteAsHttpUrl;
 Git().url_("fooBar").remoteAsHttpUrl;
 ::
 
-returns:: remote URI formatted for code::http:: respectively code::https:: requests.
+returns::
+
+remote URI formatted for code::http:: respectively code::https:: requests.
+
 
 method::remoteLatest
-returns:: hash of latest commit on the remote
+
+returns::
+
+hash of latest commit on the remote
+
 
 method::localPath
-returns:: path to local repository
+
+returns::
+
+path to local repository
+
 
 method::tag
-returns:: currently checked out tag
+
+returns::
+
+currently checked out tag
+
 
 method::tags
-returns:: avaliable tags
+
+returns::
+
+avaliable tags
+
 
 method::sha
-returns:: hash of the currently checked out version
+
+returns::
+
+hash of the currently checked out version
+
 
 method::shaForTag
+
 argument::tag
 one of the tags returned by link::#-tags::
-returns:: hash of the given tag
+
+returns::
+
+hash of the given tag
 
 
 method::isDirty
-returns:: code::true:: if there are local changes
+
+returns::
+
+code::true:: if there are local changes
 
 
 subsection:: perform actions on remote
 
+
 method::fetch
-perform a fetch from remote
+
+performs a fetch from remote
 
 
 method::checkout
-perform a checkout from remote with argument code::refspec::
+
+performs a checkout from remote with argument code::refspec::
+
 argument::refspec
 
+
 method::pull
-perform a pull from remote
+
+performs a pull from remote
+
 
 method::clone
-perform a clone from url into link::#-localPath::
+
+performs a clone from url into link::#-localPath::
+
 argument::url
 the url of the remotes
 
 
-PRIVATE:: git, refspec
-
+private:: git, refspec
 
 
 examples::

@@ -1,9 +1,12 @@
-class:: PV_ConformalMap
-summary:: Complex plane attack.
-related:: Classes/FFT, Classes/IFFT
+title:: PV_ConformalMap
+summary:: complex plane attack
 categories:: UGens>FFT
+related:: Classes/FFT, Classes/IFFT
+
 
 description::
+
+
 Applies the conformal mapping
 
 code::
@@ -12,22 +15,24 @@ z → (z - a) / (1 - za*)
 
 ::
 
-to the phase vocoder bins z with a given by the real and imag inputs to
+to the phase vocoder bins code::z:: with code::a:: given by the code::areal:: and code::aimag:: inputs to
 the UGen.
 
 
-Makes a transformation of the complex plane so the output is full of
+Makes code::a:: transformation of the complex plane so the output is full of
 phase vocoder artifacts but may be musically fun. Usually keep
 
 code::
 |a| < 1
 ::
+
 but
 you can, of course, try bigger values to make it really noisy.
 
 code::
 a = 0
 ::
+
 should
 give back the input mostly unperturbed.
 
@@ -37,13 +42,17 @@ See  link::http://mathworld.wolfram.com/ConformalMapping.html:: .
 
 classmethods::
 
+
 method::new
+
 argument::buffer
 FFT buffer.
+
 argument::areal
-Real part of a.
+real part of code::a::.
+
 argument::aimag
-Imaginary part of a.
+imaginary part of code::a::.
 
 
 examples::

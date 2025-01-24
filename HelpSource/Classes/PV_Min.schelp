@@ -1,19 +1,26 @@
-class:: PV_Min
-summary:: Minimum magnitude.
-related:: Classes/FFT, Classes/IFFT, Classes/PV_Add, Classes/PV_CopyPhase, Classes/PV_MagMul, Classes/PV_Max, Classes/PV_Mul
+title:: PV_Min
+summary:: minimum magnitude
 categories:: UGens>FFT
+related:: Classes/FFT, Classes/IFFT, Classes/PV_Add, Classes/PV_CopyPhase, Classes/PV_MagMul, Classes/PV_Max, Classes/PV_Mul
+
 
 description::
+
+
 Output copies bins with the minimum magnitude of the two inputs.
 
 
 classmethods::
 
+
 method::new
+
 argument::bufferA
 FFT buffer A.
+
 argument::bufferB
 FFT buffer B.
+
 
 examples::
 

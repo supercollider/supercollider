@@ -1,38 +1,58 @@
-class:: Splay
+title:: Splay
 summary:: Splay spreads an array of channels across the stereo field
 categories:: UGens>Multichannel>Panners
 related:: Classes/SplayAz, Classes/SplayZ
 
+
 description::
+
+
 Splay spreads an array of channels across the stereo field.
 Optional arguments are spread and center, and equal power levelCompensation.
 The formula for the stereo position is ((0 .. (n - 1)) * (2 / (n - 1)) - 1) * spread + center
 
+
 classmethods::
+
+
 method::ar, kr
+
 argument::inArray
-The array of channels to be distributed over the two stereo pairs
+the array of channels to be distributed over the two stereo pairs
+
 argument::spread
-For spread = 0, all channels end up in the centre, for 1, they have maximum distribution
+for spread = 0, all channels end up in the centre, for 1, they have maximum distribution
+
 argument::level
-An amplitude multiplier for all channels
+an amplitude multiplier for all channels
+
 argument::center
-Shift the centre of the distribution.
+shifts the centre of the distribution.
+
 argument::levelComp
 
+
 method::arFill
-In analogy to Mix:arFill, this method takes a function that produces the channels. The counting index is passed to it.
+
+in analogy to Mix:arFill, this method takes a function that produces the channels. The counting index is passed to it.
+
 argument::n
-Number of channels
+number of channels
+
 argument::function
-Function to return each channel
+function to return each channel
+
 argument::spread
-For spread = 0, all channels end up in the centre, for 1, they have maximum distribution
+for spread = 0, all channels end up in the centre, for 1, they have maximum distribution
+
 argument::level
-An amplitude multiplier for all channels
+an amplitude multiplier for all channels
+
 argument::center
-Shift the centre of the distribution.
+shifts the centre of the distribution.
+
 argument::levelComp
+
 
 examples::
 

@@ -1,19 +1,28 @@
-TITLE:: PdefnAllGui
-summary:: show all current Pdefns as code
+title:: PdefnAllGui
+summary:: shows all current Pdefns as code
 categories:: JITLib>GUI, Live Coding
 related:: Classes/Pdefn, Classes/PdefnGui
 
+
 description::
+
+
 PdefnAllGui displays all current Pdefns as code.
 See also TdefAllGui for general info, search functions, etc.
 
-CLASSMETHODS::
+
+classmethods::
+
 
 method::observedClass
+
 Pdefn
 
+
 method::tpGuiClass
+
 PdefnGui
+
 
 examples::
 

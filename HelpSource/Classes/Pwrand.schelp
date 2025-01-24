@@ -1,10 +1,14 @@
-class:: Pwrand
+title:: Pwrand
 summary:: embed values randomly chosen from a list
-related:: Classes/Prand, Classes/Pxrand
 categories:: Streams-Patterns-Events>Patterns>List
+related:: Classes/Prand, Classes/Pxrand
+
 
 description::
+
+
 returns one item from the list at random for each repeat, the probability for each item is determined by a list of weights which should sum to 1.0.
+
 
 examples::
 

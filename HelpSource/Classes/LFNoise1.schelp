@@ -1,10 +1,12 @@
-class:: LFNoise1
-summary:: Ramp noise
+title:: LFNoise1
+summary:: ramp noise
+categories:: UGens>Generators>Stochastic
 related:: Classes/LFClipNoise, Classes/LFDClipNoise, Classes/LFDNoise0, Classes/LFDNoise1, Classes/LFDNoise3, Classes/LFNoise0, Classes/LFNoise2
-categories::  UGens>Generators>Stochastic
 
 
 description::
+
+
 generates linearly interpolated random values at a rate given by the
 nearest integer division of the sample rate by the
 code::freq::  argument.
@@ -12,13 +14,18 @@ code::freq::  argument.
 
 classmethods::
 
+
 method::ar, kr
+
 argument::freq
-Approximate rate at which to generate random values.
+approximate rate at which to generate random values.
+
 argument::mul
-Output will be multiplied by this value.
+output will be multiplied by this value.
+
 argument::add
-This value will be added to the output.
+this value will be added to the output.
+
 
 examples::
 

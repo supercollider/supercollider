@@ -1,10 +1,12 @@
-class:: BiPanB2
-summary:: 2D Ambisonic B-format panner.
+title:: BiPanB2
+summary:: 2D Ambisonic B-format panner
+categories:: UGens>Multichannel>Ambisonics
 related:: Classes/DecodeB2, Classes/PanB, Classes/PanB2, Classes/Rotate2
-categories::  UGens>Multichannel>Ambisonics
 
 
 description::
+
+
 Encode a two channel signal to two dimensional ambisonic B-format. This
 puts two channels at opposite poles of a 2D ambisonic field. This is one
 way to map a stereo sound onto a soundfield. It is equivalent to:
@@ -13,19 +15,25 @@ code::
 PanB2(inA, azimuth, gain) + PanB2(inB, azimuth + 1, gain)
 ::
 
+
 classmethods::
 
+
 method::ar, kr
+
 argument::inA
-Input signal A
+input signal A
+
 argument::inB
-Input signal B.
+input signal B.
+
 argument::azimuth
-Position around the circle from -1 to +1.
+position around the circle from -1 to +1.
 
 -1 is behind, -0.5 is left, 0 is forward, +0.5 is right, +1 is behind.
+
 argument::gain
-Amplitude control.
+amplitude control.
 
 
 examples::

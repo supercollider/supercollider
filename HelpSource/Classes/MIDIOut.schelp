@@ -1,59 +1,83 @@
-class:: MIDIOut
+title:: MIDIOut
 summary:: send MIDI messages
-related:: Classes/MIDIClient, Classes/MIDIIn, Guides/MIDI, Guides/UsingMIDI
 categories:: External Control>MIDI
+related:: Classes/MIDIClient, Classes/MIDIIn, Guides/MIDI, Guides/UsingMIDI
+
 
 description::
+
+
 a MIDIOut is bound to a specific link::Classes/MIDIEndPoint:: as defined by the operating system.
 
 Linux users, or any users who require cross-platform compatibility with Linux, should read link::#Linux specific: Connecting and disconnecting ports:: carefully.
 
-ClassMethods::
 
-private::connectByUID, disconnectByUID
+classmethods::
+
+
+private:: connectByUID, disconnectByUID
+
 
 method::new
+
 creates a new MIDIOut instance. Note that this method is not safe for cross-platform usage with Linux, because the meaning of the teletype::port:: argument is different. See link::#Linux specific: Connecting and disconnecting ports:: for details.
+
 argument::port
-definitionList::
+
+definitionlist::
 ## macOS, Windows || The index of the MIDIEndPoint in the code::MIDIClient.destinations:: array.
 ## Linux || The output port number. teletype::MIDIEndPoint("SuperCollider", "out0"):: is port 0; teletype::"out1":: is port 1. In Linux, this argument has no connection at all to code::MIDIClient.destinations::.
 ::
+
 argument::uid
-definitionList::
-## macOS / Windows || uid is optional; if specified, it should be the uid of that port ie. MIDIClient.destinations[port].uid. If you don't provide a uid, the correct uid will be filled in for you (easier).
+
+definitionlist::
+## macOS, Windows || uid is optional; if specified, it should be the uid of that port ie. MIDIClient.destinations[port].uid. If you don't provide a uid, the correct uid will be filled in for you (easier).
 ## Linux || using the uid is optional as described below.
 ::
 
+
 method::newByName
+
 searches for the MIDI output device, by a name found in the code::MIDIClient.destinations:: array. This is safer then depending on the index which will change if your studio setup changes. It is also Linux compatible.
+
 code::
 // list connected out ports with names:
 MIDIClient.init;
 MIDIClient.destinations;
 ::
+
 
 method::findPort
+
 searches for a connected MIDIEndPoint by name.
+
 code::
 // list connected out ports with names:
 MIDIClient.init;
 MIDIClient.destinations;
 ::
 
-method::connect, disconnect
-Linux only. MacOS does not need to connect. On Linux it is an optional feature (see below).
 
-InstanceMethods::
+method::connect, disconnect
+
+linux only. MacOS does not need to connect. On Linux it is an optional feature (see below).
+
+
+instancemethods::
+
+
 method::sysex
+
 sends a sysex command represented as an link::Classes/Int8Array:: to the device.
 
 note::
 The method call should contain a full sysex message. In other words,
 it should start with 0xF0 (240 or -16) and end with 0xF7 (247 or -9).
 ::
+
 argument::packet
-An Int8Array of data bytes to be sent.
+an Int8Array of data bytes to be sent.
 
 code::
 m = MIDIOut(0);
@@ -63,13 +87,17 @@ m.sysex(Int8Array[0xF0, 1, 2, 3, 0xF7]);  // OK!
 m.sysex(Int8Array[1, 2, 3]);  // not OK
 ::
 
-private::send, prSysex
+private:: send, prSysex
+
 
 method::latency
-This sets the latency with which a midi event is sent out. Per default, this is set to 0.2, in order to be equal to the Server.latency.
+
+this sets the latency with which a midi event is sent out. Per default, this is set to 0.2, in order to be equal to the Server.latency.
+
 note::
 On Linux, there seems to be an ALSA or kernel bug if the latency is larger than 0, for some Linux kernels. If MIDIOut does not seem to work, set the latency to 0.
 ::
+
 
 examples::
 
@@ -117,6 +145,7 @@ See link::Tutorials/A-Practical-Guide/PG_08_Event_Types_and_Parameters#MIDI outp
 
 subsection:: Linux specific: Connecting and disconnecting ports
 
+
 In Linux, the MIDIOut architecture is different from other operating systems.
 
 In macOS and Windows, a MIDIOut instance is bound to a specific destination MIDI device.
@@ -145,7 +174,9 @@ m = MIDIOut(0);  // use virtual source port "out0"
 m.connect(1);  // connect to MIDIClient.destinations[1]
 ::
 
-WARNING:: The teletype::port:: argument to link::Classes/MIDIOut#*new:: has an entirely different meaning in Linux, compared to macOS and Windows. If user code calls this method emphasis::and:: cross-platform compatibility is needed, it is the user's responsibility to handle Linux separately. User code can check the platform using code::thisProcess.platform.name:: (which returns one of code::\osx::, code::\linux:: or code::\windows::). Or, for compatibility, use link::#*newByName:: instead.::
+warning::
+The teletype::port:: argument to link::Classes/MIDIOut#*new:: has an entirely different meaning in Linux, compared to macOS and Windows. If user code calls this method emphasis::and:: cross-platform compatibility is needed, it is the user's responsibility to handle Linux separately. User code can check the platform using code::thisProcess.platform.name:: (which returns one of code::\osx::, code::\linux:: or code::\windows::). Or, for compatibility, use link::#*newByName:: instead.
+::
 
 link::Classes/MIDIOut#*new:: optionally takes a second argument, for the uid of the MIDI destination device. If the uid is non-zero, then: 1/ all connections in the ALSA MIDI patchbay are ignored, and 2/ individual messages will be sent directly to the specified device.
 
@@ -158,6 +189,7 @@ Also, because a uid bypasses patchbay connections, it is meaningless to specify 
 ::
 
 strong::Compatibility::
+
 list::
 ## code::MIDIOut.newByName("device", "port"):: -- Should be compatible on all systems.
 ## code::MIDIOut(index):: -- macOS, Windows (teletype::index:: is the device's index in code::MIDIClient.destinations::). Note that this usage is emphasis::not:: compatible with Linux! macOS and Windows users should not expect Linux users to be able to run this style of connection.
@@ -166,6 +198,7 @@ list::
 
 
 subsection:: macOS specific: Sending MIDI to other applications
+
 
 Opens the Audio MIDI Setup application. Double-click on IAC Driver and check "device is online".
 
@@ -176,9 +209,11 @@ MIDIClient.init(numIns, numOuts)
 The IAC Bus will now appear in MIDIClient.destinations. It will appear first, which means that any code that you have written that addresses the first physical bus as 0 will now have to be changed.
 
 For this reason, it is always safer to find the port by name :
+
 code::
 MIDIOut.newByName("RemoteSL IN", "Port 1");
 ::
+
 The IAC Bus will now also appear to other applications.
 
 
@@ -189,12 +224,15 @@ http://www.snoize.com/MIDIMonitor/
 
 subsection:: Sysex example
 
+
 a machinedrum manual say sysex commands should be formatted like this...
+
 code::
 $f0,$00,$20,$3c,$02,$00,command,...,$f7
 ::
 
 and to set the tempo the machinedrum expects this command...
+
 code::
 $61 | Set tempo ID
 %0aaaaaaa | Upper bits
@@ -204,6 +242,7 @@ Note: Tempo = %aaaaaaabbbbbbb / 24, max 300 BPM, min 30 BPM
 ::
 
 so to create and send a valid set tempo sysex command from SuperCollider to this machinedrum do...
+
 code::
 MIDIClient.init;
 m = MIDIOut(0);  // Linux users: MIDIOut(0, MIDIClient.destinations[0].uid)
@@ -211,6 +250,7 @@ m.sysex(Int8Array[0xf0, 0x00, 0x20, 0x3c, 0x02, 0x00, 0x61, 21, 54, 0xf7]);
 ::
 
 This will set the tempo to 114.23 bpm. One can calculate the upper and lower 7bit values like this...
+
 code::
 (
 var bpm, val, upper, lower;
@@ -221,4 +261,5 @@ lower = val&2r00000001111111;
 [upper, lower].postln;
 )
 ::
+
 where the resulting 21 and 54 are the same as 2r0010101 and 2r0110110 in binary notation.

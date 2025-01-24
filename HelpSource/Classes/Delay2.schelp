@@ -1,27 +1,35 @@
-class:: Delay2
-summary:: Two sample delay.
+title:: Delay2
+summary:: two sample delay
+categories:: UGens>Delays
 related:: Classes/Delay1, Classes/TDelay
-categories::  UGens>Delays
 
 
 description::
+
+
 Delays the input by two samples.
 
 
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-The input signal.
+the input signal.
+
 argument::mul
-The output will be multiplied by this value.
+the output will be multiplied by this value.
+
 argument::add
-This value will be added to the output.
+this value will be added to the output.
+
 argument::x1
-The sample directly preceding the delayed input signal, which is the second output sample.
+the sample directly preceding the delayed input signal, which is the second output sample.
 This can be a numeric value or a code::UGen::.
+
 argument::x2
-The sample preceding the delayed input signal by two samples, which is the first output sample.
+the sample preceding the delayed input signal by two samples, which is the first output sample.
 This can be a numeric value or a code::UGen::.
 
 note::
@@ -31,6 +39,7 @@ At control rate, the default values are set to the first sample of strong::in::,
 
 discussion::
 The output sequence is:
+
 teletype::
 out[0] = in[-2] = x2
 out[1] = in[-1] = x1

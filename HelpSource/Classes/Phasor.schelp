@@ -1,14 +1,15 @@
-class:: Phasor
-summary:: A resettable linear ramp between two levels.
-categories::  UGens>Triggers, UGens>Buffer
+title:: Phasor
+summary:: a resettable linear ramp between two levels
+categories:: UGens>Triggers, UGens>Buffer
 
 
 description::
+
+
 Phasor is a linear ramp between start and end values. When its trigger
 input crosses from non-positive to positive, Phasor's output will jump to
 its reset position. Upon reaching the end of its ramp Phasor will wrap
 back to its start.
-
 
 note::
 N.B. Since end is defined as the wrap point, its value is never
@@ -24,19 +25,25 @@ Phasor is commonly used as an index control with link::Classes/BufRd:: and link:
 
 classmethods::
 
+
 method::ar, kr
+
 argument::trig
-When triggered, jump to resetPos (default: 0, equivalent to
+when triggered, jump to resetPos (default: 0, equivalent to
 start).
+
 argument::rate
-The amount of change per sample, i.e at a rate of 1 the value of
+the amount of change per sample, i.e at a rate of 1 the value of
 each sample will be 1 greater than the preceding sample.
+
 argument::start
-Start point of the ramp.
+start point of the ramp.
+
 argument::end
-End point of the ramp.
+end point of the ramp.
+
 argument::resetPos
-The value to jump to upon receiving a trigger.
+the value to jump to upon receiving a trigger.
 
 
 examples::

@@ -1,9 +1,12 @@
-class:: FBSineC
-summary:: Feedback sine with chaotic phase indexing
+title:: FBSineC
+summary:: feedback sine with chaotic phase indexing
 categories:: UGens>Generators>Chaotic
 related:: Classes/FBSineN, Classes/FBSineL
 
+
 description::
+
+
 A cubic-interpolating sound generator based on the difference equations:
 
 teletype::
@@ -22,24 +25,36 @@ plot(size.collect { xi = sin((im * yi) + (fb * xi)); yi = (a * yi + c) % 2pi; xi
 )
 ::
 
+
 classmethods::
+
+
 method::ar
+
 argument::freq
-Iteration frequency in Hertz
+iteration frequency in Hertz
+
 argument::im
-Index multiplier amount
+index multiplier amount
+
 argument::fb
-Feedback amount
+feedback amount
+
 argument::a
-Phase multiplier amount
+phase multiplier amount
+
 argument::c
-Phase increment amount
+phase increment amount
+
 argument::xi
-Initial value of x
+initial value of x
+
 argument::yi
-Initial value of y
+initial value of y
+
 
 examples::
+
 code::
 // default initial params
 { FBSineC.ar(SampleRate.ir/4) * 0.2 }.play(s);

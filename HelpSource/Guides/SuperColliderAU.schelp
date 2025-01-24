@@ -7,10 +7,12 @@ SuperColliderAU is an AudioUnit wrapper that allows using SuperCollider servers 
 
 section:: Installing
 
+
 Copy the bundle "SuperColliderAU.component" into /Library/Audio/Plug-ins/Components or in ~/Library/Audio/Plug-ins/Components
 
 
 section:: Quick Start
+
 
 Start up an Audio Units host application. Common hosts include Apple Logic and Ableton Live. A list of supported hosts can be found in this page of the SuperCollider swiki (feel free to update it):
 
@@ -19,6 +21,7 @@ http://swiki.hfbk-hamburg.de:8888/MusicTechnology/823
 Find SuperColliderAU among the rest of AudioUnit plugins and add an instance to a track (check the manual of your host if you don't know how to do this). A panel will appear telling you which port the server is listening to for OSC messages.
 
 Now you can run this code from within the SuperCollider language to talk directly with the embedded server:
+
 code::
 u = Server(\scau, NetAddr("127.0.0.1", 9989)); // Change the port from 9989 to the right one for you
 u.serverRunning = true;
@@ -30,10 +33,13 @@ z = { SoundIn.ar([0,1]) * SinOsc.ar(MouseX.kr(100, 1000)) }.play(u);
 
 section:: Inside the bundle
 
+
 As an AudioUnit plugin, SuperColliderAU is packaged in a component bundle. All the files needed by SuperColliderAU can be found in the Resources folder inside the bundle:
 
 
 subsection:: serverConfig.plist
+
+
 Stores configuration parameters for the server (see link::Classes/ServerOptions::)
 
 list::
@@ -47,17 +53,24 @@ list::
 
 
 subsection:: pluginSpec.plist
+
+
 Stores parameter configuration for standalone plugins. SuperColliderAU will use this to display and set the parameters of your synth definition. Note that the default values must be the same for the synth definition, they will not be set by the wrapper. The value in this file is only for display.
 
 
 subsection:: synthdefs
+
+
 For standalone plugins you should have your synth definition here. When controlling the server remotely you can just send the synth definitions.
 
 
 subsection:: plugins
+
+
 Here you need all the SC plugins you intend to use with that server.
 
 
 section:: Making standalone plugins
+
 
 Besides controlling SuperColliderAU from within the language, you can create AudioUnits plugins that are controlled from the host using the default GUI. This can be done manually by duplicating SupercolliderAU.component, adding a synthdef and associated SC plugins and editing pluginSpec.plist. However, if you want an AudioUnit with a unique identifier (the identifier is what you see from within the host GUI) you have to recompile its resource file (with the new identifier) using Rez. This program is included in Apple's Developer Tools. A helper class that automates all this process is maintained in the AudioUnitBuilder quark. Using the class AudioUnitBuilder you can create standalone AudioUnit plugins without leaving SuperCollider.

@@ -1,8 +1,11 @@
-class::Nil
-categories::Core
-summary:: Represents uninitialized data
+title:: Nil
+summary:: represents uninitialized data
+categories:: Core
+
 
 description::
+
+
 Nil has a single instance named code::nil:: and is used to represent uninitialized data,
 bad values, or terminal values such as end-of-stream.
 
@@ -15,73 +18,104 @@ Nil.isNil; // false
 Nil == nil; // false
 Nil === nil; // false
 ::
+
 ::
+
 
 instancemethods::
 
-private::do, reverseDo, pairsDo, collect, select, reject, detect, collectAs, selectAs, rejectAs, pop, source, source_, changed, 	addDependant, removeDependant, release, update, swapThisGroup, performMsg, remove, seconds_, throw, superclassesDo, !?, play, printOn, storeOn, archiveAsCompileString, set, addDependant
+
+private:: do, reverseDo, pairsDo, collect, select, reject, detect, collectAs, selectAs, rejectAs, pop, source, source_, changed, 	addDependant, removeDependant, release, update, swapThisGroup, performMsg, remove, seconds_, throw, superclassesDo, !?, play, printOn, storeOn, archiveAsCompileString, set, addDependant
 
 
 method::isNil
+
 returns code::true:: because this is code::nil::. In class link::Classes/Object:: this message is defined to answer code::false::.
+
 code::
 [1, 2, nil, 3].collect(_.isNil);
 ::
 
+
 method::notNil
+
 returns code::false::. In class link::Classes/Object:: this message answers code::true::.
+
 code::
 [1, 2, nil, 3].collect(_.notNil);
 ::
 
+
 method::?
+
 returns first code::non-nil:: argument. Since this IS code::nil:: then returns anObject.
 In class link::Classes/Object::, ? is defined to answer the receiver.
+
 code::
 [1, 2, nil, 3].collect { |x| x ? -1 }; // replace nil by -1
 ::
 
+
 method::??
-If the receiver is code::nil::, evaluates the function and returns the result.  Since this IS code::nil::, then evaluates the function and returns the result. In class link::Classes/Object::, code::??:: is defined to answer the receiver.
+
+if the receiver is code::nil::, evaluates the function and returns the result.  Since this IS code::nil::, then evaluates the function and returns the result. In class link::Classes/Object::, code::??:: is defined to answer the receiver.
 
 code::
 [nil, 2, nil, 3].collect { |x| x ?? { 100.rand } }; // replace nil by a random number
 ::
 
+
 method::booleanValue
+
 returns code::false::.
+
 code::
 [1, 2, nil, 3].collect(_.booleanValue);
 // compare:
 [true, false, false, true].collect(_.binaryValue);
 ::
 
+
 method::rate
+
 returns code::nil::.
+
 
 method::numChannels
+
 returns code::nil::.
+
 
 method::isPlaying
+
 returns code::false::.
 
+
 method::dependants
+
 returns an empty IdentitySet.
 
+
 method::awake
+
 returns code::nil::.
 
+
 method::nextTimeOnGrid
+
 returns clock.nextTimeOnGrid.
 
+
 method::asQuant
+
 returns Quant.default.
 
+
 method::matchItem
+
 returns code::true::.
 
 See also link::Reference/matchItem::.
-
 
 code::
 [3, 2, 1].select(nil.matchItem(_))); // returns all
@@ -91,26 +125,37 @@ code::
 
 
 method::asCollection
+
 returns empty array.
 
+
 method::get
+
 returns prevVal.
 
 
 method::asSpec
+
 returns the default ControlSpec
 
+
 method::handleError
-Either report error or inspect error and halt execution.
+
+either report error or inspect error and halt execution.
+
 
 method::push
-Executes function.
+
+executes function.
+
 
 method::appendStream
+
 returns stream.
 
 
 subsection:: Dependancy
+
 
 All the messages for the Dependancy protocol (See class link::Classes/Object::) are defined in class Nil
 to do nothing. This eliminates the need to check for code::nil:: when sending dependancy messages.
@@ -118,31 +163,42 @@ to do nothing. This eliminates the need to check for code::nil:: when sending de
 
 subsection:: Other Methods
 
+
 Many other messages are defined in class Nil to do nothing. This eliminates the need to check for code::nil::.
 
 
 subsection:: Generic Collectors
 
+
 There are a number of methods that can be applied to code::nil:: so that variables do not need to be initialized. Nil is just the "ground" (default case) from which the rest is bootstrapped.
 
+
 method::add
+
 returns an array with the value. This makes it unnecessary to initialize when adding to a variable.
+
 code::
 x = nil;
 x = x.add(8);  // returns an array
 x = x.add(7); // appends to the array
 ::
 
+
 method::addAll
+
 returns an array with all the values. This makes it unnecessary to initialize when adding to a variable.
+
 code::
 x = nil;
 x = x.addAll([0, 2, 1, 2]);  // returns an array
 x = x.addAll(7); // single objects are converted
 ::
 
+
 method::remove
-For code::nil::, it just returns code::nil::. This makes it unnecessary to initialize when removing from a variable and adding to it again.
+
+for code::nil::, it just returns code::nil::. This makes it unnecessary to initialize when removing from a variable and adding to it again.
+
 code::
 x = nil;
 x.remove(1); // stays nil, returns nil
@@ -151,17 +207,23 @@ x.remove(1); // returns 1
 x;
 ::
 
+
 method::++
+
 returns an array with all the values. This makes it unnecessary to initialize when adding to a variable.
+
 code::
 x = nil;
 x = x ++ [7, 8, 9]; // returns the receiver
 x = x ++ [3, 0, 1, 2]; // adds to the array
 ::
 
+
 method::addFunc
+
 returns a function or a FunctionList.
 This method is used to add multiple functions to already existing ones.
+
 code::
 f = nil;
 f = f.addFunc { "----------****".scramble };
@@ -169,8 +231,10 @@ f = f.addFunc { 1.0.rand };
 f.value;
 ::
 
+
 method::removeFunc
-This method is used to remove multiple functions from already existing ones. For Nil, it just returns itself.
+
+this method is used to remove multiple functions from already existing ones. For Nil, it just returns itself.
 
 code::
 f = { 1.0.rand };
@@ -183,7 +247,8 @@ f.value;
 
 
 method::transformEvent
-This method is used to operate on events which are passed through the system as an argument.
+
+this method is used to operate on events which are passed through the system as an argument.
 
 code::
 // for Nil: returns the argument unmodified (an event).

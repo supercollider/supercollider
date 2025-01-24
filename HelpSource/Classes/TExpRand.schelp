@@ -1,26 +1,32 @@
-class:: TExpRand
-summary:: Triggered exponential random number generator.
-related:: Classes/ExpRand, Classes/IRand, Classes/LinRand, Classes/NRand, Classes/Rand, Classes/TIRand, Classes/TRand
+title:: TExpRand
+summary:: triggered exponential random number generator
 categories:: UGens>Random, UGens>Triggers
+related:: Classes/ExpRand, Classes/IRand, Classes/LinRand, Classes/NRand, Classes/Rand, Classes/TIRand, Classes/TRand
 
 
 description::
+
+
 generates a random float value in exponential distribution from
 code::lo::  to  code::hi::  each time the
 trigger signal changes from nonpositive to positive values
-code::lo::  and  code::hi::  must both have
+code::lo:: and code::hi::  must both have
 the same sign and be non-zero.
 
 
 classmethods::
 
+
 method::ar, kr
+
 argument::lo
-Lower limit of the output range.
+lower limit of the output range.
+
 argument::hi
-Upper limit of the output range.
+upper limit of the output range.
+
 argument::trig
-The trigger. Trigger can be any signal. A trigger happens when
+the trigger. Trigger can be any signal. A trigger happens when
 the signal changes from non-positive to positive.
 
 

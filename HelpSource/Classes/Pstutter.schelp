@@ -1,12 +1,20 @@
-class:: Pstutter
-summary:: repeat input stream values
-related:: Classes/Pdup, Classes/Pn, Classes/Pattern#-dup
+title:: Pstutter
+summary:: repeats input stream values
 categories:: Streams-Patterns-Events>Patterns>Repetition
+related:: Classes/Pdup, Classes/Pn, Classes/Pattern#-dup
 
-note::It is recommended to use link::Classes/Pdup:: instead. This class is retained for backwards compatibility.::
-warning::Pstutter will return link::Classes/Pdup::::
+note::
+It is recommended to use link::Classes/Pdup:: instead. This class is retained for backwards compatibility.
+::
+
+warning::
+Pstutter will return link::Classes/Pdup::.
+::
+
 
 description::
+
+
 repeat each element n times.
 
 code::
@@ -21,17 +29,23 @@ x = a.asStream;
 This is also a response to link::Classes/Pattern#-dup::
 
 
-ClassMethods::
+classmethods::
+
 
 method::new
+
 argument::n
-The number of repeats for each new element. n may be a pattern, so the number of times can vary each iteration.
+the number of repeats for each new element. n may be a pattern, so the number of times can vary each iteration.
+
 argument::pattern
 the pattern to repeat.
-returns:: link::Classes/Pdup::
+
+returns::
+
+link::Classes/Pdup::
+
 
 examples::
-
 
 code::
 // the first argument can be a pattern, too:

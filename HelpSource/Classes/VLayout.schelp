@@ -1,12 +1,17 @@
-CLASS:: VLayout
-summary:: A layout that distributes views in a vertical line
+title:: VLayout
+summary:: a layout that distributes views in a vertical line
 categories:: GUI>Layout
 related:: Classes/LineLayout, Classes/HLayout, Classes/GridLayout, Classes/StackLayout, Guides/GUI-Layout-Management
 
+
 description::
+
+
 See documentation of superclass link::Classes/LineLayout:: for details.
 
+
 examples::
+
 code::
 
 // simple example
@@ -59,7 +64,9 @@ w.layout = HLayout(VLayout(*a));
 
 ::
 
-CLASSMETHODS::
 
-PRIVATE:: key
-PRIVATE:: layoutClass
+classmethods::
+
+
+private:: key
+private:: layoutClass

@@ -1,13 +1,17 @@
-class:: Stream
-summary:: Stream is the base class for classes that define streams
-related:: Classes/Routine, Classes/FuncStream, Classes/EventStreamPlayer
+title:: Stream
+summary:: the base class for classes that define streams
 categories:: Streams-Patterns-Events
+related:: Classes/Routine, Classes/FuncStream, Classes/EventStreamPlayer
+
 
 description::
+
+
 Stream is an abstract class that is not used directly. The following attempts to document some aspects of the use of Streams for music generation.
 
 
 subsection:: Overview
+
 
 A Stream represents a sequence of values that are obtained incrementally by repeated strong::next:: messages. A Stream can be restarted with a strong::reset:: message. (Not all streams actually implement reset semantics.)
 
@@ -17,6 +21,7 @@ In SuperCollider, Streams are primarily used for handling text and for generatin
 
 
 subsection:: FuncStream(nextFunction, resetFunction)
+
 
 A link::Classes/Function:: defines a stream consisting of the Function itself, a link::Classes/FuncStream:: defines a stream that consists of emphasis::evaluations:: of its nextFunction.
 
@@ -43,6 +48,7 @@ code::
 
 
 subsection:: Routine(nextFunction, stacksize)
+
 
 In a link::Classes/FuncStream::, the nextFunction runs through to completion for each element of the stream. In a link::Classes/Routine::, the nextFunction returns values with strong::yield:: and resumes execution (when it receives a strong::next:: message) at the expression following the yield. This allows a sequence of expressions in the function definition to represent a sequence of distinct events, like a musical score.
 
@@ -74,6 +80,7 @@ code::
 
 
 subsection:: Playing streams
+
 
 Because streams respond like functions to the value message, they can be used as a scheduling task.
 
@@ -134,12 +141,14 @@ Routine({ loop {
 
 subsection:: Iteration
 
+
 The method link::#-do:: effectively 'plays' a stream by iterating all of its contents.
 
 And the following messages create a stream by filtering another stream in some way: link::#-collect::, link::#-reject::, link::#-select::, link::#-dot::, link::#-interlace::, link::#-appendStream::, link::#-embedInStream::, link::#-trace::.
 
 
 subsection:: Composite Streams
+
 
 Routines can be strong::embedded:: in each other, using link::#-embedInStream:: :
 
@@ -207,6 +216,7 @@ Composite Streams can be defined as combinations of Streams using the unary and 
 
 subsection:: Unary messages
 
+
 Streams support most of the unary messages defined in link::Classes/AbstractFunction:: :
 
 code::
@@ -237,6 +247,7 @@ nil;
 
 subsection:: Binary messages
 
+
 Streams support the following binary messages defined in link::Classes/AbstractFunction:: :
 
 code::
@@ -259,47 +270,74 @@ nil;
 )
 ::
 
-InstanceMethods::
+
+instancemethods::
+
 
 method::play
-Streams that return strong::numbers:: can be played directly with the strong::play:: message. Streams that return strong::events:: need to be wrapped in an link::Classes/EventStreamPlayer::. See link::#-asEventStreamPlayer::.
+
+streams that return strong::numbers:: can be played directly with the strong::play:: message. Streams that return strong::events:: need to be wrapped in an link::Classes/EventStreamPlayer::. See link::#-asEventStreamPlayer::.
+
 argument::clock
 a clock. link::Classes/TempoClock:: by default.
+
 argument::quant
 either a number strong::n:: (quantize to strong::n:: beats), or an array strong::[n, m]:: (quantize to n beats, with offset m).
 
+
 method::do
+
 iterates until a code::nil:: is encountered.
+
 warning::
 Applying do to an endless stream will lock up the interpreter!
 ::
 
+
 method::collect
+
 iterates indefinitely.
 
+
 method::reject
+
 returns only those elements for which function.value(element) is code::false::.
 
+
 method::select
+
 returns only those elements for which function.value(element) is code::true::.
 
+
 method::dot
+
 returns function.value(this.next, stream.next) for each element.
 
+
 method::interlace
+
 iterates all of stream for each element of this. Combines the values using function.
 
+
 method::appendStream
+
 appends stream after this returns code::nil::. The same like ++
 
+
 method::embedInStream
+
 iterates all of this from within whatever Stream definition it is called.
 
+
 method::trace
+
 prints out the results of a stream while returning the original values.
+
 argument::key
 when streaming events, post only this key.
+
 argument::printStream
-printOn this stream (default: link::Classes/Post::).
+code::printOn:: this stream (default: link::Classes/Post::).
+
 argument::prefix
 string added to the printout to separate different streams.

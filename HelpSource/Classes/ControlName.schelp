@@ -1,42 +1,74 @@
-class:: ControlName
+title:: ControlName
 summary:: Object to store control information of SynthDef (used internally)
-related:: Classes/SynthDesc, Classes/SynthDef
 categories:: UGens>Synth control
+related:: Classes/SynthDesc, Classes/SynthDef
+
 
 description::
+
+
 For an explicit creation of control names see: link::Classes/NamedControl::, link::Classes/Control::
 
+
 examples::
+
 code::
 a = SynthDescLib.global; // the global library of SynthDescs
 x = a.synthDescs.at(\default); // get the default SynthDesc
 x.controls.do { |ctl| [\name, ctl.name, \defaultValue, ctl.defaultValue].postln }; "";
 ::
 
+
 instancemethods::
+
+
 private:: printOn
 
+
 method::name
-The name of the control.
-returns:: a link::Classes/Symbol::
+
+the name of the control.
+
+returns::
+
+a link::Classes/Symbol::
+
 
 method::index
-The index of the control.
-returns:: an link::Classes/Integer::
+
+the index of the control.
+
+returns::
+
+an link::Classes/Integer::
+
 
 method::rate
-The rate of the control.
-returns:: a link::Classes/Symbol:: like code::'audio':: or code::'control'::
+
+the rate of the control.
+
+returns::
+
+a link::Classes/Symbol:: like code::'audio':: or code::'control'::
+
 
 method::defaultValue
-Default value of this control. Will be an link::Classes/Array:: for multichannel controls.
+
+default value of this control. Will be an link::Classes/Array:: for multichannel controls.
+
 
 method::numChannels
-The number of channels.
-returns:: an link::Classes/Integer::
+
+the number of channels.
+
+returns::
+
+an link::Classes/Integer::
+
 
 method::spec
-The link::Classes/ControlSpec:: for this control. If set, it will be added to the specs metadata for the current SynthDef.at
+
+the link::Classes/ControlSpec:: for this control. If set, it will be added to the specs metadata for the current SynthDef.at
 
 code::
 (

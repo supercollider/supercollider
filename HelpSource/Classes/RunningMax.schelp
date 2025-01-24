@@ -1,21 +1,26 @@
-class:: RunningMax
-summary:: Track maximum level.
+title:: RunningMax
+summary:: tracks maximum level
+categories:: UGens>Maths
 related:: Classes/RunningMin, Classes/RunningSum
-categories::  UGens>Maths
 
 
 description::
+
+
 Outputs the maximum value received at the input. When a trigger occurs at
 the reset input, the maximum output value is reset to the current value.
 
 
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-The input signal.
+the input signal.
+
 argument::trig
-Resets the output value to the current input value. A trigger happens when the signal changes from non-positive to positive.
+resets the output value to the current input value. A trigger happens when the signal changes from non-positive to positive.
 
 
 examples::

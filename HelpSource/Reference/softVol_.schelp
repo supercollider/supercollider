@@ -1,26 +1,38 @@
 title:: softVol_
-summary:: set a nodeproxy's vol conditionally
+summary:: sets a nodeproxy's vol conditionally
 categories:: JITLib>GUI
 related:: Reference/softSet, Reference/softPut
 
+
 description::
+
+
 Extension method to link::Classes/NodeProxy:: to set vol conditionally.
 
+
 method::softVol
+
 setter.
+
 argument::val
 the volume value to set to
+
 argument::within
 the normalized range within which the set is accepted
+
 argument::pause
 a flag whether to pause the nodeproxy when volume is 0.
 waits for 0.2 seconds for volume to go down first.
+
 argument::lastVal
 the previous value that the controller has set - can be
+
 argument::spec
 a link::Classes/ControlSpec:: can be passed in. if code::nil::, code::\amp.asSpec:: is used.
 
+
 examples::
+
 code::
 Ndef(\test, { |freq=200| Splay.ar(SinOsc.ar(freq * Array.rand(12, 0.95, 1.05))) });
 Ndef(\test).play(vol: 0.1);

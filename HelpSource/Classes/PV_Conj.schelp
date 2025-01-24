@@ -1,16 +1,25 @@
-class:: PV_Conj
-summary:: Complex conjugate
+title:: PV_Conj
+summary:: complex conjugate
 categories:: UGens>FFT
 
+
 description::
+
+
 Converts the FFT frames to their complex conjugate (i.e. reverses the sign of their imaginary part). This is not usually a useful audio effect in itself, but may be a component of other analysis or transformation processes...
 
+
 classmethods::
+
+
 method::new
+
 argument::buffer
 FFT chain.
 
+
 examples::
+
 code::
 s.boot;
 

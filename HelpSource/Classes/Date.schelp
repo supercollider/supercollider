@@ -1,11 +1,13 @@
-class:: Date
+title:: Date
 summary:: an object describing a point in time
 categories:: Control
 
 
-ClassMethods::
+classmethods::
+
 
 method::new
+
 creates a new Date with the given properties (all are Integer values, except teletype::rawSeconds::, which is a Float). These arguments are also the names of instance variables of the Date object.
 
 The constructor initializes the instance in one of the following ways (in order of priority):
@@ -37,6 +39,7 @@ Date(2016); // -> Fri Jan  1 00:00:00 2016
 d = Date(2010, day: 15, minute: 30); // -> Fri Jan 15 00:30:00 2010
 [d.asString, d.dayOfWeek, d.rawSeconds]; // dayOfWeek and rawSeconds were computed
 ::
+
 ::
 
 It is possible to specify dates with "out of range" values that will be resolved into a valid range -- this allows simple date offset calculations to be performed (see example below).
@@ -51,16 +54,20 @@ Date(2017, 2, 29).postln; // March 1: 2017 was not a leap year!
 )
 ::
 
-note::The teletype::dayOfWeek:: argument is strong::always calculated::.  If it is specified, the value will be overwritten (it only remains a constructor argument for reasons of backward compatibility).
+note::
+The teletype::dayOfWeek:: argument is strong::always calculated::.  If it is specified, the value will be overwritten (it only remains a constructor argument for reasons of backward compatibility).
 
 code::
 // There is no point (but no harm) in specifying the dayOfWeek argument,
 // as it will always be calculated:
 Date(2017, 10, 31, dayOfWeek: 0).dayOfWeek; // calculated to be 2 (Tuesday), not 0 (Sunday)
 ::
+
 ::
 
+
 method::fromString
+
 creates a new Date object from a date/time string, which is parsed according to the provided format string.
 
 code::
@@ -74,15 +81,20 @@ var d = Date.fromString(stampString, "%y%m%d_%H%M%S");
 (stampString + "-->" + d).postln;
 )
 ::
+
 argument::string
-The date/time string to parse, for example teletype::"2017-10-25 13:25:55"::.
+the date/time string to parse, for example teletype::"2017-10-25 13:25:55"::.
+
 argument::format
-The format to use to parse the date string. Note that the supported input formats are slightly different from those of the link::#-format:: (output) method. In particular, some of the "combined" formats (such as teletype::%F:: or teletype::%T::) are not supported for input, you must expand them out (teletype::"%F":: -> teletype::"%Y-%m-%d":: and teletype::"%T":: -> teletype::"%H:%M:%S"::).  The full list of supported input format flags may be found link::http://www.boost.org/doc/libs/1_63_0/doc/html/date_time/date_time_io.html##here::.
+the format to use to parse the date string. Note that the supported input formats are slightly different from those of the link::#-format:: (output) method. In particular, some of the "combined" formats (such as teletype::%F:: or teletype::%T::) are not supported for input, you must expand them out (teletype::"%F":: -> teletype::"%Y-%m-%d":: and teletype::"%T":: -> teletype::"%H:%M:%S"::).  The full list of supported input format flags may be found link::http://www.boost.org/doc/libs/1_63_0/doc/html/date_time/date_time_io.html##here::.
 
 To parse the above example string, you would use teletype::"%Y-%m-%d %H:%M:%S"::.
 
+
 method::getDate
+
 gets current date from system and creates a date object from it.
+
 code::
 (
 var a = Date.getDate;
@@ -92,14 +104,21 @@ a
 )
 ::
 
+
 method::localtime
+
 gets current localized time from system and creates a date object from it.
 
+
 method::gmtime
+
 gets current strong::Greenwich Mean Time (GMT):: from system and creates a date object from it.
 
+
 method::seed
+
 gets current date and returns a value suitable for seeding a random number generator. See also link::Reference/randomSeed##randomSeed::.
+
 code::
 (
 var a = Date.seed;
@@ -110,9 +129,12 @@ thisThread.randSeed = a;
 )
 ::
 
-InstanceMethods::
+
+instancemethods::
+
 
 method::rawSeconds
+
 gets/sets the receiver's raw time in seconds (relative to the "epoch" of January 1, 1970).
 
 If you modify this property, the other properties will not update. See note at link::#-resolve:: -- there is no "resolveFromRawSeconds" method, but you can generate a new self-consistent Date instance by passing the teletype::rawSeconds:: as an argument to link::#*new::.
@@ -128,35 +150,55 @@ var loadedDate = Date.fromString(savedDateStr, "%Y%m%d_%H%M%S").postln;
 )
 ::
 
+
 method::localtime
+
 sets the receiver's time to current localtime.
 
+
 method::gmtime
+
 sets the receiver's time to current strong::Greenwich Mean Time (GMT)::.
 
+
 method::dayStamp
-Obtain a string with the year, month and day in the format strong::YYMMDD::.
+
+obtains a string with the year, month and day in the format strong::YYMMDD::.
+
 
 method::hourStamp
-Obtain a string in the format strong::H:M:S::.
+
+obtains a string in the format strong::H:M:S::.
+
 
 method::secStamp
-Obtain a string with the seconds.
+
+obtains a string with the seconds.
+
 
 method::stamp
-Obtain a string in the format strong::YYMMDD_HHMMSS::.
+
+obtains a string in the format strong::YYMMDD_HHMMSS::.
+
 
 method::asSortableString
-Obtain a string in an alphabetically sortable standard database format.
+
+obtains a string in an alphabetically sortable standard database format.
+
 
 method::asctime
-Obtain a string in the format WeekdayName MonthName Time Year.
+
+obtains a string in the format WeekdayName MonthName Time Year.
+
 
 method::asString
+
 returns asctime.
 
+
 method::resolve
-Resolve any inconsistencies in the Date object, updating all the fields (in particular teletype::dayOfWeek:: and teletype::rawSeconds::) as necessary.
+
+resolves any inconsistencies in the Date object, updating all the fields (in particular teletype::dayOfWeek:: and teletype::rawSeconds::) as necessary.
 
 If the instance properties (teletype::year::, teletype::month::, teletype::day::, teletype::hour::, teletype::minute::, teletype::second::) are modified, the Date will be in an inconsistent state -- its teletype::rawSeconds:: won't reflect the modifications, and the properties may fall outside of "normal" ranges (teletype::month: 1-12, day:1-31, hour: 0-23, minute/second: 0-59::).  Also, using the string conversion methods may give strange results. Calling the teletype::resolve:: method will put things back into a consistent state.
 
@@ -192,10 +234,14 @@ d.rawSeconds; // -> 947594800
 d = Date(rawSeconds: d.rawSeconds);
 // -> Tue Jan 11 13:46:40 2000
 ::
+
 ::
 
+
 method::format
-Obtain a date string with a given format. The character % is replaced by the appropriate value, which is derived from the letter that follows.
+
+obtains a date string with a given format. The character % is replaced by the appropriate value, which is derived from the letter that follows.
+
 code::
 Date.getDate.format("Today is %A. It is around %I o'clock (%p), in %B.");
 Date.getDate.format("%d/%m/%Y %H:%M");  // DD/MM/YYYY hh:mm
@@ -205,8 +251,7 @@ discussion::
 
 A list of formats can be found here: http://www.opengroup.org/onlinepubs/009695399/functions/strftime.html
 
-
-definitionList::
+definitionlist::
 
 ## %a
 || Replaced by the locale's abbreviated weekday name. [ tm_wday]
@@ -322,11 +367,20 @@ definitionList::
 
 If a conversion specification does not correspond to any of the above, the behavior is undefined.
 
+
 method::<
+
+
 method::<=
+
+
 method::>
+
+
 method::>=
-Compare two Dates based on their rawSeconds.
+
+compares two Dates based on their rawSeconds.
+
 code::
 Date(1999, 12, 31, 23, 59, 59) < Date(2000, 1, 1, 0, 0, 0);
 Date(1999, 12, 31, 23, 59, 59) <= Date(2000, 1, 1, 0, 0, -1);
@@ -334,9 +388,14 @@ Date(2005, 1, 1) > Date(2004, 1, 2);
 Date(2005, 2, 13) >= Date(2005, 2, 13);
 ::
 
+
 method::==
+
+
 method::!=
+
 tests whether two Dates are equal/unequal, based on their rawSeconds.
+
 code::
 Date(2016, 11, 4) == Date(2016, 10, 4 + 31);
 Date(2016) != Date(2017);

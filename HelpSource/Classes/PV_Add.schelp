@@ -1,9 +1,12 @@
-class:: PV_Add
-summary:: Complex addition.
-related:: Classes/FFT, Classes/IFFT, Classes/PV_CopyPhase, Classes/PV_MagMul, Classes/PV_Max, Classes/PV_Min, Classes/PV_Mul
+title:: PV_Add
+summary:: complex addition
 categories:: UGens>FFT
+related:: Classes/FFT, Classes/IFFT, Classes/PV_CopyPhase, Classes/PV_MagMul, Classes/PV_Max, Classes/PV_Min, Classes/PV_Mul
+
 
 description::
+
+
 Complex addition:
 
 code::
@@ -15,11 +18,15 @@ RealA + RealB, ImagA + ImagB
 
 classmethods::
 
+
 method::new
+
 argument::bufferA
 FFT buffer A.
+
 argument::bufferB
 FFT buffer B.
+
 
 examples::
 

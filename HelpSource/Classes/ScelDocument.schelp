@@ -1,8 +1,11 @@
-TITLE:: ScelDocument
-summary:: Document subclass for scel editor
+title:: ScelDocument
+summary:: document subclass for scel editor
 categories:: IDE
 related:: Classes/Document
 
+
 description::
+
+
 Is this already implemented?
 Please fill in details...

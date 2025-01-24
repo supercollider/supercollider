@@ -1,11 +1,12 @@
 title:: Bundled Server Messages
-summary:: Sending OSC message bundles
+summary:: sending OSC message bundles
 categories:: External Control>OSC, Server>Architecture
 related:: Guides/ServerTiming
 
 When using the Synth/Node/Group sclang objects there is often a need to construct bundles to send messages together. For example when you want to start a synth that should be mapped instantly to certain buses, or need to ensure that two synths start with precise synchronisation.
 
 The simplest way to deal with this is through Server's automated bundling support. This allows you to open a bundle into which all osc messages will be collected until it is sent. See Server for details of makeBundle's arguments.
+
 code::
 s.boot;
 (
@@ -42,6 +43,7 @@ x.free; y.free;
 ::
 
 To send a bundle with the default latency of the server, use the message bind:
+
 code::
 (
 s.bind {
@@ -59,6 +61,7 @@ a.free; x.free;
 ::
 
 In addition to this there are a number of methods which return OSC messages which can be added to a bundle. These are detailed in the helpfiles for link::Classes/Node::, link::Classes/Synth::, and link::Classes/Group::.
+
 code::
 s.boot;
 b = List.new;

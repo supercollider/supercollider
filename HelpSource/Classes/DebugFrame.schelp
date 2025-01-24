@@ -1,8 +1,11 @@
-class:: DebugFrame
-summary:: A representation of the call frame
-categories::  Core
+title:: DebugFrame
+summary:: a representation of the call frame
+categories:: Core
+
 
 description::
+
+
 A representation of the call frame.
 Can be used to reconstruct a backtrace by using link::#-caller::.
 
@@ -11,16 +14,22 @@ While this is often not useful due to function inlining,
 it is useful when called on an link::Classes/Exception::,
 see the implementation of link::Classes/Exception#-reportError:: where a call to link::Classes/Object#-dumpBackTrace:: can be replaced by a call to link::Classes/Object#-getBackTrace:: and a call stack constructed manually.
 
-Instancemethods::
+
+instancemethods::
+
 
 method::functionDef
+
 returns a link::Classes/FunctionDef:: or a link::Classes/method::of the current function or method.
 
+
 method::caller
+
 returns another link::Classes/DebugFrame:: for the function that called this function.
 
 discussion::
 Can be used to make a back trace, but watch out for function inlining.
+
 code::
 (
 var debugFrame = { 1.0.getBackTrace }.();
@@ -40,12 +49,14 @@ while{ debugFrame.isNil.not }{
 )
 ::
 
+
 method::args
+
 returns an link::Classes/Array:: of the argument's values, if there are no arguments, returns a link::Classes/Nil::.
 This does not contain the argument names, which must be accessed through the link::#-functionDef::.
 
-
 discussion::
+
 code::
 { thisFunction.getBackTrace }.().args == nil;
 { |a, b, c| thisFunction.getBackTrace }.().args == [nil, nil, nil];
@@ -53,17 +64,25 @@ code::
 { |a, b, c = 1| thisFunction.getBackTrace }.(2, 3, c: 4).args == [2, 3, 4];
 ::
 
+
 method::vars
-Same as link::#-args:: but for the variables.
+
+same as link::#-args:: but for the variables.
+
 discussion::
+
 code::
 { thisFunction.getBackTrace }.().vars == nil
 { var a; thisFunction.getBackTrace }.().vars == [nil]
 { var a, b = 1; thisFunction.getBackTrace }.().vars == [nil, 1]
 ::
 
+
 method::address
+
 returns a link::Classes/RawPointer::, rarely useful.
 
+
 method::context
+
 returns another link::Classes/DebugFrame:: of the compiling context, rarely useful.

@@ -1,49 +1,78 @@
-TITLE:: Spawner
-summary:: A Spawner
+title:: Spawner
+summary:: a Spawner
 categories:: Streams-Patterns-Events>Composition
 related:: Classes/Pspawner
 
+
 description::
+
+
 Can start subpatterns. Used as an argument inside link::Classes/Pspawner::. Tracks subpatterns in a link::Classes/PriorityQueue::.
 
 
-CLASSMETHODS::
+classmethods::
+
 
 method::new
+
 argument::func
+
 argument::stackSize
 
-INSTANCEMETHODS::
+
+instancemethods::
+
 
 method::par
+
 begins an event stream in parallel to the routine.
 If delta is non-zero, the pattern will begin that many beats after strong::now::, provided that strong::now + delta:: is later than the next event that the Spawner will generate.
-argument::pattern
-A link::Classes/Pattern::.
-argument::delta
-A number of beats.
 
-returns:: The stream from strong::pattern::.
+argument::pattern
+a link::Classes/Pattern::.
+
+argument::delta
+a number of beats.
+
+returns::
+
+the stream from strong::pattern::.
+
 
 method::seq
+
 begins an event stream. Do not return until the event is finished.
+
 argument::pattern
-A link::Classes/Pattern::.
+a link::Classes/Pattern::.
+
 
 method::wait
+
 waits a number of seconds, then returns.
+
 argument::dur
-A number of seconds.
+a number of seconds.
+
 
 method::suspend
-stops a stream.
-argument::stream
-An index of the underlying link::Classes/PriorityQueue::.
 
-returns:: The stopped stream, or code::nil:: if the stream is not found.
+stops a stream.
+
+argument::stream
+an index of the underlying link::Classes/PriorityQueue::.
+
+returns::
+
+the stopped stream, or code::nil:: if the stream is not found.
+
 
 method::suspendAll
+
 stops all substreams.
 
+
 examples::
+
+
 See link::Classes/Pspawner::

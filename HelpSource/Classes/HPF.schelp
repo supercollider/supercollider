@@ -1,25 +1,35 @@
-class:: HPF
-summary:: 2nd order Butterworth highpass filter.
+title:: HPF
+summary:: 2nd order Butterworth highpass filter
+categories:: UGens>Filters>Linear
 related:: Classes/BPF, Classes/BRF, Classes/LPF
-categories::  UGens>Filters>Linear
 
 
 description::
+
+
 A second order high pass filter.
 
 
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-The input signal.
+the input signal.
+
 argument::freq
-Cutoff frequency in Hertz.
-WARNING: due to the nature of its implementation frequency values close to 0 may cause glitches and/or extremely loud audio artifacts!
+cutoff frequency in Hertz.
+
+warning::
+Due to the nature of its implementation frequency values close to 0 may cause glitches and/or extremely loud audio artifacts!
+::
+
 argument::mul
-Output will be multiplied by this value.
+output will be multiplied by this value.
+
 argument::add
-This value will be added to the output.
+this value will be added to the output.
 
 
 examples::

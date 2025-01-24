@@ -1,23 +1,36 @@
-class:: Loudness
-summary:: Extraction of instantaneous loudness in sones
+title:: Loudness
+summary:: extraction of instantaneous loudness in sones
 categories:: UGens>Analysis>Amplitude
 related:: Classes/BeatTrack, Classes/MFCC, Classes/Onsets, Classes/Pitch, Classes/KeyTrack
 
+
 description::
+
+
 A perceptual loudness function which outputs loudness in sones; this is a variant of an MP3 perceptual model, summing excitation in ERB bands. It models simple spectral and temporal masking, with equal loudness contour correction in ERB bands to obtain phons (relative dB), then a phon to sone transform. The final output is typically in the range of 0 to 64 sones, though higher values can occur with specific synthesised stimuli.
 
-note::Research note: This UGen is an informal juxtaposition of perceptual coding, and a Zwicker and Glasberg/Moore/Stone loudness model.::
+note::
+Research note: This UGen is an informal juxtaposition of perceptual coding, and a Zwicker and Glasberg/Moore/Stone loudness model.
+::
+
 
 classmethods::
+
+
 method::kr
+
 argument::chain
 [fft] Audio input to track, which has been pre-analysed by the link::Classes/FFT:: link::Classes/UGen::; see examples below for the expected FFT size.
+
 argument::smask
 [sk] Spectral masking param: lower bins mask higher bin power within ERB bands, with a power falloff (leaky integration multiplier) of smask per bin.
+
 argument::tmask
 [sk] Temporal masking param: the phon level let through in an ERB band is the maximum of the new measurement, and the previous minus tmask phons.
 
+
 examples::
+
 code::
 // assumes hop of half fftsize, fine
 

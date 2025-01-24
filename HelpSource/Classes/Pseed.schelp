@@ -1,14 +1,20 @@
-class:: Pseed
-summary:: set the random seed in subpattern
-related:: Reference/randomSeed
+title:: Pseed
+summary:: sets the random seed in subpattern
 categories:: Streams-Patterns-Events>Patterns>Language Control
+related:: Reference/randomSeed
+
 
 description::
+
+
 sets the random generator seed of the resulting stream.
 
-ClassMethods::
+
+classmethods::
+
 
 method::new
+
 argument::randSeed
 integer number, pattern or stream that returns an integer number.
 
@@ -23,8 +29,11 @@ Pseed(1000, Pwhite(1, 10, 3)).asStream.nextN(10);
 // the output stream consists of three values, then 'nil' ad infinitum
 Pseed(Pn(1000, 1), Pwhite(1, 10, 3)).asStream.nextN(10);
 ::
+
 ::
+
 argument::pattern
+
 
 examples::
 

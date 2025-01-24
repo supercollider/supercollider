@@ -1,9 +1,10 @@
 title:: List of GUI classes
-summary:: The most used GUI classes and their kit-specific equivalents
+summary:: the most used GUI classes and their kit-specific equivalents
 categories:: GUI
 
 
 section:: Kit-independent GUI classes
+
 
 The following table contains classes that are independent of GUI implementation, but may use other GUI classes or be used with any of them.
 
@@ -27,6 +28,7 @@ table::
 
 
 section:: Window and views
+
 
 The following table contains generic classes and their corresponding classes in each GUI kit, for window and most views.
 
@@ -60,7 +62,7 @@ table::
 ## MultiSliderView      || SCMultiSliderView      || JSCMultiSliderView  || QMultiSliderView    || array of sliders
 ## EnvelopeView         || SCEnvelopeView         || JSCEnvelopeView     || QEnvelopeView       || breakpoint envelope editor
 ## UserView             || SCUserView             || JSCUserView         || QUserView           || view for user-defined drawing operations
-## SoundFileView        || SCSoundFileView        || JSCSoundFileView    || QSoundFileView      || waveform view / editor for sound files
+## SoundFileView        || SCSoundFileView        || JSCSoundFileView    || QSoundFileView      || waveform view/editor for sound files
 ## MovieView            || SCMovieView            || JSCMovieView        || N/A                 || canvas for movie (QuickTime) and image display
 ## TextView             || SCTextView             || JSCTextView         || QTextView           || multiline text editor
 ## N/A                  || SCQuartzComposerView   || N/A                 || N/A                 || view for displaying QuartzComposer documents
@@ -73,9 +75,12 @@ table::
 
 section:: Layout management
 
+
 The following table contains classes used in layout management.
 
-note:: This classes are only implemented in Qt GUI! ::
+note::
+This classes are only implemented in Qt GUI!
+::
 
 table::
 ## strong::Class::      || strong::description::

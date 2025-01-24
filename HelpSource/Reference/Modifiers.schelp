@@ -2,7 +2,9 @@ title:: Modifier Keys
 summary:: macOS Modifier key reference
 categories:: GUI, Platform>macOS
 
-note:: This document might be outdated.. ::
+note::
+This document might be outdated.
+::
 
 An integer bit field indicating the modifier keys in effect. You can examine individual flag settings using the C bitwise AND operator.
 

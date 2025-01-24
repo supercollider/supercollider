@@ -1,8 +1,11 @@
-CLASS:: TreeView
-summary:: A view displaying a tree of items with columns
+title:: TreeView
+summary:: a view displaying a tree of items with columns
 categories:: GUI>Views
 
+
 description::
+
+
 A view that displays a hierarchy of items. It is divided into rows and column: each row represents an item, and each column represents a different data field of the items.
 
 The items are represented in code by instances of link::Classes/TreeViewItem::, returned by the various TreeView methods. Top level items are added via the TreeView interface, while child items are added via the TreeViewItem interface, which also allows to manipulate items in more detail after their creation.
@@ -12,98 +15,137 @@ Items can be visually sorted with link::#-sort::, or by clicking on one of the c
 Each item can hold other views in each of its data fields, which allows for rich graphical interaction. See link::Classes/TreeViewItem#-setView::.
 
 
-CLASSMETHODS::
+classmethods::
 
-PRIVATE:: key
 
-INSTANCEMETHODS::
+private:: key
 
-PRIVATE:: prForEachColumnDataPair
-PRIVATE:: prValidItem
+
+instancemethods::
+
+
+private:: prForEachColumnDataPair
+private:: prValidItem
 
 
 subsection:: Data
 
+
 method::columns
+
 	Gets or sets the number of columns (data fields) and their names. When setting a smaller number of columns than the current the extra columns will be removed, and hence all the data stored stored in those columns.
 
 	argument::
 		An array of Strings for column names.
 
+
 method::numColumns
+
 	The total number of columns (data fields).
 
+
 method::addItem
+
 	Appends a new top-level item.
 
 	argument::strings
 		An array of Strings (or code::nil::), each for the text of one data field.
+
 	returns:: 
 		An instance of TreeViewItem representing the new item.
 
+
 method::insertItem
+
 	Insert a new top-level item at code::index::.
 
 	argument::index
 		The position at which to insert the item.
 	argument::strings
 		An array of Strings (or code::nil::), each for the text of one data field.
+
 	returns:: 
 		An instance of TreeViewItem representing the new item.
 
+
 method::removeItem
+
 	Remove the given code::item::. After the item is removed, any usage of the related TreeViewItems will have no effect.
 
 	argument::
 		An instance of TreeViewItem.
 
+
 method::numItems
+
 	The total number of items.
 
+
 method::clear
+
     Removes all items.
 
+
 method::currentItem
+
 	Gets or sets the currently selected item.
 
 	argument::
 		An instance of TreeViewItem.
+
 	returns:: 
 		An instance of TreeViewItem or code::nil::, if no current item.
 
+
 method::itemAt
+
 	The item at code::index::.
 
+
 method::childAt
+
 	Alias for link::#-itemAt::, provided for compatibility with TreeViewItem.
 
+
 method::addChild
+
 	Alias for link::#-addItem::, provided for compatibility with TreeViewItem.
 
+
 method::insertChild
+
 	Alias for link::#-addChild::, provided for compatibility with TreeViewItem.
 
 
 subsection:: Appearance
 
+
 method::sort
+
 	Sort items by data in code::column::. This works regardless of link::#-canSort::.
 
-	NOTE:: Sorting has no effect on the logical order of the items, it only affects how they are displayed. ::
+	note::
+	Sorting has no effect on the logical order of the items, it only affects how they are displayed.
+	::
 
 	argument::column
 		The integer column index to sort by.
 	argument::descending
 		Whether to sort in descending or ascending fashion. The default is ascending.
 
+
 method::columnWidth
+
 	argument::column
 		The integer index of a column
+
 	returns:: 
 		Integer width of column in pixels. If code::column:: is not in the range
 		code::0..(numColumns-1)::, returns code::-1::.
 
+
 method::setColumnWidth
+
 sets the width of a column. The rightmost column must extend at least to the right bound of the
 TreeView.
 
@@ -112,12 +154,14 @@ TreeView.
 	argument::width
 		Integer width in pixels
 
-PRIVATE:: background
+private:: background
 
 
 subsection:: Interaction
 
+
 method::canSort
+
 	Whether the user can sort the items by clicking on a column header.
 
 	When setting to code::true::, the items will be sorted immediately according to the current sorting column. While code::true::, the view will also automatically sort new items.
@@ -129,16 +173,20 @@ method::canSort
 
 subsection:: Actions
 
+
 method::itemPressedAction
+
 	The object to be evaluated when a mouse button is pressed on an item, passing this view as the argument.
 
+
 method::onItemChanged
+
 	The object to be evaluated whenever the current item changes, passing this view as the argument.
 
 
 examples::
 
-CODE::
+code::
 
 (
 var t = TreeView().front;

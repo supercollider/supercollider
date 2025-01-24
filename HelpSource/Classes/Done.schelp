@@ -1,12 +1,16 @@
-class:: Done
-summary:: Monitors another UGen to see when it is finished
-related::  Classes/UGen, Classes/FreeSelfWhenDone, Classes/PauseSelfWhenDone
-categories::  UGens>Synth control, Server>Nodes
+title:: Done
+summary:: monitors another UGen to see when it is finished
+categories:: UGens>Synth control, Server>Nodes
+related:: Classes/UGen, Classes/FreeSelfWhenDone, Classes/PauseSelfWhenDone
+
 
 description::
+
+
 Some UGens set a 'done' flag when they are finished playing. This UGen echoes that flag when it is set to track a particular UGen.
 
 The UGens trackable by Done are:
+
 list::
 ## link::Classes/PlayBuf::
 ## link::Classes/RecordBuf::
@@ -25,6 +29,8 @@ list::
 
 
 section:: Actions
+
+
 A number of UGens implement doneActions. These allow one to optionally free or pause the enclosing synth and other related nodes when the UGen is finished. You can use the constants in this class to name doneActions, which can be clearer than using the number codes alone. The available doneActions are as follows:
 
 table::
@@ -52,17 +58,28 @@ For information on code::freeAll:: and code::deepFree::, see link::Classes/Group
 
 
 section:: Alternatives
+
+
 Another way to free a synth when some UGen is done playing is to use link::Classes/FreeSelfWhenDone::, or link::Classes/FreeSelf:: in combination with link::Classes/Done::. For example, this can be used to delay the freeing to let reverb tails fade out, etc.
 
+
 classmethods::
+
+
 private:: categories
 
+
 method::kr
+
 argument::src
-The UGen to monitor
+the UGen to monitor
+
 
 examples::
+
+
 The 'done' flag can be used to trigger other things in the same synth:
+
 code::
 (
 SynthDef("Done-help", { |out, t_trig|
@@ -79,7 +96,9 @@ SynthDef("Done-help", { |out, t_trig|
 
 Synth("Done-help"); // note that this synth doesn't have it's own doneAction, so you'll need to manually deallocate it
 ::
+
 The 'done' flag can be used to trigger a delayed freeing of the current synth, which is not possible by using doneActions alone:
+
 code::
 play {
     var env = Line.kr(1, 0, 2);

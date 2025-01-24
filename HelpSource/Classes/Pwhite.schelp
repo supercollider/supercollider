@@ -1,17 +1,23 @@
-class:: Pwhite
+title:: Pwhite
 summary:: random values with uniform distribution
-related:: Classes/Pgauss
 categories:: Streams-Patterns-Events>Patterns>Random
+related:: Classes/Pgauss
 
-ClassMethods::
+
+classmethods::
+
 
 method::new
+
 argument::lo
 lower boundary of values.
+
 argument::hi
 upper boundary of values.
+
 argument::length
 number of values produced.
+
 
 examples::
 

@@ -1,5 +1,5 @@
-title::SynthDefs versus Synths
-summary:: The use of precompiled SynthDefs as opposed to always compiling on the fly
+title:: SynthDefs versus Synths
+summary:: the use of precompiled SynthDefs as opposed to always compiling on the fly
 categories:: Language>SC3 vs SC2
 
 In SC2 code::Synth.play:: was the standard way to compile a emphasis::ugenGraphFunc:: and play it. Each time you executed code::Synth.play::, or Spawned a new event, that function was compiled anew. SC3 on the other hand, makes use of what are called SynthDefs. A link::Classes/SynthDef:: takes a emphasis::ugenGraphFunc:: and compiles it to a kind of bytecode (sort of like Java bytecode) which can be understood by the server app. The server reads the link::Classes/SynthDef:: and creates a synth node based upon it.
@@ -15,6 +15,7 @@ When maximum flexibility is required, it is still possible to compile and send S
 It is important to understand that creating and sending SynthDefs is emphasis::asynchronous::. This means that it is impossible to determine precisely how long it will take to compile and send a link::Classes/SynthDef::, and thus when it will be available for creating new Synths. A simple way around this is to execute code in blocks, selecting them one at a time. More complicated is to use completion messages. code::SynthDef.play:: takes care of this for you, and returns a link::Classes/Synth:: object which you can then manipulate. See the example below
 
 Another important distinction is between Synth in SC2 and link::Classes/Synth:: in SC3. The latter is a client-side object which represents a synth node on the server. Although it has some of the same methods, it does not function in the same way. There is no top level Synth in SC3, within which all scheduling and creation of other Synths occurs. There are only link::Classes/Synth:: objects which represent synth nodes on the server. These can be created at any time, within any scope.
+
 
 examples::
 

@@ -1,6 +1,9 @@
-class::True
-categories::Core
+title:: True
 summary:: true logical value
+categories:: Core
+
 
 description::
+
+
 see link::Classes/Boolean::

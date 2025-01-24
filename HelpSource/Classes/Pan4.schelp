@@ -1,25 +1,32 @@
-class:: Pan4
-summary:: Four channel equal power pan.
+title:: Pan4
+summary:: four channel equal power pan
+categories:: UGens>Multichannel>Panners
 related:: Classes/Balance2, Classes/LinPan2, Classes/Pan2, Classes/PanAz
-categories::  UGens>Multichannel>Panners
 
 
 description::
+
+
 Four channel equal power panner. Outputs are in order LeftFront,
 RightFront, LeftBack, RightBack.
 
 
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-The input signal.
+the input signal.
+
 argument::xpos
-X  pan position from -1 to +1 (left to right).
+x pan position from -1 to +1 (left to right).
+
 argument::ypos
-Y pan position from -1 to +1 (back to front).
+y pan position from -1 to +1 (back to front).
+
 argument::level
-A control rate level input.
+a control rate level input.
 
 
 examples::

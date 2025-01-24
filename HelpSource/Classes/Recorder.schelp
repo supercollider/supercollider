@@ -1,9 +1,13 @@
-class:: Recorder
-summary:: Write Audio to Harddisk
+title:: Recorder
+summary:: writes audio to harddisk
 categories:: Server>Abstractions
 related:: Classes/Server, Classes/DiskOut, Guides/Non-Realtime-Synthesis
 
-description:: A Recorder allows you to write audio to harddisk, reading from a given bus and a certain number of channels, relative to a given node. A link::Classes/Server:: has one instance, which is accessible also through the link::Classes/ScIDE::. You can use the server directly to record its output
+
+description::
+
+
+A Recorder allows you to write audio to harddisk, reading from a given bus and a certain number of channels, relative to a given node. A link::Classes/Server:: has one instance, which is accessible also through the link::Classes/ScIDE::. You can use the server directly to record its output
 
 code::
 (
@@ -28,12 +32,14 @@ code::
 thisProcess.platform.recordingsDir
 ::
 
-NOTE::
+note::
 By default, record creates the recording synth after the Server's default group and uses In.ar. Thus if you add nodes after the recording synth their output will not be captured.
 To avoid this, either use Node objects (which use the default node as their target) or (when using messaging style) use a target nodeID of 1.
+
 code::
 s.sendMsg("/s_new", "default", s.nextNodeID, 1, 1);
 ::
+
 ::
 
 For more detail on this subject see link::Guides/Order-of-execution::, link::Reference/default_group::, and link::Guides/NodeMessaging::.
@@ -42,41 +48,55 @@ See link::Classes/SoundFile:: for information on the various sample and header f
 Not all sample and header formats are compatible. Note that the sampling rate of the output file will be the same as that of the server app. This can be set using the Server's link::Classes/ServerOptions::.
 
 
+classmethods::
 
-ClassMethods::
 
 method::new
+
 creates a new instance for a given server.
+
 argument::server
 
-InstanceMethods::
+
+instancemethods::
+
 
 method::prepareForRecord
+
 allocates the necessary buffer, etc. for recording the server's output. (See code::record:: below.)
+
 argument::path
 a link::Classes/String:: representing the path and name of the output file. If the directory does not exist, it will be created for you. (Note, however, that if this fails for any reason, recording will also fail.)
+
 argument::numChannels
-The number of output channels to record.
+the number of output channels to record.
 
 discussion::
 If you do not specify a path than a file will be created in your recordings folder (see the note above on this) called code::SC_thisDateAndTime::. Changes to the header or sample format, or to the number of channels must be made strong::before:: calling this.
 
 
-
 method::record
-Starts or resumes recording the output.
+
+starts or resumes recording the output.
+
 argument::path
 this is optional, and is passed to code::prepareForRecord:: (above).
-argument::bus
-The bus (link::Classes/Bus:: object or integer bus index), the offset at which to start to count the number of channels. You can record any adjacent number of bus channels.
-argument::numChannels
-The number of output channels to record.
-argument::node
-The link::Classes/Node:: to record immediately after. By default, this is the default group 1.
-argument::duration
-If set, this limits recording to a given time in seconds.
 
-note::The recording starts when the buffer has been allocated, and after the usually very short network latency. It will last for the code::duration:: exactly down to one server block size (64 samples). For scheduling the starting point of a recording precisely, call link::#-prepareForRecord:: first, and then call link::#-record:: a bundle (see link::Classes/Server#-bind:: and  link::Classes/Server#-sync::).::
+argument::bus
+the bus (link::Classes/Bus:: object or integer bus index), the offset at which to start to count the number of channels. You can record any adjacent number of bus channels.
+
+argument::numChannels
+the number of output channels to record.
+
+argument::node
+the link::Classes/Node:: to record immediately after. By default, this is the default group 1.
+
+argument::duration
+if set, this limits recording to a given time in seconds.
+
+note::
+The recording starts when the buffer has been allocated, and after the usually very short network latency. It will last for the code::duration:: exactly down to one server block size (64 samples). For scheduling the starting point of a recording precisely, call link::#-prepareForRecord:: first, and then call link::#-record:: a bundle (see link::Classes/Server#-bind:: and  link::Classes/Server#-sync::).
+::
 
 discussion::
 If you have not called prepareForRecord first (see above) then it will be invoked for you (but that adds a slight delay before recording starts for real).
@@ -88,63 +108,92 @@ r.record(numChannels: 2);
 r.stopRecording;
 ::
 
+
 method::pauseRecording
-Pauses recording. Can be resumed by executing record again, or by calling resumeRecording.
+
+pauses recording. Can be resumed by executing record again, or by calling resumeRecording.
+
 
 method::resumeRecording
-Start recording again.
+
+starts recording again.
+
 
 method::stopRecording
+
 stops recording, closes the file, and frees the associated resources.
+
 discussion::
 You must call this when finished recording or the output file will be unusable. Cmd-. while recording has the same effect.
 
+
 method::filePrefix
+
 a string used as prefix for the path when recording. This can be used to separate the outputs of several recorders. The default is code::"SC_"::.
 
+
 method::numChannels
+
 a number of sound file channels that is used always when using this recorder, unless a different one is specified in the link::#-record:: method. When not set, we use link::Classes/Server#-recChannels::.
 
+
 method::recHeaderFormat
+
 gets/sets the header format (string) of the output file. The default is "wav". Must be called strong::before:: prepareForRecord.
 
+
 method::recSampleFormat
+
 gets/sets the sample format (string) of the output file. The default is "float". Must be called strong::before:: prepareForRecord.
 
+
 method::recBufSize
+
 gets/sets the size of the link::Classes/Buffer:: to use with the link::Classes/DiskOut:: UGen. This must be a power of two. The default is the code::sampleRate.nextPowerOfTwo:: or the first power of two number of samples longer than one second. Must be called strong::before:: prepareForRecord.
 
+
 method::isRecording
+
 returns code::true:: if we are in the process of recording
 
+
 method::paused
+
 returns code::true:: if recording is paused
 
+
 method::duration
+
 returns the number of seconds we have been recording so far
 
+
 method::path
+
 returns the path of the current recording
 
+
 method::numFrames
+
 returns the number of frames of the recording buffer
 
+
 method::notifyServer
+
 if set to code::true::, it will send code::changed:: notifications to the server instance. This is used internally by the link::Classes/Server:: class.
 
 
 method::server
+
 server to record from
 
-private::cmdPeriod
-private::prRecord
-private::prStopRecord
-private::makePath
-private::changedServer
+private:: cmdPeriod
+private:: prRecord
+private:: prStopRecord
+private:: makePath
+private:: changedServer
 
 
 section:: Examples
-
 
 code::
 // something to record

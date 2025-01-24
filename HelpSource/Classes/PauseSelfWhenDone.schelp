@@ -1,15 +1,19 @@
-class:: PauseSelfWhenDone
-summary:: FIXME: PauseSelfWhenDone purpose.
+title:: PauseSelfWhenDone
+summary:: FIXME: PauseSelfWhenDone purpose
+categories:: UGens>Synth control, UGens>Undocumented
 related:: Classes/Done, Classes/FreeSelfWhenDone
-categories::  UGens>Synth control, UGens>Undocumented
 
 
 description::
+
+
 FIXME: PauseSelfWhenDone description.
 
 
 classmethods::
 
+
 method::kr
+
 argument::src
 FIXME: explain parameter src.

@@ -1,10 +1,12 @@
-class:: Lag
-summary:: Exponential lag
+title:: Lag
+summary:: exponential lag
+categories:: UGens>Filters>Linear
 related:: Classes/Lag2, Classes/Lag3, Classes/VarLag, Classes/LagUD
-categories::  UGens>Filters>Linear
 
 
 description::
+
+
 This is essentially the same as  link::Classes/OnePole::  except that
 instead of supplying the coefficient directly, it is calculated from a 60
 dB lag time. This is the time required for the filter to converge to
@@ -13,17 +15,23 @@ signals.
 
 For linear and other alternatives, see link::Classes/VarLag::.
 
+
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-The input signal.
+the input signal.
+
 argument::lagTime
 60 dB lag time in seconds.
+
 argument::mul
-Output will be multiplied by this value.
+output will be multiplied by this value.
+
 argument::add
-This value will be added to the output.
+this value will be added to the output.
 
 
 examples::

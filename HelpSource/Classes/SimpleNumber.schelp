@@ -1,388 +1,644 @@
-CLASS:: SimpleNumber
+title:: SimpleNumber
 summary:: one-dimensional value
 categories:: Math
-related::Classes/Polar, Classes/Complex, Classes/Float, Classes/Integer, Classes/UnaryOpUGen, Classes/BinaryOpUGen, Guides/Tour-of-Special-Functions
+related:: Classes/Polar, Classes/Complex, Classes/Float, Classes/Integer, Classes/UnaryOpUGen, Classes/BinaryOpUGen, Guides/Tour-of-Special-Functions
+
 
 description::
+
+
 Base class for numbers which can be represented by a single one dimensional value.
 
 Most of the Unary and Binary operations are also implemented by link::Classes/UnaryOpUGen:: and link::Classes/BinaryOpUGen::, so you can get more examples by looking at the help for those.
 
-CLASSMETHODS::
+
+classmethods::
+
 
 method::new
+
 allocates a new SimpleNumber.
 
 
+instancemethods::
 
-INSTANCEMETHODS::
 
 private:: prSimpleNumberSeries
 
 
 subsection:: math support
 
+
 method::+
-Addition.
+
+addition.
 
 
 method::-
-Subtraction.
+
+subtraction.
+
 
 method::*
-Multiplication.
+
+multiplication.
+
 
 method::/
-Division.
+
+division.
+
 
 method::%
-Modulo.
+
+modulo.
+
 
 method::mod
-Modulo.
+
+modulo.
+
 
 method::div
-Integer Division.
+
+integer division.
+
 
 method::**
-Exponentiation.
+
+exponentiation.
+
 
 method::!=
-Is not.
+
+is not.
+
 
 method::>
+
 greater than.
+
 
 method::<
+
 greater than.
 
+
 method::>=
+
 greater or equal than.
 
+
 method::<=
+
 smaller or equal than.
 
+
 method::lcm
-Least common multiple.
+
+least common multiple.
+
 
 method::gcd
-Greatest common divisor.
+
+greatest common divisor.
+
 
 method::round
+
 rounds to multiple of aNumber.
 
+
 method::roundUp
-rounds up to a multiple of aNumber. For roundDown use Link::Classes/SimpleNumber#-trunc#trunc::.
+
+rounds up to a multiple of aNumber. For roundDown use link::Classes/SimpleNumber#-trunc#trunc::.
+
 
 method::smallButNotZero
+
 checks if the value is closer to zero than a threshold, but not zero.
+
 argument::thresh
-The threshold to use for comparison.
+the threshold to use for comparison.
+
 
 method::trunc
+
 truncates to multiple of aNumber (e.g. it rounds numbers down to a multiple of aNumber).
 
+
 method::softRound
+
 rounds the value to a multiple of strong::resolution::. By using strong::margin:: and strong::strength:: you can control which values will be rounded, and by how much.
 
 Conceptually this is the equivalent of MIDI quantization in a DAW/MIDI sequencer. In particular it allows a certain sloppiness close to the strong::resolution:: value.
 
 Note: this method expects values >= 0.
+
 argument::resolution
-Round this value to a multiple of resolution. E.g. if you chose 1, then all values would be rounded to the nearest integer.
+rounds this value to a multiple of resolution. E.g. if you chose 1, then all values would be rounded to the nearest integer.
+
 argument::margin
-Values that are within ±strong::margin:: from a multiple of strong::resolution:: will be left as they are.
+values that are within ±strong::margin:: from a multiple of strong::resolution:: will be left as they are.
 
 E.g. if you chose a resolution value of 0.5 and a margin of 0.01, then the values 0.501 and 0.499 would be left as they are, but the value 0.502 would become 0.5.
 
 This should be a value between 0 and strong::resolution::.
+
 argument::strength
-Determines the degree to which this number will be changed.
+determines the degree to which this number will be changed.
 
 If strength is 1, then this function will return the nearest resolution. If it is 0, then value of this number will be left unchanged.
 
 E.g. If the resolution was 1 and strength was 0.5, then the value 0.6 would become 0.8.
+
 discussion::
+
 code::
 ((0..10) / 5).collect { |num| [num, num.softRound(1, 0, 1)] };
 ((0..10) / 5).collect { |num| [num, num.softRound(1, 0.3, 1)] };
 ((0..10) / 5).collect { |num| [num, num.softRound(1, 0, 0.5)] };
 ::
 
+
 method::snap
+
 rounds the values strong::margin:: distance from resolution to a multiple of resolution. By using strong::margin:: and strong::strength:: you can control when values will be rounded, and by how much.
 
 Conceptually this is the equivalent of 'snap' in a graphics program. Values within a certain distance (strong::margin::) from a grid line are snapped to it. All other values are unchanged.
 
 Note: this method expects values >= 0.
+
 argument::resolution
-Snap this value to a multiple of resolution. E.g. if you chose 1, then all values would be rounded to the nearest integer.
+snaps this value to a multiple of resolution. E.g. if you chose 1, then all values would be rounded to the nearest integer.
+
 argument::margin
-Only values that are greater ±strong::margin:: from a multiple of strong::resolution:: value will be changed. Values that are less than strong::margin:: will be unchanged.
+only values that are greater ±strong::margin:: from a multiple of strong::resolution:: value will be changed. Values that are less than strong::margin:: will be unchanged.
 
 E.g. if you chose a resolution value of 0.5 and a margin of 0.01, then the values 0.501 and 0.499 would be snapped to 0.5, but the value 0.502 would be unchanged.
 
 This should be a value between 0 and strong::resolution::.
+
 argument::strength
-Determines the degree to which this number will be changed.
+determines the degree to which this number will be changed.
 
 If strength is 1, then this function will return the nearest resolution. If it is 0, then value of this number will be left unchanged.
 
 E.g. If the resolution was 1 and strength was 0.5, then the value 0.6 would become 0.8.
+
 discussion::
+
 code::
 ((0..10) / 5).collect { |num| [num, num.snap(1, 0, 1)] };
 ((0..10) / 5).collect { |num| [num, num.snap(1, 0.3, 1)] };
 ((0..10) / 5).collect { |num| [num, num.snap(1, 0, 0.5)] };
 ::
 
+
 method::thresh
 
+
 method::min
-Minimum.
+
+minimum.
+
 
 method::max
-Maximum.
+
+maximum.
+
 
 method::wrap2
 
+
 method::atan2
-Arctangent of (this/aNumber).
+
+arctangent of (this/aNumber).
+
 
 method::hypot
-Square root of the sum of the squares.
+
+square root of the sum of the squares.
 
 
 method::log
-returns:: Base e logarithm.
+
+returns::
+
+base e logarithm.
+
 
 method::log2
-returns:: Base 2 logarithm.
+
+returns::
+
+base 2 logarithm.
+
 
 method::log10
-returns:: Base 10 logarithm.
+
+returns::
+
+base 10 logarithm.
+
 
 method::neg
-returns:: negation.
+
+returns::
+
+negation.
+
 
 method::abs
-returns:: absolute value.
+
+returns::
+
+absolute value.
+
 
 method::sign
-returns:: -1 if negative, +1 if positive or 0 if zero.
+
+returns::
+
+-1 if negative, +1 if positive or 0 if zero.
+
 
 method::ceil
-returns:: next larger integer.
+
+returns::
+
+next larger integer.
+
 
 method::floor
-returns:: next smaller integer.
+
+returns::
+
+next smaller integer.
+
 
 method::sin
-Sine.
+
+sine.
+
 
 method::cos
-Cosine.
+
+cosine.
+
 
 method::tan
-Tangent.
+
+tangent.
+
 
 method::asin
-Arcsine.
+
+arcsine.
+
 
 method::acos
-Arccosine.
+
+arccosine.
+
 
 method::atan
-Arctangent.
+
+arctangent.
+
 
 method::sinh
-Hyperbolic sine.
+
+hyperbolic sine.
+
 
 method::cosh
-Hyperbolic cosine.
+
+hyperbolic cosine.
+
 
 method::tanh
-Hyperbolic tangent.
+
+hyperbolic tangent.
+
 
 method::frac
+
 fractional part.
 
+
 method::squared
+
 the square of the number.
 
+
 method::cubed
+
 the cube of the number.
 
+
 method::sqrt
+
 the square root of the number.
 
+
 method::exp
+
 e to the power of the receiver.
 
+
 method::reciprocal
+
 code::1 / this::.
 
+
 method::pow
+
 this to the power of aNumber.
 
+
 method::fold2
+
 the folded value, a bitwise or with aNumber.
 
+
 method::previousPowerOf
+
 the number relative to this that is the previous power of aNumber.
 
+
 method::nextPowerOf
+
 the next power of aNumber.
 
+
 method::nextPowerOfTwo
-returns:: the number relative to this that is the next power of 2.
+
+returns::
+
+the number relative to this that is the next power of 2.
+
 
 method::nextPowerOfThree
+
 the next power of three.
 
+
 method::hash
-returns:: a hash value.
+
+returns::
+
+a hash value.
+
 
 method::<!
-returns:: the receiver. aNumber is ignored.
+
+returns::
+
+the receiver. aNumber is ignored.
+
 
 method::&
-Bitwise And.
+
+bitwise and.
+
 
 method::|
-Bitwise Or.
+
+bitwise or.
+
 
 method::bitXor
-Bitwise Exclusive Or.
+
+bitwise exclusive or.
+
 
 method::bitHammingDistance
-Binary Hamming distance: the count of bits that are not the same in the two numbers.
+
+binary Hamming distance: the count of bits that are not the same in the two numbers.
+
 
 method::bitTest
-returns:: code::true:: if bit at index aNumber is set.
+
+returns::
+
+code::true:: if bit at index aNumber is set.
+
 
 method::bitNot
-returns:: ones complement.
+
+returns::
+
+ones complement.
+
 
 method::<<
-Binary shift left.
+
+binary shift left.
+
 
 method::>>
-Binary shift right.
+
+binary shift right.
+
 
 method::+>>
-Unsigned binary shift right.
+
+unsigned binary shift right.
+
 
 method::rightShift
-returns:: performs a binary right shift.
+
+returns::
+
+performs a binary right shift.
+
 
 method::unsignedRightShift
-returns:: performs an unsigned right shift.
+
+returns::
+
+performs an unsigned right shift.
+
 
 method::leftShift
-returns:: performs a binary left shift.
+
+returns::
+
+performs a binary left shift.
+
 
 method::bitOr
-returns:: performs a bitwise or with aNumber.
+
+returns::
+
+performs a bitwise or with aNumber.
+
 
 method::bitAnd
-returns:: performs a bitwise and with aNumber.
+
+returns::
+
+performs a bitwise and with aNumber.
+
 
 method::ring1
+
 code::(a * b) + a::
 
+
 method::ring2
+
 code::((a * b) + a + b)::
 
+
 method::ring3
+
 code::(a * a * b)::
 
+
 method::ring4
+
 code::((a * a * b) - (a * b * b))::
 
+
 method::difsqr
+
 code::(a * a) - (b * b)::
 
+
 method::sumsqr
+
 code::(a * a) + (b * b)::
 
+
 method::sqrdif
+
 code::(a - b) ** 2::
 
+
 method::sqrsum
+
 code::(a + b) ** 2::
 
+
 method::absdif
+
 code::(a - b).abs::
 
+
 method::moddif
-On a circle, there are two distances between two points. This operator returns the smaller value of the two.
+
+on a circle, there are two distances between two points. This operator returns the smaller value of the two.
+
 code::
 moddif(0.75, 0, 1)
 ::
 
+
 method::amclip
-0  when  b <= 0,  a*b  when  b > 0.
+
+code::0::  when  code::b <= 0::,  a*b  when  code::b > 0::.
+
 
 method::scaleneg
-a * b when a < 0, otherwise a.
+
+code::a * b:: when code::a < 0::, otherwise code::a::.
+
 
 method::clip2
+
 clips receiver to +/- aNumber.
 
+
 method::excess
+
 returns the difference of the receiver and its clipped form.
+
 discussion::
+
 code::
 (a - clip2(a, b))
 ::
 
+
 method::madd
+
 code::
 this * a + b
 ::
 
 
 subsection:: testing
+
+
 method::isPositive
-Answers if the number is >= 0.
+
+answers if the number is >= 0.
+
 
 method::isNegative
-Answers if the number is < 0.
+
+answers if the number is < 0.
+
 
 method::isStrictlyPositive
-Answers if the number is > 0.
+
+answers if the number is > 0.
+
 
 method::booleanValue
-returns:: code::true::, if strictly positive (> 0), otherwise code::false:: (see link::Classes/Boolean::)
+
+returns::
+
+code::true::, if strictly positive (> 0), otherwise code::false:: (see link::Classes/Boolean::)
+
 
 method::isNaN
+
+
 method::==
 
 
 subsection:: conversion
 
+
 method::asFraction
+
 argument::denominator
+
 argument::fasterBetter
 if code::true::, asFraction may find a much closer approximation and do it faster.
-returns:: an array of denominator and divisor of the nearest and smallest fraction
+
+returns::
+
+an array of denominator and divisor of the nearest and smallest fraction
+
 
 method::asAudioRateInput
-Converts this into an audiorate input.
+
+converts this into an audiorate input.
+
 
 method::asTimeString
-Produces a time string in the clock format inspired by ISO 8601 time interval display (truncated representation) code::(ddd:)hh:mm:ss(.z)::, interpreting the receiver as time in seconds. See link::Classes/String#-asSecs:: for the inverse function.
+
+produces a time string in the clock format inspired by ISO 8601 time interval display (truncated representation) code::(ddd:)hh:mm:ss(.z)::, interpreting the receiver as time in seconds. See link::Classes/String#-asSecs:: for the inverse function.
+
 argument::precision
 accuracy of the fraction of seconds; since the number of decimal places is also an argument, code::precision:: is clamped to code::10.pow(decimalPlaces.neg)::, i.e. code::0.001:: for code::decimalPlaces = 3::
+
 argument::maxDays
 maximum number of days
+
 argument::dropDaysIfPossible
 a link::Classes/Boolean::. If set to code::true::, and the number of days in the formatted string
 would be 0, that section of the resulting string is omitted
+
 argument::decimalPlaces
 number of decimal places representing fraction of seconds, clamped to code::0::; if code::0::, the string is formatted as code::(ddd:)hh:mm:ss::
+
 discussion::
+
 code::
 (
 var start;
@@ -396,40 +652,76 @@ start = Main.elapsedTime;
 )
 ::
 
+
 method::asPoint
-returns:: this as link::Classes/Point::. x = y = this.
+
+returns::
+
+this as link::Classes/Point::. x = y = this.
+
 
 method::asComplex
-returns:: this as link::Classes/Point::. x = y = this.
+
+returns::
+
+this as link::Classes/Point::. x = y = this.
+
 
 method::asWarp
+
 argument::spec
 a link::Classes/ControlSpec::
-returns:: this as link::Classes/CurveWarp:: according to spec.
+
+returns::
+
+this as link::Classes/CurveWarp:: according to spec.
+
 
 method::asFloat
-returns:: this as link::Classes/Float::
+
+returns::
+
+this as link::Classes/Float::
+
 
 method::asRect
-returns:: a link::Classes/Rect:: with x = y = w = h = this.
+
+returns::
+
+a link::Classes/Rect:: with x = y = w = h = this.
+
 
 method::asBoolean
-returns:: this as a link::Classes/Boolean::.  this > 0
+
+returns::
+
+this as a link::Classes/Boolean::.  this > 0
+
 
 method::asQuant
-returns:: the values as link::Classes/Quant::
+
+returns::
+
+the values as link::Classes/Quant::
+
 
 method::asInteger
-returns:: this as link::Classes/Integer::
+
+returns::
+
+this as link::Classes/Integer::
 
 
 subsection:: timing
 
+
 method::wait
+
 within a routine, yield the number so that the clock can wait for this many beats. Outside a Routine, this trows an error (see also Routine for details).
 
 discussion::
 Create a routine by a function fork:
+
 code::
 (
 fork {
@@ -448,25 +740,40 @@ fork {
 )
 ::
 
+
 method::waitUntil
-Like wait, only specifies a time (measured in beats of the current thread's clock). Outside a Routine, this throws an error (see also Routine for details).
+
+like link::#-wait::, only specifies a time (measured in beats of the current thread's clock). Outside a Routine, this throws an error (see also Routine for details).
+
 
 method::sleep
+
 makes the current thread sleep, until woken up by re-scheduling. Outside a Routine, this trows an error (see also Routine for details).
 
+
 method::nextTimeOnGrid
+
 argument::clock
-returns:: the next possible multiple of the clock's beats.
+
+returns::
+
+the next possible multiple of the clock's beats.
+
 
 method::schedBundleArrayOnClock
 
 
 subsection:: series and arrays
 
+
 method::nearestInList
-returns:: the value in the list closest to this
+
+returns::
+
+the value in the list closest to this
 
 discussion::
+
 code::
 (
 l = [0, 0.5, 0.9, 1];
@@ -474,14 +781,21 @@ l = [0, 0.5, 0.9, 1];
 )
 ::
 
+
 method::nearestInScale
+
 argument::scale
 an array of SimpleNumbers each treated as a step in the octave.
+
 argument::stepsPerOctave
-12 by default
-returns:: the value in the collection closest to this, assuming an octave repeating table of note values.
+12 by default.
+
+returns::
+
+the value in the collection closest to this, assuming an octave repeating table of note values.
 
 discussion::
+
 code::
 (
 l = [0, 1, 5, 9, 11]; // pentatonic scale
@@ -489,31 +803,40 @@ l = [0, 1, 5, 9, 11]; // pentatonic scale
 )
 ::
 
+
 method::series
+
 generates an arithmetic series from teletype::this:: over strong::second:: to strong::last::.
 
 If strong::second:: is teletype::nil::, it is one magnitude step towards last (1 or -1).
+
 code::
 series(5, 7, 10);
 series(5, nil, 10);
 (5, 7 .. 10)
 ::
+
 This is used in the shortcuts:
+
 code::
 (0..100);
 (1, 3 .. 17)
 ::
 
-returns:: 
-An link::Classes/Array::.
+returns::
+
+an link::Classes/Array::.
 
 discussion::
 The last value may not be included in the result if the step size does not divide evenly into the range of the series.
 
+
 method::seriesIter
+
 creates a link::Classes/Routine:: that iterates over an arithmetic series from teletype::this:: over strong::second:: to strong::last::.
 
 Since this is a lazy operation, strong::last:: can be code::inf::, generating an endless series. If unspecified, strong::last:: is code::inf:: or code::-inf:: depending on the step direction.
+
 code::
 r = seriesIter(0, 5, 52);
 r.nextN(8);
@@ -522,37 +845,60 @@ r.nextN(8); // reaches 'last', then nils
 r = seriesIter(0, 5); // last = inf
 r.nextN(8); // run repeatedly
 ::
+
 See also link::#-series:: and link::Guides/ListComprehensions::.
 
-returns:: 
-A link::Classes/Routine::.
+returns::
+
+a link::Classes/Routine::.
 
 
 subsection:: windowing
 
+
 method::rectWindow
-returns:: a value for a rectangular window function between 0 and 1.
+
+returns::
+
+a value for a rectangular window function between 0 and 1.
+
 
 method::hanWindow
-returns:: a value for a hanning window function between 0 and 1.
+
+returns::
+
+a value for a hanning window function between 0 and 1.
+
 
 method::welWindow
-returns:: a value for a welsh window function between 0 and 1.
+
+returns::
+
+a value for a welsh window function between 0 and 1.
+
 
 method::triWindow
-returns:: a value for a triangle window function between 0 and 1.
+
+returns::
+
+a value for a triangle window function between 0 and 1.
 
 
 subsection:: mapping
 
+
 method::distort
-A nonlinear distortion function.
+
+a nonlinear distortion function.
 
 Implements:
+
 teletype::
 this / (1.0 - abs(this))
 ::
+
 Visualize:
+
 code::
 (
 { var saw = LFSaw.ar(2 * 0.01.reciprocal);
@@ -561,14 +907,19 @@ code::
 )
 ::
 
+
 method::softclip
-Distortion with a perfectly linear region from -0.5 to +0.5.
+
+distortion with a perfectly linear region from -0.5 to +0.5.
 
 Implements:
+
 teletype::
 if (abs(this) < 0.5) { this } { (abs(this) - 0.25) / this };
 ::
+
 Visualize:
+
 code::
 (
 { var saw = LFSaw.ar(2 * 0.01.reciprocal);
@@ -577,20 +928,29 @@ code::
 )
 ::
 
+
 method::scurve
+
 maps receiver in the onto an S-curve bound to [0, 1].
 Implements:
+
 teletype::
 this * this * (3.0 - (2.0 * this))
 ::
+
 with teletype::this:: clipped to [0, 1].
+
 code::
 ((-100..200) / 100).collect(_.scurve).plot
 ::
 
+
 method::ramp
+
 maps the receiver onto a ramp starting at code::0.0::, ending at code::1.0::, effectively clipping the receiver at [0, 1].
+
 discussion::
+
 code::
 (
 	var vals = (-100..200) / 100;
@@ -602,20 +962,31 @@ code::
 )
 ::
 
+
 method::magnitude
-returns:: The absolute value.
+
+returns::
+
+the absolute value.
 
 Alternatively conceived of as the link::Classes/Polar#-magnitude:: or link::Classes/Complex#-magnitude::, wherein the receiver is the real part and the imaginary part is code::0.0::.
 
+
 method::angle
-returns:: Angle of receiver (in radians) conceived as link::Classes/Polar:: or link::Classes/Complex:: number, wherein the receiver is the real part and the imaginary part is code::0.0::. I.e. teletype::if (this.isPositive) { 0.0 } { pi }::.
+
+returns::
+
+angle of receiver (in radians) conceived as link::Classes/Polar:: or link::Classes/Complex:: number, wherein the receiver is the real part and the imaginary part is code::0.0::. I.e. teletype::if (this.isPositive) { 0.0 } { pi }::.
 
 
 method::degreeToKey
+
 argument::scale
 an array of SimpleNumbers each treated as a step in the octave.
+
 argument::stepsPerOctave
 12 is the standard chromatic scale.
+
 discussion::
 the value is truncated to an integer and used as an index into an octave repeating table of note values. Indices wrap around the table and shift octaves as they do.
 
@@ -628,19 +999,26 @@ l = [0, 1, 5, 9, 11]; // pentatonic scale
 )
 ::
 
+
 method::keyToDegree
+
 inverse of degreeToKey.
+
 argument::scale
 an array of SimpleNumbers each treated as a step in the octave.
+
 argument::stepsPerOctave
 12 is the standard chromatic scale.
+
 discussion::
+
 code::
 (
 l = [0, 1, 5, 9, 11]; // pentatonic scale
 (60, 61..75).collect { |i| i.keyToDegree(l, 12) }
 )
 ::
+
 code::
 (
 l = [0, 1, 5, 9, 11]; // pentatonic scale
@@ -650,32 +1028,42 @@ l = [0, 1, 5, 9, 11]; // pentatonic scale
 
 
 method::gaussCurve
+
 maps the receiver onto a gauss function.
 
 Uses the formula:
-teletype::
+
+code::
 a * -exp((this - b).squared / (2 * c.squared))
 ::
+
 where code::a:: is the distribution amplitude, code::b:: is the mean (typically denoted emphasis::mu::), and the variance is code::c.squared:: (emphasis::sigma::^2).
 
 The method defaults to a "standard normal distribution": a zero mean and both the peak amplitude and variance are code::1.0:: (code::a = 1.0, b = 0.0, c = 1.0::).
+
 code::
 (0..1000).normalize(-10, 10).collect { |num| num.gaussCurve }.plot;
 ::
 
 
 method::equalWithPrecision
+
 argument::that
 the number to compare with within precision
+
 argument::precision
-The absolute precision, independent of the value compared
+the absolute precision, independent of the value compared
+
 argument::relativePrecision
-The precision relative to the larger absolute of the values compared.
+the precision relative to the larger absolute of the values compared.
 
 
-returns:: code::true:: if receiver is closer to that than precision.
+returns::
+
+code::true:: if receiver is closer to that than precision.
 
 discussion::
+
 code::
 3.1.equalWithPrecision(3.0, 0.05); // false
 3.1.equalWithPrecision(3.0, 0.1); // false
@@ -685,31 +1073,45 @@ code::
 
 ::
 
+
 method::quantize
-Deprecated. Round the receiver to the quantum. If you're looking for MIDI quantization type features use CODE::SimpleNumber#-softRound::
+
+deprecated. Round the receiver to the quantum. If you're looking for MIDI quantization type features use code::SimpleNumber#-softRound::
+
 argument::quantum
 amount.
+
 argument::tolerance
 allowed tolerance.
+
 argument::strength
-Determines how much the value is allowed to differ in the tolerance range.
+determines how much the value is allowed to differ in the tolerance range.
+
 discussion::
+
 code::
 ((0..10) / 10).collect { |num| num.quantize(1, 0.3, 0.5) }.postcs.plot;
 ((0..10) / 10).collect { |num| num.quantize(1, 0.6, 0.5) }.postcs.plot;
 ((0..10) / 10).collect { |num| num.quantize(1, 1.0, 0.5) }.postcs.plot;
 ::
 
+
 method::linlin
+
 maps the receiver from an assumed linear input range to a linear output range. If the input exceeds the assumed input range, the behaviour is specified by the clip argument.
+
 argument::inMin
 assumed input minimum
+
 argument::inMax
 assumed input maximum
+
 argument::outMin
-output minimum
+outputs minimum
+
 argument::outMax
-output maximum
+outputs maximum
+
 argument::clip
 code::nil:: (don't clip)
 \max (clip ceiling)
@@ -717,99 +1119,138 @@ code::nil:: (don't clip)
 \minmax (clip both - this is default).
 
 discussion::
+
 code::
 (0..10).collect { |num| num.linlin(0, 10, -4.3, 100) };
 (0..10).linlin(0, 10, -4.3, 100); // equivalent.
 ::
 
+
 method::linexp
+
 maps the receiver from an assumed linear input range (inMin..inMax) to an exponential output range (outMin..outMax). The output range must not include zero. If the input exceeds the input range, the following behaviours are specified by the clip argument.
+
 argument::inMin
 assumed input minimum
+
 argument::inMax
 assumed input maximum
+
 argument::outMin
-output minimum
+outputs minimum
+
 argument::outMax
-output maximum
+outputs maximum
+
 argument::clip
 code::nil:: (don't clip)
 \max (clip ceiling)
 \min (clip floor)
 \minmax (clip both - this is default).
+
 discussion::
+
 code::
 (0..10).collect { |num| num.linexp(0, 10, 4.3, 100) };
 (0..10).linexp(0, 10, 4.3, 100); // equivalent.
 ::
 
+
 method::explin
+
 maps the receiver from an assumed exponential input range (inMin..inMax) to a linear output range (outMin..outMax) if the input exceeds the assumed input range. The input range must not include zero.
 If the input exceeds the input range, the following behaviours are specified by the clip argument.
+
 argument::inMin
 assumed input minimum
+
 argument::inMax
 assumed input maximum
+
 argument::outMin
-output minimum
+outputs minimum
+
 argument::outMax
-output maximum
+outputs maximum
+
 argument::clip
 code::nil:: (don't clip)
 \max (clip ceiling)
 \min (clip floor)
 \minmax (clip both - this is default).
+
 discussion::
+
 code::
 (1..10).collect { |num| num.explin(0.1, 10, -4.3, 100) };
 (1..10).explin(0.1, 10, -4.3, 100); // equivalent.
 ::
 
+
 method::expexp
+
 maps the receiver from an assumed exponential input range (inMin..inMax) to an exponential output range (outMin..outMax) if the input exceeds the assumed input range. Both input range and output range must not include zero.
 If the input exceeds the input range, the following behaviours are specified by the clip argument.
+
 argument::inMin
 assumed input minimum
+
 argument::inMax
 assumed input maximum
+
 argument::outMin
-output minimum
+outputs minimum
+
 argument::outMax
-output maximum
+outputs maximum
+
 argument::clip
 code::nil:: (don't clip)
 \max (clip ceiling)
 \min (clip floor)
 \minmax (clip both - this is default).
+
 discussion::
+
 code::
 (1..10).collect { |num| num.expexp(0.1, 10, 4.3, 100) };
 (1..10).expexp(0.1, 10, 4.3, 100); // equivalent.
 ::
 
+
 method::lincurve
+
 maps the receiver from an assumed linear input range (inMin..inMax) to an exponential curve output range (outMin..outMax). A curve is like the curve parameter in Env. Unlike with linexp, the output range may include zero.
 If the input exceeds the input range, the following behaviours are specified by the clip argument.
+
 argument::inMin
 assumed input minimum
+
 argument::inMax
 assumed input maximum
+
 argument::outMin
-output minimum
+outputs minimum
+
 argument::outMax
-output maximum
+outputs maximum
+
 argument::curve
 0 (linear) <0 (concave, negatively curved) >0 (convex, positively curved)
+
 argument::clip
 code::nil:: (don't clip)
 \max (clip ceiling)
 \min (clip floor)
 \minmax (clip both - this is default).
+
 discussion::
+
 code::
 (0..10).collect { |num| num.lincurve(0, 10, -4.3, 100, -3) };
 (0..10).lincurve(0, 10, -4.3, 100, -3); // equivalent.
 ::
+
 code::
 // different curves:
 (-4..4).do { |val|
@@ -817,18 +1258,26 @@ code::
 }
 ::
 
+
 method::curvelin
+
 maps the receiver from an assumed curve-exponential input range (inMin..inMax) to a linear output range (outMin..outMax) if the input exceeds the assumed input range. A curve is like the curve parameter in Env. Unlike with explin, the input range may include zero. If the input exceeds the input range, the following behaviours are specified by the clip argument.
+
 argument::inMin
 assumed input minimum
+
 argument::inMax
 assumed input maximum
+
 argument::outMin
-output minimum
+outputs minimum
+
 argument::outMax
-output maximum
+outputs maximum
+
 argument::curve
 0 (linear) <0 (concave, negatively curved) >0 (convex, positively curved)
+
 argument::clip
 code::nil:: (don't clip)
 \max (clip ceiling)
@@ -836,10 +1285,12 @@ code::nil:: (don't clip)
 \minmax (clip both - this is default).
 
 discussion::
+
 code::
 (1..10).collect { |num| num.curvelin(0, 10, -4.3, 100, -3) };
 (1..10).curvelin(0, 10, -4.3, 100, -3); // equivalent.
 ::
+
 code::
 // different curves:
 (-4..4).do { |val|
@@ -847,24 +1298,35 @@ code::
 }
 ::
 
+
 method::bilin
+
 maps the receiver from two assumed linear input ranges (inMin..inCenter) and (inCenter..inMax) to two linear output ranges (outMin..outCenter) and (outCenter..outMax). If the input exceeds the input range, the following behaviours are specified by the clip argument.
+
 argument::inCenter
+
 argument::inMin
 assumed input minimum
+
 argument::inMax
 assumed input maximum
+
 argument::outCenter
+
 argument::outMin
-output minimum
+outputs minimum
+
 argument::outMax
-output maximum
+outputs maximum
+
 argument::clip
 code::nil:: (don't clip)
 \max (clip ceiling)
 \min (clip floor)
 \minmax (clip both - this is default).
+
 discussion::
+
 code::
 var center = 0.5, ctlCenter;
 w = Window("bilin", Rect(100, 100, 200, 100)).front;
@@ -879,17 +1341,25 @@ a.action = {
 
 
 method::biexp
+
 maps the receiver from two assumed exponential input ranges (inMin..inCenter) and (inCenter..inMax) to two linear output ranges (outMin..outCenter) and (outCenter..outMax). The input range must not include zero. If the input exceeds the input range, the following behaviours are specified by the clip argument.
+
 argument::inCenter
+
 argument::inMin
 assumed input minimum
+
 argument::inMax
 assumed input maximum
+
 argument::outCenter
+
 argument::outMin
-output minimum
+outputs minimum
+
 argument::outMax
-output maximum
+outputs maximum
+
 argument::clip
 code::nil:: (don't clip)
 \max (clip ceiling)
@@ -897,6 +1367,7 @@ code::nil:: (don't clip)
 \minmax (clip both - this is default).
 
 discussion::
+
 code::
 // doesn't properly work yet.
 (
@@ -912,119 +1383,206 @@ a.action = {
 )
 ::
 
+
 method::lcurve
+
 maps the receiver onto an L-curve.
 
 discussion::
-Uses the formula
+Uses the formula:
+
 code::
 a * (m * exp(x) * rTau + 1) / (n * exp(x) * rTau + 1)
 ::
+
 This is used for smoothing values and limiting them to a range.
+
 code::
 (0..1000).normalize(-10, 10).collect { |num| num.lcurve }.plot;
 ::
 
 
 method::degrad
-returns:: converts degree to radian
+
+returns::
+
+converts degree to radian
+
 
 method::raddeg
-returns:: converts radian to degree
+
+returns::
+
+converts radian to degree
+
 
 method::midicps
-Convert MIDI note to cycles per second
-returns:: cycles per second
+
+converts MIDI note to cycles per second
+
+returns::
+
+cycles per second
+
 
 method::cpsmidi
-Convert cycles per second to MIDI note.
-returns:: midi note
+
+converts cycles per second to MIDI note.
+
+returns::
+
+MIDI note
 
 
 method::midiratio
-Convert an interval in semitones to a ratio.
-returns:: a ratio
+
+converts an interval in semitones to a ratio.
+
+returns::
+
+a ratio
+
 
 method::ratiomidi
-Convert a ratio to an interval in semitones.
-returns:: an interval in semitones
+
+converts a ratio to an interval in semitones.
+
+returns::
+
+an interval in semitones
+
 
 method::ampdb
-Convert a linear amplitude to decibels.
+
+converts a linear amplitude to decibels.
 
 
 method::dbamp
-Convert a decibels to a linear amplitude.
+
+converts a decibels to a linear amplitude.
+
 
 method::octcps
-Convert decimal octaves to cycles per second.
+
+converts decimal octaves to cycles per second.
+
 
 method::cpsoct
-Convert cycles per second to decimal octaves.
+
+converts cycles per second to decimal octaves.
 
 
 subsection:: streams
 
+
 method::storeOn
+
 stores this on the given stream
+
+
 method::printOn
+
 prints this on the given stream
 
 
 subsection:: random
 
+
 method::coin
-Lets emphasis::x:: be the receiver clipped to the range [0, 1]. With probability emphasis::x::, returns code::true::. With probability 1 - emphasis::x::, returns code::false::.
+
+lets emphasis::x:: be the receiver clipped to the range [0, 1]. With probability emphasis::x::, returns code::true::. With probability 1 - emphasis::x::, returns code::false::.
+
 
 method::rand
-returns:: Random number from zero up to the receiver, exclusive.
+
+returns::
+
+random number from zero up to the receiver, exclusive.
+
 
 method::rand2
-returns:: a random number from -this to +this.
+
+returns::
+
+a random number from -this to +this.
+
 
 method::rrand
+
 argument::aNumber
 the upper limit
+
 argument::adverb
-returns:: a random number in the interval ]a, b[.
+
+returns::
+
+a random number in the interval ]a, b[.
+
 discussion::
 If both a and b are link::Classes/Integer:: then the result will be an link::Classes/Integer::.
 
+
 method::linrand
-returns:: a linearly distributed random number from zero to this.
+
+returns::
+
+a linearly distributed random number from zero to this.
+
 
 method::bilinrand
-returns:: Bilateral linearly distributed random number from -this to +this.
+
+returns::
+
+bilateral linearly distributed random number from -this to +this.
+
 
 method::sum3rand
-This was suggested by Larry Polansky as a loose approximation of gaussian.
-returns:: A random number from -this to +this that is the result of summing three uniform random generators to yield a bell-like distribution.
+
+this was suggested by Larry Polansky as a loose approximation of gaussian.
+
+returns::
+
+a random number from -this to +this that is the result of summing three uniform random generators to yield a bell-like distribution.
+
 
 method::exprand
+
 an exponentially distributed random number in the interval ]a, b[. This is always a link::Classes/Float::.
-(Note that the distribution of numbers is not exactly an EMPHASIS::exponential distribution::, since that would be unbounded: we might call it a EMPHASIS::logarithmic uniform distribution::.)
+(Note that the distribution of numbers is not exactly an emphasis::exponential distribution::, since that would be unbounded: we might call it a emphasis::logarithmic uniform distribution::.)
+
 argument::aNumber
 the upper limit
+
 argument::adverb
 
+
 method::gauss
+
 a gaussian distributed random number.
+
 argument::standardDeviation
 the upper limit
+
 discussion::
 Always returns a link::Classes/Float::.
+
 code::
 (0..1000).collect { |num| gauss(0.0, num) }.plot;
 ::
 
+
 method::partition
+
 randomly partition a number into parts of at least min size.
+
 argument::parts
 number of parts
+
 argument::min
 the minimum size
 
 discussion::
+
 code::
 75.partition(8, 3);
 75.partition(75, 1);
@@ -1033,19 +1591,29 @@ code::
 
 subsection:: UGen Compatibility Methods
 
+
 Some methods to ease the development of generic ugen code.
 
+
 method::lag, lag2, lag3, lagud, lag2ud, lag3ud, slew, varlag
-returns:: code::this::
+
+returns::
+
+code::this::
 
 
 subsection:: misc
 
+
 method::isValidUGenInput
-returns:: false if receiver cannot be used in UGen.
+
+returns::
+
+false if receiver cannot be used in UGen.
 
 
 subsection:: Special Functions
+
 
 A variety of Special Functions are supplied by the Boost C++ library. The library's
 link::http://www.boost.org/doc/libs/1_66_0/libs/math/doc/html/special.html##online documentation::
@@ -1055,216 +1623,312 @@ here match closely with those found in the source library, as do argument names.
 Below you'll find descriptions of the functions and their bounds, but for
 visualizing the functions, have a look in link::Guides/Tour-of-Special-Functions::.
 
-warning::Many of the functions are only valid in certain numerical ranges. For the most part, error handling
+warning::
+Many of the functions are only valid in certain numerical ranges. For the most part, error handling
 happens in the underlying boost functions. While these errors are often obtuse, you'll usually find
 a useful message at the end of the error regarding proper ranges and the erroneous value supplied.
 Refer to the online documentation for more detailed descriptions, and the
-link::Guides/Tour-of-Special-Functions:: for plots showing ranges and asymptotes.::
+link::Guides/Tour-of-Special-Functions:: for plots showing ranges and asymptotes.
+::
 
 
 subsection:: Number Series
+
+
 Take a tour of link::Guides/Tour-of-Special-Functions#Number Series#Number Series::.
 
+
 method::bernouliB2n
+
 returns the (2*code::n::)th Bernoulli number.
 
 Because all odd numbered Bernoulli numbers are zero
 (apart from B(1) which is -1/2) the interface will only
 Returns the even numbered Bernoulli numbers.
 
+
 method::tangentT2n
+
 returns a single tangent number at code::i::. Also called a zag function.
 
 
 subsection:: Gamma Functions
+
+
 Take a tour of link::Guides/Tour-of-Special-Functions#Gamma Functions#Gamma Functions::.
 
+
 method::tgamma
+
 returns the "true gamma" of value code::z::.
 
+
 method::tgamma1pm1
+
 returns code::gamma(dz + 1) - 1::.
 
+
 method::lgamma
+
 returns the natural logarithm of the gamma function.
 
+
 method::digamma
+
 returns the digamma or psi function of code::z::.
 
 Digamma is defined as the logarithmic derivative of the gamma function.
 
+
 method::trigamma
+
 returns the trigamma function of code::z::.
 
 Trigamma is defined as the derivative of the digamma function.
 
+
 method::polygamma
+
 returns the polygamma function of code::z::.
 
 Polygamma is defined as the code::n::'th derivative of the digamma function.
 
+
 method::tgammaRatio
+
 returns the ratio of gamma functions code::tgamma(a) / tgamma(b)::.
 
+
 method::tgammaDeltaRatio
+
 returns the ratio of gamma functions code::tgamma(a) / tgamma(a+delta)::.
 
+
 method::gammaP
+
 returns the normalised lower incomplete gamma function.
 
 Requires code::a:: > 0 and code::z:: >= 0.
 
+
 method::gammaQ
+
 returns the normalised upper incomplete gamma function.
 
 Requires code::a:: > 0 and code::z:: >= 0.
 
+
 method::tgammaLower
+
 returns the full (non-normalised) lower incomplete gamma function.
 
 Requires code::a:: > 0 and code::z:: >= 0.
 
+
 method::tgammaUpper
+
 returns the full (non-normalised) upper incomplete gamma function.
 
 Requires code::a:: > 0 and code::z:: >= 0.
 
+
 method::gammaPInv
+
 returns a value such that code::p = gamma_p(a, x)::.
 
 Requires code::a:: > 0 and 1 >= code::p,q:: >= 0.
+
 
 method::gammaQInv
+
 returns a value x such that code::q = gamma_q(a, x)::.
 
 Requires code::a:: > 0 and 1 >= code::p,q:: >= 0.
 
+
 method::gammaPInvA
+
 returns a value such that code::p = gamma_p(a, x)::.
 
 Requires code::x:: > 0 and 1 >= code::p,q:: >= 0.
 
+
 method::gammaQInvA
+
 returns a value x such that code::q = gamma_q(a, x)::.
 
 Requires code::x:: > 0 and 1 >= code::p,q:: >= 0.
 
+
 method::gammaPDerivative
-Implements the partial derivative with respect to x of the incomplete gamma function (lower).
+
+implements the partial derivative with respect to x of the incomplete gamma function (lower).
+
 
 method::gammaQDerivative
-Implements the partial derivative with respect to x of the incomplete gamma function (upper).
+
+implements the partial derivative with respect to x of the incomplete gamma function (upper).
 
 
 subsection:: Factorials and Binomial Coefficients
+
+
 Take a tour of link::Guides/Tour-of-Special-Functions#Factorials and Binomial Coefficients#Factorials and Binomial Coefficients::.
 
+
 method::factorial
+
 returns code::i!::.
 
-warning::code::factorial:: will overflow if code::i > 170::::
+warning::
+code::factorial:: will overflow if code::i > 170::.
+::
+
 
 method::doubleFactorial
+
 returns code::i!!::.
 
 For strong::even:: code::i::, code::i !! = i(i-2)(i-4)(i-6) ... (4)(2)::.
 
 For strong::odd:: code::i::, code::i !! = i(i-2)(i-4)(i-6) ... (3)(1)::.
 
+
 method::risingFactorial
+
 returns the rising factorial of code::x:: and code::i:::
 
 code::x(x+1)(x+2)(x+3)...(x+i-1)::
 
 Both code::x:: and code::i:: can be negative as well as positive.
 
+
 method::fallingFactorial
+
 returns the falling factorial of code::x:: and code::i:::
 
 code::x(x-1)(x-2)(x-3)...(x-i+1)::
 
 This function is only defined for positive code::i::. Argument code::x:: can be either positive or negative.
 
+
 method::binomialCoefficient
-Requires code::k:: <= code::n::.
+
+requires code::k:: <= code::n::.
 
 
 subsection:: Beta Functions
+
+
 Take a tour of link::Guides/Tour-of-Special-Functions#Beta Functions#Beta Functions::.
 
+
 method::beta
-The beta function is defined by: code::tgamma(a)*tgamma(b) / tgamma(a+b)::.
+
+the beta function is defined by: code::tgamma(a)*tgamma(b) / tgamma(a+b)::.
+
 
 method::ibeta
+
 returns the normalised incomplete beta function of code::a::, code::b:: and code::x::.
 
 Require 0 <= code::x:: <= 1, code::a,b:: >= 0, and in addition that not both code::a:: and code::b:: are zero.
 
+
 method::ibetaC
+
 returns the normalised complement of the incomplete beta function of code::a::, code::b:: and code::x::.
 
 Require 0 <= code::x:: <= 1, code::a,b:: >= 0, and in addition that not both code::a:: and code::b:: are zero.
 
+
 method::betaFull
+
 returns the full (non-normalised) incomplete beta function of code::a::, code::b:: and code::x::.
 
 Require 0 <= code::x:: <= 1, and code::a,b:: > 0.
 
+
 method::betaFullC
+
 returns the full (non-normalised) complement of the incomplete beta function of code::a::, code::b:: and code::x::.
 
 Require 0 <= code::x:: <= 1, and code::a,b:: > 0.
 
+
 method::ibetaInv
+
 returns a value code::x:: such that: code::p = ibeta(a, b, x)::.
 
 Requires code::a,b:: > 0 and 0 <= code::p:: <= 1.
 
+
 method::ibetaCInv
+
 returns a value code::x:: such that: code::q = ibetaC(a, b, x)::.
 
 Requires code::a,b:: > 0 and 0 <= code::q:: <= 1.
 
+
 method::ibetaInvA
+
 returns a value code::a:: such that: code::p = ibeta(a, b, x)::.
 
 Requires code::b:: > 0, 0 < code::x:: < 1, and 0 <= code::p:: <= 1.
 
+
 method::ibetaCInvA
+
 returns a value code::a:: such that: code::q = ibetaC(a, b, x)::.
 
 Requires code::b:: > 0, 0 < code::x:: < 1, and 0 <= code::q:: <= 1.
 
+
 method::ibetaInvB
+
 returns a value code::b:: such that: code::p = ibeta(a, b, x)::.
 
 Requires code::a:: > 0, 0 < code::x:: < 1, and 0 <= code::p:: <= 1.
 
+
 method::ibetaCInvB
+
 returns a value code::b:: such that: code::q = ibetaC(a, b, x)::.
 
 Requires code::a:: > 0, 0 < code::x:: < 1, and 0 <= code::q:: <= 1.
 
+
 method::ibetaDerivative
+
 returns the partial derivative with respect to code::x:: of the incomplete
 beta function code::ibeta(a, b, x)::.
 
 
 subsection:: Error Functions
+
+
 Take a tour of link::Guides/Tour-of-Special-Functions#Error Functions#Error Functions::.
 
+
 method::erf
+
 returns the error function of code::z::.
 
+
 method::erfC
+
 returns the complement of the error function of code::z::.
 
+
 method::erfInv
+
 returns the inverse error function of code::z::, that is a value code::x:: such that:
 
 code::p = erf(x)::.
 
+
 method::erfCInv
+
 returns the inverse of the complement of the error function of code::z::,
 that is a value code::x:: such that:
 
@@ -1272,54 +1936,82 @@ code::p = erfC(x)::
 
 
 subsection:: Polynomials
+
+
 Take a tour of link::Guides/Tour-of-Special-Functions#Polynomials#Polynomials::.
 
+
 method::legendreP
+
 returns the Legendre Polynomial of the first kind.
 
 Requires -1 <= code::x:: <= 1.
 
+
 method::legendrePPrime
+
 returns the derivatives of the Legendre polynomials.
 
+
 method::legendrePZeros
-Since the Legendre polynomials are alternatively even and odd, only the
+
+since the Legendre polynomials are alternatively even and odd, only the
 non-negative zeros are returned. For the odd Legendre polynomials, the
 first zero is always zero. The rest of the zeros are returned in increasing order.
 
+
 method::legendrePAssoc
+
 returns the associated Legendre polynomial of the first kind.
 
 Requires -1 <= code::x:: <= 1.
 
+
 method::legendreQ
+
 returns the value of the Legendre polynomial that is the
 second solution to the Legendre differential equation.
 
 Requires -1 <= code::x:: <= 1.
 
+
 method::laguerre
+
 returns the value of the Laguerre Polynomial of order code::n:: at point code::x::.
 
+
 method::laguerreAssoc
+
 returns the Associated Laguerre polynomial of degree of dgree code::n:: and order code::m:: at point code::x::.
 
+
 method::hermite
+
 returns the value of the Hermite Polynomial of order code::n:: at point code::x::.
 
+
 method::chebyshevT
+
 returns the Chebyshev polynomials of the first kind.
 
+
 method::chebyshevU
+
 returns the Chebyshev polynomials of the second kind.
 
+
 method::chebyshevTPrime
+
 returns the derivatives of the Chebyshev polynomials of the first kind.
 
+
 method::chebyshevTZeros
+
 returns the roots (zeros) of the code::n::-th Chebyshev polynomial of the first kind.
 
+
 method::sphericalHarmonic
+
 returns the (code::Complex::) value of the Spherical Harmonic.
 
 code::theta:: is taken as the polar (colatitudinal) coordinate within code::[0, pi]::,
@@ -1328,122 +2020,180 @@ and code::phi:: as the azimuthal (longitudinal) coordinate within code::[0, 2pi]
 See boost documentation for further information, including a note about the
 Condon-Shortley phase term of code::(-1)^m::.
 
+
 method::sphericalHarmonicR
+
 returns the real part of the Spherical Harmonic.
 
+
 method::sphericalHarmonicI
+
 returns the imaginary part of the Spherical Harmonic.
 
 
 subsection:: Bessel Functions
+
+
 Take a tour of link::Guides/Tour-of-Special-Functions#Bessel Functions#Bessel Functions::.
 
+
 method::cylBesselJ
+
 returns the result of the Bessel functions of the first kind.
 
 The functions return the result of code::domain_error:: whenever the result is
 undefined or complex. This occurs when code::x < 0:: and code::v:: is
 not an integer, or when code::x == 0:: and code::v != 0::.
 
+
 method::cylNeumann
+
 returns the result of the Bessel functions of the second kind.
 
 The functions return the result of code::domain_error:: whenever the result is
 undefined or complex. This occurs when code::x <= 0::.
 
+
 method::cylBesselJZero
+
 returns a single zero or root of the Bessel function of the first kind.
 
 code::index:: is a 1-based index of zero of the cylindrical Bessel function of order code::v::.
 
+
 method::cylNeumannZero
+
 returns a single zero or root of the Neumann function (Bessel function of the second kind).
 
 code::index:: is a 1-based index of zero of the cylindrical Neumann function of order code::v::.
 
+
 method::cylBesselI
+
 returns the result of the modified Bessel functions of the first kind.
 
+
 method::cylBesselK
+
 returns the result of the modified Bessel functions of the second kind.
 
 Requires code::x > 0::.
 
+
 method::sphBessel
+
 returns the result of the spherical Bessel functions of the first kind.
 
 Requires code::x:: > 0.
+
 
 method::sphNeumann
+
 returns the result of the spherical Bessel functions of the first kind.
 
 Requires code::x:: > 0.
 
+
 method::cylBesselJPrime
+
 returns the first derivative with respect to x of the corresponding Bessel function.
 
+
 method::cylNeumannPrime
+
 returns the first derivative with respect to x of the corresponding Neumann function.
 
 Requires code:: x > 0::.
 
+
 method::cylBesselIPrime
+
 returns the first derivative with respect to x of the corresponding Bessel function.
+
 
 method::cylBesselKPrime
+
 returns the first derivative with respect to x of the corresponding Bessel function.
 
 Requires code:: x > 0::.
+
 
 method::sphBesselPrime
+
 returns the first derivative with respect to x of the corresponding Bessel function.
 
 Requires code:: x > 0::.
 
+
 method::sphNeumannPrime
+
 returns the first derivative with respect to x of the corresponding Neumann function.
 
 Requires code:: x > 0::.
 
 
 subsection:: Hankel Functions
+
+
 Take a tour of link::Guides/Tour-of-Special-Functions#Hankel Functions#Hankel Functions::.
 
+
 method::cylHankel1
+
 returns the result of the Hankel functions of the first kind.
 
+
 method::cylHankel2
+
 returns the result of the Hankel functions of the second kind.
 
+
 method::sphHankel1
+
 returns the result of the spherical Hankel functions of the first kind.
 
+
 method::sphHankel2
+
 returns the result of the spherical Hankel functions of the second kind.
 
 
 subsection:: Airy Functions
+
+
 Take a tour of link::Guides/Tour-of-Special-Functions#Airy Functions#Airy Functions::.
 
+
 method::airyAi
+
 returns the result of the Airy function Ai at code::x::.
 
+
 method::airyBi
+
 returns the result of the Airy function Bi at code::x::.
 
+
 method::airyAiPrime
+
 returns the derivative of the Airy function Ai at code::x::.
 
+
 method::airyBiPrime
+
 returns the derivative of the Airy function Bi at code::x::.
 
+
 method::airyAiZero
+
 returns the code::m::th zero or root of the Airy Ai function. The Airy Ai
 function has an infinite number of zeros on the negative real axis.
 
 code::m:: is 1-based.
 
+
 method::airyBiZero
+
 returns the code::m::th zero or root (1-based) of the Airy Bi function. The Airy Bi
 function has an infinite number of zeros on the negative real axis.
 
@@ -1451,79 +2201,111 @@ code::m:: is 1-based.
 
 
 subsection:: Elliptic Integrals
+
+
 Take a tour of link::Guides/Tour-of-Special-Functions#Elliptic Integrals#Elliptic Integrals::.
 
+
 method::ellintRf
+
 returns Carlson's Elliptic Integral RF.
 
 Requires that code::x,y >= 0::, with at most one of them zero, and that code::z >= 0::.
 
+
 method::ellintRd
+
 returns Carlson's Elliptic Integral RD.
 
 Requires that code::x,y >= 0::, with at most one of them zero, and that code::z >= 0::.
 
+
 method::ellintRj
+
 returns Carlson's Elliptic Integral RJ.
 
 Requires that code::x,y,z >= 0::, with at most one of them zero, and that code::p != 0::.
 
+
 method::ellintRc
+
 returns Carlson's Elliptic Integral RC.
 
 Requires that code::x >= 0::, with at most one of them zero, and that code::y != 0::.
 
+
 method::ellintRg
+
 returns Carlson's Elliptic Integral RG.
 
 Requires that code::x,y >= 0::.
 
+
 method::ellint1
+
 returns the incomplete elliptic integral of the first kind, Legendre form.
 
 Requires code::-1 <= k <= 1::.
 
+
 method::ellint1C
+
 returns the complete elliptic integral of the first kind, Legendre form.
 
 Requires code::-1 <= k <= 1::.
 
+
 method::ellint2
+
 returns the incomplete elliptic integral of the second kind, Legendre form.
 
 Requires code::-1 <= k <= 1::.
 
+
 method::ellint2C
+
 returns the complete elliptic integral of the second kind, Legendre form.
 
 Requires code::-1 <= k <= 1::.
 
+
 method::ellint3
+
 returns the incomplete elliptic integral of the third kind, Legendre form.
 
 Requires code::-1 <= k <= 1:: and code::n < 1/sin^2(phi)::.
 
+
 method::ellint3C
+
 returns the complete elliptic integral of the third kind, Legendre form.
 
 Requires code::-1 <= k <= 1:: and code::n < 1::.
 
+
 method::ellintD
+
 returns the incomplete elliptic integral strong::D(phi, k)::, Legendre form.
 
 Requires code::-1 <= k <= 1::.
 
+
 method::ellintDC
+
 returns the complete elliptic integral strong::D(phi, k)::, Legendre form.
 
 Requires code::-1 <= k <= 1::.
 
+
 method::jacobiZeta
+
 returns the result of the Jacobi Zeta Function.
 
 Requires code::-1 <= k <= 1::.
 
+
 method::heumanLambda
+
 returns the result of the Heuman Lambda Function.
 
 Requires code::-1 <= k <= 1::.
@@ -1531,127 +2313,185 @@ Requires code::-1 <= k <= 1::.
 
 subsection:: Jacobi Elliptic Functions
 
+
 Like all elliptic functions, these can be parameterised in a number of ways:
 
-LIST::
+list::
 ##In terms of a parameter code::m::.
 ##In terms of the elliptic modulus code::k:: where code::m = k^2::.
 ##In terms of the modular angle code::α::, where code::m = sin2α::.
 ::
+
 This implementation takes the elliptic modulus code::k:: as the parameter.
 In addition the variable code::u:: is used to express an amplitude strong::φ::.
 All take the elliptic modulus as the first argument - this is for alignment with the link::#Elliptic Integrals::.
 
 Take a tour of link::Guides/Tour-of-Special-Functions#Jacobi Elliptic Functions#Jacobi Elliptic Functions::.
 
+
 method::jacobiCd
+
 
 method::jacobiCn
 
+
 method::jacobiCs
+
 
 method::jacobiDc
 
+
 method::jacobiDn
+
 
 method::jacobiDs
 
+
 method::jacobiNc
+
 
 method::jacobiNd
 
+
 method::jacobiNs
+
 
 method::jacobiSc
 
+
 method::jacobiSd
+
 
 method::jacobiSn
 
 
 subsection:: Zeta Functions
+
+
 Take a tour of link::Guides/Tour-of-Special-Functions#Zeta Functions#Zeta Functions::.
 
+
 method::zeta
+
 returns the zeta function of code::z::.
 
 Requires code::z != 1::.
 
 
 subsection:: Exponential Integrals
+
+
 Take a tour of link::Guides/Tour-of-Special-Functions#Exponential Integrals#Exponential Integrals::.
 
+
 method::expintEn
+
 returns the exponential integral En of code::z::.
 
 Requires that when code::n == 1::, code::z != 0::.
 
+
 method::expintEi
+
 returns the exponential integral of code::z::.
 
 Requires code::z != 0::.
 
 
 subsection:: Basic Functions
+
+
 Take a tour of link::Guides/Tour-of-Special-Functions#Basic Functions#Basic Functions::.
 
+
 method::sinPi
+
 returns code::sin(x * π)::.
 
+
 method::cosPi
+
 returns code::cos(x * π)::.
 
+
 method::log1p
+
 returns the natural logarithm of code::x+1::.
 
+
 method::expm1
+
 returns code::e^x - 1::.
 
+
 method::cbrt
+
 returns the cube root of code::x::.
 
+
 method::sqrt1pm1
+
 returns code::sqrt(1+x) - 1::.
 
+
 method::powm1
+
 returns code::x^y - 1::.
 
 
 subsection:: Sinus Cardinal (Sinc) and Hyperbolic Sinus Cardinal Functions
+
+
 Take a tour of link::Guides/Tour-of-Special-Functions#Sinus Cardinal (Sinc) and Hyperbolic Sinus Cardinal Functions, Inverse Hyperbolic Functions#Sinus Cardinal (Sinc) and Hyperbolic Sinus Cardinal Functions::.
 
+
 method::sincPi
+
 returns the Sinus Cardinal of code::x::. Also known as the "sinc" function.
 
 code::sincPi(x) = sin(x) / x::
 
+
 method::sinhcPi
+
 returns the Hyperbolic Sinus Cardinal of code::x::.
 
 code::sinhcPi(x) = sinh(x) / x::
 
 
 subsection:: Inverse Hyperbolic Functions
+
+
 Take a tour of link::Guides/Tour-of-Special-Functions#Sinus Cardinal (Sinc) and Hyperbolic Sinus Cardinal Functions, Inverse Hyperbolic Functions#Inverse Hyperbolic Functions::.
 
+
 method::asinh
+
 returns the reciprocal of the hyperbolic sine function at code::x::.
 
+
 method::acosh
+
 returns the reciprocal of the hyperbolic cosine function at code::x::.
 
 Requires code::x >= 1::.
 
+
 method::atanh
+
 returns the reciprocal of the hyperbolic sine function at code::x::.
 
 Requires code::-1 < x < 1::.
 
 
 subsection:: Owen's T Function
+
+
 Take a tour of link::Guides/Tour-of-Special-Functions#Owen#Owen's T Function::.
 
+
 method::owensT
+
 returns the Owens T function of code::h:: and code::a::.
 
 

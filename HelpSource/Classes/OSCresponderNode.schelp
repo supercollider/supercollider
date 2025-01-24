@@ -1,9 +1,11 @@
-class:: OSCresponderNode
-summary:: client side network responder
-related:: Classes/OSCFunc, Classes/OSCdef, Guides/OSC_communication, Classes/OSCpathResponder, Classes/NetAddr
+title:: OSCresponderNode
+summary:: client-side network responder
 categories:: External Control>OSC
+related:: Classes/OSCFunc, Classes/OSCdef, Guides/OSC_communication, Classes/OSCpathResponder, Classes/NetAddr
+
 
 description::
+
 note::
 This class is deprecated and will be removed in a future version of SC. Use link::Classes/OSCFunc:: and link::Classes/OSCdef:: instead. They are faster, safer, and have more logical argument order than the old responder classes, and they support pattern matching and custom listening ports. Use of the older classes OSCresponder, OSCresponderNode, and OSCpathResponder can be unsafe, since responders in user and class code can override each other unintentionally.
 ::
@@ -18,6 +20,7 @@ Other applications sending messages to SuperCollider should distinguish between 
 Messages from external clients that should be processed by OSCresponders must be sent to the language port, strong::57120:: by default. Use code::NetAddr.langPort:: to confirm which port the SuperCollider language is listening on.
 
 See link::Guides/OSC_communication:: for more details.
+
 
 examples::
 

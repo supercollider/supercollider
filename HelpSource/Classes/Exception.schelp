@@ -1,9 +1,12 @@
-class::Exception
-categories::Core
+title:: Exception
 summary:: root error class
+categories:: Core
 keyword:: try protect catch
 
+
 description::
+
+
 The root of SuperCollider's error handling mechanism.
 
 Exception is an abstract class, defining basic error behavior. This class is not directly used in SuperCollider. Users may create subclasses of Exception to identify specific types of failure conditions.
@@ -16,6 +19,7 @@ You should not return ^ from inside of the code::try:: or code::protect:: functi
 
 
 subsection:: Background: General exception handling
+
 
 An exception is any event that disrupts the normal execution flow of a program. In practice there is not much distinction between an exception and an error; in SuperCollider, we tend to speak of errors where other object-oriented languages (Java, C++) would use exception consistently.
 
@@ -77,6 +81,7 @@ try { } { |error|
 		{ error.throw }
 }
 ::
+
 Following is an example that recovers from a failed attempt to write into an immutable array, by re-attempting the write on a copy of the array.
 
 code::

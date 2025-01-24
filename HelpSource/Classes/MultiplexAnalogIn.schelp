@@ -1,33 +1,47 @@
-class:: MultiplexAnalogIn
-summary:: Read data from an analog input of the Bela board
+title:: MultiplexAnalogIn
+summary:: reads data from an analog input of the Bela board
+categories:: UGens>Bela
 related:: Classes/AnalogIn, Classes/AnalogOut, Classes/DigitalIn, Classes/DigitalOut, Classes/DigitalIO
-categories::  UGens>Bela
 
 
 description::
+
+
 reads analog data from a multiplexed analog input of the Bela board, with the additional Multiplexer board.
 
 note::
-This UGen only works on Bela
+This UGen only works on Bela.
 ::
+
 
 classmethods::
 
+
 method::ar
+
 argument::analogPin
-Analog pin number to read. Pin numbers begin at 0. This value can be modulated at audiorate.
+analog pin number to read. Pin numbers begin at 0. This value can be modulated at audiorate.
+
 argument::muxChannel
-Multiplex channel to read. Pin numbers begin at 0. This value can be modulated at audiorate.
+multiplex channel to read. Pin numbers begin at 0. This value can be modulated at audiorate.
+
 argument::mul
+
 argument::add
 
+
 method::kr
+
 argument::analogPin
-Analog pin number to read. Pin numbers begin at 0.
+analog pin number to read. Pin numbers begin at 0.
+
 argument::muxChannel
-Multiplex channel to read. Pin numbers begin at 0.
+multiplex channel to read. Pin numbers begin at 0.
+
 argument::mul
+
 argument::add
+
 
 examples::
 

@@ -1,20 +1,28 @@
-class:: Punop
+title:: Punop
 summary:: unary operator pattern
-related:: Classes/Pbinop, Classes/Pnaryop, Classes/UnaryOpFunction, Overviews/Operators
 categories:: Streams-Patterns-Events>Patterns>Math
+related:: Classes/Pbinop, Classes/Pnaryop, Classes/UnaryOpFunction, Overviews/Operators
+
 
 description::
+
+
 returns a stream that applies the unary operator to the stream values of the receiver. Usually, this is the result of applying a unary operator (i.e. a method with one argument) to a pattern.
 
-Examples of unary operators are: squared, sqrt, sin, tan ...
+Examples of unary operators are: code::squared::, code::sqrt::, code::sin::, code::tan::, ...
 
-ClassMethods::
+
+classmethods::
+
 
 method::new
+
 argument::operator
 operator to be applied
+
 argument::a
 a pattern (or compatible pattern input)
+
 
 examples::
 

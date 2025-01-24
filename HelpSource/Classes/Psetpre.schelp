@@ -1,10 +1,14 @@
-class:: Psetpre
-summary:: set values of one key in an event before it is passed up
-related:: Classes/Pset, Classes/Psetp
+title:: Psetpre
+summary:: sets values of one key in an event before it is passed up
 categories:: Streams-Patterns-Events>Patterns>Filter
+related:: Classes/Pset, Classes/Psetp
+
 
 description::
+
+
 sets a value in an event, before it is passed up the stream. To set the value after it has been passed to the stream, use link::Classes/Pset::.
+
 code::
 (
 var a, b;
@@ -14,15 +18,21 @@ x = a.asStream;
 )
 ::
 
-ClassMethods::
+
+classmethods::
+
 
 method::new
+
 argument::name
 the key
+
 argument::value
 can be a pattern or a stream. The resulting stream ends when that incoming stream ends.
+
 argument::pattern
 the pattern
+
 
 examples::
 

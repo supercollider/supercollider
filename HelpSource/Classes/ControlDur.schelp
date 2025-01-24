@@ -1,15 +1,23 @@
-class:: ControlDur
-summary:: Duration of one block
+title:: ControlDur
+summary:: duration of one block
 categories:: UGens>Info
 related:: Classes/ControlRate
 
+
 description::
-returns the current block duration of the server in seconds. Equivalent to  1 / link::Classes/ControlRate::.
+
+
+returns the current block duration of the server in seconds. Equivalent to teletype::1 / ControlRate.ir::. See link::Classes/ControlRate::.
+
 
 classmethods::
+
+
 method::ir
 
+
 examples::
+
 code::
 { ControlDur.ir.poll }.play;
 

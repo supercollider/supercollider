@@ -1,23 +1,30 @@
-class:: Crackle
-summary:: Chaotic noise function.
+title:: Crackle
+summary:: chaotic noise function
+categories:: UGens>Generators>Stochastic
 related:: Classes/LatoocarfianN, Classes/Logistic
-categories::  UGens>Generators>Stochastic
 
 
 description::
+
+
 A noise generator based on a chaotic function.
 
 
 classmethods::
 
+
 method::ar, kr
+
 argument::chaosParam
-A parameter of the chaotic function with useful values from
+a parameter of the chaotic function with useful values from
 just below 1.0 to just above 2.0. Towards 2.0 the sound crackles.
+
 argument::mul
-Output will be multiplied by this value.
+output will be multiplied by this value.
+
 argument::add
-This value will be added to the output.
+this value will be added to the output.
+
 
 examples::
 

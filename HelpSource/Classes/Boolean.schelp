@@ -1,13 +1,18 @@
-class::Boolean
+title:: Boolean
 summary:: abstract class whose instances represent a logical value
-categories::Core
+categories:: Core
 related:: Reference/Control-Structures
 
+
 description::
+
+
 Boolean is the superclass of link::Classes/True:: and link::Classes/False:: which are the concrete realizations.
 In code link::Classes/True:: and link::Classes/False:: are represented by the literal values code::true:: and code::false::.
 
-instanceMethods::
+
+instancemethods::
+
 
 private:: while
 private:: storeOn
@@ -15,39 +20,79 @@ private:: trace
 private:: printOn
 private:: archiveAsCompileString
 
+
 method::xor
-returns:: the exclusive or of the receiver and another Boolean.
+
+returns::
+
+the exclusive or of the receiver and another Boolean.
+
 
 method::and
-If the receiver is code::true::, then answer the evaluation of function.
+
+if the receiver is code::true::, then answer the evaluation of function.
 If the receiver is code::false::, then function is not evaluated and the message answers code::false::.
 
+
 method::or
-If the receiver is code::false::, then answer the evaluation of function.
+
+if the receiver is code::false::, then answer the evaluation of function.
 If the receiver is code::true::, then function is not evaluated and the message answers code::true::.
 
+
 method::&&
-returns:: code::true:: if the receiver is code::true:: and aBoolean is code::true::.
+
+returns::
+
+code::true:: if the receiver is code::true:: and aBoolean is code::true::.
+
 
 method::||
-returns:: code::true:: if either the receiver is code::true:: or aBoolean is code::true::.
+
+returns::
+
+code::true:: if either the receiver is code::true:: or aBoolean is code::true::.
+
 
 method::nand
-returns:: code::true:: unless both the operands are code::true:: (Sheffer stroke)
+
+returns::
+
+code::true:: unless both the operands are code::true:: (Sheffer stroke)
+
 
 method::not
-returns:: code::true:: if the receiver is code::false::, and code::false:: if the receiver is code::true::.
+
+returns::
+
+code::true:: if the receiver is code::false::, and code::false:: if the receiver is code::true::.
+
 
 method::if
-If the receiver is code::true::, answer the evaluation of the trueFunc. If the receiver is code::false::, answer the evaluation of the falseFunc.
+
+if the receiver is code::true::, answer the evaluation of the trueFunc. If the receiver is code::false::, answer the evaluation of the falseFunc.
+
 
 method::asInteger
+
+
 method::binaryValue
-returns:: 1 if the receiver is code::true::, and 0 if the receiver is code::false::.
+
+returns::
+
+1 if the receiver is code::true::, and 0 if the receiver is code::false::.
+
 
 method::asBoolean
+
+
 method::booleanValue
-returns:: The receiver. The same message is understood by link::Classes/SimpleNumber:: and can be used to convert it to boolean.
+
+returns::
+
+the receiver. The same message is understood by link::Classes/SimpleNumber:: and can be used to convert it to boolean.
+
 
 method::keywordWarnings
-turn on/off warnings if a keyword argument is not found
+
+turns on/off warnings if a keyword argument is not found

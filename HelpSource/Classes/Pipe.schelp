@@ -1,47 +1,72 @@
-class:: Pipe
+title:: Pipe
 summary:: pipe stdin to, or stdout from, a UNIX shell command
-related:: Classes/UnixFILE
 categories:: Files
+related:: Classes/UnixFILE
+
 
 description::
+
+
 Pipe stdin to, or stdout from, a UNIX shell command. Pipe treats the shell command as if it were a UnixFILE, and returns code::nil:: when done. See link::Classes/UnixFILE:: for details of the access methods. Pipe must be explicitly closed. Do not rely on the garbage collector to do this for you!
 
-ClassMethods::
+
+classmethods::
+
 
 method::new
+
 argument::commandLine
-A link::Classes/String:: representing a valid shell command.
+a link::Classes/String:: representing a valid shell command.
+
 argument::mode
-A link::Classes/String:: representing the mode. Valid modes are "w" (pipe to stdin) and "r" (pipe from stdout).
+a link::Classes/String:: representing the mode. Valid modes are "w" (pipe to stdin) and "r" (pipe from stdout).
+
 
 method::argv
+
 argument::args
-A link::Classes/SequenceableCollection:: containining strings where the first string is the path to the executable to be run and all other strings are passed as arguments to the executable. This method starts the process directly without using a shell.
+a link::Classes/SequenceableCollection:: containining strings where the first string is the path to the executable to be run and all other strings are passed as arguments to the executable. This method starts the process directly without using a shell.
+
 argument::mode
-A link::Classes/String:: representing the mode. Valid modes are "w" (pipe to stdin) and "r" (pipe from stdout).
+a link::Classes/String:: representing the mode. Valid modes are "w" (pipe to stdin) and "r" (pipe from stdout).
 
-InstanceMethods::
 
-private::prClose, prOpen, prOpenArgv
+instancemethods::
+
+
+private:: prClose, prOpen, prOpenArgv
+
 
 method::open
+
 opens the file.
+
 argument::commandLine
-A command line link::Classes/String:: passed to popen.
+a command line link::Classes/String:: passed to popen.
+
 argument::mode
-A link::Classes/String:: passed to popen, so should be one of: "r", "w"
+a link::Classes/String:: passed to popen, so should be one of: "r", "w"
+
 
 method::openArgv
+
 opens the file.
+
 argument::args
-A link::Classes/SequenceableCollection:: containining strings where the first string is the path to the executable to be run and all other strings are passed as arguments to the executable. This method starts the process directly without using a shell.
+a link::Classes/SequenceableCollection:: containining strings where the first string is the path to the executable to be run and all other strings are passed as arguments to the executable. This method starts the process directly without using a shell.
+
 argument::mode
-A link::Classes/String:: passed to popen, so should be one of: "r", "w"
+a link::Classes/String:: passed to popen, so should be one of: "r", "w"
+
 
 method::close
+
 closes the pipe, waiting for the command to finish. You must do this explicitly before the Pipe object is garbage collected.
 
-returns:: The exit status of the command (an Integer).
+returns::
+
+the exit status of the command (an Integer).
+
 
 examples::
 
@@ -70,6 +95,7 @@ p.close;					// close the pipe to avoid that nasty buildup
 ::
 
 A more time-intensive request:
+
 code::
 (
 var p, l;

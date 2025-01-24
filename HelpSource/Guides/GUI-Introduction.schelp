@@ -1,5 +1,5 @@
 title:: Introduction to GUI
-summary:: An introduction to writing graphical user interface code
+summary:: an introduction to writing graphical user interface code
 categories:: GUI
 
 note::
@@ -10,6 +10,7 @@ You will still see remnants of the old GUI classes in some SuperCollider help fi
 
 
 section:: Basic elements: Windows, views and containers
+
 
 The most fundamental element of the GUI is the strong::Window::. It occupies a rectangular space on screen within which other GUI elements are displayed. It usually has a bar that displays the window's title and allows for moving it, resizing it and closing it with the controls it displays or through mouse and keyboard interaction. Some of these aspects may be controlled within SuperCollider GUI code, though it is largely platform-dependent how precisely interaction with a window happens and is visually indicated.
 
@@ -42,10 +43,12 @@ w.front;
 
 section:: Automatic positioning and resizing of views
 
+
 As a handy alternative to specifying all the dimensions and positions of views explicitly in code, SuperCollider allows for automatic positioning and resizing of views in relation to each other and in relation to window size - at the view creation and dynamically, when window is resized. There are several mechanisms for this purpose.
 
 
 subsection:: View's resize options
+
 
 Views can automatically resize or move when their parent is resized, in one of the nine different ways that define how each of the view's edges will move along with the parent's edges. For documentation see the view's link::Classes/View#-resize#resize:: method and link::Reference/Resize:: document.
 
@@ -60,6 +63,7 @@ w.front;
 
 subsection:: Decorators
 
+
 Decorators are objects that can be assigned to container views to carry the task of positioning the container's child views (currently there exists only one: FlowLayout). After a decorator is assigned to a container, the views created as its children will automatically be positioned in a specific pattern. See documentation of link::Classes/FlowLayout:: for details.
 
 code::
@@ -73,12 +77,14 @@ w.view.decorator = FlowLayout(w.view.bounds);
 
 subsection:: Layouts
 
+
 Layout classes make part of a complex system to manage both position and size of views. Using layouts, only relations of views within a pattern of organization need to be specified and their exact positions as well as sizes will automatically be deduced based on their type (the content they display and the type of interaction they offer) and in accord with principles of good GUI usability. Layouts also position and resize views dynamically, whenever their parent is resized or their contents change.
 
 See the link::Guides/GUI-Layout-Management:: guide for detailed explanation.
 
 note::
 Layouts are currently implemented strong::only in Qt GUI::. The following example will not work in other GUI kits.
+
 code::
 w = Window.new("GUI Introduction").layout_(
 	VLayout(
@@ -87,6 +93,7 @@ w = Window.new("GUI Introduction").layout_(
 	)
 ).front;
 ::
+
 ::
 
 note::
@@ -96,10 +103,12 @@ Layouts are not compatible with decorators and will ignore view resize options. 
 
 section:: Customizing appearance
 
+
 Views offer various ways to customize their appearance. This ranges from decorative changing of colors they use to draw themselves to controlling how they display various kinds of data.
 
 
 subsection:: Colors
+
 
 Colors are represented in GUI code by the link::Classes/Color:: class.
 
@@ -131,6 +140,7 @@ r = Slider(w, Rect(10, 160, 200, 20))
 
 subsection:: Palette
 
+
 In Qt GUI, the complete set of colors used to draw the views is represented by a palette (see the link::Classes/QPalette:: class). Using a palette, you can define (most of) the appearance of the whole GUI in one go.
 
 In the following example, clicking on the button will switch between two palettes. Note, however, that the color assigned to the first Button state will beat the red color defined in the palette, and that colors of individual ListView items are not controlled by the palette.
@@ -158,6 +168,7 @@ RangeSlider(w, Rect(10, 190, 200, 20));
 
 subsection:: Fonts
 
+
 Views that display some text will typically allow you to specify a custom font for it. Fonts are represented by the link::Classes/Font:: class, which can also be queried for the default font used in general, as well as the default font specifically for the "serif", "sans-serif" and "monospace" font types. It can also be queried for all available fonts on the system.
 
 code::
@@ -174,10 +185,12 @@ b = Button.new(w,Rect(10,10,180,50))
 
 subsection:: Other visual properties
 
+
 Complex views may have many other ways to customize how they display the same data. link::Classes/MultiSliderView:: and link::Classes/EnvelopeView:: are good examples.
 
 
 section:: Actions and hooks: Make that button do something!
+
 
 Views and windows can be assigned strong::actions:: that they will perform whenever a specific event occurs as a result of user's interaction. Technically, an action can be any Object, and when the relevant event occurs, its link::Classes/Object#-value#value#:: method will be called. For example, it is useful to assign a Function as an action, which allows one to define an arbitrary chunk of code to be performed in response to a GUI event.
 
@@ -187,6 +200,7 @@ Here, we will give an overview of different kinds of actions and hooks. See link
 
 
 subsection:: Default actions
+
 
 Views can typically be assigned a default action with their link::Classes/View#-action#action:: setter method, which will be performed when the view's primary mode of interaction is invoked. The default action for a Button for example occurs when it is clicked, for a Slider when its handle is moved.
 
@@ -202,6 +216,7 @@ code::
 
 
 subsection:: Keyboard and mouse actions
+
 
 All the views can be assigned actions to specific mouse and keyboard events, no matter what other effects those events might have on the view or what other specialized actions or hooks the view might trigger on these events.
 
@@ -243,6 +258,7 @@ If a key or mouse event is not handled by the view on which it occurs, it may st
 
 subsection:: Drag and drop actions
 
+
 When a mouse button is pressed on a view together with Cmd(macOS) or Ctrl(Other OS) key and the mouse pointer is moved while holding the button, a strong::drag-and-drop:: operation is initiated - in case the view supports it. Most views have a default object that they export when a drag is attempted. For a Slider it is its value, for a List it is the numeric index of the currently selected item, etc. It is said that the exported object is being strong::dragged::. When the dragging gesture ends on another view by releasing the mouse button on top of it, it is said that the dragged object was strong::dropped:: on another view. A view may respond to various objects dropped on it in different ways.
 
 It is possible to customize what object a view exports when dragged from and how a view reacts to objects dropped by assigning custom drag and drop actions.
@@ -261,10 +277,12 @@ code::
 
 subsection:: Other specialized actions
 
+
 Some views can be assigned actions on other events specific to their mode of interaction with the user which you are invited to discover by consulting their documentation.
 
 
 subsection:: Hooks
+
 
 Hooks are various events that signify important changes of state of GUI elements. Technically they are used the same way as actions, but are distinguished from them to denote events that are not a direct result of the user's interaction. Methods of GUI classes used to assign hooks are usually prefixed with "on". (You will also find this naming pattern in methods of other SuperCollider classes, that have hooks in the same sense).
 
@@ -273,11 +291,14 @@ For example, one hook that every view as well as Window has is onClose, which is
 
 section:: Custom views
 
+
 The UserView is a view that displays and does nothing on itself, but allows emphasis::you:: to define how it will be drawn, and for which you can define the entire behavior using mouse, key, and drag and drop actions. For documentation on all of these aspects, see link::Classes/UserView::, link::Classes/View::, and link::Classes/Pen::. The explanation below, however, will demonstrate the basic techniques for designing a custom view.
 
 You will be using the link::Classes/Pen:: class to draw the view. Pen is a powerful class that allows you to algorithmically draw using simple visual primitives like lines, arcs, curves, rectangles, ellipses, etc. and fill the shapes with colors and gradients.
 
-note:: Older tutorials might recommend subclassing UserView. Don't do that. Use composition, not inheritance. Make the UserView a property of your custom view class. ::
+note::
+Older tutorials might recommend subclassing UserView. Don't do that. Use composition, not inheritance. Make the UserView a property of your custom view class.
+::
 
 Creating a custom view involves the following steps:
 

@@ -1,44 +1,69 @@
-class:: RecNodeProxy
+title:: RecNodeProxy
 summary:: a NodeProxy that can record
 categories:: JITLib>NodeProxy
 related:: Classes/NodeProxy
 
+
 description::
+
+
 this is also created from a link::Classes/NodeProxy::, or an link::Classes/Ndef:: with the message strong::record::.
 
-ClassMethods::
+
+classmethods::
+
 
 method::new
-see superclass
+
+see superclass.
+
 
 method::audio
-see superclass
+
+see superclass.
+
 
 method::newFrom
+
 instantiate a new proxy that listens to the in proxy.
 
-InstanceMethods::
+
+instancemethods::
+
 
 method::open
+
 opens new file and initialize buffer on server
 
+
 method::record
-start the recording synth.
+
+starts the recording synth.
+
 argument::paused
 if paused is code::false:: start recording immediately.
+
 argument::clock
 optional - the clock to use for scheduling recording ...
+
 argument::quant
 ... if a code::non-nil::, quant is given.
 
+
 method::close
+
 stops recording, close file
 
+
 method::isRecording
-see if recording right now
+
+see if recording right now.
+
 
 method::wakeUp
+
 until the proxy is not used by any output (either .play or .ar/.kr) it is not running on the server. you can wake it up to force it playing.
+
 
 examples::
 

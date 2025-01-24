@@ -1,10 +1,11 @@
  title:: Non-Realtime Synthesis (NRT)
-summary:: Non-realtime synthesis with binary files of OSC commands
+summary:: non-realtime synthesis with binary files of OSC commands
 categories:: Server>NRT, External Control>OSC
 related:: Classes/Score
 
 
 section:: Realtime vs. Non-Realtime Synthesis
+
 
 When you boot a SuperCollider server (scsynth, or supernova on supported systems) normally, it runs in emphasis::realtime:: mode:
 
@@ -22,12 +23,13 @@ list::
 ## There is no network connection and no interaction with the process while it is running.
 ::
 
-Strong::When to use NRT mode: :: If the audio processing can be arranged fully in advance, and you need "faster-than-light" processing (or the processing is too heavy to complete in real time), NRT may be appropriate.
+strong::When to use NRT mode: :: If the audio processing can be arranged fully in advance, and you need "faster-than-light" processing (or the processing is too heavy to complete in real time), NRT may be appropriate.
 
-Strong::When not to use NRT mode: :: If you need to interact with the server process at specific times, NRT is not appropriate. For instance, if your code makes decisions about upcoming events based on data received from link::Classes/SendReply::, link::Classes/Bus#-get:: (teletype::/c_get::) or link::Classes/Buffer#-get:: (teletype::/b_get::), or node notification messages, these data will not be available in NRT mode.
+strong::When not to use NRT mode: :: If you need to interact with the server process at specific times, NRT is not appropriate. For instance, if your code makes decisions about upcoming events based on data received from link::Classes/SendReply::, link::Classes/Bus#-get:: (teletype::/c_get::) or link::Classes/Buffer#-get:: (teletype::/b_get::), or node notification messages, these data will not be available in NRT mode.
 
 
 section:: Basic usage of Score
+
 
 It is recommended to use a link::Classes/Score:: object to run NRT processes. A Score object:
 
@@ -71,6 +73,7 @@ server.remove;
 
 subsection:: Timed messages
 
+
 A new Score object needs a list of commands, with times.
 
 Each command is an array, e.g. code::['/n_set', 1000, 'gate', 0]::.
@@ -81,7 +84,9 @@ code::
 [143.2647423, ['/n_set', 1000, 'gate', 0]]
 ::
 
-NOTE:: Times are adjusted for the clock's tempo. link::Classes/Score#*new:: allows you to specify a link::Classes/TempoClock::; if you don't, then code::TempoClock.default:: will be used. ::
+note::
+Times are adjusted for the clock's tempo. link::Classes/Score#*new:: allows you to specify a link::Classes/TempoClock::; if you don't, then code::TempoClock.default:: will be used.
+::
 
 Server abstraction objects (Synth, Group, Buffer etc.) include methods to give you the OSC message. So, a Score may frequently include idioms such as:
 
@@ -91,7 +96,8 @@ list::
 ## Read a buffer from disk: code::[time, Buffer(server).allocReadMsg(path)]::
 ::
 
-NOTE:: Normal usage of link::Classes/Synth:: or link::Classes/Buffer:: communicates immediately with the server: code::Synth.new(...):: transmits teletype::/s_new::; code::Buffer.alloc(server, ...):: sends teletype::/b_alloc::. To build a NRT score, create the object as a placeholder (no immediate communication) and then ask a placeholder for the message: link::Classes/Synth#*basicNew:: and link::Classes/Synth#-newMsg::, or link::Classes/Buffer#*new:: and link::Classes/Buffer#-allocMsg:: or link::Classes/Buffer#-allocReadMsg::. There is no need for a bus-allocation message simmilar to link::Classes/Buffer#-allocMsg::. If you have only used realtime synthesis, this code style is unfamiliar, but it's worth practicing.
+note::
+Normal usage of link::Classes/Synth:: or link::Classes/Buffer:: communicates immediately with the server: code::Synth.new(...):: transmits teletype::/s_new::; code::Buffer.alloc(server, ...):: sends teletype::/b_alloc::. To build a NRT score, create the object as a placeholder (no immediate communication) and then ask a placeholder for the message: link::Classes/Synth#*basicNew:: and link::Classes/Synth#-newMsg::, or link::Classes/Buffer#*new:: and link::Classes/Buffer#-allocMsg:: or link::Classes/Buffer#-allocReadMsg::. There is no need for a bus-allocation message simmilar to link::Classes/Buffer#-allocMsg::. If you have only used realtime synthesis, this code style is unfamiliar, but it's worth practicing.
 
 (The result of, e.g., teletype::newMsg:: is already the array representing the message. So it is sufficient for each Score item to be an array containing the time and method call. The subarray should be explicit only when writing the message by hand.) ::
 
@@ -131,6 +137,7 @@ x = Score([
 
 subsection:: Rendering a Score using 'recordNRT'
 
+
 To render the Score, use the link::Classes/Score#-recordNRT:: method. Here is a rough template, followed by an explanation of the teletype::recordNRT:: parameters.
 
 code::
@@ -167,12 +174,16 @@ definitionlist::
 
 Of these, teletype::outputFilePath::, teletype::options:: and teletype::duration:: are particularly important. Make sure you specify at least these.
 
-NOTE:: NRT processing continues until the last timestamp in the score file. If you specify a teletype::duration:: for recordNRT, Score will automatically append a dummy command at the end of the score, with the given timestamp, ensuring that the output file will be at least this long. ::
+note::
+NRT processing continues until the last timestamp in the score file. If you specify a teletype::duration:: for recordNRT, Score will automatically append a dummy command at the end of the score, with the given timestamp, ensuring that the output file will be at least this long.
+::
 
 If you are repeatedly rendering NRT scores, you can set code::Score.options = ServerOptions.new...:: and teletype::recordNRT:: will use this set of server options by default.
 
 
 subsection:: Score files
+
+
 teletype::recordNRT:: allows you optionally to specify the path to the binary OSC score file. This is useful if you want to keep the file for archival purposes, or to delete the file in teletype::recordNRT::'s action function.
 
 If you do not give a path, teletype::recordNRT:: will generate one for you in the system's temporary file location. These files are not automatically deleted after rendering. Some systems may automatically clean up old temporary files after some time. Otherwise, you can take it into your own hands:
@@ -190,6 +201,7 @@ x.recordNRT(oscFilePath: oscPath, ..., action: {
 
 subsection:: Using system SynthDefs
 
+
 Some code requires a number of SynthDefs that are assumed to exist on the server (link::Classes/SystemSynthDefs::). When booting a server in realtime mode, they are sent automatically. In non-realtime mode, they need to be added to the score explicitly:
 
 code::
@@ -200,12 +212,14 @@ x.addSystemSynthDefs;
 
 subsection:: Server instance
 
+
 If you want to use server abstraction objects (e.g. Synth, Group, Buffer), you might also want them to allocate node IDs or buffer and bus numbers for you. link::Classes/Synth#*basicNew:: and link::Classes/Buffer#*new:: use the server's allocators if you don't supply an ID (leave it nil). However, if you accidentally use the default server, any IDs you allocate for NRT will be marked as allocated in the default, realtime server. To avoid this, you can create a separate Server instance, just for producing the Score, and then remove the instance after rendering. This is a client-only object; you don't need to boot it.
 
 It is technically incorrect to use the default server teletype::s:: for Score generation, but for quick and dirty uses, it may be acceptable. The examples in this document demonstrate the use of a dedicated Server object as a best practice. Following this best practice is likely to avoid problems in which NRT Score generation affect the default server instance; however, in common usage, such problems might not be severe. "At the user's own risk."
 
 
 subsection:: Server resources
+
 
 A NRT server is emphasis::a separate server process:: from any other. Every time you run a Score, it launches a brand-new server process. Each new server starts with a blank slate. In particular, any SynthDefs you have added or Buffers you have loaded are not automatically available to the new server.
 
@@ -257,7 +271,9 @@ code::
 File.delete(PathName.tmp +/+ "nrt-help-fail.wav");
 ::
 
-NOTE:: Another common technique to transmit SynthDefs to an NRT server is to use link::Classes/SynthDef#-writeDefFile:: to avoid this problem. This works by writing the SynthDef into the default SynthDef directory; then, the NRT server reads SynthDefs from the default location when it starts up. This approach is perfectly valid, but has the disadvantage of leaving teletype::.scsyndef:: files on disk that you might not need later. For that reason, this document demonstrates how to make SynthDefs available to NRT servers without using disk files. ::
+note::
+Another common technique to transmit SynthDefs to an NRT server is to use link::Classes/SynthDef#-writeDefFile:: to avoid this problem. This works by writing the SynthDef into the default SynthDef directory; then, the NRT server reads SynthDefs from the default location when it starts up. This approach is perfectly valid, but has the disadvantage of leaving teletype::.scsyndef:: files on disk that you might not need later. For that reason, this document demonstrates how to make SynthDefs available to NRT servers without using disk files.
+::
 
 The good news is that a NRT server does not have to wait for "heavy" operations like receiving SynthDefs or loading buffers. Commands that are considered asynchronous in a realtime server behave as synchronous commands in NRT. So, you can simply front-load your Score with all the SynthDefs and Buffers, at time 0.0, and then start the audio processing also at time 0.0. (However, you might need a slight offset for the audio processing because code::sort:: may not know which entries at time 0.0 must come first.) The following examples demonstrate.
 
@@ -266,6 +282,7 @@ section:: Examples
 
 
 subsection:: Algorithmic generation of Synth messages
+
 
 The preceding example, for simplicity, adds only one synth. Another approach is to create the initial Score with "setup" messages, and add further Synth messages for notes.
 
@@ -314,6 +331,7 @@ server.remove;
 
 subsection:: NRT processing of an audio file
 
+
 Applying a custom effect to a very long audio file is an especially good use of NRT: create a Score that defines an effect SynthDef and runs it for the duration of of the input file. You can use teletype::recordNRT::'s input file parameter to pipe the source audio to the NRT server's hardware inputs, and read it with link::Classes/SoundIn::.
 
 The example audio file is not very long, but processing here is almost instantaneous.
@@ -359,6 +377,7 @@ server.remove;
 
 
 subsection:: Generating NRT scores from patterns
+
 
 Event patterns can be converted into Scores by teletype::asScore::. (Note that teletype::asScore:: internally creates a Server instance to use for allocators. So, it is not necessary for this example to create a Server.)
 
@@ -437,6 +456,7 @@ See also link::Classes/Pproto:: for another way to initialize buffers and other 
 
 
 subsection:: Analysis using a Non-Realtime server
+
 
 An NRT server may also be used to extract analytical data from a sound file. The main issues are:
 
@@ -518,17 +538,20 @@ fork {
 
 section:: OSC file format
 
+
 If, for some reason, you need to write the OSC command file yourself without using Score, the general method is:
 
 numberedlist::
 ## Open a file for writing: code::File(path, "w")::.
 ## For each OSC command:
+
 numberedlist::
 ## Create the command as an array, and save it in a variable such as teletype::cmd::.
 ## Convert to binary: code::cmd = cmd.asRawOSC;::
 ## Write the byte size as an integer: code::file.write(cmd.size);::
 ## Write the binary command: code::file.write(cmd);::
 ::
+
 ::
 
 code::
@@ -558,6 +581,7 @@ File.delete(PathName.tmp +/+ "Cmds.osc");
 
 
 section:: Bus allocation and synth/LFO mapping
+
 
 In this example, a control bus and LFO map is used to have various affects on the source sound.
 

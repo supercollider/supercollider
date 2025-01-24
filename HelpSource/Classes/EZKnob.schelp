@@ -1,9 +1,12 @@
-class:: EZKnob
-summary:: Wrapper class for label, knob, number box
+title:: EZKnob
+summary:: wrapper class for label, knob, number box
 categories:: GUI>EZ-GUI
 related:: Classes/Knob, Classes/NumberBox, Classes/StaticText, Classes/CompositeView, Classes/EZGui
 
+
 description::
+
+
 EZKnob is wrapper class which creates an (optional) link::Classes/StaticText::, and a link::Classes/Knob:: plus a link::Classes/NumberBox::. If the parent is code::nil::, then EZKnob will create its own window. See link::Classes/EZGui:: more options.
 
 
@@ -17,39 +20,56 @@ note::
 Bounds: Make certain to choose bounds that are large enough to encompass the knob, the number box, and the label (if you use one), otherwise you may get confusing results. See the examples below.
 ::
 
+
 classmethods::
 
+
 method::new
+
 argument::parent
-The parent view or window. If the parent is code::nil::, then EZKnob will create its own link::Classes/Window::, and place it conveniently on the screen if the bounds are a link::Classes/Point::. If the bounds are a link::Classes/Rect::, then the link::Classes/Rect:: determines the window bounds.
+the parent view or window. If the parent is code::nil::, then EZKnob will create its own link::Classes/Window::, and place it conveniently on the screen if the bounds are a link::Classes/Point::. If the bounds are a link::Classes/Rect::, then the link::Classes/Rect:: determines the window bounds.
+
 argument::bounds
-An instance of link::Classes/Rect:: or link::Classes/Point::. The default value is code::160@20::.  Make certain to choose bounds that are large enough to encompass the knob, the number box, and the label (if you use one), otherwise you may get confusing results. See the examples below.
+an instance of link::Classes/Rect:: or link::Classes/Point::. The default value is code::160@20::.  Make certain to choose bounds that are large enough to encompass the knob, the number box, and the label (if you use one), otherwise you may get confusing results. See the examples below.
+
 argument::label
-The label. The default value is code::nil::. If code::nil::, then no link::Classes/StaticText:: is created.
+the label. The default value is code::nil::. If code::nil::, then no link::Classes/StaticText:: is created.
+
 argument::controlSpec
-The link::Classes/ControlSpec:: for scaling the value.  If the code::minVal + maxVal:: of the spec is 0, then code::centered:: will be set to code::true:: automatically.
+the link::Classes/ControlSpec:: for scaling the value.  If the code::minVal + maxVal:: of the spec is 0, then code::centered:: will be set to code::true:: automatically.
+
 argument::action
-A link::Classes/Function:: called when the value changes. The function is passed the EZKnob instance as its argument.
+a link::Classes/Function:: called when the value changes. The function is passed the EZKnob instance as its argument.
+
 argument::initVal
-The value to initialize the knob and number box with. If code::nil::, then it uses the link::Classes/ControlSpec::'s default value.
+the value to initialize the knob and number box with. If code::nil::, then it uses the link::Classes/ControlSpec::'s default value.
+
 argument::initAction
-A link::Classes/Boolean:: indicating whether the action function should be called when setting the initial value. The default is code::false::.
+a link::Classes/Boolean:: indicating whether the action function should be called when setting the initial value. The default is code::false::.
+
 argument::labelWidth
-Number of pixels width for the label. The default is 60. This is only valid for the code::\horz:: layout.
+number of pixels width for the label. The default is 60. This is only valid for the code::\horz:: layout.
+
 argument::knobSize
-An instance of link::Classes/Point::.  It will adjust itself to maximize the space use of code::width/height::. By default, it uses the maximum available height, and adjusts the width accordingly.
+an instance of link::Classes/Point::.  It will adjust itself to maximize the space use of code::width/height::. By default, it uses the maximum available height, and adjusts the width accordingly.
+
 argument::unitWidth
-Number of pixels width for the unit label. The default is 0. If 0, then no unitLabel is created.
+number of pixels width for the unit label. The default is 0. If 0, then no unitLabel is created.
+
 argument::labelHeight
-Default is 20.
+default is 20.
+
 argument::layout
 code::\vert::, code::vert2::, code::\line2::, or code::\horz::. The default is code::\vert::.
+
 argument::gap
-A link::Classes/Point::. By default, the view tries to get its parent's gap, otherwise it defaults to code::2@2::. Setting it overrides these.
+a link::Classes/Point::. By default, the view tries to get its parent's gap, otherwise it defaults to code::2@2::. Setting it overrides these.
+
 argument::margin
-A link::Classes/Point::. This will inset the bounds occupied  by the subviews of view.
+a link::Classes/Point::. This will inset the bounds occupied  by the subviews of view.
 
 discussion::
+
 code::
 (
 w = Window.new.front;
@@ -68,6 +88,7 @@ g.setColors(Color.grey, Color.white)
 	g.action_({ |ez| (ez.value.asString ++" is the value of " ++ ez).postln });
 );
 ::
+
 The contained views can be accessed via the EZKnob instance variables: code::labelView::, code::knobView::, code::numberView::.
 
 
@@ -76,73 +97,117 @@ instancemethods::
 
 subsection:: Accessing Instance Variables
 
+
 method::numberView
-returns:: the code::numberView::
+
+returns::
+
+the code::numberView::
+
 
 method::knobView
-returns:: the code::knobView::
+
+returns::
+
+the code::knobView::
+
 
 method::labelView
+
 sets/gets the code::labelView::
 
+
 method::action
-A function to be evaluated when the value changes. Te first argument will be the EZKnob.
+
+a function to be evaluated when the value changes. Te first argument will be the EZKnob.
+
 argument::arg1
-An instance of link::Classes/Function:: or link::Classes/FunctionList::. The default value is code::nil::.
+an instance of link::Classes/Function:: or link::Classes/FunctionList::. The default value is code::nil::.
+
 
 method::value
-The value of the knob
+
+the value of the knob
+
 
 method::centered
+
 sets/gets whether the knob is in centered mode. See link::Classes/Knob::.
 
+
 method::round
+
 rounds the values in the number box.
 
+
 method::controlSpec
-An instance of link::Classes/ControlSpec:: for scaling the values.
+
+an instance of link::Classes/ControlSpec:: for scaling the values.
+
 
 method::value
+
 gets/sets the list/menu to the index at value. Does not perform the action.
+
 argument::val
-An link::Classes/Integer::.
+an link::Classes/Integer::.
+
 
 method::doAction
-Performs the action at the current index and the global action.
+
+performs the action at the current index and the global action.
+
 
 method::set
+
 sets the args after creation. You can only set the label if it was not code::nil:: from the beginning.
 
+
 method::visible
+
 sets/gets if the component views are visible.
+
 argument::bool
-An instance of link::Classes/Boolean::. The default is code::true::.
+an instance of link::Classes/Boolean::. The default is code::true::.
 
 
 subsection:: Changing Appearance
 
+
 method::setColors
+
 argument::stringBackground
-An instance of link::Classes/Color::. The code::background:: of the label and unit views.
+an instance of link::Classes/Color::. The code::background:: of the label and unit views.
+
 argument::stringColor
-An instance of link::Classes/Color::. The code::stringColor:: of the label and unit views.
+an instance of link::Classes/Color::. The code::stringColor:: of the label and unit views.
+
 argument::numBackground
-An instance of link::Classes/Color::. The code::numColor:: of the number view.
+an instance of link::Classes/Color::. The code::numColor:: of the number view.
+
 argument::numStringColor
-An instance of link::Classes/Color::. The code::stringColor:: of the number view.
+an instance of link::Classes/Color::. The code::stringColor:: of the number view.
+
 argument::numNormalColor
-An instance of link::Classes/Color::. The code::normalColor:: of the number view.
+an instance of link::Classes/Color::. The code::normalColor:: of the number view.
+
 argument::numTypingColor
-An instance of link::Classes/Color::. The code::typingColor:: of the number view.
+an instance of link::Classes/Color::. The code::typingColor:: of the number view.
+
 argument::knobColors
-An instance of link::Classes/Color::. The code::knobColors:: of the knob view.
+an instance of link::Classes/Color::. The code::knobColors:: of the knob view.
+
 argument::background
-An instance of link::Classes/Color::. The code::background:: of the enclosing view.
+an instance of link::Classes/Color::. The code::background:: of the enclosing view.
+
 
 method::font
+
 sets the Font used by all the views.
+
 argument::font
-An instance of link::Classes/Font::.
+an instance of link::Classes/Font::.
+
 
 examples::
 

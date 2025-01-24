@@ -1,15 +1,20 @@
-class:: Pclutch
-summary:: sample and hold a pattern
-related:: Classes/StreamClutch, Classes/Pdup, Classes/Latch
+title:: Pclutch
+summary:: samples and hold a pattern
 categories:: Streams-Patterns-Events>Patterns>Repetition
+related:: Classes/StreamClutch, Classes/Pdup, Classes/Latch
 
-ClassMethods::
+
+classmethods::
+
 
 method::new
+
 argument::pattern
 any pattern.
+
 argument::connected
 a pattern that returns either a series of link::Classes/Boolean::s or the equivalent 0 and 1. If code::true:: (or 1), the pattern plays as usual, if code::false:: (or 0), the previous value is kept.
+
 
 examples::
 

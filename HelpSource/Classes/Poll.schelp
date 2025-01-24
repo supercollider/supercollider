@@ -1,32 +1,52 @@
-class:: Poll
+title:: Poll
+summary:: prints the current output value of a UGen
 categories:: UGens>Info
-summary:: Print the current output value of a UGen
 related:: Classes/SendTrig, Classes/OSCFunc
 
+
 description::
+
+
 prints the current output value of a UGen, useful for debugging SynthDefs.
 
-WARNING:: Printing values from the Server in intensive for the CPU. Poll should be used for debugging purposes.::
+warning::
+Printing values from the Server in intensive for the CPU. Poll should be used for debugging purposes.
+::
+
 
 classmethods::
+
+
 private:: categories, new, new1
 
+
 method::ar, kr
+
 argument::trig
 a non-positive to positive transition telling Poll to return a value
+
 argument::in
 the signal you want to poll
+
 argument::label
 a string or symbol to be printed with the polled value
+
 argument::trigid
 if greater then 0, a '/tr' message is sent back to the client (similar to SendTrig)
 
-returns:: its in signal (and is therefore transparent).
+returns::
+
+its in signal (and is therefore transparent).
+
 
 instancemethods::
+
+
 private:: checkInputs, init
 
+
 examples::
+
 code::
 s.boot;
 

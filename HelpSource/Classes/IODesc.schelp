@@ -1,30 +1,48 @@
-class:: IODesc
-summary:: Description of SynthDesc input or output
+title:: IODesc
+summary:: description of SynthDesc input or output
 categories:: Server>Nodes
 related:: Classes/SynthDesc
 
+
 description::
+
+
 IODesc describes an input or output of a SynthDesc, as returned by link::Classes/SynthDesc#-outputs:: and link::Classes/SynthDesc#-inputs::
 
+
 classmethods::
+
+
 private:: new
 
+
 instancemethods::
+
+
 private:: printOn
 
+
 method::rate
-A link::Classes/Symbol:: for the rate.
+
+a link::Classes/Symbol:: for the rate.
+
 
 method::numberOfChannels
-The number of channels.
+
+the number of channels.
+
 
 method::startingChannel
-This can either be a link::Classes/String::, a link::Classes/Float:: or an link::Classes/UGen::.
+
+this can either be a link::Classes/String::, a link::Classes/Float:: or an link::Classes/UGen::.
+
 table::
 ## String || The name of the control that provides the bus index
 ## Float || A hard-coded bus index
 ## UGen || The UGen providing the bus index
 ::
 
+
 method::type
-The class of the input/output ugen, like link::Classes/In::, link::Classes/Out::, link::Classes/ReplaceOut::, etc.
+
+the class of the input/output ugen, like link::Classes/In::, link::Classes/Out::, link::Classes/ReplaceOut::, etc.

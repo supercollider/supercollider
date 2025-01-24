@@ -1,9 +1,11 @@
 title:: play
-summary:: Start a process
+summary:: starts a process
 categories:: Common methods
 
+
 method::play
-The code::play:: message is of common use in sc. Different objects respond to it in various
+
+the code::play:: message is of common use in sc. Different objects respond to it in various
 ways, but the simple meaning is: strong::start a process::.
 It is usually implemented by objects in contributed libraries as well.
 
@@ -14,40 +16,57 @@ opposite: code::stop::
 
 
 section:: Clocks, Routines, Streams and Patterns
+
+
 For a full list of which classes that implements code::play::, see link::Overviews/Methods#play::
 
 
 subsection:: clock.play (stream)
+
+
 returns: the clock
+
 code::
 (
 r = Routine.new({ "...playing".postln; 1.wait; "ok, that was it".postln });
 SystemClock.play(r);
 )
 ::
+
 See link::Classes/Clock#*play::
 
 
 subsection:: routine.play (clock)
+
+
 returns: the routine
+
 code::
 Routine.new({ "...playing".postln; 1.wait; "ok, that was it".postln }).play;
 ::
+
 See link::Classes/Routine#-play::
 
 
 subsection:: stream.play (clock)
+
+
 returns: the stream
 
 the stream will loop until it returns code::nil::
+
 code::
 FuncStream({ "ok, that was it".postln; 1 }).play;
 ::
+
 See link::Classes/FuncStream#-play::
 
 
 subsection:: pausestream.play (clock) / task.play (clock)
+
+
 returns: the stream
+
 code::
 a = PauseStream.new(FuncStream.new({ "ok, that was it".postln; 1 }));
 a.play;
@@ -59,11 +78,15 @@ a = Task.new({ loop({ "ok, that was it".postln; 1.wait; }) });
 a.play;
 a.stop;
 ::
+
 See link::Classes/Stream#-play:: and link::Classes/Task#-play::
 
 
 subsection:: pattern.play (clock, protoEvent)
+
+
 returns: an link::Classes/EventStreamPlayer::
+
 code::
 (
 Pseq([
@@ -72,27 +95,33 @@ Pseq([
 ], 2).play;
 )
 ::
+
 See link::Classes/Pattern#-play::
 
 
 section:: Playing single Synths from SynthDefs on the server
+
 
 The following play messages both cause a SynthDef to be written, send it to the server
 and start a synth with it there.
 
 note::
 Some UGens are added in this process.
+
 list::
 ## an link::Classes/Out:: UGen for playing the audio to the first audio busses. If the function returns an Out UGen, this is omitted. ##an envelope with a code::gate:: control for releasing and crossfading. If the function provides its own releasable envelope, this is omitted.
 ::
+
 Also note that they should not be used in quickly running automated processes,
-as there are more efficient alternatives ( see link::Guides/SynthDefsVsSynths:: )
+as there are more efficient alternatives (see link::Guides/SynthDefsVsSynths::)
 ::
 
 
 subsection:: function.play (target, outbus, fadeTime, addAction, args)
 
+
 returns: a link::Classes/Synth::
+
 table::
 ## outbus || on what bus to play (default: 0)
 ## fadeTime || in what time to fade out when released (default: 0.02)
@@ -122,6 +151,8 @@ a = { |freq = 500| HPF.ar(PinkNoise.ar([1, 1] * 0.4), freq) }.play(args: [\freq,
 
 
 subsection:: synthDef.play (target, args, addAction)
+
+
 returns: a link::Classes/Synth::
 
 Note that you need an out ugen to hear the result.
@@ -146,6 +177,9 @@ x.set(\amp, 0.2);
 //free the synth
 x.free;
 ::
+
 See link::Classes/SynthDef#-play::
 
-note:: code::Synth.play(function):: is synonymous, for backwards compatibility with sc2 ::
+note::
+code::Synth.play(function):: is synonymous, for backwards compatibility with sc2.
+::

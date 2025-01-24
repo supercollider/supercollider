@@ -1,16 +1,22 @@
-class:: Pspawner
+title:: Pspawner
 summary:: dynamic control of multiple event streams from a Routine
-related:: Classes/Pspawn
 categories:: Streams-Patterns-Events>Patterns>Parallel
+related:: Classes/Pspawn
+
 
 description::
+
+
 Pspawner allows a routine to dynamically start and stop subpatterns.
 
-ClassMethods::
+
+classmethods::
+
 
 method::new
+
 argument::routineFunc
-The function defines a link::Classes/Routine:: that receives a link::Classes/Spawner:: as its sole argument. All control of subpatterns is through the spawner.
+the function defines a link::Classes/Routine:: that receives a link::Classes/Spawner:: as its sole argument. All control of subpatterns is through the spawner.
 
 link::Classes/Spawner:: responds to the messages:
 
@@ -34,6 +40,7 @@ Stops all substreams of the Spawner.
 note::
 These are also documented in link::Classes/Spawner::.
 ::
+
 
 examples::
 

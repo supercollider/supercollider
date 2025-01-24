@@ -1,10 +1,12 @@
 title:: News in 3.13
-summary:: A summary of news in SC 3.13
+summary:: a summary of news in SC 3.13
 categories:: News
 
 Welcome to the SuperCollider 3.13 release! 
 
-NOTE:: In this version numerous UGens have been fixes so that they calculate their initial value as originally intended. In some cases this may create a different result than previously. See below for details ::
+note::
+In this version numerous UGens have been fixes so that they calculate their initial value as originally intended. In some cases this may create a different result than previously. See below for details.
+::
 
 We now also provide a universal build for both x86_64 and arm64 Apple machines.
 
@@ -12,6 +14,7 @@ Below you can find a more complete list of changes in this version. A big thank 
 
 
 section:: General
+
 
 Countless improvements to help files and documentation (@elifieldsteel, @JaimeClover, @DoHITB, @jamshark70, @heretogo, @capital-G, @alexhughk, @chris75vie, @forrcaho, @paum3, @avdrd, @wolfgangschaltung, @telephon, @redFrik, @madskjeldgaard, @mxw, @dyfer, @tdug, @mtmccrea, @prko, @mjsyts, @grirgz, @chkworks, @balzss, @hectorgonzalezo, @michelestew, @mttvn, @pearcemerritt, @mlang)
 
@@ -40,6 +43,7 @@ Updates and fixes for the automated build system (GitHub Actions):
 
 section:: General: Added
 
+
 Universal macOS build for both Intel x86_64 and Apple arm64 CPUs by @dyfer in https://github.com/supercollider/supercollider/pull/5953
 
 Better description in the about dialog for tagged builds by @dyfer in https://github.com/supercollider/supercollider/pull/5697 and https://github.com/supercollider/supercollider/pull/5739
@@ -47,12 +51,14 @@ Better description in the about dialog for tagged builds by @dyfer in https://gi
 
 section:: General: Changed
 
+
 Update sc-el submodule to latest version by @jxa in https://github.com/supercollider/supercollider/pull/5600
 
 The regular release macOS build now supports macOS 10.14 and up (previously supported 10.13). The legacy build is still provided supporting macOS 10.10 and up.
 
 
 section:: General: Fixed
+
 
 Remove spurious Qt dependencies by @marcan in https://github.com/supercollider/supercollider/pull/4991
 
@@ -66,6 +72,8 @@ Find JACK using cmake's FindPkgConfig by @dvzrv in https://github.com/supercolli
 
 
 section:: sclang: Added
+
+
 Ability to set scrollPosition of QWebView by @paum3 in https://github.com/supercollider/supercollider/pull/5483
 
 Interactive Command line interface on Windows using Readline by @dyfer in https://github.com/supercollider/supercollider/pull/5712
@@ -75,10 +83,12 @@ Support for MPEG formats by @dyfer in https://github.com/supercollider/supercoll
 
 section:: sclang: Changed
 
+
 code:: Signal -thresh :: by @elgiano in https://github.com/supercollider/supercollider/pull/5432
 
 
 section:: sclang: Fixed
+
 
 Stretch behaviour in QcRangeSlider by @miriamvoth in https://github.com/supercollider/supercollider/pull/5595
 
@@ -94,6 +104,7 @@ Parsing block arguments by @nilninull in https://github.com/supercollider/superc
 
 
 section:: Class library: Added
+
 
 Support for code:: kitty :: and code:: alacritty :: Linux terminals by @madskjeldgaard in https://github.com/supercollider/supercollider/pull/5548
 
@@ -118,6 +129,7 @@ Add hooks to the code::Quark:: class by @capital-G and @telephon in https://gith
 
 section:: Class library: Changed
 
+
 Refactor functionality: code:: connectToServerAddr :: by @telephon in https://github.com/supercollider/supercollider/pull/5569
 
 Improve efficiency of calling code:: List -order :: by @telephon in https://github.com/supercollider/supercollider/pull/5561
@@ -141,10 +153,12 @@ Create only a single server meter by default by @telephon in https://github.com/
 
 section:: Class library: Deprecated
 
+
 QuartzComposerView by @dyfer in https://github.com/supercollider/supercollider/pull/5710
 
 
 section:: Class library: Fixed
+
 
 Prevent possible infinite recursion in code:: *initClassTree :: by @jamshark70 in https://github.com/supercollider/supercollider/pull/5575
 
@@ -209,6 +223,7 @@ code:: Buffer *cueSoundFile ::: keep code:: path :: value by @telephon in https:
 
 section:: scsynth and supernova: Added
 
+
 Support for MPEG formats by @dyfer in https://github.com/supercollider/supercollider/pull/5786
 
 Option for LIB_SUFFIX in the CMake build system by @tdug in https://github.com/supercollider/supercollider/pull/5644 and @elgiano in https://github.com/supercollider/supercollider/pull/5728
@@ -218,6 +233,7 @@ Error warnings and /fail replies to /d_load and /d_loadDir (scsynth) by @muellmu
 
 section:: scsynth and supernova: Fixed
 
+
 Make code:: /g_head :: always fire an code:: /n_move :: reply (scsynth) by @Sciss in https://github.com/supercollider/supercollider/pull/5580
 
 Non-real-time mode in supernova by @Spacechild1 in https://github.com/supercollider/supercollider/pull/5616
@@ -226,7 +242,7 @@ Crash when passing audio/control bus mapping to arrayed Group control in superno
 
 Possible crash with unit commands by @Spacechild1 in https://github.com/supercollider/supercollider/pull/5610
 
-Use the code:: /error :: messages to turn on / off the console printing in supernova by @vitreo12 in https://github.com/supercollider/supercollider/pull/5820
+Use the code:: /error :: messages to turn on/off the console printing in supernova by @vitreo12 in https://github.com/supercollider/supercollider/pull/5820
 
 Support for code:: libsndfile :: version >= 1.1.0 by @dyfer in https://github.com/supercollider/supercollider/pull/5761
 
@@ -241,13 +257,16 @@ OffsetOut_Ctor error in supernova on Windows by @Spacechild1 in https://github.c
 
 section:: UGens: Added
 
+
 Argument code:: binout :: to code:: SpecPcile :: by @woolgathering in https://github.com/supercollider/supercollider/pull/5097
 
 
 section:: UGens: Changed
 
+
 code:: Impulse :: is now initialized correctly such that:
-LIST::
+
+list::
 ##it will fire on the first sample, given the default phase of 0 (or multiple of 1).
 ##a frequency of 0 fires once and only once on the first sample (unless the frequency subsequently changes).
 ##negative frequencies and phases are now supported and phase of any value is wrapped into range.
@@ -271,6 +290,8 @@ code:: PanAz ::, due to fixing leaks and imprecisions by @elgiano in https://git
 
 
 section:: UGens: Fixed
+
+
 code:: Tap :: samplerate compensation by @morfant in https://github.com/supercollider/supercollider/pull/5606
 
 Audio rate versions of triggered random ugens by @telephon in https://github.com/supercollider/supercollider/pull/5344

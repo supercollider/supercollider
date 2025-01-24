@@ -1,9 +1,12 @@
-TITLE:: CallOnce
-summary:: execute a function (at most) once
-categories::Streams-Patterns-Events
+title:: CallOnce
+summary:: executes a function (at most) once
+categories:: Streams-Patterns-Events
 related:: Classes/EventStreamCleanup
 
+
 description::
+
+
 Unlike a link::Classes/Thunk::, which takes no arguments, a CallOnce does allow arguments to be passed to the function it wraps, but the function is executed at most once. A CallOnce can also be "cancelled" with a code::clear:: call, without ever executing the wrapped function, even if CallOnce's code::value:: is called later.
 
 The general contract for CallOnce is that any calls into the function after the first would do the same or less (cleanup) work as the first call did. Thus, subsequent calls are completely redundant and can be answered with the result from the first call, even if the arguments change on subsequent calls. Prototypical use case: if a cleanup is called with a code::releaseResource: false:: argument, e.g. because the resource was already released by link::Classes/CmdPeriod::, it is assumed that the cleanup will not be called later with a code::releaseResource: true:: argument.
@@ -18,32 +21,52 @@ c.value(true);  // -> done: true (and posts "woking...")
 c.value(false); // -> done: true (nothing posted)
 ::
 
-CLASSMETHODS::
+
+classmethods::
+
 
 method::new
+
 argument::function
 a function that typically executes some cleanup and may return a desired value. The function is wrapped in the CallOnce for later execution.
 
-INSTANCEMETHODS::
+
+instancemethods::
+
 
 method::clear
-Cancels the CallOnce, meaning that subsequent calls to code::value:: will not execute the wrapped function at all.
-returns:: the CallOnce.
+
+cancels the CallOnce, meaning that subsequent calls to code::value:: will not execute the wrapped function at all.
+
+returns::
+
+the CallOnce.
+
 
 method::didEvaluate
-Report if the CallOnce is considered already evaluated.
-returns:: code::false:: if neither code::clear:: nor code::value:: were called previously; code::true:: otherwise.
+
+reports if the CallOnce is considered already evaluated.
+
+returns::
+
+code::false:: if neither code::clear:: nor code::value:: were called previously; code::true:: otherwise.
+
 
 method::value
-If code::clear:: was called previously, the code::value:: call has no side-effect. Otherwise, on the first call to code::value:: the function wrapped by the CallOnce is evaluated with the arguments provided to code::value:: and the result of this evaluation is stored as the CallOnce's result, used to answer all subsequent calls to code::value::.
-argument::... args
-Arguments to use in the call to the wrapped function, if the call happens. If code::didEvaluate:: already returns code::true:: (before the current call to code::value::), then the current code::args:: are irrelevant because the wrapped function is not called anymore.
 
-returns:: 
+if code::clear:: was called previously, the code::value:: call has no side-effect. Otherwise, on the first call to code::value:: the function wrapped by the CallOnce is evaluated with the arguments provided to code::value:: and the result of this evaluation is stored as the CallOnce's result, used to answer all subsequent calls to code::value::.
+
+argument::... args
+arguments to use in the call to the wrapped function, if the call happens. If code::didEvaluate:: already returns code::true:: (before the current call to code::value::), then the current code::args:: are irrelevant because the wrapped function is not called anymore.
+
+returns::
+
 list::
 ## code::nil:: if code::clear:: was called on the CallOnce before any calls to code::value::, otherwise
 ## the value that was computed by the function (wrapped by the CallOnce) on the first call to CallOnce's code::value::
 ::
+
+
 examples::
 
 code::

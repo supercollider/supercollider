@@ -1,11 +1,13 @@
-class:: PV_HainsworthFoote
-summary:: FFT onset detector.
+title:: PV_HainsworthFoote
+summary:: FFT onset detector
+categories:: UGens>FFT
 related:: Classes/PV_JensenAndersen
-categories::  UGens>FFT
 
 
 description::
-FFT onset detector based on work described in emphasis:: Hainsworth, S. (2003) Techniques for the Automated Analysis of Musical Audio. PhD, University of Cambridge engineering dept. ::
+
+
+FFT onset detector based on work described in emphasis::Hainsworth, S. (2003) Techniques for the Automated Analysis of Musical Audio. PhD, University of Cambridge engineering dept.::
 See especially p128. The Hainsworth metric is a modification of the Kullback Liebler
 distance.
 
@@ -21,20 +23,28 @@ useful in some situations: experimental.
 
 
 classmethods::
+
+
 private:: categories
 
+
 method::ar
+
 argument::buffer
 FFT buffer.
+
 argument::proph
-What strength of detection signal from Hainsworth metric to use.
+what strength of detection signal from Hainsworth metric to use.
+
 argument::propf
-What strength of detection signal from Foote metric to use. The
+what strength of detection signal from Foote metric to use. The
 Foote metric is normalised to (0..1).
+
 argument::threshold
-Threshold hold level for allowing a detection.
+threshold hold level for allowing a detection.
+
 argument::waittime
-If triggered, minimum wait until a further frame can cause
+if triggered, minimum wait until a further frame can cause
 another spot (useful to stop multiple detects on heavy signals).
 
 

@@ -1,38 +1,50 @@
-CLASS:: SendPeakRMS
-summary:: Track peak and power of a signal for GUI applications.
+title:: SendPeakRMS
+summary:: tracks peak and power of a signal for GUI applications
+categories:: UGens>Analysis>Amplitude
 related:: Classes/Peak, Classes/PeakFollower, Classes/OSCFunc
-categories::  UGens>Analysis>Amplitude
 
 
 description::
+
+
 The SendPeakRMS unit generator computes peak and power of a signal and sends the
 computed values back to the clients. It does not produce any output.
 
 
-CLASSMETHODS::
+classmethods::
+
 
 private:: new1
 
 
 method::ar, kr
-Unlike with other unit generators, the code::ar:: and code::kr:: methods do not
+
+unlike with other unit generators, the code::ar:: and code::kr:: methods do not
 specify the rate of the computation, but the granularity. When the SendPeakRMS ugen
 is instantiated with code::kr::, the reply rate is quantized to control-rate
 blocks.
+
 argument::sig
-The input signal.
+the input signal.
+
 argument::replyRate
 Float or Integer. Specifies the number of replies that are sent to the clients
 per second.
+
 argument::peakLag
 Float or Integer. Lag time, which is applied to the peak values. This option is
 commonly used for GUI VU meters.
-argument::cmdName
-Symbol or String. Address pattern for reply message.
-argument::replyID
-Integer ID (similar to link::Classes/SendTrig::).
 
-INSTANCEMETHODS::
+argument::cmdName
+link::Classes/Symbol:: or link::Classes/String::. Address pattern for reply message.
+
+argument::replyID
+integer ID (similar to link::Classes/SendTrig::).
+
+
+instancemethods::
+
+
 private:: numOutputs, writeOutputSpecs
 
 

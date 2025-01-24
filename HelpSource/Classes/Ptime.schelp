@@ -1,7 +1,8 @@
-class:: Ptime
+title:: Ptime
 summary:: returns time in beats from moment of embedding in stream
-related:: Classes/Pkey
 categories:: Streams-Patterns-Events>Patterns>Time
+related:: Classes/Pkey
+
 
 examples::
 

@@ -1,10 +1,12 @@
-class:: Stepper
-summary:: Pulse counter.
+title:: Stepper
+summary:: pulse counter
+categories:: UGens>Triggers
 related:: Classes/PulseCount
-categories::  UGens>Triggers
 
 
 description::
+
+
 Each trigger increments a counter which is output as a signal. The
 counter wraps between  code::min::  and
 code::max:: .
@@ -12,22 +14,29 @@ code::max:: .
 
 classmethods::
 
+
 method::ar, kr
+
 argument::trig
-The trigger. Trigger can be any signal. A trigger happens when
+the trigger. Trigger can be any signal. A trigger happens when
 the signal changes from non-positive to positive.
+
 argument::reset
-Resets the counter to
+resets the counter to
 code::resetval::  when
 triggered.
+
 argument::min
-Minimum value of the counter.
+minimum value of the counter.
+
 argument::max
-Maximum value of the counter.
+maximum value of the counter.
+
 argument::step
-Step value each trigger. May be negative.
+step value each trigger. May be negative.
+
 argument::resetval
-Value to which the counter is reset when it receives a reset
+value to which the counter is reset when it receives a reset
 trigger. If code::nil::, then this is patched to
 
 code::min:: .

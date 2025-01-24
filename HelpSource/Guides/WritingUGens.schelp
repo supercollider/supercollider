@@ -1,5 +1,5 @@
 title:: Writing Unit Generators
-summary:: Get started with writing unit generators
+summary:: get started with writing unit generators
 categories:: Internals
 related:: Reference/ServerPluginAPI
 
@@ -19,6 +19,7 @@ resort for when the limitations of SC are impassable.
 
 
 section:: Pseudo-UGens
+
 
 Before we proceed to the real UGens, we'll take a quick detour for the sake of completeness. A pseudo-UGen is a bit of
 SuperCollider code that abbreviates a certain configuration of UGens that gets used repeatedly. A pseudo-UGen is a class
@@ -52,6 +53,7 @@ loops in the SynthDef.
 
 section:: Basics of UGens
 
+
 A (real) UGen needs two components: a plugin for the server, and a class for the language. The class goes in an ordinary
 code::*.sc:: file, and defines the interface for your UGen in the language. This class is generally just a few lines of
 code that ultimately call the class method link::Classes/UGen#-multiNew::.
@@ -77,7 +79,12 @@ plugin. If you modify the plugin file but not the class file, you don't need to 
 
 section:: FAUST
 
-FAUST footnote::http://faust.grame.fr/:: is an open source DSP language that describes real-time audio units. It can
+
+FAUST footnote::
+
+http://faust.grame.fr/
+
+:: is an open source DSP language that describes real-time audio units. It can
 compile to SuperCollider plugins, providing an easy way to create UGens in SuperCollider.
 
 FAUST provides a shell script useful for SuperCollider users called code::faust2supercollider::. This compiles a .dsp
@@ -91,6 +98,7 @@ limitations, it is time to move on to handwritten C++.
 
 
 section:: Example Plugins
+
 
 To get an idea of the necessary ingredients for writing UGens, it's often best to poke around at complete examples.
 We've set up a GitHub repository at https://github.com/supercollider/example-plugins, which contains some example
@@ -107,11 +115,13 @@ internal buffers, and demonstrates how to do cubic interpolation from an array o
 
 section:: Anatomy of a UGen
 
+
 The SC source code has a header file, code::include/plugin_interface/SC_PlugIn.h::, that gives you your interface to the server
 architecture as well as a bunch of helper functions. These are documented at link::Reference/ServerPluginAPI::.
 
 
 subsection:: The Entry Point
+
 
 When the library is loaded the server calls a function in the library, which is defined by the code::PluginLoad()::
 macro.  This entry point has two responsibilities:
@@ -125,7 +135,7 @@ Unit Generators are defined by calling a function in the InterfaceTable and pass
 the size of its C data struct, and pointers to functions for constructing and destructing it. There are 4 macros, which
 can be used to simplify the process.
 
-definitionList::
+definitionlist::
 ## DefineSimpleUnit || Define a `simple' unit generator
 ## DefineDtorUnit || Define a unit generator with a destructor
 ## DefineSimpleCantAliasUnit || Define a `simple' unit generator, whose input and output buffers cannot alias
@@ -133,6 +143,7 @@ definitionList::
 ::
 
 These macros depend on a specific naming convention:
+
 list::
 ## The unit generator struct is named like the plug-in.
 ## The unit generator constructor is named code::PluginName_Ctor::
@@ -142,6 +153,7 @@ list::
 
 subsection:: The Exit Point
 
+
 The optional code::PluginUnload():: macro exports a function that is called when the library is deinitialized,
 right before it is unloaded. This is only required in rare cases, typically for resource cleanup that cannot be safely done
 in a global object destructor. For example, the DiskIO UGens and UI UGens in code::DiskIO_UGens.cpp:: resp. code::UIUGens.cpp::
@@ -149,6 +161,7 @@ use the unload function to safely join their worker threads.
 
 
 subsection:: The Calculation Function
+
 
 The meat of the UGen is its calculation function, which gets called every control period with the UGen object as an
 argument. (This is for control-rate and audio-rate UGens -- demand-rate is different.) In this function, the UGen reads
@@ -166,7 +179,12 @@ reverb?
 
 subsection:: Building Unit Generator Plugins
 
-The most portable way to build plugins is using cmake footnote::http://www.cmake.org::, a cross-platform build
+
+The most portable way to build plugins is using cmake footnote::
+
+http://www.cmake.org
+
+::, a cross-platform build
 system.
 
 The examples in the example repository contain code::CMakeLists.txt:: files.
@@ -174,10 +192,11 @@ The examples in the example repository contain code::CMakeLists.txt:: files.
 
 section:: Coding Guidelines
 
+
 Unit generator plugins are called from the real-time context, which means that special care needs to be taken in order
 to avoid audio dropouts.
 
-definitionList::
+definitionlist::
 ## STL Containers || It is generally not recommended to use STL containers, since they internally allocate memory. The only
                      way the STL containers can be used is by providing an Allocator, which maps to the allocating functions of
                      the server.
@@ -188,9 +207,11 @@ definitionList::
 
 
 subsection:: Memory Allocation
+
+
 Do not allocate memory from the OS via code::malloc:: / code::free:: or code::new::/ code::delete::. Instead you should use the real-time memory allocator via code::RTAlloc:: / code::RTFree::.
 
-definitionList::
+definitionlist::
 ## Remember to code::RTFree:: the memory you code::RTAlloc:: ||
 
 Like with code::malloc/free::, you are reponsible for freeing all the memory you allocate. Remember to include code::RTFree:: calls in your destructor functions.
@@ -208,12 +229,13 @@ Since this can cause early exit from your constructor function, it is fundamenta
 code::ClearUnitIfMemFailed:: can be passed a single pointer, or it can check multiple pointers at the same time, by chaining them with the code::&&:: operator (see examples below).
 
 ## For PV and FFT UGens ||
-UGens in FFT chains (such as the ones listed in LINK::Guides/FFT-Overview#PV and FFT UGens in the Standard Library::) should use code::ClearFFTUnitIfMemFailed:: instead. This is because, on a failed allocation, code::ClearUnitIfMemFailed:: would make them output code::0::, which would be interpreted by the next UGen in the FFT chain as "FFT data is ready to be processed on buffer number 0", which is not the case. code::ClearFFTUnitIfMemFailed:: will set their output to code::-1:: instead, meaning that FFT data is not ready, and thus blocking further processing for the rest of the FFT chain. For more informations please see LINK::Guides/FFT-Overview#How FFT UGens communicate::.
+UGens in FFT chains (such as the ones listed in link::Guides/FFT-Overview#PV and FFT UGens in the Standard Library::) should use code::ClearFFTUnitIfMemFailed:: instead. This is because, on a failed allocation, code::ClearUnitIfMemFailed:: would make them output code::0::, which would be interpreted by the next UGen in the FFT chain as "FFT data is ready to be processed on buffer number 0", which is not the case. code::ClearFFTUnitIfMemFailed:: will set their output to code::-1:: instead, meaning that FFT data is not ready, and thus blocking further processing for the rest of the FFT chain. For more informations please see link::Guides/FFT-Overview#How FFT UGens communicate::.
 
 code::ClearFFTUnitIfMemFailed:: is defined in code::FFT_UGens.h::
 ::
 
 Minimal example, C style:
+
 code::
 struct MyUnit : public Unit {
   float* m_values;
@@ -237,7 +259,9 @@ void MyUnit_Dtor(MyUnit* unit) {
   RTFree(unit->mWorld, unit->m_moreValues);
 }
 ::
+
 Or, in C++ class style:
+
 code::
 namespace MyUnit {
   // 1. Use initializer list to ensure pointers are initialized to nullptr
@@ -266,12 +290,13 @@ namespace MyUnit {
 
 subsection:: Thread Safety
 
+
 There are two different implementations of the SuperCollider server. strong::scsynth:: is the traditional server and
 strong::supernova:: is a new implementation with support for multi-processor audio synthesis. Since the plugins in
 strong::supernova:: can be called at the same time from multiple threads, write access to global data structures needs
 to be synchronized.
 
-definitionList::
+definitionlist::
 ## Shared Global Data Structures || Unit generators should not share data structures, which are written to. While it it safe to use
     global data structures for read-only purposes (e.g. different unit generators could use the same constant wavetable),
     the data structures that are modified by the unit generators should not be shared among different instances.
@@ -284,6 +309,7 @@ definitionList::
 
 
 subsection:: Deadlock Prevention
+
 
 In order to prevent deadlocks, a simple deadlock prevention scheme is implemented, based on the following constraints.
 

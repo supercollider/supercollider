@@ -1,9 +1,12 @@
-CLASS:: ObjectGui
-summary:: Controller class for MVC architecture, superclass for all XYZGui classes
-related:: Reference/gui
+title:: ObjectGui
+summary:: controller class for MVC architecture, superclass for all XYZGui classes
 categories:: GUI
+related:: Reference/gui
+
 
 description::
+
+
 In the MVC architecture this is the Controller, which creates Views for manipulating the properties of your Model, and receives messages from the View and enacts the changes on the Model.
 
 Each class specifies its Gui class via the guiClass method.
@@ -29,91 +32,143 @@ gui.gui(parent, bounds);
 In addition to those steps the model/gui dependencies are managed, defaults (code::nil:: parent or code::nil:: bounds) are managed and when the window or parent view is closed then dependencies are safely managed.
 
 
-CLASSMETHODS::
+classmethods::
+
 
 method::new
-creates a gui controller object but does not yet create the views / window.  Calls code::.gui:: to create the views.
+
+creates a gui controller object but does not yet create the views and window.  Calls code::.gui:: to create the views.
+
 argument::model
-The model is the object that the GUI is a graphical interface for.
+the model is the object that the GUI is a graphical interface for.
 
-returns:: the ObjectGui or subclass object
+returns::
+
+the ObjectGui or subclass object
 
 
-INSTANCEMETHODS::
+instancemethods::
+
 
 method::guiBody
-When implementing subclasses this is the primary and often the only method that needs to be implemented.  The ObjectGui parent class takes care of setting up all windows and dependencies and then the guiBody method adds views to the layout.  It is normal to declare instance variables in the ObjectGui subclass that are used to store the widgets so they can be updated later.
+
+when implementing subclasses this is the primary and often the only method that needs to be implemented.  The ObjectGui parent class takes care of setting up all windows and dependencies and then the guiBody method adds views to the layout.  It is normal to declare instance variables in the ObjectGui subclass that are used to store the widgets so they can be updated later.
+
 argument::layout
-Usually a FlowView : a parent view with a FlowLayout to add views to.
+usually a FlowView : a parent view with a FlowLayout to add views to.
+
 argument::bounds
 code::nil:: or a link::Classes/Rect::.
-argument::... args
-More args may be passed here.
 
-returns:: this
+argument::... args
+more args may be passed here.
+
+returns::
+
+this
+
 
 method::update
-When the model is changed and the .changed method is called then .update is called on all dependants including this gui object.  Update the views you have placed in the guiBody.
+
+when the model is changed and the .changed method is called then .update is called on all dependants including this gui object.  Update the views you have placed in the guiBody.
+
 argument::theChanged
-The model.  Within your gui class the model is already in the instance variable 'model'.
+the model.  Within your gui class the model is already in the instance variable 'model'.
+
 argument::theChanger
-Depends on the conventions of how .changed was called.  If an object called someModel.changed(this) then it is supplying itself as the changer and will be passed through here.  Sometimes a flag is used: someModel.changed('points') and the gui may know of and participate in that convention.  Sometimes no changer is passed in.
+depends on the conventions of how .changed was called.  If an object called someModel.changed(this) then it is supplying itself as the changer and will be passed through here.  Sometimes a flag is used: someModel.changed('points') and the gui may know of and participate in that convention.  Sometimes no changer is passed in.
 
 
 method::gui
-The standard method to create a view / window.  Usually you call yourModel.gui(parent, bounds) and this creates the gui (of the related ObjectGui subclass) and then theObjectGui.gui(parent, bounds) is called, forwarding the arguments.  So this method is what receives the forwarded (parent, bounds) from the initial call to theModel.gui(parent, bounds). Usually you do not call this manually and would avoid reimplementing it.
+
+the standard method to create a view/window.  Usually you call yourModel.gui(parent, bounds) and this creates the gui (of the related ObjectGui subclass) and then theObjectGui.gui(parent, bounds) is called, forwarding the arguments.  So this method is what receives the forwarded (parent, bounds) from the initial call to theModel.gui(parent, bounds). Usually you do not call this manually and would avoid reimplementing it.
+
 argument::parent
 parent view : nil, a Window, a FlowView or any other usable container view.
+
 argument::bounds
 code::nil:: or a Rect.  The default of code::nil:: will offer the entire bounds to the guiBody method and then shrink the view size afterwards to the exact size of the contents that were actually added.
-argument::... args
-More args may be passed into theModel.gui(parent, bounds, anArg, moreArg) and will be forwarded to guiBody.
 
-returns:: this
+argument::... args
+more args may be passed into theModel.gui(parent, bounds, anArg, moreArg) and will be forwarded to guiBody.
+
+returns::
+
+this
+
 
 method::guify
-This converts a supplied parent and bounds into a usable parent container view on a window.  It creates a window if needed.
+
+this converts a supplied parent and bounds into a usable parent container view on a window.  It creates a window if needed.
+
 argument::parent
 parent view or code::nil::
+
 argument::bounds
 desired bounds or code::nil::
+
 argument::title
 window title IF a new window is being created.  if there is a parent view then title is ignored.
 
-returns:: converted parent
+returns::
+
+converted parent
 
 
 method::model
-sets a new model. This allows to use a single gui and dynamically swap in a different model of the same class.  The old model releases the gui as a dependant and the new model adds the gui as a dependent.  Then the views are updated.
-argument::newModel
-The new object
 
-returns:: (returnvalue)
+sets a new model. This allows to use a single gui and dynamically swap in a different model of the same class.  The old model releases the gui as a dependant and the new model adds the gui as a dependent.  Then the views are updated.
+
+argument::newModel
+the new object
+
+returns::
+
+(returnvalue)
+
 
 method::dragSource
-The default implementation of writeName places a nameplate on the gui that is draggable.  This method is an accessor for that dragSource object.
 
-returns:: a GUi.dragSource
+the default implementation of writeName places a nameplate on the gui that is draggable.  This method is an accessor for that dragSource object.
+
+returns::
+
+a GUi.dragSource
+
 
 method::viewDidClose
-This is called when the parent view closes. It releases dependants.
 
-returns:: this
+this is called when the parent view closes. It releases dependants.
+
+returns::
+
+this
+
 
 method::background
-Each ObjectGui subclass may implement a default background color.
 
-returns:: a color
+each ObjectGui subclass may implement a default background color.
+
+returns::
+
+a color
+
 
 method::writeName
+
 ObjectGui by default makes a nameplate with the name of the model.  Implement this in subclasses if a different name style or no nameplate is desired.  Note: this may change in the near future.  So many classes override this to shut off the name.
+
 argument::layout
-The layout to place the nameplate on.  Probably the same as is being passed to guiBody
+the layout to place the nameplate on.  Probably the same as is being passed to guiBody
+
 
 method::prWriteName
-The default write name implementation.  You could call this from a subclass if you are primarily implementing writeName to customize what name is shown or to add other items to that area.
+
+the default write name implementation.  You could call this from a subclass if you are primarily implementing writeName to customize what name is shown or to add other items to that area.
+
 argument::layout
 the layout
+
 argument::name
 the string to display
 

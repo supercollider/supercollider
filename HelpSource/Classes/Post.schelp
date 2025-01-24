@@ -1,64 +1,93 @@
-CLASS::Post
+title:: Post
 summary:: posts text to the post window
 categories:: Files
 
+
 description::
+
+
 The class Post is a stream destination. Its main use is that it can sometimes make code more readable and execution slightly more efficient.
+
 code::
 Post <<< a << " " <<< b << " " <<< c << " " <<< d << Char.nl;
 ::
+
 vs
+
 code::
 (a.asCompileString + b.asCompileString + c.asCompileString + d.asCompileString).postln;
 ::
 
 warning::
-<< also means object left shift.
+code::<<:: also means object left shift.
 ::
 
-CLASSMETHODS::
+
+classmethods::
+
 
 method::<<
-Post as string
+
+posts as string
+
 code::
 Post << "string";
 ::
 
+
 method::<<<
-Post as compile string
+
+posts as compile string
+
 code::
 Post <<< "string";
 ::
 
+
 method::comma
+
 prints a comma
+
 code::
 Post.comma;
 ::
 
+
 method::space
+
 prints a space
+
 code::
 Post.space;
 ::
 
+
 method::nl
+
 prints a newline
+
 code::
 Post.nl;
 ::
 
+
 method::ff
+
 prints the char $\f
+
 code::
 Post.ff;
 ::
 
+
 method::tab
+
 prints a tab
+
 code::
 Post.tab;
 ::
+
 
 examples::
 

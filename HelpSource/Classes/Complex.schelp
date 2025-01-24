@@ -1,101 +1,157 @@
-CLASS:: Complex
+title:: Complex
 summary:: complex number
 categories:: Math
-related::Classes/Polar, Classes/SimpleNumber, Classes/Float, Classes/Integer
+related:: Classes/Polar, Classes/SimpleNumber, Classes/Float, Classes/Integer
+
 
 description::
+
+
 A class representing complex numbers.
 Note that this is a simplified representation of a complex number, which does not implement the full mathematical notion of a complex number.
 
-CLASSMETHODS::
+
+classmethods::
+
+
 method::new
+
 creates a new complex number with the given real and imaginary parts.
+
 argument::real
 the real part
+
 argument::imag
 the imaginary part
 
-returns:: a new instance of Complex.
+returns::
+
+a new instance of Complex.
+
 discussion::
+
 code::
 a = Complex(2, 5);
 a.real;
 a.imag;
 ::
 
-INSTANCEMETHODS::
+
+instancemethods::
 
 
 subsection:: math support
+
+
 method::real
-The real part of the number.
+
+the real part of the number.
+
 
 method::imag
-The imaginary part of the number.
+
+the imaginary part of the number.
+
 
 method::conjugate
+
 the complex conjugate.
+
 discussion::
+
 code::
 Complex(2, 9).conjugate
 ::
 
+
 method::+
-Complex addition.
+
+complex addition.
+
 discussion::
+
 code::
 Complex(2, 9) + Complex(-6, 2)
 ::
 
+
 method::-
-Complex subtraction
+
+complex subtraction
+
 discussion::
+
 code::
 Complex(2, 9) - Complex(-6, 2)
 ::
 
+
 method::*
-Complex multiplication
+
+complex multiplication
+
 discussion::
+
 code::
 Complex(2, 9) * Complex(-6, 2)
 ::
 
+
 method::/
-Complex division.
+
+complex division.
+
 discussion::
+
 code::
 Complex(2, 9) / Complex(-6, 2)
 ::
 
+
 method::exp
-Complex exponentiation with base e.
+
+complex exponentiation with base e.
+
 discussion::
+
 code::
 exp(Complex(2, 9))
 ::
+
 code::
 exp(Complex(0, pi)) == -1 // Euler's formula: true
 ::
 
+
 method::squared
-Complex self multiplication.
+
+complex self multiplication.
+
 discussion::
+
 code::
 squared(Complex(2, 1))
 ::
 
+
 method::cubed
+
 complex triple self multiplication.
+
 discussion::
+
 code::
 cubed(Complex(2, 1))
 ::
 
+
 method::sqrt
-Complex square root
+
+complex square root
+
 discussion::
 returns the principal root
+
 code::
 Complex(4, 1.neg).sqrt
 
@@ -103,110 +159,173 @@ Complex(4, 1.neg).sqrt
 Complex(4, 1.neg).pow(2.reciprocal)
 ::
 
+
 method::**
+
+
 method::pow
-Complex exponentiation
+
+complex exponentiation
+
 discussion::
 not implemented for all combinations - some are mathematically ambiguous.
+
 code::
 Complex(0, 2) ** 6
 ::
+
 code::
 2.3 ** Complex(0, 2)
 ::
+
 code::
 Complex(2, 9) ** 1.2 // not defined
 ::
 
 
 method::<
+
 the comparison of just the real parts.
+
 discussion::
+
 code::
 Complex(2, 9) < Complex(5, 1);
 ::
 
+
 method::==
+
 the comparison assuming that the reals (floats) are fully embedded in the complex numbers
+
 discussion::
+
 code::
 Complex(1, 0) == 1;
 Complex(1, 5) == Complex(1, 5);
 ::
 
+
 method::neg
+
 negation of both parts
+
 discussion::
+
 code::
 Complex(2, 9).neg
 ::
 
+
 method::reciprocal
+
 the reciprocal of a complex number
+
 discussion::
+
 code::
 Complex(3, 4).reciprocal
 1 / Complex(3, 4) // same, but less efficient
 ::
 
+
 method::abs
+
 the absolute value of a complex number is its magnitude.
+
 discussion::
+
 code::
 Complex(3, 4).abs
 ::
 
+
 method::magnitude
+
 distance to the origin.
+
 
 method::magnitudeApx
 
+
 method::rho
+
 the distance to the origin.
 
+
 method::angle, phase, theta
+
 the angle in radians.
 
 
 subsection:: conversion
+
+
 method::asPoint
-Convert to a link::Classes/Point::.
+
+converts to a link::Classes/Point::.
+
 
 method::asPolar
-Convert to a Polar
+
+converts to a Polar
+
 
 method::asInteger
+
 real part as link::Classes/Integer::.
 
+
 method::asFloat
+
 real part as link::Classes/Float::.
 
+
 method::asComplex
+
 returns this
 
 
 subsection:: misc
-method::coerce
-method::hash
-a hash value
-method::printOn
-prints this on given stream
-method::performBinaryOpOnSignal
-method::performBinaryOpOnComplex
-method::performBinaryOpOnSimpleNumber
-method::performBinaryOpOnUGen
 
+
+method::coerce
+
+
+method::hash
+
+a hash value
+
+
+method::printOn
+
+prints this on given stream
+
+
+method::performBinaryOpOnSignal
+
+
+method::performBinaryOpOnComplex
+
+
+method::performBinaryOpOnSimpleNumber
+
+
+method::performBinaryOpOnUGen
 
 
 examples::
 
+
 Basic example:
+
 code::
 a = Complex(0, 1);
 a * a; // returns Complex(-1, 0);
 ::
 
 Julia set approximation:
+
 code::
 f = { |z| z * z + Complex(0.70176, 0.3842) };
 

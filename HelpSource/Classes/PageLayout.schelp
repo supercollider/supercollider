@@ -1,206 +1,344 @@
-CLASS:: PageLayout
+title:: PageLayout
 summary:: a Window with a FlowView on it for use in ObjectGui's MVC model
 categories:: GUI
 related:: Classes/ObjectGui, Classes/FlowView, Classes/Window, Classes/NotificationCenter
 
+
 description::
+
+
 This class encapsulates the common task of creating a Window, adding a FlowView (CompositeView with a FlowLayout on it).  It also supports the MVC model by registering controllers that are then removed (sent the .remove message) when the Window closes.  Additionally it can resize itself to fit the contents.
 
 
-CLASSMETHODS::
+classmethods::
+
 
 method::new
+
 creates a Window with a FlowView on it.  The PageLayout object can be treated like a Window or like a View.
+
 argument::title
-Window title
+window title
+
 argument::bounds
-Bounds or code::nil::.  Default of code::nil:: will size the window to the entire screen size.  Use .resizeToFit to shrink the window to the content size.
+bounds or code::nil::.  Default of code::nil:: will size the window to the entire screen size.  Use .resizeToFit to shrink the window to the content size.
+
 argument::margin
 FlowLayout margin.
+
 argument::background
-Background color
+background color
+
 argument::scroll
 boolean: add scroll bars or not.
+
 argument::front
 boolean: whether to immediately display the window, bringing it to the front.  default is code::true::.  You may choose to first add your views to the window and then front it which is useful for large slow GUIs
 
-returns:: a PageLayout
+returns::
+
+a PageLayout
 
 
-INSTANCEMETHODS::
+instancemethods::
+
 
 method::window
+
 the Window object
 
-returns:: a Window
+returns::
+
+a Window
+
 
 method::view
+
 the top most view on the Window
 
-returns:: a View
+returns::
+
+a View
+
 
 method::isClosed
+
 boolean: has the window been closed ?
 
-returns:: boolean
+returns::
+
+boolean
+
 
 method::onClose
-Just as for Window, this method is called when the PageLayout's window is closed.  The actual Window's onClose method is used to trigger clean up operations, releasing dependencies and will also call this onClose function.
 
-returns:: gets/sets onClose handler
+just as for Window, this method is called when the PageLayout's window is closed.  The actual Window's onClose method is used to trigger clean up operations, releasing dependencies and will also call this onClose function.
+
+returns::
+
+gets/sets onClose handler
+
 
 method::asView
+
 returns the top view
 
-returns:: a View
+returns::
+
+a View
+
 
 method::asFlowView
+
 argument::bounds
 if bounds are code::nil:: then it returns self, as a PageLayout is compatible with FlowView.  If bounds are supplied then a child FlowView is placed and returned
 
-returns:: self or a new FlowView
+returns::
+
+self or a new FlowView
+
 
 method::bounds
+
 inner bounds of the top level view.
 
-returns:: a Rect
+returns::
+
+a Rect
+
 
 method::asPageLayout
-Similar to asFlowView, this message converts code::nil:: and various other objects to a PageLayout. This is already a PageLayout, so it returns self.
-argument::name
-Ignored. If the receiver had been code::nil::, then the name would be the Window name. 
-argument::bounds
-Ignored. Would have been used to size the PageLayout
 
-returns:: self
+similar to asFlowView, this message converts code::nil:: and various other objects to a PageLayout. This is already a PageLayout, so it returns self.
+
+argument::name
+ignored. If the receiver had been code::nil::, then the name would be the Window name. 
+
+argument::bounds
+ignored. Would have been used to size the PageLayout
+
+returns::
+
+self
+
 
 method::startRow
+
 compatible with FlowView
 
-returns:: self
+returns::
+
+self
+
 
 method::indentedRemaining
+
 compatible with FlowView
 
-returns:: self
+returns::
+
+self
+
 
 method::checkNotClosed
+
 isClosed.not
 
-returns:: boolean
+returns::
+
+boolean
+
 
 method::front
-bring Window to the front
 
-returns:: self
+brings Window to the front
+
+returns::
+
+self
+
 
 method::hide
-Hide window
 
-returns:: self
+hides window
+
+returns::
+
+self
+
 
 method::show
-Show the window if it was previously hidden.
 
-returns:: self
+shows the window if it was previously hidden.
+
+returns::
+
+self
+
 
 method::close
+
 closes the window, releasing any dependencies and calling the onClose handler.
 
-returns:: self
+returns::
+
+self
+
 
 method::refresh
-Refresh the top level view
 
-returns:: self
+refreshes the top level view
+
+returns::
+
+self
+
 
 method::background
+
 sets background color of top level view
+
 argument::c
 color
 
-returns:: self
+returns::
+
+self
+
 
 method::removeOnClose
-Register an object, usually a ObjectGui subclass or an Updater so that when the Window closes the .remove message will be sent to it. This will cause the object to release its dependencies on its Model.  This means the ObjectGui (or other controller object) will stop getting update messages and will stop trying to update the View which has just been closed along with the Window.  It also means that if there is no link to the Model and no longer any Views that held links to the controller object, that the controller is now unreferenced and will be garbage collected.
+
+registers an object, usually a ObjectGui subclass or an Updater so that when the Window closes the .remove message will be sent to it. This will cause the object to release its dependencies on its Model.  This means the ObjectGui (or other controller object) will stop getting update messages and will stop trying to update the View which has just been closed along with the Window.  It also means that if there is no link to the Model and no longer any Views that held links to the controller object, that the controller is now unreferenced and will be garbage collected.
+
 argument::dependant
 the object that wishes to be sent .remove on closing the window
 
-returns:: self
+returns::
+
+self
+
 
 method::resizeToFit
-Resize the top FlowView to fit its contents and then resize the Window to fit that.
+
+resizes the top FlowView to fit its contents and then resize the Window to fit that.
+
 argument::reflow
-boolean: FlowView can relay all of its child views in cases where the bounds have changed or views have been removed.  This puts them all back in place one by one for the updated bounds.  So this may result in smaller over all bounds, after which the window is shrunk.
+boolean: link::Classes/FlowView:: can relay all of its child views in cases where the bounds have changed or views have been removed.  This puts them all back in place one by one for the updated bounds.  So this may result in smaller over all bounds, after which the window is shrunk.
+
 argument::center
 boolean: after resizing, re-center the window in the screen.
 
-returns:: self
+returns::
+
+self
+
 
 method::reflowAll
-see FlowView reflowAll
 
-returns:: self
+see link::Classes/FlowView#-reflowAll::.
+
+returns::
+
+self
+
 
 method::fullScreen
-go Full screen
 
-returns:: self
+goes to Full screen
+
+returns::
+
+self
+
 
 method::endFullScreen
-end full screen
 
-returns:: self
+ends full screen
+
+returns::
+
+self
 
 
 subsection:: FlowView extensions
 
-method::flow
-Place a new FlowView on the window
-argument::func
-A handler that recieves the new FlowView as argument
-argument::bounds
-Bounds fo the FlowView
 
-returns:: (returnvalue)
+method::flow
+
+places a new FlowView on the window
+
+argument::func
+a handler that recieves the new FlowView as argument
+
+argument::bounds
+bounds for the FlowView
+
+returns::
+
+(returnvalue)
+
 
 method::vert
+
 (describe method here)
+
 argument::func
 (describe argument here)
+
 argument::bounds
 (describe argument here)
+
 argument::spacing
 (describe argument here)
 
-returns:: (returnvalue)
+returns::
+
+(returnvalue)
+
 
 method::horz
+
 (describe method here)
+
 argument::func
 (describe argument here)
+
 argument::bounds
 (describe argument here)
+
 argument::spacing
 (describe argument here)
 
-returns:: (returnvalue)
+returns::
+
+(returnvalue)
+
 
 method::comp
+
 (describe method here)
+
 argument::func
 (describe argument here)
+
 argument::bounds
 (describe argument here)
 
-returns:: (returnvalue)
+returns::
+
+(returnvalue)
+
 
 method::scroll
+
 (describe method here)
+
 argument::... args
 (describe argument here)
 
-returns:: (returnvalue)
+returns::
+
+(returnvalue)
 
 
 examples::

@@ -1,12 +1,18 @@
-class:: OnError
-summary:: register functions to be evaluated when an error occurs
-related:: Classes/StartUp, Classes/ShutDown, Classes/ServerQuit, Classes/ServerTree, Classes/CmdPeriod
+title:: OnError
+summary:: registers functions to be evaluated when an error occurs
 categories:: Control
+related:: Classes/StartUp, Classes/ShutDown, Classes/ServerQuit, Classes/ServerTree, Classes/CmdPeriod
+
 
 description::
+
+
 OnError registers functions to perform an action when an error occurs.
 
-ClassMethods::
+
+classmethods::
+
 
 method::run
+
 calls the object in order.

@@ -1,17 +1,23 @@
-class:: Phprand
+title:: Phprand
 summary:: random values that tend toward hi
-related:: Classes/Plprand
 categories:: Streams-Patterns-Events>Patterns>Random
+related:: Classes/Plprand
 
-ClassMethods::
+
+classmethods::
+
 
 method::new
+
 argument::lo
 lower boundary of values.
+
 argument::hi
 upper boundary of values.
+
 argument::length
 number of values produced.
+
 
 examples::
 

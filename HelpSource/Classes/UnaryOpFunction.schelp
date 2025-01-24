@@ -1,10 +1,14 @@
-class::UnaryOpFunction
-summary:: represent a unary operation on a function
+title:: UnaryOpFunction
+summary:: represents a unary operation on a function
+categories:: Core
 related:: Classes/UnaryOpStream, Classes/Punop, Classes/BinaryOpFunction, Classes/NAryOpFunction, Overviews/Operators
-categories::Core
+
 
 description::
+
+
 Operating on functions instead of numbers, what results is not a result of the calculation, but a structure that represents that calculation.
+
 
 examples::
 

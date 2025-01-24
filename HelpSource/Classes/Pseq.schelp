@@ -1,10 +1,14 @@
-class:: Pseq
+title:: Pseq
 summary:: sequentially embed values in a list
-related:: Classes/Pser
 categories:: Streams-Patterns-Events>Patterns>List
+related:: Classes/Pser
+
 
 description::
+
+
 Cycles over a list of values. The repeats variable gives the number of times to repeat the entire list.
+
 
 examples::
 
@@ -18,6 +22,7 @@ b = a.asStream;
 ::
 
 Pseq also has an offset argument which gives a starting offset into the list.
+
 code::
 (
 var a, b;
@@ -28,6 +33,7 @@ b = a.asStream;
 ::
 
 You can pass a function for the repeats variable that gets evaluated when the stream is created.
+
 code::
 (
 var a, b;
@@ -38,6 +44,7 @@ b = a.asStream;
 ::
 
 If you specify the value inf for the repeats variable, then it will repeat indefinitely.
+
 code::
 (
 var a, b;
@@ -49,6 +56,7 @@ b = a.asStream;
 
 
 Pseq used as a sequence of pitches:
+
 code::
 (
 SynthDef(\help_sinegrain,

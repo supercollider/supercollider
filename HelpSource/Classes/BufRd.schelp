@@ -1,40 +1,60 @@
-class:: BufRd
-summary:: Buffer reading oscillator.
+title:: BufRd
+summary:: Buffer reading oscillator
+categories:: UGens>Buffer
 related:: Classes/BufWr
-categories::  UGens>Buffer
 
 
 description::
+
+
 reads the content of a buffer at an index.
 
 In comparison to link::Classes/PlayBuf:: :
 PlayBuf plays through the buffer by itself, BufRd only moves its read point by the phase input and
 therefore has no pitch input. BufRd has variable interpolation.
 
+
 classmethods::
+
+
 private:: categories
+
+
 method::ar, kr
+
 argument::numChannels
-Number of channels that the buffer will be. This must be a fixed
+number of channels that the buffer will be. This must be a fixed
 integer. The architecture of the SynthDef cannot change after it
 is compiled.
+
 note::
-If you supply a  code::bufnum::  of a buffer that has a
+If you supply a  code::bufnum:: of a buffer that has a
 different  code::numChannels:: than you have specified to
 the BufRd, it will post a warning and output the channels it can.
 ::
+
 argument::bufnum
-The index of the buffer to use.
+the index of the buffer to use.
+
 argument::phase
-Audio rate modulateable index into the buffer.
-Warning:: The phase argument only offers precision for addressing 2**24 samples (about 6.3 minutes at 44100Hz). ::
+audio rate modulateable index into the buffer.
+
+warning::
+The phase argument only offers precision for addressing code::2 ** 24:: samples (about 6.3 minutes at 44100 Hz).
+::
+
 argument::loop
 1 means code::true::, 0 means code::false::. This is modulateable.
+
 argument::interpolation
 1 means no interpolation, 2 is linear, 4 is cubic interpolation.
 
+
 instancemethods::
+
+
 private:: init, argNamesInputsOffset, checkInputs
+
 
 examples::
 

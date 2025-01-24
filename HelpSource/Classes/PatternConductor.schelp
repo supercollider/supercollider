@@ -1,26 +1,40 @@
-class:: PatternConductor
-summary:: Simple interactive control for playing patterns
-related:: Classes/Pattern
+title:: PatternConductor
+summary:: simple interactive control for playing patterns
 categories:: Streams-Patterns-Events>Patterns
+related:: Classes/Pattern
+
 
 description::
+
+
 PatternConductor provides a simple interactive control (supporting play, pause, resume, stop) for playing pattern, much like link::Classes/Pattern#-play::. However, PatternConductor creates its own clock and directly controls the release of sounding notes as well as their initiation by the pattern.
 
-InstanceMethods::
 
-private::prPlay
+instancemethods::
+
+
+private:: prPlay
+
 
 method::tempo
+
 sets the tempo of the PatternConductor
 
+
 method::play
+
 plays the pattern. A link::Classes/TempoClock:: is created, its tempo is set to the PatternConductor tempo, and the pattern is played using that clock. If quant is non-zero, this is synchronized with TempoClock.default at the specified quantization.
 
+
 method::pause
-Pause the pattern, sustaining notes indefinitely. A subsequent link::#-resume:: will return to the original tempo (so the notes will end as scheduled). A subsequent link::#-play:: will cut-off any sounding notes and resume play at the original tempo.
+
+pauses the pattern, sustaining notes indefinitely. A subsequent link::#-resume:: will return to the original tempo (so the notes will end as scheduled). A subsequent link::#-play:: will cut-off any sounding notes and resume play at the original tempo.
+
 
 method::stop
+
 can cut-off or shorten sounding notes, depending on the value of tempo. If code::stopTempo:: argument is code::nil::, all notes are cut-off immediately. Otherwise, notes end at the specified tempo.
+
 
 examples::
 

@@ -1,22 +1,29 @@
-class:: LinPan2
-summary:: Two channel linear pan.
+title:: LinPan2
+summary:: two channel linear pan
+categories:: UGens>Multichannel>Panners
 related:: Classes/Balance2, Classes/Pan2, Classes/Pan4, Classes/PanAz
-categories::  UGens>Multichannel>Panners
 
 
 description::
-Two channel linear panner. The signal is lowered as it pans from left (or right) to center using a straight line from 1 (left or right) to 0.5 (center) for a 6dB reduction in the middle. A problem inherent to linear panning is that the perceived volume of the signal drops in the middle. Pan2 solves this by taking the square root of the linear scaling factor going from 1 (left or right) to 0.5.sqrt (~=0.707) in the center, which is about 3dB reduction. This is equal power panning.
+
+
+Two channel linear panner. The signal is lowered as it pans from left (or right) to center using a straight line from 1 (left or right) to 0.5 (center) for a 6 dB reduction in the middle. A problem inherent to linear panning is that the perceived volume of the signal drops in the middle. Pan2 solves this by taking the square root of the linear scaling factor going from 1 (left or right) to 0.5.sqrt (~=0.707) in the center, which is about 3 dB reduction. This is equal power panning.
 LinPan2 sounds more like the Rhodes tremolo than Pan2.
+
 
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-The input signal.
+the input signal.
+
 argument::pos
-Pan position, -1 is left, +1 is right.
+pan position, -1 is left, +1 is right.
+
 argument::level
-A control rate level input.
+a control rate level input.
 
 
 examples::

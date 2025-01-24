@@ -1,13 +1,17 @@
-CLASS:: HLayout
-summary:: A layout that distributes views in a horizontal line
+title:: HLayout
+summary:: a layout that distributes views in a horizontal line
 categories:: GUI>Layout
 related:: Classes/LineLayout, Classes/VLayout, Classes/GridLayout, Classes/StackLayout, Guides/GUI-Layout-Management
 
+
 description::
+
+
 See documentation of superclass link::Classes/LineLayout:: for details.
 
 
 examples::
+
 code::
 
 // simple example
@@ -61,9 +65,13 @@ w.layout = HLayout(VLayout(*a));
 ::
 
 
-CLASSMETHODS::
+classmethods::
 
-PRIVATE:: key
-PRIVATE:: layoutClass
 
-INSTANCEMETHODS::
+private:: key
+private:: layoutClass
+
+
+instancemethods::
+
+

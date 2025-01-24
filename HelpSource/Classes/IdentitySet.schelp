@@ -1,9 +1,12 @@
-CLASS::IdentitySet
+title:: IdentitySet
 summary:: a set according to identity
-related::Classes/List, Classes/Dictionary
-categories::Collections>Unordered
+categories:: Collections>Unordered
+related:: Classes/List, Classes/Dictionary
+
 
 description::
+
+
 An IdentitySet is a collection of objects, no two of which are the same object (aka. "identical").
 Most of its methods are inherited (see link::Classes/Collection:: and link::Classes/Set:: classes).
 The contents of an IdentitySet are unordered. You must not depend on the order of items in an IdentitySet.
@@ -12,13 +15,17 @@ For an ordered set, see link::Classes/OrderedIdentitySet::.
 IdentitySets are faster than Sets because testing for identity is much faster than testing for equality. Different classes may implement equality in different ways, but identity can be determined just by comparing the object addresses. This allows some methods of IdentitySet to be implemented
 by fast primitives.
 
-INSTANCEMETHODS::
+
+instancemethods::
 
 
 subsection:: Adding and Removing
 
+
 method::add
+
 adds anObject to the IdentitySet. An object which is equal to an object already in the IdentitySet will not be added.
+
 code::
 IdentitySet[1, 2, 3].add(4);
 IdentitySet[1, 2, 3].add(3);
@@ -29,8 +36,11 @@ IdentitySet['abc', 'def', 'ghi'].add('def');
 IdentitySet['abc', 'def', 'ghi'].add('jkl');
 ::
 
+
 method::remove
+
 removes anObject from the IdentitySet.
+
 code::
 IdentitySet[1, 2, 3].remove(3);
 ::
@@ -38,8 +48,11 @@ IdentitySet[1, 2, 3].remove(3);
 
 subsection:: Iteration
 
+
 method::do
+
 evaluates function for each item in the IdentitySet. You must not depend on the order of items. The function is passed two arguments, the item and an integer index.
+
 code::
 IdentitySet[1, 2, 3, 300].do { |item, i| item.postln };
 ::
@@ -47,13 +60,17 @@ IdentitySet[1, 2, 3, 300].do { |item, i| item.postln };
 
 subsection:: Finding an element
 
+
 method::findMatch
+
 returns item if it is in the collection, otherwise returns code::nil::.
+
 code::
 a = IdentitySet[1, 2, 3, 300];
 a.findMatch(1);
 a.findMatch(1.5);
 ::
+
 
 examples::
 

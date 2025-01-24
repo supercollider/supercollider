@@ -1,9 +1,12 @@
-class:: PdefGui
+title:: PdefGui
 summary:: a line of editing controls for a Pdef, and optionally its envir
 categories:: JITLib>GUI, Live Coding
 related:: Classes/PdefAllGui, Classes/TdefGui, Classes/TdefAllGui, Classes/EnvirGui
 
+
 description::
+
+
 A gui showing the link::Classes/Pdef::'s name, playing state, source state, and envir state. Optionally, its envir can also be edited.
 
 
@@ -34,93 +37,133 @@ PdefGui(Pdef(\a), 3, w);
 
 subsection:: Details on the GUI elements
 
-definitionList::
+definitionlist::
 ## name button
 || when selected, typing the delete key will delete its Pdef.
 ## play/stop button
 || indicates whether the Pdef is playing:
+
 table::
 ## " >" || if stopped,
 ## " _" || if playing and active,
 ## " |" || if it is playing, but the stream has ended.
 ::
+
 ## pause/resume button
 || only visible if one can pause or resume the Pdef, i.e. while it is playing.
+
 table::
 ## "paus" || shown when you can pause it,
 ## "rsum" || shown when you can resume it.
 ::
+
 ## src button
 || opens a document to edit the source (function) of the Pdef.
+
 table::
 ## green || a source exists,
 ## white || the source is code::nil::.
 ::
+
 ## env button
 || opens a document to edit the environment of the Pdef, which is where one can keep all variables the Pdef uses for easy access.
+
 table::
 ## green || the Pdef has an envir,
 ## white || the envir is code::nil::.
 ::
+
 ::
 
-ClassMethods::
+
+classmethods::
 
 
 subsection:: Creation Methods
 
+
 method::new
+
 creates a new link::Classes/JITGui:: that will be watching an object and display its state.
+
 argument::object
 the object to watch
+
 argument::numItems
 the number of display items to use, e.g. how many fields for text, or how many EZSliders for single-number parameters.
+
 argument::parent
 a parent view on which to display. If code::nil::, a new window is created; strong::parent:: can also be an existing window or a composite view.
+
 argument::bounds
 a desired size and position where to display a JITGui. can be code::nil::, a link::Classes/Point::, or a link::Classes/Rect::. JITGuis know their minimum size (strong::minSize::), and if code::bounds:: argument is code::nil::, minSize is used. if code::bounds:: argument is a link::Classes/Point:: or link::Classes/Rect::, it will be set to at least minSize. With a rect one can also supply a position where to display. If a point, shown size is the maximum of code::bounds:: argument and minSize.
+
 argument::makeSkip
-A flag whether to make a skipjack.
+a flag whether to make a skipjack.
+
 argument::options
 a list of additional information, e.g. flags about optional buttons. (this is used is some subclasses)
 
-InstanceMethods::
+
+instancemethods::
+
 
 method::object
+
 a link::Classes/Pdef::, or code::nil::
 
+
 method::numItems
+
 the number of items in the envirGui
 
+
 method::parent
+
 the parent view
 
+
 method::bounds
+
 the bounds of the link::#-zone::
 
+
 method::zone
+
 the link::Classes/CompositeView:: within which the PdefGui is shown
 
+
 method::nameBut, playBut, pauseBut, srcBut, envBut
+
 the buttons
 
+
 method::envirGui
+
 the gui for the Pdef's envir - code::nil:: if numItems is 0.
 
+
 method::object
+
 puts an object in the gui.
 
+
 method::moveTo
+
 (if the jitGui is in its own window)
 
 moves it to some specific location.
 
+
 method::clear
+
 (if the jitGui is in its own window)
 
 sets the PdefGui's object to code::nil::
 
+
 method::close
+
 (if the jitGui is in its own window)
 
 closes its window.
@@ -128,7 +171,9 @@ closes its window.
 
 subsection:: Internal methods
 
+
 method::srcString
+
 a compileString that recreates the Pdef.
 
 code::
@@ -136,13 +181,18 @@ code::
 g.srcString;
 ::
 
+
 method::editString
+
 a compileString that recreates the Pdef's envir at edKey.
 
+
 method::editStrings
+
 a compileString that recreates the Pdef's envir at edKeys.
+
 argument::edKeys
-Default value is code::nil::.
+default value is code::nil::.
 
 code::
 // assume g from above is still there
@@ -153,22 +203,29 @@ g.editString(\foo);
 g.editStrings;
 ::
 
+
 method::getUsedKeys
+
 the keys in use in the envir
 
 code::
 g.getUsedKeys;
 ::
 
+
 method::openDoc
+
 opens a document with some strings at some location
 
 code::
 g.openDoc(g.editStrings);
 ::
 
+
 method::makeEnvirGui
+
 makes an envirGui within zone - called internally.
+
 
 examples::
 

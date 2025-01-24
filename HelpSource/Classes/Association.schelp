@@ -1,59 +1,84 @@
-CLASS::Association
+title:: Association
 summary:: relate two objects
-categories::Collections
+categories:: Collections
+
 
 description::
+
+
 associates a key with a value.
 Associations can be created via the -> operator which is defined in class link::Classes/Object::.
 
 Associations are used internally in link::Classes/Dictionary::.
 
-CLASSMETHODS::
+
+classmethods::
+
 
 method::new
+
 creates an Association between two objects.
+
 code::
 (
 x = 'name' -> 100;
 x.postln;
 )
 ::
+
 argument::key
 any object
+
 argument::value
 any object
 
-INSTANCEMETHODS::
+
+instancemethods::
 
 
 subsection:: Accessing
 
+
 method::key
+
 the key object.
 
+
 method::value
+
 the value object.
 
 
 subsection:: Testing
 
+
 method::==
-Compare the keys of two Associations.
+
+compares the keys of two Associations.
+
 
 method::<
-Compare the keys of two Associations.
+
+compares the keys of two Associations.
+
 
 method::hash
-Compute the hash value of the Association.
+
+computes the hash value of the Association.
 
 
 subsection:: Writing to streams
 
+
 method::printOn
+
 writes a string representation to the stream.
 
+
 method::storeOn
+
 writes a compilable string representation to the stream.
+
 
 examples::
 

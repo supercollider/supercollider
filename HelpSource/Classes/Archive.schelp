@@ -1,31 +1,45 @@
-CLASS::Archive
+title:: Archive
 summary:: storing objects to file
 categories:: Collections, Files
-related::Classes/Library, Classes/Object, Classes/LibraryBase
+related:: Classes/Library, Classes/Object, Classes/LibraryBase
+
 
 description::
+
+
 Archives can write any object to disk and read from file again. Complex structures of objects can thus be restored. Writing an object to file as a strong::compile string:: is usually more readable, but does not account for the internal structure of the object.
 
 There is only one global instance: Archive.global, which is initialized automatically.
 
-CLASSMETHODS::
 
-private::initClass
+classmethods::
+
+
+private:: initClass
+
 
 method::global
+
 sets/gets the global archive instance
 
+
 method::archiveDir
+
 sets/gets the directory that the archive is written to.
 Default: link::Classes/Platform::.userAppSupportDir.
 
+
 method::write
+
 writes the global archive now. This is called automatically when SuperCollider quits.
 The default filename is "/archive.sctxar"
 
+
 method::read
+
 reads the global archive now. This is called automatically when SuperCollider recompiles or starts.
 The default filename is "/archive.sctxar"
+
 
 examples::
 

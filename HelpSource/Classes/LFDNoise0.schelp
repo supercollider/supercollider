@@ -1,22 +1,27 @@
-class:: LFDNoise0
-summary:: Dynamic step noise
+title:: LFDNoise0
+summary:: dynamic step noise
+categories:: UGens>Generators>Stochastic
 related:: Classes/LFClipNoise, Classes/LFDClipNoise, Classes/LFDNoise1, Classes/LFDNoise3, Classes/LFNoise0, Classes/LFNoise1, Classes/LFNoise2
-categories::  UGens>Generators>Stochastic
 
 
 description::
+
+
 Like link::Classes/LFNoise0::, it generates random values at a rate
 given by the  code::freq::  argument, with two differences:
 
 list::
 ## no time quantization
 ## fast recovery from low freq values footnote::
-link::Classes/LFNoise0::, link::Classes/LFNoise1::  and
-link::Classes/LFNoise2::  quantize to the nearest integer division
+
+link::Classes/LFNoise0::, link::Classes/LFNoise1:: and
+link::Classes/LFNoise2:: quantize to the nearest integer division
 of the samplerate, and they poll the  code::freq::
 argument only when scheduled; thus they often seem to hang
 when freqs get very low.
+
 ::
+
 ::
 
 
@@ -26,13 +31,18 @@ link::Classes/LFNoise0::  is more efficient.
 
 classmethods::
 
+
 method::ar, kr
+
 argument::freq
-Approximate rate at which to generate random values.
+approximate rate at which to generate random values.
+
 argument::mul
-Output will be multiplied by this value.
+output will be multiplied by this value.
+
 argument::add
-This value will be added to the output.
+this value will be added to the output.
+
 
 examples::
 

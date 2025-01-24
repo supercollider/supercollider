@@ -1,31 +1,43 @@
-class:: DemandEnvGen
-summary:: Demand rate envelope generator
+title:: DemandEnvGen
+summary:: demand rate envelope generator
+categories:: UGens>Demand, UGens>Envelopes
 related:: Classes/Demand, Classes/Duty, Classes/TDuty
-categories::  UGens>Demand, UGens>Envelopes
+
 
 description::
+
+
 plays back break point envelope contours (levels, times, shapes) given by demand ugens. The next values are called when the next node is reached.
 
+
 classmethods::
+
+
 private:: categories
 
+
 method::ar, kr
+
 argument::level
-A demand UGen or any other UGen returning level values. If this ends, the
+a demand UGen or any other UGen returning level values. If this ends, the
 
 code::doneAction::  is evaluated.
+
 argument::dur
-A demand UGen or any other UGen returning time values. If this ends, the
+a demand UGen or any other UGen returning time values. If this ends, the
 
 code::doneAction::  is evaluated.
+
 argument::shape
-A demand UGen or any other UGen: the number given is the shape
+a demand UGen or any other UGen: the number given is the shape
 number according to link::Classes/Env::.
+
 argument::curve
-A demand UGen or any other UGen returning curve values. if shape is 5, this is the
+a demand UGen or any other UGen returning curve values. if shape is 5, this is the
 curve factor.
 
 The possible values are:
+
 table::
 ## 0 || flat segments
 ## 1 || linear segments, the default
@@ -35,8 +47,9 @@ table::
 ## a Float || a curvature value for all segments.
 ## An Array of Floats || curvature values for each segments.
 ::
+
 argument::gate
-If gate is x ≥ 1, the UGen runs.
+if gate is x ≥ 1, the UGen runs.
 
 
 If gate is 0 > x > 1, the UGen is released at the next
@@ -44,17 +57,22 @@ level (doneAction).
 
 
 If gate is x < 0, the UGen is sampled and held.
+
 argument::reset
-If reset crosses from non-positive to positive, the UGen is reset
+if reset crosses from non-positive to positive, the UGen is reset
 at the next level. If it is > 1, it is reset immediately.
+
 argument::levelScale
 demand ugen returning level scaling values
+
 argument::levelBias
 demand ugen returning level offset values
+
 argument::timeScale
 demand ugen returning time scaling values
+
 argument::doneAction
-A doneAction that is evaluated when level or duration stream
+a doneAction that is evaluated when level or duration stream
 ends. See link::Classes/Done::  for more detail.
 
 

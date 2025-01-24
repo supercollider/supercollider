@@ -1,18 +1,25 @@
-class:: LagControl
-summary:: Lagged control input
+title:: LagControl
+summary:: lagged control input
+categories:: UGens>Synth control
 related:: Classes/Control, Classes/TrigControl
-categories::  UGens>Synth control
 
 
 description::
+
+
 code::Control:: ugen with fixed-time lags.
+
 
 classmethods::
 
-private::ir
+
+private:: ir
+
 
 method::kr
+
 argument::values
-Initial value (code::Float:: or code::Array:: of Floats).
+initial value (code::Float:: or code::Array:: of Floats).
+
 argument::lags
-Lag times (code::Float:: or code::Array:: of Floats).
+lag times (code::Float:: or code::Array:: of Floats).

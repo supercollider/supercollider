@@ -1,9 +1,11 @@
-class::Frame
-summary:: Stack Frame
+title:: Frame
+summary:: stack frame
 categories:: Core>Kernel
 
 
 description::
+
+
 Frames are used to contain the arguments, variables and other information for active Functions.
 
 There are no instance variables or methods.

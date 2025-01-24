@@ -1,10 +1,12 @@
-class:: LFNoise2
-summary:: Quadratic noise.
+title:: LFNoise2
+summary:: quadratic noise
+categories:: UGens>Generators>Stochastic
 related:: Classes/LFClipNoise, Classes/LFDClipNoise, Classes/LFDNoise0, Classes/LFDNoise1, Classes/LFDNoise3, Classes/LFNoise0, Classes/LFNoise1
-categories::  UGens>Generators>Stochastic
 
 
 description::
+
+
 generates quadratically interpolated random values at a rate given by
 the nearest integer division of the sample rate by the
 code::freq::  argument.
@@ -13,15 +15,21 @@ note::
 quadratic interpolation means that the noise values can occasionally extend beyond the normal range of +-1, if the freq varies in certain ways. If this is undesirable then you might like to clip2 the values, or use a linearly-interpolating unit instead.
 ::
 
+
 classmethods::
 
+
 method::ar, kr
+
 argument::freq
-Approximate rate at which to generate random values.
+approximate rate at which to generate random values.
+
 argument::mul
-Output will be multiplied by this value.
+output will be multiplied by this value.
+
 argument::add
-This value will be added to the output.
+this value will be added to the output.
+
 
 examples::
 

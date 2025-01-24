@@ -1,5 +1,5 @@
 title:: Writing tests
-summary:: Get started with writing unit tests
+summary:: get started with writing unit tests
 categories:: Testing
 related:: Reference/SCDocSyntax, Classes/SCDoc
 
@@ -15,11 +15,13 @@ list::
 
 section:: install a sourcecode version of SuperCollider
 
-Download or clone SuperCollider from github: https://github.com/supercollider/supercollider.
+
+downloads or clones SuperCollider from github: https://github.com/supercollider/supercollider.
 It is not needed to compile SuperCollider from its sources, you can instead use a pre-compiled binary and include the relevant folders (code::SCClassLibrary, HelpSource, testsuite/classlibrary:: in your environment. See below for an example.
 
 
 section:: Change your environment to include only core library functionality
+
 
 In order to mimick the standard SuperCollider installation, make sure that you have only the class library installed. 
 
@@ -37,14 +39,17 @@ LanguageConfig.addIncludePath(~scSourceDir +/+ "testsuite/classlibrary");
 
 section:: Organisation
 
+
 Core class code::UnitTest::s are located in the directory
 1.  UnitTests go into parrallel directory
 2.  server-related tests go into `server` subdir
 3.  UnitTests should use assert and assertFloat
 4.  look at existing UnitTests to understand what are good UnitTests
 5.  UnitTest setup
-8.  run UnitTests either automatically (UnitTest.runAll), interactively (UnitTEst.gui), or individually by class (MyClass.test / TestMyClass.run << synonyms)
+8.  run UnitTests either automatically (code::UnitTest.runAll::), interactively (code::UnitTEst.gui::), or individually by class (code::MyClass.test / TestMyClass.run << synonyms::)
 
 
 section:: Writing new tests
+
+
 The simplest way is to look at an existing help file or class document, and read this document and link::Reference/SCDocSyntax::

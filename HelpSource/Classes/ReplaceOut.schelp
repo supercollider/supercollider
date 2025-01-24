@@ -1,10 +1,12 @@
-class:: ReplaceOut
-summary:: Send signal to a bus, overwriting previous contents.
+title:: ReplaceOut
+summary:: sends signal to a bus, overwriting previous contents
+categories:: UGens>InOut
 related:: Classes/OffsetOut, Classes/Out, Classes/XOut
-categories::  UGens>InOut
 
 
 description::
+
+
 link::Classes/Out::  adds it's output to a given bus, making it
 available to all nodes later in the node tree (See link::Classes/Synth:: and
 link::Guides/Order-of-execution:: for more information). ReplaceOut overwrites those
@@ -17,12 +19,15 @@ buses and how they are used.
 
 classmethods::
 
+
 method::ar, kr
+
 argument::bus
-The index of the bus to write out to. The lowest numbers are
+the index of the bus to write out to. The lowest numbers are
 written to the audio hardware.
+
 argument::channelsArray
-An Array of channels or single output to write out. You cannot
+an Array of channels or single output to write out. You cannot
 change the size of this once a SynthDef has been built.
 
 

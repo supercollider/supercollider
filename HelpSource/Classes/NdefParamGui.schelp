@@ -1,19 +1,25 @@
-class:: NdefParamGui
+title:: NdefParamGui
 summary:: display the settings of a nodeproxy
 categories:: JITLib>GUI, Live Coding
 related:: Classes/EZText, Classes/NdefGui, Classes/EnvirGui
 
+
 description::
+
+
 NdefParamGui displays all settings and mappings of a nodeproxy, so one can change them flexibly. Single number gets displayed with an link::Classes/EZSlider::, and anything else is shown as an link::Classes/EZText:: (a text field). Its main use is within link::Classes/NdefGui::.
 
 It inherits some useful methods from link::Classes/EnvirGui::.
 
-ClassMethods::
+
+classmethods::
 
 
 subsection:: Creation
 
+
 method::new
+
 creates a new NdefParamGui
 
 code::
@@ -53,27 +59,37 @@ Ndef(\a).map(\freqs, Ndef(\lfos))
 
 g.parent.close
 ::
+
 argument::object
 the nodeproxy whose settings are to be displayed.
+
 argument::numItems
 the number of items to display. If an envir is given, and no num, num is envir.size.
+
 argument::parent
 the parent view to display in; if none is given, a new window is created.
+
 argument::bounds
 the bounds within which to display; if none is given, bounds are calculated.
+
 argument::makeSkip
 flag whether to make a skipjack to manage updates of the envirgui. The default is code::true::.
+
 argument::options
 a list of additional information, e.g. flags about optional buttons.
 
-InstanceMethods::
+
+instancemethods::
+
 
 method::name
+
 if in its own window, set the window's name
 
 code::
 g.name = "Yoohoo";
 ::
+
 
 examples::
 

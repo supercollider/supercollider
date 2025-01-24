@@ -1,19 +1,27 @@
-class:: PSinGrain
-summary:: Very fast sine grain with a parabolic envelope
-categories::  UGens>Generators>Deterministic
+title:: PSinGrain
+summary:: very fast sine grain with a parabolic envelope
+categories:: UGens>Generators>Deterministic
 
 
 description::
+
+
 Very fast sine grain with a parabolic envelope.
 
 
 classmethods::
+
+
 private:: categories
 
+
 method::ar
+
 argument::freq
-Frequency in Hertz.
+frequency in Hertz.
+
 argument::dur
-Grain duration.
+grain duration.
+
 argument::amp
-Grain amplitude.
+grain amplitude.

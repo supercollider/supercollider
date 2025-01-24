@@ -1,9 +1,12 @@
-TITLE:: UnitTest
+title:: UnitTest
 summary:: a class for programmatic testing of classes
 categories:: Testing
 related:: Classes/UnitTestResult, Classes/UnitTestScript
 
+
 description::
+
+
 In order to make sure a method works correctly, a test can be implemented that assures the correct behavior.
 
 It is a common practice to write tests to clarify how an object should respond, and it may avoid inconsistencies on the long run. A test is always a subclass of code::UnitTest::, implementing at least one method starting with code::test_::.
@@ -17,27 +20,35 @@ To install, link::https://github.com/supercollider/supercollider##download the s
 ::
 
 
-CLASSMETHODS::
+classmethods::
 
-PRIVATE:: allTestClasses, classesWithTests, classesWithoutTests, failures, findTestClass, findTestClasses, findTestMethods, findTestedClass, forkIfNeeded, listUntestedMethods, passes, report, reset, run, untestedMethods
+
+private:: allTestClasses, classesWithTests, classesWithoutTests, failures, findTestClass, findTestClasses, findTestMethods, findTestedClass, forkIfNeeded, listUntestedMethods, passes, report, reset, run, untestedMethods
+
 
 method::gui
-A graphical interface to run and browse all tests
+
+a graphical interface to run and browse all tests
 
 code::
 UnitTest.gui
 ::
 
+
 method::reportPasses
-Accessor controlling whether passing tests should be reported.
+
+accessor controlling whether passing tests should be reported.
 Defaults to code::true::.  See also link::#*passVerbosity:: which
 controls how much detail is reported from passing tests
 when this is set to code::true::.
+
 argument::value
-Should be code::true:: or code::false::.
+should be code::true:: or code::false::.
+
 
 method::passVerbosity
-Accessor controlling whether extra details should be reported for
+
+accessor controlling whether extra details should be reported for
 passing tests.
 
 Defaults to code::UnitTest.full:: so that all details are reported;
@@ -46,33 +57,42 @@ sufficient to see that a test is passing without needing to see the
 detail.  If set to code::UnitTest.brief::, and link::#*reportPasses::
 is code::true::, passes will be reported, but without any extra details which
 may be provided by assertions.
+
 argument::value
-Should be code::UnitTest.full:: or code::UnitTest.brief::.
+should be code::UnitTest.full:: or code::UnitTest.brief::.
+
 
 method::run
+
 runs all methods whose names begin with code::test_::.
 
 code::
 TestUnitTest.new.run;
 ::
+
 argument::reset
-If code::true::, first runs link::#*reset:: on the class.
+if code::true::, first runs link::#*reset:: on the class.
+
 argument::report
-If code::true::, outputs the test results.
+if code::true::, outputs the test results.
+
 
 method::runTest
+
 runs a single test method.
 
 code::
 UnitTest.reset;
 UnitTest.runTest("TestUnitTest:test_assert");
 ::
+
 argument::methodName
-A link::Classes/String:: referring to the class and test method
+a link::Classes/String:: referring to the class and test method
 within it, e.g. code::"TestPolyPlayerPool:test_prepareChildrenToBundle"::.
 
 
 method::runAll
+
 runs the entire test suite. As this method addresses the entire test suite, it should be called only on code::UnitTest::. Calling it on any of its subclasses will result in throwing an code::Error::.
 
 code::
@@ -81,47 +101,61 @@ UnitTest.runAll;
 ::
 
 
-INSTANCEMETHODS::
+instancemethods::
+
 
 method::runTestMethod
+
 runs a single test method of this class
 
 code::
 TestUnitTest.new.runTestMethod(TestUnitTest.findMethod(\test_assert));
 ::
+
 argument::method
 the method to run
+
 argument::report
-Reports the result of the test if code::true:: (default is code::true::)
+reports the result of the test if code::true:: (default is code::true::)
 
-returns:: (describe returnvalue here)
+returns::
 
-PRIVATE:: s, run, findTestMethods, setUp, tearDown
+(describe returnvalue here)
+
+private:: s, run, findTestMethods, setUp, tearDown
 
 
 method::assert
-Asserts that an expression must be code::true::.
+
+asserts that an expression must be code::true::.
 
 code::
 this.assert(2 == 2, "passes");
 this.assert(2 == 2.00001, "fails");
 ::
+
 argument::boolean
-A boolean, where code::true:: means that the test is passed.
+a boolean, where code::true:: means that the test is passed.
+
 argument::message
-A message describing the purpose of the assertion, e.g. code::"foo
+a message describing the purpose of the assertion, e.g. code::"foo
 should be less than bar"::.
 Posted if code::report:: is code::true::.
+
 argument::report
-Reports the result of the test if code::true::.
+reports the result of the test if code::true::.
+
 argument::onFailure
-If not code::nil::, a failure stops the tests and evaluates this function.
+if not code::nil::, a failure stops the tests and evaluates this function.
+
 argument::details
-Some optional extra details which will be passed to the reporting framework
+some optional extra details which will be passed to the reporting framework
 for display unless brief reporting is requested (see link::#*passVerbosity::).
 
+
 method::assertEquals
-Asserts that an expression code::a:: is equal to the value code::b::,
+
+asserts that an expression code::a:: is equal to the value code::b::,
 where equality is determined according to code::a::'s implementation
 of code::==::.
 
@@ -134,21 +168,28 @@ code::
 this.assertEquals(2 + 2, 4, "passes");
 this.assertEquals(2 + 2, 5, "fails");
 ::
+
 argument::a
 the experimentally produced value
+
 argument::b
 the expected value
+
 argument::message
-A message describing the purpose of the assertion, e.g.
+a message describing the purpose of the assertion, e.g.
 code::"Adding two numbers should return their sum."::.
 Posted if code::report:: is code::true::.
+
 argument::report
-Reports the result of the test if code::true:: (default is code::true::)
+reports the result of the test if code::true:: (default is code::true::)
+
 argument::onFailure
-If not code::nil::, a failure stops the tests and evaluates this function.
+if not code::nil::, a failure stops the tests and evaluates this function.
+
 
 method::assertFloatEquals
-Asserts that an expression code::a:: returning a float is within a
+
+asserts that an expression code::a:: returning a float is within a
 given range (code::within::) of being equal to code::b::.
 
 Automatically passes details of the equality check to the reporting
@@ -160,48 +201,62 @@ code::
 this.assertFloatEquals(2, 2.0001, "Pass since 2 is close enough to 2.0001.", 0.001);
 this.assertFloatEquals(2, 2.0001, "Fail since 2 isn't close enough to 2.0001.", 0.0001);
 ::
+
 argument::a
 the experimentally produced float value
+
 argument::b
 the expected float value
+
 argument::message
-A message describing the purpose of the assertion, e.g.
+a message describing the purpose of the assertion, e.g.
 code::"Adding two numbers should return their sum."::.
 Posted if code::report:: is code::true::.
+
 argument::within
-The range within which code::a:: must be of code::b:: in
+the range within which code::a:: must be of code::b:: in
 order for the test to pass.
+
 argument::report
-Reports the result of the test if code::true:: (default is code::true::)
+reports the result of the test if code::true:: (default is code::true::)
+
 argument::onFailure
-If not code::nil::, a failure stops the tests and evaluates this function.
+if not code::nil::, a failure stops the tests and evaluates this function.
 
 
 method::assertArrayFloatEquals
+
 makes sure that the two arrays of floats code::a:: and code::b:: equal within a given range (code::within::).
 
 code::
 this.assertArrayFloatEquals([2, 3] + 0.0001, [2, 3], "Pass since pairs of floats are close enough", 0.001);
 this.assertArrayFloatEquals([2, 3.0001], [2, 3], "Fail since pairs of floats aren't both close enough", 0.0001);
 ::
+
 argument::a
 the experimentally produced value, which is an code::Array:: of floats
+
 argument::b
 the code::Array:: of float values expected
+
 argument::message
-A message describing the purpose of the assertion, e.g.
+a message describing the purpose of the assertion, e.g.
 code::"Arrays foo and bar should be equal."::.
 Posted if code::report:: is code::true::.
+
 argument::within
-The range within which each item of code::a:: must be of the
+the range within which each item of code::a:: must be of the
 corresponding item in code::b:: in order for the test to pass.
+
 argument::report
-Reports the result of the test if code::true:: (default is code::true::)
+reports the result of the test if code::true:: (default is code::true::)
+
 argument::onFailure
-If not code::nil::, a failure stops the tests and evaluates this function.
+if not code::nil::, a failure stops the tests and evaluates this function.
 
 
 method::ifAsserts
+
 makes a further assertion only if it passed, or only if it failed.
 
 code::
@@ -211,31 +266,43 @@ a.ifAsserts(2 == 3, "yes", { a.assert(2 == 4) }, { a.assert(1 == 1, "but this is
 )
 ::
 
+
 method::assertException
+
 makes sure that a specific link::Classes/Exception:: or link::Classes/Error:: is thrown.
+
 argument::func
-Pass the code that is expected to throw an error in this function.
+passes the code that is expected to throw an error in this function.
+
 argument::errorClass
-The class or class name which the error should be kind of.
+the class or class name which the error should be kind of.
+
 argument::message
-A message describing the purpose of the assertion.
+a message describing the purpose of the assertion.
+
 argument::report
-Reports the result of the test if code::true:: (default is code::true::)
+reports the result of the test if code::true:: (default is code::true::)
+
 argument::onFailure
-If not code::nil::, a failure stops the tests and evaluates this function.
+if not code::nil::, a failure stops the tests and evaluates this function.
+
 argument::details
-Some optional extra details which will be passed to the reporting framework
+some optional extra details which will be passed to the reporting framework
 for display unless brief reporting is requested (see link::#*passVerbosity::).
 
+
 method::assertNoException
+
 makes sure that a specific link::Classes/Exception:: or link::Classes/Error:: is strong::not:: thrown.
 For arguments, see link::#-assertException::.
 
 
 method::wait
+
 waits for a predicate function to return code::true::. Considers the test failed after code::maxTime::. Only valid within a test (or a routine).
 
-note:: It's best to avoid using this method in tests. See link::Classes/CondVar#-waitFor:: for a better option.::
+note::
+It's best to avoid using this method in tests. See link::Classes/CondVar#-waitFor:: for a better option.::
 
 code::
 (
@@ -246,7 +313,9 @@ code::
 )
 ::
 
+
 method::bootServer
+
 waits for server boot until continued. Only valid within a test (or a routine).
 
 If already booted, then does code::freeAll:: and creates new allocators.
@@ -259,15 +328,19 @@ code::
 )
 ::
 
+
 method::debug
+
 supplies some debugging information relevant to the currently running
 test case.  This will be displayed immediately preceding any details
 which may be displayed through use of the code::details:: argument of
 link::#-passed:: and link::#-failed::.
-argument::text
-The debugging text.
 
-DISCUSSION::
+argument::text
+the debugging text.
+
+discussion::
+
 code::
 test_myMethod {
     var obj = MyClass.new;
@@ -287,46 +360,62 @@ Should be:
          5
 ::
 
+
 method::passed
-Register a passed test.
+
+registers a passed test.
+
 argument::method
-Name of the method in which the test is passing.
+name of the method in which the test is passing.
+
 argument::message
-A message describing the purpose of the assertion, e.g. code::"foo
+a message describing the purpose of the assertion, e.g. code::"foo
 should be less than bar"::.
 Posted if neither code::report:: nor link::#*reportPasses:: are code::false::.
+
 argument::report
-Reports the result of the test if code::true:: and link::#*reportPasses:: is code::true::.
+reports the result of the test if code::true:: and link::#*reportPasses:: is code::true::.
+
 argument::details
-Some optional extra details which will be displayed if
+some optional extra details which will be displayed if
 link::#*reportPasses:: is code::true:: and link::#*passVerbosity:: is
 not set to code::UnitTest.brief::.
 
-DISCUSSION::
+discussion::
+
 code::
 this.passed(message: "this passed");
 ::
 
+
 method::failed
-Register a test failure.
+
+registers a test failure.
+
 argument::method
-Name of the method in which the test is failing.
+name of the method in which the test is failing.
+
 argument::message
-A message describing the purpose of the assertion, e.g. code::"foo
+a message describing the purpose of the assertion, e.g. code::"foo
 should be less than bar"::.
 Posted if code::report:: is code::true::.
+
 argument::report
-Reports the result of the test if code::true::.
+reports the result of the test if code::true::.
+
 argument::details
-Some optional extra details which will be displayed if code::report::
+some optional extra details which will be displayed if code::report::
 is code::true::.
 
-DISCUSSION::
+discussion::
+
 code::
 this.failed(message: "this failed");
 ::
 
+
 examples::
+
 
 Write tests by subclassing UnitTest, and defining methods whose names
 begins code::test_::.  Each test method will be called from a fresh

@@ -1,10 +1,12 @@
-class:: InFeedback
-summary:: Read signal from a bus with a current or one cycle old timestamp.
+title:: InFeedback
+summary:: reads signal from a bus with a current or one cycle old timestamp
+categories:: UGens>InOut
 related:: Classes/In, Classes/LagIn, Classes/LocalIn
-categories::  UGens>InOut
 
 
 description::
+
+
 When the various output UGens (link::Classes/Out::,
 link::Classes/OffsetOut::, link::Classes/XOut::) write data to a bus,
 they mix it with any data from the current cycle, but overwrite any data
@@ -30,6 +32,7 @@ The variably mixing and overwriting behaviour of the output UGens can
 make order of execution crucial. (No pun intended.) For example with a
 node order like the following the InFeedback UGen in Synth 2 will only
 receive data from Synth 1 (→ = write out; ← = read in):
+
 list::
 ## Synth1 → busA (this synth overwrites the output of Synth3 before it reaches Synth2)
 ## Synth2 (with InFeedback) ← busA
@@ -52,22 +55,29 @@ list::
 ## Synth2 (with InFeedback) ← busB
 ## Synth3 → busB + busA
 ::
+
 The second example below demonstrates this issue.
 
 
 classmethods::
 
+
 method::ar
+
 argument::bus
-The index of the bus to read in from.
+the index of the bus to read in from.
+
 argument::numChannels
-The number of channels (i.e. adjacent buses) to read in. The
+the number of channels (i.e. adjacent buses) to read in. The
 default is 1. You cannot modulate this number by assigning it to
 an argument in a SynthDef.
 
 
 examples::
+
+
 audio feedback modulation:
+
 code::
 (
 SynthDef("help-InFeedback", { |out = 0, in = 0|
@@ -79,7 +89,9 @@ SynthDef("help-InFeedback", { |out = 0, in = 0|
 }).play;
 )
 ::
+
 this shows how a node can read audio from a bus that is being written to by a synth following it:
+
 code::
 (
 SynthDef("help-InFeedback", { |out = 0, in = 0|
@@ -112,6 +124,7 @@ a.free; b.free;
 ::
 
 The example below implements a resonator. Note that you must subtract the blockSize in order for the tuning to be correct. See link::Classes/LocalIn:: for an equivalent example.
+
 code::
 (
 var play, imp, initial;

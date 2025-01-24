@@ -1,34 +1,49 @@
 title:: softPut
-summary:: set a (number) parameter in an environment conditionally
+summary:: sets a (number) parameter in an environment conditionally
 categories:: JITLib>GUI
 related:: Reference/softSet, Reference/softVol_
 
+
 description::
+
+
 code::softPut:: is an extension method to link::Classes/Dictionary:: that changes an existing numerical value for key in a dictionary only in two conditions:
+
 list::
 ## if the new value is close enough to the current value at that key;
 ## or if the setting controller knows the previous value and sends it along. the idea here is that if the controller knows it did the last value change, it has authority to jump now.
 ::
+
 Typical uses would be switching to a new preset, then using a faderbox, and avoiding sudden controller jumps that could occur (soft takeover).
 
+
 method::softPut (param, val, within = 0.025, lastVal, mapped = true, spec)
+
 argument::param
 the name of the parameter (key) to set
+
 argument::val
 the value to set the param to (can be mapped or unmapped)
+
 argument::within
 the normalized range within which the set is accepted - default is 0.025
+
 argument::mapped
 a flag whether strong::val:: is mapped (within the range of param.asSpec) or unmapped (0.0-1.0)
+
 argument::lastVal
 the previous value that a control has set - see last examples.
+
 argument::spec
 a link::Classes/ControlSpec:: can be passed in. if code::nil::, param.asSpec is used.
+
 note::
-if no spec is given, or no value exists yet, softSet simply allows setting.
+If no spec is given, or no value exists yet, softSet simply allows setting.
 ::
 
+
 examples::
+
 code::
 (
 e = (amp: 0.1, dur: 0.2);

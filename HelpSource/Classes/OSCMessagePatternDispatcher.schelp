@@ -1,29 +1,43 @@
-CLASS:: OSCMessagePatternDispatcher
-summary:: The default pattern matching dispatcher for OSCFunc and OSCdef.
+title:: OSCMessagePatternDispatcher
+summary:: the default pattern matching dispatcher for OSCFunc and OSCdef
 categories:: External Control>OSC>Dispatchers
 related:: Classes/OSCFunc, Classes/OSCdef, Classes/AbstractWrappingDispatcher, Classes/AbstractDispatcher, Classes/AbstractMessageMatcher, Classes/OSCMessageDispatcher, Classes/OSCFuncAddrMessageMatcher, Classes/OSCFuncRecvPortMessageMatcher, Classes/OSCFuncBothMessageMatcher, Guides/OSC_communication
 
+
 description::
+
+
 OSCMessageDispatcher dispatches incoming OSC messages to matching functions, using pattern matching to see if regular expressions wildcards in the incoming message's address pattern match one of this dispatcher's OSCFuncs' paths. Normally users should not have to create or message instances of this class directly. For details on OSC pattern matching, see http://opensoundcontrol.org/spec-1_0
 
 
-CLASSMETHODS::
+classmethods::
 
 
-INSTANCEMETHODS::
+instancemethods::
+
 
 method::value
-Attempt to match an incoming OSC message with this dispatcher's responder funcs, and evaluate their functions for all matches found.
+
+attempts to match an incoming OSC message with this dispatcher's responder funcs, and evaluate their functions for all matches found.
+
 argument::msg
-The OSC message as an link::Classes/Array:: in the form code::[OSCAddress, other args]::.
+the OSC message as an link::Classes/Array:: in the form code::[OSCAddress, other args]::.
+
 argument::time
-A link::Classes/Float:: indicating the time the incoming message was sent.
+a link::Classes/Float:: indicating the time the incoming message was sent.
+
 argument::addr
-A link::Classes/NetAddr:: indicating the source of the message.
+a link::Classes/NetAddr:: indicating the source of the message.
+
 argument::recvPort
-An link::Classes/Integer:: indicating the port on which the message was received.
+an link::Classes/Integer:: indicating the port on which the message was received.
+
 
 method::typeKey
+
 returns code::'OSC unmatched'::.
 
-returns:: A link::Classes/Symbol::.
+returns::
+
+a link::Classes/Symbol::.
+

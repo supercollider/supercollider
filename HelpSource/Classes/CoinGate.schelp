@@ -1,20 +1,26 @@
-class:: CoinGate
-summary:: Statistical gate.
-categories::  UGens>Generators>Stochastic
+title:: CoinGate
+summary:: statistical gate
+categories:: UGens>Generators>Stochastic
 
 
 description::
+
+
 When CoinGate receives a trigger, it tosses a coin
 and either passes the trigger or doesn't.
 
 
 classmethods::
 
+
 method::ar, kr
+
 argument::prob
-Value between 0.0 and 1.0 determines probability of either possibilities.
+value between 0.0 and 1.0 determines probability of either possibilities.
+
 argument::in
-The trigger input.
+the trigger input.
+
 
 examples::
 

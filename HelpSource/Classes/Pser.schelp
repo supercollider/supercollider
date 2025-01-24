@@ -1,10 +1,14 @@
-class:: Pser
+title:: Pser
 summary:: sequentially embed values in a list
-related:: Classes/Pseq
 categories:: Streams-Patterns-Events>Patterns>List
+related:: Classes/Pseq
+
 
 description::
+
+
 is like link::Classes/Pseq::, however the repeats variable gives strong::the number of items:: returned instead of the number of complete cycles.
+
 
 examples::
 

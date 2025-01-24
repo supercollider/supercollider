@@ -1,10 +1,12 @@
-class:: HPZ1
-summary:: Two point difference filter
+title:: HPZ1
+summary:: two point difference filter
+categories:: UGens>Filters>Linear
 related:: Classes/LPZ1, Classes/HPZ2
-categories::  UGens>Filters>Linear
 
 
 description::
+
+
 A special case fixed filter. Implements the formula:
 
 code::
@@ -16,13 +18,17 @@ Which is a two point differentiator.
 
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-The input signal.
+the input signal.
+
 argument::mul
-Output will be multiplied by this value.
+output will be multiplied by this value.
+
 argument::add
-This value will be added to the output.
+this value will be added to the output.
 
 
 examples::

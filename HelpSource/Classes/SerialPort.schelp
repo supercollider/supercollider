@@ -1,4 +1,4 @@
-class:: SerialPort
+title:: SerialPort
 summary:: serial port interface
 categories:: External Control
 
@@ -8,39 +8,53 @@ Each SerialPort object uses an 8KB internal buffer and reads data as soon as it 
 
 Since it is constantly polling the port for available data, a SerialPort object knows almost immediately when the port has been lost. When this happens, it will call the link::#-doneAction:: callback and mark itself as closed.
 
-ClassMethods::
 
-private::initClass
+classmethods::
+
+
+private:: initClass
+
 
 method::new
+
 creates and opens the port. Throws if creation fails; this may be because the port does not exist,
 the port could not be opened, or the settings were invalid.
+
 argument::port
-A link::Classes/String:: representing the port to be opened. (An link::Classes/Integer:: index into link::#*devices:: is allowed, but this is deprecated.)
+a link::Classes/String:: representing the port to be opened. (An link::Classes/Integer:: index into link::#*devices:: is allowed, but this is deprecated.)
+
 argument::baudrate
-Integer baud rate, typically in the range code::[4800..230400]::.
+integer baud rate, typically in the range code::[4800..230400]::.
+
 argument::databits
-Bits per character. Typically 8, but can be any integer.
+bits per character. Typically 8, but can be any integer.
+
 argument::stopbit
-A link::Classes/Boolean:: indicating whether to use two stop bits (code::true::) or one stop bit
+a link::Classes/Boolean:: indicating whether to use two stop bits (code::true::) or one stop bit
 (code::false::).
+
 argument::parity
-Whether the port uses even, odd, or no parity. Pass code::'even'::, code::'odd'::, or code::nil::
+whether the port uses even, odd, or no parity. Pass code::'even'::, code::'odd'::, or code::nil::
  (for none).
+
 argument::crtscts
-A link::Classes/Boolean:: indicating whether to use hardware flow control (RTS/CTS signals).
+a link::Classes/Boolean:: indicating whether to use hardware flow control (RTS/CTS signals).
+
 argument::xonxoff
-A link::Classes/Boolean:: indicating whether to use software flow control (XON/XOFF signals).
+a link::Classes/Boolean:: indicating whether to use software flow control (XON/XOFF signals).
+
 argument::exclusive
-A link::Classes/Boolean:: indicating whether to open the device exclusively. This option is not
+a link::Classes/Boolean:: indicating whether to open the device exclusively. This option is not
 implemented on Windows.
 
 discussion::
 code::crtscts:: and code::xonxoff:: cannot both be code::true::; code::*new:: will throw an error if both
 are set.
 
+
 method::devices
-Retrieve an array of available devices represented as link::Classes/String##Strings::. On macOS and Linux, this list is obtained using a number of regular expression rules on files in the code::/dev/:: directory. On Windows, this is obtained using a registry key. The matching rules are designed to be identical to that of the Arduino IDE.
+
+retrieves an array of available devices represented as link::Classes/String##Strings::. On macOS and Linux, this list is obtained using a number of regular expression rules on files in the code::/dev/:: directory. On Windows, this is obtained using a registry key. The matching rules are designed to be identical to that of the Arduino IDE.
 
 For backward compatibility, if code::SerialPort.devicePattern:: is not code::nil::, code::SerialPort.devicePattern.pathMatch:: is returned instead of the default behavior.
 
@@ -48,68 +62,101 @@ code::
 SerialPort.devices;
 ::
 
+
 method::listDevices
+
 prints the list of available devices, one per line. Shorthand for
 code::SerialPort.devices.do(_.postln)::.
+
 code::
 SerialPort.listDevices;
 ::
 
+
 method::devicePattern
-If set to a code::non-nil:: value, code::SerialPort.devicePattern:: instead returns code::SerialPort.devicePattern.patchMatch::. That is, the value of this class variable is used as a file glob.
+
+if set to a code::non-nil:: value, code::SerialPort.devicePattern:: instead returns code::SerialPort.devicePattern.patchMatch::. That is, the value of this class variable is used as a file glob.
 
 This is a legacy feature and no longer recommended. File globbing alone is not powerful enough to capture a general set of possible serial port paths, and this level of customization was not necessary for code::SerialPort.devices::. If you need to refine the results returned by code::SerialPort.devices::, it is better to do your own matching or filtering.
 
+
 method::closeAll
+
 calls link::#-close:: on all ports.
 
+
 method::cleanupAll
-Deprecated; use link::#*closeAll:: instead.
 
-InstanceMethods::
+deprecated; use link::#*closeAll:: instead.
 
-private::prInit, prOpen, prClose, primCleanup, prCleanup, prPut, prDataAvailable, prDoneAction
+
+instancemethods::
+
+
+private:: prInit, prOpen, prClose, primCleanup, prCleanup, prPut, prDataAvailable, prDoneAction
+
 
 method::isOpen
-Whether this object represents a valid serial port connection.
+
+whether this object represents a valid serial port connection.
+
 
 method::next
+
 reads a byte from the device. Non-blocking read.
 
+
 method::read
+
 reads a byte from the device. Blocking read.
 
+
 method::rxErrors
+
 RX (receive) errors since last query. An RX error occurs when the internal buffer is completely
 full. This count is reset to 0 every time this method is called.
 
+
 method::put
+
 writes a byte to the device. Always blocks.
+
 argument::byte
-An link::Classes/Integer:: or link::Classes/Char::. Only values in the range from 0 to
+an link::Classes/Integer:: or link::Classes/Char::. Only values in the range from 0 to
 code::2**databits - 1:: may be written. If a value out of that range is passed to code::put::, only
 the lowest bits will be used.
-argument::timeout
-Unused, deprecated.
 
-returns:: 
-A link::Classes/Boolean:: indicating whether the write was successful.
+argument::timeout
+unused, deprecated.
+
+returns::
+
+a link::Classes/Boolean:: indicating whether the write was successful.
+
 
 method::putAll
+
 writes multiple bytes to the device.
+
 argument::bytes
 Collection may be link::Classes/Int8Array:: or link::Classes/String::.
+
 argument::timeout
-Unused, deprecated.
+unused, deprecated.
+
 
 method::doneAction
-A link::Classes/Function:: which will be evaluated if the port gets closed (maybe unexpectedly so,
+
+a link::Classes/Function:: which will be evaluated if the port gets closed (maybe unexpectedly so,
 due to hardware failure or accidental disconnection). This allows you to for example to make a
 backup solution and activate it (like using fake input data for your algorithm, or trying to reopen
 the device). By default it will post a message reading "SerialPort X was closed".
 
+
 method::close
+
 closes the port.
+
 
 examples::
 
@@ -145,6 +192,7 @@ SerialPort.closeAll; // close all ports
 
 subsection:: Arduino write example
 
+
 First load the sketch Examples/Communication/Dimmer. See
 link::http://www.arduino.cc/en/Tutorial/Dimmer::.
 
@@ -176,6 +224,7 @@ p.close;
 
 
 subsection:: Arduino read example
+
 
 First load the sketch Examples/Communication/Graph. See
 link::http://www.arduino.cc/en/Tutorial/Graph::.

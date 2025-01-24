@@ -1,7 +1,7 @@
-class:: OSCresponder
-summary:: client side network responder
-related:: Classes/OSCFunc, Classes/OSCdef, Guides/OSC_communication, Classes/OSCresponderNode, Classes/NetAddr
+title:: OSCresponder
+summary:: client-side network responder
 categories:: External Control>OSC
+related:: Classes/OSCFunc, Classes/OSCdef, Guides/OSC_communication, Classes/OSCresponderNode, Classes/NetAddr
 
 note::
 This class is deprecated and will be removed in a future version of SC. Use link::Classes/OSCFunc:: and link::Classes/OSCdef:: instead. They are faster, safer, and have more logical argument order than the old responder classes, and they support pattern matching and custom listening ports. Use of the older classes OSCresponder, OSCresponderNode, and OSCpathResponder can be unsafe, since responders in user and class code can override each other unintentionally.
@@ -19,21 +19,30 @@ note::
 It is highly recommended to use link::Classes/OSCresponderNode:: or link::Classes/OSCpathResponder:: instead of OSCresponder directly. OSCresponders can overwrite each other, but OSCresponderNodes with the same address and command name can coexist peacefully.
 ::
 
-ClassMethods::
 
-private::initClass
+classmethods::
+
+
+private:: initClass
+
 
 method::new
+
 argument::addr
-The address the responder strong::receives from:: (an instance of link::Classes/NetAddr::, e.g. code::Server.default.addr::). An address of code::nil:: will respond to messages from anywhere. An address with a port of code::nil:: will respond to messages from any port from that specific IP.
+the address the responder strong::receives from:: (an instance of link::Classes/NetAddr::, e.g. code::Server.default.addr::). An address of code::nil:: will respond to messages from anywhere. An address with a port of code::nil:: will respond to messages from any port from that specific IP.
+
 argument::cmdName
-An OSC command eg. code::'/done'::.
+an OSC command eg. code::'/done'::.
+
 argument::action
-A link::Classes/Function:: that will be evaluated when a cmd of that name is received from addr. arguments: time, theResponder, message, addr
+a link::Classes/Function:: that will be evaluated when a cmd of that name is received from addr. arguments: time, theResponder, message, addr
+
 note::
-OSCresponder evaluates its function in the system process. In order to access the application process (e.g. for GUI access) use { ... }.defer; within the action function, e.g., code:: { |time, resp, msg| { gui.value_(msg[3]) }.defer } ::
+OSCresponder evaluates its function in the system process. In order to access the application process (e.g. for GUI access) use code::{ ... }.defer;:: within the action function, e.g., code::{ |time, resp, msg| { gui.value_(msg[3]) }.defer }::
 ::
 
+
 examples::
+
 
 see link::Classes/OSCresponderNode::.

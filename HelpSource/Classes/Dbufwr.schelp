@@ -1,23 +1,32 @@
-class:: Dbufwr
+title:: Dbufwr
 summary:: Buffer write demand ugen
 categories:: UGens>Buffer, UGens>Demand
 related:: Classes/Dbufrd
 
+
 classmethods::
 
+
 method::new
+
 argument::input
 single channel input
+
 argument::bufnum
-buffer number to write to (single channel buffer)
+Buffer number to write to (single channel buffer)
+
 argument::phase
 index into the buffer
+
 argument::loop
 when phase exceeds number of frames in buffer, loops when set to 1 (default :1)
+
 discussion::
 all inputs can be either demand ugen or any other ugen.
 
+
 examples::
+
 code::
 // alloc a single channel buffer
 b = Buffer.alloc(s, 24, 1);

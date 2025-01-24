@@ -1,20 +1,29 @@
-class:: Pgauss
+title:: Pgauss
 summary:: random values that follow a Gaussian Distribution
-related:: Classes/Ppoisson
 categories:: Streams-Patterns-Events>Patterns>Random
+related:: Classes/Ppoisson
+
 
 description::
+
+
 This pattern uses the Box-Muller transform to generate a gaussian distribution from uniformly distributed values: code::sqrt(-2 * log(1.0.rand)) * sin(2pi.rand)::
 
-ClassMethods::
+
+classmethods::
+
 
 method::new
+
 argument::mean
-The mean of the distribution.
+the mean of the distribution.
+
 argument::dev
-The spread of values around the mean (standard deviation).
+the spread of values around the mean (standard deviation).
+
 argument::length
-Number of values produced.
+number of values produced.
+
 
 examples::
 

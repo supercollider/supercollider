@@ -1,9 +1,12 @@
-CLASS::DoubleArray
+title:: DoubleArray
 summary:: an array of 64-bit double precision floating-point numbers
-related::Classes/FloatArray, Classes/Signal
-categories::Collections>Ordered
+categories:: Collections>Ordered
+related:: Classes/FloatArray, Classes/Signal
+
 
 description::
+
+
 An array of 64-bit double precision floating point numbers.
 
 Note that despite not having "Float" in its name, DoubleArray does in fact hold
@@ -27,6 +30,9 @@ list::
 ## link::Classes/SymbolArray:: - symbols
 ::
 
-INSTANCEMETHODS::
+
+instancemethods::
+
 
 method::readFromStream
+

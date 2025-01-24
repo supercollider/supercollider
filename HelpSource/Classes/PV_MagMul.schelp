@@ -1,19 +1,26 @@
-class:: PV_MagMul
-summary:: Multiply magnitudes.
-related:: Classes/FFT, Classes/IFFT, Classes/PV_Add, Classes/PV_CopyPhase, Classes/PV_Max, Classes/PV_Min, Classes/PV_Mul
+title:: PV_MagMul
+summary:: multiplies magnitudes
 categories:: UGens>FFT
+related:: Classes/FFT, Classes/IFFT, Classes/PV_Add, Classes/PV_CopyPhase, Classes/PV_Max, Classes/PV_Min, Classes/PV_Mul
+
 
 description::
+
+
 Multiplies magnitudes of two inputs and keeps the phases of the first input.
 
 
 classmethods::
 
+
 method::new
+
 argument::bufferA
 FFT buffer A.
+
 argument::bufferB
 FFT buffer B.
+
 
 examples::
 

@@ -1,20 +1,28 @@
-TITLE:: Pclump
-summary:: A pattern that takes another pattern and groups its values into arrays.
-related:: Classes/SequenceableCollection#-clump
+title:: Pclump
+summary:: a pattern that takes another pattern and groups its values into arrays
 categories:: Streams-Patterns-Events>Patterns>List
+related:: Classes/SequenceableCollection#-clump
+
 
 description::
-Groups the source pattern into arrays whose size is given by n. Similar to LINK::Classes/SequenceableCollection#-clump::.
+
+
+Groups the source pattern into arrays whose size is given by n. Similar to link::Classes/SequenceableCollection#-clump::.
 
 E.g. If the source pattern has 5 elements and you choose a clump size of 2, the new pattern will return two arrays containing 2 elements and a final array containing 1 element.
 
-CLASSMETHODS::
+
+classmethods::
+
 
 method::new
+
 argument::n
-An integer, or a pattern that returns an integer. This integer will determine the size of the next clump.
+an integer, or a pattern that returns an integer. This integer will determine the size of the next clump.
+
 argument::pattern
-The pattern to be filtered.
+the pattern to be filtered.
+
 
 examples::
 
@@ -28,6 +36,7 @@ x.next;
 ::
 
 Play some random chords:
+
 code::
 
 Pbind(

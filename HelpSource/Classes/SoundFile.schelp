@@ -1,9 +1,12 @@
-class:: SoundFile
+title:: SoundFile
 summary:: sclang soundfile data
-related:: Classes/File, Classes/Buffer
 categories:: Files
+related:: Classes/File, Classes/Buffer
+
 
 description::
+
+
 The SoundFile class is used to check the size, format, channels etc. when the sclang client needs this information about a SoundFile. Soundfile data can be read and modified. Soundfile data can also be read and written incrementally, so with properly designed code, there is no restriction on the file size.
 
 In most cases you will wish to send commands to the server to get it to load SoundFiles directly into Buffers. You will not need to use this class for this. See the link::Classes/Buffer:: helpfile.
@@ -21,83 +24,123 @@ When reading a sound file, the headerFormat, sampleFormat, numChannels and numFr
 
 When creating a new SoundFile, the format will be monophonic, 44.1 kHz, AIFF, floating-point by default. Users may override the defaults by passing the desired format strings to link::Classes/SoundFile#*openWrite::, or by using link::Classes/SoundFile#-headerFormat::, link::Classes/SoundFile#-sampleFormat::, link::Classes/SoundFile#-numChannels:: and link::Classes/SoundFile#-sampleRate:: emphasis::before:: calling link::Classes/SoundFile#-openWrite::.
 
-ClassMethods::
+
+classmethods::
+
 
 method::new
+
 creates a new SoundFile instance.
 
+
 method::writeArray
+
 writes an array (or nested array) to a path as a sound file.
+
 argument::array
-The data to write.
+the data to write.
 Can be an array of numbers for a mono audio file, or an array of arrays-of-numbers for a multichannel audio file.
 Does not accept further nested arrays.
 Please note, that supercollider does not currently support very large arrays,
 roughly speaking,
 mono sound files longer than 45 mins at a sampling rate of 44100 will cause supercollider to fail silently.
-argument::pathName
-The path as a link::Classes/String::.
-argument::headerFormat
-See link::Classes/SoundFile#-headerFormat::.
-argument::sampleFormat
-See link::Classes/SoundFile#-sampleFormat::.
-argument::sampleRate
-A number, defaults to 44100.
 
-returns:: The path if successful, or throws if unsuccessful.
+argument::pathName
+the path as a link::Classes/String::.
+
+argument::headerFormat
+see link::Classes/SoundFile#-headerFormat::.
+
+argument::sampleFormat
+see link::Classes/SoundFile#-sampleFormat::.
+
+argument::sampleRate
+a number, defaults to 44100.
+
+returns::
+
+the path if successful, or throws if unsuccessful.
+
 
 method::openRead
-Try to open the audio file at the given path.
-argument::pathName
-Full path to the sound file. Use link::Classes/String#-standardizePath:: to resolve home-folder shortcuts such as teletype::~::.
 
-returns:: A new SoundFile instance if successful, or code::nil:: if file open failed. User code should check for code::nil:: before doing anything with the SoundFile object.
+tries to open the audio file at the given path.
+
+argument::pathName
+full path to the sound file. Use link::Classes/String#-standardizePath:: to resolve home-folder shortcuts such as teletype::~::.
+
+returns::
+
+a new SoundFile instance if successful, or code::nil:: if file open failed. User code should check for code::nil:: before doing anything with the SoundFile object.
+
 
 method::openWrite
-Try to create an audio file at the given path. Note that there is no code::numFrames:: argument: the number of frames is counted after writing data into the file.
-argument::pathName
-Full path to the sound file. Use link::Classes/String#-standardizePath:: to resolve home-folder shortcuts such as teletype::~::.
-argument::headerFormat
-A string for the sound file format. Valid strings are listed at link::Classes/SoundFile#-headerFormat::. If not given, the default code::"AIFF":: is used.
-argument::sampleFormat
-A string for the sample format. Valid strings are listed at link::Classes/SoundFile#-sampleFormat::. If not given, the default code::"float":: is used.
-argument::numChannels
-An integer number of channels (1 by default).
-argument::sampleRate
-An integer sample rate (44100 by default).
 
-returns:: A new SoundFile instance if successful, or code::nil:: if file open failed. User code should check for code::nil:: before doing anything with the SoundFile object.
+tries to create an audio file at the given path. Note that there is no code::numFrames:: argument: the number of frames is counted after writing data into the file.
+
+argument::pathName
+full path to the sound file. Use link::Classes/String#-standardizePath:: to resolve home-folder shortcuts such as teletype::~::.
+
+argument::headerFormat
+a string for the sound file format. Valid strings are listed at link::Classes/SoundFile#-headerFormat::. If not given, the default code::"AIFF":: is used.
+
+argument::sampleFormat
+a string for the sample format. Valid strings are listed at link::Classes/SoundFile#-sampleFormat::. If not given, the default code::"float":: is used.
+
+argument::numChannels
+an integer number of channels (1 by default).
+
+argument::sampleRate
+an integer sample rate (44100 by default).
+
+returns::
+
+a new SoundFile instance if successful, or code::nil:: if file open failed. User code should check for code::nil:: before doing anything with the SoundFile object.
+
 
 method::collect
+
 returns an link::Classes/Array:: of SoundFile objects whose paths match the pattern. (The associated files are closed. These objects can be used to cue playback buffers)
+
 code::
 SoundFile.collect("sounds/*").do { |f| f.path.postln };
 ::
 
+
 method::use
+
 reads the data of a SoundFile, evaluates the function (passing the file as argument) and closes it again.
+
 code::
 SoundFile.use(Platform.resourceDir +/+ "sounds/a11wlk01.wav", { |f| f.inspect });
 ::
 
+
 method::normalize
-Normalizes a soundfile to a level set by the user. The normalized audio will be written into a second file.
+
+normalizes a soundfile to a level set by the user. The normalized audio will be written into a second file.
 
 Using this class method (SoundFile.normalize) will automatically open the source file for you. You may also link::#-openRead:: the SoundFile yourself and call link::#-normalize:: on it. In that case, the source path is omitted because the file is already open.
 
 See instance method link::#-normalize:: for more information.
 
-InstanceMethods::
 
-private::prOpenRead, prOpenWrite
+instancemethods::
+
+
+private:: prOpenRead, prOpenWrite
 
 
 subsection:: Playback
 
+
 method::cue
+
 allocates a buffer and cues the SoundFile for playback. Returns an event parameterized to play that buffer. (See link::Reference/NodeEvent:: for a description of how events can be used to control running synths.) The event responds to strong::play::, strong::stop::, strong::pause::, strong::resume::, keeping the buffer open. The buffer is closed when the event is sent a strong::close:: message.
+
 argument::ev
-An link::Classes/Event:: can passed as an argument allowing playback to be customized using the following keys:
+an link::Classes/Event:: can passed as an argument allowing playback to be customized using the following keys:
+
 table::
 ## strong::key:: || strong::default value:: || strong::what it does::
 ## bufferSize || 65536 || Must be a power of two (65536, 131072 or 262144 recommended)
@@ -110,7 +153,9 @@ table::
 ## amp: || 1 || amplitude
 ## instrument: || code::nil:: || if code::nil::, SoundFile:cue determines the SynthDef (one of diskIn1, diskIn2, ...diskIn16)
 ::
+
 Where strong::bufferSize::, strong::firstFrame::, strong::lastFrame:: are for buffer and playback position, and strong::out::, strong::server::, strong::group::, strong::addAction::, strong::amp:: are synth parameters. Here is the default SynthDef used for stereo files:
+
 code::
 SynthDef(\diskIn2, { |out, amp = 1, bufnum, sustainTime, atk = 0, rel = 0, gate = 1|
 	var sig = VDiskIn.ar(2, bufnum, BufRateScale.kr(bufnum));
@@ -119,44 +164,61 @@ SynthDef(\diskIn2, { |out, amp = 1, bufnum, sustainTime, atk = 0, rel = 0, gate 
 	Out.ar(out, sig * env * amp)
 });
 ::
+
 The control strong::sustainTime:: determines playback duration based on the firstFrame and lastFrame. The control strong::gate:: allows early termination of the playback
+
 argument::playNow
-This is a link::Classes/Boolean:: that determines whether the file is to be played immediately after cueing.
+this is a link::Classes/Boolean:: that determines whether the file is to be played immediately after cueing.
+
 code::
 f = SoundFile.collect("sounds/*");
 e = f[1].cue;
 
 e = f[1].cue((addAction: 2, group: 1));	// synth will play ahead of the default group
 ::
+
 argument::closeWhenDone
-A flag to indicate whether the buffer will be closed after playback is finished. The default is code::false::.
+a flag to indicate whether the buffer will be closed after playback is finished. The default is code::false::.
 
 
 subsection:: Read/Write
 
+
 method::openRead
+
 reads the header of a file. Returns a link::Classes/Boolean:: whether the read was successful. Sets the link::#-numFrames::, link::#-numChannels:: and link::#-sampleRate::. Does strong::not:: set the link::#-headerFormat:: and link::#-sampleFormat::.
+
 argument::pathName
 a link::Classes/String:: specifying the path name of the file to read.
 
+
 method::readData
+
 reads the sample data of the file into the raw array you supply. You must have already called link::#-openRead::.
 
 When you reach EOF, the array's size will be 0. Checking the array size is an effective termination condition when looping through a sound file. See the method link::#-channelPeaks:: for example.
+
 argument::rawArray
-The raw array must be a link::Classes/FloatArray::. Regardless of the sample format of the file, the array will be populated with floating point values. For integer formats, the floats will all be in the range -1..1.
+the raw array must be a link::Classes/FloatArray::. Regardless of the sample format of the file, the array will be populated with floating point values. For integer formats, the floats will all be in the range -1..1.
 
 The size of the FloatArray determines the maximum number of single samples (not sample frames) that will be read. If there are not enough samples left in the file, the size of the array after the readData call will be less than the original size.
 
+
 method::openWrite
+
 writes the header of a file. Returns a link::Classes/Boolean:: whether the write was successful.
+
 argument::pathName
 a link::Classes/String:: specifying the path name of the file to write.
 
+
 method::writeData
+
 writes the rawArray to the sample data of the file. You must have already called link::#-openWrite::.
+
 argument::rawArray
-The raw array must be a link::Classes/FloatArray:: or link::Classes/Signal::, with all values between -1 and 1 to avoid clipping during playback.
+the raw array must be a link::Classes/FloatArray:: or link::Classes/Signal::, with all values between -1 and 1 to avoid clipping during playback.
+
 code::
 (
 f = SoundFile.new.headerFormat_("AIFF").sampleFormat_("int16").numChannels_(1);
@@ -169,56 +231,78 @@ f.close;
 )
 ::
 
+
 method::isOpen
+
 answers if the file is open.
 
+
 method::close
+
 closes the file.
 
+
 method::duration
+
 the duration in seconds of the file.
 
 
 subsection:: Normalizing
 
+
 method::normalize
-Normalizes a soundfile to a level set by the user. The normalized audio will be written into a second file.
+
+normalizes a soundfile to a level set by the user. The normalized audio will be written into a second file.
 
 The normalizer may be used to convert a soundfile from one sample format to another (e.g., to take a floating point soundfile produced by SuperCollider and produce an int16 or int24 soundfile suitable for use in other applications).
 
 note::
 While the normalizer is working, there is no feedback to the user. It will look like SuperCollider is hung, but it will eventually complete the operation. You can set code::threaded:true:: to get feedback but it will take slightly longer to complete.
 ::
+
 argument::outPath
 a path to the destination file.
+
 argument::newHeaderFormat
 the desired header format of the new file; if not specified, the header format of the source file will be used.
+
 argument::newSampleFormat
 the desired sample format of the new file; if not specified, the sample format of the source file will be used.
+
 argument::startFrame
 an index to the sample frame to start normalizing.
+
 argument::numFrames
 the number of sample frames to copy into the destination file (default code::nil::, or entire soundfile).
+
 argument::maxAmp
 the desired maximum amplitude. Provide a floating point number or, if desired, an array to specify a different level for each channel.
+
 argument::linkChannels
 a link::Classes/Boolean:: specifying whether all channels should be scaled by the same amount. The default is strong::true::, meaning that the peak calculation will be based on the largest sample in any channel. If code::false::, each channel's peak will be calculated independently and all channels will be scaled to maxAmp (this would alter the relative loudness of each channel).
+
 argument::chunkSize
 how many samples to read at once (default is 4194304, or 16 MB).
+
 argument::threaded
 if code::true::, the normalization runs in a routine so that SC can respond (intermittently) while processing. Prevents macOS beachballing.
 
 
 subsection:: Instance Variables
 
+
 method::path
+
 gets the pathname of the file. This variable is set via the link::#-openRead:: or link::#-openWrite:: calls.
 
-method::headerFormat
-This is a link::Classes/String:: indicating the header format which was read by openRead and will be written by openWrite. In order to write a file with a certain header format you set this variable.
 
-definitionList::
+method::headerFormat
+
+this is a link::Classes/String:: indicating the header format which was read by openRead and will be written by openWrite. In order to write a file with a certain header format you set this variable.
+
+definitionlist::
 ## read/write header formats: ||
+
 table::
 ## strong:: header :: || strong:: description:: || strong:: filename extensions:: || strong::notes::
 ## "AIFF" || Apple/SGI AIFF format || .aif, .aiff ||
@@ -227,10 +311,10 @@ table::
 ## "SD2" || Sound Designer 2 || .sd2 ||
 ## "IRCAM" || Berkeley/IRCAM/CARL || .sf ||
 ## "raw" || no header = raw data || ||
-## "MAT4" || Matlab (tm) V4.2 / GNU Octave 2.0 || .mat4 ||
-## "MAT5" || Matlab (tm) V5.0 / GNU Octave 2.1 || .mat5 ||
+## "MAT4" || Matlab (tm) V4.2 and GNU Octave 2.0 || .mat4 ||
+## "MAT5" || Matlab (tm) V5.0 and GNU Octave 2.1 || .mat5 ||
 ## "PAF" || Ensoniq PARIS file format || .paf ||
-## "SVX" || Amiga IFF / SVX8 / SV16 format || .svx ||
+## "SVX" || Amiga IFF, SVX8 and SV16 format || .svx ||
 ## "NIST" || Sphere NIST format || .nist, .sph ||
 ## "VOC" || VOC files || .voc ||
 ## "W64" || Sonic Foundry's 64 bit RIFF/WAV || .w64 || supports files larger than 4GB
@@ -245,22 +329,27 @@ table::
 ## "OGG" || Xiph OGG container || .ogg || use .ogg extension for the "vorbis" format (see below)
 ## "MPEG" || MPEG container || .mp1, .mp2, .mp3 || file extension depends on the format (see below)
 ::
+
 ::
 Additionally, a huge number of other formats are supported read only. Please note that WAV file support is limited to 4GB. For output of multiple channels or very long recordings we suggest to use RF64, W64, or CAF (on macOS).
 
 
 method::sampleFormat
-A link::Classes/String:: indicating the format of the sample data which was read by link::#-openRead:: and will be written by link::#-openWrite::. libsndfile determines which header formats support which sample formats. This information is detailed at http://www.mega-nerd.com/libsndfile . The possible sample formats are:
-definitionList::
+
+a link::Classes/String:: indicating the format of the sample data which was read by link::#-openRead:: and will be written by link::#-openWrite::. libsndfile determines which header formats support which sample formats. This information is detailed at http://www.mega-nerd.com/libsndfile . The possible sample formats are:
+
+definitionlist::
 ## sample formats: ||
+
 table::
 ## strong:: format :: || strong:: notes:: || strong::supported headers:: (partial list) 
 ## "int8", "int16", "int24", "int32" || integer formats || "AIFF", "WAV", "RF64", "W64", "CAF", "FLAC" 
-## "float" || floating-point format (won't clip above 0dB) || "AIFF", "WAV", "RF64", "W64", "CAF" 
+## "float" || floating-point format (won't clip above 0 dB) || "AIFF", "WAV", "RF64", "W64", "CAF" 
 ## "mulaw", "alaw" || U-law and A-law encoding|| "WAV", "W64" 
 ## "vorbis" || "Vorbis" compressed format || "OGG" 
 ## "mp1", "mp2", "mp3" ||  MPEG Layer I, II, and III compressed formats || "MPEG" (see strong::NOTE:: below)
 ::
+
 ::
 Not all header formats support all sample formats.
 
@@ -272,15 +361,22 @@ Currently there's no way to control the quality (bitrate) when writing OGG vorbi
 
 
 method::numFrames
-The number of sample frames in the file.
+
+the number of sample frames in the file.
+
 
 method::numChannels
-The number of channels in the file.
+
+the number of channels in the file.
+
 
 method::sampleRate
-The sample rate of the file.
+
+the sample rate of the file.
+
 
 examples::
+
 code::
 // Writing a sound file, long form:
 // Set the format variables before calling 'openWrite'

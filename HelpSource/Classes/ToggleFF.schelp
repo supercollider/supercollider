@@ -1,18 +1,22 @@
-class:: ToggleFF
-summary:: Toggle flip flop.
+title:: ToggleFF
+summary:: toggles flip flop
+categories:: UGens>Triggers
 related:: Classes/SetResetFF
-categories::  UGens>Triggers
 
 
 description::
+
+
 Toggles between 0 and 1 upon receiving a trigger.
 
 
 classmethods::
 
+
 method::ar, kr
+
 argument::trig
-Trigger input.
+trigger input.
 
 
 examples::

@@ -1,22 +1,29 @@
-class:: PV_RandComb
-summary:: Pass random bins.
-related:: Classes/PV_RandWipe
+title:: PV_RandComb
+summary:: passes random bins
 categories:: UGens>FFT
+related:: Classes/PV_RandWipe
+
 
 description::
+
+
 Randomly clears bins.
 
 
 classmethods::
 
+
 method::new
+
 argument::buffer
 FFT buffer.
+
 argument::wipe
-Clears bins from input in a random order as wipe goes from 0 to
+clears bins from input in a random order as wipe goes from 0 to
 1.
+
 argument::trig
-A trigger, that selects a new random ordering.
+a trigger, that selects a new random ordering.
 
 
 examples::

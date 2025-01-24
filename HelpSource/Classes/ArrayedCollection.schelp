@@ -1,62 +1,89 @@
-CLASS::ArrayedCollection
-categories::Collections>Ordered
-summary:: Abstract superclass of Collections of fixed maximum size
+title:: ArrayedCollection
+summary:: abstract superclass of Collections of fixed maximum size
+categories:: Collections>Ordered
+
 
 description::
+
+
 ArrayedCollection is an abstract class, a subclass of SequenceableCollections whose elements are held in a vector of slots. Instances of ArrayedCollection have a fixed maximum size beyond which they may not grow.
 
 Its principal subclasses are link::Classes/Array:: (for holding objects), and link::Classes/RawArray::, from which link::Classes/Int8Array::, link::Classes/FloatArray::, link::Classes/Signal:: etc. inherit.
 
-CLASSMETHODS::
+
+classmethods::
+
 
 method::newClear
+
 creates a new instance with strong::indexedSize:: indexable slots. The slots are filled with link::Classes/Nil::, zero or something else appropriate to the type of indexable slots in the object.
+
 code::
 Array.newClear(4).postln;
 ::
 
+
 method::with
+
 creates a new ArrayedCollection whose slots are filled with the given arguments.
+
 code::
 Array.with(7, 'eight', 9).postln;
 ::
 
+
 method::series
-Fill an ArrayedCollection with an arithmetic series.
+
+fills an ArrayedCollection with an arithmetic series.
+
 code::
 Array.series(5, 10, 2).postln;
 ::
 
+
 method::geom
-Fill an ArrayedCollection with a geometric series.
+
+fills an ArrayedCollection with a geometric series.
+
 code::
 Array.geom(5, 1, 3).postln;
 ::
 
+
 method::iota
-Fills an ArrayedCollection with a counter. See link::Guides/J-concepts-in-SC:: for more examples.
+
+fills an ArrayedCollection with a counter. See link::Guides/J-concepts-in-SC:: for more examples.
+
 code::
 Array.iota(2, 3);
 Array.iota(2, 3, 4);
 ::
 
 
-INSTANCEMETHODS::
+instancemethods::
+
 
 method::size
+
 returns the number of elements the ArrayedCollection.
 
+
 method::maxSize
+
 returns the maximum number of elements the ArrayedCollection can hold. For example, link::Classes/Array::s may initialise themselves with a larger capacity than the number of elements added.
+
 code::
 [4, 5, 6].maxSize; // gosh
 ::
 
+
 method::isRectangular
+
 returns code::true:: if all nested sub arrays are the same size and all elements have the same depth.
 This is a requirement of several nested array algorithms and formats, notably multichannel audio files.
 
 Example:
+
 code::
 [1, 2, 3].isRectangular // true
 [[1, 2], [3, 4]].isRectangular // true
@@ -66,25 +93,34 @@ code::
 [[1, 2], [3, [4, 5]]].isRectangular // false
 ::
 
+
 method::at
+
 returns the item at strong::index::.
 
 The index can also be an Array of indices to extract specified elements. Example:
+
 code::
 x = [10, 20, 30];
 y = [0, 0, 2, 2, 1];
 x[y]; // returns [10, 10, 30, 30, 20]
 ::
 
+
 method::clipAt
-Same as link::#-at::, but values for strong::index:: greater than the size of the ArrayedCollection will be clipped to the last index.
+
+same as link::#-at::, but values for strong::index:: greater than the size of the ArrayedCollection will be clipped to the last index.
+
 code::
 y = [1, 2, 3];
 y.clipAt(13).postln;
 ::
 
+
 method::wrapAt
-Same as link::#-at::, but values for strong::index:: greater than the size of the ArrayedCollection will be wrapped around to 0.
+
+same as link::#-at::, but values for strong::index:: greater than the size of the ArrayedCollection will be wrapped around to 0.
+
 code::
 y = [1, 2, 3];
 y.wrapAt(3).postln; // this returns the value at index 0
@@ -92,8 +128,11 @@ y.wrapAt(4).postln; // this returns the value at index 1
 y.wrapAt([-2, 1])   // index can also be a collection or negative numbers
 ::
 
+
 method::foldAt
-Same as link::#-at::, but values for strong::index:: greater than the size of the ArrayedCollection will be folded back.
+
+same as link::#-at::, but values for strong::index:: greater than the size of the ArrayedCollection will be folded back.
+
 code::
 y = [1, 2, 3];
 y.foldAt(3).postln; // this returns the value at index 1
@@ -101,83 +140,120 @@ y.foldAt(4).postln; // this returns the value at index 0
 y.foldAt(5).postln; // this returns the value at index 1
 ::
 
+
 method::plot
-Plot values in a GUI window.  See link::Reference/plot:: for more details. When the receiver contains code::nil:: items, the plot fails with an error.
+
+plots values in a GUI window.  See link::Reference/plot:: for more details. When the receiver contains code::nil:: items, the plot fails with an error.
+
 
 method::swap
-Swap the values at indices i and j.
+
+swaps the values at indices i and j.
+
 code::
 [1, 2, 3].swap(0, 2).postln;
 ::
 
+
 method::put
+
 puts strong::item:: at strong::index::, replacing what is there.
 
+
 method::clipPut
-Same as link::#-put::, but values for strong::index:: greater than the size of the ArrayedCollection will be clipped to the last index.
+
+same as link::#-put::, but values for strong::index:: greater than the size of the ArrayedCollection will be clipped to the last index.
+
 
 method::wrapPut
-Same as link::#-put::, but values for strong::index:: greater than the size of the ArrayedCollection will be wrapped around to 0.
+
+same as link::#-put::, but values for strong::index:: greater than the size of the ArrayedCollection will be wrapped around to 0.
+
 
 method::foldPut
-Same as link::#-put::, but values for strong::index:: greater than the size of the ArrayedCollection will be folded back.
+
+same as link::#-put::, but values for strong::index:: greater than the size of the ArrayedCollection will be folded back.
+
 
 method::putEach
+
 puts the strong::values:: in the corresponding indices given by strong::keys::. If one of the two argument arrays is longer, then it will wrap.
+
 code::
 y = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 y.putEach([4, 7], [\smelly, \head]);
 y.putEach([2, 3, 5, 6], \wotsits);
 ::
 
+
 method::indexOf
+
 returns the first index containing an item which matches strong::item::. Elements are checked for identity (not for equality).
+
 code::
 y = [\the, \symbol, \collection, \contains, \my, \symbol];
 y.indexOf(\symbol);
 ::
 
+
 method::includes
+
 returns a boolean indicating whether the collection contains anything matching strong::item::. Elements are checked for identity (not for equality).
+
 code::
 y = [\the, \symbol, \collection, \contains, \my, \symbol];
 y.includes(\symbol);
 y.includes(\solipsism);
 ::
 
+
 method::indexOfGreaterThan
+
 returns the first index containing an item which is greater than strong::item::.
+
 code::
 y = [10, 5, 77, 55, 12, 123];
 y.indexOfGreaterThan(70);
 ::
 
+
 method::removeAt
+
 removes and returns the element at strong::index::, shrinking the size of the ArrayedCollection.
+
 code::
 y = [1, 2, 3];
 y.removeAt(1);
 y.postln;
 ::
 
+
 method::takeAt
-Similar to link::#-removeAt::, but does not maintain the order of the items following the one that was removed. Instead, the last item is placed into the position of the removed item and the array's size decreases by one.
+
+similar to link::#-removeAt::, but does not maintain the order of the items following the one that was removed. Instead, the last item is placed into the position of the removed item and the array's size decreases by one.
+
 code::
 y = [1, 2, 3, 4, 5];
 y.takeAt(1);
 y.postln;
 ::
 
+
 method::takeThese
+
 removes all items in the receiver for which the strong::func:: answers code::true::. The function is passed two arguments, the item and an integer index. Note that order is not preserved. See link::#-takeAt::.
+
 code::
 y = [1, 2, 3, 4];
 y.takeThese({ |item, index| item.odd });	// remove odd items
 y.postln;
 ::
 
+
 method::add
+
 adds an item to an ArrayedCollection if there is space. This method may return a new ArrayedCollection. For this reason, you should always assign the result of code::add:: to a variable - never depend on code::add:: changing the receiver.
+
 code::
 (
 // z and y are the same object
@@ -198,8 +274,11 @@ y.postln;
 )
 ::
 
+
 method::addAll
+
 adds all the elements of aCollection to the contents of the receiver. This method may return a new ArrayedCollection. For this reason, you should always assign the result of code::addAll:: to a variable - never depend on code::add:: changing the receiver.
+
 code::
 (
 // in this case a new object is returned
@@ -211,8 +290,11 @@ y.postln;
 )
 ::
 
+
 method::extend
-Extends the object to match strong::size:: by adding a number of strong::item::s. If strong::size:: is less than receiver size, then truncate. This method may return a new ArrayedCollection. For this reason, you should always assign the result of code::extend:: to a variable - never depend on code::add:: changing the receiver.
+
+extends the object to match strong::size:: by adding a number of strong::item::s. If strong::size:: is less than receiver size, then truncate. This method may return a new ArrayedCollection. For this reason, you should always assign the result of code::extend:: to a variable - never depend on code::add:: changing the receiver.
+
 code::
 (
 var y, z;
@@ -223,8 +305,15 @@ y.postln;
 )
 ::
 
+
 method::fill
-Inserts the item into the contents of the receiver. note::the difference between this and link::Classes/Collection#*fill#Collection's *fill::.::
+
+inserts the item into the contents of the receiver. 
+
+note::
+The difference between this and link::Classes/Collection#*fill#Collection's *fill::.
+::
+
 code::
 (
 var z;
@@ -234,8 +323,11 @@ z.fill([1, 2, 3, 4]).postln;
 )
 ::
 
+
 method::insert
-Inserts the item into the contents of the receiver. This method may return a new ArrayedCollection. For this reason, you should always assign the result of code::insert:: to a variable - never depend on code::add:: changing the receiver.
+
+inserts the item into the contents of the receiver. This method may return a new ArrayedCollection. For this reason, you should always assign the result of code::insert:: to a variable - never depend on code::add:: changing the receiver.
+
 code::
 (
 // in this case a new object is returned
@@ -247,22 +339,28 @@ y.postln;
 )
 ::
 
+
 method::move
-Moves an item from one position to another.
+
+moves an item from one position to another.
 
 code::
 [10, 20, 1000, 40, 50].move(2, 0) // move 1000 to index 0
 ::
+
 argument::fromIndex
-The position in the array from which the element is removed.
+the position in the array from which the element is removed.
+
 argument::toIndex
-The position in the array before which the element is inserted again.
+the position in the array before which the element is inserted again.
 
 
 
 
 method::addFirst
-Inserts the item before the contents of the receiver, possibly returning a new collection.
+
+inserts the item before the contents of the receiver, possibly returning a new collection.
+
 code::
 (
 // in this case a new object is returned
@@ -274,8 +372,11 @@ y.postln;
 )
 ::
 
+
 method::pop
+
 removes and returns the last element of the ArrayedCollection.
+
 code::
 (
 var z;
@@ -285,19 +386,27 @@ z.postln;
 )
 ::
 
+
 method::grow
-Increase the size of the ArrayedCollection by strong::sizeIncrease:: number of slots, possibly returning a new collection.
+
+increases the size of the ArrayedCollection by strong::sizeIncrease:: number of slots, possibly returning a new collection.
+
 
 method::growClear
-Increase the size of the ArrayedCollection by strong::sizeIncrease:: number of slots, returning a new collection with link::Classes/Nil::s in the added slots.
+
+increases the size of the ArrayedCollection by strong::sizeIncrease:: number of slots, returning a new collection with link::Classes/Nil::s in the added slots.
+
 code::
 // Compare:
 [4, 5, 6].grow(5);
 [4, 5, 6].growClear(5);
 ::
 
+
 method::copyRange
+
 returns a new ArrayedCollection which is a copy of the indexed slots of the receiver from strong::start:: to strong::end::. If strong::end:: < strong::start::, an empty ArrayedCollection is returned.
+
 code::
 (
 var y, z;
@@ -307,9 +416,14 @@ z.postln;
 y.postln;
 )
 ::
-warning:: code::x.copyRange(a, b):: is strong::not:: equivalent to code::x[a..b]::. The latter compiles to link::#-copySeries::, which has different behavior when strong::end:: < strong::start::. ::
+
+warning::
+code::x.copyRange(a, b):: is strong::not:: equivalent to code::x[a..b]::. The latter compiles to link::#-copySeries::, which has different behavior when strong::end:: < strong::start::.
+::
+
 
 method::copySeries
+
 returns a new ArrayedCollection consisting of the values starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::. If strong::second:: is code::nil::, a step of 1 or -1 is used as appropriate.
 
 code::x.copySeries(a, nil, c):: is equivalent to code::x[a..c]::, and code::x.copySeries(a, b, c):: is equivalent to code::x[a, b..c]::
@@ -323,17 +437,22 @@ y.postln;
 )
 ::
 
-note::If the intent is to copy emphasis::forward:: in an array, and you are calculating start and end indices such that code::end:: may be less than code::start::, it is not safe to use code::copySeries:: or the shortcut syntax code::x[a..b]:: because it will adapt to use a positive or negative step as needed. In this case, code::copyRange:: is recommended.
+note::
+If the intent is to copy emphasis::forward:: in an array, and you are calculating start and end indices such that code::end:: may be less than code::start::, it is not safe to use code::copySeries:: or the shortcut syntax code::x[a..b]:: because it will adapt to use a positive or negative step as needed. In this case, code::copyRange:: is recommended.
 
 code::
 a = Array.series(10, 0, 1);
 a[2..0];  // [2, 1, 0]
 a.copyRange(2, 0);  // []
 ::
+
 ::
 
+
 method::seriesFill
-Fill the receiver with an arithmetic progression. The first element will be strong::start::, the second strong::start + step::, the third strong::start + step + step:: ...
+
+fills the receiver with an arithmetic progression. The first element will be strong::start::, the second strong::start + step::, the third strong::start + step + step:: ...
+
 code::
 (
 var y;
@@ -343,9 +462,12 @@ y.postln;
 )
 ::
 
+
 method::putSeries
+
 puts strong::value:: at every index starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::.
 code::x.putSeries(a, b, c, val):: can also be written as code::x[a, b..c] = val::
+
 code::
 (
 var y, z;
@@ -355,8 +477,11 @@ y.postln;
 )
 ::
 
+
 method::++
-Concatenate the contents of the two collections into a new ArrayedCollection.
+
+concatenates the contents of the two collections into a new ArrayedCollection.
+
 code::
 (
 var y, z;
@@ -367,8 +492,11 @@ y.postln;
 )
 ::
 
+
 method::reverse
+
 returns a new ArrayedCollection whose elements are reversed.
+
 code::
 (
 var y, z;
@@ -379,23 +507,34 @@ y.postln;
 )
 ::
 
+
 method::do
+
 iterates over the elements in order, calling the function for each element. The function is passed two arguments, the element and an index.
+
 code::
 ['a', 'b', 'c'].do({ |item, i| [i, item].postln });
 ::
 
+
 method::reverseDo
+
 iterates over the elements in reverse order, calling the function for each element. The function is passed two arguments, the element and an index.
+
 code::
 ['a', 'b', 'c'].reverseDo({ |item, i| [i, item].postln });
 ::
 
+
 method::collect
+
 returns a new collection which consists of the results of function evaluated for each item in the collection. The function is passed two arguments, the item and an integer index. See link::Classes/Collection:: helpfile for examples.
 
+
 method::deepCollect
-The same as link::#-collect::, but can look inside sub-arrays up to the specified strong::depth::.
+
+the same as link::#-collect::, but can look inside sub-arrays up to the specified strong::depth::.
+
 code::
 a = [99, [4, 6, 5], [[32]]];
 a.deepCollect(1, { |item| item.isArray }).postln;
@@ -403,8 +542,11 @@ a.deepCollect(2, { |item| item.isArray }).postln;
 a.deepCollect(3, { |item| item.isArray }).postln;
 ::
 
+
 method::windex
-Interprets the array as a list of probabilities which should sum to 1.0 and returns a random index value based on those probabilities.
+
+interprets the array as a list of probabilities which should sum to 1.0 and returns a random index value based on those probabilities.
+
 code::
 (
 Array.fill(10, {
@@ -413,27 +555,42 @@ Array.fill(10, {
 )
 ::
 
+
 method::normalizeSum
+
 returns the Array resulting from :
+
 code::
 (this / this.sum)
 ::
+
 so that the array will sum to 1.0.
 
 This is useful for using with windex or wchoose.
+
 code::
 [1, 2, 3].normalizeSum.postln;
 ::
 
+
 method::normalize
+
 returns a new Array with the receiver items normalized between strong::min:: and strong::max::.
+
 code::
 [1, 2, 3].normalize;			// default min = 0, max = 1
 [1, 2, 3].normalize(-20, 10);
 ::
 
+
 method::perfectShuffle
-returns a copy of the receiver with its items split into two equal halves, then reconstructed by interleaving the two halves. note::the size of the collection should be even, otherwise the item directly in the middle of the collection will be lost in the shuffle.::
+
+returns a copy of the receiver with its items split into two equal halves, then reconstructed by interleaving the two halves. 
+
+note::
+The size of the collection should be even, otherwise the item directly in the middle of the collection will be lost in the shuffle.
+::
+
 code::
 (
 var y, z;
@@ -444,14 +601,19 @@ y.postln;
 )
 ::
 
+
 method::performInPlace
-Performs a method in place, within a certain region [from..to], returning the same array.
+
+performs a method in place, within a certain region [from..to], returning the same array.
+
 code::
 a = (0..10);
 a.performInPlace(\normalizeSum, 3, 6);
 ::
 
+
 method::rank
+
 returns the number of dimensions of the collection.
 code::rank:: inspects the size of the left-most elements of sub-arrays only,
 i.e. it's assumed that the collection link::#-isRectangular::,
@@ -467,7 +629,9 @@ code::
 [1 ,2, [3, 4]].rank // 1, this array is not rectangular and returns a meaningless value.
 ::
 
+
 method::shape
+
 returns an array describing the dimension of each nested array.
 Requires link::#-isRectangular:: as a precondition.
 
@@ -478,40 +642,54 @@ code::
 [1, 2, [3, 4]].shape // [3], this array is not rectangular and returns a meaningless value.
 ::
 
+
 method::reshape
-For a multidimensional array, rearranges the data using the desired number of elements along each dimension.
+
+for a multidimensional array, rearranges the data using the desired number of elements along each dimension.
 The data may be extended using link::Classes/Array#-wrapExtend:: if needed.
 This will always return a rectangular array, see link::#-isRectangular::.
+
 code::
 a = [4, 7, 6, 8];
 a.reshape(2, 2);
 a.reshape(2, 3);
 ::
 
+
 method::find
+
 finds the starting index of a number of elements contained in the array. This method expects a collection as an argument. So for finding only one element, have a look at link::Classes/SequenceableCollection#-indexOfEqual::.
 Elements are checked for equality (not for identity).
+
 code::
 a = (0..10);
 a.find([4, 5, 6]);
 ::
 
+
 method::replace
+
 returns a new array in which a number of elements have been replaced by another. Elements are checked for equality (not for identity).
+
 code::
 a = (0..10) ++ (0..10);
 a.replace([4, 5, 6], 100);
 a.replace([4, 5, 6], [1734, 1985, 1860]);
 ::
+
 this method is inherited by link::Classes/String:: :
+
 code::
 a = "hello world";
 a.replace("world", "word");
 ::
 
+
 method::asRandomTable
+
 returns an integral table that can be used to generate random numbers with a specified distribution.
 (see link::Guides/Randomness:: helpfile for a more detailed example)
+
 code::
 (
 a = (0..100) ++ (100..50) / 100; // distribution
@@ -519,8 +697,11 @@ a = a.asRandomTable;
 )
 ::
 
+
 method::tableRand
+
 returns a new random number from a random table.
+
 code::
 (
 a = (0..100) ++ (100..50) / 100; // distribution
@@ -529,22 +710,31 @@ a = a.asRandomTable;
 )
 ::
 
+
 method::msgSize
+
 returns the size of an osc message in bytes
+
 code::
 a = ["/s_new", "default", -1, "freq", 440];
 a.msgSize;
 ::
 
+
 method::bundleSize
+
 returns the size of an osc bundle in bytes
+
 code::
 a = [["/s_new", "default", -1, "freq", 440], ["/s_new", "default", -1, "freq", 220]];
 a.bundleSize;
 ::
 
+
 method::asciiPlot
-For an ArrayedCollection containing numbers (e.g. audio data) this renders a plot in the post window using asterisks and spaces (works best if you use a monospace font in your post window).
+
+for an ArrayedCollection containing numbers (e.g. audio data) this renders a plot in the post window using asterisks and spaces (works best if you use a monospace font in your post window).
+
 code::
 a = (0, pi/10 .. 5pi).collect{ |val| val.sin };
 a.asciiPlot;

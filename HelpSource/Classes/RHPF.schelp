@@ -1,27 +1,38 @@
-class:: RHPF
-summary:: A resonant high pass filter.
+title:: RHPF
+summary:: a resonant high pass filter
+categories:: UGens>Filters>Linear
 related:: Classes/Formlet, Classes/RLPF, Classes/Resonz, Classes/Ringz
-categories::  UGens>Filters>Linear
 
 
 description::
+
+
 A resonant high pass filter.
 
 
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-The input signal.
+the input signal.
+
 argument::freq
-Cutoff frequency in Hertz.
-WARNING: due to the nature of its implementation frequency values close to 0 may cause glitches and/or extremely loud audio artifacts!
+cutoff frequency in Hertz.
+
+warning::
+Due to the nature of its implementation frequency values close to 0 may cause glitches and/or extremely loud audio artifacts!
+::
+
 argument::rq
-The reciprocal of Q (bandwidth / cutoffFreq).
+the reciprocal of Q: teletype::bandwidth / cutoffFreq::.
+
 argument::mul
-Output will be multiplied by this value.
+output will be multiplied by this value.
+
 argument::add
-This value will be added to the output.
+this value will be added to the output.
 
 
 examples::

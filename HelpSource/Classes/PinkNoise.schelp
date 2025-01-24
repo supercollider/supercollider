@@ -1,10 +1,12 @@
-class:: PinkNoise
-summary:: Pink Noise.
+title:: PinkNoise
+summary:: pink noise
+categories:: UGens>Generators>Stochastic
 related:: Classes/BrownNoise, Classes/GrayNoise, Classes/ClipNoise, Classes/WhiteNoise
-categories::  UGens>Generators>Stochastic
 
 
 description::
+
+
 generates noise whose spectrum falls off in power by 3 dB per octave, which gives equal power over the span of each octave.
 This version is band-limited to 8 octaves.
 
@@ -18,11 +20,15 @@ The values produced by this UGen were observed to lie with very high probability
 
 classmethods::
 
+
 method::ar, kr
+
 argument::mul
-Output will be multiplied by this value.
+output will be multiplied by this value.
+
 argument::add
-This value will be added to the output.
+this value will be added to the output.
+
 
 examples::
 

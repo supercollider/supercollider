@@ -1,31 +1,49 @@
-CLASS:: LevelIndicator
+title:: LevelIndicator
 summary:: a level indicator GUI widget
 categories:: GUI>Views
 related:: Classes/RangeSlider
 
+
 description::
+
+
 A level indicator view, suitable for use as a level or peak meter, etc.
 
 
-CLASSMETHODS::
-private::key
+classmethods::
 
-INSTANCEMETHODS::
-private::valueAction
+
+private:: key
+
+
+instancemethods::
+
+
+private:: valueAction
+
 
 method::value
-gets/sets the current level of the view.
-argument::val
-A link::Classes/Float:: between 0 and 1.
 
-returns:: A link::Classes/Float::
+gets/sets the current level of the view.
+
+argument::val
+a link::Classes/Float:: between 0 and 1.
+
+returns::
+
+a link::Classes/Float::
+
 
 method::warning
+
+
 method::critical
+
 sets the warning and critical thresholds. If meter value is above either threshold, link::#-warningColor:: or link::#-criticalColor:: will be shown, respectively (by default, yellow and red).
 If link::#-drawsPeak:: is code::true:: warning color will be displayed based on link::#-peakLevel:: rather than value.
+
 argument::val
-A link::Classes/Float::.
+a link::Classes/Float::.
 
 code::
 a = LevelIndicator(bounds: Rect(10, 10, 20, 160)).front;
@@ -35,10 +53,13 @@ a.value = 0.7;
 a.value = 0.9;
 ::
 
+
 method::style
+
 sets the style of the view.
+
 argument::val
-An link::Classes/QLevelIndicatorStyle:: \continuous or \led (see link::#-stepWidth::)
+an link::Classes/QLevelIndicatorStyle:: \continuous or \led (see link::#-stepWidth::)
 
 code::
 (
@@ -51,10 +72,13 @@ w = Window().front.layout_(
 )
 ::
 
+
 method::stepWidth
-The width of each led light, for \led.
+
+the width of each led light, for \led.
+
 argument::val
-An positive link::Classes/Integer::.
+an positive link::Classes/Integer::.
 
 code::
 (
@@ -67,10 +91,13 @@ w = Window().front.layout_(HLayout(
 )
 ::
 
+
 method::numSteps
-The number of steps used in \led style.
+
+the number of steps used in \led style.
+
 argument::val
-An positive link::Classes/Integer::.
+an positive link::Classes/Integer::.
 
 code::
 (
@@ -81,15 +108,23 @@ a.numSteps = 4;
 )
 ::
 
+
 method::image
-note:: Not yet implemented in Qt GUI ::
+
+note::
+Not yet implemented in Qt GUI.
+::
+
 argument::image
-An link::Classes/Image::. The default image is the SC cube.
+an link::Classes/Image::. The default image is the SC cube.
+
 
 method::numTicks
-The number of ticks to display in the view's scale.
+
+the number of ticks to display in the view's scale.
+
 argument::number
-An link::Classes/Integer:: >= 0.
+an link::Classes/Integer:: >= 0.
 
 code::
 (
@@ -102,10 +137,13 @@ w.layout_(HLayout(
 )
 ::
 
+
 method::numMajorTicks
-The number of ticks in the view's scale which will be large sized.
+
+the number of ticks in the view's scale which will be large sized.
+
 argument::number
-An link::Classes/Integer:: >= 0.
+an link::Classes/Integer:: >= 0.
 
 code::
 (
@@ -119,10 +157,13 @@ w.layout_(HLayout(
 )
 ::
 
+
 method::drawsPeak
-Determines whether the view draws a separate peak display. This can be useful for displaying both peak and RMS values. If drawsPeak is code::true::, link::#-warning:: and link::#-critical:: will be displayed based on link::#-peakLevel:: rather than value.
+
+determines whether the view draws a separate peak display. This can be useful for displaying both peak and RMS values. If drawsPeak is code::true::, link::#-warning:: and link::#-critical:: will be displayed based on link::#-peakLevel:: rather than value.
+
 argument::bool
-A link::Classes/Boolean::. By default the peak is not drawn.
+a link::Classes/Boolean::. By default the peak is not drawn.
 
 code::
 (
@@ -133,10 +174,13 @@ w = Window().front().layout_(HLayout(
 )
 ::
 
+
 method::peakLevel
+
 sets the level of the peak display. (See link::#-drawsPeak::.)
+
 argument::val
-A link::Classes/Float::.
+a link::Classes/Float::.
 
 code::
 (
@@ -149,12 +193,19 @@ w = Window().front().layout_(HLayout(
 )
 ::
 
+
 method::meterColor
+
+
 method::warningColor
+
+
 method::criticalColor
+
 sets the color of the meter, as well as the warning and critical colors.
+
 argument::color
-A link::Classes/Color::.
+a link::Classes/Color::.
 
 code::
 (
@@ -164,6 +215,7 @@ l.warningColor = Color.blue(0.7);
 l.criticalColor = Color.blue(0.5);
 )
 ::
+
 code::
 (
 // inverse

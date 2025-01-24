@@ -1,12 +1,14 @@
 title:: if
-categories::Core, Common methods
-related:: Reference/Control-Structures
 summary:: conditional execution
+categories:: Core, Common methods
+related:: Reference/Control-Structures
+
 
 method::if
 
 
 section:: example
+
 code::
 if ( [false, true].choose,				// Boolean expression (chooses one at random)
 	{ "expression was true".postln },	// true function
@@ -20,20 +22,21 @@ z.postln;
 )
 ::
 
-UGens can also use if
+UGens can also use teletype::if::.
 
-the condition ugen is 0 / 1
+The recommended output range of condition UGen is between teletype::0:: and teletype::1::.
 
 code::
 (
 	{
-		if( LFNoise1.kr(1.0,0.5,0.5) , SinOsc.ar, Saw.ar )
+		if( LFNoise1.kr(1.0,0.5,0.5), SinOsc.ar, Saw.ar )
 	}.play
 )
 ::
 
 
 section:: optimization
+
 
 the functions will be inlined, which plucks the code from the functions and uses a more efficient jump statement.
 
@@ -64,6 +67,7 @@ a FunctionDef in closed FunctionDef
 
 
 failure to inline due to variable declarations
+
 code::
 {
 
@@ -76,7 +80,8 @@ code::
 
 }.def.dumpByteCodes
 
-WARNING: FunctionDef contains variable declarations and so will not be inlined.
+warning::
+FunctionDef contains variable declarations and so will not be inlined.
    in file 'selected text'
    line 4 char 14 :
   		var notHere;•

@@ -1,8 +1,11 @@
-class:: OutputProxy
-summary:: Place holder for multiple outputs
+title:: OutputProxy
+summary:: place holder for multiple outputs
 categories:: UGens>Base
 
+
 description::
+
+
 OutputProxy is used by some UGens as a place holder for multiple outputs.
 There is no reason for a user to create an OutputProxy directly.
 
@@ -13,14 +16,22 @@ out = Pan2.ar(WhiteNoise.ar, 0.0);
 out.postln;
 ::
 
+
 classmethods::
+
+
 private:: categories
 
-InstanceMethods::
+
+instancemethods::
+
 
 method::source
-The UGen that is the source for this OutputProxy.
+
+the UGen that is the source for this OutputProxy.
+
 discussion::
+
 code::
 var left, right;
 // Pan2 uses an OutputProxy for each of its two outputs.

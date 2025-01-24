@@ -1,16 +1,21 @@
-class::Method
-categories::Core>Kernel
-summary:: Code that implements an operation upon instances of a Class.
+title:: Method
+summary:: code that implements an operation upon instances of a Class
+categories:: Core>Kernel
 related:: Classes/Class
 
+
 description::
+
+
 A Method is code that is a part of the set of operations upon instances of a link::Classes/Class::.
 
 
 subsection:: Related Keywords
 
+
 method::thisMethod
-The global pseudo-variable code::thismethod::always evaluates to the enclosing Method in a class definition, much like code::thisFunction::.
+
+the global pseudo-variable code::thismethod::always evaluates to the enclosing Method in a class definition, much like code::thisFunction::.
 When executed outside that context, it returns link::Classes/Interpreter#-functionCompileContext::, the method within which all interpreted code executes.
 
 code::
@@ -28,26 +33,40 @@ a.methodThatPostsItself;
 ::
 
 code::thismethod::is frequently used to pass information to error-throwing methods. For example, the implementation of code::Nil.new:: is:
+
 code::
 *new { ^this.shouldNotImplement(thisMethod) }
 ::
 
 See also: link::Classes/Function#.thisFunction#thisFunction::.
 
-instanceMethods::
+
+instancemethods::
+
 
 method::ownerClass
-returns:: 
-The link::Classes/Class:: for which the method is part of the implementation.
+
+returns::
+
+the link::Classes/Class:: for which the method is part of the implementation.
+
 
 method::name
-returns:: 
-A link::Classes/Symbol:: which is the name of the Method.
+
+returns::
+
+a link::Classes/Symbol:: which is the name of the Method.
+
 
 method::primitiveName
-returns:: 
-A link::Classes/Symbol:: which contains the name of the primitive function that implements the Method, if there is one.
+
+returns::
+
+a link::Classes/Symbol:: which contains the name of the primitive function that implements the Method, if there is one.
+
 
 method::filenameSymbol
-returns:: 
-A link::Classes/Symbol:: which is the full path of the source file that this method is defined in.
+
+returns::
+
+a link::Classes/Symbol:: which is the full path of the source file that this method is defined in.

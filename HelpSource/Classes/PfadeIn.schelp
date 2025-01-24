@@ -1,43 +1,67 @@
-TITLE::PfadeIn
-summary:: Fade an event pattern in
-CATEGORIES::Streams-Patterns-Events>Patterns>Filter
-RELATED::Classes/PfadeOut
+title:: PfadeIn
+summary:: fades an event pattern in
+categories:: Streams-Patterns-Events>Patterns>Filter
+related:: Classes/PfadeOut
+
 
 description::
+
+
 Fade an event pattern in by scaling its amplitude over a period of time.
 
-NOTE::This only works on event patterns that are playing synths that have a
-code::\amp:: argument in them.::
+note::
+This only works on event patterns that are playing synths that have a
+code::\amp:: argument in them.
+::
 
-CLASSMETHODS::
-METHOD::new
+
+classmethods::
+
+
+method::new
+
 argument::pattern
-The pattern to fade in. Must be an event pattern that plays a synth with the code::\amp:: parameter.
+the pattern to fade in. Must be an event pattern that plays a synth with the code::\amp:: parameter.
+
 argument::fadeTime
-The time it will take to fade.
+the time it will take to fade.
+
 argument::holdTime
+
 argument::tolerance
-The tolerance for the rounding of elapsed time used when setting the amplitude
+the tolerance for the rounding of elapsed time used when setting the amplitude
 of the input pattern.
 
-INSTANCEMETHODS::
-METHOD::fadeTime
+
+instancemethods::
+
+
+method::fadeTime
+
 gets/sets the fadetime
 
-METHOD::holdTime
+
+method::holdTime
+
 gets/sets the hold time
 
-METHOD::tolerance
+
+method::tolerance
+
 gets/sets the tolerance used when rounding the internal time.
 
-METHOD::embedInStream
+
+method::embedInStream
+
 argument::inval
 
-METHOD::storeArgs
+
+method::storeArgs
+
 
 examples::
 
-CODE::
+code::
 (
 // Create a pattern that you want to fade
 var pat = Pbind(\dur, 0.125, \degree, Pwhite(1, 10));

@@ -1,9 +1,11 @@
-class:: Integrator
-summary:: A leaky integrator.
-categories::  UGens>Filters>Linear, UGens>Maths
+title:: Integrator
+summary:: a leaky integrator
+categories:: UGens>Filters>Linear, UGens>Maths
 
 
 description::
+
+
 Integrates an input signal with a leak. The formula implemented is:
 
 code::
@@ -13,15 +15,20 @@ out(0) = in(0) + (coef * out(-1))
 
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-The input signal.
+the input signal.
+
 argument::coef
-Leak coefficient.
+leak coefficient.
+
 argument::mul
-Output will be multiplied by this value.
+output will be multiplied by this value.
+
 argument::add
-This value will be added to the output.
+this value will be added to the output.
 
 
 examples::

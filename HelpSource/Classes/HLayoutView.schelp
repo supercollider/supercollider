@@ -1,9 +1,11 @@
-class:: HLayoutView
-summary:: A container view that arranges its children horizontally
+title:: HLayoutView
+summary:: a container view that arranges its children horizontally
 categories:: GUI>Views
 related:: Classes/VLayoutView, Classes/CompositeView
 
+
 description::
+
 note::
 In Qt GUI, this class has been rendered strong::obsolete:: by a special set of layout classes; they are easier to use and more flexible. See link::Classes/HLayout:: for an equivalent to this class, and link::Guides/GUI-Layout-Management:: for a general description of the Qt layout system.
 ::
@@ -18,10 +20,15 @@ note::
 HLayoutView is designed mainly for grouping and placing widgets. While you can set it to accept key presses, it does not accept mouse clicks or drags.
 ::
 
-CLASSMETHODS::
-PRIVATE:: key
+
+classmethods::
+
+
+private:: key
+
 
 examples::
+
 
 Child view height fills the HLayoutView automatically:
 

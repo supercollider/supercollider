@@ -1,9 +1,12 @@
-class::Interpreter
-summary:: The interpreter defines a context in which interactive commands are compiled and executed.
+title:: Interpreter
+summary:: the interpreter defines a context in which interactive commands are compiled and executed
 categories:: Core>Kernel
-related::Guides/How-to-Use-the-Interpreter
+related:: Guides/How-to-Use-the-Interpreter
+
 
 description::
+
+
 The interpreter is an object that handles the translation and execution of code at runtime. It is that what runs any program code and defines a context for it.
 
 code::
@@ -13,14 +16,18 @@ this.cmdLine.postln;
 )
 ::
 
-classMethods::
 
-private::new
+classmethods::
 
-instanceMethods::
+
+private:: new
+
+
+instancemethods::
 
 
 subsection:: Accessing
+
 
 In the interpreter, code::this:: refers to the interpreter itself, e.g.: code::this.postln::
 
@@ -41,11 +48,13 @@ g.stop; a.free;
 this.inspect;
 ::
 
-note::Use these variables with a bit of extra care – as they are global, they remain in memory and one piece of code may happen to interfere with another one. The variable code::s:: is by convention bound to the default server (link::Classes/Server::) and should not be changed.::
-
+note::
+Use these variables with a bit of extra care – as they are global, they remain in memory and one piece of code may happen to interfere with another one. The variable code::s:: is by convention bound to the default server (link::Classes/Server::) and should not be changed.
+::
 
 
 method::clearAll
+
 sets the values of the variables code::a:: through code::z:: to code::nil::.
 
 code::
@@ -58,21 +67,27 @@ x.postln;
 
 subsection:: Compile & Interpret
 
+
 method::interpret
+
 compiles and executes a link::Classes/String::.
 
 code::
 this.interpret("(123 + 4000).postln");
 ::
 
+
 method::interpretPrint
+
 compiles and executes a link::Classes/String::, printing the result.
 
 code::
 this.interpretPrint("123 + 4000");
 ::
 
+
 method::compile
+
 compiles a String and returns a link::Classes/Function::.
 
 code::
@@ -83,17 +98,23 @@ z.value;
 )
 ::
 
+
 method::compileFile
+
 reads the file at pathName, compiles it and returns a Function.
 The file must contain a valid SuperCollider expression, naturally.
 This will not compile class definitions, only expressions.
 
+
 method::executeFile
+
 reads the file at pathName, compiles it and executes it, returning the result.
 The file must contain a valid SuperCollider expression, naturally.
 This will not compile class definitions, only expressions.
 
+
 method::cmdLine
+
 returns the previously interpreted code.
 
 code::
@@ -101,7 +122,9 @@ code::
 this.cmdLine
 ::
 
+
 method::codeDump
+
 this interpreter variable can be set to evaluate a function with any successfully compiled code.
 see e.g. the class History.
 
@@ -114,8 +137,10 @@ a.postcs;
 codeDump = nil; // reset to nil.
 ::
 
+
 method::preProcessor
-If this is set to a function, all interactively executed code is piped through it before parsing and
+
+if this is set to a function, all interactively executed code is piped through it before parsing and
 interpreting. This is mostly used for developing domain-specific live coding languages that piggyback
 off the SuperCollider editing environment.
 
@@ -131,8 +156,12 @@ this.preProcessor = { |code| code.replace("SinOsc", "Saw") };
 preProcessor = nil; // reset to nil.
 ::
 
+
 method::a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z
-Global variables ("interpreter variables") for interactive programming (see link::#Accessing::).
+
+global variables ("interpreter variables") for interactive programming (see link::#Accessing::).
+
 
 method::functionCompileContext
-The compiler uses this method as a virtual context in which to compile code.
+
+the compiler uses this method as a virtual context in which to compile code.

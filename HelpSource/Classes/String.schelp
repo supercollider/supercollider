@@ -1,16 +1,22 @@
-CLASS::String
-summary:: array of Chars
-related::Classes/Char
+title:: String
+summary:: Array of Chars
 categories:: Collections>Ordered
+related:: Classes/Char
+
 
 description::
+
+
 String represents an array of link::Classes/Char##Chars::.
 
 Strings can be written literally using double quotes:
+
 code::
 "my string".class
 ::
+
 A sequence of string literals will be concatenated together:
+
 code::
 x = "hel" "lo";
 y = "this is a\n"
@@ -22,6 +28,7 @@ Backslash is the escape character. See link::Reference/Literals#Characters::.
 
 
 subsection:: Character encodings
+
 
 Note that, while Char does not support encodings aside from ASCII—such as
 multi-byte encodings like UTF-8 and UTF-16, or the full Latin-1 (ISO 8859-1)
@@ -40,33 +47,47 @@ of its first index is code::-16::, which is not a valid ASCII value at all but
 rather the signed 8-bit representation of the first byte of the UTF-8 value of
 the piano keyboard emoji (🎹), code::0xF09F8EB9::.
 
-CLASSMETHODS::
 
-private::initClass
-private::doUnixCmdAction
-private::unixCmdActions
+classmethods::
+
+
+private:: initClass
+private:: doUnixCmdAction
+private:: unixCmdActions
+
 
 method::readNew
+
 reads the entire contents of a link::Classes/File:: and returns them as a new String.
 
+
 method::scDir
-Deprecated alias for code::Platform.resourceDir::. Please use link::Classes/Platform#*resourceDir:: instead.
 
-INSTANCEMETHODS::
+deprecated alias for code::Platform.resourceDir::. Please use link::Classes/Platform#*resourceDir:: instead.
 
-private::prUnixCmd, prFormat, prCat, prBounds, hash, species, getSCDir, prDrawInRect, prDrawAtPoint, openTextFile
+
+instancemethods::
+
+
+private:: prUnixCmd, prFormat, prCat, prBounds, hash, species, getSCDir, prDrawInRect, prDrawAtPoint, openTextFile
 
 
 subsection:: Accessing characters
 
+
 method::@, at
-Strings respond to .at in a manner similar to other indexed collections. Each element is a link::Classes/Char::.
+
+Strings respond to teletype::.at:: in a manner similar to other indexed collections. Each element is a link::Classes/Char::.
+
 code::
 "ABCDEFG".at(2)
 ::
 
+
 method::ascii
+
 returns an Array of ASCII values of the Strings's characters.
+
 code::
 "wertvoll".ascii // [119, 101, 114, 116, 118, 111, 108, 108]
 ::
@@ -93,46 +114,68 @@ b.collect(_.asHexString(2)) // [F0, 9F, 98, 82]
 
 subsection:: Comparing strings
 
+
 method::compare
+
 returns an integer less than, equal to or greater than zero, depending on whether the receiver should be sorted before the argument, is equal to the argument or should be sorted after the argument. This is a case sensitive compare.
 
+
 method::<
+
 returns a link::Classes/Boolean:: whether the receiver should be sorted before the argument.
+
 code::
 "same" < "samf"
 ::
 
+
 method::>
+
 returns a link::Classes/Boolean:: whether the receiver should be sorted after the argument.
+
 code::
 "same" > "samf"
 ::
+
+
 method::<=
+
 returns a link::Classes/Boolean:: whether the receiver should be sorted before the argument, including the same string.
+
 code::
 "same" <= "same"
 "same" <= "samf"
 ::
 
+
 method::>=
+
 returns a link::Classes/Boolean:: whether the receiver should be sorted after the argument, including the same string.
+
 code::
 "same" >= "same"
 "same" >= "samf"
 ::
 
+
 method::==
+
 returns a link::Classes/Boolean:: whether the two Strings are equal.
+
 note::
 This method is (now) case sensitive!
 ::
+
 code::
 "same" == "same"
 "same" == "Same"; // false
 ::
 
+
 method::!=
+
 returns a link::Classes/Boolean:: whether the two Strings are not equal.
+
 code::
 "same" != "same"; // false
 "same" != "Same";
@@ -140,8 +183,11 @@ code::
 
 
 subsection:: Fuzzy string comparison
+
+
 With fuzzy comparison, the strings don't need to match exactly - we can work out how similar they are, and make decisions based on that.
 This behaviour is inherited from the link::Classes/SequenceableCollection#-editDistance::, and is documented fully there, but to provide an example:
+
 code::
 "hello".editDistance("hallo"); // 1 (substitution)
 "hello".editDistance("hell"); // 1 (deletion)
@@ -153,58 +199,84 @@ code::
 
 subsection:: Posting strings
 
+
 method::post
+
 prints the string to the current post window.
+
 code::
 "One".post; "Two".post; "";
 ::
 
+
 method::postln
+
 prints the string and a carriage return to the current post window.
+
 code::
 "One".postln; "Two".postln; "";
 ::
 
+
 method::postc, postcln
-As link::#-post:: and link::#-postln::, but formatted as a comment.
+
+as link::#-post:: and link::#-postln::, but formatted as a comment.
+
 code::
 "This is a comment.".postcln;
 ::
 
+
 method::postf
+
 prints a formatted string with arguments to the current post window. The % character in the format string is replaced by a string representation of an argument. To print a % character use \\% .
+
 code::
 postf("this % a %. pi = %, list = %\n", "is", "test", pi.round(1e-4), (1..4))
 
 this is a test. pi = 3.1416, list = [1, 2, 3, 4]
 ::
 
+
 method::postcs
-As link::#-postln::, but posts the link::#-asCompileString#compileString:: of the receiver.
+
+as link::#-postln::, but posts the link::#-asCompileString#compileString:: of the receiver.
+
 code::
 List[1, 2, ["comment", [3, 2]], { 1.0.rand }].postcs;
 ::
 
+
 method::error
-Prepends an error banner and posts the string.
+
+prepends an error banner and posts the string.
+
 code::
 "Do not press this button again".error;
 ::
 
+
 method::warn
-Prepends a warning banner and posts the string.
+
+prepends a warning banner and posts the string.
+
 code::
 "Do not press this button again".warn;
 ::
 
+
 method::inform
-Legacy method (although due to widespread use, it will not be removed). This is identical to code::postln::.
+
+legacy method (although due to widespread use, it will not be removed). This is identical to code::postln::.
 
 
 subsection:: Interpreting strings as code
 
+
 method::compile
+
 compiles a String containing legal SuperCollider code and returns a Function.
+
 code::
 (
 var f;
@@ -213,14 +285,20 @@ f.value.postln;
 )
 ::
 
+
 method::interpret
+
 compiles and executes a String containing legal SuperCollider code, returning the result.
+
 code::
 "2 + 1".interpret.postln;
 ::
 
+
 method::interpretPrint
+
 compiles, executes and prints the result of a String containing legal SuperCollider code.
+
 code::
 "2 + 1".interpretPrint;
 ::
@@ -228,8 +306,11 @@ code::
 
 subsection:: Converting strings
 
+
 method::asCompileString
+
 returns a String formatted for compiling.
+
 code::
 (
 var f;
@@ -239,8 +320,11 @@ f.asCompileString.postln;
 )
 ::
 
+
 method::asSymbol
+
 returns a link::Classes/Symbol:: derived from the String.
+
 code::
 (
 var z;
@@ -249,20 +333,29 @@ z.class.postln;
 )
 ::
 
+
 method::asInteger
+
 returns an link::Classes/Integer:: derived from the String. Strings beginning with non-numeric characters return 0.
+
 code::
 "4".asInteger.postln;
 ::
 
+
 method::asFloat
+
 returns a link::Classes/Float:: derived from the String. Strings beginning with non-numeric characters return 0.
+
 code::
 "4.3".asFloat.postln;
 ::
 
+
 method::asSecs
+
 returns a link::Classes/Float:: based on converting a time string in format code::(ddd:)hh:mm:ss(.z)::, where code::z:: is any sequence of digits. This is the inverse method to link::Classes/SimpleNumber#-asTimeString::.
+
 code::
 "00:00:59.900".asSecs; // hh:mm:ss.zzz
 "1:1:1.1".asSecs; // h:m:s.z
@@ -282,20 +375,28 @@ code::
 
 subsection:: Concatenate strings
 
+
 method::++
+
 returns a concatenation of the two strings.
+
 code::
 "hello" ++ "word"
 ::
 
+
 method::+
+
 returns a concatenation of the two strings with a space between them.
+
 code::
 "hello" + "word"
 ::
 
+
 method::+/+
-Concatenates code::this:: and code::path::, as components of a filesystem path on the host operating
+
+concatenates code::this:: and code::path::, as components of a filesystem path on the host operating
 system. The strings are joined to avoid duplicate path separators.
 
 If code::this:: ends with a path separator and code::path:: begins with one, then the separator
@@ -305,8 +406,9 @@ using code::++::. If neither side has a path separator, the platform's preferred
 
 Returns code::this:: and code::path:: concatenated. If code::path:: was a PathName, the result is a
 PathName; otherwise, it is a String.
+
 argument::path
-Any object that can be converted to a string. Typically, either a String, link::Classes/Symbol::, or
+any object that can be converted to a string. Typically, either a String, link::Classes/Symbol::, or
 link::Classes/PathName::.
 
 code::
@@ -325,26 +427,38 @@ code::
 "foo" +/+ 'bar'
 ::
 
+
 method::catArgs
-Concatenate this string with the following args.
+
+concatenates this string with the following args.
+
 code::
 "These are some args: ".catArgs(\fish, SinOsc.ar, { 4 + 3 }).postln;
 ::
 
+
 method::scatArgs
-Same as link::#-catArgs::, but with spaces in between.
+
+same as link::#-catArgs::, but with spaces in between.
+
 code::
 "These are some args: ".scatArgs(\fish, SinOsc.ar, { 4 + 3 }).postln;
 ::
 
+
 method::ccatArgs
-Same as link::#-catArgs::, but with commas in between.
+
+same as link::#-catArgs::, but with commas in between.
+
 code::
 "a String".ccatArgs(\fish, SinOsc.ar, { 4 + 3 }).postln;
 ::
 
+
 method::catList, scatList, ccatList
-As link::#-catArgs::, link::#-scatArgs:: and link::#-ccatArgs:: above, but takes a Collection (usually a link::Classes/List:: or an link::Classes/Array::) as an argument.
+
+as link::#-catArgs::, link::#-scatArgs:: and link::#-ccatArgs:: above, but takes a Collection (usually a link::Classes/List:: or an link::Classes/Array::) as an argument.
+
 code::
 "a String".ccatList([\fish, SinOsc.ar, { 4 + 3 }]).postln;
 ::
@@ -352,21 +466,26 @@ code::
 
 subsection:: Regular expressions
 
+
 The String class provides access to the boost library's regular expression functions. Boost's default uses Perl settings. (Currently, there is no hook to override the regex style.) Syntax details may be found at link::https://www.boost.org/doc/libs/1_69_0/libs/regex/doc/html/boost_regex/syntax/perl_syntax.html::.
 
 Note carefully the argument order:
 
-List::
-## Code::regexp.matchRegexp(stringToSearch)::
-## Code::stringToSearch.findRegexp(regexp):: (and similar for code::findAllRegexp:: and code::findRegexpAt::).
+list::
+## code::regexp.matchRegexp(stringToSearch)::
+## code::stringToSearch.findRegexp(regexp):: (and similar for code::findAllRegexp:: and code::findRegexpAt::).
 ::
 
-Code::findRegexp:: follows the pattern established by link::Classes/String#-find::, where the receiver is the string to be searched. Code::matchRegexp:: follows the pattern of link::Reference/matchItem::, where the receiver is the pattern to match and the first argument is the object to be tested. This is a common source of confusion, but it is based on this precedent.
+code::findRegexp:: follows the pattern established by link::Classes/String#-find::, where the receiver is the string to be searched. code::matchRegexp:: follows the pattern of link::Reference/matchItem::, where the receiver is the pattern to match and the first argument is the object to be tested. This is a common source of confusion, but it is based on this precedent.
+
 
 method::matchRegexp
+
 Perl regular expression matching (see link::Classes/String#Regular expressions::). Returns code::true:: if the receiver (a regular expression pattern) matches the string passed to it. The strong::start:: is an offset where to start searching in the string (default: 0), strong::end:: where to stop.
 
-note::This is code::regexp.matchRegexp(stringToSearch):: and not the other way around! See above: link::Classes/String#Regular expressions::.::
+note::
+This is code::regexp.matchRegexp(stringToSearch):: and not the other way around! See above: link::Classes/String#Regular expressions::.
+::
 
 code::
 "c".matchRegexp("abcdefg", 2, 5); // true: substring exists
@@ -388,14 +507,20 @@ code::
 "[xtz]+nd".matchRegexp("xnd"); // true: any combination of x, t, z
 ::
 
-method::replaceRegexp
-This method is used to replace parts of text.
-argument::regex
-A perl regular expression (see link::Classes/String#Regular expressions::) with which to match the caller.
-argument::with
-The link::Classes/String:: to replace the found regex with.
 
-returns:: A link::Classes/String::.
+method::replaceRegexp
+
+this method is used to replace parts of text.
+
+argument::regex
+a perl regular expression (see link::Classes/String#Regular expressions::) with which to match the caller.
+
+argument::with
+the link::Classes/String:: to replace the found regex with.
+
+returns::
+
+a link::Classes/String::.
 
 code::
 // remove numbers
@@ -411,7 +536,9 @@ code::
 -> Hello world! I went to Paris yesterday.
 ::
 
+
 method::findRegexp
+
 Perl regular expression search (see link::Classes/String#Regular expressions::). This method searches exhaustively for matches and collects them into an array of pairs, in the format code::[character index, matching string]::.
 
 "Leftmost largest match": As in most flavors of regular expressions, code::*:: and code::+:: are greedy; if it is possible to have more than one overlapping match for a part of the regular expression, the match list will include only the leftmost and largest of them. In code::"foobar".findRegexp("o+")::, code::"o+":: may potentially have three matches: code::"o":: at index 1 (second character), code::"o":: at index 2, and code::"oo":: at index 1. code::findRegexp:: will return only the last of these (code::"oo"::), because it begins in the leftmost-possible matching position, and it is the longest possible match at that position.
@@ -433,10 +560,14 @@ code::
 "aaaabaaa".findRegexp("a+");
 ::
 
-returns:: A nested array, where each sub-array is a pair, code::[character index, matching string]::. If there are no matches, an empty array.
+returns::
+
+a nested array, where each sub-array is a pair, code::[character index, matching string]::. If there are no matches, an empty array.
+
 
 method::findAllRegexp
-Like link::#-findAll::, but use regular expressions (see link::Classes/String#Regular expressions::). Unlike findRegexp, it returns only the indices of the matches: code::string.findAllRegexp(regexp):: returns the same as code::string.findRegexp(regexp).flop.at(0)::.
+
+like link::#-findAll::, but use regular expressions (see link::Classes/String#Regular expressions::). Unlike findRegexp, it returns only the indices of the matches: code::string.findAllRegexp(regexp):: returns the same as code::string.findRegexp(regexp).flop.at(0)::.
 
 code::
 "foobar".findAllRegexp("o*bar");
@@ -445,10 +576,14 @@ code::
 "aaaabaaa".findAllRegexp("a+");
 ::
 
-returns:: An array of integer character indices pointing to all the possible matches.
+returns::
+
+an array of integer character indices pointing to all the possible matches.
+
 
 method::findRegexpAt
-Match a regular expression (see link::Classes/String#Regular expressions::) at the given offset, returning the match and the length of the match in an Array, or code::nil:: if it doesn't match.
+
+matches a regular expression (see link::Classes/String#Regular expressions::) at the given offset, returning the match and the length of the match in an Array, or code::nil:: if it doesn't match.
 The match must begin right at the offset.
 
 code::
@@ -462,153 +597,223 @@ code::
 "foobaroob".findRegexpAt("o*b+", 7); // [ob,  2]
 ::
 
-returns:: An array code::[matching string, length]:: if a match is found at the specified offset; code::nil:: if the offset doesn't match.
+returns::
+
+an array code::[matching string, length]:: if a match is found at the specified offset; code::nil:: if the offset doesn't match.
 
 
 subsection:: Searching strings
 
+
 method::find
+
 returns the index of the string in the receiver, or code::nil:: if not found. If strong::ignoreCase:: is code::true::, code::.find:: makes no difference between uppercase and lowercase letters. The strong::offset:: is the point in the string where the search begins. string may be a String or a link::Classes/Char::.
+
 code::
 "These are several words".find("are").postln;
 "These are several words".find("fish").postln;
 ::
 
+
 method::findBackwards
-Same like link::#-find::, but starts at the end of the string.
+
+same like link::#-find::, but starts at the end of the string.
+
 code::
 // compare:
 "These words are several words".find("words"); // 6
 "These words are several words".findBackwards("words"); // 24
 ::
 
+
 method::findAll
+
 returns the indices of the string in the receiver, or code::nil:: if not found.
+
 code::
 "These are several words which are fish".findAll("are").postln;
 "These are several words which are fish".findAll("fish").postln;
 ::
 
+
 method::contains
+
 returns a link::Classes/Boolean:: indicating if the String contains string.
+
 code::
 "These are several words".contains("are").postln;
 "These are several words".contains("fish").postln;
 ::
 
+
 method::containsi
-Same as link::#-contains::, but case insensitive.
+
+same as link::#-contains::, but case insensitive.
+
 code::
 "These are several words".containsi("ArE").postln;
 ::
 
+
 method::containsStringAt
+
 returns a link::Classes/Boolean:: indicating if the String contains string beginning at the specified index.
+
 code::
 "These are several words".containsStringAt(6, "are").postln;
 ::
 
+
 method::icontainsStringAt
-Same as link::#-containsStringAt::, but case insensitive.
+
+same as link::#-containsStringAt::, but case insensitive.
+
 
 method::beginsWith
+
+
 method::endsWith
+
 returns code::true:: if this string begins/ends with the specified other string.
+
 argument::string
-The other string
-returns:: 
-A link::Classes/Boolean::
+the other string
+
+returns::
+
+a link::Classes/Boolean::
 
 
 subsection:: Manipulating strings
 
+
 method::rotate
-Rotate the string by n steps.
+
+rotates the string by n steps.
+
 code::
 "hello word".rotate(1)
 ::
 
+
 method::scramble
-Randomize the order of characters in the string.
+
+randomizes the order of characters in the string.
+
 code::
 "hello word".scramble
 ::
 
 
 method::replace
-Like link::#-tr::, but with Strings as well as Chars as arguments.
+
+like link::#-tr::, but with Strings as well as Chars as arguments.
+
 code::
 "Here are several words which are fish".replace("are", "were");
 ::
 
+
 method::format
+
 returns a formatted string with arguments. The % character in the format string is replaced by a string representation of an argument. To print a % character use \\% .
+
 code::
 format("this % a %. pi = %, list = %\n", "is", "test", pi.round(1e-4), (1..4))
 
 this is a test. pi = 3.1416, list = [1, 2, 3, 4]
 ::
 
+
 method::escapeChar
+
 adds the escape character (\) before any character of your choice.
+
 code::
 // escape spaces:
 "This will become a Unix friendly string".escapeChar($ ).postln;
 ::
 
+
 method::quote
+
 returns this string enclosed in double-quote (teletype::"::) characters.
+
 code::
 "tell your" + "friends".quote + "not to tread onto the lawn"
 ::
 
+
 method::zeroPad
+
 returns this string enclosed in space characters.
+
 code::
 "spaces".zeroPad.postcs;
 ::
 
+
 method::underlined
+
 returns this string followed by dashes in the next line (teletype::-::).
+
 code::
 "underlined".underlined;
 "underlined".underlined($~);
 ::
 
+
 method::tr
-Transliteration. Replace all instances of strong::from:: with strong::to::.
+
+transliteration. Replace all instances of strong::from:: with strong::to::.
+
 code::
 ":-(:-(:-(".tr($(, $)); // turn the frowns upside down
 ::
 
 
 method::padLeft
+
+
 method::padRight
-Pad this string with strong::string:: so it fills strong::size:: character.
+
+pads this string with strong::string:: so it fills strong::size:: character.
+
 argument::size
-Number of characters to fill
+number of characters to fill
+
 argument::string
-Padding string
+padding string
+
 code::
 "this sentence has thirty-nine letters".padRight(39, "-+");
 "this sentence has thirty-nine letters".padLeft(39, "-+");
 "this sentence more than thirteen letters".padRight(13, "-+"); // nothing to pad.
 ::
 
+
 method::toUpper
+
 returns this string with uppercase letters.
+
 code::
 "Please, don't be impolite".toUpper;
 ::
 
+
 method::toLower
+
 returns this string with lowercase letters.
+
 code::
 "SINOSC".toLower;
 ::
 
+
 method::stripRTF
+
 returns a new String with all RTF formatting removed.
+
 code::
 (
 // same as File-readAllStringRTF
@@ -618,8 +823,11 @@ g.close;
 )
 ::
 
+
 method::split
+
 returns an Array of Strings split at the separator. The separator is a link::Classes/Char::, and is strong::not:: included in the output array.
+
 code::
 "These are several words".split($ );
 
@@ -630,8 +838,11 @@ code::
 
 subsection:: Stream support
 
+
 method::printOn
+
 prints the String on stream.
+
 code::
 "Print this on Post".printOn(Post);
 
@@ -639,8 +850,11 @@ code::
 Post << "Print this on Post";
 ::
 
+
 method::storeOn
-Same as link::#-printOn::, but formatted link::#-asCompileString::.
+
+same as link::#-printOn::, but formatted link::#-asCompileString::.
+
 code::
 "Store this on Post".storeOn(Post);
 
@@ -651,7 +865,9 @@ Post <<< "Store this on Post";
 
 subsection:: Unix Support
 
+
 Where relevant, the current working directory is the same as the location of the SuperCollider app and the shell is the Bourne shell (sh). Note that the cwd, and indeed the shell itself, does not persist:
+
 code::
 "echo $0".unixCmd; // print the shell (sh)
 "pwd".unixCmd;
@@ -661,92 +877,140 @@ code::
 "export FISH=mackerel".unixCmd;
 "echo $FISH".unixCmd;
 ::
+
 It is, however, possible to execute complex commands:
+
 code::
 "pwd; cd Help/; pwd".unixCmd;
 "export FISH=mackerel; echo $FISH".unixCmd;
 ::
+
 Also on os x applescript can be called via osascript:
+
 code::
 "osascript -e 'tell application \"Safari\" to activate'".unixCmd;
 ::
+
 Should you need an environment variable to persist you can use link::#-setenv::.
 
 note::
 Despite the fact that the method is called 'unixCmd', strong::it does work in Windows::. The string must be a DOS command, however: "dir" rather than "ls" for instance.
 ::
 
+
 method::unixCmd
-Execute a UNIX command strong::asynchronously:: using the standard shell (sh).
+
+executes a UNIX command strong::asynchronously:: using the standard shell (sh).
+
 argument::action
-A link::Classes/Function:: that is called when the process has exited. It is passed two arguments: the exit code and pid of the exited process.
+a link::Classes/Function:: that is called when the process has exited. It is passed two arguments: the exit code and pid of the exited process.
+
 argument::postOutput
-A link::Classes/Boolean:: that controls whether or not the output of the process is displayed in the post window.
-returns:: 
-An link::Classes/Integer:: - the pid of the newly created process. Use link::Classes/Integer#-pidRunning:: to test if a process is alive.
+a link::Classes/Boolean:: that controls whether or not the output of the process is displayed in the post window.
+
+returns::
+
+an link::Classes/Integer:: - the pid of the newly created process. Use link::Classes/Integer#-pidRunning:: to test if a process is alive.
+
 discussion::
 Example:
+
 code::
 "ls Help".unixCmd;
 "echo one; sleep 1; echo two; sleep 1".unixCmd { |res, pid| [\done, res, pid].postln };
 ::
 
+
 method::unixCmdGetStdOut
-Similar to link::#-unixCmd:: except that the stdout of the process is returned (strong::synchronously::) rather than sent to the post window.
+
+similar to link::#-unixCmd:: except that the stdout of the process is returned (strong::synchronously::) rather than sent to the post window.
+
 code::
 ~listing = "ls Help".unixCmdGetStdOut; // Grab
 ~listing.reverse.as(Array).dupEach.join.postln; // Mangle
 ::
 
-method::systemCmd
-Executes a UNIX command strong::synchronously:: using the standard shell (sh).
 
-returns:: Error code of the UNIX command
+method::systemCmd
+
+executes a UNIX command strong::synchronously:: using the standard shell (sh).
+
+returns::
+
+error code of the UNIX command
+
 
 method::runInTerminal
-Execute the String in a new terminal window (strong::asynchronously::).
+
+executes the String in a new terminal window (strong::asynchronously::).
+
 argument::shell
-The shell used to execute the string.
+the shell used to execute the string.
+
 discussion::
-note:: On macOS and Linux, the string is incorporated into a temporary script file and executed using the shell. ::
-note:: On Linux, it is possible to choose a specific terminal emulator to be used, otherwise sclang tries to find one by itself. See link::Classes/LinuxPlatform#*runInTerminalCmd::. ::
+
+note::
+On macOS and Linux, the string is incorporated into a temporary script file and executed using the shell.
+::
+
+note::
+On Linux, it is possible to choose a specific terminal emulator to be used, otherwise sclang tries to find one by itself. See link::Classes/LinuxPlatform#*runInTerminalCmd::.
+::
+
 Example:
+
 code::
 "echo ---------Hello delightful SuperCollider user----------".runInTerminal;
 ::
 
+
 method::setenv
+
 sets the environment variable indicated in the string to equal the String strong::value::. This value will persist until it is changed or SC is quit. Note that if strong::value:: is a path you may need to call link::#-standardizePath:: on it.
+
 code::
 // all defs in this directory will be loaded when a local server boots
 "SC_SYNTHDEF_PATH".setenv("~/scwork/".standardizePath);
 "echo $SC_SYNTHDEF_PATH".unixCmd;
 ::
 
+
 method::getenv
+
 returns the value contained in the environment variable indicated by the String.
+
 code::
 "USER".getenv;
 ::
 
+
 method::unsetenv
+
 sets the environment variable to code::nil::.
 
+
 method::mkdir
+
 makes a directory from the given path location.
 
+
 method::pathMatch
+
 returns an link::Classes/Array:: containing all paths matching this String. Wildcards apply, non-recursive.
+
 code::
 Post << "Help/*".pathMatch;
 ::
 
+
 method::load
-loads and execute the file at the path represented by the receiver.
+
+loads and executes the file at the path represented by the receiver.
+
 
 method::loadPaths
-Perform link::#-pathMatch:: on this String, then load and execute all paths in the resultant link::Classes/Array::.
 
+performs link::#-pathMatch:: on this String, then load and execute all paths in the resultant link::Classes/Array::.
 
 code::
 // first prepare a file with some code...
@@ -761,33 +1025,44 @@ File.use("/tmp/loadPaths_example.scd", "w", { |file|
  // ... it posts some text, and the return value pf loadPaths is an array of the return values of each file
 "/tmp/loadPaths_example.scd".loadPaths;
 ::
-argument::warn
-Post a warning if path doesn't point to any file.
-argument::action
-If a function is passed, it is called with each path as argument.
 
+argument::warn
+posts a warning if path doesn't point to any file.
+
+argument::action
+if a function is passed, it is called with each path as argument.
 
 
 method::loadRelative
-loads and execute the file at the path represented by the receiver, interpreting the path as relative to the current document or text file. Requires that the file has been saved. This can be used e.g. to load initialization code from files in the same folder.
+
+loads and executes the file at the path represented by the receiver, interpreting the path as relative to the current document or text file. Requires that the file has been saved. This can be used e.g. to load initialization code from files in the same folder.
+
 argument::warn
-Warn if a file is not found.
+warns if a file is not found.
+
 argument::action
-A function that is called for each file path that is found.
+a function that is called for each file path that is found.
+
 
 method::resolveRelative
-Convert the receiver from a relative path to an absolute path, relative to the current document or text file. Requires that the current text file has been saved. Absolute paths are left untransformed.
+
+converts the receiver from a relative path to an absolute path, relative to the current document or text file. Requires that the current text file has been saved. Absolute paths are left untransformed.
+
 
 method::standardizePath
-Expand ~ to your home directory, and resolve aliases on macOS. See link::Classes/PathName:: for more complex needs. See link::Classes/File#*realpath:: if you want to resolve symlinks.
+
+expands teletype::~:: to your home directory, and resolve aliases on macOS. See link::Classes/PathName:: for more complex needs. See link::Classes/File#*realpath:: if you want to resolve symlinks.
+
 code::
 "~/".standardizePath; // This will print your home directory
 ::
 
 
 method::openOS
+
 opens file, directory or URL via the operating system. On macOS this is implemented via teletype::open::, on Linux via
 teletype::xdg-open:: and on Windows via teletype::start::.
+
 code::
 Platform.userConfigDir.openOS;
 "http://supercollider.sf.net".openOS;
@@ -796,54 +1071,80 @@ Platform.userConfigDir.openOS;
 
 subsection:: Pathname Support
 
+
 Also see link::#-+/+:: for path concatenation.
 
 The term "path separator" is a platform-independent term for the character(s) that can be used to
 separate components of a path. On Windows, both forward slash "/" and backward slash "\\" are path
 separators. On POSIX-based systems like macOS and Linux, only forward slash is allowed.
 
+
 method::shellQuote
+
 returns a new string suitable for use as a filename in a shell command, by enclosing it in single quotes (teletype::'::).
 If the string contains any single quotes they will be escaped.
+
 discussion::
 You should use this method on a path before embedding it in a string executed by link::#-unixCmd:: or link::#-systemCmd::.
+
 code::
 unixCmd("ls " + Platform.userExtensionDir.shellQuote)
 ::
+
 note::
 This works well with shells such as strong::bash::, other shells might need different quotation/escaping.
 Apart from usage in the construction of shell commands, strong::escaping is not needed:: for paths passed to methods like pathMatch(path) or File.open(path).
 ::
 
+
 method::absolutePath
+
+
 method::asAbsolutePath
+
 returns this path as an absolute path by prefixing it with link::Classes/File#*getcwd:: if necessary.
 
+
 method::asRelativePath
+
 returns this path as relative to the specified path.
+
 argument::relativeTo
-The path to make this path relative to.
+the path to make this path relative to.
+
 
 method::withTrailingSlash
+
 appends a path separator if one is not already present.
 
+
 method::withoutTrailingSlash
+
 removes a trailing path separator if one is present.
 
+
 method::basename
+
 returns the filename from a Unix path.
+
 code::
 "Imaginary/Directory/fish.rtf".basename;
 ::
 
+
 method::dirname
+
 returns the directory name from a Unix path.
+
 code::
 "Imaginary/Directory/fish.rtf".dirname;
 ::
 
+
 method::splitext
-Splits off the extension from a filename or path and returns both in an link::Classes/Array:: as [path or filename, extension].
+
+splits off the extension from a filename or path and returns both in an link::Classes/Array:: as [path or filename, extension].
+
 code::
 "fish.rtf".splitext;
 "Imaginary/Directory/fish.rtf".splitext;
@@ -852,53 +1153,77 @@ code::
 
 subsection:: YAML and JSON parsing
 
+
 method::parseYAML
+
 parses this string as YAML/JSON.
-returns:: 
-A nested structure of link::Classes/Array::s (for sequences), link::Classes/Dictionary##Dictionaries:: (for maps) and link::Classes/String::s (for scalars).
+
+returns::
+
+a nested structure of link::Classes/Array::s (for sequences), link::Classes/Dictionary##Dictionaries:: (for maps) and link::Classes/String::s (for scalars).
+
 
 method::parseYAMLFile
-Same as code::parseYAML:: but parse a file directly instead of a string. This is faster than reading a file into a string and then parse it.
+
+same as code::parseYAML:: but parse a file directly instead of a string. This is faster than reading a file into a string and then parse it.
+
 
 method::parseJSON
-This method is currently just an alias for link::#-parseYAML::, in the future it will only accept valid JSON.
-returns:: 
-A nested structure of link::Classes/Array::s (for sequences), link::Classes/Dictionary##Dictionaries:: (for maps) and link::Classes/String::s (for scalars).
+
+this method is currently just an alias for link::#-parseYAML::, in the future it will only accept valid JSON.
+
+returns::
+
+a nested structure of link::Classes/Array::s (for sequences), link::Classes/Dictionary##Dictionaries:: (for maps) and link::Classes/String::s (for scalars).
 
 code::
 "{ \"a\": 1 }".parseYAML;
 "{ \"a\": 1 }".parseJSON;
 ::
 
+
 method::parseJSONFile
-This method is currently just an alias for link::#-parseYAMLFile::, in the future it will only accept valid JSON files.
+
+this method is currently just an alias for link::#-parseYAMLFile::, in the future it will only accept valid JSON files.
 
 
 subsection:: Document Support
 
+
 method::newTextWindow
+
 creates a new link::Classes/Document:: with this.
+
 code::
 "Here is a new Document".newTextWindow;
 ::
 
+
 method::openDocument
+
 creates a new link::Classes/Document:: from the path corresponding to this. The selection arguments will preselect the indicated range in the new window. Returns this.
+
 code::
 (
 String.filenameSymbol.asString.openDocument(10, 20)
 )
 ::
 
+
 method::findHelpFile
+
 returns the path for the helpfile named this, if it exists, else returns code::nil::.
+
 code::
 "Document".findHelpFile;
 "foobar".findHelpFile;
 ::
 
+
 method::help
-Performs link::#-findHelpFile:: on this, and opens the file it if it exists, otherwise opens the main helpfile.
+
+performs link::#-findHelpFile:: on this, and opens the file it if it exists, otherwise opens the main helpfile.
+
 code::
 "Document".help;
 "foobar".help;
@@ -907,11 +1232,14 @@ code::
 
 subsection:: Misc methods
 
+
 method::inspectorClass
+
 returns class link::Classes/StringInspector::.
 
 
 subsection:: Drawing Support
+
 
 The following methods must be called within an Window-drawFunc or a SCUserView-drawFunc function, and will only be visible once the window or the view is refreshed. Each call to Window-refresh SCUserView-refresh will 'overwrite' all previous drawing by executing the currently defined function.
 
@@ -921,8 +1249,11 @@ note::
 for cross-platform GUIs, use code::Pen.stringAtPoint, Pen.stringInRect, Pen.stringCenteredIn, Pen.stringLeftJustIn, Pen.stringRightJustIn:: instead.
 ::
 
+
 method::draw
-Draws the String at the current 0@0 link::Classes/Point::. If no transformations of the graphics state have taken place, this will be the upper left corner of the window. See also link::Classes/Pen::.
+
+draws the String at the current 0@0 link::Classes/Point::. If no transformations of the graphics state have taken place, this will be the upper left corner of the window. See also link::Classes/Pen::.
+
 code::
 (
 w = Window.new.front;
@@ -934,8 +1265,11 @@ w.refresh
 )
 ::
 
+
 method::drawAtPoint
-Draws the String at the given link::Classes/Point:: using the link::Classes/Font:: and link::Classes/Color:: specified.
+
+draws the String at the given link::Classes/Point:: using the link::Classes/Font:: and link::Classes/Color:: specified.
+
 code::
 (
 w = Window.new.front;
@@ -950,8 +1284,11 @@ w.refresh;
 )
 ::
 
+
 method::drawInRect
-Draws the String into the given link::Classes/Rect:: using the link::Classes/Font:: and link::Classes/Color:: specified.
+
+draws the String into the given link::Classes/Rect:: using the link::Classes/Font:: and link::Classes/Color:: specified.
+
 code::
 (
 w = Window.new.front;
@@ -965,8 +1302,11 @@ w.refresh;
 )
 ::
 
+
 method::drawCenteredIn
-Draws the String into the given Rect using the Font and Color specified.
+
+draws the String into the given Rect using the Font and Color specified.
+
 code::
 (
 w = Window.new.front;
@@ -984,8 +1324,11 @@ w.refresh;
 )
 ::
 
+
 method::drawLeftJustIn
-Draws the String into the given Rect using the Font and Color specified.
+
+draws the String into the given Rect using the Font and Color specified.
+
 code::
 (
 w = Window.new.front;
@@ -1003,8 +1346,11 @@ w.refresh;
 )
 ::
 
+
 method::drawRightJustIn
-Draws the String into the given link::Classes/Rect:: using the link::Classes/Font:: and link::Classes/Color:: specified.
+
+draws the String into the given link::Classes/Rect:: using the link::Classes/Font:: and link::Classes/Color:: specified.
+
 code::
 (
 w = Window.new.front;
@@ -1022,7 +1368,10 @@ w.refresh;
 )
 ::
 
+
 method::bounds
-Tries to return a link::Classes/Rect:: with the size needed to fit this string if drawn with given font.
+
+tries to return a link::Classes/Rect:: with the size needed to fit this string if drawn with given font.
+
 argument::font
-A link::Classes/Font::
+a link::Classes/Font::

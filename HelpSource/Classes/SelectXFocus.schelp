@@ -1,21 +1,31 @@
-class:: SelectXFocus
-summary:: Mix one output from many sources
+title:: SelectXFocus
+summary:: mixes one output from many sources
 categories:: UGens>Multichannel>Select
 related:: Classes/Select, Classes/SelectX, Classes/LinSelectX
 
+
 description::
+
+
 The output is mixed from an array of inputs, linearly interpolating from a number of adjacent channels. A focus argument allows to control how many adjacent sources are mixed.
 
+
 classmethods::
+
+
 method::ar, kr
+
 argument::which
-Index of the selected input, which is also the center of the selection for a focus > 0.
+index of the selected input, which is also the center of the selection for a focus > 0.
+
 argument::array
-A collection of inputs.
+a collection of inputs.
+
 argument::focus
-The "fuzziness" of the selection: the larger the focus, the less adjacent inputs are mixed in.
+the "fuzziness" of the selection: the larger the focus, the less adjacent inputs are mixed in.
+
 argument::wrap
-If set to code::true::, index will wrap around the array of inputs (see also: link::Classes/Array#-wrapAt::).
+if set to code::true::, index will wrap around the array of inputs (see also: link::Classes/Array#-wrapAt::).
 
 code::
 (
@@ -28,6 +38,7 @@ code::
 
 
 examples::
+
 code::
 (
 {

@@ -1,10 +1,12 @@
-class:: TDuty
-summary:: Demand results as trigger from demand rate UGens.
+title:: TDuty
+summary:: demand results as trigger from demand rate UGens
+categories:: UGens>Demand
 related:: Classes/Demand, Classes/Duty
-categories::  UGens>Demand
 
 
 description::
+
+
 A value is demanded each UGen in the list and output as a trigger
 according to a stream of duration values. The unit generators in the list
 should be 'demand' rate.
@@ -17,22 +19,29 @@ UGen, providing a stream of reset times.
 
 classmethods::
 
+
 method::ar, kr
+
 argument::dur
-Time values. Can be a demand UGen or any signal. The next trigger
+time values. Can be a demand UGen or any signal. The next trigger
 value is acquired after duration.
+
 argument::reset
-Trigger or reset time values. Resets the list of UGens and the
+triggers or resets time values. Resets the list of UGens and the
 duration UGen when triggered. The reset input may also be a
 demand UGen, providing a stream of reset times.
+
 argument::level
-Demand UGen providing the output values.
+demand UGen providing the output values.
+
 argument::doneAction
-A doneAction that is evaluated when the duration stream ends. See
+a doneAction that is evaluated when the duration stream ends. See
 
 link::Classes/Done::  for more detail.
+
 argument::gapFirst
 when 0 (default), the UGen does the first level poll immediately and then waits for the first durational value. When this is 1, the UGen initially polls the first durational value, waits for that duration, and then polls the first level (along with polling the next durational value).
+
 
 examples::
 

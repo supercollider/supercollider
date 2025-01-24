@@ -1,30 +1,44 @@
-class:: VDiskIn
-summary:: Stream in audio from a file, with variable rate
+title:: VDiskIn
+summary:: streams in audio from a file, with variable rate
 categories:: UGens>InOut, UGens>Buffer
 related:: Classes/PlayBuf, Classes/BufRd, Classes/DiskIn
 
+
 description::
+
+
 Continuously play a longer soundfile from disk. This requires a buffer to be preloaded with one buffer size of sound.
 
+
 classmethods::
+
+
 method::ar
+
 argument::numChannels
 number of channels. Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.
+
 argument::bufnum
 buffer number
-Note:: The Buffer's numFrames must be a power of two and is recommended to be at least 65536 -- preferably 131072 or 262144. Smaller buffer sizes mean more frequent disk access, which can cause glitches. ::
+
+note::
+The Buffer's numFrames must be a power of two and is recommended to be at least 65536 -- preferably 131072 or 262144. Smaller buffer sizes mean more frequent disk access, which can cause glitches.
+::
+
 argument::rate
 controls the rate of playback. Values below 4 are probably fine, but the higher the value, the more disk activity there is, and the more likelihood there will be a problem.
 
 warning::
-the rate does have a practical limit. The following must be code::true::: rate < Buffer's size / (2 * s.options.blockSize) e.g with typical default values, this will be 32768 / (2 * 64) = 256.
+the rate does have a practical limit. The following must be code::true::: code::rate < Buffer's size / (2 * s.options.blockSize):: e.g with typical default values, this will be code::32768 / (2 * 64) = 256::.
 ::
 
 If the rate is too high, the UGen will not execute, posting a warning.
+
 argument::loop
-If loop is set to 1, the soundfile will loop.
+if loop is set to 1, the soundfile will loop.
+
 argument::sendID
-If a sendID is given, the UGen sends an OSC message with this ID and the frame index emphasis::relative to the onset of the Synth:: each time it reloads the buffer: code::['/diskin', nodeID, sendID, frame]::.
+if a sendID is given, the UGen sends an OSC message with this ID and the frame index emphasis::relative to the onset of the Synth:: each time it reloads the buffer: code::['/diskin', nodeID, sendID, frame]::.
 The true frame index into the file is determined by the code::startFrame:: given when reading the initial buffer's worth of data, using link::Classes/Buffer#-cueSoundFile:: or link::Classes/Buffer#-read::.
 VDiskIn does not have access to the frame index used to cue the buffer. So, the frame index sent by OSC is always 0 at the start of the synth node.
 The user is responsible for adding the cue point: code::cueStartFrame + msg[3]::.
@@ -32,7 +46,9 @@ The user is responsible for adding the cue point: code::cueStartFrame + msg[3]::
 discussion::
 This UGen will set the link::Classes/Done##'done' flag:: when finished playing.
 
+
 examples::
+
 code::
 b = Buffer.cueSoundFile(s, Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff", 0, 1);
 
@@ -89,6 +105,7 @@ x.free; b.close; b.free; o.free; // clean up eventually
 ::
 
 The same example in OSC Messaging style, see link::Guides/NodeMessaging::
+
 code::
 // allocate a disk i/o buffer
 s.sendMsg("/b_alloc", 0, 65536, 1);

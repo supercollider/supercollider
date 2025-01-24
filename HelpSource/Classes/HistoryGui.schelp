@@ -1,13 +1,17 @@
-CLASS:: HistoryGui
-summary:: A gui for History objects
+title:: HistoryGui
+summary:: a gui for History objects
 categories:: GUI>Interfaces
 related:: Classes/History
 
+
 description::
+
+
 HistoryGui allows easy access to History as it happens: one can read recent lines, when they were written and by whom; one can search for text strings and by author names; and one can quickly grab lines of code for rewriting. Apart from documenting just in time programming sessions, all of this can be useful in live coding performances. See e.g. the system developed by powerbooks_unplugged, in the Quark called Republic.
 
 The gui elements in detail:
-DEFINITIONLIST::
+
+definitionlist::
 ## button start/end || starts and ends History emphasis::if:: code::gui.history:: is current.
 
 ## button all/filt || turns filtering on/off.
@@ -19,6 +23,7 @@ DEFINITIONLIST::
 ::
 
 first example:
+
 code::
 (
 // create a short history
@@ -37,102 +42,168 @@ g.postDoc(2);
 )
 ::
 
-ClassMethods::
+
+classmethods::
+
 
 method::docHeight
-gets and set the height of the text window opened by HistoryGui
+
+gets and sets the height of the text window opened by HistoryGui
+
+
 method::docTitle
-gets and set the title of the text window opened by HistoryGui
+
+gets and sets the title of the text window opened by HistoryGui
+
 
 method::new
+
 creates a new HistoryGui
+
 argument::object
 the history
+
 argument::numItems
 the number of lines in the TextView above
+
 argument::parent
 a parent window or view in which to place new HistoryGui
+
 argument::bounds
 bounds for new HistoryGui, constrained by its minSize.
+
 argument::makeSkip
 flag whether to create a skipjack for the HistoryGui.
+
 argument::options
 options to set for the HistoryGui (inherited from JITGui).
 
 
-InstanceMethods::
+instancemethods::
+
 
 private:: accepts, checkUpdate, getState, makeViews, setDefaults, postInlined
 private:: updateBinVal, updateFunc, updateLines, updateVal, alignDoc
 
 
 subsection:: views
+
+
 method::textV
+
 top: the TextView for the selected line
+
+
 method::startBut, filtBut, keyPop, filTextV, topBut
+
 the line of buttons, popup and TextView
+
+
 method::listV
+
 the ListView for the history lines
+
+
 method::resetViews
-reset all views
+
+resets all views
+
 
 method::showLineAt
+
 show the line at that index in History.lines in the TextView.
 
 
 subsection:: 'doc'-related
+
+
 method::doc
+
 the external text window made by HistoryGui to show codelines on.
 This is still called doc because it used to be a Document in pre-Qt times.
 
+
 method::findDoc
+
 finds an open a re-usable text window, or make a new one
 
+
 method::docFlag
+
 gets/sets the symbol for the doc strategy to use:
 code::\sameDoc:: tries to re-use a single text window,
 code::\newDoc:: always makes a new one (and keep track of old docs)
 
+
 method::oldDocs
+
 list of previous text windows (docs) opened
 
+
 method::postDoc
+
 finds the codeline at index in History, and post it on the textwindow
 
+
 method::setDocStr
+
 sets the string of the current textwindow
 
+
 method::rip
+
 creates a new textwindow with currently selected line
 
 
 subsection:: filtering
+
+
 method::filtering
+
 flag whether filtering is on
+
+
 method::filterOn, filterOff
+
 convenience on/off methods
 
+
 method::filters
+
 keys and string fragments to filter for.
 e.g. ['all', "+"] gets lines from all sources that contain the string "+".
+
+
 method::filterLines
-apply filtering to history lines
+
+applies filtering to history lines
+
 
 method::filteredIndices
+
 the indices of the current filtered lines
 
+
 method::filteredShorts
+
 the current filtered short lines for gui display
 
-method:.setKeyFilter
-Sets the key(s) to filter for, and perform filtering
+
+method::setKeyFilter
+
+sets the key(s) to filter for, and perform filtering
+
 
 method::setStrFilter
+
 sets the string to filter for, and perform filtering
 
+
 method::stickMode
+
 stickMode 0 means top, i.e. select top when new lines come in;
 stickMode 1 means keep, i.e. keep current line selected after new lines come in.
+
 
 examples::
 

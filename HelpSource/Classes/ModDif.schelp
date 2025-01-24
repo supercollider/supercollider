@@ -1,10 +1,12 @@
-class:: ModDif
-summary:: Minimum difference of two values in modulo arithmetics
+title:: ModDif
+summary:: minimum difference of two values in modulo arithmetics
+categories:: UGens>Maths
 related:: Classes/Clip, Classes/Wrap
-categories::  UGens>Maths
 
 
 description::
+
+
 returns the minimum difference of two values in modulo arithmetics. On a circle, there are two distances between two points. This UGen returns the smaller value of the two.
 
 code::
@@ -17,13 +19,17 @@ code::
 
 classmethods::
 
+
 method::ar, kr, ir
+
 argument::x
-First input value
+first input value
+
 argument::y
-Second input value
+second input value
+
 argument::mod
-Modulo (maximum value, double of the maximal difference).
+modulo (maximum value, double of the maximal difference).
 
 code::
 

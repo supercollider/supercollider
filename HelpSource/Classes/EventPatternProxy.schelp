@@ -1,56 +1,86 @@
-class:: EventPatternProxy
+title:: EventPatternProxy
 summary:: event stream reference
 categories:: JITLib>Patterns, Live Coding
 related:: Classes/Pdef
 
+
 description::
+
+
 keeps a reference to a stream that can be replaced while in use.
 
-ClassMethods::
+
+classmethods::
+
 
 method::new
+
 creates a new instance with a pattern (the source). The pattern should be an emphasis::event pattern:: (see link::Classes/Pdef::)
 
+
 method::default
+
 a default source, if none is given. the default is a Pbind with resting notes of 1.0 beat duration.
 
+
 method::defaultQuant
+
 sets the default quantization value for the class.
 
-InstanceMethods::
+
+instancemethods::
+
 
 method::source
+
 sets the source (a pattern). If a quantization is given, schedule this change to the next beat (strong::pattern_::(..) is equivalent)
 
+
 method::clear
+
 sets the source to code::nil:: and stop playing
 
+
 method::clock
+
 gets/sets the instance's default clock, used by link::#-play:: if no other clock is specified. Defaults to TempoClock.default.
 
+
 method::quant
+
 gets/sets the quantization value. can be an array [quant, phase, offset, outset]
 
+
 method::fadeTime
+
 when the synthdefs that are used contain an code::\amp:: control, the patterns are replaced by crossfading the previous with the new over this time (in beats)
 
+
 method::envir
-provide a default event for the Pdef. It is used to filter the incoming stream before it is passed to the source pattern. This is similar to link::Classes/NodeProxy#-nodeMap::. When set for the first time, the pattern is rebuilt.
+
+provides a default event for the Pdef. It is used to filter the incoming stream before it is passed to the source pattern. This is similar to link::Classes/NodeProxy#-nodeMap::. When set for the first time, the pattern is rebuilt.
+
 
 method::set
+
 sets arguments in the default event. If there is none, it is created and the pattern is rebuilt.
 
 
 subsection:: a) using as stream reference
 
+
 method::embedInStream
-Given a link::Classes/Stream:: like e.g. link::Classes/Routine::, yield all values from the pattern in the proxy before continuing. One pattern proxy can be used to produce values for any number of independent streams.
+
+given a link::Classes/Stream:: like e.g. link::Classes/Routine::, yield all values from the pattern in the proxy before continuing. One pattern proxy can be used to produce values for any number of independent streams.
+
 argument::inval
-The inval is an link::Classes/Event:: and is passed into all substreams. It can be used to control how they behave from the outside.
+the inval is an link::Classes/Event:: and is passed into all substreams. It can be used to control how they behave from the outside.
+
 argument::embed
-See link::Classes/Object#-streamArg:: for explanation.
+see link::Classes/Object#-streamArg:: for explanation.
+
 argument::default
-Replacement for code::nil:: outputs of the source pattern. One use case is link::#-endless::.
+replacement for code::nil:: outputs of the source pattern. One use case is link::#-endless::.
 
 code::
 a = EventPatternProxy.new;
@@ -64,14 +94,20 @@ r.nextN(12, ()); // the next 12 values from r
 
 subsection:: b) using as EventStreamPlayer
 
+
 method::play
+
 starts the EventPatternProxy and creates a player. if you want to play multiple instances, use link::#-fork::.
+
 argument::argClock
 play on a certain clock, e.g. a link::Classes/TempoClock::. If code::nil:: uses this instance's link::#-clock::, which in turn defaults to TempoClock.default.
+
 argument::protoEvent
 an event to be used as a first input to the chain
+
 argument::quant
 can be an array of [quant, phase, offset, outset], or an instance of link::Classes/Quant::.
+
 argument::doReset
 if set to code::true::, play will restart the stream if already running (a link::Classes/Boolean::).
 
@@ -89,16 +125,24 @@ Pdef(\x).trace.play(a);
 a.advance(0.2);
 ::
 
+
 method::stop
+
 stops the player
 
+
 method::player
+
 the current player (if the Pdef is simply used in other streams this is code::nil::)
 
+
 method::pause, resume, reset
-perform player method
+
+performs player method
+
 
 method::isPlaying
+
 returns code::true:: if Pdef is running. if a Pdef is playing and its stream ends, it will schedule a stream for playing as soon as a new one is assigned to it.
 
 

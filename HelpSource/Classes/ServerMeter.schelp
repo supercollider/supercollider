@@ -1,39 +1,58 @@
-TITLE:: ServerMeter
-summary:: Graphical feedback window showing input/output levels
+title:: ServerMeter
+summary:: graphical feedback window showing input/output levels
 categories:: GUI>Interfaces
 related:: Classes/Stethoscope, Classes/FreqScope, Classes/ServerMeterView
 
+
 description::
+
+
 A ServerMeter is a simple graphical display showing the volume levels of inputs and outputs on the server.
 
 Also see:
 link::Classes/Server#-meter::
 
-CLASSMETHODS::
+
+classmethods::
+
 
 method::new
+
 creates a new ServerMeter.
+
 argument::server
-The link::Classes/Server:: whose inputs and outputs you wish to visualize.
+the link::Classes/Server:: whose inputs and outputs you wish to visualize.
+
 argument::numIns
-The number of inputs you want to display (starts counting at the first input bus, similar to link::Classes/SoundIn::)
+the number of inputs you want to display (starts counting at the first input bus, similar to link::Classes/SoundIn::)
+
 argument::numOuts
-The number of outputs you want to display (starts counting at bus 0)
+the number of outputs you want to display (starts counting at bus 0)
 
-returns:: A reference to the newly created ServerMeter
+returns::
+
+a reference to the newly created ServerMeter
 
 
-INSTANCEMETHODS::
+instancemethods::
+
 
 method::window
+
 gets a reference to the link::Classes/Window:: of this ServerView
 
-returns:: a link::Classes/Window:: reference
+returns::
+
+a link::Classes/Window:: reference
+
 
 method::meterView
+
 gets a reference to the link::Classes/ServerMeterView:: of this ServerView
 
-returns:: a link::Classes/ServerMeterView:: reference
+returns::
+
+a link::Classes/ServerMeterView:: reference
 
 note::
 A ServerMeter encapsulates both a link::Classes/Window:: and a link::Classes/ServerMeterView:: within that Window. For more information about Windows and views see link::Guides/GUI-Introduction#Basic elements: Windows, views and containers::

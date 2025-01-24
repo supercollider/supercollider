@@ -1,9 +1,12 @@
-class:: NodeWatcher
-summary:: notify sc-lang side node objects of their server sided state
-related:: Reference/Server-Command-Reference, Classes/Node, Classes/DebugNodeWatcher
+title:: NodeWatcher
+summary:: notifies sc-lang side node objects of their server sided state
 categories:: Control, Server>Nodes
+related:: Reference/Server-Command-Reference, Classes/Node, Classes/DebugNodeWatcher
+
 
 description::
+
+
 Node instances (Synths and Groups) can be registered with the NodeWatcher.
 It watches for server node status messages:
 n_go n_end n_off n_on
@@ -18,32 +21,49 @@ code::
 NodeWatcher.register(aNode);
 ::
 
-ClassMethods::
 
-private::initClass
+classmethods::
+
+
+private:: initClass
+
 
 method::new
+
 creates a new instance listening to the server's address
 
+
 method::newFrom
+
 creates a new instance listening to the server's address. If there is one present already, returns that one.
 
+
 method::register
+
 argument::node
-Can be a Group or a Synth. The NodeWatcher is created internally.
+can be a Group or a Synth. The NodeWatcher is created internally.
+
 argument::assumePlaying
-If code::true::, the node's strong::isPlaying:: field is set to code::true::.
+if code::true::, the node's strong::isPlaying:: field is set to code::true::.
+
 
 method::unregister
+
 removes the node from the list of nodes. This happens also when a node is freed.
 
-InstanceMethods::
+
+instancemethods::
+
 
 method::start
+
 adds the OSCFunc to listen to the address.
 
+
 method::stop
+
 removes the OSCFunc to stop listen to the address.
+
 
 examples::
 

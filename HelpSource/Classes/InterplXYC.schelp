@@ -1,12 +1,16 @@
-class:: InterplXYC
+title:: InterplXYC
 summary:: envelope specification
-related:: Classes/InterplEnv
 categories:: Control, Envelopes
+related:: Classes/InterplEnv
+
 
 description::
+
+
 Takes sets of x, y and curve values and returns a new instance of InterplEnv.
 x values can be negative (for use in indexing with negative values or signals).
 See link::Classes/InterplEnv:: Help for more info.
+
 
 examples::
 

@@ -1,19 +1,25 @@
-class:: PV_BrickWall
-summary:: Zero bins.
-related:: Classes/FFT, Classes/IFFT
+title:: PV_BrickWall
+summary:: zero bins
 categories:: UGens>FFT
+related:: Classes/FFT, Classes/IFFT
+
 
 description::
+
+
 clears bins above or below a cutoff point.
 
 
 classmethods::
 
+
 method::new
+
 argument::buffer
 FFT buffer.
+
 argument::wipe
-Can range between -1 and +1.
+can range between -1 and +1.
 
 
 If

@@ -1,9 +1,12 @@
-class:: Knob
-summary:: A rotary controller view
+title:: Knob
+summary:: a rotary controller view
 categories:: GUI>Views
 related:: Classes/Slider, Classes/Slider2D
 
+
 description::
+
+
 Knob displays a value from 0.0 to 1.0 in rotary fashion, and allows to control it with either circular or linear mouse motion.
 
 It also displays the deviation of the value from either 0.0 or 0.5, which you can choose using link::#-centered::.
@@ -12,11 +15,15 @@ To switch between the mouse interaction modes, use link::#-mode::.
 
 The amount by which the value changes at interaction can be fine-tuned using link::#-step::, link::#-keystep::, link::#-shift_scale::, link::#-ctrl_scale::, and link::#-alt_scale::
 
-CLASSMETHODS::
 
-PRIVATE:: key
+classmethods::
+
+
+private:: key
+
 
 method::defaultMode
+
     The default link::#-mode:: for newly created Knobs.
 
 
@@ -25,22 +32,30 @@ INSTANCEMETHODS::
 
 subsection:: Data
 
+
 method::value
+
     The displayed value.
 
     argument::
         A Number in the range of 0.0 to 1.0.
 
+
 method::valueAction
+
     Sets the value and triggers link::#-action::.
 
+
 method::increment
+
     Increments the value by link::#-keystep:: multiplied by the argument.
 
     argument::
         A Number.
 
+
 method::decrement
+
     Decrements the value by link::#-keystep:: multiplied by the argument.
 
     argument::zoom
@@ -49,7 +64,9 @@ method::decrement
 
 subsection:: Interaction
 
+
 method::mode
+
     The way value is controlled with respect to mouse movement after clicking on the view:
     list::
     ## code::\round:: - value follows circular movement
@@ -62,7 +79,9 @@ method::mode
     argument::
         One of the symbols listed above.
 
+
 method::keystep
+
     The amount by which the value is incremented/decremented when pressing a relevant key.
 
     Defaults to 0.01;
@@ -70,25 +89,33 @@ method::keystep
     argument::
         A Number.
 
+
 method::step
+
     The amount by which the value is incremented/decremented using the mouse in 'horizontal' and 'vertical' link::#-mode#modes::.
 
     argument::
         A Number.
 
+
 method::shift_scale
+
     The factor by which link::#-step:: or link::#-keystep:: is multiplied when used at mouse or keyboard interaction while the Shift key is pressed.
 
     argument::
         A Float.
 
+
 method::ctrl_scale
+
     The factor by which link::#-step:: or link::#-keystep:: is multiplied when used at mouse or keyboard interaction while the Ctrl key is pressed.
 
     argument::
         A Float.
 
+
 method::alt_scale
+
     The factor by which link::#-step:: or link::#-keystep:: is multiplied when used at mouse or keyboard interaction while the Alt key is pressed.
 
     argument::
@@ -97,13 +124,17 @@ method::alt_scale
 
 subsection:: Appearance
 
+
 method::centered
+
     Whether the deviation of value will be displayed in relation to 0.0 or 0.5 (e.g. as in a panning controller);
 
     argument::
         A Boolean.
 
+
 method::color
+
     The colors used by the Knob to draw the following elements:
 
     list::
@@ -119,10 +150,14 @@ method::color
 
 subsection:: Actions
 
+
 method::action
+
     The action object evaluated whenever the user interacts with the Knob using the mouse or the keyboard.
 
+
 method::defaultKeyDownAction
+
     Implements the default effects of key presses as follows:
 
     table::
@@ -144,15 +179,21 @@ method::defaultKeyDownAction
 
 subsection:: Drag and drop
 
+
 method::defaultGetDrag
+
     returns:: 
         The link::#-value::.
 
+
 method::defaultCanReceiveDrag
+
     returns:: 
         code::true:: if the current drag data is a Number.
 
+
 method::defaultReceiveDrag
+
     Sets link::#-valueAction:: to the current drag data.
 
 
@@ -207,6 +248,7 @@ view.front;
 
 subsection:: Centered Mode
 
+
 Center mode is useful for pan or eq gain control etc.
 
 code::
@@ -227,6 +269,7 @@ k.centered = false
 
 
 subsection:: step
+
 
 link::#-step:: only affects the 'horiz' and 'vert' modes:
 

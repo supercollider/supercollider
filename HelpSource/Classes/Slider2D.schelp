@@ -1,8 +1,11 @@
-class:: Slider2D
-summary:: A view with a handle movable in two dimensions.
+title:: Slider2D
+summary:: a view with a handle movable in two dimensions
 categories:: GUI>Views
 
+
 description::
+
+
 A view that allows setting two numerical values represented by the horizontal and vertical position of a handle movable in two dimensions.
 
 The values are always within the range between 0 and 1. Scaling the output and input values to your needs can easily be achieved by using a link::Classes/ControlSpec:: with its link::Classes/ControlSpec#-map#-map:: and link::Classes/ControlSpec#-unmap#-unmap:: methods.
@@ -12,67 +15,87 @@ The link::#-step:: variable determines the amount by which the values will chang
 Drag and drop gives and accepts a link::Classes/Point:: of which the two coordinates represent the two values of the Slider2D.
 
 
+classmethods::
 
 
-CLASSMETHODS::
-
-PRIVATE:: key
+private:: key
 
 
-
-
-INSTANCEMETHODS::
+instancemethods::
 
 
 subsection:: Data
 
+
 method::x
+
 	The value represented by the horizontal position of the handle. It will always be clipped to the range between 0 and 1.
 
 	argument::
 		A Float.
 
+
 method::y
+
 	The value represented by the vertical position of the handle. It will always be clipped to the range between 0 and 1.
 
 	argument::
 		A Float.
 
+
 method::activex
+
 	Sets link::#-x:: and triggers the link::#-action::.
 
 
 method::activey
+
 	Sets link::#-y:: and triggers the link::#-action::.
 
+
 method::setXY
+
 	Sets link::#-x:: and link::#-y:: to the two arguments.
 
+
 method::setXYActive
+
 	Sets link::#-x:: and link::#-y:: to the two arguments, and triggers the link::#-action::.
 
+
 method::incrementX
+
 	Increments link::#-x:: by link::#-step:: multiplied by code::factor::.
 
+
 method::decrementX
+
 	Decrements link::#-x:: by link::#-step:: multiplied by code::factor::.
 
+
 method::incrementY
+
 	Increments link::#-y:: by link::#-step:: multiplied by code::factor::.
 
+
 method::decrementY
+
 	Decrements link::#-y:: by link::#-step:: multiplied by code::factor::.
 
 
 subsection:: Appearance
 
+
 method::knobColor
+
 	The color of the handle.
 
 	argument::
 		A Color.
 
+
 method::thumbSize
+
 	The size of the handle.
 
 	argument::
@@ -81,37 +104,49 @@ method::thumbSize
 
 subsection:: Interaction
 
+
 method::step
+
 	The amount by which link::#-x:: or link::#-y:: will change when incremented or decremented, either by calling relevant methods, or when related keys are pressed.
 
 	argument::
 		A Float.
 
+
 method::pixelStepX
+
 	The absolute amount by which link::#-x:: would change if the handle moved horizontally by one pixel.
 
 	returns:: 
 		A Float.
 
+
 method::pixelStepY
+
 	The absolute amount by which link::#-y:: would change if the handle moved vertically by one pixel.
 
 	returns:: 
 		A Float.
 
+
 method::shift_scale
+
 	The factor by which link::#-step:: is multiplied when incrementing or decrementing the values by keyboard while the Shift key is pressed.
 
 	argument::
 		A Float.
 
+
 method::ctrl_scale
+
 	The factor by which link::#-step:: is multiplied when incrementing or decrementing the values by keyboard while the Ctrl key is pressed.
 
 	argument::
 		A Float.
 
+
 method::alt_scale
+
 	The factor by which link::#-step:: is multiplied when incrementing or decrementing the values by keyboard while the Alt key is pressed.
 
 	argument::
@@ -120,10 +155,14 @@ method::alt_scale
 
 subsection:: Actions
 
+
 method::action
+
 	The action object evaluated whenever the user changes the position or size of the handle.
 
+
 method::defaultKeyDownAction
+
 	Implements the default effects of key presses as follows:
 
 	table::
@@ -141,18 +180,22 @@ method::defaultKeyDownAction
 
 subsection:: Drag and drop
 
+
 method::defaultGetDrag
+
 	returns:: 
 		A Point of which the x and y coordinates are set to link::#-x:: and link::#-y::, respectively.
 
+
 method::defaultCanReceiveDrag
+
 	returns:: 
 		code::true:: if the current drag data is a Point.
 
+
 method::defaultReceiveDrag
+
 	Sets link::#-x:: and link::#-y:: to the two coordinates of the Point stored as the current drag data, respectively, and triggers the link::#-action::.
-
-
 
 
 examples::
@@ -174,6 +217,7 @@ t.x_(0.25) // set the x loc
 ::
 
 Drag an drop Points
+
 code::
 (
 w = Window("Slider2D", Rect(100, 100, 500, 300));
@@ -199,6 +243,7 @@ w.front;
 ::
 
 Shape a Sound
+
 code::
 (
 s.waitForBoot({

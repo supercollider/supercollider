@@ -1,10 +1,14 @@
-CLASS::SymbolArray
+title:: SymbolArray
 summary:: an array whose indexed slots are all of the same type
-related::Classes/Int8Array, Classes/Int16Array, Classes/Int32Array, Classes/FloatArray, Classes/DoubleArray
-categories::Collections>Ordered
+categories:: Collections>Ordered
+related:: Classes/Int8Array, Classes/Int16Array, Classes/Int32Array, Classes/FloatArray, Classes/DoubleArray
+
 
 description::
+
+
 These classes implement arrays whose indexed slots are all of the same type.
+
 list::
 ## Int8Array - 8 bit integer
 ## Int16Array - 16 bit integer
@@ -14,6 +18,9 @@ list::
 ## SymbolArray - symbols
 ::
 
-INSTANCEMETHODS::
+
+instancemethods::
+
 
 method::readFromStream
+

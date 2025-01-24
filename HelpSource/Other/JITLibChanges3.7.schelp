@@ -1,9 +1,11 @@
 title:: JITLib Changes in 3.7
 categories:: JITLib, Live Coding
-summary:: A Changelog for JITLib
+summary:: a Changelog for JITLib
 
 
 section:: Overview
+
+
 In general, the changes in this version try to to strengthen the ideal of proxies being true placeholders that behave in many ways like their source objects:
 
 list::
@@ -23,7 +25,8 @@ list::
 ## link::Classes/Monitor::, link::Classes/NodeMap::
 ::
 
-note:: examples are given with Ndef, but apply to ProxySpace and NodeProxy: code::Ndef(\x, 5);:: is the same as code:: ~x = 5;:: in ProxySpace.::
+note::
+examples are given with Ndef, but apply to ProxySpace and NodeProxy: code::Ndef(\x, 5);:: is the same as code:: ~x = 5;:: in ProxySpace.::
 
 Perhaps one of the greatest chages in terms of behavior is the elastic strong::reshaping:: of node proxies (See: link::#NodeProxy elastic behavior setting::). By default it is off. If you want to test it as a default, you can add this to your startup file:
 
@@ -78,11 +81,13 @@ subsection:: NodeProxy elastic behavior setting
 list::
 ## NodeProxy is now able to reshape according to its source. When doing so, it recursively updates all other node proxies that depend on it. Both source and monitor will crossfade between the respective states.
 ## reshaping can be set on three levels:
+
 list::
 ## as a global default, e.g.: code::BusPlug.defaultReshaping = \elastic::.
 ## for a ProxySpace, e.g.: code::p = ProxySpace.push; p.reshaping = \elastic::.
 ## for an individual NodeProxy/BusPlug e.g.: code::Ndef(\x).reshaping = \elastic::.
 ::
+
 ## by default, reshaping is code::nil:: (no automatic reshaping). Apart from this, currently, there is code::\elastic::: both shrink and grow and change rate, and code::\expanding::: only grow, but also adjust rate.
 ::
 
@@ -90,7 +95,7 @@ list::
 subsection:: A few minor changes
 
 list::
-## An empty function / or a function returning code::nil:: to a node proxy will not fail, but simply play a synth without output
+## An empty function, or a function returning code::nil:: to a node proxy will not fail, but simply play a synth without output
 ## when trying to play control rate proxy, just warn and don't throw an error
 ## the source of a proxy is built when it is inserted, not only when the server is running. This allows to know its number of channels independently of the server running.
 ## bus is freed after fadeTime as to avoid a too early reuse.

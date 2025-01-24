@@ -1,5 +1,5 @@
 title:: NodeProxy roles
-summary:: Roles in NodeProxy
+summary:: roles in NodeProxy
 categories:: JITLib>NodeProxy
 related:: Classes/NodeProxy, Classes/Ndef, Classes/ProxySpace
 
@@ -22,7 +22,7 @@ Ndef(\a, ...)
 
 section:: Existing roles
 
-definitionList::
+definitionlist::
 
 ## \set -> event pattern
 || Set the proxy controls with an event pattern of type code::\set::. Old values are kept, only those explicitly provided are overridden.
@@ -68,6 +68,7 @@ a.nodeMap.postln; // the values are set in the node map.
 
 ## \xset -> event pattern
 || set all proxy controls to event data, using synth crossfade (see link::#-xset::).
+
 code::
 
 a = NodeProxy(s);
@@ -93,7 +94,7 @@ a.clear(3);
 ## \seti -> event pattern
 || Set the proxy controls for each channel in a multi-channel proxy with an event pattern of type code::\set::. Contrary to other roles it must be applied separately to each channel of the proxy.
 
-CODE::
+code::
 // 5-channel NodeProxy
 a = NodeProxy.audio(s).mold(5);
 // output will be stereo
@@ -223,6 +224,7 @@ a.clear(3);
 
 
 section:: Adding new roles
+
 
 Roles can be added on the fly. They are kept in a dictionary ( strong::buildMethods:: ) in link::Classes/AbstractPlayControl::. A second dictionary ( strong::proxyControlClasses:: ) provides the wrapper class for a given key.
 

@@ -1,26 +1,35 @@
-class:: Spec
+title:: Spec
 summary:: input datatype specification
-related:: Classes/ControlSpec, Classes/Warp
 categories:: Control, Spec
+related:: Classes/ControlSpec, Classes/Warp
+
 
 description::
+
+
 Specs specify what kind of input is required or permissible, and what the range of those parameters are. This is an abstract class - the most common subclass is: link::Classes/ControlSpec::.
 
 ControlSpec is used by GUI sliders and knobs to specify the range and curve of the controls. Input datatypes are of interest to functions, to gui interface objects (sliders etc.) and can also be used for introspection.
 
 The class Spec itself holds a global link::Classes/IdentityDictionary:: of common specifications. The name that the spec was stored as can then be used as a shorthand to refer to specs:
+
 code::
 \freq.asSpec
 ::
 
 Some common mappings are initialized in code::ControlSpec.initClass::. You may add or overwrite mappings as you wish. The crucial library (available as a quark, see link::Classes/Quarks::) defines a number of additional subclasses. See the file quarks/cruciallib/Instr/MoreSpecs.sc
 
-ClassMethods::
 
-private::initClass
+classmethods::
+
+
+private:: initClass
+
 
 method::add
+
 adds a spec to the global spec dictionary. The item will be converted to a spec using .asSpec.
+
 
 examples::
 

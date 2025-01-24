@@ -1,29 +1,34 @@
-class:: SinOscFB
-summary:: Feedback FM oscillator
+title:: SinOscFB
+summary:: feedback FM oscillator
+categories:: UGens>Generators>Deterministic, UGens>Generators>Chaotic
 related:: Classes/SinOsc, Classes/FSinOsc, Classes/PMOsc
-categories::  UGens>Generators>Deterministic, UGens>Generators>Chaotic
 
 
 description::
+
+
 SinOscFB is a sine oscillator that has phase modulation feedback; its output plugs back into the phase input.
 Basically this allows a modulation between a sine wave and a sawtooth like wave. Overmodulation causes chaotic oscillation. It may be useful if you want to simulate feedback FM synths.
 
 Please note: The frequency of SinOscFB can be modulated at control rate. When trying to modulate the frequency of SinOscFB at audio rate, you will notice audible artefacts at higher frequency modulation frequencies. This is due to SinOscFB updating incoming frequency modulation values only once every control period (which is 64 samples long per default), instead of updating on every sample (like e.g. SinOsc).
 
 
-
-
 classmethods::
 
+
 method::ar, kr
+
 argument::freq
-The base frequency of the sine oscillator in Hertz.
+the base frequency of the sine oscillator in Hertz.
+
 argument::feedback
-The second argument is the amplitude of phase feedback in radians.
+the second argument is the amplitude of phase feedback in radians.
+
 argument::mul
-Output will be multiplied by this value.
+output will be multiplied by this value.
+
 argument::add
-This value will be added to the output after any multiplication.
+this value will be added to the output after any multiplication.
 
 
 examples::

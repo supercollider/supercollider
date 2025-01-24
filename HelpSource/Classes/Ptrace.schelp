@@ -1,9 +1,12 @@
-TITLE:: Ptrace
-summary:: Print out the results of a stream
-related:: Classes/Stream, Classes/FilterPattern
+title:: Ptrace
+summary:: prints out the results of a stream
 categories:: Streams-Patterns-Events>Patterns
+related:: Classes/Stream, Classes/FilterPattern
+
 
 description::
+
+
 prints out the results of a stream while returning the original values.
 
 Tracing a pattern is most commonly done by using the strong::.trace:: method directly on the pattern like this:
@@ -12,29 +15,42 @@ code::
 Pbind(\degree, Pwhite(0, 10)).trace.play
 ::
 
-CLASSMETHODS::
+
+classmethods::
+
 
 method::new
+
 argument::pattern
-printOn this stream (default: link::Classes/Post::).
+code::printOn:: this stream (default: link::Classes/Post::).
+
 argument::key
 when streaming events, post only this key.
+
 argument::printStream
 (describe argument here)
+
 argument::prefix
 string added to the printout to separate different streams.
 
-returns:: Original values
+returns::
+
+original values
 
 
-INSTANCEMETHODS::
+instancemethods::
+
 
 method::storeArgs
 
+
 method::embedInStream
+
 argument::inval
 
+
 method::key
+
 
 examples::
 

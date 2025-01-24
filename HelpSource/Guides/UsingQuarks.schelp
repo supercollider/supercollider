@@ -1,5 +1,5 @@
 title:: Using Quarks
-summary:: A guide to Quarks
+summary:: a guide to Quarks
 categories:: Quarks
 related:: Classes/Quarks, Classes/Quark, Classes/Git
 
@@ -10,6 +10,7 @@ section:: Installing quarks
 
 
 subsection:: using the GUI
+
 
 You can install Quarks using the interface:
 
@@ -30,6 +31,7 @@ Quarks.addFolder("~/supercollider/quarks");
 
 subsection:: by name
 
+
 You can (un)install a Quark by name:
 
 code::
@@ -48,6 +50,7 @@ Quarks.uninstall("https://github.com/supercollider-quarks/MathLib.git");
 
 
 subsection:: from a local folder
+
 
 and you can install any local folder:
 
@@ -71,6 +74,7 @@ If you wish to be able to uninstall local quarks, but still see them in the GUI,
 
 subsection:: Recompile the class library
 
+
 After installing or uninstalling you need to strong::Language > Recompile Class Library::
 
 If you've made a bit of a mess:
@@ -82,6 +86,7 @@ Quarks.clear
 
 
 subsection:: Internals
+
 
 When you install one it is cloned using git into:
 
@@ -104,6 +109,7 @@ You can also see or edit these settings in the file sclang_config.yaml
 
 subsection:: Fixing Conflicts
 
+
 SuperCollider does not allow duplicate class definitions and will fail to compile if you've accidentally installed conflicting packages.
 
 The Quarks interface can only work if SuperCollider is compiled and running, so if something goes wrong then you have to fix it manually.
@@ -114,6 +120,7 @@ You can also manually edit teletype::sclang_config.yaml::
 
 
 section:: Saving and Loading sets of Quarks
+
 
 To make project work simpler you can save and later reload your currently installed Quarks to and from a quarks.txt file.
 This is similar to what the LanguageConfig does but this also downloads the Quarks if needed and installs all dependencies.
@@ -152,6 +159,7 @@ Any packages not under git source control are specified by path, abbreviated to 
 
 section:: Making your own Quarks
 
+
 Packages are a natural way to store your work.
 
 Install any source code folder as a Quark:
@@ -182,6 +190,7 @@ Hard drives die, backups fail, people make mistakes. If you keep a copy on bitbu
 
 section:: Publishing a Quark
 
+
 Make a git repository and push it to github, gitlab, bitbucket or any publicly accessible git host.
 
 Be sure to strong::tag your releases::. The name of a tag should be the release version to which it corresponds. Using link::https://semver.org##Semantic Versioning:: (eg "v1.0.1") is strongly recommended. This provides the Quarks system with the ability to list available versions and allow the user to choose which version to checkout. Version tags also allow other quark developpers to pin their dependencies to specific release versions.
@@ -199,6 +208,7 @@ quarkname=https://github.com/author/quarkname
 
 subsection:: Migrated Quarks from SVN
 
+
 I (felix) migrated the old SVN repository to github and preserved all the commits and authorship.
 You may find your old work in one of these quarks:
 
@@ -211,10 +221,12 @@ Quarks with spaces in the name had to have those spaces removed. Quarks nested i
 
 subsection:: git branches
 
+
 Releases are specified with a git tag which refers to a specific commit regardless of what branch it is on. The default branch is master, but the branch does not really matter, only the tag. If you are not tagging specific releases, then Quarks will fetch the master branch.
 
 
 section:: Quark file
+
 
 The quark file is a SuperCollider code file containing authorship, version, copyright and dependency information. It is optional but recommended. None of the fields are required and you may include any custom fields you like.
 
@@ -259,7 +271,7 @@ list::
 ## country
 ## since
 ## ext_dependency - text describing external software like "PD" or "processing"
-## preInstall - a function / hook which will be called before installation - see link::Guides/UsingQuarks#Hooks::
+## preInstall - a function/hook which will be called before installation - see link::Guides/UsingQuarks#Hooks::
 ::
 
 dependencies is a list of Quarks or git urls with optional an @refspec
@@ -280,7 +292,7 @@ It is possible to run a functions which are defined in the code::.quark:: file a
 
 This can be used to setup or delete certain directory structures, check for hardware, etc.
 
-Upon execution, the hook function will be handled link::Classes/Quark#-data::, which is the parsed code::.quark:: file as an Link::Classes/Event::, as the first argument.
+Upon execution, the hook function will be handled link::Classes/Quark#-data::, which is the parsed code::.quark:: file as an link::Classes/Event::, as the first argument.
 
 The following hooks are available and will be executed by link::Classes/Quark#-runHook::
 
@@ -311,12 +323,14 @@ code::
 
 subsection:: Deprecated/ignored fields
 
+
 teletype::path:: was used for SVN
 
 teletype::helpdoc:: specifies an html help file in the Quark. It will still work and will load the helpfile, but schelp is preferred.
 
 
 section:: Contributing fixes to a quark
+
 
 Best practice is to clone the quark into a folder where you do your development work.
 Make a ~/supercollider/quarks (or wherever you want it) and add this to the Quarks folders:
@@ -325,7 +339,7 @@ code::
 Quarks.addFolder("~/supercollider/quarks");
 ::
 
-git clone the quark into that folder. You can do your development work / hacking there
+git clone the quark into that folder. You can do your development work/hacking there
 and submit a pull request to the repository owner.
 
 There is a git extension that is quite useful for working with github repositories is https://hub.github.com
@@ -334,6 +348,7 @@ If you use Quarks.gui you should now be able to see both the downloaded version 
 
 
 section:: Offline Usage
+
 
 Quarks should be usable even when offline.
 The directory is cached, refreshed every four hours.

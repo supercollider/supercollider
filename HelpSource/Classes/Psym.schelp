@@ -1,23 +1,34 @@
-class:: Psym
-summary:: use a pattern of symbols to embed Pdefs
+title:: Psym
+summary:: uses a pattern of symbols to embed Pdefs
 categories:: JITLib>Patterns, Live Coding
 related:: Classes/Pdef
 
+
 description::
+
+
 for non-event patterns see link::Classes/Pnsym::. Overview: link::Overviews/JITLib::.
 
-ClassMethods::
+
+classmethods::
+
 
 method::new
+
 argument::pattern
 a pattern that returns symbols or characters. Arrays are converted to parallel patterns (link::Classes/Ppar::).
+
 argument::dict
 the dictionary to be used for lookup. By default, this is code::Pdef.all::, so one can embed Pdefs by name.
 
-InstanceMethods::
+
+instancemethods::
+
 
 method::dict
+
 sets the dictionary to be used.
+
 
 examples::
 

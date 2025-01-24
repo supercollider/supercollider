@@ -1,49 +1,74 @@
-TITLE:: Download
-summary:: Fetch a file from a remote URL
+title:: Download
+summary:: fetches a file from a remote URL
 categories:: Files
 related:: Classes/File
 
+
 description::
+
+
 Download allows you to download a file from a specified URL
 
 
-CLASSMETHODS::
+classmethods::
+
+
 private:: qtClass
 
-method::new
-creates and start a new Download.
-argument::requestedURL
-A link::Classes/String:: containing the URL of the file to download.
-argument::localPath
-A link::Classes/String:: containing the local path at which to save the downloaded file.
-argument::finishedFunc
-A link::Classes/Function:: to evaluate when the download is complete.
-argument::errorFunc
-A link::Classes/Function:: to evaluate if the download fails due to an error.
-argument::progressFunc
-A link::Classes/Function:: to process the download's progress. This Function will be passed two arguments, the bytes received, and the total bytes.
 
-returns:: A new Download.
+method::new
+
+creates and starts a new Download.
+
+argument::requestedURL
+a link::Classes/String:: containing the URL of the file to download.
+
+argument::localPath
+a link::Classes/String:: containing the local path at which to save the downloaded file.
+
+argument::finishedFunc
+a link::Classes/Function:: to evaluate when the download is complete.
+
+argument::errorFunc
+a link::Classes/Function:: to evaluate if the download fails due to an error.
+
+argument::progressFunc
+a link::Classes/Function:: to process the download's progress. This Function will be passed two arguments, the bytes received, and the total bytes.
+
+returns::
+
+a new Download.
+
 
 method::cancelAll
-Cancel all active Downloads.
+
+cancels all active Downloads.
 
 
-INSTANCEMETHODS::
+instancemethods::
+
+
 private:: doProgress, doError, doFinished, doOnShutDown, cleanup, startDownload, init
 
+
 method::cancel
-Cancel the download.
+
+cancels the download.
+
 
 method::errorFunc
+
 gets/sets the error link::Classes/Function::.
 
+
 method::finishedFunc
+
 gets/sets the download finished link::Classes/Function::.
 
-method::progressFunc
-gets/sets the download progress link::Classes/Function::.
 
+method::progressFunc
+
+gets/sets the download progress link::Classes/Function::.
 
 
 examples::

@@ -5,23 +5,29 @@ summary:: list comprehensions and generator expressions
 
 section:: Introduction
 
+
 List comprehensions are a syntactic feature of functional programming languages like Miranda, Haskell, and Erlang which were later copied into Python.
 You can search the web for "list comprehensions" or "generator expressions" to learn more.
 Basically list comprehensions are for getting a series of solutions to a problem.
 
 in SC these are just a syntax macro for a longer expression. read this as emphasis:: "all [x,y] for x in 1..5, y in 1..x, such that x+y is prime" :::
+
 code::
 all {:[x,y], x <- (1..5), y <- (1..x), (x+y).isPrime }
 ::
+
 returns:
+
 code::
 [ [ 1, 1 ], [ 2, 1 ], [ 3, 2 ], [ 4, 1 ], [ 4, 3 ], [ 5, 2 ] ]
 ::
 
 the list comprehension above is equivalent to the following code:
+
 code::
 all(Routine.new({ (1..5).do {|x| (1..x).do {|y| if ((x+y).isPrime) {[x,y].yield} }}}));
 ::
+
 ..but much more concise and much easier to keep in your head than writing it out.
 
 In the list comprehension compiler, simple series like code::(1..5):: and code::(1..x):: are treated as special cases and implemented as loops rather than making a collection.
@@ -30,21 +36,25 @@ A list comprehension in SC is really a link::Classes/Routine::. You can use the 
 
 
 section:: A few examples
+
 code::
 all {: x/(x+1), x <- (1..5) }
 
 [ 0.5, 0.66666666666667, 0.75, 0.8, 0.83333333333333 ]
 ::
+
 code::
 all {:[x,y], x <- (1..3), y <- [\a,\b,\c] }
 
 [ [ 1, a ], [ 1, b ], [ 1, c ], [ 2, a ], [ 2, b ], [ 2, c ], [ 3, a ], [ 3, b ], [ 3, c ] ]
 ::
+
 code::
 all {:[x,y], x <- (0..3), y <- (x..0) }
 
 [ [ 0, 0 ], [ 1, 1 ], [ 1, 0 ], [ 2, 2 ], [ 2, 1 ], [ 2, 0 ], [ 3, 3 ], [ 3, 2 ], [ 3, 1 ], [ 3, 0 ] ]
 ::
+
 code::
 all {:y, x <- (1..4), y <- (x..1) }
 
@@ -78,49 +88,63 @@ all {:[y, z], x<-(0..30), var y = x.nthPrime, var z = 2 ** y - 1, z.asInteger.is
 
 section:: Qualifier Clauses
 
+
 A list comprehension begins with code:: {: :: and contains a body followed by several qualifier clauses separated by commas.
+
 code::
 {: body , qualifiers }
 ::
+
 There are several types of qualifier clauses that can appear after the body.
 
 
 subsection:: generator clause
 
+
 The basic clause is the generator clause. Its syntax is
+
 code::
 name <- expr
 ::
+
 The expression should be something that can respond meaningfully to 'do' such as a collection or a stream.
 The name takes on each value of the expression.
 The name is a local variable whose scope extends to all clauses to the right. The name is also in scope in the body.
+
 code::
 all {: x, x <- (1..3) }
 
 [ 1, 2, 3 ]
 ::
+
 code::
 all {: x, x <- [\a, \b, \c] }
 
 [ a, b, c ]
 ::
+
 code::
 all {: x, x <- (1!3)++(2!2)++3 }
 
 [ 1, 1, 1, 2, 2, 3 ]
 ::
+
 multiple generators act like nested loops.
+
 code::
 all {: [x,y], x <- (1..2), y <- (10,20..30) }
 
 [ [ 1, 10 ], [ 1, 20 ], [ 1, 30 ], [ 2, 10 ], [ 2, 20 ], [ 2, 30 ] ]
 ::
+
 generators can depend on previous values.
+
 code::
 all {: x, x <- (1..3), y <- (1..x) }
 
 [ 1, 2, 2, 3, 3, 3 ]
 ::
+
 code::
 all {: x, x <- (1..3), y <- (1..4-x) }
 
@@ -130,23 +154,31 @@ all {: x, x <- (1..3), y <- (1..4-x) }
 
 subsection:: guard clause
 
+
 A guard clause is simply an expression. It should return a boolean value.
+
 code::
 expr
 ::
+
 The guard acts as a filter on the results and constrains the search.
+
 code::
 all {: x, x <- (0..10), x.odd }
 
 [ 1, 3, 5, 7, 9 ]
 ::
+
 code::x.odd:: is the guard and causes all even numbers to be skipped.
+
 code::
 all {: x, x <- (0..30), (x % 5 == 0) || x.isPowerOfTwo }
 
 [ 0, 1, 2, 4, 5, 8, 10, 15, 16, 20, 25, 30 ]
 ::
+
 you can have multiple guards.
+
 code::
 all {: [x,y], x <- (0..10), (x % 5 == 0) || x.isPowerOfTwo, y <- (1..2), (x+y).even }
 
@@ -156,12 +188,16 @@ all {: [x,y], x <- (0..10), (x % 5 == 0) || x.isPowerOfTwo, y <- (1..2), (x+y).e
 
 subsection:: var clause
 
+
 A var clause lets you create a new variable binding that you can use in your expressions.
 The scope of the name extends to all clauses to the right and in the body.
+
 code::
 var name = expr
 ::
+
 Unlike the generator clause, the name is bound to a single value, it doesn't iterate.
+
 code::
 all {: z, x <- (1..20), var z = (x*x-x) div: 2, z.odd }
 
@@ -171,10 +207,13 @@ all {: z, x <- (1..20), var z = (x*x-x) div: 2, z.odd }
 
 subsection:: side effect clause
 
+
 This clause lets you insert code to do some side effect like printing.
+
 code::
 \:: expr
 ::
+
 code::
 all {: z, x <- (1..20), var z = (x*x-x) div: 2, :: [x,z].postln, z.even }
 ::
@@ -182,24 +221,29 @@ all {: z, x <- (1..20), var z = (x*x-x) div: 2, :: [x,z].postln, z.even }
 
 subsection:: termination clause
 
+
 The termination clause is for stopping further searching for results. Once the expression becomes code::false::,
 the routine halts.
+
 code::
 :while expr
 ::
 
 using a guard
+
 code::
 all {: z, x <- (1..20), var z = (x*x-x) div: 2,  :: [x,z].postln, z < 50 }
 ::
 
 using a termination clause. this one stops searching, so does less work than the above.
+
 code::
 all {: z, x <- (1..20), var z = (x*x-x) div: 2,  :: [x,z].postln, :while z < 50 }
 ::
 
 
 section:: Constrained Search
+
 
 list comprehensions can solve constrained combinatorial problems like this one:
 
@@ -208,6 +252,7 @@ Baker does not live on the top floor. Cooper does not live on the bottom floor.
 Fletcher does not live on either the top or the bottom floor. Miller lives on a higher floor than does Cooper.
 Smith does not live on a floor adjacent to Fletcher's. Fletcher does not live on a floor adjacent to Cooper's.
 Where does everyone live?
+
 code::
 (
 z = {: [baker, cooper, fletcher, miller, smith] ,
@@ -238,7 +283,9 @@ the most constrained person above is fletcher, so they should be searched first,
 
 section:: Grammar
 
+
 Here is the BNF grammar for list comprehensions in SC.
+
 code::
 [ ] - optional
 { } - zero or more
@@ -267,6 +314,7 @@ code::
 
 section:: Code Generation
 
+
 For each of the above clauses, here is how the code is generated. The body acts as the innermost qualifier.
 By understanding these translations, you can better understand how scoping and control flow work in list comprehensions.
 
@@ -290,4 +338,5 @@ expr ; ..next qualifier..
 ## termination || code::
 if (expr) { ..next qualifier.. }{ nil.alwaysYield }
 ::
+
 ::

@@ -5,11 +5,15 @@ summary:: assigning values to variables
 
 section:: Single Assignment
 
+
 A single assignment assigns the value of an expression on the right hand side to a variable on the left hand side. A single assignment is in the form:
+
 code::
 <variable> = <an expression>
 ::
+
 examples:
+
 code::
 x = [1, 2, 3, 4].rotate(1);
 c = a + b;
@@ -33,6 +37,7 @@ two = nil;
 ::
 
 In some cases, chains of reassignment are useful:
+
 code::
 (
 {
@@ -48,19 +53,24 @@ code::
 
 section:: Multiple Assignment
 
+
 A multiple assignment statement assigns the elements of a link::Classes/Collection:: which is the result of an expression on the right hand side, to a list of variables on the left hand side.
 A multiple assignment statement is preceded by the symbol code::#::. If the last variable on the left is preceded by three dots, then the entire remainder of the collection is assigned to that variable. There must be at least one variable name before the ellipsis.
 
 The form of a multiple assignment is:
+
 code::
 # <list of variables> = <expression>
 ::
+
 -- or --
+
 code::
 # <list of variables> ... <variable> = <expression>
 ::
 
 examples:
+
 code::
 # a, b, c = [1, 2, 3, 4, 5, 6]; // afterwards a=1, b=2, c=3
 
@@ -75,20 +85,27 @@ Your right hand side expression can return any object that responds to these mes
 
 section:: Instance Variable Assignment
 
+
 The basic syntax for setting the value of an instance variable is to use the variable's setter method which is the name of the variable with an underscore appended.
+
 code::
 point.x_(5); // set point's x coordinate to 5
 ::
+
 An alternative syntax is to use instance variable assignment.
+
 code::
 point.x = 5;
 ::
+
 This type of assignment is translated to the first form by the compiler. The two syntaxes are equivalent.
 
 
 section:: Series Assignment to an ArrayedCollection or List
 
+
 There is a special syntax for doing assignments to a range of values in an link::Classes/ArrayedCollection:: or link::Classes/List::.
+
 code::
 a = (0,10..200);
 a[5..10] = 1;  // series stepping by 1

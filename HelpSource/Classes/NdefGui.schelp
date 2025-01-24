@@ -1,15 +1,18 @@
-class:: NdefGui
+title:: NdefGui
 summary:: a gui for a NodeProxy or Ndef
 categories:: JITLib>GUI, Live Coding
 related:: Classes/JITGui, Classes/MonitorGui, Classes/NdefParamGui, Classes/NdefMixer, Classes/ProxyMixer
 
+
 description::
+
+
 NdefGui provides controls for handling and editing a link::Classes/NodeProxy:: or link::Classes/Ndef::, and its monitors. NdefGui replaces link::Classes/NodeProxyEditor::. It provides:
 
 list::
 ## sliders for numerical settings
 ## mapping of kr proxies to parameters
-## optional controls for playing / monitoring
+## optional controls for playing/monitoring
 ::
 
 Both link::Classes/NodeProxy:: and link::Classes/Ndef:: implement a strong::.gui:: message, which returns a NdefGui for that NodeProxy. Overview: link::Overviews/JITLib::.
@@ -26,6 +29,7 @@ Ndef(\a, { |freq = 300, dens = 20, amp = 0.1, pan|
 Note that when creating an NdefGui for an Ndef with very many parameters,
 it may create more sliders than can fit on the window or screen.
 In such cases, it is best to set a reasonable maximum for numItems:
+
 code::
 // an Ndef with 100 controls
 Ndef(\1, {
@@ -43,110 +47,161 @@ g = Ndef(\1).gui(30);
 ::
 
 
-ClassMethods::
+classmethods::
 
-private::initClass
+
+private:: initClass
 
 
 subsection:: Creation
 
+
 method::new
+
 argument::object
 the nodeproxy to be shown and edited, or code::nil::.
+
 argument::numItems
-How many sliders or textviews for parameters to provide. The default value is 0.
+how many sliders or textviews for parameters to provide. The default value is 0.
+
 argument::parent
 a parent view where NdefGui is to be shown. If code::nil::, a window is made.
+
 argument::bounds
 bounds where the view (or window) will be shown.
+
 argument::makeSkip
 a flag whether to create and start a link::Classes/SkipJack:: for auto-updating.
+
 argument::options
 an array of symbols for options of what to display. See list below.
 
 
 subsection:: Preset options lists which can be used in *new:
 
+
 method::big
+
 two lines of controls for a big NdefGui, usually in its own window
 
+
 method::full
+
 two lines of controls for a very big NdefGui
 
+
 method::audio
+
 for ar proxies, used in ProxyMixer left hand side
 
+
 method::audioSm
+
 for ar proxies, used in ProxyMixer.small on left hand side
 
+
 method::control
+
 for kr proxies, used in ProxyMixer mid section
 
 
 subsection:: Class Variables
 
+
 method::buttonSizes
+
 a dict for the sizes of the different gui elements.
 
+
 method::buttonFuncs
+
 a lookup dict for making the different buttons.
 
+
 method::makeButFuncs
+
 not a class var, but the method that inits buttonFuncs.
 
 
-
-InstanceMethods::
+instancemethods::
 
 
 subsection:: Variables
 
+
 See link::Classes/JITGui:: for more instance methods.
 
 Various views the NdefGui has if they were present in the options:
+
 
 method::nameView, typeView, monitorGui, paramGui, fadeBox, pauseBut, sendBut, edBut, wakeBut
 
 
 subsection:: Basic Methods
 
+
 method::edits
+
 the paramGui's widgets (usually, EZSliders)
+
+
 method::editKeys
+
 the currently used param names
 
+
 method::highlight, unhighlight
-highlight and unhighlight a single slider by index
+
+highlights and unhighlights a single slider by index
+
 
 method::highlightName, unhighlightName
-highlight and unhighlight the nameView
+
+highlights and unhighlights the nameView
+
 
 method::highlightParams
-highlight a contiguous group of sliders;
+
+highlights a contiguous group of sliders;
 used for showing assigned MIDI faderboxes etc.
 
+
 method::addReplaceKey, removeReplaceKey
+
 editKeys with technical names can be replaced with
 more user-friendly ones.
 
+
 method::proxy
+
 an alias to method object, object_
 
 
 subsection:: Standard JITGui Methods
 
+
 method::setDefaults
+
+
 method::accepts
+
+
 method::getState, checkUpdate
 
 
 subsection:: GUI Element Creation
 
+
 method::makeViews
+
 creates all the views given in the options list. Internally this calls the following methods:
 
+
 method::makeNameView, makeTypeView, makeClrBut, makeWakeBut, makeResetBut, makeScopeBut, makeDocBut, makeEndBut, makeFadeBox, makePauseBut, makeSendBut, makeEdBut, makeRipBut, makePollBut
+
+
 method::makeMonitor
+
 
 examples::
 
@@ -237,7 +292,7 @@ NdefGui.full;
 	\sendR		a button to re-send; alt-click tells the proxy to rebuild
 	\poll		poll the proxy
 
-    * preset storage in JITLibExtensions, see ProxyPreset / NdefPreset
+    * preset storage in JITLibExtensions, see ProxyPreset and NdefPreset
 
 */
 
@@ -290,6 +345,7 @@ Ndef(\a, { |freq = 10, amp = 0.1, harm = 20| Blip.ar(freq, harm) * amp })
 
 subsection:: Test - drag and drop proxies between NdefGuis
 
+
 This seems broken in 3.7.0 - drags are sticky and can't be dropped.
 
 code::
@@ -320,6 +376,7 @@ n.object_(c);
 
 
 subsection:: Test - replacing keys
+
 
 This is used in ProxyChain (JITLibExtensions).
 

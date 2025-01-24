@@ -1,23 +1,36 @@
-class:: NodeControl
-summary:: Encapsulates in an object a node and an index.
+title:: NodeControl
+summary:: encapsulates in an object a node and an index
 categories:: Server>Nodes
 
+
 description::
+
+
 This object can be held by a client and have its value set without otherwise having to store the details about where the node's input is.
 
+
 classmethods::
+
+
 method::new
+
 argument::node
-The node to encapsulate
+the node to encapsulate
+
 argument::index
-The index to encapsulate
+the index to encapsulate
+
 
 instancemethods::
+
+
 method::value
+
 sets the value
 
 
 examples::
+
 code::
 d = SynthDef("help-NodeControl", { |out = 0, freq = 400|
 	Out.ar(out,

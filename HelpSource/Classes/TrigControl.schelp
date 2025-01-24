@@ -1,26 +1,29 @@
-class:: TrigControl
-summary:: FIXME: TrigControl purpose.
+title:: TrigControl
+summary:: FIXME: TrigControl purpose
+categories:: UGens>Synth control, UGens>Undocumented
 related:: Classes/Control, Classes/LagControl
-categories::  UGens>Synth control, UGens>Undocumented
 
 
 description::
+
+
 FIXME: TrigControl description.
 
 
 classmethods::
 
+
 method::kr, ir
+
 argument::values
 FIXME: explain parameter values.
 
 
 method::names
+
 argument::names
 FIXME: explain parameter names.
 
+returns::
 
-returns:: Returns:
-
-A newly created
-link::Classes/UGen:: .
+a newly created link::Classes/UGen:: .

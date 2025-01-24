@@ -1,9 +1,12 @@
-class:: Monitor
+title:: Monitor
 summary:: link between busses
 categories:: JITLib>NodeProxy, Live Coding
 related:: Reference/playN, Classes/NodeProxy, Classes/Bus
 
+
 description::
+
+
 A general purpose class for monitoring or crosslinking between busses. It supports multichannel expansion and crossfading between settings. It provides optimizations for playing contiguous channels to other contiguous busses (link::#-play::) and for more complex routings, such as splitting, spreading etc to multiple channels (link::#-playN::). Monitor uses the existing set of link::Classes/SystemSynthDefs:: to do this.
 
 code::
@@ -12,31 +15,44 @@ x = Monitor.new; // create a new monitor
 x.play(fromIndex: 87, fromNumChannels: 3, toIndex: 0, toNumChannels: 2); // play them back to the stereo hardware channels
 ::
 
-ClassMethods::
 
-private::warnPlayN
+classmethods::
 
 
-InstanceMethods::
+private:: warnPlayN
+
+
+instancemethods::
+
 
 method::play
+
 plays from a bus index with a number of channels to another index with a number of channels, within a target group, or a server.
+
 argument::fromIndex
 bus index from which to read
+
 argument::fromNumChannels
 number of channels to read from.
+
 argument::toIndex
 bus index to which to write.
+
 argument::toNumChannels
 number of channels to write. If this number is larger or smaller than fromNumChannels, wrap around. If nothing is given, uses fromNumChannels.
+
 argument::target
 where to send the synths to (default: server default group)
+
 argument::multi
-Keep old links and add new one: this allows you to add layer after layer, otherwise free the previous mapping (code::false:: by default).
+keeps old links and add new one: this allows you to add layer after layer, otherwise free the previous mapping (code::false:: by default).
+
 argument::volume
 volume at which to monitor
+
 argument::fadeTime
 specifies the fade in and fade out time
+
 argument::addAction
 where, relative to the target to place the monitor group.
 
@@ -61,8 +77,8 @@ x.stop;
 ::
 
 
-
 method::playN
+
 plays from an array of bus indices to another array of bus indices with an array of amplitudes, within a target group, or a server.
 
 note::
@@ -71,22 +87,30 @@ The arguments strong::out::, strong::amp:: and strong::in:: can be nested arrays
 The three arguments out, amp, and in will wrap if they do not have the same size, like this:
 code::  [[0, 1], [0.1], [3, 4, 5]].flop ::
 ::
+
 argument::out
-array of destination channels.
+Array of destination channels.
+
 argument::amp
-array of amplitudes for each channel
+Array of amplitudes for each channel
+
 argument::in
-array of source channels
+Array of source channels
+
 argument::vol
 global scaling value for amplitudes
+
 argument::fadeTime
 specifies the fade in and fade out time
+
 argument::target
 where to play (default: server default group)
+
 argument::addAction
 where, relative to the target to place the monitor group.
+
 argument::multi
-keep old links and add new one: this allows you to add layer after layer, otherwise free ther previous mapping (code::false:: by default).
+keeps old links and add new one: this allows you to add layer after layer, otherwise free ther previous mapping (code::false:: by default).
 
 code::
 // examples: args are // outs, amps, ins, vol, fadeTime
@@ -113,24 +137,37 @@ x.playN(vol: 0.0, fadeTime: 4);
 
 
 method::stop
+
 stops within the fadeTime.
-note::this keeps all the settings, so when using code::play:: next time, it will play in the same configuration, overriding only values provided.::
+
+note::
+this keeps all the settings, so when using code::play:: next time, it will play in the same configuration, overriding only values provided.
+::
+
 code::
 { Out.ar(87, SinOsc.ar(MouseX.kr(340, 1000, 1) * [1, 2, 3], 0, 0.2)) }.play;
 x = Monitor.new.play(87, 3, 0, fadeTime: 3);
 x.stop;
 x.play;
 ::
+
 argument::argFadeTime
-The time for fading out all routing synths.
+the time for fading out all routing synths.
+
 
 method::clear
+
 stops within the fadeTime.
-note::unlike code::stop::, this removes all the settings.::
+
+note::
+Unlike code::stop::, this removes all the settings.
+::
 
 
 method::vol
+
 sets the volume.
+
 code::
 { Out.ar(87, SinOsc.ar(MouseX.kr(340, 1000, 1) * [1, 2, 3], 0, 0.2)) }.play;
 x = Monitor.new.play(87, 3, 0, fadeTime: 3);
@@ -140,37 +177,57 @@ x.stop;
 
 
 method::out
+
 sets/gets the first output index.
 
+
 method::outs
+
 sets/gets the array of output bus indices.
 
+
 method::ins
+
 sets/gets the array of input bus indices.
 
+
 method::amps
+
 sets the array of amplitudes.
 
+
 method::fadeTimes
+
 sets/gets the array of fadeTimes.
 
+
 method::fadeTime
+
 sets one single fadeTime for the next transition (may be a stop or a new play).
 
+
 method::isPlaying
+
 returns code::true:: if the group is still playing.
 
+
 method::group
+
 returns the group in which all mapping synths are running.
 
+
 method::numChannels
+
 returns the number of input channels.
 
+
 method::copy
+
 returns a copy of the receiver, with the same channel setting, but not running. You can run it with the settings by sending it the link::#-play:: message, and pass in any modifications you want to make.
 
 
 method::playToBundle
+
 adds all playing osc messages to a bundle, passed as an argument. The bundle object should implement the method strong::.add::
 
-private::hasSeriesOuts, newGroupToBundle, playNBusToBundle, playNToBundle, stopToBundle, updateDefault, usedPlayN
+private:: hasSeriesOuts, newGroupToBundle, playNBusToBundle, playNToBundle, stopToBundle, updateDefault, usedPlayN

@@ -1,20 +1,27 @@
-class:: TempoBusClock
+title:: TempoBusClock
 summary:: a clock that synchronizes its tempo with the server
 categories:: JITLib>NodeProxy, Live Coding
 related:: Classes/TempoClock
 
-ClassMethods::
+
+classmethods::
+
 
 method::new
+
 returns a new instance.
+
 argument::control
 can be anything that responds to the message code::set(key, val, ...):: e.g. a link::Classes/Synth:: or a link::Classes/NodeProxy::. The control key set is "tempo". otherwise TempoBusClock works just like a link::Classes/TempoClock::.
+
 argument::tempo
-see link::Classes/TempoClock::
+see link::Classes/TempoClock::.
+
 argument::beats
-see link::Classes/TempoClock::
+see link::Classes/TempoClock::.
+
 argument::seconds
-see link::Classes/TempoClock::
+see link::Classes/TempoClock::.
 
 
 examples::

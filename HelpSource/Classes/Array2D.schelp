@@ -1,80 +1,119 @@
-CLASS::Array2D
+title:: Array2D
 summary:: two-dimensional array
-related::Classes/Array
-categories::Collections>Ordered
+categories:: Collections>Ordered
+related:: Classes/Array
+
 
 description::
+
+
 Represents a two-dimensional array of data. The number of rows and columns is fixed.
 
-note:: It is possible to implement a similar behaviour using an "array-of-arrays" - see the examples towards the bottom of this page for comparison.::
+note::
+It is possible to implement a similar behaviour using an "array-of-arrays" - see the examples towards the bottom of this page for comparison.
+::
 
-CLASSMETHODS::
+
+classmethods::
+
 
 method::new
+
 creates an array of the specified size.
+
 code::
 a = Array2D.new(3, 4);
 a[2, 2] = 1;
 a.postln
 ::
 
+
 method::fromArray
-Build an Array2D from the supplied array.
+
+build an Array2D from the supplied array.
+
 code::
 a = Array2D.fromArray(3, 4, [9, 8, 7, 6, 5, 4, 3, 2, 1, 2, 3, 4]);
 a[2, 2] = 1;
 a.postln
 ::
 
-INSTANCEMETHODS::
 
-private::printOn, storeOn
+instancemethods::
+
+
+private:: printOn, storeOn
+
 
 method::at
+
 gets a value from the array.
+
 code::
 a.at(2, 3);
 a[2, 3];
 ::
 
+
 method::put
+
 puts a value into the array.
+
 code::
 a.put(2, 3, 72);
 a[2, 3] = 72;
 ::
 
+
 method::colsDo
+
 iterates over the columns. Each column will be passed to strong::func:: in turn.
+
 code::
 a.colsDo(_.postln);
 ::
 
+
 method::rowsDo
+
 iterates over the rows. Each row will be passed to strong::func:: in turn.
+
 code::
 a.rowsDo(_.postln);
 ::
 
+
 method::colAt
-Retrieve a single column.
+
+retrieves a single column.
+
 code::
 a.colAt(2);
 ::
 
+
 method::rowAt
-Retrieve a single row.
+
+retrieves a single row.
+
 code::
 a.rowAt(2);
 ::
 
+
 method::asArray
+
 returns a flat array containing the elements.
+
 code::
 a.postln;
 a.asArray.postln;
 ::
-returns:: link::Classes/Array::
+
+returns::
+
+link::Classes/Array::
+
 
 examples::
 

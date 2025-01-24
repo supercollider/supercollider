@@ -1,12 +1,16 @@
-class:: InterplPairs
+title:: InterplPairs
 summary:: envelope specification
-related:: Classes/InterplEnv
 categories:: Control, Envelopes
+related:: Classes/InterplEnv
+
 
 description::
+
+
 Takes an array of [x, y] pairs and a curve value for all break points.
 x values can be negative (for use in indexing with negative values or signals).
 See link::Classes/InterplEnv:: Help for more info.
+
 
 examples::
 

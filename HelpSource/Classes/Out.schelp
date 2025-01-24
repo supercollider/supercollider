@@ -1,10 +1,12 @@
-class:: Out
-summary:: Write a signal to a bus.
+title:: Out
+summary:: writes a signal to a bus
+categories:: UGens>InOut
 related:: Classes/OffsetOut, Classes/ReplaceOut, Classes/XOut
-categories::  UGens>InOut
 
 
 description::
+
+
 writes a signal to a bus.
 
 
@@ -16,12 +18,9 @@ reading to or writing from a larger range, or from hardcoding to a bus
 that has been allocated. You are responsible for making sure that the
 number of channels match and that there are no conflicts.
 
-
 note::
-
 Out is subject to control rate jitter. Where sample accurate output is
-needed, use  link::Classes/OffsetOut:: .
-
+needed, use  link::Classes/OffsetOut::.
 ::
 
 See the link::Reference/Server-Architecture:: and link::Classes/Bus:: helpfiles for more information on
@@ -30,12 +29,15 @@ buses and how they are used.
 
 classmethods::
 
+
 method::ar, kr
+
 argument::bus
-The index of the bus to write out to. The lowest numbers are
+the index of the bus to write out to. The lowest numbers are
 written to the audio hardware.
+
 argument::channelsArray
-An Array of channels or single output to write out. You cannot
+an Array of channels or single output to write out. You cannot
 change the size of this once a SynthDef has been built.
 
 

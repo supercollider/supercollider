@@ -1,9 +1,11 @@
-class:: CompositeView
-summary:: A view that contains other views.
+title:: CompositeView
+summary:: a view that contains other views
 categories:: GUI>Views
 related:: Classes/FlowView, Classes/FlowLayout
 
+
 description::
+
 note::
 In Qt GUI, every view can be a parent to other views, so CompositeView redirects to the same class as link::Classes/View:: - you can use the latter equivalently.
 ::
@@ -16,6 +18,8 @@ In Cocoa GUI, this view accepts key actions, but not mouse clicks or drags.
 
 
 classmethods::
+
+
 private:: key
 
 
@@ -24,7 +28,9 @@ examples::
 
 subsection:: Coordinate System
 
+
 Containers use relative coordinates, i.e.  views are placed relative to the upper left corner of the container.
+
 code::
 (
 w = Window.new;
@@ -45,7 +51,9 @@ c.resize_(6); // contents adjust since coords are relative
 
 subsection:: Keydown Bubbling
 
+
 Key actions "bubble up" to the parent view if a view does not define one itself. In the following example, a and b do not have keyDown actions themselves, so the key event is passed to c, the parent, which defines the key down action. d's parent is the SCTopView, which has no key down action. See also link::Classes/View::.
+
 code::
 ( // Click on the different views and hit keys on the keyboard.
 
@@ -71,7 +79,9 @@ d.background = Color.black;
 
 subsection:: Decorators
 
+
 A 'decorator' object can be set to handle layout management. All views added to the CompositeView will now be placed by the decorator. Currently the only one existing is link::Classes/FlowLayout::. You can use the ContainerView's addFlowLayout method as a short cut to assigning FlowLayout to decorator.
+
 code::
 (
 a = Window.new;
@@ -90,6 +100,7 @@ a.front;
 ::
 
 You can also use an empty composite view nicely as a spacer in link::Classes/VLayoutView::, link::Classes/HLayoutView::, or views that have a link::Classes/FlowLayout:: as their decorator.
+
 code::
 (
 a = Window.new;
@@ -114,9 +125,11 @@ a.front;
 ::
 
 
-subsection:: Hiding / Swapping
+subsection:: Hiding/Swapping
+
 
 You can stack CompositeViews on top of each other and use a button show only one of them:
+
 code::
 (
 var colors = [Color.blue, Color.red, Color.green];
@@ -156,7 +169,9 @@ a.front;
 
 subsection:: Nested Example
 
+
 In this example, the link::Classes/StaticText:: accepts mouse clicks, since container views can't:
+
 code::
 (
 w = Window.new.front;

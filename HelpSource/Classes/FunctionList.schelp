@@ -1,8 +1,11 @@
-class::FunctionList
-summary:: A function that composes multiple functions into one
-categories::Core>Kernel
+title:: FunctionList
+summary:: a function that composes multiple functions into one
+categories:: Core>Kernel
+
 
 description::
+
+
 A FunctionList is a function that composes multiple functions into one. This allows allow to deal transparently with several functions as if they were one and to append new functions at a later point. The functions are evaluated in the order they have in the FunctionList's array, which is by default the order in which they have been added to it.
 
 See the link::Reference/Functions:: help file for a basic introduction.
@@ -14,31 +17,45 @@ a.addFunc({ 800.rand });
 a.addFunc({ "another".scramble });
 ::
 
-classMethods::
+
+classmethods::
+
 
 method::new
-creates a new instance.
-argument::functions
-An array of functions or objects
 
-instanceMethods::
+creates a new instance.
+
+argument::functions
+an array of functions or objects
+
+
+instancemethods::
+
 
 method::array
+
 sets/gets the FunctionList's array. New functions can be added to the array directly, e.g.
+
 code::
 x = FunctionList(...some functions);
 x.array = x.array.insert(2, aFunction);
 ::
 
+
 method::addFunc
-This message is used to be able to add to an Object, to a Function, or to a FunctionList.
+
+this message is used to be able to add to an Object, to a Function, or to a FunctionList.
 code::nil.addFunc:: returns a function, if only one function is passed in the argument.
 code::function.addFunc:: then returns a FunctionList.
 
+
 method::removeFunc
+
 removes a function from the list.
 
-returns:: the last function when only one function is left, or code::nil:: when the last function was removed.
+returns::
+
+the last function when only one function is left, or code::nil:: when the last function was removed.
 
 discussion::
 code::addFunc:: and code::removeFunc:: are implemented for link::Classes/Nil::, link::Classes/Object:: and link::Classes/FunctionList::
@@ -49,6 +66,7 @@ obj.addFunc(f) // returns FunctionList([obj, f])
 nil.removeFunc(f) // returns nil
 obj.removeFunc(f) // returns nil, if f === obj, else obj is returned
 ::
+
 
 examples::
 

@@ -1,9 +1,11 @@
-class:: InTrig
-summary:: Generate a trigger anytime a bus is set.
-categories::  UGens>InOut, UGens>Triggers
+title:: InTrig
+summary:: generates a trigger anytime a bus is set
+categories:: UGens>InOut, UGens>Triggers
 
 
 description::
+
+
 Any time the bus is "touched", ie. has its value set (using "/c_set"
 etc.), a single impulse trigger will be generated. Its amplitude is the
 value that the bus was set to.
@@ -13,11 +15,14 @@ If the bus is set link::Classes/Bus#Synchronous Control Bus Methods#synchronousl
 
 classmethods::
 
+
 method::kr
+
 argument::bus
-The index of the bus to read in from.
+the index of the bus to read in from.
+
 argument::numChannels
-The number of channels (i.e. adjacent buses) to read in. You
+the number of channels (i.e. adjacent buses) to read in. You
 cannot modulate this number by assigning it to an argument in a
 SynthDef.
 

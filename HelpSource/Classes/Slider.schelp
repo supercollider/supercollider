@@ -1,47 +1,57 @@
-CLASS:: Slider
-summary:: A view consisting of a sliding handle.
+title:: Slider
+summary:: a view consisting of a sliding handle
 categories:: GUI>Views
 
+
 description::
+
+
 A view that allows setting a numerical value by means of moving a sliding handle. It can have horizontal or vertical orientation, meaning the direction in which the handle moves.
 
 
+classmethods::
 
 
-CLASSMETHODS::
+private:: key
 
-PRIVATE:: key
 
 method::new
+
 	When a new Slider is created, its link::#-orientation:: is determined by the initial size: if it is wider than high, the orientation will be horizontal, otherwise it will be vertical.
 
 
+instancemethods::
 
 
-
-INSTANCEMETHODS::
-
-PRIVATE:: initSlider
+private:: initSlider
 
 
 subsection:: Data
 
+
 method::value
+
 	Numerical value between 0 and 1, represented by the handle position within the groove.
 
 	argument::
 		A Float.
 
+
 method::valueAction
+
 	Sets link::#-value:: and triggers link::#-action::.
 
+
 method::increment
+
 	Increments the value by link::#-step:: multiplied by 'factor'.
 
 	argument::factor
 		Any number.
 
+
 method::decrement
+
 	Decrements the value by link::#-step:: multiplied by 'factor'.
 
 	argument::factor
@@ -50,25 +60,33 @@ method::decrement
 
 subsection:: Appearance
 
+
 method::orientation
+
 	The orientation of the Slider - the direction in which the handle moves. The default value depends on the size of the view when created.
 
 	argument::
 		One of the two Symbols: \horizontal or \vertical.
 
+
 method::thumbSize
+
 	The size of the handle - its width or height, depending on link::#-orientation::.
 
 	argument::
 		An Integer amount of pixels.
 
+
 method::background
+
 	The color of the background.
 
 	argument::
 		A Color.
 
+
 method::knobColor
+
 	The color of the handle.
 
 	argument::
@@ -77,31 +95,41 @@ method::knobColor
 
 subsection:: Interaction
 
+
 method::step
+
 	The amount by which the value will changed when link::#-increment:: or link::#-decrement:: is called, or when related keys are pressed.
 
 	argument::
 		A Float.
 
+
 method::pixelStep
+
 	The absolute amount by which the value would change if the handle moved by one pixel.
 
 	returns:: 
 		A Float.
 
+
 method::shift_scale
+
 	The factor by which link::#-step:: is multiplied when incrementing or decrementing the value by keyboard while the Shift key is pressed.
 
 	argument::
 		A Float.
 
+
 method::ctrl_scale
+
 	The factor by which link::#-step:: is multiplied when incrementing or decrementing the value by keyboard while the Ctrl key is pressed.
 
 	argument::
 		A Float.
 
+
 method::alt_scale
+
 	The factor by which link::#-step:: is multiplied when incrementing or decrementing the value by keyboard while the Alt key is pressed.
 
 	argument::
@@ -110,10 +138,14 @@ method::alt_scale
 
 subsection:: Actions
 
+
 method::action
+
 	The action object evaluated whenever the user moves the handle.
 
+
 method::defaultKeyDownAction
+
 	Implements the default effects of key presses as follows:
 
 	table::
@@ -133,23 +165,29 @@ method::defaultKeyDownAction
 
 subsection:: Drag and drop
 
+
 method::defaultGetDrag
+
 	returns:: 
 		The link::#-value::.
 
+
 method::defaultCanReceiveDrag
+
 	returns:: 
 		code::true:: if the current drag data is a number.
 
-method::defaultReceiveDrag
-	Sets link::#-valueAction:: to the current drag data.
 
+method::defaultReceiveDrag
+
+	Sets link::#-valueAction:: to the current drag data.
 
 
 examples::
 
 
 subsection:: Show the slider value in a NumberBox
+
 code::
 (
 w = Window.new.front;
@@ -174,6 +212,7 @@ a.action.value;
 
 
 subsection:: Use a Spec to round and map the output range
+
 code::
 (
 w = Window.new.front;
@@ -193,6 +232,7 @@ a.action.value;
 
 
 subsection:: Change the stepsize of the slider, selected via a PopUpMenu
+
 code::
 (
 w = Window.new.front;
@@ -213,6 +253,7 @@ c = NumberBox(w, Rect(20, 20, 100, 20));
 
 
 subsection:: Use the slider view to accept key actions
+
 code::
 ( // select the slider, type something and watch the post window
 w = Window.new;
@@ -226,7 +267,10 @@ w.front;
 
 
 subsection:: Adding functionality to a view by the method addAction
+
+
 This is useful for adding things to existing frameworks that have action functions already.
+
 code::
 (
 w = Window.new("A Slider");
@@ -250,6 +294,7 @@ a.action = nil;
 
 
 subsection:: Use Slider for triggering sounds
+
 code::
 
 (
@@ -281,6 +326,7 @@ s.waitForBoot({
 
 
 subsection:: Change background color of Window
+
 code::
 (
 w = Window("RGB fader", Rect(100, 500, 400, 400))

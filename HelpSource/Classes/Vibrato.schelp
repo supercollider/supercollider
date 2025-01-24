@@ -1,8 +1,11 @@
-class:: Vibrato
-summary:: The Vibrato oscillator models a slow frequency modulation.
-categories::  UGens>Generators>Deterministic, UGens>Generators>Stochastic, UGens>Filters>Pitch
+title:: Vibrato
+summary:: the Vibrato oscillator models a slow frequency modulation
+categories:: UGens>Generators>Deterministic, UGens>Generators>Stochastic, UGens>Filters>Pitch
+
 
 description::
+
+
 Vibrato is a slow frequency modulation. Consider the systematic deviation in pitch of a singer around a fundamental frequency, or a violinist whose finger wobbles in position on the fingerboard, slightly tightening and loosening the string to add shimmer to the pitch. There is often also a delay before vibrato is established on a note. This UGen models these processes; by setting more extreme settings, you can get back to the timbres of FM synthesis. You can also add in some noise to the vibrato rate and vibrato size (modulation depth) to make for a more realistic motor pattern.
 
 The vibrato output is a waveform based on a squared envelope shape with four stages marking out 0.0 to 1.0, 1.0 to 0.0, 0.0 to -1.0, and -1.0 back to 0.0. Vibrato rate determines how quickly you move through these stages.
@@ -10,25 +13,37 @@ The vibrato output is a waveform based on a squared envelope shape with four sta
 
 classmethods::
 
+
 method::ar, kr
+
 argument::freq
-Fundamental frequency in Hertz. If the Vibrato UGen is running at audio rate, this must not be a constant, but an actual audio rate UGen (see example below)
+fundamental frequency in Hertz. If the Vibrato UGen is running at audio rate, this must not be a constant, but an actual audio rate UGen (see example below)
+
 argument::rate
-Vibrato rate, speed of wobble in Hertz. Note that if this is set to a low value (and definitely with 0.0), you may never get vibrato back, since the rate input is only checked at the end of a cycle.
+vibrato rate, speed of wobble in Hertz. Note that if this is set to a low value (and definitely with 0.0), you may never get vibrato back, since the rate input is only checked at the end of a cycle.
+
 argument::depth
-Size of vibrato frequency deviation around the fundamental, as a proportion of the fundamental. 0.02 = 2% of the fundamental.
+size of vibrato frequency deviation around the fundamental, as a proportion of the fundamental. 0.02 = 2% of the fundamental.
+
 argument::delay
-Delay before vibrato is established in seconds (a singer tends to attack a note and then stabilise with vibrato, for instance).
+delay before vibrato is established in seconds (a singer tends to attack a note and then stabilise with vibrato, for instance).
+
 argument::onset
-Transition time in seconds from no vibrato to full vibrato after the initial delay time.
+transition time in seconds from no vibrato to full vibrato after the initial delay time.
+
 argument::rateVariation
-Noise on the rate, expressed as a proportion of the rate; can change once per cycle of vibrato.
+noise on the rate, expressed as a proportion of the rate; can change once per cycle of vibrato.
+
 argument::depthVariation
-Noise on the depth of modulation, expressed as a proportion of the depth; can change once per cycle of vibrato. The noise affects independently the up and the down part of vibrato shape within a cycle.
+noise on the depth of modulation, expressed as a proportion of the depth; can change once per cycle of vibrato. The noise affects independently the up and the down part of vibrato shape within a cycle.
+
 argument::iphase
-Initial phase of vibrato modulation, allowing starting above or below the fundamental rather than on it.
+initial phase of vibrato modulation, allowing starting above or below the fundamental rather than on it.
+
 argument::trig
-Start again if transition from trig <= 0 to trig > 0.
+starts again if transition from teletype::trig <= 0:: to teletype::trig > 0::.
+
+
 examples::
 
 code::

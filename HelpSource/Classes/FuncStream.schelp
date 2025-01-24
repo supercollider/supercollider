@@ -1,9 +1,12 @@
-TITLE:: FuncStream
-summary:: Stream of a function
+title:: FuncStream
+summary:: stream of a function
 categories:: Streams-Patterns-Events
 related:: Classes/Pfunc
 
+
 description::
+
+
 FuncStream is one of the most basic ways to describe a stream: it has a function that is called for each next stream value.
 
 code::
@@ -21,9 +24,11 @@ a.next; // returns 108, not 8.
 ::
 
 
-CLASSMETHODS::
+classmethods::
+
 
 method::new
+
 returns a new stream object.
 
 code::
@@ -40,32 +45,46 @@ a.reset;
 a.next; // starts again.
 
 ::
+
 argument::nextFunc
-The function that is called on each next
+the function that is called on each next
+
 argument::resetFunc
-The function that is called on reset
+the function that is called on reset
 
 
-INSTANCEMETHODS::
+instancemethods::
 
-PRIVATE::storeArgs
+
+private:: storeArgs
+
 
 method::next
+
 argument::inval
-Returns the next value by calling the function. code::inval:: is passed
+returns the next value by calling the function. code::inval:: is passed
 as an argument to the function.
 
+
 method::reset
+
 calls the reset function, if defined.
 
+
 method::envir
+
 gets/sets the environment to which the function has been bound.
 
+
 method::nextFunc
+
 gets/sets the function which is called on link::#-next::.
 
+
 method::resetFunc
+
 gets/sets the function which is called on link::#-reset::.
+
 
 examples::
 

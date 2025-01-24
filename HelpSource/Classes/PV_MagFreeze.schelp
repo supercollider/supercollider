@@ -1,18 +1,24 @@
-class:: PV_MagFreeze
-summary:: Freeze magnitudes.
+title:: PV_MagFreeze
+summary:: freezes magnitudes
 categories:: UGens>FFT
 
+
 description::
+
+
 Freezes magnitudes at current levels when  code::freeze::  > 0.
 
 
 classmethods::
 
+
 method::new
+
 argument::buffer
 FFT buffer.
+
 argument::freeze
-If > 0, then magnitudes are frozen at current levels.
+if > 0, then magnitudes are frozen at current levels.
 
 
 examples::

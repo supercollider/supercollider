@@ -1,19 +1,26 @@
-class:: Pif
-summary:: Pattern-based conditional expression
-related:: Classes/Pwhile
+title:: Pif
+summary:: pattern-based conditional expression
 categories:: Streams-Patterns-Events>Patterns>Language Control
+related:: Classes/Pwhile
 
-ClassMethods::
+
+classmethods::
+
 
 method::new
+
 argument::condition
-A pattern or stream returning a link::Classes/Boolean:: value.
+a pattern or stream returning a link::Classes/Boolean:: value.
+
 argument::iftrue
-This stream is evaluated if the link::Classes/Boolean:: is code::true::.
+this stream is evaluated if the link::Classes/Boolean:: is code::true::.
+
 argument::iffalse
-This stream is evaluated if the link::Classes/Boolean:: is code::false::.
+this stream is evaluated if the link::Classes/Boolean:: is code::false::.
+
 argument::default
-This value (not stream) is returned if "iftrue" or "iffalse" returns code::nil:: at any time.
+this value (not stream) is returned if "iftrue" or "iffalse" returns code::nil:: at any time.
+
 
 examples::
 

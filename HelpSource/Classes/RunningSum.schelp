@@ -1,16 +1,25 @@
-class:: RunningSum
-summary:: Running sum over n frames
+title:: RunningSum
+summary:: running sum over n frames
 categories:: UGens>Analysis, UGens>Maths
 
+
 description::
+
+
 A running sum over a user specified number of samples, useful for running RMS power windowing.
 
+
 classmethods::
+
+
 method::ar, kr
+
 argument::in
-Input signal
+input signal
+
 argument::numsamp
-How many samples to take the running sum over (initialisation time only, not modulatable. default: 40)
+how many samples to take the running sum over (initialisation time only, not modulatable. default: 40)
+
 
 examples::
 

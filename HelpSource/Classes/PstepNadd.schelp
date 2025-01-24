@@ -1,10 +1,14 @@
-class:: PstepNadd
+title:: PstepNadd
 summary:: pattern that returns combinatoric sums
-related:: Classes/Pstep3add
 categories:: Streams-Patterns-Events>Patterns>Time
+related:: Classes/Pstep3add
+
 
 description::
+
+
 combines an arbitrary number of patterns by summing (depth first traversal). When a stream ends it is recreated from its pattern until the top stream ends.
+
 
 examples::
 

@@ -1,12 +1,15 @@
 title:: Node Messaging
-summary:: Messaging Nodes with OSC
+summary:: messaging Nodes with OSC
 categories:: Server>Nodes, External Control>OSC
 
 
 section:: Introduction
+
+
 The most direct and fast way to send commands to the server is to send messages to the link::Classes/Server:: object, if you are within sc-lang.  If you are in a shell you can use sendOSC (available from CNMAT).
 
 this messaging scheme is explained in detail in:
+
 list::
 ## link::Reference/Server-Architecture::
 ## link::Reference/Server-Command-Reference::
@@ -15,6 +18,8 @@ list::
 
 
 section:: Messaging nodes
+
+
 When creating nodes on the server (synths and groups) the only things we need to know are the nodeID and the server (its address to be precise).
 
 In order to communicate with a synth, one sends messages with its nodeID. If you do not intend to communicate with the node after its creation (and the node will cause itself to end without external messaging), the node id can be set to -1, which is the server's equivalent to code::nil::.
@@ -24,18 +29,22 @@ As soon as you want to pass around the reference to a certain node, assuming tha
 see link::Classes/Node::, link::Classes/Synth::, and link::Classes/Group:: help for more detailed helpfiles on node objects.
 
 the equivalent of
+
 code::
 n = s.nextNodeID;
 s.sendMsg("/s_new", "default", n);
 s.sendMsg("/n_free", n);
 ::
+
 is
+
 code::
 n = Synth("default");
 n.free;
 ::
 
 when passing arguments:
+
 code::
 n = s.nextNodeID;
 s.sendMsg("/s_new", "default", n, 0, 0, "freq", 850);
@@ -44,6 +53,7 @@ s.sendMsg("/n_free", n);
 ::
 
 it is
+
 code::
 n = Synth("default", [\freq, 850]);
 n.set(\freq, 500)
@@ -51,13 +61,16 @@ n.free;
 ::
 
 note that Symbols may be used instead of Strings:
+
 code::
 n = s.nextNodeID;
 s.sendMsg(\s_new, \default, n, 0, 0, \freq, 850);
 s.sendMsg(\n_set, n, \freq, 500);
 s.sendMsg(\n_free, n);
 ::
+
 and:
+
 code::
 n = Synth(\default, [\freq, 850]);
 n.set(\freq, 500)
@@ -69,6 +82,7 @@ The answer to the question of whether one should work with node objects or direc
 The encapsulation of node objects results in a certain generalization, meaning that other compound objects can respond to the same messages and thus exploit polymorphism. They also provide a certain level of convenience, keeping track of indexes and IDs, etc.
 
 In certain cases, such as for granular synthesis it is recommended to use messages directly, because there is no benefit to be gained from the node objects (i.e. no need to message them) and they add cpu load to the client side.
+
 code::
 (
 SynthDef("grain", {
@@ -95,6 +109,7 @@ IMPORTANT: If you wish to have the functionality of the default_group (e.g. prob
 ::
 
 Note that link::Classes/Function#-play#Function-play:: and link::Classes/SynthDef#-play#SynthDef-play:: return a synth object that can be used to send messages to.
+
 code::
 x = { arg freq=1000; Ringz.ar(Crackle.ar(1.95, 0.1), freq, 0.05) }.play(s);
 x.set(\freq, 1500);
@@ -104,13 +119,17 @@ x.free;
 
 section:: Argument lists in node messages
 
+
 Several node messages accept lists of values to map onto the controls of Synth nodes, as in some of the examples already given:
+
 code::
 s.sendMsg(\s_new, \default, n, 0, 0, \freq, 850);
 n = Synth(\default, [\freq, 850]);
 ::
+
 Argument lists generally appear as alternating pairs, with the control identifier preceding the value. Usually the control identifier is a name, as above, but it could also be an integer index. (Using integers is slightly faster for the server, but it makes the code harder to read and can introduce bugs if the SynthDef structure changes.)
 One way to find out control indices is to .add the SynthDef into a link::Classes/SynthDescLib::, then get the list of all controls out of the link::Classes/SynthDesc::.
+
 code::
 	(
 		SynthDef(\controlList, { |out = 0, freq = 440, amp = 0.1, detune = #[0.999, 1.001], gate = 1|
@@ -122,7 +141,9 @@ code::
 		SynthDescLib.global[\controlList]
 	)
 ::
+
 Prints:
+
 code::
 SynthDesc 'controlList'
 Controls:
@@ -134,9 +155,11 @@ ControlName  P 4 gate control 1
 ControlName  P 5 out control 0
    O audio 0 2
 ::
+
 The list shows that the 'freq' control has index 0, 'amp' is 1 and so on. Detune is defined as an "array argument," occupying indices 2-3.
 
 SynthDefs with a large number of controls may need a little extra code to print the entire list.
+
 code::
 SynthDescLib.global[\controlList].controls.do(_.postln); ""
 ::
@@ -145,7 +168,10 @@ Prior to SuperCollider 3.3, the only way to set array arguments by name was usin
 
 
 subsection:: Messaging style
+
+
 note the characters $[ and $] delimiting the array in the list:
+
 code::
 n = s.nextNodeID;
 s.sendMsg(\s_new, \controlList, n, 0, 0, \detune, $[, 0.95, 1.005, $], \freq, 220);
@@ -154,7 +180,10 @@ s.sendMsg(\n_set, n, \gate, 0);
 
 
 subsection:: Object style
+
+
 the Node object automatically inserts $[ and $] for you:
+
 code::
 n = Synth(\controlList, [\detune, [0.95, 1.005], \freq, 220]);
 n.set(\detune, [0.99, 1.01]);
@@ -163,7 +192,10 @@ n.release;
 
 
 subsection:: Event style
+
+
 Supplying an array for an argument in an event already has another meaning: multichannel expansion, in which a separate node is created for each array item. If all items of the array should be sent to the same node, then the array argument should be enclosed in another array level:
+
 code::
 (instrument: \controlList, freq: 220, detune: [[0.95, 1.005]], sustain: 2).play;
 ::

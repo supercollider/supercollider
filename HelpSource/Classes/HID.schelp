@@ -1,18 +1,23 @@
-TITLE:: HID
-summary:: This class provides access to human input devices, or in short HID, such as joysticks, gamepads, mice, keyboard, and so on.
+title:: HID
+summary:: this class provides access to human input devices, or in short HID, such as joysticks, gamepads, mice, keyboard, and so on
 categories:: External Control>HID
 related:: Classes/HIDFunc, Guides/Working_with_HID, Classes/HIDElement, Classes/HIDCollection, Classes/HIDUsage, Classes/HIDInfo
 
+
 description::
+
+
 Human input devices can be used as controllers for making music. This class provides you with access to them in a simple and transparent way.
 
 The development of this SuperCollider implementation of HID access was funded by the SuperCollider community and BEK, Bergen Elektronisk Kunst, Bergen, Norway, http://www.bek.no
 
 
 subsection:: Introduction
+
+
 In general using an Human Input Device follows this scheme:
 
-DEFINITIONLIST::
+definitionlist::
 	## Find available devices:
 	|| code:: HID.findAvailable; ::
 	## Print a readable list of available devices:
@@ -23,312 +28,439 @@ DEFINITIONLIST::
 	|| code:: ~myhid.elements[1].action = { |...args| args.postln };
 ::
 
-See LINK::Guides/Working_with_HID:: for a full introduction.
+See link::Guides/Working_with_HID:: for a full introduction.
 
 ::
 
 
-CLASSMETHODS::
+classmethods::
 
-PRIVATE:: doPrAction, prInitHID, prCloseAll, prOpenDevice, prCloseDevice, prHIDDeviceClosed, prGetDeviceInfo, prGetNumberOfCollections, prGetCollectionInfo, prGetNumberOfElements, prGetElementInfo, prSetElementOutput, prSetElementRepeat, prbuildDeviceList, deviceClosed, prHIDElementData, prHIDDeviceData, basicNew, mergeUsageDict, removeUsageDict
+
+private:: doPrAction, prInitHID, prCloseAll, prOpenDevice, prCloseDevice, prHIDDeviceClosed, prGetDeviceInfo, prGetNumberOfCollections, prGetCollectionInfo, prGetNumberOfElements, prGetElementInfo, prSetElementOutput, prSetElementRepeat, prbuildDeviceList, deviceClosed, prHIDElementData, prHIDDeviceData, basicNew, mergeUsageDict, removeUsageDict
 
 
 subsection:: Finding devices
 
+
 method::findAvailable
+
 queries the operating system which HID devices are attached to the system and can be accessed. When using HID this is the first method you need to execute, before you can access any device.
 
-returns:: an IdentityDictionary of available devices
+returns::
+
+an IdentityDictionary of available devices
+
 
 method::available
-A dictionary of available devices, or rather info about them in an instance of LINK::Classes/HIDInfo::, populated by the method findAvailable
 
-returns:: an IdentityDictionary
+a dictionary of available devices, or rather info about them in an instance of link::Classes/HIDInfo::, populated by the method findAvailable
+
+returns::
+
+an IdentityDictionary
+
 
 method::postAvailable
-posts a human readable list of available HID devices and their properties (see also LINK::Classes/HIDInfo::)
+
+posts a human readable list of available HID devices and their properties (see also link::Classes/HIDInfo::)
 
 
 method::findBy
-finds devices in the available device dictionary by specifying one or more characteristics of the device
-argument::vendorID
-The vendor ID of the device, this is a number encoded by the device itself, and the same across platforms.
-argument::productID
-The product ID of the device, this is a number encoded by the device itself, and the same across platforms.
-argument::path
-The path of the device, this is a path defined by the operating system, and thus not the same across platforms, but essential to distinguish devices with the same vendor and product ID from each other.
-argument::serial
-The serial number of the device. This is dependent on the operating system, e.g. on Linux it is not set.
-argument::releaseNumber
-The release number of the device, this is a number encoded by the device itself, and the same across platforms.
 
-returns:: an IdentityDictionary of devices the match the search query, or code::nil:: if no arguments are given
+finds devices in the available device dictionary by specifying one or more characteristics of the device
+
+argument::vendorID
+the vendor ID of the device, this is a number encoded by the device itself, and the same across platforms.
+
+argument::productID
+the product ID of the device, this is a number encoded by the device itself, and the same across platforms.
+
+argument::path
+the path of the device, this is a path defined by the operating system, and thus not the same across platforms, but essential to distinguish devices with the same vendor and product ID from each other.
+
+argument::serial
+the serial number of the device. This is dependent on the operating system, e.g. on Linux it is not set.
+
+argument::releaseNumber
+the release number of the device, this is a number encoded by the device itself, and the same across platforms.
+
+returns::
+
+an IdentityDictionary of devices the match the search query, or code::nil:: if no arguments are given
 
 
 method::availableUsages
-A dictionary of available usages from all HIDs, populated automatically when devices are opened and closed.
 
-returns:: an IdentityDictionary
+a dictionary of available usages from all HIDs, populated automatically when devices are opened and closed.
+
+returns::
+
+an IdentityDictionary
 
 
 method::postAvailableUsages
-posts a human readable list of available HID usages and their properties (see also LINK::Classes/HIDElement:: and LINK::Classes/HIDUsage::)
+
+posts a human readable list of available HID usages and their properties (see also link::Classes/HIDElement:: and link::Classes/HIDUsage::)
 
 
 subsection:: Opening devices
 
+
 method::open
+
 opens a device with a given vendorID, product ID and optionally a path.
+
 argument::vendorID
-The vendor ID of the device
+the vendor ID of the device
+
 argument::productID
-The product ID of the device
+the product ID of the device
+
 argument::path
 (optional) The path in the operating system, e.g. "/dev/hidraw0" on Linux.
 If not specified, the method will look for a matching device in the device list, and open the first match it finds.
 
-returns:: The HID device - an instance of HID.
+returns::
+
+the HID device - an instance of HID.
+
 
 method::new
-Same as HID.open
+
+same as HID.open
 
 
 method::openPath
-opens a device using its path in the operating system
-argument::path
-The path in the operating system, e.g. "/dev/hidraw0" on Linux
 
-returns:: The HID device - an instance of HID.
+opens a device using its path in the operating system
+
+argument::path
+the path in the operating system, e.g. "/dev/hidraw0" on Linux
+
+returns::
+
+the HID device - an instance of HID.
+
 
 method::openAt
-opens a device using its index in the dictionary of available devices
-argument::index
-The index into the dictionary of available devices
 
-returns:: The HID device - an instance of HID.
+opens a device using its index in the dictionary of available devices
+
+argument::index
+the index into the dictionary of available devices
+
+returns::
+
+the HID device - an instance of HID.
 
 
 method::openDevices
-A dictionary of the opened devices
 
-returns:: an IdentityDictionary
+a dictionary of the opened devices
+
+returns::
+
+an IdentityDictionary
 
 
 subsection:: Adding functions to HID events
 
+
 Whenever data comes in from an opened HID device, there are two types of actions fired. An action for the incoming element data and an action for the device, indicating that there has been a change in one of the elements. In most cases you will want to use the first action; only in cases where the order of parsing the element data is important, you may want to use the second type - e.g. when dealing with very accurately timed button press combinations.
 
 There are three levels where you can set actions:
-LIST::
+
+list::
 	## at the global level - called for any HID device, for any element
 	## at the device level - called for the specific device, for any element
 	## at the element level - called for the specific element of the specific device
 ::
 
-Alternately, you can also use the LINK::Classes/HIDFunc:: interface.
-
+Alternately, you can also use the link::Classes/HIDFunc:: interface.
 
 
 method::debug
-When set to code::true::, the incoming data from any opened HID device will be printed to the post window.
 
+when set to code::true::, the incoming data from any opened HID device will be printed to the post window.
 
 
 method::action
+
 sets/gets the action to be performed upon receiving element data from the device. The function will be passed the following arguments: the value (mapped between 0 and 1), the raw value, element usage page, the element usage, the element id, the device id, the device (an instance of HID).
+
 argument::function
-The function to be performed upon receiving element data from the device
+the function to be performed upon receiving element data from the device
 
 
 method::addRecvFunc
+
 adds a function to the internal FunctionList that will be evaluated whenever element data comes in from an open device. The arguments passed to the function are as defined above.
 Use this method if you want to add actions to HID functions from classes you write, so that you still keep the option to add an action on the fly from user code.
+
 argument::function
-The function to be added to the list.
+the function to be added to the list.
 
 
 method::removeRecvFunc
+
 removes a function to the internal FunctionList that will be evaluated whenever data comes in from a device.
+
 argument::function
-The function to remove from the list, this must be a reference to the Function that was originally added to the list
+the function to remove from the list, this must be a reference to the Function that was originally added to the list
 
 
 method::deviceAction
+
 sets an action or function to be performed whenever there is an update to any device's elements.
+
 argument::function
-The function to be performed upon receiving data from the device
+the function to be performed upon receiving data from the device
 
 
 method::addDevFunc
+
 adds a function to the internal FunctionList that will be evaluated whenever data comes in from a device.
+
 argument::function
-The function to be performed upon receiving data from the device
+the function to be performed upon receiving data from the device
 
 
 method::removeDevFunc
+
 removes a function to the internal FunctionList that will be evaluated whenever data comes in from a device.
+
 argument::function
-The function to remove from the list, this must be a reference to the Function that was originally added to the list
+the function to remove from the list, this must be a reference to the Function that was originally added to the list
 
 
 subsection:: Managing the HID subsystem
 
+
 The following methods are used internally to initialize and finalize the HID subsystem, but in rare cases you may wish to manage these methods manually.
 
+
 method::initializeHID
-Initialize the HID subsystem, this method is called automatically when calling the method findAvailable.
+
+initializes the HID subsystem, this method is called automatically when calling the method findAvailable.
 
 
 method::running
+
 indicates whether or not the HID subsystem is running.
 
 
 method::closeAll
-This method is called automatically upon Shutdown, if the HID subsystem was initialized. It can be stopped manually, in order to save system resources. This method will close all opened HID devices.
+
+this method is called automatically upon Shutdown, if the HID subsystem was initialized. It can be stopped manually, in order to save system resources. This method will close all opened HID devices.
 
 
-INSTANCEMETHODS::
+instancemethods::
 
-PRIVATE::init, getInfo, getElements, getElementInfo, getCollections, getCollectionInfo, getUsages, id, valueAction, valueDeviceAction, info_, prDeviceClosed
+
+private:: init, getInfo, getElements, getElementInfo, getCollections, getCollectionInfo, getUsages, id, valueAction, valueDeviceAction, info_, prDeviceClosed
 
 
 method::elements
-An IdentityDictionary holding all the elements, i.e. controls, of the device
+
+an IdentityDictionary holding all the elements, i.e. controls, of the device
 
 
 method::findElementWithUsage
-finds all elements with a certain usage and usagePage.
-argument::elUsage
-The usage index of the element
-argument::elUsagePage
-The usage page of the element
 
-returns:: an Array with the found elements
+finds all elements with a certain usage and usagePage.
+
+argument::elUsage
+the usage index of the element
+
+argument::elUsagePage
+the usage page of the element
+
+returns::
+
+an Array with the found elements
 
 
 method::getElementWithID
-gets the element with the given index
-argument::elid
-The index of the element
 
-returns:: the HIDElement
+gets the element with the given index
+
+argument::elid
+the index of the element
+
+returns::
+
+the HIDElement
+
 
 method::close
+
 closes the HID device, closing a device is asynchronous. You can set a closeAction (see below), which will be performed when the device closes.
 
+
 method::isOpen
+
 returns code::true:: if the device is open, code::false:: if the device was closed.
 
 returns: a Boolean
 
 
 method::collections
-An IdentityDictionary holding all the collections, i.e. groups of controls, of the device
+
+an IdentityDictionary holding all the collections, i.e. groups of controls, of the device
 
 
 subsection:: Adding functionality to the device
 
+
 method::debug
-When set to code::true::, the incoming data from this HID device will be printed to the post window.
+
+when set to code::true::, the incoming data from this HID device will be printed to the post window.
 
 
 method::closeAction
-Function to be performed when device is closed.
+
+function to be performed when device is closed.
 
 
 method::action
+
 sets/gets the action to be performed upon receiving element data from the device. The function will be passed the following arguments: the value (mapped between 0 and 1), the raw value, element usage page, the element usage, the element id
+
 argument::function
-The function to be performed upon receiving element data from the device
+the function to be performed upon receiving element data from the device
 
 
 method::deviceAction
+
 sets an action or function to be performed whenever there is an update to any of the device's elements.
+
 argument::function
-The function to be performed upon receiving data from the device
+the function to be performed upon receiving data from the device
 
 
 subsection:: Posting human readable information about the device
 
+
 method::postInfo
-Post the HIDInfo of this device in a human readable format
+
+posts the HIDInfo of this device in a human readable format
+
 
 method::postCollections
-Post information about all the collections of this device in a human readable format
+
+posts information about all the collections of this device in a human readable format
+
 
 method::postElements
-Post information about all the elements of this device in a human readable format
+
+posts information about all the elements of this device in a human readable format
+
 
 method::postInputElements
-Post information about all the input elements of this device in a human readable format
+
+posts information about all the input elements of this device in a human readable format
+
 
 method::postOutputElements
-Post information about all the output elements of this device in a human readable format
+
+posts information about all the output elements of this device in a human readable format
+
 
 method::postFeatureElements
-Post information about all the feature elements of this device in a human readable format
+
+posts information about all the feature elements of this device in a human readable format
 
 
 method::postUsages
-Post information about all the usages of this device in a human readable format
+
+posts information about all the usages of this device in a human readable format
 
 
 subsection:: Properties of the device
 
-method::info
-Retrieve the HIDInfo of this device
 
-returns:: an instance of HIDInfo
+method::info
+
+retrieves the HIDInfo of this device
+
+returns::
+
+an instance of HIDInfo
 
 
 method::usage
-Retrieve the usage index of a collection of this device, or the main usage of the device (if called without an argument).
-argument::collectionID
-The collection of which to retrieve the usage. The default is 0, which should define the primary usage of the device.
 
-returns:: the usage index of this device
+retrieves the usage index of a collection of this device, or the main usage of the device (if called without an argument).
+
+argument::collectionID
+the collection of which to retrieve the usage. The default is 0, which should define the primary usage of the device.
+
+returns::
+
+the usage index of this device
+
 
 method::usageName
-Retrieve the usage name of a collection of this device, or the main usage of the device (if called without an argument). The name is looked up from the standardized HID usage tables using the usage index.
-argument::collectionID
-The collection of which to retrieve the usage. The default is 0, which should define the primary usage of the device.
 
-returns:: the usage name of this device
+retrieves the usage name of a collection of this device, or the main usage of the device (if called without an argument). The name is looked up from the standardized HID usage tables using the usage index.
+
+argument::collectionID
+the collection of which to retrieve the usage. The default is 0, which should define the primary usage of the device.
+
+returns::
+
+the usage name of this device
 
 
 method::usagePage
-Retrieve the usage page index of a collection of this device, or the main page of the device (if called without an argument). The name is looked up from the standardized HID usage tables using the usage page index.
-argument::collectionID
-The collection of which to retrieve the usage page. The default is 0, which should define the primary usage of the device.
 
-returns:: the usage page index of this device
+retrieves the usage page index of a collection of this device, or the main page of the device (if called without an argument). The name is looked up from the standardized HID usage tables using the usage page index.
+
+argument::collectionID
+the collection of which to retrieve the usage page. The default is 0, which should define the primary usage of the device.
+
+returns::
+
+the usage page index of this device
 
 
 method::pageName
-Retrieve the page name of a collection of this device, or the main page of the device (if called without an argument). The name is looked up from the standardized HID usage tables using the usage page index.
-argument::collectionID
-The collection of which to retrieve the usage page name. The default is 0, which should define the primary usage of the device.
 
-returns:: the usage page name of this device
+retrieves the page name of a collection of this device, or the main page of the device (if called without an argument). The name is looked up from the standardized HID usage tables using the usage page index.
+
+argument::collectionID
+the collection of which to retrieve the usage page name. The default is 0, which should define the primary usage of the device.
+
+returns::
+
+the usage page name of this device
 
 
 method::vendor
-Retrieve the vendor id of this device
 
-returns:: the vendor id
+retrieves the vendor id of this device
+
+returns::
+
+the vendor id
 
 
 method::product
-Retrieve the product id of this device
 
-returns:: the product id
+retrieves the product id of this device
+
+returns::
+
+the product id
 
 
 method::usages
-Retrieve the usages of the elements of this device.
 
-returns:: an IdentityDictionary with usages as keys and lists of elements as corresponding elements
+retrieves the usages of the elements of this device.
 
+returns::
+
+an IdentityDictionary with usages as keys and lists of elements as corresponding elements
 
 
 examples::

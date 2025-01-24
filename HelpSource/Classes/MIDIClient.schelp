@@ -1,79 +1,113 @@
-TITLE:: MIDIClient
-summary:: Basic access to MIDI on your computer
+title:: MIDIClient
+summary:: basic access to MIDI on your computer
 categories:: External Control>MIDI
 related:: Classes/MIDIIn, Classes/MIDIOut, Classes/MIDIFunc, Classes/MIDIdef, Guides/MIDI, Guides/UsingMIDI, Classes/MIDIEndPoint
 
+
 description::
+
+
 MIDIClient is the core class that provides access to the MIDI subsystem on your computer.
 
 See the link::Guides/UsingMIDI:: helpfile for practical considerations and techniques for using MIDI in SC.
 
-CLASSMETHODS::
+
+classmethods::
+
 
 private:: prInit, prDisposeClient, prInitClient, prList
 
 
 method::init
-Initializes the MIDIClient, checks which available MIDI sources and destinations there are, and opens as many connections as desired.
+
+initializes the MIDIClient, checks which available MIDI sources and destinations there are, and opens as many connections as desired.
+
 argument::inports
 the number of MIDI input connections to open; if code::nil:: then opens as many inports as there are MIDI sources.
+
 argument::outports
 the number of MIDI output connections to open; if code::nil:: then opens as many outports as there are MIDI destinations.
+
 argument::verbose
-A flag whether or not to post the MIDI sources and destinations that were found. The default is code::true::.
+a flag whether or not to post the MIDI sources and destinations that were found. The default is code::true::.
 
 
 method::initialized
-A flag that tells whether of not the MIDIClient has been initialized.
 
+a flag that tells whether of not the MIDIClient has been initialized.
 
 
 method::disposeClient
-Cleans up the MIDIClient. After using this method, you will have to reinitialize the MIDIClient before you can use MIDI again.
 
+cleans up the MIDIClient. After using this method, you will have to reinitialize the MIDIClient before you can use MIDI again.
 
 
 method::list
-Refresh the list of available sources and destinations.
+
+refreshes the list of available sources and destinations.
 If you have connected a MIDI device after MIDIClient initialization, you won't see it until this method is run.
 
-method::sources
-The list of available MIDI sources, including SuperCollider's own sources.
 
-returns:: A code::List:: of code::MIDIEndPoints::
+method::sources
+
+the list of available MIDI sources, including SuperCollider's own sources.
+
+returns::
+
+a code::list:: of code::MIDIEndPoints::
+
 
 method::externalSources
-The list of available MIDI sources, excluding SuperCollider's own sources. Only on Linux the list of code::sources:: and code::externalSources:: differs.
 
-returns:: A code::List:: of code::MIDIEndPoints::
+the list of available MIDI sources, excluding SuperCollider's own sources. Only on Linux the list of code::sources:: and code::externalSources:: differs.
+
+returns::
+
+a code::list:: of code::MIDIEndPoints::
+
 
 method::destinations
-The list of available MIDI destinations, including SuperCollider's own destinations.
 
-returns:: A code::List:: of code::MIDIEndPoints::
+the list of available MIDI destinations, including SuperCollider's own destinations.
+
+returns::
+
+a code::list:: of code::MIDIEndPoints::
+
 
 method::externalDestinations
-The list of available MIDI destinations, excluding SuperCollider's own destinations. Only on Linux the list of code::destinations:: and code::externalDestinations:: differs.
 
-returns:: A code::List:: of code::MIDIEndPoints::
+the list of available MIDI destinations, excluding SuperCollider's own destinations. Only on Linux the list of code::destinations:: and code::externalDestinations:: differs.
+
+returns::
+
+a code::list:: of code::MIDIEndPoints::
+
 
 method::restart
-Restart the MIDIClient.
+
+restarts the MIDIClient.
 
 
 method::myinports
-The number of input ports that SuperCollider created. This is mainly useful to know on the Linux platform.
+
+the number of input ports that SuperCollider created. This is mainly useful to know on the Linux platform.
 
 
 method::myoutports
-The number of output ports that SuperCollider created. This is mainly useful to know on the Linux platform.
+
+the number of output ports that SuperCollider created. This is mainly useful to know on the Linux platform.
+
 
 method::getClientID
-Linux only. This gets the client ID by which the MIDIClient is defined in the ALSA subsystem. It can be used to identify whether a port is belonging to this client or another one.
+
+linux only. This gets the client ID by which the MIDIClient is defined in the ALSA subsystem. It can be used to identify whether a port is belonging to this client or another one.
 
 On non-linux systems, it posts a warning and returns code::nil::.
 
+
 examples::
+
 
 This is Linux specific code.
 The function takes care of initializing MIDIClient, detects a MIDI device named SE25 and connects it to port 0 of SuperCollider.

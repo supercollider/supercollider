@@ -1,32 +1,49 @@
-class:: PbindProxy
+title:: PbindProxy
 summary:: incremental event pattern reference
 categories:: JITLib>Patterns, Streams-Patterns-Events>Patterns, Live Coding
 related:: Classes/Pbindef, Classes/Pdef
 
+
 description::
+
+
 keeps a reference to a link::Classes/Pbind:: in which single keys can be replaced. It plays on when the old stream ended and a new stream is set and schedules the changes to the beat.
 
-ClassMethods::
+
+classmethods::
+
 
 method::new
+
 creates a new instance of PbindProxy with the given patternpairs
 
-InstanceMethods::
+
+instancemethods::
+
 
 method::source
+
 returns the wrapper for the Pbind
 
+
 method::set
+
 sets the given patternpairs.
 
+
 method::at
+
 returns a pattern at that key. this can be used to set quant value individually, so different elementary patterns can be quantized differently.
+
 code::
 x.at(\freq).quant = 2;
 ::
 
+
 method::quant
+
 sets the quant of all elementary patterns, or returns the quant value of the source pattern.
+
 
 examples::
 

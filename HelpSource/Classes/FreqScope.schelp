@@ -1,12 +1,16 @@
-class:: FreqScope
-summary:: Frequency spectrum visualizer
+title:: FreqScope
+summary:: frequency spectrum visualizer
 categories:: GUI>Interfaces
 related:: Classes/FreqScopeView
 
+
 description::
+
+
 FreqScope shows the frequency spectrum of the specified audio bus. The scope will remain active after a command-period. To turn it off you must either click off the 'Power' button or close the window.
 
 Panel commands:
+
 table::
 ## Power || Turns the scope on and off. This is useful for freezing the signal on the display or for saving CPU.
 ## BusIn || The audio bus to be analyzed.
@@ -14,23 +18,33 @@ table::
 ## dbCut || Determines the lowest decibel shown on the y-axis.
 ::
 
-ClassMethods::
+
+classmethods::
+
 
 method::new
+
 argument::width
-Default value is 512.
+default value is 512.
+
 argument::height
-Default value is 300.
+default value is 300.
+
 argument::busNum
-The number of the audio link::Classes/Bus:: to be monitored.
+the number of the audio link::Classes/Bus:: to be monitored.
+
 argument::scopeColor
-An instance of link::Classes/Color::. The drawing color of the scope.
+an instance of link::Classes/Color::. The drawing color of the scope.
+
 argument::bgColor
-An instance of link::Classes/Color::. The background color of the scope.
+an instance of link::Classes/Color::. The background color of the scope.
+
 argument::server
 the server whose buses to show on scope.
+
 discussion::
 Example:
+
 code::
 s.boot;
 
@@ -53,20 +67,29 @@ FreqScope.new(400, 200, 0, server: s);
 
 subsection:: Subclassing and Internal Methods
 
+
 The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
 
+
 method::scopeOpen
+
 returns a link::Classes/Boolean::, whether the scope is open.
 
-InstanceMethods::
+
+instancemethods::
 
 
 subsection:: Subclassing and Internal Methods
 
+
 The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
 
+
 method::window
+
 returns the window in which the link::Classes/FreqScopeView:: is placed.
 
+
 method::scope
+
 returns the link::Classes/FreqScopeView::.

@@ -1,8 +1,11 @@
-class::Symbol
+title:: Symbol
 summary:: a unique name for something
-categories::Core
+categories:: Core
+
 
 description::
+
+
 A symbol, like a link::Classes/String::, is a sequence of characters. Unlike strings, two symbols
 with exactly the same characters will be the exact same object. Symbols are optimized for recreating
 the same symbol over and over again. In practice, this means that symbols are best used for
@@ -17,6 +20,7 @@ Symbols are represented syntactically as literals which are described in link::R
 
 subsection:: Creating a Symbol
 
+
 A symbol can be written by surrounding characters by single quotes (may include whitespace):
 
 code::'foo bar'::
@@ -29,58 +33,76 @@ A String can be converted into a symbol:
 
 code::"arbeit".scramble.asSymbol;::
 
+
 classmethods::
-private::new
+
+
+private:: new
+
 
 instancemethods::
 
 
 subsection:: Testing
 
+
 method::isClassName
-Answers whether the symbol can be a class name. This does not say if the class exists.
+
+answers whether the symbol can be a class name. This does not say if the class exists.
 
 code::
 \Array.isClassName;
 \Bauxite.isClassName;
 ::
 
+
 method::isMetaClassName
-Answers whether the symbol can be meta class name. This does not say if the class exists.
+
+answers whether the symbol can be meta class name. This does not say if the class exists.
 
 code::
 \Meta_Array.isMetaClassName;
 ::
 
+
 method::isSetter
-Answers whether the symbol has a trailing underscore.
+
+answers whether the symbol has a trailing underscore.
 
 code::
 'action_'.isSetter;
 ::
 
+
 method::isPrimitiveName
-Answers whether the symbol is a valid primitive name
+
+answers whether the symbol is a valid primitive name
 
 code::
 '_SymbolIsClassName'.isPrimitiveName;
 ::
 
+
 method::isPrefix
-Answers whether the symbol is a prefix of another one
+
+answers whether the symbol is a prefix of another one
 
 code::
 'a'.isPrefix('all'); // true
 'z'.isPrefix('all');  // false
 ::
 
+
 method::isIdentifier
+
 returns code::true:: if the symbol is a valid variable name, or equivalently a valid method name in the two
 most common method call syntaxes (code::foo.bar():: and code::bar(foo)::). A valid identifier
 contains only alphanumeric characters and underscores, and the first character must be a lowercase
 letter.
 
+
 method::isBinaryOp
+
 returns code::true:: if the symbol is a valid binary operator. A valid binary operator contains only the
 symbols code::!@%&*-+=|<>?/::, does not start with 'code:://::' or 'code::/*::', and is not the
 string 'code::=::'.
@@ -88,35 +110,54 @@ string 'code::=::'.
 
 subsection:: Conversion
 
+
 method::asString
-Convert to a String
+
+converts to a String
+
 
 method::asInteger
-Convert to an Integer
+
+converts to an Integer
+
 
 method::asClass
+
 returns the Class named by the receiver.
 
+
 method::asSetter
+
 returns a symbol with a trailing underscore added.
 
+
 method::asGetter
+
 returns a symbol with a trailing underscore removed.
 
+
 method::ascii
+
 returns the ascii codes as an array
 
+
 method::asSpec
-Convert to a ControlSpec
+
+converts to a ControlSpec
+
 
 method::asTuning
-Convert to a Tuning
+
+converts to a Tuning
+
 
 method::asScale
-Convert to a Scale
+
+converts to a Scale
 
 
 subsection:: Environments
+
 
 Symbols are used as keys to look up objects in dictionaries and environments, but also in arrays.
 See link::Classes/IdentityDictionary::, link::Classes/Environment::, link::Classes/Event::
@@ -127,12 +168,18 @@ a.put(\commune, 1871);
 a.at(\commune);
 ::
 
+
 method::envirPut
+
 puts a value to the current environment using receiver as key
 
+
 method::envirGet
+
 returns a value from the current environment using receiver as key
+
 discussion::
+
 code::
 \foo.envirPut(100);
 \foo.envirGet;
@@ -142,13 +189,18 @@ code::
 
 subsection:: Math
 
+
 Symbols respond to all unary and binary math operations by returning themselves. The result of any math operation between a Number or other math object and a Symbol is to return the Symbol. This allows for example operations on lists of notes which contain 'rest's to preserve the rests.
 
 code::Pseq([1, 3, \rest, 2, 4] + 8);::
 
+
 method::applyTo
+
 uses the symbol as a method selector and perform the message on firstArg, with args as arguments. This is used for mixing functions with method selectors (see also: Function).
+
 discussion::
+
 code::
 '%'.applyTo(2553, 345);
 ['+', '-', '*', { |a, b| a.rand + b.rand }].choose.applyTo(2, 3);
@@ -157,14 +209,17 @@ code::
 
 subsection:: Synthesis
 
+
 Inside SynthDefs and UGen functions, symbols can be used to conveniently specify control inputs of different rates and with lags (see:  NamedControl, ControlName, and Control).
 
 
 method::kr
+
 returns a control rate NamedControl input with a default value (val), and if supplied, with a lag. If val is an array, the control will be multichannel.
 A link::Classes/ControlSpec:: provided to the code::spec:: parameter will be written into the spec metadata for the current synth.
 
 discussion::
+
 code::
 a = { SinOsc.ar(\freq.kr(440, 1.2)) }.play;
 a.set(\freq, 330);
@@ -174,15 +229,23 @@ a.setn(\freq, [330, 367]);
 a.release;
 ::
 
+
 method::ar
+
 returns an audio rate NamedControl input with a default value (val), and if supplied, with a lag. If val is an array, the control will be multichannel.
 
+
 method::ir
+
 returns an initialization rate NamedControl input with a default value (val). If val is an array, the control will be multichannel.
 
+
 method::tr
+
 returns a TrigControl input with a default value (val). If val is an array, the control will be multichannel.
+
 discussion::
+
 code::
 a = { Ringz.ar(T2A.ar(\trig.tr), \freq.kr(500, 1), 0.8) }.play;
 a.set(\freq, 330, \trig, 1);

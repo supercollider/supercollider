@@ -1,9 +1,12 @@
-class:: Onsets
-summary:: Onset detector
+title:: Onsets
+summary:: onset detector
 categories:: UGens>Analysis
 related:: Classes/BeatTrack, Classes/Loudness, Classes/MFCC, Classes/Pitch, Classes/KeyTrack
 
+
 description::
+
+
 An onset detector for musical audio signals - detects the beginning of notes/drumbeats/etc. Outputs a control-rate trigger signal which is 1 when an onset is detected, and 0 otherwise.
 
 For more details of all the processes involved, the different onset detection functions, and their evaluation, see:
@@ -11,25 +14,39 @@ For more details of all the processes involved, the different onset detection fu
 D. Stowell and M. D. Plumbley. Adaptive whitening for improved real-time audio onset detection. emphasis::Proceedings of the International Computer Music Conference (ICMC2007)::, Copenhagen, Denmark, August 2007. See
 http://c4dm.eecs.qmul.ac.uk/papers/2007/StowellPlumbley07-icmc.pdf
 
+
 classmethods::
+
+
 private:: categories
 
+
 method::kr
+
 argument::chain
 an FFT chain.
+
 argument::threshold
 the detection threshold, typically between 0 and 1, although in rare cases you may find values outside this range useful.
+
 argument::odftype
 chooses which emphasis::onset detection function:: is used. In many cases the default will be fine. More choices are listed below.
 
 The remaining args are all tweak factors, explained below in section Advanced features:
+
 argument::relaxtime
+
 argument::floor
+
 argument::mingap
+
 argument::medianspan
+
 argument::whtype
+
 argument::rawodf
-Discussion::
+
+discussion::
 
 	The following choices are available for code::odftype:: :
 
@@ -53,6 +70,7 @@ Which onset detection function should you choose? The differences aren't large, 
 
 subsection:: Advanced features
 
+
 Further options are available, which you are welcome to explore if you want. They are numbers that modulate the behaviour of the onset detector:
 
 list::
@@ -65,7 +83,9 @@ list::
 ## strong::medianspan:: specifies the size (in FFT frames) of the median window used for smoothing the detection function before triggering.
 ::
 
+
 examples::
+
 code::
 
 ////////////////////////////////////////////////////////////////////////////////////////////////

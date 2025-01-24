@@ -1,13 +1,16 @@
-TITLE::Help
-summary:: Documentation home
-categories::Help
+title:: Help
+summary:: documentation home
+categories:: Help
 
 SuperCollider is an audio server, programming language, and IDE for sound synthesis and algorithmic composition.
 
-NOTE:: link::Guides/News-3_13##News in SuperCollider version 3.13:: ::
+note::
+link::Guides/News-3_13##News in SuperCollider version 3.13::
+::
 
 
 section:: Search and browse
+
 definitionlist::
 ## link::Search:: || Search all documents and methods
 ## link::Browse:: || Browse all documents by categories
@@ -15,6 +18,7 @@ definitionlist::
 
 
 section:: Getting started
+
 
 These are useful starting points for getting help on SuperCollider:
 
@@ -39,6 +43,7 @@ definitionlist::
 
 
 section:: Licensing
+
 
 SuperCollider is free software published under the GPL: link::Other/Licensing::.
 

@@ -1,13 +1,17 @@
-class:: NumControlBuses
-summary:: Number of control busses.
+title:: NumControlBuses
+summary:: number of control busses
+categories:: UGens>Info
 related:: Classes/NumAudioBuses, Classes/NumBuffers, Classes/NumInputBuses, Classes/NumOutputBuses, Classes/NumRunningSynths
-categories::  UGens>Info
 
 
 description::
+
+
 Number of control busses.
 
 
 classmethods::
 
+
 method::ir
+

@@ -1,20 +1,25 @@
-class:: Gate
-summary:: Gate or hold.
+title:: Gate
+summary:: gates or holds.
+categories:: UGens>Triggers
 related:: Classes/Latch
-categories::  UGens>Triggers
 
 
 description::
+
+
 Allows input signal value to pass when gate is positive, otherwise holds last value.
 
 
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-The input signal.
+the input signal.
+
 argument::trig
-Gate - can be any signal. The output is held fixed when this is non-positive.
+gate - can be any signal. The output is held fixed when this is non-positive.
 
 
 examples::

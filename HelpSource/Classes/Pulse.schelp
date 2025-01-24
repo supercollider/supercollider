@@ -1,24 +1,31 @@
-class:: Pulse
-summary:: Band limited pulse wave.
+title:: Pulse
+summary:: band limited pulse wave
+categories:: UGens>Generators>Deterministic
 related:: Classes/LFPulse
-categories::  UGens>Generators>Deterministic
 
 
 description::
+
+
 Band limited pulse wave generator with pulse width modulation.
 
 
 classmethods::
 
+
 method::ar, kr
+
 argument::freq
-Frequency in Hertz.
+frequency in Hertz.
+
 argument::width
-Pulse width ratio from zero to one. 0.5 makes a square wave.
+pulse width ratio from zero to one. 0.5 makes a square wave.
+
 argument::mul
-Output will be multiplied by this value.
+output will be multiplied by this value.
+
 argument::add
-This value will be added to the output.
+this value will be added to the output.
 
 
 examples::

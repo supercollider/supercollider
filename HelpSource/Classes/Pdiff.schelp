@@ -1,10 +1,14 @@
-class:: Pdiff
+title:: Pdiff
 summary:: returns the difference between the current and previous values of an enclosed pattern
-related:: Classes/Pseries
 categories:: Streams-Patterns-Events>Patterns
+related:: Classes/Pseries
+
 
 description::
+
+
 A pattern that returns the difference between the current and previous values of an enclosed pattern.
+
 
 examples::
 

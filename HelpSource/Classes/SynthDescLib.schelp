@@ -1,14 +1,21 @@
-class:: SynthDescLib
+title:: SynthDescLib
 summary:: SynthDesc library
 categories:: Server>Nodes
 related:: Classes/SynthDesc
 
+
 description::
+
+
 See link::Classes/SynthDesc::
 
-INSTANCEMETHODS::
+
+instancemethods::
+
 
 method::add
+
 adds a SynthDesc to this SynthDescLib. Doing this triggers an update message with the key code::\synthDescAdded:: for any dependants this lib may have. See link::Classes/Object#Dependancy::.
+
 argument::synthdesc 
-The link::Classes/SynthDesc:: to be added.
+the link::Classes/SynthDesc:: to be added.

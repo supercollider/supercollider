@@ -1,8 +1,11 @@
-CLASS:: ListView
-summary:: A view displaying a list of text items.
+title:: ListView
+summary:: a view displaying a list of text items
 categories:: GUI>Views
 
+
 description::
+
+
 A view that displays a list of text items and allows one or more of them to be selected, depending on link::#-selectionMode::.
 
 In default selection mode (single item selection), clicking on an item will select it, and pressing the up or down arrow keys will move selection to previous or next item, respectively. Other selection modes allow more complex interaction.
@@ -10,11 +13,10 @@ In default selection mode (single item selection), clicking on an item will sele
 There is a difference between the concepts of link::#-value#current:: item, end link::#-selection#selected:: items. In default selection mode they will always be the same, but not so in other modes.
 
 
-CLASSMETHODS::
-
-PRIVATE:: key
+classmethods::
 
 
+private:: key
 
 
 INSTANCEMETHODS::
@@ -22,25 +24,35 @@ INSTANCEMETHODS::
 
 subsection:: Data
 
+
 method::items
+
 	The list of items displayed by the view.
 
 	argument::
 		An Array of Strings, each String defining the text to represent an item.
 
+
 method::clear
+
     Removes all items.
 
+
 method::value
+
 	The index of the current item, or code::nil:: when there is no current item. Note that this may be different than link::#-selection:: when link::#-selectionMode:: allows multiple items to be selected.
 
 	argument::
 		An Integer or code::nil::.
 
+
 method::valueAction
+
 	Sets link::#-value:: and triggers the link::#-action::.
 
+
 method::selection
+
 	An array of all selected indexes. When setting selection, either an array or a single integer may be used.
 
 	Note that this may be different than link::#-value:: when link::#-selectionMode:: allows multiple items to be selected. When setting selection in single-item selection mode, only the last index will remain selected.
@@ -48,25 +60,33 @@ method::selection
 
 subsection:: Appearance
 
+
 method::colors
+
 	The background colors of the items.
 
 	argument::
 		An Array of Colors, one Color for each item.
 
+
 method::stringColor
+
 	The color used to display all the text of all unselected items.
 
 	argument::
 		A Color.
 
+
 method::selectedStringColor
+
 	The color used to display the selected item's text.
 
 	argument::
 		A Color.
 
+
 method::hiliteColor
+
 	The color used to indicate the selected item (aside from the color of its text).
 
 	argument::
@@ -75,7 +95,9 @@ method::hiliteColor
 
 subsection:: Interaction
 
+
 method::selectionMode
+
 	The allowed mode of item selection, according to the following table:
 
 	table::
@@ -93,16 +115,24 @@ method::selectionMode
 
 subsection:: Actions
 
+
 method::action
+
 	The action object evaluated whenever the user changes the emphasis::current:: item, i.e. when link::#-value:: changes as a result of GUI interaction.
 
+
 method::selectionAction
-The action object evaluated whenever link::#-selection:: changes.
+
+the action object evaluated whenever link::#-selection:: changes.
+
 
 method::enterKeyAction
+
 	The action object evaluated whenever the user presses the Enter (Return) key.
 
+
 method::defaultKeyDownAction
+
 	Implements the default effects of key presses as follows:
 
 	table::
@@ -120,15 +150,21 @@ method::defaultKeyDownAction
 
 subsection:: Drag and drop
 
+
 method::defaultGetDrag
+
 	returns:: 
 		The link::#-value::.
 
+
 method::defaultCanReceiveDrag
+
 	returns:: 
 		code::true:: if the current drag data is a number.
 
+
 method::defaultReceiveDrag
+
 	Sets link::#-valueAction:: to the current drag data.
 
 
@@ -154,7 +190,9 @@ v = ListView(w, Rect(10, 10, 120, 70))
 
 subsection:: Sound Example
 
+
 Use ListView to switch filters:
+
 code::
 (
 s.waitForBoot({

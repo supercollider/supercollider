@@ -1,181 +1,334 @@
-TITLE:: Quarks
-class:: Quarks
-summary:: Package manager
+title:: Quarks
+title:: Quarks
+summary:: package manager
 categories:: Quarks
 related:: Guides/UsingQuarks, Classes/Quark
 
+
 description::
+
+
 See link::Guides/UsingQuarks:: for an introduction to the Quarks package system.
 
-CLASSMETHODS::
+
+classmethods::
+
 
 method::gui
-Show the interface for managing quarks
-returns:: QuarksGui
+
+shows the interface for managing quarks
+
+returns::
+
+QuarksGui
+
 
 method::install
-Will execute the link::Guides/UsingQuarks#Hooks#hooks:: code::\preInstall:: and code::\postInstall:: if defined.
+
+will execute the link::Guides/UsingQuarks#Hooks#hooks:: code::\preInstall:: and code::\postInstall:: if defined.
+
 argument::name
-Name of a quark that is listed in the directory,
+name of a quark that is listed in the directory,
 or the url of a git repository
 or the path (absolute or relative to current working directory) of a folder to install.
+
 argument::refspec
-Optional git refspec. By default it will install the latest version.
+optional git refspec. By default it will install the latest version.
 Optionally you can specify a tag: "tags/1.0.0"
 A sha commit: "15e6ea822a18d06b286c3f10918f83b8d797d939"
 "HEAD"
 code::nil:: (default)
-returns:: this
+
+returns::
+
+this
+
 
 method::installQuark
-Install a quark
+
+installs a quark
 Usually you use *install with a name, url or path.
+
 argument::quark
-returns:: this
+
+returns::
+
+this
+
 
 method::uninstall
-Will execute the link::Guides/UsingQuarks#Hooks#hooks:: code::\preUninstall:: and code::\postUninstall:: if defined.
+
+will execute the link::Guides/UsingQuarks#Hooks#hooks:: code::\preUninstall:: and code::\postUninstall:: if defined.
+
 argument::name
-Name (String) of a quark that is listed in the directory,
+name (String) of a quark that is listed in the directory,
 or url of a git repository
 or the path (absolute or relative to current working directory) of a folder to uninstall.
-returns:: this
+
+returns::
+
+this
+
 
 method::clear
-Uninstall all Quarks, by setting LanguageConfig.installedPaths to empty.
-returns:: this
+
+uninstall all Quarks, by setting LanguageConfig.installedPaths to empty.
+
+returns::
+
+this
+
 
 method::addFolder
+
 argument::path
-In addition to the default downloaded-quarks
+in addition to the default downloaded-quarks
 add folders that contain quarks to offer on the menu for installation.
 These may be private quarks, cloned working copies or folders where you have manually downloaded quarks.
-NOTE:: The argument should be a path to a directory emphasis::containing quark directories::. It should emphasis::not:: be an isolated quark directory by itself. Users are discouraged from scattering quark directories in isolated locations. ::
-returns:: this
+
+note::
+The argument should be a path to a directory emphasis::containing quark directories::. It should emphasis::not:: be an isolated quark directory by itself. Users are discouraged from scattering quark directories in isolated locations.
+::
+
+returns::
+
+this
+
 
 method::all
-All Quarks whether downloaded or installed or not. Includes any Quarks that were installed by path.
-returns:: Array of Quarks
+
+all Quarks whether downloaded or installed or not. Includes any Quarks that were installed by path.
+
+returns::
+
+Array of Quarks
+
 
 method::installed
-All currently installed Quarks
-returns:: Array of Quarks
+
+all currently installed Quarks
+
+returns::
+
+Array of Quarks
+
 
 method::isInstalled
+
 argument::name
-Name, url or path
-returns:: Boolean
+name, url or path
+
+returns::
+
+Boolean
+
 
 method::save
-Saves the currently installed quarks to a file as a list of urls and refspecs.
+
+saves the currently installed quarks to a file as a list of urls and refspecs.
+
 argument::path
 path of file to save to
-returns:: this
+
+returns::
+
+this
+
 
 method::load
+
 clears all installed quarks and load a list from a file.
 Relative paths in the file are resolved relative to the file itself.
 eg. ./classes/my-quark
 Unix style tildes (~/supercollider/quarks/my-quark) resolve to the user's home directory, even on Windows.
 By convention the file is called quarks.txt
+
 argument::path
 path of file to load. May contain ~ or relative paths (root is current working directory)
+
 argument::done
 function to be evaluated when loading is done
 
-returns:: this
+returns::
+
+this
+
 
 method::update
+
 runs 'git pull' on the checked out copy of the quark. The gui provides a more robust way to do updates.
 Will execute the link::Guides/UsingQuarks#Hooks#hooks:: code::\preUpdate:: and code::\postUpdate:: if defined.
+
 argument::name
 name of quark
-returns:: this
+
+returns::
+
+this
+
 
 method::openFolder
+
 opens the downloaded-quarks folder
-returns:: this
+
+returns::
+
+this
+
 
 method::folder
-Path of the downloaded-quarks folder where Quarks are cloned to before installing.
-returns:: path
+
+path of the downloaded-quarks folder where Quarks are cloned to before installing.
+
+returns::
+
+path
+
 
 method::checkForUpdates
-Scan through all downloaded, git-repository quarks and download any updates. This uses teletype::git fetch::; updates will be retrieved but not applied to the working copy (i.e., no visible change to the environment). After this, repositories will be aware of new branches and version tags.
+
+scan through all downloaded, git-repository quarks and download any updates. This uses teletype::git fetch::; updates will be retrieved but not applied to the working copy (i.e., no visible change to the environment). After this, repositories will be aware of new branches and version tags.
 
 This will take several seconds per quark. The SC interpreter will be unresponsive during each individual quark update.
+
 argument::done
 (Optional) A function to evaluate after all quarks have been checked.
+
 argument::quarkAction
 (Optional) A function to evaluate emphasis::before:: checking each individual quark. This function receives the Quark object as an argument, so you can use it, for instance, to print the quark name and have a running status update in the post window: code::Quarks.checkForUpdates(quarkAction: { |quark| "Updating %\n".postf(quark.name) });::.
 
+
 method::fetchDirectory
-Private.
+
+private.
 Fetches the directory listing into downloaded-quarks/quarks
 If a local copy already exists and it is not a git repo then this is used instead.
+
 argument::force
 (Boolean)
 Forces fetch. By default it is fetched once per session. Recompiles the class library to fetch it again, or
 calls code::Quarks.fetchDirectory(true):: to force it.
-returns:: this
+
+returns::
+
+this
+
 
 method::classesInPackage
+
 returns the Classes that are defined in the Quark or package.
+
 argument::packageName
 name of quark or any folder in Extensions or Common.
 "Common" is a package that refers to the standard library.
-returns:: Array of Classes
+
+returns::
+
+Array of Classes
+
 
 method::link
+
 adds the path to LanguageConfig.installedPaths.
 private
+
 argument::path
-returns:: this
+
+returns::
+
+this
+
 
 method::unlink
+
 removes a path from LanguageConfig.installedPaths.
 private
+
 argument::path
-returns:: this
+
+returns::
+
+this
+
 
 method::initClass
+
 private
-returns:: this
+
+returns::
+
+this
+
 
 method::findQuarkURL
+
 private
+
 argument::name
-returns:: this
+
+returns::
+
+this
+
 
 method::directoryUrl
-The URL of the directory.txt file
-returns:: this
+
+the URL of the directory.txt file
+
+returns::
+
+this
+
 
 method::directory
-The community contributed Quarks directory. Fetched from the directoryUrl
+
+the community contributed Quarks directory. Fetched from the directoryUrl
 and parsed.
-returns:: Dictionary[name->url@refspec]
+
+returns::
+
+Dictionary[name->url@refspec]
+
 
 method::asAbsolutePath
-Helper method to resolve paths to absolute paths.
+
+helper method to resolve paths to absolute paths.
+
 argument::path
+
 argument::relativeTo
 optional root for resolving relative paths
-returns:: absolute path
+
+returns::
+
+absolute path
+
 
 method::quarkNameAsLocalPath
+
 private
+
 argument::name
 quark name, path or git url.
-returns:: absolute path where the Quark is
+
+returns::
+
+absolute path where the Quark is
+
 
 method::at
+
 private. gets or creates a Quark by name, storing it in a central cache.
+
 argument::name
-returns:: Quark
 
-PRIVATE:: prReadDirectoryFile
+returns::
+
+Quark
+
+private:: prReadDirectoryFile
 
 
+instancemethods::
 
-INSTANCEMETHODS::
+

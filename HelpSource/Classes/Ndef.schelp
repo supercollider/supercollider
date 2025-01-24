@@ -1,9 +1,12 @@
-class:: Ndef
+title:: Ndef
 summary:: node proxy definition
 categories:: JITLib>NodeProxy, Live Coding
 related:: Classes/ProxySpace, Classes/Tdef
 
+
 description::
+
+
 Ndef registers synths by key. All accesses to the registered synths go through the Ndef class via that key. Registered synths can be replaced with other synths while playing. A synth and its replacement can automatically crossfade and the replacement time can be quantized.
 
 Ndef is a reference to a proxy, forms an alternative to link::Classes/ProxySpace::. All methods are inherited from link::Classes/NodeProxy::.
@@ -35,22 +38,28 @@ Ndef.clear(3); // clear all after 3 seconds
 ::
 
 
-ClassMethods::
+classmethods::
 
-private::initClass
+
+private:: initClass
 
 
 subsection:: Creation
 
+
 method::new
+
 returns a new node proxy and store it in a global ProxySpace under the key. If there is already an Ndef there, replace its object with the new one. The object can be any supported class, see link::Classes/NodeProxy#Supported sources:: help. Internally, all instances are kept in a link::Classes/ProxySpace::. The link::Classes/EnvironmentRedirect#dispatch:: function is called when the source is set.
+
 argument::key
 the name of the proxy (usually a symbol). If only the key is given and no object, it returns the proxy object:
+
 code::
 Ndef(\x) // get the proxy
 ::
 
 If key is an association, it is interpreted as strong::key -> server name::. (order changed in SC3.3 !). If no name is given, it uses the default server that was default when Ndef was first called. (to change it, see link::#*defaultServer::).
+
 argument::object
 an object
 
@@ -58,35 +67,50 @@ code::
 Ndef(\x, { Dust.ar }); // returns the proxy and set the source object.
 ::
 
+
 method::ar
+
 equivalent to code::*new(key).ar(numChannels, offset):: (see link::Classes/BusPlug#-ar::)
 
+
 method::kr
+
 equivalent to code::*new(key).kr(numChannels, offset):: (see link::Classes/BusPlug#-kr::)
 
+
 method::clear
+
 clears all proxies
 
+
 method::defaultServer
+
 sets the default server (default: code::Server.default::)
 
+
 method::all
+
 returns the dictionary of all servers, pointing to proxyspaces with Ndefs for each.
 
 code::
 Ndef.all;
 ::
 
+
 method::dictFor
+
 returns the proxyspace for a given server.
 
 code::
 Ndef.dictFor(s);
 ::
 
-InstanceMethods::
+
+instancemethods::
+
 
 method::proxyspace
+
 returns the proxyspace for this instance
 
 code::
@@ -95,12 +119,15 @@ Ndef(\x).proxyspace
 
 
 subsection:: Setting default parameters
+
+
 Behind every Ndef there is one single instance of link::Classes/ProxySpace:: per server used (usually just the one for the default server). This ProxySpace keeps default values for the proxies that can be set. This can be done by:
 
 code::
 // set default quant
 Ndef(\x).proxyspace.quant = 1.0;
 ::
+
 The other values that can be set in such a way are: code::clock, fadeTime, quant, reshaping, awake::.
 
 
@@ -150,10 +177,13 @@ Ndef(\sound).stop;
 
 
 subsection:: Reserved parameters
+
+
 Three parameters are automatically specified if they don't exist in a given UGen function. You can override their use: code::[\out, \gate, \fadeTime]::
 
 
 subsection:: Specifying your own envelope
+
 
 If a UGen function that is passed to the proxy has its own envelope, and if this envelope can free the synth, the node proxy uses this envelope instead of making its own. If you provide a code::fadeTime:: argument, the proxy's fadeTime will be used.
 
@@ -197,6 +227,7 @@ Ndef.clear(3);		// fade out and clear all Ndefs
 
 
 subsection:: Embedding multi-channel Patterns, playing Streams in parallel
+
 
 Controlling multi-channeled sequenced streams and having independent control over filtering and node ordering is a difficult topic in SuperCollider. However, using Ndefs (or their superclass link::Classes/NodeProxy:: or a link::Classes/ProxySpace::) may provide a convenient solution.
 
@@ -290,8 +321,10 @@ Pdef.clear;
 
 subsection:: Making Copies
 
+
 method::copy
-Because an Ndef is a unique instance for a given key, it can be copied only by supplying a new key.
+
+because an Ndef is a unique instance for a given key, it can be copied only by supplying a new key.
 See also: link::Classes/NodeProxy#-copy::.
 
 code::
@@ -299,11 +332,13 @@ Ndef(\x, { SinOsc.ar(Rand(500, 900)) * 0.1 }).play;
 Ndef(\x).copy(\y);
 Ndef(\y).play;
 ::
+
 argument::newKey
-A valid new key, usually a link::Classes/Symbol::
+a valid new key, usually a link::Classes/Symbol::
 
 
 subsection:: Recursion
+
 
 Ndefs can be used recursively. A structure like the following works:
 
@@ -358,6 +393,7 @@ NdefMixer(s);
 
 
 subsection:: Using Associations
+
 
 For a complete list, see link::Classes/NodeProxy::, and link::Reference/NodeProxy_roles::
 

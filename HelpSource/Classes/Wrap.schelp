@@ -1,23 +1,29 @@
-class:: Wrap
-summary:: Wrap a signal outside given thresholds.
+title:: Wrap
+summary:: wraps a signal outside given thresholds
+categories:: UGens>Maths
 related:: Classes/Clip, Classes/Fold
-categories::  UGens>Maths
 
 
 description::
+
+
 This differs from the  link::Classes/BinaryOpUGen::  link::Overviews/Methods#wrap2#wrap2:: in that it
 allows one to set both low and high thresholds.
 
 
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-Signal to be wrapped.
+signal to be wrapped.
+
 argument::lo
-Low threshold of wrapping.
+low threshold of wrapping.
+
 argument::hi
-High threshold of wrapping.
+high threshold of wrapping.
 
 
 examples::

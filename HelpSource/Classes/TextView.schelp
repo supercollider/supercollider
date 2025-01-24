@@ -1,8 +1,11 @@
-CLASS:: TextView
-summary:: A view displaying editable formatted text
+title:: TextView
+summary:: a view displaying editable formatted text
 categories:: GUI>Views
 
+
 description::
+
+
 TextView consists of an area where strong::multi-line text:: can be typed in and edited.
 
 Using the view's methods, the text can be formatted: different strong::font:: and strong::text color:: can be applied to parts of the text. Text can also be inserted, removed, and selected programmatically.
@@ -10,18 +13,20 @@ Using the view's methods, the text can be formatted: different strong::font:: an
 The view can strong::open text documents:: and load from them both strong::plain text::, as well as formatted text in strong::HTML::, although it can not save the text back to files. However, you can get the contents of the view using the link::#-string:: method and then implement saving on your own, but the -string method will only return plain text, regardless of how the contents of the view are formatted.
 
 
-CLASSMETHODS::
-
-PRIVATE:: key
+classmethods::
 
 
+private:: key
 
-INSTANCEMETHODS::
+
+instancemethods::
 
 
 subsection:: Text and Formatting
 
+
 method::open
+
 	Opens a file at code::path:: and loads text from it.
 
 	The file can be in plain text or HTML (or RTF, in Cocoa GUI) format. Note, however, that saving formatted text in the view is not supported.
@@ -31,7 +36,9 @@ method::open
 	argument::path
 		A String.
 
+
 method::string
+
 	The entire displayed contents of the view, as plain text.
 
 	Setting this variable will replace any current contents of the view.
@@ -39,7 +46,9 @@ method::string
 	argument::
 		A String.
 
+
 method::setString
+
 	Inserts the code::string:: at code::start:: position, replacing code::size:: amount of following characters. If code::size:: is 0, the text will be inserted without any characters being removed.
 
 	argument::string
@@ -49,16 +58,20 @@ method::setString
 	argument::size
 		An Integer amount of characters to be replaced.
 
+
 method::currentLine
+
 	The plain text of the line at text cursor.
 
 
 subsection:: Formatting
 
+
 TextView supports text font and color, and can syntax colorize sclang code.
 
-note::The formatting is reset when the string changes.::
-
+note::
+The formatting is reset when the string changes.
+::
 
 code::
 (
@@ -81,6 +94,7 @@ fork {
 
 
 method::setFont
+
 	Applies the code::font:: to code::size:: amount of characters following the code::start:: position.
 
 	argument::font
@@ -90,7 +104,9 @@ method::setFont
 	argument::size
 		An Integer amount of characters.
 
+
 method::setStringColor
+
 	Applies the code::color:: to code::size:: amount of characters following the code::start:: position.
 
 	argument::color
@@ -101,8 +117,8 @@ method::setStringColor
 		An Integer amount of characters.
 
 
-
 method::syntaxColorize
+
 	Applies colors to text throughout the entire contents of the view, according to the SuperCollider language syntax highlighting scheme.
 
 code::
@@ -117,7 +133,9 @@ t.front;
 
 subsection:: Text Selection
 
+
 method::selectedString
+
 	The plain text contained in the current selection.
 
 	When getting this variable and there is no selection, the entire line at text cursor is returned (equivalent to link::#-currentLine::).
@@ -126,23 +144,32 @@ method::selectedString
 
 	argument::
 		A String.
+
 	returns:: 
 		A String.
 
+
 method::selectionStart
+
 	The starting position of the selection. If no text is selected, this variable represents the cursor position.
 
 	returns:: 
 		An Integer position within the text, in characters.
 
+
 method::selectionSize
+
 	The size of the current selection.
 
 	returns:: 
 		An Integer amount of characters - 0 if no text is selected.
 
+
 method::select
-	note:: Not available in strong::Cocoa GUI::. ::
+
+	note::
+	Not available in strong::Cocoa GUI::.
+	::
 
 	Selects code::size:: amount of characters following the code::start:: position. The cursor will remain at the end of the new selection.
 
@@ -154,13 +181,17 @@ method::select
 
 subsection:: Appearance
 
+
 method::font
+
 	The default font of the entire text. This font applies to any text to which a font has not been applied using link::#-setFont::.
 
 	argument::
 		A Font.
 
+
 method::stringColor
+
 	The default color of the entire text. This color applies to any text to which a color has not been applied using link::#-setStringColor::.
 
 note::
@@ -174,22 +205,28 @@ t = TextView(nil, Rect(800, 50, 500, 400))
 .front;
 )
 ::
+
 ::
 
 
 method::tabWidth
+
 	The width of tab characters as they are displayed.
 
 
 subsection:: Interaction
 
+
 method::editable
+
 	Whether the contents of the view are editable, i.e. the text can be typed in and deleted by the user.
 
 	argument::
 		A Boolean.
 
+
 method::enterInterpretsSelection
+
 	Whether the selection will be interpreted and invoked as SuperCollider code when Ctrl/Cmd/Shift + Enter key combination is pressed.
 
 	Defaults to code::false::.
@@ -197,7 +234,9 @@ method::enterInterpretsSelection
 	argument::
 		A Boolean.
 
+
 method::usesTabToFocusNextView
+
 	Whether the tab key will - instead of inserting a tab character into the text - switch focus to the next view (as usual for other views).
 
 	Defaults to code::false::.
@@ -205,7 +244,9 @@ method::usesTabToFocusNextView
 	argument::
 		A Boolean.
 
+
 method::hasHorizontalScroller
+
 	Whether the horizontal scroller is shown.
 
 	Note that if link::#-autohidesScrollers:: is code::true:: the scroller may be hidden despite this variable being set to code::true::. Since the TextView typically wraps text into the next line when a line reaches the edge of the view, the horizontal scroller may never be shown, unless link::#-autohidesScrollers:: is code::false::.
@@ -215,7 +256,9 @@ method::hasHorizontalScroller
 	argument::
 		A Boolean.
 
+
 method::hasVerticalScroller
+
 	Whether the vertical scroller is shown.
 
 	Note that if link::#-autohidesScrollers:: is code::true:: the scroller may be hidden despite this variable being set to code::true::.
@@ -225,7 +268,9 @@ method::hasVerticalScroller
 	argument::
 		A Boolean.
 
+
 method::autohidesScrollers
+
 	Whether each of the scrollers will be automatically hidden if there is no use for it, i.e. the content is not scrollable in the direction of the scroller.
 
 	If link::#-hasHorizontalScroller:: or link::#-hasVerticalScroller:: is code::false::, the respective scroller will always be hidden, regardless of this variable.
@@ -238,17 +283,19 @@ method::autohidesScrollers
 
 subsection:: Drag and Drop
 
-note:: Default drag-and-drop behavior of TextView is not defined in standard SC methods, but in the view implementation instead (except for link::#-defaultGetDrag::). It may or may not be overridable by adding your own handlers (see link::Classes/View#Drag and drop::), depending on the GUI kit in use.
+note::
+Default drag-and-drop behavior of TextView is not defined in standard SC methods, but in the view implementation instead (except for link::#-defaultGetDrag::). It may or may not be overridable by adding your own handlers (see link::Classes/View#Drag and drop::), depending on the GUI kit in use.
 ::
 
 Dragging from TextView will give the selected text in a String as drag data, while dropping will accept any object and insert it link::Classes/Object#-asString#as String:: at the drop location.
 
 You can also drag files from outside SuperCollider onto a TextView, and it will insert their URLs at the drop location.
 
+
 method::defaultGetDrag
+
 	returns:: 
 		The link::#-selectedString::.
-
 
 
 examples::

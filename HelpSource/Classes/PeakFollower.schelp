@@ -1,10 +1,12 @@
-class:: PeakFollower
-summary:: Track peak signal amplitude.
+title:: PeakFollower
+summary:: tracks peak signal amplitude
+categories:: UGens>Analysis>Amplitude
 related:: Classes/Peak
-categories::  UGens>Analysis>Amplitude
 
 
 description::
+
+
 Outputs the peak amplitude of the signal received at the input. If level
 is below maximum, the level decreases by the factor given in
 code::decay:: .
@@ -13,16 +15,19 @@ code::decay:: .
 Internally, the absolute value of the signal is used, to prevent
 underreporting the peak value if there is a negative DC offset. To obtain
 the minimum and maximum values of the signal as is, use the
-link::Classes/RunningMin::  and  link::Classes/RunningMax::  UGens.
+link::Classes/RunningMin:: and link::Classes/RunningMax::  UGens.
 
 
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-The input signal.
+the input signal.
+
 argument::decay
-Decay factor.
+decay factor.
 
 
 examples::

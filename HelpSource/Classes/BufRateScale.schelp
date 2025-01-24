@@ -1,26 +1,35 @@
-class:: BufRateScale
-summary:: Buffer rate scaling in respect to server samplerate.
+title:: BufRateScale
+summary:: Buffer rate scaling in respect to server samplerate
+categories:: UGens>Buffer>Info
 related:: Classes/BufChannels, Classes/BufDur, Classes/BufFrames, Classes/BufSampleRate, Classes/BufSamples
-categories::  UGens>Buffer>Info
 
 
 description::
+
+
 returns a ratio by which the playback of a soundfile is to be scaled.
+
 
 classmethods::
 
+
 method::kr, ir
+
 argument::bufnum
 Buffer index.
 
-returns:: a ratio by which the playback of a soundfile is to be scaled.
+returns::
+
+a ratio by which the playback of a soundfile is to be scaled.
 
 discussion::
+
 warning::
-The  code::.ir::  method is not the safest choice.
+The  code::.ir:: method is not the safest choice.
 Since a buffer can be reallocated at any time, using
 code::.ir::  will not track the changes.
 ::
+
 
 examples::
 

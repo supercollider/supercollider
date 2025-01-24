@@ -1,9 +1,12 @@
-class:: SynthDef
-summary:: Client-side representation of a synth definition
+title:: SynthDef
+summary:: client-side representation of a synth definition
 categories:: Server>Abstractions
 related:: Classes/Synth, Reference/Synth-Definition-File-Format, Classes/SynthDesc
 
+
 description::
+
+
 The server application uses synth definitions as templates for creating link::Classes/Synth:: nodes.
 (Methods such as link::Classes/Function#-play::, etc. are simply conveniences which automatically create such a def.)
 The SynthDef class encapsulates the client-side representation of a given def, and provides methods for creating new defs, writing them to disk, and streaming them to a server.
@@ -15,6 +18,7 @@ Some insights about common SynthDef issues can be found on the FAQ link::Guides/
 
 subsection:: UGen Graph Functions and Special Argument Forms
 
+
 The core of a def is its link::Classes/UGen##unit generator:: graph function.
 This is an instance of link::Classes/Function:: which details how the def's unit generators are interconnected, its inputs and outputs, and what parameters are available for external control.
 In a synth based on the def, arguments to the function will become instances of link::Classes/Control::.
@@ -22,6 +26,7 @@ These can have default values, or can be set at the time the synth is created.
 After creation they will be controllable through link::Classes/Node::'s code::set:: and code::setn:: methods, or the n_set and n_setn link::Guides/NodeMessaging##OSC:: messages.
 
 There are four special types of arguments, which are treated differently:
+
 definitionlist::
 ## audio rate
 || Arguments that begin with "a_" (e.g. code::a_input::), or that are specified as code::\ar:: in the def's rates argument (see below), will be able to read an audio rate bus when mapped to it with code::/n_mapa::.
@@ -40,6 +45,7 @@ One of these, 'gate' when used to control the gate input of an link::Classes/Env
 
 
 subsection:: Arrayed controls
+
 
 In some cases, it is useful to send a group of values to a single control name, for instance, code::aSynth.set(\freqs, [300, 400, 500])::, or for passing envelopes at Synth instantiation. This requires an emphasis::arrayed control:: to be defined in the SynthDef.
 
@@ -61,12 +67,17 @@ See the example under link::#Array Arguments::.
 
 subsection:: Static versus Dynamic Elements
 
+
 It is important to understand that although a single def can provide a great deal of flexibility through its arguments, etc., it is nevertheless a static entity.
 A def's link::Classes/UGen:: graph function (and the SC code within it) is evaluated only when the def is created.
 Thus statements like while, do, collect etc. will have no further effect at the time the def is used to create a Synth, and it is important to understand that a UGen graph function should not be designed in the same way as functions in the language, where multiple evaluations can yield different results. It will be evaluated once and only once.
-note:: code::if:: is implemented as a linear signal crossfade when the receiver is an UGen ::
+
+note::
+code::if:: is implemented as a linear signal crossfade when the receiver is an link::Classes/UGen::.
+::
 
 There are other ways of achieving similar results, however, often using UGens such as Rand. For example, the following def will have a single randomly generated frequency, which will be the same for every Synth based on it:
+
 code::
 (
 SynthDef(\help_notRand, { |out|
@@ -78,7 +89,9 @@ SynthDef(\help_notRand, { |out|
 a = Synth(\help_notRand);
 b = Synth(\help_notRand); // the same freq as a
 ::
+
 This one on the other hand will have a different random freq for each Synth created:
+
 code::
 (
 SynthDef(\help_isRand, { |out|
@@ -92,19 +105,27 @@ b = Synth(\help_isRand); // a different randomly selected freq
 ::
 
 
-ClassMethods::
+classmethods::
+
+
 private:: initClass, prNew
 
+
 method::new
+
 creates a SynthDef instance, evaluate the ugenGraphFunc and build the ugenGraph.
+
 argument::name
-A link::Classes/String:: or link::Classes/Symbol:: (i.e. "name" or \name). This name will be used to refer to the SynthDef when creating a Synth based upon it, and should be unique.
+a link::Classes/String:: or link::Classes/Symbol:: (i.e. "name" or \name). This name will be used to refer to the SynthDef when creating a Synth based upon it, and should be unique.
+
 argument::ugenGraphFunc
-An instance of Function specifying how the def's UGens are interconnected. See the discussion above for information on how the Function's arguments are specified.
+an instance of Function specifying how the def's UGens are interconnected. See the discussion above for information on how the Function's arguments are specified.
+
 argument::rates
-An optional Array of specifications for the ugenGraphFunc's arguments. The order corresponds to the order of arguments. See the examples below to see how these are used.
+an optional Array of specifications for the ugenGraphFunc's arguments. The order corresponds to the order of arguments. See the examples below to see how these are used.
 
 A specification can be:
+
 definitionlist::
 ## nil/zero || A standard control rate link::Classes/Control:: is created.
 ## \ar || An audio rate link::Classes/AudioControl:: is created.
@@ -113,18 +134,24 @@ smooth transitions between different values. t_ and i_ args cannot be lagged.
 ## \ir || The Control can be set only at creation ('initial rate'). See discussion above.
 ## \tr || The Control is used as a trigger. See discussion above.
 ::
+
 argument::prependArgs
-An optional link::Classes/Array:: of objects which will be passed as the first arguments to the ugenGraphFunc when it is evaluated. Arguments which receive values in this way will not be converted to instances of link::Classes/Control::. See the code::wrap:: example below for an example of how this can be used.
+an optional link::Classes/Array:: of objects which will be passed as the first arguments to the ugenGraphFunc when it is evaluated. Arguments which receive values in this way will not be converted to instances of link::Classes/Control::. See the code::wrap:: example below for an example of how this can be used.
+
 argument::variants
-An optional link::Classes/Event:: containing default argument settings. These can override the defaults specified in the ugenGraphFunc. When creating a Synth a variant can be requested by appending the defName argument in the form  'name.variant' or "name.variant". See example below.
+an optional link::Classes/Event:: containing default argument settings. These can override the defaults specified in the ugenGraphFunc. When creating a Synth a variant can be requested by appending the defName argument in the form  'name.variant' or "name.variant". See example below.
+
 argument::metadata
-An optional link::Classes/Event:: containing additional, user-defined information that is relevant to the use of the SynthDef in the client. The SynthDef itself is sent to the server for audio rendering; metadata are strictly client-side descriptive information. Currently the 'specs' key in the event is reserved for link::Classes/ControlSpec::s to be associated with SynthDef arguments (this is useful for automatic GUI construction). Metadata can be persisted to disk and loaded automatically as part of a SynthDesc. See the link::Classes/SynthDesc:: help file for more details.
+an optional link::Classes/Event:: containing additional, user-defined information that is relevant to the use of the SynthDef in the client. The SynthDef itself is sent to the server for audio rendering; metadata are strictly client-side descriptive information. Currently the 'specs' key in the event is reserved for link::Classes/ControlSpec::s to be associated with SynthDef arguments (this is useful for automatic GUI construction). Metadata can be persisted to disk and loaded automatically as part of a SynthDesc. See the link::Classes/SynthDesc:: help file for more details.
 
 
 method::wrap
-Wraps a function within an enclosing synthdef.
+
+wraps a function within an enclosing synthdef.
+
 discussion::
 Arguments to the wrapped function are automatically promoted to be SynthDef controls, using the same rules applied to arguments of the main UGen function. For a very simple example:
+
 code::
 d = SynthDef(\demoWrapping, { |out|
 	Out.ar(out, SynthDef.wrap({ |freq| SinOsc.ar(freq) }))
@@ -132,6 +159,7 @@ d = SynthDef(\demoWrapping, { |out|
 
 d.allControlNames;
 ::
+
 Prints: code:: [ControlName  P 0 out control 0, ControlName  P 1 freq control 0] ::.
 
 The outer function declares the argument 'out', and the wrapped function has 'freq' as its argument. The resulting SynthDef has both arguments as controls, exactly as if the outer function included both as arguments.
@@ -140,26 +168,38 @@ The rates array behaves as described earlier. code::PrependArgs:: allows values 
 
 This is very useful for mass-producing SynthDefs that have a common "shell" defining features such as enveloping or triggering mechanisms that apply to different subgraphs of unit generators. The common features need be written only once; the UGens that differ between the SynthDefs are plugged into the supporting architecture.
 
+
 method::synthDefDir
+
 gets/sets the default directory to which defs are written.
 
+
 method::removeAt
+
 removes the synthdef code::name:: from the SynthDescLib named code::libname:: and from its servers.
 
+
 method::writeOnce
+
 creates a new SynthDef. It is written to disk only if a def file with this name does not already exist. Note that this will not check for differences, so you will need to delete the defFile to get it to rebuild. Default for dir is to use the path specified by code::SynthDef.synthDefDir::.
 
-warning:: code::SynthDef.writeOnce:: is a legacy method. Its main use was to improve the efficiency of SynthDefs in quarks, but this is superseded by link::Classes/SynthDescLib::. Being completely impervious to changes, it can cause difficult-to-diagnose bugs (such as having version 1.1 of a quark but with a SynthDef stuck in version 1.0). Quark developers should now use link::#-add:: instead.
+warning::
+code::SynthDef.writeOnce:: is a legacy method. Its main use was to improve the efficiency of SynthDefs in quarks, but this is superseded by link::Classes/SynthDescLib::. Being completely impervious to changes, it can cause difficult-to-diagnose bugs (such as having version 1.1 of a quark but with a SynthDef stuck in version 1.0). Quark developers should now use link::#-add:: instead.
 
-The exception is very large SynthDefs, where you have a choice between link::#-writeDefFile:: and this method. Even then, the efficiency savings of code::writeOnce:: are only in disk I/O -- both methods build the SynthDef every time they run. ::
+The exception is very large SynthDefs, where you have a choice between link::#-writeDefFile:: and this method. Even then, the efficiency savings of code::writeOnce:: are only in disk I/O -- both methods build the SynthDef every time they run.
+::
 
 
 method::warnAboutLargeSynthDefs
-When a SynthDef is too large to be sent to a local server in a standard OSC message, it is written to disk and the server loads it from there instead. If code::warnAboutLargeSynthDefs:: is set to code::true::, it will warn that this is happening. There will always be a warning for remote servers.
 
-InstanceMethods::
+when a SynthDef is too large to be sent to a local server in a standard OSC message, it is written to disk and the server loads it from there instead. If code::warnAboutLargeSynthDefs:: is set to code::true::, it will warn that this is happening. There will always be a warning for remote servers.
+
+
+instancemethods::
+
 
 method::add
+
 adds the synthdef to the link::Classes/SynthDescLib:: specified by libname, and sends it to the library's servers. No defFile is written; all operations take place in memory.
 
 discussion::
@@ -179,55 +219,82 @@ SynthDef(\help_synth, { |out, freq = 800, sustain = 1, amp = 0.1|
 )
 ::
 
+
 method::name
+
 returns this def's name.
 
+
 method::func
+
 returns this def's ugenGraphFunc.
 
+
 method::variants
+
 returns an Event containing this def's variants.
 
+
 method::allControlNames
-An array of link::Classes/ControlName::'s for the controls.
+
+an array of link::Classes/ControlName::'s for the controls.
+
 
 method::specs
-A link::Classes/Dictionary:: of link::Classes/ControlSpec::s for a SynthDef. Equivalent to: code::d.metadata[\specs]::
+
+a link::Classes/Dictionary:: of link::Classes/ControlSpec::s for a SynthDef. Equivalent to: code::d.metadata[\specs]::
 
 
 subsection:: Special purpose methods
+
+
 (for most purposes, the method add is recommended)
 
+
 method::writeDefFile
+
 writes the def as a file called name.scsyndef in a form readable by a server. Default for dir is synthdefs/. Defs stored in the default directory will be automatically loaded by the local and internal Servers when they are booted.
 
+
 method::load
+
 writes the defFile and send a message to server to load this file. When this asynchronous command is completed, the completionMessage (a valid OSC message) is immediately executed by the server. Default for dir is synthdefs/.
 
+
 method::send
+
 compiles the def and send it to server without writing to disk (thus avoiding that annoying SynthDef buildup). When this asynchronous command is completed, the completionMessage (a valid OSC message) is immediately executed by the server.
 
+
 method::store
+
 writes the defFile and store it in the SynthDescLib specified by libname, and send a message to the library's server to load this file. When this asynchronous command is completed, the completionMessage (a valid OSC  message) is immediately executed by the server. Default for libname is \global, for dir is synthdefs/. This is needed to use defs with the event stream system. See Streams and Pattern.
+
 argument::libname
 name of the link::Classes/SynthDescLib::
+
 argument::dir
+
 argument::completionMsg
+
 argument::mdPlugin
 (optional) The metadata plug-in class that will be used to persist metadata. If not supplied, the default plug-in is used. See the SynthDesc help file for details.
 
 
 method::play
-A convenience method which compiles the def and sends it to target's server. When this asynchronous command is completed, it creates one synth from this definition, using the argument values specified in the Array args.  For a list of valid addActions see link::Classes/Synth::. The default is code::\addToHead::.
-returns:: a corresponding Synth object.
 
+a convenience method which compiles the def and sends it to target's server. When this asynchronous command is completed, it creates one synth from this definition, using the argument values specified in the Array args.  For a list of valid addActions see link::Classes/Synth::. The default is code::\addToHead::.
 
+returns::
+
+a corresponding Synth object.
 
 
 examples::
 
 
 subsection:: Basic
+
 code::
 // Note that constructions like SynthDef(...) and Synth(...) are short for SynthDef.new(...), etc.
 // With SynthDef it is common to chain this with calls on the resulting instance,
@@ -258,6 +325,7 @@ x.free;
 
 
 subsection:: Argument Rates
+
 code::
 (
 SynthDef(\trigTest1, { |out, t_trig = 0, freq = 440| // t_trig creates a TrigControl
@@ -331,6 +399,7 @@ Pmono(\trigTest2, *[
 
 
 subsection:: Variants
+
 code::
 // create a def with some variants
 (
@@ -355,6 +424,7 @@ Synth('vartest.alpha', [\release, 3, \freq, 660]);
 
 
 subsection:: Array Arguments
+
 code::
 // freqs is defined as an arrayed control. This makes a multichannel Control of the same size.
 (
@@ -402,6 +472,7 @@ fork {
 
 
 subsection:: Wrapping Example: 'factory' production of effects defs
+
 code::
 // The makeEffect function below wraps a simpler function within itself and provides
 // a crossfade into the effect (so you can add it without clicks), control over wet
@@ -472,6 +543,7 @@ x.free;
 
 
 subsection:: common argument names: out and gate
+
 code::
 // arguments named 'out' and 'gate' are commonly used to specify an output bus and
 // EnvGen gate respectively. Although not required, using them can help with consistency
@@ -519,8 +591,11 @@ Pbind(
 
 
 subsection:: Inline ControlSpec definitions
+
+
 Sometimes, it can be clearer to specify a link::Classes/ControlSpec:: for a parameter at the point of its usage in a SynthDef, rather than elsewhere.
 Specs can be set either when contructing a link::Classes/NamedControl:: or as a property of a SynthDef argument.
+
 code::
 (
 ~def = SynthDef(\argumentExample, { |freq, amp|

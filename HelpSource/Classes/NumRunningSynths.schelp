@@ -1,16 +1,20 @@
-class:: NumRunningSynths
-summary:: Number of currently running synths.
+title:: NumRunningSynths
+summary:: number of currently running synths
+categories:: UGens>Info
 related:: Classes/NumAudioBuses, Classes/NumControlBuses, Classes/NumBuffers, Classes/NumInputBuses, Classes/NumOutputBuses
-categories::  UGens>Info
 
 
 description::
+
+
 Number of currently running synths.
 
 
 classmethods::
 
+
 method::ir
+
 
 examples::
 

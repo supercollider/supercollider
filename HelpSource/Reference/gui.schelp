@@ -1,10 +1,12 @@
 title:: gui
 categories:: GUI, Common methods
-summary:: Creates a Graphical User Interface
+summary:: creates a graphical user interface
 related:: Classes/ObjectGui
 
+
 method::gui
-The code::gui:: message is of common use in SC. It originated in the crucial library where it is used to create an link::Classes/ObjectGui:: or an ObjectGui subclass as part of a Model View Controller system.
+
+the code::gui:: message is of common use in SC. It originated in the crucial library where it is used to create an link::Classes/ObjectGui:: or an ObjectGui subclass as part of a Model View Controller system.
 
 The implementation and accepted arguments to .gui varies.  This helpfile explains the default behavior of Object and hence of all Object subclasses that haven't implemented their own .gui method. This helpfile and the implementation come from the original crucial library.
 
@@ -22,6 +24,7 @@ This means that any object can be .gui(ed) without knowing exactly what the obje
 
 section:: Argument conventions
 
+
 The convention as stated in crucial library states that the .gui method should accept parent and bounds as its arguments in the same manner as a View does.
 
 code::
@@ -36,6 +39,7 @@ This is the default implementation for Object, and is thus the implementation fo
 
 definitionlist::
 ## parent ||
+
 list::
 ##  a Window,
 ##  a FlowView
@@ -44,17 +48,21 @@ list::
 ##  VLayoutView
 ##  code::nil:: (which will create a Window with a FlowView on it) 
 ::
+
 ## bounds ||
+
 list::
 ## anything that responds to asRect:
 ## Nil - the gui will use its own default size
 ## Point - width @ height
 ::
+
 ::
 
 Usually the bounds are not specified.  The object's gui class first adds a container, lays its things inside that container and then shrinks the container to fit it. If you do specify a bounds, the container will be set to exactly that size.
 
 Add a view to a parent view (window)
+
 code::
 (
 	f = FlowView.new;
@@ -66,7 +74,8 @@ code::
 
 
 method::guiClass
-Each class can specify an associated guiClass, which is a subclass of ObjectGui.
+
+each class can specify an associated guiClass, which is a subclass of ObjectGui.
 Writing useful subclasses is the purpose of the ObjectGui system and many can be found in the crucial library.
 
 Examples specifying guiClass:

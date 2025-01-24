@@ -1,9 +1,14 @@
-TITLE:: InBus
-summary:: Return a range of channels from a bus, irrespective of node order
-categories::UGens>InOut
+title:: InBus
+summary:: returns a range of channels from a bus, irrespective of node order
+categories:: UGens>InOut
 related:: Classes/In, Classes/XIn, Classes/InFeedback, Classes/XInFeedback
 
-description::InBus provides a simple interface to the signal on a bus, crossfading between adjacent values.
+
+description::
+
+
+InBus provides a simple interface to the signal on a bus, crossfading between adjacent values.
+
 code::
 (
 b = Bus.control(s, 9); // nine channel control rate
@@ -16,22 +21,28 @@ b.setn([244, 737, 20, 271, 382, 172, 4, 2399, 251]);
 ::
 
 
-
-CLASSMETHODS::
+classmethods::
 
 
 method::ar, kr
-returns a new instance with the respective rate. If the bus rate doesn't match, the signal is converted. Multi channel arguments expand.
-argument::bus
-An instance of link::Classes/Bus::
-argument::numChannels
-Number of output channels
-argument::offset
-Offset to the starting index in the bus.
-argument::clip
-If clip is set to 'wrap', the indices into the bus will not be clipped to the last bus channel, but will wrap around.
 
-returns:: A UGen output, usually an array of UGens or, if the arguments are arrays, an array of arrays.
+returns a new instance with the respective rate. If the bus rate doesn't match, the signal is converted. Multi channel arguments expand.
+
+argument::bus
+an instance of link::Classes/Bus::
+
+argument::numChannels
+number of output channels
+
+argument::offset
+offset to the starting index in the bus.
+
+argument::clip
+if clip is set to 'wrap', the indices into the bus will not be clipped to the last bus channel, but will wrap around.
+
+returns::
+
+a UGen output, usually an array of UGens or, if the arguments are arrays, an array of arrays.
 
 
 INSTANCEMETHODS::

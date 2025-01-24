@@ -1,20 +1,29 @@
-class:: Pindex
+title:: Pindex
 summary:: pattern that indexes into an array
-related:: Classes/Pswitch
 categories:: Streams-Patterns-Events>Patterns>List>Indexing
+related:: Classes/Pswitch
+
 
 description::
+
+
 This allows an link::Classes/ArrayedCollection:: to be accessed within patterns.
 
-ClassMethods::
+
+classmethods::
+
 
 method::new
+
 argument::listPat
 the array. Can be a link::Classes/Pattern::.
+
 argument::indexPat
 the value to retrieve. Can be a link::Classes/Pattern::.
+
 argument::repeats
 specifies the number of repeats.
+
 
 examples::
 

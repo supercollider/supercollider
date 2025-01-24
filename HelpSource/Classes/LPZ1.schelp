@@ -1,26 +1,34 @@
-class:: LPZ1
-summary:: Two point average filter
+title:: LPZ1
+summary:: two point average filter
+categories:: UGens>Filters>Linear
 related:: Classes/HPZ1
-categories::  UGens>Filters>Linear
 
 
 description::
+
+
 A special case fixed filter. Implements the formula:
+
 code::
 out(i) = 0.5 * (in(i) + in(i-1))
 ::
+
 which is a two point averager.
 
 
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-The input signal.
+the input signal.
+
 argument::mul
-Output will be multiplied by this value.
+output will be multiplied by this value.
+
 argument::add
-This value will be added to the output.
+this value will be added to the output.
 
 
 examples::

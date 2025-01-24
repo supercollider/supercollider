@@ -1,20 +1,27 @@
-class:: PV_BinWipe
-summary:: combines low and high bins from two inputs.
+title:: PV_BinWipe
+summary:: combines low and high bins from two inputs
 categories:: UGens>FFT
 
+
 description::
+
+
 copies low bins from one input and the high bins of the other.
 
 
 classmethods::
 
+
 method::new
+
 argument::bufferA
 FFT buffer A.
+
 argument::bufferB
 FFT buffer B.
+
 argument::wipe
-Can range between -1 and +1.
+can range between -1 and +1.
 
 
 If

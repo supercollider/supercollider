@@ -1,16 +1,23 @@
-TITLE:: MainMenu
-summary:: A manager for sclang's application-level menu
+title:: MainMenu
+summary:: a manager for sclang's application-level menu
 categories:: GUI
 related:: Classes/MenuAction, Classes/ToolBar, Classes/MainMenu
 
+
 description::
+
+
 This class allows control over items displayed in the sclang application-level menu. Application-level menus may not exist depending on platform — in particular, macOS and some Linux window managers have it, but Windows does not. On platforms without this feature, the methods in this class simply don't do anything.
 
-note:: This is the menu for the sclang application, not the IDE. ::
+note::
+This is the menu for the sclang application, not the IDE.
+::
 
-warning:: The behavior of this class changed in version 3.10.2. Menu items for controlling the process and servers will not be added and updated by default, as in versions 3.10.0 and 3.10.1.  Those items can still be created by calling code::initBuiltInMenus::. This behavior may change again in a future version.::
+warning::
+The behavior of this class changed in version 3.10.2. Menu items for controlling the process and servers will not be added and updated by default, as in versions 3.10.0 and 3.10.1.  Those items can still be created by calling code::initBuiltInMenus::. This behavior may change again in a future version.
+::
 
-CODE::
+code::
 (
 ~testTone = MenuAction("Test Tone", {
 	{ SinOsc.ar(400) * 0.1 }.play;
@@ -22,13 +29,17 @@ MainMenu.register(~testTone, "Tests");
 MainMenu.unregister(~testTone); // to remove
 ::
 
-CLASSMETHODS::
+
+classmethods::
+
 
 private:: prGetMenu, prGetMenuGroup, prUpdateServersMenu, prBuildAppMenus, prUpdate, prSetAppMenus
 
+
 method::initBuiltInMenus
+
 	Initialize menu items under the main "SuperCollider" menu that enable process and server monitoring and control:
-		LIST::
+		list::
 			## Stop - same as Cmd/Ctrl-Period
 			## Servers - a submenu listing available servers, with items for controlling each. The
 default server will be noted, and selecting the name of a server in this menu will set it as the
@@ -36,7 +47,9 @@ default.
 			## Quit - quit sclang process
 		::
 
+
 method::register
+
 	Register a MenuAction to a main application menu. This menu item will exist for the duration of the app, or until .unregister is called for the action.
 
 	argument::action
@@ -46,7 +59,7 @@ method::register
 	argument::group
 		An optional string. Action will be placed in a section of the menu with other members of the same group, with a separator between items of other groups.
 
-	DISCUSSION::
+	discussion::
 		MainMenu.register provides an easy way to register global menu items, in a way that helps avoid disrupting menus registered by other SuperCollider components.
 
 		If you want to register menus for personal use, add the registration calls to your startup.scd file. This will ensure the menus are created automatically on launch.
@@ -54,7 +67,7 @@ method::register
 		If you're registering menu actions for a Quark or other component intended for distribution, be sure to be polite and thoughtful about where you're registering actions.
 
 		Avoid creating new top-level menus if possible - instead, try to use one of the following canonical menus to register your actions. Add your actions to a group to ensure you don't collide with actions from another component:
-		LIST::
+		list::
 			## File
 			## Edit
 			## Server
@@ -64,7 +77,9 @@ method::register
 
 		If registering menu items for a Quark, consider registering as a sub-menu of the Quarks menu. This can easily be done using the link::#*registerQuarkMenu:: method.
 
+
 method::registerQuarkMenu
+
 	Convenience method for registering a menu of functionality related to a Quark.
 	It will appear as a sub-menu under the main Quarks menu.
 
@@ -73,34 +88,45 @@ method::registerQuarkMenu
 	argument::menu
 		A link::Classes/Menu::, a menu.
 
+
 method::unregister
+
 	Remove a MenuAction that has been registered previously.
-	NOTE::
-		It is usually disruptive and confusing to add and remove menu items dynamically.
-		If you're registering a menu item that should only sometimes be available, consider disabling it using code::menuAction.enabled = false;:: rather than removing it.
+	
+	note::
+	It is usually disruptive and confusing to add and remove menu items dynamically.
+	If you're registering a menu item that should only sometimes be available, consider disabling it using code::menuAction.enabled = false;:: rather than removing it.
 	::
 
 	argument::
 		A MenuAction.
 
+
 method::otherMenus
+
 	A list of menus to append to the set of main application menus.
 
-	WARNING::This is intended for standalone SuperCollider applications, and should not be used to register menus during normal SC usage.::
+	warning::This is intended for standalone SuperCollider applications, and should not be used to register menus during normal SC usage.::
+
 
 method::add
+
 	Adds a menu to code::otherMenus::.
 
 	argument::menu
 		A link::Classes/Menu::.
 
+
 method::remove
+
 	Removes a menu to code::otherMenus::.
 
 	argument::menu
 		A link::Classes/Menu::.
 
+
 method::insert
+
 	Inserts a menu in code::otherMenus:: at the given index.
 
 	argument::index
@@ -109,16 +135,21 @@ method::insert
 	argument::menu
 		A link::Classes/Menu::.
 
+
 method::clear
+
 	Clears code::otherMenus::. The main application menus are unaffected.
 
 	argument::menu
 		A link::Classes/Menu::.
 
+
 method::applicationMenu
+
 	The main SuperCollider application menu.
 
-	WARNING::This is intended for standalone SuperCollider applications, and should not be used to register menus during normal SC usage.::
+	warning::This is intended for standalone SuperCollider applications, and should not be used to register menus during normal SC usage.::
+
 
 examples::
 

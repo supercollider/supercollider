@@ -1,48 +1,69 @@
-CLASS:: TreeViewItem
-summary:: An item in TreeView
+title:: TreeViewItem
+summary:: an item in TreeView
 categories:: GUI>Views
 
+
 description::
+
+
 An instance of TreeViewItem represents an item in TreeView. There may be multiple instances representing the same item, e.g. after calling link::Classes/TreeView#-currentItem:: multiple times.
 
-INSTANCEMETHODS::
 
-PRIVATE:: prValidItem
+instancemethods::
+
+
+private:: prValidItem
+
 
 method::index
+
 	returns:: An integer position of this item among its siblings.
 
+
 method::parent
+
 	returns:: An new instance of TreeViewItem representing the parent item.
 
+
 method::childAt
+
 	returns:: A new instance of TreeViewItem representing the child item at code::index::.
 
+
 method::addChild
+
 	Appends a new child to this item.
 
 	argument::strings
 		An array of Strings (or code::nil::), each for the text of one data field.
+
 	returns:: 
 		An instance of TreeViewItem representing the new item.
 
+
 method::insertChild
+
 	Inserts a new child to this item at code::index::.
 
 	argument::index
 		The position at which to insert the child.
 	argument::strings
 		An array of Strings (or code::nil::), each for the text of one data field.
+
 	returns:: 
 		An instance of TreeViewItem representing the new item.
 
+
 method::strings
+
 	The text in the data fields.
 
 	argument::strings
 		An array of Strings (or code::nil::), each for the text of one data field.
 
+
 method::setString
+
 	Sets the text in the given data field.
 
 	argument::column
@@ -50,13 +71,17 @@ method::setString
 	argument::string
 		A String or code::nil::.
 
+
 method::colors
+
 	The background colors of the data fields.
 
 	argument::colors
 		An array of Colors, each for the color of one data field.
 
+
 method::setColor
+
 	Sets the background color of the given data field.
 
 	argument::column
@@ -64,13 +89,17 @@ method::setColor
 	argument::color
 		A Color.
 
+
 method::textColors
+
 	The text colors of the data fields.
 
 	argument::textColors
 		An array of Colors, each for the color of one data field.
 
+
 method::setTextColor
+
 	Sets the text color of the given data field.
 
 	argument::column
@@ -78,7 +107,9 @@ method::setTextColor
 	argument::color
 		A Color.
 
+
 method::setView
+
 	Places another view into the given data field. Only one view can be placed into a data field at once. If a view is already present, it will be removed and destroyed.
 
 	If the number of data fields decreases due to a call to link::Classes/TreeView#-columns::, the views contained in removed data fields will also be removed and destroyed.
@@ -88,24 +119,32 @@ method::setView
 	argument::view
 		A View.
 
+
 method::removeView
+
 	Removes the view from the given data field, if any.
 
 	argument::column
 		An integer index of a data field.
 
+
 method::view
+
 	The view in the given data field.
 
 	argument::column
 		An integer index of a data field.
 
+
 method::==
+
 	Implements equality comparison between two TreeViewItem instances. Two instances are equal if they represent the same item in TreeView.
 
 	returns:: A Boolean.
 
+
 method::isNull
+
 	Whether the item is invalid. After an item is removed, all related TreeViewItem instances become invalid.
 
 	returns:: A Boolean.
@@ -113,7 +152,7 @@ method::isNull
 
 examples::
 
-CODE::
+code::
 
 (
 t = TreeView().front;

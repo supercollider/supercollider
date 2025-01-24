@@ -1,22 +1,28 @@
-class:: MouseButton
-summary:: Mouse button UGen.
+title:: MouseButton
+summary:: mouse button UGen
+categories:: UGens>User interaction
 related:: Classes/KeyState, Classes/MouseX, Classes/MouseY
-categories::  UGens>User interaction
 
 
 description::
+
+
 Mouse button UGen.
 
 
 classmethods::
 
+
 method::kr
+
 argument::minval
-Value when the button is not pressed.
+value when the button is not pressed.
+
 argument::maxval
-Value when the button is pressed.
+value when the button is pressed.
+
 argument::lag
-Lag factor.
+lag factor.
 
 
 examples::

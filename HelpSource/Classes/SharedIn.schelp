@@ -1,10 +1,11 @@
-class:: SharedIn
-summary:: Read from a shared control bus.
+title:: SharedIn
+summary:: reads from a shared control bus
+categories:: UGens>InOut
 related:: Classes/SharedOut
-categories::  UGens>InOut
 
 
 description::
+
 warning::
 SharedIn has been deprecated. Synchronous access to busses on local servers is possible via
 link::Classes/Bus#-getSynchronous:: and link::Classes/Bus#-setSynchronous::
@@ -18,9 +19,12 @@ arguments or the set method of Bus (or /c_set in messaging style).
 
 classmethods::
 
+
 method::kr
+
 argument::bus
-The index of the shared control bus to read from.
+the index of the shared control bus to read from.
+
 argument::numChannels
 the number of channels (i.e. adjacent buses) to read in. The
 default is 1. You cannot modulate this number by assigning it to

@@ -1,10 +1,12 @@
-class:: BPZ2
-summary:: Two zero fixed midpass.
+title:: BPZ2
+summary:: two zero fixed midpass
+categories:: UGens>Filters>Linear
 related:: Classes/BRZ2, Classes/HPZ2, Classes/LPZ2
-categories::  UGens>Filters>Linear
 
 
 description::
+
+
 A special case fixed filter. Implements the formula:
 
 code::
@@ -16,9 +18,12 @@ This filter cuts out 0 Hz and the Nyquist frequency.
 
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-The input signal.
+the input signal.
+
 
 examples::
 

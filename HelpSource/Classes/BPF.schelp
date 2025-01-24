@@ -1,25 +1,37 @@
-class:: BPF
-summary:: 2nd order Butterworth bandpass filter.
+title:: BPF
+summary:: 2nd order Butterworth bandpass filter
+categories:: UGens>Filters>Linear
 related:: Classes/BRF, Classes/HPF, Classes/LPF
-categories::  UGens>Filters>Linear
 
 
 description::
+
+
 A second order band pass filter.
 
 
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-The input signal.
+the input signal.
+
 argument::freq
-Centre frequency in Hertz.
-WARNING: due to the nature of its implementation frequency values close to 0 may cause glitches and/or extremely loud audio artifacts!
+centre frequency in Hertz.
+
+warning::
+Due to the nature of its implementation frequency values close to 0 may cause glitches and/or extremely loud audio artifacts!
+::
+
 argument::rq
-The reciprocal of Q. Q is conventionally defined as freq / bandwidth, meaning rq = (bandwidth / freq).
+the reciprocal of Q. Q is conventionally defined as teletype::freq / bandwidth::, meaning teletype::rq = (bandwidth / freq)::.
+
 argument::mul
+
 argument::add
+
 
 examples::
 

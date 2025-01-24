@@ -1,10 +1,12 @@
-class:: SetResetFF
-summary:: Set-reset flip flop.
+title:: SetResetFF
+summary:: set-reset flip flop
+categories:: UGens>Triggers
 related:: Classes/ToggleFF
-categories::  UGens>Triggers
 
 
 description::
+
+
 Output is set to 1.0 upon receiving a trigger in the trig input, and to
 0.0 upon receiving a trigger in the reset input. Once the flip flop is
 set to zero or one further triggers in the same input are have no effect.
@@ -13,15 +15,19 @@ happen until you reset it.
 
 If both inputs receive a trigger at the same time, the teletype::reset:: input takes precedence. The output will be 0. See the examples below.
 
+
 classmethods::
 
+
 method::ar, kr
+
 argument::trig
-The trigger that sets output to 1. Trigger can be any signal.
+the trigger that sets output to 1. Trigger can be any signal.
 A trigger happens when the signal changes from non-positive to
 positive.
+
 argument::reset
-The trigger that sets output to 0. Trigger can be any signal.
+the trigger that sets output to 0. Trigger can be any signal.
 A trigger happens when the signal changes from non-positive to
 positive.
 
@@ -42,6 +48,7 @@ play({
 
 
 subsection:: Simultaneous triggers
+
 
 Here, 'reset' is triggered twice as often as 'trig'. Since 'trig' is always matched by a 'reset', the output is 0. (If 'trig' took precedence, you would have a 50%-duty-cycle pulse wave.)
 

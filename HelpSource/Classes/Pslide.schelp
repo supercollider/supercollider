@@ -1,22 +1,31 @@
-class:: Pslide
-summary:: slide over a list of values and embed them
-related:: Classes/Ptuple
+title:: Pslide
+summary:: slides over a list of values and embed them
 categories:: Streams-Patterns-Events>Patterns>List
+related:: Classes/Ptuple
 
-ClassMethods::
+
+classmethods::
+
 
 method::new
+
 argument::list
+
 argument::repeats
 number of segments.
+
 argument::len
 length of each segment.
+
 argument::step
 how far to step the start of each segment from previous. step can be negative.
+
 argument::start
 what index to start at.
+
 argument::wrapAtEnd
 if code::true:: (default), indexing wraps around if goes past beginning or end. If code::false::, the pattern stops if it hits a code::nil:: element or goes outside the list bounds.
+
 
 examples::
 

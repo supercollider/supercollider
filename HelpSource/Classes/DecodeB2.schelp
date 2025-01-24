@@ -1,10 +1,12 @@
-class:: DecodeB2
-summary:: 2D Ambisonic B-format decoder.
+title:: DecodeB2
+summary:: 2D Ambisonic B-format decoder
+categories:: UGens>Multichannel>Ambisonics
 related:: Classes/BiPanB2, Classes/PanB, Classes/PanB2, Classes/Rotate2
-categories::  UGens>Multichannel>Ambisonics
 
 
 description::
+
+
 Decode a two dimensional ambisonic B-format signal to a set of speakers
 in a regular polygon. The outputs will be in clockwise order. The
 position of the first speaker is either center or left of center.
@@ -12,23 +14,31 @@ position of the first speaker is either center or left of center.
 
 classmethods::
 
+
 method::ar, kr
+
 argument::numChans
-Number of output speakers. Typically 4 to 8. Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.
+number of output speakers. Typically 4 to 8. Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.
+
 argument::w
-The B-format signal.
+the B-format signal.
+
 argument::x
-The B-format signal.
+the B-format signal.
+
 argument::y
-The B-format signal.
+the B-format signal.
+
 argument::orientation
-Should be zero if the front is a vertex of the polygon. The first
+should be zero if the front is a vertex of the polygon. The first
 speaker will be directly in front. Should be 0.5 if the front
 bisects a side of the polygon. Then the first speaker will be the
 one left of center.
 
-returns:: 
-An array of channels, one for each speaker.
+returns::
+
+an array of channels, one for each speaker.
+
 
 examples::
 

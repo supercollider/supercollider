@@ -1,5 +1,5 @@
 title:: Partial Application
-summary:: Creates Functions via Partial Application
+summary:: creates functions via partial application
 categories:: Language
 related:: Reference/Functions
 
@@ -7,28 +7,37 @@ Partial application is a way to create a function by passing only some arguments
 It only applies to a single method, list, or dictionary call, not to a more complex nested expression.
 
 for example:
+
 code::
 f = _ + 2;
 ::
+
 f is now a function of one argument.
+
 code::
 f.value(7); // returns 9
 ::
+
 it is equivalent to having written:
+
 code::
 f = {|x| x + 2 };
 ::
+
 (except that there is no name 'x' declared)
 
 code::
 g = Point(_, _);
 ::
+
 g is a function of two arguments.
+
 code::
 g.value(3, 4);
 ::
 
 Here are some example usages of this in a collect message. Below each is written the equivalent function.
+
 code::
 (1..8).collect(_.isPrime);
 (1..8).collect {|x| x.isPrime };
@@ -61,6 +70,7 @@ g.value(7);
 ::
 
 An example of what you can't do:
+
 code::
 (1..8).collect( Point(100 * _, 50) ); // nested expression won't work.
 // only the * gets partially applied, not the surrounding expression.

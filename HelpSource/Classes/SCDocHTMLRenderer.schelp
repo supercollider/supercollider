@@ -1,44 +1,68 @@
-class:: SCDocHTMLRenderer
-summary:: Render SCDoc markup text to HTML
+title:: SCDocHTMLRenderer
+summary:: renders SCDoc markup text to HTML
 categories:: HelpSystem
 related:: Classes/SCDoc, Guides/WritingHelp, Reference/SCDocSyntax, Reference/SCDocStyling
 
+
 description::
+
+
 This class is part of the SCDoc help system, and handles the rendering of the parsed document tree into HTML output.
 
 In normal cases you won't need to use this class directly, link::Classes/SCDoc:: uses this class by default to render help files.
 
 For CSS styling, see link::Reference/SCDocStyling::.
 
+
 classmethods::
 
+
 method::renderOnStream
-Renders a parsed document as HTML onto given stream.
+
+renderss a parsed document as HTML onto given stream.
+
 argument::stream
-A stream, for example a link::Classes/File:: instance.
+a stream, for example a link::Classes/File:: instance.
+
 argument::doc
-An instance of link::Classes/SCDocEntry::
+an instance of link::Classes/SCDocEntry::
+
 argument::root
-An instance of link::Classes/SCDocNode::
+an instance of link::Classes/SCDocNode::
+
 
 method::renderToFile
+
 opens a file and passes it to link::#*renderOnStream::
 
+
 method::htmlForLink
+
 creates a html string for the given scdoc link.
+
 argument::link
-An scdoc link, such as a document key like "Classes/SinOsc", or an URL, or link to other file installed with the help.
+an scdoc link, such as a document key like "Classes/SinOsc", or an URL, or link to other file installed with the help.
+
 argument::escape
 a boolean to set whether to escape special characters.
-returns:: 
-A String
+
+returns::
+
+a String
+
 
 method::makeArgString
-Used internally.
-returns:: A link::Classes/String:: representing the arguments (with defaults) for a link::Classes/Method::.
+
+used internally.
+
+returns::
+
+a link::Classes/String:: representing the arguments (with defaults) for a link::Classes/method::.
 
 
 section:: CSS styling
+
+
 The rendered HTML reads the global style from teletype::scdoc.css::, but also reads teletype::frontend.css:: and teletype::custom.css:: (in that order) if available, to enable specific frontends and users to override the CSS.
 
 So to customise the CSS, the user can create a teletype::custom.css:: in their link::Classes/SCDoc#*helpTargetDir:: or at the root of any HelpSource directory (for example in teletype::YourExtension/HelpSource/custom.css::).

@@ -1,10 +1,14 @@
-class:: ProxyMonitorGui
+title:: ProxyMonitorGui
 summary:: controls the top-level of a nodeproxy and its monitor
 categories:: JITLib>GUI, Live Coding
 related:: Classes/ProxyMixer, Classes/NodeProxyEditor
 
+
 description::
+
+
 is a GUI for controlling the top-level of a nodeproxy and its monitor. It is e.g. used in ProxyMixer, and NodeProxyEditor, and it is cross-platform.
+
 
 examples::
 
@@ -75,7 +79,7 @@ ProxyMonitorGui(~test);
 ~test.vol_(0.1);
 ~test.vol_(0.25);
 
-~test.stop;	// play / stop button:
+~test.stop;	// play/stop button:
 ~test.playN;	//
 ~test.end;	// alt-stop fully ends the proxy.
 ~test.playN(vol: 0);	// alt-playN starts with volume 0.

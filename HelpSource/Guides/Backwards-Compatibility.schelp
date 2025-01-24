@@ -1,5 +1,5 @@
 title:: Backwards Compatibility
-summary:: Classes and methods that improve backwards compatibility with SC2 code
+summary:: classes and methods that improve backwards compatibility with SC2 code
 categories:: Language>SC3 vs SC2
 
 There are a number of classes and methods that have been added to allow for backwards compatibility with SC2 code. The most notable of these is code::Synth.play::, which is basically a wrapper for code::Function.play::.

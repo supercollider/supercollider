@@ -1,17 +1,23 @@
-class:: Plprand
+title:: Plprand
 summary:: random values that tend toward lo
-related:: Classes/Phprand
 categories:: Streams-Patterns-Events>Patterns>Random
+related:: Classes/Phprand
 
-ClassMethods::
+
+classmethods::
+
 
 method::new
+
 argument::lo
 lower boundary of values.
+
 argument::hi
 upper boundary of values.
+
 argument::length
 number of values produced.
+
 
 examples::
 

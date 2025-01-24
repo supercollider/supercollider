@@ -1,26 +1,39 @@
-class:: MFCC
+title:: MFCC
 summary:: Mel frequency cepstral coefficients
 categories:: UGens>Analysis
 related:: Classes/BeatTrack, Classes/Loudness, Classes/Onsets, Classes/Pitch, Classes/KeyTrack
 
+
 description::
+
+
 generates a set of MFCCs; these are obtained from a band-based frequency representation (using the Mel scale by default), and then a discrete cosine transform (DCT). The DCT is an efficient approximation for principal components analysis, so that it allows a compression, or reduction of dimensionality, of the data, in this case reducing 42 band readings to a smaller set of MFCCs. A small number of features (the coefficients) end up describing the spectrum. The MFCCs are commonly used as timbral descriptors.
 
 Output values are somewhat normalised for the range 0.0 to 1.0, but there are no guarantees on exact conformance to this. Commonly, the first coefficient will be the highest value.
 
+note::
+Drafts of an MFCC UGen were prepared by both Dan Stowell and Nick Collins; their various ideas are combined here in a cross platform compatible UGen. Mel scale spacing with triangular crossfade overlap is used by default for the bands, approximately tracking the human critical band spacing and bandwidth. Variants such as BFCC (Bark) and EFCC (ERB) given similar results in practice; the Mel scale as used here is the standard as adapted from the speech recognition literature and now applied in music information retrieval.
+::
 
-note::Drafts of an MFCC UGen were prepared by both Dan Stowell and Nick Collins; their various ideas are combined here in a cross platform compatible UGen. Mel scale spacing with triangular crossfade overlap is used by default for the bands, approximately tracking the human critical band spacing and bandwidth. Variants such as BFCC (Bark) and EFCC (ERB) given similar results in practice; the Mel scale as used here is the standard as adapted from the speech recognition literature and now applied in music information retrieval.::
 
 classmethods::
+
+
 method::kr
+
 argument::chain
 [fft] Audio input to track, which has been pre-analysed by the FFT UGen; see examples below for the expected FFT size.
+
 argument::numcoeff
 [s] Number of coefficients, defaults to 13, maximum of 42; more efficient to use less, of course!
 
-returns:: code::#coeff1, coeff2, ...::
+returns::
+
+code::#coeff1, coeff2, ...::
+
 
 examples::
+
 code::
 // Technical note: The 0th coefficient is not generated as it consists of multiplying all bands by 1 and summing
 
@@ -94,8 +107,6 @@ x.free;
 w.close;
 )
 ::
-
-
 
 code::
 // Calculating Mel Scale Bands; allow up to 42 coefficients, so up to 42 bands
@@ -222,7 +233,7 @@ Post << fftbinmult << nl;
 a = (26.81 / (1 + (1960 / ((100, 200..22000))))) - 0.53;
 a.plot;
 
-// ERBs (rough calculation, only really valid under 6000Hz, real scale goes up to 42 rather than 37 in 22000 Hz)
+// ERBs (rough calculation, only really valid under 6000 Hz, real scale goes up to 42 rather than 37 in 22000 Hz)
 (
 a = Array.fill(220, { |i| 
 	var f = i * 100; 

@@ -1,21 +1,29 @@
-class:: Dbufrd
+title:: Dbufrd
 summary:: Buffer read demand ugen
 categories:: UGens>Buffer, UGens>Demand
 related:: Classes/Dbufwr
 
+
 classmethods::
 
+
 method::new
+
 argument::bufnum
-buffer number to read from
+Buffer number to read from
+
 argument::phase
 index into the buffer
+
 argument::loop
 when phase exceeds number of frames in buffer, loops when set to 1 (default :1)
+
 discussion::
 all inputs can be either demand ugen or any other ugen.
 
+
 examples::
+
 code::
 b = Buffer.alloc(s, 24, 1);
 b.setn(0, { exprand(200, 500) } ! b.numFrames);

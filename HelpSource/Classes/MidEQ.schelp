@@ -1,28 +1,37 @@
-class:: MidEQ
-summary:: Parametric filter.
-categories::  UGens>Filters>Linear
+title:: MidEQ
+summary:: parametric filter
+categories:: UGens>Filters>Linear
 
 
 description::
+
+
 Attenuates or boosts a frequency band.
 
 
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-The input signal.
+the input signal.
+
 argument::freq
-Center frequency of the band in Hertz.
+the enter frequency of the band in Hertz.
+
 argument::rq
-The reciprocal of Q (bandwidth / cutoffFreq).
+the reciprocal of Q: teletype::bandwidth / cutoffFreq::.
+
 argument::db
-Amount of boost (db > 0) or attenuation (db < 0) of the
+amount of boost (db > 0) or attenuation (db < 0) of the
 frequency band.
+
 argument::mul
-Output will be multiplied by this value.
+output will be multiplied by this value.
+
 argument::add
-This value will be added to the output.
+this value will be added to the output.
 
 
 examples::

@@ -1,38 +1,44 @@
-class:: Mix
-summary:: Sum an array of channels.
-categories::  UGens>Multichannel
+title:: Mix
+summary:: sums an array of channels
+categories:: UGens>Multichannel
 
 
 description::
+
+
 Mix will mix an array of channels down to a single channel or an array
 of arrays of channels down to a single array of channels.
 More information can be found under link::Guides/Multichannel-Expansion::.
 
-
 note::
-
-Note that  code::Mix.ar::  and  code::Mix.kr::  in
-SC2 are equivalent to  code::Mix.new::  in SC3,
-and that  code::Mix.arFill::  and  code::Mix.krFill::  are
-equivalent to  code::Mix.fill::.
-
+Note that code::Mix.ar:: and code::Mix.kr:: in
+SC2 are equivalent to code::Mix.new:: in SC3,
+and that code::Mix.arFill:: and code::Mix.krFill:: are
+equivalent to code::Mix.fill::.
 ::
+
 
 classmethods::
 
+
 method::new
+
 argument::array
-The array of channels or arrays.
+the array of channels or arrays.
+
 
 method::fill
-argument::n
-The size of array to create.
-argument::function
-The array filling function.
 
-returns:: Returns:
-A newly created
-link::Classes/UGen:: .
+argument::n
+the size of array to create.
+
+argument::function
+the array filling function.
+
+returns::
+
+a newly created link::Classes/UGen:: .
+
 
 examples::
 

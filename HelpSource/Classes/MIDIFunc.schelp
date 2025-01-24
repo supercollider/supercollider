@@ -1,125 +1,207 @@
-CLASS:: MIDIFunc
-summary:: Fast Responder for incoming MIDI Messages
+title:: MIDIFunc
+summary:: fast responder for incoming MIDI messages
 categories:: External Control>MIDI
 related:: Guides/MIDI, Classes/MIDIdef
 
+
 description::
+
+
 MIDIFunc (and its subclass link::Classes/MIDIdef::) registers one or more functions to respond to an incoming MIDI message. Many of its methods are inherited from its superclass link::Classes/AbstractResponderFunc::.
 
 
 subsection:: Important note on persistence
 
+
 MIDIFunc (and its subclass link::Classes/MIDIdef:: like all other
 AbstractResponderFuncs) are removed on pressing Cmd/ctrl-. To override this
 behavior, use the link::Classes/AbstractResponderFunc#-permanent:: method.
 
-CLASSMETHODS::
+
+classmethods::
+
+
 private:: initClass, cmdPeriod
 
+
 method::defaultDispatchers
+
 gets/sets an link::Classes/IdentityDictionary:: containing the default dispatcher objects for MIDIFuncs of different types (these are what you get if you pass code::nil:: as the dispatcher argument to link::#*new::). These objects will decide if any of their registered MIDIFuncs should respond to an incoming MIDI message. The dictionary should have the keys code::[\noteOn, \noteOff, \control, \polytouch, \touch, \program, \bend]:: and values of an appropriate subclass of link::Classes/AbstractDispatcher:: for each message type. By default these will be instances of link::Classes/MIDIMessageDispatcher:: for the first four message types, and instances of link::Classes/MIDIMessageDispatcherNV:: for the last three.
 
-returns:: The getter returns an link::Classes/IdentityDictionary::.
+returns::
+
+the getter returns an link::Classes/IdentityDictionary::.
+
 
 method::new
-creates a new, enabled MIDIFunc. Normally one would use one of the message type specific convenience methods below, rather than use this method directly.
-argument::func
-A link::Classes/Function:: or similar object which will respond to the incoming message. When evaluated for noteOn, noteOff, control, and polytouch messages it will be passed the arguments val, num, chan, and src, corresponding to the message value (e.g. velocity, control value, etc.), message number (e.g. note number), MIDI channel, and MIDI source uid. For touch, program change and bend messages it will be passed only val, chan, and src. For information on the args passed for the other sorts of code::msgType:: see the convenience methods below.
-argument::msgNum
-An link::Classes/Integer:: indicating the MIDI message number (note number, control number, or program number) for this MIDIFunc. This can be an array. If code::nil::, the MIDIFunc will respond to messages of all possible message numbers.
-argument::chan
-An link::Classes/Integer:: indicating the MIDI channel number for this MIDIFunc. This can be an array. If code::nil::, the MIDIFunc will respond to messages received on all channels.
-argument::msgType
-A link::Classes/Symbol:: indicating which kind of MIDI message this MIDIFunc should respond to. One of code::\noteOn::, code::\noteOff::, code::\control::, code::\touch::, code::\polytouch::, code::\bend::, code::\program::, code::\sysex::, code::\mtcQF::, code::\smpte::, code::\songPosition::, code::\songSelect::, code::\tuneRequest::, code::\midiClock::, code::\sysrt::, code::\tick::, code::\start::, code::\continue::, code::\stop::, code::\activeSense::, or code::\reset::.
-argument::srcID
-An link::Classes/Integer:: corresponding to the uid of the MIDI input. (See link::Guides/UsingMIDI#MIDIFunc and MIDIdef: Filtering based on device or message data::.) If code::nil::, the MIDIFunc will respond to messages received from all sources.
-argument::argTemplate
-An optional link::Classes/Integer:: or link::Classes/Function:: (or object which responds to the method link::Overviews/Methods#matchItem::) used to match the value of an incoming MIDI message. (e.g. velocity, control value, program number, etc.). If a Function, it will be evaluated with the message value as an argument, and should return a link::Classes/Boolean:: indicating whether the message matches and this MIDIFunc should respond.
-argument::dispatcher
-An optional instance of an appropriate subclass of link::Classes/AbstractDispatcher::. This can be used to allow for customised dispatching. Normally this should not be needed.
 
-returns:: A new instance of MIDIFunc.
+creates a new, enabled MIDIFunc. Normally one would use one of the message type specific convenience methods below, rather than use this method directly.
+
+argument::func
+a link::Classes/Function:: or similar object which will respond to the incoming message. When evaluated for noteOn, noteOff, control, and polytouch messages it will be passed the arguments val, num, chan, and src, corresponding to the message value (e.g. velocity, control value, etc.), message number (e.g. note number), MIDI channel, and MIDI source uid. For touch, program change and bend messages it will be passed only val, chan, and src. For information on the args passed for the other sorts of code::msgType:: see the convenience methods below.
+
+argument::msgNum
+an link::Classes/Integer:: indicating the MIDI message number (note number, control number, or program number) for this MIDIFunc. This can be an array. If code::nil::, the MIDIFunc will respond to messages of all possible message numbers.
+
+argument::chan
+an link::Classes/Integer:: indicating the MIDI channel number for this MIDIFunc. This can be an array. If code::nil::, the MIDIFunc will respond to messages received on all channels.
+
+argument::msgType
+a link::Classes/Symbol:: indicating which kind of MIDI message this MIDIFunc should respond to. One of code::\noteOn::, code::\noteOff::, code::\control::, code::\touch::, code::\polytouch::, code::\bend::, code::\program::, code::\sysex::, code::\mtcQF::, code::\smpte::, code::\songPosition::, code::\songSelect::, code::\tuneRequest::, code::\midiClock::, code::\sysrt::, code::\tick::, code::\start::, code::\continue::, code::\stop::, code::\activeSense::, or code::\reset::.
+
+argument::srcID
+an link::Classes/Integer:: corresponding to the uid of the MIDI input. (See link::Guides/UsingMIDI#MIDIFunc and MIDIdef: Filtering based on device or message data::.) If code::nil::, the MIDIFunc will respond to messages received from all sources.
+
+argument::argTemplate
+an optional link::Classes/Integer:: or link::Classes/Function:: (or object which responds to the method link::Overviews/Methods#matchItem::) used to match the value of an incoming MIDI message. (e.g. velocity, control value, program number, etc.). If a Function, it will be evaluated with the message value as an argument, and should return a link::Classes/Boolean:: indicating whether the message matches and this MIDIFunc should respond.
+
+argument::dispatcher
+an optional instance of an appropriate subclass of link::Classes/AbstractDispatcher::. This can be used to allow for customised dispatching. Normally this should not be needed.
+
+returns::
+
+a new instance of MIDIFunc.
+
 
 method::cc
-A convenience method to create a new MIDIFunc which responds to MIDI control messages. See link::#*new:: for argument descriptions.
 
-returns:: A new instance of MIDIFunc which responds to MIDI control messages.
+a convenience method to create a new MIDIFunc which responds to MIDI control messages. See link::#*new:: for argument descriptions.
+
+returns::
+
+a new instance of MIDIFunc which responds to MIDI control messages.
+
 
 method::noteOn
-A convenience method to create a new MIDIFunc which responds to MIDI note on messages. See link::#*new:: for argument descriptions.
 
-returns:: A new instance of MIDIFunc which responds to MIDI note on messages.
+a convenience method to create a new MIDIFunc which responds to MIDI note on messages. See link::#*new:: for argument descriptions.
+
+returns::
+
+a new instance of MIDIFunc which responds to MIDI note on messages.
+
 
 method::noteOff
-A convenience method to create a new MIDIFunc which responds to MIDI note off messages. See link::#*new:: for argument descriptions.
 
-returns:: A new instance of MIDIFunc which responds to MIDI note off messages.
+a convenience method to create a new MIDIFunc which responds to MIDI note off messages. See link::#*new:: for argument descriptions.
+
+returns::
+
+a new instance of MIDIFunc which responds to MIDI note off messages.
+
 
 method::polytouch
-A convenience method to create a new MIDIFunc which responds to MIDI polytouch messages. See link::#*new:: for argument descriptions.
 
-returns:: A new instance of MIDIFunc which responds to MIDI polytouch messages.
+a convenience method to create a new MIDIFunc which responds to MIDI polytouch messages. See link::#*new:: for argument descriptions.
+
+returns::
+
+a new instance of MIDIFunc which responds to MIDI polytouch messages.
+
 
 method::touch
-A convenience method to create a new MIDIFunc which responds to MIDI touch messages. See link::#*new:: for argument descriptions.
 
-returns:: A new instance of MIDIFunc which responds to MIDI touch messages.
+a convenience method to create a new MIDIFunc which responds to MIDI touch messages. See link::#*new:: for argument descriptions.
+
+returns::
+
+a new instance of MIDIFunc which responds to MIDI touch messages.
+
 
 method::bend
-A convenience method to create a new MIDIFunc which responds to MIDI bend messages. See link::#*new:: for argument descriptions.
 
-returns:: A new instance of MIDIFunc which responds to MIDI bend messages.
+a convenience method to create a new MIDIFunc which responds to MIDI bend messages. See link::#*new:: for argument descriptions.
+
+returns::
+
+a new instance of MIDIFunc which responds to MIDI bend messages.
+
 
 method::program
-A convenience method to create a new MIDIFunc which responds to MIDI program change messages. See link::#*new:: for argument descriptions.
 
-returns:: A new instance of MIDIFunc which responds to MIDI program change messages.
+a convenience method to create a new MIDIFunc which responds to MIDI program change messages. See link::#*new:: for argument descriptions.
+
+returns::
+
+a new instance of MIDIFunc which responds to MIDI program change messages.
+
 
 method::sysex
-A convenience method to create a new MIDIFunc which responds to MIDI system exclusive messages. See link::#*new:: for argument descriptions. The responding code::func:: will be passed the arguments data (an link::Classes/Int8Array::) and srcID.
 
-returns:: A new instance of MIDIFunc which responds to MIDI system exclusive messages.
+a convenience method to create a new MIDIFunc which responds to MIDI system exclusive messages. See link::#*new:: for argument descriptions. The responding code::func:: will be passed the arguments data (an link::Classes/Int8Array::) and srcID.
+
+returns::
+
+a new instance of MIDIFunc which responds to MIDI system exclusive messages.
 
 
 subsection:: System Common
 
+
 N.B. Because of SC's underlying low level MIDI implementation, there is no generic code::msgType:: and convenience method for System Common messages. Instead these are grouped with System Realtime under link::#*sysrt:: below.
 
-method::smpte
-A convenience method to create a new MIDIFunc which responds to MIDI smpte messages. See link::#*new:: for argument descriptions. The responding code::func:: will be passed the arguments seconds, framerate, dropframe, and srcID. (dropframe is a link::Classes/Boolean::).
 
-returns:: A new instance of MIDIFunc which responds to MIDI smpte messages.
+method::smpte
+
+a convenience method to create a new MIDIFunc which responds to MIDI smpte messages. See link::#*new:: for argument descriptions. The responding code::func:: will be passed the arguments seconds, framerate, dropframe, and srcID. (dropframe is a link::Classes/Boolean::).
+
+returns::
+
+a new instance of MIDIFunc which responds to MIDI smpte messages.
+
 
 method::mtcQuarterFrame
-A convenience method to create a new MIDIFunc which responds to MIDI Time Code Quarter Frame messages. Note that the link::#*smpte:: method above automatically assembles quarter frames into time code. See link::#*new:: for argument descriptions. The responding code::func:: will be passed the arguments data, srcID, and pieceNumber. You will need to manually assemble each 8 messages into smpte.
 
-returns:: A new instance of MIDIFunc which responds to MIDI Time Code Quarter Frame messages.
+a convenience method to create a new MIDIFunc which responds to MIDI Time Code Quarter Frame messages. Note that the link::#*smpte:: method above automatically assembles quarter frames into time code. See link::#*new:: for argument descriptions. The responding code::func:: will be passed the arguments data, srcID, and pieceNumber. You will need to manually assemble each 8 messages into smpte.
+
+returns::
+
+a new instance of MIDIFunc which responds to MIDI Time Code Quarter Frame messages.
+
 
 method::songPosition
-A convenience method to create a new MIDIFunc which responds to MIDI song position messages. See link::#*new:: for argument descriptions. The responding code::func:: will be passed the arguments position and srcID.
 
-returns:: A new instance of MIDIFunc which responds to MIDI song position messages.
+a convenience method to create a new MIDIFunc which responds to MIDI song position messages. See link::#*new:: for argument descriptions. The responding code::func:: will be passed the arguments position and srcID.
+
+returns::
+
+a new instance of MIDIFunc which responds to MIDI song position messages.
+
 
 method::songSelect
-A convenience method to create a new MIDIFunc which responds to MIDI song select messages. See link::#*new:: for argument descriptions. The responding code::func:: will be passed the arguments song and srcID.
 
-returns:: A new instance of MIDIFunc which responds to MIDI song select messages.
+a convenience method to create a new MIDIFunc which responds to MIDI song select messages. See link::#*new:: for argument descriptions. The responding code::func:: will be passed the arguments song and srcID.
+
+returns::
+
+a new instance of MIDIFunc which responds to MIDI song select messages.
+
 
 method::tuneRequest
-A convenience method to create a new MIDIFunc which responds to MIDI tune request messages. See link::#*new:: for argument descriptions. The responding code::func:: will be passed the argument srcID.
 
-returns:: A new instance of MIDIFunc which responds to MIDI tune request messages.
+a convenience method to create a new MIDIFunc which responds to MIDI tune request messages. See link::#*new:: for argument descriptions. The responding code::func:: will be passed the argument srcID.
+
+returns::
+
+a new instance of MIDIFunc which responds to MIDI tune request messages.
+
 
 method::midiClock
-A convenience method to create a new MIDIFunc which responds to MIDI clock messages. See link::#*new:: for argument descriptions. The responding code::func:: will be passed the argument srcID.
 
-returns:: A new instance of MIDIFunc which responds to MIDI clock messages.
+a convenience method to create a new MIDIFunc which responds to MIDI clock messages. See link::#*new:: for argument descriptions. The responding code::func:: will be passed the argument srcID.
+
+returns::
+
+a new instance of MIDIFunc which responds to MIDI clock messages.
 
 
 subsection:: System Realtime
 
+
 method::sysrt
-A convenience method to create a new MIDIFunc which responds generically to MIDI System Realtime and System Common messages. Note that the message specific methods above and below are probably more convenient in most cases. Note that this does not include MIDI Time Code Quarter Frame messages (sysrt index 1). For those see link::#*mtcQuarterFrame:: and link::#*smpte::. See link::#*new:: for argument descriptions. The responding code::func:: will be passed the arguments data (may be code::nil::), srcID, and index. Index indicates the message type as follows:
+
+a convenience method to create a new MIDIFunc which responds generically to MIDI System Realtime and System Common messages. Note that the message specific methods above and below are probably more convenient in most cases. Note that this does not include MIDI Time Code Quarter Frame messages (sysrt index 1). For those see link::#*mtcQuarterFrame:: and link::#*smpte::. See link::#*new:: for argument descriptions. The responding code::func:: will be passed the arguments data (may be code::nil::), srcID, and index. Index indicates the message type as follows:
+
 table::
 ## MIDI Time Code Quarter Frames || 1
 ## Song Position || 2
@@ -134,72 +216,125 @@ table::
 ## Reset || 15
 ::
 
-returns:: A new instance of MIDIFunc which responds to MIDI System Realtime messages.
+returns::
+
+a new instance of MIDIFunc which responds to MIDI System Realtime messages.
+
 
 method::tick
-A convenience method to create a new MIDIFunc which responds to MIDI tick messages. See link::#*new:: for argument descriptions. The responding code::func:: will be passed the argument srcID.
 
-returns:: A new instance of MIDIFunc which responds to MIDI tick messages.
+a convenience method to create a new MIDIFunc which responds to MIDI tick messages. See link::#*new:: for argument descriptions. The responding code::func:: will be passed the argument srcID.
+
+returns::
+
+a new instance of MIDIFunc which responds to MIDI tick messages.
+
 
 method::start
-A convenience method to create a new MIDIFunc which responds to MIDI start messages. See link::#*new:: for argument descriptions. The responding code::func:: will be passed the argument srcID.
 
-returns:: A new instance of MIDIFunc which responds to MIDI start messages.
+a convenience method to create a new MIDIFunc which responds to MIDI start messages. See link::#*new:: for argument descriptions. The responding code::func:: will be passed the argument srcID.
+
+returns::
+
+a new instance of MIDIFunc which responds to MIDI start messages.
+
 
 method::stop
-A convenience method to create a new MIDIFunc which responds to MIDI stop messages. See link::#*new:: for argument descriptions. The responding code::func:: will be passed the argument srcID.
 
-returns:: A new instance of MIDIFunc which responds to MIDI stop messages.
+a convenience method to create a new MIDIFunc which responds to MIDI stop messages. See link::#*new:: for argument descriptions. The responding code::func:: will be passed the argument srcID.
+
+returns::
+
+a new instance of MIDIFunc which responds to MIDI stop messages.
+
 
 method::continue
-A convenience method to create a new MIDIFunc which responds to MIDI continue messages. See link::#*new:: for argument descriptions. The responding code::func:: will be passed the argument srcID.
 
-returns:: A new instance of MIDIFunc which responds to MIDI continue messages.
+a convenience method to create a new MIDIFunc which responds to MIDI continue messages. See link::#*new:: for argument descriptions. The responding code::func:: will be passed the argument srcID.
+
+returns::
+
+a new instance of MIDIFunc which responds to MIDI continue messages.
+
 
 method::reset
-A convenience method to create a new MIDIFunc which responds to MIDI reset messages. See link::#*new:: for argument descriptions. The responding code::func:: will be passed the argument srcID.
 
-returns:: A new instance of MIDIFunc which responds to MIDI reset messages.
+a convenience method to create a new MIDIFunc which responds to MIDI reset messages. See link::#*new:: for argument descriptions. The responding code::func:: will be passed the argument srcID.
+
+returns::
+
+a new instance of MIDIFunc which responds to MIDI reset messages.
+
 
 method::activeSense
-A convenience method to create a new MIDIFunc which responds to MIDI active sense messages. See link::#*new:: for argument descriptions. The responding code::func:: will be passed the argument srcID.
 
-returns:: A new instance of MIDIFunc which responds to MIDI active sense messages.
+a convenience method to create a new MIDIFunc which responds to MIDI active sense messages. See link::#*new:: for argument descriptions. The responding code::func:: will be passed the argument srcID.
+
+returns::
+
+a new instance of MIDIFunc which responds to MIDI active sense messages.
 
 
 subsection:: Debugging
 
-method::trace
-A convenience method which dumps all incoming MIDI messages.
-argument::bool
-A link::Classes/Boolean:: indicating whether dumping is on or off.
 
-INSTANCEMETHODS::
+method::trace
+
+a convenience method which dumps all incoming MIDI messages.
+
+argument::bool
+a link::Classes/Boolean:: indicating whether dumping is on or off.
+
+
+instancemethods::
+
+
 private:: init, printOn
 
+
 method::chan
+
 gets this MIDIFunc's MIDI channel number.
 
-returns:: An link::Classes/Integer::.
+returns::
+
+an link::Classes/Integer::.
+
 
 method::msgNum
+
 gets this MIDIFunc's MIDI message number.
 
-returns:: An link::Classes/Integer::.
+returns::
+
+an link::Classes/Integer::.
+
 
 method::msgType
+
 gets this MIDIFunc's message type.
 
-returns:: A link::Classes/Symbol::; one of code::\noteOn::, code::\noteOff::, code::\control::, code::\touch::, code::\polytouch::, code::\bend::, code::\program::, code::\sysex::, code::\mtcQF::, code::\smpte::, code::\songPosition::, code::\songSelect::, code::\tuneRequest::, code::\midiClock::, code::\sysrt::, code::\tick::, code::\start::, code::\continue::, code::\stop::, code::\activeSense::, or code::\reset::.
+returns::
+
+a link::Classes/Symbol::; one of code::\noteOn::, code::\noteOff::, code::\control::, code::\touch::, code::\polytouch::, code::\bend::, code::\program::, code::\sysex::, code::\mtcQF::, code::\smpte::, code::\songPosition::, code::\songSelect::, code::\tuneRequest::, code::\midiClock::, code::\sysrt::, code::\tick::, code::\start::, code::\continue::, code::\stop::, code::\activeSense::, or code::\reset::.
+
 
 method::argTemplate
+
 gets this MIDIFunc's argTemplate.
-returns:: A link::Classes/Integer:: or link::Classes/Function:: (or object which responds to the method link::Overviews/Methods#matchItem::) used to match the value of an incoming MIDI message. (e.g. velocity, control value, program number, etc.).
+
+returns::
+
+a link::Classes/Integer:: or link::Classes/Function:: (or object which responds to the method link::Overviews/Methods#matchItem::) used to match the value of an incoming MIDI message. (e.g. velocity, control value, program number, etc.).
+
 
 method::learn
-Train this MIDIFunc to respond to the next message of its type. Arguments passed at creation (e.g. chan, srcID, msgNum, etc.) will filter the training to the next matching message received.
+
+trains this MIDIFunc to respond to the next message of its type. Arguments passed at creation (e.g. chan, srcID, msgNum, etc.) will filter the training to the next matching message received.
+
 argument::learnVal
-A link::Classes/Boolean:: indicating whether the responder should learn the specific value. For example, if used with a control change MIDIFunc, the object would learn to match the next specific control change value. If used with a note on MIDIFunc, it would match only a specific velocity. The default is code::false::.
+a link::Classes/Boolean:: indicating whether the responder should learn the specific value. For example, if used with a control change MIDIFunc, the object would learn to match the next specific control change value. If used with a note on MIDIFunc, it would match only a specific velocity. The default is code::false::.
+
 
 examples::
 

@@ -1,11 +1,16 @@
-class:: QtGUI
-summary:: Top-level controls for Qt GUI
+title:: QtGUI
+summary:: top-level controls for Qt GUI
 categories:: GUI
 
+
 description::
+
+
 QtGUI provides top-level control for the Qt GUI bindings and some platform-level functionality.
 
+
 classmethods::
+
 
 private:: prStringBounds, prSetStyle, view, compositeView, hLayoutView, vLayoutView, window
 private:: scrollView, staticText, button, checkBox, textField, numberBox, slider, multiSliderView
@@ -15,42 +20,60 @@ private:: userView, dragSource, dragSink, dragBoth, dialog, ezScroller, ezSlider
 private:: ezNumber, ezRanger, hLayout, vLayout, gridLayout, stackLayout, pen, font, image, qcView
 private:: notImplemented, stop, id
 
+
 method::availableStyles
+
 returns an array of all available styles on this platform. For use with link::#-style::.
 
+
 method::cursorPosition
+
 gets the current position of the cursor as a link::Classes/Point::.
 
+
 method::debugLevel
+
 gets/sets the verbosity level for debug output from "QtCollider" code. SuperCollider must have
 been built in debug mode for messages to appear. Valid values are -1 (none), 0 (warnings only,
 default), 1 (most messages), and 2 (verbose). Values outside this range are effectively clipped.
 
+
 method::focusView
+
 gets the currently focused view.
 
+
 method::palette
+
 gets/sets the link::Classes/QPalette:: used for GUI display.
 
+
 method::selectedText
+
 gets the selected text in the currently focused view. If there is no such string then returns
 empty string.
 
 Internally, first calls code::selectedText:: if that method is available; otherwise, calls
 code::selectedString:: if that method is available. Otherwise, returns empty string.
 
+
 method::stringBounds
+
 returns a link::Classes/Rect:: representing the size of the smallest rectangle that could contain a
 given string rendered with the given font.
 
 code::
 QtGUI.stringBounds("hellooo", Font(Font.defaultSansFace, 100))
 ::
+
 argument::aString
-A link::Classes/String:: to render.
+a link::Classes/String:: to render.
+
 argument::aFont
-An instance of link::Classes/Font::.
+an instance of link::Classes/Font::.
+
 
 method::style
+
 gets/sets the current GUI style. The given style must be a link::Classes/String:: or
 link::Classes/Symbol:: that names one of the styles returned by link::#-availableStyles::.

@@ -1,10 +1,12 @@
-class:: LocalOut
-summary:: Write to buses local to a synth.
+title:: LocalOut
+summary:: writes to buses local to a synth
+categories:: UGens>InOut
 related:: Classes/LocalIn
-categories::  UGens>InOut
 
 
 description::
+
+
 LocalOut writes to buses that are local to the enclosing synth. The buses
 should have been defined by a  link::Classes/LocalIn::  ugen. The
 code::channelsArray::  must be the same number of channels
@@ -12,24 +14,24 @@ as were declared in the  link::Classes/LocalIn:: . These are like the
 global buses, but are more convenient if you want to implement a self
 contained effect that uses a feedback processing loop.
 
-
 warning::
-
 Audio written to a LocalOut will not be read by a corresponding
 link::Classes/LocalIn::  until the next cycle, i.e. one block size of
 samples later. Because of this it is important to take this additional
 delay into account when using  link::Classes/LocalIn::  to create
 feedback delays with delay times shorter than the threshold of pitch
-(i. e. < 0.05 seconds or > 20Hz), or where sample accurate
+(i. e. < 0.05 seconds or > 20 Hz), or where sample accurate
 alignment is required. See the resonator example below.
-
 ::
+
 
 classmethods::
 
+
 method::ar, kr
+
 argument::channelsArray
-An Array of channels or single output to write out. You cannot
+an Array of channels or single output to write out. You cannot
 change the size of this once a SynthDef has been built.
 
 

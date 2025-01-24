@@ -1,13 +1,16 @@
-TITLE:: Tour of Special Functions
-summary:: Examples and plots for Boost Special Functions
-CATEGORIES:: Guides
+title:: Tour of Special Functions
+summary:: examples and plots for Boost Special Functions
+categories:: Guides
 related:: Classes/SimpleNumber
-KEYWORD:: special functions, boost
+keyword:: special functions, boost
 
 
-description:: Boost library Special Functions: usage, bounds and plots
+description::
+
+
+Boost library Special Functions: usage, bounds and plots
 An array of Special Functions supplied by the Boost library. The library's
-LINK::http://www.boost.org/doc/libs/1_66_0/libs/math/doc/html/special.html##online documentation::
+link::http://www.boost.org/doc/libs/1_66_0/libs/math/doc/html/special.html##online documentation::
  serves as the primary reference for the following functions.
 
 Many of the functions are only valid in certain numerical ranges. The following tour will
@@ -19,9 +22,10 @@ menu to jump between function families.
 
 section:: Before you get started...
 
+
 Define the following functions that will lay out the plots for you:
 
-CODE::
+code::
 (
 var genCol, getPlotLay, multiPlot, layOutPlots, plotSpecs;
 
@@ -124,7 +128,7 @@ getPlotLay = { |plot, text|
 
 section:: Number Series
 
-CODE::
+code::
 /* Bernouli Numbers */
 
 //   Odd numbered Bernoulli numbers are zero, except B1
@@ -143,8 +147,10 @@ section:: Gamma Functions
 
 subsection:: Gamma, Log Gamma, Digamma, Trigamma, Polygamma
 
+
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
-CODE::
+
+code::
 (
 var checkCall, plotSpecs;
 // make sure z isn't a negative integer
@@ -193,8 +199,10 @@ plotSpecs = [
 
 subsection:: Gamma Ratios, Incomplete/Inverses, and Derivatives of Gamma Functions
 
+
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
-CODE::
+
+code::
 (
 var plotSpecs = [
 	[   \gammaP,
@@ -229,7 +237,7 @@ var plotSpecs = [
 
 section:: Factorials and Binomial Coefficients
 
-CODE::
+code::
 /*  Factorial  */
 // Warning: overflows i > 170
 (1..170).do{ |i| (i.asString + factorial(i.asFloat)).postln };
@@ -256,8 +264,10 @@ section:: Beta Functions
 
 subsection:: Beta Functions, Incomplete and Derivative
 
+
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
-CODE::
+
+code::
 (
 var as = [9,7,5,2,1];
 var bs = [1,2,5,7,9];
@@ -302,8 +312,10 @@ var plotSpecs = [
 
 subsection:: Incomplete Beta Function Inverses
 
+
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
-CODE::
+
+code::
 (
 var abs = [9,7,5,2,1];
 var bs = [1,2,5,7,9];
@@ -349,8 +361,10 @@ var plotSpecs = [
 
 section:: Error Functions
 
+
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
-CODE::
+
+code::
 (
 var erfSamps = (-3, -2.995 .. 3);
 var plotSpecs = [
@@ -386,8 +400,10 @@ section:: Polynomials
 
 subsection:: Legendre (and Associated) Polynomials
 
+
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
-CODE::
+
+code::
 (
 var plotSpecs = [
 	[   { |l, x| legendreP(l, x.clip(-1,1)) },
@@ -429,8 +445,10 @@ var plotSpecs = [
 
 subsection:: Laguerre (and Associated) Polynomials
 
+
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
-CODE::
+
+code::
 (
 var plotSpecs = [
 	[   \laguerre,
@@ -457,8 +475,10 @@ var plotSpecs = [
 
 subsection:: Hermite Polynomials
 
+
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
-CODE::
+
+code::
 (
 var plotSpecs = [
 	[   \hermite,
@@ -475,8 +495,10 @@ var plotSpecs = [
 
 subsection:: Chebyshev Polynomials
 
+
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
-CODE::
+
+code::
 (
 var ns = (0..6);
 var samps = (-1, -0.995 .. 1);
@@ -506,8 +528,10 @@ var plotSpecs = [
 
 subsection:: Spherical Harmonics
 
+
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
-CODE::
+
+code::
 (
 var samps = (-2pi, -1.995pi .. 2pi);
 var dupN = { |n| n.dup(n*2+1) };
@@ -552,8 +576,10 @@ section:: Bessel Functions
 
 subsection:: Bessel and Modified Bessel Functions
 
+
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
-CODE::
+
+code::
 (
 var plotSpecs = [
 	[   \cylBesselJ,
@@ -594,8 +620,11 @@ var plotSpecs = [
 
 
 subsection:: Derivatives of Bessel and Modified Bessel Functions
+
+
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
-CODE::
+
+code::
 (
 var bPrimeVs = (0..5);
 var modBPrimeVs = [0,2,5,7,10];
@@ -641,8 +670,10 @@ section:: Hankel Functions
 
 subsection:: Cyclic Hankel Functions
 
+
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
-CODE::
+
+code::
 (
 var ns = (0..3);
 var range = (0.001, 0.025 .. 6);
@@ -676,8 +707,10 @@ var plotSpecs = [
 
 subsection:: Spherical Hankel Functions
 
+
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
-CODE::
+
+code::
 (
 var ns = (0..3);
 var range = (0.001, 0.025 .. 6);
@@ -711,8 +744,10 @@ var plotSpecs = [
 
 section:: Airy Functions
 
+
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
-CODE::
+
+code::
 (
 var aiSamps = (-20, -19.95 .. 20);
 var biSamps = (-20, -19.95 .. 3);
@@ -743,8 +778,10 @@ var plotSpecs = [
 
 section:: Elliptic Integrals
 
+
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
-CODE::
+
+code::
 (
 var samps = (-1, -0.995 ..1);
 var args1 = [0.5,0.75,1.25,pi/2]; // phis for first/second kind
@@ -812,8 +849,10 @@ var plotSpecs = [
 
 section:: Jacobi Elliptic Functions
 
+
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
-CODE::
+
+code::
 (
 var plotSpecs =
 [
@@ -845,8 +884,10 @@ var plotSpecs =
 
 section:: Zeta Functions
 
+
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
-CODE::
+
+code::
 (
 var plotSpecs = [
 	[   \zeta,
@@ -868,8 +909,10 @@ var plotSpecs = [
 
 section:: Exponential Integrals
 
+
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
-CODE::
+
+code::
 (
 var plotSpecs = [
 	[   \expintEn,
@@ -891,8 +934,10 @@ var plotSpecs = [
 
 section:: Basic Functions
 
+
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
-CODE::
+
+code::
 (
 var plotSpecs = [
 	[   \sinPi,
@@ -928,8 +973,10 @@ var plotSpecs = [
 
 section:: Sinus Cardinal (Sinc) and Hyperbolic Sinus Cardinal Functions, Inverse Hyperbolic Functions
 
+
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
-CODE::
+
+code::
 (
 var plotSpecs = [
 	[   \sincPi,
@@ -961,8 +1008,10 @@ var plotSpecs = [
 
 section:: Owen's T Function
 
+
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
-CODE::
+
+code::
 (
 var plotSpecs = [
 	[   { |a, h| owensT(h, a) },

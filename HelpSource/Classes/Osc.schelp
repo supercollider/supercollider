@@ -1,10 +1,12 @@
-class:: Osc
-summary:: Interpolating wavetable oscillator.
+title:: Osc
+summary:: interpolating wavetable oscillator
+categories:: UGens>Generators>Deterministic
 related:: Classes/COsc, Classes/OscN, Classes/VOsc, Classes/VOsc3, Classes/Wavetable
-categories::  UGens>Generators>Deterministic
 
 
 description::
+
+
 Linear interpolating wavetable lookup oscillator with frequency and
 phase modulation inputs.
 
@@ -25,18 +27,25 @@ the 'asWavetable' message, thereby creating a Wavetable object in the required f
 
 classmethods::
 
+
 method::ar, kr
+
 argument::bufnum
 Buffer index.
+
 argument::freq
-Frequency in Hertz.
+frequency in Hertz.
+
 argument::phase
-Phase offset or modulator in radians.
+phase offset or modulator in radians.
 (Note: phase values should be within the range +-8pi. If your phase values are larger, then simply use code::.mod(2pi):: to wrap them.)
+
 argument::mul
-Output will be multiplied by this value.
+output will be multiplied by this value.
+
 argument::add
-This value will be added to the output.
+this value will be added to the output.
+
 
 examples::
 

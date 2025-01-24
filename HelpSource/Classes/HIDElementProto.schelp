@@ -1,132 +1,183 @@
-TITLE:: HIDElementProto
-summary:: Prototype HID element to match with HIDFunc
+title:: HIDElementProto
+summary:: prototype HID element to match with HIDFunc
 categories:: External Control>HID
 related:: Classes/HIDFunc, Classes/HIDdef, Classes/HIDProto, Classes/HID, Classes/HIDElement, Classes/HIDInfo, Guides/Working_with_HID
 
+
 description::
+
+
 Human input devices can be used as controllers for making music. This class can be used in conjunction with link::Classes/HIDFunc:: or link::Classes/HIDdef:: to match incoming messages with a particular link::Classes/HID:: device.
 
 HIDElementProto has all the variables that specify an HID element. The more of these variables you specify, the more need to be matched when filtering the incoming HID data.
 
 
-CLASSMETHODS::
+classmethods::
+
 
 method::new
+
 creates a new instance of HIDElementProto.
 
-method::newType
-creates a new instance of HIDElementProto based on usage id and usage page id of the element.
-argument::uName
-Name of the usage ID to match
-argument::pName
-Name of the usage page to match
 
-returns:: an HIDElementProto
+method::newType
+
+creates a new instance of HIDElementProto based on usage id and usage page id of the element.
+
+argument::uName
+name of the usage ID to match
+
+argument::pName
+name of the usage page to match
+
+returns::
+
+an HIDElementProto
 
 
 method::newTypeID
-creates a new instance of HIDElementProto based on usage id and usage page id of the element.
-argument::uID
-Usage ID to match
-argument::pID
-Usage page ID to match
 
-returns:: an HIDElementProto
+creates a new instance of HIDElementProto based on usage id and usage page id of the element.
+
+argument::uID
+usage ID to match
+
+argument::pID
+usage page ID to match
+
+returns::
+
+an HIDElementProto
+
 
 method::newFromDict
+
 creates a new instance of HIDElementProto based on an IdentityDictionary with a set of parameters to match.
+
 argument::dict
-An IdentityDictionary with a set of parameters to match. The keys in the dictionary should be one of the instance variables of HIDElementProto.
+an IdentityDictionary with a set of parameters to match. The keys in the dictionary should be one of the instance variables of HIDElementProto.
 
-returns:: an HIDElementProto
+returns::
+
+an HIDElementProto
 
 
-
-INSTANCEMETHODS::
+instancemethods::
 
 
 subsection:: Instance variables that can be used to match a device
 
+
 method::id
-The element index that should be matched. This index may vary between operating systems (see also link::Classes/HIDElement::).
+
+the element index that should be matched. This index may vary between operating systems (see also link::Classes/HIDElement::).
 
 
 method::usageName
-The usage name of the element to match (see also link::Classes/HIDElement::).
+
+the usage name of the element to match (see also link::Classes/HIDElement::).
+
 
 method::pageName
-The usage page name of the element to match (see also link::Classes/HIDElement::).
+
+the usage page name of the element to match (see also link::Classes/HIDElement::).
+
 
 method::usage
-The usage index of the element to match (see also link::Classes/HIDElement::).
+
+the usage index of the element to match (see also link::Classes/HIDElement::).
+
 
 method::usagePage
-The usage page index of the element to match (see also link::Classes/HIDElement::).
+
+the usage page index of the element to match (see also link::Classes/HIDElement::).
 
 
 method::usageMin
-The minimum usage index of the element to match (see also link::Classes/HIDElement::).
+
+the minimum usage index of the element to match (see also link::Classes/HIDElement::).
 
 
 method::usageMax
-The maximum usage index of the element to match (see also link::Classes/HIDElement::).
 
+the maximum usage index of the element to match (see also link::Classes/HIDElement::).
 
 
 method::type
-The type of the element to match (see also link::Classes/HIDElement::).
+
+the type of the element to match (see also link::Classes/HIDElement::).
 
 
 method::typeSpec
-The typeSpec of the element to match (see also link::Classes/HIDElement::).
+
+the typeSpec of the element to match (see also link::Classes/HIDElement::).
 
 
 method::ioType
-The IO type of the element to match - input (1), output (2) or feature (3) (see also link::Classes/HIDElement::).
+
+the IO type of the element to match - input (1), output (2) or feature (3) (see also link::Classes/HIDElement::).
 
 
 method::iotypeName
-The IO type of the element to match - code::\input::, code::\output:: or code::\feature:: (see also link::Classes/HIDElement::).
+
+the IO type of the element to match - code::\input::, code::\output:: or code::\feature:: (see also link::Classes/HIDElement::).
 
 
 subsection:: Methods to match
 
-method::matches
-Match the argument with the template.
-argument::ele
-An instance of HIDElement
 
-returns:: a Boolean indicating whether the incoming HID matches the template
+method::matches
+
+matches the argument with the template.
+
+argument::ele
+an instance of HIDElement
+
+returns::
+
+a Boolean indicating whether the incoming HID matches the template
 
 
 method::shouldMatch
-The variables that should be matched when filtering
 
-returns:: a Set with variable names.
+the variables that should be matched when filtering
+
+returns::
+
+a Set with variable names.
 
 
 subsection:: Methods to add matching parameters
 
+
 method::addTypeMatch
+
 adds a match for usage name and usage page name of the element.
+
 argument::uName
-The usage name to match
+the usage name to match
+
 argument::pName
-The page name to match
+the page name to match
+
 
 method::addTypeIDMatch
+
 adds a match for usage id and usage page id of the element.
+
 argument::uID
-The usage id to match
+the usage id to match
+
 argument::pID
-The usage page id to match
+the usage page id to match
 
 
 method::addDictionaryMatch
-adds an IdentityDictionary with a set of parameters to match. The keys in the dictionary should be one of the instance variables of HIDElementProto.
-argument::dict
-An IdentityDictionary with a set of parameters to match.
 
+adds an IdentityDictionary with a set of parameters to match. The keys in the dictionary should be one of the instance variables of HIDElementProto.
+
+argument::dict
+an IdentityDictionary with a set of parameters to match.
 
 
 examples::

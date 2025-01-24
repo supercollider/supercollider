@@ -1,10 +1,12 @@
-class:: FOS
-summary:: First order filter section.
+title:: FOS
+summary:: first order filter section
+categories:: UGens>Filters>Linear
 related:: Classes/SOS
-categories::  UGens>Filters>Linear
 
 
 description::
+
+
 A standard first order filter section. Filter coefficients are given
 directly rather than calculated for you. Formula is equivalent to:
 
@@ -15,17 +17,25 @@ out(i) = (a0 * in(i)) + (a1 * in(i-1)) + (b1 * out(i-1))
 
 classmethods::
 
+
 method::ar, kr
+
 argument::in
-Signal input.
+signal input.
+
 argument::a0
-See formula above.
+see formula above.
+
 argument::a1
-See formula above.
+see formula above.
+
 argument::b1
-See formula above.
+see formula above.
+
 argument::mul
+
 argument::add
+
 
 examples::
 

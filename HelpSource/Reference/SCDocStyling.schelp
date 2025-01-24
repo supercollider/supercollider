@@ -1,5 +1,5 @@
 title:: SCDoc Styling
-summary:: Help system CSS styles customization and themes
+summary:: help system CSS styles customization and themes
 categories:: HelpSystem
 related:: Guides/WritingHelp, Classes/SCDoc, Classes/SCDocHTMLRenderer
 
@@ -19,6 +19,7 @@ SCDoc.helpTargetDir.openOS
 
 
 section:: Colors
+
 
 Colors are defined as CSS variables, so that to change any color, it's
 sufficient for a user to override the relevant variable in their
@@ -48,6 +49,7 @@ and how a theme can be developed.
 
 
 subsection:: Themes
+
 
 CSS themes distributed in teletype::HelpTargetDir/themes:: are
 provided only to match ScIDE's UI themes. There is currently no

@@ -1,10 +1,15 @@
-CLASS::RawArray
-categories::Collections>Ordered
-summary:: Abstract superclass for arrays holding raw data values
+title:: RawArray
+summary:: abstract superclass for arrays holding raw data values
+categories:: Collections>Ordered
+
 
 description::
+
+
 RawArray is the abstract superclass of a group of array classes that hold raw data values.
 
-INSTANCEMETHODS::
 
-private::archiveAsCompileString, archiveAsObject
+instancemethods::
+
+
+private:: archiveAsCompileString, archiveAsObject

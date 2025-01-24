@@ -1,16 +1,23 @@
-class:: SCImageFilter
+title:: SCImageFilter
 summary:: filter class to use with SCImage
 categories:: GUI>Views
 related:: Classes/SCImage, Classes/SCImageKernel
 
+
 description::
+
+
 currently this class represents the CoreImage Filters you can apply to a SCImage. All the built-in filters and docs: http://developer.apple.com/documentation/GraphicsImaging/Reference/CoreImageFilterReference/Reference/reference.html
 
-CLASSMETHODS::
 
-PRIVATE::prFilterSet, prGetFilterAttributes, initClass, prGetFilterNames
+classmethods::
 
-METHOD::new
+
+private:: prFilterSet, prGetFilterAttributes, initClass, prGetFilterNames
+
+
+method::new
+
 code::
 f = SCImageFilter.new(\CIStarShineGenerator);
 f.attributes;
@@ -19,13 +26,18 @@ f.attributes;
 f = SCImageFilter.new(\CIStarShineGenerator, [\center, [200, 200], \radius, 200*0.05]);
 f.values; //
 ::
-argument::filterName
-The filter name link::Classes/Symbol:: or link::Classes/String::
-argument::args
-The filter name link::Classes/Symbol:: or link::Classes/String::
 
-METHOD::filterCategories
+argument::filterName
+the filter name link::Classes/Symbol:: or link::Classes/String::
+
+argument::args
+the filter name link::Classes/Symbol:: or link::Classes/String::
+
+
+method::filterCategories
+
 returns a Dictionary containing all the filters associated by categories.
+
 code::
 // getting filter categories (dictionary)
 (
@@ -58,17 +70,24 @@ n;
 )
 ::
 
-INSTANCEMETHODS::
 
-PRIVATE::prAttributeRange, doesNotUnderstand
+instancemethods::
 
-METHOD::attributes
+
+private:: prAttributeRange, doesNotUnderstand
+
+
+method::attributes
+
 returns an link::Classes/IdentityDictionary:: containing for each association:
+
 list::
 ## the attribute/property name as the key.
 ## the SuperCollider link::Classes/Class:: you should use as an argument to set the attribute.
 ::
+
 Once you know the attributes you can set them like using normal instance setters, use the name and append '_'.
+
 code::
 (
 f = SCImageFilter.new(\CIStarShineGenerator);
@@ -81,8 +100,11 @@ f.center_([200, 200]);
 f.radius_(200*0.05);
 ::
 
-METHOD::attributeRange
+
+method::attributeRange
+
 gets the numerical range and the default Value for an attribute. returns an Array as code::[min, max, default]::. min, max, or default may be a link::Classes/Float::, a link::Classes/Color::, an link::Classes/Array:: or link::Classes/Nil::.
+
 code::
 // a SCImageFilter
 f = SCImageFilter.new(\CIFlashTransition);
@@ -101,8 +123,11 @@ f.attributes.keysDo({ |attr|
 )
 ::
 
-METHOD::values
+
+method::values
+
 returns all the values you set for each attributes. If a value is not explicitly set for an attribute, it will be set to default when applied to the SCImage.
+
 code::
 (
 	f = SCImageFilter.new(\CIStarShineGenerator);
@@ -116,8 +141,11 @@ code::
 )
 ::
 
-METHOD::set
+
+method::set
+
 sets the attributes for this SCImageFilter
+
 code::
 (
 	f = SCImageFilter.new(\CIStarShineGenerator);
@@ -126,10 +154,14 @@ code::
 )
 ::
 
-METHOD::enable
+
+method::enable
+
 enables or not the Filter when applied to a SCImage.
+
 argument::value
-If this is code::false::, applying the filter will do nothing.
+if this is code::false::, applying the filter will do nothing.
+
 
 examples::
 

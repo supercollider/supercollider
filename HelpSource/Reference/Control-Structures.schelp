@@ -1,4 +1,4 @@
-title::Control Structures
+title:: Control Structures
 summary:: flow control
 categories:: Language
 related:: Classes/Boolean
@@ -9,13 +9,16 @@ See link::Reference/Syntax-Shortcuts:: for the various ways expressions can be w
 
 section:: Basic Control Structures
 
+
 method::if
-Conditional execution is implemented via the code::if:: message. The code::if:: message is sent to an expression which must return a link::Classes/Boolean:: value.
+
+conditional execution is implemented via the code::if:: message. The code::if:: message is sent to an expression which must return a link::Classes/Boolean:: value.
 
 In addition it takes two arguments: a function to execute if the expression is code::true:: and another optional function to execute if the expression is code::false::. The code::if:: message returns the value of the function which is executed. If the falseFunc is not present and the expression is code::false::, then the result of the if message is code::nil::.
 
 discussion::
-Syntax
+Syntax:
+
 code::
 if(expr) { true body } { false body };
 
@@ -26,8 +29,10 @@ if(expr, trueFunc, falseFunc);
 expr.if (trueFunc, falseFunc);
 ::
 
-Examples
+Examples:
+
 code::
+(
 if([false, true].choose) {
 	"expression was true".postln  // true function
 } {
@@ -50,10 +55,12 @@ x.postln;
 
 
 method::while
-The while message implements conditional execution of a loop. If the testFunc answers code::true:: when evaluated, then the loopFunc is evaluated and the process is repeated. Once the testFunc Returns code::false::, the loop terminates.
+
+the while message implements conditional execution of a loop. If the testFunc answers code::true:: when evaluated, then the loopFunc is evaluated and the process is repeated. Once the testFunc Returns code::false::, the loop terminates.
 
 discussion::
 Syntax
+
 code::
 while { testFunc body } { loopFunc body };
 
@@ -65,6 +72,7 @@ while({ testFunc body }, { loopFunc body });
 ::
 
 Example
+
 code::
 (
 i = 0;
@@ -76,10 +84,12 @@ while expressions are also optimized by the compiler if they do not contain vari
 
 
 method::for
-The for message implements iteration over an integer series from a starting value to an end value stepping by one each time. A function is evaluated each iteration and is passed the iterated numeric value as an argument.
+
+the for message implements iteration over an integer series from a starting value to an end value stepping by one each time. A function is evaluated each iteration and is passed the iterated numeric value as an argument.
 
 discussion::
 Syntax
+
 code::
 for(startValue, endValue) { loop body }
 
@@ -91,15 +101,19 @@ startValue.for ( endValue, function )
 ::
 
 Example
+
 code::
 for(3, 7) { arg i; i.postln };  // prints values 3 through 7
 ::
 
+
 method::forBy
-The forBy selector implements iteration over an integer series with a variable step size. A function is evaluated each iteration and is passed the iterated numeric value as an argument.
+
+the forBy selector implements iteration over an integer series with a variable step size. A function is evaluated each iteration and is passed the iterated numeric value as an argument.
 
 discussion::
 Syntax
+
 code::
 forBy(startValue, endValue, stepValue) { loop body };
 
@@ -110,16 +124,19 @@ startValue.forBy(endValue, stepValue, function);
 ::
 
 Example
+
 code::
 forBy(0, 8, 2) { arg i; i.postln };  // prints values 0 through 8 by 2's
 ::
 
 
 method::do
-Do is used to iterate over a link::Classes/Collection::. Positive Integers also respond to code::do:: by iterating from zero up to their value. Collections iterate, calling the function for each object they contain. Other kinds of Objects respond to do by passing themselves to the function one time. The function is called with two arguments, the item, and an iteration counter.
+
+code::do:: is used to iterate over a link::Classes/Collection::. Positive Integers also respond to code::do:: by iterating from zero up to their value. Collections iterate, calling the function for each object they contain. Other kinds of Objects respond to do by passing themselves to the function one time. The function is called with two arguments, the item, and an iteration counter.
 
 discussion::
 Syntax
+
 code::
 collection.do { loop body };
 
@@ -132,6 +149,7 @@ do(collection) { loop body };
 ::
 
 Example
+
 code::
 [ 1, 2, "abc", (3@4) ].do { arg item, i; [i, item].postln; };
 
@@ -154,7 +172,8 @@ Routine {
 }.do { arg item; item.postln };  // 'do' applies to the Routine
 ::
 
-Note:: The syntax code::(8..20).do:: uses an optimization to avoid generating an array that is used only for iteration (but which would be discarded thereafter). The return value of code:: (8..20).do { |item| item.postln } :: is 8, the starting value.
+note::
+The syntax code::(8..20).do:: uses an optimization to avoid generating an array that is used only for iteration (but which would be discarded thereafter). The return value of code::(8..20).do { |item| item.postln }:: is 8, the starting value.
 
 However, if code::do:: is written as an infix binary operator, as in code::(8..20) do: { |item| item.postln }::, then it will generate the series as an array first, before calling Array:do. One side effect of this is that it is valid to code::do:: over an infinite series within a routine only if code::do:: is written as a method call. If it is written as a binary operator, you will get a "wrong type" error because the array must be finite.
 
@@ -182,19 +201,27 @@ r.next;
 ERROR: Primitive '_SimpleNumberSeries' failed.
 Wrong type.
 ::
+
 ::
 
+
 method::switch
+
 Object implements a switch method which allows for conditional evaluation with multiple cases. These are implemented as pairs of test objects (tested using if this == test.value) and corresponding functions to be evaluated if code::true::.
 
 The switch statement will be inlined if the test objects are all Floats, Integers, Symbols, Chars, code::nil::, code::false::, code::true:: and if the functions have no variable or argument declarations. The inlined switch uses a hash lookup (which is faster than nested if statements), so it should be very fast and scale to any number of clauses.
 
-note::Hash lookup by definition implies testing emphasis::identity:: rather than equality: a code::switch:: construction that is not inlined will test code::==::, while one that is inlined will test code::===::. See the examples. One implication is that strings should be avoided: code::switch(text) { "abc" } { ... }:: may not match, even if code::text == "abc"::. Symbols are preferred.::
+note::
+Hash lookup by definition implies testing emphasis::identity:: rather than equality: a code::switch:: construction that is not inlined will test code::==::, while one that is inlined will test code::===::. See the examples. One implication is that strings should be avoided: code::switch(text) { "abc" } { ... }:: may not match, even if code::text == "abc"::. Symbols are preferred.
+::
 
-note::Floating point numbers may sometimes appear to be equal while differing slightly in their binary representation: code::(2/3) == (1 - (1/3)):: is code::false::. Therefore floats should be avoided in code::switch:: constructions.::
+note::
+Floating point numbers may sometimes appear to be equal while differing slightly in their binary representation: code::(2/3) == (1 - (1/3)):: is code::false::. Therefore floats should be avoided in code::switch:: constructions.
+::
 
 discussion::
 Syntax
+
 code::
 switch(value)
 { testvalue1 } { truebody1 }
@@ -213,7 +240,8 @@ switch(value,
 );
 ::
 
-Examples
+Examples:
+
 code::
 (
 var x = 0; //also try 1
@@ -238,7 +266,9 @@ switch (z.choose.postln,
 ).postln;
 )
 ::
+
 or:
+
 code::
 (
 var x, z;
@@ -276,16 +306,19 @@ switch(1.0)
 	{ "no" }
 )
 
-WARNING: Float:switch is unsafe, rounding via Float:asInteger:switch
+warning::
+Float:switch is unsafe, rounding via Float:asInteger:switch
 -> yes
 ::
 
 
-method::case
-Function implements a case method which allows for conditional evaluation with multiple cases. Since the receiver represents the first case this can be simply written as pairs of test functions and corresponding functions to be evaluated if code::true::. Case is inlined and is therefore just as efficient as nested if statements.
+method:: case
+
+function implements a case method which allows for conditional evaluation with multiple cases. Since the receiver represents the first case this can be simply written as pairs of test functions and corresponding functions to be evaluated if code::true::. Case is inlined and is therefore just as efficient as nested if statements.
 
 discussion::
 Example
+
 code::
 (
 var i, x, z;
@@ -302,10 +335,14 @@ x.postln;
 )
 ::
 
-method::try
-Function implements a code::try:: method which allows catching exceptions thrown by code and run the exception handler. For more information see link::Classes/Exception::.
+
+method:: try
+
+function implements a code::try:: method which allows catching exceptions thrown by code and run the exception handler. For more information see link::Classes/Exception::.
+
 discussion::
 Example
+
 code::
 try {
 	...code... 
@@ -314,14 +351,17 @@ try {
 };
 ::
 
-method::protect
-Function implements a code::protect:: method which allows protecting code from exceptions thrown by code.
+
+method:: protect
+
+function implements a code::protect:: method which allows protecting code from exceptions thrown by code.
 The difference with code::try:: is the exception handler code is always run, even if there is no exception.
 If an exception occurs, it is rethrown after the exception handler block is run.
 For more information see link::Classes/Exception::.
 
 discussion::
 Example
+
 code::
 file = File(path, "r");
 protect {
@@ -334,12 +374,15 @@ protect {
 
 section:: Other Control Structures
 
+
 Using Functions, many control structures can be defined like the ones above. In the class link::Classes/Collection#Iteration:: there are many more messages defined for iterating over Collections.
 
 
 section:: Inline optimization
 
+
 code::if::, code::while::, code::switch:: and code::case:: expressions are optimized (i.e. inlined) by the compiler if they do not contain variable declarations in the functions. The optimization plucks the code from the functions and uses a more efficient jump statement:
+
 code::
 (
 {
@@ -368,6 +411,7 @@ BYTECODES: (20)
 ::
 
 Failure to inline due to variable declarations:
+
 code::
 (
 {
@@ -380,7 +424,8 @@ code::
 }.def.dumpByteCodes
 )
 
-WARNING: FunctionDef contains variable declarations and so will not be inlined.
+warning::
+FunctionDef contains variable declarations and so will not be inlined.
   in file 'selected text'
   line 4 char 14:
 

@@ -1,16 +1,23 @@
-class:: PlazyEnvir
+title:: PlazyEnvir
 summary:: instantiate new patterns from a function
-related:: Classes/Plazy, Classes/PlazyEnvirN, Classes/Pfunc
 categories:: Streams-Patterns-Events>Patterns>Function
+related:: Classes/Plazy, Classes/PlazyEnvirN, Classes/Pfunc
+
 
 description::
+
+
 evaluates a function that returns a pattern and embeds it in a stream. In difference to link::Classes/Plazy::, the function is evaluated using the environment passed in by the stream.
 
-ClassMethods::
+
+classmethods::
+
 
 method::new
+
 argument::func
-A link::Classes/Function:: that returns a pattern or any other valid pattern input.
+a link::Classes/Function:: that returns a pattern or any other valid pattern input.
+
 
 examples::
 

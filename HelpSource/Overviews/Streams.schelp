@@ -1,5 +1,5 @@
 title:: Streams
-summary:: Patterns/Streams Help overview
+summary:: patterns/streams Help overview
 categories:: Streams-Patterns-Events
 related:: Classes/Stream, Classes/Pattern
 
@@ -30,10 +30,12 @@ section:: Specific classes
 
 subsection:: ListPatterns
 
+
 classtree::ListPattern
 
 
 subsection:: FilterPatterns
+
 
 classtree::FilterPattern
 

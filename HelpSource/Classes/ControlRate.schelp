@@ -1,27 +1,35 @@
-class:: ControlRate
-summary:: Server control rate.
+title:: ControlRate
+summary:: server control rate
+categories:: UGens>Info
 related:: Classes/RadiansPerSample, Classes/SampleDur, Classes/SampleRate, Classes/SubsampleOffset
-categories::  UGens>Info
 
 
 description::
+
+
 gets the current control rate of the server.
 
 
 classmethods::
 
-method::ir
-returns:: 
-The current control rate of the server.
 
-equivalent to 1 / link::Classes/ControlDur::
+method::ir
+
+returns::
+
+the current control rate of the server.
+
+Equivalent to teletype::1 / ControlDur.ir::. See link::Classes/ControlDur::.
+
 
 examples::
+
 code::
 { ControlRate.ir.poll }.play;
 ::
 
 compare ControlRate (.kr) and link::Classes/SampleRate:: (.ar)
+
 code::
 ( 
 {
@@ -44,6 +52,7 @@ code::
 ::
 
 listen to difference:
+
 code::
 (
 {
@@ -56,6 +65,7 @@ code::
 More about difference between .kr (control rate) and .ar (audio rate) can be found in link::Tutorials/Mark_Polishook_tutorial/08_Rates::
 
 play a sine tone at control rate
+
 code::
 { SinOsc.ar(ControlRate.ir) * 0.1 }.play;
 ::

@@ -1,10 +1,12 @@
-class:: InRange
-summary:: Tests if a signal is within a given range.
+title:: InRange
+summary:: tests if a signal is within a given range
+categories:: UGens>Maths
 related:: Classes/InRect, Classes/Schmidt
-categories::  UGens>Maths
 
 
 description::
+
+
 If  code::in::  is ≥  code::lo::  and ≤
 code::hi::  output 1.0, otherwise output 0.0. Output is
 initially zero.
@@ -12,13 +14,17 @@ initially zero.
 
 classmethods::
 
+
 method::ar, kr, ir
+
 argument::in
-Signal to be tested.
+signal to be tested.
+
 argument::lo
-Low threshold.
+low threshold.
+
 argument::hi
-High threshold.
+high threshold.
 
 
 examples::

@@ -1,27 +1,37 @@
-class:: PMOsc
-summary:: Phase modulation oscillator pair.
-categories::  UGens>Generators>Deterministic
+title:: PMOsc
+summary:: phase modulation oscillator pair
+categories:: UGens>Generators>Deterministic
 
 
 description::
+
+
 Phase modulation sine oscillator pair.
 
 
 classmethods::
 
+
 method::ar, kr
+
 argument::carfreq
-Carrier frequency in cycles per second.
+carrier frequency in cycles per second.
+
 argument::modfreq
-Modulator frequency in cycles per second.
+modulator frequency in cycles per second.
+
 argument::pmindex
-The modulation index, representing the ratio of modulator deviation to modulator frequency. Higher values generally produce denser spectra.
+the modulation index, representing the ratio of modulator deviation to modulator frequency. Higher values generally produce denser spectra.
+
 argument::modphase
-A modulation input for the modulator's phase in radians.
+a modulation input for the modulator's phase in radians.
+
 argument::mul
-Output will be multiplied by this value.
+output will be multiplied by this value.
+
 argument::add
-This value will be added to the output.
+this value will be added to the output.
+
 
 examples::
 

@@ -1,18 +1,25 @@
-class:: Free
-summary:: When triggered, frees a node.
+title:: Free
+summary:: when triggered, frees a node
+categories:: UGens>Synth control
 related:: Classes/Pause, Classes/FreeSelf
-categories::  UGens>Synth control
+
 
 description::
+
+
 When triggered, frees a node.
+
 
 classmethods::
 
+
 method::kr
+
 argument::trig
-Trigger input
+triggers input
+
 argument::id
-Node to be freed.
+node to be freed.
 
 
 examples::

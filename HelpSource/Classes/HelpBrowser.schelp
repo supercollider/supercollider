@@ -1,70 +1,114 @@
-class:: HelpBrowser
+title:: HelpBrowser
+summary:: browses the SuperCollider help documentation
 categories:: HelpSystem, GUI>Interfaces
 related:: Classes/SCDoc
-summary:: Browse the SuperCollider help documentation
+
 
 description::
+
+
 HelpBrowser is a GUI help browser that lets you browse the documentation of SuperCollider. It is coupled with SCDoc to allow on-the-fly rendering of HTML help files.
 
 There are two different help browsers in SuperCollider: the help browser built into SCIDE, and this HelpBrowser class implemented with sclang's GUI features. Both are implemented with the same underlying Qt WebEngine browser.
 
 Since the Qt WebEngine dependency is hefty and difficult to install on some systems, it is possible for sclang to have been built without WebView support (using the CMake flag code:: -DSC_USE_QTWEBENGINE=OFF :: at compile time). If so, attempting to invoke this class will throw an error.
 
+
 classmethods::
+
+
 private:: getOldWrapUrl, initClass
 
+
 method::instance
-The singleton HelpBrowser instance.
+
+the singleton HelpBrowser instance.
+
 
 method::new
+
 creates a new HelpBrowser instance with given home URL.
 
+
 method::defaultHomeUrl
+
 gets/sets the default home URL.
 
+
 method::openNewWindows
+
 gets/sets the default for "open in new windows" toggle.
 
+
 method::goTo
-Go to url with singleton instance or a new window, depending on the code::openNewWindows:: setting.
+
+goes to url with singleton instance or a new window, depending on the code::openNewWindows:: setting.
+
 
 method::openHelpFor
+
 opens the relevant help page for given text in the singleton HelpBrowser instance.
 
+
 method::openSearchPage
+
 opens the help search page with given text in the singleton HelpBrowser instance.
 
+
 method::openBrowsePage
+
 opens the category browser page in the singleton HelpBrowser instance.
+
 argument::category
-An optional String to start at specified category, like "UGens>Filters"
+an optional String to start at specified category, like "UGens>Filters"
+
 
 method::openHelpForMethod
+
 opens help for specified method.
+
 argument::method
 a link::Classes/Method::
+
+
 instancemethods::
+
+
 private:: init, openTextFile, startAnim, stopAnim
 
+
 method::homeUrl
+
 gets/sets the home URL.
 
+
 method::window
-The GUI window for this HelpBrowser.
+
+the GUI window for this HelpBrowser.
+
 discussion::
 Mainly useful for when you need to show the browser:
+
 code::
 HelpBrowser.instance.window.front;
 ::
 
+
 method::goTo
-Go to specific URL. If the URL points to a file under link::Classes/SCDoc#*helpTargetDir::, it will be rendered on demand if needed.
+
+goes to specific URL. If the URL points to a file under link::Classes/SCDoc#*helpTargetDir::, it will be rendered on demand if needed.
+
 
 method::goHome
-Go to the home URL.
+
+goes to the home URL.
+
 
 method::goBack
-Go back.
+
+goes back.
+
 
 method::goForward
-Go forward.
+
+goes forward.

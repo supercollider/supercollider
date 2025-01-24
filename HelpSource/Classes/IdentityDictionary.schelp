@@ -1,12 +1,16 @@
-CLASS::IdentityDictionary
+title:: IdentityDictionary
 summary:: associative collection mapping keys to values
-related::Classes/Environment, Classes/Event
-categories::Collections>Unordered
+categories:: Collections>Unordered
+related:: Classes/Environment, Classes/Event
+
 
 description::
+
+
 An IdentityDictionary is an associative collection mapping keys to values. Keys and values can be arbitrary objects, but for keys, often a link::Classes/Symbol:: is used.
 
 Often, the subclass link::Classes/Event:: is used as an IdentityDictionary, because there is a syntactical shortcut:
+
 code::
 a = (); // returns a new Event.
 a.put(\foo, 2.718);
@@ -24,6 +28,7 @@ IdentityDictionary is often used to assign names to instances of a particular cl
 
 
 subsection:: 'parent' and 'proto' variables
+
 
 IdentityDictionary has three levels of content: the dictionary itself, a code::proto::, and a code::parent::. code::proto:: and code::parent:: exist primarily for IdentityDictionary's subclass link::Classes/Event::, which uses the code::parent:: to store action functions that will be used when an event is played. Users may put additional default values into the code::proto::.
 
@@ -70,18 +75,20 @@ e[\b]
 ::
 
 
-CLASSMETHODS::
+classmethods::
+
 
 method::new
-The link::#-parent:: and link::#-proto:: instance variables allow additional IdentityDictionary's to provide default values. The precedence order for determining the value of a key is the IdentityDictionary, its prototype, its parent.
+
+the link::#-parent:: and link::#-proto:: instance variables allow additional IdentityDictionary's to provide default values. The precedence order for determining the value of a key is the IdentityDictionary, its prototype, its parent.
 
 When the instance variable link::#-know:: is link::Classes/True::, the IdentityDictionary responds to unknown messages by looking up the selector and evaluating the result with the dictionary as an argument. For example:
+
 code::
 a = IdentityDictionary(know: true);
 a.put(\foo, { |x, y| "--".postln; ("x:" ++ x).postln;  ("y:" ++ y).postln; y.squared });
 a.foo(-10.01);
 ::
-
 
 warning::
 Only keys that are not already instance methods of IdentityDictionary (or its superclasses) can be used in such a way. E.g. the key "free" will not work, because it is implemented in Object. This means that class extensions (see: link::Guides/WritingClasses::) can break code. It is advisable to use underscores in method names to make this improbable.
@@ -96,35 +103,48 @@ a.some_value = 8; // sets it to 8
 a.fuzzy_plus(7, 4);
 ::
 
-INSTANCEMETHODS::
+
+instancemethods::
 
 
 method::know
-If set to code::true::, the dictionary interprets method calls as look ups. This allows you to implement object prototypes (see above).
+
+if set to code::true::, the dictionary interprets method calls as look ups. This allows you to implement object prototypes (see above).
+
 
 method::putGet
+
 sets key to newValue, returns the previous value of key.
+
 code::
 a = (z: 100);
 x = a.putGet(\z, -1); // x is now 100
 ::
 
+
 method::includesKey
+
 returns code::true:: if the key exists in the dictionary
+
 code::
 (j:8).includesKey(\j) // true
 ::
 
+
 method::findKeyForValue
+
 returns the key for a given value (it'll return the first it finds, so this may be ambiguous).
+
 code::
 (j:8, k: 9).findKeyForValue(8); // returns \j
 ::
+
 If such reverse lookup is needed a lot, for efficiency you may consider using a link::Classes/TwoWayIdentityDictionary:: instead.
 
 
 method::proto, parent
-The two instance variables proto and parent may hold dictionaries which are used to look up all those keys that have no value in the current dictionary.
+
+the two instance variables proto and parent may hold dictionaries which are used to look up all those keys that have no value in the current dictionary.
 First, proto is looked up, then parent. In other words: proto overrides parent. This allows you to construct systems with complex defaults or multiple inheritance.
 
 code::
@@ -157,13 +177,17 @@ image::IdentityDictionary_01.png#Example schema: order of overriding in proto an
 
 
 method::insertParent
-Inserts a dictionary into the chain of parents of the receiver (rather than replacing the parent).
+
+inserts a dictionary into the chain of parents of the receiver (rather than replacing the parent).
+
 argument::newParent
-The dictionary that is added to the parent chain
+the dictionary that is added to the parent chain
+
 argument::insertionDepth
-Level at which the new parent is inserted. Zero (default) means directly above, Inf means at the top of the parent chain.
+level at which the new parent is inserted. Zero (default) means directly above, Inf means at the top of the parent chain.
+
 argument::reverseInsertionDepth
-If the new parent dictionary has parents itself, this parameter specifies where the original parents are placed in the new parent chain. Zero means directly above, Inf (default) means at the top of the chain.
+if the new parent dictionary has parents itself, this parameter specifies where the original parents are placed in the new parent chain. Zero means directly above, Inf (default) means at the top of the chain.
 
 
 image::IdentityDictionary_03.png#Compare a.insertParent(b, 0) and a.insertParent(b, 1)::
@@ -173,7 +197,9 @@ image::IdentityDictionary_04.png#Compare a.insertParent(b, 0, inf) and a.insertP
 
 subsection:: Timing support (Quant)
 
+
 method::nextTimeOnGrid, asQuant, timingOffset
+
 uses a dictionary to represent timing information.
 
 code::
@@ -194,5 +220,7 @@ a.play(quant: (quant: 1, phase: 1.0.rand));
 
 subsection:: Garbage collection
 
+
 method::freezeAsParent
-For optimizing the garbage collector load, objects can be frozen and become immutable. This method creates a new dictionary with the frozen instance as a parent so that all contents can be overwritten without losing this optimization.
+
+for optimizing the garbage collector load, objects can be frozen and become immutable. This method creates a new dictionary with the frozen instance as a parent so that all contents can be overwritten without losing this optimization.

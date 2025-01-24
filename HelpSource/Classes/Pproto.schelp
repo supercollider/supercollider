@@ -1,14 +1,17 @@
-class:: Pproto
-summary:: provide a proto event for an event stream
-related:: Classes/Pattern
+title:: Pproto
+summary:: provides a proto event for an event stream
 categories:: Streams-Patterns-Events>Patterns>Server Control
+related:: Classes/Pattern
+
 
 description::
+
+
 Pproto uses the strong::makeFunction:: to allocate resources (buffers, buses, groups) and create a protoEvent that makes those resources available to a pattern. It is fully compatible with non-realtime synthesis using strong::render::.
 
 The strong::makeFunction:: "makes" the protoEvent (i.e. protoEvent is code::currentEnvironment::). Typically, it defines and yields a sequence of events that create the needed resources using the following link::Overviews/Event_types:::
 
-definitionList::
+definitionlist::
 ## \allocRead || loads a file from ~path, starting at ~firstFileFrame, reading ~numFrames sample frames
 ## \cue || cues a file for DiskIn, with ~bufferSize frames
 ## \table || loads ~amps directly into a buffer
@@ -35,9 +38,11 @@ you can use Pproto to create effects that can be controlled by a pattern that ru
 
 A strong::cleanupFunction:: that deallocates resources when the pattern ends or is stopped is automatically created. It can be replaced with a user defined cleanup if needed. This function receives two arguments: strong::proto::, the prototype event, and strong::flag::, which is set code::false:: if all nodes have been freed already by link::Classes/CmdPeriod::.
 
+
 examples::
 
-note::The syntax used for patterns like Pbind and Pmono is a little bit different for making the code more readable. The difference has nothing to do with Pproto. This is the same: code::Pbind(\freq, 700, \amp, 0.1):: and code::Pbind(*[freq: 700, amp: 0.1])::
+note::
+The syntax used for patterns like Pbind and Pmono is a little bit different for making the code more readable. The difference has nothing to do with Pproto. This is the same: code::Pbind(\freq, 700, \amp, 0.1):: and code::Pbind(*[freq: 700, amp: 0.1])::
 ::
 
 

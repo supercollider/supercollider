@@ -1,9 +1,12 @@
-class:: MonitorGui
+title:: MonitorGui
 summary:: display and control a Monitor
 categories:: JITLib>GUI, Live Coding
 related:: Classes/NodeProxy, Classes/Ndef, Classes/JITGui, Classes/NdefGui
 
+
 description::
+
+
 MonitorGui displays the state of a link::Classes/NodeProxy::'s link::Classes/Monitor::. It is used in link::Classes/NdefGui::, link::Classes/ProxyMixer::, and link::Classes/NdefMixer::.
 
 
@@ -34,14 +37,18 @@ Ndef(\a).stop;
 Ndef(\a).play(0);
 ::
 
-ClassMethods::
 
-private::initClass
+classmethods::
+
+
+private:: initClass
 
 
 subsection:: Creation
 
+
 method::new
+
 code::
 g = MonitorGui(Ndef(\a));	// barebones
 (
@@ -63,63 +70,100 @@ MonitorGui.new(Ndef(\a), options: [\name, \fade])
 	// all of 'em
 MonitorGui.new(Ndef(\a), options: [\level, \name, \fade])
 ::
+
 argument::object
 the nodeproxy whose monitor state will be shown, or code::nil::.
+
 argument::parent
 a parent view where MonitorGui is to be shown. If code::nil::, a window is made.
+
 argument::bounds
 bounds where the view (or window) will be shown.
+
 argument::makeSkip
 a flag whether to create and start a link::Classes/SkipJack:: for auto-updating.
+
 argument::options
 an array of symbols for options of what to display.
 
 
 subsection:: Class Variables
 
+
 method::lastOutBus
+
 the highest outbus number to allow. The default is 99.
 
-InstanceMethods::
+
+instancemethods::
 
 
 subsection:: Instance Variables
 
+
 method::config
+
 some information on what to display
 
+
 method::ampSl
+
 an link::Classes/EZSlider:: for link::Classes/Monitor:: volume
 
+
 method::playBut
+
 a play button. Shift-click opens a dialog window for playN output routing by code
 
+
 method::setOutBox
+
 a numberbox to set output routing
 
+
 method::fadeBox
+
 a numberbox for setting monitor fadeTime.
 
 
 subsection:: Some Methods
 
+
 strong::Making various gui elements: ::
 
+
 method::makeViews
+
+
 method::makeVol
+
+
 method::makeNameView
+
+
 method::makePlayOut
+
+
 method::makeFade
+
 strong::Standard JITGui methods: ::
 
+
 method::setDefaults
+
 creates default layout sizes
 
+
 method::accepts
+
 accepts code::nil:: or link::Classes/NodeProxy::
 
+
 method::getState
+
 gets the object's current state
 
+
 method::checkUpdate
-compare previous state with current state, and update gui elements.
+
+compares previous state with current state, and update gui elements.

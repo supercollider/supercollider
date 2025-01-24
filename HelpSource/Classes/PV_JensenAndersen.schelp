@@ -1,10 +1,12 @@
-class:: PV_JensenAndersen
-summary:: FFT feature detector for onset detection.
+title:: PV_JensenAndersen
+summary:: FFT feature detector for onset detection
+categories:: UGens>FFT
 related:: Classes/PV_HainsworthFoote
-categories::  UGens>FFT
 
 
 description::
+
+
 FFT feature detector for onset detection based on work described in
 emphasis::
 Jensen, K. & Andersen, T. H. (2003). Real-time Beat Estimation
@@ -19,22 +21,33 @@ changes.
 
 
 classmethods::
+
+
 private:: categories
+
+
 method::ar
+
 argument::buffer
 FFT buffer.
+
 argument::propsc
-Proportion of spectral centroid feature.
+proportion of spectral centroid feature.
+
 argument::prophfe
-Proportion of high frequency energy feature.
+proportion of high frequency energy feature.
+
 argument::prophfc
-Proportion of high frequency content feature.
+proportion of high frequency content feature.
+
 argument::propsf
-Proportion of spectral flux feature.
+proportion of spectral flux feature.
+
 argument::threshold
-Threshold level for allowing a detection.
+threshold level for allowing a detection.
+
 argument::waittime
-If triggered, minimum wait until a further frame can cause
+if triggered, minimum wait until a further frame can cause
 another spot (useful to stop multiple detects on heavy signals).
 
 

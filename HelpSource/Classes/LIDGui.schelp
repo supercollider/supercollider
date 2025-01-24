@@ -1,31 +1,40 @@
-TITLE:: LIDGui
-summary:: A GUI for an LID
+title:: LIDGui
+summary:: a GUI for an LID
 categories:: Platform>Linux, External Control>HID
 related:: Classes/LID
 
+
 description::
+
+
 This class creates a simple GUI for an LID device.
 
 
-CLASSMETHODS::
+classmethods::
+
 
 method::new
+
 creates a new GUI.
+
 argument::device
-An instance of LID, for which to create the GUI.
+an instance of LID, for which to create the GUI.
 
 
+instancemethods::
 
-INSTANCEMETHODS::
+
 private:: init, bkeys, rkeys, akeys, updater;
 
 
 method::win
-The window that the LIDGui is in.
+
+the window that the LIDGui is in.
 
 
 method::device
-The device for which this GUI is.
+
+the device for which this GUI is.
 
 
 examples::

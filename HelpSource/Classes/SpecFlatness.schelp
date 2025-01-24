@@ -1,17 +1,25 @@
-class:: SpecFlatness
-summary:: Spectral Flatness measure
+title:: SpecFlatness
+summary:: spectral Flatness measure
 categories:: UGens>FFT
 related:: Classes/SpecCentroid, Classes/SpecPcile
 
+
 description::
+
+
 Given an link::Classes/FFT:: strong::chain:: this calculates the emphasis::Spectral Flatness:: measure, defined as a power spectrum's geometric mean divided by its arithmetic mean. This gives a measure which ranges from approx 0 for a pure sinusoid, to approx 1 for white noise.
 
 The measure is calculated linearly. For some applications you may wish to convert the value to a decibel scale - an example of such conversion is shown below.
 
+
 classmethods::
+
+
 method::kr
+
 argument::buffer
 an link::Classes/FFT:: chain.
+
 
 examples::
 

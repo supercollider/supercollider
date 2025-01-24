@@ -1,14 +1,18 @@
-class::LinkClock
-categories::Scheduling>Clocks
-summary:: Scheduler synchronized with Ableton Link
-related::Classes/TempoClock
+title:: LinkClock
+summary:: scheduler synchronized with Ableton Link
+categories:: Scheduling>Clocks
+related:: Classes/TempoClock
+
 
 description::
+
+
 LinkClock is a link::Classes/TempoClock:: based on link::https://www.ableton.com/en/link/##Ableton Link::, a protocol
 that synchronizes phase (beat-within-bar) and tempo over a local network.
 
 
 subsection:: Link behavior
+
 
 Link attempts, as much as possible, to allow applications to move in their own time while synchronizing:
 
@@ -24,6 +28,7 @@ Many Link-enabled applications (DAWs) can start and stop the entire timeline. Su
 
 
 subsection:: Latency
+
 
 Link coordinates the emphasis::sounding time:: of given beats.
 
@@ -45,6 +50,7 @@ This does have an impact on tempo changes. SuperCollider receives tempo changes 
 
 
 subsection:: beatsPerBar and quantum
+
 
 For every moment in time, Ableton Link knows the beat, time in seconds, and emphasis::phase::. Phase is measured relative to a emphasis::quantum::. Link peers sharing the same quantum will synchronize barlines.
 
@@ -68,6 +74,7 @@ SuperCollider peers may optionally synchronize barlines and all meter changes by
 
 subsection:: Notifications
 
+
 A LinkClock's state may be changed by other connected Link peers. LinkClock uses dependant notifications to relay the new state to other interested objects.
 
 table::
@@ -84,18 +91,25 @@ table::
 
 The most convenient way to register to receive a notification is link::Classes/SimpleController::. See the examples below.
 
-Classmethods::
+
+classmethods::
+
 
 method::new
+
 creates a new instance of LinkClock.
+
 argument::tempo
-The initial link::#-tempo#tempo::. Defaults to code::1::.
+the initial link::#-tempo#tempo::. Defaults to code::1::.
+
 argument::beats
-The time in beats, corresponding to the reference time. Default to code::0::.
+the time in beats, corresponding to the reference time. Default to code::0::.
+
 argument::seconds
-The reference time in seconds. See link::Classes/TempoClock#*new::.
+the reference time in seconds. See link::Classes/TempoClock#*new::.
+
 argument::queueSize
-The storage size of the scheduling queue. See link::Classes/TempoClock#*new::.
+the storage size of the scheduling queue. See link::Classes/TempoClock#*new::.
 
 discussion::
 If an existing Link session is found on the local network, the object connects
@@ -105,10 +119,13 @@ proper beat and phase synchronization across all peers.
 If SuperCollider is the first to join, a new Link session is locally
 created and initialized with the constructor arguments.
 
+
 method::newFromTempoClock
+
 creates a new instance of LinkClock derived from a link::Classes/TempoClock::.
+
 argument::clock
-The link::Classes/TempoClock:: used to create the LinkClock.
+the link::Classes/TempoClock:: used to create the LinkClock.
 
 discussion::
 The LinkClock link::#-tempo#tempo::, link::#-beats#beats::,
@@ -117,55 +134,88 @@ set to those of the TempoClock. The TempoClock is then stopped and all of its
 tasks are rescheduled by the newly created LinkClock, so that they are now
 synchronized with the Link session.
 
-Instancemethods::
+
+instancemethods::
+
 
 private:: prInitFromTempoClock, prSetQuantum, prStart, prTempoChanged, prStartStopSync, prNumPeersChanged, setMeterAtBeat, setTempoAtBeat, setTempoAtSec
 
+
 method::latency
+
 gets/sets the number of seconds of OSC messaging latency for which the code::LinkClock:: should account. In general, this should be set to match the server object's latency.
+
 argument::lat
-A Float.
+a Float.
+
 
 method::tempo
+
 sets/gets the current session tempo at the current logical
 time. Note that the tempo may be changed at any time by another peer;
 the LinkClock broadcasts a code::\tempo:: notification in this case
 (see link::Classes/LinkClock#Notifications::).
 
+
 method::beats
+
 sets/gets the current logical time in beats. If you are trying to set
 the beats, Link may adjust your given value to maintain sync with other peers.
 
+
 method::numPeers
+
 gets the number of peers connected to the current Link session. When
 peers join or leave the session, the LinkClock broadcasts a
 code::\numPeers:: notification (see
 link::Classes/LinkClock#Notifications::).
 
+
 method::quantum
+
 gets/sets Link's internal quantum (see above, link::#beatsPerBar and quantum::). Normally this should be done at the beginning of a performance, or not at all. It is risky to change quantum during a performance. Changing meter locally is the same as in TempoClock: link::Classes/TempoClock#-beatsPerBar::.
+
 argument::quantum
-An Integer or Float.
+an Integer or Float.
+
 
 method::enableMeterSync
-Activates SuperCollider-barline sync by creating a link::Classes/MeterSync:: object internally. (If already enabled, no new object will be created.)
-argument::id
-Optional: An integer ID, uniquely identifying this instance. If not provided, one will be chosen randomly.
-argument::ports
-Optional: An array of port numbers, to which barline-sync messages will be sent.
 
-returns:: The LinkClock instance (to support chaining configuration methods, e.g. code::l = LinkClock.new.latency_(s.latency).enableMeterSync::, in which case you want code::l:: to be the clock object). To get access to the MeterSync object, use link::#-getMeterSync::.
+activates SuperCollider-barline sync by creating a link::Classes/MeterSync:: object internally. (If already enabled, no new object will be created.)
+
+argument::id
+optional: An integer ID, uniquely identifying this instance. If not provided, one will be chosen randomly.
+
+argument::ports
+optional: An array of port numbers, to which barline-sync messages will be sent.
+
+returns::
+
+the LinkClock instance (to support chaining configuration methods, e.g. code::l = LinkClock.new.latency_(s.latency).enableMeterSync::, in which case you want code::l:: to be the clock object). To get access to the MeterSync object, use link::#-getMeterSync::.
+
 
 method::disableMeterSync
+
 removes all barline-sync objects.
 
+
 method::isSyncingMeter
-returns:: A Boolean, code::true:: if barline sync is active, code::false:: if not. (If you create the barline sync object independently, this answer is likely to be incorrect.)
+
+returns::
+
+a Boolean, code::true:: if barline sync is active, code::false:: if not. (If you create the barline sync object independently, this answer is likely to be incorrect.)
+
 
 method::getMeterSync
-returns:: The MeterSync object previously created by link::#-enableMeterSync::.
 
-note:: It is possible, though redundant and not recommended, to create multiple barline-sync objects by doing code::clock.enableMeterSync:: and code::m = SCClockMeterSync(clock)::. code::getMeterSync:: has access emphasis::only:: to the object created by code::clock.enableMeterSync::. Therefore, it is recommended to use code::clock.enableMeterSync:: in all cases. ::
+returns::
+
+the MeterSync object previously created by link::#-enableMeterSync::.
+
+note::
+It is possible, though redundant and not recommended, to create multiple barline-sync objects by doing code::clock.enableMeterSync:: and code::m = SCClockMeterSync(clock)::. code::getMeterSync:: has access emphasis::only:: to the object created by code::clock.enableMeterSync::. Therefore, it is recommended to use code::clock.enableMeterSync:: in all cases.
+::
+
 
 examples::
 

@@ -1,20 +1,29 @@
-class:: WebView
-summary:: Web page display and browser
+title:: WebView
+summary:: web page display and browser
 categories:: GUI>Views
 
+
 description::
+
+
 WebView displays web pages and provides all the standard browsing functionality.
 
 Since the Qt WebEngine dependency is hefty and difficult to install on some systems, it is possible for sclang to have been built without WebView support (using the CMake flag code:: -DSC_USE_QTWEBENGINE=OFF :: at compile time). If so, attempting to invoke this class will throw an error.
 
-CLASSMETHODS::
 
-PRIVATE:: key
+classmethods::
+
+
+private:: key
+
 
 method::clearCache
+
   Clears the cache for all browser instances.
 
+
 method::setUrlHandler
+
     Sets or clears a function to handle a specific URL prefix (e.g. mail://)
 
     argument::prefix
@@ -29,19 +38,29 @@ INSTANCEMETHODS::
 
 subsection:: Navigation
 
+
 method::url
+
     Gets the current URL, or navigates to a new one. This is equivalent to entering a URL in a browser's URL box.
 
+
 method::navigate
+
     Navigate to a url. This is equivalent to clicking a link on a page - after a navigate call, back will return you to the previous page.
 
+
 method::back
+
     Navigates to the previous page in history.
 
+
 method::forward
+
     Navigates to the next page in history.
 
+
 method::findText
+
     Finds and selects the next instance of given text on the current page. When the given text changes, the search starts anew.
 
     argument::
@@ -51,7 +70,9 @@ method::findText
     argument::
         A function, called when the operation is finished. If the text was found this function is passed code::true::, otherwise code::false::.
 
+
 method::triggerPageAction
+
     Trigger an action on the current page. Possible actions include: reload, select all, copy, undo, redo (see link::Classes/QWebPageAction::)
 
     argument::
@@ -62,7 +83,9 @@ method::triggerPageAction
 
 subsection:: Data
 
+
 method::setHtml
+
     Set the HTML displayed in the view.
 
     argument::
@@ -70,8 +93,10 @@ method::setHtml
     argument::
         A url. The browser will interpret this to be the current page location.
 
+
 method::setContent
-    Set the raw content of a web view. This can be used to display binary data such as image / movie files.
+
+    Set the raw content of a web view. This can be used to display binary data such as image/movie files.
 
     argument::
         An Int8Array containing data.
@@ -80,7 +105,9 @@ method::setContent
     argument::
         A url. The browser will interpret this to be the current page location.
 
+
 method::setAttribute
+
     Set a QWebAttribute for the view. Attributes can affect behavior such as caching, auto-loading images, file url access, etc.
 
     argument::
@@ -88,7 +115,9 @@ method::setAttribute
     argument::
         A Boolean.
 
+
 method::testAttribute
+
     Check the enablement state of a QWebAttribute.
 
     argument::
@@ -96,80 +125,110 @@ method::testAttribute
     returns:: 
         A Boolean.
 
+
 method::resetAttribute
+
     Reset the enablement state of a QWebAttribute.
 
     argument::
         A QWebAttribute.
 
+
 method::toPlainText
+
     Convert the page to plain text.
     argument::
         A callback function. Called with the resulting plain text string when the operation is finished.
 
+
 method::toHtml
+
     Fetch the HTML of the current page.
     argument::
         A callback function. Called with the resulting HTML string when the operation is finished.
 
+
 method::title
+
     The title of the current page.
     returns:: A String.
 
+
 method::requestedUrl
+
     The requested url for the current page.
     returns:: A String.
 
+
 method::selectedText
+
     The currently selected text.
     returns:: A String.
 
 
 subsection:: Behavior and appearance
 
+
 method::audioMuted
+
     Gets/sets audio mute setting for the view;
     argument::
         A Boolean.
 
+
 method::contentsSize
+
     Gets the size of the current content.
     returns:: 
         A Point
 
+
 method::scrollPosition
+
     Gets/sets the scroll position of the current page.
     returns:: 
         A Point
 
+
 method::hasSelection
+
     Returns whether the page has a text selection.
     returns:: 
         A Boolean.
 
+
 method::enterInterpretsSelection
+
     Whether pressing Ctrl+Return or Ctrl+Enter while some text is selected should evaluate the selection as SuperCollider code.
     argument::
         A Boolean.
 
+
 method::setFontFamily
+
     Sets a specific font family to be used in place of a CSS-specified generic font family.
     argument::
         The CSS generic font family to assign a font to; one of link::Classes/QWebFontFamily::
     argument::
         A font family name to be assigned to the generic family; a String.
 
+
 method::zoom
+
     Gets or sets the zoom level on a page.
     argument::
         A Number, where 1.0 is the default zoom.
 
+
 method::editable
+
     Gets/sets whether the entire web page is editable.
     argument::
         A Boolean.
 
+
 method::pageBackgroundColor
+
     Gets/sets the default background color of web pages.
     argument::
         A Color.
@@ -177,74 +236,113 @@ method::pageBackgroundColor
 
 subsection:: Actions
 
+
 method::onAudioMutedChanged
+
     Sets the object to be evaluated when the mute setting of the view has changed.
 
+
 method::onRecentlyAudibleChanged
+
     Sets the object to be evaluated when the page has started or stopped playing audio.
 
+
 method::onContentsSizeChanged
+
     Sets the object to be evaluated when the contents size of the view has changed
 
+
 method::onScrollPositionChanged
+
     Sets the object to be evaluated when the scroll position on a page has changed.
 
+
 method::onSelectionChanged
+
     Sets the object to be evaluated when the text selection on a page has changed.
 
+
 method::onJavaScriptMsg
+
     Sets the object to be evaluated when a javascript console message is posted.
 
+
 method::onLinkHovered
+
     Sets the object to be evaluated when a the mouse rolls over a link.
 
+
 method::onTitleChanged
+
     Sets the object to be evaluated when the title of the displayed page changes.
 
+
 method::onUrlChanged
+
     Sets the object to be evaluated when the url of the displayed page changes.
 
+
 method::onLoadProgress
+
     Sets the object to be evaluated with load progress updates.
 
+
 method::onLoadStarted
+
     Sets the object to be evaluated when a page load begins.
 
+
 method::onLoadFinished
+
     Sets the object to be evaluated when a page has loaded successfully, passing the view as the argument.
 
+
 method::onLoadFailed
+
     Sets the object to be evaluated when a page has failed to load, passing the view as the argument.
 
+
 method::overrideNavigation
+
     When code::true::, page navigation requests will not be handled. Use in combination with onLinkActivated to provide custom navigation behavior.
 
+
 method::onLinkActivated
+
     Sets the object to be evaluated when the user triggers a link. Arguments are: a URL, a QWebPageNavigationType, a bool (page is opening in current view).
 
     When this is set to other than code::nil::, WebView will stop handling clicked links altogether. Setting this to code::nil:: will restore WebView link handling again.
     Note: for specialty behavior when clicking on links, it is much better to use setUrlHandler in most cases.
 
+
 method::onReloadTriggered
+
     Sets the object to be evaluated whenever a page reload is requested, passing the view and the URL to be reloaded (as String) as the arguments.
 
 
 subsection:: JavaScript
 
+
 method::runJavaScript
+
     Evaluates the given JavaScript code in the context of the current page.
     argument::
         A String.
     argument::
         A function to be called when execution is complete, with the result as first argument.
-        NOTE:: javascript code can correctly return Numbers, Strings and Arrays, but it can't currently pass javascript Objects to sclang. It is possible, however, to use JSON serialization to acheive this: ::
-        CODE::
+        note::
+        javascript code can correctly return Numbers, Strings and Arrays, but it can't currently pass javascript Objects to sclang. It is possible, however, to use JSON serialization to acheive this:
+        ::
+        
+        code::
 // passing a nested object from javascript to sclang:
 WebView().runJavaScript("JSON.stringify({ a: [1,2,3], b: { ba: 1, bb: 'yeah' } })"){ |res| res.parseJSON.postln }
 ::
 
+
 examples::
-CODE::
+
+code::
 // A simple web browser
 (
 var browser, webview, reloadStop, prev, next, urlBox, go;

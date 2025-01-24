@@ -1,9 +1,12 @@
-class::AbstractFunction
-summary:: An object which responds to a set of messages that represent mathematical functions
-categories::Core>Kernel
-related::Classes/UGen, Classes/Pattern, Classes/Function, Overviews/Operators
+title:: AbstractFunction
+summary:: an object which responds to a set of messages that represent mathematical functions
+categories:: Core>Kernel
+related:: Classes/UGen, Classes/Pattern, Classes/Function, Overviews/Operators
+
 
 description::
+
+
 An AbstractFunction is an object which responds to a set of messages that represent
 mathematical functions. Subclasses override a smaller set of messages to respond
 to the mathematical functions.
@@ -21,10 +24,12 @@ code::
 For an overview of common operators, see link::Overviews/Operators::, for specific examples, see also e.g. link::Classes/Function::, link::Classes/UGen::, link::Classes/Pattern::.
 To see which classes implement a specific method, see that method in the generated link::Overviews/Methods:: overview.
 
-instanceMethods::
+
+instancemethods::
 
 
 subsection:: Unary Messages
+
 
 The following messages return an object which represents a delayed unary operation, i.e. an operation on one object. For example, the reciprocal of a function will result in a new function that, when called, returns the reciprocal of the evaluation of the operand.
 
@@ -32,39 +37,63 @@ All of the following messages send the message composeUnaryOp to the receiver wi
 unary message selector as an argument.
 See link::Classes/UnaryOpFunction::.
 
+
 method::neg
+
 code::
 a = { 10.rand.postln }; b = a.neg; b.value;
 // Patterns, Streams, UGens, and Proxies are AbstractFunctions, too:
 a = Pgeom(1, 2, 5).neg; a.asStream.nextN(8);
 { a = LFNoise1.ar(1500); [a, a.neg] }.plot;
 ::
+
+
 method::reciprocal
+
 code::
 a = { 10.rand.postln }; b = a.reciprocal; b.value;
 a = Pgeom(1, 2, 5).reciprocal; a.asStream.nextN(8);
 { a = LFNoise1.ar(1500) + 2; [a, a.reciprocal] }.plot;
 ::
+
+
 method::bitNot
-Bitwise integer negation.
+
+bitwise integer negation.
+
+
 method::abs
-Absolute value
+
+absolute value
+
 code::
 a = { 10.rand - 10.rand }; b = a.abs; b.value;
 a = Pseries(3, -1.8, inf).abs; a.asStream.nextN(8);
 { a = LFNoise1.ar(1500); [a, a.abs] }.plot;
 ::
+
+
 method::asFloat
+
 code::
 a = { "123.471".scramble }; b = a.asFloat; b.value;
 ::
+
+
 method::asInt
-Deprecated. Use code::asInteger:: instead.
+
+deprecated. Use code::asInteger:: instead.
+
+
 method::asInteger
+
 code::
 a = { "123471".scramble }; b = a.asInteger; b.value;
 ::
+
+
 method::ceil, floor, frac
+
 code::
 a = { 10.0.rand2.postln }; b = a.ceil; b.value;
 a = { 10.0.rand2.postln }; b = a.floor; b.value;
@@ -72,88 +101,180 @@ a = Pgeom(1, 1.2, inf).ceil; a.asStream.nextN(8);
 a = Pgeom(1, 1.2, inf).floor; a.asStream.nextN(8);
 { a = SinOsc.ar(150) * 1.5; [a, a.ceil, a.floor, a.frac] }.plot.superpose_(true);
 ::
+
+
 method::sign
+
 returns a function that returns -1 if receiver returns a negative number, 1 if positive, and 0 if zero.
+
 code::
 a = { 10.0.rand2.postln }; b = a.sign; b.value;
 { a = LFNoise1.ar(1500) * 1.5; [a, a.sign] }.plot;
 ::
+
+
 method::squared
+
 code::
 a = { |x| x + 1 }; b = a.squared; [a.value(1), b.value(1)];
 a = Pseries(0, 1, inf).squared; a.asStream.nextN(8);
 { a = LFNoise1.ar(1500); [a, a.squared] }.plot;
 ::
+
+
 method::cubed
+
 code::
 a = { |x| x + 1 }; b = a.cubed; [a.value(1), b.value(1)];
 a = Pseries(0, 1, inf).cubed; a.asStream.nextN(8);
 { a = LFNoise1.ar(1500); [a, a.cubed] }.plot;
 ::
+
+
 method::sqrt
+
 code::
 a = { |x| x + 1 }; b = a.sqrt; [a.value(1), b.value(1)];
 a = Pseries(0, 1, inf).sqrt; a.asStream.nextN(8);
 { a = LFNoise1.ar(1500); [a, a.sqrt] }.plot;
 ::
+
+
 method::exp
+
 returns e to the power of this.
+
 code::
 a = { |x| x + 1 }; b = a.exp; [a.value(1), b.value(1)];
 a = Pseries(0, 0.25, inf).exp; a.asStream.nextN(8);
 { a = LFNoise1.ar(1500); [a, a.exp] }.plot;
 ::
+
+
 method::midicps
-Converts midinote into cycles per seconds (Hz).
+
+converts midinote into cycles per seconds (Hz).
+
 code::
 a = { |x, root = 60| x + root }; b = a.midicps; [a.value(9), b.value(9)];
 a = Pseries(60, 1, inf).midicps; a.asStream.nextN(12);
 { a = LFNoise1.ar(1) * 5 + 60; Pulse.ar(a.round.midicps) * 0.1 }.play;
 ::
+
+
 method::cpsmidi
-Converts cycles per seconds (Hz) into midinote.
+
+converts cycles per seconds (Hz) into midinote.
+
 code::
 a = { |x| #[440, 720, 801, 1020.2].at(x) }; b = a.cpsmidi; [a.value(3), b.value(3)];
 a = Pseries(220, 220, inf).cpsmidi; a.asStream.nextN(12); // overtone series as midinotes
 // follow but round to next midinote
 { a = Pitch.kr(SoundIn.ar).at(1); Pulse.ar(a.cpsmidi.round.midicps) * 0.1 }.play;
 ::
+
+
 method::midiratio
+
+
 method::ratiomidi
+
+
 method::ampdb
+
+
 method::dbamp
+
+
 method::octcps
+
+
 method::cpsoct
+
+
 method::log
+
+
 method::log2
+
+
 method::log10
+
+
 method::sin
+
+
 method::cos
+
+
 method::tan
+
+
 method::asin
+
+
 method::acos
+
+
 method::atan
+
+
 method::sinh
+
+
 method::cosh
+
+
 method::tanh
+
+
 method::rand
+
+
 method::rand2
+
+
 method::linrand
+
+
 method::bilinrand
+
+
 method::sum3rand
+
+
 method::distort
+
+
 method::softclip
+
+
 method::coin
+
+
 method::even
+
+
 method::odd
+
+
 method::isPositive
+
+
 method::isNegative
+
+
 method::isStrictlyPositive
+
+
 method::rho
+
+
 method::theta
 
 
 subsection:: Binary Messages
+
 
 The following messages return an object which represents a delayed binary operation, i.e. an operation between two objects. For example, adding two functions will result in a new function that, when called, adds the results of the evaluation of the two operands.
 
@@ -163,6 +284,7 @@ See: link::Classes/BinaryOpFunction::.
 
 
 Examples:
+
 code::
 (
 // Add two functions:
@@ -177,6 +299,7 @@ var x = 1871 + { |x| x * 12 };
 x.value(12);
 )
 ::
+
 code::
 (
 // Add two UGens
@@ -184,129 +307,201 @@ code::
  SinOsc.ar(440, 0, 0.2) + PinkNoise.ar(0.1);
 }.play
 )
-::
+
 // Add two Patterns
-code::
 (Pseq([1, 2, 3, 4]) + Prand([0, 0.1, -0.1], inf)).asStream.nextN(5);
-::
+
 // Add two NodeProxies
-code::
 Ndef(\x, { SinOsc.ar(440, 0, 0.2) });
 Ndef(\y, { PinkNoise.ar(0.1) });
 Ndef(\z, Ndef(\x) + Ndef(\y)).play;
 ::
 
+
 method::+
+
 code::
 ({ |x| x.squared } + 3).value(2);
 ::
+
+
 method::-
+
 code::
 ({ |x| x.squared } - 3).value(2);
 ::
+
+
 method::*
+
 code::
 ({ |x| x.squared } * { |x| x.squared }).value(2);
 ::
+
+
 method::/
+
 code::
 ({ |x| x.squared } / 4).value(2);
 ::
+
+
 method::div
+
 code::
 ({ |x| x.squared } div: 3).value(2);
 ::
+
+
 method::%
+
 code::
 ({ |x| x.squared } % 3).value(2);
 ::
+
+
 method::**
+
 code::
 ({ |x| x.squared } ** 3).value(2);
 ::
+
+
 method::min
+
 code::
 ({ |x| x.squared } min: 0).value(2);
 ::
+
+
 method::max
+
 code::
 ({ |x| x.squared } max: 0).value(2);
 ::
+
+
 method::<
+
 code::
 ({ |x| x.squared } < 3).value(2);
 ::
+
+
 method::<=
+
 code::
 ({ |x| x.squared } <= 3).value(2);
 ::
+
+
 method::>
+
 code::
 ({ |x| x.squared } > 3).value(2);
 ::
+
+
 method::>=
+
 code::
 ({ |x| x.squared } >= 3).value(2);
 ::
+
+
 method::&
+
 code::
 a = { |min, max| ({ rrand(min, max) } ! 4).postln };
 (a & a).value(0, 8);
 ::
+
+
 method::|
+
 code::
 a = { |min, max| ({ rrand(min, max) } ! 4).postln };
 (a | a).value(0, 8);
 ::
+
+
 method::lcm
+
 code::
 a = { |min, max| rrand(min, max).postln };
 (a lcm: a).value(0, 8);
 ::
+
+
 method::gcd
+
 code::
 a = { |min, max| rrand(min, max).postln };
 (a gcd: a).value(0, 8);
 ::
+
+
 method::round
+
 code::
 a = { |max| max.rand.postln };
 (a round: 0.5).value(1.0);
 ::
+
+
 method::trunc
+
 code::
 a = { |max| max.rand.postln };
 (a trunc: 2).value(10);
 ::
+
+
 method::atan2
+
 code::
 a = { 1.0.rand2 };
 a.atan2.dup(10);
 ::
+
+
 method::hypot
+
 code::
 a = { 1.0.rand2 };
 a.hypot.dup(10);
 ::
+
+
 method::hypotApx
+
 code::
 a = { 1.0.rand2 };
 a.hypotApx.dup(10);
 ::
+
+
 method::>>
+
 code::
 a = { [2r10010, 2r101011, 2r11100].choose.postln };
 b = a >> 2;
 b.value.asBinaryDigits.join;
 ::
+
+
 method::+>>
+
 code::
 a = { [2r10010, 2r101011, 2r11100].choose.postln };
 b = a +>> 2;
 b.value.asBinaryDigits.join;
 ::
+
+
 method::ring1
-(a * b) + a
+
+code::(a * b) + a::
 
 code::
 ({ [5, 6, 2].choose.postln } ring1: { [2, -1, 3].choose.postln }).value
@@ -317,8 +512,11 @@ code::
 ring1(a, b) * 0.1 }.play;
 )
 ::
+
+
 method::ring2
-((a*b) + a + b)
+
+code::((a*b) + a + b)::
 
 code::
 ({ [5, 6, 2].choose.postln } ring2: { [2, -1, 3].choose.postln }).value
@@ -328,8 +526,11 @@ code::
 ring2(a, b) * 0.1 }.play;
 )
 ::
+
+
 method::ring3
-(a * a * b)
+
+code::(a * a * b)::
 
 code::
 ({ [5, 6, 2].choose.postln } ring3: { [2, -1, 3].choose.postln }).value
@@ -339,8 +540,11 @@ code::
 ring3(a, b) * 0.1 }.play;
 )
 ::
+
+
 method::ring4
-((a*a *b) - (a*b*b))
+
+code::((a*a *b) - (a*b*b))::
 
 code::
 ({ [5, 6, 2].choose.postln } ring4: { [2, -1, 3].choose.postln }).value
@@ -350,8 +554,11 @@ code::
 ring4(a, b) * 0.1 }.play;
 )
 ::
+
+
 method::difsqr
-(a*a) - (b*b)
+
+code::(a*a) - (b*b)::
 
 code::
 ({ [5, 6, 2].choose.postln } difsqr: { [2, -1, 3].choose.postln }).value
@@ -361,8 +568,11 @@ code::
 difsqr(a, b) * 0.1 }.play;
 )
 ::
+
+
 method::sumsqr
-(a*a) + (b*b)
+
+code::(a*a) + (b*b)::
 
 code::
 ({ [5, 6, 2].choose.postln } sumsqr: { [2, -1, 3].choose.postln }).value
@@ -372,8 +582,11 @@ code::
 sumsqr(a, b) * 0.1 }.play;
 )
 ::
+
+
 method::sqrdif
-(a - b) ** 2
+
+code::(a - b) ** 2::
 
 code::
 ({ [5, 6, 2].choose.postln } sqrdif: { [2, -1, 3].choose.postln }).value
@@ -383,8 +596,11 @@ code::
 ring4(a, b) * 0.1 }.play;
 )
 ::
+
+
 method::sqrsum
-(a + b) ** 2
+
+code::(a + b) ** 2::
 
 code::
 ({ [5, 6, 2].choose.postln } sqrsum: { [2, -1, 3].choose.postln }).value
@@ -394,8 +610,11 @@ code::
 sqrsum(a, b) * 0.1 }.play;
 )
 ::
+
+
 method::absdif
-(a - b).abs
+
+code::(a - b).abs::
 
 code::
 ({ [5, 6, 2].choose.postln } absdif: { [2, -1, 3].choose.postln }).value
@@ -406,22 +625,37 @@ absdif(a, b) * 0.1 }.play;
 )
 ::
 
+
 method::moddif
+
 absolute difference in modulo arithmetics.
 
+
 method::amclip
-0 when b <= 0, a*b when b > 0
+
+code::0:: when code::b <= 0::, code::a * b:: when code::b > 0::
+
 
 method::scaleneg
-a * b when a < 0, otherwise a.
+
+code::a * b:: when code::a < 0::, otherwise code::a::.
+
 
 method::clip2
+
 clips receiver to +/- aNumber
 
+
 method::excess
+
 returns the difference of the receiver and its clipped form.
+
+
 method::<!
+
+
 method::rrand
+
 code::
 a = { |x| sin(x) } rrand: { |x| sin(x) *  -1 };
 (0..1000).normalize(0, 5pi).collect(a).plot;
@@ -431,17 +665,34 @@ a = { |x| sin(x) } rrand: { |x| sin(x) *  -1 };
 rrand(a, b) * 0.1 }.play;
 )
 ::
+
+
 method::exprand
+
+
 method::rotate
+
+
 method::dist
+
+
 method::bitAnd
+
+
 method::bitOr
+
+
 method::bitXor
+
+
 method::bitHammingDistance
+
+
 method::@
 
 
 subsection:: Messages with more arguments (n-ary Operators)
+
 
 The following messages return an object which represents a delayed n-ary operation, i.e. an operation between several objects (often three). For example, rescaling a function with linlin will result in a new function that, when called, scales the results of the evaluation of all operands.
 
@@ -449,21 +700,40 @@ All of the following messages send the message code::composeNAryOp:: to the rece
 binary message selector and the other operands as arguments.
 See link::Classes/NAryOpFunction::.
 
+
 method::clip
+
+
 method::wrap
+
+
 method::fold
+
+
 method::blend
+
+
 method::linlin
+
+
 method::linexp
+
+
 method::explin
+
+
 method::expexp
 
 
 subsection:: other
 
+
 method::applyTo
-Interface that allows us to combine selectors (Symbols) and Functions. Sends valueArray(args) to this.
+
+interface that allows us to combine selectors (Symbols) and Functions. Sends valueArray(args) to this.
+
 discussion::
+
 code::
 // example:
 
@@ -475,9 +745,15 @@ f.choose.postcs.applyTo(3, 4);
 (1..10).reduce({ |a, b| a * b * 1.0.rand });
 ::
 
+
 method::asUGenInput
-returns:: the result of sending the value(for) message to this.
+
+returns::
+
+the result of sending the value(for) message to this.
+
 discussion::
+
 code::
 // example:
 (
@@ -489,9 +765,13 @@ product = f * g * 0.1;
 )
 ::
 
+
 method::sampled
-Sample a function.
+
+samples a function.
+
 discussion::
+
 code::
 // sample a function
 f = { |x| sin(3*x)*cos(8*x) }
@@ -508,35 +788,51 @@ g.plotGraph(from: 0, to: 1);
 { 200.collect{ g.(rand(0.0, 1.0)) } }.bench;
 ::
 
-method::plotGraph
-Sample the function with n points, in the range [from, to], and plot it in a Plotter.
-Returns a link::Classes/Plotter::.
-argument::n
-Number of values displayed in the plot window (500 by default).
-argument::from
-Minimum value passed to the function.
-argument::to
-Maximum value passed to the function.
-argument::name
-See link::Reference/plot::
-argument::bounds
-See link::Reference/plot::
-argument::discrete
-See link::Reference/plot::
-argument::numChannels
-See link::Reference/plot::
-argument::minval
-See link::Reference/plot::
-argument::maxval
-See link::Reference/plot::
-argument::separately
-See link::Reference/plot::
-argument::parent
-See link::Reference/plot::
 
-returns:: a link::Classes/Plotter::
+method::plotGraph
+
+samples the function with n points, in the range [from, to], and plot it in a Plotter.
+Returns a link::Classes/Plotter::.
+
+argument::n
+number of values displayed in the plot window (500 by default).
+
+argument::from
+minimum value passed to the function.
+
+argument::to
+maximum value passed to the function.
+
+argument::name
+see link::Reference/plot::.
+
+argument::bounds
+see link::Reference/plot::.
+
+argument::discrete
+see link::Reference/plot::.
+
+argument::numChannels
+see link::Reference/plot::.
+
+argument::minval
+see link::Reference/plot::.
+
+argument::maxval
+see link::Reference/plot::.
+
+argument::separately
+see link::Reference/plot::.
+
+argument::parent
+see link::Reference/plot::.
+
+returns::
+
+a link::Classes/Plotter::
 
 discussion::
+
 code::
 // plot x.squared transfer function with x between -1 and 1.
 // here the x-axis shows n, the number of points 
@@ -548,6 +844,7 @@ code::
 
 
 subsection:: Function Composition
+
 
 When unary, binary or n-ary operators are applied to an abstract function, it returns an object that represents
 this operation, without evaluating the function: link::Classes/UnaryOpFunction::, link::Classes/BinaryOpFunction::, link::Classes/NAryOpFunction::.
@@ -586,6 +883,7 @@ g = (f |==| 1);  // a BinaryOpFunction
 
 g.value;  // true or false, depending on f's result
 ::
+
 
 examples::
 

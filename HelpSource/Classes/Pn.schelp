@@ -1,17 +1,23 @@
-class:: Pn
+title:: Pn
 summary:: repeatedly embed a pattern
-related:: Classes/Pdup
 categories:: Streams-Patterns-Events>Patterns>Repetition
+related:: Classes/Pdup
 
-ClassMethods::
+
+classmethods::
+
 
 method::new
+
 argument::pattern
 the pattern to repeat
+
 argument::repeats
-Repeats the enclosed pattern strong::repeats:: times.
+repeats the enclosed pattern strong::repeats:: times.
+
 argument::key
-If strong::key:: is code::non-nil::, it sets the value of that key to code::true:: whenever it restarts the pattern. This can be used to advance Patterns enclosed by link::Classes/Pgate::.
+if strong::key:: is code::non-nil::, it sets the value of that key to code::true:: whenever it restarts the pattern. This can be used to advance Patterns enclosed by link::Classes/Pgate::.
+
 
 examples::
 

@@ -1,30 +1,45 @@
-class:: FreeVerb2
-summary:: A two-channel reverb
+title:: FreeVerb2
+summary:: a two-channel reverb
 categories:: UGens>Reverbs
 related:: Classes/FreeVerb, Classes/GVerb
 
+
 description::
+
+
 Coded from experiments with faust.
+
 
 classmethods::
 
+
 method::ar
+
 argument::in
 input signal channel 1.
+
 argument::in2
 input signal channel 2.
+
 argument::mix
 dry/wet balance. range 0..1.
+
 argument::room
 room size. rage 0..1.
+
 argument::damp
-Reverb HF damp. range 0..1.
+reverb HF damp. range 0..1.
+
 argument::mul
+
 argument::add
+
 discussion::
 Valid parameter range from 0 to 1. Values outside this range are clipped by the UGen.
 
+
 examples::
+
 code::
 s.boot;
 

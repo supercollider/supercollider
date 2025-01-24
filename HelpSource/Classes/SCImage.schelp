@@ -1,27 +1,37 @@
-class:: SCImage
+title:: SCImage
 summary:: image component
 categories:: GUI>Views
 related:: Classes/SCImageFilter, Classes/SCImageKernel
 
+
 description::
+
+
 SCImage is an image component for the macOS SuperCollider client. SCImage is currently a wrapper around different models : you can use it for bitmap operations, image embedding for custom UI and for more advanced image processing as applying filters and kernels, both provided with the CoreImage framework.
 
 SCImage currently supports most formats including tiff, bmp, gif, jpeg, png, tga...ect.. for reading. But for for writing it supports only those in code::SCImage.formats::.
 
-NOTE::
-link::Classes/GUI:: Issue : since it is macOS only, be sure to call code::GUI.cocoa:: before any SCImage.call
+note::
+link::Classes/GUI:: Issue : since it is macOS only, be sure to call code::GUI.cocoa:: before any SCImage call.
 ::
 
-CLASSMETHODS::
 
-PRIVATE::initClass, prFromWindowRect, prFreeAll
+classmethods::
 
-METHOD::new
+
+private:: initClass, prFromWindowRect, prFreeAll
+
+
+method::new
+
 creates a new SCImage instance. multiple stands here for multiple arguments.
+
 argument::multiple
-May be a...
+may be a...
+
 list::
 ## link::Classes/Number:: to create an strong::empty:: image of size multiple as width and height
+
 code::
 i = SCImage.new(400);		// Create a 400x400 pixels SCimage.
 i.dump;
@@ -31,13 +41,17 @@ i = SCImage.new(400, 200);	// Create a 400x200 pixels SCimage.
 i.dump;
 i.free;
 ::
+
 ## link::Classes/Point:: to create an strong::empty:: image of size multiple.x as width and multiple.y as height
+
 code::
 i = SCImage.new(400@200);	// Create a 400x200 pixels SCimage.
 i.dump;
 i.free;
 ::
+
 ## link::Classes/String:: to create an image from a strong::local file:: or from an strong::URL:: (http://, ftp://, file:///)
+
 code::
 //	Path string
 i = SCImage.new("/Library/Desktop Pictures/Ripples Blue.jpg");
@@ -50,19 +64,27 @@ i.plot;
 i.url;
 i.free;
 ::
+
 ::
 
-METHOD::color
+
+method::color
+
 creates a new SCImage instance filled with the specified color.
+
 code::
 i = SCImage.color(400, 200, Color.blue(0.9, 0.1));
 i.plot(freeOnClose: true);
 ::
+
 argument::args
 multiple arguments. the last argument should be a valid link::Classes/Color::
 
-METHOD::open
+
+method::open
+
 creates a new SCImage instance from the local file at strong::path::.
+
 code::
 (
 i = SCImage.open("/Library/Desktop Pictures/Ripples Blue.jpg");
@@ -71,16 +93,22 @@ i.url.postln;
 )
 ::
 
-METHOD::openURL
+
+method::openURL
+
 creates a new SCImage instance from a valid image at the specified URL strong::path::.
+
 code::
 i = SCImage.openURL("file:///Library/Desktop%20Pictures/Ripples%20Blue.jpg");
 i.url;
 w = i.plot(freeOnClose: true);
 ::
 
-METHOD::fromImage
+
+method::fromImage
+
 creates a new SCImage instance from another SCImage.
+
 code::
 i = SCImage.new(SCDoc.helpSourceDir +/+ "images/vduck2.jpg");
 j = SCImage.fromImage(i);
@@ -90,7 +118,9 @@ j.dump;
 [i, j].do(_.free);
 ::
 
-METHOD::fromWindow
+
+method::fromWindow
+
 creates a new SCImage from a portion of a SCWindow. this can be used to capture either a window or a specific SCView.
 
 code::
@@ -140,56 +170,82 @@ code::
 	i.plot(freeOnClose: true);
 )
 ::
+
 argument::window
 the SCWindow object.
+
 argument::rect
 optional. the constrained rect to capture inside the SCWindow. By default, it is the window size.
 
 
 subsection:: Class variables and attributes
 
-METHOD::formats
+
+method::formats
+
 returns all the valid image formats as an link::Classes/Array::
+
 code::
 SCImage.formats;
 ::
 
-METHOD::compositingOperations
+
+method::compositingOperations
+
 returns all the valid compositing operations you can use when drawing an SCImage as an link::Classes/Array::
+
 code::
 SCImage.compositingOperations;
 ::
 
-METHOD::interpolations
+
+method::interpolations
+
 returns an link::Classes/Array:: of the different levels of interpolation you can specify when drawing an SCImage.
+
 code::
 SCImage.interpolations;
 ::
 
-METHOD::closeAllPlotWindows
+
+method::closeAllPlotWindows
+
 closes all the SCImage plot windows currently opened.
 
-INSTANCEMETHODS::
 
-PRIVATE::prLockFocus, prDrawAtPoint, prSync, prApplyFilters, prTileInRect, prUpdatePixelsInRect, prGetPixel, prInit, prSetInterpolation, prFree, prSetPixel, prLoadPixels, prSetBackground, prApplyKernel, prUpdatePixels, prWriteToFile, prUnlockFocus, prInitFromURL, prSetColor, prGetColor, prSetName, prGetInterpolation, prDrawInRect
+instancemethods::
+
+
+private:: prLockFocus, prDrawAtPoint, prSync, prApplyFilters, prTileInRect, prUpdatePixelsInRect, prGetPixel, prInit, prSetInterpolation, prFree, prSetPixel, prLoadPixels, prSetBackground, prApplyKernel, prUpdatePixels, prWriteToFile, prUnlockFocus, prInitFromURL, prSetColor, prGetColor, prSetName, prGetInterpolation, prDrawInRect
 
 
 subsection:: commons / general attributes
 
-METHOD::width
-returns or set the width of the receiver
 
-METHOD::height
-returns or set the height of the receiver
+method::width
 
-METHOD::setSize
+returns or sets the width of the receiver
+
+
+method::height
+
+returns or sets the height of the receiver
+
+
+method::setSize
+
 sets the size of the receiver
 
-METHOD::bounds
+
+method::bounds
+
 returns the bounds of the receiver.
 
-METHOD::free
+
+method::free
+
 deallocate the receiver. this method is useful if you want to manage and reclaim yourself resources. otherwise you do not need to call this method since each object is automatically garbage collected.
+
 code::
 i = SCImage.new("/Library/Desktop Pictures/Ripples Blue.jpg");
 SCImage.all;
@@ -197,8 +253,11 @@ i.free;
 SCImage.all;
 ::
 
-METHOD::scalesWhenResized
+
+method::scalesWhenResized
+
 flag to tell or set if the receiver should update its bitmap representation to scale when a resize operation if performed
+
 code::
 (
 	i = SCImage.new("/Library/Desktop Pictures/Ripples Blue.jpg");
@@ -217,8 +276,11 @@ a.close; w.close; i.free;
 )
 ::
 
-METHOD::url
-returns or set the url of the receiver. Returning only if any where supplied at creation, otherwise returns code::nil::. Setting may be used for different purpose but try to supply a valid one since it is used for archiving the image as an object.
+
+method::url
+
+returns or sets the url of the receiver. Returning only if any where supplied at creation, otherwise returns code::nil::. Setting may be used for different purpose but try to supply a valid one since it is used for archiving the image as an object.
+
 code::
 i = SCImage.new("http://www.google.com/intl/en_ALL/images/logo.gif");
 i.url;
@@ -226,14 +288,20 @@ i.plot;
 i.free;
 ::
 
-METHOD::accelerated
+
+method::accelerated
+
 if code::true::, the receiver currently use the CoreImage model, possibly caching its data on GPU, if not the bitmap model. Set it to switch representation.
-WARNING::
-this method should never be used directly unless you know perfectly what you are doing. Since the SCImage will switch internally and manage itself the syncronization between representations.
+
+warning::
+This method should never be used directly unless you know perfectly what you are doing. Since the SCImage will switch internally and manage itself the syncronization between representations.
 ::
 
-METHOD::interpolation
+
+method::interpolation
+
 gets/sets the level of interpolation used when rendering the image - it has not effect when the SCImage is accelerated. see link::#*interpolations:: for a valid range of values.
+
 code::
 (
 i = SCImage.new(SCDoc.helpSourceDir +/+ "images/vduck2.jpg");
@@ -278,8 +346,11 @@ i.free;
 
 subsection:: saving and archiving
 
-METHOD::write
+
+method::write
+
 writes the SCImage to a file.
+
 code::
 i = SCImage.new("/Library/Desktop Pictures/Ripples Blue.jpg");
 i.dump
@@ -301,16 +372,21 @@ i = Object.readArchive("~/Desktop/my_image.scd".standardizePath);
 i.plot;
 i.free;
 ::
+
 argument::path
 the location where to save it
+
 argument::format
 (optional) format to use. see SCImage.formats for supported formats. If code::nil::, it will get the format depending on the path extension.
 
 
 subsection:: rendering
 
-METHOD::plot
+
+method::plot
+
 plots the image in a SCWindow.
+
 code::
 i = SCImage.new("/Library/Desktop Pictures/Ripples Blue.jpg");
 w = i.plot;
@@ -323,22 +399,32 @@ i.free;
 // other option - image will be automatically freed when closed
 SCImage.new("/Library/Desktop Pictures/Ripples Blue.jpg").plot("Hello", freeOnClose: true);
 ::
+
 argument::name
 the title of the SCWindow. may be code::nil::.
+
 argument::bounds
 the bounds of the SCWindow. may be code::nil::.
+
 argument::freeOnClose
 flag to tell if the SCWindow should free the SCImage when closed.
+
 argument::background
 additional background to apply to the SCWindow. may be useful for artifacts due to alpha / compositing...
+
 argument::showInfo
 shows pixel coordinates while the mouse is over the image's plot window.
 
-METHOD::lockFocus
+
+method::lockFocus
+
 sets the receiver as the current graphic context. So you can use SCPen to draw inside of it.
 
-METHOD::unlockFocus
+
+method::unlockFocus
+
 restore the graphic context state. the receiver is not anymore the current graphic context.
+
 code::
 (
 	j = SCImage.new(400, 300);
@@ -367,13 +453,17 @@ j.write("~/Desktop/my_drawing.png"); // write the image
 j.free;
 ::
 
-METHOD::draw
+
+method::draw
+
 shortcut for drawing inside an image. equivalent to :
+
 list::
 ## receiver.lockFocus
 ## aFunction
 ## receiver.unlockFocus
 ::
+
 code::
 (
 	j = SCImage.new(400, 300);
@@ -409,8 +499,11 @@ j.write("~/Desktop/hello.png");
 j.free;
 ::
 
-METHOD::drawStringAtPoint
+
+method::drawStringAtPoint
+
 renders *correctly* a String inside an SCImage :) code::// to fix to have a compliant interface::
+
 code::
 (
 	var width, height, tgHeight, ratio, str, font, color, strb, targetWidth = 400, shadowColor, run = true;
@@ -441,8 +534,11 @@ code::
 )
 ::
 
-METHOD::drawAtPoint
+
+method::drawAtPoint
+
 render the image or a portion of it in the current graphic context.
+
 code::
 (
 	var operation = 'sourceOver', fraction = 1.0, i, w;
@@ -479,17 +575,24 @@ code::
 	});
 )
 ::
+
 argument::point
 the link::Classes/Point:: where to draw it
+
 argument::fromRect
 the portion of the SCImage to use
+
 argument::operation
 the compositing operation to use. code::'sourceOver':: is the default.
+
 argument::fraction
 the opacity to use, ranging from 0.0 (fully transparent) to 1.0 (fully opaque)
 
-METHOD::drawInRect
+
+method::drawInRect
+
 render the image or a portion of it in a specified rectangle of the current graphic context. This may stretch the image depending on the destination rect.
+
 code::
 (
 	i = SCImage.new(
@@ -504,17 +607,24 @@ code::
 	});
 )
 ::
+
 argument::rect
 the link::Classes/Rect:: where to draw it
+
 argument::fromRect
 the portion of the SCImage to use
+
 argument::operation
 the compositing operation to use. code::'sourceOver':: is the default.
+
 argument::fraction
 the opacity to use, ranging from 0.0 (fully transparent) to 1.0 (fully opaque)
 
-METHOD::tileInRect
-tile the image or a portion of it in a specified rectangle of the current graphic context. This may stretch the image depending on the destination rect.
+
+method::tileInRect
+
+tiles the image or a portion of it in a specified rectangle of the current graphic context. This may stretch the image depending on the destination rect.
+
 code::
 (
 	i = SCImage.new(
@@ -529,23 +639,31 @@ code::
 	});
 )
 ::
+
 argument::rect
 the link::Classes/Rect:: where to draw it
+
 argument::fromRect
 the portion of the SCImage to use
+
 argument::operation
 the compositing operation to use. code::'sourceOver':: is the default.
-NOTE::
-Compositing operations are currently disabled for tileInRect
+
+note::
+Compositing operations are currently disabled for code::tileInRect::.
 ::
+
 argument::fraction
 the opacity to use, ranging from 0.0 (fully transparent) to 1.0 (fully opaque)
 
 
 subsection:: Instance Methods / accessing and setting pixels
 
-METHOD::setPixel
+
+method::setPixel
+
 fill a pixel located at x @ y.
+
 code::
 i = SCImage.color(60, 60, Color.blue(0.1, 0.1));
 w = i.plot;
@@ -554,11 +672,15 @@ w.refresh;
 ("pixel at 0 @ 0:"+i.getPixel(0, 0).rgbaArray).postln;
 i.free;
 ::
+
 argument::rgbaInteger
 an 32 bit link::Classes/Integer:: containing color information packed as 8bit RGBA
 
-METHOD::getPixel
-retrieve the pixel value at x @ y as a RGBA integer
+
+method::getPixel
+
+retrieves the pixel value at x @ y as a RGBA integer
+
 code::
 // A simple example on how to manipulate pixels with SCImage
 b = Int32Array[
@@ -601,22 +723,33 @@ p.alpha; // 0
 p = a.getColor(1, 0); // more explicit - but same here
 ::
 
-METHOD::setColor
+
+method::setColor
+
 fill the pixel located at x @ y with the specified strong::color::.
 
-METHOD::getColor
-retrieve the pixel value at x @ y as a link::Classes/Color::.
 
-METHOD::pixels
-retrieve or set all the pixels of the receiver.
-NOTE::
-Carefull: the returned Array is a link::Classes/Int32Array:: of size receiver.width * receiver.height containing all pixel values as 32bit Integer
+method::getColor
+
+retrieves the pixel value at x @ y as a link::Classes/Color::.
+
+
+method::pixels
+
+retrieves or sets all the pixels of the receiver.
+
+note::
+Carefull: the returned Array is a link::Classes/Int32Array:: of size code::receiver.width * receiver.height:: containing all pixel values as 32bit Integer.
 ::
-argument::array
-an link::Classes/Int32Array:: of size receiver.width * receiver.height containing all pixel values as 32bit Integer
 
-METHOD::loadPixels
+argument::array
+an link::Classes/Int32Array:: of size code::receiver.width * receiver.height:: containing all pixel values as 32bit Integer.
+
+
+method::loadPixels
+
 loads all the pixels of the receiver in an array. it is better and faster to call this function instead of link::#-pixels:: if you plan to retrieve frequently the pixel data (since it won't allocate a new array everytime !)
+
 code::
 // exec one line at a time
 i = SCImage.new(
@@ -635,15 +768,21 @@ i.loadPixels(p);
 i.free;
 p;
 ::
+
 argument::array
 the array that will be filled. Should be an link::Classes/Int32Array:: of size receiver.width * receiver.height.
+
 argument::region
 the targeted rectangular region. (code::nil:: by default, meaning full size)
+
 argument::start
 the start index of the array.
 
-METHOD::setPixels
+
+method::setPixels
+
 sets the pixels in a specific portion of the receiver.
+
 code::
 (
 	i = SCImage.new(20@20);
@@ -668,20 +807,27 @@ code::
 	i.pixels.postln;
 )
 ::
+
 argument::array
 an link::Classes/Int32Array:: of size strong::rect::.width * strong::rect::.height containing all pixel values as 32bit Integer
+
 argument::rect
 a rectangle defining the portion to update in the receiver. By default strong::rect:: is code::nil::, meaning full image size.
+
 argument::start
 the array start index.
 
 
 subsection:: Instance Methods / Attributes for SCImageFilter support
 
+
 see link::Classes/SCImageFilter:: for more info
 
-METHOD::applyFilters
-apply an array of link::Classes/SCImageFilter:: to the image. this should be considered as an in place operation, meaning the SCImage is altered after it.
+
+method::applyFilters
+
+applies an array of link::Classes/SCImageFilter:: to the image. this should be considered as an in place operation, meaning the SCImage is altered after it.
+
 code::
 // ******** Built In CoreImage Generators ********
 // Generators are not filters, they actually create an image but do not need an input image
@@ -740,41 +886,60 @@ a.applyFilters([f, g, h]);
 w = a.plot(freeOnClose: true, background: Color.black);
 )
 ::
+
 argument::filters
 a SCImageFilter or an array of link::Classes/SCImageFilter:: to be applied
+
 argument::crop
 the crop region to finally use. This may be required for extending bounds since some SCImageFilter / CoreImageFilters require to set a wider region (to be applied correctly) or may create a huge image. Setting crop to code::nil:: sets no crop region. In case the current maximum size of a filtered SCImage is 4096 / 4096. Any larger size will be clipped. by default crop is constrained to the receiver bounds.
+
 argument::region
 option to constrain the filter to a specific region IN the SCImage.
 
-METHOD::filteredWith
+
+method::filteredWith
+
 returns a new SCImage, copy of the receiver filtered with an array of SCImageFilter. arguments are the same as link::#-applyFilters:: (except for strong::region::).
-NOTE::
+
+note::
 Beware: you are responsible for freeing the newly created SCImage !!!
 ::
 
-METHOD::filters
-filters is the instance variable that holds the array of SCImageFilter attached to the receiver. This is a convenient for applying filters out place and changing the SCImageFilter's attributes. see link::#-addFilter::, link::#-removeFilter::
+
+method::filters
+
+the instance variable that holds the array of SCImageFilter attached to the receiver. This is a convenient for applying filters out place and changing the SCImageFilter's attributes. see link::#-addFilter::, link::#-removeFilter::
 
 see link::Classes/SCImageFilter:: for an example on how to use the strong::filters:: array.
 
-METHOD::addFilter
+
+method::addFilter
+
 you can also attach filters to the receiver for real-time changing operations. In this case the receiver will create a cache before each rendering to maintain its previous state, and allowing you to use filters without applying them in place. The cache is managed directly by the receiver. you can add several filters to the receiver, the first filter in the array is the first applied in the rendering chain.
 
 see link::Classes/SCImageFilter:: for an example on how to use strong::addFilter::.
+
 argument::filter
 a SCImageFilter to apply before rendering of the image
 
-METHOD::removeFilter
+
+method::removeFilter
+
 see link::Classes/SCImageFilter:: for an example on how to use strong::removeFilter::.
+
 argument::filter
 the SCImageFilter to remove from the rendering chain.
 
-METHOD::flatten
+
+method::flatten
+
 if link::#-filters:: is not zero sized, this method will apply all those filters in place. if the image is accelerated this method force a bitmap representation of the receiver.
 
-METHOD::invert
+
+method::invert
+
 invert the receiver
+
 code::
 (
 i = SCImage.new("/Library/Desktop Pictures/Ripples Blue.jpg");
@@ -783,8 +948,11 @@ i.plot(freeOnClose: true);
 )
 ::
 
-METHOD::crop
+
+method::crop
+
 crop the receiver
+
 code::
 (
 i = SCImage.new("/Library/Desktop Pictures/Ripples Blue.jpg");
@@ -792,28 +960,36 @@ i.crop(Rect(10, 10, 120, 100));
 i.plot(freeOnClose: true);
 )
 ::
+
 argument::aRect
 the cropping region
 
 
 subsection:: Instance Methods / Attributes for SCImageKernel support
 
+
 see link::Classes/SCImageKernel:: for examples and more info.
 
-METHOD::applyKernel
-apply a Kernel in place. the receiver is modified after this call.
+
+method::applyKernel
+
+applies a Kernel in place. the receiver is modified after this call.
+
 argument::kernel
 a link::Classes/SCImageKernel::
+
 
 examples::
 
 
 subsection:: Views addition
 
+
 you can now use a SCImage as a valid view background. 16 drawing modes are defined to behave differently.
 
-definitionList::
+definitionlist::
 ## tileMode values: ||
+
 table::
 ## 1 || fixed to left, fixed to top
 ## 2 || horizontally tile, fixed to top
@@ -843,6 +1019,7 @@ strong::alpha:: - opacity 0 < x < 1
 
 strong::fromRect:: - the portion of the image to use. by default use the full image.
 ::
+
 code::
 (
 	b = 1.0;

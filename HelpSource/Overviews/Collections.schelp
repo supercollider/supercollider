@@ -1,5 +1,5 @@
 title:: Collections
-summary:: A hierarchical overview of Collection subclasses
+summary:: a hierarchical overview of Collection subclasses
 categories:: Collections
 related:: Classes/Collection
 
@@ -7,6 +7,7 @@ SuperCollider has a rich hierarchy of Collection subclasses, detailed below. Sub
 
 
 section:: Hierarchy
+
 
 classtree::Collection
 
