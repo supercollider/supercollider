@@ -1,82 +1,344 @@
+SynthDefTopologicalSort {
+	classvar roots;
+	classvar visited;
+	classvar out;
+
+	*new { |inRoots|
+		var return;
+		roots = inRoots.copy;
+		visited = IdentitySet();
+		out = [];
+		roots.do(SynthDefTopologicalSort.prVisit(_));
+		// clean up
+		return = out;
+		roots = nil;
+		visited = nil;
+		out = nil;
+		^return;
+	}
+
+	*prVisit { |u|
+		if (u.isKindOf(UGen) and: { visited.includes(u).not }){
+			visited.add(u);
+			u.sortAntecedents;
+			u.weakAntecedents.do( SynthDefTopologicalSort.prVisit(_) );
+			u.antecedents.do( SynthDefTopologicalSort.prVisit(_) );
+
+			// This case is a little bit of a hack,
+			//    because removing weakAntecedents that don't have descendants is costly if done elsewhere.
+			if (u.hasObservableEffect or: {u.descendants.isEmpty.not}){
+				out = out.add(u)
+			}
+		}
+	}
+}
+
+SynthDefUGenOccurrenceTracker {
+	classvar roots;
+	classvar visited;
+	classvar out;
+	classvar rollingArray;
+	classvar depth;
+
+	*new { |inRoots, inDepth|
+		var return;
+		roots = inRoots.copy;
+		visited = Set();
+		out = Bag();
+		depth = inDepth;
+		rollingArray = Array();
+		roots.do( SynthDefUGenOccurrenceTracker.prVisit(_) );
+		return = out;
+		roots = nil;
+		visited = nil;
+		out = nil;
+		^return.contents;
+	}
+	*tally { |inRoots, inDepth|
+		^SynthDefUGenOccurrenceTracker.new(inRoots, inDepth).asAssociations.sort({ |l, r| l.value > r.value })
+	}
+
+	*prVisit { |u|
+		if (u.isKindOf(UGen) and: { visited.includes(u).not }){
+			visited.add(u);
+			rollingArray = rollingArray.add(u);
+			if(rollingArray.size >= depth) {
+				out.add(
+					rollingArray[rollingArray.size - depth .. rollingArray.size]
+					.collect(_.nameForDisplay).reverse
+				)
+			};
+			u.antecedents.do( SynthDefUGenOccurrenceTracker.prVisit(_) );
+			rollingArray.pop;
+		}
+	}
+}
+
+SynthDefOptimisationResult {
+	var <>maxDepthOfOperation = 1; // Integer greater than 0.
+	var <>newUGens; // Array of UGens.
+	var <>observableUGenReplacements; // An Array of Associations, or nil
+
+	addUGen { |u, atDepth|
+		newUGens = newUGens.add(u);
+		maxDepthOfOperation = max(maxDepthOfOperation, atDepth);
+	}
+	addConstantsDescendants { |descendants|
+		newUGens = (newUGens ?? {[]}).addAll(descendants.asArray); // nil addAll is broken #6414
+		maxDepthOfOperation = max(maxDepthOfOperation, 0);
+	}
+	returnNilIfEmpty { ^newUGens !? { this } }
+}
+
+SynthDefOptimizeAndCSE {
+	var doCSE, doRewrite;
+	var roots;
+	var toVisit;
+	var common;
+
+	*new { |inRoots, doCSE, doRewrite|
+		^super.newCopyArgs(doCSE.asBoolean, doRewrite.asBoolean, inRoots.copy, inRoots.copy, IdentityDictionary(512)).prMain
+	}
+
+	prMain {
+		while {toVisit.isEmpty.not} {
+			this.prOpt
+		};
+		^roots
+	}
+
+	prCSE { |current|
+		if (current.canBeReplacedByIdenticalCall){
+			var n = current.nameForDisplay;
+			var ar = common[n];
+
+			if(ar.isNil) {
+				common[n] = Dictionary(32);
+				common[n][current.getIdenticalInputs] = current;
+			} {
+				var idIns = current.getIdenticalInputs;
+				var possibleReplacement = ar.at(idIns);
+				if (possibleReplacement.isNil.not) {
+					if (possibleReplacement != current) {
+						possibleReplacement.replaceWith(current);
+						possibleReplacement.tryDisconnect;
+
+						ar.put(idIns, current);
+
+						toVisit = toVisit.addAll(current.descendants);
+						toVisit = toVisit.addAll(current.weakDescendants);
+
+						^true // stop handling the current and go to descendants.
+					}
+				} {
+					ar.put(idIns, current);
+				}
+			}
+		};
+		^false
+	}
+	prRewrite { |current|
+		if (current.hasObservableEffect or: { current.descendants.isEmpty.not }) {
+			current.optimize !? { |res|
+
+				if (res.newUGens.isNil.not) {
+					var ref = Ref([]);
+
+					res.observableUGenReplacements !? { |replacements|
+						replacements.do{ |r|
+							roots.remove(r.key);
+							roots.add(r.value);
+						}
+					};
+
+					res.newUGens.do{ |u|
+						if (u.isKindOf(UGen)){
+							u.source.getAllDescendantsAtLevel(res.maxDepthOfOperation, ref)
+						}
+					};
+					toVisit = toVisit.addAll(ref.get);
+					^true // recur on newly added
+				}
+			};
+		};
+		^false
+	}
+	prOpt {
+		var current;
+		toVisit.removeIdenticalDuplicates;
+
+		current = toVisit.pop.source;
+
+		// CSE
+		if (doCSE) {
+			if (this.prCSE(current)) { ^nil };
+		};
+		if (doRewrite){
+			if (this.prRewrite(current)) { ^nil }
+		};
+
+		// no opts
+		toVisit = toVisit.addAll(current.antecedents);
+		^nil
+	}
+}
+
+SynthDefOptimizations {
+	var <sorting;
+	var <cse;
+	var <rewrite;
+
+	*all { ^super.newCopyArgs(true, true, true) }
+	*none { ^super.newCopyArgs(false, false, false) }
+	*onlySorting { ^super.newCopyArgs(true, false, false) }
+	*cseAndSorting { ^super.newCopyArgs(true, true, false) }
+	*sortingAndRewrite { ^super.newCopyArgs(true, false, true) }
+}
+
 SynthDef {
-	var <>name, <>func;
+	classvar <synthDefDir;
+	classvar <>warnAboutLargeSynthDefs = false;
+
+	classvar <optimizations;
+
+	var <>name;
+	var <>func;
 
 	var <>controls, <>controlNames; // ugens add to this
 	var <>allControlNames;
 	var <>controlIndex=0;
+
+	// This is the final output in topological order.
+	// It is also the initial order specified by adding UGens through evaluating the 'func'.
 	var <>children;
 
+	// Numbers.
 	var <>constants;
 	var <>constantSet;
+
 	var <>maxLocalBufs;
 
-	// topo sort
-	var <>available;
 	var <>variants;
-	var <>widthFirstUGens;
+
+	// This is nil in normal use, but true when optimisations are being ran.
 	var rewriteInProgress;
 
-	var <>desc, <>metadata;
+	var <>desc;
+	var <>metadata;
 
-	classvar <synthDefDir;
-	classvar <>warnAboutLargeSynthDefs = false;
+	// Private, don't access.
+	// These are the ends of the graph, the Outs, BufWrs, et cetera.
+	var <>effectiveUGens;
 
-	*synthDefDir_ { arg dir;
-		if (dir.last.isPathSeparator.not )
-			{ dir = dir ++ thisProcess.platform.pathSeparator };
+	// Private, don't access.
+	// This stores all resource managers in an Event<Class, UGenResourceManager>.
+	var <>resourceManagers;
+
+	*synthDefDir_ { |dir|
+		if (dir.last.isPathSeparator.not ) { dir = dir ++ thisProcess.platform.pathSeparator };
 		synthDefDir = dir;
+	}
+
+	*setOptimizations { |opts|
+		if (opts.isKindOf(SynthDefOptimizations).not) { Error("opts should be a SynthDefOptimizations").throw };
+		optimizations = opts;
 	}
 
 	*initClass {
 		synthDefDir = Platform.userAppSupportDir ++ "/synthdefs/";
-		// Ensure exists:
 		synthDefDir.mkdir;
+		optimizations = SynthDefOptimizations.all;
 	}
 
-	*new { arg name, ugenGraphFunc, rates, prependArgs, variants, metadata;
-		^super.newCopyArgs(name.asSymbol).variants_(variants).metadata_(metadata ?? {()}).children_(Array.new(64))
-			.build(ugenGraphFunc, rates, prependArgs)
+	*newForSynthDesc {
+		^super.new()
+		.effectiveUGens_([])
+		.resourceManagers_(UGenResourceManager.createNewInstances)
+	}
+
+	*new { |name, ugenGraphFunc, rates, prependArgs, variants, metadata|
+		^super.newCopyArgs(name.asSymbol, ugenGraphFunc)
+		.variants_(variants)
+		.metadata_(metadata ?? {()})
+		.children_([])
+		.effectiveUGens_([])
+		.resourceManagers_(UGenResourceManager.createNewInstances)
+		.build(rates, prependArgs)
+	}
+
+	*newWithOptimizations { |newOptimizations, name, ugenGraphFunc, rates, prependArgs, variants, metadata|
+		var out;
+		var opts = optimizations;
+		if (newOptimizations.isKindOf(SynthDefOptimizations).not) { Error("newOptimizations should be a SynthDefOptimizations").throw };
+		SynthDef.setOptimizations(newOptimizations);
+
+		out = super.newCopyArgs(name.asSymbol, ugenGraphFunc)
+		.variants_(variants)
+		.metadata_(metadata ?? {()})
+		.children_([])
+		.effectiveUGens_([])
+		.resourceManagers_(UGenResourceManager.createNewInstances)
+		.build(rates, prependArgs);
+
+		SynthDef.setOptimizations(opts);
+
+		^out;
 	}
 
 	storeArgs { ^[name, func] }
 
-	build { arg ugenGraphFunc, rates, prependArgs;
+	build { |rates, prependArgs|
 		protect {
-			this.initBuild;
-			this.buildUgenGraph(ugenGraphFunc, rates, prependArgs);
-			this.finishBuild;
-			func = ugenGraphFunc;
+			UGen.buildSynthDef = this;
+			constants = Dictionary.new;
+			constantSet = Set.new;
+			controls = nil;
+			controlIndex = 0;
+			maxLocalBufs = nil;
+
+			this.buildUgenGraph(func, rates, prependArgs);
+
+			rewriteInProgress = true;
+			children.do(_.initEdges); // Necessary because of borked init method in UGen.
+
+			effectiveUGens = SynthDefOptimizeAndCSE(effectiveUGens, optimizations.cse, optimizations.rewrite);
+
+			if (optimizations.sorting) {
+				// Does dead code elimination as a side effect.
+				children = SynthDefTopologicalSort(effectiveUGens.reverse)
+			};
+
+			children.do( _.collectConstants );
+
+			this.checkInputs; // Throws when invalid inputs are found.
+
+			children.do { | ugen, i| ugen.synthIndex = i }; // Reindex UGens.
+			children.do(_.onFinalizedSynthDef);
+
+			// Please note, this event should NOT be used inside UGens, instead, onFinalizedSynthDef should be used.
 			this.class.changed(\synthDefReady, this);
 		} {
+			rewriteInProgress = nil;
 			UGen.buildSynthDef = nil;
 		}
 	}
 
-	*wrap { arg func, rates, prependArgs;
+	*wrap { arg ugenGraphFunc, rates, prependArgs;
 		if (UGen.buildSynthDef.isNil) {
 			"SynthDef.wrap should be called inside a SynthDef ugenGraphFunc.\n".error;
 			^0
 		};
-		^UGen.buildSynthDef.buildUgenGraph(func, rates, prependArgs);
+		^UGen.buildSynthDef.buildUgenGraph(ugenGraphFunc, rates, prependArgs);
 	}
 
-	//only write if no file exists
-	*writeOnce { arg name, func, rates, prependArgs, variants, dir, metadata, mdPlugin;
-		this.new(name, func, rates, prependArgs, variants, metadata).writeOnce(dir, mdPlugin)
-	}
-	writeOnce { arg dir, mdPlugin;
-		this.writeDefFile(dir, false, mdPlugin)
+	*writeOnce { |name, ugenGraphFunc, rates, prependArgs, variants, dir, metadata, mdPlugin|
+		//only write if no file exists
+		this.new(name, ugenGraphFunc, rates, prependArgs, variants, metadata).writeOnce(dir, mdPlugin)
 	}
 
-	initBuild {
-		UGen.buildSynthDef = this;
-		constants = Dictionary.new;
-		constantSet = Set.new;
-		controls = nil;
-		controlIndex = 0;
-		maxLocalBufs = nil;
-	}
-	buildUgenGraph { arg func, rates, prependArgs;
+	writeOnce { |dir, mdPlugin| this.writeDefFile(dir, false, mdPlugin) }
+
+	buildUgenGraph { |ugenGraphFunc, rates, prependArgs|
 		var result;
 		// save/restore controls in case of *wrap
 		var saveControlNames = controlNames;
@@ -84,18 +346,19 @@ SynthDef {
 		controlNames = nil;
 
 		prependArgs = prependArgs.asArray;
-		this.addControlsFromArgsOfFunc(func, rates, prependArgs.size);
-		result = func.valueArray(prependArgs ++ this.buildControls);
+		this.addControlsFromArgsOfFunc(ugenGraphFunc, rates, prependArgs.size);
+
+		result = ugenGraphFunc.valueArray(prependArgs ++ this.buildControls);
 
 		controlNames = saveControlNames
 
 		^result
-
 	}
-	addControlsFromArgsOfFunc { arg func, rates, skipArgs=0;
+
+	addControlsFromArgsOfFunc { arg ugenGraphFunc, rates, skipArgs=0;
 		var def, names, values,argNames, specs;
 
-		def = func.def;
+		def = ugenGraphFunc.def;
 		argNames = def.argNames;
 		if(argNames.isNil) { ^nil };
 		names = def.argNames[skipArgs..];
@@ -123,7 +386,7 @@ SynthDef {
 			{
 				if (lag.isNumber and: { lag != 0 }) {
 					Post << "WARNING: lag value "<< lag <<" for i-rate arg '"
-						<< name <<"' will be ignored.\n";
+					<< name <<"' will be ignored.\n";
 				};
 				this.addIr(name, value);
 			}
@@ -131,7 +394,7 @@ SynthDef {
 			{
 				if (lag.isNumber and: { lag != 0 }) {
 					Post << "WARNING: lag value "<< lag <<" for trigger arg '"
-						<< name <<"' will be ignored.\n";
+					<< name <<"' will be ignored.\n";
 				};
 				this.addTr(name, value);
 			}
@@ -139,7 +402,7 @@ SynthDef {
 			{
 				if (lag.isNumber and: { lag != 0 }) {
 					Post << "WARNING: lag value "<< lag <<" for audio arg '"
-						<< name <<"' will be ignored.\n";
+					<< name <<"' will be ignored.\n";
 				};
 				this.addAr(name, value);
 			}
@@ -150,31 +413,29 @@ SynthDef {
 		};
 	}
 
-	addControlName { arg cn;
+	addControlName { |cn|
 		controlNames = controlNames.add(cn);
 		allControlNames = allControlNames.add(cn);
 	}
 
 	// allow incremental building of controls
-	addNonControl { arg name, values;
-		this.addControlName(ControlName(name, nil, 'noncontrol',
-			values.copy, controlNames.size));
+	addNonControl { |name, values|
+		this.addControlName(ControlName(name, nil, 'noncontrol', values.copy, controlNames.size))
 	}
-	addIr { arg name, values;
-		this.addControlName(ControlName(name, controls.size, 'scalar',
-			values.copy, controlNames.size));
+	addIr { |name, values|
+		this.addControlName(ControlName(name, controls.size, 'scalar', values.copy, controlNames.size))
 	}
-	addKr { arg name, values, lags;
-		this.addControlName(ControlName(name, controls.size, 'control',
-			values.copy, controlNames.size, lags.copy));
+	addKr { |name, values, lags|
+		this.addControlName(
+			ControlName(name, controls.size, 'control', values.copy, controlNames.size, lags.copy))
 	}
-	addTr { arg name, values;
-		this.addControlName(ControlName(name, controls.size, 'trigger',
-			values.copy, controlNames.size));
+	addTr { |name, values|
+		this.addControlName(
+			ControlName(name, controls.size, 'trigger', values.copy, controlNames.size))
 	}
-	addAr { arg name, values;
-		this.addControlName(ControlName(name, controls.size, 'audio',
-			values.copy, controlNames.size))
+	addAr { |name, values|
+		this.addControlName(
+			ControlName(name, controls.size, 'audio', values.copy, controlNames.size))
 	}
 
 	buildControls {
@@ -183,25 +444,21 @@ SynthDef {
 
 		var arguments = Array.newClear(controlNames.size);
 
-		var nonControlNames = controlNames.select {|cn| cn.rate == 'noncontrol' };
-		var irControlNames = controlNames.select {|cn| cn.rate == 'scalar' };
-		var krControlNames = controlNames.select {|cn| cn.rate == 'control' };
-		var trControlNames = controlNames.select {|cn| cn.rate == 'trigger' };
-		var arControlNames = controlNames.select {|cn| cn.rate == 'audio' };
+		var nonControlNames = controlNames.select { |cn| cn.rate == 'noncontrol' };
+		var irControlNames = controlNames.select { |cn| cn.rate == 'scalar' };
+		var krControlNames = controlNames.select { |cn| cn.rate == 'control' };
+		var trControlNames = controlNames.select { |cn| cn.rate == 'trigger' };
+		var arControlNames = controlNames.select { |cn| cn.rate == 'audio' };
 
 		if (nonControlNames.size > 0) {
-			nonControlNames.do {|cn|
-				arguments[cn.argNum] = cn.defaultValue;
-			};
+			nonControlNames.do { |cn| arguments[cn.argNum] = cn.defaultValue };
 		};
 		if (irControlNames.size > 0) {
 			values = nil;
-			irControlNames.do {|cn|
-				values = values.add(cn.defaultValue);
-			};
+			irControlNames.do { |cn| values = values.add(cn.defaultValue) };
 			index = controlIndex;
 			controlUGens = Control.ir(values.flat).asArray.reshapeLike(values);
-			irControlNames.do {|cn, i|
+			irControlNames.do { |cn, i|
 				cn.index = index;
 				index = index + cn.defaultValue.asArray.size;
 				arguments[cn.argNum] = controlUGens[i];
@@ -210,12 +467,10 @@ SynthDef {
 		};
 		if (trControlNames.size > 0) {
 			values = nil;
-			trControlNames.do {|cn|
-				values = values.add(cn.defaultValue);
-			};
+			trControlNames.do { |cn| values = values.add(cn.defaultValue) };
 			index = controlIndex;
 			controlUGens = TrigControl.kr(values.flat).asArray.reshapeLike(values);
-			trControlNames.do {|cn, i|
+			trControlNames.do { |cn, i|
 				cn.index = index;
 				index = index + cn.defaultValue.asArray.size;
 				arguments[cn.argNum] = controlUGens[i];
@@ -224,12 +479,10 @@ SynthDef {
 		};
 		if (arControlNames.size > 0) {
 			values = nil;
-			arControlNames.do {|cn|
-				values = values.add(cn.defaultValue);
-			};
+			arControlNames.do { |cn| values = values.add(cn.defaultValue) };
 			index = controlIndex;
 			controlUGens = AudioControl.ar(values.flat).asArray.reshapeLike(values);
-			arControlNames.do {|cn, i|
+			arControlNames.do { |cn, i|
 				cn.index = index;
 				index = index + cn.defaultValue.asArray.size;
 				arguments[cn.argNum] = controlUGens[i];
@@ -239,58 +492,34 @@ SynthDef {
 		if (krControlNames.size > 0) {
 			values = nil;
 			lags = nil;
-			krControlNames.do {|cn|
+			krControlNames.do { |cn|
 				valsize = cn.defaultValue.asArray.size;
 				values = values.add(cn.defaultValue);
 				lags = lags.addAll(cn.lag.asArray.wrapExtend(valsize));
 			};
 			index = controlIndex;
-			if (lags.any {|lag| lag != 0 }) {
+			if (lags.any { |lag| lag != 0 }) {
 				controlUGens = LagControl.kr(values.flat, lags).asArray.reshapeLike(values);
 			}{
 				controlUGens = Control.kr(values.flat).asArray.reshapeLike(values);
 			};
-			krControlNames.do {|cn, i|
+			krControlNames.do { |cn, i|
 				cn.index = index;
 				index = index + cn.defaultValue.asArray.size;
 				arguments[cn.argNum] = controlUGens[i];
 				this.setControlNames(controlUGens[i], cn);
 			};
 		};
-		controlNames = controlNames.reject {|cn| cn.rate == 'noncontrol' };
-
+		controlNames = controlNames.reject { |cn| cn.rate == 'noncontrol' };
 		^arguments
 	}
 
 	setControlNames {arg controlUGens, cn;
-		controlUGens.isArray.if({
-			controlUGens.do({arg thisCtrl;
-				thisCtrl.name_(cn.name);
-				})
-			}, {
+		if(controlUGens.isArray) {
+			controlUGens.do{ |thisCtrl| thisCtrl.name_(cn.name) }
+		} {
 			controlUGens.name_(cn.name)
-			});
-	}
-
-	finishBuild {
-		this.addCopiesIfNeeded;
-		this.optimizeGraph;
-		this.collectConstants;
-		this.checkInputs;// will die on error
-
-		// re-sort graph. reindex.
-		this.topologicalSort;
-		this.indexUGens;
-		UGen.buildSynthDef = nil;
-	}
-
-	addCopiesIfNeeded {
-		// could also have PV_UGens store themselves in a separate collection
-		widthFirstUGens.do({|child|
-			if(child.isKindOf(PV_ChainUGen), {
-				child.addCopiesIfNeeded;
-			});
-		});
+		}
 	}
 
 	asBytes {
@@ -298,6 +527,7 @@ SynthDef {
 		this.asArray.writeDef(stream);
 		^stream.collection;
 	}
+
 	writeDefFile { arg dir, overwrite(true), mdPlugin;
 		var desc, defFileExistedBefore;
 		if((metadata.tryPerform(\at, \shouldNotSend) ? false).not) {
@@ -314,7 +544,9 @@ SynthDef {
 			// actual error, not just warning as in .send and .load,
 			// because you might try to write the file somewhere other than
 			// the default location - could be fatal later, so crash now
-			MethodError("This SynthDef (%) was reconstructed from a .scsyndef file. It does not contain all the required structure to write back to disk. File was not written."
+			MethodError("This SynthDef (%) was reconstructed from a .scsyndef file. "
+				"It does not contain all the required structure to write back to disk. "
+				"File was not written."
 				.format(name), this).throw
 		}
 	}
@@ -396,16 +628,11 @@ SynthDef {
 		}
 	}
 
-	writeConstants { arg file;
+	writeConstants { |file|
 		var array = FloatArray.newClear(constants.size);
-		constants.keysValuesDo { arg value, index;
-			array[index] = value;
-		};
-
+		constants.keysValuesDo { |value, index| array[index] = value };
 		file.putInt32(constants.size);
-		array.do { | item |
-			file.putFloat(item)
-		};
+		array.do { |item| file.putFloat(item) };
 	}
 
 	checkInputs {
@@ -426,111 +653,28 @@ SynthDef {
 		^true
 	}
 
+	addUGen { |ugen|
+		ugen.synthIndex = children.size;
+		children = children.add(ugen);
 
-	// UGens do these
-	addUGen { arg ugen;
+		if (ugen.hasObservableEffect){
+			effectiveUGens = effectiveUGens.add(ugen)
+		};
+
+		// It is the optimizer's responsibility to add the weak edges.
 		if (rewriteInProgress.isNil) {
-			// we don't add ugens, if a rewrite operation is in progress
-			ugen.synthIndex = children.size;
-			ugen.widthFirstAntecedents = widthFirstUGens.copy;
-			children = children.add(ugen);
+			// If not nil, get each active manager and add the UGen,
+			//    otherwise call panic on all resourceManagers, adding the UGen to all resource orders.
+			ugen.resourceManagers
+			!? { |m| m.asArray.do{ |manager| resourceManagers.at(manager).add(ugen) } }
+			?? { resourceManagers.do(_.panic(ugen)) };
 		}
 	}
-	removeUGen { arg ugen;
-		// lazy removal: clear entry and later remove all nil enties
-		children[ugen.synthIndex] = nil;
-	}
-	replaceUGen { arg a, b;
-		if (b.isKindOf(UGen).not) {
-			Error("replaceUGen assumes a UGen").throw;
-		};
 
-		b.widthFirstAntecedents = a.widthFirstAntecedents;
-		b.descendants = a.descendants;
-		b.synthIndex = a.synthIndex;
-
-		children[a.synthIndex] = b;
-
-		children.do { arg item, i;
-			if (item.notNil) {
-				item.inputs.do { arg input, j;
-					if (input === a) { item.inputs[j] = b };
-				};
-			};
-		};
-	}
-	addConstant { arg value;
+	addConstant { |value|
 		if (constantSet.includes(value).not) {
 			constantSet.add(value);
 			constants[value] = constants.size;
-		};
-	}
-
-
-	// multi channel expansion causes a non optimal breadth-wise ordering of the graph.
-	// the topological sort below follows branches in a depth first order,
-	// so that cache performance of connection buffers is optimized.
-
-	optimizeGraph {
-		var oldSize;
-		this.initTopoSort;
-
-		rewriteInProgress = true;
-		children.copy.do { arg ugen;
-			ugen.optimizeGraph;
-		};
-		rewriteInProgress = nil;
-
-		// fixup removed ugens
-		oldSize = children.size;
-		children.removeEvery(#[nil]);
-		if (oldSize != children.size) {
-			this.indexUGens
-		};
-	}
-	collectConstants {
-		children.do { arg ugen;
-			ugen.collectConstants;
-		};
-	}
-
-	initTopoSort {
-		available = nil;
-		children.do { arg ugen;
-			ugen.antecedents = Set.new;
-			ugen.descendants = Set.new;
-		};
-		children.do { arg ugen;
-			// this populates the descendants and antecedents
-			ugen.initTopoSort;
-		};
-		children.reverseDo { arg ugen;
-			ugen.descendants = ugen.descendants.asArray.sort(
-								{ arg a, b; a.synthIndex < b.synthIndex }
-							);
-			ugen.makeAvailable; // all ugens with no antecedents are made available
-		};
-	}
-	cleanupTopoSort {
-		children.do { arg ugen;
-			ugen.antecedents = nil;
-			ugen.descendants = nil;
-			ugen.widthFirstAntecedents = nil;
-		};
-	}
-	topologicalSort {
-		var outStack;
-		this.initTopoSort;
-		while { available.size > 0 }
-		{
-			outStack = available.pop.schedule(outStack);
-		};
-		children = outStack;
-		this.cleanupTopoSort;
-	}
-	indexUGens {
-		children.do { arg ugen, i;
-			ugen.synthIndex = i;
 		};
 	}
 
@@ -543,7 +687,7 @@ SynthDef {
 					if (in.respondsTo(\dumpName)) { in.dumpName }{ in };
 				};
 			};
-			[ugen.dumpName, ugen.rate, inputs].postln;
+			[ugen.dumpName, ugen.rate, inputs, ugen.antecedents, ugen.descendants, ugen.weakAntecedents, ugen.weakDescendants].postln;
 		};
 	}
 
@@ -567,9 +711,6 @@ SynthDef {
 			each.value.sendMsg("/d_free", name)
 		};
 	}
-
-
-	// methods for special optimizations
 
 	// only send to servers
 	send { arg server, completionMsg;
@@ -681,15 +822,15 @@ SynthDef {
 	// to get the synthdef to the server
 
 	loadReconstructed { arg server, completionMsg;
-			"SynthDef (%) was reconstructed from a .scsyndef file, "
-			"it does not contain all the required structure to send back to the server."
-				.format(name).warn;
-			if(server.isLocal) {
-				"Loading from disk instead.".postln;
-				server.sendBundle(nil, ["/d_load", metadata[\loadPath], completionMsg]);
-			} {
-				MethodError("Server is remote, cannot load from disk.", this).throw;
-			};
+		"SynthDef (%) was reconstructed from a .scsyndef file, "
+		"it does not contain all the required structure to send back to the server."
+		.format(name).warn;
+		if(server.isLocal) {
+			"Loading from disk instead.".postln;
+			server.sendBundle(nil, ["/d_load", metadata[\loadPath], completionMsg]);
+		} {
+			MethodError("Server is remote, cannot load from disk.", this).throw;
+		};
 
 	}
 
@@ -699,21 +840,19 @@ SynthDef {
 		if(File.exists(path).not) {
 			this.store(libname, dir, completionMsg, mdPlugin);
 		} {
-				// load synthdesc from disk
-				// because SynthDescLib still needs to have the info
+			// load synthdesc from disk
+			// because SynthDescLib still needs to have the info
 			lib = SynthDescLib.getLib(libname);
 			lib.read(path);
 		};
 	}
 
-	play { arg target,args,addAction=\addToHead;
+	play { |target, args, addAction = \addToHead|
 		var synth, msg;
-//		this.deprecated(thisMethod, Function.findRespondingMethodFor(\play));
 		target = target.asTarget;
 		synth = Synth.basicNew(name,target.server);
 		msg = synth.newMsg(target, args, addAction);
 		this.send(target.server, msg);
 		^synth
 	}
-
 }

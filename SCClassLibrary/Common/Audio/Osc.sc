@@ -1,14 +1,18 @@
 /*
-	Osc - oscillator
-	arguments :
-		bufnum - an index to a buffer
-		freq - frequency in cycles per second
-		pm - phase modulation
-		mul - multiply by signal or scalar
-		add - add to signal or scalar
+Osc - oscillator
+arguments :
+bufnum - an index to a buffer
+freq - frequency in cycles per second
+pm - phase modulation
+mul - multiply by signal or scalar
+add - add to signal or scalar
 */
 
-Osc : PureUGen {
+Osc : UGen {
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar {
 		arg bufnum, freq=440.0, phase=0.0, mul=1.0, add=0.0;
 		^this.multiNew('audio', bufnum, freq, phase).madd(mul, add)
@@ -19,7 +23,11 @@ Osc : PureUGen {
 	}
 }
 
-SinOsc : PureUGen {
+SinOsc : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar {
 		arg freq=440.0, phase=0.0, mul=1.0, add=0.0;
 		^this.multiNew('audio', freq, phase).madd(mul, add)
@@ -30,7 +38,11 @@ SinOsc : PureUGen {
 	}
 }
 
-SinOscFB : PureUGen {
+SinOscFB : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar {
 		arg freq=440.0, feedback=0.0, mul=1.0, add=0.0;
 		^this.multiNew('audio', freq, feedback).madd(mul, add)
@@ -41,7 +53,11 @@ SinOscFB : PureUGen {
 	}
 }
 
-OscN : PureUGen {
+OscN : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar {
 		arg bufnum, freq=440.0, phase=0.0, mul=1.0, add=0.0;
 		^this.multiNew('audio', bufnum, freq, phase).madd(mul, add)
@@ -53,7 +69,11 @@ OscN : PureUGen {
 }
 
 
-VOsc : PureUGen {
+VOsc : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar {
 		arg bufpos, freq=440.0, phase=0.0, mul=1.0, add=0.0;
 		^this.multiNew('audio', bufpos, freq, phase).madd(mul, add)
@@ -64,7 +84,11 @@ VOsc : PureUGen {
 	}
 }
 
-VOsc3 : PureUGen {
+VOsc3 : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar {
 		arg bufpos, freq1=110.0, freq2=220.0, freq3=440.0, mul=1.0, add=0.0;
 		^this.multiNew('audio', bufpos, freq1, freq2, freq3).madd(mul, add)
@@ -75,7 +99,11 @@ VOsc3 : PureUGen {
 	}
 }
 
-COsc : PureUGen {
+COsc : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar {
 		arg bufnum, freq=440.0, beats=0.5, mul=1.0, add=0.0;
 		^this.multiNew('audio', bufnum, freq, beats).madd(mul, add)
@@ -86,14 +114,22 @@ COsc : PureUGen {
 	}
 }
 
-Formant : PureUGen {
+Formant : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar {
 		arg fundfreq = 440.0, formfreq = 1760.0, bwfreq = 880.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', fundfreq, formfreq, bwfreq).madd(mul, add)
 	}
 }
 
-LFSaw : PureUGen {
+LFSaw : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar {
 		arg freq = 440.0, iphase = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', freq, iphase).madd(mul, add)
@@ -104,16 +140,56 @@ LFSaw : PureUGen {
 	}
 }
 
-LFPar : LFSaw {
+LFPar : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
+	*ar {
+		arg freq = 440.0, iphase = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('audio', freq, iphase).madd(mul, add)
+	}
+	*kr {
+		arg freq = 440.0, iphase = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('control', freq, iphase).madd(mul, add)
+	}
 }
 
-LFCub : LFSaw {
+LFCub : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
+	*ar {
+		arg freq = 440.0, iphase = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('audio', freq, iphase).madd(mul, add)
+	}
+	*kr {
+		arg freq = 440.0, iphase = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('control', freq, iphase).madd(mul, add)
+	}
 }
 
-LFTri : LFSaw {
+LFTri : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
+	*ar {
+		arg freq = 440.0, iphase = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('audio', freq, iphase).madd(mul, add)
+	}
+	*kr {
+		arg freq = 440.0, iphase = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('control', freq, iphase).madd(mul, add)
+	}
 }
 
 LFGauss : UGen {
+	resourceManagers { ^if(this.hasObservableEffect) { [UGenDoneResourceManager] } { [] } }
+	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(4) }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar {
 		arg duration = 1, width = 0.1, iphase = 0.0, loop = 1, doneAction = 0;
 		^this.multiNew('audio', duration, width, iphase, loop, doneAction)
@@ -132,7 +208,11 @@ LFGauss : UGen {
 
 }
 
-LFPulse : PureUGen {
+LFPulse : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar {
 		arg freq = 440.0, iphase = 0.0, width = 0.5, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', freq, iphase, width).madd(mul, add)
@@ -144,7 +224,11 @@ LFPulse : PureUGen {
 	signalRange { ^\unipolar }
 }
 
-VarSaw : PureUGen {
+VarSaw : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar {
 		arg freq = 440.0, iphase = 0.0, width = 0.5, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', freq, iphase, width).madd(mul, add)
@@ -155,7 +239,11 @@ VarSaw : PureUGen {
 	}
 }
 
-Impulse : PureUGen {
+Impulse : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar {
 		arg freq = 440.0, phase = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', freq, phase).madd(mul, add)
@@ -168,7 +256,11 @@ Impulse : PureUGen {
 }
 
 
-SyncSaw : PureUGen {
+SyncSaw : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar {
 		arg syncFreq = 440.0, sawFreq = 440.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', syncFreq, sawFreq).madd(mul, add)
@@ -179,20 +271,13 @@ SyncSaw : PureUGen {
 	}
 }
 
-//
-//TPulse : UGen {//exception in GrafDef_Load: UGen 'TPulse' not installed.
-//	*ar {
-//		arg trig = 0.0, freq = 440.0, width = 0.5, mul = 1.0, add = 0.0;
-//		^this.multiNew('audio', trig, freq, width).madd(mul, add)
-//	}
-//	*kr {
-//		arg trig = 0.0, freq = 440.0, width = 0.5, mul = 1.0, add = 0.0;
-//		^this.multiNew('control', trig, freq, width).madd(mul, add)
-//	}
-//	signalRange { ^\unipolar }
-//}
 
-Index : PureUGen {
+Index : UGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\read }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar {
 		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', bufnum, in).madd(mul, add)
@@ -203,25 +288,108 @@ Index : PureUGen {
 	}
 }
 
-FoldIndex : Index {
+FoldIndex : UGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\read }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
+	*ar {
+		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('audio', bufnum, in).madd(mul, add)
+	}
+	*kr {
+		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('control', bufnum, in).madd(mul, add)
+	}
 }
 
-WrapIndex : Index {
+WrapIndex : UGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\read }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
+	*ar {
+		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('audio', bufnum, in).madd(mul, add)
+	}
+	*kr {
+		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('control', bufnum, in).madd(mul, add)
+	}
 }
 
-IndexInBetween : Index {
+IndexInBetween : UGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\read }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
+	*ar {
+		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('audio', bufnum, in).madd(mul, add)
+	}
+	*kr {
+		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('control', bufnum, in).madd(mul, add)
+	}
 }
 
-DetectIndex : Index {
+DetectIndex : UGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\read }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
+	*ar {
+		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('audio', bufnum, in).madd(mul, add)
+	}
+	*kr {
+		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('control', bufnum, in).madd(mul, add)
+	}
 }
 
-Shaper : Index {
+Shaper : UGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\read }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
+	*ar {
+		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('audio', bufnum, in).madd(mul, add)
+	}
+	*kr {
+		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('control', bufnum, in).madd(mul, add)
+	}
 }
 
-IndexL : Index {
+IndexL : UGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\read }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
+	*ar {
+		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('audio', bufnum, in).madd(mul, add)
+	}
+	*kr {
+		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
+		^this.multiNew('control', bufnum, in).madd(mul, add)
+	}
 }
 
-DegreeToKey : PureUGen {
+DegreeToKey : UGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\read }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar {
 		arg bufnum, in = 0.0, octave = 12.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', bufnum, in, octave).madd(mul, add)
@@ -232,7 +400,11 @@ DegreeToKey : PureUGen {
 	}
 }
 
-Select : PureUGen {
+Select : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar {
 		arg which, array;
 		^this.multiNewList(['audio', which] ++ array)
@@ -300,15 +472,19 @@ SelectXFocus {
 	}
 }
 
-Vibrato : PureUGen {
+Vibrato : UGen {
+    resourceManagers { ^[] }
+    hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^false } // Vibrato uses noise (variation).
+
 	*ar {
 		arg freq = 440.0, rate = 6, depth = 0.02, delay = 0.0, onset = 0.0,
-				rateVariation = 0.04, depthVariation = 0.1, iphase = 0.0, trig = 0.0;
+		rateVariation = 0.04, depthVariation = 0.1, iphase = 0.0, trig = 0.0;
 		^this.multiNew('audio', freq, rate, depth, delay, onset, rateVariation, depthVariation, iphase, trig)
 	}
 	*kr {
 		arg freq = 440.0, rate = 6, depth = 0.02, delay = 0.0, onset = 0.0,
-				rateVariation = 0.04, depthVariation = 0.1, iphase = 0.0, trig = 0.0;
+		rateVariation = 0.04, depthVariation = 0.1, iphase = 0.0, trig = 0.0;
 		^this.multiNew('control', freq, rate, depth, delay, onset, rateVariation, depthVariation, iphase, trig)
 	}
 }
@@ -333,5 +509,4 @@ TWChoose {
 	*kr { arg trig, array, weights, normalize=0;
 		^Select.kr(TWindex.kr(trig, weights, normalize), array)
 	}
-
 }

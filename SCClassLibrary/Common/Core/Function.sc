@@ -282,14 +282,14 @@ Function : AbstractFunction {
 		^"{ |func, envir| % }".format(code).interpret.value(this, envir)
 	}
 
-	asBuffer { |duration = 0.01, target, action, fadeTime = 0|
+	asBuffer { |duration = 0.01, target, action, fadeTime = 0, withOptimizations = true|
 		var buffer, def, synth, name, numOutputs, defRate, server;
 
 		target = target.asTarget;
 		server = target.server;
-		name = this.hash.asString;
+		name = this.hash.asString ++ withOptimizations.asString;
 
-		def = SynthDef(name, { |bufnum|
+		def = SynthDef.perform(withOptimizations.if(\new, \newWithoutOptimisations), name, { |bufnum|
 			var outputs;
 
 			outputs = SynthDef.wrap(this);
@@ -309,10 +309,8 @@ Function : AbstractFunction {
 			if(fadeTime > 0) {
 				outputs = outputs * EnvGen.kr(Env.linen(fadeTime, duration - (2 * fadeTime), fadeTime))
 			};
-      
-			RecordBuf.perform(RecordBuf.methodSelectorForRate(defRate), outputs, bufnum, loop: 0);
-			Line.perform(Line.methodSelectorForRate(defRate), dur: duration, doneAction: 2);
-      
+
+			RecordBuf.perform(RecordBuf.methodSelectorForRate(defRate), outputs, bufnum, loop: 0, doneAction: 2);
 		});
 
 		buffer = Buffer.new(server);
@@ -350,15 +348,18 @@ Function : AbstractFunction {
 		^buffer
 	}
 
-	loadToFloatArray { |duration = 0.01, target, action|
+	loadToFloatArray { |duration = 0.01, target, action, withOptimizations = true|
 		this.asBuffer(duration, target,
 			action: { |buffer|
 				buffer.loadToFloatArray(
 					action: { |array|
 						action.value(array, buffer);
 						buffer.free
-				})
-		})
+					}
+				)
+			},
+			withOptimizations: withOptimizations
+		)
 	}
 
 	getToFloatArray { |duration = 0.01, target, action, wait = 0.01, timeout = 3|

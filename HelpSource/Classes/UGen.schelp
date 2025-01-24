@@ -5,28 +5,40 @@ related:: Browse#UGens, Guides/Tour_of_UGens, Guides/UGens-and-Synths
 
 description::
 
-UGens represent calculations with signals. They are the basic building blocks of synth definitions on the server, and are used to generate or process both audio and control signals. The many subclasses of UGen are the client-side representations of unit generators, and are used to specify their parameters when constructing synth definitions (see link::Classes/SynthDef::).
+UGens represent calculations with signals.
+They are the basic building blocks of synth definitions on the server, and are used to generate or process both audio and control signals.
+The many subclasses of UGen are the client-side representations of unit generators,
+and are used to specify their parameters when constructing synth definitions (see link::Classes/SynthDef::).
 
 subsection:: Interface
-All UGens respond to one or more of the following class methods:
+Most UGens respond to one or more of the following class methods:
 list::
 ## code:: ar(arg1, arg2, ...) ::
 ## code:: kr(arg1, arg2, ...) ::
 ## code:: ir(arg1, arg2, ...) ::
 ::
 
-They return a new instance of UGen that calculates at audio/control rate or at initialization only (ir). Some UGens, like link::Classes/Rand::, use the code::*new:: method instead. These methods are implemented in subclasses, where argument names and their meaning depend on the case.
+They return a new instance of UGen that calculates at audio/control rate or at initialization only (ir).
+Some UGens, like link::Classes/Rand::, use the code::*new:: method instead.
 
-If any argument is an array, they return an array of UGens (see: link::Guides/Multichannel-Expansion::). If the combination of rates between arguments and ugen are not allowed, calling the methods will throw an error. This method adds the UGen to the current SynthDef, so it only fully works inside a UGen function.
+If any argument is an array, they return an array of UGens (see: link::Guides/Multichannel-Expansion::).
+If the combination of rates between arguments and ugen are not allowed, calling the methods should throw an error.
+
+This method adds the UGen to the current SynthDef, so it only fully works inside a UGen function.
 code::
 { Blip.ar(Blip.kr(4, 5, 500, 60), 59, 0.1) }.play;
 ::
 
 subsection:: Documentation of mul and add arguments
 
-A great number of UGens take arguments for code::mul:: and code::add:: in their code::*ar:: and code::*kr:: methods. Because these arguments are so ubiquitous, they are not general documented in the individual help files.
-Mul and add simply refer to a constant or signal by which to multiply the output of the UGen, and a constant or signal to add to the output of the UGen. (mul happens before add.) They thus correspond in many cases to scaling the amplitude of the UGen signal in the case of mul, and adding a constant or DC offset in the case of add.
-In most cases the defaults for mul and add are 1 and 0 respectively, and they are commonly implemented using a automatically generated link::Classes/MulAdd:: UGen for efficiency. See also the code::range:: and code::madd:: methods below.
+A great number of UGens take arguments for code::mul:: and code::add:: in their code::*ar:: and code::*kr:: methods.
+Because these arguments are so ubiquitous, they are not general documented in the individual help files.
+Mul and add simply refer to a constant or signal by which to multiply the output of the UGen,
+and a constant or signal to add to the output of the UGen (mul happens before add).
+They thus correspond in many cases to scaling the amplitude of the UGen signal in the case of mul,
+and adding a constant or DC offset in the case of add.
+In most cases the defaults for mul and add are 1 and 0 respectively.
+See also the code::range:: and code::madd:: methods below.
 
 classmethods::
 private:: categories
@@ -41,7 +53,9 @@ code::
 subsection:: Internally used class methods
 
 method:: multiNew
-These methods are responsible for multichannel expansion. They call code::*new1(rate, ...args):: for each parallel combination. Most code::*ar / *kr:: methods delegate to link::#*multiNewList::.
+These methods are responsible for multichannel expansion.
+They call code::*new1(rate, ...args):: for each parallel combination.
+Most code::*ar / *kr:: methods delegate to link::#*multiNewList::.
 argument:: ... args
 The first argument is rate, then the rest of the arguments. code::(rate, ...args)::
 
@@ -51,7 +65,8 @@ argument:: args
 An array where the first argument is rate, then the rest of the arguments. code::([rate, ...args])::
 
 method:: new1
-This method returns a single instance of the UGen, not multichannel expanded. It is called inside multiNewList, whenever a new single instance is needed.
+This method returns a single instance of the UGen, not multichannel expanded.
+It is called inside multiNewList, whenever a new single instance is needed.
 
 method:: methodSelectorForRate
 argument:: rate
@@ -130,7 +145,8 @@ method:: exprange
 
 Maps the output of this UGen exponentially to be within the range of code::lo:: and code::hi:: using a link::Classes/LinExp:: UGen.
 discussion::
-code::lo:: and code::hi:: should both be non-zero and have the same sign. Note that code::exprange:: expects the default output range, and thus should not be used in conjunction with mul and add arguments.
+code::lo:: and code::hi:: should both be non-zero and have the same sign.
+Note that code::exprange:: expects the default output range, and thus should not be used in conjunction with mul and add arguments.
 code::
 { SinOsc.ar(SinOsc.ar(0.3).exprange(440, 6600), 0, 0.5) * 0.1 }.play;
 ::
@@ -331,7 +347,8 @@ method:: checkBadValues
 Wraps the receiver in a link::Classes/CheckBadValues:: UGen with the corresponding code::id:: and code::post:: flag.
 
 method:: if
-Outputs trueUGen when the receiver outputs 1, falseUGen when the receiver outputs 0. If the receiver outputs a value between 0 and 1, a mixture of both will be played.
+Outputs trueUGen when the receiver outputs 1, falseUGen when the receiver outputs 0.
+If the receiver outputs a value between 0 and 1, a mixture of both will be played.
 discussion::
 This is implemented as: code::(this * (trueUGen - falseUGen)) + falseUGen)::
 
@@ -360,6 +377,62 @@ Complex math support. Returns code::Complex(this, 0.0)::.
 method:: dumpArgs
 Posts a list of the arguments for this UGen and their values.
 
+subsection:: Methods for UGen authors
+
+This is also discussed in  link::Guides/WritingUGens::.
+
+link::Classes/SynthDef:: provides many optimisations that make synths faster and reduce memory consumption.
+There are three main methods to be aware of.
+
+method:: hasObservableEffect
+
+Returns code::true:: or code::false::.
+
+Generally, if you would describe the UGen as 'setting' or 'writing' to something, this should be true.
+
+If a UGen does not indicate that it has an observable effect and is not connected to another UGen which does, it may be removed from the synthdef.
+This is called 'dead code elimination'.
+
+Consider the following example, where line 3 has no effect and can be removed.
+This is only possible because the 'add' UGen (link::Classes/BinaryOpUGen::) sets this method to code::true::
+code::
+SynthDef(\test, {
+    var sin = SinOsc.ar(220);
+    sin + SinOsc.ar(321); // line 3
+    Out.ar(0, sin);
+}).dumpUGens;
+/*
+[0_SinOsc, audio, [220, 0.0], [], [a BinaryOpUGen, an Out], [], []]
+[1_Out, audio, [0, 0_SinOsc], [a SinOsc], [], [], []]
+*/
+::
+
+method:: canBeReplacedByIdenticalCall
+
+Returns code::true:: or code::false::.
+
+Allows the UGen to be replaced by an identical call.
+
+As an example considering the following where many sine waves at the same frequency are created.
+There is no reason for the server to calculate the same sine wave four times,
+instead the following should be optimised to something like code::Out.ar(0, sig * 4)::
+
+code::
+SynthDef(\redundant, {
+    var sig = SinOsc.ar(440) + SinOsc.ar(440) + SinOsc.ar(440) + SinOsc.ar(44);
+    Out.ar(0, sig);
+})
+::
+
+code::
+SynthDef(\muchBetter, {
+    Out.ar(0, SinOsc.ar(440) * 4);
+})
+::
+
+
+
+
 
 subsection:: Other Instance Methods
 
@@ -381,7 +454,8 @@ Returns:: A symbol indicating the signal range of the receiver. Either code::\bi
 method:: numChannels
 Returns:: The number of output channels.
 discussion::
-For a UGen, this will always be 1, but link::Classes/Array:: also implements this method, so multichannel expansion is supported. See link::Guides/Multichannel-Expansion::.
+For a UGen, this will always be 1, but link::Classes/Array:: also implements this method,
+so multichannel expansion is supported. See link::Guides/Multichannel-Expansion::.
 
 method:: numInputs
 Returns:: The number of inputs for this UGen.
@@ -393,9 +467,9 @@ method:: name
 Returns:: The Class name of the receiver as a link::Classes/String::.
 
 method:: madd
-Wraps the receiver in a link::Classes/MulAdd:: UGen.
-discussion::
-This is for the most part only used in UGen class definitions in order to allow efficient implementation of code::mul:: and code::add:: arguments.
+argument:: mul
+argument:: add
+Implements code::this * mul + add::. Unnecessary and kept for backwards compatibility reasons.
 
 method:: isValidUGenInput
 Returns:: true
@@ -403,7 +477,8 @@ Returns:: true
 method:: asUGenInput
 Returns:: the receiver
 discussion::
-This method is implemented in a number of classes in order to allow objects like link::Classes/Node::s, link::Classes/Bus::ses, and link::Classes/Buffer::s to be passed directly as UGen inputs and link::Classes/Synth:: args.
+This method is implemented in a number of classes in order to allow objects like link::Classes/Node::s,
+link::Classes/Bus::ses, and link::Classes/Buffer::s to be passed directly as UGen inputs and link::Classes/Synth:: args.
 
 method:: copy
 Returns:: the receiver.
@@ -412,7 +487,7 @@ Thus UGen-dup effectively returns a reference to the original and is a convenien
 code::
 { SinOsc.ar(Rand(200, 4000), 0, 0.2).dup }.plot // this is the same UGen
 ::
-Function-dup evaluates that function multiple times, thus potentially returning distinct UGens.
+Function-dup evaluates that function multiple times, thus returning distinct UGens.
 code::
 { { SinOsc.ar(Rand(200, 4000), 0, 0.2) }.dup }.plot // these are different UGens
 ::

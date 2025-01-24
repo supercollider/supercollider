@@ -1,9 +1,12 @@
-Filter : PureUGen {
+Filter : UGen {
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	checkInputs { ^this.checkSameRateAsFirstInput }
 }
 
 Resonz : Filter {
-
 	*ar { arg in = 0.0, freq = 440.0, bwr = 1.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in, freq, bwr).madd(mul, add)
 	}
@@ -13,7 +16,6 @@ Resonz : Filter {
 }
 
 OnePole : Filter {
-
 	*ar { arg in = 0.0, coef = 0.5, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in, coef).madd(mul, add)
 	}
@@ -25,7 +27,6 @@ OnePole : Filter {
 OneZero : OnePole {}
 
 TwoPole : Filter {
-
 	*ar { arg in = 0.0, freq = 440.0, radius = 0.8, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in, freq, radius).madd(mul, add)
 	}
@@ -38,7 +39,6 @@ TwoZero : TwoPole {}
 APF : TwoPole {}
 
 Integrator : Filter {
-
 	*ar { arg in = 0.0, coef = 1.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in, coef).madd(mul, add)
 	}
@@ -48,7 +48,6 @@ Integrator : Filter {
 }
 
 Decay : Filter {
-
 	*ar { arg in = 0.0, decayTime = 1.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in, decayTime).madd(mul, add)
 	}
@@ -58,7 +57,6 @@ Decay : Filter {
 }
 
 Decay2 : Filter {
-
 	*ar { arg in = 0.0, attackTime = 0.01, decayTime = 1.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in, attackTime, decayTime).madd(mul, add)
 	}
@@ -68,7 +66,6 @@ Decay2 : Filter {
 }
 
 Lag : Filter {
-
 	*ar { arg in = 0.0, lagTime = 0.1, mul = 1.0, add = 0.0;
 		if ( (in.rate == \scalar) || (lagTime == 0) ) {
 			^in.madd(mul, add)
@@ -90,7 +87,6 @@ Lag3 : Lag {}
 Ramp : Lag {}
 
 LagUD : Filter {
-
 	*ar { arg in = 0.0, lagTimeU = 0.1, lagTimeD = 0.1,  mul = 1.0, add = 0.0;
 		if (in.rate == \scalar) {
 			^in.madd(mul, add)
@@ -145,7 +141,6 @@ VarLag : Filter {
 }
 
 LeakDC : Filter {
-
 	*ar { arg in = 0.0, coef = 0.995, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in, coef).madd(mul, add)
 	}
@@ -156,7 +151,6 @@ LeakDC : Filter {
 
 
 RLPF : Filter {
-
 	*ar { arg in = 0.0, freq = 440.0, rq = 1.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in, freq, rq).madd(mul, add)
 	}
@@ -169,7 +163,6 @@ RHPF : RLPF {}
 
 
 LPF : Filter {
-
 	*ar { arg in = 0.0, freq = 440.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in, freq).madd(mul, add)
 	}
@@ -181,7 +174,6 @@ LPF : Filter {
 HPF : LPF {}
 
 BPF : Filter {
-
 	*ar { arg in = 0.0, freq = 440.0, rq = 1.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in, freq, rq).madd(mul, add)
 	}
@@ -193,7 +185,6 @@ BPF : Filter {
 BRF : BPF {}
 
 MidEQ : Filter {
-
 	*ar { arg in = 0.0, freq = 440.0, rq = 1.0, db = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in, freq, rq, db).madd(mul, add)
 	}
@@ -203,7 +194,6 @@ MidEQ : Filter {
 }
 
 LPZ1 : Filter {
-
 	*ar { arg in = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in).madd(mul, add)
 	}
@@ -215,7 +205,6 @@ LPZ1 : Filter {
 HPZ1 : LPZ1 {}
 
 Slope : Filter {
-
 	*ar { arg in = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in).madd(mul, add)
 	}
@@ -234,7 +223,6 @@ Changed : Filter {
 }
 
 LPZ2 : Filter {
-
 	*ar { arg in = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in).madd(mul, add)
 	}
@@ -244,9 +232,7 @@ LPZ2 : Filter {
 }
 
 HPZ2 : LPZ2 {}
-
 BPZ2 : LPZ2 {}
-
 BRZ2 : LPZ2 {}
 
 Median : Filter {
@@ -267,17 +253,6 @@ Median : Filter {
 
 }
 
-//exception in GrafDef_Load: UGen 'AvgAbsAmp' not installed.
-//AvgAbsAmp : Filter {
-//
-//	*ar { arg in = 0.0, coef = 0.999, mul = 1.0, add = 0.0;
-//		^this.multiNew('audio', in, coef).madd(mul, add)
-//	}
-//	*kr { arg in = 0.0, coef = 0.999, mul = 1.0, add = 0.0;
-//		^this.multiNew('control', in, coef).madd(mul, add)
-//	}
-//}
-
 Slew : Filter {
 	*ar { arg in = 0.0, up = 1.0, dn = 1.0, mul = 1.0, add = 0.0;
 		if (in.rate == \scalar) {
@@ -294,14 +269,6 @@ Slew : Filter {
 		}
 	}
 }
-
-// not installed
-//RLPF4 : Filter {
-//
-//	*ar { arg in = 0.0, freq = 0.5, res = 0.5, mul = 1.0, add = 0.0;
-//		^this.multiNew('audio', in, freq, res).madd(mul, add)
-//	}
-//}
 
 FOS : Filter {
 	*ar { arg in = 0.0, a0 = 0.0, a1 = 0.0, b1 = 0.0, mul = 1.0, add = 0.0;
@@ -323,7 +290,6 @@ SOS : Filter {
 
 
 Ringz : Filter {
-
 	*ar { arg in = 0.0, freq = 440.0, decaytime = 1.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in, freq, decaytime).madd(mul, add)
 	}
@@ -333,7 +299,6 @@ Ringz : Filter {
 }
 
 Formlet : Filter {
-
 	*ar { arg in = 0.0, freq = 440.0, attacktime = 1.0, decaytime = 1.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in, freq, attacktime, decaytime).madd(mul, add)
 	}
@@ -342,21 +307,9 @@ Formlet : Filter {
 	}
 }
 
-// the doneAction arg lets you cause the EnvGen to stop or end the
-// synth without having to use a PauseSelfWhenDone or FreeSelfWhenDone ugen.
-// It is more efficient to use a doneAction.
-// doneAction = 0   do nothing when the envelope has ended.
-// doneAction = 1   pause the synth running, it is still resident.
-// doneAction = 2   remove the synth and deallocate it.
-// doneAction = 3   remove and deallocate both this synth and the preceeding node.
-// doneAction = 4   remove and deallocate both this synth and the following node.
-// doneAction = 5   remove and deallocate this synth and free all children in the preceeding group (if it is a group).
-// doneAction = 6   remove and deallocate this synth and free all children in the following group (if it is a group).
-
 DetectSilence : Filter {
-	optimizeGraph {
-	}
-
+	resourceManagers { ^if(this.hasObservableEffect) { [UGenDoneResourceManager] } { [] } }
+	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(3) }
 	*ar { arg in = 0.0, amp = 0.0001, time = 0.1, doneAction = 0;
 		^this.multiNew('audio', in, amp, time, doneAction)
 	}
@@ -364,14 +317,3 @@ DetectSilence : Filter {
 		^this.multiNew('control', in, amp, time, doneAction)
 	}
 }
-
-//exception in GrafDef_Load: UGen 'FlagNaN' not installed.
-//FlagNaN : Filter {
-//
-//	*ar { arg in = 0.0;
-//		^this.multiNew('audio', in)
-//	}
-//	*kr { arg in = 0.0;
-//		^this.multiNew('control', in)
-//	}
-//}
