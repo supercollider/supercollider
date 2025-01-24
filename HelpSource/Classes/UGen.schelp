@@ -479,7 +479,7 @@ code::
 
 method::binaryValue
 
-outputs teletype::1::, representing teletype::true:: for positive, teletype::0::, representing teletype::false:: for negative or zero input values.
+outputs teletype::1::, representing teletype::true:: for positive, teletype::0:: representing teletype::false:: for negative or zero input values.
 
 
 method::isPositive
@@ -487,7 +487,7 @@ method::isPositive
 outputs teletype::1::, representing teletype::true:: for positive or zero, teletype::0:: representing teletype::false:: for negative input values
 
 
-method::isStrictlyPOsitive
+method::isStrictlyPositive
 
 teletype::true:: for positive, teletype::0::, representing teletype::false:: for negative or zero input values.
 
