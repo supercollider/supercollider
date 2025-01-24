@@ -99,7 +99,7 @@ Complex : Number {
 		var mag, sign;
 
 		mag = this.magnitude;
-		sign = if(imag.isPositive) { 1 } { -1 };  // +1 >= 0, -1 < 0
+		sign = (imag.sign + 0.5).sign; // +1 >= 0, -1 < 0
 
 		^(
 			2.sqrt.reciprocal * Complex(
