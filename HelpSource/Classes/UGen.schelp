@@ -350,7 +350,7 @@ Outputs 1, representing true for positive, 0 representing false for negative or 
 method::isPositive
 Outputs 1, representing true for positive or zero, 0 representing false for negative input values.
 
-method::isStrictlyPOsitive
+method::isStrictlyPositive
 Outputs 1, representing true for positive, 0 representing false for negative or zero input values.
 
 method::isNegative
