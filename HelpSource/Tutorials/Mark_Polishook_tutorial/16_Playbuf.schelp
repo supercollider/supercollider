@@ -57,7 +57,7 @@ It returns
 
 code::
 InfoUGenBase
-[  NumRunningSynths  NumBuffers  ControlDur  NumControlBuses  SubsampleOffset  RadiansPerSample  SampleDur  ControlRate  NumInputBuses  NumAudioBuses  SampleRate  NumOutputBuses]InfoUGenBase
+[ NumRunningSynths NumBuffers ControlDur NumControlBuses SubsampleOffset RadiansPerSample SampleDur ControlRate NumInputBuses NumAudioBuses SampleRate NumOutputBuses]InfoUGenBase
 ::
 
 Evaluate
@@ -69,7 +69,7 @@ BufInfoUGenBase.dumpClassSubtree;
 and it returns
 
 code::
-BufInfoUGenBase[  BufChannels  BufSampleRate  BufRateScale  BufFrames  BufDur  BufSamples]BufInfoUGenBase
+BufInfoUGenBase[ BufChannels BufSampleRate BufRateScale BufFrames BufDur BufSamples]BufInfoUGenBase
 ::
 
 section::Loop a sample
