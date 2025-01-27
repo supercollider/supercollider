@@ -108,7 +108,7 @@ Methods get an anchor name automatically, prefixed with teletype::*:: for class 
 The teletype::method\:::: tag can be used also in normal documents, and emphasis::should:: then have argumentnames. This can be useful for documenting common interfaces outside of a specific class document, for example link::Reference/plot::.
 Anchors for these methods get prefixed with a dot (.) instead of * or -.
 
-When multiple methods have the same signature (like ar and kr in ugens), they should all be listed in one single method tag.
+When multiple methods have the same signature (like ar and kr in UGens), they should all be listed in one single method tag.
 
 SCDoc generates docs for all undocumented methods. To ignore private methods, add them to a teletype::private\:::: tag, which works just like the method tag but without a section body.
 

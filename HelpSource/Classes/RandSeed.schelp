@@ -59,7 +59,7 @@ x.set(\seed, 1902);
 
 
 // above you can see that the sound of the LFNoise1 is not exactly reproduced (filter frequency)
-// this is due to interference between the internal phase of the noise ugen and the
+// this is due to interference between the internal phase of the noise UGen and the
 // seed setting rate.
 
 // a solution is to start a new synth:

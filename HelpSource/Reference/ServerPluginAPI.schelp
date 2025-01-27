@@ -23,11 +23,11 @@ definitionlist::
 
 section:: UGen basics
 
-These helper macros assume that there is a ugen object called code::unit:: in the local scope.
+These helper macros assume that there is a UGen object called code::unit:: in the local scope.
 
 definitionlist::
 ## code::IN(index)::
-|| A single block of audio-rate input as a float* at the given index. Index 0 is the first input to the ugen, index 1 the second input, and so forth.
+|| A single block of audio-rate input as a float* at the given index. Index 0 is the first input to the UGen, index 1 the second input, and so forth.
 
 ## code::IN0(index)::
 || A single sample of control-rate input as a float, at the given index.
@@ -120,7 +120,7 @@ RELEASE_BUS_CONTROL(index)
 
 section:: RGen
 
-RGen is a pseudorandom number generator API. Most ugen developers are not interested in seeding their own RGens and
+RGen is a pseudorandom number generator API. Most UGen developers are not interested in seeding their own RGens and
 would prefer to draw from a global RGen instance supplied by SuperCollider. This can be retrieved with the code:
 
 code::
@@ -243,7 +243,7 @@ The following unary functions are available for both float32 and float64, but ha
 
 definitionlist::
 ## code::zapgremlins(x)::
-|| Replaces NaNs, infinities, very large and very small numbers (including denormals) with zero. This is useful in ugen
+|| Replaces NaNs, infinities, very large and very small numbers (including denormals) with zero. This is useful in UGen
 feedback to safeguard from pathological behavior. (Note lack of sc_ prefix.)
 
 ## code::sc_bitriwindow(x)::
@@ -356,7 +356,7 @@ list::
 
 section:: Unroll macros
 
-The macros in this section are legacy features. They are seen in many of SuperCollider's built-in ugens, and are
+The macros in this section are legacy features. They are seen in many of SuperCollider's built-in UGens, and are
 intended to provide more efficient alternatives to the standard code::for (int i = 0; i < inNumSamples; i++) { out[i]
 = in[i] }:: loop. These efficiency savings are negligible on modern systems and use of these macros is not recommended,
 especially since they make debugging difficult.

@@ -6,12 +6,12 @@ categories:: UGens>Demand
 description::
 Demand rate generator for embedding different inputs.
 In difference to Dswitch1, Dswitch embeds all items of
-an input demand ugen first before looking up the next index.
+an input demand UGen first before looking up the next index.
 
 classmethods::
 method:: new
 argument:: list
-array of values or other ugens
+array of values or other UGens
 argument:: index
 which of the inputs to return
 discussion::

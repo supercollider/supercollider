@@ -9,7 +9,7 @@ The basic idea of subtractive synthesis is similar to making coffee: something g
 
 section::The .dumpClassSubtree message
 
-Get a list of ugen filters in SuperCollider 3, by sending the .dumpClassSubtree message to the Filter class, as in
+Get a list of UGen filters in SuperCollider 3, by sending the .dumpClassSubtree message to the Filter class, as in
 
 code::
 Filter.dumpClassSubtree;

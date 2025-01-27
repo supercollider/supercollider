@@ -190,7 +190,7 @@ x = { |i_kernel, density = 100, trigPeriod = 5.0, cutOff = 1000, minFreq = 200, 
 	convTrigs = PulseDivider.kr(convTrig, 2, [1, 0]);
 	
 	bufFrames = BufFrames.ir(i_kernel);
-	// create the two alternatingly updated convolution ugens
+	// create the two alternatingly updated convolution UGens
 	#conv1, conv2 = Convolution2.ar(input, i_kernel, convTrigs, bufFrames);
 	
 	XFade2.ar(conv1, conv2, LFTri.kr(trigFreq * 0.5, 1)) ! 2;

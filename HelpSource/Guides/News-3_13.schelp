@@ -254,7 +254,7 @@ code:: PanAz ::, due to fixing leaks and imprecisions by @elgiano in https://git
 section::  UGens: Fixed
 code:: Tap :: samplerate compensation by @morfant in https://github.com/supercollider/supercollider/pull/5606
 
-Audio rate versions of triggered random ugens by @telephon in https://github.com/supercollider/supercollider/pull/5344
+Audio rate versions of triggered random UGens by @telephon in https://github.com/supercollider/supercollider/pull/5344
 
 code:: AudioControl :: and code:: InFeedback :: processing for an extra cycle by @vitreo12 in https://github.com/supercollider/supercollider/pull/5601
 

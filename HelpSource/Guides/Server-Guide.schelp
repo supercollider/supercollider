@@ -16,7 +16,7 @@ Most of a Server's options are contolled through its instance of ServerOptions. 
 
 subsection:: Paths
 
-Server apps running on the local machine have two UNIX environment variables: code::SC_SYNTHDEF_PATH:: and code::SC_PLUGIN_PATH::. These indicate directories of synthdefs and ugen plugins that will be loaded at startup. These are in addition to the default synthdef/ and plugin/ directories which are hard-coded.
+Server apps running on the local machine have two UNIX environment variables: code::SC_SYNTHDEF_PATH:: and code::SC_PLUGIN_PATH::. These indicate directories of synthdefs and UGen plugins that will be loaded at startup. These are in addition to the default synthdef/ and plugin/ directories which are hard-coded.
 
 These can be set within SC using the getenv and setenv methods of class link::Classes/String::.
 code::

@@ -31,7 +31,7 @@ x = {
 	var fft1 = FFT(LocalBuf(b.numFrames), son, wintype: 1);
 	var fft2 = FFT(b, out, wintype: 1);
 
-	// As with most PV_ ugens, the result is *actually* stored in the first fft buf
+	// As with most PV_ UGens, the result is *actually* stored in the first fft buf
 	var result = PV_Div(fft2, fft1);
 
 	out.dup * 0.1

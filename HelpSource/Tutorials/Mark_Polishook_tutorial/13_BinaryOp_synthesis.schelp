@@ -21,7 +21,7 @@ is a receiver (the object to which a message is sent), a binary operator, and an
 
 section::Mixing = addition
 
-Use addition (a binary operation) to mix two or more ugens.
+Use addition (a binary operation) to mix two or more UGens.
 
 code::
 (
@@ -51,13 +51,13 @@ code::
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Rewrite the previous example with the Mix ugen.
+Rewrite the previous example with the Mix UGen.
 
 code::
 (
 {
 	Mix.ar(
-		// the ugens that will be mixed go into an array
+		// the UGens that will be mixed go into an array
 		[
 			Saw.ar(500, 0.05),
 			Saw.ar(600, 0.06),
@@ -97,7 +97,7 @@ code::
 
 section::Envelopes
 
-Dynamically modulate any parameter in a ugen (such as frequency, phase, or amplitude) with an envelope.
+Dynamically modulate any parameter in a UGen (such as frequency, phase, or amplitude) with an envelope.
 
 code::
 // modulate amplitude
@@ -208,7 +208,7 @@ code::
 )
 ::
 
-(Or use the link::Classes/Klang:: ugen to produce a similar effect).
+(Or use the link::Classes/Klang:: UGen to produce a similar effect).
 
 section::Ring modulation
 

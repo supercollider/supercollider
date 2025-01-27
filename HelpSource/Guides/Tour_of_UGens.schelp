@@ -16,7 +16,7 @@ definitionlist::
     ## distortion
     ## panning
     ## reverbs
-    ## delays and buffer ugens
+    ## delays and buffer UGens
     ## granular synthesis
     ## control: envelopes, triggers, counters, gates, lags, decays
     ## spectral
@@ -1052,7 +1052,7 @@ z.release;
 
 section:: Spectral
 
-FFT, IFFT and the phase vocoder ugens.
+FFT, IFFT and the phase vocoder UGens.
 
 link::Classes/FFT:: calculates the spectrum of a sound, puts it into a buffer, and outputs a trigger each time the
 buffer is ready to process. The PV UGens process the spectrum when they receive the trigger.

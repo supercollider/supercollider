@@ -54,7 +54,7 @@ s = Server.local;
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 )
 
-// use any AUDIO rate ugen as an index generator
+// use any AUDIO rate UGen as an index generator
 
 { BufRd.ar(1, b, SinOsc.ar(0.1) * BufFrames.ir(b)) }.play;
 { BufRd.ar(1, b, LFNoise1.ar(1) * BufFrames.ir(b)) }.play;

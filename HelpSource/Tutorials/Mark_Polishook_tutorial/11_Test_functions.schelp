@@ -30,7 +30,7 @@ code::
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Code can be transfered from a test function into a synthdef. In the following example, the code from the function (above) is the second argument to the Out ugen.
+Code can be transfered from a test function into a synthdef. In the following example, the code from the function (above) is the second argument to the Out UGen.
 
 code::
 (
@@ -49,7 +49,7 @@ Synth("ringMod")
 
 section::Multi-channel expansion
 
-Expand a ugen to two channels with an array in any of the argument (control) slots.
+Expand a UGen to two channels with an array in any of the argument (control) slots.
 
 code::
 { Saw.ar([500, 933], 0.1) }.scope;
@@ -61,7 +61,7 @@ code::
 { [ Saw.ar(500, 0.1), Saw.ar(933, 0.1)] }.scope;
 ::
 
-Expand a ugen to three channels by adding values to the array.
+Expand a UGen to three channels by adding values to the array.
 
 code::
 { Saw.ar([500, 933, 2033], 0.1) }.scope;

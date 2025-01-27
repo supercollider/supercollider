@@ -100,11 +100,11 @@ SynthDescLib.global.browse;
 )
 ::
 
-The middle box (in the top row) shows the names of synthdefs. Each name, when selected, causes the other boxes to display the ugens, controls, and inputs and outputs for a particular synthdef.
+The middle box (in the top row) shows the names of synthdefs. Each name, when selected, causes the other boxes to display the UGens, controls, and inputs and outputs for a particular synthdef.
 
 The box labeled "SynthDef controls" is useful because it shows the arguments that can be passed to a given synthdef.
 
-The browser shows that the synthdef defined above - "aSynthDef" - is composed from four ugens, one control, no inputs, and one output. The four ugens include instances of Control, SinOsc, BinaryOpUGen, and Out classes.
+The browser shows that the synthdef defined above - "aSynthDef" - is composed from four UGens, one control, no inputs, and one output. The four UGens include instances of Control, SinOsc, BinaryOpUGen, and Out classes.
 
 The one control is "freq". A control is an argument that a synth can use when it is created or at any time while it (the synth) exists on the server. The browser also shows that "aSynth" has no inputs (which means that it doesn't use data from audio or control buses) and that it sends one channel of audio out to an audio Bus.
 

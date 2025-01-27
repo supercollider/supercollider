@@ -21,7 +21,7 @@ z.postln;
 
 UGens can also use if
 
-the condition ugen is 0 / 1
+the condition UGen is 0 / 1
 
 code::
 (

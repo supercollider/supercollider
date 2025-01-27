@@ -78,7 +78,7 @@ s.boot;
 )
 
 // the proxy has been initialized by its first assignment.
-// it plays at audio rate (because we have assigned an audio rate ugen function)
+// it plays at audio rate (because we have assigned an audio rate UGen function)
 // and it has two channels (because the function has stereo output)
 
 ~x.index;	// a nodeproxy owns a private bus, so its signal can be used in diverse ways.

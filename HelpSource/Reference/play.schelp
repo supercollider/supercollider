@@ -107,7 +107,7 @@ a.release;
 // passing argument with play:
 a = { |freq = 500| HPF.ar(PinkNoise.ar([1, 1] * 0.4), freq) }.play(args: [\freq, 10000]);
 
-// note that you can use Out ugens but you do not need to
+// note that you can use Out UGens but you do not need to
 { Out.ar(1, PinkNoise.ar(0.1)) }.play;
 { XOut.ar(0, MouseX.kr(0,1), PinkNoise.ar(0.1*[1,1])) }.play; // mouse x controls level
 ::
@@ -115,12 +115,12 @@ a = { |freq = 500| HPF.ar(PinkNoise.ar([1, 1] * 0.4), freq) }.play(args: [\freq,
 subsection:: synthDef.play (target, args, addAction)
 returns: a link::Classes/Synth::
 
-Note that you need an out ugen to hear the result.
+Note that you need an out UGen to hear the result.
 Examples of how to write to the busses in the helpfiles: link::Classes/Out:: / link::Classes/ReplaceOut:: / link::Classes/XOut:: / link::Classes/OffsetOut::
 
 Nevertheless, synths can also run without any writing activity: (see e.g. link::Classes/SendTrig::)
 
-Some operations provide an out ugen internally: see for example code::function.play::, which plays out
+Some operations provide an out UGen internally: see for example code::function.play::, which plays out
 to a bus number provided in the argument passed to code::.play::
 
 code::

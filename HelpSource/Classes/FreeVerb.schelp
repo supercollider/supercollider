@@ -27,7 +27,7 @@ examples::
 code::
 s.boot;
 
-// FreeVerb - 1x1 ugen
+// FreeVerb - 1x1 UGen
 (
 z = SynthDef(\src, { |out, mix = 0.25, room = 0.15, damp = 0.5|
 	Out.ar(out,
@@ -46,7 +46,7 @@ z.set(\damp, 0.2)
 
 z.free
 
-// it expands as any ugen does
+// it expands as any UGen does
 (
 z = SynthDef(\src, { |out, mix = 0.25, room = 0.15, damp = 0.5|
 	Out.ar(out,

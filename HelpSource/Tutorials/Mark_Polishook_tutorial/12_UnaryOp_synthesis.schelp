@@ -27,7 +27,7 @@ The .distort message modulates the SinOsc to create more partials.
 
 Q: Where does the .distort message come from?
 
-A: It's defined in the AbstractFunction class. The UGen class is a subclass of the AbstractFunction class. The idea is that all classes inherit methods defined in their superclasses; all ugens thus inherit from AbstractFunction).
+A: It's defined in the AbstractFunction class. The UGen class is a subclass of the AbstractFunction class. The idea is that all classes inherit methods defined in their superclasses; all UGens thus inherit from AbstractFunction).
 
 Compare
 

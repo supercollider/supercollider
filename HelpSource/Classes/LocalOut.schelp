@@ -7,7 +7,7 @@ categories::  UGens>InOut
 Description::
 
 LocalOut writes to buses that are local to the enclosing synth. The buses
-should have been defined by a  link::Classes/LocalIn::  ugen. The
+should have been defined by a  link::Classes/LocalIn::  UGen. The
 code::channelsArray::  must be the same number of channels
 as were declared in the  link::Classes/LocalIn:: . These are like the
 global buses, but are more convenient if you want to implement a self

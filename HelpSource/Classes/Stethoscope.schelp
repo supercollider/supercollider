@@ -77,12 +77,12 @@ METHOD:: isValidServer
 
 METHOD:: ugenScopes
 
-    Returns an array of the running ugen scopes.
+    Returns an array of the running UGen scopes.
 
 code::
 s.boot
 { [SinOsc.ar.scope, WhiteNoise.ar(0.5).scope]*0.1 }.scope(2);
-Stethoscope.ugenScopes; // returns the ugen scopes
+Stethoscope.ugenScopes; // returns the UGen scopes
 ::
 
 METHOD:: tileBounds

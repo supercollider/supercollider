@@ -12,7 +12,7 @@ argument:: numFrames
 number of frames (default: 1)
 argument:: numChannels
 number of channels for multiple channel buffers (default: 1)
-returns:: a new buffer – the ugen outputs its buffer number and can thus be used in any other ugen that requires a buffer number input.
+returns:: a new buffer – the UGen outputs its buffer number and can thus be used in any other UGen that requires a buffer number input.
 
 method:: newFrom
 Allocates a new buffer from a given list of values
@@ -182,7 +182,7 @@ play({
 )
 
 
-// BufCombC stereo (needs no clearing, because delay is filled by ugen)
+// BufCombC stereo (needs no clearing, because delay is filled by UGen)
 (
 {
 var z = Decay.ar(Dust.ar(1.dup, 0.1), 0.3, WhiteNoise.ar);

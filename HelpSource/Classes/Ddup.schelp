@@ -5,9 +5,9 @@ categories:: UGens>Demand
 classmethods::
 method:: new
 argument:: n
-number of repeats (can be a demand ugen)
+number of repeats (can be a demand UGen)
 argument:: in
-input ugen
+input UGen
 discussion::
 structurally related: link::Classes/Pdup::
 

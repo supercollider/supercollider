@@ -5,7 +5,7 @@ related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
 section::Time-based filters
 
-The Delay, Comb, and Allpass family of ugens create time-based effects to give a sense of location and space.
+The Delay, Comb, and Allpass family of UGens create time-based effects to give a sense of location and space.
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -61,7 +61,7 @@ Synth.head(~effects, "aDelay");
 
 section::Feedback filters
 
-Comb and Allpass filters are examples of ugens that feed some of their output back into their input. Allpass filters change the phase of signals passed through them. For this reason, they're useful even though don't seem to differ much from comb filters.
+Comb and Allpass filters are examples of UGens that feed some of their output back into their input. Allpass filters change the phase of signals passed through them. For this reason, they're useful even though don't seem to differ much from comb filters.
 
 code::
 /////////////////////////////////////////////////////////////////////////////////////////

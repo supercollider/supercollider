@@ -68,7 +68,7 @@ code::
 )
 ::
 
-code::linexp:: and code::exprange:: can be used to create a LinExp implicitly from a ugen, mapping its output values from linear range to an exponential one. The rate is derived from the ugen.
+code::linexp:: and code::exprange:: can be used to create a LinExp implicitly from a UGen, mapping its output values from linear range to an exponential one. The rate is derived from the UGen.
 
 code::
 // linexp

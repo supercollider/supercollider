@@ -619,7 +619,7 @@ table::
 ## strong::bytes:: || an OSC message to execute upon completion. (optional)
 ::
 Reads sound file data from the given starting frame in the file and writes it to the given starting frame in the buffer. If number of frames is less than zero, the entire file is read.
-If reading a file to be used by link::Classes/DiskIn:: ugen then you will want to set "leave file open" to one, otherwise set it to zero.
+If reading a file to be used by link::Classes/DiskIn:: UGen then you will want to set "leave file open" to one, otherwise set it to zero.
 definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done /b_read bufNum:: when complete.
 ::
@@ -667,7 +667,7 @@ definitionlist::
 ::
 Not all combinations of header format and sample format are possible.
 If number of frames is less than zero, all samples from the starting frame to the end of the buffer are written.
-If opening a file to be used by DiskOut ugen then you will want to set "leave file open" to one, otherwise set it to zero. If "leave file open" is set to one then the file is created, but no frames are written until the DiskOut ugen does so.
+If opening a file to be used by DiskOut UGen then you will want to set "leave file open" to one, otherwise set it to zero. If "leave file open" is set to one then the file is created, but no frames are written until the DiskOut UGen does so.
 definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done /b_write bufNum:: when complete.
 ::

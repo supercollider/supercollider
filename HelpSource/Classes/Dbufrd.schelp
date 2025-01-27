@@ -1,5 +1,5 @@
 class:: Dbufrd
-summary:: Buffer read demand ugen
+summary:: Buffer read demand UGen
 categories:: UGens>Buffer, UGens>Demand
 related:: Classes/Dbufwr
 
@@ -13,7 +13,7 @@ index into the buffer
 argument:: loop
 when phase exceeds number of frames in buffer, loops when set to 1 (default :1)
 discussion::
-all inputs can be either demand ugen or any other ugen.
+all inputs can be either demand UGen or any other UGen.
 
 examples::
 code::

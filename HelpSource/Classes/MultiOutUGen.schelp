@@ -5,7 +5,7 @@ related:: Classes/OutputProxy
 
 Description::
 This is a superclass for all UGens with multiple outputs.
-MultiOutUGen creates the link::Classes/OutputProxy:: ugens needed for the multiple outputs.
+MultiOutUGen creates the link::Classes/OutputProxy:: UGens needed for the multiple outputs.
 
 classmethods::
 private:: categories

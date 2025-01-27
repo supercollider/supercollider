@@ -23,7 +23,7 @@ a non-positive to positive transition triggers a message.
 argument:: cmdName
 a string or symbol, as a message name.
 argument:: values
-array of ugens, or valid ugen inputs.
+array of UGens, or valid UGen inputs.
 argument:: replyID
 integer id (similar to link::Classes/SendTrig::).
 

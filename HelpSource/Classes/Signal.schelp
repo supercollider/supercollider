@@ -21,7 +21,7 @@ argument::phases
 an Array of phases in radians for each harmonic beginning with the fundamental.
 
 method::chebyFill
-Fill a Signal of the given size with a sum of Chebyshev polynomials at the given amplitudes. For eventual use in waveshaping by the Shaper ugen; see link::Classes/Shaper:: helpfile and link::Classes/Buffer#-cheby#Buffer:cheby:: too.
+Fill a Signal of the given size with a sum of Chebyshev polynomials at the given amplitudes. For eventual use in waveshaping by the Shaper UGen; see link::Classes/Shaper:: helpfile and link::Classes/Buffer#-cheby#Buffer:cheby:: too.
 argument::size
 the number of samples in the Signal.
 argument::amplitudes
@@ -244,7 +244,7 @@ Signal[1, 2, -4, 2.5].normalize(0, 1);	// normalize only a range
 ::
 
 method::normalizeTransfer
-Normalizes a transfer function so that the center value of the table is offset to zero and the absolute peak value is 1. Transfer functions are meant to be used in the link::Classes/Shaper:: ugen.
+Normalizes a transfer function so that the center value of the table is offset to zero and the absolute peak value is 1. Transfer functions are meant to be used in the link::Classes/Shaper:: UGen.
 code::
 Signal[1, 2, 3, 2.5, 1].normalizeTransfer;
 ::

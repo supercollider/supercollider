@@ -7,7 +7,7 @@ This helpfile explains some basic concepts of interactive programming with Super
 
 section::What is a proxy?
 
-A proxy is a place holder that is often used to operate on something that does not yet exist. For example, an emphasis::OutputProxy:: is used to represent multiple outputs of a ugen, even if only one ugen is created eventually. Any object can have proxy behaviour (it may delegate function calls to different objects for example) but specially functions and references can be used as operands while they keep their referential quality.
+A proxy is a place holder that is often used to operate on something that does not yet exist. For example, an emphasis::OutputProxy:: is used to represent multiple outputs of a UGen, even if only one UGen is created eventually. Any object can have proxy behaviour (it may delegate function calls to different objects for example) but specially functions and references can be used as operands while they keep their referential quality.
 
 See also: link::Classes/OutputProxy::, link::Classes/Function::, link::Classes/Ref::
 

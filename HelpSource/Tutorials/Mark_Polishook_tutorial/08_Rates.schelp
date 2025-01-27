@@ -19,9 +19,9 @@ code::
 SinOsc.kr(440, 0, 1);
 ::
 
-By default, control rate ugens generate one sample value for every sixty-four sample values made by an audio rate ugen. Control rate ugens thus use fewer resources and are less computationally expensive than their audio rate counterparts.
+By default, control rate UGens generate one sample value for every sixty-four sample values made by an audio rate UGen. Control rate UGens thus use fewer resources and are less computationally expensive than their audio rate counterparts.
 
-Use control rate ugens as modulators, that is, as signals that shape an audio signal.
+Use control rate UGens as modulators, that is, as signals that shape an audio signal.
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

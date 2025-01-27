@@ -43,11 +43,11 @@ Synth("aMonoSamplePlayer", [\bus, 1, \bufNum, b, \rateScale, 1.01]);
 
 section::Information
 
-The BufRateScale and the BufDur ugens, as shown in the previous example, control the rate at which PlayBuf plays the soundfile and the length of the envelope applied to the playbuf.
+The BufRateScale and the BufDur UGens, as shown in the previous example, control the rate at which PlayBuf plays the soundfile and the length of the envelope applied to the playbuf.
 
-BufRateScale and BufDur are of a family of ugens that inherit from InfoUGenBase or BufInfoUGenBase.
+BufRateScale and BufDur are of a family of UGens that inherit from InfoUGenBase or BufInfoUGenBase.
 
-To see the complete list of such ugens, evaluate
+To see the complete list of such UGens, evaluate
 
 code::
 InfoUGenBase.dumpClassSubtree;
@@ -57,7 +57,21 @@ It returns
 
 code::
 InfoUGenBase
-[  NumRunningSynths  NumBuffers  ControlDur  NumControlBuses  SubsampleOffset  RadiansPerSample  SampleDur  ControlRate  NumInputBuses  NumAudioBuses  SampleRate  NumOutputBuses]InfoUGenBase
+[
+  NumRunningSynths
+  NumBuffers
+  ControlDur
+  NumControlBuses
+  SubsampleOffset
+  RadiansPerSample
+  SampleDur
+  ControlRate
+  NumInputBuses
+  NumAudioBuses
+  SampleRate
+  NumOutputBuses
+]
+InfoUGenBase
 ::
 
 Evaluate
@@ -69,7 +83,16 @@ BufInfoUGenBase.dumpClassSubtree;
 and it returns
 
 code::
-BufInfoUGenBase[  BufChannels  BufSampleRate  BufRateScale  BufFrames  BufDur  BufSamples]BufInfoUGenBase
+BufInfoUGenBase
+[
+  BufChannels
+  BufSampleRate
+  BufRateScale
+  BufFrames
+  BufDur
+  BufSamples
+]
+BufInfoUGenBase
 ::
 
 section::Loop a sample
@@ -100,7 +123,7 @@ SynthDef("aLoopingSamplePlayer", { arg outBus = 0, bufnum = 0, rateScale = 1, mu
 SynthDef("ampMod", { arg inBus = 0, outBus = 0, modFreq = 1;
 	Out.ar(
 		outBus,
-		[	// In.ar ugen reads from an audio bus
+		[	// In.ar UGen reads from an audio bus
 			In.ar(inBus, 1) * SinOsc.kr(modFreq),
 			In.ar(inBus, 1) * SinOsc.kr(modFreq - 0.02)
 		]

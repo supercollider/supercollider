@@ -233,13 +233,13 @@ The above examples are in 'object style'. Should you prefer to work in 'messagin
 
 section:: Feedback
 
-When the various output ugens (Out, OffsetOut, XOut) write data to a bus, they mix it with any data from the current cycle, but overwrite any data from the previous cycle. (ReplaceOut overwrites all data regardless.)
-Thus depending on node order, the data on a given bus may be from the current cycle or be one cycle old. In the case of input ugens (see In and InFeedback) In.ar checks the timestamp of any data it reads in and zeros any data from the previous cycle (for use within that synth; the data remains on the bus).
+When the various output UGens (Out, OffsetOut, XOut) write data to a bus, they mix it with any data from the current cycle, but overwrite any data from the previous cycle. (ReplaceOut overwrites all data regardless.)
+Thus depending on node order, the data on a given bus may be from the current cycle or be one cycle old. In the case of input UGens (see In and InFeedback) In.ar checks the timestamp of any data it reads in and zeros any data from the previous cycle (for use within that synth; the data remains on the bus).
 This is fine for audio data, as it avoids feedback, but for control data it is useful to be able to read data from any place in the node order. For this reason In.kr also reads data that is older than the current cycle.
 
 In some cases we might also want to read audio from a node later in the current node order. This is the purpose of InFeedback. The delay introduced by this is at maximum one block size, which equals about 0.0014 sec at the default block size and sample rate.
 
-The variably mixing and overwriting behaviour of the output ugens can make order of execution crucial when using In.kr or InFeedback.ar. (No pun intended.) For example with a node order like the following the InFeedback ugen in Synth 2 will only receive data from Synth 1 (-> = write out; <- = read in):
+The variably mixing and overwriting behaviour of the output UGens can make order of execution crucial when using In.kr or InFeedback.ar. (No pun intended.) For example with a node order like the following the InFeedback UGen in Synth 2 will only receive data from Synth 1 (-> = write out; <- = read in):
 numberedlist::
 ## Synth 1 -> busA (this synth overwrites the output of Synth3 before it reaches Synth 2)
 ## Synth 2 (with InFeedback) <- busA

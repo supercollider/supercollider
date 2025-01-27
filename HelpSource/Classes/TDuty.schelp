@@ -59,7 +59,7 @@ s.boot;
 
 // play a little rhythm
 
-{ TDuty.ar(Dseq([0.1, 0.2, 0.4, 0.3], inf)) }.play; // demand ugen as durations
+{ TDuty.ar(Dseq([0.1, 0.2, 0.4, 0.3], inf)) }.play; // demand UGen as durations
 
 
 
@@ -68,9 +68,9 @@ s.boot;
 	{
 		var trig;
 		trig = TDuty.ar(
-				Dseq([0.1, 0.2, 0.4, 0.3], inf), // demand ugen as durations
+				Dseq([0.1, 0.2, 0.4, 0.3], inf), // demand UGen as durations
 				0,
-				Dseq([0.1, 0.4, 0.01, 0.5, 1.0], inf) // demand ugen as amplitude
+				Dseq([0.1, 0.4, 0.01, 0.5, 1.0], inf) // demand UGen as amplitude
 			);
 		Ringz.ar(trig, 1000, 0.1)
 
@@ -81,7 +81,7 @@ s.boot;
 	{
 		var trig;
 		trig = TDuty.ar(
-				MouseX.kr(0.001, 2, 1), // control rate ugen as durations
+				MouseX.kr(0.001, 2, 1), // control rate UGen as durations
 				0,
 				Dseq([0.1, 0.4, 0.01, 0.5, 1.0], inf)
 			);
@@ -93,7 +93,7 @@ s.boot;
 
 
 
-// demand ugen as audio oscillator
+// demand UGen as audio oscillator
 
 (
 	{

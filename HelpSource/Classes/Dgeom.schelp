@@ -25,7 +25,7 @@ argument::length
 Number of values to create.
 
 discussion::
-The arguments can be a number or any other ugen
+The arguments can be a number or any other UGen
 
 Examples::
 

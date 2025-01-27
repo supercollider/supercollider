@@ -1,5 +1,5 @@
 class:: UnaryOpUGen
-summary:: Apply a unary operation to the values of an input ugen
+summary:: Apply a unary operation to the values of an input UGen
 categories:: UGens>Algebraic
 related:: Classes/BinaryOpUGen, Classes/UnaryOpFunction, Classes/Punop, Overviews/Operators
 
@@ -19,7 +19,7 @@ See link::Overviews/Operators:: for an overview of common operators.
 classmethods::
 
 method::new
-return a new instance that applies the operator code::selector:: to the ugen code::a::
+return a new instance that applies the operator code::selector:: to the UGen code::a::
 
 argument:: selector
 The selector symbol for the unary operator

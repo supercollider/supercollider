@@ -72,7 +72,7 @@ code::
 )
 ::
 
-linlin and range can be used to create a LinLin implicitly from a ugen, mapping its output values from linear range to an exponential one. The rate is derived from the ugen.
+linlin and range can be used to create a LinLin implicitly from a UGen, mapping its output values from linear range to an exponential one. The rate is derived from the UGen.
 
 code::
 // linlin

@@ -61,7 +61,7 @@ SynthDescLib.global.browse;
 )
 ::
 
-このコードによって作られるブラウザー・ウィンドウは６つのボックスを含み、全ての以前に定義されたSynthDefの名前を示します。それぞれの名前を選択して、それに関連づけられたugenGraphFunc ugen、control、inputとoutputを表示することができます。
+このコードによって作られるブラウザー・ウィンドウは６つのボックスを含み、全ての以前に定義されたSynthDefの名前を示します。それぞれの名前を選択して、それに関連づけられたugenGraphFunc UGen、control、inputとoutputを表示することができます。
 
 あらかじめ定義されたSynthDefとは、以前に.loadメッセージが送られたものということです。この結果、SuperColliderはあらかじめロードされたSynthDefを起動時に読み込むます。
 

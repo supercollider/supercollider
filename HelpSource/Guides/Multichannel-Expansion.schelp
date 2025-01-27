@@ -208,7 +208,7 @@ For example, link::Classes/Pan2:: :
 code::
 { Pan2.ar(SinOsc.ar([500,600]),[-0.5,0.5]) }.play;
 ::
-The expectation here might be that the two sines would get individual pan positions. And they do, but Pan2 expands into two stereo ugens nested in an outer array, resulting in a total of four output channels. code::play:: will add an link::Classes/Out:: UGen for each of them, resulting in both Pan2's writing to the same output bus:
+The expectation here might be that the two sines would get individual pan positions. And they do, but Pan2 expands into two stereo UGens nested in an outer array, resulting in a total of four output channels. code::play:: will add an link::Classes/Out:: UGen for each of them, resulting in both Pan2's writing to the same output bus:
 code::
 Pan2.ar(SinOsc.ar([500,600]),[-0.5,0.5])
 

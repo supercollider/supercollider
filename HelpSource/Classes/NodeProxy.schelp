@@ -630,7 +630,7 @@ section::Supported sources
 
 definitionList::
 ## link::Classes/NodeProxy:: || played by reading from the other NodeProxy bus.
-## link::Classes/Function:: || interpreted as ugen function, and plays a link::Classes/Synth::, similar to Function.play.
+## link::Classes/Function:: || interpreted as UGen function, and plays a link::Classes/Synth::, similar to Function.play.
 ## link::Classes/SimpleNumber:: || write this value to the bus continuously, overwriting previous bus value.
 ## link::Classes/Array:: of numbers || write the values to the bus continuously overwriting previous bus value.
 ## link::Classes/Bus:: || read the signal on the bus.
@@ -669,7 +669,7 @@ Examples::
 For more, see link::Classes/ProxySpace::
 
 code::
-///////////////////// using node proxy with ugen functions /////////////////////
+///////////////////// using node proxy with UGen functions /////////////////////
 
 s.boot;
 

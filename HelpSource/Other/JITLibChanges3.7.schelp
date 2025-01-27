@@ -8,7 +8,7 @@ In general, the changes in this version try to to strengthen the ideal of proxie
 
 list::
 ## Pattern proxies now should behave more like their source pattern
-## Node proxies can adjust their number of channels to the size of the source ugen function if you let them
+## Node proxies can adjust their number of channels to the size of the source UGen function if you let them
 ::
 
 This added a little complexity, but for various reasons, other aspects could be simplified, so that there are fewer classes and a bit more readable code. The system is easier to recover from failure. Some lesser known (or unknown) bugs are fixed, too.
@@ -53,7 +53,7 @@ list::
 ## play and playN  (Monitor) previously passed arguments are kept and can be partially overridden by new ones (the message clear removes them).
 ## nodeProxy.value(n) (e.g. code::SinOsc.ar(Ndef(\x)::) will keep the rate the proxy already has).
 ## using code::x.ar(n):: and code::x.kr(n):: will automatically expand when code::n:: is nil. It remains fixed if n is given.
-## code::nodeProxy.ar(n):: / code::nodeProxy.kr(n):: if no code::n:: is given, they will now always return an array, code::nodeProxy.value(x):: returns an array, if no input is given. This is for general consistency: a few ugens expect an array as an input, and as the numChannels of a proxy can change now, this has to be specified. In order to have a UGen and not an array, use code::nodeProxy.ar(1)::, or code::nodeProxy.kr(1)::, respectively.
+## code::nodeProxy.ar(n):: / code::nodeProxy.kr(n):: if no code::n:: is given, they will now always return an array, code::nodeProxy.value(x):: returns an array, if no input is given. This is for general consistency: a few UGens expect an array as an input, and as the numChannels of a proxy can change now, this has to be specified. In order to have a UGen and not an array, use code::nodeProxy.ar(1)::, or code::nodeProxy.kr(1)::, respectively.
 ## unlike it was before, code::x.ar(n, offset):: will now wrap around the available proxy bus channels. There is a third argument (wrap), when set to false, it will clip instead
 ## a third argument, clip, was added to ar/kr: code::x.ar(n, offset, clip)::. When set to \wrap it will extend the output size of the existing channels by wrapping (the default is \wrap). Set it to \clip if you want to keep it in range by repeating the last value.
 ## InBus is more flexible and logical in terms of multichannel expansion now and has a helpfile

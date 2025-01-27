@@ -51,7 +51,7 @@ code::
 	{
 		var freq;
 		freq = Duty.kr(
-				Drand([0.01, 0.2, 0.4], inf), // demand ugen as durations
+				Drand([0.01, 0.2, 0.4], inf), // demand UGen as durations
 				0,
 				Dseq([204, 400, 201, 502, 300, 200], inf)
 			);
@@ -64,7 +64,7 @@ code::
 	{
 		var freq;
 		freq = Duty.kr(
-				MouseX.kr(0.001, 2, 1), // control rate ugen as durations
+				MouseX.kr(0.001, 2, 1), // control rate UGen as durations
 				0,
 				Dseq([204, 400, 201, 502, 300, 200], inf)
 			);
@@ -74,7 +74,7 @@ code::
 )
 ::
 
-Resetting the demand ugens:
+Resetting the demand UGens:
 code::
 (
 	{
@@ -103,7 +103,7 @@ code::
 )
 ::
 
-Demand ugen as audio oscillator:
+Demand UGen as audio oscillator:
 code::
 (
 	{

@@ -8,7 +8,7 @@ The clientside representation of an audio or control bus on a server.  Encapsula
 
 For more information see link::Guides/ClientVsServer:: and link::Reference/Server-Architecture::.
 
-Note that using the Bus class to allocate a multichannel bus does not 'create' a multichannel bus, but rather simply reserves a series of adjacent bus indices with the bus' link::Classes/Server:: object's bus allocators. code::abus.index:: simply returns the first of those indices. When using a Bus with an link::Classes/In:: or link::Classes/Out:: ugen there is nothing to stop you from reading to or writing from a larger range, or from hardcoding to a bus that has been allocated. You are responsible for making sure that the number of channels match and that there are no conflicts.
+Note that using the Bus class to allocate a multichannel bus does not 'create' a multichannel bus, but rather simply reserves a series of adjacent bus indices with the bus' link::Classes/Server:: object's bus allocators. code::abus.index:: simply returns the first of those indices. When using a Bus with an link::Classes/In:: or link::Classes/Out:: UGen there is nothing to stop you from reading to or writing from a larger range, or from hardcoding to a bus that has been allocated. You are responsible for making sure that the number of channels match and that there are no conflicts.
 
 Bus objects should not be created or modified within a link::Classes/SynthDef::.
 
@@ -183,7 +183,7 @@ use a bus like a UGen. The numChannels and offset arguments can be used to get a
 discussion::
 By default, all the bus channels are used. E.g. in an 8 channel bus,
 list::
-## code::b.kr:: will return an link::Classes/In:: ugen reading from all the 8 channels of the bus;
+## code::b.kr:: will return an link::Classes/In:: UGen reading from all the 8 channels of the bus;
 ## code::b.kr(4):: will return the first four channels, and
 ## code::b.kr(2, 5):: will return two channels, starting from the bus's channels at index 5 and 6.
 ::

@@ -80,7 +80,7 @@ LIST::
 ##LINK::Classes/Env#*new:: accepts a new TELETYPE::step2:: shape, which steps to a value at the end of a shape
 ##LINK::Classes/UGen#-curvelin:: is now inverse of LINK::Classes/UGen#-lincurve::
 ##LINK::Classes/Server#-record:: correctly closes short files
-##In combinations of demand-ugens: Instances of PV_Copy are added automatically where necessary for parallel processing
+##In combinations of demand-UGens: Instances of PV_Copy are added automatically where necessary for parallel processing
 ::
 
 

@@ -169,7 +169,7 @@ See link::Guides/WritingUGens:: for details.
 
 subsection:: New FFT Plugin API
 
-A new FFT API for server plugins has been introduced: this simplifies writing FFT ugens in a cross-platform manner,
+A new FFT API for server plugins has been introduced: this simplifies writing FFT UGens in a cross-platform manner,
 since no external FFT libraries are required.
 
 subsection:: Supernova

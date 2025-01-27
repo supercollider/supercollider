@@ -5,7 +5,7 @@ categories:: UGens>FFT
 description::
 code::PV_ChainUGen:: is an abstract class, not used directly, but only its subclasses are. It represents phase-vocoder UGens - i.e. UGens which apply some kind of transformation to the frequency-domain signal produced by link::Classes/FFT::.
 
-It encompasses all unit generators whose output is an FFT chain. This is why link::Classes/FFT:: is in this group but link::Classes/IFFT:: is not - the IFFT ugen outputs ordinary time-domain audio.
+It encompasses all unit generators whose output is an FFT chain. This is why link::Classes/FFT:: is in this group but link::Classes/IFFT:: is not - the IFFT UGen outputs ordinary time-domain audio.
 
 For more information on using these unit generators, see link::Guides/FFT-Overview::.
 
@@ -145,7 +145,7 @@ If you wish to reduce the CPU impact of using this approach, try the following:
 list::
 ## Use the frombin and tobin arguments to limit the number of FFT bins that will be included in the calculation. Often the lower FFT bins contain the loudest and/or most relevant information, so perhaps your effect sounds very similar if you ignore the higher-up bins (either leave them unprocessed, or discard them by setting the zeroothers argument to 1, which has the effect of a band-pass frequency-domain filter).
 ## Use a smaller FFT buffer size.
-## Avoid creating ugens inside your calculation function if at all possible. For example, a deterministic ugen such as LFPar.kr(0.5, 0, 1) will be replicated once for each bin if specified inside the function, despite the fact that the output is always the same. Define it outside the calculation function and then reference it by variable name.
+## Avoid creating UGens inside your calculation function if at all possible. For example, a deterministic UGen such as LFPar.kr(0.5, 0, 1) will be replicated once for each bin if specified inside the function, despite the fact that the output is always the same. Define it outside the calculation function and then reference it by variable name.
 ## Avoid unused calculations! For example, uncommenting all the different lines in the above will waste effort because many values will be calculated but not used. This cannot be optimised away during compilation. It is particularly important because all calculations are duplicated (once for each bin) so can have a significant impact on efficiency.
 ## If you find yourself calling pvcollect on an FFT chain more than once in series, you should definitely try to combine your processing into a single pvcollect function, to avoid unnecessary unpacking-then-packing-then-unpacking-then-packing.
 ::
@@ -231,7 +231,7 @@ c.free; c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 		// [mag, phase].sqrt;
 		// [mag, 3.14.rand];
 		// [mag, LFNoise0.kr.range(0, 3.14)];
-		// [mag * Dseq([1, 0, 0, 1, 1, 0, 1, 0].dupEach(8), 999999999999)]; // Can even use Demand ugens! One val demanded each frame
+		// [mag * Dseq([1, 0, 0, 1, 1, 0, 1, 0].dupEach(8), 999999999999)]; // Can even use Demand UGens! One val demanded each frame
 		// [mag.sqrt, 3.14.rand];
 		// if(index % 7 == 0, mag, 0); // Comb filter
 		// if(LFNoise0.kr(10) > 0.5, mag, 0);

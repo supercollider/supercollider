@@ -197,7 +197,7 @@ c.action = {
 ::
 
 code::
-// ControlSpec-map can also be used to map ugens
+// ControlSpec-map can also be used to map UGens
 (
 var spec;
 spec = [100, 18000, \exp].asSpec;

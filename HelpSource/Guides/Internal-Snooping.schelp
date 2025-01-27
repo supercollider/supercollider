@@ -183,7 +183,7 @@ f = SynthDef(\snoop, { | out=0 |
 });
 )
 
-// get the ugens, listed in order of execution, with rate,
+// get the UGens, listed in order of execution, with rate,
 // index and inputs
 f.dumpUGens;
 ::

@@ -71,7 +71,7 @@ x.free; b.close; b.free;	// clean up
 
 // sending back the file position.
 // note:
-// the ugen knows nothing of the loop (apply a modulo).
+// the UGen knows nothing of the loop (apply a modulo).
 // if you load another file, you need to free the buffer and re-allocate it (see below)
 
 b = Buffer.cueSoundFile(s, Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff", 0, 1, bufferSize: 4096);

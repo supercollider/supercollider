@@ -45,7 +45,7 @@ list::
 ## int32 - number of parameter names (N)
 ## [ strong::param-name:: ] * N
 ## int32 - number of unit generators (U)
-## [ strong::ugen-spec:: ] * U
+## [ strong::UGen-spec:: ] * U
 ## int16 - number of variants (V)
 ## [ strong::variant-spec:: ] * V
 ::
@@ -56,7 +56,7 @@ list::
 ## int32 - its index in the parameter array
 ::
 
-a strong::ugen-spec:: is :
+a strong::UGen-spec:: is :
 list::
 ## pstring - the name of the SC unit generator class
 ## int8 - calculation rate
@@ -114,7 +114,7 @@ tree::
         ## int32 - its index in the parameter array
         ::
     ## int32 - number of unit generators (U)
-    ## [ strong::ugen-spec:: ] * U
+    ## [ strong::UGen-spec:: ] * U
         tree::
         ## pstring - the name of the SC unit generator class
         ## int8 - calculation rate
@@ -168,7 +168,7 @@ list::
 ## int16 - its index in the parameter array
 ::
 
-## a strong::ugen-spec:: is :
+## a strong::UGen-spec:: is :
 list::
 ## int16 - number of inputs (I)
 ## int16 - number of outputs (O)

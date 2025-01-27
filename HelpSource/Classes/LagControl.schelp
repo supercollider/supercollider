@@ -6,7 +6,7 @@ categories::  UGens>Synth control
 
 Description::
 
-code::Control:: ugen with fixed-time lags.
+code::Control:: UGen with fixed-time lags.
 
 classmethods::
 

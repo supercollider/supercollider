@@ -53,7 +53,7 @@ s.sendMsg("/n_free", n);
 
 It is VERY important and useful to understand the messaging structure which underlies the clientside Synth, Group, Buffer, and Bus objects. See link::Guides/NodeMessaging::, link::Tutorials/Server_Tutorial::, and link::Guides/ClientVsServer:: for more detail.
 
-As a convenience the 'play' method of class link::Classes/Function:: will compile a SynthDef and create and play a synth using the function for you. With this method an link::Classes/Out:: ugen will be created for you if you do not do so explicitly.
+As a convenience the 'play' method of class link::Classes/Function:: will compile a SynthDef and create and play a synth using the function for you. With this method an link::Classes/Out:: UGen will be created for you if you do not do so explicitly.
 
 code::
 { FSinOsc.ar(800, 0, 0.2) }.play; // create and play a sine oscillator at 800 Hz

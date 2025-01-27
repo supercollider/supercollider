@@ -25,10 +25,10 @@ argument::reset
 Trigger. Resets the list of UGens when triggered.
 
 argument::demandUGens
-List of demand-rate UGens to get values from. When the shortest stream ends, this ugen will set the link::Classes/Done##'done' flag::.
+List of demand-rate UGens to get values from. When the shortest stream ends, this UGen will set the link::Classes/Done##'done' flag::.
 
 discussion::
-By design, a reset trigger only resets the demand ugens; it does not reset the value at Demand's output. Demand continues to hold its value until the next value is demanded, at which point its output value will be the first expected item in the list.
+By design, a reset trigger only resets the demand UGens; it does not reset the value at Demand's output. Demand continues to hold its value until the next value is demanded, at which point its output value will be the first expected item in the list.
 To jump to the start value upon receipt of a reset trigger, one can add (+) the two triggers together:
 code::
 (
@@ -42,7 +42,7 @@ a.set(\t_trig, 1); // do this a few times -- the demand value should increase by
 a.set(\t_reset, 1);	// goes immediately back to 0
 ::
 
-One demand ugen represents a single stream of values, so that embedding the same ugen twice calls this stream twice. To isolate a demand ugen, use a function:
+One demand UGen represents a single stream of values, so that embedding the same UGen twice calls this stream twice. To isolate a demand UGen, use a function:
 code::
 {
 var a, b, t = Impulse.kr(2);

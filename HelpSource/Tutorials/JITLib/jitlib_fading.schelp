@@ -14,12 +14,12 @@ list::
 ## link::#d)_synthdef_name_assignment#d):: if a synthdef name is used, case link::#c)_custom_fade_envelope#c):: is supposed
 ::
 
-... so in most cases, there is not much to worry about, just these two points ar important, if one wants to use a self releasing synth or a different out ugen:
+... so in most cases, there is not much to worry about, just these two points ar important, if one wants to use a self releasing synth or a different out UGen:
 
 list::
 ## link::#e)_own_free_responsibility#e):: own responsibility: if the function creates a ugengraph that can be freed by trigger or other things, it waits for this action instead of the node proxy freeing the synth.
 
-## link::#f)_own_output_responsibility#f):: own out channel with 'out' arg: the control ugen with the name 'out' is set to the output channel number of the proxy.
+## link::#f)_own_output_responsibility#f):: own out channel with 'out' arg: the control UGen with the name 'out' is set to the output channel number of the proxy.
 ::
 
 code::
@@ -148,7 +148,7 @@ code::
 ~out.group.set(\t_trig, 1); //end it again
 
 
-// if there is a ugen that can free the synth, no extra fade env is created either,
+// if there is a UGen that can free the synth, no extra fade env is created either,
 // but it supposes the synth frees itself, so if a new function is assigned it does
 // not get freed.
 (

@@ -4,7 +4,7 @@ related:: Classes/Demand, Classes/Duty, Classes/TDuty
 categories::  UGens>Demand, UGens>Envelopes
 
 Description::
-Plays back break point envelope contours (levels, times, shapes) given by demand ugens. The next values are called when the next node is reached.
+Plays back break point envelope contours (levels, times, shapes) given by demand UGens. The next values are called when the next node is reached.
 
 classmethods::
 private:: categories
@@ -67,17 +67,17 @@ at the next level. If it is > 1, it is reset immediately.
 
 argument::levelScale
 
-demand ugen returning level scaling values
+demand UGen returning level scaling values
 
 
 argument::levelBias
 
-demand ugen returning level offset values
+demand UGen returning level offset values
 
 
 argument::timeScale
 
-demand ugen returning time scaling values
+demand UGen returning time scaling values
 
 
 argument::doneAction

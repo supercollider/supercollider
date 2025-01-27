@@ -17,7 +17,7 @@ list::
 
 They return a new instance of UGen that calculates at audio/control rate or at initialization only (ir). Some UGens, like link::Classes/Rand::, use the code::*new:: method instead. These methods are implemented in subclasses, where argument names and their meaning depend on the case.
 
-If any argument is an array, they return an array of UGens (see: link::Guides/Multichannel-Expansion::). If the combination of rates between arguments and ugen are not allowed, calling the methods will throw an error. This method adds the UGen to the current SynthDef, so it only fully works inside a UGen function.
+If any argument is an array, they return an array of UGens (see: link::Guides/Multichannel-Expansion::). If the combination of rates between arguments and UGen are not allowed, calling the methods will throw an error. This method adds the UGen to the current SynthDef, so it only fully works inside a UGen function.
 code::
 { Blip.ar(Blip.kr(4, 5, 500, 60), 59, 0.1) }.play;
 ::
@@ -115,7 +115,7 @@ code::
 
 method:: dpoll
 
-Like code::poll::, only that code::dpoll:: is used for Demand ugens. See link::Classes/Poll:: for more info on polling.
+Like code::poll::, only that code::dpoll:: is used for Demand UGens. See link::Classes/Poll:: for more info on polling.
 
 method:: range
 

@@ -38,8 +38,8 @@ link::Classes/String#-parseYAML:: and link::Classes/String#-parseYAMLFile:: can 
 
 subsection:: SynthDef optimizations for additive terms
 
-When the SynthDef is compiled, separate additive ugens are combined via the new link::Classes/Sum3:: and
-link::Classes/Sum4:: ugens.
+When the SynthDef is compiled, separate additive UGens are combined via the new link::Classes/Sum3:: and
+link::Classes/Sum4:: UGens.
 
 subsection:: Basic dead code elimination for SynthDefs
 

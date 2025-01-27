@@ -481,7 +481,7 @@ x.release(4); // fadeout over 4 seconds
 ::
 
 Many of the examples make use of the Function.play syntax.
-Note that reusing such code in a SynthDef requires the addition of an Out ugen.
+Note that reusing such code in a SynthDef requires the addition of an Out UGen.
 
 code::
 // the following two lines produce equivalent results
@@ -638,14 +638,14 @@ subsection::Conversion
 
 method::asSynthDef
 
-Returns a SynthDef based on this Function, adding a Linen and an Out ugen if needed.
+Returns a SynthDef based on this Function, adding a Linen and an Out UGen if needed.
 
 argument::rates
 An Array of rates and lagtimes for the function's arguments (see SynthDef for more details).
 argument::prependArgs
 arguments
 argument::outClass
-The class of the output ugen as a symbol. The default is \Out.
+The class of the output UGen as a symbol. The default is \Out.
 argument::fadeTime
 a fadein time. The default is 0.
 argument::name

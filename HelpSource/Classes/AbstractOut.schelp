@@ -1,5 +1,5 @@
 class:: AbstractOut
-summary:: Abstract class for out ugens
+summary:: Abstract class for out UGens
 categories:: UGens>InOut
 
 classmethods::

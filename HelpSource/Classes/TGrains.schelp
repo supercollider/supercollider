@@ -167,7 +167,7 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 }.scope(zoom: 4);
 )
 
-// demand ugens as inputs
+// demand UGens as inputs
 (
 {
 	var trate, dur, z, d;

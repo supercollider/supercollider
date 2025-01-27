@@ -18,7 +18,7 @@ private:: new1
 method::ar, kr
 
 Unlike with other unit generators, the code::ar:: and code::kr:: methods do not
-specify the rate of the computation, but the granularity. When the SendPeakRMS ugen
+specify the rate of the computation, but the granularity. When the SendPeakRMS UGen
 is instantiated with code::kr::, the reply rate is quantized to control-rate
 blocks.
 

@@ -6,7 +6,7 @@ related:: Classes/Demand
 classmethods::
 method:: new
 argument:: list
-array of values or other ugens
+array of values or other UGens
 argument:: weights
 array of values (should sum up to 1.0)
 argument:: repeats

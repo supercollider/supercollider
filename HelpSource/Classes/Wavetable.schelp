@@ -21,7 +21,7 @@ argument::phases
 an Array of phases in radians for each harmonic beginning with the fundamental.
 
 method::chebyFill
-Fill a Wavetable of the given size with a sum of Chebyshev polynomials at the given amplitudes for use in waveshaping by the link::Classes/Shaper:: ugen.
+Fill a Wavetable of the given size with a sum of Chebyshev polynomials at the given amplitudes for use in waveshaping by the link::Classes/Shaper:: UGen.
 argument::size
 must be a power of 2 plus 1, eventual wavetable is next power of two size up.
 argument::amplitudes

@@ -5,7 +5,7 @@ categories:: UGens>Demand, UGens>Random
 classmethods::
 method:: new
 argument:: list
-array of values or other ugens
+array of values or other UGens
 argument:: repeats
 number of repeats
 discussion::

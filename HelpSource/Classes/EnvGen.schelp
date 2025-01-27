@@ -265,7 +265,7 @@ code::
 
 subsection:: Modulating the levelScale
 code::
-// no, it doesn't take a ugen in ...
+// no, it doesn't take a UGen in ...
 (
 {
     EnvGen.kr(
@@ -277,7 +277,7 @@ code::
 }.play;
 )
 
-// ...but an .ir rate input, a float or an ir rate ugen like Rand would work
+// ...but an .ir rate input, a float or an ir rate UGen like Rand would work
 (
 {
     EnvGen.kr(
