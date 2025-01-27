@@ -122,7 +122,7 @@ the indices of the current filtered lines
 method::filteredShorts
 the current filtered short lines for gui display
 
-method:.setKeyFilter
+method::setKeyFilter
 set the key(s) to filter for, and perform filtering
 
 method::setStrFilter

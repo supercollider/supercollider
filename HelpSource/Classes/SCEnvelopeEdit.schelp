@@ -43,7 +43,7 @@ instancemethods::
 method:: refresh
 If the link::Classes/Env:: object is modified directly, this needs to be called to update the GUI.
 
-maxLevel
+method:: maxLevel
 Changes maximum level shown in editor.
 argument:: level
 An instance of link::Classes/Float::.
