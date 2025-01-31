@@ -38,7 +38,10 @@ argument::loop
 
 
 argument::interpolation
-1 means no interpolation, 2 is linear, 4 is cubic interpolation.
+1 means no interpolation, 2 is linear, 4 is cubic interpolation. (These
+numbers correspond to the number of consecutive samples needed to compute each type of
+interpolation.) Any other values for this argument will silently default to no interpolation.
+
 
 instancemethods::
 private:: init, argNamesInputsOffset, checkInputs
