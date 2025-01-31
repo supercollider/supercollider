@@ -16,7 +16,7 @@ private:: categories
 method:: ar, kr
 
 argument:: buffer
-buffer where DelTapWr has written signal.  Max delay time is based on buffer size.
+buffer where DelTapWr has written signal. Max delay time is based on buffer size.
 argument:: phase
 the current phase of the DelTapWr UGen. This is the output of DelTapWr.
 argument:: delTime
