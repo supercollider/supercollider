@@ -22,9 +22,10 @@ the current phase of the DelTapWr UGen. This is the output of DelTapWr.
 argument:: delTime
 A delay time in seconds.
 argument:: interp
-the kind of interpolation to be used. 1 is none, 2 is linear, 4 is cubic. (These
-numbers correspond to the number of consecutive samples needed to compute each type of
-interpolation.) Any other values for this argument will silently default to no interpolation.
+the kind of interpolation to be used. 1 is none, 2 is linear, 4 is cubic. 
+(These numbers correspond to the number of consecutive samples needed to 
+compute each type of interpolation.) Any other values for this argument 
+will silently default to no interpolation.
 
 argument:: mul
 argument:: add
