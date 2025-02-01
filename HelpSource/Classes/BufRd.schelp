@@ -23,25 +23,23 @@ is compiled.
 note::
 If you supply a code::bufnum:: of a buffer that has a
 different code::numChannels:: than you have specified to
-the BufRd, it will post a warning and output the channels it can.
-::
+the BufRd, it will post a warning and output the channels it can.::
 
 argument::bufnum
 The index of the buffer to use.
 
 argument::phase
 Audio rate modulateable index into the buffer.
-Warning:: The phase argument only offers precision for addressing 2**24 samples (about 6.3 minutes at 44100Hz). ::
+Warning:: The phase argument only offers precision for addressing 2**24 samples (about 6.3 minutes at 44100Hz).::
 
 argument::loop
 1 means true, 0 means false. This is modulateable.
 
-
 argument::interpolation
-1 means no interpolation, 2 is linear, 4 is cubic interpolation. (These
-numbers correspond to the number of consecutive samples needed to compute each type of
-interpolation.) Any other values for this argument will silently default to no interpolation.
-
+1 means no interpolation, 2 is linear, 4 is cubic interpolation. 
+(The numbers one, two, and emphasis::four:: correspond to the number of consecutive
+samples needed to compute each type of interpolation.)
+Any other values for this argument will silently default to no interpolation.
 
 instancemethods::
 private:: init, argNamesInputsOffset, checkInputs
