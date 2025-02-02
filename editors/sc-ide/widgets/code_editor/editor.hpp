@@ -118,6 +118,7 @@ protected:
     virtual void indentCurrentRegion() {}
 
     void zoomFont(int steps);
+    void zoomFontScaler(float scaler);
 
     void copyUpDown(bool up);
     void moveLineUpDown(bool up);
