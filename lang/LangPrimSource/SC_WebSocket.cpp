@@ -79,122 +79,46 @@ private:
 };
 
 // a websocket message can either be a byte array or a string
+// see https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/message_event
 using WebSocketData = std::variant<std::vector<uint8_t>, std::string>;
 
+// a WebSocketSession is essentially a websocket connection
 class WebSocketSession : public std::enable_shared_from_this<WebSocketSession> {
-    beast::websocket::stream<tcp::socket> ws_;
-    beast::flat_buffer buffer_;
+    beast::websocket::stream<tcp::socket> ws;
+    beast::flat_buffer buffer;
     // data to be sent to the client
-    std::queue<WebSocketData> outQueue;
-    // a primitive mutex
+    std::queue<WebSocketData> out_queue;
+    // a primitive mutex - see `do_write` and `on_write`
     bool isWriting = false;
     // used to indicate that the connection should be closed upon next message
     bool shouldClose = false;
-    int listeningPort_;
+    int listeningPort;
 
 public:
+    // we store a reference pointer to ourselves upon creation
+    // this pointer acts as an identifier on the sclang side,
+    // so it is possible to distinguish connections and we can
+    // call the the callback on the matching sclang WebSocketConnection
     WebSocketSession* ownAddress;
     // take ownership of socket
     explicit WebSocketSession(boost::asio::ip::tcp::socket&& socket, int listeningPort):
-        ws_(std::move(socket)),
-        listeningPort_(listeningPort) {}
+        ws(std::move(socket)),
+        listeningPort(listeningPort) {}
 
+    // starts consumption of a websocket connection
     void run() {
 #ifdef SC_WEBSOCKET_DEBUG
         scprintf("Start run of session\n");
 #endif
-        boost::asio::dispatch(ws_.get_executor(),
+        boost::asio::dispatch(ws.get_executor(),
                               beast::bind_front_handler(&WebSocketSession::on_run, shared_from_this()));
-    }
-
-    void on_run() {
-#ifdef SC_WEBSOCKET_DEBUG
-        scprintf("Session started\n");
-#endif
-        ws_.set_option(beast::websocket::stream_base::timeout::suggested((beast::role_type::server)));
-
-        ws_.async_accept(beast::bind_front_handler(&WebSocketSession::on_accept, shared_from_this()));
-    }
-
-    void on_accept(beast::error_code ec) {
-        if (ec) {
-#ifdef SC_WEBSOCKET_DEBUG
-            scprintf("Session accept error: %s\n", ec.message().c_str());
-#endif
-            return;
-        }
-#ifdef SC_WEBSOCKET_DEBUG
-        scprintf("Session accepted\n");
-#endif
-
-        VMGlobals* g = gMainVMGlobals;
-        gLangMutex.lock();
-        auto sclang_connection = create_sclang_connection();
-        ++g->sp;
-        SetObject(g->sp, getsym("WebSocketServer")->u.classobj);
-        ++g->sp;
-        SetInt(g->sp, listeningPort_);
-        ++g->sp;
-        SetObject(g->sp, sclang_connection);
-        runInterpreter(g, getsym("prNewConnection"), 3);
-        gLangMutex.unlock();
-
-        do_read();
-    }
-
-    void do_read() {
-        // read message into buffer
-        ws_.async_read(buffer_, beast::bind_front_handler(&WebSocketSession::on_read, shared_from_this()));
-    }
-
-    void on_close() {
-        VMGlobals* g = gMainVMGlobals;
-        gLangMutex.lock();
-        ++g->sp;
-        SetObject(g->sp, getsym("WebSocketConnection")->u.classobj);
-        ++g->sp;
-        SetPtr(g->sp, ownAddress);
-        runInterpreter(g, getsym("prConnectionDisconnect"), 2);
-        gLangMutex.unlock();
-    }
-
-    void on_read(beast::error_code ec, std::size_t bytes_transferred) {
-        if (ec == beast::websocket::error::closed) {
-#ifdef SC_WEBSOCKET_DEBUG
-            scprintf("Session closed\n");
-#endif
-            on_close();
-            return;
-        }
-        if (ec) {
-            scprintf("Websocket connection error: %s\n", ec.message().c_str());
-            on_close();
-            return;
-        }
-
-        VMGlobals* g = gMainVMGlobals;
-        gLangMutex.lock();
-        ++g->sp;
-        SetObject(g->sp, getsym("WebSocketConnection")->u.classobj);
-        ++g->sp;
-        SetPtr(g->sp, ownAddress);
-        ++g->sp;
-        if (ws_.got_text()) {
-            SetObject(g->sp, get_string(bytes_transferred));
-        } else {
-            SetObject(g->sp, get_byte_array(bytes_transferred));
-        };
-        runInterpreter(g, getsym("prReceiveMessage"), 3);
-        gLangMutex.unlock();
-
-        do_read();
     }
 
     void enqueue_message(WebSocketData message) {
         // dispatch via asio to ensure thread safety
-        boost::asio::dispatch(ws_.get_executor(), [message, self = shared_from_this()]() mutable {
-            self->outQueue.push(message);
-            self->do_write();
+        boost::asio::dispatch(ws.get_executor(), [message, self = shared_from_this()]() mutable {
+            self->out_queue.push(message);
+            self->await_writing_ws_message();
         });
     }
 
@@ -209,6 +133,133 @@ public:
     }
 
 private:
+    void on_run() {
+#ifdef SC_WEBSOCKET_DEBUG
+        scprintf("Session started\n");
+#endif
+        ws.set_option(beast::websocket::stream_base::timeout::suggested((beast::role_type::server)));
+
+        ws.async_accept(beast::bind_front_handler(&WebSocketSession::on_accept, shared_from_this()));
+    }
+
+    void on_accept(beast::error_code ec) {
+        if (ec) {
+#ifdef SC_WEBSOCKET_DEBUG
+            scprintf("Session accept error: %s\n", ec.message().c_str());
+#endif
+            return;
+        }
+#ifdef SC_WEBSOCKET_DEBUG
+        scprintf("Session accepted\n");
+#endif
+
+        call_sclang_new_connection();
+        await_receiving_ws_message();
+    }
+
+    // aka do_read in boost
+    void await_receiving_ws_message() {
+        ws.async_read(buffer,
+                      beast::bind_front_handler(&WebSocketSession::consume_received_ws_message, shared_from_this()));
+    }
+
+    // consume a received websocket message - aka on_read in boost
+    void consume_received_ws_message(beast::error_code ec, std::size_t bytes_transferred) {
+        if (ec) {
+            if (shouldClose) {
+                return;
+            };
+            if (ec == beast::websocket::error::closed) {
+#ifdef SC_WEBSOCKET_DEBUG
+                scprintf("Session closed\n");
+#endif
+            } else {
+                scprintf("Websocket connection error: %s\n", ec.message().c_str());
+            };
+            call_sclang_close();
+            return;
+        }
+        call_sclang_message_received(bytes_transferred);
+        // continue async loop to await websocket message
+        await_receiving_ws_message();
+    }
+
+    // consume out queue until empty - aka do_write on beast
+    void await_writing_ws_message(void) {
+        if (shouldClose) {
+            ws.close("Goodbye from sclang");
+#ifdef SC_WEBSOCKET_DEBUG
+            scprintf("Closing session\n");
+#endif
+            return;
+        }
+        if (!isWriting && !out_queue.empty()) {
+            isWriting = true;
+            auto message = out_queue.front();
+
+            // if a string, indicate it as a text message
+            ws.text(std::holds_alternative<std::string>(message));
+
+            ws.async_write(boost::asio::buffer(to_asio_buffer(message)),
+                           boost::beast::bind_front_handler(&WebSocketSession::on_ws_write, shared_from_this()));
+        }
+    }
+
+    // aka on_write
+    void on_ws_write(boost::beast::error_code ec, std::size_t bytes_transferred) {
+        isWriting = false;
+        if (ec) {
+            scprintf("Sending websocket message failed: %s", ec.message().c_str());
+        }
+        out_queue.pop();
+        // do this loop until our queue is empty
+        await_writing_ws_message();
+    }
+
+    // sclang parts
+    void call_sclang_new_connection() {
+        VMGlobals* g = gMainVMGlobals;
+        gLangMutex.lock();
+        auto sclang_connection = create_sclang_connection();
+        ++g->sp;
+        SetObject(g->sp, getsym("WebSocketServer")->u.classobj);
+        ++g->sp;
+        SetInt(g->sp, listeningPort);
+        ++g->sp;
+        SetObject(g->sp, sclang_connection);
+        runInterpreter(g, getsym("prNewConnection"), 3);
+        gLangMutex.unlock();
+    }
+
+    // informs sclang that our websocket connection is now closed
+    void call_sclang_close() {
+        VMGlobals* g = gMainVMGlobals;
+        gLangMutex.lock();
+        ++g->sp;
+        SetObject(g->sp, getsym("WebSocketConnection")->u.classobj);
+        ++g->sp;
+        SetPtr(g->sp, ownAddress);
+        runInterpreter(g, getsym("prConnectionDisconnect"), 2);
+        gLangMutex.unlock();
+    }
+
+    void call_sclang_message_received(std::size_t bytes_transferred) {
+        VMGlobals* g = gMainVMGlobals;
+        gLangMutex.lock();
+        ++g->sp;
+        SetObject(g->sp, getsym("WebSocketConnection")->u.classobj);
+        ++g->sp;
+        SetPtr(g->sp, ownAddress);
+        ++g->sp;
+        if (ws.got_text()) {
+            SetObject(g->sp, get_string(bytes_transferred));
+        } else {
+            SetObject(g->sp, get_byte_array(bytes_transferred));
+        };
+        runInterpreter(g, getsym("prReceiveMessage"), 3);
+        gLangMutex.unlock();
+    }
+
     PyrObject* create_sclang_connection() {
         VMGlobals* g = gMainVMGlobals;
         PyrObject* newConnection = instantiateObject(g->gc, getsym("WebSocketConnection")->u.classobj, 1, true, false);
@@ -218,65 +269,33 @@ private:
 
     PyrObject* get_string(int bytes_transferred) {
         VMGlobals* g = gMainVMGlobals;
-        std::string string = beast::buffers_to_string(buffer_.data());
+        std::string string = beast::buffers_to_string(buffer.data());
         PyrObject* scString = (PyrObject*)newPyrString(g->gc, string.c_str(), 0, true);
-        buffer_.consume(bytes_transferred);
+        buffer.consume(bytes_transferred);
         return scString;
     }
 
-    /**
-     * assumes a byte array has been transferred
-     */
     PyrObject* get_byte_array(int bytes_transferred) {
         VMGlobals* g = gMainVMGlobals;
         PyrObject* array = newPyrArray(g->gc, bytes_transferred, 0, false);
         PyrSlot* slots = array->slots;
 
-        const char* rawBytes = static_cast<const char*>(buffer_.data().data());
+        const char* rawBytes = static_cast<const char*>(buffer.data().data());
         for (size_t i = 0; i < bytes_transferred; i++) {
             SetInt(slots + i, static_cast<uint8_t>(rawBytes[i]));
         }
         array->size = bytes_transferred;
-        buffer_.consume(bytes_transferred);
+        buffer.consume(bytes_transferred);
         return array;
     }
 
-    void do_write(void) {
-        if (shouldClose) {
-            ws_.close("Goodbye from sclang");
-#ifdef SC_WEBSOCKET_DEBUG
-            scprintf("Closing session\n");
-#endif
-            return;
-        }
-        if (!isWriting && !outQueue.empty()) {
-            isWriting = true;
-            ws_.binary(true);
-            auto message = outQueue.front();
-
-            // if a string, indicate it as a text message
-            ws_.text(std::holds_alternative<std::string>(message));
-
-            ws_.async_write(boost::asio::buffer(to_asio_buffer(message)),
-                            boost::beast::bind_front_handler(&WebSocketSession::on_write, shared_from_this()));
-        }
-    }
-
-    void on_write(boost::beast::error_code ec, std::size_t bytes_transferred) {
-        isWriting = false;
-        if (ec) {
-            scprintf("Sending message failed: %s", ec.message().c_str());
-        }
-        outQueue.pop();
-        // do this loop until our queue is empty
-        do_write();
-    }
-
-    const boost::asio::const_buffer to_asio_buffer(const WebSocketData& message) {
+    // converter between WebSocketData and beast flat_buffer
+    boost::asio::const_buffer to_asio_buffer(const WebSocketData& message) {
         return std::visit([](const auto& arg) { return boost::asio::buffer(arg); }, message);
     }
 };
 
+// acts as a server which listens for incoming connections
 class WebSocketListener : public std::enable_shared_from_this<WebSocketListener> {
     boost::asio::io_context& mIoContext;
     boost::asio::ip::tcp::acceptor mAcceptor;
@@ -284,8 +303,8 @@ class WebSocketListener : public std::enable_shared_from_this<WebSocketListener>
 
 public:
     // take ownership shared ptr of our web socket thread so we maintain the lifetime of the thread
-    WebSocketListener(const std::shared_ptr<WebSocketThread> web_socket_thread, boost::asio::ip::tcp::endpoint endpoint,
-                      boost::beast::error_code& ec):
+    WebSocketListener(const std::shared_ptr<WebSocketThread>& web_socket_thread,
+                      boost::asio::ip::tcp::endpoint endpoint, boost::beast::error_code& ec):
         mIoContext(web_socket_thread->get_context()),
         mAcceptor(web_socket_thread->get_context()),
         mThread(web_socket_thread) {
@@ -348,6 +367,9 @@ private:
 
     void onAccept(beast::error_code ec, boost::asio::ip::tcp::socket socket) {
         if (ec) {
+            if (ec == boost::asio::error::operation_aborted) {
+                return;
+            }
             scprintf("Could not accept connection: %s\n", ec.message().c_str());
             return;
         }

@@ -1,7 +1,8 @@
 WebSocketServer {
     var <hostname;
     var <port;
-    var <>socket; // holds the pointer to our websocket
+    var <>socket; // @todo make this private - holds the pointer to our websocket
+    var <>running = false; // @todo make this private
     var <>onConnection;
     var <>connections;
 
@@ -21,15 +22,29 @@ WebSocketServer {
     }
 
     start {
+        if (running) {
+            "WebSocketServer already started".warn;
+            ^this;
+        };
+        this.prStart;
+        running = true;
+    }
+
+    prStart {
         _WebSocketServer_Start
         ^this.primitiveFailed;
     }
 
 	stop {
+		if (running.not) {
+		    "Can only stop a running server".warn;
+		    ^this;
+		};
 		connections.do({|connection|
-			connection.close;
+			connection.closed = true;
 		});
 		this.prStop;
+		running = false;
 	}
 
     prStop {
@@ -51,7 +66,7 @@ WebSocketServer {
 // this gets initiated from c++ - do not create this yourself
 WebSocketConnection {
     var <>beastSessionPtr; // do not modify!
-	var <>closed = false; // also managed by c++
+	var <>closed = false; // do not modify!
     var <>onMessage; // set this as a callback
     var <>onDisconnect; // set this as a callback
 
@@ -74,7 +89,8 @@ WebSocketConnection {
     *prConnectionDisconnect { |ptr|
         var connection = all[ptr];
         if(connection.notNil, {
-            connection.onDisconnect.();
+            connection.onDisconnect.value();
+            connection.closed = true;
         });
         all[ptr] = nil;
     }
@@ -105,7 +121,7 @@ WebSocketConnection {
 
 	close {
 		if(closed.not, {
-			this.prClose;
+			this.prClose();
 		});
 	}
 
