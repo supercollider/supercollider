@@ -252,9 +252,18 @@ void PostWindow::zoomOut(int steps) { zoomFont(-steps); }
 void PostWindow::zoomFont(int steps) {
     QFont currentFont = font();
     const int newSize = currentFont.pointSize() + steps;
-    if (newSize <= 7 || newSize >= 50)
+    if (newSize <= 0)
         return;
     currentFont.setPointSize(newSize);
+    setFont(currentFont);
+}
+
+void PostWindow::zoomFontScaler(float scaler) {
+    QFont currentFont = font();
+    auto defaultFontSize = Main::settings()->codeFont().pointSizeF();
+    auto newSize = currentFont.pointSizeF() * scaler;
+    newSize = std::clamp(newSize, defaultFontSize * 0.5, defaultFontSize * 8.0);
+    currentFont.setPointSizeF(newSize);
     setFont(currentFont);
 }
 
@@ -344,12 +353,7 @@ bool PostWindow::gestureEvent(QGestureEvent* event) {
         auto* pinchGesture = static_cast<QPinchGesture*>(pinch);
         if (pinchGesture->state() == Qt::GestureUpdated) {
             qreal scaleFactor = pinchGesture->scaleFactor();
-            if (scaleFactor >= 1.0) {
-                // same as document zoom steps in editor.cpp
-                zoomFont(2);
-            } else {
-                zoomFont(-2);
-            }
+            zoomFontScaler(scaleFactor);
         }
         return true;
     }

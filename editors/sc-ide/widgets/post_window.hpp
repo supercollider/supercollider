@@ -95,6 +95,7 @@ private:
     void createActions(Settings::Manager*);
     void updateActionShortcuts(Settings::Manager*);
     void zoomFont(int steps);
+    void zoomFontScaler(float scaler);
     QTextCharFormat formatForPostLine(QString line);
 
     QAction* mActions[ActionCount];
