@@ -24,6 +24,7 @@
 
 namespace beast = boost::beast;
 
+// handles the actual websocket implementation using boost::beast
 namespace SC_Websocket {
 
 /** A wrapper class for the websocket communication thread.
@@ -382,10 +383,11 @@ private:
         doAccept();
     }
 };
+}
 
-/**
- * Glue-code for sclang.
- */
+// Glue code for sclang
+namespace SC_Websocket_Lang {
+
 class WebSocketServer {
 public:
     static int Start(VMGlobals* g, int numArgsPushed) {
@@ -407,12 +409,12 @@ public:
 
         auto const address = boost::asio::ip::make_address_v4(host);
 
-        const auto webSocketThread = WebSocketThread::getInstance();
+        const auto webSocketThread = SC_Websocket::WebSocketThread::getInstance();
         webSocketThread->start();
 
         boost::beast::error_code ec;
-        auto listener = std::make_shared<WebSocketListener>(std::move(webSocketThread),
-                                                            boost::asio::ip::tcp::endpoint(address, port), ec);
+        auto listener = std::make_shared<SC_Websocket::WebSocketListener>(
+            std::move(webSocketThread), boost::asio::ip::tcp::endpoint(address, port), ec);
         if (ec) {
             scprintf("Could not start websocket listener: %s\n", ec.message().c_str());
             return errFailed;
@@ -430,7 +432,7 @@ public:
 #endif
         const auto object = get_object(g);
         const auto ptr = slotRawPtr(object->slots + SLOT_OFFSET::POINTER);
-        const auto listener = static_cast<WebSocketListener*>(ptr);
+        const auto listener = static_cast<SC_Websocket::WebSocketListener*>(ptr);
         listener->stop();
         return errNone;
     }
@@ -457,10 +459,6 @@ private:
     }
 };
 
-/**
- * Acts as a namespace for sclang primitive glue code and
- * does not hold the actual WebSocket connection.
- */
 class WebSocketConnection {
 public:
     static int SendRawMessage(VMGlobals* g, int numArgsPushed) {
@@ -502,9 +500,9 @@ private:
         return slotRawObject(webSocketServerSlot);
     }
 
-    static WebSocketSession* get_session(PyrObject* connection) {
+    static SC_Websocket::WebSocketSession* get_session(PyrObject* connection) {
         auto ptr = slotRawPtr(connection->slots + SLOT_OFFSET::POINTER);
-        return static_cast<WebSocketSession*>(ptr);
+        return static_cast<SC_Websocket::WebSocketSession*>(ptr);
     }
 
     static std::vector<uint8_t> get_raw_message(VMGlobals* g) {
@@ -522,17 +520,18 @@ private:
 
     static void set_connection_closed(PyrObject* connection) { SetTrue(connection->slots + SLOT_OFFSET::CLOSED); }
 };
+
 }
 
 void init_WebSocket_primitives() {
     int base = nextPrimitiveIndex();
     int index = 0;
 
-    definePrimitive(base, index++, "_WebSocketServer_Start", SC_Websocket::WebSocketServer::Start, 1, 0);
-    definePrimitive(base, index++, "_WebSocketServer_Stop", SC_Websocket::WebSocketServer::Stop, 1, 0);
+    definePrimitive(base, index++, "_WebSocketServer_Start", SC_Websocket_Lang::WebSocketServer::Start, 1, 0);
+    definePrimitive(base, index++, "_WebSocketServer_Stop", SC_Websocket_Lang::WebSocketServer::Stop, 1, 0);
     definePrimitive(base, index++, "_WebSocketConnection_SendRawMessage",
-                    SC_Websocket::WebSocketConnection::SendRawMessage, 1, 0);
+                    SC_Websocket_Lang::WebSocketConnection::SendRawMessage, 1, 0);
     definePrimitive(base, index++, "_WebSocketConnection_SendStringMessage",
-                    SC_Websocket::WebSocketConnection::SendStringMessage, 1, 0);
-    definePrimitive(base, index++, "_WebSocketConnection_Close", SC_Websocket::WebSocketConnection::Close, 1, 0);
+                    SC_Websocket_Lang::WebSocketConnection::SendStringMessage, 1, 0);
+    definePrimitive(base, index++, "_WebSocketConnection_Close", SC_Websocket_Lang::WebSocketConnection::Close, 1, 0);
 }
