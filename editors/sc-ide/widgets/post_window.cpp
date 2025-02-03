@@ -25,6 +25,7 @@
 #include "../core/settings/manager.hpp"
 #include "../core/settings/theme.hpp"
 #include "../core/util/overriding_action.hpp"
+#include "editor.hpp"
 
 #include <QApplication>
 #include <QScreen>
@@ -251,18 +252,14 @@ void PostWindow::zoomOut(int steps) { zoomFont(-steps); }
 
 void PostWindow::zoomFont(int steps) {
     QFont currentFont = font();
-    const int newSize = currentFont.pointSize() + steps;
-    if (newSize <= 0)
-        return;
+    const int newSize = GenericCodeEditor::clampFontSize(currentFont.pointSize() + steps);
     currentFont.setPointSize(newSize);
     setFont(currentFont);
 }
 
-void PostWindow::zoomFontScaler(float scaler) {
+void PostWindow::zoomFont(float scaler) {
     QFont currentFont = font();
-    auto defaultFontSize = Main::settings()->codeFont().pointSizeF();
-    auto newSize = currentFont.pointSizeF() * scaler;
-    newSize = std::clamp(newSize, defaultFontSize * 0.5, defaultFontSize * 8.0);
+    auto newSize = GenericCodeEditor::clampFontSize(currentFont.pointSizeF() * scaler);
     currentFont.setPointSizeF(newSize);
     setFont(currentFont);
 }
@@ -352,8 +349,8 @@ bool PostWindow::gestureEvent(QGestureEvent* event) {
     if (QGesture* pinch = event->gesture(Qt::PinchGesture)) {
         auto* pinchGesture = static_cast<QPinchGesture*>(pinch);
         if (pinchGesture->state() == Qt::GestureUpdated) {
-            qreal scaleFactor = pinchGesture->scaleFactor();
-            zoomFontScaler(scaleFactor);
+            float scaleFactor = pinchGesture->scaleFactor();
+            zoomFont(scaleFactor);
         }
         return true;
     }

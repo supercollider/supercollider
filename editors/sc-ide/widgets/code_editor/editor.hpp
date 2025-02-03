@@ -68,6 +68,8 @@ public:
     bool gestureEvent(QGestureEvent* event);
     int inactiveFadeAlpha() { return mInactiveFadeAlpha; }
 
+    static float clampFontSize(float newSize);
+
 protected:
     virtual bool event(QEvent*);
     virtual void keyPressEvent(QKeyEvent*);
@@ -118,7 +120,7 @@ protected:
     virtual void indentCurrentRegion() {}
 
     void zoomFont(int steps);
-    void zoomFontScaler(float scaler);
+    void zoomFont(float scaler);
 
     void copyUpDown(bool up);
     void moveLineUpDown(bool up);

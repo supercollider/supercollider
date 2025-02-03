@@ -465,8 +465,8 @@ bool GenericCodeEditor::gestureEvent(QGestureEvent* event) {
     if (QGesture* pinch = event->gesture(Qt::PinchGesture)) {
         auto* pinchGesture = static_cast<QPinchGesture*>(pinch);
         if (pinchGesture->state() == Qt::GestureUpdated) {
-            qreal scaleFactor = pinchGesture->scaleFactor();
-            zoomFontScaler(scaleFactor);
+            float scaleFactor = pinchGesture->scaleFactor();
+            zoomFont(scaleFactor);
         }
         return true;
     }
@@ -873,20 +873,21 @@ void GenericCodeEditor::resetFontSize() { mDoc->resetDefaultFont(); }
 
 void GenericCodeEditor::zoomFont(int steps) {
     QFont currentFont = mDoc->defaultFont();
-    const int newSize = currentFont.pointSize() + steps;
-    if (newSize <= 7 || newSize >= 50)
-        return;
-    currentFont.setPointSize(newSize);
+    const int newSize = clampFontSize(currentFont.pointSize() + steps);
+    currentFont.setPointSizeF(newSize);
     mDoc->setDefaultFont(currentFont);
 }
 
-void GenericCodeEditor::zoomFontScaler(float scaler) {
+void GenericCodeEditor::zoomFont(float scaler) {
     QFont currentFont = mDoc->defaultFont();
-    auto defaultFontSize = Main::settings()->codeFont().pointSizeF();
-    auto newSize = currentFont.pointSizeF() * scaler;
-    newSize = std::clamp(newSize, defaultFontSize * 0.5, defaultFontSize * 8.0);
+    const float newSize = clampFontSize(currentFont.pointSizeF() * scaler);
     currentFont.setPointSizeF(newSize);
     mDoc->setDefaultFont(currentFont);
+}
+
+float GenericCodeEditor::clampFontSize(float newSize) {
+    float defaultFontSize = Main::settings()->codeFont().pointSizeF();
+    return std::clamp(newSize, defaultFontSize * 0.5f, defaultFontSize * 8.0f);
 }
 
 void GenericCodeEditor::onDocumentFontChanged() {
