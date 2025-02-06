@@ -45,6 +45,13 @@ public:
 
     static int close(VMGlobals* g, int numArgsPushed);
 
+    // parts called from boost beast
+    static void newLangConnection(SC_Websocket::WebSocketSession* session, int portNumber);
+
+    static void closeLangConnection(SC_Websocket::WebSocketSession* session);
+
+    static void receiveLangMessage(SC_Websocket::WebSocketSession* session, SC_Websocket::WebSocketData& message);
+
 private:
     enum SLOT_OFFSET {
         POINTER = 0,
@@ -60,6 +67,8 @@ private:
     static std::string getStringMessage(VMGlobals* g);
 
     static void setConnectionClosed(PyrObject* connection);
+
+    static PyrObject* createConnection(SC_Websocket::WebSocketSession* session);
 };
 
 class WebSocketClient {

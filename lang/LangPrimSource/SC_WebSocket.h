@@ -4,7 +4,7 @@
 #include <boost/beast/websocket.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include "SC_WebSocketPrim.h"
-#include <PyrInterpreter.h>
+// #include <PyrInterpreter.h>
 #include <SC_Lock.h>
 
 namespace beast = boost::beast;
@@ -97,20 +97,6 @@ private:
 
     // aka on_write
     void onWsWrite(beast::error_code ec, std::size_t bytesTransferred);
-
-    // sclang parts
-    void callSclangNewConnection();
-
-    // informs sclang that our websocket connection is now closed
-    void callSclangClose();
-
-    void callSclangMessageReceived(std::size_t bytesTransferred);
-
-    PyrObject* createSclangConnection();
-
-    PyrObject* getString(int bytesTransferred);
-
-    PyrObject* getByteArray(int bytesTransferred);
 };
 
 // acts as a server which listens for incoming connections

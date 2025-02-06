@@ -11,7 +11,7 @@
 
 #include <thread>
 #include <queue>
-#include <VMGlobals.h>
+// #include <VMGlobals.h>
 #include <asio/buffers_iterator.hpp>
 
 #include "SC_WebSocketPrim.h"
@@ -121,7 +121,7 @@ void WebSocketSession::onAccept(beast::error_code ec) {
     scprintf("Session accepted\n");
 #endif
 
-    callSclangNewConnection();
+    SC_Websocket_Lang::WebSocketConnection::newLangConnection(m_ownAddress, m_listeningPort);
     awaitReceivingWsMessage();
 }
 
@@ -142,10 +142,11 @@ void WebSocketSession::consumeReceivedWsMessage(beast::error_code ec, std::size_
         } else {
             scprintf("Websocket connection error: %s\n", ec.message().c_str());
         };
-        callSclangClose();
+        SC_Websocket_Lang::WebSocketConnection::closeLangConnection(m_ownAddress);
         return;
     }
-    callSclangMessageReceived(bytesTransferred);
+    auto message = convertData(m_buffer, bytesTransferred, m_ws.got_text());
+    SC_Websocket_Lang::WebSocketConnection::receiveLangMessage(m_ownAddress, message);
     // continue async loop to await websocket message
     awaitReceivingWsMessage();
 }
@@ -178,77 +179,6 @@ void WebSocketSession::onWsWrite(beast::error_code ec, std::size_t bytesTransfer
     m_outQueue.pop();
     // do this loop until our queue is empty
     awaitWritingWsMessage();
-}
-
-void WebSocketSession::callSclangNewConnection() {
-    VMGlobals* g = gMainVMGlobals;
-    gLangMutex.lock();
-    auto sclang_connection = createSclangConnection();
-    ++g->sp;
-    SetObject(g->sp, getsym("WebSocketServer")->u.classobj);
-    ++g->sp;
-    SetInt(g->sp, m_listeningPort);
-    ++g->sp;
-    SetObject(g->sp, sclang_connection);
-    runInterpreter(g, getsym("prNewConnection"), 3);
-    gLangMutex.unlock();
-}
-
-void WebSocketSession::callSclangClose() {
-    VMGlobals* g = gMainVMGlobals;
-    gLangMutex.lock();
-    ++g->sp;
-    SetObject(g->sp, getsym("WebSocketConnection")->u.classobj);
-    ++g->sp;
-    SetPtr(g->sp, m_ownAddress);
-    runInterpreter(g, getsym("prConnectionDisconnect"), 2);
-    gLangMutex.unlock();
-}
-
-void WebSocketSession::callSclangMessageReceived(std::size_t bytesTransferred) {
-    VMGlobals* g = gMainVMGlobals;
-    gLangMutex.lock();
-    ++g->sp;
-    SetObject(g->sp, getsym("WebSocketConnection")->u.classobj);
-    ++g->sp;
-    SetPtr(g->sp, m_ownAddress);
-    ++g->sp;
-    if (m_ws.got_text()) {
-        SetObject(g->sp, getString(bytesTransferred));
-    } else {
-        SetObject(g->sp, getByteArray(bytesTransferred));
-    };
-    runInterpreter(g, getsym("prReceiveMessage"), 3);
-    gLangMutex.unlock();
-}
-
-PyrObject* WebSocketSession::createSclangConnection() {
-    VMGlobals* g = gMainVMGlobals;
-    PyrObject* newConnection = instantiateObject(g->gc, getsym("WebSocketConnection")->u.classobj, 1, true, false);
-    SetPtr(newConnection->slots, m_ownAddress);
-    return newConnection;
-}
-
-PyrObject* WebSocketSession::getString(int bytesTransferred) {
-    VMGlobals* g = gMainVMGlobals;
-    std::string string = beast::buffers_to_string(m_buffer.data());
-    PyrObject* scString = (PyrObject*)newPyrString(g->gc, string.c_str(), 0, true);
-    m_buffer.consume(bytesTransferred);
-    return scString;
-}
-
-PyrObject* WebSocketSession::getByteArray(int bytesTransferred) {
-    VMGlobals* g = gMainVMGlobals;
-    PyrObject* array = newPyrArray(g->gc, bytesTransferred, 0, false);
-    PyrSlot* slots = array->slots;
-
-    const char* rawBytes = static_cast<const char*>(m_buffer.data().data());
-    for (size_t i = 0; i < bytesTransferred; i++) {
-        SetInt(slots + i, static_cast<uint8_t>(rawBytes[i]));
-    }
-    array->size = bytesTransferred;
-    m_buffer.consume(bytesTransferred);
-    return array;
 }
 
 WebSocketListener::WebSocketListener(const std::shared_ptr<WebSocketThread>& webSocketThread,

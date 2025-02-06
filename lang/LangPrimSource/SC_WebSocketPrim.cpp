@@ -119,6 +119,51 @@ int WebSocketConnection::close(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
+void WebSocketConnection::newLangConnection(SC_Websocket::WebSocketSession* session, int portNumber) {
+    VMGlobals* g = gMainVMGlobals;
+    gLangMutex.lock();
+    auto sclangConnection = createConnection(session);
+    ++g->sp;
+    SetObject(g->sp, getsym("WebSocketServer")->u.classobj);
+    ++g->sp;
+    SetInt(g->sp, portNumber);
+    ++g->sp;
+    SetObject(g->sp, sclangConnection);
+    runInterpreter(g, getsym("prNewConnection"), 3);
+    gLangMutex.unlock();
+}
+
+void WebSocketConnection::closeLangConnection(SC_Websocket::WebSocketSession* session) {
+    VMGlobals* g = gMainVMGlobals;
+    gLangMutex.lock();
+    ++g->sp;
+    SetObject(g->sp, getsym("WebSocketConnection")->u.classobj);
+    ++g->sp;
+    SetPtr(g->sp, session);
+    runInterpreter(g, getsym("prConnectionDisconnect"), 2);
+    gLangMutex.unlock();
+}
+
+void WebSocketConnection::receiveLangMessage(SC_Websocket::WebSocketSession* session,
+                                             SC_Websocket::WebSocketData& message) {
+    VMGlobals* g = gMainVMGlobals;
+    gLangMutex.lock();
+    ++g->sp;
+    SetObject(g->sp, getsym("WebSocketConnection")->u.classobj);
+    ++g->sp;
+    SetPtr(g->sp, session);
+    ++g->sp;
+
+    if (std::holds_alternative<std::string>(message)) {
+        SetObject(++g->sp, convertMessage(std::get<std::string>(message)));
+    } else {
+        SetObject(++g->sp, convertMessage(std::get<std::vector<u_int8_t>>(message)));
+    };
+
+    runInterpreter(g, getsym("prReceiveMessage"), 3);
+    gLangMutex.unlock();
+}
+
 PyrObject* WebSocketConnection::getConnection(VMGlobals* g) {
     PyrSlot* webSocketServerSlot = g->sp;
     return slotRawObject(webSocketServerSlot);
@@ -145,6 +190,13 @@ std::string WebSocketConnection::getStringMessage(VMGlobals* g) { return std::ge
 
 void WebSocketConnection::setConnectionClosed(PyrObject* connection) {
     SetTrue(connection->slots + SLOT_OFFSET::CLOSED);
+}
+
+PyrObject* WebSocketConnection::createConnection(SC_Websocket::WebSocketSession* session) {
+    VMGlobals* g = gMainVMGlobals;
+    PyrObject* newConnection = instantiateObject(g->gc, getsym("WebSocketConnection")->u.classobj, 1, true, false);
+    SetPtr(newConnection->slots, session);
+    return newConnection;
 }
 
 int WebSocketClient::sendStringMessage(VMGlobals* g, int numArgsPushed) {
