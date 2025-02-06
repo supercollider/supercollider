@@ -131,6 +131,88 @@ WebSocketConnection {
     }
 }
 
+WebSocketClient {
+    var <host;
+    var <port;
+    var <beastConnectionPtr;
+    var <connected = false;
+    var <>onMessage;
+    var <>onDisconnect;
+
+    classvar <>globalConnections;
+
+    *initClass {
+        globalConnections = ();
+    }
+
+    *new {|host="127.0.0.1", port=8765|
+        ^super.newCopyArgs(host, port);
+    }
+
+    *prReceivedMessage {|ptr, message|
+        var connection = globalConnections[ptr];
+        if(connection.notNil, {
+            connection.onMessage.value(message);
+        });
+    }
+
+    *prConnectionDisconnect {|ptr|
+        var connection = globalConnections[ptr];
+        if(connection.notNil, {
+            connection.onDisconnect.value();
+            connection.connected = false;
+        });
+    }
+
+    connect {
+        this.prConnect;
+        connected = true;
+        globalConnections[beastConnectionPtr] = this;
+    }
+
+    prConnect {
+        _WebSocketClient_Connect
+        ^this.primitiveFailed;
+    }
+
+    close {
+        if(beastConnectionPtr.isNil, {
+            "Connection is not available - can not close.".warn;
+            ^this;
+        });
+        if(connected.not, {
+            "Can only close an open connection".warn;
+            ^this;
+        });
+
+        this.prClose;
+        connected = false;
+        globalConnections[beastConnectionPtr] = nil;
+    }
+
+    // @todo check if ptr is set!
+    prClose {
+        _WebSocketClient_Close
+        ^this.primitiveFailed;
+    }
+
+    sendMessage {|msg|
+        if(connected.not, {
+            "Can only send a message on an open connection".warn;
+            ^this;
+        });
+        if(msg.isKindOf(String), {
+            ^this.prSendStringMessage(msg);
+        });
+        "Unknown datatype %".format(msg.class).warn;
+    }
+
+    prSendStringMessage {|msg|
+        _WebSocketClient_SendStringMessage
+        ^this.primitiveFailed;
+    }
+}
+
 WebSocketNetAddr : NetAddr {
 	var <>webSocketConnection;
 	var <>debug;
