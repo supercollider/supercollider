@@ -63,10 +63,6 @@ private:
 
     static SC_Websocket::WebSocketSession* getSession(PyrObject* connection);
 
-    static std::vector<uint8_t> getRawMessage(VMGlobals* g);
-
-    static std::string getStringMessage(VMGlobals* g);
-
     static void setConnectionClosed(PyrObject* connection);
 
     static PyrObject* createConnection(SC_Websocket::WebSocketSession* session);
@@ -99,8 +95,6 @@ private:
     static PyrObject* getObject(VMGlobals* g);
 
     static std::string getHost(PyrObject* webSocketClientObj, int& error);
-
-    static std::string getStringMessage(VMGlobals* g, int& error);
 
     static int getPort(PyrObject* webSocketClientObj, int& error);
 

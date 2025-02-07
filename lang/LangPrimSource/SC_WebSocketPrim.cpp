@@ -13,6 +13,24 @@
 
 using namespace SC_Websocket_Lang;
 
+std::vector<uint8_t> getByteVector(VMGlobals* g, int& error) {
+    if (!isKindOfSlot(g->sp, getsym("Int8Array")->u.classobj)) {
+        scprintf("Raw message must be an Int8Array\n");
+        error = errBadPrimitive;
+        return std::vector<uint8_t>();
+    };
+    auto sclangByteArray = slotRawInt8Array(g->sp);
+    auto data = std::vector<uint8_t>(sclangByteArray->b, sclangByteArray->b + sclangByteArray->size);
+    return data;
+}
+
+std::string getStringMessage(VMGlobals* g, int& error) {
+    auto result = slotStrStdStrVal(g->sp);
+    error = std::get<0>(result);
+    return std::get<1>(result);
+}
+
+
 PyrObject* SC_Websocket_Lang::convertMessage(std::string& message) {
     VMGlobals* g = gMainVMGlobals;
     PyrObject* scString = reinterpret_cast<PyrObject*>(newPyrString(g->gc, message.c_str(), 0, true));
@@ -91,7 +109,11 @@ PyrObject* WebSocketServer::getObject(VMGlobals* g) {
 }
 
 int WebSocketConnection::sendRawMessage(VMGlobals* g, int numArgsPushed) {
-    auto message = getRawMessage(g);
+    int error;
+    auto message = getByteVector(g, error);
+    if (error) {
+        return error;
+    };
     --g->sp;
     auto connection = getConnection(g);
     auto session = getSession(connection);
@@ -104,7 +126,11 @@ int WebSocketConnection::sendRawMessage(VMGlobals* g, int numArgsPushed) {
 }
 
 int WebSocketConnection::sendStringMessage(VMGlobals* g, int numArgsPushed) {
-    auto message = getStringMessage(g);
+    int error;
+    auto message = getStringMessage(g, error);
+    if (error) {
+        return error;
+    };
     --g->sp;
     auto connection = getConnection(g);
     ++g->sp;
@@ -168,23 +194,6 @@ PyrObject* WebSocketConnection::getConnection(VMGlobals* g) {
 SC_Websocket::WebSocketSession* WebSocketConnection::getSession(PyrObject* connection) {
     auto ptr = slotRawPtr(connection->slots + SLOT_OFFSET::POINTER);
     return static_cast<SC_Websocket::WebSocketSession*>(ptr);
-}
-
-std::vector<uint8_t> WebSocketConnection::getRawMessage(VMGlobals* g) {
-    if (!isKindOfSlot(g->sp, getsym("Int8Array")->u.classobj)) {
-        scprintf("Raw message must be an Int8Array\n");
-        // @todo return here?
-    };
-    auto sclangByteArray = slotRawInt8Array(g->sp);
-    auto data = std::vector<uint8_t>(sclangByteArray->b, sclangByteArray->b + sclangByteArray->size);
-    return data;
-}
-
-// @todo make this a bit nicer so it can also return an error code
-std::string WebSocketConnection::getStringMessage(VMGlobals* g) { return std::get<1>(slotStrStdStrVal(g->sp)); }
-
-void WebSocketConnection::setConnectionClosed(PyrObject* connection) {
-    SetTrue(connection->slots + SLOT_OFFSET::CLOSED);
 }
 
 PyrObject* WebSocketConnection::createConnection(SC_Websocket::WebSocketSession* session) {
@@ -279,12 +288,6 @@ PyrObject* WebSocketClient::getObject(VMGlobals* g) { return slotRawObject(g->sp
 
 std::string WebSocketClient::getHost(PyrObject* webSocketClientObj, int& error) {
     auto result = slotStdStrVal(webSocketClientObj->slots + SLOT_OFFSET::HOST);
-    error = std::get<0>(result);
-    return std::get<1>(result);
-}
-
-std::string WebSocketClient::getStringMessage(VMGlobals* g, int& error) {
-    auto result = slotStrStdStrVal(g->sp);
     error = std::get<0>(result);
     return std::get<1>(result);
 }
