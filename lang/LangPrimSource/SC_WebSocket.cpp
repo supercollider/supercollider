@@ -15,7 +15,6 @@
 namespace beast = boost::beast;
 using tcp = boost::asio::ip::tcp;
 
-// handles the actual websocket implementation using boost::beast
 namespace SC_Websocket {
 
 WebSocketData convertData(beast::flat_buffer& buffer, size_t bytesTransferred, bool isText) {
@@ -80,14 +79,11 @@ void WebSocketSession::enqueueMessage(WebSocketData message) {
     // dispatch via asio to ensure thread safety
     boost::asio::dispatch(m_ws.get_executor(), [message, self = shared_from_this()]() mutable {
         self->m_outQueue.push(message);
-        self->awaitWritingWsMessage();
+        self->doWrite();
     });
 }
 
-void WebSocketSession::close() {
-    m_shouldClose = true;
-    enqueueMessage(std::string(""));
-}
+void WebSocketSession::close() { m_ws.close("Goodbye"); }
 
 boost::asio::const_buffer WebSocketSession::toAsioBuffer(const WebSocketData& message) {
     return std::visit([](const auto& arg) { return boost::asio::buffer(arg); }, message);
@@ -114,20 +110,17 @@ void WebSocketSession::onAccept(beast::error_code ec) {
 #endif
 
     SC_Websocket_Lang::WebSocketConnection::newLangConnection(m_ownAddress, m_listeningPort);
-    awaitReceivingWsMessage();
+    doRead();
 }
 
-void WebSocketSession::awaitReceivingWsMessage() {
-    m_ws.async_read(m_buffer,
-                    beast::bind_front_handler(&WebSocketSession::consumeReceivedWsMessage, shared_from_this()));
+void WebSocketSession::doRead() {
+    m_ws.async_read(m_buffer, beast::bind_front_handler(&WebSocketSession::onRead, shared_from_this()));
 }
 
-void WebSocketSession::consumeReceivedWsMessage(beast::error_code ec, std::size_t bytesTransferred) {
+void WebSocketSession::onRead(beast::error_code ec, std::size_t bytesTransferred) {
     if (ec) {
-        if (m_shouldClose) {
-            return;
-        };
-        if (ec == beast::websocket::error::closed) {
+        if (ec == boost::asio::error::eof || ec == beast::websocket::error::closed
+            || ec == boost::asio::error::operation_aborted) {
 #ifdef SC_WEBSOCKET_DEBUG
             scprintf("Session closed\n");
 #endif
@@ -140,17 +133,10 @@ void WebSocketSession::consumeReceivedWsMessage(beast::error_code ec, std::size_
     auto message = convertData(m_buffer, bytesTransferred, m_ws.got_text());
     SC_Websocket_Lang::WebSocketConnection::receiveLangMessage(m_ownAddress, message);
     // continue async loop to await websocket message
-    awaitReceivingWsMessage();
+    doRead();
 }
 
-void WebSocketSession::awaitWritingWsMessage() {
-    if (m_shouldClose) {
-        m_ws.close("Goodbye from sclang");
-#ifdef SC_WEBSOCKET_DEBUG
-        scprintf("Closing session\n");
-#endif
-        return;
-    }
+void WebSocketSession::doWrite() {
     if (!m_isWriting && !m_outQueue.empty()) {
         m_isWriting = true;
         auto message = m_outQueue.front();
@@ -159,18 +145,18 @@ void WebSocketSession::awaitWritingWsMessage() {
         m_ws.text(std::holds_alternative<std::string>(message));
 
         m_ws.async_write(boost::asio::buffer(toAsioBuffer(message)),
-                         boost::beast::bind_front_handler(&WebSocketSession::onWsWrite, shared_from_this()));
+                         boost::beast::bind_front_handler(&WebSocketSession::onWrite, shared_from_this()));
     }
 }
 
-void WebSocketSession::onWsWrite(beast::error_code ec, std::size_t bytesTransferred) {
+void WebSocketSession::onWrite(beast::error_code ec, std::size_t bytesTransferred) {
     m_isWriting = false;
     if (ec) {
         scprintf("Sending websocket message failed: %s", ec.message().c_str());
     }
     m_outQueue.pop();
     // do this loop until our queue is empty
-    awaitWritingWsMessage();
+    doWrite();
 }
 
 WebSocketListener::WebSocketListener(const std::shared_ptr<WebSocketThread>& webSocketThread,
@@ -271,7 +257,7 @@ void WebSocketClient::enqueueMessage(WebSocketData message) {
     // dispatch via asio to ensure thread safety
     boost::asio::dispatch(m_ws.get_executor(), [message, self = shared_from_this()]() mutable {
         self->m_outQueue.push(message);
-        self->awaitWritingWsMessage();
+        self->doWrite();
     });
 }
 
@@ -335,7 +321,7 @@ void WebSocketClient::onRead(beast::error_code ec, std::size_t bytesTransferred)
     doRead();
 }
 
-void WebSocketClient::awaitWritingWsMessage() {
+void WebSocketClient::doWrite() {
     if (!m_connected) {
         scprintf("WebSocket client is not connected - can not send out message\n");
         return;
@@ -346,16 +332,16 @@ void WebSocketClient::awaitWritingWsMessage() {
 
         m_ws.text(std::holds_alternative<std::string>(message));
         m_ws.async_write(boost::asio::buffer(WebSocketSession::toAsioBuffer(message)),
-                         beast::bind_front_handler(&WebSocketClient::onWsWrite, shared_from_this()));
+                         beast::bind_front_handler(&WebSocketClient::onWrite, shared_from_this()));
     }
 }
 
-void WebSocketClient::onWsWrite(beast::error_code ec, std::size_t bytesTransferred) {
+void WebSocketClient::onWrite(beast::error_code ec, std::size_t bytesTransferred) {
     m_isWriting = false;
     if (ec) {
         scprintf("Failed to write websocket message: %s\n", ec.message().c_str());
     }
     m_outQueue.pop();
-    awaitWritingWsMessage();
+    doWrite();
 }
 }

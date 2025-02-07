@@ -77,12 +77,12 @@ int WebSocketServer::stop(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int WebSocketServer::getPort(PyrObject* webSocketServerObj, int& port) {
-    return slotIntVal(webSocketServerObj->slots + SLOT_OFFSET::PORT, &port);
+int WebSocketServer::getPort(PyrObject* object, int& port) {
+    return slotIntVal(object->slots + SLOT_OFFSET::PORT, &port);
 }
 
-std::string WebSocketServer::getHost(PyrObject* webSocketServerObj) {
-    return std::get<1>(slotStrStdStrVal(webSocketServerObj->slots + SLOT_OFFSET::HOST));
+std::string WebSocketServer::getHost(PyrObject* object) {
+    return std::get<1>(slotStrStdStrVal(object->slots + SLOT_OFFSET::HOST));
 }
 
 PyrObject* WebSocketServer::getObject(VMGlobals* g) {
@@ -91,9 +91,12 @@ PyrObject* WebSocketServer::getObject(VMGlobals* g) {
 }
 
 int WebSocketConnection::sendRawMessage(VMGlobals* g, int numArgsPushed) {
-    auto connection = getConnection(g);
     auto message = getRawMessage(g);
+    --g->sp;
+    auto connection = getConnection(g);
     auto session = getSession(connection);
+    ++g->sp;
+    ++g->sp;
 
     session->enqueueMessage(message);
 
@@ -101,8 +104,11 @@ int WebSocketConnection::sendRawMessage(VMGlobals* g, int numArgsPushed) {
 }
 
 int WebSocketConnection::sendStringMessage(VMGlobals* g, int numArgsPushed) {
-    auto connection = getConnection(g);
     auto message = getStringMessage(g);
+    --g->sp;
+    auto connection = getConnection(g);
+    ++g->sp;
+    ++g->sp;
     auto session = getSession(connection);
 
     session->enqueueMessage(message);
@@ -114,7 +120,6 @@ int WebSocketConnection::close(VMGlobals* g, int numArgsPushed) {
     auto connection = getConnection(g);
     auto session = getSession(connection);
     session->close();
-    setConnectionClosed(connection);
     return errNone;
 }
 
@@ -122,12 +127,9 @@ void WebSocketConnection::newLangConnection(SC_Websocket::WebSocketSession* sess
     VMGlobals* g = gMainVMGlobals;
     gLangMutex.lock();
     auto sclangConnection = createConnection(session);
-    ++g->sp;
-    SetObject(g->sp, getsym("WebSocketServer")->u.classobj);
-    ++g->sp;
-    SetInt(g->sp, portNumber);
-    ++g->sp;
-    SetObject(g->sp, sclangConnection);
+    SetObject(++g->sp, getsym("WebSocketServer")->u.classobj);
+    SetInt(++g->sp, portNumber);
+    SetObject(++g->sp, sclangConnection);
     runInterpreter(g, getsym("prNewConnection"), 3);
     gLangMutex.unlock();
 }
@@ -135,11 +137,9 @@ void WebSocketConnection::newLangConnection(SC_Websocket::WebSocketSession* sess
 void WebSocketConnection::closeLangConnection(SC_Websocket::WebSocketSession* session) {
     VMGlobals* g = gMainVMGlobals;
     gLangMutex.lock();
-    ++g->sp;
-    SetObject(g->sp, getsym("WebSocketConnection")->u.classobj);
-    ++g->sp;
-    SetPtr(g->sp, session);
-    runInterpreter(g, getsym("prConnectionDisconnect"), 2);
+    SetObject(++g->sp, getsym("WebSocketConnection")->u.classobj);
+    SetPtr(++g->sp, session);
+    runInterpreter(g, getsym("prDisconnect"), 2);
     gLangMutex.unlock();
 }
 
@@ -147,11 +147,8 @@ void WebSocketConnection::receiveLangMessage(SC_Websocket::WebSocketSession* ses
                                              SC_Websocket::WebSocketData& message) {
     VMGlobals* g = gMainVMGlobals;
     gLangMutex.lock();
-    ++g->sp;
-    SetObject(g->sp, getsym("WebSocketConnection")->u.classobj);
-    ++g->sp;
-    SetPtr(g->sp, session);
-    ++g->sp;
+    SetObject(++g->sp, getsym("WebSocketConnection")->u.classobj);
+    SetPtr(++g->sp, session);
 
     if (std::holds_alternative<std::string>(message)) {
         SetObject(++g->sp, convertMessage(std::get<std::string>(message)));
@@ -174,7 +171,6 @@ SC_Websocket::WebSocketSession* WebSocketConnection::getSession(PyrObject* conne
 }
 
 std::vector<uint8_t> WebSocketConnection::getRawMessage(VMGlobals* g) {
-    ++g->sp;
     if (!isKindOfSlot(g->sp, getsym("Int8Array")->u.classobj)) {
         scprintf("Raw message must be an Int8Array\n");
         // @todo return here?
@@ -185,7 +181,7 @@ std::vector<uint8_t> WebSocketConnection::getRawMessage(VMGlobals* g) {
 }
 
 // @todo make this a bit nicer so it can also return an error code
-std::string WebSocketConnection::getStringMessage(VMGlobals* g) { return std::get<1>(slotStrStdStrVal(++g->sp)); }
+std::string WebSocketConnection::getStringMessage(VMGlobals* g) { return std::get<1>(slotStrStdStrVal(g->sp)); }
 
 void WebSocketConnection::setConnectionClosed(PyrObject* connection) {
     SetTrue(connection->slots + SLOT_OFFSET::CLOSED);
@@ -199,15 +195,18 @@ PyrObject* WebSocketConnection::createConnection(SC_Websocket::WebSocketSession*
 }
 
 int WebSocketClient::sendStringMessage(VMGlobals* g, int numArgsPushed) {
-    auto object = getObject(g, -1);
     int error;
     auto message = getStringMessage(g, error);
     if (error) {
         scprintf("Failed to extract string message\n");
         return error;
     }
-    auto client = getClient(object);
+    --g->sp;
+    auto object = getObject(g);
+    ++g->sp;
+    ++g->sp;
 
+    auto client = getClient(object);
     client->enqueueMessage(message);
 
     return errNone;
@@ -276,10 +275,7 @@ void WebSocketClient::setConnectionStatus(SC_Websocket::WebSocketClient* client,
     gLangMutex.unlock();
 }
 
-PyrObject* WebSocketClient::getObject(VMGlobals* g, const int offset) {
-    PyrSlot* webSocketServerSlot = g->sp + offset;
-    return slotRawObject(webSocketServerSlot);
-}
+PyrObject* WebSocketClient::getObject(VMGlobals* g) { return slotRawObject(g->sp); }
 
 std::string WebSocketClient::getHost(PyrObject* webSocketClientObj, int& error) {
     auto result = slotStdStrVal(webSocketClientObj->slots + SLOT_OFFSET::HOST);
@@ -310,12 +306,9 @@ void init_WebSocket_primitives() {
 
     definePrimitive(base, index++, "_WebSocketServer_Start", WebSocketServer::start, 1, 0);
     definePrimitive(base, index++, "_WebSocketServer_Stop", WebSocketServer::stop, 1, 0);
-    definePrimitive(base, index++, "_WebSocketConnection_SendRawMessage",
-                    // @todo this has 2 args?
-                    WebSocketConnection::sendRawMessage, 1, 0);
-    definePrimitive(base, index++, "_WebSocketConnection_SendStringMessage",
-                    // @todo this has 2 args?
-                    WebSocketConnection::sendStringMessage, 1, 0);
+    definePrimitive(base, index++, "_WebSocketConnection_SendRawMessage", WebSocketConnection::sendRawMessage, 2, 0);
+    definePrimitive(base, index++, "_WebSocketConnection_SendStringMessage", WebSocketConnection::sendStringMessage, 2,
+                    0);
     definePrimitive(base, index++, "_WebSocketConnection_Close", WebSocketConnection::close, 1, 0);
     definePrimitive(base, index++, "_WebSocketClient_Connect", WebSocketClient::connect, 1, 0);
     definePrimitive(base, index++, "_WebSocketClient_Close", WebSocketClient::close, 1, 0);

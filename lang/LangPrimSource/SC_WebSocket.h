@@ -4,16 +4,19 @@
 #include <boost/beast/websocket.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include "SC_WebSocketPrim.h"
-// #include <PyrInterpreter.h>
 #include <SC_Lock.h>
 
 namespace beast = boost::beast;
 using tcp = boost::asio::ip::tcp;
 
+// websocket server implementation using boost beast
+// communication with primitives is handeled in `SC_WebSocketPrim`.
+// See boost beast documentation for `do_read` -> `on_read` worklflow.
 namespace SC_Websocket {
-typedef std::variant<std::vector<uint8_t>, std::string> WebSocketData;
+
 // a websocket message can either be a byte array or a string
 // see https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/message_event
+typedef std::variant<std::vector<uint8_t>, std::string> WebSocketData;
 
 /** A wrapper class for the websocket communication thread.
 This gets initiated into a static variable upon request.
@@ -37,7 +40,7 @@ public:
 
     ~WebSocketThread();
 
-    //@todo how to make this private?
+    // how to make this private?
     WebSocketThread();
 
 private:
@@ -45,40 +48,33 @@ private:
     std::shared_ptr<SC_Thread> m_thread;
 };
 
-// a WebSocketSession is essentially a websocket connection
+// A WebSocketSession is essentially a websocket connection from our WebSocket server.
+// This gets build by the WebSocketListener.
 class WebSocketSession : public std::enable_shared_from_this<WebSocketSession> {
     beast::websocket::stream<tcp::socket> m_ws;
     beast::flat_buffer m_buffer;
-    // data to be sent to the client
     std::queue<WebSocketData> m_outQueue;
     // a primitive mutex - see `do_write` and `on_write`
     bool m_isWriting = false;
-    // used to indicate that the connection should be closed upon next message
-    bool m_shouldClose = false;
     int m_listeningPort;
 
 public:
     // we store a reference pointer to ourselves upon creation
     // this pointer acts as an identifier on the sclang side,
     // so it is possible to distinguish connections and we can
-    // call the the callback on the matching sclang WebSocketConnection
+    // call the callback on the matching sclang WebSocketConnection
     WebSocketSession* m_ownAddress;
+
     // take ownership of socket
     explicit WebSocketSession(boost::asio::ip::tcp::socket&& socket, int listeningPort);
 
-    // starts consumption of a websocket connection
     void run();
 
     void enqueueMessage(WebSocketData message);
 
-    /**
-     * The connection gets closed by setting the member variable `shouldClose`
-     * to true and trigger an empty message which will release the connection by
-     * not extending its lifetime.
-     */
     void close();
 
-    // converter between WebSocketData and beast flat_buffer
+    // converts WebSocketData to beast flat_buffer
     static boost::asio::const_buffer toAsioBuffer(const WebSocketData& message);
 
 private:
@@ -86,17 +82,13 @@ private:
 
     void onAccept(beast::error_code ec);
 
-    // aka do_read in boost
-    void awaitReceivingWsMessage();
+    void doRead();
 
-    // consume a received websocket message - aka on_read in boost
-    void consumeReceivedWsMessage(beast::error_code ec, std::size_t bytesTransferred);
+    void onRead(beast::error_code ec, std::size_t bytesTransferred);
 
-    // consume out queue until empty - aka do_write on beast
-    void awaitWritingWsMessage(void);
+    void doWrite(void);
 
-    // aka on_write
-    void onWsWrite(beast::error_code ec, std::size_t bytesTransferred);
+    void onWrite(beast::error_code ec, std::size_t bytesTransferred);
 };
 
 // acts as a server which listens for incoming connections
@@ -130,12 +122,12 @@ class WebSocketClient : public std::enable_shared_from_this<WebSocketClient> {
     std::queue<WebSocketData> m_outQueue;
 
 public:
-    // access to self - acts as identifier
+    // access to self - acts as identifier for sclang callbacks
     WebSocketClient* m_self;
 
     WebSocketClient(boost::asio::io_context& ioContext);
 
-    // @todo why is port a string?
+    // why is port a string?!
     void run(const std::string& host_, std::string& port);
 
     beast::error_code closeConnection();
@@ -155,8 +147,8 @@ private:
 
     void onClose() { m_connected = false; }
 
-    void awaitWritingWsMessage();
+    void doWrite();
 
-    void onWsWrite(beast::error_code ec, std::size_t bytesTransferred);
+    void onWrite(beast::error_code ec, std::size_t bytesTransferred);
 };
 }

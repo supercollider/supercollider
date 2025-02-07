@@ -41,7 +41,7 @@ WebSocketServer {
 		    ^this;
 		};
 		connections.do({|connection|
-			connection.closed = true;
+			connection.close;
 		});
 		this.prStop;
 		running = false;
@@ -65,13 +65,11 @@ WebSocketServer {
 
 // this gets initiated from c++ - do not create this yourself
 WebSocketConnection {
-    var <>beastSessionPtr; // do not modify!
-	var <>closed = false; // do not modify!
+    var <beastSessionPtr;
+	var <>connected = true; // do not modify!
     var <>onMessage; // set this as a callback
     var <>onDisconnect; // set this as a callback
 
-    // @todo how can we remove the setter?
-    // b/c we don't want to call .init from within c++
     classvar <>all;
 
     *initClass {
@@ -80,17 +78,17 @@ WebSocketConnection {
 
     // this gets called from c++
     *prReceiveMessage { |ptr, message|
-        var connection = all[ptr]; // @todo fix this all[ptr];
+        var connection = all[ptr];
         if(connection.notNil, {
             connection.onMessage.value(message);
         });
     }
 
-    *prConnectionDisconnect { |ptr|
+    *prDisconnect { |ptr|
         var connection = all[ptr];
         if(connection.notNil, {
             connection.onDisconnect.value();
-            connection.closed = true;
+            connection.connected = false;
         });
         all[ptr] = nil;
     }
@@ -106,7 +104,7 @@ WebSocketConnection {
     }
 
     sendMessage {|msg|
-        if(closed, {
+        if(connected.not, {
             "Can not send a message on a closed connection".warn;
             ^this;
         });
@@ -116,11 +114,11 @@ WebSocketConnection {
         if(msg.isKindOf(Int8Array), {
             ^this.prSendRawMessage(msg);
         });
-        "Message type '%' is unsupported".format(msg.class).warn;
+        "Message of type '%' is unsupported".format(msg.class).warn;
     }
 
 	close {
-		if(closed.not, {
+		if(connected, {
 			this.prClose();
 		});
 	}

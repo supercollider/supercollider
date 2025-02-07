@@ -10,7 +10,8 @@ class WebSocketClient;
 typedef std::variant<std::vector<uint8_t>, std::string> WebSocketData;
 }
 
-// implementation of glue-code for sclang via primitives
+// namespace to connect the boost beast websocket implementation
+// from `SC_WebSocket` to sclang primitives.
 namespace SC_Websocket_Lang {
 
 PyrObject* convertMessage(std::string& message);
@@ -19,7 +20,6 @@ PyrObject* convertMessage(std::vector<uint8_t>& message);
 class WebSocketServer {
 public:
     static int start(VMGlobals* g, int numArgsPushed);
-    ;
 
     static int stop(VMGlobals* g, int numArgsPushed);
 
@@ -30,22 +30,23 @@ private:
         POINTER = 2,
     };
 
-    static int getPort(PyrObject* webSocketServerObj, int& port);
+    static int getPort(PyrObject* object, int& port);
 
-    static std::string getHost(PyrObject* webSocketServerObj);
+    static std::string getHost(PyrObject* object);
 
     static PyrObject* getObject(VMGlobals* g);
 };
 
 class WebSocketConnection {
 public:
+    // methods called from sclang
     static int sendRawMessage(VMGlobals* g, int numArgsPushed);
 
     static int sendStringMessage(VMGlobals* g, int numArgsPushed);
 
     static int close(VMGlobals* g, int numArgsPushed);
 
-    // parts called from boost beast
+    // callback functions called from boost beast
     static void newLangConnection(SC_Websocket::WebSocketSession* session, int portNumber);
 
     static void closeLangConnection(SC_Websocket::WebSocketSession* session);
@@ -73,6 +74,7 @@ private:
 
 class WebSocketClient {
 public:
+    // methods called from sclang
     static int sendStringMessage(VMGlobals* g, int numArgsPushed);
 
     static int sendByteMessage(VMGlobals* g, int numArgsPushed);
@@ -81,7 +83,7 @@ public:
 
     static int close(VMGlobals* g, int numArgsPushed);
 
-    // called from C++ side
+    // callback functions called from boost beast
     static void receivedMessage(SC_Websocket::WebSocketClient* client, SC_Websocket::WebSocketData& message);
 
     static void setConnectionStatus(SC_Websocket::WebSocketClient* client, bool connected);
@@ -94,7 +96,7 @@ private:
         CONNECTED = 3,
     };
 
-    static PyrObject* getObject(VMGlobals* g, const int offset = 0);
+    static PyrObject* getObject(VMGlobals* g);
 
     static std::string getHost(PyrObject* webSocketClientObj, int& error);
 
