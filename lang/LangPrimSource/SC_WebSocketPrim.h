@@ -84,6 +84,8 @@ public:
     // called from C++ side
     static void receivedMessage(SC_Websocket::WebSocketClient* client, SC_Websocket::WebSocketData& message);
 
+    static void setConnectionStatus(SC_Websocket::WebSocketClient* client, bool connected);
+
 private:
     enum SLOT_OFFSET {
         HOST = 0,

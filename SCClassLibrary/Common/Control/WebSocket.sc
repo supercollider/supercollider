@@ -135,7 +135,7 @@ WebSocketClient {
     var <host;
     var <port;
     var <beastConnectionPtr;
-    var <connected = false;
+    var <>connected = false; // set via `prSetConnectionStatus` callback
     var <>onMessage;
     var <>onDisconnect;
 
@@ -156,18 +156,28 @@ WebSocketClient {
         });
     }
 
-    *prConnectionDisconnect {|ptr|
+    *prSetConnectionStatus {|ptr, connected|
         var connection = globalConnections[ptr];
         if(connection.notNil, {
-            connection.onDisconnect.value();
-            connection.connected = false;
+            if(connected, {
+                connection.connected = true;
+            }, {
+                connection.onDisconnect.value();
+                connection.connected = false;
+            });
         });
     }
 
     connect {
         this.prConnect;
-        connected = true;
         globalConnections[beastConnectionPtr] = this;
+    }
+
+    *prConnected {|ptr|
+        var client = globalConnections[ptr];
+        if(client.notNil, {
+            client.connected = true;
+        });
     }
 
     prConnect {

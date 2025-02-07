@@ -127,7 +127,6 @@ class WebSocketClient : public std::enable_shared_from_this<WebSocketClient> {
     std::string m_host;
     bool m_connected = false;
     bool m_isWriting = false;
-    bool m_shouldClose = false;
     std::queue<WebSocketData> m_outQueue;
 
 public:
@@ -138,18 +137,6 @@ public:
 
     // @todo why is port a string?
     void run(const std::string& host_, std::string& port);
-
-    void sendMessage(WebSocketData message) {
-        // Send the message
-        /*
-        ws.async_write(
-            net::buffer(message),
-            beast::bind_front_handler(
-                &WebSocketClient::on_write,
-                shared_from_this()));
-
-         */
-    }
 
     beast::error_code closeConnection();
 

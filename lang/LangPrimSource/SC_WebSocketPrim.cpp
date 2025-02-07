@@ -1,15 +1,14 @@
-#include "boost/asio.hpp"
+#include <boost/asio.hpp>
 
-#include <PyrPrimitive.h>
-#include <PyrKernel.h>
-#include <SC_Lock.h>
-#include <PyrSched.h>
-#include <PyrInterpreter.h>
+#include "PyrPrimitive.h"
+#include "PyrKernel.h"
+#include "SC_Lock.h"
+#include "PyrSched.h"
+#include "PyrInterpreter.h"
 #include "SC_WorldOptions.h"
+#include "PyrSymbolTable.h"
+
 #include "SC_WebSocketPrim.h"
-
-#include <PyrSymbolTable.h>
-
 #include "SC_WebSocket.h"
 
 using namespace SC_Websocket_Lang;
@@ -249,12 +248,6 @@ int WebSocketClient::close(VMGlobals* g, int numArgsPushed) {
     auto object = getObject(g);
     auto client = getClient(object);
     auto ec = client->closeConnection();
-
-    if (ec != boost::asio::error::eof) {
-        scprintf("Error closing connection: %s\n", ec.message().c_str());
-        return errFailed;
-    }
-
     SetFalse(object->slots + SLOT_OFFSET::CONNECTED);
     return errNone;
 }
@@ -270,6 +263,16 @@ void WebSocketClient::receivedMessage(SC_Websocket::WebSocketClient* client, SC_
         SetObject(++g->sp, convertMessage(std::get<std::vector<u_int8_t>>(message)));
     };
     runInterpreter(g, getsym("prReceivedMessage"), 3);
+    gLangMutex.unlock();
+}
+
+void WebSocketClient::setConnectionStatus(SC_Websocket::WebSocketClient* client, bool connected) {
+    VMGlobals* g = gMainVMGlobals;
+    gLangMutex.lock();
+    SetObject(++g->sp, getsym("WebSocketClient")->u.classobj);
+    SetPtr(++g->sp, client);
+    SetBool(++g->sp, connected);
+    runInterpreter(g, getsym("prSetConnectionStatus"), 3);
     gLangMutex.unlock();
 }
 

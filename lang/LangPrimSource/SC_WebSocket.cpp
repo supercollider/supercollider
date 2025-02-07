@@ -1,22 +1,14 @@
-#include "SC_WebSocket.h"
+#include <queue>
 
-#include <PyrKernel.h>
-#include <PyrSched.h>
-#include <PyrSymbolTable.h>
 #include <boost/beast/core.hpp>
 #include <boost/beast/websocket.hpp>
-#include "boost/asio/io_service.hpp"
+#include <boost/asio/io_service.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/strand.hpp>
 
-#include <thread>
-#include <queue>
-// #include <VMGlobals.h>
-#include <asio/buffers_iterator.hpp>
-
+#include "SC_WebSocket.h"
 #include "SC_WebSocketPrim.h"
 #include "SC_WorldOptions.h"
-#include "boost/asio/buffers_iterator.hpp"
 
 #define SC_WEBSOCKET_DEBUG
 
@@ -270,7 +262,6 @@ void WebSocketClient::run(const std::string& host_, std::string& port) {
 }
 
 beast::error_code WebSocketClient::closeConnection() {
-    m_connected = false;
     beast::error_code ec;
     m_ws.close(beast::websocket::close_code::normal, ec);
     return ec;
@@ -318,6 +309,7 @@ void WebSocketClient::onHandshake(beast::error_code ec) {
         scprintf("Could not handshake: %s\n", ec.message().c_str());
     }
     m_connected = true;
+    SC_Websocket_Lang::WebSocketClient::setConnectionStatus(m_self, true);
     doRead();
 }
 
@@ -327,10 +319,9 @@ void WebSocketClient::doRead() {
 
 void WebSocketClient::onRead(beast::error_code ec, std::size_t bytesTransferred) {
     if (ec) {
-        if (ec == boost::asio::error::eof) {
-            return;
-        }
-        if (ec == boost::asio::error::operation_aborted) {
+        m_connected = false;
+        SC_Websocket_Lang::WebSocketClient::setConnectionStatus(m_self, false);
+        if (ec == boost::system::errc::operation_canceled || ec == boost::asio::error::eof) {
             return;
         }
         scprintf("Failed to read websocket message: %s\n", ec.message().c_str());
@@ -341,17 +332,12 @@ void WebSocketClient::onRead(beast::error_code ec, std::size_t bytesTransferred)
 
     SC_Websocket_Lang::WebSocketClient::receivedMessage(m_self, message);
 
-    // continue consuming
-    if (m_connected) {
-        doRead();
-    }
+    doRead();
 }
 
 void WebSocketClient::awaitWritingWsMessage() {
-    if (m_shouldClose) {
-        // @todo make this async
-        m_ws.close("Goodbye from sclang");
-        m_connected = false;
+    if (!m_connected) {
+        scprintf("WebSocket client is not connected - can not send out message\n");
         return;
     }
     if (!m_isWriting && !m_outQueue.empty()) {
