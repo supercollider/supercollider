@@ -74,7 +74,8 @@ SC_Filesystem::Glob* SC_Filesystem::makeGlob(const char* pattern) {
     path = SC_Filesystem::instance().expandTilde(path);
 
     auto path_string = path.wstring();
-    while (path_string.back() == '\\') path_string.pop_back();
+    while (path_string.back() == '\\')
+        path_string.pop_back();
 
     glob->mHandle = ::FindFirstFileW(path_string.c_str(), &glob->mEntry);
     if (glob->mHandle == INVALID_HANDLE_VALUE) {
