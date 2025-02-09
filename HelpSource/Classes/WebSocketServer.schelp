@@ -1,0 +1,177 @@
+TITLE:: WebSocketServer
+summary:: A WebSocket server for sclang
+categories:: Control, External Control>WebSocket
+related:: Classes/WebSocketConnection, Classes/WebSocketClient
+
+DESCRIPTION::
+
+NOTE::
+This is a new API and has not reached a finalized state yet!
+::
+
+An implementation of a WebSocket server which allows e.g. to communicate with a web browser.
+
+WebSocket is a persistent TCP connection used to embed smaller packets that are more common in UDP.
+Being a TCP connection, this allows the connection to be more resilient through networks which are using a NAT.
+In addition, as web browsers do not allow custom ports to be opened but which is necessary for an UDP connection, WebSocket is an easy way to communicate with web browsers.
+
+For more information take a look at the link::https://developer.mozilla.org/en-US/docs/Web/API/WebSocket##MDN documentation::.
+
+
+SUBSECTION:: Example
+
+A small example to start a WebSocket server which listens from connections from any source (aka CODE::0.0.0.0::) on port CODE::8080::.
+You can use LINK::Classes/WebSocketClient:: to communicate with this server.
+
+code::
+// setup the server
+~webSocketServer = WebSocketServer(port: 8080, host: "0.0.0.0");
+
+// start listening for connections
+~webSocketServer.start;
+
+// create a client to communicate with it
+~client = WebSocketClient(host: "127.0.0.1", port: 8080);
+// connect the client
+~client.connect();
+// add a callback upon a message
+~client.onMessage = {|m| ["A new message from the server", m].cs.postln;}
+
+// there is now a new WebSocketConnection available on the server
+// see also WebSocketServer.onConnection callback
+~connection = ~webSocketServer.connections[0];
+~connection.connected; // should return true
+
+// send a string message from the server to the client through the WebSocketConnection
+~connection.sendMessage("Hello");
+// or send some raw bytes
+~connection.sendMessage(Int8Array.newFrom([0xf0, 0x2f]));
+
+// setup a reply
+~connection.onMessage = {|m| ~connection.sendMessage("OK");}
+
+// send message from client to server - server should reply with string message "OK"
+~client.sendMessage("Hello");
+
+// close the connection
+~connection.close();
+
+// the client is not connected anymore
+~client.connected;
+
+// stop consuming WebSocket messages via the socket and release the socket
+~webSocketServer.stop();
+~webSocketServer.running; // should return false
+
+// start listening again for messages
+~webSocketServer.start();
+
+WebSocketServer.all;
+::
+
+SUBSECTION:: Example using a JavaScript client
+
+Start the WebSocketServer on sclang side using port CODE::9090::.
+
+CODE::
+~webSocketServer = WebSocketServer(port: 9090).start();
+~webSocketServer.onConnection = {|c| "New connection".postln; c.sendMessage("Hello from sclang"); c.onMessage = {|m| m.cs.postln;}}
+~webSocketServer.stop;
+::
+
+Paste this into the development console of a browser tab.
+Consider displaying a local file in the tab because some websites block the usage of WebSockets as a security measure.
+
+TELETYPE::
+const socket = new WebSocket("ws://localhost:9090");
+
+// Connection opened
+socket.addEventListener("open", (event) => {
+  socket.send("Hello Server!");
+});
+
+// Listen for messages
+socket.addEventListener("message", (event) => {
+  console.log("Message from server ", event.data);
+});
+::
+
+Now you can use CODE::socket:: to send messages to sclang, such as a byte array
+
+TELETYPE::
+socket.send(new Int8Array([0xf0, 0x01]));
+::
+
+For more information consult the LINK::https://developer.mozilla.org/en-US/docs/Web/API/WebSocket##MDN documentation about WebSocket::.
+
+
+CLASSMETHODS::
+
+PRIVATE:: prNewConnection
+PRIVATE:: initClass
+
+METHOD:: all
+A LINK::Classes/Dictionary:: which stores all server instances as a key with their respective port number as key.
+
+METHOD:: new
+Setups a new WebSocketServer.
+argument:: port
+The port to listen for incoming connections.
+argument:: hostname
+The interface to listen for new connections. This defaults to CODE::0.0.0.0:: which allows for connections from any source. Use e.g. CODE::127.0.0.1:: to only listen for messages from your local computer.
+
+
+INSTANCEMETHODS::
+
+PRIVATE:: prStart
+
+PRIVATE:: port
+
+METHOD:: onConnection
+
+Upon a new connection to the WebServer, this member variable will be invoked as a function with the new LINK::Clases/WebSocketConnection:: as its sole parameter.
+
+Example:
+
+CODE::
+~webSocketServer = WebSocketServer(port: 8090).start;
+// set the onMessage callback on every incoming connection
+~webSocketServer.onConnection = {|c| "New connection".postln; c.onMessage = {|m| m.postln;}}
+
+// now a new connection from a WebSocketClient
+~client = WebSocketClient(port: 8090).connect;
+// send a message - this will be printed from our callback
+~client.sendMessage("Print!");
+
+// shut down server
+~webSocketServer.stop;
+::
+
+PRIVATE:: socket
+
+PRIVATE:: hostname
+
+METHOD:: running
+
+A boolean value indicating if the server is currently listening for new connections.
+
+METHOD:: connections
+
+A LINK::Classes/List:: which contains all connections of the server.
+This also includes closed connections!
+
+CODE::
+// get all open connections and send them a message
+~webSocketServer.connections.select({|c| c.connected}).do({|c| c.sendMessage("Hello");});
+::
+
+
+METHOD:: start
+
+Starts listening for connections.
+
+METHOD:: stop
+
+Stops listening for connections and releases the socket so another server can take it.
+
+PRIVATE:: prStop
