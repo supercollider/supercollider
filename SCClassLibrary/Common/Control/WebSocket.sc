@@ -212,11 +212,19 @@ WebSocketClient {
         if(msg.isKindOf(String), {
             ^this.prSendStringMessage(msg);
         });
+        if(msg.isKindOf(Int8Array), {
+            ^this.prSendRawMessage(msg);
+        });
         "Unknown datatype %".format(msg.class).warn;
     }
 
     prSendStringMessage {|msg|
         _WebSocketClient_SendStringMessage
+        ^this.primitiveFailed;
+    }
+
+    prSendRawMessage {|msg|
+        _WebSocketClient_SendRawMessage
         ^this.primitiveFailed;
     }
 }

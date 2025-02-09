@@ -73,7 +73,7 @@ public:
     // methods called from sclang
     static int sendStringMessage(VMGlobals* g, int numArgsPushed);
 
-    static int sendByteMessage(VMGlobals* g, int numArgsPushed);
+    static int sendRawMessage(VMGlobals* g, int numArgsPushed);
 
     static int connect(VMGlobals* g, int numArgsPushed);
 

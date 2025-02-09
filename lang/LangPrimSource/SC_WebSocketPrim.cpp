@@ -109,24 +109,24 @@ PyrObject* WebSocketServer::getObject(VMGlobals* g) {
 }
 
 int WebSocketConnection::sendRawMessage(VMGlobals* g, int numArgsPushed) {
-    int error;
+    int error = errNone;
     auto message = getByteVector(g, error);
     if (error) {
         return error;
     };
     --g->sp;
     auto connection = getConnection(g);
-    auto session = getSession(connection);
     ++g->sp;
     ++g->sp;
 
+    auto session = getSession(connection);
     session->enqueueMessage(message);
 
     return errNone;
 }
 
 int WebSocketConnection::sendStringMessage(VMGlobals* g, int numArgsPushed) {
-    int error;
+    int error = errNone;
     auto message = getStringMessage(g, error);
     if (error) {
         return error;
@@ -135,8 +135,8 @@ int WebSocketConnection::sendStringMessage(VMGlobals* g, int numArgsPushed) {
     auto connection = getConnection(g);
     ++g->sp;
     ++g->sp;
-    auto session = getSession(connection);
 
+    auto session = getSession(connection);
     session->enqueueMessage(message);
 
     return errNone;
@@ -204,7 +204,7 @@ PyrObject* WebSocketConnection::createConnection(SC_Websocket::WebSocketSession*
 }
 
 int WebSocketClient::sendStringMessage(VMGlobals* g, int numArgsPushed) {
-    int error;
+    int error = errNone;
     auto message = getStringMessage(g, error);
     if (error) {
         scprintf("Failed to extract string message\n");
@@ -221,12 +221,28 @@ int WebSocketClient::sendStringMessage(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int WebSocketClient::sendByteMessage(VMGlobals* g, int numArgsPushed) { return errNone; }
+int WebSocketClient::sendRawMessage(VMGlobals* g, int numArgsPushed) {
+    int error = errNone;
+    auto message = getByteVector(g, error);
+    if (error) {
+        scprintf("Failed to extract byte message\n");
+        return error;
+    }
+    --g->sp;
+    auto object = getObject(g);
+    ++g->sp;
+    ++g->sp;
+
+    auto client = getClient(object);
+    client->enqueueMessage(message);
+
+    return errNone;
+}
 
 int WebSocketClient::connect(VMGlobals* g, int numArgsPushed) {
     auto object = getObject(g);
 
-    int error;
+    int error = errNone;
     std::string host = getHost(object, error);
     if (error) {
         scprintf("Error parsing host\n");
@@ -316,5 +332,5 @@ void init_WebSocket_primitives() {
     definePrimitive(base, index++, "_WebSocketClient_Connect", WebSocketClient::connect, 1, 0);
     definePrimitive(base, index++, "_WebSocketClient_Close", WebSocketClient::close, 1, 0);
     definePrimitive(base, index++, "_WebSocketClient_SendStringMessage", WebSocketClient::sendStringMessage, 2, 0);
-    definePrimitive(base, index++, "_WebSocketClient_SendByteMessage", WebSocketClient::sendByteMessage, 2, 0);
+    definePrimitive(base, index++, "_WebSocketClient_SendRawMessage", WebSocketClient::sendRawMessage, 2, 0);
 }
