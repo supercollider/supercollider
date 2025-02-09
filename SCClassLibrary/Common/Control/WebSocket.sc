@@ -109,10 +109,10 @@ WebSocketConnection {
 			^this;
 		});
 		if(message.isKindOf(String), {
-			^this.prSendStringMessage(msg);
+			^this.prSendStringMessage(message);
 		});
 		if(message.isKindOf(Int8Array), {
-			^this.prSendRawMessage(msg);
+			^this.prSendRawMessage(message);
 		});
 		"Message of type '%' is unsupported".format(message.class).warn;
 	}
