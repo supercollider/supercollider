@@ -1,10 +1,10 @@
 WebSocketServer {
 	var <hostname;
 	var <port;
-	var <>socket; // @todo make this private - holds the pointer to our websocket
-	var <>running = false; // @todo make this private
+	var <socket;
+	var <running = false;
 	var <>onConnection;
-	var <>connections;
+	var <>connections; // do not modify! needs to be public so we can modify it via static method
 
 	classvar <>all;
 
@@ -26,7 +26,7 @@ WebSocketServer {
 			"WebSocketServer already started".warn;
 			^this;
 		};
-		this.prStart;
+		this.prStart();
 		running = true;
 	}
 
@@ -43,7 +43,7 @@ WebSocketServer {
 		connections.do({|connection|
 			connection.close;
 		});
-		this.prStop;
+		this.prStop();
 		running = false;
 	}
 
@@ -52,7 +52,6 @@ WebSocketServer {
 		^this.primitiveFailed;
 	}
 
-	// called from C++
 	*prNewConnection {|port, newConnection|
 		var webSocketServer = all[port];
 		WebSocketConnection.all[newConnection.beastSessionPtr] = newConnection;
@@ -66,7 +65,7 @@ WebSocketServer {
 // this gets initiated from c++ - do not create this yourself
 WebSocketConnection {
 	var <beastSessionPtr;
-	var <>connected = true; // do not modify!
+	var <>connected = true; // do not modify! needs to be public so we can modify it via static method
 	var <>onMessage; // set this as a callback
 	var <>onDisconnect; // set this as a callback
 
@@ -76,7 +75,6 @@ WebSocketConnection {
 		all = ();
 	}
 
-	// this gets called from c++
 	*prReceiveMessage { |ptr, message|
 		var connection = all[ptr];
 		if(connection.notNil, {
@@ -133,7 +131,7 @@ WebSocketClient {
 	var <host;
 	var <port;
 	var <beastConnectionPtr;
-	var <>connected = false; // set via `prSetConnectionStatus` callback
+	var <>connected = false; // do not modify! needs to be public so we can modify it via static method
 	var <>onMessage;
 	var <>onDisconnect;
 
@@ -167,7 +165,7 @@ WebSocketClient {
 	}
 
 	connect {
-		this.prConnect;
+		this.prConnect();
 		globalConnections[beastConnectionPtr] = this;
 	}
 
@@ -193,12 +191,11 @@ WebSocketClient {
 			^this;
 		});
 
-		this.prClose;
+		this.prClose();
 		connected = false;
 		globalConnections[beastConnectionPtr] = nil;
 	}
 
-	// @todo check if ptr is set!
 	prClose {
 		_WebSocketClient_Close
 		^this.primitiveFailed;
@@ -226,48 +223,5 @@ WebSocketClient {
 	prSendRawMessage {|message|
 		_WebSocketClient_SendRawMessage
 		^this.primitiveFailed;
-	}
-}
-
-WebSocketNetAddr : NetAddr {
-	var <>webSocketConnection;
-	var <>debug;
-	var <>onMessage;
-
-	*new {|webSocketConnection|
-		^super.newCopyArgs().init(webSocketConnection);
-	}
-
-	init {|connection|
-		addr = 0; // Server needs this initialized
-		debug = false;
-		webSocketConnection = connection;
-		webSocketConnection.onMessage = {|m|
-			m = Int8Array.newFrom(m).parseOSC;
-			thisProcess.recvOSCmessage(
-				time: thisProcess.tick, // @todo really?
-				replyAddr: this,
-				recvPort: NetAddr.langPort,
-				msg: m,
-			);
-			// OSCFunc.defaultDispatcher.value(m, thisProcess.tick, ~net, 57120);
-			// OSCFunc.defaultMatchingDispatcher.value(m, thisProcess.tick, ~net, 57120);
-		};
-	}
-
-	sendRaw {|rawArray|
-		if(debug, {["raw", rawArray].postln;});
-		webSocketConnection.sendMessage(rawArray);
-	}
-
-	sendMsg {|...content|
-		this.sendRaw(content.asRawOSC);
-	}
-
-	sendBundle {|time ...messages|
-		["bundle not supported?", time, messages].postln;
-		messages.do({|message|
-			this.sendRaw(message.asRawOSC);
-		});
 	}
 }
