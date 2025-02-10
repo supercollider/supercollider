@@ -37,7 +37,7 @@ PyrObject* SC_Websocket_Lang::convertMessage(std::string& message) {
     return scString;
 }
 
-PyrObject* SC_Websocket_Lang::convertMessage(std::vector<u_int8_t>& message) {
+PyrObject* SC_Websocket_Lang::convertMessage(std::vector<uint8_t>& message) {
     VMGlobals* g = gMainVMGlobals;
     PyrObject* array = newPyrArray(g->gc, message.size(), 0, false);
     PyrSlot* slots = array->slots;
@@ -179,7 +179,7 @@ void WebSocketConnection::receiveLangMessage(SC_Websocket::WebSocketSession* ses
     if (std::holds_alternative<std::string>(message)) {
         SetObject(++g->sp, convertMessage(std::get<std::string>(message)));
     } else {
-        SetObject(++g->sp, convertMessage(std::get<std::vector<u_int8_t>>(message)));
+        SetObject(++g->sp, convertMessage(std::get<std::vector<uint8_t>>(message)));
     };
 
     runInterpreter(g, getsym("prReceiveMessage"), 3);
@@ -284,7 +284,7 @@ void WebSocketClient::receivedMessage(SC_Websocket::WebSocketClient* client, SC_
     if (std::holds_alternative<std::string>(message)) {
         SetObject(++g->sp, convertMessage(std::get<std::string>(message)));
     } else {
-        SetObject(++g->sp, convertMessage(std::get<std::vector<u_int8_t>>(message)));
+        SetObject(++g->sp, convertMessage(std::get<std::vector<uint8_t>>(message)));
     };
     runInterpreter(g, getsym("prReceivedMessage"), 3);
     gLangMutex.unlock();

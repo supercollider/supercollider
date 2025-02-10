@@ -22,7 +22,7 @@ WebSocketData convertData(beast::flat_buffer& buffer, size_t bytesTransferred, b
     if (isText) {
         data = beast::buffers_to_string(buffer.data());
     } else {
-        auto array_data = std::vector<u_int8_t>(bytesTransferred);
+        auto array_data = std::vector<uint8_t>(bytesTransferred);
         std::memcpy(array_data.data(), buffer.data().data(), bytesTransferred);
         data = array_data;
     }
