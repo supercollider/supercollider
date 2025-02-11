@@ -21,3 +21,11 @@ endif()
 # when building PA ourselves, we need to specify PORTAUDIO_INCLUDE_DIRS and PORTAUDIO_LIBRARIES
 set(PORTAUDIO_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/portaudio_submodule/include" CACHE PATH "Portaudio include directory" FORCE)
 set(PORTAUDIO_LIBRARIES portaudio CACHE PATH "PORTAUDIO_LIBRARIES" FORCE)
+
+# clear variables setted by FindJACK.cmake which calls supercollider module FindPthreads.cmake expecting the one provided by vcpkg (perhaps could be worked on portaudio?)
+if(PTHREADS_INCLUDE_DIR STREQUAL "PTHREADS_INCLUDE_DIR-NOTFOUND")
+    set(PTHREADS_FOUND "" CACHE STRING "" FORCE)#PARENT_SCOPE)
+    set(PTHREADS_INCLUDE_DIR "" CACHE STRING "" FORCE)#PARENT_SCOPE)
+    set(PTHREADS_LIBRARY "" CACHE STRING "" FORCE)#PARENT_SCOPE)
+    set(PTHREADS_DEFINITIONS "" CACHE STRING "" FORCE)#PARENT_SCOPE)
+endif()
