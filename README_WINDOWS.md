@@ -304,7 +304,10 @@ following folder structure *exactly*:
             lib
         fftw
 
-In order to get support for ASIO drivers, follow this directory structure:
+In order to get support for ASIO drivers:
+PA_USE_ASIO must be set in cmake command `-DPA_USE_ASIO=ON`
+
+If cmake version is less than 3.18, you must also follow this directory structure:
 
     supercollider
         external_libraries
@@ -315,6 +318,7 @@ In order to get support for ASIO drivers, follow this directory structure:
                     common
                     ...
             ...
+Otherwise (cmake not less than 3.18) this is not needed.
 
 FFTW does not provide build files for Visual Studio. In the **Developer Command
 Prompt for VS2019** (or VS2017; note that this is not `cmd.exe`), `cd` to the
