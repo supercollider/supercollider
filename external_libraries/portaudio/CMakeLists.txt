@@ -5,8 +5,7 @@ if(WIN32)
     remove_definitions(-DWIN32_LEAN_AND_MEAN -DNOMINMAX)
 endif()
 
-set(PA_BUILD_STATIC ON CACHE BOOL "PortAudio static library" FORCE)
-set(PA_BUILD_SHARED OFF CACHE BOOL "PortAudio shared library" FORCE)
+set(PA_BUILD_SHARED_LIBS OFF CACHE BOOL "PortAudio shared library" FORCE)
 
 # disable platform suffix
 set(PA_LIBNAME_ADD_SUFFIX OFF CACHE BOOL "PortAudio static library suffix" FORCE)
@@ -21,4 +20,4 @@ endif()
 
 # when building PA ourselves, we need to specify PORTAUDIO_INCLUDE_DIRS and PORTAUDIO_LIBRARIES
 set(PORTAUDIO_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/portaudio_submodule/include" CACHE PATH "Portaudio include directory" FORCE)
-set(PORTAUDIO_LIBRARIES portaudio_static CACHE PATH "PORTAUDIO_LIBRARIES" FORCE)
+set(PORTAUDIO_LIBRARIES portaudio CACHE PATH "PORTAUDIO_LIBRARIES" FORCE)
