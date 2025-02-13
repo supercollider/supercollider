@@ -515,7 +515,8 @@ code::
 ::
 
 method::wchoosen
-Choose an element from the collection at random using a list of probabilities or weights. The weights are derived from a function or an array of any size, and their sum is normalized to 1.0. This is less efficient than code::wchoose::, but may be experimented with more freely.
+Choose an element from the collection at random using a list of probabilities or weights. The weights are derived from a function or an array of any size, and their sum is automatically normalized to 1.0. Because the provided weights are normalized on every call, it is less efficient than using link::#-wchoose:: with pre-normalized weights.
+
 code::
 // weights are a non-normalized array
 10.collect { [1, 2, 3, 4].wchoosen([10, 18, 3, 2]) }
