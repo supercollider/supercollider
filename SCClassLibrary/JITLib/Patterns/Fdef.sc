@@ -78,8 +78,8 @@ Maybe : Ref {
 		this.source.do(function) // problem: on the fly change is not picked up in this case.
 	}
 
-	doesNotUnderstand { |selector ... args|
-		^this.composeNAryOp(selector, args)
+	doesNotUnderstand { |selector ... args, kwargs|
+		^this.composeNAryOp(selector, args, kwargs)
 	}
 
 	// streams and patterns
@@ -108,8 +108,8 @@ Maybe : Ref {
 	reverseComposeBinaryOp { |aSelector, something, adverb|
 		^BinaryOpFunctionProxy.new(aSelector, something, this, adverb);
 	}
-	composeNAryOp { |aSelector, anArgList|
-		^NAryOpFunctionProxy.new(aSelector, this, anArgList)
+	composeNAryOp { |aSelector, anArgList, aKeywordArgList|
+		^NAryOpFunctionProxy.new(aSelector, this, anArgList, aKeywordArgList)
 	}
 
 
