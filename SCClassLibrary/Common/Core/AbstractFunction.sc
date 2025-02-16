@@ -293,25 +293,41 @@ BinaryOpFunction : AbstractFunction {
 }
 
 NAryOpFunction : AbstractFunction {
-	var selector, a, arglist;
+	var selector, a, arglist, kwarglist;
 
-	*new { arg selector, a, arglist;
-		^super.newCopyArgs(selector, a, arglist)
+	*new { arg selector, a, arglist, kwarglist;
+		^super.newCopyArgs(selector, a, arglist, kwarglist)
 	}
 	value { | ... args, kwargs |
-		^a.valueArgs(args, kwargs).performList(selector, arglist.collect(_.valueArgs(args, kwargs)))
+		^a.valueArgs(args, kwargs).performArgs(
+			selector,
+			arglist.collect(_.valueArgs(args, kwargs)),
+			kwarglist.collect(_.valueArgs(args, kwargs))
+		)
 	}
 	valueArray { arg args;
-		^a.valueArray(args).performList(selector, arglist.collect(_.valueArray(args)))
+		^a.valueArray(args).performArgs(
+			selector,
+			arglist.collect(_.valueArray(args)),
+			kwarglist.collect(_.valueArray(args))
+		)
 	}
 	valueEnvir { arg ... args;
-		^a.valueArrayEnvir(args).performList(selector, arglist.collect(_.valueArrayEnvir(args)))
+		^a.valueArrayEnvir(args).performArgs(
+			selector,
+			arglist.collect(_.valueArrayEnvir(args)),
+			kwarglist.collect(_.valueArrayEnvir(args))
+		)
 	}
-	valueArrayEnvir { arg ... args;
-		^a.valueArrayEnvir(args).performList(selector, arglist.collect(_.valueArrayEnvir(args)))
+	valueArrayEnvir { arg args;
+		^a.valueArrayEnvir(args).performArgs(
+			selector,
+			arglist.collect(_.valueArrayEnvir(args)),
+			kwarglist.collect(_.valueArrayEnvir(args))
+		)
 	}
 	functionPerformList { arg selector, arglist;
-		^this.performList(selector, arglist)
+		^this.performArgs(selector, arglist, kwarglist)
 	}
 	storeOn { arg stream;
 		stream <<< a << "." << selector << "(" <<<* arglist << ")"
