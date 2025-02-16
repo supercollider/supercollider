@@ -1,34 +1,85 @@
 title:: softSet
-summary:: set a proxy param value conditionally
 categories:: JITLib>GUI
+summary:: Set a proxy param value conditionally
 related:: Reference/softVol_, Reference/softPut
 
+
+
+
+
+
+
+
+
+
 description::
+
+
+
+
 code::softSet:: is an extension method to link::Classes/NodeProxy:: and link::Classes/Ndef:: that sets a nodeproxy param value only in two conditions:
+
 list::
 ## if the new value is close enough to the current param value;
-## or if the setting controller knows the previous value and sends it along. the idea here is that if the controller knows it did the last value change, it has authority to jump now.
+## or if the setting controller knows the previous value and sends it along.
+the idea here is that if the controller knows it did the last value change, it has authority to jump now.
 ::
+
 Typical uses would be switching to a preset, then using a faderbox, and avoiding sudden controller jumps that could occur (soft takeover).
 
+
+
+
 method:: softSet (param, val, within = 0.025, mapped=false, lastVal, spec)
+
+
 argument:: param
-the name of the parameter to set
+
+The name of the parameter to set
+
+
 argument:: val
-the value to set the param to (can be mapped or unmapped)
+
+The value to set the param to (can be mapped or unmapped)
+
+
 argument:: within
-the normalized range within which the set is accepted - default is 0.025
+
+The normalized range within which the set is accepted - default is 0.025
+
+
 argument:: lastVal
-the previous value that a control has set - see last examples.
+
+The previous value that a control has set - see last examples.
+
+
 argument:: mapped
-a flag whether strong::val:: is mapped (within the range of param.asSpec) or unmapped (0.0-1.0)
+
+A flag whether strong::val:: is mapped (within the range of param.asSpec) or unmapped (0.0-1.0)
+
+
 argument:: spec
-a link::Classes/ControlSpec:: can be passed in. if nil, param.asSpec is used.
+
+A link::Classes/ControlSpec:: can be passed in. if teletype::nil::, param.asSpec is used.
+
 note::
-if no spec is given, softSet simply allows setting.
+If no spec is given, softSet simply allows setting.
 ::
 
+
+
+
+
+
+
+
+
+
 examples::
+
+
+
+
 code::
 Ndef(\test, { |freq=200| Splay.ar(SinOsc.ar(freq * Array.rand(12, 0.95, 1.05))) });
 Ndef(\test).play(vol: 0.1);
@@ -40,7 +91,7 @@ Ndef(\test).set(\freq, 300);
 		// 3 midi steps == 0.02362;
 Ndef(\test).softSet(\freq, 320, 0.03); // ok
 Ndef(\test).softSet(\freq, 280, 0.03); // ok
-Ndef(\test).softSet(\freq, 200, 0.03); // returns false if too big jump
+Ndef(\test).softSet(\freq, 200, 0.03); // returns teletype::false:: if too big jump
 
 Ndef(\test).set(\freq, 600);
 

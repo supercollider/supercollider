@@ -1,30 +1,62 @@
-CLASS:: Dialog
-summary:: Shows various system dialogs
+title:: Dialog
 categories:: GUI>Accessories
+summary:: Shows various system dialogs
 related:: Classes/FileDialog, Classes/File
 
-DESCRIPTION::
-This class allows to show various system dialogs. link::#*openPanel:: will show a dialog for selecting a file to open, and link::#*savePanel:: will show a dialog for selecting or creating a file to save to.
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+This class allows to show various system dialogs.
+link::#*openPanel:: will show a dialog for selecting a file to open, and link::#*savePanel:: will show a dialog for selecting or creating a file to save to.
 
 The methods here are convenience functions built on top of link::Classes/FileDialog::.
 
-CLASSMETHODS::
-PRIVATE:: key
 
-METHOD:: openPanel
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+private:: key
+
+
+method:: openPanel
 	Shows a dialog for selection of an existing file (or multiple files) to open. It does not do anything with the file, instead it just passes the chosen filenames to the given result handler.
 
-	ARGUMENT:: okFunc
-		An object to be evaluated when OK is pressed. As argument, either a single filename is passed as a String, or an Array of Strings for multiple selected items is passed, depending on the strong::multipleSelection:: argument. The paths will always be absolute paths.
-	ARGUMENT:: cancelFunc
+	argument:: okFunc
+		An object to be evaluated when OK is pressed.
+As argument, either a single filename is passed as a String, or an Array of Strings for multiple selected items is passed, depending on the strong::multipleSelection:: argument.
+The paths will always be absolute paths.
+	argument:: cancelFunc
 		An object to be evaluated when Cancel is pressed.
-	ARGUMENT:: multipleSelection
+	argument:: multipleSelection
 		A Boolean indicating whether multiple files can be selected.
-	ARGUMENT:: path
-		A string. The dialog will initially display the contents of this path. The default is the current
+	argument:: path
+		A string. The dialog will initially display the contents of this path.
+The default is the current
 		user's home directory.
-	DISCUSSION::
+	discussion::
 	Example:
+
 code::
 (
 Dialog.openPanel({ |path|
@@ -35,18 +67,28 @@ Dialog.openPanel({ |path|
 )
 ::
 
-METHOD:: savePanel
-	Shows a dialog for selecting or creating a file to save to. It does not do anything with the selected file, and does not create any file; instead it just passes the chosen filename to the given result handler.
 
-	ARGUMENT:: okFunc
-		An object to be evaluated when OK is pressed. The chosen filename (as an absolute path) is passed as a String as argument. If the file already exists, the user will be asked to confirm.
-	ARGUMENT:: cancelFunc
+
+
+method:: savePanel
+
+
+	Shows a dialog for selecting or creating a file to save to.
+It does not do anything with the selected file, and does not create any file; instead it just passes the chosen filename to the given result handler.
+
+	argument:: okFunc
+		An object to be evaluated when OK is pressed.
+The chosen filename (as an absolute path) is passed as a String as argument.
+If the file already exists, the user will be asked to confirm.
+	argument:: cancelFunc
 		An object to be evaluated when Cancel is pressed.
-	ARGUMENT:: path
-		A string. The dialog will initially display the contents of this path. The default is the current
+	argument:: path
+		A string. The dialog will initially display the contents of this path.
+The default is the current
 		user's home directory.
-	DISCUSSION::
+	discussion::
 	Example:
+
 code::
 (
 Dialog.savePanel({ |path|
@@ -57,7 +99,12 @@ Dialog.savePanel({ |path|
 )
 ::
 
-METHOD:: getPaths
+
+
+
+method:: getPaths
+
+
 	note::Deprecated. Use link::#*openPanel:: instead. ::
 
-	Implements the same functionality as *openPanel, only the last argument is named differently and defaults to true.
+	Implements the same functionality as *openPanel, only the last argument is named differently and defaults to teletype::true::.

@@ -1,26 +1,69 @@
-class:: Spring
-summary:: physical model of resonating spring
+title:: Spring
 categories:: UGens>Filters>Nonlinear, UGens>Generators>PhysicalModels
+summary:: Physical model of resonating spring
 related:: Classes/Ball, Classes/TBall
 
+
+
+
+
+
+
+
+
+
 description::
-models the force of a resonating spring
+
+
+
+
+Model the force of a resonating spring
+
+
+
+
+
+
+
+
+
 
 classmethods::
 
+
+
+
 method:: ar, kr
 
-argument::in
-modulated input force
 
-argument::spring
-spring constant (incl. mass)
+argument:: in
 
-argument::damp
-damping
+Modulated input force
+
+
+argument:: spring
+
+Spring constant (incl. mass)
+
+
+argument:: damp
+
+Damping
+
+
+
+
+
+
+
+
 
 
 examples::
+
+
+
+
 code::
 // trigger gate is mouse button
 // spring constant is mouse x

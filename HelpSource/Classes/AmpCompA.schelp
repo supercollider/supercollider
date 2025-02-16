@@ -1,17 +1,30 @@
-class:: AmpCompA
-summary:: Basic psychoacoustic amplitude compensation (ANSI A-weighting curve).
+title:: AmpCompA
+categories:: UGens>Analysis>Amplitude
+summary:: Basic psychoacoustic amplitude compensation (ANSI A-weighting curve)
 related:: Classes/AmpComp
-categories::  UGens>Analysis>Amplitude
 
 
-Description::
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 Higher frequencies are normally perceived as louder, which AmpCompA
 compensates. Following the measurements by Fletcher and Munson, the
-ANSI standard describes a function for loudness vs. frequency.
+ANSI standard describes a function for loudness vs.
+frequency.
 
 Note that this curve is only valid for standardized amplitude.
 footnote:: Function freq → dB, derived from http://www.beis.de/Elektronik/AudioMeasure/WeightingFilters.html and modified to map freq → amp.
+
 code::
 (
 var k =  3.5041384e16;
@@ -37,29 +50,61 @@ sqrt(level)
 
 For a simpler but more flexible curve, see  link::Classes/AmpComp::
 
+
+
+
+
+
+
+
+
+
 classmethods::
 
-method::ar, kr, ir
 
-argument::freq
+
+
+method:: ar, kr, ir
+
+
+argument:: freq
+
 Input frequency value. For freq == root, the output is rootAmp.
 
-argument::root
+
+argument:: root
+
 Root freq relative to which the curve is calculated (usually lowest freq).
 
-argument::minAmp
+
+argument:: minAmp
+
 Amplitude at the minimum point of the curve (around 2512 Hz).
 
-argument::rootAmp
+
+argument:: rootAmp
+
 Amplitude at the root frequency.
+
 
 discussion::
 Apart from code::freq::, the values are not modulatable
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 // compare a sine without compensation
 
 { SinOsc.ar(MouseX.kr(300, 15000, 1)) * 0.1 }.play;

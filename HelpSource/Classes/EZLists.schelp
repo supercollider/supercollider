@@ -1,80 +1,235 @@
-class:: EZLists
-summary:: An abstract superclass for EZListView and EZPopUpMenu
+title:: EZLists
 categories:: GUI>EZ-GUI
+summary:: An abstract superclass for EZListView and EZPopUpMenu
 related:: Classes/EZListView, Classes/EZPopUpMenu
 
+
+
+
+
+
+
+
+
+
 description::
-Users will not normally directly create instances of EZLists, but only use it through its subclasses. It provides the basic mechanisms for link::Classes/EZListView:: and link::Classes/EZPopUpMenu::.
+
+
+
+
+Users will not normally directly create instances of EZLists, but only use it through its subclasses.
+It provides the basic mechanisms for link::Classes/EZListView:: and link::Classes/EZPopUpMenu::.
+
+
+
+
+
+
+
+
+
 
 classmethods::
 
+
+
+
 method:: new
+
+
+
+
+
+
+
+
+
 
 instancemethods::
 
+
+
+
 subsection:: Building and Changing the List
 
+
 method:: globalAction
-Set/get the global function to be performed in addition to the item functions: code:: { |listObj| value } ::.
+
+
+Set/get the global function to be performed in addition to the item functions:
+code:: { |listObj| value } ::.
+
+
+
 
 method:: items
-Set/get an link::Classes/Array:: of Associations including the labels and the item functions: code:: ['label' -> { |listObj| value }, ] ::.
+
+
+Set/get an link::Classes/Array:: of Associations including the labels and the item functions:
+code:: ['label' -> { |listObj| value }, ] ::.
+
+
 discussion::
-In menus, the macOS graphics system gives special meanings to some characters. See link::Classes/PopUpMenu:: ; Or and link::Classes/Array:: link::Classes/Symbol::s (if you are only using code::globalAction::). link::Classes/Array::s of link::Classes/Symbol::s will get converted into and array of link::Classes/Association::s with and empty link::Classes/Function:: code:: ['label' -> { }, ] ::.
+In menus, the macOS graphics system gives special meanings to some characters.
+See link::Classes/PopUpMenu:: ; Or and link::Classes/Array:: link::Classes/Symbol::s (if you are only using code::globalAction::). link::Classes/Array::s of link::Classes/Symbol::s will get converted into and array of link::Classes/Association::s with and empty link::Classes/Function:: code:: ['label' -> { }, ] ::.
+
+
+
 
 method:: item
-Returns:: the item label of the current selection.
+
+
+returns::
+ 
+the item label of the current selection.
+
+
+
 
 method:: itemFunc
-Returns:: the item function of the current selection.
+
+
+returns::
+ 
+the item function of the current selection.
+
+
+
 
 method:: addItem
-Adds an item.
+
+
+Add an item.
+
+
 argument:: name
-An instance of link::Classes/String:: or link::Classes/Symbol::. The name of the list/menu item.
+
+An instance of link::Classes/String:: or link::Classes/Symbol::.
+The name of the list/menu item.
+
+
 argument:: action
+
 An instance of link::Classes/Function::.
+
+
+
 
 method:: insertItem
-Inserts a list/menu item at index position.
+
+
+Insert a list/menu item at index position.
+
+
 argument:: index
-An link::Classes/Integer::. The index where to insert an item.
+
+An link::Classes/Integer::.
+The index where to insert an item.
+
+
 argument:: name
-An instance of link::Classes/String:: or link::Classes/Symbol::. The name of the list/menu item.
+
+An instance of link::Classes/String:: or link::Classes/Symbol::.
+The name of the list/menu item.
+
+
 argument:: action
+
 An instance of link::Classes/Function::.
 
+
+
+
 method:: replaceItemAt
+
+
 Replace a list/menu item at index position.
+
+
 argument:: index
-An link::Classes/Integer::. The index where to insert an item.
+
+An link::Classes/Integer::.
+The index where to insert an item.
+
+
 argument:: name
-An instance of link::Classes/String:: or link::Classes/Symbol::. The name of the list/menu item. Default is the current item label.
+
+An instance of link::Classes/String:: or link::Classes/Symbol::.
+The name of the list/menu item. Default is the current item label.
+
+
 argument:: action
-An instance of link::Classes/Function::. Default is the current item action.
+
+An instance of link::Classes/Function::.
+Default is the current item action.
+
+
+
 
 method:: removeItemAt
-Removes a list/menu item at index position.
+
+
+Remove a list/menu item at index position.
+
+
 argument:: index
-An link::Classes/Integer::. The index where to remove an item.
+
+An link::Classes/Integer::.
+The index where to remove an item.
+
+
+
 
 method:: remove
-Removes both the view, label and the list/menu from the parent view.
+
+
+Remove both the view, label and the list/menu from the parent view.
+
+
+
+
+
 
 subsection:: Accessing Values
 
+
 method:: value
-Gets/sets the list/menu to the index at value. Does not perform the action.
+
+
+Get/set the list/menu to the index at value.
+Does not perform the action.
+
+
 argument:: val
+
 An link::Classes/Integer::.
+
+
+
 
 method:: valueAction
-Sets the value and performs the action at the index value and the global action.
+
+
+Set the value and performs the action at the index value and the global action.
+
+
 argument:: val
+
 An link::Classes/Integer::.
 
+
+
+
 method:: doAction
-Performs the action at the current index and the global action.
+
+
+Perform the action at the current index and the global action.
+
+
+
 
 method:: initViews
-Called by init and overridden by all subclasses. This is where the class specific views are built.
+
+
+Called by init and overridden by all subclasses.
+This is where the class specific views are built.

@@ -1,33 +1,67 @@
-class:: Dswitch1
-summary:: Demand rate generator for switching between inputs.
-related:: Classes/Demand, Classes/Duty, Classes/TDuty, Classes/Dswitch
+title:: Dswitch1
 categories:: UGens>Demand
+summary:: Demand rate generator for switching between inputs
+related:: Classes/Demand, Classes/Duty, Classes/TDuty, Classes/Dswitch
 
-Description::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 Demand rate generator for switching between inputs.
 
 See link::Classes/Pswitch1:: for structurally related equivalent.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::new
 
-argument::list
+
+
+method:: new
+
+
+argument:: list
 
 Array of values or other UGens.
 
 
-argument::index
+argument:: index
 
 Which of the inputs to return.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 (
 {
 	var a, freq, trig;
@@ -49,5 +83,4 @@ code::
 
 }.play;
 )
-
 ::

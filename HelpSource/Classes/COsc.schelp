@@ -1,10 +1,21 @@
-class:: COsc
-summary:: Chorusing wavetable oscillator.
+title:: COsc
+categories:: UGens>Generators>Deterministic
+summary:: Chorusing wavetable oscillator
 related:: Classes/Osc, Classes/OscN, Classes/VOsc, Classes/VOsc3
-categories::  UGens>Generators>Deterministic
 
 
-Description::
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 Chorusing wavetable lookup oscillator. Produces sum of two signals at
 
@@ -15,42 +26,63 @@ code::
 Due to summing, the peak amplitude is not the same as the wavetable and can be twice of that.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::ar, kr
 
-argument::bufnum
+
+
+method:: ar, kr
+
+
+argument:: bufnum
 
 The number of a buffer filled in wavetable format.
 
 
-argument::freq
+argument:: freq
 
 Frequency in Hertz.
 
 
-argument::beats
+argument:: beats
 
 Beat frequency in Hertz.
 
 
-argument::mul
+argument:: mul
 
 Output will be multiplied by this value.
 
 
-argument::add
+argument:: add
 
 This value will be added to the output.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 (
 b = Buffer.alloc(s, 512, 1, { |buf| buf.sine1Msg(1.0/[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) });
 { COsc.ar(b.bufnum, 200, 0.7, 0.25) }.play;
 )
-
 ::

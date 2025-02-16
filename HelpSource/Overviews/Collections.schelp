@@ -1,15 +1,35 @@
 title:: Collections
-summary:: A hierarchical overview of Collection subclasses
 categories:: Collections
+summary:: A hierarchical overview of Collection subclasses
 related:: Classes/Collection
 
-SuperCollider has a rich hierarchy of Collection subclasses, detailed below. Subclasses of a given class are indented (sub-lists) relative to the class. Classes labelled "abstract" are not for direct use, but classes lower down the tree may inherit methods from them. For this reason it is important to consult the helpfiles of classes farther up the tree in order to get a complete list of available methods.
+
+SuperCollider has a rich hierarchy of Collection subclasses, detailed below. Subclasses of a given class are indented (sub-lists) relative to the class. Classes labelled "abstract" are not for direct use, but classes lower down the tree may inherit methods from them.
+For this reason it is important to consult the helpfiles of classes farther up the tree in order to get a complete list of available methods.
+
+
+
+
+
+
+
+
+
 
 section:: Hierarchy
 
+
+
+
 classtree::Collection
 
+
+
+
+
+
 subsection:: Notes
+
 
 definitionlist::
 ## link::Classes/List::
@@ -19,7 +39,8 @@ definitionlist::
 ## link::Classes/SparseArray::
 || is an array of elements optimized for huge gaps between them.
 ## link::Classes/TwoWayIdentityDictionary::
-|| is similar to link::Classes/IdentityDictionary:: and allows easy searching by both key and value. It is faster than link::Classes/IdentityDictionary:: on reverse lookup, but with more memory overhead.
+|| is similar to link::Classes/IdentityDictionary:: and allows easy searching by both key and value.
+It is faster than link::Classes/IdentityDictionary:: on reverse lookup, but with more memory overhead.
 ## link::Classes/Environment::
 || is an link::Classes/IdentityDictionary::, one of which is always current; useful for creating sets of persistent variables.
 ## link::Classes/Event::

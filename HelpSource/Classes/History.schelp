@@ -1,13 +1,26 @@
-class:: History
-summary:: keeps a history of interpreted lines of code
-related:: Classes/Archive
+title:: History
 categories:: Streams-Patterns-Events
+summary:: Keeps a history of interpreted lines of code
+related:: Classes/Archive
+
+
+
+
+
+
+
+
+
 
 description::
+
+
+
 
 History stores all code strings as they are being evaluated, in order to reuse code written earlier, to forward code to other players, or to store, reproduce, edit and analyse live-coded performances. It records every evaluated code string into a singleton instance of History - code::History.current::.
 
 First examples:
+
 code::
 History.clear.end;     // if needed, clear History first
 History.start;         // starts recording, opens log file
@@ -55,125 +68,307 @@ History.end;
 
 // Replays history, including a CmdPeriod, and keeps replaying history.
 History.play;
-
-
 ::
 
-ClassMethods::
 
-Note::
-Many class methods are redirected to the privileged instance of History, code:: History.current::. This is intended to provide a simple code user interface.
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+note::
+Many class methods are redirected to the privileged instance of History, code::History.current::.
+This is intended to provide a simple code user interface.
 ::
 
-private::initClass, timeStamp, dateString, hasMovedOn, lineShorts
+
+
+
+private:: initClass, timeStamp, dateString, hasMovedOn, lineShorts
+
+
 private:: addToLog, date, time0, saveFolder, logFolder, logFile, logPath, makeLogFolder, checkLogStarted, startLog, endLog, showLogFile.
+
+
+
+
 private:: maxShortLength, getTimeFromString, asLines, cmdPeriod
 
-method::start
-start adding interpreted code to (current) history.
 
-method::end
-end adding interpreted code to (current) history.
+method:: start
+Start adding interpreted code to (current) history.
 
-method::started
-boolean whether History is started.
 
-method::document
-post the history in a new document (as story). The document title is a string formatted as follows: code::"%Y-%m-%d-%Hh%M-History"::.
 
-method::current
-the current History instance
 
-method::lines, lineShorts
-the currently recorded lines in History.current.
+method:: end
+
+
+End adding interpreted code to (current) history.
+
+
+
+
+method:: started
+
+
+Boolean whether History is started.
+
+
+
+
+method:: document
+
+
+Post the history in a new document (as story).
+The document title is a string formatted as follows: code::"%Y-%m-%d-%Hh%M-History"::.
+
+
+
+
+method:: current
+
+
+The current History instance
+
+
+
+
+method:: lines, lineShorts
+
+
+The currently recorded lines in History.current.
 lineShorts is a copy with shortened strings for display.
 
-method::makeWin
-make a HistoryGui for History.current.
+
+
+
+method:: makeWin
+
+
+Make a HistoryGui for History.current.
 argument: where
 a point that sets left top of the HistoryGui window,
 argument: numItems
 the number of lines in the textview
 
-subsection::Configuration
 
-method::keepsLog
-get and set flag whether to log History to a file.
 
-method::verbose
-get and set flag whether to post debug messages from History operations.
 
-method::recordLocally
-get and set flag to turn recording local code evaluation on and off
 
-method::localOff, localOn
-convenience to turn recording of local code evaluation on and off
 
-method::forwardFunc
-a function to run on incoming new lines, can be used to send code by network.
+subsection:: Configuration
+
+
+method:: keepsLog
+
+
+Get and set flag whether to log History to a file.
+
+
+
+
+method:: verbose
+
+
+Get and set flag whether to post debug messages from History operations.
+
+
+
+
+method:: recordLocally
+
+
+Get and set flag to turn recording local code evaluation on and off
+
+
+
+
+method:: localOff, localOn
+
+
+Convenience to turn recording of local code evaluation on and off
+
+
+
+
+method:: forwardFunc
+
+
+A function to run on incoming new lines, can be used to send code by network.
 See the Utopia quark for examples of networking code history.
 
-subsection::Save and load history logs
 
-method::showLogFolder
-open folder where logfiles are stored
 
-method::showLogFile
-open current log file
 
-method::saveCS
-store history as one compileString.
 
-method::loadCS
-load a history from (compilestring) file.
 
-method::saveStory
-store in a file, in historical order as individual code snippets.
+subsection:: Save and load history logs
 
-method::loadStory
-read history into current, from a file in story format.
 
-method::rewrite
+method:: showLogFolder
+
+
+Open folder where logfiles are stored
+
+
+
+
+method:: showLogFile
+
+
+Open current log file
+
+
+
+
+method:: saveCS
+
+
+Store history as one compileString.
+
+
+
+
+method:: loadCS
+
+
+Load a history from (compilestring) file.
+
+
+
+
+method:: saveStory
+
+
+Store in a file, in historical order as individual code snippets.
+
+
+
+
+method:: loadStory
+
+
+Read history into current, from a file in story format.
+
+
+
+
+method:: rewrite
+
+
 Write a properly formatted code file from a history.
-argument::path
+
+
+argument:: path
+
 The filename is the original name with "_rewritten." appended.
-argument::open
+
+
+argument:: open
+
 If open is true (default: true), open a text window with the string.
 
-method::readFromDoc
-read in a history from a code file created with .rewrite
+
+
+
+method:: readFromDoc
+
+
+Read in a history from a code file created with .rewrite
+
+
+
+
 
 
 subsection:: Editing history
-method::clear
-remove all items from (current) history.
 
-method::enter
-add an entry to (current) history by hand.
 
-method::drop
-drop the newest num lines from history. if n is negative, drop the oldest n lines.
+method:: clear
 
-method::keep
-keep only the newest num lines from history. if n is negative, keep the oldest n lines.
 
-method::removeAt
-remove a specific line
+Remove all items from (current) history.
 
-method::removeLast
-remove last line from history
+
+
+
+method:: enter
+
+
+Add an entry to (current) history by hand.
+
+
+
+
+method:: drop
+
+
+Drop the newest num lines from history.
+if n is negative, drop the oldest n lines.
+
+
+
+
+method:: keep
+
+
+Keep only the newest num lines from history.
+if n is negative, keep the oldest n lines.
+
+
+
+
+method:: removeAt
+
+
+Remove a specific line
+
+
+
+
+method:: removeLast
+
+
+Remove last line from history
+
+
+
+
+
 
 subsection:: Repeating history
+
+
 Repeating history can have different uses:
 A. Reconstruction, e.g. redoing a history of coding steps as closely as possible,
 or replaying a full performance as closely as possible; here, all errors are important and should be handled individually.
-B. Experimental live performance, e.g. replaying snippets from a recorded networked live-coding show in nonlinear orders; here, errors will occur more often because the current state will not always fit with what a particular line would require. Thus, one will likely prefer the robustness to just keep going.
+B. Experimental live performance, e.g. replaying snippets from a recorded networked live-coding show in nonlinear orders; here, errors will occur more often because the current state will not always fit with what a particular line would require.
+Thus, one will likely prefer the robustness to just keep going.
+
+
+
 
 method:: ignoreErrors
-global flag whether evaluating code lines via History will ignore errors or stop and throw them.
 
-method::eval
-evaluate codeString, and optionally, use ignoreError to override global ignoreErrors flag.
+
+Global flag whether evaluating code lines via History will ignore errors or stop and throw them.
+
+
+
+
+method:: eval
+
+
+Evaluate codeString, and optionally, use ignoreError to override global ignoreErrors flag.
 
 code::
 History.ignoreErrors = true;
@@ -183,57 +378,153 @@ History.eval("1.blonk"); 123; // runtime error, keeps going -> posts 123
 History.eval("1.blonk", false); 123; // throws error and stops, code after it never happens.
 ::
 
-method::evalLineAt
-evaluate the line at index in History.current.lines
 
-method::play
-play back current history from start to end line, per default verbose.
 
-method::stop
-stop current history playback.
+
+method:: evalLineAt
+
+
+Evaluate the line at index in History.current.lines
+
+
+
+
+method:: play
+
+
+Play back current history from start to end line, per default verbose.
+
+
+
+
+method:: stop
+
+
+Stop current history playback.
+
+
+
+
 
 
 subsection:: Date, time, string functions
-method::startTimeStamp
-method::formatTime
-method::unformatTime
-method::shorten
-method::prettyString
+
+
+method:: startTimeStamp
+
+
+method:: formatTime
+
+
+
+
+method:: unformatTime
+
+
+method:: shorten
+
+
+
+
+method:: prettyString
+
 
 private:: checkPath
 
-method::new
-create a new instance containing the lines given.
 
-InstanceMethods::
 
-Note:: the instance methods code::[hasMovedOn_, hasMovedOn, play, stop, lines, lineShorts, removeAt, removeLast, keep, drop, clear, saveCS, loadCS, saveStory, evalLineAt, loadStory, makeWin, document]:: are also implemented as class methods, and documented above.
+
+method:: new
+
+
+Create a new instance containing the lines given.
+
+
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+note::
+The instance methods code::[hasMovedOn_, hasMovedOn, play, stop, lines, lineShorts, removeAt, removeLast, keep, drop, clear, saveCS, loadCS, saveStory, evalLineAt, loadStory, makeWin, document]:: are also implemented as class methods, and documented above.
 ::
+
+
+
 
 private:: hasMovedOn_, hasMovedOn, play, stop, lines, lineShorts, removeAt, removeLast, keep, drop, clear, saveCS, loadCS, saveStory, evalLineAt, loadStory, makeWin, document
 
-method::isCurrent
-flag whether this history is History.current
 
-method::makeCurrent
-make this history History.current
-
-method::player
-the player task for ths history
-
-method::keys
-all keys of code authors in this history
-
-method::addLine
-add a line to history with current time, id, and code string
+method:: isCurrent
+Flag whether this history is History.current
 
 
-method::indicesFor
-find line indices created by keys and containing string. used for filtering.
+
+
+method:: makeCurrent
+
+
+Make this history History.current
+
+
+
+
+method:: player
+
+
+The player task for ths history
+
+
+
+
+method:: keys
+
+
+All keys of code authors in this history
+
+
+
+
+method:: addLine
+
+
+Add a line to history with current time, id, and code string
+
+
+
+
+method:: indicesFor
+
+
+Find line indices created by keys and containing string.
+used for filtering.
+
+
+
 
 private:: matchKeys, matchString, storyString
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 // same as first example:
@@ -388,7 +679,7 @@ h.keys;
 h.matchKeys(\me);
 h.matchKeys(\you);
 h.matchKeys(\they);
-h.matchKeys;        // nil if no test
+h.matchKeys;        // teletype::nil:: if no test
 h.matchKeys(\all);  // all keys match
 h.matchKeys([\me, \they])
 h.matchKeys(\isidor) // empty array if no line found for this key

@@ -1,11 +1,24 @@
 title:: Understanding errors
-summary:: a guide to understanding errors
-related:: Guides/Debugging-tips
 categories:: Language, Debugging
+summary:: A guide to understanding errors
+related:: Guides/Debugging-tips
+
+
+
+
+
+
+
+
+
 
 section:: Reading error dumps
 
+
+
+
 When sc3 reports an error to the user, there are usually three parts:
+
 list::
 ## the error text
 ## a dump of the receiver of the method that caused the error, and/or any arguments of the method call
@@ -13,6 +26,7 @@ list::
 ::
 
 For example:
+
 code::
 1.blech  // no class implements this method; therefore you'll get an error
 
@@ -48,22 +62,28 @@ CALL STACK:
 	Process-interpretPrintCmdLine
 		arg this = <instance of Main>
 ::
-Each of these parts provides valuable information about the cause of the error. Debugging is much easier if you understand what the error output means.
+
+Each of these parts provides valuable information about the cause of the error.
+Debugging is much easier if you understand what the error output means.
 
 definitionlist::
 ## Error text || A string describing the error. In this case, "Message 'xxx' not understood" means that you attempted to use the method xxx on a class that does not implement it.
 ## Receiver and arguments || The method was applied to an integer (1), with no arguments (the size of the arguments array is 0).
-## Call stack || Order of execution in the call stack is in reverse: the top of the stack shows the most recent calls.
+## Call stack || Order of execution in the call stack is in reverse:
+the top of the stack shows the most recent calls.
 ::
 
 Most call stacks for errors will show the same top three calls as shown here (calling the method reportError on an error class, calling handleError on Nil, and calling throw on the error object).
 You can ignore these three calls.
 
-Following is the meat: the error happened when an object was not understood. Continuing to read down, it happened inside a function definition.
-(Every time you highlight a block of code and press the enter key, the code is compiled into a function definition and executed. So, this function definition simply refers to the text submitted to the interpreter.)
+Following is the meat: the error happened when an object was not understood.
+Continuing to read down, it happened inside a function definition.
+(Every time you highlight a block of code and press the enter key, the code is compiled into a function definition and executed.
+So, this function definition simply refers to the text submitted to the interpreter.)
 And, it all began with the instruction to interpret and print a command line.
 
 Here is a slightly more complex example, showing how you can use the variables listed for each call in the call stack to help locate the error.
+
 code::
 Routine({
 	var a;
@@ -105,27 +125,46 @@ CALL STACK:
 		arg this = <instance of Routine>
 		arg inval = 1542.075067
 ::
-Reading from the bottom this time, to trace the flow in chronological order: this time, execution did not begin with the command line, but with a routine commencing within the scheduler (Routine({...}).play).
+
+Reading from the bottom this time, to trace the flow in chronological order:
+this time, execution did not begin with the command line, but with a routine commencing within the scheduler (Routine({...}).play).
 Note that there are two calls identified as "FunctionDef in closed FunctionDef" and that they can be distinguished by the variables contained within.
 The earlier call (second from the bottom) defines the variable "a" while the other defines "b." To locate the error in the code, then, you should look for a function defining the variable "b" that is called within another function defining "a" inside a routine.
 
 What if the error occurred not inside a function definition that you wrote, but inside a method in the class library?
 There may be a bug in the method, or you may have thought the method took a certain kind of argument when in fact it expects something else.
 
-If you double click on the construction "ClassName-methodName" in the call stack, the whole thing is selected. Then you can press cmd-J to open the method definition and look at the source code.
+If you double click on the construction "ClassName-methodName" in the call stack, the whole thing is selected.
+Then you can press cmd-J to open the method definition and look at the source code.
+
+
+
+
+
+
+
+
+
 
 section:: Error objects and error handling
 
-sc3 implements error reporting using Error objects, which are instances of the class Error or one of its subclasses.
+
+
+
+Sc3 implements error reporting using Error objects, which are instances of the class Error or one of its subclasses.
 Any code (whether in the class library or any user application) can throw an error any time as follows:
+
 code::
 Error("This is a basic error.").throw;
 ::
+
 You can also catch exceptions that occur within functions by executing the function with code::try:: or code::protect:: instead of code::value::.
 
 definitionlist::
-## try || execute the first function. On an error, execute the second function and suppress the error. The second function can rethrow the error if desired, allowing you to decide which errors will be reported and which suppressed.
+## try || execute the first function. On an error, execute the second function and suppress the error.
+The second function can rethrow the error if desired, allowing you to decide which errors will be reported and which suppressed.
 In this example, we do not rethrow the error, so the error is swallowed and execution continues to the end.
+
 code::
 try { 1.blech } { |error| "oops".postln };
 "next line".postln;
@@ -133,9 +172,11 @@ try { 1.blech } { |error| "oops".postln };
 oops
 next line
 ::
+
 ## protect || executes the first function. On an error, execute the second function before reporting the error.
 This is useful when the steps before the protect make some changes that need to be undone if an error occurs.
 See link::Classes/Environment#use#Environment:use:: for an example.
+
 code::
 protect { 1.blech } { |error| "oops".postln };
 "next line".postln;
@@ -152,15 +193,19 @@ CALL STACK:
 	DoesNotUnderstandError-reportError
 		arg this = <instance of DoesNotUnderstandError>
 ::
+
 ::
 
 Prior to August 2004, try and protect do not return the value of the function to the caller if there is no error.
+
 code::
 try { 1+1 }
 
 a Function
 ::
+
 More recent builds (since early August 2004) do return the function's value. Non-error objects can be thrown using the class Exception.
+
 code::
 try { 1+1 }
 2
@@ -171,74 +216,125 @@ try { 1+Point(0, 0) } { 2*5 }
 10
 ::
 
+
+
+
+
+
+
+
+
+
 section:: Common primitive errors
 
-subsection:: operation cannot be called from this Process.
+
+
+
+subsection:: Operation cannot be called from this Process.
+
 
 This is usually the results of performing a GUI operation within a routine or scheduled function that is executing on some clock other than AppClock.
-AppClock is the only clock that can execute GUI manipulation because it is a lower priority thread. If the CPU is busy with audio synthesis or maintaining accurate scheduling for musical events, AppClock events will be delayed until the CPU is free enough.
+AppClock is the only clock that can execute GUI manipulation because it is a lower priority thread.
+If the CPU is busy with audio synthesis or maintaining accurate scheduling for musical events, AppClock events will be delayed until the CPU is free enough.
 
-Solution: write your GUI updates as follows. defer schedules the function on AppClock.
+Solution: write your GUI updates as follows.
+defer schedules the function on AppClock.
+
 code::
 { myGUIObject.value_(newValue) }.defer;
 ::
 
+
+
+
+
+
 subsection:: Attempted write to immutable object.
+
+
 code::
 #[0, 1, 2].put(1, 3)
 
 ERROR: Primitive '_BasicPut' failed.
 Attempted write to immutable object.
 ::
+
 code:: #[0, 1, 2] :: is a literal array. Literal arrays cannot be manipulated--they can only be indexed. They cannot be changed internally.
 
 Solution: copy the array first.
+
 code::
 #[0, 1, 2].copy.put(1, 3)
 
 [ 0, 3, 2 ]
 ::
 
+
+
+
+
+
 subsection:: Index not an Integer.
+
+
 code::
 #[0, 1, 2].at(\1)
 
 ERROR: Primitive '_BasicAt' failed.
 Index not an Integer
 ::
+
 Arrays can be indexed only with integers (or, in builds since August 2004, floats).
 
 Solution: use code:: .asInteger ::
+
 code::
 #[0, 1, 2].at(\1.asInteger)
 1
 ::
-note:: if the object cannot be converted into an integer, you'll get a "Does not understand" error! ::
+
+note:: 
+if the object cannot be converted into an integer, you'll get a "Does not understand" error! 
+::
+
+
+
+
+
 
 subsection:: Index out of range.
+
+
 code::
 [0, 1, 2].put(5, 5)
 
 ERROR: Primitive '_BasicPut' failed.
 Index out of range.
 ::
+
 Arrays have a finite size. If you try to put an object into an array slot but the slot does not exist because the array is too small, you'll get this error.
 
 Solution: extend the array.
+
 code::
 [0, 1, 2].extend(6).put(5, 5)
 
 [ 0, 1, 2, nil, nil, 5 ]
 ::
-Note that if the argument to extend() is smaller than the array, then the array will be truncated. If you're not sure, use max:
+
+Note that if the argument to extend() is smaller than the array, then the array will be truncated.
+If you're not sure, use max:
+
 code::
 i = rrand(5, 10);
 a = [0, 1, 2];
 a.extend(max(i+1, a.size)).put(i, 100);
 ::
+
 Why i+1? An array with size 4 allows 0, 1, 2 and 3 as indexes (4 elements starting with 0).
 
 If it's a new array, use .newClear instead of .new.
+
 code::
 a = Array.new(4);
 a.put(3, 1);
@@ -250,13 +346,30 @@ a.put(3, 1);
 [ nil, nil, nil, 1 ]
 ::
 
+
+
+
+
+
+
+
+
+
 section:: A common warning
+
+
+
+
 code::
 WARNING: FunctionDef contains variable declarations and so will not be inlined.
 ::
-This warning can be safely ignored. Your code will still run, even if you get this warning.
 
-Inlining is a compiler optimization that takes the operations inside a function and places them in the main line of the containing function. For instance,
+This warning can be safely ignored.
+Your code will still run, even if you get this warning.
+
+Inlining is a compiler optimization that takes the operations inside a function and places them in the main line of the containing function.
+For instance,
+
 code::
 // inlined
 { while { 0.9.coin } { 10.rand.postln }
@@ -273,9 +386,13 @@ BYTECODES: (16)
  15   F2       BlockReturn
 a FunctionDef in closed FunctionDef
 ::
-This function contains two other functions. One is the condition for the while loop; the other is the while loop's action. The compiler renders this into a single code block, using jump instructions to handle the looping and exit.
 
-If, however, one of the functions defines a variable, then that function requires a separate execution frame. In this case, it's necessary for the compiler to push function definition objects onto the stack.
+Thi function contains two other functions.
+One is the condition for the while loop; the other is the while loop's action. The compiler renders this into a single code block, using jump instructions to handle the looping and exit.
+
+If, however, one of the functions defines a variable, then that function requires a separate execution frame.
+In this case, it's necessary for the compiler to push function definition objects onto the stack.
+
 code::
 // not inlined
 { while { 0.9.coin } {
@@ -292,9 +409,12 @@ BYTECODES: (7)
   6   F2       BlockReturn
 a FunctionDef in closed FunctionDef
 ::
-Inlined code will run faster, because pushing and using different execution frames is extra work for the virtual machine. If you're very concerned about speed, you can use this warning as an indicator that you might be able to optimize something in your code further.
+
+Inlined code will run faster, because pushing and using different execution frames is extra work for the virtual machine.
+If you're very concerned about speed, you can use this warning as an indicator that you might be able to optimize something in your code further.
 
 Sometimes, there's no way around un-optimized code. To wit,
+
 code::
 // inlined, optimized, but you'll get stuck notes
 Routine({
@@ -318,12 +438,16 @@ Routine({
   }.loop;
 }).play;
 ::
-The first routine can be optimized because there is no variable declaration inside the loop. But, the synth variable changes on each iteration, meaning that by the time the first release happens, you don't have access anymore to the first note.
+
+The first routine can be optimized because there is no variable declaration inside the loop.
+But, the synth variable changes on each iteration, meaning that by the time the first release happens, you don't have access anymore to the first note.
 Thus the first note will never terminate.
 
-In the second case, each note has its own synth variable, so the notes will be terminated as expected. You get a warning, but it's better because the results are correct.
+In the second case, each note has its own synth variable, so the notes will be terminated as expected.
+You get a warning, but it's better because the results are correct.
 
 A solution to the above problem is to use a function with local variables.
+
 code::
 (
 Routine({

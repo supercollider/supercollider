@@ -1,19 +1,50 @@
-class:: BufDur
-summary:: Current duration of soundfile in buffer.
+title:: BufDur
+categories:: UGens>Buffer>Info
+summary:: Current duration of soundfile in buffer
 related:: Classes/BufChannels, Classes/BufFrames, Classes/BufRateScale, Classes/BufSampleRate, Classes/BufSamples
-categories::  UGens>Buffer>Info
 
-Description::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
 Get the current duration of soundfile.
+
+
+
+
+
+
+
+
+
 
 classmethods::
 
-method::kr, ir
 
-argument::bufnum
+
+
+method:: kr, ir
+
+
+argument:: bufnum
+
 Buffer index.
 
-returns:: the current duration.
+
+returns::
+ 
+the current duration.
+
 
 discussion::
 warning::
@@ -22,7 +53,19 @@ Since a buffer can be reallocated at any time, using
 code::.ir::  will not track the changes.
 ::
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
@@ -30,5 +73,4 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 { BufRd.ar(1, b, Sweep.ar(Impulse.ar(BufDur.kr(b).reciprocal), BufSampleRate.kr(b))) }.play;
 
 b.free
-
 ::

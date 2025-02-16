@@ -1,52 +1,78 @@
-class:: OffsetOut
-summary:: Write a signal to a bus with sample accurate timing.
+title:: OffsetOut
+categories:: UGens>InOut
+summary:: Write a signal to a bus with sample accurate timing
 related:: Classes/Out, Classes/ReplaceOut, Classes/XOut
-categories::  UGens>InOut
 
 
-Description::
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 Output signal to a bus, the sample offset within the bus is kept
-exactly; i.e. if the synth is scheduled to be started part way through a
-control cycle, OffsetOut will maintain the correct offset by buffering
-the output and delaying it until the exact time that the synth was
-scheduled for.
+exactly; i.e. if the synth is scheduled to be started part way through a control cycle, OffsetOut will maintain the correct offset by buffering the output and delaying it until the exact time that the synth was scheduled for.
 
 
 For achieving subsample accuracy see  link::Classes/SubsampleOffset::
 
 note::
-
-Note that if you have an input to the synth, it will be coming in and
-its normal time, then mixed in your synth, and then delayed with the
+Note that if you have an input to the synth, it will be coming in and its normal time, then mixed in your synth, and then delayed with the
 output. So you shouldn't use OffsetOut for effects or gating.
-
 ::
 
-See the link::Reference/Server-Architecture:: and link::Classes/Bus:: helpfiles for more information on
-buses and how they are used.
+See the link::Reference/Server-Architecture:: and link::Classes/Bus:: helpfiles for more information on buses and how they are used.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar
-
-argument::bus
-
-The index of the bus to write out to. The lowest numbers are
-written to the audio hardware.
 
 
-argument::channelsArray
 
-An Array of channels or single output to write out. You cannot
-change the size of this once a SynthDef has been built.
+method:: ar
 
 
-Examples::
+argument:: bus
+
+The index of the bus to write out to.
+The lowest numbers are written to the audio hardware.
+
+
+argument:: channelsArray
+
+An Array of channels or single output to write out.
+You cannot change the size of this once a SynthDef has been built.
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 (
 SynthDef("help-OffsetOut",
 	{ |out = 0, freq = 440, dur = 0.05|
@@ -99,5 +125,4 @@ SynthDef("trig1", {
 			)
 	)
 })
-
 ::

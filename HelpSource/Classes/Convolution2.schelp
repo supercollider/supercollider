@@ -1,10 +1,21 @@
-class:: Convolution2
-summary:: Real-time fixed kernel convolver.
+title:: Convolution2
+categories:: UGens>FFT, UGens>Convolution
+summary:: Real-time fixed kernel convolver
 related:: Classes/Convolution, Classes/Convolution2L, Classes/Convolution3
-categories::  UGens>FFT, UGens>Convolution
 
 
-Description::
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 Strict convolution with fixed kernel which can be updated using a trigger
 signal.
@@ -17,28 +28,39 @@ See also link::http://www.dspguide.com/ch18.htm:: by Steven W.
 Smith.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::ar
 
-argument::in
+
+
+method:: ar
+
+
+argument:: in
 
 Processing target.
 
 
-argument::kernel
+argument:: kernel
 
-Buffer index for the fixed kernel, may be modulated in
-combination with the trigger. It's size must be <= framesize.
+Buffer index for the fixed kernel, may be modulated in combination with the trigger. It's size must be <= framesize.
 
 
-argument::trigger
+argument:: trigger
 
-Update the kernel on a change from non-positive to positive
+Update the kernel on a change from non-teletype::positive:: to teletype::positive::
 value.
 
 
-argument::framesize
+argument:: framesize
 
 Size of FFT frame, must be a power of two (512, 1024, 2048, 4096 are standard choices).
 Convolution uses twice this number internally.
@@ -47,11 +69,24 @@ The maximum value you can use is 2^16 = 16384.
 (This upper limit is half of "SC_FFT_MAXSIZE" defined in the SC source code.)
 Larger convolutions than this can be done using link::Classes/PartConv::.
 
-argument::mul
 
-argument::add
+argument:: mul
 
-Examples::
+argument:: add
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 ( // allocate three buffers
@@ -169,8 +204,12 @@ b.sine1(1.0/[1, 2, 3, 4, 5, 6], true, true, true);
 )
 ::
 
-Instead of triggering the kernel update yourself, as in the first example, you can use a UGen trigger signal to do so. In the next example, we use two Convolution2 UGens in order to continuously and smoothly change the impulse response: link::Classes/RecordBuf:: is used to record a random frequency link::Classes/Saw:: oscillator every code::trigPeriod:: seconds.
-Right after the recording (trigPeriod gets delayed by the buffer duration link::Classes/BufDur::, using the link::Classes/TDelay:: UGen) the two convolution UGens alternatively update their kernels (using two triggers convTrigs). At the frequency of the kernel updates a crossfader link::Classes/XFade2:: moves between conv1 and conv2, using a triangle oscillator link::Classes/LFTri:: at half the trigger frequency as a panning input. The result is a constantly shifting spectral colorization of the Dust impulses:
+Instead of triggering the kernel update yourself, as in the first example, you can use a UGen trigger signal to do so.
+In the next example, we use two Convolution2 UGens in order to continuously and smoothly change the impulse response:
+link::Classes/RecordBuf:: is used to record a random frequency link::Classes/Saw:: oscillator every code::trigPeriod:: seconds.
+Right after the recording (trigPeriod gets delayed by the buffer duration link::Classes/BufDur::, using the link::Classes/TDelay:: UGen) the two convolution UGens alternatively update their kernels (using two triggers convTrigs).
+At the frequency of the kernel updates a crossfader link::Classes/XFade2:: moves between conv1 and conv2, using a triangle oscillator link::Classes/LFTri:: at half the trigger frequency as a panning input.
+The result is a constantly shifting spectral colorization of the Dust impulses:
 
 code::
 b = Buffer.alloc(s, 2048, 1, _.zeroMsg);
@@ -185,12 +224,13 @@ x = { |i_kernel, density = 100, trigPeriod = 5.0, cutOff = 1000, minFreq = 200, 
 	RecordBuf.ar(irSig, i_kernel, recTrig, loop: 0, trigger: recTrig);
 	
 	convTrig = TDelay.kr(recTrig, BufDur.ir(i_kernel));
-	// split updates across two triggers. 
+	// split updates across two triggers.
+
 	// Note that [1, 0] creates a MultiChannel expansion!
 	convTrigs = PulseDivider.kr(convTrig, 2, [1, 0]);
 	
 	bufFrames = BufFrames.ir(i_kernel);
-	// create the two alternatingly updated convolution ugens
+	// create the two alternatingly updated convolution UGens
 	#conv1, conv2 = Convolution2.ar(input, i_kernel, convTrigs, bufFrames);
 	
 	XFade2.ar(conv1, conv2, LFTri.kr(trigFreq * 0.5, 1)) ! 2;

@@ -1,17 +1,31 @@
 title:: Understanding Streams, Patterns and Events - Part 6
+categories:: Tutorials>Streams-Patterns-Events
 summary:: Parallel Patterns
 related:: Tutorials/Streams-Patterns-Events1, Tutorials/Streams-Patterns-Events2, Tutorials/Streams-Patterns-Events3, Tutorials/Streams-Patterns-Events4, Tutorials/Streams-Patterns-Events5, Tutorials/Streams-Patterns-Events7
-categories:: Tutorials>Streams-Patterns-Events
 
-section::Parallel Patterns
 
-subsection::Ppar
+
+
+
+
+
+
+
+
+section:: Parallel Patterns
+
+
+
+
+subsection:: Ppar
+
 
 The link::Classes/Ppar:: pattern allows you to merge multiple event streams to play in parallel.
 
 Ppar is a link::Classes/ListPattern:: and so like most ListPatterns it takes two arguments, a strong::list:: of event patterns to play in parallel and a strong::repeats:: count.
 
-Ppar's child patterns must be event patterns. Using value patterns in a Ppar is an error because value patterns contain no duration data.
+Ppar's child patterns must be event patterns.
+Using value patterns in a Ppar is an error because value patterns contain no duration data.
 
 A Ppar is done when all of its subpatterns are done.
 
@@ -54,11 +68,18 @@ Ppar([
 )
 ::
 
-subsection::Ptpar
+
+
+
+
+
+subsection:: Ptpar
+
 
 The link::Classes/Ppar:: pattern starts all of its subpatterns at the same time.
 
-A link::Classes/Ptpar:: pattern includes a start time parameter before each subpattern which allow the subpatterns to be started at some time delay within the pattern. The start time is given in beats.
+A link::Classes/Ptpar:: pattern includes a start time parameter before each subpattern which allow the subpatterns to be started at some time delay within the pattern.
+The start time is given in beats.
 
 code::
 (
@@ -100,13 +121,33 @@ Ptpar([
 )
 ::
 
-section::FilterPatterns and transformation
+
+
+
+
+
+
+
+
+
+section:: FilterPatterns and transformation
+
+
+
 
 FilterPatterns take an existing pattern and apply some modification to its properties.
 
-subsection::Padd, Pmul, Pset, Pstretch
 
-There is a simpler way to write the modal transposition example given in part 5. In fact the earlier examples are setting the values of code::mtranspose:: and code::ctranspose:: which is not the best way to change those variables, because it wipes out any modifications to them by parent patterns. It is better to take the current value of those properties and add a value to them.
+
+
+
+
+subsection:: Padd, Pmul, Pset, Pstretch
+
+
+There is a simpler way to write the modal transposition example given in part 5.
+In fact the earlier examples are setting the values of code::mtranspose:: and code::ctranspose:: which is not the best way to change those variables, because it wipes out any modifications to them by parent patterns.
+It is better to take the current value of those properties and add a value to them.
 
 The link::Classes/Padd:: filter takes the current value of a property and adds a value to it.
 
@@ -129,7 +170,8 @@ Pseq([
 )
 ::
 
-Similarly, link::Classes/Pmul:: multiplies the current value of a property by a value. link::Classes/Pset:: sets the property to a value.
+Similarly, link::Classes/Pmul:: multiplies the current value of a property by a value.
+link::Classes/Pset:: sets the property to a value.
 
 In order to process duration correctly link::Classes/Pstretch:: should be used.
 
@@ -152,9 +194,16 @@ Pseq([
 )
 ::
 
-subsection::Paddp, Pmulp, Psetp, Pstretchp
 
-In fact there is an even shorter version of the modal transposition example. link::Classes/Paddp:: reads one pattern to get values for adding to a property and plays the second pattern once through modified with each new value.
+
+
+
+
+subsection:: Paddp, Pmulp, Psetp, Pstretchp
+
+
+In fact there is an even shorter version of the modal transposition example.
+link::Classes/Paddp:: reads one pattern to get values for adding to a property and plays the second pattern once through modified with each new value.
 
 code::
 (
@@ -270,9 +319,16 @@ Pstretchp(
 )
 ::
 
-subsection::Pbindf
 
-link::Classes/Pbindf:: is like link::Classes/Pbind:: except that it merges all the bound symbols into events that it gets from a subpattern. It takes the same initial arguments in pairs as Pbind does, with an additional pattern to be modified as the last argument.
+
+
+
+
+subsection:: Pbindf
+
+
+link::Classes/Pbindf:: is like link::Classes/Pbind:: except that it merges all the bound symbols into events that it gets from a subpattern.
+It takes the same initial arguments in pairs as Pbind does, with an additional pattern to be modified as the last argument.
 
 code::
 (

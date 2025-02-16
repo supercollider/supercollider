@@ -1,45 +1,78 @@
-class:: Median
-summary:: Median filter.
-categories::  UGens>Filters>Nonlinear
+title:: Median
+categories:: UGens>Filters>Nonlinear
+summary:: Median filter
 
 
-Description::
 
-Returns the median of the last length input points. This non-linear
+
+
+
+
+
+
+
+description::
+
+
+
+
+Return the median of the last length input points.
+This non-linear
 filter is good at reducing impulse noise from a signal.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
-
-argument::length
-
-Number of input points in which to find the median. Must be an
-odd number from 1 to 31. If
-code::length::  is 1
-then Median has no effect.
 
 
-argument::in
+
+method:: ar, kr
+
+
+argument:: length
+
+Number of input points in which to find the median.
+Must be an odd number from teletype::1::to 31. If
+code::length::  is 1 then Median has no effect.
+
+
+argument:: in
 
 The input signal.
 
 
-argument::mul
+argument:: mul
 
 Output will be multiplied by this value.
 
 
-argument::add
+argument:: add
 
 This value will be added to the output.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 // a signal with impulse noise.
 { Saw.ar(500, 0.1) + Dust2.ar(100, 0.9) }.play;
 
@@ -78,5 +111,4 @@ Synth.play({
 	LeakDC.ar(Median.ar(31, WhiteNoise.ar(0.1) + SinOsc.ar(800, 0, 0.1)), 0.9)
 });
 )
-
 ::

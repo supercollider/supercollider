@@ -1,13 +1,33 @@
-class:: Pstutter
-summary:: repeat input stream values
-related:: Classes/Pdup, Classes/Pn, Classes/Pattern#-dup
+title:: Pstutter
 categories:: Streams-Patterns-Events>Patterns>Repetition
+summary:: Repeat input stream values
+related:: Classes/Pdup, Classes/Pn, Classes/Pattern#-dup
 
-note::It is recommended to use link::Classes/Pdup:: instead. This class is retained for backwards compatibility.::
-warning::Pstutter will return link::Classes/Pdup::::
+
+
+note::
+It is recommended to use link::Classes/Pdup::instead. This class is retained for backwards compatibility.
+::
+
+warning::
+Pstutter will return link::Classes/Pdup::
+::
+
+
+
+
+
+
+
+
+
 
 description::
-repeat each element n times.
+
+
+
+
+Repeat each element n times.
 
 code::
 (
@@ -21,17 +41,48 @@ x = a.asStream;
 This is also a response to link::Classes/Pattern#-dup::
 
 
-ClassMethods::
 
-method::new
-argument::n
-The number of repeats for each new element. n may be a pattern, so the number of times can vary each iteration.
 
-argument::pattern
-the pattern to repeat.
-returns:: link::Classes/Pdup::
 
-Examples::
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
+argument:: n
+
+The number of repeats for each new element.
+n may be a pattern, so the number of times can vary each iteration.
+
+
+argument:: pattern
+
+The pattern to repeat.
+
+
+returns::
+link::Classes/Pdup::
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
 
 
 code::
@@ -89,5 +140,4 @@ c.asStream.nextN(1000).plot
 a = Pwhite();
 c = (2 ** (0..10)).sum { |n| a.stutter(n.div(2).fin(1)) ++ a.stutter(n) };
 c.asStream.nextN(1000).plot
-
 ::

@@ -1,20 +1,47 @@
 title:: Pattern Guide 06g: Data Sharing
+categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Writing patterns to use information from other patterns
 related:: Tutorials/A-Practical-Guide/PG_06f_Server_Control, Tutorials/A-Practical-Guide/PG_07_Value_Conversions
-categories:: Streams-Patterns-Events>A-Practical-Guide
 
-section::Sharing data between patterns
 
-So far, we've seen patterns that are independent of each other. A single Pbind works on its own information, which is not available to other Pbinds. Also, for instance, the code::degree:: pattern in a Pbind is not aware of what the code::dur:: pattern is doing. Making these data available adds musical intelligence.
 
-There are a couple of distinct ways to transmit information from one pattern into another. The first, simpler, technique is to read values from the current event that is already being processed. The second is to pass information from one event pattern into a separate event pattern. Since both are event patterns, they produce different result events and the first technique does not apply.
 
-subsection::Reading values from the current event
 
-Within a Pbind, value patterns can easily read from other values that have already been placed into the event. The link::Classes/Pkey:: pattern looks up the key in the event currently being processed and returns its value. From there, you can do any other pattern-friendly operation on it: filter patterns, math operators, etc.
 
-definitionList::
-## code::Pkey(key):: || Read the code::key:: in the input event. Outputs values until the input event doesn't contain the key (i.e., the value is nil). There is no code::repeats:: argument. If you need to limit the number of values, wrap Pkey in link::Classes/Pfin::.
+
+
+
+
+section:: Sharing data between patterns
+
+
+
+
+So far, we've seen patterns that are independent of each other.
+A single Pbind works on its own information, which is not available to other Pbinds.
+Also, for instance, the code::degree:: pattern in a Pbind is not aware of what the code::dur:: pattern is doing. Making these data available adds musical intelligence.
+
+There are a couple of distinct ways to transmit information from one pattern into another.
+The first, simpler, technique is to read values from the current event that is already being processed.
+The second is to pass information from one event pattern into a separate event pattern.
+Since both are event patterns, they produce different result events and the first technique does not apply.
+
+
+
+
+
+
+subsection:: Reading values from the current event
+
+
+Within a Pbind, value patterns can easily read from other values that have already been placed into the event.
+The link::Classes/Pkey:: pattern looks up the key in the event currently being processed and returns its value.
+From there, you can do any other pattern-friendly operation on it: filter patterns, math operators, etc.
+
+definitionlist::
+## code::Pkey(key):: || Read the code::key:: in the input event. Outputs values until the input event doesn't contain the key (i.e., the value is nil).
+There is no code::repeats:: argument.
+If you need to limit the number of values, wrap Pkey in link::Classes/Pfin::.
 
 code::
 p = Pkey(\a).asStream;
@@ -27,9 +54,13 @@ p = (Pkey(\a) * Pkey(\b)).asStream;
 p.next((a: 2, b: 3));	// returns 6 == 2 * 3
 ::
 
-In this simple example, staccato vs. legato is calculated based on scale degree: lower notes are longer and higher notes are shorter. That only scratches the surface of this technique!
+In this simple example, staccato vs. legato is calculated based on scale degree:
+lower notes are longer and higher notes are shorter.
+That only scratches the surface of this technique!
 
-Be aware that Pkey can only look backward to keys stated earlier in the Pbind definition. Pbind processes the keys in the order given. In the example, it would not work to put code::legato:: first and have it refer to code::degree:: coming later, because the degree value is not available yet.
+Be aware that Pkey can only look backward to keys stated earlier in the Pbind definition.
+Pbind processes the keys in the order given.
+In the example, it would not work to put code::legato:: first and have it refer to code::degree:: coming later, because the degree value is not available yet.
 
 code::
 // something simple - the higher the note, the shorter the length
@@ -44,18 +75,33 @@ p = Pbind(
 
 p.stop;
 ::
+
 ::
 
-subsection::Other information storage patterns
+
+
+
+
+
+subsection:: Other information storage patterns
+
 
 These patterns represent three different strategies to persist information from one pattern and make it available to others.
 
-definitionList::
-## code::Penvir(envir, pattern, independent):: || The Streams that evaluate patterns are usually Routines, and Routines have the special feature of remembering the Environment that was in force the last time it yielded, and restoring the same environment the next time it's awakened. link::Classes/Penvir:: establishes an environment in which code::pattern:: will run. The environment can be initialized with values, or it could be empty at first and populated by elements of its pattern. The environment is separate from the event being processed (actually, the pattern could be either an event or value pattern). Access to the environment depends on function-driven patterns: link::Classes/Pfunc::, link::Classes/Pfuncn::, link::Classes/Prout::, code::.collect::, code::.select::, code::.reject::, and similar.
+definitionlist::
+## code::Penvir(envir, pattern, independent):: || The Streams that evaluate patterns are usually Routines, and Routines have the special feature of remembering the Environment that was in force the last time it yielded, and restoring the same environment the next time it's awakened. link::Classes/Penvir:: establishes an environment in which code::pattern:: will run. The environment can be initialized with values, or it could be empty at first and populated by elements of its pattern.
+The environment is separate from the event being processed (actually, the pattern could be either an event or value pattern).
+Access to the environment depends on function-driven patterns: link::Classes/Pfunc::, link::Classes/Pfuncn::, link::Classes/Prout::, code::.collect::, code::.select::, code::.reject::, and similar.
 
-The code::independent:: flag specifies whether the environment will be kept separate for each stream made from the Penvir. If true (the default), whenever the Penvir is embedded in a stream, a new environment is created that inherits the initial values provided by code::envir::. If false, the same environment is used for every stream. In that case, the same environment could also be used in different Penvir patterns, and modifications of the environment by one Penvir would carry over to all the others -- hence its usefulness for sharing data.
+The code::independent:: flag specifies whether the environment will be kept separate for each stream made from the Penvir.
+If teletype::true:: (the default), whenever the Penvir is embedded in a stream, a new environment is created that inherits the initial values provided by code::envir::. If teletype::false::, the same environment is used for every stream.
+In that case, the same environment could also be used in different Penvir patterns, and modifications of the environment by one Penvir would carry over to all the others -- hence its usefulness for sharing data.
 
-## code::Pfset(func, pattern, cleanupFunc):: || When embedded, link::Classes/Pfset:: creates an environment and populates it using environment variable assignments in the provided function. For every code::next:: call, the values in the preset environment are inserted into the event prototype before evaluating the child pattern. This is one way to set defaults for the pattern. It could also be used to load objects on the server, although this takes some care because the object would be reloaded every time the Pfset is played and you are responsible for freeing objects created this way in the cleanupFunc. (Pproto is another way; see link::Tutorials/A-Practical-Guide/PG_06f_Server_Control:: .)
+## code::Pfset(func, pattern, cleanupFunc):: || When embedded, link::Classes/Pfset:: creates an environment and populates it using environment variable assignments in the provided function.
+For every code::next:: call, the values in the preset environment are inserted into the event prototype before evaluating the child pattern.
+This is one way to set defaults for the pattern.
+It could also be used to load objects on the server, although this takes some care because the object would be reloaded every time the Pfset is played and you are responsible for freeing objects created this way in the cleanupFunc.
+(Pproto is another way; see link::Tutorials/A-Practical-Guide/PG_06f_Server_Control:: .)
 
 code::
 (
@@ -89,11 +135,14 @@ s.bufferAllocator.debug;
 p.stop;
 ::
 
-## code::Plambda(pattern, scope):: || Maintains an 'eventScope' environment, that is attached to events while they're being processed. Values can be assigned into the event scope using Plet(key, pattern, return), and read from scope using code::Pget(key, default, repeats)::. Pget is somewhat similar to Pkey, but it has a code::repeats:: argument controlling the number of return values as well as a code::default:: that will be used if the given key is not found in the event scope.
+## code::Plambda(pattern, scope):: || Maintains an 'eventScope' environment, that is attached to events while they're being processed. Values can be assigned into the event scope using Plet(key, pattern, return), and read from scope using code::Pget(key, default, repeats)::.
+Pget is somewhat similar to Pkey, but it has a code::repeats:: argument controlling the number of return values as well as a code::default:: that will be used if the given key is not found in the event scope.
 
-A unique feature of link::Classes/Plambda:: / link::Classes/Plet:: / link::Classes/Pget:: is the ability for Plet to assign one value to the event scope and return another value to the main event simultaneously. Plet assigns the value from its code::pattern:: into the event scope. The code::return:: argument is optional; if provided, it gives the value to return back to Pbind.
+A unique feature of link::Classes/Plambda:: / link::Classes/Plet:: / link::Classes/Pget:: is the ability for Plet to assign one value to the event scope and return another value to the main event simultaneously.
+Plet assigns the value from its code::pattern:: into the event scope. The code::return:: argument is optional; if provided, it gives the value to return back to Pbind.
 
-Plambda removes the eventScope before returning the final event to the caller. You can see the scope by tracing the inner pattern.
+Plambda removes the eventScope before returning the final event to the caller.
+You can see the scope by tracing the inner pattern.
 
 code::
 p = Plambda(
@@ -106,7 +155,9 @@ p = Plambda(
 p.next(());
 ::
 
-Something similar can be done with Pkey, by using intermediate values in the event that don't correspond to any SynthDef control names. There's no harm in having extra values in the event that its synth will not use; only the required ones are sent to the server. Often this is simpler than Plambda, but there might be cases where Plambda is the only way.
+Something similar can be done with Pkey, by using intermediate values in the event that don't correspond to any SynthDef control names.
+There's no harm in having extra values in the event that its synth will not use; only the required ones are sent to the server.
+Often this is simpler than Plambda, but there might be cases where Plambda is the only way.
 
 code::
 p = Pbind(
@@ -117,15 +168,29 @@ p = Pbind(
 
 p.nextN(5, ()).do(_.postln);
 ::
+
 ::
 
-subsection::Communicating values between separate event patterns
 
-Passing values from one Pbind to another takes a couple of little tricks. First is to store completed events in an accessible location. Neither the Pattern nor the EventStreamPlayer save the finished events; but, calling code::collect:: on the pattern attaches a custom action to perform on every result event. Here, we save the event into an environment variable, but it could go into the global library, a declared variable or any other data structure.
 
-Second, we have to ensure that the source pattern is evaluated before any client patterns that depend on the source's value. The only way to do this is to schedule the source slightly earlier, because items scheduled at the same time on any clock can execute in any order. (There is no priority mechanism to make one thread always run first.) But, this scheduling requirement should not affect audio timing.
 
-The solution is a timing offset mechanism, which delays the sound of an event by a given number of beats. In the example, the bass pattern is scheduled 0.1 beats before whole-numbered beats (while the chord pattern runs exactly on whole-numbered beats). The bass pattern operates with a timing offset of 0.1, delaying the sound so that it occurs on integer beats. Both patterns sound together in the server, even though their timing is different in the client.
+
+
+subsection:: Communicating values between separate event patterns
+
+
+Passing values from one Pbind to another takes a couple of little tricks.
+First is to store completed events in an accessible location.
+Neither the Pattern nor the EventStreamPlayer save the finished events; but, calling code::collect:: on the pattern attaches a custom action to perform on every result event.
+Here, we save the event into an environment variable, but it could go into the global library, a declared variable or any other data structure.
+
+Second, we have to ensure that the source pattern is evaluated before any client patterns that depend on the source's value. The only way to do this is to schedule the source slightly earlier, because items scheduled at the same time on any clock can execute in any order.
+(There is no priority mechanism to make one thread always run first.) But, this scheduling requirement should not affect audio timing.
+
+The solution is a timing offset mechanism, which delays the sound of an event by a given number of beats.
+In the example, the bass pattern is scheduled 0.1 beats before whole-numbered beats (while the chord pattern runs exactly on whole-numbered beats).
+The bass pattern operates with a timing offset of teletype::0::.1, delaying the sound so that it occurs on integer beats.
+Both patterns sound together in the server, even though their timing is different in the client.
 
 table::
 ## strong::Beat:: || strong::Client timing:: || strong::Server timing::
@@ -147,7 +212,8 @@ TempoClock.default.tempo = 1;
 	~lastBassEvent = event;
 }).play(quant: Quant(quant: 1, timingOffset: 0.1));
 
-// shorter form for the Quant object: #[1, 0, 0.1]
+// shorter form for the Quant object:
+#[1, 0, 0.1]
 
 ~chords = Pbind(
 	\topNote, Pseries(7, Prand(#[-2, -1, 1, 2], inf), inf).fold(2, 14),
@@ -173,7 +239,8 @@ TempoClock.default.tempo = 1;
 ~chords.stop;
 ::
 
-The chord pattern demonstrates some of the ways higher-level logic can be expressed in patterns. The goal is to transpose the notes of the root position triad over the bass note by octave so that the notes all fall within the octave beneath a top note (chosen by stepwise motion). code::Pkey(\topNote) - Pkey(\bassTriadNotes):: gives the number of transposition steps to bring the triad notes up to the top note; then the transposition steps are truncated to the next lower octave ( code::x div: 7:: is integer division producing an octave number; multiplying by 7 gives the number of scale degrees for that octave).
+The chord pattern demonstrates some of the ways higher-level logic can be expressed in patterns.
+The goal is to transpose the notes of the root position triad over the bass note by octave so that the notes all fall within the octave beneath a top note (chosen by stepwise motion). code::Pkey(\topNote) - Pkey(\bassTriadNotes):: gives the number of transposition steps to bring the triad notes up to the top note; then the transposition steps are truncated to the next lower octave ( code::x div: 7:: is integer division producing an octave number; multiplying by 7 gives the number of scale degrees for that octave).
 
 code::
 f = { |topNote, triad|
@@ -188,13 +255,19 @@ f.value(7, #[0, 2, 4]);
 --> [ 7, 2, 4 ] (first inversion triad)
 ::
 
-Then the transposed array is checked to see if the top note is already a member. If not, it's added so that the melody will always be present.
+Then the transposed array is checked to see if the top note is already a member.
+If not, it's added so that the melody will always be present.
 
 Note that lazy operations on patterns define most of this behavior; only the conditional array check had to be written as a function.
 
-The above example breaks one of the design principles of patterns. Ideally, it should be possible to play a single pattern object many times simultaneously without the different streams interfering with each other. Saving the bass note in one environment variable means that concurrent streams would not work together because they can't both use the same environment variable at the same time. The above approach does, however, allow the two patterns to be stopped and started independently, and new bass-dependent patterns to be added at any time. In some musical scenarios, this kind of flexibility is more important than respecting the pattern design ideal.
+The above example breaks one of the design principles of patterns.
+Ideally, it should be possible to play a single pattern object many times simultaneously without the different streams interfering with each other.
+Saving the bass note in one environment variable means that concurrent streams would not work together because they can't both use the same environment variable at the same time.
+The above approach does, however, allow the two patterns to be stopped and started independently, and new bass-dependent patterns to be added at any time.
+In some musical scenarios, this kind of flexibility is more important than respecting the pattern design ideal.
 
-It is possible, using link::Classes/Ptpar:: and link::Classes/Penvir::, to create independent environments for event storage as part of the pattern itself. By default, Penvir creates a new copy of its environment for each stream, guaranteeing independence. While the pattern is running, code::~lastBassEvent = event:: saves the event in the stream's copy of the storage environment, and it's available to both Pbinds because both are under control of Penvir (indirectly through Ptpar).
+It is possible, using link::Classes/Ptpar:: and link::Classes/Penvir::, to create independent environments for event storage as part of the pattern itself.
+By default, Penvir creates a new copy of its environment for each stream, guaranteeing independence. While the pattern is running, code::~lastBassEvent = event:: saves the event in the stream's copy of the storage environment, and it's available to both Pbinds because both are under control of Penvir (indirectly through Ptpar).
 
 code::
 (

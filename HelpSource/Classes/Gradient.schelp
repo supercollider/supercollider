@@ -1,31 +1,100 @@
-class:: Gradient
-summary:: A linear color fade between two colors
+title:: Gradient
 categories:: GUI>Accessories
+summary:: A linear color fade between two colors
 related:: Classes/Color, Classes/HiliteGradient
+
+
+
+
+
+
+
+
+
 
 description::
 
-note:: The use of Gradient is strong::not supported yet::. When Gradient is used in place of Color, the average gradient color will be used instead. ::
+
+
+
+note:: 
+The use of Gradient is strong::not supported yet::.
+When Gradient is used in place of Color, the average gradient color will be used instead.
+::
+
+
+
+
+
+
+
+
+
 
 classmethods::
 
+
+
+
 method:: new
+
+
 argument:: color1
+
 An instance of link::Classes/Color::.
+
+
 argument:: color2
+
 An instance of link::Classes/Color::.
+
+
 argument:: direction
+
 code::\h:: or code::\v:: for horizontal and vertical respectively. Default value is code::\h::.
+
+
 argument:: steps
+
 The resolution of the gradient. Default value is 64.
+
+
+
+
+
+
+
+
+
 
 instancemethods::
 
+
+
+
 method:: at
-Retrieve the colour at position code::pos::, typically a value between zero and one. code::at(0):: is code::color1::, and code::at(1):: is code::color2::.
+
+
+Retrieve the colour at position code::pos::, typically a value between zero and one.
+code::at(0):: is code::color1::, and code::at(1):: is code::color2::.
+
+
 argument:: pos
 
+
+
+
+
+
+
+
+
+
 examples::
+
+
+
+
 code::
 // basic usage
 (

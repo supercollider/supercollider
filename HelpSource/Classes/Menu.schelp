@@ -1,12 +1,25 @@
-TITLE:: Menu
-summary:: Context and application-level menus
+title:: Menu
 categories:: GUI
+summary:: Context and application-level menus
 related:: Classes/MenuAction, Classes/CustomViewAction, Classes/ToolBar, Classes/MainMenu
 
-DESCRIPTION::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
 The Menu class allows the creation and control of context menus and application-level menus.
 
-CODE::
+code::
 (
 ~menu = Menu(
 	MenuAction("A", { "A selected".postln }),
@@ -16,16 +29,31 @@ CODE::
 )
 ::
 
-CLASSMETHODS::
 
-METHOD:: new
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
 	Create a new menu. A menu is populated with link::Classes/MenuAction::s
 
-	ARGUMENT::
-		One or more link::Classes/MenuAction##MenuActions:: or Menus to be displayed in the menu. Menu arguments will create sub-menus.
+	argument::
+		One or more link::Classes/MenuAction##MenuActions:: or Menus to be displayed in the menu.
+Menu arguments will create sub-menus.
 
-	DISCUSSION::
-		CODE::
+	discussion::
+		code::
 (
 	Menu(
 		MenuAction("main"),
@@ -38,44 +66,85 @@ METHOD:: new
 )
 ::
 
-INSTANCEMETHODS::
 
-SUBSECTION:: Control
 
-METHOD:: front
-	Show the menu if it is not already shown. Note that unlike most Views, Menus are not destroyed when they are closed - front can be used to re-generate a single menu again and again.
 
-	ARGUMENT:: point
-		A link::Classes/Point:: at which to show the menu. Default to the current mouse cursor position.
-	ARGUMENT:: action
-		The action that should appear at the specified point coordinates. Should be an action contained in the menu.
 
-METHOD:: title
+
+
+
+
+
+instancemethods::
+
+
+
+
+subsection:: Control
+
+
+method:: front
+
+
+	Show the menu if it is not already shown.
+Note that unlike most Views, Menus are not destroyed when they are closed - front can be used to re-generate a single menu again and again.
+
+	argument:: point
+		A link::Classes/Point:: at which to show the menu.
+Default to the current mouse cursor position.
+	argument:: action
+		The action that should appear at the specified point coordinates.
+Should be an action contained in the menu.
+
+
+
+
+method:: title
+
+
 	The title of the menu.
 
-	ARGUMENT:: title
+	argument:: title
 		A link::Classes/String::.
 
-METHOD:: tearOff
-	ARGUMENT::
-		If true, menu is / will be torn off from its parent and become a free-floating menu.
 
-METHOD:: copy
-	Create an identical copy of the menu. The new menu will not be shown until code::.front:: is called.
 
-SUBSECTION:: Events
+
+method:: tearOff
+
+
+	argument::
+		If teletype::true::, menu is / will be torn off from its parent and become a free-floating menu.
+
+
+
+
+method:: copy
+
+
+	Create an identical copy of the menu.
+The new menu will not be shown until code::.front:: is called.
+
+
+
+
+
+
+subsection:: Events
+
+
 	Menus broadcast several kinds of events that can be registered for with the standard link::Classes/Object#-addDependant:: calls.
 	Events broadcast by menu:
 
-	LIST::
+	list::
 		## code::\aboutToShow::
 		## code::\aboutToHide::
 		## code::\triggered:: (with the MenuAction that was triggered)
 		## code::\hovered:: (with action that was hovered over)
 	::
 
-	STRONG:: Events example ::
-	CODE::
+	strong:: Events example ::
+	code::
 (
 m = Menu(MenuAction("Option A"), MenuAction("Option B")).title_("Event Example");
 
@@ -91,12 +160,20 @@ m.onClose_({ m.removeDependant(f) }).front;
 )
 	::
 
-SUBSECTION:: Context Menus
-	One or more MenuActions can be attached to any View object. The shortcut key combinations for these actions will become available, and the actions will appear in the context menu for that view.
+
+
+
+
+
+subsection:: Context Menus
+
+
+	One or more MenuActions can be attached to any View object.
+The shortcut key combinations for these actions will become available, and the actions will appear in the context menu for that view.
 
 	See link::Classes/View#-setContextMenuActions::, link::Classes/View#-addMenuAction::, link::Classes/View#-removeMenuAction:: for more information.
 
-	CODE::
+	code::
 (
 ~view = View().layout_(HLayout(
 	~button = Button().states_([["Button"]]),
@@ -118,10 +195,22 @@ SUBSECTION:: Context Menus
 )
 	::
 
-EXAMPLES::
 
-	STRONG:: A more complex menu. ::
-	CODE::
+
+
+
+
+
+
+
+
+examples::
+
+
+
+
+	strong:: A more complex menu. ::
+	code::
 (
 ~image = Image(64, 64).draw({
 	Pen.fillColor = Color.blue;

@@ -1,6 +1,19 @@
-class:: BufInfoUGenBase
+title:: BufInfoUGenBase
 categories:: UGens>Base
 summary:: Base class for buffer info ugens
 
+
+
+
+
+
+
+
+
+
 description::
-This is the superclass for the various buffer info ugens.
+
+
+
+
+This is the superclass for the various buffer info UGens.

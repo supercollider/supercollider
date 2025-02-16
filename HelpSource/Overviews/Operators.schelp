@@ -1,7 +1,8 @@
 title:: Operators
 categories:: Language, Common methods
-summary:: common unary and binary operators
+summary:: Common unary and binary operators
 related:: Reference/Adverbs
+
 
 SuperCollider supports operator overloading. Operators can thus be applied to a variety of different objects; Numbers, UGens, Collections, and so on. When operators are applied to UGens they result in link::Classes/BinaryOpUGen::s or link::Classes/UnaryOpUGen::s, through the methods of link::Classes/AbstractFunction::.
 
@@ -10,18 +11,41 @@ See the specific classes for details and other operators.
 
 You can see which classes implements a specific operator by clicking on the method name.
 
+
+
+
+
+
+
+
+
+
 section:: Unary Operators
+
+
+
+
 Unary operators may be written in two ways:
+
 code::
 a.operator
 operator(a)
 ::
 
 
+
+
+
+
 subsection:: Arithmetics
 
+
 method:: neg
+
+
 Inversion.
+
+
 discussion::
 code::
 {
@@ -31,14 +55,31 @@ code::
 }.plot
 ::
 
+
+
+
 method:: reciprocal
+
+
 Reciprocal (1/x).
 
+
+
+
 method:: abs
+
+
 Absolute value.
 
+
+
+
 method:: floor
+
+
 Next lower integer.
+
+
 discussion::
 code::
 {
@@ -48,8 +89,15 @@ code::
 }.plot
 ::
 
+
+
+
 method:: ceil
+
+
 Next higher integer.
+
+
 discussion::
 code::
 {
@@ -59,39 +107,85 @@ code::
 }.plot
 ::
 
+
+
+
 method:: frac
+
+
 Fractional part.
 
+
+
+
 method:: sign
+
+
 Sign function.
+
+
 returns::
--1 when a < 0, +1 when a > 0, 0 when a is 0
+-1 when a < 0, +1 when a > 0, teletype::0:: when a is 0
+
+
+
 
 method:: squared
+
+
 Squared value.
+
+
 returns::
 code:: a*a ::
 
+
+
+
 method:: cubed
+
+
 Cubed value.
+
+
 returns::
 code:: a*a*a ::
 
+
+
+
 method:: sqrt
+
+
 Square root.
+
+
 discussion::
 The definition of square root is extended for signals so that sqrt(a) when a<0 returns
 -sqrt(-a).
 
+
+
+
 method:: exp
+
+
 Exponential.
+
+
+
+
 
 
 subsection:: Musical acoustics
 
 
 method:: midicps
+
+
 Convert MIDI note number to cycles per second.
+
+
 discussion::
 code::
 {
@@ -99,49 +193,108 @@ code::
 }.play
 ::
 
+
+
+
 method:: cpsmidi
+
+
 Convert cycles per second to MIDI note.
 
+
+
+
 method:: midiratio
+
+
 Convert an interval in MIDI notes into a frequency ratio.
 
+
+
+
 method:: ratiomidi
+
+
 Convert a frequency ratio to an interval in MIDI notes.
 
+
+
+
 method:: dbamp
+
+
 Convert decibels to linear amplitude.
 
+
+
+
 method:: ampdb
+
+
 Convert linear amplitude to decibels.
 
+
+
+
 method:: octcps
+
+
 Convert decimal octaves to cycles per second.
 
+
+
+
 method:: cpsoct
+
+
 Convert cycles per second to decimal octaves.
+
+
+
+
+
 
 subsection:: Random operators
 
+
 See also link::Guides/Randomness::
 
-method::rand
-Returns an evenly distributed random value between this and zero.
+
+
+
+method:: rand
+
+
+Return an evenly distributed random value between this and zero.
+
 code::
 10.rand;
 
 { SinOsc.ar(110).rand }.plot;
 ::
 
-method::rand2
-Returns an evenly distributed random value between [+this ... - this].
+
+
+
+method:: rand2
+
+
+Return an evenly distributed random value between [+this ... - this].
+
 code::
 10.rand2;
 
 { SinOsc.ar(110).rand2 }.plot;
 ::
 
-method::linrand
-Returns a linearly distributed random value between this and zero.
+
+
+
+method:: linrand
+
+
+Return a linearly distributed random value between this and zero.
+
 code::
 10.linrand;
 
@@ -149,17 +302,28 @@ code::
 ::
 
 
-method::bilinrand
-Returns a linearly distributed random value between [+this ... - this].
+
+
+method:: bilinrand
+
+
+Return a linearly distributed random value between [+this ... - this].
+
 code::
 10.bilinrand;
 
 { SinOsc.ar(110).bilinrand }.plot;
 ::
 
-method::sum3rand
-Returns a value from a gaussian-like random distribution between this and zero.
-This was suggested by Larry Polansky as a loose approximation of gaussian. Follows the formula:
+
+
+
+method:: sum3rand
+
+
+Return a value from a gaussian-like random distribution between this and zero.
+This was suggested by Larry Polansky as a loose approximation of gaussian.
+Follows the formula:
 
 code::
 { 1.0.rand }.dup(3).sum - 1.5 * (2/3)
@@ -171,8 +335,14 @@ code::
 { SinOsc.ar(110).sum3rand }.plot;
 ::
 
-method::coin
-Returns one or zero with the probability given by the argument.
+
+
+
+method:: coin
+
+
+Return one or zero with the probability given by the argument.
+
 code::
 0.4.coin;
 
@@ -180,11 +350,19 @@ code::
 ::
 
 
+
+
+
+
 subsection:: Other
 
 
 method:: log
+
+
 Natural logarithm.
+
+
 discussion::
 code::
 {
@@ -195,47 +373,112 @@ code::
 }.plot
 ::
 
+
+
+
 method:: log2
+
+
 Base 2 logarithm.
 
+
+
+
 method:: log10
+
+
 Base 10 logarithm.
 
+
+
+
 method:: sin
+
+
 Sine.
 
+
+
+
 method:: cos
+
+
 Cosine.
 
+
+
+
 method:: tan
+
+
 Tangent.
 
+
+
+
 method:: asin
+
+
 Arcsine.
 
+
+
+
 method:: acos
+
+
 Arccosine.
 
+
+
+
 method:: atan
+
+
 Arctangent.
 
+
+
+
 method:: sinh
+
+
 Hyperbolic sine.
 
+
+
+
 method:: cosh
+
+
 Hyperbolic cosine.
 
+
+
+
 method:: tanh
+
+
 Hyperbolic tangent.
 
+
+
+
 method:: distort
+
+
 Nonlinear distortion.
+
+
 discussion::
 The formula used is :
+
 code::
 x / (1 + abs(x))
 ::
+
 Here is an example :
+
 code::
 (
 {
@@ -248,10 +491,18 @@ code::
 { FSinOsc.ar(500, 0.0, XLine.kr(0.1, 10, 10)).distort * 0.25 }.scope;
 ::
 
+
+
+
 method:: softclip
+
+
 Nonlinear distortion.
+
+
 discussion::
 Distortion with a perfectly linear region from -0.5 to +0.5
+
 code::
 (
 {
@@ -265,17 +516,46 @@ code::
 { FSinOsc.ar(500,0.0, XLine.kr(0.1, 10, 10)).softclip * 0.25 }.scope(2);
 ::
 
+
+
+
 method:: isPositive
+
+
 Test if signal is >= 0.
 
+
+
+
 method:: isNegative
+
+
 Test if signal is < 0.
 
+
+
+
 method:: isStrictlyPositive
+
+
 Test if signal is > 0.
 
+
+
+
+
+
+
+
+
+
 section:: Binary Operators
+
+
+
+
 Three different syntaxes can be used for binary operators consisting of letters:
+
 code::
 operator(a, b)
 
@@ -283,40 +563,88 @@ a operator: b
 
 a.operator(b)
 ::
+
 Operators consisting of symbols are written like this:
+
 code::
 a + b
 ::
 
+
+
+
+
+
 subsection:: Arithmetics
 
+
 method:: +
+
+
 Addition.
 
+
+
+
 method:: -
+
+
 Subtraction.
 
+
+
+
 method:: *
+
+
 Multiplication.
 
+
+
+
 method:: /
+
+
 Division.
 
+
+
+
 method:: %
+
+
 Floating point modulo.
 
+
+
+
 method:: **
+
+
 Exponentiation. Same as pow.
 
+
+
+
 method:: pow
+
+
 Exponentiation.
-NOTE:: When used with UGens which produce a negative signal this function extends the usual definition of exponentiation and returns code::neg(neg(a) ** b)::. This allows exponentiation of negative signal values by noninteger exponents.::
+
+note::
+When used with UGens which produce a negative signal this function extends the usual definition of exponentiation and returns code::neg(neg(a) ** b)::.
+This allows exponentiation of teletype::negative:: signal values by noninteger exponents.
+::
+
+
+
 
 method:: lcm
+
+
 Least common multiple. This definition extends the usual definition and returns a negative number if strong::any of the operands:: is negative. This makes it consistent with the lattice-theoretical interpretation and its idempotency, commutative, associative, absorption laws.
 
 Following the example of the programming language J (see: link::Guides/J-concepts-in-SC::), lcm is analogous to logical strong::and:: (see also: link::http://www.jsoftware.com/papers/eem/gcd.htm::).
-
 
 code::
 lcm(4, 6);
@@ -326,6 +654,7 @@ lcm(1624, -26);
 lcm(-1624, -26);
 lcm(513, gcd(513, 44)) // absorption law -> 513.
 ::
+
 code::
 (
 {
@@ -337,7 +666,11 @@ code::
 ::
 
 
+
+
 method:: gcd
+
+
 Greatest common divisor. This definition extends the usual definition and returns a negative number if strong::both operands:: are negative. This makes it consistent with the lattice-theoretical interpretation and its idempotency, commutative, associative, absorption laws.
 
 "greater" means "divisible by" in this interpretation, so code::gcd(-1, -1):: returns a negative number. This is necessary to make the whole system consistent (fundamental law of arithmetics, idempotency and absorption laws would fail). See examples below.
@@ -367,7 +700,6 @@ code::
 Here is an overview of how negative numbers are treated:
 
 code::
-
 lcm(4, 6) // -> 12. "least multiple" interpreted as smallest in Z
 lcm(4, -6) // -> -12 "least multiple" interpreted as smallest in Z
 lcm(-4, -6) // -> -12 "least multiple" interpreted as smallest in Z
@@ -378,18 +710,38 @@ gcd(-4, -6) // -> -2 "greatest divisor" is interpreted as *inverse* in Z. This i
 ::
 
 
+
+
+
+
 subsection:: Comparisons
 
+
 method:: <
+
+
 Less than.
 
+
+
+
 method:: <=
+
+
 Less than or equal.
 
+
+
+
 method:: >
+
+
 Greater than.
+
+
 discussion::
 With UGens, this can be useful for triggering purposes, among other things:
+
 code::
 (
 { // trigger an envelope
@@ -409,7 +761,8 @@ SynthDef("help-EnvGen", { arg out=0;
 	)
 }).add;
 
-// This synth has no output. It only checks amplitude of input and looks for a transition from < 0.2
+// This synth has no output.
+It only checks amplitude of input and looks for a transition from < 0.2
 // to > 0.2
 
 { SendTrig.kr(Amplitude.kr(SoundIn.ar(0)) > 0.2) }.play;
@@ -419,21 +772,49 @@ OSCFunc({ "triggered".postln; Synth.new("help-EnvGen") },'/tr', s.addr);
 )
 ::
 
+
+
+
 method:: >=
+
+
 Greater than or equal.
 
+
+
+
 method:: ==
+
+
 Equal.
 
+
+
+
 method:: !=
+
+
 Not equal.
 
+
+
+
 method:: |==|
+
+
 "Lazy equality." See link::Classes/Object#-|==|::.
+
+
+
+
+
 
 subsection:: Other
 
+
 method:: <!
+
+
 Return first argument.
 
 code::
@@ -450,8 +831,15 @@ code::
 )
 ::
 
+
+
+
 method:: min
+
+
 Minimum.
+
+
 discussion::
 code::
 { // distorts and envelopes z
@@ -461,8 +849,15 @@ z min: FSinOsc.ar(0.1);
 }.play;
 ::
 
+
+
+
 method:: max
+
+
 Maximum.
+
+
 discussion::
 code::
 { // modulates and envelopes z
@@ -472,17 +867,36 @@ z max: FSinOsc.ar(0.1);
 }.play;
 ::
 
+
+
+
 method:: round
+
+
 Quantization by rounding. Rounds a to the nearest multiple of b.
 
+
+
+
 method:: trunc
+
+
 Quantization by truncation. Truncate a to a multiple of b.
 
+
+
+
 method:: hypot
-Hypotenuse. Returns the square root of the sum of the squares of a and b. Or equivalently, the distance from the origin
+
+
+Hypotenuse. Returns the square root of the sum of the squares of a and b.
+Or equivalently, the distance from the origin
 to the point (x, y).
+
+
 discussion::
 In this example, hypot is used to calculate a doppler shift pitch and amplitude based on distance.
+
 code::
 (
 {
@@ -498,7 +912,9 @@ code::
 	FSinOsc.ar(1000 * pitchRatio, 0, amplitude)
 }.play)
 ::
+
 The next example uses the distance to modulate a delay line.
+
 code::
 (
 {
@@ -514,24 +930,42 @@ code::
 }.play)
 ::
 
+
+
+
 method:: hypotApx
+
+
 Hypotenuse approximation. Returns an approximation of the square root of the sum of the squares of x and y.
+
+
 discussion::
 The formula used is :
+
 code::
 abs(x) + abs(y) - ((sqrt(2) - 1) * min(abs(x), abs(y)))
 ::
-hypotApx is used to implement Complex method magnitudeApx.
-This should not be used for simulating a doppler shift because it is discontinuous. Use hypot.
+
+HypotApx is used to implement Complex method magnitudeApx.
+This should not be used for simulating a doppler shift because it is discontinuous.
+Use hypot.
 
 See also link::#hypot::, link::#atan2::.
 
+
+
+
 method:: atan2
-Returns the arctangent of y/x.
+
+
+Return the arctangent of y/x.
+
+
 discussion::
 OK, now we can add a pan to the link::#hypot:: doppler examples by using atan2 to find the azimuth,
 or direction angle, of the sound source.
 Assume speakers at +/- 45 degrees and clip the direction to between those.
+
 code::
 (
 {
@@ -566,17 +1000,28 @@ code::
 }.play)
 ::
 
+
+
+
 method:: ring1
+
+
 Ring modulation plus first source.
+
+
 discussion::
-Return the value of  ((a*b) + a). This is more efficient than using
+Return the value of  ((a*b) + a).
+This is more efficient than using
 separate unit generators for the multiply and add.
 
 See also link::#*::, link::#ring1::, link::#ring2::, link::#ring3::, link::#ring4::.
+
 code::
 { (FSinOsc.ar(800) ring1: FSinOsc.ar(XLine.kr(200,500,5))) * 0.125 }.play;
 ::
-same as :
+
+Same as :
+
 code::
 (
 {
@@ -586,7 +1031,9 @@ code::
 	((a * b) + a) * 0.125
 }.play)
 ::
-normal ring modulation:
+
+Normal ring modulation:
+
 code::
 (
 {
@@ -597,15 +1044,26 @@ code::
 }.play)
 ::
 
+
+
+
 method:: ring2
+
+
 Ring modulation plus both sources.
+
+
 discussion::
-Return the value of  ((a*b) + a + b). This is more efficient than using
+Return the value of  ((a*b) + a + b).
+This is more efficient than using
 separate unit generators for the multiply and adds.
+
 code::
 { (FSinOsc.ar(800) ring2: FSinOsc.ar(XLine.kr(200,500,5))) * 0.125 }.play;
 ::
-same as :
+
+Same as :
+
 code::
 (
 {
@@ -616,15 +1074,26 @@ code::
 }.play)
 ::
 
+
+
+
 method:: ring3
+
+
 Ring modulation variant.
+
+
 discussion::
-Return the value of  (a*a *b). This is more efficient than using
+Return the value of  (a*a *b).
+This is more efficient than using
 separate unit generators for each multiply.
+
 code::
 { (FSinOsc.ar(800) ring3: FSinOsc.ar(XLine.kr(200,500,5))) * 0.125 }.play;
 ::
-same as :
+
+Same as :
+
 code::
 (
 {
@@ -635,15 +1104,26 @@ code::
 }.play)
 ::
 
+
+
+
 method:: ring4
+
+
 Ring modulation variant.
+
+
 discussion::
-Return the value of  ((a*a *b) - (a*b*b)). This is more efficient than using
+Return the value of  ((a*a *b) - (a*b*b)).
+This is more efficient than using
 separate unit generators for each operation.
+
 code::
 { (FSinOsc.ar(800) ring4: FSinOsc.ar(XLine.kr(200,500,5))) * 0.125 }.play;
 ::
-same as :
+
+Same as :
+
 code::
 (
 {
@@ -654,15 +1134,26 @@ code::
 }.play)
 ::
 
+
+
+
 method:: sumsqr
+
+
 Sum of squares.
+
+
 discussion::
-Return the value of  (a*a) + (b*b). This is more efficient than using
+Return the value of  (a*a) + (b*b).
+This is more efficient than using
 separate unit generators for each operation.
+
 code::
 { (FSinOsc.ar(800) sumsqr: FSinOsc.ar(XLine.kr(200,500,5))) * 0.125 }.play;
 ::
-same as :
+
+Same as :
+
 code::
 (
 {
@@ -673,15 +1164,26 @@ code::
 }.play)
 ::
 
+
+
+
 method:: difsqr
+
+
 Difference of squares.
+
+
 discussion::
-Return the value of  (a*a) - (b*b). This is more efficient than using
+Return the value of  (a*a) - (b*b).
+This is more efficient than using
 separate unit generators for each operation.
+
 code::
 { (FSinOsc.ar(800) difsqr: FSinOsc.ar(XLine.kr(200,500,5))) * 0.125 }.play;
 ::
-same as :
+
+Same as :
+
 code::
 (
 {
@@ -692,15 +1194,25 @@ code::
 }.play)
 ::
 
+
+
+
 method:: sqrsum
+
+
 Square of the sum.
+
+
 discussion::
 Return the value of  (a + b)**2. This is more efficient than using
 separate unit generators for each operation.
+
 code::
 { (FSinOsc.ar(800) sqrsum: FSinOsc.ar(XLine.kr(200,500,5))) * 0.125 }.play;
 ::
-same as :
+
+Same as :
+
 code::
 (
 {
@@ -712,15 +1224,25 @@ code::
 }.play)
 ::
 
+
+
+
 method:: sqrdif
+
+
 Square of the difference.
+
+
 discussion::
 Return the value of  (a - b)**2. This is more efficient than using
 separate unit generators for each operation.
+
 code::
 { (FSinOsc.ar(800) sqrdif: FSinOsc.ar(XLine.kr(200,500,5))) * 0.125 }.play;
 ::
-same as :
+
+Same as :
+
 code::
 (
 {
@@ -732,8 +1254,15 @@ code::
 }.play)
 ::
 
+
+
+
 method:: absdif
+
+
 Absolute value of the difference. code:: abs(a - b) ::
+
+
 discussion::
 code::
 (
@@ -744,8 +1273,16 @@ FSinOsc.ar(440, 0, mul);
 )
 ::
 
+
+
+
 method:: moddif
-On a circle, there are two distances between two points. This operator returns the smaller value of the two.
+
+
+On a circle, there are two distances between two points.
+This operator returns the smaller value of the two.
+
+
 discussion::
 code::
 { Line.ar(0, 4, 0.01).moddif(0) }.plot;
@@ -757,34 +1294,66 @@ FSinOsc.ar(440, 0, mul);
 )
 ::
 
+
+
+
 method:: thresh
+
+
 Thresholding.
+
+
 discussion::
-0 when a < b, otherwise a.
+teletype::0:: when a < b, otherwise a.
+
 code::
 { LFNoise0.ar(50, 0.5) thresh: 0.45 }.play // a low-rent gate
 ::
 
+
+
+
 method:: amclip
+
+
 Two quadrant multiply.
+
+
 discussion::
 0  when  b <= 0,  a*b  when  b > 0
+
 code::
 { WhiteNoise.ar.amclip(FSinOsc.kr(1,0.2)) }.play; // makes a sine envelope
 ::
 
+
+
+
 method:: scaleneg
+
+
 Scale negative part of input.
+
+
 discussion::
-a*b when a < 0, otherwise a.
+A*b when a < 0, otherwise a.
+
 code::
 { FSinOsc.ar(500).scaleneg(Line.ar(1,-1,4)) }.play;
 ::
 
+
+
+
 method:: clip2
+
+
 Bilateral clipping.
+
+
 discussion::
-clips input wave a to +/- b
+Clip input wave a to +/- b
+
 code::
 (
 {
@@ -799,10 +1368,18 @@ code::
 { FSinOsc.ar(1000).clip2(Line.kr(0,1,8)) }.scope;
 ::
 
+
+
+
 method:: wrap2
+
+
 Bilateral wrapping.
+
+
 discussion::
-wraps input wave to +/- b
+Wrap input wave to +/- b
+
 code::
 (
 {
@@ -815,10 +1392,18 @@ code::
 { FSinOsc.ar(1000).wrap2(Line.kr(0,1.01,8)) }.scope;
 ::
 
+
+
+
 method:: fold2
+
+
 Bilateral folding.
+
+
 discussion::
-folds input wave a to +/- b
+Fold input wave a to +/- b
+
 code::
 (
 {
@@ -832,10 +1417,19 @@ code::
 { FSinOsc.ar(1000).fold2(Line.kr(0,1,8)) }.scope;
 ::
 
+
+
+
 method:: excess
+
+
 Residual of clipping.
+
+
 discussion::
-Returns the difference of the original signal and its clipped form: (a - clip2(a,b)).
+Return the difference of the original signal and its clipped form:
+(a - clip2(a,b)).
+
 code::
 (
 {

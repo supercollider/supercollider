@@ -1,16 +1,34 @@
-class:: Plotter
-summary:: Plot numerical data on a window or view
+title:: Plotter
 categories:: GUI>Accessories
+summary:: Plot numerical data on a window or view
 related:: Reference/plot
 
 
+
+
+
+
+
+
+
+
 description::
+
+
+
+
 Plot data of up to three dimensions on a link::Classes/Window:: or link::Classes/UserView::.
+
+
+
+
 
 
 subsection:: Keyboard shortcuts
 
+
 When the plotter window has focus, the following keyboard shortcuts can be used to change the display:
+
 table::
 ## + / - || vertical zoom
 ## = || compare plot channels
@@ -26,11 +44,21 @@ table::
 ::
 
 
+
+
+
+
 subsection:: Method extensions
-Plotter extends other classes with methods. To see what classes implements plot, see link::Overviews/Methods#plot::
+
+
+Plotter extends other classes with methods.
+To see what classes implements plot, see link::Overviews/Methods#plot::
+
+
 
 
 method:: plot (args)
+
 
 code::
 // plot array
@@ -52,7 +80,10 @@ Env.perc(0.4, 0.6).plot;
 ::
 
 
+
+
 method:: plotGraph (n, from, to, ...)
+
 
 code::
 { |x| sin(x) }.plotGraph(300, 0, 2*pi);
@@ -60,15 +91,38 @@ code::
 ::
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
+
+
+
 method:: new
+
+
 argument:: name
+
 Plot window title.
+
+
 argument:: bounds
+
 The window bounds (a link::Classes/Rect::).
+
+
 argument:: parent
-Either a link::Classes/Window:: / link::Classes/View:: may be passed in - then the plot is embedded. Otherwise a new link::Classes/Window:: is created.
+
+Either a link::Classes/Window:: / link::Classes/View:: may be passed in - then the plot is embedded.
+Otherwise a new link::Classes/Window:: is created.
+
+
 discussion::
 code::
 (
@@ -78,40 +132,65 @@ a.value = (0..1000).normalize(0, 14pi).curdle(0.01).scramble.flat.sin;
 ::
 
 
+
+
+
+
+
+
+
+
 instancemethods::
+
+
 
 
 subsection:: Embedding in another view
 
 
 method:: makeWindow
+
+
 Open given plotter in a new window or within a given composite view.
 
 See the link::#Embedding in another View or GUI:: example.
 
+
 argument:: argParent
-Either a link::Classes/Window:: or link::Classes/View:: may be passed in - then the plot is embedded. Otherwise a new link::Classes/Window:: is created.
+
+Either a link::Classes/Window:: or link::Classes/View:: may be passed in - then the plot is embedded.
+Otherwise a new link::Classes/Window:: is created.
+
 
 argument:: argBounds
+
 The window bounds (a link::Classes/Rect::).
+
+
+
+
 
 
 subsection:: Plot properties
 
 
 method:: plotMode
-Get/Set the style of data display. This can be an array of different modes for
+
+
+Get/Set the style of data display.
+This can be an array of different modes for
 multi-channel data.
 Available modes:
+
 table::
 ## code::\points:: || draw data points as circles with a dot in the middle
 ## code::\dots:: || draw data points as filled circles
 ## code::\lines, \linear:: || lines connect data points
 ## code::\plines:: || lines connect data points, marked also by code::\points::
 ## code::\dlines:: || lines connect data points, marked also by code::\dots::
-## code::\stems:: || PCM-style vertical lines from zero to the data point
-## code::\pstems:: || vertical lines from zero to the data points, marked also by code::\points::
-## code::\dstems:: || vertical lines from zero to the data points, marked also by code::\dots::
+## code::\stems:: || PCM-style vertical lines from teletype::zero:: to the data point
+## code::\pstems:: || vertical lines from teletype::zero:: to the data points, marked also by code::\points::
+## code::\dstems:: || vertical lines from teletype::zero:: to the data points, marked also by code::\dots::
 ## code::\filled:: || fills the area under a waveform, and assumes a bipolar signal (filled to the zero-crossing)
 ## code::\pfilled:: || code::\filled::, marked also by code::\points::
 ## code::\dfilled:: || code::\filled::, marked also by code::\dots::
@@ -120,20 +199,23 @@ table::
 ## code::\bars:: || bar graph with filled bars
 ::
 
+
 argument:: modes
+
 A link::Classes/Symbol:: or an link::Classes/Array:: of link::Classes/Symbol::s.
 
 If code::modes.size < numChannels::, the plots will emphasis::wrap:: around the
 array of modes.
+
 
 returns::
 An link::Classes/Array:: of link::Classes/Symbol::s,
 unless there is only one mode specified or if all modes of a multi-channel plot
 are the same, in which case a single link::Classes/Symbol:: is returned.
 
+
 discussion::
 code::
-
 p = (0..20).scramble.plot;
 p.plotMode = \points;
 p.plotMode = \plines;
@@ -174,19 +256,28 @@ p.superpose_(true);
 ::
 
 
+
+
 method:: plotColor
+
+
 Set or get the colors of your data plot.
 
+
 argument:: colors
+
 This can be an link::Classes/Array:: of link::Classes/Color::s for
 multichannel data, or a single link::Classes/Color:: to map to all channels.
 
 If code::colors.size < numChannels::, the plots will emphasis::wrap:: around the
 array of colors.
+
+
 returns::
 An link::Classes/Array:: of link::Classes/Color::s, unless there is only one
 color specified or if all colors of a multi-channel plot are the same, in which
 case a link::Classes/Color:: is returned.
+
 
 discussion::
 code::
@@ -215,31 +306,51 @@ var freq = 100;
 
 
 
+
 method:: superpose
-If code::true::, plotter displays channels overlaid on a single plot. (keyboard shortcut: s)
+
+
+If code::true::, plotter displays channels overlaid on a single plot.
+(keyboard shortcut: s)
+
 code::
 a = { (0..30).scramble }.dup(2).plot;
 a.superpose = true;
 ::
 
 
+
+
 method:: axisLabelX
+
+
 Get/set the label for the x-axes. Can be a link::Classes/String:: or an link::Classes/Array:: of
 link::Classes/String::s, or code::nil:: to remove the label.
 See link::#Axis labels:: example below.
 
 
+
+
 method:: axisLabelY
+
+
 Get/set the label for the y-axes. Can be a link::Classes/String:: or an link::Classes/Array:: of
 link::Classes/String::s, or code::nil:: to remove the label.
 See link::#Axis labels:: example below.
 
 
+
+
 method:: showUnits
+
+
 Get/set whether the corresponding link::Classes/ControlSpec#-units:: are displayed as labels. The state of link::#-unitLocation:: determines whether the units are shown as axis labels or appended to the tick labels.
 
+
 argument:: bool
+
 A code::Boolean::.
+
 
 discussion::
 When enabling code::showUnits::, axis or tick labels will only be updated to show the units when the code::axisLabelX/Y:: or grid code::labelAppendString:: properties are code::nil::, empty, or were previously set to show the spec units — i.e. code::showUnits:: won't overwrite a label that has been explicitly set.
@@ -247,24 +358,39 @@ When enabling code::showUnits::, axis or tick labels will only be updated to sho
 See link::#Unit labels:: example below.
 
 
+
+
 method:: unitLocation
+
+
 Get/set the label type on which the code::Spec:: link::Classes/ControlSpec#-units:: are shown.
 
 See the Discussion in link::#-showUnits:: about the interraction with pre-existing labels at the strong::location::, and link::#Unit labels:: example below.
 
+
 argument:: location
+
 A code::Symbol::, code::\axis:: or code::\ticks::, to show the units as the axis label or appended to each of the tick labels, respectively.
 
 
-method:: setProperties
-Set properties of all plot views. Defaults are taken from code::GUI.skins.at(\plot);::
 
-warning:: It's preferrable to use Plotter's instance methods when possible
+
+method:: setProperties
+
+
+Set properties of all plot views.
+Defaults are taken from code::GUI.skins.at(\plot);::
+
+warning:: 
+It's preferrable to use Plotter's instance methods when possible
 to set Plot properties to ensure proper behavior when using link::#-superpose::.
 ::
 
+
 argument:: ... pairs
+
 A list of symbol, value pairs. Supported properties:
+
 list::
 ## font
 ## fontColor
@@ -280,8 +406,10 @@ list::
 ## gridOnY (link::Classes/Boolean::)
 ::
 
+
 discussion::
 Example:
+
 code::
 (
 a = { (0..30).scramble }.dup(2).plot;
@@ -300,26 +428,45 @@ GUI.skins.at(\plot); // defaults
 ::
 
 
+
+
 method:: plots
 
-returns:: An link::Classes/Array:: of link::Classes/Plot::s.
+
+returns::
+An link::Classes/Array::of link::Classes/Plot::s.
+
+
+
+
 
 
 subsection:: Grid properties
 
+
 method:: setGridProperties
+
+
 Set one or more properties of the code::DrawGridX:: or code::DrawGridY:: used by all code::Plots::.
 
+
 argument:: axis
+
 A code::Symbol:: denoting the axis whose grid you're modifying: code::\x:: or code::\y::.
 
+
 argument:: ... propertyPairs
-Key value pairs, listed as successive arguments, of the properties to change and their new values. The property key is a code::Symbol::.
+
+Key value pairs, listed as successive arguments, of the properties to change and their new values.
+The property key is a code::Symbol::.
 
 Any of setters of code::DrawGridX:: or code::DrawGridY:: can be used. Here is a subset of useful properties:
+
 table::
-## code::\labelAnchor:: || A code::Symbol:: denoting the point on the label's bounding link::Classes/Rect:: that anchors to the point where the grid line meets the base of the axis. code::\center, \top, \bottom, \left, \right, \topLeft, \topRight, \bottomLeft, \bottomRight, \leftTop, \rightTop, \leftBottom, \rightBottom::.
-## code::\labelOffset:: || A link::Classes/Point:: describing the offset of the code::\labelAnchor:: from the point where the grid line meets the base of the axis. The positive direction for the teletype::x:: and teletype::y:: dimensions is right and down, respectively.
+## code::\labelAnchor:: || A code::Symbol:: denoting the point on the label's bounding link::Classes/Rect:: that anchors to the point where the grid line meets the base of the axis.
+code::\center, \top, \bottom, \left, \right, \topLeft, \topRight, \bottomLeft, \bottomRight, \leftTop, \rightTop, \leftBottom, \rightBottom::.
+## code::\labelOffset:: || A link::Classes/Point:: describing the offset of the code::\labelAnchor:: from the point where the grid line meets the base of the axis.
+The positive direction for the teletype::x:: and teletype::y:: dimensions is right and down, respectively.
 ## code::\labelAlign:: || Alignment of the text within its bounding code::Rect::: code::\left::, code::\center::, or code::\right::.
 ## code::\constrainLabelExtents:: || A code::Boolean:: specifying whether the tick labels at either end of the axis are constrained by, or can extend beyond, the grid bounds.
 ## code::\drawBaseLine:: || A code::Boolean:: whether a line is drawn at the minimum extent of this strong::axis::.
@@ -333,11 +480,14 @@ table::
 ## code::\gridColor:: || The link::Classes/Color:: of the axis grid lines.
 ::
 
-The properties code::\drawBaseLine::, code::\drawBoundingLines::, or code::\drawBoundingRect:: are mutually exlusive — setting any of them to true will set the others two to code::false::. In the context of code::Plotter::, setting code::\drawBoundingRect:: on one axis to code::true:: has the same appearance of setting code::\drawBoundingLines:: on emphasis::both:: axes to code::true::.
+The properties code::\drawBaseLine::, code::\drawBoundingLines::, or code::\drawBoundingRect:: are mutually exlusive — setting any of them to teletype::true:: will set the others two to code::false::.
+In the context of code::Plotter::, setting code::\drawBoundingRect:: on one axis to code::true:: has the same appearance of setting code::\drawBoundingLines:: on emphasis::both:: axes to code::true::.
+
 
 discussion::
 This is a convenience method to set the grid properties for emphasis::all:: code::Plot::s to the same values.
 An Example:
+
 code::
 (
 var plotter = [10, 34, 167].collect({ |freq|
@@ -358,6 +508,7 @@ plotter.setGridProperties(\x,
 ::
 
 To set the properties of grids on each code::Plot:: separately, iterate over the plots:
+
 code::
 (
 var plotter, labelAnchors;
@@ -377,17 +528,29 @@ plotter.updatePlotBounds;
 ::
 
 
+
+
 method:: getGridProperty
-Get the value of a grid property. See link::#-setGridProperties:: for a list of available properties.
+
+
+Get the value of a grid property.
+See link::#-setGridProperties:: for a list of available properties.
+
 
 argument:: axis
+
 A code::Symbol:: denoting the axis whose grid you're modifying: code::\x:: or code::\y::.
 
+
 argument:: property
+
 The property name as a code::Symbol::.
 
+
 discussion::
-As a convenience method, code::getGridProperty:: assumes that properties across all code::Plot::s are the same (as would be the case if set by link::#-setGridProperties::) so returns a single value. Alternatively, properties from individual plot grids can be collected by iterating over the plots:
+A a convenience method, code::getGridProperty:: assumes that properties across all code::Plot::s are the same (as would be the case if set by link::#-setGridProperties::) so returns a single value.
+Alternatively, properties from individual plot grids can be collected by iterating over the plots:
+
 code::
 ( // inspect the \labelAnchor of each DrawGridX
 var plotter  = [10, 34, 167].collect({ |freq|
@@ -401,44 +564,72 @@ plotter.plots.collect({ |plot|
 ::
 
 
+
+
 method:: drawGridBoundingRect
+
+
 Set whether a link::Classes/Rect:: is drawn around the boundary of the grid. Setting to code::false:: disables any bounding grid lines (including "base" lines).
 
+
 argument:: bool
+
 A code::Boolean::.
+
 
 discussion::
 In some cases, the link::Classes/GridLines:: of the grid will not fall on the minimum or maximum of it's spec's range. Using link::#-drawGridBaseLines:: or link::#-drawGridBoundingRect:: will give the appearance of grid lines at the lower end ("base") of the grid, or at both ends of the grid, respectively.
 
 
+
+
 method:: drawGridBaseLines
-Set whether a line is drawn at the lower extent of the grid axes. Setting to code::false:: disables any bounding grid lines (including a bounding code::Rect::). See also the Discussion in link::#-drawGridBoundingRect::.
+
+
+Set whether a line is drawn at the lower extent of the grid axes.
+Setting to code::false:: disables any bounding grid lines (including a bounding code::Rect::).
+See also the Discussion in link::#-drawGridBoundingRect::.
+
 
 argument:: bool
+
 A code::Boolean::.
+
+
+
+
 
 
 subsection:: Data display properties
 
 
 method:: specs
+
+
 Set or get the link::Classes/ControlSpec##spec:: for the y-axis (codomain).
 
 code::
 a = { (40..3000).scramble }.dup(2).plot;
 a.specs = \freq.asSpec;
 ::
+
 See also the link::#Explicit domain and axis specs:: example below.
 
 
+
+
 method:: domainSpecs
+
+
 Set or get the link::Classes/ControlSpec##spec:: for the x-axis (domain).
 
 code::
 a = { (40..300).scramble }.dup(2).plot;
 a.domainSpecs = \freq.asSpec;
 ::
+
 See also the link::#Explicit domain and axis specs:: example below.
+
 
 discussion::
 When setting your code::Plotter:: link::#-value::, the default strong::domainSpecs:: is a linear spec in the range code::[0, value.size-1]:: (i.e. the indices of the values). Therefore, your values are displayed as evenly sampled between the code::minval:: and code::maxval::, unless you have explicitly set the link::#-domain:: values.
@@ -446,8 +637,13 @@ When setting your code::Plotter:: link::#-value::, the default strong::domainSpe
 If a new link::#-value:: is set, you will need to update your domainSpecs.
 
 
+
+
 method:: domain
-Set/get the x-axis positions of your data points. The size of the code::domainArray:: must equal the size of your link::#-value:: array, i.e. a domain value specified for each data point.
+
+
+Set/get the x-axis positions of your data points.
+The size of the code::domainArray:: must equal the size of your link::#-value:: array, i.e. a domain value specified for each data point.
 
 code::
 (
@@ -460,7 +656,9 @@ plot.domainSpecs_([0, 50].asSpec);
 plot.domain_(domain);
 )
 ::
+
 See also the link::#Explicit domain and axis specs:: example below.
+
 
 discussion::
 Domain values are mapped into the range of the link::#-domainSpecs::, so need
@@ -475,8 +673,13 @@ link::Classes/Array:: of rank 1.
 If a new link::#-value:: is set, you will need to update your link::#-domain::.
 
 
+
+
 method:: resolution
+
+
 Set the minimum number of pixels between data points (default: 1)
+
 code::
 // Changing plot resolution (x-axis)
 p = 5000.collect({ |i| sinPi(i * 0.0025) }).plot;
@@ -487,59 +690,101 @@ p.resolution_(1).refresh;  // default
 ::
 
 
+
+
+
+
 subsection:: Plot data
 
 
 method:: value
-Return or set the data values. Data may be numerical arrays of up to 3 dimensions.
+
+
+Return or set the data values.
+Data may be numerical arrays of up to 3 dimensions.
+
 code::
 a = [1, 4, 2, 7, 4].dup(2).plot;
 a.value;
 ::
 
 
-method::setValue
+
+
+method:: setValue
+
+
 Set the data values, with additional arguments determining how the plot is updated.
 
+
 argument:: arrays
+
 Arrays of data to plot. Data may be numerical arrays of up to 3 dimensions.
 
+
 argument:: findSpecs
+
 A code::Boolean::. If code::true:: (default), bounds of the plot(s) are determined automatically.
 If code::false::, previous bounds will persist.
 
+
 argument:: refresh
+
 A code::Boolean::. If code::true:: (default), refresh the view immediately.
 
+
 argument:: separately
+
 A code::Boolean::. If code::true:: (default), min and max of each set of data will be calculated
-and displayed separately for each plot. If code::false::, each plot's range on the
+and displayed separately for each plot.
+If code::false::, each plot's range on the
 y-axis will be the same.
 
-argument::minval
+
+argument:: minval
+
 (Optional) The minimum value displayed on the y-axis.
 
-argument::maxval
+
+argument:: maxval
+
 (Optional) The maximum value displayed on the y-axis.
 
+
 argument:: defaultRange
+
 (Optional) A default range for the y-axis in the case
 that the max and min values of the data are identical.
 
 
+
+
 method:: findSpecs
+
+
 If code::true::, specs are derived from new data (using min and max values) automatically. Default: code::true::.
 
 
+
+
 method:: data
+
+
 Reference to the current internal data (with shape up to depth of 3).
+
+
+
+
 
 
 subsection:: Edit mode
 
 
 method:: editMode
-If the edit mode is set to true, the data may be edited via cursor.
+
+
+If the edit mode is set to teletype::true::, the data may be edited via cursor.
+
 code::
 a = (0..20).plot;
 a.editMode = true; // now edit the data by clicking into the plot..
@@ -547,11 +792,19 @@ a.value; // the updated values
 ::
 
 
+
+
 method:: editFunc
-Supply a function which is evaluated when editing data. The function is called with the arguments: code::plotter::, code::plotIndex::, code::index::, code::val::, code::x::, code::y::.
+
+
+Supply a function which is evaluated when editing data.
+The function is called with the arguments:
+code::plotter::, code::plotIndex::, code::index::, code::val::, code::x::, code::y::.
+
 
 discussion::
 Example:
+
 code::
 (
 a = { (0..10).scramble.normalize }.dup(2).plot;
@@ -577,15 +830,32 @@ a.parent.onClose = { x.release };
 ::
 
 
+
+
 method:: cursorPos
 
-returns:: The last cursorPos (a link::Classes/Point::).
+
+returns::
+The last cursorPos (a link::Classes/Point::).
+
+
 
 
 private:: plotColors, prReshape, pointIsInWhichPlot, prSetUpInteractionView
 
 
+
+
+
+
+
+
+
+
 examples::
+
+
+
 
 code::
 (
@@ -626,10 +896,15 @@ a.value = { |i| (0..20) * (3.5 ** i) }.dup(5);
 a.superpose = false;
 ::
 
+
+
+
+
+
 subsection:: Object .plot methods
 
-code::
 
+code::
 // Array:plot
 (
 a = (4 ** (-5..0)).postln.plot;
@@ -669,7 +944,13 @@ s.waitForBoot({
 ::
 
 
+
+
+
+
 subsection:: Explicit domain and axis specs
+
+
 code::
 // data
 a = (50..90).midicps.scramble.plot;
@@ -735,7 +1016,12 @@ p.domainSpecs_([1, 1000, \exp].asSpec);
 ::
 
 
+
+
+
+
 subsection:: Axis labels
+
 
 code::
 (
@@ -759,8 +1045,17 @@ p.axisLabelX_(nil);
 // ... axisLabelY behaves the same way
 ::
 
+
+
+
+
+
 subsection:: Unit labels
-The units of the grid specs are shown as labels, either axis labels or appended to tick labels. Unit labels won't overwrite preexisting labels, and can be disabled altogether.
+
+
+The units of the grid specs are shown as labels, either axis labels or appended to tick labels.
+Unit labels won't overwrite preexisting labels, and can be disabled altogether.
+
 code::
 ( // units displayed in the axis labels by default
 p = (4 ** (-1.5, -1.25 .. 0)).plot;
@@ -792,7 +1087,13 @@ p.unitLocation = \ticks;
 // ... units now appear on the y-tick labels
 ::
 
+
+
+
+
+
 subsection:: Embedding in another View or GUI
+
 
 code::
 (
@@ -815,7 +1116,12 @@ w.front;
 ::
 
 
+
+
+
+
 subsection:: Changing global defaults
+
 
 The default styles are kept (and may be overridden) in code::GUI.skins.at(\plot)::. See also link::Classes/GUI:: help.
 

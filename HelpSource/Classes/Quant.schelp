@@ -1,45 +1,126 @@
-CLASS::Quant
-categories::Scheduling
-summary::encapsulate quantization issues associated with EventStreamPlayer and TempoClock
+title:: Quant
+categories:: Scheduling
+summary:: Encapsulate quantization issues associated with EventStreamPlayer and TempoClock
 
-DESCRIPTION::
-Represents the standard scheduling model for Routines, Tasks and Patterns. A Quant object stores the parameters needed to calculate the precise time when a Routine/Task/Pattern will start playing on a specified TempoClock.
 
-The standard scheduling model uses quant and phase to locate the starting time. They are evaluated with reference to the TempoClock's baseBarBeat, which is normally zero but is updated when you change the clock's meter using the clock's setMeterAtBeat method. Thus scheduling still makes sense even after a meter change. See the link::Classes/TempoClock:: help file for details on its representation of time.
 
-CLASSMETHODS::
 
-method::new
-Explicitly create an instance of Quant, which may be used and reused. Phase and offset may be nil, in which case they are treated as 0. If quant is nil, it will schedule for the current time exactly.
 
-INSTANCEMETHODS::
 
-method::quant
-Quantization granularity. The routine will begin on the next integer multiple of this number after the baseBarBeat. If negative, it indicates the number of bars in the future to schedule (where the bar length is taken from the clock's beatsPerBar variable).
 
-method::phase
-An offset to push the scheduling time into the middle of the bar. +1 is one beat later, -1 is one beat earlier. A negative phase is legal, but it might result in a scheduling time that is later than the current time, in which case scheduling will be incorrect. It's your responsibility to take this into account.
 
-method::timingOffset
+
+
+description::
+
+
+
+
+Represent the standard scheduling model for Routines, Tasks and Patterns. A Quant object stores the parameters needed to calculate the precise time when a Routine/Task/Pattern will start playing on a specified TempoClock.
+
+The standard scheduling model uses quant and phase to locate the starting time.
+They are evaluated with reference to the TempoClock's baseBarBeat, which is normally zero but is updated when you change the clock's meter using the clock's setMeterAtBeat method. Thus scheduling still makes sense even after a meter change.
+See the link::Classes/TempoClock:: help file for details on its representation of time.
+
+
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
+Explicitly create an instance of Quant, which may be used and reused.
+Phase and offset may be nil, in which case they are treated as 0.
+If quant is nil, it will schedule for the current time exactly.
+
+
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+method:: quant
+
+
+Quantization granularity. The routine will begin on the next integer multiple of this number after the baseBarBeat.
+If teletype::negative::, it indicates the number of bars in the future to schedule (where the bar length is taken from the clock's beatsPerBar variable).
+
+
+
+
+method:: phase
+
+
+An offset to push the scheduling time into the middle of the bar.
++1 is one beat later, -1 is one beat earlier. A negative phase is legal, but it might result in a scheduling time that is later than the current time, in which case scheduling will be incorrect.
+It's your responsibility to take this into account.
+
+
+
+
+method:: timingOffset
+
+
 For use with patterns only -- this enables patterns to run slightly ahead of their sounding time on the clock, giving you control over the order in which threads execute.
 
-EXAMPLES::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 definitionlist::
 ## quant = 1 || schedule for the next whole beat
 ## quant = 4, phase = -1 || a one beat pick-up to the next 4/4 barline
 ::
+
 Suppose the clock's meter was 3/4 for 3 bars (starting at 0). Then:
+
 definitionlist::
 ## quant = 3, phase = 1 || would schedule for 1, 4, or 7 beats
 ::
+
 During this time, clock.setMeterAtBeat(4, 9) is executed. Then:
+
 definitionlist::
 ## quant = 4, phase = 0 || would schedule for 9, 13, 17, 21 etc. beats
 ::
+
 Every point in time can be precisely identified this way, and it can be related back easily to the Western concept of meter or time signature.
 
-subsection::Automatic instantiation
+
+
+
+
+
+subsection:: Automatic instantiation
+
 
 Certain objects convert themselves into Quant objects when used with link::Classes/Routine#-play::, link::Classes/Task#-play:: or link::Classes/Pattern#-play::.
 
@@ -53,16 +134,27 @@ code:: [4.0, 1.0, 0.1] --> Quant(4.0, 1.0, 0.1) ::
 ## link::Classes/Nil::
 || code:: nil --> Quant(nil, nil, nil) ::
 ::
+
 This simplifies the syntax:
+
 code::
-Routine({ ... }).play(quant: 4.0):: vs. code::Routine({ ... }).play(quant: Quant(4.0))
+Routine({ ... }).play(quant: 4.0)::vs. code::Routine({ ... }).play(quant: Quant(4.0))
 ::
 
-subsection::Timing offset in Patterns
 
-In some cases, you might want two patterns that are sounding at the same time to evaluate in a specific order -- for instance, the second pattern might depend upon data calculated by the first. If they are scheduled on the clock for exactly the same time, you have no control over the order of execution: the second pattern might evaluate first, in which case it would be using stale data for the pattern that should have run first.
 
-The timing offset is a positive number, usually small, that pushes the scheduling time slightly earlier, guaranteeing that patterns with larger timing offsets will execute earlier than others. The timing offset value is saved in the event prototype, which then delays its messages to the server by exactly that number of beats.
+
+
+
+subsection:: Timing offset in Patterns
+
+
+In some cases, you might want two patterns that are sounding at the same time to evaluate in a specific order -- for instance, the second pattern might depend upon data calculated by the first.
+If they are scheduled on the clock for exactly the same time, you have no control over the order of execution:
+the second pattern might evaluate first, in which case it would be using stale data for the pattern that should have run first.
+
+The timing offset is a positive number, usually small, that pushes the scheduling time slightly earlier, guaranteeing that patterns with larger timing offsets will execute earlier than others.
+The timing offset value is saved in the event prototype, which then delays its messages to the server by exactly that number of beats.
 
 Two patterns, scheduled for the same quant and phase but with different timing offsets, should sound exactly together.
 
@@ -80,19 +172,31 @@ q = Pbind(\freq, 880, \pan, 1, \delta, 0.5, \sustain, 0.1).play(quant: [2, 0, 0.
 p.stop; q.stop;
 ::
 
-subsection::Extensibility: adding custom scheduling models
 
-While the standard scheduling model should be sufficient for most uses, the point of using an object to encapsulate scheduling details is that you can use a different object to schedule Routines or Patterns differently. (Users are not forced to use the standard scheduling model in every case.)
+
+
+
+
+subsection:: Extensibility:
+
+
+Adding custom scheduling models
+
+While the standard scheduling model should be sufficient for most uses, the point of using an object to encapsulate scheduling details is that you can use a different object to schedule Routines or Patterns differently.
+(Users are not forced to use the standard scheduling model in every case.)
 
 If it's a kind of scheduling you expect to use often, you can create a subclass of Quant that implements the following methods:
 
-*new(...): create a new instance, with whatever arguments you need
+*new(...):
+create a new instance, with whatever arguments you need
 
-nextTimeOnGrid(clock): calculate the exact beat number on the clock
+nextTimeOnGrid(clock):
+calculate the exact beat number on the clock
 
 Your class should also have methods asQuant, offset and offset_. If your class is a subclass of Quant, it will inherit those methods automatically.
 
-You can also use an Event for one shot scheduling. It should at least have an entry for nextTimeOnGrid, which will usually be a function taking the arguments "self" and "clock" that returns the absolute scheduling time. Any other values needed for that calculation should also be present in the Event.
+You can also use an Event for one shot scheduling. It should at least have an entry for nextTimeOnGrid, which will usually be a function taking the arguments "self" and "clock" that returns the absolute scheduling time.
+Any other values needed for that calculation should also be present in the Event.
 
 code::
 // schedule for a random number of beats after the next integer

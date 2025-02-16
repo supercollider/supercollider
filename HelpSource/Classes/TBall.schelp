@@ -1,28 +1,74 @@
-class:: TBall
-summary:: physical model of bouncing object
+title:: TBall
 categories:: UGens>Filters>Nonlinear, UGens>Generators>PhysicalModels
+summary:: Physical model of bouncing object
 related:: Classes/Ball, Classes/Spring
 
+
+
+
+
+
+
+
+
+
 description::
-models the impacts of a bouncing object that is reflected by a vibrating surface
+
+
+
+
+Model the impacts of a bouncing object that is reflected by a vibrating surface
+
+
+
+
+
+
+
+
+
 
 classmethods::
 
+
+
+
 method:: ar, kr
 
-argument::in
-modulated surface level
 
-argument::g
-gravity
+argument:: in
 
-argument::damp
-damping on impact
+Modulated surface level
 
-argument::friction
-proximity from which on attraction to surface starts
+
+argument:: g
+
+Gravity
+
+
+argument:: damp
+
+Damping on impact
+
+
+argument:: friction
+
+Proximity from which on attraction to surface starts
+
+
+
+
+
+
+
+
+
 
 examples::
+
+
+
+
 code::
 // mouse x controls switch of level
 // mouse y controls gravity
@@ -86,7 +132,8 @@ code::
 	var sc, g, d, z, lfo, rate;
 	g = MouseX.kr(0.01, 100, 1);
 	d = MouseY.kr(0.00001, 0.2);
-	sc = #[451, 495.5, 595, 676, 734.5]; // azande harp tuning by B. Guinahui
+	sc = #[451, 495.5, 595, 676, 734.5]; // azande harp tuning by B.
+Guinahui
 	lfo = LFNoise1.kr(1, 0.005, 1);
 	rate = 2.4;
 	rate = rate * sc.size.reciprocal;

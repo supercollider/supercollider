@@ -1,14 +1,46 @@
-class:: SynthDescLib
-summary:: SynthDesc library
+title:: SynthDescLib
 categories:: Server>Nodes
+summary:: SynthDesc library
 related:: Classes/SynthDesc
 
+
+
+
+
+
+
+
+
+
 description::
+
+
+
+
 See link::Classes/SynthDesc::
 
-INSTANCEMETHODS::
+
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
 
 method:: add
-Add a SynthDesc to this SynthDescLib. Doing this triggers an update message with the key code::\synthDescAdded:: for any dependants this lib may have. See link::Classes/Object#Dependancy::.
-ARGUMENT:: synthdesc 
+
+
+Add a SynthDesc to this SynthDescLib.
+Doing this triggers an update message with the key code::\synthDescAdded:: for any dependants this lib may have.
+See link::Classes/Object#Dependancy::.
+
+
+argument:: synthdesc 
+
 The link::Classes/SynthDesc:: to be added.

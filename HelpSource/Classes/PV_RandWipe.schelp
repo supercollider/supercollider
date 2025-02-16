@@ -1,42 +1,76 @@
-class:: PV_RandWipe
-summary:: Crossfade in random bin order.
-related:: Classes/PV_RandComb
+title:: PV_RandWipe
 categories:: UGens>FFT
+summary:: Crossfade in random bin order
+related:: Classes/PV_RandComb
 
-Description::
 
-Crossfades between two sounds by copying bins in a random order.
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+Crossfadebetween between two sounds by copying bins in a random order.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::new
 
-argument::bufferA
+
+
+method:: new
+
+
+argument:: bufferA
 
 FFT buffer A.
 
 
-argument::bufferB
+argument:: bufferB
 
 FFT buffer B.
 
 
-argument::wipe
+argument:: wipe
 
-Copies bins from bufferB in a random order as wipe goes from 0
+yCop bins from bufferB in a random order as wipe goes from teletype::0::
 to 1.
 
 
-argument::trig
+argument:: trig
 
 A trigger, that selects a new random ordering.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 s.boot;
 
 (
@@ -51,5 +85,4 @@ SynthDef("help-randWipe", { |out = 0|
 	Out.ar(out, 0.5 * IFFT(chain).dup);
 }).play(s);
 )
-
 ::

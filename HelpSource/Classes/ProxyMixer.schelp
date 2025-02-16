@@ -1,16 +1,29 @@
-class:: ProxyMixer
-summary:: mix control for a proxyspace or Ndef.all
+title:: ProxyMixer
 categories:: JITLib>GUI, Live Coding
+summary:: Mix control for a proxyspace or Ndef.all
 related:: Classes/ProxySpace, Classes/Ndef, Classes/JITGui, Classes/NdefGui, Classes/MonitorGui, Classes/NdefParamGui
+
+
+
+
+
+
+
+
+
 
 description::
 
-ProxyMixer provides controls for handling and editing the node proxies in a proxyspace and their monitors (cross-platform graphics). It replaces the earlier ProxyMixer class. For Ndefs, use link::Classes/NdefMixer::.
+
+
+
+ProxyMixer provides controls for handling and editing the node proxies in a proxyspace and their monitors (cross-platform graphics).
+It replaces the earlier ProxyMixer class.
+For Ndefs, use link::Classes/NdefMixer::.
 
 Overview: link::Overviews/JITLib::
 
 code::
-
 // First examples:
 (
 p = ProxySpace.push(s.boot, p);
@@ -40,67 +53,164 @@ if (\ProxyMeter.asClass.notNil) { ProxyMeter.addMixer(m) };
 };
 ::
 
-ClassMethods::
-
-subsection::Creation
-
-method::new
-
-argument::obj
-the proxyspace to show and control
-
-argument::numItems
-how many ar and kr proxies can be shown
-
-argument::parent
-by default nil, so a window is made automatically. if a parent is supplied, the ProxyMixer will be shown there.
-
-argument::bounds
-window bounds - default is nil, so it determines it size.
-
-argument::makeSkip
-a flag whether to make make a skipjack
-
-argument::options
-additional settings - currently none provided.
-
-method::small
-like *new, but creates a proxyMixer for small screen sizes.
 
 
-InstanceMethods::
 
-subsection::Instance variables
+
+
+
+
+
+
+classmethods::
+
+
+
+
+subsection:: Creation
+
+
+method:: new
+
+
+argument:: obj
+
+The proxyspace to show and control
+
+
+argument:: numItems
+
+How many ar and kr proxies can be shown
+
+
+argument:: parent
+
+By default nil, so a window is made automatically.
+if a parent is supplied, the ProxyMixer will be shown there.
+
+
+argument:: bounds
+
+Window bounds - default is nil, so it determines it size.
+
+
+argument:: makeSkip
+
+A flag whether to make make a skipjack
+
+
+argument:: options
+
+Additional settings - currently none provided.
+
+
+
+
+method:: small
+
+
+Like *new, but creates a proxyMixer for small screen sizes.
+
+
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+subsection:: Instance variables
+
 
 strong::GUI areas and elements: ::
-method::arZone, krZone, editZone, arGuis, krGuis, editGui, arScroller, krScroller
+
+
+
+
+method:: arZone, krZone, editZone, arGuis, krGuis, editGui, arScroller, krScroller
+
 
 strong::current state and access methods: ::
-method::proxyspace, existingProxies, activeProxies, playingProxies, selectedKeys, arNames, krNames, numArs, numKrs, atAr, atKr
 
-subsection::Instance methods
+
+
+
+method:: proxyspace, existingProxies, activeProxies, playingProxies, selectedKeys, arNames, krNames, numArs, numKrs, atAr, atKr
+
+
+
+
+
+
+subsection:: Instance methods
+
 
 method:: highlight, unhighlight
-highlight and unhighlight an arGui slot in the arZone (left)
+
+
+Highlight and unhighlight an arGui slot in the arZone (left)
+
+
+
+
 method:: highlightSlots
-highlight a block of the arGuis in the arZone/
 
-method::sizes, switchSize
-switch between display modes 0: ar, 1: ar+kr, 2: ar+kr+ed
 
-method::arKeysRotation, krKeysRotation
-if too many proxies are present, by how much to rotate arKeys or krKeys to display.
+Highlight a block of the arGuis in the arZone/
+
+
+
+
+method:: sizes, switchSize
+
+
+Switch between display modes 0: ar, 1: ar+kr, 2: ar+kr+ed
+
+
+
+
+method:: arKeysRotation, krKeysRotation
+
+
+If too many proxies are present, by how much to rotate arKeys or krKeys to display.
+
+
+
 
 method:: title
-get the proxymixer window title.
+
+
+Get the proxymixer window title.
+
+
 
 
 method:: getNameLeftBorder
-gets current left border of nameView
+
+
+Get current left border of nameView
+
+
+
+
 method:: setNameLeftBorder
-sets current left border of nameView, trading size with volume slider
+
+
+Set current left border of nameView, trading size with volume slider
+
+
+
+
 method:: shiftNameLeftBorder
-shifts current left border of nameView
+
+
+Shift current left border of nameView
 
 code::
 m.getNameLeftBorder; // get its current left border position
@@ -111,15 +221,36 @@ m.shiftNameLeftBorder(10);
 m.shiftNameLeftBorder(-10);
 
 strong::standard JITGui methods: ::
+
+
+
+
 method:: setDefaults, accepts, getState, checkUpdate
 
-strong::internal - making the ProxyMixer gui elements: ::
+
+strong::internal - making the ProxyMixer gui elements:
+::
+
+
+
+
 method:: makeViews, makeTopLine, makeArZone, makeKrZone, makeEditZone, setEdButs
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 // make a proxyspace and 5 ar proxies, and a mixer to show them
 (
 p = ProxySpace.push(s.boot, p);
@@ -263,5 +394,4 @@ p.reduce(method: \clear);
 p.clean;
 
 p.clear;
-
 ::

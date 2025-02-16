@@ -1,19 +1,40 @@
 title:: jitlib_basic_concepts_01
-summary:: some placeholders in SuperCollider
 categories:: JITLib>Tutorials, Tutorials>JITLib
+summary:: Some placeholders in SuperCollider
 related:: Overviews/JITLib, Tutorials/JITLib/jitlib_basic_concepts_02
+
 
 This helpfile explains some basic concepts of interactive programming with SuperCollider and proxy space.
 
-section::What is a proxy?
 
-A proxy is a place holder that is often used to operate on something that does not yet exist. For example, an emphasis::OutputProxy:: is used to represent multiple outputs of a ugen, even if only one ugen is created eventually. Any object can have proxy behaviour (it may delegate function calls to different objects for example) but specially functions and references can be used as operands while they keep their referential quality.
+
+
+
+
+
+
+
+
+section:: What is a proxy?
+
+
+
+
+A proxy is a place holder that is often used to operate on something that does not yet exist.
+For example, an emphasis::OutputProxy:: is used to represent multiple outputs of a UGen, even if only one UGen is created eventually.
+Any object can have proxy behaviour (it may delegate function calls to different objects for example) but specially functions and references can be used as operands while they keep their referential quality.
 
 See also: link::Classes/OutputProxy::, link::Classes/Function::, link::Classes/Ref::
 
 Further reading: link::Classes/NodeProxy::, link::Classes/ProxySpace::, link::Classes/Ndef::
 
-subsection::using a Ref as a proxy
+
+
+
+
+
+subsection:: Using a Ref as a proxy
+
 
 code::
 // reference example
@@ -59,7 +80,13 @@ currentEnvironment.postln; // the value is stored in the environment
 ~y + ~x; // this works.
 ::
 
-subsection::using a Function as a proxy
+
+
+
+
+
+subsection:: Using a Function as a proxy
+
 
 code::
 // a function can serve the same purpose
@@ -72,19 +99,37 @@ y = 34;
 z.value;
 ::
 
-see also client side proxies like link::Classes/Tdef::, link::Classes/Pdefn::, link::Classes/Pdef::, link::Classes/Fdef::
+See also client side proxies like link::Classes/Tdef::, link::Classes/Pdefn::, link::Classes/Pdef::, link::Classes/Fdef::
 
-section::NodeProxy, ProxySpace, Ndef
 
-For interactive programming it can be useful to be able to use something before it is there - it makes evaluation order more flexible and allows to postpone decisions to a later moment. Some preparations have to be done usually - like above, a reference has to be created. In other situations this sort of preparation is not enough, for example if one wants to apply mathematical operations on signals of running processes on the server.
 
-note:: Wherever examples are given with Ndef, they apply to ProxySpace and NodeProxy: code::Ndef(\x, 5);:: is the same as:  code:: ~x = 5;:: in ProxySpace, and code::a = NodeProxy.new; a.source = 5;::::
+
+
+
+
+
+
+
+section:: NodeProxy, ProxySpace, Ndef
+
+
+
+
+For interactive programming it can be useful to be able to use something before it is there - it makes evaluation order more flexible and allows to postpone decisions to a later moment.
+Some preparations have to be done usually - like above, a reference has to be created.
+In other situations this sort of preparation is not enough, for example if one wants to apply mathematical operations on signals of running processes on the server.
+
+note::
+Wherever examples are given with Ndef, they apply to ProxySpace and NodeProxy:
+code::Ndef(\x, 5);::is the same as:  code:: ~x = 5;::in ProxySpace, and code::a = NodeProxy.new; a.source = 5;::
+::
 
 code::
 // boot the server
 s.boot;
 
-// two proxies on a server. calculation rate is audio rate, number of channels is 2
+// two proxies on a server.
+calculation rate is audio rate, number of channels is 2
 y = NodeProxy.audio(s, 2);
 z = NodeProxy.audio(s, 2);
 

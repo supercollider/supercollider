@@ -1,11 +1,14 @@
 title:: Glossary
-summary:: Glossary of some relevant words
 categories:: Help
+summary:: Glossary of some relevant words
+
+
 
 definitionlist::
 ## buffer
 keyword:: buffer
-|| A server-side header and array of 32 bit floating point sample data. Buffers are used for sound files, delay lines, arrays of global controls, and arrays of inter-synth patch points. Represented by the client-side class link::Classes/Buffer::.
+|| A server-side header and array of 32 bit floating point sample data.
+Buffers are used for sound files, delay lines, arrays of global controls, and arrays of inter-synth patch points. Represented by the client-side class link::Classes/Buffer::.
 
 ## class
 keyword:: class
@@ -13,11 +16,18 @@ keyword:: class
 
 ## client
 keyword:: client
-|| SC is divided into two separate applications: The client and the server. The client is where the SuperCollider language is implemented and where one executes code. The server actually synthesizes the audio, contains the node tree of synths and groups and responds to Open Sound Control messages from the client. See link::Guides/ClientVsServer:: for more information.
+|| SC is divided into two separate applications:
+The client and the server. The client is where the SuperCollider language is implemented and where one executes code.
+The server actually synthesizes the audio, contains the node tree of synths and groups and responds to Open Sound Control messages from the client.
+See link::Guides/ClientVsServer:: for more information.
 
 ## group
 keyword:: group
-|| A linked list of nodes. Groups provide ways to control execution of many nodes at once. A group is a kind of node. Colloquially one can understand a group as an ordered grouping of other nodes, which may include both synths and other groups. Represented by the client-side class link::Classes/Group::.
+|| A linked list of nodes.
+Groups provide ways to control execution of many nodes at once.
+A group is a kind of node.
+Colloquially one can understand a group as an ordered grouping of other nodes, which may include both synths and other groups.
+Represented by the client-side class link::Classes/Group::.
 
 ## interface
 keyword:: interface
@@ -45,7 +55,9 @@ keyword:: midi
 
 ## node
 keyword:: node
-|| One point in a tree of nodes executed in a depth first traversal order by the synth engine. There are two types of nodes, synths and groups. These are represented by the client-side classes link::Classes/Synth:: and link::Classes/Group::, and their abstract superclass link::Classes/Node::. The node tree defines the order of execution for synths.
+|| One point in a tree of nodes executed in a depth first traversal order by the synth engine.
+There are two types of nodes, synths and groups. These are represented by the client-side classes link::Classes/Synth:: and link::Classes/Group::, and their abstract superclass link::Classes/Node::.
+The node tree defines the order of execution for synths.
 
 ## object
 keyword:: object
@@ -53,7 +65,8 @@ keyword:: object
 
 ## Open Sound Control
 keyword:: OSC, opensoundcontrol
-|| a protocol defined by CNMAT at UCBerkeley for controlling synthesizers. See http://opensoundcontrol.org/. SuperCollider communicates between the client and server using OSC messages over UDP or TCP.
+|| a protocol defined by CNMAT at UCBerkeley for controlling synthesizers.
+See http://opensoundcontrol.org/. SuperCollider communicates between the client and server using OSC messages over UDP or TCP.
 
 ## OSC
 || See Open Sound Control.
@@ -72,11 +85,15 @@ keyword:: receiver
 
 ## server
 keyword:: server
-|| SC is divided into two separate applications: The client and the server. The client is where the SuperCollider language is implemented and where one executes code. The server actually synthesizes the audio, contains the node tree of synths and groups and responds to Open Sound Control messages from the client. See link::Guides/ClientVsServer:: for more information.
+|| SC is divided into two separate applications:
+The client and the server. The client is where the SuperCollider language is implemented and where one executes code.
+The server actually synthesizes the audio, contains the node tree of synths and groups and responds to Open Sound Control messages from the client.
+See link::Guides/ClientVsServer:: for more information.
 
 ## synth
 keyword:: synth
-|| A sound processing module, based upon a particular synth definition. Similar to "voice " in other systems. Synths are referred to by a number. Represented by the client-side class link::Classes/Synth::.
+|| A sound processing module, based upon a particular synth definition. Similar to "voice " in other systems. Synths are referred to by a number.
+Represented by the client-side class link::Classes/Synth::.
 
 ## synth definition
 keyword:: synthdef

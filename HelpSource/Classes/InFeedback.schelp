@@ -1,79 +1,105 @@
-class:: InFeedback
-summary:: Read signal from a bus with a current or one cycle old timestamp.
+title:: InFeedback
+categories:: UGens>InOut
+summary:: Read signal from a bus with a current or one cycle old timestamp
 related:: Classes/In, Classes/LagIn, Classes/LocalIn
-categories::  UGens>InOut
 
 
-Description::
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 When the various output UGens (link::Classes/Out::,
 link::Classes/OffsetOut::, link::Classes/XOut::) write data to a bus,
-they mix it with any data from the current cycle, but overwrite any data
-from the previous cycle. (link::Classes/ReplaceOut::  overwrites all
-data regardless.) Thus depending on node order and what synths are
-writing to the bus, the data on a given bus may be from the current cycle
-or be one cycle old at the time of reading. In.ar checks the timestamp of
-any data it reads in and zeros any data from the previous cycle (for use
-within that node; the data remains on the bus). This is fine for audio
-data, as it avoids feedback, but for control data it is useful to be able
-to read data from any place in the node order. For this reason In.kr also
-reads data that is older than the current cycle.
+they mix it with any data from the current cycle, but overwrite any data from the previous cycle. (link::Classes/ReplaceOut::  overwrites all data regardless.) Thus depending on node order and what synths are writing to the bus, the data on a given bus may be from the current cycle or be one cycle old at the time of reading.
+In.ar checks the timestamp of any data it reads in and zeros any data from the previous cycle (for use within that node; the data remains on the bus).
+This is fine for audio
+data, as it avoids feedback, but for control data it is useful to be able to read data from any place in the node order.
+For this reason In.kr also reads data that is older than the current cycle.
 
 
-In some cases we might also want to read audio from a node later in the
-current node order. This is the purpose of InFeedback. The delay
-introduced by this is one block size, which equals about 0.0014 sec at
-the default block size and sample rate. (See the resonator example below
-to see the implications of this.)
+In some cases we might also want to read audio from a node later in the current node order. This is the purpose of InFeedback.
+The delay introduced by this is one block size, which equals about 0.0014 sec at the default block size and sample rate.
+(See the resonator example below to see the implications of this.)
 
 
-The variably mixing and overwriting behaviour of the output UGens can
-make order of execution crucial. (No pun intended.) For example with a
-node order like the following the InFeedback UGen in Synth 2 will only
-receive data from Synth 1 (→ = write out; ← = read in):
+The variably mixing and overwriting behaviour of the output UGens can make order of execution crucial. (No pun intended.) For example with a node order like the following the InFeedback UGen in Synth 2 will only receive data from Synth 1 (→ = write out; ← = read in):
+
 list::
 ## Synth1 → busA (this synth overwrites the output of Synth3 before it reaches Synth2)
 ## Synth2 (with InFeedback) ← busA
 ## Synth3 → busA
 ::
 
-If Synth1 were moved after Synth2 then Synth2's InFeedback would receive
-a mix of the output from Synth1 and Synth3. This would also be true if
-Synth2 came after Synth1 and Synth3. In both cases data from Synth1 and
-Synth3 would have the same time stamp (either current or from the
+If Synth1 were moved after Synth2 then Synth2's InFeedback would receive a mix of the output from Synth1 and Synth3.
+This would also be teletype::true:: if
+Synth2 came after Synth1 and Synth3.
+In both cases data from Synth1 and Synth3 would have the same time stamp (either current or from the
 previous cycle), so nothing would be overwritten.
 
 
 Because of this it is often useful to allocate a separate bus for
-feedback. With the following arrangement Synth2 will receive data from
-Synth3 regardless of Synth1's position in the node order:
+feedback. With the following arrangement Synth2 will receive data from Synth3 regardless of Synth1's position in the node order:
 
 list::
 ## Synth1 → busA
 ## Synth2 (with InFeedback) ← busB
 ## Synth3 → busB + busA
 ::
+
 The second example below demonstrates this issue.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar
 
-argument::bus
+
+
+method:: ar
+
+
+argument:: bus
 
 The index of the bus to read in from.
 
 
-argument::numChannels
+argument:: numChannels
 
 The number of channels (i.e. adjacent buses) to read in. The
-default is 1. You cannot modulate this number by assigning it to
-an argument in a SynthDef.
+default is 1. You cannot modulate this number by assigning it to an argument in a SynthDef.
 
 
-Examples::
-audio feedback modulation:
+
+
+
+
+
+
+
+
+examples::
+
+
+
+
+Audio feedback modulation:
+
 code::
 (
 SynthDef("help-InFeedback", { |out = 0, in = 0|
@@ -85,7 +111,9 @@ SynthDef("help-InFeedback", { |out = 0, in = 0|
 }).play;
 )
 ::
-this shows how a node can read audio from a bus that is being written to by a synth following it:
+
+This shows how a node can read audio from a bus that is being written to by a synth following it:
+
 code::
 (
 SynthDef("help-InFeedback", { |out = 0, in = 0|
@@ -117,7 +145,10 @@ x.free;
 a.free; b.free;
 ::
 
-The example below implements a resonator. Note that you must subtract the blockSize in order for the tuning to be correct. See link::Classes/LocalIn:: for an equivalent example.
+The example below implements a resonator.
+Note that you must subtract the blockSize in order for the tuning to be correct.
+See link::Classes/LocalIn:: for an equivalent example.
+
 code::
 (
 var play, imp, initial;

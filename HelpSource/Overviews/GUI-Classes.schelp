@@ -1,8 +1,20 @@
 title:: List of GUI classes
-summary:: The most used GUI classes and their kit-specific equivalents
 categories:: GUI
+summary:: The most used GUI classes and their kit-specific equivalents
+
+
+
+
+
+
+
+
+
 
 section:: Kit-independent GUI classes
+
+
+
 
 The following table contains classes that are independent of GUI implementation, but may use other GUI classes or be used with any of them.
 
@@ -24,7 +36,19 @@ table::
 ## FreqScope        || A window containing a FreqScopeView and tools to control its display
 ::
 
+
+
+
+
+
+
+
+
+
 section:: Window and views
+
+
+
 
 The following table contains generic classes and their corresponding classes in each GUI kit, for window and most views.
 
@@ -33,7 +57,8 @@ table::
 ## Window               || SCWindow               || JSCWindow           || QWindow             || a frame that can contain gadgets
 ## N/A                  || SCModalWindow          ||                     || N/A                 || a modal window
 ## N/A                  || SCModalSheet           ||                     || N/A                 || a modal sheet to attach to windows
-## View                 || SCView                 || JSCView             || QView               || The base class for most view classes. Important help file.
+## View                 || SCView                 || JSCView             || QView               || The base class for most view classes.
+Important help file.
 ## CompositeView        || SCCompositeView        || JSCCompositeView    || QView               || container view for nesting layouts
 ## HLayoutView          || SCHLayoutView          || JSCHLayoutView      || QHLayoutView        || container view with horizontal distribution of children
 ## VLayoutView          || SCVLayoutView          || JSCVLayoutView      || QVLayoutView        || container view with vertical distribution of children
@@ -68,11 +93,25 @@ table::
 ## Knob                 || SCKnob                 || JKnob               || QKnob               || a knob view
 ::
 
+
+
+
+
+
+
+
+
+
 section:: Layout management
+
+
+
 
 The following table contains classes used in layout management.
 
-note:: This classes are only implemented in Qt GUI! ::
+note:: 
+This classes are only implemented in Qt GUI!
+::
 
 table::
 ## strong::Class::      || strong::Description::
@@ -84,7 +123,19 @@ table::
 ## StackLayout          || A layout that stacks items on top of each other.
 ::
 
+
+
+
+
+
+
+
+
+
 section:: Other GUI classes
+
+
+
 
 table::
 ## strong::Generic::    ||  strong::CocoaGUI::    || strong::SwingGUI::  || strong::Qt GUI::    || strong::Description::

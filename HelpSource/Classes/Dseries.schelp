@@ -1,38 +1,72 @@
-class:: Dseries
-summary:: Demand rate arithmetic series UGen.
-related:: Classes/Demand, Classes/Dgeom, Classes/Duty, Classes/TDuty
+title:: Dseries
 categories:: UGens>Demand
+summary:: Demand rate arithmetic series UGen
+related:: Classes/Demand, Classes/Dgeom, Classes/Duty, Classes/TDuty
 
-Description::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 Demand rate arithmetic series UGen.
 
 See link::Classes/Pseries:: for structurally related equivalent.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::new
 
-argument::start
+
+
+method:: new
+
+
+argument:: start
 
 Start value. Can be a number or any other UGen.
 
 
-argument::step
+argument:: step
 
 Step value. Can be a number or any other UGen.
 
 
-argument::length
+argument:: length
 
 Number of values to create.  Can be a number or any other UGen.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 (
 {
 	var a, freq, trig;
@@ -54,5 +88,4 @@ code::
 
 }.play;
 )
-
 ::

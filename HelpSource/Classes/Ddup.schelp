@@ -1,17 +1,51 @@
-class:: Ddup
-summary:: Demand rate input replicator
+title:: Ddup
 categories:: UGens>Demand
+summary:: Demand rate input replicator
+
+
+
+
+
+
+
+
+
 
 classmethods::
+
+
+
+
 method:: new
+
+
 argument:: n
-number of repeats (can be a demand ugen)
+
+Number of repeats (can be a demand UGen)
+
+
 argument:: in
-input ugen
+
+Input UGen
+
+
 discussion::
-structurally related: link::Classes/Pdup::
+Structurally related: link::Classes/Pdup::
+
+
+
+
+
+
+
+
+
 
 examples::
+
+
+
+
 code::
 (
 {

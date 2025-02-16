@@ -1,45 +1,79 @@
-class:: Integrator
-summary:: A leaky integrator.
-categories::  UGens>Filters>Linear, UGens>Maths
+title:: Integrator
+categories:: UGens>Filters>Linear, UGens>Maths
+summary:: A leaky integrator
 
 
-Description::
 
-Integrates an input signal with a leak. The formula implemented is:
+
+
+
+
+
+
+
+description::
+
+
+
+
+Integratean an input signal with a leak.
+The formula implemented is:
 
 code::
 out(0) = in(0) + (coef * out(-1))
 ::
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::ar, kr
 
-argument::in
+
+
+method:: ar, kr
+
+
+argument:: in
 
 The input signal.
 
 
-argument::coef
+argument:: coef
 
 Leak coefficient.
 
 
-argument::mul
+argument:: mul
 
 Output will be multiplied by this value.
 
 
-argument::add
+argument:: add
 
 This value will be added to the output.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 { Integrator.ar(LFPulse.ar(300, 0.2, 0.1), MouseX.kr(0.001, 0.999, 1)) }.play
 
 // used as an envelope
@@ -49,5 +83,4 @@ code::
 // scope
 
 { Integrator.ar(LFPulse.ar(1500 / 4, 0.2, 0.1), MouseX.kr(0.01, 0.999, 1)) }.scope
-
 ::

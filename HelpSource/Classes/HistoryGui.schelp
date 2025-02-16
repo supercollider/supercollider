@@ -1,14 +1,30 @@
-CLASS:: HistoryGui
-summary:: A gui for History objects
+title:: HistoryGui
 categories:: GUI>Interfaces
+summary:: A gui for History objects
 related:: Classes/History
 
-DESCRIPTION::
 
-HistoryGui allows easy access to History as it happens: one can read recent lines, when they were written and by whom; one can search for text strings and by author names; and one can quickly grab lines of code for rewriting. Apart from documenting just in time programming sessions, all of this can be useful in live coding performances. See e.g. the system developed by powerbooks_unplugged, in the Quark called Republic.
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+HistoryGui allows easy access to History as it happens:
+one can read recent lines, when they were written and by whom; one can search for text strings and by author names; and one can quickly grab lines of code for rewriting.
+Apart from documenting just in time programming sessions, all of this can be useful in live coding performances.
+See e.g. the system developed by powerbooks_unplugged, in the Quark called Republic.
 
 The gui elements in detail:
-DEFINITIONLIST::
+
+definitionlist::
 ## button start/end || starts and ends History emphasis::if:: code::gui.history:: is current.
 
 ## button all/filt || turns filtering on/off.
@@ -19,7 +35,8 @@ DEFINITIONLIST::
 ## ListView || shows either all code::lineShorts::, or the filtered code::lineShorts::; selecting them in ListView makes them come appear in post-doc window.
 ::
 
-first example:
+First example:
+
 code::
 (
 // create a short history
@@ -38,101 +55,286 @@ g.postDoc(2);
 )
 ::
 
-ClassMethods::
 
-method::docHeight
-get and set the height of the text window opened by HistoryGui
-method::docTitle
-get and set the title of the text window opened by HistoryGui
 
-method::new
-create a new HistoryGui
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: docHeight
+
+
+Get and set the height of the text window opened by HistoryGui
+
+
+
+
+method:: docTitle
+
+
+Get and set the title of the text window opened by HistoryGui
+
+
+
+
+method:: new
+
+
+Create a new HistoryGui
+
+
 argument:: object
-the history
+
+The history
+
+
 argument:: numItems
-the number of lines in the TextView above
+
+The number of lines in the TextView above
+
+
 argument:: parent
-a parent window or view in which to place new HistoryGui
+
+A parent window or view in which to place new HistoryGui
+
+
 argument:: bounds
-bounds for new HistoryGui, constrained by its minSize.
+
+Bounds for new HistoryGui, constrained by its minSize.
+
+
 argument:: makeSkip
-flag whether to create a skipjack for the HistoryGui.
+
+Flag whether to create a skipjack for the HistoryGui.
+
+
 argument:: options
-options to set for the HistoryGui (inherited from JITGui).
+
+Options to set for the HistoryGui (inherited from JITGui).
 
 
-InstanceMethods::
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
 
 private:: accepts, checkUpdate, getState, makeViews, setDefaults, postInlined
+
+
 private:: updateBinVal, updateFunc, updateLines, updateVal, alignDoc
-subsection:: views
-method::textV
-top: the TextView for the selected line
-method::startBut, filtBut, keyPop, filTextV, topBut
-the line of buttons, popup and TextView
-method::listV
-the ListView for the history lines
-method::resetViews
+
+
+
+
+
+
+subsection:: Views
+
+
+method:: textV
+
+
+Top: the TextView for the selected line
+
+
+
+
+method:: startBut, filtBut, keyPop, filTextV, topBut
+
+
+The line of buttons, popup and TextView
+
+
+
+
+method:: listV
+
+
+The ListView for the history lines
+
+
+
+
+method:: resetViews
+
+
 reset all views
 
-method::showLineAt
-show the line at that index in History.lines in the TextView.
+
+
+
+method:: showLineAt
+
+
+Show the line at that index in History.lines in the TextView.
+
+
+
+
+
 
 subsection:: 'doc'-related
-method::doc
-the external text window made by HistoryGui to show codelines on.
+
+
+method:: doc
+
+
+The external text window made by HistoryGui to show codelines on.
 This is still called doc because it used to be a Document in pre-Qt times.
 
-method::findDoc
-find an open a re-usable text window, or make a new one
+
+
+
+method:: findDoc
+
+
+Find an open a re-usable text window, or make a new one
+
+
+
 
 method:: docFlag
-get or set the symbol for the doc strategy to use:
+
+
+Get or set the symbol for the doc strategy to use:
 code::\sameDoc:: tries to re-use a single text window,
 code::\newDoc:: always makes a new one (and keep track of old docs)
 
-method::oldDocs
+
+
+
+method:: oldDocs
+
+
 list of previous text windows (docs) opened
 
-method::postDoc
-find the codeline at index in History, and post it on the textwindow
-
-method::setDocStr
-set the string of the current textwindow
-
-method::rip
-create a new textwindow with currently selected line
 
 
-subsection:: filtering
-method::filtering
-flag whether filtering is on
-method::filterOn, filterOff
-convenience on/off methods
 
-method::filters
-keys and string fragments to filter for.
+method:: postDoc
+
+
+Find the codeline at index in History, and post it on the textwindow
+
+
+
+
+method:: setDocStr
+
+
+Set the string of the current textwindow
+
+
+
+
+method:: rip
+
+
+Create a new textwindow with currently selected line
+
+
+
+
+
+
+subsection:: Filtering
+
+
+method:: filtering
+
+
+Flag whether filtering is on
+
+
+
+
+method:: filterOn, filterOff
+
+
+Convenience on/off methods
+
+
+
+
+method:: filters
+
+
+Keys and string fragments to filter for.
 e.g. ['all', "+"] gets lines from all sources that contain the string "+".
-method::filterLines
-apply filtering to history lines
 
-method::filteredIndices
-the indices of the current filtered lines
 
-method::filteredShorts
-the current filtered short lines for gui display
+
+
+method:: filterLines
+
+
+Apply filtering to history lines
+
+
+
+
+method:: filteredIndices
+
+
+The indices of the current filtered lines
+
+
+
+
+method:: filteredShorts
+
+
+The current filtered short lines for gui display
 
 method:.setKeyFilter
 set the key(s) to filter for, and perform filtering
 
-method::setStrFilter
-set the string to filter for, and perform filtering
 
-method::stickMode
-stickMode 0 means top, i.e. select top when new lines come in;
+
+
+method:: setStrFilter
+
+
+Set the string to filter for, and perform filtering
+
+
+
+
+method:: stickMode
+
+
+StickMode 0 means top, i.e. select top when new lines come in;
 stickMode 1 means keep, i.e. keep current line selected after new lines come in.
 
-EXAMPLES::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (
@@ -173,5 +375,4 @@ g.filters.postcs;
 // internal state cached in the HistoryGui:
 g.filteredIndices;
 g.filteredShorts;
-
 ::

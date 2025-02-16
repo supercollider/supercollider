@@ -1,29 +1,80 @@
-class:: BBandPass
-summary:: Band Pass Filter
+title:: BBandPass
 categories:: UGens>Filters>BEQSuite
+summary:: Band Pass Filter
 related:: Classes/SOS, Classes/BLowPass, Classes/BLowPass4, Classes/BHiPass, Classes/BHiPass4, Classes/BPeakEQ, Classes/BLowShelf, Classes/BHiShelf, Classes/BBandStop, Classes/BAllPass
 
+
+
+
+
+
+
+
+
+
 description::
+
+
+
+
 The B equalization suite is based on the Second Order Section (link::Classes/SOS::) biquad UGen.
 
 note::
-Biquad coefficient calculations imply certain amount of CPU overhead. These plugin UGens contain optimizations such that the coefficients get updated only when there has been a change to one of the filter's parameters. This can cause spikes in CPU performance and should be considered when using several of these units.
+Biquad coefficient calculations imply certain amount of CPU overhead.
+These plugin UGens contain optimizations such that the coefficients get updated only when there has been a change to one of the filter's parameters. This can cause spikes in CPU performance and should be considered when using several of these units.
 ::
+
+
+
+
+
+
+
+
+
 
 classmethods::
 
+
+
+
 method:: ar
+
+
 argument:: in
-input signal to be processed.
+
+Input signal to be processed.
+
+
 argument:: freq
-center frequency.
-WARNING: due to the nature of its implementation frequency values close to 0 may cause glitches and/or extremely loud audio artifacts!
+
+Center frequency.
+WARNING: due to the nature of its implementation frequency values close to teletype::0:: may cause glitches and/or extremely loud audio artifacts!
+
+
 argument:: bw
-the bandwidth in octaves between -3 dB frequencies.
+
+The bandwidth in octaves between -3 dB frequencies.
+
+
 argument:: mul
+
 argument:: add
 
+
+
+
+
+
+
+
+
+
 examples::
+
+
+
+
 code::
 s.boot;
 (

@@ -1,45 +1,99 @@
-class:: PackFFT
-summary:: Pack separate demand-rate FFT bin streams into an FFT chain buffer
+title:: PackFFT
 categories:: UGens>FFT
+summary:: Pack separate demand-rate FFT bin streams into an FFT chain buffer
 related:: Classes/UnpackFFT
 
+
+
+
+
+
+
+
+
+
 description::
-Takes an array of magnitudes and phases, and packs them into an FFT buffer ready for transforming back into time-domain audio using IFFT.
+
+
+
+
+Takean an array of magnitudes and phases, and packs them into an FFT buffer ready for transforming back into time-domain audio using IFFT.
 
 Most people won't need to use this directly - instead, use pvcollect, pvcalc, or pvcalc2 methods from the link::Classes/PV_ChainUGen:: base class.
 
+
+
+
+
+
+
+
+
+
 classmethods::
+
+
+
+
 private:: categories
+
 
 method:: new
 
+
 argument:: chain
+
 The link::Classes/FFT:: chain
 
+
 argument:: bufsize
+
 FFT buffer size
 
+
 argument:: magsphases
+
 The input data should be a flat array containing magnitude and phase of all bins in ascending order.
 e.g. code:: [mag0, phase0, mag1, phase1, mag2, phase2, ... magN, phaseN] ::
 This input is typically demand-rate.
 
+
 argument:: frombin
-restricts the frequency band
+
+Restrict the frequency band
+
 
 argument:: tobin
-restricts the frequency band
+
+Restrict the frequency band
+
 
 argument:: zeroothers
-set to 1 to zero all the magnitudes outside the restricted frequency band
+
+Set to teletype::1::to teletype::zero:: all the magnitudes outside the restricted frequency band
+
 
 discussion::
 This is technically similar to Demand or Duty in that it calls demand-rate UGens further up the graph to process the values, eventually calling UnpackFFT. These two ends of the process must in most cases see the same chain...! Otherwise behaviour is undefined and, who knows, possibly unpleasant.
 
-Optional parameters: frombin and tobin allow you to fill the supplied data only into a subset of the FFT bins (i.e. a single delimited frequency band), and if you do this, you can also optionally set zeroothers to 1 to zero all the magnitudes outside this band (otherwise they stay intact).
+Optional parameters: frombin and tobin allow you to fill the supplied data only into a subset of the FFT bins (i.e. a single delimited frequency band), and if you do this, you can also optionally set zeroothers to teletype::1::to teletype::zero:: all the magnitudes outside this band (otherwise they stay intact).
+
+
+
+
+
+
+
+
+
 
 examples::
+
+
+
+
 Here's an unusual example which uses PackFFT without using UnpackFFT first - essentially creating our FFT data from scratch.
+
 code::
 // Reminder: This isn't the intended typical usage! It's OK to do this though.
 (

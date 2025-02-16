@@ -1,39 +1,107 @@
-class:: NoteOffResponder
-summary:: allow functions to be registered to respond to MIDI noteOff events
-related:: Classes/MIDIFunc, Classes/MIDIdef, Classes/MIDIResponder, Classes/NoteOnResponder
+title:: NoteOffResponder
 categories:: External Control>MIDI
+summary:: Allow functions to be registered to respond to MIDI noteOff events
+related:: Classes/MIDIFunc, Classes/MIDIdef, Classes/MIDIResponder, Classes/NoteOnResponder
 
-Description::
-note:: SC 3.5 added the link::Classes/MIDIFunc:: and link::Classes/MIDIdef:: classes. These are faster, and aim to have a more convenient, logical and consistent interface, which shares a common design with link::Classes/OSCFunc:: and link::Classes/OSCdef::. They also provide support for all MIDI message types.::
-ClassMethods::
 
-method::new
 
-argument::function
-A link::Classes/Function:: to be evaluated. Arguments passed to the function are: src, chan, num, value.
 
-argument::src
+
+
+
+
+
+
+description::
+
+
+
+
+note::
+SC 3.5 added the link::Classes/MIDIFunc::and link::Classes/MIDIdef::classes. These are faster, and aim to have a more convenient, logical and consistent interface, which shares a common design with link::Classes/OSCFunc::and link::Classes/OSCdef::.
+They also provide support for all MIDI message types.
+::
+
+
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
+argument:: function
+
+A link::Classes/Function:: to be evaluated. Arguments passed to the function are:
+src, chan, num, value.
+
+
+argument:: src
+
 The src number may be the system UID (obtained from code:: MIDIClient.sources[index].uid ::) or the index of the source in the code:: MIDIClient.sources :: array. nil matches all.
 
-argument::chan
-An link::Classes/Integer:: between 0 and 15 that selects which MIDI channel to match. nil matches all. May also be a link::Classes/Function:: which will be evaluated to determine the match. eg: { |val| val < 2 }
 
-argument::num
-An link::Classes/Integer:: between 0 and 127 that selects which note number to match. nil matches all. May also be a link::Classes/Function:: which will be evaluated to determine the match. eg: { |val| val >= 4 }
+argument:: chan
 
-argument::veloc
-An link::Classes/Integer:: between 0 and 127 to filter values. nil matches all. May also be a link::Classes/Function:: which will be evaluated to determine the match. eg: { |val| val < 50 }
+An link::Classes/Integer:: between 0 and 15 that selects which MIDI channel to match.
+nil matches all. May also be a link::Classes/Function:: which will be evaluated to determine the match.
+eg: { |val| val < 2 }
 
-argument::install
-If true, install the responder automatically so it is active and ready to respond. If false, then it will be inactive.
 
-argument::swallowEvent
-If true, then if the midi event is matched, cease testing any further responders. Note that doing this will prevent any other responders of this type from responding, including ones added behind the scenes in classes. Note also that this functionality is sensitive to the order in which responders are added. 
+argument:: num
 
-InstanceMethods::
+An link::Classes/Integer:: between 0 and 127 that selects which note number to match.
+nil matches all. May also be a link::Classes/Function:: which will be evaluated to determine the match.
+eg: { |val| val >= 4 }
 
-method::learn
+
+argument:: veloc
+
+An link::Classes/Integer:: between 0 and 127 to filter values.
+nil matches all. May also be a link::Classes/Function:: which will be evaluated to determine the match.
+eg: { |val| val < 50 }
+
+
+argument:: install
+
+If teletype::true::, install the responder automatically so it is active and ready to respond.
+If teletype::false::, then it will be inactive.
+
+
+argument:: swallowEvent
+
+If teletype::true::, then if the midi event is matched, cease testing any further responders.
+Note that doing this will prevent any other responders of this type from responding, including ones added behind the scenes in classes.
+Note also that this functionality is sensitive to the order in which responders are added.
+
+
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+method:: learn
+
+
 Wait for the next noteOff message, reset self to match src, chan.
+
 code::
 (
 c = NoteOffResponder({ |src, chan, note, vel|
@@ -45,7 +113,18 @@ NoteOffResponder.removeAll
 ::
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (

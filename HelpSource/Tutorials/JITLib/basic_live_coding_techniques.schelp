@@ -1,6 +1,8 @@
 title:: basic_live_coding_techniques
-summary:: basic live coding techniques
 categories:: JITLib>Tutorials, Tutorials>JITLib
+summary:: Basic live coding techniques
+
+
 
 basic live coding techniques ("object style") without the use of JITLib
 

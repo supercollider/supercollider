@@ -1,25 +1,68 @@
-class:: Pgtpar
-summary:: embed event streams in parallel and put each in its own group, with time offset
-related:: Classes/Pgpar, Classes/Ptpar, Classes/Pbus, Classes/Pgroup
+title:: Pgtpar
 categories:: Streams-Patterns-Events>Patterns>Parallel
+summary:: Embed event streams in parallel and put each in its own group, with time offset
+related:: Classes/Pgpar, Classes/Ptpar, Classes/Pbus, Classes/Pgroup
+
+
+
+
+
+
+
+
+
 
 description::
 
+
+
+
 Similar to link::Classes/Pgpar:: but with additional timing offsets.
 
-ClassMethods::
 
-method::new
 
-argument::list
-list of pairs of times and patterns or streams: [time, pat, time, pat ..].
 
-note:: times are in beats and depend on the tempo of the link::Classes/TempoClock:: in use.::
 
-argument::repeats
-repeat the whole pattern n times.
 
-Examples::
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
+argument:: list
+
+list of pairs of times and patterns or streams:
+[time, pat, time, pat ..].
+
+note::
+Times are in beats and depend on the tempo of the link::Classes/TempoClock::in use.
+::
+
+
+argument:: repeats
+
+Repeat the whole pattern n times.
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 // synthdef

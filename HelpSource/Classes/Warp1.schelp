@@ -1,51 +1,114 @@
-class:: Warp1
-summary:: Warp a buffer with a time pointer
+title:: Warp1
 categories:: UGens>Buffer, UGens>Generators>Granular
+summary:: Warp a buffer with a time pointer
+
+
+
+
+
+
+
+
+
 
 description::
+
+
+
+
 Inspired by Chad Kirby's SuperCollider2 Warp1 class, which was inspired by Richard Karpen's sndwarp for CSound. A granular time stretcher and pitchshifter.
 
+
+
+
+
+
+
+
+
+
 classmethods::
+
+
+
+
 private:: categories
 
+
 method:: ar
-argument::numChannels
-the number of channels in the soundfile used in bufnum. Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.
 
-argument::bufnum
-the buffer number of a mono soundfile.
 
-argument::pointer
-the position in the buffer.  The value should be between 0 and 1, with 0 being the beginning
-of the buffer, and 1 the end.
+argument:: numChannels
 
-argument::freqScale
-the amount of frequency shift. 1.0 is normal, 0.5 is one octave down, 2.0 is one octave up.
+The number of channels in the soundfile used in bufnum.
+Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.
+
+
+argument:: bufnum
+
+The buffer number of a mono soundfile.
+
+
+argument:: pointer
+
+The position in the buffer.  The value should be between 0 and 1, with 0 being the beginning of the buffer, and 1 the end.
+
+
+argument:: freqScale
+
+The amount of frequency shift. 1.0 is normal, 0.5 is one octave down, 2.0 is one octave up.
 Negative values play the soundfile backwards.
 
-argument::windowSize
-the size of each grain window.
 
-argument::envbufnum
-the buffer number containing a signal to use for the grain envelope. -1 uses a built-in
+argument:: windowSize
+
+The size of each grain window.
+
+
+argument:: envbufnum
+
+The buffer number containing a signal to use for the grain envelope.
+-1 uses a built-in
 Hanning envelope.
 
-argument::overlaps
-the number of overlapping windows.
 
-argument::windowRandRatio
-the amount of randomness to the windowing function.  Must be between 0 (no
-randomness) to 1.0 (probably too random actually)
+argument:: overlaps
 
-argument::interp
-the interpolation method used for pitchshifting grains. 1 = no interpolation. 2 = linear.
+The number of overlapping windows.
+
+
+argument:: windowRandRatio
+
+The amount of randomness to the windowing function.
+ Must be between 0 (no
+randomness) to teletype::1.0:: (probably too random actually)
+
+
+argument:: interp
+
+The interpolation method used for pitchshifting grains.
+1 = no interpolation. 2 = linear.
 		4 = cubic interpolation (more computationally intensive).
 
-argument::mul
 
-argument::add
+argument:: mul
 
-Examples::
+argument:: add
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
+
 code::
 s.boot;
 
@@ -86,7 +149,6 @@ x.set(\envbuf, -1);
 
 // relase and end
 x.relase; z.free;
-
 ::
 
 code::

@@ -1,10 +1,24 @@
-CLASS::Int8Array
-summary::an array whose indexed slots are all of the same type
-related::Classes/FloatArray, Classes/Int16Array, Classes/Int32Array, Classes/DoubleArray, Classes/SymbolArray
-categories::Collections>Ordered
+title:: Int8Array
+categories:: Collections>Ordered
+summary:: An array whose indexed slots are all of the same type
+related:: Classes/FloatArray, Classes/Int16Array, Classes/Int32Array, Classes/DoubleArray, Classes/SymbolArray
 
-DESCRIPTION::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
 These classes implement arrays whose indexed slots are all of the same type.
+
 list::
 ## Int8Array - 8 bit integer
 ## Int16Array - 16 bit integer
@@ -14,12 +28,27 @@ list::
 ## SymbolArray - symbols
 ::
 
-INSTANCEMETHODS::
 
-method::readFromStream
 
-method::parseOSC
-Tries to interpret the bytes as an OSC message or OSC bundle. Throws an exception on failure. See also link::Classes/Array#-asRawOSC::.
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+method:: readFromStream
+
+
+method:: parseOSC
+yTr to interpret the bytes as an OSC message or OSC bundle.
+Throws an exception on failure. See also link::Classes/Array#-asRawOSC::.
+
 code::
 // OSC message:
 Int8Array[ 47, 115, 95, 110, 101, 119, 0, 0, 44, 115, 105, 105, 105, 115, 105, 0, 100, 101, 102, 97, 117, 108, 116, 0, -1, -1, -1, -1, 0, 0, 0, 1, 0, 0, 0, 1, 102, 114, 101, 113, 0, 0, 0, 0, 0, 0, 7, -87 ].parseOSC;

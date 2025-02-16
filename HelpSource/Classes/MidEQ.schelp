@@ -1,52 +1,84 @@
-class:: MidEQ
-summary:: Parametric filter.
-categories::  UGens>Filters>Linear
+title:: MidEQ
+categories:: UGens>Filters>Linear
+summary:: Parametric filter
 
 
-Description::
 
-Attenuates or boosts a frequency band.
+
+
+
+
+
+
+
+description::
+
+
+
+
+Attenuate/boost a frequency band.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
 
-argument::in
+
+
+method:: ar, kr
+
+
+argument:: in
 
 The input signal.
 
 
-argument::freq
+argument:: freq
 
 Center frequency of the band in Hertz.
 
 
-argument::rq
+argument:: rq
 
 The reciprocal of Q (bandwidth / cutoffFreq).
 
 
-argument::db
+argument:: db
 
-Amount of boost (db > 0) or attenuation (db < 0) of the
-frequency band.
+Amount of boost (db > 0) or attenuation (db < 0) of the frequency band.
 
 
-argument::mul
+argument:: mul
 
 Output will be multiplied by this value.
 
 
-argument::add
+argument:: add
 
 This value will be added to the output.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 // mixer parametric eq as wahwah
 { MidEQ.ar(Saw.ar(200, 0.2), FSinOsc.kr(1, 0, 24, 84).midicps, 0.3, 12) }.play
 
@@ -79,5 +111,4 @@ x.set(\freq, 410)
 x.set(\freq, 420)
 x.set(\freq, 400)
 x.set(\freq, 500)
-
 ::

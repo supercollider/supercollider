@@ -1,42 +1,109 @@
-TITLE:: Git
-summary:: git interface
+title:: Git
 categories:: Frontends
+summary:: Git interface
 related:: Classes/Quarks, Classes/Quark
 
-DESCRIPTION::
-An interface to the git toolchain. For more information on git, see link::http://git.io::.
-
-
-CLASSMETHODS::
 
 
 
-METHOD:: new
-creates a new instance of code::Git::, pointing to an existing local git repository.
+
+
+
+
+
+
+description::
+
+
+
+
+An interface to the git toolchain.
+For more information on git, see link::http://git.io::.
+
+
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
+Create a new instance of code::Git::, pointing to an existing local git repository.
+
+
 argument:: localPath
-path to the git repository.
+
+Path to the git repository.
 
 
-METHOD:: isGit
+
+
+method:: isGit
+
+
 returns code::true::, if a local directory is a git repository.
+
+
 argument:: localPath
 
-METHOD:: checkForGit
+
+
+
+method:: checkForGit
+
+
 returns code::true::, if the git toolchain is found on the system.
 
 
-INSTANCEMETHODS::
 
-subsection:: info
 
-METHOD:: branch
-returns:: current branch name.
 
-METHOD:: remote, url
-returns:: url of the first remote that it finds.
 
-METHOD:: remoteAsHttpUrl
-Detects if the remote URI starts with code::"git@":: or code::"git:":: and remodels it to a valid code::"https":: URI. Otherwise, it returns the unaltered remote.
+
+
+
+
+instancemethods::
+
+
+
+
+subsection:: Info
+
+
+method:: branch
+
+
+returns::
+ 
+current branch name.
+
+
+
+
+method:: remote, url
+
+
+returns::
+ 
+url of the first remote that it finds.
+
+
+
+
+method:: remoteAsHttpUrl
+
+
+Detect if the remote URI starts with code::"git@":: or code::"git:":: and remodels it to a valid code::"https":: URI. Otherwise, it returns the unaltered remote.
 
 code::
 // git-style remote URI's are transformed to https
@@ -52,58 +119,147 @@ Git().url_("http://foo.org/bar").remoteAsHttpUrl;
 Git().url_("fooBar").remoteAsHttpUrl;
 ::
 
-returns:: remote URI formatted for code::http:: respectively code::https:: requests.
 
-METHOD:: remoteLatest
-returns:: hash of latest commit on the remote
+returns::
+Remote URI formatted for code::http::respectively code::https:: requests.
 
-METHOD:: localPath
-returns:: path to local repository
 
-METHOD:: tag
-returns:: currently checked out tag
 
-METHOD:: tags
-returns:: avaliable tags
 
-METHOD:: sha
-returns:: hash of the currently checked out version
+method:: remoteLatest
 
-METHOD:: shaForTag
+
+returns::
+ 
+hash of latest commit on the remote
+
+
+
+
+method:: localPath
+
+
+returns::
+ 
+path to local repository
+
+
+
+
+method:: tag
+
+
+returns::
+ 
+currently checked out tag
+
+
+
+
+method:: tags
+
+
+returns::
+ 
+avaliable tags
+
+
+
+
+method:: sha
+
+
+returns::
+ 
+hash of the currently checked out version
+
+
+
+
+method:: shaForTag
+
+
 argument:: tag
-one of the tags returned by link::#-tags::
-returns:: hash of the given tag
+
+One of the tags returned by link::#-tags::
 
 
-METHOD:: isDirty
-returns:: code::true:: if there are local changes
+returns::
+ 
+hash of the given tag
 
 
 
-subsection:: perform actions on remote
 
-METHOD:: fetch
-perform a fetch from remote
+method:: isDirty
 
 
-METHOD:: checkout
-perform a checkout from remote with argument code::refspec::
+returns::
+code::true:: if there are local changes
+
+
+
+
+
+
+subsection:: Perform actions on remote
+
+
+method:: fetch
+
+
+Perform a fetch from remote
+
+
+
+
+method:: checkout
+
+
+Perform a checkout from remote with argument code::refspec::
+
+
 argument:: refspec
 
-METHOD:: pull
-perform a pull from remote
 
-METHOD:: clone
-perform a clone from url into link::#-localPath::
+
+
+method:: pull
+
+
+Perform a pull from remote
+
+
+
+
+method:: clone
+
+
+Perform a clone from url into link::#-localPath::
+
+
 argument:: url
-the url of the remotes
+
+The url of the remotes
 
 
-PRIVATE:: git, refspec
+
+
+private:: git, refspec
 
 
 
-EXAMPLES::
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 // create a Git that points to a Quark directory

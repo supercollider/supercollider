@@ -1,8 +1,20 @@
 title:: JITLib
-summary:: An overview of the Just In Time programming library
 categories:: JITLib, Tutorials>JITLib, Live Coding
+summary:: An overview of the Just In Time programming library
 
-section::Introduction
+
+
+
+
+
+
+
+
+
+section:: Introduction
+
+
+
 
 emphasis::"Passenger to taxtidriver: take me to number 37. I'll give you the street name when we are there."::
 footnote::An austrian math teacher's joke::
@@ -10,80 +22,117 @@ footnote::An austrian math teacher's joke::
 Disclaimer: there is no time, really; punctuality, however, is your personal responsibility.
 
 
-emphasis::Just in time programming:: (or: emphasis::conversational programming, live coding:: footnote::For Live Coding see: http://toplap.org ::emphasis::, on-the fly-programming, interactive programming::) is a paradigm that includes the programming activity in the program's operation. Here, a program is not taken as a tool that is made first to be productive later, but instead as a dynamic construction process of description and conversation. Writing code becomes an integral part of musical or experimental practice.
+emphasis::Just in time programming:: (or: emphasis::conversational programming, live coding:: footnote::For Live Coding see: http://toplap.org ::emphasis::, on-the fly-programming, interactive programming::) is a paradigm that includes the programming activity in the program's operation. Here, a program is not taken as a tool that is made first to be productive later, but instead as a dynamic construction process of description and conversation.
+Writing code becomes an integral part of musical or experimental practice.
 
 	Being a dynamic programming language, SuperCollider provides several possibilities for modification of a running program - this library extends, unifies and develops them, mainly by providing abstract placeholders, called emphasis::proxies::, which can be used in calculations and modified at runtime.
 
 	subsection::Overview
 	JITLib consists of a number of strong::placeholders:: (server side and client side emphasis::proxies::) and strong::schemes of access::footnote::They have in common that they treat assignment as a method. In such a way, they are an extension of the assignment implementation in Smalltalk-72, which makes "=" a message sent to the receiving object.::.
 These two aspects of space corresponding to emphasis::inclusion:: and emphasis::reference::, depend on their context - here the placeholders are like roles which have a certain behaviour and can be fulfilled by certain objects.
-It is useful to be aware of the three aspects of such a placeholder: a certain set of elements can be their strong::source::, they can be used in a set of strong::contexts:: and have a default source, if none is given.
+It is useful to be aware of the three aspects of such a placeholder:
+a certain set of elements can be their strong::source::, they can be used in a set of strong::contexts:: and have a default source, if none is given.
 
 
 Frequently used classes:
 	link::Classes/Tdef:: (for tasks), link::Classes/ProxySpace::, link::Classes/NodeProxy:: and link::Classes/Ndef:: (for synths), link::Classes/Pdef:: and link::Classes/Pdefn:: (for patterns).
-
-
 
 note::
 For some recent changes, see: link::Other/JITLibChanges3.7::
 ::
 
 For additional functionality, see also strong::JITLib extensions Quark::. To install it, run the following:
+
 code::
 "JITLibExtensions".include;
 ::
 
 
-section::Tutorial: Interactive Programming with SuperCollider and jitlib
 
-This tutorial focusses on some basic concepts used in JITLib. There are many possibilities,
+
+
+
+
+
+
+
+section:: Tutorial:
+
+
+
+
+Interactive Programming with SuperCollider and jitlib
+
+This tutorial focusses on some basic concepts used in JITLib.
+There are many possibilities,
 such as server messaging and pattern proxies which are not covered in tutorial form presently.
 
-definitionList::
+definitionlist::
 ## content: ||
-definitionList::
+
+definitionlist::
 ## placeholders in SuperCollider || link::Tutorials/JITLib/jitlib_basic_concepts_01::
 ## referencing and environments || link::Tutorials/JITLib/jitlib_basic_concepts_02::
 ## internal structure of node proxy || link::Tutorials/JITLib/jitlib_basic_concepts_03::
 ## timing in node proxy || link::Tutorials/JITLib/jitlib_basic_concepts_04::
 ::
+
 ::
 
 
-section::Overview of the different classes and techniques
+
+
+
+
+
+
+
+
+section:: Overview of the different classes and techniques
+
+
+
 
 list::
-## strong::Defs::: One way or style of access is the def-classes (Pdef, Ndef etc.). It binds a symbol to an object in a specific way:
+## strong::Defs:::
+One way or style of access is the def-classes (Pdef, Ndef etc.).
+It binds a symbol to an object in a specific way:
+
 code::
 Pdef(\name)		//returns the proxy
 ::
+
 code::
 Pdef(\name, object)	//sets the source and returns the proxy
 ::
-the rest of the behaviour depends on its use.
+
+The rest of the behaviour depends on its use.
 
 client side: link::Classes/Pdef::, link::Classes/Pdefn::, link::Classes/Tdef::, link::Classes/Pbindef::, link::Classes/Psym::, link::Classes/Pnsym::, link::Classes/Fdef::
 
 server side: link::Classes/Ndef::
 
 ## strong::Environments::: Another way, for server side NodeProxies, is an environment that returns placeholders on demand:
+
 code::
 ProxySpace.push
 ::
+
 code::
 ~out = { ...}
 ::
 
-helpfile: link::Classes/ProxySpace:: for the use together with other environments, see link::Tutorials/JITLib/jitlib_basic_concepts_02::
+Helpfile: link::Classes/ProxySpace:: for the use together with other environments, see link::Tutorials/JITLib/jitlib_basic_concepts_02::
 
-## strong::Lower Level Proxies::: There is also direct access emphasis::without using the access schemes:: : NodeProxy, TaskProxy etc. provide it. Internally the former use these as base classes.
+## strong::Lower Level Proxies:::
+There is also direct access emphasis::without using the access schemes:: : NodeProxy, TaskProxy etc. provide it. Internally the former use these as base classes.
 
 language side: link::Classes/PatternProxy::, link::Classes/EventPatternProxy::, link::Classes/TaskProxy::, link::Classes/PbindProxy::, link::Classes/Pdict::
 
 server side: link::Classes/NodeProxy::
 
-## strong::History::: To record all textual changes, link::Classes/History:: is provides navigation and a memory of code.
+## strong::History:::
+To record all textual changes, link::Classes/History:: is provides navigation and a memory of code.
 
 ## strong::Multichannel systems:::, link::Classes/Monitor:: (used internally) has a link::Reference/playN:: method.
 
@@ -93,9 +142,20 @@ server side: link::Classes/NodeProxy::
 ::
 
 
-section::Tutorials
 
-definitionList::
+
+
+
+
+
+
+
+section:: Tutorials
+
+
+
+
+definitionlist::
 ## link::Tutorials/JITLib/proxyspace_examples:: || (a broad variety of inputs and uses)
 ## link::Tutorials/JITLib/jitlib_efficiency:: || (optimising code)
 ## link::Tutorials/JITLib/the_lazy_proxy:: || (how the initialisation works)
@@ -108,7 +168,19 @@ definitionList::
 ## link::Reference/NodeProxy_roles:: || (adverbial syntax for NodeProxy sources)
 ::
 
-section::Networking
+
+
+
+
+
+
+
+
+
+section:: Networking
+
+
+
 
 list::
 ## in remote and local networks thanks to sc-architecture node proxies can be strong::used on any server::, as long as it notifies the client and has a correctly initialized default node.
@@ -120,16 +192,27 @@ list::
 	::
 ::
 
-section::See also these related useful classes:
 
-definitionList::
+
+
+
+
+
+
+
+
+section:: See also these related useful classes:
+
+
+
+
+definitionlist::
 ## link::Classes/BusPlug:: || (listener on a bus)
 ## link::Classes/SkipJack:: || (a task that keeps awake across cmd-period)
 ## link::Classes/LazyEnvir:: || (and environment that returns proxies)
 ## link::Classes/EnvironmentRedirect:: || (abstract superclass for redirecting environments)
 ## link::Classes/EnvGate:: || (singleton fade envelope)
 ::
-
 
 History and GUI classes written by Alberto de Campo.
 
@@ -139,5 +222,6 @@ Thanks a lot for all the feedback and ideas!
 
 _____________________________________________________________
 
-The research for this project was funded by: German Research Foundation (DFG)
+The research for this project was funded by:
+German Research Foundation (DFG)
 and the Future Funds of Styria, Austria.

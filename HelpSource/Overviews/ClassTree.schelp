@@ -1,6 +1,7 @@
 title:: Class Tree
-related:: Overviews/Classes
-summary:: The whole class inheritance tree
 categories:: Language>OOP
+summary:: The whole class inheritance tree
+related:: Overviews/Classes
+
 
 classtree::Object

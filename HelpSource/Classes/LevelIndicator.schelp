@@ -1,32 +1,83 @@
-CLASS:: LevelIndicator
-summary:: a level indicator GUI widget
+title:: LevelIndicator
 categories:: GUI>Views
+summary:: A level indicator GUI widget
 related:: Classes/RangeSlider
 
-DESCRIPTION::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
 A level indicator view, suitable for use as a level or peak meter, etc.
 
 
-CLASSMETHODS::
-private::key
 
-INSTANCEMETHODS::
-private::valueAction
 
-METHOD:: value
+
+
+
+
+
+
+classmethods::
+
+
+
+
+private:: key
+
+
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+private:: valueAction
+
+
+method:: value
 Get or set the current level of the view.
 
+
 argument:: val
+
 A link::Classes/Float:: between 0 and 1.
 
-returns:: A link::Classes/Float::
 
-METHOD:: warning
-METHOD:: critical
-Set the warning and critical thresholds. If meter value is above either threshold, link::#-warningColor:: or link::#-criticalColor:: will be shown, respectively (by default, yellow and red).
+returns::
+A link::Classes/Float::
+
+
+
+
+method:: warning
+
+
+method:: critical
+Set the warning and critical thresholds.
+If meter value is above either threshold, link::#-warningColor:: or link::#-criticalColor:: will be shown, respectively (by default, yellow and red).
 If link::#-drawsPeak:: is true warning color will be displayed based on link::#-peakLevel:: rather than value.
 
+
 argument:: val
+
 A link::Classes/Float::.
 
 code::
@@ -37,10 +88,17 @@ a.value = 0.7;
 a.value = 0.9;
 ::
 
-METHOD:: style
-Sets the style of the view.
+
+
+
+method:: style
+
+
+Set the style of the view.
+
 
 argument:: val
+
 An link::Classes/QLevelIndicatorStyle:: \continuous or \led (see link::#-stepWidth::)
 
 code::
@@ -54,10 +112,17 @@ w = Window().front.layout_(
 )
 ::
 
-METHOD:: stepWidth
+
+
+
+method:: stepWidth
+
+
 The width of each led light, for \led.
 
+
 argument:: val
+
 An positive link::Classes/Integer::.
 
 code::
@@ -71,10 +136,17 @@ w = Window().front.layout_(HLayout(
 )
 ::
 
-METHOD:: numSteps
+
+
+
+method:: numSteps
+
+
 The number of steps used in \led style.
 
+
 argument:: val
+
 An positive link::Classes/Integer::.
 
 code::
@@ -86,16 +158,33 @@ a.numSteps = 4;
 )
 ::
 
-METHOD:: image
-note:: Not yet implemented in Qt GUI ::
+
+
+
+method:: image
+
+
+note:: 
+Not yet implemented in Qt GUI 
+::
+
 
 argument:: image
-An link::Classes/Image::. The default image is the SC cube.
 
-METHOD:: numTicks
+An link::Classes/Image::.
+The default image is the SC cube.
+
+
+
+
+method:: numTicks
+
+
 The number of ticks to display in the view's scale.
 
+
 argument:: number
+
 An link::Classes/Integer:: >= 0.
 
 code::
@@ -109,10 +198,17 @@ w.layout_(HLayout(
 )
 ::
 
-METHOD:: numMajorTicks
+
+
+
+method:: numMajorTicks
+
+
 The number of ticks in the view's scale which will be large sized.
 
+
 argument:: number
+
 An link::Classes/Integer:: >= 0.
 
 code::
@@ -127,11 +223,21 @@ w.layout_(HLayout(
 )
 ::
 
-METHOD:: drawsPeak
-Determines whether the view draws a separate peak display. This can be useful for displaying both peak and RMS values. If drawsPeak is true link::#-warning:: and link::#-critical:: will be displayed based on link::#-peakLevel:: rather than value.
+
+
+
+method:: drawsPeak
+
+
+Determine whether the view draws a separate peak display.
+This can be useful for displaying both peak and RMS values.
+If drawsPeak is true link::#-warning:: and link::#-critical:: will be displayed based on link::#-peakLevel:: rather than value.
+
 
 argument:: bool
-A link::Classes/Boolean::. By default the peak is not drawn.
+
+A link::Classes/Boolean::.
+By default the peak is not drawn.
 
 code::
 (
@@ -142,10 +248,18 @@ w = Window().front().layout_(HLayout(
 )
 ::
 
-METHOD:: peakLevel
-Sets the level of the peak display. (See link::#-drawsPeak::.)
+
+
+
+method:: peakLevel
+
+
+Set the level of the peak display.
+(See link::#-drawsPeak::.)
+
 
 argument:: val
+
 A link::Classes/Float::.
 
 code::
@@ -159,12 +273,25 @@ w = Window().front().layout_(HLayout(
 )
 ::
 
-METHOD:: meterColor
-METHOD:: warningColor
-METHOD:: criticalColor
-Sets the color of the meter, as well as the warning and critical colors.
+
+
+
+method:: meterColor
+
+
+method:: warningColor
+
+
+
+
+method:: criticalColor
+
+
+Set the color of the meter, as well as the warning and critical colors.
+
 
 argument:: color
+
 A link::Classes/Color::.
 
 code::
@@ -175,6 +302,7 @@ l.warningColor = Color.blue(0.7);
 l.criticalColor = Color.blue(0.5);
 )
 ::
+
 code::
 (
 // inverse
@@ -186,7 +314,18 @@ l.criticalColor = Color.black.alpha_(0.3);
 ::
 
 
-EXAMPLES::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (
@@ -247,6 +386,4 @@ a.drawsPeak = false;
 a.bounds = a.bounds.resizeTo(90, 90);
 a.numSteps = 1;
 )
-
-
 ::

@@ -1,33 +1,69 @@
-class:: PV_Add
-summary:: Complex addition.
-related:: Classes/FFT, Classes/IFFT, Classes/PV_CopyPhase, Classes/PV_MagMul, Classes/PV_Max, Classes/PV_Min, Classes/PV_Mul
+title:: PV_Add
 categories:: UGens>FFT
+summary:: Complex addition
+related:: Classes/FFT, Classes/IFFT, Classes/PV_CopyPhase, Classes/PV_MagMul, Classes/PV_Max, Classes/PV_Min, Classes/PV_Mul
 
-Description::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 Complex addition:
 
 code::
-
 RealA + RealB, ImagA + ImagB
-
 ::
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::new
 
-argument::bufferA
+
+
+method:: new
+
+
+argument:: bufferA
+
 FFT buffer A.
 
-argument::bufferB
+
+argument:: bufferB
+
 FFT buffer B.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 s.boot;
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
@@ -44,5 +80,4 @@ SynthDef("help-add", { |out = 0, soundBufnum|
 )
 
 b.free
-
 ::

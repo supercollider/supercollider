@@ -1,29 +1,66 @@
-class:: GUI
-summary:: Factory abstraction for all GUI related core classes
+title:: GUI
 categories:: GUI>Kits
+summary:: Factory abstraction for all GUI related core classes
 related:: Overviews/GUI-Classes, Guides/GUI-Introduction
 
 
-description::
-SuperCollider currently supports three operating system platforms: macOS, UNIX (Linux and FreeBSD) and Windows (with some limitations).
 
-Warning::The redirect system has been deprecated, please use the view classes directly. If you find old code that uses prefixes for the old GUI Kits (e.g. SCWindow for CocoaGUI), try dropping the prefixes to Window, Button etc. The Qt prefix Q, as e.g. in QWindow, is converted to Window automatically; still it is better style to simply write Window.::
+
+
+
+
+
+
+
+description::
+
+
+
+
+SuperCollider currently supports three operating system platforms:
+macOS, UNIX (Linux and FreeBSD) and Windows (with some limitations).
+
+warning::
+The redirect system has been deprecated, please use the view classes directly.
+If you find old code that uses prefixes for the old GUI Kits (e.g. SCWindow for CocoaGUI), try dropping the prefixes to Window, Button etc. The Qt prefix Q, as e.g. in QWindow, is converted to Window automatically; still it is better style to simply write Window.
+::
 
 Switching between GUI schemes is not needed anymore, as Qt runs well on all platforms.
 Still, you can get the available schemes with:
+
 code::
 GUI.schemes;
 ::
+
 For a complete list of historical gui classes and their redirects, see link::Overviews/GUI-Classes::.
+
+
+
+
+
+
+
+
+
 
 classmethods::
 
+
+
+
 method:: new
+
 
 method:: makeGUI
 
+
+
+
 method:: initClass
-Sets the code::skin:: to default values on compile.
+
+
+Set the code::skin:: to default values on compile.
+
 code::
 fontSpecs: ["Helvetica", 10],
 fontColor: Color.black,
@@ -36,69 +73,172 @@ margin: 2@2,
 buttonHeight: 16
 ::
 
+
+
+
 method:: add
 
+
 method:: qt
-Makes QtGUI the current scheme and returns it. Subsequent GUI object calls to GUI are delegated to Qt. Returns the current (Qt) scheme.
+Make QtGUI the current scheme and returns it.
+Subsequent GUI object calls to GUI are delegated to Qt.
+Returns the current (Qt) scheme.
+
+
+
 
 method:: fromID
-Changes the current scheme and returns the new scheme.
+
+
+Change the current scheme and returns the new scheme.
+
+
 argument:: id
-A link::Classes/Symbol::. The identifier of the scheme to use.
+
+A link::Classes/Symbol::.
+The identifier of the scheme to use.
+
+
 
 
 method:: current
 
-Returns the current scheme. This is useful for objects that, upon instantiation, wish to store the then-current scheme, so as to be able to consistently use the same scheme in future method calls.
 
-Note:: the caller shouldn't make any assumptions about the nature (the class) of the returned object, so that the actual implementation (an Event) may change in the future. ::
+Return the current scheme. This is useful for objects that, upon instantiation, wish to store the then-current scheme, so as to be able to consistently use the same scheme in future method calls.
+
+note:: 
+the caller shouldn't make any assumptions about the nature (the class) of the returned object, so that the actual implementation (an Event) may change in the future.
+::
+
+
 
 
 method:: get
-Returns the scheme for a given identifier. Does not switch the current scheme.
+
+
+Return the scheme for a given identifier.
+Does not switch the current scheme.
+
+
 argument:: id
-A link::Classes/Symbol::. The identifier of the scheme to retrieve, such as returned by calling code::aScheme.id::.
+
+A link::Classes/Symbol::.
+The identifier of the scheme to retrieve, such as returned by calling code::aScheme.id::.
+
+
+
 
 method:: set
-Changes the current scheme.
+
+
+Change the current scheme.
+
+
 argument:: aScheme
-An instance of link::Classes/Symbol::. The scheme to use as current scheme.
+
+An instance of link::Classes/Symbol::.
+The scheme to use as current scheme.
+
+
+
 
 method:: use
-Executes a function body, temporarily setting the current GUI scheme. This is useful inside view's action functions in order to make this function use the GUI scheme that was originally used for the view of the action, even if the scheme has been switched meanwhile.
+
+
+Execute a function body, temporarily setting the current GUI scheme.
+This is useful inside view's action functions in order to make this function use the GUI scheme that was originally used for the view of the action, even if the scheme has been switched meanwhile.
+
+
 argument:: aScheme
+
 The scheme to use during the function execution.
+
+
 argument:: func
+
 An Instance of link::Classes/Function::.
 
+
+
+
 method:: useID
+
+
 Same as code::use:: but using a scheme's id as first argument.
+
+
 argument:: id
+
 The id of the scheme to use during the function execution.
+
+
 argument:: func
+
 A body to execute.
 
+
+
+
 method:: add
-Registers a new scheme. This is typically called by external libraries in their startup procedure. If a scheme with the same identifier (code::scheme.id::) exists, it is overwritten.
+
+
+Register a new scheme. This is typically called by external libraries in their startup procedure.
+If a scheme with the same identifier (code::scheme.id::) exists, it is overwritten.
+
+
 argument:: aScheme
+
 The scheme to add.
 
+
+
+
 method:: doesNotUnderstand
+
+
 All method calls are mapped to the current scheme, so that for example code::GUI.button:: can be used and is delegated to the button association of the current scheme.
+
+
 argument:: selector
+
 argument:: ... args
 
+
+
+
 method:: setSkin
+
+
 argument:: skinName
 
+
+
+
 method:: scheme
+
+
 A class variable. Returns the current scheme.
 
+
+
+
 method:: schemes
+
+
 A class variable. Returns an link::Classes/IdentityDictionary:: of registered schemes.
 
+
+
+
 method:: skin
+
+
 A class variable. Returns the current skin.
 
+
+
+
 method:: skins
+
+
 A class variable. Returns an link::Classes/IdentityDictionary:: of registered skins.

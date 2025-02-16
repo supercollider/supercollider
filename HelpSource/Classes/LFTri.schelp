@@ -1,34 +1,73 @@
-class:: LFTri
+title:: LFTri
+categories:: UGens>Generators>Deterministic
 summary:: Triangle oscillator
 related:: Classes/LFCub, Classes/LFPar, Classes/LFPulse, Classes/LFSaw
-categories::  UGens>Generators>Deterministic
 
 
-Description::
 
-A non-band-limited triangle oscillator. Output ranges from -1 to +1.
+
+
+
+
+
+
+
+description::
+
+
+
+
+A non-band-limited triangle oscillator. Output ranges from teletype::-1:: to +1.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
 
-argument::freq
+
+
+method:: ar, kr
+
+
+argument:: freq
+
 Frequency in Hertz. For efficiency reasons, only positive values result in correct behavior.
 
-argument::iphase
 
-Initial phase offset. For efficiency reasons this is a value
-ranging from 0 to 4.
+argument:: iphase
+
+Initial phase offset. For efficiency reasons this is a value ranging from teletype::0:: to 4.
 
 
-argument::mul
+argument:: mul
+
 Output will be multiplied by this value.
 
-argument::add
+
+argument:: add
+
 This value will be added to the output.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 // plot:

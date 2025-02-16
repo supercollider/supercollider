@@ -1,44 +1,84 @@
-class:: OscN
-summary:: Noninterpolating wavetable oscillator.
+title:: OscN
+categories:: UGens>Generators>Deterministic
+summary:: Noninterpolating wavetable oscillator
 related:: Classes/COsc, Classes/Osc, Classes/VOsc, Classes/VOsc3
-categories::  UGens>Generators>Deterministic
 
 
-Description::
 
-Noninterpolating wavetable lookup oscillator with frequency and phase
-modulation inputs. It is usually better to use the interpolating
+
+
+
+
+
+
+
+description::
+
+
+
+
+Noninterpolating wavetable lookup oscillator with frequency and phase modulation inputs. It is usually better to use the interpolating
 oscillator  link::Classes/Osc:: .
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
 
-argument::bufnum
+
+
+method:: ar, kr
+
+
+argument:: bufnum
+
 Buffer index.  the buffer size must be a power of 2.
 The buffer should NOT be filled using Wavetable format (b_gen
-commands should set wavetable flag to false. Raw signals (not
-converted with asWavetable) can be saved to disk and loaded
-into the buffer.
+commands should set wavetable flag to teletype::false::. Raw signals (not
+converted with asWavetable) can be saved to disk and loaded into the buffer.
 
 
-argument::freq
+argument:: freq
+
 Frequency in Hertz.
 
-argument::phase
+
+argument:: phase
+
 Phase offset or modulator in radians.
 
-argument::mul
+
+argument:: mul
+
 Output will be multiplied by this value.
 
-argument::add
+
+argument:: add
+
 This value will be added to the output.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 // compare examples below with interpolating Osc examples.
 
 (
@@ -140,5 +180,4 @@ Routine({
 }).play;
 )
 b.free;
-
 ::

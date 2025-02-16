@@ -1,44 +1,123 @@
-class:: GVerb
-summary:: A two-channel reverb
+title:: GVerb
 categories:: UGens>Reverbs
+summary:: A two-channel reverb
 related:: Classes/FreeVerb, Classes/FreeVerb2
 
+
+
+
+
+
+
+
+
+
 description::
+
+
+
+
 A two-channel reverb link::Classes/UGen::, based on the "GVerb" LADSPA effect by Juhana Sadeharju (kouhia at nic.funet.fi).
 
+
+
+
+
+
 subsection:: Known issues
+
+
 list::
 ## There is a large CPU spike when the synth is instantiated while all the delay lines are zeroed out.
 ## Changes in roomsize result in pitch shifting and noise.
 ::
 
+
+
+
+
+
+
+
+
+
 classmethods::
 
+
+
+
 method:: ar
+
+
 argument:: in
-mono input.
+
+Mono input.
+
+
 argument:: roomsize
-in squared meters.
+
+In squared meters.
+
+
 argument:: revtime
-in seconds.
+
+In seconds.
+
+
 argument:: damping
-0 to 1, high frequency rolloff, 0 damps the reverb signal completely, 1 not at all.
+
+teletype::0:: to 1, high frequency rolloff, 0 damps the reverb signal completely, 1 not at all.
+
+
 argument:: inputbw
-0 to 1, same as damping control, but on the input signal.
+
+teletype::0:: to 1, same as damping control, but on the input signal.
+
+
 argument:: spread
-a control on the stereo spread and diffusion of the reverb signal.
+
+A control on the stereo spread and diffusion of the reverb signal.
+
+
 argument:: drylevel
-amount of dry signal.
+
+Amount of dry signal.
+
+
 argument:: earlyreflevel
-amount of early reflection level.
+
+Amount of early reflection level.
+
+
 argument:: taillevel
-amount of tail level.
+
+Amount of tail level.
+
+
 argument:: maxroomsize
-to set the size of the delay lines. Defaults to roomsize + 1.
+
+To set the size of the delay lines.
+Defaults to roomsize + 1.
+
+
 argument:: mul
+
 argument:: add
 
+
+
+
+
+
+
+
+
+
 examples::
+
+
+
+
 code::
 (
 SynthDef(\test, { |out, roomsize, revtime, damping, inputbw, spread = 15, drylevel, earlylevel,

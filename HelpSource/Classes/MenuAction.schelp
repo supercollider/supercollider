@@ -1,103 +1,209 @@
-TITLE:: MenuAction
-summary:: An individual menu or toolbar item, that performs an action when clicked.
+title:: MenuAction
 categories:: GUI
+summary:: An individual menu or toolbar item, that performs an action when clicked
 related:: Classes/Menu, Classes/ToolBar, Classes/MainMenu
 
-DESCRIPTION::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
 A MenuAction represents a single action that can occupy multiple link::Classes/Menu::s or a link::Classes/ToolBar::s, and will evaluate a function when activated.
-When added to a menu, these are displayed as menu items. When added to a toolbar, they appear as buttons.
+When added to a menu, these are displayed as menu items.
+When added to a toolbar, they appear as buttons.
 
 
-CLASSMETHODS::
 
-METHOD:: new
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
 	Create a new Action. Note that one action may occupy multiple menus and toolbars.
 
-	ARGUMENT:: string
+	argument:: string
 		The name of the action. This will be its display name if added to a menu.
 
-	ARGUMENT:: function
+	argument:: function
 		A function to perform when the action is activated.
 
-METHOD:: separator
-	An action that represents a menu or toolbar separator. These are not selectable or clickable.
 
-	ARGUMENT:: string
+
+
+method:: separator
+
+
+	An action that represents a menu or toolbar separator.
+These are not selectable or clickable.
+
+	argument:: string
 		A label for the separator. These are not always visible, depending on your OS and context.
 
 
 
-INSTANCEMETHODS::
 
-METHOD:: string
-	A string representing the name of the action. This is used as text when it is placed in menus, and on toolbars if it does not have an icon.
-	ARGUMENT::
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+method:: string
+
+
+	A string representing the name of the action.
+This is used as text when it is placed in menus, and on toolbars if it does not have an icon.
+	argument::
 		A String
 
-METHOD:: menu
+
+
+
+method:: menu
+
+
 	A Menu. If present, this action acts as a submenu, or a pop-up menu when placed on a toolbar.
-	ARGUMENT::
+	argument::
 		A link::Classes/Menu::
 
-METHOD:: shortcut
-	A string representing the keyboard shortcut to trigger this action. Keyboard shortcuts are available when an action is attached to a link::Classes/ToolBar::, or when it's part of the context menu for a View (see link::Classes/View#-setContextMenuActions::)
+
+
+
+method:: shortcut
+
+
+	A string representing the keyboard shortcut to trigger this action.
+Keyboard shortcuts are available when an action is attached to a link::Classes/ToolBar::, or when it's part of the context menu for a View (see link::Classes/View#-setContextMenuActions::)
 	Shortcut strings are of the form e.g. "Ctrl+M", "Shift+Alt+space" etc. See https://doc.qt.io/qt-5/qkeysequence.html#details for more info.
-	ARGUMENT::
+	argument::
 		A String
 
-METHOD:: checked
+
+
+
+method:: checked
+
+
 	Indicates whether the action is checked or unchecked.
-	ARGUMENT::
+	argument::
 		A boolean.
 
-METHOD:: toolTip
+
+
+
+method:: toolTip
+
+
 	A string to display when hovering over the menu item / button.
-	ARGUMENT::
+	argument::
 		A String
 
-METHOD:: separator
+
+
+
+method:: separator
+
+
 	Indicates whether the action is a separator.
-	ARGUMENT::
+	argument::
 		A Boolean.
 
-METHOD:: iconVisible
+
+
+
+method:: iconVisible
+
+
 	Indicates whether the icon for this action will be visible.
-	ARGUMENT::
+	argument::
 		A Boolean.
 
-METHOD:: checkable
+
+
+
+method:: checkable
+
+
 	Indicates that the action shows a checkbox and is checkable.
-	ARGUMENT::
+	argument::
 		A Boolean
 
-METHOD:: enabled
+
+
+
+method:: enabled
+
+
 	Indicates that the action is enabled; otherwise it will be greyed out and uninteractive.
-	ARGUMENT::
+	argument::
 		A Boolean
 
-METHOD:: icon
+
+
+
+method:: icon
+
+
 	An link::Classes/Image:: associated with the action - to be shown next to the name of the action in both menus and toolbars.
-	ARGUMENT::
+	argument::
 		An link::Classes/Image::
 
-METHOD:: font
+
+
+
+method:: font
+
+
 	The font used to display the action's name. Note that special fonts may or may not be displayed depending on OS and context (e.g. system menu, context menu, toolbar). For example, OSX application menus will honor italicized fonts, but not the font family itself.
-ARGUMENT::
+
+
+argument::
 	A link::Classes/Font::
 
-SUBSECTION:: Events
+
+
+
+
+
+subsection:: Events
+
+
 	Menu actions broadcast several kinds of events that can be registered for with the standard link::Classes/Object#-addDependant:: calls.
 	Events broadcast by menu:
 
-	LIST::
+	list::
 		## code::\changed:: (issued when one of the actions properties changes)
 		## code::\triggered:: (issued when the action is clicked / activated - value is a boolean representing whether the action is checked)
 		## code::\hovered::
 		## code::\toggled::
 	::
 
-	STRONG:: Events example ::
-	CODE::
+	strong:: Events example ::
+	code::
 (
 m = Menu(
 	a = MenuAction("Option A"),
@@ -115,9 +221,22 @@ m.onClose_({ a.removeDependant(f); b.removeDependant(f) }).front;
 )
 	::
 
-EXAMPLES::
 
-STRONG:: Simple checkable menu item ::
+
+
+
+
+
+
+
+
+examples::
+
+
+
+
+strong:: Simple checkable menu item ::
+
 code::
 (
 ~view = View().layout_(HLayout(
@@ -143,7 +262,8 @@ code::
 )
 ::
 
-STRONG:: Action help strings ::
+strong:: Action help strings ::
+
 code::
 (
 ~view = View(bounds: 300@100).layout_(VLayout(
@@ -174,8 +294,8 @@ code::
 )
 ::
 
+strong:: A more complex example ::
 
-STRONG:: A more complex example ::
 code::
 (
 s.waitForBoot {

@@ -1,16 +1,41 @@
-class:: Pavaroh
-summary:: applying ascending and descending scales to event stream
+title:: Pavaroh
 categories:: Streams-Patterns-Events>Patterns>Math
+summary:: Applying ascending and descending scales to event stream
+
+
+
+
+
+
+
+
+
 
 description::
+
+
+
 
 Basic classical indian scale pattern. Allowing to apply an ascending scale (aroh) and a descending scale (avaroh).
 
 Note that no special pakads (movements) or vakras (twists) are applied.
 
-The pakad is often a natural consequence of the notes of arohana / avarohana (ascending and descending structures). This is the purpose of this pattern.
+The pakad is often a natural consequence of the notes of arohana / avarohana (ascending and descending structures).
+This is the purpose of this pattern.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (

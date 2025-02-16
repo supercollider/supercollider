@@ -1,11 +1,26 @@
 title:: Understanding Streams, Patterns and Events - Part 2
+categories:: Tutorials>Streams-Patterns-Events
 summary:: Patterns Introduction
 related:: Tutorials/Streams-Patterns-Events1, Tutorials/Streams-Patterns-Events3, Tutorials/Streams-Patterns-Events4, Tutorials/Streams-Patterns-Events5, Tutorials/Streams-Patterns-Events6, Tutorials/Streams-Patterns-Events7
-categories:: Tutorials>Streams-Patterns-Events
 
-section::Patterns
 
-Often one wants to be able to create multiple streams from a single stream specification. Patterns are just a way to make multiple Streams from a single specification, like a cookie cutter. A pattern can be any object that responds to the code::asStream:: message by creating a link::Classes/Stream::. Once again there is a default implementation in class link::Classes/Object:: of asStream that simply returns the receiver as its own stream. Thus any object is by default a pattern that returns itself as a stream when sent the asStream message.
+
+
+
+
+
+
+
+
+section:: Patterns
+
+
+
+
+Often one wants to be able to create multiple streams from a single stream specification.
+Patterns are just a way to make multiple Streams from a single specification, like a cookie cutter. A pattern can be any object that responds to the code::asStream:: message by creating a link::Classes/Stream::.
+Once again there is a default implementation in class link::Classes/Object:: of asStream that simply returns the receiver as its own stream.
+Thus any object is by default a pattern that returns itself as a stream when sent the asStream message.
 
 code::
 (
@@ -15,11 +30,24 @@ a.next.postln;
 )
 ::
 
-section::Pattern and its subclasses
+
+
+
+
+
+
+
+
+
+section:: Pattern and its subclasses
+
+
+
 
 There is a class named link::Classes/Pattern:: that provides more functionality for the concept of a pattern.
 
-A link::Classes/Pfunc:: is a Pattern that returns a link::Classes/FuncStream::. The same function arguments are supplied as are supplied to FuncStream.
+A link::Classes/Pfunc:: is a Pattern that returns a link::Classes/FuncStream::.
+The same function arguments are supplied as are supplied to FuncStream.
 
 code::
 (
@@ -30,7 +58,8 @@ b = a.asStream;			// make a stream from the pattern
 )
 ::
 
-A link::Classes/Prout:: is a Pattern that returns a link::Classes/Routine::. The same function argument is supplied as is supplied to Routine.
+A link::Classes/Prout:: is a Pattern that returns a link::Classes/Routine::.
+The same function argument is supplied as is supplied to Routine.
 
 code::
 (
@@ -68,7 +97,19 @@ b = a.asStream;
 )
 ::
 
-section::Math operations on Patterns
+
+
+
+
+
+
+
+
+
+section:: Math operations on Patterns
+
+
+
 
 Patterns also respond to math operators by returning patterns that respond to code::asStream:: with appropriately modified streams.
 
@@ -77,7 +118,7 @@ Applying a unary operator to a pattern
 code::
 (
 var a, b, c;
-a = Pseries.new(0,1,10);	// a is a pattern whose stream counts from 0 to 9
+a = Pseries.new(0,1,10);	// a is a pattern whose stream counts from teletype::0:: to 9
 b = a.squared;			// pattern b is a square of the pattern a
 c = b.asStream;
 12.do({ c.next.postln; });
@@ -89,14 +130,26 @@ Using a binary operator on a pattern
 code::
 (
 var a, b, c;
-a = Pseries.new(0,1,10);	// a is a pattern whose stream counts from 0 to 9
+a = Pseries.new(0,1,10);	// a is a pattern whose stream counts from teletype::0:: to 9
 b = a + 100;			// add a constant value to pattern a
 c = b.asStream;
 12.do({ c.next.postln; });
 )
 ::
 
-section::Filtering operations on patterns
+
+
+
+
+
+
+
+
+
+section:: Filtering operations on patterns
+
+
+
 
 Patterns also respond to the messages code::collect::, code::select::, and code::reject:: by returning a new link::Classes/Pattern::.
 
@@ -105,21 +158,21 @@ The code::collect:: message returns a Pattern whose link::Classes/Stream:: is mo
 code::
 (
 var a, b, c;
-// a is a pattern whose stream counts from 0 to 9
+// a is a pattern whose stream counts from teletype::0:: to 9
 a = Pseries.new(0,1,10);
-// b is a pattern whose stream adds 100 to even values
+// b is a pattern whose stream adds teletype::100:: to even values
 b = a.collect({ arg item; if (item.even, { item + 100 },{ item }); });
 c = b.asStream;
 6.do({ c.next.postln; });
 )
 ::
 
-The code::select:: message creates a pattern whose stream passes only items that return true from a user supplied function.
+The code::select:: message creates a pattern whose stream passes only items that return teletype::true:: from a user supplied function.
 
 code::
 (
 var a, b, c;
-// a is a pattern whose stream counts from 0 to 9
+// a is a pattern whose stream counts from teletype::0:: to 9
 a = Pseries.new(0,1,10);
 // b is a pattern whose stream only returns the odd values
 b = a.select({ arg item; item.odd; });
@@ -128,12 +181,12 @@ c = b.asStream;
 )
 ::
 
-The code::reject:: message creates a pattern whose stream passes only items that return false from a user supplied function.
+The code::reject:: message creates a pattern whose stream passes only items that return teletype::false:: from a user supplied function.
 
 code::
 (
 var a, b, c;
-// a is a pattern whose stream counts from 0 to 9
+// a is a pattern whose stream counts from teletype::0:: to 9
 a = Pseries.new(0,1,10);
 // b is a pattern whose stream that only returns the non-odd values
 b = a.reject({ arg item; item.odd; });
@@ -142,7 +195,19 @@ c = b.asStream;
 )
 ::
 
-section::Making Music with Patterns
+
+
+
+
+
+
+
+
+
+section:: Making Music with Patterns
+
+
+
 
 Here is a variation of the example given in part 1 that uses a link::Classes/Pattern:: to create two instances of the random melody stream.
 

@@ -1,23 +1,69 @@
-class:: Dswitch
+title:: Dswitch
+categories:: UGens>Demand
 summary:: Demand rate generator for embedding different inputs
 related:: Classes/Demand, Classes/Dswitch1
-categories:: UGens>Demand
+
+
+
+
+
+
+
+
+
 
 description::
+
+
+
+
 Demand rate generator for embedding different inputs.
-In difference to Dswitch1, Dswitch embeds all items of
-an input demand ugen first before looking up the next index.
+In difference to Dswitch1, Dswitch embeds all items of an input demand UGen first before looking up the next index.
+
+
+
+
+
+
+
+
+
 
 classmethods::
+
+
+
+
 method:: new
+
+
 argument:: list
-array of values or other ugens
+
+Array of values or other UGens
+
+
 argument:: index
-which of the inputs to return
+
+Which of the inputs to return
+
+
 discussion::
-structurally related: link::Classes/Pswitch::
+Structurally related: link::Classes/Pswitch::
+
+
+
+
+
+
+
+
+
 
 examples::
+
+
+
+
 code::
 (
 	{

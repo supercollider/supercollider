@@ -1,23 +1,51 @@
 title:: News in 3.6
-summary:: A summary of news in SC 3.6
 categories:: News
+summary:: A summary of news in SC 3.6
 
-SECTION:: SuperCollider IDE
+
+
+
+
+
+
+
+
+
+section:: SuperCollider IDE
+
+
+
 
 A new cross-platform SuperCollider coding environment.
 
 Read link::Guides/SCIde##the guide::!
 
 
-SECTION:: Language-side news
+
+
+
+
+
+
+
+
+section:: Language-side news
+
+
+
 
 subsection:: More informative syntax errors
+
+
 The parser now posts the details of syntax errors, example:
+
 code::
 [1,2,%,4];
 123;
 ::
-Posts the following error message:
+
+Post the following error message:
+
 teletype::
 ERROR: syntax error, unexpected BINOP, expecting ']'
   in file 'selected text'
@@ -30,40 +58,102 @@ ERROR: syntax error, unexpected BINOP, expecting ']'
 ERROR: Command line parse failed
 ::
 
+
+
+
+
+
 subsection:: Remove old syntax
+
+
 code::#(a:1):: was valid syntax, but yielded nonsense results. This will now result in a syntax error instead.
 
+
+
+
+
+
 subsection:: YAML/JSON parser
+
+
 link::Classes/String#-parseYAML:: and link::Classes/String#-parseYAMLFile:: can be used to parse YAML or JSON.
+
+
+
+
+
 
 subsection:: SynthDef optimizations for additive terms
 
-When the SynthDef is compiled, separate additive ugens are combined via the new link::Classes/Sum3:: and
-link::Classes/Sum4:: ugens.
+
+When the SynthDef is compiled, separate additive UGens are combined via the new link::Classes/Sum3:: and
+link::Classes/Sum4:: UGens.
+
+
+
+
+
 
 subsection:: Basic dead code elimination for SynthDefs
+
 
 The process of building synthdefs now performs a simple dead code elimination pass, which removes all
 link::Classes/PureUGen:: instances without successor.
 
+
+
+
+
+
 subsection:: Case sensitive String comparison
+
+
 String comparison operators (teletype::==, !=, <=, >=, >, <::) are now case sensitive.
+
 code::
 "Foo" == "fOo"; // false
 ::
 
+
+
+
+
+
 subsection:: SplayAz Bug Fix
-Positioning of SplayAz was broken. The semantics of the TELETYPE::spread:: and TELETYPE::center:: arguments has
+
+
+Positioning of SplayAz was broken. The semantics of the teletype::spread:: and teletype::center:: arguments has
 been changed in order to fix the behavior.
 
-subsection:: Array primitives respect mutability
-The array primitives now respect object mutability: writing to an immutable object now fails and changing an
-immutable object with TELETYPE::add::, TELETYPE::addAll::, TELETYPE::insert::, TELETYPE::extend::,
-TELETYPE::growClear:: and TELETYPE::overwrite:: will return a newly allocated object.
 
-SECTION:: Server-side news
+
+
+
+
+subsection:: Array primitives respect mutability
+
+
+The array primitives now respect object mutability:
+writing to an immutable object now fails and changing an
+immutable object with teletype::add::, teletype::addAll::, teletype::insert::, teletype::extend::,
+teletype::growClear:: and teletype::overwrite:: will return a newly allocated object.
+
+
+
+
+
+
+
+
+
+
+section:: Server-side news
+
+
+
 
 subsection:: SynthDef2 fileformat
+
 
 subsection:: C++ base class for Unit Generators
 

@@ -1,26 +1,63 @@
-class:: ClipNoise
-summary:: Clip Noise.
+title:: ClipNoise
+categories:: UGens>Generators>Stochastic
+summary:: Clip Noise
 related:: Classes/BrownNoise, Classes/GrayNoise, Classes/PinkNoise, Classes/WhiteNoise
-categories::  UGens>Generators>Stochastic
 
 
-Description::
 
-Generates noise whose values are either -1 or 1. This produces
-the maximum energy for the least peak to peak amplitude.
+
+
+
+
+
+
+
+description::
+
+
+
+
+Generatenoise noise whose values are either -1 or 1. This produces the maximum energy for the least peak to peak amplitude.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
 
-argument::mul
+
+
+method:: ar, kr
+
+
+argument:: mul
+
 Output will be multiplied by this value.
 
-argument::add
+
+argument:: add
+
 This value will be added to the output.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 { ClipNoise.ar(0.2) }.play;

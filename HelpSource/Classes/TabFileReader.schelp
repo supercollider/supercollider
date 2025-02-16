@@ -1,14 +1,39 @@
-class:: TabFileReader
-summary:: file reader for tab separated data
-related:: Classes/File
+title:: TabFileReader
 categories:: Files
+summary:: File reader for tab separated data
+related:: Classes/File
+
+
+
+
+
+
+
+
+
 
 description::
+
+
+
+
 TabFileReader reads tab/return delimited files into 2D arrays.
 
 For semi-colon-delimited files use link::Classes/SemiColonFileReader::. For comma-separated files use link::Classes/CSVFileReader::. For space-delimited files, or custom delimiters, use link::Classes/FileReader::.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (

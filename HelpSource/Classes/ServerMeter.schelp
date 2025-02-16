@@ -1,52 +1,120 @@
-TITLE:: ServerMeter
-summary:: Graphical feedback window showing input/output levels
+title:: ServerMeter
 categories:: GUI>Interfaces
+summary:: Graphical feedback window showing input/output levels
 related:: Classes/Stethoscope, Classes/FreqScope, Classes/ServerMeterView
 
-DESCRIPTION::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
 A ServerMeter is a simple graphical display showing the volume levels of inputs and outputs on the server.
 
 Also see:
 link::Classes/Server#-meter::
 
-CLASSMETHODS::
 
-METHOD:: new
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
 Create a new ServerMeter.
 
-ARGUMENT:: server
+
+argument:: server
+
 The link::Classes/Server:: whose inputs and outputs you wish to visualize.
 
-ARGUMENT:: numIns
+
+argument:: numIns
+
 The number of inputs you want to display (starts counting at the first input bus, similar to link::Classes/SoundIn::)
 
-ARGUMENT:: numOuts
+
+argument:: numOuts
+
 The number of outputs you want to display (starts counting at bus 0)
 
-returns:: A reference to the newly created ServerMeter
+
+returns::
+ 
+A reference to the newly created ServerMeter
 
 
-INSTANCEMETHODS::
 
-METHOD:: window
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+method:: window
+
+
 Get a reference to the link::Classes/Window:: of this ServerView
 
-returns:: a link::Classes/Window:: reference
 
-METHOD:: meterView
+returns::
+A link::Classes/Window:: reference
+
+
+
+
+method:: meterView
+
+
 Get a reference to the link::Classes/ServerMeterView:: of this ServerView
 
-returns:: a link::Classes/ServerMeterView:: reference
+
+returns::
+A link::Classes/ServerMeterView:: reference
 
 note::
 A ServerMeter encapsulates both a link::Classes/Window:: and a link::Classes/ServerMeterView:: within that Window. For more information about Windows and views see link::Guides/GUI-Introduction#Basic elements: Windows, views and containers::
 ::
 
 
-EXAMPLES::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 s = Server.internal; // use the internal server
 s.boot;
 // display 4 input channels & main stereo output

@@ -1,44 +1,78 @@
-class:: LinLin
+title:: LinLin
+categories:: UGens>Maths
 summary:: Map a linear range to another linear range
 related:: Classes/LinExp
-categories::  UGens>Maths
 
 
-Description::
 
-Maps a linear range of values to another linear range of values.
+
+
+
+
+
+
+
+description::
+
+
+
+
+Map a linear range of values to another linear range of values.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
 
-argument::in
+
+
+method:: ar, kr
+
+
+argument:: in
 
 The input signal to convert.
 
 
-argument::srclo
+argument:: srclo
 
 Lower limit of input range.
 
 
-argument::srchi
+argument:: srchi
 
 Upper limit of input range.
 
 
-argument::dstlo
+argument:: dstlo
 
 Lower limit of output range.
 
 
-argument::dsthi
+argument:: dsthi
 
 Upper limit of output range.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 // examples:
@@ -72,7 +106,8 @@ code::
 )
 ::
 
-linlin and range can be used to create a LinLin implicitly from a ugen, mapping its output values from linear range to an exponential one. The rate is derived from the ugen.
+Linlin and range can be used to create a LinLin implicitly from a UGen, mapping its output values from linear range to an exponential one.
+The rate is derived from the UGen.
 
 code::
 // linlin

@@ -1,32 +1,68 @@
-class:: Sweep
+title:: Sweep
+categories:: UGens>Triggers
 summary:: Triggered linear ramp
-categories::  UGens>Triggers
 
-Description::
 
-Starts a linear raise by rate/sec from zero when trig input crosses from
-non-positive to positive.
 
-When rate == 1, Sweep may be used to get a continually-updating measurement
-of the time (in seconds) since the last trigger.
+
+
+
+
+
+
+
+description::
+
+
+
+
+Start a linear raise by rate/sec from teletype::zero:: when trig input crosses from
+non-teletype::positive:: to teletype::positive::.
+
+When rate == 1, Sweep may be used to get a continually-updating measurement of the time (in seconds) since the last trigger.
+
+
+
+
+
+
+
+
 
 
 classmethods::
+
+
+
+
 private:: categories
 
-method::ar, kr
 
-argument::trig
-
-triggers when trig input crosses from non-positive to positive.
+method:: ar, kr
 
 
-argument::rate
+argument:: trig
 
-rate/sec raise rate
+Trigger when trig input crosses from non-teletype::positive:: to teletype::positive::.
 
 
-Examples::
+argument:: rate
+
+Rate/sec raise rate
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 // using sweep to modulate sine frequency
@@ -68,10 +104,10 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 )
 
 b.free
-
 ::
 
 Sweep can be used as a resettable link::Classes/Phasor:: or link::Classes/Line:: - one that can start, pause, resume and stop. To get a resettable link::Classes/XLine:: behavior change the code::linlin:: to code::linexp:: in the SynthDef below.
+
 code::
 (
 SynthDef(\lineReset, { |out, start = 0, end = 1, dur = 1, t_trig = 1, run = 1|

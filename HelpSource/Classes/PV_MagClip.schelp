@@ -1,31 +1,65 @@
-class:: PV_MagClip
-summary:: Clip bins to a threshold.
-related:: Classes/FFT, Classes/IFFT, Classes/PV_MagAbove, Classes/PV_LocalMax, Classes/PV_MagBelow
+title:: PV_MagClip
 categories:: UGens>FFT
+summary:: Clip bins to a threshold
+related:: Classes/FFT, Classes/IFFT, Classes/PV_MagAbove, Classes/PV_LocalMax, Classes/PV_MagBelow
 
-Description::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 Clips bin magnitudes to a maximum threshold.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::new
 
-argument::buffer
+
+
+method:: new
+
+
+argument:: buffer
 
 FFT buffer.
 
 
-argument::threshold
+argument:: threshold
 
 Magnitude threshold.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 s.boot;
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
@@ -47,5 +81,4 @@ SynthDef("help-magClip2", { |out = 0, soundBufnum = 2|
 	Out.ar(out, 0.5 * IFFT(chain).dup);
 }).play(s, [\soundBufnum, b]);
 )
-
 ::

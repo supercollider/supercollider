@@ -1,32 +1,78 @@
-class:: UnaryOpUGen
-summary:: Apply a unary operation to the values of an input ugen
+title:: UnaryOpUGen
 categories:: UGens>Algebraic
+summary:: Apply a unary operation to the values of an input ugen
 related:: Classes/BinaryOpUGen, Classes/UnaryOpFunction, Classes/Punop, Overviews/Operators
 
+
+
+
+
+
+
+
+
+
 description::
+
+
+
+
 UnaryOpUGens are created as the result of a unary operator applied to a link::Classes/UGen::.
+
 code::
 (SinOsc.ar(200).abs).dump;
 (LFSaw.ar(200).sin).dump;
 ::
+
 As in the examples given here, you don't usually need to instantiate UnaryOpUGen yourself.
 
-The unary and binary operators are defined in link::Classes/UGen::'s superclass link::Classes/AbstractFunction::, which creates the
-BinaryOpUGen as a result of the operation.
+The unary and binary operators are defined in link::Classes/UGen::'s superclass link::Classes/AbstractFunction::, which creates the BinaryOpUGen as a result of the operation.
 
 See link::Overviews/Operators:: for an overview of common operators.
 
+
+
+
+
+
+
+
+
+
 classmethods::
 
-method::new
-return a new instance that applies the operator code::selector:: to the ugen code::a::
+
+
+
+method:: new
+
+
+Return a new instance that applies the operator code::selector:: to the UGen code::a::
+
 
 argument:: selector
+
 The selector symbol for the unary operator
+
+
 argument:: a
-operand
+
+Operand
+
+
+
+
+
+
+
+
+
 
 examples::
+
+
+
+
 code::
 a = WhiteNoise.ar; // a WhiteNoise
 b = a.squared; // a UnaryOpUGen.

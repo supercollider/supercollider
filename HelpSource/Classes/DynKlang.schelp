@@ -1,31 +1,81 @@
-class:: DynKlang
+title:: DynKlang
 categories:: UGens>Generators>Deterministic
 summary:: Dynamic sine oscillator bank
 related:: Classes/Klang, Classes/DynKlank, Classes/Klank
 
+
+
+
+
+
+
+
+
+
 description::
-DynKlang is a bank of sine oscillators. It is less efficient than Klang, as it is basically a wrapper around SinOsc UGens in order to provide a similar interface to link::Classes/Klang::.
+
+
+
+
+DynKlang is a bank of sine oscillators.
+It is less efficient than Klang, as it is basically a wrapper around SinOsc UGens in order to provide a similar interface to link::Classes/Klang::.
 
 Unlike Klang, parameters in code::specificationsArrayRef:: can be changed after it has been started.
 
+
+
+
+
+
+
+
+
+
 classmethods::
+
+
+
+
 private:: categories
+
 
 method:: ar, kr
 
+
 argument:: specificationsArrayRef
-a Ref to an Array of three Arrays:
+
+A Ref to an Array of three Arrays:
+
 definitionlist::
 ## frequencies || an Array of oscillator frequencies.
-## amplitudes || an Array of oscillator amplitudes, or nil. If nil, then amplitudes default to 1.0
-## phases || an Array of initial phases, or nil. If nil, then phases default to 0.0
+## amplitudes || an Array of oscillator amplitudes, or nil. If teletype::nil::, then amplitudes default to teletype::1.0::
+## phases || an Array of initial phases, or nil. If teletype::nil::, then phases default to teletype::0.0::
 ::
+
+
 argument:: freqscale
-a scale factor multiplied by all frequencies at initialization time.
+
+A scale factor multiplied by all frequencies at initialization time.
+
+
 argument:: freqoffset
-an offset added to all frequencies at initialization time.
+
+An offset added to all frequencies at initialization time.
+
+
+
+
+
+
+
+
+
 
 examples::
+
+
+
+
 code::
 // frequency modulation
 (

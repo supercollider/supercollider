@@ -1,32 +1,73 @@
-class:: Latch
+title:: Latch
+categories:: UGens>Triggers
 summary:: Sample and hold
 related:: Classes/Gate
-categories::  UGens>Triggers
 
-Description::
-Holds input signal value when triggered. Latch will output 0 until it receives its first trigger.
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+Hold input signal value when triggered.
+Latch will output 0 until it receives its first trigger.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
 
-argument::in
+
+
+method:: ar, kr
+
+
+argument:: in
+
 The input signal.
 
-argument::trig
 
-Trigger. Trigger can be any signal. A trigger happens when the
-signal changes from non-positive to positive.
+argument:: trig
+
+Trigger. Trigger can be any signal.
+A trigger happens when the signal changes from non-teletype::positive:: to teletype::positive::.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 { Blip.ar(Latch.ar(WhiteNoise.ar, Impulse.ar(9)) * 400 + 500, 4, 0.2) }.play;
 ::
 
-The above is just meant as example. LFNoise0 is a faster way to generate random steps:
+The above is just meant as example.
+LFNoise0 is a faster way to generate random steps:
+
 code::
 { Blip.ar(LFNoise0.kr(9, 400, 500), 4, 0.2) }.play;
 ::

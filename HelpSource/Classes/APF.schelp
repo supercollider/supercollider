@@ -1,37 +1,60 @@
-class:: APF
-summary:: FIXME: APF purpose.
-categories::  UGens>Filters>Linear, UGens>Undocumented
+title:: APF
+categories:: UGens>Filters>Linear, UGens>Undocumented
+summary:: FIXME: APF purpose
 
 
-Description::
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 FIXME: APF description.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::ar, kr
 
-argument::in
+
+
+method:: ar, kr
+
+
+argument:: in
 
 FIXME: explain parameter in.
 
 
-argument::freq
+argument:: freq
 
 FIXME: explain parameter freq.
 
 
-argument::radius
+argument:: radius
 
 FIXME: explain parameter radius.
 
 
-argument::mul
+argument:: mul
 
 Output will be multiplied by this value.
 
 
-argument::add
+argument:: add
 
 This value will be added to the output.

@@ -1,37 +1,70 @@
-class:: Saw
-summary:: Band limited sawtooth.
+title:: Saw
+categories:: UGens>Generators>Deterministic
+summary:: Band limited sawtooth
 related:: Classes/SyncSaw, Classes/VarSaw, Classes/LFSaw
-categories::  UGens>Generators>Deterministic
 
 
-Description::
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 Band limited sawtooth wave generator.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::ar
 
-argument::freq
+
+
+method:: ar
+
+
+argument:: freq
 
 Frequency in Hertz.
 
 
-argument::mul
+argument:: mul
 
 Output will be multiplied by this value.
 
 
-argument::add
+argument:: add
 
 This value will be added to the output.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 // modulating the frequency
 
 { Saw.ar(XLine.kr(40, 4000, 6), 0.2) }.play;
@@ -39,5 +72,4 @@ code::
 // two band limited sawtooth waves through a resonant low pass filter
 
 { RLPF.ar(Saw.ar([100, 250], 0.1), XLine.kr(8000, 400, 5), 0.05) }.play;
-
 ::

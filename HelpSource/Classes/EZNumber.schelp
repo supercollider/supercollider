@@ -1,61 +1,144 @@
-class:: EZNumber
-summary:: Wrapper class for label and number box
+title:: EZNumber
 categories:: GUI>EZ-GUI
+summary:: Wrapper class for label and number box
 related:: Classes/NumberBox
 
+
+
+
+
+
+
+
+
+
 description::
+
+
+
+
 EZNumber is wrapper class which creates an (optional) link::Classes/StaticText::, and a link::Classes/NumberBox::.
 
+
+
+
+
+
 subsection:: Some Important Issues Regarding NumberBox
-If the parent is code::nil::, then EZNumber will create its own window. See link::Classes/EZGui:: more options.
+
+
+If the parent is code::nil::, then EZNumber will create its own window.
+See link::Classes/EZGui:: more options.
+
+
+
+
+
 
 subsection:: Scrolling and Arrow Keys
-EZNumber scrolls by default, using the step size of the link::Classes/ControlSpec::. If the controlSpec's step is set to 0, or is not set, then the stepping and scrolling will be guessed according to the code::minval:: and code::maxval:: values of the spec on creation of the view.  Unlike the step variable of a regular link::Classes/NumberBox::, code::controlSpec.step:: is also the smallest possible increment for the EZNumber. By default, the shift-key modifier will allow you to step by 100 x code::controlSpec.step::, while the ctrl-key will give you 10x code::controlSpec.step::. Since the alt-key would give you 0.1 of the minimum step, it is disabled by default, but you can change that by setting code::numberView.alt_step:: to any value you like. Accordingly you can customize the other modifiers to fit your needs. See link::Classes/NumberBox::.
+
+
+EZNumber scrolls by default, using the step size of the link::Classes/ControlSpec::. If the controlSpec's step is set to teletype::0::, or is not set, then the stepping and scrolling will be guessed according to the code::minval:: and code::maxval:: values of the spec on creation of the view.
+ Unlike the step variable of a regular link::Classes/NumberBox::, code::controlSpec.step:: is also the smallest possible increment for the EZNumber.
+By default, the shift-key modifier will allow you to step by 100 x code::controlSpec.step::, while the ctrl-key will give you 10x code::controlSpec.step::. Since the alt-key would give you 0.1 of the minimum step, it is disabled by default, but you can change that by setting code::numberView.alt_step:: to any value you like. Accordingly you can customize the other modifiers to fit your needs.
+See link::Classes/NumberBox::.
+
+
+
+
+
+
+
+
+
 
 classmethods::
+
+
+
+
 method:: new
 
+
 argument:: parent
-The parent view or window. If the parent is nil, then EZNumber will create its own link::Classes/Window::, and place it conveniently on the screen if the bounds are a link::Classes/Point::. If the bounds are a link::Classes/Rect::, then the link::Classes/Rect:: determines the window bounds.
+
+The parent view or window. If the parent is nil, then EZNumber will create its own link::Classes/Window::, and place it conveniently on the screen if the bounds are a link::Classes/Point::.
+If the bounds are a link::Classes/Rect::, then the link::Classes/Rect:: determines the window bounds.
+
 
 argument:: bounds
-An instance of link::Classes/Rect:: or link::Classes/Point::. Default value is code::160@20::.
+
+An instance of link::Classes/Rect:: or link::Classes/Point::.
+Default value is code::160@20::.
+
 
 argument:: label
+
 The label. Default value is code::nil::. If code::nil::, then no link::Classes/StaticText:: is created.
 
+
 argument:: controlSpec
+
 The link::Classes/ControlSpec:: for scaling the value.
 
+
 argument:: action
+
 A link::Classes/Function:: called when the value changes. The function is passed the EZNumber instance as its argument.
 
+
 argument:: initVal
-The value to initialize the slider and number box with. If code::nil::, then it uses the link::Classes/ControlSpec::'s default value.
+
+The value to initialize the slider and number box with.
+If code::nil::, then it uses the link::Classes/ControlSpec::'s default value.
+
 
 argument:: initAction
-A link::Classes/Boolean:: indicating whether the action function should be called when setting the initial value. The default is code::false::.
+
+A link::Classes/Boolean:: indicating whether the action function should be called when setting the initial value.
+The default is code::false::.
+
 
 argument:: labelWidth
-Number of pixels width for the label. The  default is 60. In the code::\horz:: layout, if you specify the code::numberWidth::, then the code::labelWidth:: is ignored and is set to the code::bounds.width - unitWidth - numberWidth::.
+
+Number of pixels width for the label.
+The  default is 60. In the code::\horz:: layout, if you specify the code::numberWidth::, then the code::labelWidth:: is ignored and is set to the code::bounds.width - unitWidth - numberWidth::.
+
 
 argument:: numberWidth
-Number of pixels width for the number box. The  default is 45. In \line2 layout, numberWidth defaults to the bounds.width minus the unitWidth.
+
+Number of pixels width for the number box.
+The  default is 45. In \line2 layout, numberWidth defaults to the bounds.width minus the unitWidth.
+
 
 argument:: unitWidth
-Number of pixels width for the unit label. The default is 0.  If code::unitWidth:: is 0, then no code::unitLabel:: is created. In the code::\line2:: layout, if you specify the code::numberWidth::, then the code::unitWidth:: is ignored and is set to the code::bounds.width - unitWidth - numberWidth::.
+
+Number of pixels width for the unit label.
+The default is 0.  If code::unitWidth:: is 0, then no code::unitLabel:: is created. In the code::\line2:: layout, if you specify the code::numberWidth::, then the code::unitWidth:: is ignored and is set to the code::bounds.width - unitWidth - numberWidth::.
+
 
 argument:: labelHeight
+
 Default is 20;
 
+
 argument:: layout
-code::\line2::, or code::\horz::. The default is code::\horz::; code::\line2:: is a two line version.
+
+code::\line2::, or code::\horz::.
+The default is code::\horz::; code::\line2:: is a two line version.
+
 
 argument:: gap
-A link::Classes/Point::. By default, the view tries to get its parent's gap, otherwise it defaults to code::2@2::. Setting it overrides these.
+
+A link::Classes/Point::. By default, the view tries to get its parent's gap, otherwise it defaults to code::2@2::.
+Setting it overrides these.
+
 
 argument:: margin
-A link::Classes/Point::. This will inset the bounds occupied  by the subviews of view.
+
+A link::Classes/Point::.
+This will inset the bounds occupied  by the subviews of view.
+
 
 discussion::
 code::
@@ -80,74 +163,195 @@ g.setColors(Color.grey, Color.white);
 );
 ::
 
-The contained views can be accessed via the EZNumber instance variables: code::labelView::, code::numberView::.
+The contained views can be accessed via the EZNumber instance variables:
+code::labelView::, code::numberView::.
+
+
+
+
+
+
+
+
+
 
 instancemethods::
 
+
+
+
 method:: numberView
-Returns the numberView
+
+
+Return the numberView
+
+
+
 
 method:: action
-A function to be evaluated when the value changes. Te first argument will be the EZNumber.
+
+
+A function to be evaluated when the value changes.
+Te first argument will be the EZNumber.
+
+
 argument:: arg1
-An instance of link::Classes/Function:: or link::Classes/FunctionList::. Default value is nil.
+
+An instance of link::Classes/Function:: or link::Classes/FunctionList::.
+Default value is nil.
+
+
+
 
 method:: value
+
+
 The value of the slider
 
+
+
+
 method:: round
-Rounds the values in the number box.
+
+
+Round the values in the number box.
+
+
+
 
 method:: controlSpec
+
+
 An instance of link::Classes/ControlSpec:: for scaling the values.
 
+
+
+
 method:: value
-Gets/sets the list/menu to the index at value. Does not perform the action.
+
+
+Get/set the list/menu to the index at value.
+Does not perform the action.
+
+
 argument:: val
+
 An link::Classes/Integer::.
+
+
+
 
 method:: valueAction
-Sets the value and performs the action at the index value and the global action.
+
+
+Set the value and performs the action at the index value and the global action.
+
+
 argument:: val
+
 An link::Classes/Integer::.
 
+
+
+
 method:: doAction
-Performs the action at the current index and the global action.
+
+
+Perform the action at the current index and the global action.
+
+
+
 
 method:: set
+
+
 Set the args after creation.
 
+
+
+
 method:: enabled
-Sets/gets if the list is enabled.
+
+
+Set/get if the list is enabled.
+
+
 argument:: bool
+
 An instance of link::Classes/Boolean::. Default is code::true::.
+
+
+
+
 
 
 subsection:: Changing Appearance
 
+
 method:: setColors
+
+
 argument:: stringBackground
+
 An instance of link::Classes/Color::. The code::background:: of the label and unit views.
+
+
 argument:: stringColor
+
 An instance of link::Classes/Color::. The code::stringColor:: of the label and unit views.
+
+
 argument:: numBackground
+
 An instance of link::Classes/Color::. The code::background:: of the number view.
+
+
 argument:: numStringColor
+
 An instance of link::Classes/Color::. The code::stringColor:: of the number view.
+
+
 argument:: numNormalColor
+
 An instance of link::Classes/Color::. The code::normalColor:: of the number view.
+
+
 argument:: numTypingColor
+
 An instance of link::Classes/Color::. The code::typingColor:: of the number view.
+
+
 argument:: background
+
 An instance of link::Classes/Color::. The code::background:: of the enclosing view.
 
+
+
+
 method:: font
+
+
 Set the link::Classes/Font:: used by all the views.
+
+
 argument:: font
+
 An instance of link::Classes/Font::.
 
 
+
+
+
+
+
+
+
+
 examples::
+
+
+
+
 code::
 // Simplest version
 (		// basic use
@@ -280,7 +484,7 @@ s.waitForBoot({
 					"bal", balanceControl.value,
 					"amp", ampControl.value.dbamp]);
 			} {
-				// set gate to zero to cause envelope to release
+				// set gate to teletype::zero:: to cause envelope to release
 				node.release; node = nil;
 			};
 	};
@@ -307,7 +511,7 @@ s.waitForBoot({
 		{ |ez| node.set("amp", ez.value.dbamp) }, -6);
 
 
-	// set start button to zero upon a cmd-period
+	// set start button to teletype::zero:: upon a cmd-period
 	cmdPeriodFunc = { startButton.value = 0 };
 	CmdPeriod.add(cmdPeriodFunc);
 

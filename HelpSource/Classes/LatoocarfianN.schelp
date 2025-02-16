@@ -1,9 +1,22 @@
-class:: LatoocarfianN
-summary:: Latoocarfian chaotic generator
+title:: LatoocarfianN
 categories:: UGens>Generators>Chaotic
+summary:: Latoocarfian chaotic generator
 related:: Classes/LatoocarfianL, Classes/LatoocarfianC
 
+
+
+
+
+
+
+
+
+
 description::
+
+
+
+
 A non-interpolating sound generator based on a function given in Clifford Pickover's book Chaos In Wonderland, pg 26. The function is:
 
 teletype::
@@ -11,7 +24,7 @@ teletype::
         y(n+1) = sin(a * x(n)) + d * sin(a * y(n))
 ::
 
-According to Pickover, parameters code::a:: and code::b:: should be in the range from -3 to +3, and parameters code::c:: and code::d:: should be in the range from 0.5 to 1.5. The function can, depending on the parameters given, give continuous chaotic output, converge to a single value (silence) or oscillate in a cycle (tone).
+According to Pickover, parameters code::a:: and code::b:: should be in the range from -3 to +3, and parameters code::c:: and code::d:: should be in the range from teletype::0::.5 to 1.5. The function can, depending on the parameters given, give continuous chaotic output, converge to a single value (silence) or oscillate in a cycle (tone).
 
 sclang code translation:
 
@@ -26,28 +39,80 @@ xi
 )
 ::
 
-note::This UGen is experimental and not optimized currently, so is rather hoggish of CPU.::
+note::
+This UGen is experimental and not optimized currently, so is rather hoggish of CPU.
+::
+
+
+
+
+
+
+
+
+
 
 classmethods::
+
+
+
+
 method:: ar
+
+
 argument:: freq
+
 Iteration frequency in Hertz
+
+
 argument:: a
+
 Equation variable
+
+
 argument:: b
+
 Equation variable
+
+
 argument:: c
+
 Equation variable
+
+
 argument:: d
+
 Equation variable
+
+
 argument:: xi
+
 Initial value of x
+
+
 argument:: yi
+
 Initial value of y
+
+
 argument:: mul
+
 argument:: add
 
+
+
+
+
+
+
+
+
+
 examples::
+
+
+
+
 code::
 // default initial params
 { LatoocarfianN.ar(MouseX.kr(20, SampleRate.ir)) * 0.2 }.play(s);

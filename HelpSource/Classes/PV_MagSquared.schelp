@@ -1,27 +1,61 @@
-class:: PV_MagSquared
-summary:: Square magnitudes.
-related:: Classes/FFT, Classes/IFFT
+title:: PV_MagSquared
 categories:: UGens>FFT
+summary:: Square magnitudes
+related:: Classes/FFT, Classes/IFFT
 
-Description::
 
-Squares the magnitudes and renormalizes to previous peak. This makes weak
-bins weaker.
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+Squarethe the magnitudes and renormalizes to previous peak.
+This makes weak bins weaker.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::new
 
-argument::buffer
+
+
+method:: new
+
+
+argument:: buffer
 
 FFT buffer.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 s.boot;
 
 (
@@ -38,5 +72,4 @@ SynthDef("help-magSquared", { |out = 0, bufnum = 0, soundBufnum = 2|
 	Out.ar(out, 0.003 * IFFT(chain).dup);
 }).play(s, [\out, 0, \bufnum, b.bufnum, \soundBufnum, c.bufnum]);
 )
-
 ::

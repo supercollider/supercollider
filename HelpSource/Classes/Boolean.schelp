@@ -1,63 +1,161 @@
-class::Boolean
-summary:: abstract class whose instances represent a logical value
-categories::Core
+title:: Boolean
+categories:: Core
+summary:: Abstract class whose instances represent a logical value
 related:: Reference/Control-Structures
 
+
+
+
+
+
+
+
+
+
 description::
+
+
+
+
 Boolean is the superclass of link::Classes/True:: and link::Classes/False:: which are the concrete realizations.
 In code True and False are represented by the literal values code::true:: and code::false::.
 
-instanceMethods::
+
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
 
 private:: while
+
+
 private:: storeOn
+
+
+
+
 private:: trace
+
+
 private:: printOn
+
+
+
+
 private:: archiveAsCompileString
 
-method::xor
 
-returns:: the exclusive or of the receiver and another Boolean.
+method:: xor
 
-method::and
+
+returns::
+ 
+the exclusive or of the receiver and another Boolean.
+
+
+
+
+method:: and
+
 
 If the receiver is true then answer the evaluation of function.
-If the receiver is false then function is not evaluated and the message answers false.
+If the receiver is false then function is not evaluated and the message answers teletype::false::.
 
-method::or
+
+
+
+method:: or
+
 
 If the receiver is false then answer the evaluation of function.
-If the receiver is true then function is not evaluated and the message answers true.
+If the receiver is true then function is not evaluated and the message answers teletype::true::.
 
-method::&&
 
-returns:: true if the receiver is true and aBoolean is true.
 
-method::||
 
-returns:: true if either the receiver is true or aBoolean is true.
+method:: &&
 
-method::nand
 
-returns:: true unless both the operands are true (Sheffer stroke)
+returns::
+ 
+teletype::true:: if the receiver is true and aBoolean is true.
 
-method::not
 
-returns:: true if the receiver is false, and false if the receiver is true.
 
-method::if
 
-If the receiver is true, answer the evaluation of the trueFunc. If the receiver is false, answer the evaluation of the falseFunc.
+method:: ||
 
-method::asInteger
-method::binaryValue
 
-returns:: 1 if the receiver is true, and 0 if the receiver is false.
+returns::
+ 
+teletype::true:: if either the receiver is true or aBoolean is true.
 
-method::asBoolean
-method::booleanValue
-Returns:: The receiver. The same message is understood by link::Classes/SimpleNumber:: and can be used to convert it to boolean.
 
-method::keywordWarnings
 
-turn on/off warnings if a keyword argument is not found
+
+method:: nand
+
+
+returns::
+ 
+true unless both the operands are true (Sheffer stroke)
+
+
+
+
+method:: not
+
+
+returns::
+ 
+teletype::true:: if the receiver is false, and teletype::false:: if the receiver is true.
+
+
+
+
+method:: if
+
+
+If the receiver is true, answer the evaluation of the trueFunc.
+If the receiver is false, answer the evaluation of the falseFunc.
+
+
+
+
+method:: asInteger
+
+
+method:: binaryValue
+
+
+returns::
+ 
+1 if the receiver is true, and teletype::0:: if the receiver is false.
+
+
+
+
+method:: asBoolean
+
+
+method:: booleanValue
+
+
+returns::
+The receiver. The same message is understood by link::Classes/SimpleNumber:: and can be used to convert it to boolean.
+
+
+
+
+method:: keywordWarnings
+
+
+Turn on/off warnings if a keyword argument is not found

@@ -1,6 +1,19 @@
-class::True
-categories::Core
-summary::true logical value
+title:: True
+categories:: Core
+summary:: True logical value
+
+
+
+
+
+
+
+
+
 
 description::
-see link::Classes/Boolean::
+
+
+
+
+See link::Classes/Boolean::

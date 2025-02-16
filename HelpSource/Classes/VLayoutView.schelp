@@ -1,28 +1,68 @@
-class:: VLayoutView
-summary:: A container view that arranges its children vertically
+title:: VLayoutView
 categories:: GUI>Views
+summary:: A container view that arranges its children vertically
 related:: Classes/HLayoutView, Classes/CompositeView
 
-DESCRIPTION::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 note::
-In Qt GUI, this class has been rendered strong::obsolete:: by a special set of layout classes; they are easier to use and more flexible. See link::Classes/VLayout:: for an equivalent to this class, and link::Guides/GUI-Layout-Management:: for a general description of the Qt layout system.
+In Qt GUI, this class has been rendered strong::obsolete:: by a special set of layout classes; they are easier to use and more flexible.
+See link::Classes/VLayout:: for an equivalent to this class, and link::Guides/GUI-Layout-Management:: for a general description of the Qt layout system.
 ::
 
-VLayoutView can be a parent to other views, and it automatically arranges its child views in vertical order, expanding their width to its own bounds. Only the height of the children is relevant.
+VLayoutView can be a parent to other views, and it automatically arranges its child views in vertical order, expanding their width to its own bounds.
+Only the height of the children is relevant.
 
 When arranging its children, VLayoutView takes the values of their 'minHeight' and 'maxHeight' properties into account. This is useful when a child's link::Classes/View#-resize#resize:: mode is set to 4, 5, or 6. See link::#examples:: below.
 
 VLayoutView inherits some useful formatting methods from its superclasses.
 
 note::
-VLayoutView is designed mainly for grouping and placing widgets. While you can set it to accept key presses, it does not accept mouse clicks or drags.
+VLayoutView is designed mainly for grouping and placing widgets.
+While you can set it to accept key presses, it does not accept mouse clicks or drags.
 ::
 
-CLASSMETHODS::
-PRIVATE:: key
 
-EXAMPLES::
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+private:: key
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (
@@ -41,7 +81,6 @@ w.front
 // show the area of the view.
 v.background_(Color.rand) // The sliders automatically expand to the optimal width
 ::
-
 
 Stretching the layout view; Slider height is fixed:
 
@@ -64,7 +103,8 @@ w.front
 )
 ::
 
-Stretching the layout view and the contents; if all the contents are elastic, the heights of the contents are perfectly divided up. In this example, the StaticText is not elastic in order to preserve its height.
+Stretching the layout view and the contents; if all the contents are elastic, the heights of the contents are perfectly divided up.
+In this example, the StaticText is not elastic in order to preserve its height.
 
 code::
 (
@@ -90,6 +130,7 @@ w.front
 ::
 
 Mixed stretching modes:
+
 code::
 (
 q = 5;
@@ -157,8 +198,8 @@ w.front
 )
 ::
 
-
 Nesting: use VLayoutView and HLayoutView in combination:
+
 code::
 (
 q = 10;

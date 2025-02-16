@@ -1,27 +1,61 @@
-class:: RandID
-summary:: Set the synth's random generator ID.
+title:: RandID
+categories:: UGens>Generators>Stochastic, UGens>Random
+summary:: Set the synth's random generator ID
 related:: Classes/RandSeed
-categories::  UGens>Generators>Stochastic, UGens>Random
 
 
-Description::
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 Choose which random number generator to use for this synth.
-All synths that use the same generator reproduce the same sequence
-of numbers when the same seed is set again.
+All synths that use the same generator reproduce the same sequence of numbers when the same seed is set again.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::kr, ir
 
-argument::id
+
+
+method:: kr, ir
+
+
+argument:: id
+
 The random number generator ID.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 // start a noise patch and set the id of the generator
 (
 SynthDef("help-RandID", { |out = 0, id = 1|
@@ -50,5 +84,4 @@ x = Synth("help-RandSeed", [\id, 1]);
 
 // change the target randgen to 2 (affects right channel)
 x.set(\id, 2);
-
 ::

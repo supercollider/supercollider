@@ -1,34 +1,68 @@
-class:: Drand
-summary:: Demand rate random sequence generator.
-related:: Classes/Demand, Classes/Dseq, Classes/Dser, Classes/Duty, Classes/Dxrand, Classes/TDuty
+title:: Drand
 categories:: UGens>Demand
+summary:: Demand rate random sequence generator
+related:: Classes/Demand, Classes/Dseq, Classes/Dser, Classes/Duty, Classes/Dxrand, Classes/TDuty
 
-Description::
-link::Classes/Dxrand::  never plays the same value twice, whereas Drand
-chooses any value in the list.
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+link::Classes/Dxrand::  never plays the same value twice, whereas Drand chooses any value in the list.
 
 
 See link::Classes/Prand:: for structurally related equivalent.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::new
 
-argument::list
+
+
+method:: new
+
+
+argument:: list
 
 An array of values or other UGens.
 
 
-argument::repeats
+argument:: repeats
 
 Number of values to return.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 (
 {
 	var a, freq, trig;
@@ -39,5 +73,4 @@ code::
 
 }.play;
 )
-
 ::

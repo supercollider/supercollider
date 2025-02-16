@@ -1,9 +1,21 @@
 title:: 03
-summary:: Mark Polishook tutorial (JP)
 categories:: Tutorials>Mark_Polishook_tutorial>Japanese_version
+summary:: Mark Polishook tutorial (JP)
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
-section::SynthDefsには2つの重要な部分がある
+
+
+
+
+
+
+
+
+
+section:: SynthDefsには2つの重要な部分がある
+
+
+
 
 SynthDefsは、SuperColliderでシンセサイザーのエンジンを作るのに使うクラスです。
 
@@ -48,9 +60,21 @@ SynthDef(
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-section::SynthDefブラウザー
 
-典型的には、ugenGraphFuncは2、3の重要なコンポーネントを含みます。これらにはugen（ユニット・ジェネレータ）、control（コントロール）、input（入力）そしてoutput（出力）が含まれます。
+
+
+
+
+
+
+
+
+section:: SynthDefブラウザー
+
+
+
+
+典型的には、ugenGraphFuncは2、3の重要なコンポーネントを含みます。これらにはUGen（ユニット・ジェネレータ）、control（コントロール）、input（入力）そしてoutput（出力）が含まれます。
 
 ブラウザー・ウィンドウでそのようなことを見るためには、次のコードを実行してみて下さい。
 
@@ -61,7 +85,7 @@ SynthDescLib.global.browse;
 )
 ::
 
-このコードによって作られるブラウザー・ウィンドウは６つのボックスを含み、全ての以前に定義されたSynthDefの名前を示します。それぞれの名前を選択して、それに関連づけられたugenGraphFunc ugen、control、inputとoutputを表示することができます。
+このコードによって作られるブラウザー・ウィンドウは６つのボックスを含み、全ての以前に定義されたSynthDefの名前を示します。それぞれの名前を選択して、それに関連づけられたugenGraphFunc UGen、control、inputとoutputを表示することができます。
 
 あらかじめ定義されたSynthDefとは、以前に.loadメッセージが送られたものということです。この結果、SuperColliderはあらかじめロードされたSynthDefを起動時に読み込むます。
 
@@ -71,11 +95,23 @@ SynthDescLib.global.browse;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-section::ugenGraphFuncのコンポーネント
 
-SynthDefブラウザーは定義されたSynthDefを表示します。先ほどの「aSynthDef」は4つのugenから構成されています。それには1つのcontrolがあります。それにはinputがありません。そしてそれには1つのoutputがあります。
 
-ブラウザーで表示される様に、4つのugenはControl、SinOsc、BinaryOpUGenそしてOutそれぞれのインスタンスを含みます。この例では、このSynthDefを完全に機能する様にするために、SuperColliderはControlとBinaryOpUGenのインスタンスをインストールしています。他の全てのugenは指定したときだけ存在します。
+
+
+
+
+
+
+
+section:: UgenGraphFuncのコンポーネント
+
+
+
+
+SynthDefブラウザーは定義されたSynthDefを表示します。先ほどの「aSynthDef」は4つのUGenから構成されています。それには1つのcontrolがあります。それにはinputがありません。そしてそれには1つのoutputがあります。
+
+ブラウザーで表示される様に、4つのUGenはControl、SinOsc、BinaryOpUGenそしてOutそれぞれのインスタンスを含みます。この例では、このSynthDefを完全に機能する様にするために、SuperColliderはControlとBinaryOpUGenのインスタンスをインストールしています。他の全てのUGenは指定したときだけ存在します。
 
 このSynthDefの1つのコントロールは「freq」で、これはシンセが生成される時、あるいはサーバー上にある時であればいつでも使うことのできるアーギュメントです。ブラウザーは「aSynth」には入力が無いことを示しています。これが意味するのは、このSynthDefがInクラスのインスタンスを使っていないということです。
 

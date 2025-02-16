@@ -1,47 +1,97 @@
-class:: Pdfsm
-summary:: deterministic finite state machine
-related:: Classes/Pfsm
+title:: Pdfsm
 categories:: Streams-Patterns-Events>Patterns>List>Indexing
+summary:: Deterministic finite state machine
+related:: Classes/Pfsm
+
+
+
+
+
+
+
+
+
 
 description::
 
+
+
+
 Pdfsm is a deterministic finite state machine with signal input (written by by ccos).
 
-ClassMethods::
 
-method::new
 
-argument::list
-a list consisting of the stream which gives input signals to determine state transitions, and then dictionary entries, one for each state, mapping the destination state and yield streams to those input signals.
 
-argument::startState
-an integer index for the state to start with.
 
-argument::repeats
-an integer giving the number of times the pattern should cycle. A cycle ends when the strong::signal stream:: ends or nil is given for the destination state to a signal value, see below.
 
-Examples::
 
-definitionList::
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
+argument:: list
+
+A list consisting of the stream which gives input signals to determine state transitions, and then dictionary entries, one for each state, mapping the destination state and yield streams to those input signals.
+
+
+argument:: startState
+
+An integer index for the state to start with.
+
+
+argument:: repeats
+
+An integer giving the number of times the pattern should cycle.
+A cycle ends when the strong::signal stream:: ends or nil is given for the destination state to a signal value, see below.
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
+
+definitionlist::
 ## list structure:
 || [
-definitionList::
-## signal stream || can be a stream of anything which can serve as a key for an associative collection. integers, symbols, etc... asStream is called on this for each repeat.
+
+definitionlist::
+## signal stream || can be a stream of anything which can serve as a key for an associative collection.
+integers, symbols, etc... asStream is called on this for each repeat.
 ## states || states should be an instance of link::Classes/IdentityDictionary::, link::Classes/Event:: or some other associative collection.
 ::
+
 ## ] ||
 ## list syntax:
 || [
-definitionList::
+
+definitionlist::
 ## signal stream, ||
 ## ( // state 0, ||
-definitionList::
+
+definitionlist::
 ## signal value : [destination state, return stream or pattern], ||
 ## signal value : [destination state, return stream or pattern] ||
 ::
+
 ## ), ||
 ## ... // state 1 ... N ||
 ::
+
 ## ] ||
 ::
 
@@ -49,7 +99,9 @@ Any number of states can be given, and are indexed by the order in which they ar
 
 If the fsm is in state x and it receives a strong::signal value:: y it looks up y in the state dictionary supplied for x, if there is no y entry, it looks for a \default entry and uses that.
 
-The next state is then set to strong::destination state::, and the stream yielded is given by strong::return stream or pattern::. That is unless the strong::destination state:: is given as nil, or if a strong::destination state:: is given for which you have not supplied a dictionary - in both cases the current cycle ends and any remaining repeats are executed. If there is no strong::signal value:: given for a particular signal, and no \default is supplied then one will get a runtime error.
+The next state is then set to strong::destination state::, and the stream yielded is given by strong::return stream or pattern::.
+That is unless the strong::destination state:: is given as nil, or if a strong::destination state:: is given for which you have not supplied a dictionary - in both cases the current cycle ends and any remaining repeats are executed.
+If there is no strong::signal value:: given for a particular signal, and no \default is supplied then one will get a runtime error.
 
 code::
 (

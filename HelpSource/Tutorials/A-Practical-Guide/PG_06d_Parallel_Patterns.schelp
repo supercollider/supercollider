@@ -1,32 +1,62 @@
 title:: Pattern Guide 06d: Parallel Patterns
+categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Running multiple event patterns simultaneously
 related:: Tutorials/A-Practical-Guide/PG_06c_Composition_of_Patterns, Tutorials/A-Practical-Guide/PG_06e_Language_Control
-categories:: Streams-Patterns-Events>A-Practical-Guide
 
-section::Parallelizing event patterns
 
-There are a couple of different ways to have several patterns playing at the same time. The most obvious is to play them separately. The patterns' events get scheduled independently on their clock(s) and run concurrently. None of these patterns need to have any knowledge of the others. One advantage of this approach is that the patterns can be stopped and started independently.
 
-The other is to combine them into a parallel stream. The result is a single pattern object that can be played or stopped only as one unit. Some degree of interactive control is lost, but there are times when merging several patterns is necessary -- for instance, converting a pattern into a Score object for NRT rendering.
 
-definitionList::
+
+
+
+
+
+
+section:: Parallelizing event patterns
+
+
+
+
+There are a couple of different ways to have several patterns playing at the same time.
+The most obvious is to play them separately.
+The patterns' events get scheduled independently on their clock(s) and run concurrently. None of these patterns need to have any knowledge of the others.
+One advantage of this approach is that the patterns can be stopped and started independently.
+
+The other is to combine them into a parallel stream.
+The result is a single pattern object that can be played or stopped only as one unit.
+Some degree of interactive control is lost, but there are times when merging several patterns is necessary -- for instance, converting a pattern into a Score object for NRT rendering.
+
+definitionlist::
 ## code::Ppar(list, repeats):: || Start each of the event patterns in the code::list:: at the same time. When the last one finishes, the link::Classes/Ppar:: also stops. If code::repeats > 1 ::, all the subpatterns start over again from the beginning.
-## code::Ptpar(list, repeats):: || Here, the list consists of code::[timeOffset0, pattern0, timeOffset1, pattern1...]:: . Each pattern starts after the number of beats given as its time offset. The patterns can start at different times relative to each other.
+## code::Ptpar(list, repeats):: || Here, the list consists of code::[timeOffset0, pattern0, timeOffset1, pattern1...]:: . Each pattern starts after the number of beats given as its time offset.
+The patterns can start at different times relative to each other.
 ## code::Pgpar(list, repeats):: || Like Ppar, but it creates a separate group for each subpattern.
 ## code::Pgtpar(list, repeats):: || This is like Ptpar with separate groups for the subpatterns.
 ::
 
 An excellent example of link::Classes/Ppar:: and link::Classes/Pseq:: used together to structure an entire piece (Kraftwerk's "Spacelab") can be found in examples/pieces/spacelab.scd.
 
-subsection::Dynamic parallelizing
 
-Ppar and its cousins are good for a fixed set of parallel patterns -- that is, you need to know in advance how many patterns will be parallelized. Once the parallel pattern starts, there is no way to add more streams to it. To keep adding streams, use link::Classes/Pspawner:: and link::Classes/Pspawn::. For the purpose of this overview, some basic features will be illustrated in a couple of simple examples. These classes have more capabilities; refer to their help files for specifics.
 
-definitionList::
-## code::Pspawner(routineFunc):: || The function is run in a Routine. A Spawner object gets passed into this Routine, and this object is used to add or remove streams to/from the parallel stream. New patterns can be added in sequence or in parallel.
+
+
+
+subsection:: Dynamic parallelizing
+
+
+Ppar and its cousins are good for a fixed set of parallel patterns -- that is, you need to know in advance how many patterns will be parallelized.
+Once the parallel pattern starts, there is no way to add more streams to it.
+To keep adding streams, use link::Classes/Pspawner:: and link::Classes/Pspawn::.
+For the purpose of this overview, some basic features will be illustrated in a couple of simple examples.
+These classes have more capabilities; refer to their help files for specifics.
+
+definitionlist::
+## code::Pspawner(routineFunc):: || The function is run in a Routine.
+A Spawner object gets passed into this Routine, and this object is used to add or remove streams to/from the parallel stream. New patterns can be added in sequence or in parallel.
 ## code::Pspawn(pattern, spawnProtoEvent):: || Supports most of the features of Pspawner, but uses a pattern to control the Spawner object instead of a Routine function.
 
-This example uses link::Classes/Pspawner:: to trigger overlapping scale segments at different speeds. Unlike Ppar, which could handle a fixed number before stopping, Pspawner can keep going indefinitely.
+This example uses link::Classes/Pspawner:: to trigger overlapping scale segments at different speeds.
+Unlike Ppar, which could handle a fixed number before stopping, Pspawner can keep going indefinitely.
 
 code::
 (
@@ -75,6 +105,7 @@ p = Pspawn(Pbind(
 
 p.stop;
 ::
+
 ::
 
 Previous:	link::Tutorials/A-Practical-Guide/PG_06c_Composition_of_Patterns::

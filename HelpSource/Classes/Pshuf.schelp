@@ -1,13 +1,37 @@
-class:: Pshuf
-summary:: sequentially embed values in a list in constant, but random order
-related:: Classes/Prand
+title:: Pshuf
 categories:: Streams-Patterns-Events>Patterns>List
+summary:: Sequentially embed values in a list in constant, but random order
+related:: Classes/Prand
+
+
+
+
+
+
+
+
+
 
 description::
 
-Returns a shuffled version of the strong::list:: item by item, with n strong::repeats::.
 
-Examples::
+
+
+Return a shuffled version of the strong::list:: item by item, with n strong::repeats::.
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (

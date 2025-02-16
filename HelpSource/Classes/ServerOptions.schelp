@@ -1,135 +1,386 @@
-class:: ServerOptions
-summary:: Encapsulates commandline and other options for a Server
+title:: ServerOptions
 categories:: Server
+summary:: Encapsulates commandline and other options for a Server
 related:: Classes/Server, Reference/Server-Architecture, Reference/Server-Command-Reference, Reference/AudioDeviceSelection
+
+
+
+
+
+
+
+
+
 
 description::
 
-ServerOptions encapsulates various options for a server app within an object. This makes it convenient to launch multiple servers with the same options, or to archive different sets of options, etc.
-Every link::Classes/Server:: has an instance of ServerOptions created for it if one is not passed as the options argument when the Server object is created. (This is the case for example with the local and internal Servers which are created at startup.)
+
+
+
+ServerOptions encapsulates various options for a server app within an object.
+This makes it convenient to launch multiple servers with the same options, or to archive different sets of options, etc.
+Every link::Classes/Server:: has an instance of ServerOptions created for it if one is not passed as the options argument when the Server object is created.
+(This is the case for example with the local and internal Servers which are created at startup.)
 
 A Server's instance of ServerOptions is stored in its options instance variable, which can be accessed through corresponding getter and setter methods.
 
-N.B. A ServerOptions' instance variables are translated into commandline arguments when a server app is booted. Thus a running Server must be rebooted before changes will take effect. There are also a few commandline options which are not currently encapsulated in ServerOptions. See link::Reference/Server-Architecture:: for more details.
+N.B. A ServerOptions' instance variables are translated into commandline arguments when a server app is booted.
+Thus a running Server must be rebooted before changes will take effect.
+There are also a few commandline options which are not currently encapsulated in ServerOptions.
+See link::Reference/Server-Architecture:: for more details.
 
-ClassMethods::
+
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
 private:: prListDevices
+
 
 method:: new
 Create and return a new instance of ServerOptions.
 
+
+
+
 method:: devices
+
+
 Return an Array of Strings listing the audio devices currently available on the system.
 
+
+
+
 method:: inDevices
+
+
 Return an Array of Strings listing the audio devices currently available on the system which have input channels.
 
+
+
+
 method:: outDevices
+
+
 Return an Array of Strings listing the audio devices currently available on the system which have output channels.
 
-note:: The above three methods are not available if SuperCollider is built with JACK backend (by default on Linux). Also see link::Reference/AudioDeviceSelection:: for more information on selecting audio device.::
+note::
+The above three methods are not available if SuperCollider is built with JACK backend (by default on Linux). Also see link::Reference/AudioDeviceSelection::for more information on selecting audio device.
+::
+
+
+
+
+
+
+
+
+
 
 instancemethods::
+
+
+
+
 subsection:: The Options
 
+
 method:: blockSize
-The number of samples in one control period. The default is 64.
+
+
+The number of samples in one control period.
+The default is 64.
+
+
+
 
 method:: device
-A String that allows you to choose a sound device to use as input and output. The default, code::nil::, will use the system's default input and output device(s). See link::Reference/AudioDeviceSelection:: for more details.
+
+
+A String that allows you to choose a sound device to use as input and output.
+The default, code::nil::, will use the system's default input and output device(s). See link::Reference/AudioDeviceSelection:: for more details.
+
+
+
 
 method:: inDevice
-A String that allows you to choose an input sound device. The default, code::nil::, will use the system's default input device. See link::Reference/AudioDeviceSelection:: for more details.
+
+
+A String that allows you to choose an input sound device.
+The default, code::nil::, will use the system's default input device. See link::Reference/AudioDeviceSelection:: for more details.
+
+
+
 
 method:: outDevice
-A String that allows you to choose an output sound device. The default, code::nil::, will use the system's default output device. See link::Reference/AudioDeviceSelection:: for more details.
+
+
+A String that allows you to choose an output sound device.
+The default, code::nil::, will use the system's default output device. See link::Reference/AudioDeviceSelection:: for more details.
+
+
+
 
 method:: hardwareBufferSize
-The preferred hardware buffer size. If non-nil the server app will attempt to set the hardware buffer frame size. Not all sizes are valid. See the documentation of your audio hardware for details. Default value is nil.
+
+
+The preferred hardware buffer size. If non-nil the server app will attempt to set the hardware buffer frame size.
+Not all sizes are valid. See the documentation of your audio hardware for details.
+Default value is nil.
+
+
+
 
 method:: initialNodeID
+
+
 By default, the Server object in the client begins allocating node IDs at 1000, reserving 0-999 for "permanent" nodes. You may change this default here.
 
+
+
+
 method:: inputStreamsEnabled
-A String which allows turning off input streams that you are not interested in on the audio device. If the string is "01100", for example, then only the second and third input streams on the device will be enabled. Turning off streams can reduce CPU load. The default value is nil.
+
+
+A String which allows turning off input streams that you are not interested in on the audio device. If the string is "01100", for example, then only the second and third input streams on the device will be enabled.
+Turning off streams can reduce CPU load.
+The default value is nil.
+
+
+
 
 method:: loadDefs
+
+
 A Boolean indicating whether or not to load the synth definitions in synthdefs/ (or anywhere set in the environment variable SC_SYNTHDEF_PATH) at startup. The default is true.
 
+
+
+
 method:: maxNodes
+
+
 The maximum number of nodes. The default is 1024.
 
+
+
+
 method:: maxSynthDefs
+
+
 The maximum number of synthdefs. The default is 1024.
 
+
+
+
 method:: memSize
-The number of kilobytes of real time memory allocated to the server. This memory is used to allocate synths and any memory that unit generators themselves allocate (for instance in the case of delay ugens which do not use buffers, such as CombN), and is separate from the memory used for buffers. Setting this too low is a common cause of 'exception in real time: alloc failed' errors. The default is 8192.
+
+
+The number of kilobytes of real time memory allocated to the server.
+This memory is used to allocate synths and any memory that unit generators themselves allocate (for instance in the case of delay UGens which do not use buffers, such as CombN), and is separate from the memory used for buffers.
+Setting this too low is a common cause of 'exception in real time: alloc failed' errors. The default is 8192.
+
+
+
 
 method:: numAudioBusChannels
-The number of audio rate busses, which includes input and output busses. The default is 1024.
+
+
+The number of audio rate busses, which includes input and output busses.
+The default is 1024.
+
+
+
 
 method:: numBuffers
-The number of global sample buffers available. (See Buffer.) The default is 1024.
+
+
+The number of global sample buffers available.
+(See Buffer.) The default is 1024.
+
+
+
 
 method:: numControlBusChannels
-The number of internal control rate busses. The default is 16384.
+
+
+The number of internal control rate busses.
+The default is 16384.
+
+
+
 
 method:: numInputBusChannels
-The number of audio input bus channels. This need not correspond to the number of hardware inputs. The default is 2.
+
+
+The number of audio input bus channels.
+This need not correspond to the number of hardware inputs.
+The default is 2.
+
+
+
 
 method:: numOutputBusChannels
-The number of audio output bus channels. This need not correspond to the number of hardware outputs (this can be useful for instance in the case of recording). The default is 2.
+
+
+The number of audio output bus channels.
+This need not correspond to the number of hardware outputs (this can be useful for instance in the case of recording).
+The default is 2.
+
+
+
 
 method:: numRGens
-The number of seedable random number generators. The default is 64.
+
+
+The number of seedable random number generators.
+The default is 64.
+
+
+
 
 method:: numWireBufs
-The maximum number of buffers that are allocated to interconnect unit generators. (Not to be confused with the global sample buffers represented by Buffer.) This sets the limit of complexity of SynthDefs that can be loaded at runtime. This value will be automatically increased if a more complex def is loaded at startup, but it cannot be increased thereafter without rebooting. The default is 64.
+
+
+The maximum number of buffers that are allocated to interconnect unit generators.
+(Not to be confused with the global sample buffers represented by Buffer.) This sets the limit of complexity of SynthDefs that can be loaded at runtime.
+This value will be automatically increased if a more complex def is loaded at startup, but it cannot be increased thereafter without rebooting.
+The default is 64.
+
+
+
 
 method:: outputStreamsEnabled
-A String which allows turning off output streams that you are not interested in on the  audio device. If the string is "11000", for example, then only the first two output streams on the device will be enabled. Turning off streams can reduce CPU load.
+
+
+A String which allows turning off output streams that you are not interested in on the  audio device. If the string is "11000", for example, then only the first two output streams on the device will be enabled.
+Turning off streams can reduce CPU load.
+
+
+
 
 method:: protocol
-A Symbol representing the communications protocol. Either code::\udp:: or code::\tcp::. The default is code::\udp::.
+
+
+A Symbol representing the communications protocol.
+Either code::\udp:: or code::\tcp::.
+The default is code::\udp::.
+
+
+
 
 method:: bindAddress
+
+
 The IP address that the server's TCP or UDP socket is listening on. The default value is code::"127.0.0.1"::, meaning only listen to OSC messages on the host.
 
 warning::
 Until SuperCollider 3.10.3, this was set to code::"0.0.0.0":: (listen on all network interfaces). However, this is a dangerous default configuration — for most users working on laptops connected to WiFi, this means that anyone on your local network can send OSC messages to the server. code::"0.0.0.0":: is only useful if you are running networked server/client, and only safe if your networking is properly configured.
 
-Before SuperCollider 3.12 supernova listened to all network interfaces and ignored the code::bindAddress:: option. In later versions the behavior is identical to scsynth. 
+Before SuperCollider 3.12 supernova listened to all network interfaces and ignored the code::bindAddress:: option.
+In later versions the behavior is identical to scsynth.
 ::
 
+
+
+
 method:: remoteControlVolume
-A Boolean indicating whether this server should allow its volume to be set remotely. The default value is code::false::.
+
+
+A Boolean indicating whether this server should allow its volume to be set remotely.
+The default value is code::false::.
+
+
+
 
 method:: sampleRate
-The preferred sample rate. If non-nil the server app will attempt to set the sample rate of the hardware. The hardware has to support the sample rate that you choose.
 
-note:: On Windows, leaving the code::sampleRate:: as code::nil:: for an code::ASIO:: device will likely result in setting the hardware to run at 44100 Hz.::
+
+The preferred sample rate. If non-nil the server app will attempt to set the sample rate of the hardware.
+The hardware has to support the sample rate that you choose.
+
+note::
+On Windows, leaving the code::sampleRate::as code::nil::for an code::ASIO::device will likely result in setting the hardware to run at 44100 Hz.
+::
+
+
+
 
 method:: verbosity
-Controls the verbosity of server messages. A value of 0 is normal behaviour. -1 suppresses informational messages. -2 suppresses informational and many error messages, as well as messages from Poll. The default is 0.
+
+
+Control the verbosity of server messages.
+A value of teletype::0:: is normal behaviour. -1 suppresses informational messages. -2 suppresses informational and many error messages, as well as messages from Poll.
+The default is 0.
+
+
+
 
 method:: zeroConf
-A Boolean indication whether or not the server should publish its port using zero configuration networking, to facilitate network interaction. This is true by default; if you find unacceptable delays (beachballing) upon server boot, you can try setting this to false.
+
+
+A Boolean indication whether or not the server should publish its port using zero configuration networking, to facilitate network interaction. This is true by default; if you find unacceptable delays (beachballing) upon server boot, you can try setting this to teletype::false::.
+
+
+
 
 method:: ugenPluginsPath
+
+
 A path or an Array of paths. If non-nil, the standard paths are NOT searched for plugins. This corresponds with the option "-U".
 
+
+
+
 method:: restrictedPath
-Allows you to restrict the system paths in which the server is allowed to read/write files during running. A nil value (the default) means no restriction. Otherwise, set it as a string representing a single path.
+
+
+Allow you to restrict the system paths in which the server is allowed to read/write files during running. A nil value (the default) means no restriction. Otherwise, set it as a string representing a single path.
+
+
+
 
 method:: threads
-Number of audio threads that are spawned by supernova. For scsynth this value is ignored. If it is code::nil::or 0, it uses one thread per CPU core. Default is code::nil::.
+
+
+Number of audio threads that are spawned by supernova.
+For scsynth this value is ignored.
+If it is code::nil::or 0, it uses one thread per CPU core.
+Default is code::nil::.
+
+
+
 
 method:: threadPinning
-Enable/disable thread pinning. For scsynth this value is ignored. Thread pinning forces each thread to only run on a particular CPU core. Depending on the system, this might give better or worse performance. Default is code::nil:: which means that the value is chosen by Supernova. (At the time of writing, it is by default enabled on Linux and disabled on macOS and Windows.)
+
+
+Enable/disable thread pinning. For scsynth this value is ignored.
+Thread pinning forces each thread to only run on a particular CPU core.
+Depending on the system, this might give better or worse performance.
+Default is code::nil:: which means that the value is chosen by Supernova.
+(At the time of writing, it is by default enabled on Linux and disabled on macOS and Windows.)
+
+
+
 
 method:: useSystemClock
-Tells supernova whether to sync to the driver's sample clock, or to the system clock.
-note:: scsynth always uses system clock and this value is ignored.::
+
+
+Tell supernova whether to sync to the driver's sample clock, or to the system clock.
+
+note::
+Scsynth always uses system clock and this value is ignored.
+::
+
 list::
 ## code::true:: (default) -- Use the system clock. Timestamped messages will maintain consistent
 latency over long sessions, but may not be perfectly sample-accurate.
@@ -138,33 +389,98 @@ support sample-accurate scheduling; however, messaging latency from
 the SuperCollider language will drift over long periods of time.
 ::
 
+
+
+
 method:: memoryLocking
-A Boolean indicating whether the server should try to lock its memory into physical RAM. Default is code::false::.
+
+
+A Boolean indicating whether the server should try to lock its memory into physical RAM.
+Default is code::false::.
+
+
+
 
 method:: maxLogins
-An Integer indicating the maximum number of clients which can simultaneously receive notifications from the server. When using TCP this is also the maximum number of simultaneous connections. This is also used by the language to split ranges of link::Classes/Node##Nodes::, link::Classes/Buffer##Buffers::, or link::Classes/Bus##Busses::. In multi-client situations you will need to set this to at least the number of clients you wish to allow. This must be the same in the Server instances on every client. The default is 1. The maximum is 32.
+
+
+An Integer indicating the maximum number of clients which can simultaneously receive notifications from the server.
+When using TCP this is also the maximum number of simultaneous connections.
+This is also used by the language to split ranges of link::Classes/Node##Nodes::, link::Classes/Buffer##Buffers::, or link::Classes/Bus##Busses::. In multi-client situations you will need to set this to at least the number of clients you wish to allow.
+This must be the same in the Server instances on every client.
+The default is 1. The maximum is 32.
+
+
+
 
 method:: safetyClipThreshold
-note:: MacOS only::
-A Float indicating a safety threshold for output values to be clipped to. This is necessary on macOS because setting a low system volume doesn't prevent output values greater than +/- 1 from sounding extremely loud, which can happen by mistake, e.g. when sending a negative coefficient to a filter. With this threshold, values are clipped just before being written to hardware output busses, which does not affect the recording. However, the signal will be affected if it's above the threshold and the sound is routed to other apps using 3rd-party software.
-Defaults to a threshold of 1.26 (ca. 2 dB), to save some ears and still allow some headroom. Setting safetyClipThreshold to code::inf::, code::0::, or a negative value, disables clipping altogether.
+
+
+note::
+MacOS only
+::
+
+A Float indicating a safety threshold for output values to be clipped to.
+This is necessary on macOS because setting a low system volume doesn't prevent output values greater than +/- teletype::1:: from sounding extremely loud, which can happen by mistake, e.g. when sending a negative coefficient to a filter.
+With this threshold, values are clipped just before being written to hardware output busses, which does not affect the recording.
+However, the signal will be affected if it's above the threshold and the sound is routed to other apps using 3rd-party software.
+Defaults to a threshold of 1.26 (ca. 2 dB), to save some ears and still allow some headroom.
+Setting safetyClipThreshold to code::inf::, code::0::, or a negative value, disables clipping altogether.
+
+
+
+
+
 
 subsection:: Other Instance Methods
+
+
 method:: asOptionsString
+
+
 argument:: port
-The port number for the resulting server app. Default value is 57110.
-Returns:: a String specifying the options in the format required by the command-line server app (scsynth or supernova).
+
+The port number for the resulting server app.
+Default value is 57110.
+
+
+returns::
+ 
+a String specifying the options in the format required by the command-line server app (scsynth or supernova).
+
+
+
 
 method:: firstPrivateBus
-Returns:: the index of the first audio bus on this server which is not used by the input and output hardware.
+
+
+returns::
+ 
+the index of the first audio bus on this server which is not used by the input and output hardware.
+
+
+
 
 method:: pingsBeforeConsideredDead
+
+
 Number of failed pings (attempts to contact server process) before server is considered dead.
 Default value is 5.
 
 
 
-Examples::
+
+
+
+
+
+
+
+examples::
+
+
+
+
 code::
 // Get the default server's options
 

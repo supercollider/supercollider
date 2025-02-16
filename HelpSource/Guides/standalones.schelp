@@ -1,27 +1,59 @@
-TITLE:: Making Standalone Applications
-SUMMARY:: A guide to making SuperCollider-based applications by 'exporting' existing SuperCollider app configurations and projects.
-CATEGORIES:: Platform>macOS, Tutorials
-KEYWORD:: standalones, stand-alones
+title:: Making Standalone Applications
+categories:: Platform>macOS, Tutorials
+summary:: A guide to making SuperCollider-based applications by 'exporting' existing SuperCollider app configurations and projects
 
-NOTE:: The concept of standalone applications is mainly relevant on macOS. On linux, Miguel Negrão and Fredrik Olofsson have created similar ways of packing versions of SC3 into independent setups. ::
+
+
+
+note:: 
+The concept of standalone applications is mainly relevant on macOS.
+On linux, Miguel Negrão and Fredrik Olofsson have created similar ways of packing versions of SC3 into independent setups.
+::
+
+
+
+
+
+
+
+
+
 
 section:: Introduction
 
-SuperCollider 3.6 and earlier versions supported macOS Cocoa interfaces, and a special XCode project that allowed very flexible interface design, including removing and adding Menus. Since 3.7, SuperCollider uses Qt only, and the (now obsolete) standalone XCode project has been removed for 3.9. While the current Qt implementation is less flexible ATM, useful standalone applications can still be created with it using the scripts provided here (or similar ones).
 
-One can package performance setups, installation pieces, software synthesis instruments, complex sound generators and other projects, into fully independent copies of the  SuperCollider.app including the IDE, and the Help system if desired. Custom interfaces can make such apps easily accessible to audiences that need not know how to install SuperCollider, run SuperCollider code, or even know that SuperCollider is involved.
-This is useful for distributing applications to the general public, or for creating special-purpose applications for your own use. There is one important restriction: the entire application must be open-source and comply with the GNU General Public License.
+
+
+SuperCollider 3.6 and earlier versions supported macOS Cocoa interfaces, and a special XCode project that allowed very flexible interface design, including removing and adding Menus.
+Since 3.7, SuperCollider uses Qt only, and the (now obsolete) standalone XCode project has been removed for 3.9. While the current Qt implementation is less flexible ATM, useful standalone applications can still be created with it using the scripts provided here (or similar ones).
+
+One can package performance setups, installation pieces, software synthesis instruments, complex sound generators and other projects, into fully independent copies of the  SuperCollider.app including the IDE, and the Help system if desired.
+Custom interfaces can make such apps easily accessible to audiences that need not know how to install SuperCollider, run SuperCollider code, or even know that SuperCollider is involved.
+This is useful for distributing applications to the general public, or for creating special-purpose applications for your own use.
+There is one important restriction: the entire application must be open-source and comply with the GNU General Public License.
 
 On macOS, applications are special directories with an ".app" extension, known as emphasis::bundles::. SuperCollider emphasis::standalone applications:: are bundles that contain your SuperCollider code, as well as a renamed copy of SuperCollider itself that  runs your code.
 
+
+
+
+
+
+
+
+
+
 section:: Practical Guide
+
+
+
 
 (written by Alberto de Campo, 2017)
 
 This Guide is for exporting copies of an existing SC3 setup,
 for at least two scenarios:
 
-LIST::
+list::
 ## Freezing an SC-based setup for non-expert users,
 say an installation for a piece that runs in a museum,
 which is as easily movable and selfcontained as possible.
@@ -32,16 +64,24 @@ or safety copy, keeping much flexibility for skilled users.
 
 Creating more complex user-oriented applications with SC was possible in versions pre 3.6, and a number of people work on additions to SC that will allow similar flexibility again.
 
-Note::
+note::
 Known working versions for making standalones:
 strong::SC3.8.0, SC3.9dev from branch [2a105f1]::
+
 code::
 "https://supercollider.github.io/download".openOS;
 ::
+
 Self-built SC versions may assume their code:: Platform.userAppSupportDir :: is called code::.../SuperCollider/ :: and not the name of the newly made app.
 ::
 
+
+
+
+
+
 subsection:: How this guide works
+
 
 This guide is a set of scripts for creating a SuperCollider-based Standalone app in a few basic steps:
 
@@ -52,7 +92,8 @@ numberedlist::
 
 ## test that Platform.userAppSupportDir is independent in the new app!
 
-... Then the adaptation to the specific project begins: ...
+... Then the adaptation to the specific project begins:
+...
 
 ## transfer active quarks and extensions to the new app
 
@@ -63,7 +104,13 @@ numberedlist::
 ## test and adapt until it does what you want
 ::
 
+
+
+
+
+
 subsection:: What to prepare
+
 
 list::
 ## have your system ready with all desired quarks installed,
@@ -76,7 +123,13 @@ and a working startup file. (can be a very simple test setup)
 ## when you get to the wakeup kiss, share and enjoy!
 ::
 
+
+
+
+
+
 subsection:: Naming, copying, and fixing up the new app
+
 
 code::
 // TO PREPARE, CHECK YOUR CURRENT config in Preferences->Interpreter:
@@ -113,7 +166,7 @@ code::
 (
 // 1. make a copy of thisApp with the newAppName:
 // can take a while on slow harddisks.
-// wait for RESULT = 0 to show!
+// wait for RESULT = teletype::0:: to show!
 
 if (File.exists(~pathToNewApp).not) {
 	~copyFolder.(~pathToThisApp, ~pathToNewApp);
@@ -159,16 +212,22 @@ unixCmd("open" + ~pathToNewApp);
 Platform.userAppSupportDir.postcs;
 ::
 
-NOTE:: THIS SHOULD END WITH ~newAppName! If it has the original ~thisAppName (the one you started from, e.g. ~/././SuperCollider), the new app will not be interfere with SuperCollider!
+note:: 
+THIS SHOULD END WITH ~newAppName! If it has the original ~thisAppName (the one you started from, e.g. ~/././SuperCollider), the new app will not be interfere with SuperCollider!
 So, delete the app again, and start over using a recommended version of SC3 (see tested list on top)!
-
 ::
+
+
+
+
+
 
 subsection:: Adaptation to the project
 
-Quit the new standalone and go back to the starting app to do:
-list::
 
+Quit the new standalone and go back to the starting app to do:
+
+list::
 ##4. overwrite .startupFiles to look inside the app folder
 
 ##5. make a demo project folder and loadfile for the new app
@@ -328,8 +387,10 @@ LanguageConfig.includePaths.last.pathMatch.postln;
 // - the added quarks should now be present.
 ::
 
-Note:: You can use the Standalone quark to make sure your app remains closed, keeps using its to its InternalExtensions dir, and continues to ignore anything in its userExtensionDir or systemExtensionDir.
+note:: 
+You can use the Standalone quark to make sure your app remains closed, keeps using its to its InternalExtensions dir, and continues to ignore anything in its userExtensionDir or systemExtensionDir.
 ::
+
 code::
 // IN THE NEW APP, DO:
 Quarks.install("https://github.com/adcxyz/Standalone");

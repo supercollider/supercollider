@@ -1,6 +1,19 @@
-class::False
-categories::Core
-summary::false logical value
+title:: False
+categories:: Core
+summary:: False logical value
+
+
+
+
+
+
+
+
+
 
 description::
-see link::Classes/Boolean::
+
+
+
+
+See link::Classes/Boolean::

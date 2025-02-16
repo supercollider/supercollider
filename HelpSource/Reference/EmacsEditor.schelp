@@ -2,13 +2,36 @@ title:: Emacs Editor
 categories:: Frontends
 summary:: Using SuperCollider in Emacs
 
+
+
+
+
+
+
+
+
+
 section:: Keyboard shortcuts
-Here is a more extensive and elaborate overview of useful shortcuts in the Emacs Editor. For a general reference to Emacs shortcut, check out this link::http://lpn.rnbhq.org/tools/xemacs/emacs_ref.html##Emacs reference::.
+
+
+
+
+Here is a more extensive and elaborate overview of useful shortcuts in the Emacs Editor.
+For a general reference to Emacs shortcut, check out this link::http://lpn.rnbhq.org/tools/xemacs/emacs_ref.html##Emacs reference::.
+
 definitionlist::
 ## C-g || Abort current action
 ## C-h || General help on emacs
 ::
+
+
+
+
+
+
 subsection:: Interpreting code
+
+
 definitionlist::
 ## C-c C-d
 (C-c C-c) || Interpret Selection
@@ -18,7 +41,15 @@ definitionlist::
 ## C-M-x || Interpret defun
 ## C-c C-f || Interpret current document
 ::
+
+
+
+
+
+
 subsection:: Control the interpreter
+
+
 definitionlist::
 ## C-c C-s || Stop (CmdPeriod) / Main.stop
 ## C-c C-r || Main.run
@@ -26,34 +57,77 @@ definitionlist::
 ## M-x sclang-stop || Stop interpreter
 ## C-c C-p p || Show server panels
 ::
+
+
+
+
+
+
 subsection:: Postbuffer and workspace
+
+
 definitionlist::
 ## C-c C-w || Switch to workspace
 ## C-c < || Clear postbuffer
 ## C-c > || Show postbuffer
 ::
+
+
+
+
+
+
 subsection:: Help files
+
+
 definitionlist::
 ## C-M-h || Show help browser
-## C-c C-h || Open help file. You do not need to select a word before using the shortcut. It will suggest the word at the current cursor position, or lets you type a word in the minibuffer. There is autocompletion by typing <TAB>.
+## C-c C-h || Open help file. You do not need to select a word before using the shortcut.
+It will suggest the word at the current cursor position, or lets you type a word in the minibuffer.
+There is autocompletion by typing <TAB>.
 ## E (in the help browser) || open the help file as plain text (in sclang-mode), so it can be edited.
 ## C-c C-v (in the help browser) || edit the help file as html code.
 ::
+
+
+
+
+
+
 subsection:: Finding things in class source files
+
+
 definitionlist::
 ## C-c : || Find definitions (method or class). Again, you can type the word you want to look for in the minibuffer and it suggests the word at the current cursor position.
 ## C-c ; || Find references to (method or class). (ditto)
-## C-c C-k || Open current file at the svn development path location. You need to have set the devpath variable in Platform for this to work properly, e.g.
+## C-c C-k || Open current file at the svn development path location.
+You need to have set the devpath variable in Platform for this to work properly, e.g.
 thisProcess.platform.devpath = "~/svn/SuperCollider3".standardizePath;
 ::
+
+
+
+
+
+
 subsection:: Current code completion and interface
+
+
 definitionlist::
 ## C-c [ || Dump interface
 ## C-c { || Dump full interface
 ## C-c C-m / C-c RET || Show method arguments (in minibuffer)
 ## C-c C-n / M-TAB || Autocomplete keyword (either puts in the one possible completion, or pops up a buffer with possibilities from which you can choose one)
 ::
+
+
+
+
+
+
 subsection:: Files and buffers
+
+
 definitionlist::
 ## C-x C-f || Open file or new file
 ## C-x C-s || Save file
@@ -66,7 +140,15 @@ definitionlist::
 ## C-z || Suspend emacs
 ## C-x C-c || Close down emacs
 ::
+
+
+
+
+
+
 subsection:: Undo and recovery
+
+
 definitionlist::
 ## C-x u / C-_ || Undo
 ## C-x u / C-_ || Redo
@@ -74,27 +156,52 @@ definitionlist::
 ## M-x recover-file RETURN || Recover text from an autosave-file
 ## M-x recover-session RETURN || Recover text from an autosave-files if you edited several files
 ::
+
+
+
+
+
+
 subsection:: Editing
+
+
 definitionlist::
 ## M-w || Copy
 ## C-y || Paste
 ## C-w || Cut
 ## C-x C-o || Delete blank lines
 ::
+
+
+
+
+
+
 subsection:: Search and replace
+
+
 definitionlist::
 ## C-s || Search / find. This allows you to set a string in the mini-buffer. The occurrences in the text will be highlighted and you can press C-s again and again to jump to next occurrences
 ## C-r || Search / find backwards.
 ## M-% || Replace and find next
 ## M-, || Replace
 ::
+
+
+
+
+
+
 subsection:: Navigating and selecting
+
+
 definitionlist::
 ## M-g g || Goto line ...
 ## C-x a || Select all
 ## C-M-f || zips you forward to matching parenthesis, so if you hover over the opening bracket, hit
 C-<space>, C-M-f, C-c C-c you can quickly execute a block.
-## C-M-b || zips you backward to matching parenthesis. If you are just to the right of closing brackets this is handier if you've just finished some code.
+## C-M-b || zips you backward to matching parenthesis.
+If you are just to the right of closing brackets this is handier if you've just finished some code.
 ## C-f || Move forward a character
 ## C-b || Move backward a character
 ## M-f || Move forward a word
@@ -106,10 +213,19 @@ C-<space>, C-M-f, C-c C-c you can quickly execute a block.
 ## M-a || Move back to beginning of sentence
 ## M-e || Move forward to end of sentence
 ::
+
+
+
+
+
+
 subsection:: Formatting
+
+
 definitionlist::
 ## M-x show-paren-mode || Paren match highlighting. Can also be set from the options menu.
-## M-; || Add comment. If you have a text selected, then that text will become a comment. It will remove the commenting // when you have selected a commented text.
+## M-; || Add comment. If you have a text selected, then that text will become a comment.
+It will remove the commenting // when you have selected a commented text.
 ## C-M-j || Continue the comment on the next line.
 ## C-u M-; || Remove comment. This removes the whole comment, so also the text!
 ## M-x comment-region || Comments the selected region
@@ -117,23 +233,70 @@ definitionlist::
 ## TAB || Auto-aligns tabs according to code.
 ::
 
+
+
+
+
+
+
+
+
+
 section:: Marks
+
+
+
+
 (info from EmacsWiki)
+
+
+
+
+
+
 subsection:: set-mark-command (`C-SPC')
-A nice feature that not all know about is what happens if you feed it with a universal argument: ‘C-u C-SPC’. It’s an easy way to navigate back to your previous editing spots by jumping to the positions stored in the buffer’s local mark ring. Repeated calls will cycle through the ring of marks.
+
+
+A nice feature that not all know about is what happens if you feed it with a universal argument:
+‘C-u C-SPC’. It’s an easy way to navigate back to your previous editing spots by jumping to the positions stored in the buffer’s local mark ring. Repeated calls will cycle through the ring of marks.
 
 If you use TransientMarkMode and you want to set the mark but don’t want to subsequently see the region highlighting, you can use ‘C-SPC C-g’ to set the mark and then deactivate it.
 
+
+
+
+
+
 subsection:: pop-global-mark (`C-x C-SPC')
-In addition to the ordinary mark ring that belongs to each buffer, Emacs has a single global mark ring. It records a sequence of buffers in which you have recently set the mark, so you can go back to those buffers.
 
-Setting the mark always makes an entry on the current buffer’s mark ring. If you have switched buffers since the previous mark setting, the new mark position makes an entry on the global mark ring also. The result is that the global mark ring records a sequence of buffers that you have been in, and, for each buffer, a place where you set the mark.
 
-‘C-x C-SPC’ (‘pop-global-mark’) jumps to the buffer and position of the latest entry in the global mark ring. It also rotates the ring, so that successive uses of ‘C-x C-SPC’ take you to earlier and earlier buffers.
+In addition to the ordinary mark ring that belongs to each buffer, Emacs has a single global mark ring.
+It records a sequence of buffers in which you have recently set the mark, so you can go back to those buffers.
+
+Setting the mark always makes an entry on the current buffer’s mark ring. If you have switched buffers since the previous mark setting, the new mark position makes an entry on the global mark ring also.
+The result is that the global mark ring records a sequence of buffers that you have been in, and, for each buffer, a place where you set the mark.
+
+‘C-x C-SPC’ (‘pop-global-mark’) jumps to the buffer and position of the latest entry in the global mark ring.
+It also rotates the ring, so that successive uses of ‘C-x C-SPC’ take you to earlier and earlier buffers.
+
+
+
+
+
+
+
+
+
 
 section:: Customizing Emacs' behavior
 
-You can customize the behaviour of Emacs, by putting things in the startup file of emacs. This file is code:: ~/.emacs ::. You can define options there, for example:
+
+
+
+You can customize the behaviour of Emacs, by putting things in the startup file of emacs.
+This file is code:: ~/.emacs ::.
+You can define options there, for example:
+
 code::
 (custom-set-variables
  '(case-fold-search t)
@@ -143,15 +306,26 @@ code::
  '(transient-mark-mode t)
 )
 ::
-nil means that an option is turned off, t or 1 means that it is turned on.
+
+Nil means that an option is turned off, t or 1 means that it is turned on.
+
 code::
 '(sclang-eval-line-forward nil)
 ::
+
 Configure the text cursor NOT to move after hitting C-c C-c
+
+
+
+
+
 
 subsection:: Customize w3m
 
-Normally w3m uses the arrow keys to jump between hyperlinks. For browsing SC help files this is not very useful.
+
+Normally w3m uses the arrow keys to jump between hyperlinks.
+For browsing SC help files this is not very useful.
+
 code::
 (eval-after-load "w3m"
  '(progn
@@ -163,7 +337,14 @@ code::
  ))
 ::
 
+
+
+
+
+
 subsection:: Automatically complete brackets and parentheses
+
+
 code::
   (setq skeleton-pair t)
   (global-set-key (kbd "(") 'skeleton-pair-insert-maybe)
@@ -173,7 +354,14 @@ code::
   (global-set-key (kbd "'") 'skeleton-pair-insert-maybe)
 ::
 
+
+
+
+
+
 subsection:: Scrollwheel support
+
+
 code::
 ;;; scrollwheel support
 (defun scroll-up-half ()
@@ -191,14 +379,26 @@ code::
 (global-set-key [(mouse-4)] 'scroll-down-half)
 ::
 
+
+
+
+
+
 subsection:: Recent files menu
 
-Recentf is a minor mode that builds a list of recently opened files. This list is automatically saved across Emacs sessions. You can then access this list through a menu. Put this in your `~/.emacs’:
+
+Recentf is a minor mode that builds a list of recently opened files.
+This list is automatically saved across Emacs sessions.
+You can then access this list through a menu.
+Put this in your `~/.emacs’:
+
 code::
 (require 'recentf)
 (recentf-mode 1)
 ::
+
 For adding a shortcut (C-x C-r) to open a recent file add this code as well:
+
 code::
 (defun recentf-open-files-compl ()
   (interactive)
@@ -212,6 +412,18 @@ code::
 (global-set-key "\C-x\C-r" 'recentf-open-files-compl)
 ::
 
+
+
+
+
+
+
+
+
+
 section:: More info on Emacs
+
+
+
 
 See the link::http://www.emacswiki.org/cgi-bin/wiki##Emacs Wiki::

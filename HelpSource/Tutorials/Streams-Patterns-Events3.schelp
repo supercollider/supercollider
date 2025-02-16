@@ -1,13 +1,29 @@
 title:: Understanding Streams, Patterns and Events - Part 3
+categories:: Tutorials>Streams-Patterns-Events
 summary:: ListPatterns
 related:: Tutorials/Streams-Patterns-Events1, Tutorials/Streams-Patterns-Events2, Tutorials/Streams-Patterns-Events4, Tutorials/Streams-Patterns-Events5, Tutorials/Streams-Patterns-Events6, Tutorials/Streams-Patterns-Events7
-categories:: Tutorials>Streams-Patterns-Events
 
-section::ListPatterns
 
-ListPatterns are link::Classes/Pattern::s that iterate over arrays of objects in some fashion. All ListPatterns have in common the instance variables list and repeats. The list variable is some link::Classes/Array:: to be iterated over. The repeats variable is some measure of the number of times to do something, whose meaning varies from subclass to subclass. The default value for repeats is 1.
 
-A link::Classes/Pseq:: is a Pattern that cycles over a list of values. The repeats variable gives the number of times to repeat the entire list.
+
+
+
+
+
+
+
+section:: ListPatterns
+
+
+
+
+ListPatterns are link::Classes/Pattern::s that iterate over arrays of objects in some fashion.
+All ListPatterns have in common the instance variables list and repeats.
+The list variable is some link::Classes/Array:: to be iterated over. The repeats variable is some measure of the number of times to do something, whose meaning varies from subclass to subclass.
+The default value for repeats is 1.
+
+A link::Classes/Pseq:: is a Pattern that cycles over a list of values.
+The repeats variable gives the number of times to repeat the entire list.
 
 code::
 //////////////////////////////////////////////////////////////
@@ -69,7 +85,8 @@ Pseq used as a sequence of pitches:
 
 Remember that math operations like code::midicps:: can be used on streams.
 
-The alternative code::Pseq(...).midicps.asStream:: is also possible because both pattern and stream inherit from link::Classes/AbstractFunction:: for which midicps is a method. ( midicps converts a midi value to cycles per second or Hz )
+The alternative code::Pseq(...).midicps.asStream:: is also possible because both pattern and stream inherit from link::Classes/AbstractFunction:: for which midicps is a method.
+( midicps converts a midi value to cycles per second or Hz )
 
 code::
 (
@@ -149,7 +166,8 @@ Task({
 )
 ::
 
-link::Classes/Pshuf:: iterates over the list in scrambled order. The entire scrambled list is repeated in the same order the number of times given by the repeats variable.
+link::Classes/Pshuf:: iterates over the list in scrambled order.
+The entire scrambled list is repeated in the same order the number of times given by the repeats variable.
 
 code::
 (
@@ -175,9 +193,22 @@ Task({
 )
 ::
 
-section::Nesting Patterns
 
-If a link::Classes/Pattern:: encounters another Pattern in its list, it embeds that pattern in its output. That is, it creates a stream on that pattern and iterates that pattern until it ends before moving on.
+
+
+
+
+
+
+
+
+section:: Nesting Patterns
+
+
+
+
+If a link::Classes/Pattern:: encounters another Pattern in its list, it embeds that pattern in its output.
+That is, it creates a stream on that pattern and iterates that pattern until it ends before moving on.
 
 For example here is one pattern nested in another.
 
@@ -225,7 +256,19 @@ Task({
 )
 ::
 
-section::Math operations on ListPatterns
+
+
+
+
+
+
+
+
+
+section:: Math operations on ListPatterns
+
+
+
 
 Pattern code::b:: plays pattern a once normally, once transposed up a fifth and once transposed up a fourth.
 
@@ -259,7 +302,19 @@ Task({
 )
 ::
 
-section::Making Music with ListPatterns
+
+
+
+
+
+
+
+
+
+section:: Making Music with ListPatterns
+
+
+
 
 Here is the same example given in part 2 rewritten to use ListPatterns. It uses nested patterns and results in much more concise code. SuperCollider allows you to write code::SomeClass.new(params):: as code::SomeClass(params):: eliminating the ".new". This can make code like the pattern examples below, which create a lot of objects, more readable.
 
@@ -298,7 +353,8 @@ Task({
 )
 ::
 
-Here is an example that uses a Pattern to create a rhythmic solo. The values in the pattern specify the amplitudes of impulses fed to the link::Classes/Decay2:: generator.
+Here is an example that uses a Pattern to create a rhythmic solo.
+The values in the pattern specify the amplitudes of impulses fed to the link::Classes/Decay2:: generator.
 
 code::
 (

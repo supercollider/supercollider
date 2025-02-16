@@ -1,17 +1,32 @@
-class:: Maybe
-summary:: referentially transparent proxy object
+title:: Maybe
 categories:: JITLib>Environments, Live Coding
+summary:: Referentially transparent proxy object
 related:: Classes/Fdef, Overviews/JITLib
 
-description::
-A Maybe object can contain either nil or some other object, and allows to construct calculations without knowing this other object yet. If the calculation fails, due to a loop or a not yet defined object, Maybe returns nil.
 
-The name strong::Maybe:: stems from the programming language Haskell, where it represents a somewhat similar entity. See also: link::Classes/Fdef::
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+A Maybe object can contain either nil or some other object, and allows to construct calculations without knowing this other object yet.
+If the calculation fails, due to a loop or a not yet defined object, Maybe returns teletype::nil::.
+
+The name strong::Maybe:: stems from the programming language Haskell, where it represents a somewhat similar entity.
+See also: link::Classes/Fdef::
 
 note::
-A Maybe object lazily constructs an operation as an object instead of
-performing it immediately. Its implementation remains incomplete
-necessarily, in the current form: it is limited to the arithmetic operations that AbstractFunction implements and the following collection methods: code::put, addAll, add, putAll, atAll::.
+A Maybe object lazily constructs an operation as an object instead of performing it immediately. Its implementation remains incomplete
+necessarily, in the current form: it is limited to the arithmetic operations that AbstractFunction implements and the following collection methods:
+code::put, addAll, add, putAll, atAll::.
 
 You can extend Maybe as you need for your purpose, by the following schema:
 
@@ -23,15 +38,33 @@ code::
 	}
 }
 ::
+
 ::
 
-ClassMethods::
 
-method::new
-create a new instance
 
-argument::thing
-an object or nil.
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
+Create a new instance
+
+
+argument:: thing
+
+An object or nil.
+
 code::
 a = Maybe.new;
 b = Maybe(a + 6);
@@ -40,21 +73,53 @@ a.value = 1;
 b.value; // => 7
 ::
 
-InstanceMethods::
 
-method::source
-return or set the contained object
 
-method::value
-set the contained object or return the source, or the value of the contained object, if it is a Maybe. If there is a recursion, return nil.
 
-method::apply
-return the value, or the value of the contained object, if it is a Maybe. This method allows recursion, so that recursive calculations can be made.
 
-method::doesNotUnderstand
+
+
+
+
+
+instancemethods::
+
+
+
+
+method:: source
+
+
+Return or set the contained object
+
+
+
+
+method:: value
+
+
+Set the contained object or return the source, or the value of the contained object, if it is a Maybe.
+If there is a recursion, return teletype::nil::.
+
+
+
+
+method:: apply
+
+
+Return the value, or the value of the contained object, if it is a Maybe.
+This method allows recursion, so that recursive calculations can be made.
+
+
+
+
+method:: doesNotUnderstand
+
+
 (called by any message that Maybe doesn't understand.)
 
 returns a composition function that, when evaluated, returns the value.
+
 code::
 a = Maybe.new;
 a.respondsTo(\flop) // false: Maybe constructs a placeholder instead
@@ -64,7 +129,19 @@ a.value = [1, 2, [2, 3]];
 b.value;	// => [[1, 2, 2], [1, 2, 3]]
 ::
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 // the following examples use a LazyEnvir with a Maybe as a proxy class.
@@ -129,7 +206,8 @@ f.(12)
 
 
 ~faculty = { |x| if(x == 1) { 1 } { x * ~faculty.(x - 1) } };
-~faculty.(12) // doesn't work (=> nil). here we _do_ want recursion ...
+~faculty.(12) // doesn't work (=> nil).
+here we _do_ want recursion ...
 
 // for explicit recursion use "apply"
 ~faculty = { |x| if(x == 1) { 1 } { x * ~faculty.apply(x - 1) } };

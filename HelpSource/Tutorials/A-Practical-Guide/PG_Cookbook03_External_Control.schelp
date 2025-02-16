@@ -1,11 +1,24 @@
 title:: Pattern Guide Cookbook 03: External Control
+categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Pattern control by external device
 related:: Tutorials/A-Practical-Guide/PG_Cookbook02_Manipulating_Patterns, Tutorials/A-Practical-Guide/PG_Cookbook04_Sending_MIDI
-categories:: Streams-Patterns-Events>A-Practical-Guide
 
-section::Pattern control by external device
 
-subsection::Control of parameters by MIDI or HID
+
+
+
+
+
+
+
+
+section:: Pattern control by external device
+
+
+
+
+subsection:: Control of parameters by MIDI or HID
+
 
 The best approach is to save an incoming value into a variable, and then use link::Classes/Pfunc:: to access the variable for each event.
 
@@ -51,13 +64,27 @@ p.stop;
 c.remove;
 ::
 
-subsection::Triggering patterns by external control
 
-Issuing code::play:: to a pattern can occur in an action function for many different kinds of objects: GUI, MIDI, OSCFunc, HID actions. This allows triggering patterns from a variety of interfaces.
 
-It's very unlikely that an action function would be triggered exactly in sync with a clock. If the pattern being played needs to run in time with other patterns, use the code::quant:: argument to control its starting time (see link::Classes/Quant::).
 
-subsection::Triggering a pattern by a GUI
+
+
+subsection:: Triggering patterns by external control
+
+
+Issuing code::play:: to a pattern can occur in an action function for many different kinds of objects:
+GUI, MIDI, OSCFunc, HID actions. This allows triggering patterns from a variety of interfaces.
+
+It's very unlikely that an action function would be triggered exactly in sync with a clock.
+If the pattern being played needs to run in time with other patterns, use the code::quant:: argument to control its starting time (see link::Classes/Quant::).
+
+
+
+
+
+
+subsection:: Triggering a pattern by a GUI
+
 
 code::
 (
@@ -89,7 +116,13 @@ window.front;
 p.stop;
 ::
 
-subsection::Triggering a pattern by MIDI
+
+
+
+
+
+subsection:: Triggering a pattern by MIDI
+
 
 code::
 (
@@ -115,17 +148,29 @@ var	pattern = Pbind(
 ~noteOnFunc.free;
 ::
 
-subsection::Triggering a pattern by signal amplitude
 
-Triggering a pattern based on audio amplitude is a bit trickier -- not because it's harder to play the pattern, but because identifying when the trigger should happen is more involved. The most straightforward way in SuperCollider is to use the link::Classes/Amplitude:: UGen to get the volume of the input signal and compare it to a threshold. Volume can fluctuate rapidly, so the code::releaseTime:: argument of Amplitude is set to a high value. This makes the measured amplitude fall more slowly toward the baseline, preventing triggers from being sent too close together.
 
-The actual threshold depends on the incoming signal, so the example pops up a quick and dirty window to see the measured amplitude and set the threshold and decay accordingly. The synth listens by default to the first hardware input bus, but you can change it the following in the code to use a different input bus:
+
+
+
+subsection:: Triggering a pattern by signal amplitude
+
+
+Triggering a pattern based on audio amplitude is a bit trickier -- not because it's harder to play the pattern, but because identifying when the trigger should happen is more involved.
+The most straightforward way in SuperCollider is to use the link::Classes/Amplitude:: UGen to get the volume of the input signal and compare it to a threshold.
+Volume can fluctuate rapidly, so the code::releaseTime:: argument of Amplitude is set to a high value.
+This makes the measured amplitude fall more slowly toward the baseline, preventing triggers from being sent too close together.
+
+The actual threshold depends on the incoming signal, so the example pops up a quick and dirty window to see the measured amplitude and set the threshold and decay accordingly.
+The synth listens by default to the first hardware input bus, but you can change it the following in the code to use a different input bus:
 
 code::
 	inbus: s.options.numOutputBusChannels
 ::
 
-In this configuration, the first trigger starts the pattern and the second trigger stops it. You might want the pattern to play while the input signal is above the threshold, and stop when the signal drops to a quieter level. The comparison code::amp >= thresh:: can send a trigger only when the signal goes from softer to lower, so if we want the pattern to stop when the signal becomes quiet, we need to send a trigger when crossing the threshold in both directions.
+In this configuration, the first trigger starts the pattern and the second trigger stops it.
+You might want the pattern to play while the input signal is above the threshold, and stop when the signal drops to a quieter level.
+The comparison code::amp >= thresh:: can send a trigger only when the signal goes from softer to lower, so if we want the pattern to stop when the signal becomes quiet, we need to send a trigger when crossing the threshold in both directions.
 
 code::
 	var	amp = Amplitude.kr(In.ar(inbus, 1), attackTime: 0.01, releaseTime: decay),
@@ -133,7 +178,8 @@ code::
 	SendTrig.kr(trig.abs, 1, trig);
 ::
 
-link::Classes/HPZ1:: is positive if its input rises and negative if it falls. Triggering based on the absolute value, then, sends the trigger on any change. The client responding to the trigger might need to know the direction of change, so we send HPZ1's value back and the client can decide which action to take based on the sign of this value.
+link::Classes/HPZ1:: is teletype::positive:: if its input rises and teletype::negative:: if it falls. Triggering based on the absolute value, then, sends the trigger on any change.
+The client responding to the trigger might need to know the direction of change, so we send HPZ1's value back and the client can decide which action to take based on the sign of this value.
 
 For this example, triggers are measured only when the signal rises above the threshold.
 

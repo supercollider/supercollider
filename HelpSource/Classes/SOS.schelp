@@ -1,52 +1,96 @@
-class:: SOS
-summary:: Second order filter section (biquad).
+title:: SOS
+categories:: UGens>Filters>Linear
+summary:: Second order filter section (biquad)
 related:: Classes/FOS
-categories::  UGens>Filters>Linear
 
 
-Description::
 
-A standard second order filter section. Filter coefficients are given
-directly rather than calculated for you. Formula is equivalent to:
+
+
+
+
+
+
+
+description::
+
+
+
+
+A standard second order filter section.
+Filter coefficients are given directly rather than calculated for you.
+Formula is equivalent to:
 
 code::
-
 out(i) = (a0 * in(i)) + (a1 * in(i-1)) + (a2 * in(i-2)) + (b1 * out(i-1)) + (b2 * out(i-2))
-
 ::
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
 
-argument::in
 
-signal input
 
-argument::a0
+method:: ar, kr
+
+
+argument:: in
+
+Signal input
+
+
+argument:: a0
+
 See formula above.
 
-argument::a1
+
+argument:: a1
+
 See formula above.
 
-argument::a2
+
+argument:: a2
+
 See formula above.
 
-argument::b1
+
+argument:: b1
+
 See formula above.
 
-argument::b2
+
+argument:: b2
+
 See formula above.
 
-argument::mul
 
-argument::add
+argument:: mul
 
-Examples::
+argument:: add
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 // example: same as TwoPole
 (
 {
@@ -84,5 +128,4 @@ code::
 	SinOsc.ar(vib * 200 + 600) * 0.2
 }.play
 )
-
 ::

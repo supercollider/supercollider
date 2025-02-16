@@ -1,9 +1,21 @@
-class:: Pmulpre
-summary:: multiplies with value of a key in event stream, before it is passed up
-related:: Classes/Pmul, Classes/Pmulp
+title:: Pmulpre
 categories:: Streams-Patterns-Events>Patterns>Math
+summary:: Multiplies with value of a key in event stream, before it is passed up
+related:: Classes/Pmul, Classes/Pmulp
+
+
+
+
+
+
+
+
+
 
 description::
+
+
+
 
 Multiplies with a value in an event, strong::before it is passed up:: the stream. To multiply with the value after it has been passed down, use link::Classes/Pmul::.
 
@@ -17,6 +29,7 @@ x = a.asStream;
 ::
 
 Pmulpre does not override incoming values:
+
 code::
 (
 var a, b;
@@ -26,18 +39,45 @@ x = a.asStream;
 )
 ::
 
-ClassMethods::
 
-method::new
 
-argument::name
 
-argument::value
-can be a pattern or a stream. The resulting stream ends when that incoming stream ends.
 
-argument::pattern
 
-Examples::
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
+argument:: name
+
+argument:: value
+Can be a pattern or a stream.
+The resulting stream ends when that incoming stream ends.
+
+
+argument:: pattern
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (

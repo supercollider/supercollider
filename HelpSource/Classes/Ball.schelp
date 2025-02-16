@@ -1,30 +1,79 @@
-class:: Ball
-summary:: physical model of bouncing object
+title:: Ball
 categories:: UGens>Filters>Nonlinear, UGens>Generators>PhysicalModels
+summary:: Physical model of bouncing object
 related:: Classes/TBall, Classes/Spring
 
-Description::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
 Ball models the path of a bouncing object that is reflected by a vibrating surface.
 
+
+
+
+
+
+
+
+
+
 classmethods::
+
+
+
+
 private:: categories
+
 
 method:: ar, kr
 
-argument::in
-modulated surface level
 
-argument::g
-gravity
+argument:: in
 
-argument::damp
-damping on impact
+Modulated surface level
 
-argument::friction
-proximity from which on attraction to surface starts
+
+argument:: g
+
+Gravity
+
+
+argument:: damp
+
+Damping on impact
+
+
+argument:: friction
+
+Proximity from which on attraction to surface starts
+
+
+
+
+
+
+
+
+
 
 examples::
-mouse x controls switch of level:
+
+
+
+
+Mouse x controls switch of level:
+
 code::
 (
 {
@@ -37,7 +86,8 @@ code::
 )
 ::
 
-mouse x controls modulation rate, mouse y controls gravity:
+Mouse x controls modulation rate, mouse y controls gravity:
+
 code::
 (
 {
@@ -51,7 +101,8 @@ code::
 )
 ::
 
-the general german police choir. mouse x controls damping, mouse y controls gravity:
+The general german police choir. mouse x controls damping, mouse y controls gravity:
+
 code::
 (
 {

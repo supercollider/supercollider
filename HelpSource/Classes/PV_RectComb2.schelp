@@ -1,46 +1,80 @@
-class:: PV_RectComb2
-summary:: Make gaps in spectrum.
-related:: Classes/FFT, Classes/IFFT, Classes/PV_RectComb
+title:: PV_RectComb2
 categories:: UGens>FFT
+summary:: Make gaps in spectrum
+related:: Classes/FFT, Classes/IFFT, Classes/PV_RectComb
 
-Description::
 
-Alternates blocks of bins between the two inputs.
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+Alternateblock blocks of bins between the two inputs.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::new
 
-argument::bufferA
+
+
+method:: new
+
+
+argument:: bufferA
 
 FFT buffer A.
 
 
-argument::bufferB
+argument:: bufferB
 
 FFT buffer B.
 
 
-argument::numTeeth
+argument:: numTeeth
 
 Number of teeth in the comb.
 
 
-argument::phase
+argument:: phase
 
 Starting phase of comb pulse.
 
 
-argument::width
+argument:: width
 
 Pulse width of the comb.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 s.boot;
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
@@ -63,5 +97,4 @@ Dialog.getPaths({ |paths| // get a second soundfile;
 	"cancelled".postln;
 });
 )
-
 ::

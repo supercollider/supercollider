@@ -1,22 +1,53 @@
-class:: Pmul
-summary:: multiply with value of a key in event stream
-related:: Classes/Padd, Classes/Pmulp
+title:: Pmul
 categories:: Streams-Patterns-Events>Patterns>Math
+summary:: Multiply with value of a key in event stream
+related:: Classes/Padd, Classes/Pmulp
 
-ClassMethods::
 
-method::new
 
-argument::name
-the key
 
-argument::value
-can be a pattern or a stream. The resulting stream ends when that incoming stream ends.
 
-argument::pattern
-the pattern
 
-Examples::
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
+argument:: name
+
+The key
+
+
+argument:: value
+
+Can be a pattern or a stream.
+The resulting stream ends when that incoming stream ends.
+
+
+argument:: pattern
+
+The pattern
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (

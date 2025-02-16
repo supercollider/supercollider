@@ -1,16 +1,21 @@
 title:: Writing Classes
-summary:: Writing SuperCollider Classes
 categories:: Language>OOP
+summary:: Writing SuperCollider Classes
 related:: Reference/Classes, Classes/Class, Classes/Object
+
 
 
 SuperCollider follows a pure object-oriented paradigm. It is not built on data types, but on objects, which respond to messages. A class is an object that holds information about how its objects (instances) respond to such messages. Writing a class gives a definition of this behavior.
 
-This is an overview of idioms used in writing classes. It is not a tutorial on writing a system of interrelated classes. It gives an overview of some typical expressions. See also: link::Guides/Intro-to-Objects::, link::Reference/Messages::, and link::Reference/Classes::.
+This is an overview of idioms used in writing classes.
+It is not a tutorial on writing a system of interrelated classes.
+It gives an overview of some typical expressions.
+See also: link::Guides/Intro-to-Objects::, link::Reference/Messages::, and link::Reference/Classes::.
 
 There is also an overview of the current full link::Overviews/ClassTree::.
 
-note:: Class definitions are statically compiled when you launch SuperCollider or "recompile the library." This means
+note:: 
+Class definitions are statically compiled when you launch SuperCollider or "recompile the library." This means
 that class definitions must be saved into a file with the extension .sc, in a disk location where SuperCollider looks
 for classes. Saving into the main class library (SCClassLibrary) is generally not recommended. It's preferable to use
 either the user or system extension directories.
@@ -24,7 +29,18 @@ It is not possible to enter a class definition into an interpreter window and ex
 ::
 
 
+
+
+
+
+
+
+
+
 section:: Inheriting
+
+
+
 
 To avoid having to write the same code several times, classes can strong::inherit:: implementations from their strong::superclasses::.
 
@@ -46,11 +62,24 @@ This is why in the above example, the message code::new:: can be called without 
 
 
 
+
+
+
+
+
+
+
 section:: Methods
+
+
+
 
 subsection:: Instance Methods
 
-Each object instance responds to its strong::instance methods::. Instance methods are called in the local context of the object. Within instance methods, the keyword code::this:: refers to the instance itself.
+
+Each object instance responds to its strong::instance methods::.
+Instance methods are called in the local context of the object.
+Within instance methods, the keyword code::this:: refers to the instance itself.
 
 code::
 MyClass {
@@ -72,8 +101,9 @@ a = MyClass.new // returns a new instance
 a.instanceMethod // posts "hello instance"
 ::
 
-
-To return from the method use teletype::^:: (caret). Multiple exit points also possible. If no teletype::^:: is
+To return from the method use teletype::^:: (caret).
+Multiple exit points also possible.
+If no teletype::^:: is
 specified, the method will return the instance (and in the case of Class methods, will return the class). There is no
 such thing as returning void in SuperCollider.
 
@@ -95,13 +125,19 @@ MyClass {
 ::
 
 
+
+
+
+
 subsection:: Class Methods
 
 
-An object's  strong::class methods:: are defined alongside its instance methods. They are specified with an asterisk (teletype::*::) before the method name.
+An object's  strong::class methods:: are defined alongside its instance methods.
+They are specified with an asterisk (teletype::*::) before the method name.
 
 
-A link::Classes/Class:: is itself an object. It is what all instances of it have in common. Class methods are the instance methods of the object's class. That's why within class methods, the keyword code::this:: refers to the class.
+A link::Classes/Class:: is itself an object. It is what all instances of it have in common.
+Class methods are the instance methods of the object's class. That's why within class methods, the keyword code::this:: refers to the class.
 
 code::
 MyClass {
@@ -123,10 +159,16 @@ MyClass.classMethod // posts "hello class"
 ::
 
 
-subsection::Overriding methods (overloading)
+
+
+
+
+subsection:: Overriding methods (overloading)
+
 
 To change the behaviour inherited from the superclass, methods can be overridden. Note that an object looks always for
-the method it has defined first and then looks in the superclass. Here code::MyClass.value(2):: will return 6, not 4:
+the method it has defined first and then looks in the superclass.
+Here code::MyClass.value(2):: will return 6, not 4:
 
 code::
 SomeSuperclass {
@@ -159,7 +201,17 @@ MyClass : SomeSuperclass {
 
 
 
+
+
+
+
+
+
+
 section:: Instances
+
+
+
 
 code::Object.new:: will return a new object. When overriding the class method code::.new:: you must call the
 superclass, which in turn calls its superclass, up until code::Object.new:: is called and an object is actually created
@@ -179,12 +231,15 @@ MyClass {
 }
 ::
 
-In this case note that code::super.new:: called the method new on the superclass and returned a new object. Subsequently
+In this case note that code::super.new:: called the method new on the superclass and returned a new object.
+Subsequently
 we are calling the code::.init:: method on that object, which is an instance method.
 
-Warning:: If the superclass also happened to call super.new.init it will have expected to call the .init method defined
+warning:: 
+If the superclass also happened to call super.new.init it will have expected to call the .init method defined
 in that class (the superclass), but instead the message .init will find the implementation of the class that the object
-actually is, which is our new subclass. In such cases, a unique method name like myclassInit should be used.
+actually is, which is our new subclass.
+In such cases, a unique method name like myclassInit should be used.
 ::
 
 One easy way to copy the arguments passed to the instance variables when creating a class is to use link::Classes/Object#*newCopyArgs::.  This
@@ -236,15 +291,35 @@ MyClass {
 
 
 
-section::Alternatives to inheritance
 
-Overreliance on inheritance is usually a design flaw. Inheritance is mainly a way to organise code, and shouldn't be mistaken for a categorisation of objects. Two objects may respond to a message in different ways (polymorphism), and objects delegate control to ther objects they hold in their instance variables (object composition).
 
-subsection::Polymorphism
+
+
+
+
+section:: Alternatives to inheritance
+
+
+
+
+Overreliance on inheritance is usually a design flaw.
+Inheritance is mainly a way to organise code, and shouldn't be mistaken for a categorisation of objects.
+Two objects may respond to a message in different ways (polymorphism), and objects delegate control to ther objects they hold in their instance variables (object composition).
+
+
+
+
+
+
+subsection:: Polymorphism
+
 
 See also: link::Guides/Polymorphism::
 
-Two completely unrelated objects can respond to the same messages and therefore be used together in the same code. For example, link::Classes/Function:: and link::Classes/Event:: have no common superclass apart from the general class link::Classes/Object::. But both respond to the message code::play::. Instead of inheriting all methods, you can simply implement some of the same methods in your class.
+Two completely unrelated objects can respond to the same messages and therefore be used together in the same code.
+For example, link::Classes/Function:: and link::Classes/Event:: have no common superclass apart from the general class link::Classes/Object::.
+But both respond to the message code::play::.
+Instead of inheriting all methods, you can simply implement some of the same methods in your class.
 
 code::
 MyClass {
@@ -259,8 +334,16 @@ a.value; // returns 1
 ::
 
 
-subsection::Object Composition
-Often, an object passes control to one of the objects it has in its instance variables. Because these objects can be of any kind, this is a very flexible way to achieve a wide range of functionalities. For example, a link::Classes/Button:: has an code::action:: instance variable, which may hold anything that responds to the message code::value::.
+
+
+
+
+subsection:: Object Composition
+
+
+Often, an object passes control to one of the objects it has in its instance variables.
+Because these objects can be of any kind, this is a very flexible way to achieve a wide range of functionalities.
+For example, a link::Classes/Button:: has an code::action:: instance variable, which may hold anything that responds to the message code::value::.
 
 code::
 MyClass {
@@ -283,11 +366,25 @@ b.value(8);
 Often, variables like code::action:: above are filled with custom objects that belong to code::MyClass::. Thus, one will write many small classes that can be well combined in such a way. This is called "pluggable behavior".
 
 
-section::Variables
+
+
+
+
+
+
+
+
+section:: Variables
+
+
+
 
 subsection:: Initializing variables directly
 
-In a variable declaration, variables can be directly initialized. Only link::Reference/Literals:: may be used to initialize variables this way. This means that it is not possible to chain assignments (e.g. code:: var x = 9; var y = x + 1::).
+
+In a variable declaration, variables can be directly initialized.
+Only link::Reference/Literals:: may be used to initialize variables this way.
+This means that it is not possible to chain assignments (e.g. code::var x = 9; var y = x + 1::).
 
 code::
 MyClass {
@@ -298,22 +395,30 @@ MyClass {
 ::
 
 
+
+
+
+
 subsection:: Variable Scope
 
-An instance variable is accessible strong::from all instance methods:: of this class and its subclasses. A class variable, by contrast, is accessible strong::from all class and instance methods:: of this class and its subclasses. Instance variables will shadow class variables of the same name.
+
+An instance variable is accessible strong::from all instance methods:: of this class and its subclasses.
+A class variable, by contrast, is accessible strong::from all class and instance methods:: of this class and its subclasses.
+Instance variables will shadow class variables of the same name.
 
 code::
 MyClass {
 	classvar x = 0, y = 1;
 	var x = 1;
 
-	*returnX { ^x } // returns 0
+	*returnX { ^x } // returns teletype::0::
 	returnX { ^x } // returns 1
 	returnXY { ^x + y } // returns 2
 }
 ::
 
-Subclasses can override class variable declarations (but not instance variables). Then the class variables of the superclass are not accessible in the subclass anymore.
+Subclasses can override class variable declarations (but not instance variables).
+Then the class variables of the superclass are not accessible in the subclass anymore.
 
 code::
 SomeSuperclass {
@@ -329,16 +434,21 @@ MyClass : SomeSuperclass {
 	returnXHere { ^x }
 }
 
-// SomeSuperclass.returnXHere returns 0
+// SomeSuperclass.returnXHere returns teletype::0::
 // MyClass.returnXHere returns 1
-// MyClass.returnX returns 0
-
-
+// MyClass.returnX returns teletype::0::
 ::
+
+
+
+
+
 
 subsection:: Getters and Setters
 
-SuperCollider demands that variables are not accessible outside of the class or instance. A method must be added to
+
+SuperCollider demands that variables are not accessible outside of the class or instance.
+A method must be added to
 explicitly give access:
 
 code::
@@ -355,7 +465,8 @@ MyClass : SomeSuperclass {
 }
 ::
 
-These are referred to as getter and setter methods. SuperCollider allows these methods to be easily added by adding teletype::<:: or
+These are referred to as getter and setter methods.
+SuperCollider allows these methods to be easily added by adding teletype::<:: or
 teletype::>::.
 
 code::
@@ -380,8 +491,9 @@ someObject.getMeOrSetMe_(5);
 someObject.getMeOrSetMe;
 ::
 
-
-A getter or setter method created in this fashion may be overridden in a subclass by explicitly defining the method. Setter methods should take only one argument to support both ways of expression consistently.  eg.
+A getter or setter method created in this fashion may be overridden in a subclass by explicitly defining the method.
+Setter methods should take only one argument to support both ways of expression consistently.
+ eg.
 
 code::
 MyClass {
@@ -393,10 +505,17 @@ MyClass {
 }
 ::
 
-A setter method should always return the receiver. This allows us to be sure that several setters can chained up.
+A setter method should always return the receiver.
+This allows us to be sure that several setters can chained up.
 
 
-subsection::Constants
+
+
+
+
+subsection:: Constants
+
+
 Constants are variables, that, well, don't vary. They can only be assigned initially.
 
 code::
@@ -404,13 +523,27 @@ MyClass {
 	const <zero = 0;
 }
 
-MyClass.zero // returns 0
+MyClass.zero // returns teletype::0::
 ::
+
+
+
+
+
+
+
+
+
 
 section:: External method files
 
-Methods may be added to Classes in separate files.  This is equivalent to Categories in Objective-C.  By convention, the
-file name starts with a lower case letter: the name of the method or feature that the methods are supporting.
+
+
+
+Methods may be added to Classes in separate files.
+ This is equivalent to Categories in Objective-C.  By convention, the
+file name starts with a lower case letter:
+the name of the method or feature that the methods are supporting.
 
 code::
 + Class {
@@ -427,7 +560,18 @@ code::
 ::
 
 
+
+
+
+
+
+
+
+
 section:: Slotted classes
+
+
+
 
 Classes defined with code::[slot]:: can use the syntax code::myClass[...]:: which will call code::myClass.new:: and then code::this.add(each):: for each item in the square brackets.
 
@@ -443,11 +587,25 @@ a = MyClass[1, 2, 3];
 a.allOfThem; // [1, 2, 3]
 ::
 
+
+
+
+
+
+
+
+
+
 section:: Printing to string
+
+
+
 
 subsection:: Printing custom messages to post window
 
-By default when postln is called on an class instance the name of the class is printed in a post window. When
+
+By default when postln is called on an class instance the name of the class is printed in a post window.
+When
 code::postln:: or code::asString:: is called on a class instance, the class then calls code::printOn:: which by default returns just the object's class name. This should be overridden to obtain more useful information.
 
 code::
@@ -468,12 +626,20 @@ code::
 a = MyTestPoint(2, 3)
 ::
 
+
+
+
+
+
 subsection:: Defining custom asCompileString behaviour
+
 
 A call to code::asCompileString:: should return a string which when evaluated creates the exact same instance of the
 class. To define a custom behaviour one should either override code::storeOn:: or code::storeArgs::. The method
-code::storeOn:: should return the string that evaluated creates the instance of the current object. The method
-code::storeArgs:: should return an array with the arguments to be passed to code::TheClass.new::. In most cases this
+code::storeOn:: should return the string that evaluated creates the instance of the current object.
+The method
+code::storeArgs:: should return an array with the arguments to be passed to code::TheClass.new::.
+In most cases this
 method can be used instead of code::storeOn::.
 
 code::
@@ -510,14 +676,42 @@ code::
 MyTestPoint(2, 3).asCompileString;
 ::
 
-section::Private Methods
 
-Private methods are marked by a prefix code::pr::, e.g. code::prBundleSize::. This is just a strong::naming convention::; the message can still be called from anywhere. It is recommended to stick to convention and only call private methods from within the class that defines them.
+
+
+
+
+
+
+
+
+section:: Private Methods
+
+
+
+
+Private methods are marked by a prefix code::pr::, e.g. code::prBundleSize::.
+This is just a strong::naming convention::; the message can still be called from anywhere.
+It is recommended to stick to convention and only call private methods from within the class that defines them.
+
+
+
+
+
+
+
+
 
 
 section:: Catching undefined method calls
 
-When a message is received that is undefined, the receiver calls the method code::doesNotUnderstand::. Normally this throws an error. By overriding code::doesNotUnderstand::, it is possible to catch those calls and use them. For an example, see the class definition of code::IdentityDictionary::.
+
+
+
+When a message is received that is undefined, the receiver calls the method code::doesNotUnderstand::.
+Normally this throws an error.
+By overriding code::doesNotUnderstand::, it is possible to catch those calls and use them.
+For an example, see the class definition of code::IdentityDictionary::.
 
 code::
 MyClass {

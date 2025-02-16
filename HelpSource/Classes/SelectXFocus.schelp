@@ -1,22 +1,60 @@
-class:: SelectXFocus
-summary:: Mix one output from many sources
+title:: SelectXFocus
 categories:: UGens>Multichannel>Select
+summary:: Mix one output from many sources
 related:: Classes/Select, Classes/SelectX, Classes/LinSelectX
 
+
+
+
+
+
+
+
+
+
 description::
-The output is mixed from an array of inputs, linearly interpolating from a number of adjacent channels. A focus argument allows to control how many adjacent sources are mixed.
+
+
+
+
+The output is mixed from an array of inputs, linearly interpolating from a number of adjacent channels.
+A focus argument allows to control how many adjacent sources are mixed.
+
+
+
+
+
+
+
+
+
 
 classmethods::
+
+
+
+
 method:: ar, kr
 
+
 argument:: which
+
 Index of the selected input, which is also the center of the selection for a focus > 0.
+
+
 argument:: array
+
 A collection of inputs.
+
+
 argument:: focus
+
 The "fuzziness" of the selection: the larger the focus, the less adjacent inputs are mixed in.
+
+
 argument:: wrap
-If set to true, index will wrap around the array of inputs (see also: link::Classes/Array#-wrapAt::).
+
+If set to teletype::true::, index will wrap around the array of inputs (see also: link::Classes/Array#-wrapAt::).
 
 code::
 (
@@ -28,7 +66,19 @@ code::
 ::
 
 
+
+
+
+
+
+
+
+
 examples::
+
+
+
+
 code::
 (
 {
@@ -46,7 +96,9 @@ code::
 ::
 
 note::
-all the ugens are continuously running. This may not be the most efficient way if each input is  cpu-expensive. The array is fixed at the time of writing the SynthDef, and the whole array is embedded in the SynthDef file itself.  For small arrays this is more efficient than reading from a buffer.
+All the UGens are continuously running.
+This may not be the most efficient way if each input is  cpu-expensive. The array is fixed at the time of writing the SynthDef, and the whole array is embedded in the SynthDef file itself.
+ For small arrays this is more efficient than reading from a buffer.
 ::
 
 code::

@@ -1,40 +1,97 @@
-class:: LocalBuf
-summary:: Allocate a buffer local to the synth
+title:: LocalBuf
 categories:: UGens>Buffer
+summary:: Allocate a buffer local to the synth
 related:: Classes/Buffer, Classes/SetBuf, Classes/ClearBuf
 
+
+
+
+
+
+
+
+
+
 classmethods::
+
+
+
+
 private:: categories, new1
+
 
 method:: new
 Allocate a local buffer
+
+
 argument:: numFrames
-number of frames (default: 1)
+
+Number of frames (default: 1)
+
+
 argument:: numChannels
-number of channels for multiple channel buffers (default: 1)
-returns:: a new buffer – the ugen outputs its buffer number and can thus be used in any other ugen that requires a buffer number input.
+
+Number of channels for multiple channel buffers (default: 1)
+
+
+returns::
+ 
+a new buffer – the UGen outputs its buffer number and can thus be used in any other UGen that requires a buffer number input.
+
+
+
 
 method:: newFrom
-Allocates a new buffer from a given list of values
+
+
+Allocate a new buffer from a given list of values
+
+
 argument:: list
+
 The list may be two-dimensional for numChannels > 1.
 It is then reshaped into the buffer's current format by flattening.
-returns:: a new buffer
+
+
+returns::
+ 
+a new buffer
+
+
 discussion::
 Since newFrom is called by the as message, one may thus convert an array to a LocalBuf:
+
 code::
 [1, 2, 3].as(LocalBuf)
 ::
 
+
+
+
+
+
+
+
+
+
 instancemethods::
+
+
+
+
 method:: set
-set the buffer slots with a list of values.
+
+
+Set the buffer slots with a list of values.
+
+
 discussion::
-If list is smaller than numFrames, it will only set
-part of the buffer. The list may be two-dimensional for numChannels > 1.
+If list is smaller than numFrames, it will only set part of the buffer. The list may be two-dimensional for numChannels > 1.
 offset is the starting index (default: 0)
+
 warning::
-SynthDef permits a maximum of 65536 (2**16) unique constant values in one definition. A very large array of distinct values can corrupt the SynthDef's binary format. If you need a large buffer to be pre-initialized with signal data, it is strongly recommended to use link::Classes/Buffer:: instead.
+SynthDef permits a maximum of 65536 (2**16) unique constant values in one definition.
+A very large array of distinct values can corrupt the SynthDef's binary format. If you need a large buffer to be pre-initialized with signal data, it is strongly recommended to use link::Classes/Buffer:: instead.
 ::
 
 If the buffer is large but holds a smaller number of unique values, e.g. code::Array.fill(88200, { #[0, 0.25, 0.5, 0.75, 1.0].choose })::, this is no problem. SynthDef compacts the large array for the list of constants.
@@ -48,16 +105,35 @@ SynthDescLib.at(\bigLocalBuf).constants;
 // prints: FloatArray[1, 88200, 0, 0.75, 0.5, 0.25]
 ::
 
+
+
+
 method:: clear
-set the buffer slot to zero.
+
+
+Set the buffer slot to teletype::zero::.
+
+
 discussion::
 This is important when randomly accessing buffer slots
-(e.g. with a BufRd) or not overwriting them. Clear is not an efficient real time operation
-for larger buffers, so it should be only used when really needed - but then it is essential:
-a LocalBuf is "created" in each new synth, and it may reuse old space. So if an older
-synth has already ended, this part of memory may be the same as the new synth's.
+(e.g. with a BufRd) or not overwriting them. Clear is not an efficient real time operation for larger buffers, so it should be only used when really needed - but then it is essential:
+a LocalBuf is "created" in each new synth, and it may reuse old space.
+So if an older synth has already ended, this part of memory may be the same as the new synth's.
+
+
+
+
+
+
+
+
+
 
 examples::
+
+
+
+
 code::
 // example: FFT
 
@@ -182,7 +258,7 @@ play({
 )
 
 
-// BufCombC stereo (needs no clearing, because delay is filled by ugen)
+// BufCombC stereo (needs no clearing, because delay is filled by UGen)
 (
 {
 var z = Decay.ar(Dust.ar(1.dup, 0.1), 0.3, WhiteNoise.ar);

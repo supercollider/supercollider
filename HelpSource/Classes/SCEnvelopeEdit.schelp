@@ -1,14 +1,34 @@
-class:: SCEnvelopeEdit
-summary:: An envelope editor view
+title:: SCEnvelopeEdit
 categories:: GUI>Kits>Cocoa
+summary:: An envelope editor view
 related:: Classes/EnvelopeView
 
+
+
+
+
+
+
+
+
+
 description::
+
+
+
+
 An editable Envelope view.
+
+
+
+
+
 
 subsection:: Some Important Issues Regarding SCEnvelopeEdit
 
+
 The breakpoints are color coded as follows:
+
 table::
 ## blue || normal
 ## red || sustain node
@@ -16,95 +36,242 @@ table::
 ::
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
+
+
+
 method:: new
+
+
 argument:: parent
+
 The parent view.
+
+
 argument:: bounds
+
 An instance of link::Classes/Rect::, or a link::Classes/Point:: indicating code::width@height::.
+
+
 argument:: env
+
 The envelope. An instance of link::Classes/Env::.
+
+
 argument:: pointsPerSegment
-The resolution in points per segment. Default value is 10.
+
+The resolution in points per segment.
+Default value is 10.
+
+
+
 
 method:: paletteExample
+
+
 argument:: parent
+
 argument:: bounds
+
+
+
+
+
 
 subsection:: Subclassing and Internal Methods
 
-The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
+
+The following methods are usually not used directly or are called by a primitive.
+Programmers can still call or override these as needed.
+
+
+
 
 method:: viewClass
 
+
+
+
+
+
+
+
+
+
 instancemethods::
 
+
+
+
 method:: refresh
+
+
 If the link::Classes/Env:: object is modified directly, this needs to be called to update the GUI.
 
 method: maxLevel
 Changes maximum level shown in editor.
+
+
 argument:: level
+
 An instance of link::Classes/Float::.
+
+
+
 
 method:: minLevel
+
+
 Changes minimum level shown in editor.
+
+
 argument:: level
+
 An instance of link::Classes/Float::.
 
+
+
+
 method:: minTime
-Changes minimum time (sec) shown in editor. Negative times are okay because link::Classes/Env:: uses inter-node durations.
+
+
+Change minimum time (sec) shown in editor. Negative times are okay because link::Classes/Env:: uses inter-node durations.
+
+
 argument:: sec
+
 An instance of link::Classes/Float::. Seconds.
 
+
+
+
 method:: maxTime
-Changes maximum time (sec) shown in editor.
+
+
+Change maximum time (sec) shown in editor.
+
+
 argument:: sec
+
 An instance of link::Classes/Float::. Seconds.
+
+
+
+
 
 
 subsection:: Subclassing and Internal Methods
 
-The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
+
+The following methods are usually not used directly or are called by a primitive.
+Programmers can still call or override these as needed.
+
+
+
 
 method:: defaultMouseDownAction
+
+
 argument:: x
+
 argument:: y
+
+
 argument:: modifiers
+
 argument:: buttonNumber
+
+
 argument:: clickCount
 
 
+
+
 method:: env
+
+
 argument:: e
 
+
+
+
 method:: addBreakPoint
+
+
 argument:: level
 
+
+
+
 method:: insertAtTime
+
+
 argument:: time
+
 argument:: level
+
+
+
 
 method:: pointsPerSegment
 
+
 method:: initSCEnvelopeEdit
+
+
 argument:: argEnv
+
 argument:: argPPS
+
+
 argument:: setMinMax
+
+
+
 
 method:: redraw
 
+
 method:: updateAll
 
+
+
+
 method:: updateSegment
+
+
 argument:: segNum
+
+
+
 
 method:: clear
 
+
+
+
+
+
+
+
+
+
 examples::
 
+
+
+
 Make a basic editor:
+
 code::
 (
 e = Env([1, 2], [10]);
@@ -130,6 +297,7 @@ v.refresh; // must refresh editor
 ::
 
 Controlling a Synth
+
 code::
 s.boot;
 

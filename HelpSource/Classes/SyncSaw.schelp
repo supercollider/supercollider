@@ -1,47 +1,80 @@
-class:: SyncSaw
-summary:: Hard sync sawtooth wave.
+title:: SyncSaw
+categories:: UGens>Generators>Deterministic
+summary:: Hard sync sawtooth wave
 related:: Classes/Saw, Classes/VarSaw, Classes/LFSaw
-categories::  UGens>Generators>Deterministic
 
 
-Description::
 
-A sawtooth wave that is hard synched to a fundamental pitch. This
+
+
+
+
+
+
+
+description::
+
+
+
+
+A sawtooth wave that is hard synched to a fundamental pitch.
+This
 produces an effect similar to  moving formants or pulse width modulation.
-The sawtooth oscillator has its phase reset when the sync oscillator
-completes a cycle. This is not a band limited waveform, so it may alias.
+The sawtooth oscillator has its phase reset when the sync oscillator completes a cycle. This is not a band limited waveform, so it may alias.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
 
-argument::syncFreq
+
+
+method:: ar, kr
+
+
+argument:: syncFreq
 
 Frequency of the fundamental.
 
 
-argument::sawFreq
+argument:: sawFreq
 
-Frequency of the synched sawtooth wave. Should always be
-greater than
+Frequency of the synched sawtooth wave.
+Should always be greater than
 code::syncFreq:: .
 
 
-argument::mul
+argument:: mul
 
 Output will be multiplied by this value.
 
 
-argument::add
+argument:: add
 
 This value will be added to the output.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 { SyncSaw.ar(100, Line.kr(100, 800, 12), 0.1) }.play;
 
 
@@ -68,5 +101,4 @@ scope {
 	Impulse.ar(freq) // to show sync rate
 ] * 0.3 }
 )
-
 ::

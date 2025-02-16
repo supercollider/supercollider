@@ -1,13 +1,24 @@
-class:: Schmidt
-summary:: Schmidt trigger.
+title:: Schmidt
+categories:: UGens>Maths
+summary:: Schmidt trigger
 related:: Classes/InRange, Classes/InRect
-categories::  UGens>Maths
 
 
-Description::
 
-If code::in > hi::, output 1. If code::in < lo::, output 0. Otherwise, repeat the
-last sample of output, assumed to be 0 at initialization. In sclang-flavored
+
+
+
+
+
+
+
+description::
+
+
+
+
+If code::in > hi::, output 1. If code::in < lo::, output 0. Otherwise, repeat the last sample of output, assumed to be 0 at initialization.
+In sclang-flavored
 pseudocode:
 
 code::
@@ -22,29 +33,52 @@ out[i] = if(in[i] < lo[i]) {
 };
 ::
 
+
+
+
+
+
+
+
+
+
 classmethods::
 
-method::ar, kr
 
-argument::in
+
+
+method:: ar, kr
+
+
+argument:: in
 
 Signal to be tested.
 
 
-argument::lo
+argument:: lo
 
 Low threshold.
 
 
-argument::hi
+argument:: hi
 
 High threshold.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 s.boot;
 
 { Schmidt.kr(SinOsc.kr(1, 0, 0.2), -0.15, 0.15) }.scope; // see the trigger
@@ -59,5 +93,4 @@ s.boot;
 	SinOsc.ar(in * 200 + 500 * octave, 0, 0.1)
 }.scope;
 )
-
 ::

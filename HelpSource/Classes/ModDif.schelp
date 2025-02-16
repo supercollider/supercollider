@@ -1,35 +1,64 @@
-class:: ModDif
+title:: ModDif
+categories:: UGens>Maths
 summary:: Minimum difference of two values in modulo arithmetics
 related:: Classes/Clip, Classes/Wrap
-categories::  UGens>Maths
 
 
-Description::
-Returns the minimum difference of two values in modulo arithmetics. On a circle, there are two distances between two points. This UGen returns the smaller value of the two.
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+Return the minimum difference of two values in modulo arithmetics.
+On a circle, there are two distances between two points.
+This UGen returns the smaller value of the two.
 
 code::
 { var a = Line.ar(0, 4, 0.01), d = ModDif.ar(a); [a, d] }.plot;
 { var a = Line.ar(0, 4, 0.01); ModDif.ar(a, 0, (1..4)) }.plot;
 { var a = Line.ar(0, 4, 0.01); ModDif.ar(a, (0, 0.25 .. 1), 1) }.plot;
-
 ::
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr, ir
 
-argument::x
+
+
+method:: ar, kr, ir
+
+
+argument:: x
+
 First input value
 
-argument::y
+
+argument:: y
+
 Second input value
 
-argument::mod
+
+argument:: mod
+
 Modulo (maximum value, double of the maximal difference).
 
 code::
-
 // different moduli
 (
 {

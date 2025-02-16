@@ -1,9 +1,21 @@
-class:: Dbrown
-summary:: Demand rate brownian movement generator.
-related:: Classes/Dibrown, Classes/Demand, Classes/Duty, Classes/TDuty
+title:: Dbrown
 categories:: UGens>Demand
+summary:: Demand rate brownian movement generator
+related:: Classes/Dibrown, Classes/Demand, Classes/Duty, Classes/TDuty
 
-Description::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 Dbrown returns numbers in the continuous range between
 code::lo::  and  code::hi::,
@@ -17,34 +29,56 @@ See link::Classes/Pbrown::, link::Classes/BrownNoise::  for structurally related
 equivalents.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::new
 
-argument::lo
+
+
+method:: new
+
+
+argument:: lo
 
 Minimum value.
 
 
-argument::hi
+argument:: hi
 
 Maximum value.
 
 
-argument::step
+argument:: step
 
 Maximum step for each new value.
 
 
-argument::length
+argument:: length
 
 Number of values to create. Use code::inf:: for an infinite number.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 (
 {
 	var a, freq, trig;
@@ -55,5 +89,4 @@ code::
 
 }.play;
 )
-
 ::

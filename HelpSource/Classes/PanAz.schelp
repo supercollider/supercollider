@@ -1,42 +1,66 @@
-class:: PanAz
+title:: PanAz
+categories:: UGens>Multichannel>Panners
 summary:: Azimuth panner
 related:: Classes/Balance2, Classes/LinPan2, Classes/Pan2, Classes/Pan4
-categories::  UGens>Multichannel>Panners
 
 
-Description::
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 Multichannel equal power panner.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::ar, kr
 
-argument::numChans
+
+
+method:: ar, kr
+
+
+argument:: numChans
 
 Number of output channels. Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.
 
 
-argument::in
+argument:: in
 
 The input signal.
 
 
-argument::pos
+argument:: pos
 
-pan position (code::kr:: or code::ar::). Channels are evenly spaced over a cyclic period of code::2.0:: in pos with code::0.0:: equal to channel zero and code::2.0/numChans:: equal to channel 1, code::4.0/numChans:: equal to channel 2, etc.
+Pan position (code::kr:: or code::ar::).
+Channels are evenly spaced over a cyclic period of code::2.0:: in pos with code::0.0:: equal to channel zero and code::2.0/numChans:: equal to channel 1, code::4.0/numChans:: equal to channel 2, etc.
 
 
 Thus all channels will be cyclically panned through if a bipolar sawtooth wave from code::-1:: to code::+1:: is used to modulate the pos.
 
 
-argument::level
+argument:: level
 
 A control rate level input.
 
 
-argument::width
+argument:: width
 
 The width of the panning envelope.
 Nominally this is code::2.0:: which pans between pairs of adjacent speakers.
@@ -45,23 +69,37 @@ Values less than code::1:: will leave silent gaps between speakers.
 The absolute of this value is taken as negative values have no meaning (a width of code::-1:: is the same as a width of code::1::).
 
 
-argument::orientation
+argument:: orientation
 
 Should be code::0:: if the front is a vertex of the spanning polygon.
-The first speaker will be directly in front. Should be code::0.5:: if the front
+The first speaker will be directly in front.
+Should be code::0.5:: if the front
 bisects a side of the spanning polygon.
 Then the first speaker will be the one left of center.
 
-section::Comparison to Pan2
+
+
+
+
+
+
+
+
+
+section:: Comparison to Pan2
+
+
+
 
 Despite a certain similarity, link::Classes/Pan2:: and link::Classes/PanAz:: with 2 channels behave differently.
 
 code::
-// one full cycle for PanAz: from -1 to 1
+// one full cycle for PanAz:
+from teletype::-1:: to 1
 { PanAz.ar(2, DC.ar(1), Line.ar(-1, 1, 0.1), orientation: 0) }.plot(0.1)
 // comparing with Pan2
 { Pan2.ar(DC.ar(1), Line.ar(-1, 1, 0.1)) }.plot(0.1)
-// to create one full cycle for Pan2, move from 1 to -1 and back to 1
+// to create one full cycle for Pan2, move from teletype::1::to teletype::-1:: and back to 1
 { Pan2.ar(DC.ar(1), EnvGen.ar(Env([1, -1, 1], [0.05, 0.05]))) }.plot(0.1)
 ::
 
@@ -83,7 +121,7 @@ In other words, while code::Pan2:: needs a position change of code::2:: from cha
 
 code::
 { Pan2.ar(DC.ar(1), Line.ar(-1, 1, 0.1)) }.plot(0.1)
-// we need a position change of 1 in PanAz:
+// we need a position change of teletype::1::in PanAz:
 { PanAz.ar(2, DC.ar(1), Line.ar(0, 1, 0.1), orientation: 0) }.plot(0.1)
 ::
 
@@ -100,12 +138,23 @@ code::
 )
 ::
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 Five channel circular panning with first channel on the left
 
 code::
-
 (
 {
 	PanAz.ar(
@@ -118,5 +167,4 @@ code::
 	);
 }.scope
 )
-
 ::

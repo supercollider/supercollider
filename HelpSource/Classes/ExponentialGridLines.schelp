@@ -1,10 +1,26 @@
-CLASS:: ExponentialGridLines
-summary:: Calculates the numerical values suitable for exponentially-spaced grid lines to be used for plotting or other UI elements.
+title:: ExponentialGridLines
 categories:: GUI>Accessories
+summary:: Calculates the numerical values suitable for exponentially-spaced grid lines to be used for plotting or other UI elements
 related:: Classes/GridLines, Classes/AbstractGridLines, Classes/LinearGridLines, Classes/DrawGrid, Classes/ControlSpec, Classes/Plotter, Reference/plot
 
-DESCRIPTION::
-code::ExponentialGridLines:: is a strategy object that finds suitable intervals for plotting grid lines and labels. The values span the range defined by a corresponding link::Classes/ControlSpec::. Most of the functionality of code::ExponentialGridLines:: is inherited from its superclass, link::Classes/AbstractGridLines::. The instance methods are used by link::Classes/DrawGrid:: (which is in turn used by link::Classes/Plotter::) which handles the drawing of the lines and labels.
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+code::ExponentialGridLines:: is a strategy object that finds suitable intervals for plotting grid lines and labels.
+The values span the range defined by a corresponding link::Classes/ControlSpec::.
+Most of the functionality of code::ExponentialGridLines:: is inherited from its superclass, link::Classes/AbstractGridLines::.
+The instance methods are used by link::Classes/DrawGrid:: (which is in turn used by link::Classes/Plotter::) which handles the drawing of the lines and labels.
 
 code::ExponentialGridLines:: isn't usually instantiated directly, but rather by the link::Classes/GridLines:: factory class or the link::Classes/ControlSpec#-grid:: method which return the appropriate code::AbstractGridLines:: subclass for the given spec.
 
@@ -19,17 +35,60 @@ DrawGrid.test(linGrid, expGrid);
 )
 ::
 
-CLASSMETHODS::
 
-COPYMETHOD:: AbstractGridLines *new
 
-INSTANCEMETHODS::
 
-COPYMETHOD:: AbstractGridLines -spec
-COPYMETHOD:: AbstractGridLines -asGrid
-COPYMETHOD:: AbstractGridLines -niceNum
-COPYMETHOD:: AbstractGridLines -looseRange
-COPYMETHOD:: AbstractGridLines -getParams
-COPYMETHOD:: AbstractGridLines -formatLabel
+
+
+
+
+
+
+classmethods::
+
+
+
+
+copymethod:: AbstractGridLines *new
+
+
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+copymethod:: AbstractGridLines -spec
+
+
+copymethod:: AbstractGridLines -asGrid
+
+
+
+
+copymethod:: AbstractGridLines -niceNum
+
+
+copymethod:: AbstractGridLines -looseRange
+
+
+
+
+copymethod:: AbstractGridLines -getParams
+
+
+copymethod:: AbstractGridLines -formatLabel
+
+
+
 
 private:: prCheckWarp, ideals
+
+

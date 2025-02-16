@@ -1,20 +1,65 @@
-class:: IndexL
-summary:: Index into a table with a signal, linear interpolated
+title:: IndexL
 categories:: UGens>Buffer
+summary:: Index into a table with a signal, linear interpolated
 related:: Classes/Index, Classes/IndexInBetween
 
+
+
+
+
+
+
+
+
+
 description::
+
+
+
+
 The input signal value is used as an index into the table, with linear interpolation.
 Out of range index values are clipped to the valid range.
 
+
+
+
+
+
+
+
+
+
 classmethods::
+
+
+
+
 method:: ar, kr
+
+
 argument:: bufnum
-index of the buffer.
+
+Index of the buffer.
+
+
 argument:: in
-the input signal.
+
+The input signal.
+
+
+
+
+
+
+
+
+
 
 examples::
+
+
+
+
 code::
 // indexing into a fixed table
 (

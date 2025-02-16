@@ -1,11 +1,25 @@
-class:: Pset
-summary:: event pattern that sets values of one key
-related:: Classes/Pbindf, Classes/Psetp
+title:: Pset
 categories:: Streams-Patterns-Events>Patterns>Filter
+summary:: Event pattern that sets values of one key
+related:: Classes/Pbindf, Classes/Psetp
+
+
+
+
+
+
+
+
+
 
 description::
 
-Pset sets a value in an event stream. It acts like one key in a link::Classes/Pbindf::.
+
+
+
+Pset sets a value in an event stream.
+It acts like one key in a link::Classes/Pbindf::.
+
 code::
 (
 var a, b;
@@ -15,20 +29,51 @@ x = a.asStream;
 )
 ::
 
-ClassMethods::
 
-method::new
 
-argument::name
-the key.
 
-argument::value
-can be a pattern or a stream. The resulting stream ends when that incoming stream ends.
 
-argument::pattern
-the pattern.
 
-Examples::
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
+argument:: name
+
+The key.
+
+
+argument:: value
+
+Can be a pattern or a stream.
+The resulting stream ends when that incoming stream ends.
+
+
+argument:: pattern
+
+The pattern.
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 // Pset overrides incoming values:

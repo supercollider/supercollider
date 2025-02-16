@@ -1,19 +1,47 @@
-class:: Prorate
-summary:: divide stream proportionally
-related:: Classes/Pattern
+title:: Prorate
 categories:: Streams-Patterns-Events>Patterns>Math
+summary:: Divide stream proportionally
+related:: Classes/Pattern
 
-ClassMethods::
 
-method::new
 
-argument::proportion
-a pattern that returns either numbers (divides the pattern into pairs) or arrays of size n which are used to split up the input into n parts.
 
-argument::pattern
-a numerical pattern.
 
-Examples::
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
+argument:: proportion
+
+A pattern that returns either numbers (divides the pattern into pairs) or arrays of size n which are used to split up the input into n parts.
+
+
+argument:: pattern
+
+A numerical pattern.
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 // divide 1 into various proportions

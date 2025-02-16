@@ -1,46 +1,100 @@
-CLASS:: PopUpMenu
-summary:: A view displaying a text item selectable from a drop-down menu.
+title:: PopUpMenu
 categories:: GUI>Views
+summary:: A view displaying a text item selectable from a drop-down menu
 
-DESCRIPTION::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 When clicked, this view opens a menu containing several text items, then closes the menu and displays one of the items after it is selected.
 
-CLASSMETHODS::
-
-PRIVATE:: key
 
 
 
 
-INSTANCEMETHODS::
 
 
 
-SUBSECTION:: Data
 
-METHOD:: items
+
+classmethods::
+
+
+
+
+private:: key
+
+
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+subsection:: Data
+
+
+method:: items
+
+
 	The list of items displayed in a menu when the view is clicked.
 
 	argument::
 		An Array of Strings or Symbols.
 
-METHOD:: clear
+
+
+
+method:: clear
+
+
  Removes all items.
 
-METHOD:: item
+
+
+
+method:: item
+
+
 	The currently selected item.
 
 	returns::
 		A String.
 
-METHOD:: value
+
+
+
+method:: value
+
+
 	The index of the currently selected item.
 
 	argument::
 		An integer, or nil meaning no selected item.
 
-METHOD:: valueAction
+
+
+
+method:: valueAction
+
+
 	Sets link::#-value:: and triggers link::#-action::.
 
 	argument::
@@ -48,15 +102,26 @@ METHOD:: valueAction
 
 
 
-SUBSECTION:: Appearance
 
-METHOD:: stringColor
+
+
+subsection:: Appearance
+
+
+method:: stringColor
+
+
 	The color used to display text.
 
 	argument::
 		A Color.
 
-METHOD:: background
+
+
+
+method:: background
+
+
 	Setting this variable colors the area of the view under the text with the given color.
 
 	argument::
@@ -64,41 +129,82 @@ METHOD:: background
 
 
 
-SUBSECTION:: Interaction
 
-METHOD:: allowsReselection
-	Determines whether the action is triggered when selecting already selected item. Defaults to false.
+
+
+subsection:: Interaction
+
+
+method:: allowsReselection
+
+
+	Determines whether the action is triggered when selecting already selected item.
+Defaults to teletype::false::.
 
 	argument::
 		A Boolean.
 
 
 
-SUBSECTION:: Actions
-
-METHOD:: action
-	The action object evaluated whenever the user changes the selected item from the menu. See link::#-allowsReselection:: for customization.
 
 
 
-SUBSECTION:: Drag and drop
+subsection:: Actions
 
-METHOD:: defaultGetDrag
+
+method:: action
+
+
+	The action object evaluated whenever the user changes the selected item from the menu.
+See link::#-allowsReselection:: for customization.
+
+
+
+
+
+
+subsection:: Drag and drop
+
+
+method:: defaultGetDrag
+
+
 	returns::
 		The link::#-value::.
 
-METHOD:: defaultCanReceiveDrag
+
+
+
+method:: defaultCanReceiveDrag
+
+
 	returns::
 		True if the current drag data is a number.
 
-METHOD:: defaultReceiveDrag
+
+
+
+method:: defaultReceiveDrag
+
+
 	Sets link::#-valueAction:: to the current drag data.
 
 
 
-EXAMPLES::
+
+
+
+
+
+
+
+examples::
+
+
+
 
 subsection:: Basic Example
+
 
 code::
 (
@@ -125,7 +231,13 @@ m.value_(2);  // changes the displayed item, but does not evaluate the action
 m.valueAction_(3); // evaluates the action.
 ::
 
+
+
+
+
+
 subsection:: Sound Example
+
 
 Play different functions:
 
@@ -156,7 +268,7 @@ s.waitForBoot({
 	
 	w.front;
 	
-	p = CmdPeriod.add({ b.value_(0) }); // set button to 0 on hitting Cmd-period
+	p = CmdPeriod.add({ b.value_(0) }); // set button to teletype::0:: on hitting Cmd-period
 	w.onClose_{ snd.release; CmdPeriod.removeAll }; // clean up when window is closed
 	
 })

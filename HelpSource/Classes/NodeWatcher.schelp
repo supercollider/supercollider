@@ -1,53 +1,132 @@
-class:: NodeWatcher
-summary:: notify sc-lang side node objects of their server sided state
-related:: Reference/Server-Command-Reference, Classes/Node, Classes/DebugNodeWatcher
+title:: NodeWatcher
 categories:: Control, Server>Nodes
+summary:: Notify sc-lang side node objects of their server sided state
+related:: Reference/Server-Command-Reference, Classes/Node, Classes/DebugNodeWatcher
+
+
+
+
+
+
+
+
+
 
 description::
+
+
+
+
 Node instances (Synths and Groups) can be registered with the NodeWatcher.
 It watches for server node status messages:
 n_go n_end n_off n_on
 
-and sets the isPlaying and isRunning variables on the Node instance accordingly. A Node that ends is unregistered at that time.
+and sets the isPlaying and isRunning variables on the Node instance accordingly.
+A Node that ends is unregistered at that time.
 
-In some cases this can be an invaluable service. The use of an independant object to maintain the state keeps the implementation of the Node classes simple.
-Note that server notification should be on. (this is default. see: aServer.notify)
+In some cases this can be an invaluable service.
+The use of an independant object to maintain the state keeps the implementation of the Node classes simple.
+Note that server notification should be on.
+(this is default. see: aServer.notify)
 
 code::
 // the most common use:
 NodeWatcher.register(aNode);
 ::
 
-ClassMethods::
 
-private::initClass
 
-method::new
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+private:: initClass
+
+
+method:: new
 Create a new instance listening to the server's address
 
-method::newFrom
+
+
+
+method:: newFrom
+
+
 Create a new instance listening to the server's address. If there is one present already return that one.
 
-method::register
 
-argument::node
-Can be a Group or a Synth. The NodeWatcher is created internally.
 
-argument::assumePlaying
-If true, the node's strong::isPlaying:: field is set to true.
 
-method::unregister
-Remove the node from the list of nodes. This happens also when a node is freed.
+method:: register
 
-InstanceMethods::
 
-method::start
+argument:: node
+
+Can be a Group or a Synth.
+The NodeWatcher is created internally.
+
+
+argument:: assumePlaying
+
+If teletype::true::, the node's strong::isPlaying:: field is set to teletype::true::.
+
+
+
+
+method:: unregister
+
+
+Remove the node from the list of nodes.
+This happens also when a node is freed.
+
+
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+method:: start
+
+
 Add the OSCFunc to listen to the address.
 
-method::stop
+
+
+
+method:: stop
+
+
 Remove the OSCFunc to stop listen to the address.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (

@@ -1,25 +1,49 @@
 title:: Pattern Guide 06f: Server Control
+categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Patterns that manage server-side resources
 related:: Tutorials/A-Practical-Guide/PG_06e_Language_Control, Tutorials/A-Practical-Guide/PG_06g_Data_Sharing
-categories:: Streams-Patterns-Events>A-Practical-Guide
 
-section::Server control methods
 
-A handful of filter patterns can isolate signals on a private bus and/or group, and also apply effect synths. A nice feature is that resources allocated at the beginning of the pattern are removed at the end. This is especially useful for effects, where you don't want to have a lot of effect synths left over taking up CPU but not processing audio.
 
-definitionList::
-## code::Pbus(pattern, dur, fadeTime, numChannels, rate):: || Creates a private group and bus for the synths played by the pattern. The group and bus are released when the pattern stops. Useful for isolating signals from different patterns.
+
+
+
+
+
+
+
+section:: Server control methods
+
+
+
+
+A handful of filter patterns can isolate signals on a private bus and/or group, and also apply effect synths.
+A nice feature is that resources allocated at the beginning of the pattern are removed at the end.
+This is especially useful for effects, where you don't want to have a lot of effect synths left over taking up CPU but not processing audio.
+
+definitionlist::
+## code::Pbus(pattern, dur, fadeTime, numChannels, rate):: || Creates a private group and bus for the synths played by the pattern.
+The group and bus are released when the pattern stops.
+Useful for isolating signals from different patterns.
 ## code::Pgroup(pattern):: || Creates a private group (without private bus) for the pattern's synths.
 
 ## code::Pfx(pattern, fxname, pairs):: ||
-## code::Pfxb(pattern, fxname, pairs):: || Both of these patterns play an effect synth at the tail of the target group. This synth should read from the bus identified by the code::out:: argument, and write the processed signal onto the same bus using either link::Classes/ReplaceOut:: or link::Classes/XOut::. Pfx uses whatever bus and group are specified in the incoming event. Pfxb allocates a separate bus and group for the effect and the pattern.
+## code::Pfxb(pattern, fxname, pairs):: || Both of these patterns play an effect synth at the tail of the target group.
+This synth should read from the bus identified by the code::out:: argument, and write the processed signal onto the same bus using either link::Classes/ReplaceOut:: or link::Classes/XOut::.
+Pfx uses whatever bus and group are specified in the incoming event.
+Pfxb allocates a separate bus and group for the effect and the pattern.
 
-There are a lot of permutations when it comes to signal routing and effect management, too many to discuss in depth here. Some of the main scenarios are:
+There are a lot of permutations when it comes to signal routing and effect management, too many to discuss in depth here.
+Some of the main scenarios are:
 
 list::
-## Separate effects that should apply individually: the patterns and effects should be isolated on separate buses. link::Classes/Pfxb:: handles this isolation automatically: two patterns like code::Pfxb(Pbind(...), \fxname, \effectargName, value, \name, value...):: will play on separate buses and their signals will not interfere with each other.
+## Separate effects that should apply individually:
+the patterns and effects should be isolated on separate buses.
+link::Classes/Pfxb:: handles this isolation automatically: two patterns like code::Pfxb(Pbind(...), \fxname, \effectargName, value, \name, value...):: will play on separate buses and their signals will not interfere with each other.
 
-## Effects that should apply as a chain: both effects should use the same bus, and the effect patterns should be nested to string them together. The outermost effect should use Pfxb to allocate a separate group and bus for this signal chain; inner ones should use link::Classes/Pfx:: to piggyback on the existing bus.
+## Effects that should apply as a chain:
+both effects should use the same bus, and the effect patterns should be nested to string them together.
+The outermost effect should use Pfxb to allocate a separate group and bus for this signal chain; inner ones should use link::Classes/Pfx:: to piggyback on the existing bus.
 ::
 
 code::
@@ -36,11 +60,16 @@ Pfxb(
 
 More complex arrangements are possible through nesting, and parallelizing Pfx or Pfxb patterns using link::Classes/Ppar:: and its cousins.
 
-This example uses Pfxb to isolate a pair of separately-sounding patterns on different buses, and to pass the two signals' streams through separate volume controls. The effect synth, for volume, is kept deliberately simple for the example, but of course it can do any kind of signal processing you like.
+This example uses Pfxb to isolate a pair of separately-sounding patterns on different buses, and to pass the two signals' streams through separate volume controls.
+The effect synth, for volume, is kept deliberately simple for the example, but of course it can do any kind of signal processing you like.
 
-It might seem odd at first to use a gated envelope for an effect, but this is important to keep the signal's integrity. If the gate is not there, the effect synth will be n_free'd (brutally cut off), probably before the nodes played by the source pattern have finished. In this case it would produce a sudden, brief jump in volume at the end. The gate, combined with the one-second release in the envelope, keeps the effect synth around long enough to allow its source synths to become silent first.
+It might seem odd at first to use a gated envelope for an effect, but this is important to keep the signal's integrity. If the gate is not there, the effect synth will be n_free'd (brutally cut off), probably before the nodes played by the source pattern have finished.
+In this case it would produce a sudden, brief jump in volume at the end.
+The gate, combined with the one-second release in the envelope, keeps the effect synth around long enough to allow its source synths to become silent first.
 
-Remember that streams made from patterns don't expose their internals. That means you can't adjust the parameters of an effect synth directly, because you have no way to find out what its node ID is. The example addresses this problem by allocating a couple of control buses for the amplitude values, and mapping the volume synths to those control buses. Then the little GUI needs only to update the control bus values.
+Remember that streams made from patterns don't expose their internals. That means you can't adjust the parameters of an effect synth directly, because you have no way to find out what its node ID is.
+The example addresses this problem by allocating a couple of control buses for the amplitude values, and mapping the volume synths to those control buses.
+Then the little GUI needs only to update the control bus values.
 
 code::
 // Demonstrates how Pfxb isolates signals on different buses
@@ -81,18 +110,33 @@ p = Ppar([
 
 p.stop;
 ::
+
 ::
 
-strong::Third-party extension alert:: : Pfx and its cousins work on the philosophy that a signal routing arrangement should be created as needed (when its subpattern is playing) and removed immediately when the pattern is finished. Another approach is to treat signal routing and effects as a persistent infrastructure, created and destroyed under the user's control (not the pattern's). JITLib's proxy system offers some support for this. MixerChannels (in the ddwMixerChannel quark) are a more explicit way. Any pattern can be played on a MixerChannel: code::aMixer.play(aPattern)::.
+strong::Third-party extension alert:: : Pfx and its cousins work on the philosophy that a signal routing arrangement should be created as needed (when its subpattern is playing) and removed immediately when the pattern is finished.
+Another approach is to treat signal routing and effects as a persistent infrastructure, created and destroyed under the user's control (not the pattern's). JITLib's proxy system offers some support for this.
+MixerChannels (in the ddwMixerChannel quark) are a more explicit way.
+Any pattern can be played on a MixerChannel:
+code::aMixer.play(aPattern)::.
 
 
-subsection::Pproto: Allocating other resources for the duration of a pattern
+
+
+
+
+subsection:: Pproto:
+
+
+Allocating other resources for the duration of a pattern
 
 It's also possible to load sound file or wavetable buffers or play synths as part of the preparation to run a Pbind-style pattern. When the Pbind stops, those resources would be removed automatically from the server.
 
-The mechanism to do this is a bit unlike most of the other protocols to use the server in SuperCollider. To create the resources, Pproto takes a function in which one or more Event objects contain the instructions to create them. These events should use specific event types, described in Pproto's help file. The pattern is able to clean up the resources because each event has an associated cleanup action (see the event types with cleanup class). Thus, Pproto needs only to remember the events representing the resources, and execute their cleanup actions at the end.
+The mechanism to do this is a bit unlike most of the other protocols to use the server in SuperCollider.
+To create the resources, Pproto takes a function in which one or more Event objects contain the instructions to create them.
+These events should use specific event types, described in Pproto's help file. The pattern is able to clean up the resources because each event has an associated cleanup action (see the event types with cleanup class). Thus, Pproto needs only to remember the events representing the resources, and execute their cleanup actions at the end.
 
-The Pproto help file has several complex examples that are worth reading. Here is just one simple case that loads the standard a11wlk01.wav sound file and plays fragments from it.
+The Pproto help file has several complex examples that are worth reading.
+Here is just one simple case that loads the standard a11wlk01.wav sound file and plays fragments from it.
 
 code::
 (

@@ -1,65 +1,99 @@
-class:: PitchShift
-summary:: Time domain pitch shifter.
-categories::  UGens>Filters>Pitch
+title:: PitchShift
+categories:: UGens>Filters>Pitch
+summary:: Time domain pitch shifter
 
 
-Description::
 
-A time domain granular pitch shifter. Grains have a triangular amplitude
-envelope and an overlap of 4:1, and use linear interpolation of the buffer.
+
+
+
+
+
+
+
+description::
+
+
+
+
+A time domain granular pitch shifter.
+Grains have a triangular amplitude envelope and an overlap of 4:1, and use linear interpolation of the buffer.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar
 
-argument::in
+
+
+method:: ar
+
+
+argument:: in
 
 The input signal.
 
 
-argument::windowSize
+argument:: windowSize
 
-The size of the grain window in seconds. This value cannot be
-modulated. The minimum value is 3 sample periods. If you supply a smaller
+The size of the grain window in seconds.
+This value cannot be
+modulated. The minimum value is 3 sample periods.
+If you supply a smaller
 value, it will be rounded up to the minimum.
 
 
-argument::pitchRatio
+argument:: pitchRatio
 
-The ratio of the pitch shift. Must be from 0 to 4.
+The ratio of the pitch shift.
+Must be from teletype::0:: to 4.
 
 
-argument::pitchDispersion
+argument:: pitchDispersion
 
 The maximum random deviation of the pitch from the
 
 code::pitchRatio:: .
 
 
-argument::timeDispersion
+argument:: timeDispersion
 
-A random offset from zero to code::timeDispersion:: seconds is added to the
-delay of each grain. Use of some dispersion can alleviate a hard
-comb filter effect due to uniform grain placement. It can also be
-an effect in itself.
+A random offset from teletype::zero:: to code::timeDispersion:: seconds is added to the delay of each grain. Use of some dispersion can alleviate a hard comb filter effect due to uniform grain placement.
+It can also be an effect in itself.
 code::timeDispersion:: can be no larger than code::windowSize::.
 
 
-argument::mul
+argument:: mul
 
 Output will be multiplied by this value.
 
 
-argument::add
+argument:: add
 
 This value will be added to the output.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 (
 play({
 	z = Blip.ar(800, 6, 0.1);
@@ -80,7 +114,8 @@ play({
 
 (
 // use PitchShift to granulate input - USE HEADPHONES to prevent feedback.
-// upper left corner is normal playback. x = pitch dispersion, y = time dispersion
+// upper left corner is normal playback.
+x = pitch dispersion, y = time dispersion
 var grainSize;
 grainSize = 0.5;
 play({
@@ -92,5 +127,4 @@ play({
 		MouseY.kr(0, grainSize)	// time dispersion
 	)
 }))
-
 ::

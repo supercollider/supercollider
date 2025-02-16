@@ -1,49 +1,81 @@
-class:: DegreeToKey
-summary:: Convert signal to modal pitch.
-categories::  UGens>Conversion
+title:: DegreeToKey
+categories:: UGens>Conversion
+summary:: Convert signal to modal pitch
 
 
-Description::
 
-The input signal value is truncated to an integer value and used as an
-index into an octave repeating table of note values. Indices wrap around
-the table and shift octaves as they do.
+
+
+
+
+
+
+
+description::
+
+
+
+
+The input signal value is truncated to an integer value and used as an index into an octave repeating table of note values.
+Indices wrap around the table and shift octaves as they do.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
 
-argument::bufnum
+
+
+method:: ar, kr
+
+
+argument:: bufnum
 
 Index of the buffer which contains the steps for each scale
 degree.
 
 
-argument::in
+argument:: in
 
 The input signal.
 
 
-argument::octave
+argument:: octave
 
 The number of steps per octave in the scale.
 
 
-argument::mul
+argument:: mul
 
 Output will be multiplied by this value.
 
 
-argument::add
+argument:: add
 
 This value will be added to the output.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 (
 // modal space
 // mouse x controls discrete pitch in dorian mode
@@ -79,5 +111,4 @@ play({
 	CombN.ar(mix, 0.31, 0.31, 2, 1, mix)
 })
 )
-
 ::

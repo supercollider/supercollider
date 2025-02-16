@@ -1,24 +1,59 @@
-class:: FreeSelf
-summary:: When triggered, free enclosing synth.
+title:: FreeSelf
+categories:: UGens>Synth control
+summary:: When triggered, free enclosing synth
 related:: Classes/PauseSelf, Classes/Free
-categories::  UGens>Synth control
 
 
-Description::
-Free enclosing synth when input signal crosses from non-positive to
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+Free enclosing synth when input signal crosses from non-teletype::positive:: to
 positive.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::kr
 
-argument::in
+
+
+method:: kr
+
+
+argument:: in
 
 The input signal.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (

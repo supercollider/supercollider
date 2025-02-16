@@ -1,32 +1,72 @@
-class:: Timer
-summary:: Returns time since last triggered.
-categories::  UGens>Triggers
+title:: Timer
+categories:: UGens>Triggers
+summary:: Returns time since last triggered
 
-Description::
-When triggered, Timer measures the time (in seconds) elapsed since the previous trigger, and outputs this time value as a constant. Its output will not change until the next trigger. The initial value is 0.
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+When triggered, Timer measures the time (in seconds) elapsed since the previous trigger, and outputs this time value as a constant.
+Its output will not change until the next trigger.
+The initial value is 0.
 
 If you need the time since the last trigger, where the time is continually updated, see link::Classes/Sweep::.
 
+
+
+
+
+
+
+
+
+
 classmethods::
+
+
+
+
 private:: categories
 
-method::ar, kr
 
-argument::trig
-
-A trigger occurs when trig signal crosses from non-positive to positive.
+method:: ar, kr
 
 
-Examples::
+argument:: trig
+
+A trigger occurs when trig signal crosses from non-teletype::positive:: to teletype::positive::.
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
-// using timer to modulate sine frequency: the slower the trigger is the higher the frequency
+// using timer to modulate sine frequency:
+the slower the trigger is the higher the frequency
 (
 { var trig;
 	trig = Impulse.kr(MouseX.kr(0.5, 20, 1));
 	SinOsc.ar(Timer.kr(trig) * 500 + 500, 0, 0.2)
 }.play;
 )
-
 ::

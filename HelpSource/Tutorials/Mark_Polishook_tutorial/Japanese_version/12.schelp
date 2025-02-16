@@ -1,9 +1,21 @@
 title:: 12
-summary:: Mark Polishook tutorial (JP)
 categories:: Tutorials>Mark_Polishook_tutorial>Japanese_version
+summary:: Mark Polishook tutorial (JP)
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
-section::複数の部分からなるシンセシス
+
+
+
+
+
+
+
+
+
+section:: 複数の部分からなるシンセシス
+
+
+
 
 シンセシスのプロセスを部分に分割することは、モジュラー・デザインとコンポーネントの再利用を促進します。このことが意味するのは、小さく、うまく設計されたタスクを成し遂げる様にSynthDefを作るということには、しばしば〜があるということです。そのようにすることで、複雑なシンセシスのネットワークを構築するためにSynthDefを組み合わせたり、様々な方法で組み替えたりすることが可能になるのです。
 
@@ -45,7 +57,19 @@ Synth("aMonoSamplePlayer", [\bus, 1, \bufNum, b, \rateScale, 1.01]);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-section::どのようにして情報を取得するか
+
+
+
+
+
+
+
+
+
+section:: どのようにして情報を取得するか
+
+
+
 
 前の例ではBufRateScaleとBufDurというUGenを使って、PlayBufがサウンド・ファイルをプレイするレートと、PlayBufに適用されるエンベロープの長さをコントロールしています。
 
@@ -75,7 +99,19 @@ BufInfoUGenBase[  BufChannels  BufSampleRate  BufRateScale  BufFrames  Buf
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-section::実行の順序
+
+
+
+
+
+
+
+
+
+section:: 実行の順序
+
+
+
 
 もう一度、次の例はどのようにしてシンセをソースとエフェクトのグループに配置するのかを示します。２つのグループは２つのシンセが適切な順序で実行されることを保証します。
 
@@ -110,7 +146,19 @@ Synth.head(~source, "aMonoSamplePlayer", [\bus, 0, \bufNum, b]);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-section::サンプルをループする
+
+
+
+
+
+
+
+
+
+section:: サンプルをループする
+
+
+
 
 サウンド・ファイルを何度も何度も繰り返し再生するには、PlayBufのloopアーギュメント（コントロール）を使います。
 

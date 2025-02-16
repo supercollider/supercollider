@@ -1,13 +1,31 @@
-class:: TdefGui
-summary:: a line of editing controls for a Tdef, and optionally its envir
+title:: TdefGui
 categories:: JITLib>GUI, Live Coding
+summary:: A line of editing controls for a Tdef, and optionally its envir
 related:: Classes/TdefAllGui, Classes/PdefGui, Classes/PdefAllGui, Classes/EnvirGui
+
+
+
+
+
+
+
+
+
 
 description::
 
+
+
+
 A gui showing the link::Classes/Tdef::'s name, playing state, source state, and envir state. Optionally, its envir can also be edited.
 
-subsection::First example
+
+
+
+
+
+subsection:: First example
+
 
 code::
 g = TdefGui();			// make a TdefGui
@@ -26,122 +44,252 @@ TdefGui(Tdef(\a), 3, w);
 )
 ::
 
-subsection::Details on the GUI elements
 
-definitionList::
+
+
+
+
+subsection:: Detailon the on the GUI elements
+
+
+definitionlist::
 ## name button
 || when selected, typing the delete key will delete its Tdef.
 ## play/stop button
 || indicates whether the tdef is playing:
+
 table::
 ## " >" || if stopped,
 ## " _" || if playing and active,
 ## " |" || if it is playing, but the stream has ended.
 ::
+
 ## pause/resume button
 || only visible if one can pause or resume the Tdef, i.e. while it is playing.
+
 table::
 ## "paus" || shown when you can pause it,
 ## "rsum" || shown when you can resume it.
 ::
+
 ## src button
 || opens a document to edit the source (function) of the Tdef.
+
 table::
 ## green || a source exists,
 ## white || the source is nil.
 ::
+
 ## env button
 || strong::click:: opens a document to edit the envir of the Tdef, strong::option-click:: opens a new TdefGui with a big enough link::Classes/EnvirGui:: for the Tdef's envir.
+
 table::
 ## green || the Tdef has an envir,
 ## white || the envir is nil.
 ::
+
 ::
 
-ClassMethods::
 
-subsection::Creation Methods
 
-method::new
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+subsection:: Creation Methods
+
+
+method:: new
+
+
 Create a new link::Classes/JITGui:: that will be watching an object and display its state.
 
-argument::object
-the object to watch
 
-argument::numItems
-the number of display items to use, e.g. how many fields for text, or how many EZSliders for single-number parameters.
+argument:: object
 
-argument::parent
-a parent view on which to display. If nil, a new window is created; strong::parent:: can also be an existing window or a composite view.
-
-argument::bounds
-a desired size and position where to display a JITGui. can be nil, a link::Classes/Point::, or a link::Classes/Rect::. JITGuis know their minimum size (strong::minSize::), and if bounds is nil, minSize is used. if bounds is a point or rect, it will be set to at least minSize. With a rect one can also supply a position where to display. If a point, shown size is the maximum of bounds and minSize
-
-argument::makeSkip
-A flag whether to make a skipjack. If one uses a TdefGui as part of a larger gui ensemble, one may want to call checkUpdate on all of them together, not with separate skipJacks.
-
-argument::options
-a list of additional information, e.g. flags about optional buttons. (this is used is some subclasses)
-
-InstanceMethods::
-
-method::object
-a link::Classes/Tdef::, or nil
-
-method::numItems
-the number of items in the envirGui
-
-method::parent
-the parent view
-
-method::bounds
-the bounds of the link::#-zone::
-
-method::zone
-the link::Classes/CompositeView:: within which the TdfGui is shown
+The object to watch
 
 
-method::nameBut, playBut, pauseBut, srcBut, envBut
-the buttons
+argument:: numItems
 
-method::envirGui
-the gui for the Tdef's envir - if numItems > 0.
+The number of display items to use, e.g. how many fields for text, or how many EZSliders for single-number parameters.
 
-method::object
-put an object in the gui.
 
-method::moveTo
+argument:: parent
+
+A parent view on which to display.
+If teletype::nil::, a new window is created; strong::parent:: can also be an existing window or a composite view.
+
+
+argument:: bounds
+
+A desired size and position where to display a JITGui.
+can be nil, a link::Classes/Point::, or a link::Classes/Rect::.
+JITGuis know their minimum size (strong::minSize::), and if bounds is nil, minSize is used. if bounds is a point or rect, it will be set to at least minSize.
+With a rect one can also supply a position where to display.
+If a point, shown size is the maximum of bounds and minSize
+
+
+argument:: makeSkip
+
+A flag whether to make a skipjack.
+If one uses a TdefGui as part of a larger gui ensemble, one may want to call checkUpdate on all of them together, not with separate skipJacks.
+
+
+argument:: options
+
+A list of additional information, e.g. flags about optional buttons. (this is used is some subclasses)
+
+
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+method:: object
+
+
+A link::Classes/Tdef::, or nil
+
+
+
+
+method:: numItems
+
+
+The number of items in the envirGui
+
+
+
+
+method:: parent
+
+
+The parent view
+
+
+
+
+method:: bounds
+
+
+The bounds of the link::#-zone::
+
+
+
+
+method:: zone
+
+
+The link::Classes/CompositeView:: within which the TdfGui is shown
+
+
+
+
+method:: nameBut, playBut, pauseBut, srcBut, envBut
+
+
+The buttons
+
+
+
+
+method:: envirGui
+
+
+The gui for the Tdef's envir - if numItems > 0.
+
+
+
+
+method:: object
+
+
+Put an object in the gui.
+
+
+
+
+method:: moveTo
+
+
 (if the jitGui is in its own window)
 
 move it to some specific location.
 
-method::clear
+
+
+
+method:: clear
+
+
 (if the jitGui is in its own window)
 
-set the TdefGui's object to nil
+set the TdefGui's object to teletype::nil::
 
-method::close
+
+
+
+method:: close
+
+
 (if the jitGui is in its own window)
 
 and close its window.
 
-subsection::Internal methods
 
-method::srcString
-a compileString that recreates the Tdef.
+
+
+
+
+subsection:: Internal methods
+
+
+method:: srcString
+
+
+A compileString that recreates the Tdef.
 
 code::
 // assume g from above is still there
 g.srcString;
 ::
 
-method::editString
-a compileString that recreates the Tdef's envir at edKey.
 
-method::editStrings
-a compileString that recreates the Tdef's envir at edKeys.
 
-argument::edKeys
+
+method:: editString
+
+
+A compileString that recreates the Tdef's envir at edKey.
+
+
+
+
+method:: editStrings
+
+
+A compileString that recreates the Tdef's envir at edKeys.
+
+
+argument:: edKeys
+
 Default value is nil.
 
 code::
@@ -153,24 +301,52 @@ g.editString(\foo);
 g.editStrings;
 ::
 
-method::getUsedKeys
-the keys in use in the envir
+
+
+
+method:: getUsedKeys
+
+
+The keys in use in the envir
 
 code::
 g.getUsedKeys;
 ::
 
-method::openDoc
-open a document with some strings at some location. used with src button, env button.
+
+
+
+method:: openDoc
+
+
+Open a document with some strings at some location.
+used with src button, env button.
 
 code::
 g.openDoc(g.editStrings);
 ::
 
-method::makeEnvirGui
-make an envirGui within zone.
 
-Examples::
+
+
+method:: makeEnvirGui
+
+
+Make an envirGui within zone.
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (

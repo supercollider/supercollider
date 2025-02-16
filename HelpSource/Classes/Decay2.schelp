@@ -1,17 +1,29 @@
-class:: Decay2
+title:: Decay2
+categories:: UGens>Filters>Linear, UGens>Envelopes
 summary:: Exponential decay
 related:: Classes/Decay, Classes/Integrator
-categories::  UGens>Filters>Linear, UGens>Envelopes
 
 
-Description::
+
+
+
+
+
+
+
+
+description::
+
+
+
+
 An integrating filter like link::Classes/Decay::, but both the onset time and decay time can be specified.
 
 teletype::
 Decay2.ar(in, attackTime, decayTime)
 ::
 
-is equivalent to:
+Is equivalent to:
 
 teletype::
 Decay.ar(in, decayTime) - Decay.ar(in, attackTime)
@@ -20,27 +32,59 @@ Decay.ar(in, decayTime) - Decay.ar(in, attackTime)
 For precise control over the attack, decay, and level of code::Decay2:: see link::#Onset control and normalizing the envelope of Decay2:: and link::#Calculating rise time and maximum rise time of Decay2:: below.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::ar, kr
 
-argument::in
+
+
+method:: ar, kr
+
+
+argument:: in
+
 The input signal.
 
-argument::attackTime
+
+argument:: attackTime
+
 60 dB attack time in seconds.
 
-argument::decayTime
+
+argument:: decayTime
+
 60 dB decay time in seconds.
 
-argument::mul
+
+argument:: mul
+
 The output will be multiplied by this value.
 
-argument::add
+
+argument:: add
+
 This value will be added to the output.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 // Used as an envelope
@@ -65,7 +109,12 @@ plot({
 ::
 
 
-Subsection:: Onset control and normalizing the envelope of Decay2
+
+
+
+
+subsection:: Onset control and normalizing the envelope of Decay2
+
 
 It can be useful to parameterize code::Decay2:: so that its peak value is code::1.0::, and to be able to control when the peak value is reached.
 The following example normalizes the envelope of code::Decay2:: and provides a parameter, code::riseScale::, to shift the onset earlier or later.
@@ -134,9 +183,15 @@ plot(
 ::
 
 
-Subsection:: Calculating rise time and maximum rise time of Decay2
 
-The longest possible rise time is constrained to ~15% of the strong::decayTime::. This maximum rise time, as well as exact rise time for a given code::riseScale:: factor, can be calculated as follows:
+
+
+
+subsection:: Calculating rise time and maximum rise time of Decay2
+
+
+The longest possible rise time is constrained to ~15% of the strong::decayTime::.
+This maximum rise time, as well as exact rise time for a given code::riseScale:: factor, can be calculated as follows:
 
 code::
 (

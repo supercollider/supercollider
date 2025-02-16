@@ -1,38 +1,81 @@
-class:: LFGauss
-summary:: Gaussian function oscillator
+title:: LFGauss
 categories:: UGens>Generators>Deterministic
+summary:: Gaussian function oscillator
+
+
+
+
+
+
+
+
+
 
 description::
+
+
+
+
 A non-band-limited gaussian function oscillator.
 
 teletype::LFGauss:: implements the formula:
+
 teletype::
 f(x) = exp((x - iphase)^2 / (-2.0 * width^2))
 ::
-where teletype::x:: in this context is the phase, which cycles in a range teletype::-1:: to teletype::1:: over the period strong::duration::.
+
+Where teletype::x:: in this context is the phase, which cycles in a range teletype::-1:: to teletype::1:: over the period strong::duration::.
 The Gaussian function in this form is a bell-shaped link::https://mathworld.wolfram.com/ApodizationFunction.html##apodization function::, making it convenient for use as an envelope.
 
 Its minimum value occurs when the phase teletype::x = -1:: and teletype::x = 1::, and its maximum occurs when teletype::x = 0::.
 
+
+
+
+
+
+
+
+
+
 classmethods::
+
+
+
+
 method:: ar, kr
 
+
 argument:: duration
+
 Duration of one cycle, in seconds. (Hint: strong::duration:: teletype::= 1/frequency::). Default: teletype::1::
+
+
 argument:: width
+
 The width of the bell curve (its standard deviation).
 
 Practically speaking, a strong::width:: teletype::<= 0.25:: will give minimum values near, but not equal to, zero.
 
 The bell curve becomes broader with increasing strong::width::. Beyond roughly teletype::>= 0.25:: the function has the appearance of being truncated, or, when strong::loop:: teletype::= 1::, the cycles begin to "overlap".
 Default: teletype::0.1::
+
+
 argument:: iphase
+
 Initial offset phase offset in the range teletype::[-1, 1]::. Default: 0
+
+
 argument:: loop
+
 If strong::loop:: teletype::> 0::, the function repeats. Otherwise, it calls strong::doneAction:: after one cycle. Default: 1
+
+
 argument:: doneAction
+
 A teletype::doneAction:: value, which is evaluated at the end of a cycle (if strong::loop:: teletype::= 0::). teletype::2:: frees the synth. Default: teletype::0:: (continues running).
 See link::Classes/Done#Actions:: for more options.
+
 
 discussion::
 By default, the maximum value of teletype::LFGauss:: is teletype::1::.
@@ -42,15 +85,33 @@ The function can be mapped to a specified range with link::#-range::, which can 
 
 See the examples below for understanding and manipulating the link::#Min and max values, curve width::.
 
+
+
+
+
+
+
+
+
+
 instancemethods::
 
-method::minval
 
-Returns the function's lowest value for the given strong::width:: parameter, which is teletype::exp(1.0 / (-2.0 * width^2))::.
 
-method::range
 
-Scales the output to the given range. This can be convenient when using teletype::LFGauss:: as an envelope (see link::#examples:: below).
+method:: minval
+
+
+Return the function's lowest value for the given strong::width:: parameter, which is teletype::exp(1.0 / (-2.0 * width^2))::.
+
+
+
+
+method:: range
+
+
+Scale the output to the given range.
+This can be convenient when using teletype::LFGauss:: as an envelope (see link::#examples:: below).
 
 code::
 // high width, curve minimum around is 0.25
@@ -59,9 +120,22 @@ code::
 { LFGauss.ar(0.01, 0.6).range(0, 2) }.plot;
 ::
 
+
+
+
+
+
+
+
+
+
 examples::
 
+
+
+
 subsection:: Example plots
+
 
 code::
 s.boot;
@@ -79,7 +153,13 @@ s.boot;
 { LFGauss.ar(0.065, 0.12, 0, loop: 1) }.plot(0.3);
 ::
 
+
+
+
+
+
 subsection:: Min and max values, curve width
+
 
 link::#-minval:: for a given strong::width:: (assuming strong::iphase:: teletype::= 0::) is:
 
@@ -94,14 +174,14 @@ strong::width:: at half of the maximum value(teletype::0.5::) is:
 teletype::(2 * sqrt(2 * log(2)) * width) = ca. 2.355 * width::
 
 code::
-// minval for a width of 0.1:
+// minval for a width of teletype::0::.1:
 (exp(1 / (-2.0 * squared(0.1)))) // 2e-22
 
 // maximum width for a beginning at -60dB:
 // we want the beginning small enough to avoid clicks
 sqrt(-1 / (2 * log(-60.dbamp))) // 0.269
 
-// minval for width of 0.25
+// minval for width of teletype::0::.25
 (exp(1 / (-2.0 * squared(0.25)))).ampdb // -70dB
 
 // maximum is always 1:
@@ -129,7 +209,14 @@ sqrt(-1 / (2 * log(-60.dbamp))) // 0.269
 );
 ::
 
+
+
+
+
+
 subsection:: Sound examples
+
+
 code::
 // modulating duration
 { LFGauss.ar(XLine.kr(0.1, 0.001, 10), 0.03) * 0.2 }.play;
@@ -174,13 +261,19 @@ code::
 )
 ::
 
+
+
+
+
+
 subsection:: Gabor Grain
 
+
 note::
-The gaussian function doesn't start with teletype::0:: – it asymptotically approaches it at teletype::-inf:: and teletype::inf::. When using it as an envelope, it has to start at some smaller value, and it has an offset for this value. You can remove this offset by explicitly setting the link::#-range::, e.g. to teletype::[0, 1]:: (this is the default).
+The gaussian function doesn't start with teletype::0:: – it asymptotically approaches it at teletype::-inf:: and teletype::inf::.
+When using it as an envelope, it has to start at some smaller value, and it has an offset for this value.
+You can remove this offset by explicitly setting the link::#-range::, e.g. to teletype::[0, 1]:: (this is the default).
 ::
-
-
 
 code::
 // first, visualize LFGauss as a granular envelope on a sine oscillator

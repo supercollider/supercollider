@@ -1,15 +1,29 @@
 title:: Pattern Guide Reference 01: Pattern Internals
+categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Details of pattern implementation, with guidance on writing new pattern classes
 related:: Tutorials/A-Practical-Guide/PG_Cookbook08_Swing
-categories:: Streams-Patterns-Events>A-Practical-Guide
 
-section::Inner workings of patterns
 
-subsection::Patterns as streams
+
+
+
+
+
+
+
+
+section:: Inner workings of patterns
+
+
+
+
+subsection:: Patterns as streams
+
 
 As noted, patterns by themselves don't do much. They have to be turned into streams first; then, values are requested from a stream, not from the pattern.
 
-For most patterns, the stream is an instance of link::Classes/Routine::. Routines (formally known in computer science as "coroutines") are important because they can yield control back to the caller but still remember exactly where they were, so they can resume in the middle on the next call without having to start over. A few exceptional patterns use FuncStream, which is simply a wrapper around a function that allows a function to act like a stream by responding to code::next:: and other Stream methods.
+For most patterns, the stream is an instance of link::Classes/Routine::. Routines (formally known in computer science as "coroutines") are important because they can yield control back to the caller but still remember exactly where they were, so they can resume in the middle on the next call without having to start over.
+A few exceptional patterns use FuncStream, which is simply a wrapper around a function that allows a function to act like a stream by responding to code::next:: and other Stream methods.
 
 Every pattern class must respond to code::asStream::; however, most patterns do not directly implement code::asStream::. Instead, they use the generic code::asStream:: implementation from link::Classes/Pattern::.
 
@@ -17,7 +31,8 @@ code::
 	asStream { ^Routine({ arg inval; this.embedInStream(inval) }) }
 ::
 
-This line creates a Routine whose job is simply to embed the pattern into its stream. "Embedding" means for the pattern to do its assigned work, and return control to the parent level when it's finished. When a simple pattern finishes, its parent level is the Routine itself. After code::embedInStream:: returns, there is nothing else for the Routine to do, so that stream is over; it can only yield nil thereafter.
+This line creates a Routine whose job is simply to embed the pattern into its stream. "Embedding" means for the pattern to do its assigned work, and return control to the parent level when it's finished. When a simple pattern finishes, its parent level is the Routine itself.
+After code::embedInStream:: returns, there is nothing else for the Routine to do, so that stream is over; it can only yield nil thereafter.
 
 code::
 p = Pseries(0, 1, 3).asStream;	// this will yield exactly 3 values
@@ -31,7 +46,8 @@ code::
 	embedInStream { ^this.yield; }
 ::
 
-But if the item is a pattern itself, control enters into the subpattern and stays there until the subpattern ends. Then control goes back to the list pattern to get the next item, which is embedded and so on.
+But if the item is a pattern itself, control enters into the subpattern and stays there until the subpattern ends.
+Then control goes back to the list pattern to get the next item, which is embedded and so on.
 
 code::
 p = Pseq([Pseries(0, 1, 3), Pgeom(10, 2, 3)], 1).asStream;
@@ -90,17 +106,28 @@ ListPattern : Pattern {
 }
 ::
 
-Because of this inheritance, Prand simply expresses its behavior as a code::do:: loop, choosing code::repeats:: items randomly from the list and embedding them into the stream. When the loop is finished, the method returns the input value (see below).
+Because of this inheritance, Prand simply expresses its behavior as a code::do:: loop, choosing code::repeats:: items randomly from the list and embedding them into the stream.
+When the loop is finished, the method returns the input value (see below).
 
-subsection::Streams' input values (inval, inevent)
+
+
+
+
+
+subsection:: Streams' input values (inval, inevent)
+
 
 Before discussing input values in patterns, let's take a step back and discuss how it works for Routines.
 
-link::Classes/Routine::'s code::next:: method takes one argument, which is passed into the stream (Routine). The catch is that the routine doesn't start over from the beginning -- if it did, it would lose its unique advantage of remembering its position and resuming on demand. So it isn't sufficient to receive the argument using the routine function's argument variable.
+link::Classes/Routine::'s code::next:: method takes one argument, which is passed into the stream (Routine).
+The catch is that the routine doesn't start over from the beginning -- if it did, it would lose its unique advantage of remembering its position and resuming on demand.
+So it isn't sufficient to receive the argument using the routine function's argument variable.
 
 In reality, when a Routine yields a value, its execution is interrupted after calling code::yield::, but before code::yield:: returns. Then, when the Routine is asked for its next value, execution resumes by providing a return value from the code::yield:: method. (This behavior isn't visible in the SuperCollider code in the class library; code::yield:: is a primitive in the C++ backend, which is how it's able to do something that is otherwise impossible in the language.)
 
-For a quick example, consider a routine that is supposed to multiply the input value by two. First, the wrong way, assuming that everything is done by the function argument code::inval::. In reality, the first code::inval:: to come in is code::1::. Since nothing in the routine changes the value of code::inval::, the routine yields the same value each time.
+For a quick example, consider a routine that is supposed to multiply the input value by two.
+First, the wrong way, assuming that everything is done by the function argument code::inval::. In reality, the first code::inval:: to come in is code::1::.
+Since nothing in the routine changes the value of code::inval::, the routine yields the same value each time.
 
 code::
 r = Routine({ |inval|
@@ -133,24 +160,39 @@ list::
 ## When the pattern exits, it must return the last input value, so that the parent pattern will get the input value as the result of its code::embedInStream:: call: code::^inval::.
 ::
 
-By following these rules, code::embedInStream:: becomes a near twin of code::yield::. Both do essentially the same thing: spit values out to the user, and come back with the next input value. The only difference is that yield can return only one object to the code::next:: caller, while code::embedInStream:: can yield several in succession.
+By following these rules, code::embedInStream:: becomes a near twin of code::yield::.
+Both do essentially the same thing:
+spit values out to the user, and come back with the next input value.
+The only difference is that yield can return only one object to the code::next:: caller, while code::embedInStream:: can yield several in succession.
 
 Take a moment to go back and look at how Prand's code::embedInStream:: method does it.
 
-subsection::embedInStream vs. asStream + next
 
-If a pattern class needs to use values from another pattern, should it evaluate that pattern using code::embedInStream::, or should it make a separate stream ( code::asStream:: ) and pull values from that stream using code::next::? Both approaches are used in the class library.
 
-code::embedInStream:: turns control over to the subpattern completely. The outer pattern is effectively suspended until the subpattern gives control back. This is the intended behavior of most list patterns, for example. There is no opportunity for the parent to do anything to the value yielded back to the caller.
 
-This pattern demonstrates what it means to give control over to the subpattern. The first pattern in the link::Classes/Pseq:: list is infinite; consequently, the second subpattern will never execute because the infinite pattern never gives control back to Pseq.
+
+
+subsection:: EmbedInStream vs. asStream + next
+
+
+If a pattern class needs to use values from another pattern, should it evaluate that pattern using code::embedInStream::, or should it make a separate stream ( code::asStream:: ) and pull values from that stream using code::next::?
+Both approaches are used in the class library.
+
+code::embedInStream:: turns control over to the subpattern completely.
+The outer pattern is effectively suspended until the subpattern gives control back.
+This is the intended behavior of most list patterns, for example. There is no opportunity for the parent to do anything to the value yielded back to the caller.
+
+This pattern demonstrates what it means to give control over to the subpattern.
+The first pattern in the link::Classes/Pseq:: list is infinite; consequently, the second subpattern will never execute because the infinite pattern never gives control back to Pseq.
 
 code::
 p = Pseq([Pwhite(0, 9, inf), Pwhite(100, 109, inf)], 1).asStream;
 p.nextN(20);	// no matter how long you do this, it'll never be > 9!
 ::
 
-code::asStream:: should be used if the parent pattern needs to perform some other operation on the yield value before yielding, or if it needs to keep track of multiple child streams at the same time. For instance, link::Classes/Pdiff:: takes the difference between the current value and last value. Since the subtraction comes between evaluating the child pattern and yielding the difference, the child pattern must be used as a stream.
+code::asStream:: should be used if the parent pattern needs to perform some other operation on the yield value before yielding, or if it needs to keep track of multiple child streams at the same time.
+For instance, link::Classes/Pdiff:: takes the difference between the current value and last value.
+Since the subtraction comes between evaluating the child pattern and yielding the difference, the child pattern must be used as a stream.
 
 code::
 Pdiff : FilterPattern {
@@ -171,13 +213,25 @@ Pdiff : FilterPattern {
 }
 ::
 
-subsection::Writing patterns: other factors
 
-Pattern objects are supposed to be emphasis::stateless::, meaning that the pattern object itself should undergo no changes based on any stream running the pattern. (There are some exceptions, such as link::Classes/Ppatmod::, which exists specifically to perform some modification on a pattern object. But, even this special case makes a separate copy of the pattern to be modified for each stream; the original pattern is insulated from the streams' behavior.) emphasis::Be very careful if you're thinking about breaking this rule::, and before doing so, think about whether there might be another way to accomplish the goal without breaking it.
 
-Because of this rule, emphasis::all variables reflecting the state of a particular stream should be local to the embedInStream method::. If you look through existing pattern classes for examples, you will see in virtually every case that code::embedInStream:: does not alter the instance variables defined in the class. It uses them as parameters, but does not change them. Anything that changes while a stream is being evaluated is a local method variable.
 
-To initialize the pattern's parameters (instance variables), typical practice in the library is to give getter and setter methods to all instance variables, and use the setters in the code::*new:: method (or, use code::^super.newCopyArgs(...))::. It's not typical to have an init method populate the instance variables. E.g.,
+
+
+subsection:: Writing patterns: other factors
+
+
+Pattern objects are supposed to be emphasis::stateless::, meaning that the pattern object itself should undergo no changes based on any stream running the pattern.
+(There are some exceptions, such as link::Classes/Ppatmod::, which exists specifically to perform some modification on a pattern object.
+But, even this special case makes a separate copy of the pattern to be modified for each stream; the original pattern is insulated from the streams' behavior.) emphasis::Be very careful if you're thinking about breaking this rule::, and before doing so, think about whether there might be another way to accomplish the goal without breaking it.
+
+Because of this rule, emphasis::all variables reflecting the state of a particular stream should be local to the embedInStream method::.
+If you look through existing pattern classes for examples, you will see in virtually every case that code::embedInStream:: does not alter the instance variables defined in the class.
+It uses them as parameters, but does not change them.
+Anything that changes while a stream is being evaluated is a local method variable.
+
+To initialize the pattern's parameters (instance variables), typical practice in the library is to give getter and setter methods to all instance variables, and use the setters in the code::*new:: method (or, use code::^super.newCopyArgs(...))::. It's not typical to have an init method populate the instance variables.
+E.g.,
 
 code::
 Pn : FilterPattern {
@@ -190,7 +244,8 @@ Pn : FilterPattern {
 }
 ::
 
-Consider carefully whether a parameter can change in each code::next:: call. If so, make a stream from that parameter and call code::.next(inval):: on it for each iteration. Parameters that should not change, such as number of repeats, should call code::.value(inval):: so that a function may be given. link::Classes/Pwhite:: demonstrates both of these features.
+Consider carefully whether a parameter can change in each code::next:: call. If so, make a stream from that parameter and call code::.next(inval):: on it for each iteration. Parameters that should not change, such as number of repeats, should call code::.value(inval):: so that a function may be given.
+link::Classes/Pwhite:: demonstrates both of these features.
 
 - strong::Exercise for the reader:: : Why does code::Pwhite(0.0, 1.0, inf):: work, even with the code::asStream:: and next calls?
 
@@ -222,9 +277,17 @@ Pwhite : Pattern {
 Pwhite(Pseries(0.0, 0.01, inf), Pseries(0.2, 0.01, inf), inf).asStream.nextN(200).plot;
 ::
 
-subsection::Cleaning up event pattern resources
 
-Some event patterns create server or other objects that need to be explicitly removed when they come to a stop. This is handled by the link::Classes/EventStreamCleanup:: object. This class stores a set of functions that will run at the pattern's end. It also uses special keys in the current event to communicate cleanup functions upward to parent patterns, and ultimately to the link::Classes/EventStreamPlayer:: that executes the events.
+
+
+
+
+subsection:: Cleaning up event pattern resources
+
+
+Some event patterns create server or other objects that need to be explicitly removed when they come to a stop.
+This is handled by the link::Classes/EventStreamCleanup:: object.
+This class stores a set of functions that will run at the pattern's end. It also uses special keys in the current event to communicate cleanup functions upward to parent patterns, and ultimately to the link::Classes/EventStreamPlayer:: that executes the events.
 
 Basic usage involves 4 stages:
 
@@ -257,19 +320,38 @@ code::
 	}
 ::
 
-numberedList::
-## The embedInStream method should create its own instance of EventStreamCleanup. (Alternately, it may receive the cleanup object as the second argument, but it should not assume that the cleanup object will be passed in. It should always check for its existence and create the instance if needed. Note that the pattern should also reimplement code::asStream:: as shown.) It's much simpler for the pattern just to create its own instance.
-## When the pattern creates the objects that will need to be cleaned up, it should also use the code::addFunction:: method on the EventStreamCleanup with a function that will remove the resource(s). (The example above is deliberately oversimplified. In practice, attention to the timing of server actions is important. Several pattern classes give good examples of how to do this, e.g., link::Classes/Pmono::, link::Classes/Pfx::.)
+numberedlist::
+## The embedInStream method should create its own instance of EventStreamCleanup.
+(Alternately, it may receive the cleanup object as the second argument, but it should not assume that the cleanup object will be passed in.
+It should always check for its existence and create the instance if needed.
+Note that the pattern should also reimplement code::asStream:: as shown.) It's much simpler for the pattern just to create its own instance.
+## When the pattern creates the objects that will need to be cleaned up, it should also use the code::addFunction:: method on the EventStreamCleanup with a function that will remove the resource(s). (The example above is deliberately oversimplified.
+In practice, attention to the timing of server actions is important.
+Several pattern classes give good examples of how to do this, e.g., link::Classes/Pmono::, link::Classes/Pfx::.)
 
-The flag should be used when removing Synth or Group nodes. Normally the flag is true; but, if the pattern's EventStreamPlayer gets stopped by cmd-., the nodes will already be gone from the server. If your function tries to remove them again, the user will see FAILURE messages from the server and then get confused, thinking that they did something wrong when in fact the error is preventable in the class.
+The flag should be used when removing Synth or Group nodes.
+Normally the flag is true; but, if the pattern's EventStreamPlayer gets stopped by cmd-., the nodes will already be gone from the server.
+If your function tries to remove them again, the user will see FAILURE messages from the server and then get confused, thinking that they did something wrong when in fact the error is preventable in the class.
 ## Before calling code::.yield:: with the return event, also call code::cleanup.update(outputEvent)::.
-## When code::embedInStream:: returns control back to the parent, normally this is done with code::^inval::. When an EventStreamCleanup is involved, it should be code::^cleanup.exit(inval)::. This executes the cleanup functions and also removes them from EventStreamCleanups at any parent level.
+## When code::embedInStream:: returns control back to the parent, normally this is done with code::^inval::.
+When an EventStreamCleanup is involved, it should be code::^cleanup.exit(inval)::.
+This executes the cleanup functions and also removes them from EventStreamCleanups at any parent level.
 ::
 
-subsection::When does a pattern need an EventStreamCleanup?
+
+
+
+
+
+subsection:: When does a pattern need an EventStreamCleanup?
+
 
 If the pattern creates something on the server (bus, group, synth, buffer etc.), it must use an EventStreamCleanup as shown to make sure those resources are properly garbage collected.
 
-Or, if there is a chance of the pattern stopping before one or more child patterns has stopped on its own, EventStreamCleanup is important so that the pattern is aware of cleanup actions from the children. For example, in a construction like code::Pfindur(10, Pmono(name, pairs...)):: , Pmono may continue for more than 10 beats, in which case Pfindur will cut it off. The Pmono needs to end its synth, but it doesn't know that a pattern higher up in the chain is making it stop. It becomes the parent's responsibility to clean up after the children. As illustrated above, EventStreamCleanup handles this with only minimal intrusion into normal pattern logic.
+Or, if there is a chance of the pattern stopping before one or more child patterns has stopped on its own, EventStreamCleanup is important so that the pattern is aware of cleanup actions from the children.
+For example, in a construction like code::Pfindur(10, Pmono(name, pairs...)):: , Pmono may continue for more than 10 beats, in which case Pfindur will cut it off.
+The Pmono needs to end its synth, but it doesn't know that a pattern higher up in the chain is making it stop.
+It becomes the parent's responsibility to clean up after the children.
+As illustrated above, EventStreamCleanup handles this with only minimal intrusion into normal pattern logic.
 
 Previous:	link::Tutorials/A-Practical-Guide/PG_Cookbook08_Swing::

@@ -1,15 +1,39 @@
 title:: 07
-summary:: Mark Polishook tutorial (JP)
 categories:: Tutorials>Mark_Polishook_tutorial>Japanese_version
+summary:: Mark Polishook tutorial (JP)
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
-section::いつ1つのSynthDefを用いるか ... いつ2つまたはそれ以上のSynthDefを用いるか
+
+
+
+
+
+
+
+
+
+section:: いつ1つのSynthDefを用いるか ... いつ2つまたはそれ以上のSynthDefを用いるか
+
+
+
 
 多くのシンセシスのプロセスでは、シンプルな場合には、単独のSynthDefで定義することができます。　もっと複雑な場合には、グループの中でコンポーネントとしてコラボレートする複数のSynthDefを使う様に書くのがベストです。
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-section::関数と.scopeメッセージ
+
+
+
+
+
+
+
+
+
+section:: 関数と.scopeメッセージ
+
+
+
 
 シンプルなシンセシスのプロセスを試してみる簡単な方法は、関数の中で実行してみるということで、これはSynthDefを定義してそれをシンセの中でエンジンとして使うというよりも簡単です。この様な方法でコードを開発している時、後のある時点で、コードをテスト用の関数からSynthDefに変換することができます。
 

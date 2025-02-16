@@ -1,55 +1,88 @@
-class:: Line
-summary:: Line generator.
+title:: Line
+categories:: UGens>Envelopes
+summary:: Line generator
 related:: Classes/XLine
-categories::  UGens>Envelopes
 
 
-Description::
 
-Generates a line from the start value to the end value.
+
+
+
+
+
+
+
+description::
+
+
+
+
+Generatea a line from the start value to the end value.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
 
-argument::start
+
+
+method:: ar, kr
+
+
+argument:: start
 
 Starting value.
 
 
-argument::end
+argument:: end
 
 Ending value.
 
 
-argument::dur
+argument:: dur
 
 Duration in seconds.
 
 
-argument::mul
+argument:: mul
 
 Output will be multiplied by this value.
 
 
-argument::add
+argument:: add
 
 This value will be added to the output.
 
 
-argument::doneAction
+argument:: doneAction
 
-A doneAction to be evaluated when the Line is completed. See
+A doneAction to be evaluated when the Line is completed.
+See
 
 link::Classes/Done::  for more detail.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 // XLine is usually better than Line for frequency
 play({ SinOsc.ar(Line.kr(200, 17000, 10), 0, 0.1) });
-
 ::

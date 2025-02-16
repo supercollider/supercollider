@@ -1,7 +1,8 @@
 title:: Event Stream
 categories:: Streams-Patterns-Events
-related:: Classes/Stream, Classes/Event
 summary:: A Stream that returns Events when called
+related:: Classes/Stream, Classes/Event
+
 
 An event stream is a normal link::Classes/Stream:: that returns events when called. (see class link::Classes/Event::). Usually, an event stream requires an event to be passed in, often the default event is used:
 
@@ -11,7 +12,8 @@ t.next(Event.default);
 t.next(Event.default);
 ::
 
-An event stream cannot be played directly with a clock, as it returns events and not time values. Therefore, an link::Classes/EventStreamPlayer:: is used, which replaces the event by according time value.
+An event stream cannot be played directly with a clock, as it returns events and not time values.
+Therefore, an link::Classes/EventStreamPlayer:: is used, which replaces the event by according time value.
 
 A link::Classes/Pevent:: can be used to wrap a stream in an event:
 

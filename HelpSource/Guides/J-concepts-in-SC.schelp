@@ -1,16 +1,33 @@
 title:: J concepts in SC
-summary:: An overview of concepts borrowed from J
 categories:: Language
+summary:: An overview of concepts borrowed from J
 
-The J programming language is a successor of APL (see link::http://www.jsoftware.com::). These languages are made for processing arrays of data and are able to express
+
+
+The J programming language is a successor of APL (see link::http://www.jsoftware.com::).
+These languages are made for processing arrays of data and are able to express
 complex notions of iteration implicitly.
 
 The following are some concepts borrowed from or inspired by J.
 Thinking about multidimensional arrays can be both mind bending and mind expanding.
 It may take some effort to grasp what is happening in these examples.
 
+
+
+
+
+
+
+
+
+
 section:: Filling arrays
+
+
+
+
 iota fills an array with a counter
+
 code::
 z = Array.iota(2, 3, 3);
 z.rank; // 3 dimensions
@@ -20,7 +37,8 @@ z.rank; // 3 dimensions
 z.shape;
 ::
 
-fill a multidimensional array
+Fill a multidimensional array
+
 code::
 // 2 dimensions
 Array.fill([3,3], { 1.0.rand.round(0.01) });
@@ -38,8 +56,21 @@ Array.fill([2, 2, 4, 2], {|...args| args.join });
 ::
 
 
+
+
+
+
+
+
+
+
 section:: Creating arrays
-using dup to create arrays
+
+
+
+
+Using dup to create arrays
+
 code::
 (1..4) dup: 3;
 100.rand dup: 10;
@@ -50,7 +81,9 @@ code::
 {|i| i.nthPrime} dup: 10;
 { |i, j, k| i * j } dup: [5, 5]; // multidimensional dup
 ::
+
 ! is an abbreviation of dup
+
 code::
 (1..4) ! 3;
 100.rand ! 10;
@@ -62,7 +95,8 @@ code::
 { |i, j| i * j } ! [5, 5];
 ::
 
-other ways to do the same thing:
+Other ways to do the same thing:
+
 code::
 // partial application
 _.squared ! 10;
@@ -73,9 +107,23 @@ _.nthPrime ! 10;
 (0..9).nthPrime;
 ::
 
+
+
+
+
+
+
+
+
+
 section:: Operator adverbs
+
+
+
+
 Adverbs are a third argument passed to binary operators that modifies how they iterate over
 SequenceableCollections or Streams. See the link::Reference/Adverbs:: help file for more information.
+
 code::
 [10, 20, 30, 40, 50] + [1, 2, 3]; // normal
 [10, 20, 30, 40, 50] +.f [1, 2, 3]; // folded
@@ -84,10 +132,26 @@ code::
 [10, 20, 30, 40, 50] +.t [1, 2, 3]; // table
 ::
 
+
+
+
+
+
+
+
+
+
 section:: Operator depth
+
+
+
+
 J has a concept called verb rank, which is probably too complex to understand and implement in SC, but operator depth is similar and simpler.
-A binary operator can be given a depth at which to operate. Negative depths iterate the opposite operand.
-These are better understood by example. It is not currently possible to combine adverb and depth.
+A binary operator can be given a depth at which to operate.
+Negative depths iterate the opposite operand.
+These are better understood by example.
+It is not currently possible to combine adverb and depth.
+
 code::
 z = Array.iota(3,3);
 y = [100, 200, 300];
@@ -98,8 +162,16 @@ z +.2 y; // y added to each element of z
 z +.-1 y; // z added to each element of y
 ::
 
+
+
+
+
+
 subsection:: deepCollect
+
+
 deepCollect operates a function at different dimensions or depths in an array.
+
 code::
 z = Array.iota(3, 2, 3);
 f = {|item| item.reverse };
@@ -113,9 +185,23 @@ z.deepCollect(1, f);
 z.deepCollect(2, f);
 ::
 
+
+
+
+
+
+
+
+
+
 section:: Sections of multidimensional arrays
-slice can get sections of multidimensional arrays.
+
+
+
+
+Slice can get sections of multidimensional arrays.
 nil gets all the indices of a dimension.
+
 code::
 z = Array.iota(4, 5);
 z.slice(nil, (1..3));
@@ -136,25 +222,58 @@ z.slice(1, [0,1]);
 z.flop;
 ::
 
+
+
+
+
+
+
+
+
+
 section:: Sorting order
-generate a random array:
+
+
+
+
+Generate a random array:
+
 code::
 z = {100.rand}.dup(10);
 ::
-order returns an array of indices representing what would be the sorted order of the array:
+
+Order returns an array of indices representing what would be the sorted order of the array:
+
 code::
 o = z.order;
 y = z[o]; // using the order as an index returns the sorted array
 ::
-calling order on the order returns an array of indices that returns the sorted array to the
+
+Calling order on the order returns an array of indices that returns the sorted array to the
 original scrambled order:
+
 code::
 p = o.order;
 x = y[p];
 ::
 
+
+
+
+
+
+
+
+
+
 section:: Bubbling
-bubbling wraps an item in an array of one element. it takes the depth and levels as arguments.
+
+
+
+
+Bubbling wraps an item in an array of one element.
+it takes the depth and levels as arguments.
+
 code::
 z = Array.iota(4,4);
 z.bubble;
@@ -164,7 +283,9 @@ z.bubble(0,2);
 z.bubble(1,2);
 z.bubble(2,2);
 ::
-similarly, unbubble unwraps an Array if it contains a single element.
+
+Similarly, unbubble unwraps an Array if it contains a single element.
+
 code::
 5.unbubble;
 [5].unbubble;
@@ -178,9 +299,23 @@ z.bubble(1).unbubble(1);
 z.bubble(2).unbubble(2);
 ::
 
+
+
+
+
+
+
+
+
+
 section:: Laminating with the +++ operator
-the +++ operator takes each item from the second list and appends it to the corresponding item
+
+
+
+
+The +++ operator takes each item from the second list and appends it to the corresponding item
 in the first list. If the second list is shorter, it wraps.
+
 code::
 z = Array.iota(5,2);
 z +++ [77,88,99];
@@ -208,21 +343,39 @@ z = (1..4);
 )
 ::
 
+
+
+
+
+
+
+
+
+
 section:: reshapeLike
+
+
+
+
 reshapeLike allows you to make one nested array be restructured in the same manner as another.
+
 code::
 a = [[10,20],[30, 40, 50], 60, 70, [80, 90]];
 b = [[1, 2, [3, 4], [[5], 6], 7], 8, [[9]]];
 a.reshapeLike(b);
 b.reshapeLike(a);
 ::
+
 If the lengths are different, the default behaviour is to wrap:
+
 code::
 a = [[10,20],[30, 40, 50]];
 b = [[1, 2, [3, 4], [[5], 6], 7], 8, [[9]]];
 a.reshapeLike(b);
 ::
-but you can specify other index operators:
+
+But you can specify other index operators:
+
 code::
 a.reshapeLike(b, \foldAt);
 
@@ -231,8 +384,22 @@ a.reshapeLike(b, \clipAt);
 a.reshapeLike(b, \at);
 ::
 
-section:: measuring dimensionality and size
+
+
+
+
+
+
+
+
+
+section:: Measuring dimensionality and size
+
+
+
+
 maxSizeAtDepth allows you to check the maximum array size at a given depth dimension
+
 code::
 [[1, 2, 3], [[41, 52], 5, 6], 1, 2, 3].maxSizeAtDepth(2);
 [[1, 2, 3], [[41, 52], 5, 6], 1, 2, 3].maxSizeAtDepth(1);
@@ -240,8 +407,23 @@ code::
 (0..3).collect([[1, 2, 3], [[41, 52], 5, 6], 1, 2, 3].maxSizeAtDepth(_)) // max sizes for each dimension
 ::
 
-section:: inverting dimensions
-flopDeep allows you to to invert the outermost dimension with a dimension at any depth. This is analogous to flop, which does the same for 2-dimensional arrays.
+
+
+
+
+
+
+
+
+
+section:: Inverting dimensions
+
+
+
+
+flopDeep allows you to to invert the outermost dimension with a dimension at any depth.
+This is analogous to flop, which does the same for 2-dimensional arrays.
+
 code::
 [[1, 2, 3], [[41, 52], 5, 6]].flopDeep(2);
 [[1, 2, 3], [[41, 52], 5, 6]].flopDeep(1);
@@ -254,8 +436,21 @@ code::
 ::
 
 
+
+
+
+
+
+
+
+
 section:: allTuples
+
+
+
+
 allTuples will generate all combinations of the sub arrays
+
 code::
 [[1, 2, 3], [4, 5], 6].allTuples;
 [[1, 2, 3], [4, 5, 6, 7], [8, 9]].allTuples;

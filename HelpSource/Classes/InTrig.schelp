@@ -1,31 +1,68 @@
-class:: InTrig
-summary:: Generate a trigger anytime a bus is set.
-categories::  UGens>InOut, UGens>Triggers
+title:: InTrig
+categories:: UGens>InOut, UGens>Triggers
+summary:: Generate a trigger anytime a bus is set
 
 
-Description::
 
-Any time the bus is "touched", ie. has its value set (using "/c_set"
-etc.), a single impulse trigger will be generated. Its amplitude is the
-value that the bus was set to.
+
+
+
+
+
+
+
+description::
+
+
+
+
+Any time the bus is "touched", i.e.:. has its value set (using "/c_set"
+etc.), a single impulse trigger will be generated.
+Its amplitude is the value that the bus was set to.
 
 If the bus is set link::Classes/Bus#Synchronous Control Bus Methods#synchronously:: no trigger will be generated.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::kr
 
-argument::bus
+
+
+method:: kr
+
+
+argument:: bus
+
 The index of the bus to read in from.
 
-argument::numChannels
+
+argument:: numChannels
+
 The number of channels (i.e. adjacent buses) to read in. You
 cannot modulate this number by assigning it to an argument in a
 SynthDef.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 s = Server.local;
@@ -49,4 +86,4 @@ b.value = 0.2;
 b.value = 0.1;
 ::
 
-compare with link::Classes/In:: example.
+Compare with link::Classes/In:: example.

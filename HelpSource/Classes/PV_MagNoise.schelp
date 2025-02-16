@@ -1,26 +1,60 @@
-class:: PV_MagNoise
-summary:: Multiply magnitudes by noise.
-related:: Classes/FFT, Classes/IFFT
+title:: PV_MagNoise
 categories:: UGens>FFT
+summary:: Multiply magnitudes by noise
+related:: Classes/FFT, Classes/IFFT
 
-Description::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 Magnitudes are multiplied with noise.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::new
 
-argument::buffer
+
+
+method:: new
+
+
+argument:: buffer
 
 FFT buffer.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 s.boot;
 
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
@@ -46,5 +80,4 @@ SynthDef("help-magNoise2", { |out = 0, soundBufnum = 2|
 )
 
 b.free;
-
 ::

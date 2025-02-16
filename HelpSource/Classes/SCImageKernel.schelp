@@ -1,13 +1,27 @@
-class:: SCImageKernel
-summary:: kernel class to use with SCImage
+title:: SCImageKernel
 categories:: GUI>Views
+summary:: Kernel class to use with SCImage
 related:: Classes/SCImage, Classes/SCImageFilter
 
-DESCRIPTION::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 code::// very experimental :)::
 
-Currently this class represents the CoreImage strong::CIKernel:: you can apply to a link::Classes/SCImage::. The Kernel language is a subset of the OpenGL Shading Language. more information about the Kernel Language can be found here : http://developer.apple.com/documentation/GraphicsImaging/Reference/CIKernelLangRef/Introduction/chapter_1_section_1.html
+Currently this class represents the CoreImage strong::CIKernel:: you can apply to a link::Classes/SCImage::.
+The Kernel language is a subset of the OpenGL Shading Language.
+more information about the Kernel Language can be found here : http://developer.apple.com/documentation/GraphicsImaging/Reference/CIKernelLangRef/Introduction/chapter_1_section_1.html
 
 and here: http://developer.apple.com/documentation/GraphicsImaging/Reference/CIKernelLangRef/chapter_2_section_1.html#//apple_ref/doc/uid/TP40004397-CH206-TPXREF101
 
@@ -22,38 +36,103 @@ table::
 ## __table || link::Classes/SCImage:: (basically the __table modifier just use Images as a data providers - LUT)
 ::
 
-CLASSMETHODS::
 
-METHOD::new
-creates a new SCImageKernel
 
-ARGUMENT::shader
-optional. the shader code string. nil by default
 
-ARGUMENT::values
-optional. the values that match the kernel proc function defined in the shader string. nil by default
 
-ARGUMENT::bounds
-optional. not used for now. nil by default
 
-INSTANCEMETHODS::
 
-METHOD::shader
-get or set the shader string.
 
-METHOD::values
-get or set the values array. When setting the object indexes in the values Array must match the argument declaration order as defined in the main emphasis::kernel vec4 routine::. See link::#examples:: for more info.
 
-METHOD::isValid
-very basic verification to tell if all arguments of the shader are set.
 
-METHOD::compile
-compile the SCImageKernel object (and cache it).
-NOTE::
-when rendered the first time, the kernel object is always compiled first. If you plan to change the shader string after, you must explicitely compile it to make it effective.
+classmethods::
+
+
+
+
+method:: new
+
+
+Create a new SCImageKernel
+
+
+argument:: shader
+
+Optional. the shader code string. nil by default
+
+
+argument:: values
+
+Optional. the values that match the kernel proc function defined in the shader string.
+nil by default
+
+
+argument:: bounds
+
+Optional. not used for now. nil by default
+
+
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+method:: shader
+
+
+Get or set the shader string.
+
+
+
+
+method:: values
+
+
+Get or set the values array.
+When setting the object indexes in the values Array must match the argument declaration order as defined in the main emphasis::kernel vec4 routine::. See link::#examples:: for more info.
+
+
+
+
+method:: isValid
+
+
+Very basic verification to tell if all arguments of the shader are set.
+
+
+
+
+method:: compile
+
+
+Compile the SCImageKernel object (and cache it).
+
+note::
+When rendered the first time, the kernel object is always compiled first.
+If you plan to change the shader string after, you must explicitely compile it to make it effective.
 ::
 
-EXAMPLES::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 /**** Kernels ****/

@@ -1,88 +1,242 @@
-class:: Rect
-summary:: Rectangle
+title:: Rect
 categories:: Geometry
+summary:: Rectangle
 
-ClassMethods::
 
-method::new
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
 Return a new Rect with the given upper left corner and dimensions.
 
-method::newSides
+
+
+
+method:: newSides
+
+
 Return a new Rect with the given boundaries.
 
-method::fromPoints
+
+
+
+method:: fromPoints
+
+
 Return a new Rect defined by the given Points.
 
-InstanceMethods::
 
-method::left
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+method:: left
+
+
 Get or set the value of the boundary.
 
-method::top
+
+
+
+method:: top
+
+
 Get or set the value of the boundary.
 
-method::right
+
+
+
+method:: right
+
+
 Get the value of the boundary.
 
-method::bottom
+
+
+
+method:: bottom
+
+
 Get the value of the boundary.
 
-method::set
+
+
+
+method:: set
+
+
 Set the boundaries to the given values.
 
-method::setExtent
+
+
+
+method:: setExtent
+
+
 Set the dimensions.
 
-method::width
+
+
+
+method:: width
+
+
 Set or get the width.
 
-method::height
+
+
+
+method:: height
+
+
 Set or get the height.
 
-method::origin
+
+
+
+method:: origin
+
+
 Return the upper left corner as a Point.
 
-method::extent
+
+
+
+method:: extent
+
+
 Return a Point whose x value is the height and whose y value is the width.
 
-method::leftTop
+
+
+
+method:: leftTop
+
+
 Return the upper left corner as a Point.
 
-method::rightTop
+
+
+
+method:: rightTop
+
+
 Return the upper right corner as a Point.
 
-method::leftBottom
+
+
+
+method:: leftBottom
+
+
 Return the lower left corner as a Point.
 
-method::rightBottom
+
+
+
+method:: rightBottom
+
+
 Return the lower right corner as a Point.
 
-method::moveBy
-Returns a new Rect which is offset by x and y.
 
-method::moveTo
-Returns a new Rect whose upper left corner is moved to (x, y).
 
-method::moveToPoint
-Returns a new Rect whose upper left corner is moved to aPoint.
 
-method::resizeBy
-Returns a new Rect whose dimensions have been changed by (x, y).
+method:: moveBy
 
-method::resizeTo
-Returns a new Rect whose dimensions are (x, y).
 
-method::insetBy
-Returns a new Rect whose boundaries have been inset by (x, y). If only one argument is supplied, it will be used for both x and y.
+Return a new Rect which is offset by x and y.
 
-method::insetAll
-Returns a new Rect whose boundaries have been inset by the given amounts.
 
-method::contains
-Answers whether aPoint is in the receiver.
 
-method::union, |
-Returns a new Rect which contains the receiver and aRect.
 
-method::sect, &
-Returns a new Rect which is the intersection of the receiver and aRect.
+method:: moveTo
+
+
+Return a new Rect whose upper left corner is moved to (x, y).
+
+
+
+
+method:: moveToPoint
+
+
+Return a new Rect whose upper left corner is moved to aPoint.
+
+
+
+
+method:: resizeBy
+
+
+Return a new Rect whose dimensions have been changed by (x, y).
+
+
+
+
+method:: resizeTo
+
+
+Return a new Rect whose dimensions are (x, y).
+
+
+
+
+method:: insetBy
+
+
+Return a new Rect whose boundaries have been inset by (x, y).
+If only one argument is supplied, it will be used for both x and y.
+
+
+
+
+method:: insetAll
+
+
+Return a new Rect whose boundaries have been inset by the given amounts.
+
+
+
+
+method:: contains
+
+
+Answer whether aPoint is in the receiver.
+
+
+
+
+method:: union, |
+
+
+Return a new Rect which contains the receiver and aRect.
+
+
+
+
+method:: sect, &
+
+
+Return a new Rect which is the intersection of the receiver and aRect.

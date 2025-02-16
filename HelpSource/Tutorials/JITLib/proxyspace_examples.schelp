@@ -1,11 +1,24 @@
 title:: ProxySpace examples
-summary:: Some ProxySpace examples
 categories:: JITLib>Tutorials, Tutorials>JITLib
+summary:: Some ProxySpace examples
 related:: Overviews/JITLib, Classes/ProxySpace
 
-section::main examples
 
-subsection::preparing the environment
+
+
+
+
+
+
+
+
+section:: Main examples
+
+
+
+
+subsection:: Preparing the environment
+
 
 code::
 (
@@ -14,7 +27,13 @@ p = ProxySpace.push(s);
 )
 ::
 
-subsection::playing and monitoring
+
+
+
+
+
+subsection:: Playing and monitoring
+
 
 code::
 // play some output to the hardware busses, this could be any audio rate key.
@@ -29,7 +48,13 @@ code::
 ~out = { Pan2.ar(PinkNoise.ar(0.1), LFClipNoise.kr(2)) };
 ::
 
-subsection::setting the node controls
+
+
+
+
+
+subsection:: Setting the node controls
+
 
 code::
 ~out = { arg rate = 2; Pan2.ar(PinkNoise.ar(0.1), LFClipNoise.kr(rate)) };
@@ -38,7 +63,13 @@ code::
 ~out.set(\rate, 2);
 ::
 
-subsection::referencing between proxies
+
+
+
+
+
+subsection:: Referencing between proxies
+
 
 code::
 ~lfo = { LFNoise2.kr(30, 300, 500) };
@@ -49,7 +80,13 @@ code::
 ~lfo = 410;
 ::
 
-subsection::math
+
+
+
+
+
+subsection:: math
+
 
 code::
 // unary operators
@@ -68,7 +105,13 @@ currentEnvironment.free; // free all node proxies
 ~out.stop; // free the playback synth.
 ::
 
-subsection::waking up a network of proxies
+
+
+
+
+
+subsection:: Waking up a network of proxies
+
 
 code::
 // hit cmd-. to stop all nodes
@@ -76,7 +119,13 @@ code::
 ~out.play;
 ::
 
-subsection::feeding back
+
+
+
+
+
+subsection:: Feeding back
+
 
 (one buffer size delay)
 
@@ -103,7 +152,13 @@ code::
 )
 ::
 
-subsection::multiple control
+
+
+
+
+
+subsection:: Multiple control
+
 
 code::
 (
@@ -126,7 +181,13 @@ code::
 )
 ::
 
-subsection::mixing
+
+
+
+
+
+subsection:: Mixing
+
 
 code::
 ~out1 = { SinOsc.ar(600, 0, 0.1) };
@@ -147,7 +208,13 @@ code::
 ~out[2] = { SinOsc.ar(400 * 1.2, 0, 0.1) };
 ::
 
-subsection::restoring / erasing
+
+
+
+
+
+subsection:: Restoring / erasing
+
 
 code::
 ~out.free; // this frees the group, not the play synth x
@@ -164,9 +231,16 @@ code::
 ~out.clear; // this neutralizes the proxy, and frees its bus
 ::
 
-for more on the proxy slots see: link::Tutorials/JITLib/jitlib_basic_concepts_03::
+For more on the proxy slots see:
+link::Tutorials/JITLib/jitlib_basic_concepts_03::
 
-subsection::garbage collecting
+
+
+
+
+
+subsection:: Garbage collecting
+
 
 code::
 // often there are proxies playing that are not used anymore - this is good,
@@ -193,11 +267,18 @@ p.clean;
 p.postln; // empty space.
 ::
 
-subsection::execution order
+
+
+
+
+
+subsection:: Execution order
+
 
 code::
 // you can .play .kr or .ar also a name that is not yet used.
-// the rate is guessed as far as possible. on this topic see also: [the_lazy_proxy]
+// the rate is guessed as far as possible.
+on this topic see also: [the_lazy_proxy]
 
 ~myOut.play; // play some key (audio rate is assumed)
 
@@ -211,10 +292,17 @@ code::
 ~myOut = { SinOsc.ar(~otherFreq.ar * 2, 0, 0.1) };
 ~otherFreq = { SinOsc.ar(115, 0, 70, 220) };
 
-currentEnvironment.clear; // clear every proxy in this environment and remove them. (same: p.clear)
+currentEnvironment.clear; // clear every proxy in this environment and remove them.
+(same: p.clear)
 ::
 
-subsection::setting the xfade time
+
+
+
+
+
+subsection:: Setting the xfade time
+
 
 code::
 ~out.play;
@@ -230,7 +318,13 @@ code::
 ~out.stop;	// stop monitor
 ::
 
-subsection::setting and mapping arguments
+
+
+
+
+
+subsection:: Setting and mapping arguments
+
 
 code::
 ~out.play;
@@ -271,7 +365,8 @@ code::
 ~out.xmap(\ffreq, ~lfo3);
 
 // argument rates: just like a synthdef has input 'rates' (like \ir or \tr), a nodeproxy control
-// can be given a rate. this rate is used for each function passed into the proxy.
+// can be given a rate.
+this rate is used for each function passed into the proxy.
 
 // trigger inputs
 ~out = { arg trig, dt=1; Decay2.kr(trig, 0.01, dt) * Mix(SinOsc.ar(7000 * [1.2, 1.3, 0.2])) }
@@ -306,11 +401,25 @@ code::
 // note that the same works with the i_ and the t_ arguments, just as it does in SynthDef
 ::
 
-section::other possible inputs
 
-subsection::using a synthdef as input
 
-for a more systematic overview see: link::Tutorials/JITLib/jitlib_fading::
+
+
+
+
+
+
+
+section:: Other possible inputs
+
+
+
+
+subsection:: Using a synthdef as input
+
+
+For a more systematic overview see:
+link::Tutorials/JITLib/jitlib_fading::
 
 code::
 // you have the responsibility for the right number of channels and output rate
@@ -321,7 +430,8 @@ code::
 ~out = SynthDef("w", { arg out=0; Out.ar(out,SinOsc.ar([Rand(430, 600), 500], 0, 0.2)) });
 
 
-// if you supply a gate it fades in and out. evaluate this several times
+// if you supply a gate it fades in and out.
+evaluate this several times
 (
 ~out = SynthDef("w", { arg out=0, gate=1.0, fadeTime = 0.1;
 	Out.ar(out,
@@ -333,7 +443,8 @@ code::
 
 // once the SynthDef is sent, it can be assigned by name.
 // using this method, a gate argument should be
-// provided that releases the synth. (doneAction: Done.freeSelf)
+// provided that releases the synth.
+(doneAction: Done.freeSelf)
 // this is very efficient, as the def is on the server already.
 
 // if the synth def is in the synthdesc lib (.add) its gate is detected.
@@ -380,11 +491,17 @@ SynthDef("staub", { arg out;
 
 ~out = \staub;
 ~out = \staub;	// watching the synth count shows that the old synth is freed.
-~out = 0;	// now out plays continuous stream of zero.
+~out = 0;	// now out plays continuous stream of teletype::zero::.
 ~out = nil;	// removes object and stops it.
 ::
 
-subsection::using patterns
+
+
+
+
+
+subsection:: Using patterns
+
 
 code::
 // example
@@ -408,7 +525,8 @@ SynthDef(\who, { arg amp=0.1, freq=440, detune=0, gate=1, out=0, ffreq=800;
 
 // embed a control node proxy into an event pattern:
 // this does not work for indirect assignment as \degree, \midinote, etc.,
-// because there is calculations in the event! if needed, these can be done in the SynthDef.
+// because there is calculations in the event!
+if needed, these can be done in the SynthDef.
 
 ~lfo = { SinOsc.kr(2, 0, 400, 700) };
 ~out = Pbind(\instrument, \who, \freq, 500, \ffreq, ~lfo, \legato, 0.02);
@@ -431,7 +549,8 @@ SynthDef(\who, { arg amp=0.1, freq=440, detune=0, gate=1, out=0, ffreq=800;
 // note that when you use a proxy within a non-event pattern it gets embedded as an object,
 // so this functionality is still standard
 
-// works only with control rate proxies. multichannel control rate proxies cause
+// works only with control rate proxies.
+multichannel control rate proxies cause
 // multichannel expansion of the events:
 
 ~lfoStereo = { LFNoise1.kr([1, 1], 1300, 1500) }; // 2 channel control rate proxy
@@ -458,10 +577,16 @@ p.clock.tempo = 1.0
 )
 ::
 
-subsection::using instruments and players
+
+
+
+
+
+subsection:: Using instruments and players
+
 
 note::
-for the following to work you will need to have the strong::cruciallib:: quark installed.
+For the following to work you will need to have the strong::cruciallib:: quark installed.
 ::
 
 code::
@@ -500,9 +625,22 @@ Instr(\test,
 //~out.set(\ffreq, 500);
 ::
 
-section::client side routines
 
-subsection::spawning
+
+
+
+
+
+
+
+
+section:: Client side routines
+
+
+
+
+subsection:: Spawning
+
 
 code::
 ~out.play;
@@ -536,7 +674,8 @@ t.stop;
 t.start;
 
 // note: if you want to avoid using interpreter variables (single letter, like "t"),
-// you can use Tdef for this. (see Tdef.help)
+// you can use Tdef for this.
+(see Tdef.help)
 
 // set some argument
 ~out.set(\freq, 300);
@@ -563,9 +702,15 @@ t.stop;
 currentEnvironment.clear;
 ::
 
-subsection::granular synthesis: efficient code
 
-see also link::Tutorials/JITLib/jitlib_efficiency::
+
+
+
+
+subsection:: Granular synthesis: efficient code
+
+
+See also link::Tutorials/JITLib/jitlib_efficiency::
 
 code::
 ~out.play;
@@ -616,9 +761,16 @@ currentEnvironment.clear;
 ProxySpace.pop; // restore original environment
 ::
 
-subsection::using multiple proxyspaces
 
-can be done while the server is not running: with p.wakeUp or p.play
+
+
+
+
+subsection:: Using multiple proxyspaces
+
+
+Can be done while the server is not running:
+with p.wakeUp or p.play
 
 the environment can be played back.
 
@@ -656,7 +808,13 @@ s.waitForBoot({
 )
 ::
 
-subsection::external access
+
+
+
+
+
+subsection:: External access
+
 
 code::
 q[\in][1] = { Impulse.ar(2, 0, 0.5) }; // adding a synth at index 1
@@ -665,7 +823,13 @@ q[\in][1] = { Impulse.ar(2, 0, 0.5) }; // adding a synth at index 1
 q.at(\in).put(1, { Impulse.ar(7, 0, 0.5) });
 ::
 
-subsection::connecting two spaces
+
+
+
+
+
+subsection:: Connecting two spaces
+
 
 (must be on one server)
 
@@ -677,7 +841,13 @@ q.use({
 )
 ::
 
-subsection::recording output
+
+
+
+
+
+subsection:: Recording output
+
 
 (see also: link::Classes/RecNodeProxy::)
 
@@ -694,7 +864,13 @@ r.pause;
 r.close;
 ::
 
-subsection::push/pop
+
+
+
+
+
+subsection:: Push/pop
+
 
 code::
 // make p the currentEnvironment
@@ -720,9 +896,22 @@ q.clear;
 p.clear;
 ::
 
-section::some more topics
 
-subsection::nodeproxy with numbers as input
+
+
+
+
+
+
+
+
+section:: Some more topics
+
+
+
+
+subsection:: Nodeproxy with numbers as input
+
 
 code::
 p = ProxySpace.push(s.boot);

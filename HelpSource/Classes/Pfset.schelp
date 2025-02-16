@@ -1,25 +1,71 @@
-class:: Pfset
+title:: Pfset
+categories:: Streams-Patterns-Events>Patterns>Data Sharing
 summary:: Insert an environment into the event prototype before evaluating the supplied pattern
 related:: Classes/Pset
-categories:: Streams-Patterns-Events>Patterns>Data Sharing
+
+
+
+
+
+
+
+
+
 
 description::
+
+
+
+
 Good for setting default values or loading server objects.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
+
+
+
 method:: new
 
+
 argument:: func
-Use environment variable syntax (e.g., code:: ~x = 0 ::) to store values in the internal environment. These values are copied into the event prototype before running the supplied pattern.
+
+Use environment variable syntax (e.g., code:: ~x = 0 ::) to store values in the internal environment.
+These values are copied into the event prototype before running the supplied pattern.
+
+
 argument:: pattern
+
 An event pattern (such as link::Classes/Pbind::).
+
+
 argument:: cleanupFunc
-Optional. A function to evaluate when the pattern is stopped, or when the supplied pattern runs out of values. For example, if you loaded a link::Classes/Buffer:: in the initializer function, you could free it in the code::cleanupFunc::.
+
+Optional. A function to evaluate when the pattern is stopped, or when the supplied pattern runs out of values.
+For example, if you loaded a link::Classes/Buffer:: in the initializer function, you could free it in the code::cleanupFunc::.
+
+
+
+
+
+
+
+
 
 
 examples::
+
+
+
+
 code::
 (
 var a, b;
@@ -33,6 +79,7 @@ x = a.asStream;
 ::
 
 Pfset does not override values placed into the event by the inner pattern:
+
 code::
 (
 var a, b;
@@ -45,6 +92,7 @@ x = a.asStream;
 ::
 
 Sound example
+
 code::
 (
 SynthDef(\sinegrain,

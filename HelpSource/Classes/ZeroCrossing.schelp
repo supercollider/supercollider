@@ -1,16 +1,59 @@
-class:: ZeroCrossing
-summary:: Zero crossing frequency follower
+title:: ZeroCrossing
 categories:: UGens>Analysis>Pitch
+summary:: Zero crossing frequency follower
+
+
+
+
+
+
+
+
+
 
 description::
-Outputs a frequency based upon the distance between interceptions of the X axis. The X intercepts are determined via linear interpolation so this gives better than just integer wavelength resolution. This is a very crude pitch follower, but can be useful in some situations.
+
+
+
+
+Output a frequency based upon the distance between interceptions of the X axis.
+The X intercepts are determined via linear interpolation so this gives better than just integer wavelength resolution.
+This is a very crude pitch follower, but can be useful in some situations.
+
+
+
+
+
+
+
+
+
 
 classmethods::
+
+
+
+
 method:: ar, kr
-argument::in
+
+
+argument:: in
+
 Input signal.
 
+
+
+
+
+
+
+
+
+
 examples::
+
+
+
 
 code::
 s.boot;

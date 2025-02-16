@@ -1,59 +1,126 @@
-class:: EZListView
-summary:: A wrapper class for a label plus a listView with per item actions
+title:: EZListView
 categories:: GUI>EZ-GUI
+summary:: A wrapper class for a label plus a listView with per item actions
 related:: Classes/ListView
 
+
+
+
+
+
+
+
+
+
 description::
-EZListView is wrapper class which creates an (optional) label and a listView. It includes per item actions as well as a global action which are both evaluated upon selection of an item. Convenience methods for inserting and deleting list items are also included . If the parent is nil, then EZListView will create its own window. See link::Classes/EZGui:: and link::Classes/EZLists:: for all of the options.
+
+
+
+
+EZListView is wrapper class which creates an (optional) label and a listView. It includes per item actions as well as a global action which are both evaluated upon selection of an item.
+Convenience methods for inserting and deleting list items are also included . If the parent is nil, then EZListView will create its own window.
+See link::Classes/EZGui:: and link::Classes/EZLists:: for all of the options.
+
+
+
+
+
 
 subsection:: Some Important Issues Regarding EZListView
 
-The convenience methods for EZListView require that the items array is an array of associations of labels and functions, not like in ListView, where items is simply an array of strings. If code::label:: is nil, then no staticText is created.
+
+The convenience methods for EZListView require that the items array is an array of associations of labels and functions, not like in ListView, where items is simply an array of strings.
+If code::label:: is nil, then no staticText is created.
+
+
+
+
+
+
+
+
+
 
 classmethods::
 
+
+
+
 subsection:: Creation / Class Methods
+
 
 method:: new
 
+
 argument:: parentView
-The parent view or window. If the parent is nil, then EZListView will create its own link::Classes/Window::, and place it conveniently on the screen if the bounds are a link::Classes/Point::. If the bounds are a link::Classes/Rect::, then the link::Classes/Rect:: determines the window bounds.
+
+The parent view or window. If the parent is nil, then EZListView will create its own link::Classes/Window::, and place it conveniently on the screen if the bounds are a link::Classes/Point::.
+If the bounds are a link::Classes/Rect::, then the link::Classes/Rect:: determines the window bounds.
+
 
 argument:: bounds
-An instance of link::Classes/Rect:: or link::Classes/Point::. Default value is code::160@200::.
+
+An instance of link::Classes/Rect:: or link::Classes/Point::.
+Default value is code::160@200::.
+
 
 argument:: label
+
 The label. Default value is code::nil::. If code::nil::, then no link::Classes/StaticText:: is created.
 
+
 argument:: items
+
 Default value is code::nil::. An link::Classes/Array:: of link::Classes/Association::s code:: ['label' -> { |listObj| value }, ] ::. Or and link::Classes/Array:: link::Classes/Symbol::s (if you are only using code::globalAction::).
 
+
 argument:: globalAction
+
 A global function to be performed in addition to the item functions code:: { |listObj| value } ::.
 
+
 argument:: initVal
+
 Initial value of the List, i.e. the index selected. Default value is 0.
 
+
 argument:: initAction
-An instance of link::Classes/Boolean::. Performs the action at code::initVal:: on creation of the list, plus the code::globalAction::. Default value is code::false::.
+
+An instance of link::Classes/Boolean::.
+Performs the action at code::initVal:: on creation of the list, plus the code::globalAction::.
+Default value is code::false::.
+
 
 argument:: labelWidth
+
 Default value is 80. Not used if layout is code::\vert::.
 
+
 argument:: labelHeight
+
 Default value is 20. Not used if layout is code::\horz::.
 
+
 argument:: layout
+
 code::\vert:: or code::\horz::. default is code::\vert::.
 
+
 argument:: gap
-A link::Classes/Point::. By default, the view tries to get its parent's gap, otherwise it defaults to code::2@2::. Setting it overrides these.
+
+A link::Classes/Point::. By default, the view tries to get its parent's gap, otherwise it defaults to code::2@2::.
+Setting it overrides these.
+
 
 argument:: margin
-A link::Classes/Point::. This will inset the bounds occupied  by the subviews of view.
+
+A link::Classes/Point::.
+This will inset the bounds occupied  by the subviews of view.
+
 
 discussion::
 Example:
+
 code::
 (
 // default with vertical layout
@@ -63,8 +130,8 @@ g = EZListView.new(w,
 	230@230,
 	"An ListView:",
 	[
-		\item0 ->{ |a| ("this is item 0 of " ++ a).postln },
-		\item1 ->{ |a| ("this is item 1 of " ++ a).postln },
+		\item0 ->{ |a| ("this is item teletype::0:: of " ++ a).postln },
+		\item1 ->{ |a| ("this is item teletype::1:: of " ++ a).postln },
 		\item2 ->{ |a| ("this is item 2 of " ++ a).postln },
 	],
 	globalAction: { |a| ("this is a global action of "++a.asString).postln },
@@ -83,40 +150,96 @@ g = EZListView.new(w,
 w = Window.new.front;
 w.view.decorator = FlowLayout(w.view.bounds);
 g = EZListView.new(w, 200@230, " List:");
-g.addItem(\item0, { |a| ("this is item 0 of " ++ a).postln });
-g.addItem(\item1, { |a| ("this is item 1 of " ++ a).postln });
+g.addItem(\item0, { |a| ("this is item teletype::0:: of " ++ a).postln });
+g.addItem(\item1, { |a| ("this is item teletype::1:: of " ++ a).postln });
 g.addItem(\item2, { |a| ("this is item 2 of " ++ a).postln });
 g.setColors(Color.grey, Color.white);
 )
 ::
 
+
+
+
+
+
+
+
+
+
 instancemethods::
+
+
+
 
 subsection:: Changing Appearance
 
+
 method:: setColors
+
+
 argument:: stringBackground
+
 An instance of link::Classes/Color::. The code::background:: of the label and unit views.
+
+
 argument:: stringColor
+
 An instance of link::Classes/Color::. The code::stringColor:: of the label and unit views.
+
+
 argument:: listBackground
+
 An instance of link::Classes/Color::. The code::background:: of the list view.
+
+
 argument:: listStringColor
+
 An instance of link::Classes/Color::. The code::stringColor:: of the list view.
+
+
 argument:: selectedStringColor
+
 An instance of link::Classes/Color::. The code::selectedStringColor:: of the listView.
+
+
 argument:: hiliteColor
+
 An instance of link::Classes/Color::. The code::hiliteColor:: of the list view.
+
+
 argument:: background
+
 An instance of link::Classes/Color::. The code::background:: of the list view.
+
+
+
 
 method:: font
+
+
 Set the link::Classes/Font:: used by all the views.
+
+
 argument:: font
+
 An instance of link::Classes/Font::.
 
+
+
+
+
+
+
+
+
+
 examples::
-Creates its own window if parent is nil:
+
+
+
+
+Createit its own window if parent is nil:
+
 code::
 (
 g = EZListView.new(label: " My PopUp List: ");
@@ -126,7 +249,9 @@ g.addItem(\item2, { "this is item 2".postln });
 g.setColors(Color.grey, Color.white);
 )
 ::
+
 Layout horizontal:
+
 code::
 (
 g = EZListView.new(nil, 205@180, "Choose One: ", layout: \horz);
@@ -134,7 +259,9 @@ g = EZListView.new(nil, 205@180, "Choose One: ", layout: \horz);
 g.setColors(Color.grey, Color.white);
 )
 ::
+
 No labelView created, so set the window title:
+
 code::
 (
 g = EZListView.new(bounds: 200@230); // no label
@@ -142,7 +269,9 @@ g = EZListView.new(bounds: 200@230); // no label
 g.view.parent.findWindow.name = " choose item";
 )
 ::
-insert item:
+
+Insert item:
+
 code::
 (
 g = EZListView.new(nil, 200@200, "List:");
@@ -154,7 +283,9 @@ g.addItem(\item4, { "this is item 4".postln });
 
 g.insertItem(3, \item3, { "this is item 3".postln });
 ::
-remove item:
+
+Remove item:
+
 code::
 (
 g = EZListView.new(nil, 200@200, "List:");
@@ -167,7 +298,9 @@ g.insertItem(3, \item3, { "this is item 3".postln });
 
 g.removeItemAt(1);
 ::
-replace item:
+
+Replace item:
+
 code::
 (
 g = EZListView.new(nil, 200@200, "List:");

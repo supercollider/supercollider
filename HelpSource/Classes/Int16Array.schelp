@@ -1,10 +1,24 @@
-CLASS::Int16Array
-summary::an array whose indexed slots are all of the same type
-related::Classes/FloatArray, Classes/Int8Array, Classes/Int32Array, Classes/DoubleArray, Classes/SymbolArray
-categories::Collections>Ordered
+title:: Int16Array
+categories:: Collections>Ordered
+summary:: An array whose indexed slots are all of the same type
+related:: Classes/FloatArray, Classes/Int8Array, Classes/Int32Array, Classes/DoubleArray, Classes/SymbolArray
 
-DESCRIPTION::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
 These classes implement arrays whose indexed slots are all of the same type.
+
 list::
 ## Int8Array - 8 bit integer
 ## Int16Array - 16 bit integer
@@ -14,6 +28,20 @@ list::
 ## SymbolArray - symbols
 ::
 
-INSTANCEMETHODS::
 
-method::readFromStream
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+method:: readFromStream
+
+

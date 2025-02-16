@@ -1,33 +1,72 @@
-class:: DiskIn
-summary:: Stream in audio from a file.
+title:: DiskIn
+categories:: UGens>InOut, UGens>Buffer
+summary:: Stream in audio from a file
 related:: Classes/PlayBuf, Classes/VDiskIn, Classes/DiskOut
-categories::  UGens>InOut, UGens>Buffer
 
-Description::
 
-Continuously play a longer soundfile from disk. This requires a buffer to
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+Continuously play a longer soundfile from disk.
+This requires a buffer to
 be preloaded with one buffer size of sound.
 
 DiskIn cannot alter playback rate. See link::Classes/VDiskIn:: for a
 disk-streaming UGen with rate control.
 
 
+
+
+
+
+
+
+
+
 classmethods::
+
+
+
+
 private:: categories
 
-method::ar
 
-argument::numChannels
-Number of channels. This must match the number of channels in the buffer. Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.
+method:: ar
 
-argument::bufnum
+
+argument:: numChannels
+
+Number of channels. This must match the number of channels in the buffer.
+Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.
+
+
+argument:: bufnum
+
 Buffer number
-Note:: The Buffer's numFrames must be a power of two and is recommended to be at least 65536 -- preferably 131072 or 262144. Smaller buffer sizes mean more frequent disk access, which can cause glitches. ::
+note:: 
+The Buffer's numFrames must be a power of two and is recommended to be at least 65536 -- preferably 131072 or 262144. Smaller buffer sizes mean more frequent disk access, which can cause glitches. 
+::
+
 
 argument:: loop
+
 If set to 1, the soundfile will loop.
 
-Note:: If the buffer has a larger number of frames than the sound file there will be a noticeable gap between the first and the following loop iterations. In that case chose a smaller buffer size or use link::Classes/PlayBuf##PlayBuf:: instead::
+note::
+If the buffer has a larger number of frames than the sound file there will be a noticeable gap between the first and the following loop iterations.
+In that case chose a smaller buffer size or use link::Classes/PlayBuf##PlayBuf::instead
+::
+
 
 discussion::
 This UGen will set the link::Classes/Done##'done' flag:: when finished playing.
@@ -36,10 +75,31 @@ This UGen will set the link::Classes/Done##'done' flag:: when finished playing.
 
 
 
+
+
+
+
+
 instancemethods::
+
+
+
+
 private:: init
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 s.boot; // start the server
@@ -52,7 +112,14 @@ SynthDef("help-Diskin", { |out, bufnum = 0|
 )
 ::
 
+
+
+
+
+
 subsection:: Normal usage (with Buffer; "Object Style")
+
+
 code::
 b = Buffer.cueSoundFile(s, Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff", 0, 1);
 
@@ -99,10 +166,16 @@ m = { |buf| x.addToHeadMsg(nil, [\bufnum, buf.bufnum]) };
 b = Buffer.cueSoundFile(s, Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff", 0, 1, completionMessage: m);
 
 )
-
 ::
 
+
+
+
+
+
 subsection:: OSC Messaging Style
+
+
 code::
 // allocate a disk i/o buffer
 s.sendMsg("/b_alloc", 0, 65536, 1);

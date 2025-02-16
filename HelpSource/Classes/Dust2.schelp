@@ -1,31 +1,70 @@
-class:: Dust2
-summary:: Random impulses.
+title:: Dust2
+categories:: UGens>Generators>Stochastic
+summary:: Random impulses
 related:: Classes/Dust
-categories::  UGens>Generators>Stochastic
 
 
-Description::
 
-Generates random impulses from -1 to +1.
+
+
+
+
+
+
+
+description::
+
+
+
+
+Generaterandom random impulses from teletype::-1:: to +1.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
 
-argument::density
+
+
+method:: ar, kr
+
+
+argument:: density
+
 Average number of impulses per second.
 
-argument::mul
+
+argument:: mul
+
 Output will be multiplied by this value.
 
-argument::add
+
+argument:: add
+
 This value will be added to the output.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 (
 SynthDef("help-Dust2", { |out = 0|
 	Out.ar(out,
@@ -41,5 +80,4 @@ SynthDef("help-Dust2", { |out = 0|
 	)
 }).play;
 )
-
 ::

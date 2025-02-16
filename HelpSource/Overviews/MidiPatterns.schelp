@@ -1,16 +1,17 @@
 title:: How to control midi events using patterns
 categories:: External Control>MIDI, Streams-Patterns-Events
-summary:: An overview of midi commands and how to use them with Pbind, etc.
+summary:: An overview of midi commands and how to use them with Pbind, etc
+
+
 
 This document is a brief overview of some commonly used midi commands
-available in the midievent part of LINK::Classes/Event:: and which arguments
+available in the midievent part of link::Classes/Event:: and which arguments
 they offer.
 
-To use them in a event pattern such as LINK::Classes/Pbind::, you need to first
+To use them in a event pattern such as link::Classes/Pbind::, you need to first
 initialise a midi out device.
 
-CODE::
-
+code::
 // This posts a list of available midi devices
 // Note their names and bus names and use them in the next step
 MIDIClient.init;
@@ -22,13 +23,14 @@ m = MIDIOut.newByName("IAC Driver", "Bus 1");
 
 In the examples below, it is assumed that you have initialised a midi out.
 
-NOTE::All midi numbers in SuperCollider are 0-indexed. That is, what on most
+note::
+All midi numbers in SuperCollider are 0-indexed. That is, what on most
 devices is called "midi channel 1" is actually midi channel 0 in SuperCollider
 and vice-versa.::
 
 Now, to use it in a Pbind:
 
-CODE::
+code::
 p = Pbind(
 	// These keys are common to all midi commands
     \type, \midi,
@@ -47,13 +49,25 @@ p = Pbind(
 p.stop;
 ::
 
-SECTION:: \noteOn and \noteOff
+
+
+
+
+
+
+
+
+
+section:: \noteOn and \noteOff
+
+
+
 
 The most common midi commands are \noteOn and \noteOff. They are used to play
 notes. \noteOff is automatically transmitted after the note duration when you
 use the \noteOn command.
 
-CODE::
+code::
 p = Pbind(
 	// These keys are common to all midi commands
     \type, \midi,
@@ -72,11 +86,23 @@ p = Pbind(
 p.stop;
 ::
 
-SECTION:: control change
+
+
+
+
+
+
+
+
+
+section:: Control change
+
+
+
 
 Send control change messages.
 
-CODE::
+code::
 p = Pbind(
 	// These keys are common to all midi commands
     \type, \midi,
@@ -94,9 +120,21 @@ p = Pbind(
 p.stop;
 ::
 
-SECTION:: \polyTouch
 
-CODE::
+
+
+
+
+
+
+
+
+section:: \polyTouch
+
+
+
+
+code::
 p = Pbind(
 	// These keys are common to all midi commands
 	\type, \midi,
@@ -112,9 +150,21 @@ p = Pbind(
 )
 ::
 
-SECTION:: \program
 
-CODE::
+
+
+
+
+
+
+
+
+section:: \program
+
+
+
+
+code::
 p = Pbind(
 	// These keys are common to all midi commands
 	\type, \midi,
@@ -129,11 +179,23 @@ p = Pbind(
 )
 ::
 
-SECTION:: \touch
+
+
+
+
+
+
+
+
+
+section:: \touch
+
+
+
 
 Emit after touch messages.
 
-CODE::
+code::
 p = Pbind(
 	// These keys are common to all midi commands
 	\type, \midi,
@@ -148,9 +210,21 @@ p = Pbind(
 )
 ::
 
-SECTION:: \bend
 
-CODE::
+
+
+
+
+
+
+
+
+section:: \bend
+
+
+
+
+code::
 p = Pbind(
 	// These keys are common to all midi commands
 	\type, \midi,
@@ -165,11 +239,23 @@ p = Pbind(
 )
 ::
 
-SECTION:: \sysex
+
+
+
+
+
+
+
+
+
+section:: \sysex
+
+
+
 
 Send a sysex message.
 
-CODE::
+code::
 p = Pbind(
 	// These keys are common to all midi commands
 	\type, \midi,

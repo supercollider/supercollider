@@ -1,6 +1,8 @@
 title:: audio_rate_mapping
-summary:: audio mapping in ProxySpace
 categories:: JITLib>Tutorials
+summary:: Audio mapping in ProxySpace
+
+
 
 code::
 // todo. expand(numChannels) message
@@ -53,14 +55,13 @@ p.fadeTime = 3;
 // possible schema:
 /*
 
-px.map knows always already the number of channels of a proxy, so can decide whether
-to use map or mapn. (map always would mean flat mapping).
+px.map knows always already the number of channels of a proxy, so can decide whether to use map or mapn. (map always would mean flat mapping).
 
 px.mapn could do tricky things like:
 px.mapn(\a_in2, [mono1, mono2])
 px.mapn(\a_in2, stereo) would still work
-px.mapn(\a_in2, [stereo, mono]) could use the first of the stereo chans and the mono
-how to get at the second arg of the stereo in? or it could mix/wrap.
+px.mapn(\a_in2, [stereo, mono]) could use the first of the stereo chans and the mono how to get at the second arg of the stereo in?
+or it could mix/wrap.
 --> px.mapn([\a_inx, \a_iny], stereo)
 
 px.mapn(\a_in, stereo) would take the first of the stereo channels

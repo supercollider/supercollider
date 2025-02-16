@@ -1,9 +1,21 @@
-class:: Dxrand
-summary:: Demand rate random sequence generator.
-related:: Classes/Demand, Classes/Drand, Classes/Dseq, Classes/Dser, Classes/Duty, Classes/TDuty
+title:: Dxrand
 categories:: UGens>Demand
+summary:: Demand rate random sequence generator
+related:: Classes/Demand, Classes/Drand, Classes/Dseq, Classes/Dser, Classes/Duty, Classes/TDuty
 
-Description::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 Dxrand never plays the same value twice, whereas link::Classes/Drand:: chooses
 any value in the list.
@@ -12,24 +24,46 @@ any value in the list.
 See link::Classes/Pxrand:: for structurally related equivalent.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::new
 
-argument::list
+
+
+method:: new
+
+
+argument:: list
 
 An array of values or other UGens.
 
 
-argument::repeats
+argument:: repeats
 
 Number of values to return.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 (
 {
 	var a, freq, trig;
@@ -40,5 +74,4 @@ code::
 
 }.play;
 )
-
 ::

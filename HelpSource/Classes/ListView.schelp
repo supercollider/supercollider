@@ -1,74 +1,153 @@
-CLASS:: ListView
-summary:: A view displaying a list of text items.
+title:: ListView
 categories:: GUI>Views
+summary:: A view displaying a list of text items
 
-DESCRIPTION::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 A view that displays a list of text items and allows one or more of them to be selected, depending on link::#-selectionMode::.
 
 In default selection mode (single item selection), clicking on an item will select it, and pressing the up or down arrow keys will move selection to previous or next item, respectively. Other selection modes allow more complex interaction.
 
-There is a difference between the concepts of link::#-value#current:: item, end link::#-selection#selected:: items. In default selection mode they will always be the same, but not so in other modes.
-
-
-CLASSMETHODS::
-
-PRIVATE:: key
+There is a difference between the concepts of link::#-value#current:: item, end link::#-selection#selected:: items.
+In default selection mode they will always be the same, but not so in other modes.
 
 
 
 
-INSTANCEMETHODS::
 
 
 
-SUBSECTION:: Data
 
-METHOD:: items
+
+
+classmethods::
+
+
+
+
+private:: key
+
+
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+subsection:: Data
+
+
+method:: items
+
+
 	The list of items displayed by the view.
 
 	argument::
 		An Array of Strings, each String defining the text to represent an item.
 
-METHOD:: clear
+
+
+
+method:: clear
+
+
     Removes all items.
 
-METHOD:: value
-	The index of the current item, or nil when there is no current item. Note that this may be different than link::#-selection:: when link::#-selectionMode:: allows multiple items to be selected.
+
+
+
+method:: value
+
+
+	The index of the current item, or teletype::nil:: when there is no current item.
+Note that this may be different than link::#-selection:: when link::#-selectionMode:: allows multiple items to be selected.
 
 	argument::
 		An Integer or nil.
 
-METHOD:: valueAction
+
+
+
+method:: valueAction
+
+
 	Sets link::#-value:: and triggers the link::#-action::.
 
-METHOD:: selection
-	An array of all selected indexes. When setting selection, either an array or a single integer may be used.
-
-	Note that this may be different than link::#-value:: when link::#-selectionMode:: allows multiple items to be selected. When setting selection in single-item selection mode, only the last index will remain selected.
 
 
-SUBSECTION:: Appearance
 
-METHOD:: colors
+method:: selection
+
+
+	An array of all selected indexes.
+When setting selection, either an array or a single integer may be used.
+
+	Note that this may be different than link::#-value:: when link::#-selectionMode:: allows multiple items to be selected.
+When setting selection in single-item selection mode, only the last index will remain selected.
+
+
+
+
+
+
+subsection:: Appearance
+
+
+method:: colors
+
+
 	The background colors of the items.
 
 	argument::
 		An Array of Colors, one Color for each item.
 
-METHOD:: stringColor
+
+
+
+method:: stringColor
+
+
 	The color used to display all the text of all unselected items.
 
 	argument::
 		A Color.
 
-METHOD:: selectedStringColor
+
+
+
+method:: selectedStringColor
+
+
 	The color used to display the selected item's text.
 
 	argument::
 		A Color.
 
-METHOD:: hiliteColor
+
+
+
+method:: hiliteColor
+
+
 	The color used to indicate the selected item (aside from the color of its text).
 
 	argument::
@@ -77,9 +156,13 @@ METHOD:: hiliteColor
 
 
 
-SUBSECTION:: Interaction
 
-METHOD:: selectionMode
+
+subsection:: Interaction
+
+
+method:: selectionMode
+
 
 	The allowed mode of item selection, according to the following table:
 
@@ -87,7 +170,8 @@ METHOD:: selectionMode
 	## strong::Value::  || strong::Meaning::
 	## \none            || No item can be selected.
 	## \single          || Only a single item can be selected at once.
-	## \multi           || Multiple items can be selected. An item's selection is toggled when clicked.
+	## \multi           || Multiple items can be selected.
+An item's selection is toggled when clicked.
 	## \extended        || Multiple items can be selected, individually by holding the Ctrl key, and in a batch by holding the Shift key.
 	## \contiguous      || Multiple neighbouring items can be selected by holding the Shift key.
 	::
@@ -97,19 +181,38 @@ METHOD:: selectionMode
 
 
 
-SUBSECTION:: Actions
 
-METHOD:: action
+
+
+subsection:: Actions
+
+
+method:: action
+
+
 	The action object evaluated whenever the user changes the emphasis::current:: item, i.e. when link::#-value:: changes as a result of GUI interaction.
 
-METHOD:: selectionAction
+
+
+
+method:: selectionAction
+
 
 The action object evaluated whenever link::#-selection:: changes.
 
-METHOD:: enterKeyAction
+
+
+
+method:: enterKeyAction
+
+
 	The action object evaluated whenever the user presses the Enter (Return) key.
 
-METHOD:: defaultKeyDownAction
+
+
+
+method:: defaultKeyDownAction
+
 
 	Implements the default effects of key presses as follows:
 
@@ -127,23 +230,51 @@ METHOD:: defaultKeyDownAction
 
 
 
-SUBSECTION:: Drag and drop
 
-METHOD:: defaultGetDrag
+
+
+subsection:: Drag and drop
+
+
+method:: defaultGetDrag
+
+
 	returns::
 		The link::#-value::.
 
-METHOD:: defaultCanReceiveDrag
+
+
+
+method:: defaultCanReceiveDrag
+
+
 	returns::
 		True if the current drag data is a number.
 
-METHOD:: defaultReceiveDrag
+
+
+
+method:: defaultReceiveDrag
+
+
 	Sets link::#-valueAction:: to the current drag data.
 
 
-EXAMPLES::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 subsection:: Basic Example
+
 
 code::
 (
@@ -160,9 +291,15 @@ v = ListView(w, Rect(10, 10, 120, 70))
 ::
 
 
+
+
+
+
 subsection:: Sound Example
 
+
 Use ListView to switch filters:
+
 code::
 (
 s.waitForBoot({

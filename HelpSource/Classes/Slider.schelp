@@ -1,49 +1,103 @@
-CLASS:: Slider
-summary:: A view consisting of a sliding handle.
+title:: Slider
 categories:: GUI>Views
-
-DESCRIPTION::
-
-A view that allows setting a numerical value by means of moving a sliding handle. It can have horizontal or vertical orientation, meaning the direction in which the handle moves.
-
-
-
-
-CLASSMETHODS::
-
-PRIVATE:: key
-
-METHOD:: new
-
-	When a new Slider is created, its link::#-orientation:: is determined by the initial size: if it is wider than high, the orientation will be horizontal, otherwise it will be vertical.
+summary:: A view consisting of a sliding handle
 
 
 
 
 
-INSTANCEMETHODS::
-
-PRIVATE:: initSlider
 
 
-SUBSECTION:: Data
 
-METHOD:: value
+
+
+description::
+
+
+
+
+A view that allows setting a numerical value by means of moving a sliding handle.
+It can have horizontal or vertical orientation, meaning the direction in which the handle moves.
+
+
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+private:: key
+
+
+method:: new
+
+	When a new Slider is created, its link::#-orientation:: is determined by the initial size:
+if it is wider than high, the orientation will be horizontal, otherwise it will be vertical.
+
+
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+private:: initSlider
+
+
+
+
+
+
+subsection:: Data
+
+
+method:: value
+
+
 	Numerical value between 0 and 1, represented by the handle position within the groove.
 
 	argument::
 		A Float.
 
-METHOD:: valueAction
+
+
+
+method:: valueAction
+
+
 	Sets link::#-value:: and triggers link::#-action::.
 
-METHOD:: increment
+
+
+
+method:: increment
+
+
 	Increments the value by link::#-step:: multiplied by 'factor'.
 
 	argument:: factor
 		Any number.
 
-METHOD:: decrement
+
+
+
+method:: decrement
+
+
 	Decrements the value by link::#-step:: multiplied by 'factor'.
 
 	argument:: factor
@@ -52,27 +106,48 @@ METHOD:: decrement
 
 
 
-SUBSECTION:: Appearance
 
-METHOD:: orientation
-	The orientation of the Slider - the direction in which the handle moves. The default value depends on the size of the view when created.
+
+subsection:: Appearance
+
+
+method:: orientation
+
+
+	The orientation of the Slider - the direction in which the handle moves.
+The default value depends on the size of the view when created.
 
 	argument::
 		One of the two Symbols: \horizontal or \vertical.
 
-METHOD:: thumbSize
+
+
+
+method:: thumbSize
+
+
 	The size of the handle - its width or height, depending on link::#-orientation::.
 
 	argument::
 		An Integer amount of pixels.
 
-METHOD:: background
+
+
+
+method:: background
+
+
 	The color of the background.
 
 	argument::
 		A Color.
 
-METHOD:: knobColor
+
+
+
+method:: knobColor
+
+
 	The color of the handle.
 
 	argument::
@@ -80,45 +155,82 @@ METHOD:: knobColor
 
 
 
-SUBSECTION:: Interaction
 
-METHOD:: step
+
+
+subsection:: Interaction
+
+
+method:: step
+
+
 	The amount by which the value will changed when link::#-increment:: or link::#-decrement:: is called, or when related keys are pressed.
 
 	argument::
 		A Float.
 
-METHOD:: pixelStep
+
+
+
+method:: pixelStep
+
+
 	The absolute amount by which the value would change if the handle moved by one pixel.
 
 	returns::
 		A Float.
 
-METHOD:: shift_scale
+
+
+
+method:: shift_scale
+
+
 	The factor by which link::#-step:: is multiplied when incrementing or decrementing the value by keyboard while the Shift key is pressed.
 
 	argument::
 		A Float.
 
-METHOD:: ctrl_scale
+
+
+
+method:: ctrl_scale
+
+
 	The factor by which link::#-step:: is multiplied when incrementing or decrementing the value by keyboard while the Ctrl key is pressed.
 
 	argument::
 		A Float.
 
-METHOD:: alt_scale
+
+
+
+method:: alt_scale
+
+
 	The factor by which link::#-step:: is multiplied when incrementing or decrementing the value by keyboard while the Alt key is pressed.
 
 	argument::
 		A Float.
 
 
-SUBSECTION:: Actions
 
-METHOD:: action
+
+
+
+subsection:: Actions
+
+
+method:: action
+
+
 	The action object evaluated whenever the user moves the handle.
 
-METHOD:: defaultKeyDownAction
+
+
+
+method:: defaultKeyDownAction
+
 
 	Implements the default effects of key presses as follows:
 
@@ -138,23 +250,52 @@ METHOD:: defaultKeyDownAction
 
 
 
-SUBSECTION:: Drag and drop
 
-METHOD:: defaultGetDrag
+
+
+subsection:: Drag and drop
+
+
+method:: defaultGetDrag
+
+
 	returns::
 		The link::#-value::.
 
-METHOD:: defaultCanReceiveDrag
+
+
+
+method:: defaultCanReceiveDrag
+
+
 	returns::
 		True if the current drag data is a number.
 
-METHOD:: defaultReceiveDrag
+
+
+
+method:: defaultReceiveDrag
+
+
 	Sets link::#-valueAction:: to the current drag data.
 
 
 
-EXAMPLES::
+
+
+
+
+
+
+
+examples::
+
+
+
+
 subsection:: Show the slider value in a NumberBox
+
+
 code::
 (
 w = Window.new.front;
@@ -177,7 +318,14 @@ a.action.value;
 )
 ::
 
+
+
+
+
+
 subsection:: Use a Spec to round and map the output range
+
+
 code::
 (
 w = Window.new.front;
@@ -195,7 +343,14 @@ a.action.value;
 )
 ::
 
+
+
+
+
+
 subsection:: Change the stepsize of the slider, selected via a PopUpMenu
+
+
 code::
 (
 w = Window.new.front;
@@ -214,7 +369,14 @@ c = NumberBox(w, Rect(20, 20, 100, 20));
 )
 ::
 
+
+
+
+
+
 subsection:: Use the slider view to accept key actions
+
+
 code::
 ( // select the slider, type something and watch the post window
 w = Window.new;
@@ -226,8 +388,16 @@ w.front;
 )
 ::
 
+
+
+
+
+
 subsection:: Adding functionality to a view by the method addAction
+
+
 This is useful for adding things to existing frameworks that have action functions already.
+
 code::
 (
 w = Window.new("A Slider");
@@ -249,9 +419,15 @@ a.removeAction(f);
 a.action = nil;
 ::
 
-subsection:: Use Slider for triggering sounds
-code::
 
+
+
+
+
+subsection:: Use Slider for triggering sounds
+
+
+code::
 (
 s.waitForBoot({
 
@@ -279,7 +455,14 @@ s.waitForBoot({
 )
 ::
 
+
+
+
+
+
 subsection:: Change background color of Window
+
+
 code::
 (
 w = Window("RGB fader", Rect(100, 500, 400, 400))

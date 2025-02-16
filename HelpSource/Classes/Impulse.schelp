@@ -1,32 +1,65 @@
-class:: Impulse
-summary:: Impulse oscillator.
+title:: Impulse
+categories:: UGens>Generators>Deterministic
+summary:: Impulse oscillator
 related:: Classes/Blip
-categories::  UGens>Generators>Deterministic
 
 
-Description::
-Outputs non-bandlimited single sample impulses.
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+Output non-bandlimited single sample impulses.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
 
-argument::freq
+
+
+method:: ar, kr
+
+
+argument:: freq
+
 Frequency in Hertz. strong::freq:: may be negative.
 
-argument::phase
-Phase offset in cycles (0..1). Staying in this range offers a slight efficiency
+
+argument:: phase
+
+Phase offset in cycles (0..1).
+Staying in this range offers a slight efficiency
 advantage, though phase offsets outside this range are supported and wrapped
 internally.
 
-argument::mul
+
+argument:: mul
+
 The output will be multiplied by this value.
 
-argument::add
+
+argument:: add
+
 This value will be added to the output.
 
-Discussion::
+
+discussion::
 code::Impulse:: will output a code::1.0:: on the first sample (assuming no
 phase offset).
 
@@ -38,13 +71,13 @@ code::(a,a)::, code::(a,k)::, code::(a,i)::,
 code::(k,k)::, code::(k,i)::,
 code::(i,k)::, code::(i,i)::.
 
-code::Impulse:: is based on a wrapping phasor: phase advances on
-each frame and if the phase goes out of range and is wrapped in that frame,
+code::Impulse:: is based on a wrapping phasor:
+phase advances on each frame and if the phase goes out of range and is wrapped in that frame,
 an impulse is output.
 
-Internally, the strong::phase:: offset value is applied
-and wrapped into range emphasis::before:: applying the phase increment
-(which is determined by the strong::freq::). After this phase increment,
+Internally, the strong::phase:: offset value is applied and wrapped into range emphasis::before:: applying the phase increment
+(which is determined by the strong::freq::).
+After this phase increment,
 the trigger condition is checked. Therefore, it is the phase increment (freq)
 that triggers an impulse, emphasis::not:: the phase offset.
 
@@ -53,6 +86,7 @@ code::freq: 0:: and modulating the strong::phase:: offset directly,
 code::Impulse:: would not support that.
 However, a you could generate an impulse train by phase modulation using the
 strong::rate:: parameter of a link::Classes/Phasor::, like this:
+
 code::
 (
 {
@@ -65,7 +99,18 @@ code::
 ::
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 { Impulse.ar(800, 0.0, 0.5, 0) }.play
@@ -73,12 +118,14 @@ code::
 { Impulse.ar(XLine.kr(800, 100, 5), 0.0, 0.5, 0) }.play
 ::
 
-modulate phase:
+Modulate phase:
+
 code::
 { Impulse.ar(4, [0, MouseX.kr(0, 1)], 0.2) }.play;
 ::
 
-an Impulse with frequency 0 returns a single impulse:
+An Impulse with frequency 0 returns a single impulse:
+
 code::
 SynthDef(\imp, { OffsetOut.ar(0, Impulse.ar(0)); FreeSelf.kr(Impulse.kr(0)) }).add;
 fork { (1 / (1..60).scramble).do { |dt| Synth.grain(\imp);  dt.wait } };

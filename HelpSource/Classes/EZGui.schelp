@@ -1,64 +1,165 @@
-class:: EZGui
-summary:: An abstract superclass for EZ widget wrappers
+title:: EZGui
 categories:: GUI>EZ-GUI
+summary:: An abstract superclass for EZ widget wrappers
 related:: Classes/EZListView, Classes/EZPopUpMenu, Classes/EZSlider, Classes/EZNumber, Classes/EZRanger, Classes/EZKnob
 
+
+
+
+
+
+
+
+
+
 description::
-Users will not normally directly create instances of EZGui, but only use it through its subclasses. It provides the basic mechanisms for various EZ widget wrappers. It also provides a standard for EZ GUI Classes, and new EZ Classes should subclass EZGUI to help keep a consistent user interface.
+
+
+
+
+Users will not normally directly create instances of EZGui, but only use it through its subclasses.
+It provides the basic mechanisms for various EZ widget wrappers.
+It also provides a standard for EZ GUI Classes, and new EZ Classes should subclass EZGUI to help keep a consistent user interface.
+
+
+
+
+
+
+
+
 
 
 instancemethods::
 
+
+
+
 subsection:: Accessing Instance Variables
 
+
 method:: view
-Returns the enclosing link::Classes/CompositeView::.
+
+
+Return the enclosing link::Classes/CompositeView::.
+
+
+
 
 method:: bounds
-Returns the bounds of the enclosing link::Classes/CompositeView::.
+
+
+Return the bounds of the enclosing link::Classes/CompositeView::.
+
+
+
 
 method:: label
+
+
 Sets/gets it the label. Will add the label view if none was initially created.
+
+
 argument:: string
+
 An Instance of link::Classes/String::.
 
+
+
+
 method:: window
-Returns the window if you used the popUp window function.
+
+
+Return the window if you used the popUp window function.
+
+
+
+
 
 
 subsection:: Accessing GUI options
 
+
 method:: alwaysOnTop
-Makes the popup window always on top, if there is one.
+
+
+Make the popup window always on top, if there is one.
+
+
 argument:: bool
+
 An Instance of link::Classes/Boolean::. Default is false.
 
+
+
+
 method:: visible
+
+
 Sets/gets it the component views are visible.
+
+
 argument:: bool
+
 An Instance of link::Classes/Boolean::. Default is true.
+
+
+
 
 method:: enabled
-Sets/gets if the list is enabled.
+
+
+Set/get if the list is enabled.
+
+
 argument:: bool
+
 An Instance of link::Classes/Boolean::. Default is true.
 
+
+
+
 method:: onClose
-Sets/gets the onClose function of either code::view:: or code::window::, depending on whether the EZ view used a popup window.
+
+
+Set/get the onClose function of either code::view:: or code::window::, depending on whether the EZ view used a popup window.
+
+
 argument:: func
+
 An Instance of link::Classes/Function:: or link::Classes/FunctionList::.
 
+
+
+
 method:: font
+
+
 argument:: font
+
 An instance of link::Classes/Font::.
+
+
+
+
 
 
 subsection:: Subclassing
 
-EZGui provides a standard and basic tools for most EZ classes. If you make a new EZ class, then subclass EZGui, and override the necessary methods. If your class only has a label and a widget, chances are, you need to override nothing, but only need to write the  new and init class methods. See existing subclasses of EZGui for examples of this. You may also want to override the following:
+
+EZGui provides a standard and basic tools for most EZ classes.
+If you make a new EZ class, then subclass EZGui, and override the necessary methods.
+If your class only has a label and a widget, chances are, you need to override nothing, but only need to write the  new and init class methods. See existing subclasses of EZGui for examples of this.
+You may also want to override the following:
+
+
+
 
 method:: widget
-Returns the active widget. Subclasses will typically refer to it or ignore it, e.g.:
+
+
+Return the active widget. Subclasses will typically refer to it or ignore it, e.g.:
+
 code::
 MyEZClass{
 	myOtherMethods{ }
@@ -67,35 +168,92 @@ MyEZClass{
 }
 ::
 
+
+
+
 method:: action
-Gets/sets the action of the EZ class instance.
+
+
+Get/set the action of the EZ class instance.
+
+
 argument:: func
+
 An Instance of link::Classes/Function:: or link::Classes/FunctionList::.
 
+
+
+
 method:: value
-Gets/sets the value of the code::widget::. Does not perform the action.
+
+
+Get/set the value of the code::widget::.
+Does not perform the action.
+
+
 argument:: val
+
 An integer.
+
+
+
 
 method:: valueAction
-Gets/sets the value of the widget. Performs do action.
+
+
+Get/set the value of the widget.
+Performs do action.
+
+
 argument:: val
+
 An integer.
 
+
+
+
 method:: doAction
-Performs code::this.action.value(this)::.
+
+
+Perform code::this.action.value(this)::.
+
+
+
+
 
 
 subsection:: Internal Utilities
 
+
 method:: prSubViewBounds
-This calculates the bounds of the subviews and the gaps. It returns an array of Rects, which depends on how many subview there are. Subclasses override this if they have more than one widget.
+
+
+This calculates the bounds of the subviews and the gaps.
+It returns an array of Rects, which depends on how many subview there are.
+Subclasses override this if they have more than one widget.
+
+
+
 
 method:: prMakeView
-Called by init. Returns code::[view, bounds]::. The container is either the enclosing Container, or a pop up window with a container.
+
+
+Called by init. Returns code::[view, bounds]::.
+The container is either the enclosing Container, or a pop up window with a container.
+
+
+
 
 method:: prSetViewParams
+
+
 Only defined by some subclasses. Sets the code::resize::  and code::align:: of all the views, according to the state of code::layout::.
 
+
+
+
 method:: prMakeMarginGap
-Called in the init method of all subclasses. Sets the margin and gap of code::view::. By default, it tries to get its parent's gap, otherwise it defaults to code::2@2::. Setting code::argGap:: overrides these.
+
+
+Called in the init method of all subclasses.
+Sets the margin and gap of code::view::. By default, it tries to get its parent's gap, otherwise it defaults to code::2@2::. Setting code::argGap:: overrides these.

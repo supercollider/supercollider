@@ -1,27 +1,70 @@
-class:: Button
-summary:: A multi-state button
+title:: Button
 categories:: GUI>Views
+summary:: A multi-state button
+
+
+
+
+
+
+
+
+
 
 description::
+
+
+
+
 A multi-state button.
+
+
+
+
+
 
 subsection:: Some Important Issues Regarding Button
 
+
 Failure to set any states at all results in an invisible button.
 
-The button performs its action upon releasing the mouse. In musical contexts, you might want to use code::mouseDownAction_():: to set a function to be performed on pressing the mouse (see link::Classes/View::, and examples below).
+The button performs its action upon releasing the mouse.
+In musical contexts, you might want to use code::mouseDownAction_():: to set a function to be performed on pressing the mouse (see link::Classes/View::, and examples below).
 
-If the drag contains a number, then code::valueAction_():: is performed using the code::currentDrag::. If the drag contains anything else, code::action:: is set to the current drag. You could, for example, drag a function to a Button, and action would then be set to that function.
+If the drag contains a number, then code::valueAction_():: is performed using the code::currentDrag::.
+If the drag contains anything else, code::action:: is set to the current drag.
+You could, for example, drag a function to a Button, and action would then be set to that function.
+
+
+
+
+
+
+
+
+
 
 classmethods::
 
+
+
+
 method:: new
+
+
 argument:: parent
+
 The parent view.
+
+
 argument:: bounds
+
 An instance of link::Classes/Rect::, or a link::Classes/Point:: indicating code::width@height::.
+
+
 discussion::
 Example:
+
 code::
 (
 w = Window.new("The Four Noble Truths");
@@ -40,18 +83,32 @@ w.front;
 )
 ::
 
+
+
+
+
+
+
+
+
+
 instancemethods::
 
-private::prDoAction
+
+
+
+private:: prDoAction
+
 
 method:: states
 An array of labels and colors defining the states of the button.
+
+
 argument:: stateArray
+
 An link::Classes/Array:: of arrays of the form code:: [[String, strColor, bgColor], ....] ::
 
 code::
-
-
 (
 w = Window.new;
 a = Button(w, Rect(130, 130, 100, 100));
@@ -70,18 +127,41 @@ a.action = { |view|
 );
 ::
 
+
+
+
 method:: value
-Sets or returns the index of the current state. This will strong::not:: evaluate the function assigned to strong::action:: (see link::Classes/View::).
+
+
+Set/return the index of the current state.
+This will strong::not:: evaluate the function assigned to strong::action:: (see link::Classes/View::).
+
+
 argument:: argVal
+
 The index of an item in the states array.
+
+
+
 
 method:: valueAction
-Sets the button to display the item at index strong::anInt:: of the states array, and evaluates strong::action:: (see link::Classes/View::), if the value has changed.
+
+
+Set the button to display the item at index strong::anInt:: of the states array, and evaluates strong::action:: (see link::Classes/View::), if the value has changed.
+
+
 argument:: anInt
+
 The index of an item in the states array.
 
+
+
+
 method:: string
-Sets or gets the text of the currently active state.
+
+
+Set/get the text of the currently active state.
+
 code::
 (
 w = Window("but", Rect(300, 300, 200, 200)).front;
@@ -90,24 +170,54 @@ b.string = "hello button";
 )
 ::
 
+
+
+
 method:: font
-Sets the Font of the button. Default value is the default font: Font.default .
+
+
+Set the Font of the button.
+Default value is the default font:
+Font.default .
+
+
 argument:: aFont
+
 An instance of link::Classes/Font::.
+
+
+
+
 
 
 subsection:: Subclassing and Internal Methods
 
-The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
+
+The following methods are usually not used directly or are called by a primitive.
+Programmers can still call or override these as needed.
+
+
+
 
 method:: doAction
+
+
 The method called by the primitive upon releasing the mouse.
+
+
 argument:: modifiers
+
 A key modifier number, which is passed to the strong::action:: as its second argument upon mouse-releasing the button.
 
+
+
+
 method:: defaultKeyDownAction
+
+
 discussion::
 The default keydown actions are:
+
 table::
 ## key || action || comment
 ## " " || value + 1 || space
@@ -115,23 +225,63 @@ table::
 ## \n || value + 1
 ## 3.asAscii || value + 1 || enter key or cmd-C on macOS
 ::
+
 To change these use code::defaultKeyDownAction_::, see link::Classes/View::.
 
+
+
+
 method:: properties
-A list of properties to which this view responds. See link::Classes/View::.
+
+
+A list of properties to which this view responds.
+See link::Classes/View::.
+
+
 returns::
 [\bounds, \visible, \enabled, \canFocus, \resize, \background, \minWidth, \maxWidth, \minHeight, \maxHeight, \value, \font, \states, \focusColor]
 
+
+
+
 method:: defaultGetDrag
+
+
 The method called by default when initiating a drag strong::from:: a Button. Returns the same as link::#-value::.
 
+
+
+
 method:: defaultCanReceiveDrag
-The method called by default when attempting to drop a drag in this object. By default, Button will respond only to drags where the drag contains a link::Classes/Number:: or link::Classes/Function::.
+
+
+The method called by default when attempting to drop a drag in this object.
+By default, Button will respond only to drags where the drag contains a link::Classes/Number:: or link::Classes/Function::.
+
+
+
 
 method:: defaultReceiveDrag
-The default method called when a drag has been received. If the drag contains a number, then action is set to the current drag. Otherwise code::valueAction_():: is performed using the code::currentDrag::.
+
+
+The default method called when a drag has been received.
+If the drag contains a number, then action is set to the current drag.
+Otherwise code::valueAction_():: is performed using the code::currentDrag::.
+
+
+
+
+
+
+
+
+
 
 examples::
+
+
+
+
 code::
 (
 w = Window.new("Example");
@@ -162,7 +312,9 @@ b.valueAction = -1;
 b.valueAction = 3.3;
 ::
 
-In a musical context, a button-down press is more meaningful than a button-up (release) as it's more intuitive to press a button on the beat. For that you can use link::Classes/View::'s link::Classes/View#-mouseDownAction:: (a superclass of Button).
+In a musical context, a button-down press is more meaningful than a button-up (release) as it's more intuitive to press a button on the beat.
+For that you can use link::Classes/View::'s link::Classes/View#-mouseDownAction:: (a superclass of Button).
+
 code::
 (
 s.waitForBoot({
@@ -180,8 +332,9 @@ s.waitForBoot({
 )
 ::
 
+If you drag a function to a button, the button's action is set to that function.
+you can us this for swapping functions.
 
-If you drag a function to a button, the button's action is set to that function. you can us this for swapping functions.
 code::
 (
 s.waitForBoot({
@@ -215,7 +368,7 @@ s.waitForBoot({
 			)
 		.string_("a play noise function").align_(\center).background_(Color.rand);
 
-	p = CmdPeriod.add({ b.value_(0) }); // set button to 0 on hitting Cmd-period
+	p = CmdPeriod.add({ b.value_(0) }); // set button to teletype::0:: on hitting Cmd-period
 	w.onClose_{ snd.free; CmdPeriod.removeAll }; // clean up when window is closed
 	w.front;
 })
@@ -223,6 +376,7 @@ s.waitForBoot({
 ::
 
 Using Routine to set button states on the fly.
+
 code::
 (
 var update, w, b;
@@ -255,6 +409,7 @@ var update, w, b;
 ::
 
 Using Routine to set button states on the fly 2.
+
 code::
 (
 s.waitForBoot({
@@ -314,6 +469,7 @@ s.waitForBoot({
 ::
 
 Complex drag and drop example try dragging the buttons to white slot, and then between white slots, or simply out of the view.
+
 code::
 (
 var w, f, slots;

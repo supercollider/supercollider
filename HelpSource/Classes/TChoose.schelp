@@ -1,20 +1,61 @@
-class:: TChoose
-summary:: Randomly select one of several inputs
+title:: TChoose
 categories:: UGens>Triggers, UGens>Random
+summary:: Randomly select one of several inputs
 related:: Classes/TWChoose
 
+
+
+
+
+
+
+
+
+
 description::
+
+
+
+
 An output is selected randomly on receiving a trigger from an array of inputs.
 
 TChoose returns a combination of link::Classes/Select:: and link::Classes/TIRand::.
 
+
+
+
+
+
+
+
+
+
 classmethods::
+
+
+
+
 method:: ar, kr
 
+
 argument:: trig
+
 argument:: array
 
+
+
+
+
+
+
+
+
+
 examples::
+
+
+
+
 code::
 (
 {
@@ -30,4 +71,7 @@ code::
 )
 ::
 
-note:: all the ugens are continuously running. This may not be the most efficient way if each input is  cpu-expensive.::
+note::
+All the UGens are continuously running.
+This may not be the most efficient way if each input is  cpu-expensive.
+::

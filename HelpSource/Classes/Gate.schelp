@@ -1,32 +1,66 @@
-class:: Gate
-summary:: Gate or hold.
+title:: Gate
+categories:: UGens>Triggers
+summary:: Gate or hold
 related:: Classes/Latch
-categories::  UGens>Triggers
 
 
-Description::
 
-Allows input signal value to pass when gate is positive, otherwise holds last value.
+
+
+
+
+
+
+
+description::
+
+
+
+
+Allow input signal value to pass when gate is positive, otherwise holds last value.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
 
-argument::in
+
+
+method:: ar, kr
+
+
+argument:: in
+
 The input signal.
 
-argument::trig
+
+argument:: trig
 
 Gate - can be any signal. The output is held fixed when this is non-positive.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 s.boot;
 // Control rate so as not to whack your speakers with DC
 { Gate.kr(WhiteNoise.kr(1, 0), LFPulse.kr(1.333, 0.5)) }.scope(zoom: 20);
-
 ::

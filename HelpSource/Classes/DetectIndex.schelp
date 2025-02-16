@@ -1,21 +1,67 @@
-class:: DetectIndex
-summary:: Search a buffer for a value
+title:: DetectIndex
 categories:: UGens>Buffer
+summary:: Search a buffer for a value
+
+
+
+
+
+
+
+
+
 
 description::
+
+
+
+
 Search a buffer for a value.
 
+
+
+
+
+
+
+
+
+
 classmethods::
+
+
+
+
 method:: ar, kr
 
+
 argument:: bufnum
-index of the buffer
+
+Index of the buffer
+
+
 argument:: in
-the input signal.
+
+The input signal.
+
+
 returns::
-index
+Index
+
+
+
+
+
+
+
+
+
 
 examples::
+
+
+
+
 code::
 (
 var max = 300;

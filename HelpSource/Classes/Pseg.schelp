@@ -1,42 +1,90 @@
-class:: Pseg
-summary:: timed embedding of values
-related:: Classes/Ptime, Classes/Pstep, Classes/Env
+title:: Pseg
 categories:: Streams-Patterns-Events>Patterns>Time
+summary:: Timed embedding of values
+related:: Classes/Ptime, Classes/Pstep, Classes/Env
+
+
+
+
+
+
+
+
+
 
 description::
 
-Pseg defines a function of time as a breakpoint envelope using the same parameters as link::Classes/Env::. These patterns can be used to describe tempo or dynamic variations independent of the rhythmic patterns that express them.
 
-ClassMethods::
 
-method::new
 
-argument::levels
+Pseg defines a function of time as a breakpoint envelope using the same parameters as link::Classes/Env::.
+These patterns can be used to describe tempo or dynamic variations independent of the rhythmic patterns that express them.
+
+
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
+argument:: levels
+
 A link::Classes/Pattern:: that returns the levels. The first level is the initial value of the envelope, all subsequent values are interpolated.
 
-argument::durs
+
+argument:: durs
+
 A link::Classes/Pattern:: that returns segments durations in beats.
 
-argument::curves
-a link::Classes/Symbol::, link::Classes/Float::, or an link::Classes/Array:: of those. Determines the shape of the segments.
 
-argument::repeats
-a number.
+argument:: curves
+
+A link::Classes/Symbol::, link::Classes/Float::, or an link::Classes/Array:: of those. Determines the shape of the segments.
+
+
+argument:: repeats
+
+A number.
 
 The possible values are:
+
 table::
 ## code::\step:: || || flat segments.
 ## code::\linear:: || code::\lin:: || linear segments, the default.
-## code::\exponential:: || code::\exp:: || natural exponential growth and decay. In this case, the levels must all be nonzero and the have the same sign.
+## code::\exponential:: || code::\exp:: || natural exponential growth and decay.
+In this case, the levels must all be nonzero and the have the same sign.
 ## code::\sine:: || code::\sin:: || sinusoidal S shaped segments.
 ## code::\welch:: || code::\wel:: || sinusoidal segments shaped like the sides of a Welch window.
 ## code::\squared::  || code::\sqr:: || squared segment.
 ## code::\cubed:: || code::\cub:: || cubed segment.
-## a link::Classes/Float:: || || a curvature value for all segments. 0 means linear, positive and negative numbers curve the segment up and down.
+## a link::Classes/Float:: || || a curvature value for all segments.
+0 means linear, positive and negative numbers curve the segment up and down.
 ## an link::Classes/Array:: of symbols or floats || || curvature values for each segment.
 ::
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 // change a parameter

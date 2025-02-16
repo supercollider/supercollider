@@ -1,10 +1,24 @@
-CLASS:: Rest
-summary:: Represents a rest in event patterns
+title:: Rest
 categories:: Streams-Patterns-Events
+summary:: Represents a rest in event patterns
 related:: Classes/Pbind, Classes/Event, Classes/AbstractFunction
 
-DESCRIPTION::
-A Rest may be used in event patterns to indicate that the resulting event should be a rest (i.e., silent). It should be used in one of the child patterns belonging to a Pbind, for instance.
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+A Rest may be used in event patterns to indicate that the resulting event should be a rest (i.e., silent).
+It should be used in one of the child patterns belonging to a Pbind, for instance.
 
 code::
 // do nothing for 2 seconds
@@ -14,39 +28,84 @@ code::
 Pbind(\note, Pseq([0, 4, 7, 11], inf), \dur, Pseq([2, 1, Rest(1)], inf) / 5).play;
 ::
 
+
+
+
+
+
 subsection:: Expressing rests in event patterns
 
-The Rest class allows rests to be indicated in any stream, not only frequency or event type. Also, using the duration argument (see the link::#*new:: method below), rests may be embedded into a duration stream. That is, rests may be treated as part of the rhythmic specification, rather than the pitch specification.
 
+The Rest class allows rests to be indicated in any stream, not only frequency or event type.
+Also, using the duration argument (see the link::#*new:: method below), rests may be embedded into a duration stream.
+That is, rests may be treated as part of the rhythmic specification, rather than the pitch specification.
 
 note::
-As of SuperCollider 3.9, code::Rest::'s behavior has changed to be more intuitive. Note that you have to now use code::Rest():: - the shortcut of code::Rest:: as class directly is strong::not supported:: anymore.
+As of SuperCollider 3.9, code::Rest::'s behavior has changed to be more intuitive.
+Note that you have to now use code::Rest():: - the shortcut of code::Rest:: as class directly is strong::not supported:: anymore.
 ::
+
+
+
+
 
 
 subsection:: Usage
 
+
 list::
-## link::Classes/Event#-isRest:: checks every item in the event to see if it meets the condition to be a rest: it may be a code::Rest:: instance, the code::Rest:: class, or either of the symbols code:: \ :: or code::\r::. If any item meets the condition, the event will be considered a rest and it will not take action when played.
+## link::Classes/Event#-isRest:: checks every item in the event to see if it meets the condition to be a rest:
+it may be a code::Rest:: instance, the code::Rest:: class, or either of the symbols code:: \ :: or code::\r::.
+If any item meets the condition, the event will be considered a rest and it will not take action when played.
 
-## If a Pbind child pattern yields a Rest object, the Rest is placed directly into the event. This is a change of behavior from 3.8.
+## If a Pbind child pattern yields a Rest object, the Rest is placed directly into the event.
+This is a change of behavior from 3.8.
 
-## If a Rest object has a value, it will respond to math operations: code::Rest(1) * 2 == Rest(2)::.
+## If a Rest object has a value, it will respond to math operations:
+code::Rest(1) * 2 == Rest(2)::.
 ::
 
 
-CLASSMETHODS::
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
 All methods of Rest except *new are private, and should not be used directly.
 
+
+
+
 private:: processRest
+
+
 private:: embedInStream
+
+
+
+
 private:: asStream
 
-METHOD:: new
+
+method:: new
 Create an instance of Rest, with a value to be used in the resulting rest event.
 
+
 argument:: value
-The Rest instance's numeric value, to be used in math operations. Note that a Rest's value is ignored for most Event keys (assuming the Event does nothing in response to code::.play::). If a Rest appears in a rhythm key (code::dur:: or code::delta::), then the number is the time until the next event. Consequently, numeric Rests are often used for duration -- but there is no requirement that a Rest's value must be a duration.
+
+The Rest instance's numeric value, to be used in math operations.
+Note that a Rest's value is ignored for most Event keys (assuming the Event does nothing in response to code::.play::).
+If a Rest appears in a rhythm key (code::dur:: or code::delta::), then the number is the time until the next event.
+Consequently, numeric Rests are often used for duration -- but there is no requirement that a Rest's value must be a duration.
+
 
 discussion::
 code::
@@ -56,31 +115,68 @@ b = 2 * a; // the same
 b.value; // returns 12
 ::
 
-The rest of a rest is always a rest. This idempotence is implemented by Rest's superclass link::Classes/Operand::.
+The rest of a rest is always a rest.
+This idempotence is implemented by Rest's superclass link::Classes/Operand::.
+
 code::
 Rest(Rest(1)) // returns Rest(1)
 ::
 
 
-INSTANCEMETHODS::
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
 private:: dur
+
+
 private:: embedInStream
+
+
+
+
 private:: asStream
+
+
 private:: asControlInput
+
+
+
+
 private:: playAndDelta
 
-METHOD:: isRest
-returns true
 
-METHOD::unwrapBoolean
+method:: isRest
+returns teletype::true::
+
+
+
+
+method:: unwrapBoolean
+
+
 returns the value.
+
+
 discussion::
 This method implements the following behavior.
+
 code::
 Rest(6) + 1 // Rest(7)
 Rest(true) // true
 ::
+
 This makes comparisons work:
+
 code::
 Rest(6) < 7 // true, and not Rest(true)
 a = Pseq([1, 2, 1, 3, Rest(1), 2, Rest(3)], inf); // e.g. as a duration pattern
@@ -88,7 +184,18 @@ b = a.collect { |x| if(x > 2) { x / 2 } { x } };
 b.asStream.nextN(8)
 ::
 
-EXAMPLES::
+
+
+
+
+
+
+
+
+
+examples::
+
+
 
 
 Using Rest instances in a pitch stream
@@ -107,6 +214,7 @@ Pbind(
 ::
 
 Using a Rest instance in a duration stream
+
 code::
 (
 Pbind(
@@ -117,12 +225,18 @@ Pbind(
 ::
 
 
+
+
+
+
 subsection:: Alternatives to Rest
+
 
 In addition to Rest, in events, rests can be specified in two other ways (legacy usages).
 
 list::
-## A link::Classes/Symbol:: may be specified in any frequency stream (under the keys degree, note, midinote or freq). The exception to this rule is control bus mapping symbols, beginning with 'c' followed by a number. Typical symbols that have been used include strong::\rest::, strong::\r:: and the empty symbol strong:: \ ::.
+## A link::Classes/Symbol:: may be specified in any frequency stream (under the keys degree, note, midinote or freq).
+The exception to this rule is control bus mapping symbols, beginning with 'c' followed by a number. Typical symbols that have been used include strong::\rest::, strong::\r:: and the empty symbol strong:: \ ::.
 
 code::
 (
@@ -149,4 +263,5 @@ p = Pbind(
 
 p.stop;
 ::
+
 ::

@@ -1,46 +1,82 @@
-class:: Ringz
-summary:: Ringing filter.
+title:: Ringz
+categories:: UGens>Filters>Linear
+summary:: Ringing filter
 related:: Classes/Formlet, Classes/RHPF, Classes/RLPF, Classes/Resonz
-categories::  UGens>Filters>Linear
 
 
-Description::
 
-This is the same as  link::Classes/Resonz::, except that it is a constant skirt gain filter, meaning that the peak gain depends on the value of Q. Also, instead of the
-resonance parameter in Resonz, the bandwidth is specified in a 60dB ring decay time. One Ringz is equivalent to one component of the
+
+
+
+
+
+
+
+description::
+
+
+
+
+This is the same as  link::Classes/Resonz::, except that it is a constant skirt gain filter, meaning that the peak gain depends on the value of Q.
+Also, instead of the
+resonance parameter in Resonz, the bandwidth is specified in a 60dB ring decay time.
+One Ringz is equivalent to one component of the
 link::Classes/Klank::  UGen.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
 
-argument::in
+
+
+method:: ar, kr
+
+
+argument:: in
 
 The input signal.
 
 
-argument::freq
+argument:: freq
 
 Resonant frequency in Hertz.
 
 
-argument::decaytime
+argument:: decaytime
 
 The 60 dB decay time of the filter.
 
 
-argument::mul
+argument:: mul
 
 Output will be multiplied by this value.
 
 
-argument::add
+argument:: add
 
 This value will be added to the output.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 { Ringz.ar(Dust.ar(3, 0.3), 2000, 2) }.play
@@ -71,11 +107,24 @@ code::
 )
 ::
 
-Section:: Interaction with sample rate
+
+
+
+
+
+
+
+
+
+section:: Interaction with sample rate
+
+
+
 
 Ringz (and UGens that are based on it: link::Classes/Klank::, link::Classes/DynKlank:: and link::Classes/Formlet::) are "sample-rate independent" with respect to emphasis::impulses:: at the input. That is, given single-sample impulses, the output signal at different sample rates should be the same frequency and amplitude.
 
-This design has a side effect: If the input is not made of impulses, the output amplitude is proportional to the sample rate.
+This design has a side effect:
+If the input is not made of impulses, the output amplitude is proportional to the sample rate.
 
 code::
 (
@@ -95,4 +144,5 @@ At 44.1 kHz, this prints a RMS amplitude of 1.0758. At 88.2 kHz, the amplitude d
 
 Modal synthesis (simulating the vibrating modes of a struck surface) feeds a short, decaying burst of noise into Ringz-style resonators. This is a common use case that emphasis::is:: subject to this amplitude effect.
 
-If you will need the results to be compatible at different sample rates, make sure to scale the volume appropriately: if code::sig:: is the Ringz, Klank or Formlet signal, use code::sig * (originalSampleRate / SampleRate.ir):: and substitute the right value in place of code::originalSampleRate::.
+If you will need the results to be compatible at different sample rates, make sure to scale the volume appropriately:
+if code::sig:: is the Ringz, Klank or Formlet signal, use code::sig * (originalSampleRate / SampleRate.ir):: and substitute the right value in place of code::originalSampleRate::.

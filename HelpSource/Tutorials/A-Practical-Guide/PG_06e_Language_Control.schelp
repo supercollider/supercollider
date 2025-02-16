@@ -1,14 +1,27 @@
 title:: Pattern Guide 06e: Language Control
+categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Patterns that mimic some language-side control structures
 related:: Tutorials/A-Practical-Guide/PG_06d_Parallel_Patterns, Tutorials/A-Practical-Guide/PG_06f_Server_Control
-categories:: Streams-Patterns-Events>A-Practical-Guide
 
-section::Language control methods
+
+
+
+
+
+
+
+
+
+section:: Language control methods
+
+
+
 
 Some patterns mimic language-style control methods: conditionals ( link::Classes/Pif:: ), loops ( link::Classes/Pwhile:: ) and error cleanup ( link::Classes/Pprotect:: ).
 
-definitionList::
-## code::Pif(condition, iftrue, iffalse, default):: || Evaluates a pattern code::condition:: that returns true or false. Then, one value is taken from the true or false branch before going back to evaluate the condition again. The code::default:: value or pattern comes into play when the true or false branch stops producing values (returns nil). If the code::default:: is not given, Pif returns control to the parent upon nil from either branch.
+definitionlist::
+## code::Pif(condition, iftrue, iffalse, default):: || Evaluates a pattern code::condition:: that returns teletype::true:: or false. Then, one value is taken from the true or false branch before going back to evaluate the condition again.
+The code::default:: value or pattern comes into play when the true or false branch stops producing values (returns teletype::nil::). If the code::default:: is not given, Pif returns control to the parent upon teletype::nil:: from either branch.
 
 code::
 p = Pbind(
@@ -20,7 +33,8 @@ p = Pbind(
 p.stop;
 ::
 
-## code::Pseed(randSeed, pattern):: || Random number generators depend on seed values; setting a specific seed produces a repeatable stream of pseudorandom numbers. link::Classes/Pseed:: sets the random seed before embedding code::pattern::, effectively restarting the random number generator at the start of the pattern.
+## code::Pseed(randSeed, pattern):: || Random number generators depend on seed values; setting a specific seed produces a repeatable stream of pseudorandom numbers.
+link::Classes/Pseed:: sets the random seed before embedding code::pattern::, effectively restarting the random number generator at the start of the pattern.
 
 code::
 p = Pbind(
@@ -40,8 +54,11 @@ r.stop;
 ::
 
 ## code::Pprotect(pattern, func):: || Like the code::protect:: error handling method, if an error occurs while getting the next value from the pattern, the function will be evaluated before the error interrupts execution.
-## code::Ptrace(pattern, key, printStream, prefix):: || For debugging, Ptrace prints every return value. Is your pattern really doing what you think? This will tell you. A Ptrace is created automatically by the code::trace:: message: code::aPattern.trace(key, printStream, prefix) --> Ptrace(aPattern, key, printStream, prefix):: .
-## code::Pwhile(func, pattern):: || Like while: as long as the function evaluates to true, the pattern is embedded. The function is checked once at the beginning and thereafter when the pattern comes to an end. If it's applied to an infinite pattern, there's no looping because the pattern never gives control back.
+## code::Ptrace(pattern, key, printStream, prefix):: || For debugging, Ptrace prints every return value.
+Is your pattern really doing what you think?
+This will tell you. A Ptrace is created automatically by the code::trace:: message: code::aPattern.trace(key, printStream, prefix) --> Ptrace(aPattern, key, printStream, prefix):: .
+## code::Pwhile(func, pattern):: || Like while: as long as the function evaluates to teletype::true::, the pattern is embedded. The function is checked once at the beginning and thereafter when the pattern comes to an end.
+If it's applied to an infinite pattern, there's no looping because the pattern never gives control back.
 
 code::
 // Pwhile and Ptrace
@@ -56,6 +73,7 @@ p = Pwhile({ ~go }, Pbind(
 
 ~go = false;	// will stop the whole pattern when the Pbind comes to an end
 ::
+
 ::
 
 Previous:	link::Tutorials/A-Practical-Guide/PG_06d_Parallel_Patterns::

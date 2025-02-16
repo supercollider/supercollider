@@ -1,20 +1,57 @@
-class:: Dwrand
-summary:: Demand rate weighted random sequence generator
+title:: Dwrand
 categories:: UGens>Demand, UGens>Random
+summary:: Demand rate weighted random sequence generator
 related:: Classes/Demand
 
+
+
+
+
+
+
+
+
+
 classmethods::
+
+
+
+
 method:: new
+
+
 argument:: list
-array of values or other ugens
+
+Array of values or other UGens
+
+
 argument:: weights
-array of values (should sum up to 1.0)
+
+Array of values (should sum up to teletype::1.0::)
+
+
 argument:: repeats
-number of values to return
+
+Number of values to return
+
+
 discussion::
-structurally related: link::Classes/Pwrand::, link::Classes/TWindex::, link::Classes/TWChoose::
+Structurally related: link::Classes/Pwrand::, link::Classes/TWindex::, link::Classes/TWChoose::
+
+
+
+
+
+
+
+
+
 
 examples::
+
+
+
+
 code::
 (
 {

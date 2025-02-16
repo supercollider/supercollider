@@ -1,39 +1,87 @@
-class:: DelayN
-summary:: Simple delay line with no interpolation.
+title:: DelayN
+categories:: UGens>Delays
+summary:: Simple delay line with no interpolation
 related:: Classes/Delay1, Classes/Delay2, Classes/DelayC, Classes/DelayL, Classes/BufDelayN
-categories::  UGens>Delays
 
 
-Description::
 
-Simple delay line with no interpolation. See also
+
+
+
+
+
+
+
+description::
+
+
+
+
+Simple delay line with no interpolation.
+See also
 link::Classes/DelayL::  which uses linear interpolation, and
 link::Classes/DelayC::  which uses cubic interpolation.
 
-This UGen will create aliasing artifacts if you modulate the delay time, which is also quantized to the nearest sample period. If these are undesirable properties, use DelayL or DelayC. But if your delay time is fixed and sub-sample accuracy is not needed, this is the most CPU-efficient choice with no loss in quality.
+This UGen will create aliasing artifacts if you modulate the delay time, which is also quantized to the nearest sample period.
+If these are undesirable properties, use DelayL or DelayC. But if your delay time is fixed and sub-sample accuracy is not needed, this is the most CPU-efficient choice with no loss in quality.
 
-The term "delay" is often used in electronic music to refer to a delay line with feedback. If you are looking for that, try CombN.
+The term "delay" is often used in electronic music to refer to a delay line with feedback.
+If you are looking for that, try CombN.
+
+
+
+
+
+
+
+
+
 
 classmethods::
 
-method::ar, kr
 
-argument::in
+
+
+method:: ar, kr
+
+
+argument:: in
+
 The input signal.
 
-argument::maxdelaytime
+
+argument:: maxdelaytime
+
 The maximum delay time in seconds, used to initialize the delay buffer size.
 
-argument::delaytime
+
+argument:: delaytime
+
 Delay time in seconds.
 
-argument::mul
+
+argument:: mul
+
 Output will be multiplied by this value.
 
-argument::add
+
+argument:: add
+
 This value will be added to the output.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (

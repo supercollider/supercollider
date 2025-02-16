@@ -1,10 +1,24 @@
-class:: SendReply
-summary:: Send an array of values from the server to all notified clients
+title:: SendReply
 categories:: UGens>Triggers
+summary:: Send an array of values from the server to all notified clients
 related:: Classes/SendTrig, Classes/OSCFunc
 
+
+
+
+
+
+
+
+
+
 description::
-A message is sent to all notified clients. See link::Classes/Server::.
+
+
+
+
+A message is sent to all notified clients.
+See link::Classes/Server::.
 
 list::
 ## strong::cmdName::
@@ -15,19 +29,56 @@ list::
 	::
 ::
 
+
+
+
+
+
+
+
+
+
 classmethods::
+
+
+
+
 method:: ar, kr
 
+
 argument:: trig
-a non-positive to positive transition triggers a message.
+
+A non-teletype::positive:: to teletype::positive:: transition triggers a message.
+
+
 argument:: cmdName
-a string or symbol, as a message name.
+
+A string or symbol, as a message name.
+
+
 argument:: values
-array of ugens, or valid ugen inputs.
+
+Array of UGens, or valid UGen inputs.
+
+
 argument:: replyID
-integer id (similar to link::Classes/SendTrig::).
+
+Integer id (similar to link::Classes/SendTrig::).
+
+
+
+
+
+
+
+
+
 
 examples::
+
+
+
+
 code::
 (
 {
@@ -79,9 +130,16 @@ OSCdef(\listener, { |msg|
 ~mySynth.set(\rate, 10); // slow it down...
 ::
 
-subsection::Identitying the time a message was sent
 
-Sometimes, we need to know when a message was sent. Because code::SendReply:: can send only messages (which have no timestamp) and no bundles (which have), we can't use the code::time:: argument of the link::Classes/OSCdef::'s function. Instead, you can send a time stamp with the data, by using the link::Classes/Sweep:: UGen.
+
+
+
+
+subsection:: Identitying the time a message was sent
+
+
+Sometimes, we need to know when a message was sent.
+Because code::SendReply:: can send only messages (which have no timestamp) and no bundles (which have), we can't use the code::time:: argument of the link::Classes/OSCdef::'s function. Instead, you can send a time stamp with the data, by using the link::Classes/Sweep:: UGen.
 
 code::
 (

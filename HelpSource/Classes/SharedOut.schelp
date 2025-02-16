@@ -1,43 +1,74 @@
-class:: SharedOut
-summary:: Write to a shared control bus.
+title:: SharedOut
+categories:: UGens>InOut
+summary:: Write to a shared control bus
 related:: Classes/SharedIn
-categories::  UGens>InOut
 
 
-Description::
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 warning::
 SharedIn has been deprecated. Synchronous access to busses on local servers is possible via
 link::Classes/Bus#-getSynchronous:: and link::Classes/Bus#-setSynchronous::
 ::
 
-
-Reads from a control bus shared between the internal server and the SC
-client. Control rate only. Reading from a shared control bus on the
-client is synchronous. When not using the internal server use the get
+Read from a control bus shared between the internal server and the SC
+client. Control rate only. Reading from a shared control bus on the client is synchronous. When not using the internal server use the get
 method of Bus (or /c_get in messaging style) or
 link::Classes/SendTrig:: with an link::Classes/OSCFunc::.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::kr
 
-argument::bus
+
+
+method:: kr
+
+
+argument:: bus
 
 The index of the shared control bus to write to.
 
 
-argument::channelsArray
+argument:: channelsArray
 
-An Array of channels or single output to write out. You cannot
-change the size of this once a SynthDef has been built.
+An Array of channels or single output to write out.
+You cannot change the size of this once a SynthDef has been built.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 (
 // only works with the internal server
 s = Server.internal;
@@ -65,5 +96,4 @@ Routine({
 
 
 s.quit;
-
 ::

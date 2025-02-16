@@ -1,33 +1,102 @@
-CLASS::LibraryBase
-summary::Abstract global storage class
+title:: LibraryBase
 categories:: Collections
+summary:: Abstract global storage class
 
-DESCRIPTION::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
 Base class for link::Classes/Library:: and link::Classes/Archive::
 
-There is only one global instance: Archive.global, or Library.global, which is initialized automatically in the subclasses.
+There is only one global instance:
+Archive.global, or Library.global, which is initialized automatically in the subclasses.
 
-CLASSMETHODS::
 
-method::global
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: global
+
+
 Subclass responsibility
 
-method::clear
+
+
+
+method:: clear
+
+
 Clear the dictionary
 
-method::at
-Access the dictionary at a path with keys. The keys may be any object, but are usually link::Classes/Symbol::s.
 
-method::put
-Store an object in the dictionary at a path, given as a list of keys and the object to be stored as last argument. The keys may be any object, but are usually link::Classes/Symbol::s.
 
-method::atList
-Access the dictionary at a path, given as a list of keys. The keys may be any object, but are usually link::Classes/Symbol::s.
 
-method::putList
-Store an object in the dictionary at a path, given as a list of keys and the object to be stored as last argument. The keys may be any object, but are usually link::Classes/Symbol::s.
+method:: at
 
-EXAMPLES::
+
+Acces the dictionary at a path with keys.
+The keys may be any object, but are usually link::Classes/Symbol::s.
+
+
+
+
+method:: put
+
+
+Store an object in the dictionary at a path, given as a list of keys and the object to be stored as last argument.
+The keys may be any object, but are usually link::Classes/Symbol::s.
+
+
+
+
+method:: atList
+
+
+Acces the dictionary at a path, given as a list of keys.
+The keys may be any object, but are usually link::Classes/Symbol::s.
+
+
+
+
+method:: putList
+
+
+Store an object in the dictionary at a path, given as a list of keys and the object to be stored as last argument.
+The keys may be any object, but are usually link::Classes/Symbol::s.
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 // an example from the subclass Library:

@@ -1,66 +1,149 @@
-CLASS:: StaticText
-summary:: A view displaying non-editable text
+title:: StaticText
 categories:: GUI>Views
+summary:: A view displaying non-editable text
 
-DESCRIPTION::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
 A view displaying non-editable text
 
 
-CLASSMETHODS::
-
-PRIVATE:: key
 
 
 
-INSTANCEMETHODS::
 
-SUBSECTION:: Data
 
-METHOD:: string
+
+
+
+classmethods::
+
+
+
+
+private:: key
+
+
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+subsection:: Data
+
+
+method:: string
+
+
 	The text displayed by the view.
 
 	argument::
 		A String.
 
-METHOD:: object
+
+
+
+method:: object
+
+
 	If link::#-setBoth:: is true, setting this variable also sets link::#-string:: to the value interpreted link::Classes/Object#-asString#as String::.
 
 	argument::
 		Any object, typically one which makes sense to display as a string, such as a Float.
 
-METHOD:: setBoth
+
+
+
+method:: setBoth
+
+
 	A variable stating whether setting link::#-object:: will also set link::#-string::.
 
 	argument::
 		A Boolean.
 
-SUBSECTION:: Appearance
 
-METHOD:: align
-	The alignment of the displayed text. See link::Reference/gui_alignments:: for possible values.
 
-METHOD:: font
+
+
+
+subsection:: Appearance
+
+
+method:: align
+
+
+	The alignment of the displayed text.
+See link::Reference/gui_alignments:: for possible values.
+
+
+
+
+method:: font
+
+
 	The font used to display the text.
 
 	argument::
 		A Font.
 
-METHOD:: stringColor
+
+
+
+method:: stringColor
+
+
 	The color used to display the text.
 
 	argument::
 		A Color.
 
-METHOD:: background
+
+
+
+method:: background
+
+
 	Setting this variable colors the whole area occupied by the view under the text with the given color.
 
 	argument::
 		A Color.
 
 
-EXAMPLES::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 subsection:: Basic Example
+
 
 code::
 (
@@ -77,7 +160,12 @@ a.string = "Your Rolex";
 ::
 
 
+
+
+
+
 subsection:: Monitoring Values in a Synth
+
 
 code::
 (
@@ -127,7 +215,12 @@ w.onClose = { r.stop; q.free; b.free }; // clean up if the window closes
 ::
 
 
+
+
+
+
 subsection:: Dynamic Text
+
 
 code::
 (

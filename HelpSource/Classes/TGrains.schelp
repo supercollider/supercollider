@@ -1,65 +1,121 @@
-class:: TGrains
-summary:: Buffer granulator.
-categories::  UGens>Buffer, UGens>Generators>Granular
+title:: TGrains
+categories:: UGens>Buffer, UGens>Generators>Granular
+summary:: Buffer granulator
 related:: Classes/GrainBuf
 
-Description::
-Triggers generate grains from a buffer. Each grain has a Hanning envelope
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+Triggers generate grains from a buffer.
+Each grain has a Hanning envelope
+
 code::
-(sin2(x) for x from 0 to π)
+(sin2(x) for x from teletype::0:: to π)
 ::
-and can be panned over multichannel output.
+
+And can be panned over multichannel output.
+
+
+
+
+
+
+
+
+
 
 classmethods::
 
-method::ar
 
-argument::numChannels
+
+
+method:: ar
+
+
+argument:: numChannels
+
 The number of output channels. Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.
 
-argument::trigger
-At each trigger, the following arguments are sampled and used as
-the arguments of a new grain. A trigger occurs when a signal
-changes from non-positive to a positive value.
 
-If the trigger is audio rate then the grains will start with
-sample accuracy.
+argument:: trigger
 
-argument::bufnum
-The index of the buffer to use. It must be a one channel (mono)
+At each trigger, the following arguments are sampled and used as the arguments of a new grain.
+A trigger occurs when a signal changes from non-teletype::positive:: to a positive value.
+
+If the trigger is audio rate then the grains will start with sample accuracy.
+
+
+argument:: bufnum
+
+The index of the buffer to use.
+It must be a one channel (mono)
 buffer.
 
-argument::rate
+
+argument:: rate
+
 1.0 is normal, 2.0 is one octave up, 0.5 is one octave down -1.0
 is backward normal rate… etc.
 
-argument::centerPos
-The position in the buffer in seconds at which the grain envelope
-will reach maximum amplitude.
 
-argument::dur
+argument:: centerPos
+
+The position in the buffer in seconds at which the grain envelope will reach maximum amplitude.
+
+
+argument:: dur
+
 Duration of the grain in seconds.
 
-argument::pan
-determines where to pan the output.
+
+argument:: pan
+
+Determine where to pan the output.
+
 list::
 ## If numChannels = 1, the pan argument is ignored.
 ## If numChannels = 2, panning is similar to Pan2.
 ## If numChannels > 2, panning is the same as PanAz.
 ::
 
-argument::amp
+
+argument:: amp
+
 Amplitude of the grain.
 
-argument::interp
+
+argument:: interp
+
 1, 2, or 4. Determines whether the grain uses (1) no
 interpolation, (2) linear interpolation, or (4) cubic
 interpolation.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 s.boot;
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
@@ -167,7 +223,7 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 }.scope(zoom: 4);
 )
 
-// demand ugens as inputs
+// demand UGens as inputs
 (
 {
 	var trate, dur, z, d;
@@ -189,5 +245,4 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 )
 
 b.free
-
 ::

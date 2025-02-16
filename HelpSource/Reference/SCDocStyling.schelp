@@ -1,7 +1,8 @@
 title:: SCDoc Styling
-summary:: Help system CSS styles customization and themes
 categories:: HelpSystem
+summary:: Help system CSS styles customization and themes
 related:: Guides/WritingHelp, Classes/SCDoc, Classes/SCDocHTMLRenderer
+
 
 Documentation rendered HTML reads the global style from teletype::scdoc.css::,
 but also reads teletype::frontend.css:: and teletype::custom.css:: (in that
@@ -17,11 +18,24 @@ code::
 SCDoc.helpTargetDir.openOS
 ::
 
-section::Colors
+
+
+
+
+
+
+
+
+
+section:: Colors
+
+
+
 
 Colors are defined as CSS variables, so that to change any color, it's
 sufficient for a user to override the relevant variable in their
-teletype::custom.css::. These variables are then used to set any color in all
+teletype::custom.css::.
+These variables are then used to set any color in all
 other css files of the documentation.
 
 Specific variables are not reported here, please refer to the default CSS theme
@@ -45,7 +59,13 @@ The teletype::themes:: directory also contains a teletype::README.md:: which
 goes more into detail about how a theme gets applied and stored for a client
 and how a theme can be developed.
 
-subsection::Themes
+
+
+
+
+
+subsection:: Themes
+
 
 CSS themes distributed in teletype::HelpTargetDir/themes:: are
 provided only to match ScIDE's UI themes. There is currently no

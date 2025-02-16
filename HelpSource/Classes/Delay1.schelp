@@ -1,28 +1,58 @@
-class:: Delay1
-summary:: Single sample delay.
+title:: Delay1
+categories:: UGens>Delays
+summary:: Single sample delay
 related:: Classes/Delay2, Classes/TDelay
-categories::  UGens>Delays
 
 
-Description::
 
-Delays the input by one audio frame or control period.
+
+
+
+
+
+
+
+description::
+
+
+
+
+Delay the input by one audio frame or control period.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
 
-argument::in
+
+
+method:: ar, kr
+
+
+argument:: in
+
 The input signal.
 
-argument::mul
+
+argument:: mul
+
 The output will be multiplied by this value.
 
-argument::add
+
+argument:: add
+
 This value will be added to the output.
 
-argument::x1
+
+argument:: x1
+
 The sample value preceding the delayed input, which is the value of the first output sample.
 This can be a numeric value or a code::UGen::.
 
@@ -31,8 +61,10 @@ When running at audio rate, strong::x1:: defaults to code::0.0::, i.e. "silence"
 At control rate, the default value is set to the first sample of strong::in::, i.e. the first input sample is held during the delay.
 ::
 
+
 discussion::
 The output sequence is:
+
 teletype::
 out[0] = in[-1] = x1
 out[1] = in[0]
@@ -46,7 +78,18 @@ At audio-rate, an analog delay model is followed—the input signal is preceded 
 At control-rate, leading with a zero is less appropriate because control signals are often DC or other non zero-mean signals (e.g. a frequency or gain control signal).
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 // Create bipolar Dust
@@ -72,5 +115,4 @@ code::
     ]
 }.plot(0.001).plotMode_(\points)
 )
-
 ::

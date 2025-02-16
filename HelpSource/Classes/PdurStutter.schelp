@@ -1,18 +1,50 @@
-class:: PdurStutter
-summary:: partition a value into n equal subdivisions
-related:: Classes/Psubdivide, Classes/Pdup
+title:: PdurStutter
 categories:: Streams-Patterns-Events>Patterns>Repetition
+summary:: Partition a value into n equal subdivisions
+related:: Classes/Psubdivide, Classes/Pdup
 
-note::It is recommended to use link::Classes/Psubdivide:: instead. This class is retained for backwards compatibility.::
-warning::PdurStutter will return link::Classes/Psubdivide::::
+
+
+note::
+It is recommended to use link::Classes/Psubdivide::instead. This class is retained for backwards compatibility.
+::
+
+warning::
+PdurStutter will return link::Classes/Psubdivide::
+::
+
+
+
+
+
+
+
+
+
 
 description::
 
+
+
+
 A filter pattern designed for a stream of float durations.
 
-Subdivides each duration by each stutter and yields that value stutter times. A stutter of 0 will skip the duration value, a stutter of 1 yields the duration value unaffected.
+Subdivides each duration by each stutter and yields that value stutter times.
+A stutter of teletype::0:: will skip the duration value, a stutter of teletype::1::yields the duration value unaffected.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (

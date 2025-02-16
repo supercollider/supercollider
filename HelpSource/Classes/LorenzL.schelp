@@ -1,9 +1,24 @@
-class:: LorenzL
-summary:: Lorenz chaotic generator
+title:: LorenzL
 categories:: UGens>Generators>Chaotic
+summary:: Lorenz chaotic generator
+
+
+
+
+
+
+
+
+
 
 description::
-A strange attractor discovered by Edward N. Lorenz while studying mathematical models of the atmosphere. The system is composed of three ordinary differential equations:
+
+
+
+
+A strange attractor discovered by Edward N.
+Lorenz while studying mathematical models of the atmosphere.
+The system is composed of three ordinary differential equations:
 
 teletype::
 	x' = s * (y - x)
@@ -11,30 +26,84 @@ teletype::
 	z' = x * y - b * z
 ::
 
-The time step amount code::h:: determines the rate at which the ODE is evaluated. Higher values will increase the rate, but cause more instability. A safe choice is the default amount of 0.05.
+The time step amount code::h:: determines the rate at which the ODE is evaluated.
+Higher values will increase the rate, but cause more instability. A safe choice is the default amount of teletype::0::.05.
+
+
+
+
+
+
+
+
+
 
 classmethods::
+
+
+
+
 method:: ar
+
+
 argument:: freq
+
 Iteration frequency in Hertz
+
+
 argument:: s
+
 Equation variable
+
+
 argument:: r
+
 Equation variable
+
+
 argument:: b
+
 Equation variable
+
+
 argument:: h
+
 Integration time step
+
+
 argument:: xi
+
 Initial value of x
+
+
 argument:: yi
+
 Initial value of y
+
+
 argument:: zi
+
 Initial value of z
+
+
 argument:: mul
+
 argument:: add
 
+
+
+
+
+
+
+
+
+
 examples::
+
+
+
+
 code::
 // vary frequency
 { LorenzL.ar(MouseX.kr(20, SampleRate.ir)) * 0.3 }.play(s);

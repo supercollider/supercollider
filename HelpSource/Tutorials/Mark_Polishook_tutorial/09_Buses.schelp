@@ -1,7 +1,8 @@
 title:: 09_Buses
-summary:: Mark Polishook tutorial
 categories:: Tutorials>Mark_Polishook_tutorial
+summary:: Mark Polishook tutorial
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
+
 
 
 By default, SuperCollider has 1024 buses for audio signals and 16,384 for control signals. The buses, which are items in an array, are what SuperCollider uses to represent audio and control rate data.
@@ -16,9 +17,21 @@ code::
 [ channel0, channel1, channel2, channel3, channel4, ... , ..., ..., etc., ... channel4095 ]
 ::
 
-section::Placing audio into a bus
 
-Use an Out ugen at the audio rate to put data into an audio bus.
+
+
+
+
+
+
+
+
+section:: Placing audio into a bus
+
+
+
+
+Use an Out UGen at the audio rate to put data into an audio bus.
 
 code::
 (
@@ -42,11 +55,23 @@ SynthDescLib.global.browse;
 )
 ::
 
-shows 1 channel of output on channel 0.
+Show 1 channel of output on channel 0.
 
-section::Getting audio from a bus
 
-Send an .ar message to an In ugen to get data from an audio bus.
+
+
+
+
+
+
+
+
+section:: Getting audio from a bus
+
+
+
+
+Send an .ar message to an In UGen to get data from an audio bus.
 
 code::
 (
@@ -67,7 +92,19 @@ Synth("dataFromABus");	// pair it with a sine wave on channel 1
 )
 ::
 
-section::Control rate buses
+
+
+
+
+
+
+
+
+
+section:: Control rate buses
+
+
+
 
 Use code::In.kr:: and code::Out.kr:: to read from or write to control buses.
 

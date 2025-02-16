@@ -1,7 +1,8 @@
 title:: Using Extensions
-summary:: Using Extensions
 categories:: Internals
+summary:: Using Extensions
 related:: Guides/WritingUGens, Guides/UsingQuarks, Guides/WritingClasses
+
 
 SC supports extensions to its class library, documentation, and server UGen plugins. Extensions should be packaged as a
 single folder containing all three (for convenient addition or removal), or any combination, which can then be placed in
@@ -9,13 +10,25 @@ platform-specific extension directories in order to be included.
 
 
 
+
+
+
+
+
+
+
 section:: Platform Specific Directories
 
-You can install extensions simply by copying the extensions to the following location. There are different directories
+
+
+
+You can install extensions simply by copying the extensions to the following location.
+There are different directories
 for per-user and system-wide extensions that apply to all users.. The locations can be obtained by running
 code::Platform.userExtensionDir:: and code::Platform.systemExtensionDir::.
 
 Typical user-specific extensions directories:
+
 table::
 ## macOS   || ~/Library/Application Support/SuperCollider/Extensions/
 ## Linux   || ~/.local/share/SuperCollider/Extensions/
@@ -23,20 +36,35 @@ table::
 ::
 
 Typical system-wide extension directories:
+
 table::
 ## macOS   || /Library/Application Support/SuperCollider/Extensions/
 ## Linux   || /usr/share/SuperCollider/Extensions/
 ## Windows || %PROGRAMDATA%/SuperCollider/Extensions/
 ::
 
+
+
+
+
+
+
+
+
+
 section:: How Extensions Folders Should be Organised
 
-Class files and UGen plugins are recognised by their file extensions. Anything placed within a folder named 
+
+
+
+Class files and UGen plugins are recognised by their file extensions.
+Anything placed within a folder named 
 teletype::ignore/:: (case insensitive) will be ignored when compiling the class library or loading plugins.
 
 Here is an example folder layout:
 
 teletype::MyExtension::
+
 tree::
 ## teletype::classes::
     tree::

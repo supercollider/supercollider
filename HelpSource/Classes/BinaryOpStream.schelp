@@ -1,13 +1,38 @@
-class:: BinaryOpStream
-summary:: two streams combined by a binary operator
-related:: Classes/UnaryOpStream, Classes/NAryOpStream
+title:: BinaryOpStream
 categories:: Streams-Patterns-Events
+summary:: Two streams combined by a binary operator
+related:: Classes/UnaryOpStream, Classes/NAryOpStream
+
+
+
+
+
+
+
+
+
 
 description::
 
-A BinaryOpStream is created as a result of a binary math operation on a pair of Streams. It is defined to respond to strong::next:: by returning the result of the math operation on the strong::next:: value from both streams. It responds to strong::reset:: by resetting both Streams.
 
-Examples::
+
+
+A BinaryOpStream is created as a result of a binary math operation on a pair of Streams.
+It is defined to respond to strong::next:: by returning the result of the math operation on the strong::next:: value from both streams. It responds to strong::reset:: by resetting both Streams.
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 x = Routine { 6.do { |i| i.yield } } + 64;

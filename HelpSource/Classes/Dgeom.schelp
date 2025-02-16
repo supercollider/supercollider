@@ -1,36 +1,76 @@
-class:: Dgeom
-summary:: Demand rate geometric series UGen.
-related:: Classes/Demand, Classes/Dseries, Classes/Duty, Classes/TDuty
+title:: Dgeom
 categories:: UGens>Demand
+summary:: Demand rate geometric series UGen
+related:: Classes/Demand, Classes/Dseries, Classes/Duty, Classes/TDuty
 
-Description::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
 Demand rate geometric series UGen.
 
 See link::Classes/Pgeom:: for structurally related equivalent.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::new
 
-argument::start
+
+
+method:: new
+
+
+argument:: start
+
 Start value. Can be a number or any other UGen.
 
 
-argument::grow
-Value by which to grow (x = x[-1] * grow).  Can be a number or
-any other UGen.
+argument:: grow
 
-argument::length
+Value by which to grow (x = x[-1] * grow).  Can be a number or any other UGen.
+
+
+argument:: length
+
 Number of values to create.
 
-discussion::
-The arguments can be a number or any other ugen
 
-Examples::
+discussion::
+The arguments can be a number or any other UGen
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 // example
 
 (
@@ -54,5 +94,4 @@ code::
 
 }.play;
 )
-
 ::

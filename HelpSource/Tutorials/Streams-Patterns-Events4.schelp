@@ -1,13 +1,26 @@
 title:: Understanding Streams, Patterns and Events - Part 4
+categories:: Tutorials>Streams-Patterns-Events
 summary:: Environment & Event
 related:: Tutorials/Streams-Patterns-Events1, Tutorials/Streams-Patterns-Events2, Tutorials/Streams-Patterns-Events3, Tutorials/Streams-Patterns-Events5, Tutorials/Streams-Patterns-Events6, Tutorials/Streams-Patterns-Events7
-categories:: Tutorials>Streams-Patterns-Events
+
 
 The preceding sections showed how to use Streams and Patterns to generate complex sequences of values for a single parameter at a time.
 
 This section covers Environments and Events, which are used to build a symbolic event framework for patterns, allowing you to control all aspects of a composition using patterns.
 
-section::Environment
+
+
+
+
+
+
+
+
+
+section:: Environment
+
+
+
 
 An link::Classes/Environment:: is an link::Classes/IdentityDictionary:: mapping link::Classes/Symbol::s to values. There is always one current Environment which is stored in the code::currentEnvironment:: class variable of class link::Classes/Object::.
 
@@ -17,7 +30,7 @@ code::
 currentEnvironment.put(\myvariable, 999);
 ::
 
-and retrieved from the current Environment as follows:
+And retrieved from the current Environment as follows:
 
 code::
 currentEnvironment.at(\myvariable).postln;
@@ -29,25 +42,37 @@ code::
 ~myvariable = 888;
 ::
 
-is equivalent to:
+Is equivalent to:
 
 code::
 currentEnvironment.put(\myvariable, 888);
 ::
 
-and:
+And:
 
 code::
 ~myvariable.postln;
 ::
 
-is equivalent to:
+Is equivalent to:
 
 code::
 currentEnvironment.at(\myvariable).postln;
 ::
 
-section::Making an Environment
+
+
+
+
+
+
+
+
+
+section:: Making an Environment
+
+
+
 
 Environment has a class method strong::make:: which can be used to create an link::Classes/Environment:: and fill it with values. What strong::make:: does is temporarily replace the current Environment with a new one, call your function where you fill the Environment with values, then it replaces the previous current Environment and returns you the new one.
 
@@ -63,7 +88,19 @@ a.postln;
 )
 ::
 
-section::Using an Environment
+
+
+
+
+
+
+
+
+
+section:: Using an Environment
+
+
+
 
 The instance method strong::use:: lets you temporarily replace the current link::Classes/Environment:: with one you have made. The strong::use:: method returns the result of your function instead of the Environment like strong::make:: does.
 
@@ -95,9 +132,23 @@ a = Environment.use({
 )
 ::
 
-section::Calling Functions with arguments from the current Environment
 
-It is possible to call a link::Classes/Function:: and have it look up any unspecified argument values from the current Environment. This is done with the strong::valueEnvir:: and strong::valueArrayEnvir:: methods. These methods will, for any unspecified argument value, look in the current Environment for a symbol with the same name as the argument. If the argument is not found then whatever the function defines as the default value for that argument is used.
+
+
+
+
+
+
+
+
+section:: Calling Functions with arguments from the current Environment
+
+
+
+
+It is possible to call a link::Classes/Function:: and have it look up any unspecified argument values from the current Environment.
+This is done with the strong::valueEnvir:: and strong::valueArrayEnvir:: methods. These methods will, for any unspecified argument value, look in the current Environment for a symbol with the same name as the argument.
+If the argument is not found then whatever the function defines as the default value for that argument is used.
 
 code::
 (
@@ -120,7 +171,8 @@ Environment.use({
 )
 ::
 
-Here is a somewhat contrived example of how the Environment might be used to manufacture SynthDefs. Even though the three functions below have the freq, amp and pan args declared in different orders it does not matter, because valueEnvir looks them up in the environment.
+Here is a somewhat contrived example of how the Environment might be used to manufacture SynthDefs.
+Even though the three functions below have the freq, amp and pan args declared in different orders it does not matter, because valueEnvir looks them up in the environment.
 
 code::
 (
@@ -167,31 +219,65 @@ Task({
 )
 ::
 
-section::Event
 
-The class link::Classes/Event:: is a subclass of link::Classes/Environment::. Events are mappings of Symbols representing names of parameters for a musical event to their value. This lets you put any information you want into an event.
 
-The class getter method strong::default:: retrieves the default prototype event which has been initialized with values for many useful parameters. It represents only one possible event model. You are free to create your own, however it would be good to understand the one provided first so that you can see what can be done.
 
-A prototype event is a default event which will be transformed by the streams returned by patterns. Compositions produced by event patterns are created entirely from transformations of copies of a single protoEvent.
+
+
+
+
+
+
+section:: Event
+
+
+
+
+The class link::Classes/Event:: is a subclass of link::Classes/Environment::.
+Events are mappings of Symbols representing names of parameters for a musical event to their value.
+This lets you put any information you want into an event.
+
+The class getter method strong::default:: retrieves the default prototype event which has been initialized with values for many useful parameters.
+It represents only one possible event model.
+You are free to create your own, however it would be good to understand the one provided first so that you can see what can be done.
+
+A prototype event is a default event which will be transformed by the streams returned by patterns.
+Compositions produced by event patterns are created entirely from transformations of copies of a single protoEvent.
 
 footnote::
 It's all a part of the Big Note, but don't tell the pigs and ponies.
 ::
 
-section::Value Patterns, Event Patterns and Pbind
 
-The patterns discussed in parts 2 and 3 are known as "value patterns" because their streams return a single value for each call to strong::next::. Here we introduce "event patterns" which once turned into streams, return an link::Classes/Event:: for each call to strong::next::.
 
-The class link::Classes/Pbind:: provides a bridge between value patterns and event patterns. It binds symbols in each event to values obtained from a pattern. Pbind takes arguments in pairs, the first of a pair being a link::Classes/Symbol:: and the second being a value link::Classes/Pattern::. Any object can act as a Pattern, so you can use constants as the pattern ( see code::\amp:: in the example below ).
 
-The Pbind stream returns nil whenever the first one of its streams ends.
+
+
+
+
+
+
+section:: Value Patterns, Event Patterns and Pbind
+
+
+
+
+The patterns discussed in parts 2 and 3 are known as "value patterns" because their streams return a single value for each call to strong::next::.
+Here we introduce "event patterns" which once turned into streams, return an link::Classes/Event:: for each call to strong::next::.
+
+The class link::Classes/Pbind:: provides a bridge between value patterns and event patterns.
+It binds symbols in each event to values obtained from a pattern.
+Pbind takes arguments in pairs, the first of a pair being a link::Classes/Symbol:: and the second being a value link::Classes/Pattern::.
+Any object can act as a Pattern, so you can use constants as the pattern ( see code::\amp:: in the example below ).
+
+The Pbind stream returns teletype::nil:: whenever the first one of its streams ends.
 
 code::
 Pbind( \freq, Pseq([440,880]) ).play
 ::
 
-An event stream is created for a Pattern by sending it the code::asStream:: message. What Pbind does is to produce a stream which puts the values for its symbols into the event, possibly overwriting previous bindings to those symbols:
+An event stream is created for a Pattern by sending it the code::asStream:: message.
+What Pbind does is to produce a stream which puts the values for its symbols into the event, possibly overwriting previous bindings to those symbols:
 
 code::
 t = Pbind( \freq, Pseq([440,880]) ).asStream;
@@ -202,19 +288,49 @@ t.next(Event.default);
 
 When calling link::Classes/Pattern#-play:: an link::Classes/EventStreamPlayer:: is automatically generated which handles scheduling as well as passing the protoEvent into the event stream.
 
-section::EventStreamPlayer
 
-The class link::Classes/EventStreamPlayer:: is a subclass of link::Classes/PauseStream::. A PauseStream is just a wrapper for a stream allowing to play, stop, start it, etc...
 
-EventStreamPlayers are initialized using the event stream returned by Pbind-asStream, as well as with a protoEvent. The EventStreamPlayer passes in a strong::protoEvent::, at each call to strong::next:: on the Pbind stream. The Pbind stream copies the event to pass down and back up the tree of pattern streams so that each stream can modify it.
 
-An EventStreamPlayer is itself a stream which returns scalars (numbers) which are used by the clock to schedule its next invocation. At every call to EventStreamPlayer-next by the clock, the player gets its delta values by querying the Event after it has been returned by the Pbind stream traversal.
 
-section::Changes in SC3
+
+
+
+
+
+section:: EventStreamPlayer
+
+
+
+
+The class link::Classes/EventStreamPlayer:: is a subclass of link::Classes/PauseStream::.
+A PauseStream is just a wrapper for a stream allowing to play, stop, start it, etc...
+
+EventStreamPlayers are initialized using the event stream returned by Pbind-asStream, as well as with a protoEvent.
+The EventStreamPlayer passes in a strong::protoEvent::, at each call to strong::next:: on the Pbind stream. The Pbind stream copies the event to pass down and back up the tree of pattern streams so that each stream can modify it.
+
+An EventStreamPlayer is itself a stream which returns scalars (numbers) which are used by the clock to schedule its next invocation.
+At every call to EventStreamPlayer-next by the clock, the player gets its delta values by querying the Event after it has been returned by the Pbind stream traversal.
+
+
+
+
+
+
+
+
+
+
+section:: Changes in SC3
+
+
+
 
 In SC2, you called asEventStream on an Pattern and you'd get a stream which actually returned events.
 
-In SC3, if you want an event stream proper you call asStream on the Event Pattern. This will give you a stream of events which you can then use to initialize an EventStreamPlayer object. You don't however need to worry about that because it is usually done for you in Pattern's play method. Also changed is that you do not pass in your protoEvent through the asStream method. It is passed in for you by the EventStreamPlayer at each call to next on the stream.
+In SC3, if you want an event stream proper you call asStream on the Event Pattern.
+This will give you a stream of events which you can then use to initialize an EventStreamPlayer object.
+You don't however need to worry about that because it is usually done for you in Pattern's play method. Also changed is that you do not pass in your protoEvent through the asStream method.
+It is passed in for you by the EventStreamPlayer at each call to next on the stream.
 
 Here you can see what the stream returned from a Pbind looks like.
 

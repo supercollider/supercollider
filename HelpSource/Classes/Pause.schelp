@@ -1,32 +1,65 @@
-class:: Pause
-summary:: When triggered, pauses a node.
+title:: Pause
+categories:: UGens>Synth control
+summary:: When triggered, pauses a node
 related:: Classes/Free
-categories::  UGens>Synth control
 
 
-Description::
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 When triggered, pauses a node.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::kr
-
-argument::gate
-
-When gate is 0, node is paused, when 1 it runs.
 
 
-argument::id
+
+method:: kr
+
+
+argument:: gate
+
+When gate is 0, node is paused, when teletype::1::it runs.
+
+
+argument:: id
 
 Node to be paused.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 s.boot;
 
 SynthDef(\a, { Out.ar(0, SinOsc.ar(800, 0, 0.2)) }).add;
@@ -40,5 +73,4 @@ s.sendMsg(\s_new, \b, 1002, 0, 0);
 s.sendMsg(\n_set, 1002, \gate, 0);
 
 s.sendMsg(\n_set, 1002, \gate, 1);
-
 ::

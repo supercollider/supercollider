@@ -1,232 +1,550 @@
-CLASS:: PageLayout
-summary:: a Window with a FlowView on it for use in ObjectGui's MVC model
+title:: PageLayout
 categories:: GUI
+summary:: A Window with a FlowView on it for use in ObjectGui's MVC model
 related:: Classes/ObjectGui, Classes/FlowView, Classes/Window, Classes/NotificationCenter
 
-DESCRIPTION::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
 This class encapsulates the common task of creating a Window, adding a FlowView (CompositeView with a FlowLayout on it).  It also supports the MVC model by registering controllers that are then removed (sent the .remove message) when the Window closes.  Additionally it can resize itself to fit the contents.
 
 
-CLASSMETHODS::
 
-METHOD:: new
-Create a Window with a FlowView on it.  The PageLayout object can be treated like a Window or like a View.
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
+Create a Window with a FlowView on it.
+ The PageLayout object can be treated like a Window or like a View.
+
 
 argument:: title
+
 Window title
 
+
 argument:: bounds
-Bounds or nil.  Default of nil will size the window to the entire screen size.  Use .resizeToFit to shrink the window to the content size.
+
+Bounds or nil.  Default of teletype::nil:: will size the window to the entire screen size.
+ Use .resizeToFit to shrink the window to the content size.
+
 
 argument:: margin
+
 FlowLayout margin.
 
+
 argument:: background
+
 Background color
 
+
 argument:: scroll
-boolean: add scroll bars or not.
+
+Boolean: add scroll bars or not.
+
 
 argument:: front
-boolean: whether to immediately display the window, bringing it to the front.  default is true.  You may choose to first add your views to the window and then front it which is useful for large slow GUIs
 
-returns:: a PageLayout
+Boolean: whether to immediately display the window, bringing it to the front.
+ default is true.  You may choose to first add your views to the window and then front it which is useful for large slow GUIs
 
 
-INSTANCEMETHODS::
+returns::
+ 
+a PageLayout
 
-METHOD:: window
-the Window object
 
-returns:: a Window
 
-METHOD:: view
-the top most view on the Window
 
-returns:: a View
 
-METHOD:: isClosed
-boolean: has the window been closed ?
 
-returns:: boolean
 
-METHOD:: onClose
+
+
+
+instancemethods::
+
+
+
+
+method:: window
+
+
+The Window object
+
+
+returns::
+ 
+a Window
+
+
+
+
+method:: view
+
+
+The top most view on the Window
+
+
+returns::
+ 
+a View
+
+
+
+
+method:: isClosed
+
+
+Boolean: has the window been closed ?
+
+
+returns::
+ 
+boolean
+
+
+
+
+method:: onClose
+
+
 Just as for Window, this method is called when the PageLayout's window is closed.  The actual Window's onClose method is used to trigger clean up operations, releasing dependencies and will also call this onClose function.
 
-returns:: get/set onClose handler
 
-METHOD:: asView
+returns::
+ 
+get/set onClose handler
+
+
+
+
+method:: asView
+
+
 returns the top view
 
-returns:: a View
 
-METHOD:: asFlowView
+returns::
+ 
+a View
+
+
+
+
+method:: asFlowView
+
 
 argument:: bounds
-if bounds are nil then it returns self, as a PageLayout is compatible with FlowView.  If bounds are supplied then a child FlowView is placed and returned
 
-returns:: self or a new FlowView
+If bounds are nil then it returns self, as a PageLayout is compatible with FlowView.
+ If bounds are supplied then a child FlowView is placed and returned
 
-METHOD:: bounds
-inner bounds of the top level view.
 
-returns:: a Rect
+returns::
+ 
+self or a new FlowView
 
-METHOD:: asPageLayout
-Similar to asFlowView, this message converts nil and various other objects to a PageLayout. This is already a PageLayout, so it returns self.
+
+
+
+method:: bounds
+
+
+Inner bounds of the top level view.
+
+
+returns::
+ 
+a Rect
+
+
+
+
+method:: asPageLayout
+
+
+Similar to asFlowView, this message converts nil and various other objects to a PageLayout.
+This is already a PageLayout, so it returns self.
+
 
 argument:: name
-Ignored. If the receiver had been nil then the name would be the Window name. 
+
+Ignored. If the receiver had been nil then the name would be the Window name.
+
 
 argument:: bounds
+
 Ignored. Would have been used to size the PageLayout
 
-returns:: self
 
-METHOD:: startRow
-compatible with FlowView
+returns::
+ 
+self
 
-returns:: self
 
-METHOD:: indentedRemaining
-compatible with FlowView
 
-returns:: self
 
-METHOD:: checkNotClosed
-isClosed.not
+method:: startRow
 
-returns:: boolean
 
-METHOD:: front
-bring Window to the front
+Compatible with FlowView
 
-returns:: self
 
-METHOD:: hide
+returns::
+ 
+self
+
+
+
+
+method:: indentedRemaining
+
+
+Compatible with FlowView
+
+
+returns::
+ 
+self
+
+
+
+
+method:: checkNotClosed
+
+
+IsClosed.not
+
+
+returns::
+ 
+boolean
+
+
+
+
+method:: front
+
+
+Bring Window to the front
+
+
+returns::
+ 
+self
+
+
+
+
+method:: hide
+
+
 Hide window
 
-returns:: self
 
-METHOD:: show
+returns::
+ 
+self
+
+
+
+
+method:: show
+
+
 Show the window if it was previously hidden.
 
-returns:: self
 
-METHOD:: close
+returns::
+ 
+self
+
+
+
+
+method:: close
+
+
 Close the window, releasing any dependencies and calling the onClose handler.
 
-returns:: self
 
-METHOD:: refresh
+returns::
+ 
+self
+
+
+
+
+method:: refresh
+
+
 Refresh the top level view
 
-returns:: self
 
-METHOD:: background
-set background color of top level view
+returns::
+ 
+self
+
+
+
+
+method:: background
+
+
+Set background color of top level view
+
 
 argument:: c
-color
 
-returns:: self
+Color
 
-METHOD:: removeOnClose
-Register an object, usually a ObjectGui subclass or an Updater so that when the Window closes the .remove message will be sent to it. This will cause the object to release its dependencies on its Model.  This means the ObjectGui (or other controller object) will stop getting update messages and will stop trying to update the View which has just been closed along with the Window.  It also means that if there is no link to the Model and no longer any Views that held links to the controller object, that the controller is now unreferenced and will be garbage collected.
+
+returns::
+ 
+self
+
+
+
+
+method:: removeOnClose
+
+
+Register an object, usually a ObjectGui subclass or an Updater so that when the Window closes the .remove message will be sent to it.
+This will cause the object to release its dependencies on its Model.
+ This means the ObjectGui (or other controller object) will stop getting update messages and will stop trying to update the View which has just been closed along with the Window.
+ It also means that if there is no link to the Model and no longer any Views that held links to the controller object, that the controller is now unreferenced and will be garbage collected.
+
 
 argument:: dependant
-the object that wishes to be sent .remove on closing the window
 
-returns:: self
+The object that wishes to be sent .remove on closing the window
 
-METHOD:: resizeToFit
+
+returns::
+ 
+self
+
+
+
+
+method:: resizeToFit
+
+
 Resize the top FlowView to fit its contents and then resize the Window to fit that.
 
+
 argument:: reflow
-boolean: FlowView can relay all of its child views in cases where the bounds have changed or views have been removed.  This puts them all back in place one by one for the updated bounds.  So this may result in smaller over all bounds, after which the window is shrunk.
+
+Boolean: FlowView can relay all of its child views in cases where the bounds have changed or views have been removed.
+ This puts them all back in place one by one for the updated bounds.
+ So this may result in smaller over all bounds, after which the window is shrunk.
+
 
 argument:: center
-boolean: after resizing, re-center the window in the screen.
 
-returns:: self
+Boolean: after resizing, re-center the window in the screen.
 
-METHOD:: reflowAll
-see FlowView reflowAll
 
-returns:: self
+returns::
+ 
+self
 
-METHOD:: fullScreen
-go Full screen
 
-returns:: self
 
-METHOD:: endFullScreen
-end full screen
 
-returns:: self
+method:: reflowAll
 
-subsection::FlowView extensions
 
-METHOD:: flow
+See FlowView reflowAll
+
+
+returns::
+ 
+self
+
+
+
+
+method:: fullScreen
+
+
+Go Full screen
+
+
+returns::
+ 
+self
+
+
+
+
+method:: endFullScreen
+
+
+End full screen
+
+
+returns::
+ 
+self
+
+
+
+
+
+
+subsection:: FlowView extensions
+
+
+method:: flow
+
+
 Place a new FlowView on the window
 
+
 argument:: func
+
 A handler that recieves the new FlowView as argument
 
+
 argument:: bounds
+
 Bounds fo the FlowView
 
-returns:: (returnvalue)
 
-METHOD:: vert
+returns::
+ (returnvalue)
+
+
+
+
+method:: vert
+
+
 (describe method here)
 
+
 argument:: func
+
 (describe argument here)
 
+
 argument:: bounds
+
 (describe argument here)
+
 
 argument:: spacing
+
 (describe argument here)
 
-returns:: (returnvalue)
 
-METHOD:: horz
+returns::
+ (returnvalue)
+
+
+
+
+method:: horz
+
+
 (describe method here)
 
+
 argument:: func
+
 (describe argument here)
 
+
 argument:: bounds
+
 (describe argument here)
+
 
 argument:: spacing
+
 (describe argument here)
 
-returns:: (returnvalue)
 
-METHOD:: comp
+returns::
+ (returnvalue)
+
+
+
+
+method:: comp
+
+
 (describe method here)
+
 
 argument:: func
+
 (describe argument here)
+
 
 argument:: bounds
+
 (describe argument here)
 
-returns:: (returnvalue)
 
-METHOD:: scroll
+returns::
+ (returnvalue)
+
+
+
+
+method:: scroll
+
+
 (describe method here)
+
 
 argument::  ... args
+
 (describe argument here)
 
-returns:: (returnvalue)
+
+returns::
+ (returnvalue)
 
 
-EXAMPLES::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 PageLayout.new

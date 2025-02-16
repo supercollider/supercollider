@@ -1,41 +1,73 @@
-class:: PulseDivider
-summary:: Pulse divider.
-categories::  UGens>Triggers
+title:: PulseDivider
+categories:: UGens>Triggers
+summary:: Pulse divider
 
 
-Description::
 
-Outputs one impulse each time it receives a certain number of triggers at
-its input.
+
+
+
+
+
+
+
+description::
+
+
+
+
+Output one impulse each time it receives a certain number of triggers at its input.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
-
-argument::trig
-
-Trigger. Trigger can be any signal. A trigger happens when the
-signal changes from non-positive to positive.
 
 
-argument::div
+
+method:: ar, kr
+
+
+argument:: trig
+
+Trigger. Trigger can be any signal.
+A trigger happens when the signal changes from non-teletype::positive:: to teletype::positive::.
+
+
+argument:: div
 
 Number of triggers to count before outputting an impulse.
 
 
-argument::start
+argument:: start
 
-Starting value for the trigger count. This lets you start
-somewhere in the middle of a count. If start is negative
-it adds that many counts to the first time the output is
+Starting value for the trigger count.
+This lets you start somewhere in the middle of a count.
+If start is negative it adds that many counts to the first time the output is
 triggered.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 SynthDef("help-PulseDivider", { |out = 0|
 	var p, a, b;
 	p = Impulse.ar(8);
@@ -44,5 +76,4 @@ SynthDef("help-PulseDivider", { |out = 0|
 
 	Out.ar(out, (a + b) * 0.4)
 }).play;
-
 ::

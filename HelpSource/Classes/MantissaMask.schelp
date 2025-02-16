@@ -1,37 +1,76 @@
-class:: MantissaMask
-summary:: Reduce precision.
-categories::  UGens>Filters>Nonlinear
+title:: MantissaMask
+categories:: UGens>Filters>Nonlinear
+summary:: Reduce precision
 
 
-Description::
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 Masks off bits in the mantissa of the floating point sample value.
-This introduces a quantization noise, but is less severe than linearly
-quantizing the signal.
+This introduces a quantization noise, but is less severe than linearly quantizing the signal.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
 
-argument::in
+
+
+method:: ar, kr
+
+
+argument:: in
+
 The input signal.
 
-argument::bits
 
-The number of mantissa bits to preserve. A number from 0 to 23.
+argument:: bits
+
+The number of mantissa bits to preserve.
+A number from teletype::0:: to 23.
 
 
-argument::mul
+argument:: mul
+
 Output will be multiplied by this value.
 
-argument::add
+
+argument:: add
+
 This value will be added to the output.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 // preserve only 3 bits of mantissa.
 { MantissaMask.ar(SinOsc.ar(SinOsc.kr(0.2, 0, 400, 500), 0, 0.4), 3) }.play
 
@@ -63,5 +102,4 @@ code::
 	in - MantissaMask.ar(in, 7)
 }.play
 )
-
 ::

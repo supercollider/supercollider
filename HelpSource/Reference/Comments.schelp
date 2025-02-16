@@ -1,10 +1,14 @@
 title:: Comments
 categories:: Language
-summary:: source-code comments
+summary:: Source-code comments
 
-Comments begin with code:://:: and go until the end of the line. Comments can also be delimited with code::/*:: and code::*/::.
+
+
+Comments begin with code:://:: and go until the end of the line.
+Comments can also be delimited with code::/*:: and code::*/::.
 
 Examples:
+
 code::
 // single line comment
 

@@ -1,43 +1,86 @@
-class:: FOS
-summary:: First order filter section.
+title:: FOS
+categories:: UGens>Filters>Linear
+summary:: First order filter section
 related:: Classes/SOS
-categories::  UGens>Filters>Linear
 
 
-Description::
 
-A standard first order filter section. Filter coefficients are given
-directly rather than calculated for you. Formula is equivalent to:
+
+
+
+
+
+
+
+description::
+
+
+
+
+A standard first order filter section.
+Filter coefficients are given directly rather than calculated for you.
+Formula is equivalent to:
 
 code::
 out(i) = (a0 * in(i)) + (a1 * in(i-1)) + (b1 * out(i-1))
 ::
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::ar, kr
 
-argument::in
+
+
+method:: ar, kr
+
+
+argument:: in
+
 Signal input.
 
-argument::a0
+
+argument:: a0
+
 See formula above.
 
-argument::a1
+
+argument:: a1
+
 See formula above.
 
-argument::b1
+
+argument:: b1
+
 See formula above.
 
-argument::mul
 
-argument::add
+argument:: mul
 
-Examples::
+argument:: add
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 (
 // same as OnePole
 {	var x;
@@ -62,5 +105,4 @@ code::
 	LFTri.ar(ctl * 200 + 500);
 }.play;
 )
-
 ::

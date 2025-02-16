@@ -1,14 +1,27 @@
-class:: TdefEditor
-summary:: will be replaced - please use TdefGui now!
+title:: TdefEditor
 categories:: JITLib>GUI, Live Coding
+summary:: Will be replaced - please use TdefGui now!
 related:: Classes/TdefGui
+
+
+
+
+
+
+
+
+
 
 description::
 
-warning::
-has been rewritten and renamed link::Classes/TdefGui::, which has largely the same functionality, but is more consistent and more flexible. There are some changes to the *new method:
 
-definitionList::
+
+
+warning::
+Has been rewritten and renamed link::Classes/TdefGui::, which has largely the same functionality, but is more consistent and more flexible.
+There are some changes to the *new method:
+
+definitionlist::
 ## instead of || *new(px, nVars, height, width, parent, makeWatcher)
 ## TdefGui uses || *new (object, numItems, parent, bounds, extras)
 ::

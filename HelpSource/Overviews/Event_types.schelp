@@ -1,7 +1,8 @@
 title:: Event types
-summary:: Different ways that an Event can "play"
 categories:: Streams-Patterns-Events>Events
+summary:: Different ways that an Event can "play"
 related:: Classes/Event
+
 
 
 An link::Classes/Event:: responds to a code::play:: message by evaluating ~play in the event, and the default behaviour of ~play is determined by the value of ~type.footnote::To see how event types are normally invoked, here is a slightly simplified version of the default definition of  ~play as defined in the Event class:
@@ -9,7 +10,6 @@ An link::Classes/Event:: responds to a code::play:: message by evaluating ~play 
 code::{ ~eventTypes[~type].value(server); }::
 
 The function uses the value of ~type to select a function from the Dictionary held in ~eventTypes. ::
-
 
 code::
 a = (play: { ~word.scramble.postln }, word: "hello word");
@@ -19,7 +19,6 @@ a = (type: \note, freq: [1310, 1321]); // choosing a play function by specifying
 a.play;
 ::
 
-
 The collection of eventTypes can be readily extended using link::Classes/Event#*addEventType#*addEventType:::
 
 code::
@@ -28,12 +27,26 @@ Event.addEventType(\test, { "Your word is: ".post; ~word.scramble.postln });
 ::
 
 
-section::Currently existing event types:
-Note:: this documentation is incomplete. ::
+
+
+
+
+
+
+
+
+section:: Currently existing event types:
+
+
+
+
+note:: 
+this documentation is incomplete. 
+::
 
 definitionlist::
-
-## note || Instantiate a synth on the server, with specified arguments, and later to free it. The choice of link::Classes/SynthDef:: is specified using the \instrument key. This event type is what code::Event.default:: returns.
+## note || Instantiate a synth on the server, with specified arguments, and later to free it.
+The choice of link::Classes/SynthDef:: is specified using the \instrument key. This event type is what code::Event.default:: returns.
 
 code::(degree: [0, 5, 7, 11]).play;::
 
@@ -53,6 +66,7 @@ fork { 10.do { (type: \set, id: a[\id], \degree: [0, 5, 8, 11].choose).play; 0.3
 
 ## group || creates a new group
 optional parameters:
+
 table::
 ## ~id || node ID, or node object
 ## ~group || outer group id or object
@@ -60,14 +74,15 @@ table::
 ::
 
 Example:
+
 code::
 (type: \group, id: 2).play					// create a group with nodeID 2
 (type: \note, freq: 500, group: 2).play		// play a synth in that group
 ::
 
-
 ## midi || send note parameters to midi device
 parameters:
+
 table::
 ## ~midicmd || A Symbol, for the MIDI command to issue
 ## ~midiout || A MIDIOut object
@@ -83,6 +98,7 @@ See link::Tutorials/A-Practical-Guide/PG_08_Event_Types_and_Parameters#MIDI outp
 ## rest || do nothing for a specified amount of time
 
 ## composite || perform any number of event types, given as ~types
+
 code::
 MIDIClient.init;
 m = MIDIOut(0);
@@ -112,14 +128,20 @@ m = MIDIOut(0);
 
 ## setProperties || sends setter messages to ~receiver for each key in ~args that has a nonNil value in the Event.
 
-## tree || creates a tree of groups. ~tree can be an array of nodeIDs, and may contain associations to further nested arrays.
+## tree || creates a tree of groups.
+~tree can be an array of nodeIDs, and may contain associations to further nested arrays.
 
 ## phrase || instead of playing a single synth from a SynthDef with ~instrument, it looks up a Pdef and plays a cluster of sounds.
-
-
 ::
 
-subsection::Some event types are used internally, e.g.:
+
+
+
+
+
+subsection:: Some event types are used internally, e.g.:
+
+
 definitionlist::
 ## monoNote || used by Pmono
 ## monoSet || used by Pmono

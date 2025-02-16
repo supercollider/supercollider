@@ -1,26 +1,68 @@
-class:: Pgeom
-summary:: geometric series pattern
-related:: Classes/Pseries
+title:: Pgeom
 categories:: Streams-Patterns-Events>Patterns>List
+summary:: Geometric series pattern
+related:: Classes/Pseries
+
+
+
+
+
+
+
+
+
 
 description::
 
-Returns a stream that behaves like a geometric series.
 
-ClassMethods::
 
-method::new
 
-argument::start
-start value.
+Return a stream that behaves like a geometric series.
 
-argument::grow
-multiplication factor.
 
-argument::length
-number of values produced.
 
-Examples::
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
+argument:: start
+
+Start value.
+
+
+argument:: grow
+
+Multiplication factor.
+
+
+argument:: length
+
+Number of values produced.
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (

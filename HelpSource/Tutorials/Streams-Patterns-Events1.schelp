@@ -1,29 +1,71 @@
 title:: Understanding Streams, Patterns and Events - Part 1
+categories:: Tutorials>Streams-Patterns-Events
 summary:: Streams & Routines
 related:: Tutorials/Streams-Patterns-Events2, Tutorials/Streams-Patterns-Events3, Tutorials/Streams-Patterns-Events4, Tutorials/Streams-Patterns-Events5, Tutorials/Streams-Patterns-Events6, Tutorials/Streams-Patterns-Events7
-categories:: Tutorials>Streams-Patterns-Events
 
-The SuperCollider Pattern library provides a means of specifying dynamic structural transformations of musical processes. It provides similar capabilities as one finds in Nyquist, Elody, Siren, Kyma, HMSL, DMix, and Patchwork.
 
-By using coroutines and streams rather than eager functional methods it is able to work in a lazy event by event method instead of the all-at-once method of Elody and Siren. It provides the kind of dynamic live control found in HMSL but with the more general event models of the others. In Nyquist and Siren certain transformation like Stretch and Transpose are specially coded into the framework. In SuperCollider Patterns, any parameter may have transformations applied to it. The only one treated specially is time, so that parallel streams can be merged.
+The SuperCollider Pattern library provides a means of specifying dynamic structural transformations of musical processes.
+It provides similar capabilities as one finds in Nyquist, Elody, Siren, Kyma, HMSL, DMix, and Patchwork.
 
-In order to understand the framework, a number of concepts must be covered. These concepts are embodied in the classes for Streams, Patterns, and Events. You should learn these concepts in the order presented. The framework is built up in layers. If you skip ahead to get to the cool stuff first, you will have missed some important points.
+By using coroutines and streams rather than eager functional methods it is able to work in a lazy event by event method instead of the all-at-once method of Elody and Siren.
+It provides the kind of dynamic live control found in HMSL but with the more general event models of the others.
+In Nyquist and Siren certain transformation like Stretch and Transpose are specially coded into the framework.
+In SuperCollider Patterns, any parameter may have transformations applied to it.
+The only one treated specially is time, so that parallel streams can be merged.
 
-section::Streams
+In order to understand the framework, a number of concepts must be covered.
+These concepts are embodied in the classes for Streams, Patterns, and Events. You should learn these concepts in the order presented.
+The framework is built up in layers.
+If you skip ahead to get to the cool stuff first, you will have missed some important points.
 
-A stream represents a lazy sequence of values. The next value in the sequence is obtained by sending the message next to the stream object. The sequence can be restarted from the beginning by sending the message reset to the stream object. A stream can be of finite or infinite length. When a finite length stream has reached the end, it returns nil.
 
-A stream can be any object that responds to the next and reset messages. Any object that responds to these messages can act as a stream. It happens that the class link::Classes/Object:: defines next and reset for all objects. In Object, both next and reset are defined to return code::this::. Thus any object is by default a stream that represents an infinite sequence of itself.
+
+
+
+
+
+
+
+
+section:: Streams
+
+
+
+
+A stream represents a lazy sequence of values.
+The next value in the sequence is obtained by sending the message next to the stream object.
+The sequence can be restarted from the beginning by sending the message reset to the stream object.
+A stream can be of finite or infinite length.
+When a finite length stream has reached the end, it returns teletype::nil::.
+
+A stream can be any object that responds to the next and reset messages.
+Any object that responds to these messages can act as a stream.
+It happens that the class link::Classes/Object:: defines next and reset for all objects.
+In Object, both next and reset are defined to return code::this::.
+Thus any object is by default a stream that represents an infinite sequence of itself.
 
 code::
 7.next.postln;	// 7 responds to next by returning itself
 ::
 
-section::Stream and its subclasses
+
+
+
+
+
+
+
+
+
+section:: Stream and its subclasses
+
+
+
 
 In addition to the default streams implemented by link::Classes/Object::, there is a class link::Classes/Stream:: that provides more functionality such as math operations on streams and filtering of streams.
 
-A generally useful subclass of Stream is the class link::Classes/FuncStream:: which allows the user to provide functions to execute in response to next and reset. Here is a FuncStream that represents an infinite random sequence:
+A generally useful subclass of Stream is the class link::Classes/FuncStream:: which allows the user to provide functions to execute in response to next and reset.
+Here is a FuncStream that represents an infinite random sequence:
 
 code::
 (
@@ -33,7 +75,11 @@ a = FuncStream.new({ #[1, 2, 3, 4].choose });
 )
 ::
 
-Another useful subclass of Stream is link::Classes/Routine:: which is a special kind of function that can act like a Stream. Routines are functions that can return a value from the middle and then be resumed from that point when called again. The yield message returns a value from the Routine. The next time the Routine is called it begins by returning from the yield and continues from that point. See the link::Classes/Routine:: help file.
+Another useful subclass of Stream is link::Classes/Routine:: which is a special kind of function that can act like a Stream.
+Routines are functions that can return a value from the middle and then be resumed from that point when called again.
+The yield message returns a value from the Routine.
+The next time the Routine is called it begins by returning from the yield and continues from that point.
+See the link::Classes/Routine:: help file.
 
 Here is a Routine that represents a finite sequence of values:
 
@@ -47,7 +93,7 @@ a = Routine.new({
 )
 ::
 
-and another:
+And another:
 
 code::
 (
@@ -61,7 +107,19 @@ a = Routine.new({
 )
 ::
 
-section::Math operations on Streams
+
+
+
+
+
+
+
+
+
+section:: Math operations on Streams
+
+
+
 
 Stream is a subclass of link::Classes/AbstractFunction:: which means that one can do math operations on streams to produce other streams.
 
@@ -70,7 +128,7 @@ Applying a unary operator to a stream:
 code::
 (
 var a, b;
-// a is a stream that counts from 0 to 9
+// a is a stream that counts from teletype::0:: to 9
 a = Routine.new({
 		10.do({ arg i; i.yield; })
 	});
@@ -84,7 +142,7 @@ Using a binary operator on a stream:
 code::
 (
 var a, b;
-// a is a stream that counts from 0 to 9
+// a is a stream that counts from teletype::0:: to 9
 a = Routine.new({
 		10.do({ arg i; i.yield; })
 	});
@@ -98,11 +156,11 @@ Using a binary operator on two streams:
 code::
 (
 var a, b, c;
-// a is a stream that counts from 0 to 9
+// a is a stream that counts from teletype::0:: to 9
 a = Routine.new({
 		10.do({ arg i; i.yield; })
 	});
-// b is a stream that counts from 100 to 280 by 20
+// b is a stream that counts from teletype::100:: to 280 by 20
 b = Routine.new({
 		forBy (100,280,20, { arg i; i.yield })
 	});
@@ -111,7 +169,19 @@ c = a + b;	// add streams a and b
 )
 ::
 
-section::Filtering operations on streams
+
+
+
+
+
+
+
+
+
+section:: Filtering operations on streams
+
+
+
 
 Streams respond to the messages code::collect::, code::select::, and code::reject:: by returning a new link::Classes/Stream::.
 
@@ -120,22 +190,22 @@ The code::collect:: message returns a stream that is modified by a function in t
 code::
 (
 var a, b;
-// a is a stream that counts from 0 to 9
+// a is a stream that counts from teletype::0:: to 9
 a = Routine.new({
 		10.do({ arg i; i.yield; })
 	});
-// b is a stream that adds 100 to even values
+// b is a stream that adds teletype::100:: to even values
 b = a.collect({ arg item; if (item.even, { item + 100 },{ item }); });
 6.do({ b.next.postln; });
 )
 ::
 
-The code::select:: message creates a stream that passes only items that return true from a user supplied function.
+The code::select:: message creates a stream that passes only items that return teletype::true:: from a user supplied function.
 
 code::
 (
 var a, b;
-// a is a stream that counts from 0 to 9
+// a is a stream that counts from teletype::0:: to 9
 a = Routine.new({
 		10.do({ arg i; i.yield; })
 	});
@@ -145,12 +215,12 @@ b = a.select({ arg item; item.odd; });
 )
 ::
 
-The code::reject:: message creates a stream that passes only items that return false from a user supplied function.
+The code::reject:: message creates a stream that passes only items that return teletype::false:: from a user supplied function.
 
 code::
 (
 var a, b;
-// a is a stream that counts from 0 to 9
+// a is a stream that counts from teletype::0:: to 9
 a = Routine.new({
 		10.do({ arg i; i.yield; })
 	});
@@ -160,7 +230,19 @@ b = a.reject({ arg item; item.odd; });
 )
 ::
 
-section::Making Music with Streams
+
+
+
+
+
+
+
+
+
+section:: Making Music with Streams
+
+
+
 
 Here is a sound example to show how you might use Streams to generate musical material.
 
@@ -214,7 +296,20 @@ code::
 )
 ::
 
-section::Optional:
+
+
+
+
+
+
+
+
+
+section:: Optional:
+
+
+
+
 More about Streams can be learned from the book A Little Smalltalk by Timothy Budd. He calls them Generators and shows how they can be used to solve problems like the "eight queens" problem etc.
 
 

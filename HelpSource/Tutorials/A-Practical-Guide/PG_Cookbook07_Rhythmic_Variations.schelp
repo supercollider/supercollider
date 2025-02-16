@@ -1,21 +1,40 @@
 title:: Pattern Guide Cookbook 07: Rhythmic Variations
+categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: An ever-changing drumbeat
 related:: Tutorials/A-Practical-Guide/PG_Cookbook06_Phrase_Network, Tutorials/A-Practical-Guide/PG_Cookbook08_Swing
-categories:: Streams-Patterns-Events>A-Practical-Guide
 
-section::Creating variations on a base rhythmic pattern
 
-Normally patterns are stateless objects. This would seem to rule out the possibility of making on-the-fly changes to the material that pattern is playing. Indeed, modifying an existing pattern object is tricky and not always appropriate (because that approach cannot confine its changes to the one stream making the changes).
+
+
+
+
+
+
+
+
+section:: Creating variations on a base rhythmic pattern
+
+
+
+
+Normally patterns are stateless objects. This would seem to rule out the possibility of making on-the-fly changes to the material that pattern is playing.
+Indeed, modifying an existing pattern object is tricky and not always appropriate (because that approach cannot confine its changes to the one stream making the changes).
 
 link::Classes/Plazy:: offers an alternate approach: use a function to generate a new pattern object periodically, and play these patterns in succession, one by one. (Plazy embeds just one pattern; wrapping Plazy in link::Classes/Pn:: does it many times.)
 
-The logic in this example is a bit more involved: for each measure, start with arrays containing the basic rhythmic pattern for each part (kick drum, snare and hi-hat) and insert ornamental notes with different amplitudes and durations. Arrays hold the rhythmic data because this type of rhythm generation calls for awareness of the entire bar (future), whereas patterns generally don't look ahead.
+The logic in this example is a bit more involved:
+for each measure, start with arrays containing the basic rhythmic pattern for each part (kick drum, snare and hi-hat) and insert ornamental notes with different amplitudes and durations.
+Arrays hold the rhythmic data because this type of rhythm generation calls for awareness of the entire bar (future), whereas patterns generally don't look ahead.
 
-This suggests an object for data storage that will also encapsulate the unique logic for each part. We saw earlier that link::Classes/Penvir:: maintains a distinct environment for each stream made from the pattern. In other words, Penvir allows more complicated behavior to be modeled using an object that encapsulates both custom logic and the data on which it will operate.
+This suggests an object for data storage that will also encapsulate the unique logic for each part.
+We saw earlier that link::Classes/Penvir:: maintains a distinct environment for each stream made from the pattern.
+In other words, Penvir allows more complicated behavior to be modeled using an object that encapsulates both custom logic and the data on which it will operate.
 
-The specific ornaments to be added are slightly different for the three parts, so there are three environments. Some functions are shared; rather than copy and paste them into each environment, we put them into a separate environment and use that as the parent of the environment for each drum part.
+The specific ornaments to be added are slightly different for the three parts, so there are three environments.
+Some functions are shared; rather than copy and paste them into each environment, we put them into a separate environment and use that as the parent of the environment for each drum part.
 
-Most of the logic is in the drum parts' environments, and consist mostly of straightforward array manipulations. Let's unpack the pattern that uses the environments to generate notes:
+Most of the logic is in the drum parts' environments, and consist mostly of straightforward array manipulations.
+Let's unpack the pattern that uses the environments to generate notes:
 
 code::
 ~kik = Penvir(~kikEnvir, Pn(Plazy({
@@ -33,21 +52,38 @@ code::
 }), inf)).play(quant: 4);
 ::
 
-definitionList::
+definitionlist::
 ## code::Penvir(~kikEnvir, ...):: || Tell the enclosed pattern to run inside the kick drum's environment.
 
 ## code::Pn(..., inf):: || Repeat the enclosed pattern (Plazy) an infinite number of times.
 
-## code::Plazy({ ... }):: || The function can do anything it likes, as long as it returns some kind of pattern. The first two lines of the function do the hard work, especially code::~addNotes::.value, calling into the environment to use the rhythm generator code. This changes the data in the environment, which then get plugged into Pbind in the code::~pbindPairs.value():: line. That pattern will play through; when it ends, Plazy gives control back to its parent -- Pn, which repeats Plazy.
+## code::Plazy({ ... }):: || The function can do anything it likes, as long as it returns some kind of pattern.
+The first two lines of the function do the hard work, especially code::~addNotes::.value, calling into the environment to use the rhythm generator code.
+This changes the data in the environment, which then get plugged into Pbind in the code::~pbindPairs.value():: line.
+That pattern will play through; when it ends, Plazy gives control back to its parent -- Pn, which repeats Plazy.
 
-## code::Pbindf(..., \freq, ...):: || Pbindf adds new values into events coming from a different pattern. This usage is to take advantage of a fact about the default event. If the code::\freq:: key is a symbol (rather than a number or array), the event represents a rest and nothing will play on the server. It doesn't matter whether or not the SynthDef has a code::freq:: control; a symbol in this space produces a rest. Here it's a simple conditional to produce a rest when code:: amp == 0 ::.
+## code::Pbindf(..., \freq, ...):: || Pbindf adds new values into events coming from a different pattern.
+This usage is to take advantage of a fact about the default event.
+If the code::\freq:: key is a symbol (rather than a number or array), the event represents a rest and nothing will play on the server.
+It doesn't matter whether or not the SynthDef has a code::freq:: control; a symbol in this space produces a rest.
+Here it's a simple conditional to produce a rest when code:: amp == 0 ::.
 
-## code::Pbind(...):: || The meat of the notes: SynthDef name, general parameters, and rhythmic values from the environment. (The code::*:: syntax explains the need for Pbindf. The code::\freq:: expression must follow the pbindPairs result, but it isn't possible to put additional arguments after code::*(...) ::. Pbindf allows the inner Pbind to be closed while still accepting additional values.)
+## code::Pbind(...):: || The meat of the notes:
+SynthDef name, general parameters, and rhythmic values from the environment.
+(The code::*:: syntax explains the need for Pbindf.
+The code::\freq:: expression must follow the pbindPairs result, but it isn't possible to put additional arguments after code::*(...) ::.
+Pbindf allows the inner Pbind to be closed while still accepting additional values.)
 ::
 
 strong::Third-party extension alert:: : This type of hybrid between pattern-style flow of control and object-oriented modeling is powerful but has some limitations, mainly difficulty with inheritance (subclassing). The strong::ddwChucklib:: quark (which depends on ddwPrototype) expands the object-oriented modeling possibilities while supporting patterns' ability to work with data external to a pattern itself.
 
-subsection::Example
+
+
+
+
+
+subsection:: Example
+
 
 code::
 (

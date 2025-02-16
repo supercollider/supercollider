@@ -1,14 +1,33 @@
-class::Class
-summary::A Class describes the structure and implementation of a set of objects which are its instances.
-categories::Core>Kernel, Language>OOP
+title:: Class
+categories:: Core>Kernel, Language>OOP
+summary:: A Class describes the structure and implementation of a set of objects which are its instances
 related:: Guides/WritingClasses, Reference/Classes
 
-ClassMethods::
+
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
 method:: allClasses
-returns:: an link::Classes/Array:: of all Classes
+
+
+returns::
+An link::Classes/Array:: of all Classes
+
+
 
 
 method:: initClass
+
 
 When SuperCollider starts up, just after it has compiled the library, it initializes all the classes from Object down, a depth first traversal of subclasses.
 
@@ -18,12 +37,16 @@ note::
 Each class will be initialized once, thus each class' code::initClass:: is called exactly once during the initialization phase.
 ::
 
+
+
+
 method:: initClassTree
 
-used in link::#*initClass:: to assure the initialisation of code::aClass:: before using it. Wherever necessary, it recursively initializes all classes required by code::aClass::.
 
-In some cases it is required that another class and its resources are initialized before you initialize your own. This can be accomplished by
+Used in link::#*initClass:: to assure the initialisation of code::aClass:: before using it. Wherever necessary, it recursively initializes all classes required by code::aClass::.
 
+In some cases it is required that another class and its resources are initialized before you initialize your own.
+This can be accomplished by
 
 code::
 YourClass {
@@ -58,111 +81,225 @@ YourClass {
 }
 ::
 
-InstanceMethods::
 
-method::browse
 
-Open a graphical browser for this Class. Shows methods, arguments, variables, subclasses, and has buttons for navigating to the superclass, source, helpfile, etc.
 
-method::findMethod
 
-Find the Method referred to by name. If not found, return nil.
 
-method::findRespondingMethodFor
 
-As above, but climb the class tree to see if the method is inherited from a superclass. If not found, return nil.
 
-method::dumpAllMethods
+
+
+instancemethods::
+
+
+
+
+method:: browse
+
+
+Open a graphical browser for this Class.
+Shows methods, arguments, variables, subclasses, and has buttons for navigating to the superclass, source, helpfile, etc.
+
+
+
+
+method:: findMethod
+
+
+Find the Method referred to by name.
+If not found, return teletype::nil::.
+
+
+
+
+method:: findRespondingMethodFor
+
+
+As above, but climb the class tree to see if the method is inherited from a superclass.
+If not found, return teletype::nil::.
+
+
+
+
+method:: dumpAllMethods
+
 
 Post all instance methods which instances of this class responds too, including inherited ones. code::this.class.dumpAllMethods:: will post all class methods which this class responds to.
 
-method::dumpByteCodes
+
+
+
+method:: dumpByteCodes
+
 
 Dump the byte codes of the named method.
 
-method::dumpClassSubtree
+
+
+
+method:: dumpClassSubtree
+
 
 Post the tree of all Classes that inherit from this class.
 
-method::dumpInterface
+
+
+
+method:: dumpInterface
+
 
 Post all the methods defined by this Class and their arguments.
 
-method::dumpFullInterface
+
+
+
+method:: dumpFullInterface
+
 
 Post all the class and instance methods that this class responds to (i.e. those defined in this class and those inherited by it).
 
-method::help
 
-Opens the help file for this Class if it exists.
 
-method::helpFilePath
 
-Returns the path of this Class's helpfile as a String.
+method:: help
 
-method::helpFileForMethod
 
-Opens the helpfile for the class in which the responding method is implemented.
+Open the help file for this Class if it exists.
+
+
+
+
+method:: helpFilePath
+
+
+Return the path of this Class's helpfile as a String.
+
+
+
+
+method:: helpFileForMethod
+
+
+Open the helpfile for the class in which the responding method is implemented.
 
 code::
 Array.helpFileForMethod('select'); // This will open the Collection helpfile
 ::
 
-method::asClass
+
+
+
+method:: asClass
+
 
 Return this.
 
-method::asString
+
+
+
+method:: asString
+
 
 Return the name of the class as a String.
 
 
+
+
+
+
 subsection:: Accessing
 
-method::name
+
+method:: name
+
 
 A Symbol that is the name of the class.
 
-method::nextclass
+
+
+
+method:: nextclass
+
 
 The next class in a linked list of all classes.
 
-method::superclass
+
+
+
+method:: superclass
+
 
 The Class from which this class directly inherits.
 
-method::superclasses
+
+
+
+method:: superclasses
+
 
 An Array of this class's superclasses, going back to Object.
 
-method::subclasses
+
+
+
+method:: subclasses
+
 
 An Array of the direct subclasses of this.
 
-method::allSubclasses
+
+
+
+method:: allSubclasses
+
 
 An Array of all subclasses of this.
 
-method::methods
+
+
+
+method:: methods
+
 
 An Array of the methods of this class.
 
-method::instVarNames
+
+
+
+method:: instVarNames
+
 
 An Array of the names of the instance variables for this class.
 
-method::classVarNames
+
+
+
+method:: classVarNames
+
 
 An Array of the names of the class variables for this class.
 
-method::iprototype
+
+
+
+method:: iprototype
+
 
 An Array of the initial values of instance variables.
 
-method::cprototype
+
+
+
+method:: cprototype
+
 
 An Array of the initial values of class variables.
 
-method::filenameSymbol
+
+
+
+method:: filenameSymbol
+
 
 A Symbol which is a path to the file which defines the Class.

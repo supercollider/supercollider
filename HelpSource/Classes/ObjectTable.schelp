@@ -1,40 +1,113 @@
-CLASS::ObjectTable
-summary::associate objects with IDs
+title:: ObjectTable
 categories:: Collections>Unordered
+summary:: Associate objects with IDs
 
-DESCRIPTION::
-An ObjectTable is used to associate an id with an object. This is useful
-for enabling references to objects on remote systems via Open Sound Control.
 
-CLASSMETHODS::
 
-private::initClass
 
-method::add
+
+
+
+
+
+
+description::
+
+
+
+
+An ObjectTable is used to associate an id with an object.
+This is useful for enabling references to objects on remote systems via Open Sound Control.
+
+
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+private:: initClass
+
+
+method:: add
 Put an object in the main ObjectTable and generate an Integer id.
-argument::obj
-the object to put in the table.
 
-method::put
+
+argument:: obj
+
+The object to put in the table.
+
+
+
+
+method:: put
+
+
 Put an object in the main ObjectTable under a specific key.
-argument::key
-a link::Classes/Symbol::.
-argument::obj
-the object to put in the table.
 
-method::at
+
+argument:: key
+
+A link::Classes/Symbol::.
+
+
+argument:: obj
+
+The object to put in the table.
+
+
+
+
+method:: at
+
+
 Get an object in the main ObjectTable.
-argument::id
-an link::Classes/Integer:: or link::Classes/Symbol::.
 
-method::getID
+
+argument:: id
+
+An link::Classes/Integer:: or link::Classes/Symbol::.
+
+
+
+
+method:: getID
+
+
 Get the ID of an object in the table.
-argument::obj
-an object in the table.
 
-INSTANCEMETHODS::
 
-method::add
+argument:: obj
+
+An object in the table.
+
+
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+method:: add
+
+
 Put an object in an ObjectTable and generate an Integer id.
-argument::obj
-the object to put in the table.
+
+
+argument:: obj
+
+The object to put in the table.

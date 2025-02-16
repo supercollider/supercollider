@@ -1,19 +1,20 @@
 title:: Sclang Startup File
-summary:: The sclang startup file
 categories:: Language
+summary:: The sclang startup file
 
-Once the class library is finished compiling the interpreter looks for a file at code::Platform.userConfigDir +/+ "startup.scd":: and if such a
-file exists, executes any code within it (this happens within link::Classes/Main#-startup::). By creating a file in this location you can make user
-specific customizations.
 
-definitionList::
+
+Once the class library is finished compiling the interpreter looks for a file at code::Platform.userConfigDir +/+ "startup.scd":: and if such a file exists, executes any code within it (this happens within link::Classes/Main#-startup::).
+By creating a file in this location you can make user specific customizations.
+
+definitionlist::
 ## Linux   || teletype::~/.config/SuperCollider/startup.scd::, according to the xdg base directory specification
 ## macOS   || teletype::~/Library/Application Support/SuperCollider/startup.scd::
 ## Windows || teletype::C:\\SuperCollider\\startup.scd:: (or similar, depending on the location of the SuperCollider installation)
 ::
 
-
 A common example would be to alter the options of the local and internal Servers:
+
 code::
 // placing the following code in the file will cause these modifications to be made
 // at startup (see also: ServerOptions)
@@ -42,6 +43,6 @@ Archive.archiveDir = "~/scwork".standardizePath;
 // hook up jack ports to audio channels
 "SC_JACK_DEFAULT_INPUTS".setenv("system");
 "SC_JACK_DEFAULT_OUTPUTS".setenv("system");
-
 ::
+
 Naturally the file must contain only valid SC expressions.

@@ -1,9 +1,21 @@
-class:: FilterPattern
-summary:: abstract class that holds a pattern to be modified
-related:: Classes/ListPattern
+title:: FilterPattern
 categories:: Streams-Patterns-Events>Patterns>Filter
+summary:: Abstract class that holds a pattern to be modified
+related:: Classes/ListPattern
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 // post subclasses:

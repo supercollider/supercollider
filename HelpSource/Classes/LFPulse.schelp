@@ -1,64 +1,128 @@
-class::LFPulse
-summary::pulse oscillator
-categories::UGens>Generators>Deterministic
-related::Classes/LFSaw
+title:: LFPulse
+categories:: UGens>Generators>Deterministic
+summary:: Pulse oscillator
+related:: Classes/LFSaw
+
+
+
+
+
+
+
+
+
 
 description::
-A non-band-limited pulse oscillator. Outputs a high value of one and a low value of zero.
+
+
+
+
+A non-band-limited pulse oscillator. Outputs a high value of one and a low value of teletype::zero::.
+
+
+
+
+
+
+
+
+
 
 classmethods::
 
-method::ar, kr
 
-argument::freq
-frequency in Hertz
 
-argument::iphase
-initial phase offset in cycles (0..1)
 
-argument::width
-pulse width duty cycle from zero to one.
+method:: ar, kr
 
-argument::mul
 
-argument::add
+argument:: freq
+
+Frequency in Hertz
+
+
+argument:: iphase
+
+Initial phase offset in cycles (0..1)
+
+
+argument:: width
+
+Pulse width duty cycle from teletype::zero:: to one.
+
+
+argument:: mul
+
+argument:: add
+
+
+
+
+
+
+
+
+
 
 instancemethods::
-private::signalRange
+
+
+
+
+private:: signalRange
+
+
+
+
+
+
+
+
+
 
 examples::
 
-a plot:
+
+
+
+A plot:
+
 code::
 { LFPulse.ar(Line.kr(100, 800, 0.1)) }.plot(0.1);
 ::
 
 50 Hz wave:
+
 code::
 { LFPulse.ar(50) * 0.1 }.play;
 ::
 
-modulating frequency:
+Modulating frequency:
+
 code::
 { LFPulse.ar(XLine.kr(1, 200, 10), 0, 0.2, 0.1) }.play;
 ::
 
-amplitude modulation:
+Amplitude modulation:
+
 code::
 { LFPulse.kr(XLine.kr(1, 200, 10), 0, 0.2) * SinOsc.ar(440) * 0.1 }.play;
 ::
 
-used as both Oscillator and LFO:
+Used as both Oscillator and LFO:
+
 code::
 { LFPulse.ar(LFPulse.kr(3, 0, 0.3, 200, 200), 0, 0.2, 0.1) }.play;
 ::
 
-scope:
+Scope:
+
 code::
 { LFPulse.ar(500, 0, MouseX.kr, 0.5) }.scope;
 ::
 
-compare with band limited Pulse UGen:
+Compare with band limited Pulse UGen:
+
 code::
 (
 {

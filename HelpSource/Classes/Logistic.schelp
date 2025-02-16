@@ -1,40 +1,92 @@
-class:: Logistic
+title:: Logistic
+categories:: UGens>Generators>Chaotic
 summary:: Chaotic noise function
 related:: Classes/Crackle, Classes/LatoocarfianN
-categories::  UGens>Generators>Chaotic
 
 
-Description::
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 A noise generator based on the logistic map:
+
 code::
 y = chaosParam * y * (1.0 - y)
 ::
 
+
+
+
+
+
+
+
+
+
 classmethods::
+
+
+
+
 private:: categories
 
-method::ar, kr
 
-argument::chaosParam
-a parameter of the chaotic function with useful values from 0.0 to 4.0. Chaos occurs from 3.57 up. Don't use values outside this range if you don't want the UGen to blow up.
+method:: ar, kr
 
-argument::freq
+
+argument:: chaosParam
+
+A parameter of the chaotic function with useful values from teletype::0.0:: to 4.0. Chaos occurs from 3.57 up. Don't use values outside this range if you don't want the UGen to blow up.
+
+
+argument:: freq
+
 Frequency of calculation; if over the sampling rate, this is clamped to the sampling rate
 
+
 argument:: init
+
 Initial value of y in the equation above
 
-argument::mul
+
+argument:: mul
+
 Output will be multiplied by this value.
 
-argument::add
+
+argument:: add
+
 This value will be added to the output.
 
+
 discussion::
-y will stay in the range of 0.0 to 1.0 for normal values of the chaosParam. This leads to a DC offset, and may cause a pop when you stop the Synth. For output you might want to combine this UGen with a LeakDC or rescale around 0.0 via mul and add: see example below.
+Y will stay in the range of teletype::0.0:: to teletype::1.0:: for normal values of the chaosParam.
+This leads to a DC offset, and may cause a pop when you stop the Synth.
+For output you might want to combine this UGen with a LeakDC or rescale around 0.0 via mul and add: see example below.
+
+
+
+
+
+
+
+
+
 
 examples::
+
+
+
+
 code::
 // default values
 { Logistic.ar }.play

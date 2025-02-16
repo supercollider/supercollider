@@ -1,15 +1,28 @@
-TITLE:: Operand
-summary::Idempotent wrapper around math operations
+title:: Operand
 categories:: Core
+summary:: Idempotent wrapper around math operations
 related:: Classes/AbstractFunction, Classes/Maybe, Classes/Ref, Classes/Rest
 
-DESCRIPTION::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
 If you need to ensure that math operations always return the result wrapped in a specific object, you can use Operand or subclass from it.
-For some practical examples, see its subclass link::Classes/Rest::. If you need to keep nested operations, use link::Classes/Maybe::.
+For some practical examples, see its subclass link::Classes/Rest::.
+If you need to keep nested operations, use link::Classes/Maybe::.
 
 
 Its creation is idempotent, that is code::Operand(Operand(x)) == Operand(x)::.
-
 
 code::
 // An Operand is an Operand is an Operand
@@ -24,10 +37,25 @@ c = a + b * a; // Operand([6, 8, 10])
 c.value; // [6, 8, 10]
 ::
 
-CLASSMETHODS::
 
-METHOD:: new
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
 argument:: value
+
 Return a new instance of Operand, using an arbitrary object as value.
 
 code::
@@ -38,11 +66,23 @@ Operand(Operand(Operand(1))) == Operator(1)
 ::
 
 
-INSTANCEMETHODS::
 
-PRIVATE:: composeBinaryOp, composeNAryOp, composeUnaryOp, performBinaryOpOnComplex, performBinaryOpOnSeqColl, performBinaryOpOnSignal, performBinaryOpOnSimpleNumber, reverseComposeBinaryOp
 
-METHOD:: value
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+private:: composeBinaryOp, composeNAryOp, composeUnaryOp, performBinaryOpOnComplex, performBinaryOpOnSeqColl, performBinaryOpOnSignal, performBinaryOpOnSimpleNumber, reverseComposeBinaryOp
+
+
+method:: value
 Set or return the current value.
 
 code::
@@ -52,27 +92,56 @@ a.value = 78;
 a.value; // 78
 ::
 
-METHOD:: ==
+
+
+
+method:: ==
+
+
 argument:: obj
+
 An Operand is equal to another one if their value are equal.
+
 code::
 Operand(1) == Operand(1);
 Operand(1) + 2 == Operand(3);
 ::
 
-METHOD:: hash
+
+
+
+method:: hash
+
+
 Two instances with the same value return the same hash value.
+
 code::
 Set[Operand(1), Operand(1)] == Set[Operand(1)] // true
 ::
 
-METHOD:: dereferenceOperand
-This method is called to avoid nesting. You may override it in subclasses to perform actions on resulting values.
+
+
+
+method:: dereferenceOperand
+
+
+This method is called to avoid nesting.
+You may override it in subclasses to perform actions on resulting values.
 code::Operand(Operand(1)) // Operand(1)::.
 
 
 
-EXAMPLES::
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 // you could make a class that always converts values to integers:

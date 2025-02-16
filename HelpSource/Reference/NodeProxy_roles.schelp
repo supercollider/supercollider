@@ -1,7 +1,8 @@
 title:: NodeProxy roles
-summary:: Roles in NodeProxy
 categories:: JITLib>NodeProxy
+summary:: Roles in NodeProxy
 related:: Classes/NodeProxy, Classes/Ndef, Classes/ProxySpace
+
 
 Similar to Adverbs (see link::Guides/J-concepts-in-SC::), roles allow to specify how a source for a link::Classes/NodeProxy:: is being used. A role is an association of a link::Classes/Symbol:: and the new proxy source object.
 
@@ -19,12 +20,24 @@ ProxySpace.push(s);
 Ndef(\a, ...)
 ::
 
-section::Existing roles
 
-definitionList::
 
+
+
+
+
+
+
+
+section:: Existing roles
+
+
+
+
+definitionlist::
 ## \set -> event pattern
-|| Set the proxy controls with an event pattern of type code::\set::. Old values are kept, only those explicitly provided are overridden.
+|| Set the proxy controls with an event pattern of type code::\set::.
+Old values are kept, only those explicitly provided are overridden.
 
 code::
 a = NodeProxy(s);
@@ -67,8 +80,8 @@ a.nodeMap.postln; // the values are set in the node map.
 
 ## \xset -> event pattern
 || set all proxy controls to event data, using synth crossfade (see link::#-xset::).
-code::
 
+code::
 a = NodeProxy(s);
 a[0] = { |freq = 440, dt=0.1, rate=2| Ringz.ar(Impulse.ar(rate * [1, 1.2]), freq, dt)*0.1 };
 a.play;
@@ -90,9 +103,10 @@ a.clear(3);
 ::
 
 ## \seti -> event pattern
-|| Set the proxy controls for each channel in a multi-channel proxy with an event pattern of type code::\set::. Contrary to other roles it must be applied separately to each channel of the proxy.
+|| Set the proxy controls for each channel in a multi-channel proxy with an event pattern of type code::\set::.
+Contrary to other roles it must be applied separately to each channel of the proxy.
 
-CODE::
+code::
 // 5-channel NodeProxy
 a = NodeProxy.audio(s).mold(5);
 // output will be stereo
@@ -177,7 +191,9 @@ a.clear(3);
 ::
 
 ## \filter -> function
-|| Filter the audio on the proxy's own bus, using the first argument to pass in the sound. The function is any valid UGen function, which may be control or audio rate. Default controls are wet++index, where strong::index:: is the slot of the proxy (default 0), in the example below, the control is code::\wet1::, and it crossfades between the incoming sound source and the effect (wet) signal output.
+|| Filter the audio on the proxy's own bus, using the first argument to pass in the sound.
+The function is any valid UGen function, which may be control or audio rate.
+Default controls are wet++index, where strong::index:: is the slot of the proxy (default 0), in the example below, the control is code::\wet1::, and it crossfades between the incoming sound source and the effect (wet) signal output.
 
 code::
 a = NodeProxy(s).play;
@@ -220,11 +236,26 @@ a.clear(3);
 
 ::
 
-section::Adding new roles
 
-Roles can be added on the fly. They are kept in a dictionary ( strong::buildMethods:: ) in link::Classes/AbstractPlayControl::. A second dictionary ( strong::proxyControlClasses:: ) provides the wrapper class for a given key.
 
-Here is a new role that allows you to set a control rate node proxy with the help of an event pattern. The new values are in a key named \value.
+
+
+
+
+
+
+
+section:: Adding new roles
+
+
+
+
+Roles can be added on the fly.
+They are kept in a dictionary ( strong::buildMethods:: ) in link::Classes/AbstractPlayControl::.
+A second dictionary ( strong::proxyControlClasses:: ) provides the wrapper class for a given key.
+
+Here is a new role that allows you to set a control rate node proxy with the help of an event pattern.
+The new values are in a key named \value.
 
 code::
 // add the new role:

@@ -1,35 +1,76 @@
-class:: Unpack1FFT
-summary:: Unpack a single value (magnitude or phase) from an FFT chain
+title:: Unpack1FFT
 categories:: UGens>FFT, UGens>Demand
+summary:: Unpack a single value (magnitude or phase) from an FFT chain
 related:: Classes/PackFFT, Classes/UnpackFFT, Guides/FFT-Overview
+
 
 
 Unpack1FFT(chain, bufsize, binindex, whichmeasure = 0)
 
-description::
-Takes an FFT chain and extracts a single scalar value as a demand-rate stream. To call it, a "demander" is needed, which fires whenever the FFT chain fires - this is normally achieved using link::Classes/PackFFT:: but can also be done using link::Classes/Demand::.
 
-Note::
-This UGen is commonly not used directly. Its main purpose is as a component in link::Classes/PV_ChainUGen#-pvcollect::, link::Classes/PV_ChainUGen#-pvcalc::, and link::Classes/PV_ChainUGen#-pvcalc2:: processes. You're welcome to use it on its own - the example below shows how.
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+Takean an FFT chain and extracts a single scalar value as a demand-rate stream. To call it, a "demander" is needed, which fires whenever the FFT chain fires - this is normally achieved using link::Classes/PackFFT:: but can also be done using link::Classes/Demand::.
+
+note::
+This UGen is commonly not used directly.
+Its main purpose is as a component in link::Classes/PV_ChainUGen#-pvcollect::, link::Classes/PV_ChainUGen#-pvcalc::, and link::Classes/PV_ChainUGen#-pvcalc2:: processes. You're welcome to use it on its own - the example below shows how.
 ::
 
+
+
+
+
+
+
+
+
+
 classmethods::
+
+
+
+
 private:: categories
+
 
 method:: new
 
+
 argument:: chain
-an FFT chain
+
+An FFT chain
+
+
 argument:: bufsize
-the size of the expected input FFT frames
+
+The size of the expected input FFT frames
+
+
 argument:: binindex
-the integer index of the bin you want to query
+
+The integer index of the bin you want to query
+
+
 argument:: whichmeasure
-0 for magnitude and 1 for phase. None of these arguments can be modulated.
+
+0 for magnitude and 1 for phase.
+None of these arguments can be modulated.
+
 
 discussion::
 code::
-
 // Let's extract the DC component - i.e. the magnitude at binindex zero.
 (
 {

@@ -1,20 +1,59 @@
-class:: Pfinval
-summary:: limit number of items embedded in a stream
-related:: Classes/Pfindur, Classes/Pfin, Classes/Pconst
+title:: Pfinval
 categories:: Streams-Patterns-Events>Patterns>Repetition
+summary:: Limit number of items embedded in a stream
+related:: Classes/Pfindur, Classes/Pfin, Classes/Pconst
+
+
+
+
+
+
+
+
+
 
 description::
 
+
+
+
 note::
-Pfinval is not appropriate for wrapping link::Classes/Pmono::, link::Classes/Pfx:: etc. For these types of event patterns, you should use link::Classes/Pfin::.
+Pfinval is not appropriate for wrapping link::Classes/Pmono::, link::Classes/Pfx:: etc.
+For these types of event patterns, you should use link::Classes/Pfin::.
 ::
 
-ClassMethods::
 
-method::new
-Embeds strong::count:: elements of the strong::pattern:: into the stream.
 
-Examples::
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
+Embed strong::count:: elements of the strong::pattern:: into the stream.
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (

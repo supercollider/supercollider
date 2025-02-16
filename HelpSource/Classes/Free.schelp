@@ -1,23 +1,63 @@
-class:: Free
-summary:: When triggered, frees a node.
+title:: Free
+categories:: UGens>Synth control
+summary:: When triggered, frees a node
 related:: Classes/Pause, Classes/FreeSelf
-categories::  UGens>Synth control
 
-Description::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
 When triggered, frees a node.
+
+
+
+
+
+
+
+
+
 
 classmethods::
 
-method::kr
 
-argument::trig
+
+
+method:: kr
+
+
+argument:: trig
+
 Trigger input
 
-argument::id
+
+argument:: id
+
 Node to be freed.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 s.boot;

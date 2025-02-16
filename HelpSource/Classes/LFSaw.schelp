@@ -1,42 +1,83 @@
-class:: LFSaw
+title:: LFSaw
+categories:: UGens>Generators>Deterministic
 summary:: Sawtooth oscillator
 related:: Classes/LFCub, Classes/LFPar, Classes/LFPulse, Classes/LFTri, Classes/Saw
-categories::  UGens>Generators>Deterministic
 
 
-Description::
 
-A non-band-limited sawtooth oscillator. Output ranges from -1 to +1.
+
+
+
+
+
+
+
+description::
+
+
+
+
+A non-band-limited sawtooth oscillator. Output ranges from teletype::-1:: to +1.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
 
-argument::freq
+
+
+method:: ar, kr
+
+
+argument:: freq
+
 Frequency in Hertz.
 
-argument::iphase
 
-Initial phase offset. For efficiency reasons this is a value
-ranging from 0 to 2.
-Note:: enter "1" for an initial phase of 0 radians.
-A value of 0 would start the cycle at pi radians. See the example below.::
+argument:: iphase
 
-argument::mul
+Initial phase offset. For efficiency reasons this is a value ranging from teletype::0:: to 2.
+note:: 
+enter "1" for an initial phase of teletype::0:: radians.
+A value of teletype::0:: would start the cycle at pi radians.
+See the example below.::
+
+
+argument:: mul
+
 Output will be multiplied by this value.
 
-argument::add
+
+argument:: add
+
 This value will be added to the output.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 { LFSaw.ar(500, 1, 0.1) }.play
 
 // used as both Oscillator and LFO:
 { LFSaw.ar(LFSaw.kr(4, 0, 200, 400), 0, 0.1) }.play
-
 ::
 
 Display the special behaviour of the initial phase parameter:

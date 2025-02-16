@@ -1,32 +1,71 @@
-class:: LFClipNoise
+title:: LFClipNoise
+categories:: UGens>Generators>Stochastic
 summary:: Clipped noise
 related:: Classes/LFDClipNoise, Classes/LFDNoise0, Classes/LFDNoise1, Classes/LFDNoise3, Classes/LFNoise0, Classes/LFNoise1, Classes/LFNoise2
-categories::  UGens>Generators>Stochastic
 
 
-Description::
 
-Randomly generates the values -1 or +1 at a rate given by the nearest
-integer division of the sample rate by the  code::freq:: argument. It is probably pretty hard on your speakers!
+
+
+
+
+
+
+
+description::
+
+
+
+
+Randomly generates the values -1 or +1 at a rate given by the nearest integer division of the sample rate by the  code::freq:: argument.
+It is probably pretty hard on your speakers!
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
 
-argument::freq
+
+
+method:: ar, kr
+
+
+argument:: freq
+
 Approximate rate at which to generate random values.
 
-argument::mul
+
+argument:: mul
+
 Output will be multiplied by this value.
 
-argument::add
+
+argument:: add
+
 This value will be added to the output.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 (
 SynthDef("help-LFClipNoise", { |out = 0|
 	Out.ar(out,
@@ -55,5 +94,4 @@ SynthDef("help-LFClipNoise", { |out = 0|
 	)
 }).play;
 )
-
 ::

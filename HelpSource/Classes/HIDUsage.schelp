@@ -1,71 +1,159 @@
-TITLE:: HIDUsage
-summary:: Helper class to read usage information from HID usage tables
+title:: HIDUsage
 categories:: External Control>HID
+summary:: Helper class to read usage information from HID usage tables
 related:: Classes/HID, Classes/HIDElement, Classes/HIDCollection, Guides/Working_with_HID
 
-DESCRIPTION::
-HID functionality is described by the USB HID standard usage tables. Each element and collection has a usage page and index, describing the type of control that it provides. This class allows to query the name of a usage and page based on the indices read from the device. This class is primarily used internally by other HID classes.
 
 
-CLASSMETHODS::
-
-PRIVATE:: initClass
 
 
-METHOD:: getUsageDescription
+
+
+
+
+
+description::
+
+
+
+
+HID functionality is described by the USB HID standard usage tables.
+Each element and collection has a usage page and index, describing the type of control that it provides.
+This class allows to query the name of a usage and page based on the indices read from the device.
+This class is primarily used internally by other HID classes.
+
+
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+private:: initClass
+
+
+method:: getUsageDescription
 Retrieve the standard usage name and pagename of an HID usage element or collection.
 
-ARGUMENT:: usagePage
-usage page number
 
-ARGUMENT:: usage
-usage index
+argument:: usagePage
 
-returns:: an Array with the pageName and usageName
+Usage page number
 
 
+argument:: usage
 
-METHOD:: hutDirectory
+Usage index
+
+
+returns::
+ 
+an Array with the pageName and usageName
+
+
+
+
+method:: hutDirectory
+
+
 Directory where the yaml files with the HID usage tables are stored.
 
 
-METHOD:: readHUTFile
-Reads and parses the HID usage table file. Called from getUsageDescription to read in the usage table.
 
-ARGUMENT:: yamlfile
-the filename of the yamlfile with a particular usage table, relative to the hutDirectory.
 
-returns:: an IdentityDictionary representing the table
+method:: readHUTFile
 
-METHOD:: getUsageIds
+
+Reads and parses the HID usage table file.
+Called from getUsageDescription to read in the usage table.
+
+
+argument:: yamlfile
+
+The filename of the yamlfile with a particular usage table, relative to the hutDirectory.
+
+
+returns::
+ 
+an IdentityDictionary representing the table
+
+
+
+
+method:: getUsageIds
+
+
 Retrieve usage id and page id from the usageName.
 
-ARGUMENT:: usageName
-the usage name
 
-returns:: an Array with the page id and the usage id
+argument:: usageName
+
+The usage name
 
 
-METHOD:: idsToName
+returns::
+ 
+an Array with the page id and the usage id
+
+
+
+
+method:: idsToName
+
+
 Retrieve the standard usage name and pagename of an HID usage element or collection.
 
-ARGUMENT:: page
-the usage page id
 
-ARGUMENT:: usage
-the usage id
+argument:: page
 
-returns:: the usage name
+The usage page id
 
-METHOD:: usageIDsToName
+
+argument:: usage
+
+The usage id
+
+
+returns::
+ 
+the usage name
+
+
+
+
+method:: usageIDsToName
+
+
 MultiLevelIdentityDictionary containing a map of page ids, usage ids to usage names.
 
-METHOD:: usageNameToIDs
+
+
+
+method:: usageNameToIDs
+
+
 IdentityDictionary containing a map of usageNames to page ids and usage ids.
 
 
 
-EXAMPLES::
+
+
+
+
+
+
+
+examples::
+
+
+
 
 Get the usage description for a collection or element with usage page 1 and usage index 5
 

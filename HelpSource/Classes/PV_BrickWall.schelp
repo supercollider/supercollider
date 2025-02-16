@@ -1,23 +1,47 @@
-class:: PV_BrickWall
-summary:: Zero bins.
-related:: Classes/FFT, Classes/IFFT
+title:: PV_BrickWall
 categories:: UGens>FFT
+summary:: Zero bins
+related:: Classes/FFT, Classes/IFFT
 
-Description::
 
-Clears bins above or below a cutoff point.
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+Clear bins above or below a cutoff point.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::new
 
-argument::buffer
+
+
+method:: new
+
+
+argument:: buffer
 
 FFT buffer.
 
 
-argument::wipe
+argument:: wipe
 
 Can range between -1 and +1.
 
@@ -27,19 +51,27 @@ code::wipe::  == 0 then there is no effect.
 
 
 If
-code::wipe::  > 0 then it acts like a high
-pass filter, clearing bins from the bottom up.
+code::wipe::  > 0 then it acts like a high pass filter, clearing bins from the bottom up.
 
 
 If
-code::wipe::  < 0 then it acts like a low
-pass filter, clearing bins from the top down.
+code::wipe::  < 0 then it acts like a low pass filter, clearing bins from the top down.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 s.boot;
 
 (
@@ -51,5 +83,4 @@ s.boot;
 	IFFT(chain);
 }.play
 )
-
 ::

@@ -1,18 +1,45 @@
-CLASS:: GridLines
-summary:: A factory class for AbstractGridLines
+title:: GridLines
 categories:: GUI>Accessories
+summary:: A factory class for AbstractGridLines
 related:: Classes/AbstractGridLines, Classes/LinearGridLines, Classes/ExponentialGridLines, Classes/DrawGrid, Classes/ControlSpec, Classes/Plotter, Reference/plot
 
 
-DESCRIPTION::
+
+
+
+
+
+
+
+
+description::
+
+
+
+
 code::GridLines:: is a factory class that returns the appropriate subclass of link::Classes/AbstractGridLines:: for a given code::ControlSpec::, e.g. a link::Classes/LinearGridLines:: or link::Classes/ExponentialGridLines:: for a linear or exponential spec, respectively. See those help files for examples and information on modifying their behavior.
 
 
-CLASSMETHODS::
 
-METHOD:: new
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
 
 argument:: spec
+
 A link::Classes/ControlSpec:: that defines the minimum and maximum values, warp and step.
 
-returns:: A subclass of link::Classes/AbstractGridLines::, e.g. link::Classes/LinearGridLines:: or link::Classes/ExponentialGridLines::.
+
+returns::
+A subclass of link::Classes/AbstractGridLines::, e.g. link::Classes/LinearGridLines::or link::Classes/ExponentialGridLines::.

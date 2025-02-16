@@ -1,9 +1,21 @@
 title:: 13_BinaryOp_synthesis
-summary:: Mark Polishook tutorial
 categories:: Tutorials>Mark_Polishook_tutorial
+summary:: Mark Polishook tutorial
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
-section::Binary messages
+
+
+
+
+
+
+
+
+
+section:: Binary messages
+
+
+
 
 The pattern for a binary message is
 
@@ -17,11 +29,23 @@ code::
 2 * 3
 ::
 
-is a receiver (the object to which a message is sent), a binary operator, and an operand.
+I a receiver (the object to which a message is sent), a binary operator, and an operand.
 
-section::Mixing = addition
 
-Use addition (a binary operation) to mix two or more ugens.
+
+
+
+
+
+
+
+
+section:: Mixing = addition
+
+
+
+
+Use addition (a binary operation) to mix two or more UGens.
 
 code::
 (
@@ -51,13 +75,13 @@ code::
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Rewrite the previous example with the Mix ugen.
+Rewrite the previous example with the Mix UGen.
 
 code::
 (
 {
 	Mix.ar(
-		// the ugens that will be mixed go into an array
+		// the UGens that will be mixed go into an array
 		[
 			Saw.ar(500, 0.05),
 			Saw.ar(600, 0.06),
@@ -74,9 +98,22 @@ code::
 { Mix.arFill(3, { arg i; Saw.ar(500 + (i * 100), 0.05) }) }.scope;
 ::
 
-Every time the function is evaluated, the argument i is incremented. So i equals 0 the first time the function is evaluated, i equals 1 the second time, i equals 2, the third time, and so on.
+Every time the function is evaluated, the argument i is incremented.
+So i equals 0 the first time the function is evaluated, i equals 1 the second time, i equals 2, the third time, and so on.
 
-section::Scaling = multiplication
+
+
+
+
+
+
+
+
+
+section:: Scaling = multiplication
+
+
+
 
 Apply an envelope, in the form of a low-frequency sine wave, to a WhiteNoise generator.
 
@@ -95,9 +132,21 @@ code::
 )
 ::
 
-section::Envelopes
 
-Dynamically modulate any parameter in a ugen (such as frequency, phase, or amplitude) with an envelope.
+
+
+
+
+
+
+
+
+section:: Envelopes
+
+
+
+
+Dynamically modulate any parameter in a UGen (such as frequency, phase, or amplitude) with an envelope.
 
 code::
 // modulate amplitude
@@ -106,9 +155,22 @@ code::
 
 Setting the doneAction argument (control) to 2 insures that after the envelope reaches its endpoint, SuperCollider will release the memory it used for the instances of the SinOsc and the EnvGen.
 
-section::Keyword arguments
 
-Keywords make code easier to read and they allow arguments to be presented in any order. Here, the doneAction and the timeScale arguments are expressed in keyword style.
+
+
+
+
+
+
+
+
+section:: Keyword arguments
+
+
+
+
+Keywords make code easier to read and they allow arguments to be presented in any order.
+Here, the doneAction and the timeScale arguments are expressed in keyword style.
 
 code::
 (
@@ -144,9 +206,22 @@ r = Routine({
 r.play
 ::
 
-section::Additive Synthesis
 
-Additive synthesis is as its name says. Components are added (mixed) together.
+
+
+
+
+
+
+
+
+section:: Additive Synthesis
+
+
+
+
+Additive synthesis is as its name says.
+Components are added (mixed) together.
 
 code::
 (
@@ -168,7 +243,19 @@ code::
 )
 ::
 
-section::Envelopes
+
+
+
+
+
+
+
+
+
+section:: Envelopes
+
+
+
 
 The promise of additive synthesis is that one can add sine waves to create any sound that can be imagined.
 
@@ -208,9 +295,21 @@ code::
 )
 ::
 
-(Or use the link::Classes/Klang:: ugen to produce a similar effect).
+(Or use the link::Classes/Klang:: UGen to produce a similar effect).
 
-section::Ring modulation
+
+
+
+
+
+
+
+
+
+section:: Ring modulation
+
+
+
 
 Multiply two UGens.
 
@@ -230,9 +329,21 @@ code::
 )
 ::
 
-section::Amplitude modulation
 
-Multiply two UGens and restrict the value of the modulator to positive values (use the .abs message to calculate 'absolute' value) to create what Charles Dodge calls "classic" amplitude modulation.
+
+
+
+
+
+
+
+
+section:: Amplitude modulation
+
+
+
+
+Multiply two UGens and restrict the value of the modulator to teletype::positive:: values (use the .abs message to calculate 'absolute' value) to create what Charles Dodge calls "classic" amplitude modulation.
 
 code::
 // use an lfo to modulate the amplitude of the modulator

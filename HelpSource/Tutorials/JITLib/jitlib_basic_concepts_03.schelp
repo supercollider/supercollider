@@ -1,7 +1,8 @@
 title:: jitlib_basic_concepts_03
-summary:: proxyspace - basic concepts
 categories:: JITLib>Tutorials, Tutorials>JITLib
+summary:: Proxyspace - basic concepts
 related:: Overviews/JITLib, Tutorials/JITLib/jitlib_basic_concepts_02, Tutorials/JITLib/jitlib_basic_concepts_04
+
 
 internal structure of the node proxy, node order and the parameter context
 
@@ -12,7 +13,9 @@ list::
 ## link::#d) The parameter context#d) the parameter context::
 ::
 
-A NodeProxy has two internal contexts in which the objects are inserted: The group, which is on the server, and the nodeMap, which is a client side parameter context. As the group can contain an order of synths, there is a client side representation, in which the source objects are stored (see link::Classes/Order::).
+A NodeProxy has two internal contexts in which the objects are inserted:
+The group, which is on the server, and the nodeMap, which is a client side parameter context.
+As the group can contain an order of synths, there is a client side representation, in which the source objects are stored (see link::Classes/Order::).
 
 code::
 // make new space
@@ -20,9 +23,22 @@ p = ProxySpace.push(s.boot);
 ~z.play; ~y.ar; // explicitly initialize proxies
 ::
 
-section::a) NodeProxy slots
 
-One node proxy can hold several objects in an execution order. The index can be any positive integer.
+
+
+
+
+
+
+
+
+section:: A) NodeProxy slots
+
+
+
+
+One node proxy can hold several objects in an execution order.
+The index can be any positive integer.
 
 code::
 // the initial slot (0) is used when assigning directly.
@@ -46,10 +62,10 @@ code::
 ~y.source.postcs	// this returns the function in slot 0 only.
 ::
 
-multiple assignment
+Multiple assignment
 
 code::
-// the function is assigned to the slots from 1 to 4
+// the function is assigned to the slots from teletype::1::to 4
 ~z[1..4] = { SinOsc.ar(exprand(300, 600), 0, LFTri.kr({exprand(1, 3)} ! 3).sum.max(0)) * 0.1 };
 
 
@@ -63,7 +79,19 @@ code::
 ~y.end;
 ::
 
-section::b) fade time
+
+
+
+
+
+
+
+
+
+section:: B) fade time
+
+
+
 
 code::
 // setting the fadeTime will allow cross fades.
@@ -82,16 +110,37 @@ code::
 ::
 
 note::
-the fadeTime is also used for the operations xset and xmap. (see below)
+The fadeTime is also used for the operations xset and xmap.
+(see below)
 ::
 
-section::c) play/stop, send/free, pause/resume
 
-there are a couple of messages a NodeProxy understands that are related to play, stop etc. Here is what they do.
 
-subsection::play/stop
 
-this pair of messages is related to the monitoring function of the proxy. play starts monitoring, stop ends the monitoring. emphasis::if the proxy group is playing:: (this can be tested with .isPlaying), play will not affect the proxie's internal behaviour in any way. Only if it is not playing (e.g because one has freed the group by cmd-period) it starts the synths/objects in the proxy. Stop never affects the internal state of the proxy.
+
+
+
+
+
+
+section:: C) play/stop, send/free, pause/resume
+
+
+
+
+There are a couple of messages a NodeProxy understands that are related to play, stop etc. Here is what they do.
+
+
+
+
+
+
+subsection:: Play/stop
+
+
+This pair of messages is related to the monitoring function of the proxy.
+play starts monitoring, stop ends the monitoring. emphasis::if the proxy group is playing:: (this can be tested with .isPlaying), play will not affect the proxie's internal behaviour in any way.
+Only if it is not playing (e.g because one has freed the group by cmd-period) it starts the synths/objects in the proxy. Stop never affects the internal state of the proxy.
 
 code::
 // first hit cmd-period.
@@ -110,9 +159,18 @@ code::
 ~z.vol = 0.8;
 ::
 
-subsection::send / release
 
-this pair of messages controls the synths within the proxy. It does not affect the monitoring (see above). send starts a new synth, release releases the synth. strong::send:: by default releases the last synth. if the synth frees itself (doneAction 2) strong::spawn:: can be used.
+
+
+
+
+subsection:: Send / release
+
+
+This pair of messages controls the synths within the proxy.
+It does not affect the monitoring (see above).
+send starts a new synth, release releases the synth. strong::send:: by default releases the last synth.
+if the synth frees itself (doneAction 2) strong::spawn:: can be used.
 
 code::
 // first hit cmd-period.
@@ -133,20 +191,22 @@ code::
 ~z.play; // monitor. as the group was still playing, this does _not_ start the proxy.
 ::
 
-in order to free the synths and the group together, strong::free:: is used:
+In order to free the synths and the group together, strong::free:: is used:
 
 code::
 ~z.free; // this does also not affect the monitoring.
 ~z.play; // monitor. as the group was not playing, this starts the proxy.
 ::
 
-in order to free the synths and the group, stop playback, strong::end:: is used.
+In order to free the synths and the group, stop playback, strong::end:: is used.
 
 code::
 ~z.end(3); // end in 3 sec
 ::
 
-in order to rebuild the synthdef on the server, use strong::rebuild::. this is of course far less efficient than emphasis::send::, but it can make sense; e.g. the synthdef has random elements. UGens like Rand(300, 400) create new random values on every send, while client-side random functions like exprand(1, 1.3) only get built once; to force new decisions with these, one can use strong::rebuild::.
+In order to rebuild the synthdef on the server, use strong::rebuild::.
+this is of course far less efficient than emphasis::send::, but it can make sense; e.g. the synthdef has random elements.
+UGens like Rand(300, 400) create new random values on every send, while client-side random functions like exprand(1, 1.3) only get built once; to force new decisions with these, one can use strong::rebuild::.
 
 code::
 (
@@ -167,9 +227,15 @@ code::
 ~z.end;
 ::
 
-subsection::pause / resume
 
-when paused, a node proxy still stays active, but every synth that is started is paused until the proxy is resumed again.
+
+
+
+
+subsection:: Pause / resume
+
+
+When paused, a node proxy still stays active, but every synth that is started is paused until the proxy is resumed again.
 
 code::
 ~z.play;
@@ -184,9 +250,15 @@ code::
 
 Note that pause/resume causes clicks with audio rate proxies, which do not happen when pauseing control rate proxies.
 
-subsection::clear
 
-clear removes all synths, the group, the monitor and releases the bus number.
+
+
+
+
+subsection:: Clear
+
+
+Clear removes all synths, the group, the monitor and releases the bus number.
 
 code::
 ~z.clear;
@@ -194,18 +266,31 @@ code::
 ~z.isNeutral;	// not initialized.
 ::
 
-note that when other processes use the nodeproxy these are not notified. So clearing has to be done with regard to this.
+note that when other processes use the nodeproxy these are not notified.
+So clearing has to be done with regard to this.
 
-section::d) The parameter context
 
-what happens to function arguments?
+
+
+
+
+
+
+
+
+section:: D) The parameter context
+
+
+
+
+What happens to function arguments?
 
 code::
 ~y.play;
 ~y = { arg freq=500; SinOsc.ar(freq * [1, 1.1]) * 0.1 };
 ::
 
-now the argument 'freq' is a control in the synth (just like in SynthDef) which you can change by the strong::'set':: message.
+Now the argument 'freq' is a control in the synth (just like in SynthDef) which you can change by the strong::'set':: message.
 
 code::
 ~y.set(\freq, 440);
@@ -215,7 +300,7 @@ code::
 ~y = { arg freq=500; Formant.ar(50, freq * [1, 1.1], 70) * 0.1 };
 ::
 
-the message strong::xset:: is a variant of set, to crossfade the change using the current fadeTime:
+The message strong::xset:: is a variant of set, to crossfade the change using the current fadeTime:
 
 code::
 ~y.fadeTime = 3;
@@ -227,7 +312,8 @@ code::
 ~y.xset(\freq, 300);
 ::
 
-the parameter context also can keep bus mappings. a control can be mapped to any emphasis::control proxy:: :
+The parameter context also can keep bus mappings.
+a control can be mapped to any emphasis::control proxy:: :
 
 code::
 ~c = { MouseX.kr(300, 800, 1) };
@@ -238,20 +324,20 @@ code::
 ~y = { arg freq=500; Formant.ar(4, freq * [1, 1.1], 70) * 0.1 };
 ::
 
-the message strong::xmap:: is a variant of map, to crossfade the change using the current fadeTime:
+The message strong::xmap:: is a variant of map, to crossfade the change using the current fadeTime:
 
 code::
 ~y.set(\freq, 440);
 ~y.xmap(\freq, ~c);
 ::
 
-to remove a setting or a mapping, use unmap / unset.
+To remove a setting or a mapping, use unmap / unset.
 
 code::
 ~y.unmap;
 ::
 
-also multichannel controls can be mapped to a multichannel proxy using strong::map:: :
+Also multichannel controls can be mapped to a multichannel proxy using strong::map:: :
 
 code::
 ~c2 = { [MouseX.kr(300, 800, 1), MouseY.kr(300, 800, 1)] };
@@ -259,7 +345,7 @@ code::
 ~y.map(\freq, ~c2);
 ::
 
-the parameter context can be examined:
+The parameter context can be examined:
 
 code::
 ~y.nodeMap;
@@ -273,4 +359,4 @@ code::
 p.clear(8); // clear the whole proxy space, in 8 secs.
 ::
 
-previous: link::Tutorials/JITLib/jitlib_basic_concepts_02:: next: link::Tutorials/JITLib/jitlib_basic_concepts_04::
+Previous: link::Tutorials/JITLib/jitlib_basic_concepts_02:: next: link::Tutorials/JITLib/jitlib_basic_concepts_04::

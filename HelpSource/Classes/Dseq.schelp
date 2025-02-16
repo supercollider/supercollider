@@ -1,9 +1,21 @@
-class:: Dseq
-summary:: Demand rate sequence generator.
-related:: Classes/Demand, Classes/Drand, Classes/Dser, Classes/Duty, Classes/Dxrand, Classes/TDuty
+title:: Dseq
 categories:: UGens>Demand
+summary:: Demand rate sequence generator
+related:: Classes/Demand, Classes/Drand, Classes/Dser, Classes/Duty, Classes/Dxrand, Classes/TDuty
 
-Description::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 Demand rate sequence generator.
 
@@ -11,24 +23,46 @@ Demand rate sequence generator.
 See link::Classes/Pseq:: for structurally related equivalent.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::new
 
-argument::list
+
+
+method:: new
+
+
+argument:: list
 
 An array of values or other UGens.
 
 
-argument::repeats
+argument:: repeats
 
 Number of repeats.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 (
 {
 	var a, freq, trig;
@@ -51,5 +85,4 @@ code::
 
 }.play;
 )
-
 ::

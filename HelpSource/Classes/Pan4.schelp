@@ -1,43 +1,76 @@
-class:: Pan4
-summary:: Four channel equal power pan.
+title:: Pan4
+categories:: UGens>Multichannel>Panners
+summary:: Four channel equal power pan
 related:: Classes/Balance2, Classes/LinPan2, Classes/Pan2, Classes/PanAz
-categories::  UGens>Multichannel>Panners
 
 
-Description::
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 Four channel equal power panner. Outputs are in order LeftFront,
 RightFront, LeftBack, RightBack.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::ar, kr
 
-argument::in
+
+
+method:: ar, kr
+
+
+argument:: in
 
 The input signal.
 
 
-argument::xpos
+argument:: xpos
 
-X  pan position from -1 to +1 (left to right).
-
-
-argument::ypos
-
-Y pan position from -1 to +1 (back to front).
+X  pan position from teletype::-1:: to +1 (left to right).
 
 
-argument::level
+argument:: ypos
+
+Y pan position from teletype::-1:: to +1 (back to front).
+
+
+argument:: level
 
 A control rate level input.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 // You'll only hear the front two channels on a stereo setup.
 
 { Pan4.ar(PinkNoise.ar, FSinOsc.kr(2), FSinOsc.kr(1.2), 0.3)) }.play;
@@ -49,5 +82,4 @@ code::
 { Pan4.ar(PinkNoise.ar,  0,  1, 0.3) }.play; // front pair
 
 { Pan4.ar(PinkNoise.ar,  0,  0, 0.3) }.play; // center
-
 ::

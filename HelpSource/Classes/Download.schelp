@@ -1,62 +1,143 @@
-TITLE:: Download
-summary:: Fetch a file from a remote URL
+title:: Download
 categories:: Files
+summary:: Fetch a file from a remote URL
 related:: Classes/File
 
-DESCRIPTION::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
 Download allows you to download a file from a specified URL
 
 
-CLASSMETHODS::
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
 private:: qtClass
 
-METHOD:: new
+
+method:: new
 Create and start a new Download.
 
-ARGUMENT:: requestedURL
+
+argument:: requestedURL
+
 A link::Classes/String:: containing the URL of the file to download.
 
-ARGUMENT:: localPath
+
+argument:: localPath
+
 A link::Classes/String:: containing the local path at which to save the downloaded file.
 
-ARGUMENT:: finishedFunc
+
+argument:: finishedFunc
+
 A link::Classes/Function:: to evaluate when the download is complete.
 
-ARGUMENT:: errorFunc
+
+argument:: errorFunc
+
 A link::Classes/Function:: to evaluate if the download fails due to an error.
 
-ARGUMENT:: progressFunc
+
+argument:: progressFunc
+
 A link::Classes/Function:: to process the download's progress. This Function will be passed two arguments, the bytes received, and the total bytes.
 
-returns:: A new Download.
 
-METHOD:: cancelAll
+returns::
+ 
+A new Download.
+
+
+
+
+method:: cancelAll
+
+
 Cancel all active Downloads.
 
 
-INSTANCEMETHODS::
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
 private:: doProgress, doError, doFinished, doOnShutDown, cleanup, startDownload, init
 
-METHOD:: cancel
+
+method:: cancel
 Cancel the download.
 
-METHOD:: errorFunc
+
+
+
+method:: errorFunc
+
+
 Get or set the error link::Classes/Function::.
 
-METHOD:: finishedFunc
+
+
+
+method:: finishedFunc
+
+
 Get or set the download finished link::Classes/Function::.
 
-METHOD:: progressFunc
+
+
+
+method:: progressFunc
+
+
 Get or set the download progress link::Classes/Function::.
 
 
 
-EXAMPLES::
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 Download("http://art-on-wires.org/wp-content/uploads/2011/03/nick_collins.png", "/tmp/nick.png", { \huzzah.postln }, { \error.postln }, { |rec, tot| [rec, tot].postln }); // beautify your tmp directory
 
 d = Download("http://scottwilson.ca/files/flame.mp3", "/tmp/flame.mp3", { \huzzah.postln }, { \error.postln }, { |rec, tot| [rec, tot].postln });
 d.cancel; // cancel this
-
 ::

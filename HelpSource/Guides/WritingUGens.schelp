@@ -1,7 +1,8 @@
 title:: Writing Unit Generators
-summary:: Get started with writing unit generators
 categories:: Internals
+summary:: Get started with writing unit generators
 related:: Reference/ServerPluginAPI
+
 
 SuperCollider has a vast library of unit generators that can be assembled in unlimited ways, but sometimes even those
 aren't sufficient. You may have a need for an unusual signal processing algorithm, or you're running into efficiency
@@ -13,15 +14,31 @@ with SC to write them.
 
 Writing UGens is not too difficult, but it's arguably far less convenient and intuitive than the high-level tools that
 SuperCollider provides. You'll need a build system and a good amount of boilerplate code -- even fairly basic signal
-processing operations can require a lot of code. You don't have an instant live coding environment, and mistakes can
+processing operations can require a lot of code.
+You don't have an instant live coding environment, and mistakes can
 easily crash the server. SuperCollider's UGens are stable and well-tested, and custom UGens are best viewed as a last
 resort for when the limitations of SC are impassable.
 
+
+
+
+
+
+
+
+
+
 section:: Pseudo-UGens
 
-Before we proceed to the real UGens, we'll take a quick detour for the sake of completeness. A pseudo-UGen is a bit of
-SuperCollider code that abbreviates a certain configuration of UGens that gets used repeatedly. A pseudo-UGen is a class
-that superficially resembles a UGen class, but it only returns a composition of existing UGens. It has no efficiency
+
+
+
+Before we proceed to the real UGens, we'll take a quick detour for the sake of completeness.
+A pseudo-UGen is a bit of
+SuperCollider code that abbreviates a certain configuration of UGens that gets used repeatedly.
+A pseudo-UGen is a class
+that superficially resembles a UGen class, but it only returns a composition of existing UGens.
+It has no efficiency
 savings, but it does save typing.
 
 The below example has only a code::.ar:: method, but you can just as easily have both code::.ar:: and code::.kr::
@@ -48,13 +65,28 @@ for audio rate. Putting LocalIn and LocalOut in a pseudo-UGen is a bad idea, as 
 loops in the SynthDef.
 ::
 
+
+
+
+
+
+
+
+
+
 section:: Basics of UGens
 
-A (real) UGen needs two components: a plugin for the server, and a class for the language. The class goes in an ordinary
-code::*.sc:: file, and defines the interface for your UGen in the language. This class is generally just a few lines of
+
+
+
+A (real) UGen needs two components: a plugin for the server, and a class for the language.
+The class goes in an ordinary
+code::*.sc:: file, and defines the interface for your UGen in the language.
+This class is generally just a few lines of
 code that ultimately call the class method link::Classes/UGen#-multiNew::.
 
-The server plugin is where the actual UGen behavior is defined. It is given by a dynamically loaded library written in
+The server plugin is where the actual UGen behavior is defined.
+It is given by a dynamically loaded library written in
 C++, whose format is platform-dependent:
 
 list::
@@ -66,46 +98,96 @@ list::
 A plugin file can contain more than one UGen, and it can also define things other than UGens such as buffer fill
 ("/b_gen") commands.
 
-When the server boots, it will look for plugin files in code::Platform.userExtensionDir::. Since sclang also looks for
+When the server boots, it will look for plugin files in code::Platform.userExtensionDir::.
+Since sclang also looks for
 class files in the same location, the class file and the library file can go in the same place.
 
 Plug-ins are loaded during the startup of the server, so it will have to be restarted after (re-)compiling a
 plugin. If you modify the plugin file but not the class file, you don't need to reboot the interpreter.
 
+
+
+
+
+
+
+
+
+
 section:: FAUST
+
+
+
 
 FAUST footnote::http://faust.grame.fr/:: is an open source DSP language that describes real-time audio units. It can
 compile to SuperCollider plugins, providing an easy way to create UGens in SuperCollider.
 
-FAUST provides a shell script useful for SuperCollider users called code::faust2supercollider::. This compiles a .dsp
+FAUST provides a shell script useful for SuperCollider users called code::faust2supercollider::.
+This compiles a .dsp
 file into a class file and server plugin, which you can then drop into your extensions directory.
 
-FAUST plugins are often quick to develop and can be painlessly ported to other environments. Unfortunately, they can't
+FAUST plugins are often quick to develop and can be painlessly ported to other environments.
+Unfortunately, they can't
 take advantage of all of the server's features, such as accessing Buffers or random number generators, and some UGens
-featuring very complex logic are difficult or impossible to write in FAUST. Furthermore, the FAUST compiler is quite
-intelligent but it might not always offer the best efficiency in its results. If a UGen you are developing hits these
+featuring very complex logic are difficult or impossible to write in FAUST.
+Furthermore, the FAUST compiler is quite
+intelligent but it might not always offer the best efficiency in its results.
+If a UGen you are developing hits these
 limitations, it is time to move on to handwritten C++.
 
+
+
+
+
+
+
+
+
+
 section:: Example Plugins
+
+
+
 
 To get an idea of the necessary ingredients for writing UGens, it's often best to poke around at complete examples.
 We've set up a GitHub repository at https://github.com/supercollider/example-plugins, which contains some example
 plugins numbered roughly by complexity. Each directory in that repository is self-contained with its own build system,
-so you can copy out a directory to form a starting point for your own UGens. The source codes of these plugins are
+so you can copy out a directory to form a starting point for your own UGens.
+The source codes of these plugins are
 heavily commented.
 
 The first example, BoringMixer, is very minimal. The UGen is stateless and has only one calculation function, which is
 audio rate.
 
-MySaw introduces states and multiple calculation functions. AnalogEcho introduces real-time memory management through
+MySaw introduces states and multiple calculation functions.
+AnalogEcho introduces real-time memory management through
 internal buffers, and demonstrates how to do cubic interpolation from an array of samples.
+
+
+
+
+
+
+
+
+
 
 section:: Anatomy of a UGen
 
+
+
+
 The SC source code has a header file, code::include/plugin_interface/SC_PlugIn.h::, that gives you your interface to the server
-architecture as well as a bunch of helper functions. These are documented at link::Reference/ServerPluginAPI::.
+architecture as well as a bunch of helper functions.
+These are documented at link::Reference/ServerPluginAPI::.
+
+
+
+
+
 
 subsection:: The Entry Point
+
 
 When the library is loaded the server calls a function in the library, which is defined by the code::PluginLoad()::
 macro.  This entry point has two responsibilities:
@@ -116,10 +198,11 @@ list::
 ::
 
 Unit Generators are defined by calling a function in the InterfaceTable and passing it the name of the unit generator,
-the size of its C data struct, and pointers to functions for constructing and destructing it. There are 4 macros, which
+the size of its C data struct, and pointers to functions for constructing and destructing it.
+There are 4 macros, which
 can be used to simplify the process.
 
-definitionList::
+definitionlist::
 ## DefineSimpleUnit || Define a `simple' unit generator
 ## DefineDtorUnit || Define a unit generator with a destructor
 ## DefineSimpleCantAliasUnit || Define a `simple' unit generator, whose input and output buffers cannot alias
@@ -127,20 +210,33 @@ definitionList::
 ::
 
 These macros depend on a specific naming convention:
+
 list::
 ## The unit generator struct is named like the plug-in.
 ## The unit generator constructor is named code::PluginName_Ctor::
 ## The unit generator destructor is named code::PluginName_Dtor::
 ::
 
+
+
+
+
+
 subsection:: The Exit Point
+
 
 The optional code::PluginUnload():: macro exports a function that is called when the library is deinitialized,
 right before it is unloaded. This is only required in rare cases, typically for resource cleanup that cannot be safely done
 in a global object destructor. For example, the DiskIO UGens and UI UGens in code::DiskIO_UGens.cpp:: resp. code::UIUGens.cpp::
 use the unload function to safely join their worker threads.
 
+
+
+
+
+
 subsection:: The Calculation Function
+
 
 The meat of the UGen is its calculation function, which gets called every control period with the UGen object as an
 argument. (This is for control-rate and audio-rate UGens -- demand-rate is different.) In this function, the UGen reads
@@ -155,34 +251,64 @@ Phasor_next_aa, Phasor_next_ak, Phasor_next_ka, and Phasor_next_kk. You don't ne
 UGens, however. For example, link::Classes/FreeVerb:: has only one calculation function. Who would want a control-rate
 reverb?
 
+
+
+
+
+
 subsection:: Building Unit Generator Plugins
+
 
 The most portable way to build plugins is using cmake footnote::http://www.cmake.org::, a cross-platform build
 system.
 
 The examples in the example repository contain code::CMakeLists.txt:: files.
 
+
+
+
+
+
+
+
+
+
 section:: Coding Guidelines
+
+
+
 
 Unit generator plugins are called from the real-time context, which means that special care needs to be taken in order
 to avoid audio dropouts.
 
-definitionList::
-## STL Containers || It is generally not recommended to use STL containers, since they internally allocate memory. The only
+definitionlist::
+## STL Containers || It is generally not recommended to use STL containers, since they internally allocate memory.
+The only
                      way the STL containers can be used is by providing an Allocator, which maps to the allocating functions of
                      the server.
-## Blocking API Calls || Unit generators should not call any code, which could block the execution of the current thread. In
-                         particular, system calls should be avoided. If synchronization with other threads is required, this has to be
+## Blocking API Calls || Unit generators should not call any code, which could block the execution of the current thread.
+In
+                         particular, system calls should be avoided.
+If synchronization with other threads is required, this has to be
                          done in a lock-free manner.
 ::
 
-subsection:: Memory Allocation
-Do not allocate memory from the OS via code::malloc:: / code::free:: or code::new::/ code::delete::. Instead you should use the real-time memory allocator via code::RTAlloc:: / code::RTFree::.
 
-definitionList::
+
+
+
+
+subsection:: Memory Allocation
+
+
+Do not allocate memory from the OS via code::malloc:: / code::free:: or code::new::/ code::delete::.
+Instead you should use the real-time memory allocator via code::RTAlloc:: / code::RTFree::.
+
+definitionlist::
 ## Remember to code::RTFree:: the memory you code::RTAlloc:: ||
 
-Like with code::malloc/free::, you are reponsible for freeing all the memory you allocate. Remember to include code::RTFree:: calls in your destructor functions.
+Like with code::malloc/free::, you are reponsible for freeing all the memory you allocate.
+Remember to include code::RTFree:: calls in your destructor functions.
 
 ## Ensure your pointers are initialized to code::nullptr:: ||
 
@@ -190,19 +316,23 @@ Not initialized pointers can have a garbage address, and when RTFree tries to fr
 To prevent this, ensure your member pointers are initialized to code::nullptr:: as early as possible in your constructor functions.
 
 ## Use code::ClearUnitIfMemFailed:: ||
-This macro is used to check your pointers after memory allocation. If any of them is still code::nullptr::, it means that RTAlloc failed to allocate memory for it.
+This macro is used to check your pointers after memory allocation.
+If any of them is still code::nullptr::, it means that RTAlloc failed to allocate memory for it.
 The macro will then print an error message, set the UGen's calculation function to a no-op, and return from the calling function immediately.
 Since this can cause early exit from your constructor function, it is fundamental that all pointers are initialized to code::nullptr:: as early as possible, as stated above.
 
 code::ClearUnitIfMemFailed:: can be passed a single pointer, or it can check multiple pointers at the same time, by chaining them with the code::&&:: operator (see examples below).
 
 ## For PV and FFT UGens ||
-UGens in FFT chains (such as the ones listed in LINK::Guides/FFT-Overview#PV and FFT UGens in the Standard Library::) should use code::ClearFFTUnitIfMemFailed:: instead. This is because, on a failed allocation, code::ClearUnitIfMemFailed:: would make them output code::0::, which would be interpreted by the next UGen in the FFT chain as "FFT data is ready to be processed on buffer number 0", which is not the case. code::ClearFFTUnitIfMemFailed:: will set their output to code::-1:: instead, meaning that FFT data is not ready, and thus blocking further processing for the rest of the FFT chain. For more informations please see LINK::Guides/FFT-Overview#How FFT UGens communicate::.
+UGens in FFT chains (such as the ones listed in link::Guides/FFT-Overview#PV and FFT UGens in the Standard Library::) should use code::ClearFFTUnitIfMemFailed:: instead. This is because, on a failed allocation, code::ClearUnitIfMemFailed:: would make them output code::0::, which would be interpreted by the next UGen in the FFT chain as "FFT data is ready to be processed on buffer number 0", which is not the case.
+code::ClearFFTUnitIfMemFailed:: will set their output to code::-1:: instead, meaning that FFT data is not ready, and thus blocking further processing for the rest of the FFT chain.
+For more informations please see link::Guides/FFT-Overview#How FFT UGens communicate::.
 
 code::ClearFFTUnitIfMemFailed:: is defined in code::FFT_UGens.h::
 ::
 
 Minimal example, C style:
+
 code::
 struct MyUnit : public Unit {
   float* m_values;
@@ -226,7 +356,9 @@ void MyUnit_Dtor(MyUnit* unit) {
   RTFree(unit->mWorld, unit->m_moreValues);
 }
 ::
+
 Or, in C++ class style:
+
 code::
 namespace MyUnit {
   // 1. Use initializer list to ensure pointers are initialized to nullptr
@@ -252,14 +384,21 @@ namespace MyUnit {
 }
 ::
 
+
+
+
+
+
 subsection:: Thread Safety
 
-There are two different implementations of the SuperCollider server. strong::scsynth:: is the traditional server and
+
+There are two different implementations of the SuperCollider server.
+strong::scsynth:: is the traditional server and
 strong::supernova:: is a new implementation with support for multi-processor audio synthesis. Since the plugins in
 strong::supernova:: can be called at the same time from multiple threads, write access to global data structures needs
 to be synchronized.
 
-definitionList::
+definitionlist::
 ## Shared Global Data Structures || Unit generators should not share data structures, which are written to. While it it safe to use
     global data structures for read-only purposes (e.g. different unit generators could use the same constant wavetable),
     the data structures that are modified by the unit generators should not be shared among different instances.
@@ -270,15 +409,24 @@ definitionList::
     locked.
 ::
 
+
+
+
+
+
 subsection:: Deadlock Prevention
+
 
 In order to prevent deadlocks, a simple deadlock prevention scheme is implemented, based on the following constraints.
 
 list::
-## Lock resources only when required: few unit generators actually require the access to more than one resource at the same time.
-   The main exception of this rule are the FFT Chain UGens, which access multiple buffers at the same time. There is no known unit
+## Lock resources only when required:
+few unit generators actually require the access to more than one resource at the same time.
+   The main exception of this rule are the FFT Chain UGens, which access multiple buffers at the same time.
+There is no known unit
    generator, which accesses both buffers and busses at the same time.
-## Acquire reader locks if possible. Since multiple UGens can acquire a reader lock to the same resource at the same time, their
+## Acquire reader locks if possible.
+Since multiple UGens can acquire a reader lock to the same resource at the same time, their
    use reduces contention.
 ## Resources have to be acquired in a well-defined order: busses should be acquired before buffers and resources with a high index
    should be acquired before resources with a low index.

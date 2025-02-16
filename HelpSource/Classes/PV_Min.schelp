@@ -1,27 +1,65 @@
-class:: PV_Min
-summary:: Minimum magnitude.
-related:: Classes/FFT, Classes/IFFT, Classes/PV_Add, Classes/PV_CopyPhase, Classes/PV_MagMul, Classes/PV_Max, Classes/PV_Mul
+title:: PV_Min
 categories:: UGens>FFT
+summary:: Minimum magnitude
+related:: Classes/FFT, Classes/IFFT, Classes/PV_Add, Classes/PV_CopyPhase, Classes/PV_MagMul, Classes/PV_Max, Classes/PV_Mul
 
-Description::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 Output copies bins with the minimum magnitude of the two inputs.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::new
 
-argument::bufferA
+
+
+method:: new
+
+
+argument:: bufferA
+
 FFT buffer A.
 
-argument::bufferB
+
+argument:: bufferB
+
 FFT buffer B.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 s.boot;
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
@@ -45,5 +83,4 @@ Dialog.getPaths({ |paths| // get a second soundfile;
 )
 
 b.free
-
 ::

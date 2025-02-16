@@ -1,64 +1,139 @@
-class:: GrainBuf
-summary:: Granular synthesis with sound stored in a buffer
+title:: GrainBuf
 categories:: UGens>Buffer, UGens>Generators>Granular
+summary:: Granular synthesis with sound stored in a buffer
 related:: Classes/GrainIn, Classes/GrainFM, Classes/GrainSin, Classes/TGrains
 
+
+
+
+
+
+
+
+
+
 classmethods::
+
+
+
+
 private:: categories
+
 
 method:: ar
 
+
 argument:: numChannels
-the number of channels to output. If 1, mono is returned and pan is ignored. Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.
+
+The number of channels to output.
+If 1, mono is returned and pan is ignored.
+Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.
+
 
 argument:: trigger
-a kr or ar trigger to start a new grain. If ar, grains after the start of the synth are sample accurate.
+
+A kr or ar trigger to start a new grain.
+If ar, grains after the start of the synth are sample accurate.
+
 
 argument:: dur
-size of the grain (in seconds).
+
+Size of the grain (in seconds).
+
 
 argument:: sndbuf
-the buffer holding a mono audio signal. If using multi-channel files, use Buffer.readChannel.
+
+The buffer holding a mono audio signal.
+If using multi-channel files, use Buffer.readChannel.
+
 
 argument:: rate
-the playback rate of the sampled sound
+
+The playback rate of the sampled sound
+
 
 argument:: pos
-the playback position for the grain to start with (0 is beginning, 1 is end of file)
+
+The playback position for the grain to start with (0 is beginning, 1 is end of file)
+
 
 argument:: interp
-the interpolation method used for pitchshifting grains:
+
+The interpolation method used for pitchshifting grains:
+
 list::
 ## 1 = no interpolation
 ## 2 = linear
 ## 4 = cubic interpolation (more computationally intensive)
 ::
 
+
 argument:: pan
-determines where to pan the output.
+
+Determine where to pan the output.
+
 list::
 ## If numChannels = 1, no panning is done.
 ## If numChannels = 2, panning is similar to Pan2.
 ## If numChannels > 2, panning is the same as PanAz.
 ::
 
+
 argument:: envbufnum
-the buffer number containing a signal to use for the grain envelope. -1 uses a built-in Hann envelope.
+
+The buffer number containing a signal to use for the grain envelope.
+-1 uses a built-in Hann envelope.
+
 
 argument:: maxGrains
-the maximum number of overlapping grains that can be used at a given time. This value is set at the UGens init time and can't be modified. Defaults to 512. This can be set lower for more efficient use of memory.
 
-warning:: The above parameter is new (post SC 3.3.1) and has the potential to break code written <= 3.3.1. This parameter is BEFORE the mul slot, and you may need to update code to account for this difference. ::
+The maximum number of overlapping grains that can be used at a given time.
+This value is set at the UGens init time and can't be modified. Defaults to 512. This can be set lower for more efficient use of memory.
+
+warning:: 
+The above parameter is new (post SC 3.3.1) and has the potential to break code written <= 3.3.1. This parameter is BEFORE the mul slot, and you may need to update code to account for this difference.
+::
+
 
 argument:: mul
 
 argument:: add
 
-discussion:: All args except numChannels and trigger are polled at grain creation time.
+
+discussion::
+ 
+All args except numChannels and trigger are polled at grain creation time.
+
+
+
+
+
+
+
+
+
+
 instancemethods::
+
+
+
+
 private:: init, argNamesInputsOffset
 
+
+
+
+
+
+
+
+
+
 examples::
+
+
+
+
 code::
 s.boot;
 

@@ -1,18 +1,51 @@
-class:: PV_Div
-summary:: Complex division
+title:: PV_Div
 categories:: UGens>FFT
+summary:: Complex division
 related:: Classes/PV_Mul, Classes/PV_MagDiv
+
+
+
+
+
+
+
+
+
 
 classmethods::
 
-method:: new
-argument:: bufferA
-fft buffer A.
-argument:: bufferB
-fft buffer B.
 
-Examples::
-In this example we estimate the transfer function of the LPF UGen. The transfer function is estimated by dividing the FFT of the output, by the FFT of the input, and looking at the magnitudes in the result.
+
+
+method:: new
+
+
+argument:: bufferA
+
+Fft buffer A.
+
+
+argument:: bufferB
+
+Fft buffer B.
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
+
+In this example we estimate the transfer function of the LPF UGen.
+The transfer function is estimated by dividing the FFT of the output, by the FFT of the input, and looking at the magnitudes in the result.
+
 code::
 (
 s.waitForBoot({
@@ -31,7 +64,7 @@ x = {
 	var fft1 = FFT(LocalBuf(b.numFrames), son, wintype: 1);
 	var fft2 = FFT(b, out, wintype: 1);
 
-	// As with most PV_ ugens, the result is *actually* stored in the first fft buf
+	// As with most PV_ UGens, the result is *actually* stored in the first fft buf
 	var result = PV_Div(fft2, fft1);
 
 	out.dup * 0.1

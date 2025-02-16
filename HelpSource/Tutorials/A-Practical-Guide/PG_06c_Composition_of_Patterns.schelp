@@ -1,13 +1,28 @@
 title:: Pattern Guide 06c: Composition of Patterns
+categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Making multiple event patterns act as one
 related:: Tutorials/A-Practical-Guide/PG_06b_Time_Based_Patterns, Tutorials/A-Practical-Guide/PG_06d_Parallel_Patterns
-categories:: Streams-Patterns-Events>A-Practical-Guide
 
-section::Adding values to a base event pattern (Or, "Pattern Composition")
 
-One way to use patterns is to write everything into the pattern up front. This has the advantage of clarity and ease of understanding. Another way is to modularize the behavior by creating smaller, simpler patterns and combining their results into single events that have keys and values from all the component patterns.
 
-This is related to the computer science concept of "function composition," in which a complex calculation can be written not as a single large function, but as several smaller functions that are then chained together into a single function. Since Functions are normal objects in SuperCollider, it's easy to do an operation on a function that returns a composite function (which may then be used like any other function). http://en.wikipedia.org/wiki/Function_composition_(computer_science)
+
+
+
+
+
+
+
+section:: Adding values to a base event pattern (Or, "Pattern Composition")
+
+
+
+
+One way to use patterns is to write everything into the pattern up front.
+This has the advantage of clarity and ease of understanding.
+Another way is to modularize the behavior by creating smaller, simpler patterns and combining their results into single events that have keys and values from all the component patterns.
+
+This is related to the computer science concept of "function composition," in which a complex calculation can be written not as a single large function, but as several smaller functions that are then chained together into a single function.
+Since Functions are normal objects in SuperCollider, it's easy to do an operation on a function that returns a composite function (which may then be used like any other function). http://en.wikipedia.org/wiki/Function_composition_(computer_science)
 
 In mathematics, the code::·:: operator represents function composition.
 
@@ -40,9 +55,10 @@ g.value(f.value(1));
 
 Event patterns can be similarly composed.
 
-definitionList::
+definitionlist::
 ## code::Pbindf(pattern, pairs):: || Adds new key-value pairs onto a pre-existing Pbind-style pattern. code::Pbindf(Pbind(\a, patternA), \b, patternB, \c, patternC):: gets the same result as code::Pbind(\a, patternA, \b, patternB, \c, patternC):: .
-## code::Pchain(patterns):: || Chains separate Pbind-style patterns together, so that all their key-value pairs go into the same event. For example, if one part of your code creates a Pbind instance code::a = Pbind(\a, patternA):: and another part creates code::b = Pbind(\b, patternB, \c, patternC)::, you could append code::\b:: and code::\c:: into the code::\a:: result using code::Pchain(b, a):: . The subpatterns evaluate in reverse order, in keeping with function composition notation.
+## code::Pchain(patterns):: || Chains separate Pbind-style patterns together, so that all their key-value pairs go into the same event.
+For example, if one part of your code creates a Pbind instance code::a = Pbind(\a, patternA):: and another part creates code::b = Pbind(\b, patternB, \c, patternC)::, you could append code::\b:: and code::\c:: into the code::\a:: result using code::Pchain(b, a):: . The subpatterns evaluate in reverse order, in keeping with function composition notation.
 
 For musical purposes, you could have one part of your code create a pattern defining rhythm and another part defining pitch material, then combine them with link::Classes/Pchain::.
 
@@ -59,7 +75,8 @@ p = Pchain(~melody, ~rhythm).play;
 p.stop;
 ::
 
-That in itself has some good potential for algorithmic composition. Introducing link::Classes/EventPatternProxy:: into the mix makes it possible to swap different melody and rhythm components in and out on the fly, with no interruption. We can even change the type of pattern ( link::Classes/Pbind::, link::Classes/Pmono::, link::Classes/PmonoArtic:: ) with no ill effect.
+That in itself has some good potential for algorithmic composition.
+Introducing link::Classes/EventPatternProxy:: into the mix makes it possible to swap different melody and rhythm components in and out on the fly, with no interruption. We can even change the type of pattern ( link::Classes/Pbind::, link::Classes/Pmono::, link::Classes/PmonoArtic:: ) with no ill effect.
 
 code::
 ~rhythm = EventPatternProxy(Pbind(
@@ -79,14 +96,22 @@ p = Pchain(~melody, ~rhythm).play;
 
 p.stop;
 ::
+
 ::
 
-subsection::Pset and cousins
+
+
+
+
+
+subsection:: Pset and cousins
+
 
 A group of pattern classes allow single event keys to be overwritten, or one addition or multiplication to be performed. link::Classes/Pkey::, in combination with the link::Classes/Pchain:: or link::Classes/Pbindf:: "pattern composition" classes, can do everything the following classes can do (though this alternate notation may be more convenient in certain cases).
 
-definitionList::
-## code::Pset(name, value, pattern):: || Get one event from code::pattern::, and then put the next value from the code::value:: pattern into the code::name:: key. If the source pattern specifies a value for the same name, the value from the source will be replaced with the new one.
+definitionlist::
+## code::Pset(name, value, pattern):: || Get one event from code::pattern::, and then put the next value from the code::value:: pattern into the code::name:: key.
+If the source pattern specifies a value for the same name, the value from the source will be replaced with the new one.
 ## code::Padd(name, value, pattern):: || After getting the next event, replace the code::name:: value with its existing value code::+:: the next number from code::value::.
 ## code::Pmul(name, value, pattern):: || After getting the next event, replace the code::name:: value with its existing value code::*:: the next number from code::value::.
 ::
@@ -101,7 +126,7 @@ table::
 
 The patterns link::Classes/Psetpre::, link::Classes/Paddpre::, and link::Classes/Pmulpre:: reverse the order of evaluation. link::Classes/Pchain:: is able to duplicate this functionality.
 
-definitionList::
+definitionlist::
 ## code::Psetpre(name, value, pattern):: || Get the next code::value:: and put it into the event prototype before evaluating code::pattern::.
 ::
 
@@ -109,6 +134,7 @@ table::
 ## code::Psetpre(name, value, pattern):: || code::Pchain(pattern, Pbind(name, value))::
 ## code::Paddpre(name, value, pattern):: || code::Pchain(pattern, Pbind(name, Pkey(name) + value))::
 ::
+
 Similar for code::Pmulpre::.
 
 A third group -- link::Classes/Psetp::, link::Classes/Paddp::, link::Classes/Pmulp:: -- behave slightly differently, nesting pattern evaluation.

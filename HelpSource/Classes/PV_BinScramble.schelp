@@ -1,41 +1,75 @@
-class:: PV_BinScramble
-summary:: Scramble bins.
+title:: PV_BinScramble
 categories:: UGens>FFT
+summary:: Scramble bins
 
-Description::
 
-Randomizes the order of the bins. The trigger will select a new random ordering.
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+Randomizethe the order of the bins.
+The trigger will select a new random ordering.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::new
 
-argument::buffer
+
+
+method:: new
+
+
+argument:: buffer
 
 FFT buffer.
 
 
-argument::wipe
+argument:: wipe
 
-Scrambles more bins as wipe moves from 0 to 1.
-
-
-argument::width
-
-A value from zero to one, indicating the maximum randomized
-distance of a bin from its original location in the spectrum.
+Scrambles more bins as wipe moves from teletype::0:: to 1.
 
 
-argument::trig
+argument:: width
+
+A value from teletype::zero:: to one, indicating the maximum randomized distance of a bin from its original location in the spectrum.
+
+
+argument:: trig
 
 A trigger, that selects a new random ordering.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 s.boot;
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
@@ -49,5 +83,4 @@ SynthDef("help-binScramble", { |out = 0, soundBufnum = 2|
 	Out.ar(out, 0.1 * IFFT(chain).dup);
 }).play(s, [\soundBufnum, b]);
 )
-
 ::

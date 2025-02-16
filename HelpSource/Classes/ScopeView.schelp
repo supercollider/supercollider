@@ -1,23 +1,59 @@
-CLASS:: ScopeView
-summary:: A buffer plotting view.
+title:: ScopeView
 categories:: GUI>Views
+summary:: A buffer plotting view
 related:: Classes/Stethoscope, Classes/FreqScopeView, Classes/FreqScope
 
-DESCRIPTION::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 ScopeView is mainly intended to support the implementation of link::Classes/Stethoscope:: (an oscilloscope), link::Classes/FreqScopeView:: (a basic frequency spectrum plotting view) and link::Classes/FreqScope:: (a frequency spectrum analyzer tool).
 
 It is optimized to efficiently perform frequent plotting of the contents of a link::Classes/Buffer:: into which a link::Classes/ScopeOut2:: UGen is writing. It will periodically poll the buffer for data and update the plot, as long as the ScopeOut2 UGen is writing into it; the buffer will not be plotted otherwise.
 
 
-CLASSMETHODS::
-
-PRIVATE:: key
 
 
-INSTANCEMETHODS::
 
-METHOD:: bufnum
+
+
+
+
+
+classmethods::
+
+
+
+
+private:: key
+
+
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+method:: bufnum
+
+
     The number of the Buffer to plot.
 
     To set up the ScopeView object for plotting, one needs to set a valid buffer number and tell a link::Classes/ScopeOut2:: UGen to write to it. Before the view starts periodically plotting the buffer, however, one needs to assign it a link::Classes/Server:: object and call the link::#-start:: method on it.
@@ -27,19 +63,40 @@ METHOD:: bufnum
     argument::
         An integer.
 
-METHOD:: server
+
+
+
+method:: server
+
+
     An instance of ScopeView must be assigned to a particular server for it to work.
 
     argument::
         A link::Classes/Server:: object
 
-METHOD:: start
+
+
+
+method:: start
+
+
     Tells the ScopeView object to start plotting.
 
-METHOD:: stop
-    Tells the ScopeView object to stop plotting. Plotting can be resumed anytime with the link::#start:: method.
 
-METHOD:: style
+
+
+method:: stop
+
+
+    Tells the ScopeView object to stop plotting.
+Plotting can be resumed anytime with the link::#start:: method.
+
+
+
+
+method:: style
+
+
     The plotting style:
     list::
     ## 0 = the channels are vertically spaced
@@ -50,42 +107,85 @@ METHOD:: style
     argument::
         One of the above Integers.
 
-METHOD:: xZoom
+
+
+
+method:: xZoom
+
+
     The scaling factor on the horizontal axis.
 
     argument::
         A Float.
 
-METHOD:: yZoom
+
+
+
+method:: yZoom
+
+
     The scaling factor on the vertical axis.
 
     argument::
         A Float.
 
-METHOD:: x
+
+
+
+method:: x
+
+
     The horizontal offset.
     argument::
         A Float.
 
-METHOD:: y
+
+
+
+method:: y
+
+
     The vertical offset.
     argument::
         A Float.
 
-METHOD:: fill
+
+
+
+method:: fill
+
+
     Fill area under scope.
     argument::
         A Boolean.
 
-METHOD:: waveColors
+
+
+
+method:: waveColors
+
+
     The colors used to plot each of the channels.
 
     argument::
         An Array of Colors, one per channel.
 
-EXAMPLES::
 
-SUBSECTION:: A step-by-step example
+
+
+
+
+
+
+
+
+examples::
+
+
+
+
+subsection:: A step-by-step example
+
 
 code::
 // boot the server (if not already booted)
@@ -137,10 +237,15 @@ CmdPeriod.doOnce({ w.close });
 c.style = 0; // vertically spaced
 c.style = 1; // overlapped
 c.style = 2; // x/y
-
 ::
 
-SUBSECTION:: An interactive example with sound
+
+
+
+
+
+subsection:: An interactive example with sound
+
 
 This explains all the options:
 

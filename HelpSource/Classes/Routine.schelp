@@ -1,25 +1,42 @@
-class::Routine
-categories::Core>Kernel
+title:: Routine
+categories:: Core>Kernel
 summary:: Functions that can return in the middle and then resume where they left off
 related:: Classes/Stream
 
+
+
+
+
+
+
+
+
+
 description::
+
+
+
+
 A Routine runs a link::Classes/Function:: and allows it to be suspended in the middle
-and be resumed again where it left off. This functionality is supported by the Routine's
+and be resumed again where it left off.
+This functionality is supported by the Routine's
 superclass link::Classes/Thread::. Effectively, Routines can be used to implement
 co-routines as found in Scheme and some other languages.
 
 A Routine is strong::started:: the first time link::#-next:: is called, which will run
 the Function from the beginning. It is strong::suspended:: when it "yields"
 (using link::Classes/Object#-yield:: within the Function), and then strong::resumed::
- using link::#-next:: again. When the Function returns, the Routine is considered
+ using link::#-next:: again.
+When the Function returns, the Routine is considered
 strong::stopped::, and calling link::#-next:: will have no effect - unless the Routine is
 strong::reset:: using link::#-reset::, which will rewind the Function to the beginning.
 You can stop a Routine before its Function returns using link::#-stop::.
 
 When a Routine is strong::scheduled:: on a link::Classes/Clock:: (e.g. using
-link::#-play::), it will be started or resumed at the scheduled time. The value yielded
-by the Routine will be used as the time difference for rescheduling the Routine. (See
+link::#-play::), it will be started or resumed at the scheduled time.
+The value yielded
+by the Routine will be used as the time difference for rescheduling the Routine.
+(See
 link::#-awake::).
 
 Since Routine inherits from link::Classes/Thread::, it has its own associated
@@ -30,17 +47,34 @@ Routine also inherits from link::Classes/Stream::, and thus shares its ability t
 combined using math operations and "filtered".
 
 
-classMethods::
 
-method::new
 
-Creates an instance of Routine, passing it the Function with code to run.
 
-argument::func
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
+Create an instance of Routine, passing it the Function with code to run.
+
+
+argument:: func
+
 A Function with code for the Thread to run.
 
-argument::stackSize
+
+argument:: stackSize
+
 Call stack size (an Integer).
+
 
 discussion::
 code::
@@ -56,11 +90,25 @@ code::
 a = r { 1.yield; 2.yield };
 ::
 
-instanceMethods::
 
-method::next
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+method:: next
+
 
 This method performs differently according to the Routine's state:
+
 list::
 ## Starts the Routine, if it has not been started yet or it has been
 link::#-reset#reset::; i.e runs its Function from the beginning, passing on the
@@ -81,6 +129,7 @@ Time: Just before code::next:: is called, code::thisThread:: points either to an
 
 Synonyms for code::next:: are link::#-value:: and link::#-resume::.
 
+
 returns::
 list::
 ## Either the value that the Routine yields (the Object on which
@@ -88,8 +137,8 @@ link::Classes/Object#-yield#yield:: is called within the Routine Function),
 ## ...or code::nil::, if the Routine has stopped.
 ::
 
-discussion::
 
+discussion::
 When a Routine is started by a call to this method (or one of its synonyms), the method's
 argument is passed on as the argument to the Routine Function:
 
@@ -102,7 +151,8 @@ Routine { |inval|
 After the Routine has yielded (it has been suspended at the point in its Function where
 code::yield:: is called on an Object), a call to this method (or its synonyms) resumes
 executing the Function and the argument to this method becomes the return value of
-code::yield::. To access that value within the Function, you have to assign it to a
+code::yield::.
+To access that value within the Function, you have to assign it to a
 variable - typically, the argument of the Function is reused:
 
 code::
@@ -138,26 +188,43 @@ r = Routine { |inval|
 )
 ::
 
-method::value
+
+
+
+method:: value
+
 
 Equivalent to link::#-next::.
 
-method::resume
+
+
+
+method:: resume
+
 
 Equivalent to link::#-next::.
 
-method::stop
 
-Equivalent to the Routine Function reaching its end or returning: after this, the Routine
+
+
+method:: stop
+
+
+Equivalent to the Routine Function reaching its end or returning:
+after this, the Routine
 will never run again (the link::#-next:: method has no effect and returns code::nil::),
 unless link::#-reset:: is called.
 
-method::reset
 
-Causes the Routine to start from the beginning next time link::#-next:: is called.
+
+
+method:: reset
+
+
+Cause the Routine to start from the beginning next time link::#-next:: is called.
+
 
 discussion::
-
 If a Routine is stopped (its Function has returned or link::#-stop:: has been called), it
 will never run again (the link::#-next:: method has no effect and returns code::nil::),
 unless this method is called.
@@ -167,18 +234,30 @@ A Routine cannot reset itself, except by calling link::Classes/Object#-yieldAndR
 See also: link::Classes/Object#-yield::, link::Classes/Object#-alwaysYield::
 
 
-method::play
 
-Schedules the Routine on the given link::Classes/Clock::, at a time specified by code::quant::. At that time, the Routine will wake up (by calling link::Classes/Routine#-awake::), setting the clock and time and evaluating the Routine. If the Routine yields a number, this number of beats will be added to the current time and the Routine will be rescheduled. (This behavior is compatible with scheduling a link::Classes/Stream:: or a link::Classes/Function::.)
 
-argument::clock
-a Clock, TempoClock by default
+method:: play
 
-argument::quant
-see the link::Classes/Quant:: helpfile
+
+Schedule the Routine on the given link::Classes/Clock::, at a time specified by code::quant::. At that time, the Routine will wake up (by calling link::Classes/Routine#-awake::), setting the clock and time and evaluating the Routine.
+If the Routine yields a number, this number of beats will be added to the current time and the Routine will be rescheduled.
+(This behavior is compatible with scheduling a link::Classes/Stream:: or a link::Classes/Function::.)
+
+
+argument:: clock
+
+A Clock, TempoClock by default
+
+
+argument:: quant
+
+See the link::Classes/Quant:: helpfile
+
 
 discussion::
-using link::Classes/Object#-idle:: within a routine, return values until this time is over. Time is measured relative to the thread's clock.
+Using link::Classes/Object#-idle:: within a routine, return values until this time is over.
+Time is measured relative to the thread's clock.
+
 code::
 // for 6 seconds, return 200, then continue
 (
@@ -217,26 +296,45 @@ fork {
 );
 ::
 
+
+
+
 method:: reschedule
+
 
 If a Routine is currently scheduled on a clock, it will be expected to "awake" at a specific time, on a specific clock. code::reschedule:: allows you to change to a different clock or to a later time.
 
+
 argument:: argClock
-The new clock on which to run the Routine. If code::nil::, the routine's clock will not be changed. (Note: Currently incompatible with link::Classes/AppClock::; rescheduling depends upon the method code::schedAbs::, which AppClock does not implement.)
+
+The new clock on which to run the Routine.
+If code::nil::, the routine's clock will not be changed.
+(Note: Currently incompatible with link::Classes/AppClock::; rescheduling depends upon the method code::schedAbs::, which AppClock does not implement.)
+
 
 argument:: quant
+
 A quantization specifier, identifying a time emphasis::later:: than the next-scheduled time. If code::nil::, the current value of code::nextBeat:: will be used.
 
+
 discussion::
-
 list::
-## Rescheduling to a different clock will be continuous in terms of seconds, but not necessarily continuous in terms of beats. Time-based patterns such as link::Classes/Pseg::, or the use of link::Classes/Env:: as a stream, may not follow the envelope shape continuously. (Pseg and Env-as-stream measure time in beats on the clock that is playing. In normal use, the clock never changes, so time advances monotonically through the envelope's breakpoints. If a thread is rescheduled to a different clock, the beats values are very unlikely to be the same on the new clock. So the envelope would jump forward or backward in time.)
+## Rescheduling to a different clock will be continuous in terms of seconds, but not necessarily continuous in terms of beats.
+Time-based patterns such as link::Classes/Pseg::, or the use of link::Classes/Env:: as a stream, may not follow the envelope shape continuously.
+(Pseg and Env-as-stream measure time in beats on the clock that is playing.
+In normal use, the clock never changes, so time advances monotonically through the envelope's breakpoints. If a thread is rescheduled to a different clock, the beats values are very unlikely to be the same on the new clock.
+So the envelope would jump forward or backward in time.)
 
-When switching the clock, code::reschedule:: will first calculate the new "awake" time, in beats, based on the given code::quant::. Then it converts that code::beats:: value into the new clock's code::beats:: for the same instant in time. If the old clock's tempo is 1 and the Routine is waiting for 1 beat, the next "awake" should happen after one second. When rescheduling without a code::quant::, the next "awake" will emphasis::still:: happen after one second -- but the code::beats:: value will adjust for the new clock.
+When switching the clock, code::reschedule:: will first calculate the new "awake" time, in beats, based on the given code::quant::.
+Then it converts that code::beats:: value into the new clock's code::beats:: for the same instant in time. If the old clock's tempo is 1 and the Routine is waiting for 1 beat, the next "awake" should happen after one second. When rescheduling without a code::quant::, the next "awake" will emphasis::still:: happen after one second -- but the code::beats:: value will adjust for the new clock.
 
-## Currently code::quant:: will resolve to a time emphasis::later:: than the Routine's current code::nextBeat::. If you try to force it earlier, there is likely to be some discontinuity. This is because the Routine cannot reschedule until it wakes up normally. The workaround is to switch the Routine into a different link::Classes/Task:: wrapper.
+## Currently code::quant:: will resolve to a time emphasis::later:: than the Routine's current code::nextBeat::.
+If you try to force it earlier, there is likely to be some discontinuity.
+This is because the Routine cannot reschedule until it wakes up normally.
+The workaround is to switch the Routine into a different link::Classes/Task:: wrapper.
 
-## Currently the routine must be playing (already scheduled on a clock). This is because the handoff to the new clock or time occurs during the thread's "awake" process. If the routine is not playing, then it will not awake, and nothing will happen.
+## Currently the routine must be playing (already scheduled on a clock).
+This is because the handoff to the new clock or time occurs during the thread's "awake" process. If the routine is not playing, then it will not awake, and nothing will happen.
 ::
 
 code::
@@ -298,38 +396,54 @@ t.stop;
 u.stop;
 ::
 
+
+
+
 method:: awake
 
+
 This method is called by a link::Classes/Clock:: on which the Routine was scheduled
-when its scheduling time is up. It calls link::#-next::, passing on the scheduling
-time in beats as an argument. The value returned by code::next:: (the value yielded
+when its scheduling time is up.
+It calls link::#-next::, passing on the scheduling
+time in beats as an argument.
+The value returned by code::next:: (the value yielded
 by the Routine) will in turn be returned by this method, thus determining the time
 which the Routine will be rescheduled for.
 
+
 argument:: inBeats
+
 The scheduling time in beats. This is equal to the current logical time
 (link::Classes/Thread#-beats::).
 
+
 argument:: inSeconds
+
 The scheduling time in seconds. This is equal to the current logical time
 (link::Classes/Thread#-seconds::).
 
+
 argument:: inClock
+
 The clock which awoke the Routine.
+
+
 
 
 method:: p
 
+
 Convert the routine to a (subclass of) link::Classes/Pattern::.
 
-returns::
 
+returns::
 A link::Classes/Prout:: that (in response to code::asStream::) acts as a generator of independent copies of the original routine (the receiver of code::p::).
 
 
 discussion::
-
-Any subclass of Pattern returns a Stream in response to code::asStream::. However, the exact subclass of Stream returned depends on the class of the Pattern. In particular, a Prout returns a Routine in response to code::asStream::. Thus, a way to make an independent copy of a Routine is to make a Prout from it with the method code::p::, and then create a new Routine from this Prout. In the example immediately below, this second step is done explicitly by calling code::asStream::, but in the context of passing arguments to other Patterns, this latter step usually happens automatically, as shown in later examples.
+Any subclass of Pattern returns a Stream in response to code::asStream::. However, the exact subclass of Stream returned depends on the class of the Pattern.
+In particular, a Prout returns a Routine in response to code::asStream::. Thus, a way to make an independent copy of a Routine is to make a Prout from it with the method code::p::, and then create a new Routine from this Prout.
+In the example immediately below, this second step is done explicitly by calling code::asStream::, but in the context of passing arguments to other Patterns, this latter step usually happens automatically, as shown in later examples.
 
 code::
 (
@@ -344,7 +458,8 @@ r.next.postln;    // "bye" because r kept its own state, separate from q
 ::
 
 note::
-New routines produced by code::.p.asStream:: run the original routine's function from the beginning. There is no copy of the internal state of the original routine, only its function is copied. On a related note, code::Routine.copy:: (inherited from code::Thread::) does not create a new, separate Routine; it just returns the receiver.
+New routines produced by code::.p.asStream:: run the original routine's function from the beginning. There is no copy of the internal state of the original routine, only its function is copied.
+On a related note, code::Routine.copy:: (inherited from code::Thread::) does not create a new, separate Routine; it just returns the receiver.
 ::
 
 The Routine method code::p:: is mostly useful in the context of using the result of Routine-returning expressions as arguments to Patterns, when the intent is to use the Routine's result as a pattern, i.e. multiple occurrences acting independently of each other.
@@ -384,7 +499,12 @@ Pseq([(:2..6), (:2..6)]).asStream.all.postln;
 ::
 
 
-subsection::Accessible instance variables
+
+
+
+
+subsection:: Accessible instance variables
+
 
 Routine inherits from link::Classes/Thread::, which allows access to some of its state:
 
@@ -408,19 +528,49 @@ r.seconds;
 r.clock;
 ::
 
-method::beats
 
-returns:: The elapsed beats (logical time) of the routine. The beats do not proceed when the routine is not playing.
 
-method::seconds
 
-returns:: The elapsed seconds (logical time) of the routine. The seconds do not proceed when the routine is not playing, it is the converted beat value.
+method:: beats
 
-method::clock
 
-returns:: The thread's clock. If it has not played, it is the SystemClock.
+returns::
+ 
+The elapsed beats (logical time) of the routine. The beats do not proceed when the routine is not playing.
+
+
+
+
+method:: seconds
+
+
+returns::
+ 
+The elapsed seconds (logical time) of the routine. The seconds do not proceed when the routine is not playing, it is the converted beat value.
+
+
+
+
+method:: clock
+
+
+returns::
+ 
+The thread's clock. If it has not played, it is the SystemClock.
+
+
+
+
+
+
+
+
+
 
 examples::
+
+
+
 
 code::
 (

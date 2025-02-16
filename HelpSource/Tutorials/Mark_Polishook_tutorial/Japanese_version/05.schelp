@@ -1,9 +1,21 @@
 title:: 05
-summary:: Mark Polishook tutorial (JP)
 categories:: Tutorials>Mark_Polishook_tutorial>Japanese_version
+summary:: Mark Polishook tutorial (JP)
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
-section::バスにオーディオを乗せる
+
+
+
+
+
+
+
+
+
+section:: バスにオーディオを乗せる
+
+
+
 
 デフォルトでは、SuperColliderはオーディオに対して1024のバスを持ちます。バスは配列の中の要素として存在します。
 
@@ -14,7 +26,7 @@ section::バスにオーディオを乗せる
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-オーディオ・バスにデータを乗せるには、オーディオ・レートで動作するOutというugenを使います。
+オーディオ・バスにデータを乗せるには、オーディオ・レートで動作するOutというUGenを使います。
 
 code::
 (
@@ -43,9 +55,21 @@ SynthDescLib.global.browse;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-section::バスからオーディオを取得する
 
-オーディオ・バスからデータを取得するには、.arメッセージをInというugenに送ります。
+
+
+
+
+
+
+
+
+section:: バスからオーディオを取得する
+
+
+
+
+オーディオ・バスからデータを取得するには、.arメッセージをInというUGenに送ります。
 
 code::
 (

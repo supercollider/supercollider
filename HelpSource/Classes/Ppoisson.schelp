@@ -1,19 +1,47 @@
-class:: Ppoisson
-summary:: random values that follow a Poisson Distribution (positive integer values)
-related:: Classes/Pgauss
+title:: Ppoisson
 categories:: Streams-Patterns-Events>Patterns>Random
+summary:: Random values that follow a Poisson Distribution (positive integer values)
+related:: Classes/Pgauss
 
-ClassMethods::
 
-method::new
 
-argument::mean
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
+argument:: mean
+
 The mean of the distribution.
 
-argument::length
+
+argument:: length
+
 Number of values produced.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (

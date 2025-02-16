@@ -1,11 +1,25 @@
 title:: 03_Comments
-summary:: Mark Polishook tutorial
 categories:: Tutorials>Mark_Polishook_tutorial
+summary:: Mark Polishook tutorial
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
-section::Comments
 
-Comments are descriptive remarks that are meant to be read by humans but ignored by computers. Programmers use comments to annotate how code works or what it does. It's also the case that some find it helpful to write programs by first notating comments and then filling in matching code.
+
+
+
+
+
+
+
+
+section:: Comments
+
+
+
+
+Comments are descriptive remarks that are meant to be read by humans but ignored by computers.
+Programmers use comments to annotate how code works or what it does.
+It's also the case that some find it helpful to write programs by first notating comments and then filling in matching code.
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -15,19 +29,19 @@ code::
 //
 ::
 
-as in
+As in
 
 code::
 // Everything up to the end of the line is a comment
 ::
 
-or place text on one or more lines between
+Or place text on one or more lines between
 
 code::
 /* and */
 ::
 
-as in
+As in
 
 code::
 /*
@@ -40,7 +54,7 @@ comment
  */
 ::
 
-If (when) evaluated, a comment will return nil, which is the value SuperCollider uses for uninitialized data.
+If (when) evaluated, a comment will return teletype::nil::, which is the value SuperCollider uses for uninitialized data.
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

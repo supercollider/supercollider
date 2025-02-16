@@ -1,46 +1,81 @@
-class:: NRand
-summary:: Sum of uniform distributions.
-related:: Classes/ExpRand, Classes/IRand, Classes/LinRand, Classes/Rand, Classes/TExpRand, Classes/TIRand, Classes/TRand
+title:: NRand
 categories:: UGens>Random
+summary:: Sum of uniform distributions
+related:: Classes/ExpRand, Classes/IRand, Classes/LinRand, Classes/Rand, Classes/TExpRand, Classes/TIRand, Classes/TRand
 
-Description::
 
-Generates a single random float value in a sum of
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+Generatea a single random float value in a sum of
 code::n::  uniform distributions from
 code::lo::  to  code::hi:: .
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::new
 
-argument::lo
+
+
+method:: new
+
+
+argument:: lo
+
 Lower limit of the output range.
 
-argument::hi
+
+argument:: hi
+
 Upper limit of the output range.
 
-argument::n
+
+argument:: n
 
 table::
-
 ## n = 1: || Uniform distribution - same as link::Classes/Rand::.
 
 ## n = 2: || Triangular distribution.
 
 ## n = 3: || Smooth hump.
-
 ::
 
-As
-code::n::  increases, distribution converges
-towards gaussian.
+A
+code::n::  increases, distribution converges towards gaussian.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 (
 SynthDef("help-NRand", { |out = 0, n = 0|
 	Out.ar(out,
@@ -63,5 +98,4 @@ Routine({
 n = 1;
 n = 2;
 n = 4;
-
 ::

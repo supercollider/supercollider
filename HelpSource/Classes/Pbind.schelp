@@ -1,23 +1,63 @@
-class:: Pbind
-summary:: combine several value patterns to one event stream by binding keys to values
-related:: Classes/Pattern, Classes/Event, Classes/Pmono, Classes/Rest
+title:: Pbind
 categories:: Streams-Patterns-Events>Patterns>Event
+summary:: Combine several value patterns to one event stream by binding keys to values
+related:: Classes/Pattern, Classes/Event, Classes/Pmono, Classes/Rest
+
+
+
+
+
+
+
+
+
 
 description::
 
-Pbind combines several value streams into one event stream. Each value stream is assigned to one or more keys in the resulting event stream. It specifies a stream of strong::Events:: in terms of different patterns that are strong::bound:: to different keys in the Event.
+
+
+
+Pbind combines several value streams into one event stream.
+Each value stream is assigned to one or more keys in the resulting event stream.
+It specifies a stream of strong::Events:: in terms of different patterns that are strong::bound:: to different keys in the Event.
 The patterns bound to keys are referred to as emphasis::value patterns:: and the Pbind itself is termed an event pattern.
 
 The keys used in a Pbind are usually determined by link::Classes/Event::'s default mechanism and the controls defined for the link::Classes/SynthDef:: to be played. (See link::#SynthDef and Event:: below for a brief discussion of both in relation to Pbind.)
 
-ClassMethods::
 
-method::new
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
 The arguments to Pbind are an alternating sequence of keys and patterns, this can alternatively be specified using keyword arguments.
 A pattern can also be bound to an array of keys.
 In this case, the pattern must specify a sequence whose elements are arrays with at least as many elements as there are keys.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (
@@ -90,11 +130,18 @@ Pbind(
 ::
 
 
-subsection::SynthDef and Event
 
-The keys used in a Pbind are determined by the link::Classes/SynthDef:: used and the structure of the extensive default mechanism provided by link::Classes/Event::. This section provides a brief review of both.
 
-A link::Classes/SynthDef:: assigns a name to an interconnection of unit generators to be run as a synth on a server. It also assigns strong::control names:: to the synth's control inputs. In the following example the SynthDef \test has control inputs strong::out::, strong::freq::, strong::amp::, strong::nharms::, strong::pan::, and strong::gate::.
+
+
+subsection:: SynthDef and Event
+
+
+The keys used in a Pbind are determined by the link::Classes/SynthDef:: used and the structure of the extensive default mechanism provided by link::Classes/Event::.
+This section provides a brief review of both.
+
+A link::Classes/SynthDef:: assigns a name to an interconnection of unit generators to be run as a synth on a server.
+It also assigns strong::control names:: to the synth's control inputs. In the following example the SynthDef \test has control inputs strong::out::, strong::freq::, strong::amp::, strong::nharms::, strong::pan::, and strong::gate::.
 
 code::
 SynthDef(\test, { |out, freq = 440, amp = 0.1, nharms = 10, pan = 0, gate = 1|
@@ -104,38 +151,48 @@ SynthDef(\test, { |out, freq = 440, amp = 0.1, nharms = 10, pan = 0, gate = 1|
 }).add;
 ::
 
-The SynthDef needs to be downloaded to the server upon which it is to be run. Use strong::.add:: instead of .send to ensure that any patterns using this SynthDef have information about the available control inputs (see link::Classes/SynthDesc::). Alternately, strong::.store:: may be used to save the SynthDef to disk and add the SynthDesc to the library.
+The SynthDef needs to be downloaded to the server upon which it is to be run.
+Use strong::.add:: instead of .send to ensure that any patterns using this SynthDef have information about the available control inputs (see link::Classes/SynthDesc::). Alternately, strong::.store:: may be used to save the SynthDef to disk and add the SynthDesc to the library.
 
-An link::Classes/Event:: is a Dictionary that specifies an action to be taken in response to strong::play:: and a time increment to be returned in response to strong::delta::. Events can be written as a series of key value pairs enclosed in parentheses. Empty parentheses create an empty event.
+An link::Classes/Event:: is a Dictionary that specifies an action to be taken in response to strong::play:: and a time increment to be returned in response to strong::delta::.
+Events can be written as a series of key value pairs enclosed in parentheses.
+Empty parentheses create an empty event.
 
-By default, Events play synths on a server. Such emphasis::note events:: use the following keys:
+By default, Events play synths on a server.
+Such emphasis::note events:: use the following keys:
 
-definitionList::
+definitionlist::
 ## instrument (\default) || The synthdef to be played
 ## variant (nil, optional) || The set of variant control defaults to use (see link::Classes/SynthDef::)
 ## server (Server.default) || The server that plays the synth
 ## group (1) || The new synth's or the synth the new synth is placed before or after
 ## addAction (0) || How the synth is placed relative to the target specified by strong::group::
-definitionList::
+
+definitionlist::
 ## 0 || head of group
 ## 1 || tail of group
 ## 2 || before group (could be a Synth)
 ## 3 || after group (could be a Synth)
 ::
+
 ## delta (function) || The time until the next event in a sequence of events, generally specified indirectly through strong::dur::
 ::
 
-When the Event is played, it creates an OSC command to play a synth. It uses the name assigned to strong::instrument:: to the select the SynthDef to be played. The SynthDef's control names (found in its link::Classes/SynthDesc::) are looked up in the event and the corresponding values included in the command.
+When the Event is played, it creates an OSC command to play a synth.
+It uses the name assigned to strong::instrument:: to the select the SynthDef to be played.
+The SynthDef's control names (found in its link::Classes/SynthDesc::) are looked up in the event and the corresponding values included in the command.
 
-Playing a synth is the normal action taken by an Event. The default event structure defines several other event types that can perform a wide variety of server actions. See the link::Classes/Event:: help file for a list of event types.
+Playing a synth is the normal action taken by an Event.
+The default event structure defines several other event types that can perform a wide variety of server actions.
+See the link::Classes/Event:: help file for a list of event types.
 
 There are a number of conventional names typically used to identify controls in a synth.
 
-definitionList::
+definitionlist::
 ## out || output bus index
 ## in || input bus index (for filters, modulators, etc)
-## gate || envelope gate (not level!) - should default to 1.0, deletes synth when released
-## trig || envelope gate (not level!) - should default to 1.0, does not delete synth when released
+## gate || envelope gate (not level!) - should default to teletype::1.0::, deletes synth when released
+## trig || envelope gate (not level!) - should default to teletype::1.0::, does not delete synth when released
 ## pan || panning position
 ## bufnum || buffer number (used in synths that utilize link::Classes/PlayBuf::, link::Classes/DiskIn::, etc)
 ## sustain || duration of the synth
@@ -143,34 +200,48 @@ definitionList::
 ## freq || base pitch of the synth
 ::
 
-Event implements a layered specification scheme for some of these controls. In the following list, the first and leftmost name is the actual control name, names below and indented are more abstract ways to specify the control.
+Event implements a layered specification scheme for some of these controls.
+In the following list, the first and leftmost name is the actual control name, names below and indented are more abstract ways to specify the control.
 
-definitionList::
-## delta || The time until the next event. Generally determined by:
-definitionList::
+definitionlist::
+## delta || The time until the next event.
+Generally determined by:
+
+definitionlist::
 ## dur || The time until next event in a sequence of events
 ## stretch || Scales event timings (i.e. stretch == 2 => durations are twice as long)
 ::
+
 ## sustain || Duration of the synth, typically determined (in stretched time units) by:
-definitionList::
+
+definitionlist::
 ## legato || The ratio of the synth's duration to the event's duration
 ::
-## amp || synth amplitude (typically ranging from 0 to 1), often determined by
-definitionList::
+
+## amp || synth amplitude (typically ranging from teletype::0:: to 1), often determined by
+
+definitionlist::
 ## db || Amplitude in decibels
 ::
+
 ## detunedFreq || actual "pitch" of a synth, determined by:
-definitionList::
+
+definitionlist::
 ## freq + detune; || freq is determined by:
-definitionList::
+
+definitionlist::
 ## (midinote + ctranspose).midicps * harmonic; || midinote is determined by:
-definitionList::
+
+definitionlist::
 ## (note + gtranspose + root)/stepsPerOctave * octave * 12; || note is determined by:
-definitionList::
+
+definitionlist::
 ## (degree + mtranspose).degreeToKey(scale, stepsPerOctave) ||
 ::
+
 ::
 ::
+
 ::
 ::
 
@@ -189,22 +260,42 @@ SynthDef(\test, { |out, freq = 440, amp = 0.1, nharms = 10, pan = 0, gate = 1|
 )
 ::
 
-subsection::Rests
+
+
+
+
+
+subsection:: Rests
+
 
 See link::Classes/Rest:: for a discussion of marking events as rests in Pbind.
 
-subsection::The Play Method
+
+
+
+
+
+subsection:: The Play Method
+
 
 While the play method is actually defined in the class link::Classes/Pattern::, it is useful to review it here:
 
-definitionList::
+definitionlist::
 ## play (clock, protoEvent, quant) || returns an link::Classes/EventStreamPlayer::.
 ## clock || The clock that schedules the EventStreamPlayer, defaults to TempoClock.default. Patterns that change graphics must use link::Classes/AppClock::.
 ## protoEvent || The initial event modified by Pbind, defaults to Event.default.
-## quant || A quantization value used by clock. When a number, the pattern will start at the next even multiple of that number. May also be a link::Classes/Quant::, which specifies quantization, time position within that quantization, and a timingOffset. See link::Classes/Quant:: for details.
+## quant || A quantization value used by clock.
+When a number, the pattern will start at the next even multiple of that number.
+May also be a link::Classes/Quant::, which specifies quantization, time position within that quantization, and a timingOffset. See link::Classes/Quant:: for details.
 ::
 
-subsection::Realtime Control with EventStreamPlayer
+
+
+
+
+
+subsection:: Realtime Control with EventStreamPlayer
+
 
 The link::Classes/EventStreamPlayer:: provides realtime control through strong::mute::, strong::unmute::, strong::stop::, strong::play:: and strong::reset::.
 
@@ -282,10 +373,18 @@ e.stream = Pbind(
 )
 ::
 
-subsection::Additional arguments
 
-Here is an example with more bindings. Here we have added a filter with cutoff and resonance arguments.
-You will need to hit command '.' before executing the next few pbind ex. without having them stack up.
+
+
+
+
+subsection:: Additional arguments
+
+
+Here is an example with more bindings.
+Here we have added a filter with cutoff and resonance arguments.
+You will need to hit command '.' before executing the next few pbind ex.
+without having them stack up.
 also, due to the synthdef's and synthdeclib, if the server is shut down you will have to reload the
 synthdef and re-read the synthdesclib.
 
@@ -342,11 +441,18 @@ Prand([
 )
 ::
 
-subsection::Multichannel Expansion
+
+
+
+
+
+subsection:: Multichannel Expansion
+
 
 If we supply an array for strong::any:: argument, the synth node will automatically replicate to handle the additional arguments.
 
-The only strong::exception:: to this is: code::\instrument:: and code::\dur::. For the general schema, see also: link::Guides/Multichannel-Expansion::.
+The only strong::exception:: to this is: code::\instrument:: and code::\dur::.
+For the general schema, see also: link::Guides/Multichannel-Expansion::.
 
 code::
 // When we provide the 'root' argument an array, we should hear a chord.
@@ -376,7 +482,9 @@ Pbind(
 );
 ::
 
-note::In Pbind, you can’t have arrays of patterns, but only patterns that strong::return:: arrays.::
+note::
+In Pbind, you can’t have arrays of patterns, but only patterns that strong::return::arrays.
+::
 
 code::
 // so this does not expand:
@@ -385,7 +493,6 @@ Pbind(\degree, [Pseq([0, 2, 3], inf), Pseq([2, 4, 5, 6], inf)]).play;
 // but this does:
 Pbind(\degree, Pseq([[0, 2], [2, 4], [3, 5], [0, 6]], inf)).play;
 ::
-
 
 code::
 // transform an array of patterns into a pattern that returns arrays, use Ptuple:
@@ -414,7 +521,12 @@ Pdef(\x,
 ::
 
 
-subsection::Experimenting with Patterns
+
+
+
+
+subsection:: Experimenting with Patterns
+
 
 Using link::Classes/Pdef:: (provided by link::Overviews/JITLib::) makes it easy to replace patterns on the fly:
 
@@ -444,13 +556,21 @@ Pdef(\buckyball).resume;
 Pdef.remove(\buckyball);
 ::
 
-subsection::Sending to effects
 
-Assignment to effect processors can be achieved by setting the 'out' argument to the desired efx's input bus. The effect Synth must also be created. Synth.new is one way of doing this.
+
+
+
+
+subsection:: Sending to effects
+
+
+Assignment to effect processors can be achieved by setting the 'out' argument to the desired efx's input bus. The effect Synth must also be created.
+Synth.new is one way of doing this.
 
 code::
 (
-// efx synthdef- dig the timing on the delay and the pbind. :-P
+// efx synthdef- dig the timing on the delay and the pbind.
+:-P
 SynthDef(\pbindefx, { |out, in, time1 = 0.25, time2 = 0.5|
 	var audio, efx;
 	audio = In.ar([20, 21], 2);
@@ -461,7 +581,7 @@ SynthDef(\pbindefx, { |out, in, time1 = 0.25, time2 = 0.5|
 // create efx synth
 a = Synth.after(1, \pbindefx);
 
-// if you don't like the beats change to 0.4, 0.24
+// if you don't like the beats change to teletype::0::.4, 0.24
 // a.set(\time1, 0.4, \time2, 0.24);
 
 SynthDef(\acid, { |out, freq = 1000, gate = 1, pan = 0, cut = 4000, rez = 0.8, amp = 1|
@@ -482,7 +602,13 @@ Pbind(\instrument, \acid, \out, 20, \dur, Pseq([0.25, 0.5, 0.25], inf), \root, [
 )
 ::
 
-subsection::Additional examples
+
+
+
+
+
+subsection:: Additional examples
+
 
 code::
 (

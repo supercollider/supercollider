@@ -1,9 +1,22 @@
-class:: QuadC
-summary:: General quadratic map chaotic generator
+title:: QuadC
 categories:: UGens>Generators>Chaotic
+summary:: General quadratic map chaotic generator
 related:: Classes/QuadN, Classes/QuadL
 
+
+
+
+
+
+
+
+
+
 description::
+
+
+
+
 A cubic-interpolating sound generator based on the difference equation:
 
 teletype::
@@ -19,20 +32,61 @@ plot(size.collect { xi = (a * (xi ** 2)) + (b * xi) + c; xi });
 )
 ::
 
+
+
+
+
+
+
+
+
+
 classmethods::
+
+
+
+
 method:: ar
+
+
 argument:: freq
+
 Iteration frequency in Hertz
+
+
 argument:: a
+
 Equation variable
+
+
 argument:: b
+
 Equation variable
+
+
 argument:: c
+
 Equation variable
+
+
 argument:: xi
+
 Initial value of x
 
+
+
+
+
+
+
+
+
+
 examples::
+
+
+
+
 code::
 // default params
 { QuadC.ar(SampleRate.ir/4) * 0.2 }.play(s);

@@ -1,9 +1,21 @@
 title:: Pattern Guide 03: What Is Pbind
+categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Pattern-based musical sequencing with Pbind and cousins
 related:: Tutorials/A-Practical-Guide/PG_02_Basic_Vocabulary, Tutorials/A-Practical-Guide/PG_04_Words_to_Phrases
-categories:: Streams-Patterns-Events>A-Practical-Guide
 
-section::What's that Pbind thing?
+
+
+
+
+
+
+
+
+
+section:: What's that Pbind thing?
+
+
+
 
 Some of the examples in the last tutorial played notes using Pbind, and you might be wondering how it works in general and what else you can do with it.
 
@@ -24,11 +36,25 @@ e.put(\amp, 0.6);	// Add a new value into the event
 e.put(\dur, nil);	// Remove a value
 ::
 
-A Pbind is defined by a list of pairs: keys associated with the patterns that will supply the values for the events.
+A Pbind is defined by a list of pairs:
+keys associated with the patterns that will supply the values for the events.
 
-Things get interesting when the names associated with Pbind's sub-patterns are also link::Classes/SynthDef:: arguments. Then it becomes possible to play new Synths with Pbind, and feed their inputs with different values on each event.
+Things get interesting when the names associated with Pbind's sub-patterns are also link::Classes/SynthDef:: arguments.
+Then it becomes possible to play new Synths with Pbind, and feed their inputs with different values on each event.
 
-section::Building an event, one key at a time
+
+
+
+
+
+
+
+
+
+section:: Building an event, one key at a time
+
+
+
 
 We can look at the return values from a Pbind by calling code::next:: on the stream. Note that it's necessary to pass an empty event into emphasis::next::, so that Pbind has somewhere to put the values.
 
@@ -49,30 +75,56 @@ p.next(Event.new);	// shorter: p.next(())
 ( 'degree': 4, 'dur': 0.5 )
 ::
 
-The return events show us what Pbind really does. Each time the next value is requested, it goes through each key-pattern pair and gets the next value from each pattern (actually streams, but Pbind makes streams out of the sub patterns internally). Each value gets put into the event, using the associated key.
+The return events show us what Pbind really does.
+Each time the next value is requested, it goes through each key-pattern pair and gets the next value from each pattern (actually streams, but Pbind makes streams out of the sub patterns internally).
+Each value gets put into the event, using the associated key.
 
-For the first event, the first key is code::'degree':: and the value is code::0::. This is placed into the event before moving to the next pair: the event in transition contains code::( 'degree': 0 ) ::. Then the next key supplies code::0.5:: for code::'dur'::, and since there are no more pairs, the event is complete: code::( 'degree': 0, 'dur': 0.5 ) ::.
+For the first event, the first key is code::'degree':: and the value is code::0::.
+This is placed into the event before moving to the next pair:
+the event in transition contains code::( 'degree': 0 ) ::.
+Then the next key supplies code::0.5:: for code::'dur'::, and since there are no more pairs, the event is complete: code::( 'degree': 0, 'dur': 0.5 ) ::.
 
 // User does:
+
 code::
 p.next(Event.new);
 ::
+
 // SuperCollider processes:
-numberedList::
+
+numberedlist::
 ## code::\degree:: stream returns code::0::
-## Put it in the Event: code:: ( 'degree': 0 ) ::
+## Put it in the Event:
+code:: ( 'degree': 0 ) ::
 ## code::\dur:: stream returns code::0.5::
-## Put it in the Event: code:: ( 'degree': 0, 'dur': 0.5 ) ::
+## Put it in the Event:
+code:: ( 'degree': 0, 'dur': 0.5 ) ::
 ## Return the result event.
 ::
 
 note::
-Dictionaries in SuperCollider are emphasis::unordered:: collections. Even though Pbind processes its child streams in the order given, the results can display the keys and values in any order. This does not affect the behavior of playing Events, as we will soon see.
+Dictionaries in SuperCollider are emphasis::unordered:: collections.
+Even though Pbind processes its child streams in the order given, the results can display the keys and values in any order.
+This does not affect the behavior of playing Events, as we will soon see.
 ::
 
-section::Event, .play and event prototypes
 
-So far we haven't seen anything that produces a note, just data processing: fetching values from patterns and stitching them together into events. The notes come from the difference between Events and regular Dictionaries: Events can do things when you code::.play:: them.
+
+
+
+
+
+
+
+
+section:: Event, .play and event prototypes
+
+
+
+
+So far we haven't seen anything that produces a note, just data processing: fetching values from patterns and stitching them together into events.
+The notes come from the difference between Events and regular Dictionaries:
+Events can do things when you code::.play:: them.
 
 code::
 ( 'degree': 0, 'dur': 0.5 ).play;
@@ -80,35 +132,60 @@ code::
 
 The action that the event will take is defined in an "event prototype." The prototype must include a function for the code::'play':: key; this function is executed when code::.play:: is called on the event. Also, optionally the prototype can contain default values for a wide variety of parameters.
 
-Pbind doesn't do much without an event prototype. Fortunately, you don't have to write the prototype on your own. There is a default event, accessed by code::Event.default::, that includes functions for many different server-messaging tasks. If no specific action is requested, the normal action is to play a Synth. That's why playing a Pbind, as in the previous tutorial, with only code::'degree':: and code::'dur':: patterns produced notes: each event produces at least one synth by default, and the default event prototype knows how to convert scale degrees into frequencies and code::'dur':: (duration) into note lengths.
+Pbind doesn't do much without an event prototype.
+Fortunately, you don't have to write the prototype on your own.
+There is a default event, accessed by code::Event.default::, that includes functions for many different server-messaging tasks. If no specific action is requested, the normal action is to play a Synth.
+That's why playing a Pbind, as in the previous tutorial, with only code::'degree':: and code::'dur':: patterns produced notes: each event produces at least one synth by default, and the default event prototype knows how to convert scale degrees into frequencies and code::'dur':: (duration) into note lengths.
 
-When a pattern is played, an object called link::Classes/EventStreamPlayer:: is created. This object reads out the events one by one from the pattern's stream (using a given event prototype as the base), and calls code::play:: on each. The code::'delta':: value in the event determines how many beats to wait until the next event. Play continues until the pattern stops producing events, or you call .stop on the EventStreamPlayer. (Note that calling code::.stop:: on the pattern does nothing. Patterns are stateless and cannot play or stop by themselves.)
+When a pattern is played, an object called link::Classes/EventStreamPlayer:: is created. This object reads out the events one by one from the pattern's stream (using a given event prototype as the base), and calls code::play:: on each. The code::'delta':: value in the event determines how many beats to wait until the next event.
+Play continues until the pattern stops producing events, or you call .stop on the EventStreamPlayer. (Note that calling code::.stop:: on the pattern does nothing. Patterns are stateless and cannot play or stop by themselves.)
 
-- strong::To sum up so far:: : A Pbind's stream generates Events. When an Event is played, it does some work that usually makes noise on the server. This work is defined in an event prototype. The Event class provides a default event prototype that includes powerful options to create and manipulate objects on the server.
+- strong::To sum up so far:: : A Pbind's stream generates Events. When an Event is played, it does some work that usually makes noise on the server.
+This work is defined in an event prototype.
+The Event class provides a default event prototype that includes powerful options to create and manipulate objects on the server.
 
-subsection::Rests
+
+
+
+
+
+subsection:: Rests
+
 
 Rests may be indicated in three ways.
 
 list::
 ## strong::Recommended::
+
 list::
 ## emphasis::Rest: :: An instance of link::Classes/Rest:: that marks the event as a rest.
 ::
+
 ## strong::Legacy::
+
 list::
 ## emphasis::Symbol as pitch: :: A symbol, such as strong::\rest::, strong::\r:: or even the empty symbol strong:: \ ::, in a key related to pitch (degree, note, midinote, freq) causes the event to be silent.
 ## emphasis::\type, \rest: :: Setting the event's \type to \rest also silences the event.
 ::
+
 ::
 
 A more complete discussion is found in the link::Classes/Rest:: help file.
 
-subsection::Useful Pbind variant: Pmono
 
-Pbind plays separate notes by default. Sometimes, you might need a pattern to act more like a monophonic synthesizer, where it plays just one Synth node and changes its values with each event. If Pbind normally corresponds to code::Synth.new:: or code::/s_new::, link::Classes/Pmono:: corresponds to code::aSynth.set:: or code::/n_set::.
 
-Compare the sound of these patterns. Pbind produces an attack on every note, while Pmono glides from pitch to pitch.
+
+
+
+subsection:: Useful Pbind variant: Pmono
+
+
+Pbind plays separate notes by default.
+Sometimes, you might need a pattern to act more like a monophonic synthesizer, where it plays just one Synth node and changes its values with each event.
+If Pbind normally corresponds to code::Synth.new:: or code::/s_new::, link::Classes/Pmono:: corresponds to code::aSynth.set:: or code::/n_set::.
+
+Compare the sound of these patterns.
+Pbind produces an attack on every note, while Pmono glides from pitch to pitch.
 
 code::
 p = Pbind(\degree, Pwhite(0, 7, inf), \dur, 0.25, \legato, 1).play;
@@ -120,9 +197,22 @@ p.stop;
 
 Articulating phrases is possible with Pmono by chaining several Pmono patterns together in a row, or by using link::Classes/PmonoArtic::.
 
-section::Connecting Event values to SynthDef inputs
 
-Most SynthDefs have link::Classes/Control:: inputs, usually defined by arguments to the UGen function. For example, the default SynthDef (declared in Event.sc) defines five inputs: code::out::, code::freq::, code::amp::, code::pan:: and code::gate::.
+
+
+
+
+
+
+
+
+section:: Connecting Event values to SynthDef inputs
+
+
+
+
+Most SynthDefs have link::Classes/Control:: inputs, usually defined by arguments to the UGen function.
+For example, the default SynthDef (declared in Event.sc) defines five inputs: code::out::, code::freq::, code::amp::, code::pan:: and code::gate::.
 
 code::
 SynthDef(\default, { arg out=0, freq=440, amp=0.1, pan=0, gate=1;
@@ -135,7 +225,8 @@ SynthDef(\default, { arg out=0, freq=440, amp=0.1, pan=0, gate=1;
 }, [\ir]);
 ::
 
-When an event plays a synth, any values stored in the event under the same name as a SynthDef input will be passed to the new synth. Compare the following:
+When an event plays a synth, any values stored in the event under the same name as a SynthDef input will be passed to the new synth.
+Compare the following:
 
 code::
 // Similar to Synth(\default, [freq: 293.3333, amp: 0.2, pan: -0.7])
@@ -145,9 +236,12 @@ code::
 (freq: 440, amp: 0.1, pan: 0.7).play;
 ::
 
-This leads to a key point: strong::The names that you use for patterns in Pbind should correspond to the arguments in the SynthDef being played::. The Pbind pattern names determine the names for values in the resulting Event, and those values are sent to the corresponding Synth control inputs.
+This leads to a key point:
+strong::The names that you use for patterns in Pbind should correspond to the arguments in the SynthDef being played::.
+The Pbind pattern names determine the names for values in the resulting Event, and those values are sent to the corresponding Synth control inputs.
 
-The SynthDef to play is named by the code::'instrument':: key. To play a pattern using a different Synth, simply name it in the pattern.
+The SynthDef to play is named by the code::'instrument':: key.
+To play a pattern using a different Synth, simply name it in the pattern.
 
 code::
 SynthDef(\harpsi, { |outbus = 0, freq = 440, amp = 0.1, gate = 1|
@@ -168,13 +262,22 @@ p = Pbind(
 It's actually an oversimplification to say that the Pbind names should always match up to SynthDef arguments.
 
 list::
-## A Pbind can use some values in the event for intermediate calculations (see link::Tutorials/A-Practical-Guide/PG_06g_Data_Sharing::). If these intermediate values have names not found in the SynthDef, they are not sent to the server. There is no requirement that every item in an Event must correspond to a SynthDef control.
-## The default event prototype performs some automatic conversions. You might have noticed that the examples so far use code::'degree':: to specify pitch, but the default SynthDef being played does not have a degree argument. It works because the default event converts degree into code::'freq'::, which is an argument. The most important conversions are for pitch and timing. Timing is simple; pitch is more elaborate. See link::Tutorials/A-Practical-Guide/PG_07_Value_Conversions:: for an explanation of these automatic calculations.
+## A Pbind can use some values in the event for intermediate calculations (see link::Tutorials/A-Practical-Guide/PG_06g_Data_Sharing::).
+If these intermediate values have names not found in the SynthDef, they are not sent to the server.
+There is no requirement that every item in an Event must correspond to a SynthDef control.
+## The default event prototype performs some automatic conversions.
+You might have noticed that the examples so far use code::'degree':: to specify pitch, but the default SynthDef being played does not have a degree argument.
+It works because the default event converts degree into code::'freq'::, which is an argument. The most important conversions are for pitch and timing.
+Timing is simple; pitch is more elaborate. See link::Tutorials/A-Practical-Guide/PG_07_Value_Conversions:: for an explanation of these automatic calculations.
 ::
 
 strong::Don't send or load SynthDefs; use .add or .store instead::
 
-To send only the relevant values to the new Synth, the Event needs to know what controls exist in the SynthDef. This is done by a library of descriptors for SynthDefs; the descriptor is a link::Classes/SynthDesc::, and the library is a link::Classes/SynthDescLib::. The normal methods -- code::.send(s)::, code::.load(s):: -- to communicate a SynthDef to the server do not enter it into the library. As a result, SynthDefs sent this way will not work properly with Pbind. Instead, use different methods that emphasis::store:: the SynthDef into the library.
+To send only the relevant values to the new Synth, the Event needs to know what controls exist in the SynthDef.
+This is done by a library of descriptors for SynthDefs; the descriptor is a link::Classes/SynthDesc::, and the library is a link::Classes/SynthDescLib::.
+The normal methods -- code::.send(s)::, code::.load(s):: -- to communicate a SynthDef to the server do not enter it into the library.
+As a result, SynthDefs sent this way will not work properly with Pbind.
+Instead, use different methods that emphasis::store:: the SynthDef into the library.
 
 code::
 // Save into the library, write a .scsyndef file, and load it on the server
@@ -190,7 +293,18 @@ SynthDef(...).add;
 .send(s)	-->	.add
 
 
-section::Rest events
+
+
+
+
+
+
+
+
+section:: Rest events
+
+
+
 
 Beginning with version 3.5, rests may be indicated using instances of link::Classes/Rest::.
 
@@ -223,35 +337,73 @@ p.stop;
 ::
 
 note::
-In 3.9, it is no longer supported to use the Rest class in patterns. All rests need to have a value, e.g. code::Rest(0)::. Rest objects now support math operators. That is, you can now write code::Pseq([1, 2, Rest(0)], inf) * 2:: emphasis::and:: code::[1, 2, Rest(0)] * 2::. (Prior to 3.9, the former usage was supported, but only in Pbind, and the latter usage was not supported at all.)
+In 3.9, it is no longer supported to use the Rest class in patterns.
+All rests need to have a value, e.g. code::Rest(0)::.
+Rest objects now support math operators.
+That is, you can now write code::Pseq([1, 2, Rest(0)], inf) * 2:: emphasis::and:: code::[1, 2, Rest(0)] * 2::. (Prior to 3.9, the former usage was supported, but only in Pbind, and the latter usage was not supported at all.)
 ::
 
-The older convention for rests is to set the code::\freq:: key to a link::Classes/Symbol::. Commonly this is code::\rest::, but a backslash by itself is enough to suppress the note on the server. (This usage is still supported, but not recommended because it is limited to pitch-related keys only.)
+The older convention for rests is to set the code::\freq:: key to a link::Classes/Symbol::.
+Commonly this is code::\rest::, but a backslash by itself is enough to suppress the note on the server.
+(This usage is still supported, but not recommended because it is limited to pitch-related keys only.)
 
 If it's the code::\freq:: key that determines whether the event as a rest or not, why does it work to use it with code::\note::? As noted, keys like code::\degree::, code::\note::, and code::\midinote:: are automatically converted into frequency. The math operations that perform the conversion preserve Symbols intact -- e.g., code::\rest + 1 == \rest:: . So the code::\rest:: value is passed all the way through the chain of conversions so that code::\freq:: in the event ends up receiving code::\rest::.
 
-Note that it doesn't matter if the SynthDef has a code::freq:: argument. It's the event, on the emphasis::client:: side, that looks to this key to determine whether to play the note or not. If it is a rest, the server is not involved at all.
+Note that it doesn't matter if the SynthDef has a code::freq:: argument. It's the event, on the emphasis::client:: side, that looks to this key to determine whether to play the note or not.
+If it is a rest, the server is not involved at all.
 
-section::Writing SynthDefs for patterns
+
+
+
+
+
+
+
+
+
+section:: Writing SynthDefs for patterns
+
+
+
 
 SynthDefs should have a couple of specific features to work well with patterns.
 
-subsection::Synths should release themselves
+
+
+
+
+
+subsection:: Synths should release themselves
+
 
 The default event prototype relies on the synth to remove itself from the server when it's finished. This can be done in several ways:
 
 list::
-## (Most typical) A gated envelope with a releasing code::doneAction:: ( >= 2) in the envelope generator (see link::Classes/Done:: for a complete list). The code::\harpsi:: SynthDef above uses this technique. A gated envelope specifies a release node or uses one of the predefined sustaining envelope types: code::Env.asr::, code::Env.adsr::, code::Env.dadsr::. The link::Classes/Env:: help file offers more detail on gated envelopes.
-## code::Linen.kr::, which is a shortcut for code::EnvGen.kr(Env([0, susLevel, 0], [attackTime, releaseTime], \lin, releaseNode: 1), gate, doneAction: [2 or higher]) ::. The default SynthDef uses this. The code::doneAction:: should be at least 2 to release the node.
+## (Most typical) A gated envelope with a releasing code::doneAction:: ( >= 2) in the envelope generator (see link::Classes/Done:: for a complete list). The code::\harpsi:: SynthDef above uses this technique. A gated envelope specifies a release node or uses one of the predefined sustaining envelope types:
+code::Env.asr::, code::Env.adsr::, code::Env.dadsr::. The link::Classes/Env:: help file offers more detail on gated envelopes.
+## code::Linen.kr::, which is a shortcut for code::EnvGen.kr(Env([0, susLevel, 0], [attackTime, releaseTime], \lin, releaseNode: 1), gate, doneAction: [2 or higher]) ::.
+The default SynthDef uses this.
+The code::doneAction:: should be at least 2 to release the node.
+
 note::
-If the release is controlled by a gate, the gate must be represented by the synth argument code::gate::; standard event prototypes expect to be able to control the synth's release using this argument. Also, make sure the gate's default value is greater than 0. Otherwise, the envelope will never start and you will both hear nothing and watch synths pile up on the server.
+If the release is controlled by a gate, the gate must be represented by the synth argument code::gate::; standard event prototypes expect to be able to control the synth's release using this argument. Also, make sure the gate's default value is greater than 0.
+Otherwise, the envelope will never start and you will both hear nothing and watch synths pile up on the server.
 ::
+
 ## Fixed-duration envelopes (no gate).
 ::
 
-subsection::Argument name prefixes
 
-One other subtle point about synth argument names. In a SynthDef, argument names can have the prefix code::t_:: to indicate a "trigger control," or code::i_:: for an "initial rate" control (meaning that it holds the value set when the Synth is first played). This is described in link::Classes/SynthDef:: help. Pbind and its cousins should leave out the prefixes, e.g.:
+
+
+
+
+subsection:: Argument name prefixes
+
+
+One other subtle point about synth argument names. In a SynthDef, argument names can have the prefix code::t_:: to indicate a "trigger control," or code::i_:: for an "initial rate" control (meaning that it holds the value set when the Synth is first played).
+This is described in link::Classes/SynthDef:: help.
+Pbind and its cousins should leave out the prefixes, e.g.:
 
 code::
 (

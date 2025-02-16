@@ -1,14 +1,39 @@
-class:: CSVFileReader
-summary:: file reader for comma separated data
-related:: Classes/File
+title:: CSVFileReader
 categories:: Files
+summary:: File reader for comma separated data
+related:: Classes/File
+
+
+
+
+
+
+
+
+
 
 description::
+
+
+
+
 CSVFileReader reads comma-separated text files into 2D arrays line by line.
 
 For tab delimited files use link::Classes/TabFileReader::. For semi-colon-delimited files use link::Classes/SemiColonFileReader::. For space-delimited files, or custom delimiters, use link::Classes/FileReader::.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (

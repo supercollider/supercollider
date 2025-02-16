@@ -1,9 +1,21 @@
 title:: 08_Rates
-summary:: Mark Polishook tutorial
 categories:: Tutorials>Mark_Polishook_tutorial
+summary:: Mark Polishook tutorial
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
-section::Audio rate
+
+
+
+
+
+
+
+
+
+section:: Audio rate
+
+
+
 
 UGens to which an .ar message is sent run at the audio rate, by default, at 44,100 samples per second. Send the .ar message to unit generators when they're part of the audio chain that will be heard.
 
@@ -11,7 +23,19 @@ code::
 SinOsc.ar(440, 0, 1);
 ::
 
-section::Control rate
+
+
+
+
+
+
+
+
+
+section:: Control rate
+
+
+
 
 UGens to which a .kr message is appended run at the control rate.
 
@@ -19,9 +43,10 @@ code::
 SinOsc.kr(440, 0, 1);
 ::
 
-By default, control rate ugens generate one sample value for every sixty-four sample values made by an audio rate ugen. Control rate ugens thus use fewer resources and are less computationally expensive than their audio rate counterparts.
+By default, control rate UGens generate one sample value for every sixty-four sample values made by an audio rate UGen.
+Control rate UGens thus use fewer resources and are less computationally expensive than their audio rate counterparts.
 
-Use control rate ugens as modulators, that is, as signals that shape an audio signal.
+Use control rate UGens as modulators, that is, as signals that shape an audio signal.
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

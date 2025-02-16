@@ -1,42 +1,81 @@
-class:: LFDClipNoise
+title:: LFDClipNoise
+categories:: UGens>Generators>Stochastic
 summary:: Dynamic clipped noise
 related:: Classes/LFClipNoise, Classes/LFDNoise0, Classes/LFDNoise1, Classes/LFDNoise3, Classes/LFNoise0, Classes/LFNoise1, Classes/LFNoise2
-categories::  UGens>Generators>Stochastic
 
 
-Description::
 
-Like link::Classes/LFClipNoise::, it generates the values -1 or +1 at a rate given
-by the  code::freq::  argument, with two differences:
+
+
+
+
+
+
+
+description::
+
+
+
+
+Like link::Classes/LFClipNoise::, it generates the values -1 or +1 at a rate given by the  code::freq::  argument, with two differences:
+
 list::
 ## no time quantization
 ## fast recovery from low freq values footnote::
 link::Classes/LFClipNoise::, as well as  link::Classes/LFNoise0::,
-link::Classes/LFNoise1::  and  link::Classes/LFNoise2::  quantize to the
-nearest integer division of the samplerate, and they poll the
-code::freq::  argument only when scheduled; thus they often
-seem to hang when freqs get very low.
+link::Classes/LFNoise1::  and  link::Classes/LFNoise2::  quantize to the nearest integer division of the samplerate, and they poll the
+code::freq::  argument only when scheduled; thus they often seem to hang when freqs get very low.
 ::
+
 ::
 
 If you don't need very high or very low freqs, or use fixed freqs,
 link::Classes/LFClipNoise::  is more efficient.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::ar, kr
 
-argument::freq
+
+
+method:: ar, kr
+
+
+argument:: freq
+
 Approximate rate at which to generate random values.
 
-argument::mul
+
+argument:: mul
+
 Output will be multiplied by this value.
 
-argument::add
+
+argument:: add
+
 This value will be added to the output.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 // try wiggling the mouse quickly;

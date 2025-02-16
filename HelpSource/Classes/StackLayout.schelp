@@ -1,13 +1,27 @@
-CLASS:: StackLayout
-summary:: A layout that stacks views on top of each other
+title:: StackLayout
 categories:: GUI>Layout
+summary:: A layout that stacks views on top of each other
 related:: Classes/HLayout, Classes/VLayout, Classes/GridLayout, Guides/GUI-Layout-Management
 
-DESCRIPTION::
 
-StackLayout manages several views stacked into the same space. It has two modes: it can either switch the view that is visible, hiding the others, or it can keep all of them visible, switching the one that is on top.
 
-The second mode is useful for example for overlaying a view with a link::Classes/UserView::, on which you can then draw additional information. If you still want to be able to interact with the view below using the mouse, you can make the one above ignore the mouse using link::Classes/View#-acceptsMouse::. See the link::#examples#example:: below.
+
+
+
+
+
+
+
+description::
+
+
+
+
+StackLayout manages several views stacked into the same space.
+It has two modes: it can either switch the view that is visible, hiding the others, or it can keep all of them visible, switching the one that is on top.
+
+The second mode is useful for example for overlaying a view with a link::Classes/UserView::, on which you can then draw additional information.
+If you still want to be able to interact with the view below using the mouse, you can make the one above ignore the mouse using link::Classes/View#-acceptsMouse::. See the link::#examples#example:: below.
 
 Views can be added to the layout immediately at link::#*new#construction::, or you can link::#-add#add:: or link::#-insert#insert:: them after. To remove a view, you simply call link::Classes/View#-remove::.
 
@@ -20,14 +34,32 @@ Unlike other layouts, StackLayout can not contain another layout, but only subcl
 ::
 
 
-CLASSMETHODS::
 
-PRIVATE:: key
-PRIVATE:: qtClass
 
-METHOD:: new
 
-    Creates a StackLayout and fills it with the items given as arguments. The first view becomes the current one, i.e. visible and on top of others.
+
+
+
+
+
+classmethods::
+
+
+
+
+private:: key
+
+
+private:: qtClass
+
+
+
+
+method:: new
+
+
+    Creates a StackLayout and fills it with the items given as arguments.
+The first view becomes the current one, i.e. visible and on top of others.
 
     argument:: ... views
     A sequence of strong::views::. Unlike other layouts, StackLayout can not contain another layout.
@@ -35,6 +67,7 @@ METHOD:: new
     discussion::
 
     In the example below, the button will switch between the three text editing areas:
+
 code::
 (
 var stack;
@@ -49,16 +82,37 @@ w = Window().layout_(VLayout(
 )
 ::
 
-INSTANCEMETHODS::
 
-METHOD:: add
-    Adds a view at the last index. This does not affect the current link::#-index::.
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+method:: add
+
+
+    Adds a view at the last index.
+This does not affect the current link::#-index::.
 
     argument:: view
     A View.
 
-METHOD:: insert
-    Inserts a view at the specific index. This does not affect the current link::#-index::.
+
+
+
+method:: insert
+
+
+    Inserts a view at the specific index.
+This does not affect the current link::#-index::.
 
     argument:: view
     A View.
@@ -66,14 +120,32 @@ METHOD:: insert
     argument:: index
     An integer. If it is less than 0 or more than link::#-count::, the view will always be inserted as last.
 
-METHOD:: count
+
+
+
+method:: count
+
+
     The number of views managed by the layout.
 
-METHOD:: index
-    Sets or gets the index of the current view. The current view is placed on top of others, and if link::#-mode:: is 0, all the others are hidden.
 
-METHOD:: mode
-    Sets or gets the current mode: in mode 0, the layout only displays the current view; in mode 1, the layout displays all the views. In both modes, the current view will be placed on top of others.
+
+
+method:: index
+
+
+    Sets or gets the index of the current view.
+The current view is placed on top of others, and if link::#-mode:: is 0, all the others are hidden.
+
+
+
+
+method:: mode
+
+
+    Sets or gets the current mode:
+in mode 0, the layout only displays the current view; in mode 1, the layout displays all the views.
+In both modes, the current view will be placed on top of others.
 
     See also: link::#-index::.
 
@@ -82,7 +154,19 @@ METHOD:: mode
     returns::
         0 or 1.
 
-EXAMPLES::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 Overlaying a TextView with a UserView to do additional drawing on top, while still allowing the interaction with the text:
 

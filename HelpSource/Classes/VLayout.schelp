@@ -1,14 +1,39 @@
-CLASS:: VLayout
-summary:: A layout that distributes views in a vertical line
+title:: VLayout
 categories:: GUI>Layout
+summary:: A layout that distributes views in a vertical line
 related:: Classes/LineLayout, Classes/HLayout, Classes/GridLayout, Classes/StackLayout, Guides/GUI-Layout-Management
 
-DESCRIPTION::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
 See documentation of superclass link::Classes/LineLayout:: for details.
 
-EXAMPLES::
-code::
 
+
+
+
+
+
+
+
+
+examples::
+
+
+
+
+code::
 // simple example
 (
 w = Window().front;
@@ -56,10 +81,23 @@ f = { SoundFileView(w).load(Platform.resourceDir +/+ "sounds/a11wlk01.wav", 1e5.
 a = { HLayout(VLayout(*{ Slider(w, Rect(0, 0, 230, 20)).minSize_(Size(130, 20)) } ! 3), f.value) } ! 4;
 w.layout = HLayout(VLayout(*a));
 )
-
 ::
 
-CLASSMETHODS::
 
-PRIVATE:: key
-PRIVATE:: layoutClass
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+private:: key
+
+
+private:: layoutClass

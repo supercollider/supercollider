@@ -1,26 +1,69 @@
-class:: Fdef
-summary:: lazy function proxy
+title:: Fdef
 categories:: JITLib>Patterns, Live Coding
+summary:: Lazy function proxy
 related:: Classes/Pdef, Classes/Tdef, Classes/Pdefn, Classes/Ndef
 
+
+
+
+
+
+
+
+
+
 description::
-Fdef is a placeholder for functions. Fdef allows dynamically replacing functions while they are being used.
+
+
+
+
+Fdef is a placeholder for functions.
+Fdef allows dynamically replacing functions while they are being used.
 
 See also: link::Classes/Maybe:: and the link::Overviews/JITLib:: overview.
 
-ClassMethods::
 
-private::initClass
 
-method::new
 
-argument::key
-if no instance exists with this name, create a new one, otherwise return the existing one.
 
-argument::val
+
+
+
+
+
+classmethods::
+
+
+
+
+private:: initClass
+
+
+method:: new
+
+
+argument:: key
+
+If no instance exists with this name, create a new one, otherwise return the existing one.
+
+
+argument:: val
+
 If a link::Classes/Function:: is given, replace the old function with the new one.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 Fdef(\x, { 8 + 9 });

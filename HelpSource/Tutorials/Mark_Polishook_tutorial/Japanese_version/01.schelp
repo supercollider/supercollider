@@ -1,9 +1,21 @@
 title:: 01
-summary:: Mark Polishook tutorial (JP)
 categories:: Tutorials>Mark_Polishook_tutorial>Japanese_version
+summary:: Mark Polishook tutorial (JP)
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
-section::シンセシスとスケジューリングは2つの独立したプロセスである
+
+
+
+
+
+
+
+
+
+section:: シンセシスとスケジューリングは2つの独立したプロセスである
+
+
+
 
 SuperColliderについてまず知らなければならないことは、それがクライアント／サーバー・モデルを使っているということです。このことが意味することは、私たちはSuperColliderの言語でシンセシスのプロセスを定義するプログラムを書くのだということです。私たちが書いたプログラムが正しい限りにおいては、サーバーは言われた通りのことをするでしょう。サーバーはオーディオを処理し、サウンドをシンセサイズします。
 

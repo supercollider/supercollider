@@ -1,42 +1,75 @@
-class:: Lag2
+title:: Lag2
+categories:: UGens>Filters>Linear
 summary:: Exponential lag
 related:: Classes/Lag, Classes/Lag3, Classes/Ramp, Classes/Lag2UD
-categories::  UGens>Filters>Linear
 
 
-Description::
 
-Lag2 is equivalent to code:: Lag.kr(Lag.kr(in, time), time) ::, thus resulting in a
-smoother transition. This saves on CPU as you only have to calculate the
-decay factor once instead of twice. See  link::Classes/Lag::  for more
+
+
+
+
+
+
+
+description::
+
+
+
+
+Lag2 is equivalent to code:: Lag.kr(Lag.kr(in, time), time) ::, thus resulting in a smoother transition. This saves on CPU as you only have to calculate the decay factor once instead of twice.
+See  link::Classes/Lag::  for more
 details.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
 
-argument::in
+
+
+method:: ar, kr
+
+
+argument:: in
 
 The input signal.
 
 
-argument::lagTime
+argument:: lagTime
 
 60 dB lag time in seconds.
 
 
-argument::mul
+argument:: mul
 
 Output will be multiplied by this value.
 
 
-argument::add
+argument:: add
 
 This value will be added to the output.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (

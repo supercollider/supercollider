@@ -1,14 +1,28 @@
-TITLE:: ParamView
-summary:: show a parameter of a JITLib process
+title:: ParamView
 categories:: JITLib
+summary:: Show a parameter of a JITLib process
 related:: Classes/JITGui, Overviews/JITLib
 
-DESCRIPTION::
-ParamView displays a parameter value, and switches representation as appropriate for value: A single number is shown by an EZSlider, a pair of numbers by an EZRanger, and anything else as code on an EZText.
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+ParamView displays a parameter value, and switches representation as appropriate for value:
+A single number is shown by an EZSlider, a pair of numbers by an EZRanger, and anything else as code on an EZText.
 
 First examples:
-code::
 
+code::
 w = Window("test", Rect(20, 820, 400, 100)).front;
 w.addFlowLayout;
 ~pv = ParamView(w, Rect(20, 20, 360, 20));
@@ -35,68 +49,168 @@ w.addFlowLayout;
 // anything else -> EZText
 ~pv.value_(\blonk);
 ~pv.action = { |pv| pv.value.postcs };
-
 ::
 
-CLASSMETHODS::
-
-METHOD:: new
-create a new ParamView with
-ARGUMENT:: parent
-the parent window or view
-ARGUMENT:: bounds
-the bounds of the view
-ARGUMENT:: label
-a label to display
-ARGUMENT:: spec
-a controlspec for the value
-ARGUMENT:: action
-an action to do when the value changes
-ARGUMENT:: initVal
-an initial value
-ARGUMENT:: initAction
-a boolean whether to perform the action on init.
 
 
-INSTANCEMETHODS::
 
-METHOD:: label
-get and set the view's label
 
-METHOD:: spec
-get and set the view's control spec
 
-METHOD:: action
-get and set the paramview's action
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
+Create a new ParamView with
+
+
+argument:: parent
+
+The parent window or view
+
+
+argument:: bounds
+
+The bounds of the view
+
+
+argument:: label
+
+A label to display
+
+
+argument:: spec
+
+A controlspec for the value
+
+
+argument:: action
+
+An action to do when the value changes
+
+
+argument:: initVal
+
+An initial value
+
+
+argument:: initAction
+
+A boolean whether to perform the action on init.
+
+
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+method:: label
+
+
+Get and set the view's label
+
+
+
+
+method:: spec
+
+
+Get and set the view's control spec
+
+
+
+
+method:: action
+
+
+Get and set the paramview's action
+
+
+
 
 private:: zone, zones
 
-METHOD:: ezviews, slider, ranger, textview
-the 3 ezviews between which the ParamView switches
 
-METHOD:: currview
-the currently shown view of these
+method:: ezviews, slider, ranger, textview
+The 3 ezviews between which the ParamView switches
 
-METHOD:: value
-get and set value
 
-METHOD:: valueAction
-get and set value and do action
 
-METHOD:: doAction
-do the view's action
 
-METHOD:: viewType
-get and set the view's type:
+method:: currview
+
+
+The currently shown view of these
+
+
+
+
+method:: value
+
+
+Get and set value
+
+
+
+
+method:: valueAction
+
+
+Get and set value and do action
+
+
+
+
+method:: doAction
+
+
+Do the view's action
+
+
+
+
+method:: viewType
+
+
+Get and set the view's type:
 0 is single number -> EZSlider,
 1 is pair of numbers -> EZRanger,
 2 is anything else
 
-METHOD:: valueType
-determine viewType for a given value
 
 
-METHOD:: background
-get and set background color
+
+method:: valueType
+
+
+Determine viewType for a given value
+
+
+
+
+method:: background
+
+
+Get and set background color
+
+
+
 
 private:: init
+
+

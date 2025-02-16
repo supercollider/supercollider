@@ -1,29 +1,74 @@
-class:: Tap
+title:: Tap
+categories:: UGens>Buffer, UGens>Delays>Buffer
 summary:: Single tap into a delay line
 related:: Classes/MultiTap, Classes/PlayBuf
-categories::  UGens>Buffer, UGens>Delays>Buffer
 
-Description::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 The Tap UGen allows a single tap at a delay into a buffer.
 
 Tap uses the link::Classes/PlayBuf:: UGen internally
 
+
+
+
+
+
+
+
+
+
 classmethods::
+
+
+
+
 private:: categories
 
-method::ar
 
-argument::bufnum
+method:: ar
+
+
+argument:: bufnum
+
 The index of the buffer to use
 
-argument::numChannels
+
+argument:: numChannels
+
 Number of channels of the buffer
 
-argument::delaytime
+
+argument:: delaytime
+
 Tap delay; cannot be modulated
 
+
+
+
+
+
+
+
+
+
 examples::
+
+
+
+
 code::
 // Create a buffer.
 b = Buffer.alloc(s, s.sampleRate, 1); // enough space for one second of mono audio

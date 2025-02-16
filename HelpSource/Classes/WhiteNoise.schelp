@@ -1,28 +1,65 @@
-class:: WhiteNoise
-summary:: White noise.
+title:: WhiteNoise
+categories:: UGens>Generators>Stochastic
+summary:: White noise
 related:: Classes/BrownNoise, Classes/GrayNoise, Classes/ClipNoise, Classes/PinkNoise
-categories::  UGens>Generators>Stochastic
 
 
-Description::
 
-Generates noise whose spectrum has equal power at all frequencies.
+
+
+
+
+
+
+
+description::
+
+
+
+
+Generatenoise noise whose spectrum has equal power at all frequencies.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
 
-argument::mul
+
+
+method:: ar, kr
+
+
+argument:: mul
+
 Output will be multiplied by this value.
 
-argument::add
+
+argument:: add
+
 This value will be added to the output.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 (
 SynthDef("help-WhiteNoise", { |out = 0|
 	Out.ar(out,
@@ -30,5 +67,4 @@ SynthDef("help-WhiteNoise", { |out = 0|
 	)
 }).play;
 )
-
 ::

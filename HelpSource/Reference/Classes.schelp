@@ -1,36 +1,62 @@
 title:: Classes
 categories:: Language>OOP
-summary:: explaining classes
+summary:: Explaining classes
 related:: Classes/Class, Reference/Assignment, Guides/Intro-to-Objects, Reference/Messages, Guides/Polymorphism, Guides/WritingClasses
 
-All objects in SuperCollider are members of a class that describes the objects' data and interface. The name of a class must begin with a capital letter. Class names are the only global values in the SC language. Since classes are themselves objects, the value of a class name identifier is the object representing that class.
+
+All objects in SuperCollider are members of a class that describes the objects' data and interface. The name of a class must begin with a capital letter.
+Class names are the only global values in the SC language.
+Since classes are themselves objects, the value of a class name identifier is the object representing that class.
 
 See link::Guides/Intro-to-Objects:: for an introduction to the concepts of classes, objects and messages.
 
+
+
+
+
+
+
+
+
+
 section:: Instance Variables
 
-The data of an object is contained in its instance variables. Instance variables are of two kinds, named and indexed. Each object contains a separate copy of its instance variables.
 
-Some classes' instances have no instance variables at all but instead have an atomic value. Classes whose instances consist of an atomic value are link::Classes/Integer::, link::Classes/Float::, link::Classes/Symbol::, link::Classes/True::, link::Classes/False::, link::Classes/Nil::, link::Classes/Char::, link::Classes/Color::.
 
-Instance variables declaration lists occur after the open curly bracket of the class definition and are preceded by the reserved word code::var::. Instance variables names in the list may be initialized to a default literal value by using an equals sign. Instance variables which are not explicitly initialized will be set to nil. Instance variables that are immutable are defined by the reserved word code::const::.
 
-Instance variables may only be directly accessed and changed from within the class' own methods. Instance variables may be exposed to clients by adding getter and setter messages to the class. A getter message is a message with the same name as the variable which returns the value of that variable when sent to the receiver. A setter message is a message with the name of the variable with an underscore appended which sets the value of the instance variable to the value of the argument to the message.
+The data of an object is contained in its instance variables.
+Instance variables are of two kinds, named and indexed. Each object contains a separate copy of its instance variables.
 
-Getter and setter methods may be defined in the declaration of the instance variable. A getter message for an instance variable is created by typing a less than sign code::<:: before the variable name. A setter message is created by typing a greater than code::>:: sign before the variable name. If both occur then they must occur in the order code::<>::.
+Some classes' instances have no instance variables at all but instead have an atomic value.
+Classes whose instances consist of an atomic value are link::Classes/Integer::, link::Classes/Float::, link::Classes/Symbol::, link::Classes/True::, link::Classes/False::, link::Classes/Nil::, link::Classes/Char::, link::Classes/Color::.
+
+Instance variables declaration lists occur after the open curly bracket of the class definition and are preceded by the reserved word code::var::.
+Instance variables names in the list may be initialized to a default literal value by using an equals sign.
+Instance variables which are not explicitly initialized will be set to teletype::nil::.
+Instance variables that are immutable are defined by the reserved word code::const::.
+
+Instance variables may only be directly accessed and changed from within the class' own methods. Instance variables may be exposed to clients by adding getter and setter messages to the class.
+A getter message is a message with the same name as the variable which returns the value of that variable when sent to the receiver.
+A setter message is a message with the name of the variable with an underscore appended which sets the value of the instance variable to the value of the argument to the message.
+
+Getter and setter methods may be defined in the declaration of the instance variable.
+A getter message for an instance variable is created by typing a less than sign code::<:: before the variable name. A setter message is created by typing a greater than code::>:: sign before the variable name. If both occur then they must occur in the order code::<>::.
+
 code::
 var a, <b, >c, <>d;
 ::
+
 definitionlist::
 ## a || has no getter or setter.
 ## b || has a getter but not a setter.
 ## c || has only a setter.
 ## d || has both a getter and setter.
 ::
+
 code::
 Point {
 	// x and y are instance variables which have both getter and setter methods
-	// and default to zero.
+	// and default to teletype::zero::.
 	var <>x = 0, <>y = 0;
 	...
 }
@@ -44,32 +70,94 @@ a = p.x;		// send getter message for x
 b = p.y;		// send getter message for y
 ::
 
+
+
+
+
+
+
+
+
+
 section:: Class Variables
 
-Class variables are values that are shared by all objects in the class. Class variable declaration lists are preceded by the reserved word code::classvar:: and may be interspersed with instance variable declaration lists.
-Class variables like instance variables may only be directly accessed by methods of the class. Class variables may also have getter and setter methods created for them using the less than code::<:: and greater than code::>:: symbols.
+
+
+
+Class variables are values that are shared by all objects in the class.
+Class variable declaration lists are preceded by the reserved word code::classvar:: and may be interspersed with instance variable declaration lists.
+Class variables like instance variables may only be directly accessed by methods of the class.
+Class variables may also have getter and setter methods created for them using the less than code::<:: and greater than code::>:: symbols.
+
+
+
+
+
+
+
+
+
 
 section:: Instance Methods
 
-The messages of a class' interface are implemented in the methods of the class. When an object is sent a message the method whose name matches the message selector in the receiver's class is executed.
+
+
+
+The messages of a class' interface are implemented in the methods of the class.
+When an object is sent a message the method whose name matches the message selector in the receiver's class is executed.
 
 Method definitions follow the class variable and instance variable declarations in the class.
 
-Method definitions are similar to FunctionDefs in syntax. Method definitions begin with the message selector. The message selector must be an identifier or a binary operator. Methods have arguments and variable declarations with the same syntax as in FunctionDefs.
-Methods however have an implicit first argument named this which is the receiver of the message. The variable code::this:: may be referred to just like any of the other arguments and variables in the method. You may not assign a value to code::this::.
+Method definitions are similar to FunctionDefs in syntax.
+Method definitions begin with the message selector.
+The message selector must be an identifier or a binary operator.
+Methods have arguments and variable declarations with the same syntax as in FunctionDefs.
+Methods however have an implicit first argument named this which is the receiver of the message.
+The variable code::this:: may be referred to just like any of the other arguments and variables in the method.
+You may not assign a value to code::this::.
+
+
+
+
+
+
+
+
+
 
 section:: Class Methods
 
-Class Methods are methods that implement messages sent to the class object. A common example is the message new which is sent to the class object to create a new instance of the class. Class method names have an asterisk code::*:: preceding the message selector.
+
+
+
+Class Methods are methods that implement messages sent to the class object.
+A common example is the message new which is sent to the class object to create a new instance of the class.
+Class method names have an asterisk code::*:: preceding the message selector.
+
+
+
+
+
+
+
+
+
 
 section:: Determine the class of an object
+
+
+
+
 link::Classes/Object:: defines the method code::isKindOf:::
+
 code::
 anObject.isKindOf(aClass)
 ::
-It returns true if the object is of the class or one of its subclasses.
+
+It returns teletype::true:: if the object is of the class or one of its subclasses.
 
 To determine if an object is specifically of type aClass, but not one of its subclasses, use the code::class:: instance variable and the identity equals sign:
+
 code::
 anObject.class === aClass
 ::

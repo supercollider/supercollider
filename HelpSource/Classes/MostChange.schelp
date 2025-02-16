@@ -1,32 +1,65 @@
-class:: MostChange
-summary:: Output most changed.
+title:: MostChange
+categories:: UGens>Maths
+summary:: Output most changed
 related:: Classes/LeastChange, Classes/LastValue
-categories::  UGens>Maths
 
 
-Description::
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 Given two inputs code::a:: and code::b::, let code::da[t] = abs(a[t] - a[t - 1]):: and code::db[t] = abs(b[t] - b[t - 1])::. Output code::a[t]:: if code::da[t]:: is larger, and output code::b[t]:: if code::db[t]:: is larger. If code::da[t] == db[t]::, use whichever input was used last (assume code::a:: for the first sample of output).
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::ar, kr
 
-argument::a
+
+
+method:: ar, kr
+
+
+argument:: a
 
 Input signal A.
 
 
-argument::b
+argument:: b
 
 Input signal B.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 (
 d = SynthDef("help-MostChange", { |out, amp = 1.0|
 	var sound, in1, in2;
@@ -59,5 +92,4 @@ d.set(\freq, 800);
 d.set(\freq, 800); // nothing changed
 d.set(\freq, 900);
 d.free;
-
 ::

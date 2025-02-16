@@ -2,11 +2,15 @@ title:: Color roles
 categories:: GUI>Accessories
 summary:: A list of color roles within a palette, and their meaning
 
-A palette (see link::Classes/QPalette::) consists of colors assigned to various color roles within the three color groups (see link::Reference/palette_color_groups::). The following is a list of possible symbols to denote color roles, and their meanings.
+
+
+A palette (see link::Classes/QPalette::) consists of colors assigned to various color roles within the three color groups (see link::Reference/palette_color_groups::).
+The following is a list of possible symbols to denote color roles, and their meanings.
 
 table::
 ## strong::Role::    || strong::Meaning::
-## 'window'          || Window background. Views may also use this role, for example to derive the color of their border. It is also the background of StaticText.
+## 'window'          || Window background. Views may also use this role, for example to derive the color of their border.
+It is also the background of StaticText.
 ## 'windowText'      || Text on top of 'window', for example in StaticText.
 ## 'button'          || Everything button-alike. For example Button background, as well as Slider thumb.
 ## 'buttonText'      || Text on top of 'button'.

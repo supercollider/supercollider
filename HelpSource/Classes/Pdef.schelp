@@ -1,12 +1,29 @@
-class:: Pdef
-summary:: stream reference definition
+title:: Pdef
 categories:: JITLib>Patterns
+summary:: Stream reference definition
 related:: Classes/Pdefn, Classes/PdefGui
 
-description::
-Pdef registers patterns by key. All accesses to the registered patterns go through the Pdef class via that key. Registered patterns can be replaced while running. The old pattern and its replacement can automatically crossfade and the time of replacement can be quantized.
 
-Pdef is a class that provides an interface to its superclass link::Classes/EventPatternProxy::, keeping a reference to a stream that can be replaced while playing. One pattern may be used in many streams in different places. A change in the pattern definition propagates through all streams.
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+Pdef registers patterns by key. All accesses to the registered patterns go through the Pdef class via that key.
+Registered patterns can be replaced while running.
+The old pattern and its replacement can automatically crossfade and the time of replacement can be quantized.
+
+Pdef is a class that provides an interface to its superclass link::Classes/EventPatternProxy::, keeping a reference to a stream that can be replaced while playing.
+One pattern may be used in many streams in different places.
+A change in the pattern definition propagates through all streams.
 
 Pdef and Pdefn use separate global collections.
 
@@ -15,11 +32,20 @@ Pdef(key)	// returns the instance
 Pdef(key, pat)	// stores the pattern and returns the instance, like Tdef and Ndef.
 ::
 
-It can be used to store event Patterns globally. Changes in this global library have immediate effect.
+It can be used to store event Patterns globally.
+Changes in this global library have immediate effect.
 
-For strong::non-event patterns:: link::Classes/Pdefn:: is used instead. For another use of Pdef see also link::Tutorials/JITLib/recursive_phrasing::. Graphical overview over all current Pdefs: link::Classes/PdefAllGui::. Overview: link::Overviews/JITLib::.
+For strong::non-event patterns:: link::Classes/Pdefn:: is used instead. For another use of Pdef see also link::Tutorials/JITLib/recursive_phrasing::.
+Graphical overview over all current Pdefs:
+link::Classes/PdefAllGui::. Overview: link::Overviews/JITLib::.
 
-subsection::First Example
+
+
+
+
+
+subsection:: First Example
+
 
 code::
 s.boot;
@@ -34,29 +60,59 @@ Pdef(\x, Pbind(\note, Pseq([0, 3, 5, 7, 9, 11], inf)));
 Pdef(\x, Pbind(\freq, Pseq([1000, 1923, 245.2, 1718] / 1.2 + 0.1, inf)));
 ::
 
-ClassMethods::
 
-method::all
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: all
+
+
 A global link::Classes/IdentityDictionary:: with all proxies.
 
 
-private::initClass
 
-subsection::Creation
 
-method::new
-Store the pattern in a global dictionary under key, replacing its pattern with the new one. If the pattern is a strong::function::, Pdef creates a link::Classes/PlazyEnvir:: internally that dynamically creates the pattern returned from the function, applying the arguments from the inevent.
+private:: initClass
+
+
+
+
+
+
+subsection:: Creation
+
+
+method:: new
+
+
+Store the pattern in a global dictionary under key, replacing its pattern with the new one.
+If the pattern is a strong::function::, Pdef creates a link::Classes/PlazyEnvir:: internally that dynamically creates the pattern returned from the function, applying the arguments from the inevent.
 
 Using strong::*new(key):: you can access the pattern at that key (if none is given, a default silent event is created)
 
-argument::key
-An identifier for the proxy. Usually, it is a link::Classes/Symbol::. The key transparently accesses the global link::Classes/IdentityDictionary::.
 
-argument::item
-An object for (re)defining the source of the proxy. If code::nil::, the proxy is returned unmodified.
+argument:: key
+
+An identifier for the proxy. Usually, it is a link::Classes/Symbol::.
+The key transparently accesses the global link::Classes/IdentityDictionary::.
+
+
+argument:: item
+
+An object for (re)defining the source of the proxy.
+If code::nil::, the proxy is returned unmodified.
 
 code::
-
 (
 SynthDef(\Pdefhelp, { |out, freq, sustain = 1, amp = 1, pan|
     var env = EnvGen.kr(Env.perc(0.01, sustain), 1, doneAction: Done.freeSelf);
@@ -79,120 +135,304 @@ Pn(Pdef(\x)).play;
 Pdef(\stut, { Pdup(~dup ? 1, ~pattern) });
 Pdef(\x, Pbind(\instrument, \Pdefhelp, \note, Pseq([0, 4, 7, 3, 0, 1, 0], inf)));
 Pdef(\y, Pdef(\stut) <> (pattern: Pdef(\x), dup: Pseq([2, 2, 4, 3], inf)) <> (dur: 0.1, legato: 0.2)).play;
-
 ::
 
 
 
-method::default
-Default source, if none is given. The default is an Event.silent of 1.0 beat duration.
 
-method::removeAll
+method:: default
+
+
+Default source, if none is given. The default is an Event.silent of teletype::1.0:: beat duration.
+
+
+
+
+method:: removeAll
+
+
 Remove all proxies from the global dictionary (link::#*all::)
 
-method::clear
+
+
+
+method:: clear
+
+
 Clear all proxies, setting their source to silence.
 
-method::all
+
+
+
+method:: all
+
+
 Set or return the environment (link::Classes/IdentityDictionary::) that stores all Pdefs.
 
-method::defaultQuant
-Set the default quantisation for new instances (default: 1.0). This can be an array [quant, phase, timingOffset, outset]
 
-InstanceMethods::
 
-private::prAdd
 
-subsection::Changing the definition / setting the source
+method:: defaultQuant
 
-One pattern may have many streams in different places. A change in the pattern definition Pdef propagates through all streams. The change does not have to be immediate - there is a scheme to schedule when the change becomes effective: a strong::quant:: and strong::clock:: (like elsewhere) and a strong::condition::.
 
-method::clock
-get or set the instance's default clock, used by link::#-play:: if no other clock is specified. Defaults to TempoClock.default.
+Set the default quantisation for new instances (default: 1.0).
+This can be an array [quant, phase, timingOffset, outset]
 
-method::quant
+
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+private:: prAdd
+
+
+
+
+
+
+subsection:: Changing the definition / setting the source
+
+
+One pattern may have many streams in different places.
+A change in the pattern definition Pdef propagates through all streams.
+The change does not have to be immediate - there is a scheme to schedule when the change becomes effective:
+a strong::quant:: and strong::clock:: (like elsewhere) and a strong::condition::.
+
+
+
+
+method:: clock
+
+
+Get or set the instance's default clock, used by link::#-play:: if no other clock is specified.
+Defaults to TempoClock.default.
+
+
+
+
+method:: quant
+
+
 Set the quantisation time for beat accurate scheduling.
 
-argument::val
-can be an array strong::[quant, phase, timingOffset, outset] ::, or just strong::[quant, phase]:: etc.
 
-method::condition
-Provide a condition under which the pattern is switched when a new one is inserted. The stream value and a count value is passed into the function.
+argument:: val
 
-method::count
+Can be an array strong::[quant, phase, timingOffset, outset] ::, or just strong::[quant, phase]:: etc.
+
+
+
+
+method:: condition
+
+
+Provide a condition under which the pattern is switched when a new one is inserted.
+The stream value and a count value is passed into the function.
+
+
+
+
+method:: count
+
+
 Create and update condition that simply counts up to n and switches the pattern then
 
-method::reset
+
+
+
+method:: reset
+
+
 Switch the pattern immediately (stuck conditions can be subverted by this).
 
-method::fadeTime
+
+
+
+method:: fadeTime
+
+
 When the synthdefs that are used contain an code::\amp:: control, the patterns are replaced by crossfading the previous with the new over this time (in beats)
 
-method::envir
-Set the event for the Pdef. It is used to filter the incoming stream before it is passed to the source pattern. This is similar to link::Classes/NodeProxy#-nodeMap::. When set for the first time, the pattern is rebuilt.
 
-method::set
-Set arguments in the default event. If there is none, it is created and the pattern is rebuilt.
 
-method::map
+
+method:: envir
+
+
+Set the event for the Pdef.
+It is used to filter the incoming stream before it is passed to the source pattern.
+This is similar to link::Classes/NodeProxy#-nodeMap::.
+When set for the first time, the pattern is rebuilt.
+
+
+
+
+method:: set
+
+
+Set arguments in the default event.
+If there is none, it is created and the pattern is rebuilt.
+
+
+
+
+method:: map
+
+
 Map Pdefn to the keys in the event.
 
-method::clear
-Set the source to nil
 
-method::endless
-Returns a link::Classes/Prout:: that plays the proxy endlessly, replacing strong::nil:: with a strong::default:: value (silent event). This allows to create streams that idle on until a new pattern is inserted.
 
-subsection::Pdef as stream reference
 
-A single Pdef may serve as a definition for multiple streams. These methods show how to fork off separate streams from one instance. Even if they run in different contexts, their definition may still be changed.
+method:: clear
 
-method::fork
+
+Set the source to teletype::nil::
+
+
+
+
+method:: endless
+
+
+Return a link::Classes/Prout:: that plays the proxy endlessly, replacing strong::nil:: with a strong::default:: value (silent event).
+This allows to create streams that idle on until a new pattern is inserted.
+
+
+
+
+
+
+subsection:: Pdef as stream reference
+
+
+A single Pdef may serve as a definition for multiple streams.
+These methods show how to fork off separate streams from one instance.
+Even if they run in different contexts, their definition may still be changed.
+
+
+
+
+method:: fork
+
+
 Play an independent stream in parallel.
 
-argument::argClock
+
+argument:: argClock
+
 The clock to run the substream on.
 
-argument::quant
-can be an array of [quant, phase, offset], or a link::Classes/Quant:: value.
 
-argument::protoEvent
+argument:: quant
+
+Can be an array of [quant, phase, offset], or a link::Classes/Quant:: value.
+
+
+argument:: protoEvent
+
 An link::Classes/Event:: to pass in that is used by the substream
 
-returns:: an link::Classes/EventStreamPlayer::.
+
+returns::
+An link::Classes/EventStreamPlayer::.
 
 
-method::embed
-Pass a value (typically an link::Classes/Event::) into the pattern inval, and embed the Pdef in the stream.
 
-method::embedInStream
-just like any pattern, embeds itself in stream
 
-subsection::Pdef as EventStreamPlayer
+method:: embed
 
-For live coding, each Pdef also may control one instance that plays one stream off it. This is an link::Classes/EventStreamPlayer::, accessible in the instance variable link::#-player::.
 
-method::play
-Starts the Pdef and creates a player. (See: link::Classes/EventPatternProxy#-play::)
+Pas a value (typically an link::Classes/Event::) into the pattern inval, and embed the Pdef in the stream.
 
-method::stop
-Stops the player
 
-method::player
+
+
+method:: embedInStream
+
+
+Just like any pattern, embeds itself in stream
+
+
+
+
+
+
+subsection:: Pdef as EventStreamPlayer
+
+
+For live coding, each Pdef also may control one instance that plays one stream off it.
+This is an link::Classes/EventStreamPlayer::, accessible in the instance variable link::#-player::.
+
+
+
+
+method:: play
+
+
+Start the Pdef and creates a player.
+(See: link::Classes/EventPatternProxy#-play::)
+
+
+
+
+method:: stop
+
+
+Stop the player
+
+
+
+
+method:: player
+
+
 Return the current player (if the Pdef is simply used in other streams this is nil)
 
-method::pause, resume, reset
+
+
+
+method:: pause, resume, reset
+
+
 Perform this method on the player.
 
-method::isPlaying
-Returns true if player is running. If a Pdef is playing and its stream ends, it will schedule a stream for playing strong::as soon as a new one is assigned to it::. If it is stopped by strong::stop::, it won't.
 
-Examples::
 
-subsection::Pdef as stream reference
+
+method:: isPlaying
+
+
+Return teletype::true:: if player is running. If a Pdef is playing and its stream ends, it will schedule a stream for playing strong::as soon as a new one is assigned to it::.
+If it is stopped by strong::stop::, it won't.
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
+
+subsection:: Pdef as stream reference
+
 
 code::
-
 s.boot;
 
 (
@@ -271,7 +511,13 @@ Pdef(\a).set(\detune, 0);
 x.stop;
 ::
 
-subsection::Pdef as EventStreamPlayer
+
+
+
+
+
+subsection:: Pdef as EventStreamPlayer
+
 
 code::
 (
@@ -348,33 +594,52 @@ TempoClock.default.tempo = 1.0;
 PdefAllGui(18);
 ::
 
-subsection::Recursion
 
-Pdefs can be used recursively under the condition that the stream call structure allows it. a structure like the following works:
+
+
+
+
+subsection:: Recursion
+
+
+Pdefs can be used recursively under the condition that the stream call structure allows it.
+a structure like the following works:
 
 code::
 Pdef(\x, Pseq([Pbind(\instrument, \gpdef), Pdef(\x)], inf));
 Pdef(\x).play;
 ::
 
-but the following would crash, because code::.embedInStream:: is called recursively with no limit:
+But the following would crash, because code::.embedInStream:: is called recursively with no limit:
 
 code::
 // Pdef(\y, Pseq([Pdef(\y), Pbind(\instrument, \gpdef)], inf));
 ::
 
-subsection::Quantizing and outset
 
-When quantizing to a larger number of beats, the changes become very slow if one has to wait for the next beat. Providing an strong::outset:: quant value is a way to make the change so that it appears as if it had been done at the previous grid point already. The stream is fast forwarded to the current position relative to the quant grid. Providing a number larger than zero, the next possible quant point is used as outset.
+
+
+
+
+subsection:: Quantizing and outset
+
+
+When quantizing to a larger number of beats, the changes become very slow if one has to wait for the next beat.
+Providing an strong::outset:: quant value is a way to make the change so that it appears as if it had been done at the previous grid point already.
+The stream is fast forwarded to the current position relative to the quant grid.
+Providing a number larger than zero, the next possible quant point is used as outset.
 
 For example, if quant is 32, and one has just missed the first beat when changing the pattern,
-one has to wait for 32 beats until the change happens. Using an outset of 1, it is assumed that you had already
-changed the pattern at the first beat, the stream is fast forwarded to the time it would be at now if you had done so. The new pattern is inserted at the next beat (outset = 1).
+one has to wait for 32 beats until the change happens.
+Using an outset of 1, it is assumed that you had already
+changed the pattern at the first beat, the stream is fast forwarded to the time it would be at now if you had done so.
+The new pattern is inserted at the next beat (outset = 1).
 
 quant can be: strong::[quant, phase, timingOffset, outset]::
 
 note::
-This fast forwarding might create a cpu peak if the pattern is very complex/fast or quant is very long. This is hard to avoid, so it simply has to be taken into account.
+This fast forwarding might create a cpu peak if the pattern is very complex/fast or quant is very long.
+This is hard to avoid, so it simply has to be taken into account.
 ::
 
 code::
@@ -404,7 +669,7 @@ Pdef(\y, Pbind(\degree, Pseq((0..7).scramble-4, inf), \dur, 0.25, \legato, 0.3))
 
 // some testing
 (
-var quant = #[8, 0, 0, 1]; // quantise to 8 beats, no phase, insert quant to 1 beat
+var quant = #[8, 0, 0, 1]; // quantise to 8 beats, no phase, insert quant to teletype::1::beat
 Pdef(\x).quant_(quant);
 Pdef(\x).play;
 Routine { loop { 8.do { |i| ("uhr:"+i).postln; 1.wait } } }.play(quant: quant);
@@ -430,9 +695,17 @@ Pdef(\x).quant = 8;
 Pdef(\x, Pbind(\degree, Pseq((0..7), inf)).trace(\degree));
 ::
 
-subsection::Update condition
 
-In order to be able to switch to a new pattern under a certain link::#-condition::, the instance variable condition can be set to a function that returns a boolean. Value and a count index are passed to the function. The condition is always valid for the strong::next pattern:: inserted. For stuck conditions, the link::#-reset:: message can be used.
+
+
+
+
+subsection:: Update condition
+
+
+In order to be able to switch to a new pattern under a certain link::#-condition::, the instance variable condition can be set to a function that returns a boolean.
+Value and a count index are passed to the function.
+The condition is always valid for the strong::next pattern:: inserted. For stuck conditions, the link::#-reset:: message can be used.
 
 As counting up (such as emphasis::"every nth event, a swap can happen"::) is a common task, there is a method for this, called link::#-count::(n).
 
@@ -448,7 +721,13 @@ Pdef(\x, Pbind(\degree, Pseq((0..7) + 5.rand, inf), \dur, 0.3)).count(8);
 // the value that is sent in is the event, so decisions can be made dependent on the event's fields
 ::
 
-subsection::reset
+
+
+
+
+
+subsection:: Reset
+
 
 code::
 // reset to change immediately:

@@ -1,26 +1,85 @@
-TITLE:: PdefnGui
-summary:: a simple gui for Pdefns
+title:: PdefnGui
 categories:: JITLib>GUI, Live Coding
+summary:: A simple gui for Pdefns
 related:: Classes/Pdefn, Classes/PdefnAllGui, Classes/TdefAllGui
 
-DESCRIPTION::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
 PdefnGui displays a PdefnGui, and allows editing and evaluating its code.
 
 
-CLASSMETHODS::
 
-METHOD:: observedClass
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: observedClass
+
+
 Pdefn
 
-INSTANCEMETHODS::
+
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
 
 strong::JITGui methods: ::
-METHOD:: accepts
-test whether object can be displayed
 
-METHOD:: getState, checkUpdate
 
-EXAMPLES::
+
+
+method:: accepts
+
+
+Test whether object can be displayed
+
+
+
+
+method:: getState, checkUpdate
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 g = PdefnGui();
@@ -29,6 +88,6 @@ g.object_(Pdefn(\abc));
 Pdefn(\abc, 345);
 
 // Note: When editing code in the csView and evaluating,
-// there is a short delay before displaying. this is intended.
-
+// there is a short delay before displaying.
+this is intended.
 ::

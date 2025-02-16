@@ -1,64 +1,168 @@
-CLASS:: RingBuffer
-SUMMARY:: Fixed size ringbuffer
-CATEGORIES:: Collections>Ordered
-RELATED:: Classes/LinkedList
+title:: RingBuffer
+categories:: Collections>Ordered
+summary:: Fixed size ringbuffer
+related:: Classes/LinkedList
 
-DESCRIPTION::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
 A circular buffer that holds a fixed-size collection. Can be used as a queue.
 
 
-CLASSMETHODS::
 
-METHOD:: new
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
 Create a new buffer.
 
-ARGUMENT:: size
+
+argument:: size
+
 Initial size. The collection will be able to hold one minus this number of values.
 
-ARGUMENT:: collectionClass
-Defaults to the LINK::Classes/Array:: class.
+
+argument:: collectionClass
+
+Default to the link::Classes/Array:: class.
 
 
-INSTANCEMETHODS::
 
-METHOD:: array
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+method:: array
+
+
 The collection.
 
-METHOD:: readPos
+
+
+
+method:: readPos
+
+
 Current read position.
 
-METHOD:: writePos
+
+
+
+method:: writePos
+
+
 Current write position.
 
-METHOD:: maxSize
+
+
+
+method:: maxSize
+
+
 Maximum capacity.
 
-METHOD:: size
-Alias of LINK::#-readable::.
 
-METHOD:: readable
+
+
+method:: size
+
+
+Alias of link::#-readable::.
+
+
+
+
+method:: readable
+
+
 Number of readble items.
 
-METHOD:: writable
+
+
+
+method:: writable
+
+
 Number of writable items.
 
-METHOD:: add
-Add value and increase LINK::#-writePos::. Do nothing if no items can be written.
 
-METHOD:: pop
-Return next readable item and increase LINK::#-readPos::. Return CODE::nil:: if no items can be read.
 
-METHOD:: overwrite
-Add value and increase LINK::#-writePos:: by overwriting oldest readable item.
 
-METHOD:: do
+method:: add
+
+
+Add value and increase link::#-writePos::.
+Do nothing if no items can be written.
+
+
+
+
+method:: pop
+
+
+Return next readable item and increase link::#-readPos::. Return code::nil:: if no items can be read.
+
+
+
+
+method:: overwrite
+
+
+Add value and increase link::#-writePos:: by overwriting oldest readable item.
+
+
+
+
+method:: do
+
+
 Iterate over the currently readable items.
 
 
-EXAMPLES::
 
-CODE::
 
+
+
+
+
+
+
+examples::
+
+
+
+
+code::
 r = RingBuffer(4);
 r.add(\one);
 r.add(\two);

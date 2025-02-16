@@ -1,10 +1,24 @@
-TITLE:: FuncStream
-summary:: Stream of a function
+title:: FuncStream
 categories:: Streams-Patterns-Events
+summary:: Stream of a function
 related:: Classes/Pfunc
 
-DESCRIPTION::
-FuncStream is one of the most basic ways to describe a stream: it has a function that is called for each next stream value.
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+FuncStream is one of the most basic ways to describe a stream:
+it has a function that is called for each next stream value.
 
 code::
 // make a stream that returns a random number
@@ -21,9 +35,22 @@ a.next; // returns 108, not 8.
 ::
 
 
-CLASSMETHODS::
 
-METHOD:: new
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
 Return a new stream object.
 
 code::
@@ -38,42 +65,88 @@ a.next;
 a.nextN(80).plot;
 a.reset;
 a.next; // starts again.
-
 ::
 
+
 argument:: nextFunc
+
 The function that is called on each next
+
+
 argument:: resetFunc
+
 The function that is called on reset
 
 
-INSTANCEMETHODS::
 
-PRIVATE::storeArgs
 
-METHOD:: next
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+private:: storeArgs
+
+
+method:: next
+
+
 argument:: inval
 
-Return the next value by calling the function. code::inval:: is passed
-as an argument to the function.
+Return the next value by calling the function.
+code::inval:: is passed as an argument to the function.
 
-METHOD:: reset
+
+
+
+method:: reset
+
 
 Call the reset function, if defined.
 
-METHOD:: envir
+
+
+
+method:: envir
+
 
 Get or set the environment to which the function has been bound.
 
-METHOD:: nextFunc
+
+
+
+method:: nextFunc
+
 
 Get or set the function which is called on link::#-next::.
 
-METHOD:: resetFunc
+
+
+
+method:: resetFunc
+
 
 Get or set the function which is called on link::#-reset::.
 
-EXAMPLES::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (

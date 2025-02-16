@@ -1,15 +1,40 @@
-class:: Psubdivide
-summary:: partition a value into n equal subdivisions
-related:: Classes/Pdup
+title:: Psubdivide
 categories:: Streams-Patterns-Events>Patterns>Repetition
+summary:: Partition a value into n equal subdivisions
+related:: Classes/Pdup
+
+
+
+
+
+
+
+
+
 
 description::
 
+
+
+
 A filter pattern designed for a stream of float durations.
 
-Subdivides each duration by each subdivision and yields that value n times. A subdivision of 0 will skip the duration value, a subdivision of 1 yields the duration value unaffected.
+Subdivides each duration by each subdivision and yields that value n times.
+A subdivision of teletype::0:: will skip the duration value, a subdivision of teletype::1::yields the duration value unaffected.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (

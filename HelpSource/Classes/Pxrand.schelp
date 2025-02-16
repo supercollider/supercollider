@@ -1,12 +1,37 @@
-class:: Pxrand
-summary:: embed values randomly chosen from a list
-related:: Classes/Prand, Classes/Pwrand
+title:: Pxrand
 categories:: Streams-Patterns-Events>Patterns>List
+summary:: Embed values randomly chosen from a list
+related:: Classes/Prand, Classes/Pwrand
+
+
+
+
+
+
+
+
+
 
 description::
+
+
+
+
 Like link::Classes/Prand::, returns one item from the list at random for each repeat, but Pxrand never repeats the same element twice in a row.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (

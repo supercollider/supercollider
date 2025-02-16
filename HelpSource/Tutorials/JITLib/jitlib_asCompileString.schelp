@@ -1,13 +1,15 @@
 title:: jitlib_asCompileString
-summary:: asCompileString in JITLib
 categories:: JITLib>Tutorials
+summary:: AsCompileString in JITLib
+
+
 
 code::
 { 10 + 6 * ~harry }.asCompileString;
 ::
 
-Many objects understand strong::.storeOn::, which a way to post their string that is needed to reproduce them by compilation. Sometimes one wants to store a certain configuration of a proxy space, which can be done
-if all functions used are closed functions.
+Many objects understand strong::.storeOn::, which a way to post their string that is needed to reproduce them by compilation.
+Sometimes one wants to store a certain configuration of a proxy space, which can be done if all functions used are closed functions.
 
 code::
 // an example how ProxySpace can document its current state:
@@ -49,6 +51,7 @@ p.document([\ctl1]);	// document all dependants of ~ctl1
 ::
 
 Ndefs and NodeProxies can also store their full state as a code string:
+
 code::
 // Ndef with source
 Ndef(\x, { Saw.ar(\freq.kr(234), 0.1) });

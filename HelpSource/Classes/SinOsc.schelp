@@ -1,19 +1,36 @@
-class:: SinOsc
-summary:: Interpolating sine wavetable oscillator.
+title:: SinOsc
+categories:: UGens>Generators>Deterministic
+summary:: Interpolating sine wavetable oscillator
 related:: Classes/Osc, Classes/FSinOsc, Classes/SinOscFB, Classes/PMOsc, Classes/Klang
-categories::  UGens>Generators>Deterministic
 
 
-Description::
 
-Generates a sine wave.
+
+
+
+
+
+
+
+description::
+
+
+
+
+Generatea a sine wave.
 Uses a wavetable lookup oscillator with linear interpolation.
 Frequency and phase modulation are provided for audio-rate modulation.
 Technically, code::SinOsc:: uses the same implementation as  link::Classes/Osc::  except that its table is fixed to be a sine wave made of code::8192:: samples.
 
+
+
+
+
+
 subsection:: Other sinewaves oscillators
 
-LIST::
+
+list::
 ## link::Classes/FSinOsc:: – fast sinewave oscillator
 ## link::Classes/SinOscFB:: – sinewave with phase feedback
 ## link::Classes/PMOsc:: – phase modulation sine oscillator
@@ -22,32 +39,64 @@ LIST::
 ::
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::ar, kr
 
-argument::freq
+
+
+method:: ar, kr
+
+
+argument:: freq
+
 Frequency in Hertz.
 Sampled at audio-rate.
 
-argument::phase
+
+argument:: phase
+
 Phase in radians.
 Sampled at audio-rate.
-note::phase values should be within the range +-8pi. If your phase values are larger then simply use code::.mod(2pi):: to wrap them.::
 
-argument::mul
+note::
+Phase values should be within the range +-8pi. If your phase values are larger then simply use code::.mod(2pi)::to wrap them.
+::
+
+
+argument:: mul
+
 Output will be multiplied by this value.
 
-argument::add
+
+argument:: add
+
 This value will be added to the output.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 // create an audio-rate sine wave at 200 Hz,
-// starting with phase 0 and an amplitude of 0.5
+// starting with phase 0 and an amplitude of teletype::0::.5
 { SinOsc.ar(200, 0, 0.5) }.play;
 
 // modulate the frequency with an exponential ramp
@@ -58,5 +107,4 @@ code::
 
 // phase modulation (see also PMOsc)
 { SinOsc.ar(800, SinOsc.ar(XLine.kr(1, 1000, 9), 0, 2pi), 0.25) }.play;
-
 ::

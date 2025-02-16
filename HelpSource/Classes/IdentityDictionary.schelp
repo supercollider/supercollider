@@ -1,38 +1,66 @@
-CLASS::IdentityDictionary
-summary::associative collection mapping keys to values
-related::Classes/Environment, Classes/Event
-categories::Collections>Unordered
+title:: IdentityDictionary
+categories:: Collections>Unordered
+summary:: Associative collection mapping keys to values
+related:: Classes/Environment, Classes/Event
 
-DESCRIPTION::
-An IdentityDictionary is an associative collection mapping keys to values. Keys and values can be arbitrary objects, but for keys, often a link::Classes/Symbol:: is used.
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+An IdentityDictionary is an associative collection mapping keys to values.
+Keys and values can be arbitrary objects, but for keys, often a link::Classes/Symbol:: is used.
 
 Often, the subclass link::Classes/Event:: is used as an IdentityDictionary, because there is a syntactical shortcut:
+
 code::
 a = (); // return a new Event.
 a.put(\foo, 2.718);
 a.at(\foo);
 ::
 
-Note::
-Keys match only if they are strong::identical objects::. (i.e. === returns true. In Dictionary, keys match if they are equal valued. This makes IdentityDictionary faster than link::Classes/Dictionary::)
+note::
+Keys match only if they are strong::identical objects::. (i.e. === returns teletype::true::. In Dictionary, keys match if they are equal valued.
+This makes IdentityDictionary faster than link::Classes/Dictionary::)
 
-The contents of a Dictionary are strong::unordered::. You must not depend on the order of items in a Dictionary.
+The contents of a Dictionary are strong::unordered::.
+You must not depend on the order of items in a Dictionary.
 ::
 
+IdentityDictionary is often used to assign names to instances of a particular class.
+For example, the proxy classes (link::Classes/Pdef::, link::Classes/Pdefn::, link::Classes/Tdef::, link::Classes/Ndef::), and link::Classes/NodeWatcher:: all have class variables named all implemented as IdentityDictionaries.
 
-IdentityDictionary is often used to assign names to instances of a particular class. For example, the proxy classes (link::Classes/Pdef::, link::Classes/Pdefn::, link::Classes/Tdef::, link::Classes/Ndef::), and link::Classes/NodeWatcher:: all have class variables named all implemented as IdentityDictionaries.
 
-Subsection:: 'parent' and 'proto' variables
 
-IdentityDictionary has three levels of content: the dictionary itself, a code::proto::, and a code::parent::. code::proto:: and code::parent:: exist primarily for IdentityDictionary's subclass link::Classes/Event::, which uses the code::parent:: to store action functions that will be used when an event is played. Users may put additional default values into the code::proto::.
 
-Looking up a key within a dictionary first checks the dictionary itself. If the key is not found at this level, it looks in the code::proto::, and if still not found, it looks in the parent.
+
+
+subsection:: 'parent' and 'proto' variables
+
+
+IdentityDictionary has three levels of content:
+the dictionary itself, a code::proto::, and a code::parent::. code::proto:: and code::parent:: exist primarily for IdentityDictionary's subclass link::Classes/Event::, which uses the code::parent:: to store action functions that will be used when an event is played.
+Users may put additional default values into the code::proto::.
+
+Looking up a key within a dictionary first checks the dictionary itself.
+If the key is not found at this level, it looks in the code::proto::, and if still not found, it looks in the parent.
 
 These extra levels are meant for common, default values that should be the same across many dictionary instances.
 
 list::
 ## code::proto:: and code::parent:: values are not shown when posting the dictionary.
-## Copying an IdentityDictionary transfers a reference to the parent and proto into the copy. It is a reference, not a copy: changing the copy's parent also affects the parent of the original. This is for efficiency.
+## Copying an IdentityDictionary transfers a reference to the parent and proto into the copy.
+It is a reference, not a copy: changing the copy's parent also affects the parent of the original.
+This is for efficiency.
 ## Iteration operations (link::Classes/Dictionary#-do::, link::Classes/Dictionary#-keysValuesDo::) only touch the main-level values.
 ## link::Classes/Dictionary#-collect::, link::Classes/Dictionary#-select::, and link::Classes/Dictionary#-reject:: return new dictionaries. The parent and proto will be preserved emphasis::as is:: in the new result, but -- as with code::do:: -- they will not be processed in the iteration, and as with code::copy::, they are identical references.
 ::
@@ -69,21 +97,36 @@ e[\b]
 ::
 
 
-CLASSMETHODS::
 
-method::new
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
 The link::#-parent:: and link::#-proto:: instance variables allow additional IdentityDictionary's to provide default values. The precedence order for determining the value of a key is the IdentityDictionary, its prototype, its parent.
 
-When the instance variable link::#-know:: is link::Classes/True::, the IdentityDictionary responds to unknown messages by looking up the selector and evaluating the result with the dictionary as an argument. For example:
+When the instance variable link::#-know:: is link::Classes/True::, the IdentityDictionary responds to unknown messages by looking up the selector and evaluating the result with the dictionary as an argument.
+For example:
+
 code::
 a = IdentityDictionary(know: true);
 a.put(\foo, { |x, y| "--".postln; ("x:" ++ x).postln;  ("y:" ++ y).postln; y.squared });
 a.foo(-10.01);
 ::
 
-
 warning::
-Only keys that are not already instance methods of IdentityDictionary (or its superclasses) can be used in such a way. E.g. the key "free" will not work, because it is implemented in Object. This means that class extensions (see: link::Guides/WritingClasses::) can break code. It is advisable to use underscores in method names to make this improbable.
+Only keys that are not already instance methods of IdentityDictionary (or its superclasses) can be used in such a way. E.g. the key "free" will not work, because it is implemented in Object.
+This means that class extensions (see: link::Guides/WritingClasses::) can break code. It is advisable to use underscores in method names to make this improbable.
 ::
 
 In the subclass link::Classes/Event::, "know" is true by default, so that it can be instantly used for prototype objects. The first argument passed to the functions is in such cases always the dictionary/event itself (here denoted by "self").
@@ -95,34 +138,70 @@ a.some_value = 8; // sets it to 8
 a.fuzzy_plus(7, 4);
 ::
 
-INSTANCEMETHODS::
 
 
-method::know
-If set to true, the dictionary interprets method calls as look ups. This allows you to implement object prototypes (see above).
 
-method::putGet
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+method:: know
+
+
+If set to teletype::true::, the dictionary interprets method calls as look ups.
+This allows you to implement object prototypes (see above).
+
+
+
+
+method:: putGet
+
+
 Sets key to newValue, returns the previous value of key.
+
 code::
 a = (z: 100);
 x = a.putGet(\z, -1); // x is now 100
 ::
 
-method::includesKey
-Returns true if the key exists in the dictionary
+
+
+
+method:: includesKey
+
+
+Return teletype::true:: if the key exists in the dictionary
+
 code::
 (j:8).includesKey(\j) // true
 ::
 
-method::findKeyForValue
-Returns the key for a given value (it'll return the first it finds, so this may be ambiguous).
+
+
+
+method:: findKeyForValue
+
+
+Return the key for a given value (it'll return the first it finds, so this may be ambiguous).
+
 code::
 (j:8, k: 9).findKeyForValue(8); // returns \j
 ::
+
 If such reverse lookup is needed a lot, for efficiency you may consider using a link::Classes/TwoWayIdentityDictionary:: instead.
 
 
-method::proto, parent
+
+
+method:: proto, parent
+
 
 The two instance variables proto and parent may hold dictionaries which are used to look up all those keys that have no value in the current dictionary.
 First, proto is looked up, then parent. In other words: proto overrides parent. This allows you to construct systems with complex defaults or multiple inheritance.
@@ -135,9 +214,8 @@ a.proto_((freq: 20));
 a.at(\freq); // returns 20
 y = (i: -1);
 b.parent_(y);
-a.at(\i); // returns -1
+a.at(\i); // returns teletype::-1::
 a.cs;
-
 ::
 
 image::IdentityDictionary_02.png#Setting the parent of a dictionary.::
@@ -150,29 +228,50 @@ b = (amp: 0.5).parent_(y);
 a.parent_(b);
 a.at(\freq); // returns 300
 a.cs;
-
 ::
 
 image::IdentityDictionary_01.png#Example schema: order of overriding in proto and parent.::
 
 
-method::insertParent
-Inserts a dictionary into the chain of parents of the receiver (rather than replacing the parent).
-argument::newParent
+
+
+method:: insertParent
+
+
+Insert a dictionary into the chain of parents of the receiver (rather than replacing the parent).
+
+
+argument:: newParent
+
 The dictionary that is added to the parent chain
-argument::insertionDepth
-Level at which the new parent is inserted. Zero (default) means directly above, Inf means at the top of the parent chain.
-argument::reverseInsertionDepth
-If the new parent dictionary has parents itself, this parameter specifies where the original parents are placed in the new parent chain. Zero means directly above, Inf (default) means at the top of the chain.
+
+
+argument:: insertionDepth
+
+Level at which the new parent is inserted.
+Zero (default) means directly above, Inf means at the top of the parent chain.
+
+
+argument:: reverseInsertionDepth
+
+If the new parent dictionary has parents itself, this parameter specifies where the original parents are placed in the new parent chain.
+Zero means directly above, Inf (default) means at the top of the chain.
 
 
 image::IdentityDictionary_03.png#Compare a.insertParent(b, 0) and a.insertParent(b, 1)::
 
 image::IdentityDictionary_04.png#Compare a.insertParent(b, 0, inf) and a.insertParent(b, 0, 0)::
 
-subsection::Timing support (Quant)
 
-method::nextTimeOnGrid, asQuant, timingOffset
+
+
+
+
+subsection:: Timing support (Quant)
+
+
+method:: nextTimeOnGrid, asQuant, timingOffset
+
 
 Use a dictionary to represent timing information.
 
@@ -191,7 +290,16 @@ a.play(quant: (quant: 1, phase: 1.0.rand));
 )
 ::
 
-subsection::Garbage collection
 
-method::freezeAsParent
-For optimizing the garbage collector load, objects can be frozen and become immutable. This method creates a new dictionary with the frozen instance as a parent so that all contents can be overwritten without losing this optimization.
+
+
+
+
+subsection:: Garbage collection
+
+
+method:: freezeAsParent
+
+
+For optimizing the garbage collector load, objects can be frozen and become immutable.
+This method creates a new dictionary with the frozen instance as a parent so that all contents can be overwritten without losing this optimization.

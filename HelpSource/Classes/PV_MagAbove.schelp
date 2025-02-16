@@ -1,31 +1,65 @@
-class:: PV_MagAbove
-summary:: Pass bins above a threshold.
-related:: Classes/FFT, Classes/IFFT, Classes/PV_LocalMax, Classes/PV_MagBelow, Classes/PV_MagClip
+title:: PV_MagAbove
 categories:: UGens>FFT
+summary:: Pass bins above a threshold
+related:: Classes/FFT, Classes/IFFT, Classes/PV_LocalMax, Classes/PV_MagBelow, Classes/PV_MagClip
 
-Description::
 
-Passes only bins whose magnitude is above a threshold.
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+Passeonly only bins whose magnitude is above a threshold.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::new
 
-argument::buffer
+
+
+method:: new
+
+
+argument:: buffer
 
 FFT buffer.
 
 
-argument::threshold
+argument:: threshold
 
 Magnitude threshold.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 s.boot;
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
@@ -60,5 +94,4 @@ SynthDef("help-magAbove3", { |out = 0, soundBufnum = 2|
 	Out.ar(out, 0.1 * IFFT(chain).dup);
 }).play(s, [\soundBufnum, b]);
 )
-
 ::

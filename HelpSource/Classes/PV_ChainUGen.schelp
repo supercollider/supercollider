@@ -1,23 +1,64 @@
-class:: PV_ChainUGen
-summary:: Base class for UGens that operate on FFT chains
+title:: PV_ChainUGen
 categories:: UGens>FFT
+summary:: Base class for UGens that operate on FFT chains
+
+
+
+
+
+
+
+
+
 
 description::
-code::PV_ChainUGen:: is an abstract class, not used directly, but only its subclasses are. It represents phase-vocoder UGens - i.e. UGens which apply some kind of transformation to the frequency-domain signal produced by link::Classes/FFT::.
 
-It encompasses all unit generators whose output is an FFT chain. This is why link::Classes/FFT:: is in this group but link::Classes/IFFT:: is not - the IFFT ugen outputs ordinary time-domain audio.
+
+
+
+code::PV_ChainUGen:: is an abstract class, not used directly, but only its subclasses are.
+It represents phase-vocoder UGens - i.e. UGens which apply some kind of transformation to the frequency-domain signal produced by link::Classes/FFT::.
+
+It encompasses all unit generators whose output is an FFT chain.
+This is why link::Classes/FFT:: is in this group but link::Classes/IFFT:: is not - the IFFT UGen outputs ordinary time-domain audio.
 
 For more information on using these unit generators, see link::Guides/FFT-Overview::.
 
+
+
+
+
+
+
+
+
+
 classmethods::
+
+
+
+
 private:: categories
+
+
+
+
+
+
+
+
+
 
 instancemethods::
 
-private::addCopiesIfNeeded
 
-method::fftSize
-Returns the FFT chain buffer's size.
+
+
+private:: addCopiesIfNeeded
+
+
+method:: fftSize
+Return the FFT chain buffer's size.
 
 code::
 (
@@ -30,19 +71,29 @@ code::
 ::
 
 
+
+
 method:: pvcalc
-pvcalc applies a function to the frequency-domain data of an FFT chain. See link::#-pvcollect:: below for discussion of efficiency considerations. See also link::#-pvcalc2:: below, and link::Classes/UnpackFFT::.
+
+
+pvcalc applies a function to the frequency-domain data of an FFT chain.
+See link::#-pvcollect:: below for discussion of efficiency considerations.
+See also link::#-pvcalc2:: below, and link::Classes/UnpackFFT::.
 
 code::
 chain = chain.pvcalc(numframes, func, frombin, tobin, zeroothers)
 ::
 
 
-argument::numframes
+argument:: numframes
+
 Number of FFT frames to process
 
-argument::func
+
+argument:: func
+
 The function that takes two arrays as inputs  (code::magnitude::, and code::phase::) and returns a resulting pair of arrays code::[magnitude, phase]::.
+
 code::
 // example function
 { |magnitudes, phases|
@@ -50,35 +101,48 @@ code::
 }
 ::
 
-argument::frombin
+
+argument:: frombin
 
 Range start (optional)
 
-argument::tobin
+
+argument:: tobin
 
 Range end (optional)
 
-argument::zeroothers
 
-If set to 1 then bins outside of the range being processed are silenced.
+argument:: zeroothers
+
+If set to teletype::1::then bins outside of the range being processed are silenced.
 
 
 
-method::pvcalc2
+
+method:: pvcalc2
+
+
 The method pvcalc2 is just like link::#-pvcalc:: but can combine two FFT chains.
 
 code::
 chain = chain.pvcalc2(chain2, numframes, func, frombin, tobin, zeroothers)
 ::
 
-argument::chain2
+
+argument:: chain2
+
 The second FFT chain.
 
-argument::numframes
+
+argument:: numframes
+
 Number of FFT frames to process
 
-argument::func
+
+argument:: func
+
 The function that takes four arrays as inputs (magnitudes1, phases1, magnitudes2, phases2) and returns a resulting pair of arrays code::[magnitude, phase]::.
+
 code::
 // example function
 { |magnitudes1, phases1, magnitudes2, phases2|
@@ -86,32 +150,44 @@ code::
 }
 ::
 
-argument::frombin
+
+argument:: frombin
 
 Range start (optional)
 
-argument::tobin
+
+argument:: tobin
 
 Range end (optional)
 
-argument::zeroothers
 
-If set to 1 then bins outside of the range being processed are silenced.
+argument:: zeroothers
+
+If set to teletype::1::then bins outside of the range being processed are silenced.
+
 
 
 
 method:: pvcollect
+
+
 Process each bin of an FFT chain, separately, by applying a function to each bin of an FFT chain.
 
 code::
 chain = chain.pvcollect(numframes, func, frombin, tobin, zeroothers)
 ::
 
-argument::numframes
+
+argument:: numframes
+
 Number of FFT frames to process
 
-argument::func
-The function that processes each bin. It should be a function that takes code:: magnitude, phase, bin, index :: as inputs and returns a resulting array code::[magnitude, phase]::.
+
+argument:: func
+
+The function that processes each bin.
+It should be a function that takes code:: magnitude, phase, bin, index :: as inputs and returns a resulting array code::[magnitude, phase]::.
+
 code::
 // example function
 { |magnitude, phase, bin, index|
@@ -122,37 +198,58 @@ code::
 
 The strong::bin:: is the integer bin number, starting at 0 for DC, while strong::index:: is the iteration number, always starting with 0. You can optionally ignore the phase and only return a single (magnitude) value, in which case the phase is assumed to be left unchanged.
 
-argument::frombin
+
+argument:: frombin
 
 Range start (optional)
 
-argument::tobin
+
+argument:: tobin
 
 Range end (optional)
 
-argument::zeroothers
 
-If set to 1 then bins outside of the range being processed are silenced.
+argument:: zeroothers
+
+If set to teletype::1::then bins outside of the range being processed are silenced.
 
 
 discussion::
-
-
 Note that this procedure can be relatively CPU-heavy, depending on how you use it.
 Using pvcollect (or its components, UnpackFFT & PackFFT) is usually less efficient than using a single "PV_" unit generator to process an FFT chain, because it involves the creation of quite a large graph of demand-rate unit generators.
 
 If you wish to reduce the CPU impact of using this approach, try the following:
+
 list::
-## Use the frombin and tobin arguments to limit the number of FFT bins that will be included in the calculation. Often the lower FFT bins contain the loudest and/or most relevant information, so perhaps your effect sounds very similar if you ignore the higher-up bins (either leave them unprocessed, or discard them by setting the zeroothers argument to 1, which has the effect of a band-pass frequency-domain filter).
+## Use the frombin and tobin arguments to limit the number of FFT bins that will be included in the calculation.
+Often the lower FFT bins contain the loudest and/or most relevant information, so perhaps your effect sounds very similar if you ignore the higher-up bins (either leave them unprocessed, or discard them by setting the zeroothers argument to 1, which has the effect of a band-pass frequency-domain filter).
 ## Use a smaller FFT buffer size.
-## Avoid creating ugens inside your calculation function if at all possible. For example, a deterministic ugen such as LFPar.kr(0.5, 0, 1) will be replicated once for each bin if specified inside the function, despite the fact that the output is always the same. Define it outside the calculation function and then reference it by variable name.
-## Avoid unused calculations! For example, uncommenting all the different lines in the above will waste effort because many values will be calculated but not used. This cannot be optimised away during compilation. It is particularly important because all calculations are duplicated (once for each bin) so can have a significant impact on efficiency.
+## Avoid creating UGens inside your calculation function if at all possible.
+For example, a deterministic UGen such as LFPar.kr(0.5, 0, 1) will be replicated once for each bin if specified inside the function, despite the fact that the output is always the same.
+Define it outside the calculation function and then reference it by variable name.
+## Avoid unused calculations! For example, uncommenting all the different lines in the above will waste effort because many values will be calculated but not used.
+This cannot be optimised away during compilation.
+It is particularly important because all calculations are duplicated (once for each bin) so can have a significant impact on efficiency.
 ## If you find yourself calling pvcollect on an FFT chain more than once in series, you should definitely try to combine your processing into a single pvcollect function, to avoid unnecessary unpacking-then-packing-then-unpacking-then-packing.
 ::
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 subsection:: pvcalc
+
+
 code::
 // a sound file
 c.free; c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
@@ -176,7 +273,14 @@ c.free; c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 )
 ::
 
+
+
+
+
+
 subsection:: pvcalc2
+
+
 code::
 c.free; c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
@@ -209,7 +313,14 @@ x = {
 )
 ::
 
+
+
+
+
+
 subsection:: pvcollect
+
+
 code::
 c.free; c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
@@ -231,7 +342,8 @@ c.free; c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 		// [mag, phase].sqrt;
 		// [mag, 3.14.rand];
 		// [mag, LFNoise0.kr.range(0, 3.14)];
-		// [mag * Dseq([1, 0, 0, 1, 1, 0, 1, 0].dupEach(8), 999999999999)]; // Can even use Demand ugens! One val demanded each frame
+		// [mag * Dseq([1, 0, 0, 1, 1, 0, 1, 0].dupEach(8), 999999999999)]; // Can even use Demand UGens!
+One val demanded each frame
 		// [mag.sqrt, 3.14.rand];
 		// if(index % 7 == 0, mag, 0); // Comb filter
 		// if(LFNoise0.kr(10) > 0.5, mag, 0);
@@ -244,5 +356,4 @@ c.free; c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 	0.5 * IFFT(chain).dup
 }.play
 )
-
 ::

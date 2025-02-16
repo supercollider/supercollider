@@ -1,24 +1,63 @@
-class:: Psetp
-summary:: event pattern that sets values of one key
-related:: Classes/Pbindf, Classes/Pset
+title:: Psetp
 categories:: Streams-Patterns-Events>Patterns>Filter
+summary:: Event pattern that sets values of one key
+related:: Classes/Pbindf, Classes/Pset
+
+
+
+
+
+
+
+
+
 
 description::
 
-Sets a value in an event stream until it ends, repeats this with new values until the value stream ends.
 
-ClassMethods::
 
-method::new
 
-argument::name
+Set a value in an event stream until it ends, repeats this with new values until the value stream ends.
 
-argument::value
-can be a pattern, a stream or an array. The resulting stream ends when that incoming stream ends.
 
-argument::pattern
 
-Examples::
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
+argument:: name
+
+argument:: value
+Can be a pattern, a stream or an array.
+The resulting stream ends when that incoming stream ends.
+
+
+argument:: pattern
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (

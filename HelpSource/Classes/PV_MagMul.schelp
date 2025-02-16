@@ -1,27 +1,65 @@
-class:: PV_MagMul
-summary:: Multiply magnitudes.
-related:: Classes/FFT, Classes/IFFT, Classes/PV_Add, Classes/PV_CopyPhase, Classes/PV_Max, Classes/PV_Min, Classes/PV_Mul
+title:: PV_MagMul
 categories:: UGens>FFT
+summary:: Multiply magnitudes
+related:: Classes/FFT, Classes/IFFT, Classes/PV_Add, Classes/PV_CopyPhase, Classes/PV_Max, Classes/PV_Min, Classes/PV_Mul
 
-Description::
 
-Multiplies magnitudes of two inputs and keeps the phases of the first input.
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+Multiplymagnitudemagnitude magnitudes of two inputs and keeps the phases of the first input.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::new
 
-argument::bufferA
+
+
+method:: new
+
+
+argument:: bufferA
+
 FFT buffer A.
 
-argument::bufferB
+
+argument:: bufferB
+
 FFT buffer B.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 s.boot;
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
@@ -50,5 +88,4 @@ SynthDef("help-magMul2", { |out = 0, soundBufnum = 2|
 )
 
 b.free
-
 ::

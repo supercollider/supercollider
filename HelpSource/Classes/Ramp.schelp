@@ -1,49 +1,87 @@
-class:: Ramp
+title:: Ramp
+categories:: UGens>Filters>Linear
 summary:: Break a continuous signal into line segments
 related:: Classes/Lag, Classes/VarLag, Classes/Slew
-categories::  UGens>Filters>Linear
 
 
-Description::
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 Break a continuous signal into linearly interpolated segments with specific durations.
 
 Feeding Ramp with noise is similar to link::Classes/LFNoise1::
+
 code::
 Ramp.kr(WhiteNoise.kr(1), 0.5)
 ::
-is equal to:
+
+Is equal to:
+
 code::
 LFNoise1.kr(1 / 0.5)
 ::
 
 For smoothing out control signals, take a look at link::Classes/Lag:: and link::Classes/VarLag::
 
+
+
+
+
+
+
+
+
+
 classmethods::
 
-method::ar, kr
 
-argument::in
+
+
+method:: ar, kr
+
+
+argument:: in
 
 The input signal.
 
 
-argument::lagTime
+argument:: lagTime
 
-segment duration in seconds.
+Segment duration in seconds.
 
 
-argument::mul
+argument:: mul
 
 Output will be multiplied by this value.
 
 
-argument::add
+argument:: add
 
 This value will be added to the output.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 s.boot;

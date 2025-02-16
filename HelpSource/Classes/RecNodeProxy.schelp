@@ -1,48 +1,139 @@
-class:: RecNodeProxy
-summary:: a NodeProxy that can record
+title:: RecNodeProxy
 categories:: JITLib>NodeProxy
+summary:: A NodeProxy that can record
 related:: Classes/NodeProxy
 
+
+
+
+
+
+
+
+
+
 description::
-this is also created from a link::Classes/NodeProxy::, or an link::Classes/Ndef:: with the message strong::record::.
 
-ClassMethods::
 
-method::new
-see superclass
 
-method::audio
-see superclass
 
-method::newFrom
-instantiate a new proxy that listens to the in proxy.
+This is also created from a link::Classes/NodeProxy::, or an link::Classes/Ndef:: with the message strong::record::.
 
-InstanceMethods::
 
-method::open
-open new file and initialize buffer on server
 
-method::record
-start the recording synth.
 
-argument::paused
-if paused is false start recording immediately.
 
-argument::clock
-optional - the clock to use for scheduling recording ...
-argument::quant
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
+See superclass
+
+
+
+
+method:: audio
+
+
+See superclass
+
+
+
+
+method:: newFrom
+
+
+Instantiate a new proxy that listens to the in proxy.
+
+
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+method:: open
+
+
+Open new file and initialize buffer on server
+
+
+
+
+method:: record
+
+
+Start the recording synth.
+
+
+argument:: paused
+
+If paused is false start recording immediately.
+
+
+argument:: clock
+
+Optional - the clock to use for scheduling recording ...
+
+
+argument:: quant
+
 ... if a non-nil quant is given.
 
-method::close
-stop recording, close file
 
-method::isRecording
-see if recording right now
 
-method::wakeUp
-until the proxy is not used by any output (either .play or .ar/.kr) it is not running on the server. you can wake it up to force it playing.
 
-Examples::
+method:: close
+
+
+Stop recording, close file
+
+
+
+
+method:: isRecording
+
+
+See if recording right now
+
+
+
+
+method:: wakeUp
+
+
+Until the proxy is not used by any output (either .play or .ar/.kr) it is not running on the server.
+you can wake it up to force it playing.
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 s.boot;
@@ -64,7 +155,13 @@ a.close;
 a.stop;
 ::
 
-subsection::recording from some bus
+
+
+
+
+
+subsection:: Recording from some bus
+
 
 code::
 a = Bus.audio(s, 2);
@@ -86,7 +183,13 @@ n.unpause;
 n.close;
 ::
 
-subsection::instance creation from an existent node proxy
+
+
+
+
+
+subsection:: Instance creation from an existent node proxy
+
 
 code::
 b = NodeProxy.audio(s, 2);
@@ -113,7 +216,13 @@ r.close;
 b.stop; // stop listen to b
 ::
 
-subsection::instance creation from an existent node proxy again
+
+
+
+
+
+subsection:: Instance creation from an existent node proxy again
+
 
 code::
 b = NodeProxy.audio(s, 2);
@@ -126,7 +235,13 @@ r.close; // end recording, close file
 b.stop;	// stop listen
 ::
 
-subsection::recording from other sources
+
+
+
+
+
+subsection:: Recording from other sources
+
 
 code::
 s.boot;

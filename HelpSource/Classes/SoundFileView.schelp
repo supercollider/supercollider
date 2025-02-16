@@ -1,10 +1,21 @@
-class:: SoundFileView
-summary:: Sound file display
+title:: SoundFileView
 categories:: GUI>Views
+summary:: Sound file display
 related:: Classes/SoundFile
 
 
-DESCRIPTION::
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 A sound file viewer with numerous options.
 
@@ -12,24 +23,53 @@ Zoom in and out using Shift + right-click + mouse-up/down;
 
 Scroll using right-click + mouse-left/right.
 
-CLASSMETHODS::
-
-PRIVATE:: key
 
 
-INSTANCEMETHODS::
 
-SUBSECTION:: Data
 
-METHOD:: soundfile
+
+
+
+
+
+classmethods::
+
+
+
+
+private:: key
+
+
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+subsection:: Data
+
+
+method:: soundfile
+
 
     argument::
         An Instance of SoundFile to display.
 
 
-METHOD:: read
 
-    Reads a section of the link::#-soundfile:: and displays it in the view. For large files, you may want to use readWithTask instead.
+
+method:: read
+
+
+    Reads a section of the link::#-soundfile:: and displays it in the view.
+For large files, you may want to use readWithTask instead.
 
     The 'block' argument has no effect; the display resolution is infinite.
 
@@ -40,18 +80,23 @@ METHOD:: read
         The size of the section, in frames.
 
     argument:: block
-        The block size - visual resolution of the display. An Integer of the form 2**n.
+        The block size - visual resolution of the display.
+An Integer of the form 2**n.
 
     argument:: closeFile
-        If true, closes the SoundFile after reading.
+        If teletype::true::, closes the SoundFile after reading.
 
     argument:: doneAction
         A Function called when the file reading has completed.
 
 
-METHOD:: readFile
 
-    Reads a section of an open instance of SoundFile, and displays it in the view. For large files, you may want to use the method readWithTask instead.
+
+method:: readFile
+
+
+    Reads a section of an open instance of SoundFile, and displays it in the view.
+For large files, you may want to use the method readWithTask instead.
 
    The 'block' argument has no effect; the display resolution is infinite.
 
@@ -65,18 +110,24 @@ METHOD:: readFile
         The size of the section, in frames.
 
     argument:: block
-        The block size - visual resolution of the display. An Integer of the form 2**n.
+        The block size - visual resolution of the display.
+An Integer of the form 2**n.
 
     argument:: closeFile
-        If true, closes the SoundFile after reading.
+        If teletype::true::, closes the SoundFile after reading.
     argument:: doneAction
         A Function called when the file reading has completed.
 
-METHOD:: readWithTask
+
+
+
+method:: readWithTask
+
 
     Reads a section of the link::#-soundfile:: asynchronously (in the background), updating the link::#-readProgress:: along the way. If the code::showProgress:: argument is code::true::, a SoundFileViewProgressWindow opens to show the progress.
 
-   The 'block' argument has no effect; the display resolution is infinite. The 'showProgress' argument has no effect; the view always displays reading progress within itself.
+   The 'block' argument has no effect; the display resolution is infinite.
+The 'showProgress' argument has no effect; the view always displays reading progress within itself.
 
     argument:: startFrame
         The beginning of the section, in frames.
@@ -85,16 +136,21 @@ METHOD:: readWithTask
         The size of the section, in frames.
 
     argument:: block
-        The block size - visual resolution of the display. An Integer of the form 2**n.
+        The block size - visual resolution of the display.
+An Integer of the form 2**n.
 
     argument:: doneAction
         An optional function to be evaluated on completion.
 
     argument:: showProgress
-        Whether to open a progress window. Defaults to code::true::.
+        Whether to open a progress window.
+Defaults to code::true::.
 
 
-METHOD:: readFileWithTask
+
+
+method:: readFileWithTask
+
 
     Reads a section of an open instance of SoundFile asynchronously (in the background), updating the link::#-readProgress:: along the way. If the code::showProgress:: argument is code::true::, a SoundFileViewProgressWindow opens to show the progress.
 
@@ -111,24 +167,37 @@ METHOD:: readFileWithTask
         The size of the section, in frames.
 
     argument:: block
-        The block size - visual resolution of the display. An Integer of the form 2**n.
+        The block size - visual resolution of the display.
+An Integer of the form 2**n.
 
     argument:: doneAction
         An optional function to be evaluated on completion.
 
     argument:: showProgress
-        Whether to open a progress window. Defaults to code::true::.
+        Whether to open a progress window.
+Defaults to code::true::.
 
-METHOD:: data
 
-    Sets custom data instead of a sound file. This is a setter only; it is not possible to get the data. If you need access to the data, you must keep it in your own variable.
 
-   Setting this property assumes 1 channel and sample rate of 44100 Hz. Use link::#-setData:: instead if you want more control.
+
+method:: data
+
+
+    Sets custom data instead of a sound file.
+This is a setter only; it is not possible to get the data.
+If you need access to the data, you must keep it in your own variable.
+
+   Setting this property assumes 1 channel and sample rate of 44100 Hz.
+Use link::#-setData:: instead if you want more control.
 
     argument::
         An Array of Floats; multiple channel data should be interleaved.
 
-METHOD:: setData
+
+
+
+method:: setData
+
 
     Sets custom display data instead of a sound file, interpreting it using specified number of channels and sample rate.
 
@@ -137,7 +206,8 @@ METHOD:: setData
         An Array of Floats; multiple channel data should be interleaved.
 
     argument:: block
-The block size - visual resolution of the display. An Integer of the form 2**n. (since the port to QT, the 'block' argument has no effect; the display resolution is infinite).
+The block size - visual resolution of the display.
+An Integer of the form 2**n. (since the port to QT, the 'block' argument has no effect; the display resolution is infinite).
 
     argument:: startFrame
         An integer.
@@ -148,9 +218,13 @@ The block size - visual resolution of the display. An Integer of the form 2**n. 
     argument:: samplerate
         An integer.
 
-METHOD:: alloc
 
-Allocates a desired amount of display channels and frames; all frames have initial value of 0.
+
+
+method:: alloc
+
+
+Allocate a desired amount of display channels and frames; all frames have initial value of teletype::0::.
 
     argument:: frames
         An Integer.
@@ -159,123 +233,225 @@ Allocates a desired amount of display channels and frames; all frames have initi
     argument:: samplerate
         An Integer.
 
-METHOD:: set
 
-Overwrites a range of display data with another data. This method can be used after link::#-alloc:: or link::#-setData:: has been called, but not while the view is displaying a sound file.
+
+
+method:: set
+
+
+Overwrite a range of display data with another data.
+This method can be used after link::#-alloc:: or link::#-setData:: has been called, but not while the view is displaying a sound file.
 
     argument:: offset
         The frame at which to start overwriting; an Integer.
     argument:: data
         The new data; an Array of Floats; multiple channel data should be interleaved.
 
-METHOD:: startFrame
 
-    The beginning of the read section of the soundfile, or 0 if link::#-alloc:: or link::#-setData:: has been used.
 
-METHOD:: numFrames
+
+method:: startFrame
+
+
+    The beginning of the read section of the soundfile, or teletype::0:: if link::#-alloc:: or link::#-setData:: has been used.
+
+
+
+
+method:: numFrames
+
 
     The total amount of frames in the view; this is unrelated to link::#-zoom#zooming:: and link::#-scroll#scrolling::.
 
-METHOD:: readProgress
+
+
+
+method:: readProgress
+
 
      The reading progress, updated periodically when reading a soundfile using link::#-readWithTask:: or link::#-readFileWithTask::.
 
-SUBSECTION:: Navigation
 
-METHOD:: viewFrames
+
+
+
+
+subsection:: Navigation
+
+
+method:: viewFrames
+
 
     The amount of currently visible frames in the view.
 
-METHOD:: zoom
+
+
+
+method:: zoom
+
 
     Zooms by a factor relative to current zoom.
 
     argument::
         A Float.
 
-METHOD:: zoomToFrac
+
+
+
+method:: zoomToFrac
+
 
     Zooms to a specific scale.
 
     argument::
         A Float.
 
-METHOD:: zoomAllOut
+
+
+
+method:: zoomAllOut
+
 
     Zooms to the link::#-currentSelection#current selection::.
 
-METHOD:: zoomSelection
+
+
+
+method:: zoomSelection
+
 
     Zooms to a specific selection.
 
     argument::
         The index of the selection; an Integer between 0 an 63.
 
-METHOD:: xZoom
-    The number of seconds of audio to display in the view. E.g., to zoom out by a factor of 2, code::view.xZoom = dataDuration / 2::. (You are responsible for keeping track of the data duration.)
+
+
+
+method:: xZoom
+
+
+    The number of seconds of audio to display in the view.
+E.g., to zoom out by a factor of 2, code::view.xZoom = dataDuration / 2::. (You are responsible for keeping track of the data duration.)
 
     returns:: A Float, in seconds of audio displayed.
 
-METHOD:: yZoom
-    Vertical scaling. The default code::yZoom = 1:: sets ±1.0 to the top and bottom of the view. If code::yZoom = 2::, the view covers ±0.5 of the value range.
+
+
+
+method:: yZoom
+
+
+    Vertical scaling. The default code::yZoom = 1:: sets ±teletype::1.0:: to the top and bottom of the view.
+If code::yZoom = 2::, the view covers ±0.5 of the value range.
 
     returns:: A Float scaling factor.
 
-METHOD:: yOffset
-    Vertical offset. The default code::yOffset = 0:: sets value of 0.0 in the middle of the channel's view, while code::yOffset = 1::, sets 0.0 at the top and code::yOffset = -1:: sets 0.0 at the bottom of the view. This is performed after (and thus is not scaled by) the link::#-yZoom:: factor.
+
+
+
+method:: yOffset
+
+
+    Vertical offset. The default code::yOffset = 0:: sets value of teletype::0.0:: in the middle of the channel's view, while code::yOffset = 1::, sets 0.0 at the top and code::yOffset = -1:: sets 0.0 at the bottom of the view.
+This is performed after (and thus is not scaled by) the link::#-yZoom:: factor.
 
     returns:: A Float offset.
 
-METHOD:: spacing
-    A ratio between vertical space outside of the ±1.0 value range and channel's full height. The default code::spacing = 0.1:: makes top and bottom spaces add up to code::0.1 * height:: (each of them occupying half of that), while ±1.0 value range occupies code::0.9 * height::. The value is clipped in the range from code::0.0:: to  code:: 1.0::.
+
+
+
+method:: spacing
+
+
+    A ratio between vertical space outside of the ±1.0 value range and channel's full height. The default code::spacing = 0.1:: makes top and bottom spaces add up to code::0.1 * height:: (each of them occupying half of that), while ±1.0 value range occupies code::0.9 * height::.
+The value is clipped in the range from code::0.0:: to  code::1.0::.
 
     returns:: A Float scaling factor.
 
-METHOD:: scrollPos
 
-    The scrolling position of the view, as a fraction of the total scrolling range. The total scrolling range is code::totalDuration - xZoom::.
+
+
+method:: scrollPos
+
+
+    The scrolling position of the view, as a fraction of the total scrolling range.
+The total scrolling range is code::totalDuration - xZoom::.
 
     returns::
-        A Float in the range of 0.0 to 1.0.
+        A Float in the range of teletype::0.0:: to teletype::1.0::.
 
-METHOD:: scrollTo
 
-    Scrolls to a fraction of the total scrolling range. The total scrolling range is code::totalDuration - xZoom::.
+
+
+method:: scrollTo
+
+
+    Scrolls to a fraction of the total scrolling range.
+The total scrolling range is code::totalDuration - xZoom::.
 
     argument::
-        A Float in the range of 0.0 to 1.0.
+        A Float in the range of teletype::0.0:: to teletype::1.0::.
 
-METHOD:: scroll
+
+
+
+method:: scroll
+
 
     Scrolls by a fraction of the visible range.
 
     argument::
         A Float.
 
-METHOD:: scrollToStart
+
+
+
+method:: scrollToStart
+
 
     Scrolls to the beginning.
 
-METHOD:: scrollToEnd
+
+
+
+method:: scrollToEnd
+
 
     Scrolls to the end.
 
-SUBSECTION:: Selection
 
-METHOD:: selections
+
+
+
+
+subsection:: Selection
+
+
+method:: selections
+
 
     All the selections.
 
-    returns:: An array of 64 arrays of start frames and sizes: [[start0, size0], [start1, size1], ...].
+    returns:: An array of 64 arrays of start frames and sizes:
+[[start0, size0], [start1, size1], ...].
 
-METHOD:: selection
+
+
+
+method:: selection
+
 
     The selection at index.
 
     returns::
         An Array of the form code::[start, size]::, where start and size denote frames.
 
-METHOD:: setSelection
+
+
+
+method:: setSelection
+
 
     Sets the selection at index.
 
@@ -285,14 +461,22 @@ METHOD:: setSelection
     argument:: selection
         An Array of the form code::[start, size]::, where start and size are Integers and denote frames.
 
-METHOD:: currentSelection
+
+
+
+method:: currentSelection
+
 
     The index of the current selection
 
     argument::
         An integer between 0 an 63.
 
-METHOD:: selectionStart
+
+
+
+method:: selectionStart
+
 
     The start frame of a selection.
 
@@ -302,7 +486,11 @@ METHOD:: selectionStart
     returns::
         An Integer.
 
-METHOD:: setSelectionStart
+
+
+
+method:: setSelectionStart
+
 
     Sets the start frame of a selection.
 
@@ -312,7 +500,11 @@ METHOD:: setSelectionStart
     argument:: frame
         The starting frame of the selection, an Integer.
 
-METHOD:: selectionSize
+
+
+
+method:: selectionSize
+
 
     The size of a selection.
 
@@ -322,7 +514,11 @@ METHOD:: selectionSize
     returns::
         An Integer.
 
-METHOD:: setSelectionSize
+
+
+
+method:: setSelectionSize
+
 
     Sets the size of a selection.
 
@@ -332,7 +528,11 @@ METHOD:: setSelectionSize
     argument:: frames
         The size in frames of the selection, an Integer.
 
-METHOD:: selectionStartTime
+
+
+
+method:: selectionStartTime
+
 
     The start of a selection in seconds.
 
@@ -342,7 +542,11 @@ METHOD:: selectionStartTime
     returns::
         A Float.
 
-METHOD:: selectionDuration
+
+
+
+method:: selectionDuration
+
 
     The size of a selection in seconds.
 
@@ -352,7 +556,11 @@ METHOD:: selectionDuration
     returns::
         A Float.
 
-METHOD:: selectAll
+
+
+
+method:: selectAll
+
 
     Sets a selection to span the whole data range.
 
@@ -360,14 +568,21 @@ METHOD:: selectAll
         The index of the selection; an Integer between 0 an 63.
 
 
-METHOD:: selectNone
 
-    Sets the size of a selection to 0.
+
+method:: selectNone
+
+
+    Sets the size of a selection to teletype::0::.
 
     argument:: index
         The index of the selection; an Integer between 0 an 63.
 
-METHOD:: setSelectionColor
+
+
+
+method:: setSelectionColor
+
 
     Sets the color of a selection.
 
@@ -377,7 +592,11 @@ METHOD:: setSelectionColor
     argument:: color
         A Color.
 
-METHOD:: setEditableSelectionStart
+
+
+
+method:: setEditableSelectionStart
+
 
     Sets whether the start point of a selection can be edited.
 
@@ -387,7 +606,11 @@ METHOD:: setEditableSelectionStart
     argument:: editable
         A Boolean.
 
-METHOD:: setEditableSelectionSize
+
+
+
+method:: setEditableSelectionSize
+
 
     Whether the end point of a selection can be edited.
 
@@ -397,145 +620,244 @@ METHOD:: setEditableSelectionSize
     argument:: editable
         A Boolean.
 
-METHOD:: readSelection
+
+
+
+method:: readSelection
+
 
     note:: Not implemented ::
 
     Read the data within a selection.
 
     argument:: block
-        The block size - visual resolution of the display. An Integer of the form 2**n.
+        The block size - visual resolution of the display.
+An Integer of the form 2**n.
 
     argument:: closeFile
-        If true, closes the SoundFile after reading.
+        If teletype::true::, closes the SoundFile after reading.
 
-METHOD:: readSelectionWithTask
+
+
+
+method:: readSelectionWithTask
+
 
     note:: Not implemented ::
 
     Read the data within the current selection asynchronously (in the background), showing the progress in a separate window.
 
 
-SUBSECTION:: Display
 
-METHOD:: peakColor
+
+
+
+subsection:: Display
+
+
+method:: peakColor
+
 
     The color of the peak-to-peak data. This can be overridden by link::#-waveColors::. Defaults to code::Color(0.95, 0.7)::.
 
     argument::
         A code::Color::.
 
-METHOD:: rmsColor
 
-    The color of the RMS data. Defaults to code::Color(1.0, 1.0)::.
+
+
+method:: rmsColor
+
+
+    The color of the RMS data.
+Defaults to code::Color(1.0, 1.0)::.
 
     argument::
         A code::Color::.
 
-METHOD:: waveColors
 
-    An array of colors for the peak-to-peak data for each channel, allowing each channel to be represented by a different color. Defaults to code::[]::. Once set, it overrides link::#-peakColor::. In order to revert to using code::.peakColor::, set code::.waveColors:: back to an empty array: code::.waveColors_([])::.
 
-    note::link::#-rmsColor:: stays the same for all channels. However, using alpha blending, it is possible to display RMS data using either a lighter (e.g. code::.rmsColor_(Color.grey(1, 0.3))::) or a darker (e.g. code::.rmsColor_(Color.grey(0, 0.3))::) shade of the peak-to-peak color.::
+
+method:: waveColors
+
+
+    An array of colors for the peak-to-peak data for each channel, allowing each channel to be represented by a different color.
+Defaults to code::[]::. Once set, it overrides link::#-peakColor::.
+In order to revert to using code::.peakColor::, set code::.waveColors:: back to an empty array: code::.waveColors_([])::.
+
+    note::link::#-rmsColor::stays the same for all channels.
+However, using alpha blending, it is possible to display RMS data using either a lighter (e.g. code::.rmsColor_(Color.grey(1, 0.3))::) or a darker (e.g. code::.rmsColor_(Color.grey(0, 0.3))::) shade of the peak-to-peak color.::
 
     argument::
         And array of code::[Color]::.
 
-METHOD:: gridOn
+
+
+
+method:: gridOn
+
 
     Whether the grid is displayed. Defaults to code::true::.
 
     argument::
         A Boolean.
 
-METHOD:: gridResolution
+
+
+
+method:: gridResolution
+
 
     The resolution of the grid.
 
     argument::
         An instance of Float.
 
-METHOD:: gridOffset
+
+
+
+method:: gridOffset
+
 
     Sets the grid offset.
 
     argument::
         Grid blocks are offset by this value (in seconds).
 
-METHOD:: gridColor
+
+
+
+method:: gridColor
+
 
     The color of the grid.
 
     argument::
         A Color.
 
-METHOD:: drawsWaveForm
+
+
+
+method:: drawsWaveForm
+
 
     Whether the data is displayed. Defaults to code::true::.
 
     argument::
         A Boolean.
 
-METHOD:: drawsRMS
 
-    Whether the RMS data for the waveform is displayed. Defaults to code::true::.
 
-METHOD:: drawsCenterLine
+
+method:: drawsRMS
+
+
+    Whether the RMS data for the waveform is displayed.
+Defaults to code::true::.
+
+
+
+
+method:: drawsCenterLine
+
 
     Whether the center line (at value 0.0) is displayed. Defaults to code::true::.
 
     argument::
         A Boolean.
 
-METHOD:: drawsBoundingLines
+
+
+
+method:: drawsBoundingLines
+
 
     Whether the bounding lines (at values ±1.0) are displayed. Defaults to code::true::.
 
     argument::
         A Boolean.
 
-METHOD:: timeCursorOn
 
-    Whether the time cursor is displayed. Defaults to code::false::.
+
+
+method:: timeCursorOn
+
+
+    Whether the time cursor is displayed.
+Defaults to code::false::.
 
     argument::
         A Boolean.
 
-METHOD:: timeCursorPosition
+
+
+
+method:: timeCursorPosition
+
 
     The position of the time cursor in frames.
 
     argument::
         An Integer.
 
-METHOD:: timeCursorColor
+
+
+
+method:: timeCursorColor
+
 
     The color of the time cursor.
 
     argument::
         A Color.
 
-METHOD:: elasticMode
+
+
+
+method:: elasticMode
+
 
     Not operational, for compatibility only.
 
-SUBSECTION:: Actions
 
-METHOD:: action
+
+
+
+
+subsection:: Actions
+
+
+method:: action
+
 
     The object to be evaluated whenever the user interacts with the view.
 
-METHOD:: metaAction
+
+
+
+method:: metaAction
+
 
     The object to be evaluated on Ctrl + click.
 
 
-EXAMPLES::
 
-SUBSECTION:: Basic example
+
+
+
+
+
+
+
+examples::
+
+
+
+
+subsection:: Basic example
+
 
 code::
-
 // To zoom in/out: Shift + right-click + mouse-up/down
 // To scroll: right-click + mouse-left/right
 (
@@ -560,7 +882,13 @@ w.front;
 )
 ::
 
-SUBSECTION:: Step by step examples
+
+
+
+
+
+subsection:: Step by step examples
+
 
 code::
 ( // make a simple SoundFileView
@@ -693,23 +1021,31 @@ a.scroll(12);       // scroll is in viewFrames.
 a.zoom(4);
 
 w.close;
-
 ::
 
-SUBSECTION:: Adding a scroll bar
 
-Zooming and scrolling by mouse, directly in a SoundFileView, may not be immediately intuitive. (Most users wouldn't guess to shift-right-click!) You can add a link::Classes/RangeSlider:: to act as a scrollbar.
+
+
+
+
+subsection:: Adding a scroll bar
+
+
+Zooming and scrolling by mouse, directly in a SoundFileView, may not be immediately intuitive.
+(Most users wouldn't guess to shift-right-click!) You can add a link::Classes/RangeSlider:: to act as a scrollbar.
 
 Notes:
 
 list::
-## If the user shift-right-clicks, the only way to track the SoundFileView's display changes is by using mouse actions: link::Classes/View#-mouseDownAction:: and link::Classes/View#-mouseUpAction:: to know which button is pressed, and link::Classes/View#-mouseMoveAction:: to read the new scrolling and zooming values.
+## If the user shift-right-clicks, the only way to track the SoundFileView's display changes is by using mouse actions:
+link::Classes/View#-mouseDownAction:: and link::Classes/View#-mouseUpAction:: to know which button is pressed, and link::Classes/View#-mouseMoveAction:: to read the new scrolling and zooming values.
 ## link::Classes/SoundFileView#-xZoom:: is in seconds, while the range slider is normalized to a 0-1 range. So code::xZoom == slider.range * duration::, and code::slider.range == xZoom / duration::.
-## link::Classes/SoundFileView#-scrollPos:: is normalized to the "total scrolling range," where 1.0 is scrolled fully to the right. We have to subtract the displayed area: code::slider.lo = sfv.scrollPos / (1 - slider.size)::, with some refinements to avoid division by 0.
+## link::Classes/SoundFileView#-scrollPos:: is normalized to the "total scrolling range," where 1.0 is scrolled fully to the right.
+We have to subtract the displayed area:
+code::slider.lo = sfv.scrollPos / (1 - slider.size)::, with some refinements to avoid division by 0.
 ::
 
 code::
-
 f = SoundFile.openRead(Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 f.readData(d = Signal.newClear(f.numFrames * f.numChannels));
 f.close;

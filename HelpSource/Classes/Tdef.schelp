@@ -1,21 +1,47 @@
-class:: Tdef
-summary:: task reference definition
+title:: Tdef
 categories:: JITLib>Patterns
+summary:: Task reference definition
 related:: Classes/TaskProxy, Classes/Task, Classes/Routine
 
-description::
-Tdef registers tasks by key. All accesses to the registered tasks go through the Tdef class via that key. Registered tasks can be replaced with other tasks while playing. The old task and its replacement can automatically crossfade and the replacement time can be quantized.
 
-Tdef provides an interface to its superclass TaskProxy. Tdef keeps a reference to a task (strong::time pattern::) that can be replaced while playing. It continues playing when the old stream ended and a new stream is set and schedules the changes to the beat. One Tdef may be used in many tasks in different places. A change in the task definition Tdef propagates through all tasks.
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+Tdef registers tasks by key. All accesses to the registered tasks go through the Tdef class via that key.
+Registered tasks can be replaced with other tasks while playing.
+The old task and its replacement can automatically crossfade and the replacement time can be quantized.
+
+Tdef provides an interface to its superclass TaskProxy.
+Tdef keeps a reference to a task (strong::time pattern::) that can be replaced while playing.
+It continues playing when the old stream ended and a new stream is set and schedules the changes to the beat.
+One Tdef may be used in many tasks in different places.
+A change in the task definition Tdef propagates through all tasks.
 
 code::
 Tdef(key)	// returns the instance
 Tdef(key, func)	// defines the task and returns the instance, like Pdef and Ndef.
 ::
 
-Graphical overview over all current Tdefs: link::Classes/TdefAllGui::. Overview: link::Overviews/JITLib::
+Graphical overview over all current Tdefs:
+link::Classes/TdefAllGui::. Overview: link::Overviews/JITLib::
 
-subsection::First Example
+
+
+
+
+
+subsection:: First Example
+
 
 code::
 Tdef(\x, { loop { 0.5.wait; "aaaaaaaaaaaaaazz".scramble.postln } }).play;
@@ -27,129 +53,335 @@ Tdef(\x).play;
 Tdef(\x).clear;
 ::
 
-ClassMethods::
 
-method::all
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: all
+
+
 A global link::Classes/IdentityDictionary:: with all proxies.
 
 
-private::initClass
 
-subsection::Creation
 
-method::new
+private:: initClass
+
+
+
+
+
+
+subsection:: Creation
+
+
+method:: new
+
+
 Store the task in a global dictionary under key, replacing its routine function with the new one.
 
 Using strong::*new(key):: you can access the pattern at that key (if none is given, a default task is created)
 
-argument::key
-An identifier for the proxy. Usually, it is a link::Classes/Symbol::. The key transparently accesses the global link::Classes/IdentityDictionary::.
 
-argument::item
-An object for (re)defining the source of the proxy. If code::nil::, the proxy is returned unmodified.
+argument:: key
 
-method::default
+An identifier for the proxy. Usually, it is a link::Classes/Symbol::.
+The key transparently accesses the global link::Classes/IdentityDictionary::.
+
+
+argument:: item
+
+An object for (re)defining the source of the proxy.
+If code::nil::, the proxy is returned unmodified.
+
+
+
+
+method:: default
+
+
 Default source, if none is given. The default task has a function that waits in 1.0 beat steps and does nothing.
 
-method::removeAll
+
+
+
+method:: removeAll
+
+
 Remove all proxies from the global dictionary (link::#*all::)
 
-method::clear
+
+
+
+method:: clear
+
+
 Clear all proxies, setting their source to silence.
 
-method::all
+
+
+
+method:: all
+
+
 Set or return the environment (link::Classes/IdentityDictionary::) that stores all instances.
 
-method::defaultQuant
-Set the default quantisation for new instances (default: 1.0). This can be an array [quant, phase, timingOffset, outset]
 
-InstanceMethods::
 
-subsection::Changing the definition / setting the source
 
-One Tdef may have many tasks in different places. A change in the task definition Tdef propagates through all tasks. The change does not have to be immediate - there is a scheme to schedule when the change becomes effective: a strong::quant:: and strong::clock:: (like elsewhere) and a strong::condition::.
+method:: defaultQuant
 
-method::quant
+
+Set the default quantisation for new instances (default: 1.0).
+This can be an array [quant, phase, timingOffset, outset]
+
+
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+subsection:: Changing the definition / setting the source
+
+
+One Tdef may have many tasks in different places.
+A change in the task definition Tdef propagates through all tasks.
+The change does not have to be immediate - there is a scheme to schedule when the change becomes effective:
+a strong::quant:: and strong::clock:: (like elsewhere) and a strong::condition::.
+
+
+
+
+method:: quant
+
+
 Set the quantisation time for beat accurate scheduling.
 
-method::clock
-get or set the instance's default clock, used by link::#-play:: if no other clock is specified. Defaults to TempoClock.default.
 
-argument::val
-can be an array strong::[quant, phase, timingOffset, outset] ::, or just strong::[quant, phase]:: etc.
 
-method::condition
-Provide a condition under which the pattern is switched when a new one is inserted. The stream value and a count value is passed into the function.
 
-method::count
+method:: clock
+
+
+Get or set the instance's default clock, used by link::#-play:: if no other clock is specified.
+Defaults to TempoClock.default.
+
+
+argument:: val
+
+Can be an array strong::[quant, phase, timingOffset, outset] ::, or just strong::[quant, phase]:: etc.
+
+
+
+
+method:: condition
+
+
+Provide a condition under which the pattern is switched when a new one is inserted.
+The stream value and a count value is passed into the function.
+
+
+
+
+method:: count
+
+
 Create and update condition that simply counts up to n and switches the pattern then
 
-method::reset
+
+
+
+method:: reset
+
+
 Switch the task immediately (stuck conditions can be subverted by this).
 
-method::envir
+
+
+
+method:: envir
+
+
 Set the environment (an link::Classes/Event::) for the Tdef. strong::It is passed as first argument into the Task function::.
 
-method::set
-Set arguments in the default event. If there is none, it is created and the task routine is rebuilt.
 
-method::clear
-Set the source to nil
 
-method::endless
-Returns a link::Classes/Prout:: that plays the task endlessly, replacing strong::nil:: with a strong::default:: value 1. This allows to create streams that idle on until a new pattern is inserted.
 
-subsection::Tdef as stream reference
+method:: set
 
-A single Tdef may serve as a definition for multiple tasks. These methods show how to fork off separate routines from one instance. Even if they run in different contexts, their definition may still be changed.
 
-method::fork
+Set arguments in the default event.
+If there is none, it is created and the task routine is rebuilt.
+
+
+
+
+method:: clear
+
+
+Set the source to teletype::nil::
+
+
+
+
+method:: endless
+
+
+Return a link::Classes/Prout:: that plays the task endlessly, replacing strong::nil:: with a strong::default:: value 1. This allows to create streams that idle on until a new pattern is inserted.
+
+
+
+
+
+
+subsection:: Tdef as stream reference
+
+
+A single Tdef may serve as a definition for multiple tasks.
+These methods show how to fork off separate routines from one instance.
+Even if they run in different contexts, their definition may still be changed.
+
+
+
+
+method:: fork
+
+
 Play an independent task in parallel.
 
-argument::clock
-the clock on which to play the forked task
 
-argument::quant
-can be an array of [quant, phase, offset], or a link::Classes/Quant:: value.
+argument:: clock
 
-argument::event
-an event to pass into the forked task
+The clock on which to play the forked task
 
-method::embed
-Pass a value (typically an link::Classes/Event::) into the task function, and embed the Tdef in the stream.
 
-method::embedInStream
-just like any pattern, embeds itself in stream
+argument:: quant
 
-subsection::Tdef as EventStreamPlayer
+Can be an array of [quant, phase, offset], or a link::Classes/Quant:: value.
 
-For live coding, each Tdef also may control one instance that plays one task. This is a link::Classes/PauseStream::, accessible in the instance variable link::#-player::.
 
-method::play
-Starts the Tdef and creates a player.
+argument:: event
 
-argument::argClock
-a clock on which to play the Tdef. If nil, uses the instance's link::#-clock::, which in turn defaults to TempoClock.default.
-argument::doReset
-a flag whether to reset the task if already playing
-argument::quant
-can be an array of [quant, phase, offset] or a link::Classes/Quant:: value.
+An event to pass into the forked task
 
-method::stop
-Stops the player
 
-method::player
+
+
+method:: embed
+
+
+Pas a value (typically an link::Classes/Event::) into the task function, and embed the Tdef in the stream.
+
+
+
+
+method:: embedInStream
+
+
+Just like any pattern, embeds itself in stream
+
+
+
+
+
+
+subsection:: Tdef as EventStreamPlayer
+
+
+For live coding, each Tdef also may control one instance that plays one task.
+This is a link::Classes/PauseStream::, accessible in the instance variable link::#-player::.
+
+
+
+
+method:: play
+
+
+Start the Tdef and creates a player.
+
+
+argument:: argClock
+
+A clock on which to play the Tdef.
+If teletype::nil::, uses the instance's link::#-clock::, which in turn defaults to TempoClock.default.
+
+
+argument:: doReset
+
+A flag whether to reset the task if already playing
+
+
+argument:: quant
+
+Can be an array of [quant, phase, offset] or a link::Classes/Quant:: value.
+
+
+
+
+method:: stop
+
+
+Stop the player
+
+
+
+
+method:: player
+
+
 Return the current player (if the Tdef is simply used in other streams this is nil)
 
-method::pause, resume, reset
+
+
+
+method:: pause, resume, reset
+
+
 Perform this method on the player.
 
-method::isPlaying
-Returns true if player is running. If a Tdef is playing and its stream ends, it will schedule a stream for playing strong::as soon as a new one is assigned to it::. If it is stopped by strong::stop::, it won't.
 
-Examples::
 
-subsection::Tdef as a Task player
+
+method:: isPlaying
+
+
+Return teletype::true:: if player is running. If a Tdef is playing and its stream ends, it will schedule a stream for playing strong::as soon as a new one is assigned to it::.
+If it is stopped by strong::stop::, it won't.
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
+
+subsection:: Tdef as a Task player
+
 
 code::
 Tdef(\x).play; // create an empty Tdef and play it.
@@ -244,7 +476,13 @@ Tdef(\x).stop;
 Tdef.removeAll;
 ::
 
-subsection::Embed and fork: Tdef within other Tasks / Routines
+
+
+
+
+
+subsection:: Embed and fork: Tdef within other Tasks / Routines
+
 
 code::
 // embed plays tdefs in sequence within a task.
@@ -309,9 +547,16 @@ Tdef(\d, {
 )
 ::
 
-subsection::Tdef as a time pattern
 
-Instead of using a link::Classes/Pdefn:: for time values, it can be useful to use a Tdef. When changing its source, it keeps the stream of values synchronized to its clock.
+
+
+
+
+subsection:: Tdef as a time pattern
+
+
+Instead of using a link::Classes/Pdefn:: for time values, it can be useful to use a Tdef.
+When changing its source, it keeps the stream of values synchronized to its clock.
 
 code::
 (

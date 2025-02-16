@@ -1,46 +1,81 @@
-class:: AmpComp
-summary:: Basic psychoacoustic amplitude compensation.
+title:: AmpComp
+categories:: UGens>Analysis>Amplitude
+summary:: Basic psychoacoustic amplitude compensation
 related:: Classes/AmpCompA
-categories::  UGens>Analysis>Amplitude
 
 
-Description::
 
-Implements the (optimized) formula:
+
+
+
+
+
+
+
+description::
+
+
+
+
+Implement the (optimized) formula:
 
 code::
 compensationFactor = (root / freq) ** exp
 ::
 
-
 Higher frequencies are normally perceived as louder, which AmpComp
 compensates.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::ar, kr, ir
 
-argument::freq
+
+
+method:: ar, kr, ir
+
+
+argument:: freq
 
 Input frequency value. For freq == root, the output is 1.0.
 
 
-argument::root
+argument:: root
 
 Root freq relative to which the curve is calculated
 (usually lowest freq).
 
 
-argument::exp
+argument:: exp
 
 Exponent: how steep the curve decreases for increasing freq.
+
 
 discussion::
 Note that for frequencies very much smaller than root the amplitudes can become very high.
 In this case limit the freq with code::freq.max(minval)::, or use AmpCompA.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 // compare a sine without compensation

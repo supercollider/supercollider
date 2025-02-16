@@ -1,20 +1,47 @@
-CLASS::SystemClock
-categories::Scheduling>Clocks
+title:: SystemClock
+categories:: Scheduling>Clocks
 summary:: Clock running on separate accurately timed thread
-related::Classes/AppClock, Classes/TempoClock
+related:: Classes/AppClock, Classes/TempoClock
 
-DESCRIPTION::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 SystemClock is more accurate than AppClock, but cannot call GUI primitives.
 
 See link::Classes/Clock:: for general explanation of how clocks operate.
 
-CLASSMETHODS::
 
-private::prClear
 
-method::sched
-The float you return specifies the delta to resched the function for. Returning nil will stop the task from being rescheduled.
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+private:: prClear
+
+
+method:: sched
+The float you return specifies the delta to resched the function for.
+Returning nil will stop the task from being rescheduled.
+
 code::
 (
 SystemClock.sched(0.0, { |time|
@@ -23,6 +50,7 @@ SystemClock.sched(0.0, { |time|
 });
 )
 ::
+
 code::
 (
 SystemClock.sched(2.0, {
@@ -32,13 +60,24 @@ SystemClock.sched(2.0, {
 )
 ::
 
-method::clear
+
+
+
+method:: clear
+
+
 Clear the SystemClock's scheduler to stop it.
+
 code::
 SystemClock.clear;
 ::
 
-method::schedAbs
+
+
+
+method:: schedAbs
+
+
 code::
 (
 SystemClock.schedAbs((thisThread.seconds + 4.0).round(1.0), { |time|
@@ -48,10 +87,16 @@ SystemClock.schedAbs((thisThread.seconds + 4.0).round(1.0), { |time|
 )
 ::
 
-method::play
-Calls to the GUI may not be made directly from actions triggered by SystemClock or incoming socket messages (OSCFunc).
 
-To get around this, use code::{ }.defer ::. This will execute the function using the AppClock and is equivalent to code::AppClock.sched(0, function)::
+
+
+method:: play
+
+
+Call to the GUI may not be made directly from actions triggered by SystemClock or incoming socket messages (OSCFunc).
+
+To get around this, use code::{ }.defer ::.
+This will execute the function using the AppClock and is equivalent to code::AppClock.sched(0, function)::
 
 code::
 (
@@ -72,4 +117,6 @@ r = Routine({ |time|
 SystemClock.play(r);
 )
 ::
-This example is only to show how to make calls to Cocoa/GUI when scheduling with the SystemClock. If you only wish to control the GUI, use AppClock.
+
+This example is only to show how to make calls to Cocoa/GUI when scheduling with the SystemClock.
+If you only wish to control the GUI, use AppClock.

@@ -1,9 +1,22 @@
-class:: CuspN
-summary:: Cusp map chaotic generator
+title:: CuspN
 categories:: UGens>Generators>Chaotic
+summary:: Cusp map chaotic generator
 related:: Classes/CuspL
 
+
+
+
+
+
+
+
+
+
 description::
+
+
+
+
 A non-interpolating sound generator based on the difference equation:
 
 teletype::
@@ -19,21 +32,61 @@ plot(size.collect { xi = a - (b * sqrt(abs(xi))) });
 )
 ::
 
+
+
+
+
+
+
+
+
+
 classmethods::
 
+
+
+
 method:: ar
-argument::freq
+
+
+argument:: freq
+
 Iteration frequency in Hertz
-argument::a
+
+
+argument:: a
+
 Equation variable
-argument::b
+
+
+argument:: b
+
 Equation variable
-argument::xi
+
+
+argument:: xi
+
 Initial value of x
-argument::mul
-argument::add
+
+
+argument:: mul
+
+argument:: add
+
+
+
+
+
+
+
+
+
 
 examples::
+
+
+
+
 code::
 // vary frequency
 { CuspN.ar(MouseX.kr(20, SampleRate.ir), 1.0, 1.99) * 0.3 }.play(s);

@@ -1,33 +1,75 @@
-class:: LFPar
+title:: LFPar
+categories:: UGens>Generators>Deterministic
 summary:: Parabolic oscillator
 related:: Classes/LFCub, Classes/LFPulse, Classes/LFSaw, Classes/LFTri
-categories::  UGens>Generators>Deterministic
 
 
-Description::
 
-A sine-like shape made of two parabolas and the integral of a triangular wave.  It has audible odd harmonics and is non-band-limited.
-Output ranges from -1 to +1.
+
+
+
+
+
+
+
+description::
+
+
+
+
+A sine-like shape made of two parabolas and the integral of a triangular wave.
+ It has audible odd harmonics and is non-band-limited.
+Output ranges from teletype::-1:: to +1.
+
+
+
+
+
+
+
+
+
 
 classmethods::
 
-method::ar, kr
 
-argument::freq
+
+
+method:: ar, kr
+
+
+argument:: freq
+
 Frequency in Hertz.
 
-argument::iphase
 
-Initial phase offset. For efficiency reasons this is a value ranging from 0 to 4.
+argument:: iphase
+
+Initial phase offset. For efficiency reasons this is a value ranging from teletype::0:: to 4.
 
 
-argument::mul
+argument:: mul
+
 Output will be multiplied by this value.
 
-argument::add
+
+argument:: add
+
 This value will be added to the output.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 // a plot

@@ -1,45 +1,103 @@
-class:: ProxySynthDef
-summary:: synth def that wraps ugen graph
+title:: ProxySynthDef
 categories:: JITLib>NodeProxy
+summary:: Synth def that wraps ugen graph
 related:: Classes/NodeProxy
 
+
+
+
+
+
+
+
+
+
 description::
+
+
+
+
 (used internally by link::Classes/NodeProxy::)
 
 for inner workings see link::Tutorials/JITLib/jitlib_fading::
 
-ClassMethods::
 
-method::new
 
-argument::name
-like in link::Classes/SynthDef::. todo: add variants.
 
-argument::func
-like in link::Classes/SynthDef::. todo: add variants.
 
-argument::rates
-like in link::Classes/SynthDef::. todo: add variants.
 
-argument::prependArgs
-like in link::Classes/SynthDef::. todo: add variants.
 
-argument::makeFadeEnv
-if true it constructs a fader envelope and adds controls for gate and fadeTime
 
-argument::channelOffset
-a constant offset that is added to the out number
 
-argument::chanConstraint
-max numChannels for the synthdef. If ugenfunc returns a larger array, it wraps
 
-argument::rateConstraint
-a symbol like \audio, \control or \scalar.
+classmethods::
 
-method::sampleAccurate
-always use link::Classes/OffsetOut::, if set to true (default: false)
 
-Examples::
+
+
+method:: new
+
+
+argument:: name
+
+Like in link::Classes/SynthDef::. todo: add variants.
+
+
+argument:: func
+
+Like in link::Classes/SynthDef::. todo: add variants.
+
+
+argument:: rates
+
+Like in link::Classes/SynthDef::. todo: add variants.
+
+
+argument:: prependArgs
+
+Like in link::Classes/SynthDef::. todo: add variants.
+
+
+argument:: makeFadeEnv
+
+If teletype::true:: it constructs a fader envelope and adds controls for gate and fadeTime
+
+
+argument:: channelOffset
+
+A constant offset that is added to the out number
+
+
+argument:: chanConstraint
+
+Max numChannels for the synthdef. If ugenfunc returns a larger array, it wraps
+
+
+argument:: rateConstraint
+
+A symbol like \audio, \control or \scalar.
+
+
+
+
+method:: sampleAccurate
+
+
+Always use link::Classes/OffsetOut::, if set to teletype::true:: (default: false)
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 a = ProxySynthDef("xtest", { SinOsc.ar(400) * 0.1 });
@@ -53,7 +111,8 @@ x.release;
 /*
 
 	if the resulting number of channels is larger than a given channelConstraint,
-	it behaves according to the rate: audio rate signals are wrapped around
+	it behaves according to the rate:
+audio rate signals are wrapped around
 	a smaller channel size, control rate signals are not (the exceeding channels are left out)
 
 */

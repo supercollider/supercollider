@@ -1,11 +1,24 @@
 title:: Pattern Guide Cookbook 05: Using Samples
+categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Using samples
 related:: Tutorials/A-Practical-Guide/PG_Cookbook04_Sending_MIDI, Tutorials/A-Practical-Guide/PG_Cookbook06_Phrase_Network
-categories:: Streams-Patterns-Events>A-Practical-Guide
 
-section::Using samples
 
-subsection::Playing a pattern in time with a sampled loop
+
+
+
+
+
+
+
+
+section:: Using samples
+
+
+
+
+subsection:: Playing a pattern in time with a sampled loop
+
 
 A deceptively complex requirement.
 
@@ -19,7 +32,7 @@ numberedlist::
 
 strong::1. Determine the loop boundaries::
 
-Use an external audio editor to identify a segment of the source file that loops in a musically sensible way. For this example, we will use "a11wlk01.wav" because it's readily available. Empirically, we can find that the segment from 0.404561 to 3.185917 seconds produces a rhythm that can be parsed as one bar of 4/4 time.
+Use an external audio editor to identify a segment of the source file that loops in a musically sensible way. For this example, we will use "a11wlk01.wav" because it's readily available. Empirically, we can find that the segment from teletype::0::.404561 to 3.185917 seconds produces a rhythm that can be parsed as one bar of 4/4 time.
 
 The segment beginning (0.404561) and ending (3.185917) are important. We will use them below.
 
@@ -34,7 +47,8 @@ list::
 ## the desired playback tempo.
 ::
 
-strong::Original tempo: :: The duration of the segment chosen in part 1 is 3.185917 - 0.404561 = 2.781356 seconds. This spans one bar = 4 beats, so the duration of one beat is 2.781356 / 4 = 0.695339 seconds/beat. SuperCollider specifies tempo as beats per second, so we need the reciprocal: 1 / 0.695339 = 1.4381474359988 beats/second (86.289 bpm).
+strong::Original tempo: :: The duration of the segment chosen in part 1 is 3.185917 - 0.404561 = 2.781356 seconds. This spans one bar = 4 beats, so the duration of one beat is 2.781356 / 4 = 0.695339 seconds/beat. SuperCollider specifies tempo as beats per second, so we need the reciprocal:
+1 / 0.695339 = 1.4381474359988 beats/second (86.289 bpm).
 
 code::
 ((end - start) / numBeats).reciprocal
@@ -46,13 +60,16 @@ code::
 numBeats / (end - start)
 ::
 
-strong::Playback tempo: :: In principle, you can choose any tempo you like. The loop-segment player should provide a code::rate:: parameter, where the rate is code::desiredTempo / originalTempo::. If the original tempo is, as above, 86.289 bpm and you want to play at 72 bpm, you have to scale the sample's rate down by a factor of 72 / 86.289 = 0.83440531238049.
+strong::Playback tempo: :: In principle, you can choose any tempo you like.
+The loop-segment player should provide a code::rate:: parameter, where the rate is code::desiredTempo / originalTempo::.
+If the original tempo is, as above, 86.289 bpm and you want to play at 72 bpm, you have to scale the sample's rate down by a factor of 72 / 86.289 = 0.83440531238049.
 
 strong::3. Sequence individual loop segments alongside other patterns::
 
 It might be tempting to loop a link::Classes/PlayBuf:: so that the loop runs automatically on the server, but it can easily drift out of sync with the client (because of slight deviations in the actual sample rate). Instead, it is better to define a SynthDef that plays exactly one repetition of the loop, and repeatedly triggers it once per bar.
 
-The primary bell pattern accents the downbeat and follows with a randomly generated rhythm. The catch is that we have no assurance that the link::Classes/Pwrand:: code::\dur:: pattern will add up to exactly 4 beats. The link::Classes/Pfindur:: ("finite duration") pattern cuts off the inner Pbind after 4 beats. This would stop the pattern, except link::Classes/Pn:: repeats the Pfindur infinitely, placing the accent in the right place every time.
+The primary bell pattern accents the downbeat and follows with a randomly generated rhythm. The catch is that we have no assurance that the link::Classes/Pwrand:: code::\dur:: pattern will add up to exactly 4 beats. The link::Classes/Pfindur:: ("finite duration") pattern cuts off the inner Pbind after 4 beats.
+This would stop the pattern, except link::Classes/Pn:: repeats the Pfindur infinitely, placing the accent in the right place every time.
 
 The loop actually starts with a half-beat anacrusis, so link::Classes/Ptpar:: delays the bell patterns by 0.5 beats.
 
@@ -129,7 +146,9 @@ TempoClock.tempo = 104/60;
 p.stop;
 ::
 
-The use of Ptpar above means that you could stop or start only the whole ball of wax at once, with no control over the three layers. It's no more difficult to play the layers in the independent event stream players, using the quant argument to ensure the proper synchronization. See the link::Classes/Quant:: help file for details on specifying the onset time of a pattern.
+The use of Ptpar above means that you could stop or start only the whole ball of wax at once, with no control over the three layers.
+It's no more difficult to play the layers in the independent event stream players, using the quant argument to ensure the proper synchronization.
+See the link::Classes/Quant:: help file for details on specifying the onset time of a pattern.
 
 code::
 (
@@ -175,13 +194,24 @@ r = Pbind(
 b.free;
 ::
 
-subsection::Using audio samples to play pitched material
 
-To use an instrument sample in a pattern, you need a SynthDef that plays the sample at a given rate. Here we will use link::Classes/PlayBuf::, which doesn't allow looping over a specific region. For that, link::Classes/Phasor:: and link::Classes/BufRd:: are probably the best choice. ( strong::Third-party extension alert:: : LoopBuf by Lance Putnam is an alternative - find it in the strong::sc3-plugins:: package.)
 
-Frequency is controlled by the rate parameter. The sample plays at a given frequency at normal rate, so to play a specific frequency, code::frequency / baseFrequency:: gives you the required rate.
 
-The first example makes a custom protoEvent that calculates rate, as code::\freq::, based on the base frequency. It uses one sample, so it would be best for patterns that will play in a narrow range. Since there isn't an instrument sample in the SuperCollider distribution, we will record a frequency-modulation sample into a buffer before running the pattern.
+
+
+subsection:: Using audio samples to play pitched material
+
+
+To use an instrument sample in a pattern, you need a SynthDef that plays the sample at a given rate.
+Here we will use link::Classes/PlayBuf::, which doesn't allow looping over a specific region.
+For that, link::Classes/Phasor:: and link::Classes/BufRd:: are probably the best choice. ( strong::Third-party extension alert:: : LoopBuf by Lance Putnam is an alternative - find it in the strong::sc3-plugins:: package.)
+
+Frequency is controlled by the rate parameter.
+The sample plays at a given frequency at normal rate, so to play a specific frequency, code::frequency / baseFrequency:: gives you the required rate.
+
+The first example makes a custom protoEvent that calculates rate, as code::\freq::, based on the base frequency.
+It uses one sample, so it would be best for patterns that will play in a narrow range.
+Since there isn't an instrument sample in the SuperCollider distribution, we will record a frequency-modulation sample into a buffer before running the pattern.
 
 code::
 // make a sound sample
@@ -229,11 +259,21 @@ p.stop;
 b.free;
 ::
 
-subsection::Multi-sampled instruments
 
-To extend the sampler's range using multiple samples and ensure smooth transitions between frequency ranges, the SynthDef should crossfade between adjacent buffers. A hybrid approach is used here, where Pbind calculates the lower buffer number to use and the SynthDef calculates the crossfade strength. (The calculations could be structured differently, either putting more of them into the SynthDef for convenience in the pattern, or loading them into the pattern and keeping the SynthDef as lean as possible.)
 
-MIDI note numbers are used for these calculations because it's a linear frequency scale and linear interpolation is easier than the exponential interpolation that would be required when using Hz. Assuming a sorted array, indexInBetween gives the fractional index using linear interpolation. If you need to use frequency in Hz, use this function in place of indexInBetween.
+
+
+
+subsection:: Multi-sampled instruments
+
+
+To extend the sampler's range using multiple samples and ensure smooth transitions between frequency ranges, the SynthDef should crossfade between adjacent buffers.
+A hybrid approach is used here, where Pbind calculates the lower buffer number to use and the SynthDef calculates the crossfade strength.
+(The calculations could be structured differently, either putting more of them into the SynthDef for convenience in the pattern, or loading them into the pattern and keeping the SynthDef as lean as possible.)
+
+MIDI note numbers are used for these calculations because it's a linear frequency scale and linear interpolation is easier than the exponential interpolation that would be required when using Hz.
+Assuming a sorted array, indexInBetween gives the fractional index using linear interpolation.
+If you need to use frequency in Hz, use this function in place of indexInBetween.
 
 code::
 f = { |val, array|

@@ -1,21 +1,66 @@
-class:: Pcollect
-summary:: Apply a function to a pattern
+title:: Pcollect
 categories:: Streams-Patterns-Events>Patterns>Filter
+summary:: Apply a function to a pattern
 related:: Classes/Pselect, Classes/Preject
 
+
+
+
+
+
+
+
+
+
 description::
-Modifies each value by passing it to the function. This is the pattern library's equivalent of link::Classes/Collection#-collect::.
+
+
+
+
+Modifies each value by passing it to the function.
+This is the pattern library's equivalent of link::Classes/Collection#-collect::.
+
+
+
+
+
+
+
+
+
 
 classmethods::
 
+
+
+
 method:: new
+
+
 argument:: func
-A link::Classes/Function::. Receives values from code::pattern::.
+
+A link::Classes/Function::.
+Receives values from code::pattern::.
+
+
 argument:: pattern
+
 A link::Classes/Pattern::.
 
 
+
+
+
+
+
+
+
+
 examples::
+
+
+
+
 code::
 (
 a = Pcollect({ |item| item * 3 }, Pseq(#[1, 2, 3], inf));
@@ -24,7 +69,9 @@ x = a.asStream;
 )
 ::
 
-The message code::collect:: returns a Pcollect when passed to a pattern. Note that because the pattern is converted to a link::Classes/Stream:: (more precisely a link::Classes/FuncStream::) the collect function is evaluated for one item each time the message code::next:: is passed.
+The message code::collect:: returns a Pcollect when passed to a pattern.
+Note that because the pattern is converted to a link::Classes/Stream:: (more precisely a link::Classes/FuncStream::) the collect function is evaluated for one item each time the message code::next:: is passed.
+
 code::
 (
 a = Pseq(#[1, 2, 3], inf).collect({ |item| item * 3 });

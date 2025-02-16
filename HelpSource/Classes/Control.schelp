@@ -1,43 +1,84 @@
-class:: Control
-summary:: Bring signals and floats into the ugenGraph function of a SynthDef.
+title:: Control
+categories:: UGens>Synth control
+summary:: Bring signals and floats into the ugenGraph function of a SynthDef
 related:: Classes/NamedControl, Classes/LagControl, Classes/TrigControl
-categories::  UGens>Synth control
 
-Description::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 A Control is a UGen that can be set and routed externally to interact with a running Synth.
 Typically, Controls are created from the arguments of a SynthDef function.
 
-Generally you do not create Controls yourself. (See Arrays example
+Generally you do not create Controls yourself.
+(See Arrays example
 below).
 
 The rate may be either .kr (continuous control rate signal) or .ir (a
 static value, set at the time the synth starts up, and subsequently
 unchangeable). For .ar, see link::Classes/AudioControl::
 
-SynthDef creates these when compiling the ugenGraph function. They are
+SynthDef creates these when compiling the ugenGraph function.
+They are
 created for you, you use them, and you don't really need to worry about
 them if you don't want to.
 
 For a more concise combination of name, default value and lag, see link::Classes/NamedControl::
 
+
+
+
+
+
+
+
+
+
 classmethods::
 
-method::kr, ir
-
-argument::values
-
-default values.
 
 
-method::names
 
-argument::names
-
-adds control names to the SynthDef.
+method:: kr, ir
 
 
-Examples::
+argument:: values
+
+Default values.
+
+
+
+
+method:: names
+
+
+argument:: names
+
+Adds control names to the SynthDef.
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (
@@ -61,6 +102,7 @@ SynthDef(\help_Control, {
 What is passed into the ugenGraph function is an link::Classes/OutputProxy::, and its source is a Control.
 
 The main explicit use of Control is to allow Arrays to be sent to running Synths:
+
 code::
 // a synth def that has 4 partials
 (
@@ -129,13 +171,20 @@ b.setn(\amp, Array.rand(4, 0.005, 0.1))
 b.setn(\ring, Array.rand(4, 0.005, 1.0))
 ::
 
+
+
+
+
+
 subsection:: Symbols
+
 
 Inside SynthDefs and UGen functions, symbols can be used to conveniently specify control inputs of different rates and with lags (see: link::Classes/NamedControl::, and link::Classes/Symbol::)
 
 definitionlist::
 ## code:: \name.kr(val, lag) ::
 || Return a control rate link::Classes/NamedControl:: input with a default value (val), and if supplied, with a lag. If val is an array, the control will be multichannel.
+
 code::
 a = { SinOsc.ar(\freq.kr(440, 1.2)) }.play;
 a.set(\freq, 330);
@@ -149,14 +198,18 @@ a.release;
 || Return an audio rate link::Classes/NamedControl:: input with a default value (val), and if supplied, with a lag. If val is an array, the control will be multichannel.
 
 ## code:: \name.ir(val) ::
-|| Return an initialization rate link::Classes/NamedControl:: input with a default value (val). If val is an array, the control will be multichannel.
+|| Return an initialization rate link::Classes/NamedControl:: input with a default value (val).
+If val is an array, the control will be multichannel.
 
 ## code:: \name.tr(val) ::
-|| Return a link::Classes/TrigControl:: input with a default value (val). If val is an array, the control will be multichannel.
+|| Return a link::Classes/TrigControl:: input with a default value (val).
+If val is an array, the control will be multichannel.
+
 code::
 a = { Ringz.ar(T2A.ar(\trig.tr), \freq.kr(500, 1), 0.8) }.play;
 a.set(\freq, 330, \trig, 1);
 a.set(\freq, 830, \trig, 1);
 a.release;
 ::
+
 ::

@@ -1,11 +1,24 @@
-TITLE:: ReadableNodeIDAllocator
-summary:: an allocator for nodeIDs with human-readable ownership
+title:: ReadableNodeIDAllocator
 categories:: Control
+summary:: An allocator for nodeIDs with human-readable ownership
 related:: Classes/Server, Guides/MultiClient_Setups
 
-DESCRIPTION::
-In multi-client setups, it is useful to know which client created which nodeIDs on a shared server. ReadableNodeIDAllocator provides that facility by using a decimal prefix based on the clientID.
 
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+In multi-client setups, it is useful to know which client created which nodeIDs on a shared server.
+ReadableNodeIDAllocator provides that facility by using a decimal prefix based on the clientID.
 
 code::
 // default server uses a ReadableNodeIDAllocator
@@ -29,16 +42,39 @@ r.defaultGroupID;
 3.do { r.nextNodeID.postln };
 ::
 
-CLASSMETHODS::
 
-METHOD:: new
-make a new instance for given clientID, offset for lowest temporary id, and
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
+Make a new instance for given clientID, offset for lowest temporary id, and
+
+
 argument:: clientID
-the clientID for which to create an offset/prefix
+
+The clientID for which to create an offset/prefix
+
+
 argument:: lowestTempID
-the offset for the lowest temporary id
+
+The offset for the lowest temporary id
+
+
 argument:: numClients
-the number of clients for which to split the number range
+
+The number of clients for which to split the number range
 
 code::
 // make an allocator with id 11
@@ -47,39 +83,107 @@ a = ReadableNodeIDAllocator(11, 1000, 12);
 3.do { a.alloc.postln };
 ::
 
-INSTANCEMETHODS::
 
-METHOD:: clientID
-the clientID for which to create an offset/prefix
 
-METHOD:: numClients
-the number of clients for which to split the number range
 
-METHOD:: lowestTempID
-the offset from where temporary nodeID begin
 
-METHOD:: idOffset
-the offset from where nodeID range begins
 
-METHOD:: maxPermID
-the highest permanent nodeID
 
-METHOD:: numIDs
-the number of IDs before the allocator will wrap
 
-METHOD:: alloc
-allocate next temporary nodeID
 
-METHOD:: allocPerm
-allocate next permanent nodeID
 
-METHOD:: freePerm
-free a permanent nodeID
+instancemethods::
+
+
+
+
+method:: clientID
+
+
+The clientID for which to create an offset/prefix
+
+
+
+
+method:: numClients
+
+
+The number of clients for which to split the number range
+
+
+
+
+method:: lowestTempID
+
+
+The offset from where temporary nodeID begin
+
+
+
+
+method:: idOffset
+
+
+The offset from where nodeID range begins
+
+
+
+
+method:: maxPermID
+
+
+The highest permanent nodeID
+
+
+
+
+method:: numIDs
+
+
+The number of IDs before the allocator will wrap
+
+
+
+
+method:: alloc
+
+
+Allocate next temporary nodeID
+
+
+
+
+method:: allocPerm
+
+
+Allocate next permanent nodeID
+
+
+
+
+method:: freePerm
+
+
+Free a permanent nodeID
+
+
 argument:: id
 
-METHOD:: isPerm
-test whether num is in the allocator's range of permanent numbers
+
+
+
+method:: isPerm
+
+
+Test whether num is in the allocator's range of permanent numbers
+
+
 argument:: num
 
-METHOD:: reset
+
+
+
+method:: reset
+
+
 reset allocator to initial state

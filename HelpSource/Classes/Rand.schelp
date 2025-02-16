@@ -1,30 +1,66 @@
-class:: Rand
-summary:: Single random number generator.
-related:: Classes/ExpRand, Classes/IRand, Classes/LinRand, Classes/NRand, Classes/TExpRand, Classes/TIRand, Classes/TRand
+title:: Rand
 categories:: UGens>Random
+summary:: Single random number generator
+related:: Classes/ExpRand, Classes/IRand, Classes/LinRand, Classes/NRand, Classes/TExpRand, Classes/TIRand, Classes/TRand
 
-Description::
 
-Generates a single random float value in uniform distribution from
-code::lo::  to  code::hi:: . It generates
-this when the SynthDef first starts playing, and remains fixed for
-the duration of the synth's existence.
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+Generatea a single random float value in uniform distribution from
+code::lo::  to  code::hi:: . It generates this when the SynthDef first starts playing, and remains fixed for the duration of the synth's existence.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::new
 
-argument::lo
+
+
+method:: new
+
+
+argument:: lo
+
 Lower limit of the output range.
 
-argument::hi
+
+argument:: hi
+
 Upper limit of the output range.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 (
 SynthDef("help-Rand", { |out = 0|
 	Out.ar(out,
@@ -42,5 +78,4 @@ Routine({
 	})
 }).play;
 )
-
 ::

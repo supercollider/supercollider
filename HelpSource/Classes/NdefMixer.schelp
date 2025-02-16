@@ -1,13 +1,37 @@
-class:: NdefMixer
-summary:: mix control for an Ndef proxyspace
+title:: NdefMixer
 categories:: JITLib>GUI, Live Coding
+summary:: Mix control for an Ndef proxyspace
 related:: Classes/ProxyMixer, Classes/JITGui, Classes/NdefGui
+
+
+
+
+
+
+
+
+
 
 description::
 
+
+
+
 NdefMixer is nearly identical to link::Classes/ProxyMixer::, except that it looks at the proxyspaces for each server that code::Ndef.all:: contains.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 n = NdefMixer(s);

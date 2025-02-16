@@ -1,21 +1,56 @@
-class:: FFTTrigger
-summary:: Outputs the necessary signal for FFT chains, without doing an FFT on a signal
+title:: FFTTrigger
 categories:: UGens>FFT
+summary:: Outputs the necessary signal for FFT chains, without doing an FFT on a signal
+
+
+
+
+
+
+
+
+
 
 classmethods::
+
+
+
+
 private:: categories
 
+
 method:: new
+
+
 argument:: buffer
-a buffer to condition for FFT use
+
+A buffer to condition for FFT use
+
+
 argument:: hop
-the hop size for timing triggers (defaults to 0.5)
+
+The hop size for timing triggers (defaults to teletype::0::.5)
+
+
 argument:: polar
-a flag. If 0.0, the buffer will be prepared for complex data, if > 0.0, polar data is set up.
+
+A flag. If teletype::0.0::, the buffer will be prepared for complex data, if > 0.0, polar data is set up.
+
+
+
+
+
+
+
+
+
 
 examples::
-code::
 
+
+
+
+code::
 // Reminder: This isn't the intended typical usage! It's OK to do this though.
 (
 x = {

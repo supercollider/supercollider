@@ -1,14 +1,23 @@
-class:: SubsampleOffset
-summary:: Offset from synth start within one sample.
+title:: SubsampleOffset
+categories:: UGens>Info
+summary:: Offset from synth start within one sample
 related:: Classes/ControlRate, Classes/RadiansPerSample, Classes/SampleDur, Classes/SampleRate, Classes/OffsetOut
-categories::  UGens>Info
 
 
-Description::
 
-When a synth is created from a time stamped osc-bundle, it starts
-calculation at the next possible block (normally 64 samples). Using an
-OffsetOut UGen, one can delay the audio so that it matches sample
+
+
+
+
+
+
+
+description::
+
+
+
+
+When a synth is created from a time stamped osc-bundle, it starts calculation at the next possible block (normally 64 samples). Using an OffsetOut UGen, one can delay the audio so that it matches sample
 accurately.
 
 
@@ -18,14 +27,36 @@ scheduled. It can be used to offset envelopes or resample the audio
 output.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::ir
 
-Examples::
+
+
+method:: ir
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 // example: demonstrate cubic subsample interpolation
 
 
@@ -92,5 +123,4 @@ SynthDef("Help_Subsample_Grain",
 		}
 	}.play;
 )
-
 ::

@@ -1,9 +1,21 @@
-class:: ListPattern
-summary:: abstract class that holds a list
-related:: Classes/FilterPattern
+title:: ListPattern
 categories:: Streams-Patterns-Events>Patterns>List
+summary:: Abstract class that holds a list
+related:: Classes/FilterPattern
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 // post subclasses:

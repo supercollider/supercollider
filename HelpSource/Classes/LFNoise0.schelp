@@ -1,29 +1,68 @@
-class:: LFNoise0
+title:: LFNoise0
+categories:: UGens>Generators>Stochastic
 summary:: Step noise
 related:: Classes/LFClipNoise, Classes/LFDClipNoise, Classes/LFDNoise0, Classes/LFDNoise1, Classes/LFDNoise3, Classes/LFNoise1, Classes/LFNoise2
-categories::  UGens>Generators>Stochastic
 
 
-Description::
 
-Generates random values at a rate given by the nearest integer division
-of the sample rate by the  code::freq::  argument.
+
+
+
+
+
+
+
+description::
+
+
+
+
+Generaterandom random values at a rate given by the nearest integer division of the sample rate by the  code::freq::  argument.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
 
-argument::freq
+
+
+method:: ar, kr
+
+
+argument:: freq
+
 Approximate rate at which to generate random values.
 
-argument::mul
+
+argument:: mul
+
 Output will be multiplied by this value.
 
-argument::add
+
+argument:: add
+
 This value will be added to the output.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 { LFNoise0.ar(1000, 0.25) }.play;

@@ -1,15 +1,31 @@
 title:: Literals
-summary:: values with a direct syntactic representation
-related:: Classes/Number, Classes/Integer, Classes/Float, Classes/SimpleNumber, Classes/String, Classes/Array, Classes/Symbol
 categories:: Language
+summary:: Values with a direct syntactic representation
+related:: Classes/Number, Classes/Integer, Classes/Float, Classes/SimpleNumber, Classes/String, Classes/Array, Classes/Symbol
+
 
 Literals are values which have a direct syntactic representation.
 The following sections describe the types of literals that can be represented.
 
-section::Numbers
 
-subsection::Integers
+
+
+
+
+
+
+
+
+section:: Numbers
+
+
+
+
+subsection:: Integers
+
+
 An integer is any series of digits optionally preceded by a minus sign:
+
 code::
 -13
 666
@@ -19,6 +35,7 @@ code::
 
 They can also also be expressed in hexadecimal with the prefix code::0x:: and
 either uppercase or lowercase letters:
+
 code::
 0xa    // 10
 -0xd   // -13
@@ -27,7 +44,14 @@ code::
 0x60   // 96
 ::
 
-subsection::Floats
+
+
+
+
+
+subsection:: Floats
+
+
 A float, or floating-point number, is one or more decimal digits, followed by a
 decimal point, followed by one or more decimal digits.
 You must have digits on both sides of the decimal point.
@@ -35,6 +59,7 @@ In SuperCollider, floating-point numbers are always 64-bit, except within a
 link::Classes/FloatArray::.
 
 Examples of floats:
+
 code::
 0.39
 98.6
@@ -43,6 +68,7 @@ code::
 ::
 
 Exponential notation is also supported:
+
 code::
 1.2e4
 1E-4
@@ -50,6 +76,7 @@ code::
 
 The keyword code::pi:: can also be used by itself, or appended to a float or
 integer to create a floating point constant:
+
 code::
 pi
 2pi
@@ -59,16 +86,25 @@ pi
 
 The keyword code::inf:: represents infinity, and is also treated as an instance
 of Float.
+
 code::
 inf   // and beyond!
 -inf
 ::
 
-subsection::Radix
+
+
+
+
+
+subsection:: Radix
+
+
 Numbers can also be written in radices other than base 10 up to base 36.
 The radix is specified in base 10, followed by the letter 'r', followed by the
 value written in that radix using characters 0-9 and A-Z (or a-z) for digit
-values from 0 to 35. For example, you can write hexadecimal numbers as follows:
+values from teletype::0:: to 35. For example, you can write hexadecimal numbers as follows:
+
 code::
 16rF // 15
 16ra9 // 169
@@ -76,15 +112,18 @@ code::
 ::
 
 Binary numbers can be written as follows:
+
 code::
 2r01101011
 ::
 
-Floating point values may also be specified in any base. However, only
+Floating point values may also be specified in any base.
+However, only
 uppercase letters may be used past the decimal point for bases greater than 10.
 This eliminates ambiguity: if lowercase letters were allowed,
 code::36rA.bitNot:: might be a function call, or it might be
 code::36rA.BITNOT == 10.320080118934::.
+
 code::
 12r4a.abc // wrong
 12r4a.ABC // works
@@ -93,7 +132,14 @@ code::
 
 Hexidecimal numbers notated with code::0x:: may only be expressed as integers.
 
-subsection::Scale Degrees
+
+
+
+
+
+subsection:: Scale Degrees
+
+
 Integer numbers as scale degrees supports accidentals notation by adding the suffixes strong::s:: for sharp and strong::b:: for flat. Accidentals are represented as floating point values.
 
 code::
@@ -126,9 +172,22 @@ code::
 2s204 == 2.204 // scale degree two, 204 cents sharp
 ::
 
-section::Characters
+
+
+
+
+
+
+
+
+
+section:: Characters
+
+
+
 
 Characters are preceded by a dollar sign:
+
 code::
 $A
 $B
@@ -148,14 +207,17 @@ code::"He repeated, \"Madam, I'm Adam,\" only this time he had said it backward.
 In all cases, the \ as an escape character does not appear in the String or
 Symbol. This is a frequent source of confusion for Windows file paths:
 e.g., code::"C:\Users\Somebody\SuperCollider":: translates into
-teletype::C:UsersSomebodySuperCollider::. The way to notate a literal backslash
+teletype::C:UsersSomebodySuperCollider::.
+The way to notate a literal backslash
 inside a String or Symbol is with a double-backslash:
 code::"C:\\Users\\Somebody\\SuperCollider"::. (Note, however, that it is
 preferable to write file paths using forward slashes, regardless of platform:
 code::"C:/Users/Somebody/SuperCollider"::.
 
-The following are the recognized escape characters in SuperCollider. A
+The following are the recognized escape characters in SuperCollider.
+A
 backslash before any other character will simply produce that character.
+
 code::
 $\t  // tab (horizontal tab)
 $\f  // form feed
@@ -165,13 +227,29 @@ $\r  // return
 $\\  // backslash`
 ::
 
-section::Symbols and Strings
 
-subsection::Symbols
-A symbol can be written in two ways. One method is to enclose the contents in
+
+
+
+
+
+
+
+
+section:: Symbols and Strings
+
+
+
+
+subsection:: Symbols
+
+
+A symbol can be written in two ways.
+One method is to enclose the contents in
 single quotes. Any printing character may be used within a symbol except for
 non-space whitespace characters (code::\f, \n, \r, \t, \v::). Any single quotes
 within the symbol must be escaped (code::\'::).
+
 code::
 'x'
 'aiff'
@@ -185,6 +263,7 @@ code::
 A second way of notating symbols is by prefixing the word with a backslash.
 This is only legal if the symbol consists of a single word (a sequence
 of alphanumeric and/or underscore characters).
+
 code::
 \x
 \aiff
@@ -192,20 +271,30 @@ code::
 \not really a symbol  // illegal
 ::
 
-subsection::Strings
+
+
+
+
+
+subsection:: Strings
+
 
 Strings are written in double quotes:
+
 code::
 "This is a string."
 ::
 
 If two or more strings are lexically adjacent, then they combine into a larger string:
+
 code::
 a = "st" "ri" "ng"
 a.size // 6
 ::
 
-Strings may span more than one line. The newline characters become part of the string:
+Strings may span more than one line.
+The newline characters become part of the string:
+
 code::
 a = "st
 ri
@@ -217,10 +306,23 @@ a.size // 9
 The SuperCollider IDE uses UTF-8 to decode and display strings.
 See link::Classes/String#Character encodings##String:: for more information.
 
-section::Identifiers
+
+
+
+
+
+
+
+
+
+section:: Identifiers
+
+
+
 
 Names of methods and variables begin with a lower case alphabetic character,
 followed by zero or more alphanumeric or underscore characters.
+
 code::
 var abc, z123, trigger_func;
 var 1var; // not legal
@@ -229,10 +331,23 @@ var hmm_; // Although this is legal, avoid it, since setter functions in
           // SuperCollider typically end with underscores.
 ::
 
-section::Class Names
+
+
+
+
+
+
+
+
+
+section:: Class Names
+
+
+
 
 Class names always begin with a capital letter followed by zero or more
 alphanumeric or underscore characters.
+
 code::
 Object
 Point
@@ -243,38 +358,70 @@ MyClass_LikesUnderscores // legal
 MyClass_ // legal, but avoid
 ::
 
-section::Special Values
+
+
+
+
+
+
+
+
+
+section:: Special Values
+
+
+
 
 The singular instances of the classes True, False and Nil can
 be expressed with keywords code::true::, code::false::, and code::nil::.
+
 code::
 x = true;
 y = false;
 z = nil;
 ::
 
-section::Arrays
+
+
+
+
+
+
+
+
+
+section:: Arrays
+
+
+
 
 link::Classes/Array::s of literals are created at compile time and are written with a # preceding the array as follows:
+
 code::
 #[1, 2, 'abc', "def", 4]
 ::
+
 Literal Arrays must be used as is and may not be altered at run time.
 
-In literal Arrays names are interpreted as symbols. This is not the case in regular Arrays, where they are interpreted as variable names:
+In literal Arrays names are interpreted as symbols.
+This is not the case in regular Arrays, where they are interpreted as variable names:
+
 code::
 #[foo, bar]     // this is legal; an Array of Symbols
 [foo, bar]      // this is only legal if foo and bar have been declared as variables
 ::
+
 Arrays and other collections may also be created dynamically which is explained in link::Classes/Collection::.
 Using a literal Array is faster than building an array dynamically every time you need it.
 
 When nesting literal arrays, only the outermost literal array needs the '#' character.
+
 code::
 #[[1, 2, 3], [4, 5, 6]]
 ::
 
 Literal Arrays can be useful for things such as tables of constants, for example note names:
+
 code::
 (
 // build a table of note names
@@ -300,9 +447,22 @@ table.atAll(#[c4, e4, gs4, c5, e5, gs5, c6])
 )
 ::
 
+
+
+
+
+
+
+
+
+
 section:: Compiler limits
 
-There is no theoretical limit on the number of literals in a single function, if those literals are used as freestanding objects. (Of course, there remains the practical limits of system memory and the processor time required to keep track of all the objects.)
+
+
+
+There is no theoretical limit on the number of literals in a single function, if those literals are used as freestanding objects.
+(Of course, there remains the practical limits of system memory and the processor time required to keep track of all the objects.)
 
 The following are a special category of literal, called emphasis::selectors::.
 
@@ -316,15 +476,23 @@ Here, there are four selectors: code::SinOsc::, code::ar::, code::play:: and the
 
 code::{ SinOsc.ar(440, 0, 0.1) }.play;::
 
-A single function may contain no more than 256 selectors. If this limit is exceeded, a compiler error is printed:
+A single function may contain no more than 256 selectors.
+If this limit is exceeded, a compiler error is printed:
 
-teletype::ERROR: Selector table too big: too many classes, method selectors or function definitions in this function. Simplify the function.::
+teletype::ERROR: Selector table too big: too many classes, method selectors or function definitions in this function.
+Simplify the function.::
 
 note::
 Code submitted for interactive execution is first compiled into a function. A very large block of code, spanning several thousand lines, may run into this limitation if it doesn't break down the tasks into smaller functions. In general, code is easier to maintain if it is reasonably emphasis::modular::, with small functions handling clearly-defined parts of the problem. This error message is a signal that the code has become too complex for a loose or "flat" code structure.
 ::
 
+
+
+
+
+
 subsection:: What counts as "inside the function"?
+
 
 Selectors are counted only toward the function definition currently being compiled.
 
@@ -346,7 +514,8 @@ code::
 }.value;
 ::
 
-The outer function includes only the selector code::value::. The other selectors -- code::>::, code::*::, code::-:: -- belong to the inner function definition and don't affect the outer function's number of selectors.
+The outer function includes only the selector code::value::.
+The other selectors -- code::>::, code::*::, code::-:: -- belong to the inner function definition and don't affect the outer function's number of selectors.
 
 So, one possible easy way to work around the limitation is to break up a large block of code into several functions that are value'd successively:
 

@@ -1,47 +1,104 @@
-CLASS:: SimpleController
-summary:: Controller according to the model-view-controller (M-V-C) paradigm
+title:: SimpleController
 categories:: Core
+summary:: Controller according to the model-view-controller (M-V-C) paradigm
 related:: Classes/Object
 
-DESCRIPTION::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 SimpleController can be used as a controller according to the model-view-controller (M-V-C) paradigm. It provides an
-link::Classes/IdentityDictionary:: of actions, which are called whenever the attached model sends a notification by
-calling changed.
+link::Classes/IdentityDictionary:: of actions, which are called whenever the attached model sends a notification by calling changed.
 
 
-CLASSMETHODS::
 
-METHOD:: new
-Creates a SimpleController instance with the model to be observed.
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
+Create a SimpleController instance with the model to be observed.
+
 
 argument:: model
+
 An object of any class
 
 
-INSTANCEMETHODS::
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
 
 private:: init, update
 
-METHOD:: put
+
+method:: put
+
 
 argument:: what
+
 Register an action, which is called when the model invokes changed(what, moreArgs).
+
 
 argument:: action
 
 Action to register.
 
 
-METHOD:: remove
+
+
+method:: remove
+
 
 Remove a registered action.
+
 
 argument:: action
 
 Action to remove
 
-EXAMPLES::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (

@@ -1,57 +1,144 @@
-TITLE:: Spawner
-summary:: A Spawner
+title:: Spawner
 categories:: Streams-Patterns-Events>Composition
+summary:: A Spawner
 related:: Classes/Pspawner
 
-DESCRIPTION::
-Can start subpatterns. Used as an argument inside link::Classes/Pspawner::. Tracks subpatterns in a link::Classes/PriorityQueue::.
 
 
-CLASSMETHODS::
-
-METHOD:: new
-
-ARGUMENT:: func
-
-ARGUMENT:: stackSize
 
 
-INSTANCEMETHODS::
 
-METHOD:: par
+
+
+
+
+description::
+
+
+
+
+Can start subpatterns. Used as an argument inside link::Classes/Pspawner::.
+Tracks subpatterns in a link::Classes/PriorityQueue::.
+
+
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
+argument:: func
+
+argument:: stackSize
+
+
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+method:: par
+
+
 Begin an event stream in parallel to the routine.
 If delta is non-zero, the pattern will begin that many beats after strong::now::, provided that strong::now + delta:: is later than the next event that the Spawner will generate.
 
-ARGUMENT:: pattern
+
+argument:: pattern
+
 A link::Classes/Pattern::.
 
-ARGUMENT:: delta
+
+argument:: delta
+
 A number of beats.
 
-returns:: The stream from strong::pattern::.
 
-METHOD:: seq
+returns::
+The stream from strong::pattern::.
+
+
+
+
+method:: seq
+
+
 Begin an event stream. Do not return until the event is finished.
 
-ARGUMENT:: pattern
+
+argument:: pattern
+
 A link::Classes/Pattern::.
 
-METHOD:: wait
+
+
+
+method:: wait
+
+
 Wait a number of seconds, then return.
 
-ARGUMENT:: dur
+
+argument:: dur
+
 A number of seconds.
 
-METHOD:: suspend
-Stops a stream.
 
-ARGUMENT:: stream
+
+
+method:: suspend
+
+
+Stop a stream.
+
+
+argument:: stream
+
 An index of the underlying link::Classes/PriorityQueue::.
 
-returns:: The stopped stream, or nil if the stream is not found.
 
-METHOD:: suspendAll
+returns::
+ 
+The stopped stream, or teletype::nil:: if the stream is not found.
+
+
+
+
+method:: suspendAll
+
+
 Stop all substreams.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
+
 See link::Classes/Pspawner::

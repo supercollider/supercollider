@@ -1,57 +1,91 @@
-class:: Duty
-summary:: Demand results from demand rate UGens.
+title:: Duty
+categories:: UGens>Demand
+summary:: Demand results from demand rate UGens
 related:: Classes/Demand, Classes/TDuty
-categories::  UGens>Demand
 
 
-Description::
 
-A value is demanded of each UGen in the list and output according to a
-stream of duration values. The unit generators in the list should be
+
+
+
+
+
+
+
+description::
+
+
+
+
+A value is demanded of each UGen in the list and output according to a stream of duration values. The unit generators in the list should be
 'demand' rate.
 
 
 When there is a trigger at the reset input, the demand rate UGens in the
-list and the duration are reset. The reset input may also be a demand
+list and the duration are reset.
+The reset input may also be a demand
 UGen, providing a stream of reset times.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
-
-argument::dur
-
-Time values. Can be a demand UGen or any signal. The next level
-is acquired after duration.
 
 
-argument::reset
 
-Trigger or reset time values. Resets the list of UGens and the
-duration UGen when triggered. The reset input may also be a
-demand UGen, providing a stream of reset times.
+method:: ar, kr
 
 
-argument::level
+argument:: dur
+
+Time values. Can be a demand UGen or any signal.
+The next level is acquired after duration.
+
+
+argument:: reset
+
+Trigger or reset time values. Resets the list of UGens and the duration UGen when triggered. The reset input may also be a demand UGen, providing a stream of reset times.
+
+
+argument:: level
 
 Demand UGen providing the output values.
 
 
-argument::doneAction
+argument:: doneAction
 
-A doneAction that is evaluated when the duration stream ends. See
+A doneAction that is evaluated when the duration stream ends.
+See
 
 link::Classes/Done::  for more detail.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
+
 code::
 (
 	{
 		var freq;
 		freq = Duty.kr(
-				Drand([0.01, 0.2, 0.4], inf), // demand ugen as durations
+				Drand([0.01, 0.2, 0.4], inf), // demand UGen as durations
 				0,
 				Dseq([204, 400, 201, 502, 300, 200], inf)
 			);
@@ -64,7 +98,7 @@ code::
 	{
 		var freq;
 		freq = Duty.kr(
-				MouseX.kr(0.001, 2, 1), // control rate ugen as durations
+				MouseX.kr(0.001, 2, 1), // control rate UGen as durations
 				0,
 				Dseq([204, 400, 201, 502, 300, 200], inf)
 			);
@@ -74,7 +108,8 @@ code::
 )
 ::
 
-Resetting the demand ugens:
+Resetting the demand UGens:
+
 code::
 (
 	{
@@ -103,7 +138,8 @@ code::
 )
 ::
 
-Demand ugen as audio oscillator:
+Demand UGen as audio oscillator:
+
 code::
 (
 	{
@@ -124,7 +160,8 @@ code::
 )
 ::
 
-single sample feedback: a lin cong algorithm:
+Single sample feedback: a lin cong algorithm:
+
 code::
 (
 b = Buffer.alloc(s, 1);

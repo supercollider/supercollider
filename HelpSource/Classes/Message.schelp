@@ -1,39 +1,119 @@
-TITLE:: Message
-summary:: A message to an object
+title:: Message
 categories:: Language
+summary:: A message to an object
 related:: Classes/MethodQuote
 
-DESCRIPTION::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
 A message to an object, to be evaluated later.
 
-CLASSMETHODS::
 
-METHOD:: new
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
 argument:: receiver
-the receiver of the message
+
+The receiver of the message
+
+
 argument:: selector
-the method to be called
+
+The method to be called
+
+
 argument:: args
+
 arguments to the call
 
-INSTANCEMETHODS::
 
-METHOD:: receiver
-the object to which the message is relayed
 
-METHOD:: selector
-the method to be called
 
-METHOD:: args
-the arguments to the call
 
-METHOD:: value
-send the message to the receiver and call the selector with the arguments
+
+
+
+
+
+instancemethods::
+
+
+
+
+method:: receiver
+
+
+The object to which the message is relayed
+
+
+
+
+method:: selector
+
+
+The method to be called
+
+
+
+
+method:: args
+
+
+The arguments to the call
+
+
+
+
+method:: value
+
+
+Send the message to the receiver and call the selector with the arguments
+
+
 argument::  ... moreArgs
+
+
+
 
 private:: storeArgs
 
-EXAMPLES::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 // an object

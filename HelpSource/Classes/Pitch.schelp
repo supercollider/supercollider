@@ -1,54 +1,134 @@
-class:: Pitch
-summary:: Autocorrelation pitch follower
+title:: Pitch
 categories:: UGens>Analysis>Pitch
+summary:: Autocorrelation pitch follower
+
+
+
+
+
+
+
+
+
 
 description::
-This is a better pitch follower than link::Classes/ZeroCrossing::, but more costly of CPU. For most purposes the default settings can be used and only code::in:: needs to be supplied. Pitch returns two values (via an link::Classes/Array:: of OutputProxys, see the link::Classes/OutputProxy:: help file), a code::freq:: which is the pitch estimate and code::hasFreq::, which tells whether a pitch was found. Some vowels are still problematic, for instance a wide open mouth sound somewhere between a low pitched short 'a' sound as in 'sat', and long 'i' sound as in 'fire', contains enough overtone energy to confuse the algorithm.
+
+
+
+
+This is a better pitch follower than link::Classes/ZeroCrossing::, but more costly of CPU.
+For most purposes the default settings can be used and only code::in:: needs to be supplied. Pitch returns two values (via an link::Classes/Array:: of OutputProxys, see the link::Classes/OutputProxy:: help file), a code::freq:: which is the pitch estimate and code::hasFreq::, which tells whether a pitch was found.
+Some vowels are still problematic, for instance a wide open mouth sound somewhere between a low pitched short 'a' sound as in 'sat', and long 'i' sound as in 'fire', contains enough overtone energy to confuse the algorithm.
+
+
+
+
+
+
+
+
+
 
 classmethods::
+
+
+
+
 private:: categories
+
+
 method:: kr
-argument::in
-argument::initFreq
-argument::minFreq
-argument::maxFreq
-argument::execFreq
-argument::maxBinsPerOctave
-argument::median
-argument::ampThreshold
-argument::peakThreshold
-argument::downSample
-argument::clar
+
+
+argument:: in
+
+argument:: initFreq
+
+
+argument:: minFreq
+
+argument:: maxFreq
+
+
+argument:: execFreq
+
+argument:: maxBinsPerOctave
+
+
+argument:: median
+
+argument:: ampThreshold
+
+
+argument:: peakThreshold
+
+argument:: downSample
+
+
+argument:: clar
 
 discussion::
-The pitch follower executes periodically at the rate specified by code::execFreq:: in cps. code::execFreq:: is clipped to be between code::minFreq:: and code::maxFreq::. First it detects whether the input peak to peak amplitude is above the code::ampThreshold::.
-If it is not then no pitch estimation is performed, code::hasFreq:: is set to zero and code::freq:: is held at its previous value. It performs an autocorrelation on the input and looks for the first peak after the peak around the lag of zero that is above code::peakThreshold:: times the amplitude of the peak at lag zero.
+The pitch follower executes periodically at the rate specified by code::execFreq:: in cps. code::execFreq:: is clipped to be between code::minFreq:: and code::maxFreq::.
+First it detects whether the input peak to peak amplitude is above the code::ampThreshold::.
+If it is not then no pitch estimation is performed, code::hasFreq:: is set to teletype::zero:: and code::freq:: is held at its previous value.
+It performs an autocorrelation on the input and looks for the first peak after the peak around the lag of teletype::zero:: that is above code::peakThreshold:: times the amplitude of the peak at lag zero.
 
-If the code::clar:: argument is greater than zero (it is zero by default) then code::hasFreq:: is given additional detail. Rather than simply being 1 when a pitch is detected, it is a "clarity" measure in the range between zero and one.
+If the code::clar:: argument is greater than zero (it is zero by default) then code::hasFreq:: is given additional detail. Rather than simply being teletype::1:: when a pitch is detected, it is a "clarity" measure in the range between zero and one.
 (Technically, it's the height of the autocorrelation peak normalised by the height of the zero-lag peak.)
 It therefore gives a kind of measure of "purity" of the pitched signal.
 
 Using a code::peakThreshold:: of one half does a pretty good job of eliminating overtones, and finding the first peak above that threshold rather than the absolute maximum peak does a good job of eliminating estimates that are actually multiple periods of the wave.
 
-The autocorrelation is done coarsely at first using a maximum of code::maxBinsPerOctave:: lags until the peak is located. Then a fine resolution search is performed until the peak is found. (Note that maxBinsPerOctave does NOT affect the final pitch resolution; a fine resolution search is always performed. Setting maxBinsPerOctave larger will cause the coarse search to take longer, and setting it smaller will cause the fine search to take longer.)
+The autocorrelation is done coarsely at first using a maximum of code::maxBinsPerOctave:: lags until the peak is located.
+Then a fine resolution search is performed until the peak is found.
+(Note that maxBinsPerOctave does NOT affect the final pitch resolution; a fine resolution search is always performed.
+Setting maxBinsPerOctave larger will cause the coarse search to take longer, and setting it smaller will cause the fine search to take longer.)
 
-The three values around the peak are used to find a fractional lag value for the pitch. If the pitch frequency is higher than code::maxFreq::, or if no peak is found above code::minFreq::, then code::hasFreq:: is set to zero and code::freq:: is held at its previous value.
+The three values around the peak are used to find a fractional lag value for the pitch.
+If the pitch frequency is higher than code::maxFreq::, or if no peak is found above code::minFreq::, then code::hasFreq:: is set to teletype::zero:: and code::freq:: is held at its previous value.
 
-It is possible to put a median filter of length code::median:: on the output estimation so that outliers and jitter can be eliminated. This will however add latency to the pitch estimation for new pitches, because the median filter will have to become half filled with new values before the new one becomes the median value.
+It is possible to put a median filter of length code::median:: on the output estimation so that outliers and jitter can be eliminated.
+This will however add latency to the pitch estimation for new pitches, because the median filter will have to become half filled with new values before the new one becomes the median value.
 If median is set to one then that is equivalent to no filter, which is the default.
 
 When an in range peak is found, it is inserted into the median filter, a new pitch is read out of the median filter and output as code::freq::, and code::hasFreq:: is set to one.
 
-It is possible to down sample the input signal by an integer factor code::downSample:: in order to reduce CPU overhead. This will also reduce the pitch resolution.
+It is possible to down sample the input signal by an integer factor code::downSample:: in order to reduce CPU overhead.
+This will also reduce the pitch resolution.
 
 Until Pitch finds a pitch for the first time, it will output code::initFreq::.
 
 None of these settings are time variable.
 
+
+
+
+
+
+
+
+
+
 instancemethods::
+
+
+
+
 private:: init
 
+
+
+
+
+
+
+
+
+
 examples::
+
+
+
 
 code::
 // (use headphones!)
@@ -70,7 +150,6 @@ code::
 ::
 
 code::
-
 (
 	SynthDef("pitchFollow2", { |out|
 		var in, amp, freq, hasFreq, sound;
@@ -90,8 +169,7 @@ code::
 RM octaver
 
 inSignal is RingModulated by a sinusoidal tone with half frequency.
-The resulting spectrum is given by all the components of inSignal with
-half freqs.
+The resulting spectrum is given by all the components of inSignal with half freqs.
 This means that the new spectrum is a one 8ve below version of the input signal's one,
 with only odd partials.
 As a consequence, if inSignal is added again, even partials are
@@ -116,5 +194,4 @@ andreavalle
 )
 
 Synth.new(\RmOctaver);
-
 ::

@@ -1,38 +1,101 @@
-class:: BufWr
-summary:: Buffer writing oscillator.
+title:: BufWr
+categories:: UGens>Buffer
+summary:: Buffer writing oscillator
 related:: Classes/BufRd
-categories::  UGens>Buffer
 
-Description::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
 Write to a buffer at an index.
 
-note:: BufWr (in difference to  link::Classes/BufRd::) does not do multichannel expansion, because input is an array. ::
+note:: 
+BufWr (in difference to  link::Classes/BufRd::) does not do multichannel expansion, because input is an array.
+::
+
+
+
+
+
+
+
+
+
 
 classmethods::
+
+
+
+
 private:: categories
 
-method::ar, kr
 
-argument::inputArray
+method:: ar, kr
+
+
+argument:: inputArray
+
 Input UGens (channelArray).
 
-argument::bufnum
+
+argument:: bufnum
+
 The index of the buffer to use.
 
-argument::phase
-Modulateable index into the buffer (has to be audio rate).
-Warning:: The phase argument only offers precision for addressing 2**24 samples (about 6.3 minutes at 44100Hz) ::
 
-argument::loop
+argument:: phase
+
+Modulateable index into the buffer (has to be audio rate).
+warning:: 
+The phase argument only offers precision for addressing 2**24 samples (about 6.3 minutes at 44100Hz) 
+::
+
+
+argument:: loop
+
 1 means true, 0 means false. This is modulateable.
 
+
+
+
+
+
+
+
+
+
 instancemethods::
+
+
+
+
 private:: checkInputs
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 (
 // allocate a buffer for writinig into
 s = Server.local;
@@ -62,5 +125,4 @@ x = { |rate = 1|
 x.set(\rate, 5);
 y.set(\rate, 2.0.rand);
 x.set(\rate, 2);
-
 ::

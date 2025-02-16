@@ -1,55 +1,132 @@
-class:: DiskOut
-summary:: Record to a soundfile to disk.
+title:: DiskOut
+categories:: UGens>InOut, UGens>Buffer
+summary:: Record to a soundfile to disk
 related:: Classes/RecordBuf, Classes/DiskIn, Classes/VDiskIn
-categories::  UGens>InOut, UGens>Buffer
 
-Description::
-Record to a soundfile to disk. Uses a link::Classes/Buffer::.
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+Record to a soundfile to disk.
+Uses a link::Classes/Buffer::.
 
 See link::Classes/RecordBuf:: for recording into a buffer in memory.
 
+
+
+
+
+
 subsection:: Disk recording procedure
 
-Recording to disk involves several steps, which should be taken in the right order. link::Classes/Server#-record:: performs these steps for you. To record arbitrary buses using DiskOut explicitly, make sure to do the following:
+
+Recording to disk involves several steps, which should be taken in the right order.
+link::Classes/Server#-record:: performs these steps for you. To record arbitrary buses using DiskOut explicitly, make sure to do the following:
 
 numberedlist::
 ## Define a DiskOut link::Classes/SynthDef::, as shown in the example below.
 ## Allocate a link::Classes/Buffer:: for recording.
+
 list::
 ## The buffer size should be a power of two.
-## A duration of at least one second is recommended: code::s.sampleRate.nextPowerOfTwo::.
+## A duration of at least one second is recommended:
+code::s.sampleRate.nextPowerOfTwo::.
 ## Do not allocate the buffer inside the SynthDef.
 ## Keep the buffer in a variable.
 ::
-## Specify the file path and recording format using link::Classes/Buffer#-write::, with the teletype::leaveOpen:: flag set to code::true::. This is the only way to set the file path and recording format.
+
+## Specify the file path and recording format using link::Classes/Buffer#-write::, with the teletype::leaveOpen:: flag set to code::true::.
+This is the only way to set the file path and recording format.
 ## Create a link::Classes/Synth:: node to run the DiskOut UGen.
 ## When recording is finished, stop the DiskOut synth.
-## Close the buffer: code::b.close::. This step updates the recorded file's audio header. Without it, the file will be unusable.
+## Close the buffer: code::b.close::.
+This step updates the recorded file's audio header. Without it, the file will be unusable.
 ## Free the buffer: code::b.free::.
 ::
 
 These steps are illustrated in the Examples section. In general, only the "Object Style" approach is needed. ("Messaging Style" is provided as a historical reference, but it isn't needed for typical use.)
 
+
+
+
+
+
+
+
+
+
 classmethods::
+
+
+
+
 private:: categories
 
-method::ar
 
-argument::bufnum
+method:: ar
+
+
+argument:: bufnum
+
 The number of the buffer to write to (prepared with /b-write or
 Buffer.write)
-Note:: The Buffer's numFrames must be a power of two and is recommended to be at least 65536 -- preferably 131072 or 262144. Smaller buffer sizes mean more frequent disk access, which can cause glitches. ::
+note:: 
+The Buffer's numFrames must be a power of two and is recommended to be at least 65536 -- preferably 131072 or 262144. Smaller buffer sizes mean more frequent disk access, which can cause glitches. 
+::
 
-argument::channelsArray
+
+argument:: channelsArray
+
 The Array of channels to write to the file.
-Note:: The number of channels in the buffer and the channelsArray must be the same, otherwise DiskOut will fail silently (and not write anything to your file). ::
+note:: 
+The number of channels in the buffer and the channelsArray must be the same, otherwise DiskOut will fail silently (and not write anything to your file). 
+::
 
-returns:: The number of frames written to disk.
+
+returns::
+ 
+The number of frames written to disk.
+
+
+
+
+
+
+
+
+
 
 instancemethods::
+
+
+
+
 private:: checkInputs
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
+
 code::
 s.boot; // start the server
 (
@@ -73,7 +150,14 @@ SynthDef("help-Diskin-2chan", { |out, bufnum = 0|
 )
 ::
 
+
+
+
+
+
 subsection:: Object Style
+
+
 code::
 // start something to record
 x = Synth("bubbles");
@@ -104,7 +188,14 @@ b = Buffer.cueSoundFile(s, "~/diskouttest.wav".standardizePath, 0, 2, completion
 x.free; b.close; b.free; // cleanup
 ::
 
+
+
+
+
+
 subsection:: Messaging Style
+
+
 code::
 // The same thing done in Messaging Style (less overhead but without the convenience of objects)
 // This does nothing different from the Messaging Style example.

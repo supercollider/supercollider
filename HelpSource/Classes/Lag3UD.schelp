@@ -1,22 +1,71 @@
-class:: Lag3UD
-summary:: Exponential lag
+title:: Lag3UD
 categories:: UGens>Filters
+summary:: Exponential lag
 related:: Classes/Lag, Classes/Lag2, Classes/Lag3, Classes/LagUD, Classes/Lag2UD
 
+
+
+
+
+
+
+
+
+
 description::
-Lag3UD is equivalent to LagUD.kr(LagUD.kr(LagUD.kr(in, timeU, timeD), timeU, timeD), timeU, timeD), thus resulting in a smoother transition. This saves on CPU as you only have to calculate the decay factor once instead of three times. See link::Classes/LagUD:: for more details.
+
+
+
+
+Lag3UD is equivalent to LagUD.kr(LagUD.kr(LagUD.kr(in, timeU, timeD), timeU, timeD), timeU, timeD), thus resulting in a smoother transition.
+This saves on CPU as you only have to calculate the decay factor once instead of three times.
+See link::Classes/LagUD:: for more details.
+
+
+
+
+
+
+
+
+
 
 classmethods::
+
+
+
+
 method:: ar, kr
 
+
 argument:: in
-input signal.
+
+Input signal.
+
+
 argument:: lagTimeU
+
 60 dB lag time in seconds for the upgoing signal.
+
+
 argument:: lagTimeD
+
 60 dB lag time in seconds for the downgoing signal.
 
+
+
+
+
+
+
+
+
+
 examples::
+
+
+
+
 code::
 // used to lag pitch
 (

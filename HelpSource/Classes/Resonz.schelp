@@ -1,10 +1,21 @@
-class:: Resonz
-summary:: Resonant filter.
+title:: Resonz
+categories:: UGens>Filters>Linear
+summary:: Resonant filter
 related:: Classes/Formlet, Classes/RHPF, Classes/RLPF, Classes/Ringz
-categories::  UGens>Filters>Linear
 
 
-Description::
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 This is the same as  link::Classes/Ringz::, except that it has a constant gain at 0 dB instead of being constant skirt.
 
@@ -14,47 +25,68 @@ code::
 z = ±1
 ::
 
-
 Based on  emphasis::K. Steiglitz, "A Note on Constant-Gain Digital Resonators", Computer Music Journal, vol 18, no. 4, pp. 8-10, Winter 1994::.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
 
-argument::in
+
+
+method:: ar, kr
+
+
+argument:: in
 
 The input signal.
 
 
-argument::freq
+argument:: freq
 
 Resonant frequency in Hertz.
-WARNING: due to the nature of its implementation frequency values close to 0 may cause glitches and/or extremely loud audio artifacts!
+WARNING: due to the nature of its implementation frequency values close to teletype::0:: may cause glitches and/or extremely loud audio artifacts!
 
-argument::bwr
+
+argument:: bwr
 
 Bandwidth ratio (reciprocal of Q). rq = bandwidth / centerFreq.
 
 
-The reciprocal of Q is used rather than Q because it saves a
-divide operation inside the unit generator.
+The reciprocal of Q is used rather than Q because it saves a divide operation inside the unit generator.
 
 
-argument::mul
+argument:: mul
 
 Output will be multiplied by this value.
 
 
-argument::add
+argument:: add
 
 This value will be added to the output.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 { Resonz.ar(WhiteNoise.ar(0.5), 2000, 0.1) }.play
 
 // modulate frequency
@@ -65,5 +97,4 @@ code::
 
 // modulate bandwidth opposite direction
 { Resonz.ar(WhiteNoise.ar(0.5), 2000, XLine.kr(0.001, 1, 8)) }.play
-
 ::

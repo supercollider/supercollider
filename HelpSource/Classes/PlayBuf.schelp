@@ -1,48 +1,97 @@
-class:: PlayBuf
-summary:: Sample playback oscillator.
+title:: PlayBuf
+categories:: UGens>Buffer
+summary:: Sample playback oscillator
 related:: Classes/RecordBuf, Classes/DiskIn, Classes/BufRd
-categories::  UGens>Buffer
 
 
-Description::
-Plays back a sample resident in memory.
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+Play back a sample resident in memory.
+
+
+
+
+
+
+
+
+
 
 classmethods::
 
-method::ar, kr
 
-argument::numChannels
-Number of channels that the buffer will be. This must be a fixed
-integer. The architecture of the SynthDef cannot change after it
-is compiled.
 
-argument::bufnum
+
+method:: ar, kr
+
+
+argument:: numChannels
+
+Number of channels that the buffer will be.
+This must be a fixed
+integer. The architecture of the SynthDef cannot change after it is compiled.
+
+
+argument:: bufnum
+
 The index of the buffer to use.
+
 note::
-If you supply a bufnum of a buffer with a differing number of channels
-than the one specified in this PlayBuf, it will post a warning and output the channels it can.
+If you supply a bufnum of a buffer with a differing number of channels than the one specified in this PlayBuf, it will post a warning and output the channels it can.
 ::
 
-argument::rate
-1.0 is the server's sample rate, 2.0 is one octave up, 0.5 is one
-octave down -1.0 is backwards normal rate… etc. Interpolation
+
+argument:: rate
+
+1.0 is the server's sample rate, 2.0 is one octave up, 0.5 is one octave down -1.0 is backwards normal rate… etc. Interpolation
 is cubic.
 
 
-argument::trigger
-A trigger causes a jump to the startPos. A trigger occurs when a
-signal changes from negative value to positive value.
+argument:: trigger
 
-argument::startPos
+A trigger causes a jump to the startPos.
+A trigger occurs when a signal changes from teletype::negative:: value to teletype::positive:: value.
+
+
+argument:: startPos
+
 Sample frame to start playback.
 
-argument::loop
+
+argument:: loop
+
 1 means true, 0 means false. This is modulateable.
 
-argument:: doneAction
-an integer representing an action to be executed when the buffer is finished playing. This can be used to free the enclosing synth, etc. See link::Classes/Done:: for more detail. code::doneAction:: is only evaluated if loop is 0.
 
-Examples::
+argument:: doneAction
+
+An integer representing an action to be executed when the buffer is finished playing.
+This can be used to free the enclosing synth, etc. See link::Classes/Done:: for more detail. code::doneAction:: is only evaluated if loop is 0.
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 s.boot // Boot the server, if you need to
@@ -60,7 +109,8 @@ SynthDef(\help_PlayBuf, { |out = 0, bufnum = 0|
 
 In the above example, note how the code::doneAction: Done.freeSelf:: causes the synth to free itself when the buffer reaches its end.
 
-Note again that the number of channels must be fixed for the SynthDef. It cannot vary depending on which buffer you use.
+Note again that the number of channels must be fixed for the SynthDef.
+It cannot vary depending on which buffer you use.
 
 code::
 // loop is true
@@ -111,7 +161,8 @@ SynthDef(\help_PlayBuf, { |out = 0, bufnum = 0|
 }).play(s, [\out, 0, \bufnum, b]);
 
 
-// sine wave control of playback rate. negative rate plays backwards
+// sine wave control of playback rate.
+negative rate plays backwards
 SynthDef(\help_PlayBuf, { |out = 0, bufnum = 0|
 	var rate;
 	rate = FSinOsc.kr(XLine.kr(0.2, 8, 30), 0, 3, 0.6);

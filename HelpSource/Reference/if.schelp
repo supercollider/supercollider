@@ -1,11 +1,29 @@
 title:: if
-categories::Core, Common methods
+categories:: Core, Common methods
+summary:: Conditional execution
 related:: Reference/Control-Structures
-summary:: conditional execution
+
+
+
+
+
 
 method:: if
 
-section::example
+
+
+
+
+
+
+
+
+
+section:: Example
+
+
+
+
 code::
 if ( [false, true].choose,				// Boolean expression (chooses one at random)
 	{ "expression was true".postln },	// true function
@@ -21,7 +39,7 @@ z.postln;
 
 UGens can also use if
 
-the condition ugen is 0 / 1
+the condition UGen is 0 / 1
 
 code::
 (
@@ -31,9 +49,21 @@ code::
 )
 ::
 
-section:: optimization
 
-the functions will be inlined, which plucks the code from the functions and uses a more efficient jump statement.
+
+
+
+
+
+
+
+
+section:: Optimization
+
+
+
+
+The functions will be inlined, which plucks the code from the functions and uses a more efficient jump statement.
 
 code::
 {
@@ -58,10 +88,8 @@ BYTECODES: (18)
 a FunctionDef in closed FunctionDef
 ::
 
+Failure to inline due to variable declarations
 
-
-
-failure to inline due to variable declarations
 code::
 {
 

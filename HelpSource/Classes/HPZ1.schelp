@@ -1,10 +1,21 @@
-class:: HPZ1
+title:: HPZ1
+categories:: UGens>Filters>Linear
 summary:: Two point difference filter
 related:: Classes/LPZ1, Classes/HPZ2
-categories::  UGens>Filters>Linear
 
 
-Description::
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 A special case fixed filter. Implements the formula:
 
@@ -15,26 +26,49 @@ out(i) = 0.5 * (in(i) - in(i-1))
 Which is a two point differentiator.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::ar, kr
 
-argument::in
+
+
+method:: ar, kr
+
+
+argument:: in
 
 The input signal.
 
 
-argument::mul
+argument:: mul
 
 Output will be multiplied by this value.
 
 
-argument::add
+argument:: add
 
 This value will be added to the output.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 // Compare:

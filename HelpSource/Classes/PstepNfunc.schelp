@@ -1,13 +1,38 @@
-class:: PstepNfunc
-summary:: combinatoric pattern
-related:: Classes/PstepNadd
+title:: PstepNfunc
 categories:: Streams-Patterns-Events>Patterns>Time
+summary:: Combinatoric pattern
+related:: Classes/PstepNadd
+
+
+
+
+
+
+
+
+
 
 description::
 
-Combines an arbitrary number of patterns by evaluating a function (depth first traversal). When a stream ends it is recreated from its pattern until the top stream ends.
 
-Examples::
+
+
+Combinean an arbitrary number of patterns by evaluating a function (depth first traversal).
+When a stream ends it is recreated from its pattern until the top stream ends.
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (

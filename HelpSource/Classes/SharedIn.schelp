@@ -1,42 +1,73 @@
-class:: SharedIn
-summary:: Read from a shared control bus.
+title:: SharedIn
+categories:: UGens>InOut
+summary:: Read from a shared control bus
 related:: Classes/SharedOut
-categories::  UGens>InOut
 
 
-Description::
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 warning::
 SharedIn has been deprecated. Synchronous access to busses on local servers is possible via
 link::Classes/Bus#-getSynchronous:: and link::Classes/Bus#-setSynchronous::
 ::
 
-Reads from a control bus shared between the internal server and the SC
-client. Control rate only. Writing to a shared control bus from the
-client is synchronous. When not using the internal server use node
+Read from a control bus shared between the internal server and the SC
+client. Control rate only. Writing to a shared control bus from the client is synchronous. When not using the internal server use node
 arguments or the set method of Bus (or /c_set in messaging style).
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::kr
 
-argument::bus
+
+
+method:: kr
+
+
+argument:: bus
 
 The index of the shared control bus to read from.
 
 
-argument::numChannels
+argument:: numChannels
 
-the number of channels (i.e. adjacent buses) to read in. The
-default is 1. You cannot modulate this number by assigning it to
-an argument in a SynthDef.
+The number of channels (i.e. adjacent buses) to read in. The
+default is 1. You cannot modulate this number by assigning it to an argument in a SynthDef.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 (
 // only works with the internal server
 s = Server.internal;
@@ -69,5 +100,4 @@ Routine({
 
 
 s.quit;
-
 ::

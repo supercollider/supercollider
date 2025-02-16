@@ -1,22 +1,55 @@
-class:: NumRunningSynths
-summary:: Number of currently running synths.
+title:: NumRunningSynths
+categories:: UGens>Info
+summary:: Number of currently running synths
 related:: Classes/NumAudioBuses, Classes/NumControlBuses, Classes/NumBuffers, Classes/NumInputBuses, Classes/NumOutputBuses
-categories::  UGens>Info
 
 
-Description::
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 Number of currently running synths.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::ir
 
-Examples::
+
+
+method:: ir
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 // example: frequency is derived from the number of synths running
 (
 SynthDef("numRunning", { |out|
@@ -28,5 +61,4 @@ s.sendMsg("/s_new", "numRunning", -1, 0, 0);
 s.sendMsg("/s_new", "numRunning", -1, 0, 0);
 s.sendMsg("/s_new", "numRunning", -1, 0, 0);
 s.sendMsg("/s_new", "numRunning", -1, 0, 0);
-
 ::

@@ -1,20 +1,39 @@
 title:: Pattern Guide Cookbook 06: Phrase Network
+categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Sequencing by a network of phrases, Articulating notes with PmonoArtic
 related:: Tutorials/A-Practical-Guide/PG_Cookbook05_Using_Samples, Tutorials/A-Practical-Guide/PG_Cookbook07_Rhythmic_Variations
-categories:: Streams-Patterns-Events>A-Practical-Guide
 
-section::Sequencing by a network of phrases
-section::Articulating notes with PmonoArtic
+
+
+
+
+
+
+
+
+
+section:: Sequencing by a network of phrases
+
+
+
+
+section:: Articulating notes with PmonoArtic
 
 Two for one here!
 
-Most conventional synthesizers have a mode where playing a note while the previous note is still sustaining slides from one note to the other. The link::Classes/PmonoArtic:: pattern does this based on the event's sustain value. The delta value is the number of beats until the next event; sustain is the number of beats until the note releases. If sustain is shorter than delta, the note should cut off early and the next event should produce a new synth.
+Most conventional synthesizers have a mode where playing a note while the previous note is still sustaining slides from one note to the other.
+The link::Classes/PmonoArtic:: pattern does this based on the event's sustain value. The delta value is the number of beats until the next event; sustain is the number of beats until the note releases.
+If sustain is shorter than delta, the note should cut off early and the next event should produce a new synth.
 
-The example uses link::Classes/Pfsm:: (finite state machine) to arrange a set of predefined phrases in a partially randomized order. Each phrase is followed by a list pointing to the phrases that could legitimately follow the current phrase. That is, it might make musical sense to go from phrase 1 to phrase 2, but not from 1 to 3. Defining the successors for 1 appropriately makes sure that a nonsense transition will not be made.
+The example uses link::Classes/Pfsm:: (finite state machine) to arrange a set of predefined phrases in a partially randomized order.
+Each phrase is followed by a list pointing to the phrases that could legitimately follow the current phrase.
+That is, it might make musical sense to go from phrase teletype::1:: to phrase 2, but not from teletype::1::to 3. Defining the successors for 1 appropriately makes sure that a nonsense transition will not be made.
 
-This is a long example, but it's only because there are lots of phrases. The structure is very simple: just a set of phrases chosen in succession by Pfsm.
+This is a long example, but it's only because there are lots of phrases.
+The structure is very simple: just a set of phrases chosen in succession by Pfsm.
 
-- strong::Third-party extension alert:: : In this example, the selection of the next phrase is explicitly weighted by repeating array elements, such as code::#[1, 1, 1, 1, 2, 2, 3, 3, 4, 4, 5]::. A more elegant way to do this is using the strong::WeighBag:: class in the strong::MathLib:: quark.
+- strong::Third-party extension alert:: : In this example, the selection of the next phrase is explicitly weighted by repeating array elements, such as code::#[1, 1, 1, 1, 2, 2, 3, 3, 4, 4, 5]::.
+A more elegant way to do this is using the strong::WeighBag:: class in the strong::MathLib:: quark.
 
 code::
 // the following are equivalent:
@@ -25,7 +44,13 @@ a = WeighBag.with((1..5), #[4, 2, 2, 2, 1]);
 ({ a.wchoose } ! 100).histo(5, 1, 5);
 ::
 
-subsection::Example
+
+
+
+
+
+subsection:: Example
+
 
 code::
 (
@@ -47,7 +72,8 @@ SynthDef(\sawpulse, { |out, freq = 440, gate = 0.5, plfofreq = 6, mw = 0, ffreq 
 (
 TempoClock.default.tempo = 128/60;
 
-// Pmul does only one thing here: take ~amp from each event
+// Pmul does only one thing here:
+take ~amp from each event
 // and replace it with ~amp * 0.4
 p = Pmul(\amp, 0.4, Pfsm([
 	#[0, 3, 1],		// starting places

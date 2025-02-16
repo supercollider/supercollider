@@ -1,37 +1,71 @@
-class:: PV_RandComb
-summary:: Pass random bins.
-related:: Classes/PV_RandWipe
+title:: PV_RandComb
 categories:: UGens>FFT
+summary:: Pass random bins
+related:: Classes/PV_RandWipe
 
-Description::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 Randomly clear bins.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::new
 
-argument::buffer
+
+
+method:: new
+
+
+argument:: buffer
 
 FFT buffer.
 
 
-argument::wipe
+argument:: wipe
 
-Clears bins from input in a random order as wipe goes from 0 to
+Clear bins from input in a random order as wipe goes from teletype::0:: to
 1.
 
 
-argument::trig
+argument:: trig
 
 A trigger, that selects a new random ordering.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 s.boot;
 c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
@@ -55,5 +89,4 @@ SynthDef("help-randcomb2", { |out = 0, soundBufnum = 2|
 	Out.ar(out, IFFT(chain).dup);
 }).play(s, [\soundBufnum, c.bufnum]);
 )
-
 ::

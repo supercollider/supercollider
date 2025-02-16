@@ -1,33 +1,87 @@
-class:: FreeVerb
-summary:: A reverb
+title:: FreeVerb
 categories:: UGens>Reverbs
+summary:: A reverb
 related:: Classes/FreeVerb2, Classes/GVerb
 
+
+
+
+
+
+
+
+
+
 description::
+
+
+
+
 Coded from experiments with faust.
+
+
+
+
+
+
+
+
+
 
 classmethods::
 
+
+
+
 method:: ar
+
+
 argument:: in
-input signal.
+
+Input signal.
+
+
 argument:: mix
-dry/wet balance. range 0..1.
+
+Dry/wet balance. range 0..1.
+
+
 argument:: room
-room size. rage 0..1.
+
+Room size. rage 0..1.
+
+
 argument:: damp
+
 Reverb HF damp. range 0..1.
+
+
 argument:: mul
+
 argument:: add
 
+
 discussion::
-Valid parameter range from 0 to 1. Values outside this range are clipped by the UGen.
+Valid parameter range from teletype::0:: to 1. Values outside this range are clipped by the UGen.
+
+
+
+
+
+
+
+
+
 
 examples::
+
+
+
+
 code::
 s.boot;
 
-// FreeVerb - 1x1 ugen
+// FreeVerb - 1x1 UGen
 (
 z = SynthDef(\src, { |out, mix = 0.25, room = 0.15, damp = 0.5|
 	Out.ar(out,
@@ -46,7 +100,7 @@ z.set(\damp, 0.2)
 
 z.free
 
-// it expands as any ugen does
+// it expands as any UGen does
 (
 z = SynthDef(\src, { |out, mix = 0.25, room = 0.15, damp = 0.5|
 	Out.ar(out,

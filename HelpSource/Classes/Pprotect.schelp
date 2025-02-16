@@ -1,19 +1,48 @@
-class:: Pprotect
-summary:: evaluate a function when an error occured in the thread
-related:: Classes/Ptrace
+title:: Pprotect
 categories:: Streams-Patterns-Events>Patterns>Language Control
+summary:: Evaluate a function when an error occured in the thread
+related:: Classes/Ptrace
 
-ClassMethods::
 
-method::new
 
-argument::pattern
-any pattern
 
-argument::func
-a link::Classes/Function:: to be evaluated when an error occurs. The error and the thread are passed as arguments to the function.
 
-Examples::
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
+argument:: pattern
+
+Any pattern
+
+
+argument:: func
+
+A link::Classes/Function:: to be evaluated when an error occurs.
+The error and the thread are passed as arguments to the function.
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (

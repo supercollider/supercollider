@@ -1,15 +1,29 @@
 title:: Understanding Streams, Patterns and Events - Part 5
+categories:: Tutorials>Streams-Patterns-Events
 summary:: Event.default
 related:: Tutorials/Streams-Patterns-Events1, Tutorials/Streams-Patterns-Events2, Tutorials/Streams-Patterns-Events3, Tutorials/Streams-Patterns-Events4, Tutorials/Streams-Patterns-Events6, Tutorials/Streams-Patterns-Events7
-categories:: Tutorials>Streams-Patterns-Events
+
 
 More about the default Event:
 
-section::protoEvents
+
+
+
+
+
+
+
+
+
+section:: ProtoEvents
+
+
+
 
 The protoEvent contains default values for many useful parameters.
 
-The default protoEvent is code::Event.default::. It provides default bindings for duration, envelope, instrument, making a very simple Pattern directly playable:
+The default protoEvent is code::Event.default::.
+It provides default bindings for duration, envelope, instrument, making a very simple Pattern directly playable:
 
 code::
 (
@@ -39,17 +53,42 @@ Pbind(
 )
 ::
 
-section::~finish
+
+
+
+
+
+
+
+
+
+section:: ~finish
+
+
+
 
 Event.default contains a function bound to the Symbol code::'finish':: which is called for each new event generated in order to complete any computations that depend on the other values in the event.
 
-section::The pitch model
+
+
+
+
+
+
+
+
+
+section:: The pitch model
+
+
+
 
 Event.default implements a multi level pitch model which allows composition using modal scale degrees, equal division note values, midi note values, or frequencies in Hertz. These different ways of specifying the pitch can all be used interchangeably.
 
 The way this works is due to the default values bound to the Symbols of the pitch model.
 
-The lowest level Symbol in the pitch model is code::'freq'::. The default binding for code::'freq':: is a link::Classes/Function:: which calculates the frequency by getting the value of code::'midinote'::, adding a transpose value and converting it to Hertz using code::midicps::.
+The lowest level Symbol in the pitch model is code::'freq'::.
+The default binding for code::'freq':: is a link::Classes/Function:: which calculates the frequency by getting the value of code::'midinote'::, adding a transpose value and converting it to Hertz using code::midicps::.
 
 code::
 	~freq = {
@@ -89,7 +128,8 @@ code::
 	};
 ::
 
-This function gets the value bound to code::'note':: which is a value expressed in some equal temperament, not necessarily 12. It adds a gamut transpose value code::'gtranspose'::, and scales from the number of notes per octave being used into 12 notes per octave MIDI key values. If you compose with code::'midinote':: directly then that will override this function.
+Thi function gets the value bound to code::'note':: which is a value expressed in some equal temperament, not necessarily 12. It adds a gamut transpose value code::'gtranspose'::, and scales from the number of notes per octave being used into 12 notes per octave MIDI key values.
+If you compose with code::'midinote':: directly then that will override this function.
 
 code::
 (
@@ -110,13 +150,16 @@ code::
 	};
 ::
 
-This function derives the note value from the next higher level variables which specify a pitch from a scale. These variables are defined as follows:
+Thi function derives the note value from the next higher level variables which specify a pitch from a scale.
+These variables are defined as follows:
 
 code::
 	~stepsPerOctave = 12.0;
 ::
 
-The number of equal divisions of an octave for this tuning. The equal temperament defined by this variable is known as the gamut. If you wanted to work in cents for example you could set this to 1200.0.
+The number of equal divisions of an octave for this tuning.
+The equal temperament defined by this variable is known as the gamut.
+If you wanted to work in cents for example you could set this to 1200.0.
 
 code::
 	~octave = 5.0;
@@ -140,7 +183,8 @@ code::
 	~degree = 0;
 ::
 
-A scale degree index into the code::~scale::. 0 is the root and the scale wraps in the manner defined by code::degreeToKey::.
+A scale degree index into the code::~scale::.
+0 is the root and the scale wraps in the manner defined by code::degreeToKey::.
 
 code::
 	~mtranspose = 0;
@@ -160,7 +204,19 @@ code::
 
 A chromatic transposition value expressed in semitones.
 
-section::Pitch model Examples
+
+
+
+
+
+
+
+
+
+section:: Pitch model Examples
+
+
+
 
 code::
 (
@@ -280,7 +336,8 @@ Pbind(
 
 
 (
-// composing in non 12 equal temperaments. 72 tone equal temp.
+// composing in non 12 equal temperaments.
+72 tone equal temp.
 Pbind(
 	\stepsPerOctave, 72,
 	\note, Pseq([
@@ -298,9 +355,22 @@ Pbind(
 )
 ::
 
-section::The duration model
 
-Duration is expressed in beats and is bound to the code::'dur':: symbol. The sustain time of a note can be expressed directly in beats or by using a legato value which is multiplied by the note duration to get the sustain time.
+
+
+
+
+
+
+
+
+section:: The duration model
+
+
+
+
+Duration is expressed in beats and is bound to the code::'dur':: symbol.
+The sustain time of a note can be expressed directly in beats or by using a legato value which is multiplied by the note duration to get the sustain time.
 
 code::
 (

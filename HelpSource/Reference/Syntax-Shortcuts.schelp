@@ -1,13 +1,27 @@
 title:: Syntax Shortcuts
-summary:: syntactic sugar
 categories:: Language
+summary:: Syntactic sugar
 related:: Overviews/SymbolicNotations
+
+
+
+
+
+
+
+
+
 
 section:: Introduction
 
+
+
+
 This file shows a number of syntax equivalences in the compiler.
 
-Because of the multiple syntax equivalences, some expressions can be written in many different ways. All of the following do the same thing and compile to the same code.
+Because of the multiple syntax equivalences, some expressions can be written in many different ways.
+All of the following do the same thing and compile to the same code.
+
 code::
 // new argument syntax
 
@@ -34,22 +48,46 @@ collect((1..10), _.squared);  // function call syntax
 (1..10) collect: _.squared;   // binary operator syntax
 ::
 
-You could even start expanding out the equivalent of (1..10) which is really a shortcut for code:: series(1, nil, 10) ::. This could also be written code:: 1.series(nil,10) ::. This adds another 26 variations to the 13 variations above.
+You could even start expanding out the equivalent of (1..10) which is really a shortcut for code:: series(1, nil, 10) ::.
+This could also be written code:: 1.series(nil,10) ::.
+This adds another 26 variations to the 13 variations above.
+
+
+
+
+
+
+
+
+
 
 section:: Defining functions and classes
 
-subsection:: shorter argument lists in definitions
+
+
+
+subsection:: Shorter argument lists in definitions
+
+
 table::
 ## instead of writing: || you can write:
 ## code:: { arg x; x < 2 } :: || code:: { |x| x < 2 } ::
 ## code:: { arg x = 123; x < 2 } :: || code:: { |x = 123| x < 2 } ::
 ## code:: { arg x = 10.rand; x < 2 } :: || code:: { |x = (10.rand)| x < 2 } :: or code:: {|x(10.rand)| x < 2 } ::
 ::
+
 note::
 When using the new code::||:: syntax, the default value needs to be enclosed in parenthesis if it's not a literal.
 ::
 
-subsection:: partial application
+
+
+
+
+
+subsection:: Partial application
+
+
 table::
 ## instead of writing: || you can write:
 ## code:: { |x| object.msg(a, x, b) } :: || code:: object.msg(a, _, b) ::
@@ -58,11 +96,19 @@ table::
 ## code:: { |x| [a, b, x] } :: || code:: [a, b, _] ::
 ## code:: { |x| (a: x) } :: || code:: (a: _) ::
 ::
+
 note::
 There are some limitations to the extent of the surrounding expression that code::_:: can capture. See link::Reference/Partial-Application:: for details.
 ::
 
-subsection:: defining instance variable accessor methods
+
+
+
+
+
+subsection:: Defining instance variable accessor methods
+
+
 table::
 ## instead of writing: || you can write:
 ## code::
@@ -70,40 +116,84 @@ Thing { var x;
     x { ^x }
     x_ { arg z; x = z; }
 }
-:: || code::
+::
+
+|| code::
 Thing { var <>x; }
 ::
+
 ::
+
+
+
+
+
+
+
+
 
 
 section:: Sending messages, calling functions, and instantiating objects
 
-subsection:: function-call and receiver notations
+
+
+
+subsection:: Function-call and receiver notations
+
+
 table::
 ## instead of writing: || you can write:
 ## code:: f(x, y) :: || code:: x.f(y) ::
 ## code:: f(g(x)) :: || code:: x.g.f ::
 ::
 
-subsection:: calling the 'value' method
+
+
+
+
+
+subsection:: Calling the 'value' method
+
+
 table::
 ## instead of writing: || you can write:
 ## code:: f.value(x) :: || code:: f.(x) ::
 ::
 
-subsection:: instantiate object
+
+
+
+
+
+subsection:: Instantiate object
+
+
 table::
 ## instead of writing: || you can write:
 ## code:: Point.new(3, 4) :: || code:: Point(3, 4) ::
 ::
 
-subsection:: calling an instance variable setter method
+
+
+
+
+
+subsection:: Calling an instance variable setter method
+
+
 table::
 ## instead of writing: || you can write:
 ## code:: p.x_(y) :: || code:: p.x = y :: or code:: x(p) = y ::
 ::
 
-subsection:: calling performList
+
+
+
+
+
+subsection:: Calling performList
+
+
 table::
 ## instead of writing: || you can write:
 ## code:: object.performList(\method, a, b, array) :: || code:: object.method(a, b, *array) ::
@@ -111,7 +201,12 @@ table::
 
 
 
-subsection:: moving blocks out of argument lists (trailing-block arguments)
+
+
+
+subsection:: Moving blocks out of argument lists (trailing-block arguments)
+
+
 table::
 ## instead of writing: || you can write:
 ## code:: if (x < 3, { \abc }, { \def }) :: || code:: if (x < 3) { \abc } { \def } ::
@@ -121,9 +216,12 @@ table::
 ::
 
 note::
-Trailing arguments must be literal blocks. No other expression may be used as a trailing argument, even if it evaluates to a Function. For example, you cannot use a variable name as a trailing argument, even if this variable was assigned a Function.
+Trailing arguments must be literal blocks.
+No other expression may be used as a trailing argument, even if it evaluates to a Function.
+For example, you cannot use a variable name as a trailing argument, even if this variable was assigned a Function.
 
 Using a selector as an infix binary operator (discussed in the next section) enables a visually similar construct that does allow arbitrary expressions as operands, but these binary-operator constructs technically do not have trailing arguments.
+
 code::
 (
 var f = { |n| (2**n) + (3**n) };
@@ -134,7 +232,11 @@ collect((1..5), f); // valid
 (1..5).collect f;   // syntax error (non-block as a trailing argument)
 collect((1..5)) f;  // syntax error (ibid.)
 ::
-A fairly common case when this syntactic restriction matters: a partial application using the code::_:: syntax is an expression evaluating to a Function, but it is not a literal block. Therefore:
+
+A fairly common case when this syntactic restriction matters:
+a partial application using the code::_:: syntax is an expression evaluating to a Function, but it is not a literal block.
+Therefore:
+
 code::
 do(6) _.postln  // syntax error
 6.do _.postln   // syntax error
@@ -142,9 +244,17 @@ do(6, _.postln) // valid
 6.do(_.postln)  // valid
 6 do: _.postln  // valid
 ::
+
 ::
 
-subsection:: use a selector (method name) as a binary operator
+
+
+
+
+
+subsection:: Use a selector (method name) as a binary operator
+
+
 table::
 ## instead of writing: || you can write:
 ## code:: div(x, y) :: || code:: x div: y ::
@@ -175,6 +285,7 @@ code::
 // Or by uniform use of selectors as binary operators
 (1..3) collect: { |x| x + 1 } bubble: 0
 ::
+
 ::
 
 
@@ -200,23 +311,50 @@ var a = (_+_) ! [3, 3];
 ::
 
 
+
+
+
+
+
+
+
+
 section:: Collections
 
-subsection:: create a collection
+
+
+
+subsection:: Create a collection
+
+
 table::
 ## instead of writing: || you can write:
 ## code:: Set.new.add(3).add(4).add(5) :: || code:: Set[3, 4, 5] ::
 ## code:: Array[3, 4, 5] :: || code:: [3, 4, 5] ::
 ::
 
-subsection:: indexing elements
+
+
+
+
+
+subsection:: Indexing elements
+
+
 table::
 ## instead of writing: || you can write:
 ## code:: z.at(i) :: || code:: z[i] ::
 ## code:: z.put(i, y) :: || code:: z[i] = y ::
 ::
 
-subsection:: accessing subranges of Arrays
+
+
+
+
+
+subsection:: Accessing subranges of Arrays
+
+
 table::
 ## instead of writing: || you can write:
 ## code:: a.copyRange(4, 8) :: || code:: a[4..8] ::
@@ -224,65 +362,126 @@ table::
 ## code:: a.copyFromStart(4) :: || code:: a[..4] ::
 ::
 
-subsection:: creating arithmetic series
+
+
+
+
+
+subsection:: Creating arithmetic series
+
+
 table::
 ## instead of writing: || you can write:
 ## code:: Array.series(16, 1, 1) :: or code:: series(1, nil, 16) :: || code:: (1..16) ::
 ## code:: Array.series(6, 1, 2) :: or code:: series(1, 3, 11) :: || code:: (1, 3..11) ::
 ::
+
 There is also the similar syntax for creating an iterating link::Classes/Routine:::
+
 table::
 ## instead of writing: || you can write:
 ## code:: seriesIter(1, 3, 11) :: || code:: (:1, 3..11) ::
 ::
+
 note::
 SuperCollider also supports link::Guides/ListComprehensions::.
 ::
 
-As a simple (non-combinatorial) example, the following are equivalent ways of listing the first 10 primes:
+A a simple (non-combinatorial) example, the following are equivalent ways of listing the first 10 primes:
 
 code::
 (:1..) select: _.isPrime nextN: 10;
 {: x, x <- (1..), x.isPrime }.nextN(10);
 ::
 
-subsection:: creating Events
+
+
+
+
+
+subsection:: Creating Events
+
+
 table::
 ## instead of writing: || you can write:
 ## code:: Event[\a -> 1, \b -> 2] :: || code:: (a: 1, b: 2) ::
 ::
 
-subsection:: creating Arrays with key-value pairs
+
+
+
+
+
+subsection:: Creating Arrays with key-value pairs
+
+
 table::
 ## instead of writing: || you can write:
 ## code:: [\a, 1, \b, 2] :: || code:: [a: 1, b: 2] ::
 ::
 
+
+
+
+
+
+
+
+
+
 section:: Other shortcuts
 
-subsection:: multiple assignment
+
+
+
+subsection:: Multiple assignment
+
+
 table::
 ## instead of writing: || you can write:
 ## code:: x = z.at(0); y = z.at(1); :: || code:: # x, y = z; ::
 ::
 
-subsection:: accessing environment variables
+
+
+
+
+
+subsection:: Accessing environment variables
+
+
 table::
 ## instead of writing: || you can write:
 ## code:: 'myName'.envirGet :: || code:: ~myName ::
 ## code:: 'myName'.envirPut(9) :: || code:: ~myName = 9 ::
 ::
 
-subsection:: shorthand for Symbols
+
+
+
+
+
+subsection:: Shorthand for Symbols
+
+
 table::
 ## instead of writing: || you can write:
 ## code:: 'mySymbol' :: || code:: \mySymbol ::
 ::
+
 note::
-The shorthand only admits a subset of the symbols that may be enclosed in single quotes. See link::Reference/Literals#Symbols:: for details.
+The shorthand only admits a subset of the symbols that may be enclosed in single quotes.
+See link::Reference/Literals#Symbols:: for details.
 ::
 
-subsection:: creating a Ref
+
+
+
+
+
+subsection:: Creating a Ref
+
+
 table::
 ## instead of writing: || you can write:
 ## code:: Ref.new(thing) :: || code:: `thing ::

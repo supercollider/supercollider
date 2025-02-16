@@ -1,17 +1,43 @@
 title:: 05_The_network
-summary:: Mark Polishook tutorial
 categories:: Tutorials>Mark_Polishook_tutorial
+summary:: Mark Polishook tutorial
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
-section::Networks and client/server
 
-SuperCollider 3 uses a client/server model to operate across a network. What this means is that users write client programs that ask a server to do something, that is, they request service. Such requests can occur locally on one computer or they can be distributed remotely among two or more computers. Whether the computers are in the same room or separated across the world makes no difference as long as they're connected on a network.
+
+
+
+
+
+
+
+
+section:: Networks and client/server
+
+
+
+
+SuperCollider 3 uses a client/server model to operate across a network.
+What this means is that users write client programs that ask a server to do something, that is, they request service. Such requests can occur locally on one computer or they can be distributed remotely among two or more computers.
+Whether the computers are in the same room or separated across the world makes no difference as long as they're connected on a network.
 
 Client programs in SuperCollider typically specify synthesis definition (how a particular sound will be made) and synthesis scheduling (when a particular sound will be made). In turn, a SuperCollider server (or servers) synthesizes audio according to client instructions.
 
 To summarize, clients request; servers respond.
 
-section::Client/server examples
+
+
+
+
+
+
+
+
+
+section:: Client/server examples
+
+
+
 
 code::
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -86,9 +112,23 @@ s.sendMsg("s_new", "sine", n = s.nextNodeID, 0, 1);
 s.sendMsg("/n_free", n);
 ::
 
-section::Localhost and internal servers
 
-The previous examples define server objects. But, for the most part, this isn't necessary as SuperCollider defines two such objects, the localhost and internal servers, at startup. They're represented by windows at the bottom of the screen. Each of the windows has a boot button to start its respective server.
+
+
+
+
+
+
+
+
+section:: Localhost and internal servers
+
+
+
+
+The previous examples define server objects.
+But, for the most part, this isn't necessary as SuperCollider defines two such objects, the localhost and internal servers, at startup. They're represented by windows at the bottom of the screen.
+Each of the windows has a boot button to start its respective server.
 
 See the link::Guides/ClientVsServer::, link::Classes/Server::, and link::Classes/ServerOptions:: and link::Tutorials/Server_Tutorial:: documents in the SuperCollider help system for further information.
 

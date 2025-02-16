@@ -1,19 +1,50 @@
-class:: BufFrames
-summary:: Current number of frames allocated in the buffer.
+title:: BufFrames
+categories:: UGens>Buffer>Info
+summary:: Current number of frames allocated in the buffer
 related:: Classes/BufChannels, Classes/BufDur, Classes/BufRateScale, Classes/BufSampleRate, Classes/BufSamples
-categories::  UGens>Buffer>Info
 
-Description::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
 Get the current number of allocated frames.
+
+
+
+
+
+
+
+
+
 
 classmethods::
 
-method::kr, ir
 
-argument::bufnum
+
+
+method:: kr, ir
+
+
+argument:: bufnum
+
 Buffer index.
 
-returns:: the current number of allocated frames.
+
+returns::
+ 
+the current number of allocated frames.
+
 
 discussion::
 warning::
@@ -22,10 +53,21 @@ Since a buffer can be reallocated at any time, using
 code::.ir::  will not track the changes.
 ::
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 // indexing with a phasor
@@ -35,5 +77,4 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 { BufRd.ar(1, b, K2A.ar(MouseX.kr(0, BufFrames.kr(b)))) }.play;
 
 b.free
-
 ::

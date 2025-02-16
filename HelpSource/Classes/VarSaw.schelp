@@ -1,36 +1,78 @@
-class:: VarSaw
+title:: VarSaw
+categories:: UGens>Generators>Deterministic
 summary:: Variable duty saw
 related:: Classes/Saw, Classes/SyncSaw, Classes/LFSaw
-categories::  UGens>Generators>Deterministic
 
 
-Description::
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 Sawtooth-triangle oscillator with variable duty.
 
 
+
+
+
+
+
+
+
+
 classmethods::
+
+
+
+
 private:: categories
 
-method::ar, kr
 
-argument::freq
-frequency in Hertz
+method:: ar, kr
 
-argument::iphase
-initial phase offset in cycles (0..1)
 
-argument::width
-duty cycle from zero to one.
+argument:: freq
 
-argument::mul
+Frequency in Hertz
 
-argument::add
 
-Examples::
+argument:: iphase
+
+Initial phase offset in cycles (0..1)
+
+
+argument:: width
+
+Duty cycle from teletype::zero:: to one.
+
+
+argument:: mul
+
+argument:: add
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 play({
 	VarSaw.ar(
 		LFPulse.kr(3, 0, 0.3, 200, 200),
@@ -45,5 +87,4 @@ play({ VarSaw.ar(LFPulse.kr(3, 0, 0.3, 200, 200), 0, 0.2, 0.1) });
 // compare:
 
 play({ LFPulse.ar(LFPulse.kr(3, 0, 0.3, 200, 200), 0, 0.2, 0.1) });
-
 ::

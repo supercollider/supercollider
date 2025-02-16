@@ -1,14 +1,27 @@
-class::Frame
-summary:: Stack Frame
+title:: Frame
 categories:: Core>Kernel
+summary:: Stack Frame
+
+
+
+
+
+
+
+
 
 
 description::
+
+
+
+
 Frames are used to contain the arguments, variables and other information for active Functions.
 
 There are no instance variables or methods.
 
-Since Frames are often created on the stack, it is too dangerous to allow access to them. Dangling pointers could result.
+Since Frames are often created on the stack, it is too dangerous to allow access to them.
+Dangling pointers could result.
 
 Frame instances are inaccessible to the user.
 

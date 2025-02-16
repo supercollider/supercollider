@@ -1,53 +1,114 @@
-class:: BufRd
-summary:: Buffer reading oscillator.
+title:: BufRd
+categories:: UGens>Buffer
+summary:: Buffer reading oscillator
 related:: Classes/BufWr
-categories::  UGens>Buffer
 
 
-Description::
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 Read the content of a buffer at an index.
 
 In comparison to link::Classes/PlayBuf:: :
-PlayBuf plays through the buffer by itself, BufRd only moves its read point by the phase input and
-therefore has no pitch input. BufRd has variable interpolation.
+PlayBuf plays through the buffer by itself, BufRd only moves its read point by the phase input and therefore has no pitch input. BufRd has variable interpolation.
+
+
+
+
+
+
+
+
+
 
 classmethods::
-private:: categories
-method::ar, kr
 
-argument::numChannels
-Number of channels that the buffer will be. This must be a fixed
-integer. The architecture of the SynthDef cannot change after it
-is compiled.
+
+
+
+private:: categories
+
+
+method:: ar, kr
+
+
+argument:: numChannels
+
+Number of channels that the buffer will be.
+This must be a fixed
+integer. The architecture of the SynthDef cannot change after it is compiled.
+
 note::
 If you supply a code::bufnum:: of a buffer that has a
-different code::numChannels:: than you have specified to
-the BufRd, it will post a warning and output the channels it can.::
+different code::numChannels:: than you have specified to the BufRd, it will post a warning and output the channels it can.::
 
-argument::bufnum
+
+argument:: bufnum
+
 The index of the buffer to use.
 
-argument::phase
-Audio rate modulateable index into the buffer.
-Warning:: The phase argument only offers precision for addressing 2**24 samples (about 6.3 minutes at 44100Hz).::
 
-argument::loop
+argument:: phase
+
+Audio rate modulateable index into the buffer.
+
+warning::
+The phase argument only offers precision for addressing 2**24 samples (about 6.3 minutes at 44100Hz).
+::
+
+
+argument:: loop
+
 1 means true, 0 means false. This is modulateable.
 
-argument::interpolation
+
+argument:: interpolation
+
 1 means no interpolation, 2 is linear, 4 is cubic interpolation. 
-(The numbers one, two, and emphasis::four:: correspond to the number of consecutive
-samples needed to compute each type of interpolation.)
+(The numbers one, two, and emphasis::four:: correspond to the number of consecutive samples needed to compute each type of interpolation.)
 Any other values for this argument will silently default to no interpolation.
 
+
+
+
+
+
+
+
+
+
 instancemethods::
+
+
+
+
 private:: init, argNamesInputsOffset, checkInputs
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 (
 // read a whole sound into memory
 s = Server.local;
@@ -55,7 +116,7 @@ s = Server.local;
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 )
 
-// use any AUDIO rate ugen as an index generator
+// use any AUDIO rate UGen as an index generator
 
 { BufRd.ar(1, b, SinOsc.ar(0.1) * BufFrames.ir(b)) }.play;
 { BufRd.ar(1, b, LFNoise1.ar(1) * BufFrames.ir(b)) }.play;
@@ -107,5 +168,4 @@ y.set(\rate, 2.0.rand);
 x.set(\rate, 2);
 
 b.free
-
 ::

@@ -1,46 +1,90 @@
 title:: Pattern Guide 07: Value Conversions
+categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Describes the default event's conversions for pitch, rhythm and amplitude
 related:: Tutorials/A-Practical-Guide/PG_06g_Data_Sharing, Tutorials/A-Practical-Guide/PG_08_Event_Types_and_Parameters
-categories:: Streams-Patterns-Events>A-Practical-Guide
 
-section::Pitch and rhythm conversions in the default event
 
-Using the default event prototype, pitch and rhythm can be specified in Pbind at different levels depending on the musical requirement. The default event prototype includes logic to convert higher-level abstractions into the physical parameters that are useful for synthesis.
 
-The descriptions below start with the ending value that will actually be used, following up with the other values that are used in the calculations: e.g., \delta is based on \dur and \stretch. The calculations may be bypassed by providing another value for the calculated item. If your pattern specifies code::\delta:: directly, code::\dur:: and code::\stretch:: are ignored.
 
-Note also that there is no obligation to use these constructs. The default event prototype is not meant to enforce one model of pitch or rhythm over any other; it simply provides these options, which you may use if they suit the task, or ignore or override if your task calls for something else entirely.
 
-subsection::Timing conversions
+
+
+
+
+
+section:: Pitch and rhythm conversions in the default event
+
+
+
+
+Using the default event prototype, pitch and rhythm can be specified in Pbind at different levels depending on the musical requirement.
+The default event prototype includes logic to convert higher-level abstractions into the physical parameters that are useful for synthesis.
+
+The descriptions below start with the ending value that will actually be used, following up with the other values that are used in the calculations:
+e.g., \delta is based on \dur and \stretch. The calculations may be bypassed by providing another value for the calculated item.
+If your pattern specifies code::\delta:: directly, code::\dur:: and code::\stretch:: are ignored.
+
+Note also that there is no obligation to use these constructs.
+The default event prototype is not meant to enforce one model of pitch or rhythm over any other; it simply provides these options, which you may use if they suit the task, or ignore or override if your task calls for something else entirely.
+
+
+
+
+
+
+subsection:: Timing conversions
+
 
 Rhythm is based on code::\delta:: and code::\sustain:: event keys. Both of these can be calculated from higher-level abstractions: code::\dur::, code::\stretch:: and code::\legato::.
 
-definitionList::
-## delta || The number of beats until the next event. You can give the delta pattern directly, or the default event prototype can calculate it for you based on other values:
-definitionList::
+definitionlist::
+## delta || The number of beats until the next event.
+You can give the delta pattern directly, or the default event prototype can calculate it for you based on other values:
+
+definitionlist::
 ## dur || Duration of this event.
 ## stretch || A multiplier for duration: code::delta = dur * stretch::.
 ::
+
 ::
 
-definitionList::
-## sustain || How many beats to hold this note. After code::\sustain:: beats, a release message will be sent to the synth node setting its code::gate:: control to code::0::. Your SynthDef should use code::gate:: in an link::Classes/EnvGen:: based on a sustaining envelope (see link::Classes/Env::), and the EnvGen should have a code::doneAction:: ( link::Classes/Done:: ) that releases the synth at the end. You can give the sustain pattern directly, or the default event prototype can calculate it for you based on:
-definitionList::
-## legato || A fraction of the event's duration for which the synth should sustain. code::1.0:: means this synth will release exactly at the onset of the next; code::0.5:: means the last half of the duration will be a rest. Values greater than code::1.0:: produce overlapping notes. code::sustain = dur * legato * stretch::.
-::
+definitionlist::
+## sustain || How many beats to hold this note.
+After code::\sustain:: beats, a release message will be sent to the synth node setting its code::gate:: control to code::0::.
+Your SynthDef should use code::gate:: in an link::Classes/EnvGen:: based on a sustaining envelope (see link::Classes/Env::), and the EnvGen should have a code::doneAction:: ( link::Classes/Done:: ) that releases the synth at the end.
+You can give the sustain pattern directly, or the default event prototype can calculate it for you based on:
+
+definitionlist::
+## legato || A fraction of the event's duration for which the synth should sustain.
+code::1.0:: means this synth will release exactly at the onset of the next; code::0.5:: means the last half of the duration will be a rest.
+Values greater than code::1.0:: produce overlapping notes. code::sustain = dur * legato * stretch::.
 ::
 
-subsection::Pitch conversions
+::
 
-Pitch handling in the default event is rich, with a large number of options. To use events, it is not necessary to understand all of those options. As the examples have shown, a note-playing pattern produces sensible results even specifying only code::\degree::. The other parameters allow you to control how the event gets from code::\degree:: to the frequency that is finally passed to the new synth. The default event prototype includes reasonable defaults for all of these.
+
+
+
+
+
+subsection:: Pitch conversions
+
+
+Pitch handling in the default event is rich, with a large number of options.
+To use events, it is not necessary to understand all of those options.
+As the examples have shown, a note-playing pattern produces sensible results even specifying only code::\degree::.
+The other parameters allow you to control how the event gets from code::\degree:: to the frequency that is finally passed to the new synth.
+The default event prototype includes reasonable defaults for all of these.
 
 To go from the highest level of abstraction down:
 
-definitionList::
-## \degree || represents a scale degree. Fractional scale degrees support accidentals: adding code::0.1:: to an integer scale degree raises the corresponding chromatic note number by a semitone, and subtracting code::0.1:: lowers the chromatic note number. code::0.2:: raises or lowers by two semitones, and so on.
+definitionlist::
+## \degree || represents a scale degree. Fractional scale degrees support accidentals:
+adding code::0.1:: to an integer scale degree raises the corresponding chromatic note number by a semitone, and subtracting code::0.1:: lowers the chromatic note number. code::0.2:: raises or lowers by two semitones, and so on.
 ## \note || is a chromatic note index, calculated from code::\degree:: based on a code::\scale:: and modal transposition (code::\mtranspose::, scale degrees to raise or lower the note). code::\note:: is in equal-tempered units of any number of steps to the octave ( code::\stepsPerOctave:: ).
 ## \midinote || is a 12ET conversion of code::\note::, transposed into the right code::\octave:: and applying gamut transposition (code::\gtranspose::, given in stepsPerOctave units). If code::\stepsPerOctave:: is anything other than code::12::, the non-12ET units are scaled into 12 code::\midinote:: units per octave.
-## \freq || is calculated from code::\midinote:: by code::midicps::. A chromatic transposition in 12ET units ( code::\ctranspose:: ) is added.
+## \freq || is calculated from code::\midinote:: by code::midicps::.
+A chromatic transposition in 12ET units ( code::\ctranspose:: ) is added.
 ::
 
 Most note-playing SynthDefs use code::freq:: as an argument. If desired, they may use code::midinote::, code::note:: or even code::degree::.
@@ -49,35 +93,50 @@ To simplify into rules of thumb:
 
 list::
 ## If your material is organized around scales or modes, use code::\degree::.
+
 list::
 ## If the scale has different ascending and descending patterns, use code::\note:: in your Pbind, with the filter pattern link::Classes/Pavaroh::.
 ::
+
 ## If your material is organized around equal divisions of the octave (not necessarily 12 divisions), use code::\note:: (and code::\stepsPerOctave:: for equal temperament other than 12 notes).
 ## If your material is organized around MIDI note numbers (or 12-tone equal temperament), code::\midinote:: will also work.
 ## If you prefer to give frequencies directly in Hz, use code::\freq::.
 ::
 
-Following is a complete description of all elements of the pitch system. Feel free to use the ones that are of interest, and ignore the rest.
+Following is a complete description of all elements of the pitch system.
+Feel free to use the ones that are of interest, and ignore the rest.
 
-definitionList::
-## freq || Frequency in Hz. May be given directly, or calculated based on the following. Pitch may be expressed at any one of several levels. Only one need be used at a time. For instance, if you write pitch in terms of scale degrees, the note, MIDI note and frequency values are calculated automatically for you.
-definitionList::
+definitionlist::
+## freq || Frequency in Hz. May be given directly, or calculated based on the following.
+Pitch may be expressed at any one of several levels.
+Only one need be used at a time.
+For instance, if you write pitch in terms of scale degrees, the note, MIDI note and frequency values are calculated automatically for you.
+
+definitionlist::
 ## ctranspose || Chromatic transposition, in 12ET units. Added to midinote.
-## midinote || MIDI note number; 12 MIDI notes = one octave. This may be fractional if needed. Calculated based on:
-definitionList::
+## midinote || MIDI note number; 12 MIDI notes = one octave. This may be fractional if needed.
+Calculated based on:
+
+definitionlist::
 ## root || The scale root, given in 12ET MIDI note increments.
-## octave || The octave number for code::\note = 0 ::. The default is code::5::, mapping note code::0:: onto MIDI note code::60::.
+## octave || The octave number for code::\note = 0 ::.
+The default is code::5::, mapping note code::0:: onto MIDI note code::60::.
 ## stepsPerOctave || How many code::\note:: units map onto the octave. Supports non-12ET temperaments.
 ## gtranspose || Non-12ET transposition, in code::\note:: units. Added to note.
-## note || The note number, in any division of the octave. code::0:: is the scale root. Calculated based on:
-definitionList::
+## note || The note number, in any division of the octave.
+code::0:: is the scale root. Calculated based on:
+
+definitionlist::
 ## degree || Scale degree.
-## scale || Mapping of scale degrees onto semitones. Major, for instance, is code::[0, 2, 4, 5, 7, 9, 11]::.
+## scale || Mapping of scale degrees onto semitones.
+Major, for instance, is code::[0, 2, 4, 5, 7, 9, 11]::.
 ## stepsPerOctave || (Same as above.)
 ## mtranspose || Modal transposition; added to degree.
 ::
+
 ::
 ::
+
 ::
 
 See also the link::Classes/Scale:: class for a repository of scale configurations, and the possibility of non-ET tuning.
@@ -97,7 +156,13 @@ p = Pbind(
 p.stop;
 ::
 
-subsection::Amplitude conversion
+
+
+
+
+
+subsection:: Amplitude conversion
+
 
 Finally, you can specify amplitude as code::\db:: or code::\amp::. If it's given as code::\db::, the amplitude will be calculated automatically using code::.dbamp::.
 

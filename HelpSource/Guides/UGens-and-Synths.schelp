@@ -1,15 +1,35 @@
 title:: Unit Generators and Synths
-summary:: Introduction to some fundamental concepts
 categories:: Server>Nodes
+summary:: Introduction to some fundamental concepts
 
-A unit generator is an object that processes or generates sound. There are many classes of unit generators, all of which derive from the class link::Classes/UGen::.
 
-Unit generators in SuperCollider can have many inputs, but always have a single output. Unit generator classes which would naturally have several outputs such as a panner, return an array of unit generators when instantiated. The convention of having only a single output per unit generator allows the implementation of multiple channels by using arrays of unit generators. (See link::Guides/Multichannel-Expansion:: for more details.)
 
-section::Instantiation. Audio Rate, Control Rate
+A unit generator is an object that processes or generates sound.
+There are many classes of unit generators, all of which derive from the class link::Classes/UGen::.
 
-A unit generator is created by sending the 'ar' or 'kr' message to the unit generator's class object. The 'ar' message creates a unit generator that runs at audio rate. The 'kr' message creates a unit generator that runs
-at control rate. Control rate unit generators are used for low frequency or slowly changing control signals. Control rate unit generators produce only a single sample per control cycle and therefore use less processing power than audio rate unit generators.
+Unit generators in SuperCollider can have many inputs, but always have a single output.
+Unit generator classes which would naturally have several outputs such as a panner, return an array of unit generators when instantiated.
+The convention of having only a single output per unit generator allows the implementation of multiple channels by using arrays of unit generators.
+(See link::Guides/Multichannel-Expansion:: for more details.)
+
+
+
+
+
+
+
+
+
+
+section:: Instantiation. Audio Rate, Control Rate
+
+
+
+
+A unit generator is created by sending the 'ar' or 'kr' message to the unit generator's class object. The 'ar' message creates a unit generator that runs at audio rate.
+The 'kr' message creates a unit generator that runs
+at control rate. Control rate unit generators are used for low frequency or slowly changing control signals.
+Control rate unit generators produce only a single sample per control cycle and therefore use less processing power than audio rate unit generators.
 
 The input parameters for a unit generator are given in the documentation for that class.
 
@@ -19,9 +39,23 @@ FSinOsc.ar(800, 0.0, 0.2); // create a sine oscillator at 800 Hz, phase 0.0, amp
 
 A unit generator's signal inputs can be other unit generators, scalars, or arrays of unit generators and scalars.
 
-section::SynthDefs and Synths
 
-In order to play a unit generator one needs to compile it in a link::Classes/SynthDef:: and play it on the server in a link::Classes/Synth::. A synth node is a container for one or more unit generators that execute together. A SynthDef is like a kind of pattern for creating synth nodes on the server.
+
+
+
+
+
+
+
+
+section:: SynthDefs and Synths
+
+
+
+
+In order to play a unit generator one needs to compile it in a link::Classes/SynthDef:: and play it on the server in a link::Classes/Synth::.
+A synth node is a container for one or more unit generators that execute together.
+A SynthDef is like a kind of pattern for creating synth nodes on the server.
 
 code::
 s.boot; // boot the server
@@ -44,7 +78,8 @@ s.sendMsg("/s_new", "FSinOsc-test", n);
 s.sendMsg("/n_free", n);
 ::
 
-Because any expression returns its value, we can nest the first two lines above for convenience. (See link::Reference/Expression-Sequence:: for more detail.)
+Because any expression returns its value, we can nest the first two lines above for convenience.
+(See link::Reference/Expression-Sequence:: for more detail.)
 
 code::
 s.sendMsg("/s_new", "FSinOsc-test", n = s.nextNodeID;);
@@ -53,15 +88,32 @@ s.sendMsg("/n_free", n);
 
 It is VERY important and useful to understand the messaging structure which underlies the clientside Synth, Group, Buffer, and Bus objects. See link::Guides/NodeMessaging::, link::Tutorials/Server_Tutorial::, and link::Guides/ClientVsServer:: for more detail.
 
-As a convenience the 'play' method of class link::Classes/Function:: will compile a SynthDef and create and play a synth using the function for you. With this method an link::Classes/Out:: ugen will be created for you if you do not do so explicitly.
+As a convenience the 'play' method of class link::Classes/Function:: will compile a SynthDef and create and play a synth using the function for you.
+With this method an link::Classes/Out:: UGen will be created for you if you do not do so explicitly.
 
 code::
 { FSinOsc.ar(800, 0, 0.2) }.play; // create and play a sine oscillator at 800 Hz
 ::
 
-section::Building Patches
 
-You can do math operations on unit generators and the result will be another unit generator. Doing math on unit generators is not doing any signal calculation itself - it is building the network of unit generators that will execute once they are played in a Synth. This is the essential thing to understand: Synthesis networks, or in other words signal flow graphs are created by executing expressions of unit generators. The following expression creates a flow graph whose root is an instance of link::Classes/BinaryOpUGen:: which performs the '+' operation. Its inputs are the link::Classes/FSinOsc:: and link::Classes/BrownNoise:: unit generators.
+
+
+
+
+
+
+
+
+section:: Building Patches
+
+
+
+
+You can do math operations on unit generators and the result will be another unit generator.
+Doing math on unit generators is not doing any signal calculation itself - it is building the network of unit generators that will execute once they are played in a Synth.
+This is the essential thing to understand:
+Synthesis networks, or in other words signal flow graphs are created by executing expressions of unit generators.
+The following expression creates a flow graph whose root is an instance of link::Classes/BinaryOpUGen:: which performs the '+' operation. Its inputs are the link::Classes/FSinOsc:: and link::Classes/BrownNoise:: unit generators.
 
 code::
 FSinOsc.ar(800, 0.0, 0.2) + BrownNoise.ar(0.2); // press enter and look at the post window

@@ -1,13 +1,38 @@
-class:: ProxyMonitorGui
-summary:: controls the top-level of a nodeproxy and its monitor
+title:: ProxyMonitorGui
 categories:: JITLib>GUI, Live Coding
+summary:: Controls the top-level of a nodeproxy and its monitor
 related:: Classes/ProxyMixer, Classes/NodeProxyEditor
+
+
+
+
+
+
+
+
+
 
 description::
 
-is a GUI for controlling the top-level of a nodeproxy and its monitor. It is e.g. used in ProxyMixer, and NodeProxyEditor, and it is cross-platform.
 
-Examples::
+
+
+I a GUI for controlling the top-level of a nodeproxy and its monitor.
+It is e.g. used in ProxyMixer, and NodeProxyEditor, and it is cross-platform.
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 s.boot;
@@ -55,7 +80,8 @@ ProxyMonitorGui(~test, showLevel: true, showPlayN: false);
 	// without multichan out button - then uses proxy.play. true = playN by default.
 ProxyMonitorGui(~test, showPlayN: false);
 
-	// show proxy name or not. on by default.
+	// show proxy name or not.
+on by default.
 ProxyMonitorGui(~test, showName: false);
 
 	// show proxy pause and send buttons - true by default

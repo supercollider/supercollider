@@ -1,10 +1,24 @@
 title:: Keyboard Shortcuts
-summary:: Keyboard shortcuts for SuperCollider
 categories:: Frontends
+summary:: Keyboard shortcuts for SuperCollider
+
+
+
+
+
+
+
+
+
 
 section:: Language-Specific Commands
 
-note:: For shortcuts bindings of teletype::ScIDE::, please consult the menu and/or the shortcut configuration menu.::
+
+
+
+note::
+For shortcuts bindings of teletype::ScIDE::, please consult the menu and/or the shortcut configuration menu.
+::
 
 table::
 ## strong::Functions::
@@ -139,7 +153,20 @@ table::
 || C-c C-p p
 ::
 
+
+
+
+
+
+
+
+
+
 section:: Files
+
+
+
+
 table::
 ## strong::Functions::
 || strong::macOS::
@@ -183,7 +210,20 @@ table::
 || E
 ::
 
-section::Text Editing
+
+
+
+
+
+
+
+
+
+section:: Text Editing
+
+
+
+
 table::
 ## strong::Functions::
 || strong::macOS::
@@ -281,7 +321,20 @@ table::
 ||
 ::
 
-section::Formatting
+
+
+
+
+
+
+
+
+
+section:: Formatting
+
+
+
+
 table::
 ## strong::Functions::
 || strong::macOS::
@@ -336,7 +389,8 @@ table::
 ||
 ||
 
-## Insert (): enclose selected text with (txt)
+## Insert ():
+enclose selected text with (txt)
 || cmd-(
 ||
 ||

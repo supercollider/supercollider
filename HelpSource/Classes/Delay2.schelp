@@ -1,32 +1,64 @@
-class:: Delay2
-summary:: Two sample delay.
+title:: Delay2
+categories:: UGens>Delays
+summary:: Two sample delay
 related:: Classes/Delay1, Classes/TDelay
-categories::  UGens>Delays
 
 
-Description::
 
-Delays the input by two samples.
+
+
+
+
+
+
+
+description::
+
+
+
+
+Delay the input by two samples.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
 
-argument::in
+
+
+method:: ar, kr
+
+
+argument:: in
+
 The input signal.
 
-argument::mul
+
+argument:: mul
+
 The output will be multiplied by this value.
 
-argument::add
+
+argument:: add
+
 This value will be added to the output.
 
-argument::x1
+
+argument:: x1
+
 The sample directly preceding the delayed input signal, which is the second output sample.
 This can be a numeric value or a code::UGen::.
 
-argument::x2
+
+argument:: x2
+
 The sample preceding the delayed input signal by two samples, which is the first output sample.
 This can be a numeric value or a code::UGen::.
 
@@ -35,8 +67,10 @@ When running at audio rate, strong::x1:: and strong::x2:: default to code::0.0::
 At control rate, the default values are set to the first sample of strong::in::, i.e. the first input sample is held during the delay.
 ::
 
+
 discussion::
 The output sequence is:
+
 teletype::
 out[0] = in[-2] = x2
 out[1] = in[-1] = x1
@@ -51,10 +85,20 @@ At audio-rate, an analog delay model is followed—the input signal is preceded 
 At control-rate, leading with zeros is less appropriate because control signals are often DC or other non zero-mean signals (e.g. a frequency or gain control signal).
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 (
 {
 	var z = Dust.ar(1000);
@@ -80,5 +124,4 @@ code::
     ]
 }.plot(0.001).plotMode_(\points)
 )
-
 ::

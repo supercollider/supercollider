@@ -1,12 +1,39 @@
-class:: BasicOpUGen
-summary:: Common superclass to operations on UGen
+title:: BasicOpUGen
 categories:: UGens>Algebraic
+summary:: Common superclass to operations on UGen
 related:: Classes/UnaryOpUGen, Classes/BinaryOpUGen, Overviews/Operators
 
+
+
+
+
+
+
+
+
+
 description::
+
+
+
+
 Common superclass to operations on UGens
+
+
+
+
+
+
+
+
+
 
 instancemethods::
 
-method::operator
-set or get the operator
+
+
+
+method:: operator
+
+
+Set or get the operator

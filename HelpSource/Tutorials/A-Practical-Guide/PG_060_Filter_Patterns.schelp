@@ -1,97 +1,181 @@
 title:: Pattern Guide 060: Filter Patterns
+categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Overview of patterns that modify the behavior of other patterns
 related:: Tutorials/A-Practical-Guide/PG_05_Math_on_Patterns, Tutorials/A-Practical-Guide/PG_06a_Repetition_Contraint_Patterns
-categories:: Streams-Patterns-Events>A-Practical-Guide
 
-section::Filter patterns
+
+
+
+
+
+
+
+
+
+section:: Filter patterns
+
+
+
 
 Just like filter UGens modify an input signal, filter patterns modify the stream of values coming from a pattern.
 
-We have already seen some operations that modify a stream of values: math operators (which render as link::Classes/Punop::, link::Classes/Pbinop:: or link::Classes/Pnaryop:: patterns) and certain collection methods (mainly code::collect::, code::select:: and code::reject::). Filter pattern classes can do some other surprising and useful things.
+We have already seen some operations that modify a stream of values:
+math operators (which render as link::Classes/Punop::, link::Classes/Pbinop:: or link::Classes/Pnaryop:: patterns) and certain collection methods (mainly code::collect::, code::select:: and code::reject::).
+Filter pattern classes can do some other surprising and useful things.
 
 All filter patterns take at least one source pattern, providing the values/events to be filtered. Some filter patterns are designed for value patterns, others for event patterns. A handful work equally well with both single values and events.
 
 Following is a categorized overview. See the separate category documents for more detail.
 
-subsection::Repetition and Constraint patterns
+
+
+
+
+
+subsection:: Repetition and Constraint patterns
+
+
 link::Tutorials/A-Practical-Guide/PG_06a_Repetition_Contraint_Patterns::
 
-definitionList::
-## code::Pclutch(pattern, connected):: || If the code::connected:: pattern is true, Pclutch returns the next value from code::pattern::. If code::connected:: is false, the previous pattern value is repeated. It's like a clutch in a car: when engaged, the pattern moves forward; when disconnected, it stays where it is.
-## code::Pn(pattern, repeats):: || Embeds the source pattern code::repeats:: times: simple repetition. This also works on single values: code::Pn(1, 5):: outputs the number 1 5 times.
+definitionlist::
+## code::Pclutch(pattern, connected):: || If the code::connected:: pattern is true, Pclutch returns the next value from code::pattern::. If code::connected:: is false, the previous pattern value is repeated.
+It's like a clutch in a car:
+when engaged, the pattern moves forward; when disconnected, it stays where it is.
+## code::Pn(pattern, repeats):: || Embeds the source pattern code::repeats:: times: simple repetition. This also works on single values:
+code::Pn(1, 5):: outputs the number 1 5 times.
 ## code::Pdup(n, pattern):: || code::n:: and code::pattern:: are both patterns. Each value from code::pattern:: is repeated code::n:: times. If code::n:: is a pattern, each value can be repeated a different number of times.
 ## code::Psubdivide(n, pattern):: || Like Pdup, except the pattern value is divided by the number of repeats (so that the total time for the repeat cycle is the duration value from the source pattern).
 
 ## code::Pfin(count, pattern):: || Returns exactly code::count:: values from the source pattern, then stops.
-## code::Pconst(sum, pattern, tolerance):: || Output numbers until the sum reaches a predefined limit. The last output value is adjusted so that the sum matches the limit exactly.
+## code::Pconst(sum, pattern, tolerance):: || Output numbers until the sum reaches a predefined limit.
+The last output value is adjusted so that the sum matches the limit exactly.
 ## code::Pfindur(dur, pattern, tolerance):: || Like Pconst, but applying the "constrain" behavior to the event's rhythmic values. The source pattern runs up to the specified duration, then stops. This is very useful if you know how long a musical behavior should go on, but the number of events to fill up that time is not known.
-## code::Psync(pattern, quant, maxdur, tolerance):: || Like Pfindur, but does not have a fixed duration limit. Instead, it plays until either it reaches code::maxdur:: (in which case it behaves like Pfindur, adjusting the last event so the total duration matches code::maxdur::), or the pattern stops early and the last event is rounded up to the next integer multiple of quant.
+## code::Psync(pattern, quant, maxdur, tolerance):: || Like Pfindur, but does not have a fixed duration limit.
+Instead, it plays until either it reaches code::maxdur:: (in which case it behaves like Pfindur, adjusting the last event so the total duration matches code::maxdur::), or the pattern stops early and the last event is rounded up to the next integer multiple of quant.
 ::
 
-subsection::Time-based patterns
+
+
+
+
+
+subsection:: Time-based patterns
+
+
 link::Tutorials/A-Practical-Guide/PG_06b_Time_Based_Patterns::
 
-definitionList::
+definitionlist::
 ## code::Ptime(repeats):: || Returns the amount of time elapsed since embedding.
 ## code::Pstep(levels, durs, repeats):: || Repeat a code::level:: value for its corresponding duration, then move to the next.
-## code::Pseg(levels, durs, curves, repeats):: || Similar to Pstep, but interpolates to the next value instead of stepping abruptly at the end of the duration. Interpolation is linear by default, but any envelope segment curve can be used. code::levels::, code::durs:: and code::curves:: should be patterns. Related: Use of link::Classes/Env:: as a pattern.
+## code::Pseg(levels, durs, curves, repeats):: || Similar to Pstep, but interpolates to the next value instead of stepping abruptly at the end of the duration.
+Interpolation is linear by default, but any envelope segment curve can be used.
+code::levels::, code::durs:: and code::curves:: should be patterns. Related: Use of link::Classes/Env:: as a pattern.
 ::
 
-subsection::Adding values into event patterns (Or, "Pattern Composition")
+
+
+
+
+
+subsection:: Adding values into event patterns (Or, "Pattern Composition")
+
+
 link::Tutorials/A-Practical-Guide/PG_06c_Composition_of_Patterns::
 
-definitionList::
+definitionlist::
 ## code::Pbindf(pattern, pairs):: || Adds new key-value pairs onto a pre-existing Pbind-style pattern.
 ## code::Pchain(patterns):: || Chains separate Pbind-style patterns together, so that all their key-value pairs go into the same event.
 ::
 
-subsection::Parallelizing event patterns
+
+
+
+
+
+subsection:: Parallelizing event patterns
+
+
 link::Tutorials/A-Practical-Guide/PG_06d_Parallel_Patterns::
 
-definitionList::
+definitionlist::
 ## code::Ppar(list, repeats):: || Start each of the event patterns in the code::list:: at the same time. When the last one finishes, the Ppar also stops. If code::repeats:: > 1, all the subpatterns start over again from the beginning.
-## code::Ptpar(list, repeats):: || Here, the list consists of code::[timeOffset0, pattern0, timeOffset1, pattern1...]:: . Each pattern starts after the number of beats given as its time offset. The patterns can start at different times relative to each other.
+## code::Ptpar(list, repeats):: || Here, the list consists of code::[timeOffset0, pattern0, timeOffset1, pattern1...]:: . Each pattern starts after the number of beats given as its time offset.
+The patterns can start at different times relative to each other.
 ## code::Pgpar(list, repeats):: || Like Ppar, but it creates a separate group for each subpattern.
 ## code::Pgtpar(list, repeats):: || This is supposed to be like Ptpar with separate groups for the sub patterns, but the class is currently broken.
 
-## code::Pspawner(routineFunc):: || The function is used to make a routine. A Spawner object gets passed into this routine, and this object is used to add or remove streams to/from the parallel stream. New patterns can be added in sequence or in parallel.
+## code::Pspawner(routineFunc):: || The function is used to make a routine.
+A Spawner object gets passed into this routine, and this object is used to add or remove streams to/from the parallel stream. New patterns can be added in sequence or in parallel.
 ## code::Pspawn(pattern, spawnProtoEvent):: || Supports most of the features of Pspawner, but uses a pattern to control the link::Classes/Spawner:: object instead of a routine function.
 ::
 
-subsection::Language control methods
+
+
+
+
+
+subsection:: Language control methods
+
+
 link::Tutorials/A-Practical-Guide/PG_06e_Language_Control::
 
 Some patterns mimic language-style control methods: conditionals ( link::Classes/Pif:: ), loops ( link::Classes/Pwhile:: ) and error cleanup ( link::Classes/Pprotect:: ).
 
-definitionList::
-## code::Pif(condition, iftrue, iffalse, default):: || Evaluates a pattern code::condition:: that returns true or false. Then, one value is taken from the true or false branch before going back to evaluate the condition again. The code::default:: value or pattern comes into play when the true or false branch stops producing values (returns nil). If the code::default:: is not given, Pif returns control to the parent upon nil from either branch.
-## code::Pseed(randSeed, pattern):: || Random number generators depend on seed values; setting a specific seed produces a repeatable stream of pseudorandom numbers. Pseed sets the random seed before embedding code::pattern::, effectively restarting the random number generator at the start of the pattern.
+definitionlist::
+## code::Pif(condition, iftrue, iffalse, default):: || Evaluates a pattern code::condition:: that returns teletype::true:: or false. Then, one value is taken from the true or false branch before going back to evaluate the condition again.
+The code::default:: value or pattern comes into play when the true or false branch stops producing values (returns teletype::nil::). If the code::default:: is not given, Pif returns control to the parent upon teletype::nil:: from either branch.
+## code::Pseed(randSeed, pattern):: || Random number generators depend on seed values; setting a specific seed produces a repeatable stream of pseudorandom numbers.
+Pseed sets the random seed before embedding code::pattern::, effectively restarting the random number generator at the start of the pattern.
 ## code::Pprotect(pattern, func):: || Like the code::protect:: error handling method, if an error occurs while getting the next value from the pattern, the function will be evaluated before the error interrupts execution.
-## code::Ptrace(pattern, key, printStream, prefix):: || For debugging, Ptrace prints every return value. Is your pattern really doing what you think? This will tell you. A Ptrace is created automatically by the code::trace:: message: code::aPattern.trace(key, printStream, prefix):: --> code::Ptrace(aPattern, key, printStream, prefix)::.
-## code::Pwhile(func, pattern):: || Like link::Reference/Control-Structures##while:: as long as the function evaluates to true, the pattern is embedded. The function is checked once at the beginning and thereafter when the pattern comes to an end. If it's applied to an infinite pattern, there's no looping because the pattern never gives control back.
+## code::Ptrace(pattern, key, printStream, prefix):: || For debugging, Ptrace prints every return value.
+Is your pattern really doing what you think?
+This will tell you. A Ptrace is created automatically by the code::trace:: message: code::aPattern.trace(key, printStream, prefix):: --> code::Ptrace(aPattern, key, printStream, prefix)::.
+## code::Pwhile(func, pattern):: || Like link::Reference/Control-Structures##while:: as long as the function evaluates to teletype::true::, the pattern is embedded. The function is checked once at the beginning and thereafter when the pattern comes to an end.
+If it's applied to an infinite pattern, there's no looping because the pattern never gives control back.
 ::
 
-subsection::Server control methods
+
+
+
+
+
+subsection:: Server control methods
+
+
 link::Tutorials/A-Practical-Guide/PG_06f_Server_Control::
 
-definitionList::
-## code::Pbus(pattern, dur, fadeTime, numChannels, rate):: || Creates a private group and bus for the synths played by the pattern. The group and bus are released when the pattern stops. Useful for isolating signals from different patterns.
+definitionlist::
+## code::Pbus(pattern, dur, fadeTime, numChannels, rate):: || Creates a private group and bus for the synths played by the pattern.
+The group and bus are released when the pattern stops.
+Useful for isolating signals from different patterns.
 ## code::Pgroup(pattern):: || Creates a private group (without private bus) for the pattern's synths.
 
 ## code::Pfx(pattern, fxname, pairs):: ||
-## code::Pfxb(pattern, fxname, pairs):: || Both of these patterns play an effect synth at the tail of the target group. This synth should read from the bus identified by the code::out:: argument, and write the processed signal onto the same bus using either link::Classes/ReplaceOut:: or link::Classes/XOut::. Pfx uses whatever bus and group are specified in the incoming event. Pfxb allocates a separate bus and group for the effect and the pattern.
+## code::Pfxb(pattern, fxname, pairs):: || Both of these patterns play an effect synth at the tail of the target group.
+This synth should read from the bus identified by the code::out:: argument, and write the processed signal onto the same bus using either link::Classes/ReplaceOut:: or link::Classes/XOut::.
+Pfx uses whatever bus and group are specified in the incoming event.
+Pfxb allocates a separate bus and group for the effect and the pattern.
 
-## code::Pproto(makeFunction, pattern, cleanupFunc):: || Allocate resources on the server and add references to them into the event prototype used to play code::pattern::. When the pattern stops (or is stopped), the resources can be removed automatically.
+## code::Pproto(makeFunction, pattern, cleanupFunc):: || Allocate resources on the server and add references to them into the event prototype used to play code::pattern::.
+When the pattern stops (or is stopped), the resources can be removed automatically.
 ::
 
-subsection::Data sharing
+
+
+
+
+
+subsection:: Data sharing
+
+
 link::Tutorials/A-Practical-Guide/PG_06g_Data_Sharing::
 
-definitionList::
+definitionlist::
 ## code::Pkey(key):: || Read the code::key:: in the input event, making previously-calculated values available for other streams.
 ## code::Penvir(envir, pattern, independent):: || Run the pattern inside a given environment.
 ## code::Pfset(func, pattern):: || Assign default values into the input event before getting each result event out of the given pattern.
-## code::Plambda(pattern, scope):: || Creates a "function scope" into which values are assigned using link::Classes/Plet::, and from which values are retrieved with link::Classes/Pget::. Pget is somewhat like link::Classes/Pkey::, except that its scope is strictly internal, hidden from the caller. With Pkey, the source values remain present in the event returned to the caller.
+## code::Plambda(pattern, scope):: || Creates a "function scope" into which values are assigned using link::Classes/Plet::, and from which values are retrieved with link::Classes/Pget::.
+Pget is somewhat like link::Classes/Pkey::, except that its scope is strictly internal, hidden from the caller. With Pkey, the source values remain present in the event returned to the caller.
 ::
 
 Previous:	link::Tutorials/A-Practical-Guide/PG_05_Math_on_Patterns::

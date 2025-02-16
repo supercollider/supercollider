@@ -1,22 +1,29 @@
 title:: Default Group
-summary:: An automatically created Group in sclang
 categories:: Server>Nodes
+summary:: An automatically created Group in sclang
 related:: Classes/Group, Classes/RootNode, Classes/Node, Guides/NodeMessaging, Guides/Order-of-execution
+
+
 
 tree::
 ## root node (id:0)
+
 tree::
 ## default group (id:1)
 ::
+
 ::
 
-When a Server is booted, there is a top level group with an ID of 0 that
-defines the root of the tree. This is represented by a subclass of Group:
+When a Server is booted, there is a top level group with an ID of teletype::0:: that
+defines the root of the tree.
+This is represented by a subclass of Group:
 link::Classes/RootNode::.
 
 Separate from the root group is sclang's notion of a "default group," which is
-automatically created when the server is booted. You can access it with the
-method link::Classes/Server#-defaultGroup::. This group is the default
+automatically created when the server is booted.
+You can access it with the
+method link::Classes/Server#-defaultGroup::.
+This group is the default
 enclosing group for all Nodes, i.e. it's what you get if you don't specify. In
 general, you should create new Nodes within the default group of a Server
 rather than in its RootNode. In a single-client setup, the default group will
@@ -24,17 +31,21 @@ have an ID of 1.
 
 Keep in mind that default groups are a client-side concept, and you are
 responsible for creating them if you're running scsynth from the command line
-or NRT mode, or developing an alternate client. footnote::
+or NRT mode, or developing an alternate client.
+footnote::
 When booting the server from the command line, you can create the default group manually with:
+
 code::
 s.initTree;
 ::
+
 ::
 
 This is the default target for all Nodes when using object style and is what
 you will get if you supply a link::Classes/Server:: as a target. If you don't
 specify a target or pass in nil, you will get the default group of the default
 Server.
+
 code::
 s.boot;
 a = Synth.new(\default); // creates a synth in the default group of the default Server
@@ -42,7 +53,11 @@ a.group; // note the Group ID
 a.group == Server.default.defaultGroup;
 // -> true
 ::
-The default group serves an important purpose: It provides a predictable basic Node tree so that methods such as Server-scope, Server-record, etc. can function without running into order of execution problems. In the example below the scoping node will come after the default group.
+
+The default group serves an important purpose:
+It provides a predictable basic Node tree so that methods such as Server-scope, Server-record, etc. can function without running into order of execution problems.
+In the example below the scoping node will come after the default group.
+
 code::
 s.boot;
 
@@ -56,41 +71,69 @@ s.queryAllNodes;
 
 s.quit;
 ::
-Note that the default group is persistent: It is created in Server's code::initTree:: method (executed along with any code stored in its tree instance variable; see Server for more detail) and is recreated upon reboot, after pressing Cmd-., and after all nodes are freed. When using osc messages this means that a target node of id 1 can always be used:
+
+Note that the default group is persistent:
+It is created in Server's code::initTree:: method (executed along with any code stored in its tree instance variable; see Server for more detail) and is recreated upon reboot, after pressing Cmd-., and after all nodes are freed.
+When using osc messages this means that a target node of id 1 can always be used:
+
 code::
 s.sendMsg("/s_new", "snd", 1832,0,1); // add to head of group 1
 ::
+
 The default group can be specifically freed, but there is generally no reason that one would want to do so.
 
-In general one should add nodes to the default group rather than the RootNode unless one has a specific reason to do so (i.e. adding some new functionality such as recording and scoping which is dependent upon a predictable basic node order). When using object style the default group is the default target for all new nodes, so nodes will normally not be added to the RootNode unless that is explicitly specified. It is of course possible to do so, but it should only be done with a proper understanding of the issues involved.
+In general one should add nodes to the default group rather than the RootNode unless one has a specific reason to do so (i.e. adding some new functionality such as recording and scoping which is dependent upon a predictable basic node order).
+When using object style the default group is the default target for all new nodes, so nodes will normally not be added to the RootNode unless that is explicitly specified.
+It is of course possible to do so, but it should only be done with a proper understanding of the issues involved.
 
 For instance, if one were to place an 'effects' synth after the default group and call Server-record or Server-scope, the resulting recording or scope synths may not be correctly ordered:
+
 tree::
 ## default group
+
 tree::
 ## source synth1
 ## source synth2
 ::
+
 ## recording synth
 ## effects synth
 ::
+
 In the above example the recording synth might not capture the output of the effects synth since it comes later in the node order.
 
 A better method in this case is to create a group within the default group and place the effects synth after that.
+
 tree::
 ## default group
+
 tree::
 ## source group
+
 tree::
 ## source synth1
 ## source synth2
 ::
+
 ## effects synth
 ::
+
 ## recording synth
 ::
 
+
+
+
+
+
+
+
+
+
 section:: Default groups in multi-client setups
+
+
+
 
 See link::Guides/MultiClient_Setups:: for more info.
 
@@ -100,6 +143,7 @@ group. All nodes belonging to one client are in its default group and can be
 specifically addressed.
 
 This keeps nodes cleanly separated by default, but a client also knows the
-default groups of all other clients. This is accessible via the method
+default groups of all other clients.
+This is accessible via the method
 link::Classes/Server#-defaultGroups::, which is an array mapping client IDs
 to default groups.

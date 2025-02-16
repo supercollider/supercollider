@@ -1,28 +1,63 @@
-class:: PV_LocalMax
-summary:: Pass bins which are a local maximum.
-related:: Classes/FFT, Classes/IFFT, Classes/PV_MagAbove, Classes/PV_MagBelow, Classes/PV_MagClip
+title:: PV_LocalMax
 categories:: UGens>FFT
+summary:: Pass bins which are a local maximum
+related:: Classes/FFT, Classes/IFFT, Classes/PV_MagAbove, Classes/PV_MagBelow, Classes/PV_MagClip
 
-Description::
 
-Passes only bins whose magnitude is above a threshold and above their nearest neighbors.
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+Passeonly only bins whose magnitude is above a threshold and above their nearest neighbors.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::new
 
-argument::buffer
+
+
+method:: new
+
+
+argument:: buffer
 
 FFT buffer.
 
 
-argument::threshold
+argument:: threshold
 
 Magnitude threshold.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 s.boot;
@@ -48,5 +83,4 @@ SynthDef("help-localMax2", { |out = 0, soundBufnum = 2|
 	Out.ar(out, 0.1 * IFFT(chain).dup);
 }).play(s, [\soundBufnum, b]);
 )
-
 ::

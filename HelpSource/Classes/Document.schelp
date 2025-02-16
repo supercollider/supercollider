@@ -1,131 +1,320 @@
-class:: Document
-redirect:: implementationClass
-summary:: Editor-specific text document editing
+title:: Document
 categories:: Frontends
+summary:: Editor-specific text document editing
+redirect:: implementationClass
+
 related:: Classes/EmacsDocument, Classes/ScelDocument
 
+
+
+
+
+
+
+
+
+
 description::
-The Document class represents a text document within the context of your text editing environment. You can use the class to programmatically create, modify, and query these documents.
 
-Document used to be an abstract class, meaning it didn't provide all the functionality itself, but instead relied on subclasses to complete the functionality. One such subclass was CocoaDocument. Although CocoaDocument was available only to macOS and had an ad hoc interface, it possessed many additional features like code animation and rich text.
 
-In SuperCollider 3.6, Document changed a bit and now the "abstract class" descriptor is only partially true. The SuperCollider IDE provides its own version of the Document class. The Emacs editor still supplies link::Classes/ScelDocument:: (which links to link::Classes/EmacsDocument::) as a subclass of Document. As an unfortunate byproduct of the history of Document, there are inconsistencies in the APIs of SCIDE's Document and Emacs' ScelDocument. This help file describes that of SCIDE.
+
+
+The Document class represents a text document within the context of your text editing environment.
+You can use the class to programmatically create, modify, and query these documents.
+
+Document used to be an abstract class, meaning it didn't provide all the functionality itself, but instead relied on subclasses to complete the functionality.
+One such subclass was CocoaDocument. Although CocoaDocument was available only to macOS and had an ad hoc interface, it possessed many additional features like code animation and rich text.
+
+In SuperCollider 3.6, Document changed a bit and now the "abstract class" descriptor is only partially true.
+The SuperCollider IDE provides its own version of the Document class.
+The Emacs editor still supplies link::Classes/ScelDocument:: (which links to link::Classes/EmacsDocument::) as a subclass of Document.
+As an unfortunate byproduct of the history of Document, there are inconsistencies in the APIs of SCIDE's Document and Emacs' ScelDocument. This help file describes that of SCIDE.
 
 Future versions of SuperCollider will aim to fix these API inconsistencies and restore the functionality of CocoaDocument.
 
+
+
+
+
+
 subsection:: Setting the Environment
+
 
 By default code::envir:: it is set to the current link::Classes/Environment::. However, you can make it use its own link::Classes/Environment:: also. Thus, e.g., if you were to set the link::Classes/Environment:: variable code::~myVar = 12:: in the current link::Classes/Environment::, you can create a new Document window in which that link::Classes/Environment:: variable is not set.
 
+
+
+
+
+
+
+
+
+
 classmethods::
+
+
+
 
 private:: prGetLast, prSetSyntaxColorTheme, prnumberOfOpen, prBasicNew, prGetIndexOfListener, prDefaultUsesAutoInOutdent, initClass
 
+
 method:: new
+
+
 argument:: title
+
 An instance of link::Classes/String:: or link::Classes/Symbol::.
+
+
 argument:: string
-An instance of link::Classes/String::. The contents of the document.
+
+An instance of link::Classes/String::.
+The contents of the document.
+
+
 argument:: envir
-An instance of link::Classes/Environment::. The link::Classes/Environment:: to be used by the interpreter of the document window. By default, it is set to the current link::Classes/Environment::.
+
+An instance of link::Classes/Environment::. The link::Classes/Environment:: to be used by the interpreter of the document window.
+By default, it is set to the current link::Classes/Environment::.
+
+
 discussion::
 code::
 Document.new("this is the title", "this is the text");
 ::
 
+
+
+
 method:: open
+
+
 Open a document from a path.
+
+
 argument:: path
-The file system path to the document. An instance of link::Classes/String::.
+
+The file system path to the document.
+An instance of link::Classes/String::.
+
+
 argument:: selectionStart
+
 The beginning of the cursor selection of the file content.
+
+
 argument:: selectionLength
+
 The length of the cursor selection of the file content.
+
+
 argument:: envir
-An instance of link::Classes/Environment::. The Environment to be used by the interpreter of the document window. By default, it is set to the current link::Classes/Environment::.
+
+An instance of link::Classes/Environment::.
+The Environment to be used by the interpreter of the document window.
+By default, it is set to the current link::Classes/Environment::.
+
+
 discussion::
 See also link::Classes/Document#save:: below.
+
 code::
 Document.open("README", 292, 253); // notice the selected text in the open document
 ::
 
+
+
+
 method:: openDocuments
-Returns an Array of all open documents.
+
+
+Return an Array of all open documents.
+
 code::
 d = Document.openDocuments.do{ |doc| doc.name.postln };
 ::
 
+
+
+
 method:: hasEditedDocuments
-Returns true if there are edited Documents.
+
+
+Return teletype::true:: if there are edited Documents.
+
+
+
 
 method:: closeAll
+
+
 warning::
 Closes all open Documents, whether edited or not.
 ::
+
+
 argument:: leavePostWindowOpen
+
 An instance of link::Classes/Boolean::.
+
+
+
 
 method:: closeAllUnedited
+
+
 Closes all unedited Documents.
+
+
 argument:: leavePostWindowOpen
+
 An instance of link::Classes/Boolean::.
 
+
+
+
 method:: current
-Gets/sets the current Document.
+
+
+Get/set the current Document.
+
+
 argument:: value
+
 A Document.
+
+
 discussion::
 code::
 Document.current.name.postln; // Prints "Document.html"
 ::
 
+
+
+
 method:: allDocuments
+
+
 Returns all documents.
 
+
+
+
 method:: globalKeyDownAction
+
+
 Get/set A global action to be performed when a key is pressed.
+
+
 argument:: action
+
 An instance of link::Classes/Function:: or link::Classes/FunctionList::.
+
+
+
 
 method:: globalKeyUpAction
+
+
 Get/set A global action to be performed when a key is released.
+
+
 argument:: action
+
 An instance of link::Classes/Function:: or link::Classes/FunctionList::.
+
+
+
 
 method:: initAction
+
+
 Get/set A an action to be performed up opening or creating a Document.
+
+
 argument:: action
+
 An instance of link::Classes/Function:: or link::Classes/FunctionList::.
 
+
+
+
 method:: autoRun
-If autoRun is set to true, documents beginning with the comment code::/*RUN*/:: will be executed immediately after being opened, and also when the class library is recompiled with the document already open in the IDE.
+
+
+If autoRun is set to teletype::true::, documents beginning with the comment code::/*RUN*/:: will be executed immediately after being opened, and also when the class library is recompiled with the document already open in the IDE.
+
+
 argument:: value
-An instance of link::Classes/Boolean::. Default value is code::true::.
+
+An instance of link::Classes/Boolean::.
+Default value is code::true::.
+
+
+
 
 method:: implementationClass
+
+
 The editor implementation specific class which will handle Documents.
+
+
 argument:: value
+
 A class for implementing Document.
+
+
+
+
+
 
 subsection:: Path Utilities
 
-Utilities and settings for dealing with documents such as SuperCollider code files. By default the document directory is SuperCollider's application directory.
+
+Utilities and settings for dealing with documents such as SuperCollider code files.
+By default the document directory is SuperCollider's application directory.
+
+
+
 
 method:: dir
+
+
 Get/set the default document directory. The default is dependent on link::#*implementationClass::.
+
+
 argument:: path
-The file system path to the directory. An instance of link::Classes/String::.
+
+The file system path to the directory.
+An instance of link::Classes/String::.
+
+
 discussion::
 In Main-startUp you can set this to a more practical directory:
+
 code::
 Document.dir = "~/Documents/SuperCollider";
 ::
 
+
+
+
 method:: standardizePath
+
+
 argument:: p
-The file system path to the directory. An instance of link::Classes/String::.
+
+The file system path to the directory.
+An instance of link::Classes/String::.
+
+
 discussion::
-If it is a relative path, expand it to an absolute path relative to your document directory. Expand tildes in path (your home directory), resolve symbolic links (but not aliases). Also converts from Mac OS 9 path format. See PathName for more complex needs.
+If it is a relative path, expand it to an absolute path relative to your document directory.
+Expand tildes in path (your home directory), resolve symbolic links (but not aliases).
+Also converts from Mac OS 9 path format.
+See PathName for more complex needs.
+
 code::
 Document.standardizePath("~/"); // This will print your home directory
 
@@ -139,93 +328,210 @@ Document.standardizePath("Patches/newfoots/fastRuckAndTuck")
 // Returns: Patches/newfoots/fastRuckAndTuck
 ::
 
+
+
+
 method:: abrevPath
-Returns a path relative to Document.dir, if the path is inside Document.dir.
+
+
+Return a path relative to Document.dir, if the path is inside Document.dir.
+
+
 argument:: path
-The file system path to the directory. An instance of link::Classes/String::.
+
+The file system path to the directory.
+An instance of link::Classes/String::.
+
+
+
+
+
+
 
 
 
 
 instancemethods::
 
+
+
+
 private:: prGetBackgroundColor, prGetBounds, prIsEditable, propen, prGetTitle, prinitByString, prGetLastIndex, prSetBackgroundColor, prSetFileName, prUsesAutoInOutdent, prclose, prGetSelectedBackgroundColor, prGetFileName, prSetSelectedBackgroundColor, prSelectLine, prinitByIndex, prAdd, prSetBounds, prinsertText, prSetTitle, initFromPath, initByString
+
+
+
+
+
 
 subsection:: General Document Properties
 
+
 method:: path
+
+
 Get / set the Document's path.
+
+
 argument:: apath
-An instance of link::Classes/String::. A files system path.
+
+An instance of link::Classes/String::.
+A files system path.
+
+
 discussion::
 code::
 Document.current.path.postln;
 ::
 
+
+
+
 method:: dir
-Returns the directory of a Document.
+
+
+Return the directory of a Document.
+
+
 discussion::
 code::
 Document.current.dir.postln;
 ::
 
+
+
+
 method:: ==
+
+
 A binary operator.
+
+
 argument:: that
+
 An instance of Document.
+
+
 discussion::
 code::
-Document.current == Document.listener; // presumably returns false
+Document.current == Document.listener; // presumably returns teletype::false::
 ::
 
+
+
+
 method:: editable
+
+
 Get / set the document is editable.
+
+
 argument:: bool
+
 An instance of link::Classes/Boolean::.
 
+
+
+
 method:: name
+
+
 Get / set the title (same as link::#-title::).
+
+
 argument:: aname
+
 An instance of link::Classes/String::.
+
+
 discussion::
 code::
 Document.current.name.postln;
 ::
 
+
+
+
 method:: title
+
+
 Get / set the title (same as link::#-name::).
+
+
 argument:: newTitle
+
 An instance of link::Classes/String::.
 
+
+
+
 method:: promptToSave
-Get/set whether a document is prompts to save if it has been changed. Use this with caution.
+
+
+Get/set whether a document is prompts to save if it has been changed.
+Use this with caution.
+
+
 argument:: bool
+
 An instance of link::Classes/Boolean::.
 
+
+
+
 method:: closed
-Returns code::true:: if the document has been closed.
+
+
+Return code::true:: if the document has been closed.
+
+
+
 
 method:: isEdited
-Returns code::true:: if the document has been edited.
+
+
+Return code::true:: if the document has been edited.
+
 code::
 Document.current.isEdited.postln;
 ::
 
+
+
+
 method:: isFront
-Returns code::true:: if the document is in front.
+
+
+Return code::true:: if the document is in front.
+
+
+
 
 method:: didBecomeKey
-Saves the current link::Classes/Environment::, makes the document current, and performs its link::#-toFrontAction::.
+
+
+Save the current link::Classes/Environment::, makes the document current, and performs its link::#-toFrontAction::.
+
+
+
 
 method:: didResignKey
-Performs the Document's link::#-endFrontAction:: and restores the current link::Classes/Environment::.
+
+
+Perform the Document's link::#-endFrontAction:: and restores the current link::Classes/Environment::.
+
+
+
 
 
 
 subsection:: Controlling Document
 
+
 method:: close
+
+
 Close a document.
+
 code::
 (
 Task({
@@ -240,10 +546,21 @@ Task({
 )
 ::
 
+
+
+
 method:: save
+
+
 Save this Document.
+
+
 argument:: path
-An optional instance of link::Classes/String:: indicating the path to save the Document. If a path is not provided, the current path (if it has been previously saved or read) is used. After a successful save, this Document's path will be updated if needed. See also link::Classes/Document#*open:: above.
+
+An optional instance of link::Classes/String:: indicating the path to save the Document.
+If a path is not provided, the current path (if it has been previously saved or read) is used. After a successful save, this Document's path will be updated if needed.
+See also link::Classes/Document#*open:: above.
+
 code::
 d = Document.new("testSave", "foo");
 d.save(Platform.defaultTempDir ++ "foo.scd"); // saved in the temp dir
@@ -254,38 +571,88 @@ d.save(Platform.defaultTempDir ++ "savedAs.scd");
 d.path;
 ::
 
+
+
+
 method:: front
+
+
 Bring a document to the front.
+
 code::
 Document.listener.front;
 ::
 
+
+
+
 method:: onClose
+
+
 Get/set the action to be performed on closing the document.
+
+
 argument:: value
+
 An instance of link::Classes/Function:: or link::Classes/FunctionList::.
+
+
+
 
 method:: endFrontAction
+
+
 Get/set the action to be performed when the document becomes no longer the front document.
+
+
 argument:: value
+
 An instance of link::Classes/Function:: or link::Classes/FunctionList::.
+
+
+
 
 method:: toFrontAction
+
+
 Get / set the action to be performed when the document become the front document.
+
+
 argument:: value
+
 An instance of link::Classes/Function:: or link::Classes/FunctionList::.
 
+
+
+
 method:: mouseDownAction
+
+
 Get/set the action to be performed on link::#-mouseDown::.
 
+
 argument:: action
-An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::document::, code::x::, code::y::, code::modifiers::, code::buttonNumber::, code::clickCount::.
+
+An instance of link::Classes/Function:: or link::Classes/FunctionList::.
+The arguments passed to the function are:
+code::document::, code::x::, code::y::, code::modifiers::, code::buttonNumber::, code::clickCount::.
+
+
 
 
 method:: mouseUpAction
+
+
 Get/set the action to be performed on link::#-mouseUp::.
+
+
 argument:: action
-An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::document::, code::x::, code::y::, code::modifiers::, code::buttonNumber::.
+
+An instance of link::Classes/Function:: or link::Classes/FunctionList::.
+The arguments passed to the function are:
+code::document::, code::x::, code::y::, code::modifiers::, code::buttonNumber::.
+
+
 discussion::
 code::
 (
@@ -307,16 +674,30 @@ s.waitForBoot({
 });
 )
 ::
-Test here and click in front of the numbers: 17 and 23.
+
+Test here and click in front of the numbers:
+17 and 23.
+
 code::
 Document.current.mouseUpAction = nil; // clear mouseUpAction
 ::
 
 
+
+
 method:: keyDownAction
+
+
 Get/set the action to be performed on link::#-keyDown::.
+
+
 argument:: action
-An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::document::, code::char::, code::modifiers::, code::unicode::, code::keycode::. See link::Classes/View#Key actions:: for details on these arguments.
+
+An instance of link::Classes/Function:: or link::Classes/FunctionList::.
+The arguments passed to the function are:
+code::document::, code::char::, code::modifiers::, code::unicode::, code::keycode::. See link::Classes/View#Key actions:: for details on these arguments.
+
+
 discussion::
 code::
 Document.current.keyDownAction = { |...args| args.postln };
@@ -324,10 +705,22 @@ Document.current.keyDownAction = { |...args| args.postln };
 Document.current.keyDownAction = nil;
 ::
 
+
+
+
 method:: keyUpAction
+
+
 Get/set the action to be performed on link::#-keyUp::.
+
+
 argument:: action
-An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::document::, code::char::, code::modifiers::, code::unicode::, code::keycode::. See link::Classes/View#Key actions:: for details on these arguments.
+
+An instance of link::Classes/Function:: or link::Classes/FunctionList::.
+The arguments passed to the function are:
+code::document::, code::char::, code::modifiers::, code::unicode::, code::keycode::. See link::Classes/View#Key actions:: for details on these arguments.
+
+
 discussion::
 code::
 Document.current.keyUpAction = { |...args| args.postln };
@@ -335,23 +728,49 @@ Document.current.keyUpAction = { |...args| args.postln };
 Document.current.keyUpAction = nil;
 ::
 
+
+
+
+
+
 subsection:: Accessing and Editing Content
 
+
 method:: selectLine
+
+
 Select a line of the document by number.
+
+
 argument:: line
+
 An link::Classes/Integer::.
+
+
 discussion::
 code::
 Document.current.selectLine(390);
 ::
 
+
+
+
 method:: selectRange
+
+
 Select a text range in the string of the document.
+
+
 argument:: start
+
 The start index.
+
+
 argument:: length
+
 The length of the selection.
+
+
 discussion::
 code::
 (
@@ -359,14 +778,26 @@ Document.current.selectRange(Document.current.selectedRangeLocation + 3, 150);
 )
 ::
 
+
+
+
 method:: selectionStart
-Returns the start of a current selection.
+
+
+Return the start of a current selection.
+
 code::
 Document.current.selectionStart.postln;
 ::
 
+
+
+
 method:: selectionSize
-Returns the size of a current selection.
+
+
+Return the size of a current selection.
+
 code::
 (
 var doc;
@@ -377,10 +808,19 @@ doc.selectionSize.postln;
 ::
 
 
+
+
 method:: selectedString
-Gets/sets the selected string.
+
+
+Get/set the selected string.
+
+
 argument:: txt
+
 An instance of link::Classes/String::.
+
+
 discussion::
 code::
 (
@@ -391,8 +831,14 @@ doc.selectedString.postln;
 )
 ::
 
+
+
+
 method:: currentLine
-Returns the current line as a link::Classes/String::.
+
+
+Return the current line as a link::Classes/String::.
+
 code::
 (
 var doc;
@@ -402,8 +848,15 @@ doc.currentLine.postln;
 )
 ::
 
+
+
+
 method:: getSelectedLines
+
+
 Returns all full lines from before code::rangestart:: to after code::rangestart + rangesize:: as a link::Classes/String::.
+
+
 discussion::
 code::
 (
@@ -415,14 +868,29 @@ doc.getSelectedLines(doc.selectionStart - 40, 130).postln;
 ::
 
 
+
+
 method:: string
-Gets or sets the string within a certain range.
+
+
+Get/set the string within a certain range.
+
+
 argument:: string
+
 A link::Classes/String::.
+
+
 argument:: rangestart
+
 An link::Classes/Integer::.
+
+
 argument:: rangesize
+
 An link::Classes/Integer::.
+
+
 discussion::
 code::
 // Select the following code in parentheses and execute it
@@ -434,31 +902,67 @@ Document.current.string_(": test test test test test ",
 // Watch me change content
 ::
 
+
+
+
 method:: getText
-Get a range of text from the document. Synchronous. The text is directly returned.
+
+
+Get a range of text from the document.
+Synchronous. The text is directly returned.
+
+
 argument:: start
+
 An link::Classes/Integer:: for the starting position to access.
+
+
 argument:: range
-An link::Classes/Integer:: for the number of characters to retrieve. -1 retrieves to the end of the document.
+
+An link::Classes/Integer:: for the number of characters to retrieve.
+-1 retrieves to the end of the document.
+
+
+
 
 method:: getTextAsync
-Get a range of text from the document. Asynchronous. The text is passed to the code::action:: function as an argument.
 
-note:: Currently, in Windows, link::#-getText:: and link::#-string:: may be unreliable. Windows users are recommended to use link::#-getTextAsync:: for the time being.
+
+Get a range of text from the document.
+Asynchronous. The text is passed to the code::action:: function as an argument.
+
+note::
+Currently, in Windows, link::#-getText::and link::#-string::may be unreliable. Windows users are recommended to use link::#-getTextAsync:: for the time being.
 ::
 
+
 argument:: action
-A function to evaluate after the request is complete. It is passed one argument, a link::Classes/String::, for the retrieved contents.
+
+A function to evaluate after the request is complete.
+It is passed one argument, a link::Classes/String::, for the retrieved contents.
+
+
 argument:: start
+
 An link::Classes/Integer:: for the starting position to access.
+
+
 argument:: range
-An link::Classes/Integer:: for the number of characters to retrieve. -1 retrieves to the end of the document.
+
+An link::Classes/Integer:: for the number of characters to retrieve.
+-1 retrieves to the end of the document.
+
+
+
 
 
 
 subsection:: Subclassing and Internal Methods
 
-The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
+
+The following methods are usually not used directly or are called by a primitive.
+Programmers can still call or override these as needed.
+
 code::
 	*startup
 	*numberOfOpen
@@ -516,7 +1020,15 @@ code::
 
 
 
+
+
+
+
+
 examples::
+
+
+
 
 code::
 // unfocusedFront_
@@ -567,6 +1079,7 @@ Task({
 ::
 
 A simple implementation of TBT (time based text) http://tbt.dyne.org/?info=download
+
 code::
 // record: type some text
 (
@@ -597,7 +1110,11 @@ fork({
 )
 ::
 
-Changing the default look of documents can be done with the help of the link::#*initAction:: method. Run the following example once. Afterwards all newly created documents will have a dark grey background. To make this change happen every time you start SuperCollider, put the code inside your startup.scd file (and optionally wrap it in a code::{ }.defer(0.1)::).
+Changing the default look of documents can be done with the help of the link::#*initAction:: method.
+Run the following example once.
+Afterwards all newly created documents will have a dark grey background.
+To make this change happen every time you start SuperCollider, put the code inside your startup.scd file (and optionally wrap it in a code::{ }.defer(0.1)::).
+
 code::
 (
 Document.listener.background = Color.red;	// a special color for post document

@@ -1,23 +1,45 @@
-TITLE:: EventStreamCleanup
+title:: EventStreamCleanup
+categories:: Streams-Patterns-Events
 summary:: Helper class that collects information about internal state of streams that needs to be released
-categories::Streams-Patterns-Events
 
-DESCRIPTION::
-Event streams created by objects like link::Classes/Pmono:: or link::Classes/Pfx:: are special: when they start, they create some state (like a new synth) that is present over the whole period of the stream, or at least over several events. When such a stream ends, it releases this state. There are other streams, however, strong::that may stop their input stream at any time:: (e.g.  link::Classes/Pfindur:: or link::Classes/Pdef::). Them the state of any stream buried in the hierarchy of input streams must be released by them. EventStreamCleanup collects the cleanup functions and can run them when the stream is cut.
 
-Note::So all event patterns that can end a subpattern (and streams respectively) have to use an EventStreamCleanup.::
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+Event streams created by objects like link::Classes/Pmono:: or link::Classes/Pfx:: are special: when they start, they create some state (like a new synth) that is present over the whole period of the stream, or at least over several events.
+When such a stream ends, it releases this state. There are other streams, however, strong::that may stop their input stream at any time:: (e.g.  link::Classes/Pfindur:: or link::Classes/Pdef::).
+Them the state of any stream buried in the hierarchy of input streams must be released by them.
+EventStreamCleanup collects the cleanup functions and can run them when the stream is cut.
+
+note::
+So all event patterns that can end a subpattern (and streams respectively) have to use an EventStreamCleanup.
+::
 
 Some examples of patterns that may stop an input stream and update an EventStreamCleanup:
+
 list::
 ## link::Classes/Pbindf:: (stops its event stream if one of its parameter streams ends)
 ## link::Classes/Pfin:: (stops stream after a number of events)
 ## link::Classes/Pfindur:: (stops stream after a certain elapsed time)
 ## link::Classes/Pdef::  (stops stream when replaced by a new one)
 ## link::Classes/Pset::  (stops its event stream when its parameter streams ends)
-## link::Classes/Pswitch1:: (stops all input streams after fixed number of items or when one of them ends. Not link::Classes/Pswitch::, which completely embeds every input stream)
+## link::Classes/Pswitch1:: (stops all input streams after fixed number of items or when one of them ends.
+Not link::Classes/Pswitch::, which completely embeds every input stream)
 ::
 
-Some examples of patterns that create state that lasts over several events. They also release the state via EventStreamCleanup:
+Some examples of patterns that create state that lasts over several events.
+They also release the state via EventStreamCleanup:
+
 list::
 ## link::Classes/Pmono:: (starts one synth that it controls over time)
 ## link::Classes/Pfx:: (starts an effect synth that it feeds through the signals of the substreams)
@@ -26,7 +48,6 @@ list::
 ::
 
 code::
-
 // wrap a pattern in a stop condition
 (
 f = { |pat, condition|
@@ -52,57 +73,141 @@ Pn(x).play; // loop it.
 ::
 
 
-CLASSMETHODS::
 
-METHOD:: new
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
 Create a new instance.
 
-INSTANCEMETHODS::
 
-METHOD:: addFunction
-Add a new cleanup function which will be called when the stream is made to end somewhere downstreams. This is called only in patterns that create resources that need to be released (e.g. link::Classes/Pmono:: or link::Classes/Pfx::).
 
-ARGUMENT:: event
-The outevent that is passed on downstreams and which communicates to any stream-ending pattern what needs to be done to release the resources. strong::It must be yielded after update!::
 
-ARGUMENT:: function
-The function that is called for cleanup. E.g. code::{ group.free }::.
 
-RETURNS:: a link::Classes/CallOnce:: that executes the cleanup code::function:: at most once. Should it be necessary to execute the cleanup outside of the control of code::EventStreamCleanup::, the CallOnce returned should be used instead of the original code::function::, so that other referents are informed of the execution of the cleanup.
 
-METHOD:: update
-For every new event, the cleanup must be updated to receive information from any input stream further up. This method is called from all streams that may stop early (e.g. link::Classes/Pmono:: or link::Classes/Pfindur::).
 
-ARGUMENT:: event
-The outevent from the input stream. strong::It must be yielded after update!::
 
-METHOD:: exit
+
+
+instancemethods::
+
+
+
+
+method:: addFunction
+
+
+Add a new cleanup function which will be called when the stream is made to end somewhere downstreams.
+This is called only in patterns that create resources that need to be released (e.g. link::Classes/Pmono:: or link::Classes/Pfx::).
+
+
+argument:: event
+
+The outevent that is passed on downstreams and which communicates to any stream-ending pattern what needs to be done to release the resources.
+strong::It must be yielded after update!::
+
+
+argument:: function
+
+The function that is called for cleanup.
+E.g. code::{ group.free }::.
+
+
+returns::
+A link::Classes/CallOnce::that executes the cleanup code::function::at most once. Should it be necessary to execute the cleanup outside of the control of code::EventStreamCleanup::, the CallOnce returned should be used instead of the original code::function::, so that other referents are informed of the execution of the cleanup.
+
+
+
+
+method:: update
+
+
+For every new event, the cleanup must be updated to receive information from any input stream further up.
+This method is called from all streams that may stop early (e.g. link::Classes/Pmono:: or link::Classes/Pfindur::).
+
+
+argument:: event
+
+The outevent from the input stream.
+strong::It must be yielded after update!::
+
+
+
+
+method:: exit
+
+
 Run all functions that have been collected over time, adding appropriate information to the event, in case it is passed on as an inevent.
 
-ARGUMENT:: event
+
+argument:: event
+
 The inevent that is passed through to the outer stream
 
-ARGUMENT:: freeNodes
+
+argument:: freeNodes
+
 Used internally.
 
-returns:: An event. In embedInStream, this event must be returned (code:: ^cleanup.exit(inevent) ::)
 
-METHOD:: functions
+returns::
+ 
+An event. In embedInStream, this event must be returned (code:: ^cleanup.exit(inevent) ::)
+
+
+
+
+method:: functions
+
+
 A collections of cleanup functions.
 
-METHOD:: clear
+
+
+
+method:: clear
+
+
 Empty the cleanup functions, without evaluating them.
 
-METHOD:: terminate
+
+
+
+method:: terminate
+
+
 Run all functions that have been collected over time without adding information to an event.
 
-ARGUMENT:: freeNodes
+
+argument:: freeNodes
+
 Used internally.
 
 
 
 
-EXAMPLES::
+
+
+
+
+
+
+examples::
+
+
+
+
 code::
 // some code from the class library
 
@@ -127,7 +232,8 @@ Pfin : FilterPattern {
 	}
 }
 
-// and here is a pattern that adds a resource: a bus in which the events play
+// and here is a pattern that adds a resource:
+a bus in which the events play
 
 Pbus : FilterPattern {
 	var <>numChannels, <>rate, <>dur = 2.0, <>fadeTime;
@@ -203,5 +309,4 @@ Pbus : FilterPattern {
 		}
 	}
 }
-
 ::

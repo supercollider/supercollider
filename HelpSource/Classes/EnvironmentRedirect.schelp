@@ -1,62 +1,173 @@
-class:: EnvironmentRedirect
-summary:: base class for environment redirects
+title:: EnvironmentRedirect
 categories:: JITLib>Environments, Collections>Unordered, Live Coding
+summary:: Base class for environment redirects
 related:: Classes/Environment
 
+
+
+
+
+
+
+
+
+
 description::
-Environment that redirects access (strong::put::) and assignment (strong::at::). It is used as a base class for redirecting Environments. For example uses, see link::Classes/LazyEnvir:: and link::Classes/ProxySpace::.
 
-ClassMethods::
 
-method::new
+
+
+Environment that redirects access (strong::put::) and assignment (strong::at::).
+It is used as a base class for redirecting Environments.
+For example uses, see link::Classes/LazyEnvir:: and link::Classes/ProxySpace::.
+
+
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
 Create new environment redirect, if envir is given, it is used as a basis.
 
-subsection:: replacing Environment class methods
+
+
+
+
+
+subsection:: Replacing Environment class methods
+
 
 EnvironmentRedirect implements some of the interface of link::Classes/Environment::
 
-method::push, pop, make, use
 
-InstanceMethods::
 
-method::envir
-return or replace the source environment
+
+method:: push, pop, make, use
+
+
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+method:: envir
+
+
+Return or replace the source environment
+
 code::
 e = LazyEnvir.new;
 e.put(\x, 9);
-e.envir; // look into the envir itself: for a LazyEnvir it contains Maybe as placeholders
+e.envir; // look into the envir itself:
+for a LazyEnvir it contains Maybe as placeholders
 ::
 
-subsection::redirecting objects
 
-Overriding these methods, one can redirect where objects go when they are assigned to the space. This is done for example in link::Classes/LazyEnvir:: and link::Classes/ProxySpace::.
 
-method::at, put, localPut, removeAt
 
-method::dispatch
-A function or object that is called when the environment is modified. The key and the changed object are passed as arguments.
+
+
+subsection:: redirecting objects
+
+
+Overriding these methods, one can redirect where objects go when they are assigned to the space.
+This is done for example in link::Classes/LazyEnvir:: and link::Classes/ProxySpace::.
+
+
+
+
+method:: at, put, localPut, removeAt
+
+
+method:: dispatch
+A function or object that is called when the environment is modified.
+The key and the changed object are passed as arguments.
+
 code::
 e = LazyEnvir.new;
 e.dispatch = { |key, val| [key, val].postln };
 e.put(\x, 9);
 ::
 
-method::add
-add an association
 
-subsection:: replacing Environment instance methods
+
+
+method:: add
+
+
+Add an association
+
+
+
+
+
+
+subsection:: Replacing Environment instance methods
+
 
 EnvironmentRedirect implements some of the interface of link::Classes/Environment::, which it can replace where needed.
 
+
+
+
 method:: push, pop, clear, choose
+
+
 method:: make, use
+
+
+
+
 method:: do, keysValuesDo, sortedKeysValuesDo
+
+
 method:: keysValuesArrayDo
+
+
+
+
 method:: findKeyForValue
+
+
 method:: know
+
+
+
+
 method:: doesNotUnderstand
 
 
-section::Networking
 
-EnvironmentRedirect and its subclasses can be used to dispatch assignment over a network. To do this, a dispatch function can be supplied - see Public in strong::JITLibExtensions:: quark.
+
+
+
+
+
+
+
+section:: Networking
+
+
+
+
+EnvironmentRedirect and its subclasses can be used to dispatch assignment over a network.
+To do this, a dispatch function can be supplied - see Public in strong::JITLibExtensions:: quark.

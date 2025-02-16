@@ -1,16 +1,30 @@
-TITLE:: UnitTestScript
-summary:: run test scripts
+title:: UnitTestScript
 categories:: Testing
+summary:: Run test scripts
 related:: Classes/UnitTest, Classes/UnitTestResult
 
-DESCRIPTION::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
 In order to make sure a method works correctly, a test can be implemented that assures the correct behavior.
 
 It is a common practice to write tests to clarify how an object should respond, and it may avoid inconsistencies on the long run.
 
-Test scripts are simply plain text files ending with TELETYPE::_unittest.scd::, which are interpreted.
+Test scripts are simply plain text files ending with teletype::_unittest.scd::, which are interpreted.
 Scripts may be located next to a class in the classpath or one folder below.
-If they return a function, the code::UnitTestScript:: is passed in, allowing to call methods like assert etc. (see link::Classes/UnitTest::)
+If they return a function, the code::UnitTestScript:: is passed in, allowing to call methods like assert etc.
+(see link::Classes/UnitTest::)
 
 code::UnitTestScript:: mimics some of the behavior of link::Classes/Method::, to be compatible with link::Classes/UnitTest::.
 
@@ -19,19 +33,51 @@ code::UnitTestScript:: mimics some of the behavior of link::Classes/Method::, to
 
 
 
-CLASSMETHODS::
-PRIVATE:: initClass, findTestScripts, new, findTestMethods, allScripts, runTest
 
-INSTANCEMETHODS::
 
-PRIVATE:: name, path, init, runScript
 
-EXAMPLES::
+
+classmethods::
+
+
+
+
+private:: initClass, findTestScripts, new, findTestMethods, allScripts, runTest
+
+
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+private:: name, path, init, runScript
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 An example script
 
-NOTE::
-This should be in a file TELETYPE::myUnitTest_unittest.scd::
+note::
+This should be in a file teletype::myUnitTest_unittest.scd::
 ::
 
 code::

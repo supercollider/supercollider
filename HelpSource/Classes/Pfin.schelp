@@ -1,20 +1,59 @@
-class:: Pfin
-summary:: limit number of events embedded in a stream
-related:: Classes/Pfinval, Classes/Pfindur, Classes/Pconst
+title:: Pfin
 categories:: Streams-Patterns-Events>Patterns>Repetition
+summary:: Limit number of events embedded in a stream
+related:: Classes/Pfinval, Classes/Pfindur, Classes/Pconst
+
+
+
+
+
+
+
+
+
 
 description::
 
-Limits the number of output values from the given pattern or stream. If the stream is able to output more values, Pfin will terminate it early.
+
+
+
+Limit the number of output values from the given pattern or stream.
+If the stream is able to output more values, Pfin will terminate it early.
 
 The number may be given as a constant, or calculated on the fly from a function or stream. See the "sequence of pitches" example below.
 
-ClassMethods::
 
-method::new
-embeds strong::count:: elements of the strong::pattern:: into the stream.
 
-Examples::
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
+Embed strong::count:: elements of the strong::pattern:: into the stream.
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (

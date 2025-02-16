@@ -1,33 +1,69 @@
-class:: Convolution3
-summary:: Time based convolver.
+title:: Convolution3
+categories:: UGens>Convolution
+summary:: Time based convolver
 related:: Classes/Convolution, Classes/Convolution2, Classes/Convolution2L
-categories::  UGens>Convolution
 
-Description::
-Strict convolution with fixed kernel which can be updated using a trigger signal. The convolution is performed in the time domain.
 
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+Strict convolution with fixed kernel which can be updated using a trigger signal.
+The convolution is performed in the time domain.
 
 note::
 Doing convolution in time domain is highly inefficient, and probably only useful for either very short kernel sizes, or for control rate signals.
 See link::Classes/Convolution2:: and link::Classes/Convolution2L:: for more efficient convolution UGens.
 ::
 
+
+
+
+
+
+
+
+
+
 classmethods::
+
+
+
+
 private:: categories
 
-method::ar, kr
 
-argument::in
-processing target
+method:: ar, kr
 
-argument::kernel
-buffer index for the fixed kernel, may be modulated in combination with the trigger
 
-argument::trigger
-update the kernel on a change from <=0 to >0
+argument:: in
 
-argument::framesize
-maximum size of the buffer containing the kernel
+Processing target
+
+
+argument:: kernel
+
+Buffer index for the fixed kernel, may be modulated in combination with the trigger
+
+
+argument:: trigger
+
+Update the kernel on a change from <=teletype::0:: to >0
+
+
+argument:: framesize
+
+Maximum size of the buffer containing the kernel
+
 
 argument:: mul
 

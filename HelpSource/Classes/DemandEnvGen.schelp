@@ -1,53 +1,86 @@
-class:: DemandEnvGen
+title:: DemandEnvGen
+categories:: UGens>Demand, UGens>Envelopes
 summary:: Demand rate envelope generator
 related:: Classes/Demand, Classes/Duty, Classes/TDuty
-categories::  UGens>Demand, UGens>Envelopes
 
-Description::
-Plays back break point envelope contours (levels, times, shapes) given by demand ugens. The next values are called when the next node is reached.
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+Play back break point envelope contours (levels, times, shapes) given by demand UGens. The next values are called when the next node is reached.
+
+
+
+
+
+
+
+
+
 
 classmethods::
+
+
+
+
 private:: categories
 
-method::ar, kr
 
-argument::level
-
-A demand UGen or any other UGen returning level values. If this ends, the
-
-code::doneAction::  is evaluated.
+method:: ar, kr
 
 
-argument::dur
+argument:: level
 
-A demand UGen or any other UGen returning time values. If this ends, the
+A demand UGen or any other UGen returning level values.
+If this ends, the
 
 code::doneAction::  is evaluated.
 
 
-argument::shape
+argument:: dur
 
-A demand UGen or any other UGen: the number given is the shape
-number according to link::Classes/Env::.
+A demand UGen or any other UGen returning time values.
+If this ends, the
+
+code::doneAction::  is evaluated.
 
 
-argument::curve
+argument:: shape
 
-A demand UGen or any other UGen returning curve values. if shape is 5, this is the
-curve factor.
+A demand UGen or any other UGen:
+the number given is the shape number according to link::Classes/Env::.
+
+
+argument:: curve
+
+A demand UGen or any other UGen returning curve values.
+if shape is 5, this is the curve factor.
 
 The possible values are:
+
 table::
 ## 0 || flat segments
 ## 1 || linear segments, the default
-## 2 || natural exponential growth and decay. In this case, the levels must all be nonzero and the have the same sign.
+## 2 || natural exponential growth and decay.
+In this case, the levels must all be nonzero and the have the same sign.
 ## 3 || sinusoidal S shaped segments.
 ## 4 || sinusoidal segments shaped like the sides of a Welch window.
 ## a Float || a curvature value for all segments.
 ## An Array of Floats || curvature values for each segments.
 ::
 
-argument::gate
+
+argument:: gate
 
 If gate is x ≥ 1, the UGen runs.
 
@@ -59,34 +92,44 @@ level (doneAction).
 If gate is x < 0, the UGen is sampled and held.
 
 
-argument::reset
+argument:: reset
 
-If reset crosses from non-positive to positive, the UGen is reset
-at the next level. If it is > 1, it is reset immediately.
-
-
-argument::levelScale
-
-demand ugen returning level scaling values
+If reset crosses from non-teletype::positive:: to teletype::positive::, the UGen is reset at the next level. If it is > 1, it is reset immediately.
 
 
-argument::levelBias
+argument:: levelScale
 
-demand ugen returning level offset values
-
-
-argument::timeScale
-
-demand ugen returning time scaling values
+Demand UGen returning level scaling values
 
 
-argument::doneAction
+argument:: levelBias
+
+Demand UGen returning level offset values
+
+
+argument:: timeScale
+
+Demand UGen returning time scaling values
+
+
+argument:: doneAction
 
 A doneAction that is evaluated when level or duration stream
 ends. See link::Classes/Done::  for more detail.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 // frequency envelope with random times

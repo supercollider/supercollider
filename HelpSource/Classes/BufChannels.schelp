@@ -1,19 +1,50 @@
-class:: BufChannels
-summary:: Current number of channels of soundfile in buffer.
+title:: BufChannels
+categories:: UGens>Buffer>Info
+summary:: Current number of channels of soundfile in buffer
 related:: Classes/BufDur, Classes/BufFrames, Classes/BufRateScale, Classes/BufSampleRate, Classes/BufSamples
-categories::  UGens>Buffer>Info
 
-Description::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
 Get the current number of channels of soundfile.
+
+
+
+
+
+
+
+
+
 
 classmethods::
 
-method::kr, ir
 
-argument::bufnum
+
+
+method:: kr, ir
+
+
+argument:: bufnum
+
 Buffer index.
 
-returns:: the current number of channels.
+
+returns::
+ 
+the current number of channels.
+
 
 discussion::
 warning::

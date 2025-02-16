@@ -1,8 +1,11 @@
 title:: What's new in Qt GUI
-summary:: A summary of new features and differences in Qt GUI
 categories:: GUI, News
+summary:: A summary of new features and differences in Qt GUI
 
-This document is intended for those already familiar with graphical user interface programming in SuperCollider. If you are new to this topic, you are suggested to first read the link::Guides/GUI-Introduction::.
+
+
+This document is intended for those already familiar with graphical user interface programming in SuperCollider.
+If you are new to this topic, you are suggested to first read the link::Guides/GUI-Introduction::.
 
 For the purpose of this guide, let's switch to the Qt GUI:
 
@@ -10,11 +13,25 @@ code::
 GUI.qt
 ::
 
-SECTION:: View hierarchy
 
-SUBSECTION:: Every view can be a window
 
-Every view can be displayed as a window on its own, without the use of the Window class. Hence, most methods that are present in Window, are also present in View.
+
+
+
+
+
+
+
+section:: View hierarchy
+
+
+
+
+subsection:: Every view can be a window
+
+
+Every view can be displayed as a window on its own, without the use of the Window class.
+Hence, most methods that are present in Window, are also present in View.
 
 For example, you can display any view without embedding it in a Window or another container view using the link::Classes/View#-front:: method. For this reason, it is valid to omit the 'parent' argument at view construction - any view without a parent can be shown as a window:
 
@@ -25,7 +42,13 @@ x.load(Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 )
 ::
 
-SUBSECTION:: Every view can be a container
+
+
+
+
+
+subsection:: Every view can be a container
+
 
 Every view can contain other views (i.e. act as their parent). For this reason, if you want to group several views together, you can simply use a View as the container:
 
@@ -40,17 +63,42 @@ v.front;
 ::
 
 
-SECTION:: Layout management
+
+
+
+
+
+
+
+
+section:: Layout management
+
+
+
 
 The Qt layout system allows you to forget about pixels - it manages the size and position of child views in a parent automatically.
 
-SUBSECTION:: Intrinsic view sizes
 
-You may have noticed in the examples above that, besides omitting the code::parent:: argument, we sometimes omitted the code::bounds:: argument as well, at view construction. This is possible because views have intrinsically defined preferred and minimum sizes. See link::Guides/GUI-Layout-Management#Intrinsic view sizes:: for further explanation.
 
-SUBSECTION:: Layout classes
 
-A collection of layout classes allows you to associate one of them with a parent view and several child views, and it will manage positions and sizes of the children automatically according to their size preferences and constraints. It will also do that dynamically, as you resize the window:
+
+
+subsection:: Intrinsic view sizes
+
+
+You may have noticed in the examples above that, besides omitting the code::parent:: argument, we sometimes omitted the code::bounds:: argument as well, at view construction. This is possible because views have intrinsically defined preferred and minimum sizes.
+See link::Guides/GUI-Layout-Management#Intrinsic view sizes:: for further explanation.
+
+
+
+
+
+
+subsection:: Layout classes
+
+
+A collection of layout classes allows you to associate one of them with a parent view and several child views, and it will manage positions and sizes of the children automatically according to their size preferences and constraints.
+It will also do that dynamically, as you resize the window:
 
 code::
 (
@@ -69,15 +117,36 @@ w = Window.new(bounds:Rect(100,100,300,80)).layout_(
 See the link::Guides/GUI-Layout-Management:: guide for detailed explanation.
 
 
-SECTION:: Color management
 
-SUBSECTION:: The palette
 
-Qt has the notion of the color palette - a collection of colors from which the views pick when drawing themselves. It is represented by the link::Classes/QPalette:: class, and can be set on a view using link::Classes/View#-palette::.
 
-By default, a window will get the global palette ( link::Classes/QtGUI#*palette:: ), and the palette is inherited by child views from their parent. Thus, changing the parent's palette will also affect its children, unless the palette has been overridden on a particular child. You can easily change the appearance of the whole GUI by changing the global palette.
 
-SUBSECTION:: Predefined palettes
+
+
+
+
+section:: Color management
+
+
+
+
+subsection:: The palette
+
+
+Qt has the notion of the color palette - a collection of colors from which the views pick when drawing themselves.
+It is represented by the link::Classes/QPalette:: class, and can be set on a view using link::Classes/View#-palette::.
+
+By default, a window will get the global palette ( link::Classes/QtGUI#*palette:: ), and the palette is inherited by child views from their parent.
+Thus, changing the parent's palette will also affect its children, unless the palette has been overridden on a particular child.
+You can easily change the appearance of the whole GUI by changing the global palette.
+
+
+
+
+
+
+subsection:: Predefined palettes
+
 
 There are two predefined palettes ( link::Classes/QPalette#*light:: and link::Classes/QPalette#*dark:: ), and you can also access the native palette of your operating system ( link::Classes/QPalette#*system:: ):
 
@@ -91,13 +160,27 @@ QtGUI.palette = QPalette.light;
 QtGUI.palette = QPalette.system;
 ::
 
-SECTION:: View actions and hooks
 
-SUBSECTION:: Mouse and key event propagation
+
+
+
+
+
+
+
+
+section:: View actions and hooks
+
+
+
+
+subsection:: Mouse and key event propagation
+
 
 In addition to key events, mouse events can also propagate to parent views.
 
-Also, the control over event propagation works differently in Qt. See link::Classes/View#Key and mouse event processing:: for detailed explanation.
+Also, the control over event propagation works differently in Qt.
+See link::Classes/View#Key and mouse event processing:: for detailed explanation.
 
 Moreover, you can make a view transparent for mouse events using link::Classes/View#-acceptsMouse::, which will forward all mouse events to the view under, regardless of whether they are in a parent-child relationship.
 
@@ -132,9 +215,17 @@ win.front;
 )
 ::
 
-SUBSECTION:: Extended mouse interaction
 
-Many Qt views already implement some kind of strong::mouse wheel:: interaction. For example, you can scroll a ScrollView, ListView and TreeView using the mouse wheel. You can also change the value of a Slider or a Knob using the mouse wheel. In addition, you can assign an action of your own to the mouse wheel event using link::Classes/View#-mouseWheelAction:::
+
+
+
+
+subsection:: Extended mouse interaction
+
+
+Many Qt views already implement some kind of strong::mouse wheel:: interaction. For example, you can scroll a ScrollView, ListView and TreeView using the mouse wheel.
+You can also change the value of a Slider or a Knob using the mouse wheel.
+In addition, you can assign an action of your own to the mouse wheel event using link::Classes/View#-mouseWheelAction:::
 
 There's another two handy new mouse actions triggered when the strong::mouse enters or leaves:: the view: link::Classes/View#-mouseEnterAction:: and link::Classes/View#-mouseLeaveAction:::.
 
@@ -161,7 +252,11 @@ t.mouseWheelAction = { |v,x,y,mod,dx,dy|
 
 
 
-SUBSECTION:: Hooks for position and size change
+
+
+
+subsection:: Hooks for position and size change
+
 
 Since views can be automatically repositioned and resized by link::#Layout management#layouts::, or by the user (if they are windows), it may come handy to make your view respond to these changes using link::Classes/View#-onMove:: and link::Classes/View#-onResize::.
 
@@ -187,9 +282,22 @@ x.front;
 )
 ::
 
-SECTION:: Enhancements
 
-SUBSECTION:: Stethoscope
+
+
+
+
+
+
+
+
+section:: Enhancements
+
+
+
+
+subsection:: Stethoscope
+
 
 Qt brings a new implementation of link::Classes/Stethoscope:: that uses emphasis::shared memory:: to allow highly efficient monitoring of buses on any strong::local server::.
 
@@ -199,11 +307,19 @@ code::
 Server.local.scope;
 ::
 
-SUBSECTION:: SoundFileView
 
-link::Classes/SoundFileView:: has strong::infinite display resolution::. This means you can always zoom into the waveform until you see a single sound frame.
+
+
+
+
+subsection:: SoundFileView
+
+
+link::Classes/SoundFileView:: has strong::infinite display resolution::.
+This means you can always zoom into the waveform until you see a single sound frame.
 
 It also offers convenient strong::mouse interaction:: for zooming in and scrolling:
+
 list::
 ## shift + right-click + mouse-up/down = strong::zoom::
 ## right-click + mouse-left/right = strong::scroll::
@@ -228,9 +344,17 @@ v.alloc(5000, samplerate: 500);
 )
 ::
 
-SUBSECTION:: EnvelopeView
 
-link::Classes/EnvelopeView:: offers two different strong::display styles::: in addition to traditional style where nodes are drawn as rectangles with labels inside, it can draw nodes as small dots, with labels next to them. See link::Classes/EnvelopeView#-style::.
+
+
+
+
+subsection:: EnvelopeView
+
+
+link::Classes/EnvelopeView:: offers two different strong::display styles:::
+in addition to traditional style where nodes are drawn as rectangles with labels inside, it can draw nodes as small dots, with labels next to them.
+See link::Classes/EnvelopeView#-style::.
 
 code::
 (
@@ -249,9 +373,12 @@ w = Window()
 )
 ::
 
-You can enforce a strong::strict order of nodes:: on the time axis. In this case, a node can not move to position before the previous node, or after the next node. See link::Classes/EnvelopeView#-keepHorizontalOrder:: and the example below.
+You can enforce a strong::strict order of nodes:: on the time axis. In this case, a node can not move to position before the previous node, or after the next node.
+See link::Classes/EnvelopeView#-keepHorizontalOrder:: and the example below.
 
-You can also control how a strong::selection of nodes:: behaves when it is strong::moved::: it can either keep its form rigidly and block all movement when meeting view edges or other nodes, or it can adjust its form to the obstacles, allowing the movement of those nodes that are not blocked individually. See link::Classes/EnvelopeView#-elasticSelection:: and the following example.
+You can also control how a strong::selection of nodes:: behaves when it is strong::moved:::
+it can either keep its form rigidly and block all movement when meeting view edges or other nodes, or it can adjust its form to the obstacles, allowing the movement of those nodes that are not blocked individually.
+See link::Classes/EnvelopeView#-elasticSelection:: and the following example.
 
 Example: try selecting several nodes (by clicking on them with Shift key pressed) and moving them around, then use the menu to switch the way selection behaves, and repeat:
 
@@ -275,28 +402,59 @@ w = Window()
 )
 ::
 
-SUBSECTION:: ScrollView
-
-link::Classes/ScrollView:: allows to strong::replace the canvas:: that holds its child views with an arbitrary view. This allows great flexibility, including using a link::#Layout management#layout:: to manage the child views. See link::Classes/ScrollView#-canvas:: for explanation, and this link::Classes/ScrollView#examples#example::.
 
 
-SECTION:: New views
 
-SUBSECTION:: TreeView
 
-link::Classes/TreeView:: is a powerful addition to the group of views that display a strong::set of items:: (including ListView and PopUpMenu). It displays items organized in a strong::hierarchical:: manner, akin to filesystem browsers.
 
-Unlike ListView, where items are only arranged in one column, TreeView may consist of strong::several columns::: each item occupies a row, and may contain one text value for each column. Columns also have strong::labeled headers::.
+subsection:: ScrollView
+
+
+link::Classes/ScrollView:: allows to strong::replace the canvas:: that holds its child views with an arbitrary view.
+This allows great flexibility, including using a link::#Layout management#layout:: to manage the child views. See link::Classes/ScrollView#-canvas:: for explanation, and this link::Classes/ScrollView#examples#example::.
+
+
+
+
+
+
+
+
+
+
+section:: New views
+
+
+
+
+subsection:: TreeView
+
+
+link::Classes/TreeView:: is a powerful addition to the group of views that display a strong::set of items:: (including ListView and PopUpMenu).
+It displays items organized in a strong::hierarchical:: manner, akin to filesystem browsers.
+
+Unlike ListView, where items are only arranged in one column, TreeView may consist of strong::several columns:::
+each item occupies a row, and may contain one text value for each column.
+Columns also have strong::labeled headers::.
 
 Moreover, each data field of an item may also strong::contain another view::, giving you a great potential for interactivity with items.
 
-SUBSECTION:: WebView
 
-link::Classes/WebView:: is the core component for strong::web page browsing::. It is also implemented in the Cocoa GUI, but we list it here nonetheless.
+
+
+
+
+subsection:: WebView
+
+
+link::Classes/WebView:: is the core component for strong::web page browsing::.
+It is also implemented in the Cocoa GUI, but we list it here nonetheless.
 
 It is a view that displays web pages, with web technology support comparable to widespread desktop web browsers.
 
-NOTE:: There may currently be some issues with displaying multimedia content. ::
+note:: 
+There may currently be some issues with displaying multimedia content.
+::
 
 code::
 (

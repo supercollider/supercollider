@@ -1,9 +1,24 @@
-TITLE:: InBus
-summary::Return a range of channels from a bus, irrespective of node order
-categories::UGens>InOut
+title:: InBus
+categories:: UGens>InOut
+summary:: Return a range of channels from a bus, irrespective of node order
 related:: Classes/In, Classes/XIn, Classes/InFeedback, Classes/XInFeedback
 
-DESCRIPTION::InBus provides a simple interface to the signal on a bus, crossfading between adjacent values.
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+InBus provides a simple interface to the signal on a bus, crossfading between adjacent values.
+
 code::
 (
 b = Bus.control(s, 9); // nine channel control rate
@@ -17,31 +32,65 @@ b.setn([244, 737, 20, 271, 382, 172, 4, 2399, 251]);
 
 
 
-CLASSMETHODS::
 
 
-METHOD:: ar, kr
-Return a new instance with the respective rate. If the bus rate doesn't match the signal is converted. Multi channel arguments expand.
 
-ARGUMENT:: bus
+
+
+
+
+classmethods::
+
+
+
+
+method:: ar, kr
+
+
+Return a new instance with the respective rate.
+If the bus rate doesn't match the signal is converted.
+Multi channel arguments expand.
+
+
+argument:: bus
+
 An instance of link::Classes/Bus::
 
-ARGUMENT:: numChannels
+
+argument:: numChannels
+
 Number of output channels
 
-ARGUMENT:: offset
+
+argument:: offset
+
 Offset to the starting index in the bus.
 
-ARGUMENT:: clip
+
+argument:: clip
+
 If clip is set to 'wrap', the indices into the bus will not be clipped to the last bus channel, but will wrap around.
 
-returns:: A UGen output, usually an array of UGens or, if the arguments are arrays, an array of arrays.
+
+returns::
+ 
+A UGen output, usually an array of UGens or, if the arguments are arrays, an array of arrays.
 
 
-INSTANCEMETHODS::
 
 
-EXAMPLES::
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+examples::
 
 code::
 (
@@ -74,5 +123,4 @@ s.waitForBoot({
 { InBus.kr(b, 2, MouseX.kr(0, 10).round.poll(2, "index"), \wrap).postln.poll(2, "val"); 0.0 }.play;
 { InBus.kr(b, 3, MouseX.kr(0, 10).round.poll(2, "index"), \wrap).postln.poll(2, "val"); 0.0 }.play;
 { InBus.kr(b, 4, MouseX.kr(0, 10).round.poll(2, "index"), \wrap).postln.poll(2, "val"); 0.0 }.play;
-
 ::

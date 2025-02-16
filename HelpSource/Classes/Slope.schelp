@@ -1,23 +1,68 @@
-class:: Slope
-summary:: Slope of signal
+title:: Slope
 categories:: UGens>Analysis, UGens>Filters>Linear, UGens>Maths
+summary:: Slope of signal
+
+
+
+
+
+
+
+
+
 
 description::
-Measures the rate of change per second of a signal.
+
+
+
+
+Measurethe the rate of change per second of a signal.
 Formula implemented is:
 
 code::
 out[i] = (in[i] - in[i-1]) * sampling_rate
 ::
 
+
+
+
+
+
+
+
+
+
 classmethods::
+
+
+
+
 method:: ar, kr
-argument::in
+
+
+argument:: in
+
 Input signal to measure.
-argument::mul
-argument::add
+
+
+argument:: mul
+
+argument:: add
+
+
+
+
+
+
+
+
+
 
 examples::
+
+
+
+
 code::
 (
 {

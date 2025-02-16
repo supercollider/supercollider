@@ -1,62 +1,97 @@
-class:: PV_HainsworthFoote
-summary:: FFT onset detector.
+title:: PV_HainsworthFoote
+categories:: UGens>FFT
+summary:: FFT onset detector
 related:: Classes/PV_JensenAndersen
-categories::  UGens>FFT
 
 
-Description::
 
-FFT onset detector based on work described in emphasis:: Hainsworth, S. (2003) Techniques for the Automated Analysis of Musical Audio. PhD, University of Cambridge engineering dept. ::
+
+
+
+
+
+
+
+description::
+
+
+
+
+FFT onset detector based on work described in emphasis:: Hainsworth, S. (2003) Techniques for the Automated Analysis of Musical Audio.
+PhD, University of Cambridge engineering dept.
+::
+
 See especially p128. The Hainsworth metric is a modification of the Kullback Liebler
 distance.
 
 
-The onset detector has general ability to spot spectral change, so may
-have some ability to track chord changes  aside from obvious transient
-jolts, but there's no guarantee it won't be confused by frequency
-modulation artifacts.
+The onset detector has general ability to spot spectral change, so may have some ability to track chord changes  aside from obvious transient
+jolts, but there's no guarantee it won't be confused by frequency modulation artifacts.
 
 
-Hainsworth metric on it's own gives good results but Foote might be
-useful in some situations: experimental.
+Hainsworth metric on it's own gives good results but Foote might be useful in some situations: experimental.
+
+
+
+
+
+
+
+
 
 
 classmethods::
+
+
+
+
 private:: categories
 
-method::ar
 
-argument::buffer
+method:: ar
+
+
+argument:: buffer
 
 FFT buffer.
 
 
-argument::proph
+argument:: proph
 
 What strength of detection signal from Hainsworth metric to use.
 
 
-argument::propf
+argument:: propf
 
-What strength of detection signal from Foote metric to use. The
+What strength of detection signal from Foote metric to use.
+The
 Foote metric is normalised to (0..1).
 
 
-argument::threshold
+argument:: threshold
 
 Threshold hold level for allowing a detection.
 
 
-argument::waittime
+argument:: waittime
 
-If triggered, minimum wait until a further frame can cause
-another spot (useful to stop multiple detects on heavy signals).
+If triggered, minimum wait until a further frame can cause another spot (useful to stop multiple detects on heavy signals).
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 // just Hainsworth metric with low threshold
 (
 SynthDef(\fftod, { |out|
@@ -100,5 +135,4 @@ SynthDef(\fftod, { |out|
 		Out.ar(out, Pan2.ar(source1, -1.0) + Pan2.ar(SinOsc.ar(440, 0, Decay.ar(0.1 * detect, 0.1)), 1.0));
 	}).play(s);
 )
-
 ::

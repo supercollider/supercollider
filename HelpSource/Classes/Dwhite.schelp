@@ -1,9 +1,21 @@
-class:: Dwhite
-summary:: Demand rate white noise random generator.
-related:: Classes/Diwhite, Classes/Demand, Classes/Duty, Classes/TDuty
+title:: Dwhite
 categories:: UGens>Demand
+summary:: Demand rate white noise random generator
+related:: Classes/Diwhite, Classes/Demand, Classes/Duty, Classes/TDuty
 
-Description::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 Dwhite returns numbers in the continuous range between
 code::lo::  and  code::hi:: .
@@ -17,29 +29,51 @@ See link::Classes/Pwhite::, link::Classes/WhiteNoise::  for structurally related
 equivalents.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::new
 
-argument::lo
+
+
+method:: new
+
+
+argument:: lo
 
 Minimum value.
 
 
-argument::hi
+argument:: hi
 
 Maximum value.
 
 
-argument::length
+argument:: length
 
 Number of values to create.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 (
 {
 	var a, freq, trig;
@@ -50,5 +84,4 @@ code::
 
 }.play;
 )
-
 ::

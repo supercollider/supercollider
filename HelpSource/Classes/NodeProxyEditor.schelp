@@ -1,19 +1,33 @@
-class:: NodeProxyEditor
-summary:: editor for a nodeproxy - replaced by NdefGui!
+title:: NodeProxyEditor
 categories:: JITLib>GUI, Live Coding
+summary:: Editor for a nodeproxy - replaced by NdefGui!
 related:: Classes/NdefGui
+
+
+
+
+
+
+
+
+
 
 description::
 
-warning::
-NodeProxyEditor has been rewritten and renamed link::Classes/NdefGui::, which has the same functionality, but is both more consistent and more flexible. There are some changes to the strong::*new:: method:
 
-definitionList::
+
+
+warning::
+NodeProxyEditor has been rewritten and renamed link::Classes/NdefGui::, which has the same functionality, but is both more consistent and more flexible.
+There are some changes to the strong::*new:: method:
+
+definitionlist::
 ## instead of || *new(proxy, nSliders = 16, parent, extras = [\CLR, \reset, \scope, \doc, \end, \fade], monitor, sinks, morph)
 ## NdefGui uses || *new(object, numItems = 0, parent, bounds, makeSkip, options)
 ::
 
-strong::proxy:: is now strong::object::, strong::nSliders:: is now strong::numItems::, strong::parent:: is still strong::parent::. strong::bounds:: - can be code::Rect(l, t, w, h):: or code::width@heights::, strong::makeSkip:: - is an option to build without skipjack. strong::extras:: are now strong::options::, and have become more flexible.
+strong::proxy:: is now strong::object::, strong::nSliders:: is now strong::numItems::, strong::parent:: is still strong::parent::. strong::bounds:: - can be code::Rect(l, t, w, h):: or code::width@heights::, strong::makeSkip:: - is an option to build without skipjack.
+strong::extras:: are now strong::options::, and have become more flexible.
 
 Please see link::Classes/NdefGui:: for more details.
 ::
@@ -28,16 +42,49 @@ list::
 
 link::Classes/NodeProxy:: and link::Classes/Ndef:: implement an strong::edit:: message, which returns a link::Classes/NodeProxyEditor::. Overview: link::Overviews/JITLib::
 
-ClassMethods::
 
-private::initClass
 
-subsection::Creation
 
-method::new
-Returns a new instance for a given proxy. If a window (win) or a composite view is given, it uses this.
 
-Examples::
+
+
+
+
+
+classmethods::
+
+
+
+
+private:: initClass
+
+
+
+
+
+
+subsection:: Creation
+
+
+method:: new
+
+
+Return a new instance for a given proxy.
+If a window (win) or a composite view is given, it uses this.
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 	// preparation
@@ -143,7 +190,13 @@ Spec.add(\intv, ControlSpec(0, 24, \lin, 0.01, 0)); n.fullUpdate;
 ~test.set(\freq, rrand(200, 500), \intv, rrand(-5.5, 5.5));
 ::
 
-subsection::You can drag and drop proxies between NodeProxyEditors
+
+
+
+
+
+subsection:: You can drag and drop proxies between NodeProxyEditors
+
 
 code::
 (
@@ -156,7 +209,8 @@ o = NodeProxyEditor(nil, 3); o.w.bounds_(o.w.bounds.moveBy(0, 480));
 
 Spec.add(\dens, [0.1, 300, \exp]);
 
-	// make 3 kinds of proxies: using tilde/proxyspace, Ndef, and unnamed.
+	// make 3 kinds of proxies:
+using tilde/proxyspace, Ndef, and unnamed.
 ~spacy = { |dens = 5| Formlet.ar(Dust.ar(dens ! 2), LFDNoise0.kr(20 ! 2).lag(0.1).linexp(-1, 1, 300, 5000), 0.003, 0.03) };
 Ndef(\ndeffy, { GrayNoise.ar(0.1 ! 2) });
 c = NodeProxy.audio.source_({ PinkNoise.ar(0.1 ! 2) });

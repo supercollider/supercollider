@@ -1,25 +1,66 @@
-class:: BinaryOpFunction
-summary:: represent a binary operation on a function
+title:: BinaryOpFunction
 categories:: Core
+summary:: Represent a binary operation on a function
 related:: Classes/UnaryOpFunction, Classes/NAryOpFunction, Classes/BinaryOpStream, Classes/Pbinop, Overviews/Operators
+
+
+
+
+
+
+
+
+
 
 description::
 
+
+
+
 Operating on functions instead of numbers, what results is not a result of the calculation, but a structure that represents that calculation.
 
-instanceMethods::
 
-private::storeOn
 
-method::value
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+private:: storeOn
+
+
+method:: value
 
 Executes each of the operand functions and then performs the selector on the result.
 
-method::valueArray
 
-the same as link::#-value::
+
+
+method:: valueArray
+
+
+The same as link::#-value::
+
+
+
+
+
+
+
+
+
 
 examples::
+
+
+
 
 code::
 // example

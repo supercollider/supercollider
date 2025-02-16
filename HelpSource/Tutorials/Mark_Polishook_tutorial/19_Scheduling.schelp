@@ -1,9 +1,21 @@
 title:: 19_Scheduling
-summary:: Mark Polishook tutorial
 categories:: Tutorials>Mark_Polishook_tutorial
+summary:: Mark Polishook tutorial
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
-section::Routines and clocks
+
+
+
+
+
+
+
+
+
+section:: Routines and clocks
+
+
+
 
 Use clocks to create automated, algorithmic scheduling. Among the things that clocks "play" are routines, tasks, and patterns.
 
@@ -32,10 +44,11 @@ code::
 r.next;
 ::
 
-The routine above returns nil when its evaluated a second time. This is because once a routine "yields" and if there's no additional code after the .yield message, the routine is finished, over, and done - unless it receives a reset message. Then it can start over again.
+The routine above returns teletype::nil:: when its evaluated a second time. This is because once a routine "yields" and if there's no additional code after the .yield message, the routine is finished, over, and done - unless it receives a reset message.
+Then it can start over again.
 
 code::
-r.next;		// returns nil
+r.next;		// returns teletype::nil::
 r.reset;	// reset the routine
 r.next;		// it works!
 ::
@@ -52,13 +65,13 @@ r = Routine({
 )
 ::
 
-The first three .next messages return a string. The fourth .next message returns nil.
+The first three .next messages return a string. The fourth .next message returns teletype::nil::.
 
 code::
 r.next;	// returns a string
 r.next;	// returns a string
 r.next;	// returns a string
-r.next;	// returns nil
+r.next;	// returns teletype::nil::
 ::
 
 Reset the routine.
@@ -99,7 +112,19 @@ code::
 
 The routine returned three strings followed by nil.
 
-section::Scheduling routines
+
+
+
+
+
+
+
+
+
+section:: Scheduling routines
+
+
+
 
 Rewrite the routine so that it includes a .wait message.
 
@@ -131,7 +156,19 @@ code::
 r.reset.play;
 ::
 
-section::Clocks and the convenience of .play
+
+
+
+
+
+
+
+
+
+section:: Clocks and the convenience of .play
+
+
+
 
 When a routine receives a .play message, control (of the routine) is redirected to a clock. The clock uses the receiver of the .wait message as a unit of time to schedule ("play") the routine.
 
@@ -149,13 +186,25 @@ code::
 r.reset.play;		// reset the routine before playing it
 ::
 
-instead of
+Instead of
 
 code::
 SystemClock.play(r)
 ::
 
-section::Scheduling synths with routines
+
+
+
+
+
+
+
+
+
+section:: Scheduling synths with routines
+
+
+
 
 Enclose synths within routines. It's often the case that the synthdef used by the synth in routines should have an envelope with a doneAction parameter set to 2 (to deallocate the memory needed for the synth after its envelope has finished playing).
 

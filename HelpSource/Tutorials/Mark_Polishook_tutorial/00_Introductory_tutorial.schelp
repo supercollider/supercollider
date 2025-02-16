@@ -1,19 +1,23 @@
 title:: 00_Introductory tutorial
-summary:: Mark Polishook tutorial
 categories:: Tutorials>Mark_Polishook_tutorial
+summary:: Mark Polishook tutorial
 related:: Tutorials/Getting-Started/00-Getting-Started-With-SC
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-definitionList::
+definitionlist::
 ## First_steps ||
+
 list::
 ## link::Tutorials/Mark_Polishook_tutorial/01_Startup::
 ## link::Tutorials/Mark_Polishook_tutorial/02_Evaluating_code::
 ## link::Tutorials/Mark_Polishook_tutorial/03_Comments::
 ## link::Tutorials/Mark_Polishook_tutorial/04_Help::
 ::
+
 ## Synthesis ||
+
 list::
 ## link::Tutorials/Mark_Polishook_tutorial/05_The_network::
 ## link::Tutorials/Mark_Polishook_tutorial/06_Prerequisites::
@@ -31,19 +35,23 @@ list::
 ## link::Tutorials/Mark_Polishook_tutorial/18_Frequency_modulation::
 ## link::Tutorials/Mark_Polishook_tutorial/19_Scheduling::
 ::
+
 ## Debugging ||
+
 list::
 ## link::Tutorials/Mark_Polishook_tutorial/20_Debugging::
 ## link::Tutorials/Mark_Polishook_tutorial/21_Syntax_errors::
 ## link::Tutorials/Mark_Polishook_tutorial/22_Runtime_errors::
 ::
+
 ::
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 last revised: August 2, 2004
 
-partly updated: April 13, 2011 while converted to new help system. /f0
+partly updated: April 13, 2011 while converted to new help system.
+/f0
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

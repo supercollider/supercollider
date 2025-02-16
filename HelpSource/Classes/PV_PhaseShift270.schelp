@@ -1,26 +1,60 @@
-class:: PV_PhaseShift270
-summary:: Shift phase by 270 degrees.
-related:: Classes/FFT, Classes/IFFT, Classes/PV_PhaseShift, Classes/PV_PhaseShift90, Classes/PV_Diffuser
+title:: PV_PhaseShift270
 categories:: UGens>FFT
+summary:: Shift phase by 270 degrees
+related:: Classes/FFT, Classes/IFFT, Classes/PV_PhaseShift, Classes/PV_PhaseShift90, Classes/PV_Diffuser
 
-Description::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 Shift phase of all bins by 270 degrees.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::new
 
-argument::buffer
+
+
+method:: new
+
+
+argument:: buffer
 
 FFT buffer.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 s.boot;
 
 (
@@ -33,5 +67,4 @@ s.boot;
 	[IFFT(fft2), IFFT(shifted)]
 }.scope
 )
-
 ::

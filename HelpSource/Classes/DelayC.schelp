@@ -1,39 +1,85 @@
-class:: DelayC
-summary:: Simple delay line with cubic interpolation.
+title:: DelayC
+categories:: UGens>Delays
+summary:: Simple delay line with cubic interpolation
 related:: Classes/DelayL, Classes/DelayN, Classes/BufDelayC
-categories::  UGens>Delays
 
 
-Description::
 
-Simple delay line with cubic interpolation. See also
+
+
+
+
+
+
+
+description::
+
+
+
+
+Simple delay line with cubic interpolation.
+See also
 link::Classes/DelayN::  which uses no interpolation, and
 link::Classes/DelayL::  which uses linear interpolation. Cubic
 interpolation is more computationally expensive than linear,
 but more accurate.
 
-The term "delay" is often used in electronic music to refer to a delay line with feedback. If you are looking for that, try CombC.
+The term "delay" is often used in electronic music to refer to a delay line with feedback.
+If you are looking for that, try CombC.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
 
-argument::in
+
+
+method:: ar, kr
+
+
+argument:: in
+
 The input signal.
 
-argument::maxdelaytime
-The maximum delay time in seconds. used to initialize the delay buffer size.
 
-argument::delaytime
+argument:: maxdelaytime
+
+The maximum delay time in seconds.
+used to initialize the delay buffer size.
+
+
+argument:: delaytime
+
 Delay time in seconds.
+
 
 discussion::
 note::
-DelayC needs at least 4 samples buffer. Therefore the minimum code::maxdelaytime:: and code::delaytime:: must be code::SampleDur.ir * 4::.
+DelayC needs at least 4 samples buffer.
+Therefore the minimum code::maxdelaytime:: and code::delaytime:: must be code::SampleDur.ir * 4::.
 ::
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
+
 code::
 (
 // Dust randomly triggers Decay to create an exponential

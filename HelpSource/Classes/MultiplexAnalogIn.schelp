@@ -1,10 +1,21 @@
-class:: MultiplexAnalogIn
+title:: MultiplexAnalogIn
+categories:: UGens>Bela
 summary:: Read data from an analog input of the Bela board
 related:: Classes/AnalogIn, Classes/AnalogOut, Classes/DigitalIn, Classes/DigitalOut, Classes/DigitalIO
-categories::  UGens>Bela
 
 
-Description::
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 Reads analog data from a multiplexed analog input of the Bela board, with the additional Multiplexer board.
 
@@ -12,37 +23,72 @@ note::
 This UGen only works on Bela
 ::
 
+
+
+
+
+
+
+
+
+
 classmethods::
 
-method::ar
 
-argument::analogPin
 
-Analog pin number to read. Pin numbers begin at 0. This value can be modulated at audiorate.
 
-argument::muxChannel
+method:: ar
 
-Multiplex channel to read. Pin numbers begin at 0. This value can be modulated at audiorate.
 
-argument::mul
+argument:: analogPin
 
-argument::add
+Analog pin number to read. Pin numbers begin at 0.
+This value can be modulated at audiorate.
 
-method::kr
 
-argument::analogPin
+argument:: muxChannel
+
+Multiplex channel to read. Pin numbers begin at 0.
+This value can be modulated at audiorate.
+
+
+argument:: mul
+
+argument:: add
+
+
+
+
+method:: kr
+
+
+argument:: analogPin
 
 Analog pin number to read. Pin numbers begin at 0.
 
-argument::muxChannel
+
+argument:: muxChannel
 
 Multiplex channel to read. Pin numbers begin at 0.
 
-argument::mul
 
-argument::add
+argument:: mul
 
-Examples::
+argument:: add
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 // modulate frequency of a sine oscillator

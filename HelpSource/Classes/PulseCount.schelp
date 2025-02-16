@@ -1,33 +1,66 @@
-class:: PulseCount
-summary:: Pulse counter.
+title:: PulseCount
+categories:: UGens>Triggers
+summary:: Pulse counter
 related:: Classes/Stepper
-categories::  UGens>Triggers
 
 
-Description::
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 Each trigger increments a counter which is output as a signal.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::ar, kr
-
-argument::trig
-
-Trigger. Trigger can be any signal. A trigger happens when the
-signal changes from non-positive to positive.
 
 
-argument::reset
 
-Resets the counter to zero when triggered.
+method:: ar, kr
 
 
-Examples::
+argument:: trig
+
+Trigger. Trigger can be any signal.
+A trigger happens when the signal changes from non-teletype::positive:: to teletype::positive::.
+
+
+argument:: reset
+
+Reset the counter to teletype::zero:: when triggered.
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 SynthDef("help-PulseCount", { |out = 0|
 	Out.ar(out,
 		SinOsc.ar(
@@ -36,5 +69,4 @@ SynthDef("help-PulseCount", { |out = 0|
 		)
 	)
 }).play;
-
 ::

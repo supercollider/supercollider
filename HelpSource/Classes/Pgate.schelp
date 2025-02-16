@@ -1,25 +1,71 @@
-class:: Pgate
-summary:: A gated stream that only advances when a particular event key is true.
-related:: Classes/Pn
+title:: Pgate
 categories:: Streams-Patterns-Events>Patterns>Repetition
+summary:: A gated stream that only advances when a particular event key is true
+related:: Classes/Pn
+
+
+
+
+
+
+
+
+
+
 description::
 
-Pgate advances its subpattern whenever strong::key:: is true. Pgate must be used within an Event pattern. You can either set the key manually, or use LINK::Classes/Pn::.
 
-CLASSMETHODS::
 
-METHOD:: new
 
-ARGUMENT:: pattern
+Pgate advances its subpattern whenever strong::key:: is true. Pgate must be used within an Event pattern.
+You can either set the key manually, or use link::Classes/Pn::.
+
+
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
+argument:: pattern
+
 The source pattern to be filtered.
 
-ARGUMENT::repeats
+
+argument:: repeats
+
 Repeat the enclosed pattern strong::repeats:: times.
 
-ARGUMENT::key
-Pgate will only return the next value in the source pattern if the event that it belongs to has strong::key:: set to true. Otherwise it will keep returning the same value. This allows for a gated effect on streams.
 
-Examples::
+argument:: key
+
+Pgate will only return the next value in the source pattern if the event that it belongs to has strong::key:: set to teletype::true::.
+Otherwise it will keep returning the same value.
+This allows for a gated effect on streams.
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 // Use \step to change the octave randomly

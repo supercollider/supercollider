@@ -1,19 +1,28 @@
 title:: asTarget
-summary:: Convert to a valid Node Target
 categories:: Server>Nodes
+summary:: Convert to a valid Node Target
 related:: Classes/Node
+
+
+
+
+
 
 method:: asTarget
 
-The classes listed below implement the method code::asTarget::. This is used widely in the link::Classes/Node:: classes ( link::Classes/Group:: and link::Classes/Synth:: ) to convert non-Node objects to an appropriate target.
+
+The classes listed below implement the method code::asTarget::.
+This is used widely in the link::Classes/Node:: classes ( link::Classes/Group:: and link::Classes/Synth:: ) to convert non-Node objects to an appropriate target.
 This allows nil and instances of link::Classes/Server:: to be used as targets. This can be useful when writing classes which create nodes internally, but in most cases there should be little need to call asTarget in normal use.
 
 For an updated list of which classes that implements code::asTarget::, see asTarget in link::Overviews/Methods#asTarget::
 
 definitionlist::
-## link::Classes/Node#-asTarget:: || Returns the instance of Node itself. The subclasses of Node (Synth and Group) are valid targets and require no conversion.
+## link::Classes/Node#-asTarget:: || Returns the instance of Node itself.
+The subclasses of Node (Synth and Group) are valid targets and require no conversion.
 
 ## link::Classes/Server#-asTarget:: || Returns a link::Classes/Group:: object representing the link::Reference/default_group:: of this instance of Server. Note that this object may not be identical with other objects representing the default group, but will be equivalent.
+
 code::
 s = Server.default;
 g = s.asTarget;     // the default group of s
@@ -23,6 +32,7 @@ g === h;            // false
 ::
 
 ## link::Classes/Nil#-asTarget:: || Returns a link::Classes/Group:: object representing the link::Reference/default_group:: of the current default link::Classes/Server::.
+
 code::
 s = Server.default;
 g = nil.asTarget;
@@ -30,7 +40,13 @@ g == s.defaultGroup; // true
 ::
 
 ## link::Classes/Integer#-asTarget:: || Returns a link::Classes/Group:: object representing a group node on the current default Server with this Integer as its node ID number.
-Note:: Although this can be convenient in some cases, it does not create the corresponding node on the default server, nor does it check to make sure that it exists. As well it does not directly access the server's NodeIDAllocator, so duplication of node IDs is possible. For these reasons this method should be used with care. When not dealing with the default Server, Group-basicNew is safer and simpler, as otherwise one needs to set the server instance variable to ensure correct targeting. ::
+note:: 
+Although this can be convenient in some cases, it does not create the corresponding node on the default server, nor does it check to make sure that it exists.
+As well it does not directly access the server's NodeIDAllocator, so duplication of node IDs is possible.
+For these reasons this method should be used with care.
+When not dealing with the default Server, Group-basicNew is safer and simpler, as otherwise one needs to set the server instance variable to ensure correct targeting.
+::
+
 code::
 /////// Showing the problems
 
@@ -55,6 +71,7 @@ g.server = i;
 x = Synth.head(g, "default");   // now to the right place
 x.free; g.free;
 ::
+
 code::
 /////// A more practical example
 
@@ -71,4 +88,5 @@ z = Synth.head(Group.basicNew(s, x), "default");
 
 y.free; z.free; x.asTarget.free;
 ::
+
 ::

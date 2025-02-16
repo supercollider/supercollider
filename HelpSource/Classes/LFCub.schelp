@@ -1,34 +1,75 @@
-class:: LFCub
+title:: LFCub
+categories:: UGens>Generators>Deterministic
 summary:: A sine like shape made of two cubic pieces
 related:: Classes/LFPar, Classes/LFPulse, Classes/LFSaw, Classes/LFTri
-categories::  UGens>Generators>Deterministic
 
 
-Description::
 
-A sine like shape made of two cubic pieces. Smoother than
+
+
+
+
+
+
+
+description::
+
+
+
+
+A sine like shape made of two cubic pieces.
+Smoother than
 link::Classes/LFPar:: .
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
 
-argument::freq
+
+
+method:: ar, kr
+
+
+argument:: freq
+
 Frequency in Hertz.
 
-argument::iphase
 
-Initial phase offset. For efficiency reasons this is a value ranging from 0 to 2.
+argument:: iphase
+
+Initial phase offset. For efficiency reasons this is a value ranging from teletype::0:: to 2.
 
 
-argument::mul
+argument:: mul
+
 Output will be multiplied by this value.
 
-argument::add
+
+argument:: add
+
 This value will be added to the output.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 { LFCub.ar(LFCub.kr(LFCub.kr(0.2, 0, 8, 10), 0, 400, 800), 0, 0.1) }.play

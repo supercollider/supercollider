@@ -1,10 +1,21 @@
-class:: AllpassL
-summary:: Schroeder allpass delay line with linear interpolation.
+title:: AllpassL
+categories:: UGens>Delays
+summary:: Schroeder allpass delay line with linear interpolation
 related:: Classes/AllpassC, Classes/AllpassN, Classes/BufAllpassL
-categories::  UGens>Delays
 
 
-Description::
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 A Schroeder allpass filter is given by the difference equations
 
@@ -13,7 +24,7 @@ s(t) = x(t) + k * s(t - D)
 y(t) = -k * s(t) + s(t - D)
 ::
 
-where code::x(t):: is the input signal, code::y(t):: is the output signal,
+Where code::x(t):: is the input signal, code::y(t):: is the output signal,
 code::D:: is the delay time, and code::k:: is the allpass coefficient.
 
 In this UGen, code::k:: is computed as
@@ -26,32 +37,68 @@ Cubic interpolation is more computationally expensive than linear,
 but more accurate.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::ar, kr
 
-argument::in
+
+
+method:: ar, kr
+
+
+argument:: in
+
 The input signal.
 
-argument::maxdelaytime
-The maximum delay time in seconds. Used to initialize the delay buffer size.
 
-argument::delaytime
+argument:: maxdelaytime
+
+The maximum delay time in seconds.
+Used to initialize the delay buffer size.
+
+
+argument:: delaytime
+
 Delay time in seconds.
 
-argument::decaytime
-Time for the echoes to decay by 60 decibels. If this time is negative then the feedback coefficient will be negative, thus emphasizing only odd harmonics at an octave lower.
 
-argument::mul
+argument:: decaytime
+
+Time for the echoes to decay by 60 decibels.
+If this time is negative then the feedback coefficient will be negative, thus emphasizing only odd harmonics at an octave lower.
+
+
+argument:: mul
+
 Output will be multiplied by this value.
 
-argument::add
+
+argument:: add
+
 This value will be added to the output.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 // Since the allpass delay has no audible effect as a resonator on
 // steady state sound ...
 
@@ -82,5 +129,4 @@ code::
 // but it outputs the input signal immediately (inverted) and the echoes
 // are lower in amplitude.
 { AllpassL.ar(Decay.ar(Dust.ar(1, 0.5), 0.2, WhiteNoise.ar), 0.2, 0.2, 3) }.play;
-
 ::

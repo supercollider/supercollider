@@ -1,22 +1,55 @@
-class:: SampleRate
-summary:: Server sample rate.
+title:: SampleRate
+categories:: UGens>Info
+summary:: Server sample rate
 related:: Classes/ControlRate, Classes/RadiansPerSample, Classes/SampleDur, Classes/SubsampleOffset
-categories::  UGens>Info
 
 
-Description::
 
-Returns the current sample rate of the server.
+
+
+
+
+
+
+
+description::
+
+
+
+
+Return the current sample rate of the server.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ir
 
-Examples::
+
+
+method:: ir
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 // compares a 441 Hz sine tone derived from sample rate (44100 * 0.01, left)
 // with a 440 Hz tone (right), resulting in a 1 Hz beating
 (
@@ -26,5 +59,4 @@ code::
 	SinOsc.ar(freq, 0, 0.1)
 }.play;
 )
-
 ::

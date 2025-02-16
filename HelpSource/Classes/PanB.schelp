@@ -1,47 +1,79 @@
-class:: PanB
-summary:: Ambisonic B-format panner.
+title:: PanB
+categories:: UGens>Multichannel>Ambisonics
+summary:: Ambisonic B-format panner
 related:: Classes/BiPanB2, Classes/DecodeB2, Classes/PanB2, Classes/Rotate2
-categories::  UGens>Multichannel>Ambisonics
 
 
-Description::
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 Ambisonic B format panner. Output channels are in order W, X, Y, Z.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::ar, kr
 
-argument::in
+
+
+method:: ar, kr
+
+
+argument:: in
 
 The input signal.
 
 
-argument::azimuth
+argument:: azimuth
 
 Azimuth in radians, -π to +π.
 
 
-argument::elevation
+argument:: elevation
 
 Elevation in radians, -0.5π to +0.5π.
 
 
-argument::gain
+argument:: gain
 
 A control rate level input.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 // You'll only hear the first two channels on a stereo setup.
 play({
 	#w, x, y, z = PanB.ar(WhiteNoise.ar, LFSaw.kr(0.5, pi), FSinOsc.kr(0.31, 0.5pi), 0.3);
 	// decode for 4 channels
 	DecodeB2.ar(4, w, x, y, 0.5);
 });
-
 ::

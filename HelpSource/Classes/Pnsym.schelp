@@ -1,27 +1,84 @@
-class:: Pnsym
-summary:: use a pattern of symbols to embed Pdefns
+title:: Pnsym
 categories:: JITLib>Patterns, Live Coding
+summary:: Use a pattern of symbols to embed Pdefns
 related:: Classes/Pdefn
 
+
+
+
+
+
+
+
+
+
 description::
-for event patterns see link::Classes/Psym::. Overview: link::Overviews/JITLib::.
 
-ClassMethods::
 
-method::new
 
-argument::pattern
-a pattern that returns symbols or characters. Arrays are converted to parallel patterns (link::Classes/Ptuple::).
 
-argument::dict
-the dictionary to be used for lookup. By default, this is code::Pdefn.all::, so one can embed Pdefns by name.
+For event patterns see link::Classes/Psym::. Overview: link::Overviews/JITLib::.
 
-InstanceMethods::
 
-method::dict
-set the dictionary to be used.
 
-Examples::
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
+argument:: pattern
+
+A pattern that returns symbols or characters.
+Arrays are converted to parallel patterns (link::Classes/Ptuple::).
+
+
+argument:: dict
+
+The dictionary to be used for lookup.
+By default, this is code::Pdefn.all::, so one can embed Pdefns by name.
+
+
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+method:: dict
+
+
+Set the dictionary to be used.
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (

@@ -1,9 +1,21 @@
 title:: Server Plugin API
-summary:: Reference for writing unit generators
 categories:: Internals
+summary:: Reference for writing unit generators
 related:: Guides/WritingUGens
 
+
+
+
+
+
+
+
+
+
 section:: Input rates
+
+
+
 
 These four constants identify the calculation rates of inputs in SuperCollider.
 
@@ -21,13 +33,25 @@ definitionlist::
 || Demand rate.
 ::
 
+
+
+
+
+
+
+
+
+
 section:: UGen basics
 
-These helper macros assume that there is a ugen object called code::unit:: in the local scope.
+
+
+
+These helper macros assume that there is a UGen object called code::unit:: in the local scope.
 
 definitionlist::
 ## code::IN(index)::
-|| A single block of audio-rate input as a float* at the given index. Index 0 is the first input to the ugen, index 1 the second input, and so forth.
+|| A single block of audio-rate input as a float* at the given index. Index 0 is the first input to the UGen, index 1 the second input, and so forth.
 
 ## code::IN0(index)::
 || A single sample of control-rate input as a float, at the given index.
@@ -39,7 +63,8 @@ definitionlist::
 || A single sample of control-rate input as a float, at the given index.
 
 ## code::INRATE(index)::
-|| Get the rate of a given input index. This will be one of the four rates.
+|| Get the rate of a given input index.
+This will be one of the four rates.
 
 ## code::INBUFLENGTH(index)::
 || Get the block size of a given input index.
@@ -66,11 +91,25 @@ definitionlist::
 ||
 ::
 
+
+
+
+
+
+
+
+
+
 section:: Buffers
+
+
+
 
 definitionlist::
 ## code::GET_BUF::
-|| The recommended way to retrieve a buffer. Take the first input of this UGen and use it as a buffer number. This dumps
+|| The recommended way to retrieve a buffer.
+Take the first input of this UGen and use it as a buffer number.
+This dumps
 a number of variables into the local scope:
 
 list::
@@ -81,7 +120,8 @@ list::
 ## code::bufFrames:: - the number of frames in the buffer
 ::
 
-The buffer is locked using the code::LOCK_SNDBUF:: macro. Buffer lock operations are specific to supernova, and don't
+The buffer is locked using the code::LOCK_SNDBUF:: macro.
+Buffer lock operations are specific to supernova, and don't
 do anything in vanilla scsynth.
 
 ## code::GET_BUF_SHARED::
@@ -97,7 +137,8 @@ do anything in vanilla scsynth.
 || Like code::SIMPLE_GET_BUF::, but locks the buffer with code::LOCK_SNDBUF_SHARED::.
 ::
 
-The following macros are for use in supernova. They still exist in scsynth, but will have no effect.
+The following macros are for use in supernova.
+They still exist in scsynth, but will have no effect.
 
 code::
 ACQUIRE_BUS_AUDIO(index)
@@ -118,10 +159,24 @@ ACQUIRE_BUS_CONTROL(index)
 RELEASE_BUS_CONTROL(index)
 ::
 
+
+
+
+
+
+
+
+
+
 section:: RGen
 
-RGen is a pseudorandom number generator API. Most ugen developers are not interested in seeding their own RGens and
-would prefer to draw from a global RGen instance supplied by SuperCollider. This can be retrieved with the code:
+
+
+
+RGen is a pseudorandom number generator API.
+Most UGen developers are not interested in seeding their own RGens and
+would prefer to draw from a global RGen instance supplied by SuperCollider.
+This can be retrieved with the code:
 
 code::
 RGen& rgen = *unit->mParent->mRGen;
@@ -156,8 +211,9 @@ definitionlist::
 || Bilinearly distributed random float in (-1,1), with a bias towards 0.
 
 ## code::float RGen\::fsum3rand()::
-|| A crude but fast approximation to a Gaussian distribution. Results are always in the range (-1,1). The variance is
-1/6 and the standard deviation is 0.41. footnote:: The formula is code::(rand() + rand() + rand() - 1.5) * 2/3::,
+|| A crude but fast approximation to a Gaussian distribution.
+Results are always in the range (-1,1). The variance is
+1/6 and the standard deviation is 0.41. footnote::The formula is code::(rand() + rand() + rand() - 1.5) * 2/3::,
 technically a shifted and stretched order-3 Irwin-Hall distribution. ::
 
 ## code::int32 RGen\::irand(int32 scale)::
@@ -194,7 +250,19 @@ technically a shifted and stretched order-3 Irwin-Hall distribution. ::
 || Double version of code::RGen\::fsum3rand::.
 ::
 
+
+
+
+
+
+
+
+
+
 section:: Unary operators
+
+
+
 
 definitionlist::
 ## code::bool sc_isnan(float/double x)::
@@ -243,8 +311,9 @@ The following unary functions are available for both float32 and float64, but ha
 
 definitionlist::
 ## code::zapgremlins(x)::
-|| Replaces NaNs, infinities, very large and very small numbers (including denormals) with zero. This is useful in ugen
-feedback to safeguard from pathological behavior. (Note lack of sc_ prefix.)
+|| Replaces NaNs, infinities, very large and very small numbers (including denormals) with zero. This is useful in UGen
+feedback to safeguard from pathological behavior.
+(Note lack of sc_ prefix.)
 
 ## code::sc_bitriwindow(x)::
 || Alternative to code::sc_triwindow:: using absolute value.
@@ -271,7 +340,19 @@ feedback to safeguard from pathological behavior. (Note lack of sc_ prefix.)
 || Fold code::x:: around ±1, folding only once.
 ::
 
+
+
+
+
+
+
+
+
+
 section:: Binary operators
+
+
+
 
 definitionlist::
 ## code::sc_wrap(in, lo, hi [, range])::
@@ -323,7 +404,19 @@ list::
 ## code::sc_atan2(a, b):: (legacy -- use code::std\::atan2::)
 ::
 
+
+
+
+
+
+
+
+
+
 section:: Constants
+
+
+
 
 The following constants are doubles:
 
@@ -354,11 +447,25 @@ list::
 ## code::truncFloat:: = 3 * 2^22 (used to truncate precision)
 ::
 
+
+
+
+
+
+
+
+
+
 section:: Unroll macros
 
-The macros in this section are legacy features. They are seen in many of SuperCollider's built-in ugens, and are
+
+
+
+The macros in this section are legacy features.
+They are seen in many of SuperCollider's built-in UGens, and are
 intended to provide more efficient alternatives to the standard code::for (int i = 0; i < inNumSamples; i++) { out[i]
-= in[i] }:: loop. These efficiency savings are negligible on modern systems and use of these macros is not recommended,
+= in[i] }:: loop.
+These efficiency savings are negligible on modern systems and use of these macros is not recommended,
 especially since they make debugging difficult.
 
 definitionlist::
@@ -372,10 +479,10 @@ definitionlist::
 || An alternative to LOOP/LOOP1 that is more debugger-friendly. The body of the loop comes after the call to code::LooP::.
 
 ## code::ZIN(index)::
-|| Similar to code::IN::, but subtracts 1 from the pointer to correct for off-by-one errors when using code::LOOP:: and code::ZXP::.
+|| Similar to code::IN::, but subtracts teletype::1:: from the pointer to correct for off-by-one errors when using code::LOOP:: and code::ZXP::.
 
 ## code::ZOUT(index)::
-|| Same as code::OUT::, but subtracts 1 from the pointer to correct for off-by-one errors when using code::LOOP:: and code::ZXP::.
+|| Same as code::OUT::, but subtracts teletype::1:: from the pointer to correct for off-by-one errors when using code::LOOP:: and code::ZXP::.
 
 ## code::ZIN0(index)::
 || Alias for code::IN0::.

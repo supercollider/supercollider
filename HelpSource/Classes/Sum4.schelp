@@ -1,14 +1,42 @@
-CLASS:: Sum4
-summary:: Sum four signals
+title:: Sum4
 categories:: UGens>Algebraic
+summary:: Sum four signals
 related:: Classes/Mix
 
-DESCRIPTION::
-Sum four signals. Internal ugen to efficiently mix four signals. Should be used via link::Classes/Mix::.
 
-CLASSMETHODS::
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+Sum four signals. Internal UGen to efficiently mix four signals.
+Should be used via link::Classes/Mix::.
+
+
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
 private:: new1
 
-METHOD:: new
+
+method:: new
 
 Construct UGen.

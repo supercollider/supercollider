@@ -1,15 +1,40 @@
 title:: 14_Subtractive_synthesis
-summary:: Mark Polishook tutorial
 categories:: Tutorials>Mark_Polishook_tutorial
+summary:: Mark Polishook tutorial
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
-section::Filtering
 
-The basic idea of subtractive synthesis is similar to making coffee: something goes through a filter to remove unwanted components from the final product.
 
-section::The .dumpClassSubtree message
 
-Get a list of ugen filters in SuperCollider 3, by sending the .dumpClassSubtree message to the Filter class, as in
+
+
+
+
+
+
+section:: Filtering
+
+
+
+
+The basic idea of subtractive synthesis is similar to making coffee:
+something goes through a filter to remove unwanted components from the final product.
+
+
+
+
+
+
+
+
+
+
+section:: The .dumpClassSubtree message
+
+
+
+
+Get a list of UGen filters in SuperCollider 3, by sending the .dumpClassSubtree message to the Filter class, as in
 
 code::
 Filter.dumpClassSubtree;

@@ -1,7 +1,8 @@
 title:: jitlib_efficiency
-summary:: Efficient coding with NodeProxy
 categories:: JITLib>Tutorials, Tutorials>JITLib
+summary:: Efficient coding with NodeProxy
 related:: Overviews/JITLib
+
 
 link::Classes/NodeProxy:: (and, in disguise link::Classes/ProxySpace::) represent "pronouns", placeholders for all kinds of sound producing objects that are able to write to a specific bus on the server.
 
@@ -17,9 +18,21 @@ a.source = ... is equivalent to ~a = ...
 a.add(...) a.put(0,...) a[0] = ... ~a[0] = ... are equivalent in cpu load.
 ::
 
-section::a) rebuild and send: manual rate
 
-the following code requires a rebuild and send of a link::Classes/SynthDef:: and is thus most cpu-expensive. though fine for slower use (esp.hand-use) for automatisation it is better to build a synthdef and assign it.
+
+
+
+
+
+
+
+
+section:: A) rebuild and send: manual rate
+
+
+
+
+The following code requires a rebuild and send of a link::Classes/SynthDef:: and is thus most cpu-expensive. though fine for slower use (esp.hand-use) for automatisation it is better to build a synthdef and assign it.
 
 code::
 ~a = { someUGenFunction };
@@ -34,9 +47,21 @@ code::
 server, bus, setRates
 ::
 
-section::b) starting synths and tasks
 
-the following code sends commands to the server to start synths, which is load mainly on the server and depends on the characteristics of the synthdef:
+
+
+
+
+
+
+
+
+section:: B) starting synths and tasks
+
+
+
+
+The following code sends commands to the server to start synths, which is load mainly on the server and depends on the characteristics of the synthdef:
 
 code::
 ~a = \synthDefName; // the synthdef is already on the server
@@ -46,7 +71,7 @@ code::
 ~a.refresh; ~a.wakeUp; // waking up a stopped proxy does not require a resend
 ::
 
-these resend the synth with new properties
+These resend the synth with new properties
 
 code::
 ~a.send(...)	// directly sends a message. the mapping bundle of the proxy is cached
@@ -69,9 +94,21 @@ code::
 ~a.lineAt(key), ~a.xlineAt(key)
 ::
 
-section::c) sending messages to running synths
 
-for these the least calculation has to be done
+
+
+
+
+
+
+
+
+section:: C) sending messages to running synths
+
+
+
+
+For these the least calculation has to be done
 
 code::
 ~a.set(\freq, 400, \dt, 0.2); ~a.unset(\freq); // if running the bundle will be recalculated
@@ -84,13 +121,28 @@ code::
 ~a.group.set(\freq, 500);
 ::
 
-section::switching audio
+
+
+
+
+
+
+
+
+
+section:: Switching audio
+
+
+
 
 (this can now be done with map!)
 
 todo: rewrite this part.
 
-control rate sources can be easily and efficiently switched using strong::map:: or strong::xmap::. here is an example of how already running audio rate inputs can be switched. it is about as efficient as (b) - first example (setting a defname). it works only for 1 or 2 channels right now.
+control rate sources can be easily and efficiently switched using strong::map:: or strong::xmap::.
+here is an example of how already running audio rate inputs can be switched.
+it is about as efficient as (b) - first example (setting a defname).
+it works only for 1 or 2 channels right now.
 
 code::
 (

@@ -1,11 +1,24 @@
-class:: Pgpar
-summary:: embed event streams in parallel and put each in its own group
-related:: Classes/Ppar, Classes/Pbus, Classes/Pgroup
+title:: Pgpar
 categories:: Streams-Patterns-Events>Patterns>Parallel
+summary:: Embed event streams in parallel and put each in its own group
+related:: Classes/Ppar, Classes/Pbus, Classes/Pgroup
+
+
+
+
+
+
+
+
+
 
 description::
 
-Embeds several event streams so that they form a single output stream with all their events in temporal order. When one stream ends, the other streams are further embedded until all have ended.
+
+
+
+Embed several event streams so that they form a single output stream with all their events in temporal order.
+When one stream ends, the other streams are further embedded until all have ended.
 
 note::
 In order to fully separate these layers from other synths, use link::Classes/Pbus::.
@@ -13,17 +26,45 @@ In order to fully separate these layers from other synths, use link::Classes/Pbu
 
 See link::Classes/Pgroup:: for a description of the code::\groupReleaseTime:: event key.
 
-ClassMethods::
 
-method::new
 
-argument::list
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
+argument:: list
+
 list of patterns or streams.
 
-argument::repeats
-repeat the whole pattern n times.
 
-Examples::
+argument:: repeats
+
+Repeat the whole pattern n times.
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 // an example analogous to the one in the Pfx helpfile

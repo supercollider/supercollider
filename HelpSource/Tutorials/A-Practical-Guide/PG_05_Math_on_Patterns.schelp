@@ -1,15 +1,31 @@
 title:: Pattern Guide 05: Math on Patterns
+categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Performing math and collection operations on patterns
 related:: Tutorials/A-Practical-Guide/PG_04_Words_to_Phrases, Tutorials/A-Practical-Guide/PG_060_Filter_Patterns
-categories:: Streams-Patterns-Events>A-Practical-Guide
 
-section::Math on patterns
 
-Often, there is not a pattern that delivers exactly the desired result by itself. But, other operations can be applied to patterns, to manipulate one pattern's output and turn it into something else.
 
-Some of these operations look like things you would do to an array, but there is a critical difference. Doing math on an array performs the operation on every array item all at once. By contrast, patterns are "lazy" -- they evaluate one value at the time, only when asked, and they only do as much as they need to do to deliver the next value. An operation on a pattern produces another pattern that remembers the work that is to be done. Making a stream out of the composite pattern creates the structure to perform the operation upon request.
 
-For example, multiplying a pattern by a number produces a "binary operator pattern": link::Classes/Pbinop::. Looking at the Pbinop's variables reveals everything that is needed to reconstruct the operation on demand.
+
+
+
+
+
+
+section:: Math on patterns
+
+
+
+
+Often, there is not a pattern that delivers exactly the desired result by itself.
+But, other operations can be applied to patterns, to manipulate one pattern's output and turn it into something else.
+
+Some of these operations look like things you would do to an array, but there is a critical difference. Doing math on an array performs the operation on every array item all at once. By contrast, patterns are "lazy" -- they evaluate one value at the time, only when asked, and they only do as much as they need to do to deliver the next value.
+An operation on a pattern produces another pattern that remembers the work that is to be done.
+Making a stream out of the composite pattern creates the structure to perform the operation upon request.
+
+For example, multiplying a pattern by a number produces a "binary operator pattern": link::Classes/Pbinop::.
+Looking at the Pbinop's variables reveals everything that is needed to reconstruct the operation on demand.
 
 code::
 p = Pwhite(1, 5, inf) * 2;	// a Pbinop
@@ -21,9 +37,16 @@ p.b		// == 2
 
 In other words, the multiplication here produces not the result of a single multiplication, but a template for an infinite stream of multiplications to follow.
 
-subsection::Math on patterns
 
-Not only can patterns generate numbers, but they also support all the standard math operators: unary (abs, reciprocal, etc.), binary (+, -, *, /, **, min, max, etc.) and n-ary (clip, wrap, fold, linlin, linexp, etc.) operators are all valid with patterns.
+
+
+
+
+subsection:: Math on patterns
+
+
+Not only can patterns generate numbers, but they also support all the standard math operators:
+unary (abs, reciprocal, etc.), binary (+, -, *, /, **, min, max, etc.) and n-ary (clip, wrap, fold, linlin, linexp, etc.) operators are all valid with patterns.
 
 code::
 // Random integers, 1-5
@@ -39,14 +62,16 @@ Pwhite(1, 5, inf).asStream.nextN(10);
 (Pwhite(1, 5, inf) * Prand(#[-1, 1], inf)).asStream.nextN(10);
 ::
 
-If a binary operation occurs on two patterns, every time a value is requested from the resulting stream, both of the component streams are asked for a value, and the operator applies to those results. If either stream ends, the binary operator stream also ends.
+If a binary operation occurs on two patterns, every time a value is requested from the resulting stream, both of the component streams are asked for a value, and the operator applies to those results.
+If either stream ends, the binary operator stream also ends.
 
 code::
 // The resulting stream has two values, because the shorter operand stream has two values
 (Pseq([10, 9, 8], 1) + Pseq([1, 2], 1)).do { |x| x.postln };
 ::
 
-The binary operator adverb code::.x:: is supported with patterns. (See link::Reference/Adverbs::.) This adverb is like a nested loop: in code::streamA +.x streamB::, the first value of streamA is added to every value of streamB in succession, then the second value of streamA is added to every streamB value, and so on. This is an easy way to transpose a pattern to different levels successively.
+The binary operator adverb code::.x:: is supported with patterns. (See link::Reference/Adverbs::.) This adverb is like a nested loop:
+in code::streamA +.x streamB::, the first value of streamA is added to every value of streamB in succession, then the second value of streamA is added to every streamB value, and so on. This is an easy way to transpose a pattern to different levels successively.
 
 code::
 // Play a major-7th arpeggio, transposed to different scale degrees
@@ -62,12 +87,19 @@ p = Pbind(
 p.stop;
 ::
 
-subsection::Collection operations on patterns
+
+
+
+
+
+subsection:: Collection operations on patterns
+
 
 Some of the things you can do to arrays also work with patterns.
 
-definitionList::
-## code::collect(func):: || Applies the function to each return value from the pattern. Good for generic transformations.
+definitionlist::
+## code::collect(func):: || Applies the function to each return value from the pattern.
+Good for generic transformations.
 ## code::select(func):: || Preserve values from the output stream that pass the Boolean test; discard the rest.
 ## code::reject(func):: || Discard values from the output stream that pass the test; return the rest to the user.
 
@@ -82,7 +114,9 @@ Pwhite(0, 255, 20).select({ |x| x.odd }).do { |x| x.postln };
 Pwhite(0, 255, 20).reject({ |x| x.odd }).do { |x| x.postln };
 ::
 
-## code::clump(n):: || Calling code::.clump:: on an array turns a flat array into a multilevel array. Similarly, code::.clump:: on a pattern gets emphasis::n:: values from the pattern at once and returns all of them as an array. emphasis::n:: can be a number or a numeric pattern.
+## code::clump(n):: || Calling code::.clump:: on an array turns a flat array into a multilevel array.
+Similarly, code::.clump:: on a pattern gets emphasis::n:: values from the pattern at once and returns all of them as an array.
+emphasis::n:: can be a number or a numeric pattern.
 ## code::flatten(levels):: || The reverse operation: if a pattern returns an array, its values will be output one by one.
 
 code::
@@ -108,23 +142,35 @@ code::
 Pseries(1, 1, 20).drop(5).do { |x| x.postln };
 ::
 
-## code::differentiate:: || Return the difference between successive values: second - first, third - second, and so on.
+## code::differentiate:: || Return the difference between successive values:
+second - first, third - second, and so on.
 
 code::
 Array.geom(20, 1, 1.01).differentiate;
 Pgeom(1, 1.01, 20).differentiate.do { |x| x.postln };
 ::
+
 ::
 
-subsection::Miscellaneous calculation patterns
+
+
+
+
+
+subsection:: Miscellaneous calculation patterns
+
 
 These are some other numeric calculations that don't exactly fall in the category of math operators.
 
-definitionList::
-## code::Pavaroh(pattern, aroh, avaroh, stepsPerOctave):: || Convert scale degrees to note numbers, with separate ascending and descending scale patterns. Originally written for Indian ragas, it also works well for the western melodic minor scale.
-## code::PdegreeToKey(pattern, scale, stepsPerOctave):: || Given a pattern yielding scale degrees, convert the degrees into note numbers according to the provided scale and steps per octave. This is done automatically when you use the code::'degree':: event key, but there might be cases where you would want to do some further math on the note numbers, and it might be necessary to make the conversion explicit.
-## code::Pdiff(pattern):: || Returns the difference between the source stream's latest and previous values. Among other uses, this can measure whether a stream is ascending or descending. This is the underlying implementation of the code::differentiate:: method discussed just above.
-## code::Prorate(proportion, pattern):: || Splits up a number from code::pattern:: according to proportion(s) given by the code::proportion:: pattern. This is tricky to explain briefly; see the help file for some good examples.
+definitionlist::
+## code::Pavaroh(pattern, aroh, avaroh, stepsPerOctave):: || Convert scale degrees to note numbers, with separate ascending and descending scale patterns.
+Originally written for Indian ragas, it also works well for the western melodic minor scale.
+## code::PdegreeToKey(pattern, scale, stepsPerOctave):: || Given a pattern yielding scale degrees, convert the degrees into note numbers according to the provided scale and steps per octave.
+This is done automatically when you use the code::'degree':: event key, but there might be cases where you would want to do some further math on the note numbers, and it might be necessary to make the conversion explicit.
+## code::Pdiff(pattern):: || Returns the difference between the source stream's latest and previous values. Among other uses, this can measure whether a stream is ascending or descending.
+This is the underlying implementation of the code::differentiate:: method discussed just above.
+## code::Prorate(proportion, pattern):: || Splits up a number from code::pattern:: according to proportion(s) given by the code::proportion:: pattern.
+This is tricky to explain briefly; see the help file for some good examples.
 
 code::
 // Swing notes with Prorate
@@ -137,11 +183,20 @@ p = Pbind(
 
 p.stop;
 ::
+
 ::
 
-subsection::Calculations based on other event values
 
-In a Pbind, normally the patterns for the various keys calculate independently. But it's possible for one or more child patterns to depend on the result of another pattern inside the same Pbind. This is done with link::Classes/Pkey::, described in link::Tutorials/A-Practical-Guide/PG_06g_Data_Sharing::.
+
+
+
+
+subsection:: Calculations based on other event values
+
+
+In a Pbind, normally the patterns for the various keys calculate independently.
+But it's possible for one or more child patterns to depend on the result of another pattern inside the same Pbind.
+This is done with link::Classes/Pkey::, described in link::Tutorials/A-Practical-Guide/PG_06g_Data_Sharing::.
 
 Previous:	link::Tutorials/A-Practical-Guide/PG_04_Words_to_Phrases::
 

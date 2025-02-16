@@ -1,29 +1,83 @@
-class:: Pchain
-summary:: pass values from stream to stream
-related:: Classes/Pbindf
+title:: Pchain
 categories:: Streams-Patterns-Events>Patterns>Composition
+summary:: Pass values from stream to stream
+related:: Classes/Pbindf
+
+
+
+
+
+
+
+
+
 
 description::
 
-definitionList::
+
+
+
+definitionlist::
 ## Pchain(pattern1, pattern2, ... patternN) || pattern1 <- pattern2 <- ...patternN
 ::
 
-Values produced by the stream of strong::pattern2:: are used as inval to the stream of strong::pattern1::. Therefore pattern1 overrides (or filters) the output of pattern2, and so forth. This is an equivalent to the composite pattern: emphasis::pattern1 <> pattern2 <> ... patternN::
+Values produced by the stream of strong::pattern2:: are used as inval to the stream of strong::pattern1::.
+Therefore pattern1 overrides (or filters) the output of pattern2, and so forth. This is an equivalent to the composite pattern:
+emphasis::pattern1 <> pattern2 <> ... patternN::
 
-ClassMethods::
 
-method::new
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
 
 argument:: ... patterns
+
 The patterns to be chained up.
 
-InstanceMethods::
 
-method::<>
+
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+method:: <>
+
+
 Add another pattern to the chain.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (
@@ -61,9 +115,21 @@ Pchain(a, b, c).trace.play;
 )
 ::
 
-section::pattern composition
 
-pattern <> pattern <> pattern
+
+
+
+
+
+
+
+
+section:: Pattern composition
+
+
+
+
+Pattern <> pattern <> pattern
 
 code::
 // implicitly, the composition operator <> returns a Pchain when applied to a pattern.

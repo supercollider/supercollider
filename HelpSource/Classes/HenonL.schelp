@@ -1,9 +1,22 @@
-class:: HenonL
-summary:: Henon map chaotic generator
+title:: HenonL
 categories:: UGens>Generators>Chaotic
+summary:: Henon map chaotic generator
 related:: Classes/HenonC, Classes/HenonN
 
+
+
+
+
+
+
+
+
+
 description::
+
+
+
+
 A linear-interpolating sound generator based on the difference equation:
 
 teletype::
@@ -21,20 +34,61 @@ plot(size.collect { var aux = 1 - (a * (x1 ** 2)) + (b * x0); x0 = x1; x1 = aux;
 )
 ::
 
+
+
+
+
+
+
+
+
+
 classmethods::
+
+
+
+
 method:: ar
+
+
 argument:: freq
+
 Iteration frequency in Hertz
+
+
 argument:: a
+
 Equation variable
+
+
 argument:: b
+
 Equation variable
+
+
 argument:: x0
+
 Initial value of x
+
+
 argument:: x1
+
 Second value of x
 
+
+
+
+
+
+
+
+
+
 examples::
+
+
+
+
 code::
 // default initial params
 { HenonL.ar(MouseX.kr(20, SampleRate.ir)) * 0.2 }.play(s);

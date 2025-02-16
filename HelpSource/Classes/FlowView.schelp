@@ -1,10 +1,24 @@
-CLASS:: FlowView
-summary:: CompositeView with a FlowLayout as decorator
+title:: FlowView
 categories:: GUI>Views
+summary:: CompositeView with a FlowLayout as decorator
 related:: Classes/FlowLayout, Classes/CompositeView
 
-DESCRIPTION::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
 In the simplest respect this is a lazy contraction of this:
+
 code::
 w = GUI.window.new;
 w.view.decorator = FlowLayout.new(w.bounds);
@@ -12,6 +26,7 @@ w.front;
 ::
 
 link::Classes/FlowView:: add some features to this setup.
+
 code::
 (
 f = FlowView.new;
@@ -30,31 +45,73 @@ GUI.slider.new(f, Rect(0, 0, 100, 100));
 ::
 
 
-CLASSMETHODS::
 
-METHOD:: new
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
 
 argument:: parent
+
 Parent widget.
 
+
 argument:: bounds
+
 An instance of link::Classes/Rect::, or a link::Classes/Point:: indicating width@height.
 
+
 argument:: margin
+
 ...
+
+
 argument:: gap
+
 ...
+
+
 argument:: windowTitle
+
 Title of the window.
 
 
-INSTANCEMETHODS::
 
-METHOD:: startRow
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+method:: startRow
+
+
 Start a new row.
 
-METHOD:: indentedRemaining
+
+
+
+method:: indentedRemaining
+
+
 The maximum space that is left, starting at the current cursor position.
+
 code::
 (
 f = FlowView.new;
@@ -91,8 +148,14 @@ GUI.slider.new(f, f.indentedRemaining)
 )
 ::
 
-METHOD:: used
+
+
+
+method:: used
+
+
 The area used so far, rounded up to the nearest rectangle plus margin.
+
 code::
 (
 w = GUI.window.new;
@@ -131,8 +194,14 @@ GUI.compositeView.new(w, f.used)
 )
 ::
 
-METHOD:: flow
+
+
+
+method:: flow
+
+
 Insert a sub flow view into the current view.
+
 code::
 (
 f = FlowView.new;
@@ -147,14 +216,24 @@ g = f.flow({ |g|
 )
 ::
 
+
 argument:: func
+
 (describe argument here)
+
 
 argument:: bounds
+
 (describe argument here)
 
-METHOD:: comp
+
+
+
+method:: comp
+
+
 Insert a sub composite view into the current view.
+
 code::
 (
 f = FlowView.new;
@@ -172,14 +251,29 @@ f.startRow;
 )
 ::
 
+
 argument:: func
+
 (describe argument here)
+
 
 argument:: bounds
+
 (describe argument here)
 
 
-EXAMPLES::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 // note: some of the following examples use ActionButton from the crucialib

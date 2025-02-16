@@ -1,11 +1,24 @@
 title:: Understanding Streams, Patterns and Events - Part 7
+categories:: Tutorials>Streams-Patterns-Events
 summary:: Practical Considerations
 related:: Tutorials/Streams-Patterns-Events1, Tutorials/Streams-Patterns-Events2, Tutorials/Streams-Patterns-Events3, Tutorials/Streams-Patterns-Events4, Tutorials/Streams-Patterns-Events5, Tutorials/Streams-Patterns-Events6
-categories:: Tutorials>Streams-Patterns-Events
 
-section::Practical Considerations
 
-subsection::Using your own instrument
+
+
+
+
+
+
+
+
+section:: Practical Considerations
+
+
+
+
+subsection:: Using your own instrument
+
 
 code::
 (
@@ -34,7 +47,8 @@ SynthDef(\help_SPE7_CFString1, { arg i_out, freq = 360, gate = 1, pan, amp=0.1;
 )
 ::
 
-link::Classes/Pattern#-play:: creates an link::Classes/EventStreamPlayer:: for you and also supplies a default protoEvent. If you were using your own event model you would just pass in your own protoEvent to the play method.
+link::Classes/Pattern#-play:: creates an link::Classes/EventStreamPlayer:: for you and also supplies a default protoEvent.
+If you were using your own event model you would just pass in your own protoEvent to the play method.
 
 code::
 (
@@ -48,11 +62,20 @@ Pbind(
 )
 ::
 
-subsection::Defining your own message bindings
 
-The default event prototype uses a code::msgFunc:: to determine which bindings to pass to the server. Synthdefs that have been stored in a link::Classes/SynthDescLib:: ("synth description library") construct the code::msgFunc:: automatically. The default event looks up the instrument name in a SynthDescLib of your choosing (using the code::\synthLib:: key). Normally only the global SynthDescLib is used; if code::\synthLib:: is empty, the global library is the default.
 
-You should not send or load synthdefs that you plan to use with patterns. Instead, store them in a SynthDescLib.
+
+
+
+subsection:: Defining your own message bindings
+
+
+The default event prototype uses a code::msgFunc:: to determine which bindings to pass to the server. Synthdefs that have been stored in a link::Classes/SynthDescLib:: ("synth description library") construct the code::msgFunc:: automatically.
+The default event looks up the instrument name in a SynthDescLib of your choosing (using the code::\synthLib:: key).
+Normally only the global SynthDescLib is used; if code::\synthLib:: is empty, the global library is the default.
+
+You should not send or load synthdefs that you plan to use with patterns.
+Instead, store them in a SynthDescLib.
 
 code::
 // saves .scsyndef file on disk (like .load), and adds description to the global library
@@ -62,7 +85,8 @@ SynthDef(...).store;
 SynthDef(...).add;
 ::
 
-If you don't do this, nondefault bindings will be ignored. In that case, you can provide a custom code::msgFunc:: manually. Here's an example:
+If you don't do this, nondefault bindings will be ignored.
+In that case, you can provide a custom code::msgFunc:: manually. Here's an example:
 
 code::
 (
@@ -78,7 +102,7 @@ SynthDef(\help_SPE4_CFString2, { arg i_out, freq = 360, gate = 1, pan, amp=0.1, 
 )
 ::
 
-As you can see I have added code::dorkarg:: to the arglist of the SynthDef from earlier.
+A you can see I have added code::dorkarg:: to the arglist of the SynthDef from earlier.
 
 code::
 (
@@ -119,7 +143,13 @@ But this is quite clumsy. It is strongly recommended to get into the habit of us
 
 The other option you have if you will be using unspecified bindings, is of course to define an event with the appropriate code::msgFunc:: as default. Have a look at Event's source, it's easy, and it's cleaner than passing in the code::msgFunc:: every time.
 
-subsection::Manipulating an EventStreamPlayer in Realtime
+
+
+
+
+
+subsection:: Manipulating an EventStreamPlayer in Realtime
+
 
 code::
 (

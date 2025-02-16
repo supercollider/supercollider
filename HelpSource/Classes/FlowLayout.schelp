@@ -1,23 +1,63 @@
-class:: FlowLayout
-summary:: A view decorator which autowraps the view contents
+title:: FlowLayout
 categories:: GUI>Layout
+summary:: A view decorator which autowraps the view contents
 related:: Classes/SCContainerView, Classes/CompositeView
 
+
+
+
+
+
+
+
+
+
 description::
-FlowLayout is a decorator which automatically arranges views inside a container view in a row, and starts a new row if there is not enough space left for the next view. link::Classes/Window:: and link::Classes/CompositeView:: both have code::addFlowLayout:: methods which assign FlowLayout to their view decorators and return the decorator.
+
+
+
+
+FlowLayout is a decorator which automatically arranges views inside a container view in a row, and starts a new row if there is not enough space left for the next view.
+link::Classes/Window:: and link::Classes/CompositeView:: both have code::addFlowLayout:: methods which assign FlowLayout to their view decorators and return the decorator.
+
+
+
+
+
+
+
+
+
 
 classmethods::
 
+
+
+
 method:: new
+
+
 argument:: bounds
-An instance of link::Classes/Rect::. Normally set to the code::parent.bounds::.
+
+An instance of link::Classes/Rect::.
+Normally set to the code::parent.bounds::.
+
+
 argument:: margin
-An instance of link::Classes/Point::. The horizontal and vertical inner margins, within which the parent's subviews are placed.
+
+An instance of link::Classes/Point::.
+The horizontal and vertical inner margins, within which the parent's subviews are placed.
+
+
 argument:: gap
-An instance of link::Classes/Point::. The horizontal and vertical layout gap between the subviews.
+
+An instance of link::Classes/Point::.
+The horizontal and vertical layout gap between the subviews.
+
 
 discussion::
 Example:
+
 code::
 (
 w = Window.new.front;
@@ -26,7 +66,9 @@ w.view.decorator = FlowLayout(w.view.bounds, 10@10, 20@5);
 16.do{ Slider2D(w.view, 80@80).background_(Color.rand) };
 )
 ::
+
 You can also write:
+
 code::
 (
 w = Window.new.front;
@@ -35,12 +77,28 @@ w.addFlowLayout(10@10, 20@5); // a shortcut method, see SCContainerView
 )
 ::
 
+
+
+
+
+
+
+
+
+
 instancemethods::
+
+
+
 
 subsection:: Accessing Instance Variables
 
+
 method:: nextLine
-Forces the decorator to start a new line:
+
+
+Force the decorator to start a new line:
+
 code::
 (
 w = Window.new;
@@ -52,8 +110,16 @@ w.front;
 )
 ::
 
+
+
+
 method:: indentedRemaining
-Returns and instance of link::Classes/Rect::. This is a very useful method which tells you how much space is left in a row, before the next row starts. The height of code::indentedRemaining::, is the full height remaining in the FlowLayout.
+
+
+Returns and instance of link::Classes/Rect::.
+This is a very useful method which tells you how much space is left in a row, before the next row starts.
+The height of code::indentedRemaining::, is the full height remaining in the FlowLayout.
+
 code::
 (
 // normally you will only use the width of indentedRemaining
@@ -66,7 +132,9 @@ Slider(w.view, d.indentedRemaining.width@150) // fits this view perfectly to the
 w.front;
 )
 ::
+
 Compare this with:
+
 code::
 ( // here the third view is fit to both the right and bottom innerBounds
 w = Window.new;
@@ -79,33 +147,78 @@ w.front;
 )
 ::
 
+
+
+
 method:: bounds
+
+
 The outer bounds in which the decorator places the subviews in the parent view.
+
+
 argument:: b
+
 An instance of link::Classes/Rect::.
 
+
+
+
 method:: innerBounds
-Returns the bounds inset by margin.
+
+
+Return the bounds inset by margin.
+
+
+
 
 method:: gap
+
+
 The horizontal and vertical layout gap between the subviews.
+
+
 argument:: arg1
+
 An instance of link::Classes/Point::.
 
+
+
+
 method:: margin
+
+
 The horizontal and vertical inner margins, within which the parent's subviews are placed.
+
+
 argument:: arg1
+
 An instance of link::Classes/Point::.
+
+
+
+
 
 
 subsection:: Subclassing and Internal Methods
 
-The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
+
+The following methods are usually not used directly or are called by a primitive.
+Programmers can still call or override these as needed.
+
+
+
 
 method:: left
+
+
 Get the current left indentation or manually set it.
+
+
 argument:: arg1
+
 A number.
+
+
 discussion::
 code::
 (
@@ -118,10 +231,20 @@ w.front;
 )
 ::
 
+
+
+
 method:: top
+
+
 Get the current top indentation or manually set it.
+
+
 argument:: arg1
+
 A number.
+
+
 discussion::
 code::
 (
@@ -135,13 +258,28 @@ w.front;
 )
 ::
 
+
+
+
 method:: shift
+
+
 Set the current left and top indentation (see above).
 
+
+
+
 method:: maxHeight
+
+
 Get/set maximium height of the subviews in the current position.
+
+
 argument:: arg1
+
 A number.
+
+
 discussion::
 code::
 (
@@ -156,10 +294,20 @@ w.front;
 )
 ::
 
+
+
+
 method:: maxRight
+
+
 Get/set maximium right of the subviews in the current position.
+
+
 argument:: arg1
+
 A number.
+
+
 discussion::
 code::
 (
@@ -174,8 +322,15 @@ w.front;
 )
 ::
 
+
+
+
 method:: currentBounds
-Gets a link::Classes/Rect:: with code::bounds.width:: and code::height = top + maxHeight::.
+
+
+Get a link::Classes/Rect:: with code::bounds.width:: and code::height = top + maxHeight::.
+
+
 discussion::
 code::
 (
@@ -191,8 +346,15 @@ w.front;
 )
 ::
 
+
+
+
 method:: used
-Gets a link::Classes/Rect:: with the space actually used.
+
+
+Get a link::Classes/Rect:: with the space actually used.
+
+
 discussion::
 code::
 (
@@ -208,5 +370,10 @@ w.front;
 )
 ::
 
+
+
+
 method:: reset
-Resets the layout mechanism to 0,0.
+
+
+Reset the layout mechanism to teletype::0,0::.

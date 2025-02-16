@@ -1,15 +1,27 @@
 title:: News in 3.7
-summary:: A summary of news in SC 3.7
 categories:: News
-related::Guides/News-3_6, Guides/News-3_5, Guides/Debugging-tips
+summary:: A summary of news in SC 3.7
+related:: Guides/News-3_6, Guides/News-3_5, Guides/Debugging-tips
 
 
-In addition to the new features and changes described here, there are STRONG::many bugfixes and interesting improvements::, a full list of which can be found in CHANGELOG.md.
+
+In addition to the new features and changes described here, there are strong::many bugfixes and interesting improvements::, a full list of which can be found in CHANGELOG.md.
 
 
-SECTION::SuperCollider IDE
 
-LIST::
+
+
+
+
+
+
+
+section:: SuperCollider IDE
+
+
+
+
+list::
 ##Menu entries for Recording, scope and server inspection
 ##Modify and query IDE documents from sclang
 ##Support for the Atom text editor
@@ -17,12 +29,21 @@ LIST::
 ##Autosave feature
 ::
 
-SECTION::SuperCollider Language
 
 
 
 
-LIST::
+
+
+
+
+
+section:: SuperCollider Language
+
+
+
+
+list::
 ##Improved link::Classes/Quark:: system and many new interesting Quarks.
 ##LINK::Classes/TempoClock#-beats:: can be set.
 ##An interface for key-value-pairs, see link::Reference/Key-Value-Pairs::
@@ -31,23 +52,41 @@ LIST::
 ::
 
 
-SUBSECTION::External Interfacing
-
-There is an entirely new HID (Human Interface Device) implementation: see link::Guides/Working_with_HID:: that works cross platform (Linux and macOS thus far). This deprecates the GeneralHID interface. Also the link::Classes/LID:: interface has been updated to match the API of the new HID implementation.
 
 
 
-SUBSECTION::New methods and classes
 
-LIST::
+subsection:: External Interfacing
+
+
+There is an entirely new HID (Human Interface Device) implementation: see link::Guides/Working_with_HID:: that works cross platform (Linux and macOS thus far).
+This deprecates the GeneralHID interface.
+Also the link::Classes/LID:: interface has been updated to match the API of the new HID implementation.
+
+
+
+
+
+
+subsection:: New methods and classes
+
+
+list::
 ##link::Classes/Collection#-collectCopy::, link::Classes/Collection#-collectInPlace::
-##link::Classes/SimpleNumber#-lcm:: and link::Classes/SimpleNumber#-gcd:: have consistent interpretations of negative values and zero.
+##link::Classes/SimpleNumber#-lcm:: and link::Classes/SimpleNumber#-gcd:: have consistent interpretations of teletype::negative:: values and zero.
 ##link::Classes/Dictionary#-embedInStream:: can be customized from within the dictionary.
 ##link::Classes/Server#*remote:: Create a new Server instance corresponding to a server app running on a separate machine.
 ::
 
-SUBSECTION::Deprecated classes and methods
-LIST::
+
+
+
+
+
+subsection:: Deprecated classes and methods
+
+
+list::
 ##TuningInfo
 ##ScaleInfo
 ##Proutine (use Prout instead)
@@ -58,37 +97,65 @@ LIST::
 
 
 
-SECTION::SuperCollider Server
+
+
+
+
+
+
+
+section:: SuperCollider Server
+
+
+
 
 Apart from UDP, the TCP-protocol is now supported.
 
 When mapping controls of synths to busses, their number of channels is limited to the number of control channels, avoiding a "spill-over" of mappings.
 
-SUBSECTION::List of new UGens
 
-LIST::
+
+
+
+
+subsection:: List of new UGens
+
+
+list::
 ##NodeID (UGen that returns the current node id)
 ##LINK::Classes/Dconst::
 ::
 
-SUBSECTION::Improved or corrected behavior
-LIST::
+
+
+
+
+
+subsection:: Improved or corrected behavior
+
+
+list::
 ##LINK::Classes/LinXFade2:: (correct fading direction)
 ##LINK::Classes/LFPulse:: (when width = 0.5, return exactly as many 0 as 1)
-##LINK::Classes/TrigControl:: is now independent of synth order, like LINK::Classes/Control::.
-##LINK::Classes/TRand::, LINK::Classes/TExpRand::, LINK::Classes/TIRand:: (can operate at audio rate)
-##LINK::Classes/Env#*new:: accepts a new TELETYPE::step2:: shape, which steps to a value at the end of a shape
-##LINK::Classes/UGen#-curvelin:: is now inverse of LINK::Classes/UGen#-lincurve::
+##LINK::Classes/TrigControl:: is now independent of synth order, like link::Classes/Control::.
+##LINK::Classes/TRand::, link::Classes/TExpRand::, link::Classes/TIRand:: (can operate at audio rate)
+##LINK::Classes/Env#*new:: accepts a new teletype::step2:: shape, which steps to a value at the end of a shape
+##LINK::Classes/UGen#-curvelin:: is now inverse of link::Classes/UGen#-lincurve::
 ##LINK::Classes/Server#-record:: correctly closes short files
-##In combinations of demand-ugens: Instances of PV_Copy are added automatically where necessary for parallel processing
+##In combinations of demand-UGens: Instances of PV_Copy are added automatically where necessary for parallel processing
 ::
 
 
-SUBSECTION::More operators work uniformly across sclang and scserver
+
+
+
+
+subsection:: More operators work uniformly across sclang and scserver
+
 
 The following operators have been added as UGens and work the same as in sclang:
 
-TABLE::
+table::
 ##unary operators || code::rand, rand2, linrand, bilinrand, sum3rand, coin::
 
 ##binary operators || code::lcm, gcd, rrand, exprand::
@@ -97,8 +164,20 @@ TABLE::
 See link::Overviews/Operators::
 
 
-SECTION:: Known Issues
 
-While much has improved and many bugs from 3.6 have been fixed, there are still many known issues. For a complete list see: link::https://github.com/supercollider/supercollider/issues/::
 
-Please do not hesitate to add new issues you find to the LINK::https://github.com/supercollider/supercollider/issues##issue tracker:: or mention them on the  LINK::http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx##mailing list::
+
+
+
+
+
+
+section:: Known Issues
+
+
+
+
+While much has improved and many bugs from 3.6 have been fixed, there are still many known issues.
+For a complete list see: link::https://github.com/supercollider/supercollider/issues/::
+
+Please do not hesitate to add new issues you find to the link::https://github.com/supercollider/supercollider/issues##issue tracker:: or mention them on the  link::http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx##mailing list::

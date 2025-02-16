@@ -1,14 +1,38 @@
-class:: NumOutputBuses
-summary:: Number of output busses.
+title:: NumOutputBuses
+categories:: UGens>Info
+summary:: Number of output busses
 related:: Classes/NumAudioBuses, Classes/NumControlBuses, Classes/NumBuffers, Classes/NumInputBuses, Classes/NumRunningSynths
-categories::  UGens>Info
 
 
-Description::
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 Number of output busses.
 
 
+
+
+
+
+
+
+
+
 classmethods::
 
-method::ir
+
+
+
+method:: ir
+
+

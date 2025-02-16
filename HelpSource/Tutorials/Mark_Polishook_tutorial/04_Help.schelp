@@ -1,15 +1,40 @@
 title:: 04_Help
-summary:: Mark Polishook tutorial
 categories:: Tutorials>Mark_Polishook_tutorial
+summary:: Mark Polishook tutorial
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
-section::Help
+
+
+
+
+
+
+
+
+
+section:: Help
+
+
+
 
 SuperCollider has a built-in help system. To see the main help page, press cmd-d (without first selecting anything). From that page, click on underlined topics. Another useful document is link::Guides/More-On-Getting-Help::.
 
-In general, there are help files for classes (capitalized words, such as SinOsc, Array, Nil, etc.). Select the name of a class and press Cmd-d. A help file, if one exists, will open.
+In general, there are help files for classes (capitalized words, such as SinOsc, Array, Nil, etc.).
+Select the name of a class and press Cmd-d. A help file, if one exists, will open.
 
-section::Class definitions, message implementations, and the Find command
+
+
+
+
+
+
+
+
+
+section:: Class definitions, message implementations, and the Find command
+
+
+
 
 To see source code for class definitions, select the name of a class and type cmd-j
 
@@ -17,9 +42,22 @@ To see how a class or classes implement a particular message, select the message
 
 Use the Find and Find Next commands, available through the Edit menu, to search for text in the frontmost document
 
-section::grep
 
-Use grep in the Terminal (in the Applications->Utilities folder) to search for all occurrences of a given word or phrase. For example, to see all documents that use the LFSaw class, evaluate (in the Terminal application)
+
+
+
+
+
+
+
+
+section:: Grep
+
+
+
+
+Use grep in the Terminal (in the Applications->Utilities folder) to search for all occurrences of a given word or phrase.
+For example, to see all documents that use the LFSaw class, evaluate (in the Terminal application)
 
 code::
 grep -r LFSaw /Applications/SuperCollider
@@ -32,14 +70,28 @@ code::
 grep -r LFSaw /Applications/SuperCollider/ > /Users/yourHomeDirectory/Desktop/grep_results
 ::
 
-section::Additional sources
+
+
+
+
+
+
+
+
+
+section:: Additional sources
+
+
+
 
 The SuperCollider wiki:
+
 list::
 ## http://swiki.hfbk-hamburg.de:8888/MusicTechnology/6
 ::
 
 The SuperCollider users mailing list archive:
+
 list::
 ## http://www.listarc.bham.ac.uk/marchives/sc-users/
 ::

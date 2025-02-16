@@ -1,40 +1,102 @@
-CLASS::Order
-summary::an order of elements with a numerical index
-related::Classes/SparseArray
+title:: Order
 categories:: Collections>Ordered
+summary:: An order of elements with a numerical index
+related:: Classes/SparseArray
 
-DESCRIPTION::
-Keeps elements in an order and allows to put them at arbitrary slots
-without having to allocate a large array.
+
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+Keeps elements in an order and allows to put them at arbitrary slots without having to allocate a large array.
 
 note::
 link::#-put:: and link::#-at:: are slower than in link::Classes/IdentityDictionary:: / link::Classes/PriorityQueue::, link::#-do:: is faster.
 ::
 
-CLASSMETHODS::
 
-method::new
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
 Create a new order.
+
 code::
 g = Order.new;
 g.put(7, 100); // put a value (100) at index 7
 g.clear; // empty
 ::
 
-method::newFromIndices
+
+
+
+method:: newFromIndices
+
+
 Create a new order from given items and indices.
 
-INSTANCEMETHODS::
 
-private::resetIndices, nextSlotFor, slotFor, prPutSlot
 
-method::doRange
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+private:: resetIndices, nextSlotFor, slotFor, prPutSlot
+
+
+method:: doRange
 Iterate over a range of the order's items.
 
-method::pos
+
+
+
+method:: pos
+
+
 Return the current write position.
 
-EXAMPLES::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 a = Order.new;

@@ -1,49 +1,84 @@
-class:: Slew
-summary:: Slew rate limiter.
+title:: Slew
+categories:: UGens>Filters>Nonlinear
+summary:: Slew rate limiter
 related:: Classes/Slope, Classes/Ramp, Classes/Lag, Classes/VarLag
-categories::  UGens>Filters>Nonlinear
 
 
-Description::
 
-Limits the slope of an input signal. The slope is expressed in units per
+
+
+
+
+
+
+
+description::
+
+
+
+
+Limit the slope of an input signal.
+The slope is expressed in units per
 second.
 
 For smoothing out control signals, take a look at link::Classes/Lag:: and link::Classes/VarLag::
 
+
+
+
+
+
+
+
+
+
 classmethods::
 
-method::ar, kr
 
-argument::in
+
+
+method:: ar, kr
+
+
+argument:: in
 
 The input signal.
 
 
-argument::up
+argument:: up
 
 Maximum upward slope in units per second.
 
 
-argument::dn
+argument:: dn
 
 Maximum downward slope in units per second.
 
 
-argument::mul
+argument:: mul
 
 Output will be multiplied by this value.
 
 
-argument::add
+argument:: add
 
 This value will be added to the output.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 (
 {
 	z = LFPulse.ar(800);
@@ -61,5 +96,4 @@ Has the effect of removing transients and higher frequencies.
 
 }.play
 )
-
 ::

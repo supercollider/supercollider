@@ -1,38 +1,73 @@
-class:: Normalizer
-summary:: Flattens dynamics.
-related:: Classes/Amplitude, Classes/Compander, Classes/CompanderD, Classes/Limiter
+title:: Normalizer
 categories:: UGens>Dynamics
+summary:: Flattens dynamics
+related:: Classes/Amplitude, Classes/Compander, Classes/CompanderD, Classes/Limiter
 
 
-Description::
 
-Normalizes the input amplitude to the given level. Normalizer will not
-overshoot like  link::Classes/Compander::  will, but it needs to look
-ahead in the audio. Thus there is a delay equal to twice the value
-of the  code::dur::  parameter.
+
+
+
+
+
+
+
+description::
+
+
+
+
+Normalizethe the input amplitude to the given level.
+Normalizer will not overshoot like  link::Classes/Compander::  will, but it needs to look ahead in the audio. Thus there is a delay equal to twice the value of the  code::dur::  parameter.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar
 
-argument::in
+
+
+method:: ar
+
+
+argument:: in
+
 The signal to be processed.
 
-argument::level
+
+argument:: level
+
 The peak output amplitude level to which to normalize the input.
 
-argument::dur
+
+argument:: dur
+
 Also called lookAheadTime.
-The buffer delay time. Shorter times will produce smaller delays
-and quicker transient response times, but may introduce amplitude
-modulation artifacts.
+The buffer delay time. Shorter times will produce smaller delays and quicker transient response times, but may introduce amplitude modulation artifacts.
 This parameter cannot be modulated.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 (
 // example signal to process
 Synth.play({
@@ -52,5 +87,4 @@ Synth.play({
 	[z, Normalizer.ar(z, 0.4, 0.01)]
 }, 0.5)
 )
-
 ::

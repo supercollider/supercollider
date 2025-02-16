@@ -1,51 +1,100 @@
-class:: CombL
-summary:: Comb delay line with linear interpolation.
+title:: CombL
+categories:: UGens>Delays
+summary:: Comb delay line with linear interpolation
 related:: Classes/CombC, Classes/CombN, Classes/BufCombL
-categories::  UGens>Delays
 
 
-Description::
 
-Comb delay line with linear interpolation. See also  link::Classes/CombN::
+
+
+
+
+
+
+
+description::
+
+
+
+
+Comb delay line with linear interpolation.
+See also  link::Classes/CombN::
 which uses no interpolation, and  link::Classes/CombC::  which uses cubic
-interpolation. Cubic interpolation is more computationally expensive
-than linear, but more accurate.
+interpolation. Cubic interpolation is more computationally expensive than linear, but more accurate.
 
 The feedback coefficient is given by the equation code:: fb == 0.001 ** (delay / decay.abs) * decay.sign :: where 0.001 is -60 dBFS.
 
+
+
+
+
+
+
+
+
+
 classmethods::
 
-method::ar, kr
 
-argument::in
+
+
+method:: ar, kr
+
+
+argument:: in
+
 The input signal.
 
-argument::maxdelaytime
-The maximum delay time in seconds. Used to initialize the delay buffer size.
 
-argument::delaytime
+argument:: maxdelaytime
+
+The maximum delay time in seconds.
+Used to initialize the delay buffer size.
+
+
+argument:: delaytime
+
 Delay time in seconds.
 
-argument::decaytime
-Time for the echoes to decay by 60 decibels. If this time is negative then the feedback coefficient will be negative, thus emphasizing only odd harmonics at an octave lower.
+
+argument:: decaytime
+
+Time for the echoes to decay by 60 decibels.
+If this time is negative then the feedback coefficient will be negative, thus emphasizing only odd harmonics at an octave lower.
 
 Large decay times are sensitive to DC bias, so use a link::Classes/LeakDC:: if this is an issue.
 
-Infinite decay times are permitted. A decay time of code::inf:: leads to a feedback coefficient of 1, and a decay time of code::-inf:: leads to a feedback coefficient of -1.
+Infinite decay times are permitted. A decay time of code::inf:: leads to a feedback coefficient of 1, and a decay time of code::-inf:: leads to a feedback coefficient of teletype::-1::.
 
-argument::mul
+
+argument:: mul
+
 Output will be multiplied by this value.
 
-argument::add
+
+argument:: add
+
 This value will be added to the output.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 // These examples compare the variants, so that you can hear the difference in interpolation
 
-// Comb used as a resonator. The resonant fundamental is equal to
+// Comb used as a resonator.
+The resonant fundamental is equal to
 // reciprocal of the delay time.
 { CombN.ar(WhiteNoise.ar(0.01), 0.01, XLine.kr(0.0001, 0.01, 20), 0.2) }.play;
 
@@ -62,5 +111,4 @@ code::
 
 // used as an echo.
 { CombL.ar(Decay.ar(Dust.ar(1, 0.5), 0.2, WhiteNoise.ar), 0.2, 0.2, 3) }.play;
-
 ::

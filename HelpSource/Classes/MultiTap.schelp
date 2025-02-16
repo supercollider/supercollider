@@ -1,47 +1,91 @@
-class:: MultiTap
-summary:: Multiple tap delay.
+title:: MultiTap
+categories:: UGens>Buffer, UGens>Delays>Buffer
+summary:: Multiple tap delay
 related:: Classes/Tap
-categories::  UGens>Buffer, UGens>Delays>Buffer
 
 
-Description::
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 This is a wrapper which creates a multiple tap delay line using
 link::Classes/RecordBuf::  and  link::Classes/PlayBuf:: .
 
-note:: code::RecordBuf.ar:: and code::PlayBuf.ar:: operate block by block. If a delay time is greater than the buffer
-size minus the server's block size, the write and read heads might interfere in unintended ways. Use a slightly larger
-buffer if this happens. ::
+note::
+code::RecordBuf.ar::and code::PlayBuf.ar:: operate block by block. If a delay time is greater than the buffer size minus the server's block size, the write and read heads might interfere in unintended ways.
+Use a slightly larger buffer if this happens. ::
+
+
+
+
+
+
+
+
+
 
 classmethods::
 
-method::ar
 
-argument::timesArray
+
+
+method:: ar
+
+
+argument:: timesArray
+
 A Ref to an Array of delay times in seconds.
 
-argument::levelsArray
+
+argument:: levelsArray
+
 A Ref to an Array of amplitudes.
 
-argument::in
+
+argument:: in
+
 The input signal.
 
-argument::mul
+
+argument:: mul
+
 Output will be multiplied by this value.
 
-argument::add
+
+argument:: add
+
 This value will be added to the output.
 
-argument::bufnum
 
-The number of the buffer to use for the delay. This must be at
-least as long as the longest tap time.
+argument:: bufnum
+
+The number of the buffer to use for the delay.
+This must be at least as long as the longest tap time.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 s.boot;
 b = Buffer.alloc(s, s.sampleRate);
 (
@@ -50,5 +94,4 @@ b = Buffer.alloc(s, s.sampleRate);
 		Decay.ar(Dust.ar(2), 0.1, PinkNoise.ar), bufnum: b.bufnum)
 }.play
 )
-
 ::

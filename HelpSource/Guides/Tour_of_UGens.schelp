@@ -1,7 +1,9 @@
 title:: Tour of UGens
+categories:: UGens, Server>Nodes
 summary:: Signal Processing in SuperCollider
 related:: Browse#UGens
-categories:: UGens, Server>Nodes
+
+
 
 definitionlist::
 ## 1. A Tour of available Unit Generators.
@@ -16,7 +18,7 @@ definitionlist::
     ## distortion
     ## panning
     ## reverbs
-    ## delays and buffer ugens
+    ## delays and buffer UGens
     ## granular synthesis
     ## control: envelopes, triggers, counters, gates, lags, decays
     ## spectral
@@ -38,9 +40,22 @@ s.boot;
 )
 ::
 
+
+
+
+
+
+
+
+
+
 section:: Periodic Sources: Oscillators.
 
+
+
+
 subsection:: LF - "Low Frequency" Unit Generators.
+
 
 link::Classes/LFPar::, link::Classes/LFCub::, link::Classes/LFTri::, link::Classes/Impulse::, link::Classes/LFSaw::, link::Classes/LFPulse::, link::Classes/VarSaw::, link::Classes/SyncSaw:: - has geometric waveforms, not band limited.
 will cause aliasing at higher frequencies.
@@ -57,6 +72,7 @@ code::
 // since it is not band limited, there are aliasing artifacts
 { LFPar.ar(XLine.kr(100,15000,6),0,0.1) }.scope(1, zoom: 4);
 ::
+
 code::
 // cubic approximation of sine
 { LFCub.ar(LFCub.kr(LFCub.kr(0.2,0,8,10),0, 400,800),0,0.1) }.scope(1, zoom: 4);
@@ -64,18 +80,21 @@ code::
 { LFCub.ar(800,0,0.1) }.scope(1, zoom: 4);
 { LFCub.ar(XLine.kr(100,15000,6),0,0.1) }.scope(1, zoom: 4);
 ::
+
 code::
 { LFTri.ar(LFTri.kr(LFTri.kr(0.2,0,8,10),0, 400,800),0,0.1) }.scope(1, zoom: 4);
 { LFTri.ar(LFTri.kr(0.2, 0, 400,800),0,0.1) }.scope(1, zoom: 4);
 { LFTri.ar(800,0,0.1) }.scope(1, zoom: 4);
 { LFTri.ar(XLine.kr(100,15000,6),0,0.1) }.scope(1, zoom: 4);
 ::
+
 code::
 { LFSaw.ar(LFSaw.kr(LFSaw.kr(0.2,0,8,10),0, 400,800),0,0.1) }.scope(1, zoom: 4);
 { LFSaw.ar(LFSaw.kr(0.2, 0, 400,800),0,0.1) }.scope(1, zoom: 4);
 { LFSaw.ar(100,0,0.1) }.scope(1, zoom: 4);
 { LFSaw.ar(XLine.kr(100,15000,6),0,0.1) }.scope(1, zoom: 4);
 ::
+
 code::
 { Impulse.ar(LFTri.kr(LFTri.kr(0.2,0,8,10),0, 400,800),0,0.1) }.scope(1, zoom: 4);
 { Impulse.ar(LFTri.kr(0.2, 0, 400,800),0,0.1) }.scope(1, zoom: 4);
@@ -91,16 +110,19 @@ code::
 { LFPulse.ar(LFPulse.kr(3, 0, 0.3, 200, 200), 0, 0.2, 0.1) }.scope(1, zoom: 4);
 { LFPulse.ar(XLine.kr(100,15000,6),0,0.5,0.1) }.scope(1, zoom: 4);
 ::
+
 code::
 // pulse width modulation
 { LFPulse.ar(100,0,MouseY.kr(0,1),0.1) }.scope(1, zoom: 4);
 { LFPulse.ar(100,0,LFTri.kr(0.2,0,0.5,0.5),0.1) }.scope(1, zoom: 4);
 ::
+
 code::
 { VarSaw.ar(VarSaw.kr(VarSaw.kr(0.2,0,0.2,8,10),0,0.2, 400,800),0,0.2,0.1) }.scope(1, zoom: 4);
 { VarSaw.ar(VarSaw.kr(0.2, 0, 0.2, 400,800),0,0.2,0.1) }.scope(1, zoom: 4);
 { VarSaw.ar(XLine.kr(100,15000,6),0,0.2,0.1) }.scope(1, zoom: 4);
 ::
+
 code::
 // pulse width modulation
 { VarSaw.ar(100,0,MouseY.kr(0,1),0.1) }.scope(1, zoom: 4);
@@ -114,21 +136,30 @@ code::
 { SyncSaw.ar(100, MouseX.kr(100, 1000), 0.1) }.scope(1, zoom: 4);
 { SyncSaw.ar(100, Line.kr(100, 800, 12), 0.1) }.scope(1, zoom: 4);
 ::
+
 ::
 
+
+
+
+
+
 subsection:: Band Limited Oscillators
+
 
 link::Classes/SinOsc::, link::Classes/FSinOsc::, link::Classes/Blip::, link::Classes/Saw::, link::Classes/Pulse:: - will not alias.
 
 definitionlist::
 ## link::Classes/SinOsc::, link::Classes/FSinOsc::
 || arguments: code::frequency, phase, mul, add::
+
 code::
 { SinOsc.ar(SinOsc.kr(SinOsc.kr(0.2,0,8,10),0, 400,800),0,0.1) }.scope(1, zoom: 4);
 { SinOsc.ar(SinOsc.kr(0.2, 0, 400,800),0,0.1) }.scope(1, zoom: 4);
 { SinOsc.ar(800,0,0.1) }.scope(1, zoom: 4);
 { SinOsc.ar(XLine.kr(100,15000,6),0,0.1) }.scope(1, zoom: 4);
 ::
+
 code::
 { FSinOsc.ar(800,0,0.1) }.scope(1, zoom: 4);
 // FSinOsc should not be frequency modulated.
@@ -138,6 +169,7 @@ code::
 
 ## link::Classes/Blip::
 || arguments: code::frequency, numHarmonics, mul, add::
+
 code::
 { Blip.ar(XLine.kr(20000,200,6),100,0.2) }.scope(1);
 { Blip.ar(XLine.kr(100,15000,6),100,0.2) }.scope(1); // no aliasing
@@ -147,6 +179,7 @@ code::
 
 ## link::Classes/Saw::
 || arguments: code::frequency, mul, add::
+
 code::
 { Saw.ar(XLine.kr(20000,200,6),0.2) }.scope(1);
 { Saw.ar(XLine.kr(100,15000,6),0.2) }.scope(1); // no aliasing
@@ -154,6 +187,7 @@ code::
 
 ## link::Classes/Pulse::
 || arguments: code::frequency, width, mul, add::
+
 code::
 { Pulse.ar(XLine.kr(20000,200,6),0.3,0.2) }.scope(1);
 { Pulse.ar(XLine.kr(100,15000,6),0.3,0.2) }.scope(1); // no aliasing
@@ -167,14 +201,22 @@ code::
 
 ## link::Classes/Klang:: - sine oscillator bank
 || arguments: code:: `[ frequencies, amplitudes, phases ], mul, add ::
+
 code::
 { Klang.ar(`[ [800, 1000, 1200],[0.3, 0.3, 0.3],[pi,pi,pi]], 1, 0) * 0.4}.scope(1);
 
 { Klang.ar(`[ {exprand(400, 2000)}.dup(16), nil, nil ], 1, 0) * 0.04 }.scope(1);
 ::
+
 ::
 
+
+
+
+
+
 subsection:: Table Oscillators
+
 
 link::Classes/Osc::, link::Classes/COsc::, link::Classes/VOsc::, link::Classes/VOsc3:: - uses a buffer allocated on the server.
 
@@ -209,6 +251,7 @@ b.sine1({1.0.rand2.cubed}.dup(24).round(1e-3).postln);
 
 ## link::Classes/COsc:: - two oscillators, detuned
 || arguments: code:: buffer number, frequency, beat frequency, mul, add ::
+
 code::
 b.sine1(1.0/(1..6), true, true, true);
 
@@ -218,6 +261,7 @@ b.sine1(1.0/(1..6), true, true, true);
 
 ## link::Classes/VOsc:: - multiple wave table crossfade oscillators
 || arguments: code:: buffer number, frequency, phase, mul, add ::
+
 code::
 (
 // allocate tables 80 to 87
@@ -229,7 +273,8 @@ code::
 8.do({|i|
 	var n, a;
 	// generate array of harmonic amplitudes
-	n = (i+1)**2; // num harmonics for each table: [1,4,9,16,25,36,49,64]
+	n = (i+1)**2; // num harmonics for each table:
+[1,4,9,16,25,36,49,64]
 	a = {|j| ((n-j)/n).squared }.dup(n);
 	// fill table
 	s.listSendMsg([\b_gen, 80+i, \sine1, 7] ++ a);
@@ -251,6 +296,7 @@ code::
 
 ## link::Classes/VOsc3:: - three VOscs summed.
 || arguments: code:: buffer number, freq1, freq2, freq3, beat frequency, mul, add ::
+
 code::
 // chorusing
 { VOsc3.ar(MouseX.kr(80,87), 120, 121.04, 119.37, 0.2) }.scope(1, zoom:4);
@@ -258,15 +304,30 @@ code::
 // chords
 { VOsc3.ar(MouseX.kr(80,87), 120, 151.13, 179.42, 0.2) }.scope(1, zoom:4);
 ::
+
 ::
+
+
+
+
+
+
+
+
+
 
 section:: Aperiodic Sources: Noise.
 
+
+
+
 subsection:: LF "Low Frequency" Noise Generators.
+
 
 definitionlist::
 ## link::Classes/LFNoise0::, link::Classes/LFNoise1::, link::Classes/LFNoise2::, link::Classes/LFClipNoise::
 || arguments: code:: frequency, mul, add ::
+
 code::
 { LFClipNoise.ar(MouseX.kr(200, 10000, 1), 0.125) }.scope(1);
 { LFNoise0.ar(MouseX.kr(200, 10000, 1), 0.25) }.scope(1);
@@ -279,13 +340,21 @@ code::
 { LFPar.ar(LFNoise1.kr(MouseX.kr(0.5, 64, 1), 200, 400), 0, 0.2) }.scope(1, zoom:8);
 { LFPar.ar(LFNoise2.kr(MouseX.kr(0.5, 64, 1), 200, 400), 0, 0.2) }.scope(1, zoom:8);
 ::
+
 ::
 
+
+
+
+
+
 subsection:: Broad Spectrum Noise Generators
+
 
 definitionlist::
 ## link::Classes/ClipNoise::, link::Classes/WhiteNoise::, link::Classes/PinkNoise::, link::Classes/BrownNoise::, link::Classes/GrayNoise::
 || arguments: code:: mul, add ::
+
 code::
 { ClipNoise.ar(0.2) }.scope(1);
 { WhiteNoise.ar(0.2) }.scope(1);
@@ -293,45 +362,83 @@ code::
 { BrownNoise.ar(0.2) }.scope(1);
 { GrayNoise.ar(0.2) }.scope(1);
 ::
+
 ::
 
+
+
+
+
+
 subsection:: Impulse Noise Generators
+
 
 definitionlist::
 ## link::Classes/Dust::, link::Classes/Dust2::
 || arguments: code:: density, mul, add ::
+
 code::
 { Dust.ar(MouseX.kr(1,10000,1), 0.4) }.scope(1, zoom:4);
 { Dust2.ar(MouseX.kr(1,10000,1), 0.4) }.scope(1, zoom:4);
 ::
+
 ::
 
+
+
+
+
+
 subsection:: Chaotic Noise Generators
+
 
 definitionlist::
 ## link::Classes/Crackle::
 || arguments: code:: chaosParam, mul, add ::
+
 code::
 { Crackle.ar(MouseX.kr(1,2), 0.5) }.scope(1);
 ::
+
 ::
+
+
+
+
+
+
+
+
+
 
 section:: Filters
 
+
+
+
 subsection:: Low Pass, High Pass
+
 
 definitionlist::
 ## link::Classes/LPF::, link::Classes/HPF:: - 12 dB / octave
 || arguments: code:: in, freq, mul, add ::
+
 code::
 { LPF.ar(WhiteNoise.ar, MouseX.kr(1e2,2e4,1), 0.2) }.scope(1);
 { HPF.ar(WhiteNoise.ar, MouseX.kr(1e2,2e4,1), 0.2) }.scope(1);
 { LPF.ar(Saw.ar(100), MouseX.kr(1e2,2e4,1), 0.2) }.scope(1);
 { HPF.ar(Saw.ar(100), MouseX.kr(1e2,2e4,1), 0.2) }.scope(1);
 ::
+
 ::
 
+
+
+
+
+
 subsection:: Band Pass, Band Cut
+
 
 definitionlist::
 ## link::Classes/BPF::, link::Classes/BRF:: - 12 dB / octave
@@ -339,6 +446,7 @@ definitionlist::
 
 rq is the reciprocal of the Q of the filter,
 or in other words: the bandwidth in Hertz = rq * freq.
+
 code::
 { BPF.ar(WhiteNoise.ar, MouseX.kr(1e2,2e4,1), 0.4, 0.4) }.scope(1);
 { BRF.ar(WhiteNoise.ar, MouseX.kr(1e2,2e4,1), 0.4, 0.2) }.scope(1);
@@ -348,13 +456,21 @@ code::
 // modulating the bandwidth
 { BPF.ar(WhiteNoise.ar, 3000, MouseX.kr(0.01,0.7,1), 0.4) }.scope(1);
 ::
+
 ::
 
+
+
+
+
+
 subsection:: Resonant Low Pass, High Pass, Band Pass
+
 
 definitionlist::
 ## link::Classes/RLPF::, link::Classes/RHPF:: - 12 dB / octave
 || arguments: code:: in, freq, rq, mul, add ::
+
 code::
 { RLPF.ar(WhiteNoise.ar, MouseX.kr(1e2,2e4,1), 0.2, 0.2) }.scope(1);
 { RHPF.ar(WhiteNoise.ar, MouseX.kr(1e2,2e4,1), 0.2, 0.2) }.scope(1);
@@ -364,6 +480,7 @@ code::
 
 ## link::Classes/Resonz:: - resonant band pass filter with uniform amplitude
 || arguments: code:: in, freq, rq, mul, add ::
+
 code::
 // modulate frequency
 { Resonz.ar(WhiteNoise.ar(0.5), XLine.kr(1000,8000,10), 0.05) }.scope(1);
@@ -379,6 +496,7 @@ code::
 || arguments: code:: in, frequency, ring time, mul, add ::
 
 Internally it is the same as Resonz but the bandwidth is expressed as a ring time.
+
 code::
 { Ringz.ar(Dust.ar(3, 0.3), 2000, 2) }.scope(1, zoom:4);
 
@@ -392,22 +510,40 @@ code::
 // modulate ring time
 { Ringz.ar(Impulse.ar(6, 0, 0.3), 2000, XLine.kr(0.04, 4, 8)) }.scope(1, zoom:4);
 ::
+
 ::
 
+
+
+
+
+
 subsection:: Simpler Filters
+
+
 definitionlist::
 ## link::Classes/OnePole::, link::Classes/OneZero:: - 6 dB / octave
 ||
+
 code::
 { OnePole.ar(WhiteNoise.ar(0.5), MouseX.kr(-0.99, 0.99)) }.scope(1);
 { OneZero.ar(WhiteNoise.ar(0.5), MouseX.kr(-0.49, 0.49)) }.scope(1);
 ::
+
 ::
 
+
+
+
+
+
 subsection:: NonLinear Filters
+
+
 definitionlist::
 ## link::Classes/Median::, link::Classes/Slew::
 ||
+
 code::
 // a signal with impulse noise.
 { Saw.ar(500, 0.1) + Dust2.ar(100, 0.9) }.scope(1);
@@ -419,12 +555,21 @@ code::
 // after applying slew rate limiter
 { Slew.ar(Saw.ar(500, 0.1) + Dust2.ar(100, 0.9),1000,1000) }.scope(1);
 ::
+
 ::
 
+
+
+
+
+
 subsection:: Formant Filter
+
+
 definitionlist::
 ## link::Classes/Formlet:: - A filter whose impulse response is similar to a FOF grain.
 ||
+
 code::
 { Formlet.ar(Impulse.ar(MouseX.kr(2,300,1), 0, 0.4), 800, 0.01, 0.1) }.scope(1, zoom:4);
 ::
@@ -445,13 +590,27 @@ code::
 
 { Klank.ar(`[ (1,3..13)*200, 1/(1,3..13), nil ], PinkNoise.ar(0.01)) }.scope(1);
 ::
+
 ::
 
+
+
+
+
+
+
+
+
+
 section:: Distortion
+
+
+
 
 definitionlist::
 ## abs, max, squared, cubed
 ||
+
 code::
 { SinOsc.ar(300, 0, 0.2) }.scope(1);
 { SinOsc.ar(300, 0, 0.2).abs }.scope(1);
@@ -462,6 +621,7 @@ code::
 
 ## distort, softclip, clip2, fold2, wrap2,
 ||
+
 code::
 { SinOsc.ar(300, 0, MouseX.kr(0.1,80,1)).distort * 0.2 }.scope(1);
 { SinOsc.ar(300, 0, MouseX.kr(0.1,80,1)).softclip * 0.2 }.scope(1);
@@ -473,12 +633,14 @@ code::
 
 ## scaleneg
 ||
+
 code::
 { SinOsc.ar(200, 0, 0.2).scaleneg(MouseX.kr(-1,1)) }.scope(1);
 ::
 
 ## waveshaping by phase modulating a 0 Hz sine oscillator
 || (currently there is a limit of 8pi)
+
 code::
 (
 {
@@ -502,9 +664,23 @@ s.listSendMsg([\b_gen, 80, \cheby, 7] ++ {1.0.rand2.squared}.dup(6));
 s.listSendMsg([\b_gen, 80, \cheby, 7] ++ {1.0.rand2.squared}.dup(6));
 s.listSendMsg([\b_gen, 80, \cheby, 7] ++ {1.0.rand2.squared}.dup(6));
 ::
+
 ::
 
+
+
+
+
+
+
+
+
+
 section:: Panning
+
+
+
+
 code::
 (
 s.quit;
@@ -518,7 +694,7 @@ definitionlist::
 ## link::Classes/Pan2:: - equal power stereo pan a mono source
 || arguments: code:: in, pan position, level ::
 
-pan controls typically range from -1 to +1
+pan controls typically range from teletype::-1:: to +1
 
 code::
 { Pan2.ar(BrownNoise.ar, MouseX.kr(-1,1), 0.3) }.scope(2);
@@ -535,18 +711,21 @@ code::
 
 ## link::Classes/Balance2:: - balance a stereo source
 || arguments: code:: left in, right in, pan position, level ::
+
 code::
 { Balance2.ar(BrownNoise.ar, BrownNoise.ar, MouseX.kr(-1,1), 0.3) }.scope(2);
 ::
 
 ## link::Classes/Pan4:: - equal power quad panner
 ||
+
 code::
 { Pan4.ar(BrownNoise.ar, MouseX.kr(-1,1), MouseY.kr(1,-1), 0.3) }.scope(4);
 ::
 
 ## link::Classes/PanAz:: - azimuth panner to any number of channels
 || arguments: code:: num channels, in, pan position, level, width ::
+
 code::
 { PanAz.ar(5, BrownNoise.ar, MouseX.kr(-1,1), 0.3, 2) }.scope(5);
 
@@ -556,12 +735,14 @@ code::
 
 ## link::Classes/XFade2:: - equal power cross fade between two inputs
 || arguments: code:: in1, in2, crossfade, level ::
+
 code::
 { XFade2.ar(BrownNoise.ar, SinOsc.ar(500), MouseX.kr(-1,1), 0.3) }.scope(1);
 ::
 
 ## link::Classes/PanB2:: and link::Classes/DecodeB2:: - 2D ambisonics panner and decoder
 ||
+
 code::
 (
 {
@@ -575,13 +756,15 @@ code::
 	// B-format decode to quad. outputs in clockwise order
 	#lf, rf, rr, lr = DecodeB2.ar(4, w, x, y);
 
-	[lf, rf, lr, rr] // reorder to my speaker arrangement: Lf Rf Lr Rr
+	[lf, rf, lr, rr] // reorder to my speaker arrangement:
+Lf Rf Lr Rr
 }.scope(4);
 )
 ::
 
 ## link::Classes/Rotate2:: - rotate a sound field of ambisonic or even stereo sound.
 ||
+
 code::
 (
 {
@@ -594,13 +777,27 @@ code::
 }.scope(2);
 )
 ::
+
 ::
 
+
+
+
+
+
+
+
+
+
 section:: Reverbs
+
+
+
 
 definitionlist::
 ## link::Classes/FreeVerb::
 ||
+
 code::
 (
 {
@@ -616,6 +813,7 @@ code::
 
 ## link::Classes/GVerb::
 ||
+
 code::
 (
 {
@@ -626,19 +824,34 @@ code::
 }.scope;
 )
 ::
+
 ::
 
+
+
+
+
+
+
+
+
+
 section:: Delays and Buffer UGens
+
+
+
 
 definitionlist::
 ## link::Classes/DelayN::, link::Classes/DelayL::, link::Classes/DelayC:: - simple delays
 ||
+
 list::
 ## N - no interpolation
 ## L - linear interpolation
 ## C - cubic interpolation
 ::
-arguments: code:: in, maximum delay time, current delay time, mul, add ::
+
+Arguments: code:: in, maximum delay time, current delay time, mul, add ::
 
 code::
 (
@@ -650,6 +863,7 @@ DelayN.ar(z, 0.1, 0.1, 1, z); // input is mixed with delay via the add input
 }.scope(1, zoom: 4)
 )
 ::
+
 code::
 (
 {
@@ -666,7 +880,8 @@ code::
 // used as an echo.
 { CombN.ar(Decay.ar(Dust.ar(1,0.5), 0.2, WhiteNoise.ar), 0.2, 0.2, 3) }.scope(1, zoom:4);
 
-// Comb used as a resonator. The resonant fundamental is equal to
+// Comb used as a resonator.
+The resonant fundamental is equal to
 // reciprocal of the delay time.
 { CombN.ar(WhiteNoise.ar(0.02), 0.01, XLine.kr(0.0001, 0.01, 20), 0.2) }.scope(1);
 
@@ -689,6 +904,7 @@ code::
 
 ## link::Classes/AllpassN::, link::Classes/AllpassL::, link::Classes/AllpassC:: - allpass delay
 || arguments: code:: in, maximum delay time, current delay time, echo decay time, mul, add ::
+
 code::
 (
 {
@@ -702,6 +918,7 @@ code::
 
 ## link::Classes/PlayBuf:: - buffer playback
 || arguments: code:: numChannels, buffer number, rate, trigger, start pos, loop ::
+
 code::
 // read sound
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
@@ -711,6 +928,7 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 // loop is true
 { PlayBuf.ar(1,b, BufRateScale.kr(b), loop:1) }.scope(1);
 ::
+
 code::
 // trigger one shot on each pulse
 (
@@ -730,6 +948,7 @@ code::
 }.scope(1);
 )
 ::
+
 code::
 // mouse control of trigger rate and startpos
 (
@@ -749,7 +968,8 @@ code::
 }.scope(1);
 )
 
-// sine wave control of playback rate. negative rate plays backwards
+// sine wave control of playback rate.
+negative rate plays backwards
 (
 {
 	var rate;
@@ -771,13 +991,27 @@ code::
 // free sound
 b.free;
 ::
+
 ::
 
+
+
+
+
+
+
+
+
+
 section:: Granular Synthesis.
+
+
+
 
 definitionlist::
 ## link::Classes/TGrains:: - granulation of a buffer
 || arguments: code:: numChannels, trigger, buffer number, rate, center pos, dur, pan, amp, interpolation ::
+
 code::
 // read sound
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
@@ -920,16 +1154,32 @@ b = Buffer.sendCollection(s, Env([0, 1, 0], [0.5, 0.5], [8, -8]).discretize, 1);
 }.scope(2, zoom: 4);
 )
 ::
+
 ::
-see also link::Classes/GrainFM::, link::Classes/GrainBuf:: and link::Classes/GrainIn::
+
+See also link::Classes/GrainFM::, link::Classes/GrainBuf:: and link::Classes/GrainIn::
+
+
+
+
+
+
+
+
+
 
 section:: Control
 
+
+
+
 subsection:: Filters for Controls
+
 
 definitionlist::
 ## link::Classes/Decay:: - triggered exponential decay
 || arguments: code:: in, decay time, mul, add ::
+
 code::
 { WhiteNoise.ar * Decay.ar(Impulse.ar(1), 0.9, 0.2) }.scope(1, zoom:4);
 { WhiteNoise.ar * Decay.ar(Dust.ar(3), 0.9, 0.2) }.scope(1, zoom:4);
@@ -938,6 +1188,7 @@ code::
 
 ## link::Classes/Decay2:: - triggered exponential attack and exponential decay
 || arguments: code:: trigger, attack time, decay time, mul, add ::
+
 code::
 { WhiteNoise.ar * Decay2.ar(Impulse.ar(1), 0.2, 0.9, 0.2) }.scope(1, zoom:4);
 { WhiteNoise.ar * Decay2.ar(Dust.ar(3), 0.2, 0.9, 0.2) }.scope(1, zoom:4);
@@ -945,22 +1196,32 @@ code::
 
 ## link::Classes/Lag::
 || arguments: code:: trigger, duration ::
+
 code::
 { SinOsc.ar(Lag.ar(LFPulse.ar(2,0,0.5,800,400), MouseX.kr(0,0.5)), 0, 0.2) }.scope(1, zoom:4);
 ::
 
 ## link::Classes/Integrator:: - leaky integrator
 ||
+
 code::
 { SinOsc.ar(Integrator.ar(Dust2.ar(8), 0.99999, 200, 800), 0, 0.2) }.scope(1)
 ::
+
 ::
 
+
+
+
+
+
 subsection:: Triggers
+
 
 definitionlist::
 ## link::Classes/Trig::, link::Classes/Trig1:: - timed duration gate
 || arguments: code:: trigger, duration ::
+
 code::
 // amplitude determined by amplitude of trigger
 { Trig.ar(Dust.ar(2), 0.2) * FSinOsc.ar(800, 0, 0.4) }.scope(1, zoom:4);
@@ -970,6 +1231,7 @@ code::
 
 ## link::Classes/TDelay:: - delays a trigger. only delays one pending trigger at a time.
 || arguments: code:: trigger, delay time ::
+
 code::
 (
 {
@@ -983,6 +1245,7 @@ code::
 
 ## link::Classes/Latch:: - sample and hold
 || arguments: code:: in, trigger ::
+
 code::
 { Blip.ar(Latch.ar(WhiteNoise.ar, Impulse.ar(9)) * 400 + 500, 4, 0.2) }.play;
 { Blip.ar(Latch.ar(SinOsc.ar(0.3), Impulse.ar(9)) * 400 + 500, 4, 0.2) }.play;
@@ -990,12 +1253,14 @@ code::
 
 ## link::Classes/Gate:: - pass or hold
 || arguments: code:: in, trigger ::
+
 code::
 { Blip.ar(Gate.ar(LFNoise2.ar(40), LFPulse.ar(1)) * 400 + 500, 4, 0.2) }.scope(1, zoom:4);
 ::
 
 ## link::Classes/PulseCount:: - count triggers
 || arguments: code:: trigger, reset ::
+
 code::
 (
 {
@@ -1009,6 +1274,7 @@ SinOsc.ar(
 
 ## link::Classes/PulseDivider::
 || arguments: code:: trigger, div, start ::
+
 code::
 (
 {
@@ -1024,6 +1290,7 @@ code::
 
 ## link::Classes/EnvGen:: - envelope generator
 || envelope is specified using an instance of the link::Classes/Env:: class.
+
 code::
 { EnvGen.kr(Env.perc, doneAction: Done.freeSelf) * SinOsc.ar(880,0,0.2) }.play;
 { EnvGen.kr(Env.perc(1,0.005,1,4), doneAction: Done.freeSelf) * SinOsc.ar(880,0,0.2) }.play;
@@ -1048,11 +1315,24 @@ z = { arg gate=1;
 )
 z.release;
 ::
+
 ::
+
+
+
+
+
+
+
+
+
 
 section:: Spectral
 
-FFT, IFFT and the phase vocoder ugens.
+
+
+
+FFT, IFFT and the phase vocoder UGens.
 
 link::Classes/FFT:: calculates the spectrum of a sound, puts it into a buffer, and outputs a trigger each time the
 buffer is ready to process. The PV UGens process the spectrum when they receive the trigger.
@@ -1144,9 +1424,22 @@ c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 ::
 
 
+
+
+
+
+
+
+
+
 section:: Techniques
 
+
+
+
 subsection:: Artificial Space
+
+
 Building a sense of space into a sound by setting up phase differences between the speakers.
 
 code::
@@ -1201,7 +1494,14 @@ code::
 )
 ::
 
+
+
+
+
+
 subsection:: Parallel Structures
+
+
 code::
 (
 {
@@ -1270,7 +1570,14 @@ code::
 )
 ::
 
+
+
+
+
+
 subsection:: Serial structures
+
+
 code::
 (
 play {

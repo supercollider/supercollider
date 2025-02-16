@@ -1,36 +1,73 @@
-class:: TWindex
-summary:: Triggered windex.
+title:: TWindex
 categories:: UGens>Random, UGens>Triggers
+summary:: Triggered windex
 
 
-Description::
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 When triggered, returns a random index value based on array as a list of
-probabilities. By default the list of probabilities should sum to 1.0,
-when the normalize flag is set to 1, the values get normalized
-by the UGen (less efficient).
+probabilities. By default the list of probabilities should sum to teletype::1.0::,
+when the normalize flag is set to 1, the values get normalized by the UGen (less efficient).
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
-
-argument::in
-
-The trigger. Trigger can be any signal. A trigger happens when
-the signal changes from non-positive to positive.
 
 
-argument::array
+
+method:: ar, kr
+
+
+argument:: in
+
+The trigger. Trigger can be any signal.
+A trigger happens when the signal changes from non-teletype::positive:: to teletype::positive::.
+
+
+argument:: array
+
 The list of probabilities. (Note: These should be control rate only.)
 
-argument::normalize
-Controls whether to normalize the probability values. (Control rate only.)
 
-Examples::
+argument:: normalize
+
+Control whether to normalize the probability values.
+(Control rate only.)
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 // assuming normalized values
 (
 a = SynthDef("help-TWindex", { |out, w1 = 0.0, w2 = 0.5, w3 = 0.5|
@@ -75,5 +112,4 @@ a.setn(0, [0, 0]);
 a.setn(0, [1, 1]);
 a.setn(0, [1, 0]);
 a.setn(0, [0, 1]);
-
 ::

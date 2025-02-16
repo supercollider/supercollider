@@ -1,15 +1,31 @@
 title:: 02. First Steps
-summary:: Getting Started With SuperCollider
 categories:: Tutorials>Getting-Started
+summary:: Getting Started With SuperCollider
 related:: Tutorials/Getting-Started/00-Getting-Started-With-SC
 
+
+
 note::
-This document is written so that it can be used on all supported systems, though having first of all macOS in mind using the application SuperCollider.app (SCapp). Some features, e.g. menu commands, are platform specific, but the principles extend to all platforms. See the helpfile link::Reference/KeyboardShortcuts:: for key commands when using other tools such as SC enhanced editors, e.g. on Linux platforms.
+This document is written so that it can be used on all supported systems, though having first of all macOS in mind using the application SuperCollider.app (SCapp). Some features, e.g. menu commands, are platform specific, but the principles extend to all platforms.
+See the helpfile link::Reference/KeyboardShortcuts:: for key commands when using other tools such as SC enhanced editors, e.g. on Linux platforms.
 ::
 
-section::Hello World, I'm SuperCollider
 
-It is traditional when learning a new programming language to start with a simple program called 'Hello World'. This just makes the program print the text 'Hello World!' to well, wherever it prints text. In SC that's a place called the post window. The post window is the one that opened up when you first started SC, and a bunch of stuff was printed there which looks something like this:
+
+
+
+
+
+
+
+
+section:: Hello World, I'm SuperCollider
+
+
+
+
+It is traditional when learning a new programming language to start with a simple program called 'Hello World'. This just makes the program print the text 'Hello World!' to well, wherever it prints text. In SC that's a place called the post window.
+The post window is the one that opened up when you first started SC, and a bunch of stuff was printed there which looks something like this:
 
 code::
 init_OSC
@@ -28,7 +44,8 @@ RESULT = 256
 Class tree inited in 0.14 seconds
 ::
 
-Don't worry too much about what all that means just now, just keep in mind that this is where SC will send you information. It's also where we'll get the result of our Hello World program, which you can see below:
+Don't worry too much about what all that means just now, just keep in mind that this is where SC will send you information.
+It's also where we'll get the result of our Hello World program, which you can see below:
 
 code::
 "Hello World!".postln;
@@ -45,13 +62,18 @@ Hello World!
 
 Alternatively you can also first select the code you wish to execute (by clicking and dragging over the text until it is highlighted) and then press Ctrl-Enter (Cmd-Return on macOS). Try this now.
 
-Now let's take a closer look at the code. The first bit, code::"Hello World!"::, is a kind of emphasis::Object::, called a String. An object is basically just a way of representing something in the computer, for instance a bit of text, or an oscillator, that allows you to control it and send messages to it. More about that later, but for now just understand that a String is a way of representing a bit of text.
+Now let's take a closer look at the code. The first bit, code::"Hello World!"::, is a kind of emphasis::Object::, called a String. An object is basically just a way of representing something in the computer, for instance a bit of text, or an oscillator, that allows you to control it and send messages to it.
+More about that later, but for now just understand that a String is a way of representing a bit of text.
 
-The second bit, code::.postln;::, says 'print me (or a meaningful description of me) to the post window.' Remember postln, it's your friend. You can apply it to almost anything in SC and get something meaningful back. This can be very handy when tracking down bugs in your code.
+The second bit, code::.postln;::, says 'print me (or a meaningful description of me) to the post window.' Remember postln, it's your friend. You can apply it to almost anything in SC and get something meaningful back.
+This can be very handy when tracking down bugs in your code.
 
-Why did it print twice? Well, when you execute code in SC, it always posts the result of the last bit of code (the last statement). So it first prints because we explicitly told it to print, and then it prints the result of this operation, which happens to be the same in this case.
+Why did it print twice? Well, when you execute code in SC, it always posts the result of the last bit of code (the last statement).
+So it first prints because we explicitly told it to print, and then it prints the result of this operation, which happens to be the same in this case.
 
-So in this case we didn't really need the code::postln:: bit. But in the following example we would. Select both lines of text by clicking and dragging over them, and then execute, i.e. press Ctrl-Enter (Cmd-Return on macOS).
+So in this case we didn't really need the code::postln:: bit.
+But in the following example we would.
+Select both lines of text by clicking and dragging over them, and then execute, i.e. press Ctrl-Enter (Cmd-Return on macOS).
 
 code::
 "Hello there, I'm SuperCollider!".postln;
@@ -60,7 +82,9 @@ code::
 
 The first line, 'Hello there, I'm SuperCollider!' would not have printed if we didn't have the explicit postln.
 
-In general, when you are meant to execute several lines of code at the same time they will be surrounded by parentheses, as in the example below. You can have your cursor anywhere in this region (or on the line of the parentheses on macOS), then double-click and press Ctrl-Enter or Shift-Enter (Cmd-Return or Shift-Return on macOS) - this selects the whole region and executes it. Try it out on the example below.
+In general, when you are meant to execute several lines of code at the same time they will be surrounded by parentheses, as in the example below.
+You can have your cursor anywhere in this region (or on the line of the parentheses on macOS), then double-click and press Ctrl-Enter or Shift-Enter (Cmd-Return or Shift-Return on macOS) - this selects the whole region and executes it.
+Try it out on the example below.
 
 code::
 (
@@ -69,11 +93,18 @@ code::
 )
 ::
 
-Double clicking inside a pair of enclosing parentheses may not select the entire region on all systems, notably not on modern Macs. On some it may only select the double clicked word. Thus it may be good, to make it a habit to stick to a particular technique. E.g. to first always check you have selected all of the intended code, regardless of the selection technique, before pressing either Ctrl-Enter or Shift-Enter (Cmd-Return or Shift-Enter on macOS). Then stick to the technique that works best for you. Experiment with this to learn how your system behaves.
+Double clicking inside a pair of enclosing parentheses may not select the entire region on all systems, notably not on modern Macs.
+On some it may only select the double clicked word.
+Thus it may be good, to make it a habit to stick to a particular technique.
+E.g. to first always check you have selected all of the intended code, regardless of the selection technique, before pressing either Ctrl-Enter or Shift-Enter (Cmd-Return or Shift-Enter on macOS).
+Then stick to the technique that works best for you.
+Experiment with this to learn how your system behaves.
 
-When code is not surrounded by parentheses it is generally intended to be executed one line at a time. You can have your cursor anywhere in a line of code and press Ctrl-Enter or Shift-Enter (Cmd-Return or Shift-Return on macOS) - this selects the whole line and executes it.
+When code is not surrounded by parentheses it is generally intended to be executed one line at a time.
+You can have your cursor anywhere in a line of code and press Ctrl-Enter or Shift-Enter (Cmd-Return or Shift-Return on macOS) - this selects the whole line and executes it.
 
-Note that each of the lines within the block of code ends with a semi-colon. This is very important when executing multiple lines of code. Try what happens when you execute following variant of the almost identical code.
+Note that each of the lines within the block of code ends with a semi-colon. This is very important when executing multiple lines of code.
+Try what happens when you execute following variant of the almost identical code.
 
 code::
 (
@@ -94,27 +125,50 @@ line 3 char 10:
 )
 ::
 
-Usually the problem actually occurs a little before that, so that's where you should look.  In this case, it's the lack of a semi-colon at the end of the previous line.  Note that each line of code ends normally with a semi-colon.  This is how you separate lines of code in SC. Since we didn't have a semi-colon between the two lines we have gotten an error. 
+Usually the problem actually occurs a little before that, so that's where you should look.  In this case, it's the lack of a semi-colon at the end of the previous line.
+ Note that each line of code ends normally with a semi-colon.  This is how you separate lines of code in SC.
+Since we didn't have a semi-colon between the two lines we have gotten an error.
 
-Note also, having an extra semi-colon at the very end of the last piece of code does not hurt and is tolerated by SC for reasons of convenience. 
 
-A couple of more notes about the post window. It's very useful to be able to see it, but sometimes it can get hidden behind other windows. You can bring it to the front at any time by pressing Cmd-\.
+Note also, having an extra semi-colon at the very end of the last piece of code does not hurt and is tolerated by SC for reasons of convenience.
 
-Other times, the post window becomes full of text and hard to read. You can clear it at any time by pressing Ctrl-Shift-P (Cmd-Shift-P on macOS).
 
-section::The World According to SuperCollider
+A couple of more notes about the post window.
+It's very useful to be able to see it, but sometimes it can get hidden behind other windows.
+You can bring it to the front at any time by pressing Cmd-\.
+
+Other times, the post window becomes full of text and hard to read.
+You can clear it at any time by pressing Ctrl-Shift-P (Cmd-Shift-P on macOS).
+
+
+
+
+
+
+
+
+
+
+section:: The World According to SuperCollider
+
+
+
 
 SuperCollider is actually three programs:
+
 list::
 ##The text editor you are looking at (also referred to as the IDE or Integrated Development Environment),
 ##the language (sclang or the "client" app),
 ##and the server, which does the actual synthesis and calculation of audio.
 ::
+
 The sclang part is a sophisticated programming language with nice features for building GUIs (Graphical User Interfaces); and the server part is a lean, mean, efficient UNIX command line application (meaning it runs without any GUI representation).
 
-They communicate by a protocol called OSC (Open Sound Control), over either UDP (User Datagram Protocol) or TCP (Transmission Control Protocol), which are network protocols also used on the internet. Because the client and server communicate this way, more advanced projects might run them on separate computers for performance reasons. In fact, it's even possible that they could be running in different parts of the world! However, just because these two applications communicate using common internet protocols does not mean they must be connected to the internet or on different computers. Most of the time they will be running on the same computer, and the "networking" aspect of things will be relatively transparent for you. Especially while you're still getting started.
+They communicate by a protocol called OSC (Open Sound Control), over either UDP (User Datagram Protocol) or TCP (Transmission Control Protocol), which are network protocols also used on the internet. Because the client and server communicate this way, more advanced projects might run them on separate computers for performance reasons. In fact, it's even possible that they could be running in different parts of the world! However, just because these two applications communicate using common internet protocols does not mean they must be connected to the internet or on different computers. Most of the time they will be running on the same computer, and the "networking" aspect of things will be relatively transparent for you.
+Especially while you're still getting started.
 
-You can only communicate with the server using OSC messages over the network, but luckily the language app has lots of powerful objects which represent things on the server and allow you to control them easily and elegantly. Understanding how exactly that works is crucial to effectively working in SC, so we'll be talking about that in some depth.
+You can only communicate with the server using OSC messages over the network, but luckily the language app has lots of powerful objects which represent things on the server and allow you to control them easily and elegantly.
+Understanding how exactly that works is crucial to effectively working in SC, so we'll be talking about that in some depth.
 
 But first let's have a little fun, and make some sound!
 
@@ -122,18 +176,34 @@ For more information see:
 
 link::Guides/How-to-Use-the-Interpreter::, link::Reference/Literals::, link::Classes/String::, link::Guides/ClientVsServer::, link::Reference/Server-Architecture::
 
-section::Suggested Exercise
 
-Open a new tab or window by pressing Ctrl-N (Cmd-N on macOS) or choose 'New' from the File menu. Save the document by giving it a name like 'My first SC code.scd'. Note, you should always use extension '.scd' for files containing SC code. Copy some of above code examples and paste them into the new document using Ctrl-C and Ctrl-V (Cmd-C and Cmd-V on macOS) or use the copy and paste Edit menu items.
+
+
+
+
+
+
+
+
+section:: Suggested Exercise
+
+
+
+
+Open a new tab or window by pressing Ctrl-N (Cmd-N on macOS) or choose 'New' from the File menu. Save the document by giving it a name like 'My first SC code.scd'. Note, you should always use extension '.scd' for files containing SC code.
+Copy some of above code examples and paste them into the new document using Ctrl-C and Ctrl-V (Cmd-C and Cmd-V on macOS) or use the copy and paste Edit menu items.
 
 SC will let you edit the help files and documentation, so it's always a good idea to copy text over before changing it to avoid accidentally saving altered help files!
 
-Experiment with altering the text between the quotes to print different things to the post window. Do this with both blocks of text wrapped in parentheses, and single lines.
+Experiment with altering the text between the quotes to print different things to the post window.
+Do this with both blocks of text wrapped in parentheses, and single lines.
 
 ____________________
 
 This document is part of the tutorial strong::Getting Started With SuperCollider::.
 
-Click here to go on to the next section: link::Tutorials/Getting-Started/03-Start-Your-Engines::
+Click here to go on to the next section:
+link::Tutorials/Getting-Started/03-Start-Your-Engines::
 
-Click here to return to the table of Contents: link::Tutorials/Getting-Started/00-Getting-Started-With-SC::
+Click here to return to the table of Contents:
+link::Tutorials/Getting-Started/00-Getting-Started-With-SC::

@@ -1,27 +1,57 @@
-class:: OSCresponderNode
-summary:: client side network responder
-related:: Classes/OSCFunc, Classes/OSCdef, Guides/OSC_communication, Classes/OSCpathResponder, Classes/NetAddr
+title:: OSCresponderNode
 categories:: External Control>OSC
+summary:: Client side network responder
+related:: Classes/OSCFunc, Classes/OSCdef, Guides/OSC_communication, Classes/OSCpathResponder, Classes/NetAddr
+
+
+
+
+
+
+
+
+
 
 description::
+
+
+
+
 note::
-This class is deprecated and will be removed in a future version of SC. Use link::Classes/OSCFunc:: and link::Classes/OSCdef:: instead. They are faster, safer, and have more logical argument order than the old responder classes, and they support pattern matching and custom listening ports. Use of the older classes OSCresponder, OSCresponderNode, and OSCpathResponder can be unsafe, since responders in user and class code can override each other unintentionally.
+This class is deprecated and will be removed in a future version of SC.
+Use link::Classes/OSCFunc:: and link::Classes/OSCdef:: instead. They are faster, safer, and have more logical argument order than the old responder classes, and they support pattern matching and custom listening ports.
+Use of the older classes OSCresponder, OSCresponderNode, and OSCpathResponder can be unsafe, since responders in user and class code can override each other unintentionally.
 ::
 
-Register a function to be called upon receiving a specific command from a specific OSC address. Same interface like link::Classes/OSCresponder::, but allows strong::multiple responders to the same command::.
+Register a function to be called upon receiving a specific command from a specific OSC address.
+Same interface like link::Classes/OSCresponder::, but allows strong::multiple responders to the same command::.
 
 Note that OSCresponderNode evaluates its function in the system process.
 In order to access the application process (e.g. for GUI access) use { ... }.defer;
 
-Other applications sending messages to SuperCollider should distinguish between sending messages to the server or the language. Server messages are documented in the link::Reference/Server-Command-Reference:: and should be sent to the server's port - code::s.addr.port:: - which is strong::57110:: by default. Messages sent to the server will not be processed by any OSCresponder in the language.
+Other applications sending messages to SuperCollider should distinguish between sending messages to the server or the language.
+Server messages are documented in the link::Reference/Server-Command-Reference:: and should be sent to the server's port - code::s.addr.port:: - which is strong::57110:: by default. Messages sent to the server will not be processed by any OSCresponder in the language.
 
 Messages from external clients that should be processed by OSCresponders must be sent to the language port, strong::57120:: by default. Use code::NetAddr.langPort:: to confirm which port the SuperCollider language is listening on.
 
 See link::Guides/OSC_communication:: for more details.
 
-Examples::
 
-subsection::Setting up OSCresponderNode for listening to a remote application
+
+
+
+
+
+
+
+
+examples::
+
+
+
+
+subsection:: Setting up OSCresponderNode for listening to a remote application
+
 
 code::
 // example: two SuperCollider apps communicating
@@ -45,27 +75,45 @@ m.sendBundle(0.0, ["/chat", "Hello App 1"], ["/chat", "Hallo Wurld"]);
 o.remove;
 ::
 
-subsection::Listening to data from _any_ client
+
+
+
+
+
+subsection:: Listening to data from _any_ client
+
 
 code::
-// same as above, but we set the address to nil so we can receive from anywhere
+// same as above, but we set the address to teletype::nil:: so we can receive from anywhere
 // no need for a NetAddr since we are just listening (and not sending)
 
 o = OSCresponderNode(nil, '/test', { |t, r, msg| msg.postln }).add;
 o.remove;
 ::
 
-subsection::Listening to data from _any_ client, but from a specific host
+
+
+
+
+
+subsection:: Listening to data from _any_ client, but from a specific host
+
 
 code::
-// same as above, but we use a NetAddr with a port of nil, so we can receive from a specific host, but from any port
+// same as above, but we use a NetAddr with a port of teletype::nil::, so we can receive from a specific host, but from any port
 
 n = NetAddr("127.0.0.1", nil); // the url should be the one of computer of app 2
 o = OSCresponderNode(n, '/test', { |t, r, msg| msg.postln }).add;
 o.remove;
 ::
 
-subsection::Listening to data from the server
+
+
+
+
+
+subsection:: Listening to data from the server
+
 
 code::
 // example from SendTrig
@@ -95,7 +143,13 @@ b.remove;
 x.free;
 ::
 
-subsection::Watching for something specific
+
+
+
+
+
+subsection:: Watching for something specific
+
 
 code::
 // end of group message
@@ -117,7 +171,13 @@ g.free;
 a.remove;
 ::
 
-subsection::Watching for errors
+
+
+
+
+
+subsection:: Watching for errors
+
 
 code::
 // example from ServerErrorGui in crucial lib

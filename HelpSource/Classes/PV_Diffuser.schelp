@@ -1,33 +1,66 @@
-class:: PV_Diffuser
-summary:: Random phase shifting.
-related:: Classes/FFT, Classes/IFFT, Classes/PV_PhaseShift, Classes/PV_PhaseShift90, Classes/PV_PhaseShift270
+title:: PV_Diffuser
 categories:: UGens>FFT
+summary:: Random phase shifting
+related:: Classes/FFT, Classes/IFFT, Classes/PV_PhaseShift, Classes/PV_PhaseShift90, Classes/PV_PhaseShift270
 
-Description::
 
-Adds a different constant random phase shift to each bin. When triggered, it selects a new set of random phases.
+
+
+
+
+
+
+
+
+description::
+
+
+
+
+Add a different constant random phase shift to each bin.
+When triggered, it selects a new set of random phases.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::new
 
-argument::buffer
+
+
+method:: new
+
+
+argument:: buffer
 
 FFT buffer.
 
 
-argument::trig
+argument:: trig
 
 A trigger, that selects a new set of random values.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
-
-
 (
 // trig with MouseY crossing center of screen
 {
@@ -51,5 +84,4 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 	0.5 * IFFT(chain).dup;
 }.play
 );
-
 ::

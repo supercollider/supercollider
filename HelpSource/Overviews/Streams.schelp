@@ -1,9 +1,21 @@
 title:: Streams
-summary:: Patterns/Streams Help overview
 categories:: Streams-Patterns-Events
+summary:: Patterns/Streams Help overview
 related:: Classes/Stream, Classes/Pattern
 
+
+
+
+
+
+
+
+
+
 section:: Some tutorials
+
+
+
 
 definitionlist::
 ## link::Tutorials/A-Practical-Guide/PG_01_Introduction:: || A Practical Guide to Patterns
@@ -23,17 +35,42 @@ definitionlist::
 ## link::Classes/Pattern:: || Pattern class helpfile
 ::
 
+
+
+
+
+
+
+
+
+
 section:: Specific classes
+
+
+
 
 subsection:: ListPatterns
 
+
 classtree::ListPattern
+
+
+
+
+
 
 subsection:: FilterPatterns
 
+
 classtree::FilterPattern
 
-subsection:: event stream specific filter patterns
+
+
+
+
+
+subsection:: Event stream specific filter patterns
+
 
 list::
 ## link::Classes/Pset::
@@ -46,7 +83,13 @@ list::
 ## link::Classes/Pfindur::
 ::
 
-subsection:: other Patterns
+
+
+
+
+
+subsection:: Other Patterns
+
 
 list::
 ## link::Classes/Pwhite::
@@ -58,7 +101,13 @@ list::
 ## link::Classes/PstepNfunc::
 ::
 
+
+
+
+
+
 subsection:: Streams
+
 
 list::
 ## link::Classes/BinaryOpStream::

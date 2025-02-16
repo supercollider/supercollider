@@ -1,8 +1,20 @@
-CLASS::Pair
-summary::LISP-like two element cells
+title:: Pair
 categories:: Collections>Ordered
+summary:: LISP-like two element cells
 
-DESCRIPTION::
+
+
+
+
+
+
+
+
+
+description::
+
+
+
 
 note::
 Implementation incomplete. See link::Guides/J-concepts-in-SC:: for similar functionality.
@@ -10,37 +22,106 @@ Implementation incomplete. See link::Guides/J-concepts-in-SC:: for similar funct
 
 Most methods are inherited from the superclasses.
 
-CLASSMETHODS::
 
-method::new
+
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
 Return new instance.
 
-method::newFrom
+
+
+
+method:: newFrom
+
+
 Convert collection (e.g. arrays of arrays) to pairs.
 
-INSTANCEMETHODS::
 
-private::storeOn, printOn, storeArgs
 
-method::size
+
+
+
+
+
+
+
+instancemethods::
+
+
+
+
+private:: storeOn, printOn, storeArgs
+
+
+method:: size
 Return the size when linking across.
 
-method::depth
+
+
+
+method:: depth
+
+
 Return the size when linking down.
 
-method::do
+
+
+
+method:: do
+
+
 Iterate over the two elements.
 
-method::traverse
+
+
+
+method:: traverse
+
+
 Same like: link::#-depthFirstPreOrderTraversal::
 
-method::depthFirstPreOrderTraversal
+
+
+
+method:: depthFirstPreOrderTraversal
+
+
 Traverse the data structure first link down, then across (see link::#examples::).
 
-method::depthFirstPostOrderTraversal
+
+
+
+method:: depthFirstPostOrderTraversal
+
+
 Traverse the data structure from bottom up (see link::#examples::).
 
-EXAMPLES::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 a = Pair(Pair(Pair(1, 2), 4), Pair(5, 6));

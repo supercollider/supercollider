@@ -1,12 +1,37 @@
-class::UnaryOpFunction
-summary::represent a unary operation on a function
+title:: UnaryOpFunction
+categories:: Core
+summary:: Represent a unary operation on a function
 related:: Classes/UnaryOpStream, Classes/Punop, Classes/BinaryOpFunction, Classes/NAryOpFunction, Overviews/Operators
-categories::Core
+
+
+
+
+
+
+
+
+
 
 description::
+
+
+
+
 Operating on functions instead of numbers, what results is not a result of the calculation, but a structure that represents that calculation.
 
+
+
+
+
+
+
+
+
+
 examples::
+
+
+
 
 code::
 a = 2.sqrt; // result is square root of two (approximate floating point).

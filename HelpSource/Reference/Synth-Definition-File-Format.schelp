@@ -1,10 +1,13 @@
 title:: Synth Definition File Format
-summary:: Description of Synth Definition file format used by SC synth server
 categories:: Server>Architecture
+summary:: Description of Synth Definition file format used by SC synth server
 related:: Classes/SynthDef
 
-Synth definition files are read by the synth server and define collections of unit generators and their connections. These files are currently written by  the SuperCollider language application, but theoretically could be written by any program.
-Such a program would need knowledge of the SC unit generators and their characteristics, such as number of inputs and outputs and available calculation rates. The code to write these files is open and available in the SuperCollider language app.
+
+Synth definition files are read by the synth server and define collections of unit generators and their connections.
+These files are currently written by  the SuperCollider language application, but theoretically could be written by any program.
+Such a program would need knowledge of the SC unit generators and their characteristics, such as number of inputs and outputs and available calculation rates.
+The code to write these files is open and available in the SuperCollider language app.
 
 In the current SuperCollider 3.6 development version, there are two versions of SynthDef:
 
@@ -15,8 +18,23 @@ list::
 
 This document describes SynthDef2's format. See link::#Original SynthDef format:: for the differences between SynthDef and SynthDef2.
 
+
+
+
+
+
+
+
+
+
 section:: Basic types
-All data is stored big endian. All integers, unless otherwise noted, are signed. All data is packed, not padded or aligned.
+
+
+
+
+All data is stored big endian.
+All integers, unless otherwise noted, are signed. All data is packed, not padded or aligned.
+
 definitionlist::
 ## int32 || a 32 bit integer.
 ## int16 || a 16 bit integer.
@@ -25,9 +43,22 @@ definitionlist::
 ## pstring || a pascal format string: a byte (an strong::unsigned:: int8) giving the length followed by that many bytes.
 ::
 
+
+
+
+
+
+
+
+
+
 section:: File Format
 
-a strong::synth-definition-file:: is :
+
+
+
+A strong::synth-definition-file:: is :
+
 list::
 ## int32 - four byte file type id containing the ASCII characters: "SCgf"
 ## int32 - file version, currently 2.
@@ -35,7 +66,8 @@ list::
 ## [ strong::synth-definition:: ] * D
 ::
 
-a strong::synth-definition:: is :
+A strong::synth-definition:: is :
+
 list::
 ## pstring - the name of the synth definition
 ## int32 - number of constants (K)
@@ -45,18 +77,20 @@ list::
 ## int32 - number of parameter names (N)
 ## [ strong::param-name:: ] * N
 ## int32 - number of unit generators (U)
-## [ strong::ugen-spec:: ] * U
+## [ strong::UGen-spec:: ] * U
 ## int16 - number of variants (V)
 ## [ strong::variant-spec:: ] * V
 ::
 
-a strong::param-name:: is :
+A strong::param-name:: is :
+
 list::
 ## pstring - the name of the parameter
 ## int32 - its index in the parameter array
 ::
 
-a strong::ugen-spec:: is :
+A strong::UGen-spec:: is :
+
 list::
 ## pstring - the name of the SC unit generator class
 ## int8 - calculation rate
@@ -67,35 +101,61 @@ list::
 ## [ strong::output-spec:: ] * O
 ::
 
-an strong::input-spec:: is :
+An strong::input-spec:: is :
+
 list::
 ## int32 - index of unit generator or -1 for a constant
 ## if (unit generator index == -1) :
+
 list::
 ## int32 - index of constant
 ::
+
 ## else :
+
 list::
 ## int32 - index of unit generator output
 ::
+
 ::
 
-an strong::output-spec:: is :
+An strong::output-spec:: is :
+
 list::
 ## int8 - calculation rate
 ::
 
-a strong::variant-spec:: is :
+A strong::variant-spec:: is :
+
 list::
 ## pstring - the name of the variant
 ## [float32] * P - variant initial parameter values
 ::
 
+
+
+
+
+
+
+
+
+
 section:: File Format as Tree
+
+
+
 
 soft::added by Jonatan Liljedahl::
 
-subsection::synth-definition-file
+
+
+
+
+
+subsection:: synth-definition-file
+
+
 tree::
 ## int32 - four byte file type id containing the ASCII characters: "SCgf"
 ## int32 - file version, currently 2.
@@ -114,7 +174,7 @@ tree::
         ## int32 - its index in the parameter array
         ::
     ## int32 - number of unit generators (U)
-    ## [ strong::ugen-spec:: ] * U
+    ## [ strong::UGen-spec:: ] * U
         tree::
         ## pstring - the name of the SC unit generator class
         ## int8 - calculation rate
@@ -147,73 +207,135 @@ tree::
     ::
 ::
 
+
+
+
+
+
+
+
+
+
 section:: Original SynthDef format
+
+
+
 
 The original SynthDef format differs in that the following items are teletype::int16:: instead of teletype::int32::.
 
-note:: The following list describes what has changed between SynthDef and SynthDef2. It is not a complete description of the original SynthDef file format. ::
+note:: 
+The following list describes what has changed between SynthDef and SynthDef2.
+It is not a complete description of the original SynthDef file format.
+::
 
 list::
 ## int32 - file version, currently 1. (This is emphasis::2:: for the new format.)
 
 ## a strong::synth-definition:: is :
+
 list::
 ## int16 - number of constants (K)
 ## int16 - number of parameters (P)
 ## int16 - number of parameter names (N)
 ## int16 - number of unit generators (U)
 ::
+
 ## a strong::param-name:: is :
+
 list::
 ## int16 - its index in the parameter array
 ::
 
-## a strong::ugen-spec:: is :
+## a strong::UGen-spec:: is :
+
 list::
 ## int16 - number of inputs (I)
 ## int16 - number of outputs (O)
 ::
 
 ## an strong::input-spec:: is :
+
 list::
 ## int16 - index of unit generator or -1 for a constant
 ## int16 - index of constant
 ## int16 - index of unit generator output
 ::
+
 ::
+
+
+
+
+
+
+
+
 
 
 section:: Glossary
 
+
+
+
 definitionlist::
-## calculation rate || the rate that a computation is done. There are three rates numbered 0, 1, 2 as follows:
+## calculation rate || the rate that a computation is done.
+There are three rates numbered 0, 1, 2 as follows:
+
 definitionlist::
 ## 0 = scalar rate || one sample is computed at initialization time only.
 ## 1 = control rate || one sample is computed each control period.
 ## 2 = audio rate || one sample is computed for each sample of audio output.
 ::
-Outputs have their own calculation rate. This allows MultiOutUGens to have outputs at different rates. A one output unit generator's calculation rate should match that of its output.
+
+Outputs have their own calculation rate.
+This allows MultiOutUGens to have outputs at different rates.
+A one output unit generator's calculation rate should match that of its output.
 
 ## constant || a single floating point value that is used as a unit generator input.
 
 ## parameter || a value that can be externally controlled using server commands /s.new, /n.set, /n.setn, /n.fill, /n.map .
 
-## parameter name || a string naming an index in the parameter array. This allows one to refer to the same semantic value such as 'freq' or 'pan' in different synths  even though they exist at different offsets in their respective parameter arrays.
+## parameter name || a string naming an index in the parameter array.
+This allows one to refer to the same semantic value such as 'freq' or 'pan' in different synths  even though they exist at different offsets in their respective parameter arrays.
 
-## special index || this value is used by some unit generators for a special purpose. For example, UnaryOpUGen and BinaryOpUGen use it to indicate which operator to perform. If not used it should be set to zero.
+## special index || this value is used by some unit generators for a special purpose.
+For example, UnaryOpUGen and BinaryOpUGen use it to indicate which operator to perform.
+If not used it should be set to teletype::zero::.
 
-## synth || a collection of unit generators that execute together. A synth is a type of node.
+## synth || a collection of unit generators that execute together.
+A synth is a type of node.
 
 ## synth definition || a specification for creating synths.
 
-## unit generator ||  a basic signal processing module with inputs and outputs. unit generators are connected together to form synths.
+## unit generator ||  a basic signal processing module with inputs and outputs.
+unit generators are connected together to form synths.
 ::
+
+
+
+
+
+
+
+
+
 
 section:: Notes
 
-Unit generators are listed in the order they will be executed. Inputs must refer to constants or previous unit generators. No feedback loops are allowed. Feedback must be accomplished via delay lines or through buses.
+
+
+
+Unit generators are listed in the order they will be executed.
+Inputs must refer to constants or previous unit generators.
+No feedback loops are allowed. Feedback must be accomplished via delay lines or through buses.
+
+
+
+
+
 
 subsection:: For greatest efficiency:
+
 
 Unit generators should be listed in an order that permits efficient reuse of connection buffers, which means that a depth first topological sort of the graph is preferable to breadth first.
 

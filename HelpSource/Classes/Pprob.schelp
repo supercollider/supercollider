@@ -1,38 +1,88 @@
-class:: Pprob
-summary:: random values with arbitrary probability distribution
-related:: Classes/Ppoisson
+title:: Pprob
 categories:: Streams-Patterns-Events>Patterns>Random
+summary:: Random values with arbitrary probability distribution
+related:: Classes/Ppoisson
+
+
+
+
+
+
+
+
+
 
 description::
 
-Creates an integral table on instantiation (cpu intensive) which is then used by the streams to generate random values efficiently.
 
-ClassMethods::
 
-method::new
 
-argument::distribution
-desired probability distribution (histogram).
+Createan an integral table on instantiation (cpu intensive) which is then used by the streams to generate random values efficiently.
 
-argument::lo
-lower bound of the resulting values.
 
-argument::hi
-upper bound of the resulting values.
 
-argument::length
-number of values to repeat.
 
-argument::tableSize
-resample table to this size. If the size of the distribution is smaller than 64, it is (linearly) resampled to this minimum size.
 
-argument::distribution
-set the distribution, the table is recalculated.
 
-argument::tableSize
-set the resample size, the table is recalculated.
 
-Examples::
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
+argument:: distribution
+
+Desired probability distribution (histogram).
+
+
+argument:: lo
+
+Lower bound of the resulting values.
+
+
+argument:: hi
+
+Upper bound of the resulting values.
+
+
+argument:: length
+
+Number of values to repeat.
+
+
+argument:: tableSize
+
+Resample table to this size. If the size of the distribution is smaller than 64, it is (linearly) resampled to this minimum size.
+
+
+argument:: distribution
+
+Set the distribution, the table is recalculated.
+
+
+argument:: tableSize
+
+Set the resample size, the table is recalculated.
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 // a consistency test

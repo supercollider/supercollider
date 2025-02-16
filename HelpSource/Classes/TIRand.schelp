@@ -1,36 +1,72 @@
-class:: TIRand
-summary:: Triggered integer random number generator.
-related:: Classes/ExpRand, Classes/IRand, Classes/LinRand, Classes/NRand, Classes/Rand, Classes/TExpRand, Classes/TRand, Classes/TChoose
+title:: TIRand
 categories:: UGens>Random, UGens>Triggers
+summary:: Triggered integer random number generator
+related:: Classes/ExpRand, Classes/IRand, Classes/LinRand, Classes/NRand, Classes/Rand, Classes/TExpRand, Classes/TRand, Classes/TChoose
 
 
-Description::
 
-Generates a random integer value in uniform distribution from
-code::lo::  to  code::hi::  each time the
-trigger signal changes from nonpositive to positive values.
+
+
+
+
+
+
+
+description::
+
+
+
+
+Generatea a random integer value in uniform distribution from
+code::lo::  to  code::hi::  each time the trigger signal changes from nonpositive to teletype::positive:: values.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
 
-argument::lo
+
+
+method:: ar, kr
+
+
+argument:: lo
+
 Lower limit of the output range.
 
-argument::hi
+
+argument:: hi
+
 Upper limit of the output range.
 
-argument::trig
 
-The trigger. Trigger can be any signal. A trigger happens when
-the signal changes from non-positive to positive.
+argument:: trig
+
+The trigger. Trigger can be any signal.
+A trigger happens when the signal changes from non-teletype::positive:: to teletype::positive::.
 
 
-Examples::
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 (
 SynthDef("help-TIRand", {
 	var trig, outBus;
@@ -58,5 +94,4 @@ SynthDef("help-TIRand", {
 		) * 0.1
 }.play;
 )
-
 ::

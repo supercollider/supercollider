@@ -1,22 +1,58 @@
 title:: 22_Runtime_errors
-summary:: Mark Polishook tutorial
 categories:: Tutorials>Mark_Polishook_tutorial
+summary:: Mark Polishook tutorial
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
-section::Runtime errors
+
+
+
+
+
+
+
+
+
+section:: Runtime errors
+
+
+
 
 Runtime errors occur while a program is executing.
 
-section::Common errors
 
-numberedList::
+
+
+
+
+
+
+
+
+section:: Common errors
+
+
+
+
+numberedlist::
 ## an object receives a message which it doesn't understand
 ## a binary operation (addition, subtraction, multiplication, etc.) can't be performed
 ## a value other than true or false appears in a conditional (boolean) test
 ## a file can't be opened (a primitive fails)
 ::
 
-section::Object doesn't understand
+
+
+
+
+
+
+
+
+
+section:: Object doesn't understand
+
+
+
 
 In the case of
 
@@ -24,7 +60,8 @@ code::
 3.createRuntimeError
 ::
 
-SuperCollider prints a four-part error notification to the post window. The parts of the notification are ERROR, RECEIVER, ARGS, and CALL STACK, as in
+SuperCollider prints a four-part error notification to the post window.
+The parts of the notification are ERROR, RECEIVER, ARGS, and CALL STACK, as in
 
 code::
 ERROR: Message 'createRuntimeError' not understood.
@@ -57,43 +94,47 @@ CALL STACK:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-The ERROR section explains what went wrong. The RECEIVER section names the class of the object to which the message was sent. The ARGS section says how many arguments were included in the message. Read the CALL STACK from the bottom to the top to see where the error happened. Reading from bottom to top means going from
+The ERROR section explains what went wrong.
+The RECEIVER section names the class of the object to which the message was sent.
+The ARGS section says how many arguments were included in the message.
+Read the CALL STACK from the bottom to the top to see where the error happened.
+Reading from bottom to top means going from
 
 code::
 Process-interpretPrintCmdLine
 ::
 
-to
+To
 
 code::
 Interpreter-interpretPrintCmdLine
 ::
 
-to
+To
 
 code::
 Object-doesNotUnderstand
 ::
 
-to
+To
 
 code::
 Object-throw
 ::
 
-to
+To
 
 code::
 Nil-handleError
 ::
 
-to
+To
 
 code::
 DoesNotUnderstandError-reportError
 ::
 
-which is the first line in the stack.
+Which is the first line in the stack.
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -101,7 +142,8 @@ code::
 DoesNotUnderstandError-reportError
 ::
 
-is the mechanism that prints the error notification to the post window. Select it and press cmd-j to see how it works (how it prints the notification).
+I the mechanism that prints the error notification to the post window.
+Select it and press cmd-j to see how it works (how it prints the notification).
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -111,11 +153,12 @@ code::
 $a * $b
 ::
 
-to create another runtime error message.
+To create another runtime error message.
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-The ERROR, RECEIVER, ARGS, and CALL STACK headers in the post window explain the problem: Instances of class Char have no knowledge of multiplication.
+The ERROR, RECEIVER, ARGS, and CALL STACK headers in the post window explain the problem:
+Instances of class Char have no knowledge of multiplication.
 
 code::
 ERROR: Message '*' not understood.
@@ -147,14 +190,26 @@ CALL STACK:
 		arg this = <instance of Main>
 ::
 
-section::Uninitialized variable (binary operation fails)
+
+
+
+
+
+
+
+
+
+section:: Uninitialized variable (binary operation fails)
+
+
+
 
 Here, the variable a is initialized to an integer and the variable b isn't initialized. Multiplying a (the integer 10) by b (nil, the value that SuperCollider uses for uninitialized data) will create a runtime error.
 
 code::
 (
 var a = 10;	// a is declared and initialized
-var b;		// b declared but not initialized, so it defaults to nil
+var b;		// b declared but not initialized, so it defaults to teletype::nil::
 
 t = Task({
 
@@ -225,7 +280,19 @@ CALL STACK:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-section::True, false, or other
+
+
+
+
+
+
+
+
+
+section:: True, false, or other
+
+
+
 
 A value other than true or false in a boolean test, as in
 
@@ -233,7 +300,7 @@ code::
 if(x=4) { "this is ok"};
 ::
 
-produces
+Produces
 
 code::
 ERROR: Non Boolean in test.
@@ -268,9 +335,22 @@ if(x==4) { "this is ok"};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-section::Primitive fails
 
-Asking for the length of a non-existent file creates a runtime error. The notification shows what went wrong (a C code primitive failed).
+
+
+
+
+
+
+
+
+section:: Primitive fails
+
+
+
+
+Asking for the length of a non-existent file creates a runtime error.
+The notification shows what went wrong (a C code primitive failed).
 
 code::
 f = File("i_don't_exist", "r");

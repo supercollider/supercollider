@@ -1,29 +1,73 @@
-class:: Pgbrown
-summary:: geometric brownian motion pattern
-related:: Classes/BrownNoise, Classes/Pbrown
+title:: Pgbrown
 categories:: Streams-Patterns-Events>Patterns>Random
+summary:: Geometric brownian motion pattern
+related:: Classes/BrownNoise, Classes/Pbrown
+
+
+
+
+
+
+
+
+
 
 description::
 
-Returns a stream that behaves like a geometric brownian motion.
 
-ClassMethods::
 
-method::new
 
-argument::lo
-lower boundary of values.
+Return a stream that behaves like a geometric brownian motion.
 
-argument::hi
-upper boundary of values.
 
-argument::step
-maximum multiplication factor per step (omega) - the distribution is xrand2.
 
-argument::length
-number of values produced.
 
-Examples::
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
+argument:: lo
+
+Lower boundary of values.
+
+
+argument:: hi
+
+Upper boundary of values.
+
+
+argument:: step
+
+Maximum multiplication factor per step (omega) - the distribution is xrand2.
+
+
+argument:: length
+
+Number of values produced.
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (

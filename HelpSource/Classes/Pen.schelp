@@ -1,64 +1,170 @@
-class:: Pen
-summary:: Draw custom graphics
+title:: Pen
 categories:: GUI>Accessories
+summary:: Draw custom graphics
 related:: Classes/QPenPrinter
 
+
+
+
+
+
+
+
+
+
 description::
+
+
+
+
 A class which allows you to draw custom graphics on a UserView or Window.
 
-The following methods must be called within a link::Classes/Window#-drawFunc:: or a link::Classes/UserView#-drawFunc:: function, and will only be visible once the window or the view is refreshed. Each call to link::Classes/Window#-refresh:: or link::Classes/UserView#-refresh:: will 'overwrite' all previous drawing by executing the currently defined function, unless link::Classes/UserView#-clearOnRefresh:: is set to code::false::
+The following methods must be called within a link::Classes/Window#-drawFunc:: or a link::Classes/UserView#-drawFunc:: function, and will only be visible once the window or the view is refreshed.
+Each call to link::Classes/Window#-refresh:: or link::Classes/UserView#-refresh:: will 'overwrite' all previous drawing by executing the currently defined function, unless link::Classes/UserView#-clearOnRefresh:: is set to code::false::
+
+
+
+
+
+
+
+
+
 
 classmethods::
+
+
+
+
 private:: prAddAnnularWedge, prAddArc, prDrawImage, prSetFont, prTileImage
 
+
+
+
+
+
 subsection:: Construct path
+
+
 The following methods define paths. You will need to call link::#*stroke:: or link::#*fill:: to actually draw them.
 
+
+
+
 method:: moveTo
+
+
 Move the Pen to point.
+
+
 argument:: point
+
 An instance of link::Classes/Point::
+
+
+
 
 method:: lineTo
+
+
 Draw a line (define a path) from the current position to point.
+
+
 argument:: point
+
 An instance of link::Classes/Point::
+
+
+
 
 method:: line
+
+
 Draw a line (define a path) from p1 to p2. Current position will be p2.
+
+
 argument:: p1
+
 An instance of link::Classes/Point::
+
+
 argument:: p2
+
 An instance of link::Classes/Point::
+
+
+
 
 method:: curveTo
-Draws a cubic bezier curve from the current position to point.
+
+
+Draw a cubic bezier curve from the current position to point.
 strong::cpoint1:: and strong::cpoint2:: are control points determining the curve's curvature.
+
+
 argument:: endPoint
+
 An instance of link::Classes/Point::
+
+
 argument:: cPoint1
+
 An instance of link::Classes/Point::
+
+
 argument:: cPoint2
+
 An instance of link::Classes/Point::
+
+
+
 
 method:: quadCurveTo
-Draws a quad bezier curve from the current position to point.
+
+
+Draw a quad bezier curve from the current position to point.
 strong::cpoint:: is a control point determining the curve's curvature.
+
+
 argument:: endPoint
-An instance of link::Classes/Point::
-argument:: cPoint
+
 An instance of link::Classes/Point::
 
+
+argument:: cPoint
+
+An instance of link::Classes/Point::
+
+
+
+
 method:: arcTo
-Draws an arc of a circle using a radius and tangent points.
+
+
+Draw an arc of a circle using a radius and tangent points.
+
+
 argument:: point1
-The end point of the first tangent line. Its start point is the current position. An instance of link::Classes/Point::
+
+The end point of the first tangent line.
+Its start point is the current position.
+An instance of link::Classes/Point::
+
+
 argument:: point2
-The end point of the second tangent line. Its start point is point1. An instance of link::Classes/Point::
+
+The end point of the second tangent line.
+Its start point is point1. An instance of link::Classes/Point::
+
+
 argument:: radius
+
 The radius of the arc.
+
+
 discussion::
-example:
+Example:
+
 code::
 (
 var w = Window("arcTo", Rect(100, 200, 300, 300)).front;
@@ -77,10 +183,18 @@ w.drawFunc = { |v|
 )
 ::
 
+
+
+
 method:: addArc
+
+
 Draw an arc around the link::Classes/Point:: strong::center::, at strong::radius:: number of pixels. strong::startAngle:: and strong::arcAngle:: refer to the starting angle and the extent of the arc, and are in radians [0..2pi].
+
+
 discussion::
-example:
+Example:
+
 code::
 (
 w = Window.new.front;
@@ -98,10 +212,18 @@ w.refresh;
 )
 ::
 
+
+
+
 method:: addWedge
+
+
 Draw a wedge around the link::Classes/Point:: strong::center::, at strong::radius:: number of pixels. strong::startAngle:: and strong::sweepLength:: refer to the starting angle and the extent of the arc, and are in radians [0..2pi].
+
+
 discussion::
-example:
+Example:
+
 code::
 (
 w = Window.new.front;
@@ -119,10 +241,18 @@ w.refresh;
 )
 ::
 
+
+
+
 method:: addAnnularWedge
+
+
 Draw an annular wedge around the link::Classes/Point:: strong::center::, from strong::innerRadius:: to strong::outerRadius:: in pixels. strong::startAngle:: and strong::sweepLength:: refer to the starting angle and the extent of the arc, and are in radians [0..2pi].
+
+
 discussion::
-example:
+Example:
+
 code::
 (
 w = Window.new.front;
@@ -146,10 +276,18 @@ w.refresh;
 )
 ::
 
+
+
+
 method:: addRect
-Adds a link::Classes/Rect:: to the drawing.
+
+
+Add a link::Classes/Rect:: to the drawing.
+
+
 discussion::
-example:
+Example:
+
 code::
 (
 w = Window.new.front;
@@ -168,16 +306,31 @@ w.refresh;
 )
 ::
 
+
+
+
 method:: addOval
-Adds an Oval shape that fits inside the link::Classes/Rect:: to the current path.
+
+
+Add an Oval shape that fits inside the link::Classes/Rect:: to the current path.
+
+
+
+
 
 
 subsection:: Draw the path
 
+
 method:: stroke
+
+
 Outline the previous defined path.
+
+
 discussion::
-example:
+Example:
+
 code::
 (
 w = Window.new.front;
@@ -200,10 +353,18 @@ w.refresh;
 )
 ::
 
+
+
+
 method:: fill
+
+
 Fill the previous defined path.
+
+
 discussion::
-example:
+Example:
+
 code::
 (
 w = Window.new.front;
@@ -226,9 +387,17 @@ w.refresh;
 )
 ::
 
+
+
+
 method:: draw
+
+
 Draw the previous defined path using any of the following options:
+
+
 argument:: style
+
 table::
 ## 0 || fill
 ## 1 || fill using even-odd rule
@@ -236,8 +405,11 @@ table::
 ## 3 || fill and stroke the current path
 ## 4 || fill and stroke using even-odd rule
 ::
+
+
 discussion::
-example:
+Example:
+
 code::
 (
 w = Window.new.front;
@@ -260,31 +432,74 @@ w.refresh;
 )
 ::
 
+
+
+
 method:: fillStroke
-Fill and stroke the current path. Shortcut to the draw(3) method.
+
+
+Fill and stroke the current path.
+Shortcut to the draw(3) method.
+
+
+
+
 
 
 subsection:: Construct and draw
+
+
 These methods do not require separate calls to link::#*stroke:: or link::#*fill::.
 
+
+
+
 method:: strokeRect
-Strokes a link::Classes/Rect:: into the window.
+
+
+Stroke a link::Classes/Rect:: into the window.
+
+
+
 
 method:: fillRect
-Draws a filled link::Classes/Rect:: into the window.
+
+
+Draw a filled link::Classes/Rect:: into the window.
+
+
+
 
 method:: strokeOval
-Strokes an oval into the window.
+
+
+Stroke an oval into the window.
+
+
+
 
 method:: fillOval
-Draws a filled oval into the window.
+
+
+Draw a filled oval into the window.
+
+
+
+
+
 
 subsection:: Gradients
 
+
 method:: fillAxialGradient
-Fills an Axial gradient.
+
+
+Fill an Axial gradient.
+
+
 discussion::
-example:
+Example:
+
 code::
 (
 w = Window.new.front;
@@ -297,10 +512,18 @@ w.refresh;
 )
 ::
 
+
+
+
 method:: fillRadialGradient
-Fills a Radial gradient.
+
+
+Fill a Radial gradient.
+
+
 discussion::
-example:
+Example:
+
 code::
 (
 w = Window.new.front;
@@ -314,14 +537,29 @@ w.refresh;
 )
 ::
 
+
+
+
+
+
 subsection:: Graphics State Methods
 
-The following commands transform the graphics state, i.e. they effect all subsequent drawing commands. These transformations are cumulative, i.e. each command applies to the previous graphics state, not the original one.
+
+The following commands transform the graphics state, i.e. they effect all subsequent drawing commands.
+These transformations are cumulative, i.e. each command applies to the previous graphics state, not the original one.
+
+
+
 
 method:: translate
+
+
 Translate the coordinate system to have its origin moved by x,y
+
+
 discussion::
-example:
+Example:
+
 code::
 (
 w = Window.new.front;
@@ -341,7 +579,9 @@ w.drawFunc = {
 w.refresh;
 )
 ::
+
 Cumulative translations:
+
 code::
 (
 w = Window.new.front;
@@ -359,10 +599,18 @@ w.refresh;
 )
 ::
 
+
+
+
 method:: scale
-Scales subsequent drawing. x and y are scaling factors (i.e. 1 is normal, 2 is double size, etc.).
+
+
+Scale subsequent drawing. x and y are scaling factors (i.e. 1 is normal, 2 is double size, etc.).
+
+
 discussion::
-example:
+Example:
+
 code::
 (
 w = Window.new.front;
@@ -384,10 +632,18 @@ w.refresh;
 )
 ::
 
+
+
+
 method:: skew
-Skews subsequent drawing. x and y are skewing factors (i.e. 1 is normal).
+
+
+Skew subsequent drawing. x and y are skewing factors (i.e. 1 is normal).
+
+
 discussion::
-example:
+Example:
+
 code::
 (
 w = Window.new.front;
@@ -409,10 +665,18 @@ w.refresh;
 )
 ::
 
+
+
+
 method:: rotate
-Rotates subsequent drawing around the link::Classes/Point:: code::x@y:: by the amount strong::angle:: in radians [0..2pi].
+
+
+Rotate subsequent drawing around the link::Classes/Point:: code::x@y:: by the amount strong::angle:: in radians [0..2pi].
+
+
 discussion::
-example:
+Example:
+
 code::
 (
 w = Window.new.front;
@@ -439,21 +703,42 @@ w.refresh;
 )
 ::
 
+
+
+
 method:: matrix
-Gets or sets the coordinate system transformation matrix.
+
+
+Get/set the coordinate system transformation matrix.
 
 See link::#Matrix example:: for an example.
 
+
 argument:: matrixArray
+
 An array of the form code::[zoomX, shearingY, shearingX, zoomY, translateX, translateY]::
 
+
+
+
 method:: width
-Sets the width of the Pen for the whole stroke
+
+
+Set the width of the Pen for the whole stroke
+
+
+
 
 method:: use
-Draw function, and then revert to the previous graphics state. This allows you to make complex transformations of the graphics state without having to explicitly revert to get back to 'normal'.
+
+
+Draw function, and then revert to the previous graphics state.
+This allows you to make complex transformations of the graphics state without having to explicitly revert to get back to 'normal'.
+
+
 discussion::
-example:
+Example:
+
 code::
 (
 // modified by an example of Stefan Wittwer
@@ -490,26 +775,56 @@ w.refresh
 )
 ::
 
+
+
+
 method:: path
+
+
 Make a path, consisting of the drawing made in function.
+
 note::
 Unfortunately not working for now...
 (there's no Pen.endPath which currently is used in this method)
 ::
 
+
+
+
 method:: beginPath
+
+
 Discard any previous path.
 
+
+
+
 method:: beginTransparencyLayer
-Begins a new transparency layer. Transparency layers are useful when you want to apply an effect to a group of objects or create a composite graphic. See link::#Transparency layer example::.
+
+
+Begin a new transparency layer. Transparency layers are useful when you want to apply an effect to a group of objects or create a composite graphic.
+See link::#Transparency layer example::.
+
+
+
 
 method:: endTransparencyLayer
-Ends the current transparency layer.
+
+
+End the current transparency layer.
+
+
+
 
 method:: clip
+
+
 Use the previously defined path as a clipping path.
+
+
 discussion::
-example:
+Example:
+
 code::
 (
 w = Window.new.front;
@@ -542,10 +857,18 @@ w.refresh;
 )
 ::
 
+
+
+
 method:: smoothing
+
+
 Turns on/off anti-aliasing.
+
+
 discussion::
-example:
+Example:
+
 code::
 (
 var w = Window("smoothing", Rect(100, 200, 500, 300)).front;
@@ -568,27 +891,47 @@ w.drawFunc = { |v|
 )
 ::
 
+
+
+
 method:: setShadow
+
+
 Will fill the current path with a shadow.
 You should use this option between Pen.push / Pen.pop (or Pen.use)
 
+
+
+
 method:: joinStyle
+
+
 Set the lines joining style according to the defined options:
+
 table::
 ## 0 || miter
 ## 1 || round
 ## 2 || bevel
 ::
 
+
+
+
 method:: capStyle
+
+
 Set the lines joining style according to the defined options:
+
 table::
 ## 0 || butt
 ## 1 || round
 ## 2 || square
 ::
+
+
 discussion::
-example:
+Example:
+
 code::
 (
 w = Window.new.front;
@@ -616,21 +959,44 @@ w.refresh;
 )
 ::
 
+
+
+
 method:: alpha
+
+
 Set the opacity level.
 
+
+
+
 method:: blendMode
+
+
 Set the blending mode to use.
 See link::#Blending modes:: for more information.
 
+
+
+
 method:: lineDash
+
+
 Set the line dash pattern.
 pattern should be a link::Classes/FloatArray:: of values that specify the lengths of the painted segments and not painted segments.
 
+
+
+
 method:: drawImage
+
+
 Draw a bitmap image using the Image class.
+
+
 discussion::
-example:
+Example:
+
 code::
 (
 w = Window.new.front;
@@ -642,8 +1008,22 @@ w.drawFunc_({
 )
 ::
 
+
+
+
+
+
+
+
+
+
 examples::
+
+
+
+
 Simple rotating and scaling:
+
 code::
 (
 	w = Window("Pen Rotation and Scaling", Rect(128, 64, 360, 360));
@@ -679,7 +1059,9 @@ code::
 	w.front;
 )
 ::
+
 Redraw at random interval, different every time:
+
 code::
 (
 var w, run = true;
@@ -703,6 +1085,7 @@ w.drawFunc = {
 
 )
 ::
+
 code::
 (
 var w, run = true;
@@ -728,11 +1111,18 @@ w.drawFunc = {
 )
 ::
 
+
+
+
+
+
 subsection:: Animation
 
-Uses random seed to 'store' data
+
+Use random seed to 'store' data
 By reseting the seed each time the same random values and shapes are generated for each 'frame'
 These can then be subjected to cumulative rotation, etc., by simply incrementing the phase var.
+
 code::
 (
 // By James McCartney
@@ -777,6 +1167,7 @@ w.drawFunc = {
 
 )
 ::
+
 code::
 (
 var w, phase = 0, seed = Date.seed, run = true;
@@ -876,7 +1267,14 @@ w.drawFunc = {
 )
 ::
 
+
+
+
+
+
 subsection:: Matrix example
+
+
 code::
 (
 var controlWindow, w;
@@ -941,7 +1339,14 @@ w.refresh;
 )
 ::
 
+
+
+
+
+
 subsection:: Transparency layer example
+
+
 code::
 (
 w = Window.new("Transparency Layer test", Rect(400, 400, 430, 450)).front;
@@ -1016,7 +1421,14 @@ w.refresh;
 )
 ::
 
+
+
+
+
+
 subsection:: Blending modes
+
+
 code::
 /*
 different blend modes:

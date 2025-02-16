@@ -1,19 +1,43 @@
 title:: Pattern Guide 04: Words to Phrases
+categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Nesting patterns, arranging music in terms of phrases
 related:: Tutorials/A-Practical-Guide/PG_03_What_Is_Pbind, Tutorials/A-Practical-Guide/PG_05_Math_on_Patterns
-categories:: Streams-Patterns-Events>A-Practical-Guide
 
-section::From words to phrases
 
-A single pattern by itself is not so exciting. But patterns can be used together to get more complex results.
 
-subsection::Patterns within list patterns
 
-We saw list patterns ( link::Classes/Pseq::, link::Classes/Prand::, etc.) that returned numbers from a preset list, either in the order given or rearranged randomly. The list may also include other patterns. When a list pattern encounters another pattern in its list, the inner pattern is emphasis::embedded:: into the stream. That is, the inner pattern takes over until it runs out of values to return. Then, control returns to the outer list pattern. This is like calling a function in the middle of another function.
+
+
+
+
+
+
+section:: From words to phrases
+
+
+
+
+A single pattern by itself is not so exciting.
+But patterns can be used together to get more complex results.
+
+
+
+
+
+
+subsection:: Patterns within list patterns
+
+
+We saw list patterns ( link::Classes/Pseq::, link::Classes/Prand::, etc.) that returned numbers from a preset list, either in the order given or rearranged randomly.
+The list may also include other patterns.
+When a list pattern encounters another pattern in its list, the inner pattern is emphasis::embedded:: into the stream. That is, the inner pattern takes over until it runs out of values to return.
+Then, control returns to the outer list pattern.
+This is like calling a function in the middle of another function.
 
 There is no preset limit to the number of levels of embedding.
 
-If a single pattern is like a word, a list pattern that uses other patterns could be more like a sentence or phrase. You can alternate between different behaviors, either in a predictable order as in the example below, or randomly by using one of the random-order list patterns.
+If a single pattern is like a word, a list pattern that uses other patterns could be more like a sentence or phrase.
+You can alternate between different behaviors, either in a predictable order as in the example below, or randomly by using one of the random-order list patterns.
 
 code::
 // Scale segments, in the sequence: up, up, down (repeat)
@@ -32,7 +56,8 @@ p = Pbind(
 p.stop;
 ::
 
-But it gets even more fun -- list patterns don't care whether they're enclosing value patterns (as in the previous example) or event patterns. That means you can write a set of Pbind-style patterns, each one representing a phrase, and string them together. This next example is longer, but that's only because of a larger number of phrase patterns. The structure is very simple, though: code::Pxrand([Pbind(), Pmono(), Pmono()...], inf):: . Some of the phrases are written with Pmono to slide between notes.
+But it gets even more fun -- list patterns don't care whether they're enclosing value patterns (as in the previous example) or event patterns. That means you can write a set of Pbind-style patterns, each one representing a phrase, and string them together. This next example is longer, but that's only because of a larger number of phrase patterns.
+The structure is very simple, though: code::Pxrand([Pbind(), Pmono(), Pmono()...], inf):: . Some of the phrases are written with Pmono to slide between notes.
 
 code::
 (
@@ -79,17 +104,26 @@ p = Pxrand([
 p.stop;
 ::
 
-strong::Shortcut notation:: : Just like you can concatenate arrays with ++, you can also concatenate patterns the same way. Writing code::pattern1 ++ pattern2:: is the same as writing code::Pseq([pattern1, pattern2], 1):: .
+strong::Shortcut notation:: : Just like you can concatenate arrays with ++, you can also concatenate patterns the same way.
+Writing code::pattern1 ++ pattern2:: is the same as writing code::Pseq([pattern1, pattern2], 1):: .
 
-subsection::Some ways to string together patterns
 
-definitionList::
 
-## Sequentially || Each sub-pattern follows the next in the same order every time. Use link::Classes/Pseq:: or link::Classes/Pser::.
+
+
+
+subsection:: Some ways to string together patterns
+
+
+definitionlist::
+## Sequentially || Each sub-pattern follows the next in the same order every time.
+Use link::Classes/Pseq:: or link::Classes/Pser::.
 
 ## Randomized order || Sub-patterns in completely random order ( link::Classes/Prand:: ), random order with no repeats ( link::Classes/Pxrand:: ), or random order according to a set of probabilities ( link::Classes/Pwrand:: ). link::Classes/Pshuf:: creates one random ordering and uses it repeatedly.
 
-## Direct array indexing || Patterns can be chosen in arbitrary order by index. This gives you more control than Pwrand. Both link::Classes/Pindex:: and link::Classes/Pswitch:: can be used for this.
+## Direct array indexing || Patterns can be chosen in arbitrary order by index.
+This gives you more control than Pwrand.
+Both link::Classes/Pindex:: and link::Classes/Pswitch:: can be used for this.
 
 code::
 // scale degree segments, every fifth choice is odd-numbered only (descending)
@@ -115,18 +149,28 @@ p.stop;
 
 ## Finite state machine (Pfsm, Pdfsm) || A finite state machine is a way of associating an item with its possible successors. It is closer to a "grammar" than purely random selection. link::Classes/Pfsm:: defines a finite state machine as a set of possible "entry points," followed by a list of the possible "states" of the machine and, for each state, a list of the possible states that may follow the current state. States may be single values or patterns, meaning that phrases can be linked to other phrases that "make sense" in succession (and unwanted transitions can be prevented).
 
-If this sounds a bit like a Markov chain, that's because the Pfsm implementation is a special case of a Markov chain where there is an equal probability of choosing the next state from the valid successors. In a Markov chain, the probabilities are weighted according to analysis of a real-world data stream.
+If this sounds a bit like a Markov chain, that's because the Pfsm implementation is a special case of a Markov chain where there is an equal probability of choosing the next state from the valid successors.
+In a Markov chain, the probabilities are weighted according to analysis of a real-world data stream.
 
-The Pfsm help file includes very good examples of organizing single values and pattern phrases. Also see link::Tutorials/A-Practical-Guide/PG_Cookbook06_Phrase_Network:: for an application of Pfsm to generate a corny jazz solo.
+The Pfsm help file includes very good examples of organizing single values and pattern phrases.
+Also see link::Tutorials/A-Practical-Guide/PG_Cookbook06_Phrase_Network:: for an application of Pfsm to generate a corny jazz solo.
 
 The name link::Classes/Pdfsm:: stands for "deterministic finite state machine," where there is no random selection.
 
 - strong::Third-party extension alert:: : A good Markov chain implementation for SuperCollider exists in the MathLib quark.
 ::
 
-subsection::Library of named sub-patterns
 
-One very effective way to manage phrases is to make a library, or more precisely link::Classes/Dictionary::, of sub-patterns, and then call them up one at a time. link::Classes/Psym:: is the pattern to do this. The advantage here is that you can store the phrases in a separate place, while the pattern that you actually play is much simpler and describes the musical intent at a much higher level.
+
+
+
+
+subsection:: Library of named sub-patterns
+
+
+One very effective way to manage phrases is to make a library, or more precisely link::Classes/Dictionary::, of sub-patterns, and then call them up one at a time.
+link::Classes/Psym:: is the pattern to do this.
+The advantage here is that you can store the phrases in a separate place, while the pattern that you actually play is much simpler and describes the musical intent at a much higher level.
 
 code::
 // Uses the bass SynthDef above
@@ -165,31 +209,47 @@ p = Psym(Pxrand(#[repeated, octave, tritone, dim], inf), ~phrases).play;
 p.stop;
 ::
 
-A complicated pattern with lots of embedding can be hard to read because it's more work to separate note-level details from the larger structure. The pattern choosing the phrases -- code::Pxrand(#[repeated, octave, tritone, dim], inf) :: -- is self-explanatory, however, and Psym fills in the details transparently.
+A complicated pattern with lots of embedding can be hard to read because it's more work to separate note-level details from the larger structure.
+The pattern choosing the phrases -- code::Pxrand(#[repeated, octave, tritone, dim], inf) :: -- is self-explanatory, however, and Psym fills in the details transparently.
 
 note::
-Because of some special handling needed for event patterns, there are two versions of Psym. link::Classes/Psym:: handles event patterns, while link::Classes/Pnsym:: is for value patterns. Think of it this way: Pbind can be contained within Psym, but it contains Pnsym.
+Because of some special handling needed for event patterns, there are two versions of Psym.
+link::Classes/Psym:: handles event patterns, while link::Classes/Pnsym:: is for value patterns. Think of it this way:
+Pbind can be contained within Psym, but it contains Pnsym.
 
 code::
 ( Psym ( Pbind ( Pnsym ) ) )
 ::
 
-definitionList::
+definitionlist::
 ## Good: ||
+
 list::
 ## code::Psym(**, (pattern1: Pbind(**)) ::
 ## code::Pbind(\someValue, Pnsym(**, (pattern1: Pwhite(**))) ::
 ::
+
 ## Bad: ||
+
 list::
 ## code::Pbind(\someValue, Psym(**, (pattern1: Pwhite(**))) ::
 ::
+
 ::
 ::
 
-subsection::Switching between patterns for individual values
 
-In the examples above, if a list pattern encounters another pattern in its input values, the subpattern is embedded in its entirety before the list pattern is allowed to continue. Sometimes you might want to get just one value out of the subpattern, and then choose a different subpattern on the next event. Pswitch, Psym and Pnsym have cousins that do exactly this: link::Classes/Pswitch1::, Psym1 and Pnsym1.
+
+
+
+
+subsection:: Switching between patterns for individual values
+
+
+In the examples above, if a list pattern encounters another pattern in its input values, the subpattern is embedded in its entirety before the list pattern is allowed to continue.
+Sometimes you might want to get just one value out of the subpattern, and then choose a different subpattern on the next event.
+Pswitch, Psym and Pnsym have cousins that do exactly this:
+link::Classes/Pswitch1::, Psym1 and Pnsym1.
 
 code::
 // random pitches in two distinct ranges; use a coin toss to decide which for this event
@@ -218,13 +278,24 @@ p = Pbind(
 p.stop;
 ::
 
-With Pswitch, one of the items is chosen from the list and keeps playing until it's finished. But the length of both Pwhite patterns is infinite, so whichever one is chosen first retains control. Pswitch1 does the coin toss on every event and embeds just one item.
+With Pswitch, one of the items is chosen from the list and keeps playing until it's finished. But the length of both Pwhite patterns is infinite, so whichever one is chosen first retains control.
+Pswitch1 does the coin toss on every event and embeds just one item.
 
 Psym1 and Pnsym1 behave similarly, choosing the name to look up the pattern for each event.
 
-subsection::Related: Conditional patterns
 
-link::Classes/Pif:: supports this kind of structure: If the next value from a Boolean pattern is true, return the next item from pattern A, otherwise take it from pattern B. Another way to write the Pswitch1 example is to use a Boolean test directly on Pwhite, instead of writing a Pfunc for the coin toss. This might be clearer to read. However, this works only when there are two alternatives. Pswitch1 and Psym1 allow any number of choices.
+
+
+
+
+subsection:: Related: Conditional patterns
+
+
+link::Classes/Pif:: supports this kind of structure: If the next value from a Boolean pattern is true, return the next item from pattern A, otherwise take it from pattern B.
+Another way to write the Pswitch1 example is to use a Boolean test directly on Pwhite, instead of writing a Pfunc for the coin toss.
+This might be clearer to read.
+However, this works only when there are two alternatives.
+Pswitch1 and Psym1 allow any number of choices.
 
 code::
 (
@@ -239,7 +310,8 @@ p = Pbind(
 p.stop;
 ::
 
-We will see in link::Tutorials/A-Practical-Guide/PG_06e_Language_Control:: that Pif can be used on values that were previously calculated in the Pbind. It adds considerably to the intelligence Pbind can manage, when its value streams are aware of other values in the event.
+We will see in link::Tutorials/A-Practical-Guide/PG_06e_Language_Control:: that Pif can be used on values that were previously calculated in the Pbind.
+It adds considerably to the intelligence Pbind can manage, when its value streams are aware of other values in the event.
 
 
 Previous:	link::Tutorials/A-Practical-Guide/PG_03_What_Is_Pbind::

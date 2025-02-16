@@ -1,36 +1,76 @@
-class:: Limiter
+title:: Limiter
+categories:: UGens>Dynamics
 summary:: Peak limiter
 related:: Classes/Amplitude, Classes/Compander, Classes/CompanderD, Classes/Normalizer
-categories:: UGens>Dynamics
 
 
-Description::
 
-Limits the input amplitude to the given level. Limiter will not overshoot
+
+
+
+
+
+
+
+description::
+
+
+
+
+Limit the input amplitude to the given level.
+Limiter will not overshoot
 like  link::Classes/Compander::  will, but it needs to look ahead in the
 audio. Thus there is a delay equal to twice the value of the
 code::dur::  parameter.
 
 Limiter, unlike Compander, is completely transparent for an in range signal.
 
+
+
+
+
+
+
+
+
+
 classmethods::
 
-method::ar
 
-argument::in
+
+
+method:: ar
+
+
+argument:: in
+
 The signal to be processed.
 
-argument::level
+
+argument:: level
+
 The peak output amplitude level to which to normalize the input.
 
-argument::dur
+
+argument:: dur
+
 Also called lookAheadTime.
-The buffer delay time. Shorter times will produce smaller delays
-and quicker transient response times, but may introduce amplitude
-modulation artifacts.
+The buffer delay time. Shorter times will produce smaller delays and quicker transient response times, but may introduce amplitude modulation artifacts.
 This parameter cannot be modulated.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 (

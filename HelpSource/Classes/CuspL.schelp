@@ -1,9 +1,22 @@
-class:: CuspL
-summary:: Cusp map chaotic generator
+title:: CuspL
 categories:: UGens>Generators>Chaotic
+summary:: Cusp map chaotic generator
 related:: Classes/CuspN
 
+
+
+
+
+
+
+
+
+
 description::
+
+
+
+
 A linear-interpolating sound generator based on the difference equation:
 
 teletype::
@@ -19,19 +32,56 @@ plot(size.collect { xi = a - (b * sqrt(abs(xi))) });
 )
 ::
 
+
+
+
+
+
+
+
+
+
 classmethods::
 
+
+
+
 method:: ar
-argument::freq
+
+
+argument:: freq
+
 Iteration frequency in Hertz
-argument::a
+
+
+argument:: a
+
 Equation variable
-argument::b
+
+
+argument:: b
+
 Equation variable
-argument::xi
+
+
+argument:: xi
+
 Initial value of x
 
+
+
+
+
+
+
+
+
+
 examples::
+
+
+
+
 code::
 // vary frequency
 { CuspL.ar(MouseX.kr(20, SampleRate.ir), 1.0, 1.99) * 0.3 }.play(s);

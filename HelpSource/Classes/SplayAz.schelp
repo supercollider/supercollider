@@ -1,9 +1,22 @@
-class:: SplayAz
-summary:: Spreads an array of channels across a ring of channels
+title:: SplayAz
 categories:: UGens>Multichannel>Panners
+summary:: Spreads an array of channels across a ring of channels
 related:: Classes/Splay, Classes/PanAz, Classes/SelectXFocus
 
+
+
+
+
+
+
+
+
+
 description::
+
+
+
+
 SplayAz spreads an array of channels across a ring of channels.
 Optional spread and center controls, and equal power levelCompensation.
 numChans and orientation are as in link::Classes/PanAz::.
@@ -12,55 +25,124 @@ code::
 { SplayAz.ar(5, [SinOsc.ar, Saw.ar], 0, 1) }.plot;
 ::
 
+
+
+
+
+
+
+
+
+
 classmethods::
+
+
+
 
 method:: ar, kr
 
+
 Each of the inputs is evenly spaced over a cyclic period of
-2.0 in pos with 0.0 equal to channel zero and 2.0/numChans equal
-to channel 1, 4.0/numChans equal to channel 2, etc.
+2.0 in pos with 0.0 equal to channel zero and 2.0/numChans equal to channel 1, 4.0/numChans equal to channel 2, etc.
 
 The distance between the input signals in the output range is determined by the spread argument.
 
+
 argument:: numChans
+
 Number of output channels of the UGen
+
+
 argument:: inArray
+
 Input signals (can be a single UGen or an array)
+
+
 argument:: spread
-How far the input signals  are apart in the output. If zero, everything is mixed on center position (see below).
+
+How far the input signals  are apart in the output. If teletype::zero::, everything is mixed on center position (see below).
+
 code::
 { SplayAz.ar(6, [SinOsc.ar, Saw.ar(800)], spread: MouseX.kr(0, 1).poll) * 0.3 }.scope;
 ::
 
+
 argument:: level
+
 Scaling for all signals
+
+
 argument:: width
+
 Over how much of the channels each signal is distributed.
+
+
 argument:: center
+
 Which of the channels will be the first channel
+
+
 argument:: orientation
-Should be zero if the front is a vertex of the polygon. The first
-speaker will be directly in front. Should be 0.5 if the front
-bisects a side of the polygon. Then the first speaker will be the
-one left of center.
+
+Should be teletype::zero:: if the front is a vertex of the polygon.
+The first speaker will be directly in front.
+Should be 0.5 if the front bisects a side of the polygon.
+Then the first speaker will be the one left of center.
+
+
 argument:: levelComp
-If true, the signal level is adjusted to maintain overall loudness the same (n.reciprocal.sqrt).
+
+If teletype::true::, the signal level is adjusted to maintain overall loudness the same (n.reciprocal.sqrt).
+
+
+
 
 method:: arFill
+
+
 argument:: numChans
+
 Number of output channels
+
+
 argument:: n
+
 Number of input channels
+
+
 argument:: function
+
 A function that returns a UGen (the channel index is passed as an argument)
+
+
 argument:: spread
+
 argument:: level
+
+
 argument:: width
+
 argument:: center
+
+
 argument:: orientation
+
 argument:: levelComp
 
+
+
+
+
+
+
+
+
+
 examples::
+
+
+
+
 code::
 (
 x = { |spread = 1, level = 0.2, width = 2, center = 0.0|
@@ -79,7 +161,7 @@ x.set(\spread, 1,   \center, 0);  // full n chans
 x.set(\spread, 0.5, \center, -0.25); // less wide
 x.set(\spread, 0, \center, 0);  // mono center (depends on orientation, see PanAz)
 x.set(\spread, 0, \center, -0.25); //
-x.set(\spread, 0.0, \center, 0.5); // mono, but rotate 1 toward the higher channels
+x.set(\spread, 0.0, \center, 0.5); // mono, but rotate teletype::1:: toward the higher channels
 x.set(\spread, 0.5, \center, 0.5); // spread over the higher channels
 x.set(\spread, 0,   \center, -0.25); // all on first channel
 x.set(\spread, 1,   \center, 0);  // full n chans

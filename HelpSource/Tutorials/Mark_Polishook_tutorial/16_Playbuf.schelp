@@ -1,7 +1,8 @@
 title:: 16_Playbuf
-summary:: Mark Polishook tutorial
 categories:: Tutorials>Mark_Polishook_tutorial
+summary:: Mark Polishook tutorial
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
+
 
 Breaking synthesis processes into parts that accomplish small well-defined tasks encourages modular design and component reuse (the oop mantra).
 
@@ -41,13 +42,25 @@ Synth("aMonoSamplePlayer", [\bus, 1, \bufNum, b, \rateScale, 1.01]);
 )
 ::
 
-section::Information
 
-The BufRateScale and the BufDur ugens, as shown in the previous example, control the rate at which PlayBuf plays the soundfile and the length of the envelope applied to the playbuf.
 
-BufRateScale and BufDur are of a family of ugens that inherit from InfoUGenBase or BufInfoUGenBase.
 
-To see the complete list of such ugens, evaluate
+
+
+
+
+
+
+section:: Information
+
+
+
+
+The BufRateScale and the BufDur UGens, as shown in the previous example, control the rate at which PlayBuf plays the soundfile and the length of the envelope applied to the playbuf.
+
+BufRateScale and BufDur are of a family of UGens that inherit from InfoUGenBase or BufInfoUGenBase.
+
+To see the complete list of such UGens, evaluate
 
 code::
 InfoUGenBase.dumpClassSubtree;
@@ -66,15 +79,30 @@ code::
 BufInfoUGenBase.dumpClassSubtree;
 ::
 
-and it returns
+And it returns
 
 code::
 BufInfoUGenBase[  BufChannels  BufSampleRate  BufRateScale  BufFrames  BufDur  BufSamples]BufInfoUGenBase
 ::
 
-section::Loop a sample
 
-The next example uses three synthsdefs to make a chain. The first synthdef is a sample player that loops through a buffer. The second synthdef ring modulates its input. The third synthdef applies a lowpass filter.
+
+
+
+
+
+
+
+
+section:: Loop a sample
+
+
+
+
+The next example uses three synthsdefs to make a chain.
+The first synthdef is a sample player that loops through a buffer.
+The second synthdef ring modulates its input.
+The third synthdef applies a lowpass filter.
 
 code::
 (
@@ -100,7 +128,7 @@ SynthDef("aLoopingSamplePlayer", { arg outBus = 0, bufnum = 0, rateScale = 1, mu
 SynthDef("ampMod", { arg inBus = 0, outBus = 0, modFreq = 1;
 	Out.ar(
 		outBus,
-		[	// In.ar ugen reads from an audio bus
+		[	// In.ar UGen reads from an audio bus
 			In.ar(inBus, 1) * SinOsc.kr(modFreq),
 			In.ar(inBus, 1) * SinOsc.kr(modFreq - 0.02)
 		]

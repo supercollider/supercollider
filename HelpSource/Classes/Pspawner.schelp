@@ -1,24 +1,52 @@
-class:: Pspawner
-summary:: dynamic control of multiple event streams from a Routine
-related:: Classes/Pspawn
+title:: Pspawner
 categories:: Streams-Patterns-Events>Patterns>Parallel
+summary:: Dynamic control of multiple event streams from a Routine
+related:: Classes/Pspawn
+
+
+
+
+
+
+
+
+
 
 description::
 
+
+
+
 Pspawner allows a routine to dynamically start and stop subpatterns.
 
-ClassMethods::
 
-method::new
 
-argument::routineFunc
+
+
+
+
+
+
+
+classmethods::
+
+
+
+
+method:: new
+
+
+argument:: routineFunc
+
 The function defines a link::Classes/Routine:: that receives a link::Classes/Spawner:: as its sole argument. All control of subpatterns is through the spawner.
 
 link::Classes/Spawner:: responds to the messages:
 
 definitionlist::
 ## par ||
-Begin an event stream in parallel to the routine. If delta is non-zero, the pattern will begin that many beats after 'now', provided that now + delta is later than the next event that the Spawner will generate. The method returns the stream. This may be called from any object.
+Begin an event stream in parallel to the routine.
+If delta is non-zero, the pattern will begin that many beats after 'now', provided that now + delta is later than the next event that the Spawner will generate.
+The method returns the stream. This may be called from any object.
 
 ## seq ||
 Run the entire pattern and then return control to the routine.
@@ -27,7 +55,7 @@ Run the entire pattern and then return control to the routine.
 Wait strong::dur:: seconds and then return control to the routine.
 
 ## suspend ||
-Find the stream in the Spawner and stop it, returns nil if the stream is not found, the stream otherwise.
+Find the stream in the Spawner and stop it, returns teletype::nil:: if the stream is not found, the stream otherwise.
 
 ## suspendAll ||
 Stop all substreams of the Spawner.
@@ -37,7 +65,19 @@ note::
 These are also documented in link::Classes/Spawner::.
 ::
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
 // example 1: a simple Pspawner

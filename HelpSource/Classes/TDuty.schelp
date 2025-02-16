@@ -1,57 +1,92 @@
-class:: TDuty
-summary:: Demand results as trigger from demand rate UGens.
+title:: TDuty
+categories:: UGens>Demand
+summary:: Demand results as trigger from demand rate UGens
 related:: Classes/Demand, Classes/Duty
-categories::  UGens>Demand
 
 
-Description::
 
-A value is demanded each UGen in the list and output as a trigger
-according to a stream of duration values. The unit generators in the list
-should be 'demand' rate.
+
+
+
+
+
+
+
+description::
+
+
+
+
+A value is demanded each UGen in the list and output as a trigger according to a stream of duration values.
+The unit generators in the list should be 'demand' rate.
 
 
 When there is a trigger at the reset input, the demand rate UGens in the
-list and the duration are reset. The reset input may also be a demand
+list and the duration are reset.
+The reset input may also be a demand
 UGen, providing a stream of reset times.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
-
-argument::dur
-
-Time values. Can be a demand UGen or any signal. The next trigger
-value is acquired after duration.
 
 
-argument::reset
 
-Trigger or reset time values. Resets the list of UGens and the
-duration UGen when triggered. The reset input may also be a
-demand UGen, providing a stream of reset times.
+method:: ar, kr
 
 
-argument::level
+argument:: dur
+
+Time values. Can be a demand UGen or any signal.
+The next trigger value is acquired after duration.
+
+
+argument:: reset
+
+Trigger or reset time values. Resets the list of UGens and the duration UGen when triggered. The reset input may also be a demand UGen, providing a stream of reset times.
+
+
+argument:: level
 
 Demand UGen providing the output values.
 
 
-argument::doneAction
+argument:: doneAction
 
-A doneAction that is evaluated when the duration stream ends. See
+A doneAction that is evaluated when the duration stream ends.
+See
 
 link::Classes/Done::  for more detail.
 
 
-argument::gapFirst
-when 0 (default), the UGen does the first level poll immediately and then waits for the first durational value. When this is 1, the UGen initially polls the first durational value, waits for that duration, and then polls the first level (along with polling the next durational value).
+argument:: gapFirst
 
-Examples::
+When teletype::0:: (default), the UGen does the first level poll immediately and then waits for the first durational value.
+When this is 1, the UGen initially polls the first durational value, waits for that duration, and then polls the first level (along with polling the next durational value).
+
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 // examples
 
 s.boot;
@@ -59,7 +94,7 @@ s.boot;
 
 // play a little rhythm
 
-{ TDuty.ar(Dseq([0.1, 0.2, 0.4, 0.3], inf)) }.play; // demand ugen as durations
+{ TDuty.ar(Dseq([0.1, 0.2, 0.4, 0.3], inf)) }.play; // demand UGen as durations
 
 
 
@@ -68,9 +103,9 @@ s.boot;
 	{
 		var trig;
 		trig = TDuty.ar(
-				Dseq([0.1, 0.2, 0.4, 0.3], inf), // demand ugen as durations
+				Dseq([0.1, 0.2, 0.4, 0.3], inf), // demand UGen as durations
 				0,
-				Dseq([0.1, 0.4, 0.01, 0.5, 1.0], inf) // demand ugen as amplitude
+				Dseq([0.1, 0.4, 0.01, 0.5, 1.0], inf) // demand UGen as amplitude
 			);
 		Ringz.ar(trig, 1000, 0.1)
 
@@ -81,7 +116,7 @@ s.boot;
 	{
 		var trig;
 		trig = TDuty.ar(
-				MouseX.kr(0.001, 2, 1), // control rate ugen as durations
+				MouseX.kr(0.001, 2, 1), // control rate UGen as durations
 				0,
 				Dseq([0.1, 0.4, 0.01, 0.5, 1.0], inf)
 			);
@@ -93,7 +128,7 @@ s.boot;
 
 
 
-// demand ugen as audio oscillator
+// demand UGen as audio oscillator
 
 (
 	{
@@ -155,5 +190,4 @@ fork { 10.do { s.sendBundle(0.2, ["/s_new", "delta_demand2", -1]); 1.0.rand.wait
 
 	}.play;
 )
-
 ::

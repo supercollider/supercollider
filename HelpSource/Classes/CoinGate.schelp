@@ -1,30 +1,64 @@
-class:: CoinGate
-summary:: Statistical gate.
-categories::  UGens>Generators>Stochastic
+title:: CoinGate
+categories:: UGens>Generators>Stochastic
+summary:: Statistical gate
 
 
-Description::
 
-When CoinGate receives a trigger, it tosses a coin
-and either passes the trigger or doesn't.
+
+
+
+
+
+
+
+description::
+
+
+
+
+When CoinGate receives a trigger, it tosses a coin and either passes the trigger or doesn't.
+
+
+
+
+
+
+
+
 
 
 classmethods::
 
-method::ar, kr
 
-argument::prob
+
+
+method:: ar, kr
+
+
+argument:: prob
 
 Value between 0.0 and 1.0 determines probability of either possibilities.
 
 
-argument::in
+argument:: in
+
 The trigger input.
 
-Examples::
+
+
+
+
+
+
+
+
+
+examples::
+
+
+
 
 code::
-
 (
 a = SynthDef("help-TCoin", { |out = 0, prob = 0.5|
 	var trig;
@@ -55,5 +89,4 @@ a = SynthDef("help-TCoin", { |out = 0, prob = 0.5|
 a.set(\prob, 1.0);
 a.set(\prob, 0.0);
 a.set(\prob, 0.1);
-
 ::

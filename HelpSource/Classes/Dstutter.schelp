@@ -1,23 +1,66 @@
-class:: Dstutter
-summary:: Demand rate input replicator
+title:: Dstutter
 categories:: UGens>Demand
+summary:: Demand rate input replicator
 related:: Classes/Ddup
 
-note::It is recommended to use link::Classes/Ddup:: instead. This class is retained for backwards compatibility.::
-warning::Dstutter will return link::Classes/Ddup::::
+
+
+note::
+It is recommended to use link::Classes/Ddup::instead. This class is retained for backwards compatibility.
+::
+
+warning::
+Dstutter will return link::Classes/Ddup::
+::
+
+
+
+
+
+
+
+
+
 
 classmethods::
+
+
+
+
 method:: new
+
+
 argument:: n
-number of repeats (can be a demand ugen)
+
+Number of repeats (can be a demand UGen)
+
+
 argument:: in
-input ugen
-returns:: link::Classes/Ddup::
+
+Input UGen
+
+
+returns::
+link::Classes/Ddup::
+
 
 discussion::
-structurally related: link::Classes/Pdup::
+Structurally related: link::Classes/Pdup::
+
+
+
+
+
+
+
+
+
 
 examples::
+
+
+
+
 code::
 (
 {

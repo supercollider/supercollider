@@ -1,88 +1,244 @@
-class:: Point
+title:: Point
+categories:: Geometry
 summary:: Cartesian point
 related:: Classes/Polar, Classes/Complex
-categories:: Geometry
+
+
+
+
+
+
+
+
+
 
 description::
-Defines a point on the Cartesian plane.
+
+
+
+
+Definea a point on the Cartesian plane.
+
+
+
+
+
+
+
+
+
 
 classmethods::
 
-method::new
-Defines a new point.
+
+
+
+method:: new
+
+
+Define a new point.
+
+
+
+
+
+
+
+
+
 
 instancemethods::
 
+
+
+
 subsection:: Accessing
 
-method::x
+
+method:: x
+
+
 Get or set the x coordinate value.
 
-method::y
+
+
+
+method:: y
+
+
 Get or set the y coordinate value.
 
-method::set
-Sets the point x and y values.
+
+
+
+method:: set
+
+
+Set the point x and y values.
+
+
+
+
+
 
 subsection:: Testing
 
-method::==
-Answers a Boolean whether the receiver equals the argument.
 
-method::hash
-Returns a hash value for the receiver.
+method:: ==
+
+
+Answer a Boolean whether the receiver equals the argument.
+
+
+
+
+method:: hash
+
+
+Return a hash value for the receiver.
+
+
+
+
+
 
 subsection:: Math
 
-method::+
+
+method:: +
+
+
 Addition.
 
-method::-
+
+
+
+method:: -
+
+
 Subtraction.
 
-method::*
+
+
+
+method:: *
+
+
 Multiplication.
 
-method::/
+
+
+
+method:: /
+
+
 Division.
 
-method::translate
+
+
+
+method:: translate
+
+
 Addition by a Point.
 
-method::scale
+
+
+
+method:: scale
+
+
 Multiplication by a Point.
 
-method::rotate
+
+
+
+method:: rotate
+
+
 Rotation about the origin by the angle given in radians.
 
-method::abs
+
+
+
+method:: abs
+
+
 Absolute value of the point.
 
-method::rho
+
+
+
+method:: rho
+
+
 Return the polar coordinate radius of the receiver.
 
-method::theta
+
+
+
+method:: theta
+
+
 Return the polar coordinate angle of the receiver.
 
-method::dist
+
+
+
+method:: dist
+
+
 Return the distance from the receiver to aPoint.
 
-method::transpose
+
+
+
+method:: transpose
+
+
 Return a Point whose x and y coordinates are swapped.
 
-method::round
+
+
+
+method:: round
+
+
 Round the coordinate values to a multiple of quantum.
 
-method::trunc
+
+
+
+method:: trunc
+
+
 Truncate the coordinate values to a multiple of quantum.
+
+
+
+
+
 
 subsection:: Conversion
 
-method::asPoint
-Returns the receiver.
 
-method::asComplex
-Returns a complex number with x as the real part and y as the imaginary part.
+method:: asPoint
 
-method::asString
+
+Return the receiver.
+
+
+
+
+method:: asComplex
+
+
+Return a complex number with x as the real part and y as the imaginary part.
+
+
+
+
+method:: asString
+
+
 Return a string representing the receiver.

@@ -1,17 +1,33 @@
 title:: Pattern Guide Cookbook 01: Basic Sequencing
+categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Sequencing basics
 related:: Tutorials/A-Practical-Guide/PG_08_Event_Types_and_Parameters, Tutorials/A-Practical-Guide/PG_Cookbook02_Manipulating_Patterns
-categories:: Streams-Patterns-Events>A-Practical-Guide
 
-section::Cookbook: Sequencing basics
 
-subsection::Playing a predefined note sequence
+
+
+
+
+
+
+
+
+section:: Cookbook: Sequencing basics
+
+
+
+
+subsection:: Playing a predefined note sequence
+
 
 The following are three different ways of playing the same famous fugue subject.
 
-The first is brute force, listing all the scale degrees mechanically in order. The second and third recognize the A pedal point and use interlacing operations to insert the pedal notes in between the changing notes.
+The first is brute force, listing all the scale degrees mechanically in order.
+The second and third recognize the A pedal point and use interlacing operations to insert the pedal notes in between the changing notes.
 
-The example demonstrates the use of the code::\scale:: and code::\root:: event keys to define tonality. Root = 2 is D, and the scale defines a natural minor mode. The degree sequence also uses accidentals. Subtracting 0.1 from an integer scale degree flattens the note by a semitone; adding 0.1 raises by a semitone. -0.9 is 0.1 higher than -1; a natural minor scale degree below the tonic is a flat 7, and a half step higher than that is the leading tone.
+The example demonstrates the use of the code::\scale:: and code::\root:: event keys to define tonality. Root = 2 is D, and the scale defines a natural minor mode.
+The degree sequence also uses accidentals.
+Subtracting 0.1 from an integer scale degree flattens the note by a semitone; adding 0.1 raises by a semitone. -0.9 is 0.1 higher than -1; a natural minor scale degree below the tonic is a flat 7, and a half step higher than that is the leading tone.
 
 code::
 (
@@ -47,11 +63,21 @@ p = Pbind(
 )
 ::
 
-subsection::"Multichannel" expansion
 
-In a SynthDef, using an array as the input to a UGen expands the UGen into an array of UGens (see link::Guides/Multichannel-Expansion::). Something similar happens in patterns. Normally a value sent to a Synth node should be a single number, but if it's an array instead, the pattern expands the event to produce emphasis::multiple synth nodes instead:: of just one.
 
-The code::\degree:: pattern applies a set of chord intervals to a melody that's always on top. It's a compound pattern, Pseries(...) + Prand(...), where Pseries returns a single number and Prand returns an array. As with regular math operations, a number plus an array is an array. If the current Pseries value is 7 and Prand returns [0, -3, -5], the result is [7, 4, 2] and you would hear a C major triad in first inversion.
+
+
+
+subsection:: "Multichannel" expansion
+
+
+In a SynthDef, using an array as the input to a UGen expands the UGen into an array of UGens (see link::Guides/Multichannel-Expansion::).
+Something similar happens in patterns.
+Normally a value sent to a Synth node should be a single number, but if it's an array instead, the pattern expands the event to produce emphasis::multiple synth nodes instead:: of just one.
+
+The code::\degree:: pattern applies a set of chord intervals to a melody that's always on top. It's a compound pattern, Pseries(...) + Prand(...), where Pseries returns a single number and Prand returns an array.
+As with regular math operations, a number plus an array is an array.
+If the current Pseries value is 7 and Prand returns [0, -3, -5], the result is [7, 4, 2] and you would hear a C major triad in first inversion.
 
 code::
 (
@@ -65,13 +91,21 @@ p = Pbind(
 p.stop;
 ::
 
-subsection::Using custom SynthDefs (including unpitched SynthDefs)
 
-Patterns have special features to support several styles of pitch organization, but those features are strictly optional. Here we play a SynthDef that has no frequency argument whatsoever.
+
+
+
+
+subsection:: Using custom SynthDefs (including unpitched SynthDefs)
+
+
+Patterns have special features to support several styles of pitch organization, but those features are strictly optional.
+Here we play a SynthDef that has no frequency argument whatsoever.
 
 Note the use of code::add:: to prepare the SynthDef. Without it, most of the SynthDef inputs would not be recognized and the pattern would not send values to them.
 
-It's worth noting that the pattern runs in beats, whose real duration in seconds depends on the clock's tempo. The SynthDef, however, always measures time in seconds. This example keeps things simple by setting the clock to 1 beat per second. If the tempo needs to be something else, though, the code::\time:: key should be divided by the tempo:
+It's worth noting that the pattern runs in beats, whose real duration in seconds depends on the clock's tempo. The SynthDef, however, always measures time in seconds.
+This example keeps things simple by setting the clock to teletype::1::beat per second. If the tempo needs to be something else, though, the code::\time:: key should be divided by the tempo:
 
 code::
 	\time, Pkey(\delta) / Pfunc { thisThread.clock.tempo },
