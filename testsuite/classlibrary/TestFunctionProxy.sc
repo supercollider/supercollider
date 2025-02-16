@@ -67,4 +67,10 @@ TestFunctionProxy : UnitTest {
 		val = p.value;
 		this.assertEquals(val, 1 + 2, "a method which is not understood should be passed on, and keyword args should be passed when called");
 	}
+	test_kwargs_apply {
+		var p, val;
+		p = Maybe { |x| if(x == 1) { 1 } { x * p.apply(x: x - 1) } };
+		val = p.value(12);
+		this.assertEquals(val, 479001600, "apply should pass on keyword argument");
+	}
 }
