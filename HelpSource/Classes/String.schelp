@@ -120,8 +120,6 @@ code::
 
 method::==
 Returns a link::Classes/Boolean:: whether the two Strings are equal.
-
-Overridden by the need to check for equality of each instance of link::Classes/Char:: with its integer index as independent of identity. See link::Classes/Object#Equality and Identity::.
 note::
 This method is (now) case sensitive!
 ::
@@ -131,115 +129,7 @@ code::
 ::
 
 Discussion::
-code::
-~string_a = "hi"; ~string_b = "hi"  // Evaluate this code first!
-::
-
-list::
-## Equality:
-code::
-~string_a == ~string_b // checking for equality
-::
-teletype::
--> true
-::
-It first checks whether the two objects are identical, then the right part of code::==:: is not an instance of the link::Classes/String:: class, then the two link::Classes/String:: instances are identical including upper and lower case. If they are the same, then their emphasis::hash table indices:: are equal and identical:
-
-code::
-~string_a.hash
-~string_a.hash
-::
-code::
-~string_a.hash ==  ~string_b.hash
-::
-teletype::
--> true
-::
-code::
-~string_a.hash === ~string_b.hash
-::
-teletype::
--> true
-::
-
-## Identity
-code::
-~string_a === ~string_b // // checking for identity
-::
-
-teletype::
--> false
-::
-They are two different objects allocated to different addresses in virtual memory.
-The first two parts of the parenthesis pairs below, i.e. teletype::0x1525795a8:: with teletype::gc=54:: by evaluating the code code::~string_a.dump::,
-code::
-~string_a.dump
-::
-teletype::
-Instance of String {    (0x1533d23b8, gc=50, fmt=07, flg=10, set=02)
-  indexed slots [2]
-      0 : h
-      1 : i
-}
--> hi
-::
-
-and teletype::0x1533d23b8:: with teletype::gc=50:: by evaluating the code code::~string_b.dump::,
-code::
-~string_b.dump
-::
-teletype::
-Instance of String {    (0x1525795a8, gc=54, fmt=07, flg=10, set=02)
-  indexed slots [2]
-      0 : h
-      1 : i
-}
--> hi
-::
-may be different as the value represented here when one evaluating the same code. N.B.: Their values are determined by evaluating the code code::~string_a = "hi":: and code::~string_b = "hi"::, not by evaluating the code code::~string_a.dump:: and code::~string_b.dump::. (see: link::Classes/Object#-dump::.)
-
-The hexadecimal digits addresses indicate the address on virtual memory.
-
-list::
-## The address of the object associated with the variable code::~string_a:: is as follows:
-teletype::
-0x1533d23b8
-::
-
-## The address of the object associated with the variable code::~string_b:: is as follows:
-teletype::
-0x1525795a8
-::
-::
-
-When two objects are identical, their emphasis::identity hash table indices:: are equal and identical, i.e. the same object always results in the same emphasis::identity hash index::.
-code::
-~string_c = ~string_a
-::
-code::
-~string_a.identityHash
-~string_c.identityHash
-~string_b.identityHash
-::
-code::
-~string_a.identityHash ==  ~string_a.identityHash
-::
-teletype::
--> true
-::
-code::
-~string_a.identityHash === ~string_c.identityHash
-::
-teletype::
--> true
-::
-code::
-~string_a.identityHash === ~string_b.identityHash
-::
-teletype::
--> false
-::
-::
+Overridden by the need to check for equality of each instance of link::Classes/Char:: with its integer index as independent of identity. See link::Classes/Object:: (particularly link::Classes/Object#Equality and Identity#Equality and Identity:: section) and the link::Reference/Equality_and_identity:: reference (particularly link::Reference/Equality_and_identity#String#String:: section).
 
 method::!=
 Returns a link::Classes/Boolean:: whether the two Strings are not equal.

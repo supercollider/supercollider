@@ -362,8 +362,6 @@ returns:: true, if strictly positive (> 0), otherwise false (see link::Classes/B
 method:: isNaN
 
 method:: ==
-Overridden by the need to check for equality of value as independent of identity.
-See link::Classes/Object#Equality and Identity::.
 
 0.0 and 0 are equal in value, but 0.0 is an instance of Float and 0 is an instance of Integer:
 code::
@@ -376,6 +374,15 @@ teletype::
 
 code::
 0.0 === 0 // checking for identity
+::
+
+teletype::
+-> false
+::
+
+Floating-point numbers that appear identical in decimal notation can be unequal in computation:
+code::
+0.3 == (0.1 + 0.1 + 0.1)
 ::
 
 teletype::
@@ -401,141 +408,9 @@ teletype::
 ::
 
 Discussion::
+Overridden by the need to check for equality of value as independent of identity.
+See link::Classes/Object:: (particularly link::Classes/Object#Equality and Identity#Equality and Identity:: section) and the link::Reference/Equality_and_identity:: reference (especially the link::Reference/Equality_and_identity#String#SimpleNumber:: section for details of the three examples above).
 
-The same number will always result in the same emphasis::hash index:: and in the same emphasis::identity hash index:::
-
-code::
-// Evaluate the following codes more than once and compare the results.
-0.hash
-0.identityHash
-0.0.hash
-0.0.identityHash
--0.0.hash
--0.0.identityHash
-
-// Or check that each of the following pieces of code always returns true:
-0.hash == 0.hash
-0.identityHash == 0.identityHash
-0.0.hash == 0.0.hash
-0.0.identityHash == 0.0.identityHash
--0.0.hash == -0.0.hash
--0.0.identityHash == -0.0.identityHash
-::
-
-list::
-
-## The equality and identity of an integer and a float with the same value as the integer:
-
-If an integer and a float are equal,
-then their emphasis::hash table indices:: are equal and identical:
-code::
-0.hash == 0.0.hash
-::
-teletype::
--> true
-::
-code::
-0.hash === 0.0.hash
-::
-teletype::
--> true
-::
-However, although an integer and a float are equal,
-their emphasis::identity hash table indices:: are
-neither equal nor identical:
-
-code::
-0.identityHash == 0.0.identityHash
-::
-teletype::
--> false
-::
-code::
-0.identityHash === 0.0.identityHash
-::
-teletype::
--> false
-::
-## The inaccuracy of equality between human readable decimals:
-
-0.1 plus 0.1 plus 0.1 equals 0.3:
-code::
-0.1 + 0.1 + 0.1
-::
-teletype::
--> 0.3
-::
-However, sclang returns false when checking for equality of the two:
-
-code::
-0.3 == (0.1 + 0.1 + 0.1)
-::
-teletype::
--> false
-::
-This is due to the imprecise decimal representation of float
-because the 64-bit SuperCollider uses emphasis::64-bit double precision floats:: on the client (sclang) and emphasis::32-bit floats:: on the server (scsynth and supernova).
-The human-readable decimal representation of the float value may not be accurate.
-To check the more precise hexadecimal representation of float in sclang, the code::.dump:: method (see: link::Classes/Object#-dump::) can be used:
-
-code::
-0.3.dump
-::
-teletype::
-   Float 0.300000   33333333 3FD33333
--> 0.3
-::
-code::
-(0.1 + 0.1 + 0.1).dump
-::
-teletype::
-   Float 0.300000   33333334 3FD33333
--> 0.3
-::
-## The equality and identity of 0.0 and -0.0:
-
-The existence of 0.0 and -0.0 in computing is a result of the way floating point numbers are represented. They are equal in value:
-code::
-0.0 == -0.0
-::
-teletype::
--> true
-::
-However, their identities are not the same:
-code::
-0.0 === -0.0
-::
-teletype::
--> false
-::
-code::
-0.0.dump
-::
-teletype::
-   Float 0.000000   00000000 00000000
--> 0.0
-::
-code::
--0.0.dump
-::
-teletype::
-   Float -0.000000   00000000 80000000
--> -0.0
-::
-Consequently, their emphasis::hash table indices:: and emphasis::identity hash indices:: are not the same:
-code::
-0.0.hash == -0.0.hash
-::
-teletype::
--> false
-::
-code::
-0.0.identityHash == -0.0.identityHash
-::
-teletype::
--> false
-::
-::
 
 
 
