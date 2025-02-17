@@ -136,4 +136,3 @@ SkipJack.stopAll        // do this to stop all;
 
 SkipJack.stop("jack");  // reach it by name and stop
 ::
-

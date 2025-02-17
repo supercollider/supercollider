@@ -184,4 +184,3 @@ b.sine1(1.0/[1, 2, 3, 4, 5, 6], true, true, true);
 b.free;
 
 ::
-

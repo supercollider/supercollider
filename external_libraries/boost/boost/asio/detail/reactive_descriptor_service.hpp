@@ -2,7 +2,7 @@
 // detail/reactive_descriptor_service.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -19,9 +19,13 @@
 
 #if !defined(BOOST_ASIO_WINDOWS) \
   && !defined(BOOST_ASIO_WINDOWS_RUNTIME) \
-  && !defined(__CYGWIN__)
+  && !defined(__CYGWIN__) \
+  && !defined(BOOST_ASIO_HAS_IO_URING_AS_DEFAULT)
 
+#include <boost/asio/associated_cancellation_slot.hpp>
+#include <boost/asio/associated_immediate_executor.hpp>
 #include <boost/asio/buffer.hpp>
+#include <boost/asio/cancellation_type.hpp>
 #include <boost/asio/execution_context.hpp>
 #include <boost/asio/detail/bind_handler.hpp>
 #include <boost/asio/detail/buffer_sequence_adapter.hpp>
@@ -86,7 +90,7 @@ public:
 
   // Move-construct a new descriptor implementation.
   BOOST_ASIO_DECL void move_construct(implementation_type& impl,
-      implementation_type& other_impl) BOOST_ASIO_NOEXCEPT;
+      implementation_type& other_impl) noexcept;
 
   // Move-assign from another descriptor implementation.
   BOOST_ASIO_DECL void move_assign(implementation_type& impl,
@@ -120,6 +124,14 @@ public:
   // Release ownership of the native descriptor representation.
   BOOST_ASIO_DECL native_handle_type release(implementation_type& impl);
 
+  // Release ownership of the native descriptor representation.
+  native_handle_type release(implementation_type& impl,
+      boost::system::error_code& ec)
+  {
+    ec = success_ec_;
+    return release(impl);
+  }
+
   // Cancel all operations associated with the descriptor.
   BOOST_ASIO_DECL boost::system::error_code cancel(implementation_type& impl,
       boost::system::error_code& ec);
@@ -131,6 +143,7 @@ public:
   {
     descriptor_ops::ioctl(impl.descriptor_, impl.state_,
         command.name(), static_cast<ioctl_arg_type*>(command.data()), ec);
+    BOOST_ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
@@ -146,6 +159,7 @@ public:
   {
     descriptor_ops::set_user_non_blocking(
         impl.descriptor_, impl.state_, mode, ec);
+    BOOST_ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
@@ -185,6 +199,7 @@ public:
       break;
     }
 
+    BOOST_ASIO_ERROR_LOCATION(ec);
     return ec;
   }
 
@@ -197,6 +212,9 @@ public:
   {
     bool is_continuation =
       boost_asio_handler_cont_helpers::is_continuation(handler);
+
+    associated_cancellation_slot_t<Handler> slot
+      = boost::asio::get_associated_cancellation_slot(handler);
 
     // Allocate and construct an operation to wrap the handler.
     typedef reactive_wait_op<Handler, IoExecutor> op;
@@ -211,22 +229,32 @@ public:
     switch (w)
     {
     case posix::descriptor_base::wait_read:
-        op_type = reactor::read_op;
-        break;
+      op_type = reactor::read_op;
+      break;
     case posix::descriptor_base::wait_write:
-        op_type = reactor::write_op;
-        break;
+      op_type = reactor::write_op;
+      break;
     case posix::descriptor_base::wait_error:
-        op_type = reactor::except_op;
-        break;
-      default:
-        p.p->ec_ = boost::asio::error::invalid_argument;
-        reactor_.post_immediate_completion(p.p, is_continuation);
-        p.v = p.p = 0;
-        return;
+      op_type = reactor::except_op;
+      break;
+    default:
+      p.p->ec_ = boost::asio::error::invalid_argument;
+      start_op(impl, reactor::read_op, p.p,
+          is_continuation, false, true, false, &io_ex, 0);
+      p.v = p.p = 0;
+      return;
     }
 
-    start_op(impl, op_type, p.p, is_continuation, false, false);
+    // Optionally register for per-operation cancellation.
+    if (slot.is_connected())
+    {
+      p.p->cancellation_key_ =
+        &slot.template emplace<reactor_op_cancellation>(
+            &reactor_, &impl.reactor_data_, impl.descriptor_, op_type);
+    }
+
+    start_op(impl, op_type, p.p, is_continuation,
+        false, false, false, &io_ex, 0);
     p.v = p.p = 0;
   }
 
@@ -238,9 +266,10 @@ public:
     typedef buffer_sequence_adapter<boost::asio::const_buffer,
         ConstBufferSequence> bufs_type;
 
+    size_t n;
     if (bufs_type::is_single_buffer)
     {
-      return descriptor_ops::sync_write1(impl.descriptor_,
+      n = descriptor_ops::sync_write1(impl.descriptor_,
           impl.state_, bufs_type::first(buffers).data(),
           bufs_type::first(buffers).size(), ec);
     }
@@ -248,9 +277,12 @@ public:
     {
       bufs_type bufs(buffers);
 
-      return descriptor_ops::sync_write(impl.descriptor_, impl.state_,
+      n = descriptor_ops::sync_write(impl.descriptor_, impl.state_,
           bufs.buffers(), bufs.count(), bufs.all_empty(), ec);
     }
+
+    BOOST_ASIO_ERROR_LOCATION(ec);
+    return n;
   }
 
   // Wait until data can be written without blocking.
@@ -259,7 +291,7 @@ public:
   {
     // Wait for descriptor to become ready.
     descriptor_ops::poll_write(impl.descriptor_, impl.state_, ec);
-
+    BOOST_ASIO_ERROR_LOCATION(ec);
     return 0;
   }
 
@@ -273,18 +305,30 @@ public:
     bool is_continuation =
       boost_asio_handler_cont_helpers::is_continuation(handler);
 
+    associated_cancellation_slot_t<Handler> slot
+      = boost::asio::get_associated_cancellation_slot(handler);
+
     // Allocate and construct an operation to wrap the handler.
     typedef descriptor_write_op<ConstBufferSequence, Handler, IoExecutor> op;
     typename op::ptr p = { boost::asio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(success_ec_, impl.descriptor_, buffers, handler, io_ex);
 
+    // Optionally register for per-operation cancellation.
+    if (slot.is_connected())
+    {
+      p.p->cancellation_key_ =
+        &slot.template emplace<reactor_op_cancellation>(
+            &reactor_, &impl.reactor_data_,
+            impl.descriptor_, reactor::write_op);
+    }
+
     BOOST_ASIO_HANDLER_CREATION((reactor_.context(), *p.p, "descriptor",
           &impl, impl.descriptor_, "async_write_some"));
 
     start_op(impl, reactor::write_op, p.p, is_continuation, true,
         buffer_sequence_adapter<boost::asio::const_buffer,
-          ConstBufferSequence>::all_empty(buffers));
+          ConstBufferSequence>::all_empty(buffers), true, &io_ex, 0);
     p.v = p.p = 0;
   }
 
@@ -296,16 +340,29 @@ public:
     bool is_continuation =
       boost_asio_handler_cont_helpers::is_continuation(handler);
 
+    associated_cancellation_slot_t<Handler> slot
+      = boost::asio::get_associated_cancellation_slot(handler);
+
     // Allocate and construct an operation to wrap the handler.
     typedef reactive_null_buffers_op<Handler, IoExecutor> op;
     typename op::ptr p = { boost::asio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(success_ec_, handler, io_ex);
 
+    // Optionally register for per-operation cancellation.
+    if (slot.is_connected())
+    {
+      p.p->cancellation_key_ =
+        &slot.template emplace<reactor_op_cancellation>(
+            &reactor_, &impl.reactor_data_,
+            impl.descriptor_, reactor::write_op);
+    }
+
     BOOST_ASIO_HANDLER_CREATION((reactor_.context(), *p.p, "descriptor",
           &impl, impl.descriptor_, "async_write_some(null_buffers)"));
 
-    start_op(impl, reactor::write_op, p.p, is_continuation, false, false);
+    start_op(impl, reactor::write_op, p.p,
+        is_continuation, false, false, false, &io_ex, 0);
     p.v = p.p = 0;
   }
 
@@ -317,9 +374,10 @@ public:
     typedef buffer_sequence_adapter<boost::asio::mutable_buffer,
         MutableBufferSequence> bufs_type;
 
+    size_t n;
     if (bufs_type::is_single_buffer)
     {
-      return descriptor_ops::sync_read1(impl.descriptor_,
+      n = descriptor_ops::sync_read1(impl.descriptor_,
           impl.state_, bufs_type::first(buffers).data(),
           bufs_type::first(buffers).size(), ec);
     }
@@ -327,9 +385,12 @@ public:
     {
       bufs_type bufs(buffers);
 
-      return descriptor_ops::sync_read(impl.descriptor_, impl.state_,
+      n = descriptor_ops::sync_read(impl.descriptor_, impl.state_,
           bufs.buffers(), bufs.count(), bufs.all_empty(), ec);
     }
+
+    BOOST_ASIO_ERROR_LOCATION(ec);
+    return n;
   }
 
   // Wait until data can be read without blocking.
@@ -338,7 +399,7 @@ public:
   {
     // Wait for descriptor to become ready.
     descriptor_ops::poll_read(impl.descriptor_, impl.state_, ec);
-
+    BOOST_ASIO_ERROR_LOCATION(ec);
     return 0;
   }
 
@@ -353,18 +414,30 @@ public:
     bool is_continuation =
       boost_asio_handler_cont_helpers::is_continuation(handler);
 
+    associated_cancellation_slot_t<Handler> slot
+      = boost::asio::get_associated_cancellation_slot(handler);
+
     // Allocate and construct an operation to wrap the handler.
     typedef descriptor_read_op<MutableBufferSequence, Handler, IoExecutor> op;
     typename op::ptr p = { boost::asio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(success_ec_, impl.descriptor_, buffers, handler, io_ex);
 
+    // Optionally register for per-operation cancellation.
+    if (slot.is_connected())
+    {
+      p.p->cancellation_key_ =
+        &slot.template emplace<reactor_op_cancellation>(
+            &reactor_, &impl.reactor_data_,
+            impl.descriptor_, reactor::read_op);
+    }
+
     BOOST_ASIO_HANDLER_CREATION((reactor_.context(), *p.p, "descriptor",
           &impl, impl.descriptor_, "async_read_some"));
 
     start_op(impl, reactor::read_op, p.p, is_continuation, true,
         buffer_sequence_adapter<boost::asio::mutable_buffer,
-          MutableBufferSequence>::all_empty(buffers));
+          MutableBufferSequence>::all_empty(buffers), true, &io_ex, 0);
     p.v = p.p = 0;
   }
 
@@ -376,23 +449,103 @@ public:
     bool is_continuation =
       boost_asio_handler_cont_helpers::is_continuation(handler);
 
+    associated_cancellation_slot_t<Handler> slot
+      = boost::asio::get_associated_cancellation_slot(handler);
+
     // Allocate and construct an operation to wrap the handler.
     typedef reactive_null_buffers_op<Handler, IoExecutor> op;
     typename op::ptr p = { boost::asio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(success_ec_, handler, io_ex);
 
+    // Optionally register for per-operation cancellation.
+    if (slot.is_connected())
+    {
+      p.p->cancellation_key_ =
+        &slot.template emplace<reactor_op_cancellation>(
+            &reactor_, &impl.reactor_data_,
+            impl.descriptor_, reactor::read_op);
+    }
+
     BOOST_ASIO_HANDLER_CREATION((reactor_.context(), *p.p, "descriptor",
           &impl, impl.descriptor_, "async_read_some(null_buffers)"));
 
-    start_op(impl, reactor::read_op, p.p, is_continuation, false, false);
+    start_op(impl, reactor::read_op, p.p,
+        is_continuation, false, false, false, &io_ex, 0);
     p.v = p.p = 0;
   }
 
 private:
   // Start the asynchronous operation.
-  BOOST_ASIO_DECL void start_op(implementation_type& impl, int op_type,
-      reactor_op* op, bool is_continuation, bool is_non_blocking, bool noop);
+  BOOST_ASIO_DECL void do_start_op(implementation_type& impl,
+      int op_type, reactor_op* op, bool is_continuation,
+      bool allow_speculative, bool noop, bool needs_non_blocking,
+      void (*on_immediate)(operation* op, bool, const void*),
+      const void* immediate_arg);
+
+  // Start the asynchronous operation for handlers that are specialised for
+  // immediate completion.
+  template <typename Op>
+  void start_op(implementation_type& impl, int op_type, Op* op,
+      bool is_continuation, bool allow_speculative, bool noop,
+      bool needs_non_blocking, const void* io_ex, ...)
+  {
+    return do_start_op(impl, op_type, op, is_continuation, allow_speculative,
+        noop, needs_non_blocking, &Op::do_immediate, io_ex);
+  }
+
+  // Start the asynchronous operation for handlers that are not specialised for
+  // immediate completion.
+  template <typename Op>
+  void start_op(implementation_type& impl, int op_type,
+      Op* op, bool is_continuation, bool allow_speculative,
+      bool noop, bool needs_non_blocking, const void*,
+      enable_if_t<
+        is_same<
+          typename associated_immediate_executor<
+            typename Op::handler_type,
+            typename Op::io_executor_type
+          >::asio_associated_immediate_executor_is_unspecialised,
+          void
+        >::value
+      >*)
+  {
+    return do_start_op(impl, op_type, op, is_continuation,
+        allow_speculative, noop, needs_non_blocking,
+        &reactor::call_post_immediate_completion, &reactor_);
+  }
+
+  // Helper class used to implement per-operation cancellation
+  class reactor_op_cancellation
+  {
+  public:
+    reactor_op_cancellation(reactor* r,
+        reactor::per_descriptor_data* p, int d, int o)
+      : reactor_(r),
+        reactor_data_(p),
+        descriptor_(d),
+        op_type_(o)
+    {
+    }
+
+    void operator()(cancellation_type_t type)
+    {
+      if (!!(type &
+            (cancellation_type::terminal
+              | cancellation_type::partial
+              | cancellation_type::total)))
+      {
+        reactor_->cancel_ops_by_key(descriptor_,
+            *reactor_data_, op_type_, this);
+      }
+    }
+
+  private:
+    reactor* reactor_;
+    reactor::per_descriptor_data* reactor_data_;
+    int descriptor_;
+    int op_type_;
+  };
 
   // The selector that performs event demultiplexing for the service.
   reactor& reactor_;
@@ -414,5 +567,6 @@ private:
 #endif // !defined(BOOST_ASIO_WINDOWS)
        //   && !defined(BOOST_ASIO_WINDOWS_RUNTIME)
        //   && !defined(__CYGWIN__)
+       //   && !defined(BOOST_ASIO_HAS_IO_URING_AS_DEFAULT)
 
 #endif // BOOST_ASIO_DETAIL_REACTIVE_DESCRIPTOR_SERVICE_HPP

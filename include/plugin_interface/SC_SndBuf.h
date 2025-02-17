@@ -29,8 +29,14 @@
 #    include <atomic>
 #    include <cassert>
 
-#    ifdef __SSE2__
-#        include <emmintrin.h>
+/* for rw_spinlock::pause() */
+#    if defined(_MSC_VER)
+#        ifndef NOMINMAX
+#            define NOMINMAX
+#        endif
+#        include <Windows.h>
+#    elif defined(__SSE2__)
+#        include <immintrin.h>
 #    endif
 
 
@@ -39,9 +45,17 @@ class rw_spinlock {
     static const uint32_t locked_state = 0x80000000;
     static const uint32_t reader_mask = 0x7fffffff;
 
-#    ifdef __SSE2__
+/* this is a simplified version of nova::detail::pause() */
+#    if defined(_MSC_VER) /* Visual Studio Intel/ARM64 */
+    static inline void pause() { YieldProcessor(); }
+#    elif defined(__SSE2__) /* all modern Intel processors */
     static inline void pause() { _mm_pause(); }
+#    elif defined(__aarch64__) /* 64-bit ARM */
+    static inline void pause() { __asm__ __volatile__("isb"); }
+#    elif defined(__arm__) /* 32-bit ARM */
+    static inline void pause() { __asm__ __volatile__("yield"); }
 #    else
+#        warning "unknown architecture: fall back to busy-waiting"
     static inline void pause() {}
 #    endif
 

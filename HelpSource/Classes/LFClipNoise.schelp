@@ -57,4 +57,3 @@ SynthDef("help-LFClipNoise", { |out = 0|
 )
 
 ::
-

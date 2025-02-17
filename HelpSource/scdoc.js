@@ -170,7 +170,7 @@ function fixTOC() {
         var indexes_menu = $("<div>", {class: "submenu"}).hide()
             .appendTo(li);
 
-        var nav_items = ["Documents", "Classes", "Methods"];
+        var nav_items = ["Documents", "Classes", "ClassTree", "Methods"];
         nav_items.forEach(function (item) {
             $("<a>", {
                 text: item,
@@ -205,6 +205,7 @@ const themeNames = [
     "dark",
     "default",
     "dracula",
+    "monokai",
     "solarizedDark",
     "solarizedLight"
 ];

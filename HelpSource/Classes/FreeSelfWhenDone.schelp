@@ -70,4 +70,3 @@ SynthDef("help-RecordBuf play", { |out = 0, bufnum = 0|
 }).play(s, [\out, 0, \bufnum, b]);
 )
 ::
-

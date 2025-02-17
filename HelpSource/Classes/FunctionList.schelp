@@ -135,6 +135,3 @@ d.keyDownAction = d.keyDownAction.addFunc { :x, x<-(1..), :: "already % times\n\
 
 d.keyDownAction = nil;
 ::
-
-
-

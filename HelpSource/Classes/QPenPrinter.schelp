@@ -146,4 +146,3 @@ p.showDialog {
     "Printing cancelled!".postln;
 };
 ::
-

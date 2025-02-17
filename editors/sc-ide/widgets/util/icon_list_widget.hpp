@@ -23,6 +23,7 @@
 #include <QListWidget>
 #include <QStyledItemDelegate>
 #include <QPainter>
+#include <QListWidget>
 
 namespace ScIDE {
 
@@ -39,11 +40,7 @@ public:
             QString text = index.data(Qt::DisplayRole).toString();
             QFontMetrics fm(option.font);
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
             int fontWidth = fm.horizontalAdvance(text);
-#else
-            int fontWidth = fm.width(text);
-#endif
 
             QSize requiredSize(qMax(fontWidth, iconSize.width()), fm.height() + iconSize.height());
 
@@ -78,7 +75,12 @@ public:
     IconListWidget(QWidget* parent = 0): QListWidget(parent) { setItemDelegate(new ItemDelegate(this)); }
 
     virtual QStyleOptionViewItem viewOptions() const {
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
         QStyleOptionViewItem opt(QListWidget::viewOptions());
+#else
+        QStyleOptionViewItem opt;
+        QListWidget::initViewItemOption(&opt);
+#endif
         opt.displayAlignment = Qt::AlignCenter;
         opt.decorationAlignment = Qt::AlignCenter;
         opt.decorationPosition = QStyleOptionViewItem::Top;

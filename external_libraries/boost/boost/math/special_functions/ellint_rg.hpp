@@ -28,10 +28,7 @@ namespace boost { namespace math { namespace detail{
 
       if(x < 0 || y < 0 || z < 0)
       {
-         return policies::raise_domain_error<T>(function,
-            "domain error, all arguments must be non-negative, "
-            "only sensible result is %1%.",
-            std::numeric_limits<T>::quiet_NaN(), pol);
+         return policies::raise_domain_error<T>(function, "domain error, all arguments must be non-negative, only sensible result is %1%.", std::numeric_limits<T>::quiet_NaN(), pol);
       }
       //
       // Function is symmetric in x, y and z, but we require
@@ -46,8 +43,8 @@ namespace boost { namespace math { namespace detail{
       if(y > z)
          swap(y, z);
       
-      BOOST_ASSERT(x >= z);
-      BOOST_ASSERT(z >= y);
+      BOOST_MATH_ASSERT(x >= z);
+      BOOST_MATH_ASSERT(z >= y);
       //
       // Special cases from http://dlmf.nist.gov/19.20#ii
       //
@@ -73,10 +70,8 @@ namespace boost { namespace math { namespace detail{
       }
       else if(y == z)
       {
-         if(x == 0)
-            return constants::pi<T>() * sqrt(y) / 4;
-         else
-            return (y == 0) ? T(sqrt(x) / 2) : T((y * ellint_rc_imp(x, y, pol) + sqrt(x)) / 2);
+         BOOST_MATH_ASSERT(x > 0);  // Ordering of x,y,z above takes care of x == 0 case.
+         return (y == 0) ? T(sqrt(x) / 2) : T((y * ellint_rc_imp(x, y, pol) + sqrt(x)) / 2);
       }
       else if(y == 0)
       {
@@ -92,7 +87,7 @@ namespace boost { namespace math { namespace detail{
          T sum = 0;
          T sum_pow = 0.25f;
 
-         while(fabs(xn - yn) >= 2.7 * tools::root_epsilon<T>() * fabs(xn))
+         while(fabs(xn - yn) >= T(2.7) * tools::root_epsilon<T>() * fabs(xn))
          {
             T t = sqrt(xn * yn);
             xn = (xn + yn) / 2;

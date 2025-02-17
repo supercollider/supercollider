@@ -254,7 +254,7 @@ code::
 
 method:: linexp
 
-Wraps the receiver so that a linear inputrange is mapped to an exponential output range.
+Wraps the receiver so that a linear input range is mapped to an exponential output range.
 discussion::
 outMin and outMax must be nonzero and of the same sign. For clip argument, see code::linlin:: above.
 code::
@@ -263,7 +263,7 @@ code::
 
 method:: explin
 
-Wraps the receiver so that an exponential inputrange is mapped to a linear output range.
+Wraps the receiver so that an exponential input range is mapped to a linear output range.
 discussion::
 inMin and inMax must be nonzero and of the same sign. For clip argument, see code::linlin:: above.
 code::
@@ -272,7 +272,7 @@ code::
 
 method:: expexp
 
-Wraps the receiver so that an exponential inputrange is mapped to an exponential output range.
+Wraps the receiver so that an exponential input range is mapped to an exponential output range.
 discussion::
 outMin, outMax, inMin and inMax must be nonzero and of the same sign. For clip argument, see code::linlin:: above.
 code::
@@ -281,7 +281,7 @@ code::
 
 method:: lincurve
 
-Wraps the receiver so that a linear inputrange is mapped to a curve-like exponential output range.
+Wraps the receiver so that a linear input range is mapped to a curve-like exponential output range.
 discussion::
 outMin and outMax may be zero and of the different sign. For clip argument, see code::linlin:: above.
 code::
@@ -293,7 +293,7 @@ code::
 ::
 
 method:: curvelin
-Wraps the receiver so that a  curve-like exponential inputrange is mapped to a linear output range.
+Wraps the receiver so that a curve-like exponential input range is mapped to a linear output range.
 discussion::
 inMin and inMax may be zero and of the different sign. For clip argument, see code::linlin:: above.
 code::
@@ -344,8 +344,34 @@ code::
 ::
 
 method::binaryValue
-Outputs 1, representing true for positive, 0 for negative or zero input values.
+Outputs 1, representing true for positive, 0 representing false for negative or zero input values.
 
+
+method::isPositive
+Outputs 1, representing true for positive or zero, 0 representing false for negative input values.
+
+method::isStrictlyPositive
+Outputs 1, representing true for positive, 0 representing false for negative or zero input values.
+
+method::isNegative
+Outputs 1, representing true for negative, 0 representing false for positive or zero input values.
+
+
+method::|==|
+Outputs 1, representing true, when the receiver and argument signal coincide. Note that this may be ambivalent in many cases, because of floating point arithmetic. A special sign is needed, because code::==:: compares the UGen objects, and not the signal they produce.
+
+code::
+// an example of floating point relevance for the |==| operator.
+// the rounded signal will match at some point, but not the direct signal
+(
+{
+	var a = Line.ar(0, 1, 0.008);
+	var b = a |==| 0.5;
+	var c = a.round(0.01) |==| 0.5;
+	[a, Trig1.ar(b, 0.001), Trig1.ar(c, 0.001)]
+}.plot
+)
+::
 
 method:: @
 Dynamic geometry support. Returns code::Point(this, y)::.

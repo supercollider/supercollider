@@ -42,7 +42,7 @@ w.front;
 
 SECTION:: Automatic positioning and resizing of views
 
-As a handy alternative to specifying all the dimensions and positions of views explicitly in code, SuperCollider allows for automatic positioning and resizing of views in relation to each other and in relation to window size - at the view creation and dynamically, when window is resized. There is several mechanisms for this purpose.
+As a handy alternative to specifying all the dimensions and positions of views explicitly in code, SuperCollider allows for automatic positioning and resizing of views in relation to each other and in relation to window size - at the view creation and dynamically, when window is resized. There are several mechanisms for this purpose.
 
 subsection:: View's resize options
 
@@ -175,7 +175,7 @@ Complex views may have many other ways to customize how they display the same da
 
 SECTION:: Actions and hooks: Make that button do something!
 
-Views and windows can be assigned strong::actions:: that they will perform whenever a specific event occurs as a result of user's interaction. Technically, an action can be any Object, and when the relevant event occurs, it's link::Classes/Object#-value#value#:: method will be called. For example, it is useful to assign a Function as an action, which allows one to define an arbitrary chunk of code to be performed in response to a GUI event.
+Views and windows can be assigned strong::actions:: that they will perform whenever a specific event occurs as a result of user's interaction. Technically, an action can be any Object, and when the relevant event occurs, its link::Classes/Object#-value#value#:: method will be called. For example, it is useful to assign a Function as an action, which allows one to define an arbitrary chunk of code to be performed in response to a GUI event.
 
 Objects can also be given to views and windows to evaluate on events that are not a direct result of user's interaction, but convey useful information about the view's operation and the state it moved in. In this case they are often differentiated from actions and called strong::hooks::.
 

@@ -100,4 +100,3 @@ a.add("something");
 a.add("something");
 a.contents; // two objects in the bag
 ::
-

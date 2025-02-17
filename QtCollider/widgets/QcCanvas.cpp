@@ -88,7 +88,7 @@ void QcCanvas::animate(bool on) {
         if (!_animating && _fps > 0) {
             _frameCount = 0;
             _animating = true;
-            _meterTime.start();
+            _meterTime = QTime::currentTime();
             _timerId = startTimer(1000.f / _fps);
             _fpsTimer.start(_meterPeriod, this);
         }
@@ -169,10 +169,10 @@ void QcCanvas::timerEvent(QTimerEvent* e) {
         repaint();
     } else if (e->timerId() == _fpsTimer.timerId()) {
         // recalc actual fps
-        float dTime = _meterTime.elapsed();
+        float dTime = _meterTime.msecsTo(QTime::currentTime());
         _fpsActual = (dTime > 0) ? (_meterFrames * 1000.f / dTime) : 0.f;
         // reset fps meter
-        _meterTime.restart();
+        _meterTime = QTime::currentTime();
         _meterFrames = 0;
     }
 }

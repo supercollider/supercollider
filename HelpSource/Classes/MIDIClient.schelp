@@ -110,5 +110,3 @@ code::
 
 ~connect_midi_devices.("SE25", "SE25 MIDI 1"); // test it now
 ::
-
-

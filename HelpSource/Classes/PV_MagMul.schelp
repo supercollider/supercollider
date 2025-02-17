@@ -52,4 +52,3 @@ SynthDef("help-magMul2", { |out = 0, soundBufnum = 2|
 b.free
 
 ::
-

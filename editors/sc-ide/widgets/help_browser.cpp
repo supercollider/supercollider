@@ -32,16 +32,22 @@
 
 #    include <QVBoxLayout>
 #    include <QToolBar>
-#    include <QWebEngineSettings>
-#    include <QWebEngineContextMenuData>
 #    include <QAction>
 #    include <QMenu>
 #    include <QStyle>
 #    include <QShortcut>
 #    include <QApplication>
-#    include <QDesktopWidget>
+#    include <QScreen>
+#    include <QWindow>
 #    include <QDebug>
 #    include <QKeyEvent>
+
+#    include <QWebEngineSettings>
+#    if (QT_VERSION < QT_VERSION_CHECK(6, 2, 0))
+#        include <QWebEngineContextMenuData>
+#    else
+#        include <QWebEngineContextMenuRequest>
+#    endif
 
 #    ifdef Q_OS_MAC
 #        include <QStyleFactory> // QStyleFactory::create, see below
@@ -50,7 +56,7 @@
 namespace ScIDE {
 
 HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
-    QRect availableScreenRect = qApp->desktop()->availableGeometry(this);
+    QRect availableScreenRect = qApp->primaryScreen()->availableGeometry();
     mSizeHint = QSize(availableScreenRect.width() * 0.4, availableScreenRect.height() * 0.7);
 
     // setPage does not take ownership of webPage; it must be deleted manually later (see below)
@@ -355,17 +361,30 @@ void HelpBrowser::onJsConsoleMsg(const QString& arg1, int arg2, const QString& a
 void HelpBrowser::onContextMenuRequest(const QPoint& pos) {
     QMenu menu;
 
+#    if (QT_VERSION < QT_VERSION_CHECK(6, 2, 0))
     const auto& contextData = mWebView->page()->contextMenuData();
-
     if (!contextData.linkUrl().isEmpty()) {
+#    else
+    const auto& contextData = mWebView->lastContextMenuRequest();
+    if (!contextData->linkUrl().isEmpty()) {
+#    endif
         menu.addAction(mWebView->pageAction(QWebEnginePage::CopyLinkToClipboard));
         menu.addSeparator();
     }
 
+#    if (QT_VERSION < QT_VERSION_CHECK(6, 2, 0))
     if (contextData.isContentEditable() || !contextData.selectedText().isEmpty()) {
+#    else
+    if (contextData->isContentEditable() || !contextData->selectedText().isEmpty()) {
+#    endif
         menu.addAction(mWebView->pageAction(QWebEnginePage::Copy));
+#    if (QT_VERSION < QT_VERSION_CHECK(6, 2, 0))
         if (contextData.isContentEditable())
+#    else
+        if (contextData->isContentEditable())
+#    endif
             menu.addAction(mWebView->pageAction(QWebEnginePage::Paste));
+
         menu.addSeparator();
     }
 
@@ -373,7 +392,11 @@ void HelpBrowser::onContextMenuRequest(const QPoint& pos) {
     menu.addAction(mWebView->pageAction(QWebEnginePage::Forward));
     menu.addAction(mWebView->pageAction(QWebEnginePage::Reload));
 
+#    if (QT_VERSION < QT_VERSION_CHECK(6, 2, 0))
     if (contextData.selectedText().isEmpty())
+#    else
+    if (contextData->selectedText().isEmpty())
+#    endif
         menu.addAction(mActions[EvaluateRegion]);
     else
         menu.addAction(mActions[Evaluate]);

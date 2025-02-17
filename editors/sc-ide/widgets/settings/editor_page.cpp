@@ -37,7 +37,9 @@ namespace ScIDE { namespace Settings {
 
 EditorPage::EditorPage(QWidget* parent):
     QWidget(parent),
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     fontDatabase(new QFontDatabase),
+#endif()
     ui(new Ui::EditorConfigPage) {
     ui->setupUi(this);
 
@@ -67,7 +69,9 @@ EditorPage::EditorPage(QWidget* parent):
 
 EditorPage::~EditorPage() {
     delete ui;
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     delete fontDatabase;
+#endif
     qDeleteAll(mThemes);
 }
 
@@ -204,9 +208,17 @@ void EditorPage::loadThemeFormats(Theme& theme) {
 
 void EditorPage::populateFontList(bool onlyMonospaced) {
     ui->fontCombo->clear();
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     QStringList fontFamilies = fontDatabase->families();
+#else
+    QStringList fontFamilies = QFontDatabase::families();
+#endif
     foreach (QString family, fontFamilies) {
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
         if (onlyMonospaced && !fontDatabase->isFixedPitch(family))
+#else
+        if (onlyMonospaced && !QFontDatabase::isFixedPitch(family))
+#endif
             continue;
 
         ui->fontCombo->addItem(family);
@@ -358,7 +370,7 @@ void EditorPage::updateTextFormatDisplay(QTreeWidgetItem* item) {
     if (format.hasProperty(QTextFormat::FontItalic))
         f.setItalic(format.fontItalic());
     if (format.hasProperty(QTextFormat::FontWeight))
-        f.setWeight(format.fontWeight());
+        f.setWeight(static_cast<QFont::Weight>(format.fontWeight()));
 
     item->setFont(0, f);
 }

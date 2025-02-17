@@ -61,4 +61,9 @@ TestIdentityDictionaryObjectPrototyping : UnitTest {
 		this.assertEquals(result.args, [3, 4, 5]);
 		this.assertEquals(result.kwargs, [foo: 10, bar: 11]);
 	}
+	test_with_array {
+		var ev = (x: { |self, data| data });
+		var result = ev.x([1, 2, 3, 4]);
+		this.assertEquals(result, [1, 2, 3, 4], "Arrays should not be expanded by functionPerformList");
+	}
 }

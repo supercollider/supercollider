@@ -38,7 +38,7 @@ void defineQWidgetPrimitives();
 void defineQPalettePrimitives();
 void defineQImagePrimitives();
 
-#ifdef __APPLE__
+#if defined(__APPLE__) && (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
 void defineQcQuartzComposerPrimitives();
 #endif
 
@@ -54,7 +54,7 @@ void initPrimitives() {
     defineQPalettePrimitives();
     defineQImagePrimitives();
 
-#ifdef __APPLE__
+#if defined(__APPLE__) && (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     defineQcQuartzComposerPrimitives();
 #endif
 

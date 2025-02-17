@@ -38,4 +38,3 @@ SynthDef("help-PulseCount", { |out = 0|
 }).play;
 
 ::
-

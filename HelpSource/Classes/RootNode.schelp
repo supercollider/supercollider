@@ -28,4 +28,3 @@ classmethods::
 private:: initClass
 instancemethods::
 private:: rninit, free, moveBefore, moveAfter, moveToHead, moveToTail, run
-
