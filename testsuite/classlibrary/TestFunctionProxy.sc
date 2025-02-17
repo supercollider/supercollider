@@ -73,4 +73,20 @@ TestFunctionProxy : UnitTest {
 		val = p.value(12);
 		this.assertEquals(val, 479001600, "apply should pass on keyword argument");
 	}
+
+	test_large_combination_of_ops {
+		var p, q, r, val, f;
+		p = Maybe.new;
+		q = Maybe.new;
+		f = { |a, b| a.squared * b + a.mod(b) + a.linlin(0, 1, 0, b) };
+		r = f.(p, q);
+		p.source = 1; q.source = 5; val = r.value;
+		this.assertEquals(val, f.(p.value, q.value), "a complicated term of maybes is evaulated like their sources would");
+		p.source = -10;  val = r.value;
+		this.assertEquals(val, f.(p.value, q.value), "updated source values of maybes return correctly");
+		p.source = { |x| x + 1 };  val = r.value(5);
+		this.assertEquals(val, f.(p.value(5), q.value), "function source values of maybes take arguments correctly");
+		p.source = { |x, y| x + y };  val = r.value(5, y: 20);
+		this.assertEquals(val, f.(p.value(5, y: 20), q.value), "function source values of maybes take keyword arguments correctly");
+	}
 }
