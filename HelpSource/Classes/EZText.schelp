@@ -3,120 +3,76 @@ categories:: GUI>EZ-GUI
 summary:: Wrapper class for a label, a text field and a value
 related:: Classes/StaticText, Classes/TextField
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 EZText is a wrapper class which creates an (optional) link::Classes/StaticText::, and a link::Classes/TextField::.
 The value is displayed as a compileString in the text field for editing.
 
-
-
-
-
-
 subsection:: Some Important Issues Regarding EZText
-
 
 If the parent is code::nil::, then EZText will create its own link::Classes/Window::. See link::Classes/EZGui:: for more options.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 subsection:: Creation / Class Methods
 
-
 method:: new
-
 
 argument:: parent
 
 The parent view or window. If the parent is nil, then EZText will create its own link::Classes/Window::, and place it conveniently on the screen if the bounds are a link::Classes/Point::.
 If the bounds are a link::Classes/Rect::, then the link::Classes/Rect:: determines the window bounds.
 
-
 argument:: bounds
 
 An instance of link::Classes/Rect:: or link::Classes/Point::.
 Default value is code::160@20::.
 
-
 argument:: label
 
 The label. Default value is code::nil::. If code::nil::, then no link::Classes/StaticText:: is created.
-
 
 argument:: action
 
 A link::Classes/Function:: called when the value changes. The function is passed the EZText instance as its argument.
 
-
 argument:: initVal
 
 The value to initialize the EZText with.
-
 
 argument:: initAction
 
 A link::Classes/Boolean:: indicating whether the action function should be called when setting the initial value.
 The default is false.
 
-
 argument:: labelWidth
 
 Number of pixels width for the label.
 The default is 60. In the code::\horz:: layout, if you specify the code::textWidth::, then the code::labelWidth:: is ignored and is set to the code::bounds.width - textWidth::.
-
 
 argument:: textWidth
 
 Number of pixels width for the number box.
 The default is 45. In code::\vert:: layout, code::textWidth:: defaults to the code::bounds.width::.
 
-
 argument:: labelHeight
 
 Default is 20.
-
 
 argument:: layout
 
 code::\vert::, or code::\horz::.
 The default is code::\horz::; code::\vert:: is a two line version.
 
-
 argument:: gap
 
 A link::Classes/Point::. By default, the view tries to get its parent's gap, otherwise it defaults to code::2@2::.
 Setting it overrides these.
 
-
 argument:: margin
 
 A link::Classes/Point::.
 This will inset the bounds occupied  by the subviews of view.
-
 
 discussion::
 Example:
@@ -149,154 +105,88 @@ g.setColors(Color.grey, Color.white);
 The contained views can be accessed via the EZText instance variables:
 code::labelView::, code::textField::.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 method:: textField
 
-
-Return the textField.
-
-
-
+Returns the textField.
 
 method:: action
-
 
 A link::Classes/Function:: to be evaluated when the value changes.
 Typical use is to type in a new value, and interpret it by hitting the evaluation shortcut.
 The first argument to the function will be the EZText.
 
-
-
-
 method:: value
 
-
-Get/set the value of the ezText.
+Gets/sets the value of the ezText.
 Does not perform the action.
-
 
 argument:: inval
 
 Any object.
 
-
-
-
 method:: valueAction
 
-
-Set the value and performs the action.
-
+Sets the value and performs the action.
 
 argument:: val
 
 Any object.
 
-
-
-
 method:: doAction
 
-
-Perform the action.
-
-
-
+Performs the action.
 
 method:: enabled
 
-
-Set/get whether the textfield is enabled.
-
+Sets/gets whether the textfield is enabled.
 
 argument:: bool
 
 An instance of link::Classes/Boolean::. Default is code::true::.
 
-
-
-
-
-
 subsection:: Changing Appearance
 
-
 method:: setColors
-
 
 argument:: stringBackground
 
 An instance of link::Classes/Color::. The code::background:: of the label and unit views.
 
-
 argument:: stringColor
 
 An instance of link::Classes/Color::. The code::stringColor:: of the label and unit views.
-
 
 argument:: textBackground
 
 An instance of link::Classes/Color::. The code::background:: of the textField.
 
-
 argument:: textStringColor
 
 An instance of link::Classes/Color::. The code::stringColor:: of the textField.
-
 
 argument:: textNormalColor
 
 An instance of link::Classes/Color::. The code::normalColor:: of the textField.
 
-
 argument:: textTypingColor
 
 An instance of link::Classes/Color::. The code::typingColor:: of the textField.
-
 
 argument:: background
 
 An instance of link::Classes/Color::. The code::background:: of the enclosing view.
 
-
-
-
 method:: font
 
-
 Set the Font used by all the views.
-
 
 argument:: font
 
 An instance of link::Classes/Font::.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // Simplest version

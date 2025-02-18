@@ -3,61 +3,23 @@ categories:: UGens>Triggers
 summary:: Gate or hold
 related:: Classes/Latch
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Allow input signal value to pass when gate is positive, otherwise holds last value.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: in
 
 The input signal.
 
-
 argument:: trig
 
 Gate - can be any signal. The output is held fixed when this is non-positive.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 s.boot;

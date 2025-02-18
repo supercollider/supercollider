@@ -8,22 +8,9 @@ Control structures in SuperCollider are implemented via message sends.
 Here are a few of those available.
 See link::Reference/Syntax-Shortcuts:: for the various ways expressions can be written.
 
-
-
-
-
-
-
-
-
-
 section:: Basic Control Structures
 
-
-
-
 method:: if
-
 
 Conditional execution is implemented via the code::if:: message. The code::if:: message is sent to an expression which must return a link::Classes/Boolean:: value.
 
@@ -31,7 +18,6 @@ In addition it takes two arguments:
 a function to execute if the expression is true and another optional function to execute if the expression is false.
 The code::if:: message returns the value of the function which is executed.
 If the falseFunc is not present and the expression is false then the result of the if message is nil.
-
 
 discussion::
 Syntax
@@ -70,16 +56,11 @@ x.postln;
 )
 ::
 
-
-
-
 method:: while
-
 
 The while message implements conditional execution of a loop.
 If the testFunc answers teletype::true:: when evaluated, then the loopFunc is evaluated and the process is repeated.
 Once the testFunc returns teletype::false::, the loop terminates.
-
 
 discussion::
 Syntax
@@ -105,15 +86,10 @@ while { i < 5 } { i = i + 1; "boing".postln };
 
 While expressions are also optimized by the compiler if they do not contain variable declarations in the testFunc and the loopFunc.
 
-
-
-
 method:: for
-
 
 The for message implements iteration over an integer series from a starting value to an end value stepping by one each time.
 A function is evaluated each iteration and is passed the iterated numeric value as an argument.
-
 
 discussion::
 Syntax
@@ -134,15 +110,10 @@ code::
 for(3, 7) { arg i; i.postln };  // prints values 3 through 7
 ::
 
-
-
-
 method:: forBy
-
 
 The forBy selector implements iteration over an integer series with a variable step size.
 A function is evaluated each iteration and is passed the iterated numeric value as an argument.
-
 
 discussion::
 Syntax
@@ -162,17 +133,12 @@ code::
 forBy(0, 8, 2) { arg i; i.postln };  // prints values 0 through 8 by 2's
 ::
 
-
-
-
 method:: do
-
 
 Do is used to iterate over a link::Classes/Collection::.
 Positive Integers also respond to code::do:: by iterating from teletype::zero:: up to their value. Collections iterate, calling the function for each object they contain.
 Other kinds of Objects respond to do by passing themselves to the function one time.
 The function is called with two arguments, the item, and an iteration counter.
-
 
 discussion::
 Syntax
@@ -245,11 +211,7 @@ Wrong type.
 
 ::
 
-
-
-
 method:: switch
-
 
 Object implements a switch method which allows for conditional evaluation with multiple cases.
 These are implemented as pairs of test objects (tested using if this == test.value) and corresponding functions to be evaluated if teletype::true::.
@@ -265,7 +227,6 @@ note::
 Floating point numbers may sometimes appear to be equal while differing slightly in their binary representation:
 code::(2/3) == (1 - (1/3))::is false. Therefore floats should be avoided in code::switch::constructions.
 ::
-
 
 discussion::
 Syntax
@@ -358,16 +319,11 @@ WARNING: Float:switch is unsafe, rounding via Float:asInteger:switch
 -> yes
 ::
 
-
-
-
 method:: case
-
 
 Function implements a case method which allows for conditional evaluation with multiple cases.
 Since the receiver represents the first case this can be simply written as pairs of test functions and corresponding functions to be evaluated if teletype::true::.
 Case is inlined and is therefore just as efficient as nested if statements.
-
 
 discussion::
 Example
@@ -388,15 +344,10 @@ x.postln;
 )
 ::
 
-
-
-
 method:: try
-
 
 Function implements a code::try:: method which allows catching exceptions thrown by code and run the exception handler.
 For more information see link::Classes/Exception::.
-
 
 discussion::
 Example
@@ -409,17 +360,12 @@ try {
 };
 ::
 
-
-
-
 method:: protect
-
 
 Function implements a code::protect:: method which allows protecting code from exceptions thrown by code.
 The difference with code::try:: is the exception handler code is always run, even if there is no exception.
 If an exception occurs, it is rethrown after the exception handler block is run.
 For more information see link::Classes/Exception::.
-
 
 discussion::
 Example
@@ -433,36 +379,12 @@ protect {
 };
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Other Control Structures
-
-
-
 
 Using Functions, many control structures can be defined like the ones above.
 In the class link::Classes/Collection#Iteration:: there are many more messages defined for iterating over Collections.
 
-
-
-
-
-
-
-
-
-
 section:: Inline optimization
-
-
-
 
 code::if::, code::while::, code::switch:: and code::case:: expressions are optimized (i.e. inlined) by the compiler if they do not contain variable declarations in the functions.
 The optimization plucks the code from the functions and uses a more efficient jump statement:

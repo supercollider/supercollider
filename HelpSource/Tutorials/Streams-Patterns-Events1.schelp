@@ -18,19 +18,7 @@ These concepts are embodied in the classes for Streams, Patterns, and Events. Yo
 The framework is built up in layers.
 If you skip ahead to get to the cool stuff first, you will have missed some important points.
 
-
-
-
-
-
-
-
-
-
 section:: Streams
-
-
-
 
 A stream represents a lazy sequence of values.
 The next value in the sequence is obtained by sending the message next to the stream object.
@@ -48,19 +36,7 @@ code::
 7.next.postln;	// 7 responds to next by returning itself
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Stream and its subclasses
-
-
-
 
 In addition to the default streams implemented by link::Classes/Object::, there is a class link::Classes/Stream:: that provides more functionality such as math operations on streams and filtering of streams.
 
@@ -107,19 +83,7 @@ a = Routine.new({
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Math operations on Streams
-
-
-
 
 Stream is a subclass of link::Classes/AbstractFunction:: which means that one can do math operations on streams to produce other streams.
 
@@ -169,19 +133,7 @@ c = a + b;	// add streams a and b
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Filtering operations on streams
-
-
-
 
 Streams respond to the messages code::collect::, code::select::, and code::reject:: by returning a new link::Classes/Stream::.
 
@@ -230,19 +182,7 @@ b = a.reject({ arg item; item.odd; });
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Making Music with Streams
-
-
-
 
 Here is a sound example to show how you might use Streams to generate musical material.
 
@@ -296,19 +236,7 @@ code::
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Optional:
-
-
-
 
 More about Streams can be learned from the book A Little Smalltalk by Timothy Budd. He calls them Generators and shows how they can be used to solve problems like the "eight queens" problem etc.
 

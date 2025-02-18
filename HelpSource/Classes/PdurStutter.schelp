@@ -13,38 +13,14 @@ warning::
 PdurStutter will return link::Classes/Psubdivide::
 ::
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A filter pattern designed for a stream of float durations.
 
 Subdivides each duration by each stutter and yields that value stutter times.
 A stutter of teletype::0:: will skip the duration value, a stutter of teletype::1::yields the duration value unaffected.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

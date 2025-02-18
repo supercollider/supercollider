@@ -3,19 +3,7 @@ categories:: Tutorials>Mark_Polishook_tutorial
 summary:: Mark Polishook tutorial
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
-
-
-
-
-
-
-
-
-
 section:: Routines and clocks
-
-
-
 
 Use clocks to create automated, algorithmic scheduling. Among the things that clocks "play" are routines, tasks, and patterns.
 
@@ -112,19 +100,7 @@ code::
 
 The routine returned three strings followed by nil.
 
-
-
-
-
-
-
-
-
-
 section:: Scheduling routines
-
-
-
 
 Rewrite the routine so that it includes a .wait message.
 
@@ -156,19 +132,7 @@ code::
 r.reset.play;
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Clocks and the convenience of .play
-
-
-
 
 When a routine receives a .play message, control (of the routine) is redirected to a clock. The clock uses the receiver of the .wait message as a unit of time to schedule ("play") the routine.
 
@@ -192,19 +156,7 @@ code::
 SystemClock.play(r)
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Scheduling synths with routines
-
-
-
 
 Enclose synths within routines. It's often the case that the synthdef used by the synth in routines should have an envelope with a doneAction parameter set to 2 (to deallocate the memory needed for the synth after its envelope has finished playing).
 

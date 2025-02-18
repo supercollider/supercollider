@@ -3,19 +3,7 @@ categories:: Tutorials>Streams-Patterns-Events
 summary:: Patterns Introduction
 related:: Tutorials/Streams-Patterns-Events1, Tutorials/Streams-Patterns-Events3, Tutorials/Streams-Patterns-Events4, Tutorials/Streams-Patterns-Events5, Tutorials/Streams-Patterns-Events6, Tutorials/Streams-Patterns-Events7
 
-
-
-
-
-
-
-
-
-
 section:: Patterns
-
-
-
 
 Often one wants to be able to create multiple streams from a single stream specification.
 Patterns are just a way to make multiple Streams from a single specification, like a cookie cutter. A pattern can be any object that responds to the code::asStream:: message by creating a link::Classes/Stream::.
@@ -30,19 +18,7 @@ a.next.postln;
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Pattern and its subclasses
-
-
-
 
 There is a class named link::Classes/Pattern:: that provides more functionality for the concept of a pattern.
 
@@ -97,19 +73,7 @@ b = a.asStream;
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Math operations on Patterns
-
-
-
 
 Patterns also respond to math operators by returning patterns that respond to code::asStream:: with appropriately modified streams.
 
@@ -137,19 +101,7 @@ c = b.asStream;
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Filtering operations on patterns
-
-
-
 
 Patterns also respond to the messages code::collect::, code::select::, and code::reject:: by returning a new link::Classes/Pattern::.
 
@@ -195,19 +147,7 @@ c = b.asStream;
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Making Music with Patterns
-
-
-
 
 Here is a variation of the example given in part 1 that uses a link::Classes/Pattern:: to create two instances of the random melody stream.
 

@@ -3,19 +3,7 @@ categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: A filter pattern that turns equal rhythmic divisions into swung notes
 related:: Tutorials/A-Practical-Guide/PG_Cookbook07_Rhythmic_Variations, Tutorials/A-Practical-Guide/PG_Ref01_Pattern_Internals
 
-
-
-
-
-
-
-
-
-
 section:: Converting equal divisions into "swing"
-
-
-
 
 Most MIDI sequencers have a "swing" feature, which handles a note's timing differently depending on its metric position.
 A note in a stronger metric position is played on time; a note in a weaker position is delayed by some fraction of the beat.
@@ -23,13 +11,7 @@ A note in a stronger metric position is played on time; a note in a weaker posit
 In SuperCollider patterns, it's more convenient to express rhythm in terms of equal note durations.
 To mimic the swing-quantize behavior of conventional sequencers, it's helpful to have a way to modify the output events from a pattern so that the metrically-weaker notes sound later, without requiring the original pattern to be aware of the notes' metric positions.
 
-
-
-
-
-
 subsection:: Requirements
-
 
 definitionlist::
 ## Parameter: Base rhythmic value || You should be able to swing any subdivision of the beat:
@@ -43,13 +25,7 @@ Treating triplets, quintuplets or other divisions by the same algorithm would pr
 So, we may also want a parameter teletype::swingThreshold:: to disable swing for notes that are too far away from the base rhythmic value.
 ::
 
-
-
-
-
-
 subsection:: Implementation
-
 
 link::Classes/Pchain:: applies one pattern to the result of another pattern.
 So, if we can write a pattern that will modify the events coming from the source, Pchain will be an easy way to combine them.
@@ -92,13 +68,7 @@ code::
 )
 ::
 
-
-
-
-
-
 subsection:: Examples
-
 
 code::
 p = Pbind(\degree, Pseries(0, 1, 8), \dur, 0.25);
@@ -164,13 +134,7 @@ Pchain(
 )
 ::
 
-
-
-
-
-
 subsection:: Explanation
-
 
 We need to measure the current metric position against some reference point.
 The most logical is the time when the pattern started processing.

@@ -3,91 +3,46 @@ categories:: External Control>OSC>Matchers
 summary:: Matches incoming messages to responder funcs based on receive port
 related:: Classes/AbstractMessageMatcher, Classes/OSCFuncAddrMessageMatcher, Classes/OSCFuncRecvPortMessageMatcher, Classes/OSCFuncBothMessageMatcher
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 This is used by link::Classes/OSCMessageDispatcher:: and link::Classes/OSCMessagePatternDispatcher:: to match incoming OSC messages  to instances of link::Classes/OSCFunc:: or link::Classes/OSCdef:: using receive port. This class is private, and generally users should not need to address instances directly.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: new
 
-
 Make a new instance.
-
 
 argument:: recvPort
 
 The receive port to attempt to match, in the form of an link::Classes/Integer::.
 
-
 argument:: func
 
 The link::Classes/Function:: to evaluate if a match is found.
-
 
 returns::
  
 An OSCFuncRecvPortMessageMatcher.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 private:: init
 
-
 method:: value
 Check to see if a message matches, and evaluate func if it does.
-
 
 argument:: msg
 
 The OSC message as an link::Classes/Array:: in the form code::[OSCAddress, other args]::.
 
-
 argument:: time
 
 A link::Classes/Float:: indicating the time the incoming message was sent.
 
-
 argument:: addr
 
 A link::Classes/NetAddr:: indicating the source of the message.
-
 
 argument:: testRecvPort
 

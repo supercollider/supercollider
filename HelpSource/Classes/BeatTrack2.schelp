@@ -3,19 +3,7 @@ categories:: UGens>Analysis, UGens>FFT
 summary:: Template matching beat tracker
 related:: Classes/BeatTrack
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Thi beat tracker footnote::
 Research note: Designed by Nick Collins following work by Jean Laroche
@@ -29,41 +17,24 @@ The latency of the beat tracker with default settings is thus at least 2.5 secon
 This beat tracker is designed to be flexible for user needs; you can try out different window sizes, tempo weights and combinations of features.
 However, there are no guarantees on stability and effectiveness, and you will need to explore such parameters for a particular situation.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: categories
 
-
 method:: kr
-
 
 argument:: busindex
 
 [sk] Audio input to track, already analysed into N features, passed in via a control bus number from which to retrieve consecutive streams.
 
-
 argument:: numfeatures
 
 [s] How many features (i.e.: how many control buses) are provided
-
 
 argument:: windowsize
 
 [s] Size of the temporal window desired (2.teletype::0:: to 3.0 seconds models the human temporal window).
 You might use longer values for stability of estimate at the expense of reactiveness.
-
 
 argument:: phaseaccuracy
 
@@ -71,17 +42,14 @@ argument:: phaseaccuracy
 At the default, 50 different phases spaced by phaseaccuracy seconds would be tried out for 60bpm; 16 would be tried for 180 bpm.
 Larger phaseaccuracy means more tests and more CPU cost.
 
-
 argument:: lock
 
 [sk] If this argument is greater than 0.5, the tracker will lock at its current periodicity and continue from the current phase.
 Whilst it updates the model's phase and period, this is not reflected in the output until lock goes back below 0.5.
 
-
 argument:: weightingscheme
 
 [s] Use (-2.5) for flat weighting of tempi, (-1.5) for compensation weighting based on the number of events tested (because different periods allow different numbers of events within the temporal window) or otherwise a bufnum from teletype::0:: upwards for passing an array of teletype::120:: individual tempo weights; tempi go from 60 to 179 bpm in steps of one bpm, so you must have a buffer of teletype::120:: values.
-
 
 returns::
 Six k-rate outputs:
@@ -90,35 +58,11 @@ code::
 #beattick, eighthtick, groovetick, tempo, phase, groove = BeatTrack2.kr(busindex, numfeatures)
 ::
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 private:: init
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // you should load something useful for testing, like a one minute pop song

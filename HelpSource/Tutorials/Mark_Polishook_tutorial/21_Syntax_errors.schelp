@@ -3,19 +3,7 @@ categories:: Tutorials>Mark_Polishook_tutorial
 summary:: Mark Polishook tutorial
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
-
-
-
-
-
-
-
-
-
 section:: Syntax and grammar
-
-
-
 
 Before it actually runs a program, SuperCollider examines the code to ensure that syntax and grammar are correct.
 For example, are all variable names and/or keywords spelled correctly in a program?
@@ -34,19 +22,7 @@ code::
 nil
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Common errors
-
-
-
 
 numberedlist::
 ## the name of a class or a variable is misspelled

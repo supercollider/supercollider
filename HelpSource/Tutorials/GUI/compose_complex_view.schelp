@@ -3,38 +3,14 @@ categories:: Tutorials>GUI
 summary:: General examples about composing views with basic GUI components
 related:: Tutorials/GUI/create_window, Tutorials/GUI/create_simple_instrument_view
 
-
-
-
-
-
-
-
-
-
 section:: GUI Tutorial
-
-
-
 
 This helpfile is part of a link::Tutorials/GUI/tutorial_intro##GUI tutorial::.
 
 It is the third part of a beginner's introduction to SuperCollider's GUI system. First part covers
  link::Tutorials/GUI/create_window##creating a window::, while second part talks about link::Tutorials/GUI/create_simple_instrument_view##interfacing a synth with a GUI interface::.
 
-
-
-
-
-
-
-
-
-
 section:: What is this tutorial about?
-
-
-
 
 This tutorial presents strong::different interfaces you might need to construct:: when working with SuperCollider's system, strong::and discuss their particularities::.
 If you need a more detailed tutorial about the basics of view composition, you should read link::Tutorials/GUI/create_simple_instrument_view:: first.
@@ -45,19 +21,7 @@ The list of those components is available in the documentation, by selecting str
 
 You can see those components as some base building blocks allowing you to construct a greater structure.
 
-
-
-
-
-
-
-
-
-
 section:: Composing a Slider with a title and an editable text field
-
-
-
 
 This is the simplest example about view composition:
 a link::Classes/Slider::, a link::Classes/TextField:: and a link::Classes/StaticText::.
@@ -116,19 +80,7 @@ sliderView.front;
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Centralizing Views actions with a single Function
-
-
-
 
 This example is the continuation of the previous one, and explains why strong::UI components shouldn't be directly responsible for the action they ultimately perform::.
 It also talks briefly about focus and keyboard input response.
@@ -251,19 +203,7 @@ One of the most widely spread is the link::https://en.wikipedia.org/wiki/Model%E
 For SuperCollider implementation of the Model-View-Controller paradigm, see link::Classes/SimpleController::.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Creating a Tab View
-
-
-
 
 An interface that provides a simple tab system, like one would find in a web browser, allowing to switch between several web pages.
 
@@ -317,19 +257,7 @@ tabView.front;
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Implementing a view minimizer
-
-
-
 
 This example demonstrate how to strong::toggle a views visibility as one would use a window minimize function::.
 

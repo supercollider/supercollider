@@ -3,19 +3,7 @@ categories:: UGens>Synth control, Server>Nodes
 summary:: Monitors another UGen to see when it is finished
 related:: Classes/UGen, Classes/FreeSelfWhenDone, Classes/PauseSelfWhenDone
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Some UGens set a 'done' flag when they are finished playing.
 This UGen echoes that flag when it is set to track a particular UGen.
@@ -38,19 +26,7 @@ list::
 ## link::Classes/Demand::
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Actions
-
-
-
 
 A number of UGens implement doneActions.
 These allow one to optionally free or pause the enclosing synth and other related nodes when the UGen is finished.
@@ -79,59 +55,21 @@ table::
 
 For information on code::freeAll:: and code::deepFree::, see link::Classes/Group:: and link::Reference/Server-Command-Reference::.
 
-
-
-
-
-
-
-
-
-
 section:: Alternatives
-
-
-
 
 Another way to free a synth when some UGen is done playing is to use link::Classes/FreeSelfWhenDone::, or link::Classes/FreeSelf:: in combination with link::Classes/Done::. For example, this can be used to delay the freeing to let reverb tails fade out, etc.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: categories
 
-
 method:: kr
-
 
 argument:: src
 
 The UGen to monitor
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 The 'done' flag can be used to trigger other things in the same synth:
 

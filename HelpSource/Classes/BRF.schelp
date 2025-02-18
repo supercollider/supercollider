@@ -3,67 +3,28 @@ categories:: UGens>Filters>Linear
 summary:: 2nd order Butterworth band reject filter
 related:: Classes/BPF, Classes/HPF, Classes/LPF
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A second order band reject filter.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: in
 
 The input signal.
-
 
 argument:: freq
 
 Cutoff frequency in Hertz.
 WARNING: due to the nature of its implementation frequency values close to teletype::0:: may cause glitches and/or extremely loud audio artifacts!
 
-
 argument:: rq
 
 The reciprocal of Q (bandwidth / cutoffFreq).
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 { BRF.ar(Saw.ar(200, 0.1), FSinOsc.kr(XLine.kr(0.7, 300, 20), 0, 3800, 4000), 0.3) }.play;

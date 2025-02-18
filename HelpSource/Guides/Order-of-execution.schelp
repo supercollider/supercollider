@@ -6,19 +6,7 @@ related:: Classes/Server, Classes/Node, Classes/Group, Classes/ParGroup, Referen
 
 Order of execution is one of the most critical and seemingly difficult aspects of using SuperCollider, but in reality it only takes a little thought in the early planning stages to make it work for you.
 
-
-
-
-
-
-
-
-
-
 section:: Introduction
-
-
-
 
 Order of execution in this context doesn't mean the order in which statements are executed in the language (the client).
 It refers to the ordering of synth nodes on the server, which corresponds to the order in which their output is calculated each control cycle (blockSize).
@@ -54,19 +42,7 @@ image::server.png#A diagram of a typical server configuration::
 On the server external signals can be received by synths from "public" input busses (one in the represented case), while the different synths must be connected to "public" out audio busses (two in the case) in order to output a signal externally to the soundcard (see Bus). Other busses (both control and audio) are internal.
 In general, busses can be thought as roughly analogous to sends, busses, or submixes on an analog mixer, or as pipes allowing one to route "flowing" signals. If a synth is connected to a bus at a certain point (thus "flowing" into it)  a synth taking the signal from the same bus at a subsequent point will take as input the flowing signal (along with anything else previously output to the bus), just as would occur with a water pipe.
 
-
-
-
-
-
-
-
-
-
 section:: Some Notes about Servers and Targets
-
-
-
 
 There is always a default Server, which can be accessed or set through the class method Server.default. At startup this is set to be the local Server, and is also assigned to the interpreter variable s.
 
@@ -90,31 +66,13 @@ It provides a predictable basic Node tree so that methods such as Server:scope a
 Thus in general one should create new Nodes within the default group rather than in the RootNode.
 See link::Reference/default_group:: and link::Classes/RootNode:: for more detail.
 
-
-
-
-
-
-
-
-
-
 section:: Controlling order of execution
-
-
-
 
 There are three ways to control the order of execution:
 using addAction in your synth creation messages, moving nodes, and placing your synths in groups.
 Using groups is optional, but they are the most effective in helping you organize the order of execution.
 
-
-
-
-
-
 subsection:: Add actions
-
 
 By specifying an addAction argument for code::Synth.new:: (or SynthDef.play, Function.play, etc.) one can specify the node's placement relative to a target.
 The target might be a group node, another synth node, or a server.
@@ -162,13 +120,7 @@ Using Synth.new without an addAction will result in the default addAction.
 (You can check the default values for the arguments of any method by looking at a class' source code. See Internal-Snooping for more details.)
 Where order of execution matters, it is important that you specify an addAction, or use one of the convenience methods shown above.
 
-
-
-
-
-
 subsection:: Moving nodes
-
 
 code::
     .moveBefore
@@ -185,13 +137,7 @@ code::
     ~src.moveBefore(~fx);   // place the source before the effect
 ::
 
-
-
-
-
-
 subsection:: Groups
-
 
 Groups can be moved in the same way as synths.
 When you move a group, all the synths in that group move with it.
@@ -207,13 +153,7 @@ This is an easy, easy way to make the order of execution happen the way you want
 
 Determine your architecture, then make groups to support the architecture.
 
-
-
-
-
-
 subsection:: Parallel Groups
-
 
 In some cases, server nodes do not depend on each other.
 On multiprocessor systems, these nodes could be evaluated on different CPUs.
@@ -227,13 +167,7 @@ However the alternative
 server strong::supernova:: is able to distribute the contents of parallel groups to different CPUs.
 ::
 
-
-
-
-
-
 subsection:: Using order of execution to your advantage
-
 
 Before you start coding, plan out what you want and decide where the synths need to go.
 
@@ -336,30 +270,12 @@ Note that in the routine, using a Group for the source synths allows their order
 Note that this arrangement prevents errors in order of execution, through the use of a small amount of organizational code.
 Although straightforward here, this arrangement could easily be scaled to a larger project.
 
-
-
-
-
-
 subsection:: Messaging Style
-
 
 The above examples are in 'object style'. Should you prefer to work in 'messaging style' there are corresponding messages to all of the methods shown above.
 See NodeMessaging, and Server-Command-Reference for more details.
 
-
-
-
-
-
-
-
-
-
 section:: Feedback
-
-
-
 
 When the various output UGens (Out, OffsetOut, XOut) write data to a bus, they mix it with any data from the current cycle, but overwrite any data from the previous cycle.
 (ReplaceOut overwrites all data regardless.)

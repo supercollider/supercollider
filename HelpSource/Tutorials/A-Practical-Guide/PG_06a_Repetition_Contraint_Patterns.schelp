@@ -3,30 +3,12 @@ categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Patterns that repeat values, or cut other patterns off early
 related:: Tutorials/A-Practical-Guide/PG_060_Filter_Patterns, Tutorials/A-Practical-Guide/PG_06b_Time_Based_Patterns
 
-
-
-
-
-
-
-
-
-
 section:: Repetition and Constraint patterns
-
-
-
 
 These are essentially flow of control patterns.
 Each one takes a source pattern and repeats values from it, or stops the stream early based on a preset constraint.
 
-
-
-
-
-
 subsection:: Repetition patterns
-
 
 These patterns allow you to repeat single values, or (in the case of Pn) entire patterns.
 
@@ -90,13 +72,7 @@ p.stop;
 
 ::
 
-
-
-
-
-
 subsection:: Constraint (or interruption) patterns
-
 
 Instead of prolonging a stream by repetition, these patterns use different methods to stop a stream dynamically.
 They are especially useful for modularizing pattern construction.

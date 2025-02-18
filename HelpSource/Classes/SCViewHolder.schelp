@@ -3,19 +3,7 @@ categories:: GUI
 summary:: Instead of subclassing a (Q/SC)View, this is a proxy/adapter object that holds the View
 related:: Classes/View
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 When writing gui widgets it is sometimes not desirable to subclass a view class.
 Its preferable to write a class that acts like a View and is used where Views normally are used but isn't a direct subclass of a View class.
@@ -42,146 +30,85 @@ Messages that are not understood by the view holder are forwarded to the proxied
 Historical note: this class was originally in the cruciallib.
  ObjectGui is a subclass of this.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: consumeKeyDowns
 
-
 Global preference variable: if teletype::true:: then subclasses that do not set a keyDownAction do NOT bubble up keyDown events by default.
-
 
 returns::
  
 The result of calling the method on the proxied view
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 method:: view
 
-
 Get or set the view for which this object is a proxy/adapter.
-
 
 argument:: v
 
 The view: a link::Classes/View::
 
-
 returns::
  
 The result of calling the method on the proxied view
 
-
-
-
 method:: doesNotUnderstand
 
-
-Message that are not understood by the view holder are forwarded to the proxied view.
+Messages that are not understood by the view holder are forwarded to the proxied view.
  So when the interpreter is told to send a message to a view holder object and that message is not understood, it calls doesNotUnderstand
-
 
 argument:: selector
 
 The message that was not understood
 
-
 argument::  ... args
 
 The arguments that were supplied
-
 
 returns::
  
 the result of calling the method on the proxied view
 
-
-
-
 method:: viewDidClose
 
-
-Unset the view variable. After the view is closed (removed from the window) then all calls to the view holder will fail, and should fail as there is no view anymore.
+Unsets the view variable. After the view is closed (removed from the window) then all calls to the view holder will fail, and should fail as there is no view anymore.
  You can check viewHolder.isClosed if you are unsure
-
 
 returns::
  
 this
-
-
-
 
 method:: remove
 
-
-Remove the view from the window if it has not already been removed.
-
+Removes the view from the window if it has not already been removed.
 
 returns::
  
 this
 
-
-
-
 method:: action
 
-
 This method is forwarded to the view
-
 
 argument:: f
 
 returns::
  
 The result of calling the method on the proxied view
-
-
-
 
 method:: doAction
 
-
 This method is forwarded to the view
-
 
 returns::
  
 The result of calling the method on the proxied view
 
-
-
-
 method:: keyDownAction
 
-
 This method is forwarded to the view
-
 
 argument:: f
 
@@ -189,55 +116,35 @@ returns::
  
 The result of calling the method on the proxied view
 
-
-
-
 method:: keyDownResponder
-
 
 This method is forwarded to the view.
  Note: this is a cruciallib convention and will be deprecated here.
 
-
 returns::
  
 The result of calling the method on the proxied view
 
-
-
-
 method:: enableKeyDowns
-
 
 This method is forwarded to the view.
 Note: this is a cruciallib convention and will be deprecated here.
 
-
 returns::
  
 The result of calling the method on the proxied view
 
-
-
-
 method:: asView
 
-
 returns the view
-
 
 returns::
  
 the view
 
-
-
-
 method:: bounds
 
-
 This method is forwarded to the view
-
 
 argument:: b
 
@@ -245,14 +152,9 @@ returns::
  
 The result of calling the method on the proxied view
 
-
-
-
 method:: resize
 
-
 This method is forwarded to the view
-
 
 argument:: r
 
@@ -260,42 +162,27 @@ returns::
  
 The result of calling the method on the proxied view
 
-
-
-
 method:: enabled
 
-
 This method is forwarded to the view
-
 
 argument:: b
 
 returns::
  
 The result of calling the method on the proxied view
-
-
-
 
 method:: refresh
 
-
 This method is forwarded to the view
-
 
 returns::
  
 The result of calling the method on the proxied view
 
-
-
-
 method:: background
 
-
 This method is forwarded to the view
-
 
 argument:: b
 
@@ -303,14 +190,9 @@ returns::
  
 The result of calling the method on the proxied view
 
-
-
-
 method:: focus
 
-
 This method is forwarded to the view
-
 
 argument:: flag
 
@@ -318,14 +200,9 @@ returns::
  
 The result of calling the method on the proxied view
 
-
-
-
 method:: visible
 
-
 This method is forwarded to the view
-
 
 argument:: boo
 
@@ -333,27 +210,17 @@ returns::
  
 The result of calling the method on the proxied view
 
-
-
-
 method:: isClosed
 
-
 This method is forwarded to the view
-
 
 returns::
  
 The result of calling the method on the proxied view
 
-
-
-
 method:: font
 
-
 This method is forwarded to the view
-
 
 argument:: f
 

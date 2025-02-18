@@ -121,19 +121,7 @@ tree::
 ## recording synth
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Default groups in multi-client setups
-
-
-
 
 See link::Guides/MultiClient_Setups:: for more info.
 

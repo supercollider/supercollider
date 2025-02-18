@@ -12,19 +12,7 @@ Unit generator classes which would naturally have several outputs such as a pann
 The convention of having only a single output per unit generator allows the implementation of multiple channels by using arrays of unit generators.
 (See link::Guides/Multichannel-Expansion:: for more details.)
 
-
-
-
-
-
-
-
-
-
 section:: Instantiation. Audio Rate, Control Rate
-
-
-
 
 A unit generator is created by sending the 'ar' or 'kr' message to the unit generator's class object. The 'ar' message creates a unit generator that runs at audio rate.
 The 'kr' message creates a unit generator that runs
@@ -39,19 +27,7 @@ FSinOsc.ar(800, 0.0, 0.2); // create a sine oscillator at 800 Hz, phase 0.0, amp
 
 A unit generator's signal inputs can be other unit generators, scalars, or arrays of unit generators and scalars.
 
-
-
-
-
-
-
-
-
-
 section:: SynthDefs and Synths
-
-
-
 
 In order to play a unit generator one needs to compile it in a link::Classes/SynthDef:: and play it on the server in a link::Classes/Synth::.
 A synth node is a container for one or more unit generators that execute together.
@@ -95,19 +71,7 @@ code::
 { FSinOsc.ar(800, 0, 0.2) }.play; // create and play a sine oscillator at 800 Hz
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Building Patches
-
-
-
 
 You can do math operations on unit generators and the result will be another unit generator.
 Doing math on unit generators is not doing any signal calculation itself - it is building the network of unit generators that will execute once they are played in a Synth.

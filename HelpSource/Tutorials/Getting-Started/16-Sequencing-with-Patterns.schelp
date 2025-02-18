@@ -65,19 +65,7 @@ r = Task({
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: What else can patterns do?
-
-
-
 
 The SuperCollider pattern library is large (over 120 classes, not including extension libraries), obviously beyond the scope of a tutorial to cover in depth.
 But some patterns you'll come back to again and again.
@@ -131,19 +119,7 @@ p.nextN(15);	// get 15 values from the pattern's stream
 This is just a taste, meant to illustrate the kinds of flexibility you can get with patterns.
 As with any rich and adaptable structure, the best way is to start with simple cases and gradually extend into more complicated setups.
 
-
-
-
-
-
-
-
-
-
 section:: Playing notes with a pattern: Pbind
-
-
-
 
 Not only can patterns produce data for notes, but they can also play the notes themselves.
 'Over the Rainbow' again.
@@ -261,35 +237,11 @@ p.stop;
 k.stop;
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Further reading
-
-
-
 
 link::Overviews/Streams::, link::Tutorials/Streams-Patterns-Events1##Streams-Patterns-Events::, link::Tutorials/A-Practical-Guide/PG_01_Introduction##Practical Guide to Patterns::
 
-
-
-
-
-
-
-
-
-
 section:: Suggested exercises
-
-
-
 
 list::
 ## Choose a familiar tune and write a Pbind for it, using any synthdef you like.

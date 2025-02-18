@@ -3,59 +3,31 @@ categories:: UGens>Delays>Buffer
 summary:: Stereo ping-pong delay
 related:: Classes/SinOsc
 
-
-
-
-
-
-
-
-
-
 description::
 
-
-
-
-Bouncesound sound between two outputs…  Like a ping-pong ball. PingPong is actually a compound built upon  link::Classes/RecordBuf::  and
+Bouncesound sound between two outputs…  Like a ping-pong ball. PingPong is
+actually a compound built upon  link::Classes/RecordBuf::  and
 link::Classes/PlayBuf:: .
-
-
-
-
-
-
-
-
-
 
 classmethods::
 
-
-
-
 method:: ar
-
 
 argument:: bufnum
 
 First index of a multi channel buffer.
 
-
 argument:: inputs
 
 An array of audio inputs, the same size as your buffer.
-
 
 argument:: delayTime
 
 Delay time in seconds.
 
-
 argument:: feedback
 
 Feedback coefficient.
-
 
 argument:: rotate
 
@@ -64,19 +36,7 @@ Which rotates the inputArray by one step.
 left). Rotation of teletype::0:: (or 2) would result in no rotation to the
 inputArray. You cannot modulate this number by assigning it to a control in a SynthDef.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

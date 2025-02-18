@@ -11,22 +11,9 @@ note::
 The keyboard shortcuts mentioned here only apply to the standard SuperCollider IDE.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Class Definitions, Implementations, and References
 
-
-
-
 subsection:: Look up Implementation
-
 
 Selecting the name of any method (e.g. play) and then the menu item teletype::Language>Look up Implementation:: will open a window showing all implementations of that method and their arguments.
 Selecting one of those classes and methods (e.g. Sample:play) and typing enter will open the class definition at that method.
@@ -34,26 +21,14 @@ Note that this only shows implementations, and does not indicate inheritance.
 
 (see link::Reference/KeyboardShortcuts::)
 
-
-
-
-
-
 subsection:: Look up References
-
 
 Selecting any text (e.g. Window or asStream) and then the menu item teletype::Language>Look up References:: will open a window showing all references to the selected text, i.e. each place it is used within the class library.
 Note that this will not find methods calls compiled with special byte codes like 'value'.
 
 (see link::Reference/KeyboardShortcuts::)
 
-
-
-
-
-
 subsection:: Graphical Class browser
-
 
 SC has a graphical Class browser which will show all methods, arguments, subclasses, instance variables and class variables.
 Using the browser's buttons you can easily navigate to the class' superclass, subclasses, class source, method source, helpfile (if there is one), check references or implementation of methods.
@@ -62,13 +37,7 @@ code::
 SequenceableCollection.browse;
 ::
 
-
-
-
-
-
 subsection:: Snooping in Classes
-
 
 code::
 // print all instance methods defined for this class
@@ -145,13 +114,7 @@ Class.allClasses.do { | class |
 )
 ::
 
-
-
-
-
-
 subsection:: Snooping in Methods
-
 
 code::
 // does the class implement this method?
@@ -189,13 +152,7 @@ Collection.dumpByteCodes('select');
 { 1 + 2 }.def.dumpByteCodes; // dump its code.
 ::
 
-
-
-
-
-
 subsection:: Snooping in GUI Windows
-
 
 code::
 (
@@ -225,13 +182,7 @@ Window.allWindows.do { | window |
 Window.closeAll; // close all the windows
 ::
 
-
-
-
-
-
 subsection:: Snooping in SynthDefs
-
 
 code::
 // a synthdef to snoop in
@@ -246,13 +197,7 @@ f = SynthDef(\snoop, { | out=0 |
 f.dumpUGens;
 ::
 
-
-
-
-
-
 subsection:: Snooping on the Server
-
 
 Lots of information on server-related snooping can be found in the link::Classes/Server:: helpfile under "Information and debugging".
 
@@ -280,13 +225,7 @@ x = f.play;
 s.dumpOSC(0);
 ::
 
-
-
-
-
-
 subsection:: Snooping in the Interpreter
-
 
 When evaluating text in the interpreter, the variable 'this' always refers to the interpreter.
 

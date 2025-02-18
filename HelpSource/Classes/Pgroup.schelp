@@ -3,19 +3,7 @@ categories:: Streams-Patterns-Events>Patterns>Server Control
 summary:: Starts a new Group and plays the pattern in this group
 related:: Classes/Group, Classes/Pbus
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 The group is released when the stream has ended.
 The group's strong::release:: is delayed (default 0.1 beats) until after the last note releases.
@@ -25,30 +13,15 @@ code::
 Pgroup(...).play(protoEvent: Event.default.put(\groupReleaseTime, releaseLag));
 ::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 p = Pbind(\degree, Prand((0..7), inf), \dur, 0.3, \legato, 0.2);
 
- // watch the node structure as it changes
-s.waitForBoot({ s.plotTree });
+ // watch the node structure as it changes s.waitForBoot({ s.plotTree });
 
-// one group
-Pgroup(p).play;
+// one group Pgroup(p).play;
 
-// two nested groups
-Pgroup(Pgroup(p)).play;
+// two nested groups Pgroup(Pgroup(p)).play;
 Pgroup(Ppar([Pgroup(p), Pgroup(p)])).play;
 ::

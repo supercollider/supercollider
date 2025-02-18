@@ -3,19 +3,7 @@ categories:: UGens>InOut
 summary:: Read audio from hardware inputs
 related:: Classes/In, Classes/ServerOptions
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 SoundIn is a convenience UGen to read audio from the input of your computer or soundcard.
 It is a wrapper link::Classes/UGen:: based on link::Classes/In::, which offsets the index such that 0 will always correspond to the first input regardless of the number of inputs present.
@@ -26,45 +14,19 @@ On Intel based Macs, reading the built-in microphone or input may require creati
 code::"open -a 'Audio MIDI Setup'".unixCmd; // execute this to launch it::
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar
-
 
 argument:: bus
 
 The channel (or array of channels) to read in. These start at 0, which will correspond to the first audio input.
 
-
 argument:: mul
 
 argument:: add
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // world's most expensive patchcord (use headphones to avoid feedback)

@@ -3,19 +3,7 @@ categories:: UGens>Filters>Linear
 summary:: Two zero fixed midpass
 related:: Classes/BRZ2, Classes/HPZ2, Classes/LPZ2
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A special case fixed filter. Implements the formula:
 
@@ -25,40 +13,15 @@ out(i) = 0.5 * (in(i) - in(i - 2)).
 
 This filter cuts out 0 Hz and the Nyquist frequency.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: in
 
 The input signal.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // Compare:

@@ -3,19 +3,7 @@ categories:: Language
 summary:: Lambda expressions
 related:: Classes/Function, Classes/AbstractFunction, Classes/FunctionDef
 
-
-
-
-
-
-
-
-
-
 section:: Introduction
-
-
-
 
 A link::Classes/Function:: is an expression which defines operations to be performed when it is sent the code::value:: message. In functional languages, a function would be known as a lambda expression.
 Function definitions are enclosed in curly brackets code::{}::. Argument declarations, if any, follow the open bracket. Variable declarations follow argument declarations.
@@ -50,19 +38,7 @@ The following figure depicts an empty function, input without output, output wit
 
 image::functions.png#Functions::
 
-
-
-
-
-
-
-
-
-
 section:: Arguments
-
-
-
 
 An argument list immediately follows the open curly bracket of a function definition.
 An argument list either begins with the reserved word code::arg::, or is contained between two vertical bars.
@@ -126,13 +102,7 @@ See link::Reference/Literals:: for more information.
 
 anchor::[1]::
 
-
-
-
-
-
 subsection:: [1] Literal argument defaults
-
 
 Argument defaults that are literals are stored as part of the link::Classes/FunctionDef::.
 Arguments passed at runtime -- including nil -- always override the defaults:
@@ -148,13 +118,7 @@ f.value(nil);  // prints nil
 
 anchor::[2]::
 
-
-
-
-
-
 subsection:: [2] Expression argument defaults
-
 
 Since expressions are evaluated when the function is called, they cannot be stored in the link::Classes/FunctionDef::.
 They are executed only if the passed-in value is nil.
@@ -224,19 +188,7 @@ code::
 };
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Variables
-
-
-
 
 Following the argument declarations are the variable declarations.
 These may be declared in any order.

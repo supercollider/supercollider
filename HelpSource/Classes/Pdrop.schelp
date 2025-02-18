@@ -3,54 +3,17 @@ categories:: Streams-Patterns-Events>Patterns
 summary:: Skips (drops) the first n events from a pattern
 related:: Classes/Pclutch
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Skip an initial (count) number of events from a pattern.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: new
 
-
-Drop strong::count:: elements of the strong::pattern:: from the stream.
-
-
-
-
-
-
-
-
-
+Drops strong::count:: elements of the strong::pattern:: from the stream.
 
 examples::
-
-
-
 
 code::
 (

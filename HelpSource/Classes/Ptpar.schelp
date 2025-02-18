@@ -3,38 +3,13 @@ categories:: Streams-Patterns-Events>Patterns>Parallel
 summary:: Embed event streams in parallel, with time offset
 related:: Classes/Ppar
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Embed several event streams so that they form a single output stream with all their events in temporal order, providing a global strong::offset:: for each. When one stream ends, the other streams are further embedded until all have ended.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: list
 
@@ -45,24 +20,11 @@ note::
 Times are in beats and depend on the tempo of the link::Classes/TempoClock::in use.
 ::
 
-
 argument:: repeats
 
 Repeat the whole pattern n times.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // see the delta values in the resulting events

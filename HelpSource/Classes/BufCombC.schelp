@@ -3,61 +3,34 @@ categories:: UGens>Delays>Buffer
 summary:: Buffer based comb delay line with cubic interpolation
 related:: Classes/BufCombL, Classes/BufCombN, Classes/CombC
 
-
-
-
-
-
-
-
-
-
 description::
 
-
-
-
-Comb delay line with cubic interpolation which uses a buffer for its internal memory. See also  link::Classes/BufCombN::  which uses no
+Comb delay line with cubic interpolation which uses a buffer for its
+internal memory. See also  link::Classes/BufCombN::  which uses no
 interpolation, and  link::Classes/BufCombL::  which uses linear
-interpolation. Cubic interpolation is more computationally expensive than linear, but more accurate.
-
-
-
-
-
-
-
-
-
+interpolation. Cubic interpolation is more computationally expensive
+than linear, but more accurate.
 
 classmethods::
 
-
-
-
 method:: ar
-
 
 argument:: buf
 
 Buffer number.
 
-
 argument:: in
 
 The input signal.
-
 
 argument:: delaytime
 
 Delay time in seconds.
 
-
 argument:: decaytime
 
 Time for the echoes to decay by 60 decibels.
 If this time is negative then the feedback coefficient will be negative, thus emphasizing only odd harmonics at an octave lower.
-
 
 discussion::
 warning:: 
@@ -65,19 +38,7 @@ For reasons of efficiency, the effective buffer size is limited to the previous 
 So, if 44100 samples are allocated, the maximum delay would be 32768 samples.
 ::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // These examples compare the variants, so that you can hear the difference in interpolation

@@ -2,19 +2,7 @@ title:: News in 3.10
 categories:: News
 summary:: All the news that's fit to .postln
 
-
-
-
-
-
-
-
-
-
 section:: Known issues
-
-
-
 
 FileDialog can hang — currently we are only able to reproduce on KDE, but other OS's could be affected.
 
@@ -23,35 +11,11 @@ On Windows and Linux, running code with Ctrl+Enter in the help browser (not the 
 QtWebEngine, a hard dependency of SCLang and SCIDE, is difficult or impossible to install in some environments.
 Work is underway to make it an optional component, but this will not happen in time for 3.10.
 
-
-
-
-
-
-
-
-
-
 section:: General: Added
-
-
-
 
 A code:: NO_X11 :: option has been added to the build system so that server plugins requiring an X server such as MouseX can be omitted.
 
-
-
-
-
-
-
-
-
-
 section:: General: Changed
-
-
-
 
 sclang and scide have long been stuck with Qt 5.5 due to Qt dropping QtWebKit for QtWebEngine.
 They have been upgraded for compatibility with Qt 5.7+. We recommend using the most recent version of Qt.
@@ -69,19 +33,7 @@ The minimum required version is now CMake 3.5 instead of CMake 2.8.
 
 scel (the emacs package) is now a submodule.
 
-
-
-
-
-
-
-
-
-
 section:: General: Fixed
-
-
-
 
 Many issues with Unicode paths on Windows were fixed in 3.9. A few remaining cases involving sound files remained, and are now fixed:
 
@@ -98,35 +50,11 @@ Fixed a misleading deprecation warning when code:: CMAKE_INSTALL_PREFIX :: is se
 
 Fixed code:: CMAKE_PREFIX_PATH :: incorrectly defaulting to code:: /usr/local/ :: on macOS under some conditions.
 
-
-
-
-
-
-
-
-
-
 section:: scsynth and supernova: Added
-
-
-
 
 Supernova now has latency compensation.
 
-
-
-
-
-
-
-
-
-
 section:: scsynth and supernova: Fixed
-
-
-
 
 scsynth's latency compensation had a math error that ended up doubling the latency.
 It is fixed now.
@@ -142,35 +70,11 @@ Fixed errors in supernova's code:: /s_getn ::.
 
 Fix supernova's response to code:: /g_queryTree :: so it matches scsynth.
 
-
-
-
-
-
-
-
-
-
 section:: UGens: Fixed
-
-
-
 
 Fixed clicks in Convolution2L.
 
-
-
-
-
-
-
-
-
-
 section:: sclang: Added
-
-
-
 
 Menus are now supported in the Qt GUI.
 See help files for code:: Menu ::, code:: MenuAction ::, code:: ToolBar ::, and code:: MainMenu ::.
@@ -183,19 +87,7 @@ code:: FileDialog :: and code:: Dialog :: now support a "path" argument that spe
 
 code:: QTreeView :: has a new method: code:: setColumnWidth ::.
 
-
-
-
-
-
-
-
-
-
 section:: sclang: Changed
-
-
-
 
 strong:: Breaking change: :: code:: Float:asString :: now always produces a decimal point, so code:: 3.0.asString :: is now code:: "3.0" :: instead of code:: "3" ::.
 
@@ -206,35 +98,11 @@ Previously, it returned the File object.
 
 Scrollbars now always appear for ScrollView on Linux an Windows, as a temporary workaround for a very odd dependency on the use of the scroll wheel.
 
-
-
-
-
-
-
-
-
-
 section:: sclang: Removed
-
-
-
 
 Removed some unused Qt dependencies from the build system.
 
-
-
-
-
-
-
-
-
-
 section:: sclang: Fixed
-
-
-
 
 strong:: Breaking change: :: Fixed a long-standing math error in code:: SimpleNumber:expexp ::.
 
@@ -255,19 +123,7 @@ Fixed code:: Node:release :: getting stuck on negative release times, which are 
 
 Fixed code:: == :: on code:: Signal :: objects randomly returning the wrong result.
 
-
-
-
-
-
-
-
-
-
 section:: Class library: Added
-
-
-
 
 code:: UnitTest.passVerbosity :: allows changing the verbosity of test failure reports.
 See the code:: UnitTest :: help file for more information.
@@ -278,55 +134,19 @@ code:: Node:query :: has a new code:: action :: argument, allowing specification
 
 code:: .degrad :: and code:: .raddeg :: are now implemented for UGens.
 
-
-
-
-
-
-
-
-
-
 section:: Class library: Changed
-
-
-
 
 The default behavior of code:: SerialPort.devices :: pattern matching has been improved to match a wider variety of devices on macOS and Linux.
 
 Internal calls to code:: .interpret :: have been removed from code:: Color.fromHexString :: and code:: History.unformatTime ::, improving both performance and security.
 
-
-
-
-
-
-
-
-
-
 section:: Class library: Deprecated
-
-
-
 
 code:: SerialPort.cleanupAll :: is deprecated.
 
 Providing an integer index for code:: SerialPort.new :: is deprecated.
 
-
-
-
-
-
-
-
-
-
 section:: Class library: Fixed
-
-
-
 
 code:: BufWr.ar :: no longer allows its input signals to be control rate, which caused the server to read from garbage memory.
 
@@ -371,37 +191,13 @@ Fixed incorrect template matching behavior in code:: OSCFunc :: and related func
 
 Fixed "Message 'extension' not understood" preventing code:: Image :: from working.
 
-
-
-
-
-
-
-
-
-
 section:: IDE & SCDoc: Added
-
-
-
 
 The IDE has a prettier default theme. The old theme still exists as "classic."
 
 The IDE now properly highlights scale degree literals like code:: 4s ::.
 
-
-
-
-
-
-
-
-
-
 section:: IDE & SCDoc: Changed
-
-
-
 
 The IDE has a prettier default theme. The old theme still exists as "classic."
 
@@ -412,19 +208,7 @@ The SCDoc TOC and menubar have been redesigned again.
 Various tweaks to the appearance of the IDE:
 nicer tabs, better border colors.
 
-
-
-
-
-
-
-
-
-
 section:: IDE & SCDoc: Fixed
-
-
-
 
 When starting the IDE, detached docklet sometimes spawn as unresponsive.
 This has been fixed.

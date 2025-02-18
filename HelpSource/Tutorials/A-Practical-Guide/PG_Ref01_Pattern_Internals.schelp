@@ -3,22 +3,9 @@ categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Details of pattern implementation, with guidance on writing new pattern classes
 related:: Tutorials/A-Practical-Guide/PG_Cookbook08_Swing
 
-
-
-
-
-
-
-
-
-
 section:: Inner workings of patterns
 
-
-
-
 subsection:: Patterns as streams
-
 
 As noted, patterns by themselves don't do much. They have to be turned into streams first; then, values are requested from a stream, not from the pattern.
 
@@ -109,13 +96,7 @@ ListPattern : Pattern {
 Because of this inheritance, Prand simply expresses its behavior as a code::do:: loop, choosing code::repeats:: items randomly from the list and embedding them into the stream.
 When the loop is finished, the method returns the input value (see below).
 
-
-
-
-
-
 subsection:: Streams' input values (inval, inevent)
-
 
 Before discussing input values in patterns, let's take a step back and discuss how it works for Routines.
 
@@ -167,13 +148,7 @@ The only difference is that yield can return only one object to the code::next::
 
 Take a moment to go back and look at how Prand's code::embedInStream:: method does it.
 
-
-
-
-
-
 subsection:: EmbedInStream vs. asStream + next
-
 
 If a pattern class needs to use values from another pattern, should it evaluate that pattern using code::embedInStream::, or should it make a separate stream ( code::asStream:: ) and pull values from that stream using code::next::?
 Both approaches are used in the class library.
@@ -213,13 +188,7 @@ Pdiff : FilterPattern {
 }
 ::
 
-
-
-
-
-
 subsection:: Writing patterns: other factors
-
 
 Pattern objects are supposed to be emphasis::stateless::, meaning that the pattern object itself should undergo no changes based on any stream running the pattern.
 (There are some exceptions, such as link::Classes/Ppatmod::, which exists specifically to perform some modification on a pattern object.
@@ -277,13 +246,7 @@ Pwhite : Pattern {
 Pwhite(Pseries(0.0, 0.01, inf), Pseries(0.2, 0.01, inf), inf).asStream.nextN(200).plot;
 ::
 
-
-
-
-
-
 subsection:: Cleaning up event pattern resources
-
 
 Some event patterns create server or other objects that need to be explicitly removed when they come to a stop.
 This is handled by the link::Classes/EventStreamCleanup:: object.
@@ -338,13 +301,7 @@ When an EventStreamCleanup is involved, it should be code::^cleanup.exit(inval):
 This executes the cleanup functions and also removes them from EventStreamCleanups at any parent level.
 ::
 
-
-
-
-
-
 subsection:: When does a pattern need an EventStreamCleanup?
-
 
 If the pattern creates something on the server (bus, group, synth, buffer etc.), it must use an EventStreamCleanup as shown to make sure those resources are properly garbage collected.
 

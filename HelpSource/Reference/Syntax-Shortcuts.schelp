@@ -3,19 +3,7 @@ categories:: Language
 summary:: Syntactic sugar
 related:: Overviews/SymbolicNotations
 
-
-
-
-
-
-
-
-
-
 section:: Introduction
-
-
-
 
 This file shows a number of syntax equivalences in the compiler.
 
@@ -52,22 +40,9 @@ You could even start expanding out the equivalent of (1..10) which is really a s
 This could also be written code:: 1.series(nil,10) ::.
 This adds another 26 variations to the 13 variations above.
 
-
-
-
-
-
-
-
-
-
 section:: Defining functions and classes
 
-
-
-
 subsection:: Shorter argument lists in definitions
-
 
 table::
 ## instead of writing: || you can write:
@@ -80,13 +55,7 @@ note::
 When using the new code::||:: syntax, the default value needs to be enclosed in parenthesis if it's not a literal.
 ::
 
-
-
-
-
-
 subsection:: Partial application
-
 
 table::
 ## instead of writing: || you can write:
@@ -101,13 +70,7 @@ note::
 There are some limitations to the extent of the surrounding expression that code::_:: can capture. See link::Reference/Partial-Application:: for details.
 ::
 
-
-
-
-
-
 subsection:: Defining instance variable accessor methods
-
 
 table::
 ## instead of writing: || you can write:
@@ -124,22 +87,9 @@ Thing { var <>x; }
 
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Sending messages, calling functions, and instantiating objects
 
-
-
-
 subsection:: Function-call and receiver notations
-
 
 table::
 ## instead of writing: || you can write:
@@ -147,65 +97,35 @@ table::
 ## code:: f(g(x)) :: || code:: x.g.f ::
 ::
 
-
-
-
-
-
 subsection:: Calling the 'value' method
-
 
 table::
 ## instead of writing: || you can write:
 ## code:: f.value(x) :: || code:: f.(x) ::
 ::
 
-
-
-
-
-
 subsection:: Instantiate object
-
 
 table::
 ## instead of writing: || you can write:
 ## code:: Point.new(3, 4) :: || code:: Point(3, 4) ::
 ::
 
-
-
-
-
-
 subsection:: Calling an instance variable setter method
-
 
 table::
 ## instead of writing: || you can write:
 ## code:: p.x_(y) :: || code:: p.x = y :: or code:: x(p) = y ::
 ::
 
-
-
-
-
-
 subsection:: Calling performList
-
 
 table::
 ## instead of writing: || you can write:
 ## code:: object.performList(\method, a, b, array) :: || code:: object.method(a, b, *array) ::
 ::
 
-
-
-
-
-
 subsection:: Moving blocks out of argument lists (trailing-block arguments)
-
 
 table::
 ## instead of writing: || you can write:
@@ -247,13 +167,7 @@ do(6, _.postln) // valid
 
 ::
 
-
-
-
-
-
 subsection:: Use a selector (method name) as a binary operator
-
 
 table::
 ## instead of writing: || you can write:
@@ -310,22 +224,9 @@ var a = (_+_) ! [3, 3];
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Collections
 
-
-
-
 subsection:: Create a collection
-
 
 table::
 ## instead of writing: || you can write:
@@ -333,13 +234,7 @@ table::
 ## code:: Array[3, 4, 5] :: || code:: [3, 4, 5] ::
 ::
 
-
-
-
-
-
 subsection:: Indexing elements
-
 
 table::
 ## instead of writing: || you can write:
@@ -347,13 +242,7 @@ table::
 ## code:: z.put(i, y) :: || code:: z[i] = y ::
 ::
 
-
-
-
-
-
 subsection:: Accessing subranges of Arrays
-
 
 table::
 ## instead of writing: || you can write:
@@ -362,13 +251,7 @@ table::
 ## code:: a.copyFromStart(4) :: || code:: a[..4] ::
 ::
 
-
-
-
-
-
 subsection:: Creating arithmetic series
-
 
 table::
 ## instead of writing: || you can write:
@@ -394,61 +277,30 @@ code::
 {: x, x <- (1..), x.isPrime }.nextN(10);
 ::
 
-
-
-
-
-
 subsection:: Creating Events
-
 
 table::
 ## instead of writing: || you can write:
 ## code:: Event[\a -> 1, \b -> 2] :: || code:: (a: 1, b: 2) ::
 ::
 
-
-
-
-
-
 subsection:: Creating Arrays with key-value pairs
-
 
 table::
 ## instead of writing: || you can write:
 ## code:: [\a, 1, \b, 2] :: || code:: [a: 1, b: 2] ::
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Other shortcuts
 
-
-
-
 subsection:: Multiple assignment
-
 
 table::
 ## instead of writing: || you can write:
 ## code:: x = z.at(0); y = z.at(1); :: || code:: # x, y = z; ::
 ::
 
-
-
-
-
-
 subsection:: Accessing environment variables
-
 
 table::
 ## instead of writing: || you can write:
@@ -456,13 +308,7 @@ table::
 ## code:: 'myName'.envirPut(9) :: || code:: ~myName = 9 ::
 ::
 
-
-
-
-
-
 subsection:: Shorthand for Symbols
-
 
 table::
 ## instead of writing: || you can write:
@@ -474,13 +320,7 @@ The shorthand only admits a subset of the symbols that may be enclosed in single
 See link::Reference/Literals#Symbols:: for details.
 ::
 
-
-
-
-
-
 subsection:: Creating a Ref
-
 
 table::
 ## instead of writing: || you can write:

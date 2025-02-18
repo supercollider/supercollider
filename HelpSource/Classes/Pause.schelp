@@ -3,61 +3,23 @@ categories:: UGens>Synth control
 summary:: When triggered, pauses a node
 related:: Classes/Free
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 When triggered, pauses a node.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: kr
-
 
 argument:: gate
 
 When gate is 0, node is paused, when teletype::1::it runs.
 
-
 argument:: id
 
 Node to be paused.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 s.boot;

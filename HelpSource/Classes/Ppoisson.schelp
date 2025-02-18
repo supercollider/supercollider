@@ -3,45 +3,19 @@ categories:: Streams-Patterns-Events>Patterns>Random
 summary:: Random values that follow a Poisson Distribution (positive integer values)
 related:: Classes/Pgauss
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: mean
 
 The mean of the distribution.
 
-
 argument:: length
 
 Number of values produced.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

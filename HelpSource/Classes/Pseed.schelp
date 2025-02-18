@@ -3,38 +3,13 @@ categories:: Streams-Patterns-Events>Patterns>Language Control
 summary:: Set the random seed in subpattern
 related:: Reference/randomSeed
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Set the random generator seed of the resulting stream.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: randSeed
 
@@ -55,22 +30,9 @@ Pseed(Pn(1000, 1), Pwhite(1, 10, 3)).asStream.nextN(10);
 
 ::
 
-
 argument:: pattern
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 a = Pseed(1972, Prand([1, 2, 3], inf));
@@ -176,7 +138,8 @@ Pdef(\drumPat,
 /*
 When Pseed wraps around a whole pattern like in the above example the values are being generated for the parameters from top to bottom.
 Uncommenting the static pew value does not change the pattern but uncommenting the line below with the stochastic choice does.
-The pew parameter is now receiving the value that would have gone to the tun parameter and so this alternate timeline diverges more and more as time passes.
+The pew parameter is now receiving the value that would have gone to the tun parameter and so this alternate timeline diverges more and more
+as time passes.
 */
 
 (
@@ -208,7 +171,8 @@ Pdef(\drumPat,
 )
 
 /*
-In the above example Pseed is used as a kind of "data sharing" strategy. The two patterns aren't actually sharing data. They are both using the same seed to generate all future stochastic choices for the dur parameter.
+In the above example Pseed is used as a kind of "data sharing" strategy. The two patterns aren't actually sharing data. They are both
+using the same seed to generate all future stochastic choices for the dur parameter.
 All other parameters in the two patterns are unaffected.
 */
 ::

@@ -3,19 +3,7 @@ categories:: UGens>Filters>Linear
 summary:: Two point average filter
 related:: Classes/HPZ1
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A special case fixed filter. Implements the formula:
 
@@ -25,50 +13,23 @@ out(i) = 0.5 * (in(i) + in(i-1))
 
 Which is a two point averager.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: in
 
 The input signal.
 
-
 argument:: mul
 
 Output will be multiplied by this value.
-
 
 argument:: add
 
 This value will be added to the output.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // Compare:

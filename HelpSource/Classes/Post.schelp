@@ -2,19 +2,7 @@ title:: Post
 categories:: Files
 summary:: Posts text to the post window
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 The class Post is a stream destination.
 Its main use is that it can sometimes make code more readable and execution slightly more efficient.
@@ -33,22 +21,9 @@ warning::
 << also means object left shift.
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: <<
-
 
 Post as string
 
@@ -56,11 +31,7 @@ code::
 Post << "string";
 ::
 
-
-
-
 method:: <<<
-
 
 Post as compile string
 
@@ -68,79 +39,47 @@ code::
 Post <<< "string";
 ::
 
-
-
-
 method:: comma
 
-
-Print a comma
+Prints a comma
 
 code::
 Post.comma;
 ::
 
-
-
-
 method:: space
 
-
-Print a space
+Prints a space
 
 code::
 Post.space;
 ::
 
-
-
-
 method:: nl
 
-
-Print a newline
+Prints a newline
 
 code::
 Post.nl;
 ::
 
-
-
-
 method:: ff
 
-
-Print the char $\f
+Prints the char $\f
 
 code::
 Post.ff;
 ::
 
-
-
-
 method:: tab
 
-
-Print a tab
+Prints a tab
 
 code::
 Post.tab;
 ::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 a = "a string";

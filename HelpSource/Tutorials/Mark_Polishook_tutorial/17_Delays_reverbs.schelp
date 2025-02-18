@@ -3,19 +3,7 @@ categories:: Tutorials>Mark_Polishook_tutorial
 summary:: Mark Polishook tutorial
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
-
-
-
-
-
-
-
-
-
 section:: Time-based filters
-
-
-
 
 The Delay, Comb, and Allpass family of UGens create time-based effects to give a sense of location and space.
 
@@ -71,19 +59,7 @@ Synth.head(~effects, "aDelay");
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Feedback filters
-
-
-
 
 Comb and Allpass filters are examples of UGens that feed some of their output back into their input.
 Allpass filters change the phase of signals passed through them.
@@ -155,19 +131,7 @@ code::
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Reverberation
-
-
-
 
 The next example is by James McCartney.
 It comes from the emphasis::Why Supercollider 2.0?:: document that was part of the SuperCollider2 distribution.
@@ -192,19 +156,7 @@ s+(0.2*y)
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Components
-
-
-
 
 The following shows one way to divide the JMC example into components.
 
@@ -297,19 +249,7 @@ s.queryAllNodes;
 
 For context, here, below, is the complete text of the strong::01 Why SuperCollider:: document (by James McCartney) from the SuperCollider 2 distribution.
 
-
-
-
-
-
-
-
-
-
 section:: Why SuperCollider 2.0?
-
-
-
 
 SuperCollider version 2.0 is a new programming language.
 strong::Why invent a new language and not use an existing language?:: Computer music composition is a specification problem.

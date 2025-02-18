@@ -10,19 +10,7 @@ The concept of standalone applications is mainly relevant on macOS.
 On linux, Miguel Negrão and Fredrik Olofsson have created similar ways of packing versions of SC3 into independent setups.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Introduction
-
-
-
 
 SuperCollider 3.6 and earlier versions supported macOS Cocoa interfaces, and a special XCode project that allowed very flexible interface design, including removing and adding Menus.
 Since 3.7, SuperCollider uses Qt only, and the (now obsolete) standalone XCode project has been removed for 3.9. While the current Qt implementation is less flexible ATM, useful standalone applications can still be created with it using the scripts provided here (or similar ones).
@@ -34,19 +22,7 @@ There is one important restriction: the entire application must be open-source a
 
 On macOS, applications are special directories with an ".app" extension, known as emphasis::bundles::. SuperCollider emphasis::standalone applications:: are bundles that contain your SuperCollider code, as well as a renamed copy of SuperCollider itself that  runs your code.
 
-
-
-
-
-
-
-
-
-
 section:: Practical Guide
-
-
-
 
 (written by Alberto de Campo, 2017)
 
@@ -75,13 +51,7 @@ code::
 Self-built SC versions may assume their code:: Platform.userAppSupportDir :: is called code::.../SuperCollider/ :: and not the name of the newly made app.
 ::
 
-
-
-
-
-
 subsection:: How this guide works
-
 
 This guide is a set of scripts for creating a SuperCollider-based Standalone app in a few basic steps:
 
@@ -104,13 +74,7 @@ numberedlist::
 ## test and adapt until it does what you want
 ::
 
-
-
-
-
-
 subsection:: What to prepare
-
 
 list::
 ## have your system ready with all desired quarks installed,
@@ -123,13 +87,7 @@ and a working startup file. (can be a very simple test setup)
 ## when you get to the wakeup kiss, share and enjoy!
 ::
 
-
-
-
-
-
 subsection:: Naming, copying, and fixing up the new app
-
 
 code::
 // TO PREPARE, CHECK YOUR CURRENT config in Preferences->Interpreter:
@@ -217,13 +175,7 @@ THIS SHOULD END WITH ~newAppName! If it has the original ~thisAppName (the one y
 So, delete the app again, and start over using a recommended version of SC3 (see tested list on top)!
 ::
 
-
-
-
-
-
 subsection:: Adaptation to the project
-
 
 Quit the new standalone and go back to the starting app to do:
 

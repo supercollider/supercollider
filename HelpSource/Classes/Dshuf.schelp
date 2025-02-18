@@ -2,49 +2,22 @@ title:: Dshuf
 categories:: UGens>Demand, UGens>Random
 summary:: Demand rate random sequence generator
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: list
 
 Array of values or other UGens
 
-
 argument:: repeats
 
 Number of repeats
 
-
 discussion::
 Structurally related: link::Classes/Pshuf::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

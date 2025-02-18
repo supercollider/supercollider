@@ -2,38 +2,13 @@ title:: Interval
 categories:: Math
 summary:: Range of integers
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 An Interval is a range of integers from a starting value to an ending value by some step value.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 Create a new Interval.
 
@@ -42,46 +17,21 @@ Interval(10, 30, 4);
 10 to: 30; // the message to creates an interval with step 1
 ::
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 method:: start
 
-
 The starting value of the interval.
-
-
-
 
 method:: end
 
-
 The ending value of the interval.
-
-
-
 
 method:: step
 
-
 The step value of the interval.
 
-
-
-
 method:: size
-
 
 Return the number of items in the interval.
 
@@ -89,11 +39,7 @@ code::
 Interval(10, 30, 4).size.postln;
 ::
 
-
-
-
 method:: at
-
 
 Return the indexed item in the interval.
 
@@ -101,13 +47,9 @@ code::
 Interval(10, 30, 4).at(3).postln;
 ::
 
-
-
-
 method:: do
 
-
-Evaluate function for each item in the interval.
+Evaluates function for each item in the interval.
 The function is passed two arguments, the item and an integer index.
 
 code::

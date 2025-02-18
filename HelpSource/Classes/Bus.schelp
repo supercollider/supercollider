@@ -3,19 +3,7 @@ categories:: Server>Abstractions
 summary:: Representation of a bus on the server
 related:: Classes/Server
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 The clientside representation of an audio or control bus on a server.
  Encapsulates all the link::Browse#OpenSoundControl#OSC:: messages a Bus can receive.  Manages allocation and deallocation of bus indices so that you don't need to worry about conflicts.
@@ -45,86 +33,53 @@ definitionlist::
 Do not try to use hardware I/O buses as private buses.
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: control
 
-
 Allocate a control bus on the server.
-
 
 argument:: server
 
 The link::Classes/Server::. Defaults to Server.default.
 
-
 argument:: numChannels
 
 Number of channels to allocate
-
-
-
 
 method:: audio
 
-
 Allocate a private audio bus on the server.
-
 
 argument:: server
 
 The link::Classes/Server::. Defaults to Server.default.
 
-
 argument:: numChannels
 
 Number of channels to allocate
 
-
-
-
 method:: alloc
 
-
 Allocate a bus of either rate as specified by code::rate::.
-
 
 argument:: rate
 
 Rate symbol: \control or \audio
 
-
 argument:: server
 
 The link::Classes/Server::. Defaults to Server.default.
-
 
 argument:: numChannels
 
 Number of channels to allocate
 
-
-
-
 method:: new
-
 
 This method does not allocate a bus index, but assumes that you
 already have allocated the appropriate bus index and can supply it
 yourself.
-
 
 discussion::
 The hardware I/O buses can be accessed via the lowest indices (see link::#note#Note:: in the link::#description#Description:: section):
@@ -144,11 +99,7 @@ b = Bus(\audio, 2, 1)
 
 ::
 
-
-
-
 method:: newFrom
-
 
 This method creates a new Bus that is a subset of the bus.
 The bus will be at the same rate as the input bus.
@@ -156,67 +107,33 @@ offset is the index into the given bus.
 numChannels is the desired number of channels.
 If the combination of offset and numChannels is outside the input bus' range, an error will be thrown.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 method:: index
 
-
 Get the Bus' index. Normally you should not need to do this since instances of Bus can be passed directly as link::Classes/UGen:: inputs or link::Classes/Synth:: args.
-
-
-
 
 method:: free
 
-
 Return the bus' indices to the server's bus allocator so they can be reallocated.
-
-
-
 
 method:: rate
 
-
 Get the Bus' rate. This is a symbol, either \control or \audio.
-
-
-
 
 method:: numChannels
 
-
 Get the Bus' number of channels.
-
-
-
 
 method:: server
 
-
 Get the Bus' server object.
 
-
-
-
 method:: asMap
-
 
 returns::
  
 a symbol consisting of the letter 'c' or 'a' (for control or audio) followed by the bus's index. This may be used when setting a synth node's control inputs to map the input to the control bus.
-
 
 discussion::
 See the link::Classes/Node:: help file for more information on mapping controls to buses.
@@ -233,62 +150,35 @@ SynthDef(\rlpf, { |out, ffreq, rq|
 )
 ::
 
-
-
-
 method:: subBus
-
 
 Get a new Bus that is a subset of this bus (see code::newFrom::).
 
-
-
-
-
-
 subsection:: Asynchronous Control Bus Methods
-
 
 The following commands apply only to control buses and are asynchronous.
 For synchronous access to control busses please
 consult link::#Synchronous Control Bus Methods::.
 
-
-
-
 method:: value
-
 
 Set all channels to this float value.
 This command is asynchronous.
 
-
-
-
 method:: set
-
 
 A list of values for each channel of the control bus.
  The list of values supplied should not be greater than the number of channels.
 This command is asynchronous.
 
-
-
-
 method:: setn
-
 
 As set but takes an array as an argument.
 
-
-
-
 method:: get
-
 
 Get the current value of this control bus.
 This command is asynchronous.
-
 
 argument:: action
 
@@ -296,32 +186,20 @@ A function that will be evaluated when the server responds, with the current val
 This will be a float for a single channel bus, or an array of floats for a multichannel bus.
 The default action posts the bus values.
 
-
-
-
 method:: getn
-
 
 Get the current values of this control bus.
 This command is asynchronous.
-
 
 argument:: count
 
 The number of channels to read, starting from this bus' first channel.
 
-
 argument:: action
 
 A function that will be evaluated when the server responds, with the current values of the bus in an array passed as an argument.
 
-
-
-
-
-
 subsection:: Synchronous Control Bus Methods
-
 
 Synchronous access to control busses only works for servers with a shared memory interface.
 You can check with link::Classes/Server#-hasShmInterface#hasShmInterface:: if the server provides these methods.
@@ -332,99 +210,57 @@ link::Classes/SharedOut::.
 These classes have been deprecated and will be removed.
  ::
 
-
-
-
 method:: getSynchronous
-
 
 Get the current value of this control bus.
 This command is synchronous.
 
-
 returns::
 Value of the control bus.
 
-
-
-
 method:: getnSynchronous
-
 
 Get the current values of this control bus.
 This command is synchronous.
-
 
 argument:: count
 
 The number of channels to read, starting from this bus' first channel.
 
-
 returns::
 Array of values.
 
-
-
-
 method:: setSynchronous
-
 
 A list of values for each channel of the control bus.
  The list of values supplied should not be greater than the number of channels.
 This command is synchronous.
 
-
-
-
 method:: setnSynchronous
-
 
 As setSynchronous but takes an array as an argument.
 
-
-
-
-
-
 subsection:: Conveniences for multichannel buses
-
 
 method:: setAt
 
-
 Set the bus value(s) beginning at offset. asynchronous.
 
-
-
-
 method:: setnAt
-
 
 Set the bus to the list of values supplied.
 asynchronous.
 
-
-
-
 method:: setPairs
-
 
 Set the bus values by pairs of index, value, ... asynchronous
 
-
-
-
-
-
 subsection:: Using Buses like UGens
-
 
 method:: kr, ar
 
-
 Use a bus like a UGen.
 The numChannels and offset arguments can be used to get a subset of the bus.
-
 
 discussion::
 By default, all the bus channels are used.
@@ -436,78 +272,45 @@ list::
 ## code::b.kr(2, 5):: will return two channels, starting from the bus's channels at index 5 and 6.
 ::
 
-
-
-
-
-
 subsection:: OSC Bundle Methods
-
 
 method:: getMsg
 
-
-Return a msg of the type /c_get for use in osc bundles.
-
-
-
+Returns a msg of the type /c_get for use in osc bundles.
 
 method:: getnMsg
 
-
-Return a msg of the type /c_getn for use in osc bundles.
-
+Returns a msg of the type /c_getn for use in osc bundles.
 
 argument:: count
 
 The number of channels to read, starting from this bus' first channel. The default is this bus' numChannels.
 
-
-
-
 method:: setMsg
 
-
-Return a msg of the type /c_set for use in osc bundles.
-
-
-
+Returns a msg of the type /c_set for use in osc bundles.
 
 method:: setnMsg
 
-
-Return a msg of the type /c_setn for use in osc bundles.
-
+Returns a msg of the type /c_setn for use in osc bundles.
 
 argument:: values
 
 An array of values to which adjacent channels should be set, starting at this bus' first channel.
 
-
-
-
 method:: fillMsg
 
-
-Return a msg of the type /c_fill for use in osc bundles.
-
+Returns a msg of the type /c_fill for use in osc bundles.
 
 argument:: value
 
 The value to which this bus' channels will be set.
 
-
-
-
-
-
 subsection:: Monitoring with an oscilloscope
-
 
 method:: scope
 
-
-Display a bus in a link::Classes/Stethoscope::, using the Bus' link::#-numChannels::, link::#-index::, and link::#-rate:: properties.
+Displays a bus in a link::Classes/Stethoscope::, using the Bus' link::#-numChannels::, link::#-index::, and link::#-rate:: properties.
 
 code::
 s.boot
@@ -519,24 +322,13 @@ a.free;
 b.free;
 ::
 
-
-
-
-
-
 subsection:: Plotting
-
 
 method:: plot
 
-
 See link::#-plotAudio::
 
-
-
-
 method:: plotAudio
-
 
 Example:
 
@@ -555,43 +347,22 @@ s.bind {
 )
 ::
 
-
-
-
-
-
 subsection:: Bela
-
 
 method:: belaScope
 
-
 Scope all channels from this Bus to Bela's Oscilloscope (see link::Classes/BelaScope:: for required setup).
 It is required that this Bus is on Server running on a Bela, which is thus capable of using BelaScope.
-
 
 argument:: scopeChannel
 
 Bela's oscilloscope channel to start scoping on.
 This has to be a non-negative number, and can't be changed after scoping starts.
 
-
 returns::
 A link::Classes/Synth::, linking this Bus to BelaScope's bus.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 s.boot;

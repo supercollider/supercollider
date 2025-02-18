@@ -2,19 +2,7 @@ title:: SparseArray
 categories:: Collections>Ordered
 summary:: Array that stores duplicated values more efficiently
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A sparse array is a data structure that acts in exactly the same manner as an Array.
 However, data is represented differently in memory, in a way that makes it much more efficient to store very large arrays in which many values are the same.
@@ -23,22 +11,9 @@ Take for example an array consisting of a million zeroes, with a 1 appended to t
 
 The benefits of using SparseArray typically arise when creating collections containing many millions of slots.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: newClear
-
 
 Create a new SparseArray of the specified strong::size::, with each slot's value being strong::default::.
 
@@ -47,22 +22,16 @@ g = SparseArray.newClear(20, 3);
 g.postcs;
 ::
 
-
 argument:: size
 
 Number of slots in the desired array.
 Note that slots are not explicitly created, so the speed of creation is not related to the array size.
 
-
 argument:: default
 
 The default value, i.e. the value that all slots should take at first.
 
-
-
-
 method:: reduceArray
-
 
 Create a new SparseArray holding the same data as strong::array::.
 
@@ -72,33 +41,18 @@ g = SparseArray.reduceArray(a, 4);
 g.postcs;
 ::
 
-
 argument:: array
 
 Any link::Classes/ArrayedCollection::.
-
 
 argument:: default
 
 The default value, i.e. the value that all slots should take at first.
 For best memory efficiency, you should supply the most common value found in the collection.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 private:: prPutSlot
-
 
 method:: put
 Put a value at the desired index.
@@ -112,11 +66,7 @@ g.put(6, [4, 5, 6]);
 g[1] = \hello; // Common compact notation
 ::
 
-
-
-
 method:: at
-
 
 Retrieve the value at index.
 
@@ -127,11 +77,7 @@ g.at(4);
 g[4];
 ::
 
-
-
-
 method:: asArray
-
 
 Convert to an ordinary link::Classes/Array::.
 
@@ -141,19 +87,7 @@ g.postcs;
 g.asArray;
 ::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 Here we compare speed of Array vs SparseArray.
 

@@ -3,19 +3,7 @@ categories:: UGens>FFT
 summary:: Find a percentile of FFT magnitude spectrum
 related:: Classes/SpecCentroid, Classes/SpecFlatness
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Given an link::Classes/FFT:: chain this calculates the cumulative distribution of the frequency spectrum, and outputs the frequency value which corresponds to the desired percentile.
 
@@ -27,48 +15,21 @@ Set it to teletype::1::to enable this.
 Optional fourth argument is strong::binout:: (code::ir::) specifies whether to output the bin number instead of the frequency (default 0, set to teletype::1::to enable).
 If interpolate is enabled, linear interpolation on the bin number is performed.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: kr
-
 
 argument:: buffer
 
 An link::Classes/FFT:: chain.
 
-
 argument:: fraction
 
 argument:: interpolate
 
-
 argument:: binout
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // Simple demo with filtering white noise, and trying to infer the cutoff freq.

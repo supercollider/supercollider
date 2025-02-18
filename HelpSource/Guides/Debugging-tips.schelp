@@ -3,29 +3,11 @@ categories:: Language, Debugging
 summary:: Tips on debugging synthdefs, client code and more
 related:: Guides/Understanding-Errors
 
-
-
-
-
-
-
-
-
-
 section:: Debugging synthdefs
-
-
-
 
 The challenge in debugging synthdefs is the invisibility of the server's operations. There are a handful of techniques to expose the output of various UGens.
 
-
-
-
-
-
 subsection:: SendTrig / OSCFunc
-
 
 SendTrig is originally intended to send a trigger message back to the client, so the client can take further action on the server.
 However, it can be used to send any numeric value back to the client, which can then be printed out.
@@ -80,13 +62,7 @@ o.free;  // when done, you need to clean up the OSCFunc
 l.flat.plot(numChannels: 2);
 ::
 
-
-
-
-
-
 subsection:: Polling
-
 
 Polling allows you to debug a SynthDef by printing samples of a UGen's output to the post window.
 To do this, use the .poll method (a shorthand for the Poll UGen), which prints 10 times per second by default.
@@ -146,13 +122,7 @@ code::
 { LFNoise1.ar.poll; }.play;
 ::
 
-
-
-
-
-
 subsection:: Trace control signals using a control bus
-
 
 Another technique to watch control values is to output the signal to a control-rate bus. Then you can access the bus using link::Classes/Bus#-get:: or link::Classes/Bus#-getSynchronous::.
 Saving the values into an Array or List is a little more straightforward with getSynchronous.
@@ -187,13 +157,7 @@ note::
 This approach is not valid for audio buses, because the data move too quickly to support 'get'.
 ::
 
-
-
-
-
-
 subsection:: Server-side trace
-
 
 The code::/n_trace:: message causes the server to print a list of all the UGens in the node as well as their input and output values.
 
@@ -307,19 +271,7 @@ a.trace;
 a.free;
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Debugging client-to-server communication
-
-
-
 
 Some bugs result from OSC messages to the server being constructed incorrectly.
 Julian Rohrhuber's DebugNetAddr is a convenient way to capture messages.
@@ -353,29 +305,11 @@ a.free;
 		[ 11, 1001 ]
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Debugging client code
-
-
-
 
 SuperCollider does not have a step trace function, which makes debugging on the client side tougher, but not impossible.
 
-
-
-
-
-
 subsection:: Errors
-
 
 Learning how to read SuperCollider error output is absolutely essential.
 Error dumps often (though not always) contain a great deal of information:
@@ -394,13 +328,7 @@ In most cases, this will give you more information than a regular error dump.
 Usually the regular error dump is sufficient.
 If you are using Environments or prototype-style programming, the graphic inspector is indispensable.
 
-
-
-
-
-
 subsection:: Debug output using post statements
-
 
 The most common approach is to insert statements to print the values of variables and expressions.
 Since the normal printing methods don't change the value of an expression, they can be placed in the middle of the statement without altering the processing flow.
@@ -453,13 +381,7 @@ code::
 
 By sprinkling these throughout your code, especially at the beginnings of functions or methods, the debugging output can give you a partial trace of which code blocks get visited in what order.
 
-
-
-
-
-
 subsection:: dumpBackTrace
-
 
 If you discover that a particular method or function is being entered but you don't know how it got there, you can use the code::.dumpBackTrace:: method on any object. You'll get what looks like an error dump, but without the error. Execution continues normally after the stack dump.
 
@@ -495,13 +417,7 @@ This tells you that the function came from interpreting a closed FunctionDef (au
 
 In a method definition, it's recommended to use code::this.dumpBackTrace::; in a free-standing function, there is no "this" so you should pick some arbitrary object.
 
-
-
-
-
-
 subsection:: Tracing streams
-
 
 To see the results of a pattern, use the .trace method. Each output value from the pattern gets posted to the main output.
 
@@ -514,13 +430,7 @@ p = Pbind(\degree, Pwalk((0..14), Pdup(Pwhite(1, 4, inf), Prand(#[-2, -1, 1, 2],
 p.stop;
 ::
 
-
-
-
-
-
 subsection:: Debugging infinite loops or recursion
-
 
 code::
 while(true);
@@ -612,13 +522,7 @@ a = 0;
 SystemClock.sched(2, { a.postln; nil });
 ::
 
-
-
-
-
-
 subsection:: Removing debugging statements
-
 
 Use formatting to help your eye locate debugging statements when it's time to remove them. SuperCollider code is usually indented.
 If you write your debugging statements fully left-justified, they're much easier to see.

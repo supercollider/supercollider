@@ -3,19 +3,7 @@ categories:: UGens>Demand
 summary:: Demand rate white noise random generator
 related:: Classes/Diwhite, Classes/Demand, Classes/Duty, Classes/TDuty
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Dwhite returns numbers in the continuous range between
 code::lo::  and  code::hi:: .
@@ -28,50 +16,23 @@ The arguments can be a number or any other UGen.
 See link::Classes/Pwhite::, link::Classes/WhiteNoise::  for structurally related
 equivalents.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: lo
 
 Minimum value.
 
-
 argument:: hi
 
 Maximum value.
-
 
 argument:: length
 
 Number of values to create.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

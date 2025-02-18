@@ -8,45 +8,19 @@ Plambda is used to create a namespace for patterns to share data among each othe
 
 Used in combination with link::Classes/Plet:: and link::Classes/Pget::, it allows you to get the output of a pattern from one stream and use it in another stream and as such create a dataspace for your patterns.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: pattern
 
 An event stream.
 
-
 argument:: scope
 
 An event with default bindings (can be nil).
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 /*

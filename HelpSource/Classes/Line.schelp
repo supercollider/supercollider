@@ -3,63 +3,33 @@ categories:: UGens>Envelopes
 summary:: Line generator
 related:: Classes/XLine
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Generatea a line from the start value to the end value.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: start
 
 Starting value.
 
-
 argument:: end
 
 Ending value.
-
 
 argument:: dur
 
 Duration in seconds.
 
-
 argument:: mul
 
 Output will be multiplied by this value.
 
-
 argument:: add
 
 This value will be added to the output.
-
 
 argument:: doneAction
 
@@ -68,19 +38,7 @@ See
 
 link::Classes/Done::  for more detail.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // XLine is usually better than Line for frequency

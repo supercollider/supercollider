@@ -3,56 +3,19 @@ categories:: UGens>Conversion, UGens>Triggers
 summary:: Audio rate trigger to control rate trigger converter
 related:: Classes/T2A, Classes/K2A, Classes/A2K
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Converts audio rate trigger into control rate trigger, using the maximum trigger in the input during each control period.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: kr
-
 
 argument:: in
 
 Input signal.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // this does not work:

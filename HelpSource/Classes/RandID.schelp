@@ -3,57 +3,21 @@ categories:: UGens>Generators>Stochastic, UGens>Random
 summary:: Set the synth's random generator ID
 related:: Classes/RandSeed
 
-
-
-
-
-
-
-
-
-
 description::
 
-
-
-
 Choose which random number generator to use for this synth.
-All synths that use the same generator reproduce the same sequence of numbers when the same seed is set again.
-
-
-
-
-
-
-
-
-
+All synths that use the same generator reproduce the same sequence
+of numbers when the same seed is set again.
 
 classmethods::
 
-
-
-
 method:: kr, ir
-
 
 argument:: id
 
 The random number generator ID.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // start a noise patch and set the id of the generator

@@ -15,19 +15,7 @@ list::
 ## link::#d) sample accurate output#d) sample accurate output::
 ::
 
-
-
-
-
-
-
-
-
-
 section:: A) clock
-
-
-
 
 Generally, every node proxy can have its own time base, usually a tempo clock. the clock is responsible for the timing of insertion of new functions, per default at the next beat of the clock.
 
@@ -61,31 +49,13 @@ p.clock = TempoClock.default; p.quant = 1.0;
 p.clear; // clear all.
 ::
 
-
-
-
-
-
 subsection:: Sequence of events
-
 
 When inserting a new function into the proxy, the synthdef is built, sent to the server who sends back a message when it has completed.
 Then the proxy waits for the next beat to start the synth.
 When using node proxies with patterns, the patterns are played using the clock as a scheduler.
 
-
-
-
-
-
-
-
-
-
 section:: B) quant and offset
-
-
-
 
 In order to be able to control the offset/quant point of insertion, the 'quant' instance variable can be used, which can be either a number or an array of the form [quant, offset], just like in pattern.play(quant).
 
@@ -102,19 +72,7 @@ Quant and offset scheduling is used for the following operations:
 strong::play::, strong::put::, strong::removeAt::, strong::setNodeMap::, strong::wakeUp::, strong::rebuild:: (and the rebuild operations lag, setRates, bus_).
 For more information about quantisation in SC, see link::Classes/Quant::.
 
-
-
-
-
-
-
-
-
-
 section:: C) connecting client and server tempo
-
-
-
 
 A ProxySpace has the method link::Classes/ProxySpace#-makeTempoClock::, which creates an instance of link::Classes/TempoBusClock:: together with a node proxy (~tempo) which it keeps in sync.
 
@@ -132,19 +90,7 @@ p.clock.tempo = 2.2; // set the tempo to 2.2
 ~y.free;
 ::
 
-
-
-
-
-
-
-
-
-
 section:: D) sample accurate output
-
-
-
 
 For efficiency, NodeProxy uses a normal Out UGen for writing to its bus.
 If sample accurate playback is needed (link::Classes/OffsetOut::), the ProxySynthDef class variable link::Classes/ProxySynthDef#-sampleAccurate:: can be set to teletype::true::.

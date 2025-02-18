@@ -3,36 +3,12 @@ categories:: Streams-Patterns-Events>Patterns>List
 summary:: Interlace streams
 related:: Classes/Place
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Similar to link::Classes/Place::, but the list is an array of streams or patterns.
 The results of each stream will be output in turn.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 p = Ppatlace([Pwhite(1, 5, 5), Pgeom(10, 1.01, 10)], inf);
@@ -40,22 +16,8 @@ x = p.asStream;
 x.all;
 
 
-5		// from Pwhite
-10		// from Pgeom
-4		// from Pwhite
-10.1		// etc....
-5
-10.201
-4
-10.30301
-2
-10.4060401
-10.510100501
-10.61520150601
-10.72135352107
-10.828567056281
-10.936852726844
-nil
+5		// from Pwhite 10		// from Pgeom 4		// from Pwhite 10.1		// etc....
+5 10.201 4 10.30301 2 10.4060401 10.510100501 10.61520150601 10.72135352107 10.828567056281 10.936852726844 nil
 ::
 
 Note that the Ppatlace has an infinite number of repeats, but the resulting stream is finite because the member streams are all finite.

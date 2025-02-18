@@ -3,35 +3,11 @@ categories:: Streams-Patterns-Events>Patterns
 summary:: Returns the difference between the current and previous values of an enclosed pattern
 related:: Classes/Pseries
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A pattern that returns the difference between the current and previous values of an enclosed pattern.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 p = Pbind(

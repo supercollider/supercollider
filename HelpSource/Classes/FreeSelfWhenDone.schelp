@@ -3,19 +3,7 @@ categories:: UGens>Synth control
 summary:: Free the enclosing synth when a UGen is finished
 related:: Classes/Done, Classes/PauseSelfWhenDone, Classes/Done
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Some UGens set a 'done' flag when they are finished playing.
 FreeSelfWhenDone will free the enclosing synth when this flag is set to teletype::true::.
@@ -30,43 +18,17 @@ One must be careful when using binary operations on UGens with done flags, as th
 See example below. 
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: categories
 
-
 method:: kr
-
 
 argument:: src
 
 The UGen to check for done.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 s.boot;

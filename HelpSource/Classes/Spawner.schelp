@@ -3,142 +3,69 @@ categories:: Streams-Patterns-Events>Composition
 summary:: A Spawner
 related:: Classes/Pspawner
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Can start subpatterns. Used as an argument inside link::Classes/Pspawner::.
 Tracks subpatterns in a link::Classes/PriorityQueue::.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: func
 
 argument:: stackSize
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 method:: par
-
 
 Begin an event stream in parallel to the routine.
 If delta is non-zero, the pattern will begin that many beats after strong::now::, provided that strong::now + delta:: is later than the next event that the Spawner will generate.
 
-
 argument:: pattern
 
 A link::Classes/Pattern::.
-
 
 argument:: delta
 
 A number of beats.
 
-
 returns::
 The stream from strong::pattern::.
 
-
-
-
 method:: seq
 
-
 Begin an event stream. Do not return until the event is finished.
-
 
 argument:: pattern
 
 A link::Classes/Pattern::.
 
-
-
-
 method:: wait
 
-
 Wait a number of seconds, then return.
-
 
 argument:: dur
 
 A number of seconds.
 
-
-
-
 method:: suspend
 
-
-Stop a stream.
-
+Stops a stream.
 
 argument:: stream
 
 An index of the underlying link::Classes/PriorityQueue::.
 
-
 returns::
  
 The stopped stream, or teletype::nil:: if the stream is not found.
 
-
-
-
 method:: suspendAll
-
 
 Stop all substreams.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 See link::Classes/Pspawner::

@@ -3,81 +3,39 @@ categories:: UGens>Maths
 summary:: Map a linear range to an exponential range
 related:: Classes/LinLin
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Convert a linear range of values to an exponential range of values.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: in
 
 The input signal to convert.
 
-
 argument:: srclo
 
 Lower limit of input range.
-
 
 argument:: srchi
 
 Upper limit of input range.
 
-
 argument:: dstlo
 
 Lower limit of output range.
-
 
 argument:: dsthi
 
 Upper limit of output range.
 
-
 discussion::
 The code::dstlo::  and  code::dsthi::  arguments
 must be nonzero and have the same sign.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // compare:

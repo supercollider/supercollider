@@ -3,133 +3,67 @@ categories:: External Control>HID
 summary:: A class describing a group of elements of an HID device
 related:: Classes/HID, Guides/Working_with_HID, Classes/HIDElement, Classes/HIDUsage
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 An HIDCollection defines a group of controls on a low level of the HID device, i.e. the device reports these groups.
 The main use to access it is to retrieve information about what kind of function the HID device performs, e.g. a GamePad, a Joystick or a Mouse.
 
 This class is populated with information read from the device, and represents some of the internal information of the device.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: new
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 private:: printOn
-
 
 method:: postCollection
 Post a human readable description of the collection to the post window.
 
-
-
-
 method:: usage
 
-
 Retrieve the usage index of this collection.
-
 
 returns::
  
 a Number - the usage index of this collection
 
-
-
-
 method:: usagePage
 
-
 Retrieve the usage page index of this collection.
-
 
 returns::
  
 a Number- the usage page index
 
-
-
-
 method:: usageName
-
 
 Retrieve the usage name of this collection.
 The name is looked up from the standardized HID usage tables using the usage page index.
-
 
 returns::
  
 a String - the usage name
 
-
-
-
 method:: pageName
-
 
 Retrieve the page name of this collection.
 The name is looked up from the standardized HID usage tables using the usage page index.
-
 
 returns::
  
 a String - the usage page name
 
-
-
-
 method:: type
 
-
 The type of collection.
-
 
 returns::
  
 a number describing the type of collection.
 
-
-
-
 method:: device
-
 
 Get the device to which this collection belongs.
 
@@ -137,84 +71,53 @@ note::
 Do not set this as a user!
 ::
 
-
 returns::
  
 an instance of HID
 
-
-
-
 method:: id
-
 
 Index of this collection
 
-
 returns::
  
 a Number
-
-
-
 
 method:: parent
 
-
 Index of the parent of this collection.
-
 
 returns::
  
 a Number
-
-
-
 
 method:: numElements
 
-
 Number of elements in this collection
-
 
 returns::
  
 a Number
 
-
-
-
 method:: firstElement
 
-
 The first element that is part of this collection.
-
 
 returns::
  
 a Number - an index indicating the first element
 
-
-
-
 method:: numCollections
 
-
 Number of (child) collections in this collection
-
 
 returns::
  
 a Number
 
-
-
-
 method:: firstCollection
 
-
 The first collection that is part of this collection.
-
 
 returns::
  

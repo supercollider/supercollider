@@ -3,19 +3,7 @@ categories:: Tutorials>Getting-Started
 summary:: Getting Started With SuperCollider
 related:: Tutorials/Getting-Started/00-Getting-Started-With-SC
 
-
-
-
-
-
-
-
-
-
 section:: Scoping Out Some Plots
-
-
-
 
 Function has two other useful audio related methods.
 The first you've already seen some results of, Function-plot:
@@ -60,19 +48,7 @@ code::
 
 Like Function-plot, Function-scope can be useful for testing purposes, and to see if you're actually getting out what you think you are.
 
-
-
-
-
-
-
-
-
-
 section:: Scoping on Demand
-
-
-
 
 You can also scope the output of the server at any time, by calling 'scope' on it.
 
@@ -87,19 +63,7 @@ For more information see:
 
 link::Classes/Function::, link::Classes/Server::, link::Classes/Stethoscope::
 
-
-
-
-
-
-
-
-
-
 section:: Suggested Exercise
-
-
-
 
 Experiment with scoping and plotting some of the Function examples from earlier sections, or some Functions of your own creation.
 Try experimenting with different duration or zoom values.

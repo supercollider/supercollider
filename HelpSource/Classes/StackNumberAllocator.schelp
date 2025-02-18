@@ -3,103 +3,42 @@ categories:: Control
 summary:: Consecutive number allocator
 related:: Classes/ContiguousBlockAllocator, Classes/PowerOfTwoAllocator
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Number allocator within a specified range.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: new
 
-
 Make a new instance, with lo and hi values.
-
 
 argument:: lo
 
 Initial value
 
-
 argument:: hi
 
 Maximum
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 method:: init
 
-
 Reset allocator to its initial state.
-
-
-
 
 method:: alloc
 
-
 Allocate next number. After hi value returns teletype::nil::.
 
-
-
-
 method:: free
-
 
 Set the next value of the allocator to the arbitrary teletype::inIndex:: (could be any object).
 Then continue with the counter.
 
-
 argument:: inIndex
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 o = StackNumberAllocator(0, 100);

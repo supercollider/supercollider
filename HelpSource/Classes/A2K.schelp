@@ -3,38 +3,13 @@ categories:: UGens>Conversion
 summary:: Audio to control rate converter
 related:: Classes/K2A
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Audio to control rate converter. Only needed in specific cases.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: kr
-
 
 argument:: in
 

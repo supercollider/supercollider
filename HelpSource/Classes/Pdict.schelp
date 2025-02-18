@@ -3,35 +3,11 @@ categories:: JITLib>Patterns, Live Coding
 summary:: Pattern that embeds patterns from a dictionary
 related:: Classes/Pbind
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A general purpose lookup stream.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 SynthDescLib.read;

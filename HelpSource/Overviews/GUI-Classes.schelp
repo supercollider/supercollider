@@ -2,19 +2,7 @@ title:: List of GUI classes
 categories:: GUI
 summary:: The most used GUI classes and their kit-specific equivalents
 
-
-
-
-
-
-
-
-
-
 section:: Kit-independent GUI classes
-
-
-
 
 The following table contains classes that are independent of GUI implementation, but may use other GUI classes or be used with any of them.
 
@@ -36,19 +24,7 @@ table::
 ## FreqScope        || A window containing a FreqScopeView and tools to control its display
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Window and views
-
-
-
 
 The following table contains generic classes and their corresponding classes in each GUI kit, for window and most views.
 
@@ -93,19 +69,7 @@ Important help file.
 ## Knob                 || SCKnob                 || JKnob               || QKnob               || a knob view
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Layout management
-
-
-
 
 The following table contains classes used in layout management.
 
@@ -123,19 +87,7 @@ table::
 ## StackLayout          || A layout that stacks items on top of each other.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Other GUI classes
-
-
-
 
 table::
 ## strong::Generic::    ||  strong::CocoaGUI::    || strong::SwingGUI::  || strong::Qt GUI::    || strong::Description::

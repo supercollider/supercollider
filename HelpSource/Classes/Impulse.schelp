@@ -3,43 +3,17 @@ categories:: UGens>Generators>Deterministic
 summary:: Impulse oscillator
 related:: Classes/Blip
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Output non-bandlimited single sample impulses.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: freq
 
 Frequency in Hertz. strong::freq:: may be negative.
-
 
 argument:: phase
 
@@ -48,16 +22,13 @@ Staying in this range offers a slight efficiency
 advantage, though phase offsets outside this range are supported and wrapped
 internally.
 
-
 argument:: mul
 
 The output will be multiplied by this value.
 
-
 argument:: add
 
 This value will be added to the output.
-
 
 discussion::
 code::Impulse:: will output a code::1.0:: on the first sample (assuming no
@@ -72,10 +43,12 @@ code::(k,k)::, code::(k,i)::,
 code::(i,k)::, code::(i,i)::.
 
 code::Impulse:: is based on a wrapping phasor:
-phase advances on each frame and if the phase goes out of range and is wrapped in that frame,
+phase advances on
+each frame and if the phase goes out of range and is wrapped in that frame,
 an impulse is output.
 
-Internally, the strong::phase:: offset value is applied and wrapped into range emphasis::before:: applying the phase increment
+Internally, the strong::phase:: offset value is applied
+and wrapped into range emphasis::before:: applying the phase increment
 (which is determined by the strong::freq::).
 After this phase increment,
 the trigger condition is checked. Therefore, it is the phase increment (freq)
@@ -98,19 +71,7 @@ code::
 )
 ::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 { Impulse.ar(800, 0.0, 0.5, 0) }.play

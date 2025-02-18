@@ -3,19 +3,7 @@ categories:: GUI>Views
 summary:: A configurable view with nodes and connections
 related:: Classes/MultiSliderView, Classes/SCEnvelopeEdit
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A view which can graphically display nodes at x/y coordinates, connection lines, cross-connections, node markers, and labels. All of the values for these are stored in arrays.
 While this view is typically used to make editable envelopes interfaces, it can be used to draw very complex interconnection graphs as well.
@@ -25,13 +13,7 @@ Note however that the view will work on a copy of the data of the Env object, th
 
 You can also define nodes with arrays of x and y values using link::#-value::, and the connections using link::#-connect::.
 
-
-
-
-
-
 subsection:: Appearance
-
 
 The view supports two strong::display styles:::
 the default one draws nodes as small dots, with labels next to them, while another style draws nodes as rounded rectangles with labels drawn inside.
@@ -39,13 +21,7 @@ See link::#-style::.
 
 A strong::label:: for each of the nodes can be set using link::#-strings:: and link::#-setString::.
 
-
-
-
-
-
 subsection:: Interaction
-
 
 Nodes can be selected and moved using mouse.
 Shift-clicking a node will add it to the selection.
@@ -63,25 +39,11 @@ link::#-elasticSelection:: determines whether moving multiple nodes will be bloc
 
 Node selection can also be changed programmatically using link::#-index::, link::#-selectIndex::, and link::#-deselectIndex::. The link::#-index#current:: node can be moved programmatically using link::#-x:: and link::#-y::.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 subsection:: Data
 
-
 method:: setEnv
-
 
 	Sets an link::Classes/Env:: to be displayed by the view.
 The view will extract data from the Env object to display (times, values and curve types).
@@ -91,11 +53,7 @@ The view will extract data from the Env object to display (times, values and cur
 	argument::
 		An Env.
 
-
-
-
 method:: value
-
 
 	code::value:: retrieves the node positions, returning an array in the format of the Argument below.
 code::value_(anArray):: Sets the positions of the nodes, creating them if not existent.
@@ -107,49 +65,29 @@ code::value_(anArray):: Sets the positions of the nodes, creating them if not ex
 The values must be between 0 and 1.
 For example: code:: [[x1, x2, x3, ...], [y1, y2, y3, ...]] ::
 
-
-
-
 method:: valueAction
-
 
 	Sets link::#-value:: to the argument and triggers the link::#-action::.
 
-
-
-
 method:: x
-
 
 	The horizontal position of the emphasis::current:: node.
 
 	argument::
 		A Float between 0 and 1.
 
-
-
-
 method:: y
-
 
 	The vertical position of the emphasis::current:: node.
 
 	argument::
 		A Float between 0 and 1.
 
-
-
-
 method:: currentvalue
-
 
 	Synonym for link::#-y::.
 
-
-
-
 method:: curves
-
 
 	The shapes of connections between nodes.
 See below for the valid objects that describe a shape.
@@ -165,11 +103,7 @@ If there are such connections however, their origin is the node that was passed 
 		The valid objects to describe a shape are listed in link::Classes/Env#*new::.
 The argument can be either a single, or an Array of those values.
 
-
-
-
 method:: strings
-
 
 	The labels of the nodes.
 
@@ -179,11 +113,7 @@ method:: strings
 	argument::
 		An Array of Strings.
 
-
-
-
 method:: setString
-
 
 	Sets the label of the node at the given index.
 
@@ -195,11 +125,7 @@ method:: setString
 	argument::string
 		A String.
 
-
-
-
 method:: setFillColor
-
 
 	Sets the color used to draw the inside of the node at the given index.
 
@@ -208,11 +134,7 @@ method:: setFillColor
 	argument:: color
 		A Color.
 
-
-
-
 method:: setThumbWidth
-
 
 	Sets the width of the node at the given index.
 
@@ -223,11 +145,7 @@ method:: setThumbWidth
 	argument:: width
 		An Integer.
 
-
-
-
 method:: setThumbHeight
-
 
 	Sets the height of the node at the given index.
 
@@ -238,11 +156,7 @@ method:: setThumbHeight
 	argument:: height
 		An Integer.
 
-
-
-
 method:: setThumbSize
-
 
 	Sets both width and height of the node at the given index to code::size::.
 
@@ -251,11 +165,7 @@ method:: setThumbSize
 	argument:: size
 		An Integer.
 
-
-
-
 method:: connect
-
 
 	Removes any connections created when the link::#-value:: was set, and then creates new ones from the node at index given in the first argument to each of the nodes at indexes given in the second argument.
 
@@ -264,24 +174,13 @@ method:: connect
 	argument:: targets
 		An Array of Integers - indexes of nodes, each to become the second end to a new connection created.
 
-
-
-
 method:: selection
-
 
 	Returns an array of indexes of all selected nodes.
 
-
-
-
-
-
 subsection:: Appearance
 
-
 method:: style
-
 
     One of the following drawing styles:
 
@@ -304,55 +203,35 @@ You can still set a different style afterwards.
 
     returns:: An integer 0 or 1.
 
-
-
-
 method:: drawLines
-
 
 	Whether to draw the connections between the nodes.
 
 	argument::
 		A Boolean.
 
-
-
-
 method:: drawRects
-
 
 	Whether to draw the nodes
 
 	argument::
 		A Boolean.
 
-
-
-
 method:: gridOn
-
 
 	Whether to draw the grid.
 
 	argument::
 		A Boolean.
 
-
-
-
 method:: grid
-
 
 	The resolution of the grid.
 
 	argument::
 		A Point of which x and y correspond to grid spacing on the horizontal and the vertical axis, respectively. If one of the two is 0, the grid on that axis will not be drawn.
 
-
-
-
 method:: thumbWidth
-
 
     Sets the width of all nodes.
 
@@ -361,11 +240,7 @@ method:: thumbWidth
 	argument::
 		An Integer.
 
-
-
-
 method:: thumbHeight
-
 
     Sets the height of all nodes.
 
@@ -374,30 +249,18 @@ method:: thumbHeight
 	argument::
 		An Integer.
 
-
-
-
 method:: thumbSize
-
 
 	Sets both link::#-thumbWidth:: and link::#-thumbHeight:: to the argument.
 
-
-
-
 method:: strokeColor
-
 
 	The color used to draw the connections and the node labels.
 
 	argument::
 		A Color.
 
-
-
-
 method:: fillColor
-
 
 	The default color used to draw the nodes.
 If the color of a specific node has been set using link::#-setFillColor::, it will take precedence.
@@ -405,46 +268,27 @@ If the color of a specific node has been set using link::#-setFillColor::, it wi
 	argument::
 		A Color.
 
-
-
-
 method:: selectionColor
-
 
 	The color of a node when it is selected.
 
 	argument::
 		A Color.
 
-
-
-
 method:: gridColor
-
 
 	The color of the grid.
 
 	argument::
 		A Color.
 
-
-
-
 method:: colors
-
 
 	Sets the link::#-strokeColor:: and the link::#-fillColor:: to the arguments, respectively.
 
-
-
-
-
-
 subsection:: Interaction
 
-
 method:: index
-
 
 	The index of the emphasis::current:: node, i.e. the node affected by link::#-x:: and link::#-y:: methods.
 
@@ -453,30 +297,18 @@ method:: index
 	argument::
 		An Integer.
 
-
-
-
 method:: lastIndex
-
 
     The last node selected, regardless of the current state of selection, or teletype::-1:: if no node has yet been selected.
 
-
-
-
 method:: selectIndex
-
 
 	Selects the node at given index and makes it the current one, i.e. link::#-currentvalue:: will relate to that node. As a special case, if the argument is -1 all nodes will be deselected.
 
 	argument::
 		An Integer.
 
-
-
-
 method:: deselectIndex
-
 
 	Deselects the node at given index.
 
@@ -485,22 +317,14 @@ method:: deselectIndex
 	argument::
 		An Integer.
 
-
-
-
 method:: editable
-
 
 	Whether any node is editable.
 
 	argument::
 		A Boolean.
 
-
-
-
 method:: setEditable
-
 
 	Sets whether the node at given index is editable.
 Regardless of this, no node will be editable unless link::#-editable:: is code::true::.
@@ -511,11 +335,7 @@ Regardless of this, no node will be editable unless link::#-editable:: is code::
 	argument:: flag
 		A Boolean.
 
-
-
-
 method:: step
-
 
 	Makes the nodes snap (i.e. quantized) to the nearest multiple of the argument.
 Unless this is larger than 0, nodes will not be movable using keyboard.
@@ -523,11 +343,7 @@ Unless this is larger than 0, nodes will not be movable using keyboard.
 	argument::
 		A Float.
 
-
-
-
 method:: keepHorizontalOrder
-
 
 	Whether the position of nodes on the horizontal axis shall be restricted by their immediate neighbours (in order of their index).
 
@@ -536,11 +352,7 @@ method:: keepHorizontalOrder
 	argument::
 		A Boolean.
 
-
-
-
 method:: elasticSelection
-
 
 	Whether the relative positions of nodes within the selection can change when the selection is moved using mouse or keyboard, in order to adapt to obstacles (the view bounds or, in case link::#-keepHorizontalOrder:: is code::true::, a neighbour node).
 
@@ -549,82 +361,40 @@ method:: elasticSelection
 	argument::
 		A Boolean.
 
-
-
-
-
-
 subsection:: Actions
-
 
 method:: action
 
-
 	The action object evaluated whenever the user moves a node.
-
-
-
 
 method:: metaAction
 
-
 	The action object evaluated whenever the user moves a node while the Ctrl key is pressed.
 
-
-
-
 method:: defaultKeyDownAction
-
 
     Implements the default behavior on key presses.
 
     The default behavior is defined in the C++ implementation of the view instead of this method.
 See link::Classes/View#Key and mouse event processing:: for explanation of how to override the behavior.
 
-
-
-
-
-
 subsection:: Drag and drop
 
-
 method:: defaultGetDrag
-
 
 	returns::
 		The link::#-value::.
 
-
-
-
 method:: defaultCanReceiveDrag
-
 
 	returns::
 		True for any drag data, but the data should be in the same format as link::#-value::.
 
-
-
-
 method:: defaultReceiveDrag
-
 
 	If the drag data is of the acceptable form (see link::#-defaultCanReceiveDrag:: above), sets link::#-value:: using that data.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 Use as envelope view
 

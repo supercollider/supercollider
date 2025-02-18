@@ -2,59 +2,30 @@ title:: MulAdd
 categories:: UGens>Maths
 summary:: Multiply and add to a signal
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Multiplythe the signal by mul and adds add. This UGen is very efficient (it performs various optimisation checks, for example).
 It is used very heavily throughout SuperCollider to perform multiply and add operations on the server; in fact it is  what "really" performs the mul and add arguments found in many UGens.
 
 See also the discussion of mul and add arguments in the link::Classes/UGen:: help file.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: new1
 
-
 method:: new
-
 
 argument:: in
 
 Input signal
 
-
 argument:: mul
 
 Multiply with this value
 
-
 argument:: add
 
 Add this value
-
 
 discussion::
 Same as:
@@ -63,35 +34,11 @@ code::
 in.madd(mul, add)
 ::
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 private:: init
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 s.boot;

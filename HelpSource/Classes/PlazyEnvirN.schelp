@@ -3,19 +3,7 @@ categories:: Streams-Patterns-Events>Patterns>Function
 summary:: Instantiate new patterns from a function and multichannel expand them
 related:: Classes/Plazy, Classes/PlazyEnvir, Classes/Pfunc
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Evaluatea a function that returns a pattern and embeds it in a stream.
 
@@ -25,22 +13,9 @@ list::
 This works only with event streams.
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: func
 
@@ -60,19 +35,7 @@ a.nextN(4);
 c.nextN(4); // no degrees, because stream ends
 ::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

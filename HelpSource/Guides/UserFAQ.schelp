@@ -7,22 +7,9 @@ summary:: Some FAQ and common errors
 
 anchor::ERROR Primitive BasicNew failed Index not an Integer::
 
-
-
-
-
-
-
-
-
-
 section:: ERROR: Primitive 'BasicNew' failed. Index not an Integer
 
-
-
-
 subsection:: If you're writing a SynthDef
-
 
 It's quite likely that the error means you're trying to dynamically change the number of channels inside a SynthDef, which is something you can't do - SynthDefs need to have a fixed layout.
 For example, this is a simple attempt to make pink noise over a variable number of channels:
@@ -39,13 +26,7 @@ It fails because we're trying to make the number of pink noise generators involv
 You can't do that - when the SynthDef is compiled, the language needs to know strong::exactly:: how many UGens will be involved and how they are connected.
 This is because a SynthDef represents an efficient fixed-layout synth that the server can instantiate.
 
-
-
-
-
-
 subsection:: So what to do instead?
-
 
 Think of SynthDefs as tiny fixed reusable components, and design your logic to reuse them in whatever combinations are needed.
 
@@ -77,22 +58,9 @@ Then you'd need to invoke code::\simplepink_4:: or whatever, as appropriate.
 
 anchor::Language (client) Issues::
 
-
-
-
-
-
-
-
-
-
 section:: Language (client) issues
 
-
-
-
 subsection:: Calling gui primitives from a SystemClock routine
-
 
 When calling gui primitives from a SystemClock routine will cause an error:
 
@@ -118,13 +86,7 @@ code::
 SystemClock.sched(0,{ { Window.new.front }.defer })
 ::
 
-
-
-
-
-
 subsection:: Binary operations order
-
 
 Because of the way SuperCollider evaluates expressions, the usual order of execution of mathematical expressions is not respected.
 In SuperCollider everything is an object, and evaluation happens from left to right, so:
@@ -149,22 +111,9 @@ code::
 
 anchor::SynthDef Issues::
 
-
-
-
-
-
-
-
-
-
 section:: SynthDef Issues
 
-
-
-
 subsection:: "If" statements inside a SynthDef
-
 
 It's only a matter of time before a user tries to write something like this in a code::SynthDef::
 
@@ -185,13 +134,7 @@ SynthDef(\kablooie, { |x = 0|
 
 This should be the first clue that Boolean logic in the server is a very different animal from the so-called "normal" use of conditionals on the client side (in the language).
 
-
-
-
-
-
 subsection:: What is a Boolean in the server?
-
 
 In fact, there is no such thing.
 The server handles floating-point numbers. It doesn't have strong::true:: or strong::false:: entities.
@@ -202,13 +145,7 @@ The server follows the same convention as other DSP environments (Max/MSP, pd et
 - code::True:: is represented by 1.0
 - code::False:: is represented by 0.0
 
-
-
-
-
-
 subsection:: Why is x > 0 "non-Boolean" in the "test"?
-
 
 This goes back to the general issue of handling operators in the server.
 Math operators in a SynthDef are not calculations to do strong::right now::.
@@ -245,13 +182,7 @@ if (aBinaryOpUGen) { ... } { ... };
 To do this, the language must know which function (true or false) to execute. But there is no way to know which one the BinaryOpUGen will be.
 So, SuperCollider throws an error.
 
-
-
-
-
-
 subsection:: If you can't branch, what good is a comparison in the server?
-
 
 Comparisons have a lot of uses, actually.
 
@@ -294,13 +225,7 @@ var mic = In.ar(8, 1),
 SendTrig.kr(filteredTrig, 0, amplitude);
 ::
 
-
-
-
-
-
 subsection:: Logical operators: And, Or, Not, Xor
-
 
 Logical operators have simple arithmetic equivalents.
 
@@ -327,13 +252,7 @@ code::
 BinaryOpUGen('==', (x > 0) + (y > 0), 1)
 ::
 
-
-
-
-
-
 subsection:: ERROR: SynthDef not found
-
 
 Sending a SynthDef to the server requires a little bit of time, which means that running a block of code with both SynthDef definitions and instances of those SynthDefs won't be guaranteed to work unless this slight delay is accounted for.
 There are two main ways to do this:
@@ -358,13 +277,7 @@ Routine({
 }).play
 ::
 
-
-
-
-
-
 subsection:: FAILURE /s_new alloc failed, increase server's memory allocation
-
 
 strong::What it means:::
 While initializing the unit generators in a new Synth node, the server ran out of real-time memory.
@@ -398,13 +311,7 @@ code::BufDelayN::, code::BufDelayL::, code::BufDelayC::, code::BufCombL:: etc.
 code::Buffer.alloc():: does not use the real-time pool and is not subject to the memSize limitation.
 This approach will not help with FFT units.
 
-
-
-
-
-
 subsection:: Array arguments
-
 
 Sometimes, you need to send an array to a series of Control inputs in a SynthDef (often called "_array arguments_").
 
@@ -434,13 +341,7 @@ SynthDef(\xyz, {
 });
 ::
 
-
-
-
-
-
 subsection:: Why does it have to be a literal array?
-
 
 The reason comes from the process of building a SynthDef:
 
@@ -474,22 +375,9 @@ code::a is: [ an OutputProxy, an OutputProxy, an OutputProxy, an OutputProxy, an
 
 anchor::Server Issues::
 
-
-
-
-
-
-
-
-
-
 section:: Server issues
 
-
-
-
 subsection:: How to trigger a function from the server
-
 
 The first and most important point:
 strong::Functions are client-side only::.
@@ -525,25 +413,13 @@ o = OSCdef(\bleepResponder, { |msg|
 a.free; o.remove;
 ::
 
-
-
-
-
-
 subsection:: Helpfile references:
-
 
 - link::Classes/SendTrig::, link::Classes/SendReply::
 
 - link::Classes/OSCresponderNode::, link::Classes/OSCpathResponder::, link::Classes/OSCresponder::, link::Guides/OSC_communication::
 
-
-
-
-
-
 subsection:: Error:
-
 
 Failed to open UDP socket: address in use
 
@@ -557,22 +433,9 @@ You can also kill scsynth using a terminal or your operating system's task manag
 
 anchor::Other Issues::
 
-
-
-
-
-
-
-
-
-
 section:: Other issues
 
-
-
-
 subsection:: Error while loading shared libraries: libsclang.so: cannot open shared object file
-
 
 This usually happens after building on Linux and it means that your system is unaware of newly installed shared libraries.
 Running ldconfig

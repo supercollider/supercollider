@@ -2,19 +2,7 @@ title:: FunctionList
 categories:: Core>Kernel
 summary:: A function that composes multiple functions into one
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A FunctionList is a function that composes multiple functions into one.
 This allows allow to deal transparently with several functions as if they were one and to append new functions at a later point.
@@ -29,46 +17,19 @@ a.addFunc({ 800.rand });
 a.addFunc({ "another".scramble });
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: new
 
-
 Create a new instance.
-
 
 argument:: functions
 
 An array of functions or objects
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 method:: array
-
 
 Set/get the FunctionList's array. New functions can be added to the array directly, e.g.
 
@@ -77,28 +38,18 @@ x = FunctionList(...some functions);
 x.array = x.array.insert(2, aFunction);
 ::
 
-
-
-
 method:: addFunc
-
 
 This message is used to be able to add to an Object, to a Function, or to a FunctionList.
 code::nil.addFunc:: returns a function, if only one function is passed in the argument.
 code::function.addFunc:: then returns a FunctionList.
 
-
-
-
 method:: removeFunc
-
 
 Remove a function from the list.
 
-
 returns::
 The last function when only one function is left, or code::nil:: when the last function was removed.
-
 
 discussion::
 code::addFunc:: and code::removeFunc:: are implemented for link::Classes/Nil::, link::Classes/Object:: and link::Classes/FunctionList::
@@ -110,19 +61,7 @@ nil.removeFunc(f) // returns teletype::nil::
 obj.removeFunc(f) // returns teletype::nil::, if f === obj, else obj is returned
 ::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // example

@@ -3,56 +3,19 @@ categories:: UGens>FFT
 summary:: Multiply magnitudes by noise
 related:: Classes/FFT, Classes/IFFT
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Magnitudes are multiplied with noise.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: buffer
 
 FFT buffer.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 s.boot;

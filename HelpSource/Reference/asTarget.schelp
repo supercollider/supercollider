@@ -5,11 +5,7 @@ related:: Classes/Node
 
 
 
-
-
-
 method:: asTarget
-
 
 The classes listed below implement the method code::asTarget::.
 This is used widely in the link::Classes/Node:: classes ( link::Classes/Group:: and link::Classes/Synth:: ) to convert non-Node objects to an appropriate target.

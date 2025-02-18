@@ -2,72 +2,33 @@ title:: PV_BinScramble
 categories:: UGens>FFT
 summary:: Scramble bins
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Randomizethe the order of the bins.
 The trigger will select a new random ordering.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: buffer
 
 FFT buffer.
 
-
 argument:: wipe
 
 Scrambles more bins as wipe moves from teletype::0:: to 1.
 
-
 argument:: width
 
-A value from teletype::zero:: to one, indicating the maximum randomized distance of a bin from its original location in the spectrum.
-
+A value from teletype::zero:: to one, indicating the maximum randomized
+distance of a bin from its original location in the spectrum.
 
 argument:: trig
 
 A trigger, that selects a new random ordering.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 s.boot;

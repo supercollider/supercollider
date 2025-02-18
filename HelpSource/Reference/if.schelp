@@ -5,24 +5,9 @@ related:: Reference/Control-Structures
 
 
 
-
-
-
 method:: if
 
-
-
-
-
-
-
-
-
-
 section:: Example
-
-
-
 
 code::
 if ( [false, true].choose,				// Boolean expression (chooses one at random)
@@ -49,19 +34,7 @@ code::
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Optimization
-
-
-
 
 The functions will be inlined, which plucks the code from the functions and uses a more efficient jump statement.
 

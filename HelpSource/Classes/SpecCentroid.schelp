@@ -3,58 +3,21 @@ categories:: UGens>FFT
 summary:: Spectral centroid
 related:: Classes/SpecFlatness, Classes/SpecPcile
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Given an link::Classes/FFT:: strong::chain::, this measures the emphasis::spectral:: centroid, which is the weighted mean frequency, or the "centre of mass" of the spectrum. (DC is ignored.)
 
 This can be a useful indicator of the perceptual emphasis::brightness:: of a signal.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: kr
-
 
 argument:: buffer
 
 An link::Classes/FFT:: chain.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 A link::Classes/Blip:: oscillator is ideal for demonstrating this because the number of harmonics is directly manipulated:
 as the number of harmonics increases, the centroid is pushed higher.

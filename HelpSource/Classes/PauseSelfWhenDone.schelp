@@ -3,38 +3,13 @@ categories:: UGens>Synth control, UGens>Undocumented
 summary:: FIXME: PauseSelfWhenDone purpose
 related:: Classes/Done, Classes/FreeSelfWhenDone
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 FIXME: PauseSelfWhenDone description.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: kr
-
 
 argument:: src
 

@@ -3,19 +3,7 @@ categories:: Collections>Ordered
 summary:: Fixed size collection
 related:: Reference/Literals, Classes/List
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Arrays are ArrayedCollections whose slots may contain any object.
 Arrays have a fixed maximum size beyond which they cannot grow.
@@ -43,48 +31,25 @@ code::a.at(2):: or code::a[2]::
 
 See link::Classes/ArrayedCollection:: for the principal methods: at, put, clipAt, wrapAt, etc...
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: new
 
-
 Create a new array with size 0 that can grow up to the fixed size.
-
 
 argument:: maxSize
 
 The maximum size of the array.
 
-
-
-
 method:: newClear
 
-
 Create a new array with all slots filled with nils.
-
 
 argument:: indexedSize
 
 The size of the array.
 
-
-
-
 method:: with
-
 
 Create a new Array whose slots are filled with the given arguments.
 This is the same as the method in ArrayedCollection, but is reimplemented here to be more efficient.
@@ -93,181 +58,89 @@ code::
 Array.with(7, 'eight', 9).postln;
 ::
 
-
-
-
 copymethod:: Collection *fill
-
 
 copymethod:: Collection *fill2D
 
-
-
-
 copymethod:: Collection *fillND
-
 
 copymethod:: Collection *newFrom
 
-
-
-
 copymethod:: ArrayedCollection *geom
-
 
 copymethod:: ArrayedCollection *series
 
-
-
-
 copymethod:: ArrayedCollection *iota
-
 
 copymethod:: SequenceableCollection *interpolation
 
-
-
-
 copymethod:: SequenceableCollection *rand
-
 
 copymethod:: SequenceableCollection *rand2
 
-
-
-
 copymethod:: SequenceableCollection *linrand
-
 
 copymethod:: SequenceableCollection *exprand
 
-
-
-
 copymethod:: SequenceableCollection *fib
-
-
-
-
-
-
-
-
-
 
 instancemethods::
 
-
-
-
 copymethod:: ArrayedCollection -at
-
 
 copymethod:: ArrayedCollection -put
 
-
-
-
 copymethod:: ArrayedCollection -insert
-
 
 copymethod:: ArrayedCollection -clipAt
 
-
-
-
 copymethod:: ArrayedCollection -wrapAt
-
 
 copymethod:: ArrayedCollection -foldAt
 
-
-
-
 copymethod:: ArrayedCollection -clipPut
-
 
 copymethod:: ArrayedCollection -wrapPut
 
-
-
-
 copymethod:: ArrayedCollection -foldPut
-
 
 copymethod:: ArrayedCollection -swap
 
-
-
-
 copymethod:: ArrayedCollection -replace
-
 
 copymethod:: ArrayedCollection -++
 
-
-
-
 copymethod:: ArrayedCollection -add
-
 
 copymethod:: ArrayedCollection -addAll
 
-
-
-
 copymethod:: ArrayedCollection -addFirst
-
 
 copymethod:: ArrayedCollection -removeAt
 
-
-
-
 copymethod:: ArrayedCollection -collect
-
 
 copymethod:: ArrayedCollection -do
 
-
-
-
 copymethod:: ArrayedCollection -reverseDo
-
 
 copymethod:: ArrayedCollection -deepCollect
 
-
-
-
 copymethod:: ArrayedCollection -reshape
-
 
 copymethod:: ArrayedCollection -windex
 
-
-
-
 copymethod:: ArrayedCollection -size
-
 
 copymethod:: ArrayedCollection -normalize
 
-
-
-
 copymethod:: ArrayedCollection -normalizeSum
-
 
 copymethod:: ArrayedCollection -plot
 
-
-
-
 method:: reverse
 
-
-Return a new Array whose elements are reversed.
+Returns a new Array whose elements are reversed.
 The receiver is unchanged.
 
 code::
@@ -277,24 +150,16 @@ x.postln;
 z.postln;
 ::
 
-
-
-
 method:: scramble
 
-
-Return a new Array whose elements have been scrambled.
+Returns a new Array whose elements have been scrambled.
 The receiver is unchanged.
 
 code::
 [1, 2, 3, 4, 5, 6].scramble.postln;
 ::
 
-
-
-
 method:: mirror
-
 
 Return a new Array which is the receiver made into a palindrome.
 The receiver is unchanged.
@@ -303,11 +168,7 @@ code::
 [1, 2, 3, 4].mirror.postln;
 ::
 
-
-
-
 method:: mirror1
-
 
 Return a new Array which is the receiver made into a palindrome with the last element removed.
 This is useful if the list will be repeated cyclically, the first element will not get played twice.
@@ -318,11 +179,7 @@ code::
 [1, 2, 3, 4].mirror1.postln;
 ::
 
-
-
-
 method:: mirror2
-
 
 Return a new Array which is the receiver concatenated with a reversal of itself.
 The center element is duplicated. The receiver is unchanged.
@@ -331,11 +188,7 @@ code::
 [1, 2, 3, 4].mirror2.postln;
 ::
 
-
-
-
 method:: stutter
-
 
 note::
 It is recommended to use code::dupEach::instead. This method is retained for backwards compatibility.
@@ -348,16 +201,11 @@ code::
 [1, 2, 3].stutter(2).postln;
 ::
 
-
 argument:: n
 
 Number of repeats.
 
-
-
-
 method:: dupEach
-
 
 Return a new Array whose elements are repeated n times.
 The receiver is unchanged.
@@ -366,16 +214,11 @@ code::
 [1, 2, 3].dupEach(2).postln;
 ::
 
-
 argument:: n
 
 Number of repeats.
 
-
-
-
 method:: rotate
-
 
 Return a new Array whose elements are in rotated order.
 The receiver is unchanged.
@@ -386,17 +229,12 @@ code::
 [1, 2, 3, 4, 5].rotate(3).postln;
 ::
 
-
 argument:: n
 
 Number of elements to rotate. Negative n values rotate left, positive n values
 rotate right.
 
-
-
-
 method:: pyramid
-
 
 Return a new Array whose elements have been reordered via one of 10 "counting" algorithms.
 Run the examples to see the algorithms.
@@ -407,16 +245,11 @@ code::
 });
 ::
 
-
 argument:: patternType
 
 Choose counting algorithm. The algorithms are numbered 1 through 10.
 
-
-
-
 method:: pyramidg
-
 
 Like pyramid, but keep the resulting values grouped in subarrays.
 
@@ -426,11 +259,7 @@ code::
 [1, 2, 3, 4].pyramidg(1).postln;
 ::
 
-
-
-
 method:: sputter
-
 
 Return a new Array of length maxlen with the items partly repeated (random choice of given probability).
 
@@ -440,23 +269,17 @@ code::
 [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].sputter(0.8, 8).postln;
 ::
 
-
 argument:: probability
 
 Probability of repeat.
-
 
 argument:: maxlen
 
 The length of the new Array.
 
-
-
-
 method:: lace
 
-
-Return a new Array whose elements are interlaced sequences of the elements of the receiver's subcollections, up to size length. The receiver is unchanged.
+Returns a new Array whose elements are interlaced sequences of the elements of the receiver's subcollections, up to size length. The receiver is unchanged.
 
 code::
 x = [[1, 2, 3], 6, List["foo", 'bar']];
@@ -465,13 +288,9 @@ x.postln;
 y.postln;
 ::
 
-
-
-
 method:: permute
 
-
-Return a new Array whose elements are the nthPermutation of the elements of the receiver.
+Returns a new Array whose elements are the nthPermutation of the elements of the receiver.
 The receiver is unchanged.
 
 code::
@@ -479,26 +298,18 @@ x = [1, 2, 3];
 6.do({ |i| x.permute(i).postln });
 ::
 
-
-
-
 method:: allTuples
 
-
-Return a new Array whose elements contain all possible combinations of the receiver's subcollections.
+Returns a new Array whose elements contain all possible combinations of the receiver's subcollections.
 
 code::
 [[1, 2, 3, 4, 5], [10, 20, 30]].allTuples;
 [[1, 2, 3, 4, 5], [10, 20, 30], [5, 6]].allTuples;
 ::
 
-
-
-
 method:: wrapExtend
 
-
-Return a new Array whose elements are repeated sequences of the receiver, up to size length. The receiver is unchanged.
+Returns a new Array whose elements are repeated sequences of the receiver, up to size length. The receiver is unchanged.
 
 code::
 x = [1, 2, 3, "foo", 'bar'];
@@ -507,11 +318,7 @@ x.postln;
 y.postln;
 ::
 
-
-
-
 method:: foldExtend
-
 
 Same as wrapExtend but the sequences fold back on the list elements.
 
@@ -522,11 +329,7 @@ x.postln;
 y.postln;
 ::
 
-
-
-
 method:: clipExtend
-
 
 Same as wrapExtend but the sequences "clip" (return their last element) rather than wrapping.
 
@@ -537,11 +340,7 @@ x.postln;
 y.postln;
 ::
 
-
-
-
 method:: slide
-
 
 Return a new Array whose elements are repeated subsequences from the receiver.
 Easier to demonstrate than explain.
@@ -552,11 +351,7 @@ code::
 [1, 2, 3, 4, 5, 6].slide(4, 1).postcs;
 ::
 
-
-
-
 method:: shift
-
 
 Shift the values of the array n steps to the right (n positive) or to the left(n negative),
 dropping the excess and filling empty space with zero.
@@ -566,24 +361,16 @@ code::
 [1, 2, 3, 4, 5, 6].shift(-3).postln;
 ::
 
-
-
-
 method:: containsSeqColl
 
-
-Return teletype::true:: if the receiver Array contains any instance of SequenceableCollection
+Returns teletype::true:: if the receiver Array contains any instance of SequenceableCollection
 
 code::
 [1, 2, 3, 4].containsSeqColl.postln
 [1, 2, [3], 4].containsSeqColl.postln
 ::
 
-
-
-
 method:: powerset
-
 
 Returns all possible combinations of the array's elements.
 
@@ -601,11 +388,7 @@ List[1, 2, 3].powerset
 (a: 1, b: 2, c: 3).powerset;
 ::
 
-
-
-
 method:: envirPairs
-
 
 Given an array of symbols, this returns an array of pairs of (symbol, value) from the current environment.
 This can then be used as arguments for a Synth, or in an OSC message.
@@ -617,11 +400,7 @@ e.use {
 }
 ::
 
-
-
-
 method:: flop
-
 
 Invert rows and columns in a two dimensional Array (turn inside out).
 See also: Function, SequenceableCollection.
@@ -632,20 +411,12 @@ code::
 [].flop; // result is always 2-d.
 ::
 
-
-
-
 method:: multiChannelExpand
-
 
 Used by UGens to perform multi channel expansion.
 Same as flop.
 
-
-
-
 method:: source
-
 
 Some UGens return Arrays of OutputProxy when instantiated.
 This method allows you to
@@ -657,11 +428,7 @@ z.postln;
 z.source.postln;
 ::
 
-
-
-
 method:: fork
-
 
 Used within Routines and assumes an array of functions, from which subroutines are created.
 The subroutines are played while the outer Routine carries on.
@@ -700,11 +467,7 @@ Routine {
 )
 ::
 
-
-
-
 method:: poll
-
 
 Apply an array of Poll units to an array of UGens (see those helpfiles for more details).
 
@@ -718,63 +481,35 @@ x.trace; // By tracing the Synth you can see the two Poll units we created
 x.free
 ::
 
-
-
-
 method:: dpoll
-
 
 Apply an array of Dpoll units to an array of UGens (see those helpfiles for more details).
 
-
-
-
 method:: atIdentityHash
-
 
 This method is used by IdentitySet to search for a key among its members.
 
-
-
-
 method:: atIdentityHashInPairs
-
 
 This method is used by IdentityDictionary to search for a key among its members.
 
-
-
-
 method:: asString
 
-
-Return a string representing the Array.
+Returns a string representing the Array.
 May not be compilable due to elision (...) of excessive arguments.
-
-
-
 
 method:: asCompileString
 
-
-Return a string that will compile to return an Array equal to the receiver.
-
-
-
+Returns a string that will compile to return an Array equal to the receiver.
 
 method:: isValidUGenInput
 
-
-Return teletype::true::.
+Returns teletype::true::.
 Arrays are valid UGen inputs.
-
-
-
 
 method:: asRawOSC
 
-
-Return the OSC message as an Int8Array.
+Returns the OSC message as an Int8Array.
 Receiver can be a message or a bundle.
 See also link::Classes/Int8Array#-parseOSC::.
 
@@ -783,32 +518,22 @@ code::
 [0.1, [\s_new, \default, -1, 1, 1, \freq, 1961]].asRawOSC; // bundle
 ::
 
-
-
-
-
-
 subsection:: Bela
-
 
 method:: belaScope
 
-
 Send this Array's content to Bela's Oscilloscope (see link::Classes/BelaScope:: for required setup)
-
 
 argument:: scopeChannel
 
 Bela's oscilloscope channel to start scoping on.
 This has to be a non-negative number, and can't be changed after scoping starts.
 
-
 argument:: server
 
 The server on which BelaScope is running.
 If not specified, it looks for the first server for which BelaScope was already initialized.
 If none is found, it attempts to initialize a link::Classes/BelaScope:: instance on link::Classes/Server#*default::.
-
 
 returns::
  

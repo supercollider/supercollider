@@ -3,29 +3,11 @@ categories:: External Control>MIDI
 summary:: About MIDI
 related:: Guides/UsingMIDI, Classes/MIDIFunc, Classes/MIDIdef
 
-
-
-
-
-
-
-
-
-
 section:: Practical usage overview
-
-
-
 
 Begin with the link::Guides/UsingMIDI:: help file.
 
-
-
-
-
-
 subsection:: Receiving MIDI input
-
 
 link::Classes/MIDIFunc:: and link::Classes/MIDIdef:: are the standard, recommended way to receive MIDI note on/off, controller, pitch bend, aftertouch, poly-touch and program change messages.
 
@@ -45,29 +27,11 @@ This is not recommended for normal use.
 The exceptions are sysex (system exclusive) and sysrt (MIDI clock) messages, which are currently supported only by MIDIIn.
 See the example below.
 
-
-
-
-
-
 subsection:: Sending MIDI output
-
 
 See the link::Classes/MIDIOut:: help file for details.
 
-
-
-
-
-
-
-
-
-
 section:: Summary of MIDI classes
-
-
-
 
 definitionlist::
 ## link::Classes/MIDIClient:: || This class connects to the operating system's MIDI layer, and obtains the lists of available MIDI sources and destinations.
@@ -83,19 +47,7 @@ It contains a device name, port name and unique identifier (uid).
 ## link::Classes/MIDIIn:: || The lowest-level MIDI input class. MIDIFunc and MIDIdef use this class so that you don't have to. It is strongly recommended to avoid using this class directly.
 ::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 MIDI input:
 

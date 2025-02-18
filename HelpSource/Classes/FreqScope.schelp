@@ -3,19 +3,7 @@ categories:: GUI>Interfaces
 summary:: Frequency spectrum visualizer
 related:: Classes/FreqScopeView
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 FreqScope shows the frequency spectrum of the specified audio bus.
 The scope will remain active after a command-period. To turn it off you must either click off the 'Power' button or close the window.
@@ -31,54 +19,35 @@ Logarithmic is equal spacing per musical octave.
 ## dbCut || Determines the lowest decibel shown on the y-axis.
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: width
 
 Default value is 512.
 
-
 argument:: height
 
 Default value is 300.
 
-
 argument:: busNum
 
 The number of the audio link::Classes/Bus:: to be monitored.
-
 
 argument:: scopeColor
 
 An instance of link::Classes/Color::.
 The drawing color of the scope.
 
-
 argument:: bgColor
 
 An instance of link::Classes/Color::.
 The background color of the scope.
 
-
 argument:: server
 
 The server whose buses to show on scope.
-
 
 discussion::
 Example:
@@ -102,57 +71,26 @@ FreqScope.new(400, 200, 0, server: s);
 { Blip.ar(200, Line.kr(1, 100, 10), 0.2) }.play(s);
 ::
 
-
-
-
-
-
 subsection:: Subclassing and Internal Methods
-
 
 The following methods are usually not used directly or are called by a primitive.
 Programmers can still call or override these as needed.
-
-
-
 
 method:: scopeOpen
 
-
-Return a link::Classes/Boolean::, whether the scope is open.
-
-
-
-
-
-
-
-
-
+Returns a link::Classes/Boolean::, whether the scope is open.
 
 instancemethods::
 
-
-
-
 subsection:: Subclassing and Internal Methods
-
 
 The following methods are usually not used directly or are called by a primitive.
 Programmers can still call or override these as needed.
 
-
-
-
 method:: window
 
-
-Return the window in which the link::Classes/FreqScopeView:: is placed.
-
-
-
+Returns the window in which the link::Classes/FreqScopeView:: is placed.
 
 method:: scope
 
-
-Return the link::Classes/FreqScopeView::.
+Returns the link::Classes/FreqScopeView::.

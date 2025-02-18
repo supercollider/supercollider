@@ -3,19 +3,7 @@ categories:: Language
 summary:: Catalog of symbolic notations in SuperCollider
 related:: Overviews/Operators, Reference/Syntax-Shortcuts
 
-
-
-
-
-
-
-
-
-
 section:: Arithmetic operators
-
-
-
 
 Math operators apply to many classes, including arrays and other collections.
 
@@ -35,19 +23,7 @@ definitionlist::
 ## code:: number ** number :: || exponentiation
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Bitwise arithmetic
-
-
-
 
 definitionlist::
 ## code:: number & number :: || bitwise and
@@ -57,19 +33,7 @@ definitionlist::
 ## code:: number +>> number :: || unsigned bitwise right shift
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Logical operators
-
-
-
 
 definitionlist::
 ## code:: object == object :: || equivalence
@@ -140,19 +104,7 @@ second condition
 false
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Array and Collection operators
-
-
-
 
 definitionlist::
 ## code:: object ++ object :: || concatenation
@@ -163,19 +115,7 @@ definitionlist::
 ## code:: collection |@| integer :: || collection/array indexing: .clipAt(int)
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Set operators
-
-
-
 
 definitionlist::
 ## code:: set & set :: || intersection of two sets
@@ -206,19 +146,7 @@ a -- b
 Set[ 2, 9, 3, 4, 8 ]
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Geometry operators
-
-
-
 
 definitionlist::
 ## code:: number @ number :: || make a link::Classes/Point:: of two numbers
@@ -242,19 +170,7 @@ Rect(left, top, right-left, bottom-top)
 ## code:: rect | rect :: || union of two rectangles (returns a Rect whose boundaries exactly encompass both Rects)
 ::
 
-
-
-
-
-
-
-
-
-
 section:: IOStream operators
-
-
-
 
 definitionlist::
 ## code:: stream << object :: || represent the object as a string and add to the stream.
@@ -285,19 +201,7 @@ Post <<< "a string"
 ## code:: stream <<<* collection :: || add each item's compile string to the stream.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Conditional execution operators
-
-
-
 
 definitionlist::
 ## code:: object ? object :: || nil check (no .value)
@@ -356,19 +260,7 @@ f.value(2)
 
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Miscellaneous operators
-
-
-
 
 definitionlist::
 ## code:: object ! number :: || same as code:: object.dup(number) ::
@@ -420,19 +312,7 @@ f.([10, 75, 512]);
 
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Symbolic notations to define literals/other objects
-
-
-
 
 definitionlist::
 ## code:: $ :: || character prefix: code:: "ABC".at(0) == $A ::
@@ -466,19 +346,7 @@ definitionlist::
 ## code:: (_ * 2) :: || define a function code:: { |a| a * 2 } :: (see link::Reference/Partial-Application::)
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Argument definition
-
-
-
 
 definitionlist::
 ## code:: |a, b, c| :: || define function/method arguments
@@ -487,19 +355,7 @@ definitionlist::
 ## code:: #a, b ... c = myArray :: || assign first two elements to a and b; the rest as an array into c
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Where f is a function
-
-
-
 
 definitionlist::
 ## code:: f.( ) :: || evaluate the function with the arguments in parentheses
@@ -519,19 +375,7 @@ f.(a: 2, b: 4);
 This works only with single-argument methods like binary operators.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Class and instance variable access
-
-
-
 
 Inside a class definition (see link::Guides/WritingClasses:: ):
 
@@ -557,19 +401,7 @@ definitionlist::
 ## code:: myObject.instVar = x; :: || invoke the setter: code:: (myObject.instVar_(x); x) ::
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Array series and indexing
-
-
-
 
 definitionlist::
 ## code:: (a..b) :: || produces an array consisting of consecutive integers from a to b
@@ -587,19 +419,7 @@ definitionlist::
 ## code:: ~abc = value :: || compiles to code:: \abc.envirPut(value) ::
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Adverbs to math operators
-
-
-
 
 (see link::Reference/Adverbs:: )
 

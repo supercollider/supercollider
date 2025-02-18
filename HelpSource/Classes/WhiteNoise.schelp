@@ -3,61 +3,23 @@ categories:: UGens>Generators>Stochastic
 summary:: White noise
 related:: Classes/BrownNoise, Classes/GrayNoise, Classes/ClipNoise, Classes/PinkNoise
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Generatenoise noise whose spectrum has equal power at all frequencies.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: mul
 
 Output will be multiplied by this value.
 
-
 argument:: add
 
 This value will be added to the output.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

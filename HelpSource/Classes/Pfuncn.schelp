@@ -3,61 +3,23 @@ categories:: Streams-Patterns-Events>Patterns>Function
 summary:: Function pattern of given length
 related:: Classes/Pfunc, Classes/FuncStream
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Return a stream that returns values from the code::func::.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: func
 
 Stream function. In an event stream receives the current link::Classes/Event:: as argument.
 
-
 argument:: repeats
 
 End after this number of times.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

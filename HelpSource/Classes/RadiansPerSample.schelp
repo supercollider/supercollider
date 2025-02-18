@@ -3,36 +3,11 @@ categories:: UGens>Info
 summary:: Number of radians per sample
 related:: Classes/ControlRate, Classes/SampleDur, Classes/SampleRate, Classes/SubsampleOffset
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Return the number of radians per sample.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ir
-
 

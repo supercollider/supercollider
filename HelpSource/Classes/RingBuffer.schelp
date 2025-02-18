@@ -3,164 +3,72 @@ categories:: Collections>Ordered
 summary:: Fixed size ringbuffer
 related:: Classes/LinkedList
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A circular buffer that holds a fixed-size collection. Can be used as a queue.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: new
 
-
 Create a new buffer.
-
 
 argument:: size
 
 Initial size. The collection will be able to hold one minus this number of values.
 
-
 argument:: collectionClass
 
-Default to the link::Classes/Array:: class.
-
-
-
-
-
-
-
-
-
+Defaults to the link::Classes/Array:: class.
 
 instancemethods::
 
-
-
-
 method:: array
-
 
 The collection.
 
-
-
-
 method:: readPos
-
 
 Current read position.
 
-
-
-
 method:: writePos
-
 
 Current write position.
 
-
-
-
 method:: maxSize
-
 
 Maximum capacity.
 
-
-
-
 method:: size
-
 
 Alias of link::#-readable::.
 
-
-
-
 method:: readable
-
 
 Number of readble items.
 
-
-
-
 method:: writable
-
 
 Number of writable items.
 
-
-
-
 method:: add
-
 
 Add value and increase link::#-writePos::.
 Do nothing if no items can be written.
 
-
-
-
 method:: pop
-
 
 Return next readable item and increase link::#-readPos::. Return code::nil:: if no items can be read.
 
-
-
-
 method:: overwrite
-
 
 Add value and increase link::#-writePos:: by overwriting oldest readable item.
 
-
-
-
 method:: do
-
 
 Iterate over the currently readable items.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 r = RingBuffer(4);

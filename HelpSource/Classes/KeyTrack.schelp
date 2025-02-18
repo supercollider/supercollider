@@ -3,70 +3,31 @@ categories:: UGens>Analysis>Pitch
 summary:: Key tracker
 related:: Classes/BeatTrack, Classes/Loudness, Classes/MFCC, Classes/Onsets, Classes/Pitch
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A (12TET major/minor) key tracker based on a pitch class profile of energy across FFT bins and matching this to templates for major and minor scales in all transpositions.
 It assumes a 440 Hz concert A reference.
 Output is 0-11 C major to B major, 12-23 C minor to B minor.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: kr
-
 
 argument:: chain
 
 [fft] Audio input to track. This must have been pre-analysed by a 4096 size FFT.
 No other FFT sizes are valid except as noted below.
 
-
 argument:: keydecay
 
 [sk] Number of seconds for the influence of a window on the final key decision to decay by 40dB (to teletype::0::.01 its original value).
-
 
 argument:: chromaleak
 
 [sk] Each frame, the chroma values are set to the previous value multiplied by the chromadecay.
 0.0 will start each frame afresh with no memory.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // The following files are test materials on my machine; you will subsitute your own filenames here

@@ -8,13 +8,9 @@ You can see which classes implement a specific method by clicking on the method 
 
 There are a number of methods that incrementally build up (or reduce down) collections like arrays or events. Nil responds by creating a collection, so that variables do not need to be initialized. Nil is just the "ground" (default case) from which the rest is bootstrapped.
 
-
-
-
 method:: add
 
-
-Return an array with the value.
+Returns an array with the value.
 This makes it unnecessary to initialize when adding to a variable.
 
 code::
@@ -23,13 +19,9 @@ x = x.add(8);  // returns an array
 x = x.add(7); // appends to the array
 ::
 
-
-
-
 method:: addAll
 
-
-Return an array with all the values.
+Returns an array with all the values.
 This makes it unnecessary to initialize when adding to a variable.
 
 code::
@@ -38,11 +30,7 @@ x = x.addAll([0, 2, 1, 2]);  // returns an array
 x = x.addAll(7); // single objects are converted to an array and appended
 ::
 
-
-
-
 method:: remove
-
 
 For nil, it just returns teletype::nil::.
 This makes it unnecessary to initialize when removing from a variable and adding to it again.
@@ -55,13 +43,9 @@ x.remove(1); // returns 1
 x;
 ::
 
-
-
-
 method:: ++
 
-
-Return an array with all the values.
+Returns an array with all the values.
 This makes it unnecessary to initialize when adding to a variable.
 
 code::
@@ -74,13 +58,9 @@ note::
 Note that, unlike with addAll, the second operand must be a collection in order to function in this way.
 ::
 
-
-
-
 method:: addFunc
 
-
-Return a function or a FunctionList.
+Returns a function or a FunctionList.
 This method is used to add multiple functions to already existing ones.
 
 code::
@@ -99,11 +79,7 @@ a.action = a.action.addFunc { "I am so very moved".postln };
 a.addFuncTo(\action, { "Now, I am finally really moved".postln }); // shorter alternative
 ::
 
-
-
-
 method:: removeFunc
-
 
 This method is used to remove multiple functions from already existing ones.
 For Nil, it just returns itself.
@@ -117,11 +93,7 @@ f.removeFunc(g);
 f.value;
 ::
 
-
-
-
 method:: transformEvent
-
 
 This method is used to operate on events which are passed through the system as an argument.
 

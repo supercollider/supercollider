@@ -3,72 +3,32 @@ categories:: UGens>FFT
 summary:: Crossfade in random bin order
 related:: Classes/PV_RandComb
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Crossfadebetween between two sounds by copying bins in a random order.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: bufferA
 
 FFT buffer A.
 
-
 argument:: bufferB
 
 FFT buffer B.
 
-
 argument:: wipe
 
-yCop bins from bufferB in a random order as wipe goes from teletype::0::
+Copies bins from bufferB in a random order as wipe goes from teletype::0::
 to 1.
-
 
 argument:: trig
 
 A trigger, that selects a new random ordering.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 s.boot;

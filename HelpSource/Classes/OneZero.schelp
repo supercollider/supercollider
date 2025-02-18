@@ -3,19 +3,7 @@ categories:: UGens>Filters>Linear
 summary:: One zero filter
 related:: Classes/OnePole
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A one zero filter. Implements the formula:
 
@@ -23,27 +11,13 @@ code::
 out(i) = ((1 - abs(coef)) * in(i)) + (coef * in(i-1)).
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: in
 
 The input signal.
-
 
 argument:: coef
 
@@ -67,29 +41,15 @@ link::Classes/Delay1::).
 
 -1 makes an inverted single sample delay.
 
-
 argument:: mul
 
 Output will be multiplied by this value.
-
 
 argument:: add
 
 This value will be added to the output.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 { OneZero.ar(WhiteNoise.ar(0.5), 0.5) }.play

@@ -3,63 +3,25 @@ categories:: UGens>Generators>Stochastic
 summary:: Gray Noise
 related:: Classes/BrownNoise, Classes/ClipNoise, Classes/PinkNoise, Classes/WhiteNoise
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Generatenoise noise which results from flipping random bits in a word.
 This type of noise has a high RMS level relative to its peak to peak
 level. The spectrum is emphasized towards lower frequencies.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: mul
 
 Output will be multiplied by this value.
 
-
 argument:: add
 
 This value will be added to the output.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

@@ -6,19 +6,7 @@ related:: Classes/SequenceableCollection, Classes/Stream
 
 Adverbs are a third argument passed to binary operators that modifies how they iterate over link::Classes/SequenceableCollection::s or link::Classes/Stream::s. The idea for adverbs is taken from the J programming language which is a successor of APL.
 
-
-
-
-
-
-
-
-
-
 section:: Adverbs and SequenceableCollections
-
-
-
 
 Normally when you add two arrays like this:
 
@@ -37,13 +25,7 @@ A new array is created which is the length of the longer array and items from ea
 Using adverbs can change this behavior.
 Adverbs are symbols and they follow a '.' (dot) after the binary operator. Adverbs can be applied to all binary operators.
 
-
-
-
-
-
 subsection:: Adverb 's'
-
 
 The first adverb is 's' which means 'short'. The add operation now returns the shorter of the two arrays.
 
@@ -57,13 +39,7 @@ code::
 [ 11, 22, 33 ]
 ::
 
-
-
-
-
-
 subsection:: Adverb 'f'
-
 
 Another adverb is 'f' which uses folded indexing instead of wrapped:
 
@@ -77,13 +53,7 @@ code::
 [ 11, 22, 33, 42, 51 ]
 ::
 
-
-
-
-
-
 subsection:: Adverb 't'
-
 
 The table adverb 't' makes an array of arrays where each item in the first array is added to the whole second array and the resulting arrays are collected.
 
@@ -97,13 +67,7 @@ code::
 [ [ 11, 12, 13 ], [ 21, 22, 23 ], [ 31, 32, 33 ], [ 41, 42, 43 ], [ 51, 52, 53 ] ]
 ::
 
-
-
-
-
-
 subsection:: Adverb 'x'
-
 
 The cross adverb 'x' is like table, except that the result is a flat array:
 
@@ -117,19 +81,7 @@ code::
 [ 11, 12, 13, 21, 22, 23, 31, 32, 33, 41, 42, 43, 51, 52, 53 ]
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Adverbs and Streams
-
-
-
 
 There is currently one adverb defined for streams.
 This is the cross adverb, 'x'.

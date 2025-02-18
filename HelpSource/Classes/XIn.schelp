@@ -3,19 +3,7 @@ categories:: UGens>InOut
 summary:: Helper class used by InBus
 related:: Classes/InBus, Classes/In, Classes/InFeedback, Classes/XInFeedback
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A private class used in the implementation of link::Classes/InBus::.
 You should never need to use this UGen directly.

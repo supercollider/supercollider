@@ -3,81 +3,45 @@ categories:: UGens>Generators>Deterministic
 summary:: Fast sine oscillator
 related:: Classes/SinOsc, Classes/SinOscFB
 
-
-
-
-
-
-
-
-
-
 description::
 
-
-
-
 Very fast sine wave generator (2 PowerPC instructions per output sample!)
-implemented using a ringing filter. This generates a much cleaner sine wave than a table lookup oscillator and is a lot faster.
+implemented using a ringing filter. This generates a much cleaner sine
+wave than a table lookup oscillator and is a lot faster.
 However, the
 amplitude of the wave will vary with frequency.
-Generally the amplitude will go down as you raise the frequency and go up as you lower the frequency.
+Generally the amplitude
+will go down as you raise the frequency and go up as you lower the frequency.
 
 warning::
-In the current implementation, the amplitude can blow up if the frequency is modulated by certain alternating signals.
+In the current implementation, the amplitude can blow up if the
+frequency is modulated by certain alternating signals.
 ::
-
-
-
-
-
-
-
-
-
 
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: freq
 
 Frequency in Hertz.
 note:: 
-While an audio-rate frequency input is accepted, frequency is is currently only updated internally at only control-rate.::
-
+While an audio-rate frequency input is accepted, frequency is
+is currently only updated internally at only control-rate.::
 
 argument:: iphase
 
 Initial phase offset.
 
-
 argument:: mul
 
 Output will be multiplied by this value.
-
 
 argument:: add
 
 This value will be added to the output.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 { FSinOsc.ar(800) * 0.2 }.play;

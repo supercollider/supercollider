@@ -3,61 +3,23 @@ categories:: Streams-Patterns-Events>Patterns>Function
 summary:: Routine pattern
 related:: Classes/Routine
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 note that there is a shortcut to create a Prout:
 
 code::p(func)::
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: new
 
-
-Return a routine from the function.
-
+Returns a routine from the function.
 
 argument:: routineFunc
 
 Routine function.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

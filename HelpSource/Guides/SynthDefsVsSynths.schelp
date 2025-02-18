@@ -31,19 +31,7 @@ There is no top level Synth in SC3, within which all scheduling and creation of 
 There are only link::Classes/Synth:: objects which represent synth nodes on the server.
 These can be created at any time, within any scope.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 s.boot;
@@ -69,8 +57,7 @@ SynthDef("Help-SynthDef", { arg out = 0;
 }).send(s);
 )
 
-// Create a Synth with it
-x = Synth.new("Help-SynthDef", s);
+// Create a Synth with it x = Synth.new("Help-SynthDef", s);
 x.free;
 
 // Shorthand method to compile and write a SynthDef, and then play it in a Synth when done.
@@ -83,8 +70,7 @@ x = SynthDef("Help-SynthDef", { arg out = 0;
 // The above only starts the new Synth after the def has been sent to the server.
 // Note that SynthDef.play returns a Synth object!
 
-x.set(\out, 1); // change one of the arguments
-x.free;
+x.set(\out, 1); // change one of the arguments x.free;
 
 // SynthDef with a parameter that will be randomly determined each time a new Synth is created
 // (try it several times to hear the differences)

@@ -3,67 +3,29 @@ categories:: UGens>Maths
 summary:: Tests if a signal is within a given range
 related:: Classes/InRect, Classes/Schmidt
 
-
-
-
-
-
-
-
-
-
 description::
 
-
-
-
 If  code::in::  is ≥  code::lo::  and ≤
-code::hi::  output 1.0, otherwise output 0.0. Output is initially zero.
-
-
-
-
-
-
-
-
-
+code::hi::  output 1.0, otherwise output 0.0. Output is
+initially zero.
 
 classmethods::
 
-
-
-
 method:: ar, kr, ir
-
 
 argument:: in
 
 Signal to be tested.
 
-
 argument:: lo
 
 Low threshold.
-
 
 argument:: hi
 
 High threshold.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 s.boot;

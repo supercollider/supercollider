@@ -7,19 +7,7 @@ related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 This document is macOS (SCapp) specific in key commands, though the principles extend to all platforms.
 See the helpfile link::Reference/KeyboardShortcuts:: for key commands in other editors.
 
-
-
-
-
-
-
-
-
-
 section:: Synthesizing sound
-
-
-
 
 To run (evaluate) one line of code, such as
 
@@ -70,19 +58,7 @@ Will appear in the post window.
 
 Press command-period (cmd-.) to stop synthesis.
 
-
-
-
-
-
-
-
-
-
 section:: Scoping sound
-
-
-
 
 To scope whatever it is you're synthesizing (create a graphical display of the waveform):
 
@@ -113,19 +89,7 @@ code::
 
 Press cmd-. to stop sound synthesis.
 
-
-
-
-
-
-
-
-
-
 section:: Recording sound
-
-
-
 
 The localhost and the internal server windows have buttons, on the far right, to activate recording. To record, choose the a default server. The button on the default server of your choice initially will say "record" Press it to start recording.
 

@@ -3,36 +3,12 @@ categories:: JITLib>GUI, Live Coding
 summary:: Controls the top-level of a nodeproxy and its monitor
 related:: Classes/ProxyMixer, Classes/NodeProxyEditor
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 I a GUI for controlling the top-level of a nodeproxy and its monitor.
 It is e.g. used in ProxyMixer, and NodeProxyEditor, and it is cross-platform.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 s.boot;
@@ -49,13 +25,9 @@ p = ProxySpace.push;
 ~test.playN(0, vol: 0.1);
 )
 
-	// make a ProxyMonitorGui
-z = ProxyMonitorGui();
+	// make a ProxyMonitorGui z = ProxyMonitorGui();
 
-	// switching between proxies: drag-view displays proxy key
-z.proxy = ~otto12345;	// up to 9 letters or so on macOS
-z.proxy = ~test;		// make audio controls available if proxy is audio
-z.proxy = nil;
+	// switching between proxies: drag-view displays proxy key z.proxy = ~otto12345;	// up to 9 letters or so on macOS z.proxy = ~test;		// make audio controls available if proxy is audio z.proxy = nil;
 z.proxy = ~otto; ~otto.kr;	//
 z.proxy = ~test;
 
@@ -63,8 +35,7 @@ z.proxy = ~test;
 
 	// configuration variants
 
-	// pudgier
-ProxyMonitorGui(~test, bounds: 300@30);
+	// pudgier ProxyMonitorGui(~test, bounds: 300@30);
 
 	// place it in an existing window:
 ProxyMonitorGui(~test, Window("ProxyMonitor", Rect(200, 200, 400, 100)).front);
@@ -74,8 +45,7 @@ ProxyMonitorGui(~test, Window("ProxyMonitor").front, bounds: 350@40);
 ProxyMonitorGui(~test, Window("ProxyMonitor").front, bounds: Rect(20, 20, 360, 20));
 
 
-	// show level in dB - off by default
-ProxyMonitorGui(~test, showLevel: true, showPlayN: false);
+	// show level in dB - off by default ProxyMonitorGui(~test, showLevel: true, showPlayN: false);
 
 	// without multichan out button - then uses proxy.play. true = playN by default.
 ProxyMonitorGui(~test, showPlayN: false);
@@ -84,8 +54,7 @@ ProxyMonitorGui(~test, showPlayN: false);
 on by default.
 ProxyMonitorGui(~test, showName: false);
 
-	// show proxy pause and send buttons - true by default
-ProxyMonitorGui(~test, showPauseSend: true, showPlayN: false);
+	// show proxy pause and send buttons - true by default ProxyMonitorGui(~test, showPauseSend: true, showPlayN: false);
 
 
 	// turn off SkipJack view updates - updates are on by default.

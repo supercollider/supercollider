@@ -3,57 +3,28 @@ categories:: Math
 summary:: Complex number
 related:: Classes/Polar, Classes/SimpleNumber, Classes/Float, Classes/Integer
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A class representing complex numbers.
 Note that this is a simplified representation of a complex number, which does not implement the full mathematical notion of a complex number.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: new
 
-
 Create a new complex number with the given real and imaginary parts.
-
 
 argument:: real
 
 The real part
 
-
 argument:: imag
 
 The imaginary part
 
-
 returns::
  
 a new instance of Complex.
-
 
 discussion::
 code::
@@ -62,114 +33,66 @@ a.real;
 a.imag;
 ::
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 subsection:: math support
 
-
 method:: real
-
 
 The real part of the number.
 
-
-
-
 method:: imag
-
 
 The imaginary part of the number.
 
-
-
-
 method:: conjugate
 
-
 The complex conjugate.
-
 
 discussion::
 code::
 Complex(2, 9).conjugate
 ::
 
-
-
-
 method:: +
 
-
 Complex addition.
-
 
 discussion::
 code::
 Complex(2, 9) + Complex(-6, 2)
 ::
 
-
-
-
 method:: -
 
-
 Complex subtraction
-
 
 discussion::
 code::
 Complex(2, 9) - Complex(-6, 2)
 ::
 
-
-
-
 method:: *
 
-
 Complex multiplication
-
 
 discussion::
 code::
 Complex(2, 9) * Complex(-6, 2)
 ::
 
-
-
-
 method:: /
 
-
 Complex division.
-
 
 discussion::
 code::
 Complex(2, 9) / Complex(-6, 2)
 ::
 
-
-
-
 method:: exp
 
-
 Complex exponentiation with base e.
-
 
 discussion::
 code::
@@ -180,42 +103,27 @@ code::
 exp(Complex(0, pi)) == -1 // Euler's formula: true
 ::
 
-
-
-
 method:: squared
 
-
 Complex self multiplication.
-
 
 discussion::
 code::
 squared(Complex(2, 1))
 ::
 
-
-
-
 method:: cubed
 
-
 Complex triple self multiplication.
-
 
 discussion::
 code::
 cubed(Complex(2, 1))
 ::
 
-
-
-
 method:: sqrt
 
-
 Complex square root
-
 
 discussion::
 return the principal root
@@ -227,15 +135,10 @@ Complex(4, 1.neg).sqrt
 Complex(4, 1.neg).pow(2.reciprocal)
 ::
 
-
-
-
 method:: **
-
 
 method:: pow
 Complex exponentiation
-
 
 discussion::
 Not implemented for all combinations - some are mathematically ambiguous.
@@ -252,28 +155,18 @@ code::
 Complex(2, 9) ** 1.2 // not defined
 ::
 
-
-
-
 method:: <
 
-
 The comparison of just the real parts.
-
 
 discussion::
 code::
 Complex(2, 9) < Complex(5, 1);
 ::
 
-
-
-
 method:: ==
 
-
 The comparison assuming that the reals (floats) are fully embedded in the complex numbers
-
 
 discussion::
 code::
@@ -281,28 +174,18 @@ Complex(1, 0) == 1;
 Complex(1, 5) == Complex(1, 5);
 ::
 
-
-
-
 method:: neg
 
-
 Negation of both parts
-
 
 discussion::
 code::
 Complex(2, 9).neg
 ::
 
-
-
-
 method:: reciprocal
 
-
 The reciprocal of a complex number
-
 
 discussion::
 code::
@@ -310,141 +193,70 @@ Complex(3, 4).reciprocal
 1 / Complex(3, 4) // same, but less efficient
 ::
 
-
-
-
 method:: abs
 
-
 The absolute value of a complex number is its magnitude.
-
 
 discussion::
 code::
 Complex(3, 4).abs
 ::
 
-
-
-
 method:: magnitude
-
 
 Distance to the origin.
 
-
-
-
 method:: magnitudeApx
-
 
 method:: rho
 The distance to the origin.
 
-
-
-
 method:: angle, phase, theta
-
 
 The angle in radians.
 
-
-
-
-
-
 subsection:: Conversion
-
 
 method:: asPoint
 
-
 Convert to a link::Classes/Point::.
-
-
-
 
 method:: asPolar
 
-
 Convert to a Polar
-
-
-
 
 method:: asInteger
 
-
 Real part as link::Classes/Integer::.
-
-
-
 
 method:: asFloat
 
-
 Real part as link::Classes/Float::.
-
-
-
 
 method:: asComplex
 
-
 returns this
-
-
-
-
-
 
 subsection:: Misc
 
-
 method:: coerce
-
 
 method:: hash
 A hash value
 
-
-
-
 method:: printOn
-
 
 Print this on given stream
 
-
-
-
 method:: performBinaryOpOnSignal
-
 
 method:: performBinaryOpOnComplex
 
-
-
-
 method:: performBinaryOpOnSimpleNumber
-
 
 method:: performBinaryOpOnUGen
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 Basic example:
 

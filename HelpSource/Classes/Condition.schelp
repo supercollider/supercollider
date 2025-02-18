@@ -2,49 +2,19 @@ title:: Condition
 categories:: Scheduling
 summary:: Block the execution of a thread
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: new
 
-
 Create a new instance, set the strong::test:: variable.
-
-
-
-
-
-
-
-
-
 
 instancemethods::
 
-
-
-
 method:: test
-
 
 Answer whether the condition will block or not (boolean).
 
-
-
-
 method:: wait
-
 
 Wait until the condition is true and signalled.
 This only works in a Routine.
@@ -56,11 +26,7 @@ c.test = true;
 c.signal;
 ::
 
-
-
-
 method:: hang
-
 
 Wait for strong::value:: time, regardless of test. This only works in a Routine.
 This method yields a symbol (\hang), so that the clock doesn't reschedule the Routine.
@@ -70,35 +36,15 @@ c = Condition.new; fork { 0.5.wait; "started ...".postln; c.hang;  "... and fini
 c.unhang;
 ::
 
-
-
-
 method:: signal
-
 
 If link::#-test:: is true, reschedule blocked threads.
 
-
-
-
 method:: unhang
-
 
 Resume threads.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

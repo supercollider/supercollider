@@ -15,19 +15,7 @@ SynthDescLib.global.browse;
 
 And examine the box that lists the controls for each synth.
 
-
-
-
-
-
-
-
-
-
 section:: Controls (usually) are arguments
-
-
-
 
 Use controls, which most often are defined as arguments in a ugenGraphFunc, to give information to a synth, either when it is created and/or after it is running. Supply default values to the arguments to make code more readable and to protect against user error (such as forgetting to supply a value to an argument).
 
@@ -84,19 +72,7 @@ In this case, the pattern is
 
 [ controlIndex, value, controlIndex, value, controlIndex].
 
-
-
-
-
-
-
-
-
-
 section:: To adjust a control
-
-
-
 
 Use the code::.set:: message to change the value of a control while a synth is running.
 
@@ -114,19 +90,7 @@ SynthDef("resetMyControls", { arg freq = 440, mul = 0.22;
 ~aSynth.set(\freq, 600, \mul, 0.25);
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Environment variables
-
-
-
 
 The '~' character before aSynth in the previous example defines an environment variable.
 An advantage to using an environment variable is that it doesn't have to be declared explicitly, as in
@@ -141,19 +105,7 @@ For further information, see the link::Classes/Environment:: document in the Sup
 In this usage, ~aSynth behaves like a global variable in other programming languages.
 By the strict definition, it isn't precisely emphasis::global::, but it may be used as such in SuperCollider.
 
-
-
-
-
-
-
-
-
-
 section:: Lag times
-
-
-
 
 Use an array of lag times to state how long it takes to glide smoothly from one control value to another.
 Write the lag times in an array and place it in the synthdef after the ugenGraphFunc, as in
@@ -172,19 +124,7 @@ SynthDef("controlsWithLags", { arg freq1 = 440, freq2 = 443, mul = 0.12;
 ~aSynth.set(\freq1, 600, \freq2, 701, \mul, 0.05);
 ::
 
-
-
-
-
-
-
-
-
-
 section:: SynthDef templates
-
-
-
 
 The array of lagtimes means that the synthdef template with two components (discussed in link::Tutorials/Mark_Polishook_tutorial/07_SynthDefs::)
 

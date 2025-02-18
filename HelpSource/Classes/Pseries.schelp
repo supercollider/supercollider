@@ -3,66 +3,27 @@ categories:: Streams-Patterns-Events>Patterns>List
 summary:: Arithmetic series pattern
 related:: Classes/Pgeom
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Return a stream that behaves like an arithmetic series.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: start
 
 Start value.
 
-
 argument:: step
 
 Addition factor.
-
 
 argument:: length
 
 Number of values produced.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

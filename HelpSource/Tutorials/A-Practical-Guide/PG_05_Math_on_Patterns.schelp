@@ -3,19 +3,7 @@ categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Performing math and collection operations on patterns
 related:: Tutorials/A-Practical-Guide/PG_04_Words_to_Phrases, Tutorials/A-Practical-Guide/PG_060_Filter_Patterns
 
-
-
-
-
-
-
-
-
-
 section:: Math on patterns
-
-
-
 
 Often, there is not a pattern that delivers exactly the desired result by itself.
 But, other operations can be applied to patterns, to manipulate one pattern's output and turn it into something else.
@@ -37,13 +25,7 @@ p.b		// == 2
 
 In other words, the multiplication here produces not the result of a single multiplication, but a template for an infinite stream of multiplications to follow.
 
-
-
-
-
-
 subsection:: Math on patterns
-
 
 Not only can patterns generate numbers, but they also support all the standard math operators:
 unary (abs, reciprocal, etc.), binary (+, -, *, /, **, min, max, etc.) and n-ary (clip, wrap, fold, linlin, linexp, etc.) operators are all valid with patterns.
@@ -87,13 +69,7 @@ p = Pbind(
 p.stop;
 ::
 
-
-
-
-
-
 subsection:: Collection operations on patterns
-
 
 Some of the things you can do to arrays also work with patterns.
 
@@ -152,13 +128,7 @@ Pgeom(1, 1.01, 20).differentiate.do { |x| x.postln };
 
 ::
 
-
-
-
-
-
 subsection:: Miscellaneous calculation patterns
-
 
 These are some other numeric calculations that don't exactly fall in the category of math operators.
 
@@ -186,13 +156,7 @@ p.stop;
 
 ::
 
-
-
-
-
-
 subsection:: Calculations based on other event values
-
 
 In a Pbind, normally the patterns for the various keys calculate independently.
 But it's possible for one or more child patterns to depend on the result of another pattern inside the same Pbind.

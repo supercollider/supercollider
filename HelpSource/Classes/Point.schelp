@@ -3,242 +3,110 @@ categories:: Geometry
 summary:: Cartesian point
 related:: Classes/Polar, Classes/Complex
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Definea a point on the Cartesian plane.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: new
 
-
-Define a new point.
-
-
-
-
-
-
-
-
-
+Defines a new point.
 
 instancemethods::
 
-
-
-
 subsection:: Accessing
-
 
 method:: x
 
-
 Get or set the x coordinate value.
-
-
-
 
 method:: y
 
-
 Get or set the y coordinate value.
-
-
-
 
 method:: set
 
-
-Set the point x and y values.
-
-
-
-
-
+Sets the point x and y values.
 
 subsection:: Testing
 
-
 method:: ==
 
-
-Answer a Boolean whether the receiver equals the argument.
-
-
-
+Answers a Boolean whether the receiver equals the argument.
 
 method:: hash
 
-
-Return a hash value for the receiver.
-
-
-
-
-
+Returns a hash value for the receiver.
 
 subsection:: Math
 
-
 method:: +
-
 
 Addition.
 
-
-
-
 method:: -
-
 
 Subtraction.
 
-
-
-
 method:: *
-
 
 Multiplication.
 
-
-
-
 method:: /
-
 
 Division.
 
-
-
-
 method:: translate
-
 
 Addition by a Point.
 
-
-
-
 method:: scale
-
 
 Multiplication by a Point.
 
-
-
-
 method:: rotate
-
 
 Rotation about the origin by the angle given in radians.
 
-
-
-
 method:: abs
-
 
 Absolute value of the point.
 
-
-
-
 method:: rho
-
 
 Return the polar coordinate radius of the receiver.
 
-
-
-
 method:: theta
-
 
 Return the polar coordinate angle of the receiver.
 
-
-
-
 method:: dist
-
 
 Return the distance from the receiver to aPoint.
 
-
-
-
 method:: transpose
-
 
 Return a Point whose x and y coordinates are swapped.
 
-
-
-
 method:: round
-
 
 Round the coordinate values to a multiple of quantum.
 
-
-
-
 method:: trunc
-
 
 Truncate the coordinate values to a multiple of quantum.
 
-
-
-
-
-
 subsection:: Conversion
-
 
 method:: asPoint
 
-
-Return the receiver.
-
-
-
+Returns the receiver.
 
 method:: asComplex
 
-
-Return a complex number with x as the real part and y as the imaginary part.
-
-
-
+Returns a complex number with x as the real part and y as the imaginary part.
 
 method:: asString
-
 
 Return a string representing the receiver.

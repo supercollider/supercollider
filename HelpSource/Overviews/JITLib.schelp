@@ -2,19 +2,7 @@ title:: JITLib
 categories:: JITLib, Tutorials>JITLib, Live Coding
 summary:: An overview of the Just In Time programming library
 
-
-
-
-
-
-
-
-
-
 section:: Introduction
-
-
-
 
 emphasis::"Passenger to taxtidriver: take me to number 37. I'll give you the street name when we are there."::
 footnote::An austrian math teacher's joke::
@@ -47,19 +35,7 @@ code::
 "JITLibExtensions".include;
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Tutorial:
-
-
-
 
 Interactive Programming with SuperCollider and jitlib
 
@@ -79,19 +55,7 @@ definitionlist::
 
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Overview of the different classes and techniques
-
-
-
 
 list::
 ## strong::Defs:::
@@ -141,19 +105,7 @@ To record all textual changes, link::Classes/History:: is provides navigation an
 (for separate use: link::Classes/TdefGui::, link::Classes/PdefGui::, link::Classes/MonitorGui::, link::Classes/NdefGui::, link::Classes/NdefParamGui::)
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Tutorials
-
-
-
 
 definitionlist::
 ## link::Tutorials/JITLib/proxyspace_examples:: || (a broad variety of inputs and uses)
@@ -168,19 +120,7 @@ definitionlist::
 ## link::Reference/NodeProxy_roles:: || (adverbial syntax for NodeProxy sources)
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Networking
-
-
-
 
 list::
 ## in remote and local networks thanks to sc-architecture node proxies can be strong::used on any server::, as long as it notifies the client and has a correctly initialized default node.
@@ -192,19 +132,7 @@ list::
 	::
 ::
 
-
-
-
-
-
-
-
-
-
 section:: See also these related useful classes:
-
-
-
 
 definitionlist::
 ## link::Classes/BusPlug:: || (listener on a bus)

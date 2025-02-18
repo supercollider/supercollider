@@ -3,68 +3,33 @@ categories:: UGens>Analysis>Amplitude
 summary:: Track peak signal amplitude
 related:: Classes/Peak
 
-
-
-
-
-
-
-
-
-
 description::
 
-
-
-
 Output the peak amplitude of the signal received at the input.
-If level is below maximum, the level decreases by the factor given in
+If level
+is below maximum, the level decreases by the factor given in
 code::decay:: .
 
 
-Internally, the absolute value of the signal is used, to prevent underreporting the peak value if there is a negative DC offset.
-To obtain the minimum and maximum values of the signal as is, use the
+Internally, the absolute value of the signal is used, to prevent
+underreporting the peak value if there is a negative DC offset.
+To obtain
+the minimum and maximum values of the signal as is, use the
 link::Classes/RunningMin::  and  link::Classes/RunningMax::  UGens.
-
-
-
-
-
-
-
-
-
 
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: in
 
 The input signal.
 
-
 argument:: decay
 
 Decay factor.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 s.boot;

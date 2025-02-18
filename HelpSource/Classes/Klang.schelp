@@ -3,40 +3,16 @@ categories:: UGens>Generators>Deterministic
 summary:: Sine oscillator bank
 related:: Classes/Klank, Classes/DynKlang
 
-
-
-
-
-
-
-
-
-
 description::
 
-
-
-
 Klang is a bank of fixed frequency sine oscillators.
-Klang is more efficient than creating individual oscillators but offers less
+Klang is more
+efficient than creating individual oscillators but offers less
 flexibility.
-
-
-
-
-
-
-
-
-
 
 classmethods::
 
-
-
-
 method:: ar
-
 
 argument:: specificationsArrayRef
 
@@ -48,34 +24,19 @@ definitionlist::
 ## phases: || an Array of initial phases, or nil. If teletype::nil::, then phases default to teletype::0.0::.
 ::
 
-
 argument:: freqscale
 
 A scale factor multiplied by all frequencies at initialization time.
-
 
 argument:: freqoffset
 
 An offset added to all frequencies at initialization time.
 
-
 discussion::
 The parameters in code::specificationsArrayRef:: can't be changed after it has been started.
 For a modulatable but less efficient version, see link::Classes/DynKlang::.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 play({ Klang.ar(`[[800, 1000, 1200], [0.3, 0.3, 0.3], [pi, pi, pi]], 1, 0) * 0.4 });

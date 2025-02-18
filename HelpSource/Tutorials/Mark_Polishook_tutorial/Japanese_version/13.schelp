@@ -3,19 +3,7 @@ categories:: Tutorials>Mark_Polishook_tutorial>Japanese_version
 summary:: Mark Polishook tutorial (JP)
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
-
-
-
-
-
-
-
-
-
 section:: 時間ベースのフィルター
-
-
-
 
 Delay、CombそしてAlpassといったUGenは時間ベースのエフェクトを生成します。これは空間や位置の感覚を与えるリバーブなどのエフェクトを作るのに適しています。
 
@@ -71,19 +59,7 @@ Synth.head(~effects, "aDelay");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
 section:: フィードバック・フィルター
-
-
-
 
 CombやAllpassフィルターは、自分の出力を入力にフィードバックするUGenの例です。Allpassフィルターは一般的にCombフィルターと比較した場合に音はあまり違って聞こえません。しかしながら、Allpassフィルターはそれを通過する信号の位相を変えます。このため、これはUGenのネットワーク中で用いる時に便利なのです。
 
@@ -141,19 +117,7 @@ code::
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
 section:: リバーブレーション
-
-
-
 
 次の例は、James McCartneyによるもので、.playではなく.scopeを使っているということと、変数が関数の中で宣言されているという変更を加えています。この例はSuperCollider 2の配布物の中の一部分のドキュメントであった01 Why SuperColliderからのものです。
 
@@ -179,19 +143,7 @@ s+(0.2*y)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
 section:: コンポーネント
-
-
-
 
 次の例は、01 Why SuperColliderドキュメントの、つい先ほど説明したばかりのシンセシスのプロセスを、小さくシンプルな部分に分割する方法を示します。それはまた信号を並列にフィルタリングする方法（"combs"のSynthDefを参照）と、信号をシリーズでフィルタリングする方法（"allpass"のSynthDefを参照）を示します。この例はまた、どのようにシンセが実行されるたびにランダムに生成されるコントロール値を使うのかということをデモするものです。
 
@@ -285,19 +237,7 @@ Synth.head(~source, "filteredDust");
 
 For context, here, below, is the complete text of the strong::01 Why SuperCollider:: document (by James McCartney) from the SuperCollider 2 distribution.
 
-
-
-
-
-
-
-
-
-
 section:: Why SuperCollider 2.0 ?
-
-
-
 
 SuperCollider version 2.0 is a new programming language.
 strong::Why invent a new language and not use an existing language?:: Computer music composition is a specification problem.

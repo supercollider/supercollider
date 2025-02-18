@@ -3,19 +3,7 @@ categories:: Core
 summary:: ASCII character
 related:: Classes/String
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 An ASCII character represented as a signed 8-bit integer (-128 to 127).
 Valid ASCII values are in the range 0-127.
@@ -33,269 +21,145 @@ together in strings that use these encodings.
 The SuperCollider IDE uses UTF-8 to decode and display strings.
 See link::Classes/String:: for more information.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: nl
 
-
 Newline code::($\n)::.
-
-
-
 
 method:: ret
 
-
 Carriage return code::($\r)::.
-
-
-
 
 method:: tab
 
-
 Horizontal tab code::($\t)::.
-
-
-
 
 method:: ff
 
-
 Form feed code::($\f)::.
-
-
-
 
 method:: vtab
 
-
 Vertical tab code::($\v)::.
-
-
-
 
 method:: space
 
-
 Single space code::($ )::.
-
-
-
 
 method:: comma
 
-
 Comma code::($,)::.
-
-
-
 
 method:: bullet
 
-
 Asterisk code::($*)::.
-
-
-
 
 method:: binaryOpCharacters
 
-
 A string containing all characters allowed in a binary operator: code::"!@%&*-+=|<>?/"::.
-
-
-
-
-
-
-
-
-
 
 instancemethods::
 
-
-
-
 private:: archiveAsCompileString
-
-
-
-
-
 
 subsection:: Conversion
 
-
 method:: hash
-
 
 returns::
  
 the hash value of the receiver.
 
-
-
-
 method:: ascii
-
 
 returns::
  
 the integer ASCII value of a Char.
 
-
-
-
 method:: digit
-
 
 returns::
  
 an integer value from teletype::0:: to 9 for chars $teletype::0:: to $9, and values 10 to 35 for chars $a to $z
 or $A to $Z.
 
-
-
-
 method:: asAscii
-
 
 returns::
  
 the object itself.
-
-
-
 
 method:: asUnicode
 
-
 returns::
  
 the object itself.
 
-
-
-
 method:: toUpper
-
 
 returns::
  
 the upper case version of a char.
 Nonalphabetic chars return themselves.
 
-
-
-
 method:: toLower
-
 
 returns::
  
 a lower case version of a char.
 Nonalphabetic chars return themselves.
 
-
-
-
-
-
 subsection:: Testing
 
-
 method:: isAlpha
-
 
 returns::
  
 whether the char is an alphabetic character.
 
-
-
-
 method:: isAlphaNum
-
 
 returns::
  
 whether the char is an alphabetic or numeric character.
 
-
-
-
 method:: isPrint
-
 
 returns::
  
 whether the char is printable.
 
-
-
-
 method:: isPunct
-
 
 returns::
  
 whether the char is a punctuation character.
 
-
-
-
 method:: isControl
-
 
 returns::
  
 teletype::true:: if the char is a control character.
 
-
-
-
 method:: isSpace
-
 
 returns::
 teletype::true:: if the char is white space:
 any of code::[$ , $\f, $\n, $\r, $\t, $\v]::.
 
-
-
-
 method:: isDecDigit
-
 
 returns::
  
 teletype::true:: if the char is a decimal digit $teletype::0:: to $9.
 
-
-
-
 method:: isFileSafe
-
 
 returns::
  
 teletype::true:: if the char is safe for use in a filename.
 Excludes the path separators / and :
-
 
 discussion::
 code::
@@ -305,69 +169,41 @@ code::
 });
 ::
 
-
-
-
 method:: isLower
-
 
 returns::
  
 teletype::true:: if the char is a lowercase letter.
 
-
-
-
 method:: isUpper
-
 
 returns::
  
 teletype::true:: if the char is a uppercase letter.
 
-
-
-
 method:: isPathSeparator
-
 
 returns::
  
 teletype::true:: if the char is one of the platform specific path separators.
 
-
-
-
 method:: isVowel
-
 
 returns::
  
 teletype::true:: if the char is a vowel.
 
-
-
-
 method:: ++
-
 
 returns::
 teletype::this.asString ++ that::
 
-
-
-
 method:: <
-
 
 returns::
 teletype::this.ascii < aChar.ascii::
 
-
-
-
 method:: ==
-
 
 returns::
  

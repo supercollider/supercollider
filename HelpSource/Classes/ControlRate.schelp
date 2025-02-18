@@ -3,57 +3,20 @@ categories:: UGens>Info
 summary:: Server control rate
 related:: Classes/RadiansPerSample, Classes/SampleDur, Classes/SampleRate, Classes/SubsampleOffset
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Get the current control rate of the server.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ir
-
 
 returns::
 The current control rate of the server.
 
 equivalent to teletype::1::/ link::Classes/ControlDur::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 { ControlRate.ir.poll }.play;

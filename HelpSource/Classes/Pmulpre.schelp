@@ -3,19 +3,7 @@ categories:: Streams-Patterns-Events>Patterns>Math
 summary:: Multiplies with value of a key in event stream, before it is passed up
 related:: Classes/Pmul, Classes/Pmulp
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Multiplies with a value in an event, strong::before it is passed up:: the stream. To multiply with the value after it has been passed down, use link::Classes/Pmul::.
 
@@ -39,22 +27,9 @@ x = a.asStream;
 )
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: name
 
@@ -62,22 +37,9 @@ argument:: value
 Can be a pattern or a stream.
 The resulting stream ends when that incoming stream ends.
 
-
 argument:: pattern
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

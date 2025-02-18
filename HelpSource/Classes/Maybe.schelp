@@ -3,19 +3,7 @@ categories:: JITLib>Environments, Live Coding
 summary:: Referentially transparent proxy object
 related:: Classes/Fdef, Overviews/JITLib
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A Maybe object can contain either nil or some other object, and allows to construct calculations without knowing this other object yet.
 If the calculation fails, due to a loop or a not yet defined object, Maybe returns teletype::nil::.
@@ -24,7 +12,8 @@ The name strong::Maybe:: stems from the programming language Haskell, where it r
 See also: link::Classes/Fdef::
 
 note::
-A Maybe object lazily constructs an operation as an object instead of performing it immediately. Its implementation remains incomplete
+A Maybe object lazily constructs an operation as an object instead of
+performing it immediately. Its implementation remains incomplete
 necessarily, in the current form: it is limited to the arithmetic operations that AbstractFunction implements and the following collection methods:
 code::put, addAll, add, putAll, atAll::.
 
@@ -41,25 +30,11 @@ code::
 
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: new
 
-
 Create a new instance
-
 
 argument:: thing
 
@@ -73,48 +48,23 @@ a.value = 1;
 b.value; // => 7
 ::
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 method:: source
 
-
 Return or set the contained object
 
-
-
-
 method:: value
-
 
 Set the contained object or return the source, or the value of the contained object, if it is a Maybe.
 If there is a recursion, return teletype::nil::.
 
-
-
-
 method:: apply
-
 
 Return the value, or the value of the contained object, if it is a Maybe.
 This method allows recursion, so that recursive calculations can be made.
 
-
-
-
 method:: doesNotUnderstand
-
 
 (called by any message that Maybe doesn't understand.)
 
@@ -129,19 +79,7 @@ a.value = [1, 2, [2, 3]];
 b.value;	// => [[1, 2, 2], [1, 2, 3]]
 ::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // the following examples use a LazyEnvir with a Maybe as a proxy class.

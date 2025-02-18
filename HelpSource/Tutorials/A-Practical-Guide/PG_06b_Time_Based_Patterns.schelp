@@ -3,19 +3,7 @@ categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Patterns using time as the basis for their evaluation
 related:: Tutorials/A-Practical-Guide/PG_06a_Repetition_Contraint_Patterns, Tutorials/A-Practical-Guide/PG_06c_Composition_of_Patterns
 
-
-
-
-
-
-
-
-
-
 section:: Time-based patterns
-
-
-
 
 "Time-based patterns" here are value patterns that use time as part of their calculation.
 Event patterns are naturally time-driven when played on a clock.
@@ -77,13 +65,7 @@ p.stop;
 
 ::
 
-
-
-
-
-
 subsection:: Using envelopes as patterns
-
 
 link::Classes/Env:: supports the stream protocol: code::asStream:: turns an Env into a stream, and timed values can be obtained from it using code::next::.
 The envelope stream returns the value the envelope would have at the elapsed time, in the same way code::.at(time):: returns the envelope value at the specified time.

@@ -3,60 +3,31 @@ categories:: UGens>Dynamics
 summary:: Compressor, expander, limiter, gate, ducker
 related:: Classes/Normalizer, Classes/CompanderD, Classes/Limiter
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 General purpose (hard-knee) dynamics processor.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar
-
 
 argument:: in
 
 The signal to be compressed / expanded / gated.
-
 
 argument:: control
 
 The signal whose amplitude determines the gain applied to the input signal.
 Often the same as in (for standard gating or compression) but should be different for ducking.
 
-
 argument:: thresh
 
 Usually between 0 and 1. Amplitude threshold of the control signal, which determines the break point between slopeBelow and slopeAbove.
 The control signal amplitude is calculated using RMS.
 
-
 argument:: slopeBelow
 
 Slope of applied amplitude curve if control signal amplitude is below code::thresh::. If > 1.0, the amplitude drops off more quickly the softer the control signal gets; when the control signal is close to teletype::0:: amplitude, the output should be exactly zero -- hence, noise gating. Values < 1.0 are possible, but it means that a very low-level control signal will cause the input signal to be amplified, which would raise the noise floor.
-
 
 argument:: slopeAbove
 
@@ -64,45 +35,28 @@ Slope of applied amplitude curve if control signal amplitude is above code::thre
 Values < 1.0 achieve compression (louder signals are attenuated) whereas values > 1.0 expand (louder signals are made even louder).
 A value of code::1/3:: achieves a 3:1 compression.
 
-
 argument:: clampTime
 
 Time (in seconds) it takes for the amplitude adjustment to kick in fully after the control signal is above code::thresh::.
 Usually a small value around 10ms (0.01), often set as low as 2ms (0.002).
-
 
 argument:: relaxTime
 
 Time (in seconds) for the amplitude adjustment to be released (control signal below code::thresh::).
 Usually longer than code::clampTime::; depending on the input and control signal, setting both times too short results in (possibly unwanted) artifacts.
 
-
 argument:: mul
 
 Output is multiplied by this value.
-
 
 argument:: add
 
 Value added to the output.
 
-
 discussion::
 See for example http://en.wikipedia.org/wiki/Audio_level_compression for a more in-depth explanation.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 Clean signal (for reference)
 

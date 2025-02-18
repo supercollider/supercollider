@@ -3,19 +3,7 @@ categories:: Core>Kernel
 summary:: The interpreter defines a context in which interactive commands are compiled and executed
 related:: Guides/How-to-Use-the-Interpreter
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 The interpreter is an object that handles the translation and execution of code at runtime.
 It is that what runs any program code and defines a context for it.
@@ -27,38 +15,13 @@ this.cmdLine.postln;
 )
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: new
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 subsection:: Accessing
-
 
 In the interpreter, code::this:: refers to the interpreter itself, e.g.: code::this.postln::
 
@@ -84,11 +47,7 @@ Use these variables with a bit of extra care – as they are global, they remain
 The variable code::s::is by convention bound to the default server (link::Classes/Server::) and should not be changed.
 ::
 
-
-
-
 method:: clearAll
-
 
 Set the values of the variables code::a:: through code::z:: to teletype::nil::.
 
@@ -99,16 +58,9 @@ this.clearAll;
 x.postln;
 ::
 
-
-
-
-
-
 subsection:: Compile & Interpret
 
-
 method:: interpret
-
 
 Compile and execute a link::Classes/String::.
 
@@ -116,11 +68,7 @@ code::
 this.interpret("(123 + 4000).postln");
 ::
 
-
-
-
 method:: interpretPrint
-
 
 Compile and execute a link::Classes/String::, printing the result.
 
@@ -128,11 +76,7 @@ code::
 this.interpretPrint("123 + 4000");
 ::
 
-
-
-
 method:: compile
-
 
 Compile a String and return a link::Classes/Function::.
 
@@ -144,44 +88,28 @@ z.value;
 )
 ::
 
-
-
-
 method:: compileFile
 
-
-Read the file at pathName, compiles it and returns a Function.
+Reads the file at pathName, compiles it and returns a Function.
 The file must contain a valid SuperCollider expression, naturally.
 This will not compile class definitions, only expressions.
-
-
-
 
 method:: executeFile
 
-
-Read the file at pathName, compiles it and executes it, returning the result.
+Reads the file at pathName, compiles it and executes it, returning the result.
 The file must contain a valid SuperCollider expression, naturally.
 This will not compile class definitions, only expressions.
 
-
-
-
 method:: cmdLine
 
-
-Return the previously interpreted code.
+Returns the previously interpreted code.
 
 code::
 1 + 2;
 this.cmdLine
 ::
 
-
-
-
 method:: codeDump
-
 
 This interpreter variable can be set to evaluate a function with any successfully compiled code.
 see e.g. the class History.
@@ -195,11 +123,7 @@ a.postcs;
 codeDump = nil; // reset to teletype::nil::.
 ::
 
-
-
-
 method:: preProcessor
-
 
 If this is set to a function, all interactively executed code is piped through it before parsing and
 interpreting. This is mostly used for developing domain-specific live coding languages that piggyback
@@ -217,18 +141,10 @@ this.preProcessor = { |code| code.replace("SinOsc", "Saw") };
 preProcessor = nil; // reset to teletype::nil::.
 ::
 
-
-
-
 method:: a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z
-
 
 Global variables ("interpreter variables") for interactive programming (see link::#Accessing::).
 
-
-
-
 method:: functionCompileContext
-
 
 The compiler uses this method as a virtual context in which to compile code.

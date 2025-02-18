@@ -2,50 +2,23 @@ title:: CheckBadValues
 categories:: UGens>Info
 summary:: Test for infinity, not-a-number, and denormals
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 This link::Classes/UGen:: tests for infinity, NaN (not a number), and denormals. If one of these is found, it posts a warning. Its output is as follows:
 0 = a normal float, 1 = NaN, 2 = infinity, and 3 = a denormal.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: in
 
 The link::Classes/UGen:: whose output is to be tested.
 
-
 argument:: id
 
 An id number to identify this link::Classes/UGen::.
 The default is 0.
-
 
 argument:: post
 
@@ -60,19 +33,7 @@ list::
 The default post mode is 2.
 Post mode 1 is retained for backward compatibility; be aware that it generates a large amount of output.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 { CheckBadValues.kr(SinOsc.ar); 0 }.play // nothing wrong here

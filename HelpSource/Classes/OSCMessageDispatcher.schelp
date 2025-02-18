@@ -3,121 +3,65 @@ categories:: External Control>OSC>Dispatchers
 summary:: The default dispatcher class for OSCFunc and OSCdef
 related:: Classes/OSCFunc, Classes/OSCdef, Classes/AbstractWrappingDispatcher, Classes/AbstractDispatcher, Classes/AbstractMessageMatcher, Classes/OSCMessagePatternDispatcher, Classes/OSCFuncAddrMessageMatcher, Classes/OSCFuncRecvPortMessageMatcher, Classes/OSCFuncBothMessageMatcher, Guides/OSC_communication
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 OSCMessageDispatcher dispatches incoming OSC messages to matching functions.
 Normally users should not have to create or message instances of this class directly.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 instancemethods::
 
-
-
-
 method:: wrapFunc
 
-
 Called internally to wrap functions in message matcher objects, if needed.
-
 
 argument:: funcProxy
 
 An instance of link::Classes/OSCFunc:: or link::Classes/OSCdef:: whose function(s) are to be wrapped.
 
-
-
-
 method:: getKeysForFuncProxy
 
-
 Get the keys at which a responder func's functions are stored in this dispatcher's active dictionary. The keys will be an OSC path.
-
 
 argument:: funcProxy
 
 The link::Classes/OSCFunc:: or link::Classes/OSCdef:: whose keys should be returned.
 
-
 returns::
 An link::Classes/Array::containing the funcProxy's path as a link::Classes/Symbol::.
 
-
-
-
 method:: value
 
-
 Attempt to match an incoming OSC message with this dispatcher's responder funcs, and evaluate their functions for all matches found.
-
 
 argument:: msg
 
 The OSC message as an link::Classes/Array:: in the form code::[OSCAddress, other args]::.
 
-
 argument:: time
 
 A link::Classes/Float:: indicating the time the incoming message was sent.
-
 
 argument:: addr
 
 A link::Classes/NetAddr:: indicating the source of the message.
 
-
 argument:: recvPort
 
 An link::Classes/Integer:: indicating the port on which the message was received.
 
-
-
-
 method:: register
 
-
-Add this dispatcher to thisProcess.recvOSCfunc.
-
-
-
+Adds this dispatcher to thisProcess.recvOSCfunc.
 
 method:: unregister
 
-
-Remove this dispatcher from thisProcess.recvOSCfunc.
-
-
-
+Removes this dispatcher from thisProcess.recvOSCfunc.
 
 method:: typeKey
 
-
-Return code::'OSC unmatched'::.
-
+Returns code::'OSC unmatched'::.
 
 returns::
 A link::Classes/Symbol::.

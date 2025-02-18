@@ -3,32 +3,14 @@ categories:: External Control>HID
 summary:: A guide to using HID devices for control input
 related:: Classes/HID, Classes/HIDFunc
 
-
-
-
-
-
-
-
-
-
 section:: Introduction
-
-
-
 
 Human input devices can be used as controllers for making music.
 The HID and HIDFunc classes provides you with access to them in a simple and transparent way.
 
 The development of this SuperCollider implementation of HID access was funded by the SuperCollider community and BEK, Bergen Elektronisk Kunst, Bergen, Norway, http://www.bek.no
 
-
-
-
-
-
 subsection:: What are HID devices?
-
 
 HID stands for Human Input Device, so in a sense saying HID device is saying Human Input Device device.
 Another confusion is that HID's are not merely input devices, they can also have outputs, e.g. the leds which indicate whether you have turned CapsLock or NumLock on, or force feedback (or vibration) in game devices.
@@ -41,19 +23,7 @@ note::
 The backend for Windows has not been completed yet, so HID is not working yet on Windows.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: General workflow
-
-
-
 
 The general workflow to work with HID devices is to:
 
@@ -65,19 +35,7 @@ list::
 
 When you want to use an HID, you will initially want to explore the device and check out its capabilities, and then write some code that you can reuse every time you want to start using your instrument.
 
-
-
-
-
-
-
-
-
-
 section:: Exploring HID
-
-
-
 
 Here is a short example of how to explore which HID's are attached, and what input they generate:
 
@@ -122,13 +80,7 @@ You can always check which devices have already been opened by SuperCollider wit
 
 code:: HID.openDevices; ::
 
-
-
-
-
-
 subsection:: Exploring HID control data
-
 
 If you have enabled debugging of the HID input data, and you move one of the controls on your device, you will get an output similar to this:
 
@@ -197,13 +149,7 @@ In the description the page and usage are translated using the table lookup, and
 The usage range is again of importance for keyboards, the logical and physical range give ranges within which values will vary.
 The report ID, size and index give low level information on how the data comes in.
 
-
-
-
-
-
 subsection:: Assigning actions to HID control data
-
 
 Whenever data comes in from an opened HID device, there are two types of actions fired.
 An action for the incoming element data and an action for the device, indicating that there has been a change in one of the elements.
@@ -242,19 +188,7 @@ code::
 ~myhid.close;
 ::
 
-
-
-
-
-
-
-
-
-
 section:: A simple example
-
-
-
 
 code::
 HID.findAvailable; // check which devices are attached
@@ -271,19 +205,7 @@ HIDdef.usage( \freq, { |value| Ndef( \sinewave ).set( \freq, ~freqRange.map( val
 HIDdef.usage( \amp, { |value| Ndef( \sinewave ).set( \amp, value ); }, \Y );
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Finding a device automatically again after it is detached
-
-
-
 
 code::
 (

@@ -3,39 +3,14 @@ categories:: Collections>Ordered
 summary:: Sampled audio buffer
 related:: Classes/Wavetable
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A Signal is a FloatArray that represents a sampled function of time buffer.
  Signals support math operations.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: sineFill
-
 
 Fill a Signal of the given size with a sum of sines at the given amplitudes and phases.
 The Signal will be normalized.
@@ -44,40 +19,30 @@ code::
 Signal.sineFill(1000, 1.0/[1, 2, 3, 4, 5, 6]).plot;
 ::
 
-
 argument:: size
 
 The number of samples in the Signal.
-
 
 argument:: amplitudes
 
 An Array of amplitudes for each harmonic beginning with the fundamental.
 
-
 argument:: phases
 
 An Array of phases in radians for each harmonic beginning with the fundamental.
 
-
-
-
 method:: chebyFill
-
 
 Fill a Signal of the given size with a sum of Chebyshev polynomials at the given amplitudes.
 For eventual use in waveshaping by the Shaper UGen; see link::Classes/Shaper:: helpfile and link::Classes/Buffer#-cheby#Buffer:cheby:: too.
-
 
 argument:: size
 
 The number of samples in the Signal.
 
-
 argument:: amplitudes
 
 An link::Classes/Array:: of amplitudes for each Chebyshev polynomial beginning with order 1.
-
 
 argument:: normalize
 
@@ -85,11 +50,9 @@ A link::Classes/Boolean:: indicating whether to normalize the resulting Signal.
 If the zeroOffset argument is true, the normalization is done for use as a transfer function, using link::Classes/Signal#-normalizeTransfer#normalizeTransfer::, otherwise it just uses link::Classes/Signal#-normalize#normalize:: to make the absolute peak value 1.
  Default is true.
 
-
 argument:: zeroOffset
 
 A link::Classes/Boolean:: indicating whether to offset the middle of each polynomial to teletype::zero::. If teletype::true::, then a zero input will always result in a zero output when used as a link::Classes/Shaper##waveshaper::. If teletype::false::, then the "raw" (unshifted) Chebyshev polynomials are used. Default is false.
-
 
 discussion::
 note::
@@ -142,11 +105,7 @@ s.waitForBoot({
 x.free; b.do(_.free); b = nil
 ::
 
-
-
-
 method:: hanningWindow
-
 
 Fill a Signal of the given size with a Hanning window.
 
@@ -155,21 +114,15 @@ Signal.hanningWindow(1024).plot;
 Signal.hanningWindow(1024, 512).plot;
 ::
 
-
 argument:: size
 
 The number of samples in the Signal.
-
 
 argument:: pad
 
 The number of samples of the size that is zero padding.
 
-
-
-
 method:: hammingWindow
-
 
 Fill a Signal of the given size with a Hamming window.
 
@@ -182,21 +135,15 @@ Signal.hammingWindow(1024).plot;
 Signal.hammingWindow(1024, 512).plot;
 ::
 
-
 argument:: size
 
 The number of samples in the Signal.
-
 
 argument:: pad
 
 The number of samples of the size that is zero padding.
 
-
-
-
 method:: welchWindow
-
 
 Fill a Signal of the given size with a Welch window.
 
@@ -205,21 +152,15 @@ Signal.welchWindow(1024).plot;
 Signal.welchWindow(1024, 512).plot;
 ::
 
-
 argument:: size
 
 The number of samples in the Signal.
-
 
 argument:: pad
 
 The number of samples of the size that is zero padding.
 
-
-
-
 method:: rectWindow
-
 
 Fill a Signal of the given size with a rectangular window.
 
@@ -228,21 +169,15 @@ Signal.rectWindow(1024).plot;
 Signal.rectWindow(1024, 512).plot;
 ::
 
-
 argument:: size
 
 The number of samples in the Signal.
-
 
 argument:: pad
 
 The number of samples of the size that is zero padding.
 
-
-
-
 method:: fftCosTable
-
 
 Fourier Transform: Fill a Signal with the cosine table needed by the FFT methods.
 See also the instance methods link::#-fft:: and link::#-ifft::.
@@ -251,31 +186,14 @@ code::
 Signal.fftCosTable(512).plot;
 ::
 
-
-
-
 method:: hammingWindow_old
-
 
 This used to be code:: Signal.hammingWindow ::, but the coefficients were incorrect (making it a different window in the generalized Hamming window family).
 It is provided to assist in porting code to 3.11 and later.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 private:: performBinaryOpOnSignal, performBinaryOpOnComplex, performBinaryOpOnSimpleNumber
-
 
 method:: plot
 Plot the Signal in a window.
@@ -288,13 +206,9 @@ Signal.sineFill(512, [1]).plot("Signal 1", Rect(50, 50, 150, 450));
 
 For details, see link::Reference/plot::
 
-
-
-
 method:: play
 
-
-Load the signal into a buffer on the server and plays it.
+Loads the signal into a buffer on the server and plays it.
 Returns the buffer so you can free it again.
 
 code::
@@ -302,35 +216,26 @@ b = Signal.sineFill(512, [1]).play(true, 0.2);
 b.free;	// free the buffer again.
 ::
 
-
 argument:: loop
 
 A link::Classes/Boolean:: whether to loop the entire signal or play it once.
 Default is false.
 
-
 argument:: mul
 
 Volume at which to play it, 0.2 by default.
-
 
 argument:: numChannels
 
 If the signal is an interleaved multichannel file, number of channels, default is 1.
 
-
 argument:: server
 
 The server on which to load the signal into a buffer.
 
-
-
-
 method:: waveFill
 
-
 Fill the Signal with a function evaluated over an interval.
-
 
 argument:: function
 
@@ -366,21 +271,15 @@ a.plot;
 )
 ::
 
-
 argument:: start
 
 The starting value of the interval.
-
 
 argument:: end
 
 The ending value of the interval.
 
-
-
-
 method:: asWavetable
-
 
 Convert the Signal into a Wavetable.
 
@@ -388,11 +287,7 @@ code::
 Signal.sineFill(512, [1]).asWavetable.plot;
 ::
 
-
-
-
 method:: fill
-
 
 Fill the Signal with a value.
 
@@ -400,11 +295,7 @@ code::
 Signal.newClear(512).fill(0.2).plot;
 ::
 
-
-
-
 method:: scale
-
 
 Scale the Signal by a factor strong::in place::.
 
@@ -413,11 +304,7 @@ a = Signal[1, 2, 3, 4];
 a.scale(0.5); a;
 ::
 
-
-
-
 method:: offset
-
 
 Offset the Signal by a value strong::in place::.
 
@@ -426,11 +313,7 @@ a = Signal[1, 2, 3, 4];
 a.offset(0.5); a;
 ::
 
-
-
-
 method:: peak
-
 
 Return the peak absolute value of a Signal.
 
@@ -438,11 +321,7 @@ code::
 Signal[1, 2, -3, 2.5].peak;
 ::
 
-
-
-
 method:: normalize
-
 
 Normalize the Signal strong::in place:: such that the maximum absolute peak value is 1.
 
@@ -451,24 +330,16 @@ Signal[1, 2, -4, 2.5].normalize;
 Signal[1, 2, -4, 2.5].normalize(0, 1);	// normalize only a range
 ::
 
-
-
-
 method:: normalizeTransfer
 
-
-Normalize a transfer function so that the center value of the table is offset to teletype::zero:: and the absolute peak value is 1.
+Normalizes a transfer function so that the center value of the table is offset to teletype::zero:: and the absolute peak value is 1.
 Transfer functions are meant to be used in the link::Classes/Shaper:: UGen.
 
 code::
 Signal[1, 2, 3, 2.5, 1].normalizeTransfer;
 ::
 
-
-
-
 method:: invert
-
 
 Invert the Signal strong::in place::.
 
@@ -477,11 +348,7 @@ a = Signal[1, 2, 3, 4];
 a.invert(0.5); a;
 ::
 
-
-
-
 method:: reverse
-
 
 Reverse a subrange of the Signal strong::in place::.
 
@@ -490,11 +357,7 @@ a = Signal[1, 2, 3, 4];
 a.reverse(1, 2); a;
 ::
 
-
-
-
 method:: fade
-
 
 Fade a subrange of the Signal strong::in place::.
 
@@ -504,11 +367,7 @@ a.fade(0, 3);		// fade in
 a.fade(6, 9, 1, 0);	// fade out
 ::
 
-
-
-
 method:: integral
-
 
 Return the integral of a signal.
 
@@ -516,11 +375,7 @@ code::
 Signal[1, 2, 3, 4].integral;
 ::
 
-
-
-
 method:: overDub
-
 
 Add a signal to myself starting at the index.
 If the other signal is too long only the first part is overdubbed.
@@ -546,11 +401,7 @@ a = Signal.fill(4, 100);
 a.overDub(Signal[1, 2, 3, 4, 5, 6, 7, 8], -2);
 ::
 
-
-
-
 method:: overWrite
-
 
 Write a signal to myself starting at the index.
 If the other signal is too long only the first part is overdubbed.
@@ -576,11 +427,7 @@ a = Signal.fill(4, 100);
 a.overWrite(Signal[1, 2, 3, 4, 5, 6, 7, 8], -2);
 ::
 
-
-
-
 method:: blend
-
 
 Blend two signals by some proportion.
 
@@ -592,16 +439,9 @@ Signal[1, 2, 3, 4].blend(Signal[5, 5, 5, 0], 1);
 Signal[1, 2, 3, 4].blend(Signal[5, 5, 5, 0], 2);
 ::
 
-
-
-
-
-
 subsection:: Fourier Transform
 
-
 method:: fft
-
 
 Perform an FFT on a real and imaginary signal in place.
 See also the class method link::#*fftCosTable::.
@@ -643,11 +483,7 @@ complex = fft(real, imag, cosTable);
 )
 ::
 
-
-
-
 method:: ifft
-
 
 Perform an inverse FFT on a real and imaginary signal in place.
 See also the class method link::#*fftCosTable::.
@@ -680,13 +516,7 @@ ifft = complex.real.ifft(complex.imag, cosTable);
 )
 ::
 
-
-
-
-
-
 subsection:: Unary Messages
-
 
 Signal will respond to unary operators by returning a new Signal.
 
@@ -696,18 +526,9 @@ x = Signal.sineFill(512, [0, 0, 0, 1]);
 	.plot(numChannels: 9);
 ::
 
-
-
-
 method:: neg, abs, sign, squared, cubed, sqrt, exp, log, log2, log10, sin, cos, tan, asin, acos, atan, sinh, cosh, tanh, distort, softclip, isPositive, isNegative, isStrictlyPositive
 
-
-
-
-
-
 subsection:: Binary Messages
-
 
 Signal will respond to binary operators by returning a new Signal.
 
@@ -720,11 +541,7 @@ y = Signal.fill(512, { |i| (i * pi / 64).sin });
 )
 ::
 
-
-
-
 method:: thresh
-
 
 Thresholding replaces every value < threshold with 0.
 
@@ -733,19 +550,11 @@ Before SuperCollider 3.13 this function was implemented incorrectly, evaluating 
 This behavior is now fixed, but note that older code might give different results.
 ::
 
-
-
-
 method:: +, -, *, /, div, pow, mod, min, max, ring1, ring2, ring3, ring4, difsqr, sumsqr, sqrdif, absdif, amclip, scaleneg, clip2, wrap2, excess
-
 
 method:: %, **
 
-
-
-
 method:: <!
-
 
 code::
 // these fail for Signal but work for FloatArray:

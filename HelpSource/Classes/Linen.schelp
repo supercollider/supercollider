@@ -3,38 +3,13 @@ categories:: UGens>Envelopes
 summary:: Simple linear envelope generator
 related:: Classes/EnvGen
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Simple linear envelope generator.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: kr
-
 
 argument:: gate
 
@@ -42,41 +17,26 @@ This triggers the envelope and holds it open while > 0.
 
 If strong::gate:: < 0, force release with time code:: -1.0 - gate ::. See link::Classes/EnvGen#Forced release::.
 
-
 argument:: attackTime
 
 The duration of the attack portion.
-
 
 argument:: susLevel
 
 The level of the sustain portion.
 
-
 argument:: releaseTime
 
 The duration of the release portion.
 
-
 argument:: doneAction
 
-An integer representing an action to be executed when the envelope is finished. See
+An integer representing an action to be executed when the
+envelope is finished. See
 link::Classes/Done::  for
 more detail.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // trigged

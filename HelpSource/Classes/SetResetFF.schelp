@@ -3,19 +3,7 @@ categories:: UGens>Triggers
 summary:: Set-reset flip flop
 related:: Classes/ToggleFF
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Output is set to teletype::1.0:: upon receiving a trigger in the trig input, and to
 0.0 upon receiving a trigger in the reset input.
@@ -27,22 +15,9 @@ happen until you reset it.
 If both inputs receive a trigger at the same time, the teletype::reset:: input takes precedence. The output will be 0.
 See the examples below.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: trig
 
@@ -51,7 +26,6 @@ Trigger can be any signal.
 A trigger happens when the signal changes from non-teletype::positive:: to
 positive.
 
-
 argument:: reset
 
 The trigger that sets output to teletype::0::.
@@ -59,19 +33,7 @@ Trigger can be any signal.
 A trigger happens when the signal changes from non-teletype::positive:: to
 positive.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (
@@ -83,13 +45,7 @@ play({
 }))
 ::
 
-
-
-
-
-
 subsection:: Simultaneous triggers
-
 
 Here, 'reset' is triggered twice as often as 'trig'. Since 'trig' is always matched by a 'reset', the output is 0. (If 'trig' took precedence, you would have a 50%-duty-cycle pulse wave.)
 

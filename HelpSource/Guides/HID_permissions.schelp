@@ -3,19 +3,7 @@ categories:: External Control>HID
 summary:: Details how to configure your computer to set the permissions to access HID's
 related:: Guides/Working_with_HID, Classes/HID
 
-
-
-
-
-
-
-
-
-
 section:: On Linux
-
-
-
 
 You will have to set the permissions with udev to be correct, create a file in the folder:
 code:: /etc/udev/rules.d/ ::, and name it (e.g.) code:: 90-hidraw-permissions.rules ::

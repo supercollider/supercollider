@@ -3,19 +3,7 @@ categories:: Streams-Patterns-Events>Patterns>Time
 summary:: Returns time in beats from moment of embedding in stream
 related:: Classes/Pkey
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

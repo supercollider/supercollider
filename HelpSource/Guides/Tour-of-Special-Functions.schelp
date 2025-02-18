@@ -5,19 +5,7 @@ related:: Classes/SimpleNumber
 
 keyword:: special functions, boost
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
  
 Boost library Special Functions: usage, bounds and plots
@@ -34,19 +22,7 @@ show you plots that illustrate the behavior of the functions, their ranges and a
 Define the plotting functions in the next section, then you can use the Table of Contents
 menu to jump between function families.
 
-
-
-
-
-
-
-
-
-
 section:: Before you get started...
-
-
-
 
 Define the following functions that will lay out the plots for you:
 
@@ -150,19 +126,7 @@ getPlotLay = { |plot, text|
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Number Series
-
-
-
 
 code::
 /* Bernouli Numbers */
@@ -177,22 +141,9 @@ code::
 (0..15).do { |i| postf("% %\n", i, tangentT2n(i)) }
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Gamma Functions
 
-
-
-
 subsection:: Gamma, Log Gamma, Digamma, Trigamma, Polygamma
-
 
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
 
@@ -242,13 +193,7 @@ plotSpecs = [
 )
 ::
 
-
-
-
-
-
 subsection:: Gamma Ratios, Incomplete/Inverses, and Derivatives of Gamma Functions
-
 
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
 
@@ -284,19 +229,7 @@ var plotSpecs = [
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Factorials and Binomial Coefficients
-
-
-
 
 code::
 /*  Factorial  */
@@ -319,22 +252,9 @@ risingFactorial(9, 4)  // 9 * 10 * 11 ... (9+4-1)
 fallingFactorial(9, 4) // 9 *  8 *  7 ... (9-4+1)
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Beta Functions
 
-
-
-
 subsection:: Beta Functions, Incomplete and Derivative
-
 
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
 
@@ -380,13 +300,7 @@ var plotSpecs = [
 )
 ::
 
-
-
-
-
-
 subsection:: Incomplete Beta Function Inverses
-
 
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
 
@@ -433,19 +347,7 @@ var plotSpecs = [
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Error Functions
-
-
-
 
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
 
@@ -479,22 +381,9 @@ var plotSpecs = [
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Polynomials
 
-
-
-
 subsection:: Legendre (and Associated) Polynomials
-
 
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
 
@@ -537,13 +426,7 @@ var plotSpecs = [
 )
 ::
 
-
-
-
-
-
 subsection:: Laguerre (and Associated) Polynomials
-
 
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
 
@@ -571,13 +454,7 @@ var plotSpecs = [
 )
 ::
 
-
-
-
-
-
 subsection:: Hermite Polynomials
-
 
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
 
@@ -595,13 +472,7 @@ var plotSpecs = [
 )
 ::
 
-
-
-
-
-
 subsection:: Chebyshev Polynomials
-
 
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
 
@@ -632,13 +503,7 @@ var plotSpecs = [
 )
 ::
 
-
-
-
-
-
 subsection:: Spherical Harmonics
-
 
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
 
@@ -681,22 +546,9 @@ var plotSpecs = [
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Bessel Functions
 
-
-
-
 subsection:: Bessel and Modified Bessel Functions
-
 
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
 
@@ -739,13 +591,7 @@ var plotSpecs = [
 )
 ::
 
-
-
-
-
-
 subsection:: Derivatives of Bessel and Modified Bessel Functions
-
 
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
 
@@ -789,22 +635,9 @@ var plotSpecs = [
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Hankel Functions
 
-
-
-
 subsection:: Cyclic Hankel Functions
-
 
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
 
@@ -839,13 +672,7 @@ var plotSpecs = [
 )
 ::
 
-
-
-
-
-
 subsection:: Spherical Hankel Functions
-
 
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
 
@@ -880,19 +707,7 @@ var plotSpecs = [
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Airy Functions
-
-
-
 
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
 
@@ -924,19 +739,7 @@ var plotSpecs = [
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Elliptic Integrals
-
-
-
 
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
 
@@ -1005,19 +808,7 @@ var plotSpecs = [
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Jacobi Elliptic Functions
-
-
-
 
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
 
@@ -1050,19 +841,7 @@ var plotSpecs =
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Zeta Functions
-
-
-
 
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
 
@@ -1085,19 +864,7 @@ var plotSpecs = [
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Exponential Integrals
-
-
-
 
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
 
@@ -1120,19 +887,7 @@ var plotSpecs = [
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Basic Functions
-
-
-
 
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
 
@@ -1169,19 +924,7 @@ var plotSpecs = [
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section::  Sinus Cardinal (Sinc) and Hyperbolic Sinus Cardinal Functions, Inverse Hyperbolic Functions
-
-
-
 
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
 
@@ -1214,19 +957,7 @@ var plotSpecs = [
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Owen's T Function
-
-
-
 
 Be sure to define code::~layOutPlots:: and code::~multiPlot:: at the link::#Before you get started...#top of the page::.
 

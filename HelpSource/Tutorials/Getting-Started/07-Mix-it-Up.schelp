@@ -79,19 +79,7 @@ For more information see:
 
 link::Classes/Mix::, link::Classes/BinaryOpUGen::, link::Overviews/Operators::, link::Reference/Syntax-Shortcuts::
 
-
-
-
-
-
-
-
-
-
 section:: Suggested Exercise
-
-
-
 
 Experiment with altering the Functions in the text above.
 For instance try changing the frequencies of the SinOsc, or making multi-channel versions of things.

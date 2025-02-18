@@ -3,19 +3,7 @@ categories:: Streams-Patterns-Events>Patterns>Server Control
 summary:: Add an effect synth to the synths of a given event stream
 related:: Classes/Pfx, Classes/Pbus, Classes/Pgroup
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Put an effect node on the tail of the current group and releases it when the contained pattern finishes.
 Name value pairs are inserted into the event for starting the effect node.
@@ -23,19 +11,7 @@ The effect parameters are set from the event.
 
 In difference to link::Classes/Pfx::, a strong::private effect bus:: is provided according to the number of channels in the effect synth def.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

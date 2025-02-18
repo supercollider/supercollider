@@ -3,21 +3,11 @@ categories:: UGens>Multichannel>Ambisonics, UGens>Multichannel>Panners
 summary:: Rotate a sound field
 related:: Classes/BiPanB2, Classes/DecodeB2, Classes/PanB, Classes/PanB2
 
-
-
-
-
-
-
-
-
-
 description::
 
-
-
-
-Rotate2 can be used for rotating an ambisonic B-format sound field around an axis. Rotate2 does an equal power rotation so it also works well on stereo sounds. It takes two audio inputs (x, y) and an angle control
+Rotate2 can be used for rotating an ambisonic B-format sound field around
+an axis. Rotate2 does an equal power rotation so it also works well on
+stereo sounds. It takes two audio inputs (x, y) and an angle control
 (pos).
 It outputs two channels (x, y). It computes this:
 
@@ -32,51 +22,24 @@ yout = cos(angle) * yin - sin(angle) * xin;
 Where angle = pos * pi, so that -1 becomes -pi and +1 becomes +pi. This
 allows you to use an LFSaw to do continuous rotation around a circle.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: x
 
 Input signal X.
 
-
 argument:: y
 
 Input signal Y.
-
 
 argument:: pos
 
 Angle to rotate around the circle from teletype::-1:: to +1. -1 is 180
 degrees, -0.5 is left, 0 is forward, +0.5 is right, +1 is behind.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

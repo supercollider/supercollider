@@ -3,46 +3,20 @@ categories:: Streams-Patterns-Events
 summary:: Buffers a streamed value
 related:: Classes/Routine, Classes/FuncStream, Classes/EventStreamPlayer
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: pattern
 
 A pattern or stream to be buffered.
-
 
 argument:: connected
 
 If teletype::true:: it will call the next stream value for each time next is called.
 if teletype::false:: it returns the last value.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 a = Pseq([1, 2, 3], inf);

@@ -3,19 +3,7 @@ categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Patterns that mimic some language-side control structures
 related:: Tutorials/A-Practical-Guide/PG_06d_Parallel_Patterns, Tutorials/A-Practical-Guide/PG_06f_Server_Control
 
-
-
-
-
-
-
-
-
-
 section:: Language control methods
-
-
-
 
 Some patterns mimic language-style control methods: conditionals ( link::Classes/Pif:: ), loops ( link::Classes/Pwhile:: ) and error cleanup ( link::Classes/Pprotect:: ).
 

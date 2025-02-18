@@ -2,48 +2,21 @@ title:: PV_BinWipe
 categories:: UGens>FFT
 summary:: Combine low and high bins from two inputs
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Copies low bins from one input and the high bins of the other.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: bufferA
 
 FFT buffer A.
 
-
 argument:: bufferB
 
 FFT buffer B.
-
 
 argument:: wipe
 
@@ -57,27 +30,17 @@ code::bufferA:: .
 
 
 If
-code::wipe::  > 0, then it begins replacing with bins from
+code::wipe::  > 0, then it begins replacing
+with bins from
 code::bufferB::  from the bottom up.
 
 
 If
-code::wipe::  < 0, then it begins replacing with bins from
+code::wipe::  < 0, then it begins replacing
+with bins from
 code::bufferB::  from the top down.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 s.boot;

@@ -62,9 +62,7 @@ code::
 ::
 
 code::
-f = (a:_, b:_); // f is a two argument function
-g = f.(_, 5);   // g is a partial application of f
-g.(7);          // get the answer
+f = (a:_, b:_); // f is a two argument function g = f.(_, 5);   // g is a partial application of f g.(7);          // get the answer
 
 // equivalent to this:
 f = {|x, y| (a:x, b:y) }

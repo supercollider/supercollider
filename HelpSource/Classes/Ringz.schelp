@@ -3,19 +3,7 @@ categories:: UGens>Filters>Linear
 summary:: Ringing filter
 related:: Classes/Formlet, Classes/RHPF, Classes/RLPF, Classes/Resonz
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 This is the same as  link::Classes/Resonz::, except that it is a constant skirt gain filter, meaning that the peak gain depends on the value of Q.
 Also, instead of the
@@ -23,60 +11,31 @@ resonance parameter in Resonz, the bandwidth is specified in a 60dB ring decay t
 One Ringz is equivalent to one component of the
 link::Classes/Klank::  UGen.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: in
 
 The input signal.
 
-
 argument:: freq
 
 Resonant frequency in Hertz.
-
 
 argument:: decaytime
 
 The 60 dB decay time of the filter.
 
-
 argument:: mul
 
 Output will be multiplied by this value.
-
 
 argument:: add
 
 This value will be added to the output.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 { Ringz.ar(Dust.ar(3, 0.3), 2000, 2) }.play
@@ -107,19 +66,7 @@ code::
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Interaction with sample rate
-
-
-
 
 Ringz (and UGens that are based on it: link::Classes/Klank::, link::Classes/DynKlank:: and link::Classes/Formlet::) are "sample-rate independent" with respect to emphasis::impulses:: at the input. That is, given single-sample impulses, the output signal at different sample rates should be the same frequency and amplitude.
 

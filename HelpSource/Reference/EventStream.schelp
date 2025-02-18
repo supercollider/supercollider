@@ -7,8 +7,7 @@ related:: Classes/Stream, Classes/Event
 An event stream is a normal link::Classes/Stream:: that returns events when called. (see class link::Classes/Event::). Usually, an event stream requires an event to be passed in, often the default event is used:
 
 code::
-t = Pbind(\x, Pseq([1, 2, 3])).asStream; // Pbind, e.g. creates a stream
-t.next(Event.default);
+t = Pbind(\x, Pseq([1, 2, 3])).asStream; // Pbind, e.g. creates a stream t.next(Event.default);
 t.next(Event.default);
 ::
 

@@ -3,19 +3,7 @@ categories:: GUI>Views
 summary:: A rotary controller view
 related:: Classes/Slider, Classes/Slider2D
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Knob displays a value from teletype::0.0:: to teletype::1.0:: in rotary fashion, and allows to control it with either circular or linear mouse motion.
 
@@ -25,92 +13,46 @@ To switch between the mouse interaction modes, use link::#-mode::.
 
 The amount by which the value changes at interaction can be fine-tuned using link::#-step::, link::#-keystep::, link::#-shift_scale::, link::#-ctrl_scale::, and link::#-alt_scale::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 private:: key
-
 
 method:: defaultMode
 
     The default link::#-mode:: for newly created Knobs.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 subsection:: Data
 
-
 method:: value
-
 
     The displayed value.
 
     argument::
         A Number in the range of teletype::0.0:: to teletype::1.0::.
 
-
-
-
 method:: valueAction
-
 
     Sets the value and triggers link::#-action::.
 
-
-
-
 method:: increment
-
 
     Increments the value by link::#-keystep:: multiplied by the argument.
 
     argument::
         A Number.
 
-
-
-
 method:: decrement
-
 
     Decrements the value by link::#-keystep:: multiplied by the argument.
 
     argument:: zoom
         A Number.
 
-
-
-
-
-
 subsection:: Interaction
 
-
 method:: mode
-
 
     The way value is controlled with respect to mouse movement after clicking on the view:
     list::
@@ -124,11 +66,7 @@ method:: mode
     argument::
         One of the symbols listed above.
 
-
-
-
 method:: keystep
-
 
     The amount by which the value is incremented/decremented when pressing a relevant key.
 
@@ -137,71 +75,44 @@ method:: keystep
     argument::
         A Number.
 
-
-
-
 method:: step
-
 
     The amount by which the value is incremented/decremented using the mouse in 'horizontal' and 'vertical' link::#-mode#modes::.
 
     argument::
         A Number.
 
-
-
-
 method:: shift_scale
-
 
     The factor by which link::#-step:: or link::#-keystep:: is multiplied when used at mouse or keyboard interaction while the Shift key is pressed.
 
     argument::
         A Float.
 
-
-
-
 method:: ctrl_scale
-
 
     The factor by which link::#-step:: or link::#-keystep:: is multiplied when used at mouse or keyboard interaction while the Ctrl key is pressed.
 
     argument::
         A Float.
 
-
-
-
 method:: alt_scale
-
 
     The factor by which link::#-step:: or link::#-keystep:: is multiplied when used at mouse or keyboard interaction while the Alt key is pressed.
 
     argument::
         A Float.
 
-
-
-
-
-
 subsection:: Appearance
 
-
 method:: centered
-
 
     Whether the deviation of value will be displayed in relation to teletype::0.0:: or 0.5 (e.g. as in a panning controller);
 
     argument::
         A Boolean.
 
-
-
-
 method:: color
-
 
     The colors used by the Knob to draw the following elements:
 
@@ -215,24 +126,13 @@ method:: color
     argument::
         An Array of four Colors in the order listed above.
 
-
-
-
-
-
 subsection:: Actions
-
 
 method:: action
 
-
     The action object evaluated whenever the user interacts with the Knob using the mouse or the keyboard.
 
-
-
-
 method:: defaultKeyDownAction
-
 
     Implements the default effects of key presses as follows:
 
@@ -252,53 +152,25 @@ method:: defaultKeyDownAction
 
     See also: link::#-keystep::, link::#-shift_scale::, link::#-ctrl_scale::, link::#-alt_scale::.
 
-
-
-
-
-
 subsection:: Drag and drop
 
-
 method:: defaultGetDrag
-
 
     returns::
         The link::#-value::.
 
-
-
-
 method:: defaultCanReceiveDrag
-
 
     returns::
         True if the current drag data is a Number.
 
-
-
-
 method:: defaultReceiveDrag
-
 
     Sets link::#-valueAction:: to the current drag data.
 
-
-
-
-
-
-
-
-
-
 examples::
 
-
-
-
 subsection:: Basic Example
-
 
 code::
 (
@@ -327,13 +199,7 @@ k.canFocus = false
 k.canFocus = true
 ::
 
-
-
-
-
-
 subsection:: Compare Mouse Modes
-
 
 code::
 (
@@ -348,13 +214,7 @@ view.front;
 )
 ::
 
-
-
-
-
-
 subsection:: Centered Mode
-
 
 Center mode is useful for pan or eq gain control etc.
 
@@ -374,13 +234,7 @@ k.centered = true
 k.centered = false
 ::
 
-
-
-
-
-
 subsection:: Step
-
 
 link::#-step:: only affects the 'horiz' and 'vert' modes:
 
@@ -403,13 +257,7 @@ k.mode = \horiz;
 k.mode = \round;
 ::
 
-
-
-
-
-
 subsection:: mouseOverAction
-
 
 code::
 (
@@ -433,13 +281,7 @@ w.front
 k[4].value
 ::
 
-
-
-
-
-
 subsection:: Drag and Drop
-
 
 code::
 (

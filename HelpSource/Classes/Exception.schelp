@@ -2,19 +2,7 @@ title:: Exception
 categories:: Core
 summary:: Root error class
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 The root of SuperCollider's error handling mechanism.
 
@@ -27,13 +15,7 @@ note::
 You should not return ^ from inside of the code::try:: or code::protect:: function itself, it cannot be caught. Returns in methods called by the receiver are OK.
 ::
 
-
-
-
-
-
 subsection:: Background: General exception handling
-
 
 An exception is any event that disrupts the normal execution flow of a program.
 In practice there is not much distinction between an exception and an error; in SuperCollider, we tend to speak of errors where other object-oriented languages (Java, C++) would use exception consistently.
@@ -42,13 +24,7 @@ If a piece of code runs into an unexpected condition, it creates an exception ob
 An exception that never gets caught causes execution to abort.
 In SuperCollider, this results in the standard error dump (see the Understanding-Errors help file for details); in C++ or Java, the effect is catastrophic, causing the whole program to crash.
 
-
-
-
-
-
 subsection:: Common syntax in other languages for exception handling is:
-
 
 code::
 try { ...code... }

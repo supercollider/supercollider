@@ -3,68 +3,29 @@ categories:: UGens>Filters>Nonlinear
 summary:: Applies the Hilbert transform to an input signal
 related:: Classes/HilbertFIR, Classes/FreqShift
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Return two channels with the original signal and a copy of that signal that has been shifted in phase by 90 degrees (0.5 pi radians).
 Hilbert outputs two channels containing the input signal and the transformed signal.
 Due to the method used, distortion occurs in the upper octave of the frequency spectrum (See HilbertFIR for an FFT implementation that avoids this, but introduces a significant delay).
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar
-
 
 argument:: in
 
 The input signal to transform.
 
-
 argument:: mul
 
 Output will be multiplied by this value.
-
 
 argument:: add
 
 This value will be added to the output.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 s.boot;

@@ -3,32 +3,17 @@ categories:: Streams-Patterns-Events>Patterns>List
 summary:: A one-dimensional random walk over a list of values that are embedded
 related:: Classes/Pbrown
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: list
 
 The items to be walked over.
 
-
 argument:: stepPattern
 
-Return integers that will be used to increment the index into list.
-
+Returns integers that will be used to increment the index into list.
 
 argument:: directionPattern
 
@@ -42,24 +27,11 @@ definitionlist::
 ## Pseq([1, -1], inf) || go forward first, then backward, then forward again.
 ::
 
-
 argument:: startPos
 
 Where to start in the list.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

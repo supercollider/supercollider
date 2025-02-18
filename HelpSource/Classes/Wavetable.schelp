@@ -3,38 +3,13 @@ categories:: Collections>Ordered
 summary:: Sampled audio buffer in wavetable format
 related:: Classes/Signal
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A Wavetable is a FloatArray in a special format used by SuperCollider's interpolating oscillators. Wavetables cannot be created by strong::new::.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: sineFill
-
 
 Fill a Wavetable of the given size with a sum of sines at the given amplitudes and phases.
 The Wavetable will be normalized.
@@ -43,39 +18,29 @@ code::
 Wavetable.sineFill(512, 1.0/[1, 2, 3, 4, 5, 6]).plot;
 ::
 
-
 argument:: size
 
 Must be a power of 2.
-
 
 argument:: amplitudes
 
 An Array of amplitudes for each harmonic beginning with the fundamental.
 
-
 argument:: phases
 
 An Array of phases in radians for each harmonic beginning with the fundamental.
 
-
-
-
 method:: chebyFill
 
-
 Fill a Wavetable of the given size with a sum of Chebyshev polynomials at the given amplitudes for use in waveshaping by the link::Classes/Shaper:: UGen.
-
 
 argument:: size
 
 Must be a power of 2 plus 1, eventual wavetable is next power of two size up.
 
-
 argument:: amplitudes
 
 An link::Classes/Array:: of amplitudes for each Chebyshev polynomial beginning with order 1.
-
 
 argument:: normalize
 
@@ -83,11 +48,9 @@ A link::Classes/Boolean:: indicating whether to normalize the resulting Wavetabl
 If the zeroOffset argument is true, the normalization is done for use as a transfer function, using link::Classes/Signal#-normalizeTransfer#normalizeTransfer::, otherwise it just uses link::Classes/Signal#-normalize#normalize:: to make the absolute peak value 1.
  Default is true.
 
-
 argument:: zeroOffset
 
 A link::Classes/Boolean:: indicating whether to offset the middle of each polynomial to teletype::zero::. If teletype::true::, then a zero input will always result in a zero output when used as a link::Classes/Shaper##waveshaper::. If teletype::false::, then the "raw" (unshifted) Chebyshev polynomials are used. Default is false.
-
 
 discussion::
 note::
@@ -140,22 +103,9 @@ s.waitForBoot({
 x.free; b.do(_.free); b = nil;
 ::
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 method:: plot
-
 
 Plot the Wavetable in a window.
 The arguments are not required and if not given defaults will be used.
@@ -165,28 +115,23 @@ Wavetable.sineFill(512, [0.5]).plot;
 Wavetable.sineFill(512, [1]).plot("Table 1", Rect(50, 50, 150, 450));
 ::
 
-
 argument:: name
 
 A String, the name of the window.
 
-
 argument:: bounds
 
 A Rect giving the bounds of the window.
-
 
 argument:: minval
 
 The minimum value in the plot.
 Defaults to the highest value in the data.
 
-
 argument:: maxval
 
 The maximum value in the plot.
 Defaults to the lowest value in the data.
-
 
 argument:: parent
 
@@ -201,11 +146,7 @@ w.front
 )
 ::
 
-
-
-
 method:: asSignal
-
 
 Convert the Wavetable into a Signal.
 
@@ -213,13 +154,7 @@ code::
 Wavetable.sineFill(512, [1]).asSignal.plot;
 ::
 
-
-
-
-
-
 subsection:: Advanced notes: wavetable format
-
 
 code::
 Signal: [a0, a1, a2...]

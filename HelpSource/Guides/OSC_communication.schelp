@@ -7,19 +7,7 @@ related:: Classes/NetAddr, Classes/OSCFunc
 OSC communication between programs is often done to send messages from one application to another, possibly with the applications running on different computers.
 In SuperCollider this communication is done by creating a link::Classes/NetAddr:: of the target application and creating an link::Classes/OSCFunc:: to listen to another application. The underlying protocol of OSC is either UDP or TCP.
 
-
-
-
-
-
-
-
-
-
 section:: Sending OSC to another application
-
-
-
 
 To establish communication to another application, you need to know on which port that application is listening.
 For example if an application is listening on port 7771, we can create a NetAddr and send it a message:
@@ -29,19 +17,7 @@ b = NetAddr.new("127.0.0.1", 7771);	// create the NetAddr
 b.sendMsg("/hello", "there");	// send the application the message "hello" with the parameter "there"
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Receiving OSC from another application
-
-
-
 
 To listen to another application, that application needs to send a message to the port SuperCollider is listening on.
 Normally the default port is 57120, but it could be something different if that port was already bound when SC started.
@@ -81,19 +57,7 @@ The port 7771 above is the port the other application is sending strong::from::,
 See the strong::recvPort:: argument in link::Classes/OSCFunc#*new:: if you want to receive on another port than NetAddr.langPort. 
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Receiving from an application that is sending from a variable port
-
-
-
 
 Some applications (notably Pd and Max) do not send messages from a fixed port, but instead use a different port each time they send out a message, or each time a patch starts up it picks a random port.
 In that case the OSCFunc needs to be set up, so that it listens to messages coming from anywhere.
@@ -104,19 +68,7 @@ o = OSCFunc({ arg msg, time, addr, recvPort; [msg, time, addr, recvPort].postln;
 o.free;	// remove the OSCFunc when you are done.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Testing incoming traffic
-
-
-
 
 OSCFunc has a convenience method, link::Classes/OSCFunc#*trace:: which posts all incoming OSC messages:
 
@@ -125,19 +77,7 @@ OSCFunc.trace(true); // Turn posting on
 OSCFunc.trace(false); // Turn posting off
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Custom OSC message processing
-
-
-
 
 All incoming OSC messages call the message recvOSCmessage in link::Classes/Main::. If needed, one can add a custom link::Classes/Function:: or other object to Main's recvOSCFunc variable. Although one can do this directly using the corresponding setter, it is better to use the link::Classes/Main#-addOSCRecvFunc:: and link::Classes/Main#-removeOSCRecvFunc:: to avoid overwriting any other functions that may have been added by class code.
 
@@ -157,19 +97,7 @@ thisProcess.addOSCRecvFunc(f);
 thisProcess.removeOSCRecvFunc(f);
 ::
 
-
-
-
-
-
-
-
-
-
 section:: OSC type tags and sclang
-
-
-
 
 Inbound OSC messages must have type tags, or an error will be thrown.
 

@@ -3,36 +3,11 @@ categories:: UGens>Info
 summary:: Number of input busses
 related:: Classes/NumAudioBuses, Classes/NumControlBuses, Classes/NumBuffers, Classes/NumOutputBuses, Classes/NumRunningSynths
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Number of input busses.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ir
-
 

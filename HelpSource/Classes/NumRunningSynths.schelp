@@ -3,51 +3,15 @@ categories:: UGens>Info
 summary:: Number of currently running synths
 related:: Classes/NumAudioBuses, Classes/NumControlBuses, Classes/NumBuffers, Classes/NumInputBuses, Classes/NumOutputBuses
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Number of currently running synths.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: ir
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // example: frequency is derived from the number of synths running

@@ -3,25 +3,15 @@ categories:: UGens>Generators>Deterministic
 summary:: Interpolating wavetable oscillator
 related:: Classes/COsc, Classes/OscN, Classes/VOsc, Classes/VOsc3, Classes/Wavetable
 
-
-
-
-
-
-
-
-
-
 description::
 
-
-
-
-Linear interpolating wavetable lookup oscillator with frequency and phase modulation inputs.
+Linear interpolating wavetable lookup oscillator with frequency and
+phase modulation inputs.
 
 
 This oscillator requires a buffer to be filled with a wavetable format
-signal. This preprocesses the Signal into a form which can be used efficiently by the Oscillator. The buffer size must be a power of 2.
+signal. This preprocesses the Signal into a form which can be used
+efficiently by the Oscillator. The buffer size must be a power of 2.
 
 
 This can be achieved by creating a Buffer object and sending it one of
@@ -33,61 +23,32 @@ This can also be achieved by creating a link::Classes/Signal:: object and sendin
 the 'asWavetable' message, thereby creating a Wavetable object in the required format.
 Then, the wavetable data may be transmitted to the server using the link::Classes/Buffer#*sendCollection:: or link::Classes/Buffer#*loadCollection:: methods.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: bufnum
 
 Buffer index.
 
-
 argument:: freq
 
 Frequency in Hertz.
-
 
 argument:: phase
 
 Phase offset or modulator in radians.
 (Note: phase values should be within the range +-8pi. If your phase values are larger then simply use code::.mod(2pi):: to wrap them.)
 
-
 argument:: mul
 
 Output will be multiplied by this value.
-
 
 argument:: add
 
 This value will be added to the output.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

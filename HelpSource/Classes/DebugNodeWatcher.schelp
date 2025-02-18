@@ -3,19 +3,7 @@ categories:: Control, Server>Nodes
 summary:: Watches a server address for debug-related messages
 related:: Reference/Server-Command-Reference, Classes/Node, Classes/NodeWatcher
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Post when these messages are received from the server:
 n_go n_end n_off n_on
@@ -23,19 +11,7 @@ n_go n_end n_off n_on
 For debugging, it can be useful to see every node start and end.
 It doesn't require registration, reacts to each message.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 s.boot;

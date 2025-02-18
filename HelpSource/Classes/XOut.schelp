@@ -3,76 +3,39 @@ categories:: UGens>InOut
 summary:: Send signal to a bus, crossfading with previous contents
 related:: Classes/OffsetOut, Classes/Out, Classes/ReplaceOut
 
-
-
-
-
-
-
-
-
-
 description::
 
-
-
-
 Send signal to a bus, crossfading with previous contents.
-code::xfade::  is a level for the crossfade between what is on the bus and what you are sending.
+code::xfade::  is a level for the crossfade between what
+is on the bus and what you are sending.
 The algorithm is equivalent to this:
 
 code::
 bus_signal = (input_signal * xfade) + (bus_signal * (1 - xfade));
 ::
 
-See the link::Reference/Server-Architecture:: and link::Classes/Bus:: helpfiles for more information on buses and how they are used.
-
-
-
-
-
-
-
-
-
+See the link::Reference/Server-Architecture:: and link::Classes/Bus:: helpfiles for more information on
+buses and how they are used.
 
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: bus
 
 The index of the bus to write out to.
 The lowest numbers are written to the audio hardware.
 
-
 argument:: xfade
 
 Crossfade level.
-
 
 argument:: channelsArray
 
 An Array of channels or single output to write out.
 You cannot change the size of this once a SynthDef has been built.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

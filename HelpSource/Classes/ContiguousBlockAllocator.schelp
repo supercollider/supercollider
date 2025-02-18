@@ -3,96 +3,40 @@ categories:: Control
 summary:: For better handling of dynamic allocation
 related:: Classes/Server, Classes/PowerOfTwoAllocator, Guides/MultiClient_Setups
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 The default allocator used in servers to allocate bus numbers and buffer numbers.
 Compared to its predecessor, link::Classes/PowerOfTwoAllocator::, it can reserve a block of numbers at the beginning of its range, and it can offset its entire range of numbers to support multiple clientIDs.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 Create a new allocator with emphasis::size:: slots.
 You may block off the first emphasis::pos:: slots (the server's audioBusAllocator does this to reserve the hardware input and output buses).
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 private:: prReserve, prSplit, addToFreed, blocks, findNext, findPrevious, prFindNext, prFindPrevious, removeFromFreed
 
-
-
-
-
-
 subsection:: Public interface
 
-
 method:: alloc
-
 
 Return the starting index of a free block that is emphasis::n:: slots wide. The default is 1 slot.
 
 Note that the returned address is not guaranteed to be the lowest possible address that can satisfy the requested size.
 It should be adjacent to a previously allocated block, however (to minimize fragmentation of the address space).
 
-
-
-
 method:: free
-
 
 Free a previously allocated block starting at emphasis::address::.
 
-
-
-
 method:: reserve
-
 
 Mark a specific range of addresses as used so that the alloc method will not return any addresses within that range.
 
-
-
-
 method:: findAvailable
-
 
 Given an integer width of a desired block, find and return a code::ContiguousBlock:: object whose code::start:: is the beginning address of the block and whose code::size:: is the width. This method only queries the allocator; it does not change the state.
 If you obtain an address using code::findAvailable::, there is no guarantee that a later call will not return the same address.
@@ -100,69 +44,31 @@ So, in general, use link::#-alloc:: to request an address. (code::alloc:: calls 
 
 This method could be considered "half-private": It may be useful for queries, but in general, you can get everything you need from link::#-alloc::, link::#-free:: and link::#-reserve::.
 
-
-
-
-
-
 subsection:: Status and debugging
-
 
 You may query these state variables, but it is not recommended to change them outside of the public interface.
 
-
-
-
 method:: debug
-
 
 	Post internal state of allocator for debugging.
 
-
-
-
 method:: size
-
 
 	The number of id numbers it can allocate.
 
-
-
-
 method:: pos
-
 
 	The allocator's offset for a reserved block (e.g. for hardware input and output buses).
 
-
-
-
 method:: addrOffset
-
 
 	The offset of the allocator's address range, which is used to accomodate multiple clientIDs.
 
-
-
-
 method:: top
-
 
 	The address of the last empty block.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 c = ContiguousBlockAllocator(10);

@@ -3,19 +3,7 @@ categories:: UGens>FFT
 summary:: Fast Fourier Transform
 related:: Classes/IFFT, Guides/FFT-Overview
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 The fast fourier transform analyzes the frequency content of a signal, which can be useful for audio analysis or for frequency-domain sound processing (phase vocoder).
 
@@ -40,46 +28,31 @@ fft = FFT(LocalBuf(2048.dup(2), 1), aStereoSignal);
 See also link::Guides/FFT-Overview#Multichannel Expansion with FFT UGens::.
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: buffer
 
 A buffer to store spectral data.
-The buffer's size must correspond to a power of 2.
+The buffer's size must
+correspond to a power of 2.
 LocalBuf is useful here, because processes should not share data between synths.
 (Note: most PV UGens operate on this data in place.
 Use PV_Copy for parallel processing.)
 
-
 argument:: in
 
 The signal to be analyzed. The signal's rate determines the rate at which the input is read.
-
 
 argument:: hop
 
 The amount of offset from the beginning of one FFT analysis frame to the next, measured in multiples of the analysis frame size.
 This can range between 1.0 and values close to (but larger than) 0.0, and the default is 0.5 (meaning each frame has a 50% overlap with the preceding/following frames).
 
-
 argument:: wintype
 
-Define how the data is windowed:
+Defines how the data is windowed:
 
 table::
 ## -1 || strong::rectangular:: windowing, simple but typically not recommended;
@@ -87,12 +60,10 @@ table::
 ## 1 || strong::Hann:: windowing, typically recommended for analysis work.
 ::
 
-
 argument:: active
 
 A simple control allowing FFT analysis to be active (>0) or inactive (<=0).
 This is mainly useful for signal analysis processes which are only intended to analyse at specific times rather than continuously
-
 
 argument:: winsize
 
@@ -101,10 +72,8 @@ If you wish the FFT to be zero-padded then you can specify a window size smaller
 Both values must still be a power of two.
 Leave this at its default of teletype::zero:: for no zero-padding.
 
-
 returns::
 The FFT chain
-
 
 discussion::
 Only the first two arguments are required.
@@ -115,19 +84,7 @@ The buffer size must be a multiple of the control block size as well as being a 
 
 Note that for phase-vocoder usage, changing the hop or wintype settings from their defaults will typically result in unnatural sound when used in combination with IFFT, due to windowing artifacts. (A hop of teletype::0::.25, with Hann windowing, can be a useful combination for phase-vocoder work.)
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

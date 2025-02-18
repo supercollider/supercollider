@@ -2,63 +2,25 @@ title:: Dreset
 categories:: UGens>Demand
 summary:: Demand rate reset
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 The reset of a demand UGen can be controlled "from the outside" by the reset input of the link::Classes/Demand:: or link::Classes/Duty:: UGen, which consumes the chain of demands.
 Dreset allows to reset a subset of the chain internally.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: in
 
 A demand UGen, producing values which are passed through
-
 
 argument:: reset
 
 A demand or any other UGen.
 When crossing from nonpositive to teletype::positive::, it resets the first argument.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

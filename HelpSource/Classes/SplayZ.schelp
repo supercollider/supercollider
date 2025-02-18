@@ -3,19 +3,7 @@ categories:: UGens>Multichannel>Panners
 summary:: Spreads an array of channels across a ring of channels
 related:: Classes/PanAz, Classes/SplayAz
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 SplayZ spreads an array of channels across a ring of channels.
 Optional spread and center controls, and levelComp(ensation) (equal power).
@@ -26,83 +14,47 @@ ATTENTION - SplayZ is deprecated because its geometry is wrong.
 It is only kept for backwards compatibility - please adapt your patches to link::Classes/SplayAz::! See link::Classes/SplayAz:: help file for the comparison in behavior.
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar
-
 
 argument:: numChans
 
 argument:: inArray
 
-
 argument:: spread
 
 argument:: level
-
 
 argument:: width
 
 argument:: center
 
-
 argument:: orientation
 
 argument:: levelComp
 
-
-
-
 method:: arFill
-
 
 argument:: numChans
 
 argument:: n
 
-
 argument:: function
 
 argument:: spread
-
 
 argument:: level
 
 argument:: width
 
-
 argument:: center
 
 argument:: orientation
 
-
 argument:: levelComp
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

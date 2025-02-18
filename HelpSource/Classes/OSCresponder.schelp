@@ -24,25 +24,11 @@ note::
 It is highly recommended to use link::Classes/OSCresponderNode:: or link::Classes/OSCpathResponder:: instead of OSCresponder directly. OSCresponders can overwrite each other, but OSCresponderNodes with the same address and command name can coexist peacefully.
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: initClass
 
-
 method:: new
-
 
 argument:: addr
 
@@ -50,11 +36,9 @@ The address the responder strong::receives from:: (an instance of link::Classes/
 An address of teletype::nil:: will respond to messages from anywhere.
 An address with a port of teletype::nil:: will respond to messages from any port from that specific IP.
 
-
 argument:: cmdName
 
 An OSC command eg. code::'/done'::.
-
 
 argument:: action
 
@@ -66,18 +50,6 @@ OSCresponder evaluates its function in the system process.
 In order to access the application process (e.g. for GUI access) use { ... }.defer; within the action function, e.g., code:: { |time, resp, msg| { gui.value_(msg[3]) }.defer } ::
 ::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 See link::Classes/OSCresponderNode::.

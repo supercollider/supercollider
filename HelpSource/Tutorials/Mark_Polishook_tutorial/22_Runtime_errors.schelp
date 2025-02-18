@@ -3,35 +3,11 @@ categories:: Tutorials>Mark_Polishook_tutorial
 summary:: Mark Polishook tutorial
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
-
-
-
-
-
-
-
-
-
 section:: Runtime errors
-
-
-
 
 Runtime errors occur while a program is executing.
 
-
-
-
-
-
-
-
-
-
 section:: Common errors
-
-
-
 
 numberedlist::
 ## an object receives a message which it doesn't understand
@@ -40,19 +16,7 @@ numberedlist::
 ## a file can't be opened (a primitive fails)
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Object doesn't understand
-
-
-
 
 In the case of
 
@@ -190,19 +154,7 @@ CALL STACK:
 		arg this = <instance of Main>
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Uninitialized variable (binary operation fails)
-
-
-
 
 Here, the variable a is initialized to an integer and the variable b isn't initialized. Multiplying a (the integer 10) by b (nil, the value that SuperCollider uses for uninitialized data) will create a runtime error.
 
@@ -280,19 +232,7 @@ CALL STACK:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
 section:: True, false, or other
-
-
-
 
 A value other than true or false in a boolean test, as in
 
@@ -335,19 +275,7 @@ if(x==4) { "this is ok"};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
 section:: Primitive fails
-
-
-
 
 Asking for the length of a non-existent file creates a runtime error.
 The notification shows what went wrong (a C code primitive failed).

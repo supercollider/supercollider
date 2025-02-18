@@ -3,49 +3,22 @@ categories:: Files
 summary:: A class for reading and writing files
 related:: Classes/FileReader
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A class for reading and writing files.
 Not sound files.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 private:: prGetcwd, prType, openDialog, openDialogs, saveDialog
-
 
 method:: new
 Create a File instance and open the file.
 If the open fails, link::Classes/UnixFILE#-isOpen#isOpen:: will return teletype::false::.
 
-
 argument:: pathName
 
 A link::Classes/String:: containing the path name of the file to open.
-
 
 argument:: mode
 
@@ -70,19 +43,11 @@ The file is created if it does not exist.
 ## "rb+", "wb+", "ab+" || same as above, but data is binary
 ::
 
-
-
-
 method:: open
-
 
 Same as link::#*new::, but a more intuitive name.
 
-
-
-
 method:: getcwd
-
 
 POSIX standard 'get current working directory'.
 
@@ -91,19 +56,11 @@ code::
 File.getcwd;
 ::
 
-
-
-
 method:: use
-
 
 Open the file, evaluate the function with the file as argument, and close it again. If the process fails, close the file and throw an error.
 
-
-
-
 method:: readAllString
-
 
 Open the file at the given path, call link::#-readAllString::, and return the string. Whether the process succeeds or fails, the file will always be closed.
 
@@ -115,42 +72,23 @@ File.use("~/test.txt".standardizePath, "w", { |f| f.write("The green fox fell in
 File.readAllString("~/test.txt".standardizePath);
 ::
 
-
-
-
 method:: readAllSignal
-
 
 Open the file at the given path, call link::#-readAllSignal::, and return the signal. Whether the process succeeds or fails, the file will always be closed.
 
-
-
-
 method:: readAllStringHTML
-
 
 Open the file at the given path, call link::#-readAllStringHTML::, and return the string. Whether the process succeeds or fails, the file will always be closed.
 
-
-
-
 method:: readAllStringRTF
-
 
 Open the file at the given path, call link::#-readAllStringRTF::, and return the string. Whether the process succeeds or fails, the file will always be closed.
 
-
-
-
-
-
 subsection:: Filesystem utilities
-
 
 method:: exists
 
-
-Answer if a file exists at that path.
+Answers if a file exists at that path.
 
 note::
 Some filesystems, like the one used by macOS, are case insensitive.
@@ -158,15 +96,10 @@ On such systems, this method will return teletype::true:: for "fOo" even if the 
 For a workaround, see link::#*existsCaseSensitive:: below.
 ::
 
-
 returns::
 A link::Classes/Boolean::
 
-
-
-
 method:: existsCaseSensitive
-
 
 Like link::#*exists:: but ensure case sensitivity emphasis:: of the last path component :: on case insensitive filesystems. On case sensitive systems, it falls back to using code::exists::.
 
@@ -174,22 +107,13 @@ note::
 This is slower than the normal code::exists:: method, so use it only when really needed.
 ::
 
-
-
-
 method:: systemIsCaseSensitive
 
-
-Answer if the filesystem is case sensitive or not.
-
-
-
+Answers if the filesystem is case sensitive or not.
 
 method:: mkdir
 
-
 Create directory at path, including any missing parent directories.
-
 
 returns::
 A link::Classes/Boolean::, as follows:
@@ -199,15 +123,10 @@ list::
 ## code::false:: -- A directory already existed at code::path::; a new one was not created.
 ::
 
-
-
-
 method:: delete
 
-
-Delete the file at that path.
+Deletes the file at that path.
 Use only for good, never for evil.
-
 
 returns::
 A link::Classes/Boolean::, as follows:
@@ -219,15 +138,10 @@ list::
 Your code should assume that the path still exists.
 ::
 
-
-
-
 method:: deleteAll
 
-
-Delete the file and all children at that path.
+Deletes the file and all children at that path.
 Use only for good, never for evil.
-
 
 returns::
 A link::Classes/Boolean::, as follows:
@@ -239,71 +153,41 @@ list::
 
 If deletion fails, a PrimitiveFailedError object will be thrown.
 
-
-
-
 method:: realpath
 
-
 Follow symbolic links (and aliases on macOS) and any parent directory references (like "..") and return the true absolute path.
-
 
 returns::
 A link::Classes/String::or code::nil:: if path did not exist.
 
-
-
-
 method:: copy
-
 
 Copy file, symlink or directory. this method will fail if pathNameTo already exists.
 
 Symlinks are copied as symlinks (re-created).
 
-
-
-
 method:: type
 
-
 Get file type as one of code::\error, \not_found, \regular, \directory, \symlink, \block, \character, \fifo, \socket, \unknown::
-
 
 returns::
 A link::Classes/Symbol::
 
-
-
-
 method:: fileSize
-
 
 Get size of file in bytes.
 
-
 returns::
 An link::Classes/Integer::
-
-
-
 
 method:: mtime
 
-
 Get last modification time in seconds since the Epoch.
-
 
 returns::
 An link::Classes/Integer::
 
-
-
-
-
-
 subsection:: Error handling in filesystem utilities
-
 
 If one of the above filesystem primitives fails, in most cases, a PrimitiveFailedError object will be thrown:
 
@@ -321,22 +205,9 @@ See link::Guides/Understanding-Errors:: for details.
 
 Currently, link::Classes/File#*copy::, link::Classes/File#*fileSize::, link::Classes/File#*mkdir::, link::Classes/File#*mtime::, and link::Classes/File#*type:: throw errors upon failure. (link::Classes/File#*delete:: does not throw an error, but instead returns a Boolean.)
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 private:: prOpen, prClose
-
 
 method:: open
 Open the file. Files are automatically opened upon creation, so this call is only necessary if you are closing and opening the same file object repeatedly.
@@ -345,53 +216,29 @@ note::
 It is possible when saving files with a standard file dialog to elect to "hide the extension" and save it as RTF. When opening the file you must specify the real filename: "filename.rtf", even though you can't see in file load dialogs or in the Finder.
 ::
 
-
-
-
 method:: close
-
 
 Close the file.
 
-
-
-
 method:: readAllString
 
-
-Read the entire file as a link::Classes/String::.
-
-
-
+Reads the entire file as a link::Classes/String::.
 
 method:: readAllStringHTML
 
-
-Read the entire file as a link::Classes/String::, stripping HTML tags.
-
-
-
+Reads the entire file as a link::Classes/String::, stripping HTML tags.
 
 method:: readAllStringRTF
 
-
-Read the entire file as a link::Classes/String::, stripping RTF formatting.
-
-
-
+Reads the entire file as a link::Classes/String::, stripping RTF formatting.
 
 method:: readAllSignal
 
-
-Read the entire file as a link::Classes/Signal::, where every chunk of four bytes is interpreted as a 32-bit floating point sample.
-
-
-
+Reads the entire file as a link::Classes/Signal::, where every chunk of four bytes is interpreted as a 32-bit floating point sample.
 
 method:: seek
 
-
-Move the read/write pointer to a given location in the file, where offset is location given in bytes, and origin is the reference of the offset:
+Moves the read/write pointer to a given location in the file, where offset is location given in bytes, and origin is the reference of the offset:
 
 definitionlist::
 ## 0 || offset is from the beginning of the file
@@ -399,38 +246,18 @@ definitionlist::
 ## 2 || offset is from the end of the file
 ::
 
-
-
-
 method:: pos
 
-
-Set/return the current position in the file (in bytes).
+Sets or returns the current position in the file (in bytes).
 when used as a setter, this method is a shortcut for seek(0, value).
 so setting the pos moves the current file position to a given location from the beginning of the file.
 the value is clipped so that it lies between 0 inclusively and the file length exclusively.
 
-
-
-
 method:: length
 
-
-Return the current file size in bytes.
-
-
-
-
-
-
-
-
-
+Returns the current file size in bytes.
 
 examples::
-
-
-
 
 code::
 // write some string to a file:

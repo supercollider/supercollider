@@ -23,19 +23,7 @@ p = ProxySpace.push(s.boot);
 ~z.play; ~y.ar; // explicitly initialize proxies
 ::
 
-
-
-
-
-
-
-
-
-
 section:: A) NodeProxy slots
-
-
-
 
 One node proxy can hold several objects in an execution order.
 The index can be any positive integer.
@@ -79,19 +67,7 @@ code::
 ~y.end;
 ::
 
-
-
-
-
-
-
-
-
-
 section:: B) fade time
-
-
-
 
 code::
 // setting the fadeTime will allow cross fades.
@@ -114,29 +90,11 @@ The fadeTime is also used for the operations xset and xmap.
 (see below)
 ::
 
-
-
-
-
-
-
-
-
-
 section:: C) play/stop, send/free, pause/resume
-
-
-
 
 There are a couple of messages a NodeProxy understands that are related to play, stop etc. Here is what they do.
 
-
-
-
-
-
 subsection:: Play/stop
-
 
 This pair of messages is related to the monitoring function of the proxy.
 play starts monitoring, stop ends the monitoring. emphasis::if the proxy group is playing:: (this can be tested with .isPlaying), play will not affect the proxie's internal behaviour in any way.
@@ -159,13 +117,7 @@ code::
 ~z.vol = 0.8;
 ::
 
-
-
-
-
-
 subsection:: Send / release
-
 
 This pair of messages controls the synths within the proxy.
 It does not affect the monitoring (see above).
@@ -227,13 +179,7 @@ code::
 ~z.end;
 ::
 
-
-
-
-
-
 subsection:: Pause / resume
-
 
 When paused, a node proxy still stays active, but every synth that is started is paused until the proxy is resumed again.
 
@@ -250,13 +196,7 @@ code::
 
 Note that pause/resume causes clicks with audio rate proxies, which do not happen when pauseing control rate proxies.
 
-
-
-
-
-
 subsection:: Clear
-
 
 Clear removes all synths, the group, the monitor and releases the bus number.
 
@@ -269,19 +209,7 @@ code::
 note that when other processes use the nodeproxy these are not notified.
 So clearing has to be done with regard to this.
 
-
-
-
-
-
-
-
-
-
 section:: D) The parameter context
-
-
-
 
 What happens to function arguments?
 

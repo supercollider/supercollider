@@ -3,50 +3,23 @@ categories:: Streams-Patterns-Events>Patterns>Random
 summary:: Random values that tend toward ((lo + hi) / 2)
 related:: Classes/Plprand, Classes/Phprand
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: lo
 
 Lower boundary of values.
 
-
 argument:: hi
 
 Upper boundary of values.
-
 
 argument:: length
 
 Number of values produced.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

@@ -5,11 +5,7 @@ related:: Classes/ObjectGui
 
 
 
-
-
-
 method:: gui
-
 
 The code::gui:: message is of common use in SC.
 It originated in the crucial library where it is used to create an link::Classes/ObjectGui:: or an ObjectGui subclass as part of a Model View Controller system.
@@ -28,19 +24,7 @@ nil.gui;
 This means that any object can be .gui(ed) without knowing exactly what the object is.
  This is identical in purpose to .asString which is used for posting an object's representation to the post window.
 
-
-
-
-
-
-
-
-
-
 section:: Argument conventions
-
-
-
 
 The convention as stated in crucial library states that the .gui method should accept parent and bounds as its arguments in the same manner as a View does.
 
@@ -91,11 +75,7 @@ code::
 )
 ::
 
-
-
-
 method:: guiClass
-
 
 Each class can specify an associated guiClass, which is a subclass of ObjectGui.
 Writing useful subclasses is the purpose of the ObjectGui system and many can be found in the crucial library.

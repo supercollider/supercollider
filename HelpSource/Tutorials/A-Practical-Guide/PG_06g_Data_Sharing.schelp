@@ -3,19 +3,7 @@ categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Writing patterns to use information from other patterns
 related:: Tutorials/A-Practical-Guide/PG_06f_Server_Control, Tutorials/A-Practical-Guide/PG_07_Value_Conversions
 
-
-
-
-
-
-
-
-
-
 section:: Sharing data between patterns
-
-
-
 
 So far, we've seen patterns that are independent of each other.
 A single Pbind works on its own information, which is not available to other Pbinds.
@@ -26,13 +14,7 @@ The first, simpler, technique is to read values from the current event that is a
 The second is to pass information from one event pattern into a separate event pattern.
 Since both are event patterns, they produce different result events and the first technique does not apply.
 
-
-
-
-
-
 subsection:: Reading values from the current event
-
 
 Within a Pbind, value patterns can easily read from other values that have already been placed into the event.
 The link::Classes/Pkey:: pattern looks up the key in the event currently being processed and returns its value.
@@ -78,13 +60,7 @@ p.stop;
 
 ::
 
-
-
-
-
-
 subsection:: Other information storage patterns
-
 
 These patterns represent three different strategies to persist information from one pattern and make it available to others.
 
@@ -171,13 +147,7 @@ p.nextN(5, ()).do(_.postln);
 
 ::
 
-
-
-
-
-
 subsection:: Communicating values between separate event patterns
-
 
 Passing values from one Pbind to another takes a couple of little tricks.
 First is to store completed events in an accessible location.

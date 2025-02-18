@@ -3,87 +3,32 @@ categories:: Platform>Linux, External Control>HID
 summary:: A GUI for an LID
 related:: Classes/LID
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 This class creates a simple GUI for an LID device.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: new
 
-
 Create a new GUI.
-
 
 argument:: device
 
 An instance of LID, for which to create the GUI.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 private:: init, bkeys, rkeys, akeys, updater;
-
 
 method:: win
 The window that the LIDGui is in.
 
-
-
-
 method:: device
-
 
 The device for which this GUI is.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 LID.findAvailable;

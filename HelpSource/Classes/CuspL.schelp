@@ -3,19 +3,7 @@ categories:: UGens>Generators>Chaotic
 summary:: Cusp map chaotic generator
 related:: Classes/CuspN
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A linear-interpolating sound generator based on the difference equation:
 
@@ -32,55 +20,27 @@ plot(size.collect { xi = a - (b * sqrt(abs(xi))) });
 )
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar
-
 
 argument:: freq
 
 Iteration frequency in Hertz
 
-
 argument:: a
 
 Equation variable
-
 
 argument:: b
 
 Equation variable
 
-
 argument:: xi
 
 Initial value of x
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // vary frequency

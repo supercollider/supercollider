@@ -13,8 +13,7 @@ See Server for details of makeBundle's arguments.
 code::
 s.boot;
 (
-// send a synth def to server
-SynthDef("tpulse", { arg out=0,freq=700,sawFreq=440.0;
+// send a synth def to server SynthDef("tpulse", { arg out=0,freq=700,sawFreq=440.0;
 	Out.ar(out, SyncSaw.ar(freq,  sawFreq,0.1) )
 }).send(s);
 )
@@ -70,12 +69,9 @@ code::
 s.boot;
 b = List.new;
 c = Bus.control(s, 1).set(660);
-x = Synth.basicNew("default", s); // Create without sending
-b.add(x.newMsg);
+x = Synth.basicNew("default", s); // Create without sending b.add(x.newMsg);
 b.add(x.mapMsg(\freq, c));
-b.postln; // here's what it looks like
-s.listSendBundle(1.0, b); // Execute after 1 second
-c.set(440);
+b.postln; // here's what it looks like s.listSendBundle(1.0, b); // Execute after 1 second c.set(440);
 s.queryAllNodes;
 x.free;
 ::

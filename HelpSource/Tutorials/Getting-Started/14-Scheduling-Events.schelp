@@ -7,19 +7,7 @@ related:: Tutorials/Getting-Started/00-Getting-Started-With-SC
 Music happens over time, and to make effective music, it's necessary to control when things happen.
 In SuperCollider, this is done by scheduling things on clocks.
 
-
-
-
-
-
-
-
-
-
 section:: Clocks
-
-
-
 
 A clock in SuperCollider has two major functions.
 It knows what time it is, and it knows what time things are supposed to happen, so that it can wake them up at just the right time.
@@ -28,19 +16,7 @@ Musical sequencing will usually use link::Classes/TempoClock::, because you can 
 Two other kinds of clock exist:
 link::Classes/SystemClock::, which always runs in seconds, and link::Classes/AppClock::, which also runs in seconds but has a lower system priority (so it is better for graphic updates and other activities that are not time critical).
 
-
-
-
-
-
-
-
-
-
 section:: Scheduling
-
-
-
 
 Scheduling means to tell the clock to execute something at some time in the future.
 So, you need to have the thing to schedule, and a number indicating the time.
@@ -87,19 +63,7 @@ TempoClock.default.schedAbs(timeNow + 5,
 
 Notice that the 'Time is later' message shows up after a shorter delay, but the difference between the two times is still 5.
 
-
-
-
-
-
-
-
-
-
 section:: What time is it?
-
-
-
 
 Inside a scheduled function, you might want to know which clock is running the function.
 code::thisThread.clock:: tells you this -- don't worry for now about how it knows, just know that you can use this to find out.
@@ -113,19 +77,7 @@ AppClock.beats;
 thisThread.clock.beats;
 ::
 
-
-
-
-
-
-
-
-
-
 section:: What can you schedule?
-
-
-
 
 Suppose we schedule "hello" by itself.
 
@@ -144,19 +96,7 @@ Task
 Routines and Tasks will be covered in the next section, and Functions we have already seen.
 There are some others, but these are the best starting point.
 
-
-
-
-
-
-
-
-
-
 section:: Caution
-
-
-
 
 If you schedule function that returns a number, the clock will treat that number as the amount of time before running the function again.
 

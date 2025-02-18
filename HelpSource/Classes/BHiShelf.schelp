@@ -3,19 +3,7 @@ categories:: UGens>Filters>BEQSuite
 summary:: Hi Shelf
 related:: Classes/SOS, Classes/BLowPass, Classes/BLowPass4, Classes/BHiPass, Classes/BHiPass4, Classes/BPeakEQ, Classes/BLowShelf, Classes/BBandPass, Classes/BBandStop, Classes/BAllPass
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 The B equalization suite is based on the Second Order Section (link::Classes/SOS::) biquad UGen.
 
@@ -24,62 +12,33 @@ Biquad coefficient calculations imply certain amount of CPU overhead.
 These plugin UGens contain optimizations such that the coefficients get updated only when there has been a change to one of the filter's parameters. This can cause spikes in CPU performance and should be considered when using several of these units.
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar
-
 
 argument:: in
 
 Input signal to be processed.
-
 
 argument:: freq
 
 WARNING: due to the nature of its implementation frequency values close to teletype::0:: may cause glitches and/or extremely loud audio artifacts!
 center frequency.
 
-
 argument:: rs
 
 The reciprocal of S. Shell boost/cut slope. When S = 1, the shelf slope is as steep as it can be and remain monotonically increasing or decreasing gain with frequency.
 The shelf slope, in dB/octave, remains proportional to S for all other values for a fixed code::freq/SampleRate.ir:: and code::db::.
 
-
 argument:: db
 
 Gain. boost/cut the center frequency in dBs.
-
 
 argument:: mul
 
 argument:: add
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 s.boot;

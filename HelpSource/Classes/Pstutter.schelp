@@ -13,19 +13,7 @@ warning::
 Pstutter will return link::Classes/Pdup::
 ::
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Repeat each element n times.
 
@@ -40,50 +28,23 @@ x = a.asStream;
 
 This is also a response to link::Classes/Pattern#-dup::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: n
 
 The number of repeats for each new element.
 n may be a pattern, so the number of times can vary each iteration.
 
-
 argument:: pattern
 
 The pattern to repeat.
 
-
 returns::
 link::Classes/Pdup::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // the first argument can be a pattern, too:

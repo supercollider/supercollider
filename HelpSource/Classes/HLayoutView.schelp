@@ -3,19 +3,7 @@ categories:: GUI>Views
 summary:: A container view that arranges its children horizontally
 related:: Classes/VLayoutView, Classes/CompositeView
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 note::
 In Qt GUI, this class has been rendered strong::obsolete:: by a special set of layout classes; they are easier to use and more flexible.
@@ -34,35 +22,11 @@ HLayoutView is designed mainly for grouping and placing widgets.
 While you can set it to accept key presses, it does not accept mouse clicks or drags.
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: key
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 Child view height fills the HLayoutView automatically:
 
@@ -113,8 +77,7 @@ q = 10;
 w = Window.new;
 
 h = HLayoutView(w, Rect(0, 0, 300, 300));
-h.resize = 5; // elastic
-h.background = Color.rand;
+h.resize = 5; // elastic h.background = Color.rand;
 
 Array.fill(q, { |i|
     var s;
@@ -164,8 +127,7 @@ q = 5;
 w = Window.new;
 
 h = HLayoutView(w, Rect(0, 0, 300, 300));
-h.resize = 5; // elastic
-h.background = Color.rand;
+h.resize = 5; // elastic h.background = Color.rand;
 Array.fill(q, { |i|
     var s;
     s = Slider(h, Rect(0, 0, 20, 75));

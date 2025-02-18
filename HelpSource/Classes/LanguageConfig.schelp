@@ -2,35 +2,11 @@ title:: LanguageConfig
 categories:: Language
 summary:: Access and modify interpreter configuration
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 The LanguageConfig class provides access to the interpreter configuration.
 
-
-
-
-
-
-
-
-
-
 section:: Configuration File Format
-
-
-
 
 The configuration file is stored in YAML format, which contains one dictionary. The semantics of the dictionary is listed in
 the following table:
@@ -41,40 +17,20 @@ definitionlist::
 ## teletype::postInlineWarnings:: || Boolean flag to post warnings about missing inline opportunities.
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: store
-
 
 Store the current configuration to file.
 Throws an error if the config file cannot be opened or if
 writing fails.
-
 
 argument:: file
 
 Path to the configuration file to store. If the value is code::nil:: it defaults to currently used configuration file, as specified in the IDE preferences, or by the code::sclang -l "/path/to/sclang_conf.yaml":: argument.
 By default this is code::Platform.userConfigDir +/+ "sclang_conf.yaml"::
 
-
-
-
-
-
 subsection:: Library Path Handling
-
 
 The language configuration mechanism provides a way to add or exclude specific paths for the class library.
 
@@ -82,67 +38,35 @@ note::
 Changeto the to the class library paths won't have any effect before the configuration file is stored and the class library is recompiled.
 ::
 
-
-
-
 method:: includePaths
-
 
 Return the class library include paths.
 
-
-
-
 method:: addIncludePath
-
 
 Add new class library include path.
 
-
-
-
 method:: removeIncludePath
-
 
 Remove path from class library include paths.
 
-
-
-
 method:: excludePaths
-
 
 Return the class library exclude paths.
 
-
-
-
 method:: addExcludePath
-
 
 Add new class library exclude path.
 
-
-
-
 method:: removeExcludePath
-
 
 Remove path from class library exclude paths.
 
-
-
-
 method:: currentPath
-
 
 Return the current config file path.
 
-
-
-
 method:: excludeDefaultPaths
-
 
 Get or set whether default class library paths are included.
 
@@ -151,16 +75,9 @@ If sclang is started with -a the class library paths are excluded and this value
 The default class library paths are Platform.classLibraryDir, and the system and user extensions directories.
 ::
 
-
-
-
-
-
 subsection:: Compiler Warnings
 
-
 method:: postInlineWarnings
-
 
 Get or set the compiler flag, whether warnings should be posted if a FunctionDef cannot be inlined.
 

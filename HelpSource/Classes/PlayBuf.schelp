@@ -3,95 +3,56 @@ categories:: UGens>Buffer
 summary:: Sample playback oscillator
 related:: Classes/RecordBuf, Classes/DiskIn, Classes/BufRd
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Play back a sample resident in memory.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: numChannels
 
 Number of channels that the buffer will be.
 This must be a fixed
-integer. The architecture of the SynthDef cannot change after it is compiled.
-
+integer. The architecture of the SynthDef cannot change after it
+is compiled.
 
 argument:: bufnum
 
 The index of the buffer to use.
 
 note::
-If you supply a bufnum of a buffer with a differing number of channels than the one specified in this PlayBuf, it will post a warning and output the channels it can.
+If you supply a bufnum of a buffer with a differing number of channels
+than the one specified in this PlayBuf, it will post a warning and output the channels it can.
 ::
-
 
 argument:: rate
 
-1.0 is the server's sample rate, 2.0 is one octave up, 0.5 is one octave down -1.0 is backwards normal rate… etc. Interpolation
+1.0 is the server's sample rate, 2.0 is one octave up, 0.5 is one
+octave down -1.0 is backwards normal rate… etc. Interpolation
 is cubic.
-
 
 argument:: trigger
 
 A trigger causes a jump to the startPos.
-A trigger occurs when a signal changes from teletype::negative:: value to teletype::positive:: value.
-
+A trigger occurs when a
+signal changes from teletype::negative:: value to teletype::positive:: value.
 
 argument:: startPos
 
 Sample frame to start playback.
 
-
 argument:: loop
 
 1 means true, 0 means false. This is modulateable.
-
 
 argument:: doneAction
 
 An integer representing an action to be executed when the buffer is finished playing.
 This can be used to free the enclosing synth, etc. See link::Classes/Done:: for more detail. code::doneAction:: is only evaluated if loop is 0.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 s.boot // Boot the server, if you need to

@@ -3,19 +3,7 @@ categories:: Server>Nodes
 summary:: The persistent root group on the server
 related:: Classes/Group, Reference/default_group
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A RootNode is the Group with the nodeID of teletype::0:: which is always present on each Server and represents the root of that server's node tree.
 
@@ -43,36 +31,11 @@ Instead one should add nodes to the default_group.
 This provides a known basic node order and protects functionality like Server.record, Server.scope, etc. The default group is the default target for all new nodes, so when using object style nodes will normally not be added to the RootNode unless that is explicitly specified.
 See link::Reference/default_group:: for more information.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: initClass
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 private:: rninit, free, moveBefore, moveAfter, moveToHead, moveToTail, run
-
 

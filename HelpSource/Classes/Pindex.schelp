@@ -3,66 +3,27 @@ categories:: Streams-Patterns-Events>Patterns>List>Indexing
 summary:: Pattern that indexes into an array
 related:: Classes/Pswitch
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 This allows an link::Classes/ArrayedCollection:: to be accessed within patterns.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: listPat
 
 The array. Can be a link::Classes/Pattern::.
 
-
 argument:: indexPat
 
 The value to retrieve. Can be a link::Classes/Pattern::.
 
-
 argument:: repeats
 
-ySpecif the number of repeats.
-
-
-
-
-
-
-
-
-
+Specifies the number of repeats.
 
 examples::
-
-
-
 
 code::
 (

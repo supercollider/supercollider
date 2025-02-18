@@ -12,19 +12,7 @@ The following are some concepts borrowed from or inspired by J.
 Thinking about multidimensional arrays can be both mind bending and mind expanding.
 It may take some effort to grasp what is happening in these examples.
 
-
-
-
-
-
-
-
-
-
 section:: Filling arrays
-
-
-
 
 iota fills an array with a counter
 
@@ -55,19 +43,7 @@ Array.fill([2, 3, 4], {|i,j,k| [i, j, k].join });
 Array.fill([2, 2, 4, 2], {|...args| args.join });
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Creating arrays
-
-
-
 
 Using dup to create arrays
 
@@ -107,19 +83,7 @@ _.nthPrime ! 10;
 (0..9).nthPrime;
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Operator adverbs
-
-
-
 
 Adverbs are a third argument passed to binary operators that modifies how they iterate over
 SequenceableCollections or Streams. See the link::Reference/Adverbs:: help file for more information.
@@ -132,19 +96,7 @@ code::
 [10, 20, 30, 40, 50] +.t [1, 2, 3]; // table
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Operator depth
-
-
-
 
 J has a concept called verb rank, which is probably too complex to understand and implement in SC, but operator depth is similar and simpler.
 A binary operator can be given a depth at which to operate.
@@ -162,13 +114,7 @@ z +.2 y; // y added to each element of z
 z +.-1 y; // z added to each element of y
 ::
 
-
-
-
-
-
 subsection:: deepCollect
-
 
 deepCollect operates a function at different dimensions or depths in an array.
 
@@ -185,19 +131,7 @@ z.deepCollect(1, f);
 z.deepCollect(2, f);
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Sections of multidimensional arrays
-
-
-
 
 Slice can get sections of multidimensional arrays.
 nil gets all the indices of a dimension.
@@ -222,19 +156,7 @@ z.slice(1, [0,1]);
 z.flop;
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Sorting order
-
-
-
 
 Generate a random array:
 
@@ -257,19 +179,7 @@ p = o.order;
 x = y[p];
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Bubbling
-
-
-
 
 Bubbling wraps an item in an array of one element.
 it takes the depth and levels as arguments.
@@ -299,19 +209,7 @@ z.bubble(1).unbubble(1);
 z.bubble(2).unbubble(2);
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Laminating with the +++ operator
-
-
-
 
 The +++ operator takes each item from the second list and appends it to the corresponding item
 in the first list. If the second list is shorter, it wraps.
@@ -343,19 +241,7 @@ z = (1..4);
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: reshapeLike
-
-
-
 
 reshapeLike allows you to make one nested array be restructured in the same manner as another.
 
@@ -384,19 +270,7 @@ a.reshapeLike(b, \clipAt);
 a.reshapeLike(b, \at);
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Measuring dimensionality and size
-
-
-
 
 maxSizeAtDepth allows you to check the maximum array size at a given depth dimension
 
@@ -407,19 +281,7 @@ code::
 (0..3).collect([[1, 2, 3], [[41, 52], 5, 6], 1, 2, 3].maxSizeAtDepth(_)) // max sizes for each dimension
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Inverting dimensions
-
-
-
 
 flopDeep allows you to to invert the outermost dimension with a dimension at any depth.
 This is analogous to flop, which does the same for 2-dimensional arrays.
@@ -435,19 +297,7 @@ code::
 [[]].flopDeep(4);
 ::
 
-
-
-
-
-
-
-
-
-
 section:: allTuples
-
-
-
 
 allTuples will generate all combinations of the sub arrays
 

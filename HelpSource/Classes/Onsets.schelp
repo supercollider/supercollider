@@ -3,19 +3,7 @@ categories:: UGens>Analysis
 summary:: Onset detector
 related:: Classes/BeatTrack, Classes/Loudness, Classes/MFCC, Classes/Pitch, Classes/KeyTrack
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 An onset detector for musical audio signals - detects the beginning of notes/drumbeats/etc. Outputs a control-rate trigger signal which is teletype::1:: when an onset is detected, and 0 otherwise.
 
@@ -24,58 +12,38 @@ For more details of all the processes involved, the different onset detection fu
 D. Stowell and M. D. Plumbley. Adaptive whitening for improved real-time audio onset detection. emphasis::Proceedings of the International Computer Music Conference (ICMC2007)::, Copenhagen, Denmark, August 2007. See
 http://c4dm.eecs.qmul.ac.uk/papers/2007/StowellPlumbley07-icmc.pdf
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: categories
 
-
 method:: kr
-
 
 argument:: chain
 
 An FFT chain.
 
-
 argument:: threshold
 
 The detection threshold, typically between 0 and 1, although in rare cases you may find values outside this range useful.
 
-
 argument:: odftype
 
-Choose which emphasis::onset detection function:: is used. In many cases the default will be fine.
+Chooses which emphasis::onset detection function:: is used. In many cases the default will be fine.
 More choices are listed below.
 
 The remaining args are all tweak factors, explained below in section Advanced features:
-
 
 argument:: relaxtime
 
 argument:: floor
 
-
 argument:: mingap
 
 argument:: medianspan
 
-
 argument:: whtype
 
 argument:: rawodf
-
 
 discussion::
 	The following choices are available for code::odftype:: :
@@ -100,13 +68,7 @@ The differences aren't large, so I'd recommend you stick with the default code::
 Then maybe try code::\wphase::. The code::\mkl:: type is a bit different from the others so maybe try that too.
 They all have slightly different characteristics, and in tests perform at a similar quality level.
 
-
-
-
-
-
 subsection:: Advanced features
-
 
 Further options are available, which you are welcome to explore if you want.
 They are numbers that modulate the behaviour of the onset detector:
@@ -123,19 +85,7 @@ For some cleanly-recorded classical music with wide dynamic variations, I found 
 ## strong::medianspan:: specifies the size (in FFT frames) of the median window used for smoothing the detection function before triggering.
 ::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 ////////////////////////////////////////////////////////////////////////////////////////////////

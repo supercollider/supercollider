@@ -6,19 +6,7 @@ related:: Tutorials/Streams-Patterns-Events1, Tutorials/Streams-Patterns-Events2
 
 More about the default Event:
 
-
-
-
-
-
-
-
-
-
 section:: ProtoEvents
-
-
-
 
 The protoEvent contains default values for many useful parameters.
 
@@ -53,35 +41,11 @@ Pbind(
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: ~finish
-
-
-
 
 Event.default contains a function bound to the Symbol code::'finish':: which is called for each new event generated in order to complete any computations that depend on the other values in the event.
 
-
-
-
-
-
-
-
-
-
 section:: The pitch model
-
-
-
 
 Event.default implements a multi level pitch model which allows composition using modal scale degrees, equal division note values, midi note values, or frequencies in Hertz. These different ways of specifying the pitch can all be used interchangeably.
 
@@ -204,19 +168,7 @@ code::
 
 A chromatic transposition value expressed in semitones.
 
-
-
-
-
-
-
-
-
-
 section:: Pitch model Examples
-
-
-
 
 code::
 (
@@ -355,19 +307,7 @@ Pbind(
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: The duration model
-
-
-
 
 Duration is expressed in beats and is bound to the code::'dur':: symbol.
 The sustain time of a note can be expressed directly in beats or by using a legato value which is multiplied by the note duration to get the sustain time.

@@ -28,19 +28,7 @@ Platform.systemExtensionDir; // Extensions available to all users on the machine
 It is not possible to enter a class definition into an interpreter window and execute it.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Inheriting
-
-
-
 
 To avoid having to write the same code several times, classes can strong::inherit:: implementations from their strong::superclasses::.
 
@@ -60,22 +48,9 @@ MyClass { // : Object is implied
 
 This is why in the above example, the message code::new:: can be called without being explicitly defined in the class.
 
-
-
-
-
-
-
-
-
-
 section:: Methods
 
-
-
-
 subsection:: Instance Methods
-
 
 Each object instance responds to its strong::instance methods::.
 Instance methods are called in the local context of the object.
@@ -124,13 +99,7 @@ MyClass {
 }
 ::
 
-
-
-
-
-
 subsection:: Class Methods
-
 
 An object's  strong::class methods:: are defined alongside its instance methods.
 They are specified with an asterisk (teletype::*::) before the method name.
@@ -158,13 +127,7 @@ code::
 MyClass.classMethod // posts "hello class"
 ::
 
-
-
-
-
-
 subsection:: Overriding methods (overloading)
-
 
 To change the behaviour inherited from the superclass, methods can be overridden. Note that an object looks always for
 the method it has defined first and then looks in the superclass.
@@ -199,19 +162,7 @@ MyClass : SomeSuperclass {
 }
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Instances
-
-
-
 
 code::Object.new:: will return a new object. When overriding the class method code::.new:: you must call the
 superclass, which in turn calls its superclass, up until code::Object.new:: is called and an object is actually created
@@ -288,31 +239,13 @@ MyClass {
 }
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Alternatives to inheritance
-
-
-
 
 Overreliance on inheritance is usually a design flaw.
 Inheritance is mainly a way to organise code, and shouldn't be mistaken for a categorisation of objects.
 Two objects may respond to a message in different ways (polymorphism), and objects delegate control to ther objects they hold in their instance variables (object composition).
 
-
-
-
-
-
 subsection:: Polymorphism
-
 
 See also: link::Guides/Polymorphism::
 
@@ -333,13 +266,7 @@ a = MyClass.new;
 a.value; // returns 1
 ::
 
-
-
-
-
-
 subsection:: Object Composition
-
 
 Often, an object passes control to one of the objects it has in its instance variables.
 Because these objects can be of any kind, this is a very flexible way to achieve a wide range of functionalities.
@@ -365,22 +292,9 @@ b.value(8);
 
 Often, variables like code::action:: above are filled with custom objects that belong to code::MyClass::. Thus, one will write many small classes that can be well combined in such a way. This is called "pluggable behavior".
 
-
-
-
-
-
-
-
-
-
 section:: Variables
 
-
-
-
 subsection:: Initializing variables directly
-
 
 In a variable declaration, variables can be directly initialized.
 Only link::Reference/Literals:: may be used to initialize variables this way.
@@ -394,13 +308,7 @@ MyClass {
 }
 ::
 
-
-
-
-
-
 subsection:: Variable Scope
-
 
 An instance variable is accessible strong::from all instance methods:: of this class and its subclasses.
 A class variable, by contrast, is accessible strong::from all class and instance methods:: of this class and its subclasses.
@@ -439,13 +347,7 @@ MyClass : SomeSuperclass {
 // MyClass.returnX returns teletype::0::
 ::
 
-
-
-
-
-
 subsection:: Getters and Setters
-
 
 SuperCollider demands that variables are not accessible outside of the class or instance.
 A method must be added to
@@ -508,13 +410,7 @@ MyClass {
 A setter method should always return the receiver.
 This allows us to be sure that several setters can chained up.
 
-
-
-
-
-
 subsection:: Constants
-
 
 Constants are variables, that, well, don't vary. They can only be assigned initially.
 
@@ -526,19 +422,7 @@ MyClass {
 MyClass.zero // returns teletype::0::
 ::
 
-
-
-
-
-
-
-
-
-
 section:: External method files
-
-
-
 
 Methods may be added to Classes in separate files.
  This is equivalent to Categories in Objective-C.  By convention, the
@@ -559,19 +443,7 @@ code::
 }
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Slotted classes
-
-
-
 
 Classes defined with code::[slot]:: can use the syntax code::myClass[...]:: which will call code::myClass.new:: and then code::this.add(each):: for each item in the square brackets.
 
@@ -587,22 +459,9 @@ a = MyClass[1, 2, 3];
 a.allOfThem; // [1, 2, 3]
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Printing to string
 
-
-
-
 subsection:: Printing custom messages to post window
-
 
 By default when postln is called on an class instance the name of the class is printed in a post window.
 When
@@ -626,13 +485,7 @@ code::
 a = MyTestPoint(2, 3)
 ::
 
-
-
-
-
-
 subsection:: Defining custom asCompileString behaviour
-
 
 A call to code::asCompileString:: should return a string which when evaluated creates the exact same instance of the
 class. To define a custom behaviour one should either override code::storeOn:: or code::storeArgs::. The method
@@ -676,37 +529,13 @@ code::
 MyTestPoint(2, 3).asCompileString;
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Private Methods
-
-
-
 
 Private methods are marked by a prefix code::pr::, e.g. code::prBundleSize::.
 This is just a strong::naming convention::; the message can still be called from anywhere.
 It is recommended to stick to convention and only call private methods from within the class that defines them.
 
-
-
-
-
-
-
-
-
-
 section:: Catching undefined method calls
-
-
-
 
 When a message is received that is undefined, the receiver calls the method code::doesNotUnderstand::.
 Normally this throws an error.

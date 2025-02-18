@@ -26,8 +26,7 @@ In the following code, for instance, each block or line of code is dependent upo
 code::
 // Execute these one at a time
 
-// Boot the server
-s.boot;
+// Boot the server s.boot;
 
 // Compile a SynthDef and write it to disk
 (
@@ -36,17 +35,13 @@ SynthDef("Help-SynthDef", { arg out = 0;
 }).writeDefFile;
 )
 
-// Load it into the server
-s.loadSynthDef("Help-SynthDef");
+// Load it into the server s.loadSynthDef("Help-SynthDef");
 
-// Create a Synth with it
-x = Synth.new("Help-SynthDef", s);
+// Create a Synth with it x = Synth.new("Help-SynthDef", s);
 
-// Free the node on the server
-x.free;
+// Free the node on the server x.free;
 
-// Allow the client-side Synth object to be garbage collected
-x = nil;
+// Allow the client-side Synth object to be garbage collected x = nil;
 ::
 
 In the previous example it was necessary to use interpreter variables (the variables a-z, which are declared at compile time) in order to refer to previously created objects in later blocks or lines of code.
@@ -72,8 +67,7 @@ SynthDef("Help-SynthDef", { arg out = 0;
 // but you've still got a Synth object
 ~mysynth.postln;
 
-// so remove it from the Environment so that the Synth will be garbage collected
-currentEnvironment.removeAt(\mysynth);
+// so remove it from the Environment so that the Synth will be garbage collected currentEnvironment.removeAt(\mysynth);
 ::
 
 But what if you want to have one block of code which contains a number of synchronous and asynchronous tasks.
@@ -229,8 +223,7 @@ SynthDef("help-SendTrig",{
     SendTrig.kr(Dust.kr(1.0), 0, 0.9);
 }).send(s);
 
-// register to receive this message
-a = OSCFunc({ arg msg, time;
+// register to receive this message a = OSCFunc({ arg msg, time;
     ("This is the done message for the SynthDef.send:" + [time, msg]).postln;
 }, '/done').oneShot; // remove me automatically when done
 

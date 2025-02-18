@@ -3,48 +3,21 @@ categories:: UGens>Buffer>Info
 summary:: Buffer rate scaling in respect to server samplerate
 related:: Classes/BufChannels, Classes/BufDur, Classes/BufFrames, Classes/BufSampleRate, Classes/BufSamples
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Return a ratio by which the playback of a soundfile is to be scaled.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: kr, ir
-
 
 argument:: bufnum
 
 Buffer index.
 
-
 returns::
  
 a ratio by which the playback of a soundfile is to be scaled.
-
 
 discussion::
 warning::
@@ -53,19 +26,7 @@ Since a buffer can be reallocated at any time, using
 code::.ir::  will not track the changes.
 ::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");

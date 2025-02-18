@@ -2,51 +2,23 @@ title:: Changed
 categories:: UGens>Triggers, UGens>Filters>Linear
 summary:: Triggers when a value changes
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Trigger when a value changes.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: ar, kr
 
-
 A special case fixed filter.
-
 
 argument:: input
 
 Signal input
 
-
 argument:: threshold
 
 Threshold
-
 
 discussion::
 Implement the formula:
@@ -55,19 +27,7 @@ code::
 out(i) = abs(in(i) - in(i-1)) > thresh
 ::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 Detect changes in a signal:
 

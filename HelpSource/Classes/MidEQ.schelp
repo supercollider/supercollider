@@ -2,81 +2,40 @@ title:: MidEQ
 categories:: UGens>Filters>Linear
 summary:: Parametric filter
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Attenuate/boost a frequency band.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: in
 
 The input signal.
 
-
 argument:: freq
 
 Center frequency of the band in Hertz.
-
 
 argument:: rq
 
 The reciprocal of Q (bandwidth / cutoffFreq).
 
-
 argument:: db
 
-Amount of boost (db > 0) or attenuation (db < 0) of the frequency band.
-
+Amount of boost (db > 0) or attenuation (db < 0) of the
+frequency band.
 
 argument:: mul
 
 Output will be multiplied by this value.
 
-
 argument:: add
 
 This value will be added to the output.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // mixer parametric eq as wahwah

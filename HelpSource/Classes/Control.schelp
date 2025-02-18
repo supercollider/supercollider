@@ -3,19 +3,7 @@ categories:: UGens>Synth control
 summary:: Bring signals and floats into the ugenGraph function of a SynthDef
 related:: Classes/NamedControl, Classes/LagControl, Classes/TrigControl
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A Control is a UGen that can be set and routed externally to interact with a running Synth.
 Typically, Controls are created from the arguments of a SynthDef function.
@@ -35,50 +23,21 @@ them if you don't want to.
 
 For a more concise combination of name, default value and lag, see link::Classes/NamedControl::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: kr, ir
-
 
 argument:: values
 
 Default values.
 
-
-
-
 method:: names
-
 
 argument:: names
 
 Adds control names to the SynthDef.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (
@@ -171,13 +130,7 @@ b.setn(\amp, Array.rand(4, 0.005, 0.1))
 b.setn(\ring, Array.rand(4, 0.005, 1.0))
 ::
 
-
-
-
-
-
 subsection:: Symbols
-
 
 Inside SynthDefs and UGen functions, symbols can be used to conveniently specify control inputs of different rates and with lags (see: link::Classes/NamedControl::, and link::Classes/Symbol::)
 

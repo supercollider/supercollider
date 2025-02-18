@@ -2,61 +2,23 @@ title:: PV_MagFreeze
 categories:: UGens>FFT
 summary:: Freeze magnitudes
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Freezemagnitude magnitudes at current levels when  code::freeze::  > 0.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: buffer
 
 FFT buffer.
 
-
 argument:: freeze
 
 If > 0, then magnitudes are frozen at current levels.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 s.boot;

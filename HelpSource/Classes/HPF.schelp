@@ -3,72 +3,32 @@ categories:: UGens>Filters>Linear
 summary:: 2nd order Butterworth highpass filter
 related:: Classes/BPF, Classes/BRF, Classes/LPF
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A second order high pass filter.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: in
 
 The input signal.
-
 
 argument:: freq
 
 Cutoff frequency in Hertz.
 WARNING: due to the nature of its implementation frequency values close to teletype::0:: may cause glitches and/or extremely loud audio artifacts!
 
-
 argument:: mul
 
 Output will be multiplied by this value.
-
 
 argument:: add
 
 This value will be added to the output.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 { HPF.ar(Saw.ar(200, 0.1), FSinOsc.kr(XLine.kr(0.7, 300, 20), 0, 3600, 4000), 5) }.play;

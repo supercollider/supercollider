@@ -3,19 +3,7 @@ categories:: UGens>Triggers
 summary:: Send an array of values from the server to all notified clients
 related:: Classes/SendTrig, Classes/OSCFunc
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A message is sent to all notified clients.
 See link::Classes/Server::.
@@ -29,55 +17,27 @@ list::
 	::
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: trig
 
 A non-teletype::positive:: to teletype::positive:: transition triggers a message.
 
-
 argument:: cmdName
 
 A string or symbol, as a message name.
-
 
 argument:: values
 
 Array of UGens, or valid UGen inputs.
 
-
 argument:: replyID
 
 Integer id (similar to link::Classes/SendTrig::).
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (
@@ -130,13 +90,7 @@ OSCdef(\listener, { |msg|
 ~mySynth.set(\rate, 10); // slow it down...
 ::
 
-
-
-
-
-
 subsection:: Identitying the time a message was sent
-
 
 Sometimes, we need to know when a message was sent.
 Because code::SendReply:: can send only messages (which have no timestamp) and no bundles (which have), we can't use the code::time:: argument of the link::Classes/OSCdef::'s function. Instead, you can send a time stamp with the data, by using the link::Classes/Sweep:: UGen.

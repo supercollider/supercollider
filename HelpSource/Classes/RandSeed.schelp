@@ -3,69 +3,33 @@ categories:: UGens>Generators>Stochastic, UGens>Random
 summary:: Sets the synth's random generator seed
 related:: Classes/RandID
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 When the trigger signal changes from nonpositive to teletype::positive::, the synth's
 random generator seed is reset to the given value.
-All synths that use the same random number generator reproduce the same sequence of numbers
+All synths that use
+the same random number generator reproduce the same sequence of numbers
 again.
 
 
 See  link::Classes/RandID::  UGen for setting the randgen id and
 link::Reference/randomSeed:: for the client side equivalent.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: kr, ir
-
 
 argument:: trig
 
 The trigger. Trigger can be any signal.
-A trigger happens when the signal changes from non-teletype::positive:: to teletype::positive::.
-
+A trigger happens when
+the signal changes from non-teletype::positive:: to teletype::positive::.
 
 argument:: seed
 
 The random seed.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // start a noise patch

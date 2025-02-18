@@ -3,39 +3,14 @@ categories:: UGens>Algebraic
 summary:: Sum four signals
 related:: Classes/Mix
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Sum four signals. Internal UGen to efficiently mix four signals.
 Should be used via link::Classes/Mix::.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 private:: new1
-
 
 method:: new
 

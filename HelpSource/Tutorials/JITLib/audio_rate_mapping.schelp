@@ -59,14 +59,11 @@ px.map knows always already the number of channels of a proxy, so can decide whe
 
 px.mapn could do tricky things like:
 px.mapn(\a_in2, [mono1, mono2])
-px.mapn(\a_in2, stereo) would still work
-px.mapn(\a_in2, [stereo, mono]) could use the first of the stereo chans and the mono how to get at the second arg of the stereo in?
+px.mapn(\a_in2, stereo) would still work px.mapn(\a_in2, [stereo, mono]) could use the first of the stereo chans and the mono how to get at the second arg of the stereo in?
 or it could mix/wrap.
 --> px.mapn([\a_inx, \a_iny], stereo)
 
-px.mapn(\a_in, stereo) would take the first of the stereo channels
-px.map(\a_in, stereo) would use the first of the stereo channels
-px.mapn(\a_in, [mono, mono]) would use the first channel
+px.mapn(\a_in, stereo) would take the first of the stereo channels px.map(\a_in, stereo) would use the first of the stereo channels px.mapn(\a_in, [mono, mono]) would use the first channel
 
 mappings could be saved as is and if the proxy rebuilds with a different channel size, it would unfold?
 

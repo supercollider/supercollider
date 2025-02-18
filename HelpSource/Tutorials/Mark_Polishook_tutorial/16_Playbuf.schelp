@@ -42,19 +42,7 @@ Synth("aMonoSamplePlayer", [\bus, 1, \bufNum, b, \rateScale, 1.01]);
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Information
-
-
-
 
 The BufRateScale and the BufDur UGens, as shown in the previous example, control the rate at which PlayBuf plays the soundfile and the length of the envelope applied to the playbuf.
 
@@ -85,19 +73,7 @@ code::
 BufInfoUGenBase[  BufChannels  BufSampleRate  BufRateScale  BufFrames  BufDur  BufSamples]BufInfoUGenBase
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Loop a sample
-
-
-
 
 The next example uses three synthsdefs to make a chain.
 The first synthdef is a sample player that loops through a buffer.

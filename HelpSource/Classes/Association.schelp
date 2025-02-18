@@ -2,41 +2,16 @@ title:: Association
 categories:: Collections
 summary:: Relate two objects
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Associatea a key with a value.
 Associations can be created via the -> operator which is defined in class link::Classes/Object::.
 
 Associations are used internally in link::Classes/Dictionary::.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 Create an Association between two objects.
 
@@ -47,109 +22,51 @@ x.postln;
 )
 ::
 
-
 argument:: key
 
 Any object
-
 
 argument:: value
 
 Any object
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 subsection:: Accessing
 
-
 method:: key
-
 
 The key object.
 
-
-
-
 method:: value
-
 
 The value object.
 
-
-
-
-
-
 subsection:: Testing
-
 
 method:: ==
 
-
 Compare the keys of two Associations.
-
-
-
 
 method:: <
 
-
 Compare the keys of two Associations.
-
-
-
 
 method:: hash
 
-
 Compute the hash value of the Association.
-
-
-
-
-
 
 subsection:: Writing to streams
 
-
 method:: printOn
-
 
 Write a string representation to the stream.
 
-
-
-
 method:: storeOn
-
 
 Write a compilable string representation to the stream.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // associations can be a good way to store named data in order:

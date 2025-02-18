@@ -3,21 +3,10 @@ categories:: UGens>Demand
 summary:: Demand results from demand rate UGens
 related:: Classes/Demand, Classes/TDuty
 
-
-
-
-
-
-
-
-
-
 description::
 
-
-
-
-A value is demanded of each UGen in the list and output according to a stream of duration values. The unit generators in the list should be
+A value is demanded of each UGen in the list and output according to a
+stream of duration values. The unit generators in the list should be
 'demand' rate.
 
 
@@ -26,38 +15,25 @@ list and the duration are reset.
 The reset input may also be a demand
 UGen, providing a stream of reset times.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: dur
 
 Time values. Can be a demand UGen or any signal.
-The next level is acquired after duration.
-
+The next level
+is acquired after duration.
 
 argument:: reset
 
-Trigger or reset time values. Resets the list of UGens and the duration UGen when triggered. The reset input may also be a demand UGen, providing a stream of reset times.
-
+Trigger or reset time values. Resets the list of UGens and the
+duration UGen when triggered. The reset input may also be a
+demand UGen, providing a stream of reset times.
 
 argument:: level
 
 Demand UGen providing the output values.
-
 
 argument:: doneAction
 
@@ -66,19 +42,7 @@ See
 
 link::Classes/Done::  for more detail.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

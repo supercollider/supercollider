@@ -3,183 +3,85 @@ categories:: Platform>Linux, External Control>HID
 summary:: Handles incoming LID data
 related:: Classes/LID
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 classmethods::
 
-
-
-
 private:: new, initClass
-
 
 method:: slotTypeStrings
 An IdentityDictionary mapping the evtTypes to descriptive strings.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 private:: initSpec, init
-
 
 method:: postInfo
 Post the slots properties in a nice, human readable way.
 
-
-
-
 method:: debug
-
 
 Turn on or off the debug posting for this slot.
 
-
-
-
 method:: action
-
 
 Set the action for this slot.
 
-
-
-
 method:: value
-
 
 Get the current value of this slot, mapped according to its spec.
 
-
-
-
 method:: spec
-
 
 The ControlSpec to map this slots value.
 
-
-
-
 method:: rawValue
-
 
 Get the rawValue; the setter of this method is called from the primitive code::LID.prHandleEvent:: and should not be called by the user.
 
-
-
-
 method:: next
-
 
 Convenience method to use a LIDSlot in a pattern; this will call the value of the slot.
 
-
-
-
 method:: createBus
-
 
 Create a bus on the server.
 The slot's value will automatically be set to this bus on the server.
-
 
 argument:: server
 
 The server on which to create the bus and forward the value to.
 By default this is code::Server.default::
 
-
-
-
 method:: bus
-
 
 The bus on the server that this slot's value is mapped to.
 
-
-
-
 method:: freeBus
-
 
 Free the bus on the server and remove the action to forward the value.
 
-
-
-
 method:: kr
-
 
 JITLib support to access the bus in NodeProxy's. This will create the bus if it does not already exist.
 
-
-
-
 method:: device
-
 
 The device to which this slot belongs.
 
-
-
-
 method:: type
-
 
 The type of slot that this is.
 
-
-
-
 method:: code
-
 
 The eventCode for this slot.
 
-
-
-
 method:: key
-
 
 The key by which this slot is known in the spec of the device.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 LID.findAvailable;

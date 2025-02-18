@@ -3,43 +3,17 @@ categories:: UGens>FFT
 summary:: Zero bins
 related:: Classes/FFT, Classes/IFFT
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Clear bins above or below a cutoff point.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: buffer
 
 FFT buffer.
-
 
 argument:: wipe
 
@@ -51,25 +25,15 @@ code::wipe::  == 0 then there is no effect.
 
 
 If
-code::wipe::  > 0 then it acts like a high pass filter, clearing bins from the bottom up.
+code::wipe::  > 0 then it acts like a high
+pass filter, clearing bins from the bottom up.
 
 
 If
-code::wipe::  < 0 then it acts like a low pass filter, clearing bins from the top down.
-
-
-
-
-
-
-
-
-
+code::wipe::  < 0 then it acts like a low
+pass filter, clearing bins from the top down.
 
 examples::
-
-
-
 
 code::
 s.boot;

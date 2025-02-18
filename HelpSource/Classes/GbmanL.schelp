@@ -3,19 +3,7 @@ categories:: UGens>Generators>Chaotic
 summary:: Gingerbreadman map chaotic generator
 related:: Classes/GbmanN
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A linear-interpolating sound generator based on the difference equations:
 
@@ -37,50 +25,23 @@ plot(size.collect { var x; xi = 1 - yi + abs(x = xi); yi = x; xi });
 
 Reference: Devaney, R. L. "The Gingerbreadman." Algorithm 3, 15-16, Jan. 1992.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar
-
 
 argument:: freq
 
 Iteration frequency in Hertz
 
-
 argument:: xi
 
 Initial value of x
-
 
 argument:: yi
 
 Initial value of y
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // default initial params

@@ -3,19 +3,7 @@ categories:: Streams-Patterns-Events>Patterns>Filter
 summary:: Abstract class that filters a pattern using a function
 related:: Classes/FilterPattern
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 This is an abstract class that filters a pattern using a function.
 See subclasses below:

@@ -15,19 +15,7 @@ You've already met one kind of server abstraction, class Server itself. The obje
 Now it's time to get familiar with the rest of them.
 The first thing we'll look at is the class SynthDef, which is short for 'synth definition'.
 
-
-
-
-
-
-
-
-
-
 section:: Meet the SynthDef
-
-
-
 
 Up until now we've been using Functions to generate audio.
 This way of working is very useful for quick testing, and in cases where maximum flexibility is needed.
@@ -69,19 +57,7 @@ Within the function braces, the code::|out|:: argument defines a SynthDef emphas
 It is a good habit to provide an code::out:: control in every SynthDef. Review link::Tutorials/Getting-Started/04-Functions-and-Other-Functionality:: for more about function arguments. 
 ::
 
-
-
-
-
-
-
-
-
-
 section:: SynthDefs vs. Functions
-
-
-
 
 This UGen Graph Function we used in the second example above is similar to the Function we used in the first one, but with one notable difference:
 It has an extra UGen called Out.
@@ -161,19 +137,7 @@ x.free; y.free; z.free;
 Each time you create a new Synth based on the def, the frequency is the same.
 This is because the Function (and thus code::200.rand::) is only evaluated only once, when the SynthDef is created.
 
-
-
-
-
-
-
-
-
-
 section:: Creating Variety with SynthDefs
-
-
-
 
 There are numerous ways of getting variety out of SynthDefs, however. Some things, such as randomness, can be accomplished with various UGens.
 One example is link::Classes/Rand::, which calculates a random number between low and high values when a synth is first created:
@@ -207,19 +171,7 @@ x.free; y.free; z.free;
 
 This combination of args and UGens means that you can get a lot of mileage out of a single def, but in some cases where maximum flexibility is required, you may still need to use Functions, or create multiple defs.
 
-
-
-
-
-
-
-
-
-
 section:: More About Synth
-
-
-
 
 Synth understands some methods which allow you to change the values of args after a synth has been created.
 For now we'll just look at one, 'set'. Synth-set takes pairs of arg names and values.
@@ -238,19 +190,7 @@ x.set("freq", 880, "out", 1);
 x.free;
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Some Notes on Symbols, Strings, SynthDef and Arg Names
-
-
-
 
 SynthDef names and argument names can be either a String, as we've seen above, or another kind of literal called a Symbol.
 You write symbols in one of two ways, either enclosed in single quotes:
@@ -273,19 +213,7 @@ For more information see:
 
 link::Classes/SynthDef::, link::Classes/Synth::, link::Classes/String::, link::Classes/Symbol::, link::Reference/Literals::, link::Guides/Randomness::, link::Browse#UGens::
 
-
-
-
-
-
-
-
-
-
 section:: Suggested Exercise
-
-
-
 
 Try converting some of the earlier Function based examples, or Functions of your own, to SynthDef versions, adding Out UGens. Experiment with adding and changing arguments both when the synths are created, and afterwards using 'set'.
 

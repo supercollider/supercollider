@@ -2,19 +2,7 @@ title:: Frame
 categories:: Core>Kernel
 summary:: Stack Frame
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Frames are used to contain the arguments, variables and other information for active Functions.
 

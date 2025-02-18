@@ -3,19 +3,7 @@ categories:: GUI
 summary:: Context and application-level menus
 related:: Classes/MenuAction, Classes/CustomViewAction, Classes/ToolBar, Classes/MainMenu
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 The Menu class allows the creation and control of context menus and application-level menus.
 
@@ -29,22 +17,9 @@ code::
 )
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 	Create a new menu. A menu is populated with link::Classes/MenuAction::s
 
@@ -66,25 +41,11 @@ Menu arguments will create sub-menus.
 )
 ::
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 subsection:: Control
 
-
 method:: front
-
 
 	Show the menu if it is not already shown.
 Note that unlike most Views, Menus are not destroyed when they are closed - front can be used to re-generate a single menu again and again.
@@ -96,42 +57,24 @@ Default to the current mouse cursor position.
 		The action that should appear at the specified point coordinates.
 Should be an action contained in the menu.
 
-
-
-
 method:: title
-
 
 	The title of the menu.
 
 	argument:: title
 		A link::Classes/String::.
 
-
-
-
 method:: tearOff
-
 
 	argument::
 		If teletype::true::, menu is / will be torn off from its parent and become a free-floating menu.
 
-
-
-
 method:: copy
-
 
 	Create an identical copy of the menu.
 The new menu will not be shown until code::.front:: is called.
 
-
-
-
-
-
 subsection:: Events
-
 
 	Menus broadcast several kinds of events that can be registered for with the standard link::Classes/Object#-addDependant:: calls.
 	Events broadcast by menu:
@@ -160,13 +103,7 @@ m.onClose_({ m.removeDependant(f) }).front;
 )
 	::
 
-
-
-
-
-
 subsection:: Context Menus
-
 
 	One or more MenuActions can be attached to any View object.
 The shortcut key combinations for these actions will become available, and the actions will appear in the context menu for that view.
@@ -195,19 +132,7 @@ The shortcut key combinations for these actions will become available, and the a
 )
 	::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 	strong:: A more complex menu. ::
 	code::

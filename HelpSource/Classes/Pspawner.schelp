@@ -3,38 +3,13 @@ categories:: Streams-Patterns-Events>Patterns>Parallel
 summary:: Dynamic control of multiple event streams from a Routine
 related:: Classes/Pspawn
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Pspawner allows a routine to dynamically start and stop subpatterns.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: routineFunc
 
@@ -65,19 +40,7 @@ note::
 These are also documented in link::Classes/Spawner::.
 ::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // example 1: a simple Pspawner

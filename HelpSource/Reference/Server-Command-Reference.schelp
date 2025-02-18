@@ -20,22 +20,9 @@ code::
     ]
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Top-Level Commands
 
-
-
-
 subsection:: /quit
-
 
 Quit program. Exits the synthesis server.
 
@@ -43,13 +30,7 @@ definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done:: just before completion.
 ::
 
-
-
-
-
-
 subsection:: /notify
-
 
 Register to receive notifications from server
 
@@ -67,13 +48,7 @@ Clients can use this ID in multi-client situations to avoid conflicts when alloc
 strong::maxLogins:: is not supported by supernova.
 ::
 
-
-
-
-
-
 subsection:: /status
-
 
 Query the status. Replies to sender with the following message:
 
@@ -96,13 +71,7 @@ teletype::/status::messages won't be posted, if the server is in teletype::/dump
 
 ::
 
-
-
-
-
-
 subsection:: /cmd
-
 
 Plug-in defined command.
 
@@ -113,13 +82,7 @@ table::
 
 Commands are defined by plug-ins.
 
-
-
-
-
-
 subsection:: /dumpOSC
-
 
 Display incoming OSC messages.
 
@@ -139,13 +102,7 @@ table::
 ## 3 || print both the parsed and hexadecimal representations of the contents.
 ::
 
-
-
-
-
-
 subsection:: /sync
-
 
 Notify when async commands have completed.
 
@@ -160,23 +117,11 @@ definitionlist::
 ## Asynchronous. || Replies to sender with strong:: /synced, ID :: when complete.
 ::
 
-
-
-
-
-
 subsection:: /clearSched
-
 
 Clear all scheduled bundles. Removes all bundles from the scheduling queue.
 
-
-
-
-
-
 subsection:: /error
-
 
 Enable/disable error message posting.
 
@@ -207,13 +152,7 @@ However, even if this is not done, the next bundle or message received will begi
 
 Temporary error suppression may not affect asynchronous commands in every case.
 
-
-
-
-
-
 subsection:: /version
-
 
 Query the SuperCollider version. Replies to sender with the following message:
 
@@ -234,15 +173,9 @@ Since version information is easily accessible to sclang users via the methods d
 
 The git branch/tag name and commit hash could be anything if the user has forked SC, so they should only be used for display and user interface purposes.
 
-
-
-
-
-
 subsection:: /rtMemoryStatus
 
-
-yQuer the amount of currently free real-time memory (in bytes).
+Queries the amount of currently free real-time memory (in bytes).
 
 definitionlist::
 ## /rtMemoryStatus.reply || table::
@@ -252,22 +185,9 @@ definitionlist::
 
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Synth Definition Commands
 
-
-
-
 subsection:: /d_recv
-
 
 Receive a synth definition file.
 
@@ -284,13 +204,7 @@ definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done:: when complete.
 ::
 
-
-
-
-
-
 subsection:: /d_load
-
 
 Load synth definition.
 
@@ -307,13 +221,7 @@ definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done:: when complete.
 ::
 
-
-
-
-
-
 subsection:: /d_loadDir
-
 
 Load a directory of synth definitions.
 
@@ -330,13 +238,7 @@ definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done:: when complete.
 ::
 
-
-
-
-
-
 subsection:: /d_free
-
 
 Delete synth definition.
 
@@ -346,22 +248,9 @@ table::
 
 Remove a synth definition. The definition is removed immediately, and does not wait for synth nodes based on that definition to end.
 
-
-
-
-
-
-
-
-
-
 section:: Node Commands
 
-
-
-
 subsection:: /n_free
-
 
 Delete a node.
 
@@ -372,13 +261,7 @@ table::
 Stop a node abruptly, removes it from its group, and frees its memory. A list of node IDs may be specified.
 Using this method can cause a click if the node is not silent at the time it is freed.
 
-
-
-
-
-
 subsection:: /n_run
-
 
 Turn node on or off.
 
@@ -396,13 +279,7 @@ list::
 
 Using this method to start and stop nodes can cause a click if the node is not silent at the time run flag is toggled.
 
-
-
-
-
-
 subsection:: /n_set
-
 
 Set a node's control value(s).
 
@@ -420,13 +297,7 @@ If the node is a group, then it sets the controls of every node in the group.
 This message now supports array type tags ($[ and $]) in the control/value component of the OSC message.
  Arrayed control values are applied in the manner of n_setn (i.e., sequentially starting at the indexed or named control).
 
-
-
-
-
-
 subsection:: /n_setn
-
 
 Set ranges of a node's control value(s).
 
@@ -442,13 +313,7 @@ table::
 Set contiguous ranges of control indices to sets of values.
 For each range, the starting control index is given followed by the number of controls to change, followed by the values. If the node is a group, then it sets the controls of every node in the group.
 
-
-
-
-
-
 subsection:: /n_fill
-
 
 Fill ranges of a node's control value(s).
 
@@ -465,13 +330,7 @@ Set contiguous ranges of control indices to single values.
 For each range, the starting control index is given followed by the number of controls to change, followed by the value to fill.
 If the node is a group, then it sets the controls of every node in the group.
 
-
-
-
-
-
 subsection:: /n_map
-
 
 Map a node's controls to read from a bus.
 
@@ -488,13 +347,7 @@ If the node is a group, then it maps the controls of every node in the group.
 If the control bus index is -1 then any current mapping is undone.
 Any n_set, n_setn and n_fill command will also unmap the control.
 
-
-
-
-
-
 subsection:: /n_mapn
-
 
 Map a node's controls to read from buses.
 
@@ -512,13 +365,7 @@ If the node is a group, then it maps the controls of every node in the group.
 If the control bus index is -1 then any current mapping is undone.
 Any n_set, n_setn and n_fill command will also unmap the control.
 
-
-
-
-
-
 subsection:: /n_mapa
-
 
 Map a node's controls to read from an audio bus.
 
@@ -536,13 +383,7 @@ If the audio bus index is -1 then any current mapping is undone.
 Any n_set, n_setn and n_fill command will also unmap the control.
 For the full audio rate signal, the argument must have its rate set to \ar.
 
-
-
-
-
-
 subsection:: /n_mapan
-
 
 Map a node's controls to read from audio buses.
 
@@ -561,13 +402,7 @@ If the audio bus index is -1 then any current mapping is undone.
 Any n_set, n_setn and n_fill command will also unmap the control.
 For the full audio rate signal, the argument must have its rate set to \ar.
 
-
-
-
-
-
 subsection:: /n_before
-
 
 Place a node before another.
 
@@ -580,13 +415,7 @@ table::
 
 Place node A in the same group as node B, to execute immediately before node B.
 
-
-
-
-
-
 subsection:: /n_after
-
 
 Place a node after another.
 
@@ -599,13 +428,7 @@ table::
 
 Place node A in the same group as node B, to execute immediately after node B.
 
-
-
-
-
-
 subsection:: /n_query
-
 
 Get info about a node.
 
@@ -616,13 +439,7 @@ table::
 The server sends an /n_info message for each node to registered clients.
 See Node Notifications below for the format of the /n_info message.
 
-
-
-
-
-
 subsection:: /n_trace
-
 
 Trace a node.
 
@@ -633,13 +450,7 @@ table::
 Cause a synth to print out the values of the inputs and outputs of its unit generators for one control period.
 Causes a group to print the node IDs and names of each node in the group for one control period.
 
-
-
-
-
-
 subsection:: /n_order
-
 
 Move and order a list of nodes.
 
@@ -661,22 +472,9 @@ definitionlist::
     ::
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Synth Commands
 
-
-
-
 subsection:: /s_new
-
 
 Create a new synth.
 
@@ -722,13 +520,7 @@ In a multi-client situation, the only way you can be sure what node -1 refers to
 This message now supports array type tags ($[ and $]) in the control/value component of the OSC message.
  Arrayed control values are applied in the manner of n_setn (i.e., sequentially starting at the indexed or named control). See the link::Guides/NodeMessaging:: helpfile.
 
-
-
-
-
-
 subsection:: /s_get
-
 
 Get control value(s).
 
@@ -739,13 +531,7 @@ table::
 
 yRepl to sender with the corresponding strong::/n_set:: command.
 
-
-
-
-
-
 subsection:: /s_getn
-
 
 Get ranges of control value(s).
 
@@ -759,13 +545,7 @@ table::
 
 Get contiguous ranges of controls. Replies to sender with the corresponding strong::/n_setn:: command.
 
-
-
-
-
-
 subsection:: /s_noid
-
 
 Auto-reassign synth's ID to a reserved value.
 
@@ -778,22 +558,9 @@ The server will reassign this synth to a reserved negative number.
 This command is purely for bookkeeping convenience of the client.
 No notification is sent when this occurs.
 
-
-
-
-
-
-
-
-
-
 section:: Group Commands
 
-
-
-
 subsection:: /g_new
-
 
 Create a new group.
 
@@ -821,13 +588,7 @@ The target node is freed.
 
 Multiple groups may be created in one command by adding arguments.
 
-
-
-
-
-
 subsection:: /p_new
-
 
 Create a new parallel group.
 
@@ -856,13 +617,7 @@ The target node is freed.
 
 Multiple groups may be created in one command by adding arguments.
 
-
-
-
-
-
 subsection:: /g_head
-
 
 Add node to head of group.
 
@@ -875,13 +630,7 @@ table::
 
 Add the node to the head (first to be executed) of the group.
 
-
-
-
-
-
 subsection:: /g_tail
-
 
 Add node to tail of group.
 
@@ -894,13 +643,7 @@ table::
 
 Add the node to the tail (last to be executed) of the group.
 
-
-
-
-
-
 subsection:: /g_freeAll
-
 
 Delete all nodes in a group.
 
@@ -911,13 +654,7 @@ table::
 Frees all nodes in the group.
 A list of groups may be specified.
 
-
-
-
-
-
 subsection:: /g_deepFree
-
 
 Free all synths in this group and all its sub-groups.
 
@@ -928,13 +665,7 @@ table::
 Traverses all groups below this group and frees all the synths.
 Sub-groups are not freed. A list of groups may be specified.
 
-
-
-
-
-
 subsection:: /g_dumpTree
-
 
 Post a representation of this group's node subtree.
 
@@ -947,13 +678,7 @@ table::
 
 Post a representation of this group's node subtree, i.e. all the groups and synths contained within it, optionally including the current control values for synths.
 
-
-
-
-
-
 subsection:: /g_queryTree
-
 
 Get a representation of this group's node subtree.
 
@@ -991,22 +716,9 @@ N.B. The order of nodes corresponds to their execution order on the server.
 Thus child nodes (those contained within a group) are listed immediately following their parent.
 See the method Server:queryAllNodes for an example of how to process this reply.
 
-
-
-
-
-
-
-
-
-
 section:: Unit Generator Commands
 
-
-
-
 subsection:: /u_cmd
-
 
 Send a command to a unit generator.
 
@@ -1020,29 +732,11 @@ table::
 Sends all arguments following the command name to the unit generator to be performed.
 Commands are defined by unit generator plug ins.
 
-
-
-
-
-
-
-
-
-
 section:: Buffer Commands
-
-
-
 
 Buffers are stored in a global array, indexed by integers starting at zero.
 
-
-
-
-
-
 subsection:: /b_alloc
-
 
 Allocate buffer space.
 
@@ -1060,13 +754,7 @@ definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done /b_alloc bufNum:: when complete.
 ::
 
-
-
-
-
-
 subsection:: /b_allocRead
-
 
 Allocate buffer space and read a sound file.
 
@@ -1087,13 +775,7 @@ definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done /b_allocRead bufNum:: when complete.
 ::
 
-
-
-
-
-
 subsection:: /b_allocReadChannel
-
 
 Allocate buffer space and read channels from a sound file.
 
@@ -1117,13 +799,7 @@ definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done /b_allocReadChannel bufNum:: when complete.
 ::
 
-
-
-
-
-
 subsection:: /b_read
-
 
 Read sound file data into an existing buffer.
 
@@ -1146,13 +822,7 @@ definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done /b_read bufNum:: when complete.
 ::
 
-
-
-
-
-
 subsection:: /b_readChannel
-
 
 Read sound file channel data into an existing buffer.
 
@@ -1177,13 +847,7 @@ definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done /b_readChannel bufNum:: when complete.
 ::
 
-
-
-
-
-
 subsection:: /b_write
-
 
 Write sound file data.
 
@@ -1214,13 +878,7 @@ definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done /b_write bufNum:: when complete.
 ::
 
-
-
-
-
-
 subsection:: /b_free
-
 
 Free buffer data.
 
@@ -1236,13 +894,7 @@ definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done /b_free bufNum:: when complete.
 ::
 
-
-
-
-
-
 subsection:: /b_zero
-
 
 Zero sample data.
 
@@ -1258,13 +910,7 @@ definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done /b_zero bufNum:: when complete.
 ::
 
-
-
-
-
-
 subsection:: /b_set
-
 
 Set sample value(s).
 
@@ -1278,13 +924,7 @@ table::
 
 Take a list of pairs of sample indices and values and sets the samples to those values.
 
-
-
-
-
-
 subsection:: /b_setn
-
 
 Set ranges of sample value(s).
 
@@ -1300,13 +940,7 @@ table::
 Set contiguous ranges of sample indices to sets of values.
 For each range, the starting sample index is given followed by the number of samples to change, followed by the values.
 
-
-
-
-
-
 subsection:: /b_fill
-
 
 Fill ranges of sample value(s).
 
@@ -1323,13 +957,7 @@ Set contiguous ranges of sample indices to single values.
 For each range, the starting sample index is given followed by the number of samples to change, followed by the value to fill.
 This is only meant for setting a few samples, not whole buffers or large sections.
 
-
-
-
-
-
 subsection:: /b_gen
-
 
 Call a command to fill a buffer.
 
@@ -1349,13 +977,7 @@ definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done /b_gen bufNum:: when complete.
 ::
 
-
-
-
-
-
 subsection:: /b_close
-
 
 Close soundfile.
 
@@ -1371,13 +993,7 @@ definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done /b_close bufNum:: when complete.
 ::
 
-
-
-
-
-
 subsection:: /b_query
-
 
 Get buffer info.
 
@@ -1396,13 +1012,7 @@ table::
     ::
 ::
 
-
-
-
-
-
 subsection:: /b_get
-
 
 Get sample value(s).
 
@@ -1413,13 +1023,7 @@ table::
 
 yRepl to sender with the corresponding strong::/b_set:: command.
 
-
-
-
-
-
 subsection:: /b_getn
-
 
 Get ranges of sample value(s).
 
@@ -1434,22 +1038,9 @@ table::
 Get contiguous ranges of samples. Replies to sender with the corresponding strong::/b_setn:: command.
 This is only meant for getting a few samples, not whole buffers or large sections.
 
-
-
-
-
-
-
-
-
-
 section:: Control Bus Commands
 
-
-
-
 subsection:: /c_set
-
 
 Set bus value(s).
 
@@ -1462,13 +1053,7 @@ table::
 
 Take a list of pairs of bus indices and values and sets the buses to those values.
 
-
-
-
-
-
 subsection:: /c_setn
-
 
 Set ranges of bus value(s).
 
@@ -1485,13 +1070,7 @@ table::
 Set contiguous ranges of buses to sets of values.
 For each range, the starting bus index is given followed by the number of channels to change, followed by the values.
 
-
-
-
-
-
 subsection:: /c_fill
-
 
 Fill ranges of bus value(s).
 
@@ -1506,13 +1085,7 @@ table::
 Set contiguous ranges of buses to single values.
 For each range, the starting sample index is given followed by the number of buses to change, followed by the value to fill.
 
-
-
-
-
-
 subsection:: /c_get
-
 
 Get bus value(s).
 
@@ -1522,13 +1095,7 @@ table::
 
 Take a list of buses and replies to sender with the corresponding strong::/c_set:: command.
 
-
-
-
-
-
 subsection:: /c_getn
-
 
 Get ranges of bus value(s).
 
@@ -1541,22 +1108,9 @@ table::
 
 Get contiguous ranges of buses. Replies to sender with the corresponding strong::/c_setn:: command.
 
-
-
-
-
-
-
-
-
-
 section:: Non Real Time Mode Commands
 
-
-
-
 subsection:: /nrt_end
-
 
 End real time mode, close file.  Not yet implemented.
 
@@ -1565,29 +1119,11 @@ The bundle timestamp will establish the ending time of the file.
 This command will end non real time mode and close the sound file.
 Replies to sender with strong::/done:: when complete.
 
-
-
-
-
-
-
-
-
-
 section:: Replies to Commands
-
-
-
 
 These messages are sent by the server in response to some commands.
 
-
-
-
-
-
 subsection:: /done
-
 
 An asynchronous message has completed.
 
@@ -1599,13 +1135,7 @@ table::
 Sent in response to all asynchronous commands.
 Sent only to the sender of the original message.
 
-
-
-
-
-
 subsection:: /fail
-
 
 An error occurred.
 
@@ -1617,13 +1147,7 @@ table::
 
 There was a problem. Sent only to the sender of the original message.
 
-
-
-
-
-
 subsection:: /late
-
 
 A command was received too late.
 not yet implemented
@@ -1638,19 +1162,7 @@ table::
 The command was received too late to be executed on time.
 Sent only to the sender of the original message.
 
-
-
-
-
-
-
-
-
-
 section:: Node Notifications from Server
-
-
-
 
 These messages are sent as notification of some event to all clients who have registered via the strong::/notify:: command.
 
@@ -1667,95 +1179,41 @@ table::
 ## strong::int:: || the ID of the tail node, teletype::-1:: if there is no tail node.
 ::
 
-
-
-
-
-
 subsection:: /n_go
-
 
 A node was started.
 This command is sent to all registered clients when a node is created.
 
-
-
-
-
-
 subsection:: /n_end
-
 
 A node ended.
 This command is sent to all registered clients when a node ends and is deallocated.
 
-
-
-
-
-
 subsection:: /n_off
-
 
 A node was turned off.
 This command is sent to all registered clients when a node is turned off.
 
-
-
-
-
-
 subsection:: /n_on
-
 
 A node was turned on.
 This command is sent to all registered clients when a node is turned on.
 
-
-
-
-
-
 subsection:: /n_move
-
 
 A node was moved.
 This command is sent to all registered clients when a node is moved.
 
-
-
-
-
-
 subsection:: /n_info
-
 
 Reply to /n_query.
 This command is sent to all registered clients in response to an strong::/n_query:: command.
 
-
-
-
-
-
-
-
-
-
 section:: Trigger Notification
-
-
-
 
 These messages are sent as notification of some event to all clients who have registered via the strong::/notify:: command.
 
-
-
-
-
-
 subsection:: /tr
-
 
 A trigger message.
 
@@ -1769,29 +1227,11 @@ This command is the mechanism that synths can use to trigger events in clients.
 The node ID is the node that is sending the trigger.
 The trigger ID and value are determined by inputs to the SendTrig unit generator which is the originator of this message.
 
-
-
-
-
-
-
-
-
-
 section:: Buffer Fill Commands
-
-
-
 
 These are the currently defined fill routines for use with the strong::/b_gen:: command.
 
-
-
-
-
-
 subsection:: Wave Fill Commands
-
 
 There are three defined fill routines for sine waves.
 
@@ -1870,13 +1310,7 @@ cheby(n) = amplitude * cos(n * acos(x))
 The first float value specifies the amplitude for n = 1, the second float value specifies the amplitude for n = 2, and so on. To eliminate a DC offset when used as a waveshaper, the wavetable is offset so that the center value is zero.
 ::
 
-
-
-
-
-
 subsection:: Other Commands
-
 
 definitionlist::
 ## copy ||
@@ -1897,19 +1331,7 @@ definitionlist::
 
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Command Numbers
-
-
-
 
 These are the currently defined command numbers.
 More may be added to the end of the list in the future.

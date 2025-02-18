@@ -3,37 +3,13 @@ categories:: Files
 summary:: File reader for space-delimited text files
 related:: Classes/File
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 FileReader reads space-delimited text files into 2D arrays line by line.
 
 For tab delimited files use link::Classes/TabFileReader::. For semi-colon-delimited files use link::Classes/SemiColonFileReader::. For comma-separated files use link::Classes/CSVFileReader::.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

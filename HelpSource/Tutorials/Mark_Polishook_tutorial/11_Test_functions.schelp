@@ -3,19 +3,7 @@ categories:: Tutorials>Mark_Polishook_tutorial
 summary:: Mark Polishook tutorial
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
-
-
-
-
-
-
-
-
-
 section:: Functions and .scope messages
-
-
-
 
 An easy way to audition synthesis processes is to test them within a function.
 To do this, append a .scope or a .play message to a function. The .scope message, which works only with the internal server, displays a visual representation of a sound wave.
@@ -61,19 +49,7 @@ SynthDef("ringMod", {
 Synth("ringMod")
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Multi-channel expansion
-
-
-
 
 Expand a UGen to two channels with an array in any of the argument (control) slots.
 

@@ -3,19 +3,7 @@ categories:: Language>OOP
 summary:: Method calls, sending messages to objects
 related:: Reference/Classes, Classes/Class, Classes/Object, Guides/Intro-to-Objects, Guides/Polymorphism
 
-
-
-
-
-
-
-
-
-
 section:: Introduction
-
-
-
 
 Sending messages is the way things get done in an object oriented language.
 A message consists of a message selector which names the type of operation, a receiver to which the message is sent and in some cases a list of arguments which give additional information pertaining to the operation.
@@ -25,19 +13,7 @@ In the default case, the return value is the receiver itself.
 
 Messages may be written using binary operators, functional notation or receiver notation.
 
-
-
-
-
-
-
-
-
-
 section:: Binary operator messages
-
-
-
 
 A binary operator selector is any string of characters from the list of legal binary operator characters:
 
@@ -61,19 +37,7 @@ code::
 10 rrand: 100
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Operator Precedence
-
-
-
 
 There is none. All binary operators have the same level of precedence and associate from left to right.
 For example, the expression:
@@ -96,19 +60,7 @@ code::
 
 Therefore it is usually better style to fully parenthesize your expressions.
 
-
-
-
-
-
-
-
-
-
 section:: Functional notation messages
-
-
-
 
 The message selector precedes the parenthesized argument list.
 The first argument in the list is actually
@@ -119,19 +71,7 @@ sin(x)      // sine of x
 max(a, b)   // maximum of a and b
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Receiver notation messages
-
-
-
 
 A method call in functional notation may be converted to receiver notation by putting the receiver before the method name followed by a dot as shown below.
 
@@ -169,19 +109,7 @@ f(a, b).g(c)
 a.f(b).g(c)
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Default Argument Values
-
-
-
 
 You may call a function or method with more or fewer arguments than it was declared to accept.
 If fewer arguments are passed, those arguments not passed are set to a default value if one is given in the method or function definition, or otherwise to teletype::nil::.
@@ -203,19 +131,7 @@ z = x.value(10, 5, 9);  // z is set to 15.
 (a is 10, b is 5, 9 is ignored)
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Keyword Arguments
-
-
-
 
 Arguments to Methods may be specified by the name by which they are declared in a method's definition. Such arguments are called keyword arguments.
 Any argument may be passed as a keyword argument except for the receiver code::this::.
@@ -262,13 +178,7 @@ code::
 SinOsc.perform('ar', phase: pi, mul: 0.2, freq: 800);
 ::
 
-
-
-
-
-
 subsection:: Cost of using keyword arguments
-
 
 When using keyword arguments there is a runtime cost to do the matching that you should be aware of.
 The cost can be worth the convenience when speed is not critical.

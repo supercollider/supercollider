@@ -3,77 +3,36 @@ categories:: UGens>Filters>Linear
 summary:: A resonant low pass filter
 related:: Classes/Formlet, Classes/RHPF, Classes/Resonz, Classes/Ringz
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A resonant low pass filter.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: in
 
 The input signal.
-
 
 argument:: freq
 
 Cutoff frequency in Hertz.
 WARNING: due to the nature of its implementation frequency values close to teletype::0:: may cause glitches and/or extremely loud audio artifacts!
 
-
 argument:: rq
 
 The reciprocal of Q (bandwidth / cutoffFreq).
-
 
 argument:: mul
 
 Output will be multiplied by this value.
 
-
 argument:: add
 
 This value will be added to the output.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 { RLPF.ar(Saw.ar(200, 0.1), SinOsc.ar(XLine.kr(0.7, 300, 20), 0, 3600, 4000), 0.2) }.play;

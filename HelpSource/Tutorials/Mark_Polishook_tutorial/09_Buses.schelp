@@ -17,19 +17,7 @@ code::
 [ channel0, channel1, channel2, channel3, channel4, ... , ..., ..., etc., ... channel4095 ]
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Placing audio into a bus
-
-
-
 
 Use an Out UGen at the audio rate to put data into an audio bus.
 
@@ -57,19 +45,7 @@ SynthDescLib.global.browse;
 
 Show 1 channel of output on channel 0.
 
-
-
-
-
-
-
-
-
-
 section:: Getting audio from a bus
-
-
-
 
 Send an .ar message to an In UGen to get data from an audio bus.
 
@@ -92,19 +68,7 @@ Synth("dataFromABus");	// pair it with a sine wave on channel 1
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Control rate buses
-
-
-
 
 Use code::In.kr:: and code::Out.kr:: to read from or write to control buses.
 

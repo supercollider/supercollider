@@ -3,19 +3,7 @@ categories:: Tutorials>Mark_Polishook_tutorial
 summary:: Mark Polishook tutorial
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
-
-
-
-
-
-
-
-
-
 section:: Comments
-
-
-
 
 Comments are descriptive remarks that are meant to be read by humans but ignored by computers.
 Programmers use comments to annotate how code works or what it does.

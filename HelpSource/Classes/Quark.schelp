@@ -3,49 +3,22 @@ categories:: Quarks
 summary:: Object for managing a Quark - a package of source code
 related:: Guides/UsingQuarks, Classes/Quarks
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A Quark is a folder of source code, a package. It may be cloned from a git repository, or maybe not.
 This class is used by the Quarks class and you will not usually want to use it directly.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: name
 
 Quark name, git url or local path (absolute or relative)
 
-
 argument:: refspec
 
 argument:: url
-
 
 argument:: localPath
 
@@ -53,14 +26,9 @@ returns::
  
 this
 
-
-
-
 method:: fromLocalPath
 
-
 Alternate constructor
-
 
 argument:: path
 
@@ -68,395 +36,246 @@ returns::
  
 this
 
-
-
-
 method:: fromDirectoryEntry
 
-
 Alternate constructor
-
 
 argument:: name
 
 argument:: directoryEntry
 
-
 returns::
  
 this
 
-
-
-
 method:: parseQuarkName
-
 
 argument:: name
 
 argument:: refspec
 
-
 argument:: url
 
 argument:: localPath
-
 
 returns::
  
 this
 
-
-
-
 method:: parseDependency
 
-
 private
-
 
 argument:: dep
 
 argument:: forQuark
 
-
 returns::
  
 this
 
-
-
-
 private:: prMakeDep
-
-
-
-
-
-
-
-
-
 
 instancemethods::
 
-
-
-
 method:: name
-
 
 returns::
  
 String
 
-
-
-
 method:: dependencies
 
-
 Based on the dependencies list in the quark file, returns an array of Quarks.
-
 
 returns::
  
 Array of Quark
 
-
-
-
 method:: deepDependencies
-
 
 Declared dependencies of this Quark and those of each dependency.
 This will check out all dependencies.
-
 
 returns::
  
 Array of Quarks
 
-
-
-
 method:: data
 
-
 Lazily parses the quark file (if found) and caches it
-
 
 returns::
  
 Dictionary - the contents of the quark file
 
-
-
-
 method:: refspec
-
 
 Git refspec (tag or sha hash)
 
-
 returns::
  
 this
-
-
-
 
 method:: localPath
 
-
 Absolute path where the Quark is located
-
 
 returns::
  
 this
-
-
-
 
 method:: summary
 
-
 Summary text from the quark file
-
 
 returns::
  
 this
-
-
-
 
 method:: url
 
-
-Git repository url. If not declared when creating, it will examine the checked out git source and get the origin.
-
+Git repository url. If not declared when creating, it will examine the checked out git source
+and get the origin.
 
 returns::
  
 this
 
-
-
-
 method:: isDownloaded
-
 
 returns::
  
 Boolean
-
-
-
 
 method:: isInstalled
 
-
 returns::
  
 Boolean
 
-
-
-
 method:: git
 
-
-Quark that have git repos have a Git object that can be used for checking out, listing tags etc.
-
+Quarks that have git repos have a Git object that can be used for checking out, listing tags etc.
 
 returns::
  
 a Git object
 
-
-
-
 method:: init
 
-
 private
-
 
 argument:: argName
 
 argument:: argUrl
 
-
 argument:: argRefspec
 
 argument:: argLocalPath
 
-
 returns::
  
 this
-
-
-
 
 method:: install
 
-
 returns::
  
 this
-
-
-
 
 method:: uninstall
 
-
 returns::
  
 this
 
-
-
-
 method:: checkout
-
 
 Clone and checkout the url and refspec.
 Used by install and for switching versions.
 
-
 returns::
  
 this
 
-
-
-
 method:: version
-
 
 returns::
  
 String
 
-
-
-
 method:: branch
 
-
 returns the current branch name.
-
 
 returns::
  
 String or nil, if failed
 
-
-
-
 method:: tags
-
 
 returns::
  
 Array of Strings
 
-
-
-
 method:: isCompatible
 
-
-Evaluate the 'isCompatible' function in the quarkfile, if there is one.
+Evaluates the 'isCompatible' function in the quarkfile, if there is one.
 This allows a quarkfile to check its environment and raise an alarm before it gets installed and breaks something.
-
 
 returns::
  
 Boolean
 
-
-
-
 method:: definesClasses
 
-
-Classe that are defined by this Quark
-
+Classes that are defined by this Quark
 
 returns::
  
 Array of Classes
 
-
-
-
 method:: definesExtensionMethods
 
-
-Method that this Quark defines that overwrite implementations in other packages including in Common.
-
+Methods that this Quark defines that overwrite implementations in other packages including in Common.
 
 returns::
  
 Array of Methods
 
-
-
-
 method:: help
 
-
 Open the help file. Either as specified in the quark file as 'schelp' or searches by the name of the quark.
-
 
 returns::
  
 this
 
-
-
-
 method:: changed
-
 
 After un/installing or checking out, state is set to changed.
 code smell: this is for the gui
-
 
 returns::
  
 Boolean
 
-
-
-
 method:: runHook
 
-
-Run the function code::hook:: which is defined in the code::.quark:: file.
+Runs the function code::hook:: which is defined in the code::.quark:: file.
 This can be used for running a function before or after installation, see link::Guides/UsingQuarks#Hooks:: for more information.
 In case the function can not be executed properly a warning will be printed and the update or installation process will be stopped.
-
 
 argument:: hook
 
 Name of function to run.
 
-
 returns::
  
 this
 
-
-
-
 method:: printOn
-
 
 argument:: stream
 
@@ -464,22 +283,13 @@ returns::
  
 this
 
-
-
-
 method:: parseQuarkFile
 
-
 private
-
 
 returns::
  
 this
 
-
-
-
 private:: prCollectDependencies
-
 

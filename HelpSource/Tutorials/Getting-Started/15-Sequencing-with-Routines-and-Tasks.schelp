@@ -32,19 +32,7 @@ On the second next call, execution picks up just after the first yield and conti
 We will come back to the use of routines for data generation.
 More important for sequencing is what happens when you schedule a routine on a clock, and the routine returns time values.
 
-
-
-
-
-
-
-
-
-
 section:: Scheduling routines
-
-
-
 
 Recall that, when you schedule a function on a clock, numbers returned by the function are treated as time values -- specifically, the amount of time until the function should execute again.
 The same thing happens with numbers yielded by a routine.
@@ -100,19 +88,7 @@ r.stop;
 
 There you go -- our first sequence.
 
-
-
-
-
-
-
-
-
-
 section:: Pause and resume: Task
-
-
-
 
 Routines have one sticky little characteristic that can limit their usefulness as musical objects.
 Once you stop a routine, you can only start it over again from the beginning.
@@ -145,19 +121,7 @@ t.stop;
 
 Task will be used for the remainder of this tutorial.
 
-
-
-
-
-
-
-
-
-
 section:: When do you want to start?
-
-
-
 
 By default, strong::play:: applied to a Task starts the Task immediately.
 Most of the time, many tasks will be running simultaneously, and they should be synchronized.
@@ -208,19 +172,7 @@ u = f.value.play(quant: [4, 0.5]);	// next 4-beat boundary + a half-beat
 t.stop; u.stop;
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Using data routines in note sequencing
-
-
-
 
 The previous example controls the generation of one parameter (pitch) by looping over an array inside the Task.
 What if you want to control several parameters?
@@ -270,19 +222,7 @@ sequencing with patterns.
 This is because it takes some time for the synthdef to be ready for use on the server.
 Without it, the first note would not be heard.)
 
-
-
-
-
-
-
-
-
-
 section:: A note on server messaging and timing
-
-
-
 
 Using Synth as in the preceding examples can result in small but sometimes noticeable timing inaccuracies.
 This is because it takes a short time to transmit OSC messages from your code to the server, and this time is not always constant.
@@ -333,19 +273,7 @@ See also:
 
 link::Classes/Routine::, link::Classes/Task::, link::Classes/Quant::, link::Guides/ServerTiming::, link::Guides/Bundled-Messages::
 
-
-
-
-
-
-
-
-
-
 section:: Suggested Exercise
-
-
-
 
 Make a more interesting SynthDef to replace the \smooth SynthDef. Use more arguments for greater variability.
 Then change the data streams in the 'Over the Rainbow' example and add new data streams to play a different tune, more expressively.

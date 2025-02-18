@@ -3,19 +3,7 @@ categories:: JITLib>GUI, Live Coding
 summary:: Will be replaced - please use TdefGui now!
 related:: Classes/TdefGui
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 warning::
 Has been rewritten and renamed link::Classes/TdefGui::, which has largely the same functionality, but is more consistent and more flexible.

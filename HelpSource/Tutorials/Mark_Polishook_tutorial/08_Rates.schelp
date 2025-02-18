@@ -3,19 +3,7 @@ categories:: Tutorials>Mark_Polishook_tutorial
 summary:: Mark Polishook tutorial
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
-
-
-
-
-
-
-
-
-
 section:: Audio rate
-
-
-
 
 UGens to which an .ar message is sent run at the audio rate, by default, at 44,100 samples per second. Send the .ar message to unit generators when they're part of the audio chain that will be heard.
 
@@ -23,19 +11,7 @@ code::
 SinOsc.ar(440, 0, 1);
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Control rate
-
-
-
 
 UGens to which a .kr message is appended run at the control rate.
 

@@ -3,19 +3,7 @@ categories:: HelpSystem
 summary:: SCDoc markup language syntax
 related:: Guides/WritingHelp, Classes/SCDoc, Classes/SCDocHTMLRenderer
 
-
-
-
-
-
-
-
-
-
 section:: Introduction
-
-
-
 
 This document specifies the syntax and link::#Grammar:: of the link::Classes/SCDoc:: markup language.
 code::SCDoc Markup:: is used in SuperCollider mainly for helpfiles.
@@ -25,19 +13,7 @@ note::
 A guide to writing help can be found at link::Guides/WritingHelp::.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Specification
-
-
-
 
 A document is split into a header section and a body.
 The header contains only header tags, which are not allowed in the document body.
@@ -54,13 +30,7 @@ list::
 ## Some enclosing tags can be nested, while others are modal and ignore any tag until an end-tag.
 ::
 
-
-
-
-
-
 subsection:: Header tags
-
 
 Header tags take the remaining text in their definition line as their argument.
 They expect no end-tag.
@@ -114,13 +84,7 @@ teletype:: CLASS\:: :: name
 || Deprecated, use TITLE instead.
 ::
 
-
-
-
-
-
 subsection:: Section tags
-
 
 A document can be divided into sections and subsections.
 Section bodies consist of everything that follows its section tag until another section tag of same or higher level.
@@ -147,19 +111,7 @@ teletype:: SECTION\:: :: name
 
 teletype::
 
-
-
-
-
-
-
-
-
-
 section:: Introduction
-
-
-
 
 ::
 
@@ -185,13 +137,7 @@ Example:
 
 teletype::
 
-
-
-
-
-
 subsection:: Some more info
-
 
 ::
 
@@ -207,20 +153,13 @@ Example:
 
 teletype::
 
-
 subsubsection:: Some more detailed info
 
 ::
 
 ::
 
-
-
-
-
-
 subsection:: Method tags
-
 
 These are level 3 subsections:
 
@@ -273,11 +212,7 @@ The methodname must be prefixed with teletype::*:: for classmethods and teletype
 
 teletype::
 
-
-
-
 copymethod:: SinOsc *ar
-
 
 ::
 
@@ -304,36 +239,23 @@ teletype:: DISCUSSION\:: ::
 
 teletype::
 
-
-
-
 method:: ar, kr
 
-
 This is a nice method, try it out!
-
 
 argument:: freq
 
 The frequency of this thing as a floating point value.
 
-
 argument:: amp
 
 The amplitude, be careful. Goes to 11.
-
 
 returns::
 An UGen.
 ::
 
-
-
-
-
-
 subsection:: Modal tags
-
 
 These tags enclose a text and ends with a single teletype::\:::: (double-colon) end-tag.
 The enclosed text can not contain any other tags.
@@ -447,13 +369,7 @@ Which is separated from the text through a block.
 For specifics check out the used rendering engine kaTeX at https://katex.org
 ::
 
-
-
-
-
-
 subsection:: Lists and tables
-
 
 List items, table rows and definition terms are denoted with teletype::##:: (double-hash).
 Table cells and definition descriptions are denoted with teletype::||:: (double-bar).
@@ -507,13 +423,7 @@ teletype:: TREE\:: ::
 Items are prefixed with teletype::##::
 ::
 
-
-
-
-
-
 subsection:: Notes and warnings
-
 
 These can have other tags in them, and ends with the end-tag.
 
@@ -553,13 +463,7 @@ According to http://en.wikipedia.org/wiki/Geek the word geek is a slang term, wi
 
 ::
 
-
-
-
-
-
 subsection:: Other tags
-
 
 definitionlist::
 ## keyword::keyword\::
@@ -571,19 +475,7 @@ teletype:: CLASSTREE\:: :: classname
 || Render a class tree of subclasses starting from the given class.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Grammar
-
-
-
 
 The following is an exact specification of the grammar:
 

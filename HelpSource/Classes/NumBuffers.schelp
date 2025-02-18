@@ -3,36 +3,11 @@ categories:: UGens>Info
 summary:: Number of open buffers
 related:: Classes/NumAudioBuses, Classes/NumControlBuses, Classes/NumInputBuses, Classes/NumOutputBuses, Classes/NumRunningSynths
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Number of open buffers.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ir
-
 

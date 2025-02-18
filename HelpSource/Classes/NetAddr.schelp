@@ -3,22 +3,9 @@ categories:: Control, External Control>OSC
 summary:: Network address
 related:: Classes/OSCFunc
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 private:: initClass
-
 
 method:: new
 Create new net address.
@@ -27,98 +14,53 @@ note::
 To send messages internally, loopback IP is used: "127.0.0.1"
 ::
 
-
 argument:: hostname
 
 A link::Classes/String::, either an IP number (e.g. "192.168.34.56") or a hostname such as "otherHost.local".
-
 
 argument:: port
 
 A port number, like 57110.
 
-
-
-
 method:: fromIP
-
 
 Create new net address using an integer IP number.
 
-
-
-
 method:: langPort
-
 
 Get the port sclang is currently listening on (may change after a recompile).
 
-
-
-
 method:: localAddr
-
 
 Get a NetAddr which corresponds to localhost and the port sclang is listening on.
 
-
-
-
 method:: disconnectAll
-
 
 Close all TCP connections.
 
-
-
-
 method:: broadcastFlag
-
 
 Get or set the broadcast flag (whether or not broadcast messages can be sent).
 
-
-
-
 method:: matchLangIP
 
-
 Test an IP address to see if it matches that of one of the NICs on this computer.
-
 
 argument:: ipstring
 
 A link::Classes/String:: to test containing an IP number in dot decimal notation (e.g. "192.168.34.56").
 
-
 returns::
 A link::Classes/Boolean:: indicating whether a match was found.
 
-
-
-
 method:: connections
-
 
 returns::
 A copy of the link::Classes/IdentityDictionary:: with all open TCP connections.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 private:: prConnect, prDisconnect, prConnectionClosed, recover
-
 
 method:: sendMsg
 Convert the argument list to an OSC message and send it to the NetAddr without a timestamp. The first argument is the OSC address, and the remaining arguments are the arguments in the OSC message. If you leave off the initial "/" in the OSC address, one will be prepended. The technical details of how sclang objects are converted to OSC messages is given in the link::Guides/OSC_communication:: helpfile.
@@ -138,48 +80,27 @@ n.sendMsg(\n_set, 2000, \gate, 0);
 n.sendMsg(*~msg);
 ::
 
-
-
-
 method:: sendBundle
-
 
 Send a bundle with timestamp to the addr.
 
-
-
-
 method:: sendRaw
-
 
 Send a raw message without timestamp to the addr.
 
-
-
-
 method:: connect
 
-
 Open TCP connection.
-
 
 argument:: disconnectHandler
 
 Called when the connection is closed (either by the client or by the server).
 
-
-
-
 method:: disconnect
-
 
 Close TCP connection.
 
-
-
-
 method:: ip
-
 
 returns the ip number (as a link::Classes/String::).
 
@@ -188,31 +109,14 @@ n = NetAddr("localhost", 57110);
 n.ip;
 ::
 
-
-
-
 method:: isLocal
 
-
 Test if this NetAddr ip number matches that of one of this hosts NICs, or the loopback address.
-
 
 returns::
 A link::Classes/Boolean::.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 n = NetAddr("127.0.0.1", 57120); // 57120 is sclang default port

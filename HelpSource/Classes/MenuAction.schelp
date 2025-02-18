@@ -3,40 +3,15 @@ categories:: GUI
 summary:: An individual menu or toolbar item, that performs an action when clicked
 related:: Classes/Menu, Classes/ToolBar, Classes/MainMenu
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A MenuAction represents a single action that can occupy multiple link::Classes/Menu::s or a link::Classes/ToolBar::s, and will evaluate a function when activated.
 When added to a menu, these are displayed as menu items.
 When added to a toolbar, they appear as buttons.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 	Create a new Action. Note that one action may occupy multiple menus and toolbars.
 
@@ -46,11 +21,7 @@ method:: new
 	argument:: function
 		A function to perform when the action is activated.
 
-
-
-
 method:: separator
-
 
 	An action that represents a menu or toolbar separator.
 These are not selectable or clickable.
@@ -58,43 +29,22 @@ These are not selectable or clickable.
 	argument:: string
 		A label for the separator. These are not always visible, depending on your OS and context.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 method:: string
-
 
 	A string representing the name of the action.
 This is used as text when it is placed in menus, and on toolbars if it does not have an icon.
 	argument::
 		A String
 
-
-
-
 method:: menu
-
 
 	A Menu. If present, this action acts as a submenu, or a pop-up menu when placed on a toolbar.
 	argument::
 		A link::Classes/Menu::
 
-
-
-
 method:: shortcut
-
 
 	A string representing the keyboard shortcut to trigger this action.
 Keyboard shortcuts are available when an action is attached to a link::Classes/ToolBar::, or when it's part of the context menu for a View (see link::Classes/View#-setContextMenuActions::)
@@ -102,95 +52,56 @@ Keyboard shortcuts are available when an action is attached to a link::Classes/T
 	argument::
 		A String
 
-
-
-
 method:: checked
-
 
 	Indicates whether the action is checked or unchecked.
 	argument::
 		A boolean.
 
-
-
-
 method:: toolTip
-
 
 	A string to display when hovering over the menu item / button.
 	argument::
 		A String
 
-
-
-
 method:: separator
-
 
 	Indicates whether the action is a separator.
 	argument::
 		A Boolean.
 
-
-
-
 method:: iconVisible
-
 
 	Indicates whether the icon for this action will be visible.
 	argument::
 		A Boolean.
 
-
-
-
 method:: checkable
-
 
 	Indicates that the action shows a checkbox and is checkable.
 	argument::
 		A Boolean
 
-
-
-
 method:: enabled
-
 
 	Indicates that the action is enabled; otherwise it will be greyed out and uninteractive.
 	argument::
 		A Boolean
 
-
-
-
 method:: icon
-
 
 	An link::Classes/Image:: associated with the action - to be shown next to the name of the action in both menus and toolbars.
 	argument::
 		An link::Classes/Image::
 
-
-
-
 method:: font
 
-
 	The font used to display the action's name. Note that special fonts may or may not be displayed depending on OS and context (e.g. system menu, context menu, toolbar). For example, OSX application menus will honor italicized fonts, but not the font family itself.
-
 
 argument::
 	A link::Classes/Font::
 
-
-
-
-
-
 subsection:: Events
-
 
 	Menu actions broadcast several kinds of events that can be registered for with the standard link::Classes/Object#-addDependant:: calls.
 	Events broadcast by menu:
@@ -221,19 +132,7 @@ m.onClose_({ a.removeDependant(f); b.removeDependant(f) }).front;
 )
 	::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 strong:: Simple checkable menu item ::
 

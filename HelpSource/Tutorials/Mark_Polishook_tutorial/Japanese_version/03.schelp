@@ -3,19 +3,7 @@ categories:: Tutorials>Mark_Polishook_tutorial>Japanese_version
 summary:: Mark Polishook tutorial (JP)
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
-
-
-
-
-
-
-
-
-
 section:: SynthDefsには2つの重要な部分がある
-
-
-
 
 SynthDefsは、SuperColliderでシンセサイザーのエンジンを作るのに使うクラスです。
 
@@ -60,19 +48,7 @@ SynthDef(
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
 section:: SynthDefブラウザー
-
-
-
 
 典型的には、ugenGraphFuncは2、3の重要なコンポーネントを含みます。これらにはUGen（ユニット・ジェネレータ）、control（コントロール）、input（入力）そしてoutput（出力）が含まれます。
 
@@ -95,19 +71,7 @@ SynthDescLib.global.browse;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
 section:: UgenGraphFuncのコンポーネント
-
-
-
 
 SynthDefブラウザーは定義されたSynthDefを表示します。先ほどの「aSynthDef」は4つのUGenから構成されています。それには1つのcontrolがあります。それにはinputがありません。そしてそれには1つのoutputがあります。
 

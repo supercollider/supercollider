@@ -3,19 +3,7 @@ categories:: GUI>Kits>Cocoa
 summary:: An abstract superclass for drag views
 related:: Classes/DragSource, Classes/DragSink, Classes/DragBoth
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Users will not normally directly create instances of SCDragView, but only use it through its subclasses.
 The three subclasses, link::Classes/DragSource::, link::Classes/DragSink::, link::Classes/DragBoth::, all function basically the same way:
@@ -25,48 +13,19 @@ They inherit from SCStaticTextBase, and thus store their content in object and b
 You can keep their string independent of the content, if you set code::setBoth = false::.
 You can also set a label to be displayed while dragging by using code::dragLabel_()::.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 subsection:: Subclassing and Internal Methods
-
 
 The following methods are usually not used directly or are called by a primitive.
 Programmers can still call or override these as needed.
 
-
-
-
 method:: defaultGetDrag
-
 
 The method called by default when initiating a drag.
 Returns object.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

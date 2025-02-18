@@ -3,76 +3,35 @@ categories:: UGens>Filters>Linear
 summary:: Two zero filter
 related:: Classes/TwoPole
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A two zero filter.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: in
 
 The input signal.
 
-
 argument:: freq
 
 Frequency of teletype::zero:: angle.
-
 
 argument:: radius
 
 Radius of teletype::zero::.
 
-
 argument:: mul
 
 Output will be multiplied by this value.
-
 
 argument:: add
 
 This value will be added to the output.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 { TwoZero.ar(WhiteNoise.ar(0.125), XLine.kr(20, 20000, 8), 1) }.play

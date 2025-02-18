@@ -2,22 +2,9 @@ title:: Date
 categories:: Control
 summary:: An object describing a point in time
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 Create a new Date with the given properties (all are Integer values, except teletype::rawSeconds::, which is a Float).
 These arguments are also the names of instance variables of the Date object.
@@ -78,11 +65,7 @@ Date(2017, 10, 31, dayOfWeek: 0).dayOfWeek; // calculated to be 2 (Tuesday), not
 
 ::
 
-
-
-
 method:: fromString
-
 
 Create a new Date object from a date/time string, which is parsed according to the provided format string.
 
@@ -98,11 +81,9 @@ var d = Date.fromString(stampString, "%y%m%d_%H%M%S");
 )
 ::
 
-
 argument:: string
 
 The date/time string to parse, for example teletype::"2017-10-25 13:25:55"::.
-
 
 argument:: format
 
@@ -110,11 +91,7 @@ The format to use to parse the date string. Note that the supported input format
 
 To parse the above example string, you would use teletype::"%Y-%m-%d %H:%M:%S"::.
 
-
-
-
 method:: getDate
-
 
 Get current date from system and create a date object from it.
 
@@ -127,27 +104,15 @@ a
 )
 ::
 
-
-
-
 method:: localtime
-
 
 Get current localized time from system and create a date object from it.
 
-
-
-
 method:: gmtime
-
 
 Get current strong::Greenwich Mean Time (GMT):: from system and create a date object from it.
 
-
-
-
 method:: seed
-
 
 Get current date and return a value suitable for seeding a random number generator.
 See also link::Reference/randomSeed##randomSeed::.
@@ -162,22 +127,9 @@ thisThread.randSeed = a;
 )
 ::
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 method:: rawSeconds
-
 
 Get or set the receiver's raw time in seconds (relative to the "epoch" of January 1, 1970).
 
@@ -195,83 +147,43 @@ var loadedDate = Date.fromString(savedDateStr, "%Y%m%d_%H%M%S").postln;
 )
 ::
 
-
-
-
 method:: localtime
-
 
 Set the receiver's time to current localtime.
 
-
-
-
 method:: gmtime
-
 
 Set the receiver's time to current strong::Greenwich Mean Time (GMT)::.
 
-
-
-
 method:: dayStamp
-
 
 Obtain a string with the year, month and day in the format strong::YYMMDD::.
 
-
-
-
 method:: hourStamp
-
 
 Obtain a string in the format strong::H:M:S::.
 
-
-
-
 method:: secStamp
-
 
 Obtain a string with the seconds.
 
-
-
-
 method:: stamp
-
 
 Obtain a string in the format strong::YYMMDD_HHMMSS::.
 
-
-
-
 method:: asSortableString
-
 
 Obtain a string in an alphabetically sortable standard database format.
 
-
-
-
 method:: asctime
-
 
 Obtain a string in the format WeekdayName MonthName Time Year.
 
-
-
-
 method:: asString
-
 
 Returns asctime.
 
-
-
-
 method:: resolve
-
 
 Resolve any inconsistencies in the Date object, updating all the fields (in particular teletype::dayOfWeek:: and teletype::rawSeconds::) as necessary.
 
@@ -313,11 +225,7 @@ d = Date(rawSeconds: d.rawSeconds);
 
 ::
 
-
-
-
 method:: format
-
 
 Obtain a date string with a given format.
 The character % is replaced by the appropriate value, which is derived from the letter that follows.
@@ -326,7 +234,6 @@ code::
 Date.getDate.format("Today is %A. It is around %I o'clock (%p), in %B.");
 Date.getDate.format("%d/%m/%Y %H:%M");  // DD/MM/YYYY hh:mm
 ::
-
 
 discussion::
 A list of formats can be found here:
@@ -457,19 +364,11 @@ If tm_isdst is negative, no characters are returned. [ tm_isdst]
 
 If a conversion specification does not correspond to any of the above, the behavior is undefined.
 
-
-
-
 method:: <
-
 
 method:: <=
 
-
-
-
 method:: >
-
 
 method:: >=
 Compare two Dates based on their rawSeconds.
@@ -481,11 +380,7 @@ Date(2005, 1, 1) > Date(2004, 1, 2);
 Date(2005, 2, 13) >= Date(2005, 2, 13);
 ::
 
-
-
-
 method:: ==
-
 
 method:: !=
 Test whether two Dates are equal/unequal, based on their rawSeconds.

@@ -3,19 +3,7 @@ categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Overview of patterns that modify the behavior of other patterns
 related:: Tutorials/A-Practical-Guide/PG_05_Math_on_Patterns, Tutorials/A-Practical-Guide/PG_06a_Repetition_Contraint_Patterns
 
-
-
-
-
-
-
-
-
-
 section:: Filter patterns
-
-
-
 
 Just like filter UGens modify an input signal, filter patterns modify the stream of values coming from a pattern.
 
@@ -27,13 +15,7 @@ All filter patterns take at least one source pattern, providing the values/event
 
 Following is a categorized overview. See the separate category documents for more detail.
 
-
-
-
-
-
 subsection:: Repetition and Constraint patterns
-
 
 link::Tutorials/A-Practical-Guide/PG_06a_Repetition_Contraint_Patterns::
 
@@ -54,13 +36,7 @@ The last output value is adjusted so that the sum matches the limit exactly.
 Instead, it plays until either it reaches code::maxdur:: (in which case it behaves like Pfindur, adjusting the last event so the total duration matches code::maxdur::), or the pattern stops early and the last event is rounded up to the next integer multiple of quant.
 ::
 
-
-
-
-
-
 subsection:: Time-based patterns
-
 
 link::Tutorials/A-Practical-Guide/PG_06b_Time_Based_Patterns::
 
@@ -72,13 +48,7 @@ Interpolation is linear by default, but any envelope segment curve can be used.
 code::levels::, code::durs:: and code::curves:: should be patterns. Related: Use of link::Classes/Env:: as a pattern.
 ::
 
-
-
-
-
-
 subsection:: Adding values into event patterns (Or, "Pattern Composition")
-
 
 link::Tutorials/A-Practical-Guide/PG_06c_Composition_of_Patterns::
 
@@ -87,13 +57,7 @@ definitionlist::
 ## code::Pchain(patterns):: || Chains separate Pbind-style patterns together, so that all their key-value pairs go into the same event.
 ::
 
-
-
-
-
-
 subsection:: Parallelizing event patterns
-
 
 link::Tutorials/A-Practical-Guide/PG_06d_Parallel_Patterns::
 
@@ -109,13 +73,7 @@ A Spawner object gets passed into this routine, and this object is used to add o
 ## code::Pspawn(pattern, spawnProtoEvent):: || Supports most of the features of Pspawner, but uses a pattern to control the link::Classes/Spawner:: object instead of a routine function.
 ::
 
-
-
-
-
-
 subsection:: Language control methods
-
 
 link::Tutorials/A-Practical-Guide/PG_06e_Language_Control::
 
@@ -134,13 +92,7 @@ This will tell you. A Ptrace is created automatically by the code::trace:: messa
 If it's applied to an infinite pattern, there's no looping because the pattern never gives control back.
 ::
 
-
-
-
-
-
 subsection:: Server control methods
-
 
 link::Tutorials/A-Practical-Guide/PG_06f_Server_Control::
 
@@ -160,13 +112,7 @@ Pfxb allocates a separate bus and group for the effect and the pattern.
 When the pattern stops (or is stopped), the resources can be removed automatically.
 ::
 
-
-
-
-
-
 subsection:: Data sharing
-
 
 link::Tutorials/A-Practical-Guide/PG_06g_Data_Sharing::
 

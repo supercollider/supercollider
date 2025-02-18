@@ -3,32 +3,14 @@ categories:: Scheduling>Clocks
 summary:: Abstract superclass for clocks
 related:: Classes/AppClock, Classes/SystemClock, Classes/TempoClock
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Clock is an abstract class: it only defines an abstract set of methods that
 all clocks should implement. See its subclasses: link::Classes/SystemClock::,
 link::Classes/TempoClock::, link::Classes/AppClock:: for specific
 implementations.
 
-
-
-
-
-
 subsection:: Scheduling
-
 
 A Clock keeps track of time and allows strong::tasks:: to be
 strong::scheduled:: for some time in the future (e.g. using
@@ -42,13 +24,7 @@ this method is a number, the task is automatically strong::rescheduled:: for the
 time equal to its last scheduled time plus the return value (in
 link::Classes/TempoClock#-beats#beats::).
 
-
-
-
-
-
 subsection:: Useful Tasks
-
 
 Objects of different classes may do different things in response to being
 scheduled on a clock by having own implementation of the code::awake:: method.
@@ -71,13 +47,7 @@ turn starting or resuming the Routine's Function.
 do something useful aside from returning a new value in a stream.
 ::
 
-
-
-
-
-
 subsection:: Scheduling and Threads
-
 
 Whenever a task is awaken, its code::awake:: method is called in the context of
 the link::Classes/Process#-mainThread#main thread::. Just before that, the main

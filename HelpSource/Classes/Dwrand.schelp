@@ -3,54 +3,26 @@ categories:: UGens>Demand, UGens>Random
 summary:: Demand rate weighted random sequence generator
 related:: Classes/Demand
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: list
 
 Array of values or other UGens
 
-
 argument:: weights
 
 Array of values (should sum up to teletype::1.0::)
-
 
 argument:: repeats
 
 Number of values to return
 
-
 discussion::
 Structurally related: link::Classes/Pwrand::, link::Classes/TWindex::, link::Classes/TWChoose::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

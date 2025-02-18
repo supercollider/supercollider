@@ -2,19 +2,7 @@ title:: EventStreamCleanup
 categories:: Streams-Patterns-Events
 summary:: Helper class that collects information about internal state of streams that needs to be released
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Event streams created by objects like link::Classes/Pmono:: or link::Classes/Pfx:: are special: when they start, they create some state (like a new synth) that is present over the whole period of the stream, or at least over several events.
 When such a stream ends, it releases this state. There are other streams, however, strong::that may stop their input stream at any time:: (e.g.  link::Classes/Pfindur:: or link::Classes/Pdef::).
@@ -72,141 +60,75 @@ Pn(x).play; // loop it.
 );
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: new
 
-
 Create a new instance.
-
-
-
-
-
-
-
-
-
 
 instancemethods::
 
-
-
-
 method:: addFunction
-
 
 Add a new cleanup function which will be called when the stream is made to end somewhere downstreams.
 This is called only in patterns that create resources that need to be released (e.g. link::Classes/Pmono:: or link::Classes/Pfx::).
-
 
 argument:: event
 
 The outevent that is passed on downstreams and which communicates to any stream-ending pattern what needs to be done to release the resources.
 strong::It must be yielded after update!::
 
-
 argument:: function
 
 The function that is called for cleanup.
 E.g. code::{ group.free }::.
 
-
 returns::
 A link::Classes/CallOnce::that executes the cleanup code::function::at most once. Should it be necessary to execute the cleanup outside of the control of code::EventStreamCleanup::, the CallOnce returned should be used instead of the original code::function::, so that other referents are informed of the execution of the cleanup.
 
-
-
-
 method:: update
-
 
 For every new event, the cleanup must be updated to receive information from any input stream further up.
 This method is called from all streams that may stop early (e.g. link::Classes/Pmono:: or link::Classes/Pfindur::).
-
 
 argument:: event
 
 The outevent from the input stream.
 strong::It must be yielded after update!::
 
-
-
-
 method:: exit
 
-
 Run all functions that have been collected over time, adding appropriate information to the event, in case it is passed on as an inevent.
-
 
 argument:: event
 
 The inevent that is passed through to the outer stream
 
-
 argument:: freeNodes
 
 Used internally.
-
 
 returns::
  
 An event. In embedInStream, this event must be returned (code:: ^cleanup.exit(inevent) ::)
 
-
-
-
 method:: functions
-
 
 A collections of cleanup functions.
 
-
-
-
 method:: clear
-
 
 Empty the cleanup functions, without evaluating them.
 
-
-
-
 method:: terminate
 
-
 Run all functions that have been collected over time without adding information to an event.
-
 
 argument:: freeNodes
 
 Used internally.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // some code from the class library

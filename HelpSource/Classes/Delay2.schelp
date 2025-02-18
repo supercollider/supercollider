@@ -3,59 +3,30 @@ categories:: UGens>Delays
 summary:: Two sample delay
 related:: Classes/Delay1, Classes/TDelay
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Delay the input by two samples.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: in
 
 The input signal.
 
-
 argument:: mul
 
 The output will be multiplied by this value.
-
 
 argument:: add
 
 This value will be added to the output.
 
-
 argument:: x1
 
 The sample directly preceding the delayed input signal, which is the second output sample.
 This can be a numeric value or a code::UGen::.
-
 
 argument:: x2
 
@@ -66,7 +37,6 @@ note::
 When running at audio rate, strong::x1:: and strong::x2:: default to code::0.0::, i.e. "silence" precedes the delayed input.
 At control rate, the default values are set to the first sample of strong::in::, i.e. the first input sample is held during the delay.
 ::
-
 
 discussion::
 The output sequence is:
@@ -84,19 +54,7 @@ Why are the default values of strong::x1:: and strong::x2:: different depending 
 At audio-rate, an analog delay model is followed—the input signal is preceded by silence (zeros).
 At control-rate, leading with zeros is less appropriate because control signals are often DC or other non zero-mean signals (e.g. a frequency or gain control signal).
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

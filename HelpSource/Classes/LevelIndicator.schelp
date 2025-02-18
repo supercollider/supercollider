@@ -3,78 +3,34 @@ categories:: GUI>Views
 summary:: A level indicator GUI widget
 related:: Classes/RangeSlider
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A level indicator view, suitable for use as a level or peak meter, etc.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: key
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 private:: valueAction
 
-
 method:: value
 Get or set the current level of the view.
-
 
 argument:: val
 
 A link::Classes/Float:: between 0 and 1.
 
-
 returns::
 A link::Classes/Float::
 
-
-
-
 method:: warning
-
 
 method:: critical
 Set the warning and critical thresholds.
 If meter value is above either threshold, link::#-warningColor:: or link::#-criticalColor:: will be shown, respectively (by default, yellow and red).
 If link::#-drawsPeak:: is true warning color will be displayed based on link::#-peakLevel:: rather than value.
-
 
 argument:: val
 
@@ -88,14 +44,9 @@ a.value = 0.7;
 a.value = 0.9;
 ::
 
-
-
-
 method:: style
 
-
-Set the style of the view.
-
+Sets the style of the view.
 
 argument:: val
 
@@ -112,14 +63,9 @@ w = Window().front.layout_(
 )
 ::
 
-
-
-
 method:: stepWidth
 
-
 The width of each led light, for \led.
-
 
 argument:: val
 
@@ -136,14 +82,9 @@ w = Window().front.layout_(HLayout(
 )
 ::
 
-
-
-
 method:: numSteps
 
-
 The number of steps used in \led style.
-
 
 argument:: val
 
@@ -158,30 +99,20 @@ a.numSteps = 4;
 )
 ::
 
-
-
-
 method:: image
-
 
 note:: 
 Not yet implemented in Qt GUI 
 ::
-
 
 argument:: image
 
 An link::Classes/Image::.
 The default image is the SC cube.
 
-
-
-
 method:: numTicks
 
-
 The number of ticks to display in the view's scale.
-
 
 argument:: number
 
@@ -198,14 +129,9 @@ w.layout_(HLayout(
 )
 ::
 
-
-
-
 method:: numMajorTicks
 
-
 The number of ticks in the view's scale which will be large sized.
-
 
 argument:: number
 
@@ -223,16 +149,11 @@ w.layout_(HLayout(
 )
 ::
 
-
-
-
 method:: drawsPeak
 
-
-Determine whether the view draws a separate peak display.
+Determines whether the view draws a separate peak display.
 This can be useful for displaying both peak and RMS values.
 If drawsPeak is true link::#-warning:: and link::#-critical:: will be displayed based on link::#-peakLevel:: rather than value.
-
 
 argument:: bool
 
@@ -248,15 +169,10 @@ w = Window().front().layout_(HLayout(
 )
 ::
 
-
-
-
 method:: peakLevel
 
-
-Set the level of the peak display.
+Sets the level of the peak display.
 (See link::#-drawsPeak::.)
-
 
 argument:: val
 
@@ -273,22 +189,13 @@ w = Window().front().layout_(HLayout(
 )
 ::
 
-
-
-
 method:: meterColor
-
 
 method:: warningColor
 
-
-
-
 method:: criticalColor
 
-
-Set the color of the meter, as well as the warning and critical colors.
-
+Sets the color of the meter, as well as the warning and critical colors.
 
 argument:: color
 
@@ -313,19 +220,7 @@ l.criticalColor = Color.black.alpha_(0.3);
 )
 ::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

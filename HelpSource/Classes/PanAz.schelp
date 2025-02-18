@@ -3,48 +3,21 @@ categories:: UGens>Multichannel>Panners
 summary:: Azimuth panner
 related:: Classes/Balance2, Classes/LinPan2, Classes/Pan2, Classes/Pan4
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Multichannel equal power panner.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: numChans
 
 Number of output channels. Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.
 
-
 argument:: in
 
 The input signal.
-
 
 argument:: pos
 
@@ -54,11 +27,9 @@ Channels are evenly spaced over a cyclic period of code::2.0:: in pos with code:
 
 Thus all channels will be cyclically panned through if a bipolar sawtooth wave from code::-1:: to code::+1:: is used to modulate the pos.
 
-
 argument:: level
 
 A control rate level input.
-
 
 argument:: width
 
@@ -68,7 +39,6 @@ Values greater than code::2:: will spread the pan over greater numbers of speake
 Values less than code::1:: will leave silent gaps between speakers.
 The absolute of this value is taken as negative values have no meaning (a width of code::-1:: is the same as a width of code::1::).
 
-
 argument:: orientation
 
 Should be code::0:: if the front is a vertex of the spanning polygon.
@@ -77,19 +47,7 @@ Should be code::0.5:: if the front
 bisects a side of the spanning polygon.
 Then the first speaker will be the one left of center.
 
-
-
-
-
-
-
-
-
-
 section:: Comparison to Pan2
-
-
-
 
 Despite a certain similarity, link::Classes/Pan2:: and link::Classes/PanAz:: with 2 channels behave differently.
 
@@ -138,19 +96,7 @@ code::
 )
 ::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 Five channel circular panning with first channel on the left
 

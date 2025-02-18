@@ -36,46 +36,20 @@ pattern <> event
 
 By contrast to Pchain, Pevent uses an  link::Classes/Event#*default:: if nothing is provided.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: pattern
 
 Pattern or stream that returns or modifies events.
-
 
 argument:: event
 
 An event with objects to embed.
  If none is provided, it uses link::Classes/Event#*default::.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

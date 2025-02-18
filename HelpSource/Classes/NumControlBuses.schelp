@@ -3,36 +3,11 @@ categories:: UGens>Info
 summary:: Number of control busses
 related:: Classes/NumAudioBuses, Classes/NumBuffers, Classes/NumInputBuses, Classes/NumOutputBuses, Classes/NumRunningSynths
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Number of control busses.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ir
-
 

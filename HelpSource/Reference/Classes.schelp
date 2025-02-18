@@ -10,19 +10,7 @@ Since classes are themselves objects, the value of a class name identifier is th
 
 See link::Guides/Intro-to-Objects:: for an introduction to the concepts of classes, objects and messages.
 
-
-
-
-
-
-
-
-
-
 section:: Instance Variables
-
-
-
 
 The data of an object is contained in its instance variables.
 Instance variables are of two kinds, named and indexed. Each object contains a separate copy of its instance variables.
@@ -70,38 +58,14 @@ a = p.x;		// send getter message for x
 b = p.y;		// send getter message for y
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Class Variables
-
-
-
 
 Class variables are values that are shared by all objects in the class.
 Class variable declaration lists are preceded by the reserved word code::classvar:: and may be interspersed with instance variable declaration lists.
 Class variables like instance variables may only be directly accessed by methods of the class.
 Class variables may also have getter and setter methods created for them using the less than code::<:: and greater than code::>:: symbols.
 
-
-
-
-
-
-
-
-
-
 section:: Instance Methods
-
-
-
 
 The messages of a class' interface are implemented in the methods of the class.
 When an object is sent a message the method whose name matches the message selector in the receiver's class is executed.
@@ -116,37 +80,13 @@ Methods however have an implicit first argument named this which is the receiver
 The variable code::this:: may be referred to just like any of the other arguments and variables in the method.
 You may not assign a value to code::this::.
 
-
-
-
-
-
-
-
-
-
 section:: Class Methods
-
-
-
 
 Class Methods are methods that implement messages sent to the class object.
 A common example is the message new which is sent to the class object to create a new instance of the class.
 Class method names have an asterisk code::*:: preceding the message selector.
 
-
-
-
-
-
-
-
-
-
 section:: Determine the class of an object
-
-
-
 
 link::Classes/Object:: defines the method code::isKindOf:::
 

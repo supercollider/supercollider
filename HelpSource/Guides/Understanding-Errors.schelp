@@ -3,19 +3,7 @@ categories:: Language, Debugging
 summary:: A guide to understanding errors
 related:: Guides/Debugging-tips
 
-
-
-
-
-
-
-
-
-
 section:: Reading error dumps
-
-
-
 
 When sc3 reports an error to the user, there are usually three parts:
 
@@ -137,19 +125,7 @@ There may be a bug in the method, or you may have thought the method took a cert
 If you double click on the construction "ClassName-methodName" in the call stack, the whole thing is selected.
 Then you can press cmd-J to open the method definition and look at the source code.
 
-
-
-
-
-
-
-
-
-
 section:: Error objects and error handling
-
-
-
 
 Sc3 implements error reporting using Error objects, which are instances of the class Error or one of its subclasses.
 Any code (whether in the class library or any user application) can throw an error any time as follows:
@@ -216,22 +192,9 @@ try { 1+Point(0, 0) } { 2*5 }
 10
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Common primitive errors
 
-
-
-
 subsection:: Operation cannot be called from this Process.
-
 
 This is usually the results of performing a GUI operation within a routine or scheduled function that is executing on some clock other than AppClock.
 AppClock is the only clock that can execute GUI manipulation because it is a lower priority thread.
@@ -244,13 +207,7 @@ code::
 { myGUIObject.value_(newValue) }.defer;
 ::
 
-
-
-
-
-
 subsection:: Attempted write to immutable object.
-
 
 code::
 #[0, 1, 2].put(1, 3)
@@ -269,13 +226,7 @@ code::
 [ 0, 3, 2 ]
 ::
 
-
-
-
-
-
 subsection:: Index not an Integer.
-
 
 code::
 #[0, 1, 2].at(\1)
@@ -297,13 +248,7 @@ note::
 if the object cannot be converted into an integer, you'll get a "Does not understand" error! 
 ::
 
-
-
-
-
-
 subsection:: Index out of range.
-
 
 code::
 [0, 1, 2].put(5, 5)
@@ -346,19 +291,7 @@ a.put(3, 1);
 [ nil, nil, nil, 1 ]
 ::
 
-
-
-
-
-
-
-
-
-
 section:: A common warning
-
-
-
 
 code::
 WARNING: FunctionDef contains variable declarations and so will not be inlined.

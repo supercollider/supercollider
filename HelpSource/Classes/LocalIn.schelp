@@ -3,49 +3,30 @@ categories:: UGens>InOut
 summary:: Define and read from buses local to a synth
 related:: Classes/LocalOut
 
-
-
-
-
-
-
-
-
-
 description::
 
-
-
-
 LocalIn defines buses that are local to the enclosing synth.
-These are like the global buses, but are more convenient if you want to implement a self contained effect that uses a feedback processing loop.
+These are
+like the global buses, but are more convenient if you want to implement a
+self contained effect that uses a feedback processing loop.
 
 There can only be one audio rate and one control rate LocalIn per
 SynthDef. The audio can be written to the bus using
 link::Classes/LocalOut:: .
 
 warning::
-Audio written to a  link::Classes/LocalOut::  will not be read by a corresponding LocalIn until the next cycle, i.e. one block size of samples later. Because of this it is important to take this additional delay into account when using LocalIn to create feedback delays with delay times shorter than the threshold of pitch (i. e. < 0.05
+Audio written to a  link::Classes/LocalOut::  will not be read by a
+corresponding LocalIn until the next cycle, i.e. one block size of
+samples later. Because of this it is important to take this additional
+delay into account when using LocalIn to create feedback delays with
+delay times shorter than the threshold of pitch (i. e. < 0.05
 seconds or > 20Hz), or where sample accurate alignment is required.
 See the resonator example below.
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: numChannels
 
@@ -53,25 +34,12 @@ The number of channels (i.e. adjacent buses) to read in. You
 cannot modulate this number by assigning it to an argument in a
 SynthDef.
 
-
 argument:: default
 
 The initial value written to the bus once, so that it can be used before overwriting it with LocalOut.
 An array can be passed in to specify different values for each channel.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

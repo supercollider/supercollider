@@ -2,19 +2,7 @@ title:: GUI: Tutorial introduction
 categories:: Tutorials>GUI
 summary:: GUI Tutorial overview
 
-
-
-
-
-
-
-
-
-
 section:: About
-
-
-
 
 SuperCollider's language, strong::sclang::, provides some Classes dedicated to Graphical User Interfaces (GUIs) creation, which allow you to create your own graphical interfaces.
 
@@ -23,19 +11,7 @@ Qt is supported by the most common Operating Systems, which allows cross-platfor
 
 The goal of this tutorial series is to strong::provide the basics of GUI manipulation:: within the scope of sclang. It is designed to be accessible to beginners, and follows a step-by-step progression, illustrated with examples.
 
-
-
-
-
-
-
-
-
-
 section:: Tutorial organisation
-
-
-
 
 list::
 ## 1. link::Tutorials/GUI/create_window:::

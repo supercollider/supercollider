@@ -3,46 +3,19 @@ categories:: UGens>Synth control
 summary:: Lagged control input
 related:: Classes/Control, Classes/TrigControl
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 code::Control:: UGen with fixed-time lags.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: ir
 
-
 method:: kr
-
 
 argument:: values
 
 Initial value (code::Float:: or code::Array:: of Floats).
-
 
 argument:: lags
 

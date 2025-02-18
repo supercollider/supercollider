@@ -3,19 +3,7 @@ categories:: Streams-Patterns-Events>Patterns>List
 summary:: Abstract class that holds a list
 related:: Classes/FilterPattern
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // post subclasses:

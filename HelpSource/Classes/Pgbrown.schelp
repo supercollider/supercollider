@@ -3,71 +3,31 @@ categories:: Streams-Patterns-Events>Patterns>Random
 summary:: Geometric brownian motion pattern
 related:: Classes/BrownNoise, Classes/Pbrown
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Return a stream that behaves like a geometric brownian motion.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: lo
 
 Lower boundary of values.
 
-
 argument:: hi
 
 Upper boundary of values.
-
 
 argument:: step
 
 Maximum multiplication factor per step (omega) - the distribution is xrand2.
 
-
 argument:: length
 
 Number of values produced.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

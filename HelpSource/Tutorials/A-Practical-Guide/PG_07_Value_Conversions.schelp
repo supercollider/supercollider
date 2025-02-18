@@ -3,19 +3,7 @@ categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Describes the default event's conversions for pitch, rhythm and amplitude
 related:: Tutorials/A-Practical-Guide/PG_06g_Data_Sharing, Tutorials/A-Practical-Guide/PG_08_Event_Types_and_Parameters
 
-
-
-
-
-
-
-
-
-
 section:: Pitch and rhythm conversions in the default event
-
-
-
 
 Using the default event prototype, pitch and rhythm can be specified in Pbind at different levels depending on the musical requirement.
 The default event prototype includes logic to convert higher-level abstractions into the physical parameters that are useful for synthesis.
@@ -27,13 +15,7 @@ If your pattern specifies code::\delta:: directly, code::\dur:: and code::\stret
 Note also that there is no obligation to use these constructs.
 The default event prototype is not meant to enforce one model of pitch or rhythm over any other; it simply provides these options, which you may use if they suit the task, or ignore or override if your task calls for something else entirely.
 
-
-
-
-
-
 subsection:: Timing conversions
-
 
 Rhythm is based on code::\delta:: and code::\sustain:: event keys. Both of these can be calculated from higher-level abstractions: code::\dur::, code::\stretch:: and code::\legato::.
 
@@ -62,13 +44,7 @@ Values greater than code::1.0:: produce overlapping notes. code::sustain = dur *
 
 ::
 
-
-
-
-
-
 subsection:: Pitch conversions
-
 
 Pitch handling in the default event is rich, with a large number of options.
 To use events, it is not necessary to understand all of those options.
@@ -156,13 +132,7 @@ p = Pbind(
 p.stop;
 ::
 
-
-
-
-
-
 subsection:: Amplitude conversion
-
 
 Finally, you can specify amplitude as code::\db:: or code::\amp::. If it's given as code::\db::, the amplitude will be calculated automatically using code::.dbamp::.
 

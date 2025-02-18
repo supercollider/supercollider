@@ -2,19 +2,7 @@ title:: QPalette
 categories:: GUI>Accessories
 summary:: Set of colors used by the GUI
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 QPalette is a strong::set of colors:: that the GUI system uses to draw the views.
 The colors are organized into three strong::color groups:: (active, inactive and disabled) used according to the state of the views drawn, and each group containing one color assigned to each of the various strong::color roles:: (window, windowText, button, buttonText, etc.), used to draw distinct elements of the views.
@@ -32,31 +20,14 @@ If you wish to design your own palette, it is most convenient to use link::#*aut
 
 Note that in Qt GUI most color-related methods of views (like link::Classes/Window#-background::, link::Classes/Slider#-knobColor::, etc.) actually modify the view's palette.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 	Instantiates a new palette, equivalent to the global palette assigned to QtGUI.
 All colors are considered to not be set (see link::#-hasColor::).
 
-
-
-
 method:: auto
-
 
 	Instantiates a new palette, with colors automatically derived from the given colors for 'button' and 'window' color roles. All colors are considered to be set (see link::#-hasColor::).
 
@@ -65,72 +36,35 @@ method:: auto
 	argument:: windowColor
 		The Color assigned to the window role.
 
-
-
-
 method:: light
-
 
 	A predefined palette using light colors.
 All colors are considered to be set (see link::#-hasColor::).
 
-
-
-
 method:: dark
-
 
 	A predefined palette using dark colors.
 All colors are considered to be set (see link::#-hasColor::).
 
-
-
-
 method:: system
-
 
 	The native system palette. All colors are considered to be set (see link::#-hasColor::).
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 private:: prInit
 
-
 private:: prAuto
-
-
-
 
 private:: prSystem
 
-
 private:: prColor
-
-
-
 
 private:: prSetColor
 
-
 private:: prHasColor
 
-
-
-
 method:: color
-
 
 	Returns the color assigned to a color role within a color group.
 	argument:: role
@@ -138,11 +72,7 @@ method:: color
 	argument:: group
 		A symbol among link::Reference/palette_color_groups::, or nil, in which case the current color group is used.
 
-
-
-
 method:: setColor
-
 
 	Assigns a color to a color role within a color group.
 
@@ -153,11 +83,7 @@ method:: setColor
 	argument:: group
 		A symbol among link::Reference/palette_color_groups::, or nil, in which case the color will be assigned to all groups.
 
-
-
-
 method:: hasColor
-
 
 	Whether the color belonging to a color role and group has been set on this QPalette instance.
 
@@ -168,66 +94,34 @@ method:: hasColor
 	argument:: group
 		A symbol among link::Reference/palette_color_groups::.
 
-
-
-
 method:: window
-
 
 	Convenience method to get or set the color for the 'window' role.
 
-
-
-
 method:: windowText
-
 
 	Convenience method to get or set the color for the 'windowText' role.
 
-
-
-
 method:: button
-
 
 	Convenience method to get or set the color for the 'button' role.
 
-
-
-
 method:: buttonText
-
 
 	Convenience method to get or set the color for the 'buttonText' role.
 
-
-
-
 method:: base
-
 
 	Convenience method to get or set the color for the 'base' role.
 
-
-
-
 method:: baseText
-
 
 	Convenience method to get or set the color for the 'baseText' role.
 
-
-
-
 method:: highlight
-
 
 	Convenience method to get or set the color for the 'highlight' role.
 
-
-
-
 method:: highlightText
-
 
 	Convenience method to get or set the color for the 'highlightText' role.

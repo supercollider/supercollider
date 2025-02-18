@@ -3,61 +3,24 @@ categories:: UGens>Buffer
 summary:: Wave shaper
 related:: Classes/Index, Classes/WrapIndex, Classes/Wavetable
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Perform waveshaping on the input signal by indexing into the table.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: ar, kr
 
-
 argument:: bufnum
 
-The number of a buffer filled in wavetable format containing the transfer function.
-
+The number of a buffer filled in wavetable format containing the
+transfer function.
 
 argument:: in
 
 The input signal.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 s.boot;

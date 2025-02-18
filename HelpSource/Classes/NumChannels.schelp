@@ -2,71 +2,31 @@ title:: NumChannels
 categories:: UGens>Multichannel
 summary:: Ensures the number of output channels
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Ensurethe the output has the stated number of channels, regardless of the number of input channels.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar
-
 
 argument:: input
 
 The audio signal
 
-
 argument:: numChannels
 
 An integer
-
 
 argument:: mixdown
 
 True/false, whether you want to mixdown or just use the first channel
 
-
 discussion::
 Mono input is copied.
 Multi-channels clumped and if code::mixdown:: is true mixed down, else the first channel used.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

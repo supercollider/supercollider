@@ -2,19 +2,7 @@ title:: Assignment Statements
 categories:: Language
 summary:: Assigning values to variables
 
-
-
-
-
-
-
-
-
-
 section:: Single Assignment
-
-
-
 
 A single assignment assigns the value of an expression on the right hand side to a variable on the left hand side.
 A single assignment is in the form:
@@ -61,19 +49,7 @@ code::
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Multiple Assignment
-
-
-
 
 A multiple assignment statement assigns the elements of a link::Classes/Collection:: which is the result of an expression on the right hand side, to a list of variables on the left hand side.
 A multiple assignment statement is preceded by the symbol code::#::.
@@ -105,19 +81,7 @@ code::
 Multiple assignment is implemented using the 'at' method and the 'copyToEnd' method.
 Your right hand side expression can return any object that responds to these messages.
 
-
-
-
-
-
-
-
-
-
 section:: Instance Variable Assignment
-
-
-
 
 The basic syntax for setting the value of an instance variable is to use the variable's setter method which is the name of the variable with an underscore appended.
 
@@ -134,19 +98,7 @@ point.x = 5;
 This type of assignment is translated to the first form by the compiler.
 The two syntaxes are equivalent.
 
-
-
-
-
-
-
-
-
-
 section:: Series Assignment to an ArrayedCollection or List
-
-
-
 
 There is a special syntax for doing assignments to a range of values in an link::Classes/ArrayedCollection:: or link::Classes/List::.
 

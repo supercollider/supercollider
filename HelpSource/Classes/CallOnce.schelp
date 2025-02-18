@@ -3,19 +3,7 @@ categories:: Streams-Patterns-Events
 summary:: Execute a function (at most) once
 related:: Classes/EventStreamCleanup
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Unlike a link::Classes/Thunk::, which takes no arguments, a CallOnce does allow arguments to be passed to the function it wraps, but the function is executed at most once. A CallOnce can also be "cancelled" with a code::clear:: call, without ever executing the wrapped function, even if CallOnce's code::value:: is called later.
 
@@ -33,77 +21,39 @@ c.value(true);  // -> done: true (and posts "woking...")
 c.value(false); // -> done: true (nothing posted)
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: function
 
 A function that typically executes some cleanup and may return a desired value.
 The function is wrapped in the CallOnce for later execution.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 method:: clear
 
-
-Cancel the CallOnce, meaning that subsequent calls to code::value:: will not execute the wrapped function at all.
-
+Cancels the CallOnce, meaning that subsequent calls to code::value:: will not execute the wrapped function at all.
 
 returns::
  
 the CallOnce.
 
-
-
-
 method:: didEvaluate
 
-
 Report if the CallOnce is considered already evaluated.
-
 
 returns::
 code::false::if neither code::clear::nor code::value::were called previously; code::true:: otherwise.
 
-
-
-
 method:: value
 
-
 If code::clear:: was called previously, the code::value:: call has no side-effect. Otherwise, on the first call to code::value:: the function wrapped by the CallOnce is evaluated with the arguments provided to code::value:: and the result of this evaluation is stored as the CallOnce's result, used to answer all subsequent calls to code::value::.
-
 
 argument::  ... args
 
 Arguments to use in the call to the wrapped function, if the call happens. If code::didEvaluate:: already returns code::true:: (before the current call to code::value::) then the current code::args:: are irrelevant because the wrapped function is not called anymore.
-
 
 returns::
 list::
@@ -111,19 +61,7 @@ list::
 ## the value that was computed by the function (wrapped by the CallOnce) on the first call to CallOnce's code::value::
 ::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 r = 1; // some resource

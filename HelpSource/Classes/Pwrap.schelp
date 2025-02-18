@@ -3,35 +3,11 @@ categories:: Streams-Patterns-Events>Patterns>Math
 summary:: Constrain the range of output values by wrapping
 related:: Classes/SimpleNumber
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Note: this is equivalent to pattern.wrap(lo, hi)
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

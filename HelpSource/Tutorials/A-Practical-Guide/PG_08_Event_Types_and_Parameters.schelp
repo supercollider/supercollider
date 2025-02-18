@@ -3,19 +3,7 @@ categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Describes the event types defined in the default event, and the parameters they expect
 related:: Tutorials/A-Practical-Guide/PG_07_Value_Conversions, Tutorials/A-Practical-Guide/PG_Cookbook01_Basic_Sequencing
 
-
-
-
-
-
-
-
-
-
 section:: Event types
-
-
-
 
 A common question is, "Which parameters have special meanings in Pbind?" Perhaps surprisingly, none of them do! That's because Pbind simply puts data into the result event; it doesn't care what the data are.
 
@@ -33,22 +21,9 @@ The others are auxiliary, and most useful when writing patterns to generate a li
 Before looking at the event types themselves, let's go over some standard parameters used across many event types.
 (Not every common parameter is used in every event type, but these turn up in lots of places.)
 
-
-
-
-
-
-
-
-
-
 section:: Common parameters
 
-
-
-
 subsection:: Timing control
-
 
 definitionlist::
 ## \delta || Number of strong::beats:: until the next event. Calculated from code::~dur * ~stretch::, if code::\delta:: is not given explicitly.
@@ -84,13 +59,7 @@ Pbind(
 
 ::
 
-
-
-
-
-
 subsection:: Node control
-
 
 definitionlist::
 ## \addAction || How to add a synth or group node relative to the given code::\group:: in the event. See link::Classes/Synth::.
@@ -104,13 +73,7 @@ Normally this is code::nil::, in which case the IDs will be obtained from code::
 ## \out || Generally used for the output bus of a link::Classes/Synth::. When using link::Classes/Pbus:: or link::Classes/Pfxb::, an audio bus is allocated to isolate the pattern's signal. All events from the pattern receive the new bus number in the code::\out:: slot, and SynthDefs being played should use an code::out:: argument for the target of output UGens, e.g., code::Out.ar(out, ...):: .
 ::
 
-
-
-
-
-
 subsection:: User function hooks
-
 
 definitionlist::
 ## \finish || A function that will be executed after code::play:: has been called, but before event type processing.
@@ -119,22 +82,9 @@ Use this to manipulate event data.
 The code::callback:: may be used for bookkeeping. Finished Events are expected to store new node IDs under code::~id::; with the IDs, you can register functions to watch node status or set node controls, for instance. The function receives the finished event as its argument.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Event Types
 
-
-
-
 subsection:: Node control
-
 
 definitionlist::
 ## rest || As one would expect, a code::\rest:: does nothing except wait the required amount of time until the next event.
@@ -272,13 +222,7 @@ definitionlist::
 They should not be used directly.
 ::
 
-
-
-
-
-
 subsection:: Server control
-
 
 definitionlist::
 ## group || Create a new group (or groups).
@@ -301,13 +245,7 @@ A Bus object can be used.
 
 ::
 
-
-
-
-
-
 subsection:: Buffer control
-
 
 All of these buffer event types expect the buffer number to be provided.
 They will not automatically get a buffer number from the server's buffer allocator. A Buffer object is allowed -- you could create the Buffer first using code::Buffer.alloc:: or code::Buffer.new:: and then use this object in the control events.
@@ -367,13 +305,7 @@ Default = code::0::.
 
 ::
 
-
-
-
-
-
 subsection:: Event types with cleanup
-
 
 These event types uniquely have automatic cleanup event types associated with them.
 Playing one of these event types allocates a server resource.
@@ -485,13 +417,7 @@ definitionlist::
 
 ::
 
-
-
-
-
-
 subsection:: MIDI output
-
 
 definitionlist::
 ## midi || Sends one of several types of MIDI messages to a MIDIOut object.
@@ -601,13 +527,7 @@ Write code::[Int8Array[...]]::, not just code::Int8Array[...]::.
 
 ::
 
-
-
-
-
-
 subsection:: Miscellaneous
-
 
 definitionlist::
 ## composite || Perform any number of event types, given as ~types. You should ensure that parameters are compatible.

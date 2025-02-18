@@ -3,82 +3,42 @@ categories:: UGens>Filters>Linear
 summary:: First order filter section
 related:: Classes/SOS
 
-
-
-
-
-
-
-
-
-
 description::
 
-
-
-
 A standard first order filter section.
-Filter coefficients are given directly rather than calculated for you.
+Filter coefficients are given
+directly rather than calculated for you.
 Formula is equivalent to:
 
 code::
 out(i) = (a0 * in(i)) + (a1 * in(i-1)) + (b1 * out(i-1))
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: in
 
 Signal input.
 
-
 argument:: a0
 
 See formula above.
-
 
 argument:: a1
 
 See formula above.
 
-
 argument:: b1
 
 See formula above.
-
 
 argument:: mul
 
 argument:: add
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

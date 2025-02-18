@@ -18,19 +18,7 @@ code::
 SCDoc.helpTargetDir.openOS
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Colors
-
-
-
 
 Colors are defined as CSS variables, so that to change any color, it's
 sufficient for a user to override the relevant variable in their
@@ -59,13 +47,7 @@ The teletype::themes:: directory also contains a teletype::README.md:: which
 goes more into detail about how a theme gets applied and stored for a client
 and how a theme can be developed.
 
-
-
-
-
-
 subsection:: Themes
-
 
 CSS themes distributed in teletype::HelpTargetDir/themes:: are
 provided only to match ScIDE's UI themes. There is currently no

@@ -3,19 +3,7 @@ categories:: UGens>Algebraic
 summary:: Apply a binary operation to the values of an input UGen
 related:: Classes/UnaryOpUGen, Classes/BinaryOpFunction, Classes/Pbinop, Overviews/Operators
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 BinaryOpUGens are created as the result of a binary operator applied to a link::Classes/UGen::.
 
@@ -33,75 +21,34 @@ For the immediate operations on numbers, see for example link::Classes/SimpleNum
 
 See link::Overviews/Operators:: for an overview of common operators.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: new1
 
-
 method:: new
 Return a new instance that applies the operator code::selector:: to the UGens code::a:: and code::b:: normally, this is implicitly called when applying an operator to a link::Classes/UGen::.
-
 
 argument:: selector
 
 The selector symbol for the binary operator
 
-
 argument:: a
 
 Left operand
-
 
 argument:: b
 
 Right operand
 
-
 returns::
  
 A new instance of BinaryOpUGen
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 private:: init, optimizeGraph, constantFolding
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 a = WhiteNoise.ar; // a WhiteNoise
@@ -118,13 +65,7 @@ b.operator; // +
 )
 ::
 
-
-
-
-
-
 subsection:: The comparison operators
-
 
 The operators code:: >, >=, <, <= :: are particularly useful for triggering. They should not be confused with their use in conditionals.
 Compare:

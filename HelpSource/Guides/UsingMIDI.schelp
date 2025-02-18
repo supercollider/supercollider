@@ -6,19 +6,7 @@ related:: Guides/MIDI, Classes/MIDIFunc, Classes/MIDIdef
 
 keyword::MIDI
 
-
-
-
-
-
-
-
-
-
 section:: Introduction
-
-
-
 
 SuperCollider's out of the box MIDI support is fairly thorough (although not as complete as you'll find in commercial sequencers).
 All MIDI devices accessible to your operating system (CoreMIDI on macOS, ALSA on Linux, PortMIDI on Windows) are accessible to SuperCollider.
@@ -41,22 +29,9 @@ It contains a device name, port name and unique identifier (uid).
 
 In most cases, each physical MIDI connection (pair of in/out jacks on the MIDI interface) has one MIDIEndPoint object to represent it in the client.
 
-
-
-
-
-
-
-
-
-
 section:: Receiving MIDI input
 
-
-
-
 subsection:: MIDIFunc and MIDIdef
-
 
 For most uses, the preferred way to receive MIDI input is using the link::Classes/MIDIFunc:: and link::Classes/MIDIdef:: classes.
 The advantage of this approach is that any number of responders can be registered, using extremely flexible matching.
@@ -66,13 +41,7 @@ It can  filter incoming MIDI messages to respond to a particular device, channel
 
 See link::#Playing notes on your MIDI keyboard:: below for a simple example using the note-on and note-off MIDIFuncs.
 
-
-
-
-
-
 subsection:: MIDIFunc and MIDIdef: Filtering based on device or message data
-
 
 MIDIFunc and MIDIdef can filter incoming messages, responding to specific devices, MIDI channels or data values.
 For example, you may want one MIDIFunc to handle controller 1, while a different MIDIFunc handles controller 7.
@@ -90,13 +59,7 @@ If you know the device's name, you can search the array for a matching MIDIEndPo
 
 Any filters that are omitted will match all values -- e.g., for an omni-channel responder, simply leave out a code::chan:: filter.
 
-
-
-
-
-
 subsection:: MIDIIn
-
 
 MIDIIn has a number of class variables holding functions to be evaluated when a MIDI event comes in.
 Technical details on each function can be found in the link::Classes/MIDIIn:: help file.
@@ -104,19 +67,7 @@ Technical details on each function can be found in the link::Classes/MIDIIn:: he
 Note, however, that MIDIIn provides no functionality for filtering incoming MIDI based on device, controller number or other factors.
 This means, for practical use, MIDIIn is significantly harder to use than link::Classes/MIDIFunc:: or link::Classes/MIDIdef::. strong::It is generally recommended to avoid using MIDIIn directly.:: The exceptions are sysex (system exclusive) and sysrt (MIDI clock) messages, which are currently supported only by MIDIIn.
 
-
-
-
-
-
-
-
-
-
 section:: Playing notes on your MIDI keyboard
-
-
-
 
 The technical problem is that every note on needs to save its synth object so that the note off message can end the right server-side node.
 
@@ -153,19 +104,7 @@ SuperCollider does not have a built-in class to handle this automatically.
 However, emphasis::dewdrop_lib::, a third party library mentioned link::#Third party libraries#below::, includes Voicer (to simplify note on-off bookkeeping) and VoicerMIDISocket (to trigger Voicer notes by MIDI).
 Users interested in this functionality may wish to examine that library.
 
-
-
-
-
-
-
-
-
-
 section:: Sending MIDI out
-
-
-
 
 See the link::Classes/MIDIOut:: helpfile. Unlike MIDIIn, with MIDIOut you create an instance of the MIDIOut class with a port and uid.
 You can have multiple MIDIOut objects to send MIDI to different physical devices.
@@ -174,19 +113,7 @@ Many users have reported timing issues with MIDIOut.
 When the CPU is busy, especially during graphics updates, outgoing MIDI messages may be delayed.
 Use with caution in a performance situation.
 
-
-
-
-
-
-
-
-
-
 section:: MIDI synchronization
-
-
-
 
 MIDI synchronization may be performed using MIDIIn's sysrt or smpte response functions.
 It's up to the user to implement the desired kind of synchronization.
@@ -205,19 +132,7 @@ See the MIDISyncClock helpfile for details.
 
 There are significant limitations, discussed in the helpfile. This is not really a fully supported class, but it's there for users who need rudimentary MIDI sync functionality.
 
-
-
-
-
-
-
-
-
-
 section:: Third party libraries
-
-
-
 
 emphasis::dewdrop_lib:: is a third party library providing a number of useful performance features, available through the link::Classes/Quarks:: interface.
 The library provides a user-extensible framework of MIDI responder classes designed for multiport, multichannel applications.

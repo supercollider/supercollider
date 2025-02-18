@@ -45,23 +45,19 @@ p.asCompileString;
 
 // the document message creates a new document which it posts the code into
 
-p.document;		// document everything
-p.document([\out]); 	// document all dependants of ~out
-p.document([\ctl1]);	// document all dependants of ~ctl1
+p.document;		// document everything p.document([\out]); 	// document all dependants of ~out p.document([\ctl1]);	// document all dependants of ~ctl1
 ::
 
 Ndefs and NodeProxies can also store their full state as a code string:
 
 code::
-// Ndef with source
-Ndef(\x, { Saw.ar(\freq.kr(234), 0.1) });
+// Ndef with source Ndef(\x, { Saw.ar(\freq.kr(234), 0.1) });
 Ndef(\x).asCode;
 // returns:
 "Ndef('x', { Saw.ar(\freq.kr(234), 0.1) });
 "
 
-// Ndef with source and settings
-Ndef(\a,  { Saw.ar(\freq.kr, 0.1) }).set(\freq, 123);
+// Ndef with source and settings Ndef(\a,  { Saw.ar(\freq.kr, 0.1) }).set(\freq, 123);
 Ndef(\a).asCode;
 // returns:
 "(
@@ -76,8 +72,7 @@ z.asCode
 // returns:
 "a = NodeProxy.new.source_({ DC.ar });"
 
-// nodeproxy  in a pushed proxyspace, which is also playing
-p = ProxySpace.push(s);
+// nodeproxy  in a pushed proxyspace, which is also playing p = ProxySpace.push(s);
 ~x = { Saw.ar(\freq.kr(234), 0.1) };
 ~x.play;
 ~x.asCode;

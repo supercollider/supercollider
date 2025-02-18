@@ -6,19 +6,7 @@ related:: Overviews/JITLib, Tutorials/JITLib/jitlib_basic_concepts_02
 
 This helpfile explains some basic concepts of interactive programming with SuperCollider and proxy space.
 
-
-
-
-
-
-
-
-
-
 section:: What is a proxy?
-
-
-
 
 A proxy is a place holder that is often used to operate on something that does not yet exist.
 For example, an emphasis::OutputProxy:: is used to represent multiple outputs of a UGen, even if only one UGen is created eventually.
@@ -28,13 +16,7 @@ See also: link::Classes/OutputProxy::, link::Classes/Function::, link::Classes/R
 
 Further reading: link::Classes/NodeProxy::, link::Classes/ProxySpace::, link::Classes/Ndef::
 
-
-
-
-
-
 subsection:: Using a Ref as a proxy
-
 
 code::
 // reference example
@@ -80,13 +62,7 @@ currentEnvironment.postln; // the value is stored in the environment
 ~y + ~x; // this works.
 ::
 
-
-
-
-
-
 subsection:: Using a Function as a proxy
-
 
 code::
 // a function can serve the same purpose
@@ -101,19 +77,7 @@ z.value;
 
 See also client side proxies like link::Classes/Tdef::, link::Classes/Pdefn::, link::Classes/Pdef::, link::Classes/Fdef::
 
-
-
-
-
-
-
-
-
-
 section:: NodeProxy, ProxySpace, Ndef
-
-
-
 
 For interactive programming it can be useful to be able to use something before it is there - it makes evaluation order more flexible and allows to postpone decisions to a later moment.
 Some preparations have to be done usually - like above, a reference has to be created.

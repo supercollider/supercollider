@@ -7,38 +7,14 @@ related:: Guides/News-3_7, Guides/News-3_6, Guides/News-3_5, Guides/Debugging-ti
 3.8 is light on new features and heavy on small bugfixes.
 See CHANGELOG.md for more details.
 
-
-
-
-
-
-
-
-
-
 section:: SuperCollider IDE
-
-
-
 
 list::
 ## The middle mouse button now closes tabs.
 ## A new menu entry, Language > Quarks, launches Quarks.gui.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: SuperCollider Language
-
-
-
 
 list::
 ## New methods: link::Classes/Function#-plotAudio::, link::Classes/Bus#-plotAudio::.
@@ -46,19 +22,7 @@ list::
 ## New methods: link::Classes/TreeView#-addChild::, link::Classes/TreeView#-insertChild::, and link::Classes/TreeView#-childAt::, alias methods provided for symmetry with TreeViewItem.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: SuperCollider Server
-
-
-
 
 list::
 ## A new command-line option for scsynth, -B, allows binding to a specific address.
@@ -66,19 +30,7 @@ list::
 ## link::Classes/TGrains:: supports numChannels set to 1.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: API changes
-
-
-
 
 list::
 ## The number of default audio buses has been increased from 128 to 1024.
@@ -87,19 +39,7 @@ list::
 ## The argument "startframe" has been renamed to "startFrame" and "aSoundFile" to "soundFile" in the following methods of link::Classes/SoundFileView::: loadFile, setData, readFile, read, readFileWithTask, readWithTask.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Known Issues
-
-
-
 
 While much has improved and many bugs from 3.7 have been fixed, there are still many known issues.
 For a complete list see: link::https://github.com/supercollider/supercollider/issues/::

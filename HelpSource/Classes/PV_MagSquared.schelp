@@ -3,57 +3,21 @@ categories:: UGens>FFT
 summary:: Square magnitudes
 related:: Classes/FFT, Classes/IFFT
 
-
-
-
-
-
-
-
-
-
 description::
 
-
-
-
 Squarethe the magnitudes and renormalizes to previous peak.
-This makes weak bins weaker.
-
-
-
-
-
-
-
-
-
+This makes weak
+bins weaker.
 
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: buffer
 
 FFT buffer.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 s.boot;

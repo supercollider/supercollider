@@ -3,39 +3,14 @@ categories:: Control
 summary:: Register actions to be taken to initialise a basic tree of groups on the server
 related:: Classes/Server, Classes/ServerQuit, Classes/ServerBoot, Classes/CmdPeriod
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 The singleton ServerTree provides a place for registering functions and objects for events that should happen when a given server has booted and when all synths are freed.
 This is to initialise a basic tree of groups on the server.
 
 See link::Classes/AbstractServerAction:: for usage.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 private:: initClass
-
 

@@ -3,19 +3,7 @@ categories:: UGens>Analysis>Amplitude
 summary:: Basic psychoacoustic amplitude compensation (ANSI A-weighting curve)
 related:: Classes/AmpComp
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Higher frequencies are normally perceived as louder, which AmpCompA
 compensates. Following the measurements by Fletcher and Munson, the
@@ -50,59 +38,30 @@ sqrt(level)
 
 For a simpler but more flexible curve, see  link::Classes/AmpComp::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr, ir
-
 
 argument:: freq
 
 Input frequency value. For freq == root, the output is rootAmp.
 
-
 argument:: root
 
 Root freq relative to which the curve is calculated (usually lowest freq).
-
 
 argument:: minAmp
 
 Amplitude at the minimum point of the curve (around 2512 Hz).
 
-
 argument:: rootAmp
 
 Amplitude at the root frequency.
 
-
 discussion::
 Apart from code::freq::, the values are not modulatable
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // compare a sine without compensation

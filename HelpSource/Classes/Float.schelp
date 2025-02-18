@@ -2,19 +2,7 @@ title:: Float
 categories:: Math
 summary:: 64-bit Floating point number
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A 64-bit double precision floating point number.
 Float inherits most of its behaviour from its superclass.
@@ -36,143 +24,83 @@ apotome / limma
 Note that despite its name, link::Classes/FloatArray:: only holds 32-bit (single precision) floats.
 For a raw array of 64-bit floats, use link::Classes/DoubleArray::.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: from32Bits
-
 
 returns::
  
 a new Float from a 32-bit word.
 
-
-
-
 method:: from64Bits
-
 
 returns::
  
 a new Float from a 64-bit word.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 method:: do
 
-
-Iterate a link::Classes/Function:: from code::0:: to code::this - 1::. See also: link::Classes/Integer#-do::, link::Classes/Collection#-do::
-
+Iterates a link::Classes/Function:: from code::0:: to code::this - 1::. See also: link::Classes/Integer#-do::, link::Classes/Collection#-do::
 
 argument:: function
 
 The function to iterate.
-
-
-
 
 method:: reverseDo
 
-
-Iterate function from code::this - 1:: to teletype::0::
-
+Iterates function from code::this - 1:: to teletype::0::
 
 argument:: function
 
 The function to iterate.
 
-
-
-
 method:: clip
-
 
 Return this if lo <= this <= hi, otherwise return the nearest boundary:
 lo if this < lo, hi if this > hi.
-
 
 argument:: lo
 
 The low threshold of clipping.
 
-
 argument:: hi
 
 The high threshold of clipping.
 
-
-
-
 method:: fold
 
-
 Fold this to [lo, hi].
-
 
 argument:: lo
 
 The low threshold of folding.
 
-
 argument:: hi
 
 The high threshold of folding.
 
-
-
-
 method:: wrap
-
 
 Wrap this around [lo, hi) such that it falls in range.
 Equivalent to (this % (hi - lo)) + lo.
-
 
 argument:: lo
 
 The low threshold (inclusive) of wrapping.
 
-
 argument:: hi
 
 The high threshold (exclusive) of wrapping.
 
-
-
-
 method:: coin
-
 
 Let emphasis::x:: be the receiver clipped to the range [0, 1]. With probability emphasis::x::, return teletype::true::.
 With probability 1 - emphasis::x::, return teletype::false::.
 
-
 returns::
 A link::Classes/Boolean::
-
 
 discussion::
 code::
@@ -181,68 +109,40 @@ code::
 
 See also: link::Guides/Randomness::
 
-
-
-
 method:: xrand2
-
 
 returns::
 A random float from this.neg to this, excluding the value exclude.
 
-
-
-
 method:: isFloat
-
 
 returns::
 code::true:: since this is a Float.
 
-
-
-
 method:: asFloat
-
 
 returns::
 code::this:: since this is a Float.
 
-
-
-
 method:: as32Bits
-
 
 returns::
  
 an Integer which is the bit pattern of this as a 32bit single precision float
 
-
-
-
 method:: high32Bits
-
 
 returns::
  
 an Integer which is the bit pattern of high 32-bits of the 64-bit double precision floating point value
-
-
-
 
 method:: low32Bits
 
-
 returns::
  
 an Integer which is the bit pattern of high 32-bits of the 64-bit double precision floating point value
 
-
-
-
 method:: asCompileString
-
 
 returns::
 A string that when interpreted matches the receiver, if the number is within the range given in code::storeOn::.
@@ -252,14 +152,9 @@ a = 2.81882773638;
 a.asCompileString.interpret == a;
 ::
 
-
-
-
 method:: asStringPrec
 
-
-Return a string representation of the number, with the desired precision (i.e. number of significant figures).
-
+Returns a string representation of the number, with the desired precision (i.e. number of significant figures).
 
 discussion::
 code::
@@ -272,11 +167,7 @@ pi.asStringPrec(6)
 7.4.asStringPrec(50)
 ::
 
-
-
-
 method:: dump
-
 
 code::
 -1.0.dump
@@ -302,13 +193,7 @@ class   decmial          significant part      exponent part
         representation   (mantissa)            with sign bit
 ::
 
-
-
-
-
-
 subsection:: Using Floats as replacement for Integers
-
 
 In SuperCollider, Floats are 64-bit wide. Because  an link::Classes/Integer::  is 32-bit, it can only capture integers in the range code::-2147483648 .. +2147483647::, or about code:: 2 x 10^9 ::.
 

@@ -29,31 +29,13 @@ w = Window(bounds:Rect(200,200,200,200)).layout_(
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: How a layout does its job
-
-
-
 
 A layout does its job by resizing and moving items within the parent view to form a specific distribution pattern, in accord with items' own size preferences and constraints, and with the common sense of what makes the GUI useful.
 
 To explain how the layout operates, let's first take a look at intrinsic size preferences and constraints of views:
 
-
-
-
-
-
 subsection:: Intrinsic view sizes
-
 
 Every view intrinsically has a strong::preferred size:: and a strong::minimum size::, returned by link::Classes/View#-sizeHint:: and link::Classes/View#-minSizeHint::, respectively. The preferred size is a suitable size for the view to comfortably draw itself, display its contents and allow interaction, while the minimum size is the absolute minimum that the view needs to properly draw itself (including its contents).
 Both may change when the view's contents change; for example, most views that display some text will report a different code::sizeHint:: when the text changes (unless the text is scrollable).
@@ -99,13 +81,7 @@ x.resizeTo(100,100);
 // The view did not allow a smaller size than minSize.
 ::
 
-
-
-
-
-
 subsection:: Automatic and dynamic space distribution
-
 
 A layout strong::automatically:: distributes its space among its items, possibly in strong::unequal:: parts, based on the intrinsic preferences and constraints of views described above.
 Moreover, views also have intrinsic preferences as to whether they profit from being extended horizontally or vertically, or whether they prefer their size to be fixed in a certain direction.
@@ -136,22 +112,9 @@ w = Window.new(bounds:Rect(100,100,300,80)).layout_(
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: User customization
 
-
-
-
 subsection:: Stretch factors
-
 
 Layouts typically allow the user to override their default distribution policy by assigning stretch factors to items or aspects of the layout's distribution pattern.
 
@@ -166,13 +129,7 @@ w = Window.new(bounds:Rect(100,100,400,80)).layout_(
 )
 ::
 
-
-
-
-
-
 subsection:: Size constraints
-
 
 The user can override a view's intrinsic size constraints and preferences that the layout will take into account, by placing a hard-limit on a view's size, as described above.
 
@@ -203,13 +160,7 @@ w = Window.new(bounds:Rect(100,100,200,200)).layout_(
 )
 ::
 
-
-
-
-
-
 subsection:: Alignment
-
 
 The combination of size constraints and preferences of all items in a layout hierarchy may result in a larger amount of space given to an item than its own constraints allow.
 In that case the item will only grow up to its maximum allowed size, and its position within its extra available space may be controlled by user by assigning alignment to an item.
@@ -226,42 +177,18 @@ w = Window.new.layout_(
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: View vs. layout hierarchies
-
-
-
 
 A layout starts to operate on the space that a view occupies from the moment it is installed on that view on.
 However, it will not automatically affect child views that where created before the layout was.
 For views to be managed by a layout they have to be created as children of a view after the layout has been installed on it, or they have to be explicitly inserted into the layout via layout's constructor or its instance methods for this purpose.
 
-
-
-
-
-
 subsection:: View constructed with a parent
-
 
 When a view is created with another view as parent it will implicitly become subject to the management of the parent's layout - it will be inserted into the layout in some default way.
 However, layouts like link::Classes/GridLayout:: have a complex space distribution pattern and so you will need to use their dedicated methods to specify exactly what place in the layout's distribution pattern a view will occupy.
 
-
-
-
-
-
 subsection:: View explicitly inserted into a layout
-
 
 A view can also be constructed with no parent given; after it is explicitly inserted into a layout via the layout's constructor or an instance method, it will automatically become a child of the view on which the layout is or will be installed.
 In case the layout occupies place directly in another layout, the view will become a child of the view on which the topmost layout is installed.

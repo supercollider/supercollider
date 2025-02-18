@@ -6,22 +6,9 @@ summary:: Writing Primitives
 
 Although much of SuperCollider's functionality is implemented in the SuperCollider language itself, for reasons of efficiency, some functionality is implemented in 'back end' C++ functions called 'primitives'. This document provides guidance to members of the SC development community on writing primitives.
 
-
-
-
-
-
-
-
-
-
 section:: Example
 
-
-
-
 subsection:: SuperCollider code
-
 
 Primitive calls are preceded with an underscore, so for example code::_myPrimitiveName::.
 Here is an example call to a primitive in an SC class:
@@ -96,13 +83,7 @@ prOpenUDPPort {|portNum|
 }
 ::
 
-
-
-
-
-
 subsection:: Define your primitive
-
 
 In your primitive source code define the primitive:
 
@@ -131,13 +112,7 @@ to include the receiver which is passed in as the first argument.
 
 (TODO varArgs ...)
 
-
-
-
-
-
 subsection:: Write your primitive
-
 
 teletype::g->sp:: is the top of the stack and is the last argument pushed.
 teletype::g->sp - inNumArgsPushed + 1 :: is the receiver and where the result goes.
@@ -161,22 +136,9 @@ int prGetPathsDialog(struct VMGlobals *g, int numArgsPushed)
 This example does not set the receiver, so the primitive returns the original receiver unchanged (still an instance of code::Cocoa::).
 Or set the object at teletype::receiver:: which again is at teletype::(g->sp - numArgsPushed + 1)::.
 
-
-
-
-
-
-
-
-
-
 section:: Guidelines
 
-
-
-
 subsection:: Creating objects in primitives, and GC safety
-
 
 SuperCollider uses a garbage collector to manage memory allocation and collection where needed.footnote::Some SC language objects, such as numbers, boolean types, chars, and symbols are stored directly within a PyrSlot, and do not require allocation.
 (Symbols are a special case: A reference to a location in the global symbol table is stored, where each defined symbol is permanently stored.):: In order to meet the requirements of good real time performance, a small and bounded amount of garbage collection may be triggered each time an object is created.
@@ -427,13 +389,7 @@ The object has to stay in that array until no C object refers to it.
 strong::Failing to observe the above two points can result in very hard to find bugs.::
 ::
 
-
-
-
-
-
 subsection:: Type safety
-
 
 Since SC is dynamically typed, you cannot rely on any of the arguments being of the class you expect.
 You should check every argument to make sure it is the correct type.
@@ -444,19 +400,7 @@ Similarly there is teletype::slotStringVal::.
 
 It is safe to assume that the receiver will be of the correct type because this is ensured by the method dispatch mechanism.
 
-
-
-
-
-
-
-
-
-
 section:: FAQ
-
-
-
 
 definitionlist::
 ## Now where do I put the thing to return it?

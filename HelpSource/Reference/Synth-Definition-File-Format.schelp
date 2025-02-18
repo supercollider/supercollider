@@ -18,19 +18,7 @@ list::
 
 This document describes SynthDef2's format. See link::#Original SynthDef format:: for the differences between SynthDef and SynthDef2.
 
-
-
-
-
-
-
-
-
-
 section:: Basic types
-
-
-
 
 All data is stored big endian.
 All integers, unless otherwise noted, are signed. All data is packed, not padded or aligned.
@@ -43,19 +31,7 @@ definitionlist::
 ## pstring || a pascal format string: a byte (an strong::unsigned:: int8) giving the length followed by that many bytes.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: File Format
-
-
-
 
 A strong::synth-definition-file:: is :
 
@@ -132,29 +108,11 @@ list::
 ## [float32] * P - variant initial parameter values
 ::
 
-
-
-
-
-
-
-
-
-
 section:: File Format as Tree
-
-
-
 
 soft::added by Jonatan Liljedahl::
 
-
-
-
-
-
 subsection:: synth-definition-file
-
 
 tree::
 ## int32 - four byte file type id containing the ASCII characters: "SCgf"
@@ -207,19 +165,7 @@ tree::
     ::
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Original SynthDef format
-
-
-
 
 The original SynthDef format differs in that the following items are teletype::int16:: instead of teletype::int32::.
 
@@ -263,19 +209,7 @@ list::
 
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Glossary
-
-
-
 
 definitionlist::
 ## calculation rate || the rate that a computation is done.
@@ -311,31 +245,13 @@ A synth is a type of node.
 unit generators are connected together to form synths.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Notes
-
-
-
 
 Unit generators are listed in the order they will be executed.
 Inputs must refer to constants or previous unit generators.
 No feedback loops are allowed. Feedback must be accomplished via delay lines or through buses.
 
-
-
-
-
-
 subsection:: For greatest efficiency:
-
 
 Unit generators should be listed in an order that permits efficient reuse of connection buffers, which means that a depth first topological sort of the graph is preferable to breadth first.
 

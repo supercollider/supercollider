@@ -3,57 +3,20 @@ categories:: UGens>Synth control
 summary:: When triggered, pause enclosing synth
 related:: Classes/FreeSelf
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Pause enclosing synth when input signal crosses from non-teletype::positive:: to
 positive.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: kr
-
 
 argument:: in
 
 The input signal.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

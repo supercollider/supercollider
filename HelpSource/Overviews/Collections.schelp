@@ -7,29 +7,11 @@ related:: Classes/Collection
 SuperCollider has a rich hierarchy of Collection subclasses, detailed below. Subclasses of a given class are indented (sub-lists) relative to the class. Classes labelled "abstract" are not for direct use, but classes lower down the tree may inherit methods from them.
 For this reason it is important to consult the helpfiles of classes farther up the tree in order to get a complete list of available methods.
 
-
-
-
-
-
-
-
-
-
 section:: Hierarchy
-
-
-
 
 classtree::Collection
 
-
-
-
-
-
 subsection:: Notes
-
 
 definitionlist::
 ## link::Classes/List::

@@ -3,51 +3,15 @@ categories:: UGens>Info
 summary:: Server sample rate
 related:: Classes/ControlRate, Classes/RadiansPerSample, Classes/SampleDur, Classes/SubsampleOffset
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Return the current sample rate of the server.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: ir
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // compares a 441 Hz sine tone derived from sample rate (44100 * 0.01, left)

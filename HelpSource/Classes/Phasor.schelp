@@ -2,25 +2,17 @@ title:: Phasor
 categories:: UGens>Triggers, UGens>Buffer
 summary:: A resettable linear ramp between two levels
 
-
-
-
-
-
-
-
-
-
 description::
 
-
-
-
 Phasor is a linear ramp between start and end values.
-When its trigger input crosses from non-teletype::positive:: to teletype::positive::, Phasor's output will jump to its reset position. Upon reaching the end of its ramp Phasor will wrap back to its start.
+When its trigger
+input crosses from non-teletype::positive:: to teletype::positive::, Phasor's output will jump to
+its reset position. Upon reaching the end of its ramp Phasor will wrap
+back to its start.
 
 note::
-N.B. Since end is defined as the wrap point, its value is never actually output.
+N.B. Since end is defined as the wrap point, its value is never
+actually output.
 ::
 
 note::
@@ -29,61 +21,33 @@ If one wants Phasor to output a signal with frequency teletype::freq:: oscillati
 
 Phasor is commonly used as an index control with link::Classes/BufRd:: and link::Classes/BufWr::.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: trig
 
 When triggered, jump to resetPos (default: 0, equivalent to
 start).
 
-
 argument:: rate
 
-The amount of change per sample, i.e at a rate of teletype::1::the value of each sample will be 1 greater than the preceding sample.
-
+The amount of change per sample, i.e at a rate of teletype::1::the value of
+each sample will be 1 greater than the preceding sample.
 
 argument:: start
 
 Start point of the ramp.
 
-
 argument:: end
 
 End point of the ramp.
-
 
 argument:: resetPos
 
 The value to jump to upon receiving a trigger.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // phasor controls sine frequency: end frequency matches a second sine wave.

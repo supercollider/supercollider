@@ -2,76 +2,26 @@ title:: Thunk
 categories:: Core>Kernel
 summary:: Unevaluated value
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Thunk, "past tense of think", can be used 	when a calculation may, or may not have to be performed at a later point in time, and its value is needed several times.
 This is an example of lazy evaluation, and can be used to avoid unnecessary calculations and to make state immutable.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: function
 
 Some function that returns the desired value
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 method:: value
 
-
 Return the value. If calculation is done, use previous value, otherwise do calculation.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // so for example, random values will result in a single instance:

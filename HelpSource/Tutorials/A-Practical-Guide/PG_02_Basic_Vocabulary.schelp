@@ -3,19 +3,7 @@ categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Common patterns to generate streams of single values
 related:: Tutorials/A-Practical-Guide/PG_01_Introduction, Tutorials/A-Practical-Guide/PG_03_What_Is_Pbind
 
-
-
-
-
-
-
-
-
-
 section:: Basic Vocabulary: Generating values
-
-
-
 
 Before getting to the really cool things patterns can do, we need to build up a basic vocabulary.
 We'll start with some words, then move into phrases in the next tutorial.
@@ -31,22 +19,9 @@ You can always come back and look at the rest later.
 
 For more information on any of these patterns, select the class name and use the help key for your editor to open its help file.
 
-
-
-
-
-
-
-
-
-
 section:: Quick reference
 
-
-
-
 subsection:: Primary Patterns
-
 
 definitionlist::
 ## code::Pseq(list, repeats, offset):: || Play through the entire list code::repeats:: times. Like code::list.do::.
@@ -68,13 +43,7 @@ definitionlist::
 The function should return values using code::.yield:: or code::.embedInStream::.
 ::
 
-
-
-
-
-
 subsection:: Additional List Patterns
-
 
 definitionlist::
 ## code::Pser(list, repeats, offset):: || Play through the list as many times as needed, but output only code::repeats:: items.
@@ -87,13 +56,7 @@ definitionlist::
 ## code::Ptuple(list, repeats):: || Collect the list items into an array as the return value.
 ::
 
-
-
-
-
-
 subsection:: Additional Random Number Generators
-
 
 definitionlist::
 ## code::Pgbrown(lo, hi, step, length):: || Brownian motion, geometric scale (multiplication).
@@ -109,22 +72,9 @@ definitionlist::
 ## code::Pprob(distribution, lo, hi, length, tableSize):: || Arbitrary distribution, based on a probability table.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Functional descriptions of patterns
 
-
-
-
 subsection:: List Patterns
-
 
 The most obvious thing one would want to do with a pattern is to give it a list of values and have it read them out in order.
 You have a couple of choices, which differ in their handling of the code::repeats:: parameter.
@@ -192,13 +142,7 @@ p = Pbind(
 
 ::
 
-
-
-
-
-
 subsection:: Random-order list patterns
-
 
 definitionlist::
 ## code::Prand(list, repeats):: || Choose items from the list randomly (same as code::list.choose::).
@@ -253,13 +197,7 @@ p = Pbind(
 This pattern is a bit more complicated; see its link::Classes/Pwalk##help:: file for details.
 ::
 
-
-
-
-
-
 subsection:: Interlacing values and making arrays
-
 
 These are opposing operations: interlacing means splitting arrays and merging them into a stream of single values, and arrays can be made out of single-value streams as well.
 
@@ -319,13 +257,7 @@ p = Pbind(
 
 ::
 
-
-
-
-
-
 subsection:: Arithmetic and geometric series
-
 
 Now, let's move to patterns that produce values mathematically, without using a predefined list.
 
@@ -360,13 +292,7 @@ Pgeom(0.5, 0.89140193218427, 15)
 
 ::
 
-
-
-
-
-
 subsection:: Random numbers and probability distributions
-
 
 definitionlist::
 ## code::Pwhite(lo, hi, length):: || Produces code::length:: random numbers with equal distribution ('white' refers to white noise).
@@ -392,13 +318,7 @@ code::
 Pmeanrand(0.0, 1.0, inf).asStream.nextN(10000).histo(200, 0.0, 1.0).plot;
 ::
 
-
-
-
-
-
 subsection:: Catchall Patterns
-
 
 Not everything is pre-written as a pattern class. These patterns let you embed custom logic.
 

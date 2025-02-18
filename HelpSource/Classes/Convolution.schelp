@@ -3,54 +3,28 @@ categories:: UGens>FFT, UGens>Convolution
 summary:: Real-time convolver
 related:: Classes/Convolution2, Classes/Convolution2L, Classes/Convolution3
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Strict convolution of two continuously changing inputs.
 Also see
-link::Classes/Convolution2::  for a cheaper CPU cost alternative for the case of a fixed kernel which can be changed with a trigger message.
+link::Classes/Convolution2::  for a cheaper CPU cost alternative for the
+case of a fixed kernel which can be changed with a trigger message.
 
 
 See also  link::http://www.dspguide.com/ch18.htm::  by Steven W.
 Smith.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar
-
 
 argument:: in
 
 Processing target.
 
-
 argument:: kernel
 
 Processing kernel.
-
 
 argument:: framesize
 
@@ -61,29 +35,15 @@ The maximum value you can use is 2^16 = 16384.
 (This upper limit is half of "SC_FFT_MAXSIZE" defined in the SC source code.)
 Larger convolutions than this can be done using link::Classes/PartConv::.
 
-
 argument:: mul
 
 Output will be multiplied by this value.
-
 
 argument:: add
 
 This value will be added to the output.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

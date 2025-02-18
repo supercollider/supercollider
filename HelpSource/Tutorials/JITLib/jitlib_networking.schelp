@@ -6,31 +6,13 @@ related:: Overviews/JITLib
 
 emphasis::please note any problems, I'll try to add solutions here.::
 
-
-
-
-
-
-
-
-
-
 section:: 1) using ProxySpace with more than one client, with separate bus spaces
-
-
-
 
 note::
 If only one client is using a remote server, only step (a) and step (d) are relevant. The clientID argument can be left out then.
 ::
 
-
-
-
-
-
 subsection:: Before you start
-
 
 Remember to synchronize your system clocks.
 This can be done by:
@@ -44,13 +26,7 @@ A local time server is better than the apple time server.
 if you cannot sync the time, you can set the server latency to code::nil::.
 This will break the pattern's functionality though.
 
-
-
-
-
-
 subsection:: A) boot the (remote) server and create a local model
-
 
 code::
 s = Server("serverName", NetAddr(hostname, port));
@@ -67,13 +43,7 @@ default is 57110
 
 See link::Classes/Server::
 
-
-
-
-
-
 subsection:: B) from each client, initialize the default node and set notify to true:
-
 
 code::
 s.boot; // this will initialize the tree and start notification
@@ -82,13 +52,7 @@ s.boot; // this will initialize the tree and start notification
 s.makeWindow;
 ::
 
-
-
-
-
-
 subsection:: C) now create a ProxySpace from the server:
-
 
 code::
 p = ProxySpace.push(s);

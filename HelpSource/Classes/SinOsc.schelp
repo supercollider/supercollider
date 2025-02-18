@@ -3,32 +3,14 @@ categories:: UGens>Generators>Deterministic
 summary:: Interpolating sine wavetable oscillator
 related:: Classes/Osc, Classes/FSinOsc, Classes/SinOscFB, Classes/PMOsc, Classes/Klang
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Generatea a sine wave.
 Uses a wavetable lookup oscillator with linear interpolation.
 Frequency and phase modulation are provided for audio-rate modulation.
 Technically, code::SinOsc:: uses the same implementation as  link::Classes/Osc::  except that its table is fixed to be a sine wave made of code::8192:: samples.
 
-
-
-
-
-
 subsection:: Other sinewaves oscillators
-
 
 list::
 ## link::Classes/FSinOsc:: – fast sinewave oscillator
@@ -38,28 +20,14 @@ list::
 ## link::Classes/DynKlang:: – modulable bank of sinewave oscillators
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: freq
 
 Frequency in Hertz.
 Sampled at audio-rate.
-
 
 argument:: phase
 
@@ -70,29 +38,15 @@ note::
 Phase values should be within the range +-8pi. If your phase values are larger then simply use code::.mod(2pi)::to wrap them.
 ::
 
-
 argument:: mul
 
 Output will be multiplied by this value.
-
 
 argument:: add
 
 This value will be added to the output.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // create an audio-rate sine wave at 200 Hz,

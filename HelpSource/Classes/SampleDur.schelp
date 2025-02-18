@@ -3,37 +3,12 @@ categories:: UGens>Info
 summary:: Duration of one sample
 related:: Classes/ControlRate, Classes/RadiansPerSample, Classes/SampleRate, Classes/SubsampleOffset
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Return the current sample duration of the server.
 Equivalent to 1/SampleRate.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ir
-
 

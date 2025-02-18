@@ -3,37 +3,13 @@ categories:: Control, Envelopes
 summary:: Envelope specification
 related:: Classes/InterplEnv
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Takean an array of [x, y] pairs and a curve value for all break points.
 x values can be negative (for use in indexing with negative values or signals).
 See link::Classes/InterplEnv:: Help for more info.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 a = InterplPairs([[0, 1], [1, 2], [2, 0]], \sin);

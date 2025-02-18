@@ -2,19 +2,7 @@ title:: JITLib Changes in 3.7
 categories:: JITLib, Live Coding
 summary:: A Changelog for JITLib
 
-
-
-
-
-
-
-
-
-
 section:: Overview
-
-
-
 
 In general, the changes in this version try to to strengthen the ideal of proxies being true placeholders that behave in many ways like their source objects:
 
@@ -51,22 +39,9 @@ code::
 BusPlug.defaultReshaping = \elastic;
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Behavior Changes
 
-
-
-
 subsection:: Changes in pattern proxies (Pdef/Pdefn/Tdef and respective parent classes)
-
 
 list::
 ## When a none-stream/non-pattern object is the source of the proxy, return the object only once per stream (do not loop by default)
@@ -78,13 +53,7 @@ all pattern proxies now behave to asStream and embedInStream like their respecti
 E.g. code::Pdefn(\x, 800); Pbindef(\freq, Pdefn(\x)):: will loop 800, while code::Pseq([Pdefn(\x), 900]):: will return first 800, then 900.
 ::
 
-
-
-
-
-
 subsection:: Changes in node proxy (NodeProxy, Ndef, BusPlug)
-
 
 list::
 ## controls are now set at synth creation time, not in an extra set message.
@@ -110,13 +79,7 @@ Set it to \clip if you want to keep it in range by repeating the last value.
 ## InBus is more flexible and logical in terms of multichannel expansion now and has a helpfile
 ::
 
-
-
-
-
-
 subsection:: New functionality
-
 
 list::
 ## the message link::Classes/NodeProxy#-mold:: allows you to change the number of channels and rate of the proxy at runtime.
@@ -132,13 +95,7 @@ In NodeProxy, the rendered SynthDef is cached, which makes the copy efficient.
 A ProxySpace or LazyEnvir can be copied and then modified independently.
 ::
 
-
-
-
-
-
 subsection:: NodeProxy elastic behavior setting
-
 
 list::
 ## NodeProxy is now able to reshape according to its source.
@@ -156,13 +113,7 @@ list::
 both shrink and grow and change rate, and code::\expanding::: only grow, but also adjust rate.
 ::
 
-
-
-
-
-
 subsection:: A few minor changes
-
 
 list::
 ## An empty function / or a function returning teletype::nil:: to a node proxy will not fail, but simply play a synth without output
@@ -173,19 +124,7 @@ This allows to know its number of channels independently of the server running.
 ## proxy is passed into events produced by event streams (code::~proxy::).
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Implementation Changes
-
-
-
 
 list::
 ## NodeProxy and BusPlug code has been refactored to make it easier to read and more consistent in behavior (see below).
@@ -195,19 +134,7 @@ You can use NodeMap for many purposes.
 ## Some methods, like setSourceLikeInPbind and prFadeTime were not necessary anymore.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Bugs fixed
-
-
-
 
 list::
 ## Pattern Proxies sometimes didn't embed correctly when quant was not nil (fixed)
@@ -217,19 +144,7 @@ list::
 ## Cleanup sometimes didn't work in Pdef. Fixes issue #107.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Example: Elastic NodeProxy
-
-
-
 
 code::
 s.boot;
@@ -264,19 +179,7 @@ Ndef(\y, { Impulse.ar([1, 2/3, 4/6, 2, 9/8] * 100 * DelayC.ar(Ndef.ar(\aa) + 1, 
 Ndef(\x, { Splay.ar(Resonz.ar(SplayAz.ar(4, Ndef.ar(\y)), [600, 720, 320, 780] * (Ndef.ar(\aa).lag(0.01) * 0.3 + 1), 0.01, 100)).distort });
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Tests for NodeProxy and Monitor
-
-
-
 
 code::
 // some tests for node proxy.
@@ -1321,19 +1224,7 @@ Ndef(\x, Instr(\sin));// not correct yet, should be 2.
 //Ndef(\c, StreamKrDur(Pseq([Prand([530, 600],1), 700, 400, 800, 500].scramble, inf) / 3, 0.2)); // still fails
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Tests for PatternProxy
-
-
-
 
 code::
 // general rule: proxy should behave (in streams and patterns) like the object it holds

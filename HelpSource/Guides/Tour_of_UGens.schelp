@@ -40,22 +40,9 @@ s.boot;
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Periodic Sources: Oscillators.
 
-
-
-
 subsection:: LF - "Low Frequency" Unit Generators.
-
 
 link::Classes/LFPar::, link::Classes/LFCub::, link::Classes/LFTri::, link::Classes/Impulse::, link::Classes/LFSaw::, link::Classes/LFPulse::, link::Classes/VarSaw::, link::Classes/SyncSaw:: - has geometric waveforms, not band limited.
 will cause aliasing at higher frequencies.
@@ -139,13 +126,7 @@ code::
 
 ::
 
-
-
-
-
-
 subsection:: Band Limited Oscillators
-
 
 link::Classes/SinOsc::, link::Classes/FSinOsc::, link::Classes/Blip::, link::Classes/Saw::, link::Classes/Pulse:: - will not alias.
 
@@ -210,13 +191,7 @@ code::
 
 ::
 
-
-
-
-
-
 subsection:: Table Oscillators
-
 
 link::Classes/Osc::, link::Classes/COsc::, link::Classes/VOsc::, link::Classes/VOsc3:: - uses a buffer allocated on the server.
 
@@ -307,22 +282,9 @@ code::
 
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Aperiodic Sources: Noise.
 
-
-
-
 subsection:: LF "Low Frequency" Noise Generators.
-
 
 definitionlist::
 ## link::Classes/LFNoise0::, link::Classes/LFNoise1::, link::Classes/LFNoise2::, link::Classes/LFClipNoise::
@@ -343,13 +305,7 @@ code::
 
 ::
 
-
-
-
-
-
 subsection:: Broad Spectrum Noise Generators
-
 
 definitionlist::
 ## link::Classes/ClipNoise::, link::Classes/WhiteNoise::, link::Classes/PinkNoise::, link::Classes/BrownNoise::, link::Classes/GrayNoise::
@@ -365,13 +321,7 @@ code::
 
 ::
 
-
-
-
-
-
 subsection:: Impulse Noise Generators
-
 
 definitionlist::
 ## link::Classes/Dust::, link::Classes/Dust2::
@@ -384,13 +334,7 @@ code::
 
 ::
 
-
-
-
-
-
 subsection:: Chaotic Noise Generators
-
 
 definitionlist::
 ## link::Classes/Crackle::
@@ -402,22 +346,9 @@ code::
 
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Filters
 
-
-
-
 subsection:: Low Pass, High Pass
-
 
 definitionlist::
 ## link::Classes/LPF::, link::Classes/HPF:: - 12 dB / octave
@@ -432,13 +363,7 @@ code::
 
 ::
 
-
-
-
-
-
 subsection:: Band Pass, Band Cut
-
 
 definitionlist::
 ## link::Classes/BPF::, link::Classes/BRF:: - 12 dB / octave
@@ -459,13 +384,7 @@ code::
 
 ::
 
-
-
-
-
-
 subsection:: Resonant Low Pass, High Pass, Band Pass
-
 
 definitionlist::
 ## link::Classes/RLPF::, link::Classes/RHPF:: - 12 dB / octave
@@ -513,13 +432,7 @@ code::
 
 ::
 
-
-
-
-
-
 subsection:: Simpler Filters
-
 
 definitionlist::
 ## link::Classes/OnePole::, link::Classes/OneZero:: - 6 dB / octave
@@ -532,13 +445,7 @@ code::
 
 ::
 
-
-
-
-
-
 subsection:: NonLinear Filters
-
 
 definitionlist::
 ## link::Classes/Median::, link::Classes/Slew::
@@ -558,13 +465,7 @@ code::
 
 ::
 
-
-
-
-
-
 subsection:: Formant Filter
-
 
 definitionlist::
 ## link::Classes/Formlet:: - A filter whose impulse response is similar to a FOF grain.
@@ -593,19 +494,7 @@ code::
 
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Distortion
-
-
-
 
 definitionlist::
 ## abs, max, squared, cubed
@@ -667,19 +556,7 @@ s.listSendMsg([\b_gen, 80, \cheby, 7] ++ {1.0.rand2.squared}.dup(6));
 
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Panning
-
-
-
 
 code::
 (
@@ -780,19 +657,7 @@ code::
 
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Reverbs
-
-
-
 
 definitionlist::
 ## link::Classes/FreeVerb::
@@ -827,19 +692,7 @@ code::
 
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Delays and Buffer UGens
-
-
-
 
 definitionlist::
 ## link::Classes/DelayN::, link::Classes/DelayL::, link::Classes/DelayC:: - simple delays
@@ -994,19 +847,7 @@ b.free;
 
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Granular Synthesis.
-
-
-
 
 definitionlist::
 ## link::Classes/TGrains:: - granulation of a buffer
@@ -1159,22 +1000,9 @@ b = Buffer.sendCollection(s, Env([0, 1, 0], [0.5, 0.5], [8, -8]).discretize, 1);
 
 See also link::Classes/GrainFM::, link::Classes/GrainBuf:: and link::Classes/GrainIn::
 
-
-
-
-
-
-
-
-
-
 section:: Control
 
-
-
-
 subsection:: Filters for Controls
-
 
 definitionlist::
 ## link::Classes/Decay:: - triggered exponential decay
@@ -1210,13 +1038,7 @@ code::
 
 ::
 
-
-
-
-
-
 subsection:: Triggers
-
 
 definitionlist::
 ## link::Classes/Trig::, link::Classes/Trig1:: - timed duration gate
@@ -1318,19 +1140,7 @@ z.release;
 
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Spectral
-
-
-
 
 FFT, IFFT and the phase vocoder UGens.
 
@@ -1423,22 +1233,9 @@ c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Techniques
 
-
-
-
 subsection:: Artificial Space
-
 
 Building a sense of space into a sound by setting up phase differences between the speakers.
 
@@ -1494,13 +1291,7 @@ code::
 )
 ::
 
-
-
-
-
-
 subsection:: Parallel Structures
-
 
 code::
 (
@@ -1570,13 +1361,7 @@ code::
 )
 ::
 
-
-
-
-
-
 subsection:: Serial structures
-
 
 code::
 (

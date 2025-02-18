@@ -17,19 +17,7 @@ list::
 ## link::#f) using ProxySpace together with other Environments#f) using ProxySpace together with other Environments::
 ::
 
-
-
-
-
-
-
-
-
-
 section:: A) normal environment lookup
-
-
-
 
 code::
 currentEnvironment.postln; // anEnvironment (if not, you haven't left it from last helppage..)
@@ -58,19 +46,7 @@ x.a + x.b;
 
 Further readings: link::Classes/Environment::
 
-
-
-
-
-
-
-
-
-
 section:: B) a proxyspace as an environment
-
-
-
 
 One can replace the current environment with a special type of environment, a ProxySpace. this environment represents processes that play audio on a server.
 
@@ -87,19 +63,7 @@ currentEnvironment === p; // and they are identical.
 p.postln;	// now there are two empty placeholders in the environment.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: C) using the proxyspace to change processes on the fly
-
-
-
 
 code::
 // boot the server
@@ -203,19 +167,7 @@ s.boot;
 
 Further readings: link::Tutorials/JITLib/proxyspace_examples::, link::Classes/Bus::, link::Classes/AbstractFunction::
 
-
-
-
-
-
-
-
-
-
 section:: D) when are the node proxies initialized?
-
-
-
 
 By default, bus initialization of a node proxy happens as soon as it is used for the first time.
 Later inputs are adjusted to this bus, as far as it is possible.
@@ -272,19 +224,7 @@ code::
 p.postln;		// post the whole proxy space
 ::
 
-
-
-
-
-
-
-
-
-
 section:: E) moving out of the proxy space
-
-
-
 
 code::
 // play the audio:
@@ -325,19 +265,7 @@ This is a common mistake when using normal environments.
 currentEnvironment.clear;
 ::
 
-
-
-
-
-
-
-
-
-
 section:: F) using ProxySpace together with other Environments
-
-
-
 
 Using proxy space as an access scheme for node proxies can get in the way of the normal use of environments as pseudo variables.
 Here are some ways to cope with this.

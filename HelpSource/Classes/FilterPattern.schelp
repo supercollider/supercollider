@@ -3,19 +3,7 @@ categories:: Streams-Patterns-Events>Patterns>Filter
 summary:: Abstract class that holds a pattern to be modified
 related:: Classes/ListPattern
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // post subclasses:

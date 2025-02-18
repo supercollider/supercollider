@@ -3,19 +3,7 @@ categories:: UGens>Demand
 summary:: Return the same unique series of values for several demand streams
 related:: Classes/Demand, Classes/Drand, Classes/Dser, Classes/Duty, Classes/Dxrand, Classes/TDuty
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A demand UGen represents a single series of states.
 When used by more than one demand stream, it will output only every nth value for each.
@@ -32,36 +20,20 @@ code::
 { var x = Dunique(Drand([0, 1, 2, 3, 4, 5], inf)); { Demand.ar(Impulse.ar(1/rrand(0.001, 0.0015)), 0, x) } ! 3 }.plot;
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: new
 
-
 Return a new instance.
-
 
 argument:: source
 
 The demand UGen that is to be reused in several others.
 
-
 argument:: maxBufferSize
 
 Maximum size for the value buffer when protected is false.
 Values will loop after maxBufferSize has been exceeded.
-
 
 argument:: protected
 

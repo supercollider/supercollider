@@ -2,46 +2,17 @@ title:: UniqueID
 categories:: Core
 summary:: Source for unique numbers
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: initClass
 
-
 Initialize the starting id.
-
-
-
 
 method:: next
 
-
 Get next id, which is unique to the system
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // example

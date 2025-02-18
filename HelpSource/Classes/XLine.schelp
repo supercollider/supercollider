@@ -3,64 +3,34 @@ categories:: UGens>Envelopes
 summary:: Exponential line generator
 related:: Classes/Line
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Generatean an exponential curve from the start value to the end value.
 Both the start and end values must be non-zero and have the same sign.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: start
 
 Starting value.
 
-
 argument:: end
 
 Ending value.
-
 
 argument:: dur
 
 Duration in seconds.
 
-
 argument:: mul
 
 Output will be multiplied by this value.
 
-
 argument:: add
 
 This value will be added to the output.
-
 
 argument:: doneAction
 
@@ -69,19 +39,7 @@ See
 
 link::Classes/Done::  for more detail.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 play({ SinOsc.ar(XLine.kr(200, 17000, 10), 0, 0.1) });

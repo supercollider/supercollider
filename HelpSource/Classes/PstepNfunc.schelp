@@ -3,36 +3,12 @@ categories:: Streams-Patterns-Events>Patterns>Time
 summary:: Combinatoric pattern
 related:: Classes/PstepNadd
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Combinean an arbitrary number of patterns by evaluating a function (depth first traversal).
 When a stream ends it is recreated from its pattern until the top stream ends.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

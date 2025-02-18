@@ -3,19 +3,7 @@ categories:: UGens>Buffer
 summary:: Buffer writing oscillator
 related:: Classes/BufRd
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Write to a buffer at an index.
 
@@ -23,35 +11,19 @@ note::
 BufWr (in difference to  link::Classes/BufRd::) does not do multichannel expansion, because input is an array.
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: categories
 
-
 method:: ar, kr
-
 
 argument:: inputArray
 
 Input UGens (channelArray).
 
-
 argument:: bufnum
 
 The index of the buffer to use.
-
 
 argument:: phase
 
@@ -60,40 +32,15 @@ warning::
 The phase argument only offers precision for addressing 2**24 samples (about 6.3 minutes at 44100Hz) 
 ::
 
-
 argument:: loop
 
 1 means true, 0 means false. This is modulateable.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 private:: checkInputs
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

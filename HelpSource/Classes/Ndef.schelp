@@ -3,19 +3,7 @@ categories:: JITLib>NodeProxy, Live Coding
 summary:: Node proxy definition
 related:: Classes/ProxySpace, Classes/Tdef
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Ndef registers synths by key. All accesses to the registered synths go through the Ndef class via that key.
 Registered synths can be replaced with other synths while playing.
@@ -32,13 +20,7 @@ Ndef(key, obj)	// stores the object and returns the instance, like Tdef and Pdef
 Graphical editor overviewing all current Ndefs:
 link::Classes/NdefMixer::. A general overview: link::Overviews/JITLib::.
 
-
-
-
-
-
 subsection:: First Example
-
 
 code::
 s.boot;
@@ -56,37 +38,17 @@ Ndef(\b, { Impulse.ar([5, 7]/2, [0, 0.5], 0.15) });
 Ndef.clear(3); // clear all after 3 seconds
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: initClass
 
-
-
-
-
-
 subsection:: Creation
 
-
 method:: new
-
 
 Return a new node proxy and store it in a global ProxySpace under the key.
 If there is already an Ndef there, replace its object with the new one.
 The object can be any supported class, see link::Classes/NodeProxy#Supported sources:: help. Internally, all instances are kept in a link::Classes/ProxySpace::. The link::Classes/EnvironmentRedirect#dispatch:: function is called when the source is set.
-
 
 argument:: key
 
@@ -101,7 +63,6 @@ If key is an association, it is interpreted as strong::key -> server name::. (or
 If no name is given, it uses the default server that was default when Ndef was first called.
 (to change it, see link::#*defaultServer::).
 
-
 argument:: object
 
 An object
@@ -110,43 +71,23 @@ code::
 Ndef(\x, { Dust.ar }); // returns the proxy and set the source object.
 ::
 
-
-
-
 method:: ar
-
 
 Equivalent to code::*new(key).ar(numChannels, offset):: (see link::Classes/BusPlug#-ar::)
 
-
-
-
 method:: kr
-
 
 Equivalent to code::*new(key).kr(numChannels, offset):: (see link::Classes/BusPlug#-kr::)
 
-
-
-
 method:: clear
-
 
 Clear all proxies
 
-
-
-
 method:: defaultServer
-
 
 Set the default server (default: code::Server.default::)
 
-
-
-
 method:: all
-
 
 Return the dictionary of all servers, pointing to proxyspaces with Ndefs for each.
 
@@ -154,11 +95,7 @@ code::
 Ndef.all;
 ::
 
-
-
-
 method:: dictFor
-
 
 Return the proxyspace for a given server.
 
@@ -166,22 +103,9 @@ code::
 Ndef.dictFor(s);
 ::
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 method:: proxyspace
-
 
 Return the proxyspace for this instance
 
@@ -189,13 +113,7 @@ code::
 Ndef(\x).proxyspace
 ::
 
-
-
-
-
-
 subsection:: Setting default parameters
-
 
 Behind every Ndef there is one single instance of link::Classes/ProxySpace:: per server used (usually just the one for the default server).
 This ProxySpace keeps default values for the proxies that can be set.
@@ -209,19 +127,7 @@ Ndef(\x).proxyspace.quant = 1.0;
 The other values that can be set in such a way are:
 code::clock, fadeTime, quant, reshaping, awake::.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 s.boot;
@@ -241,13 +147,7 @@ Ndef(\lfo, { LFNoise1.kr(300, 400, 800) });
 Ndef.clear; // clear all Ndefs
 ::
 
-
-
-
-
-
 subsection:: Using Ndef inside other Ndefs
-
 
 code::
 Ndef(\lfo2, { LFNoise1.kr(LFNoise1.kr(0.1).exprange(1, 300) ! 2, 400, 800) });
@@ -256,13 +156,7 @@ Ndef(\sound, { Blip.ar(Ndef.kr(\lfo2), 30) * 0.2 }).play;
 Ndef(\lfo2, { [MouseX.kr(10, 300, 1), MouseY.kr(10, 300, 1)] });
 ::
 
-
-
-
-
-
 subsection:: Setting and mapping parameters
-
 
 code::
 Ndef(\sound, { |freq = 56, numHarm = 10| Blip.ar(freq, numHarm, 30) * 0.2 }).play;
@@ -275,24 +169,12 @@ Ndef(\sound).set(\numHarm, nil); // unmap.
 Ndef(\sound).stop;
 ::
 
-
-
-
-
-
 subsection:: Reserved parameters
-
 
 Three parameters are automatically specified if they don't exist in a given UGen function.
 You can override their use: code::[\out, \gate, \fadeTime]::
 
-
-
-
-
-
 subsection:: Specifying your own envelope
-
 
 If a UGen function that is passed to the proxy has its own envelope, and if this envelope can free the synth, the node proxy uses this envelope instead of making its own.
 If you provide a code::fadeTime:: argument, the proxy's fadeTime will be used.
@@ -307,13 +189,7 @@ Ndef(\sound, { |fadeTime = 1, gate = 1|
 )
 ::
 
-
-
-
-
-
 subsection:: Simple audio routing with the <<> operator
-
 
 code::
 (
@@ -340,13 +216,7 @@ Ndef(\a) <<>.phase nil;	// unmap
 Ndef.clear(3);		// fade out and clear all Ndefs
 ::
 
-
-
-
-
-
 subsection:: Embedding multi-channel Patterns, playing Streams in parallel
-
 
 Controlling multi-channeled sequenced streams and having independent control over filtering and node ordering is a difficult topic in SuperCollider.
 However, using Ndefs (or their superclass link::Classes/NodeProxy:: or a link::Classes/ProxySpace::) may provide a convenient solution.
@@ -438,16 +308,9 @@ Ndef.clear;
 Pdef.clear;
 ::
 
-
-
-
-
-
 subsection:: Making Copies
 
-
 method:: copy
-
 
 Because an Ndef is a unique instance for a given key, it can be copied only by supplying a new key.
 See also: link::Classes/NodeProxy#-copy::.
@@ -458,18 +321,11 @@ Ndef(\x).copy(\y);
 Ndef(\y).play;
 ::
 
-
 argument:: newKey
 
 A valid new key, usually a link::Classes/Symbol::
 
-
-
-
-
-
 subsection:: Recursion
-
 
 Ndefs can be used recursively. A structure like the following works:
 
@@ -486,13 +342,7 @@ code::
 (Platform.resourceDir +/+ "examples/demonstrations/single_sample_feedback.scd").openDocument;
 ::
 
-
-
-
-
-
 subsection:: Using different servers
-
 
 code::
 // create a new server
@@ -508,13 +358,7 @@ a.dump;	// display settings of new server
 a.quit;	// terminate new server
 ::
 
-
-
-
-
-
 subsection:: GUI
-
 
 code::
 // create a window for a given Ndef
@@ -533,13 +377,7 @@ Ndef(\sound).clear(1);
 NdefMixer(s);
 ::
 
-
-
-
-
-
 subsection:: Using Associations
-
 
 For a complete list, see link::Classes/NodeProxy::, and link::Reference/NodeProxy_roles::
 

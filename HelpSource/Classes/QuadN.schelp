@@ -3,19 +3,7 @@ categories:: UGens>Generators>Chaotic
 summary:: General quadratic map chaotic generator
 related:: Classes/QuadL, Classes/QuadC
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A non-interpolating sound generator based on the difference equation:
 
@@ -32,65 +20,35 @@ plot(size.collect { xi = (a * (xi ** 2)) + (b * xi) + c; xi });
 )
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar
-
 
 argument:: freq
 
 Iteration frequency in Hertz
 
-
 argument:: a
 
 Equation variable
-
 
 argument:: b
 
 Equation variable
 
-
 argument:: c
 
 Equation variable
-
 
 argument:: xi
 
 Initial value of x
 
-
 argument:: mul
 
 argument:: add
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // default params

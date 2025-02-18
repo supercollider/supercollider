@@ -2,55 +2,25 @@ title:: SortedList
 categories:: Collections>Ordered
 summary:: A Collection whose items are kept in a sorted order
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: new
 
-
-Create a SortedList with the initial capacity given by strong::size:: and a comparison strong::function::.
+Creates a SortedList with the initial capacity given by strong::size:: and a comparison strong::function::.
 The SortedList can contain equal / identical elements more than once.
-
-
-
-
-
-
-
-
-
 
 instancemethods::
 
-
-
-
 private:: indexForInserting
 
-
 method:: add
-Add an item in the SortedList at the correct position.
+Adds an item in the SortedList at the correct position.
 
 code::
 SortedList[1, 2, 5, 6].add(4).postln;
 ::
 
-
-
-
 method:: addAll
-
 
 Adds all the items in the collection into the SortedList.
 

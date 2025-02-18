@@ -15,19 +15,7 @@ At some point, it would be a good idea to familiarise yourself with some of thes
 Again don't worry if everything doesn't immediately make complete sense to you.
 Learning a computer language is sometimes a little like slowly zeroing in on something, rather than getting it immediately, and some information you can just file away for future reference.
 
-
-
-
-
-
-
-
-
-
 section:: Classes and Methods
-
-
-
 
 By now we've learned enough OOP theory that we know that we have classes, which are like templates for objects, and instances, which are objects which have been created from those templates.
 We also have class and instance methods, which may take arguments. Class methods do things like create instances (as well as some convenience functions that don't require an actual instance), and instance methods control and manipulate instances.
@@ -59,19 +47,7 @@ Array
 Some methods also have helpfiles, and there are a number of ones on general topics.
 Most of these are listed in the main help window.
 
-
-
-
-
-
-
-
-
-
 section:: Syntax Shortcuts
-
-
-
 
 Remember the example of Mix(...) vs. Mix.new(...)?
 SC has a number of such shorthand forms or alternate syntaxes.
@@ -86,19 +62,7 @@ play({ SinOsc.ar(440, 0, 0.2) });
 
 You will find numerous other examples of syntax shortcuts throughout SC's documentation. If you see something you don't recognize, a good place to check is link::Reference/Syntax-Shortcuts::, which gives examples of most of these.
 
-
-
-
-
-
-
-
-
-
 section:: Snooping, etc.
-
-
-
 
 SC has numerous other ways of tracking down information on classes, methods, etc. Most of these won't be too helpful for you at this point, but are good to know about for future use.
 Information on these can be found in the files link::Guides/More-On-Getting-Help:: and link::Guides/Internal-Snooping::.
@@ -107,19 +71,7 @@ For more information see:
 
 link::Guides/More-On-Getting-Help::, link::Guides/Internal-Snooping::, link::Reference/Syntax-Shortcuts::
 
-
-
-
-
-
-
-
-
-
 section:: Suggested Exercise
-
-
-
 
 Go back over the examples in the previous tutorials, and try opening up the helpfiles for the various classes used.
 Try out the examples, and if you like open up the help files for any unfamiliar classes used in those examples.

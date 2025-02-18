@@ -3,29 +3,11 @@ categories:: GUI>Kits>Cocoa
 summary:: An envelope editor view
 related:: Classes/EnvelopeView
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 An editable Envelope view.
 
-
-
-
-
-
 subsection:: Some Important Issues Regarding SCEnvelopeEdit
-
 
 The breakpoints are color coded as follows:
 
@@ -35,240 +17,129 @@ table::
 ## green || loop node
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: parent
 
 The parent view.
 
-
 argument:: bounds
 
 An instance of link::Classes/Rect::, or a link::Classes/Point:: indicating code::width@height::.
 
-
 argument:: env
 
 The envelope. An instance of link::Classes/Env::.
-
 
 argument:: pointsPerSegment
 
 The resolution in points per segment.
 Default value is 10.
 
-
-
-
 method:: paletteExample
-
 
 argument:: parent
 
 argument:: bounds
 
-
-
-
-
-
 subsection:: Subclassing and Internal Methods
-
 
 The following methods are usually not used directly or are called by a primitive.
 Programmers can still call or override these as needed.
 
-
-
-
 method:: viewClass
-
-
-
-
-
-
-
-
-
 
 instancemethods::
 
-
-
-
 method:: refresh
-
 
 If the link::Classes/Env:: object is modified directly, this needs to be called to update the GUI.
 
 method: maxLevel
 Changes maximum level shown in editor.
 
-
 argument:: level
 
 An instance of link::Classes/Float::.
-
-
-
 
 method:: minLevel
 
-
 Changes minimum level shown in editor.
-
 
 argument:: level
 
 An instance of link::Classes/Float::.
 
-
-
-
 method:: minTime
 
-
-Change minimum time (sec) shown in editor. Negative times are okay because link::Classes/Env:: uses inter-node durations.
-
+Changes minimum time (sec) shown in editor. Negative times are okay because link::Classes/Env:: uses inter-node durations.
 
 argument:: sec
 
 An instance of link::Classes/Float::. Seconds.
-
-
-
 
 method:: maxTime
 
-
-Change maximum time (sec) shown in editor.
-
+Changes maximum time (sec) shown in editor.
 
 argument:: sec
 
 An instance of link::Classes/Float::. Seconds.
 
-
-
-
-
-
 subsection:: Subclassing and Internal Methods
-
 
 The following methods are usually not used directly or are called by a primitive.
 Programmers can still call or override these as needed.
 
-
-
-
 method:: defaultMouseDownAction
-
 
 argument:: x
 
 argument:: y
 
-
 argument:: modifiers
 
 argument:: buttonNumber
 
-
 argument:: clickCount
-
-
-
 
 method:: env
 
-
 argument:: e
-
-
-
 
 method:: addBreakPoint
 
-
 argument:: level
 
-
-
-
 method:: insertAtTime
-
 
 argument:: time
 
 argument:: level
 
-
-
-
 method:: pointsPerSegment
 
-
 method:: initSCEnvelopeEdit
-
 
 argument:: argEnv
 
 argument:: argPPS
 
-
 argument:: setMinMax
-
-
-
 
 method:: redraw
 
-
 method:: updateAll
-
-
-
 
 method:: updateSegment
 
-
 argument:: segNum
-
-
-
 
 method:: clear
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 Make a basic editor:
 

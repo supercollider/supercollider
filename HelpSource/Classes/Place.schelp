@@ -3,35 +3,11 @@ categories:: Streams-Patterns-Events>Patterns>List
 summary:: Interlaced embedding of subarrays
 related:: Classes/Ppatlace
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Returns elements in the list. If an element is an array itself, it embeds the first element when it comes by first time, the second element when it comes by the second time... The nth when it comes by the nth time.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (
@@ -41,11 +17,7 @@ x = a.asStream;
 8.do({ x.next.postln });
 )
 
-1
-2 3
-1 5
-6 1
-2
+1 2 3 1 5 6 1 2
 
 
 

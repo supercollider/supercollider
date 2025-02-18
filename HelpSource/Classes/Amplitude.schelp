@@ -2,73 +2,33 @@ title:: Amplitude
 categories:: UGens>Analysis>Amplitude
 summary:: Amplitude follower
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Track the relative amplitude of a signal, using an envelope follower algorithm.
 An envelope follower converges toward rising amplitude according to code::attackTime::, and toward falling amplitude according to code::releaseTime::.
 See the plot under Examples.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: in
 
 Input signal
 
-
 argument:: attackTime
 
 20dB convergence time for following attacks.
-
 
 argument:: releaseTime
 
 20dB convergence time for following decays.
 
-
 argument:: mul
 
 argument:: add
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 The first example produces a plot, comparing a fast attack/release against slower settings. The green line (fast settings) approximates the amplitude more quickly, but also oscillates according to the wave shape.
 The blue line (slow settings) rises more slowly, but oscillates less (more stable measurement).

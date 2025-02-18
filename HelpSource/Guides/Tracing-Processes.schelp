@@ -8,19 +8,7 @@ What goes on in a running system?
 In SC, various methods help to get information about processes on different levels:
 server side and client side (in sclang).
 
-
-
-
-
-
-
-
-
-
 section:: Tracing sclang processes
-
-
-
 
 In order to know more about objects as they are created by processes like tasks or even simply by evaluating a bit of code, one can insert messages like postln and postcs anywhere in the code.
 
@@ -75,13 +63,7 @@ var n = 3;
 (1..n).do { |num| { num.rand }.dup(200).postcs };
 ::
 
-
-
-
-
-
 subsection:: Streams, tasks and routines
-
 
 In streams, tasks and routines, this works just as well:
 
@@ -144,19 +126,7 @@ Pbind(
 ).trace([\degree, \dur], prefix: ["degree ", "dur "]).play
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Tracing server processes
-
-
-
 
 Using postln or post on a UGen will only return the UGen, but not the values it produces in a running synth.
 The poll message creates a Poll UGen which posts at regular intervals when given a time value or as a response to a trigger (see link::Classes/Poll:: helpfile)

@@ -2,19 +2,7 @@ title:: Integer
 categories:: Math
 summary:: Integer number
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A 32 bit integer. Integer inherits most of its behaviour from its superclass.
 
@@ -22,28 +10,13 @@ note::
 A 32 bit signed integer can represent values in the range -2147483648 to 2147483647. Adding up further returns in a wrapped result, so that and 2147483647+1 = -2147483648. For a larger range, one can use link::Classes/Float::, which is 64 bit and supports many (but not all) numerical methods that int does.
 ::
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 subsection:: Iteration
 
-
 method:: do
 
-
-Execute strong::function:: for all integers from teletype::zero:: to this minus one.
-
+Executes strong::function:: for all integers from teletype::zero:: to this minus one.
 
 argument:: function
 
@@ -51,200 +24,122 @@ A link::Classes/Function:: which is passed two arguments, both of which are the 
 integer from teletype::zero:: to this minus one. The reason two arguments are passed is for
 symmetry with the implementations of do in link::Classes/Collection::.
 
-
-
-
 method:: reverseDo
 
-
-Execute strong::function:: for all integers from  this minus one to teletype::zero::.
-
-
-
+Executes strong::function:: for all integers from  this minus one to teletype::zero::.
 
 method:: for
 
-
-Execute strong::function:: for all integers from this to strong::endval::, inclusive.
-
+Executes strong::function:: for all integers from this to strong::endval::, inclusive.
 
 argument:: endval
 
 An link::Classes/Integer::.
-
 
 argument:: function
 
 A link::Classes/Function:: which is passed two arguments, the first which is an integer from this to
 endval, and the second which is a number from teletype::zero:: to the number of iterations minus one.
 
-
-
-
 method:: forBy
 
-
-Execute strong::function:: for all integers from this to strong::endval::, inclusive, stepping each time by strong::stepval::.
-
+Executes strong::function:: for all integers from this to strong::endval::, inclusive, stepping each time by strong::stepval::.
 
 argument:: endval
 
 An link::Classes/Integer::.
-
 
 argument:: stepval
 
 An link::Classes/Integer::.
 
-
 argument:: function
 
 A link::Classes/Function:: which is passed two arguments, the first which is an integer from this to
 endval, and the second which is a number from teletype::zero:: to the number of iterations minus one.
 
-
-
-
 method:: collect
-
 
 returns::
 An link::Classes/Array::of this size filled by objects generated from evaluating the strong::function::.
 
-
-
-
 method:: collectAs
-
 
 returns::
 A link::Classes/Collection::of strong::class::of this size filled by objects generated from evaluating the strong::function::.
 
-
-
-
 method:: to
-
 
 returns::
 An link::Classes/Interval::from this to strong::hi::.
 
-
-
-
 method:: geom
-
 
 returns::
  
 an array with a geometric series of this size from start.
 
-
-
-
 method:: fib
-
 
 returns::
 An array with a fibonacci series of this size beginning with strong::a::and strong::b::.
 
-
-
-
 method:: factors
-
 
 returns::
  
 the prime factors as array.
 
-
-
-
-
-
 subsection:: Random Numbers
-
 
 See also: link::Guides/Randomness::
 
-
-
-
 method:: xrand
-
 
 argument:: exclude
 
 An link::Classes/Integer::.
-
 
 returns::
  
 a random value from teletype::zero:: to this, excluding the value exclude.
 
-
-
-
 method:: xrand2
-
 
 argument:: exclude
 
 An link::Classes/Integer::.
 
-
 returns::
  
 a random value from this.neg to this, excluding the value exclude.
 
-
-
-
-
-
 subsection:: Conversion
 
-
 method:: asAscii
-
 
 returns::
 A link::Classes/Char:: which has the ASCII value of the receiver.
 
-
-
-
 method:: asDigit
-
 
 returns::
 A link::Classes/Char:: which represents the receiver as an ASCII digit.
 
-
 discussion::
 For example code::5.asDigit::returns code::$5::.
 
-
-
-
 method:: asBinaryDigits
-
 
 returns::
  
 an array with the binary digits (integer 0 or 1).
 
-
-
-
 method:: asDigits
-
 
 returns::
  
 an array with the n-ary digits.
-
 
 discussion::
 See also the complementary method link::Classes/SequenceableCollection#-convertDigits::.
@@ -254,180 +149,107 @@ code::
 2007.asDigits(2);
 ::
 
-
-
-
 method:: asBinaryString
-
 
 returns::
  
 a string with the binary digits (0 or 1).
 
-
-
-
 method:: asHexString
-
 
 returns::
  
 a string with the hexadecimal digits (integer teletype::0:: to F).
 
-
-
-
 method:: asIPString
-
 
 returns::
  
 a string in IP format.
 
-
-
-
 method:: asStringToBase
-
 
 returns::
 A string with code::width::-rightmost digits in base code::base::.
-
 
 discussion::
 code::
 15.asStringToBase(3, 5); // returns 00120
 ::
 
-
-
-
 method:: asUnicode
-
 
 returns::
  
 the receiver.
 
-
-
-
 method:: degreeToKey
 
-
 Interpret this as index into a scale with a given number of steps per ocatve.
-
 
 discussion::
 code::
 2.degreeToKey([0, 2, 5, 7, 11]);
 ::
 
-
-
-
 method:: grayCode
-
 
 returns::
  
 the gray code for the number.
-
 
 discussion::
 code::
 2.grayCode
 ::
 
-
-
-
 method:: hash
-
 
 returns::
  
 a hash value.
 
-
-
-
-
-
 subsection:: Binary Representation
-
 
 method:: setBit
 
-
 Set nth bit to teletype::zero:: (bool = false) or one (bool = true)
-
-
-
 
 method:: leadingZeroes
 
-
 code:: { _CLZ } ::
-
-
-
 
 method:: trailingZeroes
 
-
 code:: { _CTZ } ::
 
-
-
-
 method:: numBits
-
 
 returns::
  
 number of required bits
 
-
-
-
-
-
 subsection:: Properties
 
-
 method:: even
-
 
 returns::
  
 teletype::true:: if dividable by 2 with no rest
 
-
-
-
 method:: odd
-
 
 returns::
  
 teletype::true:: if not dividable by 2 with no rest
 
-
-
-
-
-
 subsection:: Powers Of Two
 
-
 method:: nextPowerOfTwo
-
 
 returns::
  
 the next power of two greater than or equal to the receiver.
-
 
 discussion::
 code::
@@ -435,16 +257,11 @@ code::
 64.nextPowerOfTwo.postln;
 ::
 
-
-
-
 method:: isPowerOfTwo
-
 
 returns::
  
 the whether the receiver is a power of two.
-
 
 discussion::
 code::
@@ -452,69 +269,46 @@ code::
 64.isPowerOfTwo.postln;
 ::
 
-
-
-
-
-
 subsection:: Prime Numbers
 
-
 method:: nthPrime
-
 
 returns::
  
 the nth prime number. The receiver must be from teletype::0:: to 6541.
-
 
 discussion::
 code::
 [0, 1, 2, 3, 4, 5].collect({ |i| i.nthPrime }).postln;
 ::
 
-
-
-
 method:: prevPrime
-
 
 returns::
  
 the next prime less than or equal to the receiver up to 65521.
-
 
 discussion::
 code::
 25.prevPrime.postln;
 ::
 
-
-
-
 method:: nextPrime
-
 
 returns::
  
 the next prime less than or equal to the receiver up to 65521.
-
 
 discussion::
 code::
 25.nextPrime.postln;
 ::
 
-
-
-
 method:: isPrime
-
 
 returns::
  
 whether the receiver is prime.
-
 
 discussion::
 code::
@@ -522,17 +316,12 @@ code::
 13.isPrime.postln;
 ::
 
-
-
-
 method:: indexOfPrime
-
 
 returns::
  
 the index of a prime number less than or equal to the receiver up to 65521.
 If the receiver is not a prime, the answer is nil.
-
 
 discussion::
 code::
@@ -540,40 +329,21 @@ code::
 25.indexOfPrime;
 ::
 
-
-
-
-
-
 subsection:: Integer Math
-
 
 method:: *
 
-
 Multiplication.
-
-
-
 
 method:: +
 
-
 Addition.
-
-
-
 
 method:: -
 
-
 Subtraction.
 
-
-
-
 method:: clip
-
 
 returns::
 list::
@@ -584,7 +354,6 @@ list::
 
 The result is an Integer only if both code::lo:: and code::hi:: are Integers.
 
-
 discussion::
 code::
 4.clip(2, 5); // returns 4
@@ -592,16 +361,11 @@ code::
 7.clip(2, 5); // returns 5
 ::
 
-
-
-
 method:: factorial
-
 
 returns::
 The factorial of the receiver as an integer.
 This will overflow for numbers code::> 12::and throw an error. Floating point factorials can be used in such cases (see: link::Classes/SimpleNumber#-factorial::).
-
 
 discussion::
 code::
@@ -609,34 +373,23 @@ code::
 23.0.factorial // for larger factorials, use floats.
 ::
 
-
-
-
 method:: fold
 
-
-Fold in to a value between code::lo:: and code::hi::.
-
+Folds in to a value between code::lo:: and code::hi::.
 
 returns::
 An Integer between code::lo::and code::hi::.
-
 
 discussion::
 code::
 (0..12).fold(0, 3); // returns [0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 2, 1, 0]
 ::
 
-
-
-
 method:: log2Ceil
-
 
 returns::
  
 next larger integer of the base 2 logarithm of the receiver.
-
 
 discussion::
 code::
@@ -645,86 +398,54 @@ code::
 17.log2.ceil.asInteger; // equivalent to the previous line
 ::
 
-
-
-
 method:: wrap
 
-
-Wrap in to a value between code::lo:: and code::hi::.
-
+Wraps in to a value between code::lo:: and code::hi::.
 
 returns::
 An Integer between code::lo::and code::hi::.
-
 
 discussion::
 code::
 (0..12).wrap(0, 3); // returns [0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0]
 ::
 
-
-
-
-
-
 subsection:: Range Limiting
-
 
 copymethod:: Float -clip
 
-
 copymethod:: Float -fold
-
-
-
 
 method:: wrap
 
-
 Wrap this around [lo, hi] such that it falls in range.
 Equivalent to (this % (hi - lo + 1)) + lo. Note that this behavior is different from link::Classes/Float#-wrap::.
-
 
 argument:: lo
 
 The low threshold (inclusive) of wrapping.
 
-
 argument:: hi
 
 The high threshold (inclusive) of wrapping.
 
-
-
-
-
-
 subsection:: Misc
 
-
 method:: exit
-
 
 returns::
  
 exits the sclang program and returns the receiver as an exit code to the parent process (e.g. Unix shell).
-
 
 discussion::
 code::
 7.exit; // this line stops the interpreter and returns 7 as exit code
 ::
 
-
-
-
 method:: generate
-
 
 returns::
 Calls code::function.value(receiver):: but returns the receiver.
-
 
 discussion::
 code::
@@ -733,26 +454,17 @@ f = { |i| "foo".postln; i*2 }
 f.value(3) // returns 6
 ::
 
-
-
-
 method:: isInteger
-
 
 returns::
  
 true (the receiver is an integer).
 
-
-
-
 method:: isAlt, isCaps, isCmd, isCtrl, isFun, isHelp, isNumPad, isShift
-
 
 returns::
 A Boolean for whether or not the given key modifier is in effect.
 For a list of these, see link::Reference/Modifiers::.
-
 
 discussion::
 code::
@@ -772,16 +484,11 @@ v.keyDownAction = { |view, char, modifiers|
 };
 ::
 
-
-
-
 method:: pidRunning
-
 
 returns::
  
 a Boolean for whether or not the specified pid is running.
-
 
 discussion::
 code::
@@ -791,9 +498,5 @@ p.pidRunning; // cat will stay alive
 p.pidRunning;
 ::
 
-
-
-
 private:: archiveAsCompileString
-
 

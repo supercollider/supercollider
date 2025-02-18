@@ -3,19 +3,7 @@ categories:: GUI>Accessories
 summary:: A linear color fade between an outside and an inside color
 related:: Classes/Color, Classes/Gradient
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A linear color fade between an outside and an inside color.
 
@@ -24,60 +12,31 @@ The use of HiliteGradient is strong::not supported yet in Qt GUI::.
 When HiliteGradient is used in place of Color, the average gradient color will be used instead.
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: color1
 
 An instance of Color.
 
-
 argument:: color2
 
 An instance of Color.
-
 
 argument:: direction
 
 code::\h:: or code::\v:: for horizontal and vertical respectively. Default value is code::\v::.
 
-
 argument:: steps
 
 The resolution of the gradient. Default value is 64.
-
 
 argument:: frac
 
 The center of the gradient. Default value is 0.33, i.e. off center toward the top on a vertical gradient.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // basic usage

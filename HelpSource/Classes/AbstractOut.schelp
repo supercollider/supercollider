@@ -2,38 +2,13 @@ title:: AbstractOut
 categories:: UGens>InOut
 summary:: Abstract class for out ugens
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: categories
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 method:: numOutputs
-
 
 returns::
 Number of output buses (default: 0, overridden in subclasses)

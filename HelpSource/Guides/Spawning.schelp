@@ -105,8 +105,7 @@ SynthDef("help-EnvGen",{ arg out = 0;
 )
 
 (
-r = Routine.new({ { Synth.new("help-EnvGen"); 1.yield; }.loop }); // loop every one second
-SystemClock.play(r);
+r = Routine.new({ { Synth.new("help-EnvGen"); 1.yield; }.loop }); // loop every one second SystemClock.play(r);
 )
 ::
 
@@ -115,8 +114,7 @@ This results in a lower CPU spike when Synths are created than SC2-style Spawnin
 See the section link::Overviews/SC3vsSC2#SynthDefsVsSynths:: for more detail.
 
 code::
-// SynthDefs on the fly
-s.boot;
+// SynthDefs on the fly s.boot;
 (
 t = TempoClock.new;
 r = Routine.new({
@@ -140,29 +138,21 @@ code::aClock.play(aRoutine):: and code::aRoutine.play(aClock):: are functionally
 
 code::
 (
-// this, that and the other
-r = Routine.new({var i = 0; { ("this: " ++ i).postln; i = i + 1; 1.yield; }.loop });
+// this, that and the other r = Routine.new({var i = 0; { ("this: " ++ i).postln; i = i + 1; 1.yield; }.loop });
 q = Routine.new({var i = 0; { ("that: " ++ i).postln; i = i + 1; 1.yield; }.loop });
 t = Routine.new({var i = 0; { ("the other: " ++ i).postln; i = i + 1; 1.yield; }.loop });
 )
 
-SystemClock.play(r);	// start this
-SystemClock.play(q);	// start that
-SystemClock.play(t);	// start the other
+SystemClock.play(r);	// start this SystemClock.play(q);	// start that SystemClock.play(t);	// start the other
 
-r.stop;			// stop this but not that or the other
-q.reset;		// reset that while playing
+r.stop;			// stop this but not that or the other q.reset;		// reset that while playing
 
-c = TempoClock.new;	// make a TempoClock
-r.reset;		// have to reset this because it's stopped
-c.play(r);		// play this in the new clock; starts from the beginning
-c.tempo = 16;		// increase the tempo of this
+c = TempoClock.new;	// make a TempoClock r.reset;		// have to reset this because it's stopped c.play(r);		// play this in the new clock; starts from the beginning c.tempo = 16;		// increase the tempo of this
 
 SystemClock.clear;	// clear EVERYTHING scheduled in the SystemClock; so that and the other
 			// but not this
 
-c.clear;		// clear everything scheduled in c, i.e. this
-c.play(r);		// since it wasn't stopped, we don't have to reset this
+c.clear;		// clear everything scheduled in c, i.e. this c.play(r);		// since it wasn't stopped, we don't have to reset this
 			// and it picks up where it left off
 
 c.stop;			// stop c, destroy its scheduler, and release its OS thread
@@ -180,13 +170,7 @@ t = Task.new({
 });
 )
 
-t.start;		// Start it
-t.stop;			// Stop it
-t.start;		// Start again from the beginning
-t.reset;		// Reset on the fly
-t.stop;			// Stop again
-t.resume;		// Restart from where you left off
-t.clock.tempo = 0.25;	// Get the Task's clock and change the tempo.
+t.start;		// Start it t.stop;			// Stop it t.start;		// Start again from the beginning t.reset;		// Reset on the fly t.stop;			// Stop again t.resume;		// Restart from where you left off t.clock.tempo = 0.25;	// Get the Task's clock and change the tempo.
 This works since the
 			// default is a TempoClock.
 t.pause;		// Same as t.stop
@@ -198,8 +182,7 @@ See their individual helpfiles for details on their arguments and functionality.
 code::
 s.boot;
 (
-// this Synth will send a trigger to the client app
-SynthDef("help-SendTrig", {
+// this Synth will send a trigger to the client app SynthDef("help-SendTrig", {
 	SendTrig.kr(
 		Dust.kr(1.0), // trigger could be anything, e.g. Amplitude.kr(SoundIn.ar(0) > 0.5)
 		0, 0.9
@@ -208,8 +191,7 @@ SynthDef("help-SendTrig", {
 )
 
 (
-// this receives the trigger on the client side and 'Spawns' a new Synth on the server
-OSCFunc({
+// this receives the trigger on the client side and 'Spawns' a new Synth on the server OSCFunc({
 	SynthDef("help-EnvGen", { arg out = 0;
 		Out.ar(
 			out,

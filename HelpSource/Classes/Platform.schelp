@@ -2,19 +2,7 @@ title:: Platform
 categories:: Platform
 summary:: Handle cross-platform differencies
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 The Platform class (along with its subclasses) handles things which differ between operating systems (mac/linux/windows/...), to simplify cross-platform aspects of SuperCollider.
 
@@ -27,32 +15,13 @@ thisProcess.platform
 
 Currently implemented platforms include: OSXPlatform, LinuxPlatform, WindowsPlatform, UnixPlatform.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 Most of Platforms class methods are simply wrappers to code::thisProcess.platform.method::.
 
-
-
-
-
-
 subsection:: Platform name and platform dependent actions
 
-
 method:: case
-
 
 Perform actions depending on the current platform (name), just like Object:switch:
 
@@ -64,11 +33,7 @@ Platform.case(
 );
 ::
 
-
-
-
 method:: ideName
-
 
 returns a String indicating which IDE the language believes it is running in. (Often this is determined via the "-i" option to the sclang executable.) This is determined when sclang starts and cannot be changed dynamically.
 
@@ -77,151 +42,77 @@ The main purpose of this is to include/exclude folders from the class search pat
 Known IDE names in use are "scapp" (SuperCollider.app on Mac), "scvim" (vim), "scel" (emacs).
 Others may be used.
 
-
-
-
-
-
 subsection:: Directories and filesystem stuff
-
 
 method:: classLibraryDir
 
-
 Location of the bundled class library
-
-
-
 
 method:: helpDir
 
-
 Location of the bundled help files
-
-
-
 
 method:: systemAppSupportDir
 
-
 System application support directory
-
-
-
 
 method:: systemExtensionDir
 
-
 System extension directory (see link::Guides/UsingExtensions::)
-
-
-
 
 method:: userHomeDir
 
-
 User home directory
-
-
-
 
 method:: userAppSupportDir
 
-
 User application support directory
-
-
-
 
 method:: userConfigDir
 
-
 Directory for configuration files
-
-
-
 
 method:: userExtensionDir
 
-
 User extension directory (see link::Guides/UsingExtensions::)
-
-
-
 
 method:: platformDir
 
-
 Platform specific directory for class files (see link::Guides/UsingExtensions::)
-
-
-
 
 method:: pathSeparator
 
-
 Platform specific path separator
-
-
-
 
 method:: resourceDir
 
-
 Platform specific resource directory
-
-
-
 
 method:: recordingsDir
 
-
 Platform recordings directory
-
-
-
 
 method:: defaultTempDir
 
-
 Default directory for temporary files
-
-
-
 
 method:: hasQt
 
-
 teletype::true:: if the Qt library is available, false otherwise
-
-
-
 
 method:: hasQtWebEngine
 
-
 teletype::true:: if the QtWebEngine library is available, false otherwise
 
-
-
-
 method:: architecture
-
 
 A link::Classes/Symbol:: naming the architecture for which this version of SuperCollider was built.
 Returns one of 'AArch32' (32-bit ARM), 'AArch64' (64-bit ARM, introduced in ARMv8), 'Itanium64', 'i386', 'x86_64',
 'PowerPC', or 'unknown' if the architecture is unidentifiable.
 
-
-
-
-
-
 subsection:: Features
 
-
 method:: when
-
 
 Evaluate ifFunction if all features are present, otherwise evaluate elseFunction.
 
@@ -229,161 +120,80 @@ code::
 Platform.when(#[\Document, \SCWindow], { "yeehah!".postln });
 ::
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 private:: shutdown, startup
-
 
 method:: name
 returns the platform name
 
-
-
-
 method:: recompile
-
 
 Recompile class library
 
-
-
-
-
-
 subsection:: Directories and filesystem stuff
-
 
 method:: classLibraryDir
 
-
 Location of the bundled class library
-
-
-
 
 method:: helpDir
 
-
 Location of the bundled help files
-
-
-
 
 method:: systemAppSupportDir
 
-
 System application support directory
-
-
-
 
 method:: systemExtensionDir
 
-
 System extension directory (see link::Guides/UsingExtensions::)
-
-
-
 
 method:: userHomeDir
 
-
 User home directory
-
-
-
 
 method:: userAppSupportDir
 
-
 User application support directory
-
-
-
 
 method:: userConfigDir
 
-
 Directory for configuration files
-
-
-
 
 method:: userExtensionDir
 
-
 User extension directory (see link::Guides/UsingExtensions::)
-
-
-
 
 method:: platformDir
 
-
 Platform specific directory for class files (see link::Guides/UsingExtensions::)
-
-
-
 
 method:: pathSeparator
 
-
 Platform specific path separator
-
-
-
 
 method:: pathDelimiter
 
-
 Platform specific path delimiter
-
-
-
 
 method:: recordingsDir
 
-
 Platform recordings directory
-
-
-
 
 method:: resourceDir
 
-
 Platform specific resource directory
-
-
-
 
 method:: defaultTempDir
 
-
 Default directory for temporary files
 
-
-
-
 method:: formatPathForCmdLine
-
 
 argument:: path
 
 A path string.
-
 
 returns::
  
@@ -391,40 +201,21 @@ The input string formatted as a command-line argument. On Windows this
 method quotes the string. On Unix-based systems this method escapes space
 characters with a backslash.
 
-
-
-
-
-
 subsection:: Startup files
-
 
 method:: startupFiles
 
-
 Files to be loaded on startup
-
-
-
 
 method:: loadStartupFiles
 
-
 (re)load startup files
-
-
-
-
-
 
 subsection:: System commands
 
-
 method:: killAll
 
-
 Kill all processes as defined by cmdLineArgs.
-
 
 argument:: cmdLineArgs
 
@@ -435,14 +226,9 @@ code::
 thisProcess.platform.killAll("scsynth supernova");
 ::
 
-
-
-
 method:: killProcessByID
 
-
 Kill a single process as identified by its process ID.
-
 
 argument:: pid
 
@@ -455,31 +241,17 @@ code::
 thisProcess.platform.killProcessByID(~pid);
 ::
 
-
-
-
-
-
 subsection:: Features
-
 
 Features are abstract symbols that can be declared by extension authors and be checked during runtime in user code.
 Apart from explicitly declared features, class and primitive names are implicitly declared.
 
-
-
-
 method:: declareFeature
-
 
 Declare aSymbol to be a feature present in the runtime.
 Class names and primitive names cannot be declared as features.
 
-
-
-
 method:: hasFeature
-
 
 Return teletype::true:: if the feature aSymbol is present in the runtime system.
 aSymbol can refer to explicitly declared features as well as class and primitive names.
@@ -493,11 +265,7 @@ thisProcess.platform.declareFeature('superCrazyCompositionSystem');
 thisProcess.platform.hasFeature('superCrazyCompositionSystem');
 ::
 
-
-
-
 method:: when
-
 
 Evaluate ifFunction if all features are present, otherwise evaluate elseFunction.
 

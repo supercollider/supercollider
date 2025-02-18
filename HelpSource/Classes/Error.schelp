@@ -2,19 +2,7 @@ title:: Error
 categories:: Core
 summary:: Superclass of all Errors
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Error and its subclasses separate different types of error is that can occur in the SuperCollider program into distinct classes, so that they can be reported differently to the user.
 
@@ -40,13 +28,7 @@ code::
 
 Throwing an error object gives the caller the opportunity to catch, and possibly recover from, the error. See the Exception help file for more information about this.
 
-
-
-
-
-
 subsection:: Error hierarchy
-
 
 The following error classes exist in the main library.
 

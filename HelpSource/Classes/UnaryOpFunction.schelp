@@ -3,42 +3,16 @@ categories:: Core
 summary:: Represent a unary operation on a function
 related:: Classes/UnaryOpStream, Classes/Punop, Classes/BinaryOpFunction, Classes/NAryOpFunction, Overviews/Operators
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Operating on functions instead of numbers, what results is not a result of the calculation, but a structure that represents that calculation.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 a = 2.sqrt; // result is square root of two (approximate floating point).
-a = { b }.sqrt; // result is  a UnaryOpFunction
-b = 2;
-a.value; // now it is evaluated, and the result is calculated
-b = 9;
+a = { b }.sqrt; // result is  a UnaryOpFunction b = 2;
+a.value; // now it is evaluated, and the result is calculated b = 9;
 a.value; // again, with a different value.
 ::
 

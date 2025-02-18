@@ -3,40 +3,17 @@ categories:: UGens>Delays>Buffer
 summary:: Buffer based simple delay line with no interpolation
 related:: Classes/BufDelayC, Classes/BufDelayL, Classes/DelayN
 
-
-
-
-
-
-
-
-
-
 description::
 
-
-
-
-Simple delay line with no interpolation which uses a buffer for its internal memory. See also  link::Classes/BufDelayL::  which uses linear
+Simple delay line with no interpolation which uses a buffer for its
+internal memory. See also  link::Classes/BufDelayL::  which uses linear
 interpolation, and  link::Classes/BufDelayC::  which uses cubic
-interpolation. Cubic interpolation is more computationally expensive than linear, but more accurate.
-
-
-
-
-
-
-
-
-
+interpolation. Cubic interpolation is more computationally expensive
+than linear, but more accurate.
 
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: buf
 
@@ -47,21 +24,17 @@ The buffers provided to any of the BufDelay units must be one channel.
 If you want to delay a multichannel signal, you must provide as many separate (one-channel) buffers as there are input channels.
 ::
 
-
 argument:: in
 
 The input signal.
-
 
 argument:: delaytime
 
 Delay time in seconds.
 
-
 argument:: mul
 
 argument:: add
-
 
 discussion::
 warning:: 
@@ -69,19 +42,7 @@ For reasons of efficiency, the effective buffer size is limited to the previous 
 So, if 44100 samples are allocated, the maximum delay would be 32768 samples.
 ::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // allocate buffer

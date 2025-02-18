@@ -3,55 +3,27 @@ categories:: Streams-Patterns-Events>Patterns>Random
 summary:: Random values that follow a Exponential Distribution
 related:: Classes/Pkey
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 note::
 Lo and hi should both be positive or negative (their range should not cross 0).
 ::
 
-
 argument:: lo
 
 Lower boundary of values.
-
 
 argument:: hi
 
 Upper boundary of values
 
-
 argument:: length
 
 Number of values produced.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

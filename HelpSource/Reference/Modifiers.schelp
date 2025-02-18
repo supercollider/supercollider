@@ -39,15 +39,13 @@ code::
 (
 w = Window.new.front; w.addFlowLayout;
 
-	// direct, using bit field
-Button(w, Rect(0,0,390,50)).states_([["hold shift/alt keys and click"]])
+	// direct, using bit field Button(w, Rect(0,0,390,50)).states_([["hold shift/alt keys and click"]])
 	.action_ { |but, mod|
 		if (mod & 131072 == 131072) { "shift key was pressed.".postln; };
 		if (mod & 524288 == 524288) { "alt key was pressed.".postln; };
 	};
 
-	// using helper methods
-Button(w, Rect(0,0,390,50)).states_([["hold any mod keys and click"]])
+	// using helper methods Button(w, Rect(0,0,390,50)).states_([["hold any mod keys and click"]])
 	.action_ { |but, mod|
 		if(mod.isCaps) { "mod pressed: Caps.".postln };
 		if(mod.isShift) { "mod pressed: Shift.".postln };
@@ -58,8 +56,7 @@ Button(w, Rect(0,0,390,50)).states_([["hold any mod keys and click"]])
 		if(mod.isFun) { "mod pressed: Fun.".postln };
 	};
 
-	// collecting all modifiers
-Button(w, Rect(0,0,390,50)).states_([["hold any mod keys and click"]])
+	// collecting all modifiers Button(w, Rect(0,0,390,50)).states_([["hold any mod keys and click"]])
 	.action_ { |but, mod|
 		var pressed;
 		#[\isCaps, \isShift, \isCtrl, \isAlt, \isCmd, \isNumPad, \isHelp, \isFun].do { |x|

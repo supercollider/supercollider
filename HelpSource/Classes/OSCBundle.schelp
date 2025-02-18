@@ -3,105 +3,49 @@ categories:: External Control>OSC
 summary:: Network bundle object
 related:: Guides/OSC_communication
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A bundle object that allows to add preparation messages for async processes.
 If this feature is not needed, a list object can be used instead.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 private:: prSend
-
 
 method:: add
 Add an osc message to the bundle.
 
-
-
-
 method:: addAll
-
 
 Add an array of osc messages to the bundle.
 
-
-
-
 method:: addPrepare
-
 
 Add a preparation osc message, which is sent before the bundle is sent.
 
-
-
-
 method:: send
-
 
 Send the bundle to a server.
 If preparation messages are given, they are sent, the process waits for their reception abd then sends the bundle.
 
-
-
-
 method:: schedSend
 
-
 Like send, but the sending is synced to a given clock to the next beat.
-
 
 argument:: server
 
 A link::Classes/Server::.
 
-
 argument:: clock
 
 A link::Classes/TempoClock::.
-
 
 argument:: quant
 
 Can be a pair of values:
 [quant, offset].
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // create a new, empty instance

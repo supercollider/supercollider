@@ -3,41 +3,16 @@ categories:: Streams-Patterns-Events>Patterns>List
 summary:: Sequentially embed values in a list in constant, but random order
 related:: Classes/Prand
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Return a shuffled version of the strong::list:: item by item, with n strong::repeats::.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (
 var a, b;
-a = Pshuf([1, 2, 3, 4, 5], 3);	// repeat 3 times
-b = a.asStream;
+a = Pshuf([1, 2, 3, 4, 5], 3);	// repeat 3 times b = a.asStream;
 16.do({ b.next.postln });
 )
 

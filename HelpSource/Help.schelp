@@ -10,38 +10,14 @@ note::
 link::Guides/News-3_13##News in SuperCollider version 3.13:: 
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Search and browse
-
-
-
 
 definitionlist::
 ## link::Search:: || Search all documents and methods
 ## link::Browse:: || Browse all documents by categories
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Getting started
-
-
-
 
 These are useful starting points for getting help on SuperCollider:
 
@@ -54,19 +30,7 @@ definitionlist::
 ## link::Guides/UserFAQ:: || Common Errors and FAQ
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Documentation indexes
-
-
-
 
 definitionlist::
 ## link::Overviews/Documents:: || Alphabetical index of all documents
@@ -75,19 +39,7 @@ definitionlist::
 ## link::Overviews/Methods:: || Alphabetical index of all methods
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Licensing
-
-
-
 
 SuperCollider is free software published under the GPL:
 link::Other/Licensing::.

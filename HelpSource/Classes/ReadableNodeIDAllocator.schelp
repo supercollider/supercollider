@@ -3,19 +3,7 @@ categories:: Control
 summary:: An allocator for nodeIDs with human-readable ownership
 related:: Classes/Server, Guides/MultiClient_Setups
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 In multi-client setups, it is useful to know which client created which nodeIDs on a shared server.
 ReadableNodeIDAllocator provides that facility by using a decimal prefix based on the clientID.
@@ -42,35 +30,19 @@ r.defaultGroupID;
 3.do { r.nextNodeID.postln };
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: new
 
-
 Make a new instance for given clientID, offset for lowest temporary id, and
-
 
 argument:: clientID
 
 The clientID for which to create an offset/prefix
 
-
 argument:: lowestTempID
 
 The offset for the lowest temporary id
-
 
 argument:: numClients
 
@@ -83,107 +55,52 @@ a = ReadableNodeIDAllocator(11, 1000, 12);
 3.do { a.alloc.postln };
 ::
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 method:: clientID
 
-
 The clientID for which to create an offset/prefix
-
-
-
 
 method:: numClients
 
-
 The number of clients for which to split the number range
-
-
-
 
 method:: lowestTempID
 
-
 The offset from where temporary nodeID begin
-
-
-
 
 method:: idOffset
 
-
 The offset from where nodeID range begins
-
-
-
 
 method:: maxPermID
 
-
 The highest permanent nodeID
-
-
-
 
 method:: numIDs
 
-
 The number of IDs before the allocator will wrap
-
-
-
 
 method:: alloc
 
-
 Allocate next temporary nodeID
-
-
-
 
 method:: allocPerm
 
-
 Allocate next permanent nodeID
-
-
-
 
 method:: freePerm
 
-
 Free a permanent nodeID
-
 
 argument:: id
 
-
-
-
 method:: isPerm
-
 
 Test whether num is in the allocator's range of permanent numbers
 
-
 argument:: num
 
-
-
-
 method:: reset
-
 
 reset allocator to initial state

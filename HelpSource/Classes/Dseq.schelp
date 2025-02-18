@@ -3,64 +3,26 @@ categories:: UGens>Demand
 summary:: Demand rate sequence generator
 related:: Classes/Demand, Classes/Drand, Classes/Dser, Classes/Duty, Classes/Dxrand, Classes/TDuty
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Demand rate sequence generator.
 
 
 See link::Classes/Pseq:: for structurally related equivalent.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: list
 
 An array of values or other UGens.
 
-
 argument:: repeats
 
 Number of repeats.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

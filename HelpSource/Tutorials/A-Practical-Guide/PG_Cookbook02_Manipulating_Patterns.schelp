@@ -3,22 +3,9 @@ categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Manipulating pattern data
 related:: Tutorials/A-Practical-Guide/PG_Cookbook01_Basic_Sequencing, Tutorials/A-Practical-Guide/PG_Cookbook03_External_Control
 
-
-
-
-
-
-
-
-
-
 section:: Manipulating pattern data
 
-
-
-
 subsection:: Merging (interleaving) independent streams
-
 
 Suppose you wanted a pattern that generated pitches in a lower range 70% of the time, and a higher range the other 30%. For purely random patterns, this is simple because the pattern for each range has no memory (the next value does not depend on the previous value in any perceptible way).
 The random number generator patterns ( link::Classes/Pwhite:: ) return one element before yielding control back to the "selector" ( link::Classes/Pwrand:: ).
@@ -51,13 +38,7 @@ p = Pbind(
 p.stop;
 ::
 
-
-
-
-
-
 subsection:: Reading an array forward or backward arbitrarily
-
 
 Here's an interesting one. We have an array of possible output values, and we want the pattern to move forward or backward through the array depending on some kind of user input.
 
@@ -99,13 +80,7 @@ strong::Third-party extension alert:: : The link::Classes/Pwalk:: pattern shown 
 To do the same thing with the results of a pattern, see Pscratch in the strong::ddwPatterns:: quark.
 An especially fun use of Pscratch is to use it on an event pattern like Pbind, skipping around in a series of fully realized note events.
 
-
-
-
-
-
 subsection:: Changing Pbind value patterns on the fly
-
 
 Patterns are converted into streams to generate values (or events). By design, there is no way to access the internal state of the stream.
 This means, for Pbind and similar patterns, the streams producing values for the event keys are invisible.

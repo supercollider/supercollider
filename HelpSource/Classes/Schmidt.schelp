@@ -3,21 +3,10 @@ categories:: UGens>Maths
 summary:: Schmidt trigger
 related:: Classes/InRange, Classes/InRect
 
-
-
-
-
-
-
-
-
-
 description::
 
-
-
-
-If code::in > hi::, output 1. If code::in < lo::, output 0. Otherwise, repeat the last sample of output, assumed to be 0 at initialization.
+If code::in > hi::, output 1. If code::in < lo::, output 0. Otherwise, repeat the
+last sample of output, assumed to be 0 at initialization.
 In sclang-flavored
 pseudocode:
 
@@ -33,50 +22,23 @@ out[i] = if(in[i] < lo[i]) {
 };
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: in
 
 Signal to be tested.
 
-
 argument:: lo
 
 Low threshold.
-
 
 argument:: hi
 
 High threshold.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 s.boot;

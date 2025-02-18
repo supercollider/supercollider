@@ -3,19 +3,7 @@ categories:: GUI>Views
 summary:: A view that contains other views
 related:: Classes/FlowView, Classes/FlowLayout
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 note::
 In Qt GUI, every view can be a parent to other views, so CompositeView redirects to the same class as link::Classes/View:: - you can use the latter equivalently.
@@ -28,38 +16,13 @@ note::
 In Cocoa GUI, this view accepts key actions, but not mouse clicks or drags.
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: key
 
-
-
-
-
-
-
-
-
-
 examples::
 
-
-
-
 subsection:: Coordinate System
-
 
 Containers use relative coordinates, i.e.  views are placed relative to the upper left corner of the container.
 
@@ -80,13 +43,7 @@ c.bounds_(Rect(100, 0, 300, 300)); // contents adjust since coords are relative
 c.resize_(6); // contents adjust since coords are relative
 ::
 
-
-
-
-
-
 subsection:: Keydown Bubbling
-
 
 Key actions "bubble up" to the parent view if a view does not define one itself.
 In the following example, a and b do not have keyDown actions themselves, so the key event is passed to c, the parent, which defines the key down action.
@@ -115,13 +72,7 @@ d.background = Color.black;
 )
 ::
 
-
-
-
-
-
 subsection:: Decorators
-
 
 A 'decorator' object can be set to handle layout management.
 All views added to the CompositeView will now be placed by the decorator.
@@ -170,13 +121,7 @@ a.front;
 )
 ::
 
-
-
-
-
-
 subsection:: Hiding / Swapping
-
 
 You can stack CompositeViews on top of each other and use a button show only one of them:
 
@@ -216,13 +161,7 @@ a.front;
 )
 ::
 
-
-
-
-
-
 subsection:: Nested Example
-
 
 In this example, the link::Classes/StaticText:: accepts mouse clicks, since container views can't:
 

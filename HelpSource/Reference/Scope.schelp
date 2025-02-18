@@ -35,14 +35,7 @@ z = makeCounter.value(99, 100);
 X and z are functions which refer to different instances of the variables curVal and stepVal
 
 code::
-x.value.postln; // posts 10
-x.value.postln; // posts 11
-z.value.postln; // posts 99
-z.value.postln; // posts 199
-x.value.postln; // posts 12
-x.value.postln; // posts 13
-z.value.postln; // posts 299
-z.value.postln; // posts 399
+x.value.postln; // posts 10 x.value.postln; // posts 11 z.value.postln; // posts 99 z.value.postln; // posts 199 x.value.postln; // posts 12 x.value.postln; // posts 13 z.value.postln; // posts 299 z.value.postln; // posts 399
 ::
 
 Note that even though the function which defines curVal and stepVal has completed execution, its variables are still accessible to those functions that were defined within its context.

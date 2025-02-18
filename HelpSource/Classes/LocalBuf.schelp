@@ -3,60 +3,37 @@ categories:: UGens>Buffer
 summary:: Allocate a buffer local to the synth
 related:: Classes/Buffer, Classes/SetBuf, Classes/ClearBuf
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: categories, new1
 
-
 method:: new
 Allocate a local buffer
-
 
 argument:: numFrames
 
 Number of frames (default: 1)
 
-
 argument:: numChannels
 
 Number of channels for multiple channel buffers (default: 1)
-
 
 returns::
  
 a new buffer – the UGen outputs its buffer number and can thus be used in any other UGen that requires a buffer number input.
 
-
-
-
 method:: newFrom
 
-
-Allocate a new buffer from a given list of values
-
+Allocates a new buffer from a given list of values
 
 argument:: list
 
 The list may be two-dimensional for numChannels > 1.
 It is then reshaped into the buffer's current format by flattening.
 
-
 returns::
  
 a new buffer
-
 
 discussion::
 Since newFrom is called by the as message, one may thus convert an array to a LocalBuf:
@@ -65,28 +42,15 @@ code::
 [1, 2, 3].as(LocalBuf)
 ::
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 method:: set
 
-
 Set the buffer slots with a list of values.
 
-
 discussion::
-If list is smaller than numFrames, it will only set part of the buffer. The list may be two-dimensional for numChannels > 1.
+If list is smaller than numFrames, it will only set
+part of the buffer. The list may be two-dimensional for numChannels > 1.
 offset is the starting index (default: 0)
 
 warning::
@@ -105,34 +69,19 @@ SynthDescLib.at(\bigLocalBuf).constants;
 // prints: FloatArray[1, 88200, 0, 0.75, 0.5, 0.25]
 ::
 
-
-
-
 method:: clear
-
 
 Set the buffer slot to teletype::zero::.
 
-
 discussion::
 This is important when randomly accessing buffer slots
-(e.g. with a BufRd) or not overwriting them. Clear is not an efficient real time operation for larger buffers, so it should be only used when really needed - but then it is essential:
+(e.g. with a BufRd) or not overwriting them. Clear is not an efficient real time operation
+for larger buffers, so it should be only used when really needed - but then it is essential:
 a LocalBuf is "created" in each new synth, and it may reuse old space.
-So if an older synth has already ended, this part of memory may be the same as the new synth's.
-
-
-
-
-
-
-
-
-
+So if an older
+synth has already ended, this part of memory may be the same as the new synth's.
 
 examples::
-
-
-
 
 code::
 // example: FFT

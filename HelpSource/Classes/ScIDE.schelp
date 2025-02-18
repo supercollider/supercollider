@@ -3,19 +3,7 @@ categories:: Frontends
 summary:: Interaction with the Qt IDE
 related:: Classes/Document
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 The ScIDE class contains a number of class methods for interaction with the Qt IDE.
 Most users won't need to access these methods directly.

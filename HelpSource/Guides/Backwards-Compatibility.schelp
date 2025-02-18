@@ -8,8 +8,7 @@ There are a number of classes and methods that have been added to allow for back
 The most notable of these is code::Synth.play::, which is basically a wrapper for code::Function.play::.
 
 code::
-{ SinOsc.ar(440, 0, 0.5) }.play; // creates an arbitrarily named SynthDef and a Synth to play it
-Synth.play({ SinOsc.ar(440, 0, 0.5) }); // in SC3 just a wrapper for Function.play with fewer args
+{ SinOsc.ar(440, 0, 0.5) }.play; // creates an arbitrarily named SynthDef and a Synth to play it Synth.play({ SinOsc.ar(440, 0, 0.5) }); // in SC3 just a wrapper for Function.play with fewer args
 ::
 
 Both of these will create synth nodes on the default server.
@@ -28,11 +27,8 @@ Although useful for quick testing these methods are generally inferior to code::
 Like code::SynthDef.play::, code::Function.play:: returns a link::Classes/Synth:: object which can then be messaged, etc. However, since code::Function.play:: creates an arbitrarily named link::Classes/SynthDef::, one cannot reuse the resulting def, at least not without reading its name from the post window, or getting it from the link::Classes/Synth:: object.
 
 code::
-//The following examples are functionally equivalent
-x = { arg freq = 440; Out.ar(1, SinOsc.ar(freq, 0, 0.5)) }.play(fadeTime: 0);
-x.set(\freq, 880);		// you can set arguments
-y = Synth.new(x.defName);	// get the arbitrary defname from x
-x.free;
+//The following examples are functionally equivalent x = { arg freq = 440; Out.ar(1, SinOsc.ar(freq, 0, 0.5)) }.play(fadeTime: 0);
+x.set(\freq, 880);		// you can set arguments y = Synth.new(x.defName);	// get the arbitrary defname from x x.free;
 y.free;
 
 x = SynthDef("backcompat-sine", { arg freq = 440; Out.ar(1, SinOsc.ar(freq, 0, 0.5)) }).play;

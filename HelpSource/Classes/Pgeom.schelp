@@ -3,66 +3,27 @@ categories:: Streams-Patterns-Events>Patterns>List
 summary:: Geometric series pattern
 related:: Classes/Pseries
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Return a stream that behaves like a geometric series.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: start
 
 Start value.
 
-
 argument:: grow
 
 Multiplication factor.
-
 
 argument:: length
 
 Number of values produced.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

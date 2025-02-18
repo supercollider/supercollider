@@ -2,65 +2,26 @@ title:: DetectIndex
 categories:: UGens>Buffer
 summary:: Search a buffer for a value
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Search a buffer for a value.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: bufnum
 
 Index of the buffer
 
-
 argument:: in
 
 The input signal.
 
-
 returns::
 Index
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

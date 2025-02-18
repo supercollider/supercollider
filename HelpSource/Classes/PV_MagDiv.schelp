@@ -2,69 +2,29 @@ title:: PV_MagDiv
 categories:: UGens>FFT
 summary:: Division of magnitudes
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Dividemagnitude magnitudes of two inputs and keeps the phases of the first input.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: categories
 
-
 method:: new
-
 
 argument:: bufferA
 
 Fft buffer A.
 
-
 argument:: bufferB
 
 Fft buffer B.
-
 
 argument:: zeroed
 
 Number to use when bins are zeroed out, i.e. causing division by zero (defaults to teletype::0::.0001)
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 s.boot;

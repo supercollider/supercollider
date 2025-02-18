@@ -3,19 +3,7 @@ categories:: JITLib>GUI, Live Coding
 summary:: Mix control for a proxyspace or Ndef.all
 related:: Classes/ProxySpace, Classes/Ndef, Classes/JITGui, Classes/NdefGui, Classes/MonitorGui, Classes/NdefParamGui
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 ProxyMixer provides controls for handling and editing the node proxies in a proxyspace and their monitors (cross-platform graphics).
 It replaces the earlier ProxyMixer class.
@@ -53,164 +41,86 @@ if (\ProxyMeter.asClass.notNil) { ProxyMeter.addMixer(m) };
 };
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 subsection:: Creation
 
-
 method:: new
-
 
 argument:: obj
 
 The proxyspace to show and control
 
-
 argument:: numItems
 
 How many ar and kr proxies can be shown
-
 
 argument:: parent
 
 By default nil, so a window is made automatically.
 if a parent is supplied, the ProxyMixer will be shown there.
 
-
 argument:: bounds
 
 Window bounds - default is nil, so it determines it size.
-
 
 argument:: makeSkip
 
 A flag whether to make make a skipjack
 
-
 argument:: options
 
 Additional settings - currently none provided.
 
-
-
-
 method:: small
-
 
 Like *new, but creates a proxyMixer for small screen sizes.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 subsection:: Instance variables
 
-
 strong::GUI areas and elements: ::
-
-
-
 
 method:: arZone, krZone, editZone, arGuis, krGuis, editGui, arScroller, krScroller
 
-
 strong::current state and access methods: ::
-
-
-
 
 method:: proxyspace, existingProxies, activeProxies, playingProxies, selectedKeys, arNames, krNames, numArs, numKrs, atAr, atKr
 
-
-
-
-
-
 subsection:: Instance methods
-
 
 method:: highlight, unhighlight
 
-
 Highlight and unhighlight an arGui slot in the arZone (left)
-
-
-
 
 method:: highlightSlots
 
-
 Highlight a block of the arGuis in the arZone/
-
-
-
 
 method:: sizes, switchSize
 
-
 Switch between display modes 0: ar, 1: ar+kr, 2: ar+kr+ed
-
-
-
 
 method:: arKeysRotation, krKeysRotation
 
-
 If too many proxies are present, by how much to rotate arKeys or krKeys to display.
-
-
-
 
 method:: title
 
-
 Get the proxymixer window title.
-
-
-
 
 method:: getNameLeftBorder
 
-
-Get current left border of nameView
-
-
-
+Gets current left border of nameView
 
 method:: setNameLeftBorder
 
-
-Set current left border of nameView, trading size with volume slider
-
-
-
+Sets current left border of nameView, trading size with volume slider
 
 method:: shiftNameLeftBorder
 
-
-Shift current left border of nameView
+Shifts current left border of nameView
 
 code::
 m.getNameLeftBorder; // get its current left border position
@@ -222,33 +132,14 @@ m.shiftNameLeftBorder(-10);
 
 strong::standard JITGui methods: ::
 
-
-
-
 method:: setDefaults, accepts, getState, checkUpdate
-
 
 strong::internal - making the ProxyMixer gui elements:
 ::
 
-
-
-
 method:: makeViews, makeTopLine, makeArZone, makeKrZone, makeEditZone, setEdButs
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // make a proxyspace and 5 ar proxies, and a mixer to show them

@@ -2,35 +2,11 @@ title:: GUI: Things you probably want to know
 categories:: Tutorials>GUI
 summary:: Miscellaneous things you probably want to know about SuperCollider's GUI system
 
-
-
-
-
-
-
-
-
-
 section:: GUI Tutorial
-
-
-
 
 This helpfile is part of a link::Tutorials/GUI/tutorial_intro##GUI tutorial::.
 
-
-
-
-
-
-
-
-
-
 section:: Rendering isn't always available
-
-
-
 
 SuperCollider provides some useful classes to automate processes.
 Some of them are associated to a link::Classes/Clock::: mainly link::Classes/Routine:: and link::Classes/Task::.
@@ -70,19 +46,7 @@ win.front;
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Qt limitations
-
-
-
 
 This remark mostly concerns debugging and understanding issues.
 Since strong::Qt is a third-party library integrated within SuperCollider::, some of its limitations are unrelated to SuperCollider itself.
@@ -90,19 +54,7 @@ Since strong::Qt is a third-party library integrated within SuperCollider::, som
 As an example, at the time of writing this, Qt link::Classes/QImage:: has a strict pixel limit and cannot exceed 32767x32767 pixels.
 This 'issue' being only related to Qt, it is documented on Qt sources/forums, but not on SuperCollider sources/forums. In other words, working with Qt within the context of SuperCollider might also include using Qts documentation directly.
 
-
-
-
-
-
-
-
-
-
 section:: Pen usage and resource management
-
-
-
 
 The link::Classes/Pen:: class allows the user to define a custom code::drawFunc:: to a link::Classes/View::.
 

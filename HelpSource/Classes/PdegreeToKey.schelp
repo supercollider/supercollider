@@ -3,66 +3,27 @@ categories:: Streams-Patterns-Events>Patterns>Math
 summary:: Index into a scale
 related:: Classes/Scale
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Return a series of notes derived from an index into a scale.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: pattern
 
 Integer index into the scale.
 
-
 argument:: scale
 
 An array or pattern. If a pattern, it streams the scales accordingly.
-
 
 argument:: stepsPerOctave
 
 The number of steps per octave in the scale.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

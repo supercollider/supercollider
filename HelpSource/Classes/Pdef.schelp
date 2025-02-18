@@ -3,19 +3,7 @@ categories:: JITLib>Patterns
 summary:: Stream reference definition
 related:: Classes/Pdefn, Classes/PdefGui
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Pdef registers patterns by key. All accesses to the registered patterns go through the Pdef class via that key.
 Registered patterns can be replaced while running.
@@ -39,13 +27,7 @@ For strong::non-event patterns:: link::Classes/Pdefn:: is used instead. For anot
 Graphical overview over all current Pdefs:
 link::Classes/PdefAllGui::. Overview: link::Overviews/JITLib::.
 
-
-
-
-
-
 subsection:: First Example
-
 
 code::
 s.boot;
@@ -60,52 +42,27 @@ Pdef(\x, Pbind(\note, Pseq([0, 3, 5, 7, 9, 11], inf)));
 Pdef(\x, Pbind(\freq, Pseq([1000, 1923, 245.2, 1718] / 1.2 + 0.1, inf)));
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: all
 
-
 A global link::Classes/IdentityDictionary:: with all proxies.
-
-
-
 
 private:: initClass
 
-
-
-
-
-
 subsection:: Creation
 
-
 method:: new
-
 
 Store the pattern in a global dictionary under key, replacing its pattern with the new one.
 If the pattern is a strong::function::, Pdef creates a link::Classes/PlazyEnvir:: internally that dynamically creates the pattern returned from the function, applying the arguments from the inevent.
 
 Using strong::*new(key):: you can access the pattern at that key (if none is given, a default silent event is created)
 
-
 argument:: key
 
 An identifier for the proxy. Usually, it is a link::Classes/Symbol::.
 The key transparently accesses the global link::Classes/IdentityDictionary::.
-
 
 argument:: item
 
@@ -137,300 +94,156 @@ Pdef(\x, Pbind(\instrument, \Pdefhelp, \note, Pseq([0, 4, 7, 3, 0, 1, 0], inf)))
 Pdef(\y, Pdef(\stut) <> (pattern: Pdef(\x), dup: Pseq([2, 2, 4, 3], inf)) <> (dur: 0.1, legato: 0.2)).play;
 ::
 
-
-
-
 method:: default
-
 
 Default source, if none is given. The default is an Event.silent of teletype::1.0:: beat duration.
 
-
-
-
 method:: removeAll
-
 
 Remove all proxies from the global dictionary (link::#*all::)
 
-
-
-
 method:: clear
-
 
 Clear all proxies, setting their source to silence.
 
-
-
-
 method:: all
-
 
 Set or return the environment (link::Classes/IdentityDictionary::) that stores all Pdefs.
 
-
-
-
 method:: defaultQuant
-
 
 Set the default quantisation for new instances (default: 1.0).
 This can be an array [quant, phase, timingOffset, outset]
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 private:: prAdd
 
-
-
-
-
-
 subsection:: Changing the definition / setting the source
-
 
 One pattern may have many streams in different places.
 A change in the pattern definition Pdef propagates through all streams.
 The change does not have to be immediate - there is a scheme to schedule when the change becomes effective:
 a strong::quant:: and strong::clock:: (like elsewhere) and a strong::condition::.
 
-
-
-
 method:: clock
-
 
 Get or set the instance's default clock, used by link::#-play:: if no other clock is specified.
 Defaults to TempoClock.default.
 
-
-
-
 method:: quant
 
-
 Set the quantisation time for beat accurate scheduling.
-
 
 argument:: val
 
 Can be an array strong::[quant, phase, timingOffset, outset] ::, or just strong::[quant, phase]:: etc.
 
-
-
-
 method:: condition
-
 
 Provide a condition under which the pattern is switched when a new one is inserted.
 The stream value and a count value is passed into the function.
 
-
-
-
 method:: count
-
 
 Create and update condition that simply counts up to n and switches the pattern then
 
-
-
-
 method:: reset
-
 
 Switch the pattern immediately (stuck conditions can be subverted by this).
 
-
-
-
 method:: fadeTime
-
 
 When the synthdefs that are used contain an code::\amp:: control, the patterns are replaced by crossfading the previous with the new over this time (in beats)
 
-
-
-
 method:: envir
-
 
 Set the event for the Pdef.
 It is used to filter the incoming stream before it is passed to the source pattern.
 This is similar to link::Classes/NodeProxy#-nodeMap::.
 When set for the first time, the pattern is rebuilt.
 
-
-
-
 method:: set
-
 
 Set arguments in the default event.
 If there is none, it is created and the pattern is rebuilt.
 
-
-
-
 method:: map
-
 
 Map Pdefn to the keys in the event.
 
-
-
-
 method:: clear
-
 
 Set the source to teletype::nil::
 
-
-
-
 method:: endless
 
-
-Return a link::Classes/Prout:: that plays the proxy endlessly, replacing strong::nil:: with a strong::default:: value (silent event).
+Returns a link::Classes/Prout:: that plays the proxy endlessly, replacing strong::nil:: with a strong::default:: value (silent event).
 This allows to create streams that idle on until a new pattern is inserted.
 
-
-
-
-
-
 subsection:: Pdef as stream reference
-
 
 A single Pdef may serve as a definition for multiple streams.
 These methods show how to fork off separate streams from one instance.
 Even if they run in different contexts, their definition may still be changed.
 
-
-
-
 method:: fork
 
-
 Play an independent stream in parallel.
-
 
 argument:: argClock
 
 The clock to run the substream on.
 
-
 argument:: quant
 
 Can be an array of [quant, phase, offset], or a link::Classes/Quant:: value.
-
 
 argument:: protoEvent
 
 An link::Classes/Event:: to pass in that is used by the substream
 
-
 returns::
 An link::Classes/EventStreamPlayer::.
 
-
-
-
 method:: embed
 
-
-Pas a value (typically an link::Classes/Event::) into the pattern inval, and embed the Pdef in the stream.
-
-
-
+Pass a value (typically an link::Classes/Event::) into the pattern inval, and embed the Pdef in the stream.
 
 method:: embedInStream
 
-
 Just like any pattern, embeds itself in stream
 
-
-
-
-
-
 subsection:: Pdef as EventStreamPlayer
-
 
 For live coding, each Pdef also may control one instance that plays one stream off it.
 This is an link::Classes/EventStreamPlayer::, accessible in the instance variable link::#-player::.
 
-
-
-
 method:: play
 
-
-Start the Pdef and creates a player.
+Starts the Pdef and creates a player.
 (See: link::Classes/EventPatternProxy#-play::)
-
-
-
 
 method:: stop
 
-
-Stop the player
-
-
-
+Stops the player
 
 method:: player
 
-
 Return the current player (if the Pdef is simply used in other streams this is nil)
-
-
-
 
 method:: pause, resume, reset
 
-
 Perform this method on the player.
-
-
-
 
 method:: isPlaying
 
-
-Return teletype::true:: if player is running. If a Pdef is playing and its stream ends, it will schedule a stream for playing strong::as soon as a new one is assigned to it::.
+Returns teletype::true:: if player is running. If a Pdef is playing and its stream ends, it will schedule a stream for playing strong::as soon as a new one is assigned to it::.
 If it is stopped by strong::stop::, it won't.
-
-
-
-
-
-
-
-
-
 
 examples::
 
-
-
-
 subsection:: Pdef as stream reference
-
 
 code::
 s.boot;
@@ -511,13 +324,7 @@ Pdef(\a).set(\detune, 0);
 x.stop;
 ::
 
-
-
-
-
-
 subsection:: Pdef as EventStreamPlayer
-
 
 code::
 (
@@ -594,13 +401,7 @@ TempoClock.default.tempo = 1.0;
 PdefAllGui(18);
 ::
 
-
-
-
-
-
 subsection:: Recursion
-
 
 Pdefs can be used recursively under the condition that the stream call structure allows it.
 a structure like the following works:
@@ -616,13 +417,7 @@ code::
 // Pdef(\y, Pseq([Pdef(\y), Pbind(\instrument, \gpdef)], inf));
 ::
 
-
-
-
-
-
 subsection:: Quantizing and outset
-
 
 When quantizing to a larger number of beats, the changes become very slow if one has to wait for the next beat.
 Providing an strong::outset:: quant value is a way to make the change so that it appears as if it had been done at the previous grid point already.
@@ -695,13 +490,7 @@ Pdef(\x).quant = 8;
 Pdef(\x, Pbind(\degree, Pseq((0..7), inf)).trace(\degree));
 ::
 
-
-
-
-
-
 subsection:: Update condition
-
 
 In order to be able to switch to a new pattern under a certain link::#-condition::, the instance variable condition can be set to a function that returns a boolean.
 Value and a count index are passed to the function.
@@ -721,13 +510,7 @@ Pdef(\x, Pbind(\degree, Pseq((0..7) + 5.rand, inf), \dur, 0.3)).count(8);
 // the value that is sent in is the event, so decisions can be made dependent on the event's fields
 ::
 
-
-
-
-
-
 subsection:: Reset
-
 
 code::
 // reset to change immediately:

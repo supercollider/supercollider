@@ -315,8 +315,7 @@ Pbind(
 )
 
 
-// "zoom" in
-TempoClock.default.tempo = 0.2;
+// "zoom" in TempoClock.default.tempo = 0.2;
 TempoClock.default.tempo = 1.0;
 
 

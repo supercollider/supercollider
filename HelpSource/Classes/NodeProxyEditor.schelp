@@ -3,19 +3,7 @@ categories:: JITLib>GUI, Live Coding
 summary:: Editor for a nodeproxy - replaced by NdefGui!
 related:: Classes/NdefGui
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 warning::
 NodeProxyEditor has been rewritten and renamed link::Classes/NdefGui::, which has the same functionality, but is both more consistent and more flexible.
@@ -42,49 +30,18 @@ list::
 
 link::Classes/NodeProxy:: and link::Classes/Ndef:: implement an strong::edit:: message, which returns a link::Classes/NodeProxyEditor::. Overview: link::Overviews/JITLib::
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: initClass
 
-
-
-
-
-
 subsection:: Creation
-
 
 method:: new
 
-
-Return a new instance for a given proxy.
+Returns a new instance for a given proxy.
 If a window (win) or a composite view is given, it uses this.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 	// preparation
@@ -190,13 +147,7 @@ Spec.add(\intv, ControlSpec(0, 24, \lin, 0.01, 0)); n.fullUpdate;
 ~test.set(\freq, rrand(200, 500), \intv, rrand(-5.5, 5.5));
 ::
 
-
-
-
-
-
 subsection:: You can drag and drop proxies between NodeProxyEditors
-
 
 code::
 (

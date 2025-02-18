@@ -3,19 +3,7 @@ categories:: Tutorials>Mark_Polishook_tutorial>Japanese_version
 summary:: Mark Polishook tutorial (JP)
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
-
-
-
-
-
-
-
-
-
 section:: ユニット・ジェネレータのコントロール のレート
-
-
-
 
 いくつかのSuperColliderのUGenは、後に.arメッセージが続けられているということに気づいているでしょう。例えば、次の様に
 
@@ -29,19 +17,7 @@ code::
 SinOsc.ar
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Audio rate
-
-
-
 
 .arメッセージを持つUGenはオーディオ・レートで動作します。デフォルトでは、一秒間あたり44,100サンプルです。
 
@@ -51,19 +27,7 @@ SinOsc.ar(440, 0, 1);
 
 耳に聞こえるオーディオ・チェーンの一部分である場合にはいつでも、.arメッセージをユニット・ジェネレータに送ります。
 
-
-
-
-
-
-
-
-
-
 section:: Control rate
-
-
-
 
 コントロール・レート
 

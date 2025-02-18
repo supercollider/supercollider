@@ -3,19 +3,7 @@ categories:: Collections>Ordered
 summary:: Two-dimensional array
 related:: Classes/Array
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Represent a two-dimensional array of data. The number of rows and columns is fixed.
 
@@ -23,22 +11,9 @@ note::
 It is possible to implement a similar behaviour using an "array-of-arrays" - see the examples towards the bottom of this page for comparison.
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 Create an array of the specified size.
 
@@ -48,11 +23,7 @@ a[2, 2] = 1;
 a.postln
 ::
 
-
-
-
 method:: fromArray
-
 
 Build an Array2D from the supplied array.
 
@@ -62,22 +33,9 @@ a[2, 2] = 1;
 a.postln
 ::
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 private:: printOn, storeOn
-
 
 method:: at
 Get a value from the array.
@@ -87,11 +45,7 @@ a.at(2, 3);
 a[2, 3];
 ::
 
-
-
-
 method:: put
-
 
 Put a value into the array.
 
@@ -100,11 +54,7 @@ a.put(2, 3, 72);
 a[2, 3] = 72;
 ::
 
-
-
-
 method:: colsDo
-
 
 Iterate over the columns. Each column will be passed to strong::func:: in turn.
 
@@ -112,11 +62,7 @@ code::
 a.colsDo(_.postln);
 ::
 
-
-
-
 method:: rowsDo
-
 
 Iterate over the rows. Each row will be passed to strong::func:: in turn.
 
@@ -124,11 +70,7 @@ code::
 a.rowsDo(_.postln);
 ::
 
-
-
-
 method:: colAt
-
 
 Retrieve a single column.
 
@@ -136,11 +78,7 @@ code::
 a.colAt(2);
 ::
 
-
-
-
 method:: rowAt
-
 
 Retrieve a single row.
 
@@ -148,11 +86,7 @@ code::
 a.rowAt(2);
 ::
 
-
-
-
 method:: asArray
-
 
 Return a flat array containing the elements.
 
@@ -161,23 +95,10 @@ a.postln;
 a.asArray.postln;
 ::
 
-
 returns::
 link::Classes/Array::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // "a" is an array-of-arrays

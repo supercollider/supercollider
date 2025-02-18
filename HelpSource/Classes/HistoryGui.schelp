@@ -3,19 +3,7 @@ categories:: GUI>Interfaces
 summary:: A gui for History objects
 related:: Classes/History
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 HistoryGui allows easy access to History as it happens:
 one can read recent lines, when they were written and by whom; one can search for text strings and by author names; and one can quickly grab lines of code for rewriting.
@@ -55,286 +43,145 @@ g.postDoc(2);
 )
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: docHeight
 
-
 Get and set the height of the text window opened by HistoryGui
-
-
-
 
 method:: docTitle
 
-
 Get and set the title of the text window opened by HistoryGui
-
-
-
 
 method:: new
 
-
 Create a new HistoryGui
-
 
 argument:: object
 
 The history
 
-
 argument:: numItems
 
 The number of lines in the TextView above
-
 
 argument:: parent
 
 A parent window or view in which to place new HistoryGui
 
-
 argument:: bounds
 
 Bounds for new HistoryGui, constrained by its minSize.
-
 
 argument:: makeSkip
 
 Flag whether to create a skipjack for the HistoryGui.
 
-
 argument:: options
 
 Options to set for the HistoryGui (inherited from JITGui).
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 private:: accepts, checkUpdate, getState, makeViews, setDefaults, postInlined
 
-
 private:: updateBinVal, updateFunc, updateLines, updateVal, alignDoc
-
-
-
-
-
 
 subsection:: Views
 
-
 method:: textV
-
 
 Top: the TextView for the selected line
 
-
-
-
 method:: startBut, filtBut, keyPop, filTextV, topBut
-
 
 The line of buttons, popup and TextView
 
-
-
-
 method:: listV
-
 
 The ListView for the history lines
 
-
-
-
 method:: resetViews
-
 
 reset all views
 
-
-
-
 method:: showLineAt
-
 
 Show the line at that index in History.lines in the TextView.
 
-
-
-
-
-
 subsection:: 'doc'-related
 
-
 method:: doc
-
 
 The external text window made by HistoryGui to show codelines on.
 This is still called doc because it used to be a Document in pre-Qt times.
 
-
-
-
 method:: findDoc
-
 
 Find an open a re-usable text window, or make a new one
 
-
-
-
 method:: docFlag
-
 
 Get or set the symbol for the doc strategy to use:
 code::\sameDoc:: tries to re-use a single text window,
 code::\newDoc:: always makes a new one (and keep track of old docs)
 
-
-
-
 method:: oldDocs
-
 
 list of previous text windows (docs) opened
 
-
-
-
 method:: postDoc
-
 
 Find the codeline at index in History, and post it on the textwindow
 
-
-
-
 method:: setDocStr
-
 
 Set the string of the current textwindow
 
-
-
-
 method:: rip
-
 
 Create a new textwindow with currently selected line
 
-
-
-
-
-
 subsection:: Filtering
-
 
 method:: filtering
 
-
 Flag whether filtering is on
-
-
-
 
 method:: filterOn, filterOff
 
-
 Convenience on/off methods
 
-
-
-
 method:: filters
-
 
 Keys and string fragments to filter for.
 e.g. ['all', "+"] gets lines from all sources that contain the string "+".
 
-
-
-
 method:: filterLines
-
 
 Apply filtering to history lines
 
-
-
-
 method:: filteredIndices
-
 
 The indices of the current filtered lines
 
-
-
-
 method:: filteredShorts
-
 
 The current filtered short lines for gui display
 
 method:.setKeyFilter
 set the key(s) to filter for, and perform filtering
 
-
-
-
 method:: setStrFilter
-
 
 Set the string to filter for, and perform filtering
 
-
-
-
 method:: stickMode
-
 
 StickMode 0 means top, i.e. select top when new lines come in;
 stickMode 1 means keep, i.e. keep current line selected after new lines come in.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

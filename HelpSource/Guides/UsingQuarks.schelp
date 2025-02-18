@@ -7,22 +7,9 @@ related:: Classes/Quarks, Classes/Quark, Classes/Git
 Quarks are packages of SuperCollider code containing classes, extension methods, documentation and server UGen plugins.
 The Quarks class manages downloading these packages and installing or uninstalling them.
 
-
-
-
-
-
-
-
-
-
 section:: Installing quarks
 
-
-
-
 subsection:: Using the GUI
-
 
 You can install Quarks using the interface:
 
@@ -40,13 +27,7 @@ code::
 Quarks.addFolder("~/supercollider/quarks");
 ::
 
-
-
-
-
-
 subsection:: By name
-
 
 You can (un)install a Quark by name:
 
@@ -55,13 +36,7 @@ Quarks.install("MathLib");
 Quarks.uninstall("MathLib");
 ::
 
-
-
-
-
-
 subsection:: By git URL
-
 
 code::
 Quarks.install("https://github.com/supercollider-quarks/MathLib.git");
@@ -69,13 +44,7 @@ Quarks.install("https://github.com/supercollider-quarks/MathLib.git");
 Quarks.uninstall("https://github.com/supercollider-quarks/MathLib.git");
 ::
 
-
-
-
-
-
 subsection:: From a local folder
-
 
 And you can install any local folder:
 
@@ -97,13 +66,7 @@ Now each quark inside that folder will appear on the GUI for you to un/install.
 If you wish to be able to uninstall local quarks, but still see them in the GUI, it is highly recommended to collect your local quark directories under a single primary directory.
 Then, use link::Classes/Quarks#*addFolder:: to add the primary directory. code::addFolder:: does not add individual quark directories.
 
-
-
-
-
-
 subsection:: Recompile the class library
-
 
 After installing or uninstalling you need to strong::Language > Recompile Class Library::
 
@@ -114,13 +77,7 @@ code::
 Quarks.clear
 ::
 
-
-
-
-
-
 subsection:: Internals
-
 
 When you install one it is cloned using git into:
 
@@ -140,13 +97,7 @@ LanguageConfig.includePaths
 
 You can also see or edit these settings in the file sclang_config.yaml
 
-
-
-
-
-
 subsection:: Fixing Conflicts
-
 
 SuperCollider does not allow duplicate class definitions and will fail to compile if you've accidentally installed conflicting packages.
 
@@ -156,19 +107,7 @@ If you are using the SC IDE then open strong::Preferences > Interpreter:: and re
 
 You can also manually edit teletype::sclang_config.yaml::
 
-
-
-
-
-
-
-
-
-
 section:: Saving and Loading sets of Quarks
-
-
-
 
 To make project work simpler you can save and later reload your currently installed Quarks to and from a quarks.txt file.
 This is similar to what the LanguageConfig does but this also downloads the Quarks if needed and installs all dependencies.
@@ -207,19 +146,7 @@ Even if a quark was installed by name using the directory, the full repository U
 Any packages not under git source control are specified by path, abbreviated to the most logical path relative to the quark file, the home directory or by absolute path.
 They do not have a version or refspec.
 
-
-
-
-
-
-
-
-
-
 section:: Making your own Quarks
-
-
-
 
 Packages are a natural way to store your work.
 
@@ -250,19 +177,7 @@ Bitbucket offers free hosting for private repositories, and you can setup your o
 
 Hard drives die, backups fail, people make mistakes. If you keep a copy on bitbucket then your work is that much safer.
 
-
-
-
-
-
-
-
-
-
 section:: Publishing a Quark
-
-
-
 
 Make a git repository and push it to github, gitlab, bitbucket or any publicly accessible git host.
 
@@ -281,13 +196,7 @@ code::
 quarkname=https://github.com/author/quarkname
 ::
 
-
-
-
-
-
 subsection:: Migrated Quarks from SVN
-
 
 I (felix) migrated the old SVN repository to github and preserved all the commits and authorship.
 You may find your old work in one of these quarks:
@@ -300,30 +209,12 @@ You may also just fork any repo there, or if you've already moved your code to g
 Quarks with spaces in the name had to have those spaces removed.
 Quarks nested inside other quarks (dewdrop_lib) are now un-nested.
 
-
-
-
-
-
 subsection:: Git branches
-
 
 Releases are specified with a git tag which refers to a specific commit regardless of what branch it is on.
 The default branch is master, but the branch does not really matter, only the tag. If you are not tagging specific releases then Quarks will fetch the master branch.
 
-
-
-
-
-
-
-
-
-
 section:: Quark file
-
-
-
 
 The quark file is a SuperCollider code file containing authorship, version, copyright and dependency information. It is optional but recommended.
 None of the fields are required and you may include any custom fields you like.
@@ -380,13 +271,7 @@ Bjorklund
 cruciallib@tags/4.1.4
 ::
 
-
-
-
-
-
 subsection:: Hooks
-
 
 note::
 Introduced in SuperCollider 3.13 and therefore only available if running at least this version.
@@ -424,32 +309,14 @@ code::
 )
 ::
 
-
-
-
-
-
 subsection:: Deprecated/ignored fields
-
 
 teletype::path:: was used for SVN
 
 teletype::helpdoc:: specifies an html help file in the Quark.
 It will still work and will load the helpfile, but schelp is preferred.
 
-
-
-
-
-
-
-
-
-
 section:: Contributing fixes to a quark
-
-
-
 
 Best practice is to clone the quark into a folder where you do your development work.
 Make a ~/supercollider/quarks (or wherever you want it) and add this to the Quarks folders:
@@ -466,19 +333,7 @@ There is a git extension that is quite useful for working with github repositori
 
 If you use Quarks.gui you should now be able to see both the downloaded version of the quark and also your own cloned version.
 
-
-
-
-
-
-
-
-
-
 section:: Offline Usage
-
-
-
 
 Quarks should be usable even when offline.
 The directory is cached, refreshed every four hours.

@@ -3,63 +3,34 @@ categories:: Streams-Patterns-Events>Patterns>List
 summary:: Slide over a list of values and embed them
 related:: Classes/Ptuple
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: list
 
 argument:: repeats
 Number of segments.
 
-
 argument:: len
 
 Length of each segment.
-
 
 argument:: step
 
 How far to step the start of each segment from previous.
 step can be negative.
 
-
 argument:: start
 
 What index to start at.
-
 
 argument:: wrapAtEnd
 
 If teletype::true:: (default), indexing wraps around if goes past beginning or end.
 If teletype::false::, the pattern stops if it hits a nil element or goes outside the list bounds.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

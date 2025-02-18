@@ -28,8 +28,7 @@ Number of Devices: 2
    Streams: 1
       0  channels 2
 
-SC_AudioDriver: sample rate = 44100.000000, driver's block size = 512
-SuperCollider 3 server ready.
+SC_AudioDriver: sample rate = 44100.000000, driver's block size = 512 SuperCollider 3 server ready.
 Requested notification messages from server 'localhost'
 localhost: server process's maxLogins (1) matches with my options.
 localhost: keeping clientID (0) as confirmed by server process.

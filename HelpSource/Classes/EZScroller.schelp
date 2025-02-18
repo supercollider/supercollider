@@ -2,45 +2,19 @@ title:: EZScroller
 categories:: GUI>EZ-GUI
 summary:: Show a subset of items on gui elements
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 EZScroller is a vertical slider that allows displaying different subsets of a dynamically changing list of objects on a fixed number of views by scrolling.
 
 EZScroller is used JITLib guis like link::Classes/NodeProxyEditor::, link::Classes/ProxyMixer::, link::Classes/TdefAllGui::, and link::Classes/PdefAllGui::.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (
 w = Window.new("EZScroller test", Rect(100, 400, 200, 100)).front;
-// 5 displays
-v = { |i| DragBoth.new(w, Rect(0, i * 20, 100, 20)) }.dup(5);
-// 12 items
-a = (1..12);
+// 5 displays v = { |i| DragBoth.new(w, Rect(0, i * 20, 100, 20)) }.dup(5);
+// 12 items a = (1..12);
 
 e = EZScroller(w, Rect(100, 0, 14, 100), v.size, a.size, { |sc|
 	var startIndex = sc.value.asInteger.postcs;
@@ -49,8 +23,7 @@ e = EZScroller(w, Rect(100, 0, 14, 100), v.size, a.size, { |sc|
 });
 e.doAction;
 )
-// change list a, update ezscroller
-a = (1..4); e.numItems_(a.size); e.doAction;
+// change list a, update ezscroller a = (1..4); e.numItems_(a.size); e.doAction;
 
 a = (1..8); e.numItems_(a.size); e.doAction;
 ::

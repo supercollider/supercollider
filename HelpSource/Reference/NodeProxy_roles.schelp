@@ -20,19 +20,7 @@ ProxySpace.push(s);
 Ndef(\a, ...)
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Existing roles
-
-
-
 
 definitionlist::
 ## \set -> event pattern
@@ -236,19 +224,7 @@ a.clear(3);
 
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Adding new roles
-
-
-
 
 Roles can be added on the fly.
 They are kept in a dictionary ( strong::buildMethods:: ) in link::Classes/AbstractPlayControl::.

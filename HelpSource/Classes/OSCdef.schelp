@@ -3,62 +3,30 @@ categories:: External Control>OSC>Dispatchers
 summary:: OSC response reference definition
 related:: Guides/OSC_communication, Classes/OSCFunc, Classes/NetAddr
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 OSCdef provides a global reference to the functionality of its superclass link::Classes/OSCFunc::.
 Essentially it stores itself at a key within a global dictionary, allowing replacement at any time.
 Most methods are inherited from its superclass.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 private:: initClass
-
 
 method:: all
 Get the global dictionary of all OSCdefs.
 
-
 returns::
 An link::Classes/IdentityDictionary::.
 
-
-
-
 method:: new
 
-
 Create a new, enabled OSCdef. If an OSCdef already exists at this key, its parameters will be replaced with the ones provided (args for which nil is passed will use the old values).
-
 
 argument:: key
 
 The key at which to store this OSCdef in the global collection.
 Generally this will be a link::Classes/Symbol::.
-
 
 argument:: func
 
@@ -72,19 +40,16 @@ table::
 ## recvPort || link::Classes/Integer:: corresponding to the port on which the message was strong::received::.
 ::
 
-
 argument:: path
 
 A link::Classes/Symbol:: indicating the path of the OSC address of this object.
 Note that OSCdef demands OSC compliant addresses.
 If the path does not begin with a / one will be added automatically.
 
-
 argument:: srcID
 
 An optional instance of link::Classes/NetAddr:: indicating the IP address of the sender.
 If set this object will only respond to messages from that source.
-
 
 argument:: recvPort
 
@@ -92,13 +57,11 @@ An optional link::Classes/Integer:: indicating the port on which messages will b
 If set this object will only respond to message received on that port.
 This method calls link::Classes/Main#-openUDPPort:: to ensure that the port is opened.
 
-
 argument:: argTemplate
 
 An optional link::Classes/Array:: composed of instances of link::Classes/Integer:: or link::Classes/Function:: (or objects which respond to the method link::Overviews/Methods#matchItem::) used to match the arguments of an incoming OSC message.
 If a Function, it will be evaluated with the corresponding message arg as an argument, and should return a link::Classes/Boolean:: indicating whether the argument matches and this OSCdef should respond (providing all other arguments match).
 Template values of teletype::nil:: will match any incoming argument value.
-
 
 argument:: dispatcher
 
@@ -106,31 +69,23 @@ An optional instance of an appropriate subclass of link::Classes/AbstractDispatc
 This can be used to allow for customised dispatching.
 Normally this should not be needed.
 
-
 returns::
  
 An instance of OSCdef.
 
-
-
-
 method:: newMatching
 
-
 A convenience method to create a new, enabled OSCdef whose dispatcher will perform pattern matching on incoming OSC messages to see if their address patterns match this object's path.
-
 
 argument:: key
 
 The key at which to store this OSCdef in the global collection.
 Generally this will be a link::Classes/Symbol::.
 
-
 argument:: func
 
 A link::Classes/Function:: or similar object which will respond to the incoming message.
 When evaluated it will be passed the arguments msg, time, addr, and recvPort, corresponding to the message as an link::Classes/Array:: [OSC address, args1, arg2, ...], the time that the message was sent, a link::Classes/NetAddr:: corresponding to the IP address of the sender, and an link::Classes/Integer:: corresponding to the port on which the message was received.
-
 
 argument:: path
 
@@ -141,17 +96,14 @@ Pattern matching will be applied to any incoming messages to see if they match t
 Note that according to the OSC spec, regular expression wildcards are only permitted in the incoming message's address pattern. Thus path should not contain wildcards.
 For more details on OSC pattern matching, see http://opensoundcontrol.org/spec-1_0
 
-
 argument:: srcID
 
 An optional instance of link::Classes/NetAddr:: indicating the IP address of the sender.
 If set this object will only respond to messages from that source.
 
-
 argument:: recvPort
 
 An optional link::Classes/Integer:: indicating the port on which messages will be received.
-
 
 argument:: argTemplate
 
@@ -159,64 +111,29 @@ An optional link::Classes/Array:: composed of instances of link::Classes/Integer
 If a Function, it will be evaluated with the corresponding message arg as an argument, and should return a link::Classes/Boolean:: indicating whether the argument matches and this OSCFunc should respond (providing all other arguments match).
 Template values of teletype::nil:: will match any incoming argument value.
 
-
 returns::
  
 An instance of OSCdef.
 
-
-
-
 method:: freeAll
-
 
 Clears and deactivates all OSCdefs from the global collection.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 private:: addToAll, printOn
-
 
 method:: key
 Get this OSCdef's key.
 
-
 returns::
 Usually a link::Classes/Symbol::.
 
-
-
-
 method:: free
 
-
-Clear this OSCdef from the global collection and deactivates it.
-
-
-
-
-
-
-
-
-
+Clears this OSCdef from the global collection and deactivates it.
 
 section:: Timing in incoming bundles
-
-
-
 
 The time argument indicates the time the message was sent plus, if given, the latency added to the bundle:
 
@@ -235,19 +152,7 @@ n.sendBundle(1.0, [\time]);
 )
 ::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 n = NetAddr("127.0.0.1", 57120); // local machine

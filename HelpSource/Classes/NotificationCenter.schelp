@@ -3,19 +3,7 @@ categories:: Control
 summary:: Let an object emit notifications
 related:: Classes/SimpleController, Classes/NodeWatcher
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 In certain cases it may be useful to make an object perform a specific function when receiving a predefined message from another given object.
  For example, a GUI element may want to update its state when the state of a server object changes.
@@ -64,19 +52,7 @@ NotificationCenter.notify(subject, message, <optional arguments>...);
 Any object that has been registered as observer to the subject issuing the notification, will perform the action that is coupled to the message of the notification.
  It is thus possible to make any observer object perform a specified action when receiving the corresponding message from the object with which it has been registered.
 
-
-
-
-
-
-
-
-
-
 section:: Example
-
-
-
 
 When a Server boots or quits, it notifies its observers sending them the message \newAllocators:
 
@@ -94,54 +70,25 @@ NotificationCenter.register(Server.default, \newAllocators, \yourself, {
 });
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 private:: initClass
-
 
 method:: notify
 The object emits a message and may also pass extra args.
 
-
-
-
 method:: register
-
 
 An interested client can register the action function for the object/message notification. A listener may only register one action per object/message notification.
 
-
-
-
 method:: unregister
-
 
 Remove the registrations.
 
-
-
-
 method:: registerOneShot
-
 
 After the notification has been emitted and handled, automatically unregister.
 
-
-
-
 method:: registrationExists
-
 
 Simply confirms if a registration is already in place.

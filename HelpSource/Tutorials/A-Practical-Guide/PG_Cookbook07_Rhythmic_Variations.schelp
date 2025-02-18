@@ -3,19 +3,7 @@ categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: An ever-changing drumbeat
 related:: Tutorials/A-Practical-Guide/PG_Cookbook06_Phrase_Network, Tutorials/A-Practical-Guide/PG_Cookbook08_Swing
 
-
-
-
-
-
-
-
-
-
 section:: Creating variations on a base rhythmic pattern
-
-
-
 
 Normally patterns are stateless objects. This would seem to rule out the possibility of making on-the-fly changes to the material that pattern is playing.
 Indeed, modifying an existing pattern object is tricky and not always appropriate (because that approach cannot confine its changes to the one stream making the changes).
@@ -77,13 +65,7 @@ Pbindf allows the inner Pbind to be closed while still accepting additional valu
 
 strong::Third-party extension alert:: : This type of hybrid between pattern-style flow of control and object-oriented modeling is powerful but has some limitations, mainly difficulty with inheritance (subclassing). The strong::ddwChucklib:: quark (which depends on ddwPrototype) expands the object-oriented modeling possibilities while supporting patterns' ability to work with data external to a pattern itself.
 
-
-
-
-
-
 subsection:: Example
-
 
 code::
 (

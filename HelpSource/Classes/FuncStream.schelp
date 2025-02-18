@@ -3,19 +3,7 @@ categories:: Streams-Patterns-Events
 summary:: Stream of a function
 related:: Classes/Pfunc
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 FuncStream is one of the most basic ways to describe a stream:
 it has a function that is called for each next stream value.
@@ -34,22 +22,9 @@ a = Environment.use { ~x = 100; FuncStream({ ~x + 8 }) };
 a.next; // returns 108, not 8.
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 Return a new stream object.
 
@@ -67,86 +42,43 @@ a.reset;
 a.next; // starts again.
 ::
 
-
 argument:: nextFunc
 
 The function that is called on each next
-
 
 argument:: resetFunc
 
 The function that is called on reset
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 private:: storeArgs
 
-
 method:: next
-
 
 argument:: inval
 
 Return the next value by calling the function.
-code::inval:: is passed as an argument to the function.
-
-
-
+code::inval:: is passed
+as an argument to the function.
 
 method:: reset
 
-
 Call the reset function, if defined.
-
-
-
 
 method:: envir
 
-
 Get or set the environment to which the function has been bound.
-
-
-
 
 method:: nextFunc
 
-
 Get or set the function which is called on link::#-next::.
-
-
-
 
 method:: resetFunc
 
-
 Get or set the function which is called on link::#-reset::.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

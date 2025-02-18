@@ -3,25 +3,11 @@ categories:: Streams-Patterns-Events>Patterns>Repetition
 summary:: Limit total duration of events embedded in a stream
 related:: Classes/Pfinval, Classes/Pfin, Classes/Pconst
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: new
 
-
 Embeds elements of the strong::pattern:: into the stream until the duration comes close enough to strong::dur::.
-
 
 argument:: dur
 
@@ -29,29 +15,15 @@ The duration in beats after which the stream should end, derived from the event 
 The delta of the last event is adjusted so that the total duration fits this value.
 If the stream is shorter than dur, a code::filler:: (see below) can be used to fill the gap.
 
-
 argument:: pattern
 
 The pattern to cut short. This should be an event pattern (returning a stream of events).
-
 
 argument:: tolerance
 
 Measuring tolerance for the total duration to avoid jitter
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

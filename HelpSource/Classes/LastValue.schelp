@@ -3,61 +3,23 @@ categories:: UGens>Triggers
 summary:: Output the last value before the input changed
 related:: Classes/LeastChange, Classes/MostChange
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Output the last value before the input changed more than a threshold.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: in
 
 The input signal.
 
-
 argument:: diff
 
 Difference threshold.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 d = { |freq = 440| SinOsc.ar(LastValue.ar(freq, 20), 0, 0.2) }.play;

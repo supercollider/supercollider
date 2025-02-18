@@ -3,19 +3,7 @@ categories:: Tutorials>Mark_Polishook_tutorial
 summary:: Mark Polishook tutorial
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
-
-
-
-
-
-
-
-
-
 section:: SynthDefs
-
-
-
 
 Use the SynthDef class to build the engines for synths that will run on the server.
 The engines, which can be saved to disk and reused, are analogous to presets on commercial hardware and software synthesizers.
@@ -34,19 +22,7 @@ Or, go to
 
 http://www.nist.gov/dads/HTML/graph.html
 
-
-
-
-
-
-
-
-
-
 section:: Template
-
-
-
 
 Here's a template for a synthdef showing that it consists of a name and a ugenGraphFunc
 
@@ -79,36 +55,12 @@ SynthDef(
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: The .load message and the variable 's'
-
-
-
 
 The .load message writes synthdefs to disk and also sends them to the default server.
 The default server is defined by SuperCollider at startup time (as the localhost server) at which point it's also assigned to the variable 's'.
 
-
-
-
-
-
-
-
-
-
 section:: The .send message and a remote server
-
-
-
 
 On the other hand, .send message,
 
@@ -143,19 +95,7 @@ Since this tutorial was written, another general purpose method was added to Syn
 It is called strong::.add:: and will be the new recommended standard instead of .load and .send.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: SynthDef browsers
-
-
-
 
 Use the synthdef browser to examine synthdefs that have been written to disk.
 

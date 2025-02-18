@@ -3,19 +3,7 @@ categories:: Collections>Unordered
 summary:: A set according to equality
 related:: Classes/IdentitySet, Classes/List, Classes/Dictionary
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A Set is s collection of objects, no two of which are equal.
 Most of its methods are inherited from Collection.
@@ -23,32 +11,13 @@ The contents of a Set are unordered.
 You must not depend on the order of items in a set.
 For an ordered set, see link::Classes/OrderedIdentitySet::.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 private:: initSet, putCheck, fullCheck, grow, noCheckAdd
 
-
-
-
-
-
 subsection:: Adding and Removing
 
-
 method:: add
-
 
 Add an Object to the Set.
 An object which is equal to an object already in the Set will not be added.
@@ -60,11 +29,7 @@ Set["abc", "def", "ghi"].add("jkl").postln;
 Set["abc", "def", "ghi"].add("def").postln;
 ::
 
-
-
-
 method:: remove
-
 
 Remove an Object from the Set.
 Element is checked for equality (not for identity).
@@ -73,31 +38,20 @@ code::
 Set[1, 2, 3].remove(3).postln;
 ::
 
-
-
-
-
-
 subsection:: Testing
-
 
 method:: includes
 
-
-Return teletype::true:: if the specified item is present in the Set.
+Returns teletype::true:: if the specified item is present in the Set.
 Elements are checked for equality (not for identity).
 
 code::
 Set[1, 2, 3].includes(2).postln;
 ::
 
-
-
-
 method:: findMatch
 
-
-Return the item, if it is present in the set.
+Returns the item, if it is present in the set.
 Otherwise returns teletype::nil::.
 Element is checked for equality (not for identity).
 
@@ -105,43 +59,25 @@ code::
 Set[1, 2, 3].findMatch(3).postln;
 ::
 
-
-
-
-
-
 subsection:: Iteration
-
 
 method:: do
 
-
-Evaluate function for each item in the Set.
+Evaluates function for each item in the Set.
 The function is passed two arguments, the item and an integer index.
 
 code::
 Set[1, 2, 3, 300].do({ |item, i| item.postln });
 ::
 
-
-
-
 method:: keyAt
 
-
-Return the object at the internal strong::index::.
+Returns the object at the internal strong::index::.
 This index is not deterministic.
-
-
-
-
-
 
 subsection:: Set specific operations
 
-
 method:: sect, &
-
 
 Return the set theoretical intersection of this and strong::that::.
 The function will search for objects occurring in both sets and return a new set containing those.
@@ -153,11 +89,7 @@ sect(a, b);
 a & b // shorter syntax
 ::
 
-
-
-
 method:: union, |
-
 
 Return the set theoretical union of this and strong::that::.
 The function combines the two sets into one without duplicates.
@@ -169,11 +101,7 @@ union(a, b);
 a | b // shorter syntax
 ::
 
-
-
-
 method:: difference, -
-
 
 Return the set of all items which are elements of this, but not of strong::that::.
 Elements are checked for equality (not for identity).
@@ -184,11 +112,7 @@ difference(a, b);
 a - b // shorter syntax
 ::
 
-
-
-
 method:: symmetricDifference, --
-
 
 Return the set of all items which are not elements of both this and strong::that::.
 Elements are checked for equality (not for identity).
@@ -199,13 +123,9 @@ symmetricDifference(a, b);
 a -- b // shorter syntax
 ::
 
-
-
-
 method:: isSubsetOf
 
-
-Return teletype::true:: if all elements of this are also elements of strong::that::.
+Returns teletype::true:: if all elements of this are also elements of strong::that::.
 Elements are checked for equality (not for identity).
 Since Set is an unordered collection, order doesn't matter in this comparison.
 
@@ -215,19 +135,7 @@ Set[1, 2].isSubsetOf(a); // true
 Set[1, 5].isSubsetOf(a); // false
 ::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 a = Set[1, 2, 3, 4];

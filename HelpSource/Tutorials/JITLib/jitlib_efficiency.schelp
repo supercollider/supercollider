@@ -18,19 +18,7 @@ a.source = ... is equivalent to ~a = ...
 a.add(...) a.put(0,...) a[0] = ... ~a[0] = ... are equivalent in cpu load.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: A) rebuild and send: manual rate
-
-
-
 
 The following code requires a rebuild and send of a link::Classes/SynthDef:: and is thus most cpu-expensive. though fine for slower use (esp.hand-use) for automatisation it is better to build a synthdef and assign it.
 
@@ -47,19 +35,7 @@ code::
 server, bus, setRates
 ::
 
-
-
-
-
-
-
-
-
-
 section:: B) starting synths and tasks
-
-
-
 
 The following code sends commands to the server to start synths, which is load mainly on the server and depends on the characteristics of the synthdef:
 
@@ -94,19 +70,7 @@ code::
 ~a.lineAt(key), ~a.xlineAt(key)
 ::
 
-
-
-
-
-
-
-
-
-
 section:: C) sending messages to running synths
-
-
-
 
 For these the least calculation has to be done
 
@@ -121,19 +85,7 @@ code::
 ~a.group.set(\freq, 500);
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Switching audio
-
-
-
 
 (this can now be done with map!)
 

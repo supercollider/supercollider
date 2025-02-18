@@ -3,19 +3,7 @@ categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Sending notes under pattern control to MIDI devices
 related:: Tutorials/A-Practical-Guide/PG_Cookbook03_External_Control, Tutorials/A-Practical-Guide/PG_Cookbook05_Using_Samples
 
-
-
-
-
-
-
-
-
-
 section:: Sending MIDI out with Patterns
-
-
-
 
 Sending MIDI is the job of the link::Classes/MIDIOut:: class and the code::\midi:: event type. A MIDIOut is created to talk to a hardware device; the MIDI channel is provided when an event is played.
 MIDIOut's code::newByName:: makes it easier to identify a device.

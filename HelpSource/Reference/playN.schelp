@@ -5,11 +5,7 @@ related:: Classes/Monitor, Classes/Bus, Classes/NodeProxy, Classes/Ndef, Classes
 
 
 
-
-
-
 method:: playN
-
 
 PlayN is a multichannel play method for link::Classes/Monitor:: and link::Classes/NodeProxy:: (see also: link::Classes/ProxySpace::, link::Classes/Ndef::) that supports playing proxy outputs over strong::non-adjacent channels::; somewhat like a splitter/line mixer.
 

@@ -3,19 +3,7 @@ categories:: Tutorials>Mark_Polishook_tutorial
 summary:: Mark Polishook tutorial
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
-
-
-
-
-
-
-
-
-
 section:: My code doesn't work!
-
-
-
 
 Code doesn't always run as one might hope.
 In such cases, SuperCollider sometimes tells you why and sometimes it doesn't. When SuperCollider does supply information, it's usually to describe either a syntax or a runtime error.

@@ -3,81 +3,41 @@ categories:: External Control>HID
 summary:: HID response reference definition
 related:: Classes/HID, Classes/HIDFunc, Classes/OSCdef, Classes/MIDIdef, Guides/Working_with_HID
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 HIDdef provides a global reference to the functionality of its superclass HIDFunc.
 Essentially it stores itself at a key within a global dictionary, allowing replacement at any time.
 Most methods are inherited from its superclass.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 private:: initClass
-
 
 method:: all
 Get the global dictionary of all HIDdefs.
 
-
 returns::
 An link::Classes/IdentityDictionary::
 
-
-
-
 method:: freeAll
-
 
 Clears and deactivates all HIDdefs from the global collection.
 
-
-
-
 method:: new
 
-
-Acces an existing HIDdef. This is a shortcut to access an HIDdef created with one of the methods below, and allows to change its function, or call free on it.
-
+Access an existing HIDdef. This is a shortcut to access an HIDdef created with one of the methods below, and allows to change its function, or call free on it.
 
 argument:: key
 
 The key at which to store this HIDdef in the global collection.
 Generally this will be a link::Classes/Symbol::.
 
-
 argument:: func
 
 A link::Classes/Function:: or similar object which will respond to the incoming message.
 It will be passed...
 
-
-
-
 method:: usage
-
 
 Create a new, enabled HIDdef. If an HIDdef already exists at this key, its parameters will be replaced with the ones provided (args for which nil is passed will use the old values).
 
@@ -87,46 +47,38 @@ These usage names are standardized by manufacturers and are looked up in usage t
 If you have an open HID device, you can look up the available usages with:
 code::~hid.postUsages::.
 
-
 argument:: key
 
 The key at which to store this HIDdef in the global collection.
 Generally this will be a link::Classes/Symbol::.
-
 
 argument:: func
 
 A link::Classes/Function:: or similar object which will respond to the incoming message.
 It will be passed...
 
-
 argument:: elUsageName
 
 The name of the usage to look for.
 This can be one usage name, or an array of usage names.
 
-
 argument:: devUsageName
 
 The name of the device usage to look for, e.g. code::\GamePad:: or code::\Mouse::. If left blank, the code::HIDdef:: will match any device.
 
-
 argument:: deviceInfo
 
 An link::Classes/IdentityDictionary:: with a more detailed filtering for a device.
-
 
 argument:: argTemplate
 
 This should be an object that implements the method code::matchItem::.
 Depending on the code::argTemplateType::, it will be passed either the rawValue of the value of the element to be matched.
 
-
 argument:: argTemplateType
 
 If the argTemplateType is code::\rawValue:: (the default) then the matching is done based on the incoming raw value of the element (not mapped according to the logical min and max).
 Otherwise the matching is done according to the mapped value.
-
 
 argument:: dispatcher
 
@@ -135,40 +87,31 @@ This can be used to allow for customised dispatching.
 Normally this should not be needed.
 The default for this type of code::HIDdef:: is code::HIDUsageDispatcher::
 
-
 returns::
  
 A new instance of HIDdef which responds to a specific element usage and device type.
 
-
-
-
 method:: device
-
 
 Create a new, enabled HIDdef. If an HIDdef already exists at this key, its parameters will be replaced with the ones provided (args for which nil is passed will use the old values).
 
 A convenience method to filter an incoming HID value based on the name of the device.
 This type of HIDdef differs from code::HIDdef.usage:: in that it filter specifically by device name, rather than device usage, otherwise the arguments are the same.
 
-
 argument:: key
 
 The key at which to store this HIDdef in the global collection.
 Generally this will be a link::Classes/Symbol::.
-
 
 argument:: func
 
 A link::Classes/Function:: or similar object which will respond to the incoming message.
 It will be passed...
 
-
 argument:: elUsageName
 
 The name of the usage to look for.
 This can be one usage name, or an array of usage names.
-
 
 argument:: deviceName
 
@@ -176,23 +119,19 @@ The name of the device to look for, note that this has to match the string as re
 You can look this string up in the device list:
 code::HID.postAvailable::
 
-
 argument:: deviceInfo
 
 An link::Classes/IdentityDictionary:: with a more detailed filtering for a device.
-
 
 argument:: argTemplate
 
 This should be an object that implements the method code::matchItem::.
 Depending on the code::argTemplateType::, it will be passed either the rawValue of the value of the element to be matched.
 
-
 argument:: argTemplateType
 
 If the argTemplateType is code::\rawValue:: (the default) then the matching is done based on the incoming raw value of the element (not mapped according to the logical min and max).
 Otherwise the matching is done according to the mapped value.
-
 
 argument:: dispatcher
 
@@ -201,16 +140,11 @@ This can be used to allow for customised dispatching.
 Normally this should not be needed.
 The default for this type of code::HIDdef:: is code::HIDDeviceDispatcher::
 
-
 returns::
  
 A new instance of HIDdef which responds to a specific element usage for a specific device.
 
-
-
-
 method:: usageID
-
 
 Create a new, enabled HIDdef. If an HIDdef already exists at this key, its parameters will be replaced with the ones provided (args for which nil is passed will use the old values).
 
@@ -218,52 +152,43 @@ A convenience method to filter an incoming HID value based on the number of its 
 If the device is using a non-standard usage number, then this method can be used to look for it.
 A controls usage is fully specified by the combination of its usage ID and its usage page.
 
-
 argument:: key
 
 The key at which to store this HIDdef in the global collection.
 Generally this will be a link::Classes/Symbol::.
 
-
 argument:: func
 
 A link::Classes/Function:: or similar object which will respond to the incoming message.
 It will be passed...usage
-
 
 argument:: elUsageID
 
 The id (an link::Classes/Integer::) of the usage to look for.
 This can be one usage id, or an array of usage ids.
 
-
 argument:: elPageID
 
 The id (an link::Classes/Integer::) of the page of the usage to look for.
 This can be one page id, or an array of page ids.
 
-
 argument:: deviceName
 
 Since this type of HIDdef is meant for non-standardized controls, you can filter by a specific device name, rather than a general usage, similar to code::HIDdef.device::
 
-
 argument:: deviceInfo
 
 An link::Classes/IdentityDictionary:: with a more detailed filtering for a device.
-
 
 argument:: argTemplate
 
 This should be an object that implements the method code::matchItem::.
 Depending on the code::argTemplateType::, it will be passed either the rawValue of the value of the element to be matched.
 
-
 argument:: argTemplateType
 
 If the argTemplateType is code::\rawValue:: (the default) then the matching is done based on the incoming raw value of the element (not mapped according to the logical min and max).
 Otherwise the matching is done according to the mapped value.
-
 
 argument:: dispatcher
 
@@ -272,57 +197,45 @@ This can be used to allow for customised dispatching.
 Normally this should not be needed.
 The default for this type of code::HIDdef:: is code::HIDElementProtoDispatcher::
 
-
 returns::
  
 A new instance of HIDdef which responds to a specific element usage id for a specific device.
 
-
-
-
 method:: proto
-
 
 Create a new, enabled HIDdef. If an HIDdef already exists at this key, its parameters will be replaced with the ones provided (args for which nil is passed will use the old values).
 
 A convenience method to filter an incoming HID value based on a matching template of an element (a link::Classes/HIDElementProto::).
 If you have number of conditions for the element that should be matched, then this method can be used to look for it.
 
-
 argument:: key
 
 The key at which to store this HIDdef in the global collection.
 Generally this will be a link::Classes/Symbol::.
-
 
 argument:: func
 
 A link::Classes/Function:: or similar object which will respond to the incoming message.
 It will be passed...usage
 
-
 argument:: protoElement
 
 The id (an link::Classes/Integer::) of the usage to look for.
 This can be one usage id, or an array of usage ids.
 
-
 argument:: deviceInfo
 
 An link::Classes/IdentityDictionary:: with a more detailed filtering for a device.
-
 
 argument:: argTemplate
 
 This should be an object that implements the method code::matchItem::.
 Depending on the code::argTemplateType::, it will be passed either the rawValue of the value of the element to be matched.
 
-
 argument:: argTemplateType
 
 If the argTemplateType is code::\rawValue:: (the default) then the matching is done based on the incoming raw value of the element (not mapped according to the logical min and max).
 Otherwise the matching is done according to the mapped value.
-
 
 argument:: dispatcher
 
@@ -331,16 +244,11 @@ This can be used to allow for customised dispatching.
 Normally this should not be needed.
 The default for this type of code::HIDdef:: is code::HIDElementProtoDispatcher::
 
-
 returns::
  
 A new instance of HIDdef which responds to a specific prototype element.
 
-
-
-
 method:: element
-
 
 Create a new, enabled HIDdef. If an HIDdef already exists at this key, its parameters will be replaced with the ones provided (args for which nil is passed will use the old values).
 
@@ -348,46 +256,38 @@ A convenience method to filter an incoming HID value based on the index of its e
 If the device is using something non-standard, or you want to access keyboard elements directly, then this method can be used to look for it.
 Note that the element index is not necessarily the same across different operating systems (i.e. it may vary between Linux and macOS and Windows).
 
-
 argument:: key
 
 The key at which to store this HIDdef in the global collection.
 Generally this will be a link::Classes/Symbol::.
-
 
 argument:: func
 
 A link::Classes/Function:: or similar object which will respond to the incoming message.
 It will be passed...
 
-
 argument:: elID
 
 The id (an link::Classes/Integer::) of the element to look for.
 This can be one element id, or an array of element ids.
 
-
 argument:: deviceName
 
 Since this type of HIDdef is meant for non-standardized elements, you can filter by a specific device name, rather than a general usage, similar to code::HIDdef.device::
 
-
 argument:: deviceInfo
 
 An link::Classes/IdentityDictionary:: with a more detailed filtering for a device.
-
 
 argument:: argTemplate
 
 This should be an object that implements the method code::matchItem::.
 Depending on the code::argTemplateType::, it will be passed either the rawValue of the value of the element to be matched.
 
-
 argument:: argTemplateType
 
 If the argTemplateType is code::\rawValue:: (the default) then the matching is done based on the incoming raw value of the element (not mapped according to the logical min and max).
 Otherwise the matching is done according to the mapped value.
-
 
 argument:: dispatcher
 
@@ -396,56 +296,25 @@ This can be used to allow for customised dispatching.
 Normally this should not be needed.
 The default for this type of code::HIDdef:: is code::HIDElementDispatcher::
 
-
 returns::
  
 A new instance of HIDdef which responds to a specific element id for a specific device.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 private:: addToAll, printOn
-
 
 method:: key
 Get this HIDdef's key.
 
-
 returns::
 Usually a link::Classes/Symbol::.
 
-
-
-
 method:: free
 
-
-Clear this HIDdef from the global collection and deactivates it.
-
-
-
-
-
-
-
-
-
+Clears this HIDdef from the global collection and deactivates it.
 
 examples::
-
-
-
 
 For all the examples below here, you will need to have initialized an HID device (see also link::Guides/Working_with_HID::).
 The examples below should work with a standard USB mouse.
@@ -456,13 +325,7 @@ HID.postAvailable; // post the available devices
 ~myhid = HID.open(1103, 53251); // adapt this line for  the device that you want to open!
 ::
 
-
-
-
-
-
 subsection:: Filtering based on usage
-
 
 code::
 // filter all events coming from the x-axis of a mouse
@@ -499,13 +362,7 @@ HIDdef.usage(\example, { |...args| args.postln }, nil, deviceInfo: (usageName: \
 HIDdef(\example).free;
 ::
 
-
-
-
-
-
 subsection:: Filtering based on usage ID
-
 
 code::
 // filter by usage ID 48 on usage page 1
@@ -526,13 +383,7 @@ HIDdef.usageID(\example2, { |...args| args.postln }, 48, 1, deviceInfo: (path: "
 HIDdef(\example2).free;
 ::
 
-
-
-
-
-
 subsection:: Filtering based on a device
-
 
 code::
 // filter for device with name "", and element with usage \X.
@@ -540,13 +391,7 @@ HIDdef.device(\example3, { |...args| args.postln }, \X, "");
 HIDdef(\example3).free;
 ::
 
-
-
-
-
-
 subsection:: Filtering based on a prototype element
-
 
 code::
 // create an prototype element with usageName \X
@@ -555,13 +400,7 @@ HIDdef.proto(\example4, { |...args| args.postln }, c);
 HIDdef(\example4).free;
 ::
 
-
-
-
-
-
 subsection:: Filtering based on an element ID
-
 
 code::
 // filter for elements with element id 6:

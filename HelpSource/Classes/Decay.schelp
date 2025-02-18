@@ -3,72 +3,32 @@ categories:: UGens>Filters>Linear, UGens>Envelopes
 summary:: Exponential decay
 related:: Classes/Decay2, Classes/Integrator
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 An integrating filter which, if given an impulse, will produce an exponentially decaying envelope.
 code::Decay:: is essentially the same as link::Classes/Integrator::, but instead of specifying the integration coefficient directly, it is calculated from the strong::decayTime::—the time required for input signal to attentuate 60 dB, or decay to 99.9% of its value.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: in
 
 The input signal.
 
-
 argument:: decayTime
 
 The time it takes for the input signal to decay 60 dB.
-
 
 argument:: mul
 
 The output will be multiplied by this value.
 
-
 argument:: add
 
 This value will be added to the output.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // Plot the exponentially decaying envelope

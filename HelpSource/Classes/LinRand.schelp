@@ -3,69 +3,30 @@ categories:: UGens>Random
 summary:: Skewed random number generator
 related:: Classes/ExpRand, Classes/IRand, Classes/NRand, Classes/Rand, Classes/TExpRand, Classes/TIRand, Classes/TRand
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Generatea a single random float value in linear distribution from
 code::lo::  to  code::hi::, skewed towards
 code::lo::  if  code::minmax::  < 0, otherwise
 skewed towards  code::hi:: .
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: lo
 
 Lower limit of the output range.
 
-
 argument:: hi
 
 Upper limit of the output range.
-
 
 argument:: minmax
 
 The output is skewed towards code::lo:: if code::minmax:: < 0, otherwise skewed towards code::hi::.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

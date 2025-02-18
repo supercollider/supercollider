@@ -86,19 +86,7 @@ For more information see:
 
 link::Guides/Multichannel-Expansion::, link::Overviews/Collections::, link::Classes/Pan2::
 
-
-
-
-
-
-
-
-
-
 section:: Suggested Exercise
-
-
-
 
 Experiment with altering the Functions in the text above.
 For instance try changing the frequencies of the SinOsc, or making multi-channel versions of things.

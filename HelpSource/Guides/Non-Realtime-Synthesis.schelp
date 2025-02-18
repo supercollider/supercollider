@@ -3,19 +3,7 @@ categories:: Server>NRT, External Control>OSC
 summary:: Non-realtime synthesis with binary files of OSC commands
 related:: Classes/Score
 
-
-
-
-
-
-
-
-
-
 section:: Realtime vs. Non-Realtime Synthesis
-
-
-
 
 When you boot a SuperCollider server (scsynth, or supernova on supported systems) normally, it runs in emphasis::realtime:: mode:
 
@@ -40,19 +28,7 @@ strong::When not to use NRT mode:
 
  If you need to interact with the server process at specific times, NRT is not appropriate. For instance, if your code makes decisions about upcoming events based on data received from link::Classes/SendReply::, link::Classes/Bus#-get:: (teletype::/c_get::) or link::Classes/Buffer#-get:: (teletype::/b_get::), or node notification messages, these data will not be available in NRT mode.
 
-
-
-
-
-
-
-
-
-
 section:: Basic usage of Score
-
-
-
 
 It is recommended to use a link::Classes/Score:: object to run NRT processes. A Score object:
 
@@ -93,13 +69,7 @@ server.remove;
 )
 ::
 
-
-
-
-
-
 subsection:: Timed messages
-
 
 A new Score object needs a list of commands, with times.
 
@@ -173,13 +143,7 @@ x = Score([
 )
 ::
 
-
-
-
-
-
 subsection:: Rendering a Score using 'recordNRT'
-
 
 To render the Score, use the link::Classes/Score#-recordNRT:: method.
 Here is a rough template, followed by an explanation of the teletype::recordNRT:: parameters.
@@ -226,13 +190,7 @@ If you specify a teletype::duration:: for recordNRT, Score will automatically ap
 
 If you are repeatedly rendering NRT scores, you can set code::Score.options = ServerOptions.new...:: and teletype::recordNRT:: will use this set of server options by default.
 
-
-
-
-
-
 subsection:: Score files
-
 
 teletype::recordNRT:: allows you optionally to specify the path to the binary OSC score file.
 This is useful if you want to keep the file for archival purposes, or to delete the file in teletype::recordNRT::'s action function.
@@ -251,13 +209,7 @@ x.recordNRT(oscFilePath: oscPath, ..., action: {
 });
 ::
 
-
-
-
-
-
 subsection:: Using system SynthDefs
-
 
 Some code requires a number of SynthDefs that are assumed to exist on the server (link::Classes/SystemSynthDefs::).
 When booting a server in realtime mode, they are sent automatically. In non-realtime mode, they need to be added to the score explicitly:
@@ -267,13 +219,7 @@ x = Score.new;
 x.addSystemSynthDefs;
 ::
 
-
-
-
-
-
 subsection:: Server instance
-
 
 If you want to use server abstraction objects (e.g. Synth, Group, Buffer), you might also want them to allocate node IDs or buffer and bus numbers for you.
 link::Classes/Synth#*basicNew:: and link::Classes/Buffer#*new:: use the server's allocators if you don't supply an ID (leave it nil). However, if you accidentally use the default server, any IDs you allocate for NRT will be marked as allocated in the default, realtime server. To avoid this, you can create a separate Server instance, just for producing the Score, and then remove the instance after rendering.
@@ -281,13 +227,7 @@ This is a client-only object; you don't need to boot it.
 
 It is technically incorrect to use the default server teletype::s:: for Score generation, but for quick and dirty uses, it may be acceptable. The examples in this document demonstrate the use of a dedicated Server object as a best practice. Following this best practice is likely to avoid problems in which NRT Score generation affect the default server instance; however, in common usage, such problems might not be severe. "At the user's own risk."
 
-
-
-
-
-
 subsection:: Server resources
-
 
 A NRT server is emphasis::a separate server process:: from any other. Every time you run a Score, it launches a brand-new server process. Each new server starts with a blank slate.
 In particular, any SynthDefs you have added or Buffers you have loaded are not automatically available to the new server.
@@ -351,22 +291,9 @@ The good news is that a NRT server does not have to wait for "heavy" operations 
 Commands that are considered asynchronous in a realtime server behave as synchronous commands in NRT.
 So, you can simply front-load your Score with all the SynthDefs and Buffers, at time 0.0, and then start the audio processing also at time 0.0. (However, you might need a slight offset for the audio processing because code::sort:: may not know which entries at time 0.0 must come first.) The following examples demonstrate.
 
-
-
-
-
-
-
-
-
-
 section:: Examples
 
-
-
-
 subsection:: Algorithmic generation of Synth messages
-
 
 The preceding example, for simplicity, adds only one synth. Another approach is to create the initial Score with "setup" messages, and add further Synth messages for notes.
 
@@ -412,13 +339,7 @@ server.remove;
 )
 ::
 
-
-
-
-
-
 subsection:: NRT processing of an audio file
-
 
 Applying a custom effect to a very long audio file is an especially good use of NRT:
 create a Score that defines an effect SynthDef and runs it for the duration of of the input file.
@@ -465,13 +386,7 @@ server.remove;
 )
 ::
 
-
-
-
-
-
 subsection:: Generating NRT scores from patterns
-
 
 Event patterns can be converted into Scores by teletype::asScore::. (Note that teletype::asScore:: internally creates a Server instance to use for allocators.
 So, it is not necessary for this example to create a Server.)
@@ -553,13 +468,7 @@ server.remove;
 See also link::Classes/Pproto:: for another way to initialize buffers and other resources within a pattern object.
 Not every type of resource is supported in teletype::Pproto::, but for typical cases, it may be more convenient than the above approach.
 
-
-
-
-
-
 subsection:: Analysis using a Non-Realtime server
-
 
 An NRT server may also be used to extract analytical data from a sound file.
 The main issues are:
@@ -642,19 +551,7 @@ fork {
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: OSC file format
-
-
-
 
 If, for some reason, you need to write the OSC command file yourself without using Score, the general method is:
 
@@ -697,19 +594,7 @@ f.close;
 File.delete(PathName.tmp +/+ "Cmds.osc");
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Bus allocation and synth/LFO mapping
-
-
-
 
 In this example, a control bus and LFO map is used to have various affects on the source sound.
 

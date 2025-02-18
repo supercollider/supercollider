@@ -3,19 +3,7 @@ categories:: Streams-Patterns-Events>Patterns>Composition
 summary:: Pass values from stream to stream
 related:: Classes/Pbindf
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 definitionlist::
 ## Pchain(pattern1, pattern2, ... patternN) || pattern1 <- pattern2 <- ...patternN
@@ -25,59 +13,21 @@ Values produced by the stream of strong::pattern2:: are used as inval to the str
 Therefore pattern1 overrides (or filters) the output of pattern2, and so forth. This is an equivalent to the composite pattern:
 emphasis::pattern1 <> pattern2 <> ... patternN::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: ... patterns
 
 The patterns to be chained up.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 method:: <>
 
-
 Add another pattern to the chain.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (
@@ -115,19 +65,7 @@ Pchain(a, b, c).trace.play;
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Pattern composition
-
-
-
 
 Pattern <> pattern <> pattern
 

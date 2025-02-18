@@ -2,19 +2,7 @@ title:: Quant
 categories:: Scheduling
 summary:: Encapsulate quantization issues associated with EventStreamPlayer and TempoClock
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Represent the standard scheduling model for Routines, Tasks and Patterns. A Quant object stores the parameters needed to calculate the precise time when a Routine/Task/Pattern will start playing on a specified TempoClock.
 
@@ -22,78 +10,32 @@ The standard scheduling model uses quant and phase to locate the starting time.
 They are evaluated with reference to the TempoClock's baseBarBeat, which is normally zero but is updated when you change the clock's meter using the clock's setMeterAtBeat method. Thus scheduling still makes sense even after a meter change.
 See the link::Classes/TempoClock:: help file for details on its representation of time.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 Explicitly create an instance of Quant, which may be used and reused.
 Phase and offset may be nil, in which case they are treated as 0.
 If quant is nil, it will schedule for the current time exactly.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 method:: quant
-
 
 Quantization granularity. The routine will begin on the next integer multiple of this number after the baseBarBeat.
 If teletype::negative::, it indicates the number of bars in the future to schedule (where the bar length is taken from the clock's beatsPerBar variable).
 
-
-
-
 method:: phase
-
 
 An offset to push the scheduling time into the middle of the bar.
 +1 is one beat later, -1 is one beat earlier. A negative phase is legal, but it might result in a scheduling time that is later than the current time, in which case scheduling will be incorrect.
 It's your responsibility to take this into account.
 
-
-
-
 method:: timingOffset
-
 
 For use with patterns only -- this enables patterns to run slightly ahead of their sounding time on the clock, giving you control over the order in which threads execute.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 definitionlist::
 ## quant = 1 || schedule for the next whole beat
@@ -114,13 +56,7 @@ definitionlist::
 
 Every point in time can be precisely identified this way, and it can be related back easily to the Western concept of meter or time signature.
 
-
-
-
-
-
 subsection:: Automatic instantiation
-
 
 Certain objects convert themselves into Quant objects when used with link::Classes/Routine#-play::, link::Classes/Task#-play:: or link::Classes/Pattern#-play::.
 
@@ -141,13 +77,7 @@ code::
 Routine({ ... }).play(quant: 4.0)::vs. code::Routine({ ... }).play(quant: Quant(4.0))
 ::
 
-
-
-
-
-
 subsection:: Timing offset in Patterns
-
 
 In some cases, you might want two patterns that are sounding at the same time to evaluate in a specific order -- for instance, the second pattern might depend upon data calculated by the first.
 If they are scheduled on the clock for exactly the same time, you have no control over the order of execution:
@@ -172,13 +102,7 @@ q = Pbind(\freq, 880, \pan, 1, \delta, 0.5, \sustain, 0.1).play(quant: [2, 0, 0.
 p.stop; q.stop;
 ::
 
-
-
-
-
-
 subsection:: Extensibility:
-
 
 Adding custom scheduling models
 

@@ -2,19 +2,7 @@ title:: BEQSuite
 categories:: UGens>Filters>BEQSuite
 summary:: Base class for B Equalization Suite
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 definitionlist::
 ## link::Classes/BLowPass:: || 12dB/oct rolloff - 2nd order resonant Low Pass Filter

@@ -3,117 +3,49 @@ categories:: Language
 summary:: A message to an object
 related:: Classes/MethodQuote
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A message to an object, to be evaluated later.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: receiver
 
 The receiver of the message
 
-
 argument:: selector
 
 The method to be called
-
 
 argument:: args
 
 arguments to the call
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 method:: receiver
 
-
 The object to which the message is relayed
-
-
-
 
 method:: selector
 
-
 The method to be called
-
-
-
 
 method:: args
 
-
 The arguments to the call
-
-
-
 
 method:: value
 
-
 Send the message to the receiver and call the selector with the arguments
-
 
 argument::  ... moreArgs
 
-
-
-
 private:: storeArgs
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // an object

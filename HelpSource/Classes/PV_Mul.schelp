@@ -3,19 +3,7 @@ categories:: UGens>FFT
 summary:: Complex multiply
 related:: Classes/FFT, Classes/IFFT, Classes/PV_Add, Classes/PV_CopyPhase, Classes/PV_MagMul, Classes/PV_Max, Classes/PV_Min
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Complex Multiplication:
 
@@ -24,45 +12,19 @@ code::
 (ImagA * RealB) + (RealA * ImagB)
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: bufferA
 
 FFT buffer A.
 
-
 argument:: bufferB
 
 FFT buffer B.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 s.boot;

@@ -3,19 +3,7 @@ categories:: Tutorials>Mark_Polishook_tutorial>Japanese_version
 summary:: Mark Polishook tutorial (JP)
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
-
-
-
-
-
-
-
-
-
 section:: ルーチンとクロック
-
-
-
 
 クロックは、SuperColliderの中で自動のアルゴリズミックなスケジュ−リングを生成する際に使うメカニズムを提供します。クロックはルーチン、タスク、そしてパターンを再生します。
 
@@ -140,19 +128,7 @@ r.reset.play;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
 section:: ルーチンを用いたシンセシスのスケジューリング
-
-
-
 
 ルーチンの中にシンセを入れます。シンセの中のSynthDefが必ずエンベロープを持つ様にし、そのエンベロープのdoneActionパラメータを２にセットします。これによって、エンベロープが終了した後に、そのシンセのために必要とされていたメモリが解放されます。
 

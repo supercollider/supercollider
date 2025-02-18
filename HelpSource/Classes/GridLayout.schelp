@@ -3,19 +3,7 @@ categories:: GUI>Layout
 summary:: A layout that organizes views in a grid
 related:: Classes/HLayout, Classes/VLayout, Classes/StackLayout, Guides/GUI-Layout-Management
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 GridLayout distributes its space into a strong::grid of rows and columns::, where each item can occupy strong::one or more cells::.
 
@@ -31,13 +19,7 @@ The layout manages the grid size automatically:
 you can add an item at any row and cell number.
 When items are added or removed, the grid will re-adjust according to the last occupied row and column.
 
-
-
-
-
-
 subsection:: Fine tuning
-
 
 Each item can be assigned an strong::alignment:: either at layout link::#*rows#construction:: or later using link::#-setAlignment::.
 An item will then get at most its default size, if available (see: link::Classes/View#-sizeHint::), and will be aligned within its cell according to the specified alignment.
@@ -49,41 +31,18 @@ Each row or column can also be assigned a strong::minimum:: size using link::#-s
 
 In addition to adjusting the spacing between cells using link::Classes/Layout#-spacing:: you can control the spacing between rows and between columns separately using link::#-hSpacing:: and link::#-vSpacing::.
 
-
-
-
-
-
 subsection:: Leaving empty space
-
 
 You can leave any cell empty by not placing any item into it, or at link::#*rows#construction:: using code::nil:: instead of a view or another layout.
 Note though that the empty cells will always be regarded as freely stretchable and will not impose any constraints on space distribution.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: key
 
-
 private:: qtClass
 
-
-
-
 method:: rows
-
 
     Creates a GridLayout and fills each row with an array of items given as arguments.
 
@@ -111,11 +70,7 @@ w = Window().layout_(GridLayout.rows(
 )
 ::
 
-
-
-
 method:: columns
-
 
     Creates a GridLayout and fills each column with an array of items given as arguments.
 
@@ -128,22 +83,9 @@ An item can be a strong::view::, another strong::layout::, or strong::nil:: for 
 
     To make an item span several cells, or assign an alignment to it, the same instructions as for link::#*rows:: apply.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 method:: add
-
 
     Adds an item into the cell at specified row and column.
 
@@ -159,11 +101,7 @@ method:: add
     argument:: align
     A symbol denoting the alignment, or nil. See link::Reference/gui_alignments:: for possible values.
 
-
-
-
 method:: addSpanning
-
 
     Adds an item into the grid so as to occupy several cells.
 
@@ -185,27 +123,15 @@ method:: addSpanning
     argument:: align
     A symbol denoting the alignment, or nil. See link::Reference/gui_alignments:: for possible values.
 
-
-
-
 method:: hSpacing
-
 
     The spacing between columns, in Integer amount of pixels.
 
-
-
-
 method:: vSpacing
-
 
     The spacing between rows, in Integer amount of pixels.
 
-
-
-
 method:: setRowStretch
-
 
     Sets the stretch factor of a row.
 By default rows have a stretch factor of teletype::0::.
@@ -217,11 +143,7 @@ If a larger factor is assigned to a row, rows will get their space redistributed
     argument:: factor
     An Integer.
 
-
-
-
 method:: setColumnStretch
-
 
     Sets the stretch factor of a column.
 By default columns have a stretch factor of teletype::0::.
@@ -233,11 +155,7 @@ If a larger factor is assigned to a column, columns will get their space redistr
     argument:: factor
     An Integer.
 
-
-
-
 method:: setAlignment
-
 
     Sets the alignment of an item managed by the layout.
 
@@ -247,22 +165,14 @@ method:: setAlignment
     argument:: align
     A symbol denoting the alignment. See link::Reference/gui_alignments:: for possible values.
 
-
-
-
 method:: minRowHeight
-
 
     Gets the minimum height assigned to a row.
 
     argument:: row
     The index of a row.
 
-
-
-
 method:: setMinRowHeight
-
 
     Sets the minimum height of row.
 
@@ -272,22 +182,14 @@ method:: setMinRowHeight
     argument:: height
     An Integer amount of pixels.
 
-
-
-
 method:: minColumnWidth
-
 
     Gets the minimum width assigned to a column.
 
     argument:: column
     The index of a column.
 
-
-
-
 method:: setMinColumnWidth
-
 
     Sets the minimum width of a column.
 

@@ -2,208 +2,101 @@ title:: TextField
 categories:: GUI>Views
 summary:: A view displaying editable text
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A view displaying editable text.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: key
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 subsection:: Data
 
-
 method:: string
-
 
 	The text displayed in the view.
 
 	argument::
 		A String.
 
-
-
-
 method:: object
-
 
 	If link::#-setBoth:: is true, setting this variable also sets link::#-string:: to the value interpreted link::Classes/Object#-asString#as String::.
 
 	argument::
 		Any object, typically one which makes sense to display as a string, such as a Float.
 
-
-
-
 method:: setBoth
-
 
 	A variable stating whether setting link::#-object:: will also set link::#-string::.
 
 	argument::
 		A Boolean.
 
-
-
-
 method:: value
-
 
 	Gets the same as link::#-string::, but when setting also sets link::#-string:: to the value interpreted link::Classes/Object#-asString#as String:: regardless of the link::#-setBoth:: flag.
 
 	argument::
 		Any object, typically one which makes sense to display as a string, such as a Float.
 
-
-
-
 method:: valueAction
-
 
 	Sets link::#-value:: and triggers link::#-action::.
 
-
-
-
-
-
 subsection:: Appearance
 
-
 method:: align
-
 
 	The alignment of the displayed text.
 See link::Reference/gui_alignments:: for possible values.
 
-
-
-
 method:: font
-
 
 	The font used to display the text.
 
 	argument::
 		A Font.
 
-
-
-
 method:: stringColor
-
 
 	The color used to display the text.
 
 	argument::
 		A Color.
 
-
-
-
 method:: background
-
 
 	Setting this variable colors the inside of the field under the text with the given color.
 
 	argument::
 		A Color.
 
-
-
-
-
-
 subsection:: Actions
-
 
 method:: action
 
-
 	The action object evaluated whenever the user changes the text.
-
-
-
-
-
 
 subsection:: Drag and drop
 
-
 method:: defaultGetDrag
-
 
 	returns::
 		The displayed link::#-string::.
 
-
-
-
 method:: defaultCanReceiveDrag
-
 
 	returns::
 		Always true.
 
-
-
-
 method:: defaultReceiveDrag
-
 
 	Sets link::#-valueAction:: to the current drag data.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

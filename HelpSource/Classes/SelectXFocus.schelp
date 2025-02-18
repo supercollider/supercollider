@@ -3,54 +3,26 @@ categories:: UGens>Multichannel>Select
 summary:: Mix one output from many sources
 related:: Classes/Select, Classes/SelectX, Classes/LinSelectX
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 The output is mixed from an array of inputs, linearly interpolating from a number of adjacent channels.
 A focus argument allows to control how many adjacent sources are mixed.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: which
 
 Index of the selected input, which is also the center of the selection for a focus > 0.
 
-
 argument:: array
 
 A collection of inputs.
 
-
 argument:: focus
 
 The "fuzziness" of the selection: the larger the focus, the less adjacent inputs are mixed in.
-
 
 argument:: wrap
 
@@ -65,19 +37,7 @@ code::
 )
 ::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

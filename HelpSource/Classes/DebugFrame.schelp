@@ -2,19 +2,7 @@ title:: DebugFrame
 categories:: Core
 summary:: A representation of the call frame
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A representation of the call frame.
 Can be used to reconstruct a backtrace by using link::#-caller::.
@@ -24,33 +12,15 @@ While this is often not useful due to function inlining,
 it is useful when called on an link::Classes/Exception::,
 see the implementation of link::Classes/Exception#-reportError:: where a call to link::Classes/Object#-dumpBackTrace:: can be replaced by a call to link::Classes/Object#-getBackTrace:: and a call stack constructed manually.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 method:: functionDef
 
-
-Return a link::Classes/FunctionDef:: or a link::Classes/Method:: of the current function or method.
-
-
-
+Returns a link::Classes/FunctionDef:: or a link::Classes/Method:: of the current function or method.
 
 method:: caller
 
-
-Return another link::Classes/DebugFrame:: for the function that called this function.
-
+Returns another link::Classes/DebugFrame:: for the function that called this function.
 
 discussion::
 Can be used to make a back trace, but watch out for function inlining.
@@ -74,15 +44,10 @@ while{ debugFrame.isNil.not }{
 )
 ::
 
-
-
-
 method:: args
 
-
-Return an link::Classes/Array:: of the argument's values, if there are no arguments, returns a link::Classes/Nil::.
+Returns an link::Classes/Array:: of the argument's values, if there are no arguments, returns a link::Classes/Nil::.
 This does not contain the argument names, which must be accessed through the link::#-functionDef::.
-
 
 discussion::
 code::
@@ -92,14 +57,9 @@ code::
 { |a, b, c = 1| thisFunction.getBackTrace }.(2, 3, c: 4).args == [2, 3, 4];
 ::
 
-
-
-
 method:: vars
 
-
 Same as link::#-args:: but for the variables.
-
 
 discussion::
 code::
@@ -108,18 +68,10 @@ code::
 { var a, b = 1; thisFunction.getBackTrace }.().vars == [nil, 1]
 ::
 
-
-
-
 method:: address
 
-
-Return a link::Classes/RawPointer::, rarely useful.
-
-
-
+Returns a link::Classes/RawPointer::, rarely useful.
 
 method:: context
 
-
-Return another link::Classes/DebugFrame:: of the compiling context, rarely useful.
+Returns another link::Classes/DebugFrame:: of the compiling context, rarely useful.

@@ -3,19 +3,7 @@ categories:: UGens>Generators>Deterministic
 summary:: Chorusing wavetable oscillator
 related:: Classes/Osc, Classes/OscN, Classes/VOsc, Classes/VOsc3
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Chorusing wavetable lookup oscillator. Produces sum of two signals at
 
@@ -25,60 +13,31 @@ code::
 
 Due to summing, the peak amplitude is not the same as the wavetable and can be twice of that.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: bufnum
 
 The number of a buffer filled in wavetable format.
 
-
 argument:: freq
 
 Frequency in Hertz.
-
 
 argument:: beats
 
 Beat frequency in Hertz.
 
-
 argument:: mul
 
 Output will be multiplied by this value.
-
 
 argument:: add
 
 This value will be added to the output.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

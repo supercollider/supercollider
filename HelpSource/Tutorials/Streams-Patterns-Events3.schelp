@@ -3,19 +3,7 @@ categories:: Tutorials>Streams-Patterns-Events
 summary:: ListPatterns
 related:: Tutorials/Streams-Patterns-Events1, Tutorials/Streams-Patterns-Events2, Tutorials/Streams-Patterns-Events4, Tutorials/Streams-Patterns-Events5, Tutorials/Streams-Patterns-Events6, Tutorials/Streams-Patterns-Events7
 
-
-
-
-
-
-
-
-
-
 section:: ListPatterns
-
-
-
 
 ListPatterns are link::Classes/Pattern::s that iterate over arrays of objects in some fashion.
 All ListPatterns have in common the instance variables list and repeats.
@@ -193,19 +181,7 @@ Task({
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Nesting Patterns
-
-
-
 
 If a link::Classes/Pattern:: encounters another Pattern in its list, it embeds that pattern in its output.
 That is, it creates a stream on that pattern and iterates that pattern until it ends before moving on.
@@ -256,19 +232,7 @@ Task({
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Math operations on ListPatterns
-
-
-
 
 Pattern code::b:: plays pattern a once normally, once transposed up a fifth and once transposed up a fourth.
 
@@ -302,19 +266,7 @@ Task({
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Making Music with ListPatterns
-
-
-
 
 Here is the same example given in part 2 rewritten to use ListPatterns. It uses nested patterns and results in much more concise code. SuperCollider allows you to write code::SomeClass.new(params):: as code::SomeClass(params):: eliminating the ".new". This can make code like the pattern examples below, which create a lot of objects, more readable.
 

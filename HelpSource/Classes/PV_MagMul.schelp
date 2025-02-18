@@ -3,61 +3,23 @@ categories:: UGens>FFT
 summary:: Multiply magnitudes
 related:: Classes/FFT, Classes/IFFT, Classes/PV_Add, Classes/PV_CopyPhase, Classes/PV_Max, Classes/PV_Min, Classes/PV_Mul
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Multiplymagnitudemagnitude magnitudes of two inputs and keeps the phases of the first input.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: bufferA
 
 FFT buffer A.
 
-
 argument:: bufferB
 
 FFT buffer B.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 s.boot;

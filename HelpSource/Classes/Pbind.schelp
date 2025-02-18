@@ -3,19 +3,7 @@ categories:: Streams-Patterns-Events>Patterns>Event
 summary:: Combine several value patterns to one event stream by binding keys to values
 related:: Classes/Pattern, Classes/Event, Classes/Pmono, Classes/Rest
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Pbind combines several value streams into one event stream.
 Each value stream is assigned to one or more keys in the resulting event stream.
@@ -24,40 +12,15 @@ The patterns bound to keys are referred to as emphasis::value patterns:: and the
 
 The keys used in a Pbind are usually determined by link::Classes/Event::'s default mechanism and the controls defined for the link::Classes/SynthDef:: to be played. (See link::#SynthDef and Event:: below for a brief discussion of both in relation to Pbind.)
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 The arguments to Pbind are an alternating sequence of keys and patterns, this can alternatively be specified using keyword arguments.
 A pattern can also be bound to an array of keys.
 In this case, the pattern must specify a sequence whose elements are arrays with at least as many elements as there are keys.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (
@@ -129,13 +92,7 @@ Pbind(
 ).play
 ::
 
-
-
-
-
-
 subsection:: SynthDef and Event
-
 
 The keys used in a Pbind are determined by the link::Classes/SynthDef:: used and the structure of the extensive default mechanism provided by link::Classes/Event::.
 This section provides a brief review of both.
@@ -260,23 +217,11 @@ SynthDef(\test, { |out, freq = 440, amp = 0.1, nharms = 10, pan = 0, gate = 1|
 )
 ::
 
-
-
-
-
-
 subsection:: Rests
-
 
 See link::Classes/Rest:: for a discussion of marking events as rests in Pbind.
 
-
-
-
-
-
 subsection:: The Play Method
-
 
 While the play method is actually defined in the class link::Classes/Pattern::, it is useful to review it here:
 
@@ -289,13 +234,7 @@ When a number, the pattern will start at the next even multiple of that number.
 May also be a link::Classes/Quant::, which specifies quantization, time position within that quantization, and a timingOffset. See link::Classes/Quant:: for details.
 ::
 
-
-
-
-
-
 subsection:: Realtime Control with EventStreamPlayer
-
 
 The link::Classes/EventStreamPlayer:: provides realtime control through strong::mute::, strong::unmute::, strong::stop::, strong::play:: and strong::reset::.
 
@@ -373,13 +312,7 @@ e.stream = Pbind(
 )
 ::
 
-
-
-
-
-
 subsection:: Additional arguments
-
 
 Here is an example with more bindings.
 Here we have added a filter with cutoff and resonance arguments.
@@ -441,13 +374,7 @@ Prand([
 )
 ::
 
-
-
-
-
-
 subsection:: Multichannel Expansion
-
 
 If we supply an array for strong::any:: argument, the synth node will automatically replicate to handle the additional arguments.
 
@@ -520,13 +447,7 @@ Pdef(\x,
 )
 ::
 
-
-
-
-
-
 subsection:: Experimenting with Patterns
-
 
 Using link::Classes/Pdef:: (provided by link::Overviews/JITLib::) makes it easy to replace patterns on the fly:
 
@@ -556,13 +477,7 @@ Pdef(\buckyball).resume;
 Pdef.remove(\buckyball);
 ::
 
-
-
-
-
-
 subsection:: Sending to effects
-
 
 Assignment to effect processors can be achieved by setting the 'out' argument to the desired efx's input bus. The effect Synth must also be created.
 Synth.new is one way of doing this.
@@ -602,13 +517,7 @@ Pbind(\instrument, \acid, \out, 20, \dur, Pseq([0.25, 0.5, 0.25], inf), \root, [
 )
 ::
 
-
-
-
-
-
 subsection:: Additional examples
-
 
 code::
 (

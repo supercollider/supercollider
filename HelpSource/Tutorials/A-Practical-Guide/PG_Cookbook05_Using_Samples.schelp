@@ -3,22 +3,9 @@ categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Using samples
 related:: Tutorials/A-Practical-Guide/PG_Cookbook04_Sending_MIDI, Tutorials/A-Practical-Guide/PG_Cookbook06_Phrase_Network
 
-
-
-
-
-
-
-
-
-
 section:: Using samples
 
-
-
-
 subsection:: Playing a pattern in time with a sampled loop
-
 
 A deceptively complex requirement.
 
@@ -194,13 +181,7 @@ r = Pbind(
 b.free;
 ::
 
-
-
-
-
-
 subsection:: Using audio samples to play pitched material
-
 
 To use an instrument sample in a pattern, you need a SynthDef that plays the sample at a given rate.
 Here we will use link::Classes/PlayBuf::, which doesn't allow looping over a specific region.
@@ -259,13 +240,7 @@ p.stop;
 b.free;
 ::
 
-
-
-
-
-
 subsection:: Multi-sampled instruments
-
 
 To extend the sampler's range using multiple samples and ensure smooth transitions between frequency ranges, the SynthDef should crossfade between adjacent buffers.
 A hybrid approach is used here, where Pbind calculates the lower buffer number to use and the SynthDef calculates the crossfade strength.

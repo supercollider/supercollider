@@ -2,51 +2,24 @@ title:: Dconst
 categories:: UGens>Demand
 summary:: Constrain a demand-rate stream to a given sum
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A demand-rate analog to link::Classes/Pconst::.
 It outputs values from the child demand stream until the sum of those values reaches or exceeds a given total.
 The last value will be truncated so that the sum of Dconst's output values will match the total exactly.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: sum
 
 The sum to reach. This may be a number, demand UGen or any other UGen.
 When a Dconst instance resets, one value will be taken for the sum, and it can't be modulated until the next reset.
 
-
 argument:: in
 
 A demand-rate stream, providing the output values.
-
 
 argument:: tolerance
 
@@ -54,24 +27,11 @@ Because of floating point rounding error, it isn't safe to stop only when the ou
 teletype::tolerance:: is how close the running sum can get to stop the output:
 code::abs(runningsum - sum) <= tolerance::.
 
-
 returns::
  
 A demand-rate stream.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // fast notes of random duration for 0.5 seconds

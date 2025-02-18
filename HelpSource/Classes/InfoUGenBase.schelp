@@ -2,18 +2,6 @@ title:: InfoUGenBase
 categories:: UGens>Base
 summary:: Base class for info ugens
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 This is the superclass for the various info UGens.

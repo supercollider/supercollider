@@ -3,41 +3,15 @@ categories:: UGens>Demand, UGens>Envelopes
 summary:: Demand rate envelope generator
 related:: Classes/Demand, Classes/Duty, Classes/TDuty
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Play back break point envelope contours (levels, times, shapes) given by demand UGens. The next values are called when the next node is reached.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: categories
 
-
 method:: ar, kr
-
 
 argument:: level
 
@@ -46,7 +20,6 @@ If this ends, the
 
 code::doneAction::  is evaluated.
 
-
 argument:: dur
 
 A demand UGen or any other UGen returning time values.
@@ -54,17 +27,17 @@ If this ends, the
 
 code::doneAction::  is evaluated.
 
-
 argument:: shape
 
 A demand UGen or any other UGen:
-the number given is the shape number according to link::Classes/Env::.
-
+the number given is the shape
+number according to link::Classes/Env::.
 
 argument:: curve
 
 A demand UGen or any other UGen returning curve values.
-if shape is 5, this is the curve factor.
+if shape is 5, this is the
+curve factor.
 
 The possible values are:
 
@@ -79,7 +52,6 @@ In this case, the levels must all be nonzero and the have the same sign.
 ## An Array of Floats || curvature values for each segments.
 ::
 
-
 argument:: gate
 
 If gate is x ≥ 1, the UGen runs.
@@ -91,45 +63,29 @@ level (doneAction).
 
 If gate is x < 0, the UGen is sampled and held.
 
-
 argument:: reset
 
-If reset crosses from non-teletype::positive:: to teletype::positive::, the UGen is reset at the next level. If it is > 1, it is reset immediately.
-
+If reset crosses from non-teletype::positive:: to teletype::positive::, the UGen is reset
+at the next level. If it is > 1, it is reset immediately.
 
 argument:: levelScale
 
 Demand UGen returning level scaling values
 
-
 argument:: levelBias
 
 Demand UGen returning level offset values
 
-
 argument:: timeScale
 
 Demand UGen returning time scaling values
-
 
 argument:: doneAction
 
 A doneAction that is evaluated when level or duration stream
 ends. See link::Classes/Done::  for more detail.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // frequency envelope with random times

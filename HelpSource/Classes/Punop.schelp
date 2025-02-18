@@ -3,64 +3,26 @@ categories:: Streams-Patterns-Events>Patterns>Math
 summary:: Unary operator pattern
 related:: Classes/Pbinop, Classes/Pnaryop, Classes/UnaryOpFunction, Overviews/Operators
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Return a stream that applies the unary operator to the stream values of the receiver.
 Usually, this is the result of applying a unary operator (i.e. a method with one argument) to a pattern.
 
 Examples of unary operators are: squared, sqrt, sin, tan ...
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: operator
 
 Operator to be applied
 
-
 argument:: a
 
 A pattern (or compatible pattern input)
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

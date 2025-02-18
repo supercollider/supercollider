@@ -3,87 +3,35 @@ categories:: UGens>Envelopes
 summary:: Envelope generator for polling values from an Env
 related:: Classes/Env
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Envelope generator for polling values from an envelope.
 IEnvGen plays back break point envelopes from the code::index:: point.
 The envelopes are instances of the link::Classes/Env:: class.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: categories, new1
 
-
 method:: ar, kr
-
 
 argument:: envelope
 
 An instance of Env (this is static for the life of the UGen)
 
-
 argument:: index
 
 A point to access within the Env
-
 
 argument:: mul
 
 argument:: add
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 private:: init, argNamesInputsOffset, convertEnv
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

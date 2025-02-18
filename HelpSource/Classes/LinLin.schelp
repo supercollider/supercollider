@@ -3,76 +3,35 @@ categories:: UGens>Maths
 summary:: Map a linear range to another linear range
 related:: Classes/LinExp
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Map a linear range of values to another linear range of values.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: in
 
 The input signal to convert.
 
-
 argument:: srclo
 
 Lower limit of input range.
-
 
 argument:: srchi
 
 Upper limit of input range.
 
-
 argument:: dstlo
 
 Lower limit of output range.
-
 
 argument:: dsthi
 
 Upper limit of output range.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // examples:

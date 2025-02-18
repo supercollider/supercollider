@@ -3,49 +3,22 @@ categories:: Streams-Patterns-Events>Patterns>Repetition
 summary:: A gated stream that only advances when a particular event key is true
 related:: Classes/Pn
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Pgate advances its subpattern whenever strong::key:: is true. Pgate must be used within an Event pattern.
 You can either set the key manually, or use link::Classes/Pn::.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: pattern
 
 The source pattern to be filtered.
 
-
 argument:: repeats
 
 Repeat the enclosed pattern strong::repeats:: times.
-
 
 argument:: key
 
@@ -53,19 +26,7 @@ Pgate will only return the next value in the source pattern if the event that it
 Otherwise it will keep returning the same value.
 This allows for a gated effect on streams.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // Use \step to change the octave randomly

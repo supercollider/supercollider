@@ -2,68 +2,37 @@ title:: Pitch
 categories:: UGens>Analysis>Pitch
 summary:: Autocorrelation pitch follower
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 This is a better pitch follower than link::Classes/ZeroCrossing::, but more costly of CPU.
 For most purposes the default settings can be used and only code::in:: needs to be supplied. Pitch returns two values (via an link::Classes/Array:: of OutputProxys, see the link::Classes/OutputProxy:: help file), a code::freq:: which is the pitch estimate and code::hasFreq::, which tells whether a pitch was found.
 Some vowels are still problematic, for instance a wide open mouth sound somewhere between a low pitched short 'a' sound as in 'sat', and long 'i' sound as in 'fire', contains enough overtone energy to confuse the algorithm.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: categories
 
-
 method:: kr
-
 
 argument:: in
 
 argument:: initFreq
 
-
 argument:: minFreq
 
 argument:: maxFreq
-
 
 argument:: execFreq
 
 argument:: maxBinsPerOctave
 
-
 argument:: median
 
 argument:: ampThreshold
 
-
 argument:: peakThreshold
 
 argument:: downSample
-
 
 argument:: clar
 
@@ -100,35 +69,11 @@ Until Pitch finds a pitch for the first time, it will output code::initFreq::.
 
 None of these settings are time variable.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 private:: init
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // (use headphones!)
@@ -169,7 +114,8 @@ code::
 RM octaver
 
 inSignal is RingModulated by a sinusoidal tone with half frequency.
-The resulting spectrum is given by all the components of inSignal with half freqs.
+The resulting spectrum is given by all the components of inSignal with
+half freqs.
 This means that the new spectrum is a one 8ve below version of the input signal's one,
 with only odd partials.
 As a consequence, if inSignal is added again, even partials are

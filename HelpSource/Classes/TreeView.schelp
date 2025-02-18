@@ -2,19 +2,7 @@ title:: TreeView
 categories:: GUI>Views
 summary:: A view displaying a tree of items with columns
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A view that displays a hierarchy of items.
 It is divided into rows and column:
@@ -28,70 +16,30 @@ Items can be visually sorted with link::#-sort::, or by clicking on one of the c
 Each item can hold other views in each of its data fields, which allows for rich graphical interaction.
 See link::Classes/TreeViewItem#-setView::.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: key
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 private:: prForEachColumnDataPair
 
-
 private:: prValidItem
-
-
-
-
-
 
 subsection:: Data
 
-
 method:: columns
-
 
 	Gets or sets the number of columns (data fields) and their names. When setting a smaller number of columns than the current the extra columns will be removed, and hence all the data stored stored in those columns.
 
 	argument::
 		An array of Strings for column names.
 
-
-
-
 method:: numColumns
-
 
 	The total number of columns (data fields).
 
-
-
-
 method:: addItem
-
 
 	Append a new top-level item.
 
@@ -100,11 +48,7 @@ method:: addItem
 	returns::
 		An instance of TreeViewItem representing the new item.
 
-
-
-
 method:: insertItem
-
 
 	Insert a new top-level item at code::index::.
 
@@ -115,11 +59,7 @@ method:: insertItem
 	returns::
 		An instance of TreeViewItem representing the new item.
 
-
-
-
 method:: removeItem
-
 
 	Remove the given code::item::.
 After the item is removed, any usage of the related TreeViewItems will have no effect.
@@ -127,27 +67,15 @@ After the item is removed, any usage of the related TreeViewItems will have no e
 	argument::
 		An instance of TreeViewItem.
 
-
-
-
 method:: numItems
-
 
 	The total number of items.
 
-
-
-
 method:: clear
-
 
     Removes all items.
 
-
-
-
 method:: currentItem
-
 
 	Gets or sets the currently selected item.
 
@@ -156,48 +84,25 @@ method:: currentItem
 	returns::
 		An instance of TreeViewItem or nil, if no current item.
 
-
-
-
 method:: itemAt
-
 
 	The item at code::index::.
 
-
-
-
 method:: childAt
-
 
 	Alias for link::#-itemAt::, provided for compatibility with TreeViewItem.
 
-
-
-
 method:: addChild
-
 
 	Alias for link::#-addItem::, provided for compatibility with TreeViewItem.
 
-
-
-
 method:: insertChild
-
 
 	Alias for link::#-addChild::, provided for compatibility with TreeViewItem.
 
-
-
-
-
-
 subsection:: Appearance
 
-
 method:: sort
-
 
 	Sort items by data in code::column::.
 This works regardless of link::#-canSort::.
@@ -211,11 +116,7 @@ This works regardless of link::#-canSort::.
 		Whether to sort in descending or ascending fashion.
 The default is ascending.
 
-
-
-
 method:: columnWidth
-
 
 	argument:: column
 		The integer index of a column
@@ -224,13 +125,9 @@ method:: columnWidth
 If code::column:: is not in the range
 		code::0..(numColumns-1)::, returns code::-1::.
 
-
-
-
 method:: setColumnWidth
 
-
-Set the width of a column.
+Sets the width of a column.
 The rightmost column must extend at least to the right bound of the
 TreeView.
 
@@ -239,21 +136,11 @@ TreeView.
 	argument:: width
 		Integer width in pixels
 
-
-
-
 private:: background
-
-
-
-
-
 
 subsection:: Interaction
 
-
 method:: canSort
-
 
 	Whether the user can sort the items by clicking on a column header.
 
@@ -264,40 +151,17 @@ While code::true::, the view will also automatically sort new items.
 
 	See also: link::#-sort::.
 
-
-
-
-
-
 subsection:: Actions
-
 
 method:: itemPressedAction
 
-
 	The object to be evaluated when a mouse button is pressed on an item, passing this view as the argument.
-
-
-
 
 method:: onItemChanged
 
-
 	The object to be evaluated whenever the current item changes, passing this view as the argument.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

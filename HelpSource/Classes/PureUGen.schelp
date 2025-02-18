@@ -3,38 +3,12 @@ categories:: UGens
 summary:: Pure UGen
 related:: Classes/UGen
 
-
-
-
-
-
-
-
-
-
 description::
 
-
-
-
 A Pure UGen is a UGen, which does not access any shared resources like busses, buffers or random number generators.
-UGen
-classes which are derived from PureUGen are candidates for common subexpression elimination and dead code elimination passes during the SynthDef compilation.
-
-
-
-
-
-
-
-
-
+UGen classes which are derived from PureUGen are candidates for common subexpression elimination and dead code elimination passes during the SynthDef compilation.
 
 instancemethods::
 
-
-
-
 private:: optimizeGraph
-
 

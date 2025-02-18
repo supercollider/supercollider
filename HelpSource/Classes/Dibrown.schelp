@@ -3,19 +3,7 @@ categories:: UGens>Demand
 summary:: Demand rate brownian movement generator
 related:: Classes/Dbrown, Classes/Demand, Classes/Duty, Classes/TDuty
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 link::Classes/Dbrown::  returns numbers in the continuous range between
 code::lo::  and  code::hi::,
@@ -28,55 +16,27 @@ The arguments can be a number or any other UGen.
 See link::Classes/Pbrown::, link::Classes/BrownNoise::  for structurally related
 equivalents.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: lo
 
 Minimum value.
 
-
 argument:: hi
 
 Maximum value.
-
 
 argument:: step
 
 Maximum step for each new value.
 
-
 argument:: length
 
 Number of values to create. Use code::inf:: for an infinite number.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

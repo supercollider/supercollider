@@ -3,19 +3,7 @@ categories:: GUI
 summary:: A manager for sclang's application-level menu
 related:: Classes/MenuAction, Classes/ToolBar, Classes/MainMenu
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 This class allows control over items displayed in the sclang application-level menu. Application-level menus may not exist depending on platform — in particular, macOS and some Linux window managers have it, but Windows does not. On platforms without this feature, the methods in this class simply don't do anything.
 
@@ -40,22 +28,9 @@ MainMenu.register(~testTone, "Tests");
 MainMenu.unregister(~testTone); // to remove
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 private:: prGetMenu, prGetMenuGroup, prUpdateServersMenu, prBuildAppMenus, prUpdate, prSetAppMenus
-
 
 method:: initBuiltInMenus
 	Initialize menu items under the main "SuperCollider" menu that enable process and server monitoring and control:
@@ -68,11 +43,7 @@ default.
 			## Quit - quit sclang process
 		::
 
-
-
-
 method:: register
-
 
 	Register a MenuAction to a main application menu.
 This menu item will exist for the duration of the app, or until .unregister is called for the action.
@@ -103,11 +74,7 @@ Add your actions to a group to ensure you don't collide with actions from anothe
 
 		If registering menu items for a Quark, consider registering as a sub-menu of the Quarks menu. This can easily be done using the link::#*registerQuarkMenu:: method.
 
-
-
-
 method:: registerQuarkMenu
-
 
 	Convenience method for registering a menu of functionality related to a Quark.
 	It will appear as a sub-menu under the main Quarks menu.
@@ -117,11 +84,7 @@ method:: registerQuarkMenu
 	argument:: menu
 		A link::Classes/Menu::, a menu.
 
-
-
-
 method:: unregister
-
 
 	Remove a MenuAction that has been registered previously.
 	note::
@@ -132,43 +95,27 @@ method:: unregister
 	argument::
 		A MenuAction.
 
-
-
-
 method:: otherMenus
-
 
 	A list of menus to append to the set of main application menus.
 
 	warning::This is intended for standalone SuperCollider applications, and should not be used to register menus during normal SC usage.::
 
-
-
-
 method:: add
-
 
 	Adds a menu to code::otherMenus::.
 
 	argument:: menu
 		A link::Classes/Menu::.
 
-
-
-
 method:: remove
-
 
 	Removes a menu to code::otherMenus::.
 
 	argument:: menu
 		A link::Classes/Menu::.
 
-
-
-
 method:: insert
-
 
 	Inserts a menu in code::otherMenus:: at the given index.
 
@@ -178,11 +125,7 @@ method:: insert
 	argument:: menu
 		A link::Classes/Menu::.
 
-
-
-
 method:: clear
-
 
 	Clears code::otherMenus::.
 The main application menus are unaffected.
@@ -190,29 +133,13 @@ The main application menus are unaffected.
 	argument:: menu
 		A link::Classes/Menu::.
 
-
-
-
 method:: applicationMenu
-
 
 	The main SuperCollider application menu.
 
 	warning::This is intended for standalone SuperCollider applications, and should not be used to register menus during normal SC usage.::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

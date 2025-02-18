@@ -3,19 +3,7 @@ categories:: GUI>Layout
 summary:: A layout that stacks views on top of each other
 related:: Classes/HLayout, Classes/VLayout, Classes/GridLayout, Guides/GUI-Layout-Management
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 StackLayout manages several views stacked into the same space.
 It has two modes: it can either switch the view that is visible, hiding the others, or it can keep all of them visible, switching the one that is on top.
@@ -33,30 +21,13 @@ note::
 Unlike other layouts, StackLayout can not contain another layout, but only subclasses of View.
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: key
 
-
 private:: qtClass
 
-
-
-
 method:: new
-
 
     Creates a StackLayout and fills it with the items given as arguments.
 The first view becomes the current one, i.e. visible and on top of others.
@@ -82,22 +53,9 @@ w = Window().layout_(VLayout(
 )
 ::
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 method:: add
-
 
     Adds a view at the last index.
 This does not affect the current link::#-index::.
@@ -105,11 +63,7 @@ This does not affect the current link::#-index::.
     argument:: view
     A View.
 
-
-
-
 method:: insert
-
 
     Inserts a view at the specific index.
 This does not affect the current link::#-index::.
@@ -120,28 +74,16 @@ This does not affect the current link::#-index::.
     argument:: index
     An integer. If it is less than 0 or more than link::#-count::, the view will always be inserted as last.
 
-
-
-
 method:: count
-
 
     The number of views managed by the layout.
 
-
-
-
 method:: index
-
 
     Sets or gets the index of the current view.
 The current view is placed on top of others, and if link::#-mode:: is 0, all the others are hidden.
 
-
-
-
 method:: mode
-
 
     Sets or gets the current mode:
 in mode 0, the layout only displays the current view; in mode 1, the layout displays all the views.
@@ -154,19 +96,7 @@ In both modes, the current view will be placed on top of others.
     returns::
         0 or 1.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 Overlaying a TextView with a UserView to do additional drawing on top, while still allowing the interaction with the text:
 

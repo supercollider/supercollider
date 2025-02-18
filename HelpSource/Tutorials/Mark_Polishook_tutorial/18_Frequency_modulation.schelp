@@ -3,19 +3,7 @@ categories:: Tutorials>Mark_Polishook_tutorial
 summary:: Mark Polishook tutorial
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
-
-
-
-
-
-
-
-
-
 section:: Carriers and modulators
-
-
-
 
 In its simplest form, frequency modulation (FM) synthesis - famous since the Yamaha DX7 of the 1980's - uses one oscillator to modulate the frequency of another.
 The modulating oscillator in FM synthesis usually runs at the audio rate and its amplitude often is shaped by an envelope or other controller, such as a low frequency oscillator.
@@ -59,19 +47,7 @@ s.queryAllNodes;
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: FM synthesis and reverb
-
-
-
 
 code::
 // ... a reverb adapted from the "01 Why SuperCollider document" in the SC2 distribution
@@ -122,19 +98,7 @@ s.queryAllNodes;
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Components
-
-
-
 
 Dividing the "fm" synth def into two pieces, a synthdef for a modulator and a synthdef for the carrier, gives more functionality - carrier signals can shaped by two or more modulators.
 
@@ -188,19 +152,7 @@ s.queryAllNodes;
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Reverberation and frequency modulation
-
-
-
 
 code::
 (

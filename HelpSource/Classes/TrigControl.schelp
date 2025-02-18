@@ -3,53 +3,23 @@ categories:: UGens>Synth control, UGens>Undocumented
 summary:: FIXME: TrigControl purpose
 related:: Classes/Control, Classes/LagControl
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 FIXME: TrigControl description.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: kr, ir
-
 
 argument:: values
 
 FIXME: explain parameter values.
 
-
-
-
 method:: names
-
 
 argument:: names
 
 FIXME: explain parameter names.
-
 
 returns::
  

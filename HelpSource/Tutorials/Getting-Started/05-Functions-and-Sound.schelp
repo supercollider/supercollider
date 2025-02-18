@@ -3,19 +3,7 @@ categories:: Tutorials>Getting-Started
 summary:: Getting Started With SuperCollider
 related:: Tutorials/Getting-Started/00-Getting-Started-With-SC
 
-
-
-
-
-
-
-
-
-
 section:: And What About Functions and Sound?
-
-
-
 
 I've probably bored you enough with technical details, so let's get back to making noise, which I assume is why you're reading this after all. Trust me though, all this work will pay off later, and believe it or not, we've already covered a fair amount of the basics of the language, at least in passing.
 
@@ -110,19 +98,7 @@ code::
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Some More Fun with Functions and UGens
-
-
-
 
 Here's another example of polymorphism, and how powerful it is.
 When creating Functions of UGens, for many arguments you don't have to use fixed values, you can in fact use other UGens!
@@ -165,19 +141,7 @@ For more information see:
 
 link::Reference/Functions::, link::Classes/Function::, link::Browse#UGens:: link::Guides/Tour_of_UGens::
 
-
-
-
-
-
-
-
-
-
 section:: Suggested Exercise
-
-
-
 
 Experiment with altering the Functions in the text above.
 For instance try changing the frequencies of the SinOsc, or making multi-channel versions of things.

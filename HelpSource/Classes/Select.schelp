@@ -3,68 +3,33 @@ categories:: UGens>Multichannel>Select
 summary:: Select output from an array of inputs
 related:: Classes/SelectX, Classes/SelectXFocus, Classes/LinSelectX
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 The output is selected from an array of inputs.
 
 note:: 
 All the UGens are continuously running.
-This may not be the most efficient way if each input is CPU-expensive. ::
+This may not be the most efficient
+way if each input is CPU-expensive. ::
 
-Note that the array is fixed at the time of writing the SynthDef, and the whole array is embedded in the SynthDef file itself.
- For small arrays this is more efficient than reading from a buffer.
-
-
-
-
-
-
-
-
-
+Note that the array is fixed at the time of writing the SynthDef, and the
+whole array is embedded in the SynthDef file itself.
+ For small arrays
+this is more efficient than reading from a buffer.
 
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: which
 
 Integer index
 
-
 argument:: array
 
 Input array of signals
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

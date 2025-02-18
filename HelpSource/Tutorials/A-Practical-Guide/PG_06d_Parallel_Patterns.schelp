@@ -3,19 +3,7 @@ categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Running multiple event patterns simultaneously
 related:: Tutorials/A-Practical-Guide/PG_06c_Composition_of_Patterns, Tutorials/A-Practical-Guide/PG_06e_Language_Control
 
-
-
-
-
-
-
-
-
-
 section:: Parallelizing event patterns
-
-
-
 
 There are a couple of different ways to have several patterns playing at the same time.
 The most obvious is to play them separately.
@@ -36,13 +24,7 @@ The patterns can start at different times relative to each other.
 
 An excellent example of link::Classes/Ppar:: and link::Classes/Pseq:: used together to structure an entire piece (Kraftwerk's "Spacelab") can be found in examples/pieces/spacelab.scd.
 
-
-
-
-
-
 subsection:: Dynamic parallelizing
-
 
 Ppar and its cousins are good for a fixed set of parallel patterns -- that is, you need to know in advance how many patterns will be parallelized.
 Once the parallel pattern starts, there is no way to add more streams to it.

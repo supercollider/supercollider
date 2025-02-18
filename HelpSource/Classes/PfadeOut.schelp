@@ -3,99 +3,45 @@ categories:: Streams-Patterns-Events>Patterns>Filter
 summary:: Fade an event pattern out
 related:: Classes/PfadeIn
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: pattern
 
 The pattern to fade out. Must be an event pattern that plays a synth with the code::\amp:: parameter.
 
-
 argument:: fadeTime
 
 The time it will take to fade.
 
-
 argument:: holdTime
 
 argument:: tolerance
-The tolerance for the rounding of elapsed time used when setting the amplitude of the input pattern.
-
-
-
-
-
-
-
-
-
+The tolerance for the rounding of elapsed time used when setting the amplitude
+of the input pattern.
 
 instancemethods::
 
-
-
-
 method:: fadeTime
-
 
 Get or set the fadetime
 
-
-
-
 method:: holdTime
-
 
 Get or set the hold time
 
-
-
-
 method:: tolerance
-
 
 Get or set the tolerance used when rounding the internal time.
 
-
-
-
 method:: embedInStream
-
 
 argument:: inval
 
-
-
-
 method:: storeArgs
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

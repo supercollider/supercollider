@@ -2,19 +2,7 @@ title:: LinkedListNode
 categories:: Collections
 summary:: Internally used class for LinkedList nodes
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 LinkedListNode is used to implement the internal nodes of the link::Classes/LinkedList:: class.
 You should not need to deal with a LinkedListNode directly.

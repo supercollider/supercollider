@@ -3,56 +3,19 @@ categories:: UGens>FFT
 summary:: Shift phase by 90 degrees
 related:: Classes/FFT, Classes/IFFT, Classes/PV_PhaseShift, Classes/PV_PhaseShift270, Classes/PV_Diffuser
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Shift phase of all bins by 90 degrees.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: buffer
 
 FFT buffer.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 s.boot;

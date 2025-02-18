@@ -3,19 +3,7 @@ categories:: UGens>Envelopes
 summary:: Envelope generator
 related:: Classes/Linen, Classes/Env
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Play back break point envelopes. The envelopes are instances of the
 link::Classes/Env:: class.
@@ -29,25 +17,11 @@ code::
 { PinkNoise.ar(EnvGen.kr(Env.perc, doneAction: Done.freeSelf)) }.play
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: convertEnv
 
-
 method:: ar, kr
-
 
 argument:: envelope
 
@@ -57,7 +31,6 @@ this.)
 
 The envelope is polled when the EnvGen is triggered, and at the start of a new envelope segment.
 The Env inputs can be other UGens.
-
 
 argument:: gate
 
@@ -70,7 +43,6 @@ gate becomes 0, at which point is released.
 
 If strong::gate:: < 0, force release with time code:: -1.0 - gate ::. See link::#Forced release:: below.
 
-
 argument:: levelScale
 
 The levels of the breakpoints are multiplied by this value.
@@ -78,13 +50,11 @@ This
 value can be modulated, but is only sampled at the start of a new
 envelope segment.
 
-
 argument:: levelBias
 
 This value is added as an offset to the levels of the breakpoints.
 This value can be modulated, but is only sampled at the start of a
 new envelope segment.
-
 
 argument:: timeScale
 
@@ -93,13 +63,11 @@ This
 value can be modulated, but is only sampled at the start of a new
 envelope segment.
 
-
 argument:: doneAction
 
 An integer representing an action to be executed when the env is
 finished playing. This can be used to free the enclosing synth,
 etc. See link::Classes/Done::  for more detail.
-
 
 discussion::
 note::
@@ -139,19 +107,7 @@ code::
 )
 ::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // retriggered envelope by Dust
@@ -221,13 +177,7 @@ a.set(\doneAction, 2, \gate, 0); // set doneAction to two to let the synth free 
 a.free; // alternatively, free it directly.
 ::
 
-
-
-
-
-
 subsection:: Specifying an envelope for each new synth
-
 
 code::
 (
@@ -252,13 +202,7 @@ Synth(\help_Env_newClear, [\gate, 1, \env, Env({ rrand(60, 70).midicps } ! 4, [1
 (instrument: \help_Env_newClear, gate: 1, env: Env({ rrand(60, 70).midicps } ! 4, [1, 1, 1], \exp)).play;
 ::
 
-
-
-
-
-
 subsection:: Forced release
-
 
 If the gate of an EnvGen is set to teletype::-1:: or below, then the envelope will cutoff immediately.
 The time for it to cutoff is the amount less than -1, with -1 being as fast as possible, -1.5 being a cutoff in 0.5 seconds, etc.
@@ -306,13 +250,7 @@ d.release(2);
 d.release();
 ::
 
-
-
-
-
-
 subsection:: Fast triggering tests
-
 
 code::
 (
@@ -335,13 +273,7 @@ code::
 )
 ::
 
-
-
-
-
-
 subsection:: Modulating the levelScale
-
 
 code::
 // no, it doesn't take a UGen in ...
@@ -369,13 +301,7 @@ code::
 )
 ::
 
-
-
-
-
-
 subsection:: More examples
-
 
 For more information about the emphasis::control bus mapping:: used in the line code::a = Synth(\sine, [freq: f.asMap]);::, see link::Classes/Node#-map:: and link::Classes/Bus#-asMap::.
 

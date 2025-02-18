@@ -3,39 +3,14 @@ categories:: UGens>Algebraic
 summary:: Sum three signals
 related:: Classes/Mix
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Sum three signals. Internal UGen to efficiently mix three signals.
 Should be used via link::Classes/Mix::.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 private:: new1
-
 
 method:: new
 

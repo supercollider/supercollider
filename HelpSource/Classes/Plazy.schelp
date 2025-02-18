@@ -3,56 +3,19 @@ categories:: Streams-Patterns-Events>Patterns>Function
 summary:: Instantiate new patterns from a function
 related:: Classes/PlazyEnvir, Classes/PlazyEnvirN, Classes/Pfunc
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Plazy evaluates a function that returns a pattern and embeds it in a stream.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: func
 
 A link::Classes/Function:: that returns a pattern or any other valid pattern input.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

@@ -3,62 +3,25 @@ categories:: UGens>Triggers
 summary:: Pulse counter
 related:: Classes/Stepper
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Each trigger increments a counter which is output as a signal.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: trig
 
 Trigger. Trigger can be any signal.
-A trigger happens when the signal changes from non-teletype::positive:: to teletype::positive::.
-
+A trigger happens when the
+signal changes from non-teletype::positive:: to teletype::positive::.
 
 argument:: reset
 
-Reset the counter to teletype::zero:: when triggered.
-
-
-
-
-
-
-
-
-
+Resets the counter to teletype::zero:: when triggered.
 
 examples::
-
-
-
 
 code::
 SynthDef("help-PulseCount", { |out = 0|

@@ -3,39 +3,14 @@ categories:: GUI>Views
 summary:: Filter class to use with SCImage
 related:: Classes/SCImage, Classes/SCImageKernel
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Currently this class represents the CoreImage Filters you can apply to a SCImage.
 All the built-in filters and docs: http://developer.apple.com/documentation/GraphicsImaging/Reference/CoreImageFilterReference/Reference/reference.html
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 private:: prFilterSet, prGetFilterAttributes, initClass, prGetFilterNames
-
 
 method:: new
 
@@ -48,23 +23,17 @@ f = SCImageFilter.new(\CIStarShineGenerator, [\center, [200, 200], \radius, 200*
 f.values; //
 ::
 
-
 argument:: filterName
 
 The filter name link::Classes/Symbol:: or link::Classes/String::
-
 
 argument:: args
 
 The filter name link::Classes/Symbol:: or link::Classes/String::
 
-
-
-
 method:: filterCategories
 
-
-Return a Dictionary containing all the filters associated by categories.
+Returns a Dictionary containing all the filters associated by categories.
 
 code::
 // getting filter categories (dictionary)
@@ -98,22 +67,9 @@ n;
 )
 ::
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 private:: prAttributeRange, doesNotUnderstand
-
 
 method:: attributes
 returns an link::Classes/IdentityDictionary:: containing for each association:
@@ -137,11 +93,7 @@ f.center_([200, 200]);
 f.radius_(200*0.05);
 ::
 
-
-
-
 method:: attributeRange
-
 
 Get the numerical range and the default Value for an attribute.
 returns an Array as code::[min, max, default]::. min, max, or default may be a link::Classes/Float::, a link::Classes/Color::, an link::Classes/Array:: or link::Classes/Nil::.
@@ -164,11 +116,7 @@ f.attributes.keysDo({ |attr|
 )
 ::
 
-
-
-
 method:: values
-
 
 returns all the values you set for each attributes.
 If a value is not explicitly set for an attribute, it will be set to default when applied to the SCImage.
@@ -186,11 +134,7 @@ code::
 )
 ::
 
-
-
-
 method:: set
-
 
 Set the attributes for this SCImageFilter
 
@@ -202,32 +146,15 @@ code::
 )
 ::
 
-
-
-
 method:: enable
 
-
 Enable or not the Filter when applied to a SCImage.
-
 
 argument:: value
 
 If this is false, applying the filter will do nothing.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // thor's fast experimentation request

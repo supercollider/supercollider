@@ -2,38 +2,13 @@ title:: Silent
 categories:: UGens>Generators>Single-value
 summary:: Output silence
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Output silence.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar
-
 
 argument:: numChannels
 

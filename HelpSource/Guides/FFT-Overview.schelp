@@ -3,19 +3,7 @@ categories:: UGens>FFT
 summary:: Overview of the Fast Fourier Transform (FFT) UGens
 related:: Classes/FFT, Classes/IFFT
 
-
-
-
-
-
-
-
-
-
 section:: FFT and IFFT
-
-
-
 
 SuperCollider implements a number of UGens supporting Fast Fourier Transform (FFT) based processing. The most basic of these are FFT and IFFT (inverse-FFT) which convert data between the time and frequency domains:
 
@@ -31,19 +19,7 @@ FFT requires a link::Classes/Buffer:: or link::Classes/LocalBuf::. The buffer's 
 The window size is equivalent to the buffer size, and the window link::Classes/FFT#*new#overlap defaults to 2 (hop = 0.5)::. Both link::Classes/FFT:: and link::Classes/IFFT:: use a sine window by default.
 Their combination  efficiently becomes a Hanning window (i.e. raised sine, that is, sine squared).
 
-
-
-
-
-
-
-
-
-
 section:: How FFT UGens communicate
-
-
-
 
 link::Classes/FFT:: stores spectral data in the buffer, in the following format:
 
@@ -76,19 +52,7 @@ var min = -2, max = b.bufnum + 4;
 b.free; // free the buffer again
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Phase Vocoder UGens and Spectral Processing
-
-
-
 
 In between an FFT and an IFFT one can chain together a number of Phase Vocoder UGens (i.e. code::PV_...::) to manipulate blocks of spectral data before reconversion.
 The process of buffering the appropriate amount of audio, windowing, conversion, overlap-add, etc. is handled automatically.
@@ -123,13 +87,7 @@ code::
 
 For more examples, see link::#Multichannel Expansion with FFT UGens::
 
-
-
-
-
-
 subsection:: Parallel FFT chains
-
 
 PV UGens write their output data emphasis:: in place ::, i.e. back into the same buffer from which they read.
 PV UGens which require two buffers write their data into the first buffer, usually called 'bufferA'.
@@ -172,13 +130,7 @@ d = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 d.free;
 ::
 
-
-
-
-
-
 subsection:: Copying FFT chains
-
 
 Because each PV UGen overwrites the output of the previous one, it is necessary to copy the data to an additional buffer at the desired point in the chain in order to do parallel processing of input without using multiple FFT UGens.
 link::Classes/PV_Copy:: allows for this.
@@ -227,13 +179,7 @@ x = { var inA, chainA, chainB;
 )
 ::
 
-
-
-
-
-
 subsection:: Plotting magnitudes
-
 
 Note that PV UGens convert as needed between cartesian (complex) and polar representations, therefore when using multiple PV UGens it may be impossible to know in which form the values will be at any given time.
 FFT produces complex output (see above). The following, however, returns a reliable magnitude plot:
@@ -268,13 +214,7 @@ Routine({
 x.free;
 ::
 
-
-
-
-
-
 subsection:: UGen access to FFT data
-
 
 It is possible to manipulate the FFT data directly within a synth graph (if there doesn't already exist a PV UGen which will do what you want), using the methods pvcalc, pvcalc2, pvcollect. Here's an example which uses the  methods link::Classes/SequenceableCollection#-clump:: and link::Classes/SequenceableCollection#-flop:: to rearrange the order of the spectral bins:
 
@@ -298,19 +238,7 @@ x = {
 x.free; c.free;
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Multichannel Expansion with FFT UGens
-
-
-
 
 Care must be taken when using multichannel expansion with FFT UGens, as they require separate buffers.
 Code such as this can be deceptive:
@@ -370,19 +298,7 @@ Code like code::IFFT(chain).dup:: is found throughout the PV help files , and is
 
 See also link::Guides/Multichannel-Expansion::.
 
-
-
-
-
-
-
-
-
-
 section:: PV and FFT UGens in the Standard Library
-
-
-
 
 The following PV UGens are included in the standard SC distribution:
 

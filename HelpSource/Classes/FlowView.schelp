@@ -3,19 +3,7 @@ categories:: GUI>Views
 summary:: CompositeView with a FlowLayout as decorator
 related:: Classes/FlowLayout, Classes/CompositeView
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 In the simplest respect this is a lazy contraction of this:
 
@@ -44,71 +32,37 @@ GUI.slider.new(f, Rect(0, 0, 100, 100));
 )
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: parent
 
 Parent widget.
 
-
 argument:: bounds
 
 An instance of link::Classes/Rect::, or a link::Classes/Point:: indicating width@height.
-
 
 argument:: margin
 
 ...
 
-
 argument:: gap
 
 ...
-
 
 argument:: windowTitle
 
 Title of the window.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 method:: startRow
 
-
 Start a new row.
 
-
-
-
 method:: indentedRemaining
-
 
 The maximum space that is left, starting at the current cursor position.
 
@@ -148,11 +102,7 @@ GUI.slider.new(f, f.indentedRemaining)
 )
 ::
 
-
-
-
 method:: used
-
 
 The area used so far, rounded up to the nearest rectangle plus margin.
 
@@ -194,11 +144,7 @@ GUI.compositeView.new(w, f.used)
 )
 ::
 
-
-
-
 method:: flow
-
 
 Insert a sub flow view into the current view.
 
@@ -216,21 +162,15 @@ g = f.flow({ |g|
 )
 ::
 
-
 argument:: func
 
 (describe argument here)
-
 
 argument:: bounds
 
 (describe argument here)
 
-
-
-
 method:: comp
-
 
 Insert a sub composite view into the current view.
 
@@ -251,29 +191,15 @@ f.startRow;
 )
 ::
 
-
 argument:: func
 
 (describe argument here)
-
 
 argument:: bounds
 
 (describe argument here)
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // note: some of the following examples use ActionButton from the crucialib

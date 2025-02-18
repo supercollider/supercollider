@@ -3,94 +3,37 @@ categories:: Control
 summary:: Register objects to be cleared when Cmd-. is pressed
 related:: Classes/ShutDown, Classes/ServerQuit
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 CmdPeriod allows you to register objects to perform an action when the user presses Cmd-. These objects must implement a method called strong::-cmdPeriod:: which performs the necessary tasks. (You can add such a method in your custom classes.) Note that since link::Classes/Function:: implements strong::-cmdPeriod:: as a synonym for strong::-value::, it is possible to register any function (and thus any arbitrary code) for evaluation when Cmd-. is pressed.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: add
 
-
-Register an object to be cleared when Cmd-. is pressed. This object will stay registered until it is explicitly removed, and will thus respond to additional presses of Cmd-.
-
-
-
+Registers an object to be cleared when Cmd-. is pressed. This object will stay registered until it is explicitly removed, and will thus respond to additional presses of Cmd-.
 
 method:: remove
 
-
-Remove an object that was previously registered.
-
-
-
+Removes an object that was previously registered.
 
 method:: removeAll
 
-
 Removes all objects that have been registered.
-
-
-
 
 method:: doOnce
 
-
-Register an object to be evaluated once, and then unregistered.
-
-
-
+Registers an object to be evaluated once, and then unregistered.
 
 method:: objects
 
-
 Get or set the list of objects that are called when CmdPeriod is evaluated.
-
-
-
 
 method:: era
 
-
 The number of times CmdPeriod has been called since startup.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

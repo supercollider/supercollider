@@ -10,19 +10,7 @@ This document is written so that it can be used on all supported systems, though
 See the helpfile link::Reference/KeyboardShortcuts:: for key commands when using other tools such as SC enhanced editors, e.g. on Linux platforms.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Hello World, I'm SuperCollider
-
-
-
 
 It is traditional when learning a new programming language to start with a simple program called 'Hello World'. This just makes the program print the text 'Hello World!' to well, wherever it prints text. In SC that's a place called the post window.
 The post window is the one that opened up when you first started SC, and a bunch of stuff was printed there which looks something like this:
@@ -140,19 +128,7 @@ You can bring it to the front at any time by pressing Cmd-\.
 Other times, the post window becomes full of text and hard to read.
 You can clear it at any time by pressing Ctrl-Shift-P (Cmd-Shift-P on macOS).
 
-
-
-
-
-
-
-
-
-
 section:: The World According to SuperCollider
-
-
-
 
 SuperCollider is actually three programs:
 
@@ -176,19 +152,7 @@ For more information see:
 
 link::Guides/How-to-Use-the-Interpreter::, link::Reference/Literals::, link::Classes/String::, link::Guides/ClientVsServer::, link::Reference/Server-Architecture::
 
-
-
-
-
-
-
-
-
-
 section:: Suggested Exercise
-
-
-
 
 Open a new tab or window by pressing Ctrl-N (Cmd-N on macOS) or choose 'New' from the File menu. Save the document by giving it a name like 'My first SC code.scd'. Note, you should always use extension '.scd' for files containing SC code.
 Copy some of above code examples and paste them into the new document using Ctrl-C and Ctrl-V (Cmd-C and Cmd-V on macOS) or use the copy and paste Edit menu items.

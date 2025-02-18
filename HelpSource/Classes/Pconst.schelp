@@ -3,19 +3,7 @@ categories:: Streams-Patterns-Events>Patterns>Repetition
 summary:: Constrain the sum of a value pattern
 related:: Classes/Pfindur, Classes/Pfin, Classes/Pfinval
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Similar to link::Classes/Pfindur::, but works with the value directly.
 
@@ -23,38 +11,13 @@ note::
 Be careful if this is used, directly or indirectly, for a note-length parameter! The difference may be very small and this could result in zombie nodes, due to a bug in link::Classes/EnvGen:: for very short sustain times.
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: new
 
-
 Embeds elements of the strong::pattern:: into the stream until the sum comes close enough to strong::sum::. At that point, the difference between the specified sum and the actual running sum is embedded.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

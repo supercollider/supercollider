@@ -13,53 +13,25 @@ warning::
 Dstutter will return link::Classes/Ddup::
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: n
 
 Number of repeats (can be a demand UGen)
 
-
 argument:: in
 
 Input UGen
 
-
 returns::
 link::Classes/Ddup::
-
 
 discussion::
 Structurally related: link::Classes/Pdup::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

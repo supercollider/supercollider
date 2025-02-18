@@ -3,19 +3,7 @@ categories:: JITLib>NodeProxy, Live Coding
 summary:: Link between busses
 related:: Reference/playN, Classes/NodeProxy, Classes/Bus
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A general purpose class for monitoring or crosslinking between busses.
 It supports multichannel expansion and crossfading between settings.
@@ -28,82 +16,48 @@ x = Monitor.new; // create a new monitor
 x.play(fromIndex: 87, fromNumChannels: 3, toIndex: 0, toNumChannels: 2); // play them back to the stereo hardware channels
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: warnPlayN
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 method:: play
 
-
-Play from a bus index with a number of channels to another index with a number of channels, within a target group, or a server.
-
+Plays from a bus index with a number of channels to another index with a number of channels, within a target group, or a server.
 
 argument:: fromIndex
 
 Bus index from which to read
 
-
 argument:: fromNumChannels
 
 Number of channels to read from.
-
 
 argument:: toIndex
 
 Bus index to which to write.
 
-
 argument:: toNumChannels
 
 Number of channels to write. If this number is larger or smaller than fromNumChannels, wrap around. If nothing is given, uses fromNumChannels.
 
-
 argument:: target
 
 Where to send the synths to (default: server default group)
-
 
 argument:: multi
 
 Keep old links and add new one:
 this allows you to add layer after layer, otherwise free the previous mapping (false by default).
 
-
 argument:: volume
 
 Volume at which to monitor
 
-
 argument:: fadeTime
 
-ySpecif the fade in and fade out time
-
+Specifies the fade in and fade out time
 
 argument:: addAction
 
@@ -129,13 +83,9 @@ x.play(89, 1, 0, 2, multi: true);
 x.stop;
 ::
 
-
-
-
 method:: playN
 
-
-Play from an array of bus indices to another array of bus indices with an array of amplitudes, within a target group, or a server.
+Plays from an array of bus indices to another array of bus indices with an array of amplitudes, within a target group, or a server.
 
 note::
 The arguments strong::out::, strong::amp:: and strong::in:: can be nested arrays. see also link::Reference/playN::
@@ -144,41 +94,33 @@ The three arguments out, amp, and in will wrap if they do not have the same size
 code::  [[0, 1], [0.1], [3, 4, 5]].flop ::
 ::
 
-
 argument:: out
 
 Array of destination channels.
-
 
 argument:: amp
 
 Array of amplitudes for each channel
 
-
 argument:: in
 
 Array of source channels
-
 
 argument:: vol
 
 Global scaling value for amplitudes
 
-
 argument:: fadeTime
 
-ySpecif the fade in and fade out time
-
+Specifies the fade in and fade out time
 
 argument:: target
 
 Where to play (default: server default group)
 
-
 argument:: addAction
 
 Where, relative to the target to place the monitor group.
-
 
 argument:: multi
 
@@ -208,11 +150,7 @@ x.playN(
 x.playN(vol: 0.0, fadeTime: 4);
 ::
 
-
-
-
 method:: stop
-
 
 Stops within the fadeTime.
 
@@ -227,16 +165,11 @@ x.stop;
 x.play;
 ::
 
-
 argument:: argFadeTime
 
 The time for fading out all routing synths.
 
-
-
-
 method:: clear
-
 
 Stops within the fadeTime.
 
@@ -244,11 +177,7 @@ note::
 Unlike code::stop::, this removes all the settings.
 ::
 
-
-
-
 method:: vol
-
 
 Set the volume.
 
@@ -259,97 +188,49 @@ x.vol = 0.3;
 x.stop;
 ::
 
-
-
-
 method:: out
-
 
 Set or get the first output index.
 
-
-
-
 method:: outs
-
 
 Set or get the array of output bus indices.
 
-
-
-
 method:: ins
-
 
 Set or get the array of input bus indices.
 
-
-
-
 method:: amps
-
 
 Set the array of amplitudes.
 
-
-
-
 method:: fadeTimes
-
 
 Set or get the array of fadeTimes.
 
-
-
-
 method:: fadeTime
-
 
 Set one single fadeTime for the next transition (may be a stop or a new play).
 
-
-
-
 method:: isPlaying
 
-
-Return teletype::true:: if the group is still playing.
-
-
-
+Returns teletype::true:: if the group is still playing.
 
 method:: group
 
-
 Return the group in which all mapping synths are running.
-
-
-
 
 method:: numChannels
 
-
 Return the number of input channels.
-
-
-
 
 method:: copy
 
-
 Return a copy of the receiver, with the same channel setting, but not running. You can run it with the settings by sending it the link::#-play:: message, and pass in any modifications you want to make.
-
-
-
 
 method:: playToBundle
 
-
 Adds all playing osc messages to a bundle, passed as an argument. The bundle object should implement the method strong::.add::
 
-
-
-
 private:: hasSeriesOuts, newGroupToBundle, playNBusToBundle, playNToBundle, stopToBundle, updateDefault, usedPlayN
-
 

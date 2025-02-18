@@ -3,25 +3,11 @@ categories:: UGens>Buffer, UGens>Generators>Granular
 summary:: Granular synthesis with sound stored in a buffer
 related:: Classes/GrainIn, Classes/GrainFM, Classes/GrainSin, Classes/TGrains
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: categories
 
-
 method:: ar
-
 
 argument:: numChannels
 
@@ -29,33 +15,27 @@ The number of channels to output.
 If 1, mono is returned and pan is ignored.
 Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.
 
-
 argument:: trigger
 
 A kr or ar trigger to start a new grain.
 If ar, grains after the start of the synth are sample accurate.
 
-
 argument:: dur
 
 Size of the grain (in seconds).
-
 
 argument:: sndbuf
 
 The buffer holding a mono audio signal.
 If using multi-channel files, use Buffer.readChannel.
 
-
 argument:: rate
 
 The playback rate of the sampled sound
 
-
 argument:: pos
 
 The playback position for the grain to start with (0 is beginning, 1 is end of file)
-
 
 argument:: interp
 
@@ -67,10 +47,9 @@ list::
 ## 4 = cubic interpolation (more computationally intensive)
 ::
 
-
 argument:: pan
 
-Determine where to pan the output.
+Determines where to pan the output.
 
 list::
 ## If numChannels = 1, no panning is done.
@@ -78,12 +57,10 @@ list::
 ## If numChannels > 2, panning is the same as PanAz.
 ::
 
-
 argument:: envbufnum
 
 The buffer number containing a signal to use for the grain envelope.
 -1 uses a built-in Hann envelope.
-
 
 argument:: maxGrains
 
@@ -94,45 +71,19 @@ warning::
 The above parameter is new (post SC 3.3.1) and has the potential to break code written <= 3.3.1. This parameter is BEFORE the mul slot, and you may need to update code to account for this difference.
 ::
 
-
 argument:: mul
 
 argument:: add
-
 
 discussion::
  
 All args except numChannels and trigger are polled at grain creation time.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 private:: init, argNamesInputsOffset
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 s.boot;

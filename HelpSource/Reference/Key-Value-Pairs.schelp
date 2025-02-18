@@ -3,19 +3,7 @@ categories:: Collections, Interfaces
 summary:: An interface for translating between three common data structures: Dictionaries, Arrays of Associations and of Pairs
 related:: Classes/IdentityDictionary, Classes/Array, Classes/Association
 
-
-
-
-
-
-
-
-
-
 section:: Motivation
-
-
-
 
 There are three very similar ways to represent maps between keys and values, each of which have a specific purpose:
 
@@ -33,19 +21,7 @@ table::
 ##code::asDict:: || returns an IdentityDictionary.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Examples
-
-
-
 
 code::
 // the following all return [\freq, 452, \amp, 0.2]
@@ -68,19 +44,7 @@ code::
 (freq: 452, amp: 0.2).asDict
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Mapping Parameters
-
-
-
 
 The method code::asDict:: optionally takes a code::mergeFunc:: and a code::class:: argument.
 

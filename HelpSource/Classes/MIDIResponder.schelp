@@ -3,19 +3,7 @@ categories:: External Control>MIDI
 summary:: Register multiple functions to be evaluated when MIDI events occur
 related:: Classes/MIDIFunc, Classes/MIDIdef, Classes/MIDIIn, Guides/MIDI, Guides/UsingMIDI
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 note::
 SC 3.5 added the link::Classes/MIDIFunc::and link::Classes/MIDIdef::classes. These are faster, and aim to have a more convenient, logical and consistent interface, which shares a common design with link::Classes/OSCFunc::and link::Classes/OSCdef::.
@@ -36,13 +24,7 @@ definitionlist::
 ## link::Classes/ProgramChangeResponder:: || Respond to programchange messages
 ::
 
-
-
-
-
-
 subsection:: Creation and initialization
-
 
 list::
 ## CCResponder(function, src, chan, num, value, install = true, swallowEvent = false)
@@ -102,13 +84,7 @@ MIDIResponders automatically initialize the MIDIClient with 1 standard device.
 This means the first time you install any MIDIResponder, it will make sure that MIDI has been initialized.
 If you have more devices or a specific setup, simply initialize the MIDIClient yourself before using any MIDIResponders.
 
-
-
-
-
-
 subsection:: Removal
-
 
 Just call .remove on the responder.
 

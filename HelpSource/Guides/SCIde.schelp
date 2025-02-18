@@ -14,19 +14,7 @@ It is also very customizable.
 
 It runs equally well and looks almost the same on macOS, Linux and Windows 7. (Issues with Windows XP remain to be solved.)
 
-
-
-
-
-
-
-
-
-
 section:: Overview
-
-
-
 
 note::
 Throughout this document, strong::Ctrl::indicates the modifier key for keyboard shortcuts that is used on Linux and Windows platforms.
@@ -38,13 +26,7 @@ Click link::Guides/sc_ide_overview.png##here:: for a natural-size version.
 
 image::sc_ide_overview_scaled.png::
 
-
-
-
-
-
 subsection:: Central components
-
 
 definitionlist::
 ## Title Bar || Displays the current session name (see link::#Sessions::), and the filename of the current document.
@@ -68,13 +50,7 @@ This the list of tools:
 Also displays any occasional notifications related to the IDE.
 ::
 
-
-
-
-
-
 subsection:: Docklets
-
 
 Around the central area described above, there are strong::dock areas:: where various other panels called strong::docklets:: are displayed. They are named so, because they can be moved around to different positions in the dock areas, or even be undocked to float above the main window, and they may also be hidden.
 You can show or hide each of the available docklets via the menu strong::View > Docklets::.
@@ -105,19 +81,7 @@ it may be minimized and maximized, the main window may be raised in front of it,
 ## strong::Hidden:: - A docklet may be hidden either using the menu accessible by clicking in the top-left corner of a docklet, closing a detached docklet's window, or using the main window menu View > Docklets. To show a hidden docklet, use the same main window menu.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Getting help
-
-
-
 
 All the help options are accessible via the main menu under Help.
 
@@ -140,19 +104,7 @@ In the title bar of the Help Browser there are controls to strong::navigate:: to
 
 Using the strong::Ctrl+F:: shortcut while the Help Browser is focused, you are sent directly to the strong::Find:: field, which you can use to search for text in the current help page.
 
-
-
-
-
-
-
-
-
-
 section:: Starting up the system
-
-
-
 
 There is no SuperCollider fun without two crucial components:
 
@@ -177,22 +129,9 @@ In that case, use the strong::Language menu:: to restart the interpreter.
 When your class library changes, either because you have installed or removed a Quark, or just modified a class file, you will need to strong::recompile the class library:: in order for changes to take effect.
 You can do that quickly via the strong::Ctrl+Shift+L:: shortcut, or via the Language menu.
 
-
-
-
-
-
-
-
-
-
 section:: Code editor
 
-
-
-
 subsection:: Evaluating code
-
 
 To evaluate code, use one of the following keyboard commands:
 
@@ -234,13 +173,7 @@ If some code goes into a strong::infinite loop without a pause::, using Ctrl+. w
 In this case, you will need to restart the interpreter (see link::#Starting up the system::).
 ::
 
-
-
-
-
-
 subsection:: Automatic indentation
-
 
 The editor helps you by automatically indenting lines according to opening and closing brackets as you type.
 With every new line, the indentation will be increased if there is an opening bracket on the previous line.
@@ -253,15 +186,9 @@ You can manually insert a level of indentation anywhere in code by pressing stro
 
 The indentation can either use strong::tab characters or spaces::, which you can quickly toggle via the main menu option Edit > Use Spaces for Indentation. More indentation options are available in the IDE preferences dialog.
 
-
-
-
-
-
 subsection:: Automatic completion
 
-
-A you type, the editor will try to find possible continuations of your code, and pop up a list of suggestions, so you can quickly insert one instead of typing the whole text.
+As you type, the editor will try to find possible continuations of your code, and pop up a list of suggestions, so you can quickly insert one instead of typing the whole text.
 This is called emphasis::autocompletion:: and is a great aid towards writing code faster and with less errors.
 
 In general, this works for class and method names.
@@ -311,13 +238,7 @@ This is intended as help: the menu tries to get out of your way when you probabl
 If the autocompletion menu is not shown, you can show it using strong::Ctrl+Space::, as long as there is any autocompletion options available.
 You can always dismiss the menu by pressing strong::Escape::.
 
-
-
-
-
-
 subsection:: Method call assistance
-
 
 The editor helps you when writing arguments of a method by showing you a complete list of the method's arguments and their default values, as long as it manages to figure out exactly which method that is.
 This is called emphasis::method call assistance::.
@@ -344,30 +265,12 @@ x.play(
 If method call assistance is not shown, you can activate it using strong::Ctrl+Shift+Space:: with the cursor between parenthesis surrounding the arguments.
 You can always dismiss it by pressing strong::Escape::.
 
-
-
-
-
-
-
-
-
-
 section:: Tool panels
-
-
-
 
 All tool panels are listed and may be activated via the main menu strong::View > Tool Panels::. To close the
 currently displayed panel, press strong::Escape::.
 
-
-
-
-
-
 subsection:: Find and Replace
-
 
 Shortcuts: Find: strong::Ctrl+F:: / Replace: strong::Ctrl+R::
 
@@ -403,25 +306,13 @@ We will not go here into details about regular expression.
 To learn more, we would like to refer you to an excellent tutorial online:
 link::http://www.regular-expressions.info/quickstart.html::
 
-
-
-
-
-
 subsection:: Go-To-Line
-
 
 Shortcut: strong::Ctrl+L::
 
 Using the Go-To-Line tool, you can quickly jump to a line in the current document, by number. Just enter the line number and press Return.
 
-
-
-
-
-
 subsection:: Comand Line
-
 
 Shortcut: strong::Ctrl+E::
 
@@ -430,30 +321,12 @@ The Command Line offers a one-line text field where you can enter a SuperCollide
 
 Use the Up and Down arrow keys to navigate through the strong::history:: of evaluated expressions. Up will move to older expressions, and Down will move back to more recent ones.
 
-
-
-
-
-
-
-
-
-
 section:: Class library navigation
-
-
-
 
 Often it is very useful to be able to jump directly to a place in a file, where a particular class or method is implemented, or to find all the places where a class or a method name is used.
 The IDE offers practical ways to achieve that.
 
-
-
-
-
-
 subsection:: Look up implementations
-
 
 The strong::Ctrl+I:: shortcut with the text cursor at a method or a class name will open a dialog with a list of places where that method or class is implemented.
 By selecting one of the entries and pressing Return, the IDE will open the file and position the text cursor at the location you are looking for.
@@ -474,13 +347,7 @@ Just type in some text and press Return.
 
 The strong::Ctrl+Shift+I:: shortcut will open the dialog empty, regardless of position of the text cursor.
 
-
-
-
-
-
 subsection:: Look up references
-
 
 The strong::Ctrl+U:: shortcut will open a dialog similar to the one described above, except that it will list places where a method or a class with a particular name is emphasis::used::.
 Note that this only searches class files in the class library, not regular code files.
@@ -489,19 +356,7 @@ Just as the Ctrl+I shortcut described above, Ctrl+U will work at any place in th
 
 The strong::Ctrl+Shift+U:: shortcut will open the dialog empty, regardless of position of the text cursor.
 
-
-
-
-
-
-
-
-
-
 section:: Sessions
-
-
-
 
 Sessions preserve the state of the IDE at the time of quitting, so next time you use it you can resume with the same arrangement of open documents and link::#Docklets#docklets:: automatically.
 
@@ -517,19 +372,7 @@ More options, including strong::removing:: a saved session, are available in a s
 
 By default, the IDE starts with the strong::last session:: used before closing, but you can change this behavior in the IDE configuration dialog.
 
-
-
-
-
-
-
-
-
-
 section:: Various handy shortcuts
-
-
-
 
 definitionlist::
 ## Focus Post Window: Ctrl+P ||  Gives focus to the Post Window.
@@ -539,19 +382,7 @@ Press Tab to return to the Code Editor.
 ## Enlarge/Shrink Font: Ctrl++ / Ctrl+- || Enlarges or shrinks font in Code Editor, Post Window, or Help Browser.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Customization
-
-
-
 
 Many customization options are available in the IDE configuration dialog, accessible via "Edit > Preferences" menu action.
 

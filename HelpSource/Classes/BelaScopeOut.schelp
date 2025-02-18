@@ -2,19 +2,7 @@ title:: BelaScopeOut
 categories:: UGens>Bela
 summary:: Bela's Oscilloscope interface
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 note::
 This UGen only works on Bela
@@ -23,28 +11,14 @@ This UGen only works on Bela
 This UGen effectively sends audio signals to Bela Oscilloscope, analogously to how link::/Classes/Out:: writes to a bus.
 It can be used directly, or through link::Classes/UGen#-belaScope::, link::Classes/Array#-belaScope::, link::Classes/Bus#-belaScope::, link::Classes/Function#-belaScope:: and link::Classes/Server#-belaScope:: convenience functions.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar
-
 
 argument:: offset
 
 The Bela Oscilloscope's channel where to start writing.
 This is read only at construction time and thus it's not modulatable.
-
 
 argument:: channelsArray
 

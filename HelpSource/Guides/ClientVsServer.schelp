@@ -19,19 +19,7 @@ image::structureEn.png#Figure 1. Structure of the SuperCollider application::
 The SuperCollider application is thus made up of two distinct, autonomous, components, a server and a client.
 For the first we have a choice between scsynth (SC-synthesizer) and supernova, and for the second we have sclang (SC-language).
 
-
-
-
-
-
-
-
-
-
 section:: Description
-
-
-
 
 The SuperCollider application makes use of client/server architecture which separates two functions, respectively one providing and the other requesting services.
 The client and the server communicate through a network.
@@ -115,19 +103,7 @@ The same is teletype::true:: of group nodes, buffers, and buses. A more detailed
 In conclusion, the crucial thing to remember is the distinction between things like nodes, busses, buffers, and servers and the objects that represent them in the language app (i.e. instances of link::Classes/Node::, link::Classes/Bus::, link::Classes/Buffer::, and link::Classes/Server::; these are referred to as 'Server Abstraction Objects').
 Keeping these conceptually distinct will help avoid much confusion.
 
-
-
-
-
-
-
-
-
-
 section:: Pros/Cons
-
-
-
 
 The client/server architecture provides three main advantages:
 
@@ -153,19 +129,7 @@ This can add some complexity to your code, but is in principle not an issue.
 (See link::Classes/OSCFunc:: and link::Classes/OSCdef::.) Some server abstraction objects such as link::Classes/Buffer:: provide for this automatically through 'action' functions which wait for completion before executing.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: A final remark for the advanced reader
-
-
-
 
 Apart from sclang, it is possible to control the server from any other client which provides for OSC messaging (e.g. from Java, Python, Max/MSP, etc.). For networking, see link::Reference/Server-Architecture::, link::Classes/NetAddr::, link::Classes/OSCFunc::.
 

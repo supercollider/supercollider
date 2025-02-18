@@ -3,19 +3,7 @@ categories:: UGens>Triggers, UGens>Random
 summary:: Randomly select one of several inputs
 related:: Classes/TChoose
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 An output is selected randomly on receiving a trigger from an array of inputs.
 
@@ -25,45 +13,19 @@ If code::normalize:: is set to teletype::1::the weights are continuously normali
 
 TWChoose is a composite of link::Classes/TWindex:: and link::Classes/Select::.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: trig
 
 argument:: array
 
-
 argument:: weights
 
 argument:: normalize
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

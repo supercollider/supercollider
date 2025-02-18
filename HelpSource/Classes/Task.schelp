@@ -3,19 +3,7 @@ categories:: Scheduling
 summary:: A pauseable process
 related:: Classes/Routine
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Task is a pauseable process. It is implemented by wrapping a link::Classes/PauseStream:: around a link::Classes/Routine::.
 Most of its methods (start, stop, reset) are inherited from PauseStream.
@@ -26,27 +14,13 @@ Use Task if you expect the process to need to start, stop or resume multiple tim
 
 Note that stopping a task and restarting it quickly may yield surprising results (see example below), but this is necessary to prevent tasks from becoming unstable if they are started and/or stopped in rapid succession. (Routines do allow a quick stop-reset-play cycle, but they have no mechanism to prevent timing from being broken in this case, i.e. Routine is more brittle here.) If you need to start and stop quickly while maintaining timing, a better approach would be to swap the child Routine over to a new instance of PauseStream.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: func
 
 A Function to be evaluated.
-
 
 argument:: clock
 
@@ -54,88 +28,46 @@ A Clock in which to play the link::Classes/Routine::.
 If you do not provide a Clock the default is an instance of link::Classes/TempoClock::.
 Remember that methods which call Cocoa primitives (i.e. GUI functions) must be played in link::Classes/AppClock::.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 method:: play
-
 
 argument:: argClock
 
 (optional) Override the clock assigned in Task.new.
-
 
 argument:: doReset
 
 If teletype::true::, the task will start over from the beginning.
 Default is false (task will resume where it was when it was last stopped).
 
-
 argument:: quant
 
 See the link::Classes/Quant:: helpfile.
 
-
-
-
-
-
 subsection:: Other control methods
-
 
 method:: start
 
-
 Restart the task from the beginning.
-
-
-
 
 method:: resume
 
-
 Resume the task where it left off.
-
-
-
 
 method:: pause
 
-
 Stop playing now.
-
-
-
 
 method:: stop
 
-
 Stop playing now. (Pause and stop have the same implementation.)
-
-
-
 
 method:: reset
 
-
 Set the stream to restart from the beginning the next time it's played.
 
-
-
-
 method:: reschedule
-
 
 Switch the Task to a different clock, or a different time, without stopping. See link::Classes/Routine#-reschedule:: for complete documentation.
 
@@ -144,13 +76,7 @@ If you want to reschedule a Task from within the Task itself, code::thisThread.r
 You must write code::thisThread.threadPlayer.reschedule(...):: instead.
 ::
 
-
-
-
-
-
 subsection:: Notifications
-
 
 Other objects might need to be aware of changes in the state of a task.
 The following notifications are broadcast to dependents registered with the Task object.
@@ -163,22 +89,9 @@ list::
 If the task function completes on its own, this notification is sent without 'userStopped' being sent previously.
 ::
 
-
-
-
-
-
-
-
-
-
 examples::
 
-
-
-
 subsection:: What happens if you stop and start the task too quickly?
-
 
 code::
 (

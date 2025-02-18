@@ -11,8 +11,7 @@ more to come..
 using a simple environment. this looks just like ProxySpace, but works differently. for the difference, see link::Tutorials/JITLib/jitlib_basic_concepts_01:: and link::Tutorials/JITLib/jitlib_basic_concepts_02::.
 
 code::
-d = (); // create a new environment
-d.push; // push it to current
+d = (); // create a new environment d.push; // push it to current
 
 // this synthdef can be changed on the fly, but the synth will
 // not change from this. use expression [1] for replacing a given synth

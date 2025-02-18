@@ -111,49 +111,19 @@ necessary to protect shared access to the condition state.
 single-threaded, each running thread implicitly holds the global interpreter mutex and more fine-grained mutexes are
 unnecessary.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: new
 
-
 Create a new instance.
-
-
-
-
-
-
-
-
-
 
 instancemethods::
 
-
-
-
 private:: prSleepThread, prWakeThread, prRemoveWaitingThread, prConvertTimeoutBeatsToSafeValue
-
 
 private:: prWait, prWaitFor
 
-
-
-
 method:: wait
-
 
 The behavior depends on whether a code::predicate:: is given. If no code::predicate:: is given, this method simply
 blocks the current thread until it is woken by code::signalOne:: or code::signalAll::. Otherwise, this method is
@@ -162,7 +132,6 @@ predicate is false, otherwise it blocks and only resumes once the thread has bee
 
 This method must only be called within a link::Classes/Routine:: or Routine wrapper (for example, link::Classes/Task::
 or link::Classes/Tdef::).
-
 
 argument:: predicate
 
@@ -178,15 +147,10 @@ waiting on this CondVar.
 When code::wait:: returns, the predicate was true. It may not be true later, for instance if it depends on external
 factors such as the system time or the state of the server.
 
-
 returns::
 Thi object
 
-
-
-
 method:: waitFor
-
 
 Similar to code::wait::, but the thread will also be unblocked if the relative timeout code::timeoutBeats:: expires.
 
@@ -203,7 +167,6 @@ yields.
 
 This method must only be called within a link::Classes/Routine:: or Routine wrapper (for example, link::Classes/Task:: or link::Classes/Tdef::).
 
-
 argument:: timeoutBeats
 
 A duration in beats to wait before timing out.
@@ -217,7 +180,6 @@ immediately if code::predicate:: is not nil and code::false:: otherwise.
 
 These strict checks are made to protect the thread which handles timeouts.
 
-
 argument:: predicate
 
 A condition to be checked before blocking, and before resuming after being woken by code::signalOne:: or
@@ -228,7 +190,6 @@ If evaluating the predicate throws an
 exception, the exception will propagate up on the thread which called code::wait::, and the thread will no longer be
 waiting on this CondVar.
 
-
 returns::
 If the thread was woken because the timeout expired, then returns code::predicate.value:: if one was given and
 code::false:: if code::predicate:: was code::nil::.  Otherwise, returns code::true::.
@@ -236,13 +197,9 @@ code::false:: if code::predicate:: was code::nil::.  Otherwise, returns code::tr
 In other words, if code::predicate:: is non-nil, a return value of code::true:: means that code::predicate.value:: was
 teletype::true:: when the thread resumed.
 
-
-
-
 method:: signalOne
 
-
-Wake one thread waiting on this Condition.
+Wakes one thread waiting on this Condition.
 Threads are woken in the order in which they called code::wait:: or
 code::waitFor::.
 If a thread is woken and was waiting with a predicate, and that predicate is still code::false::, it
@@ -250,15 +207,10 @@ will code::wait:: again and be placed at the end of the queue of threads waiting
 Another thread will
 not be woken in that case.
 
-
 returns::
 Thi object
 
-
-
-
 method:: signalAll
-
 
 Wakes all threads waiting on this Condition.
 Threads are woken in the order in which they called code::wait:: or
@@ -266,34 +218,16 @@ code::waitFor::.
 If threads were waiting with predicates and their predicates are still code::false:: after being woken,
 they will block again in the same order as before this method was called.
 
-
 returns::
 Thi object
 
-
-
-
 method:: shallowCopy, copy, deepCopy
 
-
-Throw a code::ShouldNotImplementError::; CondVars cannot be copied, shallow copied, or deep copied.
-
-
-
-
-
-
-
-
-
+Throws a code::ShouldNotImplementError::; CondVars cannot be copied, shallow copied, or deep copied.
 
 examples::
 
-
-
-
 subsection:: Simple interactive example
-
 
 code::
 (
@@ -319,13 +253,7 @@ Routine {
 c.signalOne;
 ::
 
-
-
-
-
-
 subsection:: Producer-consumer queue: single producer, single consumer
-
 
 The following example shows a CondVar used to manage a simple producer-consumer queue with one consumer and one producer.
 
@@ -401,13 +329,7 @@ fork {
 )
 ::
 
-
-
-
-
-
 subsection:: Producer-consumer queue: multiple producers, multiple consumers
-
 
 Here is another producer-consumer example with multiple producers and multiple consumers.
 Note how easily the code above
@@ -471,13 +393,7 @@ numConsumers.do { |index|
 )
 ::
 
-
-
-
-
-
 subsection:: Using timeouts
-
 
 Sometimes, you want to wait on an external condition that may never come true, or you want to do something else in case
 you've been waiting for a long time.

@@ -27,19 +27,7 @@ This can make code modular, reusable, and easier to read.
 
 The link::Classes/Group:: class, which is the means to specify a collection of nodes, provides a mechanism through which to control several synths at once.
 
-
-
-
-
-
-
-
-
-
 section:: Groups are linked lists
-
-
-
 
 The important technical feature of groups is that the nodes they contain are items in a linked list. A linked list is a data structure that makes it easy to order and reorder nodes. The first item in a linked list is the "head" and the last item is the "tail."
 
@@ -48,19 +36,7 @@ The ability to order synths is essential when sending source audio through an ef
 
 Another feature of groups is they allow synths to receive messages from a single point of control, eg, one message to the group goes to all of nodes that belong to the group.
 
-
-
-
-
-
-
-
-
-
 section:: Nodes, linked lists, trees
-
-
-
 
 See the link::Reference/Server-Architecture:: document for a definition of a node in SuperCollider or look to the Wikipedia for a general discussion of nodes, linked lists, and trees.
 
@@ -70,19 +46,7 @@ list::
 ## http://en.wikipedia.org/wiki/Tree_data_structure
 ::
 
-
-
-
-
-
-
-
-
-
 section:: RootNode and default_group
-
-
-
 
 By default, the localhost and internal servers each boot with two predefined groups:
 the link::Classes/RootNode:: and the link::Reference/default_group:: (see their help files). To see this, start the localhost server and then evaluate

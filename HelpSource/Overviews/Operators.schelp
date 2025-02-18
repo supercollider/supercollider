@@ -11,19 +11,7 @@ See the specific classes for details and other operators.
 
 You can see which classes implements a specific operator by clicking on the method name.
 
-
-
-
-
-
-
-
-
-
 section:: Unary Operators
-
-
-
 
 Unary operators may be written in two ways:
 
@@ -32,19 +20,11 @@ a.operator
 operator(a)
 ::
 
-
-
-
-
-
 subsection:: Arithmetics
-
 
 method:: neg
 
-
 Inversion.
-
 
 discussion::
 code::
@@ -55,30 +35,17 @@ code::
 }.plot
 ::
 
-
-
-
 method:: reciprocal
-
 
 Reciprocal (1/x).
 
-
-
-
 method:: abs
-
 
 Absolute value.
 
-
-
-
 method:: floor
 
-
 Next lower integer.
-
 
 discussion::
 code::
@@ -89,14 +56,9 @@ code::
 }.plot
 ::
 
-
-
-
 method:: ceil
 
-
 Next higher integer.
-
 
 discussion::
 code::
@@ -107,84 +69,48 @@ code::
 }.plot
 ::
 
-
-
-
 method:: frac
-
 
 Fractional part.
 
-
-
-
 method:: sign
 
-
 Sign function.
-
 
 returns::
 -1 when a < 0, +1 when a > 0, teletype::0:: when a is 0
 
-
-
-
 method:: squared
 
-
 Squared value.
-
 
 returns::
 code:: a*a ::
 
-
-
-
 method:: cubed
 
-
 Cubed value.
-
 
 returns::
 code:: a*a*a ::
 
-
-
-
 method:: sqrt
 
-
 Square root.
-
 
 discussion::
 The definition of square root is extended for signals so that sqrt(a) when a<0 returns
 -sqrt(-a).
 
-
-
-
 method:: exp
-
 
 Exponential.
 
-
-
-
-
-
 subsection:: Musical acoustics
-
 
 method:: midicps
 
-
 Convert MIDI note number to cycles per second.
-
 
 discussion::
 code::
@@ -193,79 +119,41 @@ code::
 }.play
 ::
 
-
-
-
 method:: cpsmidi
-
 
 Convert cycles per second to MIDI note.
 
-
-
-
 method:: midiratio
-
 
 Convert an interval in MIDI notes into a frequency ratio.
 
-
-
-
 method:: ratiomidi
-
 
 Convert a frequency ratio to an interval in MIDI notes.
 
-
-
-
 method:: dbamp
-
 
 Convert decibels to linear amplitude.
 
-
-
-
 method:: ampdb
-
 
 Convert linear amplitude to decibels.
 
-
-
-
 method:: octcps
-
 
 Convert decimal octaves to cycles per second.
 
-
-
-
 method:: cpsoct
-
 
 Convert cycles per second to decimal octaves.
 
-
-
-
-
-
 subsection:: Random operators
-
 
 See also link::Guides/Randomness::
 
-
-
-
 method:: rand
 
-
-Return an evenly distributed random value between this and zero.
+Returns an evenly distributed random value between this and zero.
 
 code::
 10.rand;
@@ -273,13 +161,9 @@ code::
 { SinOsc.ar(110).rand }.plot;
 ::
 
-
-
-
 method:: rand2
 
-
-Return an evenly distributed random value between [+this ... - this].
+Returns an evenly distributed random value between [+this ... - this].
 
 code::
 10.rand2;
@@ -287,13 +171,9 @@ code::
 { SinOsc.ar(110).rand2 }.plot;
 ::
 
-
-
-
 method:: linrand
 
-
-Return a linearly distributed random value between this and zero.
+Returns a linearly distributed random value between this and zero.
 
 code::
 10.linrand;
@@ -301,13 +181,9 @@ code::
 { SinOsc.ar(110).linrand }.plot;
 ::
 
-
-
-
 method:: bilinrand
 
-
-Return a linearly distributed random value between [+this ... - this].
+Returns a linearly distributed random value between [+this ... - this].
 
 code::
 10.bilinrand;
@@ -315,13 +191,9 @@ code::
 { SinOsc.ar(110).bilinrand }.plot;
 ::
 
-
-
-
 method:: sum3rand
 
-
-Return a value from a gaussian-like random distribution between this and zero.
+Returns a value from a gaussian-like random distribution between this and zero.
 This was suggested by Larry Polansky as a loose approximation of gaussian.
 Follows the formula:
 
@@ -335,13 +207,9 @@ code::
 { SinOsc.ar(110).sum3rand }.plot;
 ::
 
-
-
-
 method:: coin
 
-
-Return one or zero with the probability given by the argument.
+Returns one or zero with the probability given by the argument.
 
 code::
 0.4.coin;
@@ -349,19 +217,11 @@ code::
 { SinOsc.ar(110).coin }.plot;
 ::
 
-
-
-
-
-
 subsection:: Other
-
 
 method:: log
 
-
 Natural logarithm.
-
 
 discussion::
 code::
@@ -373,102 +233,53 @@ code::
 }.plot
 ::
 
-
-
-
 method:: log2
-
 
 Base 2 logarithm.
 
-
-
-
 method:: log10
-
 
 Base 10 logarithm.
 
-
-
-
 method:: sin
-
 
 Sine.
 
-
-
-
 method:: cos
-
 
 Cosine.
 
-
-
-
 method:: tan
-
 
 Tangent.
 
-
-
-
 method:: asin
-
 
 Arcsine.
 
-
-
-
 method:: acos
-
 
 Arccosine.
 
-
-
-
 method:: atan
-
 
 Arctangent.
 
-
-
-
 method:: sinh
-
 
 Hyperbolic sine.
 
-
-
-
 method:: cosh
-
 
 Hyperbolic cosine.
 
-
-
-
 method:: tanh
-
 
 Hyperbolic tangent.
 
-
-
-
 method:: distort
 
-
 Nonlinear distortion.
-
 
 discussion::
 The formula used is :
@@ -491,14 +302,9 @@ code::
 { FSinOsc.ar(500, 0.0, XLine.kr(0.1, 10, 10)).distort * 0.25 }.scope;
 ::
 
-
-
-
 method:: softclip
 
-
 Nonlinear distortion.
-
 
 discussion::
 Distortion with a perfectly linear region from -0.5 to +0.5
@@ -516,43 +322,19 @@ code::
 { FSinOsc.ar(500,0.0, XLine.kr(0.1, 10, 10)).softclip * 0.25 }.scope(2);
 ::
 
-
-
-
 method:: isPositive
-
 
 Test if signal is >= 0.
 
-
-
-
 method:: isNegative
-
 
 Test if signal is < 0.
 
-
-
-
 method:: isStrictlyPositive
-
 
 Test if signal is > 0.
 
-
-
-
-
-
-
-
-
-
 section:: Binary Operators
-
-
-
 
 Three different syntaxes can be used for binary operators consisting of letters:
 
@@ -570,64 +352,33 @@ code::
 a + b
 ::
 
-
-
-
-
-
 subsection:: Arithmetics
-
 
 method:: +
 
-
 Addition.
-
-
-
 
 method:: -
 
-
 Subtraction.
-
-
-
 
 method:: *
 
-
 Multiplication.
-
-
-
 
 method:: /
 
-
 Division.
-
-
-
 
 method:: %
 
-
 Floating point modulo.
-
-
-
 
 method:: **
 
-
 Exponentiation. Same as pow.
 
-
-
-
 method:: pow
-
 
 Exponentiation.
 
@@ -636,11 +387,7 @@ When used with UGens which produce a negative signal this function extends the u
 This allows exponentiation of teletype::negative:: signal values by noninteger exponents.
 ::
 
-
-
-
 method:: lcm
-
 
 Least common multiple. This definition extends the usual definition and returns a negative number if strong::any of the operands:: is negative. This makes it consistent with the lattice-theoretical interpretation and its idempotency, commutative, associative, absorption laws.
 
@@ -665,11 +412,7 @@ code::
 )
 ::
 
-
-
-
 method:: gcd
-
 
 Greatest common divisor. This definition extends the usual definition and returns a negative number if strong::both operands:: are negative. This makes it consistent with the lattice-theoretical interpretation and its idempotency, commutative, associative, absorption laws.
 
@@ -709,35 +452,19 @@ gcd(4, -6) // -> 2 "greatest divisor" is interpreted as highest in Z
 gcd(-4, -6) // -> -2 "greatest divisor" is interpreted as *inverse* in Z. This is the only necessary asymmetry.
 ::
 
-
-
-
-
-
 subsection:: Comparisons
-
 
 method:: <
 
-
 Less than.
-
-
-
 
 method:: <=
 
-
 Less than or equal.
-
-
-
 
 method:: >
 
-
 Greater than.
-
 
 discussion::
 With UGens, this can be useful for triggering purposes, among other things:
@@ -772,48 +499,25 @@ OSCFunc({ "triggered".postln; Synth.new("help-EnvGen") },'/tr', s.addr);
 )
 ::
 
-
-
-
 method:: >=
-
 
 Greater than or equal.
 
-
-
-
 method:: ==
-
 
 Equal.
 
-
-
-
 method:: !=
-
 
 Not equal.
 
-
-
-
 method:: |==|
-
 
 "Lazy equality." See link::Classes/Object#-|==|::.
 
-
-
-
-
-
 subsection:: Other
 
-
 method:: <!
-
 
 Return first argument.
 
@@ -831,14 +535,9 @@ code::
 )
 ::
 
-
-
-
 method:: min
 
-
 Minimum.
-
 
 discussion::
 code::
@@ -849,14 +548,9 @@ z min: FSinOsc.ar(0.1);
 }.play;
 ::
 
-
-
-
 method:: max
 
-
 Maximum.
-
 
 discussion::
 code::
@@ -867,32 +561,19 @@ z max: FSinOsc.ar(0.1);
 }.play;
 ::
 
-
-
-
 method:: round
-
 
 Quantization by rounding. Rounds a to the nearest multiple of b.
 
-
-
-
 method:: trunc
-
 
 Quantization by truncation. Truncate a to a multiple of b.
 
-
-
-
 method:: hypot
-
 
 Hypotenuse. Returns the square root of the sum of the squares of a and b.
 Or equivalently, the distance from the origin
 to the point (x, y).
-
 
 discussion::
 In this example, hypot is used to calculate a doppler shift pitch and amplitude based on distance.
@@ -930,14 +611,9 @@ code::
 }.play)
 ::
 
-
-
-
 method:: hypotApx
 
-
 Hypotenuse approximation. Returns an approximation of the square root of the sum of the squares of x and y.
-
 
 discussion::
 The formula used is :
@@ -952,14 +628,9 @@ Use hypot.
 
 See also link::#hypot::, link::#atan2::.
 
-
-
-
 method:: atan2
 
-
-Return the arctangent of y/x.
-
+Returns the arctangent of y/x.
 
 discussion::
 OK, now we can add a pan to the link::#hypot:: doppler examples by using atan2 to find the azimuth,
@@ -1000,14 +671,9 @@ code::
 }.play)
 ::
 
-
-
-
 method:: ring1
 
-
 Ring modulation plus first source.
-
 
 discussion::
 Return the value of  ((a*b) + a).
@@ -1044,14 +710,9 @@ code::
 }.play)
 ::
 
-
-
-
 method:: ring2
 
-
 Ring modulation plus both sources.
-
 
 discussion::
 Return the value of  ((a*b) + a + b).
@@ -1074,14 +735,9 @@ code::
 }.play)
 ::
 
-
-
-
 method:: ring3
 
-
 Ring modulation variant.
-
 
 discussion::
 Return the value of  (a*a *b).
@@ -1104,14 +760,9 @@ code::
 }.play)
 ::
 
-
-
-
 method:: ring4
 
-
 Ring modulation variant.
-
 
 discussion::
 Return the value of  ((a*a *b) - (a*b*b)).
@@ -1134,14 +785,9 @@ code::
 }.play)
 ::
 
-
-
-
 method:: sumsqr
 
-
 Sum of squares.
-
 
 discussion::
 Return the value of  (a*a) + (b*b).
@@ -1164,14 +810,9 @@ code::
 }.play)
 ::
 
-
-
-
 method:: difsqr
 
-
 Difference of squares.
-
 
 discussion::
 Return the value of  (a*a) - (b*b).
@@ -1194,14 +835,9 @@ code::
 }.play)
 ::
 
-
-
-
 method:: sqrsum
 
-
 Square of the sum.
-
 
 discussion::
 Return the value of  (a + b)**2. This is more efficient than using
@@ -1224,14 +860,9 @@ code::
 }.play)
 ::
 
-
-
-
 method:: sqrdif
 
-
 Square of the difference.
-
 
 discussion::
 Return the value of  (a - b)**2. This is more efficient than using
@@ -1254,14 +885,9 @@ code::
 }.play)
 ::
 
-
-
-
 method:: absdif
 
-
 Absolute value of the difference. code:: abs(a - b) ::
-
 
 discussion::
 code::
@@ -1273,15 +899,10 @@ FSinOsc.ar(440, 0, mul);
 )
 ::
 
-
-
-
 method:: moddif
-
 
 On a circle, there are two distances between two points.
 This operator returns the smaller value of the two.
-
 
 discussion::
 code::
@@ -1294,14 +915,9 @@ FSinOsc.ar(440, 0, mul);
 )
 ::
 
-
-
-
 method:: thresh
 
-
 Thresholding.
-
 
 discussion::
 teletype::0:: when a < b, otherwise a.
@@ -1310,14 +926,9 @@ code::
 { LFNoise0.ar(50, 0.5) thresh: 0.45 }.play // a low-rent gate
 ::
 
-
-
-
 method:: amclip
 
-
 Two quadrant multiply.
-
 
 discussion::
 0  when  b <= 0,  a*b  when  b > 0
@@ -1326,14 +937,9 @@ code::
 { WhiteNoise.ar.amclip(FSinOsc.kr(1,0.2)) }.play; // makes a sine envelope
 ::
 
-
-
-
 method:: scaleneg
 
-
 Scale negative part of input.
-
 
 discussion::
 A*b when a < 0, otherwise a.
@@ -1342,14 +948,9 @@ code::
 { FSinOsc.ar(500).scaleneg(Line.ar(1,-1,4)) }.play;
 ::
 
-
-
-
 method:: clip2
 
-
 Bilateral clipping.
-
 
 discussion::
 Clip input wave a to +/- b
@@ -1368,14 +969,9 @@ code::
 { FSinOsc.ar(1000).clip2(Line.kr(0,1,8)) }.scope;
 ::
 
-
-
-
 method:: wrap2
 
-
 Bilateral wrapping.
-
 
 discussion::
 Wrap input wave to +/- b
@@ -1392,14 +988,9 @@ code::
 { FSinOsc.ar(1000).wrap2(Line.kr(0,1.01,8)) }.scope;
 ::
 
-
-
-
 method:: fold2
 
-
 Bilateral folding.
-
 
 discussion::
 Fold input wave a to +/- b
@@ -1417,14 +1008,9 @@ code::
 { FSinOsc.ar(1000).fold2(Line.kr(0,1,8)) }.scope;
 ::
 
-
-
-
 method:: excess
 
-
 Residual of clipping.
-
 
 discussion::
 Return the difference of the original signal and its clipped form:

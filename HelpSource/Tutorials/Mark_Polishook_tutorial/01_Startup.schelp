@@ -3,19 +3,7 @@ categories:: Tutorials>Mark_Polishook_tutorial
 summary:: Mark Polishook tutorial
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
-
-
-
-
-
-
-
-
-
 section:: To begin
-
-
-
 
 Navigate to the folder (the directory) in which SuperCollider resides and double-click on it (the red and white balloon icon).
 An untitled document with text such as
@@ -40,19 +28,7 @@ Class tree inited in 0.09 seconds
 
 Appear in the top left of the screen. The document functions as a "Post Window," so-called because SuperCollider uses it to "post" notifications.
 
-
-
-
-
-
-
-
-
-
 section:: Two more windows
-
-
-
 
 On the bottom of the screen are two more windows. One is called "localhost server" and the other is "internal server." Click on the "boot" button on the localhost server. The words "localhost" in the black box of the button turn red and the word "Boot" on the button changes to "Quit." More text, such as
 
@@ -69,19 +45,7 @@ Will print to the post window.
 The localhost server is now ready to be used.
 Activate the internal server, if you wish, in the same way.
 
-
-
-
-
-
-
-
-
-
 section:: Workspace windows
-
-
-
 
 Open existing SC documents with File->Open... or cmd-o. Use File->New or cmd-n to create new documents.
 

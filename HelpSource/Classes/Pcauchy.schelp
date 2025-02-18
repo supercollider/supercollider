@@ -3,51 +3,24 @@ categories:: Streams-Patterns-Events>Patterns>Random
 summary:: Random values that follow a Cauchy Distribution
 related:: Classes/BrownNoise, Classes/Pbrown
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: mean
 
 The mean of the distribution.
-
 
 argument:: spread
 
 The horizontal dispersion of the random values.
 The distribution is unbounded.
 
-
 argument:: length
 
 Number of values produced.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

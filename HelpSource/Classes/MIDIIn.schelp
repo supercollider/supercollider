@@ -3,19 +3,7 @@ categories:: External Control>MIDI
 summary:: Receive MIDI messages
 related:: Classes/MIDIClient, Classes/MIDIOut, Classes/MIDIFunc, Classes/MIDIdef, Guides/MIDI, Guides/UsingMIDI
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 This document explains technical details of the MIDI hardware interface class, MIDIIn.
 
@@ -31,13 +19,7 @@ These are: sysex, sysrt, smpte.
 
 See the link::Guides/UsingMIDI:: helpfile for practical considerations and techniques for using MIDI in SC.
 
-
-
-
-
-
 subsection:: The MIDIIn class
-
 
 MIDIIn links MIDI input received from the operating system to a set of user defined functions.
 Only one set of MIDI input handling functions can be active at a time, they are stored in the following class variables:
@@ -46,25 +28,12 @@ Only one set of MIDI input handling functions can be active at a time, they are 
 
 The first argument these functions receive is an unique identifier that specifies the source of the data.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: prDispatchEvent, connectByUID, disconnectByUID
 
-
 method:: findPort
-Searche for a connected link::Classes/MIDIEndPoint:: by name.
+Searches for a connected link::Classes/MIDIEndPoint:: by name.
 
 code::
 // list connected ins:
@@ -72,107 +41,69 @@ MIDIClient.init;
 MIDIClient.sources;
 ::
 
-
-
-
 method:: addFuncTo
-
 
 Add a link::Classes/Function:: or similar object to be evaluated whenever a particular MIDI message is received.
 This method is preferable to the setters below, since it will not overwrite any existing functions.
 
-
 argument:: what
 
 A link::Classes/Symbol:: indicating the message type to wait for, one of code::'noteOn':: code::'noteOff'::, code::'polytouch'::, code::'control'::, code::'program'::, code::'touch'::, code::'bend'::, code::'sysex'::, code::'sysrt'::, code::'smpte'::, or code::'invalid':: (for invalid sysex messages).
-
 
 argument:: func
 
 A link::Classes/Function:: or similar object to be evaluated when a message of the specified type is received.
 See the setters below for the arguments which will be passed at evaluation time.
 
-
-
-
 method:: removeFuncFrom
-
 
 Remove a link::Classes/Function:: or similar object from the list of those to be evaluated whenever a particular MIDI message is received.
 This method is preferable to the setters below, since it will leave any existing functions in place.
-
 
 argument:: what
 
 A link::Classes/Symbol:: indicating the message type, one of code::'noteOn':: code::'noteOff'::, code::'polytouch'::, code::'control'::, code::'program'::, code::'touch'::, code::'bend'::, code::'sysex'::, code::'sysrt'::, code::'smpte'::, or code::'invalid':: (for invalid sysex messages).
 
-
 argument:: func
 
 The link::Classes/Function:: or similar object to be removed.
 
-
-
-
 method:: replaceFuncTo
-
 
 Replace a link::Classes/Function:: or similar object in the list to be evaluated whenever a particular MIDI message is received with another one.
 This method is preferable to the setters below, since it will not overwrite any existing functions.
-
 
 argument:: what
 
 A link::Classes/Symbol:: indicating the message type to wait for, one of code::'noteOn':: code::'noteOff'::, code::'polytouch'::, code::'control'::, code::'program'::, code::'touch'::, code::'bend'::, code::'sysex'::, code::'sysrt'::, code::'smpte'::, or code::'invalid':: (for invalid sysex messages).
 
-
 argument:: func
 
 The link::Classes/Function:: or similar object to be replaced.
-
 
 argument:: newFunc
 
 A link::Classes/Function:: or similar object to be evaluated when a message of the specified type is received.
 See the setters below for the arguments which will be passed at evaluation time.
 
-
-
-
 method:: noteOnZeroAsNoteOff
-
 
 By default this flag is code::true:: and SuperCollider interprets incoming MIDI noteOn message with velocity 0 as noteOff messages.
 In case you do not want this automatic translation, you can set this flag to code::false::
 
-
-
-
 method:: connectAll
 
-
 Connect to all possible MIDI inputs.
-
 
 argument:: verbose
 
 If set to teletype::true:: (default) it will print out the ports found in MIDIClient.init.
 
-
-
-
 method:: disconnectAll
-
 
 Disconnect from all MIDI inputs.
 
-
-
-
-
-
 subsection:: Getter/Setters for Specific Message Types
-
 
 The methods below allow you to register a function to respond to a particular message type.
 
@@ -180,11 +111,7 @@ note::
 It is preferable to use the link::#*addFuncTo::, link::#*removeFuncFrom::and link::#*replaceFuncTo::methods above instead of these methods, as they will not overwrite any functions added by system objects.
 ::
 
-
-
-
 method:: noteOn
-
 
 argument:: value
 
@@ -198,11 +125,7 @@ definitionlist::
 ## velocity || 0 - 127
 ::
 
-
-
-
 method:: noteOff
-
 
 argument:: value
 
@@ -216,11 +139,7 @@ definitionlist::
 ## velocity || 0 - 127 (typically 64 unless noteOff velocity is supported)
 ::
 
-
-
-
 method:: polytouch
-
 
 argument:: value
 
@@ -234,11 +153,7 @@ definitionlist::
 ## pressure || 0 - 127
 ::
 
-
-
-
 method:: control
-
 
 argument:: value
 
@@ -251,11 +166,7 @@ definitionlist::
 ## value || 0 - 127
 ::
 
-
-
-
 method:: program
-
 
 argument:: value
 
@@ -268,11 +179,7 @@ definitionlist::
 ## programNumber || 0 - 127
 ::
 
-
-
-
 method:: touch
-
 
 argument:: value
 
@@ -284,11 +191,7 @@ definitionlist::
 ## pressure || 0 - 127
 ::
 
-
-
-
 method:: bend
-
 
 argument:: value
 
@@ -301,16 +204,11 @@ definitionlist::
 ## bend || 0 - 16383 (14bits, the midpoint is 8192)
 ::
 
-
-
-
 method:: sysex
-
 
 note::
 The current implementation assembles a complete system exclusive packet before evaluating the function.
 ::
-
 
 argument:: value
 
@@ -323,11 +221,7 @@ definitionlist::
 See manufacturer references for details.
 ::
 
-
-
-
 method:: sysrt
-
 
 table::
 ## strong::index:: || strong::data:: || strong::message::
@@ -339,7 +233,6 @@ table::
 ## 12 || || stop
 ::
 
-
 argument:: value
 
 A link::Classes/Function:: evaluated whenever a MIDI System Real-Time message is received. It is passed the following arguments:
@@ -350,11 +243,7 @@ definitionlist::
 ## data ||
 ::
 
-
-
-
 method:: smpte
-
 
 Over MIDI, SMPTE is transmitted at 1/4 frame intervals four times faster than the frame rate.
 
@@ -379,7 +268,6 @@ list::
 ::
 Nibbles are sent in ascending order.
 
-
 argument:: value
 
 A link::Classes/Function:: evaluated whenever a MIDI smpte message is received.
@@ -391,22 +279,9 @@ definitionlist::
 ## data || 0 - 15 (4bits)
 ::
 
-
-
-
-
-
-
-
-
-
 examples::
 
-
-
-
 subsection:: Quick start for 1 port
-
 
 code::
 (
@@ -449,13 +324,7 @@ MIDIIn.removeFuncFrom(\smpte, ~smpte);
 )
 ::
 
-
-
-
-
-
 subsection:: Quick start for 2 or more ports
-
 
 code::
 (
@@ -468,13 +337,7 @@ code::
 )
 ::
 
-
-
-
-
-
 subsection:: Example with sound
-
 
 code::
 MIDIIn.connect;
@@ -522,13 +385,7 @@ MIDIIn.removeFuncFrom(\noteOff, ~noteOff);
 MIDIIn.removeFuncFrom(\bend, ~bend);
 ::
 
-
-
-
-
-
 subsection:: Writing to the bus rather than directly to the synth
-
 
 code::
 // i used this and got acceptable latency for triggering synths live.
@@ -590,13 +447,7 @@ MIDIIn.removeFuncFrom(\control, ~control);
 MIDIIn.removeFuncFrom(\bend, ~bend);
 ::
 
-
-
-
-
-
 subsection:: Keyboard Split for two voices
-
 
 code::
 // pbend to cutoff, mod to rez, 7 to amp

@@ -3,30 +3,12 @@ categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Nesting patterns, arranging music in terms of phrases
 related:: Tutorials/A-Practical-Guide/PG_03_What_Is_Pbind, Tutorials/A-Practical-Guide/PG_05_Math_on_Patterns
 
-
-
-
-
-
-
-
-
-
 section:: From words to phrases
-
-
-
 
 A single pattern by itself is not so exciting.
 But patterns can be used together to get more complex results.
 
-
-
-
-
-
 subsection:: Patterns within list patterns
-
 
 We saw list patterns ( link::Classes/Pseq::, link::Classes/Prand::, etc.) that returned numbers from a preset list, either in the order given or rearranged randomly.
 The list may also include other patterns.
@@ -107,13 +89,7 @@ p.stop;
 strong::Shortcut notation:: : Just like you can concatenate arrays with ++, you can also concatenate patterns the same way.
 Writing code::pattern1 ++ pattern2:: is the same as writing code::Pseq([pattern1, pattern2], 1):: .
 
-
-
-
-
-
 subsection:: Some ways to string together patterns
-
 
 definitionlist::
 ## Sequentially || Each sub-pattern follows the next in the same order every time.
@@ -160,13 +136,7 @@ The name link::Classes/Pdfsm:: stands for "deterministic finite state machine," 
 - strong::Third-party extension alert:: : A good Markov chain implementation for SuperCollider exists in the MathLib quark.
 ::
 
-
-
-
-
-
 subsection:: Library of named sub-patterns
-
 
 One very effective way to manage phrases is to make a library, or more precisely link::Classes/Dictionary::, of sub-patterns, and then call them up one at a time.
 link::Classes/Psym:: is the pattern to do this.
@@ -238,13 +208,7 @@ list::
 ::
 ::
 
-
-
-
-
-
 subsection:: Switching between patterns for individual values
-
 
 In the examples above, if a list pattern encounters another pattern in its input values, the subpattern is embedded in its entirety before the list pattern is allowed to continue.
 Sometimes you might want to get just one value out of the subpattern, and then choose a different subpattern on the next event.
@@ -283,13 +247,7 @@ Pswitch1 does the coin toss on every event and embeds just one item.
 
 Psym1 and Pnsym1 behave similarly, choosing the name to look up the pattern for each event.
 
-
-
-
-
-
 subsection:: Related: Conditional patterns
-
 
 link::Classes/Pif:: supports this kind of structure: If the next value from a Boolean pattern is true, return the next item from pattern A, otherwise take it from pattern B.
 Another way to write the Pswitch1 example is to use a Boolean test directly on Pwhite, instead of writing a Pfunc for the coin toss.

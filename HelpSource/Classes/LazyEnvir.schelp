@@ -3,19 +3,7 @@ categories:: JITLib>Environments, Live Coding, Collections>Unordered
 summary:: Lazy environment
 related:: Classes/Maybe, Classes/Fdef, Classes/Environment, Classes/ProxySpace, Overviews/JITLib
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Environment with deferred evaluation and default values.
 
@@ -35,32 +23,15 @@ e.use { ~y = 5; ~z = 7 };
 e.at(\x).value; // the value is 12
 ::
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 method:: put
 
-
-Set the value of the reference at key.
-
-
-
+Sets the value of the reference at key.
 
 method:: at
 
-
-Return a reference to the object at key.
+Returns a reference to the object at key.
 
 code::
 l = LazyEnvir.push;
@@ -91,28 +62,16 @@ l = LazyEnvir.push;
 )
 ::
 
-
-
-
 method:: copy
 
-
-yCop the environment into a new one, with each placeholder being copied as well.
-
-
-
+Copies the environment into a new one, with each placeholder being copied as well.
 
 method:: localPut
 
-
-Set the value of the key directly.
+Sets the value of the key directly.
 This method is mainly used internally.
 
-
-
-
 method:: proxyClass
-
 
 Specify what placeholder object the environment uses by supplying a class name (link::Classes/Symbol::).
 The default is a link::Classes/Maybe::.
@@ -142,18 +101,10 @@ z.next;
 a.pop;
 ::
 
-
-
-
 method:: removeAt
 
-
-Remove the placeholder from the environment and clears it.
-
-
-
+Removes the placeholder from the environment and clears it.
 
 method:: makeProxy
 
-
-Return a new placeholder object. This is used internally and can be overridden to implement other lazy environments.
+Returns a new placeholder object. This is used internally and can be overridden to implement other lazy environments.

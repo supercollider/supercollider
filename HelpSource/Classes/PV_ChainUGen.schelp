@@ -2,19 +2,7 @@ title:: PV_ChainUGen
 categories:: UGens>FFT
 summary:: Base class for UGens that operate on FFT chains
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 code::PV_ChainUGen:: is an abstract class, not used directly, but only its subclasses are.
 It represents phase-vocoder UGens - i.e. UGens which apply some kind of transformation to the frequency-domain signal produced by link::Classes/FFT::.
@@ -24,41 +12,16 @@ This is why link::Classes/FFT:: is in this group but link::Classes/IFFT:: is not
 
 For more information on using these unit generators, see link::Guides/FFT-Overview::.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: categories
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 private:: addCopiesIfNeeded
 
-
 method:: fftSize
-Return the FFT chain buffer's size.
+Returns the FFT chain buffer's size.
 
 code::
 (
@@ -70,11 +33,7 @@ code::
 )
 ::
 
-
-
-
 method:: pvcalc
-
 
 pvcalc applies a function to the frequency-domain data of an FFT chain.
 See link::#-pvcollect:: below for discussion of efficiency considerations.
@@ -84,11 +43,9 @@ code::
 chain = chain.pvcalc(numframes, func, frombin, tobin, zeroothers)
 ::
 
-
 argument:: numframes
 
 Number of FFT frames to process
-
 
 argument:: func
 
@@ -101,26 +58,19 @@ code::
 }
 ::
 
-
 argument:: frombin
 
 Range start (optional)
-
 
 argument:: tobin
 
 Range end (optional)
 
-
 argument:: zeroothers
 
 If set to teletype::1::then bins outside of the range being processed are silenced.
 
-
-
-
 method:: pvcalc2
-
 
 The method pvcalc2 is just like link::#-pvcalc:: but can combine two FFT chains.
 
@@ -128,16 +78,13 @@ code::
 chain = chain.pvcalc2(chain2, numframes, func, frombin, tobin, zeroothers)
 ::
 
-
 argument:: chain2
 
 The second FFT chain.
 
-
 argument:: numframes
 
 Number of FFT frames to process
-
 
 argument:: func
 
@@ -150,26 +97,19 @@ code::
 }
 ::
 
-
 argument:: frombin
 
 Range start (optional)
-
 
 argument:: tobin
 
 Range end (optional)
 
-
 argument:: zeroothers
 
 If set to teletype::1::then bins outside of the range being processed are silenced.
 
-
-
-
 method:: pvcollect
-
 
 Process each bin of an FFT chain, separately, by applying a function to each bin of an FFT chain.
 
@@ -177,11 +117,9 @@ code::
 chain = chain.pvcollect(numframes, func, frombin, tobin, zeroothers)
 ::
 
-
 argument:: numframes
 
 Number of FFT frames to process
-
 
 argument:: func
 
@@ -198,21 +136,17 @@ code::
 
 The strong::bin:: is the integer bin number, starting at 0 for DC, while strong::index:: is the iteration number, always starting with 0. You can optionally ignore the phase and only return a single (magnitude) value, in which case the phase is assumed to be left unchanged.
 
-
 argument:: frombin
 
 Range start (optional)
-
 
 argument:: tobin
 
 Range end (optional)
 
-
 argument:: zeroothers
 
 If set to teletype::1::then bins outside of the range being processed are silenced.
-
 
 discussion::
 Note that this procedure can be relatively CPU-heavy, depending on how you use it.
@@ -233,22 +167,9 @@ It is particularly important because all calculations are duplicated (once for e
 ## If you find yourself calling pvcollect on an FFT chain more than once in series, you should definitely try to combine your processing into a single pvcollect function, to avoid unnecessary unpacking-then-packing-then-unpacking-then-packing.
 ::
 
-
-
-
-
-
-
-
-
-
 examples::
 
-
-
-
 subsection:: pvcalc
-
 
 code::
 // a sound file
@@ -273,13 +194,7 @@ c.free; c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 )
 ::
 
-
-
-
-
-
 subsection:: pvcalc2
-
 
 code::
 c.free; c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
@@ -313,13 +228,7 @@ x = {
 )
 ::
 
-
-
-
-
-
 subsection:: pvcollect
-
 
 code::
 c.free; c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");

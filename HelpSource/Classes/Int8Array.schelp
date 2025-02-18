@@ -3,19 +3,7 @@ categories:: Collections>Ordered
 summary:: An array whose indexed slots are all of the same type
 related:: Classes/FloatArray, Classes/Int16Array, Classes/Int32Array, Classes/DoubleArray, Classes/SymbolArray
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 These classes implement arrays whose indexed slots are all of the same type.
 
@@ -28,25 +16,12 @@ list::
 ## SymbolArray - symbols
 ::
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 method:: readFromStream
 
-
 method:: parseOSC
-yTr to interpret the bytes as an OSC message or OSC bundle.
+Tries to interpret the bytes as an OSC message or OSC bundle.
 Throws an exception on failure. See also link::Classes/Array#-asRawOSC::.
 
 code::

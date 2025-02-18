@@ -3,46 +3,20 @@ categories:: Streams-Patterns-Events>Patterns>Language Control
 summary:: Evaluate a function when an error occured in the thread
 related:: Classes/Ptrace
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: pattern
 
 Any pattern
-
 
 argument:: func
 
 A link::Classes/Function:: to be evaluated when an error occurs.
 The error and the thread are passed as arguments to the function.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

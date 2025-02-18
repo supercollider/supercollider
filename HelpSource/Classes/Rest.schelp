@@ -3,19 +3,7 @@ categories:: Streams-Patterns-Events
 summary:: Represents a rest in event patterns
 related:: Classes/Pbind, Classes/Event, Classes/AbstractFunction
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A Rest may be used in event patterns to indicate that the resulting event should be a rest (i.e., silent).
 It should be used in one of the child patterns belonging to a Pbind, for instance.
@@ -28,13 +16,7 @@ code::
 Pbind(\note, Pseq([0, 4, 7, 11], inf), \dur, Pseq([2, 1, Rest(1)], inf) / 5).play;
 ::
 
-
-
-
-
-
 subsection:: Expressing rests in event patterns
-
 
 The Rest class allows rests to be indicated in any stream, not only frequency or event type.
 Also, using the duration argument (see the link::#*new:: method below), rests may be embedded into a duration stream.
@@ -45,13 +27,7 @@ As of SuperCollider 3.9, code::Rest::'s behavior has changed to be more intuitiv
 Note that you have to now use code::Rest():: - the shortcut of code::Rest:: as class directly is strong::not supported:: anymore.
 ::
 
-
-
-
-
-
 subsection:: Usage
-
 
 list::
 ## link::Classes/Event#-isRest:: checks every item in the event to see if it meets the condition to be a rest:
@@ -65,39 +41,18 @@ This is a change of behavior from 3.8.
 code::Rest(1) * 2 == Rest(2)::.
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 All methods of Rest except *new are private, and should not be used directly.
 
-
-
-
 private:: processRest
-
 
 private:: embedInStream
 
-
-
-
 private:: asStream
-
 
 method:: new
 Create an instance of Rest, with a value to be used in the resulting rest event.
-
 
 argument:: value
 
@@ -105,7 +60,6 @@ The Rest instance's numeric value, to be used in math operations.
 Note that a Rest's value is ignored for most Event keys (assuming the Event does nothing in response to code::.play::).
 If a Rest appears in a rhythm key (code::dur:: or code::delta::), then the number is the time until the next event.
 Consequently, numeric Rests are often used for duration -- but there is no requirement that a Rest's value must be a duration.
-
 
 discussion::
 code::
@@ -122,50 +76,24 @@ code::
 Rest(Rest(1)) // returns Rest(1)
 ::
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 private:: dur
 
-
 private:: embedInStream
-
-
-
 
 private:: asStream
 
-
 private:: asControlInput
 
-
-
-
 private:: playAndDelta
-
 
 method:: isRest
 returns teletype::true::
 
-
-
-
 method:: unwrapBoolean
 
-
 returns the value.
-
 
 discussion::
 This method implements the following behavior.
@@ -184,19 +112,7 @@ b = a.collect { |x| if(x > 2) { x / 2 } { x } };
 b.asStream.nextN(8)
 ::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 Using Rest instances in a pitch stream
 
@@ -224,13 +140,7 @@ Pbind(
 )
 ::
 
-
-
-
-
-
 subsection:: Alternatives to Rest
-
 
 In addition to Rest, in events, rests can be specified in two other ways (legacy usages).
 

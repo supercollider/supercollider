@@ -38,19 +38,7 @@ s.sendMsg("/n_set", 1980, \fadeTime, 4);
 s.sendMsg("/n_set", 1980, \gate, 0);
 ::
 
-
-
-
-
-
-
-
-
-
 section:: A) automatic fade envelope generation
-
-
-
 
 code::
 // no inner envelope and audio / control rate output
@@ -63,19 +51,7 @@ code::
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: B) automatic free instead of crossfade
-
-
-
 
 code::
 // inner envelope that cannot free the synth, the synth is freed when a new
@@ -97,19 +73,7 @@ code::
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: C) custom fade envelope
-
-
-
 
 code::
 // when a gate arg is provided, and the env can free the synth, this envelope
@@ -124,19 +88,7 @@ no extra fade env is created.
 ~out = { arg gate=1, fadeTime = 0.1; EnvGen.kr(Env.asr(fadeTime, 1, fadeTime), gate, doneAction: Done.freeSelf) * 0.2 * SinOsc.ar([1,1] * Rand(440, 550)) };
 ::
 
-
-
-
-
-
-
-
-
-
 section:: D) SynthDef name assignment
-
-
-
 
 code::
 // if a symbol is used as input, the defname of a def on the server is supposed
@@ -185,19 +137,7 @@ SynthDef("test", { arg gate=1, out;
 ~out = \test;
 ::
 
-
-
-
-
-
-
-
-
-
 section:: E) own free responsibility
-
-
-
 
 code::
 //inner envelope that can free the synth, no extra fade env is created:
@@ -222,19 +162,7 @@ code::
 ~out.group.set(\t_trig, 1);
 ::
 
-
-
-
-
-
-
-
-
-
 section:: F) own output responsibility
-
-
-
 
 code::
 // the arg name 'out' can be used to output through the right channel.

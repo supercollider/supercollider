@@ -2,19 +2,7 @@ title:: MultiSliderView
 categories:: GUI>Views
 summary:: A view displaying an array of sliders
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 MultiSliderView displays a collection of values, each represented by the position of one of the sliders placed side by side.
 
@@ -28,22 +16,9 @@ Selection can be extended to more than one slider by modifying link::#-selection
 Whenever a different slider becomes the current one, the selection size shrinks back to 1.
 Note that the selection will only be visually indicated if link::#-showIndex:: is code::true::.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 private:: key
-
 
 method:: new
 
@@ -52,25 +27,11 @@ method:: new
 
 	So if you want a specific number of sliders, then it is best to specify the link::#-size:: and set link::#-elasticMode:: to 1. Then you will get a MultiSliderView which distributes link::#-size:: amount of sliders over code::bounds.width::, where the slider widths are at maximum link::#-indexThumbSize:: (default 12) and the link::#-gap:: is adjusted accordingly.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 subsection:: Data
 
-
 method:: size
-
 
 	The amount of sliders.
 
@@ -87,11 +48,7 @@ Instead, you should change the link::#-value::, if you need to change the conten
 	argument::
 		An Integer.
 
-
-
-
 method:: value
-
 
 	Sets the values of the sliders to those of the elements of the argument.
 
@@ -102,19 +59,11 @@ method:: value
 	argument::
 		An array of Floats.
 
-
-
-
 method:: valueAction
-
 
 	Sets link::#-value:: and triggers link::#-action::.
 
-
-
-
 method:: reference
-
 
 	The reference values in relation to which the values will be visually represented.
 The default for each slider is 0.
@@ -122,46 +71,27 @@ The default for each slider is 0.
 	argument::
 		An array of Floats.
 
-
-
-
 method:: index
-
 
 	The index of the current slider, i.e. the first one in the selection.
 
 	argument::
 		An Integer.
 
-
-
-
 method:: selectionSize
-
 
 	The amount of sliders in the selection (starting at link::#-index::).
 
-
-
-
 method:: currentvalue
-
 
 	The value of the slider at link::#-index::
 
 	argument::
 		A Float.
 
-
-
-
-
-
 subsection:: Display
 
-
 method:: indexIsHorizontal
-
 
 	The orientation of the view:
 if teletype::true::, the sliders are displayed in a horizontal order, otherwise in a vertical order.
@@ -169,11 +99,7 @@ if teletype::true::, the sliders are displayed in a horizontal order, otherwise 
 	argument::
 		A Boolean.
 
-
-
-
 method:: elasticMode
-
 
 	If enabled (set to 1), the sliders from link::#-startIndex:: to the last one will be distributed so as to occupy the whole area of the view.
 The link::#-gap:: variable will be ignored. The size of each slider in the direction of index will be maximally link::#-indexThumbSize::, or smaller in order for all the sliders to fit into the view.
@@ -181,52 +107,32 @@ The link::#-gap:: variable will be ignored. The size of each slider in the direc
 	argument::
 		0 (disabled) or 1 (enabled).
 
-
-
-
 method:: gap
-
 
 	The gap between the sliders in pixels when link::#-elasticMode:: is disabled.
 
 	argument::
 		An Integer.
 
-
-
-
 method:: indexThumbSize
-
 
 	The size of the sliders in the direction of index in pixels . If link::#-elasticMode:: is enabled, this will be the maximum size, but the actual size might be smaller in order for all the sliders to fit into the view.
 
 	argument::
 		An Integer.
 
-
-
-
 method:: valueThumbSize
-
 
 	The size of the slider handles in the direction of value in pixels (if drawn).
 
 	argument::
 		An Integer.
 
-
-
-
 method:: thumbSize
-
 
 	Sets both link::#-indexThumbSize:: and link::#-valueThumbSize:: to the argument.
 
-
-
-
 method:: startIndex
-
 
 	The index of the slider displayed at the left or top edge of the view (depending on whether link::#-indexIsHorizontal:: is true or false, respectively).
 Sliders with lower index than this will not be visible.
@@ -234,146 +140,85 @@ Sliders with lower index than this will not be visible.
 	argument::
 		An Integer.
 
-
-
-
-
-
 subsection:: Appearance
 
-
 method:: showIndex
-
 
 	Whether the slider selection is visually indicated.
 
 	argument::
 		A Boolean.
 
-
-
-
 method:: drawRects
-
 
 	Whether to draw the sliders.
 
 	argument::
 		A Boolean.
 
-
-
-
 method:: drawLines
-
 
 	Whether to draw a line connecting the points that represent the link::#-value#values:: of the sliders, and a line connecting the points that represent the link::#-reference#references::.
 
 	argument::
 		A Boolean.
 
-
-
-
 method:: isFilled
-
 
 	If teletype::true::, the sliders will have their area between the link::#-reference:: and the link::#-value:: colored, and the area bounded by the lines connecting the reference and the value points will be colored as well.
 
 	argument::
 		A Boolean.
 
-
-
-
 method:: strokeColor
-
 
 	The color used to draw the lines described in link::#-drawLines::.
 
 	argument::
 		A Color.
 
-
-
-
 method:: fillColor
-
 
 	The color used to visualize the areas described in link::#-isFilled::.
 
 	argument::
 		A Color.
 
-
-
-
 method:: colors
-
 
 	Sets link::#-strokeColor:: and link::#-fillColor:: to the two arguments, respectively.
 
-
-
-
-
-
 subsection:: Interaction
 
-
 method:: editable
-
 
 	Whether the values can be edited using mouse or keyboard.
 
 	argument::
 		A Boolean.
 
-
-
-
 method:: readOnly
-
 
 	The opposite if link::#-editable::.
 
 	argument::
 		A Boolean.
 
-
-
-
 method:: step
-
 
 	If the argument is larger than 0, makes the MultiSliderView keep the values quantized to the nearest multiple of the argument.
 
-
-
-
-
-
 subsection:: Actions
-
 
 method:: action
 
-
 	The action object evaluated whenever the user changes the value of a slider.
-
-
-
 
 method:: metaAction
 
-
 	The action object evaluated whenever the user changes the value of a slider while the Ctrl key is pressed.
 
-
-
-
 method:: defaultKeyDownAction
-
 
 	Implements the default effects of key presses as follows:
 
@@ -385,16 +230,9 @@ method:: defaultKeyDownAction
 	## left arrow      || decrement -index by 1
 	::
 
-
-
-
-
-
 subsection:: Drag and drop
 
-
 method:: defaultGetDrag
-
 
 	returns::
 		a) If link::#-selectionSize:: is 0, returns link::#-value::.
@@ -404,39 +242,18 @@ method:: defaultGetDrag
 		If link::#-reference:: is not nil, returns an Array containing (a) or (b), and an Array of the corresponding reference values:
 code:: [[values], [references]] ::.
 
-
-
-
 method:: defaultCanReceiveDrag
-
 
 	returns::
 		True for any drag data, but the data should either be an Array of values (code:: [values] ::), or an Array containg an Array of values and an Array of corresponding reference values (code:: [[values], [references]] ::).
 
-
-
-
 method:: defaultReceiveDrag
-
 
 	If the drag data is in one of the acceptable forms (see link::#-defaultCanReceiveDrag:: above), sets link::#-value:: (and link::#-reference::) using that data.
 
-
-
-
-
-
-
-
-
-
 examples::
 
-
-
-
 subsection:: Basic Examples
-
 
 code::
 (
@@ -473,13 +290,7 @@ m.indexIsHorizontal_(false);
 )
 ::
 
-
-
-
-
-
 subsection:: Interactive Example
-
 
 A walk through all the graphic options:
 
@@ -541,13 +352,7 @@ w.front;
 )
 ::
 
-
-
-
-
-
 subsection:: Display a Sound File
-
 
 code::
 (
@@ -615,13 +420,7 @@ a.front;
 )
 ::
 
-
-
-
-
-
 subsection:: Use as a Sequencer
-
 
 code::
 (

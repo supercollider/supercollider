@@ -3,22 +3,9 @@ categories:: Tutorials>Streams-Patterns-Events
 summary:: Parallel Patterns
 related:: Tutorials/Streams-Patterns-Events1, Tutorials/Streams-Patterns-Events2, Tutorials/Streams-Patterns-Events3, Tutorials/Streams-Patterns-Events4, Tutorials/Streams-Patterns-Events5, Tutorials/Streams-Patterns-Events7
 
-
-
-
-
-
-
-
-
-
 section:: Parallel Patterns
 
-
-
-
 subsection:: Ppar
-
 
 The link::Classes/Ppar:: pattern allows you to merge multiple event streams to play in parallel.
 
@@ -68,13 +55,7 @@ Ppar([
 )
 ::
 
-
-
-
-
-
 subsection:: Ptpar
-
 
 The link::Classes/Ppar:: pattern starts all of its subpatterns at the same time.
 
@@ -121,29 +102,11 @@ Ptpar([
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: FilterPatterns and transformation
-
-
-
 
 FilterPatterns take an existing pattern and apply some modification to its properties.
 
-
-
-
-
-
 subsection:: Padd, Pmul, Pset, Pstretch
-
 
 There is a simpler way to write the modal transposition example given in part 5.
 In fact the earlier examples are setting the values of code::mtranspose:: and code::ctranspose:: which is not the best way to change those variables, because it wipes out any modifications to them by parent patterns.
@@ -194,13 +157,7 @@ Pseq([
 )
 ::
 
-
-
-
-
-
 subsection:: Paddp, Pmulp, Psetp, Pstretchp
-
 
 In fact there is an even shorter version of the modal transposition example.
 link::Classes/Paddp:: reads one pattern to get values for adding to a property and plays the second pattern once through modified with each new value.
@@ -319,13 +276,7 @@ Pstretchp(
 )
 ::
 
-
-
-
-
-
 subsection:: Pbindf
-
 
 link::Classes/Pbindf:: is like link::Classes/Pbind:: except that it merges all the bound symbols into events that it gets from a subpattern.
 It takes the same initial arguments in pairs as Pbind does, with an additional pattern to be modified as the last argument.

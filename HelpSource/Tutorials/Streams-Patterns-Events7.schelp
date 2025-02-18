@@ -3,22 +3,9 @@ categories:: Tutorials>Streams-Patterns-Events
 summary:: Practical Considerations
 related:: Tutorials/Streams-Patterns-Events1, Tutorials/Streams-Patterns-Events2, Tutorials/Streams-Patterns-Events3, Tutorials/Streams-Patterns-Events4, Tutorials/Streams-Patterns-Events5, Tutorials/Streams-Patterns-Events6
 
-
-
-
-
-
-
-
-
-
 section:: Practical Considerations
 
-
-
-
 subsection:: Using your own instrument
-
 
 code::
 (
@@ -62,13 +49,7 @@ Pbind(
 )
 ::
 
-
-
-
-
-
 subsection:: Defining your own message bindings
-
 
 The default event prototype uses a code::msgFunc:: to determine which bindings to pass to the server. Synthdefs that have been stored in a link::Classes/SynthDescLib:: ("synth description library") construct the code::msgFunc:: automatically.
 The default event looks up the instrument name in a SynthDescLib of your choosing (using the code::\synthLib:: key).
@@ -143,13 +124,7 @@ But this is quite clumsy. It is strongly recommended to get into the habit of us
 
 The other option you have if you will be using unspecified bindings, is of course to define an event with the appropriate code::msgFunc:: as default. Have a look at Event's source, it's easy, and it's cleaner than passing in the code::msgFunc:: every time.
 
-
-
-
-
-
 subsection:: Manipulating an EventStreamPlayer in Realtime
-
 
 code::
 (

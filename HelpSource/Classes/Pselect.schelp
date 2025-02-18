@@ -3,19 +3,7 @@ categories:: Streams-Patterns-Events>Patterns>Filter
 summary:: Filters values returned by a source pattern
 related:: Classes/Pcollect, Classes/Preject, Classes/Collection#-select
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 This pattern will filter the source pattern using the supplied function strong::func::.
 
@@ -24,45 +12,19 @@ Pselect will only return that value if the strong::func:: returns teletype::true
 
 This is the pattern library's equivalent of link::Classes/Collection#-select#select::.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: func
 
 A link::Classes/Function:: that takes one parameter (the next value from strong::pattern::) and returns a boolean.
 
-
 argument:: pattern
 
 The source link::Classes/Pattern::.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

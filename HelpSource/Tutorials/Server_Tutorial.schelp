@@ -18,19 +18,7 @@ The sound synthesiser (audio server), the  programming language (and language in
 The server can run either inside the language application ("internal server"), as a separate program on the same machine ("local server"), or run on a different computer across a network connection.
 The language application sends command messages to the server using a subset of the Open Sound Control protocol.
 
-
-
-
-
-
-
-
-
-
 section:: Booting a Server
-
-
-
 
 In order to run sound we need to start a server running. The easiest way to start a server is to click on "Boot Server" in the pull-up menu you get by clicking on the server stats field on the bottom of the IDE's editor window. Or by clicking on the "Start Server" button in the respective server window. This you get with s.makeWindow (for instance for the default server) for any server object you created (see below).
 Sometimes though it is useful to start a server programmatically. To do this we need to get or create a server object and tell it to "boot". Two servers, internal and local, are predefined.
@@ -94,19 +82,7 @@ code::
 r = Server(\myServer, NetAddr("192.168.0.47", 57110));
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Making Sound
-
-
-
 
 (note: This tutorial uses raw OSC commands as described in link::Reference/Server-Command-Reference::, rather than the classes link::Classes/Synth:: and link::Classes/Group::.
 See those helpfiles also for some simpler ways of working with Synths.
@@ -196,19 +172,7 @@ SynthDef("sine", { arg freq=800;
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Using Arguments
-
-
-
 
 It is useful to be able to specify parameters of a synth when it is created.
 Here a frequency argument is added to the sine SynthDef so that we can create it
@@ -272,19 +236,7 @@ s.sendBundle(1.2, ["/n_free", x],["/n_free", y],["/n_free", z]);
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Controlling a Synth
-
-
-
 
 You can send messages to update the values of a Synth's arguments.
 
@@ -304,19 +256,7 @@ s.sendMsg("/n_set", x, "freq", 700);
 s.sendMsg("/n_free", x);
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Adding an Effect Dynamically
-
-
-
 
 You can dynamically add and remove an effect to process another synth.
 In order to do this, the effect has to be added after the node to be processed.
@@ -364,19 +304,7 @@ s.sendMsg("/n_free", x);
 This works because we added the effect after the other node.
 Sometimes you will need to use groups or code::/n_after:: to insure that an effect gets added after what it is supposed to process.
 
-
-
-
-
-
-
-
-
-
 section:: Mapping an Argument to a Control Bus
-
-
-
 
 code::
 (
@@ -424,19 +352,7 @@ code::
 s.sendMsg("/n_free", x);
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Sequencing with Routines
-
-
-
 
 code::
 (
@@ -509,19 +425,7 @@ timer.sched(0,{
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Sequencing with Patterns
-
-
-
 
 code::
 (

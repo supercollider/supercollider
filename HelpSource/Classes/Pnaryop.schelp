@@ -3,68 +3,29 @@ categories:: Streams-Patterns-Events>Patterns>Math
 summary:: N-ary operator pattern
 related:: Classes/Pbinop, Classes/Punop, Classes/NAryOpFunction
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Return a stream that applies the n-ary operator to the stream values of the receiver, taking n-1 streams as arguments. Usually, this is the result of applying an n-ary operator (i.e. a method with more than one argument) to a pattern.
 
 Examples of n-ary operators are: blend, linlin, linexp, explin, expexp, clip, fold, wrap.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: operator
 
 Operator to be applied
 
-
 argument:: a
 
 A pattern (or compatible pattern input)
-
 
 argument:: arglist
 
 A list of patterns (or compatible pattern inputs)
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

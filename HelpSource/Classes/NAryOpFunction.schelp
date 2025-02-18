@@ -3,43 +3,15 @@ categories:: Core
 summary:: Represent a n-ary operation on a function
 related:: Classes/BinaryOpFunction, Classes/UnaryOpFunction, Classes/NAryOpStream, Classes/Pnaryop, Overviews/Operators
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Operating on functions instead of numbers, what results is not a result of the calculation, but a structure that represents that calculation.
 
-
-
-
-
-
-
-
-
-
 examples::
 
-
-
-
 code::
-// example
-a = 0.8.linexp(0, 1, 40, 20000); // map (0..1) to exponentially to human frequency hearing range
-a = { b }.linexp(0, 1, 40, 20000); // result is  a NAryOpFunction
-b = 0.1;
-a.value; // now it is evaluated, and the result is calculated
-b = 0.5;
+// example a = 0.8.linexp(0, 1, 40, 20000); // map (0..1) to exponentially to human frequency hearing range a = { b }.linexp(0, 1, 40, 20000); // result is  a NAryOpFunction b = 0.1;
+a.value; // now it is evaluated, and the result is calculated b = 0.5;
 a.value; // again, with a different value.
 ::
 

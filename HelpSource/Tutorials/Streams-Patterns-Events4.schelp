@@ -8,19 +8,7 @@ The preceding sections showed how to use Streams and Patterns to generate comple
 
 This section covers Environments and Events, which are used to build a symbolic event framework for patterns, allowing you to control all aspects of a composition using patterns.
 
-
-
-
-
-
-
-
-
-
 section:: Environment
-
-
-
 
 An link::Classes/Environment:: is an link::Classes/IdentityDictionary:: mapping link::Classes/Symbol::s to values. There is always one current Environment which is stored in the code::currentEnvironment:: class variable of class link::Classes/Object::.
 
@@ -60,19 +48,7 @@ code::
 currentEnvironment.at(\myvariable).postln;
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Making an Environment
-
-
-
 
 Environment has a class method strong::make:: which can be used to create an link::Classes/Environment:: and fill it with values. What strong::make:: does is temporarily replace the current Environment with a new one, call your function where you fill the Environment with values, then it replaces the previous current Environment and returns you the new one.
 
@@ -88,19 +64,7 @@ a.postln;
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Using an Environment
-
-
-
 
 The instance method strong::use:: lets you temporarily replace the current link::Classes/Environment:: with one you have made. The strong::use:: method returns the result of your function instead of the Environment like strong::make:: does.
 
@@ -132,19 +96,7 @@ a = Environment.use({
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Calling Functions with arguments from the current Environment
-
-
-
 
 It is possible to call a link::Classes/Function:: and have it look up any unspecified argument values from the current Environment.
 This is done with the strong::valueEnvir:: and strong::valueArrayEnvir:: methods. These methods will, for any unspecified argument value, look in the current Environment for a symbol with the same name as the argument.
@@ -219,19 +171,7 @@ Task({
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Event
-
-
-
 
 The class link::Classes/Event:: is a subclass of link::Classes/Environment::.
 Events are mappings of Symbols representing names of parameters for a musical event to their value.
@@ -248,19 +188,7 @@ footnote::
 It's all a part of the Big Note, but don't tell the pigs and ponies.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Value Patterns, Event Patterns and Pbind
-
-
-
 
 The patterns discussed in parts 2 and 3 are known as "value patterns" because their streams return a single value for each call to strong::next::.
 Here we introduce "event patterns" which once turned into streams, return an link::Classes/Event:: for each call to strong::next::.
@@ -288,19 +216,7 @@ t.next(Event.default);
 
 When calling link::Classes/Pattern#-play:: an link::Classes/EventStreamPlayer:: is automatically generated which handles scheduling as well as passing the protoEvent into the event stream.
 
-
-
-
-
-
-
-
-
-
 section:: EventStreamPlayer
-
-
-
 
 The class link::Classes/EventStreamPlayer:: is a subclass of link::Classes/PauseStream::.
 A PauseStream is just a wrapper for a stream allowing to play, stop, start it, etc...
@@ -311,19 +227,7 @@ The EventStreamPlayer passes in a strong::protoEvent::, at each call to strong::
 An EventStreamPlayer is itself a stream which returns scalars (numbers) which are used by the clock to schedule its next invocation.
 At every call to EventStreamPlayer-next by the clock, the player gets its delta values by querying the Event after it has been returned by the Pbind stream traversal.
 
-
-
-
-
-
-
-
-
-
 section:: Changes in SC3
-
-
-
 
 In SC2, you called asEventStream on an Pattern and you'd get a stream which actually returned events.
 

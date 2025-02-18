@@ -3,71 +3,31 @@ categories:: UGens>Multichannel>Select
 summary:: Two channel linear crossfade
 related:: Classes/XFade2
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Two channel linear crossfader.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: inA
 
 Input signal A.
 
-
 argument:: inB
 
 Input signal B.
-
 
 argument:: pan
 
 Cross fade position from teletype::-1:: to +1.
 
-
 argument:: level
 
 A control rate level input.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 play({ LinXFade2.ar(FSinOsc.ar(800, 0, 0.2), PinkNoise.ar(0.2), FSinOsc.kr(1)) });

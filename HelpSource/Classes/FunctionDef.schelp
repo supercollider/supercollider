@@ -3,56 +3,25 @@ categories:: Core>Kernel
 summary:: FunctionDefs contain code which can be executed from a Function
 related:: Classes/Function
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 subsection:: Related Keywords
 
-
 method:: thisFunctionDef
-
 
 The global pseudo-variable code::thisFunctionDef:: always evaluates to the
 current enclosing FunctionDef.
 
 See also: link::Classes/Function#.thisFunction#thisFunction::
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 subsection:: Accessing
-
 
 Even though it is possible to change the values in the various arrays that define the FunctionDef,
 you should not do it, unless you like to crash.
 
-
-
-
 method:: code
-
 
 Get the byte code array.
 
@@ -60,11 +29,7 @@ code::
 { |a = 9, b = 10, c| a + b }.def.code;
 ::
 
-
-
-
 method:: sourceCode
-
 
 Get the source code string.
 
@@ -72,27 +37,15 @@ code::
 { |a = 9, b = 10, c| a + b }.def.sourceCode.postcs;
 ::
 
-
-
-
 method:: context
-
 
 Get the enclosing FunctionDef or Method.
 
-
-
-
 method:: findReferences
-
 
 Return a list of all references to a given symbol.
 
-
-
-
 method:: argNames
-
 
 Get the Array of Symbols of the argument names.
 
@@ -100,11 +53,7 @@ code::
 { |a = 9, b = 10, c| a + b }.def.argNames;
 ::
 
-
-
-
 method:: prototypeFrame
-
 
 Get the array of default values for argument and temporary variables.
 
@@ -112,11 +61,7 @@ code::
 { |a = 9, b = 10, c| a + b }.def.prototypeFrame;
 ::
 
-
-
-
 method:: varNames
-
 
 Get the Array of Symbols of the local variable names.
 
@@ -124,11 +69,7 @@ code::
 { |a = 9, b = 10, c| var x = 9; a + b + x }.def.varNames;
 ::
 
-
-
-
 method:: argumentString
-
 
 Return a string that contains all argument names and their default values for embedding in a string.
 If there are no arguments, it returns teletype::nil::.
@@ -138,7 +79,6 @@ code::
 { "nothing to see here" }.def.argumentString; // nil
 ::
 
-
 argument:: withDefaultValues
 
 If set to teletype::false::, no default values are appended
@@ -147,7 +87,6 @@ code::
  // "a, b, c"
 { |a = 9, b = 10, c| a + b }.def.argumentString(withDefaultValues: false);
 ::
-
 
 argument:: withEllipsis
 
@@ -160,7 +99,6 @@ code::
 { |a = 9, b = 10 ... c| a + b }.def.argumentString(withEllipsis: false);
 ::
 
-
 argument:: asArray
 
 If set to teletype::true::, return the string for an array that represents all arguments.
@@ -171,11 +109,7 @@ code::
 { |a = 9, b = 10 ... c| a + b }.def.argumentString(asArray: true);
 ::
 
-
-
-
 method:: makeEnvirFromArgs
-
 
 Get the Array of Symbols of the local variable names.
 
@@ -183,22 +117,14 @@ code::
 { |a = 9, b = 10, c| a + b }.def.makeEnvirFromArgs;
 ::
 
-
-
-
-
-
 subsection:: Generating Strings
 
-
 method:: makeFuncModifierString
-
 
 Return a string that can be interpreted as code for a new function which extracts the arguments from the receiver.
 This can be used to build a hygienic macro which returns a function with valid keyword arguments, instead of just anonymously forwarding the arguments, like in code::{ |...args| func.valueArray(args) }::.
 
 For an implementation example link::Classes/Function#flop:: (as below).
-
 
 argument:: modifier
 
@@ -235,15 +161,8 @@ h = f.flop;
 h.([1, 0], [6, 7]); // [6, 0]
 ::
 
-
-
-
-
-
 subsection:: Utilities
 
-
 method:: dumpByteCodes
-
 
 "Disassemble" and post the FunctionDef's byte code instructions to the text window.

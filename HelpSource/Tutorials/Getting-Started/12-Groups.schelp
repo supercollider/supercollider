@@ -11,19 +11,7 @@ First they are very helpful in controlling order, second, they allow you to easi
 As you've probably guessed, there's a handy Server abstraction object to represent group nodes in the client app:
 Group.
 
-
-
-
-
-
-
-
-
-
 section:: Groups as Ordering Tools
-
-
-
 
 Groups can be quite helpful in terms of controlling order.
 Like synths they take targets and addActions as arguments, which makes it easy to put them in position.
@@ -97,19 +85,7 @@ Environment.new.push;
 currentEnvironment.pop;
 ::
 
-
-
-
-
-
-
-
-
-
 section:: All the addActions
-
-
-
 
 At this point it's probably good to cover the remaining add actions.
 In addition to \addBefore and \addAfter, there is also the (rarely) used \addReplace, and two add actions which apply to Groups:
@@ -124,19 +100,7 @@ s.queryAllNodes;		// this will post a representation of the node hierarchy
 x.free; h.free; g.free;
 ::
 
-
-
-
-
-
-
-
-
-
 section:: 'queryAllNodes' and node IDs
-
-
-
 
 Server has a method called 'queryAllNodes' which will post a representation of the server's node tree. You should have seen something like the following in the post window when executing the example above:
 
@@ -158,19 +122,7 @@ Normally when working with Server abstraction objects you won't need to deal wit
 You may have been wondering why there were four groups posted above when we only created two.
 The first two, with the IDs 0 and 1, are special groups, called the RootNode and the 'default group'.
 
-
-
-
-
-
-
-
-
-
 section:: The Root Node and the Default Group
-
-
-
 
 When a server app is booted there is a special group created with a node ID of teletype::0::.
 This represents the top of the server's node tree. There is a special server abstraction object to represent this, called RootNode. In addition there is another group created with an ID of 1, called the default group. This is the default target for all Nodes and is what you will get if you supply a Server as a target.
@@ -210,19 +162,7 @@ default group [
 recording synth
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Groups as, well, groups...
-
-
-
 
 The other major use of groups is to allow you to easily treat a number of synths as a whole.
 If you send a 'set' message to a group, it will apply that message to all nodes contained within it.
@@ -239,19 +179,7 @@ g.set(\amp, 0.005); // turn them all down
 g.free;
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Groups, their Inheritance, and More on Tracking Down Help
-
-
-
 
 Now for a little more OOP theory.
 Both Group and Synth are examples of what are called emphasis::subclasses::.

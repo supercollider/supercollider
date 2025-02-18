@@ -3,19 +3,7 @@ categories:: UGens>FFT, UGens>Convolution
 summary:: Real-time fixed kernel convolver
 related:: Classes/Convolution, Classes/Convolution2L, Classes/Convolution3
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Strict convolution with fixed kernel which can be updated using a trigger
 signal.
@@ -27,38 +15,23 @@ Internally, this unit uses FFT to accelerate the calculation, which means that
 See also link::http://www.dspguide.com/ch18.htm:: by Steven W.
 Smith.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar
-
 
 argument:: in
 
 Processing target.
 
-
 argument:: kernel
 
-Buffer index for the fixed kernel, may be modulated in combination with the trigger. It's size must be <= framesize.
-
+Buffer index for the fixed kernel, may be modulated in
+combination with the trigger. It's size must be <= framesize.
 
 argument:: trigger
 
 Update the kernel on a change from non-teletype::positive:: to teletype::positive::
 value.
-
 
 argument:: framesize
 
@@ -69,24 +42,11 @@ The maximum value you can use is 2^16 = 16384.
 (This upper limit is half of "SC_FFT_MAXSIZE" defined in the SC source code.)
 Larger convolutions than this can be done using link::Classes/PartConv::.
 
-
 argument:: mul
 
 argument:: add
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 ( // allocate three buffers

@@ -2,28 +2,12 @@ title:: plot
 categories:: Common methods, GUI
 summary:: Plot data in a graph
 
-
-
-
-
-
-
-
-
-
 section:: Description
-
-
-
 
 The link::Overviews/Methods#plot#plot method:: provides the ability to plot data in a GUI window.
 The method is implemented in the link::Classes/ArrayedCollection:: class but is also available for other classes for convenience, including link::Classes/Function::, link::Classes/Bus::, link::Classes/Env::, link::Classes/Buffer::, link::Classes/SoundFile::, link::Classes/Wavetable::.
 
-
-
-
 method:: plot
-
 
 All arguments are optional.
 
@@ -32,54 +16,44 @@ The arguments available vary from object to object.
 The below list is only for explanation of possible arguments.
 ::
 
-
 argument:: name
 
 The name to be used as the GUI window title.
-
 
 argument:: bounds
 
 A link::Classes/Rect:: providing coordinates for the GUI location.
 
-
 argument:: discrete
 
 Plots are line-plots by default. Set this to code::true:: for bar charts.
-
 
 argument:: numChannels
 
 The number of interleaved channels that an array represents.
 For Buffers this argument is not available, since it's filled in automatically.
 
-
 argument:: minval
 
 Minimum value(s) for the display range. For a Buffer this defaults to code::-1:: but can be changed.
-
 
 argument:: maxval
 
 Maximum value(s) for the display range. For a Buffer this defaults to code::+1:: but can be changed.
 
-
 argument:: separately
 
 When finding the right display range in multi channel plots, do this together for all or keep them separate.
-
 
 argument:: parent
 
 By default the plot is placed in a new GUI window.
 This argument can be used to specify an existing GUI container to send the plot to.
 
-
 argument:: labels
 
 By default labels appear at the top left of the plot giving a data readout based on mouse position.
 Set this argument to code::false:: to prevent them appearing.
-
 
 discussion::
 If code::minval:: and/or code::maxval:: are set to code::nil:: (this is default, except for link::Classes/Buffer::s), they will be automatically calculated from the dataset minimum and/or maximum. For multi-channel data, code::minval:: and code::maxval:: may be arrays, specifying the range independently for each channel (including use of code::nil::, in which case the min/max will be calculated for the specific channel rather than for the overall dataset).
@@ -87,19 +61,7 @@ When the receiver contains code::nil:: items, the plot fails with an error.
 
 Hitting the strong::E-key:: on the keyboard when the window is focussed toggles the lock, and the window can be used to edit the data.
 
-
-
-
-
-
-
-
-
-
 section:: Examples
-
-
-
 
 note:: 
 See some of the classes linked above for more examples 

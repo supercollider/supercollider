@@ -3,66 +3,28 @@ categories:: UGens>Generators>Stochastic
 summary:: Chaotic noise function
 related:: Classes/LatoocarfianN, Classes/Logistic
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A noise generator based on a chaotic function.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: ar, kr
 
-
 argument:: chaosParam
 
-A parameter of the chaotic function with useful values from just below teletype::1.0:: to just above 2.0. Towards 2.0 the sound crackles.
-
+A parameter of the chaotic function with useful values from
+just below teletype::1.0:: to just above 2.0. Towards 2.0 the sound crackles.
 
 argument:: mul
 
 Output will be multiplied by this value.
 
-
 argument:: add
 
 This value will be added to the output.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 { Crackle.ar(1.95, 0.5) }.play;

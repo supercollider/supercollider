@@ -3,95 +3,38 @@ categories:: Undocumented classes
 summary:: Cyclic number allocator within a specified range
 related:: Classes/ContiguousBlockAllocator, Classes/PowerOfTwoAllocator, Classes/StackNumberAllocator
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Continuously cycles through the range of numbers, starting over from the beginning once the end of the range is reached.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: new
 
-
 Make a new instance, with lo and hi values.
-
 
 argument:: lo
 
 Initial value
 
-
 argument:: hi
 
 Maximum
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 method:: alloc
 
-
 Allocate next number. After hi value returns lo.
-
 
 returns::
  (describe returnvalue here)
 
-
-
-
 method:: init
-
 
 Reset allocator to its initial state.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 a = RingNumberAllocator.new(3, 5)

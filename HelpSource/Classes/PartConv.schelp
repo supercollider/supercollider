@@ -3,19 +3,7 @@ categories:: UGens>FFT, UGens>Convolution
 summary:: Real-time partitioned convolution
 related:: Classes/Convolution, Classes/Convolution2, Classes/Convolution2L, Classes/Convolution3
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Partitioned convolution. Various additional buffers must be supplied.
 
@@ -27,56 +15,28 @@ This plug-in uses amortisation to spread processing and avoid spikes).
 
 Normalisation factors difficult to anticipate; convolution piles up multiple copies of the input on top of itself, so can easily overload.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar
-
 
 argument:: in
 
 Processing target.
-
 
 argument:: fftsize
 
 Spectral convolution partition size (twice partition size).
 You must ensure that the blocksize divides the partition size and there are at least two blocks per partition (to allow for amortisation).
 
-
 argument:: irbufnum
 
 Prepared buffer of spectra for each partition of the inpulse response.
-
 
 argument:: mul
 
 argument:: add
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // preparation; essentially, allocate an impulse response buffer, then

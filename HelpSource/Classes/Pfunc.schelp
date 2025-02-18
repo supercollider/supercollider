@@ -3,63 +3,25 @@ categories:: Streams-Patterns-Events>Patterns>Function
 summary:: Function pattern
 related:: Classes/Pfuncn, Classes/FuncStream
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Return a link::Classes/Stream:: that returns values from the code::nextFunc::.
 To return a pattern, see link::Classes/Plazy::.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: nextFunc
 
 Stream function. In an event stream code::nextFunc:: receives the current link::Classes/Event:: as argument, and more generally the argument passed to the stream's code::next:: call.
-
 
 argument:: resetFunc
 
 Function that is called when the stream is reset.
 code::resetFunc:: receives no arguments.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 Numeric stream examples
 

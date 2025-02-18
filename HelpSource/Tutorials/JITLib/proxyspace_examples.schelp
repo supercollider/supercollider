@@ -3,22 +3,9 @@ categories:: JITLib>Tutorials, Tutorials>JITLib
 summary:: Some ProxySpace examples
 related:: Overviews/JITLib, Classes/ProxySpace
 
-
-
-
-
-
-
-
-
-
 section:: Main examples
 
-
-
-
 subsection:: Preparing the environment
-
 
 code::
 (
@@ -27,13 +14,7 @@ p = ProxySpace.push(s);
 )
 ::
 
-
-
-
-
-
 subsection:: Playing and monitoring
-
 
 code::
 // play some output to the hardware busses, this could be any audio rate key.
@@ -48,13 +29,7 @@ code::
 ~out = { Pan2.ar(PinkNoise.ar(0.1), LFClipNoise.kr(2)) };
 ::
 
-
-
-
-
-
 subsection:: Setting the node controls
-
 
 code::
 ~out = { arg rate = 2; Pan2.ar(PinkNoise.ar(0.1), LFClipNoise.kr(rate)) };
@@ -63,13 +38,7 @@ code::
 ~out.set(\rate, 2);
 ::
 
-
-
-
-
-
 subsection:: Referencing between proxies
-
 
 code::
 ~lfo = { LFNoise2.kr(30, 300, 500) };
@@ -80,13 +49,7 @@ code::
 ~lfo = 410;
 ::
 
-
-
-
-
-
 subsection:: math
-
 
 code::
 // unary operators
@@ -105,13 +68,7 @@ currentEnvironment.free; // free all node proxies
 ~out.stop; // free the playback synth.
 ::
 
-
-
-
-
-
 subsection:: Waking up a network of proxies
-
 
 code::
 // hit cmd-. to stop all nodes
@@ -119,13 +76,7 @@ code::
 ~out.play;
 ::
 
-
-
-
-
-
 subsection:: Feeding back
-
 
 (one buffer size delay)
 
@@ -152,13 +103,7 @@ code::
 )
 ::
 
-
-
-
-
-
 subsection:: Multiple control
-
 
 code::
 (
@@ -181,13 +126,7 @@ code::
 )
 ::
 
-
-
-
-
-
 subsection:: Mixing
-
 
 code::
 ~out1 = { SinOsc.ar(600, 0, 0.1) };
@@ -208,13 +147,7 @@ code::
 ~out[2] = { SinOsc.ar(400 * 1.2, 0, 0.1) };
 ::
 
-
-
-
-
-
 subsection:: Restoring / erasing
-
 
 code::
 ~out.free; // this frees the group, not the play synth x
@@ -234,13 +167,7 @@ code::
 For more on the proxy slots see:
 link::Tutorials/JITLib/jitlib_basic_concepts_03::
 
-
-
-
-
-
 subsection:: Garbage collecting
-
 
 code::
 // often there are proxies playing that are not used anymore - this is good,
@@ -267,13 +194,7 @@ p.clean;
 p.postln; // empty space.
 ::
 
-
-
-
-
-
 subsection:: Execution order
-
 
 code::
 // you can .play .kr or .ar also a name that is not yet used.
@@ -296,13 +217,7 @@ currentEnvironment.clear; // clear every proxy in this environment and remove th
 (same: p.clear)
 ::
 
-
-
-
-
-
 subsection:: Setting the xfade time
-
 
 code::
 ~out.play;
@@ -318,13 +233,7 @@ code::
 ~out.stop;	// stop monitor
 ::
 
-
-
-
-
-
 subsection:: Setting and mapping arguments
-
 
 code::
 ~out.play;
@@ -401,22 +310,9 @@ this rate is used for each function passed into the proxy.
 // note that the same works with the i_ and the t_ arguments, just as it does in SynthDef
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Other possible inputs
 
-
-
-
 subsection:: Using a synthdef as input
-
 
 For a more systematic overview see:
 link::Tutorials/JITLib/jitlib_fading::
@@ -495,13 +391,7 @@ SynthDef("staub", { arg out;
 ~out = nil;	// removes object and stops it.
 ::
 
-
-
-
-
-
 subsection:: Using patterns
-
 
 code::
 // example
@@ -577,13 +467,7 @@ p.clock.tempo = 1.0
 )
 ::
 
-
-
-
-
-
 subsection:: Using instruments and players
-
 
 note::
 For the following to work you will need to have the strong::cruciallib:: quark installed.
@@ -625,22 +509,9 @@ Instr(\test,
 //~out.set(\ffreq, 500);
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Client side routines
 
-
-
-
 subsection:: Spawning
-
 
 code::
 ~out.play;
@@ -702,13 +573,7 @@ t.stop;
 currentEnvironment.clear;
 ::
 
-
-
-
-
-
 subsection:: Granular synthesis: efficient code
-
 
 See also link::Tutorials/JITLib/jitlib_efficiency::
 
@@ -761,13 +626,7 @@ currentEnvironment.clear;
 ProxySpace.pop; // restore original environment
 ::
 
-
-
-
-
-
 subsection:: Using multiple proxyspaces
-
 
 Can be done while the server is not running:
 with p.wakeUp or p.play
@@ -808,13 +667,7 @@ s.waitForBoot({
 )
 ::
 
-
-
-
-
-
 subsection:: External access
-
 
 code::
 q[\in][1] = { Impulse.ar(2, 0, 0.5) }; // adding a synth at index 1
@@ -823,13 +676,7 @@ q[\in][1] = { Impulse.ar(2, 0, 0.5) }; // adding a synth at index 1
 q.at(\in).put(1, { Impulse.ar(7, 0, 0.5) });
 ::
 
-
-
-
-
-
 subsection:: Connecting two spaces
-
 
 (must be on one server)
 
@@ -841,13 +688,7 @@ q.use({
 )
 ::
 
-
-
-
-
-
 subsection:: Recording output
-
 
 (see also: link::Classes/RecNodeProxy::)
 
@@ -864,13 +705,7 @@ r.pause;
 r.close;
 ::
 
-
-
-
-
-
 subsection:: Push/pop
-
 
 code::
 // make p the currentEnvironment
@@ -896,22 +731,9 @@ q.clear;
 p.clear;
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Some more topics
 
-
-
-
 subsection:: Nodeproxy with numbers as input
-
 
 code::
 p = ProxySpace.push(s.boot);

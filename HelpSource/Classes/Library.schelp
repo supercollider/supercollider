@@ -3,41 +3,16 @@ categories:: Collections
 summary:: Keeping objects in a central place
 related:: Classes/Archive, Classes/LibraryBase
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Library is a global MultiLevelIdentityDictionary.
 The Library can be used as a place to store data that you want globally accessible.
 It is an alternative to using class variables.
 It is a nice place to store menus, annotations, and commonly reusable functions.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 private:: initClass
-
 
 method:: postTree
 Post a formatted description of the entire library.
@@ -46,11 +21,7 @@ code::
 Library.postTree;
 ::
 
-
-
-
 method:: put
-
 
 The last argument to put is the object being inserted:
 

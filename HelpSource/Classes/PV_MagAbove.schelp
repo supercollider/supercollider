@@ -3,61 +3,23 @@ categories:: UGens>FFT
 summary:: Pass bins above a threshold
 related:: Classes/FFT, Classes/IFFT, Classes/PV_LocalMax, Classes/PV_MagBelow, Classes/PV_MagClip
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Passeonly only bins whose magnitude is above a threshold.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: buffer
 
 FFT buffer.
 
-
 argument:: threshold
 
 Magnitude threshold.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 s.boot;

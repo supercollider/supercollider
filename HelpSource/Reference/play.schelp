@@ -16,29 +16,11 @@ the message was sent to.
 
 opposite: code::stop::
 
-
-
-
-
-
-
-
-
-
 section:: Clocks, Routines, Streams and Patterns
-
-
-
 
 For a full list of which classes that implements code::play::, see link::Overviews/Methods#play::
 
-
-
-
-
-
 subsection:: Clock.play (stream)
-
 
 returns: the clock
 
@@ -51,13 +33,7 @@ SystemClock.play(r);
 
 See link::Classes/Clock#*play::
 
-
-
-
-
-
 subsection:: Routine.play (clock)
-
 
 returns: the routine
 
@@ -67,13 +43,7 @@ Routine.new({ "...playing".postln; 1.wait; "ok, that was it".postln }).play;
 
 See link::Classes/Routine#-play::
 
-
-
-
-
-
 subsection:: Stream.play (clock)
-
 
 returns: the stream
 
@@ -85,13 +55,7 @@ FuncStream({ "ok, that was it".postln; 1 }).play;
 
 See link::Classes/FuncStream#-play::
 
-
-
-
-
-
 subsection:: Pausestream.play (clock) / task.play (clock)
-
 
 returns: the stream
 
@@ -109,13 +73,7 @@ a.stop;
 
 See link::Classes/Stream#-play:: and link::Classes/Task#-play::
 
-
-
-
-
-
 subsection:: Pattern.play (clock, protoEvent)
-
 
 returns: an link::Classes/EventStreamPlayer::
 
@@ -130,19 +88,7 @@ Pseq([
 
 See link::Classes/Pattern#-play::
 
-
-
-
-
-
-
-
-
-
 section:: Playing single Synths from SynthDefs on the server
-
-
-
 
 The following play messages both cause a SynthDef to be written, send it to the server
 and start a synth with it there.
@@ -159,13 +105,7 @@ Also note that they should not be used in quickly running automated processes,
 as there are more efficient alternatives ( see link::Guides/SynthDefsVsSynths:: )
 ::
 
-
-
-
-
-
 subsection:: Function.play (target, outbus, fadeTime, addAction, args)
-
 
 returns: a link::Classes/Synth::
 
@@ -195,13 +135,7 @@ a = { |freq = 500| HPF.ar(PinkNoise.ar([1, 1] * 0.4), freq) }.play(args: [\freq,
 { XOut.ar(0, MouseX.kr(0,1), PinkNoise.ar(0.1*[1,1])) }.play; // mouse x controls level
 ::
 
-
-
-
-
-
 subsection:: SynthDef.play (target, args, addAction)
-
 
 returns: a link::Classes/Synth::
 

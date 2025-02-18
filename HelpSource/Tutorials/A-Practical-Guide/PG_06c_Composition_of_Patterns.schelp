@@ -3,19 +3,7 @@ categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Making multiple event patterns act as one
 related:: Tutorials/A-Practical-Guide/PG_06b_Time_Based_Patterns, Tutorials/A-Practical-Guide/PG_06d_Parallel_Patterns
 
-
-
-
-
-
-
-
-
-
 section:: Adding values to a base event pattern (Or, "Pattern Composition")
-
-
-
 
 One way to use patterns is to write everything into the pattern up front.
 This has the advantage of clarity and ease of understanding.
@@ -99,13 +87,7 @@ p.stop;
 
 ::
 
-
-
-
-
-
 subsection:: Pset and cousins
-
 
 A group of pattern classes allow single event keys to be overwritten, or one addition or multiplication to be performed. link::Classes/Pkey::, in combination with the link::Classes/Pchain:: or link::Classes/Pbindf:: "pattern composition" classes, can do everything the following classes can do (though this alternate notation may be more convenient in certain cases).
 

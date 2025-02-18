@@ -3,87 +3,35 @@ categories:: UGens>Generators>Deterministic
 summary:: Pulse oscillator
 related:: Classes/LFSaw
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A non-band-limited pulse oscillator. Outputs a high value of one and a low value of teletype::zero::.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: freq
 
 Frequency in Hertz
 
-
 argument:: iphase
 
 Initial phase offset in cycles (0..1)
-
 
 argument:: width
 
 Pulse width duty cycle from teletype::zero:: to one.
 
-
 argument:: mul
 
 argument:: add
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 private:: signalRange
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 A plot:
 

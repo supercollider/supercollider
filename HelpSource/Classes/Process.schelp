@@ -2,62 +2,26 @@ title:: Process
 categories:: Core>Kernel
 summary:: Runtime environment for the virtual machine and interpreter
 
-
-
-
-
-
-
-
-
-
 description::
 
-
-
-
 A Process is the runtime environment for the virtual machine and interpreter.
-It has a subclass named link::Classes/Main:: which is where you should override the methods of Process. There are two methods of interest.
-One is named code::startup:: and is called after the class library has been compiled.
+It has a subclass named link::Classes/Main:: which is where you should override the methods
+of Process. There are two methods of interest.
+One is named code::startup:: and is
+called after the class library has been compiled.
 The other is named code::run:: and
 is called when the user chooses the Run menu command.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: tailCallOptimize
-
 
 Get or set tail call optimization.
 The default is on. Setting this to code::false:: can help with debugging by including intermediate levels in an error backtrace.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 method:: nowExecutingPath
-
 
 Usage: code::thisProcess.nowExecutingPath::
 
@@ -74,32 +38,21 @@ teletype::nowExecutingPath::has a corresponding setter method, teletype::nowExec
 Do not call the setter method!
 ::
 
-
-
-
 method:: startup
-
 
 Called after the class library has been compiled.
 Override this in class link::Classes/Main:: to do whatever you want.
 
-
-
-
 method:: run
-
 
 Called when the user chooses the Run menu command.
 Override this in class link::Classes/Main:: to do whatever you want.
 
-
-
-
 method:: mainThread
 
-
-The top-level link::Classes/Thread::, i.e the link::Classes/Thread#-parent#parent:: of all other Threads. This instance of Thread always exists and is created with the Process when SuperCollider starts.
-
+The top-level link::Classes/Thread::, i.e the link::Classes/Thread#-parent#parent:: of all
+other Threads. This instance of Thread always exists and is created with the Process when
+SuperCollider starts.
 
 discussion::
 All SuperCollider code initially runs in the context of the main Thread:
@@ -111,4 +64,6 @@ list::
 ## Functions evaluated in response to incoming OSC and MIDI messages
 ::
 
-This means that link::Classes/Thread#.thisThread#thisThread:: will always initially point to the main Thread. However, when some code starts a link::Classes/Routine::, the Routine becomes the current Thread, with the main Thread as its parent.
+This means that link::Classes/Thread#.thisThread#thisThread:: will always initially point
+to the main Thread. However, when some code starts a link::Classes/Routine::, the Routine
+becomes the current Thread, with the main Thread as its parent.

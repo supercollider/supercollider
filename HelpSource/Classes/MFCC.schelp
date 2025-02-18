@@ -3,19 +3,7 @@ categories:: UGens>Analysis
 summary:: Mel frequency cepstral coefficients
 related:: Classes/BeatTrack, Classes/Loudness, Classes/Onsets, Classes/Pitch, Classes/KeyTrack
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Generatea a set of MFCCs; these are obtained from a band-based frequency representation (using the Mel scale by default), and then a discrete cosine transform (DCT).
 The DCT is an efficient approximation for principal components analysis, so that it allows a compression, or reduction of dimensionality, of the data, in this case reducing 42 band readings to a smaller set of MFCCs.
@@ -31,49 +19,22 @@ Mel scale spacing with triangular crossfade overlap is used by default for the b
 Variants such as BFCC (Bark) and EFCC (ERB) given similar results in practice; the Mel scale as used here is the standard as adapted from the speech recognition literature and now applied in music information retrieval.
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: kr
-
 
 argument:: chain
 
 [fft] Audio input to track, which has been pre-analysed by the FFT UGen; see examples below for the expected FFT size.
 
-
 argument:: numcoeff
 
 [s] Number of coefficients, defaults to 13, maximum of 42; more efficient to use less of course!
 
-
 returns::
 code::#coeff1, coeff2, ...::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // Technical note: The 0th coefficient is not generated as it consists of multiplying all bands by 1 and summing

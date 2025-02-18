@@ -3,19 +3,7 @@ categories:: Tuning
 summary:: Represents a musical tuning
 related:: Classes/Scale
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Represent a musical tuning (e.g. equal temperament, just intonation, etc.).
 Used in conjunction with link::Classes/Scale:: to generate pitch information.
@@ -35,13 +23,7 @@ t.ratios.collect(_.round(0.001));	// [1, 1.067, 1.125, 1.2, 1.25, 1.333, 1.406, 
 Pbind(\scale, Scale.major(t), \degree, Pseq((0..7) ++ (6..0) ++ [\rest], 1), \dur, 0.25).play;
 ::
 
-
-
-
-
-
 subsection:: Creation
-
 
 strong::just, pythagorean, werckmeister, johnston, partch, wcAlpha, bp, etc.::
 
@@ -52,44 +34,23 @@ code::
 Tuning.directory
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: et
 
-
-Create an equal-tempered scale based on pitchesPerOctave.
-
-
-
+Creates an equal-tempered scale based on pitchesPerOctave.
 
 method:: choose
 
-
-Create a random tuning from the library, constrained by size (which defaults to 12).
+Creates a random tuning from the library, constrained by size (which defaults to 12).
 
 code::
 Scale.major(Tuning.choose).tuning.name;
 ::
 
-
-
-
 method:: new
 
-
-Create a Tuning using some or all of the parameters as follows:
+Creates a Tuning using some or all of the parameters as follows:
 strong::tuning:: can be the name of a library tuning (in which case that tuning is returned); an array of floats representing the semitone values of the tuning (in which case pitchesPerOctave will be set to the size of the array regardless of the second parameter); or nil (in which case the default tuning for strong::pitchesPerOctave:: will be returned). strong::octaveRatio:: defaults to 2.0, but can be set differently for stretched or compressed tunings.
 
 code::
@@ -99,55 +60,22 @@ Tuning.new(#[0, 0.795, 2.251, 3.251, 4.036, 4.680, 5.915, 7.221, 8.013, 9.29, 9.
 Tuning.new((0..11).collect(_ * (2.08 ** (1/12))), 2.08, "Stretched ET12");
 ::
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 private:: storeOn, storedKey, storeArgs, printOn
 
-
 method:: semitones
-Return an array of semitone values for the pitch set.
+Returns an array of semitone values for the pitch set.
 link::#-as::(Array) is equivalent; link::#-as::(List) returns it as a list, etc.
-
-
-
 
 method:: cents
 
-
-Return a array of cent values for the pitch set.
-
-
-
+Returns a array of cent values for the pitch set.
 
 method:: ratios
 
-
-Return a tuned array of ratios for the pitch set.
-
-
-
-
-
-
-
-
-
+Returns a tuned array of ratios for the pitch set.
 
 examples::
-
-
-
 
 For examples of use, see the link::Classes/Scale:: help file.

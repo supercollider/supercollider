@@ -3,61 +3,23 @@ categories:: UGens>FFT
 summary:: Maximum magnitude
 related:: Classes/FFT, Classes/IFFT, Classes/PV_Add, Classes/PV_CopyPhase, Classes/PV_MagMul, Classes/PV_Min, Classes/PV_Mul
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Output copies bins with the maximum magnitude of the two inputs.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: bufferA
 
 FFT buffer A.
 
-
 argument:: bufferB
 
 FFT buffer B.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 s.boot;

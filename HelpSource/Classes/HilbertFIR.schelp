@@ -3,46 +3,20 @@ categories:: UGens>Filters>Nonlinear
 summary:: Applies the Hilbert transform to an input signal
 related:: Classes/Hilbert, Classes/FreqShift
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Return two channels with the original signal and a copy of that signal that has been shifted in phase by 90 degrees (0.5 pi radians).
 HilbertFIR outputs two channels containing the input signal and the transformed signal.
 HilbertFIR uses FFTs and a 90 degree phase shift to transform the signal, and results in a delay equal to the size of the buffer used for the FFT divided by the sample rate.
 The Hilbert UGen has less delay, but distorts in the upper octave of the frequency spectrum.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar
-
 
 argument:: in
 
 The input signal to transform.
-
 
 argument:: buffer
 

@@ -3,22 +3,12 @@ categories:: UGens>Demand
 summary:: Demand results as trigger from demand rate UGens
 related:: Classes/Demand, Classes/Duty
 
-
-
-
-
-
-
-
-
-
 description::
 
-
-
-
-A value is demanded each UGen in the list and output as a trigger according to a stream of duration values.
-The unit generators in the list should be 'demand' rate.
+A value is demanded each UGen in the list and output as a trigger
+according to a stream of duration values.
+The unit generators in the list
+should be 'demand' rate.
 
 
 When there is a trigger at the reset input, the demand rate UGens in the
@@ -26,38 +16,25 @@ list and the duration are reset.
 The reset input may also be a demand
 UGen, providing a stream of reset times.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: dur
 
 Time values. Can be a demand UGen or any signal.
-The next trigger value is acquired after duration.
-
+The next trigger
+value is acquired after duration.
 
 argument:: reset
 
-Trigger or reset time values. Resets the list of UGens and the duration UGen when triggered. The reset input may also be a demand UGen, providing a stream of reset times.
-
+Trigger or reset time values. Resets the list of UGens and the
+duration UGen when triggered. The reset input may also be a
+demand UGen, providing a stream of reset times.
 
 argument:: level
 
 Demand UGen providing the output values.
-
 
 argument:: doneAction
 
@@ -66,25 +43,12 @@ See
 
 link::Classes/Done::  for more detail.
 
-
 argument:: gapFirst
 
 When teletype::0:: (default), the UGen does the first level poll immediately and then waits for the first durational value.
 When this is 1, the UGen initially polls the first durational value, waits for that duration, and then polls the first level (along with polling the next durational value).
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // examples

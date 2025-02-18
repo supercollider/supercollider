@@ -3,42 +3,16 @@ categories:: GUI>Views
 summary:: Image component
 related:: Classes/View
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Image enables the drawing of images in the SuperCollider GUI.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: initClass, prFromWindowRect, prFreeAll
 
-
 method:: new
-Create a new Image instance. "multiple" here stands for multiple arguments.
-
+Creates a new Image instance. "multiple" here stands for multiple arguments.
 
 argument:: multiple
 
@@ -78,36 +52,26 @@ i.free;
 
 ::
 
-
 argument:: height
 
 If strong::multiple:: is a number, then this argument indicates the height of the new image.
 
-
-
-
 method:: color
 
-
-Create a new Image instance filled with the specified color.
+Creates a new Image instance filled with the specified color.
 
 code::
 i = Image.color(400, 200, Color.blue(0.9, 0.1));
 i.plot(freeOnClose: true);
 ::
 
-
 argument:: ... args
 
 Multiple arguments. the last argument should be a valid link::Classes/Color::
 
-
-
-
 method:: open
 
-
-Create a new Image instance from the local file at strong::path::.
+Creates a new Image instance from the local file at strong::path::.
 
 code::
 (
@@ -117,13 +81,9 @@ i.url.postln;
 )
 ::
 
-
-
-
 method:: openSVG
 
-
-Create a new Image instance from the local SVG file at strong::path::.
+Creates a new Image instance from the local SVG file at strong::path::.
 
 code::
 (
@@ -133,11 +93,9 @@ i.url.postln;
 )
 ::
 
-
 argument:: path
 
 A String containing the SVG file's path.
-
 
 argument:: size
 
@@ -145,11 +103,7 @@ A link::Classes/Size::.
 SVG contents will be drawn into an image of this size.
 If not provided, suggested size provided by SVG will be used.
 
-
-
-
 method:: openURL
-
 
 note::
 Not implemented yet.
@@ -163,13 +117,9 @@ i.url;
 w = i.plot(freeOnClose: true);
 ::
 
-
-
-
 method:: fromImage
 
-
-Create a new Image instance from another Image.
+Creates a new Image instance from another Image.
 
 code::
 i = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
@@ -180,13 +130,9 @@ j.dump;
 [i, j].do(_.free);
 ::
 
-
-
-
 method:: fromWindow
 
-
-Create a new Image from a portion of a Window.
+Creates a new Image from a portion of a Window.
 this can be used to capture either a window or a specific View.
 
 code::
@@ -237,65 +183,39 @@ code::
 )
 ::
 
-
 argument:: window
 
 The Window object.
-
 
 argument:: rect
 
 Optional. the constrained rect to capture inside the Window.
 By default, it is the window size.
 
-
-
-
 method:: closeAllPlotWindows
-
 
 Close all the Image plot windows currently opened.
 
-
-
-
 method:: colorToPixel
 
-
 Convert a link::Classes/Color:: into a pixel datatype suitable for setting pixel data in the Image class.
-
 
 returns::
  
 A 32bit packed Integer in the RGBA format.
 
-
-
-
 method:: pixelToColor
 
-
 Convert a 32bit packed Integer in the RGBA format into a link::Classes/Color::
-
 
 returns::
 A link::Classes/Color::
 
-
-
-
 private:: newEmpty, prFormats
-
-
-
-
-
 
 subsection:: Class variables and attributes
 
-
 method:: formats
-
 
 returns all the valid image formats as an link::Classes/Array::
 
@@ -303,11 +223,7 @@ code::
 Image.formats;
 ::
 
-
-
-
 method:: compositingOperations
-
 
 returns all the valid compositing operations you can use when drawing an Image as an link::Classes/Array::
 
@@ -315,11 +231,7 @@ code::
 Image.compositingOperations;
 ::
 
-
-
-
 method:: interpolations
-
 
 returns an link::Classes/Array:: of the different levels of interpolation you can specify when drawing an Image.
 
@@ -327,11 +239,7 @@ code::
 Image.interpolations;
 ::
 
-
-
-
 method:: resizeModes
-
 
 returns an link::Classes/Array:: of the different resize modes you can specify when changing the size of an Image.
 
@@ -339,85 +247,42 @@ code::
 Image.resizeModes;
 ::
 
-
-
-
 method:: allPlotWindows
 
-
-Return an array of all the Image plot windows currently opened.
+Returns an array of all the Image plot windows currently opened.
 
 code::
 Image.allPlotWindows
 ::
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 private:: prLockFocus, prDrawAtPoint, prSync, prApplyFilters, prTileInRect, prUpdatePixelsInRect, prGetPixel, prInit, prSetInterpolation, prFree, prSetPixel, prLoadPixels, prSetBackground, prApplyKernel, prUpdatePixels, prWriteToFile, prUnlockFocus, prInitFromURL, prSetColor, prGetColor, prSetName, prGetInterpolation, prDrawInRect, prNewEmpty, prNewFromWindow, prNewPath, prNewSVG, prNewURL, prSetPainter, prSetSize, prTransferPixels, prUnsetPainter
 
-
-
-
-
-
 subsection:: Commons / general attributes
-
 
 method:: width
 
-
 returns or set the width of the receiver
-
-
-
 
 method:: height
 
-
 returns or set the height of the receiver
-
-
-
 
 method:: setSize
 
-
 Set the size of the receiver
-
-
-
 
 method:: bounds
 
-
 returns the bounds of the receiver.
 
-
-
-
 method:: free
-
 
 Deallocate the receiver. this method is useful if you want to manage and reclaim yourself resources.
 otherwise you do not need to call this method since each object is automatically garbage collected.
 
-
-
-
 method:: scalesWhenResized
-
 
 Flag to tell or set if the receiver should update its bitmap representation to scale when a resize operation is performed
 
@@ -440,11 +305,7 @@ a.close; w.close; i.free;
 )
 ::
 
-
-
-
 method:: url
-
 
 returns or set the url of the receiver.
 Returning only if any where supplied at creation, otherwise returns teletype::nil::.
@@ -457,11 +318,7 @@ i.plot;
 i.free;
 ::
 
-
-
-
 method:: interpolation
-
 
 Get or set the level of interpolation used when rendering the image - it has not effect when the Image is accelerated.
 see link::#*interpolations:: for a valid range of values.
@@ -486,16 +343,9 @@ w.refresh;
 i.free;
 ::
 
-
-
-
-
-
 subsection:: Saving and archiving
 
-
 method:: write
-
 
 Write the Image to a file.
 
@@ -522,33 +372,23 @@ i.plot;
 i.free;
 ::
 
-
 argument:: path
 
 The location where to save it
-
 
 argument:: format
 
 (optional) format to use. see Image.formats for supported formats. If teletype::nil::, it will get the format depending on the path extension.
 
-
 argument:: quality
 
 The quality factor must be in the range teletype::0:: to teletype::100:: or -1. Specify teletype::0:: to obtain small compressed files, 100 for large uncompressed files, and -1 (the default) to use the default settings.
 
-
-
-
-
-
 subsection:: Rendering
-
 
 method:: plot
 
-
-Plot the image in a Window.
+Plots the image in a Window.
 
 code::
 i = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
@@ -563,37 +403,28 @@ i.free;
 Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png").plot("Hello", freeOnClose: true);
 ::
 
-
 argument:: name
 
 The title of the Window. may be nil.
-
 
 argument:: bounds
 
 The bounds of the Window. may be nil.
 
-
 argument:: freeOnClose
 
 Flag to tell if the Window should free the Image when closed.
-
 
 argument:: background
 
 Additional background to apply to the Window.
 may be useful for artifacts due to alpha / compositing...
 
-
 argument:: showInfo
 
-Show pixel coordinates while the mouse is over the image's plot window.
-
-
-
+Shows pixel coordinates while the mouse is over the image's plot window.
 
 method:: draw
-
 
 Shortcut for drawing inside an image.
 equivalent to :
@@ -639,11 +470,7 @@ j.write("~/Desktop/hello.png");
 j.free;
 ::
 
-
-
-
 method:: drawStringAtPoint
-
 
 Renders *correctly* a String inside an Image :) code::// to fix to have a compliant interface::
 
@@ -677,11 +504,7 @@ code::
 )
 ::
 
-
-
-
 method:: drawAtPoint
-
 
 Render the image or a portion of it in the current graphic context.
 
@@ -722,31 +545,23 @@ code::
 )
 ::
 
-
 argument:: point
 
 The link::Classes/Point:: where to draw it
-
 
 argument:: fromRect
 
 The portion of the Image to use
 
-
 argument:: operation
 
 The compositing operation to use. code::'sourceOver':: is the default.
-
 
 argument:: fraction
 
 The opacity to use, ranging from teletype::0.0:: (fully transparent) to teletype::1.0:: (fully opaque)
 
-
-
-
 method:: drawInRect
-
 
 Render the image or a portion of it in a specified rectangle of the current graphic context.
 This may stretch the image depending on the destination rect.
@@ -766,31 +581,23 @@ code::
 )
 ::
 
-
 argument:: rect
 
 The link::Classes/Rect:: where to draw it
-
 
 argument:: fromRect
 
 The portion of the Image to use
 
-
 argument:: operation
 
 The compositing operation to use. code::'sourceOver':: is the default.
-
 
 argument:: fraction
 
 The opacity to use, ranging from teletype::0.0:: (fully transparent) to teletype::1.0:: (fully opaque)
 
-
-
-
 method:: tileInRect
-
 
 Tile the image or a portion of it in a specified rectangle of the current graphic context.
 This may stretch the image depending on the destination rect.
@@ -810,16 +617,13 @@ w.drawFunc_({
 )
 ::
 
-
 argument:: rect
 
 The link::Classes/Rect:: where to draw it
 
-
 argument:: fromRect
 
 The portion of the Image to use
-
 
 argument:: operation
 
@@ -829,21 +633,13 @@ note::
 Compositing operations are currently disabled for tileInRect
 ::
 
-
 argument:: opacity
 
 The opacity to use, ranging from teletype::0.0:: (fully transparent) to teletype::1.0:: (fully opaque)
 
-
-
-
-
-
 subsection:: Instance Methods / accessing and setting pixels
 
-
 method:: setPixel
-
 
 Fill a pixel located at x @ y.
 
@@ -856,26 +652,19 @@ w.refresh;
 i.free;
 ::
 
-
 argument:: rgbaInteger
 
 An 32 bit link::Classes/Integer:: containing color information packed as 8bit RGBA
-
 
 argument:: x
 
 The x position of the pixel in the image
 
-
 argument:: y
 
 The y position of the pixel in the image
 
-
-
-
 method:: getPixel
-
 
 Retrieve the pixel value at x @ y as a RGBA integer
 
@@ -923,27 +712,15 @@ Image.pixelToColor(p).alpha; // 0
 p = a.getColor(1, 0); // more explicit - but same here
 ::
 
-
-
-
 method:: setColor
-
 
 Fill the pixel located at x @ y with the specified strong::color::.
 
-
-
-
 method:: getColor
-
 
 Retrieve the pixel value at x @ y as a link::Classes/Color::.
 
-
-
-
 method:: pixels
-
 
 Retrieve or set all the pixels of the receiver.
 
@@ -952,16 +729,11 @@ Careful: the returned Array is a link::Classes/Int32Array:: of size receiver.wid
 See link::#*colorToPixel:: and link::#*pixelToColor::.
 ::
 
-
 argument:: array
 
 An link::Classes/Int32Array:: of size receiver.width * receiver.height containing all pixel values as 32bit Integer
 
-
-
-
 method:: loadPixels
-
 
 Load all the pixels of the receiver in an array.
 it is better and faster to call this function instead of link::#-pixels:: if you plan to retrieve frequently the pixel data (since it won't allocate a new array everytime !)
@@ -987,27 +759,20 @@ i.free;
 p;
 ::
 
-
 argument:: array
 
 The array that will be filled.
 Should be an link::Classes/Int32Array:: of size receiver.width * receiver.height.
 
-
 argument:: region
 
 The targeted rectangular region. (nil by default, meaning full size)
-
 
 argument:: start
 
 The start index of the array.
 
-
-
-
 method:: setPixels
-
 
 Set the pixels in a specific portion of the receiver.
 
@@ -1036,27 +801,20 @@ i.pixels.postln;
 )
 ::
 
-
 argument:: array
 
 An link::Classes/Int32Array:: of size strong::rect::.width * strong::rect::.height containing all pixel values as 32bit Integer
-
 
 argument:: region
 
 A rectangle defining the portion to update in the receiver.
 By default strong::rect:: is nil, meaning full image size.
 
-
 argument:: start
 
 The array start index.
 
-
-
-
 method:: pixelRatio
-
 
 Get/set pixel ratio of the image.
 

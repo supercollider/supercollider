@@ -21,19 +21,7 @@ They can be written to or even changed in size, emphasis::while:: they are being
 
 Many of Buffer's methods have numerous arguments. Needless to say, for full information see the link::Classes/Buffer:: help file.
 
-
-
-
-
-
-
-
-
-
 section:: Making a Buffer Object and Allocating Memory
-
-
-
 
 Making a Buffer object and allocating the necessary memory in the server app is quite easy.
 You can do it all in one step with Buffer's alloc method:
@@ -57,19 +45,7 @@ b.free;
 
 Buffer's 'free' method frees the memory on the server, and returns the Buffer's number for reallocation. You should not use a Buffer object after doing this.
 
-
-
-
-
-
-
-
-
-
 section:: Using Buffers with Sound Files
-
-
-
 
 Buffer has another class method called 'read', which reads a sound file from disk into memory, and returns a Buffer object.
 Using the UGen PlayBuf, we can play the file.
@@ -115,19 +91,7 @@ This is useful because the soundfile we loaded (a11wlk01.wav) actually has a sam
 With a rate of 1, PlayBuf would play it back using the sampling rate of the server, which is usually 44100 Hz, or four times as fast!
 BufRateScale thus brings things back to normal.
 
-
-
-
-
-
-
-
-
-
 section:: Streaming a File in From Disk
-
-
-
 
 In some cases, for instance when working with very large files, you might not want to load a sound completely into memory.
 Instead, you can stream it in from disk a bit at a time, using the UGen DiskIn, and Buffer's 'cueSoundFile' method:
@@ -149,19 +113,7 @@ b.free; y.free;
 
 This is not as flexible as PlayBuf (no rate control), but can save memory. footnote::For variable playback rate while streaming from disk, look at the link::Classes/VDiskIn::UGen.::
 
-
-
-
-
-
-
-
-
-
 section:: More on Instance Variables and Action Functions
-
-
-
 
 Now a little more OOP. Remember that individual Objects store data in emphasis::instance variables::.
 Some instance variables have what are called getter or setter methods, which allow you to get or set their values.
@@ -202,19 +154,7 @@ x.free; b.free;
 In the example above, the client sends the read command to the server app, along with a request for the necessary information to update the Buffer's instance variables. It then cues the action function to be executed when it receives the reply, and continues executing the block of code.
 That's why the 'Before update...' line executes first.
 
-
-
-
-
-
-
-
-
-
 section:: Recording into Buffers
-
-
-
 
 In addition to PlayBuf, there's a UGen called RecordBuf, which lets you record into a buffer.
 
@@ -247,19 +187,7 @@ b.free;
 
 See the link::Classes/RecordBuf:: help file for details on all of its options.
 
-
-
-
-
-
-
-
-
-
 section:: Accessing Data
-
-
-
 
 Buffer has a number of methods to allow you to get or set values in a buffer.
 Buffer-get and Buffer-set are straightforward to use and take an index as an argument.
@@ -311,19 +239,7 @@ b.free;
 
 A FloatArray is just a subclass of Array which can only contain floats.
 
-
-
-
-
-
-
-
-
-
 section:: Plotting and Playing
-
-
-
 
 Buffer has two useful convenience methods:
 'plot' and 'play'.
@@ -341,19 +257,7 @@ x = b.play(true);		// loops so doesn't free
 x.free; b.free;
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Other Uses For Buffers
-
-
-
 
 In addition to being used for loading in sound files, buffers are also useful for any situation in which you need large and/or globally accessible data sets on the server.
 One example of another use for them is as a lookup table for waveshaping.

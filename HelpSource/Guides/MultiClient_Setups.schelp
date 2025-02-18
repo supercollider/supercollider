@@ -5,31 +5,13 @@ related:: Classes/ServerOptions, Classes/Server
 
 keyword:: server, multi-client
 
-
-
-
-
-
-
-
-
-
 section:: Multi client-server setups - discussion and tests
-
-
-
 
 OSC communication between SC and its sound server offers many options for network music:
 Multiple computers can run both supercollider and associated sound servers.
 For clarity, the "server process" refers to a running scsynth or supernova process. The "server object" AKA "client" is the server's representation in sclang, such as code::Server.local, s, Server(\elsewhere, NetAddr("163.234.56.78"))::.
 
-
-
-
-
-
 subsection:: What are clientIDs, and how do servers get them?
-
 
 When more than one user plays on a given server,
 some resources need to be shared between users/clients:
@@ -54,13 +36,7 @@ list::
 ## [After pull request #3181] scsynth also sends back the maxLogins value it was started with, so clients can also adjust their internal allocator settings to it.
 ::
 
-
-
-
-
-
 subsection:: Code examples and tests
-
 
 Recommended usage for multiple clients on the same server is to use identical options settings for all clients, and logging into the scsynth process from different sclang instances, which are typically on different laptops.
 
@@ -97,13 +73,7 @@ s.userSpecifiedClientID;
 r.userSpecifiedClientID;
 ::
 
-
-
-
-
-
 subsection:: Separate defaultGroups
-
 
 For info on what a default group is, see link::Reference/default_group::.
 
@@ -114,13 +84,7 @@ A client also knows the defaultGroups of all other clients that may login, so it
 
 code::s.defaultGroups;::
 
-
-
-
-
-
 subsection:: Easy-to-trace nodeIDs
-
 
 For details on node allocation, see NodeIDAllocator and ReadableNodeIDAllocator class and help files.
 The scheme from NodeIDAllocator is also followed by many non-sclang clients allocation ranges; in networks with these, NodeIDAllocator will be the safe choice.
@@ -204,13 +168,7 @@ Ndef(\x).filter(10, { |in| Ringz.ar(in, [600, 800], 0.03) }).play;
 Ndef(\x).end(3);
 ::
 
-
-
-
-
-
 subsection:: Bus channel and buffer numbers
-
 
 The allocators for audio and control busses and for buffers split the full number range of scsynth evenly for the number of clients expected.
 
@@ -262,13 +220,7 @@ r.bufferAllocator.size;
 // more buffer alloc examples desirable here?
 ::
 
-
-
-
-
-
 subsection:: Configuring CmdPeriod behavior
-
 
 In networked performances, it is useful that clients have well-chosen
 emergency access to 'their' sounds on a remote server; and it may make sense to give the local client more emergency power.

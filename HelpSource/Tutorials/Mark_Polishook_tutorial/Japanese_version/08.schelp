@@ -3,19 +3,7 @@ categories:: Tutorials>Mark_Polishook_tutorial>Japanese_version
 summary:: Mark Polishook tutorial (JP)
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
-
-
-
-
-
-
-
-
-
 section:: 1つの、ただ1つのUGen
-
-
-
 
 最も簡単なシンセシスのプロセスはただ1つのUGenを実行するものです。例えば、
 
@@ -35,19 +23,7 @@ code::
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
 section:: マルチ・チャンネルへの拡張
-
-
-
 
 任意のアーギュメント（コントロール）スロットに配列を与えることで、1つのUGenを2チャンネルに拡張できます。
 
@@ -63,19 +39,7 @@ code::
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
 section:: UnaryOpUGenの探求
-
-
-
 
 UGenにメッセージを送ることで、多くのシンセシス・プロセスを生成することができます。UnaryOpsフォルダの中のSuperColliderヘルプ・システムの中に、多くの単項演算に関するヘルプファイルがあります。
 

@@ -3,19 +3,7 @@ categories:: Collections>Ordered
 summary:: An array whose indexed slots are all of the same type
 related:: Classes/FloatArray, Classes/Int8Array, Classes/Int16Array, Classes/DoubleArray, Classes/SymbolArray
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 These classes implement arrays whose indexed slots are all of the same type.
 
@@ -28,20 +16,7 @@ list::
 ## SymbolArray - symbols
 ::
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 method:: readFromStream
-
 

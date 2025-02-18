@@ -3,19 +3,7 @@ categories:: Internals
 summary:: Reference for writing unit generators
 related:: Guides/WritingUGens
 
-
-
-
-
-
-
-
-
-
 section:: Input rates
-
-
-
 
 These four constants identify the calculation rates of inputs in SuperCollider.
 
@@ -33,19 +21,7 @@ definitionlist::
 || Demand rate.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: UGen basics
-
-
-
 
 These helper macros assume that there is a UGen object called code::unit:: in the local scope.
 
@@ -91,19 +67,7 @@ This will be one of the four rates.
 ||
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Buffers
-
-
-
 
 definitionlist::
 ## code::GET_BUF::
@@ -159,19 +123,7 @@ ACQUIRE_BUS_CONTROL(index)
 RELEASE_BUS_CONTROL(index)
 ::
 
-
-
-
-
-
-
-
-
-
 section:: RGen
-
-
-
 
 RGen is a pseudorandom number generator API.
 Most UGen developers are not interested in seeding their own RGens and
@@ -250,19 +202,7 @@ technically a shifted and stretched order-3 Irwin-Hall distribution. ::
 || Double version of code::RGen\::fsum3rand::.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Unary operators
-
-
-
 
 definitionlist::
 ## code::bool sc_isnan(float/double x)::
@@ -340,19 +280,7 @@ feedback to safeguard from pathological behavior.
 || Fold code::x:: around ±1, folding only once.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Binary operators
-
-
-
 
 definitionlist::
 ## code::sc_wrap(in, lo, hi [, range])::
@@ -404,19 +332,7 @@ list::
 ## code::sc_atan2(a, b):: (legacy -- use code::std\::atan2::)
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Constants
-
-
-
 
 The following constants are doubles:
 
@@ -447,19 +363,7 @@ list::
 ## code::truncFloat:: = 3 * 2^22 (used to truncate precision)
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Unroll macros
-
-
-
 
 The macros in this section are legacy features.
 They are seen in many of SuperCollider's built-in UGens, and are

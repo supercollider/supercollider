@@ -3,45 +3,19 @@ categories:: UGens>FFT
 summary:: Complex division
 related:: Classes/PV_Mul, Classes/PV_MagDiv
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: bufferA
 
 Fft buffer A.
 
-
 argument:: bufferB
 
 Fft buffer B.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 In this example we estimate the transfer function of the LPF UGen.
 The transfer function is estimated by dividing the FFT of the output, by the FFT of the input, and looking at the magnitudes in the result.

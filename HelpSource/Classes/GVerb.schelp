@@ -3,120 +3,67 @@ categories:: UGens>Reverbs
 summary:: A two-channel reverb
 related:: Classes/FreeVerb, Classes/FreeVerb2
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A two-channel reverb link::Classes/UGen::, based on the "GVerb" LADSPA effect by Juhana Sadeharju (kouhia at nic.funet.fi).
 
-
-
-
-
-
 subsection:: Known issues
-
 
 list::
 ## There is a large CPU spike when the synth is instantiated while all the delay lines are zeroed out.
 ## Changes in roomsize result in pitch shifting and noise.
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar
-
 
 argument:: in
 
 Mono input.
 
-
 argument:: roomsize
 
 In squared meters.
-
 
 argument:: revtime
 
 In seconds.
 
-
 argument:: damping
 
 teletype::0:: to 1, high frequency rolloff, 0 damps the reverb signal completely, 1 not at all.
-
 
 argument:: inputbw
 
 teletype::0:: to 1, same as damping control, but on the input signal.
 
-
 argument:: spread
 
 A control on the stereo spread and diffusion of the reverb signal.
-
 
 argument:: drylevel
 
 Amount of dry signal.
 
-
 argument:: earlyreflevel
 
 Amount of early reflection level.
 
-
 argument:: taillevel
 
 Amount of tail level.
-
 
 argument:: maxroomsize
 
 To set the size of the delay lines.
 Defaults to roomsize + 1.
 
-
 argument:: mul
 
 argument:: add
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

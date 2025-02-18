@@ -3,41 +3,15 @@ categories:: JITLib>GUI
 summary:: Mix control for all Ndefs on a given server
 related:: Classes/NdefMixer
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 For more details see: link::Classes/ProxyMixer::
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 subsection:: Creation
 
-
 method:: new
-
 
 Return a new window for a given server.
 
@@ -48,58 +22,29 @@ n = NdefMixer(\localhost);
 n = NdefMixer(\trala);		// fails, no such server
 ::
 
-
 argument:: server
 
 Server object (link::Classes/Server::) or server name (link::Classes/Symbol::)
-
 
 argument:: nProxies
 
 An Integer.
 
-
 argument:: title
 
 A String.
-
 
 argument:: bounds
 
 A Rect.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 method:: proxyspace
 
-
 Return the proxyspace.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 n = NdefMixer(s);		// for the default server

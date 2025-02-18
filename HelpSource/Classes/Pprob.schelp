@@ -3,86 +3,43 @@ categories:: Streams-Patterns-Events>Patterns>Random
 summary:: Random values with arbitrary probability distribution
 related:: Classes/Ppoisson
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Createan an integral table on instantiation (cpu intensive) which is then used by the streams to generate random values efficiently.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: distribution
 
 Desired probability distribution (histogram).
 
-
 argument:: lo
 
 Lower bound of the resulting values.
-
 
 argument:: hi
 
 Upper bound of the resulting values.
 
-
 argument:: length
 
 Number of values to repeat.
-
 
 argument:: tableSize
 
 Resample table to this size. If the size of the distribution is smaller than 64, it is (linearly) resampled to this minimum size.
 
-
 argument:: distribution
 
 Set the distribution, the table is recalculated.
-
 
 argument:: tableSize
 
 Set the resample size, the table is recalculated.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // a consistency test

@@ -3,159 +3,71 @@ categories:: Collections>Unordered
 summary:: A dictionary which can serve as a 'name space' for functions
 related:: Classes/Event, Classes/IdentityDictionary
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 An Environment is an IdentityDictionary with additional features that allow it to serve as a 'name space' within which functions can be defined and/or evaluated.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: stack
 
-
-Maintain a stack of Environments accessed by link::#*push:: and link::#*pop::.
-
-
-
+Maintains a stack of Environments accessed by link::#*push:: and link::#*pop::.
 
 method:: make
 
-
-Create a new Environment and sends make message.
-
-
-
+Creates a new Environment and sends make message.
 
 method:: use
 
-
-Create a new Environment and sends use message.
-
-
-
+Creates a new Environment and sends use message.
 
 method:: push
 
-
-Save link::#currentEnvironment:: on the stack.
-
-
-
+Saves link::#currentEnvironment:: on the stack.
 
 method:: pop
 
-
-Restore link::#currentEnvironment:: from the stack.
-
-
-
-
-
-
-
-
-
+Restores link::#currentEnvironment:: from the stack.
 
 instancemethods::
 
-
-
-
 method:: make
 
-
-Evaluate the function within the environment, returns the environment.
-
-
-
+Evaluates the function within the environment, returns the environment.
 
 method:: use
 
-
-Evaluate the function within the environment, returns the return value of the function.
-
-
-
+Evaluates the function within the environment, returns the return value of the function.
 
 method:: push
 
-
-Save the receiver on the stack.
-
-
-
+Saves the receiver on the stack.
 
 method:: pop
 
-
-Restore link::#currentEnvironment:: from the stack.
-
-
-
+Restores link::#currentEnvironment:: from the stack.
 
 method:: linkDoc
 
-
-Link the environment to the current document, so that it is the currentEnvironment only when one document is in focus.
+Links the environment to the current document, so that it is the currentEnvironment only when one document is in focus.
 See: link::Classes/Document#-envir::
-
 
 argument:: doc
 
 The document to link to, defaults to the current document (link::Classes/Document#*current::).
 If the document has focus or no document is given, the environment is pushed immediately.
 
-
-
-
 method:: unlinkDoc
 
-
-Unink the environment to the current document, so that it is the currentEnvironment only when one document is in focus.
+Uninks the environment to the current document, so that it is the currentEnvironment only when one document is in focus.
 See: link::Classes/Document#-envir::
-
 
 argument:: doc
 
 The document to unlink from, defaults to the current document (link::Classes/Document#*current::).
 If the document has focus or no document is given, the environment is popped immediately.
 
-
-
-
-
-
-
-
-
-
 section:: PseudoVariables (global variables)
-
-
-
 
 These are not methods, but global variables.
 
@@ -164,19 +76,11 @@ In general, you should not manipulate these variables directly.
 Instead, use the link::#-use::, link::#-push::and link::#*pop::methods.
 ::
 
-
-
-
 method:: currentEnvironment
-
 
 Determines environment used by "~" syntax, link::#valueEnvir::, and link::#valueArrayEnvir::
 
-
-
-
 method:: topEnvironment
-
 
 Initial value of link::#currentEnvironment::. code::~environmentVariables:: placed here can be used as "global variables," as long as the topEnvironment remains the currentEnvironment.
 
@@ -206,49 +110,19 @@ e.pop;  // return to the previous currentEnvironment
 
 Thus, ~abc is not truly a global variable because it is inaccessible if its environment is not current.
 
-
-
-
-
-
-
-
-
-
 section:: Related Messages
-
-
-
 
 method:: valueEnvir (arg1, arg2...)
 
-
-Evaluate a function, looking up unspecified arguments in link::#currentEnvironment::
-
-
-
+Evaluates a function, looking up unspecified arguments in link::#currentEnvironment::
 
 method:: valueArrayEnvir (argArray)
 
-
 Same as link::#valueEnvir::, but with arguments in an array
-
-
-
-
-
-
-
-
-
 
 section:: Overview
 
-
-
-
 subsection:: topEnvironment, currentEnvironment, make and use
-
 
 When SuperCollider starts, it creates an Environment that it stores in the pseudovariables link::#topEnvironment:: and link::#currentEnvironment::. The link::#topEnvironment:: provides a universally accessible collection of named values similar to the link::Classes/Interpreter:: variables a, b, c, ....
 
@@ -281,13 +155,7 @@ a.use({
 
 Evaluate the function within that environment.
 
-
-
-
-
-
 subsection:: valueEnvir and valueArrayEnvir
-
 
 When Functions are evaluated with link::#valueEnvir:: and link::#valueArrayEnvir:: unspecified arguments are looked up in the current Environment.
 If the argument is not found in the Environment its default value is used.
@@ -356,13 +224,7 @@ orc = Environment.make {
 )
 ::
 
-
-
-
-
-
 subsection:: Environments and asynchronous functions
-
 
 Local variables declared in functions, and class and instance variables, use lexical scope. That is, the context in which they are understood depends on where the declaration is read during compilation.
 Asynchronous functions -- any function that will execute outside (later than) the current execution flow -- carry their lexically scoped variables with them.
@@ -390,13 +252,7 @@ e = (a: "got it", f: { { ~a.postln }.inEnvir.defer(0.5) });
 e.use { e.f };
 ::
 
-
-
-
-
-
 subsection:: Using Environments as object prototypes
-
 
 Environment's strong::know:: variable holds a link::Classes/Boolean:: value controlling whether the Environment may be used as an object prototype or not. If strong::know:: is true, any messages sent to the Environment that it does not already understand will be relayed into items in the Environment. (If teletype::false::, not-understood messages will produce a standard "does not understand" error message.)
 

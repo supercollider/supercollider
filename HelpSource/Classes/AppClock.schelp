@@ -3,19 +3,7 @@ categories:: Scheduling>Clocks
 summary:: Clock running on main application thread
 related:: Classes/SystemClock, Classes/TempoClock
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 SystemClock is more accurate, but cannot call GUI primitives.
 
@@ -23,22 +11,9 @@ You will need to use the link::Classes/SystemClock:: to get accurate/musical sch
 
 See link::Classes/Clock:: for general explanation of how clocks operate.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 private:: initClass, prSchedNotify
-
 
 method:: sched
 The float you return specifies the delta to resched the function for.
@@ -61,17 +36,14 @@ AppClock.sched(2.0, { "It is now % sec later".format(Main.elapsedTime - t).postl
 )
 ::
 
-
-
-
 method:: schedAbs
 
-
-Schedule a task to be performed at a particular time.
+Schedules a task to be performed at a particular time.
 Because code::AppClock:: is not intended to schedule with high precision, this time is approximate.
 
 When the scheduling time is up, the task's code::awake:: method is called. If the method
-returns a number, the task will be rescheduled for the time equal to the last scheduling time plus the returned value.
+returns a number, the task will be rescheduled for the time equal to the last scheduling
+time plus the returned value.
 
 See also: link::Classes/Clock#Scheduling::, link::Classes/Object#-awake::.
 
@@ -83,11 +55,7 @@ AppClock.schedAbs(t + 1.0, { "It is now % sec later".format(Main.elapsedTime - t
 )
 ::
 
-
-
-
 method:: clear
-
 
 Clear the AppClock's scheduler to stop it.
 
@@ -95,11 +63,7 @@ code::
 AppClock.clear;
 ::
 
-
-
-
 method:: play
-
 
 The link::Classes/Routine:: (or link::Classes/Task::) yields a float value indicating the delta (secs) for the AppClock to wait until resuming the Routine.
 
@@ -122,11 +86,7 @@ AppClock.play(r);
 )
 ::
 
-
-
-
 method:: tick
-
 
 AppClock.tick is called periodically by the SuperCollider language interpreter.
 This updates the link::Classes/Scheduler:: and causes any scheduled tasks to be executed.

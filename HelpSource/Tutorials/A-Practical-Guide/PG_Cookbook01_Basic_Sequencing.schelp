@@ -3,22 +3,9 @@ categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Sequencing basics
 related:: Tutorials/A-Practical-Guide/PG_08_Event_Types_and_Parameters, Tutorials/A-Practical-Guide/PG_Cookbook02_Manipulating_Patterns
 
-
-
-
-
-
-
-
-
-
 section:: Cookbook: Sequencing basics
 
-
-
-
 subsection:: Playing a predefined note sequence
-
 
 The following are three different ways of playing the same famous fugue subject.
 
@@ -63,13 +50,7 @@ p = Pbind(
 )
 ::
 
-
-
-
-
-
 subsection:: "Multichannel" expansion
-
 
 In a SynthDef, using an array as the input to a UGen expands the UGen into an array of UGens (see link::Guides/Multichannel-Expansion::).
 Something similar happens in patterns.
@@ -91,13 +72,7 @@ p = Pbind(
 p.stop;
 ::
 
-
-
-
-
-
 subsection:: Using custom SynthDefs (including unpitched SynthDefs)
-
 
 Patterns have special features to support several styles of pitch organization, but those features are strictly optional.
 Here we play a SynthDef that has no frequency argument whatsoever.

@@ -3,19 +3,7 @@ categories:: UGens>FFT, UGens>Demand
 summary:: Unpack an FFT chain into separate demand-rate FFT bin streams
 related:: Classes/PackFFT, Classes/Unpack1FFT
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Takean an FFT chain and separates the magnitude and phase data into separate demand-rate streams, for arithmetic manipulation etc.
 
@@ -24,49 +12,30 @@ This is technically a demand-rate UGen. The actual "demand" is usually created b
 See also link::Classes/PV_ChainUGen#-pvcollect::, link::Classes/PV_ChainUGen#-pvcalc::, and link::Classes/PV_ChainUGen#-pvcalc2::, which provide convenient ways to process audio in the frequency domain.
 The help for pvcollect includes notes on efficiency considerations.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: categories
 
-
 method:: new
-
 
 argument:: chain
 
 FFT chain
 
-
 argument:: bufsize
 
 FFT buffer size
-
 
 argument:: frombin
 
 Limiting analysis to the bins of interest
 
-
 argument:: tobin
 
 Limiting analysis to the bins of interest
 
-
 returns::
 A list from DC up to Nyquist of code:: [mag[0], phase[0], mag[1], phase[1], ... mag[nyquist], phase[nyquist]]. ::
-
 
 discussion::
 Note that you do have to decide your FFT buffer size in advance, since this determines how many values the UGen will output.
@@ -75,19 +44,7 @@ code::
 #magsphases = UnpackFFT(chain, bufsize)
 ::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // This one just drags out various the values and posts them - a little bit pointless!

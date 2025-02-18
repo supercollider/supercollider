@@ -3,19 +3,7 @@ categories:: Core
 summary:: Idempotent wrapper around math operations
 related:: Classes/AbstractFunction, Classes/Maybe, Classes/Ref, Classes/Rest
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 If you need to ensure that math operations always return the result wrapped in a specific object, you can use Operand or subclass from it.
 For some practical examples, see its subclass link::Classes/Rest::.
@@ -37,22 +25,9 @@ c = a + b * a; // Operand([6, 8, 10])
 c.value; // [6, 8, 10]
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: value
 
@@ -65,22 +40,9 @@ a = Operand(1) + 7; // returns Operand(8)
 Operand(Operand(Operand(1))) == Operator(1)
 ::
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 private:: composeBinaryOp, composeNAryOp, composeUnaryOp, performBinaryOpOnComplex, performBinaryOpOnSeqColl, performBinaryOpOnSignal, performBinaryOpOnSimpleNumber, reverseComposeBinaryOp
-
 
 method:: value
 Set or return the current value.
@@ -92,11 +54,7 @@ a.value = 78;
 a.value; // 78
 ::
 
-
-
-
 method:: ==
-
 
 argument:: obj
 
@@ -107,11 +65,7 @@ Operand(1) == Operand(1);
 Operand(1) + 2 == Operand(3);
 ::
 
-
-
-
 method:: hash
-
 
 Two instances with the same value return the same hash value.
 
@@ -119,29 +73,13 @@ code::
 Set[Operand(1), Operand(1)] == Set[Operand(1)] // true
 ::
 
-
-
-
 method:: dereferenceOperand
-
 
 This method is called to avoid nesting.
 You may override it in subclasses to perform actions on resulting values.
 code::Operand(Operand(1)) // Operand(1)::.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // you could make a class that always converts values to integers:

@@ -26,19 +26,7 @@ These 'private' busses are often used for things like an 'effects send', i.e. so
 The number of control and audio busses available, as well as the number of input and output channels, is set at the time the server app is booted.
 (See link::Classes/ServerOptions:: for information on how to set the number of input and output channels, and busses.)
 
-
-
-
-
-
-
-
-
-
 section:: Writing to or Reading from Busses
-
-
-
 
 We've already seen Out.ar, which allows you to write (i.e. play out) audio to a bus. Recall that it has two arguments – an index, and an output – which can be an array of UGens (i.e. a multichannel output) or a single UGen.
 
@@ -84,19 +72,7 @@ x = Synth("tutorial-args", ["out", 1, "freq", 660]);
 y = Synth("tutorial-args", ["out", 1, "freq", 770]);
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Creating a Bus Object
-
-
-
 
 There is a handy client-side object to represent server busses:
 Bus. Given that all you need is an In or Out UGen and an index to write to a bus, you might wonder what one would need a full-fledged Bus object for. Well, much of the time you don't, particularly if all you're doing is playing audio in and out.
@@ -171,19 +147,7 @@ Now everything that was written to our private bus is going out one of the outpu
 A Server's audio bus allocator will only assign private indices, so if you change the number of input or output channels it will take this into account when you execute your code.
 Again, this makes your code more flexible.
 
-
-
-
-
-
-
-
-
-
 section:: Busses in Action
-
-
-
 
 So here are two examples using busses.
 The first is with a control rate bus.
@@ -281,19 +245,7 @@ x.free; y.free; z.free; b.free;
 Note that we could easily have many more source synths being processed by the single reverb synth.
 If we'd built the reverb into the source synths we'd be duplicating the effort. But by using a private bus, we're able to be more efficient.
 
-
-
-
-
-
-
-
-
-
 section:: More Fun with Control Busses
-
-
-
 
 There are some other powerful things that you can do with control rate busses.
 For instance, you can map any arg in a running synth to read from a control bus.
@@ -362,19 +314,7 @@ Since it hasn't received the reply yet f is still teletype::nil:: when it's post
 It only takes a tiny amount of time for the server to send a reply, so by the time we get around to executing the last line of code f has been set to 880, as we expected. In the previous example this wasn't a problem, as we were only executing a line at a time.
 But there will be cases where you will need to execute things as a block, and the action function technique is very useful for that.
 
-
-
-
-
-
-
-
-
-
 section:: Getting it all in the Right Order
-
-
-
 
 In the examples above, you may have wondered about things like Synth.after, and addAction: \addToHead. During each cycle (the period in which a block of samples is calculated) the server calculates things in a particular order, according to its list of running synths.
 
@@ -415,19 +355,7 @@ For more information see:
 
 link::Classes/Bus::, link::Classes/In::, link::Classes/OutputProxy::, link::Guides/Order-of-execution::, link::Classes/Synth::
 
-
-
-
-
-
-
-
-
-
 section:: Suggested Exercise
-
-
-
 
 Experiment with interconnecting different synths using audio and control busses.
 When doing so, be mindful of their ordering on the server.

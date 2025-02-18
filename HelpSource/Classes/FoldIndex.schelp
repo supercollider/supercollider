@@ -3,71 +3,33 @@ categories:: UGens>Buffer
 summary:: Index into a table with a signal
 related:: Classes/Index, Classes/Shaper
 
-
-
-
-
-
-
-
-
-
 description::
 
-
-
-
-The input signal value is truncated to an integer value and used as an index into the table. Out-of-range index values are folded into the valid range.
-
-
-
-
-
-
-
-
-
+The input signal value is truncated to an integer value and used as an
+index into the table. Out-of-range index values are folded into
+the valid range.
 
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: bufnum
 
 Index of the buffer.
 
-
 argument:: in
 
 The input signal.
-
 
 argument:: mul
 
 Output will be multiplied by this value.
 
-
 argument:: add
 
 This value will be added to the output.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // indexing into a table

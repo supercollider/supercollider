@@ -3,63 +3,22 @@ categories:: JITLib>GUI, Live Coding
 summary:: Show all current Pdefns as code
 related:: Classes/Pdefn, Classes/PdefnGui
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 PdefnAllGui displays all current Pdefns as code.
 See also TdefAllGui for general info, search functions, etc.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: observedClass
 
-
 Pdefn
-
-
-
 
 method:: tpGuiClass
 
-
 PdefnGui
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 PdefnAllGui(();

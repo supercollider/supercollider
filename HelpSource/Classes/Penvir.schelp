@@ -3,51 +3,24 @@ categories:: Streams-Patterns-Events>Patterns>Data Sharing
 summary:: Use an environment when embedding the pattern in a stream
 related:: Classes/Pkey
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: envir
 
 An environment with objects to embed.
 
-
 argument:: pattern
 
 Pattern or stream, usually a link::Classes/Pfunc::, link::Classes/Prout::.
-
 
 argument:: independent
 
 If teletype::true:: streams can write to the environment without influencing other streams created from this pattern.
 if teletype::false::, the streams write to a common namespace.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

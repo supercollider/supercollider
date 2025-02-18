@@ -3,74 +3,33 @@ categories:: UGens>Filters>Nonlinear, UGens>Generators>PhysicalModels
 summary:: Physical model of bouncing object
 related:: Classes/TBall, Classes/Spring
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Ball models the path of a bouncing object that is reflected by a vibrating surface.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: categories
 
-
 method:: ar, kr
-
 
 argument:: in
 
 Modulated surface level
 
-
 argument:: g
 
 Gravity
-
 
 argument:: damp
 
 Damping on impact
 
-
 argument:: friction
 
 Proximity from which on attraction to surface starts
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 Mouse x controls switch of level:
 

@@ -19,19 +19,7 @@ A full list of those who have contributed to SuperCollider and its documentation
 
 https://supercollider.github.io
 
-
-
-
-
-
-
-
-
-
 section:: Key Combinations
-
-
-
 
 Within this text, you will see text like "Ctrl-Enter" and "Cmd-Enter". These are key combinations. They mean: hold down the first key and then press the second key (while still holding down the first). 
 
@@ -42,19 +30,7 @@ For example: "Ctrl-Enter" is a key combination of the "Ctrl" key and the "Enter"
 
 For key combinations with 3 or more keys, hold down all keys except the last key and then press the last key. For example, "Ctrl-Shift-P" means: press and hold down the "Ctrl" and "Shift" keys first, then press the "P" key while still holding "Ctrl" and "Shift".
 
-
-
-
-
-
-
-
-
-
 section:: Links
-
-
-
 
 Within the text, and at the end of each section there might be a list of links to other documents, that will look something like this:
 
@@ -64,19 +40,7 @@ Most of these are meant to expand upon what you have just read, but some just po
 Some of the linked documents are written in fairly technical language, and may duplicate information which is presented in this tutorial in a more casual form.
 Often they are designed as reference documents for people already familiar with SC, so don't worry if everything in them doesn't immediately make sense. You won't need to have seen and/or fully understood them in order to continue with the tutorial.
 
-
-
-
-
-
-
-
-
-
 section:: Code Examples
-
-
-
 
 Code examples within the text are in a different font:
 

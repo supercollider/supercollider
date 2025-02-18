@@ -15,35 +15,11 @@ The work may be redistributed at no charge with proper attribution:
 Harkins, Henry James. "A Practical Guide to Patterns." SuperCollider 3.3 Documentation, 2009.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Introduction
-
-
-
 
 Patterns are one of the most powerful elements of the SuperCollider language, but in some ways they can be difficult to approach using only the class-oriented help files. These documents seek to bridge the gap, explaining the conceptual background behind patterns, describing the usage of specific Pattern classes, and proceeding into examples of practical musical tasks written as patterns.
 
-
-
-
-
-
-
-
-
-
 section:: Contents
-
-
-
 
 definitionlist::
 ## link::Tutorials/A-Practical-Guide/PG_01_Introduction:: || Fundamental concepts of patterns and streams
@@ -63,13 +39,7 @@ definitionlist::
 ## link::Tutorials/A-Practical-Guide/PG_08_Event_Types_and_Parameters:: || Describes the event types defined in the default event, and the parameters they expect
 ::
 
-
-
-
-
-
 subsection:: Pattern Cookbook
-
 
 The pattern cookbook is a set of examples with explanations.
 
@@ -115,31 +85,13 @@ definitionlist::
 
 ::
 
-
-
-
-
-
 subsection:: Reference material
-
 
 definitionlist::
 ## link::Tutorials/A-Practical-Guide/PG_Ref01_Pattern_Internals:: || Details of pattern implementation, with guidance on writing new pattern classes
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Why patterns?
-
-
-
 
 Patterns describe calculations without explicitly stating every step.
 They are a higher-level representation of a computational task.
@@ -211,19 +163,7 @@ They can serve as a bridge for new and advanced users alike, to represent a musi
 
 The first step in learning a new language is vocabulary, so the next chapter will concentrate on foundational patterns to generate data streams of nearly every sort.
 
-
-
-
-
-
-
-
-
-
 section:: Patterns versus Streams
-
-
-
 
 Some context that is important to keep in mind throughout this discussion is the difference between patterns and streams.
 In the most general terms:

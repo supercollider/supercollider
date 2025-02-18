@@ -2,144 +2,68 @@ title:: Volume
 categories:: Server
 summary:: Model for the global volume of the synthesis server
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Internally used by Server. When volume value != 0 dB or muted, a server's volume object will create a synth for controlling the volume on the main outputs for the number of channels given.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: new
 
-
 Create and return a new instance of Volume for a given server,
 ranging from code::startBus:: over code::numChans:: (usually the server's number of output bus channels).
-
 
 argument:: server
 
 A server
 
-
 argument:: startBus
 
 Start bus
-
 
 argument:: numChannels
 
 Number of channels
 
-
 argument:: min
 
 Minimum volume in decibel
-
 
 argument:: max
 
 Minimum volume in decibel
 
-
 argument:: persist
 
 Whether to persist a reset
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 method:: mute
 
-
 Mute output
-
-
-
 
 method:: unmute
 
-
 Unmute output
-
-
-
 
 method:: volume
 
-
 Set the volume (in db)
-
-
-
 
 method:: lag
 
-
 Set the lag time that dampens volume changes
-
-
-
 
 method:: setVolumeRange
 
-
 Set the volume range
-
-
-
 
 method:: gui
 
-
 Create a volume gui.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 v = s.volume;

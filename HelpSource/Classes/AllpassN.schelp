@@ -3,19 +3,7 @@ categories:: UGens>Delays
 summary:: Schroeder allpass delay line with no interpolation
 related:: Classes/AllpassC, Classes/AllpassL, Classes/BufAllpassN
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A Schroeder allpass filter is given by the difference equations
 
@@ -30,72 +18,44 @@ code::D:: is the delay time, and code::k:: is the allpass coefficient.
 In this UGen, code::k:: is computed as
 code::k == 0.001 ** (delay / decay.abs) * decay.sign:: (0.001 is -60 dBFS).
 
-This UGen quantizes the delay time to the nearest sample period, and will produce aliasing artifacts if the delay time is modulated.
-If these are undesirable properties, the more CPU-expensive alternatives are
+This UGen quantizes the delay time to the nearest sample period, and will
+produce aliasing artifacts if the delay time is modulated.
+If these
+are undesirable properties, the more CPU-expensive alternatives are
 link::Classes/AllpassL:: which uses linear interpolation, and
 link::Classes/AllpassC:: which uses cubic interpolation.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: in
 
 The input signal.
-
 
 argument:: maxdelaytime
 
 The maximum delay time in seconds.
 Used to initialize the delay buffer size.
 
-
 argument:: delaytime
 
 Delay time in seconds.
-
 
 argument:: decaytime
 
 Time for the echoes to decay by 60 decibels.
 If this time is negative, then the feedback coefficient will be negative, thus emphasizing only odd harmonics at an octave lower.
 
-
 argument:: mul
 
 Output will be multiplied by this value.
-
 
 argument:: add
 
 This value will be added to the output.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // Since the allpass delay has no audible effect as a resonator on

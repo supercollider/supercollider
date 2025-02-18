@@ -22,19 +22,7 @@ scztt, simdax, smoge, smrg-lm, snappizz, telephon, thormagnusson,
 tiagomoraismorgado88, timsutton, vivid-synth, vividsnow, yurivict, and many
 more in the SC community who helped in ways other than participation on GitHub.
 
-
-
-
-
-
-
-
-
-
 section:: Known Issues
-
-
-
 
 The IDE server status display turns yellow after a few seconds when opening code:: s.makeGui ::.  This does not cause any usability issues.
 
@@ -54,19 +42,7 @@ On Windows, Supernova is not available.
 
 On Windows, the command-line sclang interpreter is not available.
 
-
-
-
-
-
-
-
-
-
 section:: General: Added
-
-
-
 
 Scvim has seen numerous enhancements now that an actively maintained fork has been merged in.
 
@@ -82,38 +58,14 @@ A CODE_OF_CONDUCT.md and CONTRIBUTING.md have been added to the repository.
 
 Higher-resolution raster versions of the SC cube logo have been added to the top-level code:: icons/ :: directory, and a retina-friendly code:: .icns :: file.
 
-
-
-
-
-
-
-
-
-
 section:: General: Changed
-
-
-
 
 strong:: Breaking change: :: code:: sc_gcd :: in the plugin interface now conforms to code:: gcd(n, 0) == n :: instead of code:: gcd(n, 0) == abs(n) ::.
 This also affects the method code:: SimpleNumber:gcd ::.
 
 The macOS plist file now shows the full version number for both the Version String and Shortened Version String.
 
-
-
-
-
-
-
-
-
-
 section:: General: Fixed
-
-
-
 
 A typo in the build system prevented the code:: -msse :: compiler flag from being properly set for gcc and clang.
 This *may* fix subnormal number issues in scsynth that some users have been experiencing.
@@ -122,36 +74,12 @@ Fixed a fontification break in scel when too many classes are defined.
 
 Fixed build failures on FreeBSD, GCC 7, and newer versions of Boost.
 
-
-
-
-
-
-
-
-
-
 section:: scsynth and supernova: Added
-
-
-
 
 scsynth and supernova now support a code:: /version :: command, which responds with a message of the form code:: /version.reply program major minor patch branch commit ::.
 See the Server Command Reference for full details.
 
-
-
-
-
-
-
-
-
-
 section:: scsynth and supernova: Changed
-
-
-
 
 On macOS, if scsynth's input and output devices have mismatched sample rates, an error is thrown and the server does not boot.
 Setting the number of input channels to teletype::0:: (code:: -i 0 :: on the command line and code:: s.options.numInputBusChannels = 0 :: in sclang) now bypasses this error.
@@ -160,36 +88,12 @@ Disabled Nagle's algorithm for TCP communication in scsynth.
 Nagle's algorithm increases bandwidth at the cost of delay, which is undesirable in the context of SuperCollider.
 Both supernova and sclang have it turned off.
 
-
-
-
-
-
-
-
-
-
 section:: scsynth and supernova: Fixed
-
-
-
 
 The code:: /b_read :: and code:: /b_readChannel :: messages experienced intermittent failures to read sound files, most notably affecting code:: Buffer.cueSoundFile ::.
 This has been fixed.
 
-
-
-
-
-
-
-
-
-
 section:: UGens: Added
-
-
-
 
 A new UGen, code:: Sanitize ::, replaces infinities, NaNs, and subnormals with another signal, zero by default.
 
@@ -198,19 +102,7 @@ The code:: doneAction :: argument to DetectSilence can now be modulated.
 UnaryOpUGen now supports the bitwise not operator code:: bitNot ::.
 It used to simply fail silently.
 
-
-
-
-
-
-
-
-
-
 section:: UGens: Changed
-
-
-
 
 strong:: Breaking change: :: The application binary interface (ABI) for server plugins has changed.
 This has an important impact: strong:: plugin binaries compiled for SuperCollider 3.8 will not work with SuperCollider 3.9 :: and vice versa. Please recompile your plugins.
@@ -218,35 +110,11 @@ This has an important impact: strong:: plugin binaries compiled for SuperCollide
 strong:: Breaking change: :: code:: FOS.ar :: with control-rate coefficient inputs incorrectly initialized its coefficients at 0 and ramped to the correct values over the first control period.
 This has been fixed. To restore old behavior, multiply each coefficient by code:: Line.ar(0, 1, ControlDur.ir) ::.
 
-
-
-
-
-
-
-
-
-
 section:: UGens: Deprecated
-
-
-
 
 code:: Donce ::, a demand-rate UGen with no identifiable purpose, is deprecated. It was most likely used in the production of electronic donce music.
 
-
-
-
-
-
-
-
-
-
 section:: UGens: Fixed
-
-
-
 
 A number of UGens were discovered to have serious initialization bugs where the UGen would output an initial sample of garbage memory.
 This can create audio explosions if the buggy UGen's output is fed into certain filter UGens like LPF or Delay1.
@@ -264,36 +132,12 @@ Fixed code:: AudioControl :: outputting garbage data if a bus is mapped to it bu
 
 Fixed incorrect math in code:: PanAz.ar :: with audio-rate input signal and position.
 
-
-
-
-
-
-
-
-
-
 section:: sclang: Added
-
-
-
 
 Regression tests for the sclang lexer, parser, and compiler have been added.
 This will make it easier to make fixes to these components in the future.
 
-
-
-
-
-
-
-
-
-
 section:: sclang: Changed
-
-
-
 
 strong:: Breaking change: :: sclang's nestable multiline comments had some mistakes.
 In particular, sometimes sclang's lexer would incorrectly process overlapping combinations of code:: /* :: and code:: */ ::, so e.g. code:: */*/ :: would be interpreted like code:: */ /* */ ::.
@@ -303,37 +147,13 @@ The maximum number of MIDI ports has been increased from 16 to 128.
 
 The startup post "NumPrimitives = #" is reworded to "Found # primitives".
 
-
-
-
-
-
-
-
-
-
 section:: sclang: Removed
-
-
-
 
 Removed some unhelpful memory addresses from call stack output in error printing.
 
 Removed some accidentally retained debug posts when the language starts up.
 
-
-
-
-
-
-
-
-
-
 section:: sclang: Fixed
-
-
-
 
 Fixed help files failing to open on Windows if the user's name contains a non-ASCII character.
 
@@ -358,19 +178,7 @@ You will still need code:: { }.defer ::, however.
 
 Fixed code:: QImage:getColor :: always returning zero for the green channel.
 
-
-
-
-
-
-
-
-
-
 section:: Class library: Added
-
-
-
 
 The UnitTest quark has been incorporated into the main repository.
 
@@ -426,19 +234,7 @@ A new "booted" stage has been added to Server objects that have been booted but
 may not be running yet, accessible via code:: Server:hasBooted :: and
 code:: Server.allBootedServers ::.
 
-
-
-
-
-
-
-
-
-
 section:: Class library: Changed
-
-
-
 
 strong:: Breaking change: :: Rests in the patterns system have been restructured.
 Instead of using the code:: isRest :: event property, events are considered rests if one of their properties is a code:: Rest :: object.
@@ -470,19 +266,7 @@ Conversion methods among collection types has been improved and documented.
 
 code:: clientID :: is now protected from being changed while the server is running.
 
-
-
-
-
-
-
-
-
-
 section:: Class library: Deprecated
-
-
-
 
 code:: OSCresponder ::, code:: OSCresponderNode ::, and code:: OSCpathResponder :: now emit deprecation messages, and will be removed after at least a year.
 Use code:: OSCFunc :: or code:: OSCdef :: instead.
@@ -509,19 +293,7 @@ code:: SimpleNumber:quantize :: is deprecated. Use code:: SimpleNumber:snap :: i
 
 code:: Server:userSpecifiedClientID :: is deprecated. Use code:: Server:clientID :: instead.
 
-
-
-
-
-
-
-
-
-
 section:: Class library: Removed
-
-
-
 
 Removed non-functional stub methods and classes related to Image:
 the classes ImageFilter and ImageKernel, and the Image instance methods lockFocus, unlockFocus, applyFilters, filters, filteredWith, addFilter, removeFilter, flatten, invert, crop, applyKernel.
@@ -534,19 +306,7 @@ These methods have been deprecated since 3.8.
 Removed code:: String:openTextFile :: and code:: Symbol:openTextFile ::. Use code:: String:openDocument :: and code:: Symbol:openTextFile :: instead.
 These methods have been deprecated since 3.8.
 
-
-
-
-
-
-
-
-
-
 section:: Class library: Fixed
-
-
-
 
 A number of instance methods in code:: Buffer :: and code:: Bus :: did not properly check to see if the object has already been freed, and would act on buffer #0 or bus #0 (which is especially dangerous for the code:: free :: instance method).
 They now safeguard against this case and throw errors.
@@ -609,38 +369,14 @@ Fixed supernova crashing when too many controls are used.
 
 code:: Volume :: now respects lag time when it is instantiated or destroyed.
 
-
-
-
-
-
-
-
-
-
 section:: IDE & SCDoc: Added
-
-
-
 
 Entries in the Documents docklet can be reordered, and document tabs will automatically reorder to reflect this.
 
 "Edit > Preferences > Editor > Display" has a new option that allows replacing tabs with a dropdown whose items are alphabetically ordered.
 This makes navigation easier in some performance contexts.
 
-
-
-
-
-
-
-
-
-
 section:: IDE & SCDoc: Changed
-
-
-
 
 Server actions, which were previously in the "Language" menu, have been moved out to their own "Server" menu.
 
@@ -648,19 +384,7 @@ Changed "occurrences" to "matches" in the status bar in the Find and Replace fea
 
 Many minor improvements were made to the look and feel of the documentation.
 
-
-
-
-
-
-
-
-
-
 section:: IDE & SCDoc: Fixed
-
-
-
 
 Fixed SCDoc refusing to index any further documents if one document has a malformed code:: copymethod :: command.
 

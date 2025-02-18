@@ -3,57 +3,29 @@ categories:: UGens>Delays
 summary:: Comb delay line with cubic interpolation
 related:: Classes/CombL, Classes/CombN, Classes/BufCombC
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Comb delay line with cubic interpolation.
 See also link::Classes/CombN:: which uses no interpolation, and link::Classes/CombL:: which uses linear interpolation. Cubic interpolation is more computationally expensive than linear, but more accurate.
 
 The feedback coefficient is given by the equation code:: fb == 0.001 ** (delay / decay.abs) * decay.sign :: where 0.001 is -60 dBFS.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: in
 
 The input signal.
-
 
 argument:: maxdelaytime
 
 The maximum delay time in seconds.
 Used to initialize the delay buffer size.
 
-
 argument:: delaytime
 
 Delay time in seconds.
-
 
 argument:: decaytime
 
@@ -64,29 +36,15 @@ Large decay times are sensitive to DC bias, so use a link::Classes/LeakDC:: if t
 
 Infinite decay times are permitted. A decay time of code::inf:: leads to a feedback coefficient of 1, and a decay time of code::-inf:: leads to a feedback coefficient of teletype::-1::.
 
-
 argument:: mul
 
 Output will be multiplied by this value.
-
 
 argument:: add
 
 This value will be added to the output.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // These examples compare the variants, so that you can hear the difference in interpolation

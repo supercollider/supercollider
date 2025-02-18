@@ -2,41 +2,15 @@ title:: Font
 categories:: GUI>Accessories
 summary:: A font object
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 This is the object you pass to other gui objects to set their font name or size.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: key
 
-
 method:: new
-
 
 argument:: name
 
@@ -44,26 +18,21 @@ An instance of link::Classes/String::.
 Must coincide with the name of a font on the system.
 See link::#*availableFonts::.
 
-
 argument:: size
 
 An instance of link::Classes/Float::.
-
 
 argument:: bold
 
 A Boolean.
 
-
 argument:: italic
 
 A Boolean.
 
-
 argument:: usePointSize
 
 A Boolean. Whether to regard the strong::size:: argument as point-size - adapting to the screen resolution.
-
 
 discussion::
 Example:
@@ -72,243 +41,138 @@ code::
 g = Font("Helvetica", 12);
 ::
 
-
-
-
 method:: availableFonts
-
 
 returns::
 link::Classes/Array:: of the available fonts.
 
-
-
-
 method:: antiAliasing
-
 
 argument:: flag
 
 An instance of link::Classes/Boolean::.
 Default value is code::false::.
-
-
-
 
 method:: smoothing
 
-
 argument:: flag
 
 An instance of link::Classes/Boolean::.
 Default value is code::false::.
 
-
-
-
 method:: defaultSansFace
-
 
 returns::
 The default sans serif face Font.
 
-
-
-
 method:: defaultSerifFace
-
 
 returns::
 The default serif face Font.
 
-
-
-
 method:: defaultMonoFace
-
 
 returns::
 The default monospace face Font.
 
-
-
-
 method:: default
-
 
 The global default Font.
 
 Setting this property is equivalent to code::Font.setDefault(font)::. See link::#*setDefault:: for details.
 
-
-
-
 method:: setDefault
 
-
-Set the global default font. Properties of the code::font:: argument will be combined with properties of the default system font, and those of individual views.
+Sets the global default font. Properties of the code::font:: argument will be combined with properties of the default system font, and those of individual views.
 
 Optionally, a class can be given, so only views of that class will be affected.
 
 Note that this will immediately affect any existing views.
 
-
 argument:: font
 
 An instance of Font.
-
 
 argument:: class
 
 A Class (either View or one of its subclasses), or code::nil::.
 
-
-
-
 method:: sansSerif
-
 
 Create a new sans serif face Font.
 
-
-
-
 method:: monospace
-
 
 Create a new monospace face Font.
 
-
-
-
 method:: serif
-
 
 Create a new serif face Font.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 method:: name
 
-
-Get/set the name of the font.
-
+Gets/sets the name of the font.
 
 argument:: value
 
 An instance of link::Classes/String::.
 
-
-
-
 method:: size
 
-
-Get/set the size of the font.
+Gets/sets the size of the font.
 Setting this variable is always considered as setting the link::#-pixelSize::, while getting it will return any size set.
 See link::#-hasPointSize:: for distinction.
-
 
 argument:: pixelSize
 
 A Float.
 
-
-
-
 method:: hasPointSize
-
 
 A Boolean variable indicating whether the link::#-size:: is regarded as pixel-size (precise amount of pixels), or point-size (adapting to screen resolution).
 To change this, you need to set the size via link::#-pixelSize:: or link::#-pointSize::.
 
-
-
-
 method:: pixelSize
 
-
-Get/set the pixel-size of the font. When getting, returns teletype::nil:: if the font has point-size instead. See link::#-hasPointSize:: for distinction.
-
+Gets or sets the pixel-size of the font. When getting, returns teletype::nil:: if the font has point-size instead. See link::#-hasPointSize:: for distinction.
 
 argument::
 	Any number, but note that floats will be rounded to integer values when setting pixel-size.
 
-
-
-
 method:: pointSize
 
-
-Get/set the point-size of the font. When getting, returns teletype::nil:: if the font has pixel-size instead. See link::#-hasPointSize:: for distinction.
-
+Gets or sets the point-size of the font. When getting, returns teletype::nil:: if the font has pixel-size instead. See link::#-hasPointSize:: for distinction.
 
 argument::
 	A Float.
 
-
-
-
 method:: setDefault
 
-
-Make this instance of Font the default.
+Makes this instance of Font the default.
 
 This is equivalent to calling link::#*setDefault:: with this Font and the given class as arguments.
 
-
-
-
 method:: storeArgs
 
-
 (?)
-
 
 returns::
  
 an link::Classes/Array::, code:: [name, size] ::.
 
-
-
-
 method:: boldVariant
-
 
 note::
 On the Cocoa GUI it appends teletype::"-Bold":: to the name. This is only useful for fonts that have bold
 variants.
 ::
 
-
 returns::
 Bold variant of the Font.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

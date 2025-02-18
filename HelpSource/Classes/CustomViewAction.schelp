@@ -3,19 +3,7 @@ categories:: GUI
 summary:: A MenuAction that can contain a View
 related:: Classes/MenuAction, Classes/Menu, Classes/ToolBar, Classes/MainMenu
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A CustomViewAction is a link::Classes/MenuAction:: that contains a link::Classes/View:: instead of an icon or text.
 This enables embedding of interactive components to a link::Classes/Menu:: or link::Classes/ToolBar::.
@@ -40,22 +28,9 @@ code::
 )
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
     Create a new CustomViewAction
 
@@ -65,22 +40,9 @@ method:: new
         A Function to execute when this item is selected.
         note:: In some cases, the View that the CustomViewAction contains will absorb mouse clicks, making it difficult to select this menu item (and thus trigger the action). ::
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 method:: defaultView
-
 
     Set the View that is attached to this CustomViewAction.
 

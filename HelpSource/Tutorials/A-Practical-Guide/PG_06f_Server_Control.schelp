@@ -3,19 +3,7 @@ categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Patterns that manage server-side resources
 related:: Tutorials/A-Practical-Guide/PG_06e_Language_Control, Tutorials/A-Practical-Guide/PG_06g_Data_Sharing
 
-
-
-
-
-
-
-
-
-
 section:: Server control methods
-
-
-
 
 A handful of filter patterns can isolate signals on a private bus and/or group, and also apply effect synths.
 A nice feature is that resources allocated at the beginning of the pattern are removed at the end.
@@ -119,13 +107,7 @@ MixerChannels (in the ddwMixerChannel quark) are a more explicit way.
 Any pattern can be played on a MixerChannel:
 code::aMixer.play(aPattern)::.
 
-
-
-
-
-
 subsection:: Pproto:
-
 
 Allocating other resources for the duration of a pattern
 

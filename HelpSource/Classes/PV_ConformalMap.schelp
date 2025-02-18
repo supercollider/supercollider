@@ -3,19 +3,7 @@ categories:: UGens>FFT
 summary:: Complex plane attack
 related:: Classes/FFT, Classes/IFFT
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Applythe the conformal mapping
 
@@ -23,10 +11,12 @@ code::
 z → (z - a) / (1 - za*)
 ::
 
-To the phase vocoder bins z with a given by the real and imag inputs to the UGen.
+To the phase vocoder bins z with a given by the real and imag inputs to
+the UGen.
 
 
-Makes a transformation of the complex plane so the output is full of phase vocoder artifacts but may be musically fun.
+Makes a transformation of the complex plane so the output is full of
+phase vocoder artifacts but may be musically fun.
 Usually keep
 
 code::
@@ -46,50 +36,23 @@ give back the input mostly unperturbed.
 
 See  link::http://mathworld.wolfram.com/ConformalMapping.html:: .
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: buffer
 
 FFT buffer.
 
-
 argument:: areal
 
 Real part of a.
-
 
 argument:: aimag
 
 Imaginary part of a.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // explore the effect

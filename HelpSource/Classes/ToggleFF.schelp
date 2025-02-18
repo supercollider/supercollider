@@ -3,56 +3,19 @@ categories:: UGens>Triggers
 summary:: Toggle flip flop
 related:: Classes/SetResetFF
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Togglebetween between 0 and 1 upon receiving a trigger.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: ar, kr
-
 
 argument:: trig
 
 Trigger input.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

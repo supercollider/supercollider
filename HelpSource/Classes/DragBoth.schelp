@@ -3,19 +3,7 @@ categories:: GUI>Views
 summary:: A simple drag-and-drop source and receiver
 related:: Classes/DragSink, Classes/DragSource
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 link::Classes/DragSource::, link::Classes/DragSink:: and link::Classes/DragBoth:: are a set of view classes intended as simple-to-use drag-and-drop sources and destinations. They are graphically represented as a simple rectangle, and their specialty is that they emphasis::do not require the Cmd/Ctrl key to be held down to initiate dragging::.
 
@@ -26,70 +14,25 @@ strong::DragBoth::, specifically, strong::accepts any:: dropped data and stores 
 
 See: link::Classes/View#Drag and drop:: for a general description of the drag and drop mechanism.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: key
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 method:: defaultGetDrag
 
-
 	returns::The link::Classes/StaticText#-object#-object::.
-
-
-
 
 method:: defaultCanReceiveDrag
 
-
 	returns:: Always True.
-
-
-
 
 method:: defaultReceiveDrag
 
-
 	Sets the link::Classes/StaticText#-object#-object:: to the current drag data.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

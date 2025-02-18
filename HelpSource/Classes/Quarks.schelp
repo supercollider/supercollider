@@ -3,60 +3,29 @@ categories:: Quarks
 summary:: Package manager
 related:: Guides/UsingQuarks, Classes/Quark
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 See link::Guides/UsingQuarks:: for an introduction to the Quarks package system.
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: gui
 
-
 Show the interface for managing quarks
-
 
 returns::
  
 QuarksGui
 
-
-
-
 method:: install
 
-
 Will execute the link::Guides/UsingQuarks#Hooks#hooks:: code::\preInstall:: and code::\postInstall:: if defined.
-
 
 argument:: name
 
 Name of a quark that is listed in the directory,
-or the url of a git repository or the path (absolute or relative to current working directory) of a folder to install.
-
+or the url of a git repository
+or the path (absolute or relative to current working directory) of a folder to install.
 
 argument:: refspec
 
@@ -66,19 +35,14 @@ A sha commit: "15e6ea822a18d06b286c3f10918f83b8d797d939"
 "HEAD"
 nil (default)
 
-
 returns::
  
 this
 
-
-
-
 method:: installQuark
 
-
-Install a quark Usually you use *install with a name, url or path.
-
+Install a quark
+Usually you use *install with a name, url or path.
 
 argument:: quark
 
@@ -86,43 +50,29 @@ returns::
  
 this
 
-
-
-
 method:: uninstall
 
-
 Will execute the link::Guides/UsingQuarks#Hooks#hooks:: code::\preUninstall:: and code::\postUninstall:: if defined.
-
 
 argument:: name
 
 Name (String) of a quark that is listed in the directory,
-or url of a git repository or the path (absolute or relative to current working directory) of a folder to uninstall.
-
+or url of a git repository
+or the path (absolute or relative to current working directory) of a folder to uninstall.
 
 returns::
  
 this
-
-
-
 
 method:: clear
 
-
 Uninstall all Quarks, by setting LanguageConfig.installedPaths to empty.
-
 
 returns::
  
 this
 
-
-
-
 method:: addFolder
-
 
 argument:: path
 
@@ -134,76 +84,50 @@ The argument should be a path to a directory emphasis::containing quark director
 Users are discouraged from scattering quark directories in isolated locations.
 ::
 
-
 returns::
  
 this
 
-
-
-
 method:: all
-
 
 All Quarks whether downloaded or installed or not.
 Includes any Quarks that were installed by path.
 
-
 returns::
  
 Array of Quarks
-
-
-
 
 method:: installed
 
-
 All currently installed Quarks
-
 
 returns::
  
 Array of Quarks
 
-
-
-
 method:: isInstalled
-
 
 argument:: name
 
 Name, url or path
 
-
 returns::
  
 Boolean
 
-
-
-
 method:: save
 
-
-Save the currently installed quarks to a file as a list of urls and refspecs.
-
+Saves the currently installed quarks to a file as a list of urls and refspecs.
 
 argument:: path
 
 Path of file to save to
 
-
 returns::
  
 this
 
-
-
-
 method:: load
-
 
 Clear all installed quarks and load a list from a file.
 Relative paths in the file are resolved relative to the file itself.
@@ -211,72 +135,49 @@ eg. ./classes/my-quark
 Unix style tildes (~/supercollider/quarks/my-quark) resolve to the user's home directory, even on Windows.
 By convention the file is called quarks.txt
 
-
 argument:: path
 
 Path of file to load. May contain ~ or relative paths (root is current working directory)
-
 
 argument:: done
 
 Function to be evaluated when loading is done
 
-
 returns::
  
 this
 
-
-
-
 method:: update
-
 
 Runs 'git pull' on the checked out copy of the quark.
 The gui provides a more robust way to do updates.
 Will execute the link::Guides/UsingQuarks#Hooks#hooks:: code::\preUpdate:: and code::\postUpdate:: if defined.
 
-
 argument:: name
 
 Name of quark
 
-
 returns::
  
 this
-
-
-
 
 method:: openFolder
 
-
 Open the downloaded-quarks folder
-
 
 returns::
  
 this
 
-
-
-
 method:: folder
 
-
 Path of the downloaded-quarks folder where Quarks are cloned to before installing.
-
 
 returns::
  
 path
 
-
-
-
 method:: checkForUpdates
-
 
 Scan through all downloaded, git-repository quarks and download any updates.
 This uses teletype::git fetch::; updates will be retrieved but not applied to the working copy (i.e., no visible change to the environment). After this, repositories will be aware of new branches and version tags.
@@ -284,26 +185,19 @@ This uses teletype::git fetch::; updates will be retrieved but not applied to th
 This will take several seconds per quark.
 The SC interpreter will be unresponsive during each individual quark update.
 
-
 argument:: done
 
 (Optional) A function to evaluate after all quarks have been checked.
-
 
 argument:: quarkAction
 
 (Optional) A function to evaluate emphasis::before:: checking each individual quark. This function receives the Quark object as an argument, so you can use it, for instance, to print the quark name and have a running status update in the post window: code::Quarks.checkForUpdates(quarkAction: { |quark| "Updating %\n".postf(quark.name) });::.
 
-
-
-
 method:: fetchDirectory
-
 
 Private.
 Fetches the directory listing into downloaded-quarks/quarks
 If a local copy already exists and it is not a git repo then this is used instead.
-
 
 argument:: force
 
@@ -312,55 +206,38 @@ Force fetch. By default it is fetched once per session.
 Recompile the class library to fetch it again, or
 call Quarks.fetchDirectory(true) to force it.
 
-
 returns::
  
 this
 
-
-
-
 method:: classesInPackage
 
-
-Return the Classes that are defined in the Quark or package.
-
+Returns the Classes that are defined in the Quark or package.
 
 argument:: packageName
 
 Name of quark or any folder in Extensions or Common.
 "Common" is a package that refers to the standard library.
 
-
 returns::
  
 Array of Classes
 
-
-
-
 method:: link
 
-
-Add the path to LanguageConfig.installedPaths.
+Adds the path to LanguageConfig.installedPaths.
 private
-
 
 argument:: path
 
 returns::
  
 this
-
-
-
 
 method:: unlink
 
-
-Remove a path from LanguageConfig.installedPaths.
+Removes a path from LanguageConfig.installedPaths.
 private
-
 
 argument:: path
 
@@ -368,27 +245,17 @@ returns::
  
 this
 
-
-
-
 method:: initClass
 
-
 private
-
 
 returns::
  
 this
 
-
-
-
 method:: findQuarkURL
 
-
 private
-
 
 argument:: name
 
@@ -396,77 +263,51 @@ returns::
  
 this
 
-
-
-
 method:: directoryUrl
 
-
 The URL of the directory.txt file
-
 
 returns::
  
 this
 
-
-
-
 method:: directory
 
-
-The community contributed Quarks directory. Fetched from the directoryUrl and parsed.
-
+The community contributed Quarks directory. Fetched from the directoryUrl
+and parsed.
 
 returns::
  
 Dictionary[name->url@refspec]
 
-
-
-
 method:: asAbsolutePath
 
-
 Helper method to resolve paths to absolute paths.
-
 
 argument:: path
 
 argument:: relativeTo
 Optional root for resolving relative paths
 
-
 returns::
  
 absolute path
 
-
-
-
 method:: quarkNameAsLocalPath
 
-
 private
-
 
 argument:: name
 
 Quark name, path or git url.
 
-
 returns::
  
 absolute path where the Quark is
 
-
-
-
 method:: at
 
-
 private. gets or creates a Quark by name, storing it in a central cache.
-
 
 argument:: name
 
@@ -474,22 +315,7 @@ returns::
  
 Quark
 
-
-
-
 private:: prReadDirectoryFile
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 

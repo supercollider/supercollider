@@ -8,19 +8,7 @@ SC supports extensions to its class library, documentation, and server UGen plug
 single folder containing all three (for convenient addition or removal), or any combination, which can then be placed in
 platform-specific extension directories in order to be included.
 
-
-
-
-
-
-
-
-
-
 section:: Platform Specific Directories
-
-
-
 
 You can install extensions simply by copying the extensions to the following location.
 There are different directories
@@ -43,19 +31,7 @@ table::
 ## Windows || %PROGRAMDATA%/SuperCollider/Extensions/
 ::
 
-
-
-
-
-
-
-
-
-
 section:: How Extensions Folders Should be Organised
-
-
-
 
 Class files and UGen plugins are recognised by their file extensions.
 Anything placed within a folder named 

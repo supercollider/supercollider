@@ -3,36 +3,12 @@ categories:: Streams-Patterns-Events
 summary:: Stream modified by a unary operator
 related:: Classes/BinaryOpStream, Classes/NAryOpStream
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A UnaryOpStream is created as a result of a unary math operation on a Stream.
 It is defined to respond to strong::next:: by returning the result of the math operation on the strong::next:: value from the stream. It responds to strong::reset:: by resetting the Stream.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 x = Routine { 6.do { |i| i.yield } }.squared;

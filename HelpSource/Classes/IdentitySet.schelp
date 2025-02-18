@@ -3,19 +3,7 @@ categories:: Collections>Unordered
 summary:: A set according to identity
 related:: Classes/List, Classes/Dictionary
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 An IdentitySet is a collection of objects, no two of which are the same object (aka. "identical").
 Most of its methods are inherited (see link::Classes/Collection:: and link::Classes/Set:: classes).
@@ -28,25 +16,11 @@ Different classes may implement equality in different ways, but identity can be 
 This allows some methods of IdentitySet to be implemented
 by fast primitives.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 subsection:: Adding and Removing
 
-
 method:: add
-
 
 Add anObject to the IdentitySet. An object which is equal to an object already in the IdentitySet will not be added.
 
@@ -60,11 +34,7 @@ IdentitySet['abc', 'def', 'ghi'].add('def');
 IdentitySet['abc', 'def', 'ghi'].add('jkl');
 ::
 
-
-
-
 method:: remove
-
 
 Remove anObject from the IdentitySet.
 
@@ -72,18 +42,11 @@ code::
 IdentitySet[1, 2, 3].remove(3);
 ::
 
-
-
-
-
-
 subsection:: Iteration
-
 
 method:: do
 
-
-Evaluate function for each item in the IdentitySet.
+Evaluates function for each item in the IdentitySet.
 You must not depend on the order of items.
 The function is passed two arguments, the item and an integer index.
 
@@ -91,18 +54,11 @@ code::
 IdentitySet[1, 2, 3, 300].do { |item, i| item.postln };
 ::
 
-
-
-
-
-
 subsection:: Finding an element
-
 
 method:: findMatch
 
-
-Return item if it is in the collection, otherwise returns teletype::nil::.
+Returns item if it is in the collection, otherwise returns teletype::nil::.
 
 code::
 a = IdentitySet[1, 2, 3, 300];
@@ -110,19 +66,7 @@ a.findMatch(1);
 a.findMatch(1.5);
 ::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // scanFor is fairly efficient. compare the following benchmarks:

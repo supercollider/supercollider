@@ -3,71 +3,31 @@ categories:: Streams-Patterns-Events>Patterns>Random
 summary:: Brownian motion pattern
 related:: Classes/BrownNoise, Classes/Pgbrown
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Return a stream that behaves like a brownian motion.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: lo
 
 Lower boundary of values.
 
-
 argument:: hi
 
 Upper boundary of values.
-
 
 argument:: step
 
 Maximum change per step - the distribution is xrand2.
 
-
 argument:: length
 
 Number of values produced.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

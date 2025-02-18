@@ -2,104 +2,44 @@ title:: PriorityQueue
 categories:: Collections>Ordered
 summary:: Priority queue data structure
 
-
-
-
-
-
-
-
-
-
 description::
 
-
-
-
 PriorityQueue implements a priority queue data structure, which is used to build schedulers.
-It allows you to put in items at some arbitrary time and pop them in time order.
-
-
-
-
-
-
-
-
-
+It allows you to put in items at some arbitrary time and pop them in
+time order.
 
 instancemethods::
 
-
-
-
 private:: prInternalArray
 
-
 method:: put
-Put the item in the queue at the given time.
-
-
-
+Puts the item in the queue at the given time.
 
 method:: topPriority
 
-
-Return the time of the earliest item in the queue.
-
-
-
+Returns the time of the earliest item in the queue.
 
 method:: pop
 
-
-Return the earliest item in the queue.
-
-
-
+Returns the earliest item in the queue.
 
 method:: clear
 
-
 Empty the queue.
-
-
-
 
 method:: isEmpty
 
-
 Return a link::Classes/Boolean:: whether the queue is empty.
-
-
-
 
 method:: notEmpty
 
-
 Return a link::Classes/Boolean:: whether the queue is not empty.
-
-
-
 
 method:: removeValue
 
-
 Remove all instances of value from the queue.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

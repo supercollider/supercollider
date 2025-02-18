@@ -3,29 +3,11 @@ categories:: JITLib>GUI, Live Coding
 summary:: A line of editing controls for a Tdef, and optionally its envir
 related:: Classes/TdefAllGui, Classes/PdefGui, Classes/PdefAllGui, Classes/EnvirGui
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 A gui showing the link::Classes/Tdef::'s name, playing state, source state, and envir state. Optionally, its envir can also be edited.
 
-
-
-
-
-
 subsection:: First example
-
 
 code::
 g = TdefGui();			// make a TdefGui
@@ -44,13 +26,7 @@ TdefGui(Tdef(\a), 3, w);
 )
 ::
 
-
-
-
-
-
 subsection:: Detailon the on the GUI elements
-
 
 definitionlist::
 ## name button
@@ -90,44 +66,26 @@ table::
 
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 subsection:: Creation Methods
 
-
 method:: new
 
-
 Create a new link::Classes/JITGui:: that will be watching an object and display its state.
-
 
 argument:: object
 
 The object to watch
 
-
 argument:: numItems
 
 The number of display items to use, e.g. how many fields for text, or how many EZSliders for single-number parameters.
-
 
 argument:: parent
 
 A parent view on which to display.
 If teletype::nil::, a new window is created; strong::parent:: can also be an existing window or a composite view.
-
 
 argument:: bounds
 
@@ -137,132 +95,70 @@ JITGuis know their minimum size (strong::minSize::), and if bounds is nil, minSi
 With a rect one can also supply a position where to display.
 If a point, shown size is the maximum of bounds and minSize
 
-
 argument:: makeSkip
 
 A flag whether to make a skipjack.
 If one uses a TdefGui as part of a larger gui ensemble, one may want to call checkUpdate on all of them together, not with separate skipJacks.
 
-
 argument:: options
 
 A list of additional information, e.g. flags about optional buttons. (this is used is some subclasses)
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 method:: object
-
 
 A link::Classes/Tdef::, or nil
 
-
-
-
 method:: numItems
-
 
 The number of items in the envirGui
 
-
-
-
 method:: parent
-
 
 The parent view
 
-
-
-
 method:: bounds
-
 
 The bounds of the link::#-zone::
 
-
-
-
 method:: zone
-
 
 The link::Classes/CompositeView:: within which the TdfGui is shown
 
-
-
-
 method:: nameBut, playBut, pauseBut, srcBut, envBut
-
 
 The buttons
 
-
-
-
 method:: envirGui
-
 
 The gui for the Tdef's envir - if numItems > 0.
 
-
-
-
 method:: object
-
 
 Put an object in the gui.
 
-
-
-
 method:: moveTo
-
 
 (if the jitGui is in its own window)
 
 move it to some specific location.
 
-
-
-
 method:: clear
-
 
 (if the jitGui is in its own window)
 
 set the TdefGui's object to teletype::nil::
 
-
-
-
 method:: close
-
 
 (if the jitGui is in its own window)
 
 and close its window.
 
-
-
-
-
-
 subsection:: Internal methods
 
-
 method:: srcString
-
 
 A compileString that recreates the Tdef.
 
@@ -271,22 +167,13 @@ code::
 g.srcString;
 ::
 
-
-
-
 method:: editString
-
 
 A compileString that recreates the Tdef's envir at edKey.
 
-
-
-
 method:: editStrings
 
-
 A compileString that recreates the Tdef's envir at edKeys.
-
 
 argument:: edKeys
 
@@ -301,11 +188,7 @@ g.editString(\foo);
 g.editStrings;
 ::
 
-
-
-
 method:: getUsedKeys
-
 
 The keys in use in the envir
 
@@ -313,11 +196,7 @@ code::
 g.getUsedKeys;
 ::
 
-
-
-
 method:: openDoc
-
 
 Open a document with some strings at some location.
 used with src button, env button.
@@ -326,27 +205,11 @@ code::
 g.openDoc(g.editStrings);
 ::
 
-
-
-
 method:: makeEnvirGui
-
 
 Make an envirGui within zone.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 (

@@ -3,42 +3,16 @@ categories:: JITLib>GUI, Live Coding
 summary:: Display the contents of an environment for editing
 related:: Classes/EZText, Classes/TdefGui, Classes/PdefGui
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 EnvirGui displays all keys and values of an environment, so one can change them flexibly.
 Single number get displayed with an link::Classes/EZSlider::, pairs of numbers with an link::Classes/EZRanger::, and anything else is shown as an link::Classes/EZText:: (a text field).
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 subsection:: Creation
 
-
 method:: new
-
 
 Create a new EnvirGui
 NdefParamGui
@@ -66,80 +40,48 @@ g.envir.removeAt(\v)
 g.close;
 ::
 
-
 argument:: object
 
 The envir to display
-
 
 argument:: numItems
 
 The number of items to display.
 If an envir is given, and no num, num is envir.size.
 
-
 argument:: parent
 
 The parent view to display in; if none is given, a new window is created.
-
 
 argument:: bounds
 
 The bounds within which to display; if none is given, bounds are calculated.
 
-
 argument:: makeSkip
 
 Flag whether to make a skipjack to manage updates of the envirgui.
-
 
 argument:: options
 
 Configuration options
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 subsection:: Instance Variables
 
-
 method:: numItems
-
 
 How many envir items to display
 
-
-
-
 method:: envir
-
 
 The envir displayed - actually an alias for object.
 
-
-
-
 method:: zone
-
 
 The composite view the envirgui makes for itself
 
-
-
-
 method:: paramViews
-
 
 The paramViews that display the values:
 
@@ -151,52 +93,29 @@ list::
 
 See link::Classes/ParamView:: for details.
 
-
-
-
 method:: specs
-
 
 A local dictionary of the specs used for display ranges of numerical parameters by the paramViews of this envirgui.
 See the link::#-getSpec:: method for details.
 
-
-
-
 method:: editKeys
-
 
 The keys of the currently displayed items in the dict.
 
-
-
-
 method:: keysRotation
-
 
 If the size of envir exceeds numItems, the keys displayed can be rotated:
 e.g. with 10 keys displayed on 5 paramViews, keysRotation 0 means show keys (0..4), keysRotation 2 means show keys (2..6), etc.
 
 strong::gui elements present if requested in options::
 
-
-
-
 method:: docBut, knowBut, parentBut, protoBut
-
-
-
-
-
 
 subsection:: Some Methods
 
-
 method:: object
 
-
 Set the environment to show
-
 
 argument:: obj
 
@@ -207,19 +126,11 @@ g = EnvirGui((freq: 120, \amp: 0.2, \pan: -0.5), 12, nil, bounds: Rect(20, 400, 
 g.object_((a: 1, b: [2, 3], c: \symbol, d: [4, 5, 6], f: { "boing".postln }))
 ::
 
-
-
-
 method:: envir
-
 
 Same as object_(obj)
 
-
-
-
 method:: name
-
 
 If in its own window, set the window's name
 
@@ -227,11 +138,7 @@ code::
 g.name_("Yoohoo");
 ::
 
-
-
-
 method:: getSpec
-
 
 For editing, numerical parameters need control specs for the ranges on the gui.
 These can be set locally in the EnvirGui, or global specs will be looked up.
@@ -250,21 +157,15 @@ g.specs;			// and keep it here
 g.envir.put(\iFrek, 500);
 ::
 
-
 argument:: key
 
 The parameter name for which to find a spec
-
 
 argument:: value
 
 The current value of that param, which is used when guessing specs.
 
-
-
-
 method:: putSpec
-
 
 Add a spec for a given key, or (if it is a global key) override a global spec with a local one:
 
@@ -287,35 +188,19 @@ g.close
 
 strong:: Keys with technical names can be replaced in the display with clearer names:
 
-
-
-
 method:: replaceKeys
-
 
 The current list of keys to replace
 
-
-
-
 method:: addReplaceKey
-
 
 Add a key to replace and its replacer key
 
-
-
-
 method:: removeReplaceKey
-
 
 Remove a replacer key
 
-
-
-
 method:: showKeyFor
-
 
 Show
 
@@ -335,11 +220,7 @@ g.replaceKeys
 g.removeReplaceKey(\longFreq)
 ::
 
-
-
-
 method:: highlight
-
 
 Highlight the paramview at a given index, by color and optional prefix
 
@@ -349,87 +230,44 @@ g.highlight(0, ">>_");
 g.highlight(0, ">>_", Color.green(1, 0.6));
 ::
 
-
-
-
 method:: unhighlight
-
 
 Remove highlighting at an index
 g.unhighlight(0);
 
-
-
-
-
-
 subsection:: Some internal methods
-
 
 method:: setByKeys
 
-
 Update the widgets for the current keys
-
-
-
 
 method:: showFields
 
-
 Show (num) active fields, make others invisible.
 
-
-
-
 method:: useRanger
-
 
 Set and get whether arrays of 2 number values should be displayed with EZRangers.
 
 
 strong::methods that make gui elements: ::
 
-
-
-
 method:: makeViews
-
 
 method:: makeOptionalViews
 The method that makes all views specified in the options
 
-
-
-
 method:: makeNameView, makeKnowBut, makeDocBut, makeClrBut, makeProtoBut, makeParentBut
-
 
 The methods that make the individual elements as specified
 
 strong::standard JITGui methods: ::
 
-
-
-
 method:: accepts, setDefaults, getState, checkUpdate, updateButtons
-
 
 private:: clearFields, updateViewSpecs, viewForParam
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 	// Setting envir variables in a Tdef:

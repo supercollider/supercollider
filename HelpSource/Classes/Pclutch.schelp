@@ -3,46 +3,20 @@ categories:: Streams-Patterns-Events>Patterns>Repetition
 summary:: Sample and hold a pattern
 related:: Classes/StreamClutch, Classes/Pdup, Classes/Latch
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: pattern
 
 Any pattern.
-
 
 argument:: connected
 
 A pattern that returns either a series of link::Classes/Boolean::s or the equivalent 0 and 1.
 If teletype::true:: (or 1), the pattern plays as usual, if teletype::false:: (or 0), the previous value is kept.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 Pclutch(Pseq([1, 2, 3, 4, 5], 3), Pseq([0, 0, 1, 0, 0, 0, 1, 1])).asStream.nextN(10);

@@ -3,54 +3,26 @@ categories:: UGens>Buffer, UGens>Demand
 summary:: Buffer read demand ugen
 related:: Classes/Dbufwr
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: bufnum
 
 Buffer number to read from
 
-
 argument:: phase
 
 Index into the buffer
-
 
 argument:: loop
 
 When phase exceeds number of frames in buffer, loops when set to teletype::1::(default :1)
 
-
 discussion::
 All inputs can be either demand UGen or any other UGen.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 b = Buffer.alloc(s, 24, 1);

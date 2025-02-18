@@ -15,21 +15,9 @@ Its syntax is different than SC's, but conceptually it has much in common.
 
 NB: Be sure to check out the Further Info section at the bottom of this page.
 
-
-
-
-
-
-
-
-
-
 section:: Basics
 
-
-
-
-A you've probably already learned selecting any text and pressing Cmd-d will open the corresponding helpfile.
+As you've probably already learned selecting any text and pressing Cmd-d will open the corresponding helpfile.
 Usually helpfiles are either concept related, or document particular classes. In the SC language classes begin with capital letters.
 Try Cmd-d on the following (double click on the first word; the stuff after the two slashes is a comment):
 
@@ -52,19 +40,7 @@ Click the link to open the corresponding helpfile.
 Note that many helpful methods print information to the 'post window'. Unless you have explicitly changed it (see the Window menu) this is the window which opened when you launched.
 Pressing Cmd-\ will bring the current post window to the front.
 
-
-
-
-
-
-
-
-
-
 section:: Tracking Down Information
-
-
-
 
 Executing the following
 
@@ -160,19 +136,7 @@ Array.helpFileForMethod('select'); // this will open the Collection helpfile; sc
 In general poking around can be a good way to learn about how things work.
 See link::Guides/Internal-Snooping:: for more advanced information about how to look 'under the hood.'
 
-
-
-
-
-
-
-
-
-
 section:: For Further Info
-
-
-
 
 Http://supercollider.sourceforge.net/
 

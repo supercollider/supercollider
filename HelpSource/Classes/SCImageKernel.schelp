@@ -3,19 +3,7 @@ categories:: GUI>Views
 summary:: Kernel class to use with SCImage
 related:: Classes/SCImage, Classes/SCImageFilter
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 code::// very experimental :)::
 
@@ -36,82 +24,41 @@ table::
 ## __table || link::Classes/SCImage:: (basically the __table modifier just use Images as a data providers - LUT)
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: new
 
-
-Create a new SCImageKernel
-
+Creates a new SCImageKernel
 
 argument:: shader
 
 Optional. the shader code string. nil by default
-
 
 argument:: values
 
 Optional. the values that match the kernel proc function defined in the shader string.
 nil by default
 
-
 argument:: bounds
 
 Optional. not used for now. nil by default
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 
 method:: shader
 
-
 Get or set the shader string.
 
-
-
-
 method:: values
-
 
 Get or set the values array.
 When setting the object indexes in the values Array must match the argument declaration order as defined in the main emphasis::kernel vec4 routine::. See link::#examples:: for more info.
 
-
-
-
 method:: isValid
-
 
 Very basic verification to tell if all arguments of the shader are set.
 
-
-
-
 method:: compile
-
 
 Compile the SCImageKernel object (and cache it).
 
@@ -120,19 +67,7 @@ When rendered the first time, the kernel object is always compiled first.
 If you plan to change the shader string after, you must explicitely compile it to make it effective.
 ::
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 /**** Kernels ****/

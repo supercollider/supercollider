@@ -7,22 +7,9 @@ related:: Classes/Number, Classes/Integer, Classes/Float, Classes/SimpleNumber, 
 Literals are values which have a direct syntactic representation.
 The following sections describe the types of literals that can be represented.
 
-
-
-
-
-
-
-
-
-
 section:: Numbers
 
-
-
-
 subsection:: Integers
-
 
 An integer is any series of digits optionally preceded by a minus sign:
 
@@ -44,13 +31,7 @@ code::
 0x60   // 96
 ::
 
-
-
-
-
-
 subsection:: Floats
-
 
 A float, or floating-point number, is one or more decimal digits, followed by a
 decimal point, followed by one or more decimal digits.
@@ -92,13 +73,7 @@ inf   // and beyond!
 -inf
 ::
 
-
-
-
-
-
 subsection:: Radix
-
 
 Numbers can also be written in radices other than base 10 up to base 36.
 The radix is specified in base 10, followed by the letter 'r', followed by the
@@ -132,13 +107,7 @@ code::
 
 Hexidecimal numbers notated with code::0x:: may only be expressed as integers.
 
-
-
-
-
-
 subsection:: Scale Degrees
-
 
 Integer numbers as scale degrees supports accidentals notation by adding the suffixes strong::s:: for sharp and strong::b:: for flat. Accidentals are represented as floating point values.
 
@@ -172,19 +141,7 @@ code::
 2s204 == 2.204 // scale degree two, 204 cents sharp
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Characters
-
-
-
 
 Characters are preceded by a dollar sign:
 
@@ -227,22 +184,9 @@ $\r  // return
 $\\  // backslash`
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Symbols and Strings
 
-
-
-
 subsection:: Symbols
-
 
 A symbol can be written in two ways.
 One method is to enclose the contents in
@@ -271,13 +215,7 @@ code::
 \not really a symbol  // illegal
 ::
 
-
-
-
-
-
 subsection:: Strings
-
 
 Strings are written in double quotes:
 
@@ -306,19 +244,7 @@ a.size // 9
 The SuperCollider IDE uses UTF-8 to decode and display strings.
 See link::Classes/String#Character encodings##String:: for more information.
 
-
-
-
-
-
-
-
-
-
 section:: Identifiers
-
-
-
 
 Names of methods and variables begin with a lower case alphabetic character,
 followed by zero or more alphanumeric or underscore characters.
@@ -331,19 +257,7 @@ var hmm_; // Although this is legal, avoid it, since setter functions in
           // SuperCollider typically end with underscores.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Class Names
-
-
-
 
 Class names always begin with a capital letter followed by zero or more
 alphanumeric or underscore characters.
@@ -358,19 +272,7 @@ MyClass_LikesUnderscores // legal
 MyClass_ // legal, but avoid
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Special Values
-
-
-
 
 The singular instances of the classes True, False and Nil can
 be expressed with keywords code::true::, code::false::, and code::nil::.
@@ -381,19 +283,7 @@ y = false;
 z = nil;
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Arrays
-
-
-
 
 link::Classes/Array::s of literals are created at compile time and are written with a # preceding the array as follows:
 
@@ -447,19 +337,7 @@ table.atAll(#[c4, e4, gs4, c5, e5, gs5, c6])
 )
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Compiler limits
-
-
-
 
 There is no theoretical limit on the number of literals in a single function, if those literals are used as freestanding objects.
 (Of course, there remains the practical limits of system memory and the processor time required to keep track of all the objects.)
@@ -486,13 +364,7 @@ note::
 Code submitted for interactive execution is first compiled into a function. A very large block of code, spanning several thousand lines, may run into this limitation if it doesn't break down the tasks into smaller functions. In general, code is easier to maintain if it is reasonably emphasis::modular::, with small functions handling clearly-defined parts of the problem. This error message is a signal that the code has become too complex for a loose or "flat" code structure.
 ::
 
-
-
-
-
-
 subsection:: What counts as "inside the function"?
-
 
 Selectors are counted only toward the function definition currently being compiled.
 

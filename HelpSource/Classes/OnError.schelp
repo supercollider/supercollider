@@ -3,37 +3,12 @@ categories:: Control
 summary:: Register functions to be evaluated when an error occurs
 related:: Classes/StartUp, Classes/ShutDown, Classes/ServerQuit, Classes/ServerTree, Classes/CmdPeriod
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 OnError registers functions to perform an action when an error occurs.
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: run
-
 
 Call the object in order.

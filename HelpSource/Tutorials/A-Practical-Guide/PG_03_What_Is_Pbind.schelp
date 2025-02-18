@@ -3,19 +3,7 @@ categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Pattern-based musical sequencing with Pbind and cousins
 related:: Tutorials/A-Practical-Guide/PG_02_Basic_Vocabulary, Tutorials/A-Practical-Guide/PG_04_Words_to_Phrases
 
-
-
-
-
-
-
-
-
-
 section:: What's that Pbind thing?
-
-
-
 
 Some of the examples in the last tutorial played notes using Pbind, and you might be wondering how it works in general and what else you can do with it.
 
@@ -42,19 +30,7 @@ keys associated with the patterns that will supply the values for the events.
 Things get interesting when the names associated with Pbind's sub-patterns are also link::Classes/SynthDef:: arguments.
 Then it becomes possible to play new Synths with Pbind, and feed their inputs with different values on each event.
 
-
-
-
-
-
-
-
-
-
 section:: Building an event, one key at a time
-
-
-
 
 We can look at the return values from a Pbind by calling code::next:: on the stream. Note that it's necessary to pass an empty event into emphasis::next::, so that Pbind has somewhere to put the values.
 
@@ -108,19 +84,7 @@ Even though Pbind processes its child streams in the order given, the results ca
 This does not affect the behavior of playing Events, as we will soon see.
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Event, .play and event prototypes
-
-
-
 
 So far we haven't seen anything that produces a note, just data processing: fetching values from patterns and stitching them together into events.
 The notes come from the difference between Events and regular Dictionaries:
@@ -144,13 +108,7 @@ Play continues until the pattern stops producing events, or you call .stop on th
 This work is defined in an event prototype.
 The Event class provides a default event prototype that includes powerful options to create and manipulate objects on the server.
 
-
-
-
-
-
 subsection:: Rests
-
 
 Rests may be indicated in three ways.
 
@@ -172,13 +130,7 @@ list::
 
 A more complete discussion is found in the link::Classes/Rest:: help file.
 
-
-
-
-
-
 subsection:: Useful Pbind variant: Pmono
-
 
 Pbind plays separate notes by default.
 Sometimes, you might need a pattern to act more like a monophonic synthesizer, where it plays just one Synth node and changes its values with each event.
@@ -197,19 +149,7 @@ p.stop;
 
 Articulating phrases is possible with Pmono by chaining several Pmono patterns together in a row, or by using link::Classes/PmonoArtic::.
 
-
-
-
-
-
-
-
-
-
 section:: Connecting Event values to SynthDef inputs
-
-
-
 
 Most SynthDefs have link::Classes/Control:: inputs, usually defined by arguments to the UGen function.
 For example, the default SynthDef (declared in Event.sc) defines five inputs: code::out::, code::freq::, code::amp::, code::pan:: and code::gate::.
@@ -292,19 +232,7 @@ SynthDef(...).add;
 
 .send(s)	-->	.add
 
-
-
-
-
-
-
-
-
-
 section:: Rest events
-
-
-
 
 Beginning with version 3.5, rests may be indicated using instances of link::Classes/Rest::.
 
@@ -352,29 +280,11 @@ If it's the code::\freq:: key that determines whether the event as a rest or not
 Note that it doesn't matter if the SynthDef has a code::freq:: argument. It's the event, on the emphasis::client:: side, that looks to this key to determine whether to play the note or not.
 If it is a rest, the server is not involved at all.
 
-
-
-
-
-
-
-
-
-
 section:: Writing SynthDefs for patterns
-
-
-
 
 SynthDefs should have a couple of specific features to work well with patterns.
 
-
-
-
-
-
 subsection:: Synths should release themselves
-
 
 The default event prototype relies on the synth to remove itself from the server when it's finished. This can be done in several ways:
 
@@ -393,13 +303,7 @@ Otherwise, the envelope will never start and you will both hear nothing and watc
 ## Fixed-duration envelopes (no gate).
 ::
 
-
-
-
-
-
 subsection:: Argument name prefixes
-
 
 One other subtle point about synth argument names. In a SynthDef, argument names can have the prefix code::t_:: to indicate a "trigger control," or code::i_:: for an "initial rate" control (meaning that it holds the value set when the Synth is first played).
 This is described in link::Classes/SynthDef:: help.

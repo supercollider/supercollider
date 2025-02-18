@@ -2,81 +2,31 @@ title:: Semaphore
 categories:: Scheduling
 summary:: Control parallel execution of threads
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 method:: new
 
-
 Create a new instance, set the maximum number of running threads (default: 1).
-
-
-
-
-
-
-
-
-
 
 instancemethods::
 
-
-
-
 method:: count
 
-
-Determine the number of running threads.
-
-
-
+Determines the number of running threads.
 
 method:: clear
 
-
 Remove any reference to threads, but do not reschedule any pending ones.
-
-
-
 
 method:: wait
 
-
 Stop current thread if already too many are running, otherwise continue.
-
-
-
 
 method:: signal
 
-
 Unblock the semaphore, reschedule next pending thread.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // allow only one thread

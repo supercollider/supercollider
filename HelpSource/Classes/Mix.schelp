@@ -2,21 +2,10 @@ title:: Mix
 categories:: UGens>Multichannel
 summary:: Sum an array of channels
 
-
-
-
-
-
-
-
-
-
 description::
 
-
-
-
-Mix will mix an array of channels down to a single channel or an array of arrays of channels down to a single array of channels.
+Mix will mix an array of channels down to a single channel or an array
+of arrays of channels down to a single array of channels.
 More information can be found under link::Guides/Multichannel-Expansion::.
 
 note::
@@ -26,42 +15,23 @@ and that  code::Mix.arFill::  and  code::Mix.krFill::  are
 equivalent to  code::Mix.fill::.
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
 
-
-
-
 method:: new
-
 
 argument:: array
 
 The array of channels or arrays.
 
-
-
-
 method:: fill
-
 
 argument:: n
 
 The size of array to create.
 
-
 argument:: function
 
 The array filling function.
-
 
 returns::
  
@@ -69,19 +39,7 @@ Returns:
 A newly created
 link::Classes/UGen:: .
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 s.boot;

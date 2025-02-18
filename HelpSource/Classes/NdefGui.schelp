@@ -3,19 +3,7 @@ categories:: JITLib>GUI, Live Coding
 summary:: A gui for a NodeProxy or Ndef
 related:: Classes/JITGui, Classes/MonitorGui, Classes/NdefParamGui, Classes/NdefMixer, Classes/ProxyMixer
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 NdefGui provides controls for handling and editing a link::Classes/NodeProxy:: or link::Classes/Ndef::, and its monitors. NdefGui replaces link::Classes/NodeProxyEditor::. It provides:
 
@@ -57,281 +45,160 @@ g.paramGui.paramViews.size;
 g = Ndef(\1).gui(30);
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: initClass
 
-
-
-
-
-
 subsection:: Creation
 
-
 method:: new
-
 
 argument:: object
 
 The nodeproxy to be shown and edited, or nil.
-
 
 argument:: numItems
 
 How many sliders or textviews for parameters to provide.
 Default value is 0.
 
-
 argument:: parent
 
 A parent view where NdefGui is to be shown.
 If teletype::nil::, a window is made.
 
-
 argument:: bounds
 
-Bound where the view (or window) will be shown.
-
+Bounds where the view (or window) will be shown.
 
 argument:: makeSkip
 
 A flag whether to create and start a link::Classes/SkipJack:: for auto-updating.
-
 
 argument:: options
 
 An array of symbols for options of what to display.
 See list below.
 
-
-
-
-
-
 subsection:: Preset options lists which can be used in *new:
-
 
 method:: big
 
-
 Two lines of controls for a big NdefGui, usually in its own window
-
-
-
 
 method:: full
 
-
 Two lines of controls for a very big NdefGui
-
-
-
 
 method:: audio
 
-
 For ar proxies, used in ProxyMixer left hand side
-
-
-
 
 method:: audioSm
 
-
 For ar proxies, used in ProxyMixer.small on left hand side
-
-
-
 
 method:: control
 
-
 For kr proxies, used in ProxyMixer mid section
-
-
-
-
-
 
 subsection:: Class Variables
 
-
 method:: buttonSizes
-
 
 A dict for the sizes of the different gui elements.
 
-
-
-
 method:: buttonFuncs
-
 
 A lookup dict for making the different buttons.
 
-
-
-
 method:: makeButFuncs
-
 
 Not a class var, but the method that inits buttonFuncs.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 subsection:: Variables
-
 
 See link::Classes/JITGui:: for more instance methods.
 
 Various views the NdefGui has if they were present in the options:
 
-
-
-
 method:: nameView, typeView, monitorGui, paramGui, fadeBox, pauseBut, sendBut, edBut, wakeBut
-
-
-
-
-
 
 subsection:: Basic Methods
 
-
 method:: edits
-
 
 The paramGui's widgets (usually, EZSliders)
 
-
-
-
 method:: editKeys
-
 
 The currently used param names
 
-
-
-
 method:: highlight, unhighlight
-
 
 Highlight and unhighlight a single slider by index
 
-
-
-
 method:: highlightName, unhighlightName
-
 
 Highlight and unhighlight the nameView
 
-
-
-
 method:: highlightParams
-
 
 Highlight a contiguous group of sliders;
 used for showing assigned MIDI faderboxes etc.
 
-
-
-
 method:: addReplaceKey, removeReplaceKey
-
 
 EditKeys with technical names can be replaced with
 more user-friendly ones.
 
-
-
-
 method:: proxy
-
 
 An alias to method object, object_
 
-
-
-
-
-
 subsection:: Standard JITGui Methods
-
 
 method:: setDefaults
 
-
 method:: accepts
-
-
-
 
 method:: getState, checkUpdate
 
-
-
-
-
-
 subsection:: GUI Element Creation
 
-
 method:: makeViews
-
 
 Creates all the views given in the options list.
 Internally this calls the following methods:
 
-
-
-
 method:: makeNameView, makeTypeView, makeClrBut, makeWakeBut, makeResetBut, makeScopeBut, makeDocBut, makeEndBut, makeFadeBox, makePauseBut, makeSendBut, makeEdBut, makeRipBut, makePollBut
-
 
 method:: makeMonitor
 
-
-
-
-
-
-
-
-
-
 examples::
 
+code::
+	// some preparation - make an ar and a kr nodeproxy.
+s.boot;
+(
+Ndef(\lfo, { |lofreq| SinOsc.kr(lofreq) });
+Ndef(\a, { |freq = 300, dens = 20, amp = 0.1, pan|
+	Pan2.ar(Ringz.ar(Dust.ar(dens, amp / (dens.max(1).sqrt)), freq, 0.2), pan)
+});
+)
 
+    // make an NdefGui. By default, this has a lot of the options on.
+n = NdefGui.new;
+n.object_(Ndef(\lfo));
+Ndef(\lfo).set(\lofreq, 12);
 
+n.object_(Ndef(\a));
+Ndef(\a).set(\freq, 120);
+::
+
+subsection:: Some configuration options
 
 code::
 	// some preparation - make an ar and a kr nodeproxy.
@@ -352,40 +219,7 @@ n.object_(Ndef(\a));
 Ndef(\a).set(\freq, 120);
 ::
 
-
-
-
-
-
 subsection:: Some configuration options
-
-
-code::
-	// some preparation - make an ar and a kr nodeproxy.
-s.boot;
-(
-Ndef(\lfo, { |lofreq| SinOsc.kr(lofreq) });
-Ndef(\a, { |freq = 300, dens = 20, amp = 0.1, pan|
-	Pan2.ar(Ringz.ar(Dust.ar(dens, amp / (dens.max(1).sqrt)), freq, 0.2), pan)
-});
-)
-
-    // make an NdefGui. By default, this has a lot of the options on.
-n = NdefGui.new;
-n.object_(Ndef(\lfo));
-Ndef(\lfo).set(\lofreq, 12);
-
-n.object_(Ndef(\a));
-Ndef(\a).set(\freq, 120);
-::
-
-
-
-
-
-
-subsection:: Some configuration options
-
 
 code::
 // numItems - sliders for setting parameters
@@ -480,13 +314,7 @@ Ndef(\a).set(\harm, 20)
 Ndef(\a, { |freq = 10, amp = 0.1, harm = 20| Blip.ar(freq, harm) * amp })
 ::
 
-
-
-
-
-
 subsection:: Test - drag and drop proxies between NdefGuis
-
 
 This seems broken in 3.7.0 - drags are sticky and can't be dropped.
 
@@ -517,13 +345,7 @@ n.object_(c);
 (	Ndef(\a)	)
 ::
 
-
-
-
-
-
 subsection:: Test - replacing keys
-
 
 This is used in ProxyChain (JITLibExtensions).
 

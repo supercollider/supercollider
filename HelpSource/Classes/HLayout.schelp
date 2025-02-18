@@ -3,35 +3,11 @@ categories:: GUI>Layout
 summary:: A layout that distributes views in a horizontal line
 related:: Classes/LineLayout, Classes/VLayout, Classes/GridLayout, Classes/StackLayout, Guides/GUI-Layout-Management
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 See documentation of superclass link::Classes/LineLayout:: for details.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 // simple example
@@ -83,36 +59,11 @@ w.layout = HLayout(VLayout(*a));
 )
 ::
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: key
 
-
 private:: layoutClass
 
-
-
-
-
-
-
-
-
-
 instancemethods::
-
-
-
 

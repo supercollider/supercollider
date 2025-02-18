@@ -2,19 +2,7 @@ title:: Multichannel Expansion
 categories:: Server>Nodes, UGens>Multichannel
 summary:: Explaining multichannel expansion and representation
 
-
-
-
-
-
-
-
-
-
 section:: Multiple channels as Arrays
-
-
-
 
 Multiple channels of audio are represented as link::Classes/Array::s.
 
@@ -43,19 +31,7 @@ Pan2.ar(PinkNoise.ar(0.1), FSinOsc.kr(3)).dump;
 play({ Pan2.ar(PinkNoise.ar(0.1), FSinOsc.kr(1)); });
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Multichannel expansion
-
-
-
 
 When an link::Classes/Array:: is given as an input to a unit generator it causes an array of multiple copies of that unit generator to be made, each with a different value from the input array.
 This is called multichannel expansion. All but a few special unit generators perform multichannel expansion.
@@ -108,13 +84,7 @@ code::
 { RLPF.ar(Saw.ar([100,250],0.05), XLine.kr([8000,500],[400,7000],5), 0.05) }.play;
 ::
 
-
-
-
-
-
 subsection:: Expanding methods and operators
-
 
 Many operators and methods also multichannel expand.
 For example all common math operators:
@@ -145,13 +115,7 @@ code::
 ["foo","bar","zoo"].multiChannelPerform('++', ["l","ba"])
 ::
 
-
-
-
-
-
 subsection:: Using flop and flop1 for multichannel expansion
-
 
 The method flop swaps columns and rows, allowing to derive series of argument sets:
 
@@ -224,13 +188,7 @@ a = { |dur=1, x=1, n=10, freq=400|
 a.value(5, [0.3, 0.3, 0.2], [12, 32, 64], [1000, 710, 700]);
 ::
 
-
-
-
-
-
 subsection:: Multichannel expansion in Patterns
-
 
 Multichannel expansion does not quite follow the scheme one might expect from the previously described.
 E.g. the following doesn't multichannel-expand properly:
@@ -281,19 +239,7 @@ code::
 // --> [ [ freq, [ 342, 145 ] ] ]
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Pitfalls
-
-
-
 
 Some UGens create stereo output from mono input, and might not behave as expected regarding multichannel expansion.
 
@@ -337,19 +283,7 @@ code::
 // [ 7_Out, audio, [ 0_Control[0], 5_+, 6_+ ] ]
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Protecting arrays against expansion
-
-
-
 
 Some unit generators such as link::Classes/Klank:: require arrays of values as inputs.
 Since all arrays are expanded, you need to protect some arrays by a link::Classes/Ref:: object.
@@ -386,19 +320,7 @@ code::
 [ Klank.ar(`[[400,500,600],[1,2,1]], z),  Klank.ar(`[[700,800,900],[1,2,1]], z)]
 ::
 
-
-
-
-
-
-
-
-
-
 section:: Reducing channel expansion with Mix
-
-
-
 
 The link::Classes/Mix:: object provides the means for reducing multichannel arrays to a single channel.
 

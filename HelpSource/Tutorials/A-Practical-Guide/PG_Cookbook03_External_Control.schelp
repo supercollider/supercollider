@@ -3,22 +3,9 @@ categories:: Streams-Patterns-Events>A-Practical-Guide
 summary:: Pattern control by external device
 related:: Tutorials/A-Practical-Guide/PG_Cookbook02_Manipulating_Patterns, Tutorials/A-Practical-Guide/PG_Cookbook04_Sending_MIDI
 
-
-
-
-
-
-
-
-
-
 section:: Pattern control by external device
 
-
-
-
 subsection:: Control of parameters by MIDI or HID
-
 
 The best approach is to save an incoming value into a variable, and then use link::Classes/Pfunc:: to access the variable for each event.
 
@@ -64,13 +51,7 @@ p.stop;
 c.remove;
 ::
 
-
-
-
-
-
 subsection:: Triggering patterns by external control
-
 
 Issuing code::play:: to a pattern can occur in an action function for many different kinds of objects:
 GUI, MIDI, OSCFunc, HID actions. This allows triggering patterns from a variety of interfaces.
@@ -78,13 +59,7 @@ GUI, MIDI, OSCFunc, HID actions. This allows triggering patterns from a variety 
 It's very unlikely that an action function would be triggered exactly in sync with a clock.
 If the pattern being played needs to run in time with other patterns, use the code::quant:: argument to control its starting time (see link::Classes/Quant::).
 
-
-
-
-
-
 subsection:: Triggering a pattern by a GUI
-
 
 code::
 (
@@ -116,13 +91,7 @@ window.front;
 p.stop;
 ::
 
-
-
-
-
-
 subsection:: Triggering a pattern by MIDI
-
 
 code::
 (
@@ -148,13 +117,7 @@ var	pattern = Pbind(
 ~noteOnFunc.free;
 ::
 
-
-
-
-
-
 subsection:: Triggering a pattern by signal amplitude
-
 
 Triggering a pattern based on audio amplitude is a bit trickier -- not because it's harder to play the pattern, but because identifying when the trigger should happen is more involved.
 The most straightforward way in SuperCollider is to use the link::Classes/Amplitude:: UGen to get the volume of the input signal and compare it to a threshold.

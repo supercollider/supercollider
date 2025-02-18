@@ -3,137 +3,65 @@ categories:: Files
 summary:: Fetch a file from a remote URL
 related:: Classes/File
 
-
-
-
-
-
-
-
-
-
 description::
-
-
-
 
 Download allows you to download a file from a specified URL
 
-
-
-
-
-
-
-
-
-
 classmethods::
-
-
-
 
 private:: qtClass
 
-
 method:: new
 Create and start a new Download.
-
 
 argument:: requestedURL
 
 A link::Classes/String:: containing the URL of the file to download.
 
-
 argument:: localPath
 
 A link::Classes/String:: containing the local path at which to save the downloaded file.
-
 
 argument:: finishedFunc
 
 A link::Classes/Function:: to evaluate when the download is complete.
 
-
 argument:: errorFunc
 
 A link::Classes/Function:: to evaluate if the download fails due to an error.
-
 
 argument:: progressFunc
 
 A link::Classes/Function:: to process the download's progress. This Function will be passed two arguments, the bytes received, and the total bytes.
 
-
 returns::
  
 A new Download.
 
-
-
-
 method:: cancelAll
-
 
 Cancel all active Downloads.
 
-
-
-
-
-
-
-
-
-
 instancemethods::
 
-
-
-
 private:: doProgress, doError, doFinished, doOnShutDown, cleanup, startDownload, init
-
 
 method:: cancel
 Cancel the download.
 
-
-
-
 method:: errorFunc
-
 
 Get or set the error link::Classes/Function::.
 
-
-
-
 method:: finishedFunc
-
 
 Get or set the download finished link::Classes/Function::.
 
-
-
-
 method:: progressFunc
-
 
 Get or set the download progress link::Classes/Function::.
 
-
-
-
-
-
-
-
-
-
 examples::
-
-
-
 
 code::
 Download("http://art-on-wires.org/wp-content/uploads/2011/03/nick_collins.png", "/tmp/nick.png", { \huzzah.postln }, { \error.postln }, { |rec, tot| [rec, tot].postln }); // beautify your tmp directory
