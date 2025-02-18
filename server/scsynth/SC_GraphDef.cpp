@@ -615,7 +615,7 @@ GraphDef* GraphDef_LoadGlob(World* inWorld, const char* pattern, GraphDef* inLis
 }
 
 std::string load_file(const std::filesystem::path& file_path) {
-    std::ifstream file(file_path);
+    std::ifstream file(file_path, std::ifstream::binary);
     if (!file.is_open()) {
         throw std::runtime_error("Could not open file: " + file_path.string());
     }
