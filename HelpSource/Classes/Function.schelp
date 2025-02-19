@@ -1,7 +1,7 @@
 title:: Function
 categories:: Core>Kernel
 summary:: Implements a function
-related:: Classes/FunctionDef
+related:: Reference/Functions, Classes/AbstractFunction, Classes/FunctionDef
 
 description::
 
