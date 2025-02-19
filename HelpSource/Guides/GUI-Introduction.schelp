@@ -303,7 +303,7 @@ For documentation on all of these aspects, see link::Classes/UserView::, link::C
 
 You will be using the link::Classes/Pen:: class to draw the view. Pen is a powerful class that allows you to algorithmically draw using simple visual primitives like lines, arcs, curves, rectangles, ellipses, etc. and fill the shapes with colors and gradients.
 
-note:: 
+note::
 Older tutorials might recommend subclassing UserView.
 Don't do that. Use composition, not inheritance. Make the UserView a property of your custom view class.
 ::

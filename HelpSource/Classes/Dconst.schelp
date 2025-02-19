@@ -28,7 +28,6 @@ teletype::tolerance:: is how close the running sum can get to stop the output:
 code::abs(runningsum - sum) <= tolerance::.
 
 returns::
- 
 A demand-rate stream.
 
 examples::

@@ -22,8 +22,7 @@ method:: open
 Open the device that is described by this HIDInfo
 
 returns::
- 
-an HID - the device
+An HID - the device
 
 method:: postInfo
 
@@ -67,16 +66,14 @@ method:: usage
 Retrieve the usage index of this collection.
 
 returns::
- 
-a Number - the usage index of this collection
+A Number - the usage index of this collection
 
 method:: usagePage
 
 Retrieve the usage page index of this collection.
 
 returns::
- 
-a Number- the usage page index
+A Number- the usage page index
 
 method:: usageName
 
@@ -84,8 +81,7 @@ Retrieve the usage name of this collection.
 The name is looked up from the standardized HID usage tables using the usage page index.
 
 returns::
- 
-a String - the usage name
+A String - the usage name
 
 method:: pageName
 
@@ -93,5 +89,4 @@ Retrieve the page name of this collection.
 The name is looked up from the standardized HID usage tables using the usage page index.
 
 returns::
- 
-a String - the usage page name
+A String - the usage page name

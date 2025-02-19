@@ -17,7 +17,7 @@ To avoid a hanging silent sound where the input may remain zero, you can add an 
 DetectSilence does not distinguish a DC-biased signal from a loud signal.
 If your signal has DC bias, you should wrap it in link::Classes/LeakDC::.
 
-warning:: 
+warning::
 DetectSilence can be tricky with multi-channel input! See below. 
 ::
 

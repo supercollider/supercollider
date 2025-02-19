@@ -315,7 +315,7 @@ It is also implemented in the Cocoa GUI, but we list it here nonetheless.
 
 It is a view that displays web pages, with web technology support comparable to widespread desktop web browsers.
 
-note:: 
+note::
 There may currently be some issues with displaying multimedia content.
 ::
 

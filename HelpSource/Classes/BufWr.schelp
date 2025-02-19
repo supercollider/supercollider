@@ -7,7 +7,7 @@ description::
 
 Write to a buffer at an index.
 
-note:: 
+note::
 BufWr (in difference to  link::Classes/BufRd::) does not do multichannel expansion, because input is an array.
 ::
 
@@ -28,7 +28,8 @@ The index of the buffer to use.
 argument:: phase
 
 Modulateable index into the buffer (has to be audio rate).
-warning:: 
+
+warning::
 The phase argument only offers precision for addressing 2**24 samples (about 6.3 minutes at 44100Hz) 
 ::
 

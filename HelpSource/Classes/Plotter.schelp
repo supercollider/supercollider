@@ -273,7 +273,7 @@ method:: setProperties
 Set properties of all plot views.
 Defaults are taken from code::GUI.skins.at(\plot);::
 
-warning:: 
+warning::
 It's preferrable to use Plotter's instance methods when possible
 to set Plot properties to ensure proper behavior when using link::#-superpose::.
 ::

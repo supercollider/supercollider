@@ -33,14 +33,12 @@ See link::Classes/PopUpMenu:: ; Or and link::Classes/Array:: link::Classes/Symbo
 method:: item
 
 returns::
- 
-the item label of the current selection.
+The item label of the current selection.
 
 method:: itemFunc
 
 returns::
- 
-the item function of the current selection.
+The item function of the current selection.
 
 method:: addItem
 

@@ -52,7 +52,7 @@ The first is a name, usually in the form of a String as above.
 The second is in fact a Function.
 This argument is called a UGen Graph Function, as it tells the server how to connect together its various UGens.
 
-note:: 
+note::
 Within the function braces, the code::|out|:: argument defines a SynthDef emphasis::control input::, which is then used as the first input to code::Out.ar::.
 It is a good habit to provide an code::out:: control in every SynthDef. Review link::Tutorials/Getting-Started/04-Functions-and-Other-Functionality:: for more about function arguments. 
 ::

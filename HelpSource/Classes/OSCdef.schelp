@@ -70,7 +70,6 @@ This can be used to allow for customised dispatching.
 Normally this should not be needed.
 
 returns::
- 
 An instance of OSCdef.
 
 method:: newMatching
@@ -112,7 +111,6 @@ If a Function, it will be evaluated with the corresponding message arg as an arg
 Template values of teletype::nil:: will match any incoming argument value.
 
 returns::
- 
 An instance of OSCdef.
 
 method:: freeAll

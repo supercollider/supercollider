@@ -101,7 +101,7 @@ a.numSteps = 4;
 
 method:: image
 
-note:: 
+note::
 Not yet implemented in Qt GUI 
 ::
 

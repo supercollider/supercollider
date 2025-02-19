@@ -640,8 +640,7 @@ f.choose.postcs.applyTo(3, 4);
 method:: asUGenInput
 
 returns::
- 
-the result of sending the value(for) message to this.
+The result of sending the value(for) message to this.
 
 discussion::
 code::

@@ -30,8 +30,7 @@ These class methods tell you which version of SuperCollider you are running and 
 method:: version
 
 returns::
- 
-the current version as a human readable string
+The current version as a human readable string
 
 method:: versionAtLeast
 
@@ -80,20 +79,17 @@ Main.versionAtMost(3, 13, 9);
 method:: scVersionMajor
 
 returns::
- 
-major version number as Integer
+Major version number as Integer
 
 method:: scVersionMinor
 
 returns::
- 
-minor version number as Integer
+Minor version number as Integer
 
 method:: scVersionPatch
 
 returns::
- 
-patch version number as Integer
+Patch version number as Integer
 
 method:: scVersionTweak
 
@@ -102,8 +98,7 @@ It may be
 empty.
 
 returns::
- 
-tweak version as a String
+Tweak version as a String
 
 method:: scVersionPostfix
 
@@ -233,7 +228,6 @@ A link::Classes/Set::.
 method:: pid
 
 returns::
- 
 The operating system's pid (process ID) for the process.
 
 method:: recompile

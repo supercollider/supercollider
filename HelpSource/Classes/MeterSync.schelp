@@ -15,7 +15,7 @@ In theory, MeterSync may be used with any SuperCollider clock that answers the m
 It is currently tested only with link::Classes/LinkClock::.
 It is not meaningful to use with link::Classes/TempoClock::, because TempoClock does nothing to synchronize its beats with any other machines.
 
-note:: 
+note::
 This class considers only the barline positions of SuperCollider LinkClock peers!
 Other Link-capable applications do not implement this protocol.
 ::
@@ -82,7 +82,6 @@ argument:: verbose
 Boolean. If teletype::false::, suppress information messages.
 
 returns::
- 
 The instance.
 
 method:: queryMeter
@@ -127,7 +126,6 @@ Get the array of ports to which sync messages will be sent.
 The ports are set at initialization time (link::Classes/LinkClock#-enableMeterSync:: or link::#*new::). To change them, free the current instance and create a new one.
 
 returns::
- 
 An array of integer port numbers.
 
 method:: adjustMeterBase
@@ -150,7 +148,6 @@ argument:: round
 Optional. Force a specific subdivision: round = 1 (the default) assumes quarter-notes as the metric base; round = 0.5 assumes eighth-notes (e.g. 5/8 time).
 
 returns::
- 
 The instance.
 
 code::
@@ -182,14 +179,13 @@ argument:: bool
 True = enabled, false = disabled.
 
 returns::
- 
 Boolean.
 
 method:: clock
 
 Answers with the clock being controlled by this instance.
 
-note:: 
+note::
 You cannot change the associated clock object.
 You should instead link::Classes/MeterSync#-free:: this instance, and create a new instance for the other clock.
 ::

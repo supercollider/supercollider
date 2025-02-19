@@ -7,7 +7,7 @@ description::
 
 This class allows control over items displayed in the sclang application-level menu. Application-level menus may not exist depending on platform — in particular, macOS and some Linux window managers have it, but Windows does not. On platforms without this feature, the methods in this class simply don't do anything.
 
-note:: 
+note::
 This is the menu for the sclang application, not the IDE. 
 ::
 

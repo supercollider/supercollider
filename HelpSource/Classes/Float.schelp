@@ -29,14 +29,12 @@ classmethods::
 method:: from32Bits
 
 returns::
- 
-a new Float from a 32-bit word.
+A new Float from a 32-bit word.
 
 method:: from64Bits
 
 returns::
- 
-a new Float from a 64-bit word.
+A new Float from a 64-bit word.
 
 instancemethods::
 
@@ -127,20 +125,17 @@ code::this:: since this is a Float.
 method:: as32Bits
 
 returns::
- 
-an Integer which is the bit pattern of this as a 32bit single precision float
+An Integer which is the bit pattern of this as a 32bit single precision float
 
 method:: high32Bits
 
 returns::
- 
-an Integer which is the bit pattern of high 32-bits of the 64-bit double precision floating point value
+An Integer which is the bit pattern of high 32-bits of the 64-bit double precision floating point value
 
 method:: low32Bits
 
 returns::
- 
-an Integer which is the bit pattern of high 32-bits of the 64-bit double precision floating point value
+An Integer which is the bit pattern of high 32-bits of the 64-bit double precision floating point value
 
 method:: asCompileString
 

@@ -171,8 +171,7 @@ instancemethods::
 method:: name
 
 returns::
- 
-the name of the SynthDef
+The name of the SynthDef
 
 method:: controls
 
@@ -193,8 +192,7 @@ This can be used for fast lookup of control index by name, for example to set a 
 method:: controlNames
 
 returns::
- 
-an array of Strings with the names of controls
+An array of Strings with the names of controls
 
 method:: outputs
 

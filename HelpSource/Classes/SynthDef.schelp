@@ -71,7 +71,8 @@ It is important to understand that although a single def can provide a great dea
 A def's link::Classes/UGen:: graph function (and the SC code within it) is evaluated only when the def is created.
 Thus statements like while, do, collect etc. will have no further effect at the time the def is used to create a Synth, and it is important to understand that a UGen graph function should not be designed in the same way as functions in the language, where multiple evaluations can yield different results.
 It will be evaluated once and only once.
-note:: 
+
+note::
 code::if:: is implemented as a linear signal crossfade when the receiver is an UGen 
 ::
 
@@ -303,8 +304,7 @@ A convenience method which compiles the def and sends it to target's server. Whe
 The default is code::\addToHead::.
 
 returns::
- 
-a corresponding Synth object.
+A corresponding Synth object.
 
 examples::
 

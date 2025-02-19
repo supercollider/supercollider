@@ -536,5 +536,4 @@ If not specified, it looks for the first server for which BelaScope was already 
 If none is found, it attempts to initialize a link::Classes/BelaScope:: instance on link::Classes/Server#*default::.
 
 returns::
- 
 This Array.

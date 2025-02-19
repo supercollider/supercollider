@@ -37,8 +37,7 @@ method:: clear
 Cancels the CallOnce, meaning that subsequent calls to code::value:: will not execute the wrapped function at all.
 
 returns::
- 
-the CallOnce.
+The CallOnce.
 
 method:: didEvaluate
 

@@ -68,8 +68,8 @@ The last one (if the path is not given) is cross platform compatible. The vendor
 These numbers are unique for the type of device (e.g. any Nintendo Switch Pro Controller has the same number).
 If you are using multiple of the same devices, you may want to adjust your setup to use the path as well in order to be able to identify which device you open.
 
-note:: 
-if you have trouble opening a device, e.g. when you get the message code:: ERROR: HID: Could not open device::, please check the link::Guides/HID_permissions:: 
+note::
+If you have trouble opening a device, e.g. when you get the message code:: ERROR: HID: Could not open device::, please check the link::Guides/HID_permissions:: 
 ::
 
 note::

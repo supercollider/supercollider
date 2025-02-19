@@ -19,7 +19,6 @@ argument:: messageType
 A link::Classes/Symbol:: indicating the message type, one of code::\noteOn::, code::\noteOff::, code::\control::, or code::\polytouch::.
 
 returns::
- 
 A new MIDIMessageDispatcher.
 
 instancemethods::

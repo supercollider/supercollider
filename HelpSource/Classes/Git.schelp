@@ -35,14 +35,12 @@ subsection:: Info
 method:: branch
 
 returns::
- 
-current branch name.
+Current branch name.
 
 method:: remote, url
 
 returns::
- 
-url of the first remote that it finds.
+Url of the first remote that it finds.
 
 method:: remoteAsHttpUrl
 
@@ -68,32 +66,27 @@ Remote URI formatted for code::http::respectively code::https:: requests.
 method:: remoteLatest
 
 returns::
- 
-hash of latest commit on the remote
+Hash of latest commit on the remote
 
 method:: localPath
 
 returns::
- 
-path to local repository
+Path to local repository
 
 method:: tag
 
 returns::
- 
-currently checked out tag
+Currently checked out tag
 
 method:: tags
 
 returns::
- 
-avaliable tags
+Avaliable tags
 
 method:: sha
 
 returns::
- 
-hash of the currently checked out version
+Hash of the currently checked out version
 
 method:: shaForTag
 
@@ -102,8 +95,7 @@ argument:: tag
 One of the tags returned by link::#-tags::
 
 returns::
- 
-hash of the given tag
+Hash of the given tag
 
 method:: isDirty
 

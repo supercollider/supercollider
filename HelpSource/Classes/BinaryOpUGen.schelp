@@ -41,7 +41,6 @@ argument:: b
 Right operand
 
 returns::
- 
 A new instance of BinaryOpUGen
 
 instancemethods::

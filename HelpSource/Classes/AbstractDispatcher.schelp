@@ -27,7 +27,6 @@ method:: new
 Make a new dispatcher.
 
 returns::
- 
 A new instance.
 
 instancemethods::

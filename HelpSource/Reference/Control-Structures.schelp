@@ -178,7 +178,7 @@ Routine {
 }.do { arg item; item.postln };  // 'do' applies to the Routine
 ::
 
-note:: 
+note::
 The syntax code::(8..20).do:: uses an optimization to avoid generating an array that is used only for iteration (but which would be discarded thereafter).
 The return value of code:: (8..20).do { |item| item.postln } :: is 8, the starting value.
 

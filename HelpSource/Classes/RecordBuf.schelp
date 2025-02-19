@@ -11,7 +11,7 @@ If recLevel is 1.0 and preLevel is 0.0 then the new input overwrites the
 old data. If they are both 1.0 then the new data is added to the existing
 data. (Any other settings are also valid.)
 
-note:: 
+note::
 The number of channels must be fixed for the SynthDef, it cannot vary depending on which buffer you use.
 ::
 

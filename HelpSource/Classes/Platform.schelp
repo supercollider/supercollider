@@ -196,7 +196,6 @@ argument:: path
 A path string.
 
 returns::
- 
 The input string formatted as a command-line argument. On Windows this
 method quotes the string. On Unix-based systems this method escapes space
 characters with a backslash.

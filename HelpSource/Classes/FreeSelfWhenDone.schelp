@@ -13,7 +13,7 @@ See link::Classes/Done:: for a complete list of these UGens.
 Note that many of these UGens have doneActions, which are another way of accomplishing the same thing.
 See link::Classes/Done:: for more detail.
 
-note:: 
+note::
 One must be careful when using binary operations on UGens with done flags, as these will return a link::Classes/BinaryOpUGen::, and thus prevent the done flag from being accessible.
 See example below. 
 ::

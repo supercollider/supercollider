@@ -365,7 +365,7 @@ subsection:: Using Layouts
 Layouts are used to organize view sizes automatically.
 See: link::Guides/GUI-Layout-Management::.
 
-note:: 
+note::
 Only in Cocoa GUI 
 ::
 

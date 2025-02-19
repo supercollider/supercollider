@@ -227,7 +227,7 @@ method:: getMeterSync
 returns::
 The MeterSync object previously created by link::#-enableMeterSync::.
 
-note:: 
+note::
 It is possible, though redundant and not recommended, to create multiple barline-sync objects by doing code::clock.enableMeterSync:: and code::m = SCClockMeterSync(clock)::. code::getMeterSync:: has access emphasis::only:: to the object created by code::clock.enableMeterSync::. Therefore, it is recommended to use code::clock.enableMeterSync:: in all cases. 
 ::
 

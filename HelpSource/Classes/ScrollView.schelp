@@ -50,7 +50,7 @@ See the link::#examples#example:: below.
 
 Once the canvas is replaced, new views constructed with the ScrollView as the parent will end up as children of the canvas view, equivalent to constructing them with the canvas as the parent, or inserting them into the layout installed on the canvas.
 
-warning:: 
+warning::
 Replacing the canvas will remove and destroy all the views placed on the previous one!
 ::
 
@@ -61,7 +61,6 @@ Returns either the rectangle corresponding to the size of the canvas, or the vis
 See the link::#description#discussion:: above regarding the size of the canvas.
 
 returns::
- 
 A Rect.
 
 method:: visibleOrigin
@@ -221,6 +220,6 @@ w.front;
 )
 ::
 
-note:: 
+note::
 Apparently a method 'autoScrolls' was planned but not implemented yet; its doc said that it sets or gets whether the view scrolls automatically when you drag on a child view past the edge of visible bounds.
 ::

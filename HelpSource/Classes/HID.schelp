@@ -40,16 +40,14 @@ Queries the operating system which HID devices are attached to the system and ca
 When using HID this is the first method you need to execute, before you can access any device.
 
 returns::
- 
-an IdentityDictionary of available devices
+An IdentityDictionary of available devices
 
 method:: available
 
 A dictionary of available devices, or rather info about them in an instance of link::Classes/HIDInfo::, populated by the method findAvailable
 
 returns::
- 
-an IdentityDictionary
+An IdentityDictionary
 
 method:: postAvailable
 
@@ -81,16 +79,14 @@ argument:: releaseNumber
 The release number of the device, this is a number encoded by the device itself, and the same across platforms.
 
 returns::
- 
-an IdentityDictionary of devices the match the search query, or teletype::nil:: if no arguments are given
+An IdentityDictionary of devices the match the search query, or teletype::nil:: if no arguments are given
 
 method:: availableUsages
 
 A dictionary of available usages from all HIDs, populated automatically when devices are opened and closed.
 
 returns::
- 
-an IdentityDictionary
+An IdentityDictionary
 
 method:: postAvailableUsages
 
@@ -116,7 +112,6 @@ argument:: path
 If not specified, the method will look for a matching device in the device list, and open the first match it finds.
 
 returns::
- 
 The HID device - an instance of HID.
 
 method:: new
@@ -132,7 +127,6 @@ argument:: path
 The path in the operating system, e.g. "/dev/hidraw0" on Linux
 
 returns::
- 
 The HID device - an instance of HID.
 
 method:: openAt
@@ -144,7 +138,6 @@ argument:: index
 The index into the dictionary of available devices
 
 returns::
- 
 The HID device - an instance of HID.
 
 method:: openDevices
@@ -152,8 +145,7 @@ method:: openDevices
 A dictionary of the opened devices
 
 returns::
- 
-an IdentityDictionary
+An IdentityDictionary
 
 subsection:: Adding functions to HID events
 
@@ -265,8 +257,7 @@ argument:: elUsagePage
 The usage page of the element
 
 returns::
- 
-an Array with the found elements
+An Array with the found elements
 
 method:: getElementWithID
 
@@ -277,8 +268,7 @@ argument:: elid
 The index of the element
 
 returns::
- 
-the HIDElement
+The HIDElement
 
 method:: close
 
@@ -360,8 +350,7 @@ method:: info
 Retrieve the HIDInfo of this device
 
 returns::
- 
-an instance of HIDInfo
+An instance of HIDInfo
 
 method:: usage
 
@@ -373,8 +362,7 @@ The collection of which to retrieve the usage.
 Default is 0, which should define the primary usage of the device.
 
 returns::
- 
-the usage index of this device
+The usage index of this device
 
 method:: usageName
 
@@ -387,8 +375,7 @@ The collection of which to retrieve the usage.
 Default is 0, which should define the primary usage of the device.
 
 returns::
- 
-the usage name of this device
+The usage name of this device
 
 method:: usagePage
 
@@ -401,8 +388,7 @@ The collection of which to retrieve the usage page.
 Default is 0, which should define the primary usage of the device.
 
 returns::
- 
-the usage page index of this device
+The usage page index of this device
 
 method:: pageName
 
@@ -415,32 +401,28 @@ The collection of which to retrieve the usage page name.
 Default is 0, which should define the primary usage of the device.
 
 returns::
- 
-the usage page name of this device
+The usage page name of this device
 
 method:: vendor
 
 Retrieve the vendor id of this device
 
 returns::
- 
-the vendor id
+The vendor id
 
 method:: product
 
 Retrieve the product id of this device
 
 returns::
- 
-the product id
+The product id
 
 method:: usages
 
 Retrieve the usages of the elements of this device.
 
 returns::
- 
-an IdentityDictionary with usages as keys and lists of elements as corresponding elements
+An IdentityDictionary with usages as keys and lists of elements as corresponding elements
 
 examples::
 

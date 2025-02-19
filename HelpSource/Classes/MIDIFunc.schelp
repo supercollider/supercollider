@@ -67,7 +67,6 @@ This can be used to allow for customised dispatching.
 Normally this should not be needed.
 
 returns::
- 
 A new instance of MIDIFunc.
 
 method:: cc
@@ -76,7 +75,6 @@ A convenience method to create a new MIDIFunc which responds to MIDI control mes
 See link::#*new:: for argument descriptions.
 
 returns::
- 
 A new instance of MIDIFunc which responds to MIDI control messages.
 
 method:: noteOn
@@ -85,7 +83,6 @@ A convenience method to create a new MIDIFunc which responds to MIDI note on mes
 See link::#*new:: for argument descriptions.
 
 returns::
- 
 A new instance of MIDIFunc which responds to MIDI note on messages.
 
 method:: noteOff
@@ -94,7 +91,6 @@ A convenience method to create a new MIDIFunc which responds to MIDI note off me
 See link::#*new:: for argument descriptions.
 
 returns::
- 
 A new instance of MIDIFunc which responds to MIDI note off messages.
 
 method:: polytouch
@@ -103,7 +99,6 @@ A convenience method to create a new MIDIFunc which responds to MIDI polytouch m
 See link::#*new:: for argument descriptions.
 
 returns::
- 
 A new instance of MIDIFunc which responds to MIDI polytouch messages.
 
 method:: touch
@@ -112,7 +107,6 @@ A convenience method to create a new MIDIFunc which responds to MIDI touch messa
 See link::#*new:: for argument descriptions.
 
 returns::
- 
 A new instance of MIDIFunc which responds to MIDI touch messages.
 
 method:: bend
@@ -121,7 +115,6 @@ A convenience method to create a new MIDIFunc which responds to MIDI bend messag
 See link::#*new:: for argument descriptions.
 
 returns::
- 
 A new instance of MIDIFunc which responds to MIDI bend messages.
 
 method:: program
@@ -130,7 +123,6 @@ A convenience method to create a new MIDIFunc which responds to MIDI program cha
 See link::#*new:: for argument descriptions.
 
 returns::
- 
 A new instance of MIDIFunc which responds to MIDI program change messages.
 
 method:: sysex
@@ -139,7 +131,6 @@ A convenience method to create a new MIDIFunc which responds to MIDI system excl
 See link::#*new:: for argument descriptions. The responding code::func:: will be passed the arguments data (an link::Classes/Int8Array::) and srcID.
 
 returns::
- 
 A new instance of MIDIFunc which responds to MIDI system exclusive messages.
 
 subsection:: System Common
@@ -153,7 +144,6 @@ A convenience method to create a new MIDIFunc which responds to MIDI smpte messa
 See link::#*new:: for argument descriptions. The responding code::func:: will be passed the arguments seconds, framerate, dropframe, and srcID. (dropframe is a link::Classes/Boolean::).
 
 returns::
- 
 A new instance of MIDIFunc which responds to MIDI smpte messages.
 
 method:: mtcQuarterFrame
@@ -163,7 +153,6 @@ Note that the link::#*smpte:: method above automatically assembles quarter frame
 See link::#*new:: for argument descriptions. The responding code::func:: will be passed the arguments data, srcID, and pieceNumber. You will need to manually assemble each 8 messages into smpte.
 
 returns::
- 
 A new instance of MIDIFunc which responds to MIDI Time Code Quarter Frame messages.
 
 method:: songPosition
@@ -172,7 +161,6 @@ A convenience method to create a new MIDIFunc which responds to MIDI song positi
 See link::#*new:: for argument descriptions. The responding code::func:: will be passed the arguments position and srcID.
 
 returns::
- 
 A new instance of MIDIFunc which responds to MIDI song position messages.
 
 method:: songSelect
@@ -181,7 +169,6 @@ A convenience method to create a new MIDIFunc which responds to MIDI song select
 See link::#*new:: for argument descriptions. The responding code::func:: will be passed the arguments song and srcID.
 
 returns::
- 
 A new instance of MIDIFunc which responds to MIDI song select messages.
 
 method:: tuneRequest
@@ -190,7 +177,6 @@ A convenience method to create a new MIDIFunc which responds to MIDI tune reques
 See link::#*new:: for argument descriptions. The responding code::func:: will be passed the argument srcID.
 
 returns::
- 
 A new instance of MIDIFunc which responds to MIDI tune request messages.
 
 method:: midiClock
@@ -199,7 +185,6 @@ A convenience method to create a new MIDIFunc which responds to MIDI clock messa
 See link::#*new:: for argument descriptions. The responding code::func:: will be passed the argument srcID.
 
 returns::
- 
 A new instance of MIDIFunc which responds to MIDI clock messages.
 
 subsection:: System Realtime
@@ -226,7 +211,6 @@ table::
 ::
 
 returns::
- 
 A new instance of MIDIFunc which responds to MIDI System Realtime messages.
 
 method:: tick
@@ -235,7 +219,6 @@ A convenience method to create a new MIDIFunc which responds to MIDI tick messag
 See link::#*new:: for argument descriptions. The responding code::func:: will be passed the argument srcID.
 
 returns::
- 
 A new instance of MIDIFunc which responds to MIDI tick messages.
 
 method:: start
@@ -244,7 +227,6 @@ A convenience method to create a new MIDIFunc which responds to MIDI start messa
 See link::#*new:: for argument descriptions. The responding code::func:: will be passed the argument srcID.
 
 returns::
- 
 A new instance of MIDIFunc which responds to MIDI start messages.
 
 method:: stop
@@ -253,7 +235,6 @@ A convenience method to create a new MIDIFunc which responds to MIDI stop messag
 See link::#*new:: for argument descriptions. The responding code::func:: will be passed the argument srcID.
 
 returns::
- 
 A new instance of MIDIFunc which responds to MIDI stop messages.
 
 method:: continue
@@ -262,7 +243,6 @@ A convenience method to create a new MIDIFunc which responds to MIDI continue me
 See link::#*new:: for argument descriptions. The responding code::func:: will be passed the argument srcID.
 
 returns::
- 
 A new instance of MIDIFunc which responds to MIDI continue messages.
 
 method:: reset
@@ -271,7 +251,6 @@ A convenience method to create a new MIDIFunc which responds to MIDI reset messa
 See link::#*new:: for argument descriptions. The responding code::func:: will be passed the argument srcID.
 
 returns::
- 
 A new instance of MIDIFunc which responds to MIDI reset messages.
 
 method:: activeSense
@@ -280,7 +259,6 @@ A convenience method to create a new MIDIFunc which responds to MIDI active sens
 See link::#*new:: for argument descriptions. The responding code::func:: will be passed the argument srcID.
 
 returns::
- 
 A new instance of MIDIFunc which responds to MIDI active sense messages.
 
 subsection:: Debugging

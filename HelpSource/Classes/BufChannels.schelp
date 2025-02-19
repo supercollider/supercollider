@@ -16,8 +16,7 @@ argument:: bufnum
 Buffer index.
 
 returns::
- 
-the current number of channels.
+The current number of channels.
 
 discussion::
 warning::

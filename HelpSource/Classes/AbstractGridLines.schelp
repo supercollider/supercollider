@@ -48,7 +48,6 @@ argument:: spec
 A link::Classes/ControlSpec:: that defines the numerical range, warp, and step.
 
 returns::
- 
 An instance of this class.
 
 note::
@@ -86,7 +85,6 @@ argument:: round
 A boolean. Roughly speaking, rounding will allow the returned number to be above or below the input strong::val:: (similar to a code::round:: operation), while when code::false:: the returned number will tend to be higher than strong::val:: (similar to code::ceil::).
 
 returns::
- 
 The nice number.
 
 discussion::

@@ -26,8 +26,7 @@ argument:: usage
 Usage index
 
 returns::
- 
-an Array with the pageName and usageName
+An Array with the pageName and usageName
 
 method:: hutDirectory
 
@@ -43,8 +42,7 @@ argument:: yamlfile
 The filename of the yamlfile with a particular usage table, relative to the hutDirectory.
 
 returns::
- 
-an IdentityDictionary representing the table
+An IdentityDictionary representing the table
 
 method:: getUsageIds
 
@@ -55,8 +53,7 @@ argument:: usageName
 The usage name
 
 returns::
- 
-an Array with the page id and the usage id
+An Array with the page id and the usage id
 
 method:: idsToName
 
@@ -71,8 +68,7 @@ argument:: usage
 The usage id
 
 returns::
- 
-the usage name
+The usage name
 
 method:: usageIDsToName
 

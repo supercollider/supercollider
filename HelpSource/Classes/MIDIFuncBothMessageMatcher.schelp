@@ -27,7 +27,6 @@ argument:: func
 The link::Classes/Function:: to evaluate if a match is found.
 
 returns::
- 
 An MIDIFuncBothMessageMatcher.
 
 instancemethods::

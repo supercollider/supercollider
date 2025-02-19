@@ -65,8 +65,7 @@ argument:: name
 The basic path to look for, by default this is code::"event"::. See also code::deviceRoot::.
 
 returns::
- 
-an IdentityDictionary of available devices
+An IdentityDictionary of available devices
 
 method:: deviceRoot
 
@@ -79,8 +78,7 @@ method:: available
 A dictionary of available devices, or rather info about them in an instance of link::Classes/LIDInfo::, populated by the method findAvailable
 
 returns::
- 
-an IdentityDictionary
+An IdentityDictionary
 
 method:: postAvailable
 
@@ -115,8 +113,7 @@ argument:: unique
 A unique identifier for the device, defined by the operating system.
 
 returns::
- 
-an IdentityDictionary of devices the match the search query, or teletype::nil:: if no arguments are given
+An IdentityDictionary of devices the match the search query, or teletype::nil:: if no arguments are given
 
 code::
 LID.findBy(2); // by vendorID
@@ -175,8 +172,7 @@ method:: openDevices
 A dictionary of the opened devices
 
 returns::
- 
-an IdentityDictionary
+An IdentityDictionary
 
 subsection:: Adding functions to LID events
 
@@ -597,11 +593,11 @@ code::
 LID.findAvailable("mouse");
 ::
 
-note:: 
-this is likely to give the info that the devices could not be opened, as "mouse" uses another interface (you can of course access mice via the "event" interface) 
+note::
+This is likely to give the info that the devices could not be opened, as "mouse" uses another interface (you can of course access mice via the "event" interface) 
 ::
 
-note:: 
-if you cannot open the devices at all, please look in the helpfile for:
+note::
+If you cannot open the devices at all, please look in the helpfile for:
 link::Guides/LID_permissions:: 
 ::

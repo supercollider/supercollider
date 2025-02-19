@@ -244,8 +244,8 @@ code::
 1
 ::
 
-note:: 
-if the object cannot be converted into an integer, you'll get a "Does not understand" error! 
+note::
+If the object cannot be converted into an integer, you'll get a "Does not understand" error! 
 ::
 
 subsection:: Index out of range.

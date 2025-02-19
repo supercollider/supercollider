@@ -58,8 +58,7 @@ Find help for a given string.
 Tries to be smart.
 
 returns::
- 
-the URL for help on given string
+The URL for help on given string
 
 method:: verbosity
 
@@ -146,8 +145,7 @@ argument:: url
 The url to prepare. If this is not a local file inside link::#*helpTargetDir:: then it will just pass through the url directly.
 
 returns::
- 
-the URL or teletype::nil:: if file not found.
+The URL or teletype::nil:: if file not found.
 
 subsection:: Utilities
 

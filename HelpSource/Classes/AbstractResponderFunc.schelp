@@ -111,7 +111,6 @@ method:: gui
 Open a subclass specific GUI. (Not yet implemented)
 
 returns::
- 
 The GUI object.
 
 method:: oneShot

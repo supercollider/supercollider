@@ -76,8 +76,7 @@ An link::Classes/Interval::from this to strong::hi::.
 method:: geom
 
 returns::
- 
-an array with a geometric series of this size from start.
+An array with a geometric series of this size from start.
 
 method:: fib
 
@@ -87,8 +86,7 @@ An array with a fibonacci series of this size beginning with strong::a::and stro
 method:: factors
 
 returns::
- 
-the prime factors as array.
+The prime factors as array.
 
 subsection:: Random Numbers
 
@@ -101,8 +99,7 @@ argument:: exclude
 An link::Classes/Integer::.
 
 returns::
- 
-a random value from teletype::zero:: to this, excluding the value exclude.
+A random value from teletype::zero:: to this, excluding the value exclude.
 
 method:: xrand2
 
@@ -111,8 +108,7 @@ argument:: exclude
 An link::Classes/Integer::.
 
 returns::
- 
-a random value from this.neg to this, excluding the value exclude.
+A random value from this.neg to this, excluding the value exclude.
 
 subsection:: Conversion
 
@@ -132,14 +128,12 @@ For example code::5.asDigit::returns code::$5::.
 method:: asBinaryDigits
 
 returns::
- 
-an array with the binary digits (integer 0 or 1).
+An array with the binary digits (integer 0 or 1).
 
 method:: asDigits
 
 returns::
- 
-an array with the n-ary digits.
+An array with the n-ary digits.
 
 discussion::
 See also the complementary method link::Classes/SequenceableCollection#-convertDigits::.
@@ -152,20 +146,17 @@ code::
 method:: asBinaryString
 
 returns::
- 
-a string with the binary digits (0 or 1).
+A string with the binary digits (0 or 1).
 
 method:: asHexString
 
 returns::
- 
-a string with the hexadecimal digits (integer teletype::0:: to F).
+A string with the hexadecimal digits (integer teletype::0:: to F).
 
 method:: asIPString
 
 returns::
- 
-a string in IP format.
+A string in IP format.
 
 method:: asStringToBase
 
@@ -180,8 +171,7 @@ code::
 method:: asUnicode
 
 returns::
- 
-the receiver.
+The receiver.
 
 method:: degreeToKey
 
@@ -195,8 +185,7 @@ code::
 method:: grayCode
 
 returns::
- 
-the gray code for the number.
+The gray code for the number.
 
 discussion::
 code::
@@ -206,8 +195,7 @@ code::
 method:: hash
 
 returns::
- 
-a hash value.
+A hash value.
 
 subsection:: Binary Representation
 
@@ -226,21 +214,18 @@ code:: { _CTZ } ::
 method:: numBits
 
 returns::
- 
-number of required bits
+Number of required bits
 
 subsection:: Properties
 
 method:: even
 
 returns::
- 
 teletype::true:: if dividable by 2 with no rest
 
 method:: odd
 
 returns::
- 
 teletype::true:: if not dividable by 2 with no rest
 
 subsection:: Powers Of Two
@@ -248,8 +233,7 @@ subsection:: Powers Of Two
 method:: nextPowerOfTwo
 
 returns::
- 
-the next power of two greater than or equal to the receiver.
+The next power of two greater than or equal to the receiver.
 
 discussion::
 code::
@@ -260,8 +244,7 @@ code::
 method:: isPowerOfTwo
 
 returns::
- 
-the whether the receiver is a power of two.
+The whether the receiver is a power of two.
 
 discussion::
 code::
@@ -274,8 +257,7 @@ subsection:: Prime Numbers
 method:: nthPrime
 
 returns::
- 
-the nth prime number. The receiver must be from teletype::0:: to 6541.
+The nth prime number. The receiver must be from teletype::0:: to 6541.
 
 discussion::
 code::
@@ -285,8 +267,7 @@ code::
 method:: prevPrime
 
 returns::
- 
-the next prime less than or equal to the receiver up to 65521.
+The next prime less than or equal to the receiver up to 65521.
 
 discussion::
 code::
@@ -296,8 +277,7 @@ code::
 method:: nextPrime
 
 returns::
- 
-the next prime less than or equal to the receiver up to 65521.
+The next prime less than or equal to the receiver up to 65521.
 
 discussion::
 code::
@@ -307,8 +287,7 @@ code::
 method:: isPrime
 
 returns::
- 
-whether the receiver is prime.
+Whether the receiver is prime.
 
 discussion::
 code::
@@ -319,8 +298,7 @@ code::
 method:: indexOfPrime
 
 returns::
- 
-the index of a prime number less than or equal to the receiver up to 65521.
+The index of a prime number less than or equal to the receiver up to 65521.
 If the receiver is not a prime, the answer is nil.
 
 discussion::
@@ -388,8 +366,7 @@ code::
 method:: log2Ceil
 
 returns::
- 
-next larger integer of the base 2 logarithm of the receiver.
+Next larger integer of the base 2 logarithm of the receiver.
 
 discussion::
 code::
@@ -434,8 +411,7 @@ subsection:: Misc
 method:: exit
 
 returns::
- 
-exits the sclang program and returns the receiver as an exit code to the parent process (e.g. Unix shell).
+Exit the sclang program and returns the receiver as an exit code to the parent process (e.g. Unix shell).
 
 discussion::
 code::
@@ -457,8 +433,7 @@ f.value(3) // returns 6
 method:: isInteger
 
 returns::
- 
-true (the receiver is an integer).
+True (the receiver is an integer).
 
 method:: isAlt, isCaps, isCmd, isCtrl, isFun, isHelp, isNumPad, isShift
 
@@ -487,8 +462,7 @@ v.keyDownAction = { |view, char, modifiers|
 method:: pidRunning
 
 returns::
- 
-a Boolean for whether or not the specified pid is running.
+A Boolean for whether or not the specified pid is running.
 
 discussion::
 code::

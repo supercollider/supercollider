@@ -7,7 +7,7 @@ section:: Writing new help
 
 The simplest way is to look at an existing help file or class document, and read this document and link::Reference/SCDocSyntax::
 
-note:: 
+note::
 The help files should use UTF-8 encoding! 
 ::
 
@@ -64,7 +64,7 @@ definitionlist::
 
 ::
 
-note:: 
+note::
 It's important that the document is put in the right folder.
 For Classes, it's a must! 
 ::
@@ -108,7 +108,7 @@ tree::
     ::
 ::
 
-note:: 
+note::
 Don't list arguments in the method tag, only the method names 
 ::
 
@@ -293,8 +293,7 @@ method:: stripWhiteSpace
 Strips whitespace at the beginning and end of the string
 
 returns::
- 
-the stripped string
+The stripped string
 ::
 
 The contents are inserted into the right spot (section, subsection, etc).

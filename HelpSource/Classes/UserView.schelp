@@ -16,7 +16,7 @@ See the link::#Animation:: section of this document.
 
 For a guide to using this view, see link::Guides/GUI-Introduction#Custom views::.
 
-note:: 
+note::
 Older tutorials might recommend subclassing UserView.
 Don't do that. Use composition, not inheritance. Make the UserView a property of your custom view class.
 ::
@@ -486,7 +486,7 @@ x.animate = true
 
 subsection:: Usage of refreshInRect(aRect)
 
-note:: 
+note::
 This functionality is only available in strong::Cocoa GUI:: 
 ::
 

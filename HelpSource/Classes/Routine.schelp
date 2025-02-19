@@ -438,19 +438,16 @@ r.clock;
 method:: beats
 
 returns::
- 
 The elapsed beats (logical time) of the routine. The beats do not proceed when the routine is not playing.
 
 method:: seconds
 
 returns::
- 
 The elapsed seconds (logical time) of the routine. The seconds do not proceed when the routine is not playing, it is the converted beat value.
 
 method:: clock
 
 returns::
- 
 The thread's clock. If it has not played, it is the SystemClock.
 
 examples::

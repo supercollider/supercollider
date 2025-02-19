@@ -41,8 +41,7 @@ Boolean: whether to immediately display the window, bringing it to the front.
  default is true.  You may choose to first add your views to the window and then front it which is useful for large slow GUIs
 
 returns::
- 
-a PageLayout
+A PageLayout
 
 instancemethods::
 
@@ -51,40 +50,35 @@ method:: window
 The Window object
 
 returns::
- 
-a Window
+A Window
 
 method:: view
 
 The top most view on the Window
 
 returns::
- 
-a View
+A View
 
 method:: isClosed
 
 Boolean: has the window been closed ?
 
 returns::
- 
-boolean
+Boolean
 
 method:: onClose
 
 Just as for Window, this method is called when the PageLayout's window is closed.  The actual Window's onClose method is used to trigger clean up operations, releasing dependencies and will also call this onClose function.
 
 returns::
- 
-get/set onClose handler
+Get/set onClose handler
 
 method:: asView
 
 returns the top view
 
 returns::
- 
-a View
+A View
 
 method:: asFlowView
 
@@ -94,16 +88,14 @@ If bounds are nil then it returns self, as a PageLayout is compatible with FlowV
  If bounds are supplied then a child FlowView is placed and returned
 
 returns::
- 
-self or a new FlowView
+Self or a new FlowView
 
 method:: bounds
 
 Inner bounds of the top level view.
 
 returns::
- 
-a Rect
+A Rect
 
 method:: asPageLayout
 
@@ -119,72 +111,63 @@ argument:: bounds
 Ignored. Would have been used to size the PageLayout
 
 returns::
- 
-self
+Self
 
 method:: startRow
 
 Compatible with FlowView
 
 returns::
- 
-self
+Self
 
 method:: indentedRemaining
 
 Compatible with FlowView
 
 returns::
- 
-self
+Self
 
 method:: checkNotClosed
 
 IsClosed.not
 
 returns::
- 
-boolean
+Boolean
 
 method:: front
 
 Bring Window to the front
 
 returns::
- 
-self
+Self
 
 method:: hide
 
 Hide window
 
 returns::
- 
-self
+Self
 
 method:: show
 
 Show the window if it was previously hidden.
 
 returns::
- 
-self
+Self
 
 method:: close
 
 Close the window, releasing any dependencies and calling the onClose handler.
 
 returns::
- 
-self
+Self
 
 method:: refresh
 
 Refresh the top level view
 
 returns::
- 
-self
+Self
 
 method:: background
 
@@ -195,8 +178,7 @@ argument:: c
 Color
 
 returns::
- 
-self
+Self
 
 method:: removeOnClose
 
@@ -210,8 +192,7 @@ argument:: dependant
 The object that wishes to be sent .remove on closing the window
 
 returns::
- 
-self
+Self
 
 method:: resizeToFit
 
@@ -228,32 +209,28 @@ argument:: center
 Boolean: after resizing, re-center the window in the screen.
 
 returns::
- 
-self
+Self
 
 method:: reflowAll
 
 See FlowView reflowAll
 
 returns::
- 
-self
+Self
 
 method:: fullScreen
 
 Go Full screen
 
 returns::
- 
-self
+Self
 
 method:: endFullScreen
 
 End full screen
 
 returns::
- 
-self
+Self
 
 subsection:: FlowView extensions
 
@@ -270,7 +247,7 @@ argument:: bounds
 Bounds of the FlowView
 
 returns::
- (returnvalue)
+(returnvalue)
 
 method:: vert
 
@@ -289,7 +266,7 @@ argument:: spacing
 (describe argument here)
 
 returns::
- (returnvalue)
+(returnvalue)
 
 method:: horz
 
@@ -308,7 +285,7 @@ argument:: spacing
 (describe argument here)
 
 returns::
- (returnvalue)
+(returnvalue)
 
 method:: comp
 
@@ -323,7 +300,7 @@ argument:: bounds
 (describe argument here)
 
 returns::
- (returnvalue)
+(returnvalue)
 
 method:: scroll
 
@@ -334,7 +311,7 @@ argument::  ... args
 (describe argument here)
 
 returns::
- (returnvalue)
+(returnvalue)
 
 examples::
 

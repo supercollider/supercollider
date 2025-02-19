@@ -21,8 +21,9 @@ method:: runInTerminalCmd
 Get or set the preferred command to invoke a terminal emulator when performing link::Classes/String#-runInTerminal::.
 
 If code::nil:: (which is the default), sclang will search for a supported terminal emulator installed on the system, the first time code::runInTerminal:: is called (see link::#*getTerminalEmulatorCmd::).
-note:: 
-this setting doesn't persist across sessions 
+
+note::
+This setting doesn't persist across sessions 
 ::
 
 argument:: value

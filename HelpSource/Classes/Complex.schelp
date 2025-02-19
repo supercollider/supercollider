@@ -23,8 +23,7 @@ argument:: imag
 The imaginary part
 
 returns::
- 
-a new instance of Complex.
+A new instance of Complex.
 
 discussion::
 code::

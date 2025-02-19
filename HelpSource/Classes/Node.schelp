@@ -30,8 +30,7 @@ private:: initClass
 method:: addActions
 
 returns::
- 
-the list of addActions as an event.
+The list of addActions as an event.
 
 discussion::
 Useful for converting addAction symbols to their corresponding integer codes.
@@ -52,8 +51,7 @@ The following getter methods also have corresponding setters, but they should be
 method:: nodeID
 
 returns::
- 
-the Node's node ID number.
+The Node's node ID number.
 
 discussion::
 Normally you should not need to access this since instances of Node can be passed directly as link::Classes/UGen:: inputs or link::Classes/Synth:: args.
@@ -61,14 +59,12 @@ Normally you should not need to access this since instances of Node can be passe
 method:: group
 
 returns::
- 
-an instance of Group or RootNode corresponding to this Node's group on the server.
+An instance of Group or RootNode corresponding to this Node's group on the server.
 
 method:: server
 
 returns::
- 
-an instance of Server corresponding to this Node's server app.
+An instance of Server corresponding to this Node's server app.
 
 method:: isPlaying
 
@@ -378,13 +374,11 @@ Prints this Node's link::Classes/Class:: (link::Classes/Synth:: or link::Classes
 method:: hash
 
 returns::
- 
-server.hash bitXor: nodeID.hash
+Server.hash bitXor: nodeID.hash
 
 method:: ==
 
 returns::
- 
 teletype::true:: if this Node and aNode have the same nodeID and the same Server object, otherwise returns teletype::false::.
 
 discussion::

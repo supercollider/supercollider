@@ -35,8 +35,7 @@ argument:: trigid
 If greater then 0, a '/tr' message is sent back to the client (similar to SendTrig)
 
 returns::
- 
-its in signal (and is therefore transparent).
+Its in signal (and is therefore transparent).
 
 instancemethods::
 

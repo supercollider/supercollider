@@ -17,8 +17,7 @@ method:: open
 Open the device that is described by this LIDInfo
 
 returns::
- 
-an LID - the device
+An LID - the device
 
 method:: postInfo
 

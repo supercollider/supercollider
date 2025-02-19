@@ -7,7 +7,7 @@ description::
 
 The output is selected from an array of inputs.
 
-note:: 
+note::
 All the UGens are continuously running.
 This may not be the most efficient
 way if each input is CPU-expensive. ::

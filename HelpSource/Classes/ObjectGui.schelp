@@ -40,8 +40,7 @@ argument:: model
 The model is the object that the GUI is a graphical interface for.
 
 returns::
- 
-the ObjectGui or subclass object
+The ObjectGui or subclass object
 
 instancemethods::
 
@@ -64,8 +63,7 @@ argument:: ... args
 More args may be passed here.
 
 returns::
- 
-this
+This
 
 method:: update
 
@@ -100,8 +98,7 @@ argument::  ... args
 More args may be passed into theModel.gui(parent, bounds, anArg, moreArg) and will be forwarded to guiBody.
 
 returns::
- 
-this
+This
 
 method:: guify
 
@@ -122,8 +119,7 @@ Window title IF a new window is being created.
  if there is a parent view then title is ignored.
 
 returns::
- 
-converted parent
+Converted parent
 
 method:: model
 
@@ -136,7 +132,7 @@ argument:: newModel
 The new object
 
 returns::
- (returnvalue)
+(returnvalue)
 
 method:: dragSource
 
@@ -144,8 +140,7 @@ The default implementation of writeName places a nameplate on the gui that is dr
  This method is an accessor for that dragSource object.
 
 returns::
- 
-a GUi.dragSource
+A GUi.dragSource
 
 method:: viewDidClose
 
@@ -153,16 +148,14 @@ This is called when the parent view closes.
 It releases dependants.
 
 returns::
- 
-this
+This
 
 method:: background
 
 Each ObjectGui subclass may implement a default background color.
 
 returns::
- 
-a color
+A color
 
 method:: writeName
 

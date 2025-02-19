@@ -201,7 +201,6 @@ method:: colorToPixel
 Convert a link::Classes/Color:: into a pixel datatype suitable for setting pixel data in the Image class.
 
 returns::
- 
 A 32bit packed Integer in the RGBA format.
 
 method:: pixelToColor

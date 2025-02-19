@@ -21,7 +21,6 @@ argument:: server
 An instance of Server.
 
 returns::
- 
 The constructed ServerStatusWatcher.
 
 instancemethods::

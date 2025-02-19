@@ -16,8 +16,7 @@ argument:: bufnum
 Buffer index.
 
 returns::
- 
-a ratio by which the playback of a soundfile is to be scaled.
+A ratio by which the playback of a soundfile is to be scaled.
 
 discussion::
 warning::

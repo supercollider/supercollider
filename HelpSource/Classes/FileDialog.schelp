@@ -76,8 +76,7 @@ The default is the current
 user's home directory.
 
 returns::
- 
-a FileDialog
+A FileDialog
 
 examples::
 

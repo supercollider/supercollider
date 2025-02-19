@@ -116,7 +116,7 @@ argument:: report
 Reports the result of the test if code::true:: (default is code::true::)
 
 returns::
- (describe returnvalue here)
+(describe returnvalue here)
 
 private:: s, run, findTestMethods, setUp, tearDown
 

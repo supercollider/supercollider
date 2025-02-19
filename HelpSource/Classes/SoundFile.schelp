@@ -62,7 +62,6 @@ argument:: sampleRate
 A number, defaults to 44100.
 
 returns::
- 
 The path if successful, or throws if unsuccessful.
 
 method:: openRead

@@ -128,8 +128,7 @@ As such this method does not create an object, and returns teletype::nil::.
 For details of its arguments see code::new:: above.
 
 returns::
- 
-nil
+Nil
 
 subsection:: Convenience methods for add actions
 
@@ -201,8 +200,7 @@ private:: prepareForProxySynthDef, play
 method:: defName
 
 returns::
- 
-the name of this Synth's SynthDef.
+The name of this Synth's SynthDef.
 
 subsection:: Creation without Instantiation on the Server
 
@@ -214,8 +212,7 @@ method:: newMsg
 See *new above for details of addActions and args.
 
 returns::
- 
-a message of the type s_new which can be bundled.
+A message of the type s_new which can be bundled.
 When sent to the server this message will instantiate this synth.
 If target is nil, it will default to the default_group of the Server specified in *basicNew when this Synth was created.
 The default addAction is \addToHead.
@@ -225,8 +222,7 @@ method:: addToHeadMsg
 See *new above for details on args.
 
 returns::
- 
-a message of the type s_new which can be bundled.
+A message of the type s_new which can be bundled.
 When sent to the server this message will instantiate this synth.
 If aGroup is a Group it will be added at the head of that group.
 If it is nil, it will be added at the head of the default_group of this Synth's server (as specified when *basicNew was called).
@@ -236,8 +232,7 @@ method:: addToTailMsg
 See *new above for details on args.
 
 returns::
- 
-a message of the type s_new which can be bundled.
+A message of the type s_new which can be bundled.
 When sent to the server this message will instantiate this synth.
 If aGroup is a Group it will be added at the tail of that group.
 If it is nil, it will be added at the tail of the default_group of this Synth's server (as specified when *basicNew was called).
@@ -247,8 +242,7 @@ method:: addBeforeMsg
 See *new above for details on args.
 
 returns::
- 
-a message of the type s_new which can be bundled.
+A message of the type s_new which can be bundled.
 When sent to the server this message will instantiate this synth, immediately before aNode.
 
 method:: addAfterMsg
@@ -256,8 +250,7 @@ method:: addAfterMsg
 See *new above for details on args.
 
 returns::
- 
-a message of the type s_new which can be bundled.
+A message of the type s_new which can be bundled.
 When sent to the server this message will instantiate this synth, immediately after aNode.
 
 method:: addReplaceMsg
@@ -265,8 +258,7 @@ method:: addReplaceMsg
 See *new above for details on args.
 
 returns::
- 
-a message of the type s_new which can be bundled.
+A message of the type s_new which can be bundled.
 When sent to the server this message will instantiate this synth, replacing nodeToReplace in the server's node order.
 
 subsection:: Control

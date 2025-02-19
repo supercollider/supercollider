@@ -16,8 +16,7 @@ argument:: bufnum
 Buffer index.
 
 returns::
- 
-the current duration.
+The current duration.
 
 discussion::
 warning::

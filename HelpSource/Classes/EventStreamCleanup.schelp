@@ -109,7 +109,6 @@ argument:: freeNodes
 Used internally.
 
 returns::
- 
 An event. In embedInStream, this event must be returned (code:: ^cleanup.exit(inevent) ::)
 
 method:: functions

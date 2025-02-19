@@ -30,8 +30,7 @@ argument:: pName
 Name of the usage page to match
 
 returns::
- 
-an HIDElementProto
+An HIDElementProto
 
 method:: newTypeID
 
@@ -46,8 +45,7 @@ argument:: pID
 Usage page ID to match
 
 returns::
- 
-an HIDElementProto
+An HIDElementProto
 
 method:: newFromDict
 
@@ -59,8 +57,7 @@ An IdentityDictionary with a set of parameters to match.
 The keys in the dictionary should be one of the instance variables of HIDElementProto.
 
 returns::
- 
-an HIDElementProto
+An HIDElementProto
 
 instancemethods::
 
@@ -122,16 +119,14 @@ argument:: ele
 An instance of HIDElement
 
 returns::
- 
-a Boolean indicating whether the incoming HID matches the template
+A Boolean indicating whether the incoming HID matches the template
 
 method:: shouldMatch
 
 The variables that should be matched when filtering
 
 returns::
- 
-a Set with variable names.
+A Set with variable names.
 
 subsection:: Methods to add matching parameters
 

@@ -23,8 +23,7 @@ argument:: url
 argument:: localPath
 
 returns::
- 
-this
+This
 
 method:: fromLocalPath
 
@@ -33,8 +32,7 @@ Alternate constructor
 argument:: path
 
 returns::
- 
-this
+This
 
 method:: fromDirectoryEntry
 
@@ -45,8 +43,7 @@ argument:: name
 argument:: directoryEntry
 
 returns::
- 
-this
+This
 
 method:: parseQuarkName
 
@@ -59,8 +56,7 @@ argument:: url
 argument:: localPath
 
 returns::
- 
-this
+This
 
 method:: parseDependency
 
@@ -71,8 +67,7 @@ argument:: dep
 argument:: forQuark
 
 returns::
- 
-this
+This
 
 private:: prMakeDep
 
@@ -81,7 +76,6 @@ instancemethods::
 method:: name
 
 returns::
- 
 String
 
 method:: dependencies
@@ -89,7 +83,6 @@ method:: dependencies
 Based on the dependencies list in the quark file, returns an array of Quarks.
 
 returns::
- 
 Array of Quark
 
 method:: deepDependencies
@@ -98,7 +91,6 @@ Declared dependencies of this Quark and those of each dependency.
 This will check out all dependencies.
 
 returns::
- 
 Array of Quarks
 
 method:: data
@@ -106,7 +98,6 @@ method:: data
 Lazily parses the quark file (if found) and caches it
 
 returns::
- 
 Dictionary - the contents of the quark file
 
 method:: refspec
@@ -114,24 +105,21 @@ method:: refspec
 Git refspec (tag or sha hash)
 
 returns::
- 
-this
+This
 
 method:: localPath
 
 Absolute path where the Quark is located
 
 returns::
- 
-this
+This
 
 method:: summary
 
 Summary text from the quark file
 
 returns::
- 
-this
+This
 
 method:: url
 
@@ -139,19 +127,16 @@ Git repository url. If not declared when creating, it will examine the checked o
 and get the origin.
 
 returns::
- 
-this
+This
 
 method:: isDownloaded
 
 returns::
- 
 Boolean
 
 method:: isInstalled
 
 returns::
- 
 Boolean
 
 method:: git
@@ -159,8 +144,7 @@ method:: git
 Quarks that have git repos have a Git object that can be used for checking out, listing tags etc.
 
 returns::
- 
-a Git object
+A Git object
 
 method:: init
 
@@ -175,20 +159,17 @@ argument:: argRefspec
 argument:: argLocalPath
 
 returns::
- 
-this
+This
 
 method:: install
 
 returns::
- 
-this
+This
 
 method:: uninstall
 
 returns::
- 
-this
+This
 
 method:: checkout
 
@@ -196,13 +177,11 @@ Clone and checkout the url and refspec.
 Used by install and for switching versions.
 
 returns::
- 
-this
+This
 
 method:: version
 
 returns::
- 
 String
 
 method:: branch
@@ -210,13 +189,11 @@ method:: branch
 returns the current branch name.
 
 returns::
- 
 String or nil, if failed
 
 method:: tags
 
 returns::
- 
 Array of Strings
 
 method:: isCompatible
@@ -225,7 +202,6 @@ Evaluates the 'isCompatible' function in the quarkfile, if there is one.
 This allows a quarkfile to check its environment and raise an alarm before it gets installed and breaks something.
 
 returns::
- 
 Boolean
 
 method:: definesClasses
@@ -233,7 +209,6 @@ method:: definesClasses
 Classes that are defined by this Quark
 
 returns::
- 
 Array of Classes
 
 method:: definesExtensionMethods
@@ -241,7 +216,6 @@ method:: definesExtensionMethods
 Methods that this Quark defines that overwrite implementations in other packages including in Common.
 
 returns::
- 
 Array of Methods
 
 method:: help
@@ -249,8 +223,7 @@ method:: help
 Open the help file. Either as specified in the quark file as 'schelp' or searches by the name of the quark.
 
 returns::
- 
-this
+This
 
 method:: changed
 
@@ -258,7 +231,6 @@ After un/installing or checking out, state is set to changed.
 code smell: this is for the gui
 
 returns::
- 
 Boolean
 
 method:: runHook
@@ -272,24 +244,21 @@ argument:: hook
 Name of function to run.
 
 returns::
- 
-this
+This
 
 method:: printOn
 
 argument:: stream
 
 returns::
- 
-this
+This
 
 method:: parseQuarkFile
 
 private
 
 returns::
- 
-this
+This
 
 private:: prCollectDependencies
 

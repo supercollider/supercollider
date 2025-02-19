@@ -64,8 +64,8 @@ method:: current
 
 Returns the current scheme. This is useful for objects that, upon instantiation, wish to store the then-current scheme, so as to be able to consistently use the same scheme in future method calls.
 
-note:: 
-the caller shouldn't make any assumptions about the nature (the class) of the returned object, so that the actual implementation (an Event) may change in the future.
+note::
+The caller shouldn't make any assumptions about the nature (the class) of the returned object, so that the actual implementation (an Event) may change in the future.
 ::
 
 method:: get

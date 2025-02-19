@@ -62,7 +62,7 @@ method:: new
 
 Creates an instance of Thread, passing it the Function with code to run.
 
-note:: 
+note::
 There is no good use in instantiating a Thread, because this class offers no method
 of starting the given Function. Instead, use the Thread's subclass
 link::Classes/Routine::.
@@ -197,7 +197,6 @@ A time delta in seconds. Normally, the default 0 will be used.
 method:: isPlaying
 
 returns::
- 
 teletype::true:: if it is playing.
 
 method:: state

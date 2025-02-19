@@ -537,7 +537,6 @@ code::
 ::
 
 returns::
- 
 An array of integer character indices pointing to all the possible matches.
 
 method:: findRegexpAt
@@ -870,7 +869,6 @@ method:: systemCmd
 Executes a UNIX command strong::synchronously:: using the standard shell (sh).
 
 returns::
- 
 Error code of the UNIX command
 
 method:: runInTerminal
@@ -882,11 +880,11 @@ argument:: shell
 The shell used to execute the string.
 
 discussion::
-note:: 
+note::
 On macOS and Linux, the string is incorporated into a temporary script file and executed using the shell.
 ::
 
-note:: 
+note::
 On Linux, it is possible to choose a specific terminal emulator to be used, otherwise sclang tries to find one by itself.
 See link::Classes/LinuxPlatform#*runInTerminalCmd::. 
 ::

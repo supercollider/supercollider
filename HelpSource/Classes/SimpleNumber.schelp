@@ -199,50 +199,42 @@ Square root of the sum of the squares.
 method:: log
 
 returns::
- 
 Base e logarithm.
 
 method:: log2
 
 returns::
- 
 Base 2 logarithm.
 
 method:: log10
 
 returns::
- 
 Base 10 logarithm.
 
 method:: neg
 
 returns::
- 
-negation
+Negation
 
 method:: abs
 
 returns::
- 
-absolute value.
+Absolute value.
 
 method:: sign
 
 returns::
- 
 Answer teletype::-1:: if teletype::negative::, +1 if teletype::positive:: or teletype::0:: if teletype::zero::.
 
 method:: ceil
 
 returns::
- 
-next larger integer.
+Next larger integer.
 
 method:: floor
 
 returns::
- 
-next smaller integer
+Next smaller integer
 
 method:: sin
 
@@ -323,8 +315,7 @@ The next power of aNumber
 method:: nextPowerOfTwo
 
 returns::
- 
-the number relative to this that is the next power of 2
+The number relative to this that is the next power of 2
 
 method:: nextPowerOfThree
 
@@ -333,14 +324,12 @@ The next power of three
 method:: hash
 
 returns::
- 
-a hash value
+A hash value
 
 method:: <!
 
 returns::
- 
-the receiver. aNumber is ignored.
+The receiver. aNumber is ignored.
 
 method:: &
 
@@ -361,14 +350,12 @@ Binary Hamming distance: the count of bits that are not the same in the two numb
 method:: bitTest
 
 returns::
- 
 teletype::true:: if bit at index aNumber is set.
 
 method:: bitNot
 
 returns::
- 
-ones complement
+Ones complement
 
 method:: <<
 
@@ -385,32 +372,27 @@ Unsigned binary shift right.
 method:: rightShift
 
 returns::
- 
-performs a binary right shift
+Perform a binary right shift
 
 method:: unsignedRightShift
 
 returns::
- 
-performs an unsigned right shift
+Perform an unsigned right shift
 
 method:: leftShift
 
 returns::
- 
-performs a binary left shift
+Perform a binary left shift
 
 method:: bitOr
 
 returns::
- 
-performs a bitwise or with aNumber
+Perform a bitwise or with aNumber
 
 method:: bitAnd
 
 returns::
- 
-performs a bitwise and with aNumber
+Perform a bitwise and with aNumber
 
 method:: ring1
 
@@ -517,8 +499,7 @@ argument:: fasterBetter
 If teletype::true::, asFraction may find a much closer approximation and do it faster.
 
 returns::
- 
-an array of denominator and divisor of the nearest and smallest fraction
+An array of denominator and divisor of the nearest and smallest fraction
 
 method:: asAudioRateInput
 
@@ -646,8 +627,7 @@ method:: nextTimeOnGrid
 argument:: clock
 
 returns::
- 
-the next possible multiple of the clock's beats.
+The next possible multiple of the clock's beats.
 
 method:: schedBundleArrayOnClock
 
@@ -656,8 +636,7 @@ subsection:: Series and arrays
 method:: nearestInList
 
 returns::
- 
-the value in the list closest to this
+The value in the list closest to this
 
 discussion::
 code::
@@ -678,8 +657,7 @@ argument:: stepsPerOctave
 12 by default
 
 returns::
- 
-the value in the collection closest to this, assuming an octave repeating table of note values.
+The value in the collection closest to this, assuming an octave repeating table of note values.
 
 discussion::
 code::
@@ -739,26 +717,22 @@ subsection:: Windowing
 method:: rectWindow
 
 returns::
- 
-a value for a rectangular window function between 0 and 1.
+A value for a rectangular window function between 0 and 1.
 
 method:: hanWindow
 
 returns::
- 
-a value for a hanning window function between 0 and 1.
+A value for a hanning window function between 0 and 1.
 
 method:: welWindow
 
 returns::
- 
-a value for a welsh window function between 0 and 1.
+A value for a welsh window function between 0 and 1.
 
 method:: triWindow
 
 returns::
- 
-a value for a triangle window function between 0 and 1.
+A value for a triangle window function between 0 and 1.
 
 subsection:: Mapping
 
@@ -836,7 +810,6 @@ code::
 method:: magnitude
 
 returns::
- 
 The absolute value.
 
 Alternatively conceived of as the link::Classes/Polar#-magnitude:: or link::Classes/Complex#-magnitude::, wherein the receiver is the real part and the imaginary part is code::0.0::.
@@ -929,7 +902,6 @@ argument:: relativePrecision
 The precision relative to the larger absolute of the values compared.
 
 returns::
- 
 teletype::true:: if receiver is closer to that than precision.
 
 discussion::
@@ -1311,46 +1283,40 @@ code::
 method:: degrad
 
 returns::
- 
-converts degree to radian
+Convert degree to radian
 
 method:: raddeg
 
 returns::
- 
-converts radian to degree
+Convert radian to degree
 
 method:: midicps
 
 Convert MIDI note to cycles per second
 
 returns::
- 
-cycles per second
+Cycles per second
 
 method:: cpsmidi
 
 Convert cycles per second to MIDI note.
 
 returns::
- 
-midi note
+Midi note
 
 method:: midiratio
 
 Convert an interval in semitones to a ratio.
 
 returns::
- 
-a ratio
+A ratio
 
 method:: ratiomidi
 
 Convert a ratio to an interval in semitones.
 
 returns::
- 
-an interval in semitones
+An interval in semitones
 
 method:: ampdb
 
@@ -1388,14 +1354,12 @@ With probability 1 - emphasis::x::, return teletype::false::.
 method:: rand
 
 returns::
- 
 Random number from teletype::zero:: up to the receiver, exclusive.
 
 method:: rand2
 
 returns::
- 
-a random number from -this to +this.
+A random number from -this to +this.
 
 method:: rrand
 
@@ -1406,8 +1370,7 @@ The upper limit
 argument:: adverb
 
 returns::
- 
-a random number in the interval ]a, b[.
+A random number in the interval ]a, b[.
 
 discussion::
 If both a and b are link::Classes/Integer:: then the result will be an link::Classes/Integer::.
@@ -1415,13 +1378,11 @@ If both a and b are link::Classes/Integer:: then the result will be an link::Cla
 method:: linrand
 
 returns::
- 
-a linearly distributed random number from teletype::zero:: to this.
+A linearly distributed random number from teletype::zero:: to this.
 
 method:: bilinrand
 
 returns::
- 
 Bilateral linearly distributed random number from -this to +this.
 
 method:: sum3rand
@@ -1429,7 +1390,6 @@ method:: sum3rand
 This was suggested by Larry Polansky as a loose approximation of gaussian.
 
 returns::
- 
 A random number from -this to +this that is the result of summing three uniform random generators to yield a bell-like distribution.
 
 method:: exprand
@@ -1491,7 +1451,6 @@ subsection:: Misc
 method:: isValidUGenInput
 
 returns::
- 
 teletype::false:: if receiver cannot be used in UGen.
 
 subsection:: Special Functions

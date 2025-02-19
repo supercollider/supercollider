@@ -74,7 +74,6 @@ Normally this should not be needed.
 The default for this type of code::HIDFunc:: is code::HIDUsageDispatcher::
 
 returns::
- 
 A new instance of HIDFunc which responds to a specific element usage and device type.
 
 method:: device
@@ -120,7 +119,6 @@ Normally this should not be needed.
 The default for this type of code::HIDFunc:: is code::HIDDeviceDispatcher::
 
 returns::
- 
 A new instance of HIDFunc which responds to a specific element usage for a specific device.
 
 method:: usageID
@@ -171,7 +169,6 @@ Normally this should not be needed.
 The default for this type of code::HIDFunc:: is code::HIDElementProtoDispatcher::
 
 returns::
- 
 A new instance of HIDFunc which responds to a specific element usage id for a specific device.
 
 method:: proto
@@ -211,7 +208,6 @@ Normally this should not be needed.
 The default for this type of code::HIDFunc:: is code::HIDElementProtoDispatcher::
 
 returns::
- 
 A new instance of HIDFunc which responds to a specific prototype element.
 
 method:: element
@@ -256,7 +252,6 @@ Normally this should not be needed.
 The default for this type of code::HIDFunc:: is code::HIDElementDispatcher::
 
 returns::
- 
 A new instance of HIDFunc which responds to a specific element id for a specific device.
 
 subsection:: Debugging

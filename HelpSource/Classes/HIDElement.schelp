@@ -61,8 +61,8 @@ method:: arrayValue
 The array value of the element.
 This value is only of importance for those elements which can represent multiple usages, such as from keyboards. In that case it indicates the key that is pressed, and by adding this number to the usage of the element you know which function the key has.
 
-note:: 
-values from a keyboard are parsed in two ways:
+note::
+Valuefrom a from a keyboard are parsed in two ways:
 first as the element how they come in, second just with the usage and the value (on or off) as the data comes in.
 ::
 
@@ -85,8 +85,7 @@ Do not set this as a user!
 ::
 
 returns::
- 
-an instance of HID
+An instance of HID
 
 method:: collection
 
@@ -97,16 +96,14 @@ method:: usage
 Retrieve the usage index of this collection.
 
 returns::
- 
-a Number - the usage index of this element
+A Number - the usage index of this element
 
 method:: usagePage
 
 Retrieve the usage page index of this element.
 
 returns::
- 
-a Number- the usage page index
+A Number- the usage page index
 
 method:: usageName
 
@@ -114,8 +111,7 @@ Retrieve the usage name of this element.
 The name is looked up from the standardized HID usage tables using the usage page index.
 
 returns::
- 
-a String - the usage name
+A String - the usage name
 
 method:: pageName
 
@@ -123,40 +119,35 @@ Retrieve the page name of this element.
 The name is looked up from the standardized HID usage tables using the usage page index.
 
 returns::
- 
-a String - the usage page name
+A String - the usage page name
 
 method:: type
 
 A byte describing the type of element.
 
 returns::
- 
-a number describing the type of element.
+A number describing the type of element.
 
 method:: typeSpec
 
 The type of element, decoded from the type byte.
 
 returns::
- 
-an Array with Strings describing the type of element.
+An Array with Strings describing the type of element.
 
 method:: ioType
 
 Type of the element, input (1), output (2) or feature (3)
 
 returns::
- 
-a Number indicating the ioType
+A Number indicating the ioType
 
 method:: iotypeName
 
 Type of the element, one of code::\input::, code::\output::, or code::\feature::
 
 returns::
- 
-a Symbol indicating the type
+A Symbol indicating the type
 
 method:: logicalMin
 

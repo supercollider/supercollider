@@ -648,7 +648,6 @@ argument:: bundle
 Allows you to pass in a preexisting bundle and continue adding to it.
 
 returns::
- 
 The bundle so that it can be further used if needed.
 
 discussion::
@@ -867,7 +866,6 @@ argument:: actionIfFail
 Function to be evaluated in case communication with the server cannot be established.
 
 returns::
- 
 Function to be evaluated in order to clean up all actions performed inside the method.
 To be called for instance by the onClose method of the enclosing window.
 

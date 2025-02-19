@@ -35,7 +35,6 @@ argument:: progressFunc
 A link::Classes/Function:: to process the download's progress. This Function will be passed two arguments, the bytes received, and the total bytes.
 
 returns::
- 
 A new Download.
 
 method:: cancelAll

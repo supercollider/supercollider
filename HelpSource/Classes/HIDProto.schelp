@@ -30,8 +30,7 @@ argument:: pName
 Name of the usage page id
 
 returns::
-  
-an HIDProto
+  an HIDProto
 
 method:: newProduct
 
@@ -46,8 +45,7 @@ argument:: vName
 The vendor name to match.
 
 returns::
- 
-an HIDProto
+An HIDProto
 
 method:: newFromDict
 
@@ -59,8 +57,7 @@ An IdentityDictionary with a set of parameters to match.
 The keys in the dictionary should be one of the instance variables of HIDProto.
 
 returns::
- 
-an HIDProto
+An HIDProto
 
 instancemethods::
 
@@ -132,16 +129,14 @@ argument:: hid
 An instance of HID.
 
 returns::
- 
-a Boolean indicating whether the incoming HID matches the template
+A Boolean indicating whether the incoming HID matches the template
 
 method:: shouldMatch
 
 The variables that should be matched when filtering
 
 returns::
- 
-a Set with variable names.
+A Set with variable names.
 
 subsection:: Methods to add matching parameters
 

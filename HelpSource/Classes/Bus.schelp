@@ -132,8 +132,7 @@ Get the Bus' server object.
 method:: asMap
 
 returns::
- 
-a symbol consisting of the letter 'c' or 'a' (for control or audio) followed by the bus's index. This may be used when setting a synth node's control inputs to map the input to the control bus.
+A symbol consisting of the letter 'c' or 'a' (for control or audio) followed by the bus's index. This may be used when setting a synth node's control inputs to map the input to the control bus.
 
 discussion::
 See the link::Classes/Node:: help file for more information on mapping controls to buses.

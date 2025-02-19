@@ -15,8 +15,7 @@ method:: new
 Create a new QPenPrinter object.
 
 returns::
- 
-an instance of QPenPrinter
+An instance of QPenPrinter
 
 method:: print
 

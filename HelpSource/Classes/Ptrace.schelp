@@ -34,7 +34,6 @@ argument:: prefix
 String added to the printout to separate different streams.
 
 returns::
- 
 Original values
 
 instancemethods::

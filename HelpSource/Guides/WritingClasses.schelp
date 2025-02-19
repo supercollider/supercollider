@@ -14,7 +14,7 @@ See also: link::Guides/Intro-to-Objects::, link::Reference/Messages::, and link:
 
 There is also an overview of the current full link::Overviews/ClassTree::.
 
-note:: 
+note::
 Class definitions are statically compiled when you launch SuperCollider or "recompile the library." This means
 that class definitions must be saved into a file with the extension .sc, in a disk location where SuperCollider looks
 for classes. Saving into the main class library (SCClassLibrary) is generally not recommended. It's preferable to use
@@ -186,7 +186,7 @@ In this case note that code::super.new:: called the method new on the superclass
 Subsequently
 we are calling the code::.init:: method on that object, which is an instance method.
 
-warning:: 
+warning::
 If the superclass also happened to call super.new.init it will have expected to call the .init method defined
 in that class (the superclass), but instead the message .init will find the implementation of the class that the object
 actually is, which is our new subclass.

@@ -19,8 +19,7 @@ argument:: numChannels
 Number of channels for multiple channel buffers (default: 1)
 
 returns::
- 
-a new buffer – the UGen outputs its buffer number and can thus be used in any other UGen that requires a buffer number input.
+A new buffer – the UGen outputs its buffer number and can thus be used in any other UGen that requires a buffer number input.
 
 method:: newFrom
 
@@ -32,8 +31,7 @@ The list may be two-dimensional for numChannels > 1.
 It is then reshaped into the buffer's current format by flattening.
 
 returns::
- 
-a new buffer
+A new buffer
 
 discussion::
 Since newFrom is called by the as message, one may thus convert an array to a LocalBuf:

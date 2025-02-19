@@ -81,7 +81,7 @@ code::
 [143.2647423, ['/n_set', 1000, 'gate', 0]]
 ::
 
-note:: 
+note::
 Times are adjusted for the clock's tempo. link::Classes/Score#*new:: allows you to specify a link::Classes/TempoClock::; if you don't, then code::TempoClock.default:: will be used. 
 ::
 
@@ -183,7 +183,7 @@ Score will generate a temporary filename  for you.
 
 Of these, teletype::outputFilePath::, teletype::options:: and teletype::duration:: are particularly important. Make sure you specify at least these.
 
-note:: 
+note::
 NRT processing continues until the last timestamp in the score file.
 If you specify a teletype::duration:: for recordNRT, Score will automatically append a dummy command at the end of the score, with the given timestamp, ensuring that the output file will be at least this long.
 ::
@@ -281,7 +281,7 @@ code::
 File.delete(PathName.tmp +/+ "nrt-help-fail.wav");
 ::
 
-note:: 
+note::
 Another common technique to transmit SynthDefs to an NRT server is to use link::Classes/SynthDef#-writeDefFile:: to avoid this problem. This works by writing the SynthDef into the default SynthDef directory; then, the NRT server reads SynthDefs from the default location when it starts up.
 This approach is perfectly valid, but has the disadvantage of leaving teletype::.scsyndef:: files on disk that you might not need later.
 For that reason, this document demonstrates how to make SynthDefs available to NRT servers without using disk files.

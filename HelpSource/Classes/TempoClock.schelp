@@ -143,7 +143,6 @@ Removes all tasks from the scheduling queue.
 method:: isRunning
 
 returns::
- 
 A Boolean, teletype::true:: if the clock is active or teletype::false:: if the clock has been stopped.
 
 method:: tempo

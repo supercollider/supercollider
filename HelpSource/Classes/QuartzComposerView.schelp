@@ -4,7 +4,7 @@ summary:: View for rendering Quartz Composer Compositions
 
 
 
-note:: 
+note::
 code::QuartzComposerView:: is deprecated in SC 3.13 and won't be available in subsequent versions that will use Qt 6.x. 
 ::
 

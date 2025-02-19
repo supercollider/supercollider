@@ -73,7 +73,7 @@ section:: Layout management
 
 The following table contains classes used in layout management.
 
-note:: 
+note::
 This classes are only implemented in Qt GUI!
 ::
 

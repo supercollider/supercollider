@@ -52,7 +52,7 @@ o = OSCFunc({ arg msg, time, addr, recvPort; [msg, time, addr, recvPort].postln;
 o.free;	// remove the OSCFunc when you are done.
 ::
 
-note:: 
+note::
 The port 7771 above is the port the other application is sending strong::from::, not the port SC is receiving on.
 See the strong::recvPort:: argument in link::Classes/OSCFunc#*new:: if you want to receive on another port than NetAddr.langPort. 
 ::

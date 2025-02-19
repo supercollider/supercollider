@@ -28,7 +28,7 @@ method:: alloc
 Allocate next number. After hi value returns lo.
 
 returns::
- (describe returnvalue here)
+(describe returnvalue here)
 
 method:: init
 

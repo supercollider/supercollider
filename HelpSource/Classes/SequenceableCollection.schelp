@@ -282,7 +282,7 @@ y.postln;
 )
 ::
 
-warning:: 
+warning::
 code::x.copyRange(a, b):: is strong::not:: equivalent to code::x[a..b]::.
 The latter compiles to link::Classes/ArrayedCollection#-copySeries::, which has different behavior when strong::end:: < strong::start::. 
 ::
@@ -305,7 +305,8 @@ method:: take
 
 Remove and return strong::item:: from collection. The last item in the collection will move to occupy the vacated slot (and the collection size decreases by one). See also takeAt, defined for link::Classes/ArrayedCollection#-takeAt::.
 Elements are checked for identity (not for equality).
-warning:: 
+
+warning::
 code::take(item):: works on Arrays but not on Lists, because the internally called method code::takeAt(item):: is not defined for Lists. 
 ::
 

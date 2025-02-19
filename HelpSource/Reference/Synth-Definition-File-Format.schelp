@@ -169,7 +169,7 @@ section:: Original SynthDef format
 
 The original SynthDef format differs in that the following items are teletype::int16:: instead of teletype::int32::.
 
-note:: 
+note::
 The following list describes what has changed between SynthDef and SynthDef2.
 It is not a complete description of the original SynthDef file format.
 ::

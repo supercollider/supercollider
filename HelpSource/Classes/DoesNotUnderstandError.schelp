@@ -35,19 +35,16 @@ instancemethods::
 method:: selector
 
 returns::
- 
 The selector passed to new. Typically, the method name that was not understood.
 
 method:: args
 
 returns::
- 
 The args passed to new. Typically, an array of arguments passed to the unknown method.
 
 method:: suggestedCorrection
 
 returns::
- 
 If there is a method that the receiver would understand that looks similar to the unknown method name, the
 the link::Classes/Method:: object that corresponds to it. Otherwise, code::nil::.
 

@@ -431,15 +431,17 @@ definitionlist::
 ## keyword::note\::
 teletype:: NOTE\:: ::
 || Create a NOTE box with important content.
-note:: 
-like this 
+
+note::
+Like this 
 ::
 
 ## keyword::warning\::
 teletype:: WARNING\:: ::
 || Create a WARNING box with very important content.
-warning:: 
-like this 
+
+warning::
+Like this 
 ::
 
 ## keyword::footnote\::

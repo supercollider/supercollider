@@ -394,7 +394,7 @@ y.postln;
 )
 ::
 
-warning:: 
+warning::
 code::x.copyRange(a, b):: is strong::not:: equivalent to code::x[a..b]::.
 The latter compiles to link::#-copySeries::, which has different behavior when strong::end:: < strong::start::. 
 ::

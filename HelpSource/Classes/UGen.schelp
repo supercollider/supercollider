@@ -43,8 +43,7 @@ private:: categories
 method:: buildSynthDef
 
 returns::
- 
-the SynthDef in which the UGen is situated.
+The SynthDef in which the UGen is situated.
 
 discussion::
 code::
@@ -525,7 +524,6 @@ Either code::\bipolar::or code::\unipolar::.
 method:: numChannels
 
 returns::
- 
 The number of output channels.
 
 discussion::
@@ -535,13 +533,11 @@ See link::Guides/Multichannel-Expansion::.
 method:: numInputs
 
 returns::
- 
 The number of inputs for this UGen.
 
 method:: numOutputs
 
 returns::
- 
 The number of outputs for this UGen.
 
 method:: name
@@ -559,14 +555,12 @@ This is for the most part only used in UGen class definitions in order to allow 
 method:: isValidUGenInput
 
 returns::
- 
-true
+True
 
 method:: asUGenInput
 
 returns::
- 
-the receiver
+The receiver
 
 discussion::
 This method is implemented in a number of classes in order to allow objects like link::Classes/Node::s, link::Classes/Bus::ses, and link::Classes/Buffer::s to be passed directly as UGen inputs and link::Classes/Synth:: args.
@@ -574,8 +568,7 @@ This method is implemented in a number of classes in order to allow objects like
 method:: copy
 
 returns::
- 
-the receiver.
+The receiver.
 
 discussion::
 Thus UGen-dup effectively returns a reference to the original and is a convenient way to copy a mono signal to multiple channels.
@@ -621,5 +614,4 @@ If not specified, it looks for the first server for which BelaScope was already 
 If none is found, it attempts to initialize a link::Classes/BelaScope:: instance on link::Classes/Server#*default::.
 
 returns::
- 
 This UGen.

@@ -37,7 +37,6 @@ method:: consumeKeyDowns
 Global preference variable: if teletype::true:: then subclasses that do not set a keyDownAction do NOT bubble up keyDown events by default.
 
 returns::
- 
 The result of calling the method on the proxied view
 
 instancemethods::
@@ -51,7 +50,6 @@ argument:: v
 The view: a link::Classes/View::
 
 returns::
- 
 The result of calling the method on the proxied view
 
 method:: doesNotUnderstand
@@ -68,8 +66,7 @@ argument::  ... args
 The arguments that were supplied
 
 returns::
- 
-the result of calling the method on the proxied view
+The result of calling the method on the proxied view
 
 method:: viewDidClose
 
@@ -77,16 +74,14 @@ Unsets the view variable. After the view is closed (removed from the window) the
  You can check viewHolder.isClosed if you are unsure
 
 returns::
- 
-this
+This
 
 method:: remove
 
 Removes the view from the window if it has not already been removed.
 
 returns::
- 
-this
+This
 
 method:: action
 
@@ -95,7 +90,6 @@ This method is forwarded to the view
 argument:: f
 
 returns::
- 
 The result of calling the method on the proxied view
 
 method:: doAction
@@ -103,7 +97,6 @@ method:: doAction
 This method is forwarded to the view
 
 returns::
- 
 The result of calling the method on the proxied view
 
 method:: keyDownAction
@@ -113,7 +106,6 @@ This method is forwarded to the view
 argument:: f
 
 returns::
- 
 The result of calling the method on the proxied view
 
 method:: keyDownResponder
@@ -122,7 +114,6 @@ This method is forwarded to the view.
  Note: this is a cruciallib convention and will be deprecated here.
 
 returns::
- 
 The result of calling the method on the proxied view
 
 method:: enableKeyDowns
@@ -131,7 +122,6 @@ This method is forwarded to the view.
 Note: this is a cruciallib convention and will be deprecated here.
 
 returns::
- 
 The result of calling the method on the proxied view
 
 method:: asView
@@ -139,8 +129,7 @@ method:: asView
 returns the view
 
 returns::
- 
-the view
+The view
 
 method:: bounds
 
@@ -149,7 +138,6 @@ This method is forwarded to the view
 argument:: b
 
 returns::
- 
 The result of calling the method on the proxied view
 
 method:: resize
@@ -159,7 +147,6 @@ This method is forwarded to the view
 argument:: r
 
 returns::
- 
 The result of calling the method on the proxied view
 
 method:: enabled
@@ -169,7 +156,6 @@ This method is forwarded to the view
 argument:: b
 
 returns::
- 
 The result of calling the method on the proxied view
 
 method:: refresh
@@ -177,7 +163,6 @@ method:: refresh
 This method is forwarded to the view
 
 returns::
- 
 The result of calling the method on the proxied view
 
 method:: background
@@ -187,7 +172,6 @@ This method is forwarded to the view
 argument:: b
 
 returns::
- 
 The result of calling the method on the proxied view
 
 method:: focus
@@ -197,7 +181,6 @@ This method is forwarded to the view
 argument:: flag
 
 returns::
- 
 The result of calling the method on the proxied view
 
 method:: visible
@@ -207,7 +190,6 @@ This method is forwarded to the view
 argument:: boo
 
 returns::
- 
 The result of calling the method on the proxied view
 
 method:: isClosed
@@ -215,7 +197,6 @@ method:: isClosed
 This method is forwarded to the view
 
 returns::
- 
 The result of calling the method on the proxied view
 
 method:: font
@@ -225,5 +206,4 @@ This method is forwarded to the view
 argument:: f
 
 returns::
- 
 The result of calling the method on the proxied view

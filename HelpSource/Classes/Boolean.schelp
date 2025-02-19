@@ -23,8 +23,7 @@ private:: archiveAsCompileString
 method:: xor
 
 returns::
- 
-the exclusive or of the receiver and another Boolean.
+The exclusive or of the receiver and another Boolean.
 
 method:: and
 
@@ -39,25 +38,21 @@ If the receiver is true then function is not evaluated and the message answers t
 method:: &&
 
 returns::
- 
 teletype::true:: if the receiver is true and aBoolean is true.
 
 method:: ||
 
 returns::
- 
 teletype::true:: if either the receiver is true or aBoolean is true.
 
 method:: nand
 
 returns::
- 
-true unless both the operands are true (Sheffer stroke)
+True unless both the operands are true (Sheffer stroke)
 
 method:: not
 
 returns::
- 
 teletype::true:: if the receiver is false, and teletype::false:: if the receiver is true.
 
 method:: if
@@ -70,7 +65,6 @@ method:: asInteger
 method:: binaryValue
 
 returns::
- 
 1 if the receiver is true, and teletype::0:: if the receiver is false.
 
 method:: asBoolean

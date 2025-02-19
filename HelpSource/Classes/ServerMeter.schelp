@@ -29,7 +29,6 @@ argument:: numOuts
 The number of outputs you want to display (starts counting at bus 0)
 
 returns::
- 
 A reference to the newly created ServerMeter
 
 instancemethods::

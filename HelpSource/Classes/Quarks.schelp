@@ -14,7 +14,6 @@ method:: gui
 Show the interface for managing quarks
 
 returns::
- 
 QuarksGui
 
 method:: install
@@ -36,8 +35,7 @@ A sha commit: "15e6ea822a18d06b286c3f10918f83b8d797d939"
 nil (default)
 
 returns::
- 
-this
+This
 
 method:: installQuark
 
@@ -47,8 +45,7 @@ Usually you use *install with a name, url or path.
 argument:: quark
 
 returns::
- 
-this
+This
 
 method:: uninstall
 
@@ -61,16 +58,14 @@ or url of a git repository
 or the path (absolute or relative to current working directory) of a folder to uninstall.
 
 returns::
- 
-this
+This
 
 method:: clear
 
 Uninstall all Quarks, by setting LanguageConfig.installedPaths to empty.
 
 returns::
- 
-this
+This
 
 method:: addFolder
 
@@ -79,14 +74,14 @@ argument:: path
 In addition to the default downloaded-quarks
 add folders that contain quarks to offer on the menu for installation.
 These may be private quarks, cloned working copies or folders where you have manually downloaded quarks.
-note:: 
+
+note::
 The argument should be a path to a directory emphasis::containing quark directories::. It should emphasis::not:: be an isolated quark directory by itself.
 Users are discouraged from scattering quark directories in isolated locations.
 ::
 
 returns::
- 
-this
+This
 
 method:: all
 
@@ -94,7 +89,6 @@ All Quarks whether downloaded or installed or not.
 Includes any Quarks that were installed by path.
 
 returns::
- 
 Array of Quarks
 
 method:: installed
@@ -102,7 +96,6 @@ method:: installed
 All currently installed Quarks
 
 returns::
- 
 Array of Quarks
 
 method:: isInstalled
@@ -112,7 +105,6 @@ argument:: name
 Name, url or path
 
 returns::
- 
 Boolean
 
 method:: save
@@ -124,8 +116,7 @@ argument:: path
 Path of file to save to
 
 returns::
- 
-this
+This
 
 method:: load
 
@@ -144,8 +135,7 @@ argument:: done
 Function to be evaluated when loading is done
 
 returns::
- 
-this
+This
 
 method:: update
 
@@ -158,24 +148,21 @@ argument:: name
 Name of quark
 
 returns::
- 
-this
+This
 
 method:: openFolder
 
 Open the downloaded-quarks folder
 
 returns::
- 
-this
+This
 
 method:: folder
 
 Path of the downloaded-quarks folder where Quarks are cloned to before installing.
 
 returns::
- 
-path
+Path
 
 method:: checkForUpdates
 
@@ -207,8 +194,7 @@ Recompile the class library to fetch it again, or
 call Quarks.fetchDirectory(true) to force it.
 
 returns::
- 
-this
+This
 
 method:: classesInPackage
 
@@ -220,7 +206,6 @@ Name of quark or any folder in Extensions or Common.
 "Common" is a package that refers to the standard library.
 
 returns::
- 
 Array of Classes
 
 method:: link
@@ -231,8 +216,7 @@ private
 argument:: path
 
 returns::
- 
-this
+This
 
 method:: unlink
 
@@ -242,16 +226,14 @@ private
 argument:: path
 
 returns::
- 
-this
+This
 
 method:: initClass
 
 private
 
 returns::
- 
-this
+This
 
 method:: findQuarkURL
 
@@ -260,16 +242,14 @@ private
 argument:: name
 
 returns::
- 
-this
+This
 
 method:: directoryUrl
 
 The URL of the directory.txt file
 
 returns::
- 
-this
+This
 
 method:: directory
 
@@ -277,7 +257,6 @@ The community contributed Quarks directory. Fetched from the directoryUrl
 and parsed.
 
 returns::
- 
 Dictionary[name->url@refspec]
 
 method:: asAbsolutePath
@@ -290,8 +269,7 @@ argument:: relativeTo
 Optional root for resolving relative paths
 
 returns::
- 
-absolute path
+Absolute path
 
 method:: quarkNameAsLocalPath
 
@@ -302,8 +280,7 @@ argument:: name
 Quark name, path or git url.
 
 returns::
- 
-absolute path where the Quark is
+Absolute path where the Quark is
 
 method:: at
 
@@ -312,7 +289,6 @@ private. gets or creates a Quark by name, storing it in a central cache.
 argument:: name
 
 returns::
- 
 Quark
 
 private:: prReadDirectoryFile

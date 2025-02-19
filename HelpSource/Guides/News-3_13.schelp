@@ -6,7 +6,7 @@ summary:: A summary of news in SC 3.13
 
 Welcome to the SuperCollider 3.13 release! 
 
-note:: 
+note::
 In this version numerous UGens have been fixes so that they calculate their initial value as originally intended.
 In some cases this may create a different result than previously.
 See below for details 

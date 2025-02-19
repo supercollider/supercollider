@@ -5,7 +5,8 @@ summary:: Print the current output value of a demand rate UGen
 description::
 
 Print the current output value of a demand rate UGen.
-warning:: 
+
+warning::
 Printing values from the Server in intensive for the CPU.
 Poll should be used for debugging purposes.
 ::

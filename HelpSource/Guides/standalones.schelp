@@ -5,7 +5,8 @@ summary:: A guide to making SuperCollider-based applications by 'exporting' exis
 
 
 
-note:: 
+
+note::
 The concept of standalone applications is mainly relevant on macOS.
 On linux, Miguel Negrão and Fredrik Olofsson have created similar ways of packing versions of SC3 into independent setups.
 ::
@@ -170,7 +171,7 @@ unixCmd("open" + ~pathToNewApp);
 Platform.userAppSupportDir.postcs;
 ::
 
-note:: 
+note::
 THIS SHOULD END WITH ~newAppName! If it has the original ~thisAppName (the one you started from, e.g. ~/././SuperCollider), the new app will not be interfere with SuperCollider!
 So, delete the app again, and start over using a recommended version of SC3 (see tested list on top)!
 ::
@@ -339,7 +340,7 @@ LanguageConfig.includePaths.last.pathMatch.postln;
 // - the added quarks should now be present.
 ::
 
-note:: 
+note::
 You can use the Standalone quark to make sure your app remains closed, keeps using its to its InternalExtensions dir, and continues to ignore anything in its userExtensionDir or systemExtensionDir.
 ::
 

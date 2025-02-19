@@ -28,8 +28,8 @@ Event.addEventType(\test, { "Your word is: ".post; ~word.scramble.postln });
 
 section:: Currently existing event types:
 
-note:: 
-this documentation is incomplete. 
+note::
+This documentation is incomplete. 
 ::
 
 definitionlist::

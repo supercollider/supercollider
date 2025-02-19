@@ -59,7 +59,6 @@ argument:: stream
 An index of the underlying link::Classes/PriorityQueue::.
 
 returns::
- 
 The stopped stream, or teletype::nil:: if the stream is not found.
 
 method:: suspendAll

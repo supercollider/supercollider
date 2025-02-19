@@ -43,7 +43,6 @@ argument:: clip
 If clip is set to 'wrap', the indices into the bus will not be clipped to the last bus channel, but will wrap around.
 
 returns::
- 
 A UGen output, usually an array of UGens or, if the arguments are arrays, an array of arrays.
 
 instancemethods::

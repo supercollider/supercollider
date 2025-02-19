@@ -159,8 +159,7 @@ method:: storeArgs
 (?)
 
 returns::
- 
-an link::Classes/Array::, code:: [name, size] ::.
+An link::Classes/Array::, code:: [name, size] ::.
 
 method:: boldVariant
 

@@ -31,14 +31,12 @@ A link::Classes/Boolean::whether the receiver is greater than or equal to strong
 method:: min
 
 returns::
- 
-the minimum of the receiver and aMagnitude.
+The minimum of the receiver and aMagnitude.
 
 method:: max
 
 returns::
- 
-the maximum of the receiver and aMagnitude.
+The maximum of the receiver and aMagnitude.
 
 method:: clip
 
@@ -47,11 +45,9 @@ If the receiver is less than minVal then answer minVal, else if the receiver is 
 method:: inclusivelyBetween
 
 returns::
- 
-whether the receiver is greater than or equal to minVal and less than or equal to maxVal.
+Whether the receiver is greater than or equal to minVal and less than or equal to maxVal.
 
 method:: exclusivelyBetween
 
 returns::
- 
-whether the receiver is greater than minVal and less than maxVal.
+Whether the receiver is greater than minVal and less than maxVal.

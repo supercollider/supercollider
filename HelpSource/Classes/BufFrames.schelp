@@ -16,8 +16,7 @@ argument:: bufnum
 Buffer index.
 
 returns::
- 
-the current number of allocated frames.
+The current number of allocated frames.
 
 discussion::
 warning::
