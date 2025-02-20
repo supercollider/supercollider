@@ -304,33 +304,63 @@ List[1, 2, 3, 3, 4, 3, 4, 3].occurrencesOf(3);
 ::
 
 method::sum
-Answer the sum of all items or the results of the optional strong::function:: argument evaluated for each item in the receiver. The function is passed two arguments, the item and an integer index.
-code::
-List[1, 2, 3, 4].sum;
+Answer the sum of the items in the collection, optionally applying a link::Classes/Function:: to each item before summing. When provided, the link::Classes/Function:: is passed two arguments: the item and an integer index.
 
-(0..8).sum { |i| 1 / (2 ** i) };
-// Only item is used as index is not used in the function.
-::
-discussion::
-If there is no strong::function:: argument, it can be expressed mathematically as follows:
 code::
-[\x_0, \x_1, ..., \x_n].sum // This is conceptual. Do not evaluate.
-// _0, _1 and _n indicate the index of the element.
+(0..8).sum { |item| 1 / (2 ** item) } // only the item is used; index is unused.
 ::
+
+table::
+## mathematically equivalent to:
+math::
+\sum_{item=0}^{8} \frac{1}{2^{item}}
+::
+::
+
+discussion::
+The sum of all items in a collection can be expressed mathematically as:
+
+table::
+##teletype::
+[x_0, x_1, ..., x_n].sum // pseudo-code
+::
+equivalent to:
 math::
 \text{Sum} \{ x_0, x_1, \ldots, x_n \} = \sum_{i=0}^{n} x_i
 ::
+::
+
+Example:
+code::
+List[1, 2, 3, 4].sum
+::
+
+
 
 method::product
-Answer the product of the items in the collection, optionally applying a function to each item before multiplication. See link::#-sum:: for optional strong::function:: argument.
-discussion::
-If there is no strong::function:: argument, it can be expressed mathematically as follows:
+Answer the product of the items in the collection, optionally applying a link::Classes/Function:: to each item before multiplication. When provided, the link::Classes/Function:: receives two arguments: the item and its integer index.
+
 code::
-[\x_0, \x_1, ..., \x_n].product // This is conceptual. Do not evaluate.
-// _0, _1 and _n indicate the index of the element.
+(0..8).product { |item| 1 / (2 ** item) } // only the item is used; index is unused.
 ::
+table::
+## mathematically equivalent to:
+math::
+\prod_{i=0}^{8} \frac{1}{2^i}
+::
+emphasis::The argument name:: teletype::item:: emphasis::in sclang code is represented as:: teletype::i:: emphasis::in the mathematic formula.::
+::
+
+discussion::
+The product of all items in a collection can be expressed mathematically as:
+table::
+## teletype::
+[x_0, x_1, ..., x_n].product // pseudo-code
+::
+equivalent to:
 math::
 \text{Product} \{ x_0, x_1, \ldots, x_n \} = \prod_{i=0}^{n} x_i
+::
 ::
 Example:
 code::
@@ -338,20 +368,34 @@ code::
 ::
 
 method::mean
-Answer the arithmetic mean of the results of the sum with an optional function argument. See link::#-sum:: for optional strong::function:: argument.
-discussion::
-If there is no strong::function:: argument, it can be expressed mathematically as follows:
+Answer the arithmetic mean of the items in the collection, optionally applying a link::Classes/Function:: to each item before averaging. When provided, the link::Classes/Function:: receives two arguments: the item and its integer index.
 code::
-[\x_0, \x_1, ..., \x_n].mean // This is conceptual. Do not evaluate.
-// _0, _1 and _n indicate the index of the element.
+(0..8).mean { |item| 1 / (2 ** item) } // only the item is used; index is unused.
 ::
+table::
+## mathematically equivalent to:
 math::
-\text{Mean}\{ x_0, x_1, \ldots, x_n \} = \frac{\sum_{i=0}^{n} x_i}{n+1}
+\frac{\sum_{i=0}^{8} \frac{1}{2^i}}{8-0+1}
+::
+Note: emphasis::In the mathematic formula, the argument name:: teletype::item:: emphasis::in sclang code is represented as:: teletype::i::.
+::
+
+discussion::
+The mean of all items in a collection can be expressed mathematically as:
+table::
+## teletype::
+[\x_0, \x_1, ..., \x_n].mean // pseudo-code
+::
+equivalent to:
+math::
+\text{Mean}\{ x_0, x_1, \ldots, x_n \} = \frac{\sum_{i=0}^{n} x_i}{n-0+1}
+::
 ::
 Example:
 code::
 [1, 2, 3, 4].mean
 ::
+
 
 method::maxItem
 Answer the maximum of the results of strong::function:: evaluated for each item in the receiver. The function is passed two arguments, the item and an integer index.
@@ -590,7 +634,11 @@ symmetricDifference(a, b);
 method::isSubsetOf
 Returns link::Classes/True:: if all elements of this are also elements of strong::that::
 code::
-a = Set[1, 2, 3, 4];
-Set[1, 2].isSubsetOf(a); // true
-Set[1, 5].isSubsetOf(a); // false
+a = [1, 2, 3, 4];
+// a = List[1, 2, 3, 4];
+// a = Set[1, 2, 3, 4];
+// a = Interval(1, 4, 1);
+// a = Bag[1, 2, 3, 4];
+[1, 3].isSubsetOf(a); // true
+[1, 5].isSubsetOf(a); // false
 ::
