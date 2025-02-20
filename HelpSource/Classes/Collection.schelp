@@ -348,7 +348,7 @@ table::
 math::
 \prod_{i=0}^{8} \frac{1}{2^i}
 ::
-emphasis::The argument name:: teletype::item:: emphasis::in sclang code is represented as:: teletype::i:: emphasis::in the mathematic formula.::
+Note: emphasis::In the mathematic formula, the argument name:: teletype::item:: emphasis::in sclang code is represented as:: teletype::i::.
 ::
 
 discussion::
