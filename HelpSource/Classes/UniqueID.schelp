@@ -1,16 +1,16 @@
-class::UniqueID
-summary::source for unique numbers
-categories::Core
+title:: UniqueID
+categories:: Core
+summary:: Source for unique numbers
 
 classmethods::
 
-method::initClass
+method:: initClass
 
-initialize the starting id.
+Initialize the starting id.
 
-method::next
+method:: next
 
-get next id, which is unique to the system
+Get next id, which is unique to the system
 
 examples::
 

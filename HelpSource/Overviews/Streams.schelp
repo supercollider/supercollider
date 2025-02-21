@@ -1,6 +1,6 @@
 title:: Streams
-summary:: Patterns/Streams Help overview
 categories:: Streams-Patterns-Events
+summary:: Patterns/Streams Help overview
 related:: Classes/Stream, Classes/Pattern
 
 section:: Some tutorials
@@ -33,7 +33,7 @@ subsection:: FilterPatterns
 
 classtree::FilterPattern
 
-subsection:: event stream specific filter patterns
+subsection:: Event stream specific filter patterns
 
 list::
 ## link::Classes/Pset::
@@ -46,7 +46,7 @@ list::
 ## link::Classes/Pfindur::
 ::
 
-subsection:: other Patterns
+subsection:: Other Patterns
 
 list::
 ## link::Classes/Pwhite::

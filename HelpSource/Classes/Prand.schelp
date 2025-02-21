@@ -1,27 +1,25 @@
-class:: Prand
-summary:: embed values randomly chosen from a list
-related:: Classes/Pxrand, Classes/Pwrand
+title:: Prand
 categories:: Streams-Patterns-Events>Patterns>List
+summary:: Embed values randomly chosen from a list
+related:: Classes/Pxrand, Classes/Pwrand
 
 description::
 
 Embed one item from the list at random for each repeat.
 
-Examples::
+examples::
 
 code::
 (
 var a, b;
-a = Prand([1, 2, 3, 4, 5], 6);	// return 6 items
-b = a.asStream;
+a = Prand([1, 2, 3, 4, 5], 6);	// return 6 items b = a.asStream;
 7.do({ b.next.postln });
 )
 
 // return also a subpattern:
 (
 var a, b;
-a = Prand([1, Pseq([10, 20, 30]), 2, 3, 4, 5], 6);	// return 6 items
-b = a.asStream;
+a = Prand([1, Pseq([10, 20, 30]), 2, 3, 4, 5], 6);	// return 6 items b = a.asStream;
 7.do({ b.next.postln });
 )
 

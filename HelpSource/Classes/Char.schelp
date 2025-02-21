@@ -1,9 +1,10 @@
-class::Char
-summary::ASCII character
-related::Classes/String
+title:: Char
 categories:: Core
+summary:: ASCII character
+related:: Classes/String
 
 description::
+
 An ASCII character represented as a signed 8-bit integer (-128 to 127).
 Valid ASCII values are in the range 0-127.
 Chars may be written as literals using the $ sign. For example: $a, $b, $c.
@@ -22,101 +23,130 @@ See link::Classes/String:: for more information.
 
 classmethods::
 
-method::nl
+method:: nl
+
 Newline code::($\n)::.
 
-method::ret
+method:: ret
+
 Carriage return code::($\r)::.
 
-method::tab
+method:: tab
+
 Horizontal tab code::($\t)::.
 
-method::ff
+method:: ff
+
 Form feed code::($\f)::.
 
-method::vtab
+method:: vtab
+
 Vertical tab code::($\v)::.
 
-method::space
+method:: space
+
 Single space code::($ )::.
 
-method::comma
+method:: comma
+
 Comma code::($,)::.
 
-method::bullet
+method:: bullet
+
 Asterisk code::($*)::.
 
-method::binaryOpCharacters
+method:: binaryOpCharacters
+
 A string containing all characters allowed in a binary operator: code::"!@%&*-+=|<>?/"::.
 
 instancemethods::
+
 private:: archiveAsCompileString
 
-subsection::conversion
+subsection:: Conversion
 
-method::hash
+method:: hash
 
-returns:: the hash value of the receiver.
+returns::
+The hash value of the receiver.
 
-method::ascii
+method:: ascii
 
-returns:: the integer ASCII value of a Char.
+returns::
+The integer ASCII value of a Char.
 
-method::digit
+method:: digit
 
-returns:: an integer value from 0 to 9 for chars $0 to $9, and values 10 to 35 for chars $a to $z
+returns::
+An integer value from teletype::0:: to 9 for chars $teletype::0:: to $9, and values 10 to 35 for chars $a to $z
 or $A to $Z.
 
-method::asAscii
+method:: asAscii
 
-returns:: the object itself.
+returns::
+The object itself.
 
-method::asUnicode
+method:: asUnicode
 
-returns:: the object itself.
+returns::
+The object itself.
 
-method::toUpper
+method:: toUpper
 
-returns:: the upper case version of a char. Nonalphabetic chars return themselves.
+returns::
+The upper case version of a char.
+Nonalphabetic chars return themselves.
 
-method::toLower
+method:: toLower
 
-returns:: a lower case version of a char. Nonalphabetic chars return themselves.
+returns::
+A lower case version of a char.
+Nonalphabetic chars return themselves.
 
 subsection:: Testing
 
-method::isAlpha
+method:: isAlpha
 
-returns:: whether the char is an alphabetic character.
+returns::
+Whether the char is an alphabetic character.
 
-method::isAlphaNum
+method:: isAlphaNum
 
-returns:: whether the char is an alphabetic or numeric character.
+returns::
+Whether the char is an alphabetic or numeric character.
 
-method::isPrint
+method:: isPrint
 
-returns:: whether the char is printable.
+returns::
+Whether the char is printable.
 
-method::isPunct
+method:: isPunct
 
-returns:: whether the char is a punctuation character.
+returns::
+Whether the char is a punctuation character.
 
-method::isControl
+method:: isControl
 
-returns:: true if the char is a control character.
+returns::
+teletype::true:: if the char is a control character.
 
-method::isSpace
+method:: isSpace
 
-returns:: true if the char is white space: any of code::[$ , $\f, $\n, $\r, $\t, $\v]::.
+returns::
+teletype::true:: if the char is white space:
+any of code::[$ , $\f, $\n, $\r, $\t, $\v]::.
 
-method::isDecDigit
+method:: isDecDigit
 
-returns:: true if the char is a decimal digit $0 to $9.
+returns::
+teletype::true:: if the char is a decimal digit $teletype::0:: to $9.
 
-method::isFileSafe
+method:: isFileSafe
 
-returns:: true if the char is safe for use in a filename.
+returns::
+teletype::true:: if the char is safe for use in a filename.
 Excludes the path separators / and :
+
 discussion::
 code::
  for(0, 255, { |i|
@@ -125,30 +155,37 @@ code::
 });
 ::
 
-method::isLower
+method:: isLower
 
-returns:: true if the char is a lowercase letter.
+returns::
+teletype::true:: if the char is a lowercase letter.
 
-method::isUpper
+method:: isUpper
 
-returns:: true if the char is a uppercase letter.
+returns::
+teletype::true:: if the char is a uppercase letter.
 
-method::isPathSeparator
+method:: isPathSeparator
 
-returns:: true if the char is one of the platform specific path separators.
+returns::
+teletype::true:: if the char is one of the platform specific path separators.
 
-method::isVowel
+method:: isVowel
 
-returns:: true if the char is a vowel.
+returns::
+teletype::true:: if the char is a vowel.
 
-method::++
+method:: ++
 
-returns:: teletype::this.asString ++ that::
+returns::
+teletype::this.asString ++ that::
 
-method::<
+method:: <
 
-returns:: TELETYPE::this.ascii < aChar.ascii::
+returns::
+teletype::this.ascii < aChar.ascii::
 
-method::==
+method:: ==
 
-returns:: True if the receiver equals the argument.
+returns::
+True if the receiver equals the argument.

@@ -1,43 +1,44 @@
-class:: PingPong
-summary:: Stereo ping-pong delay.
+title:: PingPong
+categories:: UGens>Delays>Buffer
+summary:: Stereo ping-pong delay
 related:: Classes/SinOsc
-categories::  UGens>Delays>Buffer
 
+description::
 
-Description::
-
-Bounces sound between two outputs…  Like a ping-pong ball. PingPong is
+Bouncesound sound between two outputs…  Like a ping-pong ball. PingPong is
 actually a compound built upon  link::Classes/RecordBuf::  and
 link::Classes/PlayBuf:: .
 
-
 classmethods::
 
-method::ar
+method:: ar
 
-argument::bufnum
+argument:: bufnum
+
 First index of a multi channel buffer.
 
-argument::inputs
+argument:: inputs
+
 An array of audio inputs, the same size as your buffer.
 
-argument::delayTime
+argument:: delayTime
+
 Delay time in seconds.
 
-argument::feedback
+argument:: feedback
+
 Feedback coefficient.
 
-argument::rotate
+argument:: rotate
 
-Which rotates the inputArray by one step. (left → right, right →
-left). Rotation of 0 (or 2) would result in no rotation to the
+Which rotates the inputArray by one step.
+(left → right, right →
+left). Rotation of teletype::0:: (or 2) would result in no rotation to the
 inputArray. You cannot modulate this number by assigning it to a control in a SynthDef.
 
-
-Examples::
+examples::
 
 code::
-
 (
 s = Server.local;
 s.waitForBoot({
@@ -84,6 +85,4 @@ SynthDef("help-PingPong", { |out = 0, bufnum = 0|
 )
 
 b.free;
-
-
 ::

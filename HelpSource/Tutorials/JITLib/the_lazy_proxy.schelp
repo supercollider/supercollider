@@ -1,23 +1,25 @@
 title:: the_lazy_proxy
-summary:: the lazy proxy
 categories:: JITLib>Tutorials
+summary:: The lazy proxy
 related:: Overviews/JITLib, Classes/NodeProxy, Classes/ProxySpace
 
-The class link::Classes/NodeProxy:: (and link::Classes/BusPlug::) uses a lazy evaluation scheme to derive its appropriate rate and numChannels from the first meaningful input that is assigned to it. see link::Classes/NodeProxy:: and link::Classes/ProxySpace:: helpfiles for basic info. So as long as the source is not set, the proxy is strong::neutral:: :
+
+The class link::Classes/NodeProxy:: (and link::Classes/BusPlug::) uses a lazy evaluation scheme to derive its appropriate rate and numChannels from the first meaningful input that is assigned to it.
+see link::Classes/NodeProxy:: and link::Classes/ProxySpace:: helpfiles for basic info. So as long as the source is not set, the proxy is strong::neutral:: :
 
 code::
 p = ProxySpace.push;
 ~x.isNeutral;
 ::
 
-as soon as the first time the source is set, it derives its bus arguments from that input
+As soon as the first time the source is set, it derives its bus arguments from that input
 
 code::
 ~x = { Array.fill(14, { SinOsc.kr(1.0.rand, 0, 100) }) }; //~x is now 14 channels control rate
 ~x;
 ::
 
-in order to reset these properties, clear is used:
+In order to reset these properties, clear is used:
 
 code::
 ~x.clear;
@@ -25,7 +27,7 @@ code::
 //for simplicity nodeproxy currently does not care for its children, only for its parents.
 ::
 
-for a quick initialisation, also code::defineBus:: can be used:
+For a quick initialisation, also code::defineBus:: can be used:
 
 code::
 ~x.defineBus(\control, 5);
@@ -33,20 +35,20 @@ code::
 ~x.kr(5)
 ::
 
-the properties are also set when some other proxy reads from it:
+The properties are also set when some other proxy reads from it:
 
 code::
 ~x = { LFPulse.kr * ~b.kr(7) }; //the first arg to kr / ar is the default number of channels
 ::
 
-if no number of channels is passed in, the default value is used:
+If no number of channels is passed in, the default value is used:
 
 code::
 ~test.ar; // 2
 ~krtest.kr; // 1
 ::
 
-the default can be set in the class NodeProxy:
+The default can be set in the class NodeProxy:
 
 code::
 NodeProxy.defaultNumAudio = 3;
@@ -60,7 +62,7 @@ NodeProxy.defaultNumAudio = 2;
 NodeProxy.defaultNumControl = 1;
 ::
 
-also if a proxy is used as a map source, control rate is assumed:
+Also if a proxy is used as a map source, control rate is assumed:
 
 code::
 ~u;
@@ -68,7 +70,7 @@ code::
 ~u;
 ::
 
-when unary or binary operations are performed, the highest rate / numChannels is used to initialize all uninitialized proxies:
+When unary or binary operations are performed, the highest rate / numChannels is used to initialize all uninitialized proxies:
 
 code::
 ~x.clear;
@@ -85,7 +87,7 @@ code::
 ~x = ~e;
 ::
 
-if a rate-1 proxy is used as rate-2 input, the rate is converted and the channels are expanded in the usual multichannel expansion pattern:
+If a rate-1 proxy is used as rate-2 input, the rate is converted and the channels are expanded in the usual multichannel expansion pattern:
 
 code::
 ~f.defineBus(\control);
@@ -99,7 +101,7 @@ code::
 ~f.ar(2);
 ::
 
-an offset can be passed in as second argument to ar/kr
+An offset can be passed in as second argument to ar/kr
 
 code::
 //modulate offset:

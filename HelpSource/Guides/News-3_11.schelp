@@ -1,8 +1,10 @@
 title:: News in 3.11
-summary:: A summary of news in SC 3.11
 categories:: News
+summary:: A summary of news in SC 3.11
 
-STRONG:: New feature:: - Ableton Link support. See link::#sclang: Added::
+
+
+strong::New feature:: - Ableton Link support. See link::#sclang: Added::
 
 Documentation improvements (#4759, #4732, #4744, #4697, #4326, #4673, #4610, #4515, #4389, #4355, #4333, #4222, #4198, #4144, #4123, #4148, #4140, #4080, #4078, #4057, #4016, #4027, #3925, #3953, #3954, #3912, #3929)
 
@@ -12,9 +14,11 @@ Added NOVA_SIMD build option for cookiecutter based plugin development (#4354)
 
 section:: General: Changed
 
-Moved RPi and BeagleBone README files into the main repository. (#4639)
+Moved RPi and BeagleBone README files into the main repository.
+(#4639)
 
-The way version numbering is handled in the build system has been reformed. This primarily affects building, but also required changes to the class library (see class library: deprecated) (#4706)
+The way version numbering is handled in the build system has been reformed.
+This primarily affects building, but also required changes to the class library (see class library: deprecated) (#4706)
 
 scel has been updated (#4712, #4700)
 
@@ -127,9 +131,11 @@ code:: Object.asInt :: is deprecated (#4089). Please use code:: Object.asInteger
 
 section:: Class library: Fixed
 
-STRONG:: Breaking change::: Fixed an issue with code:: Signal:hammingWindow :: using incorrect coefficients. code:: Signal:hammingWindow_old :: can be used for previous behaviour (#4324)
+strong:: Breaking change:::
+Fixed an issue with code:: Signal:hammingWindow :: using incorrect coefficients. code:: Signal:hammingWindow_old :: can be used for previous behaviour (#4324)
 
-STRONG:: Breaking change::: code:: Color:asHSV :: could sometimes return NaN -- grayscale colors returned NaN hue, and black returned NaN hue and saturation. Zero values are now returned in these cases, as is the standard (#4369)
+strong:: Breaking change::: code:: Color:asHSV :: could sometimes return NaN -- grayscale colors returned NaN hue, and black returned NaN hue and saturation.
+Zero values are now returned in these cases, as is the standard (#4369)
 
 Fixed an issue where NamedControl would erroneously convert code:: name :: to a String in some cases (#4761).
 
@@ -181,7 +187,7 @@ Help Browser now supports executing code regions (#3904)
 
 section:: IDE & SCDoc: Changed
 
-sc-ide is now built as a static library (#4628)
+Sc-ide is now built as a static library (#4628)
 
 Improved a number of style issues in the Help Browser (#3881)
 

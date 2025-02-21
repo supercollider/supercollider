@@ -1,12 +1,11 @@
-class:: DigitalOut
+title:: DigitalOut
+categories:: UGens>Bela
 summary:: Write data to a digital output
 related:: Classes/AnalogIn, Classes/AnalogOut, Classes/DigitalIn, Classes/DigitalIO
-categories::  UGens>Bela
 
+description::
 
-Description::
-
-Writes digital data to a digital output (e.g.: an LED or a trigger/gate output).
+Writedigital data digital data to a digital output (e.g.: an LED or a trigger/gate output).
 
 note::
 This UGen only works on Bela.
@@ -18,37 +17,37 @@ If you want to modulate the pin number, you should use the UGen link::Classes/Di
 
 classmethods::
 
-method::ar
+method:: ar
 
-argument::digitalPin
+argument:: digitalPin
 
-Digital pin number to write to. Pin numbers begin at 0. This value cannot be modulated.
+Digital pin number to write to.
+Pin numbers begin at 0. This value cannot be modulated.
 
-argument::output
+argument:: output
 
-Value to write out to the pin - the value will be 1 when the argument is larger than 0, otherwise 0.
+Value to write out to the pin - the value will be teletype::1:: when the argument is larger than 0, otherwise 0.
 
-argument::mul
+argument:: mul
 
-argument::add
+argument:: add
 
+method:: kr
 
-method::kr
+argument:: digitalPin
 
-argument::digitalPin
+Digital pin number to write to.
+Pin numbers begin at 0. This value cannot be modulated.
 
-Digital pin number to write to. Pin numbers begin at 0. This value cannot be modulated.
+argument:: output
 
-argument::output
+Value to write out to the pin - the value will be teletype::1:: when the argument is larger than 0, otherwise 0.
 
-Value to write out to the pin - the value will be 1 when the argument is larger than 0, otherwise 0.
+argument:: mul
 
-argument::mul
+argument:: add
 
-argument::add
-
-
-Examples::
+examples::
 
 code::
 // write a sine oscillator's output to a pin
@@ -58,5 +57,4 @@ SynthDef("help-DigitalOut", { |out = 0|
     DigitalOut.ar(0, SinOsc.ar(10));
 }).play;
 )
-
 ::

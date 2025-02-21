@@ -1,15 +1,14 @@
-class:: SampleDur
-summary:: Duration of one sample.
+title:: SampleDur
+categories:: UGens>Info
+summary:: Duration of one sample
 related:: Classes/ControlRate, Classes/RadiansPerSample, Classes/SampleRate, Classes/SubsampleOffset
-categories::  UGens>Info
 
+description::
 
-Description::
-
-Returns the current sample duration of the server.
+Return the current sample duration of the server.
 Equivalent to 1/SampleRate.
-
 
 classmethods::
 
-method::ir
+method:: ir
+

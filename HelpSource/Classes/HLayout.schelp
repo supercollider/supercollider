@@ -1,15 +1,15 @@
-CLASS:: HLayout
-summary:: A layout that distributes views in a horizontal line
+title:: HLayout
 categories:: GUI>Layout
+summary:: A layout that distributes views in a horizontal line
 related:: Classes/LineLayout, Classes/VLayout, Classes/GridLayout, Classes/StackLayout, Guides/GUI-Layout-Management
 
-DESCRIPTION::
+description::
+
 See documentation of superclass link::Classes/LineLayout:: for details.
 
+examples::
 
-EXAMPLES::
 code::
-
 // simple example
 (
 w = Window().front;
@@ -57,13 +57,13 @@ f = { SoundFileView(w).load(Platform.resourceDir +/+ "sounds/a11wlk01.wav", 1e5.
 a = { HLayout(VLayout(*{ Slider(w, Rect(0, 0, 230, 20)).minSize_(Size(130, 20)) } ! 3), f.value) } ! 4;
 w.layout = HLayout(VLayout(*a));
 )
-
 ::
 
+classmethods::
 
-CLASSMETHODS::
+private:: key
 
-PRIVATE:: key
-PRIVATE:: layoutClass
+private:: layoutClass
 
-INSTANCEMETHODS::
+instancemethods::
+

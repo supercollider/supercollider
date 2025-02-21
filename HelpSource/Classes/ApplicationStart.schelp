@@ -1,7 +1,7 @@
-class:: ApplicationStart
-summary:: register functions to be evaluated on Application start
-related:: Classes/StartUp, Classes/ServerBoot
+title:: ApplicationStart
 categories:: Control, Platform>macOS
+summary:: Register functions to be evaluated on Application start
+related:: Classes/StartUp, Classes/ServerBoot
 
 description::
 
@@ -12,18 +12,21 @@ The functions will be evaluated last; After the library has been compiled, the s
 
 See also link::Classes/StartUp:: for functions that are evaluated emphasis::every:: time the ClassLibrary is recompiled.
 
-ClassMethods::
+classmethods::
 
-method::add
+method:: add
+
 Registers an object or function. Objects will be receive a strong::doOnApplcationStart:: message on application start. Functions will be evaluated.
 
-method::remove
+method:: remove
+
 Removes a function that was previously registered.
 
-method::run
+method:: run
+
 Evaluates the functions or objects in order.
 
-Examples::
+examples::
 
 code::
 SomeStartClass {

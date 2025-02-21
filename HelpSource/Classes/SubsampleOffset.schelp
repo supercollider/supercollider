@@ -1,10 +1,9 @@
-class:: SubsampleOffset
-summary:: Offset from synth start within one sample.
+title:: SubsampleOffset
+categories:: UGens>Info
+summary:: Offset from synth start within one sample
 related:: Classes/ControlRate, Classes/RadiansPerSample, Classes/SampleDur, Classes/SampleRate, Classes/OffsetOut
-categories::  UGens>Info
 
-
-Description::
+description::
 
 When a synth is created from a time stamped osc-bundle, it starts
 calculation at the next possible block (normally 64 samples). Using an
@@ -17,15 +16,13 @@ provides the information where, within the current sample, the synth was
 scheduled. It can be used to offset envelopes or resample the audio
 output.
 
-
 classmethods::
 
-method::ir
+method:: ir
 
-Examples::
+examples::
 
 code::
-
 // example: demonstrate cubic subsample interpolation
 
 
@@ -92,5 +89,4 @@ SynthDef("Help_Subsample_Grain",
 		}
 	}.play;
 )
-
 ::

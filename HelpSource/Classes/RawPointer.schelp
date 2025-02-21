@@ -1,5 +1,5 @@
-class::RawPointer
-categories::Core>Kernel
+title:: RawPointer
+categories:: Core>Kernel
 summary:: Hold raw pointers from the host environment
 
 description::

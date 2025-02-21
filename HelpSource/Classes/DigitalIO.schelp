@@ -1,12 +1,11 @@
-class:: DigitalIO
+title:: DigitalIO
+categories:: UGens>Bela
 summary:: Read or write data to a digital pin
 related:: Classes/AnalogIn, Classes/AnalogOut, Classes/DigitalIn, Classes/DigitalOut
-categories::  UGens>Bela
 
+description::
 
-Description::
-
-Reads or writes digital data from or to a digital pin.
+Read/write digital data from or to a digital pin.
 The pin number of this UGen can be modulated, as well as its I/O mode, which allows to tri-state the pin.
 
 note::
@@ -19,47 +18,49 @@ If you do not need to change the pin mode or the pin, you should use the UGen li
 
 classmethods::
 
-method::ar
+method:: ar
 
 The output of this UGen is always the last value read when the digital pin was an input.
 
-argument::digitalPin
+argument:: digitalPin
 
-Digital pin number to write to. Pin numbers begin at 0. This value can be modulated at audiorate.
+Digital pin number to write to.
+Pin numbers begin at 0. This value can be modulated at audiorate.
 
-argument::output
+argument:: output
 
-Value to write out to the pin - the value will be 1 when the argument is larger than 0, otherwise 0. This value can be modulated at audio rate.
+Value to write out to the pin - the value will be teletype::1:: when the argument is larger than 0, otherwise 0. This value can be modulated at audio rate.
 
-argument::pinMode
+argument:: pinMode
 
 Value to write out to the pin - the pin will be an input when the argument is smaller than 0.5, otherwise an output. This value can be modulated at audiorate.
 
-argument::mul
+argument:: mul
 
-argument::add
+argument:: add
 
-method::kr
+method:: kr
 
 The output of this UGen is always the last value read when the digital pin was an input.
 
-argument::digitalPin
+argument:: digitalPin
 
-Digital pin number to write to. Pin numbers begin at 0.
+Digital pin number to write to.
+Pin numbers begin at 0.
 
-argument::output
+argument:: output
 
-Value to write out to the pin - the value will be 1 when the argument is larger than 0, otherwise 0.
+Value to write out to the pin - the value will be teletype::1:: when the argument is larger than 0, otherwise 0.
 
-argument::pinMode
+argument:: pinMode
 
 Value to write out to the pin - the pin will be an input when the argument is smaller than 0.5, otherwise an output.
 
-argument::mul
+argument:: mul
 
-argument::add
+argument:: add
 
-Examples::
+examples::
 
 code::
 // write a sine oscillator's output to a pin, and read the pin value at other times
@@ -69,5 +70,4 @@ SynthDef("help-DigitalIO", { |out = 0|
     DigitalIO.ar(0, SinOsc.ar(10), LFPulse.kr(0.1)).poll;
 }).play;
 )
-
 ::

@@ -1,17 +1,16 @@
-class:: A2K
-summary:: Audio to control rate converter.
+title:: A2K
+categories:: UGens>Conversion
+summary:: Audio to control rate converter
 related:: Classes/K2A
-categories::  UGens>Conversion
 
-
-Description::
+description::
 
 Audio to control rate converter. Only needed in specific cases.
 
-
 classmethods::
 
-method::kr
+method:: kr
 
-argument::in
+argument:: in
+
 The input signal.

@@ -1,39 +1,39 @@
-class:: Formant
+title:: Formant
+categories:: UGens>Generators>Deterministic
 summary:: Formant oscillator
-categories::  UGens>Generators>Deterministic
 
+description::
 
-Description::
-
-Generates a set of harmonics around a formant frequency at a given
+Generatea a set of harmonics around a formant frequency at a given
 fundamental frequency.
-
 
 classmethods::
 
-method::ar
+method:: ar
 
-argument::fundfreq
+argument:: fundfreq
+
 Fundamental frequency in Hertz. (control rate)
 
-argument::formfreq
+argument:: formfreq
+
 Formant frequency in Hertz. (control rate)
 
-argument::bwfreq
+argument:: bwfreq
+
 Pulse width frequency in Hertz. Controls the bandwidth of the
 formant. (control rate)
 
 Must be greater than or equal to code::fundfreq::.
 
-argument::mul
+argument:: mul
 
-argument::add
+argument:: add
 
 discussion::
 The frequency inputs are read at control rate only, so if you use an audio rate UGen as an input, it will only be sampled at the start of each audio synthesis block.
 
-
-Examples::
+examples::
 
 code::
 // modulate fundamental frequency, formant freq stays constant

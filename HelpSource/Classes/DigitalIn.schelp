@@ -1,12 +1,11 @@
-class:: DigitalIn
+title:: DigitalIn
+categories:: UGens>Bela
 summary:: Read data from a digital input
 related:: Classes/AnalogIn, Classes/AnalogOut, Classes/DigitalOut, Classes/DigitalIO
-categories::  UGens>Bela
 
+description::
 
-Description::
-
-Reads digital data from a digital sensor input (e.g.: a button or trigger input).
+Read digital data from a digital sensor input (e.g.: a button or trigger input).
 
 note::
 This UGen only works on Bela.
@@ -18,28 +17,29 @@ If you want to modulate the pin number, you should use the UGen link::Classes/Di
 
 classmethods::
 
-method::ar
+method:: ar
 
-argument::digitalPin
+argument:: digitalPin
 
-Digital pin number to read. Pin numbers begin at 0. This value cannot be modulated.
+Digital pin number to read. Pin numbers begin at 0.
+This value cannot be modulated.
 
-argument::mul
+argument:: mul
 
-argument::add
+argument:: add
 
-method::kr
+method:: kr
 
-argument::digitalPin
+argument:: digitalPin
 
-Digital pin number to read. Pin numbers begin at 0. This value cannot be modulated.
+Digital pin number to read. Pin numbers begin at 0.
+This value cannot be modulated.
 
-argument::mul
+argument:: mul
 
-argument::add
+argument:: add
 
-
-Examples::
+examples::
 
 code::
 // turn on and off a sine oscillator

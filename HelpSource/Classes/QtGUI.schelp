@@ -1,6 +1,6 @@
-class:: QtGUI
-summary:: Top-level controls for Qt GUI
+title:: QtGUI
 categories:: GUI
+summary:: Top-level controls for Qt GUI
 
 description::
 
@@ -9,16 +9,23 @@ QtGUI provides top-level control for the Qt GUI bindings and some platform-level
 classmethods::
 
 private:: prStringBounds, prSetStyle, view, compositeView, hLayoutView, vLayoutView, window
+
 private:: scrollView, staticText, button, checkBox, textField, numberBox, slider, multiSliderView
+
 private:: rangeSlider, slider2D, knob, listView, treeView, popUpMenu, textView, freqScope, freqScopeView
+
 private:: scopeView, stethoscope1, stethoscope, soundFileView, envelopeView, levelIndicator, webView
+
 private:: userView, dragSource, dragSink, dragBoth, dialog, ezScroller, ezSlider, ezListView, ezPopUpMenu
+
 private:: ezNumber, ezRanger, hLayout, vLayout, gridLayout, stackLayout, pen, font, image, qcView
+
 private:: notImplemented, stop, id
 
 method:: availableStyles
 
-Returns an array of all available styles on this platform. For use with link::#-style::.
+Returns an array of all available styles on this platform.
+For use with link::#-style::.
 
 method:: cursorPosition
 
@@ -27,8 +34,10 @@ Gets the current position of the cursor as a link::Classes/Point::.
 method:: debugLevel
 
 Gets or sets the verbosity level for debug output from "QtCollider" code. SuperCollider must have
-been built in debug mode for messages to appear. Valid values are -1 (none), 0 (warnings only,
-default), 1 (most messages), and 2 (verbose). Values outside this range are effectively clipped.
+been built in debug mode for messages to appear.
+Valid values are -1 (none), 0 (warnings only,
+default), 1 (most messages), and 2 (verbose).
+Values outside this range are effectively clipped.
 
 method:: focusView
 
@@ -40,7 +49,8 @@ Gets or sets the link::Classes/QPalette:: used for GUI display.
 
 method:: selectedText
 
-Gets the selected text in the currently focused view. If there is no such string then return
+Gets the selected text in the currently focused view.
+If there is no such string then return
 empty string.
 
 Internally, first calls code::selectedText:: if that method is available; otherwise, calls
@@ -56,12 +66,15 @@ QtGUI.stringBounds("hellooo", Font(Font.defaultSansFace, 100))
 ::
 
 argument:: aString
+
 A link::Classes/String:: to render.
 
 argument:: aFont
+
 An instance of link::Classes/Font::.
 
 method:: style
 
-Gets or sets the current GUI style. The given style must be a link::Classes/String:: or
+Gets or sets the current GUI style.
+The given style must be a link::Classes/String:: or
 link::Classes/Symbol:: that names one of the styles returned by link::#-availableStyles::.

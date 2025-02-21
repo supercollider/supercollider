@@ -1,6 +1,6 @@
-class:: ProxyMixerOld
-summary:: mix control for a proxyspace
+title:: ProxyMixerOld
 categories:: JITLib>GUI
+summary:: Mix control for a proxyspace
 related:: Classes/ProxySpace, Classes/NodeProxyEditor
 
 description::
@@ -13,27 +13,31 @@ ProxyMixer provides controls for handling and editing the node proxies in a prox
 
 Overview: link::Overviews/JITLib::
 
-ClassMethods::
+classmethods::
 
-private::initClass
+private:: initClass
 
-subsection::Creation
+subsection:: Creation
 
-method::new
+method:: new
 
-argument::proxyspace
-a link::Classes/ProxySpace::
+argument:: proxyspace
 
-argument::nProxies
-the maximum number of proxies you plan to use
+A link::Classes/ProxySpace::
 
-argument::title
-window title
+argument:: nProxies
 
-argument::where
-window bounds
+The maximum number of proxies you plan to use
 
-Examples::
+argument:: title
+
+Window title
+
+argument:: where
+
+Window bounds
+
+examples::
 
 code::
 p = ProxySpace.push(s.boot, \p);

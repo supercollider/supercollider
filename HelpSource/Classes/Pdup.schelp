@@ -1,11 +1,11 @@
-class:: Pdup
-summary:: repeat input stream values
-related:: Classes/Pn, Classes/Pattern#-dup
+title:: Pdup
 categories:: Streams-Patterns-Events>Patterns>Repetition
+summary:: Repeat input stream values
+related:: Classes/Pn, Classes/Pattern#-dup
 
 description::
 
-repeat each element n times.
+Repeat each element n times.
 
 code::
 (
@@ -18,19 +18,20 @@ x = a.asStream;
 
 This is also a response to link::Classes/Pattern#-dup::
 
+classmethods::
 
-ClassMethods::
+method:: new
 
-method::new
+argument:: n
 
-argument::n
-The number of repeats for each new element. n may be a pattern, so the number of times can vary each iteration.
+The number of repeats for each new element.
+n may be a pattern, so the number of times can vary each iteration.
 
-argument::pattern
-the pattern to repeat.
+argument:: pattern
 
-Examples::
+The pattern to repeat.
 
+examples::
 
 code::
 // the first argument can be a pattern, too:
@@ -87,5 +88,4 @@ c.asStream.nextN(1000).plot
 a = Pwhite();
 c = (2 ** (0..10)).sum { |n| a.dupEach(n.div(2).fin(1)) ++ a.dupEach(n) };
 c.asStream.nextN(1000).plot
-
 ::

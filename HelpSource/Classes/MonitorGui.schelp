@@ -1,13 +1,14 @@
-class:: MonitorGui
-summary:: display and control a Monitor
+title:: MonitorGui
 categories:: JITLib>GUI, Live Coding
+summary:: Display and control a Monitor
 related:: Classes/NodeProxy, Classes/Ndef, Classes/JITGui, Classes/NdefGui
 
 description::
 
-MonitorGui displays the state of a link::Classes/NodeProxy::'s link::Classes/Monitor::. It is used in link::Classes/NdefGui::, link::Classes/ProxyMixer::, and link::Classes/NdefMixer::.
+MonitorGui displays the state of a link::Classes/NodeProxy::'s link::Classes/Monitor::.
+It is used in link::Classes/NdefGui::, link::Classes/ProxyMixer::, and link::Classes/NdefMixer::.
 
-subsection::First examples
+subsection:: First examples
 
 code::
 s.boot;
@@ -34,13 +35,13 @@ Ndef(\a).stop;
 Ndef(\a).play(0);
 ::
 
-ClassMethods::
+classmethods::
 
-private::initClass
+private:: initClass
 
-subsection::Creation
+subsection:: Creation
 
-method::new
+method:: new
 
 code::
 g = MonitorGui(Ndef(\a));	// barebones
@@ -64,65 +65,86 @@ MonitorGui.new(Ndef(\a), options: [\name, \fade])
 MonitorGui.new(Ndef(\a), options: [\level, \name, \fade])
 ::
 
-argument::object
-the nodeproxy whose monitor state will be shown, or nil.
+argument:: object
 
-argument::parent
-a parent view where MonitorGui is to be shown. If nil, a window is made.
+The nodeproxy whose monitor state will be shown, or nil.
 
-argument::bounds
-bounds where the view (or window) will be shown.
+argument:: parent
 
-argument::makeSkip
-a flag whether to create and start a link::Classes/SkipJack:: for auto-updating.
+A parent view where MonitorGui is to be shown.
+If teletype::nil::, a window is made.
 
-argument::options
-an array of symbols for options of what to display.
+argument:: bounds
 
-subsection::Class Variables
+Bounds where the view (or window) will be shown.
 
-method::lastOutBus
-the highest outbus number to allow. Default is 99.
+argument:: makeSkip
 
-InstanceMethods::
+A flag whether to create and start a link::Classes/SkipJack:: for auto-updating.
 
-subsection::Instance Variables
+argument:: options
 
-method::config
-some information on what to display
+An array of symbols for options of what to display.
 
-method::ampSl
-an link::Classes/EZSlider:: for link::Classes/Monitor:: volume
+subsection:: Class Variables
 
-method::playBut
-a play button. Shift-click opens a dialog window for playN output routing by code
+method:: lastOutBus
 
-method::setOutBox
-a numberbox to set output routing
+The highest outbus number to allow.
+Default is 99.
 
-method::fadeBox
-a numberbox for setting monitor fadeTime.
+instancemethods::
 
-subsection::Some Methods
+subsection:: Instance Variables
+
+method:: config
+
+Some information on what to display
+
+method:: ampSl
+
+An link::Classes/EZSlider:: for link::Classes/Monitor:: volume
+
+method:: playBut
+
+A play button. Shift-click opens a dialog window for playN output routing by code
+
+method:: setOutBox
+
+A numberbox to set output routing
+
+method:: fadeBox
+
+A numberbox for setting monitor fadeTime.
+
+subsection:: Some Methods
 
 strong::Making various gui elements: ::
 
-method::makeViews
-method::makeVol
-method::makeNameView
-method::makePlayOut
-method::makeFade
+method:: makeViews
+
+method:: makeVol
+
+method:: makeNameView
+
+method:: makePlayOut
+
+method:: makeFade
 
 strong::Standard JITGui methods: ::
 
-method::setDefaults
-create default layout sizes
+method:: setDefaults
 
-method::accepts
-accepts nil or NodeProxy
+Create default layout sizes
 
-method::getState
-get the object's current state
+method:: accepts
 
-method::checkUpdate
-compare previous state with current state, and update gui elements.
+Accepts nil or NodeProxy
+
+method:: getState
+
+Get the object's current state
+
+method:: checkUpdate
+
+Compare previous state with current state, and update gui elements.

@@ -1,11 +1,11 @@
-class:: Paddpre
-summary:: event pattern that adds to existing value of one key
-related:: Classes/Padd, Classes/Paddp
+title:: Paddpre
 categories:: Streams-Patterns-Events>Patterns>Math
+summary:: Event pattern that adds to existing value of one key
+related:: Classes/Padd, Classes/Paddp
 
 description::
 
-Adds a value in an event, strong::before it is passed up:: the stream. To add to the value after it has been passed to the stream, use link::Classes/Padd::.
+Add a value in an event, strong::before it is passed up:: the stream. To add to the value after it has been passed to the stream, use link::Classes/Padd::.
 
 code::
 (
@@ -17,6 +17,7 @@ x = a.asStream;
 ::
 
 Paddpre does not override incoming values:
+
 code::
 (
 var a, b;
@@ -26,21 +27,24 @@ x = a.asStream;
 )
 ::
 
-ClassMethods::
+classmethods::
 
-method::new
+method:: new
 
-argument::name
-the key
+argument:: name
 
-argument::value
-can be a pattern or a stream. The resulting stream ends when that incoming stream ends.
+The key
 
-argument::pattern
-the pattern
+argument:: value
 
+Can be a pattern or a stream.
+The resulting stream ends when that incoming stream ends.
 
-Examples::
+argument:: pattern
+
+The pattern
+
+examples::
 
 code::
 (

@@ -1,10 +1,9 @@
-TITLE:: FlowVar
+title:: FlowVar
+categories:: Scheduling
 summary:: A place holder, which when accessed pauses a thread until the place holder has a value
-categories::Scheduling
 related:: Classes/Ref, Classes/Thunk, Classes/Condition, Classes/Routine
 
-DESCRIPTION::
-
+description::
 
 code::
 (
@@ -20,24 +19,25 @@ fork {
 a.value = 2;
 ::
 
+classmethods::
 
-CLASSMETHODS::
+method:: new
 
-METHOD:: new
 Return a new instance,
 
-ARGUMENT:: inVal
+argument:: inVal
+
 If a value is given here, the FlowVar will not block execution.
 
+instancemethods::
 
-INSTANCEMETHODS::
+method:: value
 
-
-METHOD:: value
 Set the value bound to the FlowVar.
 
-The getter returns the value bound to the FlowVar. If the value is not yet available, hold execution (this requires the method to be called from within a link::Classes/Routine:: or similar thread.).
+The getter returns the value bound to the FlowVar.
+If the value is not yet available, hold execution (this requires the method to be called from within a link::Classes/Routine:: or similar thread.).
 
+argument:: inVal
 
-ARGUMENT:: inVal
 Any object.

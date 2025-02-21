@@ -1,15 +1,19 @@
-class::Main
-categories::Core>Kernel
+title:: Main
+categories:: Core>Kernel
 summary:: The concrete instance of Process
 related:: Classes/StartUp
 
 description::
 
 Main is the concrete instance of link::Classes/Process:: (the runtime environment for the virtual machine and interpreter).
-Main overrides some methods of Process. There are two methods of interest. One is named startup and is
-called after the class library has been compiled. The other is called shutdown which gets called when the library gets re-compiled.
+Main overrides some methods of Process.
+There are two methods of interest.
+One is named startup and is
+called after the class library has been compiled.
+The other is called shutdown which gets called when the library gets re-compiled.
 
 method:: thisProcess
+
 The singleton instance of Main is available through the special keyword thisProcess.
 For example, to find out what platform you're on:
 
@@ -17,79 +21,94 @@ code::
 thisProcess.platform;	// --> e.g. "an OSXPlatform", "a LinuxPlatform", ...
 ::
 
-classMethods::
+classmethods::
 
 subsection:: SuperCollider version
+
 These class methods tell you which version of SuperCollider you are running and whether that version complies to your required minimum / maximum settings:
 
-method::version
+method:: version
 
-returns:: the current version as a human readable string
+returns::
+The current version as a human readable string
 
-method::versionAtLeast
+method:: versionAtLeast
 
 Returns code::true:: if we are running version maj.min.patch or newer, false otherwise. If code::min:: and/or
-code::patch:: are code::nil::, they will be treated as wildcards. The tweak part of the version is completely ignored.
+code::patch:: are code::nil::, they will be treated as wildcards.
+The tweak part of the version is completely ignored.
 
-argument::maj
+argument:: maj
+
 Major version number as Integer.
 
-argument::min
+argument:: min
+
 Minor version number as Integer, or code::nil::.
 
-argument::patch
+argument:: patch
+
 Patch version number as Integer, or code::nil::.
 
 code::
 Main.versionAtLeast(3, 10, 4);
 ::
 
-method::versionAtMost
+method:: versionAtMost
 
 Returns code::true:: if we are running version maj.min.patch or older, false otherwise. If code::min:: and/or
-code::patch:: are code::nil::, they will be treated as wildcards. The tweak part of the version is completely ignored.
+code::patch:: are code::nil::, they will be treated as wildcards.
+The tweak part of the version is completely ignored.
 
-argument::maj
+argument:: maj
+
 Major version number as Integer.
 
-argument::min
+argument:: min
+
 Minor version number as Integer, or code::nil::.
 
-argument::patch
+argument:: patch
+
 Patch version number as Integer, or code::nil::.
 
 code::
 Main.versionAtMost(3, 13, 9);
 ::
 
-method::scVersionMajor
+method:: scVersionMajor
 
-returns:: major version number as Integer
+returns::
+Major version number as Integer
 
-method::scVersionMinor
+method:: scVersionMinor
 
-returns:: minor version number as Integer
+returns::
+Minor version number as Integer
 
-method::scVersionPatch
+method:: scVersionPatch
 
-returns:: patch version number as Integer
+returns::
+Patch version number as Integer
 
-method::scVersionTweak
+method:: scVersionTweak
 
-The "tweak" version is typically only used to distinguish pre-release versions of SC from proper releases. It may be
+The "tweak" version is typically only used to distinguish pre-release versions of SC from proper releases.
+It may be
 empty.
 
-returns:: tweak version as a String
+returns::
+Tweak version as a String
 
-method::scVersionPostfix
+method:: scVersionPostfix
 
 Deprecated. Use code::scVersionPatch:: and code::scVersionTweak:: instead.
 
-instanceMethods::
+instancemethods::
 
-private::prArgv, prOpenUDPPort
+private:: prArgv, prOpenUDPPort
 
-method::startup
+method:: startup
 
 Called after the class library has been compiled.
 
@@ -100,7 +119,7 @@ Main's startup then stores Server.default in the interpreter variable s, sets th
 
 To add your own startup functionalities, you could either edit the special startup-file (discussed in link::Reference/StartupFile::), or use StartUp.add as discussed in the link::Classes/StartUp:: help file.
 
-method::shutdown
+method:: shutdown
 
 Called after SuperCollider is quit or the class library is about to be re-compiled.
 
@@ -111,7 +130,7 @@ code::
 ShutDown.add({ "Good bye!!".postln });
 ::
 
-method::run
+method:: run
 
 Override this to do whatever you want, e. g. add a class extension file like this to the class library:
 
@@ -121,15 +140,20 @@ code::
 }
 ::
 
-argument::newFunc
-A link::Classes/Function:: or similar object to be set. When evaluated, this function will be passed the arguments time, replyAddr, and message, corresponding to the time the message was sent, the link::Classes/NetAddr:: of the sender, and the message itself as an link::Classes/Array::.
+argument:: newFunc
 
-method::addOSCRecvFunc
+A link::Classes/Function:: or similar object to be set.
+When evaluated, this function will be passed the arguments time, replyAddr, and message, corresponding to the time the message was sent, the link::Classes/NetAddr:: of the sender, and the message itself as an link::Classes/Array::.
+
+method:: addOSCRecvFunc
 
 Register a link::Classes/Function:: to be evaluated whenever SuperCollider language (the client) receives an OSC message. This will not overwrite any previously registered functions.
 
-argument::func
-A link::Classes/Function:: or similar object to be added. When evaluated, this function will be passed the arguments msg, time, replyAddr, and recvPort, corresponding to the message itself as an link::Classes/Array::, the time the message was sent, the link::Classes/NetAddr:: of the sender, and the port on which the message was received. Note that this order differs from that used by the deprecated method link::#-recvOSCfunc::.
+argument:: func
+
+A link::Classes/Function:: or similar object to be added.
+When evaluated, this function will be passed the arguments msg, time, replyAddr, and recvPort, corresponding to the message itself as an link::Classes/Array::, the time the message was sent, the link::Classes/NetAddr:: of the sender, and the port on which the message was received.
+Note that this order differs from that used by the deprecated method link::#-recvOSCfunc::.
 
 code::
 // post all incoming traffic except the server status messages
@@ -147,56 +171,73 @@ thisProcess.addOSCRecvFunc(f);
 thisProcess.removeOSCRecvFunc(f);
 ::
 
-method::removeOSCRecvFunc
+method:: removeOSCRecvFunc
 
 Remove a link::Classes/Function:: from the list of those evaluated whenever SuperCollider language (the client) receives an OSC message. This will leave any other registered functions in place.
 
-argument::func
+argument:: func
+
 A link::Classes/Function:: or similar object to be removed.
 
-method::replaceOSCRecvFunc
+method:: replaceOSCRecvFunc
 
-Replace a link::Classes/Function:: in the list of those evaluated whenever SuperCollider language (the client) receives an OSC message with a different one. This will leave any other registered functions in place.
+Replace a link::Classes/Function:: in the list of those evaluated whenever SuperCollider language (the client) receives an OSC message with a different one.
+This will leave any other registered functions in place.
 
-argument::func
+argument:: func
+
 The link::Classes/Function:: or similar object to be replaced.
 
-argument::newFunc
-A link::Classes/Function:: or similar object to be replace the one being removed. When evaluated, this function will be passed the arguments time, replyAddr, recvPort, and message, corresponding to the time the message was sent, the link::Classes/NetAddr:: of the sender, the port on which the message was received, and the message itself as an link::Classes/Array::.
+argument:: newFunc
 
-method::openUDPPort
-Attempt to open a new UDP port for receiving OSC traffic. If another application has already bound to the requested port this will fail. Once opened, ports remain bound until SC is recompiled.
+A link::Classes/Function:: or similar object to be replace the one being removed.
+When evaluated, this function will be passed the arguments time, replyAddr, recvPort, and message, corresponding to the time the message was sent, the link::Classes/NetAddr:: of the sender, the port on which the message was received, and the message itself as an link::Classes/Array::.
 
-If the port was already opened by SC it will return true directly without trying to open the port again.
+method:: openUDPPort
 
-argument::portNum
+Attempt to open a new UDP port for receiving OSC traffic.
+If another application has already bound to the requested port this will fail.
+Once opened, ports remain bound until SC is recompiled.
+
+If the port was already opened by SC it will return teletype::true:: directly without trying to open the port again.
+
+argument:: portNum
+
 An link::Classes/Integer:: indicating the port to attempt to bind.
 
-argument::type
-An link::Classes/Symbol:: \osc or \raw, indicating which type of messages to expect. \osc will receive callbacks at code::Main:recvOSCmessage::, \raw will receive callbacks at code::Main:recvRawMessage::.
+argument:: type
 
-returns::A link::Classes/Boolean:: indicating whether the attempt was successful.
+An link::Classes/Symbol:: \osc or \raw, indicating which type of messages to expect.
+\osc will receive callbacks at code::Main:recvOSCmessage::, \raw will receive callbacks at code::Main:recvRawMessage::.
+
+returns::
+A link::Classes/Boolean:: indicating whether the attempt was successful.
 
 code::
-thisProcess.openUDPPort(3000); // will return true or false.
+thisProcess.openUDPPort(3000); // will return teletype::true:: or false.
 thisProcess.openPorts; // returns all open ports
 ::
 
-method::openPorts
+method:: openPorts
+
 Get a collection of all active UDP ports, including the main sclang port code::NetAddr.langPort::.
 
-returns::A link::Classes/Set::.
+returns::
+A link::Classes/Set::.
 
-method::pid
+method:: pid
 
-Returns:: The operating system's pid (process ID) for the process.
+returns::
+The operating system's pid (process ID) for the process.
 
-method::recompile
+method:: recompile
 
 Recompiles the class library.
 
-method::platform
+method:: platform
+
 Get the current link::Classes/Platform::
 
-method::argv
+method:: argv
+
 Get the command-line arguments passed to sclang.

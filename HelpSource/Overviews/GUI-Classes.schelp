@@ -1,6 +1,6 @@
 title:: List of GUI classes
-summary:: The most used GUI classes and their kit-specific equivalents
 categories:: GUI
+summary:: The most used GUI classes and their kit-specific equivalents
 
 section:: Kit-independent GUI classes
 
@@ -33,7 +33,8 @@ table::
 ## Window               || SCWindow               || JSCWindow           || QWindow             || a frame that can contain gadgets
 ## N/A                  || SCModalWindow          ||                     || N/A                 || a modal window
 ## N/A                  || SCModalSheet           ||                     || N/A                 || a modal sheet to attach to windows
-## View                 || SCView                 || JSCView             || QView               || The base class for most view classes. Important help file.
+## View                 || SCView                 || JSCView             || QView               || The base class for most view classes.
+Important help file.
 ## CompositeView        || SCCompositeView        || JSCCompositeView    || QView               || container view for nesting layouts
 ## HLayoutView          || SCHLayoutView          || JSCHLayoutView      || QHLayoutView        || container view with horizontal distribution of children
 ## VLayoutView          || SCVLayoutView          || JSCVLayoutView      || QVLayoutView        || container view with vertical distribution of children
@@ -72,7 +73,9 @@ section:: Layout management
 
 The following table contains classes used in layout management.
 
-note:: This classes are only implemented in Qt GUI! ::
+note::
+This classes are only implemented in Qt GUI!
+::
 
 table::
 ## strong::Class::      || strong::Description::

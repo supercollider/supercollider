@@ -1,22 +1,26 @@
-class:: Penvir
-summary:: use an environment when embedding the pattern in a stream
-related:: Classes/Pkey
+title:: Penvir
 categories:: Streams-Patterns-Events>Patterns>Data Sharing
+summary:: Use an environment when embedding the pattern in a stream
+related:: Classes/Pkey
 
-ClassMethods::
+classmethods::
 
-method::new
+method:: new
 
-argument::envir
-an environment with objects to embed.
+argument:: envir
 
-argument::pattern
-pattern or stream, usually a link::Classes/Pfunc::, link::Classes/Prout::.
+An environment with objects to embed.
 
-argument::independent
-if true streams can write to the environment without influencing other streams created from this pattern. if false, the streams write to a common namespace.
+argument:: pattern
 
-Examples::
+Pattern or stream, usually a link::Classes/Pfunc::, link::Classes/Prout::.
+
+argument:: independent
+
+If teletype::true:: streams can write to the environment without influencing other streams created from this pattern.
+if teletype::false::, the streams write to a common namespace.
+
+examples::
 
 code::
 (

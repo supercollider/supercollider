@@ -1,39 +1,42 @@
-TITLE:: Pget
-summary:: Retrieve a value within the scope (namespace) of a Plambda
+title:: Pget
 categories:: Streams-Patterns-Events>Patterns>Data Sharing
+summary:: Retrieve a value within the scope (namespace) of a Plambda
 related:: Classes/Plambda, Classes/Plet
 
-DESCRIPTION::
+description::
+
 link::Classes/Pget:: retrieves the value of a link::Classes/Plet::. 
 link::Classes/Plet::/link::Classes/Pget:: are used to share data between patterns inside of a link::Classes/Plambda::
 
-CLASSMETHODS::
+classmethods::
 
-METHOD:: new
+method:: new
 
-ARGUMENT:: key
+argument:: key
+
 The name of the variable
 
-ARGUMENT:: default
-default value if none is defined by a paired link::Classes/Plet::
+argument:: default
 
-ARGUMENT:: repeats
+Default value if none is defined by a paired link::Classes/Plet::
 
-INSTANCEMETHODS::
+argument:: repeats
 
-METHOD:: default
+instancemethods::
 
-METHOD:: storeArgs
+method:: default
 
-METHOD:: key
+method:: storeArgs
 
-METHOD:: repeats
+method:: key
 
-METHOD:: embedInStream
+method:: repeats
 
-ARGUMENT:: inval
+method:: embedInStream
 
-EXAMPLES::
+argument:: inval
+
+examples::
 
 code::
 (

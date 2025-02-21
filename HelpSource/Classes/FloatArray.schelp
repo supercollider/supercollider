@@ -1,9 +1,10 @@
-CLASS::FloatArray
-summary::an array of 32-bit single precision floating point numbers
-related::Classes/DoubleArray, Classes/Signal
-categories::Collections>Ordered
+title:: FloatArray
+categories:: Collections>Ordered
+summary:: An array of 32-bit single precision floating point numbers
+related:: Classes/DoubleArray, Classes/Signal
 
-DESCRIPTION::
+description::
+
 An array of 32-bit single precision floating point numbers.
 
 Note that despite the "Float" in its name, FloatArray does not hold a sequence
@@ -28,6 +29,7 @@ list::
 ## link::Classes/SymbolArray:: - symbols
 ::
 
-INSTANCEMETHODS::
+instancemethods::
 
-method::readFromStream
+method:: readFromStream
+

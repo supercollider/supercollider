@@ -1,21 +1,23 @@
-class:: Pseed
-summary:: set the random seed in subpattern
-related:: Reference/randomSeed
+title:: Pseed
 categories:: Streams-Patterns-Events>Patterns>Language Control
+summary:: Set the random seed in subpattern
+related:: Reference/randomSeed
 
 description::
 
 Set the random generator seed of the resulting stream.
 
-ClassMethods::
+classmethods::
 
-method::new
+method:: new
 
-argument::randSeed
-integer number, pattern or stream that returns an integer number.
+argument:: randSeed
+
+Integer number, pattern or stream that returns an integer number.
 
 note::
-randSeed is always treated as a pattern/stream. If you provide a single, constant seed value, it will behave as an infinite-length stream. This will cause the subpattern to be embedded an infinite number of times. Compare:
+RandSeed is always treated as a pattern/stream. If you provide a single, constant seed value, it will behave as an infinite-length stream. This will cause the subpattern to be embedded an infinite number of times.
+Compare:
 
 code::
 // Pwhite repeats its three values forever
@@ -25,11 +27,12 @@ Pseed(1000, Pwhite(1, 10, 3)).asStream.nextN(10);
 // the output stream consists of three values, then 'nil' ad infinitum
 Pseed(Pn(1000, 1), Pwhite(1, 10, 3)).asStream.nextN(10);
 ::
+
 ::
 
-argument::pattern
+argument:: pattern
 
-Examples::
+examples::
 
 code::
 a = Pseed(1972, Prand([1, 2, 3], inf));
@@ -96,7 +99,8 @@ Pdef(\varsawPat,
 ).play
 )
 
-// Reevaluate the above pattern to hear the same start. An infinity of variations unfold from a single number.
+// Reevaluate the above pattern to hear the same start.
+An infinity of variations unfold from a single number.
 // Change the seed for another infinite deterministic stream of choices.
 
 
@@ -171,5 +175,4 @@ In the above example Pseed is used as a kind of "data sharing" strategy. The two
 using the same seed to generate all future stochastic choices for the dur parameter.
 All other parameters in the two patterns are unaffected.
 */
-
 ::

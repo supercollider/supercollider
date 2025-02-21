@@ -1,26 +1,29 @@
-class:: PdegreeToKey
-summary:: index into a scale
-related:: Classes/Scale
+title:: PdegreeToKey
 categories:: Streams-Patterns-Events>Patterns>Math
+summary:: Index into a scale
+related:: Classes/Scale
 
 description::
 
-Returns a series of notes derived from an index into a scale.
+Return a series of notes derived from an index into a scale.
 
-ClassMethods::
+classmethods::
 
-method::new
+method:: new
 
-argument::pattern
-integer index into the scale.
+argument:: pattern
 
-argument::scale
-an array or pattern. If a pattern, it streams the scales accordingly.
+Integer index into the scale.
 
-argument::stepsPerOctave
-the number of steps per octave in the scale.
+argument:: scale
 
-Examples::
+An array or pattern. If a pattern, it streams the scales accordingly.
+
+argument:: stepsPerOctave
+
+The number of steps per octave in the scale.
+
+examples::
 
 code::
 (

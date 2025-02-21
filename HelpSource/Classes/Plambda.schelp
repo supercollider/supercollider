@@ -1,23 +1,26 @@
-class:: Plambda
-summary:: create a scope (namespace) for enclosed streams
-related:: Classes/Penvir, Classes/Pkey
+title:: Plambda
 categories:: Streams-Patterns-Events>Patterns>Data Sharing
+summary:: Create a scope (namespace) for enclosed streams
+related:: Classes/Penvir, Classes/Pkey
+
 
 Plambda is used to create a namespace for patterns to share data among each other.
 
 Used in combination with link::Classes/Plet:: and link::Classes/Pget::, it allows you to get the output of a pattern from one stream and use it in another stream and as such create a dataspace for your patterns.
 
-ClassMethods::
+classmethods::
 
-method::new
+method:: new
 
-argument::pattern
-an event stream.
+argument:: pattern
 
-argument::scope
-an event with default bindings (can be nil).
+An event stream.
 
-Examples::
+argument:: scope
+
+An event with default bindings (can be nil).
+
+examples::
 
 code::
 /*

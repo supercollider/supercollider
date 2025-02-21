@@ -1,9 +1,10 @@
 title:: GUI: Interfacing an instrument with a View
-summary:: Creating a view that interacts with a Synth, introduction to Layouts
 categories:: Tutorials>GUI
+summary:: Creating a view that interacts with a Synth, introduction to Layouts
 related:: Tutorials/GUI/create_window, Tutorials/GUI/compose_complex_view
 
 section:: GUI Tutorial
+
 This helpfile is part of a link::Tutorials/GUI/tutorial_intro##GUI tutorial::.
 
 It is the second part of a beginner's introduction to SuperCollider's GUI system. First part covers
@@ -22,7 +23,6 @@ list::
 ::
 
 section:: Setup
-
 
 You will need to boot the link::Classes/Server:: and add a link::Classes/SynthDef:: to it which we will be using in this tutorial.
 
@@ -127,7 +127,7 @@ window.front;
 )
 ::
 
-As you can see, strong::the Layout has arranged everything automatically::.
+A you can see, strong::the Layout has arranged everything automatically::.
 
 But strong::copy-pasting is not a good way to add:: keys. Instead, we can just ask SC to create a button 8 times:
 
@@ -152,7 +152,8 @@ window.front;
 )
 ::
 
-Those buttons feels too small. This is because link::Classes/Button:: strong::has a low default maximum height::. We can change it by reassigning it:
+Those buttons feels too small. This is because link::Classes/Button:: strong::has a low default maximum height::.
+We can change it by reassigning it:
 
 code::
 (
@@ -175,7 +176,8 @@ window.front;
 )
 ::
 
-So we now have 8 buttons, but they all make the same sound. That's doesn't sounds like much progress to me.
+So we now have 8 buttons, but they all make the same sound.
+That's doesn't sounds like much progress to me.
 
 We can strong::change the Synth parameters by modifying its arguments:::
 
@@ -244,7 +246,8 @@ window.front;
 )
 ::
 
-The volume slider now appears at the right of the piano, like it was a key. This is because it is on the same layout as the keys.
+The volume slider now appears at the right of the piano, like it was a key.
+This is because it is on the same layout as the keys.
 
 For now, strong::the Window is only containing a:: link::Classes/HLayout::.
 
@@ -252,11 +255,14 @@ strong::The HLayout divides the Window horizontally::, as if it was a succession
 
 strong::It will distribute the views inside those columns, one by one, from left to right::.
 
-This is why the Slider has been pushed all the way to the right. With this division, you can add things to the left, to the right, and between columns.
+This is why the Slider has been pushed all the way to the right.
+With this division, you can add things to the left, to the right, and between columns.
 
-But you cannot order views vertically. For this, you need to create a link::Classes/VLayout::, which in turns, cannot order views horizontally. strong::To mix horizontal and vertical division of the Window, you will need to insert some layouts inside other layouts.::
+But you cannot order views vertically.
+For this, you need to create a link::Classes/VLayout::, which in turns, cannot order views horizontally. strong::To mix horizontal and vertical division of the Window, you will need to insert some layouts inside other layouts.::
 
-Let's see an example about layout hierarchy. Execute the following code before reading it to get a visual idea about the way it works:
+Let's see an example about layout hierarchy.
+Execute the following code before reading it to get a visual idea about the way it works:
 
 code::
 (
@@ -289,7 +295,8 @@ window.front;
 )
 ::
 
-The window is first divided vertically, then the bottom of the window is divided horizontally. This means there are 3 emplacements, occupied by 3 buttons.
+The window is first divided vertically, then the bottom of the window is divided horizontally.
+This means there are 3 emplacements, occupied by 3 buttons.
 It can take some time to get accustomed to this logic.
 
 section:: Back to connecting the slider
@@ -323,7 +330,9 @@ window.front;
 )
 ::
 
-The slider is crushing everything ! It's because it is not on the right direction. We can fix this with the code::.orientation:: method. Then we can also reduce its maximum height with code::.maxHeight:: so it takes less space:
+The slider is crushing everything ! It's because it is not on the right direction.
+We can fix this with the code::.orientation:: method.
+Then we can also reduce its maximum height with code::.maxHeight:: so it takes less space:
 
 code::
 (
@@ -473,9 +482,11 @@ var durSlider = Slider()
 .action_({ dur = ControlSpec(durMin, durMax, \lin).map(durSlider.value); });
 ::
 
-section::Adding text, and specifying views ratios
+section:: Adding text, and specifying views ratios
 
-The last thing to do is to label our controls. It is easy to remember what the keyboard does, but the sliders could use some indications. We will use a link::Classes/StaticText:: for this, configuring its string, and its alignment.
+The last thing to do is to label our controls.
+It is easy to remember what the keyboard does, but the sliders could use some indications.
+We will use a link::Classes/StaticText:: for this, configuring its string, and its alignment.
 
 code::
 (
@@ -539,7 +550,8 @@ window.front;
 )
 ::
 
-You can see that when adding the views inside the layouts, I also specified a number. This is called strong::assigning a 'stretch':: to a view:
+You can see that when adding the views inside the layouts, I also specified a number.
+This is called strong::assigning a 'stretch':: to a view:
 
 code::
 windowLayout.add(volumeSlider, stretch: 3);
@@ -547,12 +559,15 @@ windowLayout.add(volumeSlider, stretch: 3);
 
 The strong::stretch number defines the view's ratio relative to the sum of every view's stretch:: inside a layout. In our example, the keyboard has the same size as the rest of the views, because the keyboard has a stretch of 8, and the sum of every others views stretches is also 8.
 
-This means that a view with a stretch of 3 will be 3 times bigger than a view with a stretch of 1. A view with a stretch of 6 will be 3 times bigger than a view with a stretch of 2, and 6 times bigger than a view with a stretch of 1.
+This means that a view with a stretch of 3 will be 3 times bigger than a view with a stretch of 1.
+A view with a stretch of 6 will be 3 times bigger than a view with a stretch of 2, and 6 times bigger than a view with a stretch of 1.
 
 Note that strong::the minimum and maximum size of a view are also taken into account when using stretch::, which can affect the real ratios of the views.
 
-section::Conclusion
+section:: Conclusion
 
 This has been a long tutorial, but with those basic concepts, you should now be able to manipulate every GUI Class without much difficulties.
 
-The next tutorial in this series is a tour of common things you might want to implement when using GUI, for example an interface with tabs, allowing you to switch between different views. Like we did here, it is about using basic GUI components to create interfaces. You can access it here: link::Tutorials/GUI/compose_complex_view::.
+The next tutorial in this series is a tour of common things you might want to implement when using GUI, for example an interface with tabs, allowing you to switch between different views.
+Like we did here, it is about using basic GUI components to create interfaces.
+You can access it here: link::Tutorials/GUI/compose_complex_view::.

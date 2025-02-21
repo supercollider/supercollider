@@ -1,33 +1,34 @@
-class:: LinRand
-summary:: Skewed random number generator.
-related:: Classes/ExpRand, Classes/IRand, Classes/NRand, Classes/Rand, Classes/TExpRand, Classes/TIRand, Classes/TRand
+title:: LinRand
 categories:: UGens>Random
+summary:: Skewed random number generator
+related:: Classes/ExpRand, Classes/IRand, Classes/NRand, Classes/Rand, Classes/TExpRand, Classes/TIRand, Classes/TRand
 
-Description::
+description::
 
-Generates a single random float value in linear distribution from
+Generatea a single random float value in linear distribution from
 code::lo::  to  code::hi::, skewed towards
 code::lo::  if  code::minmax::  < 0, otherwise
 skewed towards  code::hi:: .
 
-
 classmethods::
 
-method::new
+method:: new
 
-argument::lo
+argument:: lo
+
 Lower limit of the output range.
 
-argument::hi
+argument:: hi
+
 Upper limit of the output range.
 
-argument::minmax
+argument:: minmax
+
 The output is skewed towards code::lo:: if code::minmax:: < 0, otherwise skewed towards code::hi::.
 
-Examples::
+examples::
 
 code::
-
 (
 SynthDef("help-LinRand", { |out = 0, minmax = 1|
 	Out.ar(out,
@@ -55,5 +56,4 @@ Routine({
 	})
 }).play;
 )
-
 ::
