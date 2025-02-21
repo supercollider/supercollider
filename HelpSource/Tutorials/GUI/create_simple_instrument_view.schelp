@@ -1,0 +1,558 @@
+title:: GUI: Interfacing an instrument with a View
+summary:: Creating a view that interacts with a Synth, introduction to Layouts
+categories:: Tutorials>GUI
+related:: Tutorials/GUI/create_window, Tutorials/GUI/compose_complex_view
+
+section:: GUI Tutorial
+This helpfile is part of a link::Tutorials/GUI/tutorial_intro##GUI tutorial::.
+
+It is the second part of a beginner's introduction to SuperCollider's GUI system. First part covers
+ link::Tutorials/GUI/create_window##creating a window::, while third part talks about link::Tutorials/GUI/compose_complex_view##composing views with basic GUI components::.
+
+section:: What is this tutorial about?
+
+This is a tutorial to get started using SuperCollider's GUI system to create views and make them interact with a link::Classes/Synth::.
+
+It covers the following topics:
+
+list::
+## Create a keyboard from a list of midi notes
+## Create a volume slider, and a duration slider
+## Use the layout system so widgets are arranged in a grid pattern
+::
+
+section:: Setup
+
+
+You will need to boot the link::Classes/Server:: and add a link::Classes/SynthDef:: to it which we will be using in this tutorial.
+
+The SynthDef is a simple sine wave with a percussive envelope.
+
+We will control the frequency, volume and the duration of a link::Classes/Synth::.
+
+code::
+// make sure the server is booted:
+s.boot;
+// add our SynthDef to the server:
+(
+SynthDef(\instrView, { |out = 0, amp = 0.25, freq = 440, dur = 1.0|
+	var snd, env;
+
+	env = EnvGen.kr(Env.perc(dur * 0.01, dur * 0.99), doneAction: Done.freeSelf);
+	snd = SinOsc.ar(freq, mul: amp);
+	snd = snd * env;
+	snd = snd!2;
+
+	Out.ar(out, snd);
+}).add;
+)
+::
+
+You can try the synth using:
+
+code::
+Synth(\instrView)
+::
+
+We'll start with the following code which is not yet connected to our synth and will therefore not yield any sound yet:
+
+code::
+(
+var window = Window();
+var layout = HLayout();
+var button = Button();
+
+button.string_("Play");
+
+window.layout_(layout);
+layout.add(button);
+
+window.front;
+)
+::
+
+If this code does not make sense to you, you can find more explanations about it in link::Tutorials/GUI/create_window::.
+
+section:: Connecting the button
+
+So we start with a simple button, that, sadly, is not very useful so far.
+To connect it, you need to strong::assign a function to its 'action' method::.
+
+code::
+(
+var window = Window();
+var layout = HLayout();
+var button = Button();
+button.string_("Play");
+
+button.action_({
+	// This is the body of the function that the button will trigger
+	Synth(\instrView);
+	"ting".postln;
+});
+
+window.layout_(layout);
+layout.add(button);
+window.front;
+)
+::
+
+As we already knew the command to play the synth, we just have to strong::configure the button to evaluate this command when it is pressed::.  It is also posting a message to the console, which might be useful for debugging purposes.
+
+section:: Adding several buttons at once
+
+We now have a keyboard, but not a very good one ! It only has one key... I'd say that might be enough, but that's quite uncommon.
+
+So let's strong::add a second key:::
+
+code::
+(
+var window = Window();
+var layout = HLayout();
+var button = Button();
+var button2 = Button();
+
+button.string_("Play");
+button.action_({ Synth(\instrView); });
+
+button2.string_("Play 2");
+button2.action_({ Synth(\instrView); });
+
+window.layout_(layout);
+
+layout.add(button);
+layout.add(button2);
+
+window.front;
+)
+::
+
+As you can see, strong::the Layout has arranged everything automatically::.
+
+But strong::copy-pasting is not a good way to add:: keys. Instead, we can just ask SC to create a button 8 times:
+
+code::
+(
+var window = Window();
+var layout = HLayout();
+var numberOfButtons = 8;
+
+// 8 times...
+numberOfButtons.do({
+	// ...create a button...
+	var button = Button();
+	// ...assign its function...
+	button.action_({ Synth(\instrView); });
+	// ...and add it to the layout.
+	layout.add(button);
+});
+
+window.layout_(layout);
+window.front;
+)
+::
+
+Those buttons feels too small. This is because link::Classes/Button:: strong::has a low default maximum height::. We can change it by reassigning it:
+
+code::
+(
+var window = Window();
+var layout = HLayout();
+var numberOfButtons = 8;
+
+numberOfButtons.do({
+
+	// Changing this property
+	var button = Button()
+	.maxHeight_(200);
+
+	button.action_({ Synth(\instrView); });
+	layout.add(button);
+});
+
+window.layout_(layout);
+window.front;
+)
+::
+
+So we now have 8 buttons, but they all make the same sound. That's doesn't sounds like much progress to me.
+
+We can strong::change the Synth parameters by modifying its arguments:::
+
+code::
+Synth(\instrView, [\freq, 660]);
+::
+
+We just need to introduce this inside the loop that creates the buttons.
+But instead of asking SC to do this 8 times, it will do it for a collection of frequencies instead.
+
+We can strong::transform a set of MIDI notes into frequencies and map them to the buttons:::
+
+code::
+(
+var window = Window();
+var layout = HLayout();
+// Getting the C Major Scale, as frequencies, using MIDI notation:
+var frequencies = [60, 62, 64, 65, 67, 69, 71, 72].midicps;
+
+// For every frequency...
+frequencies.do({ |frequency|
+
+	// ...this particular button...
+	var button = Button()
+	.maxHeight_(200);
+
+	// ...will use this particular frequency.
+	button.action_({
+		Synth(\instrView, [\freq, frequency]);
+	});
+
+	layout.add(button);
+});
+
+window.layout_(layout);
+window.front;
+)
+::
+
+section:: How HLayout and VLayout works
+
+Now that we have a keyboard, we'd like to strong::implement a volume slider:: to the view.
+We can do this by inserting a link::Classes/Slider:: to the layout:
+
+code::
+(
+var window = Window();
+var layout = HLayout();
+var frequencies = [60, 62, 64, 65, 67, 69, 71, 72].midicps;
+
+// Slider creation
+var slider = Slider();
+
+frequencies.do({ |frequency|
+	var button = Button()
+	.maxHeight_(200);
+	button.action_({ Synth(\instrView, [\freq, frequency]); });
+	layout.add(button);
+});
+
+// Add it inside the layout
+layout.add(slider);
+
+window.layout_(layout);
+window.front;
+)
+::
+
+The volume slider now appears at the right of the piano, like it was a key. This is because it is on the same layout as the keys.
+
+For now, strong::the Window is only containing a:: link::Classes/HLayout::.
+
+strong::The HLayout divides the Window horizontally::, as if it was a succession of columns.
+
+strong::It will distribute the views inside those columns, one by one, from left to right::.
+
+This is why the Slider has been pushed all the way to the right. With this division, you can add things to the left, to the right, and between columns.
+
+But you cannot order views vertically. For this, you need to create a link::Classes/VLayout::, which in turns, cannot order views horizontally. strong::To mix horizontal and vertical division of the Window, you will need to insert some layouts inside other layouts.::
+
+Let's see an example about layout hierarchy. Execute the following code before reading it to get a visual idea about the way it works:
+
+code::
+(
+var window = Window();
+var firstLayout = VLayout();
+var secondLayout = HLayout();
+
+var topButton = Button().string_("top").maxHeight_(200);
+
+var leftButton = Button().string_("left").maxHeight_(200);
+var rightButton = Button().string_("right").maxHeight_(200);
+
+// The window is divided vertically, using a VLayout:
+window.layout_(firstLayout);
+
+// We're adding two objects, this will split the window in two:
+
+// This will cover the top side of the window:
+firstLayout.add(topButton);
+
+// This will cover the bottom side of the window:
+firstLayout.add(secondLayout);
+
+// The bottom of the screen is a HLayout, so it's subdivided horizontally
+// In two, because we add two objects:
+secondLayout.add(leftButton);
+secondLayout.add(rightButton);
+
+window.front;
+)
+::
+
+The window is first divided vertically, then the bottom of the window is divided horizontally. This means there are 3 emplacements, occupied by 3 buttons.
+It can take some time to get accustomed to this logic.
+
+section:: Back to connecting the slider
+
+Let's adapt our previous code to place the slider on top of the piano:
+
+code::
+(
+var window = Window();
+var windowLayout = VLayout();
+var pianoLayout = HLayout();
+
+var frequencies = [60, 62, 64, 65, 67, 69, 71, 72].midicps;
+
+var volumeSlider = Slider();
+
+frequencies.do({ |frequency|
+	var button = Button()
+	.maxHeight_(200);
+	button.action_({ Synth(\instrView, [\freq, frequency]); });
+	// Horizontal split, 'piano layout'
+	pianoLayout.add(button);
+});
+
+// Vertical split, 'window' layout
+windowLayout.add(volumeSlider);
+windowLayout.add(pianoLayout);
+
+window.layout_(windowLayout);
+window.front;
+)
+::
+
+The slider is crushing everything ! It's because it is not on the right direction. We can fix this with the code::.orientation:: method. Then we can also reduce its maximum height with code::.maxHeight:: so it takes less space:
+
+code::
+(
+var window = Window();
+var windowLayout = VLayout();
+var pianoLayout = HLayout();
+var frequencies = [60, 62, 64, 65, 67, 69, 71, 72].midicps;
+
+// Slider setup
+var volumeSlider = Slider()
+.orientation_(\horizontal)
+.maxHeight_(60);
+
+frequencies.do({ |frequency|
+	var button = Button()
+	.maxHeight_(200);
+	button.action_({ Synth(\instrView, [\freq, frequency]); });
+	pianoLayout.add(button);
+});
+
+windowLayout.add(volumeSlider);
+windowLayout.add(pianoLayout);
+window.layout_(windowLayout);
+window.front;
+)
+::
+
+So far, we changed its graphical properties, but the slider do not have any code::action::. It's time to strong::connect it:::
+
+code::
+(
+var window = Window();
+var windowLayout = VLayout();
+var pianoLayout = HLayout();
+var frequencies = [60, 62, 64, 65, 67, 69, 71, 72].midicps;
+
+// Create a variable to store the volume
+var volume = 0.1;
+
+var volumeSlider = Slider()
+.orientation_(\horizontal)
+.maxHeight_(60)
+// Make the slider start at the correct value
+.value_(volume);
+
+// When the slider moves, update the volume variable
+volumeSlider.action = {
+	volume = volumeSlider.value;
+};
+
+frequencies.do({ |frequency|
+	var button = Button()
+	.maxHeight_(200);
+	button.action_({
+		// Use the volume variable
+		// to modify the Synth arguments
+		// when the key is pressed
+		Synth(\instrView, [
+			\freq, frequency,
+			\amp, volume
+		]);
+
+	});
+	pianoLayout.add(button);
+});
+
+windowLayout.add(volumeSlider);
+windowLayout.add(pianoLayout);
+window.layout_(windowLayout);
+window.front;
+)
+::
+
+In this case, the code::action:: function of the Slider will assign the sliders value to a variable called code::volume::.
+When a key from our 'piano' is pressed, it will also check this variable to pass the right volume as argument, when evaluating the Synth command.
+
+But how did the slider know what values were expected by the volume parameter ? Well it didn't. We were only lucky: strong::Sliders value spans between 0 and 1::, which is the correct setting for the volume.
+
+section:: Adapting the Slider to the correct value (mapping)
+
+But what if we want to control other ranges ?
+We can use code::.linlin:: or code::.linexp:: to map the sliders value, which is between 0 and 1, to a value between 0.1 and 2. We'll use this to new value to control the duration of the percussive envelope:
+
+code::
+(
+var window = Window();
+var windowLayout = VLayout();
+
+var pianoLayout = HLayout();
+var frequencies = [60, 62, 64, 65, 67, 69, 71, 72].midicps;
+
+var volume = 0.1;
+var volumeSlider = Slider()
+.orientation_(\horizontal)
+.maxHeight_(60)
+.value_(volume)
+.action_({ volume = volumeSlider.value; });
+
+var dur = 1;
+var durMin = 0.1;
+var durMax = 2;
+var durSlider = Slider()
+.orientation_(\horizontal)
+.maxHeight_(60)
+.action_({
+	dur = durSlider.value;
+	// linlin maps a value
+	// from one linear range
+	// to another linear range
+	dur = dur.linlin(
+		0, 1,
+		durMin, durMax
+	);
+});
+
+frequencies.do({ |frequency|
+	var button = Button()
+	.maxHeight_(200);
+	button.action_({
+		Synth(\instrView, [
+			\freq, frequency,
+			\amp, volume,
+			\dur, dur,
+		]);
+
+	});
+	pianoLayout.add(button);
+});
+
+windowLayout.add(volumeSlider);
+windowLayout.add(durSlider);
+windowLayout.add(pianoLayout);
+window.layout_(windowLayout);
+window.front;
+)
+::
+
+Alternatively, we can use a link::Classes/ControlSpec:: to do the same thing:
+
+code::
+var dur = 1;
+var durMin = 0.1;
+var durMax = 2;
+var durSlider = Slider()
+.orientation_(\horizontal)
+.maxHeight_(60)
+.action_({ dur = ControlSpec(durMin, durMax, \lin).map(durSlider.value); });
+::
+
+section::Adding text, and specifying views ratios
+
+The last thing to do is to label our controls. It is easy to remember what the keyboard does, but the sliders could use some indications. We will use a link::Classes/StaticText:: for this, configuring its string, and its alignment.
+
+code::
+(
+var window = Window();
+var windowLayout = VLayout();
+var pianoLayout = HLayout();
+var frequencies = [60, 62, 64, 65, 67, 69, 71, 72].midicps;
+
+var volume = 0.1;
+var volumeSlider = Slider()
+.orientation_(\horizontal)
+.maxHeight_(60)
+.value_(volume)
+.action_({ volume = volumeSlider.value; });
+// Creating the text, and assigning a string
+var volumeText = StaticText()
+.string_("Volume")
+.align_(\center);
+
+var dur = 1;
+var durMin = 0.1;
+var durMax = 2;
+var durSlider = Slider()
+.orientation_(\horizontal)
+.maxHeight_(60)
+.value_(dur.linlin(durMin, durMax, 0, 1))
+.action_({
+	dur = durSlider.value;
+	dur = dur.linlin(0, 1, durMin, durMax);
+});
+// And here
+var durText = StaticText()
+.string_("Duration")
+.align_(\center);
+
+frequencies.do({ |frequency|
+	var button = Button()
+	.maxHeight_(200);
+	button.action_({
+		Synth(\instrView, [
+			\freq, frequency,
+			\amp, volume,
+			\dur, dur,
+		]);
+
+	});
+	pianoLayout.add(button);
+});
+
+// Inserting the volume text before the volume slider:
+windowLayout.add(volumeText, 1);
+windowLayout.add(volumeSlider, 3);
+// Inserting the duration text before the duration slider,
+// after the volume slider:
+windowLayout.add(durText, 1);
+windowLayout.add(durSlider, 3);
+
+windowLayout.add(pianoLayout, 8);
+window.layout_(windowLayout);
+window.front;
+)
+::
+
+You can see that when adding the views inside the layouts, I also specified a number. This is called strong::assigning a 'stretch':: to a view:
+
+code::
+windowLayout.add(volumeSlider, stretch: 3);
+::
+
+The strong::stretch number defines the view's ratio relative to the sum of every view's stretch:: inside a layout. In our example, the keyboard has the same size as the rest of the views, because the keyboard has a stretch of 8, and the sum of every others views stretches is also 8.
+
+This means that a view with a stretch of 3 will be 3 times bigger than a view with a stretch of 1. A view with a stretch of 6 will be 3 times bigger than a view with a stretch of 2, and 6 times bigger than a view with a stretch of 1.
+
+Note that strong::the minimum and maximum size of a view are also taken into account when using stretch::, which can affect the real ratios of the views.
+
+section::Conclusion
+
+This has been a long tutorial, but with those basic concepts, you should now be able to manipulate every GUI Class without much difficulties.
+
+The next tutorial in this series is a tour of common things you might want to implement when using GUI, for example an interface with tabs, allowing you to switch between different views. Like we did here, it is about using basic GUI components to create interfaces. You can access it here: link::Tutorials/GUI/compose_complex_view::.

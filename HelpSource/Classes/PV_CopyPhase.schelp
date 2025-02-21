@@ -50,4 +50,3 @@ SynthDef("help-copyPhase2", { |out = 0, soundBufnum = 2|
 )
 
 ::
-

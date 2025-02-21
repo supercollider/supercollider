@@ -67,6 +67,7 @@ public:
     std::vector<std::string> hw_name;
     bool memory_locking;
     uint16_t threads;
+    bool thread_pinning;
 
     std::vector<std::string> ugen_paths, restrict_paths;
 

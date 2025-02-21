@@ -8,7 +8,7 @@ Tap a delay line from a link::Classes/DelTapWr:: UGen.
 
 note:: If you run a code::DelTapRd.ar:: and a code::DelTapWr.ar:: in tandem, keep in mind that they read and write in blocks
 equal to the server's block size. If the delay time is greater than the buffer size minus a block, the write and read
-heads might interfere in unintended ways. Use a slightly larger buffer if this happens. ::
+heads might interfere in unintended ways. Use a slightly larger buffer if this happens.::
 
 classmethods::
 private:: categories
@@ -16,16 +16,18 @@ private:: categories
 method:: ar, kr
 
 argument:: buffer
-buffer where DelTapWr has written signal.  Max delay time is based on buffer size.
+buffer where DelTapWr has written signal. Max delay time is based on buffer size.
 argument:: phase
 the current phase of the DelTapWr UGen. This is the output of DelTapWr.
 argument:: delTime
 A delay time in seconds.
 argument:: interp
 the kind of interpolation to be used. 1 is none, 2 is linear, 4 is cubic.
+(The numbers one, two, and emphasis::four:: correspond to the number of consecutive
+samples needed to compute each type of interpolation.)
+Any other values for this argument will silently default to no interpolation.
 argument:: mul
 argument:: add
 
 examples::
 See link::Classes/DelTapWr#examples:: for examples.
-

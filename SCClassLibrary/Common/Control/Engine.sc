@@ -251,7 +251,7 @@ ContiguousBlockAllocator {
 				.format(address, size).warn;
 			};
 		} {
-			if(block.start == address) {
+			if(block.notNil and: { block.start == address }) {
 				new = this.prReserve(address, size, block);
 				^new
 			} {

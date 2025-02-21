@@ -536,4 +536,3 @@ code::
 a = MyClass();
 a.someMethodThatDoesNotExist
 ::
-

@@ -1,4 +1,4 @@
-Object  {
+Object {
 	classvar <dependantsDictionary, currentEnvironment, topEnvironment, <uniqueMethods;
 
 	const nl = "\n";
@@ -75,20 +75,24 @@ Object  {
 	isMemberOf { arg aClass; _ObjectIsMemberOf; ^this.primitiveFailed }
 	respondsTo { arg aSymbol; _ObjectRespondsTo; ^this.primitiveFailed }
 
-	performMsg { arg msg;
+    // args and kwargs should be arrays here, not variable arguments!
+	performArgs { |selector, args, kwargs|
+		_ObjectPerformArgs;
+		^this.primitiveFailed
+	}
+	performMsg { |msg|
 		_ObjectPerformMsg;
 		^this.primitiveFailed
 	}
-
 	perform { arg selector ... args;
 		_ObjectPerform;
 		^this.primitiveFailed
 	}
-	performList { arg selector, arglist;
+	performList { | ...args, kwargs|
 		_ObjectPerformList;
 		^this.primitiveFailed
 	}
-	functionPerformList {
+	functionPerformList { | ...args, kwargs|
 		// perform only if Function. see Function-functionPerformList
 		^this
 	}
@@ -97,20 +101,21 @@ Object  {
 	// \perform would be looked up in the superclass, not the selector you are interested in.
 	// Hence these methods, which look up the selector in the superclass.
 	// These methods must be called with this as the receiver.
-	superPerform { arg selector ... args;
+	superPerform { | ... args, kwargs|
 		_SuperPerform;
 		^this.primitiveFailed
 	}
-	superPerformList { arg selector, arglist;
+	superPerformList { | ...args, kwargs|
 		_SuperPerformList;
 		^this.primitiveFailed
 	}
 
-	tryPerform { arg selector ... args;
-		^if(this.respondsTo(selector),{
-			this.performList(selector,args)
+	tryPerform { |  ... args, kwargs|
+		^if(this.respondsTo(args[0]), {
+			this.performArgs(args[0],  args[1..], kwargs)
 		})
 	}
+
 	multiChannelPerform { arg selector ... args;
 		^flop([this, selector] ++ args).collect { |item|
 			performList(item[0], item[1], item[2..])
@@ -130,7 +135,7 @@ Object  {
 			val !? { args[i] = val };
 		};
 
-		^this.performList(selector, args)
+		^this.performArgs(selector, args);
 	}
 
 	performKeyValuePairs { |selector, pairs|
@@ -338,8 +343,8 @@ Object  {
 	subclassResponsibility { arg method;
 		SubclassResponsibilityError(this, method, this.class).throw;
 	}
-	doesNotUnderstand { arg selector ... args;
-		DoesNotUnderstandError(this, selector, args).throw;
+	doesNotUnderstand { |selector ...args, kwargs|
+		DoesNotUnderstandError(this, selector, args, kwargs).throw;
 	}
 	shouldNotImplement { arg method;
 		ShouldNotImplementError(this, method, this.class).throw;

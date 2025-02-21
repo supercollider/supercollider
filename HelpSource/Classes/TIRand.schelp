@@ -60,4 +60,3 @@ SynthDef("help-TIRand", {
 )
 
 ::
-

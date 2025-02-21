@@ -63,4 +63,3 @@ code::
 
 { LFNoise2.ar(1000, 0.25) }.play;
 ::
-

@@ -177,8 +177,8 @@ public:
     uint32_t ugen_count(void) const { return ugen_count_; }
     /* @} */
 
-    void load_plugin_folder(boost::filesystem::path const& path);
-    void load_plugin(boost::filesystem::path const& path);
+    void load_plugin_folder(std::filesystem::path const& path);
+    void load_plugin(std::filesystem::path const& path);
 
 private:
     void close_handles(void);

@@ -34,4 +34,3 @@ SynthDef("help-GrayNoise", { |out = 0|
 )
 
 ::
-

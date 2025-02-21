@@ -25,7 +25,6 @@
 
 #include <QShortcut>
 #include <QApplication>
-#include <QDesktopWidget>
 #include <QScreen>
 
 class QcWindowFactory : public QcObjectFactory<QcWindow> {

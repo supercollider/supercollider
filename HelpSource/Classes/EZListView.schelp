@@ -179,4 +179,3 @@ g.addItem(\item3, { "this is item 3".postln });
 
 g.replaceItemAt(2, \item2_replaced, { "this is item 2 replaced".postln });
 ::
-

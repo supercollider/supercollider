@@ -292,4 +292,3 @@ p.envir[\nono].postln;	// there is no proxy with this name.
 ::
 
 previous: link::Tutorials/JITLib/jitlib_basic_concepts_01:: next: link::Tutorials/JITLib/jitlib_basic_concepts_03::
-

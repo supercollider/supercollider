@@ -50,4 +50,3 @@ subsection::c) now create a ProxySpace from the server:
 code::
 p = ProxySpace.push(s);
 ::
-

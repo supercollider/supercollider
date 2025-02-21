@@ -322,5 +322,3 @@ CommonTestClass {
 	}
 
 }
-
-

@@ -285,6 +285,9 @@ UGen : AbstractFunction {
 
 	binaryValue { ^this.sign.max(0) }
 
+	isPositive { ^this >= 0 }
+	isNegative { ^this < 0 }
+	isStrictlyPositive { ^this > 0 }
 
 	// Note that this differs from |==| for other AbstractFunctions
 	// Other AbstractFunctions write '|==|' into the compound function

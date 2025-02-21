@@ -32,4 +32,3 @@ code::
 
 { BPZ2.ar(WhiteNoise.ar(0.25)) }.play;
 ::
-

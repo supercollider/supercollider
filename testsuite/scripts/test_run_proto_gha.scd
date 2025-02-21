@@ -94,12 +94,6 @@
 		'skip': "true",
 	),
 	(
-		'suite': "TestUGen_RTAlloc",
-		'test': "test_FFT",
-		'skip': "true",
-		'skipReason': "UnitTest fails (FIXME)",
-	),
-	(
 		'suite': "TestVolume",
 		'test': "test_booting",
 		'skip': "true",

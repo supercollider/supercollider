@@ -2,7 +2,7 @@
 // detail/win_object_handle_service.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Copyright (c) 2011 Boris Schaeling (boris@highscore.de)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -20,7 +20,6 @@
 
 #if defined(BOOST_ASIO_HAS_WINDOWS_OBJECT_HANDLE)
 
-#include <boost/asio/detail/handler_alloc_helpers.hpp>
 #include <boost/asio/detail/memory.hpp>
 #include <boost/asio/detail/wait_handler.hpp>
 #include <boost/asio/error.hpp>

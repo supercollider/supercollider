@@ -107,5 +107,3 @@ a.setn(\amps, Array.exprand(4, 0.01, 1));
 { Out.kr(102, MouseX.kr(1, 2) * Array.rand(4, 500, 2000)) }.play;
 a.mapn(\freqs, 102, 4);
 ::
-
-
