@@ -298,7 +298,7 @@ code::
 ::
 
 method::copyRange
-Return a new teletype::ArrayedCollection:: which is a copy of the indexed slots of the receiver from strong::start:: to strong::end::. If strong::end:: < strong::start::, an empty teletype::ArrayedCollection:: is returned.
+Return a new link::Classes/ArrayedCollection:: which is a copy of the indexed slots of the receiver from strong::start:: to strong::end::. If strong::end:: < strong::start::, an empty teletype::ArrayedCollection:: is returned.
 code::
 (
 var x, y;
@@ -315,7 +315,7 @@ See link::#copyRange_copySeries#NOTE:: in link::#-copySeries::.
 ::
 
 method::copySeries
-Return a new teletype::ArrayedCollection:: consisting of the values starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::. If strong::second:: is code::nil::, a step of 1 or -1 is used as appropriate.
+Return a new link::Classes/ArrayedCollection:: consisting of the values starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::. If strong::second:: is code::nil::, a step of 1 or -1 is used as appropriate.
 
 code::x.copySeries(a, nil, c):: is equivalent to code::x[a..c]::, and code::x.copySeries(a, b, c):: is equivalent to code::x[a, b..c]::
 
