@@ -122,4 +122,3 @@ MixedBundleTester : MixedBundle {
 	}
  
 }
-

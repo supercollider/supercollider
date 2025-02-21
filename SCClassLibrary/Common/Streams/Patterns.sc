@@ -341,9 +341,9 @@ Pevent : Pattern {
 
 Pbind : Pattern {
 	var <>patternpairs;
-	*new { arg ... pairs;
+	*new { | ... pairs, kwargs|
 		if (pairs.size.odd, { Error("Pbind should have even number of args.\n").throw; });
-		^super.newCopyArgs(pairs)
+		^super.newCopyArgs(pairs ++ kwargs)
 	}
 
 	storeArgs { ^patternpairs }

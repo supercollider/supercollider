@@ -189,4 +189,3 @@ Post << ((Array.series(120, 1, 2/120)).reciprocal) << nl;
 // tempo weights
  Post << (Array.fill(120, { |i|  0.2*((1.0- ((abs(i-60))/60.0))**0.5) + 0.8 })) << nl;
 ::
-

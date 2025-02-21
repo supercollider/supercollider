@@ -23,7 +23,7 @@
 #include "../widgets/code_editor/tokens.hpp"
 
 #include <QVector>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QString>
 
 namespace ScIDE {
@@ -47,7 +47,7 @@ private:
         LexicalRule(Token::Type t, const QString& s): type(t), expr(s) {}
 
         Token::Type type;
-        QRegExp expr;
+        QRegularExpression expr;
     };
 
     static void initKeywordsRules();

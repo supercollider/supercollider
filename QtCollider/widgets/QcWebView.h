@@ -22,12 +22,15 @@
 #pragma once
 
 #include "../QcCallback.hpp"
+#include <QtGlobal>
 #include <QWebEngineView>
 #include <QWebEnginePage>
-#include <QWebEngineCallback>
 #include <QPointer>
 #include <QUrl>
 #include <QException>
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+#    include <QWebEngineCallback>
+#endif
 
 const static int kWebEngineTimeout = 10000;
 

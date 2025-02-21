@@ -22,7 +22,7 @@
 
 #include "SC_SynthDef.h"
 #include "HashTable.h"
-#include <boost/filesystem/path.hpp> // path
+#include <filesystem>
 
 struct ParamSpec {
     int32 mName[kSCNameLen];
@@ -71,8 +71,8 @@ struct GraphDef {
 typedef struct GraphDef GraphDef;
 
 GraphDef* GraphDef_Recv(World* inWorld, char* buffer, GraphDef* inList);
-GraphDef* GraphDef_Load(struct World* inWorld, const boost::filesystem::path& path, GraphDef* inList);
-GraphDef* GraphDef_LoadDir(struct World* inWorld, const boost::filesystem::path& path, GraphDef* inList);
+GraphDef* GraphDef_Load(struct World* inWorld, const std::filesystem::path& path, GraphDef* inList);
+GraphDef* GraphDef_LoadDir(struct World* inWorld, const std::filesystem::path& path, GraphDef* inList);
 GraphDef* GraphDef_LoadGlob(World* inWorld, const char* pattern, GraphDef* inList);
 SCErr GraphDef_Remove(World* inWorld, int32* inName);
 SCErr GraphDef_DeleteMsg(struct World* inWorld, GraphDef* inDef);

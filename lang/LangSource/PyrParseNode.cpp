@@ -41,7 +41,7 @@
 #include "SC_LanguageConfig.hpp"
 #include "SC_Codecvt.hpp"
 
-namespace bfs = boost::filesystem;
+namespace fs = std::filesystem;
 
 AdvancingAllocPool gParseNodePool;
 
@@ -289,7 +289,7 @@ PyrClassExtNode* newPyrClassExtNode(PyrSlotNode* className, PyrMethodNode* metho
 void PyrClassExtNode::compile(PyrSlot* result) {
     PyrClass* classobj = slotRawSymbol(&mClassName->mSlot)->u.classobj;
     if (!classobj) {
-        const bfs::path relpath = relativeToCompileDir(bfs::path(gCompilingFileSym->name));
+        const fs::path relpath = relativeToCompileDir(fs::path(gCompilingFileSym->name));
         error("Class extension for nonexistent class '%s'\n     In file:'%s'\n",
               slotRawSymbol(&mClassName->mSlot)->name, SC_Codecvt::path_to_utf8_str(relpath).c_str());
         return;

@@ -32,4 +32,3 @@ SynthDef("help-WhiteNoise", { |out = 0|
 )
 
 ::
-

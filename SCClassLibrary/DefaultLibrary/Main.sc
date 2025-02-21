@@ -53,7 +53,6 @@ Main : Process {
 			+ (Platform.ideName.switch(
 				"scvim", {"For help type :SChelp."},
 				"scel",  {"For help type C-c C-y."},
-				"sced",  {"For help type ctrl-U."},
 				"scapp", {"For help type cmd-d."},
 				"scqt", {
 					if (Platform.hasQtWebEngine) {
@@ -64,7 +63,7 @@ Main : Process {
 			}) ?? {
 				(
 					osx: "For help type cmd-d.",
-					linux: "For help type ctrl-c ctrl-h (Emacs) or :SChelp (vim) or ctrl-U (sced/gedit).",
+					linux: "For help type ctrl-c ctrl-h (Emacs) or :SChelp (vim).",
 					windows: "For help press F1.",
 					iphone: ""
 				).at(platform.name);

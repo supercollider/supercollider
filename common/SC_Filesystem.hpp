@@ -76,7 +76,7 @@
 #include <map> // map
 #include <algorithm> // std::transform
 #include <string> // std::string
-#include <boost/filesystem/path.hpp> // path
+#include <filesystem> // std::filesystem
 
 #include "SC_Codecvt.hpp" // path_to_utf8_str
 
@@ -101,7 +101,7 @@ public:
     enum class DirName;
     struct Glob;
 
-    typedef boost::filesystem::path Path; ///< Path type.
+    typedef std::filesystem::path Path; ///< Path type.
     typedef std::map<DirName, Path> DirMap; ///< Type of directory name-to-path map.
 
     /// SuperCollider common directory names.

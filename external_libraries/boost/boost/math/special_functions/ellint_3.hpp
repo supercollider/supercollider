@@ -55,8 +55,7 @@ T ellint_pi_imp(T v, T phi, T k, T vc, const Policy& pol)
 
    if (k * k * sphi * sphi > 1)
    {
-      return policies::raise_domain_error<T>(function,
-         "Got k = %1%, function requires |k| <= 1", k, pol);
+      return policies::raise_domain_error<T>(function, "Got k = %1%, function requires |k| <= 1", k, pol);
    }
    // Special cases first:
    if(v == 0)
@@ -67,8 +66,7 @@ T ellint_pi_imp(T v, T phi, T k, T vc, const Policy& pol)
    if((v > 0) && (1 / v < (sphi * sphi)))
    {
       // Complex result is a domain error:
-      return policies::raise_domain_error<T>(function,
-         "Got v = %1%, but result is complex for v > 1 / sin^2(phi)", v, pol);
+      return policies::raise_domain_error<T>(function, "Got v = %1%, but result is complex for v > 1 / sin^2(phi)", v, pol);
    }
 
    if(v == 1)
@@ -107,10 +105,8 @@ T ellint_pi_imp(T v, T phi, T k, T vc, const Policy& pol)
       //
       if(fabs(phi) > 1 / tools::epsilon<T>())
       {
-         if(v > 1)
-            return policies::raise_domain_error<T>(
-            function,
-            "Got v = %1%, but this is only supported for 0 <= phi <= pi/2", v, pol);
+         // Invalid for v > 1, this case is caught above since v > 1 implies 1/v < sin^2(phi)
+         BOOST_MATH_ASSERT(v <= 1);
          //  
          // Phi is so large that phi%pi is necessarily zero (or garbage),
          // just return the second part of the duplication formula:
@@ -126,7 +122,7 @@ T ellint_pi_imp(T v, T phi, T k, T vc, const Policy& pol)
          {
             return policies::raise_domain_error<T>(function, "Got k=1 and phi=%1% but the result is complex in that domain", phi, pol);
          }
-         if(boost::math::tools::fmod_workaround(m, T(2)) > 0.5)
+         if(boost::math::tools::fmod_workaround(m, T(2)) > T(0.5))
          {
             m += 1;
             sign = -1;
@@ -180,8 +176,10 @@ T ellint_pi_imp(T v, T phi, T k, T vc, const Policy& pol)
       T Nm1 = (1 - k2) / (1 - v);
       T p2 = -v * N;
       T t;
-      if(p2 <= tools::min_value<T>())
+      if (p2 <= tools::min_value<T>())
+      {
          p2 = sqrt(-v) * sqrt(N);
+      }
       else
          p2 = sqrt(p2);
       T delta = sqrt(1 - k2 * sphi * sphi);
@@ -212,7 +210,7 @@ T ellint_pi_imp(T v, T phi, T k, T vc, const Policy& pol)
    if(k == 1)
    {
       // See http://functions.wolfram.com/08.06.03.0013.01
-      result = sqrt(v) * atanh(sqrt(v) * sin(phi)) - log(1 / cos(phi) + tan(phi));
+      result = sqrt(v) * atanh(sqrt(v) * sin(phi), pol) - log(1 / cos(phi) + tan(phi));
       result /= v - 1;
       return result;
    }
@@ -253,15 +251,15 @@ T ellint_pi_imp(T v, T phi, T k, T vc, const Policy& pol)
    // by the time we get here phi should already have been
    // normalised above.
    //
-   BOOST_ASSERT(fabs(phi) < constants::half_pi<T>());
-   BOOST_ASSERT(phi >= 0);
+   BOOST_MATH_ASSERT(fabs(phi) < constants::half_pi<T>());
+   BOOST_MATH_ASSERT(phi >= 0);
    T x, y, z, p, t;
    T cosp = cos(phi);
    x = cosp * cosp;
    t = sphi * sphi;
    y = 1 - k * k * t;
    z = 1;
-   if(v * t < 0.5)
+   if(v * t < T(0.5))
       p = 1 - v * t;
    else
       p = x + vc * t;
@@ -282,19 +280,17 @@ T ellint_pi_imp(T v, T k, T vc, const Policy& pol)
 
     if (abs(k) >= 1)
     {
-       return policies::raise_domain_error<T>(function,
-            "Got k = %1%, function requires |k| <= 1", k, pol);
+       return policies::raise_domain_error<T>(function, "Got k = %1%, function requires |k| <= 1", k, pol);
     }
     if(vc <= 0)
     {
        // Result is complex:
-       return policies::raise_domain_error<T>(function,
-            "Got v = %1%, function requires v < 1", v, pol);
+       return policies::raise_domain_error<T>(function, "Got v = %1%, function requires v < 1", v, pol);
     }
 
     if(v == 0)
     {
-       return (k == 0) ? boost::math::constants::pi<T>() / 2 : ellint_k_imp(k, pol);
+       return (k == 0) ? boost::math::constants::pi<T>() / 2 : boost::math::ellint_1(k, pol);
     }
 
     if(v < 0)
@@ -308,7 +304,7 @@ T ellint_pi_imp(T v, T k, T vc, const Policy& pol)
        // This next part is split in two to avoid spurious over/underflow:
        result *= -v / (1 - v);
        result *= (1 - k2) / (k2 - v);
-       result += ellint_k_imp(k, pol) * k2 / (k2 - v);
+       result += boost::math::ellint_1(k, pol) * k2 / (k2 - v);
        return result;
     }
 
@@ -322,13 +318,13 @@ T ellint_pi_imp(T v, T k, T vc, const Policy& pol)
 }
 
 template <class T1, class T2, class T3>
-inline typename tools::promote_args<T1, T2, T3>::type ellint_3(T1 k, T2 v, T3 phi, const boost::false_type&)
+inline typename tools::promote_args<T1, T2, T3>::type ellint_3(T1 k, T2 v, T3 phi, const std::false_type&)
 {
    return boost::math::ellint_3(k, v, phi, policies::policy<>());
 }
 
 template <class T1, class T2, class Policy>
-inline typename tools::promote_args<T1, T2>::type ellint_3(T1 k, T2 v, const Policy& pol, const boost::true_type&)
+inline typename tools::promote_args<T1, T2>::type ellint_3(T1 k, T2 v, const Policy& pol, const std::true_type&)
 {
    typedef typename tools::promote_args<T1, T2>::type result_type;
    typedef typename policies::evaluation<result_type, Policy>::type value_type;
@@ -343,17 +339,18 @@ inline typename tools::promote_args<T1, T2>::type ellint_3(T1 k, T2 v, const Pol
 } // namespace detail
 
 template <class T1, class T2, class T3, class Policy>
-inline typename tools::promote_args<T1, T2, T3>::type ellint_3(T1 k, T2 v, T3 phi, const Policy& pol)
+inline typename tools::promote_args<T1, T2, T3>::type ellint_3(T1 k, T2 v, T3 phi, const Policy&)
 {
    typedef typename tools::promote_args<T1, T2, T3>::type result_type;
    typedef typename policies::evaluation<result_type, Policy>::type value_type;
+   typedef typename policies::normalise<Policy, policies::promote_float<false>, policies::promote_double<false> >::type forwarding_policy;
    return policies::checked_narrowing_cast<result_type, Policy>(
       detail::ellint_pi_imp(
          static_cast<value_type>(v), 
          static_cast<value_type>(phi), 
          static_cast<value_type>(k),
          static_cast<value_type>(1-v),
-         pol), "boost::math::ellint_3<%1%>(%1%,%1%,%1%)");
+         forwarding_policy()), "boost::math::ellint_3<%1%>(%1%,%1%,%1%)");
 }
 
 template <class T1, class T2, class T3>

@@ -95,4 +95,3 @@ thisProcess.platform.recordingsDir +/+ "SC_" ++ Date.localtime.stamp ++ ".aiff";
 
 b.close; b.free; // cleanup
 ::
-

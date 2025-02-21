@@ -148,7 +148,7 @@ protected:
     }
 
 public:
-    virtual                 ~basic_param() {}
+    BOOST_TEST_DEFAULTED_FUNCTION(virtual ~basic_param(), {})
 
     // Pubic properties
     std::string const       p_name;

@@ -61,5 +61,3 @@ Returns:: The receiver. The same message is understood by link::Classes/SimpleNu
 method::keywordWarnings
 
 turn on/off warnings if a keyword argument is not found
-
-

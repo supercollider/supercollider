@@ -34,6 +34,7 @@
 #include <QObject>
 #include <QMetaObject>
 #include <QMetaMethod>
+#include <QMetaType>
 #include <QVariant>
 
 class QcSignalSpy : public QObject {
@@ -92,10 +93,18 @@ public:
             for (int i = 0; i < _argTypes.count(); ++i) {
                 QMetaType::Type type = static_cast<QMetaType::Type>(_argTypes.at(i));
                 if (type == QMetaType::QVariant) {
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
                     // avoid creating a QVariant<QVariant>
                     args << QVariant(type, argData[i + 1]).value<QVariant>();
+#else
+                    args << QVariant(QMetaType(type), argData[i + 1]).value<QVariant>();
+#endif
                 } else {
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
                     args << QVariant(type, argData[i + 1]);
+#else
+                    args << QVariant(QMetaType(type), (argData[i + 1]));
+#endif
                 }
             }
 

@@ -2,7 +2,7 @@
 // posix/basic_descriptor.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -20,20 +20,22 @@
 #if defined(BOOST_ASIO_HAS_POSIX_STREAM_DESCRIPTOR) \
   || defined(GENERATING_DOCUMENTATION)
 
+#include <utility>
 #include <boost/asio/any_io_executor.hpp>
 #include <boost/asio/async_result.hpp>
 #include <boost/asio/detail/handler_type_requirements.hpp>
 #include <boost/asio/detail/io_object_impl.hpp>
 #include <boost/asio/detail/non_const_lvalue.hpp>
-#include <boost/asio/detail/reactive_descriptor_service.hpp>
 #include <boost/asio/detail/throw_error.hpp>
 #include <boost/asio/error.hpp>
 #include <boost/asio/execution_context.hpp>
 #include <boost/asio/posix/descriptor_base.hpp>
 
-#if defined(BOOST_ASIO_HAS_MOVE)
-# include <utility>
-#endif // defined(BOOST_ASIO_HAS_MOVE)
+#if defined(BOOST_ASIO_HAS_IO_URING_AS_DEFAULT)
+# include <boost/asio/detail/io_uring_descriptor_service.hpp>
+#else // defined(BOOST_ASIO_HAS_IO_URING_AS_DEFAULT)
+# include <boost/asio/detail/reactive_descriptor_service.hpp>
+#endif // defined(BOOST_ASIO_HAS_IO_URING_AS_DEFAULT)
 
 #include <boost/asio/detail/push_options.hpp>
 
@@ -54,6 +56,9 @@ template <typename Executor = any_io_executor>
 class basic_descriptor
   : public descriptor_base
 {
+private:
+  class initiate_async_wait;
+
 public:
   /// The type of the executor associated with the object.
   typedef Executor executor_type;
@@ -69,10 +74,13 @@ public:
   /// The native representation of a descriptor.
 #if defined(GENERATING_DOCUMENTATION)
   typedef implementation_defined native_handle_type;
-#else
+#elif defined(BOOST_ASIO_HAS_IO_URING_AS_DEFAULT)
+  typedef detail::io_uring_descriptor_service::native_handle_type
+    native_handle_type;
+#else // defined(BOOST_ASIO_HAS_IO_URING_AS_DEFAULT)
   typedef detail::reactive_descriptor_service::native_handle_type
     native_handle_type;
-#endif
+#endif // defined(BOOST_ASIO_HAS_IO_URING_AS_DEFAULT)
 
   /// A descriptor is always the lowest layer.
   typedef basic_descriptor lowest_layer_type;
@@ -86,7 +94,7 @@ public:
    * descriptor.
    */
   explicit basic_descriptor(const executor_type& ex)
-    : impl_(ex)
+    : impl_(0, ex)
   {
   }
 
@@ -100,10 +108,11 @@ public:
    */
   template <typename ExecutionContext>
   explicit basic_descriptor(ExecutionContext& context,
-      typename enable_if<
-        is_convertible<ExecutionContext&, execution_context&>::value
-      >::type* = 0)
-    : impl_(context)
+      constraint_t<
+        is_convertible<ExecutionContext&, execution_context&>::value,
+        defaulted_constraint
+      > = defaulted_constraint())
+    : impl_(0, 0, context)
   {
   }
 
@@ -122,7 +131,7 @@ public:
    */
   basic_descriptor(const executor_type& ex,
       const native_handle_type& native_descriptor)
-    : impl_(ex)
+    : impl_(0, ex)
   {
     boost::system::error_code ec;
     impl_.get_service().assign(impl_.get_implementation(),
@@ -146,10 +155,10 @@ public:
   template <typename ExecutionContext>
   basic_descriptor(ExecutionContext& context,
       const native_handle_type& native_descriptor,
-      typename enable_if<
+      constraint_t<
         is_convertible<ExecutionContext&, execution_context&>::value
-      >::type* = 0)
-    : impl_(context)
+      > = 0)
+    : impl_(0, 0, context)
   {
     boost::system::error_code ec;
     impl_.get_service().assign(impl_.get_implementation(),
@@ -157,7 +166,6 @@ public:
     boost::asio::detail::throw_error(ec, "assign");
   }
 
-#if defined(BOOST_ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
   /// Move-construct a descriptor from another.
   /**
    * This constructor moves a descriptor from one object to another.
@@ -169,7 +177,7 @@ public:
    * constructed using the @c basic_descriptor(const executor_type&)
    * constructor.
    */
-  basic_descriptor(basic_descriptor&& other) BOOST_ASIO_NOEXCEPT
+  basic_descriptor(basic_descriptor&& other) noexcept
     : impl_(std::move(other.impl_))
   {
   }
@@ -190,10 +198,57 @@ public:
     impl_ = std::move(other.impl_);
     return *this;
   }
-#endif // defined(BOOST_ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
+
+  // All descriptors have access to each other's implementations.
+  template <typename Executor1>
+  friend class basic_descriptor;
+
+  /// Move-construct a basic_descriptor from a descriptor of another executor
+  /// type.
+  /**
+   * This constructor moves a descriptor from one object to another.
+   *
+   * @param other The other basic_descriptor object from which the move will
+   * occur.
+   *
+   * @note Following the move, the moved-from object is in the same state as if
+   * constructed using the @c basic_descriptor(const executor_type&)
+   * constructor.
+   */
+  template <typename Executor1>
+  basic_descriptor(basic_descriptor<Executor1>&& other,
+      constraint_t<
+        is_convertible<Executor1, Executor>::value,
+        defaulted_constraint
+      > = defaulted_constraint())
+    : impl_(std::move(other.impl_))
+  {
+  }
+
+  /// Move-assign a basic_descriptor from a descriptor of another executor type.
+  /**
+   * This assignment operator moves a descriptor from one object to another.
+   *
+   * @param other The other basic_descriptor object from which the move will
+   * occur.
+   *
+   * @note Following the move, the moved-from object is in the same state as if
+   * constructed using the @c basic_descriptor(const executor_type&)
+   * constructor.
+   */
+  template <typename Executor1>
+  constraint_t<
+    is_convertible<Executor1, Executor>::value,
+    basic_descriptor&
+  > operator=(basic_descriptor<Executor1> && other)
+  {
+    basic_descriptor tmp(std::move(other));
+    impl_ = std::move(tmp.impl_);
+    return *this;
+  }
 
   /// Get the executor associated with the object.
-  executor_type get_executor() BOOST_ASIO_NOEXCEPT
+  const executor_type& get_executor() noexcept
   {
     return impl_.get_executor();
   }
@@ -589,20 +644,27 @@ public:
   /// write, or to have pending error conditions.
   /**
    * This function is used to perform an asynchronous wait for a descriptor to
-   * enter a ready to read, write or error condition state.
+   * enter a ready to read, write or error condition state. It is an initiating
+   * function for an @ref asynchronous_operation, and always returns
+   * immediately.
    *
    * @param w Specifies the desired descriptor state.
    *
-   * @param handler The handler to be called when the wait operation completes.
-   * Copies will be made of the handler as required. The function signature of
-   * the handler must be:
+   * @param token The @ref completion_token that will be used to produce a
+   * completion handler, which will be called when the wait completes.
+   * Potential completion tokens include @ref use_future, @ref use_awaitable,
+   * @ref yield_context, or a function object with the correct completion
+   * signature. The function signature of the completion handler must be:
    * @code void handler(
-   *   const boost::system::error_code& error // Result of operation
+   *   const boost::system::error_code& error // Result of operation.
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
-   * not, the handler will not be invoked from within this function. On
-   * immediate completion, invocation of the handler will be performed in a
-   * manner equivalent to using boost::asio::post().
+   * not, the completion handler will not be invoked from within this function.
+   * On immediate completion, invocation of the handler will be performed in a
+   * manner equivalent to using boost::asio::async_immediate().
+   *
+   * @par Completion Signature
+   * @code void(boost::system::error_code) @endcode
    *
    * @par Example
    * @code
@@ -622,18 +684,28 @@ public:
    *     boost::asio::posix::stream_descriptor::wait_read,
    *     wait_handler);
    * @endcode
+   *
+   * @par Per-Operation Cancellation
+   * This asynchronous operation supports cancellation for the following
+   * boost::asio::cancellation_type values:
+   *
+   * @li @c cancellation_type::terminal
+   *
+   * @li @c cancellation_type::partial
+   *
+   * @li @c cancellation_type::total
    */
   template <
       BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code))
-        WaitHandler BOOST_ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
-  BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(WaitHandler,
-      void (boost::system::error_code))
-  async_wait(wait_type w,
-      BOOST_ASIO_MOVE_ARG(WaitHandler) handler
-        BOOST_ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
+        WaitToken = default_completion_token_t<executor_type>>
+  auto async_wait(wait_type w,
+      WaitToken&& token = default_completion_token_t<executor_type>())
+    -> decltype(
+      async_initiate<WaitToken, void (boost::system::error_code)>(
+        declval<initiate_async_wait>(), token, w))
   {
-    return async_initiate<WaitHandler, void (boost::system::error_code)>(
-        initiate_async_wait(this), handler, w);
+    return async_initiate<WaitToken, void (boost::system::error_code)>(
+        initiate_async_wait(this), token, w);
   }
 
 protected:
@@ -647,12 +719,16 @@ protected:
   {
   }
 
+#if defined(BOOST_ASIO_HAS_IO_URING_AS_DEFAULT)
+  detail::io_object_impl<detail::io_uring_descriptor_service, Executor> impl_;
+#else // defined(BOOST_ASIO_HAS_IO_URING_AS_DEFAULT)
   detail::io_object_impl<detail::reactive_descriptor_service, Executor> impl_;
+#endif // defined(BOOST_ASIO_HAS_IO_URING_AS_DEFAULT)
 
 private:
   // Disallow copying and assignment.
-  basic_descriptor(const basic_descriptor&) BOOST_ASIO_DELETED;
-  basic_descriptor& operator=(const basic_descriptor&) BOOST_ASIO_DELETED;
+  basic_descriptor(const basic_descriptor&) = delete;
+  basic_descriptor& operator=(const basic_descriptor&) = delete;
 
   class initiate_async_wait
   {
@@ -664,13 +740,13 @@ private:
     {
     }
 
-    executor_type get_executor() const BOOST_ASIO_NOEXCEPT
+    const executor_type& get_executor() const noexcept
     {
       return self_->get_executor();
     }
 
     template <typename WaitHandler>
-    void operator()(BOOST_ASIO_MOVE_ARG(WaitHandler) handler, wait_type w) const
+    void operator()(WaitHandler&& handler, wait_type w) const
     {
       // If you get an error on the following line it means that your handler
       // does not meet the documented type requirements for a WaitHandler.

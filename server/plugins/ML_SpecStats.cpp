@@ -209,7 +209,10 @@ void SpecPcile_next(SpecPcile* unit, int inNumSamples) {
         // Used to be MAKE_TEMP_BUF but we can handle it more cleanly in this specific case:
         if (!unit->m_tempbuf) {
         unit->m_tempbuf = (float*)RTAlloc(unit->mWorld, numbins * sizeof(float));
-        ClearUnitIfMemFailed(unit->m_tempbuf);
+        if (!unit->m_tempbuf) {
+            ClearUnitOutputs(unit, inNumSamples);
+            ClearUnitOnMemFailed;
+        }
         unit->m_numbins = numbins;
         unit->m_halfnyq_over_numbinsp2 = ((float)unit->mWorld->mSampleRate) * 0.5f / (float)(numbins + 2);
     }
