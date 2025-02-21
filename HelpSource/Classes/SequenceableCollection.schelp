@@ -1,9 +1,9 @@
 CLASS::SequenceableCollection
-summary::Abstract superclass of collections indexable by integers starting from 0
+summary::Abstract superclass of indexable collections
 categories::Collections>Ordered
 
 DESCRIPTION::
-SequenceableCollection is a subclass of Collection whose elements can be indexed by an Integer starting from 0. It has many useful subclasses; link::Classes/Array:: and link::Classes/List:: are amongst the most commonly used.
+SequenceableCollection is a subclass of Collection whose items can be indexed. It has many useful subclasses; link::Classes/Array:: and link::Classes/List:: are amongst the most commonly used.
 
 CLASSMETHODS::
 

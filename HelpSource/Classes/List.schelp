@@ -9,25 +9,35 @@ List is a subclass of SequenceableCollection with unlimited growth in size. Alth
 note::
 Size Limitations of Arrays and Flexibility of Lists and Indexing.
 
-strong::Size Limitations of Arrays and Flexibility of Lists in SuperCollider::
+definitionlist::
+## Size Limitations of Arrays and Flexibility of Lists in SuperCollider||
 
-Arrays have a fixed maximum size. If you add beyond that size a new Array is created and returned, but you must use an assignment statement or the new array will be lost. (See the link::Classes/Array:: helpfile.) List has no size limitation and is thus more flexible, but has slightly more overhead.
+Arrays have a fixed maximum size. If you add beyond that size a new Array is created and returned, but you must use an assignment statement or the new array will be lost. (See the link::Classes/Array#description#Description:: section in link::Classes/Array::. documentation). The idiomatic way to add new item in link::Classes/Array:: is:
+
+code::
+x = x.add(i);
+::
+
+Example:
+
 code::
 (
 x = Array.new(3);
-y = List.new(3);
-postf("\nMake an empty array and list with size 3:\nx: %;\t%y: %\n", x, join("\t"!10), y);
+postf("\nMake an empty array with size 3:\nx: %;\t%y: %\n", x, join("\t"!2), y);
 
-5.do({ |i| z = x.add(i); y.add(i) });
-postf("\nAfter adding 5 elements to each:\nx: %;\t\tz: %;\t\ty: %\n", x, z, y);
+5.do({ |i| y = x.add(i) });
+postf("\nAfter adding 5 items to each:\nx: %;\t\ty: %", x, y);
 
-postf("\nAccessing:\nx.at(4): %;\t\t\tz[4]: %;\t\t\t\ty[4]: %\n", x.at(4), z[4], y[4]);
+postf("\nAccessing:\nx.at(4): %;\t\ty[4]: %\n", x.at(4), y[4]);
 )
 ::
+SCDocHTMLRenderer
+List has no size limitation and is thus more flexible, but has slightly more overhead.
 
-strong::Index starting from 0::anchor::Index starting from 0::
+## Index starting from 0 anchor::Index starting from 0::||
 
-Arrays and Lists use 0-based indexing, meaning the first element is accessed with index 0. Therefore, the index 4 in code::x.at(4):: and code::z[4]:: in the example above refers to the fifth element, counting from the left (i.e., after the first four elements). If the index is out of bounds, code::nil:: is returned because there is no element at the requested index in the array or list referred to. In the given example, code::x.at(4):: returns code::nil:: because the index 4 is out of bounds. The method code::.add(4):: adds the value 4 to the end of the array or list.
+Arrays and Lists use 0-based indexing, meaning the first item is accessed with index 0. Therefore, the index 4 in code::x.at(4):: and code::z[4]:: in the example above refers to the fifth item, counting from the left (i.e., after the first four items). If the index is out of bounds, code::nil:: is returned because there is no item at the requested index in the array or list referred to. In the given example, code::x.at(4):: returns code::nil:: because the index 4 is out of bounds. The method code::.add(4):: adds the value 4 to the end of the array or list.
+::
 ::
 
 Many of List's methods are inherited from link::Classes/SequenceableCollection:: or link::Classes/Collection:: and are documented in those helpfiles.
@@ -122,7 +132,7 @@ method::grow
 Increase the size of the List by strong::sizeIncrease:: number of slots.
 
 method::removeAt
-Remove and return the element at strong::index::, shrinking the size of the List. See link::#Index starting from 0::.
+Remove and return the item at strong::index::, shrinking the size of the List. See link::#Index starting from 0::.
 code::
 y = List[1, 2, 3];
 y.removeAt(1);
