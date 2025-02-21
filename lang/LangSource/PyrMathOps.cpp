@@ -574,7 +574,7 @@ send_normal_1:
         return errFailed;
 
     msg = gSpecialUnarySelectors[opcode];
-    sendMessage(g, msg, 1);
+    sendMessage(g, msg, 1, 0);
 
     return errNone;
 }
@@ -1717,6 +1717,6 @@ send_normal_2:
         return errFailed; // arguments remain on the stack
 
     msg = gSpecialBinarySelectors[opcode];
-    sendMessage(g, msg, numArgsPushed);
+    sendMessage(g, msg, numArgsPushed, 0);
     return errNone;
 }

@@ -40,4 +40,3 @@ code::
 
 { LPZ2.ar(WhiteNoise.ar(0.25)) }.play;
 ::
-

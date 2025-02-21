@@ -69,6 +69,7 @@ if (scdoc_start_token) {
 (?i:[ \t]*private::[ \t]*)       return PRIVATE;
 (?i:[ \t]*section::[ \t]*)       return SECTION;
 (?i:[ \t]*subsection::[ \t]*)    return SUBSECTION;
+(?i:[ \t]*subsubsection::[ \t]*) return SUBSUBSECTION;
 (?i:[ \t]*copymethod::[ \t]*)    return COPYMETHOD;
 (?i:[ \t]*method::[ \t]*)        method_caller = YY_START; BEGIN(method); return METHOD;
 (?i:[ \t]*argument::[ \t]*)      return ARGUMENT;
@@ -149,6 +150,7 @@ if (scdoc_start_token) {
 <metadata,eat>(?i:[ \t]*private::[ \t]*)       BEGIN(metadata); return PRIVATE;
 <metadata,eat>(?i:[ \t]*section::[ \t]*)       BEGIN(metadata); return SECTION;
 <metadata,eat>(?i:[ \t]*subsection::[ \t]*)    BEGIN(metadata); return SUBSECTION;
+<metadata,eat>(?i:[ \t]*subsubsection::[ \t]*) BEGIN(metadata); return SUBSUBSECTION;
 <metadata,eat>(?i:[ \t]*copymethod::[ \t]*)    BEGIN(metadata); return COPYMETHOD;
 <metadata,eat>(?i:[ \t]*method::[ \t]*)        method_caller = YY_START; BEGIN(method); return METHOD;
 <metadata,eat>(?i:[ \t]*description::[ \t\n\r]*)   BEGIN(eat); return DESCRIPTION;

@@ -71,6 +71,7 @@ struct Token {
 
 struct TextBlockData : public QTextBlockUserData {
     std::vector<Token> tokens;
+    bool isInMultilineComment = false;
 };
 
 class TokenIterator {

@@ -122,6 +122,16 @@ subsection:: Some more info
 ::
 ::
 
+Level 3:
+definitionlist::
+## keyword:: subsubsection\::
+teletype:: SUBSUBSECTION\:: :: name
+|| A named subsubsection. The name should be plain text and can not contain any tags. Example:
+teletype::
+subsubsection:: Some more detailed info
+::
+::
+
 subsection:: Method tags
 These are level 3 subsections:
 definitionlist::
@@ -413,7 +423,8 @@ optsubsubsections ::= [ subsubsections ]
 subsubsections    ::= subsubsections subsubsection
                     | subsubsection
                     | body
-subsubsection     ::= "METHOD::" methnames optMETHODARGS eol methodbody
+subsubsection     ::= "SUBSUBSECTION::" words2 eol optbody
+                    | "METHOD::" methnames optMETHODARGS eol methodbody
                     | "COPYMETHOD::" words eol
                     | "PRIVATE::" commalist eol
 optMETHODARGS     ::= [ METHODARGS ]
@@ -484,4 +495,3 @@ nocommawords      ::= nocommawords TEXT
                     | URL
 commalist         ::= { nocommawords COMMA } nocommawords
 ::
-

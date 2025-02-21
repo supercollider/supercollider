@@ -325,4 +325,3 @@ definitionlist::
 ## link::Classes/UnpackFFT::, link::Classes/PackFFT::, link::Classes/Unpack1FFT:: || "unpacking" components used in pvcalc, pvcalc2, pvcollect (can also be used on their own)
 ::
 For a full list of FFT UGens, see strong::UGens>FFT:: in the link::Browse#UGens>FFT:: page.
-

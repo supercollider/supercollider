@@ -148,7 +148,7 @@ Git {
 			Pipe.callSync(gitFind, {
 				gitIsInstalled = true;
 			}, { arg error;
-				"Quarks requires git to be installed".error;
+				"Quarks requires git to be installed. Follow the installation instructions at <https://git-scm.com>.".error;
 				gitIsInstalled = false;
 			});
 		};

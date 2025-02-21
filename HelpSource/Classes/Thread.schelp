@@ -215,4 +215,3 @@ code::
 thisThread.randData_(Int32Array[-662787342, 1546785953, 1661466823]);
 10.do{ 1.0.rand2.postln };
 ::
-

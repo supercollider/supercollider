@@ -30,4 +30,3 @@ The above is just meant as example. LFNoise0 is a faster way to generate random 
 code::
 { Blip.ar(LFNoise0.kr(9, 400, 500), 4, 0.2) }.play;
 ::
-

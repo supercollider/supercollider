@@ -481,7 +481,7 @@ namespace date_time {
         boost::algorithm::replace_all(format, unrestricted_hours_format, hours_str);
       }
       // We still have to process restricted hours format specifier. In order to
-      // support parseability of durations in ISO format (%H%M%S), we'll have to
+      // support parseability of durations in ISO 8601 format (%H%M%S), we'll have to
       // restrict the stringified hours length to 2 characters.
       if (format.find(hours_format) != string_type::npos) {
         if (hours_str.empty())

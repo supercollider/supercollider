@@ -11,6 +11,7 @@
 //
 //  See http://www.boost.org/libs/smart_ptr/ for documentation.
 
+#include <boost/smart_ptr/detail/requires_cxx11.hpp>
 #include <boost/smart_ptr/make_shared_object.hpp>
 
 #if !defined( BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION ) && !defined( BOOST_NO_SFINAE )

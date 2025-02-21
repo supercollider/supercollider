@@ -65,4 +65,3 @@ Dialog.getPaths({ |paths| // get a second soundfile;
 )
 
 ::
-

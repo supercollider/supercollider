@@ -40,4 +40,3 @@ SynthDef("help-magSquared", { |out = 0, bufnum = 0, soundBufnum = 2|
 )
 
 ::
-

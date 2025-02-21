@@ -14,10 +14,12 @@
 #define BOOST_INTRUSIVE_PACK_OPTIONS_HPP
 
 #include <boost/intrusive/detail/config_begin.hpp>
-
+#include <boost/intrusive/detail/workaround.hpp>
 #if defined(BOOST_HAS_PRAGMA_ONCE)
 #  pragma once
 #endif
+
+#include <cstddef>
 
 namespace boost {
 namespace intrusive {
@@ -97,19 +99,19 @@ struct pack_options
 #else
 
 //index_tuple
-template<int... Indexes>
+template<std::size_t... Indexes>
 struct index_tuple{};
 
 //build_number_seq
 template<std::size_t Num, typename Tuple = index_tuple<> >
 struct build_number_seq;
 
-template<std::size_t Num, int... Indexes>
+template<std::size_t Num, std::size_t... Indexes>
 struct build_number_seq<Num, index_tuple<Indexes...> >
    : build_number_seq<Num - 1, index_tuple<Indexes..., sizeof...(Indexes)> >
 {};
 
-template<int... Indexes>
+template<std::size_t... Indexes>
 struct build_number_seq<0, index_tuple<Indexes...> >
 {  typedef index_tuple<Indexes...> type;  };
 
@@ -121,10 +123,10 @@ struct typelist
 template<class T>
 struct invert_typelist;
 
-template<int I, typename Tuple>
+template<std::size_t I, typename Tuple>
 struct typelist_element;
 
-template<int I, typename Head, typename... Tail>
+template<std::size_t I, typename Head, typename... Tail>
 struct typelist_element<I, typelist<Head, Tail...> >
 {
    typedef typename typelist_element<I-1, typelist<Tail...> >::type type;
@@ -136,7 +138,7 @@ struct typelist_element<0, typelist<Head, Tail...> >
    typedef Head type;
 };
 
-template<int ...Ints, class ...Types>
+template<std::size_t ...Ints, class ...Types>
 typelist<typename typelist_element<(sizeof...(Types) - 1) - Ints, typelist<Types...> >::type...>
    inverted_typelist(index_tuple<Ints...>, typelist<Types...>)
 {
@@ -158,7 +160,7 @@ template<class Typelist, class Indexes>
 struct invert_typelist_impl;
 
 
-template<class Typelist, int ...Ints>
+template<class Typelist, std::size_t ...Ints>
 struct invert_typelist_impl< Typelist, index_tuple<Ints...> >
 {
    static const std::size_t last_idx = sizeof_typelist<Typelist>::value - 1;
@@ -166,7 +168,7 @@ struct invert_typelist_impl< Typelist, index_tuple<Ints...> >
       <typename typelist_element<last_idx - Ints, Typelist>::type...> type;
 };
 
-template<class Typelist, int Int>
+template<class Typelist, std::size_t Int>
 struct invert_typelist_impl< Typelist, index_tuple<Int> >
 {
    typedef Typelist type;
@@ -249,6 +251,8 @@ struct OPTION_NAME \
 template< TYPE VALUE> \
 struct OPTION_NAME \
 { \
+   static const TYPE value = VALUE; \
+ \
    template<class Base> \
    struct pack : Base \
    { \
@@ -334,7 +338,7 @@ struct pack_options
 //!
 //!   typedef pack_options< empty_default, typename my_pointer<void*> >::type::my_pointer_type type;
 //!
-//!   BOOST_STATIC_ASSERT(( boost::is_same<type, void>::value ));
+//!   BOOST_INTRUSIVE_STATIC_ASSERT(( boost::is_same<type, void>::value ));
 //!
 //! \endcode
 #define BOOST_INTRUSIVE_OPTION_TYPE(OPTION_NAME, TYPE, TYPEDEF_EXPR, TYPEDEF_NAME)
@@ -364,7 +368,7 @@ struct pack_options
 //!
 //!   const bool is_incremental = pack_options< empty_default, incremental<true> >::type::is_incremental;
 //!
-//!   BOOST_STATIC_ASSERT(( is_incremental == true ));
+//!   BOOST_INTRUSIVE_STATIC_ASSERT(( is_incremental == true ));
 //!
 //! \endcode
 #define BOOST_INTRUSIVE_OPTION_CONSTANT(OPTION_NAME, TYPE, VALUE, CONSTANT_NAME)

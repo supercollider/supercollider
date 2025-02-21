@@ -74,5 +74,3 @@ d = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 }.plot(2.0)
 )
 ::
-
-

@@ -53,4 +53,3 @@ c.getn(0, c.numFrames, { |x| x.postln })
 
 b.free; c.free;
 ::
-

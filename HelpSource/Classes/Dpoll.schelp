@@ -55,4 +55,3 @@ code::
 { Duty.kr(0.5, 0, Dseries(0, 1, inf).dpoll); 0.0 }.play;
 { Duty.ar(0.5, 0, SinOsc.ar(0.1).dpoll); 0.0 }.play;
 ::
-
