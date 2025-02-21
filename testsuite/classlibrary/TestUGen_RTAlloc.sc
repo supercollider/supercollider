@@ -1,13 +1,13 @@
 TestUGen_RTAlloc : UnitTest {
 
-	classvar server;
+	var server;
 
 	*initClass {
 		passVerbosity = UnitTest.brief;
 	}
 
-	*setUpClass {
-		server = Server(this.name);
+	setUp {
+		server = Server(this.class.name);
 		server.options.sampleRate = 48000;
 		server.options.blockSize = 64;
 		server.options.memSize = 2 ** 13; // scsynth default
@@ -17,8 +17,9 @@ TestUGen_RTAlloc : UnitTest {
 		server.bootSync;
 	}
 
-	*tearDownClass {
-		server.quit.remove;
+	tearDown {
+		server.quit;
+		server.remove;
 	}
 
 	// Async helpers

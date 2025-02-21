@@ -2,7 +2,7 @@ name: Test Linux
 on:
   workflow_call:
     inputs:
-      artifact-file:
+      sc-version:
         required: true
         type: string
 
@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-22.04
     env:
       INSTALL_PATH: ${{ github.workspace }}/build/Install
-      ARTIFACT_FILE: ${{ inputs.artifact-file }}
+      ARTIFACT_FILE: "SuperCollider-${{ inputs.sc-version }}-ubuntu-22.04-gcc12"
       TESTS_PATH: ${{ github.workspace }}/testsuite/classlibrary
       SCLANG: ${{ github.workspace }}/build/Install/bin/sclang
       TEST_LIST_PROTO: ${{ github.workspace }}/testsuite/scripts/test_run_proto_gha.scd

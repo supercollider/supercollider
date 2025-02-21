@@ -174,7 +174,7 @@ argument:: func
 A handler that recieves the new FlowView as argument
 
 argument:: bounds
-Bounds fo the FlowView
+Bounds of the FlowView
 
 returns:: (returnvalue)
 

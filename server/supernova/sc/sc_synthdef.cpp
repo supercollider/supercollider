@@ -141,7 +141,7 @@ std::vector<sc_synthdef> read_synthdef_file(std::filesystem::path const& filenam
     using namespace std;
 
     ifstream stream;
-    stream.open(filename.string().c_str());
+    stream.open(filename.string().c_str(), std::ifstream::binary);
 
     if (!stream.is_open()) {
         cout << "cannot open file " << filename << endl;
