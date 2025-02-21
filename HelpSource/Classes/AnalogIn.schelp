@@ -47,4 +47,3 @@ SynthDef("help-AnalogIn", { |out = 0|
 }).play;
 )
 ::
-

@@ -24,7 +24,7 @@ namespace boost { namespace program_options {
     basic_command_line_parser<charT>::
     basic_command_line_parser(int argc, const charT* const argv[])
     : detail::cmdline(
-        to_internal(std::vector<std::basic_string<charT> >(argv+1, argv+argc))),
+        to_internal(std::vector<std::basic_string<charT> >(argc ? argv+1 : argv, argv+argc))),
         m_desc()
     {}
 

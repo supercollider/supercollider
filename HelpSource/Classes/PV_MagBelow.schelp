@@ -64,4 +64,3 @@ SynthDef("help-magBelow3", { |out = 0, bufnum = 0, soundBufnum = 2|
 )
 
 ::
-

@@ -28,4 +28,3 @@ table::
 
 method:: type
 The class of the input/output ugen, like link::Classes/In::, link::Classes/Out::, link::Classes/ReplaceOut::, etc.
-

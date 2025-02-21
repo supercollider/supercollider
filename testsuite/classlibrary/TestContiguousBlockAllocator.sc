@@ -55,4 +55,27 @@ TestContiguousBlockAllocator : UnitTest {
 			alloc.top == (alloc.addrOffset + alloc.size - 1),
 			"ContiguousBlockAllocator should reclaim its full range after mixed allocation/removal.")
 	}
+
+	test_CBAllocator_can_reserve_multiple_range_types {
+		var alloc = ContiguousBlockAllocator(50);
+		var block;
+		var ok;
+
+		try {
+			block = alloc.reserve(0, 10);
+		};
+		this.assert(block.notNil, "ContiguousBlockAllocator can reserve from the start of its range");
+
+		block = nil;
+		try {
+			block = alloc.reserve(20, 10);
+		};
+		this.assert(block.notNil, "ContiguousBlockAllocator can reserve in the last free region");
+
+		block = nil;
+		try {
+			block = alloc.reserve(12, 5);
+		};
+		this.assert(block.notNil, "ContiguousBlockAllocator can reserve within an interior free region");
+	}
 }

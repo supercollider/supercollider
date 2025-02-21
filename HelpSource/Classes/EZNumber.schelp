@@ -106,7 +106,7 @@ Gets/sets the list/menu to the index at value. Does not perform the action.
 argument:: val
 An link::Classes/Integer::.
 
-valueAction
+method:: valueAction
 Sets the value and performs the action at the index value and the global action.
 argument:: val
 An link::Classes/Integer::.

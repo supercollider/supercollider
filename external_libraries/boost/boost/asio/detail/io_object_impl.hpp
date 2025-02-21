@@ -1,8 +1,8 @@
 //
-// io_object_impl.hpp
-// ~~~~~~~~~~~~~~~~~~
+// detail/io_object_impl.hpp
+// ~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -44,7 +44,7 @@ public:
   typedef Executor executor_type;
 
   // Construct an I/O object using an executor.
-  explicit io_object_impl(const executor_type& ex)
+  explicit io_object_impl(int, const executor_type& ex)
     : service_(&boost::asio::use_service<IoObjectService>(
           io_object_impl::get_context(ex))),
       executor_(ex)
@@ -54,16 +54,13 @@ public:
 
   // Construct an I/O object using an execution context.
   template <typename ExecutionContext>
-  explicit io_object_impl(ExecutionContext& context,
-      typename enable_if<is_convertible<
-        ExecutionContext&, execution_context&>::value>::type* = 0)
+  explicit io_object_impl(int, int, ExecutionContext& context)
     : service_(&boost::asio::use_service<IoObjectService>(context)),
       executor_(context.get_executor())
   {
     service_->construct(implementation_);
   }
 
-#if defined(BOOST_ASIO_HAS_MOVE)
   // Move-construct an I/O object.
   io_object_impl(io_object_impl&& other)
     : service_(&other.get_service()),
@@ -72,7 +69,16 @@ public:
     service_->move_construct(implementation_, other.implementation_);
   }
 
-  // Perform a converting move-construction of an I/O object.
+  // Perform converting move-construction of an I/O object on the same service.
+  template <typename Executor1>
+  io_object_impl(io_object_impl<IoObjectService, Executor1>&& other)
+    : service_(&other.get_service()),
+      executor_(other.get_executor())
+  {
+    service_->move_construct(implementation_, other.get_implementation());
+  }
+
+  // Perform converting move-construction of an I/O object on another service.
   template <typename IoObjectService1, typename Executor1>
   io_object_impl(io_object_impl<IoObjectService1, Executor1>&& other)
     : service_(&boost::asio::use_service<IoObjectService>(
@@ -82,7 +88,6 @@ public:
     service_->converting_move_construct(implementation_,
         other.get_service(), other.get_implementation());
   }
-#endif // defined(BOOST_ASIO_HAS_MOVE)
 
   // Destructor.
   ~io_object_impl()
@@ -90,7 +95,6 @@ public:
     service_->destroy(implementation_);
   }
 
-#if defined(BOOST_ASIO_HAS_MOVE)
   // Move-assign an I/O object.
   io_object_impl& operator=(io_object_impl&& other)
   {
@@ -99,16 +103,14 @@ public:
       service_->move_assign(implementation_,
           *other.service_, other.implementation_);
       executor_.~executor_type();
-      new (&executor_) executor_type(
-          std::move(other.executor_));
+      new (&executor_) executor_type(other.executor_);
       service_ = other.service_;
     }
     return *this;
   }
-#endif // defined(BOOST_ASIO_HAS_MOVE)
 
   // Get the executor associated with the object.
-  const executor_type& get_executor() BOOST_ASIO_NOEXCEPT
+  const executor_type& get_executor() noexcept
   {
     return executor_;
   }
@@ -141,7 +143,7 @@ private:
   // Helper function to get an executor's context.
   template <typename T>
   static execution_context& get_context(const T& t,
-      typename enable_if<execution::is_executor<T>::value>::type* = 0)
+      enable_if_t<execution::is_executor<T>::value>* = 0)
   {
     return boost::asio::query(t, execution::context);
   }
@@ -149,7 +151,7 @@ private:
   // Helper function to get an executor's context.
   template <typename T>
   static execution_context& get_context(const T& t,
-      typename enable_if<!execution::is_executor<T>::value>::type* = 0)
+      enable_if_t<!execution::is_executor<T>::value>* = 0)
   {
     return t.context();
   }

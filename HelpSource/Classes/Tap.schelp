@@ -44,4 +44,3 @@ x = Synth(\helpTap, [\bufnum, b]);
 
 x.free;
 ::
-

@@ -133,6 +133,13 @@ list::
 ## The unit generator destructor is named code::PluginName_Dtor::
 ::
 
+subsection:: The Exit Point
+
+The optional code::PluginUnload():: macro exports a function that is called when the library is deinitialized,
+right before it is unloaded. This is only required in rare cases, typically for resource cleanup that cannot be safely done
+in a global object destructor. For example, the DiskIO UGens and UI UGens in code::DiskIO_UGens.cpp:: resp. code::UIUGens.cpp::
+use the unload function to safely join their worker threads.
+
 subsection:: The Calculation Function
 
 The meat of the UGen is its calculation function, which gets called every control period with the UGen object as an

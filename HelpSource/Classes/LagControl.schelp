@@ -21,5 +21,3 @@ Initial value (code::Float:: or code::Array:: of Floats).
 argument::lags
 
 Lag times (code::Float:: or code::Array:: of Floats).
-
-

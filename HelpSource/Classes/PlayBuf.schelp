@@ -132,4 +132,3 @@ SynthDef(\help_PlayBuf, { |out = 0, bufnum = 0|
 
 b.free;
 ::
-

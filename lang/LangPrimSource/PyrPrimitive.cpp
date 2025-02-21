@@ -59,13 +59,13 @@
 
 #include "SCDocPrim.h"
 
-#include <boost/filesystem/path.hpp> // path
+#include <filesystem>
 
 #ifdef __clang__
 #    pragma clang diagnostic ignored "-Warray-bounds"
 #endif
 
-namespace bfs = boost::filesystem;
+namespace fs = std::filesystem;
 
 int yyparse();
 
@@ -104,13 +104,15 @@ int slotStrLen(PyrSlot* slot) {
     return -1;
 }
 
-int slotStrVal(PyrSlot* slot, char* str, int maxlen) {
+int slotStrVal(PyrSlot* slot, char* str, size_t maxSize) {
+    assert(maxSize > 0);
     if (IsSym(slot)) {
-        strncpy(str, slotRawSymbol(slot)->name, maxlen);
+        size_t len = sc_min(maxSize - 1, slotRawSymbol(slot)->length);
+        memcpy(str, slotRawSymbol(slot)->name, len);
+        str[len] = 0;
         return errNone;
     } else if (isKindOfSlot(slot, class_string)) {
-        int len;
-        len = sc_min(maxlen - 1, slotRawObject(slot)->size);
+        size_t len = sc_min(maxSize - 1, slotRawObject(slot)->size);
         memcpy(str, slotRawString(slot)->s, len);
         str[len] = 0;
         return errNone;
@@ -3118,7 +3120,7 @@ static int prLanguageConfig_addLibraryPath(struct VMGlobals* g, int numArgsPushe
     if (error)
         return errWrongType;
 
-    const bfs::path& native_path = SC_Codecvt::utf8_str_to_path(path);
+    const fs::path& native_path = SC_Codecvt::utf8_str_to_path(path);
     if (pathType == includePaths)
         gLanguageConfig->addIncludedDirectory(native_path);
     else
@@ -3142,7 +3144,7 @@ static int prLanguageConfig_removeLibraryPath(struct VMGlobals* g, int numArgsPu
     if (error)
         return errWrongType;
 
-    const bfs::path& native_path = SC_Codecvt::utf8_str_to_path(path);
+    const fs::path& native_path = SC_Codecvt::utf8_str_to_path(path);
     if (pathType == includePaths)
         gLanguageConfig->removeIncludedDirectory(native_path);
     else
@@ -3173,7 +3175,7 @@ static int prLanguageConfig_getCurrentConfigPath(struct VMGlobals* g, int numArg
 
 static int prLanguageConfig_writeConfigFile(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* fileString = g->sp;
-    bfs::path config_path;
+    fs::path config_path;
 
     if (NotNil(fileString)) {
         char path[MAXPATHLEN];

@@ -39,4 +39,11 @@ TestPerformArgs : UnitTest {
             "Passing incorrect args should throw."
         );
     }
+	test_duplicates {
+		 this.assertEquals(
+			TestPerformArgs_O().performArgs(\foo, [1, 2], [\a: 10, \b: 20, \a: 30]),
+            (a: 30, b: 20, args: [], kwargs: []),
+            "performArgs should accept last value in cases of collision."
+        );
+	}
 }

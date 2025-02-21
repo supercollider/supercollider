@@ -51,12 +51,12 @@ std::complex<T> hankel_imp(T v, T x, const bessel_no_int_tag&, const Policy& pol
       if(v == 0)
       {
          // J is 1, Y is -INF
-         return std::complex<T>(1, sign * -policies::raise_overflow_error<T>(function, 0, pol));
+         return std::complex<T>(1, sign * -policies::raise_overflow_error<T>(function, nullptr, pol));
       }
       else
       {
          // At least one of J and Y is complex infinity:
-         return std::complex<T>(policies::raise_overflow_error<T>(function, 0, pol), sign * policies::raise_overflow_error<T>(function, 0, pol));
+         return std::complex<T>(policies::raise_overflow_error<T>(function, nullptr, pol), sign * policies::raise_overflow_error<T>(function, nullptr, pol));
       }
    }
 
@@ -137,9 +137,9 @@ inline std::complex<typename detail::bessel_traits<T1, T2, Policy>::result_type>
    typedef typename detail::bessel_traits<T1, T2, Policy>::result_type result_type;
    typedef typename policies::evaluation<result_type, Policy>::type value_type;
    typedef typename policies::normalise<
-      Policy, 
-      policies::promote_float<false>, 
-      policies::promote_double<false>, 
+      Policy,
+      policies::promote_float<false>,
+      policies::promote_double<false>,
       policies::discrete_quantile<>,
       policies::assert_undefined<> >::type forwarding_policy;
 
@@ -159,9 +159,9 @@ inline std::complex<typename detail::bessel_traits<T1, T2, Policy>::result_type>
    typedef typename detail::bessel_traits<T1, T2, Policy>::result_type result_type;
    typedef typename policies::evaluation<result_type, Policy>::type value_type;
    typedef typename policies::normalise<
-      Policy, 
-      policies::promote_float<false>, 
-      policies::promote_double<false>, 
+      Policy,
+      policies::promote_float<false>,
+      policies::promote_double<false>,
       policies::discrete_quantile<>,
       policies::assert_undefined<> >::type forwarding_policy;
 

@@ -27,7 +27,7 @@
 #include <QPainter>
 #include <QStyleOption>
 #include <QDockWidget>
-#include <QStyleOptionTabV3>
+#include <QStyleOptionTab>
 #include <QTabBar>
 #include <QToolButton>
 #include <QLayout>
@@ -140,9 +140,10 @@ void Style::drawComplexControl(ComplexControl control, const QStyleOptionComplex
             QIcon::State iconState = option->state & QStyle::State_Selected ? QIcon::On : QIcon::Off;
 
             QPixmap pixmap = icon.pixmap(toolOption->iconSize, iconMode, iconState);
-            QRect pixRect = pixmap.rect();
+            QRect pixRect;
+            pixRect.setSize(QSize(16, 16));
             pixRect.moveCenter(option->rect.center());
-            painter->drawPixmap(pixRect.topLeft(), pixmap);
+            painter->drawPixmap(pixRect, pixmap);
         } else {
             QStyle::PrimitiveElement elem = Style::PE_CustomBase;
             switch (toolBtn->arrowType()) {
@@ -239,7 +240,8 @@ void Style::drawControl(ControlElement element, const QStyleOption* option, QPai
 
         if (!tabOption->icon.isNull()) {
             QPixmap pixmap = tabOption->icon.pixmap(tabOption->iconSize);
-            QRect iconRect = pixmap.rect();
+            QRect iconRect;
+            iconRect.setSize(QSize(14, 14));
             iconRect.moveCenter(tabOption->rect.center());
             int lmargin = 5;
             if (tabOption->leftButtonSize.width() > 0)
