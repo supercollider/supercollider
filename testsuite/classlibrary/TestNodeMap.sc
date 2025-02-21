@@ -43,4 +43,3 @@ TestProxyNodeMap : UnitTest {
 		proxy.clear;
 	}
 }
-

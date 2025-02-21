@@ -1300,6 +1300,12 @@ SCErr meth_status(World* inWorld, int inSize, char* inData, ReplyAddress* inRepl
     return kSCErr_None;
 }
 
+SCErr meth_rtMemoryStatus(World* inWorld, int inSize, char* inData, ReplyAddress* inReply);
+SCErr meth_rtMemoryStatus(World* inWorld, int inSize, char* inData, ReplyAddress* inReply) {
+    CallSequencedCommand(RTMemStatusCmd, inWorld, inSize, inData, inReply);
+    return kSCErr_None;
+}
+
 SCErr meth_quit(World* inWorld, int inSize, char* inData, ReplyAddress* inReply);
 SCErr meth_quit(World* inWorld, int inSize, char* inData, ReplyAddress* inReply) {
     CallSequencedCommand(AudioQuitCmd, inWorld, inSize, inData, inReply);
@@ -1871,6 +1877,7 @@ void initMiscCommands() {
     NEW_COMMAND(quit);
     NEW_COMMAND(clearSched);
     NEW_COMMAND(version);
+    NEW_COMMAND(rtMemoryStatus);
 
     NEW_COMMAND(d_recv);
     NEW_COMMAND(d_load);

@@ -10,6 +10,9 @@
 #pragma once
 #endif
 
+#include <cmath>
+#include <cstdint>
+
 namespace boost{ namespace math{ namespace detail{
 
 template <class T, class Policy>
@@ -66,13 +69,10 @@ inline T bessel_j_derivative_small_z_series(T v, T x, const Policy& pol)
       return prefix;
 
    bessel_j_derivative_small_z_series_term<T, Policy> s(v, x);
-   boost::uintmax_t max_iter = boost::math::policies::get_max_series_iterations<Policy>();
-#if BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
-   T zero = 0;
-   T result = boost::math::tools::sum_series(s, boost::math::policies::get_epsilon<T, Policy>(), max_iter, zero);
-#else
+   std::uintmax_t max_iter = boost::math::policies::get_max_series_iterations<Policy>();
+
    T result = boost::math::tools::sum_series(s, boost::math::policies::get_epsilon<T, Policy>(), max_iter);
-#endif
+
    boost::math::policies::check_series_iterations<T>("boost::math::bessel_j_derivative_small_z_series<%1%>(%1%,%1%)", max_iter, pol);
    return prefix * result;
 }
@@ -147,6 +147,7 @@ inline T bessel_y_derivative_small_z_series(T v, T x, const Policy& pol)
    T p = log(x / 2);
    T scale = 1;
    bool need_logs = (v >= boost::math::max_factorial<T>::value) || (boost::math::tools::log_max_value<T>() / v < fabs(p));
+
    if (!need_logs)
    {
       gam = boost::math::tgamma(v, pol);
@@ -158,7 +159,7 @@ inline T bessel_y_derivative_small_z_series(T v, T x, const Policy& pol)
          if (boost::math::tools::max_value<T>() * p < gam)
          {
             // This term will overflow to -INF, when combined with the series below it becomes +INF:
-            return boost::math::policies::raise_overflow_error<T>(function, 0, pol);
+            return boost::math::policies::raise_overflow_error<T>(function, nullptr, pol);
          }
       }
       prefix = -gam / (boost::math::constants::pi<T>() * p);
@@ -174,42 +175,39 @@ inline T bessel_y_derivative_small_z_series(T v, T x, const Policy& pol)
          scale /= (boost::math::tools::max_value<T>() / 4);
          if (boost::math::tools::log_max_value<T>() < prefix)
          {
-            return boost::math::policies::raise_overflow_error<T>(function, 0, pol);
+            return boost::math::policies::raise_overflow_error<T>(function, nullptr, pol);
          }
       }
       prefix = -exp(prefix);
    }
    bessel_y_derivative_small_z_series_term_a<T, Policy> s(v, x);
-   boost::uintmax_t max_iter = boost::math::policies::get_max_series_iterations<Policy>();
-#if BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
-   T zero = 0;
-   T result = boost::math::tools::sum_series(s, boost::math::policies::get_epsilon<T, Policy>(), max_iter, zero);
-#else
+   std::uintmax_t max_iter = boost::math::policies::get_max_series_iterations<Policy>();
+
    T result = boost::math::tools::sum_series(s, boost::math::policies::get_epsilon<T, Policy>(), max_iter);
-#endif
+
    boost::math::policies::check_series_iterations<T>("boost::math::bessel_y_derivative_small_z_series<%1%>(%1%,%1%)", max_iter, pol);
    result *= prefix;
 
    p = pow(x / 2, v - 1) / 2;
    if (!need_logs)
    {
-      prefix = boost::math::tgamma(-v, pol) * boost::math::cos_pi(v) * p / boost::math::constants::pi<T>();
+      prefix = boost::math::tgamma(-v, pol) * boost::math::cos_pi(v, pol) * p / boost::math::constants::pi<T>();
    }
    else
    {
-      int sgn;
+      int sgn {};
       prefix = boost::math::lgamma(-v, &sgn, pol) + (v - 1) * log(x / 2) - constants::ln_two<T>();
       prefix = exp(prefix) * sgn / boost::math::constants::pi<T>();
    }
    bessel_y_derivative_small_z_series_term_b<T, Policy> s2(v, x);
    max_iter = boost::math::policies::get_max_series_iterations<Policy>();
-#if BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
-   T b = boost::math::tools::sum_series(s2, boost::math::policies::get_epsilon<T, Policy>(), max_iter, zero);
-#else
+
    T b = boost::math::tools::sum_series(s2, boost::math::policies::get_epsilon<T, Policy>(), max_iter);
-#endif
+
    result += scale * prefix * b;
-   return result;
+   if(scale * tools::max_value<T>() < result)
+      return boost::math::policies::raise_overflow_error<T>(function, nullptr, pol);
+   return result / scale;
 }
 
 // Calculating of BesselY'(v,x) with small x (x < epsilon) and integer x using derivatives
@@ -218,4 +216,4 @@ inline T bessel_y_derivative_small_z_series(T v, T x, const Policy& pol)
 
 }}} // namespaces
 
-#endif // BOOST_MATH_BESSEL_JY_DERIVATVIES_SERIES_HPP
+#endif // BOOST_MATH_BESSEL_JY_DERIVATIVES_SERIES_HPP

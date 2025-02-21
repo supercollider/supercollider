@@ -63,4 +63,3 @@ returns:: A link::Classes/Symbol::.
 
 METHOD:: update
 Subclasses should override this to do any necessary updating when a dispatchers responder funcs indicate they have changed via the standard dependancy mechanism. The default implementation does nothing.
-

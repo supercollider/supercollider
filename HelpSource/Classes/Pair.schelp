@@ -31,7 +31,7 @@ Return the size when linking down.
 method::do
 Iterate over the two elements.
 
-Traverse
+method::traverse
 Same like: link::#-depthFirstPreOrderTraversal::
 
 method::depthFirstPreOrderTraversal

@@ -515,7 +515,7 @@ code::
 ::
 
 method::sort
-Sort the contents of the collection using the comparison function argument. The function should take two elements as arguments and return true if the first argument should be sorted before the second argument. If the function is nil, the following default function is used. { |a, b| a < b }
+Sort the contents of the collection using the comparison function argument. The function should take two elements as arguments and return true if the first argument should be sorted before the second argument. If the function is nil, the following default function is used. { |a, b| a <= b }
 code::
 [6, 2, 1, 7, 5].sort;
 [6, 2, 1, 7, 5].sort({ |a, b| a > b }); // reverse sort

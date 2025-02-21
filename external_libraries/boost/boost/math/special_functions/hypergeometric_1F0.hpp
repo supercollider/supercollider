@@ -13,6 +13,7 @@
 
 #include <boost/math/policies/policy.hpp>
 #include <boost/math/policies/error_handling.hpp>
+#include <boost/math/tools/promotion.hpp>
 
 
 namespace boost { namespace math { namespace detail {

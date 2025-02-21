@@ -64,4 +64,3 @@ y.set(\rate, 2.0.rand);
 x.set(\rate, 2);
 
 ::
-

@@ -486,6 +486,11 @@ Int8Array[int8] : RawArray {
 	readFromStream { |stream|
 		super.readFromStream(stream, \getInt8);
 	}
+
+	parseOSC {
+		_OSCBytes_Array
+		^this.primitiveFailed
+	}
 }
 
 Int16Array[int16] : RawArray {

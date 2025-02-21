@@ -30,7 +30,7 @@ namespace boost
 {
     namespace detail
     {
-        struct basic_timed_mutex
+        struct BOOST_THREAD_CAPABILITY("mutex") basic_timed_mutex
         {
             BOOST_STATIC_CONSTANT(unsigned char,lock_flag_bit=31);
             BOOST_STATIC_CONSTANT(unsigned char,event_set_flag_bit=30);
@@ -62,12 +62,12 @@ namespace boost
             }
 
             // Take the lock flag if it's available
-            bool try_lock() BOOST_NOEXCEPT
+            bool try_lock() BOOST_NOEXCEPT BOOST_THREAD_TRY_ACQUIRE(true)
             {
                 return !win32::interlocked_bit_test_and_set(&active_count,lock_flag_bit);
             }
 
-            void lock()
+            void lock() BOOST_THREAD_ACQUIRE()
             {
                 if(try_lock())
                 {
@@ -93,7 +93,7 @@ namespace boost
 
             // Loop until the number of waiters has been incremented or we've taken the lock flag
             // The loop is necessary since this function may be called by multiple threads simultaneously
-            void mark_waiting_and_try_lock(long& old_count)
+            void mark_waiting_and_try_lock(long& old_count) BOOST_THREAD_TRY_ACQUIRE(true)
             {
                 for(;;)
                 {
@@ -117,7 +117,7 @@ namespace boost
             // until we've taken the lock flag and cleared the event set flag and decremented the
             // number of waiters
             // The loop is necessary since this function may be called by multiple threads simultaneously
-            void clear_waiting_and_try_lock(long& old_count)
+            void clear_waiting_and_try_lock(long& old_count) BOOST_THREAD_TRY_ACQUIRE(true)
             {
                 old_count&=~lock_flag_value;
                 old_count|=event_set_flag_value;
@@ -152,7 +152,7 @@ namespace boost
             }
 
             template <typename Clock, typename Timepoint, typename Duration>
-            bool do_lock_until(Timepoint const& t, Duration const& max)
+            bool do_lock_until(Timepoint const& t, Duration const& max) BOOST_THREAD_TRY_ACQUIRE(true)
             {
                 if(try_lock())
                 {
@@ -238,7 +238,7 @@ namespace boost
             }
 #endif
 
-            void unlock()
+            void unlock() BOOST_THREAD_RELEASE()
             {
                 // Clear the lock flag using atomic addition (works since long is always 32 bits on Windows)
                 long const old_count=BOOST_INTERLOCKED_EXCHANGE_ADD(&active_count,lock_flag_value);

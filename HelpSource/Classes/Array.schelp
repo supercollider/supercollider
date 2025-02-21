@@ -408,9 +408,10 @@ method::isValidUGenInput
 Returns true. Arrays are valid UGen inputs.
 
 method::asRawOSC
-Returns the OSC message as an Int8Array. Receiver must be a bundle.
+Returns the OSC message as an Int8Array. Receiver can be a message or a bundle. See also link::Classes/Int8Array#-parseOSC::.
 code::
-[0.1, [\s_new, \default, -1, 1, 1, \freq, 1961]].asRawOSC;
+[\s_new, \default, -1, 1, 1, \freq, 1961].asRawOSC; // message
+[0.1, [\s_new, \default, -1, 1, 1, \freq, 1961]].asRawOSC; // bundle
 ::
 
 subsection:: Bela

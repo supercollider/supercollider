@@ -245,8 +245,10 @@ void SyntaxHighlighter::highlightBlock(const QString& text) {
             break;
 
         default:
-            if (lexer.state() >= ScLexer::InComment)
+            if (lexer.state() >= ScLexer::InComment) {
                 highlightBlockInComment(lexer);
+                blockData->isInMultilineComment = true;
+            }
         }
     }
 

@@ -146,4 +146,3 @@ FreqScope.new;
 { SinOsc.ar(SinOsc.ar(0.2, 0, 3000, 4000)) * 0.1 }.play;
 { SinOsc.ar(SinOsc.ar((1..4) * 0.02, 0, 3000, 4000)).sum * 0.1 }.play;
 ::
-

@@ -99,4 +99,3 @@ SynthDef(\help_Index, { |out = 0, bufnum = 0|
 
 b.free;
 ::
-

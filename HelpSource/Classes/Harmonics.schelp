@@ -127,4 +127,3 @@ y.free;
 method:: rand, exprand, linrand
 method:: rand2
 method:: coin
-

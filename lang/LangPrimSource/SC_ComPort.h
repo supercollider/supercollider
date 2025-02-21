@@ -44,7 +44,7 @@ class TCPConnection : public std::enable_shared_from_this<TCPConnection>, privat
 public:
     using pointer = std::shared_ptr<TCPConnection>;
 
-    TCPConnection(boost::asio::io_service& ioService, int portNum, HandlerType);
+    TCPConnection(boost::asio::io_context& ioContext, int portNum, HandlerType);
 
     void start();
     auto& getSocket() { return mSocket; }

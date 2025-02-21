@@ -153,4 +153,3 @@ a = {
 a.set(\freq, 6000); // set filter frequency
 a.set(\gate, -3); // release in 3 seconds
 ::
-
