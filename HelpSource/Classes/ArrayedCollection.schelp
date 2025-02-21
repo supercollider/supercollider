@@ -298,7 +298,7 @@ code::
 ::
 
 method::copyRange
-Return a new link::Classes/ArrayedCollection:: which is a copy of the indexed slots of the receiver from strong::start:: to strong::end::. If strong::end:: < strong::start::, an empty teletype::ArrayedCollection:: is returned.
+Return a new link::Classes/ArrayedCollection:: which is a copy of the indexed slots of the receiver from strong::start:: to strong::end::. If strong::end:: < strong::start::, an empty link::Classes/ArrayedCollection:: is returned.
 code::
 (
 var x, y;
