@@ -78,4 +78,3 @@ After the notification has been emitted and handled, automatically unregister.
 
 method::registrationExists
 Simply confirms if a registration is already in place.
-

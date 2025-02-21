@@ -12,8 +12,6 @@ on:
       - 'HelpSource/**'
       - 'sounds/**'
       - '*.md'
-  schedule:
-    - cron: '0 0 * * 0' # run weekly to refresh cache
 
 jobs:
   lint:
@@ -33,7 +31,7 @@ jobs:
         with:
           python-version: '3.10'
 
-      - uses: pre-commit/action@v3.0.0
+      - uses: pre-commit/action@v3.0.1
         name: 'Run pre-commit'
         env:
           FULL_CHECK: 1
@@ -80,21 +78,21 @@ jobs:
     needs: [version-getter, build-linux]
     uses: ./.github/workflows/test_linux.yml
     with:
-      artifact-file: "SuperCollider-${{ needs.version-getter.outputs.sc-version }}-linux-jammy-gcc12"
+      sc-version: ${{ needs.version-getter.outputs.sc-version }}
     secrets: inherit
 
   test-macos:
     needs: [version-getter, build-macos]
     uses: ./.github/workflows/test_macos.yml
     with:
-      artifact-file: "SuperCollider-${{ needs.version-getter.outputs.sc-version }}-macOS-universal.dmg"
+      sc-version: ${{ needs.version-getter.outputs.sc-version }}
     secrets: inherit
 
   # test-windows:
   #   needs: [version-getter, build-windows]
   #   uses: ./.github/workflows/test_windows.yml
   #   with:
-  #     artifact-file: "SuperCollider-${{ needs.version-getter.outputs.sc-version }}-win64"
+  #     sc-version: ${{ needs.version-getter.outputs.sc-version }}
   #   secrets: inherit
 
   deploy_s3:
@@ -102,22 +100,26 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - artifact-suffix: macOS-universal
-            s3-os-name: osx
-            s3-artifact-suffx: ''
+          - artifact-suffix: macOS-x64
+            s3-os-name: macos-x64
+            s3-artifact-prefix: '-macOS-x64'
+            s3-artifact-suffix: ''
             s3-artifact-extension: 'dmg'
             artifact-extension: '.dmg' # for download-artifacts action, for non-zip only, should include `.`
-            s3-create-latest-link: true # create link to pointing to the "latest" build; activate only one per branch per s3-os-name
-
-          - artifact-suffix: win32
-            s3-os-name: win32
-            s3-artifact-suffx: ''
-            s3-artifact-extension: 'zip'
-            s3-create-latest-link: true # create link to pointing to the "latest" build
+            s3-create-latest-link: true # create link to pointing to the "latest" build; activate only one per branch per s3-os-name  
+        
+          - artifact-suffix: macOS-arm64
+            s3-os-name: macos-arm64
+            s3-artifact-prefix: '-macOS-arm64'
+            s3-artifact-suffix: ''
+            s3-artifact-extension: 'dmg'
+            artifact-extension: '.dmg'
+            s3-create-latest-link: true
 
           - artifact-suffix: win64
             s3-os-name: win64
-            s3-artifact-suffx: ''
+            s3-artifact-prefix: '-win64'
+            s3-artifact-suffix: ''
             s3-artifact-extension: 'zip'
             s3-create-latest-link: true # create link to pointing to the "latest" build
 
@@ -131,7 +133,7 @@ jobs:
       UPLOAD_TO_S3: ${{ (secrets.S3_ACCESS_KEY_ID != 0) && !startsWith(github.ref, 'refs/tags/') }}
       S3_CREATE_LATEST_LINK: ${{ matrix.s3-create-latest-link && (secrets.S3_ACCESS_KEY_ID != 0) && startsWith(github.ref, 'refs/heads/') }}
       S3_ARTIFACT_PATH: ${{ github.workspace }}/build/s3-upload
-      S3_ARTIFACT_NAME: SC-${{ github.sha }}${{ matrix.s3-artifact-suffx }}.${{ matrix.s3-artifact-extension }}
+      S3_ARTIFACT_NAME: SC${{ matrix.s3-artifact-prefix }}-${{ github.sha }}${{ matrix.s3-artifact-suffix }}.${{ matrix.s3-artifact-extension }}
       S3_BUILD_LOCATION: builds/supercollider/supercollider/${{ matrix.s3-os-name }}
       S3_ROOT_URL: 'https://supercollider.s3.amazonaws.com'
     steps:
@@ -214,9 +216,7 @@ jobs:
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-universal.dmg/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-arm64.dmg/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-x64-legacy.dmg/*
-            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win32-installer/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win64-installer/*
-            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win32/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win64/*
           draft: true
         env:

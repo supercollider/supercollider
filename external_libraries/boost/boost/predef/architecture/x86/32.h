@@ -78,6 +78,11 @@ If available versions [3-6] are specifically detected.
 #   define BOOST_ARCH_X86_32_AVAILABLE
 #endif
 
+#if BOOST_ARCH_X86_32
+#   undef BOOST_ARCH_WORD_BITS_32
+#   define BOOST_ARCH_WORD_BITS_32 BOOST_VERSION_NUMBER_AVAILABLE
+#endif
+
 #define BOOST_ARCH_X86_32_NAME "Intel x86-32"
 
 #include <boost/predef/architecture/x86.h>

@@ -23,7 +23,7 @@
 // contains. More details on these issues are at libs/utility/value_init.htm
 
 #include <boost/config.hpp> // For BOOST_NO_COMPLETE_VALUE_INITIALIZATION.
-#include <boost/swap.hpp>
+#include <boost/core/invoke_swap.hpp>
 #include <cstring>
 #include <cstddef>
 
@@ -32,14 +32,16 @@
 // It is safe to ignore the following warning from MSVC 7.1 or higher:
 // "warning C4351: new behavior: elements of array will be default initialized"
 #pragma warning(disable: 4351)
-// It is safe to ignore the following MSVC warning, which may pop up when T is 
+// It is safe to ignore the following MSVC warning, which may pop up when T is
 // a const type: "warning C4512: assignment operator could not be generated".
 #pragma warning(disable: 4512)
 #endif
 
+#ifndef BOOST_UTILITY_DOCS
+
 #ifdef BOOST_NO_COMPLETE_VALUE_INITIALIZATION
-  // Implementation detail: The macro BOOST_DETAIL_VALUE_INIT_WORKAROUND_SUGGESTED 
-  // suggests that a workaround should be applied, because of compiler issues 
+  // Implementation detail: The macro BOOST_DETAIL_VALUE_INIT_WORKAROUND_SUGGESTED
+  // suggests that a workaround should be applied, because of compiler issues
   // regarding value-initialization.
   #define BOOST_DETAIL_VALUE_INIT_WORKAROUND_SUGGESTED
 #endif
@@ -53,6 +55,8 @@
   #define BOOST_DETAIL_VALUE_INIT_WORKAROUND 0
   #endif
 #endif
+
+#endif // BOOST_UTILITY_DOCS
 
 namespace boost {
 
@@ -113,7 +117,7 @@ class initialized
     BOOST_GPU_ENABLED
     void swap(initialized & arg)
     {
-      ::boost::swap( this->data(), arg.data() );
+      ::boost::core::invoke_swap( this->data(), arg.data() );
     }
 
     BOOST_GPU_ENABLED
@@ -160,13 +164,13 @@ class value_initialized
     initialized<T> m_data;
 
   public :
-    
+
     BOOST_GPU_ENABLED
     value_initialized()
     :
     m_data()
     { }
-    
+
     BOOST_GPU_ENABLED
     T const & data() const
     {
@@ -224,7 +228,7 @@ void swap ( value_initialized<T> & lhs, value_initialized<T> & rhs )
 class initialized_value_t
 {
   public :
-    
+
     template <class T> BOOST_GPU_ENABLED operator T() const
     {
       return initialized<T>().data();

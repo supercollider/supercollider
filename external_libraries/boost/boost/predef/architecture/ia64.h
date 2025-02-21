@@ -42,6 +42,11 @@ http://en.wikipedia.org/wiki/Ia64[Intel Itanium 64] architecture.
 #   define BOOST_ARCH_IA64_AVAILABLE
 #endif
 
+#if BOOST_ARCH_IA64
+#   undef BOOST_ARCH_WORD_BITS_64
+#   define BOOST_ARCH_WORD_BITS_64 BOOST_VERSION_NUMBER_AVAILABLE
+#endif
+
 #define BOOST_ARCH_IA64_NAME "Intel Itanium 64"
 
 #endif

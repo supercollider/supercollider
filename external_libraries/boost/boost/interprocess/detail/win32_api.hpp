@@ -121,8 +121,8 @@ static const unsigned long MaxPath           = 260;
 
 struct interprocess_semaphore_basic_information
 {
-   unsigned int count;      // current semaphore count
-   unsigned int limit;      // max semaphore count
+   unsigned long count;      // current semaphore count
+   unsigned long limit;      // max semaphore count
 };
 
 struct interprocess_section_basic_information
@@ -304,6 +304,10 @@ namespace boost {
 namespace ipwinapiext {
 typedef boost::winapi::LONG_ LSTATUS;
 
+typedef boost::winapi::DWORD_ (__stdcall *LPTHREAD_START_ROUTINE_)
+   (boost::winapi::LPVOID_ lpThreadParameter);
+
+
 //#ifndef BOOST_USE_WINDOWS_H
 //typedef boost::winapi::LARGE_INTEGER_ LARGE_INTEGER_EXT;
 //#else
@@ -322,6 +326,18 @@ BOOST_SYMBOL_IMPORT BOOST_WINAPI_DETAIL_VOID BOOST_WINAPI_WINAPI_CC SetLastError
 //File management
 BOOST_SYMBOL_IMPORT boost::winapi::DWORD_ BOOST_WINAPI_WINAPI_CC GetFileType(boost::winapi::HANDLE_ hTemplateFile);
 BOOST_SYMBOL_IMPORT boost::winapi::BOOL_ BOOST_WINAPI_WINAPI_CC FlushFileBuffers(boost::winapi::HANDLE_ hFile);
+
+//threading
+
+BOOST_SYMBOL_IMPORT boost::winapi::HANDLE_ BOOST_WINAPI_WINAPI_CC CreateThread
+   ( ::_SECURITY_ATTRIBUTES* lpThreadAttributes
+   , boost::winapi::SIZE_T_ dwStackSize
+   , boost::ipwinapiext::LPTHREAD_START_ROUTINE_ lpStartAddress
+   , boost::winapi::LPVOID_ lpParameter
+   , boost::winapi::DWORD_ dwCreationFlags
+   , boost::winapi::LPDWORD_ lpThreadId
+   );
+
 //Virtual Memory
 BOOST_SYMBOL_IMPORT boost::winapi::BOOL_ BOOST_WINAPI_WINAPI_CC VirtualLock(boost::winapi::LPVOID_ lpAddress, boost::winapi::SIZE_T_ dwSize);
 BOOST_SYMBOL_IMPORT boost::winapi::BOOL_ BOOST_WINAPI_WINAPI_CC VirtualUnlock(boost::winapi::LPVOID_ lpAddress, boost::winapi::SIZE_T_ dwSize);
@@ -333,15 +349,23 @@ BOOST_WINAPI_DETAIL_DECLARE_HANDLE(HKEY);
 
 BOOST_SYMBOL_IMPORT boost::ipwinapiext::LSTATUS BOOST_WINAPI_WINAPI_CC RegOpenKeyExA
    (::HKEY hKey, const char *lpSubKey, boost::winapi::DWORD_ ulOptions, boost::winapi::DWORD_ samDesired, ::HKEY *phkResult);
+BOOST_SYMBOL_IMPORT boost::ipwinapiext::LSTATUS BOOST_WINAPI_WINAPI_CC RegOpenKeyExW
+   (::HKEY hKey, const wchar_t *lpSubKey, boost::winapi::DWORD_ ulOptions, boost::winapi::DWORD_ samDesired, ::HKEY *phkResult);
 BOOST_SYMBOL_IMPORT boost::ipwinapiext::LSTATUS BOOST_WINAPI_WINAPI_CC RegQueryValueExA
    (::HKEY hKey, const char *lpValueName, boost::winapi::DWORD_ *lpReserved, boost::winapi::DWORD_ *lpType, boost::winapi::BYTE_ *lpData, boost::winapi::DWORD_ *lpcbData);
+BOOST_SYMBOL_IMPORT boost::ipwinapiext::LSTATUS BOOST_WINAPI_WINAPI_CC RegQueryValueExW
+   (::HKEY hKey, const wchar_t *lpValueName, boost::winapi::DWORD_ *lpReserved, boost::winapi::DWORD_ *lpType, boost::winapi::BYTE_ *lpData, boost::winapi::DWORD_ *lpcbData);
 BOOST_SYMBOL_IMPORT boost::ipwinapiext::LSTATUS BOOST_WINAPI_WINAPI_CC RegCloseKey(::HKEY hKey);
 
 
 //Event Log
 BOOST_SYMBOL_IMPORT boost::winapi::HANDLE_ BOOST_WINAPI_WINAPI_CC OpenEventLogA(const char* lpUNCServerName, const char* lpSourceName);
+BOOST_SYMBOL_IMPORT boost::winapi::HANDLE_ BOOST_WINAPI_WINAPI_CC OpenEventLogW(const wchar_t* lpUNCServerName, const wchar_t* lpSourceName);
 BOOST_SYMBOL_IMPORT boost::winapi::BOOL_   BOOST_WINAPI_WINAPI_CC CloseEventLog(boost::winapi::HANDLE_ hEventLog);
 BOOST_SYMBOL_IMPORT boost::winapi::BOOL_   BOOST_WINAPI_WINAPI_CC ReadEventLogA
+   ( boost::winapi::HANDLE_ hEventLog, boost::winapi::DWORD_ dwReadFlags, boost::winapi::DWORD_ dwRecordOffset, void* lpBuffer
+   , boost::winapi::DWORD_ nNumberOfBytesToRead, boost::winapi::DWORD_ *pnBytesRead, boost::winapi::DWORD_ *pnMinNumberOfBytesNeeded);
+BOOST_SYMBOL_IMPORT boost::winapi::BOOL_   BOOST_WINAPI_WINAPI_CC ReadEventLogW
    ( boost::winapi::HANDLE_ hEventLog, boost::winapi::DWORD_ dwReadFlags, boost::winapi::DWORD_ dwRecordOffset, void* lpBuffer
    , boost::winapi::DWORD_ nNumberOfBytesToRead, boost::winapi::DWORD_ *pnBytesRead, boost::winapi::DWORD_ *pnMinNumberOfBytesNeeded); 
 
@@ -355,6 +379,21 @@ namespace ipwinapiext {
 typedef ::HKEY HKEY_;
 
 #if BOOST_WINAPI_PARTITION_APP_SYSTEM
+
+//Threads
+BOOST_FORCEINLINE boost::winapi::HANDLE_ CreateThread
+   ( boost::winapi::SECURITY_ATTRIBUTES_* lpThreadAttributes
+   , boost::winapi::SIZE_T_ dwStackSize
+   , boost::ipwinapiext::LPTHREAD_START_ROUTINE_ lpStartAddress
+   , boost::winapi::LPVOID_ lpParameter
+   , boost::winapi::DWORD_ dwCreationFlags
+   , boost::winapi::LPDWORD_ lpThreadId
+)
+{
+   return ::CreateThread( reinterpret_cast< ::_SECURITY_ATTRIBUTES* >(lpThreadAttributes)
+                        , dwStackSize, lpStartAddress
+                        , lpParameter, dwCreationFlags, lpThreadId);
+}
 
 //Error handling
 BOOST_FORCEINLINE BOOST_WINAPI_DETAIL_VOID SetLastError(boost::winapi::DWORD_ dwErrCode)
@@ -385,10 +424,22 @@ BOOST_FORCEINLINE boost::ipwinapiext::LSTATUS RegOpenKeyExA
    return ::RegOpenKeyExA(reinterpret_cast< ::HKEY >(hKey), lpSubKey, ulOptions, samDesired, reinterpret_cast< ::HKEY* >(phkResult));
 }
 
+BOOST_FORCEINLINE boost::ipwinapiext::LSTATUS RegOpenKeyExW
+   (boost::ipwinapiext::HKEY_ hKey, const wchar_t *lpSubKey, boost::winapi::DWORD_ ulOptions, boost::winapi::DWORD_ samDesired, boost::ipwinapiext::HKEY_ *phkResult)
+{
+   return ::RegOpenKeyExW(reinterpret_cast< ::HKEY >(hKey), lpSubKey, ulOptions, samDesired, reinterpret_cast< ::HKEY* >(phkResult));
+}
+
 BOOST_FORCEINLINE boost::ipwinapiext::LSTATUS RegQueryValueExA
    (boost::ipwinapiext::HKEY_ hKey, const char *lpValueName, boost::winapi::DWORD_ *lpReserved, boost::winapi::DWORD_ *lpType, boost::winapi::BYTE_ *lpData, boost::winapi::DWORD_ *lpcbData)
 {
    return ::RegQueryValueExA(reinterpret_cast< ::HKEY >(hKey), lpValueName, lpReserved, lpType, lpData, lpcbData);
+}
+
+BOOST_FORCEINLINE boost::ipwinapiext::LSTATUS RegQueryValueExW
+   (boost::ipwinapiext::HKEY_ hKey, const wchar_t *lpValueName, boost::winapi::DWORD_ *lpReserved, boost::winapi::DWORD_ *lpType, boost::winapi::BYTE_ *lpData, boost::winapi::DWORD_ *lpcbData)
+{
+   return ::RegQueryValueExW(reinterpret_cast< ::HKEY >(hKey), lpValueName, lpReserved, lpType, lpData, lpcbData);
 }
 
 BOOST_FORCEINLINE boost::ipwinapiext::LSTATUS RegCloseKey(boost::ipwinapiext::HKEY_ hKey)
@@ -411,7 +462,8 @@ namespace winapi {
 typedef boost::winapi::SYSTEM_INFO_ interprocess_system_info;
 typedef boost::winapi::OVERLAPPED_ interprocess_overlapped;
 typedef boost::winapi::FILETIME_ interprocess_filetime;
-typedef boost::winapi::WIN32_FIND_DATAA_ win32_find_data;
+typedef boost::winapi::WIN32_FIND_DATAA_ win32_find_data_a;
+typedef boost::winapi::WIN32_FIND_DATAW_ win32_find_data_w;
 typedef boost::winapi::SECURITY_ATTRIBUTES_ interprocess_security_attributes;
 typedef boost::winapi::SECURITY_DESCRIPTOR_ interprocess_security_descriptor;
 typedef boost::winapi::BY_HANDLE_FILE_INFORMATION_ interprocess_by_handle_file_information;
@@ -624,7 +676,11 @@ inline void * local_free(void *hmem)
 {  return LocalFree(hmem); }
 
 inline unsigned long make_lang_id(unsigned long p, unsigned long s)
-{  return ((((unsigned short)(s)) << 10) | (unsigned short)(p));   }
+{  
+   const unsigned short s_us = (unsigned short)s;
+   const unsigned short p_us = (unsigned short)p;
+   return (unsigned long)((s_us << 10) | p_us);
+}
 
 inline void sched_yield()
 {
@@ -651,14 +707,20 @@ inline bool get_process_times
 inline unsigned long get_current_process_id()
 {  return GetCurrentProcessId();  }
 
-inline unsigned int close_handle(void* handle)
-{  return CloseHandle(handle);   }
+inline bool close_handle(void* handle)
+{  return CloseHandle(handle) != 0;   }
 
-inline void * find_first_file(const char *lpFileName, win32_find_data *lpFindFileData)
+inline void * find_first_file(const char *lpFileName, win32_find_data_a *lpFindFileData)
 {  return FindFirstFileA(lpFileName, lpFindFileData);   }
 
-inline bool find_next_file(void *hFindFile, win32_find_data *lpFindFileData)
+inline void * find_first_file(const wchar_t *lpFileName, win32_find_data_w *lpFindFileData)
+{  return FindFirstFileW(lpFileName, lpFindFileData);   }
+
+inline bool find_next_file(void *hFindFile, win32_find_data_a *lpFindFileData)
 {  return FindNextFileA(hFindFile, lpFindFileData) != 0;   }
+
+inline bool find_next_file(void *hFindFile, win32_find_data_w *lpFindFileData)
+{  return FindNextFileW(hFindFile, lpFindFileData) != 0;   }
 
 inline bool find_close(void *handle)
 {  return FindClose(handle) != 0;   }
@@ -688,6 +750,9 @@ inline bool file_time_to_local_file_time
 inline void *open_or_create_mutex(const char *name, bool initial_owner, interprocess_security_attributes *attr)
 {  return CreateMutexA(attr, (int)initial_owner, name);  }
 
+inline void *open_or_create_mutex(const wchar_t *name, bool initial_owner, interprocess_security_attributes *attr)
+{  return CreateMutexW(attr, (int)initial_owner, name);  }
+
 inline unsigned long wait_for_single_object(void *handle, unsigned long time)
 {  return WaitForSingleObject(handle, time); }
 
@@ -700,8 +765,14 @@ inline int unmap_view_of_file(void *address)
 inline void *open_or_create_semaphore(const char *name, long initial_count, long maximum_count, interprocess_security_attributes *attr)
 {  return CreateSemaphoreA(attr, initial_count, maximum_count, name);  }
 
+inline void *open_or_create_semaphore(const wchar_t *name, long initial_count, long maximum_count, interprocess_security_attributes *attr)
+{  return CreateSemaphoreW(attr, initial_count, maximum_count, name);  }
+
 inline void *open_semaphore(const char *name)
 {  return OpenSemaphoreA(semaphore_all_access, 0, name);  }
+
+inline void *open_semaphore(const wchar_t *name)
+{  return OpenSemaphoreW(semaphore_all_access, 0, name);  }
 
 inline int release_semaphore(void *handle, long release_count, long *prev_count)
 {  return ReleaseSemaphore(handle, release_count, prev_count); }
@@ -732,24 +803,36 @@ class interprocess_all_access_security
 
 inline void * create_file_mapping (void * handle, unsigned long access, ::boost::ulong_long_type file_offset, const char * name, interprocess_security_attributes *psec)
 {
-   const boost::winapi::DWORD_ high_size(file_offset >> 32), low_size((boost::winapi::DWORD_)file_offset);
+   const boost::winapi::DWORD_ high_size = boost::winapi::DWORD_(file_offset >> 32);
+   const boost::winapi::DWORD_ low_size  = boost::winapi::DWORD_(file_offset);
    return CreateFileMappingA (handle, psec, access, high_size, low_size, name);
+}
+
+inline void * create_file_mapping (void * handle, unsigned long access, ::boost::ulong_long_type file_offset, const wchar_t * name, interprocess_security_attributes *psec)
+{
+   const boost::winapi::DWORD_ high_size = boost::winapi::DWORD_(file_offset >> 32);
+   const boost::winapi::DWORD_ low_size  = boost::winapi::DWORD_(file_offset);
+   return CreateFileMappingW (handle, psec, access, high_size, low_size, name);
 }
 
 inline void * open_file_mapping (unsigned long access, const char *name)
 {  return OpenFileMappingA (access, 0, name);   }
 
+inline void * open_file_mapping (unsigned long access, const wchar_t *name)
+{  return OpenFileMappingW (access, 0, name);   }
+
 inline void *map_view_of_file_ex(void *handle, unsigned long file_access, ::boost::ulong_long_type offset, std::size_t numbytes, void *base_addr)
 {
-   const unsigned long offset_low  = (unsigned long)(offset & ((::boost::ulong_long_type)0xFFFFFFFF));
-   const unsigned long offset_high = offset >> 32;
+   const boost::winapi::DWORD_ offset_low  = boost::winapi::DWORD_(offset & ((::boost::ulong_long_type)0xFFFFFFFF));
+   const boost::winapi::DWORD_ offset_high = boost::winapi::DWORD_(offset >> 32);
    return MapViewOfFileEx(handle, file_access, offset_high, offset_low, numbytes, base_addr);
 }
 
-inline void *create_file(const char *name, unsigned long access, unsigned long creation_flags, unsigned long attributes, interprocess_security_attributes *psec)
+template<class CharT>
+inline void *create_file(const CharT *name, unsigned long access, unsigned long creation_flags, unsigned long attributes, interprocess_security_attributes *psec)
 {
    for (unsigned int attempt(0); attempt < error_sharing_violation_tries; ++attempt){
-      void * const handle = CreateFileA(name, access,
+      void * const handle = boost::winapi::create_file(name, access,
                                         file_share_read | file_share_write | file_share_delete,
                                         psec, creation_flags, attributes, 0);
       bool const invalid(invalid_handle_value == handle);
@@ -782,28 +865,31 @@ inline bool flush_file_buffers(void *handle)
 inline bool get_file_size(void *handle, __int64 &size)
 {  return 0 != boost::winapi::GetFileSizeEx(handle, (boost::winapi::LARGE_INTEGER_*)&size);  }
 
-inline bool create_directory(const char *name)
+template<class CharT>
+inline bool create_directory(const CharT *name)
 {
    interprocess_all_access_security sec;
-   return 0 != boost::winapi::CreateDirectoryA(name, sec.get_attributes());
+   return 0 != boost::winapi::create_directory(name, sec.get_attributes());
 }
 
-inline bool remove_directory(const char *lpPathName)
-{  return 0 != boost::winapi::RemoveDirectoryA(lpPathName);   }
+template<class CharT>
+inline bool remove_directory(const CharT *lpPathName)
+{  return 0 != boost::winapi::remove_directory(lpPathName);   }
 
-inline unsigned long get_temp_path(unsigned long length, char *buffer)
-{  return boost::winapi::GetTempPathA(length, buffer);   }
+template<class CharT>
+inline unsigned long get_temp_path(unsigned long length, CharT *buffer)
+{  return boost::winapi::get_temp_path(length, buffer);   }
 
 inline int set_end_of_file(void *handle)
 {  return 0 != boost::winapi::SetEndOfFile(handle);   }
 
 inline bool set_file_pointer(void *handle, __int64 distance, __int64 *new_file_pointer, unsigned long move_method)
 {
-   long highPart = distance >> 32u;
-   boost::winapi::DWORD_ r = boost::winapi::SetFilePointer(handle, (unsigned long)distance, &highPart, move_method);
+   boost::winapi::LONG_ highPart = boost::winapi::LONG_(distance >> 32u);
+   boost::winapi::DWORD_ r = boost::winapi::SetFilePointer(handle, (long)distance, &highPart, move_method);
    bool br = r != boost::winapi::INVALID_SET_FILE_POINTER_ || boost::winapi::GetLastError() != 0;
    if (br && new_file_pointer){
-      *new_file_pointer = (unsigned __int64)r + ((__int64)highPart << 32);
+      *new_file_pointer = (__int64)r + ((__int64)highPart << 32);
    }
 
    return br;
@@ -858,8 +944,15 @@ inline hmodule get_module_handle(const char *name)
 inline long reg_open_key_ex(hkey hKey, const char *lpSubKey, unsigned long ulOptions, unsigned long samDesired, hkey *phkResult)
 {  return boost::ipwinapiext::RegOpenKeyExA(hKey, lpSubKey, ulOptions, samDesired, phkResult); }
 
+inline long reg_open_key_ex(hkey hKey, const wchar_t *lpSubKey, unsigned long ulOptions, unsigned long samDesired, hkey *phkResult)
+{  return boost::ipwinapiext::RegOpenKeyExW(hKey, lpSubKey, ulOptions, samDesired, phkResult); }
+
+
 inline long reg_query_value_ex(hkey hKey, const char *lpValueName, unsigned long*lpReserved, unsigned long*lpType, unsigned char *lpData, unsigned long*lpcbData)
 {  return boost::ipwinapiext::RegQueryValueExA(hKey, lpValueName, lpReserved, lpType, lpData, lpcbData); }
+
+inline long reg_query_value_ex(hkey hKey, const wchar_t *lpValueName, unsigned long*lpReserved, unsigned long*lpType, unsigned char *lpData, unsigned long*lpcbData)
+{  return boost::ipwinapiext::RegQueryValueExW(hKey, lpValueName, lpReserved, lpType, lpData, lpcbData); }
 
 inline long reg_close_key(hkey hKey)
 {  return boost::ipwinapiext::RegCloseKey(hKey); }
@@ -1150,8 +1243,8 @@ class nt_query_mem_deleter
       (SystemTimeOfDayInfoLength + sizeof(unsigned long) + sizeof(boost::winapi::DWORD_))*2;
 
    public:
-   explicit nt_query_mem_deleter(std::size_t object_name_information_size)
-      : m_size(object_name_information_size + rename_offset + rename_suffix)
+   explicit nt_query_mem_deleter(std::size_t object_name_info_size)
+      : m_size(object_name_info_size + rename_offset + rename_suffix)
       , m_buf(new char [m_size])
    {}
 
@@ -1213,7 +1306,8 @@ class c_heap_deleter
    void *m_buf;
 };
 
-inline bool unlink_file(const char *filename)
+template<class CharT>
+inline bool unlink_file(const CharT *filename)
 {
    //Don't try to optimize doing a DeleteFile first
    //as there are interactions with permissions and
@@ -1230,7 +1324,7 @@ inline bool unlink_file(const char *filename)
    //- Close the handle. If there are no file users, it will be deleted.
    //  Otherwise it will be used by already connected handles but the
    //  file name can't be used to open this file again
-   try{
+   BOOST_TRY{
       NtSetInformationFile_t pNtSetInformationFile =
          reinterpret_cast<NtSetInformationFile_t>(dll_func::get(dll_func::NtSetInformationFile));
 
@@ -1260,7 +1354,7 @@ inline bool unlink_file(const char *filename)
          ntquery_mem_t *pmem = nt_query_mem.query_mem();
          file_rename_information_t *pfri = &pmem->ren.info;
          const std::size_t RenMaxNumChars =
-            (((char*)(pmem) + nt_query_mem.file_rename_information_size()) - (char*)&pmem->ren.info.FileName[0])/sizeof(wchar_t);
+            std::size_t(((char*)(pmem) + nt_query_mem.file_rename_information_size()) - (char*)&pmem->ren.info.FileName[0])/sizeof(wchar_t);
 
          //Copy filename to the rename member
          std::memmove(pmem->ren.info.FileName, pmem->name.Name.Buffer, pmem->name.Name.Length);
@@ -1324,9 +1418,9 @@ inline bool unlink_file(const char *filename)
          return true;
       }
    }
-   catch(...){
+   BOOST_CATCH(...){
       return false;
-   }
+   } BOOST_CATCH_END
    return true;
 }
 
@@ -1337,7 +1431,8 @@ struct reg_closer
    ~reg_closer(){ reg_close_key(key_);  }
 };
 
-inline bool get_registry_value_buffer(hkey key_type, const char *subkey_name, const char *value_name, void *buf, std::size_t &buflen)
+template <class CharT>
+inline bool get_registry_value_buffer(hkey key_type, const CharT *subkey_name, const CharT *value_name, void *buf, std::size_t &buflen)
 {
    bool bret = false;
    hkey key;
@@ -1359,7 +1454,8 @@ inline bool get_registry_value_buffer(hkey key_type, const char *subkey_name, co
    return bret;
 }
 
-inline bool get_registry_value_string(hkey key_type, const char *subkey_name, const char *value_name, std::string &s)
+template<class CharT>
+inline bool get_registry_value_string(hkey key_type, const CharT *subkey_name, const CharT *value_name, std::basic_string<CharT> &s)
 {
    bool bret = false;
    s.clear();
@@ -1377,7 +1473,7 @@ inline bool get_registry_value_string(hkey key_type, const char *subkey_name, co
       long err = reg_query_value_ex( key, value_name, 0, &type, 0, &size);
       if((reg_sz == type || reg_expand_sz == type) && !err){
          //Size includes terminating NULL
-         s.resize(size);
+         s.resize(size/sizeof(CharT));
          err = reg_query_value_ex( key, value_name, 0, &type, (unsigned char*)(&s[0]), &size);
          if(!err){
             s.erase(s.end()-1);
@@ -1389,7 +1485,8 @@ inline bool get_registry_value_string(hkey key_type, const char *subkey_name, co
    return bret;
 }
 
-inline void get_shared_documents_folder(std::string &s)
+template<class CharT>
+inline void get_shared_documents_folder(std::basic_string<CharT> &s)
 {
    get_registry_value_string( hkey_local_machine
                             , "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders"
@@ -1397,7 +1494,16 @@ inline void get_shared_documents_folder(std::string &s)
                             , s);
 }
 
-inline void get_registry_value(const char *folder, const char *value_key, std::vector<unsigned char> &s)
+inline void get_shared_documents_folder(std::wstring &s)
+{
+   get_registry_value_string( hkey_local_machine
+                            , L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders"
+                            , L"Common AppData"
+                            , s);
+}
+
+template<class CharT>
+inline void get_registry_value(const CharT *folder, const CharT *value_key, std::vector<unsigned char> &s)
 {
    s.clear();
    hkey key;
@@ -1440,7 +1546,7 @@ inline bool get_file_mapping_size(void *file_mapping_hnd, __int64 &size)
       reinterpret_cast<NtQuerySection_t>(dll_func::get(dll_func::NtQuerySection));
    //Obtain file name
    interprocess_section_basic_information info;
-   unsigned long ntstatus =
+   long ntstatus =
       pNtQuerySection(file_mapping_hnd, section_basic_information, &info, sizeof(info), 0);
    size = info.section_size;
    return !ntstatus;
@@ -1453,8 +1559,8 @@ inline bool get_semaphore_info(void *handle, long &count, long &limit)
          reinterpret_cast<winapi::NtQuerySemaphore_t>(dll_func::get(winapi::dll_func::NtQuerySemaphore));
    unsigned int ret_len;
    long status = pNtQuerySemaphore(handle, winapi::semaphore_basic_information, &info, sizeof(info), &ret_len);
-   count = info.count;
-   limit = info.limit;
+   count = (long)info.count;
+   limit = (long)info.limit;
    return !status;
 }
 
@@ -1479,6 +1585,22 @@ inline unsigned long get_tick_count()
 {  return GetTickCount();  }
 
 
+template<class CharT>
+struct winapi_traits;
+
+template<>
+struct winapi_traits<char>
+{
+   static int cmp(const char *a, const char *b)
+   {  return std::strcmp(a, b); }
+};
+
+template<>
+struct winapi_traits<wchar_t>
+{
+   static int cmp(const wchar_t *a, const wchar_t *b)
+   {  return std::wcscmp(a, b); }
+};
 
 
 #if defined(BOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED)
@@ -1507,6 +1629,36 @@ inline bool get_last_bootup_time(std::string &stamp)
          buffer_to_narrow_str(&dword_val, dword_size, dword_str);
          dword_str[sizeof(dword_val)*2] = '\0';
          stamp += "_";
+         stamp += dword_str;
+      }
+      b_ret = true;
+   }
+   return b_ret;
+}
+
+inline bool get_last_bootup_time(std::wstring &stamp)
+{
+   unsigned dword_val = 0;
+   std::size_t dword_size = sizeof(dword_val);
+   bool b_ret = get_registry_value_buffer( hkey_local_machine
+      , L"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters"
+      , L"BootId", &dword_val, dword_size);
+   if (b_ret)
+   {
+      wchar_t dword_str[sizeof(dword_val)*2u+1];
+      buffer_to_wide_str(&dword_val, dword_size, dword_str);
+      dword_str[sizeof(dword_val)*2] = L'\0';
+      stamp = dword_str;
+
+      b_ret = get_registry_value_buffer( hkey_local_machine
+         , L"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power"
+         , L"HybridBootAnimationTime", &dword_val, dword_size);
+      //Old Windows versions have no HybridBootAnimationTime
+      if(b_ret)
+      {
+         buffer_to_wide_str(&dword_val, dword_size, dword_str);
+         dword_str[sizeof(dword_val)*2] = L'\0';
+         stamp += L"_";
          stamp += dword_str;
       }
       b_ret = true;
@@ -1563,16 +1715,18 @@ class eventlog_handle_closer
 
 // Loop through the buffer and obtain the contents of the
 // requested record in the buffer.
-inline bool find_record_in_buffer( const void* pBuffer, unsigned long dwBytesRead, const char *provider_name
+template<class CharT>
+inline bool find_record_in_buffer( const void* pBuffer, unsigned long dwBytesRead, const CharT *provider_name
                                  , unsigned int id_to_find, interprocess_eventlogrecord *&pevent_log_record)
 {
    const unsigned char * pRecord = static_cast<const unsigned char*>(pBuffer);
    const unsigned char * pEndOfRecords = pRecord + dwBytesRead;
 
    while (pRecord < pEndOfRecords){
-      interprocess_eventlogrecord *pTypedRecord = (interprocess_eventlogrecord*)pRecord;
+      interprocess_eventlogrecord *pTypedRecord = (interprocess_eventlogrecord*)(void*)pRecord;
       // Check provider, written at the end of the fixed-part of the record
-      if (0 == std::strcmp(provider_name, (char*)(pRecord + sizeof(interprocess_eventlogrecord))))
+
+      if (0 == winapi_traits<CharT>::cmp(provider_name, (CharT*)(void*)(pRecord + sizeof(interprocess_eventlogrecord))))
       {
          // Check event id
          if(id_to_find == (pTypedRecord->EventID & 0xFFFF)){
@@ -1645,6 +1799,72 @@ inline bool get_last_bootup_time(std::string &stamp)
                if(find_record_in_buffer(heap_deleter.get(), dwBytesRead, provider_name, event_id, pTypedRecord)){
                   char stamp_str[sizeof(unsigned long)*3+1];
                   std::sprintf(&stamp_str[0], "%u", ((unsigned int)pTypedRecord->TimeGenerated));
+                  stamp = stamp_str;
+                  break;
+               }
+            }
+         }
+      }
+   }
+   return true;
+}
+
+
+inline bool get_last_bootup_time(std::wstring &stamp)
+{
+   const wchar_t *source_name = L"System";
+   const wchar_t *provider_name = L"EventLog";
+   const unsigned short event_id = 6005u;
+
+   unsigned long status = 0;
+   unsigned long dwBytesToRead = 0;
+   unsigned long dwBytesRead = 0;
+   unsigned long dwMinimumBytesToRead = 0;
+
+   // The source name (provider) must exist as a subkey of Application.
+   void *hEventLog = OpenEventLogW(0, source_name);
+   if (hEventLog){
+      eventlog_handle_closer hnd_closer(hEventLog); (void)hnd_closer;
+      // Allocate an initial block of memory used to read event records. The number
+      // of records read into the buffer will vary depending on the size of each event.
+      // The size of each event will vary based on the size of the user-defined
+      // data included with each event, the number and length of insertion
+      // strings, and other data appended to the end of the event record.
+      dwBytesToRead = max_record_buffer_size;
+      c_heap_deleter heap_deleter(dwBytesToRead);
+
+      // Read blocks of records until you reach the end of the log or an
+      // error occurs. The records are read from newest to oldest. If the buffer
+      // is not big enough to hold a complete event record, reallocate the buffer.
+      if (heap_deleter.get() != 0){
+         while (0 == status){
+            if (!ReadEventLogW(hEventLog,
+                  eventlog_sequential_read | eventlog_backwards_read,
+                  0,
+                  heap_deleter.get(),
+                  dwBytesToRead,
+                  &dwBytesRead,
+                  &dwMinimumBytesToRead)) {
+               status = get_last_error();
+               if (error_insufficient_buffer == status) {
+                  status = 0;
+                  dwBytesToRead = dwMinimumBytesToRead;
+                  heap_deleter.realloc_mem(dwMinimumBytesToRead);
+                  if (!heap_deleter.get()){
+                     return false;
+                  }
+               }
+               else{  //Not found or EOF
+                  return false;
+               }
+            }
+            else
+            {
+               interprocess_eventlogrecord *pTypedRecord;
+               // Print the contents of each record in the buffer.
+               if(find_record_in_buffer(heap_deleter.get(), dwBytesRead, provider_name, event_id, pTypedRecord)){
+                  wchar_t stamp_str[sizeof(unsigned long)*3+1];
+                  std::swprintf(&stamp_str[0], L"%u", ((unsigned int)pTypedRecord->TimeGenerated));
                   stamp = stamp_str;
                   break;
                }

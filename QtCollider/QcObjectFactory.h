@@ -54,7 +54,11 @@ static void qcNoConstructorMsg(const QMetaObject* metaObject, int argc, QtCollid
         if (type) {
             if (i > 0)
                 str += ", ";
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
             str += QMetaType::typeName(type->id());
+#else
+            str += QMetaType(type->id()).name();
+#endif
         } else
             break;
     }

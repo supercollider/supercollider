@@ -28,6 +28,7 @@ expr.if (trueFunc, falseFunc);
 
 Examples
 code::
+(
 if([false, true].choose) {
 	"expression was true".postln  // true function
 } {

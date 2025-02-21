@@ -40,4 +40,3 @@ SynthDef("help-PinkNoise", { |out = 0|
 )
 
 ::
-

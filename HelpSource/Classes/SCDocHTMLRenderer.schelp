@@ -42,4 +42,3 @@ section:: CSS styling
 The rendered HTML reads the global style from teletype::scdoc.css::, but also reads teletype::frontend.css:: and teletype::custom.css:: (in that order) if available, to enable specific frontends and users to override the CSS.
 
 So to customise the CSS, the user can create a teletype::custom.css:: in their link::Classes/SCDoc#*helpTargetDir:: or at the root of any HelpSource directory (for example in teletype::YourExtension/HelpSource/custom.css::).
-

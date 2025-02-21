@@ -33,12 +33,12 @@ returns:: a new Float from a 64-bit word.
 InstanceMethods::
 
 method:: do
-iterates a link::Classes/Function:: from code::0:: to code::this-1::. See also: link::Classes/Integer#-do::, link::Classes/Collection#-do::
+iterates a link::Classes/Function:: from code::0:: to code::this - 1::. See also: link::Classes/Integer#-do::, link::Classes/Collection#-do::
 argument:: function
 The function to iterate.
 
 method:: reverseDo
-iterates function from this-1 to 0
+iterates function from code::this - 1:: to 0
 argument:: function
 The function to iterate.
 

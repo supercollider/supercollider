@@ -44,4 +44,3 @@ code::
 	SinOsc.ar(vib * 200 + 600) * 0.2 }.play;
 )
 ::
-

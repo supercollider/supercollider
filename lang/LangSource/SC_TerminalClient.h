@@ -91,7 +91,7 @@ public:
     // NOTE: It may be called from any thread, and with interpreter locked.
     virtual void sendSignal(Signal code);
 
-    void stop() { mIoService.stop(); }
+    void stop() { mIoContext.stop(); }
 
 protected:
     bool parseOptions(int& argc, char**& argv, Options& opt);
@@ -151,14 +151,14 @@ private:
 
     // app-clock io service
 protected:
-    boost::asio::io_service mIoService;
+    boost::asio::io_context mIoContext;
 
 private:
-    boost::asio::io_service::work mWork;
+    boost::asio::executor_work_guard<boost::asio::io_context::executor_type> mWork;
     boost::asio::basic_waitable_timer<std::chrono::system_clock> mTimer;
 
     // input io service
-    boost::asio::io_service mInputService;
+    boost::asio::io_context mInputContext;
     SC_Thread mInputThread;
     void inputThreadFn();
 

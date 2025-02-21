@@ -48,10 +48,11 @@ ServerStatusWatcher {
 		this.prSendNotifyRequest(flag, false);
 	}
 
-	doWhenBooted { |onComplete, limit = 100, onFailure|
+	doWhenBooted { |onComplete, limit = 100, onFailure, clock|
 		var mBootNotifyFirst = bootNotifyFirst, postError = true;
 		bootNotifyFirst = false;
 
+		clock = clock ?? { AppClock };
 		^Routine {
 			while {
 				server.serverRunning.not
@@ -81,7 +82,7 @@ ServerStatusWatcher {
 				onComplete.value;
 			});
 
-		}.play(AppClock)
+		}.play(clock)
 	}
 
 

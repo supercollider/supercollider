@@ -160,4 +160,3 @@ a.set(\freq, 830, \trig, 1);
 a.release;
 ::
 ::
-

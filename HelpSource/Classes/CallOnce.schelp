@@ -89,7 +89,3 @@ d.didEvaluate; // -> false (copy didn't evaluate yet)
 d.value(false) // -> nothing to do
 d.value(true)  // -> nothing to do
 ::
-
-
-
-
