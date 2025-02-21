@@ -69,6 +69,9 @@ TestPattern : UnitTest {
 		};
 		var identical = [
 			Pbind(\x, 7) <> (y:  8),
+			Pbind(x: 7, y: 8),
+			Pbind(\x, 7, y: 8),
+			Pbind(\y, 8, x: 7),
 			Pbind(\y, 8) <> (x:  7),
 			Pbind(\x, 7, \y, 8),
 			Pn((x: 7, y: 8)),
@@ -190,6 +193,13 @@ TestPattern : UnitTest {
 		this.assert(event.isRest, "The final event of a Pfindur, if it was originally a rest, should still be a rest");
 	}
 
+	test_Pwalk_boundary_folding {
+		var stream = Pwalk((1..6), 2, Pseq([1, -1], inf)).asStream;
+		var values = stream.nextN(8);
+		this.assertEquals(values, [1, 3, 5, 3, 1, 3, 5, 3],
+			"Pwalk applies directionPattern correctly at boundaries"
+		);
+	}
 
 /*
 	test_storeArgs {
@@ -245,4 +255,3 @@ TestPattern : UnitTest {
 
 
 }
-

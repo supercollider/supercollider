@@ -38,13 +38,7 @@ T ellint_rc1p_imp(T y, const Policy& pol)
    // Calculate RC(1, 1 + x)
    BOOST_MATH_STD_USING
 
-  static const char* function = "boost::math::ellint_rc<%1%>(%1%,%1%)";
-
-   if(y == -1)
-   {
-      return policies::raise_domain_error<T>(function,
-         "Argument y must not be zero but got %1%", y, pol);
-   }
+   BOOST_MATH_ASSERT(y != -1);
 
    // for 1 + y < 0, the integral is singular, return Cauchy principal value
    T result;
@@ -62,10 +56,10 @@ T ellint_rc1p_imp(T y, const Policy& pol)
    }
    else
    {
-      if(y > -0.5)
+      if(y > T(-0.5))
       {
          T arg = sqrt(-y);
-         result = (boost::math::log1p(arg) - boost::math::log1p(-arg)) / (2 * sqrt(-y));
+         result = (boost::math::log1p(arg, pol) - boost::math::log1p(-arg, pol)) / (2 * sqrt(-y));
       }
       else
       {
@@ -84,29 +78,23 @@ T ellint_rj_imp(T x, T y, T z, T p, const Policy& pol)
 
    if(x < 0)
    {
-      return policies::raise_domain_error<T>(function,
-         "Argument x must be non-negative, but got x = %1%", x, pol);
+      return policies::raise_domain_error<T>(function, "Argument x must be non-negative, but got x = %1%", x, pol);
    }
    if(y < 0)
    {
-      return policies::raise_domain_error<T>(function,
-         "Argument y must be non-negative, but got y = %1%", y, pol);
+      return policies::raise_domain_error<T>(function, "Argument y must be non-negative, but got y = %1%", y, pol);
    }
    if(z < 0)
    {
-      return policies::raise_domain_error<T>(function,
-         "Argument z must be non-negative, but got z = %1%", z, pol);
+      return policies::raise_domain_error<T>(function, "Argument z must be non-negative, but got z = %1%", z, pol);
    }
    if(p == 0)
    {
-      return policies::raise_domain_error<T>(function,
-         "Argument p must not be zero, but got p = %1%", p, pol);
+      return policies::raise_domain_error<T>(function, "Argument p must not be zero, but got p = %1%", p, pol);
    }
    if(x + y == 0 || y + z == 0 || z + x == 0)
    {
-      return policies::raise_domain_error<T>(function,
-         "At most one argument can be zero, "
-         "only possible result is %1%.", std::numeric_limits<T>::quiet_NaN(), pol);
+      return policies::raise_domain_error<T>(function, "At most one argument can be zero, only possible result is %1%.", std::numeric_limits<T>::quiet_NaN(), pol);
    }
 
    // for p < 0, the integral is singular, return Cauchy principal value
@@ -124,13 +112,13 @@ T ellint_rj_imp(T x, T y, T z, T p, const Policy& pol)
       if(x > y)
          std::swap(x, y);
 
-      BOOST_ASSERT(x <= y);
-      BOOST_ASSERT(y <= z);
+      BOOST_MATH_ASSERT(x <= y);
+      BOOST_MATH_ASSERT(y <= z);
 
       T q = -p;
       p = (z * (x + y + q) - x * y) / (z + q);
 
-      BOOST_ASSERT(p >= 0);
+      BOOST_MATH_ASSERT(p >= 0);
 
       T value = (p - z) * ellint_rj_imp(x, y, z, p, pol);
       value -= 3 * ellint_rf_imp(x, y, z, pol);
@@ -166,7 +154,7 @@ T ellint_rj_imp(T x, T y, T z, T p, const Policy& pol)
          {
             return ellint_rd_imp(x, y, y, pol);
          }
-         else if((std::max)(y, p) / (std::min)(y, p) > 1.2)
+         else if((std::max)(y, p) / (std::min)(y, p) > T(1.2))
          {
             return 3 * (ellint_rc_imp(x, y, pol) - ellint_rc_imp(x, p, pol)) / (p - y);
          }
@@ -180,7 +168,7 @@ T ellint_rj_imp(T x, T y, T z, T p, const Policy& pol)
          // y = z = p:
          return ellint_rd_imp(x, y, y, pol);
       }
-      else if((std::max)(y, p) / (std::min)(y, p) > 1.2)
+      else if((std::max)(y, p) / (std::min)(y, p) > T(1.2))
       {
          // y = z:
          return 3 * (ellint_rc_imp(x, y, pol) - ellint_rc_imp(x, p, pol)) / (p - y);
@@ -218,7 +206,7 @@ T ellint_rj_imp(T x, T y, T z, T p, const Policy& pol)
       Dn = (rp + rx) * (rp + ry) * (rp + rz);
       En = delta / Dn;
       En /= Dn;
-      if((En < -0.5) && (En > -1.5))
+      if((En < T(-0.5)) && (En > T(-1.5)))
       {
          //
          // Occasionally En ~ -1, we then have no means of calculating

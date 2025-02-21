@@ -42,7 +42,7 @@ code::
 (
 {
 	var a, freq, trig;
-	a = Dswitch1({ |i| Dseq((0..i*3), inf) } ! 5, MouseX.kr(0, 4));
+	a = Dswitch1({ |i| Dseq((0..i*3), inf) } ! 5, MouseX.kr(0, 4));
 	trig = Impulse.kr(6);
 	freq = Demand.kr(trig, 0, a) * 30 + 340;
 	SinOsc.ar(freq) * 0.1
@@ -51,4 +51,3 @@ code::
 )
 
 ::
-

@@ -539,30 +539,28 @@ IdentityDictionary : Dictionary {
 		if(parent.notNil) { stream << "\n.parent_(" <<< parent << ")" };
 	}
 
-	doesNotUnderstand { arg selector ... args;
-		var func;
-		if (know) {
-
-			func = this[selector];
-			if (func.notNil) {
-				^func.functionPerformList(\value, this, args);
-			};
-
-			if (selector.isSetter) {
-				selector = selector.asGetter;
-				if(this.respondsTo(selector)) {
-					warn(selector.asCompileString
-						+ "exists as a method name, so you can't use it as a pseudo-method.")
-				};
-				^this[selector] = args[0];
-			};
-			func = this[\forward];
-			if (func.notNil) {
-				^func.functionPerformList(\value, this, selector, args);
-			};
-			^nil
+	doesNotUnderstand { |selector... args, kwargs|
+		if (know.not) {
+            ^super.performArgs(\doesNotUnderstand, args, kwargs)
 		};
-		^this.superPerformList(\doesNotUnderstand, selector, args);
+        this[selector] !? { |func|
+			^func.performArgs(\functionPerformList, [\value, this, args], kwargs);
+        };
+
+        if (selector.isSetter) {
+            selector = selector.asGetter;
+            if(this.respondsTo(selector)) {
+                warn(selector.asCompileString
+                    + "exists as a method name, so you can't use it as a pseudo-method.")
+            };
+            ^this[selector] = args[0];
+        };
+
+        this[\forward] !? { |func|
+			^func.performArgs(\functionPerformList, [\value, this, selector, args], kwargs);
+        };
+
+        ^nil
 	}
 
 		// Quant support.

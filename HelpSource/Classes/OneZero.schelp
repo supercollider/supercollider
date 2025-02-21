@@ -31,17 +31,17 @@ Feed forward coefficient.
 
 +0.5 makes a two point averaging filter
 (see also
-link::Classes/LPZ1:: ).
+link::Classes/LPZ1::).
 
 
 -0.5 makes a differentiator
 (see also
-link::Classes/HPZ1:: ).
+link::Classes/HPZ1::).
 
 
 +1 makes a single sample delay
 (see also
-link::Classes/Delay1:: ).
+link::Classes/Delay1::).
 
 
 -1 makes an inverted single sample delay.
@@ -68,4 +68,3 @@ code::
 { OneZero.ar(WhiteNoise.ar(0.5), Line.kr(-0.5, 0.5, 10)) }.play
 
 ::
-

@@ -45,7 +45,7 @@ SynthDef(\bigLocalBuf, {
 }).add;
 
 SynthDescLib.at(\bigLocalBuf).constants;
-// prints: FloatArray[ 1, 88200, 0, 0.75, 0.5, 0.25 ]
+// prints: FloatArray[1, 88200, 0, 0.75, 0.5, 0.25]
 ::
 
 method:: clear
@@ -65,7 +65,7 @@ code::
 {
 var in, chain;
 	in = WhiteNoise.ar(0.1.dup);
-	chain = FFT({LocalBuf(2048, 1)}.dup, in);
+	chain = FFT({ LocalBuf(2048, 1) }.dup, in);
 	chain = PV_BrickWall(chain, SinOsc.kr([0.1, 0.11]));
 	IFFT(chain) // inverse FFT
 }.play;
@@ -76,7 +76,7 @@ var in, chain;
 SynthDef(\fftgrain, { |out, sustain = 1, rate = 0.2|
 	var in, chain;
 	in = WhiteNoise.ar(0.1).dup;
-	chain = FFT({LocalBuf(128, 1)}.dup, in);
+	chain = FFT({ LocalBuf(128, 1) }.dup, in);
 	chain = PV_BrickWall(chain,
 		SinOsc.kr(rate * XLine.kr(1, 15 * [1, 1.6], sustain), Rand(0, pi))
 	);
@@ -134,13 +134,13 @@ play({
 				1,					// mul = 1
 				72					// offset by 72 notes
 			).poll
-			+ LFNoise1.kr([3,3], 0.04)	// add some low freq stereo detuning
+			+ LFNoise1.kr([3, 3], 0.04)	// add some low freq stereo detuning
 		).midicps,						// convert midi notes to hertz
 		0,
 		0.1)
 
 	// drone 5ths
-	+ RLPF.ar(LFPulse.ar([48,55].midicps, 0.15),
+	+ RLPF.ar(LFPulse.ar([48, 55].midicps, 0.15),
 		SinOsc.kr(0.1, 0, 10, 72).midicps, 0.1, 0.1);
 
 	// add some 70's euro-space-rock echo
@@ -156,7 +156,7 @@ play({
 	// list.plot;
 	buf = LocalBuf.newFrom(list);
 	Osc.ar(buf,
-		XLine.kr(2000, 200 + {30.0.rand}.dup, 10) + SinOsc.ar(Line.kr(2, 300, 10),
+		XLine.kr(2000, 200 + { 30.0.rand }.dup, 10) + SinOsc.ar(Line.kr(2, 300, 10),
 		0, 100)
 	) * 0.1;
 }.play;
@@ -195,10 +195,9 @@ BufCombC.ar(LocalBuf(SampleRate.ir, 2), z, XLine.kr(0.0001, 0.01, 20), 0.2);
 {
 var in, chain, n = 4;
 	in = WhiteNoise.ar(0.1.dup(n));
-	chain = FFT({LocalBuf(2048, 1)}.dup(n), in);
+	chain = FFT({ LocalBuf(2048, 1) }.dup(n), in);
 	chain = PV_BrickWall(chain, LFNoise2.kr(2.dup(n)));
 	Splay.ar(IFFT(chain)) // inverse FFT
 }.play;
 )
 ::
-

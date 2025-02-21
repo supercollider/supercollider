@@ -32,9 +32,9 @@ Examples::
 
 code::
 (
-SynthDef("help-Select",{ arg out=0;
+SynthDef("help-Select", { |out = 0|
 
-	var a,cycle;
+	var a, cycle;
 	a = [
 			SinOsc.ar,
 			Saw.ar,
@@ -42,31 +42,30 @@ SynthDef("help-Select",{ arg out=0;
 		];
 	cycle = a.size  * 0.5;
 	Out.ar(out,
-		Select.ar(LFSaw.kr(1.0,0.0,cycle,cycle),a) * 0.2
+		Select.ar(LFSaw.kr(1.0, 0.0, cycle, cycle), a) * 0.2
 	)
 }).play;
 
 )
 
-//Here used as a sequencer:
+// Here used as a sequencer:
 (
-SynthDef("help-Select-2",{ arg out=0;
+SynthDef("help-Select-2", { |out = 0|
 
-	var a,s,cycle;
-	a = Array.fill(32,{ rrand(30,80) }).midicps;
+	var a, s, cycle;
+	a = Array.fill(32, { rrand(30, 80) }).midicps;
 	a.postln;
 	cycle = a.size  * 0.5;
 
 	s = Saw.ar(
 			Select.kr(
-				LFSaw.kr(1.0,0.0,cycle,cycle),
+				LFSaw.kr(1.0, 0.0, cycle, cycle),
 				a
 			),
 			0.2
 	);
-	Out.ar(out,s )
+	Out.ar(out, s)
 }).play;
 )
 
 ::
-

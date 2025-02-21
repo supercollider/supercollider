@@ -5,7 +5,7 @@ categories::  UGens>Buffer>Info
 
 Description::
 
-Returns the current number of allocated samples. A sample is not the same as a frame (compare with link::Classes/BufFrames:: ); a frame includes the samples in each channel of the buffer. Only for a mono buffer are samples the same as frames.
+Returns the current number of allocated samples. A sample is not the same as a frame (compare with link::Classes/BufFrames::); a frame includes the samples in each channel of the buffer. Only for a mono buffer are samples the same as frames.
 code::
 samples = frames * numChannels
 ::
@@ -38,4 +38,3 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 b.free;
 ::
-

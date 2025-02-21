@@ -235,6 +235,11 @@ argument:: limit
 The number of times to check for a successful boot. (5 times/sec)
 argument:: onFailure
 A function to evaluate after the server fails to boot. If onFailure is not given, an error message is posted. Providing a function suppresses the error message. If you want to supply a function and print the normal error message, make sure that your function returns "false," e.g. code::s.waitForBoot(onFailure: { ... custom action...; false })::.
+argument:: clock
+The default link::Classes/Clock:: is link::Classes/AppClock::. Use link::Classes/SystemClock:: or link::Classes/TempoClock:: if time accuracy is important.
+
+discussion::
+Refer to the discussion of link::#-doWhenBooted::.
 
 method:: doWhenBooted
 Evaluate "onComplete" as soon as the server has booted. This method assumes the server is being booted explicitly through a separate code::boot:: call. If the server is already running, "onComplete" is executed immediately.
@@ -244,6 +249,40 @@ argument:: limit
 The number of times to check for a successful boot.
 argument:: onFailure
 A function to evaluate after the server fails to boot. If onFailure is not given, an error message is posted. Providing a function suppresses the error message. If you want to supply a function and print the normal error message, make sure that your function returns "false," e.g. code::s.doWhenBooted(onFailure: { ... custom action...; false })::.
+argument:: clock
+The default link::Classes/Clock:: is link::Classes/AppClock::. Use link::Classes/SystemClock:: or link::Classes/TempoClock:: if time accuracy is important.
+
+discussion::
+
+To play with precise time control, the fourth argument clock should be set to a precise clock (see above), and then link::Overviews/GUI-Classes##GUI classes:: should be wrapped in a code::defer { ... }::.
+
+code::
+(
+t = TempoClock;
+t.tempo = 1;
+
+s.waitForBoot({
+	var win, routine;
+	defer {
+		win = Window();
+		win.background_(Color.grey(0, 0)).onClose_{ routine.stop }.front;
+	};
+	routine = fork {
+		9.do { |i|
+			1.wait;
+			{ win.background_(Color.rand) }.defer;
+			i = if (i % 4 == 0) { 93 } { 81 };
+			x = {
+				SinOsc.ar(i.midicps) * Env.perc.ar(Done.freeSelf) * [0.1, -0.1]
+			}.play
+		};
+		defer { win.close }
+	}
+}, clock: t)
+)
+
+t.tempo = 30/60
+::
 
 method:: boot
 boot the remote server, create new allocators.
@@ -319,7 +358,7 @@ discussion::
 Any nodes which have already been freed will be skipped. Passing nil for target and addAction will result in the location being the head of the default group.
 code::
 g = Group.new;
-x = Array.fill(5, {Synth(\default)});
+x = Array.fill(5, { Synth(\default) });
 s.queryAllNodes;
 s.reorder(x, g, \addToTail);
 s.queryAllNodes;
@@ -354,6 +393,13 @@ s.boot;
 s.queryAllNodes; // note the root node (ID 0) and the default group (ID 1)
 s.quit;
 ::
+
+method:: rtMemoryStatus
+Queries the server for the amount of currently free real-time memory
+argument:: action
+a Function that will be evaluated when the server responds, with the current
+amount of free RT memory and the size of largest continuous block (both in bytes) passed as
+arguments. The default action prints a message.
 
 method:: peakCPU, avgCPU
 Get peak and average CPU usage.
@@ -443,8 +489,8 @@ code::
 s.boot;
 (
 // send a synth def to server
-SynthDef("tpulse", { arg out=0,freq=700,sawFreq=440.0;
-	Out.ar(out, SyncSaw.ar(freq,  sawFreq,0.1) )
+SynthDef("tpulse", { |out = 0, freq = 700, sawFreq = 440.0|
+	Out.ar(out, SyncSaw.ar(freq, sawFreq, 0.1))
 }).add;
 )
 
@@ -462,7 +508,7 @@ x.free;
 // don't send
 (
 b = s.makeBundle(false, {
-	x = { PinkNoise.ar(0.1) * In.kr(0, 1); }.play;
+	x = { PinkNoise.ar(0.1) * In.kr(0, 1) }.play;
 });
 )
 // now pass b as a pre-existing bundle, and start both synths synchronously
@@ -503,7 +549,7 @@ discussion::
 code::
 (
 s.bind {
-	a = { |freq=100| SinOsc.ar(freq, LFTri.ar(freq)) * 0.2 }.play;
+	a = { |freq = 100| SinOsc.ar(freq, LFTri.ar(freq)) * 0.2 }.play;
 	s.sync;
 	a.set(\freq, 400);
 }
@@ -534,7 +580,7 @@ discussion::
 This method is called automatically when you boot a Server from the language. N.B. If you started a server app from the command line you will have to call initTree manually if you need this functionality.
 code::
 s.quit;
-f = {Group.new(s.defaultGroup); "Other code can be evaluated too".postln;};
+f = { Group.new(s.defaultGroup); "Other code can be evaluated too".postln };
 ServerTree.add(f);
 s.boot;
 s.queryAllNodes; // note the group within the default group
@@ -617,7 +663,7 @@ NOTE::
 record creates the recording synth after the Server's default group and uses In.ar. Thus if you add nodes after the recording synth their output will not be captured.
 To avoid this, either use Node objects (which use the default node as their target) or (when using messaging style) use a target nodeID of 1.
 code::
-s.sendMsg("/s_new", "default", s.nextNodeID, 1,1);
+s.sendMsg("/s_new", "default", s.nextNodeID, 1, 1);
 ::
 ::
 
@@ -634,7 +680,7 @@ s.boot; // start the server
 (
 SynthDef("bubbles", { |out|
 	var f, sound;
-	f = LFSaw.kr(0.4, 0, 24, LFSaw.kr([8,7.23], 0, 3, 80)).midicps; // glissando function
+	f = LFSaw.kr(0.4, 0, 24, LFSaw.kr([8, 7.23], 0, 3, 80)).midicps; // glissando function
 	sound = CombN.ar(SinOsc.ar(f, 0, 0.04), 0.2, 0.2, 4); // echoing sine wave
 	Out.ar(out, sound);
 }).add;

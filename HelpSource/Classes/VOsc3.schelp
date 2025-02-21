@@ -86,12 +86,12 @@ s.waitForBoot({
 	~bufs = Buffer.allocConsecutive(numBufs, s, 1024, 1);
 	s.sync;
 
-	~bufs.do({ arg buf, i;
+	~bufs.do({ |buf, i|
 		var n, a;
 
 		// generate array of harmonic amplitudes
 		n = (i+1)**2;
-		a = Array.fill(n, { arg j; ((n-j)/n).squared.round(0.001) });
+		a = Array.fill(n, { |j| ((n-j)/n).squared.round(0.001) });
 
 		// fill table
 		// argument '7': flag for the \sine1 wave fill method
@@ -106,25 +106,25 @@ s.waitForBoot({
 
 // play the synth, indexing into the buffers with MouseX
 (
-x = SynthDef("help-VOsc", { arg out = 0, bufoffset = 0, freq = 240;
+x = SynthDef("help-VOsc", { |out = 0, bufoffset = 0, freq = 240|
 	// mouse x controls the wavetable position
 	var bufindex = MouseX.kr(0, ~bufs.size - 1) + bufoffset;
 
 	Out.ar(out,
 		VOsc3.ar(
 			bufindex,
-			freq + [0,1],
+			freq + [0, 1],
 			freq + [0.37, 1.1],
 			freq + [0.43, -0.29],
 			0.3
 		)
 	)
-}).play(s,[\out, 0, \bufoffset, ~bufs.first.bufnum, \freq, 240]);
+}).play(s, [\out, 0, \bufoffset, ~bufs.first.bufnum, \freq, 240]);
 )
 
 // fill the buffers with new harmonics on-the-fly
 (
-~bufs.do({ arg buf, i;
+~bufs.do({ |buf, i|
 	var a;
 	a = Array.fill(i, 0) ++ [0.5, 1, 0.5];
 	s.performList(\sendMsg, \b_gen, buf.bufnum, \sine1, 7, a);
@@ -133,11 +133,11 @@ x = SynthDef("help-VOsc", { arg out = 0, bufoffset = 0, freq = 240;
 
 // new harmonics...
 (
-~bufs.do({ arg buf, i;
+~bufs.do({ |buf, i|
 	var a, n;
 	n = (i+1)*8;
-	a = Array.fill(n,0);
-	(n>>1).do({ arg i; a.put(n.rand, 1) });
+	a = Array.fill(n, 0);
+	(n>>1).do({ |i| a.put(n.rand, 1) });
 
 	s.performList(\sendMsg, \b_gen, buf.bufnum, \sine1, 7, a);
 });
@@ -145,7 +145,7 @@ x = SynthDef("help-VOsc", { arg out = 0, bufoffset = 0, freq = 240;
 
 // new harmonics...
 (
-~bufs.do({ arg buf, i;
+~bufs.do({ |buf, i|
 	var a, n;
 	n = (i+1)**2;
 	a = Array.fill(n, { 1.0.rand2 });
@@ -158,7 +158,7 @@ x = SynthDef("help-VOsc", { arg out = 0, bufoffset = 0, freq = 240;
 (
 var a = Array.fill(64, { 1.0.rand2 });
 var n = [1, a.size].interpolate(~bufs.size-1);
-~bufs.do({ arg buf, i;
+~bufs.do({ |buf, i|
 	n[i].postln;
 	s.performList(\sendMsg, \b_gen, buf.bufnum, \sine1, 7, a.keep(n[i].asInteger).postln);
 });

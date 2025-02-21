@@ -22,9 +22,9 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <filesystem>
 
 #include <boost/align/aligned_allocator.hpp>
-#include <boost/filesystem/path.hpp>
 
 #include "utilities/named_hash_entry.hpp"
 
@@ -134,6 +134,6 @@ private:
 };
 
 std::vector<sc_synthdef> read_synthdefs(const char* buffer, const char* buffer_end);
-std::vector<sc_synthdef> read_synthdef_file(boost::filesystem::path const& filename);
+std::vector<sc_synthdef> read_synthdef_file(std::filesystem::path const& filename);
 
 } /* namespace nova */

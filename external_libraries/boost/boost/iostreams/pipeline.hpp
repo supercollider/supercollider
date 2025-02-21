@@ -47,7 +47,7 @@ struct pipeline;
     
 namespace detail {
 
-#if BOOST_WORKAROUND(__BORLANDC__, < 0x600)
+#if BOOST_WORKAROUND(BOOST_BORLANDC, < 0x600)
     template<typename T>
     struct is_pipeline : mpl::false_ { };
 

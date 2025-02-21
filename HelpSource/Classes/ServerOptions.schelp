@@ -122,8 +122,10 @@ method:: restrictedPath
 Allows you to restrict the system paths in which the server is allowed to read/write files during running. A nil value (the default) means no restriction. Otherwise, set it as a string representing a single path.
 
 method:: threads
-Number of audio threads that are spawned by supernova. For scsynth this value is ignored. If it is code::nil::or 0, it
-uses the one thread per CPU. Default is code::nil::.
+Number of audio threads that are spawned by supernova. For scsynth this value is ignored. If it is code::nil::or 0, it uses one thread per CPU core. Default is code::nil::.
+
+method:: threadPinning
+Enable/disable thread pinning. For scsynth this value is ignored. Thread pinning forces each thread to only run on a particular CPU core. Depending on the system, this might give better or worse performance. Default is code::nil:: which means that the value is chosen by Supernova. (At the time of writing, it is by default enabled on Linux and disabled on macOS and Windows.)
 
 method:: useSystemClock
 Tells supernova whether to sync to the driver's sample clock, or to the system clock.
@@ -178,7 +180,7 @@ o.numOutputBusChannels = 6; // The next time it boots, this will take effect
 
 // specify a device
 
-o.device ="MOTU Traveler"; 	// use a specific soundcard
+o.device = "MOTU Traveler"; 	// use a specific soundcard
 o.device = nil;			// use the system default soundcard
 
 // finally, boot the server

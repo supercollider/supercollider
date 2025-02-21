@@ -24,7 +24,7 @@ namespace boost {
 
 #ifdef BOOST_OPTIONAL_USE_OLD_DEFINITION_OF_NONE
 
-BOOST_INLINE_VARIABLE none_t const none = (static_cast<none_t>(0)) ;
+BOOST_INLINE_VARIABLE none_t BOOST_CONSTEXPR_OR_CONST none = (static_cast<none_t>(0)) ;
 
 #elif defined BOOST_OPTIONAL_USE_SINGLETON_DEFINITION_OF_NONE
 
@@ -45,16 +45,15 @@ namespace detail { namespace optional_detail {
 
 namespace {
   // TU-local
-  const none_t& none = detail::optional_detail::none_instance<none_t>::instance; 
+  const none_t& none = detail::optional_detail::none_instance<none_t>::instance;
 }
 
 #else
 
-BOOST_INLINE_VARIABLE const none_t none ((none_t::init_tag()));
+BOOST_INLINE_VARIABLE BOOST_CONSTEXPR_OR_CONST none_t none ((none_t::init_tag()));
 
 #endif // older definitions
 
 } // namespace boost
 
 #endif // header guard
-

@@ -2,7 +2,7 @@
 // detached.hpp
 // ~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -24,23 +24,23 @@
 namespace boost {
 namespace asio {
 
-/// Class used to specify that an asynchronous operation is detached.
+/// A @ref completion_token type used to specify that an asynchronous operation
+/// is detached.
 /**
-
  * The detached_t class is used to indicate that an asynchronous operation is
  * detached. That is, there is no completion handler waiting for the
  * operation's result. A detached_t object may be passed as a handler to an
  * asynchronous operation, typically using the special value
  * @c boost::asio::detached. For example:
-
+ *
  * @code my_socket.async_send(my_buffer, boost::asio::detached);
  * @endcode
  */
 class detached_t
 {
 public:
-  /// Constructor. 
-  BOOST_ASIO_CONSTEXPR detached_t()
+  /// Constructor.
+  constexpr detached_t()
   {
   }
 
@@ -53,7 +53,7 @@ public:
     typedef detached_t default_completion_token_type;
 
     /// Construct the adapted executor from the inner executor type.
-    executor_with_default(const InnerExecutor& ex) BOOST_ASIO_NOEXCEPT
+    executor_with_default(const InnerExecutor& ex) noexcept
       : InnerExecutor(ex)
     {
     }
@@ -62,9 +62,9 @@ public:
     /// that to construct the adapted executor.
     template <typename OtherExecutor>
     executor_with_default(const OtherExecutor& ex,
-        typename enable_if<
+        constraint_t<
           is_convertible<OtherExecutor, InnerExecutor>::value
-        >::type* = 0) BOOST_ASIO_NOEXCEPT
+        > = 0) noexcept
       : InnerExecutor(ex)
     {
     }
@@ -72,37 +72,30 @@ public:
 
   /// Type alias to adapt an I/O object to use @c detached_t as its
   /// default completion token type.
-#if defined(BOOST_ASIO_HAS_ALIAS_TEMPLATES) \
-  || defined(GENERATING_DOCUMENTATION)
   template <typename T>
   using as_default_on_t = typename T::template rebind_executor<
-      executor_with_default<typename T::executor_type> >::other;
-#endif // defined(BOOST_ASIO_HAS_ALIAS_TEMPLATES)
-       //   || defined(GENERATING_DOCUMENTATION)
+      executor_with_default<typename T::executor_type>>::other;
 
   /// Function helper to adapt an I/O object to use @c detached_t as its
   /// default completion token type.
   template <typename T>
-  static typename decay<T>::type::template rebind_executor<
-      executor_with_default<typename decay<T>::type::executor_type>
+  static typename decay_t<T>::template rebind_executor<
+      executor_with_default<typename decay_t<T>::executor_type>
     >::other
-  as_default_on(BOOST_ASIO_MOVE_ARG(T) object)
+  as_default_on(T&& object)
   {
-    return typename decay<T>::type::template rebind_executor<
-        executor_with_default<typename decay<T>::type::executor_type>
-      >::other(BOOST_ASIO_MOVE_CAST(T)(object));
+    return typename decay_t<T>::template rebind_executor<
+        executor_with_default<typename decay_t<T>::executor_type>
+      >::other(static_cast<T&&>(object));
   }
 };
 
-/// A special value, similar to std::nothrow.
+/// A @ref completion_token object used to specify that an asynchronous
+/// operation is detached.
 /**
  * See the documentation for boost::asio::detached_t for a usage example.
  */
-#if defined(BOOST_ASIO_HAS_CONSTEXPR) || defined(GENERATING_DOCUMENTATION)
-constexpr detached_t detached;
-#elif defined(BOOST_ASIO_MSVC)
-__declspec(selectany) detached_t detached;
-#endif
+BOOST_ASIO_INLINE_VARIABLE constexpr detached_t detached;
 
 } // namespace asio
 } // namespace boost

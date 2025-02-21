@@ -66,7 +66,7 @@ code::
 method::ascii
 Returns an Array of ASCII values of the Strings's characters.
 code::
-"wertvoll".ascii // [ 119, 101, 114, 116, 118, 111, 108, 108 ]
+"wertvoll".ascii // [119, 101, 114, 116, 118, 111, 108, 108]
 ::
 
 Note that if a string contains multi-byte UTF-8 characters, this array will not
@@ -79,13 +79,13 @@ a = "😂";
 
 // although this is one UTF-8 character, it must be stored as 4 Chars because Chars can only hold 1 byte each
 a.size // 4 (!)
-a.ascii // [ -16, -97, -104, -126 ]
+a.ascii // [-16, -97, -104, -126]
 
 // "wrap(0, 255)" converts these numbers to their unsigned 8-bit values
-b = a.ascii.wrap(0, 255) // [ 240, 159, 152, 130 ]
+b = a.ascii.wrap(0, 255) // [240, 159, 152, 130]
 
 // if we represent these values in hexidecmial, it's the same as the UTF-8 above: 0xF09F9882
-b.collect(_.asHexString(2)) // [ F0, 9F, 98, 82 ]
+b.collect(_.asHexString(2)) // [F0, 9F, 98, 82]
 ::
 
 subsection:: Comparing strings
@@ -151,13 +151,13 @@ subsection:: Posting strings
 method::post
 Prints the string to the current post window.
 code::
-"One".post; "Two".post;"";
+"One".post; "Two".post; "";
 ::
 
 method::postln
 Prints the string and a carriage return to the current post window.
 code::
-"One".postln; "Two".postln;"";
+"One".postln; "Two".postln; "";
 ::
 
 method::postc, postcln
@@ -171,7 +171,7 @@ Prints a formatted string with arguments to the current post window. The % chara
 code::
 postf("this % a %. pi = %, list = %\n", "is", "test", pi.round(1e-4), (1..4))
 
-this is a test. pi = 3.1416, list = [ 1, 2, 3, 4 ]
+this is a test. pi = 3.1416, list = [1, 2, 3, 4]
 ::
 
 method::postcs
@@ -322,25 +322,25 @@ code::
 method::catArgs
 Concatenate this string with the following args.
 code::
-"These are some args: ".catArgs(\fish, SinOsc.ar, {4 + 3}).postln;
+"These are some args: ".catArgs(\fish, SinOsc.ar, { 4 + 3 }).postln;
 ::
 
 method::scatArgs
 Same as link::#-catArgs::, but with spaces in between.
 code::
-"These are some args: ".scatArgs(\fish, SinOsc.ar, {4 + 3}).postln;
+"These are some args: ".scatArgs(\fish, SinOsc.ar, { 4 + 3 }).postln;
 ::
 
 method::ccatArgs
 Same as link::#-catArgs::, but with commas in between.
 code::
-"a String".ccatArgs(\fish, SinOsc.ar, {4 + 3}).postln;
+"a String".ccatArgs(\fish, SinOsc.ar, { 4 + 3 }).postln;
 ::
 
 method::catList, scatList, ccatList
 As link::#-catArgs::, link::#-scatArgs:: and link::#-ccatArgs:: above, but takes a Collection (usually a link::Classes/List:: or an link::Classes/Array::) as an argument.
 code::
-"a String".ccatList([\fish, SinOsc.ar, {4 + 3}]).postln;
+"a String".ccatList([\fish, SinOsc.ar, { 4 + 3 }]).postln;
 ::
 
 
@@ -383,18 +383,43 @@ code::
 "[xtz]+nd".matchRegexp("xnd"); // true: any combination of x, t, z
 ::
 
+method::replaceRegexp
+This method is used to replace parts of text.
+
+argument::regex
+A perl regular expression (see link::Classes/String#Regular expressions::) with which to match the caller.
+
+argument::with
+The link::Classes/String:: to replace the found regex with.
+
+returns:: A link::Classes/String::.
+
+code::
+// remove numbers
+"g8et t8ho9se 3num5b89ers ou06t o8f h12er56e!".replaceRegexp("[0-9]", "")
+-> get those numbers out of here!
+
+// remove capital letters
+"HelLO WoRlD".replaceRegexp("(\\\w)", "\\\L$1")
+-> hello world
+
+// remove all capital letter unless at the start of a word
+"HelLO worLD! I weNT tO Paris yeSTErDay.".replaceRegexp("(\\\S)(\\\S*)", "$1\\\L$2")
+-> Hello world! I went to Paris yesterday.
+::
+
 method::findRegexp
 Perl regular expression search (see link::Classes/String#Regular expressions::). This method searches exhaustively for matches and collects them into an array of pairs, in the format code::[character index, matching string]::.
 
 "Leftmost largest match": As in most flavors of regular expressions, code::*:: and code::+:: are greedy; if it is possible to have more than one overlapping match for a part of the regular expression, the match list will include only the leftmost and largest of them. In code::"foobar".findRegexp("o+")::, code::"o+":: may potentially have three matches: code::"o":: at index 1 (second character), code::"o":: at index 2, and code::"oo":: at index 1. code::findRegexp:: will return only the last of these (code::"oo"::), because it begins in the leftmost-possible matching position, and it is the longest possible match at that position.
 
-Note, though, that parentheses for grouping (a "marked sub-expression" or "capturing group") will produce a separate result: code::"aaa".findRegexp("(a+)");:: appears to produce duplicated results code::[ [ 0, aaa ], [ 0, aaa ] ]::, but this is because the first match is for the parentheses and the second is for code::a+::.
+Note, though, that parentheses for grouping (a "marked sub-expression" or "capturing group") will produce a separate result: code::"aaa".findRegexp("(a+)");:: appears to produce duplicated results code::[[0, aaa], [0, aaa]]::, but this is because the first match is for the parentheses and the second is for code::a+::.
 
 To see the marked sub-expression results more clearly, consider:
 
 code::
 "foobar".findRegexp("(o*)(bar)");
--> [ [ 1, oobar ], [ 1, oo ], [ 3, bar ] ]
+-> [[1, oobar], [1, oo], [3, bar]]
 ::
 
 code::"oobar":: matches the entire regular expression. code::"oo":: and code::"bar":: match the first and second parenthesized sub-expressions, respectively.
@@ -425,13 +450,13 @@ The match must begin right at the offset.
 
 code::
 "foobaroob".findRegexpAt("o*b+", 0); // nil
-"foobaroob".findRegexpAt("o*b+", 1); // [ oob, 3 ]
-"foobaroob".findRegexpAt("o*b+", 2); // [ ob,  2 ]
-"foobaroob".findRegexpAt("o*b+", 3); // [ b,   1 ]
+"foobaroob".findRegexpAt("o*b+", 1); // [oob, 3]
+"foobaroob".findRegexpAt("o*b+", 2); // [ob,  2]
+"foobaroob".findRegexpAt("o*b+", 3); // [b,   1]
 "foobaroob".findRegexpAt("o*b+", 4); // nil
 "foobaroob".findRegexpAt("o*b+", 5); // nil
-"foobaroob".findRegexpAt("o*b+", 6); // [ oob, 3 ]
-"foobaroob".findRegexpAt("o*b+", 7); // [ ob,  2 ]
+"foobaroob".findRegexpAt("o*b+", 6); // [oob, 3]
+"foobaroob".findRegexpAt("o*b+", 7); // [ob,  2]
 ::
 
 Returns:: An array code::[matching string, length]:: if a match is found at the specified offset; code::nil:: if the offset doesn't match.
@@ -516,7 +541,7 @@ Returns a formatted string with arguments. The % character in the format string 
 code::
 format("this % a %. pi = %, list = %\n", "is", "test", pi.round(1e-4), (1..4))
 
-this is a test. pi = 3.1416, list = [ 1, 2, 3, 4 ]
+this is a test. pi = 3.1416, list = [1, 2, 3, 4]
 ::
 
 method::escapeChar
@@ -527,7 +552,7 @@ code::
 ::
 
 method::quote
-Return this string enclosed in double-quote ( teletype::":: ) characters.
+Return this string enclosed in double-quote (teletype::"::) characters.
 code::
 "tell your" + "friends".quote + "not to tread onto the lawn"
 ::
@@ -539,7 +564,7 @@ code::
 ::
 
 method::underlined
-Return this string followed by dashes in the next line ( teletype::-:: ).
+Return this string followed by dashes in the next line (teletype::-::).
 code::
 "underlined".underlined;
 "underlined".underlined($~);
@@ -548,7 +573,7 @@ code::
 method::tr
 Transliteration. Replace all instances of strong::from:: with strong::to::.
 code::
-":-(:-(:-(".tr($(, $)); //turn the frowns upside down
+":-(:-(:-(".tr($(, $)); // turn the frowns upside down
 ::
 
 
@@ -582,7 +607,7 @@ Returns a new String with all RTF formatting removed.
 code::
 (
 // same as File-readAllStringRTF
-g = File("/code/SuperCollider3/build/Help/UGens/Chaos/HenonC.help.rtf","r");
+g = File("/code/SuperCollider3/build/Help/UGens/Chaos/HenonC.help.rtf", "r");
 g.readAllString.stripRTF.postln;
 g.close;
 )
@@ -719,7 +744,7 @@ Perform link::#-pathMatch:: on this String, then load and execute all paths in t
 
 
 code::
-//first prepare a file with some code...
+// first prepare a file with some code...
 (
 File.use("/tmp/loadPaths_example.scd", "w", { |file|
 	file << "\"This text is the result of a postln command which was loaded and executed by loadPaths\".postln;";
@@ -755,7 +780,7 @@ Convert the receiver from a relative path to an absolute path, relative to the c
 method::standardizePath
 Expand ~ to your home directory, and resolve aliases on macOS. See link::Classes/PathName:: for more complex needs. See link::Classes/File#*realpath:: if you want to resolve symlinks.
 code::
-"~/".standardizePath; //This will print your home directory
+"~/".standardizePath; // This will print your home directory
 ::
 
 
@@ -776,7 +801,7 @@ separate components of a path. On Windows, both forward slash "/" and backward s
 separators. On POSIX-based systems like macOS and Linux, only forward slash is allowed.
 
 method::shellQuote
-Return a new string suitable for use as a filename in a shell command, by enclosing it in single quotes ( teletype::':: ).
+Return a new string suitable for use as a filename in a shell command, by enclosing it in single quotes (teletype::'::).
 If the string contains any single quotes they will be escaped.
 discussion::
 You should use this method on a path before embedding it in a string executed by link::#-unixCmd:: or link::#-systemCmd::.
@@ -838,8 +863,8 @@ returns::
 A nested structure of link::Classes/Array::s (for sequences), link::Classes/Dictionary##Dictionaries:: (for maps) and link::Classes/String::s (for scalars).
 
 code::
-"{\"a\": 1}".parseYAML;
-"{\"a\": 1}".parseJSON;
+"{ \"a\": 1 }".parseYAML;
+"{ \"a\": 1 }".parseJSON;
 ::
 
 method::parseJSONFile
@@ -996,4 +1021,3 @@ method::bounds
 Tries to return a link::Classes/Rect:: with the size needed to fit this string if drawn with given font.
 argument:: font
 A link::Classes/Font::
-

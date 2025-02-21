@@ -109,12 +109,12 @@ code::
 // here is a pattern that can end the stream externally after a number of steps
 Pfin : FilterPattern {
 	var <>count;
-	*new { arg count, pattern;
+	*new { |count, pattern|
 		^super.new(pattern).count_(count)
 	}
-	storeArgs { ^[count,pattern] }
+	storeArgs { ^[count, pattern] }
 
-	embedInStream { arg event;
+	embedInStream { |event|
 		var inevent;
 		var stream = pattern.asStream;
 		var cleanup = EventStreamCleanup.new;
@@ -130,15 +130,15 @@ Pfin : FilterPattern {
 // and here is a pattern that adds a resource: a bus in which the events play
 
 Pbus : FilterPattern {
-	var <>numChannels, <>rate, <>dur=2.0, <>fadeTime;
+	var <>numChannels, <>rate, <>dur = 2.0, <>fadeTime;
 
-	*new { arg pattern, dur=2.0, fadeTime=0.02, numChannels=2, rate=\audio;
+	*new { |pattern, dur = 2.0, fadeTime = 0.02, numChannels = 2, rate = \audio|
 		^super.new(pattern).dur_(dur).numChannels_(numChannels).rate_(rate).fadeTime_(fadeTime)
 	}
 
-	storeArgs { ^[ pattern, dur, fadeTime, numChannels, rate ] }
+	storeArgs { ^[pattern, dur, fadeTime, numChannels, rate] }
 
-	embedInStream { arg inevent;
+	embedInStream { |inevent|
 		var server, groupID, linkID, bus, ingroup, cleanup;
 		var patterns, event, freeBus, stream, cleanupEvent;
 
@@ -177,17 +177,17 @@ Pbus : FilterPattern {
 		event[\fadeTime] = fadeTime;
 		event[\instrument] = format("system_link_%_%", rate, numChannels);
 		event[\in] = bus;
-		event[\msgFunc] = #{ |out, in, fadeTime, gate=1|
+		event[\msgFunc] = #{ |out, in, fadeTime, gate = 1|
 			[\out, out, \in, in, \fadeTime, fadeTime, \gate, gate, \doneAction, 3]
 		};
 
 		cleanupEvent = (type: \off, parent: event, fadeTime: fadeTime.abs, hasGate: true, gate: 0);
 
-		cleanup.addFunction(event, { | flag |
-			if(flag) { defer ( {cleanupEvent.play}, dur) };
+		cleanup.addFunction(event, { |flag|
+			if(flag) { defer ({ cleanupEvent.play }, dur) };
 		});
 
-		cleanup.addFunction(event, { defer({ freeBus.value;}, fadeTime.abs + dur) });
+		cleanup.addFunction(event, { defer({ freeBus.value }, fadeTime.abs + dur) });
 
 		// doneAction = 3;
 		// remove and deallocate both this synth and the preceding node
@@ -205,4 +205,3 @@ Pbus : FilterPattern {
 }
 
 ::
-

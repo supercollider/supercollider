@@ -2,7 +2,7 @@
 // asio.hpp
 // ~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2024 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -17,14 +17,25 @@
 # pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
+#include <boost/asio/any_completion_executor.hpp>
+#include <boost/asio/any_completion_handler.hpp>
+#include <boost/asio/any_io_executor.hpp>
+#include <boost/asio/append.hpp>
+#include <boost/asio/as_tuple.hpp>
 #include <boost/asio/associated_allocator.hpp>
+#include <boost/asio/associated_cancellation_slot.hpp>
 #include <boost/asio/associated_executor.hpp>
+#include <boost/asio/associated_immediate_executor.hpp>
+#include <boost/asio/associator.hpp>
 #include <boost/asio/async_result.hpp>
 #include <boost/asio/awaitable.hpp>
 #include <boost/asio/basic_datagram_socket.hpp>
 #include <boost/asio/basic_deadline_timer.hpp>
+#include <boost/asio/basic_file.hpp>
 #include <boost/asio/basic_io_object.hpp>
+#include <boost/asio/basic_random_access_file.hpp>
 #include <boost/asio/basic_raw_socket.hpp>
+#include <boost/asio/basic_readable_pipe.hpp>
 #include <boost/asio/basic_seq_packet_socket.hpp>
 #include <boost/asio/basic_serial_port.hpp>
 #include <boost/asio/basic_signal_set.hpp>
@@ -32,11 +43,17 @@
 #include <boost/asio/basic_socket_acceptor.hpp>
 #include <boost/asio/basic_socket_iostream.hpp>
 #include <boost/asio/basic_socket_streambuf.hpp>
+#include <boost/asio/basic_stream_file.hpp>
 #include <boost/asio/basic_stream_socket.hpp>
 #include <boost/asio/basic_streambuf.hpp>
 #include <boost/asio/basic_waitable_timer.hpp>
+#include <boost/asio/basic_writable_pipe.hpp>
+#include <boost/asio/bind_allocator.hpp>
+#include <boost/asio/bind_cancellation_slot.hpp>
 #include <boost/asio/bind_executor.hpp>
+#include <boost/asio/bind_immediate_executor.hpp>
 #include <boost/asio/buffer.hpp>
+#include <boost/asio/buffer_registration.hpp>
 #include <boost/asio/buffered_read_stream_fwd.hpp>
 #include <boost/asio/buffered_read_stream.hpp>
 #include <boost/asio/buffered_stream_fwd.hpp>
@@ -44,13 +61,24 @@
 #include <boost/asio/buffered_write_stream_fwd.hpp>
 #include <boost/asio/buffered_write_stream.hpp>
 #include <boost/asio/buffers_iterator.hpp>
+#include <boost/asio/cancel_after.hpp>
+#include <boost/asio/cancel_at.hpp>
+#include <boost/asio/cancellation_signal.hpp>
+#include <boost/asio/cancellation_state.hpp>
+#include <boost/asio/cancellation_type.hpp>
+#include <boost/asio/co_composed.hpp>
 #include <boost/asio/co_spawn.hpp>
 #include <boost/asio/completion_condition.hpp>
 #include <boost/asio/compose.hpp>
+#include <boost/asio/composed.hpp>
 #include <boost/asio/connect.hpp>
+#include <boost/asio/connect_pipe.hpp>
+#include <boost/asio/consign.hpp>
 #include <boost/asio/coroutine.hpp>
 #include <boost/asio/deadline_timer.hpp>
 #include <boost/asio/defer.hpp>
+#include <boost/asio/deferred.hpp>
+#include <boost/asio/default_completion_token.hpp>
 #include <boost/asio/detached.hpp>
 #include <boost/asio/dispatch.hpp>
 #include <boost/asio/error.hpp>
@@ -59,41 +87,26 @@
 #include <boost/asio/execution/any_executor.hpp>
 #include <boost/asio/execution/blocking.hpp>
 #include <boost/asio/execution/blocking_adaptation.hpp>
-#include <boost/asio/execution/bulk_execute.hpp>
-#include <boost/asio/execution/bulk_guarantee.hpp>
-#include <boost/asio/execution/connect.hpp>
 #include <boost/asio/execution/context.hpp>
 #include <boost/asio/execution/context_as.hpp>
-#include <boost/asio/execution/execute.hpp>
 #include <boost/asio/execution/executor.hpp>
 #include <boost/asio/execution/invocable_archetype.hpp>
 #include <boost/asio/execution/mapping.hpp>
 #include <boost/asio/execution/occupancy.hpp>
-#include <boost/asio/execution/operation_state.hpp>
 #include <boost/asio/execution/outstanding_work.hpp>
 #include <boost/asio/execution/prefer_only.hpp>
-#include <boost/asio/execution/receiver.hpp>
-#include <boost/asio/execution/receiver_invocation_error.hpp>
 #include <boost/asio/execution/relationship.hpp>
-#include <boost/asio/execution/schedule.hpp>
-#include <boost/asio/execution/scheduler.hpp>
-#include <boost/asio/execution/sender.hpp>
-#include <boost/asio/execution/set_done.hpp>
-#include <boost/asio/execution/set_error.hpp>
-#include <boost/asio/execution/set_value.hpp>
-#include <boost/asio/execution/start.hpp>
-#include <boost/asio/execution_context.hpp>
 #include <boost/asio/executor.hpp>
 #include <boost/asio/executor_work_guard.hpp>
+#include <boost/asio/file_base.hpp>
 #include <boost/asio/generic/basic_endpoint.hpp>
 #include <boost/asio/generic/datagram_protocol.hpp>
 #include <boost/asio/generic/raw_protocol.hpp>
 #include <boost/asio/generic/seq_packet_protocol.hpp>
 #include <boost/asio/generic/stream_protocol.hpp>
-#include <boost/asio/handler_alloc_hook.hpp>
 #include <boost/asio/handler_continuation_hook.hpp>
-#include <boost/asio/handler_invoke_hook.hpp>
 #include <boost/asio/high_resolution_timer.hpp>
+#include <boost/asio/immediate.hpp>
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/io_context_strand.hpp>
 #include <boost/asio/io_service.hpp>
@@ -123,12 +136,14 @@
 #include <boost/asio/ip/unicast.hpp>
 #include <boost/asio/ip/v6_only.hpp>
 #include <boost/asio/is_applicable_property.hpp>
+#include <boost/asio/is_contiguous_iterator.hpp>
 #include <boost/asio/is_executor.hpp>
 #include <boost/asio/is_read_buffered.hpp>
 #include <boost/asio/is_write_buffered.hpp>
 #include <boost/asio/local/basic_endpoint.hpp>
 #include <boost/asio/local/connect_pair.hpp>
 #include <boost/asio/local/datagram_protocol.hpp>
+#include <boost/asio/local/seq_packet_protocol.hpp>
 #include <boost/asio/local/stream_protocol.hpp>
 #include <boost/asio/multiple_exceptions.hpp>
 #include <boost/asio/packaged_task.hpp>
@@ -140,20 +155,27 @@
 #include <boost/asio/posix/stream_descriptor.hpp>
 #include <boost/asio/post.hpp>
 #include <boost/asio/prefer.hpp>
+#include <boost/asio/prepend.hpp>
 #include <boost/asio/query.hpp>
+#include <boost/asio/random_access_file.hpp>
 #include <boost/asio/read.hpp>
 #include <boost/asio/read_at.hpp>
 #include <boost/asio/read_until.hpp>
+#include <boost/asio/readable_pipe.hpp>
+#include <boost/asio/recycling_allocator.hpp>
 #include <boost/asio/redirect_error.hpp>
+#include <boost/asio/registered_buffer.hpp>
 #include <boost/asio/require.hpp>
 #include <boost/asio/require_concept.hpp>
 #include <boost/asio/serial_port.hpp>
 #include <boost/asio/serial_port_base.hpp>
 #include <boost/asio/signal_set.hpp>
+#include <boost/asio/signal_set_base.hpp>
 #include <boost/asio/socket_base.hpp>
 #include <boost/asio/static_thread_pool.hpp>
 #include <boost/asio/steady_timer.hpp>
 #include <boost/asio/strand.hpp>
+#include <boost/asio/stream_file.hpp>
 #include <boost/asio/streambuf.hpp>
 #include <boost/asio/system_context.hpp>
 #include <boost/asio/system_executor.hpp>
@@ -175,6 +197,7 @@
 #include <boost/asio/windows/overlapped_ptr.hpp>
 #include <boost/asio/windows/random_access_handle.hpp>
 #include <boost/asio/windows/stream_handle.hpp>
+#include <boost/asio/writable_pipe.hpp>
 #include <boost/asio/write.hpp>
 #include <boost/asio/write_at.hpp>
 

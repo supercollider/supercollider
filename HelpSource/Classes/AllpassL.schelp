@@ -81,7 +81,6 @@ code::
 // used as an echo - doesn't really sound different than Comb,
 // but it outputs the input signal immediately (inverted) and the echoes
 // are lower in amplitude.
-{ AllpassL.ar(Decay.ar(Dust.ar(1,0.5), 0.2, WhiteNoise.ar), 0.2, 0.2, 3) }.play;
+{ AllpassL.ar(Decay.ar(Dust.ar(1, 0.5), 0.2, WhiteNoise.ar), 0.2, 0.2, 3) }.play;
 
 ::
-

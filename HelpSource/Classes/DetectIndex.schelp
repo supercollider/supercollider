@@ -23,7 +23,7 @@ t = Array.series(max, 0, 1).curdle(0.06).scramble.flat;
 b = Buffer(s, t.size, 1);
 
 // alloc and set the values
-s.listSendMsg( b.allocMsg( b.setnMsg(0, t) ) );
+s.listSendMsg(b.allocMsg(b.setnMsg(0, t)));
 
 
 {
@@ -39,4 +39,3 @@ s.listSendMsg( b.allocMsg( b.setnMsg(0, t) ) );
 
 b.free;
 ::
-

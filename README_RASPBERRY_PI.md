@@ -70,11 +70,11 @@ Install required libraries:
     mkdir build && cd build
 
     # For a GUI-less build:
-    cmake -DCMAKE_BUILD_TYPE=Release -DSUPERNOVA=OFF -DSC_ED=OFF -DSC_EL=OFF -DSC_VIM=ON -DNATIVE=ON \
+    cmake -DCMAKE_BUILD_TYPE=Release -DSUPERNOVA=OFF -DSC_EL=OFF -DSC_VIM=ON -DNATIVE=ON \
         -DSC_IDE=OFF -DNO_X11=ON -DSC_QT=OFF ..
 
     # For a GUI build:
-    cmake -DCMAKE_BUILD_TYPE=Release -DSUPERNOVA=OFF -DSC_ED=OFF -DSC_EL=OFF -DSC_VIM=ON -DNATIVE=ON \
+    cmake -DCMAKE_BUILD_TYPE=Release -DSUPERNOVA=OFF -DSC_EL=OFF -DSC_VIM=ON -DNATIVE=ON \
         -DSC_USE_QTWEBENGINE:BOOL=OFF ..
 
     cmake --build . --config Release --target all -- -j3 # use -j3 flag only on RPi3 or newer

@@ -56,11 +56,11 @@ code::
 s.boot;
 
 (
-SynthDef("help-PinkNoise", { arg out=0;
+SynthDef("help-PinkNoise", { |out = 0|
 	Out.ar(out, PinkNoise.ar(0.1))
 }).add;
 
-SynthDef("help-In", { arg out=0, in=0;
+SynthDef("help-In", { |out = 0, in = 0|
 	var input;
 		input = In.ar(in, 1);
 		Out.ar(out, input);
@@ -68,31 +68,31 @@ SynthDef("help-In", { arg out=0, in=0;
 }).add;
 )
 
-//play noise on the right channel
+// play noise on the right channel
 x = Synth("help-PinkNoise", [\out, 1]);
 
-//read the input and play it out on the left channel
+// read the input and play it out on the left channel
 Synth.after(x, "help-In", [\out, 0, \in, 1]);
 ::
 
 read from a  control bus:
 code::
 (
-SynthDef("help-InKr",{ arg out=0, in=0;
+SynthDef("help-InKr", { |out = 0, in = 0|
 	Out.ar(out,
 		SinOsc.ar(In.kr(in, 1), 0, 0.1)
 	)
 }).add;
-SynthDef("help-lfo", { arg out=0;
+SynthDef("help-lfo", { |out = 0|
 	Out.kr(out, LFNoise1.kr(0.3, 200, 800))
 }).add;
 )
 
 
-b = Bus.control(s,1);
+b = Bus.control(s, 1);
 b.set(800);
 
-Synth("help-InKr",[\in, b.index]);
+Synth("help-InKr", [\in, b.index]);
 b.set(400);
 b.set(300);
 Synth("help-lfo", [\out, b.index]);
@@ -101,15 +101,15 @@ Synth("help-lfo", [\out, b.index]);
 read control data from a synth later in the node order:
 code::
 (
-SynthDef("help-Infreq", { arg bus;
+SynthDef("help-Infreq", { |bus|
 	Out.ar(0, FSinOsc.ar(In.kr(bus), 0, 0.5));
 }).add;
 
-SynthDef("help-Outfreq", { arg freq = 400, bus;
+SynthDef("help-Outfreq", { |freq = 400, bus|
 	Out.kr(bus, SinOsc.kr(1, 0, freq/40, freq));
 }).add;
 
-b = Bus.control(s,1);
+b = Bus.control(s, 1);
 )
 
 // add the first control Synth at the tail of the default server; no audio yet
@@ -130,4 +130,3 @@ y.set(\bus, c.index); x.set(\bus, c.index);	// WARNING! gets loud!
 
 x.free; y.free; z.free;
 ::
-

@@ -24,9 +24,9 @@ Examples::
 code::
 
 (
-SynthDef("pauseSelf-help", { arg out, t_trig;
+SynthDef("pauseSelf-help", { |out, t_trig|
 	PauseSelf.kr(t_trig);
-	Out.ar(out, SinOsc.ar(400,0,0.2));
+	Out.ar(out, SinOsc.ar(400, 0, 0.2));
 }).add;
 )
 
@@ -37,4 +37,3 @@ s.sendMsg("/n_set", 1731, \t_trig, 1);
 s.sendMsg("/n_free", 1731);
 
 ::
-

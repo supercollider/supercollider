@@ -18,7 +18,7 @@ argument::freq
 frequency in Hertz
 
 argument::iphase
-initial phase offset in cycles ( 0..1 )
+initial phase offset in cycles (0..1)
 
 argument::width
 duty cycle from zero to one.
@@ -35,7 +35,7 @@ play({
 	VarSaw.ar(
 		LFPulse.kr(3, 0, 0.3, 200, 200),
 		0,
-		LFTri.kr(1.0).range(0,1), //width
+		LFTri.kr(1.0).range(0, 1), // width
 		0.1)
 });
 
@@ -47,4 +47,3 @@ play({ VarSaw.ar(LFPulse.kr(3, 0, 0.3, 200, 200), 0, 0.2, 0.1) });
 play({ LFPulse.ar(LFPulse.kr(3, 0, 0.3, 200, 200), 0, 0.2, 0.1) });
 
 ::
-

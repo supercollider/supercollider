@@ -24,4 +24,3 @@ Library.put(\multi, \level, \addressing, \system, "i'm the thing you are putting
 Library.at(\multi, \level, \addressing, \system).postln;
 Library.atList([\multi, \level, \addressing, \system]).postln;
 ::
-

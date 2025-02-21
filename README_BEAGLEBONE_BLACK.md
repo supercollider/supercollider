@@ -70,7 +70,7 @@ ssh from your laptop by opening a terminal and typing:
     cd supercollider
     mkdir build && cd build
     cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DSUPERNOVA=OFF -DNATIVE=ON -DSC_IDE=OFF -DNO_X11=ON \
-        -DSC_QT=OFF -DSC_ED=OFF -DSC_EL=OFF -DSC_VIM=ON ..
+        -DSC_QT=OFF -DSC_EL=OFF -DSC_VIM=ON ..
     cmake --build . --config Release --target all
     sudo cmake --build . --config Release --target install
     sudo ldconfig

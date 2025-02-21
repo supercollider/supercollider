@@ -31,13 +31,13 @@
 
     namespace airy_zero
     {
-      template<class T>
-      T equation_as_10_4_105(const T& z)
+      template<class T, class Policy>
+      T equation_as_10_4_105(const T& z, const Policy& pol)
       {
         const T one_over_z        (T(1) / z);
         const T one_over_z_squared(one_over_z * one_over_z);
 
-        const T z_pow_third     (boost::math::cbrt(z));
+        const T z_pow_third     (boost::math::cbrt(z, pol));
         const T z_pow_two_thirds(z_pow_third * z_pow_third);
 
         // Implement the top line of Eq. 10.4.105.
@@ -46,37 +46,57 @@
                                            * one_over_z_squared + (       T(77125UL) /     82944UL))
                                            * one_over_z_squared - (           T(5U)  /        36U))
                                            * one_over_z_squared + (           T(5U)  /        48U))
-                                           * one_over_z_squared + (1)));
+                                           * one_over_z_squared + 1));
 
         return fz;
       }
 
       namespace airy_ai_zero_detail
       {
-        template<class T>
-        T initial_guess(const int m)
+        template<class T, class Policy>
+        T initial_guess(const int m, const Policy& pol)
         {
           T guess;
 
           switch(m)
           {
-            case  0: { guess = T(0);                       break; }
-            case  1: { guess = T(-2.33810741045976703849); break; }
-            case  2: { guess = T(-4.08794944413097061664); break; }
-            case  3: { guess = T(-5.52055982809555105913); break; }
-            case  4: { guess = T(-6.78670809007175899878); break; }
-            case  5: { guess = T(-7.94413358712085312314); break; }
-            case  6: { guess = T(-9.02265085334098038016); break; }
-            case  7: { guess = T(-10.0401743415580859306); break; }
-            case  8: { guess = T(-11.0085243037332628932); break; }
-            case  9: { guess = T(-11.9360155632362625170); break; }
-            case 10:{ guess = T(-12.8287767528657572004); break; }
-            default:
-            {
-              const T t(((boost::math::constants::pi<T>() * 3) * ((T(m) * 4) - 1)) / 8);
-              guess = -boost::math::detail::airy_zero::equation_as_10_4_105(t);
+            case  0:
+              guess = T(0);
               break;
-            }
+            case  1:
+              guess = T(-2.33810741045976703849);
+              break;
+            case  2:
+              guess = T(-4.08794944413097061664);
+              break;
+            case  3:
+              guess = T(-5.52055982809555105913);
+              break;
+            case  4:
+              guess = T(-6.78670809007175899878);
+              break;
+            case  5:
+              guess = T(-7.94413358712085312314);
+              break;
+            case  6:
+              guess = T(-9.02265085334098038016);
+              break;
+            case  7:
+              guess = T(-10.0401743415580859306);
+              break;
+            case  8:
+              guess = T(-11.0085243037332628932);
+              break;
+            case  9:
+              guess = T(-11.9360155632362625170);
+              break;
+            case 10:
+              guess = T(-12.8287767528657572004);
+              break;
+            default:
+              const T t(((boost::math::constants::pi<T>() * 3) * ((T(m) * 4) - 1)) / 8);
+              guess = -boost::math::detail::airy_zero::equation_as_10_4_105(t, pol);
+              break;
           }
 
           return guess;
@@ -86,7 +106,9 @@
         class function_object_ai_and_ai_prime
         {
         public:
-          function_object_ai_and_ai_prime(const Policy& pol) : my_pol(pol) { }
+          explicit function_object_ai_and_ai_prime(const Policy& pol) : my_pol(pol) { }
+
+          function_object_ai_and_ai_prime(const function_object_ai_and_ai_prime&) = default;
 
           boost::math::tuple<T, T> operator()(const T& x) const
           {
@@ -98,36 +120,56 @@
 
         private:
           const Policy& my_pol;
-          const function_object_ai_and_ai_prime& operator=(const function_object_ai_and_ai_prime&);
+          const function_object_ai_and_ai_prime& operator=(const function_object_ai_and_ai_prime&) = delete;
         };
       } // namespace airy_ai_zero_detail
 
       namespace airy_bi_zero_detail
       {
-        template<class T>
-        T initial_guess(const int m)
+        template<class T, class Policy>
+        T initial_guess(const int m, const Policy& pol)
         {
           T guess;
 
           switch(m)
           {
-            case  0: { guess = T(0);                       break; }
-            case  1: { guess = T(-1.17371322270912792492); break; }
-            case  2: { guess = T(-3.27109330283635271568); break; }
-            case  3: { guess = T(-4.83073784166201593267); break; }
-            case  4: { guess = T(-6.16985212831025125983); break; }
-            case  5: { guess = T(-7.37676207936776371360); break; }
-            case  6: { guess = T(-8.49194884650938801345); break; }
-            case  7: { guess = T(-9.53819437934623888663); break; }
-            case  8: { guess = T(-10.5299135067053579244); break; }
-            case  9: { guess = T(-11.4769535512787794379); break; }
-            case 10: { guess = T(-12.3864171385827387456); break; }
-            default:
-            {
-              const T t(((boost::math::constants::pi<T>() * 3) * ((T(m) * 4) - 3)) / 8);
-              guess = -boost::math::detail::airy_zero::equation_as_10_4_105(t);
+            case  0:
+              guess = T(0);
               break;
-            }
+            case  1:
+              guess = T(-1.17371322270912792492);
+              break;
+            case  2:
+              guess = T(-3.27109330283635271568);
+              break;
+            case  3:
+              guess = T(-4.83073784166201593267);
+              break;
+            case  4:
+              guess = T(-6.16985212831025125983);
+              break;
+            case  5:
+              guess = T(-7.37676207936776371360);
+              break;
+            case  6:
+              guess = T(-8.49194884650938801345);
+              break;
+            case  7:
+              guess = T(-9.53819437934623888663);
+              break;
+            case  8:
+              guess = T(-10.5299135067053579244);
+              break;
+            case  9:
+              guess = T(-11.4769535512787794379);
+              break;
+            case 10:
+              guess = T(-12.3864171385827387456);
+              break;
+            default:
+              const T t(((boost::math::constants::pi<T>() * 3) * ((T(m) * 4) - 3)) / 8);
+              guess = -boost::math::detail::airy_zero::equation_as_10_4_105(t, pol);
+              break;
           }
 
           return guess;
@@ -137,7 +179,9 @@
         class function_object_bi_and_bi_prime
         {
         public:
-          function_object_bi_and_bi_prime(const Policy& pol) : my_pol(pol) { }
+          explicit function_object_bi_and_bi_prime(const Policy& pol) : my_pol(pol) { }
+
+          function_object_bi_and_bi_prime(const function_object_bi_and_bi_prime&) = default;
 
           boost::math::tuple<T, T> operator()(const T& x) const
           {
@@ -149,7 +193,7 @@
 
         private:
           const Policy& my_pol;
-          const function_object_bi_and_bi_prime& operator=(const function_object_bi_and_bi_prime&);
+          const function_object_bi_and_bi_prime& operator=(const function_object_bi_and_bi_prime&) = delete;
         };
       } // namespace airy_bi_zero_detail
     } // namespace airy_zero
