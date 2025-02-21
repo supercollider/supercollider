@@ -79,7 +79,8 @@ std::vector<std::unique_ptr<InPort::UDPCustom>> gCustomTcpPorts;
 
 ///////////
 
-inline bool IsBundle(char* ptr) { return strcmp(ptr, "#bundle") == 0; }
+inline bool IsBundle(const char* ptr) { return strcmp(ptr, "#bundle") == 0; }
+inline bool IsMessage(const char* ptr) { return ptr[0] == '/'; }
 
 ///////////
 
@@ -235,8 +236,8 @@ static int makeSynthMsgWithTags(big_scpacket* packet, PyrSlot* slots, int size) 
     return errNone;
 }
 
-void PerformOSCBundle(int inSize, char* inData, PyrObject* inReply, int inPortNum);
-void PerformOSCMessage(int inSize, char* inData, PyrObject* inReply, int inPortNum, double time);
+void PerformOSCBundle(int inSize, const char* inData, PyrObject* inReply, int inPortNum);
+void PerformOSCMessage(int inSize, const char* inData, PyrObject* inReply, int inPortNum, double time);
 static PyrObject* ConvertReplyAddress(ReplyAddress* inReply);
 
 static void localServerReplyFunc(struct ReplyAddress* inReplyAddr, char* inBuf, int inSize) {
@@ -529,6 +530,7 @@ static int prNetAddr_UseDoubles(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
+// Interpret an Array as an OSC message/bundle and convert it to raw bytes (Int8Array).
 static int prArray_OSCBytes(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     PyrObject* array = slotRawObject(a);
@@ -558,6 +560,32 @@ static int prArray_OSCBytes(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
+static PyrObject* ConvertOSCMessage(int inSize, const char* inData);
+static PyrObject* ConvertOSCBundle(int inSize, const char* inData);
+
+// Try to interpret an Int8Array it as an OSC message/bundle,
+// throwing an exception on failure.
+static int prOSCBytes_Array(VMGlobals* g, int numArgsPushed) {
+    PyrSlot* a = g->sp;
+    const PyrInt8Array* array = slotRawInt8Array(a);
+    int size = array->size;
+    const char* data = (const char*)array->b;
+    if (size < 1)
+        return errFailed;
+
+    PyrObject* result;
+    if (IsBundle(data)) {
+        result = ConvertOSCBundle(size, data);
+    } else if (IsMessage(data)) {
+        result = ConvertOSCMessage(size, data);
+    } else {
+        throw std::runtime_error("Not an OSC message");
+    }
+    SetObject(a, result);
+
+    return errNone;
+}
+
 // Create a new <PyrInt8Array> object and copy data from `msg.getb'.
 // Bytes are properly untyped, but there is no <UInt8Array> type.
 
@@ -573,8 +601,14 @@ static PyrInt8Array* MsgToInt8Array(sc_msg_iter& msg, bool runGC) {
 
 static const double dInfinity = std::numeric_limits<double>::infinity();
 
-static PyrObject* ConvertOSCMessage(int inSize, char* inData) {
-    char* cmdName = inData;
+// Convert raw OSC message to Array.
+static PyrObject* ConvertOSCMessage(int inSize, const char* inData) {
+    if ((inSize & 3) != 0) {
+        // OSC messages
+        throw std::runtime_error("Bad OSC message size");
+    }
+
+    const char* cmdName = inData;
     int cmdNameLen = OSCstrlen(cmdName);
     sc_msg_iter msg(inSize - cmdNameLen, inData + cmdNameLen);
 
@@ -652,24 +686,78 @@ static PyrObject* ConvertOSCMessage(int inSize, char* inData) {
     return obj;
 }
 
+// Convert raw OSC bundle to Array ([time, elements...]).
+static PyrObject* ConvertOSCBundle(int inSize, const char* inData) {
+    // OSC bundles must have at least 16 bytes (#bundle + timetag)
+    if (inSize < 16 || (inSize & 3) != 0) {
+        // OSC messages
+        throw std::runtime_error("Bad OSC bundle size");
+    }
+
+    int64 oscTime = OSCtime(inData + 8);
+    const char* data = inData + 16;
+    const char* dataEnd = inData + inSize;
+
+    // first count all elements
+    int numElements = 0;
+    for (const char* ptr = data; ptr < dataEnd;) {
+        int32 size = OSCint(ptr);
+        if (size > 0 && (size & 3) == 0) {
+            ptr += sizeof(int32) + size;
+            numElements++;
+        } else {
+            throw std::runtime_error("Bad OSC bundle element size");
+        }
+    }
+
+    VMGlobals* g = gMainVMGlobals;
+    PyrObject* result = newPyrArray(g->gc, numElements + 1, 0, false);
+    PyrSlot* slots = result->slots;
+
+    if (oscTime != 1) {
+        double seconds = static_cast<double>(oscTime) * kOSCtoSecs;
+        SetFloat(slots, seconds);
+    } else {
+        SetNil(slots); // immediate
+    }
+
+    for (int i = 0; i < numElements; i++) {
+        int32 size = OSCint(data);
+        data += sizeof(int32);
+        PyrObject* bundleElement;
+        if (IsBundle(data)) {
+            bundleElement = ConvertOSCBundle(size, data);
+        } else if (IsMessage(data)) {
+            bundleElement = ConvertOSCMessage(size, data);
+        } else {
+            throw std::runtime_error("Malformed OSC bundle element");
+        }
+        SetObject(slots + i + 1, bundleElement);
+        data += size;
+    }
+
+    result->size = numElements + 1;
+
+    return result;
+}
+
 static PyrObject* ConvertReplyAddress(ReplyAddress* inReply) {
     VMGlobals* g = gMainVMGlobals;
     PyrObject* obj = instantiateObject(g->gc, s_netaddr->u.classobj, 2, true, false);
     PyrSlot* slots = obj->slots;
-    SetInt(slots + 0, inReply->mAddress.to_v4().to_ulong());
+    SetInt(slots + 0, inReply->mAddress.to_v4().to_uint());
     SetInt(slots + 1, inReply->mPort);
     return obj;
 }
 
-void PerformOSCBundle(int inSize, char* inData, PyrObject* replyObj, int inPortNum) {
-    // convert all data to arrays
-
+// perform all OSC bundle elements
+void PerformOSCBundle(int inSize, const char* inData, PyrObject* replyObj, int inPortNum) {
     int64 oscTime = OSCtime(inData + 8);
     double seconds = OSCToElapsedTime(oscTime);
 
     VMGlobals* g = gMainVMGlobals;
-    char* data = inData + 16;
-    char* dataEnd = inData + inSize;
+    const char* data = inData + 16;
+    const char* dataEnd = inData + inSize;
     while (data < dataEnd) {
         int32 msgSize = OSCint(data);
         data += sizeof(int32);
@@ -695,7 +783,7 @@ void PerformOSCBundle(int inSize, char* inData, PyrObject* replyObj, int inPortN
     }
 }
 
-void PerformOSCMessage(int inSize, char* inData, PyrObject* replyObj, int inPortNum, double time) {
+void PerformOSCMessage(int inSize, const char* inData, PyrObject* replyObj, int inPortNum, double time) {
     PyrObject* arrayObj = ConvertOSCMessage(inSize, inData);
 
     // call virtual machine to handle message
@@ -774,12 +862,9 @@ void init_OSC(int port) {
 #endif
 
     startAsioThread();
-
     try {
-        gUDPport.reset(new InPort::UDP(port, HandlerType::OSC));
-    } catch (std::exception const& e) {
-        postfl("No networking: %s", e.what());
-    }
+        gUDPport = std::make_unique<InPort::UDP>(port, HandlerType::OSC);
+    } catch (std::exception const& e) { postfl("No networking: %s", e.what()); }
 }
 
 int prOpenOSCUDPPort(VMGlobals* g, int numArgsPushed);
@@ -838,6 +923,10 @@ void closeAllCustomPorts() {
 void cleanup_OSC() {
     postfl("cleaning up OSC\n");
 
+    // NOTE: the socket must be destroyed *before* the IO service.
+    // We cannot rely on the global object destructor because the order would be undefined.
+    gUDPport = nullptr;
+
     stopAsioThread();
 
 #ifdef _WIN32
@@ -845,7 +934,7 @@ void cleanup_OSC() {
 #endif
 }
 
-extern boost::asio::io_service ioService;
+extern boost::asio::io_context ioContext;
 
 static int prGetHostByName(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
@@ -1409,6 +1498,7 @@ void init_OSC_primitives() {
 
     definePrimitive(base, index++, "_NetAddr_UseDoubles", prNetAddr_UseDoubles, 2, 0);
     definePrimitive(base, index++, "_Array_OSCBytes", prArray_OSCBytes, 1, 0);
+    definePrimitive(base, index++, "_OSCBytes_Array", prOSCBytes_Array, 1, 0);
     definePrimitive(base, index++, "_GetHostByName", prGetHostByName, 1, 0);
     definePrimitive(base, index++, "_GetLangPort", prGetLangPort, 1, 0);
     definePrimitive(base, index++, "_MatchLangIP", prMatchLangIP, 2, 0);

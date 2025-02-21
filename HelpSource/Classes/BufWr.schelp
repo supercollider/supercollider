@@ -6,7 +6,7 @@ categories::  UGens>Buffer
 Description::
 Write to a buffer at an index.
 
-note:: BufWr (in difference to  link::Classes/BufRd:: ) does not do multichannel expansion, because input is an array. ::
+note:: BufWr (in difference to  link::Classes/BufRd::) does not do multichannel expansion, because input is an array. ::
 
 classmethods::
 private:: categories
@@ -40,19 +40,19 @@ s.sendMsg("/b_alloc", 0, 44100 * 2);
 )
 
 
-//write into the buffer with a BufWr
+// write into the buffer with a BufWr
 (
-y = { arg rate=1;
+y = { |rate = 1|
 	var in;
 	in = SinOsc.ar(LFNoise1.kr(2, 300, 400), 0, 0.1);
 	BufWr.ar(in, 0, Phasor.ar(0, BufRateScale.kr(0) * rate, 0, BufFrames.kr(0)));
-	0.0 //quiet
+	0.0 // quiet
 }.play;
 )
 
-//read it with a BufRd
+// read it with a BufRd
 (
-x = { arg rate=1;
+x = { |rate = 1|
 	BufRd.ar(1, 0, Phasor.ar(0, BufRateScale.kr(0) * rate, 0, BufFrames.kr(0)))
 }.play(s);
 )
@@ -64,4 +64,3 @@ y.set(\rate, 2.0.rand);
 x.set(\rate, 2);
 
 ::
-

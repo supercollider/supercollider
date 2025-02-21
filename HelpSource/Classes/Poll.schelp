@@ -50,10 +50,10 @@ s.boot;
 // send a '/tr' message back to the client. This can be useful if the server runs on another
 // computer than the client, i.e. the post messages by the server cannot be read locally.
 
-o = OSCFunc({arg msg; msg.postln;}, '/tr', s.addr);
+o = OSCFunc({ |msg| msg.postln }, '/tr', s.addr);
 
-{Poll.ar(Impulse.ar(5), Line.ar(0, 1, 1), \test2, 1234)}.play(s);
-{SinOsc.ar(220, 0, 1).poll(Impulse.ar(15), "test", 1234)}.play(s);
+{ Poll.ar(Impulse.ar(5), Line.ar(0, 1, 1), \test2, 1234) }.play(s);
+{ SinOsc.ar(220, 0, 1).poll(Impulse.ar(15), "test", 1234) }.play(s);
 
 o.free;
 s.quit;
@@ -81,7 +81,7 @@ son;
 
 // This example polls when someone hits the trigger
 (
-x = {|t_poll=0|
+x = { |t_poll = 0|
 var minfreq, maxfreq, son;
 minfreq = LFNoise2.ar(0.25, 100, 110);
 maxfreq = LFNoise2.ar(0.25, 200, 220);
@@ -97,4 +97,3 @@ son;
 
 x.set(\t_poll, 1); // Hit this whenever you want to know what the parameters are
 ::
-

@@ -107,7 +107,7 @@ Demand ugen as audio oscillator:
 code::
 (
 	{
-		var a, n=5, m=64;
+		var a, n = 5, m = 64;
 		a = {
 			var x;
 			x = { 0.2.rand2 } ! m;
@@ -141,4 +141,3 @@ var x, y, rate, a, c, m;
 }.play;
 )
 ::
-

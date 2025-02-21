@@ -27,7 +27,7 @@ code::
 Pbind(
 	\degree, Pseq((0..7), inf),
 	\step, Pseq([false, false, false, true, false, true, false], inf),
-	\octave, Pgate(Pwhite(3,7), inf, \step),
+	\octave, Pgate(Pwhite(3, 7), inf, \step),
 	\dur, 0.2
 ).play
 )
@@ -38,7 +38,7 @@ code::
 (
 Pbind(
 	\degree, Pn(Pseq((0..7)), inf, \step),
-	\mtranspose, Pgate(Pwhite(0,5), inf, \step),
+	\mtranspose, Pgate(Pwhite(0, 5), inf, \step),
 	\dur, 0.2
 ).play
 )
@@ -49,11 +49,10 @@ Pbind(
 Pbind(
 
 	\scale,	Scale.minor,
-	\foo, Pn(Pseq((0..2)),inf,  \step1),
+	\foo, Pn(Pseq((0..2)), inf, \step1),
 	\degree, Pn(Pseq((0..7).mirror), inf, \step),
-	\ctranspose, Pgate(Pwhite(0,5), inf, \step) + Pgate(Pseq([0,7,0,-7], inf), inf, \step1),
+	\ctranspose, Pgate(Pwhite(0, 5), inf, \step) + Pgate(Pseq([0, 7, 0, -7], inf), inf, \step1),
 	\dur, 0.2
 ).play
 )
 ::
-

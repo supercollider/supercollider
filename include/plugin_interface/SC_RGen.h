@@ -250,16 +250,14 @@ inline double RGen::exprandrng(double lo, double hi) { return lo * exp(log(hi / 
 
 inline double RGen::exprand(double scale) {
     double z;
-    while ((z = drand()) == 0.0) {
-    }
+    while ((z = drand()) == 0.0) {}
     return -log(z) * scale;
 }
 
 /// Bilateral exponentially distributed random double from -scale to +scale.
 inline double RGen::biexprand(double scale) {
     double z;
-    while ((z = drand2(1.)) == 0.0 || z == -1.0) {
-    }
+    while ((z = drand2(1.)) == 0.0 || z == -1.0) {}
     if (z > 0.0)
         z = log(z);
     else

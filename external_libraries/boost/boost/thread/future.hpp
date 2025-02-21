@@ -63,7 +63,6 @@ struct shared_state_base {
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/exception_ptr.hpp>
 #include <boost/function.hpp>
-#include <boost/next_prior.hpp>
 #include <boost/scoped_array.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/smart_ptr/make_shared.hpp>

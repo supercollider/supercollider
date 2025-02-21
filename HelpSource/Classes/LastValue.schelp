@@ -26,7 +26,7 @@ Difference threshold.
 Examples::
 
 code::
-d = { arg freq=440; SinOsc.ar(LastValue.ar(freq, 20), 0, 0.2) }.play;
+d = { |freq = 440| SinOsc.ar(LastValue.ar(freq, 20), 0, 0.2) }.play;
 
 d.set(\freq, 400);
 d.set(\freq, 200);
@@ -39,7 +39,7 @@ d.free;
 Return the difference between current and the last changed:
 code::
 (
-d = { arg out=0, val=1;
+d = { |out = 0, val = 1|
 	SinOsc.ar(
 			abs(val - LastValue.kr(val)) * 400 + 200,
 			0, 0.2
@@ -54,4 +54,3 @@ d.set(\val, 1);
 d.set(\val, 2);
 d.free;
 ::
-

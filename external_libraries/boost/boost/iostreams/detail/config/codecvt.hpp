@@ -68,7 +68,7 @@ namespace std {
 
 #if defined(__LIBCOMO__)
     using ::mbstate_t;
-#elif defined(BOOST_DINKUMWARE_STDLIB) && !defined(__BORLANDC__)
+#elif defined(BOOST_DINKUMWARE_STDLIB) && !defined(BOOST_BORLANDC)
     using ::mbstate_t;
 #elif defined(__SGI_STL_PORT)
 #elif defined(BOOST_NO_STDC_NAMESPACE)

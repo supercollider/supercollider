@@ -38,6 +38,7 @@ ServerOptions {
 
 	var <>memoryLocking;
 	var <>threads; // for supernova
+	var <>threadPinning; // for supernova
 	var <>useSystemClock;  // for supernova
 
 	var <numPrivateAudioBusChannels;
@@ -88,6 +89,7 @@ ServerOptions {
 				remoteControlVolume: false,
 				memoryLocking: false,
 				threads: nil,
+				threadPinning: nil, // default value chosen by Supernova
 				useSystemClock: true,
 				numPrivateAudioBusChannels: 1020, // see corresponding setter method below
 				reservedNumAudioBusChannels: 0,
@@ -215,8 +217,13 @@ ServerOptions {
 			o = o ++ " -L";
 		});
 		if (threads.notNil, {
-			if (Server.program.asString.endsWith("supernova")) {
+			if (Server.program.asString.contains("supernova")) {
 				o = o ++ " -T " ++ threads;
+			}
+		});
+		if (threadPinning.notNil, {
+			if (Server.program.asString.contains("supernova")) {
+				o = o ++ " -y " ++ threadPinning.asBoolean.asInteger;
 			}
 		});
 		if (useSystemClock, {
@@ -786,18 +793,18 @@ Server {
 		condition.wait
 	}
 
-	waitForBoot { |onComplete, limit = 100, onFailure|
+	waitForBoot { |onComplete, limit = 100, onFailure, clock|
 		// onFailure.true: why is this necessary?
 		// this.boot also calls doWhenBooted.
 		// doWhenBooted prints the normal boot failure message.
 		// if the server fails to boot, the failure error gets posted TWICE.
 		// So, we suppress one of them.
 		if(this.serverRunning.not) { this.boot(onFailure: true) };
-		this.doWhenBooted(onComplete, limit, onFailure);
+		this.doWhenBooted(onComplete, limit, onFailure, clock);
 	}
 
-	doWhenBooted { |onComplete, limit=100, onFailure|
-		statusWatcher.doWhenBooted(onComplete, limit, onFailure)
+	doWhenBooted { |onComplete, limit=100, onFailure, clock|
+		statusWatcher.doWhenBooted(onComplete, limit, onFailure, clock)
 	}
 
 	ifRunning { |func, failFunc|
@@ -1334,6 +1341,30 @@ Server {
 				};
 			})
 		}
+	}
+
+	rtMemoryStatus { |action|
+		var resp, done = false;
+		if (this.serverRunning.not) {
+			"server '%' not running".format(this.name).warn;
+			^this
+		};
+		resp = OSCFunc({ |msg| 
+			done = true;
+			if (action.notNil) { action.value(*msg.drop(1)) } {
+				var freeKb = msg[1] / 1024;
+				"Used RT memory: % kb".format(options.memSize - freeKb).postln;
+				"Free RT memory: % kb".format(freeKb).postln;
+				"Largest free chunk: % kb".format(msg[2] / 1024).postln;
+			}
+		} , "/rtMemoryStatus.reply", addr).oneShot;
+		addr.sendMsg("/rtMemoryStatus");
+		SystemClock.sched(3, {
+			if(done.not) {
+				resp.free;
+				"Remote server failed to respond to rtMemoryStatus!".warn;
+			};
+		})
 	}
 
 	printOn { |stream|

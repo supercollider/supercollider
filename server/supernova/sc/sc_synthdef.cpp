@@ -132,18 +132,16 @@ std::vector<sc_synthdef> read_synthdefs(const char* buffer, const char* buffer_e
 #else
             ret.emplace_back(buffer, buffer_end, version);
 #endif
-        } catch (std::exception const& e) {
-            std::cout << "Exception when reading synthdef: " << e.what() << std::endl;
-        }
+        } catch (std::exception const& e) { std::cout << "Exception when reading synthdef: " << e.what() << std::endl; }
     }
     return ret;
 }
 
-std::vector<sc_synthdef> read_synthdef_file(boost::filesystem::path const& filename) {
+std::vector<sc_synthdef> read_synthdef_file(std::filesystem::path const& filename) {
     using namespace std;
 
     ifstream stream;
-    stream.open(filename.string().c_str());
+    stream.open(filename.string().c_str(), std::ifstream::binary);
 
     if (!stream.is_open()) {
         cout << "cannot open file " << filename << endl;

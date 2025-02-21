@@ -21,7 +21,7 @@ Pclutch(Pseq([1, 2, 3, 4, 5], 3), Pseq([0, 0, 1, 0, 0, 0, 1, 1])).asStream.nextN
 // sound example
 (
 SynthDef(\help_sinegrain,
-	{ arg out=0, freq=440, sustain=0.05;
+	{ |out = 0, freq = 440, sustain = 0.05|
 		var env;
 		env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction: Done.freeSelf);
 		Out.ar(out, SinOsc.ar(freq, 0, env))
@@ -32,7 +32,7 @@ SynthDef(\help_sinegrain,
 var a;
 a = Pclutch(
 		Pseq([1, 2, 3, 4, 5], inf),
-		Pseq([0, 0, 1, 0, Pn(0, {30.rand}), 0, 1, 1], inf)
+		Pseq([0, 0, 1, 0, Pn(0, { 30.rand }), 0, 1, 1], inf)
 	).asStream;
 {
 	loop {

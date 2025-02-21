@@ -36,9 +36,8 @@
 #    include <sys/param.h>
 #endif
 
-#include <boost/filesystem/path.hpp>
-#include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/string_file.hpp>
+#include <filesystem>
+#include <fstream>
 
 #include "PyrParseNode.h"
 #include "Bison/lang11d_tab.h"
@@ -84,12 +83,12 @@ int gNumCompiledFiles;
 thisProcess.interpreter.executeFile("Macintosh HD:score").size.postln;
 */
 
-namespace bfs = boost::filesystem;
+namespace fs = std::filesystem;
 using DirName = SC_Filesystem::DirName;
 
 PyrSymbol* gCompilingFileSym = nullptr;
 VMGlobals* gCompilingVMGlobals = nullptr;
-static bfs::path gCompileDir;
+static fs::path gCompileDir;
 
 //#define DEBUGLEX 1
 bool gDebugLexer = false;
@@ -102,7 +101,7 @@ int lastClosedFuncCharNo = 0;
 
 const char* binopchars = "!@%&*-+=|<>?/";
 char yytext[MAXYYLEN];
-bfs::path currfilename;
+fs::path currfilename;
 std::string printingCurrfilename; // for error reporting
 
 int yylen;
@@ -122,7 +121,7 @@ int textpos;
 int errLineOffset, errCharPosOffset;
 int parseFailed = 0;
 bool compiledOK = false;
-std::set<bfs::path> compiledDirectories;
+std::set<fs::path> compiledDirectories;
 
 /* so the text editor's dumb paren matching will work */
 #define OPENPAREN '('
@@ -170,18 +169,18 @@ double sc_strtof(const char* str, int n, int base) {
     return z;
 }
 
-bool startLexer(PyrSymbol* fileSym, const bfs::path& p, int startPos, int endPos, int lineOffset);
-bool startLexer(PyrSymbol* fileSym, const bfs::path& p, int startPos, int endPos, int lineOffset) {
+bool startLexer(PyrSymbol* fileSym, const fs::path& p, int startPos, int endPos, int lineOffset);
+bool startLexer(PyrSymbol* fileSym, const fs::path& p, int startPos, int endPos, int lineOffset) {
     const char* filename = fileSym->name;
 
     textlen = -1;
 
     if (!fileSym->u.source) {
         try {
-            bfs::ifstream file;
+            std::ifstream file;
             file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
             file.open(p, std::ios_base::binary);
-            size_t sz = bfs::file_size(p);
+            size_t sz = fs::file_size(p);
 
             text = (char*)pyr_pool_compile->Alloc((sz + 1) * sizeof(char));
             MEMFAIL(text);
@@ -225,7 +224,7 @@ bool startLexer(PyrSymbol* fileSym, const bfs::path& p, int startPos, int endPos
     zzval = 0;
     parseFailed = 0;
     lexCmdLine = 0;
-    currfilename = bfs::path(filename);
+    currfilename = fs::path(filename);
     printingCurrfilename = "file '" + SC_Codecvt::path_to_utf8_str(currfilename) + "'";
     maxlinestarts = 1000;
     linestarts = (int*)pyr_pool_compile->Alloc(maxlinestarts * sizeof(int*));
@@ -261,7 +260,7 @@ void startLexerCmdLine(char* textbuf, int textbuflen) {
     zzval = 0;
     parseFailed = 0;
     lexCmdLine = 1;
-    currfilename = bfs::path("interpreted text");
+    currfilename = fs::path("interpreted text");
     printingCurrfilename = currfilename.string();
     maxlinestarts = 1000;
     linestarts = (int*)pyr_pool_compile->Alloc(maxlinestarts * sizeof(int*));
@@ -1721,7 +1720,7 @@ void compileClass(PyrSymbol* fileSym, int startPos, int endPos, int lineOffset) 
     gCompilingVMGlobals = nullptr;
     gRootParseNode = nullptr;
     initParserPool();
-    if (startLexer(fileSym, bfs::path(), startPos, endPos, lineOffset)) {
+    if (startLexer(fileSym, fs::path(), startPos, endPos, lineOffset)) {
         // postfl("->Parsing %s\n", fileSym->name); fflush(stdout);
         parseFailed = yyparse();
         // postfl("<-Parsing %s %d\n", fileSym->name, parseFailed); fflush(stdout);
@@ -1733,7 +1732,7 @@ void compileClass(PyrSymbol* fileSym, int startPos, int endPos, int lineOffset) 
             // postfl("done compiling\n");fflush(stdout);
         } else {
             compileErrors++;
-            bfs::path pathname(fileSym->name);
+            fs::path pathname(fileSym->name);
             error("file '%s' parse failed\n", SC_Codecvt::path_to_utf8_str(pathname).c_str());
             postfl("error parsing\n");
         }
@@ -1942,7 +1941,7 @@ void finiPassOne() {
 /**
  * \brief \c true if \c dir is one of the language config's default classlib directories
  */
-static bool isDefaultClassLibraryDirectory(const bfs::path& dir) {
+static bool isDefaultClassLibraryDirectory(const fs::path& dir) {
     auto const& defaultDirs = gLanguageConfig->defaultClassLibraryDirectories();
     auto const iter = std::find(defaultDirs.begin(), defaultDirs.end(), dir);
     return iter != defaultDirs.end();
@@ -1955,10 +1954,10 @@ static bool isDefaultClassLibraryDirectory(const bfs::path& dir) {
  * try to create it, silently ignoring failure (most likely from permissions failure).
  * Otherwise, warn the user to help catch mistyped/missing directory names. See #3468.
  */
-static void passOne_HandleMissingDirectory(const bfs::path& dir) {
+static void passOne_HandleMissingDirectory(const fs::path& dir) {
     if (isDefaultClassLibraryDirectory(dir)) {
-        boost::system::error_code ec {};
-        bfs::create_directories(dir, ec);
+        std::error_code ec {};
+        fs::create_directories(dir, ec);
     } else {
         post("WARNING: Could not open directory: '%s'\n"
              "\tTo resolve this, either create the directory or remove it from your compilation paths.\n\n",
@@ -1966,7 +1965,7 @@ static void passOne_HandleMissingDirectory(const bfs::path& dir) {
     }
 }
 
-bfs::path relativeToCompileDir(const bfs::path& p) { return bfs::relative(p, gCompileDir); }
+fs::path relativeToCompileDir(const fs::path& p) { return fs::relative(p, gCompileDir); }
 
 /** \brief Determines whether the directory should be skipped during compilation.
  *
@@ -1976,7 +1975,7 @@ bfs::path relativeToCompileDir(const bfs::path& p) { return bfs::relative(p, gCo
  * - the language configuration says this path is excluded
  * - SC_Filesystem::shouldNotCompileDirectory(dir) returns `true`
  */
-static bool passOne_ShouldSkipDirectory(const bfs::path& dir) {
+static bool passOne_ShouldSkipDirectory(const fs::path& dir) {
     return (compiledDirectories.find(dir) != compiledDirectories.end())
         || (gLanguageConfig && gLanguageConfig->pathIsExcluded(dir))
         || (SC_Filesystem::instance().shouldNotCompileDirectory(dir));
@@ -2003,24 +2002,24 @@ static bool passOne_ShouldSkipDirectory(const bfs::path& dir) {
  * \returns `true` if processing was successful, `false` if it failed.
  *   See above for what constitutes success and failure conditions.
  */
-static bool passOne_ProcessDir(const bfs::path& dir) {
+static bool passOne_ProcessDir(const fs::path& dir) {
     // Prefer non-throwing versions of filesystem functions, since they are actually not unexpected
     // and because it's faster to use error codes.
-    boost::system::error_code ec;
+    std::error_code ec;
 
     // Perform tilde expansion on incoming dir.
-    const bfs::path expdir = SC_Filesystem::instance().expandTilde(dir);
+    const fs::path expdir = SC_Filesystem::instance().expandTilde(dir);
 
     // Using a recursive_directory_iterator is much faster than actually calling this function
     // recursively. Speedup from the switch was about 1.5x. _Do_ recurse on symlinks.
-    bfs::recursive_directory_iterator rditer(expdir, bfs::symlink_option::recurse, ec);
+    fs::recursive_directory_iterator rditer(expdir, fs::directory_options::follow_directory_symlink, ec);
 
     // Check preconditions: are we able to access the file, and should we compile it according to
     // the language configuration?
     if (ec) {
         // If we got an error, post a warning if it was because the target wasn't found, and return success.
         // Otherwise, post the error and fail.
-        if (ec.default_error_condition().value() == boost::system::errc::no_such_file_or_directory) {
+        if (ec.default_error_condition() == std::errc::no_such_file_or_directory) {
             passOne_HandleMissingDirectory(expdir);
             return true;
         } else {
@@ -2042,14 +2041,14 @@ static bool passOne_ProcessDir(const bfs::path& dir) {
 
     // Invariant: we have processed (or begun to process) every directory or file already
     // touched by the iterator.
-    while (rditer != bfs::end(rditer)) {
-        const bfs::path path = *rditer;
+    while (rditer != fs::end(rditer)) {
+        const fs::path path = *rditer;
 
         // If the file is a directory, perform the same checks as above to see if we should
         // skip compilation on it.
-        if (bfs::is_directory(path)) {
+        if (fs::is_directory(path)) {
             if (passOne_ShouldSkipDirectory(path)) {
-                rditer.no_push(); // don't "push" into the next level of the hierarchy
+                rditer.disable_recursion_pending(); // don't "push" into the next level of the hierarchy
             } else {
                 // Mark this directory as compiled.
                 // By not calling no_push(), we allow the iterator to enter the directory
@@ -2062,8 +2061,8 @@ static bool passOne_ProcessDir(const bfs::path& dir) {
             // - resolution failed: returns empty path: let the user know
             // - it was not an alias, or was an alias that wasn't a directory: try to process it as a source file
             bool isAlias = false;
-            const bfs::path& respath = SC_Filesystem::resolveIfAlias(path, isAlias);
-            if (isAlias && bfs::is_directory(respath)) {
+            const fs::path& respath = SC_Filesystem::resolveIfAlias(path, isAlias);
+            if (isAlias && fs::is_directory(respath)) {
                 // If the resolved alias is a directory, recurse on it.
                 if (!passOne_ProcessDir(respath)) {
                     return false;
@@ -2095,8 +2094,8 @@ bool passOne() {
 }
 
 /// True if file doesn't begin with '.', and ends with either '.sc' or '.rtf'
-bool isValidSourceFileName(const bfs::path& path) {
-    const bfs::path& ext = path.extension();
+bool isValidSourceFileName(const fs::path& path) {
+    const fs::path& ext = path.extension();
     return path.filename().c_str()[0] != '.' && // must not be hidden file
         ((ext == ".sc") || (ext == ".rtf" && path.stem().extension() == ".sc"));
 }
@@ -2110,7 +2109,7 @@ bool isValidSourceFileName(const bfs::path& path) {
  * \returns Whether parsing was successful. The only failure condition occurs
  * when the file can't be opened.
  */
-bool passOne_ProcessOneFile(const bfs::path& path) {
+bool passOne_ProcessOneFile(const fs::path& path) {
     bool success = true;
 
     const std::string path_str = SC_Codecvt::path_to_utf8_str(path);
@@ -2125,8 +2124,7 @@ bool passOne_ProcessOneFile(const bfs::path& path) {
         PyrSymbol* fileSym = getsym(path_c_str);
         fileSym->u.source = nullptr;
         if (startLexer(fileSym, path, -1, -1, -1)) {
-            while (parseOneClass(fileSym)) {
-            };
+            while (parseOneClass(fileSym)) {};
             finiLexer();
         } else {
             error("file '%s' open failed\n", path_c_str);
@@ -2286,8 +2284,6 @@ SCLANG_DLLEXPORT_C void runLibrary(PyrSymbol* selector) {
             post("caught exception in runLibrary\n");
         }
         error(ex.what());
-    } catch (...) {
-        postfl("DANGER: OUT of MEMORY. Operation failed.\n");
-    }
+    } catch (...) { postfl("DANGER: OUT of MEMORY. Operation failed.\n"); }
     g->canCallOS = false;
 }

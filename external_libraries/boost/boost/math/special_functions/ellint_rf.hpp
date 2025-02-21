@@ -40,17 +40,11 @@ namespace boost { namespace math { namespace detail{
 
       if(x < 0 || y < 0 || z < 0)
       {
-         return policies::raise_domain_error<T>(function,
-            "domain error, all arguments must be non-negative, "
-            "only sensible result is %1%.",
-            std::numeric_limits<T>::quiet_NaN(), pol);
+         return policies::raise_domain_error<T>(function, "domain error, all arguments must be non-negative, only sensible result is %1%.", std::numeric_limits<T>::quiet_NaN(), pol);
       }
       if(x + y == 0 || y + z == 0 || z + x == 0)
       {
-         return policies::raise_domain_error<T>(function,
-            "domain error, at most one argument can be zero, "
-            "only sensible result is %1%.",
-            std::numeric_limits<T>::quiet_NaN(), pol);
+         return policies::raise_domain_error<T>(function, "domain error, at most one argument can be zero, only sensible result is %1%.", std::numeric_limits<T>::quiet_NaN(), pol);
       }
       //
       // Special cases from http://dlmf.nist.gov/19.20#i
@@ -97,7 +91,7 @@ namespace boost { namespace math { namespace detail{
          T xn = sqrt(x);
          T yn = sqrt(y);
 
-         while(fabs(xn - yn) >= 2.7 * tools::root_epsilon<T>() * fabs(xn))
+         while(fabs(xn - yn) >= T(2.7) * tools::root_epsilon<T>() * fabs(xn))
          {
             T t = sqrt(xn * yn);
             xn = (xn + yn) / 2;

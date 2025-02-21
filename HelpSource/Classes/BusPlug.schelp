@@ -4,7 +4,7 @@ categories:: JITLib>NodeProxy, Live Coding
 related:: Classes/Bus, Classes/Monitor, Classes/InBus, Classes/NodeProxy, Classes/Ndef
 
 description::
-A BusPlug is represents a listener on a private link::Classes/Bus:: that makes it easy to play back to multiple channels. It is mainly in use as a superclass of NodeProxy, but it can be used for general channel routings as well. Most methods are documented in the link::Classes/NodeProxy:: helpfile.
+A BusPlug represents a listener on a private link::Classes/Bus:: that makes it easy to play back to multiple channels. It is mainly in use as a superclass of NodeProxy, but it can be used for general channel routings as well. Most methods are documented in the link::Classes/NodeProxy:: helpfile.
 
 code::
 s.boot;
@@ -243,7 +243,7 @@ m.free; z.free;
 
 // using as a audio monitor
 
-p = BusPlug.audio(s,2);
+p = BusPlug.audio(s, 2);
 d = { Out.ar(p.index, PinkNoise.ar([0.1, 0.1])) }.play;
 
 
@@ -263,6 +263,6 @@ p.stop;
 p.play(12);
 
 // listen to that bus for a test:
-x = { InFeedback.ar(12,2) }.play;
+x = { InFeedback.ar(12, 2) }.play;
 x.free;
 ::

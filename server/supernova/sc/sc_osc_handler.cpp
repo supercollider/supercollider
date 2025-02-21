@@ -16,6 +16,7 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
+#include "server/memory_pool.hpp"
 #include <iostream>
 
 // AppleClang workaround
@@ -502,8 +503,7 @@ void sc_notify_observers::send_node_reply(int32_t node_id, int reply_id, const c
             p << osc::EndMessage;
 
             instance->send_notification(p.Data(), p.Size());
-        } catch (...) {
-        }
+        } catch (...) {}
 
         cmd_dispatcher<true>::free_in_rt_thread(std::move(value_array), std::move(cmd));
 
@@ -711,9 +711,7 @@ void sc_osc_handler::tcp_connection::send(const char* data, size_t length) {
         socket_.send(boost::asio::buffer(&len, sizeof(len)));
         size_t written = socket_.send(boost::asio::buffer(data, length));
         assert(length == written);
-    } catch (std::exception const& err) {
-        std::cout << "Exception when sending message over TCP: " << err.what();
-    }
+    } catch (std::exception const& err) { std::cout << "Exception when sending message over TCP: " << err.what(); }
 }
 
 
@@ -879,9 +877,7 @@ void sc_osc_handler::handle_message(ReceivedMessage const& message, size_t msg_s
             handle_message_int_address<realtime>(message, msg_size, endpoint);
         else
             handle_message_sym_address<realtime>(message, msg_size, endpoint);
-    } catch (std::exception const& e) {
-        log_printf("exception in handle_message: %s\n", e.what());
-    }
+    } catch (std::exception const& e) { log_printf("exception in handle_message: %s\n", e.what()); }
 }
 
 namespace {
@@ -1014,6 +1010,23 @@ template <bool realtime> void handle_version(endpoint_ptr const& endpoint_ref) {
 }
 
 template <> void handle_version<false>(endpoint_ptr const& endpoint_ref) {}
+
+template <bool realtime> void handle_rtMemoryStatus(endpoint_ptr const& endpoint_ref) {
+    cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = endpoint_ptr(endpoint_ref)]() {
+        if (unlikely(instance->quit_received))
+            return;
+
+        char buffer[4096];
+        typedef osc::int32 i32;
+
+        osc::OutboundPacketStream p(buffer, 4096);
+        p << osc::BeginMessage("/rtMemoryStatus.reply") << (i32)(rt_pool.get_pool_size() - rt_pool.get_used_size())
+          << (i32)rt_pool.get_max_size() << osc::EndMessage;
+        endpoint->send(p.Data(), p.Size());
+    });
+}
+
+template <> void handle_rtMemoryStatus<false>(endpoint_ptr const& endpoint_ref) {}
 
 void handle_unhandled_message(ReceivedMessage const& msg) {
     log_printf("unhandled message: %s\n", msg.AddressPattern());
@@ -1213,9 +1226,7 @@ void handle_s_new(ReceivedMessage const& msg) {
     try {
         while (args != end)
             set_control(synth, args, end);
-    } catch (std::exception& e) {
-        log_printf("exception in /s_new: %s\n", e.what());
-    }
+    } catch (std::exception& e) { log_printf("exception in /s_new: %s\n", e.what()); }
 }
 
 
@@ -1336,9 +1347,7 @@ template <bool realtime> void g_query_tree(int node_id, bool flag, endpoint_ptr 
             movable_array<char> message(p.Size(), data.c_array());
             cmd_dispatcher<realtime>::fire_message(endpoint, std::move(message));
             return;
-        } catch (...) {
-            max_msg_size *= 2; /* if we run out of memory, retry with doubled memory resources */
-        }
+        } catch (...) { max_msg_size *= 2; /* if we run out of memory, retry with doubled memory resources */ }
     }
 }
 
@@ -1350,9 +1359,7 @@ template <bool realtime> void handle_g_queryTree(ReceivedMessage const& msg, end
             osc::int32 id, flag;
             args >> id >> flag;
             g_query_tree<realtime>(id, flag, endpoint);
-        } catch (std::exception& e) {
-            log_printf("exception in handle_g_queryTree: %s\n", e.what());
-        }
+        } catch (std::exception& e) { log_printf("exception in handle_g_queryTree: %s\n", e.what()); }
     }
 }
 
@@ -1441,9 +1448,7 @@ void handle_g_dumpTree(ReceivedMessage const& msg) {
             osc::int32 id, flag;
             args >> id >> flag;
             g_dump_tree(id, flag);
-        } catch (std::exception& e) {
-            log_printf("exception in /g_dumpTree: %s\n", e.what());
-        }
+        } catch (std::exception& e) { log_printf("exception in /g_dumpTree: %s\n", e.what()); }
     }
 }
 
@@ -1460,9 +1465,7 @@ void handle_n_free(ReceivedMessage const& msg) {
                 continue;
 
             instance->free_node(node);
-        } catch (std::exception& e) {
-            log_printf("exception in /n_free: %s\n", e.what());
-        }
+        } catch (std::exception& e) { log_printf("exception in /n_free: %s\n", e.what()); }
     }
 }
 
@@ -1483,9 +1486,7 @@ void handle_n_free(ReceivedMessage const& msg) {
         try {                                                                                                          \
             while (it != msg.ArgumentsEnd())                                                                           \
                 function(node, it);                                                                                    \
-        } catch (std::exception & e) {                                                                                 \
-            log_printf("Exception during /n_" #cmd "handler: %s\n", e.what());                                         \
-        }                                                                                                              \
+        } catch (std::exception & e) { log_printf("Exception during /n_" #cmd "handler: %s\n", e.what()); }            \
     }
 
 void set_control(server_node* node, osc::ReceivedMessageArgumentIterator& it) {
@@ -1957,8 +1958,7 @@ completion_message extract_completion_message(osc::ReceivedMessageArgumentStream
     if (!args.Eos()) {
         try {
             args >> blob;
-        } catch (osc::WrongArgumentTypeException& e) {
-        }
+        } catch (osc::WrongArgumentTypeException& e) {}
     }
 
     return completion_message(blob.size, blob.data);
@@ -3234,6 +3234,10 @@ void sc_osc_handler::handle_message_int_address(ReceivedMessage const& message, 
         handle_version<realtime>(endpoint);
         break;
 
+    case cmd_rtMemoryStatus:
+        handle_rtMemoryStatus<realtime>(endpoint);
+        break;
+
     default:
         handle_unhandled_message(message);
     }
@@ -3618,6 +3622,11 @@ void sc_osc_handler::handle_message_sym_address(ReceivedMessage const& message, 
 
     if (strcmp(address + 1, "version") == 0) {
         handle_version<realtime>(endpoint);
+        return;
+    }
+
+    if (strcmp(address + 1, "rtMemoryStatus") == 0) {
+        handle_rtMemoryStatus<realtime>(endpoint);
         return;
     }
 

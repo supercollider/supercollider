@@ -46,7 +46,7 @@ Primitives for Unix.
 
 #include "SC_Lock.h"
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 #ifdef _WIN32
 #    include "SC_Win32Utils.h"
@@ -54,7 +54,7 @@ Primitives for Unix.
 #    include <libgen.h>
 #endif
 
-namespace bfs = boost::filesystem;
+namespace fs = std::filesystem;
 
 extern bool compiledOK;
 PyrSymbol* s_unixCmdAction;

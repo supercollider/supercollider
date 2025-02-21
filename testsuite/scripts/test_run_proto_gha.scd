@@ -16,12 +16,6 @@
 		'skipReason': "UnitTest fails when run in GHA (FIXME)",
 	),
 	(
-		'suite': "TestCoreUGens",
-		'skip': "true",
-		'test': "test_ugen_generator_equivalences",
-		'skipReason': "UnitTest has bugs (FIXME)",
-	),
-	(
 		'suite': "TestDocument",
 		'test': "*",
 		'skip': "true",
@@ -98,12 +92,6 @@
 		'test': "test_Threads_rescheduleToOtherClock",
 		'skipReason': "UnitTest sometime fails when run in GHA on Linux (FIXME)",
 		'skip': "true",
-	),
-	(
-		'suite': "TestUGen_RTAlloc",
-		'test': "test_FFT",
-		'skip': "true",
-		'skipReason': "UnitTest fails (FIXME)",
 	),
 	(
 		'suite': "TestVolume",

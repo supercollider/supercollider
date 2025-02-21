@@ -146,7 +146,7 @@ x.free;
 // post all buffers
 (
 ~allBuffers.keysValuesDo { |name, buffer, i|
-	buffer.getToFloatArray(action: { arg array;
+	buffer.getToFloatArray(action: { |array|
 		var z, x;
 		// Initially, data is in complex form
 		z = array.clump(2).flop;
@@ -165,4 +165,3 @@ x.free;
 )
 
 ::
-

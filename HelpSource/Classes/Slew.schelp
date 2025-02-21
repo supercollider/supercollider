@@ -56,11 +56,10 @@ Has the effect of removing transients and higher frequencies.
 (
 {
 
-	z = Saw.ar(800,mul:0.2);
-	Slew.ar(z,400,400)
+	z = Saw.ar(800, mul: 0.2);
+	Slew.ar(z, 400, 400)
 
 }.play
 )
 
 ::
-
