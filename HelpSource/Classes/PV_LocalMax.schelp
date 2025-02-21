@@ -50,4 +50,3 @@ SynthDef("help-localMax2", { |out = 0, soundBufnum = 2|
 )
 
 ::
-

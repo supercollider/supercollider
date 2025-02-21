@@ -72,7 +72,7 @@
   // Luke: C -------- SUBROUTINE R2F1P(BP, CP, Z, A, B, N) --------
   // Luke: C ---- PADE APPROXIMATION OF 2F1( 1 , BP; CP ; -Z ) ----
   template <class T, class Policy>
-  inline T hypergeometric_2F1_pade(const T& bp, const T& cp, const T& zp, const Policy& pol)
+  inline T hypergeometric_2F1_pade(const T& bp, const T& cp, const T& zp, const Policy&)
   {
     BOOST_MATH_STD_USING
 

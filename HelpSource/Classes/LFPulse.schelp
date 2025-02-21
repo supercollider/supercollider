@@ -69,4 +69,3 @@ code::
 }.scope(bufsize: 44100, zoom: 5)
 )
 ::
-

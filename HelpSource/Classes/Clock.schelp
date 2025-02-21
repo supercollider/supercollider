@@ -53,4 +53,3 @@ time of the awaken task, and its link::Classes/Thread#-clock#clock:: is set to
 the scheduling clock. Note however that if the task is a link::Classes/Routine::
  it will then immediately start or resume its Function, setting itself as the
 link::Classes/Thread#.thisThread#current thread::.
-

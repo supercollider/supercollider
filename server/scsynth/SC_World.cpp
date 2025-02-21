@@ -75,9 +75,9 @@
 
 #include "server_shm.hpp"
 
-#include <boost/filesystem/path.hpp> // path
+#include <filesystem>
 
-namespace bfs = boost::filesystem;
+namespace fs = std::filesystem;
 
 InterfaceTable gInterfaceTable;
 PrintFunc gPrint = nullptr;
@@ -271,7 +271,7 @@ void World_LoadGraphDefs(World* world) {
             GraphDef_Define(world, list);
         }
     } else {
-        bfs::path path = SC_Filesystem::instance().getDirectory(DirName::UserAppSupport) / "synthdefs";
+        fs::path path = SC_Filesystem::instance().getDirectory(DirName::UserAppSupport) / "synthdefs";
         if (world->mVerbosity > 0)
             scprintf("Loading synthdefs from default path: %s\n", SC_Codecvt::path_to_utf8_str(path).c_str());
         list = GraphDef_LoadDir(world, path, list);

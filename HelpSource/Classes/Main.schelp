@@ -200,4 +200,3 @@ Get the current link::Classes/Platform::
 
 method::argv
 Get the command-line arguments passed to sclang.
-

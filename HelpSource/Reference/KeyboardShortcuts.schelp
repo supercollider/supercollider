@@ -9,7 +9,6 @@ note:: For shortcuts bindings of teletype::ScIDE::, please consult the menu and/
 table::
 ## strong::Functions::
 || strong::macOS::
-|| strong::GEdit (sced):: footnote::http://artfwo.googlepages.com/sced::
 || strong::Vim (scvim):: footnote::http://www.neisis.net/%7Ealex/scvim::
 || strong::Emacs (scel):: footnote:: link::Reference/EmacsEditor:: ::
 
@@ -144,7 +143,6 @@ section:: Files
 table::
 ## strong::Functions::
 || strong::macOS::
-|| strong::GEdit (sced)::
 || strong::Vim (scvim)::
 || strong::Emacs (scel)::
 
@@ -189,7 +187,6 @@ section::Text Editing
 table::
 ## strong::Functions::
 || strong::macOS::
-|| strong::GEdit (sced)::
 || strong::Vim (scvim)::
 || strong::Emacs (scel)::
 
@@ -288,7 +285,6 @@ section::Formatting
 table::
 ## strong::Functions::
 || strong::macOS::
-|| strong::GEdit (sced)::
 || strong::Vim (scvim)::
 || strong::Emacs (scel)::
 
@@ -364,4 +360,3 @@ table::
 ||
 ||
 ::
-

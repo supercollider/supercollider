@@ -210,4 +210,3 @@ w.front;
 
 method:: reset
 Resets the layout mechanism to 0,0.
-

@@ -43,4 +43,3 @@ SynthDef(\help_pvconj2, { |out = 0, bufnum = 0, soundBufnum = 2|
 }).play(s, [\out, 0, \bufnum, b, \soundBufnum, c]);
 )
 ::
-

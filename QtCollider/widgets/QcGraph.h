@@ -275,7 +275,7 @@ private Q_SLOTS:
 private:
     struct SelectedElement {
         SelectedElement(QcGraphElement* e): elem(e) {}
-        bool operator==(const SelectedElement& other) { return elem == other.elem; }
+        bool operator==(const SelectedElement& other) const { return elem == other.elem; }
 
         QcGraphElement* elem;
         QPointF moveOrigin; // in data domain

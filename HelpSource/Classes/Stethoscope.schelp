@@ -186,8 +186,8 @@ METHOD:: style
 
     argument::
         One of the above Integers.
-        
-        
+
+
 SUBSECTION:: Operation
 
 METHOD:: run

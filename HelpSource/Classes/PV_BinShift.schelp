@@ -83,4 +83,3 @@ SynthDef("help-binShift2", { |out = 0, soundBufnum = 2|
 )
 
 ::
-

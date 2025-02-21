@@ -83,4 +83,3 @@ var read, write, readpos, writepos, writetrig;
 // free buffer:
 b.free;
 ::
-

@@ -9,7 +9,7 @@
 // Linear combination for bessel derivatives are defined here
 #ifndef BOOST_MATH_SF_DETAIL_BESSEL_DERIVATIVES_LINEAR_HPP
 #define BOOST_MATH_SF_DETAIL_BESSEL_DERIVATIVES_LINEAR_HPP
-
+#include <iostream>
 #ifdef _MSC_VER
 #pragma once
 #endif
@@ -40,10 +40,11 @@ inline T bessel_i_derivative_linear(T v, T x, Policy pol)
    T result = boost::math::detail::cyl_bessel_i_imp<T>(v - 1, x, pol);
    if(result >= tools::max_value<T>())
       return result;  // result is infinite
+   // Both experimentally, and based on https://www.wolframalpha.com/input?i=BesselI%5Bv%2C+x%5D%2FBesselI%5Bv%2B2%2C+x%5D
+   // I[v + 1, x] < I[v-1, x], so this can't overflow:
    T result2 = boost::math::detail::cyl_bessel_i_imp<T>(v + 1, x, pol);
-   if(result2 >= tools::max_value<T>() - result)
-      return result2;  // result is infinite
-   return (result + result2) / 2;
+
+   return result / 2 + result2 / 2;
 }
 
 template <class T, class Tag, class Policy>
@@ -53,15 +54,34 @@ inline T bessel_k_derivative_linear(T v, T x, Tag tag, Policy pol)
    if(result >= tools::max_value<T>())
       return -result;  // result is infinite
    T result2 = boost::math::detail::cyl_bessel_k_imp<T>(v + 1, x, tag, pol);
-   if(result2 >= tools::max_value<T>() - result)
-      return -result2;  // result is infinite
-   return (result + result2) / -2;
+   if(result2 >= tools::max_value<T>() + result)
+      return -boost::math::policies::raise_overflow_error<T>("cyl_bessel_k_prime<%1>", 0, pol);  // result is infinite
+   result /= -2;
+   result2 /= -2;
+   return result + result2;
 }
 
 template <class T, class Policy>
 inline T bessel_k_derivative_linear(T v, T x, const bessel_int_tag& tag, Policy pol)
 {
-   return (boost::math::detail::cyl_bessel_k_imp<T>(itrunc(v-1), x, tag, pol) + boost::math::detail::cyl_bessel_k_imp<T>(itrunc(v+1), x, tag, pol)) / -2;
+   T result = boost::math::detail::cyl_bessel_k_imp<T>(itrunc(v - 1), x, tag, pol);
+   if (result >= tools::max_value<T>())
+      return -result;  // result is infinite
+   T result2 = boost::math::detail::cyl_bessel_k_imp<T>(itrunc(v + 1), x, tag, pol);
+   if (result2 >= tools::max_value<T>() + result)
+      return -boost::math::policies::raise_overflow_error<T>("cyl_bessel_k_prime<%1>", 0, pol);  // result is infinite
+   result /= -2;
+   result2 /= -2;
+   return result + result2;
+}
+
+template <class T, class Policy>
+inline T bessel_k_derivative_linear(T v, T x, const bessel_maybe_int_tag&, Policy pol)
+{
+   using std::floor;
+   if (floor(v) == v)
+      return bessel_k_derivative_linear(v, x, bessel_int_tag(), pol);
+   return bessel_k_derivative_linear(v, x, bessel_no_int_tag(), pol);
 }
 
 template <class T, class Tag, class Policy>

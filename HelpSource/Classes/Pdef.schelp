@@ -165,7 +165,7 @@ returns:: an link::Classes/EventStreamPlayer::.
 method::embed
 Pass a value (typically an link::Classes/Event::) into the pattern inval, and embed the Pdef in the stream.
 
-embedInStream
+method::embedInStream
 just like any pattern, embeds itself in stream
 
 subsection::Pdef as EventStreamPlayer

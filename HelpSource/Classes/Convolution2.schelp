@@ -202,4 +202,3 @@ x.set(\trigPeriod, 0.1);	// fast changes
 x.set(\trigPeriod, 10.0);	// slow changes
 x.free;	// delete synth
 ::
-

@@ -27,7 +27,8 @@
 #include "../core/util/overriding_action.hpp"
 
 #include <QApplication>
-#include <QDesktopWidget>
+#include <QScreen>
+#include <QWindow>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPointer>
@@ -45,9 +46,7 @@ PostWindow::PostWindow(QWidget* parent): QPlainTextEdit(parent) {
     setFrameShape(QFrame::NoFrame);
     previousChar = QChar('\n');
 
-    viewport()->setAttribute(Qt::WA_MacNoClickThrough, true);
-
-    QRect availableScreenRect = qApp->desktop()->availableGeometry(this);
+    QRect availableScreenRect = this->screen()->availableGeometry();
     mSizeHint = QSize(availableScreenRect.width() * 0.4, availableScreenRect.height() * 0.3);
 
     createActions(Main::settings());
@@ -164,11 +163,7 @@ void PostWindow::applySettings(Settings::Manager* settings) {
     QFontMetrics metrics(font);
     QString stringOfSpaces(settings->value("IDE/editor/indentWidth").toInt(), QChar(' '));
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
     setTabStopDistance(metrics.horizontalAdvance(stringOfSpaces));
-#else
-    setTabStopWidth(metrics.width(stringOfSpaces));
-#endif
 
     updateActionShortcuts(settings);
 }
@@ -197,10 +192,10 @@ void PostWindow::post(const QString& text) {
     foreach (const QChar chr, text) {
         if (previousChar == linebreak) {
             cursor.movePosition(QTextCursor::End);
-            cursor.insertText(QStringRef(&text, startPos, position - startPos).toString(), currentFormat);
+            cursor.insertText(text.mid(startPos, position - startPos), currentFormat);
             startPos = position;
 
-            QStringRef newLine(&text, position, text.length() - 1);
+            QString newLine = text.mid(position, text.length() - 1);
             currentFormat = formatForPostLine(newLine);
         }
 
@@ -211,14 +206,14 @@ void PostWindow::post(const QString& text) {
     // handle remaining chars if not \n terminated
     if (startPos < text.length()) {
         cursor.movePosition(QTextCursor::End);
-        cursor.insertText(QStringRef(&text, startPos, text.length() - startPos).toString(), currentFormat);
+        cursor.insertText(text.mid(startPos, text.length() - startPos), currentFormat);
     }
 
     if (scroll)
         emit(scrollToBottomRequest());
 }
 
-QTextCharFormat PostWindow::formatForPostLine(QStringRef line) {
+QTextCharFormat PostWindow::formatForPostLine(QString line) {
     Settings::Manager* settings = Main::settings();
     QTextCharFormat postWindowError = settings->getThemeVal("postwindowerror");
     QTextCharFormat postWindowWarning = settings->getThemeVal("postwindowwarning");
@@ -293,8 +288,9 @@ void PostWindow::wheelEvent(QWheelEvent* e) {
 
     // So rather just forward the event without modifiers.
 
-    QWheelEvent modifiedEvent(e->pos(), e->globalPos(), e->delta(), e->buttons(), 0, e->orientation());
-    QPlainTextEdit::wheelEvent(&modifiedEvent);
+    e->setModifiers(Qt::NoModifier);
+
+    QPlainTextEdit::wheelEvent(e);
     return;
 
 #if 0
@@ -355,7 +351,9 @@ PostDocklet::PostDocklet(QWidget* parent): Docklet(tr("Post window"), parent) {
     mPostWindow = new PostWindow;
     setWidget(mPostWindow);
 
+    // This adds the QAction defined in PostWindow::createActions to the toolbar attached to the post window.
     toolBar()->addAction(mPostWindow->mActions[PostWindow::AutoScroll]);
+    toolBar()->addAction(mPostWindow->mActions[PostWindow::Clear]);
 
     // connect(this, SIGNAL(topLevelChanged(bool)), this, SLOT(onFloatingChanged(bool)));
 }

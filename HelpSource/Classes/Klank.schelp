@@ -1,4 +1,3 @@
-
 class:: Klank
 summary:: Bank of resonators
 related:: Classes/DynKlank, Classes/Klang
@@ -280,6 +279,3 @@ r.play;
 
 r.stop;
 ::
-
-
-
