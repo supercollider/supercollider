@@ -71,7 +71,7 @@ public:
     bool mRunning;
 };
 
-SC_LanguageClient::SC_LanguageClient(const char* name) {
+SC_LanguageClient::SC_LanguageClient(std::string name) {
     mHiddenClient = new HiddenLanguageClient;
 
     lockInstance();
@@ -99,8 +99,9 @@ void SC_LanguageClient::initRuntime(const Options& opt) {
     // start virtual machine
     if (!mHiddenClient->mRunning) {
         mHiddenClient->mRunning = true;
-        if (opt.mRuntimeDir) {
-            int err = chdir(opt.mRuntimeDir);
+        if (opt.mRuntimeDir.data() != nullptr) {
+            // int err = chdir(opt.mRuntimeDir);
+            int err = 0;
             if (err)
                 error("Cannot change to runtime directory: %s", strerror(errno));
         }
@@ -167,7 +168,7 @@ void SC_LanguageClient::runLibrary(const char* methodName) {
     unlock();
 }
 
-void SC_LanguageClient::executeFile(const char* fileName) {
+void SC_LanguageClient::executeFile(const std::string fileName) {
     std::string escaped_file_name(fileName);
     int i = 0;
     while (i < escaped_file_name.size()) {

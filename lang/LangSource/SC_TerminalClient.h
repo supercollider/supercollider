@@ -56,24 +56,22 @@ public:
 
     struct Options : public SC_LanguageClient::Options {
         Options():
-            mLibraryConfigFile(0),
+            mLibraryConfigFile(""),
             mDaemon(false),
             mCallRun(false),
             mCallStop(false),
             mStandalone(false),
-            mArgc(0),
-            mArgv(0) {}
+            mArgs({}) {}
 
-        const char* mLibraryConfigFile;
+        std::string mLibraryConfigFile;
         bool mDaemon;
         bool mCallRun;
         bool mCallStop;
         bool mStandalone;
-        int mArgc;
-        char** mArgv;
+        std::vector<std::string> mArgs;
     };
 
-    SC_TerminalClient(const char* name);
+    SC_TerminalClient(const std::string name);
     virtual ~SC_TerminalClient();
 
     const Options& options() const { return mOptions; }
