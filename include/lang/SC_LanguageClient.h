@@ -29,6 +29,7 @@
 #include "SC_Export.h"
 #include <cstdio>
 #include <cstdarg>
+#include <string>
 
 // =====================================================================
 // SC_LanguageClient - abstract sclang client.
@@ -40,17 +41,17 @@ SCLANG_DLLEXPORT void destroyLanguageClient(class SC_LanguageClient*);
 class SCLANG_DLLEXPORT SC_LanguageClient {
 public:
     struct Options {
-        Options(): mMemSpace(2 * 1024 * 1024), mMemGrow(256 * 1024), mPort(57120), mRuntimeDir(0) {}
+        Options(): mMemSpace(2 * 1024 * 1024), mMemGrow(256 * 1024), mPort(57120), mRuntimeDir("") {}
 
         int mMemSpace; // memory space in bytes
         int mMemGrow; // memory growth in bytes
         int mPort; // network port number
-        char* mRuntimeDir; // runtime directory
+        std::string mRuntimeDir; // runtime directory
     };
 
 protected:
     // create singleton instance
-    SC_LanguageClient(const char* name);
+    SC_LanguageClient(const std::string name);
     virtual ~SC_LanguageClient();
     friend void destroyLanguageClient(class SC_LanguageClient*);
 
@@ -92,7 +93,7 @@ public:
     void runLibrary(const char* methodName);
     void interpretCmdLine();
     void interpretPrintCmdLine();
-    void executeFile(const char* fileName);
+    void executeFile(const std::string fileName);
     void runMain();
     void stopMain();
 

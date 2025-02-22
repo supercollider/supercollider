@@ -25,7 +25,10 @@
 */
 
 #include "SC_TerminalClient.h"
+
+#include "SC_CLIOptions.hpp"
 #include <cstdlib>
+
 #ifdef SC_QT
 #    include "../../QtCollider/LanguageClient.h"
 #endif
@@ -72,7 +75,7 @@ static FILE* gPostDest = stdout;
 static UINT gOldCodePage; // for remembering the old codepage when we switch to UTF-8
 #endif
 
-SC_TerminalClient::SC_TerminalClient(const char* name):
+SC_TerminalClient::SC_TerminalClient(const std::string name):
     SC_LanguageClient(name),
     mReturnCode(0),
     mUseReadline(false),
@@ -156,7 +159,7 @@ bool SC_TerminalClient::parseOptions(int& argc, char**& argv, Options& opt) {
         case 'h':
             goto help;
         case 'l':
-            opt.mLibraryConfigFile = optarg;
+            // opt.mLibraryConfigFile = optarg;
             break;
         case 'm':
             if (!parseMemArg(optarg, &opt.mMemSpace)) {
@@ -228,26 +231,20 @@ optArgInvalid:
 
 int SC_TerminalClient::run(int argc, char** argv) {
     Options& opt = mOptions;
+    int error_code;
 
-    if (!parseOptions(argc, argv, opt)) {
-        return mReturnCode;
+    SC_CLI::CLIOptions cli_options;
+
+    if (cli_options.parse(argc, argv, mOptions, error_code)) {
+        return error_code;
     }
 
-    // finish argv processing
-    const char* codeFile = nullptr;
-
-    if (argc > 0) {
-        codeFile = argv[0];
-        opt.mDaemon = true;
-        argv++;
-        argc--;
+    if (!cli_options.mInputFile.empty()) {
+        mOptions.mDaemon = true;
     }
-
-    opt.mArgc = argc;
-    opt.mArgv = argv;
 
     // read library configuration file
-    if (opt.mLibraryConfigFile)
+    if (!opt.mLibraryConfigFile.empty())
         SC_LanguageConfig::setConfigPath(opt.mLibraryConfigFile);
     SC_LanguageConfig::readLibraryConfig(opt.mStandalone);
 
@@ -255,7 +252,7 @@ int SC_TerminalClient::run(int argc, char** argv) {
     initRuntime(opt);
 
     // Create config directory so that it can be used by Quarks, etc. See #2919.
-    if (!opt.mStandalone && !opt.mLibraryConfigFile)
+    if (!opt.mStandalone && !opt.mLibraryConfigFile.empty())
         std::filesystem::create_directories(SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::UserConfig));
 
     // startup library
@@ -270,8 +267,8 @@ int SC_TerminalClient::run(int argc, char** argv) {
     }
 
     // enter main loop
-    if (codeFile)
-        executeFile(codeFile);
+    if (!cli_options.mInputFile.empty())
+        executeFile(cli_options.mInputFile);
     if (opt.mCallRun)
         runMain();
 
@@ -691,8 +688,8 @@ void SC_TerminalClient::cleanupInput() {
 }
 
 int SC_TerminalClient::prArgv(struct VMGlobals* g, int) {
-    int argc = ((SC_TerminalClient*)SC_TerminalClient::instance())->options().mArgc;
-    char** argv = ((SC_TerminalClient*)SC_TerminalClient::instance())->options().mArgv;
+    int argc = ((SC_TerminalClient*)SC_TerminalClient::instance())->options().mArgs.size();
+    std::vector<std::string> argv = ((SC_TerminalClient*)SC_TerminalClient::instance())->options().mArgs;
 
     PyrSlot* argvSlot = g->sp;
 
@@ -700,7 +697,7 @@ int SC_TerminalClient::prArgv(struct VMGlobals* g, int) {
     SetObject(argvSlot, argvObj); // this is okay here as we don't use the receiver
 
     for (int i = 0; i < argc; i++) {
-        PyrString* str = newPyrString(g->gc, argv[i], 0, true);
+        PyrString* str = newPyrString(g->gc, argv[i].c_str(), 0, true);
         SetObject(argvObj->slots + i, str);
         argvObj->size++;
         g->gc->GCWriteNew(argvObj, (PyrObject*)str); // we know str is white so we can use GCWriteNew
