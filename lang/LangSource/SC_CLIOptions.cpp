@@ -5,6 +5,7 @@
 #include "SC_CLIOptions.hpp"
 
 #include <SC_Filesystem.hpp>
+#include <SC_LanguageConfig.hpp>
 #include <SC_Version.hpp>
 
 namespace po = boost::program_options;
@@ -20,6 +21,7 @@ bool CLIOptions::parse(int argc, char* argv[], SC_TerminalClient::Options& termi
 
     auto generic_description = build_generic_description();
     auto terminal_description = build_terminal_description(terminal_options);
+    auto language_config_description = build_language_config_description();
 
     // Hidden options, will be allowed both on command line and
     // in config file, but will not be shown to the user.
@@ -33,7 +35,10 @@ bool CLIOptions::parse(int argc, char* argv[], SC_TerminalClient::Options& termi
     pos_options.add("sc-args", -1);
 
     po::options_description cmdline_options;
-    cmdline_options.add(generic_description).add(terminal_description).add(hidden_description);
+    cmdline_options.add(generic_description)
+        .add(terminal_description)
+        .add(hidden_description)
+        .add(language_config_description);
 
     po::variables_map vm;
     try {
@@ -66,13 +71,25 @@ bool CLIOptions::parse(int argc, char* argv[], SC_TerminalClient::Options& termi
     if (mPrintHelp) {
         // construct a options_description w/o hidden positional options
         po::options_description visible_description("");
-        visible_description.add(generic_description).add(terminal_description);
+        visible_description.add(generic_description).add(terminal_description).add(language_config_description);
 
         cout << "Start a REPL interpreter:           sclang [ -options ]\n"
                 "Execute a .scd file:                sclang [ -options ] path_to_sc_file [ args passed to sclang... ]\n"
              << visible_description << endl;
         return true;
     }
+
+    if (!mInputFile.empty()) {
+        terminal_options.mDaemon = true;
+    }
+
+    SC_LanguageConfig::readLibraryConfig(terminal_options.mStandalone);
+
+    // for the language config we don't use the notifier of program options because
+    // we want to fill the config with a provided yaml file or their default values.
+    // as po does not allow to specify the "notify order", we parse the config manually
+    parse_language_config(vm);
+
 
     return false;
 }
@@ -110,6 +127,7 @@ po::options_description CLIOptions::build_terminal_description(SC_TerminalClient
             "yaml-config,l",
             po::value<string>(&terminal_options.mLibraryConfigFile)->notifier([&](const string &yaml_config) {
                 terminal_options.mLibraryConfigFile = yaml_config;
+                SC_LanguageConfig::setConfigPath(yaml_config);
             }),
             "Set yaml config"
         )
@@ -156,6 +174,50 @@ po::options_description CLIOptions::build_terminal_description(SC_TerminalClient
     // clang-format on
 
     return description;
+}
+
+po::options_description CLIOptions::build_language_config_description() {
+    po::options_description description("Language config options (overwrites provided yaml entries)");
+
+    // clang-format off
+    description.add_options()
+        (
+            "include-path",
+            po::value<vector<string>>(),
+            "class library path to be included for searching (allows multiple mentions)"
+        )
+        (
+            "exclude-path",
+            po::value<vector<string>>(),
+            "class library path to be to excluded from searching (overrides includePaths, allows multiple mentions)"
+        )
+        (
+            "post-inline-warnings",
+            po::bool_switch()->default_value(false),
+            "Boolean flag to turn on warnings about missing inline opportunities."
+        )
+        // exclude-default-paths is not included as this behavior is set via the `--standalone` flag
+    ;
+    // clang-format on
+    return description;
+}
+
+void CLIOptions::parse_language_config(po::variables_map& vm) {
+    // see HelpSource/Classes/LanguageConfig.schelp
+    if (vm.at("post-inline-warnings").as<bool>()) {
+        gLanguageConfig->setPostInlineWarnings(true);
+    };
+
+    if (vm.count("include-path")) {
+        for (auto includePath : vm["include-path"].as<vector<string>>()) {
+            gLanguageConfig->addIncludedDirectory(SC_Codecvt::utf8_str_to_path(includePath));
+        }
+    }
+    if (vm.count("exclude-path")) {
+        for (auto excludePath : vm["exclude-path"].as<vector<string>>()) {
+            gLanguageConfig->addExcludedDirectory(SC_Codecvt::utf8_str_to_path(excludePath));
+        }
+    }
 }
 
 // converts e.g. 1k to 1024

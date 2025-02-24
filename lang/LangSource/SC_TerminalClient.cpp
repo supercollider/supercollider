@@ -115,15 +115,6 @@ int SC_TerminalClient::run(int argc, char** argv) {
         return error_code;
     }
 
-    if (!cli_options.mInputFile.empty()) {
-        mOptions.mDaemon = true;
-    }
-
-    // read library configuration file
-    if (!opt.mLibraryConfigFile.empty())
-        SC_LanguageConfig::setConfigPath(opt.mLibraryConfigFile);
-    SC_LanguageConfig::readLibraryConfig(opt.mStandalone);
-
     // initialize runtime
     initRuntime(opt);
 
