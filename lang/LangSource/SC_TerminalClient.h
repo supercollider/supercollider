@@ -92,9 +92,6 @@ public:
     void stop() { mIoContext.stop(); }
 
 protected:
-    bool parseOptions(int& argc, char**& argv, Options& opt);
-    void printUsage();
-
     void interpretCmdLine(const char* cmdLine, bool silent);
     void interpretCmdLine(const char* buf, size_t size, bool silent);
 
