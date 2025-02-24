@@ -113,11 +113,6 @@ public:
     //     only called from the main language thread.
     virtual void flush() = 0;
 
-    // command line argument handling utilities
-    static void snprintMemArg(char* dst, size_t size, int arg);
-    static bool parseMemArg(const char* arg, int* res);
-    static bool parsePortArg(const char* arg, int* res);
-
     // AppClock driver
     //    to be called from client mainloop.
     void tick();
