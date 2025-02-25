@@ -536,6 +536,9 @@ td p {
 li {
     padding-bottom: 0.5em;
 }
+li:first-child {
+    margin-top: 1em;
+}
 
 ul.toc {
     list-style-type: none;
