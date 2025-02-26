@@ -231,6 +231,12 @@ code::
 List[1, 2, 3, 4].detectIndex({ |item, i| item.even });
 ::
 
+method::lastForWhich
+Similar to link::#-detect::, but doing in a reversed manner.
+
+method::lastIndexForWhich
+Similar to link::#-detectIndex::, but doing in a reversed manner.
+
 method::inject
 In functional programming, the operation known as a left fold.
 inject takes an initial value and a function and combines the elements of the collection by applying the function to the accumulated value and an element from the collection starting from the first element in the collection. The strong::function:: takes two arguments and returns the new value. The accumulated value is initialized to strong::initialValue::.
