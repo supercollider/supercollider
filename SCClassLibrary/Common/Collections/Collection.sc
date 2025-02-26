@@ -216,26 +216,20 @@ Collection {
 		^this.detectIndex {| item | item.performList(selector, args) }
 	}
 	lastForWhich { | function |
-		var prev;
-		this.do {|elem, i|
+		this.reverseDo {|elem, i|
 			if (function.value(elem, i)) {
-				prev = elem;
-			}{
-				^prev
+				^elem
 			}
 		};
-		^prev
+		^nil
 	}
 	lastIndexForWhich { | function |
-		var prev;
-		this.do {|elem, i|
+		this.reverseDo {|elem, i|
 			if (function.value(elem, i)) {
-				prev = i;
-			}{
-				^prev
+				^this.size - i - 1
 			}
 		};
-		^prev
+		^nil
 	}
 	inject { | thisValue, function |
 		var nextValue = thisValue;
