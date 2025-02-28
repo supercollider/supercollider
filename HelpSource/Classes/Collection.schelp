@@ -386,7 +386,7 @@ table::
 ::
 equivalent to:
 math::
-\text{Mean}\{ x_0, x_1, \ldots, x_n \} = \frac{\sum_{i=0}^{n} x_i}{n-0+1}
+\text{Mean}\{ x_0, x_1, \ldots, x_n \} = \frac{\sum_{i=0}^{n} x_i}{n-x_0+1}
 ::
 ::
 Example:
