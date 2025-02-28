@@ -307,13 +307,13 @@ method::sum
 Answer the sum of the items in the collection, optionally applying a link::Classes/Function:: to each item before summing. When provided, the link::Classes/Function:: is passed two arguments: the item and an integer index.
 
 code::
-(0..8).sum { |item| 1 / (2 ** item) }
 // only the item is used; index is unused.
+(0..8).sum { |item| 1 / (2 ** item) }
 ::
 
 The above code is represented in mathematical notation as:
 math::
-\sum_{i=0}^{n} \frac{1}{2^{x_i}} \quad \text{for} \quad \{x_0, x_1, \ldots, x_n\} \quad (n=8)
+\sum_{i=0}^{n} \frac{1}{2^{x_i}} \quad \text{for} \quad \{x_0, x_1, \ldots, x_n\}, n=8
 ::
 where math::x_i:: is the function argument teletype::item::.
 
@@ -326,7 +326,7 @@ table::
 ::
 equivalent to:
 math::
-\text{Sum} \{ x_0, x_1, \ldots, x_n \} := \prod_{i=0}^{n} x_i
+\text{Sum} \{ x_0, x_1, \ldots, x_n \} := \sum_{i=0}^{n} x_i
 ::
 ::
 
@@ -345,7 +345,7 @@ code::
 
 The above code is represented in mathematical notation as:
 math::
-\prod_{i=0}^{n} \frac{1}{2^{x_i}} \quad \text{for} \quad \{x_0, x_1, \ldots, x_n\} \quad (n=8)
+\prod_{i=0}^{n} \frac{1}{2^{x_i}} \quad \text{for} \quad \{x_0, x_1, \ldots, x_n\}, n=8
 ::
 where math::x_i:: is the function argument teletype::item::.
 
@@ -368,8 +368,8 @@ code::
 method::mean
 Answer the arithmetic mean of the items in the collection, optionally applying a link::Classes/Function:: to each item before averaging. When provided, the link::Classes/Function:: receives two arguments: the item and its integer index.
 code::
-(0..8).mean { |item| 1 / (2 ** item) }
 // only the item is used; index is unused.
+(0..8).mean { |item| 1 / (2 ** item) }
 ::
 
 The above code is represented in mathematical notation as:
