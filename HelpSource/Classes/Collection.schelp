@@ -357,7 +357,7 @@ table::
 ::
 equivalent to:
 math::
-\text{Product} \{ x_0, x_1, \ldots, x_n \} = \prod_{i=0}^{n} x_i
+\text{Product} \{ x_0, x_1, \ldots, x_n \} := \prod_{i=0}^{n} x_i
 ::
 ::
 Example:
