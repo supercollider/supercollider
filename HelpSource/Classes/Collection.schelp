@@ -374,7 +374,7 @@ code::
 
 The above code is represented in mathematical notation as:
 math::
-\frac{\sum_{i=0}^{n} \frac{1}{2^{x_i}}}{n-x_0+1} \quad \text{for} \quad \{x_0, x_1, \ldots, x_n\} \quad (n=8)
+\frac{\sum_{i=0}^{n} \frac{1}{2^{x_i}}}{n+1} ~ \mid ~ x = \lbrace 0, \dots, n \rbrace, n=8
 ::
 where math::x_i:: is the function argument teletype::item::.
 
