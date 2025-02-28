@@ -311,11 +311,11 @@ code::
 // only the item is used; index is unused.
 ::
 
-The code above is mathematically equivalent to:
+The above code is represented in mathematical notation as:
 math::
 \sum_{i=0}^{n} \frac{1}{2^{x_i}} \quad \text{for} \quad \{x_0, x_1, \ldots, x_n\} \quad (n=8)
 ::
-(emphasis::In the mathematic formula, the argument name:: teletype::item:: emphasis::in sclang code is represented as:: math::x_i::.)
+where math::x_i:: is the function argument teletype::item::.
 
 discussion::
 The sum of all items in a collection can be expressed mathematically as:
@@ -343,11 +343,11 @@ code::
 // only the item is used; index is unused.
 ::
 
-The code above is mathematically equivalent to:
+The above code is represented in mathematical notation as:
 math::
 \prod_{i=0}^{n} \frac{1}{2^{x_i}} \quad \text{for} \quad \{x_0, x_1, \ldots, x_n\} \quad (n=8)
 ::
-(emphasis::In the mathematic formula, the argument name:: teletype::item:: emphasis::in sclang code is represented as:: math::x_i::.)
+where math::x_i:: is the function argument teletype::item::.
 
 discussion::
 The product of all items in a collection can be expressed mathematically as:
@@ -372,11 +372,11 @@ code::
 // only the item is used; index is unused.
 ::
 
-The code above is mathematically equivalent to:
+The above code is represented in mathematical notation as:
 math::
 \frac{\sum_{i=0}^{n} \frac{1}{2^{x_i}}}{n-x_0+1} \quad \text{for} \quad \{x_0, x_1, \ldots, x_n\} \quad (n=8)
 ::
-(emphasis::In the mathematic formula, the argument name:: teletype::item:: emphasis::in sclang code is represented as:: math::x_i::.)
+where math::x_i:: is the function argument teletype::item::.
 
 discussion::
 The mean of all items in a collection can be expressed mathematically as:
