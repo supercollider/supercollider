@@ -326,7 +326,7 @@ table::
 ::
 equivalent to:
 math::
-\text{Sum} \{ x_0, x_1, \ldots, x_n \} = \prod_{i=0}^{n} x_i
+\text{Sum} \{ x_0, x_1, \ldots, x_n \} := \prod_{i=0}^{n} x_i
 ::
 ::
 
