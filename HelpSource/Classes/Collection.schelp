@@ -307,15 +307,15 @@ method::sum
 Answer the sum of the items in the collection, optionally applying a link::Classes/Function:: to each item before summing. When provided, the link::Classes/Function:: is passed two arguments: the item and an integer index.
 
 code::
-(0..8).sum { |item| 1 / (2 ** item) } // only the item is used; index is unused.
+(0..8).sum { |item| 1 / (2 ** item) }
+// only the item is used; index is unused.
 ::
 
-table::
-## mathematically equivalent to:
+The code above is mathematically equivalent to:
 math::
-\sum_{item=0}^{8} \frac{1}{2^{item}}
+\sum_{i=0}^{n} \frac{1}{2^{x_i}} \quad \text{for} \quad \{x_0, x_1, \ldots, x_n\} \quad (n=8)
 ::
-::
+(emphasis::In the mathematic formula, the argument name:: teletype::item:: emphasis::in sclang code is represented as:: teletype::i::.)
 
 discussion::
 The sum of all items in a collection can be expressed mathematically as:
@@ -326,7 +326,7 @@ table::
 ::
 equivalent to:
 math::
-\text{Sum} \{ x_0, x_1, \ldots, x_n \} = \sum_{i=0}^{n} x_i
+\text{Sum} \{ x_0, x_1, \ldots, x_n \} = \prod_{i=0}^{n} x_i
 ::
 ::
 
@@ -335,21 +335,19 @@ code::
 List[1, 2, 3, 4].sum
 ::
 
-
-
 method::product
 Answer the product of the items in the collection, optionally applying a link::Classes/Function:: to each item before multiplication. When provided, the link::Classes/Function:: receives two arguments: the item and its integer index.
 
 code::
-(0..8).product { |item| 1 / (2 ** item) } // only the item is used; index is unused.
+(0..8).product { |item| 1 / (2 ** item) }
+// only the item is used; index is unused.
 ::
-table::
-## mathematically equivalent to:
+
+The code above is mathematically equivalent to:
 math::
-\prod_{i=0}^{8} \frac{1}{2^i}
+\prod_{i=0}^{n} \frac{1}{2^{x_i}} \quad \text{for} \quad \{x_0, x_1, \ldots, x_n\} \quad (n=8)
 ::
-Note: emphasis::In the mathematic formula, the argument name:: teletype::item:: emphasis::in sclang code is represented as:: teletype::i::.
-::
+(emphasis::In the mathematic formula, the argument name:: teletype::item:: emphasis::in sclang code is represented as:: teletype::i::.)
 
 discussion::
 The product of all items in a collection can be expressed mathematically as:
@@ -370,15 +368,15 @@ code::
 method::mean
 Answer the arithmetic mean of the items in the collection, optionally applying a link::Classes/Function:: to each item before averaging. When provided, the link::Classes/Function:: receives two arguments: the item and its integer index.
 code::
-(0..8).mean { |item| 1 / (2 ** item) } // only the item is used; index is unused.
+(0..8).mean { |item| 1 / (2 ** item) }
+// only the item is used; index is unused.
 ::
-table::
-## mathematically equivalent to:
+
+The code above is mathematically equivalent to:
 math::
-\frac{\sum_{i=0}^{8} \frac{1}{2^i}}{8-0+1}
+\frac{\sum_{i=0}^{n} \frac{1}{2^{x_i}}}{n-x_0+1} \quad \text{for} \quad \{x_0, x_1, \ldots, x_n\} \quad (n=8)
 ::
-Note: emphasis::In the mathematic formula, the argument name:: teletype::item:: emphasis::in sclang code is represented as:: teletype::i::.
-::
+(emphasis::In the mathematic formula, the argument name:: teletype::item:: emphasis::in sclang code is represented as:: teletype::i::.)
 
 discussion::
 The mean of all items in a collection can be expressed mathematically as:
@@ -395,7 +393,6 @@ Example:
 code::
 [1, 2, 3, 4].mean
 ::
-
 
 method::maxItem
 Answer the maximum of the results of strong::function:: evaluated for each item in the receiver. The function is passed two arguments, the item and an integer index.
