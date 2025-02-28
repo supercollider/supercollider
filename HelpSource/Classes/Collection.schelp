@@ -315,7 +315,7 @@ The code above is mathematically equivalent to:
 math::
 \sum_{i=0}^{n} \frac{1}{2^{x_i}} \quad \text{for} \quad \{x_0, x_1, \ldots, x_n\} \quad (n=8)
 ::
-(emphasis::In the mathematic formula, the argument name:: teletype::item:: emphasis::in sclang code is represented as:: teletype::i::.)
+(emphasis::In the mathematic formula, the argument name:: teletype::item:: emphasis::in sclang code is represented as:: math::x_i::.)
 
 discussion::
 The sum of all items in a collection can be expressed mathematically as:
@@ -347,7 +347,7 @@ The code above is mathematically equivalent to:
 math::
 \prod_{i=0}^{n} \frac{1}{2^{x_i}} \quad \text{for} \quad \{x_0, x_1, \ldots, x_n\} \quad (n=8)
 ::
-(emphasis::In the mathematic formula, the argument name:: teletype::item:: emphasis::in sclang code is represented as:: teletype::i::.)
+(emphasis::In the mathematic formula, the argument name:: teletype::item:: emphasis::in sclang code is represented as:: math::x_i::.)
 
 discussion::
 The product of all items in a collection can be expressed mathematically as:
@@ -376,7 +376,7 @@ The code above is mathematically equivalent to:
 math::
 \frac{\sum_{i=0}^{n} \frac{1}{2^{x_i}}}{n-x_0+1} \quad \text{for} \quad \{x_0, x_1, \ldots, x_n\} \quad (n=8)
 ::
-(emphasis::In the mathematic formula, the argument name:: teletype::item:: emphasis::in sclang code is represented as:: teletype::i::.)
+(emphasis::In the mathematic formula, the argument name:: teletype::item:: emphasis::in sclang code is represented as:: math::x_i::.)
 
 discussion::
 The mean of all items in a collection can be expressed mathematically as:
