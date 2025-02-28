@@ -339,8 +339,8 @@ method::product
 Answer the product of the items in the collection, optionally applying a link::Classes/Function:: to each item before multiplication. When provided, the link::Classes/Function:: receives two arguments: the item and its integer index.
 
 code::
-(0..8).product { |item| 1 / (2 ** item) }
 // only the item is used; index is unused.
+(0..8).product { |item| 1 / (2 ** item) }
 ::
 
 The above code is represented in mathematical notation as:
