@@ -42,40 +42,42 @@ Two link::Classes/String:: instances are equal when they have the same character
 However, they are always different from the perspective of identity:
 
 code::
-"we are all the same" == "we are all the same"
 // true: equal values
+"we are all the same" == "we are all the same"
 
-"we are all the same" === "we are all the same"
 // false: different String instances (not identical)
+"we are all the same" === "we are all the same"
 ::
 
 ## link::Classes/Symbol:: instances ||
 The instances of the class link::Classes/Symbol::, written with single quotes or following \ without spaces, are special and singleton: only one instance exists for each unique symbol. Since there is only one of each, two representations of the same symbol are identical:
 code::
-'we are all the same' == 'we are all the same'
 // true: equal values
+'we are all the same' == 'we are all the same'
 
-'we are all the same' === 'we are all the same'
 // true: same Symbol instance (a singleton)
+'we are all the same' === 'we are all the same'
 ::
+
+This singleton nature of link::Classes/Symbol:: makes comparisons fast and efficient, as the sclang only needs to check if two symbols point to the same instance rather than comparing the character of their contents by character.
 
 ## link::Classes/SimpleNumber:: instances ||
 Two instances of the subclasses of link::Classes/SimpleNumber:: are the same in terms of equality if they have the same value:
 
 code::
+// true: equal values
 1.0 == 1.0
-// true: equal values
 
+// true: equal values
 1.0 == 1
-// true: equal values
 ::
-However, they are different in terms of identity if they do not belong to the same classes (in other words, their output data types are different) even though they have the same values:
+However, Identity comparison requires objects to be of the same class, such as both being floats or both being integers, even when their values are equal:
 code::
-1.0 === 1.0
 // true: a singleton instance of the Float class
+1.0 === 1.0
 
-1.0 === 1
-// false: different instances from different classes (Float vs Integer)
+// false: different instances from different classes
+1.0 === 1 // 1.0: Float; 1: Integer
 ::
 ::
 
@@ -87,46 +89,20 @@ subsection:: Equality
 list::
 ##link::Classes/Object#-==#The default implementation of equlity in Object:: is to answer if the two objects are identical.
 However, the definition of equality actually depends on the class of the receiver when link::Overviews/Methods#==:: is overridden in a class:
-## list::
+list::
 ## link::Classes/SimpleNumber::
 ## link::Classes/String::
 ::
 
 ##The detailed low level representation of a number, returned by the link::Classes/Object#-dump#.dump::, is useful to take a close look when the comparison result is different than expected:
-table::
-## When testing the two values, which are typically perceived as identical by humans,
-code::
-(0.1 * 3) == 0.3
-::
-returns,
-teletype::
--> false
-::
-because their levels are different as follows:
-list::
-## code::
-(0.1 * 3).dump
-::
-teletype::
-   Float 0.300000   33333334 3FD33333
--> 0.3
-::
-## code::
-0.3.dump
-::
-teletype::
-   Float 0.300000   33333333 3FD33333
--> 0.3
-::
-::
-::
+See link::#The inaccuracy of human readable decimals:: for details.
 ::
 
 subsection:: Identity
 
 list::
 ## For true singleton instances like link::Classes/Symbol::, equality and identity are the same because only one instance exists for each unique symbol.
-However, numbers (link::Classes/Integer:: and link::Classes/Float::, which are the instances of the subclasses of link::Classes/SimpleNumber::) are not singletons; while they may have equal values, they can be different instances depending on their class:
+However, numbers (link::Classes/Integer:: and link::Classes/Float::), are not singletons; while they may have equal values, they can be different instances as they are different classes handled by the compiler:
 code::
 1.0 === 1
 ::
@@ -137,12 +113,16 @@ code::
 ::
 returns teletype::true::.
 
-## The detailed low level representation of singleton instances, returned by the link::Classes/Object#-dump:: method, shows only its class and its value because it is unique:
+## The detailed low-level representation of singleton instances, returned by the link::Classes/Object#-dump:: method, shows only its class and its value because it is unique. Internally, symbols are implemented as pointers, making comparison operations very efficient since only the symbol table needs to be compared, unlike strings which require character-by-character comparison:
+
 table::
 ##An instance of link::Classes/Symbol:: class:
 code::
 'worth trying'.dump
 ::
+
+returns:
+
 teletype::
    Symbol 'worth trying'
 -> worth trying
@@ -152,11 +132,11 @@ teletype::
 
 section:: Using hash, identityHash and dump
 
-The link::Classes/Object#-hash:: and link::Classes/Object#-identityHash:: methods are internally used to implement link::#equality:: and link::#identity:: comparisons, respectively. They can be used to understand how objects are compared:
+The link::Classes/Object#-hash:: and link::Classes/Object#-identityHash:: methods are internally used to implement link::#equality:: and link::#identity:: comparisons, respectively. These methods are fundamental to how objects are compared and are particularly important when objects serve as keys in link::Classes/Set:: and their subclasses (link::Classes/Dictionary::, link::Classes/IdentityDictionary::, and link::Classes/Event::, for examples), where efficient lookup and comparison are essential:
 
 list::
-## link::Classes/Object#-hash::: Returns a value used for equality comparison, which should be the same for equal objects
-## link::Classes/Object#-identityHash::: Returns a unique value for each distinct object instance
+## link::Classes/Object#-hash::: Returns a value used for equality comparison, which should be the same for equal objects. link::Classes/Dictionary:: uses this method for key lookup, comparing emphasis::the full content of object:: (objectʼs value). While this provides flexible matching based on object contents, it requires more computational resources as it must compare object value.
+## link::Classes/Object#-identityHash::: Returns a unique value for each distinct object instance. link::Classes/IdentityDictionary:: and link::Classes/Event:: use this for more efficient key lookup, as it only needs to compare emphasis::object references:: rather than emphasis::their contents:: (objectʼs value). This makes IdentityDictionary operations typically faster than regular Dictionary lookups.
 ::
 
 The method link::Classes/Object#-dump::, which provides detailed information about an object's internal structure, memory address, and state, is particularly useful when investigating object relationships and memory-related issues.
@@ -165,7 +145,8 @@ These three methods help resolve unexpected results, including silent errors tha
 
 
 subsection::SequenceableCollection
-Evaluate this code first to compare equality test and identity test:
+
+This code establishes the comparison between equality and identity tests:
 code::
 ~array_a = [1, 2]; ~array_b = [1, 2]
 ::
@@ -173,49 +154,32 @@ code::
 list::
 ## Equality:
 code::
-~array_a == ~array_b // checking for equality
-::
-teletype::
--> true
+~array_a == ~array_b // -> true
 ::
 It first checks if the two objects are identical, then they're not in the same class, then their sizes aren't the same, then there's an unequal element. If they are equal, then their emphasis::hash table indices::, which are driven by the method code::.hash:: are equal and identical:
-
 code::
-~array_a.hash
-~array_b.hash
+~array_a.hash ==  ~array_b.hash // -> true
+~array_a.hash === ~array_b.hash // -> true
 ::
-code::
-~array_a.hash ==  ~array_b.hash
-::
-teletype::
--> true
-::
-code::
-~array_a.hash === ~array_b.hash
-::
-teletype::
--> true
-::
-
 ## Identity
-
 code::
-~array_a === ~array_b // checking for identity
+~array_a === ~array_b // -> false
 ::
 
-teletype::
--> false
-::
-They are two different objects allocated at different addresses in virtual memory:
+They are two different objects allocated at different addresses in virtual memory.
+For each instance, the first two values in parentheses (memory addresses and garbage collection counts) will differ and are irrelevant;
+what matters is that these values demonstrate distinct instances in memory:
 
 list::
 ## code::~array_a::
 
-code::
+table::
+## code::
 ~array_a.dump
 ::
 
 returns:
+
 teletype::
 Instance of Array {    (0x1256a70b8, gc=38, fmt=01, flg=00, set=02)
   indexed slots [2]
@@ -224,15 +188,15 @@ Instance of Array {    (0x1256a70b8, gc=38, fmt=01, flg=00, set=02)
 }
 -> [1, 2]
 ::
-
-The first two parts of the parenthesis pair above, i.e. teletype::0x1256a70b8:: and teletype::gc=38::, may be different when evaluating the code code::a.dump::, but their values are determined when evaluating the code code::~array_b = [1, 2]::. (see: link::#-dump::)
-
+::
 ##  code::~array_b::
-code::
+table::
+##code::
 ~array_b.dump
 ::
 
 returns:
+
 teletype::
 Instance of Array {    (0x152d02da8, gc=70, fmt=01, flg=00, set=02)
   indexed slots [2]
@@ -241,8 +205,7 @@ Instance of Array {    (0x152d02da8, gc=70, fmt=01, flg=00, set=02)
 }
 -> [1, 2]
 ::
-
-The first two parts of the parenthesis pair above, i.e. teletype::0x152d02da8:: and teletype::gc=70::, may be different when evaluating the code code::b.dump::, but their values are determined when evaluating the code code::~array_b = [1, 2]::. (see: link::#-dump::)
+::
 ::
 
 The hexadecimal digits addresses indicate the address on virtual memory.
@@ -262,54 +225,47 @@ teletype::
 ::
 
 When two objects are identical, their emphasis::identity hash table indices:: are equal and identical, i.e. the same object always results in the same emphasis::identity hash index::.
+
 code::
 ~array_c = ~array_a
-::
-code::
+
 ~array_a.identityHash
 ~array_c.identityHash
 ~array_b.identityHash
-::
-code::
-~array_a.identityHash ==  ~array_a.identityHash
-::
-teletype::
--> true
-::
-code::
-~array_a.identityHash === ~array_c.identityHash
-::
-teletype::
--> true
-::
-code::
-~array_a.identityHash === ~array_b.identityHash
-::
-teletype::
--> false
+
+~array_a.identityHash ==  ~array_a.identityHash // -> true
+~array_a.identityHash === ~array_c.identityHash // -> true
+~array_a.identityHash === ~array_b.identityHash // -> false
 ::
 ::
 
-subsection::SimpleNumber
+subsection::Integer and Float
 
 The same number will always result in the same emphasis::hash index:: and in the same emphasis::identity hash index:::
 
+list::
+## The following codes yield different results with each evaluation:
 code::
-// Evaluate the following codes more than once and compare the results.
 0.hash
 0.identityHash
+
 0.0.hash
 0.0.identityHash
+
 -0.0.hash
 -0.0.identityHash
-
-// Or check that each of the following pieces of code always returns true:
+::
+## The following code segments consistently return teletype::true:::
+code::
 0.hash == 0.hash
 0.identityHash == 0.identityHash
+
 0.0.hash == 0.0.hash
 0.0.identityHash == 0.0.identityHash
+
 -0.0.hash == -0.0.hash
 -0.0.identityHash == -0.0.identityHash
+::
 ::
 
 
@@ -318,116 +274,107 @@ subsubsection:: An integer and a float with the same value
 If an integer and a float are equal,
 then their emphasis::hash table indices:: are equal and identical:
 code::
-0.hash == 0.0.hash
+0.hash == 0.0.hash // -> true
+0.hash === 0.0.hash // -> true
 ::
-teletype::
--> true
-::
-code::
-0.hash === 0.0.hash
-::
-teletype::
--> true
-::
+
 However, although an integer and a float are equal,
 their emphasis::identity hash table indices:: are
 neither equal nor identical:
 
 code::
-0.identityHash == 0.0.identityHash
+0.identityHash == 0.0.identityHash // -> false
+0.identityHash === 0.0.identityHash // -> false
 ::
-teletype::
--> false
-::
-code::
-0.identityHash === 0.0.identityHash
-::
-teletype::
--> false
-::
-
 
 subsubsection:: The inaccuracy of human readable decimals
 
 0.1 plus 0.1 plus 0.1 equals 0.3:
+
 code::
-0.1 + 0.1 + 0.1
+0.1 + 0.1 + 0.1 // -> 0.3
 ::
-teletype::
--> 0.3
-::
+
 However, sclang returns false when checking for equality of the two:
 
 code::
-0.3 == (0.1 + 0.1 + 0.1)
+0.3 == (0.1 + 0.1 + 0.1) // -> false
 ::
-teletype::
--> false
-::
+
 This is due to the imprecise decimal representation of float
 because the 64-bit SuperCollider uses emphasis::64-bit double precision floats:: on the client (sclang) and emphasis::32-bit floats:: on the server (scsynth and supernova).
 The human-readable decimal representation of the float value may not be accurate.
 To check the more precise hexadecimal representation of float in sclang, the code::.dump:: method (see: link::Classes/Object#-dump::) can be used:
 
-code::
+table::
+## code::
 0.3.dump
 ::
+
+returns:
+
 teletype::
    Float 0.300000   33333333 3FD33333
 -> 0.3
 ::
-code::
+::
+table::
+## code::
 (0.1 + 0.1 + 0.1).dump
 ::
+
+returns:
+
 teletype::
    Float 0.300000   33333334 3FD33333
 -> 0.3
 ::
+::
 
 Consequently, their emphasis::hash table indices:: and emphasis::identity hash indices:: are not the same:
-code::
-0.3.hash == (0.1 + 0.1 + 0.1).hash
-::
-teletype::
--> false
-::
-code::
-0.3.identityHash == (0.1 + 0.1 + 0.1).identityHash
-::
-teletype::
--> false
-::
 
+code::
+0.3.hash == (0.1 + 0.1 + 0.1).hash // -> false
+0.3.identityHash == (0.1 + 0.1 + 0.1).identityHash // -> false
+::
 
 subsubsection:: 0.0 and -0.0
 
-The existence of 0.0 and -0.0 in computing is a result of the way floating point numbers are represented. They are equal in value:
-code::
-0.0 == -0.0
-::
-teletype::
--> true
-::
-However, their identities are not the same:
-code::
-0.0 === -0.0
-::
-teletype::
--> false
-::
-This could be ispected by using link::Overviews/Methods#dump::
+The existence of 0.0 and -0.0 in computing is a result of the way floating point numbers are represented.
+They are equal in value:
 
-list::
+code::
+0.0 == -0.0 // -> true
+::
+
+However, their identities are not the same:
+
+code::
+0.0 === -0.0 // -> false
+::
+
+This could be inspected by using link::Overviews/Methods#dump::
+
+table::
 ## code::
 0.0.dump
 ::
+
+returns:
+
 teletype::
    Float 0.000000   00000000 00000000
 -> 0.0
 ::
+::
+
+table::
 ## code::
 -0.0.dump
 ::
+
+returns:
+
 teletype::
    Float -0.000000   00000000 80000000
 -> -0.0
@@ -435,66 +382,48 @@ teletype::
 ::
 
 Consequently, their emphasis::hash table indices:: and emphasis::identity hash indices:: are not the same:
-code::
-0.0.hash == -0.0.hash
-::
-teletype::
--> false
-::
-code::
-0.0.identityHash == -0.0.identityHash
-::
-teletype::
--> false
-::
 
+code::
+0.0.hash == -0.0.hash // -> false
+0.0.identityHash == -0.0.identityHash // -> false
+::
 
 subsection::String
 
+The following code is a prerequisite for all subsequent examples:
+
 code::
-~string_a = "hi"; ~string_b = "hi"  // Evaluate this code first!
+~string_a = "hi";
+~string_b = "hi"
 ::
 
 list::
 ## Equality:
 code::
-~string_a == ~string_b // checking for equality
+~string_a == ~string_b // -> true
 ::
-teletype::
--> true
-::
+
 It first checks whether the two objects are identical, then the right part of code::==:: is not an instance of the link::Classes/String:: class, then the two link::Classes/String:: instances are identical including upper and lower case. If they are the same, then their emphasis::hash table indices:: are equal and identical:
-
 code::
 ~string_a.hash
 ~string_a.hash
-::
-code::
-~string_a.hash ==  ~string_b.hash
-::
-teletype::
--> true
-::
-code::
-~string_a.hash === ~string_b.hash
-::
-teletype::
--> true
-::
 
+~string_a.hash ==  ~string_b.hash // -> true
+~string_a.hash === ~string_b.hash // -> true
+::
 ## Identity
 code::
-~string_a === ~string_b // // checking for identity
-::
-
-teletype::
--> false
+~string_a === ~string_b // -> false
 ::
 They are two different objects allocated to different addresses in virtual memory.
 The first two parts of the parenthesis pairs below, i.e. teletype::0x1525795a8:: with teletype::gc=54:: by evaluating the code code::~string_a.dump::,
-code::
+table::
+## code::
 ~string_a.dump
 ::
+
+returns:
+
 teletype::
 Instance of String {    (0x1533d23b8, gc=50, fmt=07, flg=10, set=02)
   indexed slots [2]
@@ -503,11 +432,17 @@ Instance of String {    (0x1533d23b8, gc=50, fmt=07, flg=10, set=02)
 }
 -> hi
 ::
+::
 
 and teletype::0x1533d23b8:: with teletype::gc=50:: by evaluating the code code::~string_b.dump::,
-code::
+
+table::
+## code::
 ~string_b.dump
 ::
+
+returns:
+
 teletype::
 Instance of String {    (0x1525795a8, gc=54, fmt=07, flg=10, set=02)
   indexed slots [2]
@@ -516,6 +451,8 @@ Instance of String {    (0x1525795a8, gc=54, fmt=07, flg=10, set=02)
 }
 -> hi
 ::
+::
+
 may be different as the value represented here when one evaluating the same code. N.B.: Their values are determined by evaluating the code code::~string_a = "hi":: and code::~string_b = "hi"::, not by evaluating the code code::~string_a.dump:: and code::~string_b.dump::. (see: link::Classes/Object#-dump::.)
 
 The hexadecimal digits addresses indicate the address on virtual memory.
@@ -533,35 +470,20 @@ teletype::
 ::
 
 When two objects are identical, their emphasis::identity hash table indices:: are equal and identical, i.e. the same object always results in the same emphasis::identity hash index::.
+
 code::
 ~string_c = ~string_a
-::
-code::
+
 ~string_a.identityHash
 ~string_c.identityHash
 ~string_b.identityHash
-::
-code::
-~string_a.identityHash ==  ~string_a.identityHash
-::
-teletype::
--> true
-::
-code::
-~string_a.identityHash === ~string_c.identityHash
-::
-teletype::
--> true
-::
-code::
-~string_a.identityHash === ~string_b.identityHash
-::
-teletype::
--> false
-::
-::
 
-link::Classes/String::
+~string_a.identityHash ==  ~string_a.identityHash // -> true
+~string_a.identityHash === ~string_c.identityHash // -> true
+
+~string_a.identityHash === ~string_b.identityHash // -> false
+::
+::
 
 The link::#-hash:: and link::#-identityHash:: methods return the different emphasis::hash table index:::
 The link::#-hash:: method returns always the same emphasis::hash table index::, while link::#-identityHash:: method returns always the same emphasis::hash table index:::
@@ -578,7 +500,8 @@ teletype::
 ##code::
 "we are all the same".identityHash
 ::
-returns new values each time it is evaluated:
+
+returns new values each time it is evaluated because it creates a new object each time:
 
 for example:
 teletype::
@@ -588,25 +511,25 @@ teletype::
 -> 1088233360
 ::
 
-##code::
+## Testing the teletype::hash:: equality of two link::Classes/String:: instances with the same characteres in the same order are teletype::true:::
+
+code::
 "we are all the same".hash ==  "we are all the same".hash
-::
-teletype::
--> true
+// -> true
 ::
 
-##code::
+## Testing the identity of teletype::hash:: and teletype::identityHash:: of two link::Classes/String:: instances with the same characteres in the same order are teletype::false:::
+
+code::
 "we are all the same".hash === "we are all the same".identityHash
-::
-teletype::
--> false
+// -> false
 ::
 
-##code::
+## Testing the teletype::identityHash:: identity of two link::Classes/String:: instances with the same characteres in the same order are teletype::false:::
+
+code::
 "we are all the same".identityHash === "we are all the same".identityHash
-::
-teletype::
--> false
+// -> false
 ::
 ::
 
@@ -614,39 +537,19 @@ subsection::Symbol
 
 The link::#-hash:: and link::#-identityHash:: methods return the same emphasis::hash table index:::
 
-list::
-##code::
+code::
 'we are all the same'.hash
-::
-teletype::
--> 1592359842
-::
+// -> 1592359842
 
-##code::
 'we are all the same'.identityHash
-::
-teletype::
--> 1592359842
-::
+// -> 1592359842
 
-##code::
 'we are all the same'.hash === 'we are all the same'.hash
-::
-teletype::
--> true
-::
+// -> true
 
-##code::
 'we are all the same'.hash === 'we are all the same'.identityHash
-::
-teletype::
--> true
-::
+// -> true
 
-##code::
 'we are all the same'.identityHash === 'we are all the same'.identityHash
-::
-teletype::
--> true
-::
+// -> true
 ::
