@@ -113,7 +113,7 @@ code::
 ::
 returns teletype::true::.
 
-## The detailed low-level representation of singleton instances, returned by the link::Classes/Object#-dump:: method, shows only its class and its value because it is unique. Internally, symbols are implemented as pointers, making comparison operations very efficient since only the symbol table needs to be compared, unlike strings which require character-by-character comparison:
+## The detailed low-level representation of singleton instances, returned by the link::Classes/Object#-dump:: method, shows only its class and its value because it is unique. Internally, symbols are implemented as pointers, making comparison operations very efficient since only memory addresses need to be compared, unlike strings which require character-by-character comparison:
 
 table::
 ##An instance of link::Classes/Symbol:: class:
