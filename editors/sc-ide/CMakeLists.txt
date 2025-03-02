@@ -275,16 +275,6 @@ if(APPLE)
     endforeach()
 endif()
 
-# This sets up the exe icon for windows.
-if(WIN32)
- set(RES_FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/scide.rc)
- set(CMAKE_RC_COMPILER_INIT windres)
- ENABLE_LANGUAGE(RC)
- SET(CMAKE_RC_COMPILE_OBJECT
- "<CMAKE_RC_COMPILER> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
-endif(WIN32)
-
-
 # final builds of the IDE seem to be broken atm
 if(0 AND FINAL_BUILD)
   CREATE_FINAL_FILE(scide_final.cpp ${ide_sources})
@@ -313,7 +303,14 @@ target_include_directories(libscide PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/util
 )
 
-add_executable( SuperCollider MACOSX_BUNDLE core/main_function.cpp ${RES_FILES} ${AdditionalBundleSources} ${translations})
+add_executable( SuperCollider MACOSX_BUNDLE core/main_function.cpp ${AdditionalBundleSources} ${translations})
+
+if(WIN32)
+    target_sources(SuperCollider
+	PRIVATE
+		${CMAKE_SOURCE_DIR}/platform/windows/Resources/scide.rc
+	)
+endif()
 
 set_target_properties(libscide PROPERTIES PREFIX "")
 

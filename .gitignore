@@ -11,6 +11,14 @@ platform/mac/build
 CMakeLists.txt.user
 external_libraries/portaudio/asio*
 
+# Visual Studio
+.vs/**
+out/**
+CMakeSettings.json
+
+# CMake User Presets
+CMakeUserPresets.json
+
 # working files made by packager script
 common/Packager/LinuxExclusions.txt
 common/Packager/SuperCollider*.tar.gz
