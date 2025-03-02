@@ -377,7 +377,7 @@ private:
         packet->mReplyAddr.mReplyFunc = tcp_reply_func;
         packet->mReplyAddr.mReplyData = (void*)&socket;
         packet->mReplyAddr.mPort = socket.remote_endpoint().port();
-        packet->mReplyAddr.mSocket = 0;
+        packet->mReplyAddr.mSocket = socket.native_handle();
         packet->mReplyAddr.mAddress = socket.remote_endpoint().address();
 
         packet->mSize = OSCMsgLength;
@@ -492,6 +492,8 @@ SCSYNTH_DLLEXPORT_C bool World_SendPacketWithContext(World* inWorld, int inSize,
         packet->mReplyAddr.mReplyFunc = inFunc;
         packet->mReplyAddr.mReplyData = inContext;
         packet->mReplyAddr.mSocket = 0;
+        packet->mReplyAddr.mProtocol = 0;
+        packet->mReplyAddr.mPort = 0;
 
         if (!UnrollOSCPacket(inWorld, inSize, inData, packet)) {
             free(packet);
