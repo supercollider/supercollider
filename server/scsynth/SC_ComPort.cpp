@@ -492,7 +492,7 @@ SCSYNTH_DLLEXPORT_C bool World_SendPacketWithContext(World* inWorld, int inSize,
         packet->mReplyAddr.mReplyFunc = inFunc;
         packet->mReplyAddr.mReplyData = inContext;
         packet->mReplyAddr.mSocket = 0;
-        packet->mReplyAddr.mProtocol = 0;
+        packet->mReplyAddr.mProtocol = kUDP;
         packet->mReplyAddr.mPort = 0;
 
         if (!UnrollOSCPacket(inWorld, inSize, inData, packet)) {
