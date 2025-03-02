@@ -376,6 +376,9 @@ private:
         packet->mReplyAddr.mProtocol = kTCP;
         packet->mReplyAddr.mReplyFunc = tcp_reply_func;
         packet->mReplyAddr.mReplyData = (void*)&socket;
+        packet->mReplyAddr.mPort = socket.remote_endpoint().port();
+        packet->mReplyAddr.mSocket = 0;
+        packet->mReplyAddr.mAddress = socket.remote_endpoint().address();
 
         packet->mSize = OSCMsgLength;
 
