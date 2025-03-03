@@ -2,7 +2,7 @@ TestVolume : UnitTest {
 
 	test_booting {
 		var s = Server(thisMethod.name);
-		var correctReply = [ '/g_queryTree.reply', 0, 0, 2, 1, 0, 1000, -1, 'volumeAmpControl2' ];
+		var correctReply = [ '/g_queryTree.reply', 0, 0, 2, 1, 0, 2, 1, 3, -1, 'volumeAmpControl2' ];
 		var queryReply;
 		var nodeIDidx = 6;
 
@@ -64,5 +64,54 @@ TestVolume : UnitTest {
 
 		s.quit.remove;
 	}
+
+	test_remoteSetVolume {
+		var s = Server(thisMethod.name);
+
+		s.options.bindAddress = "0.0.0.0"; // allow connections from any address
+		s.options.maxLogins = 2; // set to 2 clients
+
+		this.bootServer(s);
+
+		0.2.wait;
+		// create ampSynth
+		s.volume = -3;
+
+		0.1.wait;
+		// send from outside like a remote client
+		s.sendMsg(15, 3, \volumeAmp, 0.25);
+
+		0.1.wait;
+		this.assertFloatEquals(s.volume.volume, 0.25.ampdb,
+			"server should update volume level when set from remote client."
+		);
+
+		s.quit.remove;
+	}
+
+	test_resetVolumeAfterKill {
+		var s = Server(thisMethod.name);
+
+		s.options.bindAddress = "0.0.0.0"; // allow connections from any address
+		s.options.maxLogins = 2; // set to 2 clients
+
+		this.bootServer(s);
+
+		0.2.wait;
+		// create ampSynth
+		s.volume = -3;
+
+		0.2.wait;
+		// kill ampSynth irregularly
+		s.sendMsg("n_free", s.volume.ampSynth.nodeID);
+
+		0.2.wait;
+		this.assertFloatEquals(s.volume.volume, 0,
+			"server should reset volume level when ampSynth dies irregularly."
+		);
+
+		s.quit.remove;
+	}
+
 
 }
