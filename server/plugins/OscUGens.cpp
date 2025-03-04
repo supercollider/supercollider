@@ -978,9 +978,10 @@ void DetectIndex_next_a(DetectIndex* unit, int inNumSamples) {
     float inval;
 
     LOOP1(
-        inNumSamples, inval = ZXP(in);
-        if (inval != prev) { prevIndex = DetectIndex_FindIndex(table, inval, maxindex); } prev = inval;
-        ZXP(out) = (float)prevIndex;);
+        inNumSamples, inval = ZXP(in); if (inval != prev) {
+            prevIndex = DetectIndex_FindIndex(table, inval, maxindex);
+            prev = inval;
+        } ZXP(out) = (float)prevIndex;);
 
     unit->mPrev = prevIndex;
     unit->mPrevIn = inval;
