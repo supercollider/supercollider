@@ -36,7 +36,7 @@ definitionlist::
 || A single block of audio-rate output as a float* at the given index.
 
 ## code::OUT0(index)::
-|| A single sample of control-rate input as a float, at the given index.
+|| A single sample of control-rate output as a float, at the given index.
 
 ## code::INRATE(index)::
 || Get the rate of a given input index. This will be one of the four rates.
