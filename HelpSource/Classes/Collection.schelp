@@ -225,17 +225,23 @@ code::
 List[1, 2, 3, 4].detect({ |item, i| item.even });
 ::
 
+method::detectLast
+Similar to link::#-detect::, but doing in a reversed manner.
+
 method::detectIndex
 Similar to link::#-detect:: but returns the index instead of the item itself.
 code::
 List[1, 2, 3, 4].detectIndex({ |item, i| item.even });
 ::
 
+method::detectLastIndex
+Similar to link::#-detectIndex::, but doing in a reversed manner.
+
 method::lastForWhich
-Similar to link::#-detect::, but doing in a reversed manner.
+Synonym to link::#-detectLast::, which is added to keep the consistency of naming.
 
 method::lastIndexForWhich
-Similar to link::#-detectIndex::, but doing in a reversed manner.
+Synonym to link::#-detectLastIndex::, which is added to keep the consistency of naming.
 
 method::inject
 In functional programming, the operation known as a left fold.
