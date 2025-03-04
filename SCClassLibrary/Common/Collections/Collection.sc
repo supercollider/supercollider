@@ -193,9 +193,15 @@ Collection {
 		this.do {|elem, i| if (function.value(elem, i)) { ^elem } }
 		^nil;
 	}
+	detectLast { | function |
+		^this.lastForWhich(function);
+	}
 	detectIndex { | function |
 		this.do {|elem, i| if (function.value(elem, i)) { ^i } }
 		^nil;
+	}
+	detectLastIndex { | function |
+		^this.lastIndexForWhich(function);
 	}
 	doMsg { | selector ... args |
 		this.do {| item | item.performList(selector, args) }
