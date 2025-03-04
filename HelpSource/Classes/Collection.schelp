@@ -318,19 +318,7 @@ math::
 where math::x_i:: is the function argument teletype::item::.
 
 discussion::
-The sum of all items in a collection can be expressed mathematically as:
-
-table::
-##teletype::
-[x_0, x_1, ..., x_n].sum // pseudo-code
-::
-equivalent to:
-math::
-\text{Sum} \{ x_0, x_1, \ldots, x_n \} := \sum_{i=0}^{n} x_i
-::
-::
-
-Example:
+The sum of all items in a collection can be expressed as:
 code::
 List[1, 2, 3, 4].sum
 ::
@@ -350,17 +338,7 @@ math::
 where math::x_i:: is the function argument teletype::item::.
 
 discussion::
-The product of all items in a collection can be expressed mathematically as:
-table::
-## teletype::
-[x_0, x_1, ..., x_n].product // pseudo-code
-::
-equivalent to:
-math::
-\text{Product} \{ x_0, x_1, \ldots, x_n \} := \prod_{i=0}^{n} x_i
-::
-::
-Example:
+The product of all items in a collection can be expressed as:
 code::
 [1, 2, 3, 4].product
 ::
@@ -379,17 +357,7 @@ math::
 where math::x_i:: is the function argument teletype::item::.
 
 discussion::
-The mean of all items in a collection can be expressed mathematically as:
-table::
-## teletype::
-[\x_0, \x_1, ..., \x_n].mean // pseudo-code
-::
-equivalent to:
-math::
-\text{Mean}\{ x_0, x_1, \ldots, x_n \} := \frac{\sum_{i=0}^{n} x_i}{n-x_0+1}
-::
-::
-Example:
+The mean of all items in a collection can be expressed as:
 code::
 [1, 2, 3, 4].mean
 ::
@@ -638,4 +606,11 @@ a = [1, 2, 3, 4];
 // a = Bag[1, 2, 3, 4];
 [1, 3].isSubsetOf(a); // true
 [1, 5].isSubsetOf(a); // false
+::
+In mathematical notation, the last two lines of the above code are the equivalent to
+math::
+[1, 3] \subseteq [1, 2, 3, 4] \Rightarrow \text{True}
+::
+math::
+[1, 5] \subseteq [1, 2, 3, 4] \Rightarrow \text{False}
 ::
