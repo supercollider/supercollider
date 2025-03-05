@@ -576,7 +576,7 @@ var path = thisProcess.nowExecutingPath;
 f = {
 	("CmdPeriod’s thisProcess.nowExecutingPath:" + path).postln
 };
-};
+
 CmdPeriod.add(f);
 )
 ::
@@ -595,6 +595,7 @@ var path = thisProcess.nowExecutingPath;
 g = {
 	("ServerBoot’s thisProcess.nowExecutingPath:" + path).postln
 };
+
 ServerBoot.add(g);
 
 s.reboot
@@ -611,6 +612,7 @@ ServerBoot.remove(g);
 code::
 (
 var path = thisProcess.nowExecutingPath;
+
 h = {
 	("ServerTree’s thisProcess.nowExecutingPath:" + path).postln
 };
