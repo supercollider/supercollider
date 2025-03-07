@@ -55,11 +55,11 @@ jobs:
             extra-cmake-flags: ""
             artifact-suffix: "macOS-x64-legacy" # set if needed - will trigger artifact upload
 
-          - job-name: "x64 use system libraries"
-            os-version: "13"
-            xcode-version: "15.2"
+          - job-name: "arm64 use system libraries"
+            os-version: "15"
+            xcode-version: "16.0"
             deployment-target: ""
-            cmake-architectures: x86_64
+            cmake-architectures: "arm64"
             homebrew-packages: "qt@6 libsndfile readline fftw portaudio yaml-cpp boost"
             vcpkg-packages: ""
             vcpkg-triplet: ""
