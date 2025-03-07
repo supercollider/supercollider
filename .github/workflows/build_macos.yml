@@ -68,9 +68,11 @@ jobs:
           - job-name: "x64 shared libscsynth"
             os-version: "13"
             xcode-version: "15.2"
+            qt-version: "6.7.3" # will use qt from aqtinstall
+            qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
             deployment-target: ""
             cmake-architectures: x86_64
-            homebrew-packages: "qt@6 libsndfile readline fftw portaudio"
+            homebrew-packages: "libsndfile readline fftw portaudio"
             vcpkg-packages: ""
             vcpkg-triplet: ""
             extra-cmake-flags: "-D LIBSCSYNTH=ON"
