@@ -864,10 +864,10 @@ TestCoreUGens : UnitTest {
 					this.assertFloatEquals(data.first, startVal,
 						"%.%'s first output sample should be its given start value.".format(ugen, rate), within: tolerance, report: false);
 
+					// An exception to this test would be if the duration of the Line is less than a frame duration.
+					// In that (odd) case the "correct" first value is the end value. See GH Issue #4279.
 					this.assert(data.last == endVal and: { data[data.size-2] != endVal },
 						"%.% should not reach its end value before the given duration".format(ugen, rate), report: false);
-					// Note an exception to the previouse test would be if the duration of the Line is less than a frame duration.
-					// In that (odd) case the "correct" first value is the end value. See GH issue #4279.
 
 					cond.signalOne;
 				});
@@ -876,70 +876,99 @@ TestCoreUGens : UnitTest {
 		}
 	}
 
-	test_env_endsAtCorrectSample {
-
-		var sampleDursToTest = (2 .. 27) ++ 63 ++ (64, 64+23 .. 256); // mix of below and over block size
-		var numTests = sampleDursToTest.size * 3 * 2; // * 3 different envs, * 2 different rates
-		var completed = 0;
-		var testsFinished = false;
+	test_env_endsOnTime {
+		var shapes = [\sin, \lin, \exp, \sqr, \cub, \welch, -2.2, \step, \hold];
+		var rates = [\kr, \ar];
+		var numTests = shapes.size * rates.size;
 		var cond = CondVar();
-		var tolerance = -100.dbamp;
-		var envEndVal = 100;
+		var testsFinished = false;
+		var completed = 0;
 
-		// Test different env shapes, ar & kr rates, multiple durations
+		// Many env stages to test time error accumulation
+		// (10, 83.4 .. 1000).scramble ->
+		var levels = [230.2, 817.4, 670.6, 890.8, 303.6, 377.0, 964.2, 523.8, 10.0, 156.8, 83.4, 597.2, 450.4, 744.0];
+
+		// Between 3 and 6 samples per stage (ensure minimum of 2)
+		// { rrand(3, 6) } ! (levels.size-1) ->
+		var timesInSamps = [4, 5, 4, 6, 4, 4, 6, 3, 6, 6, 6, 4, 6];
+
+		// Tolerance is relative to max possible level jump
+		var tolerance = (levels.maxItem - levels.minItem) * -100.dbamp;
+
 		server.bootSync;
-		[   // arguments to pass to Env: levels, durFactor, curve
-			[ [1.5, envEndVal], 1, \sin ], // single segment env
-			[ [1.5, 10, envEndVal], [1/3, 2/3], [\lin, \lin] ], // multisegment env
-			[ [1.5, 10, envEndVal], [1/3, 2/3], [\lin, \sin] ] // multisegment env, mixed curves
-		].do{ |envSpec, envi|
 
-			[\ar, \kr].do { |rate|
+		shapes.do{ |shape|
+			rates.do{ |rate|
+				var fs = switch(rate,
+					\ar, { server.sampleRate },
+					\kr, { server.sampleRate / server.options.blockSize }
+				);
+				// We expect the env to arrive at exactly this sample index.
+				var envDur_smp = timesInSamps.sum.asInteger;
+				// Render a few extra samples to observe position of Env's end value.
+				// Must be >1 to avoid loadToFloatArray truncating last sample (floating point rounding error)
+				var excessSamples = 4;
+				var renderDur = (envDur_smp + excessSamples) / fs;
 
-				sampleDursToTest.do{ |numSamps|
-
-					var sampleDur = switch(rate,
-						\ar, { 1 / server.sampleRate },
-						\kr, { server.options.blockSize / server.sampleRate }
+				{
+					EnvGen.perform(rate,
+						Env(levels, timesInSamps.normalizeSum, shape),
+						timeScale: envDur_smp / fs
 					);
-					// Render a couple extra samples to observe position of Env's end value.
-					// Must be >1 to avoid loadToFloatArray truncating last sample (floating point rounding error)
-					var excessSamples = 2;
-					var lineDur = numSamps * sampleDur;
-					var renderDur = (numSamps + excessSamples) * sampleDur;
+				}.loadToFloatArray(renderDur, server,
+					action: { |data|
+						// the end val is reached after the total env duration has elapsed, which,
+						// given zero-based indexing is index envDur_smp
+						var dataEndVal = data[envDur_smp];
+						var dataEndVal_p1 = data[envDur_smp+1];
+						var dataEndVal_m1 = data[envDur_smp-1];
+						var envEndVal = levels.last;
 
-					{   // ensure values change enough to meaningfully exceed 'within' threshold
-						("lineDur and segment lengths: % %\n").postf(lineDur, envSpec[1] * lineDur);
-						EnvGen.perform(rate, Env(envSpec[0], envSpec[1] * lineDur, envSpec[2]))
-					}.loadToFloatArray(renderDur, server,
-						{ |data|
-							var dataEndVal = data[numSamps];
-							var priorToEndVal = data[numSamps-1];
+						var test1, test2, test3;
+						var ttlMsgs = [];
 
-							this.assertFloatEquals(dataEndVal, envEndVal,
-								"EnvGen should not arrive late to its end value [dur % samples, %, which env %]".format(numSamps, rate, envi),
-								within: tolerance, report: false
-							);
+						// store local vars to avoid async overwrites
+						var shp = shape;
+						var rt = rate;
 
-							this.assert(dataEndVal != priorToEndVal,
-								"EnvGen should not arrive early to its end value [dur % samples, %, which env %, third/second to last samps: [%, %]]".format(numSamps, rate, envi, data[numSamps-2], priorToEndVal),
-								report: false
-							);
+						// Test 1: end value is correct
+						test1 = ((dataEndVal - envEndVal).abs < tolerance);
 
-							completed = completed + 1;
-							cond.signalOne;
-						}
-					);
-					server.sync;
-				}
-			}
-		};
+						// Test 2: one before end value should not equal the end value
+						test2 = (dataEndVal - dataEndVal_m1).abs > tolerance;
+						if (shp == \step or: { shp == \hold }) { test2 = true }; // test 2 doesn't apply to step or hold env
 
+						// Test 3: one sample after the env dur is the end val
+						test3 = (dataEndVal_p1 - envEndVal).abs < tolerance;
+
+						// We're more forgiving with \hold - it might arrive to its segment value at envEndVal or endVal+1
+						// depending on whether the sampling point falls before or after the segment duration
+						// (there's a theoretical "correct" answer, which would go against the how the docs say it behaves,
+						// but modifying this would make a breaking change)
+						if (shp == \hold and: { test3 or: { test1 } }) { test1 = test3 = true };
+
+						this.assert(test1,
+							format(
+								"EnvGen should end at the correct value (%, %) - should be: % is: %\n",
+								shp, rt, envEndVal, dataEndVal
+							), report: false
+						);
+						this.assert(test2, format("EnvGen should not end early. (%, %)", shp, rt), report: false);
+						this.assert(test3, format("EnvGen should not end late. (%, %)", shp, rt), report: false);
+
+						completed = completed + 1;
+						cond.signalOne;
+				});
+				server.sync;
+			} // end rates
+		}; // end shapes
+
+		// Conservatively set timeout based on the control rate tests' duration
 		testsFinished = cond.waitFor(
-			(1.5 * numTests * sampleDursToTest.maxItem / server.sampleRate).max(minTimeOut),
+			(1.5 * numTests * timesInSamps.sum * (server.sampleRate / server.options.blockSize)).max(minTimeOut),
 			{ completed == numTests }
 		);
-		this.assert(testsFinished, "TIMEOUT: test_env_endsAtCorrectSample", report: false);
+		this.assert(testsFinished, "TIMEOUT: test_env_endsOnTime", report: false);
 	}
 
 	test_oscillators_startAtCorrectPhase {
