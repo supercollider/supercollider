@@ -249,7 +249,7 @@ method::lastForWhich
 Returns the last element of the collection for which the function is true. Synonym to link::#-detectLast::.
 
 method::lastIndexForWhich
-Returns the index of the last element of the collection for which the function is true. Synonym to link::#-detectLast::.
+Returns the index of the last element of the collection for which the function is true. Synonym to link::#-detectLastIndex::.
 
 method::inject
 In functional programming, the operation known as a left fold.
