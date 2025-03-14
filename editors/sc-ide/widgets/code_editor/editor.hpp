@@ -20,6 +20,7 @@
 
 #pragma once
 
+#include <QGestureEvent>
 #include <QPlainTextEdit>
 #include <QGraphicsScene>
 #include <QList>
@@ -64,7 +65,10 @@ public:
 
     void showPosition(int charPosition, int selectionLength = 0);
     QString symbolUnderCursor();
+    bool gestureEvent(QGestureEvent* event);
     int inactiveFadeAlpha() { return mInactiveFadeAlpha; }
+
+    static float clampFontSize(float newSize);
 
 protected:
     virtual bool event(QEvent*);
@@ -116,6 +120,7 @@ protected:
     virtual void indentCurrentRegion() {}
 
     void zoomFont(int steps);
+    void zoomFont(float scaler);
 
     void copyUpDown(bool up);
     void moveLineUpDown(bool up);
