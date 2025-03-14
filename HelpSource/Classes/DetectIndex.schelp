@@ -7,7 +7,8 @@ Linearly searches a buffer for a value (i.e., loops over the frames in the
 buffer from the beginning, checking for float equality), and returns index of first occurrence of said value.
 Returns -1 if value is not found.
 The object performs a search whenever a change in the strong::in:: argument is
-detected.
+detected; 
+changes in the strong::bufnum:: argument do not trigger searches.
 Checks for changes occur at the selected rate (ar or kr).
 
 classmethods::
