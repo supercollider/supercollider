@@ -252,8 +252,8 @@ jobs:
             verify-app: true
 
           - job-name: 'x64 legacy'
-            os-version: '11'
-            xcode-version: '12.4'
+            os-version: '10.15'
+            xcode-version: '10.3'
             qt-version: '5.9.9' # will use qt from aqtinstall
             deployment-target: '10.10'
             cmake-architectures: x86_64
