@@ -135,12 +135,15 @@ sweep phase:
     list of nonlocal reached objects.
 */
 
-void fatalerror(const char* str);
 void fatalerror(const char* str) {
     fputs(str, stderr);
     postfl(str);
-    throw std::runtime_error(str);
-    // exit(-1);
+
+    if (std::getenv("SCLANG_NO_EXIT_ON_FATAL_ERROR") != nullptr) {
+        throw std::runtime_error(str);
+    }
+
+    exit(-1);
 }
 
 inline int ScanSize(PyrObjectHdr* obj) { return obj->obj_format <= obj_slot ? obj->size : 0; }
