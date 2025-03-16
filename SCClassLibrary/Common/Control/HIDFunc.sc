@@ -569,6 +569,9 @@ HIDdef : HIDFunc {
 		var objs = all.copy;
 		objs.do(_.free)
 	}
+
+	// TODO: Can this be implemented?
+	gui { ^this.notYetImplemented(thisMethod) }
 }
 
 

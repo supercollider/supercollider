@@ -53,6 +53,8 @@ FileReader : Stream {
 
 	read { ^this.all }
 
+	put { this.doesNotImplement(thisMethod) }
+
 	*read { | path, skipEmptyLines=false, skipBlanks=false, func, delimiter, startRow = 0, skipSize = 0 |
 		var fr, table;
 		fr = this.new(path, skipEmptyLines, skipBlanks,  delimiter) ?? { ^nil };
@@ -67,7 +69,8 @@ FileReader : Stream {
 	}
 
 	*readInterpret { | path, skipEmptyLines=false, skipBlanks=false, delimiter, startRow = 0, skipSize = 0  |
-		^this.read(path, skipEmptyLines, skipBlanks, _.interpret, delimiter, startRow, skipSize )	}
+		^this.read(path, skipEmptyLines, skipBlanks, _.interpret, delimiter, startRow, skipSize )
+	}
 
 }
 

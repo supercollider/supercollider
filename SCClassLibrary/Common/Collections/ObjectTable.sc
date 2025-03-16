@@ -46,6 +46,9 @@ TwoWayIdentityDictionary : Collection {
 		^idToObj.printItemsOn(stream, itemsPerLine)
 	}
 
+	// TODO: this looks like it could be implemented.
+	isAssociationArray { ^this.notYetImplemented(thisMethod) }
+
 
 	// PRIVATE
 	init {
@@ -98,4 +101,5 @@ ObjectTable : TwoWayIdentityDictionary {
 			obj.performList(selector, args);
 		});
 	}
+
 }

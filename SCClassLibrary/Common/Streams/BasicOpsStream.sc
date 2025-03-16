@@ -13,6 +13,8 @@ UnaryOpStream : Stream {
 	}
 	reset { a.reset }
 	storeOn { arg stream; stream <<< a << "." << operator }
+	// Or perhaps doesNotImplement?
+	put { ^this.notYetImplemented(thisMethod) }
 
 }
 
@@ -35,6 +37,8 @@ BinaryOpStream : Stream {
 	storeOn { arg stream;
 			stream << "(" <<< a << " " << operator.asBinOpString << " " <<< b << ")"
 	}
+	// Or perhaps doesNotImplement?
+	put { ^this.notYetImplemented(thisMethod) }
 }
 
 
@@ -69,6 +73,9 @@ BinaryOpXStream : Stream {
 			stream << ".x";
 			stream << " " <<< b << ")"
 	}
+
+	// Or perhaps doesNotImplement?
+	put { ^this.notYetImplemented(thisMethod) }
 }
 
 
@@ -100,4 +107,7 @@ NAryOpStream : Stream {
 	reset { a.reset; arglist.do({ arg item; item.reset }) }
 
 	storeOn { arg stream; stream <<< a << "." << operator << "(" <<<* arglist << ")" }
+
+	// Or perhaps doesNotImplement?
+	put { ^this.notYetImplemented(thisMethod) }
 }
