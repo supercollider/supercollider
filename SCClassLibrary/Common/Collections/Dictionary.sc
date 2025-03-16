@@ -541,7 +541,7 @@ IdentityDictionary : Dictionary {
 
 	doesNotUnderstand { |selector... args, kwargs|
 		if (know.not) {
-            ^super.performArgs(\doesNotUnderstand, args, kwargs)
+            ^this.superPerformArgs(\doesNotUnderstand, args, kwargs)
 		};
         this[selector] !? { |func|
 			^func.performArgs(\functionPerformList, [\value, this, args], kwargs);
