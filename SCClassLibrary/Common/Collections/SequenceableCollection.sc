@@ -118,6 +118,16 @@ SequenceableCollection : Collection {
 	wchoose { arg weights;
 		^this.at(weights.windex)
 	}
+	// select an element at random using an array of weights that is determined at call and normalized
+	wchoosen { |weights|
+		weights = weights.value(this);
+		^if(weights.isNil) {
+			this.choose
+		} {
+			weights = weights.keep(this.size).collect { |x| x.value(this) };
+			this.at(weights.normalizeSum.windex)
+		}
+	}
 
 	== { | aCollection |
 		if (this === aCollection) { ^true };
