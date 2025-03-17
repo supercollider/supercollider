@@ -209,7 +209,7 @@ Plot {
 	value_ { |array|
 		value = array;
 		valueCache = nil;
-		interp = value.any { |v| v%1 > 0};
+		interp = value.any(_.isInteger.not);
 	}
 	spec_ { |sp|
 		spec = sp;
