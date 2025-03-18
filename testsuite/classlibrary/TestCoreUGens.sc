@@ -333,11 +333,11 @@ TestCoreUGens : UnitTest {
 		// Other equivalence tests that don't use the batch test parameters above:
 
 		//////////////////////////////////////////
-		// Equivalence of linear Env and Line, with short duration and fast phase change.
+		// Equivalence of linear Env, Line and XLine, with short duration and fast phase change.
 		// In response to errors found in "m_grow" (step size) calculation in EnvGen,
 		// in particular with small env segment sizes.
 		sampleDursToTest = (2 .. 15);
-		numTests = sampleDursToTest.size * 2; // * 2: tests performed at ar and kr
+		numTests = sampleDursToTest.size * 4; // * 4: tests performed on Line and XLine, at ar and kr
 		completed = 0; // reset counter
 
 		[\ar, \kr].do { |rate|
@@ -359,6 +359,26 @@ TestCoreUGens : UnitTest {
 					completed = completed + 1;
 					cond.signalOne;
 				});
+				server.sync;
+
+				if (numSamps == 2) {
+					// When duration is 2 samples, skip EnvGen vs. XLine test.
+					// In this exceptional case, EnvGen is forced to a linear shape (could probably be fixed).
+					completed = completed + 1;
+					cond.signalOne;
+				} {
+					{   // ensure values change enough to meaningfully exceed 'within' threshold
+						EnvGen.perform(rate, Env([1.5, 100], lineDur, \exp)) -
+						XLine.perform(rate, 1.5, 100, lineDur)
+					}.loadToFloatArray(testDur, server, { |data|
+						this.assertArrayFloatEquals(data, 0,
+							"EnvGen should be equal to XLine over short durations [% samples] with fast phase change. [%]".format(numSamps, rate),
+							within: -90.dbamp, report: false
+						);
+						completed = completed + 1;
+						cond.signalOne;
+					});
+				};
 				server.sync;
 			}
 		};
@@ -840,42 +860,7 @@ TestCoreUGens : UnitTest {
 		};
 	}
 
-	test_line_startAndEndSampleAreOuputOverDur {
-		var durFrames = defaultNumBlocksToTest; // duration for the line to complete its trajectory, in frames
-		var renderFrames = durFrames + 1; // render one extra frame to check that the end value is reached
-		var startVal = 2;
-		var endVal = 20;
-		var tolerance = -100.dbamp;
-		var cond = CondVar();
-
-		server.bootSync;
-
-		[\ar, \kr].do{ |rate|
-			[Line, XLine].do{ |ugen|
-				var fs = server.sampleRate;
-				var rateScale = switch(rate, \ar, { 1.0 }, \kr, { server.options.blockSize });
-				var lineDur = durFrames * rateScale / fs;
-				var testDur = renderFrames * rateScale / fs;
-
-				{
-					ugen.perform(rate, startVal, endVal, lineDur)
-				}.loadToFloatArray(testDur, server, { |data|
-
-					this.assertFloatEquals(data.first, startVal,
-						"%.%'s first output sample should be its given start value.".format(ugen, rate), within: tolerance, report: false);
-
-					// An exception to this test would be if the duration of the Line is less than a frame duration.
-					// In that (odd) case the "correct" first value is the end value. See GH Issue #4279.
-					this.assert(data.last == endVal and: { data[data.size-2] != endVal },
-						"%.% should not reach its end value before the given duration".format(ugen, rate), report: false);
-
-					cond.signalOne;
-				});
-				cond.wait;
-			}
-		}
-	}
-
+	// Test for correct arrival time of Envs with numerous stages
 	test_env_endsOnTime {
 		var shapes = [\sin, \lin, \exp, \sqr, \cub, \welch, -2.2, \step, \hold];
 		var rates = [\kr, \ar];
@@ -905,7 +890,8 @@ TestCoreUGens : UnitTest {
 				);
 				// We expect the env to arrive at exactly this sample index.
 				var envDur_smp = timesInSamps.sum.asInteger;
-				// Render a few extra samples to observe position of Env's end value.
+
+				// Render a few excess samples to observe position of Env's end value.
 				// Must be >1 to avoid loadToFloatArray truncating last sample (floating point rounding error)
 				var excessSamples = 4;
 				var renderDur = (envDur_smp + excessSamples) / fs;
@@ -917,15 +903,14 @@ TestCoreUGens : UnitTest {
 					);
 				}.loadToFloatArray(renderDur, server,
 					action: { |data|
-						// the end val is reached after the total env duration has elapsed, which,
-						// given zero-based indexing is index envDur_smp
+						var test1, test2, test3;
+
+						// the end val is reached after the total env duration has elapsed,
+						// which is index envDur_smp
 						var dataEndVal = data[envDur_smp];
 						var dataEndVal_p1 = data[envDur_smp+1];
 						var dataEndVal_m1 = data[envDur_smp-1];
 						var envEndVal = levels.last;
-
-						var test1, test2, test3;
-						var ttlMsgs = [];
 
 						// store local vars to avoid async overwrites
 						var shp = shape;
@@ -935,15 +920,20 @@ TestCoreUGens : UnitTest {
 						test1 = ((dataEndVal - envEndVal).abs < tolerance);
 
 						// Test 2: one before end value should not equal the end value
+						// An exception to this test would be if the duration of the Line is
+						// less than a frame duration. In that (odd) case the "correct"
+						// first value is the end value. See GH Issue #4279.
 						test2 = (dataEndVal - dataEndVal_m1).abs > tolerance;
-						if (shp == \step or: { shp == \hold }) { test2 = true }; // test 2 doesn't apply to step or hold env
+						// test 2 doesn't apply to step or hold shapes
+						if (shp == \step or: { shp == \hold }) { test2 = true };
 
 						// Test 3: one sample after the env dur is the end val
 						test3 = (dataEndVal_p1 - envEndVal).abs < tolerance;
 
-						// We're more forgiving with \hold - it might arrive to its segment value at envEndVal or endVal+1
-						// depending on whether the sampling point falls before or after the segment duration
-						// (there's a theoretical "correct" answer, which would go against the how the docs say it behaves,
+						// We're more forgiving with \hold - it might arrive to its segment
+						// value at envEndVal or endVal+1 depending on whether the sampling point
+						// falls before or after the segment duration (there's a theoretical
+						// "correct" answer, which would go against the how the docs say it behaves,
 						// but modifying this would make a breaking change)
 						if (shp == \hold and: { test3 or: { test1 } }) { test1 = test3 = true };
 
@@ -955,6 +945,16 @@ TestCoreUGens : UnitTest {
 						);
 						this.assert(test2, format("EnvGen should not end early. (%, %)", shp, rt), report: false);
 						this.assert(test3, format("EnvGen should not end late. (%, %)", shp, rt), report: false);
+
+						// Test 4: While we're here, let's confirm EnvGen's first output sample is accurate.
+						if (shp != \step) {
+							this.assertFloatEquals(data.first, levels.first,
+								format(
+									"EnvGen's first output sample should be its given start value. (%, %)",
+									shp, rt
+								), report: false
+							);
+						};
 
 						completed = completed + 1;
 						cond.signalOne;
