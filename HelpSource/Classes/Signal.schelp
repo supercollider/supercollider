@@ -434,13 +434,3 @@ Before SuperCollider 3.13 this function was implemented incorrectly, evaluating 
 method::+, -, *, /, div, pow, mod, min, max, ring1, ring2, ring3, ring4, difsqr, sumsqr, sqrdif, absdif, amclip, scaleneg, clip2, wrap2, excess
 method:: %, **
 method:: <!
-
-code::
-// these fail for Signal but work for FloatArray:
-Signal[0, 0.5, 1] pow: 2;
-Signal[0, 0.5, 1] ** 2;
-Signal[0, 0.5, 1] mod: 0.15;
-Signal[0, 0.5, 1] % 0.15;
-
-FloatArray[0, 0.5, 1] % 0.15;
-::
