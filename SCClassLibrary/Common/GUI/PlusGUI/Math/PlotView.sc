@@ -932,11 +932,16 @@ Plotter {
 
 	superpose_ { |flag|
 		var dom, domSpecs;
+		if(flag and: { value.isRectangular.not }) {
+			"Plotter can't superpose unequally sized arrays.".warn;
+			^this
+		};
+
 		dom = domain.copy;
 		domSpecs = domainSpecs.copy;
 
 		superpose = flag;
-		if ( value.notNil ){
+		if(value.notNil) {
 			this.setValue(value, false, false);
 		};
 
