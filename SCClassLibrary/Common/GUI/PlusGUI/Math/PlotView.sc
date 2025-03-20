@@ -932,11 +932,16 @@ Plotter {
 
 	superpose_ { |flag|
 		var dom, domSpecs;
+		if(flag and: { value.isRectangular.not }) {
+			"Plotter can't superpose unequally sized arrays.".warn;
+			^this
+		};
+
 		dom = domain.copy;
 		domSpecs = domainSpecs.copy;
 
 		superpose = flag;
-		if ( value.notNil ){
+		if(value.notNil) {
 			this.setValue(value, false, false);
 		};
 
@@ -1284,13 +1289,17 @@ Plotter {
 
 + ArrayedCollection {
 	plot { |name, bounds, discrete = false, numChannels, minval, maxval, separately = true, parent|
-		var array, plotter;
+		var array, plotter, depth, hasSubArrays;
 		array = this.as(Array);
 
-		if(array.maxDepth > 3) {
-			"Cannot currently plot an array with more than 3 dimensions".warn;
+		depth = array.maxDepth;
+		hasSubArrays = depth > 1;
+
+		if(depth > 2) {
+			"Cannot currently plot an array with more than 2 dimensions".warn;
 			^nil
 		};
+
 		plotter = Plotter(name, bounds, parent);
 		if(discrete) {
 			plotter.plotMode = \points
@@ -1309,7 +1318,11 @@ Plotter {
 				if(elem.isNil) {
 					Error("Cannot plot array: non-numeric value at index %".format(i)).throw
 				};
-				elem
+				if(hasSubArrays) {
+					elem.asArray
+				} {
+					elem
+				}
 			}
 		};
 
