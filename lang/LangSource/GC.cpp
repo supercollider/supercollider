@@ -664,6 +664,10 @@ HOT void PyrGC::Collect() {
     if (mNumToScan > 0) {
         // post("->Collect  ns %d  ng %d  s %d\n", mNumToScan, mNumGrey, mScans);
         // DumpInfo();
+
+        // This operation can easily overflow if mNumToScan is large causing undefined behaviour.
+        // Right shifting a negative is also implementation defined and has led to bugs that only appear on certain
+        // operating systems and hardware.
         mNumToScan += mNumToScan >> 3;
 
         // post("->Collect2  ns %d  ng %d  s %d\n", mNumToScan, mNumGrey, mScans);
