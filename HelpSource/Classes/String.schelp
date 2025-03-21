@@ -128,6 +128,9 @@ code::
 "same" == "Same"; // false
 ::
 
+Discussion::
+Overridden by the need to check for equality of each instance of link::Classes/Char:: with its integer index as independent of identity. See link::Classes/Object:: (particularly link::Classes/Object#Equality and Identity#Equality and Identity:: section) and the link::Reference/Equality_and_identity:: reference (particularly link::Reference/Equality_and_identity#String#String:: section).
+
 method::!=
 Returns a link::Classes/Boolean:: whether the two Strings are not equal.
 code::

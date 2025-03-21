@@ -200,11 +200,26 @@ A String containing the resulting file's path.
 
 subsection::Equality and Identity
 
+For details on the differences between equality and identity of instances from the following classes, see:
+
+list::
+## link::Classes/SimpleNumber#-==:: for link::Classes/SimpleNumber:: and its subclasses (link::Classes/Float:: and link::Classes/Integer::)
+##
+link::Classes/SequenceableCollection#-==:: for link::Classes/SequenceableCollection:: and its subclasses (link::Classes/Array:: and so on)
+##
+link::Classes/String#-==:: for link::Classes/String::
+::
+
+For more detailed explanation, see link::Reference/Equality_and_identity:: reference.
+
 method::==
 
 Answer whether the receiver equals anotherObject. The definition of equality depends on the class of the receiver. The default implementation in Object is to answer if the two objects are identical.
 
-note:: Whenever == is overridden in a class, hash should be overridden as well.::
+note::
+link::#-hash:: is internally used to implement equality.
+Whenever == is overridden in a class, hash should be overridden as well.
+::
 
 code::
 5.0 == 5; // true
@@ -219,6 +234,10 @@ a === b; // not identical
 method::===
 
 Answer whether the receiver is the exact same object as anotherObject.
+
+note::
+link::#-identityHash:: is internally used to implement identity.
+::
 
 code::
 5.0 === 5; // false
