@@ -1,0 +1,113 @@
+TITLE:: WebSocketClient
+summary:: A WebSocket client for sclang
+categories:: Control, External Control>WebSocket
+related:: Classes/WebSocketServer
+
+DESCRIPTION::
+
+NOTE::
+This is a new API and has not reached a finalized state yet!
+::
+
+WebSocket is a persistent TCP connection used to embed smaller packets that are more common in UDP.
+Being a TCP connection, this allows the connection to be more resilient through networks protected by NAT.
+In addition, as web browsers do not allow custom ports to be opened but which is necessary for an UDP connection, WebSocket is an easy way to communicate with web browsers.
+
+For more information take a look at the link::https://developer.mozilla.org/en-US/docs/Web/API/WebSocket##MDN documentation::.
+
+
+SUBSECTION:: Example
+
+A small example which assumes that a WebSocket server is running at CODE::127.0.0.1:8080::.
+You can use LINK::Classes/WebSocketServer:: to spawn such a server from within sclang.
+
+code::
+// setup a client
+~client = WebSocketClient(host: "127.0.0.1", port: 8080);
+
+// connect to the server
+~client.connect();
+
+// check connection status via
+~client.connected;
+
+// send a string
+~client.sendMessage("Hello world");
+// or send raw bytes
+~client.sendMessage(Int8Array.newFrom([0x14, 0x1]));
+
+// receive messages via a callback
+~client.onMessage = {|m| m.postln;}
+
+// close the connection
+~client.close();
+
+// and reconnect again
+~client.connect();
+::
+
+CLASSMETHODS::
+
+PRIVATE:: globalConnections
+
+PRIVATE:: initClass
+
+PRIVATE:: prConnected
+
+PRIVATE:: prReceivedMessage
+
+PRIVATE:: prSetConnectionStatus
+
+METHOD:: new
+argument:: host
+The host name of the web socket server.
+argument:: port
+The port of the web socket server.
+
+
+INSTANCEMETHODS::
+
+METHOD:: connect
+
+Tries to connect to the server.
+If this fails, a warning will be yielded because the conection workflow happens in another thread.
+To check if the connection has been established sucessfuly, use the CODE::connected:: member variable.
+
+METHOD:: close
+
+Sends a closing frame to the server and closes the connection.
+
+PRIVATE:: prSendRawMessage
+
+PRIVATE:: prClose
+
+METHOD:: connected
+
+A boolean which indicates the connection status.
+
+PRIVATE:: beastConnectionPtr
+
+PRIVATE:: prConnect
+
+PRIVATE:: port
+
+PRIVATE:: host
+
+METHOD:: onDisconnect
+
+If this variable is set to a function, it will be called upon disconnect from our side or from the server side.
+
+METHOD:: sendMessage
+Sends a message to the server.
+argument:: message
+The message can either be a LINK::Classes/String:: or a byte array via LINK::Classes/Int8Array::. These are the only two dataytes that WebSocket standard allows. If applicable, please do any implicit conversion yourself before calling this method because otherwise a warning will be displayed and no message will be send. Consider using JSON.
+
+PRIVATE:: prSendStringMessage
+
+METHOD:: onMessage
+
+If a message is received from the WebSocket connection, this variable will be invoked as a function whose sole parameter is the just received message which can either be a LINK::Classes/String:: or a byte array via LINK::Classes/Int8Array::.
+
+CODE::
+~client.onMessage = {|message| message.postln;};
+::
