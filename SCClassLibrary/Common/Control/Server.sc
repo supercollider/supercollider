@@ -369,6 +369,8 @@ Server {
 	var <pid, serverInterface;
 	var pidReleaseCondition;
 
+	var serverNodeTree;
+
 	*initClass {
 		Class.initClassTree(ServerOptions);
 		Class.initClassTree(NotificationCenter);
@@ -431,6 +433,7 @@ Server {
 
 		Server.changed(\serverAdded, this);
 
+		serverNodeTree = ServerNodeTree(this);
 	}
 
 	maxNumClients { ^maxNumClients ?? { options.maxLogins } }
@@ -984,7 +987,7 @@ Server {
 					})
 				};
 			}, 0.25);
-		}
+		};
 	}
 
 	prWaitForPidRelease { |onComplete, onFailure, timeout = 1|
@@ -1026,6 +1029,8 @@ Server {
 			sendQuit = this.inProcess or: { this.isLocal };
 		};
 		this.connectSharedMemory;
+		
+		serverNodeTree.run;
 	}
 
 	prOnServerProcessExit { |exitCode|
@@ -1114,6 +1119,8 @@ Server {
 
 	quit { |onComplete, onFailure, watchShutDown = true|
 		var func;
+
+		serverNodeTree.stop;
 
 		addr.sendMsg("/quit");
 
@@ -1414,6 +1421,10 @@ Server {
 		} {
 			^serverInterface.setControlBusValues(busIndex, valueArray)
 		}
+	}
+
+	getNodeTree {
+		^serverNodeTree.getNodeTree
 	}
 
 	*scsynth {
