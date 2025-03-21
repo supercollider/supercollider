@@ -298,37 +298,55 @@ code::
 ::
 
 method::copyRange
-Return a new ArrayedCollection which is a copy of the indexed slots of the receiver from strong::start:: to strong::end::. If strong::end:: < strong::start::, an empty ArrayedCollection is returned.
+Return a new link::Classes/ArrayedCollection:: which is a copy of the indexed slots of the receiver from strong::start:: to strong::end::. If strong::end:: < strong::start::, an empty link::Classes/ArrayedCollection:: is returned.
 code::
 (
-var y, z;
-z = [1, 2, 3, 4, 5];
-y = z.copyRange(1, 3);
-z.postln;
+var x, y;
+x = [1, 2, 3, 4, 5];
+y = x.copyRange(1, 3);
+x.postln;
 y.postln;
 )
 ::
-warning:: code::x.copyRange(a, b):: is strong::not:: equivalent to code::x[a..b]::. The latter compiles to link::#-copySeries::, which has different behavior when strong::end:: < strong::start::. ::
+warning::
+code::x.copyRange(a, b):: is strong::not:: equivalent to code::x[a..b]::.
+The latter compiles to link::#-copySeries::, which has different behavior when strong::end:: < strong::start::.
+See link::#copyRange_copySeries#NOTE:: in link::#-copySeries::.
+::
 
 method::copySeries
-Return a new ArrayedCollection consisting of the values starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::. If strong::second:: is code::nil::, a step of 1 or -1 is used as appropriate.
+Return a new link::Classes/ArrayedCollection:: consisting of the values starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::. If strong::second:: is code::nil::, a step of 1 or -1 is used as appropriate.
 
 code::x.copySeries(a, nil, c):: is equivalent to code::x[a..c]::, and code::x.copySeries(a, b, c):: is equivalent to code::x[a, b..c]::
 
 code::
 (
-var y, z;
-z = [1, 2, 3, 4, 5, 6];
-y = z.copySeries(0, 2, 5);
+var x, y;
+x = [1, 2, 3, 4, 5, 6];
+y = x.copySeries(0, 2, 5);
+x.postln;
 y.postln;
 )
 ::
 
-note::If the intent is to copy emphasis::forward:: in an array, and you are calculating start and end indices such that code::end:: may be less than code::start::, it is not safe to use code::copySeries:: or the shortcut syntax code::x[a..b]:: because it will adapt to use a positive or negative step as needed. In this case, code::copyRange:: is recommended.
+note::
+anchor::copyRange_copySeries::
+If the intent is to copy emphasis::forward::, and you are calculating start and end indices such that code::end:: may be less than code::start::, code::copyRange:: is not recommended.
+In this case, code::copySeries:: or the shortcut syntax code::x[a..b]:: is recommended because it will adapt to use a positive or negative step as needed.
 
 code::
 a = Array.series(10, 0, 1);
+
+/* case 1 */
+a[0..2];  // [0, 1, 2]
+a.copySeries(0, 1, 2);  // [0, 1, 2]
+a.copySeries(0, nil, 2);  // [0, 1, 2]
+a.copyRange(0, 2);  // [0, 1, 2]
+
+/* case 2 */
 a[2..0];  // [2, 1, 0]
+a.copySeries(2, 1, 0);  // [2, 1, 0]
+a.copySeries(2, nil, 0);  // [2, 1, 0]
 a.copyRange(2, 0);  // []
 ::
 ::
