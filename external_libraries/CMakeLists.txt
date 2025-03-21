@@ -6,6 +6,17 @@ if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/nova-simd/vec.hpp)
 			" https://github.com/supercollider/supercollider/wiki/git-cheat-sheet#working-with-submodules")
 endif()
 
+add_subdirectory(libgit)
+set_property(TARGET libgit2package PROPERTY BUILD_FUZZERS OFF)
+set_property(TARGET libgit2package PROPERTY BUILD_EXAMPLES OFF)
+set_property(TARGET libgit2package PROPERTY BUILD_CLI OFF)
+set_property(TARGET libgit2package PROPERTY BUILD_SHARED_LIBS OFF)
+set_property(TARGET libgit2 PROPERTY BUILD_FUZZERS OFF)
+set_property(TARGET libgit2 PROPERTY BUILD_EXAMPLES OFF)
+set_property(TARGET libgit2 PROPERTY BUILD_CLI OFF)
+set_property(TARGET libgit2 PROPERTY BUILD_SHARED_LIBS OFF)
+
+
 if(NOT SYSTEM_PORTAUDIO)
     message(STATUS "PortAudio: building static library")
     add_subdirectory(portaudio)
@@ -83,6 +94,7 @@ set_property(TARGET tlsf PROPERTY POSITION_INDEPENDENT_CODE TRUE)
 add_library(oscpack STATIC EXCLUDE_FROM_ALL "oscpack_build.cpp")
 target_include_directories(oscpack PRIVATE ${boost_include_dirs})
 target_include_directories(oscpack INTERFACE oscpack_1_1_0 )
+
 
 if(LTO)
 	set_property(TARGET oscpack tlsf
