@@ -1636,12 +1636,12 @@ void initClasses() {
     addIntrinsicVar(class_fundef, "argNames", &o_nil);
     addIntrinsicVar(class_fundef, "varNames", &o_nil);
     addIntrinsicVar(class_fundef, "sourceCode", &o_nil);
+    addIntrinsicVar(class_fundef, "filenameSymbol", &o_nil);
 
     class_method = makeIntrinsicClass(s_method, s_fundef, 5, 0);
     addIntrinsicVar(class_method, "ownerClass", &o_nil);
     addIntrinsicVar(class_method, "name", &o_nil);
     addIntrinsicVar(class_method, "primitiveName", &o_nil);
-    addIntrinsicVar(class_method, "filenameSymbol", &o_nil);
     addIntrinsicVar(class_method, "charPos", &o_zero);
     // addIntrinsicVar(class_method, "byteMeter", &o_zero);
     // addIntrinsicVar(class_method, "callMeter", &o_zero);
@@ -2478,6 +2478,8 @@ PyrBlock* newPyrBlock(int flags) {
         block = (PyrBlock*)gMainVMGlobals->gc->New(numbytes, flags, obj_notindexed, false);
     block->classptr = class_fundef;
     block->size = numSlots;
+    SetNil(&block->filenameSym);
+
 
     // clear out raw area
     methraw = METHRAW(block);
@@ -2492,6 +2494,22 @@ PyrBlock* newPyrBlock(int flags) {
     methraw->popSize = 0;
 
     nilSlots(&block->rawData1, numSlots);
+
+    if (gCompilingVMGlobals && &gCompilingVMGlobals->process) {
+        PyrSlot* path = &gCompilingVMGlobals->process->nowExecutingPath;
+        if (path && IsObj(path)) {
+            const auto path_length = slotRawObject(path)->size;
+
+            static constexpr auto SZ = 126;
+            char small_string_buf[126];
+            char* string_copy = path_length > 126 ? (char*)malloc(path_length + 1) : small_string_buf;
+            memcpy(string_copy, slotRawString(path)->s, path_length);
+            string_copy[path_length] = 0; // symbols must be null terminated.
+            SetSymbol(&block->filenameSym, getsym(string_copy));
+            if (path_length > 126)
+                delete string_copy;
+        }
+    }
     return block;
 }
 
