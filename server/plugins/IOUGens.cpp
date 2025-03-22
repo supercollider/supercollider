@@ -560,7 +560,7 @@ void In_next_a(IOUnit* unit, int inNumSamples) {
         if (guard.isValid && (touched[i] == bufCounter))
             Copy(inNumSamples, out, in);
         else
-            Fill(inNumSamples, out, 0.f);
+            Clear(inNumSamples, out);
     }
 }
 
@@ -715,12 +715,12 @@ void InFeedback_next_a(InFeedback* unit, int inNumSamples) {
             unit->m_busUsedInPrevCycle = true;
         } else if (guard.isValid && diff == 1) {
             if (unit->m_busUsedInPrevCycle) {
-                Fill(inNumSamples, out, 0.f);
+                Clear(inNumSamples, out);
                 unit->m_busUsedInPrevCycle = false;
             } else
                 Copy(inNumSamples, out, in);
         } else {
-            Fill(inNumSamples, out, 0.f);
+            Clear(inNumSamples, out);
             unit->m_busUsedInPrevCycle = false;
         }
     }
