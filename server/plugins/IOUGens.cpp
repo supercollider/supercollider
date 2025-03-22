@@ -42,46 +42,59 @@ using nova::slope_argument;
 
 #include <boost/align/is_aligned.hpp>
 
-
 static InterfaceTable* ft;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+struct Control : Unit {};
+
+struct AudioControl : Unit {
+    float* prevVal;
+    float* m_prevBus;
+    bool m_busUsedInPrevCycle;
+};
+
+struct TrigControl : Unit {};
+
+struct LagControl : Unit {
+    float* m_b1;
+    float* m_y1;
+};
+
 struct IOUnit : public Unit {
     int32* m_busTouched;
-    float m_fbusChannel;
     float* m_bus;
+    float m_fbusChannel;
 };
+
+struct InTrig : IOUnit {};
+
+struct In : IOUnit {};
+
+struct InFeedback : public In {
+    bool m_busUsedInPrevCycle;
+};
+
+const int kMaxLags = 16;
+
+struct LagIn : public IOUnit {
+    float m_b1;
+    float m_y1[kMaxLags];
+};
+
+struct Out : IOUnit {};
 
 struct XOut : public IOUnit {
     float m_xfade;
 };
 
+struct ReplaceOut : IOUnit {};
+
 struct OffsetOut : public IOUnit {
     float* m_saved;
+    // QUESTION: why don't we just zero the save buffer in
+    // OffsetOut_Ctor instead of checking 'm_empty'?
     bool m_empty;
-};
-
-struct InFeedback : public IOUnit {
-    bool m_busUsedInPrevCycle;
-};
-
-struct AudioControl : public InFeedback {
-    float* prevVal; // this will have to be a pointer later!
-    float* m_prevBus;
-};
-
-const int kMaxLags = 16;
-
-struct LagControl : public IOUnit {
-    float* m_b1;
-    float* m_y1;
-};
-
-
-struct LagIn : public IOUnit {
-    float m_b1;
-    float m_y1[kMaxLags];
 };
 
 struct LocalIn : public Unit {
@@ -90,30 +103,46 @@ struct LocalIn : public Unit {
     float* m_realData;
 };
 
+struct LocalOut : Unit {
+    float* m_bus;
+    int32* m_busTouched;
+};
+
+struct SharedOut : Unit {
+    float* m_bus;
+    float m_fbusChannel;
+};
+
+struct SharedIn : Unit {
+    float* m_bus;
+    float m_fbusChannel;
+};
+
 extern "C" {
-void Control_Ctor(Unit* inUnit);
-void Control_next_k(Unit* unit, int inNumSamples);
-void Control_next_1(Unit* unit, int inNumSamples);
+void Control_Ctor(Control* inUnit);
+void Control_next_k(Control* unit, int inNumSamples);
+void Control_next_1(Control* unit, int inNumSamples);
 
 void AudioControl_Ctor(AudioControl* inUnit);
-//	void AudioControl_Dtor(AudioControl *inUnit);
+void AudioControl_Dtor(AudioControl* inUnit);
 void AudioControl_next_k(AudioControl* unit, int inNumSamples);
 void AudioControl_next_1(AudioControl* unit, int inNumSamples);
 
-void TrigControl_Ctor(Unit* inUnit);
-void TrigControl_next_k(Unit* unit, int inNumSamples);
-void TrigControl_next_1(Unit* unit, int inNumSamples);
+void TrigControl_Ctor(TrigControl* inUnit);
+void TrigControl_next_k(TrigControl* unit, int inNumSamples);
+void TrigControl_next_1(TrigControl* unit, int inNumSamples);
 
 void LagControl_Ctor(LagControl* inUnit);
+void LagControl_Dtor(LagControl* inUnit);
 void LagControl_next_k(LagControl* unit, int inNumSamples);
 void LagControl_next_1(LagControl* unit, int inNumSamples);
 
-void InTrig_Ctor(IOUnit* unit);
-void InTrig_next_k(IOUnit* unit, int inNumSamples);
+void InTrig_Ctor(InTrig* unit);
+void InTrig_next_k(InTrig* unit, int inNumSamples);
 
-void In_Ctor(IOUnit* unit);
-void In_next_a(IOUnit* unit, int inNumSamples);
-void In_next_k(IOUnit* unit, int inNumSamples);
+void In_Ctor(In* unit);
+void In_next_a(In* unit, int inNumSamples);
+void In_next_k(In* unit, int inNumSamples);
 
 void LagIn_Ctor(LagIn* unit);
 void LagIn_next_0(LagIn* unit, int inNumSamples);
@@ -122,30 +151,37 @@ void LagIn_next_k(LagIn* unit, int inNumSamples);
 void InFeedback_Ctor(InFeedback* unit);
 void InFeedback_next_a(InFeedback* unit, int inNumSamples);
 
-void LocalIn_Ctor(LocalIn* unit);
-void LocalIn_Dtor(LocalIn* unit);
-void LocalIn_next_a(LocalIn* unit, int inNumSamples);
-void LocalIn_next_k(LocalIn* unit, int inNumSamples);
-
-void Out_Ctor(IOUnit* unit);
-void Out_next_a(IOUnit* unit, int inNumSamples);
-void Out_next_k(IOUnit* unit, int inNumSamples);
+void Out_Ctor(Out* unit);
+void Out_next_a(Out* unit, int inNumSamples);
+void Out_next_k(Out* unit, int inNumSamples);
 
 void XOut_Ctor(XOut* unit);
 void XOut_next_a(XOut* unit, int inNumSamples);
 void XOut_next_k(XOut* unit, int inNumSamples);
 
-void ReplaceOut_Ctor(IOUnit* unit);
-void ReplaceOut_next_a(IOUnit* unit, int inNumSamples);
-void ReplaceOut_next_k(IOUnit* unit, int inNumSamples);
+void ReplaceOut_Ctor(ReplaceOut* unit);
+void ReplaceOut_next_a(ReplaceOut* unit, int inNumSamples);
+void ReplaceOut_next_k(ReplaceOut* unit, int inNumSamples);
 
 void OffsetOut_Ctor(OffsetOut* unit);
 void OffsetOut_Dtor(OffsetOut* unit);
 void OffsetOut_next_a(OffsetOut* unit, int inNumSamples);
 
-void LocalOut_Ctor(IOUnit* unit);
-void LocalOut_next_a(IOUnit* unit, int inNumSamples);
-void LocalOut_next_k(IOUnit* unit, int inNumSamples);
+void LocalIn_Ctor(LocalIn* unit);
+void LocalIn_next_a(LocalIn* unit, int inNumSamples);
+void LocalIn_next_k(LocalIn* unit, int inNumSamples);
+
+void LocalOut_Ctor(LocalOut* unit);
+void LocalOut_next_a(LocalOut* unit, int inNumSamples);
+void LocalOut_next_k(LocalOut* unit, int inNumSamples);
+
+void SharedIn_Ctor(SharedIn* unit);
+void SharedIn_next_a(SharedIn* unit, int inNumSamples);
+void SharedIn_next_k(SharedIn* unit, int inNumSamples);
+
+void SharedOut_Ctor(SharedOut* unit);
+void SharedOut_next_a(SharedOut* unit, int inNumSamples);
+void SharedOut_next_k(SharedOut* unit, int inNumSamples);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -221,7 +257,7 @@ static inline void IO_k_update_channels(IOUnit* unit, World* world, float fbusCh
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void Control_next_k(Unit* unit, int inNumSamples) {
+void Control_next_k(Control* unit, int inNumSamples) {
     uint32 numChannels = unit->mNumOutputs;
     float** mapin = unit->mParent->mMapControls + unit->mSpecialIndex;
     for (uint32 i = 0; i < numChannels; ++i) {
@@ -229,12 +265,12 @@ void Control_next_k(Unit* unit, int inNumSamples) {
     }
 }
 
-void Control_next_1(Unit* unit, int inNumSamples) {
+void Control_next_1(Control* unit, int inNumSamples) {
     float** mapin = unit->mParent->mMapControls + unit->mSpecialIndex;
     OUT0(0) = mapin[0][0];
 }
 
-void Control_Ctor(Unit* unit) {
+void Control_Ctor(Control* unit) {
     if (unit->mNumOutputs == 1) {
         SETCALC(Control_next_1);
         Control_next_1(unit, 1);
@@ -396,7 +432,7 @@ void AudioControl_Dtor(AudioControl* unit) { RTFree(unit->mWorld, unit->prevVal)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void TrigControl_next_k(Unit* unit, int inNumSamples) {
+void TrigControl_next_k(TrigControl* unit, int inNumSamples) {
     uint32 numChannels = unit->mNumOutputs;
     int specialIndex = unit->mSpecialIndex;
     Graph* parent = unit->mParent;
@@ -419,7 +455,7 @@ void TrigControl_next_1(Unit* unit, int inNumSamples) {
     control[0] = 0.f;
 }
 
-void TrigControl_Ctor(Unit* unit) {
+void TrigControl_Ctor(TrigControl* unit) {
     // Print("TrigControl_Ctor\n");
     if (unit->mNumOutputs == 1) {
         SETCALC(TrigControl_next_1);
@@ -479,7 +515,7 @@ void LagControl_Dtor(LagControl* unit) { RTFree(unit->mWorld, unit->m_y1); }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef NOVA_SIMD
-FLATTEN void In_next_a_nova(IOUnit* unit, int inNumSamples) {
+FLATTEN void In_next_a_nova(In* unit, int inNumSamples) {
     World* world = unit->mWorld;
     int bufLength = world->mBufLength;
     int numChannels = unit->mNumOutputs;
@@ -504,7 +540,7 @@ FLATTEN void In_next_a_nova(IOUnit* unit, int inNumSamples) {
     }
 }
 
-FLATTEN void In_next_a_nova_64(IOUnit* unit, int inNumSamples) {
+FLATTEN void In_next_a_nova_64(In* unit, int inNumSamples) {
     World* world = unit->mWorld;
     int bufLength = world->mBufLength;
     int numChannels = unit->mNumOutputs;
@@ -530,7 +566,7 @@ FLATTEN void In_next_a_nova_64(IOUnit* unit, int inNumSamples) {
 
 #endif
 
-void In_next_a(IOUnit* unit, int inNumSamples) {
+void In_next_a(In* unit, int inNumSamples) {
     World* world = unit->mWorld;
     int bufLength = world->mBufLength;
     int numChannels = unit->mNumOutputs;
@@ -555,7 +591,7 @@ void In_next_a(IOUnit* unit, int inNumSamples) {
 }
 
 #ifdef IPHONE_VEC
-void vIn_next_a(IOUnit* unit, int inNumSamples) {
+void vIn_next_a(In* unit, int inNumSamples) {
     World* world = unit->mWorld;
     int bufLength = world->mBufLength;
     int numChannels = unit->mNumOutputs;
@@ -580,7 +616,7 @@ void vIn_next_a(IOUnit* unit, int inNumSamples) {
 }
 #endif
 
-void In_next_k(IOUnit* unit, int inNumSamples) {
+void In_next_k(In* unit, int inNumSamples) {
     World* world = unit->mWorld;
     uint32 numChannels = unit->mNumOutputs;
 
@@ -597,7 +633,7 @@ void In_next_k(IOUnit* unit, int inNumSamples) {
     }
 }
 
-void In_Ctor(IOUnit* unit) {
+void In_Ctor(In* unit) {
     // Print("->In_Ctor\n");
     World* world = unit->mWorld;
     unit->m_fbusChannel = std::numeric_limits<float>::quiet_NaN();
@@ -732,7 +768,7 @@ void InFeedback_Ctor(InFeedback* unit) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void InTrig_next_k(IOUnit* unit, int inNumSamples) {
+void InTrig_next_k(InTrig* unit, int inNumSamples) {
     World* world = unit->mWorld;
     int numChannels = unit->mNumOutputs;
 
@@ -744,6 +780,7 @@ void InTrig_next_k(IOUnit* unit, int inNumSamples) {
     const float* in = unit->m_bus;
     int32* touched = unit->m_busTouched;
     int32 bufCounter = unit->mWorld->mBufCounter;
+
     for (int i = 0; i < numChannels; ++i, in++) {
         ACQUIRE_BUS_CONTROL(firstOutputChannel + i);
         if (touched[i] == bufCounter)
@@ -754,7 +791,7 @@ void InTrig_next_k(IOUnit* unit, int inNumSamples) {
     }
 }
 
-void InTrig_Ctor(IOUnit* unit) {
+void InTrig_Ctor(InTrig* unit) {
     World* world = unit->mWorld;
     unit->m_fbusChannel = -1.;
 
@@ -772,7 +809,7 @@ void InTrig_Ctor(IOUnit* unit) {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-void ReplaceOut_next_a(IOUnit* unit, int inNumSamples) {
+void ReplaceOut_next_a(ReplaceOut* unit, int inNumSamples) {
     World* world = unit->mWorld;
     int bufLength = world->mBufLength;
     int numChannels = unit->mNumInputs - 1;
@@ -796,7 +833,7 @@ void ReplaceOut_next_a(IOUnit* unit, int inNumSamples) {
     }
 }
 
-void ReplaceOut_next_k(IOUnit* unit, int inNumSamples) {
+void ReplaceOut_next_k(ReplaceOut* unit, int inNumSamples) {
     World* world = unit->mWorld;
     int numChannels = unit->mNumInputs - 1;
 
@@ -820,7 +857,7 @@ void ReplaceOut_next_k(IOUnit* unit, int inNumSamples) {
 }
 
 #ifdef NOVA_SIMD
-FLATTEN void ReplaceOut_next_a_nova(IOUnit* unit, int inNumSamples) {
+FLATTEN void ReplaceOut_next_a_nova(ReplaceOut* unit, int inNumSamples) {
     World* world = unit->mWorld;
     int bufLength = world->mBufLength;
     int numChannels = unit->mNumInputs - 1;
@@ -844,7 +881,7 @@ FLATTEN void ReplaceOut_next_a_nova(IOUnit* unit, int inNumSamples) {
     }
 }
 
-FLATTEN void ReplaceOut_next_a_nova_64(IOUnit* unit, int inNumSamples) {
+FLATTEN void ReplaceOut_next_a_nova_64(ReplaceOut* unit, int inNumSamples) {
     World* world = unit->mWorld;
     int bufLength = world->mBufLength;
     int numChannels = unit->mNumInputs - 1;
@@ -870,7 +907,7 @@ FLATTEN void ReplaceOut_next_a_nova_64(IOUnit* unit, int inNumSamples) {
 
 #endif /* NOVA_SIMD */
 
-void ReplaceOut_Ctor(IOUnit* unit) {
+void ReplaceOut_Ctor(ReplaceOut* unit) {
     World* world = unit->mWorld;
     unit->m_fbusChannel = -1.;
 
@@ -894,7 +931,7 @@ void ReplaceOut_Ctor(IOUnit* unit) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void Out_next_a(IOUnit* unit, int inNumSamples) {
+void Out_next_a(Out* unit, int inNumSamples) {
     // Print("Out_next_a %d\n", unit->mNumInputs);
     World* world = unit->mWorld;
     int bufLength = world->mBufLength;
@@ -925,7 +962,7 @@ void Out_next_a(IOUnit* unit, int inNumSamples) {
 
 
 #ifdef IPHONE_VEC
-void vOut_next_a(IOUnit* unit, int inNumSamples) {
+void vOut_next_a(Out* unit, int inNumSamples) {
     // Print("Out_next_a %d\n", unit->mNumInputs);
     World* world = unit->mWorld;
     int bufLength = world->mBufLength;
@@ -955,7 +992,7 @@ void vOut_next_a(IOUnit* unit, int inNumSamples) {
 
 
 #ifdef NOVA_SIMD
-FLATTEN void Out_next_a_nova(IOUnit* unit, int inNumSamples) {
+FLATTEN void Out_next_a_nova(Out* unit, int inNumSamples) {
     World* world = unit->mWorld;
     int bufLength = world->mBufLength;
     int numChannels = unit->mNumInputs - 1;
@@ -983,7 +1020,7 @@ FLATTEN void Out_next_a_nova(IOUnit* unit, int inNumSamples) {
     }
 }
 
-FLATTEN void Out_next_a_nova_64(IOUnit* unit, int inNumSamples) {
+FLATTEN void Out_next_a_nova_64(Out* unit, int inNumSamples) {
     // Print("Out_next_a %d\n", unit->mNumInputs);
     World* world = unit->mWorld;
     int bufLength = world->mBufLength;
@@ -1013,8 +1050,7 @@ FLATTEN void Out_next_a_nova_64(IOUnit* unit, int inNumSamples) {
 }
 #endif
 
-
-void Out_next_k(IOUnit* unit, int inNumSamples) {
+void Out_next_k(Out* unit, int inNumSamples) {
     World* world = unit->mWorld;
     int numChannels = unit->mNumInputs - 1;
 
@@ -1041,7 +1077,7 @@ void Out_next_k(IOUnit* unit, int inNumSamples) {
     }
 }
 
-void Out_Ctor(IOUnit* unit) {
+void Out_Ctor(Out* unit) {
     // Print("->Out_Ctor\n");
     World* world = unit->mWorld;
     unit->m_fbusChannel = -1.;
@@ -1374,7 +1410,7 @@ void OffsetOut_Dtor(OffsetOut* unit) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void SharedIn_next_k(IOUnit* unit, int inNumSamples) {
+void SharedIn_next_k(SharedIn* unit, int inNumSamples) {
     // Print("->SharedIn_next_k\n");
     World* world = unit->mWorld;
     int numChannels = unit->mNumOutputs;
@@ -1401,7 +1437,7 @@ void SharedIn_next_k(IOUnit* unit, int inNumSamples) {
     // Print("<-SharedIn_next_k\n");
 }
 
-void SharedIn_Ctor(IOUnit* unit) {
+void SharedIn_Ctor(SharedIn* unit) {
     // Print("->SharedIn_Ctor\n");
     World* world = unit->mWorld;
     unit->m_fbusChannel = -1.;
@@ -1416,7 +1452,7 @@ void SharedIn_Ctor(IOUnit* unit) {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void SharedOut_next_k(IOUnit* unit, int inNumSamples) {
+void SharedOut_next_k(SharedOut* unit, int inNumSamples) {
     // Print("->SharedOut_next_k\n");
     World* world = unit->mWorld;
     int numChannels = unit->mNumInputs - 1;
@@ -1441,7 +1477,7 @@ void SharedOut_next_k(IOUnit* unit, int inNumSamples) {
     // Print("<-SharedOut_next_k\n");
 }
 
-void SharedOut_Ctor(IOUnit* unit) {
+void SharedOut_Ctor(SharedOut* unit) {
     // Print("->SharedOut_Ctor\n");
     World* world = unit->mWorld;
     unit->m_fbusChannel = -1.;
@@ -1583,15 +1619,11 @@ void LocalIn_Ctor(LocalIn* unit) {
     // Print("<-LocalIn_Ctor\n");
 }
 
-void LocalIn_Dtor(LocalIn* unit) {
-    World* world = unit->mWorld;
-    RTFree(world, unit->m_realData);
-}
+void LocalIn_Dtor(LocalIn* unit) { RTFree(unit->mWorld, unit->m_realData); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////
 
-void LocalOut_next_a(IOUnit* unit, int inNumSamples) {
+void LocalOut_next_a(LocalOut* unit, int inNumSamples) {
     // Print("LocalOut_next_a %d\n", unit->mNumInputs);
     World* world = unit->mWorld;
     int bufLength = world->mBufLength;
@@ -1621,7 +1653,7 @@ void LocalOut_next_a(IOUnit* unit, int inNumSamples) {
 }
 
 #ifdef NOVA_SIMD
-FLATTEN void LocalOut_next_a_nova(IOUnit* unit, int inNumSamples) {
+FLATTEN void LocalOut_next_a_nova(LocalOut* unit, int inNumSamples) {
     // Print("LocalOut_next_a %d\n", unit->mNumInputs);
     World* world = unit->mWorld;
     int bufLength = world->mBufLength;
@@ -1650,7 +1682,7 @@ FLATTEN void LocalOut_next_a_nova(IOUnit* unit, int inNumSamples) {
     }
 }
 
-FLATTEN void LocalOut_next_a_nova_64(IOUnit* unit, int inNumSamples) {
+FLATTEN void LocalOut_next_a_nova_64(LocalOut* unit, int inNumSamples) {
     // Print("LocalOut_next_a %d\n", unit->mNumInputs);
     World* world = unit->mWorld;
     int bufLength = world->mBufLength;
@@ -1680,8 +1712,7 @@ FLATTEN void LocalOut_next_a_nova_64(IOUnit* unit, int inNumSamples) {
 }
 #endif
 
-
-void LocalOut_next_k(IOUnit* unit, int inNumSamples) {
+void LocalOut_next_k(LocalOut* unit, int inNumSamples) {
     int numChannels = unit->mNumInputs;
 
     LocalIn* localIn = (LocalIn*)unit->mParent->mLocalControlBusUnit;
@@ -1705,9 +1736,8 @@ void LocalOut_next_k(IOUnit* unit, int inNumSamples) {
     }
 }
 
-void LocalOut_Ctor(IOUnit* unit) {
+void LocalOut_Ctor(LocalOut* unit) {
     // Print("->LocalOut_Ctor\n");
-    unit->m_fbusChannel = -1.;
 
     if (unit->mCalcRate == calc_FullRate) {
 #ifdef NOVA_SIMD
@@ -1735,16 +1765,16 @@ PluginLoad(IO) {
     DefineSimpleUnit(XOut);
     DefineDtorUnit(LagControl);
     DefineDtorUnit(AudioControl);
-    DefineUnit("Control", sizeof(Unit), (UnitCtorFunc)&Control_Ctor, nullptr, 0);
-    DefineUnit("TrigControl", sizeof(Unit), (UnitCtorFunc)&TrigControl_Ctor, nullptr, 0);
-    DefineUnit("ReplaceOut", sizeof(IOUnit), (UnitCtorFunc)&ReplaceOut_Ctor, nullptr, 0);
-    DefineUnit("Out", sizeof(IOUnit), (UnitCtorFunc)&Out_Ctor, nullptr, 0);
-    DefineUnit("LocalOut", sizeof(IOUnit), (UnitCtorFunc)&LocalOut_Ctor, nullptr, 0);
-    DefineUnit("In", sizeof(IOUnit), (UnitCtorFunc)&In_Ctor, nullptr, 0);
-    DefineUnit("LagIn", sizeof(IOUnit), (UnitCtorFunc)&LagIn_Ctor, nullptr, 0);
-    DefineUnit("InFeedback", sizeof(IOUnit), (UnitCtorFunc)&InFeedback_Ctor, nullptr, 0);
-    DefineUnit("InTrig", sizeof(IOUnit), (UnitCtorFunc)&InTrig_Ctor, nullptr, 0);
+    DefineSimpleUnit(Control);
+    DefineSimpleUnit(TrigControl);
+    DefineSimpleUnit(ReplaceOut);
+    DefineSimpleUnit(Out);
+    DefineSimpleUnit(LocalOut);
+    DefineSimpleUnit(In);
+    DefineSimpleUnit(LagIn);
+    DefineSimpleUnit(InFeedback);
+    DefineSimpleUnit(InTrig);
 
-    DefineUnit("SharedOut", sizeof(IOUnit), (UnitCtorFunc)&SharedOut_Ctor, nullptr, 0);
-    DefineUnit("SharedIn", sizeof(IOUnit), (UnitCtorFunc)&SharedIn_Ctor, nullptr, 0);
+    DefineSimpleUnit(SharedOut);
+    DefineSimpleUnit(SharedIn);
 }
