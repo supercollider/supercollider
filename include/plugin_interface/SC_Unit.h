@@ -108,6 +108,7 @@ template <typename ToType, typename Value>
 #define BUFDUR (unit->mRate->mBufDuration)
 #define FULLRATE (unit->mWorld->mFullRate.mSampleRate)
 #define FULLBUFLENGTH (unit->mWorld->mFullRate.mBufLength)
+#define FULLSAMPLEDUR (unit->mWorld->mFullRate.mSampleDur)
 
 #ifdef SUPERNOVA
 

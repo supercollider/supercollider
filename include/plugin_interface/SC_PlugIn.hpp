@@ -193,6 +193,12 @@ public:
         return FULLRATE;
     }
 
+    /// get sample duration of audio signal
+    double fullSampleDur() const {
+        const Unit* unit = this;
+        return FULLSAMPLEDUR;
+    }
+
     /// get buffer size of audio signals
     int fullBufferSize() const {
         const Unit* unit = this;

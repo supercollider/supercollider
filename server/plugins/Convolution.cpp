@@ -173,7 +173,7 @@ void Convolution_next(Convolution* unit, int numSamples) {
     float* out1 = unit->m_inbuf1 + unit->m_pos;
     float* out2 = unit->m_inbuf2 + unit->m_pos;
 
-    // int numSamples = unit->mWorld->mFullRate.mBufLength;
+    // int numSamples = FULLBUFLENGTH;
 
     // copy input
     Copy(numSamples, out1, in1);
@@ -339,7 +339,7 @@ void Convolution2_Ctor(Convolution2* unit) {
 
         unit->m_prevtrig = 0.f;
 
-        if (unit->m_framesize >= world->mFullRate.mBufLength) {
+        if (unit->m_framesize >= FULLBUFLENGTH) {
             SETCALC(Convolution2_next);
 
             // initialize output
@@ -376,7 +376,7 @@ void Convolution2_next(Convolution2* unit, int wrongNumSamples) {
 
     float* inbuf1writepos = unit->m_inbuf1 + unit->m_pos;
 
-    int numSamples = unit->mWorld->mFullRate.mBufLength;
+    int numSamples = FULLBUFLENGTH;
     uint32 framesize = unit->m_framesize;
     uint32 framesize_f = framesize * sizeof(float);
 
@@ -833,7 +833,7 @@ void StereoConvolution2L_next(StereoConvolution2L* unit, int wrongNumSamples) {
 
     float* out1 = unit->m_inbuf1 + unit->m_pos;
 
-    int numSamples = unit->mWorld->mFullRate.mBufLength;
+    int numSamples = FULLBUFLENGTH;
     uint32 framesize_f = unit->m_framesize * sizeof(float);
 
     // copy input
@@ -1067,7 +1067,7 @@ void Convolution3_next_a(Convolution3* unit) {
 
     float* pin1 = unit->m_inbuf1;
 
-    int numSamples = unit->mWorld->mFullRate.mBufLength;
+    int numSamples = FULLBUFLENGTH;
 
     // copy input
     Copy(numSamples, pin1, in);

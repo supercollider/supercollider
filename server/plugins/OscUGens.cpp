@@ -2936,7 +2936,7 @@ void Klank_Ctor(Klank* unit) {
     int numpartials = (unit->mNumInputs - 4) / 3;
     unit->m_numpartials = numpartials;
     int numcoefs = ((numpartials + 3) & ~3) * 5;
-    unit->m_coefs = (float*)RTAlloc(unit->mWorld, (numcoefs + unit->mWorld->mBufLength) * sizeof(float));
+    unit->m_coefs = (float*)RTAlloc(unit->mWorld, (numcoefs + FULLBUFLENGTH) * sizeof(float));
     ClearUnitIfMemFailed(unit->m_coefs);
     unit->m_buf = unit->m_coefs + numcoefs;
     Klank_SetCoefs(unit);

@@ -287,7 +287,7 @@ void BufAllocCmd::CallDestructor() { this->~BufAllocCmd(); }
 bool BufAllocCmd::Stage2() {
     SndBuf* buf = World_GetNRTBuf(mWorld, mBufIndex);
     mFreeData = buf->data;
-    SCErr err = bufAlloc(buf, mNumChannels, mNumFrames, mWorld->mFullRate.mSampleRate);
+    SCErr err = bufAlloc(buf, mNumChannels, mNumFrames, mWorld->mSampleRate);
     if (err) {
         scprintf("/b_alloc: memory allocation failed\n");
         return false;
