@@ -333,20 +333,10 @@ void TrigControl_next_k(Unit* unit, int inNumSamples) {
     Graph* parent = unit->mParent;
     float** mapin = parent->mMapControls + specialIndex;
     float* control = parent->mControls + specialIndex;
-    float* buses = unit->mWorld->mControlBus;
-    for (uint32 i = 0; i < numChannels; ++i, mapin++, control++) {
-        float* out = OUT(i);
-        // requires a bit of detective work to see what it has been mapped to.
-        if (*mapin == control) {
-            // read local control.
-            *out = *control;
-        } else {
-            // global control bus. look at time stamp.
-            int busindex = *mapin - buses;
-            *out = buses[busindex];
-        }
+    for (uint32 i = 0; i < numChannels; ++i) {
+        OUT0(i) = mapin[i][0];
         // must zero the control even if mapped - otherwise it triggers on unmap
-        *control = 0.f;
+        control[i] = 0.f;
     }
 }
 
@@ -355,16 +345,9 @@ void TrigControl_next_1(Unit* unit, int inNumSamples) {
     Graph* parent = unit->mParent;
     float** mapin = parent->mMapControls + specialIndex;
     float* control = parent->mControls + specialIndex;
-    float* out = OUT(0);
-    // requires a bit of detective work to see what it has been mapped to.
-    if (*mapin == control) {
-        // read local control.
-        *out = *control;
-    } else {
-        *out = **mapin;
-    }
+    OUT0(0) = mapin[0][0];
     // must zero the control even if mapped - otherwise it triggers on unmap
-    *control = 0.f;
+    control[0] = 0.f;
 }
 
 void TrigControl_Ctor(Unit* unit) {
