@@ -41,12 +41,12 @@ public:
         definition_map.insert(*ptr.get());
     }
 
-    abstract_synth* create_instance(const char* name, int node_id) {
+    abstract_synth* create_instance(const char* name, int node_id, int block_size, double upsample) {
         prototype_map_type::iterator it = definition_map.find(name, named_hash_hash(), named_hash_equal());
         if (it == definition_map.end())
             return nullptr;
 
-        return it->create_instance(node_id);
+        return it->create_instance(node_id, block_size, upsample);
     }
 
     void remove_definition(const char* name) {

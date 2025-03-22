@@ -33,6 +33,8 @@
 
 namespace nova {
 
+void initialize_rate(Rate& rate, double sample_rate, int blocksize);
+
 class sc_done_action_handler {
 public:
     void add_pause_node(server_node* node) {
