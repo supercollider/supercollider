@@ -1165,7 +1165,7 @@ FLATTEN void XOut_next_a_nova(XOut* unit, int inNumSamples) {
 
     if (xfade0 != next_xfade) {
         float slope = CALCSLOPE(next_xfade, xfade0);
-        for (int i = 0; i < numChannels; ++i) {
+        for (int i = 0; i < numChannels; ++i, out += bufLength) {
             AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
 
             if (guard.isValid) {
@@ -1194,7 +1194,7 @@ FLATTEN void XOut_next_a_nova(XOut* unit, int inNumSamples) {
     } else if (xfade0 == 0.f) {
         // do nothing.
     } else {
-        for (int i = 0; i < numChannels; ++i) {
+        for (int i = 0; i < numChannels; ++i, out += bufLength) {
             AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
             if (guard.isValid) {
                 float* in = IN(i + 2);
@@ -1251,8 +1251,9 @@ void XOut_Ctor(XOut* unit) {
 #ifdef NOVA_SIMD
         if (boost::alignment::is_aligned(BUFLENGTH, 16))
             SETCALC(XOut_next_a_nova);
+        else
 #endif
-        SETCALC(XOut_next_a);
+            SETCALC(XOut_next_a);
         unit->m_bus = world->mAudioBus;
         unit->m_busTouched = world->mAudioBusTouched;
     } else {
