@@ -149,7 +149,7 @@ public:
 
     virtual ~synth_definition(void) = default;
 
-    virtual abstract_synth* create_instance(int node_id) = 0;
+    virtual abstract_synth* create_instance(int node_id, int block_size, double upsample) = 0;
 
     template <typename synth_t> static inline synth_t* allocate(void);
 };
