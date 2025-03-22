@@ -110,9 +110,10 @@ template <typename ToType, typename Value>
 #define BUFLENGTH (unit->mBufLength)
 #define BUFRATE (unit->mRate->mBufRate)
 #define BUFDUR (unit->mRate->mBufDuration)
-#define FULLRATE (unit->mWorld->mFullRate.mSampleRate)
-#define FULLBUFLENGTH (unit->mWorld->mFullRate.mBufLength)
-#define FULLSAMPLEDUR (unit->mWorld->mFullRate.mSampleDur)
+#define FULLRATE (unit->mParent->mFullRate->mSampleRate)
+#define FULLSAMPLEDUR (unit->mParent->mFullRate->mSampleDur)
+#define FULLBUFLENGTH (unit->mParent->mFullRate->mBufLength)
+#define REBLOCK_OR_RESAMPLE (unit->mParent->mFlags & kGraph_ReblockOrResample)
 
 #ifdef SUPERNOVA
 

@@ -117,5 +117,8 @@ enum {
 
     cmd_rtMemoryStatus = 65,
 
-    NUMBER_OF_COMMANDS = 66
+    cmd_s_newEx = 66,
+    cmd_s_newargsEx = 67,
+
+    NUMBER_OF_COMMANDS = 68
 };
