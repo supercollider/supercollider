@@ -21,6 +21,7 @@
 
 #include <stdio.h>
 #include "SC_Endian.h"
+#include "SC_Graph.h"
 #include "SC_Unit.h"
 #include "SC_UnitSpec.h"
 #include "SC_UnitDef.h"
@@ -31,7 +32,7 @@
 
 void Unit_ChooseMulAddFunc(Unit* unit);
 
-Unit* Unit_New(World* inWorld, UnitSpec* inUnitSpec, char*& memory) {
+Unit* Unit_New(World* inWorld, Graph* graph, UnitSpec* inUnitSpec, char*& memory) {
     UnitDef* def = inUnitSpec->mUnitDef;
 
     Unit* unit = (Unit*)memory;
@@ -58,8 +59,8 @@ Unit* Unit_New(World* inWorld, UnitSpec* inUnitSpec, char*& memory) {
 
     unit->mCalcRate = inUnitSpec->mCalcRate;
     unit->mSpecialIndex = inUnitSpec->mSpecialIndex;
-    Rate* rateInfo = unit->mRate = inUnitSpec->mRateInfo;
-    unit->mBufLength = rateInfo->mBufLength;
+    unit->mRate = unit->mCalcRate == calc_FullRate ? graph->mFullRate : graph->mBufRate;
+    unit->mBufLength = unit->mRate->mBufLength;
 
     unit->mDone = false;
 
