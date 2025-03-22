@@ -150,6 +150,77 @@ void LocalOut_next_k(IOUnit* unit, int inNumSamples);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+template <bool LockShared> struct AudioBusGuard {
+    AudioBusGuard(const Unit* unit, int32 currentChannel, int32 maxChannel):
+        unit(unit),
+        mCurrentChannel(currentChannel),
+        isValid(currentChannel < maxChannel) {
+        if (isValid)
+            lock();
+    }
+
+    ~AudioBusGuard() {
+        if (isValid)
+            unlock();
+    }
+
+    void lock() {
+        if (LockShared)
+            ACQUIRE_BUS_AUDIO_SHARED(mCurrentChannel);
+        else
+            ACQUIRE_BUS_AUDIO(mCurrentChannel);
+    }
+
+    void unlock() {
+        if (LockShared)
+            RELEASE_BUS_AUDIO_SHARED(mCurrentChannel);
+        else
+            RELEASE_BUS_AUDIO(mCurrentChannel);
+    }
+
+    const Unit* unit;
+    const int32 mCurrentChannel;
+    const bool isValid;
+};
+
+static inline float readControlBus(const float* bus, int channelIndex, int maxChannel) {
+    if (channelIndex < maxChannel) {
+        return *bus;
+    } else {
+        return 0;
+    }
+}
+
+static inline void IO_a_update_channels(IOUnit* unit, World* world, float fbusChannel, int numChannels, int bufLength) {
+    if (fbusChannel != unit->m_fbusChannel) {
+        unit->m_fbusChannel = fbusChannel;
+        int busChannel = (uint32)fbusChannel;
+        int lastChannel = busChannel + numChannels;
+
+        if (!(busChannel < 0 || lastChannel > (int)world->mNumAudioBusChannels)) {
+            unit->m_bus = world->mAudioBus + (busChannel * bufLength);
+            unit->m_busTouched = world->mAudioBusTouched + busChannel;
+        }
+    }
+}
+
+template <bool UpdateTouched>
+static inline void IO_k_update_channels(IOUnit* unit, World* world, float fbusChannel, int numChannels) {
+    if (fbusChannel != unit->m_fbusChannel) {
+        unit->m_fbusChannel = fbusChannel;
+        int busChannel = (int)fbusChannel;
+        int lastChannel = busChannel + numChannels;
+
+        if (!(busChannel < 0 || lastChannel > (int)world->mNumControlBusChannels)) {
+            unit->m_bus = world->mControlBus + busChannel;
+            if (UpdateTouched)
+                unit->m_busTouched = world->mControlBusTouched + busChannel;
+        }
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 void Control_next_k(Unit* unit, int inNumSamples) {
     uint32 numChannels = unit->mNumOutputs;
     float** mapin = unit->mParent->mMapControls + unit->mSpecialIndex;
@@ -322,7 +393,7 @@ void AudioControl_Ctor(AudioControl* unit) {
 }
 
 void AudioControl_Dtor(AudioControl* unit) { RTFree(unit->mWorld, unit->prevVal); }
-//////////////////////////////////////////////////////////////////////////////////////////////////
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 void TrigControl_next_k(Unit* unit, int inNumSamples) {
@@ -406,68 +477,6 @@ void LagControl_Ctor(LagControl* unit) {
 void LagControl_Dtor(LagControl* unit) { RTFree(unit->mWorld, unit->m_y1); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-static inline void IO_a_update_channels(IOUnit* unit, World* world, float fbusChannel, int numChannels, int bufLength) {
-    if (fbusChannel != unit->m_fbusChannel) {
-        unit->m_fbusChannel = fbusChannel;
-        int busChannel = (uint32)fbusChannel;
-        int lastChannel = busChannel + numChannels;
-
-        if (!(busChannel < 0 || lastChannel > (int)world->mNumAudioBusChannels)) {
-            unit->m_bus = world->mAudioBus + (busChannel * bufLength);
-            unit->m_busTouched = world->mAudioBusTouched + busChannel;
-        }
-    }
-}
-
-template <bool UpdateTouched>
-static inline void IO_k_update_channels(IOUnit* unit, World* world, float fbusChannel, int numChannels) {
-    if (fbusChannel != unit->m_fbusChannel) {
-        unit->m_fbusChannel = fbusChannel;
-        int busChannel = (int)fbusChannel;
-        int lastChannel = busChannel + numChannels;
-
-        if (!(busChannel < 0 || lastChannel > (int)world->mNumControlBusChannels)) {
-            unit->m_bus = world->mControlBus + busChannel;
-            if (UpdateTouched)
-                unit->m_busTouched = world->mControlBusTouched + busChannel;
-        }
-    }
-}
-
-template <bool LockShared> struct AudioBusGuard {
-    AudioBusGuard(const Unit* unit, int32 currentChannel, int32 maxChannel):
-        unit(unit),
-        mCurrentChannel(currentChannel),
-        isValid(currentChannel < maxChannel) {
-        if (isValid)
-            lock();
-    }
-
-    ~AudioBusGuard() {
-        if (isValid)
-            unlock();
-    }
-
-    void lock() {
-        if (LockShared)
-            ACQUIRE_BUS_AUDIO_SHARED(mCurrentChannel);
-        else
-            ACQUIRE_BUS_AUDIO(mCurrentChannel);
-    }
-
-    void unlock() {
-        if (LockShared)
-            RELEASE_BUS_AUDIO_SHARED(mCurrentChannel);
-        else
-            RELEASE_BUS_AUDIO(mCurrentChannel);
-    }
-
-    const Unit* unit;
-    const int32 mCurrentChannel;
-    const bool isValid;
-};
 
 #ifdef NOVA_SIMD
 FLATTEN void In_next_a_nova(IOUnit* unit, int inNumSamples) {
@@ -570,13 +579,6 @@ void vIn_next_a(IOUnit* unit, int inNumSamples) {
     }
 }
 #endif
-
-static inline float readControlBus(const float* bus, int channelIndex, int maxChannel) {
-    if (channelIndex < maxChannel)
-        return *bus;
-    else
-        return 0;
-}
 
 void In_next_k(IOUnit* unit, int inNumSamples) {
     World* world = unit->mWorld;
