@@ -1100,19 +1100,21 @@ void XOut_next_a(XOut* unit, int inNumSamples) {
 
     if (xfade0 != next_xfade) {
         float slope = CALCSLOPE(next_xfade, xfade0);
-        for (int i = 0; i < numChannels; ++i) {
+        for (int i = 0; i < numChannels; ++i, out += bufLength) {
             AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
 
             if (guard.isValid) {
                 float xfade = xfade0;
                 float* in = IN(i + 2);
                 if (touched[i] == bufCounter) {
-                    LOOP1(inNumSamples, float zin = *in; float zout = *out; *out = zout + xfade * (zin - zout);
-                          // if (xxi==0) Print("x %d %d %g %g %g %g\n", bufCounter, i, zin, zout, xfade, *out);
-                          xfade += slope;
-                          ++out; ++in;);
+                    for (int j = 0; j < inNumSamples; ++j, xfade += slope) {
+                        float zout = out[j];
+                        out[j] = zout + xfade * (in[j] - zout);
+                    }
                 } else {
-                    LOOP1(inNumSamples, float zin = *in; *out = xfade * zin; xfade += slope; ++out; ++in;);
+                    for (int j = 0; j < inNumSamples; ++j, xfade += slope) {
+                        out[j] = in[j] * xfade;
+                    }
                     touched[i] = bufCounter;
                 }
             }
@@ -1130,15 +1132,19 @@ void XOut_next_a(XOut* unit, int inNumSamples) {
     } else if (xfade0 == 0.f) {
         // do nothing.
     } else {
-        for (int i = 0; i < numChannels; ++i) {
+        for (int i = 0; i < numChannels; ++i, out += bufLength) {
             AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
             if (guard.isValid) {
                 float* in = IN(i + 2);
                 if (touched[i] == bufCounter) {
-                    LOOP1(inNumSamples, float zin = *in; float zout = *out; *out = zout + xfade0 * (zin - zout); ++out;
-                          ++in;);
+                    for (int j = 0; j < inNumSamples; ++j) {
+                        float zout = out[j];
+                        out[j] = zout + xfade0 * (in[j] - zout);
+                    }
                 } else {
-                    LOOP1(inNumSamples, float zin = *in; *out = xfade0 * zin; ++out; ++in;);
+                    for (int j = 0; j < inNumSamples; ++j) {
+                        out[j] = in[j] * xfade0;
+                    }
                     touched[i] = bufCounter;
                 }
             }
@@ -1210,7 +1216,6 @@ FLATTEN void XOut_next_a_nova(XOut* unit, int inNumSamples) {
 }
 
 #endif
-
 
 void XOut_next_k(XOut* unit, int inNumSamples) {
     World* world = unit->mWorld;
