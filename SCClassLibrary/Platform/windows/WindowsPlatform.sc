@@ -43,8 +43,9 @@ WindowsPlatform : Platform {
 
 	defaultTempDir {
 		// +/+ "" looks funny but ensures trailing slash
-		var tmp = this.userAppSupportDir +/+ "";
-		^if(File.exists(tmp)) { tmp }
+		var tmp = this.userAppSupportDir +/+ "tmp\\";
+		if(File.exists(tmp).not) { tmp.mkdir };
+		^tmp;
 	}
 
 	myDocumentsDir {
