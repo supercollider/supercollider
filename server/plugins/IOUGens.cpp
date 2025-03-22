@@ -72,7 +72,11 @@ struct InTrig : IOUnit {};
 struct In : IOUnit {};
 
 struct InFeedback : public In {
-    bool m_busUsedInPrevCycle;
+    static constexpr int smallVecSize = 8;
+
+    bool* m_busUsedInPrevCycle;
+    // for small vector optimization, see InFeedback_Ctor()
+    bool m_smallVec[smallVecSize];
 };
 
 const int kMaxLags = 16;
@@ -149,6 +153,7 @@ void LagIn_next_0(LagIn* unit, int inNumSamples);
 void LagIn_next_k(LagIn* unit, int inNumSamples);
 
 void InFeedback_Ctor(InFeedback* unit);
+void InFeedback_Dtor(InFeedback* unit);
 void InFeedback_next_a(InFeedback* unit, int inNumSamples);
 
 void Out_Ctor(Out* unit);
@@ -693,8 +698,9 @@ void InFeedback_next_a(InFeedback* unit, int inNumSamples) {
     int numChannels = unit->mNumOutputs;
 
     float fbusChannel = ZIN0(0);
-    if (fbusChannel != unit->m_fbusChannel)
-        unit->m_busUsedInPrevCycle = false;
+    if (fbusChannel != unit->m_fbusChannel) {
+        std::fill_n(unit->m_busUsedInPrevCycle, numChannels, false);
+    }
     IO_a_update_channels(unit, world, fbusChannel, numChannels, bufLength);
 
     float* in = unit->m_bus;
@@ -710,31 +716,48 @@ void InFeedback_next_a(InFeedback* unit, int inNumSamples) {
 
         if (guard.isValid && diff == 0) {
             Copy(inNumSamples, out, in);
-            unit->m_busUsedInPrevCycle = true;
+            unit->m_busUsedInPrevCycle[i] = true;
         } else if (guard.isValid && diff == 1) {
-            if (unit->m_busUsedInPrevCycle) {
+            if (unit->m_busUsedInPrevCycle[i]) {
                 Clear(inNumSamples, out);
-                unit->m_busUsedInPrevCycle = false;
+                unit->m_busUsedInPrevCycle[i] = false;
             } else
                 Copy(inNumSamples, out, in);
         } else {
             Clear(inNumSamples, out);
-            unit->m_busUsedInPrevCycle = false;
+            unit->m_busUsedInPrevCycle[i] = false;
         }
     }
 }
-
 
 void InFeedback_Ctor(InFeedback* unit) {
     // Print("->InFeedback_Ctor\n");
     World* world = unit->mWorld;
     unit->m_fbusChannel = -1.;
 
+    int numChannels = unit->mNumOutputs;
+
+    if (numChannels > InFeedback::smallVecSize) {
+        unit->m_busUsedInPrevCycle = (bool*)RTAlloc(world, numChannels * sizeof(bool));
+        ClearUnitIfMemFailed(unit->m_busUsedInPrevCycle);
+    } else {
+        // small vector optimization
+        unit->m_busUsedInPrevCycle = unit->m_smallVec;
+    }
+
+    std::fill_n(unit->m_busUsedInPrevCycle, numChannels, false);
+
     SETCALC(InFeedback_next_a);
+
     unit->m_bus = world->mAudioBus;
     unit->m_busTouched = world->mAudioBusTouched;
     InFeedback_next_a(unit, 1);
     // Print("<-InFeedback_Ctor\n");
+}
+
+void InFeedback_Dtor(InFeedback* unit) {
+    if (unit->m_busUsedInPrevCycle != unit->m_smallVec)
+        RTFree(unit->mWorld, unit->m_busUsedInPrevCycle);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1743,7 +1766,7 @@ PluginLoad(IO) {
     DefineSimpleUnit(LocalOut);
     DefineSimpleUnit(In);
     DefineSimpleUnit(LagIn);
-    DefineSimpleUnit(InFeedback);
+    DefineDtorUnit(InFeedback);
     DefineSimpleUnit(InTrig);
 
     DefineSimpleUnit(SharedOut);
