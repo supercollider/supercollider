@@ -25,7 +25,14 @@
 
 #include <boost/asio.hpp>
 
-enum Protocol { kUDP, kTCP };
+enum Protocol {
+    kUDP,
+    kTCP
+#ifdef __EMSCRIPTEN__
+    ,
+    kWeb
+#endif
+};
 
 struct ReplyAddress {
     boost::asio::ip::address mAddress;

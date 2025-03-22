@@ -20,6 +20,8 @@ if(NOT SYSTEM_BOOST) # we compile boost ourselves
 		aux_source_directory(boost/libs/thread/src/win32/ boost_thread_platform )
 	elseif(PTHREADS_FOUND)
 		aux_source_directory(boost/libs/thread/src/pthread/ boost_thread_platform )
+	elseif(EMSCRIPTEN)
+		aux_source_directory(boost/libs/thread/src/pthread/ boost_thread_platform )
 	else()
 		message(SEND_ERROR "we need to implement boost_thread")
 	endif()
@@ -36,6 +38,11 @@ if(NOT SYSTEM_BOOST) # we compile boost ourselves
 	aux_source_directory(boost/libs/regex/src boost_regex_src)
 	add_library(boost_regex_lib STATIC EXCLUDE_FROM_ALL ${boost_regex_src})
 	target_include_directories(boost_regex_lib PUBLIC boost)
+
+	if(EMSCRIPTEN)
+		set_property(TARGET boost_program_options_lib boost_system_lib 
+					 APPEND PROPERTY COMPILE_FLAGS "-pthread -s USE_PTHREADS=1 -s WASM=1")
+	endif()
 
 	add_library(boost_thread_lib STATIC EXCLUDE_FROM_ALL ${boost_thread_src} ${boost_thread_platform})
 	target_link_libraries(boost_thread_lib boost_system_lib)
