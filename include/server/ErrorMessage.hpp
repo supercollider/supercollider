@@ -71,7 +71,9 @@ std::string apiVersionMismatch(std::string const& utf8Filename, int const expect
     assert(expectedVersion != actualVersion);
 
     // both 1 and 2 were introduced in 3.6
-    static map<int, string> const scVersionForAPIVersion = { { 1, "3.6.0" }, { 2, "3.6.0" }, { 3, "3.9.0" } };
+    static map<int, string> const scVersionForAPIVersion = {
+        { 1, "3.6.0" }, { 2, "3.6.0" }, { 3, "3.9.0" }, { 4, "3.14" }
+    };
 
     stringstream message;
     message << "ERROR: API version mismatch: " << utf8Filename << "\n";
