@@ -119,5 +119,8 @@ enum {
 
     cmd_b_setSampleRate = 66,
 
-    NUMBER_OF_COMMANDS = 67
+    cmd_s_newEx = 67,
+    cmd_s_newargsEx = 68,
+
+    NUMBER_OF_COMMANDS = 69
 };
