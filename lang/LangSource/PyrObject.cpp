@@ -2478,7 +2478,6 @@ PyrBlock* newPyrBlock(int flags) {
         block = (PyrBlock*)gMainVMGlobals->gc->New(numbytes, flags, obj_notindexed, false);
     block->classptr = class_fundef;
     block->size = numSlots;
-    SetNil(&block->filenameSym);
 
 
     // clear out raw area
