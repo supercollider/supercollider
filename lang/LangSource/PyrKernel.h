@@ -154,13 +154,13 @@ struct PyrBlock : public PyrObjectHdr {
     PyrSlot argNames; // ***arguments to block
     PyrSlot varNames; // ***variables in block
     PyrSlot sourceCode; // source code if it is a closed function.
+    PyrSlot filenameSym;
 };
 
 struct PyrMethod : public PyrBlock {
     PyrSlot ownerclass;
     PyrSlot name;
     PyrSlot primitiveName;
-    PyrSlot filenameSym;
     PyrSlot charPos;
     // PyrSlot byteMeter;
     // PyrSlot callMeter;
