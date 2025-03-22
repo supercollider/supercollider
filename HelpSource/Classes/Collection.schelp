@@ -304,63 +304,83 @@ List[1, 2, 3, 3, 4, 3, 4, 3].occurrencesOf(3);
 ::
 
 method::sum
-Answer the sum of the items in the collection, optionally applying a link::Classes/Function:: to each item before summing. When provided, the link::Classes/Function:: is passed two arguments: the item and an integer index.
-
+Answer the sum of the items in the collection.
 code::
-// only the item is used; index is unused.
-(0..8).sum { |item| 1 / (2 ** item) }
+[3, 6, 12, 24].sum // -> 45
 ::
 
-The above code is represented in mathematical notation as:
+This can be represented as:
 math::
-\sum_{i=0}^{n} \frac{1}{2^{x_i}} \quad \text{for} \quad \{x_0, x_1, \ldots, x_n\}, n=8
+\sum_{i=0}^{n} x_i \quad | \quad \{x_0, x_1, \ldots, x_n\}
+::
+
+Optionally, a link::Classes/Function:: can be provided to be applied to each item in the collection before summing.
+
+argument:: function
+If provided, the link::Classes/Function:: is passed two arguments: the item and the iteration index.
+
+code::
+[3, 6, 12, 24].sum { |item, i| i / (2 ** item) } // -> 0.016113460063934
+::
+
+The above code can be represented as:
+math::
+\sum_{i=0}^{n} f(x_i,i) = \sum_{i=0}^{n} \frac{i}{2^{x_i}} \quad | \quad \{x_0, x_1, \ldots, x_n\}
 ::
 where math::x_i:: is the function argument teletype::item::.
 
-discussion::
-The sum of all items in a collection can be expressed as:
-code::
-List[1, 2, 3, 4].sum
-::
 
 method::product
-Answer the product of the items in the collection, optionally applying a link::Classes/Function:: to each item before multiplication. When provided, the link::Classes/Function:: receives two arguments: the item and its integer index.
-
+Answer the product of the items in the collection.
 code::
-// only the item is used; index is unused.
-(0..8).product { |item| 1 / (2 ** item) }
+[3, 6, 12, 24].product // -> 5184
 ::
 
-The above code is represented in mathematical notation as:
+This can be represented as:
 math::
-\prod_{i=0}^{n} \frac{1}{2^{x_i}} \quad \text{for} \quad \{x_0, x_1, \ldots, x_n\}, n=8
+\prod_{i=0}^{n} x_i \quad | \quad \{x_0, x_1, \ldots, x_n\}
+::
+
+Optionally, a link::Classes/Function:: can be provided to be applied to each item in the collection before multiplication.
+
+argument:: function
+If provided, the link::Classes/Function:: is passed two arguments: the item and the iteration index.
+
+code::
+[3, 6, 12, 24].product { |item, i| item.sqrt ** i } // -> 3456.0
+::
+
+The above code can be represented as:
+math::
+\prod_{i=0}^{n} f(x_i,i) = \prod_{i=0}^{n} \left( \sqrt{x_i} \right) ^ i \quad | \quad \{x_0, x_1, \ldots, x_n\}
 ::
 where math::x_i:: is the function argument teletype::item::.
-
-discussion::
-The product of all items in a collection can be expressed as:
-code::
-[1, 2, 3, 4].product
-::
 
 method::mean
-Answer the arithmetic mean of the items in the collection, optionally applying a link::Classes/Function:: to each item before averaging. When provided, the link::Classes/Function:: receives two arguments: the item and its integer index.
+Answer the arithmetic mean of the items in the collection.
 code::
-// only the item is used; index is unused.
-(0..8).mean { |item| 1 / (2 ** item) }
+[3, 6, 12, 24].mean // -> 11.25
 ::
 
-The above code is represented in mathematical notation as:
+This can be represented as:
 math::
-\frac{\sum_{i=0}^{n} \frac{1}{2^{x_i}}}{n+1} ~ \mid ~ x = \lbrace 0, \dots, n \rbrace, n=8
+\frac{1}{n+1} \sum_{i=0}^{n} x_i \quad | \quad \{x_0, x_1, \ldots, x_n\}
+::
+
+Optionally, a link::Classes/Function:: can be provided to be applied to each item in the collection before multiplication.
+
+argument:: function
+If provided, the link::Classes/Function:: is passed two arguments: the item and the iteration index.
+
+code::
+[3, 6, 12, 24].mean { |item, i| i / (item ** 2) } // -> 0.01171875
+::
+
+The above code can be represented as:
+math::
+\frac{1}{n+1} \sum_{i=0}^{n} f(x_i,i) = \frac{1}{n+1} \sum_{i=0}^{n} \frac{i}{{x_i}^2} \quad | \quad \{x_0, x_1, \ldots, x_n\}
 ::
 where math::x_i:: is the function argument teletype::item::.
-
-discussion::
-The mean of all items in a collection can be expressed as:
-code::
-[1, 2, 3, 4].mean
-::
 
 method::maxItem
 Answer the maximum of the results of strong::function:: evaluated for each item in the receiver. The function is passed two arguments, the item and an integer index.
