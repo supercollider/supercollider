@@ -589,9 +589,12 @@ void In_next_k(IOUnit* unit, int inNumSamples) {
     const int32 maxChannel = world->mNumControlBusChannels;
     const int32 firstOutputChannel = (int)fbusChannel;
 
-    const float* in = unit->m_bus;
-    for (uint32 i = 0; i < numChannels; ++i, in++)
-        OUT0(i) = readControlBus(in, firstOutputChannel + i, maxChannel);
+    const float* bus = unit->m_bus;
+    for (uint32 i = 0; i < numChannels; ++i) {
+        ACQUIRE_BUS_CONTROL(firstOutputChannel + i);
+        OUT0(i) = readControlBus(bus + i, firstOutputChannel + i, maxChannel);
+        RELEASE_BUS_CONTROL(firstOutputChannel + i);
+    }
 }
 
 void In_Ctor(IOUnit* unit) {
@@ -632,12 +635,14 @@ void LagIn_next_k(LagIn* unit, int inNumSamples) {
     const int32 maxChannel = world->mNumControlBusChannels;
     const int32 firstOutputChannel = (int)fbusChannel;
 
-    const float* in = unit->m_bus;
+    const float* bus = unit->m_bus;
     float b1 = unit->m_b1;
     float* y1 = unit->m_y1;
 
-    for (int i = 0; i < numChannels; ++i, in++) {
-        float z = readControlBus(in, firstOutputChannel + i, maxChannel);
+    for (int i = 0; i < numChannels; ++i) {
+        ACQUIRE_BUS_CONTROL(firstOutputChannel + i);
+        float z = readControlBus(bus + i, firstOutputChannel + i, maxChannel);
+        RELEASE_BUS_CONTROL(firstOutputChannel + i);
         float x = z + b1 * (y1[i] - z);
         OUT0(i) = y1[i] = zapgremlins(x);
     }
@@ -652,10 +657,13 @@ void LagIn_next_0(LagIn* unit, int inNumSamples) {
     const int32 maxChannel = world->mNumControlBusChannels;
     const int32 firstOutputChannel = (int)fbusChannel;
 
-    const float* in = unit->m_bus;
+    const float* bus = unit->m_bus;
     float* y1 = unit->m_y1;
-    for (int i = 0; i < numChannels; ++i, in++)
-        OUT0(i) = y1[i] = readControlBus(in, firstOutputChannel + i, maxChannel);
+    for (int i = 0; i < numChannels; ++i) {
+        ACQUIRE_BUS_CONTROL(firstOutputChannel + i);
+        OUT0(i) = y1[i] = readControlBus(bus + i, firstOutputChannel + i, maxChannel);
+        RELEASE_BUS_CONTROL(firstOutputChannel + i);
+    }
 }
 
 void LagIn_Ctor(LagIn* unit) {
@@ -737,11 +745,12 @@ void InTrig_next_k(IOUnit* unit, int inNumSamples) {
     int32* touched = unit->m_busTouched;
     int32 bufCounter = unit->mWorld->mBufCounter;
     for (int i = 0; i < numChannels; ++i, in++) {
-        float* out = OUT(i);
+        ACQUIRE_BUS_CONTROL(firstOutputChannel + i);
         if (touched[i] == bufCounter)
-            *out = readControlBus(in, firstOutputChannel + i, maxChannel);
+            OUT0(i) = readControlBus(in, firstOutputChannel + i, maxChannel);
         else
-            *out = 0.f;
+            OUT0(i) = 0.f;
+        RELEASE_BUS_CONTROL(firstOutputChannel + i);
     }
 }
 
