@@ -439,7 +439,7 @@ Stethoscope {
 	}
 
 	bounds_ { arg rect;
-		rect = rect ?? view.bounds;
+		rect = rect ?? { view.bounds };
 		if( window.notNil ) {
 			if (rect.width < 264) {
 				"The width value you set will be changed to 264, the minimum width.".postln;
