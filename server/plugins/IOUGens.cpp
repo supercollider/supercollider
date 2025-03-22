@@ -1475,7 +1475,7 @@ void LocalIn_next_a(LocalIn* unit, int inNumSamples) {
         if (diff == 1 || diff == 0)
             Copy(inNumSamples, out, in);
         else
-            Fill(inNumSamples, out, IN0(i));
+            Clear(inNumSamples, out);
     }
 }
 
@@ -1497,7 +1497,7 @@ FLATTEN void LocalIn_next_a_nova(LocalIn* unit, int inNumSamples) {
             nova::copyvec_simd(out, in, inNumSamples);
         else
             // nova::zerovec_simd(out, inNumSamples);
-            Fill(inNumSamples, out, IN0(i));
+            Clear(inNumSamples, out);
     }
 }
 
@@ -1517,7 +1517,7 @@ FLATTEN void LocalIn_next_a_nova_64(LocalIn* unit, int inNumSamples) {
             nova::copyvec_simd<64>(out, in);
         else
             // nova::zerovec_simd<64>(out);
-            Fill(inNumSamples, out, IN0(i));
+            Clear(inNumSamples, out);
     }
 }
 #endif
@@ -1535,7 +1535,7 @@ void LocalIn_next_k(LocalIn* unit, int inNumSamples) {
         if (diff == 1 || diff == 0)
             *out = *in;
         else
-            *out = IN0(i);
+            *out = 0.f;
     }
 }
 
