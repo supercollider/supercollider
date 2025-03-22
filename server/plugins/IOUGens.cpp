@@ -153,16 +153,14 @@ void LocalOut_next_k(IOUnit* unit, int inNumSamples);
 void Control_next_k(Unit* unit, int inNumSamples) {
     uint32 numChannels = unit->mNumOutputs;
     float** mapin = unit->mParent->mMapControls + unit->mSpecialIndex;
-    for (uint32 i = 0; i < numChannels; ++i, mapin++) {
-        float* out = OUT(i);
-        *out = **mapin;
+    for (uint32 i = 0; i < numChannels; ++i) {
+        OUT0(i) = mapin[i][0];
     }
 }
 
 void Control_next_1(Unit* unit, int inNumSamples) {
     float** mapin = unit->mParent->mMapControls + unit->mSpecialIndex;
-    float* out = OUT(0);
-    *out = **mapin;
+    OUT0(0) = mapin[0][0];
 }
 
 void Control_Ctor(Unit* unit) {
@@ -365,9 +363,9 @@ void TrigControl_Ctor(Unit* unit) {
 void LagControl_next_k(LagControl* unit, int inNumSamples) {
     uint32 numChannels = unit->mNumOutputs;
     float** mapin = unit->mParent->mMapControls + unit->mSpecialIndex;
-    for (uint32 i = 0; i < numChannels; ++i, mapin++) {
+    for (uint32 i = 0; i < numChannels; ++i) {
         float* out = OUT(i);
-        float z = **mapin;
+        float z = mapin[i][0];
         float x = z + unit->m_b1[i] * (unit->m_y1[i] - z);
         *out = unit->m_y1[i] = zapgremlins(x);
     }
@@ -376,7 +374,7 @@ void LagControl_next_k(LagControl* unit, int inNumSamples) {
 void LagControl_next_1(LagControl* unit, int inNumSamples) {
     float** mapin = unit->mParent->mMapControls + unit->mSpecialIndex;
     float* out = OUT(0);
-    float z = **mapin;
+    float z = mapin[0][0];
     float x = z + unit->m_b1[0] * (unit->m_y1[0] - z);
     *out = unit->m_y1[0] = zapgremlins(x);
 }
@@ -385,13 +383,13 @@ void LagControl_Ctor(LagControl* unit) {
     int numChannels = unit->mNumInputs;
     float** mapin = unit->mParent->mMapControls + unit->mSpecialIndex;
 
-    char* chunk = (char*)RTAlloc(unit->mWorld, numChannels * 2 * sizeof(float));
+    float* chunk = (float*)RTAlloc(unit->mWorld, numChannels * 2 * sizeof(float));
     ClearUnitIfMemFailed(chunk);
-    unit->m_y1 = (float*)chunk;
-    unit->m_b1 = unit->m_y1 + numChannels;
+    unit->m_y1 = chunk;
+    unit->m_b1 = chunk + numChannels;
 
-    for (int i = 0; i < numChannels; ++i, mapin++) {
-        unit->m_y1[i] = **mapin;
+    for (int i = 0; i < numChannels; ++i) {
+        unit->m_y1[i] = mapin[i][0];
         float lag = ZIN0(i);
         unit->m_b1[i] = lag == 0.f ? 0.f : (float)exp(log001 / (lag * SAMPLERATE));
     }
@@ -1392,9 +1390,8 @@ void SharedIn_next_k(IOUnit* unit, int inNumSamples) {
 
     float* in = unit->m_bus;
     if (in) {
-        for (int i = 0; i < numChannels; ++i, in++) {
-            float* out = OUT(i);
-            *out = *in;
+        for (int i = 0; i < numChannels; ++i) {
+            OUT0(i) = in[i];
         }
     } else {
         ClearUnitOutputs(unit, 1);
@@ -1435,9 +1432,8 @@ void SharedOut_next_k(IOUnit* unit, int inNumSamples) {
 
     float* out = unit->m_bus;
     if (out) {
-        for (int i = 1; i < numChannels + 1; ++i, out++) {
-            float* in = IN(i);
-            *out = *in;
+        for (int i = 0; i < numChannels; ++i) {
+            out[i] = IN0(i + 1);
         }
     }
     // Print("<-SharedOut_next_k\n");
@@ -1527,13 +1523,12 @@ void LocalIn_next_k(LocalIn* unit, int inNumSamples) {
     float* in = unit->m_bus;
     int32* touched = unit->m_busTouched;
     int32 bufCounter = unit->mWorld->mBufCounter;
-    for (uint32 i = 0; i < numChannels; ++i, in++) {
+    for (uint32 i = 0; i < numChannels; ++i) {
         int diff = bufCounter - touched[i];
-        float* out = OUT(i);
         if (diff == 1 || diff == 0)
-            *out = *in;
+            OUT0(i) = in[i];
         else
-            *out = 0.f;
+            OUT0(i) = 0.f;
     }
 }
 
@@ -1698,12 +1693,11 @@ void LocalOut_next_k(IOUnit* unit, int inNumSamples) {
     int32* touched = localIn->m_busTouched;
 
     int32 bufCounter = unit->mWorld->mBufCounter;
-    for (int i = 0; i < numChannels; ++i, out++) {
-        float* in = IN(i);
+    for (int i = 0; i < numChannels; ++i) {
         if (touched[i] == bufCounter)
-            *out += *in;
+            out[i] += IN0(i);
         else {
-            *out = *in;
+            out[i] = IN0(i);
             touched[i] = bufCounter;
         }
     }
