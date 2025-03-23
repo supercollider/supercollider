@@ -2499,13 +2499,13 @@ PyrBlock* newPyrBlock(int flags) {
         if (path && IsObj(path)) {
             const auto path_length = slotRawObject(path)->size;
 
-            static constexpr auto SZ = 126;
-            char small_string_buf[126];
-            char* string_copy = path_length > 126 ? (char*)malloc(path_length + 1) : small_string_buf;
+            static constexpr auto SmallStringBufferSize = 126;
+            char small_string_buf[SmallStringBufferSize];
+            char* string_copy = path_length > SmallStringBufferSize ? (char*)malloc(path_length + 1) : small_string_buf;
             memcpy(string_copy, slotRawString(path)->s, path_length);
             string_copy[path_length] = 0; // symbols must be null terminated.
             SetSymbol(&block->filenameSym, getsym(string_copy));
-            if (path_length > 126)
+            if (path_length > SmallStringBufferSize)
                 delete string_copy;
         }
     }
