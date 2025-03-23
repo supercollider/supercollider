@@ -1637,12 +1637,13 @@ void initClasses() {
     addIntrinsicVar(class_fundef, "varNames", &o_nil);
     addIntrinsicVar(class_fundef, "sourceCode", &o_nil);
     addIntrinsicVar(class_fundef, "filenameSymbol", &o_nil);
+    addIntrinsicVar(class_fundef, "charPos", &o_nil);
+    addIntrinsicVar(class_fundef, "lineNumber", &o_nil);
 
     class_method = makeIntrinsicClass(s_method, s_fundef, 5, 0);
     addIntrinsicVar(class_method, "ownerClass", &o_nil);
     addIntrinsicVar(class_method, "name", &o_nil);
     addIntrinsicVar(class_method, "primitiveName", &o_nil);
-    addIntrinsicVar(class_method, "charPos", &o_zero);
     // addIntrinsicVar(class_method, "byteMeter", &o_zero);
     // addIntrinsicVar(class_method, "callMeter", &o_zero);
 
@@ -2464,7 +2465,7 @@ PyrString* newPyrStringN(class PyrGC* gc, int length, int flags, bool runGC) {
     return string;
 }
 
-PyrBlock* newPyrBlock(int flags) {
+PyrBlock* newPyrBlock(int flags, struct PyrSymbol* optional_filename, int lineNumber, int charNumber) {
     PyrBlock* block;
     PyrMethodRaw* methraw;
 
@@ -2494,21 +2495,11 @@ PyrBlock* newPyrBlock(int flags) {
 
     nilSlots(&block->rawData1, numSlots);
 
-    if (gCompilingVMGlobals && &gCompilingVMGlobals->process) {
-        PyrSlot* path = &gCompilingVMGlobals->process->nowExecutingPath;
-        if (path && IsObj(path)) {
-            const auto path_length = slotRawObject(path)->size;
+    if (optional_filename)
+        SetSymbol(&block->filenameSym, optional_filename);
+    SetInt(&block->linePos, lineNumber);
+    SetInt(&block->charPos, charNumber);
 
-            static constexpr auto SmallStringBufferSize = 126;
-            char small_string_buf[SmallStringBufferSize];
-            char* string_copy = path_length > SmallStringBufferSize ? (char*)malloc(path_length + 1) : small_string_buf;
-            memcpy(string_copy, slotRawString(path)->s, path_length);
-            string_copy[path_length] = 0; // symbols must be null terminated.
-            SetSymbol(&block->filenameSym, getsym(string_copy));
-            if (path_length > SmallStringBufferSize)
-                delete string_copy;
-        }
-    }
     return block;
 }
 

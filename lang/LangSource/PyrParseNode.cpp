@@ -112,6 +112,26 @@ void compileTail() {
 }
 
 
+PyrSymbol* getOptionalFilename() {
+    if (gCompilingVMGlobals && &gCompilingVMGlobals->process) {
+        PyrSlot* path = &gCompilingVMGlobals->process->nowExecutingPath;
+        if (path && IsObj(path)) {
+            const auto path_length = slotRawObject(path)->size;
+            static constexpr auto SmallStringBufferSize = 126;
+            char small_string_buf[SmallStringBufferSize];
+            char* string_copy = path_length > SmallStringBufferSize ? (char*)malloc(path_length + 1) : small_string_buf;
+            memcpy(string_copy, slotRawString(path)->s, path_length);
+            string_copy[path_length] = 0; // symbols must be null terminated.
+            auto sym = getsym(string_copy);
+            if (path_length > SmallStringBufferSize)
+                delete string_copy;
+            return sym;
+        }
+    }
+    return nullptr;
+}
+
+
 PyrGC* compileGC();
 PyrGC* compileGC() { return gCompilingVMGlobals ? gCompilingVMGlobals->gc : nullptr; }
 
@@ -1754,7 +1774,7 @@ void PyrCallNodeBase::compilePartialApplication(int numCurryArgs, PyrSlot* resul
     ByteCodes savedBytes = saveByteCodeArray();
 
     int flags = compilingCmdLine ? obj_immutable : obj_permanent | obj_immutable;
-    PyrBlock* block = newPyrBlock(flags);
+    PyrBlock* block = newPyrBlock(flags, getOptionalFilename(), mLineno, linestarts[mLineno] + mCharno);
 
     PyrSlot blockSlot;
     SetObject(&blockSlot, block);
@@ -3780,7 +3800,7 @@ void PyrBlockNode::compile(PyrSlot* slotResult) {
     // create a new block object
 
     flags = compilingCmdLine ? obj_immutable : obj_permanent | obj_immutable;
-    block = newPyrBlock(flags);
+    block = newPyrBlock(flags, getOptionalFilename(), mLineno, linestarts[mLineno] + mCharno);
     SetObject(slotResult, block);
 
     int prevFunctionHighestExternalRef = gFunctionHighestExternalRef;

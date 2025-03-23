@@ -416,6 +416,8 @@ FunctionDef {
 	var raw1, raw2, <code, <selectors, <constants, <prototypeFrame, <context, <argNames, <varNames;
 	var <sourceCode;
 	var <filenameSymbol;
+	var <charPos;
+	var <lineNumber;
 
 	// a FunctionDef is defined by a code within curly braces {}
 	// When you use a FunctionDef in your code it gets pushed on the stack
@@ -564,7 +566,6 @@ FunctionDef {
 
 Method : FunctionDef {
 	var <ownerClass, <name, <primitiveName;
-	var <charPos;
 
 	openCodeFile {
 		this.filenameSymbol.asString.openDocument(this.charPos, -1);
