@@ -296,7 +296,7 @@ code::
 
 sclang returns to the terminal window (command prompt window on Windows):
 list::
-## On Lonux:
+## On Linux:
 teletype::
 ... (messages are truncated) ...
 *** Welcome to SuperCollider 3.14.0-dev. *** For help type ctrl-c ctrl-h (Emacs) or :SChelp (vim).
@@ -496,7 +496,7 @@ code::
 
 sclang returns to the terminal window (command prompt window on Windows):
 list::
-## On Lonux:
+## On Linux:
 teletype::
 ... (messages are truncated) ...
 *** Welcome to SuperCollider 3.14.0-dev. *** For help type ctrl-c ctrl-h (Emacs) or :SChelp (vim).
