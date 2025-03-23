@@ -1033,7 +1033,8 @@ int blockValueEnvirWithKeys(VMGlobals* g, int allArgsPushed, int numKeyArgsPushe
     return errNone;
 }
 
-int objectPerformArgs(struct VMGlobals* g, int numArgsPushed) {
+template <class SendMessageImpl>
+int objectPerformArgsImpl(struct VMGlobals* g, int numArgsPushed, SendMessageImpl&& sendMessageImpl) {
     auto receiverSlot = g->sp - numArgsPushed + 1;
     auto selectorSlot = receiverSlot + 1;
     auto argsArraySlot = selectorSlot + 1;
@@ -1076,7 +1077,7 @@ int objectPerformArgs(struct VMGlobals* g, int numArgsPushed) {
 
     if (argsSize == 0 && kwSize == 0) {
         g->sp -= 3;
-        sendMessage(g, selector, 1, 0);
+        std::forward<SendMessageImpl>(sendMessageImpl)(g, selector, 1, 0);
         g->numpop = 0;
         return errNone;
     }
@@ -1107,9 +1108,30 @@ int objectPerformArgs(struct VMGlobals* g, int numArgsPushed) {
     }
 
     g->sp = receiverSlot + argsSize + kwSize;
-    sendMessage(g, selector, argsSize + kwSize + 1, (kwSize / 2));
+    std::forward<SendMessageImpl>(sendMessageImpl)(g, selector, argsSize + kwSize + 1, (kwSize / 2));
     g->numpop = 0;
     return errNone;
+}
+
+int objectSuperPerformArgs(struct VMGlobals* g, int numArgsPushed) {
+    auto receiverSlot = g->sp - numArgsPushed + 1;
+    PyrClass* classobj = slotRawSymbol(&slotRawClass(&g->method->ownerclass)->superclass)->u.classobj;
+    if (!isKindOfSlot(receiverSlot, classobj)) {
+        error("superPerform must be called with 'this' as the receiver.\n");
+        return errFailed;
+    }
+
+    return objectPerformArgsImpl(g, numArgsPushed,
+                                 [](VMGlobals* g, PyrSymbol* selector, int num_args, int num_keywords) {
+                                     sendSuperMessage(g, selector, num_args, num_keywords);
+                                 });
+}
+
+int objectPerformArgs(struct VMGlobals* g, int numArgsPushed) {
+    return objectPerformArgsImpl(g, numArgsPushed,
+                                 [](VMGlobals* g, PyrSymbol* selector, int num_args, int num_keywords) {
+                                     sendMessage(g, selector, num_args, num_keywords);
+                                 });
 }
 
 int objectPerform(struct VMGlobals* g, int numArgsPushed) {
@@ -3795,6 +3817,7 @@ void initPrimitives() {
     definePrimitiveWithKeys(base, index, "_ObjectPerform", objectPerform, objectPerformWithKeys, 2, 1);
     index += 2;
     definePrimitive(base, index++, "_ObjectPerformArgs", objectPerformArgs, 4, 0);
+    definePrimitive(base, index++, "_ObjectSuperPerformArgs", objectSuperPerformArgs, 4, 0);
 
     definePrimitiveWithKeys(base, index, "_ObjectPerformList", objectPerformList, objectPerformListWithKeys, 2, 1);
     index += 2;
