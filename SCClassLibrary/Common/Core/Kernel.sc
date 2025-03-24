@@ -423,6 +423,8 @@ FunctionDef {
 	// When you use a FunctionDef in your code it gets pushed on the stack
 	// as an instance of Function
 
+	filename { ^filenameSymbol.asString }
+
 	dumpByteCodes {
 		_DumpByteCodes
 		^this.primitiveFailed
