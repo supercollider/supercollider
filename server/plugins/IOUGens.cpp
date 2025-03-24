@@ -191,6 +191,10 @@ void SharedOut_next_k(SharedOut* unit, int inNumSamples);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+// This RAII helper class is like std::lock_guard, but for audio busses.
+// If LockShared is true, the bus is locked for read access, otherwise
+// it is locked for write access. In addition, the constructor checks
+// whether the given bus number is indeed valid.
 template <bool LockShared> struct AudioBusGuard {
     AudioBusGuard(const Unit* unit, int32 currentChannel, int32 maxChannel):
         unit(unit),
@@ -232,6 +236,7 @@ static inline float readControlBus(const float* bus, int channelIndex, int maxCh
     }
 }
 
+// Update the relevant IOUnit instance members if the audio bus number has changed
 static inline void IO_a_update_channels(IOUnit* unit, World* world, float fbusChannel, int numChannels, int bufLength) {
     if (fbusChannel != unit->m_fbusChannel) {
         unit->m_fbusChannel = fbusChannel;
@@ -245,6 +250,9 @@ static inline void IO_a_update_channels(IOUnit* unit, World* world, float fbusCh
     }
 }
 
+// Update the relevant IOUnit instance members if the control bus number has changed.
+// As a small optimization, UpdateTouched tells whether we actually need to
+// update the m_busTouched member.
 template <bool UpdateTouched>
 static inline void IO_k_update_channels(IOUnit* unit, World* world, float fbusChannel, int numChannels) {
     if (fbusChannel != unit->m_fbusChannel) {
@@ -287,6 +295,8 @@ void Control_Ctor(Control* unit) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+// This is a helper function that processes a single channel of an AudioControl.
+// It is called by AudioControl_next_k() and AudioControl_next_1().
 inline void AudioControl_next_channel(AudioControl* unit, int i, float* mapin, int mapRate, int inNumSamples) {
     float* out = OUT(i);
 
@@ -381,11 +391,16 @@ void AudioControl_Ctor(AudioControl* unit) {
 
     unit->m_prevBus = nullptr;
 
+    // We allocate the m_prevVal and m_busUsedinPrevCycle arrays as a
+    // single memory chunk to reduce pressure on the RT memory allocator.
+    // Note that we start with the float array to ensure proper alignment.
+    // m_prevVal points to the start of the chunk and thus owns the memory,
+    // so we have to pass it RTFree() in AudioControl_Dtor().
     size_t memSize = numChannels * (sizeof(float) + sizeof(bool));
     char* mem = (char*)RTAlloc(world, memSize);
     ClearUnitIfMemFailed(mem);
 
-    unit->m_prevVal = (float*)mem; // see AudioControl_Dtor()!
+    unit->m_prevVal = (float*)mem;
     mem += numChannels * sizeof(float);
     std::fill_n(unit->m_prevVal, numChannels, 0.f);
 
@@ -756,6 +771,7 @@ void InFeedback_Ctor(InFeedback* unit) {
 }
 
 void InFeedback_Dtor(InFeedback* unit) {
+    // small vector optimization, see InFeedback_Ctor()
     if (unit->m_busUsedInPrevCycle != unit->m_smallVec)
         RTFree(unit->mWorld, unit->m_busUsedInPrevCycle);
 }
