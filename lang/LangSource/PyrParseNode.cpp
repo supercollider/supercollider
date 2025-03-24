@@ -115,18 +115,12 @@ void compileTail() {
 PyrSymbol* getOptionalFilename() {
     if (gCompilingVMGlobals && &gCompilingVMGlobals->process) {
         PyrSlot* path = &gCompilingVMGlobals->process->nowExecutingPath;
-        if (path && IsObj(path)) {
-            const auto path_length = slotRawObject(path)->size;
-            static constexpr auto SmallStringBufferSize = 126;
-            char small_string_buf[SmallStringBufferSize];
-            char* string_copy = path_length > SmallStringBufferSize ? (char*)malloc(path_length + 1) : small_string_buf;
-            memcpy(string_copy, slotRawString(path)->s, path_length);
-            string_copy[path_length] = 0; // symbols must be null terminated.
-            auto sym = getsym(string_copy);
-            if (path_length > SmallStringBufferSize)
-                delete string_copy;
-            return sym;
+        if (path && IsObj(path) && isKindOfSlot(path, class_string)) {
+            return stringToSymbol(slotRawString(path));
         }
+    } else if (gCompilingFileSym) {
+        // In a class file.
+        return gCompilingFileSym;
     }
     return nullptr;
 }

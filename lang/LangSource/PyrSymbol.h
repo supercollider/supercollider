@@ -52,3 +52,6 @@ enum {
     sym_MetaClass = 64,
     sym_Filename = 128
 };
+
+
+PyrSymbol* stringToSymbol(struct PyrString*);
