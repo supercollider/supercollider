@@ -112,7 +112,9 @@ void compileTail() {
 }
 
 
-PyrSymbol* getOptionalFilename() {
+/// Returns the filename currently being parsed.
+/// If code is passed from an unsaved file, or from the command line, return nullptr.
+PyrSymbol* getActivelyParsedFile() {
     if (gCompilingVMGlobals && &gCompilingVMGlobals->process) {
         PyrSlot* path = &gCompilingVMGlobals->process->nowExecutingPath;
         if (path && IsObj(path) && isKindOfSlot(path, class_string)) {
@@ -1768,7 +1770,7 @@ void PyrCallNodeBase::compilePartialApplication(int numCurryArgs, PyrSlot* resul
     ByteCodes savedBytes = saveByteCodeArray();
 
     int flags = compilingCmdLine ? obj_immutable : obj_permanent | obj_immutable;
-    PyrBlock* block = newPyrBlock(flags, getOptionalFilename(), mLineno, linestarts[mLineno] + mCharno);
+    PyrBlock* block = newPyrBlock(flags, getActivelyParsedFile(), mLineno, linestarts[mLineno] + mCharno);
 
     PyrSlot blockSlot;
     SetObject(&blockSlot, block);
@@ -3794,7 +3796,7 @@ void PyrBlockNode::compile(PyrSlot* slotResult) {
     // create a new block object
 
     flags = compilingCmdLine ? obj_immutable : obj_permanent | obj_immutable;
-    block = newPyrBlock(flags, getOptionalFilename(), mLineno, linestarts[mLineno] + mCharno);
+    block = newPyrBlock(flags, getActivelyParsedFile(), mLineno, linestarts[mLineno] + mCharno);
     SetObject(slotResult, block);
 
     int prevFunctionHighestExternalRef = gFunctionHighestExternalRef;
