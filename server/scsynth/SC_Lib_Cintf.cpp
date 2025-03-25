@@ -190,10 +190,18 @@ void initialize_library(const char* uGensPluginPath) {
 
     if (loadUGensExtDirs) {
 #ifdef SC_PLUGIN_DIR
+#    ifdef LINUX_APPIMAGE
+        // load plugins in appimage
+        bfs::path plugins_path = SC_Filesystem::instance().appdirDirectory() / "usr/lib/SuperCollider/plugins";
+        if (bfs::is_directory(plugins_path)) {
+            PlugIn_LoadDir(plugins_path, true);
+        }
+#    else
         // load globally installed plugins
         if (fs::is_directory(SC_PLUGIN_DIR)) {
             PlugIn_LoadDir(SC_PLUGIN_DIR, true);
         }
+#    endif
 #endif // SC_PLUGIN_DIR
        // load default plugin directory
         const fs::path pluginDir = SC_Filesystem::instance().getDirectory(DirName::Resource) / SC_PLUGIN_DIR_NAME;
