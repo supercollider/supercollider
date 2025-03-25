@@ -22,6 +22,8 @@ Interval : Collection {
 
 	add { ^this.shouldNotImplement(thisMethod) }
 	put { ^this.shouldNotImplement(thisMethod) }
+	remove { ^this.shouldNotImplement(thisMethod) }
+	isAssociationArray { ^false }
 	storeArgs { ^[start, end, step] }
 	storeOn { arg stream;
 		stream << this.class.name;
@@ -52,6 +54,8 @@ Range : Collection {
 
 	add { ^this.shouldNotImplement(thisMethod) }
 	put { ^this.shouldNotImplement(thisMethod) }
+	remove { ^this.shouldNotImplement(thisMethod) }
+	isAssociationArray { ^false }
 
 	split { arg num;
 		// assert: size > num

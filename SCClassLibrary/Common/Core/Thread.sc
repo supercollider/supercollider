@@ -185,4 +185,6 @@ Routine : Thread {
 		// if the user's function returns then always yield nil
 		nil.alwaysYield;
 	}
+
+	put { ^this.shouldNotImplement(thisMethod) }
 }
