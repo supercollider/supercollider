@@ -556,7 +556,7 @@ SCDocHTMLRenderer {
 				if(noParBreak) {
 					noParBreak = false;
 				} {
-					stream << "\n<p>";
+					stream << "\n";
 				};
 				this.renderChildren(stream, node);
 			},
