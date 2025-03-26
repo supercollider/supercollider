@@ -611,6 +611,11 @@ void sc_osc_handler::open_udp_socket(ip::address address, unsigned int port) {
     else
         sc_notify_observers::udp_socket.open(udp::v4());
 
+    boost::asio::socket_base::receive_buffer_size recv_buffer_size(8 * 1024 * 1024);
+    try {
+        sc_notify_observers::udp_socket.set_option(recv_buffer_size);
+    } catch (boost::system::system_error e) {}
+
     sc_notify_observers::udp_socket.bind(udp::endpoint(address, port));
 }
 
