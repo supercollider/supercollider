@@ -51,7 +51,7 @@ public:
 
 protected:
     // create singleton instance
-    SC_LanguageClient(const std::string name);
+    SC_LanguageClient(const std::string& name);
     virtual ~SC_LanguageClient();
     friend void destroyLanguageClient(class SC_LanguageClient*);
 
@@ -93,7 +93,7 @@ public:
     void runLibrary(const char* methodName);
     void interpretCmdLine();
     void interpretPrintCmdLine();
-    void executeFile(const std::string fileName);
+    void executeFile(const std::string& fileName);
     void runMain();
     void stopMain();
 

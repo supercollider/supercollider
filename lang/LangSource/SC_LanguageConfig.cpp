@@ -103,7 +103,7 @@ bool SC_LanguageConfig::removeIncludedDirectory(const Path& path) { return remov
 
 bool SC_LanguageConfig::removeExcludedDirectory(const Path& path) { return removePath(mExcludedDirectories, path); }
 
-static void processPathList(const std::string nodeName, YAML::Node& doc,
+static void processPathList(const std::string& nodeName, YAML::Node& doc,
                             const std::function<void(const std::filesystem::path&)>& func) {
     const YAML::Node& items = doc[nodeName];
     if (items && items.IsSequence()) {
@@ -117,7 +117,7 @@ static void processPathList(const std::string nodeName, YAML::Node& doc,
     }
 }
 
-static void processBool(const std::string nodeName, YAML::Node& doc, const std::function<void(bool)>& successFunc,
+static void processBool(const std::string& nodeName, YAML::Node& doc, const std::function<void(bool)>& successFunc,
                         const std::function<void()>& failFunc) {
     const YAML::Node& item = doc[nodeName];
     if (item) {

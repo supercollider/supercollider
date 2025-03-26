@@ -71,7 +71,7 @@ public:
         std::vector<std::string> mArgs;
     };
 
-    SC_TerminalClient(const std::string name);
+    SC_TerminalClient(const std::string& name);
     virtual ~SC_TerminalClient();
 
     const Options& options() const { return mOptions; }
