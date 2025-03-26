@@ -339,12 +339,21 @@ Configuration and Building
 
 *Note:* You should always use forward slashes for paths passed to CMake.
 
+Set the environment variables PATH first.
+
+    setx PATH "C:\Qt\6.8.2\msvc2022_64\bin;%PATH%"
+
+*Note:* `setx` is usable from Windows 10. Unlike `SET`, which affects
+only current `cmd.exe`, `setx` makes the change persistent.
+
+*Note:* Do not execute this command multiple times. It will populate
+`PATH` environment variable with the same path.
+
 **Confirm the location of your Qt install before executing these commands.** You
 may need to modify them if you installed Qt somewhere else. The following
 commands should be executed starting from the root directory of the
 SuperCollider repository.
 
-    SET PATH=C:\Qt\6.2\msvc2017_64\bin;%PATH%
     SET CMAKE_PREFIX_PATH=C:\Qt\6.2.0\msvc2017_64
     mkdir build
     cd build
