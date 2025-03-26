@@ -19,15 +19,19 @@ bool CLIOptions::parse(int argc, char* argv[], SC_TerminalClient::Options& termi
     exit_code = 0;
     po::options_description description("Interpreter for sclang (SuperCollider language)");
 
-    auto generic_description = build_generic_description();
-    auto terminal_description = build_terminal_description(terminal_options);
-    auto language_config_description = build_language_config_description();
+    auto generic_description = buildGenericDescription();
+    auto terminal_description = buildTerminalDescription(terminal_options);
+    auto language_config_description = buildLanguageConfigDescription();
 
     // Hidden options, will be allowed both on command line and
     // in config file, but will not be shown to the user.
     po::options_description hidden_description("Hidden options");
-    hidden_description.add_options()("input-file", po::value<string>(&mInputFile),
-                                     "input file")("sc-args", po::value<vector<string>>(&mScArgs), "sc args");
+    // clang-format off
+    hidden_description.add_options()
+        ("input-file", po::value<string>(&mInputFile), "input file")
+        ("sc-args", po::value<vector<string>>(&mScArgs), "sc args")
+    ;
+    // clang-format on
 
     // positional options are declared here but captured via hidden description
     po::positional_options_description pos_options;
@@ -88,20 +92,24 @@ bool CLIOptions::parse(int argc, char* argv[], SC_TerminalClient::Options& termi
     // for the language config we don't use the notifier of program options because
     // we want to fill the config with a provided yaml file or their default values.
     // as po does not allow to specify the "notify order", we parse the config manually
-    parse_language_config(vm);
+    parseLanguageConfig(vm);
 
 
     return false;
 }
 
-po::options_description CLIOptions::build_generic_description() {
+po::options_description CLIOptions::buildGenericDescription() {
     po::options_description options("Generic options");
-    options.add_options()("help,h", po::bool_switch(&mPrintHelp), "Print this message and exit")(
-        "version,v", po::bool_switch(&mPrintVersion), "Print sclang version and exit");
+    // clang-format off
+    options.add_options()
+        ("help,h", po::bool_switch(&mPrintHelp), "Print this message and exit")
+        ("version,v", po::bool_switch(&mPrintVersion), "Print sclang version and exit")
+    ;
+    // clang-format on
     return options;
 }
 
-po::options_description CLIOptions::build_terminal_description(SC_TerminalClient::Options& terminal_options) {
+po::options_description CLIOptions::buildTerminalDescription(SC_TerminalClient::Options& terminal_options) {
     po::options_description description("sclang options");
 
     // clang-format off
@@ -118,8 +126,8 @@ po::options_description CLIOptions::build_terminal_description(SC_TerminalClient
         )
         (
             "heap-growth,g",
-            po::value<string>()->default_value(convert_memory_integer(terminal_options.mMemGrow))->notifier([&](const string &heapGrowth) {
-                terminal_options.mMemGrow = parse_memory_string(heapGrowth);
+            po::value<string>()->default_value(convertMemoryInteger(terminal_options.mMemGrow))->notifier([&](const string &heapGrowth) {
+                terminal_options.mMemGrow = parseMemoryString(heapGrowth);
             }),
             "Set heap growth size (allows k, m and g as suffix multipliers)"
         )
@@ -133,8 +141,8 @@ po::options_description CLIOptions::build_terminal_description(SC_TerminalClient
         )
         (
             "heap-size,m",
-            po::value<string>()->default_value(convert_memory_integer(terminal_options.mMemSpace))->notifier([&](const string &heapSize) {
-                terminal_options.mMemSpace = parse_memory_string(heapSize);
+            po::value<string>()->default_value(convertMemoryInteger(terminal_options.mMemSpace))->notifier([&](const string &heapSize) {
+                terminal_options.mMemSpace = parseMemoryString(heapSize);
             }),
             "Set initial heap size (allows k, m and g as suffix multipliers)"
         )
@@ -176,7 +184,7 @@ po::options_description CLIOptions::build_terminal_description(SC_TerminalClient
     return description;
 }
 
-po::options_description CLIOptions::build_language_config_description() {
+po::options_description CLIOptions::buildLanguageConfigDescription() {
     po::options_description description("Language config options (overwrites provided yaml entries)");
 
     // clang-format off
@@ -184,12 +192,12 @@ po::options_description CLIOptions::build_language_config_description() {
         (
             "include-path",
             po::value<vector<string>>(),
-            "class library path to be included for searching (allows multiple mentions)"
+            "Class library path to be included for searching (allows multiple mentions)"
         )
         (
             "exclude-path",
             po::value<vector<string>>(),
-            "class library path to be to excluded from searching (overrides includePaths, allows multiple mentions)"
+            "Class library path to be to excluded from searching (overrides includePaths, allows multiple mentions)"
         )
         (
             "post-inline-warnings",
@@ -202,7 +210,7 @@ po::options_description CLIOptions::build_language_config_description() {
     return description;
 }
 
-void CLIOptions::parse_language_config(po::variables_map& vm) {
+void CLIOptions::parseLanguageConfig(po::variables_map& vm) {
     // see HelpSource/Classes/LanguageConfig.schelp
     if (vm.at("post-inline-warnings").as<bool>()) {
         gLanguageConfig->setPostInlineWarnings(true);
@@ -221,7 +229,7 @@ void CLIOptions::parse_language_config(po::variables_map& vm) {
 }
 
 // converts e.g. 1k to 1024
-int CLIOptions::parse_memory_string(std::string input) {
+int CLIOptions::parseMemoryString(std::string input) {
     if (input.empty()) {
         return 0;
     }
@@ -247,7 +255,7 @@ int CLIOptions::parse_memory_string(std::string input) {
 }
 
 // converts e.g. 1024 to 1k
-std::string CLIOptions::convert_memory_integer(int mem_size) {
+std::string CLIOptions::convertMemoryInteger(int mem_size) {
     int rem = mem_size;
     int mod = 0;
     std::string mod_char;

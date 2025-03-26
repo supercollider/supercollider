@@ -75,7 +75,7 @@ static FILE* gPostDest = stdout;
 static UINT gOldCodePage; // for remembering the old codepage when we switch to UTF-8
 #endif
 
-SC_TerminalClient::SC_TerminalClient(const std::string name):
+SC_TerminalClient::SC_TerminalClient(const std::string& name):
     SC_LanguageClient(name),
     mReturnCode(0),
     mUseReadline(false),
