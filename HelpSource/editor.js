@@ -37,6 +37,7 @@ const init = () => {
             value: code,
             lineWrapping: true,
             viewportMargin: Infinity,
+            lineNumbers: false/*true*//*code.split('\n').length > 3*/, 
             extraKeys: {
                 // noop: prevent both codemirror and the browser to handle Shift-Enter
                 'Shift-Enter': ()=>{}, 
