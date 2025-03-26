@@ -15,38 +15,38 @@ namespace SC_CLI {
 
 /// parses the CLI - if the program should terminate after parsing it will return true
 /// an exit code is passed by reference
-bool CLIOptions::parse(int argc, char* argv[], SC_TerminalClient::Options& terminal_options, int& exit_code) {
+bool CLIOptions::parse(int argc, char* argv[], SC_TerminalClient::Options& terminalOptions, int& exit_code) {
     exit_code = 0;
     po::options_description description("Interpreter for sclang (SuperCollider language)");
 
-    auto generic_description = buildGenericDescription();
-    auto terminal_description = buildTerminalDescription(terminal_options);
-    auto language_config_description = buildLanguageConfigDescription();
+    auto genericDescription = buildGenericDescription();
+    auto terminalDescription = buildTerminalDescription(terminalOptions);
+    auto languageConfigDescription = buildLanguageConfigDescription();
 
     // Hidden options, will be allowed both on command line and
     // in config file, but will not be shown to the user.
-    po::options_description hidden_description("Hidden options");
+    po::options_description hiddenDescription("Hidden options");
     // clang-format off
-    hidden_description.add_options()
+    hiddenDescription.add_options()
         ("input-file", po::value<string>(&mInputFile), "input file")
         ("sc-args", po::value<vector<string>>(&mScArgs), "sc args")
     ;
     // clang-format on
 
     // positional options are declared here but captured via hidden description
-    po::positional_options_description pos_options;
-    pos_options.add("input-file", 1);
-    pos_options.add("sc-args", -1);
+    po::positional_options_description positionalOptions;
+    positionalOptions.add("input-file", 1);
+    positionalOptions.add("sc-args", -1);
 
-    po::options_description cmdline_options;
-    cmdline_options.add(generic_description)
-        .add(terminal_description)
-        .add(hidden_description)
-        .add(language_config_description);
+    po::options_description cmdLineOptions;
+    cmdLineOptions.add(genericDescription)
+        .add(terminalDescription)
+        .add(hiddenDescription)
+        .add(languageConfigDescription);
 
     po::variables_map vm;
     try {
-        store(po::command_line_parser(argc, argv).options(cmdline_options).positional(pos_options).run(), vm);
+        store(po::command_line_parser(argc, argv).options(cmdLineOptions).positional(positionalOptions).run(), vm);
         notify(vm);
     } catch (po::unknown_option& e) {
         cerr << e.what() << endl;
@@ -63,7 +63,7 @@ bool CLIOptions::parse(int argc, char* argv[], SC_TerminalClient::Options& termi
     }
 
     if (vm.count("sc-args")) {
-        terminal_options.mArgs = vm["sc-args"].as<vector<string>>();
+        terminalOptions.mArgs = vm["sc-args"].as<vector<string>>();
     }
 
     if (mPrintVersion) {
@@ -74,26 +74,25 @@ bool CLIOptions::parse(int argc, char* argv[], SC_TerminalClient::Options& termi
     // this is handled here and not in the description declaration b/c we need access to the declarations
     if (mPrintHelp) {
         // construct a options_description w/o hidden positional options
-        po::options_description visible_description("");
-        visible_description.add(generic_description).add(terminal_description).add(language_config_description);
+        po::options_description visibleDescription("");
+        visibleDescription.add(genericDescription).add(terminalDescription).add(languageConfigDescription);
 
         cout << "Start a REPL interpreter:           sclang [ -options ]\n"
                 "Execute a .scd file:                sclang [ -options ] path_to_sc_file [ args passed to sclang... ]\n"
-             << visible_description << endl;
+             << visibleDescription << endl;
         return true;
     }
 
     if (!mInputFile.empty()) {
-        terminal_options.mDaemon = true;
+        terminalOptions.mDaemon = true;
     }
 
-    SC_LanguageConfig::readLibraryConfig(terminal_options.mStandalone);
+    SC_LanguageConfig::readLibraryConfig(terminalOptions.mStandalone);
 
     // for the language config we don't use the notifier of program options because
     // we want to fill the config with a provided yaml file or their default values.
     // as po does not allow to specify the "notify order", we parse the config manually
     parseLanguageConfig(vm);
-
 
     return false;
 }
@@ -109,56 +108,56 @@ po::options_description CLIOptions::buildGenericDescription() {
     return options;
 }
 
-po::options_description CLIOptions::buildTerminalDescription(SC_TerminalClient::Options& terminal_options) {
+po::options_description CLIOptions::buildTerminalDescription(SC_TerminalClient::Options& terminalOptions) {
     po::options_description description("sclang options");
 
     // clang-format off
     description.add_options()
         (
             "runtime-directory,d",
-            po::value<string>(&terminal_options.mRuntimeDir),
+            po::value<string>(&terminalOptions.mRuntimeDir),
             "Set runtime directory"
         )
         (
             "daemon,D",
-            po::bool_switch(&terminal_options.mDaemon)->default_value(terminal_options.mDaemon),
+            po::bool_switch(&terminalOptions.mDaemon)->default_value(terminalOptions.mDaemon),
             "Enter daemon mode"
         )
         (
             "heap-growth,g",
-            po::value<string>()->default_value(convertMemoryInteger(terminal_options.mMemGrow))->notifier([&](const string &heapGrowth) {
-                terminal_options.mMemGrow = parseMemoryString(heapGrowth);
+            po::value<string>()->default_value(convertMemoryInteger(terminalOptions.mMemGrow))->notifier([&](const string &heapGrowth) {
+                terminalOptions.mMemGrow = parseMemoryString(heapGrowth);
             }),
             "Set heap growth size (allows k, m and g as suffix multipliers)"
         )
         (
             "yaml-config,l",
-            po::value<string>(&terminal_options.mLibraryConfigFile)->notifier([&](const string &yaml_config) {
-                terminal_options.mLibraryConfigFile = yaml_config;
+            po::value<string>(&terminalOptions.mLibraryConfigFile)->notifier([&](const string &yaml_config) {
+                terminalOptions.mLibraryConfigFile = yaml_config;
                 SC_LanguageConfig::setConfigPath(yaml_config);
             }),
             "Set yaml config"
         )
         (
             "heap-size,m",
-            po::value<string>()->default_value(convertMemoryInteger(terminal_options.mMemSpace))->notifier([&](const string &heapSize) {
-                terminal_options.mMemSpace = parseMemoryString(heapSize);
+            po::value<string>()->default_value(convertMemoryInteger(terminalOptions.mMemSpace))->notifier([&](const string &heapSize) {
+                terminalOptions.mMemSpace = parseMemoryString(heapSize);
             }),
             "Set initial heap size (allows k, m and g as suffix multipliers)"
         )
         (
             "call-run,r",
-            po::bool_switch(&terminal_options.mCallRun)->default_value(terminal_options.mCallRun),
+            po::bool_switch(&terminalOptions.mCallRun)->default_value(terminalOptions.mCallRun),
             "Call Main.run on startup"
         )
         (
             "call-stop,s",
-            po::bool_switch(&terminal_options.mCallStop)->default_value(terminal_options.mCallStop),
+            po::bool_switch(&terminalOptions.mCallStop)->default_value(terminalOptions.mCallStop),
             "Call Main.stop on shutdown"
         )
         (
             "port,u",
-            po::value<int>(&terminal_options.mPort)->default_value(terminal_options.mPort)->notifier([&](int port) {
+            po::value<int>(&terminalOptions.mPort)->default_value(terminalOptions.mPort)->notifier([&](int port) {
                 if (port < 0 || port > 65535) {
                     cerr << "UDP port must be in range between 0-65535, but was " << port << endl;
                     mParsingFailed = true;
@@ -175,7 +174,7 @@ po::options_description CLIOptions::buildTerminalDescription(SC_TerminalClient::
         )
         (
             "standalone,a",
-            po::bool_switch(&terminal_options.mStandalone)->default_value(terminal_options.mStandalone),
+            po::bool_switch(&terminalOptions.mStandalone)->default_value(terminalOptions.mStandalone),
             "Standalone mode (exclude SCClassLibrary and user and system Extensions folders from search path)"
         )
     ;
@@ -248,17 +247,17 @@ int CLIOptions::parseMemoryString(std::string input) {
         return 0;
     }
 
-    std::string number_part = std::isdigit(suffix) ? input : input.substr(0, input.size() - 1);
-    int value = boost::lexical_cast<int>(number_part);
+    std::string numberPart = std::isdigit(suffix) ? input : input.substr(0, input.size() - 1);
+    int value = boost::lexical_cast<int>(numberPart);
 
     return value * multiplier;
 }
 
 // converts e.g. 1024 to 1k
-std::string CLIOptions::convertMemoryInteger(int mem_size) {
-    int rem = mem_size;
+std::string CLIOptions::convertMemoryInteger(int memSize) {
+    int rem = memSize;
     int mod = 0;
-    std::string mod_char;
+    std::string modChar;
 
     while ((rem % 1024) == 0 && (mod < 4)) {
         rem /= 1024;
@@ -267,19 +266,19 @@ std::string CLIOptions::convertMemoryInteger(int mem_size) {
 
     switch (mod) {
     case 1:
-        mod_char = 'k';
+        modChar = 'k';
         break;
     case 2:
-        mod_char = 'm';
+        modChar = 'm';
         break;
     case 3:
-        mod_char = 'g';
+        modChar = 'g';
         break;
     default:
-        rem = mem_size;
-        mod_char = "";
+        rem = memSize;
+        modChar = "";
     }
 
-    return std::to_string(rem) + mod_char;
+    return std::to_string(rem) + modChar;
 }
 }
