@@ -65,7 +65,10 @@ method::kr
 equivalent to code::*new(key).kr(numChannels, offset):: (see link::Classes/BusPlug#-kr::)
 
 method::clear
-clear all proxies
+clear all proxies (in all proxyspaces)
+
+method::hardClear
+clear all proxies and remove all existing proxyspaces
 
 method::defaultServer
 set the default server (default: code::Server.default::)
