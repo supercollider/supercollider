@@ -119,7 +119,7 @@ int SC_TerminalClient::run(int argc, char** argv) {
     initRuntime(opt);
 
     // Create config directory so that it can be used by Quarks, etc. See #2919.
-    if (!opt.mStandalone && !opt.mLibraryConfigFile.empty())
+    if (!opt.mStandalone && opt.mLibraryConfigFile.empty())
         std::filesystem::create_directories(SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::UserConfig));
 
     // startup library
