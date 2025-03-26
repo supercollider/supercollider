@@ -25,7 +25,7 @@
 /*
  * SC_Filesystem implementation for Linux/FreeBSD/OpenBSD.
  */
-#if defined(__linux__) || defined(__FreeBSD__) || defined(__OpenBSD__)
+#if defined(__linux__) || defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__EMSCRIPTEN__)
 
 #    include "SC_Filesystem.hpp"
 

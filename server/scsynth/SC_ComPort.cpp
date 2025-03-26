@@ -189,7 +189,6 @@ static void tcp_reply_func(struct ReplyAddress* addr, char* msg, int size) {
         printf("%s\n", errc.message().c_str());
 }
 
-
 class SC_UdpInPort {
     struct World* mWorld;
     int mPortNum;
