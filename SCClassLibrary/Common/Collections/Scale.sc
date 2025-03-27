@@ -155,7 +155,7 @@ Scale {
 	}
 
 	storedKey {
-		// can be optimised later
+		// can be optimized later
 		^all.findKeyForValue(this)
 	}
 
@@ -274,7 +274,7 @@ Tuning {
 	}
 
 	storedKey {
-		// can be optimised later
+		// can be optimized later
 		^all.findKeyForValue(this)
 	}
 

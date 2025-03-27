@@ -170,7 +170,7 @@ SynthDesc {
 
 		name = stream.getPascalString;
 
-		def = SynthDef.prNew(name);
+		def = SynthDef.newForSynthDesc(name);
 		UGen.buildSynthDef = def;
 
 		numConstants = stream.getInt32;

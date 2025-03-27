@@ -1,4 +1,9 @@
+// Writes to disk
 DiskOut : UGen {
+	resourceManagers { ^[UGenDiskResourceManager] }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar { arg bufnum, channelsArray;
 		^this.multiNewList(['audio', bufnum] ++ channelsArray.asArray)
 	}
@@ -15,7 +20,12 @@ DiskOut : UGen {
 	}
 }
 
+// Plays from disk
 DiskIn : MultiOutUGen {
+	resourceManagers { ^[UGenDiskResourceManager] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar { arg numChannels, bufnum, loop = 0;
 		^this.multiNew('audio', numChannels, bufnum, loop)
 	}
@@ -26,6 +36,10 @@ DiskIn : MultiOutUGen {
 }
 
 VDiskIn : MultiOutUGen {
+	resourceManagers { ^[UGenDiskResourceManager] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*ar { arg numChannels, bufnum, rate = 1, loop = 0, sendID = 0;
 		^this.multiNew('audio', numChannels, bufnum, rate, loop, sendID)
 	}

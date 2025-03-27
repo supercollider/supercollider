@@ -13,7 +13,6 @@ http://www.mcld.co.uk/
 */
 
 MoogFF : Filter {
-
 	*ar { | in, freq=100, gain=2, reset=0, mul=1, add=0 |
 		^this.multiNew('audio', in, freq, gain, reset).madd(mul, add)
 	}
