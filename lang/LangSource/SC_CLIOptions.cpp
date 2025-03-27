@@ -15,8 +15,8 @@ namespace SC_CLI {
 
 /// parses the CLI - if the program should terminate after parsing it will return true
 /// an exit code is passed by reference
-bool CLIOptions::parse(int argc, char* argv[], SC_TerminalClient::Options& terminalOptions, int& exit_code) {
-    exit_code = 0;
+bool CLIOptions::parse(int argc, char* argv[], SC_TerminalClient::Options& terminalOptions, int& exitCode) {
+    exitCode = 0;
     po::options_description description("Interpreter for sclang (SuperCollider language)");
 
     auto genericDescription = buildGenericDescription();
@@ -50,15 +50,15 @@ bool CLIOptions::parse(int argc, char* argv[], SC_TerminalClient::Options& termi
         notify(vm);
     } catch (po::unknown_option& e) {
         cerr << e.what() << endl;
-        exit_code = 1;
+        exitCode = 1;
         return true;
     } catch (po::invalid_option_value& e) {
         cerr << e.what() << endl;
-        exit_code = 1;
+        exitCode = 1;
         return true;
     }
     if (mParsingFailed) {
-        exit_code = 1;
+        exitCode = 1;
         return true;
     }
 
@@ -196,7 +196,7 @@ po::options_description CLIOptions::buildLanguageConfigDescription() {
         (
             "exclude-path",
             po::value<vector<string>>(),
-            "Class library path to be to excluded from searching (overrides includePaths, allows multiple mentions)"
+            "Class library path to be excluded from searching (overrides includePaths, allows multiple mentions)"
         )
         (
             "post-inline-warnings",
@@ -228,7 +228,7 @@ void CLIOptions::parseLanguageConfig(po::variables_map& vm) {
 }
 
 // converts e.g. 1k to 1024
-int CLIOptions::parseMemoryString(std::string input) {
+int CLIOptions::parseMemoryString(const std::string& input) {
     if (input.empty()) {
         return 0;
     }
@@ -243,14 +243,18 @@ int CLIOptions::parseMemoryString(std::string input) {
     } else if (suffix == 'g' || suffix == 'G') {
         multiplier = 1024 * 1024 * 1024;
     } else if (!isdigit(suffix)) {
-        cerr << "Unknown modifier '" << suffix << "'" << endl;
-        return 0;
+        cerr << "Couldn't parse memory value '" << input << "': '" << suffix << "' is an unknown modifier" << endl;
+        exit(1);
     }
 
     std::string numberPart = std::isdigit(suffix) ? input : input.substr(0, input.size() - 1);
-    int value = boost::lexical_cast<int>(numberPart);
-
-    return value * multiplier;
+    try {
+        int value = boost::lexical_cast<int>(numberPart);
+        return value * multiplier;
+    } catch (boost::bad_lexical_cast& e) {
+        cerr << "Couldn't parse memory value '" << input << "'" << endl;
+        exit(1);
+    }
 }
 
 // converts e.g. 1024 to 1k

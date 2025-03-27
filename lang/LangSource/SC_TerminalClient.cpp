@@ -107,12 +107,12 @@ void SC_TerminalClient::flush() { fflush(gPostDest); }
 
 int SC_TerminalClient::run(int argc, char** argv) {
     Options& opt = mOptions;
-    int error_code;
+    int errorCode;
 
-    SC_CLI::CLIOptions cli_options;
+    SC_CLI::CLIOptions cliOptions;
 
-    if (cli_options.parse(argc, argv, mOptions, error_code)) {
-        return error_code;
+    if (cliOptions.parse(argc, argv, mOptions, errorCode)) {
+        return errorCode;
     }
 
     // initialize runtime
@@ -134,8 +134,8 @@ int SC_TerminalClient::run(int argc, char** argv) {
     }
 
     // enter main loop
-    if (!cli_options.mInputFile.empty())
-        executeFile(cli_options.mInputFile);
+    if (!cliOptions.mInputFile.empty())
+        executeFile(cliOptions.mInputFile);
     if (opt.mCallRun)
         runMain();
 

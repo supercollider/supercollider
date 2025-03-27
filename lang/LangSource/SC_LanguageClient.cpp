@@ -100,7 +100,7 @@ void SC_LanguageClient::initRuntime(const Options& opt) {
     if (!mHiddenClient->mRunning) {
         mHiddenClient->mRunning = true;
         if (!opt.mRuntimeDir.empty()) {
-            if (int err = chdir(opt.mRuntimeDir.c_str()))
+            if (chdir(opt.mRuntimeDir.c_str()) != 0)
                 error("Cannot change to runtime directory: %s", strerror(errno));
         }
         pyr_init_mem_pools(opt.mMemSpace, opt.mMemGrow);
