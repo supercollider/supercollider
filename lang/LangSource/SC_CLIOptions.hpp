@@ -9,7 +9,7 @@ namespace SC_CLI {
 class CLIOptions {
 public:
     CLIOptions() {};
-    bool parse(int argc, char* argv[], SC_TerminalClient::Options& terminalOptions, int& exit_code);
+    bool parse(int argc, char* argv[], SC_TerminalClient::Options& terminalOptions, int& exitCode);
 
     string mInputFile;
     vector<string> mScArgs;
@@ -25,7 +25,7 @@ private:
 
     static void parseLanguageConfig(po::variables_map& vm);
 
-    static int parseMemoryString(std::string input);
+    static int parseMemoryString(const std::string& input);
     static std::string convertMemoryInteger(int memSize);
 };
 }
