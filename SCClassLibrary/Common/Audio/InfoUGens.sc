@@ -1,19 +1,22 @@
 InfoUGenBase : UGen {
-	*ir {
-		^this.multiNew('scalar')
-	}
+	resourceManagers { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
+	*ir { ^this.multiNew('scalar') }
 }
 
 BufInfoUGenBase : UGen {
-	*kr { arg bufnum;
-		^this.multiNew('control', bufnum)
-	}
+	resourceManagers { ^[UGenBusResourceManager] }
+	busAccessType { ^\read }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
+	*kr { |bufnum| ^this.multiNew('control', bufnum) }
 
 	// the .ir method is not the safest choice. Since a buffer can be reallocated at any time,
 	// using .ir will not track the changes.
-	*ir { arg bufnum;
-		^this.multiNew('scalar',bufnum)
-	}
+	*ir { |bufnum| ^this.multiNew('scalar',bufnum) }
 }
 
 SampleRate : InfoUGenBase {}
@@ -30,10 +33,9 @@ NumAudioBuses : InfoUGenBase {}
 NumControlBuses : InfoUGenBase {}
 NumBuffers : InfoUGenBase {}
 NodeID : InfoUGenBase {}
+
 NumRunningSynths : InfoUGenBase {
-	*kr {
-		^this.multiNew('control')
-	}
+	*kr { ^this.multiNew('control') }
 }
 
 BufSampleRate : BufInfoUGenBase {}
@@ -42,5 +44,3 @@ BufFrames : BufInfoUGenBase {}
 BufSamples : BufInfoUGenBase {}
 BufDur : BufInfoUGenBase {}
 BufChannels : BufInfoUGenBase {}
-
-////////////////////////////////////////////
