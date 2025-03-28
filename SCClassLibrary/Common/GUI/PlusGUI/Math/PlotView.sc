@@ -1476,7 +1476,7 @@ Plotter {
 + Env {
 	plot { |size = 400, bounds, minval, maxval, name, parent|
 		var plotLabel = if (name.isNil) { "Envelope" } { name };
-		var plotter = [this.asMultichannelSignal(size).flop]
+		var plotter = this.asMultichannelSignal(size)
 		.plot(name, bounds, minval: minval, maxval: maxval, parent: parent);
 
 		var duration = this.duration.asArray;
