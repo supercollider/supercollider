@@ -30,7 +30,7 @@ void Rate_Init(Rate* inRate, double inSampleRate, int inBufLength) {
 
     inRate->mBufLength = inBufLength;
     inRate->mBufDuration = inRate->mBufLength / inRate->mSampleRate;
-    inRate->mBufRate = 1. / inRate->mBufDuration;
+    inRate->mBufRate = inRate->mSampleRate / inRate->mBufLength;
     inRate->mSlopeFactor = 1. / inRate->mBufLength;
     inRate->mFilterLoops = inRate->mBufLength / 3;
     inRate->mFilterRemain = inRate->mBufLength % 3;

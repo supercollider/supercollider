@@ -1245,7 +1245,7 @@ void A2K_Ctor(A2K* unit) {
 void T2K_next(T2K* unit, int inNumSamples) {
     float out = 0.f, val;
     float* in = ZIN(0);
-    int n = unit->mWorld->mBufLength;
+    int n = FULLBUFLENGTH;
     LOOP1(n, val = ZXP(in); if (val > out) out = val;);
     ZOUT0(0) = out;
 }

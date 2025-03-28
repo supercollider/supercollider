@@ -431,19 +431,17 @@ void DelTapRd_next4_k(DelTapRd* unit, int inNumSamples);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void SampleRate_Ctor(Unit* unit, int inNumSamples) { ZOUT0(0) = unit->mWorld->mSampleRate; }
+void SampleRate_Ctor(Unit* unit, int inNumSamples) { ZOUT0(0) = FULLRATE; }
 
+void ControlRate_Ctor(Unit* unit, int inNumSamples) { ZOUT0(0) = BUFRATE; }
 
-void ControlRate_Ctor(Unit* unit, int inNumSamples) { ZOUT0(0) = unit->mWorld->mBufRate.mSampleRate; }
+void SampleDur_Ctor(Unit* unit, int inNumSamples) { ZOUT0(0) = FULLSAMPLEDUR; }
 
-
-void SampleDur_Ctor(Unit* unit, int inNumSamples) { ZOUT0(0) = unit->mWorld->mFullRate.mSampleDur; }
-
-void ControlDur_Ctor(Unit* unit, int inNumSamples) { ZOUT0(0) = unit->mWorld->mFullRate.mBufDuration; }
+void ControlDur_Ctor(Unit* unit, int inNumSamples) { ZOUT0(0) = BUFDUR; }
 
 void RadiansPerSample_Ctor(Unit* unit, int inNumSamples) { ZOUT0(0) = unit->mWorld->mFullRate.mRadiansPerSample; }
 
-void BlockSize_Ctor(Unit* unit, int inNumSamples) { ZOUT0(0) = unit->mWorld->mFullRate.mBufLength; }
+void BlockSize_Ctor(Unit* unit, int inNumSamples) { ZOUT0(0) = FULLBUFLENGTH; }
 
 void SubsampleOffset_Ctor(Unit* unit, int inNumSamples) { ZOUT0(0) = unit->mParent->mSubsampleOffset; }
 
@@ -566,7 +564,7 @@ void BufSamples_Ctor(BufInfoUnit* unit, int inNumSamples) {
 
 void BufRateScale_next(BufInfoUnit* unit, int inNumSamples) {
     SIMPLE_GET_BUF_SHARED
-    ZOUT0(0) = buf->samplerate * unit->mWorld->mFullRate.mSampleDur;
+    ZOUT0(0) = buf->samplerate * FULLSAMPLEDUR;
 }
 
 void BufRateScale_Ctor(BufInfoUnit* unit, int inNumSamples) {
@@ -574,7 +572,7 @@ void BufRateScale_Ctor(BufInfoUnit* unit, int inNumSamples) {
     CTOR_GET_BUF
     unit->m_fbufnum = fbufnum;
     unit->m_buf = buf;
-    ZOUT0(0) = buf->samplerate * unit->mWorld->mFullRate.mSampleDur;
+    ZOUT0(0) = buf->samplerate * FULLSAMPLEDUR;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -596,7 +594,7 @@ static void LocalBuf_allocBuffer(LocalBuf* unit, SndBuf* buf, int numChannels, i
     buf->samples = numSamples;
     buf->mask = BUFMASK(numSamples); // for delay lines
     buf->mask1 = buf->mask - 1; // for oscillators
-    buf->samplerate = unit->mWorld->mSampleRate;
+    buf->samplerate = FULLRATE;
     buf->sampledur = 1. / buf->samplerate;
 #if SUPERNOVA
     buf->isLocal = true;
@@ -1684,19 +1682,19 @@ void Pitch_Ctor(Pitch* unit) {
 
     if (INRATE(kPitchIn) == calc_FullRate) {
         SETCALC(Pitch_next_a);
-        unit->m_downsamp = sc_clip(downsamp, 1, unit->mWorld->mFullRate.mBufLength);
+        unit->m_downsamp = sc_clip(downsamp, 1, FULLBUFLENGTH);
         unit->m_srate = FULLRATE / (float)unit->m_downsamp;
     } else {
         SETCALC(Pitch_next_k);
         unit->m_downsamp = sc_max(downsamp, 1);
-        unit->m_srate = FULLRATE / (float)(unit->mWorld->mFullRate.mBufLength * unit->m_downsamp);
+        unit->m_srate = FULLRATE / (float)(FULLBUFLENGTH * unit->m_downsamp);
     }
 
     unit->m_minperiod = (long)(unit->m_srate / unit->m_maxfreq);
     unit->m_maxperiod = (long)(unit->m_srate / unit->m_minfreq);
 
     unit->m_execPeriod = (int)(unit->m_srate / execfreq);
-    unit->m_execPeriod = sc_max(unit->m_execPeriod, unit->mWorld->mFullRate.mBufLength);
+    unit->m_execPeriod = sc_max(unit->m_execPeriod, FULLBUFLENGTH);
 
     unit->m_size = sc_max(unit->m_maxperiod << 1, unit->m_execPeriod);
 
@@ -1725,7 +1723,7 @@ void Pitch_next_a(Pitch* unit, int inNumSamples) {
     uint32 index = unit->m_index;
     int downsamp = unit->m_downsamp;
     int readp = unit->m_readp;
-    int ksamps = unit->mWorld->mFullRate.mBufLength;
+    int ksamps = FULLBUFLENGTH;
 
     float* bufData = unit->m_buffer;
 
@@ -1925,7 +1923,7 @@ void Pitch_next_k(Pitch* unit, int inNumSamples) {
     uint32 index = unit->m_index;
     int downsamp = unit->m_downsamp;
     int readp = unit->m_readp;
-    //  	int ksamps = unit->mWorld->mFullRate.mBufLength;
+    //  	int ksamps = FULLBUFLENGTH;
 
     float* bufData = unit->m_buffer;
 

@@ -180,8 +180,8 @@ static void calculatetemplate(BeatTrack2* unit, int which, int j);
 static void finaldecision(BeatTrack2* unit);
 
 void BeatTrack2_Ctor(BeatTrack2* unit) {
-    // unit->m_srate = unit->mWorld->mFullRate.mSampleRate;
-    float kblocklength = unit->mWorld->mFullRate.mBufDuration; // seconds per control block
+    // unit->m_srate = FULLRATE;
+    float kblocklength = BUFDUR; // seconds per control block
     unit->m_krlength = kblocklength;
     // N features per block over numphases*2 variants for one of 120 tempi, so need at least 120 blocks to complete
 

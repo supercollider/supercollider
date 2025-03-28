@@ -2936,7 +2936,7 @@ void Klank_Ctor(Klank* unit) {
     int numpartials = (unit->mNumInputs - 4) / 3;
     unit->m_numpartials = numpartials;
     int numcoefs = ((numpartials + 3) & ~3) * 5;
-    unit->m_coefs = (float*)RTAlloc(unit->mWorld, (numcoefs + unit->mWorld->mBufLength) * sizeof(float));
+    unit->m_coefs = (float*)RTAlloc(unit->mWorld, (numcoefs + FULLBUFLENGTH) * sizeof(float));
     ClearUnitIfMemFailed(unit->m_coefs);
     unit->m_buf = unit->m_coefs + numcoefs;
     Klank_SetCoefs(unit);
@@ -3338,7 +3338,7 @@ void ChebyFill(World* world, struct SndBuf* buf, struct sc_msg_iter* msg) {
     float* data = (float*)malloc(byteSize);
 
     if (flags & flag_Clear)
-        Fill(size, data, 0.);
+        Clear(size, data);
     else
         memcpy(data, buf->data, byteSize);
 
@@ -3373,7 +3373,7 @@ void SineFill1(World* world, struct SndBuf* buf, struct sc_msg_iter* msg) {
     float* data = (float*)malloc(byteSize);
 
     if (flags & flag_Clear)
-        Fill(size, data, 0.);
+        Clear(size, data);
     else
         memcpy(data, buf->data, byteSize);
 
@@ -3407,7 +3407,7 @@ void SineFill2(World* world, struct SndBuf* buf, struct sc_msg_iter* msg) {
     float* data = (float*)malloc(byteSize);
 
     if (flags & flag_Clear)
-        Fill(size, data, 0.);
+        Clear(size, data);
     else
         memcpy(data, buf->data, byteSize);
 
@@ -3441,7 +3441,7 @@ void SineFill3(World* world, struct SndBuf* buf, struct sc_msg_iter* msg) {
     float* data = (float*)malloc(byteSize);
 
     if (flags & flag_Clear)
-        Fill(size, data, 0.);
+        Clear(size, data);
     else
         memcpy(data, buf->data, byteSize);
 
