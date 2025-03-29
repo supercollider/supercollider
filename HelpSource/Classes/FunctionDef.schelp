@@ -11,6 +11,8 @@ method:: thisFunctionDef
 The global pseudo-variable code::thisFunctionDef:: always evaluates to the
 current enclosing FunctionDef.
 
+This is most useful to get the file path of the current file, see link::Classes/FunctionDef#filenameSymbol::, which is useful when working with multiple files.
+
 See also: link::Classes/Function#.thisFunction#thisFunction::
 
 instanceMethods::
@@ -100,6 +102,29 @@ code::
 { |a = 9, b = 10 ... c| a + b }.def.argumentString(asArray: true);
 ::
 
+method::filenameSymbol
+
+Return the file path (as a link::Classes/Symbol::) where the code was defined, if the file has not been saved (or you are using a terminal interface) returns nil.
+
+This method is particularly useful when working with multiple files with link::Classes/String#load:: and you need a path relative to the file.
+
+code::
+// In a file at /home/user/test.scd
+
+thisFunctionDef.filenameSymbol // returns the Symbol '/home/user/test.scd'
+::
+
+Additionally, this can be captured by a function or link::Classes/Routine::, unlike code::thisProcess.nowExecutingPath::.
+
+code::
+// In a file at /home/user/a.scd
+
+{ thisFunctionDef.filenameSymbol }
+
+// In a file at /home/user/b.scd
+
+"a.scd".load.() // returns /home/user/a.scd
+::
 
 
 method::makeEnvirFromArgs

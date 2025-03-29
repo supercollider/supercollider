@@ -415,10 +415,15 @@ Process {
 FunctionDef {
 	var raw1, raw2, <code, <selectors, <constants, <prototypeFrame, <context, <argNames, <varNames;
 	var <sourceCode;
+	var <filenameSymbol;
+	var <charPos;
+	var <lineNumber;
 
 	// a FunctionDef is defined by a code within curly braces {}
 	// When you use a FunctionDef in your code it gets pushed on the stack
 	// as an instance of Function
+
+	filename { ^filenameSymbol.asString }
 
 	dumpByteCodes {
 		_DumpByteCodes
@@ -563,7 +568,6 @@ FunctionDef {
 
 Method : FunctionDef {
 	var <ownerClass, <name, <primitiveName;
-	var <filenameSymbol, <charPos;
 
 	openCodeFile {
 		this.filenameSymbol.asString.openDocument(this.charPos, -1);
@@ -662,7 +666,6 @@ Interpreter {
 	interpretPrintCmdLine {
 		var res, func, code = cmdLine, doc, ideClass = \ScIDE.asClass;
 		preProcessor !? { cmdLine = preProcessor.value(cmdLine, this) };
-		func = this.compile(cmdLine);
 		if (ideClass.notNil) {
 			thisProcess.nowExecutingPath = ideClass.currentPath
 		} {
@@ -670,6 +673,7 @@ Interpreter {
 				thisProcess.nowExecutingPath = doc.tryPerform(\path);
 			}
 		};
+		func = this.compile(cmdLine);
 		res = func.value;
 		thisProcess.nowExecutingPath = nil;
 		codeDump.value(code, res, func, this);
