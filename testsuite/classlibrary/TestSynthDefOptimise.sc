@@ -126,7 +126,7 @@ TestSynthDefOptimise : UnitTest {
 
 		cond.wait { counter == 0 };
 
-		r = withResult.debug(\with) - withoutResult;
+		r = withResult - withoutResult;
 		r = r.select({ |v| v.abs > threshold.dbamp });
 		if (r.isEmpty) { ^true };
 
