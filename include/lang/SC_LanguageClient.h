@@ -41,11 +41,13 @@ SCLANG_DLLEXPORT void destroyLanguageClient(class SC_LanguageClient*);
 class SCLANG_DLLEXPORT SC_LanguageClient {
 public:
     struct Options {
-        Options(): mMemSpace(2 * 1024 * 1024), mMemGrow(256 * 1024), mPort(57120) {}
+        static constexpr int defaultMemSpace = 2 * 1024 * 1024;
+        static constexpr int defaultMemGrow = 256 * 1024;
+        static constexpr int defaultPort = 57120;
 
-        int mMemSpace; // memory space in bytes
-        int mMemGrow; // memory growth in bytes
-        int mPort; // network port number
+        int mMemSpace = defaultMemSpace; // memory space in bytes
+        int mMemGrow = defaultMemGrow; // memory growth in bytes
+        int mPort = defaultPort; // network port number
         std::string mRuntimeDir; // runtime directory
     };
 
@@ -68,7 +70,7 @@ public:
     }
 
     // initialize language runtime
-    void initRuntime(const Options& opt = Options());
+    void initRuntime(const Options& opt);
     void shutdownRuntime();
 
     // return application name
