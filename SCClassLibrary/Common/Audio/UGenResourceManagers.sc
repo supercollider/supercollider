@@ -3,8 +3,9 @@ UGenResourceManager {
 	*register { |resourceManager| allResourceManagers = allResourceManagers.add(resourceManager) }
 	*createNewInstances { ^allResourceManagers.collect({|m| m -> m.new }).asEvent }
 
+	// Interface called from inside SynthDef.
 	add { |ugen| this.subclassResponsibility(thisMethod) }
-	panic { |ugen| this.subclassResponsibility(thisMethod) }
+	connectToAll { |ugen| this.subclassResponsibility(thisMethod) }
 	getAll { this.subclassResponsibility(thisMethod) }
 }
 
@@ -12,8 +13,8 @@ UGenResourceManagerSimple : UGenResourceManager {
 	var previousStateDependentUGen;
 	var all;
 
-	*new { ^super.newCopyArgs(nil, Set.new) }
-	panic { |ugen| this.add(ugen) }
+	*new { ^super.newCopyArgs(all: Set.new) }
+	connectToAll { |ugen| this.add(ugen) }
 	getAll { ^all }
 	add { |ugen|
 		previousStateDependentUGen !? { |p|
@@ -43,7 +44,7 @@ UGenResourceManagerWithNonCausalModes : UGenResourceManager {
 			^previousStateDependentUGens = [ugen];
 		};
 
-		if (currentMode == \panic) {
+		if (currentMode == \connectToAll) {
 			previousStateDependentUGens.do( _.createWeakConnectionTo(ugen) );
 			currentMode = this.prTryGettingMode(ugen);
 			previousStateDependentUGens.do {|p| all.add(p) }
@@ -67,13 +68,12 @@ UGenResourceManagerWithNonCausalModes : UGenResourceManager {
 		currentMode = this.prTryGettingMode(ugen);
 	}
 
-	panic { |ugen|
+	connectToAll { |ugen|
 		previousStateDependentUGens.do( _.createWeakConnectionTo(ugen) );
 		previousStateDependentUGens.do {|p| all.add(p) };
 		previousStateDependentUGens = [ugen];
-		currentMode = \panic;
+		currentMode = \connectToAll;
 	}
-
 	getAll { ^all }
 
 	prTryGettingMode { |ugen|

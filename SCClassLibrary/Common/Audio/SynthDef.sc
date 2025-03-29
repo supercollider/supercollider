@@ -688,10 +688,10 @@ SynthDef {
 		// It is the optimizer's responsibility to add the weak edges.
 		if (rewriteInProgress.isNil) {
 			// If not nil, get each active manager and add the UGen,
-			//    otherwise call panic on all resourceManagers, adding the UGen to all resource orders.
+			//    otherwise call connectToAll on all resourceManagers, preserving ordering at the expense of a more flexible ordering.
 			ugen.resourceManagers
 			!? { |m| m.asArray.do{ |manager| resourceManagers.at(manager).add(ugen) } }
-			?? { resourceManagers.do(_.panic(ugen)) };
+			?? { resourceManagers.do(_.connectToAll(ugen)) };
 		}
 	}
 
