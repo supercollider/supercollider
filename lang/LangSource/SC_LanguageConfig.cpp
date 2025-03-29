@@ -38,12 +38,12 @@ bool SC_LanguageConfig::gPostInlineWarnings = false;
 
 SC_LanguageConfig* gLanguageConfig;
 
-static const char* INCLUDE_PATHS = "includePaths";
-static const char* EXCLUDE_PATHS = "excludePaths";
-static const char* POST_INLINE_WARNINGS = "postInlineWarnings";
-static const char* CLASS_LIB_DIR_NAME = "SCClassLibrary";
-const char* SCLANG_YAML_CONFIG_FILENAME = "sclang_conf.yaml";
-static const char* EXCLUDE_DEFAULT_PATHS = "excludeDefaultPaths";
+static const std::string INCLUDE_PATHS = "includePaths";
+static const std::string EXCLUDE_PATHS = "excludePaths";
+static const std::string POST_INLINE_WARNINGS = "postInlineWarnings";
+static const std::string CLASS_LIB_DIR_NAME = "SCClassLibrary";
+const std::string SCLANG_YAML_CONFIG_FILENAME = "sclang_conf.yaml";
+static std::string EXCLUDE_DEFAULT_PATHS = "excludeDefaultPaths";
 
 using DirName = SC_Filesystem::DirName;
 namespace fs = std::filesystem;
@@ -103,7 +103,7 @@ bool SC_LanguageConfig::removeIncludedDirectory(const Path& path) { return remov
 
 bool SC_LanguageConfig::removeExcludedDirectory(const Path& path) { return removePath(mExcludedDirectories, path); }
 
-static void processPathList(const char* nodeName, YAML::Node& doc,
+static void processPathList(const std::string& nodeName, YAML::Node& doc,
                             const std::function<void(const std::filesystem::path&)>& func) {
     const YAML::Node& items = doc[nodeName];
     if (items && items.IsSequence()) {
@@ -117,14 +117,14 @@ static void processPathList(const char* nodeName, YAML::Node& doc,
     }
 }
 
-static void processBool(const char* nodeName, YAML::Node& doc, const std::function<void(bool)>& successFunc,
+static void processBool(const std::string& nodeName, YAML::Node& doc, const std::function<void(bool)>& successFunc,
                         const std::function<void()>& failFunc) {
     const YAML::Node& item = doc[nodeName];
     if (item) {
         try {
             successFunc(item.as<bool>());
         } catch (...) {
-            postfl("WARNING: Cannot parse config file entry \"%s\"\n", nodeName);
+            postfl("WARNING: Cannot parse config file entry \"%s\"\n", nodeName.c_str());
             failFunc();
         }
     } else {
