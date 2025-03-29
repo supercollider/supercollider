@@ -5,6 +5,11 @@ Magical UGens for treating FFT data as demand-rate streams.
 
 // Actually this just wraps up a bundle of Unpack1FFT UGens
 UnpackFFT : MultiOutUGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\read }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*new { | chain, bufsize, frombin=0, tobin |
 		var upperlimit = bufsize/2;
 		tobin = if(tobin.isNil, upperlimit, {tobin.min(upperlimit)});
@@ -14,14 +19,22 @@ UnpackFFT : MultiOutUGen {
 }
 
 Unpack1FFT : UGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\read }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+
 	*new { | chain, bufsize, binindex, whichmeasure=0 |
-		//("bufsize:"+bufsize).postln;
 		^this.multiNew('demand', chain, bufsize, binindex, whichmeasure);
 	}
 }
 
 // This does the demanding, to push the data back into an FFT buffer.
 PackFFT : PV_ChainUGen {
+	resourceManagers { ^[UGenBufferResourceManager] }
+	bufferAccessType { ^\write }
+	hasObservableEffect { ^true }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*new { | chain, bufsize, magsphases, frombin=0, tobin, zeroothers=0 |
 		tobin = tobin ?? {bufsize/2};
@@ -33,7 +46,7 @@ PackFFT : PV_ChainUGen {
 }
 
 // Conveniences to apply calculations to an FFT chain
-PV_ChainUGen : WidthFirstUGen {
+PV_ChainUGen : UGen {
 
 	// Give it a func to apply to whole set of vals: func(mags, phases)
 	pvcalc { |numframes, func, frombin=0, tobin, zeroothers=0|
@@ -45,8 +58,8 @@ PV_ChainUGen : WidthFirstUGen {
 			1, {magsphases ++ origmagsphases[1]},
 			2, {magsphases},
 			// any larger than 2 and we assume it's a list of magnitudes
-				{[magsphases, origmagsphases[1]]}
-			);
+			{[magsphases, origmagsphases[1]]}
+		);
 		magsphases = magsphases.flop.flatten;
 		^PackFFT(this, numframes, magsphases, frombin, tobin, zeroothers);
 	}
@@ -61,8 +74,8 @@ PV_ChainUGen : WidthFirstUGen {
 			1, {magsphases ++ origmagsphases[1]},
 			2, {magsphases},
 			// any larger than 2 and we assume it's a list of magnitudes
-				{[magsphases, origmagsphases[1]]}
-			);
+			{[magsphases, origmagsphases[1]]}
+		);
 		magsphases = magsphases.flop.flatten;
 		^PackFFT(this, numframes, magsphases, frombin, tobin, zeroothers);
 	}
@@ -78,39 +91,42 @@ PV_ChainUGen : WidthFirstUGen {
 		^PackFFT(this, numframes, magsphases, frombin, tobin, zeroothers);
 	}
 
-	addCopiesIfNeeded {
-		var directDescendants, frames, buf, copy;
-		// find UGens that have me as an input
-		directDescendants = buildSynthDef.children.select ({ |child|
-			var inputs;
-			child.isKindOf(PV_Copy).not and: { child.isKindOf(WidthFirstUGen) } and: {
-				inputs = child.inputs;
-				inputs.notNil and: { inputs.includes(this) }
-			}
-		});
-		if(directDescendants.size > 1, {
-			// insert a PV_Copy for all but the last one
-			directDescendants.drop(-1).do({|desc|
-				desc.inputs.do({ arg input, j;
-					if (input === this, {
-						frames = this.fftSize;
-						frames.widthFirstAntecedents = nil;
-						buf = LocalBuf(frames);
-						buf.widthFirstAntecedents = nil;
-						copy = PV_Copy(this, buf);
-						copy.widthFirstAntecedents = widthFirstAntecedents ++ [buf];
-						desc.inputs[j] = copy;
-						buildSynthDef.children = buildSynthDef.children.drop(-3).insert(this.synthIndex + 1, frames);
-						buildSynthDef.children = buildSynthDef.children.insert(this.synthIndex + 2, buf);
-						buildSynthDef.children = buildSynthDef.children.insert(this.synthIndex + 3, copy);
-						buildSynthDef.indexUGens;
-					});
-				});
-			});
-		});
-	}
-
-	// return a BufFrames
-	// any PV UGens which don't take the chain as first arg will need to override
+	// Return a BufFrames.
+	// Travels up the chain until an FFT or FFTTrigger is reached, these classes must override this method, ending the recursion.
+	// If this is called inside the optimisation path, you must call initEdges on the result.
 	fftSize { ^inputs[0].fftSize }
+
+	optimize {
+		var desc = descendants.select { |d|
+			// Get all descendants that write (not *just* read) to a buffer that aren't PV_Copy.
+			// This will incorrectly select UGens that read and write to different buffers but don't write to this buffer,
+			//   and insert an unnecessary PV_Copy, but this is rare and deemed worth the performance sacrifice.
+			d.isKindOf(PV_Copy).not and: {
+				d.resourceManagers !? { |m|
+					m.includes(UGenBufferResourceManager) and: { d.bufferAccessType != \read }
+				} ?? { true }
+			}
+		};
+
+		desc = desc.removeIdenticalDuplicates;
+
+		if (desc.size > 1) {
+			var result = SynthDefOptimisationResult();
+			var first = desc[0];
+			desc.drop(-1).do { |d|
+				var newBuffer = LocalBuf(this.fftSize.initEdges).initEdges;
+				var newCopy = PV_Copy.newDuringOptimisation(\audio, this, newBuffer);
+
+				var d_in = d.inputs.indexOfAll(this);
+				d_in.do { |di| d.replaceInputAt(di, newCopy) };
+
+				newCopy.createWeakConnectionTo(first); // ensures copy happens before the other buffer operation.
+
+				result.addUGen(newBuffer, 1);
+				result.addUGen(newCopy, 2);
+			};
+			^result
+		};
+		^nil;
+	}
 }

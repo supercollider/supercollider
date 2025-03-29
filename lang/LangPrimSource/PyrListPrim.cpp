@@ -33,6 +33,7 @@
 #include "SCBase.h"
 #include <stdlib.h>
 #include <string.h>
+#include <unordered_set>
 
 
 int ivxIdentDict_array, ivxIdentDict_size, ivxIdentDict_parent, ivxIdentDict_proto, ivxIdentDict_know;
@@ -773,6 +774,35 @@ int prPriorityQueuePostpone(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
+struct PyrSlotHash {
+    size_t operator()(const PyrSlot& slot) const { return calcHash(&slot); }
+};
+struct PyrSlotEq {
+    bool operator()(const PyrSlot& l, const PyrSlot& r) const { return SlotEq(&l, &r); }
+};
+
+int prArrayRemoveIdenticalDuplicates(struct VMGlobals* g, int numArgsPushed) {
+    PyrSlot* a = g->sp;
+    PyrObject* array = slotRawObject(a);
+
+    static std::unordered_set<PyrSlot, PyrSlotHash, PyrSlotEq> visited;
+    visited.clear();
+    visited.reserve(array->size);
+
+    const auto rm = std::remove_if(array->slots, array->slots + array->size, [&](const PyrSlot& s) -> bool {
+        if (visited.count(s) == 0) {
+            visited.insert(s);
+            return false;
+        } else {
+            return true;
+        }
+    });
+
+    array->size = static_cast<int>(std::distance(array->slots, rm));
+
+    return errNone;
+}
+
 void initListPrimitives() {
     int base, index;
 
@@ -786,6 +816,7 @@ void initListPrimitives() {
     definePrimitive(base, index++, "_Symbol_envirGet", prSymbol_envirGet, 1, 0);
     definePrimitive(base, index++, "_Symbol_envirPut", prSymbol_envirPut, 2, 0);
     definePrimitive(base, index++, "_ArrayMultiChannelExpand", prArrayMultiChanExpand, 1, 0);
+    definePrimitive(base, index++, "_ArrayRemoveIdenticalDuplicates", prArrayRemoveIdenticalDuplicates, 1, 0);
 
     definePrimitive(base, index++, "_PriorityQueueAdd", prPriorityQueueAdd, 3, 0);
     definePrimitive(base, index++, "_PriorityQueuePop", prPriorityQueuePop, 1, 0);
