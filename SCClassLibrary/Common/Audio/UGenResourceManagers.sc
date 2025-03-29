@@ -108,7 +108,7 @@ UGenBusResourceManager : UGenResourceManagerWithNonCausalModes {
 
 UGenLocalBusResourceManager : UGenResourceManagerWithNonCausalModes {
 	*initClass { UGenResourceManager.register(this) }
-	*new { ^super.new([\readAr, \writeAr, \readKr, \writeKr], \busAccessType) }
+	*new { ^super.new([\readAr, \writeAr, \readKr, \writeKr], \localBusAccessType) }
 }
 
 UGenRandomResourceManager : UGenResourceManagerWithNonCausalModes {

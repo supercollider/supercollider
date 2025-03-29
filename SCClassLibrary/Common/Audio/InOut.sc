@@ -192,7 +192,7 @@ In : AbstractIn {
 
 LocalIn : AbstractIn {
 	resourceManagers { ^[UGenLocalBusResourceManager] }
-	busAccessType { ^if(rate == \control) { \readAr } { \readAr }  }
+	localBusAccessType { ^if(rate == \control) { \readKr } { \readAr }  }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -302,7 +302,7 @@ OffsetOut : Out {
 
 LocalOut : AbstractOut {
 	resourceManagers { ^[UGenLocalBusResourceManager] }
-	busAccessType { ^if(rate == \control) { \writeKr } { \writeAr }  }
+	localBusAccessType { ^if(rate == \control) { \writeKr } { \writeAr }  }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
