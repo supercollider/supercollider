@@ -26,15 +26,13 @@ UGenResourceManagerSimple : UGenResourceManager {
 UGenResourceManagerWithNonCausalModes : UGenResourceManager {
 	var previousStateDependentUGens;
 	var previousLastGroup;
-	var currentMode;
+	var currentMode = \initial;
 	var <all;
 
-	var nonCausalModes;
-	var nameOfModeGetter;
+	*new { ^super.newCopyArgs(all: Set.new) }
 
-	*new { |nonCausalModes, nameOfModeGetter|
-		^super.newCopyArgs(nil, nil, \initial, Set.new, nonCausalModes.asArray, nameOfModeGetter.asSymbol)
-	}
+	nonCausalModes { this.subclassResponsibility(thisMethod) } // Returns an Array of Symbols
+	accessMessage { this.subclassResponsibility(thisMethod) } // Returns a Symbol
 
 	add { |ugen|
 		if (currentMode == \initial) {
@@ -49,8 +47,8 @@ UGenResourceManagerWithNonCausalModes : UGenResourceManager {
 			^previousStateDependentUGens = [ugen];
 		};
 
-		nonCausalModes.do({ |m|
-			if(currentMode == m and: {ugen.perform(nameOfModeGetter) == m}){
+		this.nonCausalModes.do({ |m|
+			if(currentMode == m and: {ugen.perform(this.accessMessage) == m}){
 				previousLastGroup.do( _.createWeakConnectionTo(ugen) );
 				^previousStateDependentUGens = previousStateDependentUGens.add(ugen); // no edge needed here.
 			}
@@ -76,10 +74,10 @@ UGenResourceManagerWithNonCausalModes : UGenResourceManager {
 	prTryGettingMode { |ugen|
 		var out;
 		try {
-			out = ugen.perform(nameOfModeGetter)
+			out = ugen.perform(this.accessMessage)
 		} { |e|
 			if (e.isKindOf(DoesNotUnderstandError)){
-				Error("% does not implement method % needed by %".format(ugen.class, nameOfModeGetter, this.class)).throw
+				Error("% does not implement method % needed by %".format(ugen.class, this.accessMessage, this.class)).throw
 			} {
 				e.throw
 			}
@@ -98,29 +96,34 @@ UGenDoneResourceManager : UGenResourceManagerSimple {
 
 UGenBufferResourceManager : UGenResourceManagerWithNonCausalModes {
 	*initClass { UGenResourceManager.register(this) }
-	*new { ^super.new([\read], \bufferAccessType) }
+	nonCausalModes { ^#[\read] }
+	accessMessage { ^\bufferAccessType }
 }
 
 UGenBusResourceManager : UGenResourceManagerWithNonCausalModes {
 	*initClass { UGenResourceManager.register(this) }
-	*new { ^super.new([\read, \write], \busAccessType) }
+	nonCausalModes { ^#[\readAr, \writeAr, \readKr, \writeKr] }
+	accessMessage { ^\busAccessType }
 }
 
 UGenLocalBusResourceManager : UGenResourceManagerWithNonCausalModes {
 	*initClass { UGenResourceManager.register(this) }
-	*new { ^super.new([\readAr, \writeAr, \readKr, \writeKr], \localBusAccessType) }
+	nonCausalModes { ^#[\readAr, \writeAr, \readKr, \writeKr] }
+	accessMessage { ^\localBusAccessType }
 }
 
 UGenRandomResourceManager : UGenResourceManagerWithNonCausalModes {
 	*initClass { UGenResourceManager.register(this) }
-	*new { ^super.new([\gen], \randomAccessType) }
+	nonCausalModes { ^#[\gen] }
+	accessMessage { ^\randomAccessType }
 }
 
 UGenAnalogResourceManager : UGenResourceManagerWithNonCausalModes {
 	*initClass { UGenResourceManager.register(this) }
 	// here, writes are sequential because I am assuming they overwrite their output
 	// --- this is not mentioned in the help file.
-	*new { ^super.new([\read], \analogAccessType) }
+	nonCausalModes { ^#[\read] }
+	accessMessage { ^\analogAccessType }
 }
 
 UGenDiskResourceManager : UGenResourceManagerSimple {
