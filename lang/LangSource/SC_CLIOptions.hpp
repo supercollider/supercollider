@@ -8,7 +8,6 @@ using namespace std;
 namespace SC_CLI {
 class CLIOptions {
 public:
-    CLIOptions() {};
     bool parse(int argc, char* argv[], SC_TerminalClient::Options& terminalOptions, int& exitCode);
 
     string mInputFile;

@@ -55,8 +55,6 @@ public:
     };
 
     struct Options : public SC_LanguageClient::Options {
-        Options(): mDaemon(false), mCallRun(false), mCallStop(false), mStandalone(false) {}
-
         std::string mLibraryConfigFile;
         bool mDaemon;
         bool mCallRun;
