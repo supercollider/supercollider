@@ -282,14 +282,14 @@ Function : AbstractFunction {
 		^"{ |func, envir| % }".format(code).interpret.value(this, envir)
 	}
 
-	asBuffer { |duration = 0.01, target, action, fadeTime = 0, withOptimizations = true|
+	asBuffer { |duration = 0.01, target, action, fadeTime = 0, optimisations|
 		var buffer, def, synth, name, numOutputs, defRate, server;
 
 		target = target.asTarget;
 		server = target.server;
-		name = this.hash.asString ++ withOptimizations.asString;
+		name = this.hash.asString;
 
-		def = SynthDef.perform(withOptimizations.if(\new, \newWithoutOptimisations), name, { |bufnum|
+		def = SynthDef.newWithOptimizations(optimisations ?? {SynthDefOptimizations.all}, name, { |bufnum|
 			var outputs;
 
 			outputs = SynthDef.wrap(this);
@@ -314,7 +314,7 @@ Function : AbstractFunction {
 				RecordBuf.methodSelectorForRate(defRate),
 				outputs, bufnum, loop: 0, doneAction: 2
 			);
-		});
+		}).dumpUGens;
 
 		buffer = Buffer.new(server);
 
@@ -351,7 +351,7 @@ Function : AbstractFunction {
 		^buffer
 	}
 
-	loadToFloatArray { |duration = 0.01, target, action, withOptimizations = true|
+	loadToFloatArray { |duration = 0.01, target, action, optimisations|
 		this.asBuffer(duration, target,
 			action: { |buffer|
 				buffer.loadToFloatArray(
@@ -361,7 +361,7 @@ Function : AbstractFunction {
 					}
 				)
 			},
-			withOptimizations: withOptimizations
+			optimisations: optimisations
 		)
 	}
 
