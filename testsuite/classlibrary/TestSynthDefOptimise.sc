@@ -55,7 +55,7 @@ TestSynthDefOptimise : UnitTest {
 		^TestSynthDefOptimise.compare_engine(server, threshold, a, b, forceDontPrint, duration)
 	}
 
-	compare_optimization_levels { |f, server, threshold, forceDontPrint=false, duration=0.01, msg|
+	compare_optimization_levels { |f, server, threshold, forceDontPrint=false, duration=0.01, msg, extraArgs|
 		var none = TestSynthDefOptimise.compare_create_synth_def(SynthDefOptimizations.none, \none, f).add;
 		var all = TestSynthDefOptimise.compare_create_synth_def(SynthDefOptimizations.all, \all, f).add;
 		var cseAndSorting = TestSynthDefOptimise.compare_create_synth_def(SynthDefOptimizations.cseAndSorting, \cseAndSorting, f).add;
@@ -65,24 +65,24 @@ TestSynthDefOptimise : UnitTest {
 		msg = msg ?? { "" };
 
 		this.assert(
-			TestSynthDefOptimise.compare_engine(server, threshold, none, all, forceDontPrint, duration),
+			TestSynthDefOptimise.compare_engine(server, threshold, none, all, forceDontPrint, duration, extraArgs),
 			msg + "--- null test against no optimizations and all of them."
 		);
 		this.assert(
-			TestSynthDefOptimise.compare_engine(server, threshold, none, cseAndSorting, forceDontPrint, duration),
+			TestSynthDefOptimise.compare_engine(server, threshold, none, cseAndSorting, forceDontPrint, duration, extraArgs),
 			msg + "--- null test against no optimizations and CSE with sorting."
 		);
 		this.assert(
-			TestSynthDefOptimise.compare_engine(server, threshold, none, sortingAndRewrite, forceDontPrint, duration),
+			TestSynthDefOptimise.compare_engine(server, threshold, none, sortingAndRewrite, forceDontPrint, duration, extraArgs),
 			msg + "--- null test against no optimizations and no CSE."
 		);
 		this.assert(
-			TestSynthDefOptimise.compare_engine(server, threshold, none, onlySorting, forceDontPrint, duration),
+			TestSynthDefOptimise.compare_engine(server, threshold, none, onlySorting, forceDontPrint, duration, extraArgs),
 			msg + "--- null test against no optimizations and only sorting."
 		);
 	}
 
-	*compare_engine { |server, threshold, defa, defb, forceDontPrint=false, duration=0.01|
+	*compare_engine { |server, threshold, defa, defb, forceDontPrint=false, duration=0.01, extraArgs=([])|
 		var withBuf = Buffer.alloc(server, duration * server.sampleRate);
 		var withoutBuf = Buffer.alloc(server, duration * server.sampleRate);
 
@@ -91,8 +91,8 @@ TestSynthDefOptimise : UnitTest {
 		var withSynth, withoutSynth;
 
 		var bind = server.bind {
-			withSynth = Synth(defa.name, [\bufnum, withBuf]);
-			withoutSynth = Synth(defb.name, [\bufnum, withoutBuf]);
+			withSynth = Synth(defa.name, [\bufnum, withBuf] ++ extraArgs);
+			withoutSynth = Synth(defb.name, [\bufnum, withoutBuf] ++ extraArgs);
 		};
 
 		var counter = 2;
@@ -126,7 +126,7 @@ TestSynthDefOptimise : UnitTest {
 
 		cond.wait { counter == 0 };
 
-		r = withResult - withoutResult;
+		r = withResult.debug(\with) - withoutResult;
 		r = r.select({ |v| v.abs > threshold.dbamp });
 		if (r.isEmpty) { ^true };
 
@@ -139,6 +139,28 @@ TestSynthDefOptimise : UnitTest {
 	}
 
 
+	test_compare_control {
+		this.compare_optimization_levels(
+			f: { \a.kr + \b.kr },
+			server: server,
+			threshold: -120,
+			duration: 0.02,
+			msg: "Test controls basic",
+			extraArgs: [\a, 2, \b, 4]
+		);
+		this.compare_optimization_levels(
+			f: {
+				var s = SinOsc.ar;
+				var ss = s * SinOsc.ar(354);
+				\a.kr + \b.kr + A2K.kr(ss)
+			},
+			server: server,
+			threshold: -120,
+			duration: 0.01,
+			msg: "Test controls with other ugens",
+			extraArgs: [\a, 2, \b, 4]
+		);
+	}
 
 
 	test_compare_arithmetic {
