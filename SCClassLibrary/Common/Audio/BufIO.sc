@@ -204,9 +204,12 @@ Tap : UGen {
 }
 
 LocalBuf : WidthFirstUGen {
-	resourceManagers { ^[] } // This depends on nothing, and is depended by its usage in code.
+
+	// This depends on nothing, and returns an instance which is passed explicitly
+	//    to the input of the UGen where it is used, therefore nothing is needed.
+	resourceManagers { ^[] }
 	hasObservableEffect { ^false } // If you don't use the buffer, it can be deleted.
-	canBeReplacedByIdenticalCall { ^false }
+	canBeReplacedByIdenticalCall { ^false } // Each call should produce a unqiue buffer.
 
 	*new { arg numFrames = 1, numChannels = 1;
 		^this.multiNew('scalar', numChannels, numFrames)
