@@ -1,0 +1,37 @@
+TITLE:: ServerNodeTree
+summary:: Observes and updates Server node tree
+categories:: Server
+related:: Classes/Server
+
+DESCRIPTION::
+An object that regularily updates a link::Classes/Server:: node tree, and formats it to human readable format.
+ServerNodeTree is a client-side server implementation detail, and users are not expected to need to use it directly. A Server's node tree can be accessed via link::Classes/Server#-getNodeTree::.
+
+CLASSMETHODS::
+
+METHOD:: new
+Creates a new ServerNodeTree.
+
+ARGUMENT:: server
+An instance of Server.
+
+returns:: The constructed ServerNodeTree.
+
+INSTANCEMETHODS::
+
+METHOD:: getNodeTree
+Converts and returns stored node tree.
+
+METHOD:: refreshRate
+Sets or gets the time interval between queries, expressed in seconds.
+
+METHOD:: running
+A link::Classes/Boolean:: stating if the updating thread is currently running.
+
+METHOD:: run
+Starts the updating thread and the link::Classes/OSCFunc::.
+
+METHOD:: stop
+Stops the updating thread and frees the link::Classes/OSCFunc::.
+
+private:: prFinalizeGroup, prAnalyzeNode, prFormatNodeTree
