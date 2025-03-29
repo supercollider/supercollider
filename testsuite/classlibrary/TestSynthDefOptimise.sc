@@ -11,7 +11,7 @@ TestSynthDefOptimise : UnitTest {
 
 	setUp {
 		server = Server(this.class.name);
-		server.options.memSize = 8192 * 4;
+		server.options.memSize = 8192 * 16;
 		server.options.blockSize = 64;
 		server.options.numWireBufs = 256;
 		server.bootSync;
@@ -605,6 +605,16 @@ TestSynthDefOptimise : UnitTest {
 		}, server, threshold: -96,
 		msg: "FB1 telephon");
 		*/
+
+		this.compare_optimization_levels({
+			var o = Mix.fill(20, {
+				var i = Impulse.ar(5)!2;
+				CombC.ar(i, 1, Select.ar(Impulse.kr(0, 5, i), (77 + [0, 3, 7, 10, 12]).collect{ |x| DC.ar(1 / x.midicps)}), 0.3 )
+			}).sum;
+			o
+		}, server, threshold: -96, forceDontPrint: true, msg: "mix")
+
+
 	}
 
 	test_io {
