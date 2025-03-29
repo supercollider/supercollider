@@ -6,7 +6,6 @@ UGenResourceManager {
 	// Interface called from inside SynthDef.
 	add { |ugen| this.subclassResponsibility(thisMethod) }
 	connectToAll { |ugen| this.subclassResponsibility(thisMethod) }
-	getAll { this.subclassResponsibility(thisMethod) }
 }
 
 UGenResourceManagerSimple : UGenResourceManager {
@@ -15,7 +14,6 @@ UGenResourceManagerSimple : UGenResourceManager {
 
 	*new { ^super.newCopyArgs(all: Set.new) }
 	connectToAll { |ugen| this.add(ugen) }
-	getAll { ^all }
 	add { |ugen|
 		previousStateDependentUGen !? { |p|
 			p.createWeakConnectionTo(ugen);
@@ -29,7 +27,7 @@ UGenResourceManagerWithNonCausalModes : UGenResourceManager {
 	var previousStateDependentUGens;
 	var previousLastGroup;
 	var currentMode;
-	var all;
+	var <all;
 
 	var nonCausalModes;
 	var nameOfModeGetter;
@@ -74,7 +72,6 @@ UGenResourceManagerWithNonCausalModes : UGenResourceManager {
 		previousStateDependentUGens = [ugen];
 		currentMode = \connectToAll;
 	}
-	getAll { ^all }
 
 	prTryGettingMode { |ugen|
 		var out;
