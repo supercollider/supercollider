@@ -22,6 +22,7 @@
 
 #include "cmd_line.hpp"
 #include "doc_list.hpp"
+#include "file_tree.hpp"
 #include "documents_dialog.hpp"
 #include "find_replace_tool.hpp"
 #include "goto_line_tool.hpp"
@@ -146,6 +147,10 @@ MainWindow::MainWindow(Main* main): mMain(main), mClockLabel(0), mDocDialog(0) {
     mPostDocklet = new PostDocklet(this);
     mPostDocklet->setObjectName("post-dock");
     addDockWidget(Qt::RightDockWidgetArea, mPostDocklet->dockWidget());
+
+    mFileTreeDocklet = new FileTreeDocklet(main->documentManager(), this);
+    mFileTreeDocklet->setObjectName("file-tree-doc");
+    addDockWidget(Qt::RightDockWidgetArea, mFileTreeDocklet->dockWidget());
 
     // Layout
     QVBoxLayout* center_box = new QVBoxLayout;

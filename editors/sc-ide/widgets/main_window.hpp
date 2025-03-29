@@ -36,6 +36,7 @@ class TextFindReplacePanel;
 class GoToLineTool;
 class PostDocklet;
 class DocumentsDocklet;
+class FileTreeDocklet;
 class HelpBrowserDocklet;
 class CmdLine;
 class Document;
@@ -245,6 +246,7 @@ private:
     // Docks
     PostDocklet* mPostDocklet;
     DocumentsDocklet* mDocumentsDocklet;
+    FileTreeDocklet* mFileTreeDocklet;
 #ifdef SC_USE_QTWEBENGINE
     HelpBrowserDocklet* mHelpBrowserDocklet;
 #endif
