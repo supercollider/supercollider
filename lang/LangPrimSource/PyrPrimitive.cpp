@@ -3964,6 +3964,9 @@ void initPrimitives() {
     void initGUIPrimitives();
     initGUIPrimitives();
 
+    void initGitPrimitives();
+    initGitPrimitives();
+
 #ifdef SC_APP
     void initSCViewPrimitives();
     initSCViewPrimitives();
