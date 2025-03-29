@@ -360,7 +360,59 @@ method:: booleanValue
 returns:: true, if strictly positive (> 0), otherwise false (see link::Classes/Boolean::)
 
 method:: isNaN
+
 method:: ==
+
+0.0 and 0 are equal in value, but 0.0 is an instance of Float and 0 is an instance of Integer:
+code::
+0.0 == 0 // checking for equality
+::
+
+teletype::
+-> true
+::
+
+code::
+0.0 === 0 // checking for identity
+::
+
+teletype::
+-> false
+::
+
+Floating-point numbers that appear identical in decimal notation can be unequal in computation:
+code::
+0.3 == (0.1 + 0.1 + 0.1)
+::
+
+teletype::
+-> false
+::
+
+Also, 0.0 and -0.0 are equal in value, but their row data (hexadecimal representation of float) are not the same:
+
+code::
+0.0 == -0.0 // checking for equality
+::
+
+teletype::
+-> true
+::
+
+code::
+0.0 === -0.0 // checking for identity
+::
+
+teletype::
+-> false
+::
+
+Discussion::
+Overridden by the need to check for equality of value as independent of identity.
+See link::Classes/Object:: (particularly link::Classes/Object#Equality and Identity#Equality and Identity:: section) and the link::Reference/Equality_and_identity:: reference (especially the link::Reference/Equality_and_identity#String#SimpleNumber:: section for details of the three examples above).
+
+
+
 
 subsection:: conversion
 

@@ -889,6 +889,16 @@ copymethod:: SimpleNumber -atanh
 copymethod:: SimpleNumber -owensT
 
 
+subsection:: Testing
+
+method:: ==
+
+Return teletype::true:: if each element is equal with its corresponding element in the receiver.
+
+discussion::
+See link::Classes/Object:: (particularly link::Classes/Object#Equality and Identity#Equality and Identity:: section) and the link::Reference/Equality_and_identity:: reference (particularly link::Reference/Equality_and_identity#String#String:: section).
+
+
 subsection::Multichannel wrappers
 All of the following messages are performed on the elements of this collection, using link::Classes/Object#-multiChannelPerform::.
 
