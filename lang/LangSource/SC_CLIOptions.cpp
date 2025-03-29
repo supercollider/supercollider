@@ -251,7 +251,7 @@ int CLIOptions::parseMemoryString(const std::string& input) {
     try {
         int value = boost::lexical_cast<int>(numberPart);
         return value * multiplier;
-    } catch (boost::bad_lexical_cast& e) {
+    } catch (const boost::bad_lexical_cast&) {
         cerr << "Couldn't parse memory value '" << input << "'" << endl;
         exit(1);
     }
