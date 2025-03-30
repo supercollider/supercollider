@@ -57,8 +57,8 @@ UnaryOpUGen : BasicOpUGen {
 				inputs[0]
 			};
 			var answer = number.perform(this.operator);
-			this.tryGetReplaceForThis(answer, result, 1) !? { |replacement|
-				this.replaceWith(replacement);
+			this.prepareForReplacement(answer, result, 1) !? { |replacement|
+				this.replace(replacement);
 				^result
 			}
 		};
@@ -77,8 +77,8 @@ UnaryOpUGen : BasicOpUGen {
 					var other = minus.inputs[0];
 					if (other != this) {
 						var new = BinaryOpUGen.newDuringOptimisation(this.rate, '+', inputs[0], other);
-						minus.tryGetReplaceForThis(new, result, 1) !? { |add|
-							minus.replaceWith(add)
+						minus.prepareForReplacement(new, result, 1) !? { |add|
+							minus.replace(add)
 						}
 					}
 				};
@@ -95,8 +95,8 @@ UnaryOpUGen : BasicOpUGen {
 					var other = add.inputs[0];
 					if (other != this) {
 						var new = BinaryOpUGen.newDuringOptimisation(this.rate, '-', other, inputs[0]);
-						add.tryGetReplaceForThis(new, result, 1) !? { |minus|
-							add.replaceWith(minus)
+						add.prepareForReplacement(new, result, 1) !? { |minus|
+							add.replace(minus)
 						}
 					}
 				};
@@ -137,46 +137,46 @@ BinaryOpUGen : BasicOpUGen {
 
 		// 1 * a => a
 		if (UGen.numericallyEquivalent(inputs[0], 1)){
-			this.tryGetReplaceForThis(inputs[1], result, 2) !? { |re|
-				this.replaceWith(re);
+			this.prepareForReplacement(inputs[1], result, 2) !? { |re|
+				this.replace(re);
 				^result
 			}
 		};
 		// a * 1 => a
 		if (UGen.numericallyEquivalent(inputs[1], 1)){
-			this.tryGetReplaceForThis(inputs[0], result, 2) !? { |re|
-				this.replaceWith(re);
+			this.prepareForReplacement(inputs[0], result, 2) !? { |re|
+				this.replace(re);
 				^result
 			}
 		};
 		// 2 * a => a + a
 		if (UGen.numericallyEquivalent(inputs[0], 2)){
 			var new = BinaryOpUGen.newDuringOptimisation(this.rate, '+', inputs[1], inputs[1]);
-			this.tryGetReplaceForThis(new, result, 2) !? { |re|
-				this.replaceWith(re);
+			this.prepareForReplacement(new, result, 2) !? { |re|
+				this.replace(re);
 				^result
 			}
 		};
 		// a * 2 => a + a
 		if (UGen.numericallyEquivalent(inputs[1], 2)){
 			var new = BinaryOpUGen.newDuringOptimisation(this.rate, '+', inputs[0], inputs[0]);
-			this.tryGetReplaceForThis(new, result, 2) !? { |re|
-				this.replaceWith(re);
+			this.prepareForReplacement(new, result, 2) !? { |re|
+				this.replace(re);
 				^result
 			}
 		};
 		// (a * 0) | (0 * a) => 0
 		if (UGen.numericallyEquivalent(inputs[0], 0) or: { UGen.numericallyEquivalent(inputs[1], 0) }){
-			this.tryGetReplaceForThis(0, result, 1) !? { |re|
-				this.replaceWith(re);
+			this.prepareForReplacement(0, result, 1) !? { |re|
+				this.replace(re);
 				^result
 			}
 		};
 		// a * -1 => a.neg
 		if (UGen.numericallyEquivalent(inputs[0], -1)){
 			var new = UnaryOpUGen.newDuringOptimisation(this.rate, 'neg', inputs[1]);
-			this.tryGetReplaceForThis(new, result, 1) !? { |re|
-				this.replaceWith(re);
+			this.prepareForReplacement(new, result, 1) !? { |re|
+				this.replace(re);
 				^result
 			}
 
@@ -184,8 +184,8 @@ BinaryOpUGen : BasicOpUGen {
 		// -1 * a => a.neg
 		if (UGen.numericallyEquivalent(inputs[1], -1)){
 			var new = UnaryOpUGen.newDuringOptimisation(this.rate, 'neg', inputs[0]);
-			this.tryGetReplaceForThis(new, result, 1) !? { |re|
-				this.replaceWith(re);
+			this.prepareForReplacement(new, result, 1) !? { |re|
+				this.replace(re);
 				^result
 			}
 		};
@@ -196,8 +196,8 @@ BinaryOpUGen : BasicOpUGen {
 				var addValue = adder.inputs.select({|i| i !== this })[0];
 				MulAdd.maybeGetMulAddOrder(inputs[0], inputs[1], addValue) !? { |mulAddOrder|
 					var new = MulAdd.newDuringOptimisation(this.rate, *mulAddOrder);
-					adder.tryGetReplaceForThis(new, result, 2) !? { |re|
-						adder.replaceWith(re);
+					adder.prepareForReplacement(new, result, 2) !? { |re|
+						adder.replace(re);
 					}
 				}
 			};
@@ -224,8 +224,8 @@ BinaryOpUGen : BasicOpUGen {
 					MulAdd.maybeGetMulAddOrder(inputs[0], inputs[1], toExtract) !? { |mulAddOrder|
 						var new = MulAdd.newDuringOptimisation(this.rate, *mulAddOrder);
 						var newAdd = BinaryOpUGen.newDuringOptimisation(sum3.rate, '+', new, other);
-						sum3.tryGetReplaceForThis(newAdd, result, 2) !? { |re|
-							sum3.replaceWith(newAdd);
+						sum3.prepareForReplacement(newAdd, result, 2) !? { |re|
+							sum3.replace(newAdd);
 						}
 					}
 				}
@@ -250,8 +250,8 @@ BinaryOpUGen : BasicOpUGen {
 					MulAdd.maybeGetMulAddOrder(inputs[0], inputs[1], sum[0]) !? { |mulAddOrder|
 						var new = MulAdd.newDuringOptimisation(this.rate, *mulAddOrder);
 						var newAdd = Sum3.newDuringOptimisation(sum4.rate, new, sum[1], sum[2]);
-						sum4.tryGetReplaceForThis(newAdd, result, 2) !? { |re|
-							sum4.replaceWith(newAdd);
+						sum4.prepareForReplacement(newAdd, result, 2) !? { |re|
+							sum4.replace(newAdd);
 						}
 					}
 				}
@@ -270,15 +270,15 @@ BinaryOpUGen : BasicOpUGen {
 		// 1 / a => a.reciprocal
 		if (UGen.numericallyEquivalent(inputs[0], 1)){
 			var new = UnaryOpUGen.newDuringOptimisation(this.rate, 'reciprocal', inputs[1]);
-			this.tryGetReplaceForThis(new, result, 2) !? { |re|
-				this.replaceWith(re);
+			this.prepareForReplacement(new, result, 2) !? { |re|
+				this.replace(re);
 				^result
 			}
 		};
 		// a / 1 => a
 		if (UGen.numericallyEquivalent(inputs[1], 1)){
-			this.tryGetReplaceForThis(inputs[0], result, 2) !? { |re|
-				this.replaceWith(re);
+			this.prepareForReplacement(inputs[0], result, 2) !? { |re|
+				this.replace(re);
 				^result
 			}
 		};
@@ -286,8 +286,8 @@ BinaryOpUGen : BasicOpUGen {
 		// a / 2 => a * 0.5  // More optimisations are possible with mul
 		if (UGen.numericallyEquivalent(inputs[1], 2)){
 			var new = BinaryOpUGen.newDuringOptimisation(this.rate, '*', inputs[0], 0.5);
-			this.tryGetReplaceForThis(new, result, 2) !? { |re|
-				this.replaceWith(re);
+			this.prepareForReplacement(new, result, 2) !? { |re|
+				this.replace(re);
 				^result
 			}
 		};
@@ -295,8 +295,8 @@ BinaryOpUGen : BasicOpUGen {
 		// a / -1 => a.neg
 		if (UGen.numericallyEquivalent(inputs[0], -1)){
 			var new = UnaryOpUGen.newDuringOptimisation(this.rate, 'neg', inputs[1]);
-			this.tryGetReplaceForThis(new, result, 1) !? { |re|
-				this.replaceWith(re);
+			this.prepareForReplacement(new, result, 1) !? { |re|
+				this.replace(re);
 				^result
 			}
 
@@ -310,15 +310,15 @@ BinaryOpUGen : BasicOpUGen {
 		var desc;
 		// 0 + a => a
 		if (UGen.numericallyEquivalent(inputs[0], 0)){
-			this.tryGetReplaceForThis(inputs[1], result, 1) !? { |re|
-				this.replaceWith(re);
+			this.prepareForReplacement(inputs[1], result, 1) !? { |re|
+				this.replace(re);
 				^result
 			}
 		};
 		// a + 0 => a
 		if (UGen.numericallyEquivalent(inputs[1], 0)){
-			this.tryGetReplaceForThis(inputs[0], result, 1) !? { |re|
-				this.replaceWith(re);
+			this.prepareForReplacement(inputs[0], result, 1) !? { |re|
+				this.replace(re);
 				^result
 			}
 		};
@@ -332,8 +332,8 @@ BinaryOpUGen : BasicOpUGen {
 				otherValues = if(otherValues.size == 1) { otherValues[0]!2 } { otherValues };
 				otherValues !? {
 					var sum4 = Sum4.newDuringOptimisation(this.rate, inputs[0], inputs[1], *otherValues);
-					sum3.tryGetReplaceForThis(sum4, result, 2) !? { |re|
-						sum3.replaceWith(re);
+					sum3.prepareForReplacement(sum4, result, 2) !? { |re|
+						sum3.replace(re);
 					}
 				}
 			};
@@ -345,8 +345,8 @@ BinaryOpUGen : BasicOpUGen {
 			desc.do{ |childAdder|
 				childAdder.inputs.select({|i| i != this })[0] !? { |otherValue|
 					var sum3 = Sum3.newDuringOptimisation(this.rate, inputs[0], inputs[1], otherValue);
-					childAdder.tryGetReplaceForThis(sum3, result, 2) !? { |re|
-						childAdder.replaceWith(re);
+					childAdder.prepareForReplacement(sum3, result, 2) !? { |re|
+						childAdder.replace(re);
 					}
 				};
 			};
@@ -362,15 +362,15 @@ BinaryOpUGen : BasicOpUGen {
 		// 0 - a => a.neg
 		if (UGen.numericallyEquivalent(inputs[0], 0)){
 			var new = UnaryOpUGen.newDuringOptimisation(this.rate, 'neg', inputs[1]);
-			this.tryGetReplaceForThis(new, result, 1) !? { |re|
-				this.replaceWith(re);
+			this.prepareForReplacement(new, result, 1) !? { |re|
+				this.replace(re);
 				^result
 			}
 		};
 		// a - 0 => a
 		if (UGen.numericallyEquivalent(inputs[1], 0)){
-			this.tryGetReplaceForThis(inputs[0], result, 1) !? { |re|
-				this.replaceWith(re);
+			this.prepareForReplacement(inputs[0], result, 1) !? { |re|
+				this.replace(re);
 				^result
 			}
 		};
@@ -401,8 +401,8 @@ BinaryOpUGen : BasicOpUGen {
 			};
 			var answer = numbers[0].perform(this.operator, numbers[1]);
 			if(answer.isNaN.not){ // let the server deal with it.
-				this.tryGetReplaceForThis(answer, result, 1) !? { |replacement|
-					this.replaceWith(replacement);
+				this.prepareForReplacement(answer, result, 1) !? { |replacement|
+					this.replace(replacement);
 					^result
 				}
 			}
@@ -472,8 +472,8 @@ MulAdd : UGen {
 				}
 			};
 			var answer = numbers[0] * numbers[1] + numbers[2];
-			this.tryGetReplaceForThis(answer, result, 1) !? { |replacement|
-				this.replaceWith(replacement);
+			this.prepareForReplacement(answer, result, 1) !? { |replacement|
+				this.replace(replacement);
 				^result
 			}
 		};
@@ -481,8 +481,8 @@ MulAdd : UGen {
 		// (0 * a + b) | (a * 0 + b) => b
 		if (UGen.numericallyEquivalent(inputs[0], 0) or: { UGen.numericallyEquivalent(inputs[1], 0) }){
 			var result = SynthDefOptimisationResult();
-			this.tryGetReplaceForThis(inputs[2], result, 2) !? { |re|
-				this.replaceWith(re);
+			this.prepareForReplacement(inputs[2], result, 2) !? { |re|
+				this.replace(re);
 				^result
 			}
 		};
@@ -491,8 +491,8 @@ MulAdd : UGen {
 		if (UGen.numericallyEquivalent(inputs[0], -1)){
 			var result = SynthDefOptimisationResult();
 			var new = BinaryOpUGen.newDuringOptimisation(this.rate, '-', inputs[2], inputs[1]);
-			this.tryGetReplaceForThis(new, result, 1) !? { |re|
-				this.replaceWith(re);
+			this.prepareForReplacement(new, result, 1) !? { |re|
+				this.replace(re);
 				^result
 			}
 		};
@@ -500,8 +500,8 @@ MulAdd : UGen {
 		if (UGen.numericallyEquivalent(inputs[1], -1)){
 			var result = SynthDefOptimisationResult();
 			var new = BinaryOpUGen.newDuringOptimisation(this.rate, '-', inputs[2], inputs[0]);
-			this.tryGetReplaceForThis(new, result, 1) !? { |re|
-				this.replaceWith(re);
+			this.prepareForReplacement(new, result, 1) !? { |re|
+				this.replace(re);
 				^result
 			}
 		};
@@ -510,8 +510,8 @@ MulAdd : UGen {
 		if (UGen.numericallyEquivalent(inputs[0], 1)){
 			var result = SynthDefOptimisationResult();
 			var new = BinaryOpUGen.newDuringOptimisation(this.rate, '+', inputs[1], inputs[2]);
-			this.tryGetReplaceForThis(new, result, 1) !? { |re|
-				this.replaceWith(re);
+			this.prepareForReplacement(new, result, 1) !? { |re|
+				this.replace(re);
 				^result
 			}
 		};
@@ -519,8 +519,8 @@ MulAdd : UGen {
 		if (UGen.numericallyEquivalent(inputs[1], -1)){
 			var result = SynthDefOptimisationResult();
 			var new = BinaryOpUGen.newDuringOptimisation(this.rate, '+', inputs[0], inputs[2]);
-			this.tryGetReplaceForThis(new, result, 1) !? { |re|
-				this.replaceWith(re);
+			this.prepareForReplacement(new, result, 1) !? { |re|
+				this.replace(re);
 				^result
 			}
 		};
@@ -530,8 +530,8 @@ MulAdd : UGen {
 			var new1 = BinaryOpUGen.newDuringOptimisation(this.rate, '+', inputs[1], inputs[1]);
 			var new2 = BinaryOpUGen.newDuringOptimisation(this.rate, '+', new1, inputs[2]);
 
-			this.tryGetReplaceForThis(new2, result, 1) !? { |re|
-				this.replaceWith(re);
+			this.prepareForReplacement(new2, result, 1) !? { |re|
+				this.replace(re);
 				^result
 			}
 		};
@@ -541,8 +541,8 @@ MulAdd : UGen {
 			var new1 = BinaryOpUGen.newDuringOptimisation(this.rate, '+', inputs[0], inputs[0]);
 			var new2 = BinaryOpUGen.newDuringOptimisation(this.rate, '+', new1, inputs[2]);
 
-			this.tryGetReplaceForThis(new2, result, 1) !? { |re|
-				this.replaceWith(re);
+			this.prepareForReplacement(new2, result, 1) !? { |re|
+				this.replace(re);
 				^result
 			}
 		};
@@ -551,8 +551,8 @@ MulAdd : UGen {
 		if (UGen.numericallyEquivalent(inputs[2], 0)){
 			var result = SynthDefOptimisationResult();
 			var new = BinaryOpUGen.newDuringOptimisation(this.rate, '*', inputs[0], inputs[1]);
-			this.tryGetReplaceForThis(new, result, 1) !? { |re|
-				this.replaceWith(re);
+			this.prepareForReplacement(new, result, 1) !? { |re|
+				this.replace(re);
 				^result
 			}
 		};
@@ -590,8 +590,8 @@ Sum3 : UGen {
 				}
 			};
 			var answer = numbers[0] + numbers[1] + numbers[2];
-			this.tryGetReplaceForThis(answer, result, 1) !? { |replacement|
-				this.replaceWith(replacement);
+			this.prepareForReplacement(answer, result, 1) !? { |replacement|
+				this.replace(replacement);
 				^result
 			}
 		};
@@ -605,8 +605,8 @@ Sum3 : UGen {
 				// if Sum3(a, b, c) + Sum3(a, b, c) then the optimisation cannot be applied
 				if (otherValues.isEmpty.not){
 					var sum4 = Sum4.newDuringOptimisation(this.rate, inputs[0], inputs[1], inputs[2], otherValues[0]);
-					add.tryGetReplaceForThis(sum4, result, 1) !? { |re|
-						add.replaceWith(re);
+					add.prepareForReplacement(sum4, result, 1) !? { |re|
+						add.replace(re);
 					}
 				}
 			};
@@ -625,8 +625,8 @@ Sum3 : UGen {
 					var add;
 					inputCopy.remove(otherValues[0]);
 					add = BinaryOpUGen.newDuringOptimisation(this.rate, '+', inputCopy[0], inputCopy[1]);
-					minus.tryGetReplaceForThis(add, result, 1) !? { |re|
-						minus.replaceWith(re)
+					minus.prepareForReplacement(add, result, 1) !? { |re|
+						minus.replace(re)
 					}
 				}
 			};
@@ -636,8 +636,8 @@ Sum3 : UGen {
 		if (inputs.every(_ === inputs[0])){
 			var result = SynthDefOptimisationResult();
 			var newMul = BinaryOpUGen.newDuringOptimisation(this.rate, '*', inputs[0], 3);
-			this.tryGetReplaceForThis(newMul, result, 1) !? { |re|
-				this.replaceWith(re);
+			this.prepareForReplacement(newMul, result, 1) !? { |re|
+				this.replace(re);
 				^result
 			}
 		};
@@ -647,23 +647,23 @@ Sum3 : UGen {
 			case
 			{ nonZero.size == 0 } {
 				var result = SynthDefOptimisationResult();
-				this.tryGetReplaceForThis(0, result, 1) !? { |re|
-					this.replaceWith(re);
+				this.prepareForReplacement(0, result, 1) !? { |re|
+					this.replace(re);
 					^result
 				}
 			}
 			{ nonZero.size == 1 } {
 				var result = SynthDefOptimisationResult();
-				this.tryGetReplaceForThis(nonZero[0], result, 1) !? { |re|
-					this.replaceWith(re);
+				this.prepareForReplacement(nonZero[0], result, 1) !? { |re|
+					this.replace(re);
 					^result
 				}
 			}
 			{ nonZero.size == 2 } {
 				var result = SynthDefOptimisationResult();
 				var new = BinaryOpUGen.newDuringOptimisation(this.rate, '+', nonZero[0], nonZero[1]);
-				this.tryGetReplaceForThis(new, result, 1) !? { |re|
-					this.replaceWith(re);
+				this.prepareForReplacement(new, result, 1) !? { |re|
+					this.replace(re);
 					^result
 				}
 			}
@@ -703,8 +703,8 @@ Sum4 : UGen {
 				}
 			};
 			var answer = numbers[0] + numbers[1] + numbers[2] + numbers[3];
-			this.tryGetReplaceForThis(answer, result, 1) !? { |replacement|
-				this.replaceWith(replacement);
+			this.prepareForReplacement(answer, result, 1) !? { |replacement|
+				this.replace(replacement);
 				^result
 			}
 		};
@@ -721,8 +721,8 @@ Sum4 : UGen {
 					var sum3;
 					inputCopy.remove(otherValues[0]);
 					sum3 = Sum3.newDuringOptimisation(this.rate, inputCopy[0], inputCopy[1], inputCopy[2]);
-					minus.tryGetReplaceForThis(sum3, result, 1) !? { |re|
-						minus.replaceWith(re);
+					minus.prepareForReplacement(sum3, result, 1) !? { |re|
+						minus.replace(re);
 						result
 					}
 				}
@@ -734,8 +734,8 @@ Sum4 : UGen {
 		if (inputs.every(_ === inputs[0])){
 			var result = SynthDefOptimisationResult();
 			var new = BinaryOpUGen.newDuringOptimisation(this.rate, '*', inputs[0], 4);
-			this.tryGetReplaceForThis(new, result, 1) !? { |re|
-				this.replaceWith(re);
+			this.prepareForReplacement(new, result, 1) !? { |re|
+				this.replace(re);
 				^result
 			}
 		};
@@ -749,31 +749,31 @@ Sum4 : UGen {
 			case
 			{ nonZero.size == 0 } {
 				var result = SynthDefOptimisationResult();
-				this.tryGetReplaceForThis(0, result, 1) !? { |re|
-					this.replaceWith(re);
+				this.prepareForReplacement(0, result, 1) !? { |re|
+					this.replace(re);
 					^result
 				}
 			}
 			{ nonZero.size == 1 } {
 				var result = SynthDefOptimisationResult();
-				this.tryGetReplaceForThis(nonZero[0], result, 1) !? { |re|
-					this.replaceWith(re);
+				this.prepareForReplacement(nonZero[0], result, 1) !? { |re|
+					this.replace(re);
 					^result
 				}
 			}
 			{ nonZero.size == 2 } {
 				var result = SynthDefOptimisationResult();
 				var new = BinaryOpUGen.newDuringOptimisation(this.rate, '+', nonZero[0], nonZero[1]);
-				this.tryGetReplaceForThis(new, result, 1) !? { |re|
-					this.replaceWith(re);
+				this.prepareForReplacement(new, result, 1) !? { |re|
+					this.replace(re);
 					^result
 				}
 			}
 			{ nonZero.size == 3 } {
 				var result = SynthDefOptimisationResult();
 				var new = Sum3.newDuringOptimisation(this.rate, nonZero[0], nonZero[1], nonZero[2]);
-				this.tryGetReplaceForThis(new, result, 1) !? { |re|
-					this.replaceWith(re);
+				this.prepareForReplacement(new, result, 1) !? { |re|
+					this.replace(re);
 					^result
 				}
 			}

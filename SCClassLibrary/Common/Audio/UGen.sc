@@ -1,5 +1,6 @@
 // UGenBuiltInMethods contains common methods (usually mathematical) that UGen implements.
 // This helps keep the UGen class easier to read.
+// This is a 'mixin' it should NEVER contain any members, instead, their getters should  be declared as sub--class responsibilities.
 UGenBuiltInMethods : AbstractFunction {
 	rate { this.subclassResponsibility(thisMethod) }
 
@@ -284,9 +285,11 @@ UGen : UGenBuiltInMethods {
 	// The order in the synthdef, not set until the synthdef compilation is complete.
 	var <>synthIndex = -1;
 
-	var <>specialIndex = 0; // This is used in binary operators.
+	var <>specialIndex = 0; // This is used to pass extra information to the server about the UGen, e.g., BinaryOp.
 
 	// Graph edges. Set in initEdges due to weird issue with init.
+	// Do NOT access these outside of this class.
+	// Other UGen instances need to alter these when making connections, but do not touch them from another class.
 	var <>antecedents, <>descendants, <>weakAntecedents, <>weakDescendants;
 	var <depth = 0; // How many children are above it in the graph.
 
@@ -298,14 +301,14 @@ UGen : UGenBuiltInMethods {
 
 	///////////////// CONSTRUCTORS
 
-	*newDuringOptimisation { |rate ...args|
-		var ret = this.performList(\new1, rate, args);
+	*newDuringOptimisation { |rate ...args, kwargs|
+		var ret = this.performArgs(\new1, [rate] ++ args, kwargs);
 		UGen.prInitEdgesRecursive(ret);
 		^ret;
 	}
 
-	*multiNewDuringOptimisation { |...args|
-		var ret = this.perform(\multiNew, *args);
+	*multiNewDuringOptimisation { |...args, kwargs|
+		var ret = this.performArgs(\multiNew, args, kwargs);
 		UGen.prInitEdgesRecursive(ret.source);
 		UGen.prInitEdgesRecursive(ret);
 		^ret;
@@ -346,7 +349,7 @@ UGen : UGenBuiltInMethods {
 	//    this causes all manner of headaches in the constructors,  be warned!
 	init { |... theInputs| inputs = theInputs }
 
-	///////////////// OVERIDEABLE INTERFACE FOR UGEN AUTHORS
+	///////////////// OVERRIDEABLE INTERFACE FOR UGEN AUTHORS
 
 	////// REQUIRED meta-info. All UGens should specify these three methods.
 	////// Defaults are provided here, but each UGen should specifiy them to be clear.
@@ -382,6 +385,7 @@ UGen : UGenBuiltInMethods {
 	checkInputs { ^this.checkValidInputs }
 
 	// Called once the synthdef has finished compiling and this UGen is present in the graph.
+	// Useful for unit commands.
 	onFinalizedSynthDef { }
 
 	///////////////// HELPER METHODS FOR HAS OBSERVABLE EFFECT
@@ -393,12 +397,13 @@ UGen : UGenBuiltInMethods {
 
 	///////////////// HELPER METHODS FOR OPTIMISE
 
+	// Some UGens arguments haven't been designed to accept scalar values on the server.
+	// This is an easy way to change a scalar to a DC to compensate.
 	coerceInputFromScalarToDC { |inputIndex, results, rate|
 		var in = inputs[inputIndex];
 		var found = false;
 		rate = rate ?? { this.rate };
-		case
-		{in.isKindOf(Number)} {
+		if  (in.isKindOf(Number)) {
 			var dc = DC.multiNewDuringOptimisation(rate, in);
 			this.replaceInputAt(inputIndex, dc);
 			results.addUGen(this, 0);
@@ -407,47 +412,51 @@ UGen : UGenBuiltInMethods {
 		^found
 	}
 
-	tryGetReplaceForThis { |other, results, depth|
+
+	// Before calling `replace`, it is important to first perform any rate conversions necessary.
+	prepareForReplacement { |with, optimiseResults, depth|
 		case
-		{ this.source === other.source } {
-			Error("Cannot tryGetReplaceForThis with this").throw
+		{ this.source === with.source } {
+			Error("Cannot replace with this with this").throw
 		}
-		{ other.isKindOf(Number) } {
+		{ with.isKindOf(Number) } {
 			case
-			{ other.isNaN } { ^nil } // do nothing, let server deal with this
+			{ with.isNaN } { ^nil } // do nothing, let server deal with this
 
 			{ this.rate == \control} {
-				results.addConstantsDescendants(this.descendants);
-				other = DC.multiNewDuringOptimisation(\control, other);
-				results.addUGen(other, depth)
+				optimiseResults.addConstantsDescendants(this.descendants);
+				with = DC.multiNewDuringOptimisation(\control, with);
+				optimiseResults.addUGen(with, depth)
 			} { this.rate == \audio } {
-				results.addConstantsDescendants(this.descendants);
-				other = DC.multiNewDuringOptimisation(\audio, other);
-				results.addUGen(other, depth)
+				optimiseResults.addConstantsDescendants(this.descendants);
+				with = DC.multiNewDuringOptimisation(\audio, with);
+				optimiseResults.addUGen(with, depth)
 			} {
-				^nil // cannot replace demand rate (or any of the other rates) with a number.
+				^nil // cannot replace demand rate (or any of the with rates) with a number.
 			}
 		}
-		{ other.rate != this.rate } {
-			// Rate system is complex, only allow audio and control replacements to be safe.
-			if (other.rate != \audio or: {other.rate != \control} or: {this.rate != \audio} or: {this.rate != \control}) {
+		{ with.rate != this.rate } {
+			// Rate system is complex.
+			// Make sure both 'this' and 'with' are either audio or control rate.
+			if (with.rate != \audio or: {with.rate != \control} or: {this.rate != \audio} or: {this.rate != \control}) {
 				^nil
 			};
-			results.addUGen(other, 1);
+			optimiseResults.addUGen(with, 1);
 			if (this.rate == \audio) {
-				other = K2A.newDuringOptimisation(\audio, other);
+				with = K2A.newDuringOptimisation(\audio, with);
 			} {
-				other = A2K.newDuringOptimisation(\control, other);
+				with = A2K.newDuringOptimisation(\control, with);
 			};
-			results.addUGen(other, depth)
+			optimiseResults.addUGen(with, depth)
 		} {
-			results.addUGen(other, depth);
+			optimiseResults.addUGen(with, depth);
 		};
 
-		^other
+		^with
 	}
 
-	replaceWith { |with|
+	// Replaces 'this' with 'with'. Ensure 'prepareForReplacement' if not absolutely certain this is valid.
+	replace { |with|
 		this.descendants.reverse.do { |d|
 			var indexes = [];
 			d.inputs.do { |in, i|
@@ -455,12 +464,12 @@ UGen : UGenBuiltInMethods {
 			};
 			indexes.reverseDo { |i| d.replaceInputAt(i, with: with) }
 		};
-		this.prCleanUpAfterReplaceWith(with);
+		this.prCleanUpAfterReplace(with);
 
 	}
 
 	// Protected, used in MultiOutUGen
-	prCleanUpAfterReplaceWith { |with|
+	prCleanUpAfterReplace { |with|
 		this.descendants = [];
 		if (with.isKindOf(UGen)){
 			with.weakDescendants = with.weakDescendants.addAll(this.weakDescendants);
@@ -480,7 +489,7 @@ UGen : UGenBuiltInMethods {
 		this.antecedents = [];
 		this.weakDescendants = [];
 		this.weakAntecedents = [];
-		this.tryDisconnect;
+		buildSynthDef.children.remove(this);
 	}
 
 	// This is unnecessary to call, but offers a small performance improvement during optimization.
@@ -488,11 +497,8 @@ UGen : UGenBuiltInMethods {
 		if (descendants.isEmpty and: {this.hasObservableEffect.not}){
 			this.inputs.do {|i| if(i.isKindOf(UGen)){ i.descendants.remove(this) } };
 			this.inputs = [];
-			this.descendants = [];
 			this.antecedents = [];
-			if(this.hasObservableEffect.not){
-				buildSynthDef.children.remove(this)
-			};
+			buildSynthDef.children.remove(this)
 		}
 	}
 
@@ -532,28 +538,21 @@ UGen : UGenBuiltInMethods {
 	asControlInput { Error("can't set a control to a UGen").throw }
 	numChannels { ^1 }
 	copy { ^this }
-	outputIndex { ^0 } // TODO: what does this do?
-	writesToBus { ^false } // TODO: what does this do?
-	isUGen { ^true }  // TODO: duh, why is this needed?
+	outputIndex { ^0 } // Used in OutputProxy.
+	writesToBus { ^false } // Used in SynthDecs to collect which UGens output audio data.
+	isUGen { ^true }  // TODO: this method could be remove, also it could be removed from object as only BelaUGens touch it and no one writes to it.
 	name { ^this.class.name.asString }
 	nameForDisplay { ^(this.name ++ rate).asSymbol }
 	dumpName { ^"%_%".format(synthIndex, this.name) }
-	inputsForIdentityCheck {
-		var out = Array(inputs.size + 1 + weakAntecedents.size);
-		out.addAll(inputs);
-		out.add(\separator);
-		out.add(weakAntecedents);
-		^out
-	}
 	numInputs { ^inputs.size }
 	numOutputs { ^1 }
 	source { ^this } // OutputProxy holds another UGen.
-	//asString { this.dumpName }
 	printOn { |p| p << "%_%".format(synthIndex, this.name) }
 
 
 	// This method should only be overriden in OutputProxy.
 	// It is fragile so don't override this as a UGen author.
+	// This is called as a part of the '*new1' methods.
 	addToSynth { (synthDef = buildSynthDef) !? _.addUGen(this) }
 
 
@@ -566,7 +565,6 @@ UGen : UGenBuiltInMethods {
 			ugen.antecedents = ugen.antecedents.add(this);
 		}
 	}
-
 
 	// Replaces an input at index with.
 	replaceInputAt { |index, with|
@@ -625,6 +623,17 @@ UGen : UGenBuiltInMethods {
 		};
 		weakAntecedents.do{ |a| depth = max(depth, a.depth + 1) };
 		^this
+	}
+
+
+	// When performing deduplication, this method returns an array used to describe the 'uniqueness' of the UGen.
+	// If canBeReplacedByIdenticalCall is true, and two ugens (of the same type and rate) return the same Array here, then they are duplicates.
+	inputsForIdentityCheck {
+		var out = Array(inputs.size + 1 + weakAntecedents.size);
+		out.addAll(inputs);
+		out.add(\separator);
+		out.add(weakAntecedents);
+		^out
 	}
 
 
@@ -756,7 +765,7 @@ MultiOutUGen : UGen {
 		channels.do{ |output| output.synthIndex_(index) };
 	}
 
-	replaceWith { |with|
+	replace { |with|
 		if (with.isKindOf(MultiOutUGen).not){
 			Error("can only replace multi outs with mulitouts").throw
 		};
@@ -775,7 +784,7 @@ MultiOutUGen : UGen {
 				d.replaceInputAt(i[0], with: with.channels[i[1]])
 			}
 		};
-		this.prCleanUpAfterReplaceWith(with);
+		this.prCleanUpAfterReplace(with);
 
 	}
 }

@@ -99,8 +99,9 @@ SynthDefOptimisationResult {
 }
 
 SynthDefOptimizer {
-	var doCSE;
-	var doRewrite;
+	var deduplicate = false;
+	var rewrite = false;
+
 	var finalGraph;
 	var toVisit;
 
@@ -110,19 +111,19 @@ SynthDefOptimizer {
 	// Used to deduce if a UGen can be replaced by another.
 	var visited;
 
-	*new { |inRoots, doCSE, doRewrite|
-		if ( (doCSE.not) and: { doRewrite.not} ){ ^inRoots.copy };
-		^super.newCopyArgs(doCSE.asBoolean, doRewrite.asBoolean, inRoots.copy, inRoots.copy, IdentityDictionary(512)).prMain
+	*new { |inRoots, deduplicate, rewrite|
+		if ( (deduplicate.not) and: { rewrite.not} ){ ^inRoots.copy };
+		^super.newCopyArgs(deduplicate.asBoolean, rewrite.asBoolean, inRoots.copy, inRoots.copy, IdentityDictionary(512)).prMain
 	}
 
 	prMain {
-		while {toVisit.isEmpty.not} {
-			this.prOpt
+		while { toVisit.isEmpty.not } {
+			this.prOptimise
 		};
 		^finalGraph
 	}
 
-	prCSE { |current|
+	prDeduplicate { |current|
 		if (current.canBeReplacedByIdenticalCall){
 			var displayName = current.nameForDisplay;
 			var found = visited[displayName];
@@ -139,7 +140,7 @@ SynthDefOptimizer {
 						toVisit = toVisit.addAll(possibleReplacement.descendants);
 						toVisit = toVisit.addAll(possibleReplacement.weakDescendants);
 
-						possibleReplacement.replaceWith(current);
+						possibleReplacement.replace(current);
 						possibleReplacement.tryDisconnect;
 
 						found.put(idIns, current);
@@ -182,19 +183,17 @@ SynthDefOptimizer {
 		^false
 	}
 
-	prOpt {
+	prOptimise {
 		var current;
 		// Although this might look slow, it provides large performance boosts for big graphs.
 		toVisit.removeIdenticalDuplicates;
-
 		current = toVisit.pop.source;
 
-		// CSE
-		if (doCSE) {
-			if (this.prCSE(current)) { ^nil };
+		if (deduplicate) {
+			if (this.prDeduplicate(current)) { ^nil }
 		};
 
-		if (doRewrite){
+		if (rewrite){
 			if (this.prRewrite(current)) { ^nil }
 		};
 
@@ -205,13 +204,13 @@ SynthDefOptimizer {
 
 SynthDefOptimizations {
 	var <sorting;
-	var <cse;
+	var <deduplication;
 	var <rewrite;
 
 	*all { ^super.newCopyArgs(true, true, true) }
 	*none { ^super.newCopyArgs(false, false, false) }
 	*onlySorting { ^super.newCopyArgs(true, false, false) }
-	*cseAndSorting { ^super.newCopyArgs(true, true, false) }
+	*deduplicationAndSorting { ^super.newCopyArgs(true, true, false) }
 	*sortingAndRewrite { ^super.newCopyArgs(true, false, true) }
 }
 
@@ -235,9 +234,7 @@ SynthDef {
 	// Numbers.
 	var <>constants;
 	var <>constantSet;
-
 	var <>maxLocalBufs;
-
 	var <>variants;
 
 	// This is nil in normal use, but true when optimisations are being ran.
@@ -246,13 +243,10 @@ SynthDef {
 	var <>desc;
 	var <>metadata;
 
-	// Private, don't access.
 	// These are the ends of the graph, the Outs, BufWrs, et cetera.
-	var <>effectiveUGens;
-
-	// Private, don't access.
+	var effectiveUGens;
 	// This stores all resource managers in an Event<Class, UGenResourceManager>.
-	var <>resourceManagers;
+	var resourceManagers;
 
 	*synthDefDir_ { |dir|
 		if (dir.last.isPathSeparator.not ) { dir = dir ++ thisProcess.platform.pathSeparator };
@@ -271,21 +265,28 @@ SynthDef {
 	}
 
 	*newForSynthDesc {
-		^super.new()
-		.effectiveUGens_([])
-		.resourceManagers_(UGenResourceManager.createNewInstances)
-    }
+		^super.newCopyArgs(
+			effectiveUGens: [],
+			resourceManagers: UGenResourceManager.createNewInstances,
+		)
+	}
 
 	*new { |name, ugenGraphFunc, rates, prependArgs, variants, metadata|
-	    ^super.newCopyArgs(
-	        name: name.asSymbol,
+		^super.newCopyArgs(
+			name: name.asSymbol,
 			func: ugenGraphFunc,
-	        variants: variants,
-	        metadata: metadata ?? {()},
-	        children: Array(64),
-            effectiveUGens: [],
-            resourceManagers: UGenResourceManager.createNewInstances,
-        ).build(rates, prependArgs)
+			variants: variants,
+			metadata: metadata ?? {()},
+			children: Array(64),
+			effectiveUGens: [],
+			resourceManagers: UGenResourceManager.createNewInstances,
+		).build(rates, prependArgs)
+	}
+
+
+	// Same as new, but optimises for a fast language side compile time, rather than fast server--side performance.
+	*newFast { |name, ugenGraphFunc, rates, prependArgs, variants, metadata|
+		^SynthDef.newWithOptimizations(SynthDefOptimizations.sortingAndRewrite, name, ugenGraphFunc, rates, prependArgs, variants, metadata)
 	}
 
 	*newWithOptimizations { |newOptimizations, name, ugenGraphFunc, rates, prependArgs, variants, metadata|
@@ -294,15 +295,15 @@ SynthDef {
 		if (newOptimizations.isKindOf(SynthDefOptimizations).not) { Error("newOptimizations should be a SynthDefOptimizations").throw };
 		SynthDef.setOptimizations(newOptimizations);
 
-		out = super.new
-		.name_(name)
-		.func_(ugenGraphFunc)
-		.variants_(variants)
-		.metadata_(metadata ?? {()})
-		.children_([])
-		.effectiveUGens_([])
-		.resourceManagers_(UGenResourceManager.createNewInstances)
-		.build(rates, prependArgs);
+		out = super.newCopyArgs(
+			name: name,
+			func: ugenGraphFunc,
+			variants: variants,
+			metadata: metadata ?? { () },
+			children: Array(64),
+			effectiveUGens: [],
+			resourceManagers: UGenResourceManager.createNewInstances,
+		).build(rates, prependArgs);
 
 		SynthDef.setOptimizations(opts);
 
@@ -323,9 +324,9 @@ SynthDef {
 			this.buildUgenGraph(func, rates, prependArgs);
 
 			rewriteInProgress = true;
-			children.do(_.initEdges); // Necessary because of borked init method in UGen.
+			children.do(_.initEdges); // Necessary because of init method in UGen child classes not returning instances of UGen.
 
-			effectiveUGens = SynthDefOptimizer(effectiveUGens, optimizations.cse, optimizations.rewrite);
+			effectiveUGens = SynthDefOptimizer(effectiveUGens, optimizations.deduplication, optimizations.rewrite);
 
 			if (optimizations.sorting) {
 				// Does dead code elimination as a side effect.
