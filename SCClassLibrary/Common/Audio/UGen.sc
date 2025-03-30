@@ -275,6 +275,7 @@ UGenBuiltInMethods : AbstractFunction {
 	}
 }
 
+
 UGen : UGenBuiltInMethods {
 	classvar <>buildSynthDef; // the synth currently under construction
 
@@ -293,67 +294,11 @@ UGen : UGenBuiltInMethods {
 	var <>antecedents, <>descendants, <>weakAntecedents, <>weakDescendants;
 	var <depth = 0; // How many children are above it in the graph.
 
-	*numericallyEquivalent { |lhs, rhsNumber|
-		if (lhs.source.isKindOf(DC)) { ^lhs.source.inputs[0] == rhsNumber };
-		^lhs == rhsNumber
-	}
-
-
-	///////////////// CONSTRUCTORS
-
-	*newDuringOptimisation { |rate ...args, kwargs|
-		var ret = this.performArgs(\new1, [rate] ++ args, kwargs);
-		UGen.prInitEdgesRecursive(ret);
-		^ret;
-	}
-
-	*multiNewDuringOptimisation { |...args, kwargs|
-		var ret = this.performArgs(\multiNew, args, kwargs);
-		UGen.prInitEdgesRecursive(ret.source);
-		UGen.prInitEdgesRecursive(ret);
-		^ret;
-	}
-
-	*new1 { |rate ... args|
-		// If you override this method, you MUST ensure that the inputs are set before calling addToSynth.
-		if (rate.isKindOf(Symbol).not) { Error("rate must be Symbol.").throw };
-		^super.new.rate_(rate).inputs_(args).addToSynth.init(*args)
-	}
-
-	*newFromDesc { |rate, numOutputs, inputs, specialIndex|
-		if (rate.isKindOf(Symbol).not) { Error("rate must be Symbol.").throw };
-		^super.new.rate_(rate).specialIndex_(specialIndex).inputs_(inputs)
-	}
-
-	*multiNew { |... args| ^this.multiNewList(args) }
-
-	*multiNewList { arg args;
-		var size = 0, newArgs, results;
-		args = args.asUGenInput(this);
-		args.do{ |item| if (item.class == Array) { size = max(size, item.size) } };
-		if (size == 0) {
-			^this.new1( *args )
-		};
-		newArgs = Array.newClear(args.size);
-		results = Array.newClear(size);
-		size.do{ |i|
-			args.do{ |item, j|
-				newArgs.put(j, if (item.class == Array, { item.wrapAt(i) }, { item }) );
-			};
-			results.put(i, this.multiNewList(newArgs));
-		};
-		^results
-	}
-
-	// Other classes override init and return different classes,
-	//    this causes all manner of headaches in the constructors,  be warned!
-	init { |... theInputs| inputs = theInputs }
-
 	///////////////// OVERRIDEABLE INTERFACE FOR UGEN AUTHORS
 
 	////// REQUIRED meta-info. All UGens should specify these three methods.
 	////// Defaults are provided here, but each UGen should specifiy them to be clear.
-	// 1. Return an Array of zero or more UGenResourceManagers, or nil if entering panic mode (see UGenResourceManager).
+	// 1. Return an Array of zero or more UGenResourceManagers, or nil if entering connectToAll mode (see UGenResourceManager).
 	// Maintains IO ordering under topological sort.
 	resourceManagers { ^nil	}
 
@@ -361,21 +306,21 @@ UGen : UGenBuiltInMethods {
 	// Will be deleted if false and doesn't connect to a UGen that has an observable effect (dead code elimination).
 	hasObservableEffect { ^true }
 
-	// 3. Whether identical calls can be replaced by each other (common subexpression elimination).
+	// 3. Whether identical calls can be replaced by each other.
 	// E.g. in `var f = (a + b); var g = (a + b);` g can be deleted and replaced by f.
 	// Importantly, the weak (IO/state) ordering is factored into whether a call is identical.
-	// UGens that rely on randomness should set this to be false.
+	// UGens that generate a random value should set this to false.
 	canBeReplacedByIdenticalCall { ^false }
 
 	////// Other methods for UGen authors.
 
-	// Graph optimisations, replace patterns of UGens with others, optional.
+	// Graph optimisations, replace UGens with others.
 	// This method should ONLY look at inputs (direct antecedents) but may look at all descendants.
 	// The optimizer runs from output to input, walking 'up' the graph.
-	// It must return a SynthDefOptimisationResult or a nil if no optimisation has occurred.
+	// It must return a SynthDefOptimisationResult or nil if no optimization has occurred.
 	// No attempt to delete UGens should be made, unless they have an observable effect (like Out),
 	//    in which case it should be added to the result as an observableUGenReplacement.
-	// To remove UGens without an observable effect, do nothing, the sort removes dead code automatically.
+	// To remove UGens without an observable effect, do nothing, the topological sort removes dead code automatically.
 	// The depth of the descendants that have been removed should be returned in the result,
 	//    this will force the optimizer to re-evaluate those descendants before continuing upwards.
 	optimize { ^nil }
@@ -388,6 +333,7 @@ UGen : UGenBuiltInMethods {
 	// Useful for unit commands.
 	onFinalizedSynthDef { }
 
+
 	///////////////// HELPER METHODS FOR HAS OBSERVABLE EFFECT
 
 	// Helper for hasObservableEffect when there is a doneAction
@@ -395,7 +341,7 @@ UGen : UGenBuiltInMethods {
 		^inputs.at(index).isNumber.not or: { inputs.at(index) != Done.none }
 	}
 
-	///////////////// HELPER METHODS FOR OPTIMISE
+	///////////////// HELPER METHODS FOR OPTIMIZE
 
 	// Some UGens arguments haven't been designed to accept scalar values on the server.
 	// This is an easy way to change a scalar to a DC to compensate.
@@ -412,8 +358,9 @@ UGen : UGenBuiltInMethods {
 		^found
 	}
 
-
 	// Before calling `replace`, it is important to first perform any rate conversions necessary.
+	// Returns 'nil' if not possible to create a replacement.
+	// This is necessary because replacing a ugen with one of the incorrect rate can cause the server to crash.
 	prepareForReplacement { |with, optimiseResults, depth|
 		case
 		{ this.source === with.source } {
@@ -468,7 +415,6 @@ UGen : UGenBuiltInMethods {
 
 	}
 
-	// Protected, used in MultiOutUGen
 	prCleanUpAfterReplace { |with|
 		this.descendants = [];
 		if (with.isKindOf(UGen)){
@@ -490,16 +436,6 @@ UGen : UGenBuiltInMethods {
 		this.weakDescendants = [];
 		this.weakAntecedents = [];
 		buildSynthDef.children.remove(this);
-	}
-
-	// This is unnecessary to call, but offers a small performance improvement during optimization.
-	tryDisconnect {
-		if (descendants.isEmpty and: {this.hasObservableEffect.not}){
-			this.inputs.do {|i| if(i.isKindOf(UGen)){ i.descendants.remove(this) } };
-			this.inputs = [];
-			this.antecedents = [];
-			buildSynthDef.children.remove(this)
-		}
 	}
 
 	///////////////// HELPER METHODS FOR CHECKINPUTS
@@ -531,6 +467,59 @@ UGen : UGenBuiltInMethods {
 		^this.checkValidInputs
 	}
 
+	///////////////// CONSTRUCTORS
+
+	*newDuringOptimisation { |rate ...args, kwargs|
+		var ret = this.performArgs(\new1, [rate] ++ args, kwargs);
+		UGen.prInitEdgesRecursive(ret);
+		^ret;
+	}
+
+	*multiNewDuringOptimisation { |...args, kwargs|
+		var ret = this.performArgs(\multiNew, args, kwargs);
+		UGen.prInitEdgesRecursive(ret.source);
+		UGen.prInitEdgesRecursive(ret);
+		^ret;
+	}
+
+	*new1 { |rate ... args|
+		// If you override this method, you MUST ensure that the inputs are set before calling addToSynth.
+		if (rate.isKindOf(Symbol).not) { Error("rate must be Symbol.").throw };
+		^super.new.rate_(rate).inputs_(args).addToSynth.init(*args)
+	}
+
+	*newFromDesc { |rate, numOutputs, inputs, specialIndex|
+		if (rate.isKindOf(Symbol).not) { Error("rate must be Symbol.").throw };
+		^super.new.rate_(rate).specialIndex_(specialIndex).inputs_(inputs)
+	}
+
+	*multiNew { |... args| ^this.multiNewList(args) }
+
+	*multiNewList { arg args;
+		var size = 0, newArgs, results;
+		args = args.asUGenInput(this);
+		args.do{ |item| if (item.class == Array) { size = max(size, item.size) } };
+		if (size == 0) {
+			^this.new1( *args )
+		};
+		newArgs = Array.newClear(args.size);
+		results = Array.newClear(size);
+		size.do{ |i|
+			args.do{ |item, j|
+				newArgs.put(j, if (item.class == Array, { item.wrapAt(i) }, { item }) );
+			};
+			results.put(i, this.multiNewList(newArgs));
+		};
+		^results
+	}
+
+	// Other classes override init and return different classes,
+	//    this causes all manner of headaches in the constructors,  be warned!
+	init { |... theInputs| inputs = theInputs }
+
+
+
+
 	///////////////// SHORT MISC METHODS
 
 	isValidUGenInput { ^true }
@@ -550,7 +539,7 @@ UGen : UGenBuiltInMethods {
 	printOn { |p| p << "%_%".format(synthIndex, this.name) }
 
 
-	// This method should only be overriden in OutputProxy.
+	// This method should only be overridden in OutputProxy.
 	// It is fragile so don't override this as a UGen author.
 	// This is called as a part of the '*new1' methods.
 	addToSynth { (synthDef = buildSynthDef) !? _.addUGen(this) }
@@ -724,6 +713,11 @@ UGen : UGenBuiltInMethods {
 		if(ugen.isKindOf(Collection)) { ^ugen.do(UGen.prInitEdgesRecursive(_)) };
 		if (ugen.isKindOf(Number)) { ^nil };
 		Error("Expected a UGen, Number, or Collection thereof, recieved a %".format(ugen)).throw
+	}
+
+	*numericallyEquivalent { |lhs, rhsNumber|
+		if (lhs.source.isKindOf(DC)) { ^lhs.source.inputs[0] == rhsNumber };
+		^lhs == rhsNumber
 	}
 }
 

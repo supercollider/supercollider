@@ -201,7 +201,6 @@ BinaryOpUGen : BasicOpUGen {
 					}
 				}
 			};
-			this.tryDisconnect;
 			result.returnNilIfEmpty !? { |r| ^r };
 		};
 
@@ -230,7 +229,6 @@ BinaryOpUGen : BasicOpUGen {
 					}
 				}
 			};
-			this.tryDisconnect;
 			result.returnNilIfEmpty !? { |r| ^r };
 		};
 
@@ -256,7 +254,6 @@ BinaryOpUGen : BasicOpUGen {
 					}
 				}
 			};
-			this.tryDisconnect;
 			result.returnNilIfEmpty !? { |r| ^r };
 		};
 

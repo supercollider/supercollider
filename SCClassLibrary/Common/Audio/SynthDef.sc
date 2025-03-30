@@ -141,7 +141,6 @@ SynthDefOptimizer {
 						toVisit = toVisit.addAll(possibleReplacement.weakDescendants);
 
 						possibleReplacement.replace(current);
-						possibleReplacement.tryDisconnect;
 
 						found.put(idIns, current);
 
