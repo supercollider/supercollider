@@ -58,28 +58,47 @@ TestSynthDefOptimise : UnitTest {
 	compare_optimization_levels { |f, server, threshold, forceDontPrint=false, duration=0.01, msg, extraArgs|
 		var none = TestSynthDefOptimise.compare_create_synth_def(SynthDefOptimizations.none, \none, f).add;
 		var all = TestSynthDefOptimise.compare_create_synth_def(SynthDefOptimizations.all, \all, f).add;
-		var cseAndSorting = TestSynthDefOptimise.compare_create_synth_def(SynthDefOptimizations.cseAndSorting, \cseAndSorting, f).add;
+		var cseAndSorting = TestSynthDefOptimise.compare_create_synth_def(SynthDefOptimizations.deduplicationAndSorting, \cseAndSorting, f).add;
 		var sortingAndRewrite = TestSynthDefOptimise.compare_create_synth_def(SynthDefOptimizations.sortingAndRewrite, \sortingAndRewrite, f).add;
 		var onlySorting = TestSynthDefOptimise.compare_create_synth_def(SynthDefOptimizations.onlySorting, \onlySorting, f).add;
 
+		var cond = CondVar();
+		var count = 4;
 		msg = msg ?? { "" };
 
-		this.assert(
-			TestSynthDefOptimise.compare_engine(server, threshold, none, all, forceDontPrint, duration, extraArgs),
-			msg + "--- null test against no optimizations and all of them."
-		);
-		this.assert(
-			TestSynthDefOptimise.compare_engine(server, threshold, none, cseAndSorting, forceDontPrint, duration, extraArgs),
-			msg + "--- null test against no optimizations and CSE with sorting."
-		);
-		this.assert(
-			TestSynthDefOptimise.compare_engine(server, threshold, none, sortingAndRewrite, forceDontPrint, duration, extraArgs),
-			msg + "--- null test against no optimizations and no CSE."
-		);
-		this.assert(
-			TestSynthDefOptimise.compare_engine(server, threshold, none, onlySorting, forceDontPrint, duration, extraArgs),
-			msg + "--- null test against no optimizations and only sorting."
-		);
+		fork {
+			this.assert(
+				TestSynthDefOptimise.compare_engine(server, threshold, none, all, forceDontPrint, duration, extraArgs),
+				msg + "--- null test against no optimizations and all of them."
+			);
+			count = count - 1;
+			cond.signalOne;
+		};
+		fork {
+			this.assert(
+				TestSynthDefOptimise.compare_engine(server, threshold, none, cseAndSorting, forceDontPrint, duration, extraArgs),
+				msg + "--- null test against no optimizations and CSE with sorting."
+			);
+			count = count - 1;
+			cond.signalOne;
+		};
+		fork {
+			this.assert(
+				TestSynthDefOptimise.compare_engine(server, threshold, none, sortingAndRewrite, forceDontPrint, duration, extraArgs),
+				msg + "--- null test against no optimizations and no CSE."
+			);
+			count = count - 1;
+			cond.signalOne;
+		};
+		fork {
+			this.assert(
+				TestSynthDefOptimise.compare_engine(server, threshold, none, onlySorting, forceDontPrint, duration, extraArgs),
+				msg + "--- null test against no optimizations and only sorting."
+			);
+			count = count - 1;
+			cond.signalOne;
+		};
+		cond.wait { count == 0 };
 	}
 
 	*compare_engine { |server, threshold, defa, defb, forceDontPrint=false, duration=0.01, extraArgs=([])|
