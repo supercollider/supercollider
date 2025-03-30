@@ -9,7 +9,6 @@
 #include <SC_Version.hpp>
 
 namespace po = boost::program_options;
-using namespace std;
 
 namespace SC_CLI {
 
@@ -28,8 +27,8 @@ bool CLIOptions::parse(int argc, char* argv[], SC_TerminalClient::Options& termi
     po::options_description hiddenDescription("Hidden options");
     // clang-format off
     hiddenDescription.add_options()
-        ("input-file", po::value<string>(&mInputFile), "input file")
-        ("sc-args", po::value<vector<string>>(&mScArgs), "sc args")
+        ("input-file", po::value<std::string>(&mInputFile), "input file")
+        ("sc-args", po::value<std::vector<std::string>>(&mScArgs), "sc args")
     ;
     // clang-format on
 
@@ -49,11 +48,11 @@ bool CLIOptions::parse(int argc, char* argv[], SC_TerminalClient::Options& termi
         store(po::command_line_parser(argc, argv).options(cmdLineOptions).positional(positionalOptions).run(), vm);
         notify(vm);
     } catch (po::unknown_option& e) {
-        cerr << e.what() << endl;
+        std::cerr << e.what() << std::endl;
         exitCode = 1;
         return true;
     } catch (po::invalid_option_value& e) {
-        cerr << e.what() << endl;
+        std::cerr << e.what() << std::endl;
         exitCode = 1;
         return true;
     }
@@ -63,23 +62,24 @@ bool CLIOptions::parse(int argc, char* argv[], SC_TerminalClient::Options& termi
     }
 
     if (vm.count("sc-args")) {
-        terminalOptions.mArgs = vm["sc-args"].as<vector<string>>();
+        terminalOptions.mArgs = vm["sc-args"].as<std::vector<std::string>>();
     }
 
     if (mPrintVersion) {
-        cout << "sclang " << SC_VersionString() << " (" << SC_BuildString() << ")" << endl;
+        std::cout << "sclang " << SC_VersionString() << " (" << SC_BuildString() << ")" << std::endl;
         return true;
     }
 
     // this is handled here and not in the description declaration b/c we need access to the declarations
     if (mPrintHelp) {
         // construct a options_description w/o hidden positional options
-        po::options_description visibleDescription("");
+        po::options_description visibleDescription;
         visibleDescription.add(genericDescription).add(terminalDescription).add(languageConfigDescription);
 
-        cout << "Start a REPL interpreter:           sclang [ -options ]\n"
-                "Execute a .scd file:                sclang [ -options ] path_to_sc_file [ args passed to sclang... ]\n"
-             << visibleDescription << endl;
+        std::cout
+            << "Start a REPL interpreter:           sclang [ -options ]\n"
+               "Execute a .scd file:                sclang [ -options ] path_to_sc_file [ args passed to sclang... ]\n"
+            << visibleDescription << std::endl;
         return true;
     }
 
@@ -115,7 +115,7 @@ po::options_description CLIOptions::buildTerminalDescription(SC_TerminalClient::
     description.add_options()
         (
             "runtime-directory,d",
-            po::value<string>(&terminalOptions.mRuntimeDir),
+            po::value<std::string>(&terminalOptions.mRuntimeDir),
             "Set runtime directory"
         )
         (
@@ -125,14 +125,14 @@ po::options_description CLIOptions::buildTerminalDescription(SC_TerminalClient::
         )
         (
             "heap-growth,g",
-            po::value<string>()->default_value(convertMemoryInteger(terminalOptions.mMemGrow))->notifier([&](const string &heapGrowth) {
+            po::value<std::string>()->default_value(convertMemoryInteger(terminalOptions.mMemGrow))->notifier([&](const std::string &heapGrowth) {
                 terminalOptions.mMemGrow = parseMemoryString(heapGrowth);
             }),
             "Set heap growth size (allows k, m and g as suffix multipliers)"
         )
         (
             "yaml-config,l",
-            po::value<string>(&terminalOptions.mLibraryConfigFile)->notifier([&](const string &yaml_config) {
+            po::value<std::string>(&terminalOptions.mLibraryConfigFile)->notifier([&](const std::string &yaml_config) {
                 terminalOptions.mLibraryConfigFile = yaml_config;
                 SC_LanguageConfig::setConfigPath(yaml_config);
             }),
@@ -140,7 +140,7 @@ po::options_description CLIOptions::buildTerminalDescription(SC_TerminalClient::
         )
         (
             "heap-size,m",
-            po::value<string>()->default_value(convertMemoryInteger(terminalOptions.mMemSpace))->notifier([&](const string &heapSize) {
+            po::value<std::string>()->default_value(convertMemoryInteger(terminalOptions.mMemSpace))->notifier([&](const std::string &heapSize) {
                 terminalOptions.mMemSpace = parseMemoryString(heapSize);
             }),
             "Set initial heap size (allows k, m and g as suffix multipliers)"
@@ -159,7 +159,7 @@ po::options_description CLIOptions::buildTerminalDescription(SC_TerminalClient::
             "port,u",
             po::value<int>(&terminalOptions.mPort)->default_value(terminalOptions.mPort)->notifier([&](int port) {
                 if (port < 0 || port > 65535) {
-                    cerr << "UDP port must be in range between 0-65535, but was " << port << endl;
+                    std::cerr << "UDP port must be in range between 0-65535, but was " << port << std::endl;
                     mParsingFailed = true;
                 }
             }),
@@ -167,7 +167,7 @@ po::options_description CLIOptions::buildTerminalDescription(SC_TerminalClient::
         )
         (
             "ide,i",
-            po::value<string>()->notifier([&](string ide_name) {
+            po::value<std::string>()->notifier([&](std::string ide_name) {
                 SC_Filesystem::instance().setIdeName(ide_name);
             }),
             "Set IDE name"
@@ -190,12 +190,12 @@ po::options_description CLIOptions::buildLanguageConfigDescription() {
     description.add_options()
         (
             "include-path",
-            po::value<vector<string>>(),
+            po::value<std::vector<std::string>>(),
             "Class library path to be included for searching (allows multiple mentions)"
         )
         (
             "exclude-path",
-            po::value<vector<string>>(),
+            po::value<std::vector<std::string>>(),
             "Class library path to be excluded from searching (overrides includePaths, allows multiple mentions)"
         )
         (
@@ -216,12 +216,12 @@ void CLIOptions::parseLanguageConfig(po::variables_map& vm) {
     };
 
     if (vm.count("include-path")) {
-        for (auto includePath : vm["include-path"].as<vector<string>>()) {
+        for (auto includePath : vm["include-path"].as<std::vector<std::string>>()) {
             gLanguageConfig->addIncludedDirectory(SC_Codecvt::utf8_str_to_path(includePath));
         }
     }
     if (vm.count("exclude-path")) {
-        for (auto excludePath : vm["exclude-path"].as<vector<string>>()) {
+        for (auto excludePath : vm["exclude-path"].as<std::vector<std::string>>()) {
             gLanguageConfig->addExcludedDirectory(SC_Codecvt::utf8_str_to_path(excludePath));
         }
     }
@@ -243,7 +243,8 @@ int CLIOptions::parseMemoryString(const std::string& input) {
     } else if (suffix == 'g' || suffix == 'G') {
         multiplier = 1024 * 1024 * 1024;
     } else if (!isdigit(suffix)) {
-        cerr << "Couldn't parse memory value '" << input << "': '" << suffix << "' is an unknown modifier" << endl;
+        std::cerr << "Couldn't parse memory value '" << input << "': '" << suffix << "' is an unknown modifier"
+                  << std::endl;
         exit(1);
     }
 
@@ -252,7 +253,7 @@ int CLIOptions::parseMemoryString(const std::string& input) {
         int value = boost::lexical_cast<int>(numberPart);
         return value * multiplier;
     } catch (const boost::bad_lexical_cast&) {
-        cerr << "Couldn't parse memory value '" << input << "'" << endl;
+        std::cerr << "Couldn't parse memory value '" << input << "'" << std::endl;
         exit(1);
     }
 }

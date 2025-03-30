@@ -3,15 +3,14 @@
 #include "SC_TerminalClient.h"
 
 namespace po = boost::program_options;
-using namespace std;
 
 namespace SC_CLI {
 class CLIOptions {
 public:
     bool parse(int argc, char* argv[], SC_TerminalClient::Options& terminalOptions, int& exitCode);
 
-    string mInputFile;
-    vector<string> mScArgs;
+    std::string mInputFile;
+    std::vector<std::string> mScArgs;
 
 private:
     bool mParsingFailed = false;

@@ -555,8 +555,8 @@ void SC_TerminalClient::cleanupInput() {
 }
 
 int SC_TerminalClient::prArgv(struct VMGlobals* g, int) {
-    int argc = ((SC_TerminalClient*)SC_TerminalClient::instance())->options().mArgs.size();
-    std::vector<std::string> argv = ((SC_TerminalClient*)SC_TerminalClient::instance())->options().mArgs;
+    auto& argv = static_cast<SC_TerminalClient*>(SC_TerminalClient::instance())->options().mArgs;
+    size_t argc = argv.size();
 
     PyrSlot* argvSlot = g->sp;
 
