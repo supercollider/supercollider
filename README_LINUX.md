@@ -194,7 +194,10 @@ To run cmake with default settings:
 
     cmake ..
 
-You can set CMake flags on the command line using `cmake -DKEY=value ..`. You can also use cmake frontends like ccmake or cmake-gui, or simply edit the `CMakeCache.txt` file. CMake flags are persistent and you only need to run these commands once each.
+You can set CMake flags on the command line using `cmake -DKEY=value ..` where the `D` prefix is necessary!
+You can also use cmake gui-frontends like [`ccmake`](https://packages.debian.org/en/sid/cmake-curses-gui) or [`cmake-gui`](https://packages.debian.org/sid/cmake-qt-gui) to inspect and set the available flags.
+It is also possible to edit the `CMakeCache.txt` file or re-execute the `cmake` command with the desired flags.
+CMake flags are persistent and you only need to run these commands once each.
 
 We will cover a few important settings. There are others, which you can view with `cmake -LH ..`. We will document more of them in this README file soon.
 
