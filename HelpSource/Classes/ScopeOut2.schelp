@@ -1,11 +1,11 @@
-class:: ScopeOut
+class:: ScopeOut2
 summary:: Used to communicate with link::CLasses/SCScope::
-categories::  UGens>Buffer, UGens>Undocumented
+categories::  UGens>Buffer
 
 
 Description::
 
-This is used to communicate with link::Classes/SCScope::, but only when running the server in internal mode.
+This is used to communicate with link::Classes/SCScope::, unless using an internal server.
 
 
 classmethods::

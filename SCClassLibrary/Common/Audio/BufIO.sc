@@ -157,12 +157,11 @@ RecordBuf : UGen {
 	}
 }
 
-// TODO: What does this class do?
 ScopeOut : UGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
-	bufferAccessType { ^\scopeOut }
+	bufferAccessType { ^\read }
 	hasObservableEffect { ^true }
-	canBeReplacedByIdenticalCall { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg inputArray , bufnum=0;
 		this.multiNewList(['audio', bufnum] ++ inputArray.asArray);
@@ -176,9 +175,9 @@ ScopeOut : UGen {
 
 ScopeOut2 : UGen {
 	resourceManagers { ^[UGenBufferResourceManager] }
-	bufferAccessType { ^\scopeOut2 }
+	bufferAccessType { ^\read }
 	hasObservableEffect { ^true }
-	canBeReplacedByIdenticalCall { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg inputArray, scopeNum=0, maxFrames = 4096, scopeFrames;
 		this.multiNewList(['audio', scopeNum, maxFrames, scopeFrames ? maxFrames] ++ inputArray.asArray);
