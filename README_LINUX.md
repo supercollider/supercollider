@@ -188,7 +188,7 @@ You can actually name this whatever you want, allowing you to have multiple inde
 
 ### Step 3: Set CMake flags
 
-Depending on what SuperCollider components you wish to install, you can set CMake flags:
+Depending on what SuperCollider components you wish to build and install, you can set CMake flags.
 
 To run cmake with default settings:
 
