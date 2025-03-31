@@ -74,7 +74,7 @@ If Step 2 requests reboot:
 
     sudo apt-get install emacs 
     
-**Note:** If you do not install emacs using the command above, you should use the following command when runninc cmake with default settings:
+**Note:** If you do not install emacs using the command above, you should use the following command when running cmake with default settings:
 
     cmake -DSC_EL=NO ..
     
