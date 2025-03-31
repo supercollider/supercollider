@@ -74,7 +74,7 @@ If Step 2 requests reboot:
 
     sudo apt-get install emacs 
     
-!!! If you do not install emacs using the command above, you should use the following command when runninc cmake with default settings:
+**Note:** If you do not install emacs using the command above, you should use the following command when runninc cmake with default settings:
 
     cmake -DSC_EL=NO ..
     
@@ -88,7 +88,7 @@ The following command installs all the recommended dependencies for sclang excep
 
     sudo apt-get install git libasound2-dev libicu-dev libreadline6-dev libudev-dev pkg-config libncurses5-dev
 
-!!! The following command installs the minimal recommended dependencies for compiling scsynth and supernova:
+**Note:** The following command installs the minimal recommended dependencies for compiling scsynth and supernova:
 
     sudo apt-get install build-essential cmake libjack-jackd2-dev libsndfile1-dev libfftw3-dev libxt-dev libavahi-client-dev libudev-dev
 
