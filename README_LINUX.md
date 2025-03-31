@@ -56,7 +56,7 @@ There are dedicated READMEs in this repository for building on particular embedd
 - BeagleBone Black: README_BEAGLEBONE_BLACK.md
 - Bela: README_BELA.md
 
-On Debian-like systems (e.g: Ubuntu, Linux Mint, Kali Linux, Elementary OS, Raspberry Pi OS, Knoppix, Corel Linux, Lindows and so on), the following commands could be execueted step by step:
+On Debian-like systems (e.g: Ubuntu, Linux Mint, Kali Linux, Elementary OS, Knoppix, Corel Linux, Lindows and so on), the following commands can be execueted step by step to install all necessary dependencies and build SuperCollider:
 
 ### Step 1: Update the package list on your system
 
