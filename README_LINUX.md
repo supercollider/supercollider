@@ -56,16 +56,44 @@ There are dedicated READMEs in this repository for building on particular embedd
 - BeagleBone Black: README_BEAGLEBONE_BLACK.md
 - Bela: README_BELA.md
 
-On Debian-like systems, the following command installs the minimal recommended dependencies for compiling scsynth and supernova:
+On Debian-like systems (e.g: Ubuntu, Linux Mint, Kali Linux, Elementary OS, Raspberry Pi OS, Knoppix, Corel Linux, Lindows and so on), the following commands could be execueted step by step:
 
-    sudo apt-get install build-essential cmake libjack-jackd2-dev libsndfile1-dev libfftw3-dev libxt-dev libavahi-client-dev
+### Step 1: Update the package list on your system
 
-If you need to use JACK1 replace libjack-jackd2-dev by libjack-dev.
+    sudo apt-get update
+
+### Step 2: Install newer versions of the software packages that are already installed on your system
+
+    sudo apt-get upgrade
+
+If Step 2 requests reboot:
+
+    reboot
+
+### Step 3: Install emacs if you need emacs:
+
+    sudo apt-get install emacs 
+    
+!!! If you do not install emacs using the command above, you should use the following command when runninc cmake with default settings:
+
+    cmake -DSC_EL=NO ..
+    
+### Step 4: Install the JACK Audio Connection Kit (JACK), specifically the version 2
+
+    sudo apt-get install jackd2
+
+### Step 5: Install dependencies
 
 The following command installs all the recommended dependencies for sclang except for Qt:
 
     sudo apt-get install git libasound2-dev libicu-dev libreadline6-dev libudev-dev pkg-config libncurses5-dev
-    
+
+!!! The following command installs the minimal recommended dependencies for compiling scsynth and supernova:
+
+    sudo apt-get install build-essential cmake libjack-jackd2-dev libsndfile1-dev libfftw3-dev libxt-dev libavahi-client-dev libudev-dev
+
+If you need to use JACK1 replace libjack-jackd2-dev by libjack-dev.
+
 Installing requirements on Fedora
 ---------------------------------
 
@@ -146,14 +174,19 @@ First, `cd` into the root of the SuperCollider source directory (where this file
 
 Create a build directory and `cd` into it:
 
-    mkdir build
-    cd build
+    mkdir build && cd build
 
 You can actually name this whatever you want, allowing you to have multiple independent build directories. If your SuperCollider source is also a git repository, the `.gitignore` file is configured to ignore files of the form `build*`.
 
 ### Step 3: Set CMake flags
 
-Depending on what SuperCollider components you wish to install, you can set CMake flags. You can set CMake flags on the command line using `cmake -DKEY=value ..`. You can also use cmake frontends like ccmake or cmake-gui, or simply edit the `CMakeCache.txt` file. CMake flags are persistent and you only need to run these commands once each.
+Depending on what SuperCollider components you wish to install, you can set CMake flags:
+
+To run cmake with default settings:
+
+    cmake ..
+
+You can set CMake flags on the command line using `cmake -DKEY=value ..`. You can also use cmake frontends like ccmake or cmake-gui, or simply edit the `CMakeCache.txt` file. CMake flags are persistent and you only need to run these commands once each.
 
 We will cover a few important settings. There are others, which you can view with `cmake -LH ..`. We will document more of them in this README file soon.
 
@@ -220,9 +253,9 @@ The `-j` option allows multiple jobs to be run simultaneously, which can improve
 
 And to install, run
 
-    make install
+    sudo make install
 
-You will need to use `sudo make install` if you are doing a system-wide installation, which is the default.
+You will need to use `make install` if you are doing a user-wide installation, which is not the default.
 
 After installing for the first time, please run
 
