@@ -90,7 +90,15 @@ The following command installs all the recommended dependencies for sclang excep
 
 **Note:** The following command installs the minimal recommended dependencies for compiling scsynth and supernova:
 
-    sudo apt-get install build-essential cmake libjack-jackd2-dev libsndfile1-dev libfftw3-dev libxt-dev libavahi-client-dev libudev-dev
+sudo apt-get install \
+  build-essential \
+  cmake \
+  libjack-jackd2-dev \
+  libsndfile1-dev \
+  libfftw3-dev \
+  libxt-dev \
+  libavahi-client-dev \
+  libudev-dev
 
 If you need to use JACK1 replace libjack-jackd2-dev by libjack-dev.
 
