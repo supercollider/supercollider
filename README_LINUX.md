@@ -56,40 +56,28 @@ There are dedicated READMEs in this repository for building on particular embedd
 - BeagleBone Black: README_BEAGLEBONE_BLACK.md
 - Bela: README_BELA.md
 
-On Debian-like systems (e.g: Ubuntu, Linux Mint, Kali Linux, Elementary OS, Knoppix, Corel Linux, Lindows and so on), the following commands can be execueted step by step to install all necessary dependencies and build SuperCollider:
+On Debian-like systems (e.g: Ubuntu, Linux Mint, Kali Linux, Elementary OS, Knoppix, Corel Linux, Lindows and so on), the following terminal commands can be executed step by step to install all necessary dependencies and build SuperCollider:
 
-### Step 1: Update the package list on your system
-
-    sudo apt-get update
-
-### Step 2: Install newer versions of the software packages that are already installed on your system
-
-    sudo apt-get upgrade
-
-If Step 2 requests reboot:
-
-    reboot
-
-### Step 3: Install emacs if you need emacs:
-
-    sudo apt-get install emacs 
-    
-**Note:** If you do not install emacs using the command above, you should use the following command when running cmake with default settings:
-
-    cmake -DSC_EL=NO ..
-    
-### Step 4: Install the JACK Audio Connection Kit (JACK), specifically the version 2
-
-    sudo apt-get install jackd2
-
-### Step 5: Install dependencies
-
-The following command installs all the recommended dependencies for sclang except for Qt:
-
-    sudo apt-get install git libasound2-dev libicu-dev libreadline6-dev libudev-dev pkg-config libncurses5-dev
-
-**Note:** The following command installs the minimal recommended dependencies for compiling scsynth and supernova:
-
+Before installing the dependencies, it is highly recommended to update the package list on your system with the following command:
+```shell
+sudo apt-get update
+```
+It is also recommended to install newer versions of software packages already installed on your system using the following command:
+```shell
+sudo apt-get upgrade
+```
+**Note::** If this updates the Linux system kernel, the terminal window may require the system to be rebooted. 
+In this case, it is recommended to reboot the system with the following command:
+```shell
+reboot
+```
+After rebooting, you can proceed with the next steps of installing the dependencies.
+The following command will install all recommended dependencies for sclang except Qt:
+```shell
+sudo apt-get install git libasound2-dev libicu-dev libreadline6-dev libudev-dev pkg-config libncurses5-dev emacs jackd2
+```
+**Note:** The following command will install the minimum recommended dependencies for compiling scsynth and supernova:
+```shell
 sudo apt-get install \
   build-essential \
   cmake \
@@ -99,14 +87,14 @@ sudo apt-get install \
   libxt-dev \
   libavahi-client-dev \
   libudev-dev
-
-If you need to use JACK1 replace libjack-jackd2-dev by libjack-dev.
+```
+If you need to use JACK1 replace libjack-jackd2-dev with libjack-dev.
 
 Installing requirements on Fedora
 ---------------------------------
 
 The following commands should install all the recommended SuperCollider dependencies on Fedora, except for Qt:
-```sh
+```shell
 sudo dnf groupinstall "Development Tools"
 sudo dnf install cmake libsndfile-devel wayland-devel xorg-x11-server-Xwayland-devel pipewire-devel pipewire-jack-audio-connection-kit-devel systemd-devel fftw-devel alsa-lib-devel libatomic
 sudo dnf install emacs # if building with the sc-el backend (default)
@@ -120,13 +108,13 @@ Installing Qt
 ### Installing Qt on recent Debian-like operating systems
 
 Try this command to query the Qt6 version available to you:
-
-    apt-cache policy qt6-base-dev
-
+```shell
+apt-cache policy qt6-base-dev
+```
 If this displays version 6.2 or later, you can install Qt6 using `apt`. Please note that this list of packages might not be complete, as it hasn't been revised for Qt6.
-
-    sudo apt-get install qt6-base-dev qt6-base-dev-tools qt6-tools-dev qt6-tools-dev-tools libqt6websockets6-dev libqt6webenginecore6 qt6-webengine-dev qt6-webengine-dev-tools libqt6svgwidgets6
-
+```shell
+sudo apt-get install qt6-base-dev qt6-base-dev-tools qt6-tools-dev qt6-tools-dev-tools libqt6websockets6-dev libqt6webenginecore6 qt6-webengine-dev qt6-webengine-dev-tools libqt6svgwidgets6
+```
 If you are on Ubuntu, check the sections below. If these instructions don't work, you will have to use the official Qt installer.
 
 ### Installing Qt on Ubuntu 22.04, 24.04
@@ -140,7 +128,7 @@ On 22.04 and 24.04 Qt6 is available in the system's package manager. The followi
 
 Please note, this list has not been tested after upgrading to Qt6. Additional packages may be needed.
 
-```sh
+```shell
 sudo dnf install qt6-qtbase-devel qt6-qtsvg-devel qt6-qtwebengine-devel qt6-linguist qt6-qtwebsockets-devel
 ```
 
@@ -169,21 +157,21 @@ Obtaining the SuperCollider source code can be done either by downloading a rele
 SuperCollider releases are available to download here: https://github.com/supercollider/supercollider/releases
 
 Cloning the repository can be done with the following command:
-
-    git clone --recurse-submodules https://github.com/SuperCollider/SuperCollider.git
-
+```shell
+git clone --recurse-submodules https://github.com/SuperCollider/SuperCollider.git
+```
 The `--recurse-submodules` option will clone the repository's submodules which are needed to build SuperCollider. The submodules can also be obtained by navigating to the root of your locally cloned SuperCollider repository and running the following command:
-
-    git submodule update --init --recursive
-
+```shell
+git submodule update --init --recursive
+```
 ### Step 2: Make a build directory
 
 First, `cd` into the root of the SuperCollider source directory (where this file resides).
 
 Create a build directory and `cd` into it:
-
-    mkdir build && cd build
-
+```shell
+mkdir build && cd build
+```
 You can actually name this whatever you want, allowing you to have multiple independent build directories. If your SuperCollider source is also a git repository, the `.gitignore` file is configured to ignore files of the form `build*`.
 
 ### Step 3: Set CMake flags
@@ -191,11 +179,17 @@ You can actually name this whatever you want, allowing you to have multiple inde
 Depending on what SuperCollider components you wish to build and install, you can set CMake flags.
 
 To run cmake with default settings:
-
-    cmake ..
-
+```shell
+cmake ..
+```
 You can set CMake flags on the command line using `cmake -DKEY=value ..` where the `D` prefix is necessary!
 You can also use cmake gui-frontends like [`ccmake`](https://packages.debian.org/en/sid/cmake-curses-gui) or [`cmake-gui`](https://packages.debian.org/sid/cmake-qt-gui) to inspect and set the available flags.
+
+**Example:**
+If you did not install emacs, you should use the following command:
+```shell
+cmake -DSC_EL=NO ..
+```
 It is also possible to edit the `CMakeCache.txt` file or re-execute the `cmake` command with the desired flags.
 CMake flags are persistent and you only need to run these commands once each.
 
@@ -204,43 +198,43 @@ We will cover a few important settings. There are others, which you can view wit
 #### Nonstandard Qt locations
 
 If you are installing sclang with GUI features and the IDE, and you installed Qt using the official Qt installer, you will need to tell SuperCollider where Qt is. To do so:
-
-    cmake -DCMAKE_PREFIX_PATH=/path/to/qt6 ..
-
+```shell
+cmake -DCMAKE_PREFIX_PATH=/path/to/qt6 ..
+```
 The location of `/path/to/qt6` will depend on how you installed Qt:
 
 - If you downloaded Qt from the Qt website, the path is two directories down from the top-level unpacked Qt directory, in a folder called `gcc`: `Qt/5.11.0/gcc_64/` (64-bit Linux) or `Qt/5.11.0/gcc/` (32-bit). By default, the Qt installer places `Qt/` in your home directory.
 
 If you want to build without Qt entirely, run
-
-    cmake -DSC_QT=OFF ..
-
+```shell
+cmake -DSC_QT=OFF ..
+```
 #### Compiler optimizations
 
 If you're building SC for production use and/or don't plan on using a debugger, make sure to build in release mode:
-
-    cmake -DCMAKE_BUILD_TYPE=Release ..
-
+```shell
+cmake -DCMAKE_BUILD_TYPE=Release ..
+```
 This sets the compiler to the best optimization settings. Switch back to the defaults using `cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ..`.
 
 If you're compiling SC only for use on your own machine (that is, you aren't cross-compiling or packaging SC for distribution), it is recommended to turn on the `NATIVE` flag to enable CPU-specific optimizations:
-
-    cmake -DNATIVE=ON ..
-
+```shell
+cmake -DNATIVE=ON ..
+```
 #### Install location
 
 By default, SuperCollider installs in `/usr/local`, a system-wide install. Maybe you can't or don't want to use superuser privileges, or just want to install for a single user. To do so, set `CMAKE_INSTALL_PREFIX` to the desired installation directory. One good place to put it would be `$HOME/usr/local`:
-
-    cmake -DCMAKE_INSTALL_PREFIX=~/usr/local ..
-
+```shell
+cmake -DCMAKE_INSTALL_PREFIX=~/usr/local ..
+```
 Make sure `~/usr/local/bin` is in your `PATH` if you do this. You can do that by adding a line such as `PATH=$PATH:$HOME/usr/local/bin` to `~/.profile`.
 
 #### Speeding up repeated builds
 
 If you are developing SC or you're constantly pulling in the latest changes, rebuilding SC repeatedly can be a drag. Installing `ccache` can speed up re-compilation. Here is how to configure cmake to use it:
-
-    cmake -DCMAKE_CXX_COMPILER=/usr/lib/ccache/g++ -DCMAKE_C_COMPILER=/usr/lib/ccache/gcc ..
-
+```shell
+cmake -DCMAKE_CXX_COMPILER=/usr/lib/ccache/g++ -DCMAKE_C_COMPILER=/usr/lib/ccache/gcc ..
+```
 This assumes your ccache executables are installed into `/usr/lib/ccache` - you may need to change the path to reflect your installation.
 
 #### Library suffix
@@ -249,34 +243,34 @@ In some situations, it is preferable to install libraries and plugins
 not in the `lib` directory but in a suffixed one, e.g. `lib64`.
 In such a case you can set the cmake variable `LIB_SUFFIX`.
 For example if you wish to install into `lib64`:
-
-    cmake -DLIB_SUFFIX=64 ..
-
+```shell
+cmake -DLIB_SUFFIX=64 ..
+```
 ### Step 4: Build
 
 If CMake ran successfully without errors, you are ready to move on to building. You can freely alternate between building and setting CMake flags.
 
 After setting your CMake flags, just run
-
-    make
-
+```shell
+make
+```
 The `-j` option allows multiple jobs to be run simultaneously, which can improve compile times on machines with multiple cores. The optimal `-j` setting varies between machines, but a good rule of thumb is the number of cores plus one. For example, on a 4-core system, try `make -j5`.
 
 And to install, run
-
-    sudo make install
-
+```shell
+sudo make install
+```
 You will need to use `make install` if you are doing a user-wide installation, which is not the default.
 
 After installing for the first time, please run
-
-    sudo ldconfig
-
+```shell
+sudo ldconfig
+```
 To uninstall:
-
-    make uninstall
-
-(or `sudo make uninstall`).
+```shell
+make sudo uninstall
+```
+(or `make uninstall` if you did user-wide installation).
 
 Building a Debian package
 -------------------------
@@ -314,8 +308,7 @@ Running sclang
 --------------
 
 Supercollider comes with its own powerful IDE. Run it with:
-
-```
+```shell
 $> scide
 ```
 
@@ -352,25 +345,25 @@ environment variables:
 
  * SC_JACK_DEFAULT_INPUTS comma-separated list of jack ports that the server's inputs should connect by default
 
-   ```
+   ```shell
    $> export SC_JACK_DEFAULT_INPUTS="system:capture_1,system:capture_2"
    ```
 
    in order to connect the first ports of one jack client, it is possible to specify only the client name
 
-   ```
+   ```shell
    $> export SC_JACK_DEFAULT_INPUTS="system"
    ```
 
  * SC_JACK_DEFAULT_OUTPUTS comma-separated list of jack ports that the server's outputs should be connected to by default.
 
-   ```
+   ```shell
    $> export SC_JACK_DEFAULT_OUTPUTS="system:playback_1,system:playback_2"
    ```
 
    In order to connect the first ports of one jack client, it is possible to specify only the client name
 
-   ```
+   ```shell
    $> export SC_JACK_DEFAULT_OUTPUTS="system"
    ```
 
@@ -380,7 +373,7 @@ names are separated by ':' as in the Unix PATH variable:
 
  * SC_PLUGIN_PATH, SC_SYNTHDEF_PATH
 
-   ```
+   ```shell
    $> export SC_SYNTHDEF_PATH="./synthdefs:/home/sk/SuperCollider/synthdefs"
    ```
 
