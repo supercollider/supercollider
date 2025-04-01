@@ -1,5 +1,7 @@
+// This should only be used for UGens that deterministically filter a signal.
+// They should not touch buffers, use randomness, have a 'doneAction'. nor alter any other server side state.
 Filter : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -307,9 +309,13 @@ Formlet : Filter {
 	}
 }
 
-DetectSilence : Filter {
-	resourceManagers { ^if(this.hasObservableEffect) { [UGenDoneResourceManager] } { [] } }
+DetectSilence : UGen {
+	resourceDependencies { ^if(this.hasObservableEffect) { [[UGenDoneResourceManager]] } { [] }  }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(3) }
+	canBeReplacedByIdenticalCall { ^true }
+
+	checkInputs { ^this.checkSameRateAsFirstInput }
+
 	*ar { arg in = 0.0, amp = 0.0001, time = 0.1, doneAction = 0;
 		^this.multiNew('audio', in, amp, time, doneAction)
 	}

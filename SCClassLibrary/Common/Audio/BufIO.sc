@@ -1,12 +1,11 @@
 PlayBuf : MultiOutUGen {
-	resourceManagers {
+	resourceDependencies {
 		^if(this.hasObservableEffect){
-			[UGenBufferResourceManager, UGenDoneResourceManager]
-		} {
-			[UGenBufferResourceManager]
+			[[UGenBufferResourceManager, \read], [UGenDoneResourceManager]]
+		}  {
+			[[UGenBufferResourceManager, \read]]
 		}
 	}
-	bufferAccessType { ^\read }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(6) }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -27,8 +26,7 @@ PlayBuf : MultiOutUGen {
 }
 
 TGrains : MultiOutUGen {
-	resourceManagers { ^[UGenBufferResourceManager] }
-	bufferAccessType { ^\read }
+	resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -46,8 +44,7 @@ TGrains : MultiOutUGen {
 }
 
 BufRd : MultiOutUGen {
-	resourceManagers { ^[UGenBufferResourceManager] }
-	bufferAccessType { ^\read }
+	resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -79,8 +76,7 @@ BufRd : MultiOutUGen {
 }
 
 BufWr : UGen {
-	resourceManagers { ^[UGenBufferResourceManager] }
-	bufferAccessType { ^\write }
+	resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -119,14 +115,13 @@ BufWr : UGen {
 }
 
 RecordBuf : UGen {
-	resourceManagers {
+	resourceDependencies {
 		^if(this.hasObservableEffect){
-			[UGenBufferResourceManager, UGenDoneResourceManager]
-		} {
-			[UGenBufferResourceManager]
+			[[UGenBufferResourceManager, \write], [UGenDoneResourceManager]]
+		}  {
+			[[UGenBufferResourceManager, \write]]
 		}
 	}
-	bufferAccessType { ^\write }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -158,8 +153,7 @@ RecordBuf : UGen {
 }
 
 ScopeOut : UGen {
-	resourceManagers { ^[UGenBufferResourceManager] }
-	bufferAccessType { ^\read }
+	resourceDependencies { ^[[UGenBufferResourceManager, \writeReplace]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -174,8 +168,7 @@ ScopeOut : UGen {
 }
 
 ScopeOut2 : UGen {
-	resourceManagers { ^[UGenBufferResourceManager] }
-	bufferAccessType { ^\read }
+	resourceDependencies { ^[[UGenBufferResourceManager, \writeReplace]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -190,8 +183,7 @@ ScopeOut2 : UGen {
 }
 
 Tap : UGen {
-	resourceManagers { ^[UGenBufferResourceManager] }
-	bufferAccessType { ^\read }
+	resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -203,10 +195,10 @@ Tap : UGen {
 }
 
 LocalBuf : WidthFirstUGen {
-
 	// This depends on nothing, and returns an instance which is passed explicitly
 	//    to the input of the UGen where it is used, therefore nothing is needed.
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
+
 	hasObservableEffect { ^false } // If you don't use the buffer, it can be deleted.
 	canBeReplacedByIdenticalCall { ^false } // Each call should produce a unqiue buffer.
 
@@ -247,7 +239,7 @@ LocalBuf : WidthFirstUGen {
 }
 
 MaxLocalBufs : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -260,8 +252,7 @@ MaxLocalBufs : UGen {
 }
 
 SetBuf : WidthFirstUGen {
-	resourceManagers { ^[UGenBufferResourceManager] }
-	bufferAccessType { ^\write }
+	resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -272,8 +263,7 @@ SetBuf : WidthFirstUGen {
 }
 
 ClearBuf : WidthFirstUGen {
-	resourceManagers { ^[UGenBufferResourceManager] }
-	bufferAccessType { ^\write }
+	resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 

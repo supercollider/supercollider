@@ -10,7 +10,7 @@
 */
 
 PSinGrain : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 	*ar { arg freq = 440.0, dur = 0.2, amp = 0.1;

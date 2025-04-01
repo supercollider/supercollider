@@ -5,8 +5,7 @@ Magical UGens for treating FFT data as demand-rate streams.
 
 // Actually this just wraps up a bundle of Unpack1FFT UGens
 UnpackFFT : MultiOutUGen {
-	resourceManagers { ^[UGenBufferResourceManager] }
-	bufferAccessType { ^\read }
+	resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -19,8 +18,7 @@ UnpackFFT : MultiOutUGen {
 }
 
 Unpack1FFT : UGen {
-	resourceManagers { ^[UGenBufferResourceManager] }
-	bufferAccessType { ^\read }
+	resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -31,8 +29,7 @@ Unpack1FFT : UGen {
 
 // This does the demanding, to push the data back into an FFT buffer.
 PackFFT : PV_ChainUGen {
-	resourceManagers { ^[UGenBufferResourceManager] }
-	bufferAccessType { ^\write }
+	resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -63,6 +60,7 @@ PV_ChainUGen : UGen {
 		magsphases = magsphases.flop.flatten;
 		^PackFFT(this, numframes, magsphases, frombin, tobin, zeroothers);
 	}
+
 	// The same but for two chains together
 	pvcalc2 { |chain2, numframes, func, frombin=0, tobin, zeroothers=0|
 		var origmagsphases, origmagsphases2, magsphases, ret;
@@ -97,14 +95,13 @@ PV_ChainUGen : UGen {
 	fftSize { ^inputs[0].fftSize }
 
 	optimize {
+		var resourceDependenciesIncludesBufferWrite = { |dep| dep.any{ |m| m[0] == UGenBufferResourceManager and: {m[1] != \read} } };
 		var desc = descendants.select { |d|
-			// Get all descendants that write (not *just* read) to a buffer that aren't PV_Copy.
+			// Get all descendants that 'write' (not *just* read) to a buffer that aren't PV_Copy.
 			// This will incorrectly select UGens that read and write to different buffers but don't write to this buffer,
 			//   and insert an unnecessary PV_Copy, but this is rare and deemed worth the performance sacrifice.
 			d.isKindOf(PV_Copy).not and: {
-				d.resourceManagers !? { |m|
-					m.includes(UGenBufferResourceManager) and: { d.bufferAccessType != \read }
-				} ?? { true }
+				d.resourceDependencies.isNil or: { resourceDependenciesIncludesBufferWrite.(d.resourceDependencies) }
 			}
 		};
 

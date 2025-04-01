@@ -1,7 +1,7 @@
 //GENDYN by Iannis Xenakis implemented for SC3 by sicklincoln with some refinements
 
 Gendy1 : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -16,7 +16,7 @@ Gendy1 : UGen {
 
 
 Gendy2 : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -31,7 +31,7 @@ Gendy2 : UGen {
 
 
 Gendy3 : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 

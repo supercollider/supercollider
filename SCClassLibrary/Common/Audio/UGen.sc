@@ -300,7 +300,7 @@ UGen : UGenBuiltInMethods {
 	////// Defaults are provided here, but each UGen should specifiy them to be clear.
 	// 1. Return an Array of zero or more UGenResourceManagers, or nil if entering connectToAll mode (see UGenResourceManager).
 	// Maintains IO ordering under topological sort.
-	resourceManagers { ^nil	}
+	resourceDependencies { ^nil }
 
 	// 2. Outputs to buffer, bus, sends a message, or does something else observable.
 	// Will be deleted if false and doesn't connect to a UGen that has an observable effect (dead code elimination).

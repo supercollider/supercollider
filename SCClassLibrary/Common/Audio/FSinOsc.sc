@@ -10,7 +10,7 @@
 */
 
 FSinOsc : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -24,22 +24,22 @@ FSinOsc : UGen {
 
 
 Klang : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg specificationsArrayRef, freqscale = 1.0, freqoffset = 0.0;
 		specificationsArrayRef = specificationsArrayRef.multichannelExpandRef(2);
-			^this.multiNewList(['audio', freqscale,
-						freqoffset, specificationsArrayRef] )
+		^this.multiNewList(['audio', freqscale,
+			freqoffset, specificationsArrayRef] )
 	}
 	*new1 { arg rate, freqscale, freqoffset, arrayRef;
 		var specs, freqs, amps, phases;
 		# freqs, amps, phases = arrayRef.dereference;
 		specs = [freqs,
-				amps ?? {Array.fill(freqs.size,1.0)},
-				phases ?? {Array.fill(freqs.size,0.0)}
-				].flop.flat;
+			amps ?? {Array.fill(freqs.size,1.0)},
+			phases ?? {Array.fill(freqs.size,0.0)}
+		].flop.flat;
 
 		^super.new.rate_(rate).addToSynth.init([freqscale,freqoffset] ++ specs);
 	}
@@ -51,22 +51,22 @@ Klang : UGen {
 }
 
 Klank : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg specificationsArrayRef, input, freqscale = 1.0, freqoffset = 0.0, decayscale = 1.0;
-			specificationsArrayRef = specificationsArrayRef.multichannelExpandRef(2);
-			^this.multiNewList(['audio',  input, freqscale,
-						freqoffset, decayscale, specificationsArrayRef] )
+		specificationsArrayRef = specificationsArrayRef.multichannelExpandRef(2);
+		^this.multiNewList(['audio',  input, freqscale,
+			freqoffset, decayscale, specificationsArrayRef] )
 	}
 	*new1 { arg rate, input, freqscale, freqoffset, decayscale, arrayRef;
 		var specs, freqs, amps, times;
 		# freqs, amps, times = arrayRef.dereference;
 		specs = [freqs,
-				amps ?? {Array.fill(freqs.size,1.0)},
-				times ?? {Array.fill(freqs.size,1.0)}
-				].flop.flat;
+			amps ?? {Array.fill(freqs.size,1.0)},
+			times ?? {Array.fill(freqs.size,1.0)}
+		].flop.flat;
 
 		^super.new.rate_(rate).addToSynth.init([input,freqscale,freqoffset,decayscale] ++ specs);
 	}
@@ -78,7 +78,7 @@ Klank : UGen {
 }
 
 DynKlank : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -94,16 +94,16 @@ DynKlank : UGen {
 		var spec = specificationsArrayRef.value;
 		var selector = this.methodSelectorForRate(rate);
 		^Ringz.perform(selector,
-				input,
-				spec[0] ? #[440.0] * freqscale + freqoffset,
-				spec[2] ? #[1.0] * decayscale,
-				spec[1] ? #[1.0]
+			input,
+			spec[0] ? #[440.0] * freqscale + freqoffset,
+			spec[2] ? #[1.0] * decayscale,
+			spec[1] ? #[1.0]
 		).sum
 	}
 }
 
 DynKlang : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -119,16 +119,16 @@ DynKlang : UGen {
 		var spec = specificationsArrayRef.value;
 		var selector = this.methodSelectorForRate(rate);
 		^SinOsc.perform(selector,
-				spec[0] ? #[440.0] * freqscale + freqoffset,
-				spec[2] ? #[0.0],
-				spec[1] ? #[1.0]
+			spec[0] ? #[440.0] * freqscale + freqoffset,
+			spec[2] ? #[0.0],
+			spec[1] ? #[1.0]
 		).sum
 	}
 }
 
 
 Blip : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -141,7 +141,7 @@ Blip : UGen {
 }
 
 Saw : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -154,7 +154,7 @@ Saw : UGen {
 }
 
 Pulse : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 

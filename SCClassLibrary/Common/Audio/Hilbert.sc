@@ -1,5 +1,5 @@
 Hilbert : MultiOutUGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -20,8 +20,7 @@ Hilbert : MultiOutUGen {
 
 // TODO: should this inherit from UGen as it is a psuedo ugen
 HilbertFIR : UGen {
-	resourceManagers { ^[UGenBufferResourceManager] }
-	bufferAccessType { ^\read }
+	resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -40,7 +39,7 @@ HilbertFIR : UGen {
 // to Hilbert.ar
 
 FreqShift : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 

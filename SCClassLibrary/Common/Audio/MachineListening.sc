@@ -1,7 +1,6 @@
 //4 outs
 BeatTrack : MultiOutUGen {
-	resourceManagers { ^[UGenBusResourceManager] }
-	busAccessType { ^\read }
+	resourceDependencies { ^[[UGenBusResourceManager, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -23,8 +22,7 @@ BeatTrack : MultiOutUGen {
 
 //loudness output in sones
 Loudness : UGen {
-	resourceManagers { ^[UGenBusResourceManager] }
-	busAccessType { ^\read }
+	resourceDependencies { ^[[UGenBusResourceManager, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -36,28 +34,26 @@ Loudness : UGen {
 
 
 Onsets : UGen {
-	resourceManagers { ^[UGenBusResourceManager] }
-	busAccessType { ^\read }
+	resourceDependencies { ^[[UGenBusResourceManager, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
 	*kr { |chain, threshold=0.5, odftype=\rcomplex, relaxtime=1,
-				floor=0.1, mingap=10, medianspan=11, whtype=1, rawodf=0|
+		floor=0.1, mingap=10, medianspan=11, whtype=1, rawodf=0|
 		if(odftype.class == Symbol){
 			odftype = #[\power, \magsum, \complex, \rcomplex, \phase, \wphase,\mkl]
-				.indexOf(odftype)
+			.indexOf(odftype)
 		};
 		// mingap of 10 frames, @ 44100 & 512 & 50%, is about 0.058 seconds
 		^this.multiNew('control', chain, threshold, odftype, relaxtime,
-				floor, mingap, medianspan, whtype, rawodf)
+			floor, mingap, medianspan, whtype, rawodf)
 	}
 }
 
 
 //transient input not currently used but reserved for future use in downweighting frames which have high transient content
 KeyTrack : UGen {
-	resourceManagers { ^[UGenBusResourceManager] }
-	busAccessType { ^\read }
+	resourceDependencies { ^[[UGenBusResourceManager, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -70,8 +66,7 @@ KeyTrack : UGen {
 
 //a bufnum could be added as third argument for passing arbitrary band spacing data
 MFCC : MultiOutUGen {
-	resourceManagers { ^[UGenBusResourceManager] }
-	busAccessType { ^\read }
+	resourceDependencies { ^[[UGenBusResourceManager, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -88,8 +83,7 @@ MFCC : MultiOutUGen {
 
 //6 outs
 BeatTrack2 : MultiOutUGen {
-	resourceManagers { ^[UGenBusResourceManager] }
-	busAccessType { ^\read }
+	resourceDependencies { ^[[UGenBusResourceManager, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -105,8 +99,7 @@ BeatTrack2 : MultiOutUGen {
 }
 
 SpecFlatness : UGen {
-	resourceManagers { ^[UGenBusResourceManager] }
-	busAccessType { ^\read }
+	resourceDependencies { ^[[UGenBusResourceManager, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -116,8 +109,7 @@ SpecFlatness : UGen {
 }
 
 SpecPcile : UGen {
-	resourceManagers { ^[UGenBusResourceManager] }
-	busAccessType { ^\read }
+	resourceDependencies { ^[[UGenBusResourceManager, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -127,8 +119,7 @@ SpecPcile : UGen {
 }
 
 SpecCentroid : UGen {
-	resourceManagers { ^[UGenBusResourceManager] }
-	busAccessType { ^\read }
+	resourceDependencies { ^[[UGenBusResourceManager, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 

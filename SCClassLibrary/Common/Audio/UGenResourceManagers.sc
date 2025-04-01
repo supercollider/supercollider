@@ -1,6 +1,6 @@
 UGenResourceManager {
 	classvar allResourceManagers;
-	*register { |resourceManager| allResourceManagers = allResourceManagers.add(resourceManager) }
+	*register { allResourceManagers = allResourceManagers.add(this) }
 	*createNewInstances { ^allResourceManagers.collect({|m| m -> m.new }).asEvent }
 
 	// Interface called from inside SynthDef.
@@ -13,6 +13,7 @@ UGenResourceManagerSimple : UGenResourceManager {
 	var all;
 
 	*new { ^super.newCopyArgs(all: Set.new) }
+
 	connectToAll { |ugen| this.add(ugen) }
 	add { |ugen|
 		previousStateDependentUGen !? { |p|
@@ -24,31 +25,34 @@ UGenResourceManagerSimple : UGenResourceManager {
 }
 
 UGenResourceManagerWithNonCausalModes : UGenResourceManager {
+	classvar nonCausalModes;
 	var previousStateDependentUGens;
 	var previousLastGroup;
-	var currentMode = \initial;
-	var <all;
+	var currentMode; // nil is the initial state here.
 
-	*new { ^super.newCopyArgs(all: Set.new) }
+	*new { ^super.new }
+	*register { |modes|
+		nonCausalModes = modes;
+		super.register;
+	}
 
-	nonCausalModes { this.subclassResponsibility(thisMethod) } // Returns an Array of Symbols
-	accessMessage { this.subclassResponsibility(thisMethod) } // Returns a Symbol
-
-	add { |ugen|
-		if (currentMode == \initial) {
-			currentMode = this.prTryGettingMode(ugen);
-			^previousStateDependentUGens = [ugen];
+	add { |ugen, accessMode|
+		accessMode ?? { Error("All UGens with causal modes resources must specifiy an access mode").throw };
+		if (currentMode.isNil) {
+			currentMode = accessMode;
+			previousStateDependentUGens = [ugen];
+			^nil
 		};
 
 		if (currentMode == \connectToAll) {
 			previousStateDependentUGens.do( _.createWeakConnectionTo(ugen) );
-			currentMode = this.prTryGettingMode(ugen);
-			previousStateDependentUGens.do {|p| all.add(p) }
-			^previousStateDependentUGens = [ugen];
+			currentMode = accessMode;
+			previousStateDependentUGens = [ugen];
+			^nil
 		};
 
-		this.nonCausalModes.do({ |m|
-			if(currentMode == m and: {ugen.perform(this.accessMessage) == m}){
+		nonCausalModes.do({ |m|
+			if(currentMode == m and: {accessMode == m}){
 				previousLastGroup.do( _.createWeakConnectionTo(ugen) );
 				^previousStateDependentUGens = previousStateDependentUGens.add(ugen); // no edge needed here.
 			}
@@ -56,76 +60,50 @@ UGenResourceManagerWithNonCausalModes : UGenResourceManager {
 
 		// add connections for everything else.
 		previousStateDependentUGens.do( _.createWeakConnectionTo(ugen) );
-		previousStateDependentUGens.do {|p| all.add(p) };
 
 		previousLastGroup = previousStateDependentUGens;
 
 		previousStateDependentUGens = [ugen];
-		currentMode = this.prTryGettingMode(ugen);
+		currentMode = accessMode;
 	}
 
 	connectToAll { |ugen|
 		previousStateDependentUGens.do( _.createWeakConnectionTo(ugen) );
-		previousStateDependentUGens.do {|p| all.add(p) };
 		previousStateDependentUGens = [ugen];
 		currentMode = \connectToAll;
-	}
-
-	prTryGettingMode { |ugen|
-		var out;
-		try {
-			out = ugen.perform(this.accessMessage)
-		} { |e|
-			if (e.isKindOf(DoesNotUnderstandError)){
-				Error("% does not implement method % needed by %".format(ugen.class, this.accessMessage, this.class)).throw
-			} {
-				e.throw
-			}
-		};
-		^out;
 	}
 }
 
 UGenMessageResourceManager : UGenResourceManagerSimple {
-	*initClass { UGenResourceManager.register(this) }
+	*initClass { this.register }
 }
 
 UGenDoneResourceManager : UGenResourceManagerSimple {
-	*initClass { UGenResourceManager.register(this) }
+	*initClass { this.register }
 }
 
 UGenBufferResourceManager : UGenResourceManagerWithNonCausalModes {
-	*initClass { UGenResourceManager.register(this) }
-	nonCausalModes { ^#[\read] }
-	accessMessage { ^\bufferAccessType }
+	*initClass { this.register(#[\read]) }
 }
 
+// TODO: this could be improved by letting 'replace' UGens be grouped depending on their rate.
 UGenBusResourceManager : UGenResourceManagerWithNonCausalModes {
-	*initClass { UGenResourceManager.register(this) }
-	nonCausalModes { ^#[\readAr, \writeAr, \readKr, \writeKr] }
-	accessMessage { ^\busAccessType }
+	*initClass { this.register(#[\readAr, \writeAr, \blendAr, \readKr, \writeKr, \blendKr]) }
 }
 
-UGenLocalBusResourceManager : UGenResourceManagerWithNonCausalModes {
-	*initClass { UGenResourceManager.register(this) }
-	nonCausalModes { ^#[\readAr, \writeAr, \readKr, \writeKr] }
-	accessMessage { ^\localBusAccessType }
+// Because you can only have one LocalIn and LocalOut, their ordering is simple.
+UGenLocalBusResourceManager : UGenResourceManagerSimple {
+	*initClass { this.register }
 }
 
 UGenRandomResourceManager : UGenResourceManagerWithNonCausalModes {
-	*initClass { UGenResourceManager.register(this) }
-	nonCausalModes { ^#[\gen] }
-	accessMessage { ^\randomAccessType }
+	*initClass { this.register(#[\gen]) }
 }
 
 UGenAnalogResourceManager : UGenResourceManagerWithNonCausalModes {
-	*initClass { UGenResourceManager.register(this) }
-	// here, writes are sequential because I am assuming they overwrite their output
-	// --- this is not mentioned in the help file.
-	nonCausalModes { ^#[\read] }
-	accessMessage { ^\analogAccessType }
+	*initClass { this.register(#[\read]) }
 }
 
 UGenDiskResourceManager : UGenResourceManagerSimple {
-	*initClass { UGenResourceManager.register(this) }
+	*initClass { this.register(this) }
 }

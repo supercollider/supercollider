@@ -1,5 +1,5 @@
 Demand : MultiOutUGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -17,7 +17,7 @@ Demand : MultiOutUGen {
 }
 
 Duty : UGen {
-	resourceManagers { ^if(this.hasObservableEffect) { [UGenDoneResourceManager] } { [] } }
+	resourceDependencies { ^if(this.hasObservableEffect) { [[UGenDoneResourceManager]] } { [] } }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(2) }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -49,7 +49,7 @@ TDuty : Duty {
 }
 
 DemandEnvGen : UGen {
-	resourceManagers { ^if(this.hasObservableEffect) { [UGenDoneResourceManager] } { [] } }
+	resourceDependencies { ^if(this.hasObservableEffect) { [[UGenDoneResourceManager]] } { [] } }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(9) }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -70,9 +70,7 @@ DemandEnvGen : UGen {
 }
 
 DUGen : UGen {
-	resourceManagers { ^[] }
-	hasObservableEffect { ^false }
-	canBeReplacedByIdenticalCall { ^true }
+
 
 	// some n-ary op special cases
 	linlin { arg inMin, inMax, outMin, outMax, clip=\minmax;
@@ -95,21 +93,28 @@ DUGen : UGen {
 }
 
 Dseries : DUGen {
+	resourceDependencies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 	*new { arg start = 1, step = 1, length = inf;
 		^this.multiNew('demand', length, start, step)
 	}
 }
 
 Dgeom : DUGen {
+	resourceDependencies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 	*new { arg start = 1, grow = 2, length = inf;
 		^this.multiNew('demand', length, start, grow)
 	}
 }
 
 Dbufrd : DUGen {
-	resourceManagers { ^[UGenBufferResourceManager] }
-	bufferAccessType { ^\read }
+	resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
 	canBeReplacedByIdenticalCall { ^true }
+	hasObservableEffect { ^false }
+
 
 	*new { arg bufnum = 0, phase = 0.0, loop = 1.0;
 		^this.multiNew('demand', bufnum, phase, loop)
@@ -117,10 +122,9 @@ Dbufrd : DUGen {
 }
 
 Dbufwr : DUGen {
-	resourceManagers { ^[UGenBufferResourceManager] }
-	bufferAccessType { ^\write }
+	resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
 	hasObservableEffect { ^true }
-	canBeReplacedByIdenticalCall { ^true }
+	canBeReplacedByIdenticalCall { ^false }
 
 	*new { arg input = 0.0, bufnum = 0, phase = 0.0, loop = 1.0;
 		^this.multiNew('demand', bufnum, phase, input, loop)
@@ -128,18 +132,42 @@ Dbufwr : DUGen {
 }
 
 ListDUGen : DUGen {
+
 	*new { arg list, repeats = 1;
 		^this.multiNewList(['demand', repeats] ++ list)
 	}
 }
 
-Dseq : ListDUGen { }
-Dser : ListDUGen { }
-Dshuf : ListDUGen { }
-Drand : ListDUGen { }
-Dxrand : ListDUGen { }
+Dseq : ListDUGen {
+	resourceDependencies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+}
+Dser : ListDUGen {
+	resourceDependencies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+}
+Dshuf : ListDUGen {
+	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^false }
+}
+Drand : ListDUGen {
+	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^false }
+}
+Dxrand : ListDUGen {
+	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^false }
+}
 
 Dwrand : DUGen {
+	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^false }
 	*new { arg list, weights, repeats = 1;
 		var size = list.size;
 		weights = weights.extend(size, 0.0);
@@ -148,28 +176,39 @@ Dwrand : DUGen {
 }
 
 Dswitch1 : DUGen {
+	resourceDependencies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 	*new { arg list, index;
 		^this.multiNewList(['demand', index] ++ list)
 	}
 }
 
-Dswitch : Dswitch1 {}
+Dswitch : Dswitch1 {
+	resourceDependencies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
+}
 
 Dwhite : DUGen {
-	resourceManagers { ^[UGenRandomResourceManager] }
-	randomAccessType { ^\gen }
-	canBeReplacedByIdenticalCall { ^false } // Randomness is not identical
+	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^false }
 
 	*new { arg lo = 0.0, hi = 1.0, length = inf;
 		^this.multiNew('demand', length, lo, hi)
 	}
 }
 
-Diwhite : Dwhite {}
+Diwhite : Dwhite {
+	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^false }
+}
 
 Dbrown : DUGen {
-	resourceManagers { ^[UGenRandomResourceManager] }
-	randomAccessType { ^\gen }
+	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
+	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
 	*new { arg lo = 0.0, hi = 1.0, step = 0.01, length = inf;
@@ -177,10 +216,18 @@ Dbrown : DUGen {
 	}
 }
 
-Dibrown : Dbrown {}
+Dibrown : Dbrown {
+	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^false }
+}
 
 Dstutter : DUGen {
 	classvar suggestNew;
+
+	resourceDependencies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 
 	*initClass {
 		suggestNew = { |n, in|
@@ -196,18 +243,25 @@ Dstutter : DUGen {
 }
 
 Ddup : DUGen {
+	resourceDependencies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 	*new { |n, in|
 		^this.multiNew('demand', n, in)
 	}
 }
 
 Dconst : DUGen {
+	resourceDependencies { ^[] }
+	hasObservableEffect { ^false }
+	canBeReplacedByIdenticalCall { ^true }
 	*new { arg sum, in, tolerance = 0.001;
 		^this.multiNew('demand', sum, in, tolerance);
 	}
 }
 
 Dreset : DUGen {
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -217,8 +271,9 @@ Dreset : DUGen {
 }
 
 Dpoll : DUGen {
+	resourceDependencies { ^[[UGenMessageResourceManager]] }
 	hasObservableEffect { ^true }
-	canBeReplacedByIdenticalCall { ^false }
+	canBeReplacedByIdenticalCall { ^false } // This will just print the thing twice.
 
 	*new { arg in, label, run = 1, trigid = -1;
 		^this.multiNew('demand', in, label, run, trigid)
@@ -241,6 +296,8 @@ Dunique : UGen {
 
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false } // TODO: maybe?
+	canBeReplacedByIdenticalCall { ^false } // This will just print the thing twice.
+
 
 	*new { arg source, maxBufferSize = 1024, protected = true;
 		^super.new.init(source, maxBufferSize, protected)

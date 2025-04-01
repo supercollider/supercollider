@@ -689,9 +689,13 @@ SynthDef {
 		if (rewriteInProgress.isNil) {
 			// If not nil, get each active manager and add the UGen,
 			//    otherwise call connectToAll on all resourceManagers, preserving ordering at the expense of a more flexible ordering.
-			ugen.resourceManagers
-			!? { |m| m.asArray.do{ |manager| resourceManagers.at(manager).add(ugen) } }
-			?? { resourceManagers.do(_.connectToAll(ugen)) };
+			//ugen.resourceManagers
+			//!? { |m| m.asArray.do{ |manager| resourceManagers.at(manager).add(ugen) } }
+			//?? { resourceManagers.do(_.connectToAll(ugen)) };
+
+			ugen.resourceDependencies
+			!? { |arrayOfArgs| arrayOfArgs.do{ |args| resourceManagers.at(args[0]).add(ugen, *args[1..]) } }
+			?? { resourceManagers.do(_.connectToAll(ugen)) }
 		}
 	}
 

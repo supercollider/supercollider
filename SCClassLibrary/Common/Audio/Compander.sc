@@ -1,5 +1,5 @@
 Amplitude : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -12,7 +12,7 @@ Amplitude : UGen {
 }
 
 Compander : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -29,7 +29,7 @@ Compander : UGen {
 // clamping will not lag the attacks in the input sound
 
 CompanderD : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -37,13 +37,13 @@ CompanderD : UGen {
 		clampTime = 0.01, relaxTime = 0.01, mul = 1.0, add = 0.0;
 
 		^Compander.ar(DelayN.ar(in, clampTime, clampTime), in, thresh,
-				slopeBelow, slopeAbove, clampTime, relaxTime).madd(mul, add)
+			slopeBelow, slopeAbove, clampTime, relaxTime).madd(mul, add)
 	}
 }
 
 
 Normalizer : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 

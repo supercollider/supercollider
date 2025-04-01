@@ -1,5 +1,5 @@
 Line : UGen {
-	resourceManagers { ^if(this.hasObservableEffect) { [UGenDoneResourceManager] } { [] } }
+	resourceDependencies { ^if(this.hasObservableEffect) { [[UGenDoneResourceManager]] } { [] } }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(3) }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -12,7 +12,7 @@ Line : UGen {
 }
 
 XLine : UGen {
-	resourceManagers { ^if(this.hasObservableEffect) { [UGenDoneResourceManager] } { [] } }
+	resourceDependencies { ^if(this.hasObservableEffect) { [[UGenDoneResourceManager]] } { [] } }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(3) }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -25,7 +25,7 @@ XLine : UGen {
 }
 
 LinExp : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	checkInputs { ^this.checkSameRateAsFirstInput }
 	canBeReplacedByIdenticalCall { ^true }
@@ -54,8 +54,8 @@ LinLin {
 }
 
 AmpComp : UGen {
-    resourceManagers { ^[] }
-    hasObservableEffect { ^false }
+	resourceDependencies { ^[] }
+	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
 	*ir { arg freq = 60.midicps, root = 60.midicps, exp = 0.3333;
@@ -86,8 +86,8 @@ AmpCompA : AmpComp {
 }
 
 K2A : UGen { // control rate to audio rate converter
-    resourceManagers { ^[] }
-    hasObservableEffect { ^false }
+	resourceDependencies { ^[] }
+	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
 	*ar { arg in = 0.0;
@@ -96,8 +96,8 @@ K2A : UGen { // control rate to audio rate converter
 }
 
 A2K : UGen { // audio rate to control rate converter. only needed in specific cases
-    resourceManagers { ^[] }
-    hasObservableEffect { ^false }
+	resourceDependencies { ^[] }
+	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
 	*kr { arg in = 0.0;
@@ -121,7 +121,7 @@ T2A : K2A { // control rate to audio rate trigger converter.
 }
 
 DC : MultiOutUGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -146,4 +146,5 @@ Silent {
 			^(sig ! numChannels)
 		}
 	}
+	//TODO: Why is there no Kr version
 }

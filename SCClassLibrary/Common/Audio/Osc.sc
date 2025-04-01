@@ -8,8 +8,9 @@ mul - multiply by signal or scalar
 add - add to signal or scalar
 */
 
+
 Osc : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -24,7 +25,7 @@ Osc : UGen {
 }
 
 SinOsc : UGen {
-    resourceManagers { ^[] }
+    resourceDependencies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -39,7 +40,7 @@ SinOsc : UGen {
 }
 
 SinOscFB : UGen {
-    resourceManagers { ^[] }
+    resourceDependencies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -54,7 +55,7 @@ SinOscFB : UGen {
 }
 
 OscN : UGen {
-    resourceManagers { ^[] }
+    resourceDependencies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -70,7 +71,7 @@ OscN : UGen {
 
 
 VOsc : UGen {
-    resourceManagers { ^[] }
+    resourceDependencies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -85,7 +86,7 @@ VOsc : UGen {
 }
 
 VOsc3 : UGen {
-    resourceManagers { ^[] }
+    resourceDependencies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -100,7 +101,7 @@ VOsc3 : UGen {
 }
 
 COsc : UGen {
-    resourceManagers { ^[] }
+    resourceDependencies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -115,7 +116,7 @@ COsc : UGen {
 }
 
 Formant : UGen {
-    resourceManagers { ^[] }
+    resourceDependencies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -126,7 +127,7 @@ Formant : UGen {
 }
 
 LFSaw : UGen {
-    resourceManagers { ^[] }
+    resourceDependencies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -141,7 +142,7 @@ LFSaw : UGen {
 }
 
 LFPar : UGen {
-    resourceManagers { ^[] }
+    resourceDependencies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -156,7 +157,7 @@ LFPar : UGen {
 }
 
 LFCub : UGen {
-    resourceManagers { ^[] }
+    resourceDependencies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -171,7 +172,7 @@ LFCub : UGen {
 }
 
 LFTri : UGen {
-    resourceManagers { ^[] }
+    resourceDependencies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -186,7 +187,7 @@ LFTri : UGen {
 }
 
 LFGauss : UGen {
-	resourceManagers { ^if(this.hasObservableEffect) { [UGenDoneResourceManager] } { [] } }
+	resourceDependencies { ^if(this.hasObservableEffect) { [[UGenDoneResourceManager]] } { [] } }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(4) }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -209,7 +210,7 @@ LFGauss : UGen {
 }
 
 LFPulse : UGen {
-    resourceManagers { ^[] }
+    resourceDependencies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -225,7 +226,7 @@ LFPulse : UGen {
 }
 
 VarSaw : UGen {
-    resourceManagers { ^[] }
+    resourceDependencies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -240,7 +241,7 @@ VarSaw : UGen {
 }
 
 Impulse : UGen {
-    resourceManagers { ^[] }
+    resourceDependencies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -257,7 +258,7 @@ Impulse : UGen {
 
 
 SyncSaw : UGen {
-    resourceManagers { ^[] }
+    resourceDependencies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -273,8 +274,7 @@ SyncSaw : UGen {
 
 
 Index : UGen {
-	resourceManagers { ^[UGenBufferResourceManager] }
-	bufferAccessType { ^\read }
+	resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -289,8 +289,7 @@ Index : UGen {
 }
 
 FoldIndex : UGen {
-	resourceManagers { ^[UGenBufferResourceManager] }
-	bufferAccessType { ^\read }
+	resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -305,8 +304,7 @@ FoldIndex : UGen {
 }
 
 WrapIndex : UGen {
-	resourceManagers { ^[UGenBufferResourceManager] }
-	bufferAccessType { ^\read }
+	resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -321,8 +319,7 @@ WrapIndex : UGen {
 }
 
 IndexInBetween : UGen {
-	resourceManagers { ^[UGenBufferResourceManager] }
-	bufferAccessType { ^\read }
+	resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -337,8 +334,7 @@ IndexInBetween : UGen {
 }
 
 DetectIndex : UGen {
-	resourceManagers { ^[UGenBufferResourceManager] }
-	bufferAccessType { ^\read }
+	resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -353,8 +349,7 @@ DetectIndex : UGen {
 }
 
 Shaper : UGen {
-	resourceManagers { ^[UGenBufferResourceManager] }
-	bufferAccessType { ^\read }
+	resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -369,8 +364,7 @@ Shaper : UGen {
 }
 
 IndexL : UGen {
-	resourceManagers { ^[UGenBufferResourceManager] }
-	bufferAccessType { ^\read }
+	resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -385,8 +379,7 @@ IndexL : UGen {
 }
 
 DegreeToKey : UGen {
-	resourceManagers { ^[UGenBufferResourceManager] }
-	bufferAccessType { ^\read }
+	resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -401,7 +394,7 @@ DegreeToKey : UGen {
 }
 
 Select : UGen {
-    resourceManagers { ^[] }
+    resourceDependencies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -473,7 +466,7 @@ SelectXFocus {
 }
 
 Vibrato : UGen {
-    resourceManagers { ^[] }
+    resourceDependencies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false } // Vibrato uses noise (variation).
 

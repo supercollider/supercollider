@@ -1,5 +1,5 @@
 CheckBadValues : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^true } // Never delete this.
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -20,7 +20,7 @@ CheckBadValues : UGen {
 }
 
 Sanitize : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 

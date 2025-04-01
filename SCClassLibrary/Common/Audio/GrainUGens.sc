@@ -1,5 +1,5 @@
 GrainSin : MultiOutUGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -18,7 +18,7 @@ GrainSin : MultiOutUGen {
 }
 
 GrainFM : MultiOutUGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -37,8 +37,7 @@ GrainFM : MultiOutUGen {
 }
 
 GrainBuf : MultiOutUGen {
-	resourceManagers { ^[UGenBufferResourceManager] }
-	bufferAccessType { ^\read }
+	resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -57,7 +56,7 @@ GrainBuf : MultiOutUGen {
 }
 
 GrainIn : MultiOutUGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -76,8 +75,7 @@ GrainIn : MultiOutUGen {
 }
 
 Warp1 : MultiOutUGen {
-	resourceManagers { ^[UGenBufferResourceManager] }
-	bufferAccessType { ^\read }
+	resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 

@@ -1,10 +1,11 @@
 // blackrain's freeverb ugen.
 
 FreeVerb : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
-	checkInputs { ^this.checkSameRateAsFirstInput }
 	canBeReplacedByIdenticalCall { ^true }
+
+	checkInputs { ^this.checkSameRateAsFirstInput }
 
 	*ar { arg in, mix = 0.33, room = 0.5, damp = 0.5, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in, mix, room, damp).madd(mul, add)
@@ -12,10 +13,11 @@ FreeVerb : UGen {
 }
 
 FreeVerb2 : MultiOutUGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
-	checkInputs { ^this.checkNInputs(2); }
 	canBeReplacedByIdenticalCall { ^true }
+
+	checkInputs { ^this.checkNInputs(2) }
 
 	*ar { arg in, in2, mix = 0.33, room = 0.5, damp = 0.5, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in, in2, mix, room, damp).madd(mul, add)

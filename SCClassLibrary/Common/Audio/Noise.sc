@@ -18,8 +18,7 @@ other than multiply and add inputs.
 
 
 RandSeed : UGen {
-	resourceManagers { ^[UGenRandomResourceManager] }
-	randomAccessType { ^\seed }
+	resourceDependencies { ^[[UGenRandomResourceManager, \seed]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -38,7 +37,7 @@ RandSeed : UGen {
 }
 
 RandID : UGen {
-	resourceManagers { ^[UGenRandomResourceManager] }
+	resourceDependencies { ^[[UGenRandomResourceManager, \seed]] }
 	randomAccessType { ^\seed }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
@@ -56,7 +55,7 @@ RandID : UGen {
 
 
 Rand : UGen {
-	resourceManagers { ^[UGenRandomResourceManager] }
+	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
 	randomAccessType { ^\gen }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
@@ -68,8 +67,7 @@ Rand : UGen {
 }
 
 IRand : UGen {
-	resourceManagers { ^[UGenRandomResourceManager] }
-	randomAccessType { ^\gen }
+	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -81,8 +79,7 @@ IRand : UGen {
 
 
 TRand : UGen {
-	resourceManagers { ^[UGenRandomResourceManager] }
-	randomAccessType { ^\gen }
+	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -96,8 +93,7 @@ TRand : UGen {
 }
 
 TIRand : UGen {
-	resourceManagers { ^[UGenRandomResourceManager] }
-	randomAccessType { ^\gen }
+	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -110,8 +106,7 @@ TIRand : UGen {
 
 
 LinRand : UGen {
-	resourceManagers { ^[UGenRandomResourceManager] }
-	randomAccessType { ^\gen }
+	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -124,8 +119,7 @@ LinRand : UGen {
 }
 
 NRand : UGen {
-	resourceManagers { ^[UGenRandomResourceManager] }
-	randomAccessType { ^\gen }
+	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -140,8 +134,7 @@ NRand : UGen {
 }
 
 ExpRand : UGen {
-	resourceManagers { ^[UGenRandomResourceManager] }
-	randomAccessType { ^\gen }
+	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -152,8 +145,7 @@ ExpRand : UGen {
 }
 
 TExpRand : UGen {
-	resourceManagers { ^[UGenRandomResourceManager] }
-	randomAccessType { ^\gen }
+	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -168,8 +160,7 @@ TExpRand : UGen {
 
 
 CoinGate : UGen {
-	resourceManagers { ^[UGenRandomResourceManager] }
-	randomAccessType { ^\gen }
+	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -182,8 +173,7 @@ CoinGate : UGen {
 }
 
 TWindex : UGen {
-	resourceManagers { ^[UGenRandomResourceManager] }
-	randomAccessType { ^\gen }
+	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -198,8 +188,7 @@ TWindex : UGen {
 }
 
 WhiteNoise : UGen {
-	resourceManagers { ^[UGenRandomResourceManager] }
-	randomAccessType { ^\gen }
+	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -221,8 +210,7 @@ WhiteNoise : UGen {
 }
 
 BrownNoise : UGen {
-	resourceManagers { ^[UGenRandomResourceManager] }
-	randomAccessType { ^\gen }
+	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -244,8 +232,7 @@ BrownNoise : UGen {
 }
 
 PinkNoise : UGen {
-	resourceManagers { ^[UGenRandomResourceManager] }
-	randomAccessType { ^\gen }
+	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -267,8 +254,7 @@ PinkNoise : UGen {
 }
 
 ClipNoise : UGen {
-	resourceManagers { ^[UGenRandomResourceManager] }
-	randomAccessType { ^\gen }
+	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -290,8 +276,7 @@ ClipNoise : UGen {
 }
 
 GrayNoise : UGen {
-	resourceManagers { ^[UGenRandomResourceManager] }
-	randomAccessType { ^\gen }
+	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -313,8 +298,7 @@ GrayNoise : UGen {
 }
 
 Crackle : UGen {
-	resourceManagers { ^[UGenRandomResourceManager] }
-	randomAccessType { ^\gen }
+	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -327,8 +311,7 @@ Crackle : UGen {
 }
 
 Logistic : UGen {
-	resourceManagers { ^[UGenRandomResourceManager] }
-	randomAccessType { ^\gen }
+	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -341,8 +324,7 @@ Logistic : UGen {
 }
 
 LFNoise0 : UGen {
-	resourceManagers { ^[UGenRandomResourceManager] }
-	randomAccessType { ^\gen }
+	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -363,7 +345,7 @@ LFDNoise3 : LFNoise0 { }
 LFDClipNoise : LFNoise0 { }
 
 Hasher : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -380,7 +362,7 @@ Hasher : UGen {
 }
 
 MantissaMask : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -393,8 +375,7 @@ MantissaMask : UGen {
 }
 
 Dust : UGen {
-	resourceManagers { ^[UGenRandomResourceManager] }
-	randomAccessType { ^\gen }
+	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -409,8 +390,7 @@ Dust : UGen {
 }
 
 Dust2 : UGen {
-	resourceManagers { ^[UGenRandomResourceManager] }
-	randomAccessType { ^\gen }
+	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 

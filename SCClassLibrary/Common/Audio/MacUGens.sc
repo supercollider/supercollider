@@ -1,7 +1,7 @@
 MouseX : UGen {
     // Although these touch shared state, it isn't possible to mutate the mouse nor keyboard,
     //   so this isn't considered true 'resource'.
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -20,7 +20,7 @@ MouseX : UGen {
 MouseY : MouseX {}
 
 MouseButton : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -32,7 +32,7 @@ MouseButton : UGen {
 }
 
 KeyState : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 

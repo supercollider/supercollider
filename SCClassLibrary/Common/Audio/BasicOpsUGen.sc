@@ -2,8 +2,7 @@
 
 BasicOpUGen : UGen {
 	var <operator;
-
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 	nameForDisplay { ^(super.name ++ rate ++ operator).asSymbol }
@@ -415,7 +414,7 @@ BinaryOpUGen : BasicOpUGen {
 }
 
 MulAdd : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -559,7 +558,7 @@ MulAdd : UGen {
 }
 
 Sum3 : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -670,7 +669,7 @@ Sum3 : UGen {
 }
 
 Sum4 : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 

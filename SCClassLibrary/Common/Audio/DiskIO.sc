@@ -1,6 +1,7 @@
 // Writes to disk
 DiskOut : UGen {
-	resourceManagers { ^[UGenDiskResourceManager] }
+
+	resourceDependencies { ^[[UGenDiskResourceManager]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -22,7 +23,7 @@ DiskOut : UGen {
 
 // Plays from disk
 DiskIn : MultiOutUGen {
-	resourceManagers { ^[UGenDiskResourceManager] }
+	resourceDependencies { ^[[UGenDiskResourceManager]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -36,7 +37,7 @@ DiskIn : MultiOutUGen {
 }
 
 VDiskIn : MultiOutUGen {
-	resourceManagers { ^[UGenDiskResourceManager] }
+	resourceDependencies { ^[[UGenDiskResourceManager]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 

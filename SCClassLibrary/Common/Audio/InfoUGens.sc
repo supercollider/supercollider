@@ -1,5 +1,5 @@
 InfoUGenBase : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -7,8 +7,7 @@ InfoUGenBase : UGen {
 }
 
 BufInfoUGenBase : UGen {
-	resourceManagers { ^[UGenBusResourceManager] }
-	busAccessType { ^\read }
+   resourceDependencies { ^[[UGenBusResourceManager, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 

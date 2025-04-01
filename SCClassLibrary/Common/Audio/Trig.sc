@@ -1,5 +1,5 @@
 Trig1 : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -16,7 +16,7 @@ Trig : Trig1 { }
 
 
 SendTrig : UGen {
-	resourceManagers { ^[UGenMessageResourceManager] }
+	resourceDependencies { ^[[UGenMessageResourceManager]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -34,7 +34,7 @@ SendTrig : UGen {
 }
 
 SendReply : SendTrig {
-	resourceManagers { ^[UGenMessageResourceManager] }
+	resourceDependencies { ^[[UGenMessageResourceManager]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -61,7 +61,7 @@ SendReply : SendTrig {
 }
 
 TDelay : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -75,7 +75,7 @@ TDelay : UGen {
 }
 
 Latch : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -89,7 +89,7 @@ Latch : UGen {
 }
 
 Gate : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -103,7 +103,7 @@ Gate : UGen {
 }
 
 PulseCount : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -117,7 +117,7 @@ PulseCount : UGen {
 }
 
 Peak : UGen {
-    resourceManagers { ^[] }
+    resourceDependencies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -137,7 +137,7 @@ Peak : UGen {
 }
 
 RunningMin : UGen {
-    resourceManagers { ^[] }
+    resourceDependencies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -157,7 +157,7 @@ RunningMin : UGen {
 }
 
 RunningMax : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -178,7 +178,7 @@ RunningMax : UGen {
 
 
 Stepper : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -193,7 +193,7 @@ Stepper : UGen {
 
 
 PulseDivider : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -207,7 +207,7 @@ PulseDivider : UGen {
 }
 
 SetResetFF : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -223,7 +223,7 @@ SetResetFF : UGen {
 
 
 ToggleFF : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -238,7 +238,7 @@ ToggleFF : UGen {
 
 
 ZeroCrossing : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -252,7 +252,7 @@ ZeroCrossing : UGen {
 }
 
 Timer : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -267,7 +267,7 @@ Timer : UGen {
 }
 
 Sweep : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -282,7 +282,7 @@ Sweep : UGen {
 }
 
 Phasor : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -295,7 +295,7 @@ Phasor : UGen {
 }
 
 PeakFollower : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -308,7 +308,7 @@ PeakFollower : UGen {
 }
 
 Pitch : MultiOutUGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -325,7 +325,7 @@ Pitch : MultiOutUGen {
 }
 
 InRange : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -345,7 +345,7 @@ InRange : UGen {
 }
 
 InRect : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -375,7 +375,7 @@ InRect : UGen {
 //}
 
 Fold : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -391,7 +391,7 @@ Fold : UGen {
 }
 
 Clip : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -407,7 +407,7 @@ Clip : UGen {
 }
 
 Wrap : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -423,7 +423,7 @@ Wrap : UGen {
 }
 
 Schmidt : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -439,7 +439,7 @@ Schmidt : UGen {
 }
 
 ModDif : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -455,7 +455,7 @@ ModDif : UGen {
 }
 
 MostChange : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -468,7 +468,7 @@ MostChange : UGen {
 }
 
 LeastChange : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -481,7 +481,7 @@ LeastChange : UGen {
 }
 
 LastValue : UGen {
-	resourceManagers { ^[] }
+	resourceDependencies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -494,7 +494,7 @@ LastValue : UGen {
 }
 
 SendPeakRMS : UGen {
-	resourceManagers { ^[UGenMessageResourceManager] }
+	resourceDependencies { ^[[UGenMessageResourceManager]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^false }
 

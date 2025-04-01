@@ -17,7 +17,8 @@ Done : UGen {
 	const <freeGroup = 14;
 	const <freeSelfResumeNext = 15;
 
-	resourceManagers { ^[] }
+	// Assuming the user hasn't called this with 'none' as that would be pointless.
+	resourceDependencies { ^[[UGenDoneResourceManager]] }
 	hasObservableEffect { ^true } // While this might not always be true, it simplifies things.
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -38,7 +39,7 @@ FreeSelf : UGen {
 }
 
 PauseSelf : UGen {
-	resourceManagers { ^[UGenDoneResourceManager] }
+	resourceDependencies { ^[[UGenDoneResourceManager]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -49,7 +50,7 @@ PauseSelf : UGen {
 }
 
 FreeSelfWhenDone : UGen {
-	resourceManagers { ^[UGenDoneResourceManager] }
+	resourceDependencies { ^[[UGenDoneResourceManager]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -59,7 +60,7 @@ FreeSelfWhenDone : UGen {
 }
 
 PauseSelfWhenDone : UGen {
-	resourceManagers { ^[UGenDoneResourceManager] }
+	resourceDependencies { ^[[UGenDoneResourceManager]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -69,7 +70,7 @@ PauseSelfWhenDone : UGen {
 }
 
 Pause : UGen {
-	resourceManagers { ^[UGenDoneResourceManager] }
+	resourceDependencies { ^[[UGenDoneResourceManager]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -79,7 +80,7 @@ Pause : UGen {
 }
 
 Free : UGen {
-	resourceManagers { ^[UGenDoneResourceManager] }
+	resourceDependencies { ^[[UGenDoneResourceManager]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -89,7 +90,7 @@ Free : UGen {
 }
 
 EnvGen : UGen { // envelope generator
-	resourceManagers { ^if(this.hasObservableEffect) { [UGenDoneResourceManager] } { [] } }
+	resourceDependencies {^if(this.hasObservableEffect) { [[UGenDoneResourceManager]] } { [] } }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(4) }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -123,7 +124,7 @@ EnvGen : UGen { // envelope generator
 }
 
 Linen : UGen {
-	resourceManagers { ^if(this.hasObservableEffect) { [UGenDoneResourceManager] } { [] } }
+	resourceDependencies {^if(this.hasObservableEffect) { [[UGenDoneResourceManager]] } { [] } }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(4) }
 	canBeReplacedByIdenticalCall { ^true }
 
