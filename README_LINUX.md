@@ -268,7 +268,7 @@ sudo ldconfig
 ```
 To uninstall:
 ```shell
-make sudo uninstall
+sudo make uninstall
 ```
 (or `make uninstall` if you did user-wide installation).
 
