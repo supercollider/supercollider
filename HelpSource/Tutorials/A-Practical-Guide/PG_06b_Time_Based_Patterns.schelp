@@ -1,7 +1,7 @@
 title:: Pattern Guide 06b: Time Based Patterns
 summary:: Patterns using time as the basis for their evaluation
 related:: Tutorials/A-Practical-Guide/PG_06a_Repetition_Contraint_Patterns, Tutorials/A-Practical-Guide/PG_06c_Composition_of_Patterns
-categories:: Streams-Patterns-Events>A-Practical-Guide
+categories:: Streams-Patterns-Events>A-Practical-Guide, Tutorials>Pattern-Guide
 
 section::Time-based patterns
 
