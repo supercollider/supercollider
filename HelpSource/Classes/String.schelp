@@ -777,6 +777,24 @@ A function that is called for each file path that is found.
 method::resolveRelative
 Convert the receiver from a relative path to an absolute path, relative to the current document or text file. Requires that the current text file has been saved. Absolute paths are left untransformed.
 
+It can also be called from a class method in a teletype::.sc:: file, in which
+case it returns link::Classes/Method#-filenameSymbol::.
+
+For getting the current document's path, see also:
+link::Classes/Process:-nowExecutingPath:: and the editor-specific
+link::Classes/Document#-path::.
+
+code::
+// currently executed .scd file's directory
+thisProcess.nowExecutingPath.dirname
+// currently open (in editor) file's directory
+Document.current.dir
+// current .sc or .scd file's directory
+"".resolveRelative
+// sclang current working directory: doesn't depend on current file
+File.getcwd;
+::
+
 method::standardizePath
 Expand ~ to your home directory, and resolve aliases on macOS. See link::Classes/PathName:: for more complex needs. See link::Classes/File#*realpath:: if you want to resolve symlinks.
 code::

@@ -77,6 +77,7 @@ A Document.
 discussion::
 code::
 Document.current.name.postln; // Prints "Document.html"
+Document.current.dir; // Prints the current document's path
 ::
 
 method:: allDocuments
@@ -121,6 +122,8 @@ code::
 Document.dir = "~/Documents/SuperCollider";
 ::
 
+To get the current document's directory, see link::Classes/Document#-dir::.
+
 method:: standardizePath
 argument:: p
 The file system path to the directory. An instance of link::Classes/String::.
@@ -162,12 +165,18 @@ code::
 Document.current.path.postln;
 ::
 
+See also link::Classes/Process#-nowExecutingPath:: and
+link::Classes/String#-resolveRelative::
+
 method:: dir
 Returns the directory of a Document.
 discussion::
 code::
 Document.current.dir.postln;
 ::
+
+See also link::Classes/Process#-nowExecutingPath:: and
+link::Classes/String#-resolveRelative::
 
 method:: ==
 A binary operator.

@@ -33,11 +33,22 @@ method::open
 Same as link::#*new::, but a more intuitive name.
 
 method::getcwd
-POSIX standard 'get current working directory'.
-code::
-// example;
-File.getcwd;
+POSIX standard 'get current working directory': returns the path from where
+strong::sclang:: was launched. It can be also set by passing the code::-d:: flag to
+sclang, or via an option in ScIDE code::(Preferences > Interpreter > Runtime
+Directory)::. Otherwise, it returns different values according to the OS, since
+each OS runs sclang differently:
+list::
+## macOS: teletype::/::
+## Linux: teletype::~::
+## Windows: link::Classes/Platform#*resourceDir::
 ::
+
+Also note that this is not necessarily the same
+directory of the file currently being executed. For that, see
+link::Classes/Process#-nowExecutingPath::,
+link::Classes/String#-resolveRelative::,  and the editor-specific
+link::Classes/Document#-dir::.
 
 method::use
 Open the file, evaluate the function with the file as argument, and close it again. If the process fails, close the file and throw an error.
