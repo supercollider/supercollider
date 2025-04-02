@@ -186,7 +186,7 @@ You can set CMake flags on the command line using `cmake -DKEY=value ..` where t
 You can also use cmake gui-frontends like [`ccmake`](https://packages.debian.org/en/sid/cmake-curses-gui) or [`cmake-gui`](https://packages.debian.org/sid/cmake-qt-gui) to inspect and set the available flags.
 
 **Example:**
-If you did not install emacs, you should use the following command:
+If you do not have emacs installed, you should add `-DSC_EL=NO` as in the following command:
 ```shell
 cmake -DSC_EL=NO ..
 ```
