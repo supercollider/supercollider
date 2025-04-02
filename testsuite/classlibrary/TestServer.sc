@@ -1310,21 +1310,21 @@ TestServer : UnitTest {
 					0, 0, 1, 0, 4, 0, 3, 79, 117, 116, 2, 0, 3, 0, 0, 0, 0, 0, 15, 0, 0, 0, 10, 0, 0, 0, 14, 0, 0, 0, 0
 				]
 			],
-			[ "/b_allocRead", 0, Platform.resourceDir +/+ "sounds/a11wlk01.wav", 0, -1, nil ],
-			[ "/b_allocRead", 1, Platform.resourceDir +/+ "sounds/a11wlk01.wav", 0, -1, nil ],
-			[ "/b_allocRead", 2, Platform.resourceDir +/+ "sounds/SinedPink.aiff", 0, -1, nil ],
-			[ "/b_allocRead", 3, Platform.resourceDir +/+ "sounds/SinedPink.aiff", 0, -1, nil ],
-			[ "/b_allocRead", 4, Platform.resourceDir +/+ "sounds/SinedPink.aiff", 0, -1, nil ],
-			[ "/b_allocRead", 5, Platform.resourceDir +/+ "sounds/SinedPink.aiff", 0, -1, nil ],
-			[ "/b_allocRead", 6, Platform.resourceDir +/+ "sounds/SinedPink.aiff", 0, -1, nil ],
-			[ "/b_allocRead", 7, Platform.resourceDir +/+ "sounds/a11wlk01.wav", 0, -1, nil ],
-			[ "/b_allocRead", 8, Platform.resourceDir +/+ "sounds/a11wlk01.wav", 0, -1, nil ],
-			[ "/b_allocRead", 9, Platform.resourceDir +/+ "sounds/a11wlk01.wav", 0, -1, nil ],
-			[ "/b_allocRead", 10, Platform.resourceDir +/+ "sounds/a11wlk01.wav", 0, -1, nil ],
-			[ "/b_allocRead", 11, Platform.resourceDir +/+ "sounds/a11wlk01.wav", 0, -1, nil ],
-			[ "/b_allocRead", 12, Platform.resourceDir +/+ "sounds/a11wlk01.wav", 0, -1, nil ],
-			[ "/b_allocRead", 13, Platform.resourceDir +/+ "sounds/a11wlk01.wav", 0, -1, nil ],
-			[ "/b_allocRead", 14, Platform.resourceDir +/+ "sounds/a11wlk01.wav", 0, -1, nil ]
+			[ "/b_allocRead", 0, BufferExamplesPath.child, 0, -1, nil ],
+			[ "/b_allocRead", 1, BufferExamplesPath.child, 0, -1, nil ],
+			[ "/b_allocRead", 2, BufferExamplesPath.sinedPink, 0, -1, nil ],
+			[ "/b_allocRead", 3, BufferExamplesPath.sinedPink, 0, -1, nil ],
+			[ "/b_allocRead", 4, BufferExamplesPath.sinedPink, 0, -1, nil ],
+			[ "/b_allocRead", 5, BufferExamplesPath.sinedPink, 0, -1, nil ],
+			[ "/b_allocRead", 6, BufferExamplesPath.sinedPink, 0, -1, nil ],
+			[ "/b_allocRead", 7, BufferExamplesPath.child, 0, -1, nil ],
+			[ "/b_allocRead", 8, BufferExamplesPath.child, 0, -1, nil ],
+			[ "/b_allocRead", 9, BufferExamplesPath.child, 0, -1, nil ],
+			[ "/b_allocRead", 10, BufferExamplesPath.child, 0, -1, nil ],
+			[ "/b_allocRead", 11, BufferExamplesPath.child, 0, -1, nil ],
+			[ "/b_allocRead", 12, BufferExamplesPath.child, 0, -1, nil ],
+			[ "/b_allocRead", 13, BufferExamplesPath.child, 0, -1, nil ],
+			[ "/b_allocRead", 14, BufferExamplesPath.child, 0, -1, nil ]
 		];
 
 	}

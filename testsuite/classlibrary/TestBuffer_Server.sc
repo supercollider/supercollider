@@ -87,7 +87,7 @@ TestBuffer_Server : UnitTest {
 		server.sendMsg(
 			'/b_allocRead',
 			buffer_number,
-			Platform.resourceDir +/+ "sounds/a11wlk01.wav",
+			BufferExamplesPath.child,
 			0, // starting frame
 			num_frames
 		);
