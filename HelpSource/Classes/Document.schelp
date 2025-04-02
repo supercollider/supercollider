@@ -36,7 +36,7 @@ Document.new("this is the title", "this is the text");
 method:: open
 Open a document from a path.
 argument:: path
-The file system path to the document. An instance of link::Classes/String::.
+The file system path to the document. An instance of link::Classes/String::. An instance of link::Classes/String::. For path handling and management, see link::Classes/File:: and link::Classes/PathName::.
 argument:: selectionStart
 The beginning of the cursor selection of the file content.
 argument:: selectionLength
