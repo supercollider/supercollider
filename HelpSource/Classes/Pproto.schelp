@@ -59,7 +59,7 @@ SynthDef(\help_playbuf, { |out = 0, bufnum = 0, rate = 1, startPos = 0, amp = 0.
 
 a = Pproto({
 	~newgroup = (type: \group).yield;
-	~sf1 = (type: \allocRead, path: Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff").yield;
+	~sf1 = (type: \allocRead, path: BufferExamplesPath.apollo11).yield;
 },
 	Pbind(*[
 		instrument:	\help_playbuf,

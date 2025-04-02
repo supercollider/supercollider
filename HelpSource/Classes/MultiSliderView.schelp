@@ -375,7 +375,7 @@ r = Slider(a, Rect(0, 0, size, 12));
 r.action = { |ex| b.gap = (ex.value * 4) + 1 };
 
 file = SoundFile.new;
-file.openRead(Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+file.openRead(BufferExamplesPath.child);
 file.numFrames.postln;
 file.readData(c);
 // file.inspect;

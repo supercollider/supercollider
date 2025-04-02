@@ -39,7 +39,7 @@ This UGen will set the link::Classes/Done##'done' flag:: when finished playing.
 
 examples::
 code::
-b = Buffer.cueSoundFile(s, Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff", 0, 1);
+b = Buffer.cueSoundFile(s, BufferExamplesPath.apollo11, 0, 1);
 
 x = { VDiskIn.ar(1, b, LFNoise2.kr(0.2).range(0.5, 2), loop: 1) }.play;
 
@@ -47,7 +47,7 @@ b.close;
 
 // again
 // note the like named instance method, but different arguments
-b.cueSoundFile(Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff", 0);
+b.cueSoundFile(BufferExamplesPath.apollo11, 0);
 
 x.free; b.close; b.free;
 
@@ -62,7 +62,7 @@ SynthDef("help-VDiskin", { |out, bufnum = 0|
 x = Synth.basicNew("help-VDiskin");
 m = { |buf| x.addToHeadMsg(nil, [\bufnum, buf]) };
 
-b = Buffer.cueSoundFile(s, Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff", 0, 1, completionMessage: m);
+b = Buffer.cueSoundFile(s, BufferExamplesPath.apollo11, 0, 1, completionMessage: m);
 )
 
 x.free; b.close; b.free;	// clean up
@@ -74,8 +74,8 @@ x.free; b.close; b.free;	// clean up
 // the ugen knows nothing of the loop (apply a modulo).
 // if you load another file, you need to free the buffer and re-allocate it (see below)
 
-b = Buffer.cueSoundFile(s, Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff", 0, 1, bufferSize: 4096);
-c = SoundFile(Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff").info;
+b = Buffer.cueSoundFile(s, BufferExamplesPath.apollo11, 0, 1, bufferSize: 4096);
+c = SoundFile(BufferExamplesPath.apollo11).info;
 x = { VDiskIn.ar(1, b, LFNoise2.kr(0.2).range(0.2, 0.9), 1, sendID: 14) }.play;
 
 // register to receive this message
@@ -99,7 +99,7 @@ code::
 s.sendMsg("/b_alloc", 0, 65536, 1);
 
 // open an input file for this buffer, leave it open
-s.sendMsg("/b_read", 0, Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff", 0, 65536, 0, 1);
+s.sendMsg("/b_read", 0, BufferExamplesPath.apollo11, 0, 65536, 0, 1);
 
 // create a diskin node
 s.sendMsg("/s_new", "help-VDiskin", x = s.nextNodeID, 1, 1);
@@ -109,7 +109,7 @@ s.sendMsg("/b_close", 0); // close the file (very important!)
 
 // again
 // don't need to reallocate and Synth is still reading
-s.sendMsg("/b_read", 0, Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff", 0, 0, 0, 1);
+s.sendMsg("/b_read", 0, BufferExamplesPath.apollo11, 0, 0, 0, 1);
 
 s.sendMsg("/n_free", x); // stop reading
 

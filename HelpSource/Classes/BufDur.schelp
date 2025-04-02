@@ -25,7 +25,7 @@ code::.ir::  will not track the changes.
 Examples::
 
 code::
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, BufferExamplesPath.child);
 
 { BufRd.ar(1, b, Sweep.ar(Impulse.ar(BufDur.kr(b).reciprocal), BufSampleRate.kr(b))) }.play;
 

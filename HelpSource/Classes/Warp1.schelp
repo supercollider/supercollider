@@ -50,7 +50,7 @@ code::
 s.boot;
 
 (
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff");
+b = Buffer.read(s, BufferExamplesPath.apollo11);
 x = { |envbuf = -1|
 	var pointer, pitch;
 	// pointer - move from beginning to end of soundfile over 15 seconds
@@ -92,7 +92,7 @@ x.relase; z.free;
 code::
 (
 b.free;
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff");
+b = Buffer.read(s, BufferExamplesPath.apollo11);
 {
 	var pointer = Phasor.ar(0, SampleDur.ir / BufDur.ir(b) * XLine.kr(1, 0.25, 20));
 	var sound = Warp1.ar(1, b, pointer, 1, 0.3, -1, 16, Line.kr(0, 1, 40), 4);
