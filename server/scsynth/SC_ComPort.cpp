@@ -261,21 +261,25 @@ public:
         if (inPortNum == 0)
             mPortNum = udpSocket.local_endpoint().port();
 
-        boost::asio::socket_base::send_buffer_size send_buffer_size(65536);
-        udpSocket.set_option(send_buffer_size);
+        boost::asio::socket_base::send_buffer_size send_buffer_size;
+        udpSocket.get_option(send_buffer_size);
+        if (send_buffer_size.value() < 8 * 1024 * 1024) {
+            send_buffer_size = 8 * 1024 * 1024;
+            try {
+                udpSocket.set_option(send_buffer_size);
+            } catch (boost::system::system_error& e) {}
+            udpSocket.get_option(send_buffer_size);
+        }
 
         boost::asio::socket_base::receive_buffer_size recv_buffer_size;
-
         udpSocket.get_option(recv_buffer_size);
-        scprintf("SC_UDP_PORT: default socket receive buffer size: %d\n", recv_buffer_size.value());
-
-        recv_buffer_size = 8 * 1024 * 1024;
-        try {
-            udpSocket.set_option(recv_buffer_size);
-        } catch (boost::system::system_error e) {}
-        udpSocket.get_option(recv_buffer_size);
-        scprintf("SC_UDP_PORT: Set socket receive buffer size to %d bytes (actual size: %d)\n", 8 * 1024 * 1024,
-                 recv_buffer_size.value());
+        if (recv_buffer_size.value() < 8 * 1024 * 1024) {
+            recv_buffer_size = 8 * 1024 * 1024;
+            try {
+                udpSocket.set_option(recv_buffer_size);
+            } catch (boost::system::system_error& e) {}
+            udpSocket.get_option(recv_buffer_size);
+        }
 
 #ifdef USE_RENDEZVOUS
         if (world->mRendezvous) {
