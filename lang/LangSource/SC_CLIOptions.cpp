@@ -12,10 +12,9 @@ namespace po = boost::program_options;
 
 namespace SC_CLI {
 
-/// parses the CLI - if the program should terminate after parsing it will return true
-/// an exit code is passed by reference
-bool CLIOptions::parse(int argc, char* argv[], SC_TerminalClient::Options& terminalOptions, int& exitCode) {
-    exitCode = 0;
+/// parses the CLI - if the program should terminate after parsing it will return an exit code.
+/// If parsing was successful and the program should continue it will return a std::nullopt .
+std::optional<int> CLIOptions::parse(int argc, char* argv[], SC_TerminalClient::Options& terminalOptions) {
     po::options_description description("Interpreter for sclang (SuperCollider language)");
 
     auto genericDescription = buildGenericDescription();
@@ -49,16 +48,13 @@ bool CLIOptions::parse(int argc, char* argv[], SC_TerminalClient::Options& termi
         notify(vm);
     } catch (po::unknown_option& e) {
         std::cerr << e.what() << std::endl;
-        exitCode = 1;
-        return true;
+        return 1;
     } catch (po::invalid_option_value& e) {
         std::cerr << e.what() << std::endl;
-        exitCode = 1;
-        return true;
+        return 1;
     }
     if (mParsingFailed) {
-        exitCode = 1;
-        return true;
+        return 1;
     }
 
     if (vm.count("sc-args")) {
@@ -67,7 +63,7 @@ bool CLIOptions::parse(int argc, char* argv[], SC_TerminalClient::Options& termi
 
     if (mPrintVersion) {
         std::cout << "sclang " << SC_VersionString() << " (" << SC_BuildString() << ")" << std::endl;
-        return true;
+        return 0;
     }
 
     // this is handled here and not in the description declaration b/c we need access to the declarations
@@ -80,7 +76,7 @@ bool CLIOptions::parse(int argc, char* argv[], SC_TerminalClient::Options& termi
             << "Start a REPL interpreter:           sclang [ -options ]\n"
                "Execute a .scd file:                sclang [ -options ] path_to_sc_file [ args passed to sclang... ]\n"
             << visibleDescription << std::endl;
-        return true;
+        return 0;
     }
 
     if (!mInputFile.empty()) {
@@ -94,7 +90,7 @@ bool CLIOptions::parse(int argc, char* argv[], SC_TerminalClient::Options& termi
     // as po does not allow to specify the "notify order", we parse the config manually
     parseLanguageConfig(vm);
 
-    return false;
+    return std::nullopt;
 }
 
 po::options_description CLIOptions::buildGenericDescription() {

@@ -7,7 +7,7 @@ namespace po = boost::program_options;
 namespace SC_CLI {
 class CLIOptions {
 public:
-    bool parse(int argc, char* argv[], SC_TerminalClient::Options& terminalOptions, int& exitCode);
+    std::optional<int> parse(int argc, char* argv[], SC_TerminalClient::Options& terminalOptions);
 
     std::string mInputFile;
     std::vector<std::string> mScArgs;

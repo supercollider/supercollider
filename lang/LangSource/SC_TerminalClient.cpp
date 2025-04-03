@@ -107,12 +107,11 @@ void SC_TerminalClient::flush() { fflush(gPostDest); }
 
 int SC_TerminalClient::run(int argc, char** argv) {
     Options& opt = mOptions;
-    int errorCode;
 
     SC_CLI::CLIOptions cliOptions;
 
-    if (cliOptions.parse(argc, argv, mOptions, errorCode)) {
-        return errorCode;
+    if (const auto errorCode = cliOptions.parse(argc, argv, mOptions)) {
+        return *errorCode;
     }
 
     // initialize runtime
