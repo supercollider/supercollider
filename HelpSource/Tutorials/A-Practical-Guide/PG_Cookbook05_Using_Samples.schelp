@@ -19,7 +19,7 @@ numberedlist::
 
 strong::1. Determine the loop boundaries::
 
-Use an external audio editor to identify a segment of the source file that loops in a musically sensible way. For this example, we will use code::BufferExamplesPath.child:: from link::Classes/BufferExamplesPath::because it's readily available. Empirically, we can find that the segment from 0.404561 to 3.185917 seconds produces a rhythm that can be parsed as one bar of 4/4 time.
+Use an external audio editor to identify a segment of the source file that loops in a musically sensible way. For this example, we will use code::BufferExamplesPath.child:: from link::Classes/BufferExamplesPath:: because it's readily available. Empirically, we can find that the segment from 0.404561 to 3.185917 seconds produces a rhythm that can be parsed as one bar of 4/4 time.
 
 The segment beginning (0.404561) and ending (3.185917) are important. We will use them below.
 
