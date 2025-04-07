@@ -75,17 +75,13 @@ inline float32 sc_log2(float32 x) { return std::log2(x); }
 inline float32 sc_log10(float32 x) { return std::log10(std::abs(x)); }
 
 /// Convert MIDI note to cycles per second
-inline float32 sc_midicps(float32 note) {
-    return (float32)440. * std::pow((float32)2., (note - (float32)69.) * (float32)0.083333333333);
-}
+inline float32 sc_midicps(float32 note) { return 440.f * std::pow(2.f, (note - 69.f) / 12.f); }
 
 /// Convert cycles per second to MIDI note.
-inline float32 sc_cpsmidi(float32 freq) {
-    return sc_log2(freq * (float32)0.0022727272727) * (float32)12. + (float32)69.;
-}
+inline float32 sc_cpsmidi(float32 freq) { return sc_log2(freq / 440.f) * 12.f + 69.f; }
 
 /// Convert an interval in MIDI notes into a frequency ratio.
-inline float32 sc_midiratio(float32 midi) { return std::pow((float32)2., midi * (float32)0.083333333333); }
+inline float32 sc_midiratio(float32 midi) { return std::pow(2.f, midi / 12.f); }
 
 /// Convert a frequency ratio to an interval in MIDI notes.
 inline float32 sc_ratiomidi(float32 ratio) { return (float32)12. * sc_log2(ratio); }
@@ -94,7 +90,7 @@ inline float32 sc_ratiomidi(float32 ratio) { return (float32)12. * sc_log2(ratio
 inline float32 sc_octcps(float32 note) { return (float32)440. * std::pow((float32)2., note - (float32)4.75); }
 
 /// Convert cycles per second to decimal octaves.
-inline float32 sc_cpsoct(float32 freq) { return sc_log2(freq * (float32)0.0022727272727) + (float32)4.75; }
+inline float32 sc_cpsoct(float32 freq) { return sc_log2(freq / 440.f) + 4.75f; }
 
 /// Convert linear amplitude to decibels.
 inline float32 sc_ampdb(float32 amp) { return std::log10(amp) * (float32)20.; }
@@ -265,7 +261,7 @@ inline float32 sc_lg3interp(float32 x1, float32 a, float32 b, float32 c, float32
     float32 x3 = x1 - 2.f;
 
     float32 x03 = x0 * x3 * 0.5f;
-    float32 x12 = x1 * x2 * 0.16666666666666667f;
+    float32 x12 = x1 * x2 / 6.f;
 
     return x12 * (d * x0 - a * x3) + x03 * (b * x2 - c * x1);
 }
@@ -319,17 +315,13 @@ inline float64 sc_log2(float64 x) { return std::log2(std::abs(x)); }
 inline float64 sc_log10(float64 x) { return std::log10(std::abs(x)); }
 
 /// Convert MIDI note to cycles per second
-inline float64 sc_midicps(float64 note) {
-    return (float64)440. * std::pow((float64)2., (note - (float64)69.) * (float64)0.08333333333333333333333333);
-}
+inline float64 sc_midicps(float64 note) { return 440. * std::pow(2., (note - 69.) / 12.); }
 
 /// Convert cycles per second to MIDI note.
-inline float64 sc_cpsmidi(float64 freq) {
-    return sc_log2(freq * (float64)0.002272727272727272727272727) * (float64)12. + (float64)69.;
-}
+inline float64 sc_cpsmidi(float64 freq) { return sc_log2(freq / 440.) * 12. + 69.; }
 
 /// Convert an interval in MIDI notes into a frequency ratio.
-inline float64 sc_midiratio(float64 midi) { return std::pow((float64)2., midi * (float64)0.083333333333); }
+inline float64 sc_midiratio(float64 midi) { return std::pow(2., midi / 12.); }
 
 /// Convert a frequency ratio to an interval in MIDI notes.
 inline float64 sc_ratiomidi(float64 ratio) { return (float64)12. * sc_log2(ratio); }
@@ -338,7 +330,9 @@ inline float64 sc_ratiomidi(float64 ratio) { return (float64)12. * sc_log2(ratio
 inline float64 sc_octcps(float64 note) { return (float64)440. * std::pow((float64)2., note - (float64)4.75); }
 
 /// Convert cycles per second to decimal octaves.
-inline float64 sc_cpsoct(float64 freq) { return sc_log2(freq * (float64)0.0022727272727) + (float64)4.75; }
+inline float64 sc_cpsoct(float64 freq) {
+    return sc_log2(freq / 440.) + 4.75;
+}
 
 /// Convert linear amplitude to decibels.
 inline float64 sc_ampdb(float64 amp) { return std::log10(amp) * (float64)20.; }
