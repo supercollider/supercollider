@@ -206,7 +206,7 @@ As link::#*read:: above, but without the automatic update of instance variables.
 argument:: server
 The server on which to allocate the buffer.
 argument:: path
-An instance of link::Classes/String:: representing the path of the soundfile to be read. For path handling and management, see link::Classes/File:: and link::Classes/PathName::
+A String representing the path of the soundfile to be read.
 argument:: startFrame
 The first frame of the soundfile to read. The default is 0, which is the beginning of the file.
 argument:: numFrames
@@ -248,7 +248,7 @@ Allocate a buffer and preload a soundfile for streaming in using link::Classes/D
 argument:: server
 The server on which to allocate the buffer.
 argument:: path
-An instance of link::Classes/String:: representing the path of the soundfile to be read. For path handling and management, see link::Classes/File:: and link::Classes/PathName::
+A String representing the path of the soundfile to be read.
 argument:: startFrame
 The frame of the soundfile that DiskIn will start playing at.
 argument:: numChannels
