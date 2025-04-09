@@ -1,5 +1,6 @@
 #include "boost/program_options.hpp"
 #include <string>
+#include <optional>
 #include "SC_TerminalClient.h"
 
 namespace po = boost::program_options;
