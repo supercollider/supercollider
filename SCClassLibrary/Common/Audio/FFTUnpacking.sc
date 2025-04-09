@@ -114,12 +114,17 @@ PV_ChainUGen : UGen {
 				var newBuffer = LocalBuf(this.fftSize.initEdges).initEdges;
 				var newCopy = PV_Copy.newDuringOptimisation(\audio, this, newBuffer);
 
-				var d_in = d.inputs.indexOfAll(this);
-				d_in.do { |di| d.replaceInputAt(di, newCopy) };
+				var indexOfChildrensInputsThatAreThis = {
+					var ins = [];
+					d.inputs.do { |elem, i| if (this === elem) { ins = ins.add(i) }};
+					ins
+				}.();
+
+				indexOfChildrensInputsThatAreThis.do { |di| d.replaceInputAt(di, newCopy) };
 
 				newCopy.createWeakConnectionTo(first); // ensures copy happens before the other buffer operation.
 
-				result.addUGen(newBuffer, 1);
+				//result.addUGen(newBuffer, 1);
 				result.addUGen(newCopy, 2);
 			};
 			^result
