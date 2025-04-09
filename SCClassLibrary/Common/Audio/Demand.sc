@@ -17,7 +17,7 @@ Demand : MultiOutUGen {
 }
 
 Duty : UGen {
-	resourceDependencies { ^if(this.hasObservableEffect) { [[UGenDoneResourceManager]] } { [] } }
+	resourceDependencies { ^if(this.hasObservableEffect) { [[DoneConnectionStrategy]] } { [] } }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(2) }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -49,7 +49,7 @@ TDuty : Duty {
 }
 
 DemandEnvGen : UGen {
-	resourceDependencies { ^if(this.hasObservableEffect) { [[UGenDoneResourceManager]] } { [] } }
+	resourceDependencies { ^if(this.hasObservableEffect) { [[DoneConnectionStrategy]] } { [] } }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(9) }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -111,7 +111,7 @@ Dgeom : DUGen {
 }
 
 Dbufrd : DUGen {
-	resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
+	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
 	canBeReplacedByIdenticalCall { ^true }
 	hasObservableEffect { ^false }
 
@@ -122,7 +122,7 @@ Dbufrd : DUGen {
 }
 
 Dbufwr : DUGen {
-	resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+	resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -149,23 +149,23 @@ Dser : ListDUGen {
 	canBeReplacedByIdenticalCall { ^true }
 }
 Dshuf : ListDUGen {
-	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
+	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 }
 Drand : ListDUGen {
-	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
+	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 }
 Dxrand : ListDUGen {
-	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
+	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 }
 
 Dwrand : DUGen {
-	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
+	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 	*new { arg list, weights, repeats = 1;
@@ -191,7 +191,7 @@ Dswitch : Dswitch1 {
 }
 
 Dwhite : DUGen {
-	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
+	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -201,13 +201,13 @@ Dwhite : DUGen {
 }
 
 Diwhite : Dwhite {
-	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
+	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 }
 
 Dbrown : DUGen {
-	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
+	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -217,7 +217,7 @@ Dbrown : DUGen {
 }
 
 Dibrown : Dbrown {
-	resourceDependencies { ^[[UGenRandomResourceManager, \gen]] }
+	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 }
@@ -271,7 +271,7 @@ Dreset : DUGen {
 }
 
 Dpoll : DUGen {
-	resourceDependencies { ^[[UGenMessageResourceManager]] }
+	resourceDependencies { ^[[MessageConnectionStrategy]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^false } // This will just print the thing twice.
 

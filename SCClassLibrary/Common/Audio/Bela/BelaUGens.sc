@@ -8,7 +8,7 @@
 // output: value of analog analogPin
 
 MultiplexAnalogIn : UGen {
-	resourceManagers { ^[UGenAnalogResourceManager] }
+	resourceManagers { ^[AnalogStateConnectionStrategy] }
 	analogAccessType { ^\read }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
@@ -27,7 +27,7 @@ MultiplexAnalogIn : UGen {
 // output: value of analog analogPin
 
 AnalogIn : UGen {
-	resourceManagers { ^[UGenAnalogResourceManager] }
+	resourceManagers { ^[AnalogStateConnectionStrategy] }
 	analogAccessType { ^\read }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
@@ -46,7 +46,7 @@ AnalogIn : UGen {
 // output: none
 
 AnalogOut : UGen {
-	resourceManagers { ^[UGenAnalogResourceManager] }
+	resourceManagers { ^[AnalogStateConnectionStrategy] }
 	analogAccessType { ^\write }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^false } // TODO: maybe true, does this function like Out or ReplaceOut?
@@ -67,7 +67,7 @@ AnalogOut : UGen {
 // output: value of digital pin
 
 DigitalIn : UGen {
-	resourceManagers { ^[UGenAnalogResourceManager] }
+	resourceManagers { ^[AnalogStateConnectionStrategy] }
 	analogAccessType { ^\read }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
@@ -86,7 +86,7 @@ DigitalIn : UGen {
 // output: none
 
 DigitalOut : UGen {
-	resourceManagers { ^[UGenAnalogResourceManager] }
+	resourceManagers { ^[AnalogStateConnectionStrategy] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^false }
 	analogAccessType { ^\write }
@@ -109,7 +109,7 @@ DigitalOut : UGen {
 // output: value of digital pin (last read value)
 
 DigitalIO : UGen {
-	resourceManagers { ^[UGenAnalogResourceManager] }
+	resourceManagers { ^[AnalogStateConnectionStrategy] }
 	analogAccessType { ^\readAndWrite }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^false }

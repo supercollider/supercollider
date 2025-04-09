@@ -66,7 +66,7 @@ AllpassC : CombN { }
 // these delays use shared buffers.
 
 BufDelayN : UGen {
-	resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
+	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -83,7 +83,7 @@ BufDelayC : BufDelayN { }
 
 
 BufCombN : UGen {
-	resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
+	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -100,7 +100,7 @@ BufAllpassL : BufCombN { }
 BufAllpassC : BufCombN { }
 
 DelTapWr : UGen {
-	resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+	resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -114,7 +114,7 @@ DelTapWr : UGen {
 }
 
 DelTapRd : UGen {
-	resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
+	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 

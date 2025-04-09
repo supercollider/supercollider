@@ -40,7 +40,7 @@ ControlName {
 Control : MultiOutUGen {
 	var <values;
 
-    resourceDependencies { ^[[UGenBusResourceManager, \readKr]] }
+    resourceDependencies { ^[[BusConnectionStrategy, \readKr]] }
 	hasObservableEffect { ^true } // controls alter the synthdef, lets not automatically remove unused ones.
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -90,7 +90,7 @@ Control : MultiOutUGen {
 AudioControl : MultiOutUGen {
 	var <values;
 
-    resourceDependencies { ^[[UGenBusResourceManager, \readAr]] }
+    resourceDependencies { ^[[BusConnectionStrategy, \readAr]] }
 	hasObservableEffect { ^true } // controls alter the synthdef, lets not automatically remove unused ones.
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -170,7 +170,7 @@ LagControl : Control {
 }
 
 AbstractIn : MultiOutUGen {
-    resourceDependencies { ^if (rate == \audio) { [[UGenBusResourceManager, \readAr]] } { [[UGenBusResourceManager, \readKr]] } }
+    resourceDependencies { ^if (rate == \audio) { [[BusConnectionStrategy, \readAr]] } { [[BusConnectionStrategy, \readKr]] } }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -191,7 +191,7 @@ In : AbstractIn {
 }
 
 LocalIn : AbstractIn {
-    resourceDependencies { ^[[UGenLocalBusResourceManager]]  }
+    resourceDependencies { ^[[LocalBusConnectionStrategy]]  }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -239,7 +239,7 @@ InTrig : AbstractIn {
 }
 
 AbstractOut : UGen {
-    resourceDependencies { ^if (rate == \audio) { [[UGenBusResourceManager, \writeAr]] } { [[UGenBusResourceManager, \writeKr]] } }
+    resourceDependencies { ^if (rate == \audio) { [[BusConnectionStrategy, \writeAr]] } { [[BusConnectionStrategy, \writeKr]] } }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -291,7 +291,7 @@ Out : AbstractOut {
 }
 
 ReplaceOut : Out {
-    resourceDependencies { ^[[UGenBusResourceManager, \replace]]  }
+    resourceDependencies { ^[[BusConnectionStrategy, \replace]]  }
 	canBeReplacedByIdenticalCall { ^true }
 }
 
@@ -300,7 +300,7 @@ OffsetOut : Out {
 }
 
 LocalOut : AbstractOut {
-    resourceDependencies { ^[[UGenLocalBusResourceManager]]  }
+    resourceDependencies { ^[[LocalBusConnectionStrategy]]  }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -324,7 +324,7 @@ LocalOut : AbstractOut {
 
 
 XOut : AbstractOut {
-    resourceDependencies { ^if (rate == \audio) { [[UGenLocalBusResourceManager, \blendAr]] } { [[UGenBusResourceManager, \blendKr]] } }
+    resourceDependencies { ^if (rate == \audio) { [[BusConnectionStrategy, \blendAr]] } { [[BusConnectionStrategy, \blendKr]] } }
 
 	*ar { arg bus, xfade, channelsArray;
 		channelsArray = this.replaceZeroesWithSilence(channelsArray.asUGenInput(this).asArray);

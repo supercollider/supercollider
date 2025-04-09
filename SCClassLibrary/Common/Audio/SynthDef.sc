@@ -244,7 +244,7 @@ SynthDef {
 
 	// These are the ends of the graph, the Outs, BufWrs, et cetera.
 	var effectiveUGens;
-	// This stores all resource managers in an Event<Class, UGenResourceManager>.
+	// This stores all resource managers in an Event<Class, ImplicitResourceConnectionStrategy>.
 	var resourceManagers;
 
 	*synthDefDir_ { |dir|
@@ -266,7 +266,7 @@ SynthDef {
 	*newForSynthDesc {
 		^super.newCopyArgs(
 			effectiveUGens: [],
-			resourceManagers: UGenResourceManager.createNewInstances,
+			resourceManagers: ImplicitResourceConnectionStrategy.createNewInstances,
 		)
 	}
 
@@ -278,7 +278,7 @@ SynthDef {
 			metadata: metadata ?? {()},
 			children: Array(64),
 			effectiveUGens: [],
-			resourceManagers: UGenResourceManager.createNewInstances,
+			resourceManagers: ImplicitResourceConnectionStrategy.createNewInstances,
 		).build(rates, prependArgs)
 	}
 
@@ -301,7 +301,7 @@ SynthDef {
 			metadata: metadata ?? { () },
 			children: Array(64),
 			effectiveUGens: [],
-			resourceManagers: UGenResourceManager.createNewInstances,
+			resourceManagers: ImplicitResourceConnectionStrategy.createNewInstances,
 		).build(rates, prependArgs);
 
 		SynthDef.setOptimizations(opts);

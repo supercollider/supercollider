@@ -16,7 +16,7 @@ Trig : Trig1 { }
 
 
 SendTrig : UGen {
-	resourceDependencies { ^[[UGenMessageResourceManager]] }
+	resourceDependencies { ^[[MessageConnectionStrategy]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -34,7 +34,7 @@ SendTrig : UGen {
 }
 
 SendReply : SendTrig {
-	resourceDependencies { ^[[UGenMessageResourceManager]] }
+	resourceDependencies { ^[[MessageConnectionStrategy]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -494,7 +494,7 @@ LastValue : UGen {
 }
 
 SendPeakRMS : UGen {
-	resourceDependencies { ^[[UGenMessageResourceManager]] }
+	resourceDependencies { ^[[MessageConnectionStrategy]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^false }
 

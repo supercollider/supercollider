@@ -37,7 +37,7 @@ GrainFM : MultiOutUGen {
 }
 
 GrainBuf : MultiOutUGen {
-	resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
+	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -75,7 +75,7 @@ GrainIn : MultiOutUGen {
 }
 
 Warp1 : MultiOutUGen {
-	resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
+	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 

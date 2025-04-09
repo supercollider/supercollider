@@ -1,5 +1,5 @@
 SoundIn  {
-	resourceDependencies { ^[[UGenBusResourceManager, \read]] }
+	resourceDependencies { ^[[BusConnectionStrategy, \read]] }
  	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 

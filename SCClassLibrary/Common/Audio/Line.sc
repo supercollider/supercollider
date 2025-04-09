@@ -1,5 +1,5 @@
 Line : UGen {
-	resourceDependencies { ^if(this.hasObservableEffect) { [[UGenDoneResourceManager]] } { [] } }
+	resourceDependencies { ^if(this.hasObservableEffect) { [[DoneConnectionStrategy]] } { [] } }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(3) }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -12,7 +12,7 @@ Line : UGen {
 }
 
 XLine : UGen {
-	resourceDependencies { ^if(this.hasObservableEffect) { [[UGenDoneResourceManager]] } { [] } }
+	resourceDependencies { ^if(this.hasObservableEffect) { [[DoneConnectionStrategy]] } { [] } }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(3) }
 	canBeReplacedByIdenticalCall { ^true }
 

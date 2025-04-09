@@ -7,7 +7,7 @@ WidthFirstUGen : UGen {
 }
 
 FFT : PV_ChainUGen {
-resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -20,7 +20,7 @@ resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
 
 // Prepares a buffer for FFT, but doesn't read from an audio stream.
 FFTTrigger : PV_ChainUGen {
-resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -32,7 +32,7 @@ resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
 }
 
 IFFT : UGen {
-resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
+resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -51,7 +51,7 @@ resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
 }
 
 PV_MagAbove : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -61,7 +61,7 @@ PV_MagAbove : PV_ChainUGen {
 }
 
 PV_MagBelow : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -70,7 +70,7 @@ PV_MagBelow : PV_ChainUGen {
 	}
 }
 PV_MagClip : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -79,7 +79,7 @@ PV_MagClip : PV_ChainUGen {
 	}
 }
 PV_LocalMax : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -89,7 +89,7 @@ PV_LocalMax : PV_ChainUGen {
 }
 
 PV_MagSmear : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -99,7 +99,7 @@ PV_MagSmear : PV_ChainUGen {
 }
 
 PV_BinShift : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -109,7 +109,7 @@ PV_BinShift : PV_ChainUGen {
 }
 
 PV_MagShift : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -119,7 +119,7 @@ PV_MagShift : PV_ChainUGen {
 }
 
 PV_MagSquared : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -129,7 +129,7 @@ PV_MagSquared : PV_ChainUGen {
 }
 
 PV_MagNoise : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -138,7 +138,7 @@ PV_MagNoise : PV_ChainUGen {
 	}
 }
 PV_PhaseShift90 : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -147,7 +147,7 @@ PV_PhaseShift90 : PV_ChainUGen {
 	}
 }
 PV_PhaseShift270 : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -156,7 +156,7 @@ PV_PhaseShift270 : PV_ChainUGen {
 	}
 }
 PV_Conj : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -166,7 +166,7 @@ PV_Conj : PV_ChainUGen {
 }
 
 PV_PhaseShift : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -176,7 +176,7 @@ PV_PhaseShift : PV_ChainUGen {
 }
 
 PV_BrickWall : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -186,7 +186,7 @@ PV_BrickWall : PV_ChainUGen {
 }
 
 PV_BinWipe : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
@@ -197,7 +197,7 @@ PV_BinWipe : PV_ChainUGen {
 }
 
 PV_MagMul : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -207,7 +207,7 @@ PV_MagMul : PV_ChainUGen {
 }
 
 PV_CopyPhase : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -216,7 +216,7 @@ PV_CopyPhase : PV_ChainUGen {
 	}
 }
 PV_Copy  : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -225,7 +225,7 @@ PV_Copy  : PV_ChainUGen {
 	}
 }
 PV_Max : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -234,7 +234,7 @@ PV_Max : PV_ChainUGen {
 	}
 }
 PV_Min : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -243,7 +243,7 @@ PV_Min : PV_ChainUGen {
 	}
 }
 PV_Mul : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -252,7 +252,7 @@ PV_Mul : PV_ChainUGen {
 	}
 }
 PV_Div : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -261,7 +261,7 @@ PV_Div : PV_ChainUGen {
 	}
 }
 PV_Add : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -271,7 +271,7 @@ PV_Add : PV_ChainUGen {
 }
 
 PV_MagDiv : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -281,7 +281,7 @@ PV_MagDiv : PV_ChainUGen {
 }
 
 PV_RandComb : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -291,7 +291,7 @@ PV_RandComb : PV_ChainUGen {
 }
 
 PV_RectComb : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -302,7 +302,7 @@ PV_RectComb : PV_ChainUGen {
 
 
 PV_RectComb2 : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -312,7 +312,7 @@ PV_RectComb2 : PV_ChainUGen {
 }
 
 PV_RandWipe : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -322,7 +322,7 @@ PV_RandWipe : PV_ChainUGen {
 }
 
 PV_Diffuser : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -332,7 +332,7 @@ PV_Diffuser : PV_ChainUGen {
 }
 
 PV_MagFreeze : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -342,7 +342,7 @@ PV_MagFreeze : PV_ChainUGen {
 }
 
 PV_BinScramble : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 

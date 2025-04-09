@@ -1,9 +1,9 @@
 PlayBuf : MultiOutUGen {
 	resourceDependencies {
 		^if(this.hasObservableEffect){
-			[[UGenBufferResourceManager, \read], [UGenDoneResourceManager]]
+			[[BufferConnectionStrategy, \read], [DoneConnectionStrategy]]
 		}  {
-			[[UGenBufferResourceManager, \read]]
+			[[BufferConnectionStrategy, \read]]
 		}
 	}
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(6) }
@@ -26,7 +26,7 @@ PlayBuf : MultiOutUGen {
 }
 
 TGrains : MultiOutUGen {
-	resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
+	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -44,7 +44,7 @@ TGrains : MultiOutUGen {
 }
 
 BufRd : MultiOutUGen {
-	resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
+	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -76,7 +76,7 @@ BufRd : MultiOutUGen {
 }
 
 BufWr : UGen {
-	resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+	resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -117,9 +117,9 @@ BufWr : UGen {
 RecordBuf : UGen {
 	resourceDependencies {
 		^if(this.hasObservableEffect){
-			[[UGenBufferResourceManager, \write], [UGenDoneResourceManager]]
+			[[BufferConnectionStrategy, \write], [DoneConnectionStrategy]]
 		}  {
-			[[UGenBufferResourceManager, \write]]
+			[[BufferConnectionStrategy, \write]]
 		}
 	}
 	hasObservableEffect { ^true }
@@ -153,7 +153,7 @@ RecordBuf : UGen {
 }
 
 ScopeOut : UGen {
-	resourceDependencies { ^[[UGenBufferResourceManager, \writeReplace]] }
+	resourceDependencies { ^[[BufferConnectionStrategy, \writeReplace]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -168,7 +168,7 @@ ScopeOut : UGen {
 }
 
 ScopeOut2 : UGen {
-	resourceDependencies { ^[[UGenBufferResourceManager, \writeReplace]] }
+	resourceDependencies { ^[[BufferConnectionStrategy, \writeReplace]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -183,7 +183,7 @@ ScopeOut2 : UGen {
 }
 
 Tap : UGen {
-	resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
+	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -252,7 +252,7 @@ MaxLocalBufs : UGen {
 }
 
 SetBuf : WidthFirstUGen {
-	resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+	resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -263,7 +263,7 @@ SetBuf : WidthFirstUGen {
 }
 
 ClearBuf : WidthFirstUGen {
-	resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+	resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 

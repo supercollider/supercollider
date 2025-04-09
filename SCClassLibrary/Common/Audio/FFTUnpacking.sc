@@ -5,7 +5,7 @@ Magical UGens for treating FFT data as demand-rate streams.
 
 // Actually this just wraps up a bundle of Unpack1FFT UGens
 UnpackFFT : MultiOutUGen {
-	resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
+	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -18,7 +18,7 @@ UnpackFFT : MultiOutUGen {
 }
 
 Unpack1FFT : UGen {
-	resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
+	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -29,7 +29,7 @@ Unpack1FFT : UGen {
 
 // This does the demanding, to push the data back into an FFT buffer.
 PackFFT : PV_ChainUGen {
-	resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+	resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -95,7 +95,7 @@ PV_ChainUGen : UGen {
 	fftSize { ^inputs[0].fftSize }
 
 	optimize {
-		var resourceDependenciesIncludesBufferWrite = { |dep| dep.any{ |m| m[0] == UGenBufferResourceManager and: {m[1] != \read} } };
+		var resourceDependenciesIncludesBufferWrite = { |dep| dep.any{ |m| m[0] == BufferConnectionStrategy and: {m[1] != \read} } };
 		var desc = descendants.select { |d|
 			// Get all descendants that 'write' (not *just* read) to a buffer that aren't PV_Copy.
 			// This will incorrectly select UGens that read and write to different buffers but don't write to this buffer,

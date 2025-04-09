@@ -1,7 +1,7 @@
 
 //sick lincoln remembers complex analysis courses
 PV_ConformalMap : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -25,7 +25,7 @@ Convolution : UGen {
 // fixed kernel convolver with fix by nescivi to update the kernel on receipt of a trigger message
 // Kernel is a Buffer.
 Convolution2 : UGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
 
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
@@ -38,7 +38,7 @@ Convolution2 : UGen {
 // fixed kernel convolver with linear crossfade
 // Kernel is a Buffer.
 Convolution2L : UGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
 
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
@@ -51,7 +51,7 @@ Convolution2L : UGen {
 //fixed kernel stereo convolver with linear crossfade
 // Kernel is a Buffer.
 StereoConvolution2L : MultiOutUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
 
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
@@ -72,7 +72,7 @@ StereoConvolution2L : MultiOutUGen {
 //time based convolution by nescivi
 // Kernel is a Buffer.
 Convolution3 : UGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
 
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
@@ -88,7 +88,7 @@ Convolution3 : UGen {
 
 //jensen andersen inspired FFT feature detector
 PV_JensenAndersen : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -99,7 +99,7 @@ PV_JensenAndersen : PV_ChainUGen {
 
 
 PV_HainsworthFoote : PV_ChainUGen {
-    resourceDependencies { ^[[UGenBufferResourceManager, \write]] }
+    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 

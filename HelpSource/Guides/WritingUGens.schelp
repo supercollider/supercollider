@@ -121,7 +121,7 @@ subsection:: UGen Resource Manager
 
 code::
 MyBufRd : MultiOutUGen {
-	resourceManagers { ^[UGenBufferResourceManager] }
+	resourceManagers { ^[BufferConnectionStrategy] }
 	bufferAccessType { ^\read }
 
 	hasObservableEffect { ^false }
@@ -140,10 +140,10 @@ The method code::resourceManager:: return an link::Classes/Array:: of link::Clas
 the UGen interacts with.
 
 The purpose of this is to preserve the ordering the user has written for certain operations.
-As an example, the order in which you read and write to buffers matters, so any UGen that interacts with a buffer should return the class link::Classes/UGenBufferResourceManager::.
+As an example, the order in which you read and write to buffers matters, so any UGen that interacts with a buffer should return the class link::Classes/BufferConnectionStrategy::.
 
 These resource managers may require extra methods be added to the class, one should check the manager's documentation.
-In the case of link::Classes/UGenBufferResourceManager:: the method code::bufferAccessType:: is required and specifies what UGen does with the resource.
+In the case of link::Classes/BufferConnectionStrategy:: the method code::bufferAccessType:: is required and specifies what UGen does with the resource.
 
 If no resource is interacted with, the method should return an empty link::Classes/Array::.
 code::
@@ -158,13 +158,13 @@ code::
 
 Here is a (non-exhaustive) list of resource managers and some examples of what classes use them:
 list::
-## link::Classes/UGenDiskResourceManager:: — link::Classes/DiskIn::
+## link::Classes/DiskStateConnectionStrategy:: — link::Classes/DiskIn::
 ## link::Classes/UGenDoneResourceManager:: — link::Classes/Line::
 ## link::Classes/UGenMessageResourceManager:: — link::Classes/SendReply::
-## link::Classes/UGenBufferResourceManager:: — link::Classes/BufRd::
-## link::Classes/UGenAnalogResourceManager:: — link::Classes/DigitalIn::
-## link::Classes/UGenBusResourceManager:: — link::Classes/In::
-## link::Classes/UGenRandomResourceManager:: — link::Classes/LFNoise2::
+## link::Classes/BufferConnectionStrategy:: — link::Classes/BufRd::
+## link::Classes/AnalogStateConnectionStrategy:: — link::Classes/DigitalIn::
+## link::Classes/BusConnectionStrategy:: — link::Classes/In::
+## link::Classes/RandomStateConnectionStrategy:: — link::Classes/LFNoise2::
 ::
 
 The default for this method is to return code::nil::, which causes all resource managers to enter 'panic' mode, preserving the order.
@@ -182,7 +182,7 @@ An example of a UGen in the class library that does this is link::Classes/Record
 
 code::
 MyRecorder : UGen {
-    resourceManagers { ^[UGenBufferResourceManager] }
+    resourceManagers { ^[BufferConnectionStrategy] }
 	bufferAccessType { ^\write }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }

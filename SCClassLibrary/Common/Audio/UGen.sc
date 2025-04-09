@@ -298,7 +298,7 @@ UGen : UGenBuiltInMethods {
 
 	////// REQUIRED meta-info. All UGens should specify these three methods.
 	////// Defaults are provided here, but each UGen should specifiy them to be clear.
-	// 1. Return an Array of zero or more UGenResourceManagers, or nil if entering connectToAll mode (see UGenResourceManager).
+	// 1. Return an Array of zero or more ImplicitResourceConnectionStrategys, or nil if entering connectToAll mode (see ImplicitResourceConnectionStrategy).
 	// Maintains IO ordering under topological sort.
 	resourceDependencies { ^nil }
 

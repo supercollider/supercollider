@@ -7,7 +7,7 @@ InfoUGenBase : UGen {
 }
 
 BufInfoUGenBase : UGen {
-   resourceDependencies { ^[[UGenBusResourceManager, \read]] }
+   resourceDependencies { ^[[BusConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 

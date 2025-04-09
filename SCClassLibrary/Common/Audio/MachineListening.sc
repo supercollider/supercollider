@@ -1,6 +1,6 @@
 //4 outs
 BeatTrack : MultiOutUGen {
-	resourceDependencies { ^[[UGenBusResourceManager, \read]] }
+	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -22,7 +22,7 @@ BeatTrack : MultiOutUGen {
 
 //loudness output in sones
 Loudness : UGen {
-	resourceDependencies { ^[[UGenBusResourceManager, \read]] }
+	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -34,7 +34,7 @@ Loudness : UGen {
 
 
 Onsets : UGen {
-	resourceDependencies { ^[[UGenBusResourceManager, \read]] }
+	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -53,7 +53,7 @@ Onsets : UGen {
 
 //transient input not currently used but reserved for future use in downweighting frames which have high transient content
 KeyTrack : UGen {
-	resourceDependencies { ^[[UGenBusResourceManager, \read]] }
+	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -66,7 +66,7 @@ KeyTrack : UGen {
 
 //a bufnum could be added as third argument for passing arbitrary band spacing data
 MFCC : MultiOutUGen {
-	resourceDependencies { ^[[UGenBusResourceManager, \read]] }
+	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -83,7 +83,7 @@ MFCC : MultiOutUGen {
 
 //6 outs
 BeatTrack2 : MultiOutUGen {
-	resourceDependencies { ^[[UGenBusResourceManager, \read]] }
+	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -99,7 +99,7 @@ BeatTrack2 : MultiOutUGen {
 }
 
 SpecFlatness : UGen {
-	resourceDependencies { ^[[UGenBusResourceManager, \read]] }
+	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -109,7 +109,7 @@ SpecFlatness : UGen {
 }
 
 SpecPcile : UGen {
-	resourceDependencies { ^[[UGenBusResourceManager, \read]] }
+	resourceDependencies { ^[[BufferConnectionStrategy, \readKr]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -119,7 +119,7 @@ SpecPcile : UGen {
 }
 
 SpecCentroid : UGen {
-	resourceDependencies { ^[[UGenBusResourceManager, \read]] }
+	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 

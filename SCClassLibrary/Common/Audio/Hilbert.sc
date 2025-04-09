@@ -20,7 +20,7 @@ Hilbert : MultiOutUGen {
 
 // TODO: should this inherit from UGen as it is a psuedo ugen
 HilbertFIR : UGen {
-	resourceDependencies { ^[[UGenBufferResourceManager, \read]] }
+	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 

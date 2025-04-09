@@ -314,7 +314,7 @@ Function : AbstractFunction {
 				RecordBuf.methodSelectorForRate(defRate),
 				outputs, bufnum, loop: 0, doneAction: 2
 			);
-		}).dumpUGens;
+		});
 
 		buffer = Buffer.new(server);
 
