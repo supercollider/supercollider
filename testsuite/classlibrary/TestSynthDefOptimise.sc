@@ -144,7 +144,10 @@ TestSynthDefOptimise : UnitTest {
 		}, '/n_end', server.addr, nil, [withoutSynth.nodeID]).oneShot;
 
 		cond.wait { counter == 0 };
-
+		if (withResult.every ( _ == 0 )) {
+			"The compare engine should not be comparing all zeros, as this is the default output".warn;
+			^false;
+		};
 		r = withResult - withoutResult;
 		r = r.select({ |v| v.abs > threshold.dbamp });
 		if (r.isEmpty) { ^true };
@@ -197,7 +200,7 @@ TestSynthDefOptimise : UnitTest {
 		);
 		this.compare_optimization_levels({
 			var a = SinOsc.ar().neg;
-			a - a
+			a - a + 0.02
 		}, server, threshold: -120,
 		msg: "Negation - same this subtraction"
 		);
@@ -209,7 +212,7 @@ TestSynthDefOptimise : UnitTest {
 		);
 		this.compare_optimization_levels({
 			var a = SinOsc.ar();
-			a.neg - a.neg
+			a.neg - a.neg + 0.02
 		}, server, threshold: -120,
 		msg: "Negation - different this subtraction"
 		);
@@ -300,44 +303,50 @@ TestSynthDefOptimise : UnitTest {
 		var b = Buffer.read(server, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 		server.sync;
 
-		this.compare_optimization_levels({
-			var inA, chainA, inB, chainB, chain ;
-			inA = PlayBuf.ar(1, b.bufnum, BufRateScale.kr(b.bufnum), loop: 0);
-			inB =  PlayBuf.ar(1, b.bufnum, BufRateScale.kr(b.bufnum) * 0.5, loop: 0);
-			chainA = FFT(LocalBuf(2048), inA);
-			chainB = FFT(LocalBuf(2048), inB);
-			chain = PV_Add(chainA, chainB);
-			(0.1 * IFFT(chain).dup).sum
-		}, server, threshold: -120,
-		msg: "PV_Add help example"
+		this.compare_optimization_levels(
+			{
+				var inA, chainA, inB, chainB, chain ;
+				inA = PlayBuf.ar(1, b.bufnum, BufRateScale.kr(b.bufnum), loop: 0);
+				inB =  PlayBuf.ar(1, b.bufnum, BufRateScale.kr(b.bufnum) * 0.5, loop: 0);
+				chainA = FFT(LocalBuf(2048), inA);
+				chainB = FFT(LocalBuf(2048), inB);
+				chain = PV_Add(chainA, chainB);
+				(0.1 * IFFT(chain).dup).sum
+			}, server,
+			threshold: -120,
+			duration: 0.2,
+			msg: "PV_Add help example"
 		);
 
-		this.compare_optimization_levels({
-			var fftsize = 1024;
-			var in, chain, in2, chain2, out;
-			in = PlayBuf.ar(1, b, BufRateScale.kr(b), loop: 0);
-			chain = FFT(LocalBuf(fftsize), in);
+		this.compare_optimization_levels(
+			{
+				var fftsize = 1024;
+				var in, chain, in2, chain2, out;
+				in = PlayBuf.ar(1, b.bufnum, BufRateScale.kr(b), loop: 0);
+				chain = FFT(LocalBuf(fftsize), in);
 
-			// JMcC babbling brook
-			in2 = ({
-				RHPF.ar(OnePole.ar(BrownNoise.ar, 0.99), LPF.ar(BrownNoise.ar, 14)
-					* 400 + 500, 0.03, 0.003) }!2)
-			+ ({ RHPF.ar(OnePole.ar(BrownNoise.ar, 0.99), LPF.ar(BrownNoise.ar, 20)
-				* 800 + 1000, 0.03, 0.005) }!2
-			) * 4;
-			chain2 = FFT(LocalBuf(fftsize), in2);
+				// JMcC babbling brook
+				in2 = ({
+					RHPF.ar(OnePole.ar(Saw.ar(19999), 0.99), LPF.ar(Saw.ar(19993), 14)
+						* 400 + 500, 0.03, 0.003) }!2)
+				+ ({ RHPF.ar(OnePole.ar(Saw.ar(1991), 0.99), LPF.ar(Saw.ar(19991), 20)
+					* 800 + 1000, 0.03, 0.005) }!2
+				) * 4;
+				chain2 = FFT(LocalBuf(fftsize), in2);
 
-			chain = chain.pvcalc2(chain2, fftsize, { |mags, phases, mags2, phases2|
-				[
-					mags * mags2 / 10,
-					phases2 + phases
-				]
-			}, frombin: 0, tobin: 125, zeroothers: 0);
+				chain = chain.pvcalc2(chain2, fftsize, { |mags, phases, mags2, phases2|
+					[
+						mags * mags2 / 10,
+						phases2 + phases
+					]
+				}, frombin: 0, tobin: 125, zeroothers: 0);
 
-			out = IFFT(chain);
-			(0.5 * out.dup).sum
-		}, server, threshold: -96,
-		msg: "pvcalc2 help example"
+				out = IFFT(chain);
+				(0.5 * out.dup).sum
+			}, server,
+			threshold: -96,
+			duration: 0.2,
+			msg: "pvcalc2 help example"
 		);
 	}
 
@@ -488,26 +497,30 @@ TestSynthDefOptimise : UnitTest {
 		}, server, threshold: -96, forceDontPrint: true,
 		msg: "A big graph - tw 0011 (f0)."
 		);
-		this.compare_optimization_levels({
-			var sig, chain;
+		this.compare_optimization_levels(
+			{
+				var sig, chain;
 
-			// The original sound source
-			sig = [2076, 2457, 2337, 1949, 2477, 2229, 3859].collect {|f|
-				SinOsc.ar(f, 0, 2 * Decay.ar(Impulse.ar(1), 0.1)).tanh
-			}.sum;
+				// The original sound source
+				sig = [2076, 2457, 2337, 1949, 2477, 2229, 3859].collect {|f|
+					SinOsc.ar(f, 0, 2 * Decay.ar(Impulse.ar(10000), 0.1)).tanh
+				}.sum;
 
-			chain = sig;    // Start with the original signal
+				chain = sig;    // Start with the original signal
 
-			[
-				[0.156, 0.0863], [0.1133, 0.1258], [0.0785, 0.1674],
-				[0.0104, 0.1523], [0.1664, 0.1706], [0.1784, 0.1117], [0.1432, 0.1894]
-			].do {|p|
-				chain = LeakDC.ar(AllpassL.ar(LPF.ar(chain * 0.9, 3000), 0.2, p, 3));
-			};
+				[
+					[0.156, 0.0863], [0.1133, 0.1258], [0.0785, 0.1674],
+					[0.0104, 0.1523], [0.1664, 0.1706], [0.1784, 0.1117], [0.1432, 0.1894]
+				].do {|p|
+					chain = LeakDC.ar(AllpassL.ar(LPF.ar(chain * 0.9, 3000), 0.2, p, 3));
+				};
 
-			Limiter.ar(sig+chain).flat.sum;    // dry + wet
-		}, server, threshold: -96, forceDontPrint: true,
-		msg: "Example from tour of UGens."
+				Limiter.ar(sig+chain).flat.sum;    // dry + wet
+			}, server,
+			duration: 0.1,
+			threshold: -96,
+			forceDontPrint: true,
+			msg: "Example from tour of UGens."
 		);
 
 
@@ -530,55 +543,60 @@ TestSynthDefOptimise : UnitTest {
 
 
 
-		this.compare_optimization_levels({
-			|pitch=440, freq=70, addFreq=17, attack=1, release = 12|
-			var sig, sig1, saws, env, shapeEnv, local, local2;
-			sig = Mix.new(
-				Array.fill(8,
-					{SinOsc.ar(freq + addFreq, 0.95, 0.03)})
-			);
-
-			env = EnvGen.kr(Env.perc(attack, release ), doneAction:2);
-			sig1 = sig + (sig *
-				Mix.new(
+		this.compare_optimization_levels(
+			{
+				|pitch=440, freq=70, addFreq=17, attack=1, release = 12|
+				var sig, sig1, saws, env, shapeEnv, local, local2;
+				sig = Mix.new(
 					Array.fill(8,
-						{SinOsc.ar(0.02, 0.7, LFNoise1.kr(0.02, 0.08))}))
-			);
+						{SinOsc.ar(freq + addFreq, 0.95, 0.03)})
+				);
 
-			sig = sig * env;
-			sig1 = sig1 * env;
+				env = EnvGen.kr(Env.perc(attack, release ), doneAction:2);
+				sig1 = sig + (sig *
+					Mix.new(
+						Array.fill(8,
+							{SinOsc.ar(0.02, 0.7, LFNoise1.kr(0.02, 0.08))}))
+				);
 
-			sig = PitchShift.ar(sig, 0.1, SinOsc.kr(pitch, 3.2, 0.9, 3));
-			sig1 = PitchShift.ar(sig1, 0.1, SinOsc.kr(pitch, 0, 0.9, 3));
+				sig = sig * env;
+				sig1 = sig1 * env;
 
-			saws = Mix.new(
-				Array.fill(8,
-					{LFSaw.ar(\sawFreq.ir(4000) + addFreq, 0.9, 0.02)})
-			);
-			shapeEnv = EnvGen.kr(Env([0.1, 0.02, 0.8, 0.0], [1, 5, 3 , 2]));
+				sig = PitchShift.ar(sig, 0.1, SinOsc.kr(pitch, 3.2, 0.9, 3));
+				sig1 = PitchShift.ar(sig1, 0.1, SinOsc.kr(pitch, 0, 0.9, 3));
 
-			saws = saws * shapeEnv;
-			saws = saws * env;
+				saws = Mix.new(
+					Array.fill(8,
+						{LFSaw.ar(\sawFreq.ir(4000) + addFreq, 0.9, 0.02)})
+				);
+				shapeEnv = EnvGen.kr(Env([0.1, 0.02, 0.8, 0.0], [1, 5, 3 , 2]));
 
-			local = LocalIn.ar(2) + [sig+sig1, sig1+sig];
-			local = DelayN.ar(local, 0.8, [0.3, 0.33]);
-			local2 = LocalIn.ar(2) + [saws, saws];
-			local2 = DelayN.ar(local2, 0.8, [0.02, 0.02]);
-			local = local + local2;
+				saws = saws * shapeEnv;
+				saws = saws * env;
 
-			local = Compander.ar(
-				local, local,
-				0.2, slopeBelow: 1.3,
-				slopeAbove: 0.1,
-				clampTime:0.1,
-				relaxTime:0.01);
-			local = local.tanh;
-			local = HPF.ar(local, 70);
-			//local = BRF.ar(local, 260);
-			LocalOut.ar(local * 0.8);
-			local.asArray.flat.sum;
-		}, server, threshold: -96, forceDontPrint: true,
-		msg: "iakamuri — https://sccode.org/1-5hW"
+				local = LocalIn.ar(2) + [sig+sig1, sig1+sig];
+				local = DelayN.ar(local, 0.8, [0.3, 0.33]);
+				local2 = LocalIn.ar(2) + [saws, saws];
+				local2 = DelayN.ar(local2, 0.8, [0.02, 0.02]);
+				local = local + local2;
+
+				local = Compander.ar(
+					local, local,
+					0.2, slopeBelow: 1.3,
+					slopeAbove: 0.1,
+					clampTime:0.1,
+					relaxTime:0.01);
+				local = local.tanh;
+				local = HPF.ar(local, 70);
+				//local = BRF.ar(local, 260);
+				LocalOut.ar(local * 0.8);
+				local.asArray.flat.sum;
+			},
+			server,
+			threshold: -96,
+			duration: 0.1,
+			forceDontPrint: true,
+			msg: "iakamuri — https://sccode.org/1-5hW"
 		);
 
 		/*
