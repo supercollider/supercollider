@@ -40,7 +40,7 @@ ControlName {
 Control : MultiOutUGen {
 	var <values;
 
-    resourceDependencies { ^[[BusConnectionStrategy, \readKr]] }
+    implicitResourceConnectionStrategies { ^[[BusConnectionStrategy, \readKr]] }
 	hasObservableEffect { ^true } // controls alter the synthdef, lets not automatically remove unused ones.
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -90,7 +90,7 @@ Control : MultiOutUGen {
 AudioControl : MultiOutUGen {
 	var <values;
 
-    resourceDependencies { ^[[BusConnectionStrategy, \readAr]] }
+    implicitResourceConnectionStrategies { ^[[BusConnectionStrategy, \readAr]] }
 	hasObservableEffect { ^true } // controls alter the synthdef, lets not automatically remove unused ones.
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -170,7 +170,7 @@ LagControl : Control {
 }
 
 AbstractIn : MultiOutUGen {
-    resourceDependencies { ^if (rate == \audio) { [[BusConnectionStrategy, \readAr]] } { [[BusConnectionStrategy, \readKr]] } }
+    implicitResourceConnectionStrategies { ^if (rate == \audio) { [[BusConnectionStrategy, \readAr]] } { [[BusConnectionStrategy, \readKr]] } }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -191,7 +191,7 @@ In : AbstractIn {
 }
 
 LocalIn : AbstractIn {
-    resourceDependencies { ^[[LocalBusConnectionStrategy]]  }
+    implicitResourceConnectionStrategies { ^[[LocalBusConnectionStrategy]]  }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -239,7 +239,7 @@ InTrig : AbstractIn {
 }
 
 AbstractOut : UGen {
-    resourceDependencies { ^if (rate == \audio) { [[BusConnectionStrategy, \writeAr]] } { [[BusConnectionStrategy, \writeKr]] } }
+    implicitResourceConnectionStrategies { ^if (rate == \audio) { [[BusConnectionStrategy, \writeAr]] } { [[BusConnectionStrategy, \writeKr]] } }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -280,7 +280,7 @@ Out : AbstractOut {
 	}
 	*numFixedArgs { ^1 }
 	optimize {
-		var result = SynthDefOptimisationResult();
+		var result = SynthDefOptimizationResult();
 		(inputs.size - 1).do({ |i|
 			this.coerceInputFromScalarToDC(i + 1, result);
 		});
@@ -291,7 +291,7 @@ Out : AbstractOut {
 }
 
 ReplaceOut : Out {
-    resourceDependencies { ^[[BusConnectionStrategy, \replace]]  }
+    implicitResourceConnectionStrategies { ^[[BusConnectionStrategy, \replace]]  }
 	canBeReplacedByIdenticalCall { ^true }
 }
 
@@ -300,7 +300,7 @@ OffsetOut : Out {
 }
 
 LocalOut : AbstractOut {
-    resourceDependencies { ^[[LocalBusConnectionStrategy]]  }
+    implicitResourceConnectionStrategies { ^[[LocalBusConnectionStrategy]]  }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -314,7 +314,7 @@ LocalOut : AbstractOut {
 		^0.0		// LocalOut has no output
 	}
 	optimize {
-		var result = SynthDefOptimisationResult();
+		var result = SynthDefOptimizationResult();
 		this.coerceInputFromScalarToDC(0, result);
 		^result.returnNilIfEmpty;
 	}
@@ -324,7 +324,7 @@ LocalOut : AbstractOut {
 
 
 XOut : AbstractOut {
-    resourceDependencies { ^if (rate == \audio) { [[BusConnectionStrategy, \blendAr]] } { [[BusConnectionStrategy, \blendKr]] } }
+    implicitResourceConnectionStrategies { ^if (rate == \audio) { [[BusConnectionStrategy, \blendAr]] } { [[BusConnectionStrategy, \blendKr]] } }
 
 	*ar { arg bus, xfade, channelsArray;
 		channelsArray = this.replaceZeroesWithSilence(channelsArray.asUGenInput(this).asArray);
@@ -336,7 +336,7 @@ XOut : AbstractOut {
 		^0.0		// Out has no output
 	}
 	optimize {
-		var result = SynthDefOptimisationResult();
+		var result = SynthDefOptimizationResult();
 		(inputs.size - 2).do({ |i|
 			this.coerceInputFromScalarToDC(i + 2, result);
 		});

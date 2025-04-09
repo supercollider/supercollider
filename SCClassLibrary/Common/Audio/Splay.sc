@@ -1,5 +1,5 @@
 Splay : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -36,7 +36,7 @@ Splay : UGen {
 
 
 SplayAz : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 

@@ -300,7 +300,7 @@ UGen : UGenBuiltInMethods {
 	////// Defaults are provided here, but each UGen should specifiy them to be clear.
 	// 1. Return an Array of zero or more ImplicitResourceConnectionStrategys, or nil if entering connectToAll mode (see ImplicitResourceConnectionStrategy).
 	// Maintains IO ordering under topological sort.
-	resourceDependencies { ^nil }
+	implicitResourceConnectionStrategies { ^nil }
 
 	// 2. Outputs to buffer, bus, sends a message, or does something else observable.
 	// Will be deleted if false and doesn't connect to a UGen that has an observable effect (dead code elimination).
@@ -317,7 +317,7 @@ UGen : UGenBuiltInMethods {
 	// Graph optimisations, replace UGens with others.
 	// This method should ONLY look at inputs (direct antecedents) but may look at all descendants.
 	// The optimizer runs from output to input, walking 'up' the graph.
-	// It must return a SynthDefOptimisationResult or nil if no optimization has occurred.
+	// It must return a SynthDefOptimizationResult or nil if no optimization has occurred.
 	// No attempt to delete UGens should be made, unless they have an observable effect (like Out),
 	//    in which case it should be added to the result as an observableUGenReplacement.
 	// To remove UGens without an observable effect, do nothing, the topological sort removes dead code automatically.

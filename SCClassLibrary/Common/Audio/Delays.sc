@@ -25,7 +25,7 @@ Delay2 : Filter {
 
 DelayN : UGen {
 	// No resource, becasuse the internal buffer is owned by the ugen.
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -42,7 +42,7 @@ DelayC : DelayN { }
 
 
 CombN : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -66,7 +66,7 @@ AllpassC : CombN { }
 // these delays use shared buffers.
 
 BufDelayN : UGen {
-	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -83,7 +83,7 @@ BufDelayC : BufDelayN { }
 
 
 BufCombN : UGen {
-	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -100,7 +100,7 @@ BufAllpassL : BufCombN { }
 BufAllpassC : BufCombN { }
 
 DelTapWr : UGen {
-	resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -114,7 +114,7 @@ DelTapWr : UGen {
 }
 
 DelTapRd : UGen {
-	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 

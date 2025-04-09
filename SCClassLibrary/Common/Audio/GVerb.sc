@@ -1,5 +1,5 @@
 GVerb : MultiOutUGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 

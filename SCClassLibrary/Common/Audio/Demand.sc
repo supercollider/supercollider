@@ -1,5 +1,5 @@
 Demand : MultiOutUGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -17,7 +17,7 @@ Demand : MultiOutUGen {
 }
 
 Duty : UGen {
-	resourceDependencies { ^if(this.hasObservableEffect) { [[DoneConnectionStrategy]] } { [] } }
+	implicitResourceConnectionStrategies { ^if(this.hasObservableEffect) { [[DoneConnectionStrategy]] } { [] } }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(2) }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -49,7 +49,7 @@ TDuty : Duty {
 }
 
 DemandEnvGen : UGen {
-	resourceDependencies { ^if(this.hasObservableEffect) { [[DoneConnectionStrategy]] } { [] } }
+	implicitResourceConnectionStrategies { ^if(this.hasObservableEffect) { [[DoneConnectionStrategy]] } { [] } }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(9) }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -93,7 +93,7 @@ DUGen : UGen {
 }
 
 Dseries : DUGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 	*new { arg start = 1, step = 1, length = inf;
@@ -102,7 +102,7 @@ Dseries : DUGen {
 }
 
 Dgeom : DUGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 	*new { arg start = 1, grow = 2, length = inf;
@@ -111,7 +111,7 @@ Dgeom : DUGen {
 }
 
 Dbufrd : DUGen {
-	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \read]] }
 	canBeReplacedByIdenticalCall { ^true }
 	hasObservableEffect { ^false }
 
@@ -122,7 +122,7 @@ Dbufrd : DUGen {
 }
 
 Dbufwr : DUGen {
-	resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -139,33 +139,33 @@ ListDUGen : DUGen {
 }
 
 Dseq : ListDUGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 }
 Dser : ListDUGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 }
 Dshuf : ListDUGen {
-	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 }
 Drand : ListDUGen {
-	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 }
 Dxrand : ListDUGen {
-	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 }
 
 Dwrand : DUGen {
-	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 	*new { arg list, weights, repeats = 1;
@@ -176,7 +176,7 @@ Dwrand : DUGen {
 }
 
 Dswitch1 : DUGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 	*new { arg list, index;
@@ -185,13 +185,13 @@ Dswitch1 : DUGen {
 }
 
 Dswitch : Dswitch1 {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 }
 
 Dwhite : DUGen {
-	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -201,13 +201,13 @@ Dwhite : DUGen {
 }
 
 Diwhite : Dwhite {
-	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 }
 
 Dbrown : DUGen {
-	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -217,7 +217,7 @@ Dbrown : DUGen {
 }
 
 Dibrown : Dbrown {
-	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 }
@@ -225,7 +225,7 @@ Dibrown : Dbrown {
 Dstutter : DUGen {
 	classvar suggestNew;
 
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -243,7 +243,7 @@ Dstutter : DUGen {
 }
 
 Ddup : DUGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 	*new { |n, in|
@@ -252,7 +252,7 @@ Ddup : DUGen {
 }
 
 Dconst : DUGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 	*new { arg sum, in, tolerance = 0.001;
@@ -261,7 +261,7 @@ Dconst : DUGen {
 }
 
 Dreset : DUGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -271,7 +271,7 @@ Dreset : DUGen {
 }
 
 Dpoll : DUGen {
-	resourceDependencies { ^[[MessageConnectionStrategy]] }
+	implicitResourceConnectionStrategies { ^[[MessageConnectionStrategy]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^false } // This will just print the thing twice.
 

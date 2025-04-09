@@ -1,5 +1,5 @@
 Poll : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^false }
 

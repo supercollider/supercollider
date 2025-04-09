@@ -1,5 +1,5 @@
 PitchShift : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 	checkInputs { ^this.checkSameRateAsFirstInput }

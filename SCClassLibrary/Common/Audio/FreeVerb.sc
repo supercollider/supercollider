@@ -1,7 +1,7 @@
 // blackrain's freeverb ugen.
 
 FreeVerb : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -13,7 +13,7 @@ FreeVerb : UGen {
 }
 
 FreeVerb2 : MultiOutUGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 

@@ -16,7 +16,7 @@ represent the interpolation method used between function iterations.
 */
 
 ChaosGen : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 }

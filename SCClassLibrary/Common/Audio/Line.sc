@@ -1,5 +1,5 @@
 Line : UGen {
-	resourceDependencies { ^if(this.hasObservableEffect) { [[DoneConnectionStrategy]] } { [] } }
+	implicitResourceConnectionStrategies { ^if(this.hasObservableEffect) { [[DoneConnectionStrategy]] } { [] } }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(3) }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -12,7 +12,7 @@ Line : UGen {
 }
 
 XLine : UGen {
-	resourceDependencies { ^if(this.hasObservableEffect) { [[DoneConnectionStrategy]] } { [] } }
+	implicitResourceConnectionStrategies { ^if(this.hasObservableEffect) { [[DoneConnectionStrategy]] } { [] } }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(3) }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -25,7 +25,7 @@ XLine : UGen {
 }
 
 LinExp : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	checkInputs { ^this.checkSameRateAsFirstInput }
 	canBeReplacedByIdenticalCall { ^true }
@@ -54,7 +54,7 @@ LinLin {
 }
 
 AmpComp : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -86,7 +86,7 @@ AmpCompA : AmpComp {
 }
 
 K2A : UGen { // control rate to audio rate converter
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -96,7 +96,7 @@ K2A : UGen { // control rate to audio rate converter
 }
 
 A2K : UGen { // audio rate to control rate converter. only needed in specific cases
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -121,7 +121,7 @@ T2A : K2A { // control rate to audio rate trigger converter.
 }
 
 DC : MultiOutUGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 

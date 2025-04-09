@@ -1,5 +1,5 @@
 PlayBuf : MultiOutUGen {
-	resourceDependencies {
+	implicitResourceConnectionStrategies {
 		^if(this.hasObservableEffect){
 			[[BufferConnectionStrategy, \read], [DoneConnectionStrategy]]
 		}  {
@@ -26,7 +26,7 @@ PlayBuf : MultiOutUGen {
 }
 
 TGrains : MultiOutUGen {
-	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -44,7 +44,7 @@ TGrains : MultiOutUGen {
 }
 
 BufRd : MultiOutUGen {
-	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -61,7 +61,7 @@ BufRd : MultiOutUGen {
 	}
 
 	optimize {
-		var result = SynthDefOptimisationResult();
+		var result = SynthDefOptimizationResult();
 		this.coerceInputFromScalarToDC(2, result); // phase
 		^result.returnNilIfEmpty;
 	}
@@ -76,7 +76,7 @@ BufRd : MultiOutUGen {
 }
 
 BufWr : UGen {
-	resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -92,7 +92,7 @@ BufWr : UGen {
 	}
 
 	optimize {
-		var result = SynthDefOptimisationResult();
+		var result = SynthDefOptimizationResult();
 		if (this.rate == \audio){
 			this.coerceInputFromScalarToDC(1, result); // phase
 			(inputs.size - 2).do { |i| this.coerceInputFromScalarToDC(3 + i, result) }; // audio array
@@ -115,7 +115,7 @@ BufWr : UGen {
 }
 
 RecordBuf : UGen {
-	resourceDependencies {
+	implicitResourceConnectionStrategies {
 		^if(this.hasObservableEffect){
 			[[BufferConnectionStrategy, \write], [DoneConnectionStrategy]]
 		}  {
@@ -141,7 +141,7 @@ RecordBuf : UGen {
 	}
 
 	optimize {
-		var result = SynthDefOptimisationResult();
+		var result = SynthDefOptimizationResult();
 		// For each inputs, turn it into a DC if it is a number
 		if (this.rate == \audio){
 			(inputs.size - 7).do { |i|
@@ -153,7 +153,7 @@ RecordBuf : UGen {
 }
 
 ScopeOut : UGen {
-	resourceDependencies { ^[[BufferConnectionStrategy, \writeReplace]] }
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \writeReplace]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -168,7 +168,7 @@ ScopeOut : UGen {
 }
 
 ScopeOut2 : UGen {
-	resourceDependencies { ^[[BufferConnectionStrategy, \writeReplace]] }
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \writeReplace]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -183,7 +183,7 @@ ScopeOut2 : UGen {
 }
 
 Tap : UGen {
-	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -197,7 +197,7 @@ Tap : UGen {
 LocalBuf : WidthFirstUGen {
 	// This depends on nothing, and returns an instance which is passed explicitly
 	//    to the input of the UGen where it is used, therefore nothing is needed.
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 
 	hasObservableEffect { ^false } // If you don't use the buffer, it can be deleted.
 	canBeReplacedByIdenticalCall { ^false } // Each call should produce a unqiue buffer.
@@ -239,7 +239,7 @@ LocalBuf : WidthFirstUGen {
 }
 
 MaxLocalBufs : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -252,7 +252,7 @@ MaxLocalBufs : UGen {
 }
 
 SetBuf : WidthFirstUGen {
-	resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -263,7 +263,7 @@ SetBuf : WidthFirstUGen {
 }
 
 ClearBuf : WidthFirstUGen {
-	resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 

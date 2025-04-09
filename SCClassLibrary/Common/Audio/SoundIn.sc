@@ -1,5 +1,5 @@
 SoundIn  {
-	resourceDependencies { ^[[BusConnectionStrategy, \read]] }
+	implicitResourceConnectionStrategies { ^[[BusConnectionStrategy, \read]] }
  	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 

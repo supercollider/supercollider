@@ -80,7 +80,7 @@ PRSynthDefUGenOccurrenceTracker {
 }
 */
 
-SynthDefOptimisationResult {
+SynthDefOptimizationResult {
 	var <>maxDepthOfOperation = 1; // Integer greater than 0.
 	var <>newUGens; // Array of UGens.
 	var <>observableUGenReplacements; // An Array of Associations, or nil
@@ -98,6 +98,7 @@ SynthDefOptimisationResult {
 	returnNilIfEmpty { ^newUGens !? { this } }
 }
 
+// Walks from the bottom of the graph (outputs) towards to top (inputs).
 SynthDefOptimizer {
 	var deduplicate = false;
 	var rewrite = false;
@@ -105,7 +106,7 @@ SynthDefOptimizer {
 	var finalGraph;
 	var toVisit;
 
-	// IdentityDiciontary[
+	// IdentityDictionary[
 	//   Symbol (current.nameForDisplay) -> Array[ugen inputs, \separator, ugen weakAntecedents] (current.inputsForIdentityCheck)
 	// ]
 	// Used to deduce if a UGen can be replaced by another.
@@ -113,7 +114,13 @@ SynthDefOptimizer {
 
 	*new { |inRoots, deduplicate, rewrite|
 		if ( (deduplicate.not) and: { rewrite.not} ){ ^inRoots.copy };
-		^super.newCopyArgs(deduplicate.asBoolean, rewrite.asBoolean, inRoots.copy, inRoots.copy, IdentityDictionary(512)).prMain
+		^super.newCopyArgs(
+			deduplicate: deduplicate.asBoolean,
+			rewrite: rewrite.asBoolean, 
+			finalGraph: inRoots.copy, 
+			toVisit: inRoots.copy, 
+			visited: IdentityDictionary(512)
+		).prMain
 	}
 
 	prMain {
@@ -121,6 +128,24 @@ SynthDefOptimizer {
 			this.prOptimise
 		};
 		^finalGraph
+	}
+
+	prOptimise {
+		var current;
+		// Although this might look slow, it provides large performance boosts for big graphs.
+		toVisit.removeIdenticalDuplicates;
+		current = toVisit.pop.source;
+
+		if (deduplicate) {
+			if (this.prDeduplicate(current)) { ^nil }
+		};
+
+		if (rewrite){
+			if (this.prRewrite(current)) { ^nil }
+		};
+
+		// no optimizations have occurred.
+		toVisit = toVisit.addAll(current.antecedents);
 	}
 
 	prDeduplicate { |current|
@@ -156,7 +181,7 @@ SynthDefOptimizer {
 
 	prRewrite { |current|
 		if (current.hasObservableEffect or: { current.descendants.isEmpty.not }) {
-			current.optimize !? { |results| // SynthDefOptimisationResult
+			current.optimize !? { |results| // SynthDefOptimizationResult
 
 				if (results.newUGens.isNil.not) {
 					var ref = Ref([]);
@@ -182,42 +207,25 @@ SynthDefOptimizer {
 		^false
 	}
 
-	prOptimise {
-		var current;
-		// Although this might look slow, it provides large performance boosts for big graphs.
-		toVisit.removeIdenticalDuplicates;
-		current = toVisit.pop.source;
-
-		if (deduplicate) {
-			if (this.prDeduplicate(current)) { ^nil }
-		};
-
-		if (rewrite){
-			if (this.prRewrite(current)) { ^nil }
-		};
-
-		// no opts
-		toVisit = toVisit.addAll(current.antecedents);
-	}
 }
 
-SynthDefOptimizations {
+SynthDefOptimizationFlags {
 	var <sorting;
 	var <deduplication;
 	var <rewrite;
 
-	*all { ^super.newCopyArgs(true, true, true) }
-	*none { ^super.newCopyArgs(false, false, false) }
-	*onlySorting { ^super.newCopyArgs(true, false, false) }
-	*deduplicationAndSorting { ^super.newCopyArgs(true, true, false) }
-	*sortingAndRewrite { ^super.newCopyArgs(true, false, true) }
+	*all { ^super.newCopyArgs(sorting:true, deduplication: true, rewrite: true) }
+	*none { ^super.newCopyArgs(sorting: false, deduplication: false, rewrite: false) }
+	*onlySorting { ^super.newCopyArgs(sorting: true, deduplication: false, rewrite: false) }
+	*deduplicationAndSorting { ^super.newCopyArgs(sorting: true, deduplication: true, rewrite: false) }
+	*sortingAndRewrite { ^super.newCopyArgs(sorting: true, deduplication: false, rewrite: true) }
 }
 
 SynthDef {
 	classvar <synthDefDir;
 	classvar <>warnAboutLargeSynthDefs = false;
 
-	classvar <optimizations;
+	classvar <optimizationLevel;
 
 	var <>name;
 	var <>func;
@@ -253,14 +261,14 @@ SynthDef {
 	}
 
 	*setOptimizations { |opts|
-		if (opts.isKindOf(SynthDefOptimizations).not) { Error("opts should be a SynthDefOptimizations").throw };
-		optimizations = opts;
+		if (opts.isKindOf(SynthDefOptimizationFlags).not) { Error("opts should be a SynthDefOptimizationFlags").throw };
+		optimizationLevel = opts;
 	}
 
 	*initClass {
 		synthDefDir = Platform.userAppSupportDir ++ "/synthdefs/";
 		synthDefDir.mkdir;
-		optimizations = SynthDefOptimizations.all;
+		optimizationLevel = SynthDefOptimizationFlags.all;
 	}
 
 	*newForSynthDesc {
@@ -285,13 +293,13 @@ SynthDef {
 
 	// Same as new, but optimises for a fast language side compile time, rather than fast server--side performance.
 	*newFast { |name, ugenGraphFunc, rates, prependArgs, variants, metadata|
-		^SynthDef.newWithOptimizations(SynthDefOptimizations.sortingAndRewrite, name, ugenGraphFunc, rates, prependArgs, variants, metadata)
+		^SynthDef.newWithOptimizations(SynthDefOptimizationFlags.sortingAndRewrite, name, ugenGraphFunc, rates, prependArgs, variants, metadata)
 	}
 
 	*newWithOptimizations { |newOptimizations, name, ugenGraphFunc, rates, prependArgs, variants, metadata|
 		var out;
-		var opts = optimizations;
-		if (newOptimizations.isKindOf(SynthDefOptimizations).not) { Error("newOptimizations should be a SynthDefOptimizations").throw };
+		var oldOptimizations = optimizationLevel;
+		if (newOptimizations.isKindOf(SynthDefOptimizationFlags).not) { Error("newOptimizations should be a SynthDefOptimizationFlags").throw };
 		SynthDef.setOptimizations(newOptimizations);
 
 		out = super.newCopyArgs(
@@ -304,7 +312,7 @@ SynthDef {
 			resourceManagers: ImplicitResourceConnectionStrategy.createNewInstances,
 		).build(rates, prependArgs);
 
-		SynthDef.setOptimizations(opts);
+		SynthDef.setOptimizations(oldOptimizations);
 
 		^out;
 	}
@@ -325,10 +333,11 @@ SynthDef {
 			rewriteInProgress = true;
 			children.do(_.initEdges); // Necessary because of init method in UGen child classes not returning instances of UGen.
 
-			effectiveUGens = SynthDefOptimizer(effectiveUGens, optimizations.deduplication, optimizations.rewrite);
+			effectiveUGens = SynthDefOptimizer(effectiveUGens, optimizationLevel.deduplication, optimizationLevel.rewrite);
 
-			if (optimizations.sorting) {
+			if (optimizationLevel.sorting) {
 				// Does dead code elimination as a side effect.
+				// Reverse so it starts at the bottom of the graph.
 				children = SynthDefTopologicalSort(effectiveUGens.reverse)
 			};
 
@@ -336,8 +345,8 @@ SynthDef {
 
 			this.checkInputs; // Throws when invalid inputs are found.
 
-			children.do { | ugen, i| ugen.synthIndex = i }; // Reindex UGens.
-			children.do(_.onFinalizedSynthDef);
+			children.do { |ugen, i| ugen.synthIndex = i }; // Reindex UGens.
+			children.do( _.onFinalizedSynthDef );
 
 			// Please note, this event should NOT be used inside UGens, instead, onFinalizedSynthDef should be used.
 			this.class.changed(\synthDefReady, this);
@@ -372,6 +381,8 @@ SynthDef {
 		prependArgs = prependArgs.asArray;
 		this.addControlsFromArgsOfFunc(ugenGraphFunc, rates, prependArgs.size);
 
+		// This is the part where the passed in function is evaluated.
+		// Here, as each UGen is instantiated, its constructor appends itself to this synthdef instance through the 'addUGen' method.
 		result = ugenGraphFunc.valueArray(prependArgs ++ this.buildControls);
 
 		controlNames = saveControlNames
@@ -677,10 +688,15 @@ SynthDef {
 		^true
 	}
 
+
+	// This is one of the more important methods here. 
+	// When evaluated the passed in ugenFunction, each UGen's constructor calls this method on the globally active synthdef.
 	addUGen { |ugen|
-		ugen.synthIndex = children.size;
+		// Set the index, this will changed later after optimisations are done.
+		//ugen.synthIndex = children.size;
 		children = children.add(ugen);
 
+		// UGen alters a resource and shouldn't be deleted by dead code elimination.
 		if (ugen.hasObservableEffect){
 			effectiveUGens = effectiveUGens.add(ugen)
 		};
@@ -693,7 +709,7 @@ SynthDef {
 			//!? { |m| m.asArray.do{ |manager| resourceManagers.at(manager).add(ugen) } }
 			//?? { resourceManagers.do(_.connectToAll(ugen)) };
 
-			ugen.resourceDependencies
+			ugen.implicitResourceConnectionStrategies
 			!? { |arrayOfArgs| arrayOfArgs.do{ |args| resourceManagers.at(args[0]).add(ugen, *args[1..]) } }
 			?? { resourceManagers.do(_.connectToAll(ugen)) }
 		}

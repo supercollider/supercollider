@@ -2,7 +2,7 @@
 
 BasicOpUGen : UGen {
 	var <operator;
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 	nameForDisplay { ^(super.name ++ rate ++ operator).asSymbol }
@@ -49,7 +49,7 @@ UnaryOpUGen : BasicOpUGen {
 
 	optimize {
 		if ((inputs[0].isKindOf(UGen) and: {inputs[0].source.isKindOf(DC)} ) or: { inputs[0].isKindOf(Number) }) {
-			var result = SynthDefOptimisationResult();
+			var result = SynthDefOptimizationResult();
 			var number =  if (inputs[0].isKindOf(UGen) and: {inputs[0].source.isKindOf(DC)}) {
 				inputs[0].source.inputs[0]
 			} {
@@ -64,7 +64,7 @@ UnaryOpUGen : BasicOpUGen {
 
 		case
 		{ operator == 'neg' } {
-			var result = SynthDefOptimisationResult();
+			var result = SynthDefOptimizationResult();
 			var desc;
 
 			// a - b.neg => a + b
@@ -131,7 +131,7 @@ BinaryOpUGen : BasicOpUGen {
 	}
 
 	optimizeMul {
-		var result = SynthDefOptimisationResult();
+		var result = SynthDefOptimizationResult();
 		var desc;
 
 		// 1 * a => a
@@ -260,7 +260,7 @@ BinaryOpUGen : BasicOpUGen {
 	}
 
 	optimizeDiv {
-		var result = SynthDefOptimisationResult();
+		var result = SynthDefOptimizationResult();
 		var desc;
 
 		// 1 / a => a.reciprocal
@@ -302,7 +302,7 @@ BinaryOpUGen : BasicOpUGen {
 	}
 
 	optimizeAdd {
-		var result = SynthDefOptimisationResult();
+		var result = SynthDefOptimizationResult();
 		var desc;
 		// 0 + a => a
 		if (UGen.numericallyEquivalent(inputs[0], 0)){
@@ -353,7 +353,7 @@ BinaryOpUGen : BasicOpUGen {
 	}
 
 	optimizeSubtract {
-		var result = SynthDefOptimisationResult();
+		var result = SynthDefOptimizationResult();
 		var desc;
 		// 0 - a => a.neg
 		if (UGen.numericallyEquivalent(inputs[0], 0)){
@@ -378,7 +378,7 @@ BinaryOpUGen : BasicOpUGen {
 		var i;
 		if (inputs.any { |in, ini| i = ini; in.source.isKindOf(DC) } ) {
 			if (inputs[1 - i].rate == this.rate) {
-				var results = SynthDefOptimisationResult();
+				var results = SynthDefOptimizationResult();
 				this.replaceInputAt(i, inputs[i].source.inputs[0]);
 				results.addUGen(this, 1);
 				^results;
@@ -387,7 +387,7 @@ BinaryOpUGen : BasicOpUGen {
 
 		// If scalar or DC, actually do the maths.
 		if (inputs.every({|in| (in.isKindOf(UGen) and: {in.source.isKindOf(DC) and: {in.source.inputs[0].isKindOf(Number) }} ) or: { in.isKindOf(Number) }})) {
-			var result = SynthDefOptimisationResult();
+			var result = SynthDefOptimizationResult();
 			var numbers = inputs.collect{ |in|
 				if (in.isKindOf(UGen) and: {in.source.isKindOf(DC)}) {
 					in.source.inputs[0]
@@ -414,7 +414,7 @@ BinaryOpUGen : BasicOpUGen {
 }
 
 MulAdd : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -459,7 +459,7 @@ MulAdd : UGen {
 	optimize {
 		// If scalar or DC, actually do the maths.
 		if (inputs.every({|in| (in.isKindOf(UGen) and: {in.source.isKindOf(DC)} ) or: { in.isKindOf(Number) }})) {
-			var result = SynthDefOptimisationResult();
+			var result = SynthDefOptimizationResult();
 			var numbers = inputs.collect{ |in|
 				if (in.isKindOf(UGen) and: {in.source.isKindOf(DC)}) {
 					in.source.inputs[0]
@@ -476,7 +476,7 @@ MulAdd : UGen {
 
 		// (0 * a + b) | (a * 0 + b) => b
 		if (UGen.numericallyEquivalent(inputs[0], 0) or: { UGen.numericallyEquivalent(inputs[1], 0) }){
-			var result = SynthDefOptimisationResult();
+			var result = SynthDefOptimizationResult();
 			this.prepareForReplacement(inputs[2], result, 2) !? { |re|
 				this.replace(re);
 				^result
@@ -485,7 +485,7 @@ MulAdd : UGen {
 
 		// -1 * a + b => b - a
 		if (UGen.numericallyEquivalent(inputs[0], -1)){
-			var result = SynthDefOptimisationResult();
+			var result = SynthDefOptimizationResult();
 			var new = BinaryOpUGen.newDuringOptimisation(this.rate, '-', inputs[2], inputs[1]);
 			this.prepareForReplacement(new, result, 1) !? { |re|
 				this.replace(re);
@@ -494,7 +494,7 @@ MulAdd : UGen {
 		};
 		// a * -1 + b => b - a
 		if (UGen.numericallyEquivalent(inputs[1], -1)){
-			var result = SynthDefOptimisationResult();
+			var result = SynthDefOptimizationResult();
 			var new = BinaryOpUGen.newDuringOptimisation(this.rate, '-', inputs[2], inputs[0]);
 			this.prepareForReplacement(new, result, 1) !? { |re|
 				this.replace(re);
@@ -504,7 +504,7 @@ MulAdd : UGen {
 
 		// 1 * a + b => a + b
 		if (UGen.numericallyEquivalent(inputs[0], 1)){
-			var result = SynthDefOptimisationResult();
+			var result = SynthDefOptimizationResult();
 			var new = BinaryOpUGen.newDuringOptimisation(this.rate, '+', inputs[1], inputs[2]);
 			this.prepareForReplacement(new, result, 1) !? { |re|
 				this.replace(re);
@@ -513,7 +513,7 @@ MulAdd : UGen {
 		};
 		// a * 1 + b => a + b
 		if (UGen.numericallyEquivalent(inputs[1], -1)){
-			var result = SynthDefOptimisationResult();
+			var result = SynthDefOptimizationResult();
 			var new = BinaryOpUGen.newDuringOptimisation(this.rate, '+', inputs[0], inputs[2]);
 			this.prepareForReplacement(new, result, 1) !? { |re|
 				this.replace(re);
@@ -522,7 +522,7 @@ MulAdd : UGen {
 		};
 		// 2 * a + b => b
 		if (UGen.numericallyEquivalent(inputs[0], 2)){
-			var result = SynthDefOptimisationResult();
+			var result = SynthDefOptimizationResult();
 			var new1 = BinaryOpUGen.newDuringOptimisation(this.rate, '+', inputs[1], inputs[1]);
 			var new2 = BinaryOpUGen.newDuringOptimisation(this.rate, '+', new1, inputs[2]);
 
@@ -533,7 +533,7 @@ MulAdd : UGen {
 		};
 		// a * 2 + b => b
 		if (UGen.numericallyEquivalent(inputs[1], 2)){
-			var result = SynthDefOptimisationResult();
+			var result = SynthDefOptimizationResult();
 			var new1 = BinaryOpUGen.newDuringOptimisation(this.rate, '+', inputs[0], inputs[0]);
 			var new2 = BinaryOpUGen.newDuringOptimisation(this.rate, '+', new1, inputs[2]);
 
@@ -545,7 +545,7 @@ MulAdd : UGen {
 
 		// a * b + 0 => a * b
 		if (UGen.numericallyEquivalent(inputs[2], 0)){
-			var result = SynthDefOptimisationResult();
+			var result = SynthDefOptimizationResult();
 			var new = BinaryOpUGen.newDuringOptimisation(this.rate, '*', inputs[0], inputs[1]);
 			this.prepareForReplacement(new, result, 1) !? { |re|
 				this.replace(re);
@@ -558,7 +558,7 @@ MulAdd : UGen {
 }
 
 Sum3 : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -577,7 +577,7 @@ Sum3 : UGen {
 
 		// If scalar or DC, actually do the maths.
 		if (inputs.every({|in| (in.isKindOf(UGen) and: {in.source.isKindOf(DC)} ) or: { in.isKindOf(Number) }})) {
-			var result = SynthDefOptimisationResult();
+			var result = SynthDefOptimizationResult();
 			var numbers = inputs.collect{ |in|
 				if (in.isKindOf(UGen) and: {in.source.isKindOf(DC)}) {
 					in.source.inputs[0]
@@ -595,7 +595,7 @@ Sum3 : UGen {
 		// Sum3(a, b, c) + d => Sum4(a, b, c, d)
 		desc = descendants.select { |d| d.isKindOf(BinaryOpUGen) and: { d.operator == '+' } };
 		if(desc.isEmpty.not){
-			var result = SynthDefOptimisationResult();
+			var result = SynthDefOptimizationResult();
 			desc.do { |add|
 				var otherValues = add.inputs.select{|i| i !== this };
 				// if Sum3(a, b, c) + Sum3(a, b, c) then the optimisation cannot be applied
@@ -612,7 +612,7 @@ Sum3 : UGen {
 		// Sum3(a, b, c) - a => (b + c)
 		desc = descendants.select { |d| d.isKindOf(BinaryOpUGen) and: { d.operator == '-' } };
 		if(desc.isEmpty.not){
-			var result = SynthDefOptimisationResult();
+			var result = SynthDefOptimizationResult();
 			desc.do { |minus|
 				var otherValues = minus.inputs.select{|i| i !== this };
 				// if Sum3(a, b, c) - Sum3(a, b, c) then the optimisation cannot be applied (handled by BinaryOpUGen)
@@ -630,7 +630,7 @@ Sum3 : UGen {
 		};
 
 		if (inputs.every(_ === inputs[0])){
-			var result = SynthDefOptimisationResult();
+			var result = SynthDefOptimizationResult();
 			var newMul = BinaryOpUGen.newDuringOptimisation(this.rate, '*', inputs[0], 3);
 			this.prepareForReplacement(newMul, result, 1) !? { |re|
 				this.replace(re);
@@ -642,21 +642,21 @@ Sum3 : UGen {
 			var nonZero = inputs.select(_ != 0);
 			case
 			{ nonZero.size == 0 } {
-				var result = SynthDefOptimisationResult();
+				var result = SynthDefOptimizationResult();
 				this.prepareForReplacement(0, result, 1) !? { |re|
 					this.replace(re);
 					^result
 				}
 			}
 			{ nonZero.size == 1 } {
-				var result = SynthDefOptimisationResult();
+				var result = SynthDefOptimizationResult();
 				this.prepareForReplacement(nonZero[0], result, 1) !? { |re|
 					this.replace(re);
 					^result
 				}
 			}
 			{ nonZero.size == 2 } {
-				var result = SynthDefOptimisationResult();
+				var result = SynthDefOptimizationResult();
 				var new = BinaryOpUGen.newDuringOptimisation(this.rate, '+', nonZero[0], nonZero[1]);
 				this.prepareForReplacement(new, result, 1) !? { |re|
 					this.replace(re);
@@ -669,7 +669,7 @@ Sum3 : UGen {
 }
 
 Sum4 : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -690,7 +690,7 @@ Sum4 : UGen {
 
 		// If scalar or DC, actually do the maths.
 		if (inputs.every({|in| (in.isKindOf(UGen) and: {in.source.isKindOf(DC)} ) or: { in.isKindOf(Number) }})) {
-			var result = SynthDefOptimisationResult();
+			var result = SynthDefOptimizationResult();
 			var numbers = inputs.collect{ |in|
 				if (in.isKindOf(UGen) and: {in.source.isKindOf(DC)}) {
 					in.source.inputs[0]
@@ -708,7 +708,7 @@ Sum4 : UGen {
 		// Sum4(a, b, c, d) - a => Sum3(b, c, d)
 		desc = descendants.select { |d| d.isKindOf(BinaryOpUGen) and: { d.operator == '-' } };
 		if(desc.isEmpty.not){
-			var result = SynthDefOptimisationResult();
+			var result = SynthDefOptimizationResult();
 			desc.do { |minus|
 				var otherValues = minus.inputs.select{|i| i !== this };
 				// if Sum4(a, b, c, d) - Sum4(a, b, c, d) then the optimisation cannot be applied (handled by BinaryOpUGen)
@@ -728,7 +728,7 @@ Sum4 : UGen {
 
 		// Sum4(a, a, a, a) => a * 4
 		if (inputs.every(_ === inputs[0])){
-			var result = SynthDefOptimisationResult();
+			var result = SynthDefOptimizationResult();
 			var new = BinaryOpUGen.newDuringOptimisation(this.rate, '*', inputs[0], 4);
 			this.prepareForReplacement(new, result, 1) !? { |re|
 				this.replace(re);
@@ -740,25 +740,25 @@ Sum4 : UGen {
 		// Sum4(a, b, 0, 0) => a + b
 		// Sum4(a, b, c, 0) => Sum3(a, b, c)
 		if (inputs.any(_ == 0)){
-			var result = SynthDefOptimisationResult();
+			var result = SynthDefOptimizationResult();
 			var nonZero = inputs.select(_ != 0);
 			case
 			{ nonZero.size == 0 } {
-				var result = SynthDefOptimisationResult();
+				var result = SynthDefOptimizationResult();
 				this.prepareForReplacement(0, result, 1) !? { |re|
 					this.replace(re);
 					^result
 				}
 			}
 			{ nonZero.size == 1 } {
-				var result = SynthDefOptimisationResult();
+				var result = SynthDefOptimizationResult();
 				this.prepareForReplacement(nonZero[0], result, 1) !? { |re|
 					this.replace(re);
 					^result
 				}
 			}
 			{ nonZero.size == 2 } {
-				var result = SynthDefOptimisationResult();
+				var result = SynthDefOptimizationResult();
 				var new = BinaryOpUGen.newDuringOptimisation(this.rate, '+', nonZero[0], nonZero[1]);
 				this.prepareForReplacement(new, result, 1) !? { |re|
 					this.replace(re);
@@ -766,7 +766,7 @@ Sum4 : UGen {
 				}
 			}
 			{ nonZero.size == 3 } {
-				var result = SynthDefOptimisationResult();
+				var result = SynthDefOptimizationResult();
 				var new = Sum3.newDuringOptimisation(this.rate, nonZero[0], nonZero[1], nonZero[2]);
 				this.prepareForReplacement(new, result, 1) !? { |re|
 					this.replace(re);

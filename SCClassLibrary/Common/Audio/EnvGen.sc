@@ -18,7 +18,7 @@ Done : UGen {
 	const <freeSelfResumeNext = 15;
 
 	// Assuming the user hasn't called this with 'none' as that would be pointless.
-	resourceDependencies { ^[[DoneConnectionStrategy]] }
+	implicitResourceConnectionStrategies { ^[[DoneConnectionStrategy]] }
 	hasObservableEffect { ^true } // While this might not always be true, it simplifies things.
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -39,7 +39,7 @@ FreeSelf : UGen {
 }
 
 PauseSelf : UGen {
-	resourceDependencies { ^[[DoneConnectionStrategy]] }
+	implicitResourceConnectionStrategies { ^[[DoneConnectionStrategy]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -50,7 +50,7 @@ PauseSelf : UGen {
 }
 
 FreeSelfWhenDone : UGen {
-	resourceDependencies { ^[[DoneConnectionStrategy]] }
+	implicitResourceConnectionStrategies { ^[[DoneConnectionStrategy]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -60,7 +60,7 @@ FreeSelfWhenDone : UGen {
 }
 
 PauseSelfWhenDone : UGen {
-	resourceDependencies { ^[[DoneConnectionStrategy]] }
+	implicitResourceConnectionStrategies { ^[[DoneConnectionStrategy]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -70,7 +70,7 @@ PauseSelfWhenDone : UGen {
 }
 
 Pause : UGen {
-	resourceDependencies { ^[[DoneConnectionStrategy]] }
+	implicitResourceConnectionStrategies { ^[[DoneConnectionStrategy]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -80,7 +80,7 @@ Pause : UGen {
 }
 
 Free : UGen {
-	resourceDependencies { ^[[DoneConnectionStrategy]] }
+	implicitResourceConnectionStrategies { ^[[DoneConnectionStrategy]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -90,7 +90,7 @@ Free : UGen {
 }
 
 EnvGen : UGen { // envelope generator
-	resourceDependencies {^if(this.hasObservableEffect) { [[DoneConnectionStrategy]] } { [] } }
+	implicitResourceConnectionStrategies {^if(this.hasObservableEffect) { [[DoneConnectionStrategy]] } { [] } }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(4) }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -124,7 +124,7 @@ EnvGen : UGen { // envelope generator
 }
 
 Linen : UGen {
-	resourceDependencies {^if(this.hasObservableEffect) { [[DoneConnectionStrategy]] } { [] } }
+	implicitResourceConnectionStrategies {^if(this.hasObservableEffect) { [[DoneConnectionStrategy]] } { [] } }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(4) }
 	canBeReplacedByIdenticalCall { ^true }
 

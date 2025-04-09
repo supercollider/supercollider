@@ -1,5 +1,5 @@
 InfoUGenBase : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -7,7 +7,7 @@ InfoUGenBase : UGen {
 }
 
 BufInfoUGenBase : UGen {
-   resourceDependencies { ^[[BusConnectionStrategy, \read]] }
+   implicitResourceConnectionStrategies { ^[[BusConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 

@@ -1,7 +1,7 @@
 
 //sick lincoln remembers complex analysis courses
 PV_ConformalMap : PV_ChainUGen {
-    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
+    implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -13,7 +13,7 @@ PV_ConformalMap : PV_ChainUGen {
 // in and kernel are both audio rate changing signals
 // Kernel is an audio rate signal.
 Convolution : UGen {
-    resourceDependencies { ^[] }
+    implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -25,7 +25,7 @@ Convolution : UGen {
 // fixed kernel convolver with fix by nescivi to update the kernel on receipt of a trigger message
 // Kernel is a Buffer.
 Convolution2 : UGen {
-    resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
+    implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \read]] }
 
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
@@ -38,7 +38,7 @@ Convolution2 : UGen {
 // fixed kernel convolver with linear crossfade
 // Kernel is a Buffer.
 Convolution2L : UGen {
-    resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
+    implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \read]] }
 
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
@@ -51,7 +51,7 @@ Convolution2L : UGen {
 //fixed kernel stereo convolver with linear crossfade
 // Kernel is a Buffer.
 StereoConvolution2L : MultiOutUGen {
-    resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
+    implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \read]] }
 
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
@@ -72,7 +72,7 @@ StereoConvolution2L : MultiOutUGen {
 //time based convolution by nescivi
 // Kernel is a Buffer.
 Convolution3 : UGen {
-    resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
+    implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \read]] }
 
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
@@ -88,7 +88,7 @@ Convolution3 : UGen {
 
 //jensen andersen inspired FFT feature detector
 PV_JensenAndersen : PV_ChainUGen {
-    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
+    implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -99,7 +99,7 @@ PV_JensenAndersen : PV_ChainUGen {
 
 
 PV_HainsworthFoote : PV_ChainUGen {
-    resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
+    implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -110,7 +110,7 @@ PV_HainsworthFoote : PV_ChainUGen {
 
 //not FFT but useful for time domain onset detection
 RunningSum : UGen {
-    resourceDependencies { ^[] }
+    implicitResourceConnectionStrategies { ^[] }
 	resourceManagers { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }

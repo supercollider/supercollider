@@ -1,7 +1,7 @@
 // Writes to disk
 DiskOut : UGen {
 
-	resourceDependencies { ^[[DiskStateConnectionStrategy]] }
+	implicitResourceConnectionStrategies { ^[[DiskStateConnectionStrategy]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -23,7 +23,7 @@ DiskOut : UGen {
 
 // Plays from disk
 DiskIn : MultiOutUGen {
-	resourceDependencies { ^[[DiskStateConnectionStrategy]] }
+	implicitResourceConnectionStrategies { ^[[DiskStateConnectionStrategy]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -37,7 +37,7 @@ DiskIn : MultiOutUGen {
 }
 
 VDiskIn : MultiOutUGen {
-	resourceDependencies { ^[[DiskStateConnectionStrategy]] }
+	implicitResourceConnectionStrategies { ^[[DiskStateConnectionStrategy]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 

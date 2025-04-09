@@ -5,7 +5,7 @@ Magical UGens for treating FFT data as demand-rate streams.
 
 // Actually this just wraps up a bundle of Unpack1FFT UGens
 UnpackFFT : MultiOutUGen {
-	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -18,7 +18,7 @@ UnpackFFT : MultiOutUGen {
 }
 
 Unpack1FFT : UGen {
-	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -29,7 +29,7 @@ Unpack1FFT : UGen {
 
 // This does the demanding, to push the data back into an FFT buffer.
 PackFFT : PV_ChainUGen {
-	resourceDependencies { ^[[BufferConnectionStrategy, \write]] }
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \write]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -95,20 +95,20 @@ PV_ChainUGen : UGen {
 	fftSize { ^inputs[0].fftSize }
 
 	optimize {
-		var resourceDependenciesIncludesBufferWrite = { |dep| dep.any{ |m| m[0] == BufferConnectionStrategy and: {m[1] != \read} } };
+		var implicitResourceConnectionStrategiesIncludesBufferWrite = { |dep| dep.any{ |m| m[0] == BufferConnectionStrategy and: {m[1] != \read} } };
 		var desc = descendants.select { |d|
 			// Get all descendants that 'write' (not *just* read) to a buffer that aren't PV_Copy.
 			// This will incorrectly select UGens that read and write to different buffers but don't write to this buffer,
 			//   and insert an unnecessary PV_Copy, but this is rare and deemed worth the performance sacrifice.
 			d.isKindOf(PV_Copy).not and: {
-				d.resourceDependencies.isNil or: { resourceDependenciesIncludesBufferWrite.(d.resourceDependencies) }
+				d.implicitResourceConnectionStrategies.isNil or: { implicitResourceConnectionStrategiesIncludesBufferWrite.(d.implicitResourceConnectionStrategies) }
 			}
 		};
 
 		desc = desc.removeIdenticalDuplicates;
 
 		if (desc.size > 1) {
-			var result = SynthDefOptimisationResult();
+			var result = SynthDefOptimizationResult();
 			var first = desc[0];
 			desc.drop(-1).do { |d|
 				var newBuffer = LocalBuf(this.fftSize.initEdges).initEdges;

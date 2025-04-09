@@ -18,7 +18,7 @@ other than multiply and add inputs.
 
 
 RandSeed : UGen {
-	resourceDependencies { ^[[RandomStateConnectionStrategy, \seed]] }
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \seed]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -37,7 +37,7 @@ RandSeed : UGen {
 }
 
 RandID : UGen {
-	resourceDependencies { ^[[RandomStateConnectionStrategy, \seed]] }
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \seed]] }
 	randomAccessType { ^\seed }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^true }
@@ -55,7 +55,7 @@ RandID : UGen {
 
 
 Rand : UGen {
-	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
 	randomAccessType { ^\gen }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
@@ -67,7 +67,7 @@ Rand : UGen {
 }
 
 IRand : UGen {
-	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -79,7 +79,7 @@ IRand : UGen {
 
 
 TRand : UGen {
-	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -93,7 +93,7 @@ TRand : UGen {
 }
 
 TIRand : UGen {
-	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -106,7 +106,7 @@ TIRand : UGen {
 
 
 LinRand : UGen {
-	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -119,7 +119,7 @@ LinRand : UGen {
 }
 
 NRand : UGen {
-	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -134,7 +134,7 @@ NRand : UGen {
 }
 
 ExpRand : UGen {
-	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -145,7 +145,7 @@ ExpRand : UGen {
 }
 
 TExpRand : UGen {
-	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -160,7 +160,7 @@ TExpRand : UGen {
 
 
 CoinGate : UGen {
-	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -173,7 +173,7 @@ CoinGate : UGen {
 }
 
 TWindex : UGen {
-	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -188,7 +188,7 @@ TWindex : UGen {
 }
 
 WhiteNoise : UGen {
-	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -210,7 +210,7 @@ WhiteNoise : UGen {
 }
 
 BrownNoise : UGen {
-	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -232,7 +232,7 @@ BrownNoise : UGen {
 }
 
 PinkNoise : UGen {
-	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -254,7 +254,7 @@ PinkNoise : UGen {
 }
 
 ClipNoise : UGen {
-	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -276,7 +276,7 @@ ClipNoise : UGen {
 }
 
 GrayNoise : UGen {
-	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -298,7 +298,7 @@ GrayNoise : UGen {
 }
 
 Crackle : UGen {
-	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -311,7 +311,7 @@ Crackle : UGen {
 }
 
 Logistic : UGen {
-	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -324,7 +324,7 @@ Logistic : UGen {
 }
 
 LFNoise0 : UGen {
-	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -345,7 +345,7 @@ LFDNoise3 : LFNoise0 { }
 LFDClipNoise : LFNoise0 { }
 
 Hasher : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -362,7 +362,7 @@ Hasher : UGen {
 }
 
 MantissaMask : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -375,7 +375,7 @@ MantissaMask : UGen {
 }
 
 Dust : UGen {
-	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -390,7 +390,7 @@ Dust : UGen {
 }
 
 Dust2 : UGen {
-	resourceDependencies { ^[[RandomStateConnectionStrategy, \gen]] }
+	implicitResourceConnectionStrategies { ^[[RandomStateConnectionStrategy, \gen]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false }
 

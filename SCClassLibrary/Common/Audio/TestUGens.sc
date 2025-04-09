@@ -1,5 +1,5 @@
 CheckBadValues : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^true } // Never delete this.
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -20,7 +20,7 @@ CheckBadValues : UGen {
 }
 
 Sanitize : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 

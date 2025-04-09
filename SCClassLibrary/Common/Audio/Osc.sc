@@ -10,7 +10,7 @@ add - add to signal or scalar
 
 
 Osc : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -25,7 +25,7 @@ Osc : UGen {
 }
 
 SinOsc : UGen {
-    resourceDependencies { ^[] }
+    implicitResourceConnectionStrategies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -40,7 +40,7 @@ SinOsc : UGen {
 }
 
 SinOscFB : UGen {
-    resourceDependencies { ^[] }
+    implicitResourceConnectionStrategies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -55,7 +55,7 @@ SinOscFB : UGen {
 }
 
 OscN : UGen {
-    resourceDependencies { ^[] }
+    implicitResourceConnectionStrategies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -71,7 +71,7 @@ OscN : UGen {
 
 
 VOsc : UGen {
-    resourceDependencies { ^[] }
+    implicitResourceConnectionStrategies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -86,7 +86,7 @@ VOsc : UGen {
 }
 
 VOsc3 : UGen {
-    resourceDependencies { ^[] }
+    implicitResourceConnectionStrategies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -101,7 +101,7 @@ VOsc3 : UGen {
 }
 
 COsc : UGen {
-    resourceDependencies { ^[] }
+    implicitResourceConnectionStrategies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -116,7 +116,7 @@ COsc : UGen {
 }
 
 Formant : UGen {
-    resourceDependencies { ^[] }
+    implicitResourceConnectionStrategies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -127,7 +127,7 @@ Formant : UGen {
 }
 
 LFSaw : UGen {
-    resourceDependencies { ^[] }
+    implicitResourceConnectionStrategies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -142,7 +142,7 @@ LFSaw : UGen {
 }
 
 LFPar : UGen {
-    resourceDependencies { ^[] }
+    implicitResourceConnectionStrategies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -157,7 +157,7 @@ LFPar : UGen {
 }
 
 LFCub : UGen {
-    resourceDependencies { ^[] }
+    implicitResourceConnectionStrategies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -172,7 +172,7 @@ LFCub : UGen {
 }
 
 LFTri : UGen {
-    resourceDependencies { ^[] }
+    implicitResourceConnectionStrategies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -187,7 +187,7 @@ LFTri : UGen {
 }
 
 LFGauss : UGen {
-	resourceDependencies { ^if(this.hasObservableEffect) { [[DoneConnectionStrategy]] } { [] } }
+	implicitResourceConnectionStrategies { ^if(this.hasObservableEffect) { [[DoneConnectionStrategy]] } { [] } }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(4) }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -210,7 +210,7 @@ LFGauss : UGen {
 }
 
 LFPulse : UGen {
-    resourceDependencies { ^[] }
+    implicitResourceConnectionStrategies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -226,7 +226,7 @@ LFPulse : UGen {
 }
 
 VarSaw : UGen {
-    resourceDependencies { ^[] }
+    implicitResourceConnectionStrategies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -241,7 +241,7 @@ VarSaw : UGen {
 }
 
 Impulse : UGen {
-    resourceDependencies { ^[] }
+    implicitResourceConnectionStrategies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -258,7 +258,7 @@ Impulse : UGen {
 
 
 SyncSaw : UGen {
-    resourceDependencies { ^[] }
+    implicitResourceConnectionStrategies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -274,7 +274,7 @@ SyncSaw : UGen {
 
 
 Index : UGen {
-	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -289,7 +289,7 @@ Index : UGen {
 }
 
 FoldIndex : UGen {
-	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -304,7 +304,7 @@ FoldIndex : UGen {
 }
 
 WrapIndex : UGen {
-	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -319,7 +319,7 @@ WrapIndex : UGen {
 }
 
 IndexInBetween : UGen {
-	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -334,7 +334,7 @@ IndexInBetween : UGen {
 }
 
 DetectIndex : UGen {
-	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -349,7 +349,7 @@ DetectIndex : UGen {
 }
 
 Shaper : UGen {
-	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -364,7 +364,7 @@ Shaper : UGen {
 }
 
 IndexL : UGen {
-	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -379,7 +379,7 @@ IndexL : UGen {
 }
 
 DegreeToKey : UGen {
-	resourceDependencies { ^[[BufferConnectionStrategy, \read]] }
+	implicitResourceConnectionStrategies { ^[[BufferConnectionStrategy, \read]] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -394,7 +394,7 @@ DegreeToKey : UGen {
 }
 
 Select : UGen {
-    resourceDependencies { ^[] }
+    implicitResourceConnectionStrategies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -466,7 +466,7 @@ SelectXFocus {
 }
 
 Vibrato : UGen {
-    resourceDependencies { ^[] }
+    implicitResourceConnectionStrategies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^false } // Vibrato uses noise (variation).
 

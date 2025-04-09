@@ -1,5 +1,5 @@
 Pan2 : MultiOutUGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -23,7 +23,7 @@ Pan2 : MultiOutUGen {
 LinPan2 : Pan2 {}
 
 Pan4 : MultiOutUGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -43,7 +43,7 @@ Pan4 : MultiOutUGen {
 }
 
 Balance2 : MultiOutUGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -65,7 +65,7 @@ Balance2 : MultiOutUGen {
 }
 
 Rotate2 : MultiOutUGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -87,7 +87,7 @@ Rotate2 : MultiOutUGen {
 }
 
 PanB : MultiOutUGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -107,7 +107,7 @@ PanB : MultiOutUGen {
 }
 
 PanB2 : MultiOutUGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -127,7 +127,7 @@ PanB2 : MultiOutUGen {
 }
 
 BiPanB2 : MultiOutUGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -147,7 +147,7 @@ BiPanB2 : MultiOutUGen {
 }
 
 DecodeB2 : MultiOutUGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -166,7 +166,7 @@ DecodeB2 : MultiOutUGen {
 }
 
 PanAz : MultiOutUGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -186,7 +186,7 @@ PanAz : MultiOutUGen {
 
 
 XFade2 : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -201,7 +201,7 @@ XFade2 : UGen {
 }
 
 LinXFade2 : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 

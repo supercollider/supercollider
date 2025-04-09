@@ -289,7 +289,7 @@ Function : AbstractFunction {
 		server = target.server;
 		name = this.hash.asString;
 
-		def = SynthDef.newWithOptimizations(optimisations ?? {SynthDefOptimizations.all}, name, { |bufnum|
+		def = SynthDef.newWithOptimizations(optimisations ?? {SynthDefOptimizationFlags.all}, name, { |bufnum|
 			var outputs;
 
 			outputs = SynthDef.wrap(this);

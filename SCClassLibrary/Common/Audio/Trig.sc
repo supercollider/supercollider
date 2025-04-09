@@ -1,5 +1,5 @@
 Trig1 : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -16,7 +16,7 @@ Trig : Trig1 { }
 
 
 SendTrig : UGen {
-	resourceDependencies { ^[[MessageConnectionStrategy]] }
+	implicitResourceConnectionStrategies { ^[[MessageConnectionStrategy]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -34,7 +34,7 @@ SendTrig : UGen {
 }
 
 SendReply : SendTrig {
-	resourceDependencies { ^[[MessageConnectionStrategy]] }
+	implicitResourceConnectionStrategies { ^[[MessageConnectionStrategy]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^false }
 
@@ -61,7 +61,7 @@ SendReply : SendTrig {
 }
 
 TDelay : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -75,7 +75,7 @@ TDelay : UGen {
 }
 
 Latch : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -89,7 +89,7 @@ Latch : UGen {
 }
 
 Gate : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -103,7 +103,7 @@ Gate : UGen {
 }
 
 PulseCount : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -117,7 +117,7 @@ PulseCount : UGen {
 }
 
 Peak : UGen {
-    resourceDependencies { ^[] }
+    implicitResourceConnectionStrategies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -137,7 +137,7 @@ Peak : UGen {
 }
 
 RunningMin : UGen {
-    resourceDependencies { ^[] }
+    implicitResourceConnectionStrategies { ^[] }
     hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -157,7 +157,7 @@ RunningMin : UGen {
 }
 
 RunningMax : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -178,7 +178,7 @@ RunningMax : UGen {
 
 
 Stepper : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -193,7 +193,7 @@ Stepper : UGen {
 
 
 PulseDivider : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -207,7 +207,7 @@ PulseDivider : UGen {
 }
 
 SetResetFF : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -223,7 +223,7 @@ SetResetFF : UGen {
 
 
 ToggleFF : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -238,7 +238,7 @@ ToggleFF : UGen {
 
 
 ZeroCrossing : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -252,7 +252,7 @@ ZeroCrossing : UGen {
 }
 
 Timer : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -267,7 +267,7 @@ Timer : UGen {
 }
 
 Sweep : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -282,7 +282,7 @@ Sweep : UGen {
 }
 
 Phasor : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -295,7 +295,7 @@ Phasor : UGen {
 }
 
 PeakFollower : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -308,7 +308,7 @@ PeakFollower : UGen {
 }
 
 Pitch : MultiOutUGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -325,7 +325,7 @@ Pitch : MultiOutUGen {
 }
 
 InRange : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -345,7 +345,7 @@ InRange : UGen {
 }
 
 InRect : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -375,7 +375,7 @@ InRect : UGen {
 //}
 
 Fold : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -391,7 +391,7 @@ Fold : UGen {
 }
 
 Clip : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -407,7 +407,7 @@ Clip : UGen {
 }
 
 Wrap : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -423,7 +423,7 @@ Wrap : UGen {
 }
 
 Schmidt : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -439,7 +439,7 @@ Schmidt : UGen {
 }
 
 ModDif : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -455,7 +455,7 @@ ModDif : UGen {
 }
 
 MostChange : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -468,7 +468,7 @@ MostChange : UGen {
 }
 
 LeastChange : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -481,7 +481,7 @@ LeastChange : UGen {
 }
 
 LastValue : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -494,7 +494,7 @@ LastValue : UGen {
 }
 
 SendPeakRMS : UGen {
-	resourceDependencies { ^[[MessageConnectionStrategy]] }
+	implicitResourceConnectionStrategies { ^[[MessageConnectionStrategy]] }
 	hasObservableEffect { ^true }
 	canBeReplacedByIdenticalCall { ^false }
 

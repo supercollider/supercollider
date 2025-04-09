@@ -190,7 +190,7 @@ MyRecorder : UGen {
 	*ar { |inputArray, bufnum = 0| ^this.multiNewList(['audio', bufnum] ++ inputArray ) }
 
 	optimize {
-        var result = SynthDefOptimisationResult();
+        var result = SynthDefOptimizationResult();
         this.coerceInputFromScalarToDC(1, result);
         ^result.returnNilIfEmpty;
 	}

@@ -1,7 +1,7 @@
 // This should only be used for UGens that deterministically filter a signal.
 // They should not touch buffers, use randomness, have a 'doneAction'. nor alter any other server side state.
 Filter : UGen {
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 
@@ -310,7 +310,7 @@ Formlet : Filter {
 }
 
 DetectSilence : UGen {
-	resourceDependencies { ^if(this.hasObservableEffect) { [[DoneConnectionStrategy]] } { [] }  }
+	implicitResourceConnectionStrategies { ^if(this.hasObservableEffect) { [[DoneConnectionStrategy]] } { [] }  }
 	hasObservableEffect { ^this.implHasObservableEffectViaDoneAction(3) }
 	canBeReplacedByIdenticalCall { ^true }
 

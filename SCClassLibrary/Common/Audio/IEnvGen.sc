@@ -1,5 +1,5 @@
 IEnvGen : UGen { // envelope index generator
-	resourceDependencies { ^[] }
+	implicitResourceConnectionStrategies { ^[] }
 	hasObservableEffect { ^false }
 	canBeReplacedByIdenticalCall { ^true }
 

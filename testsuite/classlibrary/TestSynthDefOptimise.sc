@@ -50,17 +50,17 @@ TestSynthDefOptimise : UnitTest {
 	}
 
 	*compare_a_b { |withopts, withoutopts, server, threshold, forceDontPrint=false, duration=0.01|
-		var a = TestSynthDefOptimise.compare_create_synth_def(SynthDefOptimizations.all, \a, withopts).add;
-		var b = TestSynthDefOptimise.compare_create_synth_def(SynthDefOptimizations.none, \b, withoutopts).add;
+		var a = TestSynthDefOptimise.compare_create_synth_def(SynthDefOptimizationFlags.all, \a, withopts).add;
+		var b = TestSynthDefOptimise.compare_create_synth_def(SynthDefOptimizationFlags.none, \b, withoutopts).add;
 		^TestSynthDefOptimise.compare_engine(server, threshold, a, b, forceDontPrint, duration)
 	}
 
 	compare_optimization_levels { |f, server, threshold, forceDontPrint=false, duration=0.01, msg, extraArgs|
-		var none = TestSynthDefOptimise.compare_create_synth_def(SynthDefOptimizations.none, \none, f).add;
-		var all = TestSynthDefOptimise.compare_create_synth_def(SynthDefOptimizations.all, \all, f).add;
-		var cseAndSorting = TestSynthDefOptimise.compare_create_synth_def(SynthDefOptimizations.deduplicationAndSorting, \cseAndSorting, f).add;
-		var sortingAndRewrite = TestSynthDefOptimise.compare_create_synth_def(SynthDefOptimizations.sortingAndRewrite, \sortingAndRewrite, f).add;
-		var onlySorting = TestSynthDefOptimise.compare_create_synth_def(SynthDefOptimizations.onlySorting, \onlySorting, f).add;
+		var none = TestSynthDefOptimise.compare_create_synth_def(SynthDefOptimizationFlags.none, \none, f).add;
+		var all = TestSynthDefOptimise.compare_create_synth_def(SynthDefOptimizationFlags.all, \all, f).add;
+		var cseAndSorting = TestSynthDefOptimise.compare_create_synth_def(SynthDefOptimizationFlags.deduplicationAndSorting, \cseAndSorting, f).add;
+		var sortingAndRewrite = TestSynthDefOptimise.compare_create_synth_def(SynthDefOptimizationFlags.sortingAndRewrite, \sortingAndRewrite, f).add;
+		var onlySorting = TestSynthDefOptimise.compare_create_synth_def(SynthDefOptimizationFlags.onlySorting, \onlySorting, f).add;
 
 		var cond = CondVar();
 		var count = 4;
