@@ -343,6 +343,7 @@ TestSynthDefOptimise : UnitTest {
 
 
 	test_pv_opts {
+		// Tests that the PV_ UGens insert PV_Copy in the correct places.
 		var b = Buffer.read(server, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 		server.sync;
 
@@ -361,7 +362,7 @@ TestSynthDefOptimise : UnitTest {
 				},
 				server,
 				threshold: -120,
-				duration: 0.1
+				duration: 0.2
 			),
 			"Test PV auto PV_Copy simple"
 		);
@@ -389,7 +390,7 @@ TestSynthDefOptimise : UnitTest {
 				},
 				server,
 				threshold: -120,
-				duration: 0.1
+				duration: 0.2
 			),
 			"Test PV auto PV_Copy Harder"
 		);
