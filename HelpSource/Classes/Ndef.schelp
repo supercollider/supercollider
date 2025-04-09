@@ -67,7 +67,7 @@ equivalent to code::*new(key).kr(numChannels, offset):: (see link::Classes/BusPl
 method::clear
 clear all proxies (in all proxyspaces)
 
-method::hardClear
+method::clearDict
 clear all proxies and remove all existing proxyspaces
 
 method::defaultServer
