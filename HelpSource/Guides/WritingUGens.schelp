@@ -24,7 +24,8 @@ SuperCollider code that abbreviates a certain configuration of UGens that gets u
 that superficially resembles a UGen class, but it only returns a composition of existing UGens. It has no efficiency
 savings, but it does save typing.
 
-The below example has only a code::.ar:: method, but you can just as easily have both code::.ar:: and code::.kr:: methods.
+The below example has only a code::.ar:: method, but you can just as easily have both code::.ar:: and code::.kr:: 
+methods.
 
 code::
 BoringMixer {
@@ -106,7 +107,8 @@ architecture as well as a bunch of helper functions. These are documented at lin
 
 subsection:: The Entry Point
 
-When the library is loaded the server calls a function in the library, which is defined by the code::PluginLoad():: macro.  This entry point has two responsibilities:
+When the library is loaded the server calls a function in the library, which is defined by the code::PluginLoad():: 
+macro. This entry point has two responsibilities:
 
 list::
 ## It needs to store the passed in pointer to the InterfaceTable in a global variable.
