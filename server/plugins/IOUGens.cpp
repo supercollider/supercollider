@@ -1516,8 +1516,8 @@ void LocalIn_next_a(LocalIn* unit, int inNumSamples) {
         // Print("LocalIn  %d  %d  %g\n", i, diff, in[0]);
         if (diff == 1 || diff == 0)
             Copy(inNumSamples, out, in);
-        else
-            Clear(inNumSamples, out);
+        else // get default value from UGen input
+            Fill(inNumSamples, out, IN0(i));
     }
 }
 
@@ -1537,9 +1537,8 @@ FLATTEN void LocalIn_next_a_nova(LocalIn* unit, int inNumSamples) {
         // Print("LocalIn  %d  %d  %g\n", i, diff, in[0]);
         if (diff == 1 || diff == 0)
             nova::copyvec_simd(out, in, inNumSamples);
-        else
-            // nova::zerovec_simd(out, inNumSamples);
-            Clear(inNumSamples, out);
+        else // get default value from UGen input
+            Fill(inNumSamples, out, IN0(i));
     }
 }
 
@@ -1557,9 +1556,8 @@ FLATTEN void LocalIn_next_a_nova_64(LocalIn* unit, int inNumSamples) {
         // Print("LocalIn  %d  %d  %g\n", i, diff, in[0]);
         if (diff == 1 || diff == 0)
             nova::copyvec_simd<64>(out, in);
-        else
-            // nova::zerovec_simd<64>(out);
-            Clear(inNumSamples, out);
+        else // get default value from UGen input
+            Fill(inNumSamples, out, IN0(i));
     }
 }
 #endif
@@ -1575,8 +1573,8 @@ void LocalIn_next_k(LocalIn* unit, int inNumSamples) {
         int diff = bufCounter - touched[i];
         if (diff == 1 || diff == 0)
             OUT0(i) = in[i];
-        else
-            OUT0(i) = 0.f;
+        else // get default value from UGen input
+            OUT0(i) = IN0(i);
     }
 }
 
