@@ -364,7 +364,7 @@ Server {
 	var <defaultGroup, <defaultGroups;
 
 	var <syncThread, <syncTasks;
-	var <window, <>scopeWindow, <serverMeter, <emacsbuf;
+	var <window, <>scopeWindow, <meter, <emacsbuf;
 	var <volume, <recorder, <statusWatcher;
 	var <pid, serverInterface;
 	var pidReleaseCondition;
