@@ -324,11 +324,83 @@ List[1, 2, 3, 3, 4, 3, 4, 3].occurrencesOf(3);
 ::
 
 method::sum
-Answer the sum of the results of strong::function:: evaluated for each item in the receiver. The function is passed two arguments, the item and an integer index.
+Answer the sum of the items in the collection.
 code::
-List[1, 2, 3, 4].sum;
-(0..8).sum { |i| 1 / (2 ** i) };
+[3, 6, 12, 24].sum // -> 45
 ::
+
+This can be represented as:
+math::
+\sum_{i=0}^{n} x_i \quad | \quad \{x_0, x_1, \ldots, x_n\}
+::
+
+Optionally, a link::Classes/Function:: can be provided to be applied to each item in the collection before summing.
+
+argument:: function
+If provided, the link::Classes/Function:: is passed two arguments: the item and the iteration index.
+
+code::
+[3, 6, 12, 24].sum { |item, i| i / (2 ** item) } // -> 0.016113460063934
+::
+
+The above code can be represented as:
+math::
+\sum_{i=0}^{n} f(x_i,i) = \sum_{i=0}^{n} \frac{i}{2^{x_i}} \quad | \quad \{x_0, x_1, \ldots, x_n\}
+::
+where math::x_i:: is the function argument teletype::item::.
+
+
+method::product
+Answer the product of the items in the collection.
+code::
+[3, 6, 12, 24].product // -> 5184
+::
+
+This can be represented as:
+math::
+\prod_{i=0}^{n} x_i \quad | \quad \{x_0, x_1, \ldots, x_n\}
+::
+
+Optionally, a link::Classes/Function:: can be provided to be applied to each item in the collection before multiplication.
+
+argument:: function
+If provided, the link::Classes/Function:: is passed two arguments: the item and the iteration index.
+
+code::
+[3, 6, 12, 24].product { |item, i| item.sqrt ** i } // -> 3456.0
+::
+
+The above code can be represented as:
+math::
+\prod_{i=0}^{n} f(x_i,i) = \prod_{i=0}^{n} \left( \sqrt{x_i} \right) ^ i \quad | \quad \{x_0, x_1, \ldots, x_n\}
+::
+where math::x_i:: is the function argument teletype::item::.
+
+method::mean
+Answer the arithmetic mean of the items in the collection.
+code::
+[3, 6, 12, 24].mean // -> 11.25
+::
+
+This can be represented as:
+math::
+\frac{1}{n+1} \sum_{i=0}^{n} x_i \quad | \quad \{x_0, x_1, \ldots, x_n\}
+::
+
+Optionally, a link::Classes/Function:: can be provided to be applied to each item in the collection before multiplication.
+
+argument:: function
+If provided, the link::Classes/Function:: is passed two arguments: the item and the iteration index.
+
+code::
+[3, 6, 12, 24].mean { |item, i| i / (item ** 2) } // -> 0.01171875
+::
+
+The above code can be represented as:
+math::
+\frac{1}{n+1} \sum_{i=0}^{n} f(x_i,i) = \frac{1}{n+1} \sum_{i=0}^{n} \frac{i}{{x_i}^2} \quad | \quad \{x_0, x_1, \ldots, x_n\}
+::
+where math::x_i:: is the function argument teletype::item::.
 
 method::maxItem
 Answer the maximum of the results of strong::function:: evaluated for each item in the receiver. The function is passed two arguments, the item and an integer index.
@@ -567,7 +639,18 @@ symmetricDifference(a, b);
 method::isSubsetOf
 Returns link::Classes/True:: if all elements of this are also elements of strong::that::
 code::
-a = Set[1, 2, 3, 4];
-Set[1, 2].isSubsetOf(a); // true
-Set[1, 5].isSubsetOf(a); // false
+a = [1, 2, 3, 4];
+// a = List[1, 2, 3, 4];
+// a = Set[1, 2, 3, 4];
+// a = Interval(1, 4, 1);
+// a = Bag[1, 2, 3, 4];
+[1, 3].isSubsetOf(a); // true
+[1, 5].isSubsetOf(a); // false
+::
+In mathematical notation, the last two lines of the above code are the equivalent to
+math::
+[1, 3] \subseteq [1, 2, 3, 4] \Rightarrow \text{True}
+::
+math::
+[1, 5] \subseteq [1, 2, 3, 4] \Rightarrow \text{False}
 ::
