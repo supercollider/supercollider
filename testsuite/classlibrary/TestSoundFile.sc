@@ -3,7 +3,7 @@ TestSoundFile : UnitTest {
 	var soundFile, path;
 
 	setUp {
-		path = BufferExamplesPath.child;
+		path = ExampleFiles.child;
 		soundFile = SoundFile(path);
 	}
 

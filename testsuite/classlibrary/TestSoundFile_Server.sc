@@ -6,7 +6,7 @@ TestSoundFile_Server : UnitTest {
 		server = Server(this.class.name);
 		this.bootServer(server);
 
-		soundFile = SoundFile(BufferExamplesPath.child);
+		soundFile = SoundFile(ExampleFiles.child);
 	}
 
 	tearDown {

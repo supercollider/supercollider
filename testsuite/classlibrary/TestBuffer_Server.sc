@@ -87,7 +87,7 @@ TestBuffer_Server : UnitTest {
 		server.sendMsg(
 			'/b_allocRead',
 			buffer_number,
-			BufferExamplesPath.child,
+			ExampleFiles.child,
 			0, // starting frame
 			num_frames
 		);
