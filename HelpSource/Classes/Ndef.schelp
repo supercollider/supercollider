@@ -65,10 +65,10 @@ method::kr
 equivalent to code::*new(key).kr(numChannels, offset):: (see link::Classes/BusPlug#-kr::)
 
 method::clear
-clear all proxies (in all proxyspaces)
+clear all Ndefs in all proxyspaces of the Ndef class
 
 method::clearDict
-clear all proxies and remove all existing proxyspaces
+clear all Ndefs and remove all proxyspaces of the Ndef class
 
 method::defaultServer
 set the default server (default: code::Server.default::)
