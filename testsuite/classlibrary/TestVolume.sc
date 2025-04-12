@@ -67,6 +67,7 @@ TestVolume : UnitTest {
 
 	test_remoteSetVolume {
 		var s = Server(thisMethod.name);
+		var condition = CondVar.new;
 
 		s.options.bindAddress = "0.0.0.0"; // allow connections from any address
 		s.options.maxLogins = 2; // set to 2 clients
@@ -74,13 +75,21 @@ TestVolume : UnitTest {
 		this.bootServer(s);
 
 		// create ampSynth
-		s.volume = -3;
-		s.sync;
+		s.bind {
+			s.volume = -3;
+			s.sync;
+		};
 
 		// send from outside like a remote client
 		s.sendMsg(15, 3, \volumeAmp, 0.25);
 
-		0.1.wait;
+		s.volume.ampSynth.addDependant({ |synth, changer|
+			if (changer == 'n_end') {
+				condition.signalOne;
+			};
+		});
+		condition.waitFor(1);
+
 		this.assertFloatEquals(s.volume.volume, 0.25.ampdb,
 			"server should update volume level when set from remote client."
 		);
