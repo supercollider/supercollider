@@ -252,7 +252,7 @@ These event types uniquely have automatic cleanup event types associated with th
 
 code::
 // create a buffer
-b = (type: \allocRead, path: BufferExamplesPath.child).play;
+b = (type: \allocRead, path: ExampleFiles.child).play;
 
 a = { PlayBuf.ar(1, b, doneAction: Done.freeSelf) }.play;
 

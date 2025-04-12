@@ -49,8 +49,8 @@ s.boot // Boot the server, if you need to
 
 // read a whole sound into memory
 
-// BufferExamplesPath helps locate audio files used in examples
-p = BufferExamplesPath.child;
+// ExampleFiles helps locate audio files used in examples
+p = ExampleFiles.child;
 // peek at the path to see location and the format of a path
 p.postln;
 // read the file into a buffer

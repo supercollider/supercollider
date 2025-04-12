@@ -10,8 +10,8 @@ In most cases you will wish to send commands to the server to get it to load Sou
 
 code::
 (
-// BufferExamplesPath helps locate audio files used in examples
-p = BufferExamplesPath.child;
+// ExampleFiles helps locate audio files used in examples
+p = ExampleFiles.child;
 // peek at the path to see location and the format of a path
 p.postln;
 
@@ -93,7 +93,7 @@ SoundFile.collect("sounds/*").do { |f| f.path.postln };
 method::use
 Reads the data of a SoundFile, evaluates the function (passing the file as argument) and closes it again.
 code::
-SoundFile.use(BufferExamplesPath.child, { |f| f.inspect });
+SoundFile.use(ExampleFiles.child, { |f| f.inspect });
 ::
 
 method::normalize

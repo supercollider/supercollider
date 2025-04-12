@@ -1,7 +1,7 @@
 class:: Buffer
 summary:: Client-side representation of a buffer on a server
 categories:: Server>Abstractions
-related:: Classes/BufferExamplesPath
+related:: Classes/ExampleFiles
 
 description::
 
@@ -131,8 +131,8 @@ N.B. You cannot rely on the buffer's instance variables being instantly updated,
 code::
 // Read a sound file from disk into a buffer
 s.boot;
-// BufferExamplesPath helps locate audio files used in examples
-p = BufferExamplesPath.child;
+// ExampleFiles helps locate audio files used in examples
+p = ExampleFiles.child;
 // peek at the path to see location and the format of a path
 p.postln;
 // read the file
@@ -180,23 +180,23 @@ discussion::
 code::
 s.boot;
 // first a standard read so we can see what's in the file
-b = Buffer.read(s, BufferExamplesPath.sinedPink);
-// BufferExamplesPath.sinedPink contains SinOsc on left, PinkNoise on right
+b = Buffer.read(s, ExampleFiles.sinedPink);
+// ExampleFiles.sinedPink contains SinOsc on left, PinkNoise on right
 b.plot;
 b.free;
 
 // Now just the sine
-b = Buffer.readChannel(s, BufferExamplesPath.sinedPink, channels: [0]);
+b = Buffer.readChannel(s, ExampleFiles.sinedPink, channels: [0]);
 b.plot;
 b.free;
 
 // Now just the pink noise
-b = Buffer.readChannel(s, BufferExamplesPath.sinedPink, channels: [1]);
+b = Buffer.readChannel(s, ExampleFiles.sinedPink, channels: [1]);
 b.plot;
 b.free;
 
 // Now reverse channel order
-b = Buffer.readChannel(s, BufferExamplesPath.sinedPink, channels: [1, 0]);
+b = Buffer.readChannel(s, ExampleFiles.sinedPink, channels: [1, 0]);
 b.plot;
 b.free;
 ::
@@ -227,7 +227,7 @@ SynthDef(\help_Buffer, { |out = 0, bufnum|
 }).add;
 
 y = Synth.basicNew(\help_Buffer); // not sent yet
-b = Buffer.readNoUpdate(s, BufferExamplesPath.child,
+b = Buffer.readNoUpdate(s, ExampleFiles.child,
 	completionMessage: { |buffer|
 		// synth add its s_new msg to follow
 		// after the buffer read completes
@@ -270,7 +270,7 @@ SynthDef(\help_Buffer_cue, { |out = 0, bufnum|
 
 (
 s.makeBundle(nil, {
-	b = Buffer.cueSoundFile(s, BufferExamplesPath.child, 0, 1);
+	b = Buffer.cueSoundFile(s, ExampleFiles.child, 0, 1);
 	y = Synth(\help_Buffer_cue, [\bufnum, b], s);
 });
 )
@@ -504,7 +504,7 @@ discussion::
 code::
 s.boot;
 b = Buffer.new(s);
-b.allocRead(BufferExamplesPath.child);
+b.allocRead(ExampleFiles.child);
 x = { PlayBuf.ar(1, b, BufRateScale.kr(b), loop: 1) * 0.5 }.play;
 x.free; b.free;
 ::
@@ -526,7 +526,7 @@ code::
 s.boot;
 b = Buffer.new(s);
 // read only the first channel (a Sine wave) of a stereo file
-b.allocReadChannel(BufferExamplesPath.sinedPink, channels: [0]);
+b.allocReadChannel(ExampleFiles.sinedPink, channels: [0]);
 x = { PlayBuf.ar(1, b, BufRateScale.kr(b), loop: 1) * 0.5 }.play;
 x.free; b.free;
 ::
@@ -595,11 +595,11 @@ s.boot;
 
 
 // create with cueSoundFile class method
-b = Buffer.cueSoundFile(s, BufferExamplesPath.apollo11, 0, 1);
+b = Buffer.cueSoundFile(s, ExampleFiles.apollo11, 0, 1);
 x = { DiskIn.ar(1, b) }.play;
 b.close;	// must call close in between cueing
 // now use like named instance method, but different arguments
-b.cueSoundFile(BufferExamplesPath.apollo11);
+b.cueSoundFile(ExampleFiles.apollo11);
 // have to do all this to clean up properly!
 x.free; b.close; b.free;
 ::
@@ -754,7 +754,7 @@ discussion::
 This is safer than getToFloatArray but only works with a server on your local machine. In general this is the safest way to get a large range of values from a server buffer into the client app.
 code::
 s.boot;
-b = Buffer.read(s, BufferExamplesPath.child);
+b = Buffer.read(s, ExampleFiles.child);
 // same as Buffer.plot
 b.loadToFloatArray(action: { |array| { array.plot }.defer; "done".postln });
 b.free;
@@ -776,7 +776,7 @@ discussion::
 This is more risky than loadToFloatArray but does works with servers on remote machines. In high traffic situations it is possible for data to be lost. If this method has not received all its replies by timeout it will post a warning saying that the method has failed. In general use loadToFloatArray instead wherever possible.
 code::
 s.boot;
-b = Buffer.read(s, BufferExamplesPath.child);
+b = Buffer.read(s, ExampleFiles.child);
 // like Buffer.plot
 b.getToFloatArray(wait: 0.01, action: { |array { array.plot }.defer; "done".postln });
 b.free;
@@ -803,7 +803,7 @@ SynthDef(\help_Buffer_copy, { |out = 0, buf|
 )
 
 (
-b = Buffer.read(s, BufferExamplesPath.child);
+b = Buffer.read(s, ExampleFiles.child);
 c = Buffer.alloc(s, 120000);
 )
 
@@ -851,7 +851,7 @@ code::
 (
 s.waitForBoot {
 	var w = Window("parent");
-	var buf = Buffer.read(s, BufferExamplesPath.sinedPink);
+	var buf = Buffer.read(s, ExampleFiles.sinedPink);
 	s.sync;
 	buf.plot(parent: w);
 	w.front
@@ -861,7 +861,7 @@ s.waitForBoot {
 discussion::
 code::
 s.boot;
-b = Buffer.read(s, BufferExamplesPath.child);
+b = Buffer.read(s, ExampleFiles.child);
 b.plot;
 b.free;
 ::
@@ -875,7 +875,7 @@ A value by which to scale the output. The default is 1.
 discussion::
 code::
 s.boot;
-b = Buffer.read(s, BufferExamplesPath.child);
+b = Buffer.read(s, ExampleFiles.child);
 b.play; // frees itself
 x = b.play(true);
 x.free; b.free;
@@ -906,7 +906,7 @@ A Function to be evaluated once the file has been read and this Buffer's instanc
 discussion::
 code::
 s.boot;
-b = Buffer.readNoUpdate(s, BufferExamplesPath.child);
+b = Buffer.readNoUpdate(s, ExampleFiles.child);
 b.numFrames; // shows nil
 b.updateInfo({ |buf| buf.numFrames.postln }); // now it's updated
 b.free;

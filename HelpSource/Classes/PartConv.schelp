@@ -78,7 +78,7 @@ s.waitForBoot {
 
 
 
-~target = Buffer.read(s, BufferExamplesPath.child);
+~target = Buffer.read(s, ExampleFiles.child);
 
 (
 {

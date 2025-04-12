@@ -91,7 +91,7 @@ code::
 // use phasor to index into a sound file
 
 // allocate a buffer with a sound file
-b = Buffer.read(s, BufferExamplesPath.child);
+b = Buffer.read(s, ExampleFiles.child);
 
 // simple playback (more examples: see BufRd)
 // Start and end here are defined as 0 and the number of frames in the buffer.

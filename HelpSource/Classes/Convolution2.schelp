@@ -105,7 +105,7 @@ x.set(\trig, 1); // after this trigger, the change will take effect.
 
 
 // next example
-b = Buffer.read(s, BufferExamplesPath.child);
+b = Buffer.read(s, ExampleFiles.child);
 
 (
 	{ var input, kernel;

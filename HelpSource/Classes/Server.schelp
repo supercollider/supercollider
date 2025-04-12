@@ -535,7 +535,7 @@ x.free;
 // use sync
 (
 s.makeBundle(nil, {
-	b = Buffer.read(s, BufferExamplesPath.child);
+	b = Buffer.read(s, ExampleFiles.child);
 	s.sync; // wait until load is done and then send the rest of the bundle
 	x = { PlayBuf.ar(1, b) * 0.5 }.play;
 });

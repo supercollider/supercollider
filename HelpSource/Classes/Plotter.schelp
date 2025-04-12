@@ -45,7 +45,7 @@ code::
 { SinOsc.ar([700, 357]) * SinOsc.ar([400, 476]) * 0.2 }.plot;
 
 // Buffer
-{ var b = Buffer.read(s, BufferExamplesPath.sinedPink); s.sync; b.plot }.fork(AppClock);
+{ var b = Buffer.read(s, ExampleFiles.sinedPink); s.sync; b.plot }.fork(AppClock);
 
 // Env
 Env.perc(0.4, 0.6).plot;
@@ -659,7 +659,7 @@ Env.new({ 1.0.rand2 }! 8, { 1.0.rand } ! 7, \sin).plot;
 (
 s.waitForBoot({
 	var b = Buffer.read(s,
-		BufferExamplesPath.sinedPink
+		ExampleFiles.sinedPink
 	);
 	s.sync;
 	b.plot;

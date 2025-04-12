@@ -16,7 +16,7 @@ SynthDef(\scratch, {arg gate = 1, buffer;
 s.boot;
 
 // path to a mono soundfile here
-a = Buffer.read(s, BufferExamplesPath.child);
+a = Buffer.read(s, ExampleFiles.child);
 
 b = Synth(\scratch, [\buffer, a]);
 

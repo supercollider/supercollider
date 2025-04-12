@@ -33,7 +33,7 @@ Examples::
 code::
 
 s.boot;
-c = Buffer.read(s, BufferExamplesPath.child);
+c = Buffer.read(s, ExampleFiles.child);
 
 (
 SynthDef("help-randcomb", { |out = 0|

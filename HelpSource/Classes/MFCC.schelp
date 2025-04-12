@@ -28,7 +28,7 @@ code::
 
 // assumes hop of half fftsize, fine
 
-d = Buffer.read(s, BufferExamplesPath.child);
+d = Buffer.read(s, ExampleFiles.child);
 
 
 (

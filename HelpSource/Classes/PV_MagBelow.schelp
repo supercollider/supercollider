@@ -30,7 +30,7 @@ s.boot;
 
 (
 b = Buffer.alloc(s, 2048, 1);
-c = Buffer.read(s, BufferExamplesPath.child);
+c = Buffer.read(s, ExampleFiles.child);
 )
 
 (

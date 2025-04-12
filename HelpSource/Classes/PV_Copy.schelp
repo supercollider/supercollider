@@ -26,7 +26,7 @@ examples::
 code::
 
 // read a sound file
-d = Buffer.read(s, BufferExamplesPath.child);
+d = Buffer.read(s, ExampleFiles.child);
 
 
 // crossfade between original and magmul-ed whitenoise

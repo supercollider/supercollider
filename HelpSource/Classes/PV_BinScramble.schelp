@@ -37,7 +37,7 @@ Examples::
 code::
 
 s.boot;
-b = Buffer.read(s, BufferExamplesPath.child);
+b = Buffer.read(s, ExampleFiles.child);
 
 (
 // trig with MouseY

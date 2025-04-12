@@ -313,7 +313,7 @@ The example audio file is not very long, but processing here is almost instantan
 code::
 (
 var server,
-inputFile = SoundFile.openRead(BufferExamplesPath.child);
+inputFile = SoundFile.openRead(ExampleFiles.child);
 
 inputFile.close;  // doesn't need to stay open; we just need the stats
 
@@ -408,7 +408,7 @@ x = Pbind(
 
 // the score also needs the def and buffer
 x.add([0.0, [\d_recv, def.asBytes]]);
-x.add([0.0, buf.allocReadMsg(BufferExamplesPath.child)]);
+x.add([0.0, buf.allocReadMsg(ExampleFiles.child)]);
 x.sort;
 
 x.recordNRT(
@@ -450,7 +450,7 @@ fork {
 	var resultbuf, resultpath, oscpath, score, dur, sf, cond, size, data;
 
 	// get duration
-	sf = SoundFile.openRead(BufferExamplesPath.child);
+	sf = SoundFile.openRead(ExampleFiles.child);
 	dur = sf.duration;
 	sf.close;
 

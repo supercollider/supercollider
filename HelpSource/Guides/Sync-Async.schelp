@@ -164,7 +164,7 @@ SynthDef("help-Buffer",{ arg out=0, bufnum;
 
 y = Synth.basicNew("help-Buffer"); // not sent yet
 
-b = Buffer.read(s, BufferExamplesPath.child, action: { arg buffer;
+b = Buffer.read(s, ExampleFiles.child, action: { arg buffer;
        // synth send its s_new msg to follow
        // after the buffer read completes
        s.sendBundle(nil, y.newMsg(s,[\bufnum,buffer],\addToTail));

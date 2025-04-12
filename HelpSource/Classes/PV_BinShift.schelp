@@ -39,7 +39,7 @@ code::
 s.boot;
 
 (
-c = Buffer.read(s, BufferExamplesPath.child);
+c = Buffer.read(s, ExampleFiles.child);
 )
 
 (

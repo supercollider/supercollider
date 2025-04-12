@@ -39,8 +39,8 @@ section::Using Buffers with Sound Files
 Buffer has another class method called 'read', which reads a sound file from disk into memory, and returns a Buffer object. Using the UGen PlayBuf, we can play the file.
 
 code::
-// BufferExamplesPath helps locate audio files used in examples
-p = BufferExamplesPath.child;
+// ExampleFiles helps locate audio files used in examples
+p = ExampleFiles.child;
 // peek at the path to see location and the format of a path
 p.postln;
 // read a soundfile
@@ -86,7 +86,7 @@ SynthDef("tutorial-Buffer-cue",{ arg out=0,bufnum;
 }).add;
 )
 
-b = Buffer.cueSoundFile(s,BufferExamplesPath.apollo11, 0, 1);
+b = Buffer.cueSoundFile(s,ExampleFiles.apollo11, 0, 1);
 y = Synth.new("tutorial-Buffer-cue", [\bufnum,b], s);
 
 b.free; y.free;
@@ -102,7 +102,7 @@ Buffer has a number of other instance variables with getters which can provide h
 
 code::
 // watch the post window
-b = Buffer.read(s, BufferExamplesPath.child);
+b = Buffer.read(s, ExampleFiles.child);
 b.bufnum;
 b.numFrames;
 b.numChannels;
@@ -116,7 +116,7 @@ code::
 // with an action function
 // note that the vars are not immediately up-to-date
 (
-b = Buffer.read(s, BufferExamplesPath.child, action: { arg buffer;
+b = Buffer.read(s, ExampleFiles.child, action: { arg buffer;
 	("numFrames after update:" + buffer.numFrames).postln;
 	x = { PlayBuf.ar(1, buffer, BufRateScale.kr(buffer)) }.play;
 });
@@ -215,7 +215,7 @@ Buffer has two useful convenience methods: 'plot' and 'play'.
 
 code::
 // see the waveform
-b = Buffer.read(s, BufferExamplesPath.child);
+b = Buffer.read(s, ExampleFiles.child);
 b.plot;
 
 // play the contents

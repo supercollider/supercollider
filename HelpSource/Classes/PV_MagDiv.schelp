@@ -33,7 +33,7 @@ SynthDef("help-magMul", { |out = 0|
 )
 
 
-c = Buffer.read(s, BufferExamplesPath.child);
+c = Buffer.read(s, ExampleFiles.child);
 
 (
 SynthDef("help-magMul2", { |out = 0, soundBufnum = 0|

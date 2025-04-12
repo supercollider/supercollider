@@ -155,7 +155,7 @@ Examples::
 subsection:: pvcalc
 code::
 // a sound file
-c.free; c = Buffer.read(s, BufferExamplesPath.child);
+c.free; c = Buffer.read(s, ExampleFiles.child);
 
 (
 {
@@ -178,7 +178,7 @@ c.free; c = Buffer.read(s, BufferExamplesPath.child);
 
 subsection:: pvcalc2
 code::
-c.free; c = Buffer.read(s, BufferExamplesPath.child);
+c.free; c = Buffer.read(s, ExampleFiles.child);
 
 (
 x = {
@@ -211,7 +211,7 @@ x = {
 
 subsection:: pvcollect
 code::
-c.free; c = Buffer.read(s, BufferExamplesPath.child);
+c.free; c = Buffer.read(s, ExampleFiles.child);
 
 
 (

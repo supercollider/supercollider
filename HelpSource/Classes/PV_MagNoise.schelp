@@ -23,7 +23,7 @@ code::
 
 s.boot;
 
-b = Buffer.read(s, BufferExamplesPath.child);
+b = Buffer.read(s, ExampleFiles.child);
 
 (
 SynthDef("help-magNoise", { |out = 0|
