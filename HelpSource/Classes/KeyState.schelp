@@ -13,6 +13,12 @@ helpful to select a GUI window rather than an SC document when using
 KeyState, as the latter will be altered by any keystrokes.
 ::
 
+WARNING::
+This UGen will not work for Linux users using Wayland, as the Wayland protocol does not allow a global keyboard or mouse state to be captured.
+The UGen will return MATH::0.0:: as constant value.
+For more information see https://github.com/supercollider/supercollider/issues/4544
+::
+
 classmethods::
 
 method::kr
