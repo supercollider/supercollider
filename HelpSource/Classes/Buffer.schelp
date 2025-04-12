@@ -1,7 +1,7 @@
 class:: Buffer
 summary:: Client-side representation of a buffer on a server
 categories:: Server>Abstractions
-related:: Classes/BufferExamplesPath
+related:: Classes/ExampleFiles
 
 description::
 
