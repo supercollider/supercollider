@@ -134,7 +134,6 @@ Volume {
 
 					// also catches stray endings of ampSynth
 					ampSynth.onFree {
-						// "ampSynth was freed".postln;
 						this.volume = 0;
 					};
 					ampSynth.isPlaying = true;

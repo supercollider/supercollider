@@ -73,11 +73,10 @@ TestVolume : UnitTest {
 
 		this.bootServer(s);
 
-		0.2.wait;
 		// create ampSynth
 		s.volume = -3;
+		s.sync;
 
-		0.1.wait;
 		// send from outside like a remote client
 		s.sendMsg(15, 3, \volumeAmp, 0.25);
 
@@ -91,21 +90,24 @@ TestVolume : UnitTest {
 
 	test_resetVolumeAfterKill {
 		var s = Server(thisMethod.name);
+		var condition = CondVar.new;
 
 		s.options.bindAddress = "0.0.0.0"; // allow connections from any address
 		s.options.maxLogins = 2; // set to 2 clients
 
 		this.bootServer(s);
 
-		0.2.wait;
 		// create ampSynth
-		s.volume = -3;
+		s.bind {
+			s.volume = -3;
+			s.sync;
+		};
 
-		0.2.wait;
 		// kill ampSynth irregularly
 		s.sendMsg("n_free", s.volume.ampSynth.nodeID);
+		s.volume.ampSynth.onFree({ condition.signalOne });
+		condition.waitFor(1);
 
-		0.2.wait;
 		this.assertFloatEquals(s.volume.volume, 0,
 			"server should reset volume level when ampSynth dies irregularly."
 		);
