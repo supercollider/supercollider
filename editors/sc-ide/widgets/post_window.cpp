@@ -252,14 +252,14 @@ void PostWindow::zoomOut(int steps) { zoomFont(-steps); }
 
 void PostWindow::zoomFont(int steps) {
     QFont currentFont = font();
-    const int newSize = GenericCodeEditor::clampFontSize(currentFont.pointSize() + steps);
-    currentFont.setPointSize(newSize);
+    const float newSize = GenericCodeEditor::clampFontSize(currentFont.pointSizeF() + steps);
+    currentFont.setPointSizeF(newSize);
     setFont(currentFont);
 }
 
 void PostWindow::zoomFont(float scaler) {
     QFont currentFont = font();
-    auto newSize = GenericCodeEditor::clampFontSize(currentFont.pointSizeF() * scaler);
+    const float newSize = GenericCodeEditor::clampFontSize(currentFont.pointSizeF() * scaler);
     currentFont.setPointSizeF(newSize);
     setFont(currentFont);
 }

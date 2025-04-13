@@ -873,7 +873,7 @@ void GenericCodeEditor::resetFontSize() { mDoc->resetDefaultFont(); }
 
 void GenericCodeEditor::zoomFont(int steps) {
     QFont currentFont = mDoc->defaultFont();
-    const int newSize = clampFontSize(currentFont.pointSize() + steps);
+    const float newSize = clampFontSize(currentFont.pointSizeF() + steps);
     currentFont.setPointSizeF(newSize);
     mDoc->setDefaultFont(currentFont);
 }
