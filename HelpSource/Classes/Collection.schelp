@@ -226,7 +226,7 @@ List[1, 2, 3, 4].detect({ |item, i| item.even });
 ::
 
 method::detectLast
-Similar to link::#-detect::, but doing in a reversed manner.
+Similar to link::#-detect::, but performed in reverse order.
 code::
 [2, 3, 4, 6, 8, 9, 10].detectLast({ arg item; item.odd }); // 9
 ["a", "b", "c"].detectLast({ arg item; item == "d" }); // nil
@@ -239,7 +239,7 @@ List[1, 2, 3, 4].detectIndex({ |item, i| item.even });
 ::
 
 method::detectLastIndex
-Similar to link::#-detectIndex::, but doing in a reversed manner.
+Similar to link::#-detectIndex::, but performed in reverse order.
 code::
 [0, 1, 2, 3, 4].detectLastIndex({ arg item; item.odd }); // 3
 ["a", "b", "c"].detectLastIndex({ arg item; item == 0 }); // nil
