@@ -6,13 +6,25 @@ Splay : UGen {
 		var n1 = n - 1;
 		var positions = ((0 .. n1) * (2 / n1) - 1) * spread + center;
 
-		if (levelComp) {
+		if (levelComp == true) {
+			// ar default is equal power for backwards compatibility
 			if(rate == \audio) {
 				level = level * n.reciprocal.sqrt
 			} {
+				// kr default is equal amplitude
 				level = level / n
 			}
+		} {
+			// if false, level is untouched
+			if (levelComp != false) {
+				// if number or control signal,
+				// scale by exponent: 0 is none,
+				// 0.5 is square root = equal power
+				// 1.0 is level / numchans = equal amplitude
+				level = level / (n ** levelComp.clip(0.0, 1.0));
+			};
 		};
+		level.poll;
 
 		^Mix(Pan2.perform(this.methodSelectorForRate(rate), inArray, positions)) * level;
 	}

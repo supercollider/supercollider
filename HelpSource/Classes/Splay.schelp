@@ -19,7 +19,11 @@ An amplitude multiplier for all channels
 argument:: center
 Shift the centre of the distribution.
 argument:: levelComp
-
+level compensation based on number of inArray channels:
+false or floating point 0.0 is no compensation,
+true or floating point 0.5 is equal power compensation,
+and floating point 1.0 is equal amplitude compensation.
+(See discussion below)
 
 method:: arFill
 In analogy to Mix:arFill, this method takes a function that produces the channels. The counting index is passed to it.
@@ -34,33 +38,42 @@ An amplitude multiplier for all channels
 argument:: center
 Shift the centre of the distribution.
 argument:: levelComp
+see above
 
 examples::
 
+Basic usage:
 code::
+// splay 10 chans of sound into 2
 (
 x = { |spread = 1, level = 0.2, center = 0.0|
+	var numchans = 10;
 	Splay.ar(
-		SinOsc.ar({ |i| LFNoise2.kr(1).exprange(200, 4000) } ! 10),
+		SinOsc.ar({ |i| LFNoise2.kr(1).exprange(200, 4000) } ! numchans),
 		spread,
 		level,
 		center
+		// use levelComp default true
 	);
 }.play;
 )
 
-x.set(\spread, 1,   \center, 0);  // full stereo
-x.set(\spread, 0.5, \center, 0);  // less wide
-x.set(\spread, 0,   \center, 0);  // mono center
-x.set(\spread, 0.5, \center, 0.5);
-// spread from center to right
-x.set(\spread, 0,   \center, -1); // all left
-x.set(\spread, 1,   \center, 0);  // full stereo
+s.meter;
+s.scope;
 
+// change settings dynamically:
 
-// the a similar example written with arFill:
+x.set(\spread, 1,   \center, 0);   // full stereo
+x.set(\spread, 0.5, \center, 0);   // less wide
+x.set(\spread, 0,   \center, 0);   // mono center
+x.set(\spread, 0.5, \center, 0.5); // spread from center to right
+x.set(\spread, 0,   \center, -1);  // all left
+x.set(\spread, 1,   \center, 0);   // full stereo
+
+// A similar example written with arFill:
 (
 x = { |spread = 1, level = 0.2, center = 0.0|
+	var numchans = 10;
 	Splay.arFill(10,
 		{ |i| SinOsc.ar(LFNoise2.kr(rrand(10, 20), 200, i + 3 * 100))  },
 		spread,
@@ -70,12 +83,107 @@ x = { |spread = 1, level = 0.2, center = 0.0|
 }.play;
 )
 
-
-// with mouse control
-(
-x = { var src;
-	src = SinOsc.ar({ |i| LFNoise2.kr(rrand(10, 20), 200, i + 3 * 100) } ! 10);
-	Splay.ar(src, MouseY.kr(1, 0), 0.2, MouseX.kr(-1, 1));
-}.play;
-)
 ::
+NOTE:: levelComp new takes multiple input options:
+true, false as before for rough equal power level compensation,
+and newly added: a float between 0 and 1. This is to offer more choices for level compensation, such as equal maximum amplitude.
+::
+
+Overview of levelComp variants:
+code::
+// default is equal power comp: level / ( numchans.sqrt)
+Splay.ar(ins, spread, level, center ); // true is default
+// write it explicitly for clarity
+Splay.ar(ins, spread, level, center, levelComp: true);
+// or do equal power as float levelComp
+Splay.ar(ins, spread, level, center, levelComp: 0.5); //
+
+// maximum peak safety by equal amplitude comp: level / numchans
+Splay.ar(ins, spread, level, center, levelComp: 1);
+// or calculate by hand:
+Splay.ar(ins, spread, level / ins.size, center, levelComp: false);
+
+// no compensation, just tune level by hand
+Splay.ar(ins, spread, level, center, levelComp: false);
+Splay.ar(ins, spread, level, center, levelComp: 0);
+
+// levelComp by float: level / (numchans ** levelComp),
+// so 0.0 is no compensation: level / 1;
+//    0.5 is equal power : level / ( numchans.sqrt)
+//    1.0 is equal amplitude : level / ( numchans)
+// can be used to tune e.g. between equal power and equal amp:
+Splay.ar(ins, spread, level, center, levelComp: 0.75);
+
+::
+
+subsection:: Discussion and demonstration of level compensation options:
+code::
+
+s.meter;
+s.scope;
+
+// direct synthesis at level 0.1 -> -20db on each channel
+{ var n = 2, level = 0.1, spread = 1, pan = 0;
+	LFPulse.ar({ 100.exprand(2000) } ! n).range(-1, 1) * level
+}.play;
+
+// with levelComp true by default:
+// the same with 2 chans, spread 1, level 0.1, panned to center: -20db
+x = { |spread = 1, level = 0.1, center = 0|
+	var n = 2;
+	var snd = Splay.ar(LFPulse.ar({ 100.exprand(2000) } ! n).range(-1, 1),
+		spread, level, center);
+	Amplitude.ar(snd, 0.01, 1).ampdb.poll(1);
+	snd
+}.play;
+
+// at full spread, level -20, pan to center,
+x.set(\spread, 1, \center, 0); // -23
+// no spread, in center:
+x.set(\spread, 0, \center, 0); // -20
+// worst case: no spread, pan full left
+x.set(\spread, 0, \center, -1); // -17db
+
+//// The same tests with 20 channels, levelComp true as is default:
+x = { |spread = 1, level = 0.1, center = 0|
+	var n = 20;
+	var snd = Splay.ar(LFPulse.ar({ 100.exprand(2000) } ! n).range(-1, 1),
+		spread, level, center);
+	Amplitude.ar(snd, 0.01, 1).ampdb.poll(1);
+	snd
+}.play;
+
+// at full spread, level -20, pan to center, -17 db
+x.set(\spread, 1, \center, 0); // -17
+// no spread, in center: -21
+x.set(\spread, 0, \center, 0); // -16
+// worst case: no spread, pan full left
+x.set(\spread, 0, \center, -1); // -14db
+
+
+// here the theoretical worst case for 20 channels: 13 db too loud!
+{ Splay.ar(DC.ar(1!20), 0, 1, 0.999).ampdb.poll }.plot;
+{ Splay.ar(DC.ar(1!200), 0, 1, 0.999).ampdb.poll }.plot; // 23 db louder
+{ Splay.ar(DC.ar(1!2000), 0, 1, 0.999).ampdb.poll }.plot; // 33 db louder
+
+
+// For maximum peak safety, turn levelComp off / false,
+// and divide by the number of channels - i.e. equal amplitude:
+{ n = 2; Splay.ar(DC.ar(1!n), 1, 1/n, 0, false).ampdb.poll }.plot; // -6 db on both
+{ n = 2; Splay.ar(DC.ar(1!n), 0, 1/n, 0, false).ampdb.poll }.plot; // -3 db on both
+{ n = 2; Splay.ar(DC.ar(1!n), 0, 1/n, 0.99, false).ampdb.poll }.plot; // 0 db
+
+// these are now the same for all
+{ n = 20; Splay.ar(DC.ar(1!n), 1, 1/n, 0, false).ampdb.poll }.plot; // -4 db
+{ n = 20; Splay.ar(DC.ar(1!n), 0, 1/n, 0, false).ampdb.poll }.plot; // -3 db
+{ n = 20; Splay.ar(DC.ar(1!n), 0, 1/n, 0.99, false).ampdb.poll }.plot; // 0 db on right
+
+{ n = 200; Splay.ar(DC.ar(1!n), 1, 1/n, 0, false).ampdb.poll }.plot; // -4 db
+{ n = 200; Splay.ar(DC.ar(1!n), 0, 1/n, 0, false).ampdb.poll }.plot; // -3 db
+{ n = 200; Splay.ar(DC.ar(1!n), 0, 1/n, 0.99, false).ampdb.poll }.plot; // 0 db on right
+
+{ n = 2000; Splay.ar(DC.ar(1!n), 1, 1/n, 0, false).ampdb.poll }.plot; // -4 db
+{ n = 2000; Splay.ar(DC.ar(1!n), 0, 1/n, 0, false).ampdb.poll }.plot; // -3 db
+{ n = 2000; Splay.ar(DC.ar(1!n), 0, 1/n, 0.99, false).ampdb.poll }.plot; // 0 db on right
+::
+
