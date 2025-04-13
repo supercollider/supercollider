@@ -1,16 +1,16 @@
-TITLE:: BufferExamplesPath
+TITLE:: ExampleFiles
 summary:: A shortcut to example sounds bundled with SuperCollider
 categories:: Files
-related:: Classes/Buffer, Classes/Soundfile
+related:: Classes/Buffer, Classes/Soundfile, Classes/File, Classes/PathName
 
 DESCRIPTION::
-Provides a shortcut to the paths of example sounds which are bundled with SuperCollider and are located in LINK::Classes/Platform#*resourceDir::.
+Provides a shortcut to the paths of example files which are bundled with SuperCollider and are located in LINK::Classes/Platform#*resourceDir::.
 
 CODE::
 // instead of writing
 Platform.resourceDir +/+ "sounds" +/+ "a11wlk01-44_1.aiff";
 // one can write
-BufferExamplesPath.apollo11;
+ExampleFiles.apollo11;
 ::
 
 CLASSMETHODS::
@@ -48,7 +48,7 @@ TABLE::
 returns:: The full path of TELETYPE::SinedPink.aiff:: as a LINK::Classes/String:: 
 
 METHOD:: child
-Allegedly a re-recording of Link::Classes/BufferExamplesPath#*apollo11:: performed by a child of a developer.
+Allegedly a re-recording of Link::Classes/ExampleFiles#*apollo11:: performed by a child of a developer.
 
 TABLE::
 ## Filename || TELETYPE::a11wlk01.wav::
