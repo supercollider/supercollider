@@ -1,4 +1,3 @@
-
 TestEnvironmentRedirect : UnitTest {
 	test_dispatch {
 		var e = EnvironmentRedirect();
