@@ -543,7 +543,11 @@ w = Window.new("soundfile test", Rect(200, 300, 740, 100));
 a = SoundFileView.new(w, Rect(20, 20, 700, 60));
 
 f = SoundFile.new;
-f.openRead(Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+// ExampleFiles helps locate audio files used in examples
+p = ExampleFiles.child;
+// peek at the path to see location and the format of a path
+p.postln;
+f.openRead(p);
 f.inspect;
 
 a.soundfile = f;
@@ -570,7 +574,7 @@ w.front;
 a = SoundFileView.new(w, Rect(20, 20, 700, 60));
 
 f = SoundFile.new;
-f.openRead(Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+f.openRead(ExampleFiles.child);
 // f.inspect;
 
 a.soundfile = f;            // set soundfile
@@ -709,8 +713,8 @@ list::
 ::
 
 code::
-
-f = SoundFile.openRead(Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+p = ExampleFiles.child;
+f = SoundFile.openRead(p);
 f.readData(d = Signal.newClear(f.numFrames * f.numChannels));
 f.close;
 
