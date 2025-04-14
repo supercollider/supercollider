@@ -25,6 +25,7 @@
 #include "../core/settings/manager.hpp"
 #include "../core/settings/theme.hpp"
 #include "../core/util/overriding_action.hpp"
+#include "editor.hpp"
 
 #include <QApplication>
 #include <QScreen>
@@ -54,6 +55,9 @@ PostWindow::PostWindow(QWidget* parent): QPlainTextEdit(parent) {
     setContextMenuPolicy(Qt::ActionsContextMenu);
 
     connect(this, SIGNAL(scrollToBottomRequest()), this, SLOT(scrollToBottom()), Qt::QueuedConnection);
+
+    grabGesture(Qt::PinchGesture);
+    setAttribute(Qt::WA_AcceptTouchEvents);
 
     applySettings(Main::settings());
 }
@@ -248,10 +252,15 @@ void PostWindow::zoomOut(int steps) { zoomFont(-steps); }
 
 void PostWindow::zoomFont(int steps) {
     QFont currentFont = font();
-    const int newSize = currentFont.pointSize() + steps;
-    if (newSize <= 0)
-        return;
-    currentFont.setPointSize(newSize);
+    const float newSize = GenericCodeEditor::clampFontSize(currentFont.pointSizeF() + steps);
+    currentFont.setPointSizeF(newSize);
+    setFont(currentFont);
+}
+
+void PostWindow::zoomFont(float scaler) {
+    QFont currentFont = font();
+    const float newSize = GenericCodeEditor::clampFontSize(currentFont.pointSizeF() * scaler);
+    currentFont.setPointSizeF(newSize);
     setFont(currentFont);
 }
 
@@ -270,6 +279,10 @@ bool PostWindow::event(QEvent* event) {
             event->accept();
             return true;
         }
+        break;
+    }
+    case QEvent::Gesture: {
+        return gestureEvent(static_cast<QGestureEvent*>(event));
         break;
     }
     default:
@@ -329,6 +342,19 @@ QMimeData* PostWindow::createMimeDataFromSelection() const {
     QMimeData* data = new QMimeData;
     data->setText(textCursor().selection().toPlainText());
     return data;
+}
+
+
+bool PostWindow::gestureEvent(QGestureEvent* event) {
+    if (QGesture* pinch = event->gesture(Qt::PinchGesture)) {
+        auto* pinchGesture = static_cast<QPinchGesture*>(pinch);
+        if (pinchGesture->state() == Qt::GestureUpdated) {
+            float scaleFactor = pinchGesture->scaleFactor();
+            zoomFont(scaleFactor);
+        }
+        return true;
+    }
+    return false;
 }
 
 bool PostWindow::openDocumentation() { return Main::openDocumentation(symbolUnderCursor()); }

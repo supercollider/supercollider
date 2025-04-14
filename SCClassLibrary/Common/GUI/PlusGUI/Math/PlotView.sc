@@ -1312,18 +1312,11 @@ Plotter {
 
 		numChannels !? { array = array.unlace(numChannels) };
 		array = array.collect {|elem, i|
-			if (elem.isKindOf(Env)) {
-				elem.asMultichannelSignal.flop
-			} {
-				if(elem.isNil) {
-					Error("Cannot plot array: non-numeric value at index %".format(i)).throw
-				};
-				if(hasSubArrays) {
-					elem.asArray
-				} {
-					elem
-				}
-			}
+			case {elem.isKindOf(Env)}		{elem.asMultichannelSignal.flop}
+				 {elem.isKindOf(Wavetable)} {elem.asSignal}
+				 {elem.isNil}				{Error("Cannot plot array: non-numeric value at index %".format(i)).throw}
+  				 {hasSubArrays}				{elem.asArray} 
+			  	 {elem};
 		};
 
 		plotter.setValue(
