@@ -1109,6 +1109,10 @@ Ndef : NodeProxy {
 	}
 
 	*clear { | fadeTime |
+		all.do(_.clear(fadeTime))
+	}
+
+	*clearDict { | fadeTime |
 		all.do(_.clear(fadeTime));
 		all.clear;
 	}
