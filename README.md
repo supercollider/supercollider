@@ -75,9 +75,8 @@ You can also view the archives for the old mailing lists at [sc-users][sc-users 
 
 Please read our adopted [code of conduct](CODE_OF_CONDUCT.md), which applies to all the above communities.
 
-[list signup]: http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx
-[sc-users archives]: https://www.listarc.bham.ac.uk/lists/sc-users/
-[sc-dev archives]: https://www.listarc.bham.ac.uk/lists/sc-dev/
+[sc-users archives]: https://listarc.cal.bham.ac.uk/lists/sc-users/index.html
+[sc-dev archives]: https://listarc.cal.bham.ac.uk/lists/sc-dev/index.html
 [Discourse]: https://scsynth.org/
 [Slack]: https://join.slack.com/t/scsynth/shared_invite/zt-ezoyz15j-SVM7JVul94pxtDiUDRnd0w
 
