@@ -45,7 +45,6 @@ EnvironmentRedirect {
 		^envir.removeAt(key)
 	}
 
-
 	// behave like environment
 
 

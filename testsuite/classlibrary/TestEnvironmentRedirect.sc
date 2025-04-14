@@ -1,5 +1,5 @@
-TestEnvironmentRedirect : UnitTest {
 
+TestEnvironmentRedirect : UnitTest {
 	test_dispatch {
 		var e = EnvironmentRedirect();
 		var notified = false;
