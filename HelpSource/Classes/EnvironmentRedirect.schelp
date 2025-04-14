@@ -34,11 +34,16 @@ Overriding these methods, one can redirect where objects go when they are assign
 method::at, put, localPut, removeAt
 
 method::dispatch
-A function or object that is called when the environment is modified. The key and the changed object are passed as arguments.
+A function or object that is called when the environment is modified. The key
+and the changed object are passed as arguments. When an object is removed from
+the environment, dispatch is called with its key and teletype::nil::. Note that
+dispatch is called on removal only if the removed object existed.
 code::
 e = LazyEnvir.new;
 e.dispatch = { |key, val| [key, val].postln };
 e.put(\x, 9);
+e.removeAt(\x); // also runs dispatch, val is nil
+e.removeAt(\y); // \y was not in e: dispatch not called
 ::
 
 method::add

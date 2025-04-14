@@ -32,8 +32,9 @@ EnvironmentRedirect {
 	}
 
 	removeAt { arg key;
-		var result = envir.removeAt(key);
-		dispatch.value(key, nil);
+		var hadKey = true;
+		var result = envir.removeAtFail(key) { hadKey = false; nil };
+		if (hadKey) { dispatch.value(key, nil) };
 		^result
 	}
 
@@ -44,7 +45,6 @@ EnvironmentRedirect {
 	localRemoveAt { arg key;
 		^envir.removeAt(key)
 	}
-
 
 	// behave like environment
 
