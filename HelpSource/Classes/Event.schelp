@@ -254,8 +254,6 @@ f = (a : 10); // -> ("abc": 10)
 f["abc"];     // -> nil
               // "abc" is equal to the string stored in a but not identical
 f[a]:         // -> 10
-f.a;          // -> nil
-              // a is a variable, not a Symbol
 ::
 
 subsection::Event for specifying different things to happen
