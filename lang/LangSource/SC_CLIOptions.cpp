@@ -169,9 +169,9 @@ po::options_description CLIOptions::buildTerminalDescription(SC_TerminalClient::
             "Set IDE name"
         )
         (
-            "standalone,a",
+            "exclude-default-paths,a",
             po::bool_switch(&terminalOptions.mStandalone)->default_value(terminalOptions.mStandalone),
-            "Standalone mode (exclude SCClassLibrary and user and system Extensions folders from search path)"
+            "Exclude searching in default SCClassLibrary and user and system extensions paths (aka 'standalone' mode)."
         )
     ;
     // clang-format on
