@@ -20,7 +20,7 @@ definitionlist::
 The default server is link::Classes/Server#Switching the server application#scsynth::.
 SuperCollider also includes an alternative implementation of scsynth called link::Classes/Server#Switching the server application#supernova:: which has multi-threading support to fully exploit the potential of multi-core CPUs.
 
-## • soft:: ::link::Classes/Main#.thisProcess#sclang:: – A text-based programming language and interpreter that acts as a client to the server.
+## • soft:: ::link::Classes/Main#.thisProcess#sclang:: — A text-based programming language and interpreter that acts as a client to the server.
 ||
 emphasis::sclang:: controls audio synthesis processes on the server and offers an interactive programming environment for link::Overviews/JITLib##live coding::, an extensive library for creating link::Tutorials/A-Practical-Guide/PG_01_Introduction##patterns:: and a library of link::Classes/Scale##scales and modes:: from various cultures.
 Creating link::Tutorials/Getting-Started/15-Sequencing-with-Routines-and-Tasks##processes:: that unfold over time is straightforward in emphasis::sclang::.
@@ -36,7 +36,7 @@ table::
 ## Although sclang is the native language and client for the server, there are also several client implementations in other programming languages, such as link::https://supriya-project.github.io/supriya/##Python (via Supriya API)::, link::https://crucialfelix.github.io/supercolliderjs/##JavaScript::, link::https://rohandrape.net/?t=hsc3##Haskell::, or link::https://codeberg.org/sciss/ScalaCollider##Scala::.
 ::
 
-## • soft:: ::link::Classes/ScIDE:: – a dedicated editor for SuperCollider with an integrated help system.||
+## • soft:: ::link::Classes/ScIDE:: — a dedicated editor for SuperCollider with an integrated help system.||
 The SuperCollider Integrated Development Environment (link::Guides/SCIde##IDE::) allows you to start writing code right out of the box. Community members also maintain sclang integration with other popular IDEs. The full list of support editors is available at  link::https://github.com/supercollider/supercollider/wiki/Systems-interfacing-with-SC#editors::
 ::
 
@@ -70,6 +70,7 @@ subsubsection:: Generating Sound from Scratch
 list::
 ##link::Classes/Function#-play::
 ##link::Classes/Function#-scope::
+##link::Classes/Function#-freqscope::
 ##link::Classes/Event#-play::
 ::
 
@@ -221,7 +222,7 @@ subsection:: For more information
 
 
 link:: https://github.com/supercollider/supercollider/wiki##SuperCollider Wiki::
- 
+
 SECTION::Licensing
 
 SuperCollider is free software published under the GPL: link::Other/Licensing::.
