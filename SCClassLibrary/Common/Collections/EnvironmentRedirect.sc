@@ -226,8 +226,10 @@ LazyEnvir : EnvironmentRedirect {
 	removeAt { arg key;
 		var proxy;
 		proxy = envir.removeAt(key);
-		if(proxy.notNil) { proxy.clear };
-		dispatch.value(key, nil);
+		if (proxy.notNil) {
+			proxy.clear;
+			dispatch.value(key, nil);
+		};
 		^proxy
 	}
 

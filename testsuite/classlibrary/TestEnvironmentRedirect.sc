@@ -1,4 +1,4 @@
-TestEnvironmentRedirect {
+TestEnvironmentRedirect : UnitTest {
 
 	test_dispatch {
 		var e = EnvironmentRedirect();
@@ -6,22 +6,23 @@ TestEnvironmentRedirect {
 		e.dispatch = { notified = true };
 
 		e[\test] = 1;
-		e.assert(notified, "should run dispatch when a new value is put")
+		this.assert(notified, "should run dispatch when a new value is put");
 
 		notified = false;
 		e[\test] = 2;
-		e.assert(notified, "should run dispatch when an existing value is modified")
+		this.assert(notified, "should run dispatch when an existing value is modified");
 
 		notified = false;
 		e[\test] = nil;
-		e.assert(notified, "should run dispatch when an existing value is set to nil")
+		this.assert(notified, "should run dispatch when an existing value is set to nil");
+		e[\test] = 2;
 
 		notified = false;
 		e.removeAt(\test);
-		e.assert(notified, "should run dispatch when an existing value is removed")
+		this.assert(notified, "should run dispatch when an existing value is removed");
 
 		notified = false;
 		e.removeAt(\notExisting);
-		e.assert(notified.not, "should not run dispatch when a non-existing value is removed")
+		this.assert(notified.not, "should not run dispatch when a non-existing value is removed");
 	}
 }
