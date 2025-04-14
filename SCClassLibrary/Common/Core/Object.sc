@@ -96,8 +96,9 @@ Object {
 		// perform only if Function. see Function-functionPerformList
 		^this
 	}
-	valueArgs { | args, kwargs|
-		^this.performArgs(\value, args, kwargs)
+	valueArgs { |args, kwargs|
+		_ObjectValueArgs;
+		^this.primitiveFailed
 	}
 
 	// super.perform(selector,arg) doesn't do what you might think.

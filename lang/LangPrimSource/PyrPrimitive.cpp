@@ -3817,7 +3817,9 @@ void initPrimitives() {
     definePrimitiveWithKeys(base, index, "_ObjectPerform", objectPerform, objectPerformWithKeys, 2, 1);
     index += 2;
     definePrimitive(base, index++, "_ObjectPerformArgs", objectPerformArgs, 4, 0);
+
     definePrimitive(base, index++, "_ObjectSuperPerformArgs", objectSuperPerformArgs, 4, 0);
+    definePrimitive(base, index++, "_ObjectValueArgs", objectValueArgs, 3, 0);
 
     definePrimitiveWithKeys(base, index, "_ObjectPerformList", objectPerformList, objectPerformListWithKeys, 2, 1);
     index += 2;
