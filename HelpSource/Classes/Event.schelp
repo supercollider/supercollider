@@ -246,6 +246,7 @@ Events have a very special meaning in a musical context within SuperCollider, es
 
 code::
 e = (a: 10);  // -> ('a': 10)
+a = nil;
 f = (a : 10); // -> nil
               // ERROR: Primitive '_IdentDict_Put' failed.
               // a is treated as a variable!
