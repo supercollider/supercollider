@@ -1,22 +1,26 @@
 class:: GrayNoise
-summary:: Gray Noise.
+summary:: Bit-flipping Noise
 related:: Classes/BrownNoise, Classes/ClipNoise, Classes/PinkNoise, Classes/WhiteNoise
 categories::  UGens>Generators>Stochastic
 
-
-
 Description::
 
-Generates noise which results from flipping random bits in a word.footnote::Generated through math::X_{0} = 1;\;X_{n+1} = X_{n} \oplus z::
-, where math::\oplus:: is bitwise exclusive or, and math::z:: is a 32-bit binary number with exactly one nonzero digit; the position of the nonzero digit is a uniform random variable.
+Generates noise which results from flipping random bits in a word.footnote::
+Generated through math::X_{0} = 1;\;X_{n+1} = X_{n} \oplus z::,
+where math::\oplus:: is bitwise exclusive or,
+and math::z:: is a 32-bit binary number with exactly one nonzero digit;
+the position of the nonzero digit is a uniform random variable.
 ::
 
 This type of noise has a high RMS level relative to its peak to peak level.
 The spectrum is emphasized towards lower frequencies.
 
-note::link::Classes/GrayNoise:: is derived from digital signal characteristics (e.g., bit-flipping errors) and should not be confused with "gray noise" or "grey noise," which typically refers to noise adjusted to human auditory sensitivity curves, such as the A-weighting curve. See link::https://en.wikipedia.org/wiki/Grey_noise::::
-
-
+note::
+link::Classes/GrayNoise:: is derived from digital signal characteristics (e.g., bit-flipping errors) and
+should not be confused with "gray noise" or "grey noise",
+which typically refers to noise adjusted to human auditory sensitivity curves, such as the A-weighting curve.
+See link::https://en.wikipedia.org/wiki/Grey_noise::, and link::#Comparison with conventional gray noise::
+::
 
 classmethods::
 
@@ -40,7 +44,7 @@ SynthDef("help-GrayNoise", { |out = 0|
 )
 ::
 
-Comparison with usual gray noise:
+subsection:: Comparison with conventional gray noise
 code::
 { GrayNoise.ar * 0.1 }.freqscope
 
