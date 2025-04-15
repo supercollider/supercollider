@@ -8,8 +8,6 @@ TestUGen_RTAlloc : UnitTest {
 
 	setUp {
 		server = Server(this.class.name);
-		server.options.sampleRate = 48000;
-		server.options.blockSize = 64;
 		server.options.memSize = 2 ** 13; // scsynth default
 		// - tests fail with memSize < 256 (GVerb fails)
 		// - testing with memSize >= 2 ** 20 would require multiple allocations

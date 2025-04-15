@@ -309,10 +309,11 @@ Function : AbstractFunction {
 			if(fadeTime > 0) {
 				outputs = outputs * EnvGen.kr(Env.linen(fadeTime, duration - (2 * fadeTime), fadeTime))
 			};
-      
-			RecordBuf.perform(RecordBuf.methodSelectorForRate(defRate), outputs, bufnum, loop: 0);
-			Line.perform(Line.methodSelectorForRate(defRate), dur: duration, doneAction: 2);
-      
+
+			RecordBuf.perform(
+				RecordBuf.methodSelectorForRate(defRate),
+				outputs, bufnum, loop: 0, doneAction: 2
+			);
 		});
 
 		buffer = Buffer.new(server);

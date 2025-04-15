@@ -149,9 +149,9 @@ void PartConv_Ctor(PartConv* unit) {
     }
 
     // CHECK SAMPLING RATE AND BUFFER SIZE
-    unit->m_blocksize = unit->mWorld->mFullRate.mBufLength;
+    unit->m_blocksize = FULLBUFLENGTH;
     // if(unit->m_blocksize!=64) printf("TPV complains: block size not 64, you have %d\n", unit->m_blocksize);
-    unit->m_sr = unit->mWorld->mSampleRate;
+    unit->m_sr = FULLRATE;
     // if(unit->m_sr!=44100) printf("TPV complains: sample rate not 44100, you have %d\n", unit->m_sr);
 
     OUT0(0) = 0.f;

@@ -1245,7 +1245,7 @@ void A2K_Ctor(A2K* unit) {
 void T2K_next(T2K* unit, int inNumSamples) {
     float out = 0.f, val;
     float* in = ZIN(0);
-    int n = unit->mWorld->mBufLength;
+    int n = FULLBUFLENGTH;
     LOOP1(n, val = ZXP(in); if (val > out) out = val;);
     ZOUT0(0) = out;
 }
@@ -2560,14 +2560,16 @@ static bool EnvGen_initSegment(EnvGen* unit, int& counter, double& level, double
     double curve = *envPtr[3];
     unit->m_endLevel = endLevel;
 
-    // Carry the rounding error forward to be absorbed in the next segments
+    // Carry the residual stage duration forward to the next stage
     double stageDurInSamples = dur * SAMPLERATE + unit->m_stageResidual;
-    int32 stageDurInSamples_floor = (int32)stageDurInSamples;
+    int32 stageDurInSamples_floor = static_cast<int32>(stageDurInSamples);
+    double counter_fractional = sc_max(1.0, stageDurInSamples);
     counter = sc_max(1, stageDurInSamples_floor);
     unit->m_stageResidual = stageDurInSamples - counter;
 
     if (counter == 1)
         unit->m_shape = 1; // shape_Linear
+
     switch (unit->m_shape) {
     case shape_Step: {
         level = endLevel;
@@ -2576,13 +2578,13 @@ static bool EnvGen_initSegment(EnvGen* unit, int& counter, double& level, double
         level = previousEndLevel;
     } break;
     case shape_Linear: {
-        unit->m_grow = (endLevel - level) / counter;
+        unit->m_grow = (endLevel - level) / counter_fractional;
     } break;
     case shape_Exponential: {
-        unit->m_grow = pow(endLevel / level, 1.0 / counter);
+        unit->m_grow = pow(endLevel / level, 1.0 / counter_fractional);
     } break;
     case shape_Sine: {
-        double w = pi / counter;
+        double w = pi / counter_fractional;
 
         unit->m_a2 = (endLevel + level) * 0.5;
         unit->m_b1 = 2. * cos(w);
@@ -2591,7 +2593,7 @@ static bool EnvGen_initSegment(EnvGen* unit, int& counter, double& level, double
         level = unit->m_a2 - unit->m_y1;
     } break;
     case shape_Welch: {
-        double w = (pi * 0.5) / counter;
+        double w = (pi * 0.5) / counter_fractional;
 
         unit->m_b1 = 2. * cos(w);
 
@@ -2609,23 +2611,23 @@ static bool EnvGen_initSegment(EnvGen* unit, int& counter, double& level, double
     case shape_Curve: {
         if (fabs(curve) < 0.001) {
             unit->m_shape = 1; // shape_Linear
-            unit->m_grow = (endLevel - level) / counter;
+            unit->m_grow = (endLevel - level) / counter_fractional;
         } else {
             double a1 = (endLevel - level) / (1.0 - exp(curve));
             unit->m_a2 = level + a1;
             unit->m_b1 = a1;
-            unit->m_grow = exp(curve / counter);
+            unit->m_grow = exp(curve / counter_fractional);
         }
     } break;
     case shape_Squared: {
         unit->m_y1 = sqrt(level);
         unit->m_y2 = sqrt(endLevel);
-        unit->m_grow = (unit->m_y2 - unit->m_y1) / counter;
+        unit->m_grow = (unit->m_y2 - unit->m_y1) / counter_fractional;
     } break;
     case shape_Cubed: {
         unit->m_y1 = pow(level, 1.0 / 3.0);
         unit->m_y2 = pow(endLevel, 1.0 / 3.0);
-        unit->m_grow = (unit->m_y2 - unit->m_y1) / counter;
+        unit->m_grow = (unit->m_y2 - unit->m_y1) / counter_fractional;
     } break;
     };
     return true;
@@ -2674,10 +2676,10 @@ static inline bool check_gate_ar(EnvGen* unit, int i, float& prevGate, float*& g
 static inline bool EnvGen_nextSegment(EnvGen* unit, int& counter, double& level) {
     int numstages = (int)ZIN0(kEnvGen_numStages);
 
-    if (unit->m_stage + 1 >= numstages) { // num stages
+    if (unit->m_stage + 1 >= numstages) { // last stage completed
+        // don't update level yet, the current level hasn't been written out by `perform` yet
         counter = INT_MAX;
         unit->m_shape = 0;
-        level = unit->m_endLevel;
         unit->mDone = true;
         int doneAction = (int)ZIN0(kEnvGen_doneAction);
         DoneAction(doneAction, unit);
@@ -2841,6 +2843,9 @@ void EnvGen_next_k(EnvGen* unit, int inNumSamples) {
     float* out = ZOUT(0);
     EnvGen_perform(unit, out, level, 1);
 
+    if (unit->mDone)
+        level = unit->m_endLevel;
+
     unit->m_level = level;
     unit->m_counter = counter - 1;
 }
@@ -2860,6 +2865,14 @@ void EnvGen_next_ak(EnvGen* unit, int inNumSamples) {
             bool success = EnvGen_nextSegment(unit, counter, level);
             if (!success)
                 return;
+            if (unit->mDone) {
+                // We've reached the end of the last stage,
+                // write out the previously-advanced level value
+                EnvGen_perform(unit, out, level, 1);
+                // and advance to the end level for samples thereafter
+                level = unit->m_endLevel;
+                remain -= 1;
+            }
         }
 
         int nsmps = sc_min(remain, counter);
@@ -2915,6 +2928,14 @@ FLATTEN void EnvGen_next_ak_nova(EnvGen* unit, int inNumSamples) {
             bool success = EnvGen_nextSegment(unit, counter, level);
             if (!success)
                 return;
+            if (unit->mDone) {
+                // We've reached the end of the last stage,
+                // write out the previously-advanced level value
+                EnvGen_perform(unit, out, level, 1);
+                // and advance to the end level for samples thereafter
+                level = unit->m_endLevel;
+                remain -= 1;
+            }
         }
 
         int nsmps = sc_min(remain, counter);

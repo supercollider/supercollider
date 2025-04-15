@@ -25,6 +25,7 @@
 */
 
 #include "SC_TerminalClient.h"
+#include <cstdlib>
 #ifdef SC_QT
 #    include "../../QtCollider/LanguageClient.h"
 #endif
@@ -259,6 +260,14 @@ int SC_TerminalClient::run(int argc, char** argv) {
 
     // startup library
     compileLibrary(opt.mStandalone);
+
+    if (!compiledOK) {
+        post("ERROR: Library has not been compiled successfully.\n");
+        shutdownLibrary();
+        flush();
+        shutdownRuntime();
+        return EXIT_FAILURE;
+    }
 
     // enter main loop
     if (codeFile)

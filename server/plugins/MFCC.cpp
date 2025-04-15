@@ -3298,7 +3298,7 @@ static float MFCC_prepareMel(MFCC*, float*);
 void MFCC_Ctor(MFCC* unit) {
     // may want to check sampling rate here!
 
-    unit->m_srate = unit->mWorld->mFullRate.mSampleRate;
+    unit->m_srate = FULLRATE;
 
     // if sample rate is 88200 or 96000, assume taking double size FFT to start with
     if (unit->m_srate > (44100.0 * 1.5))
