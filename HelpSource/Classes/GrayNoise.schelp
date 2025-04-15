@@ -4,11 +4,18 @@ related:: Classes/BrownNoise, Classes/ClipNoise, Classes/PinkNoise, Classes/Whit
 categories::  UGens>Generators>Stochastic
 
 
+
 Description::
 
-Generates noise which results from flipping random bits in a word.
-This type of noise has a high RMS level relative to its peak to peak
-level. The spectrum is emphasized towards lower frequencies.
+Generates noise which results from flipping random bits in a word.footnote::Generated through math::X_{0} = 1;\;X_{n+1} = X_{n} \oplus z::
+, where math::\oplus:: is bitwise exclusive or, and math::z:: is a 32-bit binary number with exactly one nonzero digit; the position of the nonzero digit is a uniform random variable.
+::
+
+This type of noise has a high RMS level relative to its peak to peak level.
+The spectrum is emphasized towards lower frequencies.
+
+note::link::Classes/GrayNoise:: is derived from digital signal characteristics (e.g., bit-flipping errors) and should not be confused with "gray noise" or "grey noise," which typically refers to noise adjusted to human auditory sensitivity curves, such as the A-weighting curve. See link::https://en.wikipedia.org/wiki/Grey_noise::::
+
 
 
 classmethods::
@@ -24,7 +31,6 @@ This value will be added to the output.
 Examples::
 
 code::
-
 (
 SynthDef("help-GrayNoise", { |out = 0|
 	Out.ar(out,
@@ -32,5 +38,22 @@ SynthDef("help-GrayNoise", { |out = 0|
 	)
 }).play;
 )
+::
 
+Comparison with usual gray noise:
+code::
+{ GrayNoise.ar * 0.1 }.freqscope
+
+(
+{
+    var binsz = s.sampleRate / 2048;
+    var in, chain;
+    in = WhiteNoise.ar(0.1);
+    chain = FFT(LocalBuf(2048), in);
+    chain = chain.pvcollect(1024, { |m, p, b, i|
+            m * AmpCompA.ir(b * binsz, minAmp: 0.2)
+            });
+    IFFT(chain);
+}.freqscope
+)
 ::
