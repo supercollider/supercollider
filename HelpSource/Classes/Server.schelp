@@ -636,7 +636,9 @@ the number of input channels. The default is nil and the number of input channel
 argument:: numOuts
 the number of output channels. The default is nil and the number of output channels defined by code::Server.local.options.numOutputBusChannels:: is used when using a local server.
 argument:: position
-the position of the scope window. The value should be a point: x@y. The default is nil and the scope window will be in the centre of the display.
+the position of the scope window. 
+The value should be a link::Classes/Point::, e.g. teletype::x@y::, or respond to teletype::asPoint::.
+The default is teletype::nil:: and the scope window will be in the centre of the display.
 
 method:: plotTree
 Plot the node/group tree. As link::#-queryAllNodes:: but graphical.
