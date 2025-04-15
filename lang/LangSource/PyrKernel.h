@@ -119,7 +119,7 @@ struct PyrThread : public PyrObjectHdr {
 
 struct PyrMethodRaw {
 #ifdef PYR_SLOTS_GENERIC
-    long padding; // used for the tag in the generic pyrslot implementation
+    std::int64_t padding; // used for the tag in the generic pyrslot implementation
 #endif
     unsigned short unused1;
     unsigned short specialIndex;
@@ -127,7 +127,7 @@ struct PyrMethodRaw {
     unsigned short frameSize;
 
 #ifdef PYR_SLOTS_GENERIC
-    long padding2; // used for the tag in generic pyrslot implementation, second slot
+    std::int64_t padding2; // used for the tag in generic pyrslot implementation, second slot
 #endif
 
     unsigned char unused2;

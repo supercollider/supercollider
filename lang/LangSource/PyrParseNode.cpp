@@ -74,7 +74,7 @@ bool gGenerateTailCallByteCodes = true;
 bool gGenerateTailCallByteCodes = false;
 #endif
 
-long gInliningLevel;
+std::int64_t gInliningLevel;
 
 int compileErrors = 0;
 int numOverwrites = 0;
@@ -1113,7 +1113,7 @@ int compareCallArgs(PyrMethodNode* node, PyrCallNode* cnode, int* varIndex, PyrC
 
 void installByteCodes(PyrBlock* block) {
     PyrInt8Array* byteArray;
-    long length, flags;
+    std::int64_t length, flags;
     ByteCodes byteCodes;
     byteCodes = getByteCodes();
     if (byteCodes) {
@@ -4419,7 +4419,7 @@ void initSpecialClasses() {
 
 void initSpecialSelectors() {
     PyrSymbol** sel;
-    long i;
+    std::int64_t i;
 
     sel = gSpecialUnarySelectors;
     sel[opNeg] = getsym("neg");

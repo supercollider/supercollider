@@ -300,7 +300,7 @@ void TCP::handleAccept(Detail::TCPConnection::pointer newConnection, const boost
 
 namespace OutPort {
 
-TCP::TCP(unsigned long inAddress, int inPort, HandlerType handlerType, ClientNotifyFunc notifyFunc, void* clientData):
+TCP::TCP(std::uint64_t inAddress, int inPort, HandlerType handlerType, ClientNotifyFunc notifyFunc, void* clientData):
     mSocket(ioContext),
     mEndpoint(boost::asio::ip::address_v4(inAddress), inPort),
     mClientNotifyFunc(notifyFunc),

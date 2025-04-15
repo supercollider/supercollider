@@ -21,10 +21,10 @@
 #pragma once
 
 #define NUMPRIMES 6542
-long nthPrime(int n);
-long findPrime(int n);
-long prevPrime(int n);
-long nextPrime(int n);
+std::int64_t nthPrime(int n);
+std::int64_t findPrime(int n);
+std::int64_t prevPrime(int n);
+std::int64_t nextPrime(int n);
 
 
 inline double linlin(double x, double a, double b, double c, double d) {
