@@ -36,7 +36,7 @@ table::
 ## Although sclang is the native language and client for the server, there are also several client implementations in other programming languages, such as link::https://supriya-project.github.io/supriya/##Python (via Supriya API)::, link::https://crucialfelix.github.io/supercolliderjs/##JavaScript::, link::https://rohandrape.net/?t=hsc3##Haskell::, or link::https://codeberg.org/sciss/ScalaCollider##Scala::.
 ::
 
-## • soft:: ::link::Classes/ScIDE:: — a dedicated editor for SuperCollider with an integrated help system.||
+## • soft:: ::link::Classes/ScIDE:: — A dedicated editor for SuperCollider with an integrated help system.||
 The SuperCollider Integrated Development Environment (link::Guides/SCIde##IDE::) allows you to start writing code right out of the box. Community members also maintain sclang integration with other popular IDEs. The full list of support editors is available at  link::https://github.com/supercollider/supercollider/wiki/Systems-interfacing-with-SC#editors::
 ::
 
