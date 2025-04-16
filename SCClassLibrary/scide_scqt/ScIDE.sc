@@ -394,6 +394,10 @@ ScIDE {
 		}
 	}
 
+	currentPath_ { |p|
+		currentPath = p.standardizePath;
+	}
+
 
 	// PRIVATE ///////////////////////////////////////////////////////////
 

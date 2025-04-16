@@ -28,7 +28,7 @@
 
 
 + Function {
-	scope { arg numChannels, outbus = 0, fadeTime = 0.05, bufsize = 4096, zoom;
+	scope { arg numChannels, outbus = 0, fadeTime = 0.05, bufsize = 4096, zoom, bounds;
 		var synth, synthDef, bytes, synthMsg, outUGen, server;
 
 		server = Server.default;
@@ -45,7 +45,7 @@
 		bytes = synthDef.asBytes;
 		synthMsg = synth.newMsg(server, [\i_out, outbus, \out, outbus], \addToHead);
 		server.sendMsg("/d_recv", bytes, synthMsg);
-		server.scope(numChannels, outbus, bufsize, zoom, outUGen.rate);
+		server.scope(numChannels, outbus, bufsize, zoom, outUGen.rate).bounds_(bounds); 
 		^synth
 	}
 

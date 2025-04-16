@@ -28,7 +28,7 @@ code::
 
 // assumes hop of half fftsize, fine
 
-d = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+d = Buffer.read(s, ExampleFiles.child);
 
 
 (

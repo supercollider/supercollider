@@ -265,7 +265,7 @@ a.free;
 a = { FFT(b, Dust2.ar(500) * 5); 0.0 }.play; // Impulses
 
 a.free;
-c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+c = Buffer.read(s, ExampleFiles.child);
 (
 m.setInputValue(\framesPerView, 50);
 a = { var colum;
@@ -295,7 +295,7 @@ s.boot;
 o = OSCresponder(s.addr, '/tr', { |time, resp, msg|
 	{ ~meters[msg[2]].level = (msg[3] + 0.01).explin(0.01, 1.01, 0, 1) }.defer;
 }).add;
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, ExampleFiles.child);
 a = { var colum, noise, imp, delimp;
 	imp = Impulse.kr(20);
 	delimp = Delay1.kr(imp);

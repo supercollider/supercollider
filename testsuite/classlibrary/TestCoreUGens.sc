@@ -28,7 +28,9 @@ TestCoreUGens : UnitTest {
 	test_ugen_generator_equivalences {
 		var cond = CondVar();
 		var completed = 0;
-		var n, v, tests, testDur, testsFinished;
+		var blockSize, sampleRate;
+		var n, v, tests, testDur, numTests, testsFinished;
+		var sampleDursToTest; // for Env/Line equivalence tests
 
 		// These pairs should generate the same shapes, so subtracting should give zero.
 		// Of course there's some rounding error due to floating-point accuracy.
@@ -260,7 +262,6 @@ TestCoreUGens : UnitTest {
 
 		//////////////////////////////////////////
 		// reversible unary ops:
-
 		[
 			[\reciprocal, \reciprocal],
 			[\squared, \sqrt],
@@ -288,7 +289,6 @@ TestCoreUGens : UnitTest {
 
 		//////////////////////////////////////////
 		// delays/bufdelays:
-
 		[
 			[DelayN, BufDelayN],
 			[DelayL, BufDelayL],
@@ -307,22 +307,87 @@ TestCoreUGens : UnitTest {
 			}
 		};
 
+		//////////////////////////////////////////
+		// Run tests:
 		server.bootSync;
-		testDur = defaultNumBlocksToTest * server.options.blockSize / server.sampleRate;
+		blockSize = server.options.blockSize;
+		sampleRate = server.sampleRate;
+		testDur = defaultNumBlocksToTest * blockSize / sampleRate;
+		numTests = tests.size;
 
 		tests.keysValuesDo { |name, func, i|
 			func.loadToFloatArray(testDur, server, { |data|
 				this.assertArrayFloatEquals(data, 0, name.quote,
 					within: -90.dbamp, // could go to -100 if not for midicps(cpsmidi()) test
-					report: true);
+					report: false);
 				completed = completed + 1;
 				cond.signalOne;
 			});
 			server.sync;
 		};
 
-		testsFinished = cond.waitFor((1.5 * tests.size * testDur).max(minTimeOut), { completed == tests.size });
+		testsFinished = cond.waitFor((1.5 * numTests * testDur).max(minTimeOut), { completed == numTests });
 		this.assert(testsFinished, "TIMEOUT: ugen_generator_equivalences tests", report: false);
+
+
+		// Other equivalence tests that don't use the batch test parameters above:
+
+		//////////////////////////////////////////
+		// Equivalence of linear Env, Line and XLine, with short duration and fast phase change.
+		// In response to errors found in "m_grow" (step size) calculation in EnvGen,
+		// in particular with small env segment sizes.
+		sampleDursToTest = (2 .. 15);
+		numTests = sampleDursToTest.size * 4; // * 4: tests performed on Line and XLine, at ar and kr
+		completed = 0; // reset counter
+
+		[\ar, \kr].do { |rate|
+			sampleDursToTest.do{ |numSamps|
+				var sampleDur = switch(rate,
+					\ar, { 1 / sampleRate },
+					\kr, { blockSize / sampleRate }
+				);
+				var lineDur = numSamps * sampleDur;
+
+				{   // ensure values change enough to meaningfully exceed 'within' threshold
+					EnvGen.perform(rate, Env([1.5, 100], lineDur)) -
+					Line.perform(rate, 1.5, 100, lineDur)
+				}.loadToFloatArray(testDur, server, { |data|
+					this.assertArrayFloatEquals(data, 0,
+						"EnvGen should be equal to Line over short durations [% samples] with fast phase change. [%]".format(numSamps, rate),
+						within: -90.dbamp, report: false
+					);
+					completed = completed + 1;
+					cond.signalOne;
+				});
+				server.sync;
+
+				if (numSamps == 2) {
+					// When duration is 2 samples, skip EnvGen vs. XLine test.
+					// In this exceptional case, EnvGen is forced to a linear shape (could probably be fixed).
+					completed = completed + 1;
+					cond.signalOne;
+				} {
+					{   // ensure values change enough to meaningfully exceed 'within' threshold
+						EnvGen.perform(rate, Env([1.5, 100], lineDur, \exp)) -
+						XLine.perform(rate, 1.5, 100, lineDur)
+					}.loadToFloatArray(testDur, server, { |data|
+						this.assertArrayFloatEquals(data, 0,
+							"EnvGen should be equal to XLine over short durations [% samples] with fast phase change. [%]".format(numSamps, rate),
+							within: -90.dbamp, report: false
+						);
+						completed = completed + 1;
+						cond.signalOne;
+					});
+				};
+				server.sync;
+			}
+		};
+
+		testsFinished = cond.waitFor(
+			(1.5 * numTests * sampleDursToTest.maxItem / server.sampleRate).max(minTimeOut),
+			{ completed == numTests }
+		);
+		this.assert(testsFinished, "TIMEOUT: ugen_generator_equivalences EnvGen/Line tests", report: false);
 	}
 
 	test_exact_convergence {
@@ -347,7 +412,7 @@ TestCoreUGens : UnitTest {
 
 		tests.keysValuesDo{ |text, func|
 			func.loadToFloatArray(testDur, server, { |data|
-				this.assertArrayFloatEquals(data, 0, text.quote, within: 0.0, report: true);
+				this.assertArrayFloatEquals(data, 0, text.quote, within: 0.0, report: false);
 				completed = completed + 1;
 				cond.signalOne;
 			});
@@ -375,7 +440,7 @@ TestCoreUGens : UnitTest {
 
 		tests.keysValuesDo{|name, func|
 			func.loadToFloatArray(testDur, server, { |data|
-				this.assertArrayFloatEquals(data, 0, name.quote, report: true);
+				this.assertArrayFloatEquals(data, 0, name.quote, report: false);
 				completed = completed + 1;
 				cond.signalOne;
 			});
@@ -469,7 +534,7 @@ TestCoreUGens : UnitTest {
 
 			this.assert(results.every(_ == results[0]),
 				"Impulse.%: all rate combinations of identical unmodulated input values should have identical output".format(rate),
-				report: true);
+				report: false);
 		};
 
 		/* Tests in response to historical bugs */
@@ -480,8 +545,8 @@ TestCoreUGens : UnitTest {
 		{ Impulse.kr(frq, 3.8) }.loadToFloatArray(
 			frq.reciprocal, // render one freq period (should contain only 1 impulse)
 			server, { |arr|
-				this.assert(arr.sum == 1.0, "Impulse.kr: phase that is far out-of-range should wrap immediately in-range, and not cause multiple impulses to fire.", report: true);
-				this.assert(arr[0] != 1.0, "Impulse.kr: a phase offset other than 0 or 1 should not produce an impulse on the first output sample.", report: true);
+				this.assert(arr.sum == 1.0, "Impulse.kr: phase that is far out-of-range should wrap immediately in-range, and not cause multiple impulses to fire.", report: false);
+				this.assert(arr[0] != 1.0, "Impulse.kr: a phase offset other than 0 or 1 should not produce an impulse on the first output sample.", report: false);
 				cond.signalOne;
 			}
 		);
@@ -495,7 +560,7 @@ TestCoreUGens : UnitTest {
 					frq.reciprocal, // 1 freq period
 					server, { |arr|
 						this.assert(arr[0] == 1.0,
-							"Impulse.%: initial phase of % should produce and impulse on the first frame.".format(rate, phs), report: true);
+							"Impulse.%: initial phase of % should produce and impulse on the first frame.".format(rate, phs), report: false);
 						cond.signalOne;
 					}
 				);
@@ -510,7 +575,7 @@ TestCoreUGens : UnitTest {
 				3 * server.options.blockSize / server.sampleRate, // 3 blocks
 				server, { |arr|
 					this.assert(arr[0] == 1.0 and: { arr.sum == 1.0 },
-						"Impulse.%: freq = 0 should produce a single impulse on the first frame and no more.".format(rate), report: true);
+						"Impulse.%: freq = 0 should produce a single impulse on the first frame and no more.".format(rate), report: false);
 					cond.signalOne;
 				}
 			);
@@ -524,7 +589,7 @@ TestCoreUGens : UnitTest {
 				server, { |arr|
 					arr = arr.clump(2).flop; // de-interleave
 					this.assertArrayFloatEquals(arr[0], arr[1],
-						"Impulse.%: positive and negative frequencies should produce the same output.".format(rate), report: true);
+						"Impulse.%: positive and negative frequencies should produce the same output.".format(rate), report: false);
 					cond.signalOne;
 				}
 			);
@@ -609,17 +674,19 @@ TestCoreUGens : UnitTest {
 				var val = Pitch.kr(son, initFreq: fromFreq).at(0);
 				var dev = (freq-val).abs;
 				// normalize deviation by 10% of the target frequency
-				dev = dev /  (freq / 10);
+				dev = dev / (freq / 10);
 				// [freq, val, dev] // for plotting/debugging
 			}//.plot(testDur, separately: true); // <-to observe/debug
 		];
 
 		server.bootSync;
 
-		tests.keysValuesDo{|text, func|
+		tests.keysValuesDo{ |text, func|
 			func.loadToFloatArray(testDur, server, { |pitchDeviation|
-				this.assertArrayFloatEquals(pitchDeviation, 0.0, text,
-					within: 1.0); // deviation should be less than 1.0 (dev is normalized to 10% of target freq)
+				this.assertArrayFloatEquals(
+					pitchDeviation, 0.0, text,
+					within: 1.0 // deviation should be less than 1.0 (dev is normalized to 10% of target freq)
+				);
 				completed = completed + 1;
 				cond.signalOne;
 			});
@@ -759,7 +826,7 @@ TestCoreUGens : UnitTest {
 					};
 
 					this.assertArrayFloatEquals(
-						data.keep(numPredelaySamples), target, errmsg, within: tolerance, report: true
+						data.keep(numPredelaySamples), target, errmsg, within: tolerance, report: false
 					);
 					cond.signalOne;
 				});
@@ -793,40 +860,115 @@ TestCoreUGens : UnitTest {
 		};
 	}
 
-	test_line_startAndEndSampleAreOuputOverDur {
-		var durFrames = defaultNumBlocksToTest; // duration for the line to complete its trajectory, in frames
-		var renderFrames = durFrames + 1; // render one extra frame to check that the end value is reached
-		var startVal = 2;
-		var endVal = 20;
-		var tolerance = -100.dbamp;
+	// Test for correct arrival time of Envs with numerous stages
+	test_env_endsOnTime {
+		var shapes = [\sin, \lin, \exp, \sqr, \cub, \welch, -2.2, \step, \hold];
+		var rates = [\kr, \ar];
+		var numTests = shapes.size * rates.size;
 		var cond = CondVar();
+		var testsFinished = false;
+		var completed = 0;
+
+		// Many env stages to test time error accumulation
+		// (10, 83.4 .. 1000).scramble ->
+		var levels = [230.2, 817.4, 670.6, 890.8, 303.6, 377.0, 964.2, 523.8, 10.0, 156.8, 83.4, 597.2, 450.4, 744.0];
+
+		// Between 3 and 6 samples per stage (ensure minimum of 2)
+		// { rrand(3, 6) } ! (levels.size-1) ->
+		var timesInSamps = [4, 5, 4, 6, 4, 4, 6, 3, 6, 6, 6, 4, 6];
+
+		// Tolerance is relative to max possible level jump
+		var tolerance = (levels.maxItem - levels.minItem) * -100.dbamp;
 
 		server.bootSync;
 
-		[\ar, \kr].do{ |rate|
-			[Line, XLine].do{ |ugen|
-				var fs = server.sampleRate;
-				var rateScale = switch(rate, \ar, { 1.0 }, \kr, { server.options.blockSize });
-				var lineDur = durFrames * rateScale / fs;
-				var testDur = renderFrames * rateScale / fs;
+		shapes.do{ |shape|
+			rates.do{ |rate|
+				var fs = switch(rate,
+					\ar, { server.sampleRate },
+					\kr, { server.sampleRate / server.options.blockSize }
+				);
+				// We expect the env to arrive at exactly this sample index.
+				var envDur_smp = timesInSamps.sum.asInteger;
+
+				// Render a few excess samples to observe position of Env's end value.
+				// Must be >1 to avoid loadToFloatArray truncating last sample (floating point rounding error)
+				var excessSamples = 4;
+				var renderDur = (envDur_smp + excessSamples) / fs;
 
 				{
-					ugen.perform(rate, startVal, endVal, lineDur)
-				}.loadToFloatArray(testDur, server, { |data|
+					EnvGen.perform(rate,
+						Env(levels, timesInSamps.normalizeSum, shape),
+						timeScale: envDur_smp / fs
+					);
+				}.loadToFloatArray(renderDur, server,
+					action: { |data|
+						var test1, test2, test3;
 
-					this.assertFloatEquals(data.first, startVal,
-						"%.%'s first output sample should be its given start value.".format(ugen, rate), within: tolerance, report: false);
+						// the end val is reached after the total env duration has elapsed,
+						// which is index envDur_smp
+						var dataEndVal = data[envDur_smp];
+						var dataEndVal_p1 = data[envDur_smp+1];
+						var dataEndVal_m1 = data[envDur_smp-1];
+						var envEndVal = levels.last;
 
-					this.assert(data.last == endVal and: { data[data.size-2] != endVal },
-						"%.% should not reach its end value before the given duration".format(ugen, rate), report: false);
-					// Note an exception to the previouse test would be if the duration of the Line is less than a frame duration.
-					// In that (odd) case the "correct" first value is the end value. See GH issue #4279.
+						// store local vars to avoid async overwrites
+						var shp = shape;
+						var rt = rate;
 
-					cond.signalOne;
+						// Test 1: end value is correct
+						test1 = ((dataEndVal - envEndVal).abs < tolerance);
+
+						// Test 2: one before end value should not equal the end value
+						// An exception to this test would be if the duration of the Line is
+						// less than a frame duration. In that (odd) case the "correct"
+						// first value is the end value. See GH Issue #4279.
+						test2 = (dataEndVal - dataEndVal_m1).abs > tolerance;
+						// test 2 doesn't apply to step or hold shapes
+						if (shp == \step or: { shp == \hold }) { test2 = true };
+
+						// Test 3: one sample after the env dur is the end val
+						test3 = (dataEndVal_p1 - envEndVal).abs < tolerance;
+
+						// We're more forgiving with \hold - it might arrive to its segment
+						// value at envEndVal or endVal+1 depending on whether the sampling point
+						// falls before or after the segment duration (there's a theoretical
+						// "correct" answer, which would go against the how the docs say it behaves,
+						// but modifying this would make a breaking change)
+						if (shp == \hold and: { test3 or: { test1 } }) { test1 = test3 = true };
+
+						this.assert(test1,
+							format(
+								"EnvGen should end at the correct value (%, %) - should be: % is: %\n",
+								shp, rt, envEndVal, dataEndVal
+							), report: false
+						);
+						this.assert(test2, format("EnvGen should not end early. (%, %)", shp, rt), report: false);
+						this.assert(test3, format("EnvGen should not end late. (%, %)", shp, rt), report: false);
+
+						// Test 4: While we're here, let's confirm EnvGen's first output sample is accurate.
+						if (shp != \step) {
+							this.assertFloatEquals(data.first, levels.first,
+								format(
+									"EnvGen's first output sample should be its given start value. (%, %)",
+									shp, rt
+								), report: false
+							);
+						};
+
+						completed = completed + 1;
+						cond.signalOne;
 				});
-				cond.wait;
-			}
-		}
+				server.sync;
+			} // end rates
+		}; // end shapes
+
+		// Conservatively set timeout based on the control rate tests' duration
+		testsFinished = cond.waitFor(
+			(1.5 * numTests * timesInSamps.sum * (server.sampleRate / server.options.blockSize)).max(minTimeOut),
+			{ completed == numTests }
+		);
+		this.assert(testsFinished, "TIMEOUT: test_env_endsOnTime", report: false);
 	}
 
 	test_oscillators_startAtCorrectPhase {
@@ -928,14 +1070,12 @@ TestCoreUGens : UnitTest {
 			// EnvGen, standard Env and using Env:*circle and Env:-circle
 			target = 42; // first output sample should be the first level of the Env
 			[
-				Env([target, target*100], period_sec),
-				Env([target, target*100], period_sec).circle(period_sec),
-				Env.circle([target, target*100], [period_sec, period_sec])
-			].do{ |env, i|
-				{
-					EnvGen.perform(rate, env);
-				}.loadToFloatArray(period_sec * 1.5, server, { |data|
-					data.postln;
+				{ EnvGen.perform(rate, Env([target, target*100], period_sec)) },
+				// circular envs have to be instantiated from within the function in order for them to be interpreted as dynamic UGen inputs
+				{ EnvGen.perform(rate, Env([target, target*100], period_sec).circle(period_sec)) },
+				{ EnvGen.perform(rate, Env.circle([target, target*100], [period_sec, period_sec])) },
+			].do{ |testFunc, i|
+				testFunc.loadToFloatArray(period_sec * 1.5, server, { |data|
 					this.assertFloatEquals(data[0], target,
 						"EnvGen's first sample, should be its first level [%, env %]".format(rate, i),
 						within: tolerance, report: false

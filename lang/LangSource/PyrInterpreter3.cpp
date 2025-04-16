@@ -2980,6 +2980,10 @@ HOT void Interpret(VMGlobals* g) {
                         for (m = 0, mmax = methraw->numargs - numArgsPushed; m < mmax; ++m)
                             slotCopy(++sp, ++qslot);
                         numArgsPushed = methraw->numargs;
+                    } else if (methraw->varargs == 0 && numArgsPushed > methraw->numargs) {
+                        const auto num_slots_to_chop = numArgsPushed - methraw->numargs;
+                        sp -= num_slots_to_chop;
+                        numArgsPushed = methraw->numargs;
                     }
                     selector = slotRawSymbol(&meth->selectors);
                     goto msg_lookup;
@@ -2991,6 +2995,10 @@ HOT void Interpret(VMGlobals* g) {
                         qslot = slotRawObject(&meth->prototypeFrame)->slots + numArgsPushed - 1;
                         for (m = 0, mmax = methraw->numargs - numArgsPushed; m < mmax; ++m)
                             slotCopy(++sp, ++qslot);
+                        numArgsPushed = methraw->numargs;
+                    } else if (methraw->varargs == 0 && numArgsPushed > methraw->numargs) {
+                        const auto num_slots_to_chop = numArgsPushed - methraw->numargs;
+                        sp -= num_slots_to_chop;
                         numArgsPushed = methraw->numargs;
                     }
                     selector = slotRawSymbol(&meth->selectors);
@@ -3004,6 +3012,10 @@ HOT void Interpret(VMGlobals* g) {
                         qslot = slotRawObject(&meth->prototypeFrame)->slots + numArgsPushed - 1;
                         for (m = 0, mmax = methraw->numargs - numArgsPushed; m < mmax; ++m)
                             slotCopy(++sp, ++qslot);
+                        numArgsPushed = methraw->numargs;
+                    } else if (methraw->varargs == 0 && numArgsPushed > methraw->numargs) {
+                        const auto num_slots_to_chop = numArgsPushed - methraw->numargs;
+                        sp -= num_slots_to_chop;
                         numArgsPushed = methraw->numargs;
                     }
                     selector = slotRawSymbol(&meth->selectors);
@@ -3021,6 +3033,10 @@ HOT void Interpret(VMGlobals* g) {
                         qslot = slotRawObject(&meth->prototypeFrame)->slots + numArgsPushed - 1;
                         for (m = 0, mmax = methraw->numargs - numArgsPushed; m < mmax; ++m)
                             slotCopy(++sp, ++qslot);
+                        numArgsPushed = methraw->numargs;
+                    } else if (methraw->varargs == 0 && numArgsPushed > methraw->numargs) {
+                        const auto num_slots_to_chop = numArgsPushed - methraw->numargs;
+                        sp -= num_slots_to_chop;
                         numArgsPushed = methraw->numargs;
                     }
                     selector = slotRawSymbol(&meth->selectors);

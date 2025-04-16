@@ -11,13 +11,9 @@ Object {
 		// to actually put things in the object you need to
 		// add them.
 	}
-	*newCopyArgs { arg ... args;
+	*newCopyArgs { | ... args, kwargs |
 		_BasicNewCopyArgsToInstVars
 		^this.primitiveFailed
-		// creates a new instance that can hold up to maxSize
-		// indexable slots. the indexed size will be zero.
-		// to actually put things in the object you need to
-		// add them.
 	}
 
 	// debugging and diagnostics
@@ -78,6 +74,10 @@ Object {
     // args and kwargs should be arrays here, not variable arguments!
 	performArgs { |selector, args, kwargs|
 		_ObjectPerformArgs;
+		^this.primitiveFailed
+	}
+	superPerformArgs { |selector, args, kwargs|
+		_ObjectSuperPerformArgs;
 		^this.primitiveFailed
 	}
 	performMsg { |msg|
