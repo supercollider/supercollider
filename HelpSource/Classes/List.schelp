@@ -12,7 +12,7 @@ Size Limitations of Arrays and Flexibility of Lists and Indexing.
 definitionlist::
 ## Size Limitations of Arrays and Flexibility of Lists in SuperCollider||
 
-Arrays have a fixed maximum size. If you add beyond that size a new Array is created and returned, but you must use an assignment statement or the new array will be lost. (See the link::Classes/Array#description#Description:: section in link::Classes/Array::. documentation). The idiomatic way to add new item in link::Classes/Array:: is:
+Arrays have a fixed maximum size. If you add beyond that size, a new link::Classes/Array:: is created and returned, but you must use an assignment statement or the new array will be lost. (See the link::Classes/Array#description#Description:: section in link::Classes/Array::. documentation). The idiomatic way to add new item in link::Classes/Array:: is:
 
 code::
 x = x.add(i);
@@ -31,7 +31,7 @@ postf("\nAfter adding 5 items to each:\nx: %;\t\ty: %", x, y);
 postf("\nAccessing:\nx.at(4): %;\t\ty[4]: %\n", x.at(4), y[4]);
 )
 ::
-SCDocHTMLRenderer
+
 List has no size limitation and is thus more flexible, but has slightly more overhead.
 
 ## Index starting from 0 anchor::Index starting from 0::||
