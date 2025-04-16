@@ -85,8 +85,7 @@ TestPV_ChainUGen : UnitTest {
 			this.assert(c.waitFor(3, { done }), "TIMEOUT: pv_equivalencetests_common", report: false);
 			b.free;
 		};
-		s.sync;
-		s.quit;
+		s.quitSync;
 		s.remove;
 	}
 

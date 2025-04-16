@@ -75,7 +75,7 @@ TestServer_ServerGUI : UnitTest {
 		var expEnabled = [true, true, true, true, true];
 		this.bootServer(server);
 		this.assertButtonStates(expValues, expEnabled, "After booting");
-		server.quit;
+		server.quitSync;
 	}
 
 	// GUI state after booting and muting the server
@@ -86,7 +86,7 @@ TestServer_ServerGUI : UnitTest {
 		server.volume.mute;
 		this.assertButtonStates(expValues, expEnabled, "After muting");
 		server.volume.unmute;
-		server.quit;
+		server.quitSync;
 	}
 
 	// GUI state after booting, muting, then unmuting the server
@@ -97,7 +97,7 @@ TestServer_ServerGUI : UnitTest {
 		server.volume.mute;
 		server.volume.unmute;
 		this.assertButtonStates(expValues, expEnabled, "After muting and unmuting");
-		server.quit;
+		server.quitSync;
 	}
 
 	// GUI state after booting then quitting
@@ -105,7 +105,7 @@ TestServer_ServerGUI : UnitTest {
 		var expValues = [0, 0, 0, 0, 0];
 		var expEnabled = [true, true, true, false, true];
 		this.bootServer(server);
-		server.quit;
+		server.quitSync;
 		this.assertButtonStates(expValues, expEnabled, "After quitting");
 	}
 

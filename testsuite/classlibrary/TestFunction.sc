@@ -48,7 +48,7 @@ TestFunction : UnitTest {
 			})
 		});
 		condition.waitFor(2);
-		server.quit;
+		server.quitSync;
 		server.remove;
 	}
 

@@ -8,7 +8,7 @@ TestNode_Server : UnitTest {
 	}
 
 	tearDown {
-		server.quit.remove;
+		server.quitSync.remove;
 	}
 
 	test_get {
