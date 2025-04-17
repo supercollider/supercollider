@@ -959,7 +959,7 @@ int prFileGetDouble(struct VMGlobals* g, int numArgsPushed) {
         SetNil(a);
     else {
         SC_IOStream<FILE*> scio(file);
-        SetFloat(a, scio.readDouble_be());
+        SetFloat<AssertDouble::CouldBeBadNan>(a, scio.readDouble_be());
     }
     return errNone;
 }
@@ -980,7 +980,7 @@ int prFileGetFloat(struct VMGlobals* g, int numArgsPushed) {
         SetNil(a);
     else {
         SC_IOStream<FILE*> scio(file);
-        SetFloat(a, scio.readFloat_be());
+        SetFloat<AssertDouble::CouldBeBadNan>(a, scio.readFloat_be());
     }
     return errNone;
 }
@@ -1002,7 +1002,7 @@ int prFileGetDoubleLE(struct VMGlobals* g, int numArgsPushed) {
         SetNil(a);
     else {
         SC_IOStream<FILE*> scio(file);
-        SetFloat(a, scio.readDouble_le());
+        SetFloat<AssertDouble::CouldBeBadNan>(a, scio.readDouble_le());
     }
     return errNone;
 }
@@ -1023,7 +1023,7 @@ int prFileGetFloatLE(struct VMGlobals* g, int numArgsPushed) {
         SetNil(a);
     else {
         SC_IOStream<FILE*> scio(file);
-        SetFloat(a, scio.readFloat_le());
+        SetFloat<AssertDouble::CouldBeBadNan>(a, scio.readFloat_le());
     }
     return errNone;
 }

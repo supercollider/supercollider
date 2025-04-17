@@ -544,7 +544,7 @@ QC_LANG_PRIMITIVE(QImage_GetDevicePixelRatio, 0, PyrSlot* r, PyrSlot* a, VMGloba
         return QtCollider::wrongThreadError();
 
     Image* image = to_image(r);
-    SetFloat(r, image->getDevicePixelRatio());
+    SetFloat<AssertDouble::CouldBeBadNan>(r, image->getDevicePixelRatio());
     return errNone;
 }
 

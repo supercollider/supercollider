@@ -100,6 +100,7 @@ static constexpr uint64_t safeNaN = 0x7FF8000000000001;
 }
 
 // This is used as a non-type template parameter to check for nans when creating slots of doubles.
+enum struct AssertDouble { Okay, CouldBeBadNan };
 
 namespace details {
 
@@ -291,14 +292,17 @@ public:
         return (lhs.isDouble() && rhs.isDouble()) ? lhs.getDouble() == rhs.getDouble() : lhs.u_raw == rhs.u_raw;
     }
 
-    [[nodiscard]] inline static PyrSlot make(double d) noexcept {
+    template <AssertDouble Check = AssertDouble::Okay> [[nodiscard]] inline static PyrSlot make(double d) noexcept {
         // There are many safe nan values, but a few are not safe.
         // The server's Convolution3 is a known source of unsafe nans.
         // Supercollider VM itself does not generate unsafe nans.
-        // Therefore, it might be possible to remove this check from here and place it at external boundaries instead.
+        if constexpr (Check == AssertDouble::CouldBeBadNan) {
             if (std::isnan(d))
                 return { PrivateTag {}, details::safeNaN };
             return { PrivateTag(), d };
+        } else {
+            return { PrivateTag(), d };
+        }
     }
     [[nodiscard]] inline static PyrSlot make(char c) noexcept {
         return { PrivateTag(), Tags::charTag, static_cast<uint64_t>(details::bit_cast<uint8_t>(c)) };
@@ -462,7 +466,10 @@ inline void SetTrue(PyrSlot* slot) noexcept { *slot = PyrSlot::make(true); }
 inline void SetFalse(PyrSlot* slot) noexcept { *slot = PyrSlot::make(false); }
 inline void SetBool(PyrSlot* slot, bool value) noexcept { *slot = PyrSlot::make(value); }
 inline void SetNil(PyrSlot* slot) noexcept { *slot = PyrSlot::make(PyrNil {}); }
-inline void SetFloat(PyrSlot* slot, double value) noexcept { *slot = PyrSlot::make(value); }
+
+template <AssertDouble Check = AssertDouble::Okay> inline void SetFloat(PyrSlot* slot, double value) noexcept {
+    *slot = PyrSlot::make<Check>(value);
+}
 
 template <typename numeric_type> [[nodiscard]] inline int slotVal(PyrSlot* slot, numeric_type* value) noexcept {
     static_assert(std::is_arithmetic_v<numeric_type>);
