@@ -39,14 +39,23 @@ A PyrSlot is an 8-byte value which is either a double precision float or a
 #include "Hash.h"
 #include "PyrSymbol.h"
 
-// TODO: are all these necessary? Or does the pointer size suffice?
 #if (__SIZEOF_POINTER__ == 8) || defined(__x86_64__) || defined(_M_X64) || defined(__LP64__) || defined(_WIN64)
-#    define POINTER_NEEDS_PADDING 0
+#    define POINTER_NEEDS_PADDING 0 \
+
+namespace details { 
+    static constexpr bool pointerNeedsPadding = false; 
+} 
+
 #elif (__SIZEOF_POINTER__ == 4) || defined(__i386__) || defined(_M_IX86) || defined(__ILP32__) || defined(_WIN32)      \
     || defined(__ppc__) || defined(__arm__)
-#    define POINTER_NEEDS_PADDING 1
+#    define POINTER_NEEDS_PADDING 1 \
+
+namespace details { 
+    static constexpr bool pointerNeedsPadding = true; 
+}
+
 #else
-#    error "no PyrSlot imlementation for this platform"
+#    error "no PyrSlot implementation for this platform"
 #endif
 
 // https://stackoverflow.com/questions/60802864/emulating-gccs-builtin-unreachable-in-visual-studio
@@ -61,7 +70,7 @@ inline void unreachable() {}
 // On 64-bit systems the pointer is assumed to fit into 48 bits.
 // This is not true for some very modern intel systems which use 56 bits
 //      - but this is not in common use and nan boxing is very common,
-//      so it is likely there will be a workaround (...hopefully...).
+//      so it is likely there will be a workaround 
 
 //        |-----------------| these are free in a pointer
 // Ptr  = 1111 1111 1111 1111 000000000000000000000000000000000000000000000000
@@ -86,6 +95,11 @@ inline void unreachable() {}
 // Signaling NaN (sNaN) is used to signal some floating point error has occurred.
 // Quiet NaN (qNaN) is normal nan.
 // We only use qNaN to store the tags in.
+namespace details {
+static constexpr uint64_t safeNaN = 0x7FF8000000000001;
+}
+
+// This is used as a non-type template parameter to check for nans when creating slots of doubles.
 
 namespace details {
 
@@ -131,9 +145,8 @@ struct Tags {
     static constexpr uint64_t falseTag = 0xFFFD000000000000;
 };
 
-static constexpr uint64_t safeNaN = 0x7FF8000000000001;
 
-
+// Pad any type less than 6 bytes to 8 bytes by inserting zeros after. Endianness doesn't matter here.
 template <typename T> struct PadValueTo64Bits {
     static_assert(std::is_default_constructible_v<T>);
     static_assert(sizeof(T) <= 6);
@@ -144,48 +157,48 @@ template <typename T> struct PadValueTo64Bits {
 
     ~PadValueTo64Bits() noexcept = default;
 
-    // TODO: this could be the wrong way around!
-#if (BYTE_ORDER == LITTLE_ENDIAN)
     T value;
     uint8_t paddingForValue[numPadding] = { 0 };
-#else
-    uint8_t paddingForValue[numPadding] = { 0 };
-    T value;
-#endif
 };
 
 static_assert(sizeof(PadValueTo64Bits<uint32_t>) == 8);
 static_assert(sizeof(PadValueTo64Bits<uint16_t>) == 8);
 static_assert(sizeof(PadValueTo64Bits<uint8_t>) == 8);
+static_assert(sizeof(PadValueTo64Bits<char>) == 8);
 
+// A wrapper around T (which is a pointer) that pads the value with known zeros if needed.
+// On a 32bit system, the slot has 32bits left over, this struct zero initialises them.
 template <typename T> struct MaybePadPointerTo64Bits {
     static_assert(std::is_pointer_v<T>);
+
 #if POINTER_NEEDS_PADDING && (BYTE_ORDER == BIG_ENDIAN)
     int32_t padding;
 #endif
 
     T ptr;
 
-    [[nodiscard]] T getPtr() const noexcept {
-#if POINTER_NEEDS_PADDING
-        return ptr; // If there is padding, the tag hasn't tainted the pointer, return it.
-#else
-        const auto r = reinterpret_cast<uintptr_t>(ptr);
-        if (r & (1ULL << 47)) {
-            return reinterpret_cast<T>(r | (~Masks::pointer));
-        } else {
-            return reinterpret_cast<T>(r & Masks::pointer);
-        }
-#endif
-    }
-
-    [[nodiscard]] int32 getPtrAsInt32() const noexcept { return static_cast<int32>(reinterpret_cast<uintptr_t>(ptr)); }
-
 #if POINTER_NEEDS_PADDING && (BYTE_ORDER == LITTLE_ENDIAN)
     int32_t padding;
 #endif
+
+    [[nodiscard]] int32 getPtrAsInt32() const noexcept { return static_cast<int32>(reinterpret_cast<uintptr_t>(ptr)); }
+    [[nodiscard]] T getPtr() const noexcept {
+        if constexpr (pointerNeedsPadding) {
+            return ptr;
+        } else {
+            const auto r = reinterpret_cast<uintptr_t>(ptr);
+            if (r & (1ULL << 47)) {
+                return reinterpret_cast<T>(r | (~Masks::pointer));
+            } else {
+                return reinterpret_cast<T>(r & Masks::pointer);
+            }
+        }
+    }
+
 };
 
+
+// On 64 and 32 bit systems this should *always* be true.
 static_assert(sizeof(MaybePadPointerTo64Bits<void*>) == sizeof(double));
 
 // cpp reference
@@ -203,7 +216,7 @@ bit_cast(const From& src) noexcept {
 
 }
 
-// This is the old tag and their values are assumed and used as indices, do not change them!
+// This is the old tag and their values are assumed and used as indices elsewhere in the code, do not change them!
 enum {
     tagNotInitialized, // uninitialized slots have a tag of 0
     tagObj,
@@ -233,6 +246,7 @@ private:
     PyrSlot(PrivateTag, uint64_t tag, uint64_t raw) noexcept: u_raw(tag | raw) {}
     // This must be a valid double, or not a nan that is used as a tag.
     PyrSlot(PrivateTag, double d) noexcept: u_double(d) {
+        // assert nans are the allowed type
         assert([&]() -> bool {
             if (std::isnan(d)) {
                 const auto bits = details::bit_cast<uint64_t>(d);
@@ -256,7 +270,7 @@ private:
         return (source & bits) == bits;
     }
     [[nodiscard]] inline static constexpr uint16_t getTagAsU16(uint64_t t) noexcept {
-        return static_cast<uint16_t>(t >> (64 - 16));
+        return static_cast<uint16_t>(t >> (64ULL - 16ULL));
     }
     [[nodiscard]] inline bool isBoxed() const noexcept { return bitsAreSet(u_raw, Masks::boxed); }
     template <uint64_t T> [[nodiscard]] inline bool tagChecker() const noexcept {
@@ -273,15 +287,8 @@ public:
 
     [[nodiscard]] friend inline bool operator==(PyrSlot lhs, PyrSlot rhs) noexcept {
         // This is identity, not equality in supercollider.
-        if (lhs.isDouble()) {
-            // Doubles have odd comparison rules...
-            if (rhs.isDouble())
-                return lhs.getDouble() == rhs.getDouble();
-            return false;
-        }
-        if (rhs.isDouble())
-            return false;
-        return lhs.u_raw == rhs.u_raw;
+        // Doubles have odd comparison rules...
+        return (lhs.isDouble() && rhs.isDouble()) ? lhs.getDouble() == rhs.getDouble() : lhs.u_raw == rhs.u_raw;
     }
 
     [[nodiscard]] inline static PyrSlot make(double d) noexcept {
@@ -289,9 +296,9 @@ public:
         // The server's Convolution3 is a known source of unsafe nans.
         // Supercollider VM itself does not generate unsafe nans.
         // Therefore, it might be possible to remove this check from here and place it at external boundaries instead.
-        if (std::isnan(d))
-            return { PrivateTag {}, details::safeNaN };
-        return { PrivateTag(), d };
+            if (std::isnan(d))
+                return { PrivateTag {}, details::safeNaN };
+            return { PrivateTag(), d };
     }
     [[nodiscard]] inline static PyrSlot make(char c) noexcept {
         return { PrivateTag(), Tags::charTag, static_cast<uint64_t>(details::bit_cast<uint8_t>(c)) };
@@ -550,7 +557,7 @@ bool postString(PyrSlot* slot, char* str);
 [[nodiscard]] const char* slotSymString(PyrSlot* slot);
 [[nodiscard]] int asCompileString(PyrSlot* slot, char* str);
 
-[[nodiscard]] int slotStrVal(PyrSlot* slot, char* str, int maxlen);
+[[nodiscard]] int slotStrVal(PyrSlot* slot, char* str, size_t maxlen);
 [[nodiscard]] std::tuple<int, std::string> slotStdStrVal(PyrSlot* slot);
 [[nodiscard]] std::tuple<int, std::string> slotStrStdStrVal(PyrSlot* slot);
 [[nodiscard]] int slotStrLen(PyrSlot* slot) noexcept;
