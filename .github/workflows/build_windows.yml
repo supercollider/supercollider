@@ -104,7 +104,7 @@ jobs:
           restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.qt-arch }}-
 
       - name: install qt using aqtinstall
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
           modules: ${{ matrix.qt-modules }}
           version: ${{ matrix.qt-version }}
