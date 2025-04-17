@@ -102,6 +102,11 @@ static constexpr uint64_t safeNaN = 0x7FF8000000000001;
 // This is used as a non-type template parameter to check for nans when creating slots of doubles.
 enum struct AssertDouble { Okay, CouldBeBadNan };
 
+[[nodiscard]] constexpr double removeBadNans(double d) noexcept { return std::isnan(d) ? details::safeNaN : d; }
+[[nodiscard]] constexpr float removeBadNans(float d) noexcept {
+    return std::isnan(d) ? static_cast<float>(details::safeNaN) : d;
+}
+
 namespace details {
 
 struct Masks {
@@ -297,9 +302,7 @@ public:
         // The server's Convolution3 is a known source of unsafe nans.
         // Supercollider VM itself does not generate unsafe nans.
         if constexpr (Check == AssertDouble::CouldBeBadNan) {
-            if (std::isnan(d))
-                return { PrivateTag {}, details::safeNaN };
-            return { PrivateTag(), d };
+            return { PrivateTag(), removeBadNans(d) };
         } else {
             return { PrivateTag(), d };
         }
@@ -362,7 +365,7 @@ public:
         assert(isNil() || (isInt() && getInt() == 0) || (isDouble() && getDouble() == 0));
         return nullptr;
     }
-    template <typename T> [[nodiscard]] inline T* getPyrObject() const noexcept {
+    template <typename T> [[nodiscard]] inline T* getPyrObjType() const noexcept {
         // types are incomplete here so can't check...
         // static_assert(std::is_base_of<PyrObjectHdr, T>::value, "Type must derive from PyrObjectHeader");
         assert(isBoxed());
@@ -497,35 +500,40 @@ template <typename numeric_type> [[nodiscard]] inline int slotVal(PyrSlot* slot,
 [[nodiscard]] inline void* slotRawPtr(PyrSlot* slot) noexcept { return slot->getPtr(); }
 
 [[nodiscard]] inline struct PyrBlock* slotRawBlock(const PyrSlot* slot) noexcept {
-    return slot->getPyrObject<PyrBlock>();
+    return slot->getPyrObjType<PyrBlock>();
 }
 [[nodiscard]] inline struct PyrSymbolArray* slotRawSymbolArray(const PyrSlot* slot) noexcept {
-    return slot->getPyrObject<PyrSymbolArray>();
+    return slot->getPyrObjType<PyrSymbolArray>();
+}
+[[nodiscard]] inline struct PyrFloatArray* slotRawFloatArray(const PyrSlot* slot) noexcept {
+    return slot->getPyrObjType<PyrFloatArray>();
 }
 [[nodiscard]] inline struct PyrDoubleArray* slotRawDoubleArray(const PyrSlot* slot) noexcept {
-    return slot->getPyrObject<PyrDoubleArray>();
+    return slot->getPyrObjType<PyrDoubleArray>();
 }
 [[nodiscard]] inline struct PyrInt8Array* slotRawInt8Array(const PyrSlot* slot) noexcept {
-    return slot->getPyrObject<PyrInt8Array>();
+    return slot->getPyrObjType<PyrInt8Array>();
 }
 [[nodiscard]] inline struct PyrMethod* slotRawMethod(const PyrSlot* slot) noexcept {
-    return slot->getPyrObject<PyrMethod>();
+    return slot->getPyrObjType<PyrMethod>();
 }
 [[nodiscard]] inline struct PyrThread* slotRawThread(const PyrSlot* slot) noexcept {
-    return slot->getPyrObject<PyrThread>();
+    return slot->getPyrObjType<PyrThread>();
 }
 [[nodiscard]] inline struct PyrString* slotRawString(const PyrSlot* slot) noexcept {
-    return slot->getPyrObject<PyrString>();
+    return slot->getPyrObjType<PyrString>();
 }
-[[nodiscard]] inline struct PyrList* slotRawList(const PyrSlot* slot) noexcept { return slot->getPyrObject<PyrList>(); }
+[[nodiscard]] inline struct PyrList* slotRawList(const PyrSlot* slot) noexcept {
+    return slot->getPyrObjType<PyrList>();
+}
 [[nodiscard]] inline struct PyrFrame* slotRawFrame(const PyrSlot* slot) noexcept {
-    return slot->getPyrObject<PyrFrame>();
+    return slot->getPyrObjType<PyrFrame>();
 }
 [[nodiscard]] inline struct PyrClass* slotRawClass(const PyrSlot* slot) noexcept {
-    return slot->getPyrObject<PyrClass>();
+    return slot->getPyrObjType<PyrClass>();
 }
 [[nodiscard]] inline struct PyrInterpreter* slotRawInterpreter(const PyrSlot* slot) noexcept {
-    return slot->getPyrObject<PyrInterpreter>();
+    return slot->getPyrObjType<PyrInterpreter>();
 }
 [[nodiscard]] inline struct PyrSymbol* slotRawSymbol(const PyrSlot* slot) noexcept { return slot->getSymbol(); }
 
@@ -533,7 +541,7 @@ template <typename numeric_type> [[nodiscard]] inline int slotVal(PyrSlot* slot,
 [[nodiscard]] inline uint8_t slotRawChar(const PyrSlot* slot) noexcept { return slot->getChar(); }
 [[nodiscard]] inline double slotRawFloat(const PyrSlot* slot) noexcept { return slot->getDouble(); }
 [[nodiscard]] inline struct PyrObject* slotRawObject(const PyrSlot* slot) noexcept {
-    return slot->getPyrObject<PyrObject>();
+    return slot->getPyrObjType<PyrObject>();
 }
 [[nodiscard]] inline struct PyrObjectHdr* slotRawObjectHdr(const PyrSlot* slot) noexcept {
     return slot->getObjectHdr();

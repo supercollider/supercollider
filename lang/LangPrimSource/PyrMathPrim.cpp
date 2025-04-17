@@ -114,8 +114,8 @@ template <typename Functor> inline int prOpNum(VMGlobals* g, int numArgsPushed) 
             SetSymbol(a, slotRawSymbol(b));
             break;
         case tagObj:
-            if (isKindOf(b->getPyrObject<PyrFloatArray>(), class_signal))
-                SetObject(a, Functor::signal_fx(g, slotRawInt(a), b->getPyrObject<PyrFloatArray>()));
+            if (isKindOf(slotRawObject(b), class_signal))
+                SetObject(a, Functor::signal_fx(g, slotRawInt(a), slotRawFloatArray(b)));
             else
                 goto send_normal_2;
             break;
@@ -134,10 +134,10 @@ template <typename Functor> inline int prOpNum(VMGlobals* g, int numArgsPushed) 
         // leave self in 'a'
         break;
     case tagObj:
-        if (isKindOf(a->getPyrObject<PyrFloatArray>(), class_signal)) {
+        if (isKindOf(slotRawObject(a), class_signal)) {
             switch (GetTag(b)) {
             case tagInt:
-                SetRaw(a, Functor::signal_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawInt(b)));
+                SetRaw(a, Functor::signal_xf(g, slotRawFloatArray(a), slotRawInt(b)));
                 break;
             case tagChar:
             case tagPtr:
@@ -149,14 +149,13 @@ template <typename Functor> inline int prOpNum(VMGlobals* g, int numArgsPushed) 
                 SetSymbol(a, slotRawSymbol(b));
                 break;
             case tagObj:
-                if (isKindOf(b->getPyrObject<PyrFloatArray>(), class_signal)) {
-                    SetRaw(a,
-                           Functor::signal_xx(g, a->getPyrObject<PyrFloatArray>(), b->getPyrObject<PyrFloatArray>()));
+                if (isKindOf(slotRawObject(b), class_signal)) {
+                    SetRaw(a, Functor::signal_xx(g, slotRawFloatArray(a), slotRawFloatArray(b)));
                 } else
                     goto send_normal_2;
                 break;
             default: // double
-                SetRaw(a, Functor::signal_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawFloat(b)));
+                SetRaw(a, Functor::signal_xf(g, slotRawFloatArray(a), slotRawFloat(b)));
                 break;
             }
         } else
@@ -177,8 +176,8 @@ template <typename Functor> inline int prOpNum(VMGlobals* g, int numArgsPushed) 
             SetSymbol(a, slotRawSymbol(b));
             break;
         case tagObj:
-            if (isKindOf(b->getPyrObject<PyrFloatArray>(), class_signal))
-                SetObject(a, Functor::signal_fx(g, slotRawFloat(a), b->getPyrObject<PyrFloatArray>()));
+            if (isKindOf(slotRawObject(b), class_signal))
+                SetObject(a, Functor::signal_fx(g, slotRawFloat(a), slotRawFloatArray(b)));
             else
                 goto send_normal_2;
             break;
@@ -225,8 +224,8 @@ template <typename Functor> inline int prOpInt(VMGlobals* g, int numArgsPushed) 
         SetSymbol(a, slotRawSymbol(b));
         break;
     case tagObj:
-        if (isKindOf(b->getPyrObject<PyrFloatArray>(), class_signal))
-            SetObject(a, Functor::signal_fx(g, slotRawInt(a), b->getPyrObject<PyrFloatArray>()));
+        if (isKindOf(slotRawObject(b), class_signal))
+            SetObject(a, Functor::signal_fx(g, slotRawInt(a), slotRawFloatArray(b)));
         else
             goto send_normal_2;
         break;
@@ -271,8 +270,8 @@ template <typename Functor> inline int prOpFloat(VMGlobals* g, int numArgsPushed
         SetSymbol(a, slotRawSymbol(b));
         break;
     case tagObj:
-        if (isKindOf(b->getPyrObject<PyrFloatArray>(), class_signal))
-            SetObject(a, Functor::signal_fx(g, slotRawFloat(a), b->getPyrObject<PyrFloatArray>()));
+        if (isKindOf(slotRawObject(b), class_signal))
+            SetObject(a, Functor::signal_fx(g, slotRawFloat(a), slotRawFloatArray(b)));
         else
             goto send_normal_2;
         break;
@@ -614,8 +613,7 @@ int mathClipSignal(struct VMGlobals* g, int numArgsPushed) {
     } else if (IsSym(c)) {
         *a = *c;
     } else if (IsSignal(b) && IsSignal(c)) {
-        sig = signal_clip_x(g, a->getPyrObject<PyrFloatArray>(), b->getPyrObject<PyrFloatArray>(),
-                            c->getPyrObject<PyrFloatArray>());
+        sig = signal_clip_x(g, slotRawFloatArray(a), slotRawFloatArray(b), slotRawFloatArray(c));
         SetObject(a, sig);
     } else {
         err = slotFloatVal(b, &lo);
@@ -624,7 +622,7 @@ int mathClipSignal(struct VMGlobals* g, int numArgsPushed) {
         err = slotFloatVal(c, &hi);
         if (err)
             return err;
-        sig = signal_clip_f(g, a->getPyrObject<PyrFloatArray>(), lo, hi);
+        sig = signal_clip_f(g, slotRawFloatArray(a), lo, hi);
         SetObject(a, sig);
     }
     return errNone;
@@ -699,8 +697,7 @@ int mathWrapSignal(struct VMGlobals* g, int numArgsPushed) {
     } else if (IsSym(c)) {
         *a = *c;
     } else if (IsSignal(b) && IsSignal(c)) {
-        sig = signal_wrap_x(g, a->getPyrObject<PyrFloatArray>(), b->getPyrObject<PyrFloatArray>(),
-                            c->getPyrObject<PyrFloatArray>());
+        sig = signal_wrap_x(g, slotRawFloatArray(a), slotRawFloatArray(b), slotRawFloatArray(c));
         SetObject(a, sig);
     } else {
         err = slotFloatVal(b, &lo);
@@ -709,7 +706,7 @@ int mathWrapSignal(struct VMGlobals* g, int numArgsPushed) {
         err = slotFloatVal(c, &hi);
         if (err)
             return err;
-        sig = signal_wrap_f(g, a->getPyrObject<PyrFloatArray>(), lo, hi);
+        sig = signal_wrap_f(g, slotRawFloatArray(a), lo, hi);
         SetObject(a, sig);
     }
     return errNone;
@@ -782,8 +779,7 @@ int mathFoldSignal(struct VMGlobals* g, int numArgsPushed) {
     } else if (IsSym(c)) {
         *a = *c;
     } else if (IsSignal(b) && IsSignal(c)) {
-        PyrFloatArray* sig = signal_fold_x(g, a->getPyrObject<PyrFloatArray>(), b->getPyrObject<PyrFloatArray>(),
-                                           c->getPyrObject<PyrFloatArray>());
+        PyrFloatArray* sig = signal_fold_x(g, slotRawFloatArray(a), slotRawFloatArray(b), slotRawFloatArray(c));
         SetObject(a, sig);
     } else {
         err = slotFloatVal(b, &lo);
@@ -792,7 +788,7 @@ int mathFoldSignal(struct VMGlobals* g, int numArgsPushed) {
         err = slotFloatVal(c, &hi);
         if (err)
             return err;
-        PyrFloatArray* sig = signal_fold_f(g, a->getPyrObject<PyrFloatArray>(), lo, hi);
+        PyrFloatArray* sig = signal_fold_f(g, slotRawFloatArray(a), lo, hi);
         SetObject(a, sig);
     }
     return errNone;

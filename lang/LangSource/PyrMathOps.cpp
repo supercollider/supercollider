@@ -311,10 +311,10 @@ int doSpecialUnaryArithMsg(VMGlobals* g, int numArgsPushed) {
         }
         break;
     case tagObj:
-        if (isKindOf(a->getPyrObject<PyrFloatArray>(), class_signal)) {
+        if (isKindOf(slotRawObject(a), class_signal)) {
             switch (opcode) {
             case opNeg:
-                SetRaw(a, signal_invert(g, a->getPyrObject<PyrFloatArray>()));
+                SetRaw(a, signal_invert(g, slotRawFloatArray(a)));
                 break;
             case opIsNil:
                 SetFalse(a);
@@ -323,68 +323,68 @@ int doSpecialUnaryArithMsg(VMGlobals* g, int numArgsPushed) {
                 SetTrue(a);
                 break;
             case opAbs:
-                SetRaw(a, signal_abs(g, a->getPyrObject<PyrFloatArray>()));
+                SetRaw(a, signal_abs(g, slotRawFloatArray(a)));
                 break;
             case opSign:
-                SetRaw(a, signal_sign(g, a->getPyrObject<PyrFloatArray>()));
+                SetRaw(a, signal_sign(g, slotRawFloatArray(a)));
                 break;
             case opSquared:
-                SetRaw(a, signal_squared(g, a->getPyrObject<PyrFloatArray>()));
+                SetRaw(a, signal_squared(g, slotRawFloatArray(a)));
                 break;
             case opCubed:
-                SetRaw(a, signal_cubed(g, a->getPyrObject<PyrFloatArray>()));
+                SetRaw(a, signal_cubed(g, slotRawFloatArray(a)));
                 break;
             case opSqrt:
-                SetRaw(a, signal_sqrt(g, a->getPyrObject<PyrFloatArray>()));
+                SetRaw(a, signal_sqrt(g, slotRawFloatArray(a)));
                 break;
             case opExp:
-                SetRaw(a, signal_exp(g, a->getPyrObject<PyrFloatArray>()));
+                SetRaw(a, signal_exp(g, slotRawFloatArray(a)));
                 break;
             case opRecip:
-                SetRaw(a, signal_recip(g, a->getPyrObject<PyrFloatArray>()));
+                SetRaw(a, signal_recip(g, slotRawFloatArray(a)));
                 break;
             case opLog:
-                SetRaw(a, signal_log(g, a->getPyrObject<PyrFloatArray>()));
+                SetRaw(a, signal_log(g, slotRawFloatArray(a)));
                 break;
             case opLog2:
-                SetRaw(a, signal_log2(g, a->getPyrObject<PyrFloatArray>()));
+                SetRaw(a, signal_log2(g, slotRawFloatArray(a)));
                 break;
             case opLog10:
-                SetRaw(a, signal_log10(g, a->getPyrObject<PyrFloatArray>()));
+                SetRaw(a, signal_log10(g, slotRawFloatArray(a)));
                 break;
             case opSin:
-                SetRaw(a, signal_sin(g, a->getPyrObject<PyrFloatArray>()));
+                SetRaw(a, signal_sin(g, slotRawFloatArray(a)));
                 break;
-            // case opSin : SetRaw(a, signal_fsin(g, a->getPyrObject<PyrFloatArray>())); break;
+            // case opSin : SetRaw(a, signal_fsin(g, slotRawFloatArray(a))); break;
             case opCos:
-                SetRaw(a, signal_cos(g, a->getPyrObject<PyrFloatArray>()));
+                SetRaw(a, signal_cos(g, slotRawFloatArray(a)));
                 break;
             case opTan:
-                SetRaw(a, signal_tan(g, a->getPyrObject<PyrFloatArray>()));
+                SetRaw(a, signal_tan(g, slotRawFloatArray(a)));
                 break;
             case opArcSin:
-                SetRaw(a, signal_asin(g, a->getPyrObject<PyrFloatArray>()));
+                SetRaw(a, signal_asin(g, slotRawFloatArray(a)));
                 break;
             case opArcCos:
-                SetRaw(a, signal_acos(g, a->getPyrObject<PyrFloatArray>()));
+                SetRaw(a, signal_acos(g, slotRawFloatArray(a)));
                 break;
             case opArcTan:
-                SetRaw(a, signal_atan(g, a->getPyrObject<PyrFloatArray>()));
+                SetRaw(a, signal_atan(g, slotRawFloatArray(a)));
                 break;
             case opSinH:
-                SetRaw(a, signal_sinh(g, a->getPyrObject<PyrFloatArray>()));
+                SetRaw(a, signal_sinh(g, slotRawFloatArray(a)));
                 break;
             case opCosH:
-                SetRaw(a, signal_cosh(g, a->getPyrObject<PyrFloatArray>()));
+                SetRaw(a, signal_cosh(g, slotRawFloatArray(a)));
                 break;
             case opTanH:
-                SetRaw(a, signal_tanh(g, a->getPyrObject<PyrFloatArray>()));
+                SetRaw(a, signal_tanh(g, slotRawFloatArray(a)));
                 break;
             case opDistort:
-                SetRaw(a, signal_distort(g, a->getPyrObject<PyrFloatArray>()));
+                SetRaw(a, signal_distort(g, slotRawFloatArray(a)));
                 break;
             case opSoftClip:
-                SetRaw(a, signal_softclip(g, a->getPyrObject<PyrFloatArray>()));
+                SetRaw(a, signal_softclip(g, slotRawFloatArray(a)));
                 break;
             default:
                 goto send_normal_1;
@@ -778,22 +778,22 @@ int doSpecialBinaryArithMsg(VMGlobals* g, int numArgsPushed, bool isPrimitive) {
                 SetSymbol(a, slotRawSymbol(b));
             break;
         case tagObj:
-            if (isKindOf(b->getPyrObject<PyrFloatArray>(), class_signal)) {
+            if (isKindOf(slotRawObject(b), class_signal)) {
                 switch (opcode) {
                 case opAdd:
-                    SetObject(a, signal_add_xf(g, b->getPyrObject<PyrFloatArray>(), slotRawInt(a)));
+                    SetObject(a, signal_add_xf(g, slotRawFloatArray(b), slotRawInt(a)));
                     break;
                 case opSub:
-                    SetObject(a, signal_sub_fx(g, slotRawInt(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_sub_fx(g, slotRawInt(a), slotRawFloatArray(b)));
                     break;
                 case opMul:
-                    SetObject(a, signal_mul_xf(g, b->getPyrObject<PyrFloatArray>(), slotRawInt(a)));
+                    SetObject(a, signal_mul_xf(g, slotRawFloatArray(b), slotRawInt(a)));
                     break;
                 case opIDiv:
-                    SetObject(a, signal_div_fx(g, slotRawInt(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_div_fx(g, slotRawInt(a), slotRawFloatArray(b)));
                     break;
                 case opFDiv:
-                    SetObject(a, signal_div_fx(g, slotRawInt(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_div_fx(g, slotRawInt(a), slotRawFloatArray(b)));
                     break;
                 case opEQ:
                     SetFalse(a);
@@ -802,61 +802,61 @@ int doSpecialBinaryArithMsg(VMGlobals* g, int numArgsPushed, bool isPrimitive) {
                     SetTrue(a);
                     break;
                 case opMin:
-                    SetObject(a, signal_min_xf(g, b->getPyrObject<PyrFloatArray>(), slotRawInt(a)));
+                    SetObject(a, signal_min_xf(g, slotRawFloatArray(b), slotRawInt(a)));
                     break;
                 case opMax:
-                    SetObject(a, signal_max_xf(g, b->getPyrObject<PyrFloatArray>(), slotRawInt(a)));
+                    SetObject(a, signal_max_xf(g, slotRawFloatArray(b), slotRawInt(a)));
                     break;
                 case opRing1:
-                    SetObject(a, signal_ring1_fx(g, slotRawInt(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_ring1_fx(g, slotRawInt(a), slotRawFloatArray(b)));
                     break;
                 case opRing2:
-                    SetObject(a, signal_ring2_fx(g, slotRawInt(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_ring2_fx(g, slotRawInt(a), slotRawFloatArray(b)));
                     break;
                 case opRing3:
-                    SetObject(a, signal_ring3_fx(g, slotRawInt(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_ring3_fx(g, slotRawInt(a), slotRawFloatArray(b)));
                     break;
                 case opRing4:
-                    SetObject(a, signal_ring4_fx(g, slotRawInt(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_ring4_fx(g, slotRawInt(a), slotRawFloatArray(b)));
                     break;
                 case opDifSqr:
-                    SetObject(a, signal_difsqr_fx(g, slotRawInt(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_difsqr_fx(g, slotRawInt(a), slotRawFloatArray(b)));
                     break;
                 case opSumSqr:
-                    SetObject(a, signal_sumsqr_fx(g, slotRawInt(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_sumsqr_fx(g, slotRawInt(a), slotRawFloatArray(b)));
                     break;
                 case opSqrSum:
-                    SetObject(a, signal_sqrsum_fx(g, slotRawInt(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_sqrsum_fx(g, slotRawInt(a), slotRawFloatArray(b)));
                     break;
                 case opSqrDif:
-                    SetObject(a, signal_sqrdif_fx(g, slotRawInt(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_sqrdif_fx(g, slotRawInt(a), slotRawFloatArray(b)));
                     break;
                 case opAbsDif:
-                    SetObject(a, signal_absdif_fx(g, slotRawInt(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_absdif_fx(g, slotRawInt(a), slotRawFloatArray(b)));
                     break;
                 case opThresh:
-                    SetObject(a, signal_thresh_fx(g, slotRawInt(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_thresh_fx(g, slotRawInt(a), slotRawFloatArray(b)));
                     break;
                 case opAMClip:
-                    SetObject(a, signal_amclip_fx(g, slotRawInt(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_amclip_fx(g, slotRawInt(a), slotRawFloatArray(b)));
                     break;
                 case opScaleNeg:
-                    SetObject(a, signal_scaleneg_fx(g, slotRawInt(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_scaleneg_fx(g, slotRawInt(a), slotRawFloatArray(b)));
                     break;
                 case opClip2:
-                    SetObject(a, signal_clip2_fx(g, slotRawInt(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_clip2_fx(g, slotRawInt(a), slotRawFloatArray(b)));
                     break;
                 case opFold2:
-                    SetObject(a, signal_fold2_fx(g, slotRawInt(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_fold2_fx(g, slotRawInt(a), slotRawFloatArray(b)));
                     break;
                 case opWrap2:
-                    SetObject(a, signal_wrap2_fx(g, slotRawInt(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_wrap2_fx(g, slotRawInt(a), slotRawFloatArray(b)));
                     break;
                 case opExcess:
-                    SetObject(a, signal_excess_fx(g, slotRawInt(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_excess_fx(g, slotRawInt(a), slotRawFloatArray(b)));
                     break;
                 case opFirstArg:
-                    SetObject(a, a->getPyrObject<PyrFloatArray>());
+                    SetObject(a, slotRawFloatArray(a));
                     break;
                 default:
                     goto send_normal_2;
@@ -1065,24 +1065,24 @@ int doSpecialBinaryArithMsg(VMGlobals* g, int numArgsPushed, bool isPrimitive) {
         }
         break;
     case tagObj: {
-        if (isKindOf(a->getPyrObject<PyrFloatArray>(), class_signal)) {
+        if (isKindOf(slotRawObject(a), class_signal)) {
             switch (GetTag(b)) {
             case tagInt:
                 switch (opcode) {
                 case opAdd:
-                    SetRaw(a, signal_add_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawInt(b)));
+                    SetRaw(a, signal_add_xf(g, slotRawFloatArray(a), slotRawInt(b)));
                     break;
                 case opSub:
-                    SetRaw(a, signal_sub_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawInt(b)));
+                    SetRaw(a, signal_sub_xf(g, slotRawFloatArray(a), slotRawInt(b)));
                     break;
                 case opMul:
-                    SetRaw(a, signal_mul_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawInt(b)));
+                    SetRaw(a, signal_mul_xf(g, slotRawFloatArray(a), slotRawInt(b)));
                     break;
                 case opIDiv:
-                    SetRaw(a, signal_div_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawInt(b)));
+                    SetRaw(a, signal_div_xf(g, slotRawFloatArray(a), slotRawInt(b)));
                     break;
                 case opFDiv:
-                    SetRaw(a, signal_div_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawInt(b)));
+                    SetRaw(a, signal_div_xf(g, slotRawFloatArray(a), slotRawInt(b)));
                     break;
                 case opEQ:
                     SetFalse(a);
@@ -1091,64 +1091,64 @@ int doSpecialBinaryArithMsg(VMGlobals* g, int numArgsPushed, bool isPrimitive) {
                     SetTrue(a);
                     break;
                 case opMin:
-                    SetRaw(a, signal_min_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawInt(b)));
+                    SetRaw(a, signal_min_xf(g, slotRawFloatArray(a), slotRawInt(b)));
                     break;
                 case opMax:
-                    SetRaw(a, signal_max_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawInt(b)));
+                    SetRaw(a, signal_max_xf(g, slotRawFloatArray(a), slotRawInt(b)));
                     break;
                 case opFill:
-                    SetRaw(a, signal_fill(a->getPyrObject<PyrFloatArray>(), slotRawInt(b)));
+                    SetRaw(a, signal_fill(slotRawFloatArray(a), slotRawInt(b)));
                     break;
                 case opRing1:
-                    SetRaw(a, signal_ring1_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawInt(b)));
+                    SetRaw(a, signal_ring1_xf(g, slotRawFloatArray(a), slotRawInt(b)));
                     break;
                 case opRing2:
-                    SetRaw(a, signal_ring2_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawInt(b)));
+                    SetRaw(a, signal_ring2_xf(g, slotRawFloatArray(a), slotRawInt(b)));
                     break;
                 case opRing3:
-                    SetRaw(a, signal_ring3_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawInt(b)));
+                    SetRaw(a, signal_ring3_xf(g, slotRawFloatArray(a), slotRawInt(b)));
                     break;
                 case opRing4:
-                    SetRaw(a, signal_ring4_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawInt(b)));
+                    SetRaw(a, signal_ring4_xf(g, slotRawFloatArray(a), slotRawInt(b)));
                     break;
                 case opDifSqr:
-                    SetRaw(a, signal_difsqr_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawInt(b)));
+                    SetRaw(a, signal_difsqr_xf(g, slotRawFloatArray(a), slotRawInt(b)));
                     break;
                 case opSumSqr:
-                    SetRaw(a, signal_sumsqr_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawInt(b)));
+                    SetRaw(a, signal_sumsqr_xf(g, slotRawFloatArray(a), slotRawInt(b)));
                     break;
                 case opSqrSum:
-                    SetRaw(a, signal_sqrsum_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawInt(b)));
+                    SetRaw(a, signal_sqrsum_xf(g, slotRawFloatArray(a), slotRawInt(b)));
                     break;
                 case opSqrDif:
-                    SetRaw(a, signal_sqrdif_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawInt(b)));
+                    SetRaw(a, signal_sqrdif_xf(g, slotRawFloatArray(a), slotRawInt(b)));
                     break;
                 case opAbsDif:
-                    SetRaw(a, signal_absdif_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawInt(b)));
+                    SetRaw(a, signal_absdif_xf(g, slotRawFloatArray(a), slotRawInt(b)));
                     break;
                 case opThresh:
-                    SetRaw(a, signal_thresh_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawInt(b)));
+                    SetRaw(a, signal_thresh_xf(g, slotRawFloatArray(a), slotRawInt(b)));
                     break;
                 case opAMClip:
-                    SetRaw(a, signal_amclip_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawInt(b)));
+                    SetRaw(a, signal_amclip_xf(g, slotRawFloatArray(a), slotRawInt(b)));
                     break;
                 case opScaleNeg:
-                    SetRaw(a, signal_scaleneg_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawInt(b)));
+                    SetRaw(a, signal_scaleneg_xf(g, slotRawFloatArray(a), slotRawInt(b)));
                     break;
                 case opClip2:
-                    SetRaw(a, signal_clip2_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawInt(b)));
+                    SetRaw(a, signal_clip2_xf(g, slotRawFloatArray(a), slotRawInt(b)));
                     break;
                 case opFold2:
-                    SetRaw(a, signal_fold2_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawInt(b)));
+                    SetRaw(a, signal_fold2_xf(g, slotRawFloatArray(a), slotRawInt(b)));
                     break;
                 case opWrap2:
-                    SetRaw(a, signal_wrap2_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawInt(b)));
+                    SetRaw(a, signal_wrap2_xf(g, slotRawFloatArray(a), slotRawInt(b)));
                     break;
                 case opExcess:
-                    SetRaw(a, signal_excess_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawInt(b)));
+                    SetRaw(a, signal_excess_xf(g, slotRawFloatArray(a), slotRawInt(b)));
                     break;
                 case opFirstArg:
-                    SetRaw(a, a->getPyrObject<PyrFloatArray>());
+                    SetRaw(a, slotRawFloatArray(a));
                     break;
                 default:
                     goto send_normal_2;
@@ -1167,104 +1167,85 @@ int doSpecialBinaryArithMsg(VMGlobals* g, int numArgsPushed, bool isPrimitive) {
                     SetSymbol(a, slotRawSymbol(b));
                 break;
             case tagObj:
-                if (isKindOf(b->getPyrObject<PyrFloatArray>(), class_signal)) {
+                if (isKindOf(slotRawObject(b), class_signal)) {
                     switch (opcode) {
                     case opAdd:
-                        SetRaw(a, signal_add_xx(g, a->getPyrObject<PyrFloatArray>(), b->getPyrObject<PyrFloatArray>()));
+                        SetRaw(a, signal_add_xx(g, slotRawFloatArray(a), slotRawFloatArray(b)));
                         break;
                     case opSub:
-                        SetRaw(a, signal_sub_xx(g, a->getPyrObject<PyrFloatArray>(), b->getPyrObject<PyrFloatArray>()));
+                        SetRaw(a, signal_sub_xx(g, slotRawFloatArray(a), slotRawFloatArray(b)));
                         break;
                     case opMul:
-                        SetRaw(a, signal_mul_xx(g, a->getPyrObject<PyrFloatArray>(), b->getPyrObject<PyrFloatArray>()));
+                        SetRaw(a, signal_mul_xx(g, slotRawFloatArray(a), slotRawFloatArray(b)));
                         break;
                     case opIDiv:
-                        SetRaw(a, signal_div_xx(g, a->getPyrObject<PyrFloatArray>(), b->getPyrObject<PyrFloatArray>()));
+                        SetRaw(a, signal_div_xx(g, slotRawFloatArray(a), slotRawFloatArray(b)));
                         break;
                     case opFDiv:
-                        SetRaw(a, signal_div_xx(g, a->getPyrObject<PyrFloatArray>(), b->getPyrObject<PyrFloatArray>()));
+                        SetRaw(a, signal_div_xx(g, slotRawFloatArray(a), slotRawFloatArray(b)));
                         break;
                     case opEQ:
-                        SetBool(a,
-                                signal_equal_xx(g, a->getPyrObject<PyrFloatArray>(), b->getPyrObject<PyrFloatArray>()));
+                        SetBool(a, signal_equal_xx(g, slotRawFloatArray(a), slotRawFloatArray(b)));
                         break;
                     case opNE:
-                        SetBool(
-                            a, !signal_equal_xx(g, a->getPyrObject<PyrFloatArray>(), b->getPyrObject<PyrFloatArray>()));
+                        SetBool(a, !signal_equal_xx(g, slotRawFloatArray(a), slotRawFloatArray(b)));
                         break;
                     case opMin:
-                        SetRaw(a, signal_min_xx(g, a->getPyrObject<PyrFloatArray>(), b->getPyrObject<PyrFloatArray>()));
+                        SetRaw(a, signal_min_xx(g, slotRawFloatArray(a), slotRawFloatArray(b)));
                         break;
                     case opMax:
-                        SetRaw(a, signal_max_xx(g, a->getPyrObject<PyrFloatArray>(), b->getPyrObject<PyrFloatArray>()));
+                        SetRaw(a, signal_max_xx(g, slotRawFloatArray(a), slotRawFloatArray(b)));
                         break;
                     case opRing1:
-                        SetRaw(a,
-                               signal_ring1_xx(g, a->getPyrObject<PyrFloatArray>(), b->getPyrObject<PyrFloatArray>()));
+                        SetRaw(a, signal_ring1_xx(g, slotRawFloatArray(a), slotRawFloatArray(b)));
                         break;
                     case opRing2:
-                        SetRaw(a,
-                               signal_ring2_xx(g, a->getPyrObject<PyrFloatArray>(), b->getPyrObject<PyrFloatArray>()));
+                        SetRaw(a, signal_ring2_xx(g, slotRawFloatArray(a), slotRawFloatArray(b)));
                         break;
                     case opRing3:
-                        SetRaw(a,
-                               signal_ring3_xx(g, a->getPyrObject<PyrFloatArray>(), b->getPyrObject<PyrFloatArray>()));
+                        SetRaw(a, signal_ring3_xx(g, slotRawFloatArray(a), slotRawFloatArray(b)));
                         break;
                     case opRing4:
-                        SetRaw(a,
-                               signal_ring4_xx(g, a->getPyrObject<PyrFloatArray>(), b->getPyrObject<PyrFloatArray>()));
+                        SetRaw(a, signal_ring4_xx(g, slotRawFloatArray(a), slotRawFloatArray(b)));
                         break;
                     case opDifSqr:
-                        SetRaw(a,
-                               signal_difsqr_xx(g, a->getPyrObject<PyrFloatArray>(), b->getPyrObject<PyrFloatArray>()));
+                        SetRaw(a, signal_difsqr_xx(g, slotRawFloatArray(a), slotRawFloatArray(b)));
                         break;
                     case opSumSqr:
-                        SetRaw(a,
-                               signal_sumsqr_xx(g, a->getPyrObject<PyrFloatArray>(), b->getPyrObject<PyrFloatArray>()));
+                        SetRaw(a, signal_sumsqr_xx(g, slotRawFloatArray(a), slotRawFloatArray(b)));
                         break;
                     case opSqrSum:
-                        SetRaw(a,
-                               signal_sqrsum_xx(g, a->getPyrObject<PyrFloatArray>(), b->getPyrObject<PyrFloatArray>()));
+                        SetRaw(a, signal_sqrsum_xx(g, slotRawFloatArray(a), slotRawFloatArray(b)));
                         break;
                     case opSqrDif:
-                        SetRaw(a,
-                               signal_sqrdif_xx(g, a->getPyrObject<PyrFloatArray>(), b->getPyrObject<PyrFloatArray>()));
+                        SetRaw(a, signal_sqrdif_xx(g, slotRawFloatArray(a), slotRawFloatArray(b)));
                         break;
                     case opAbsDif:
-                        SetRaw(a,
-                               signal_absdif_xx(g, a->getPyrObject<PyrFloatArray>(), b->getPyrObject<PyrFloatArray>()));
+                        SetRaw(a, signal_absdif_xx(g, slotRawFloatArray(a), slotRawFloatArray(b)));
                         break;
                     case opThresh:
-                        SetRaw(a,
-                               signal_thresh_xx(g, a->getPyrObject<PyrFloatArray>(), b->getPyrObject<PyrFloatArray>()));
+                        SetRaw(a, signal_thresh_xx(g, slotRawFloatArray(a), slotRawFloatArray(b)));
                         break;
                     case opAMClip:
-                        SetRaw(a,
-                               signal_amclip_xx(g, a->getPyrObject<PyrFloatArray>(), b->getPyrObject<PyrFloatArray>()));
+                        SetRaw(a, signal_amclip_xx(g, slotRawFloatArray(a), slotRawFloatArray(b)));
                         break;
                     case opScaleNeg:
-                        SetRaw(
-                            a,
-                            signal_scaleneg_xx(g, a->getPyrObject<PyrFloatArray>(), b->getPyrObject<PyrFloatArray>()));
+                        SetRaw(a, signal_scaleneg_xx(g, slotRawFloatArray(a), slotRawFloatArray(b)));
                         break;
                     case opClip2:
-                        SetRaw(a,
-                               signal_clip2_xx(g, a->getPyrObject<PyrFloatArray>(), b->getPyrObject<PyrFloatArray>()));
+                        SetRaw(a, signal_clip2_xx(g, slotRawFloatArray(a), slotRawFloatArray(b)));
                         break;
                     case opFold2:
-                        SetRaw(a,
-                               signal_fold2_xx(g, a->getPyrObject<PyrFloatArray>(), b->getPyrObject<PyrFloatArray>()));
+                        SetRaw(a, signal_fold2_xx(g, slotRawFloatArray(a), slotRawFloatArray(b)));
                         break;
                     case opWrap2:
-                        SetRaw(a,
-                               signal_wrap2_xx(g, a->getPyrObject<PyrFloatArray>(), b->getPyrObject<PyrFloatArray>()));
+                        SetRaw(a, signal_wrap2_xx(g, slotRawFloatArray(a), slotRawFloatArray(b)));
                         break;
                     case opExcess:
-                        SetRaw(a,
-                               signal_excess_xx(g, a->getPyrObject<PyrFloatArray>(), b->getPyrObject<PyrFloatArray>()));
+                        SetRaw(a, signal_excess_xx(g, slotRawFloatArray(a), slotRawFloatArray(b)));
                         break;
                     case opFirstArg:
-                        SetRaw(a, a->getPyrObject<PyrFloatArray>());
+                        SetRaw(a, slotRawFloatArray(a));
                         break;
                     default:
                         goto send_normal_2;
@@ -1275,19 +1256,19 @@ int doSpecialBinaryArithMsg(VMGlobals* g, int numArgsPushed, bool isPrimitive) {
             default: // double
                 switch (opcode) {
                 case opAdd:
-                    SetRaw(a, signal_add_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawFloat(b)));
+                    SetRaw(a, signal_add_xf(g, slotRawFloatArray(a), slotRawFloat(b)));
                     break;
                 case opSub:
-                    SetRaw(a, signal_sub_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawFloat(b)));
+                    SetRaw(a, signal_sub_xf(g, slotRawFloatArray(a), slotRawFloat(b)));
                     break;
                 case opMul:
-                    SetRaw(a, signal_mul_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawFloat(b)));
+                    SetRaw(a, signal_mul_xf(g, slotRawFloatArray(a), slotRawFloat(b)));
                     break;
                 case opIDiv:
-                    SetRaw(a, signal_div_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawFloat(b)));
+                    SetRaw(a, signal_div_xf(g, slotRawFloatArray(a), slotRawFloat(b)));
                     break;
                 case opFDiv:
-                    SetRaw(a, signal_div_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawFloat(b)));
+                    SetRaw(a, signal_div_xf(g, slotRawFloatArray(a), slotRawFloat(b)));
                     break;
                 case opEQ:
                     SetFalse(a);
@@ -1296,64 +1277,64 @@ int doSpecialBinaryArithMsg(VMGlobals* g, int numArgsPushed, bool isPrimitive) {
                     SetTrue(a);
                     break;
                 case opMin:
-                    SetRaw(a, signal_min_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawFloat(b)));
+                    SetRaw(a, signal_min_xf(g, slotRawFloatArray(a), slotRawFloat(b)));
                     break;
                 case opMax:
-                    SetRaw(a, signal_max_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawFloat(b)));
+                    SetRaw(a, signal_max_xf(g, slotRawFloatArray(a), slotRawFloat(b)));
                     break;
                 case opFill:
-                    SetRaw(a, signal_fill(a->getPyrObject<PyrFloatArray>(), slotRawFloat(b)));
+                    SetRaw(a, signal_fill(slotRawFloatArray(a), slotRawFloat(b)));
                     break;
                 case opRing1:
-                    SetRaw(a, signal_ring1_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawFloat(b)));
+                    SetRaw(a, signal_ring1_xf(g, slotRawFloatArray(a), slotRawFloat(b)));
                     break;
                 case opRing2:
-                    SetRaw(a, signal_ring2_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawFloat(b)));
+                    SetRaw(a, signal_ring2_xf(g, slotRawFloatArray(a), slotRawFloat(b)));
                     break;
                 case opRing3:
-                    SetRaw(a, signal_ring3_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawFloat(b)));
+                    SetRaw(a, signal_ring3_xf(g, slotRawFloatArray(a), slotRawFloat(b)));
                     break;
                 case opRing4:
-                    SetRaw(a, signal_ring4_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawFloat(b)));
+                    SetRaw(a, signal_ring4_xf(g, slotRawFloatArray(a), slotRawFloat(b)));
                     break;
                 case opDifSqr:
-                    SetRaw(a, signal_difsqr_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawFloat(b)));
+                    SetRaw(a, signal_difsqr_xf(g, slotRawFloatArray(a), slotRawFloat(b)));
                     break;
                 case opSumSqr:
-                    SetRaw(a, signal_sumsqr_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawFloat(b)));
+                    SetRaw(a, signal_sumsqr_xf(g, slotRawFloatArray(a), slotRawFloat(b)));
                     break;
                 case opSqrSum:
-                    SetRaw(a, signal_sqrsum_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawFloat(b)));
+                    SetRaw(a, signal_sqrsum_xf(g, slotRawFloatArray(a), slotRawFloat(b)));
                     break;
                 case opSqrDif:
-                    SetRaw(a, signal_sqrdif_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawFloat(b)));
+                    SetRaw(a, signal_sqrdif_xf(g, slotRawFloatArray(a), slotRawFloat(b)));
                     break;
                 case opAbsDif:
-                    SetRaw(a, signal_absdif_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawFloat(b)));
+                    SetRaw(a, signal_absdif_xf(g, slotRawFloatArray(a), slotRawFloat(b)));
                     break;
                 case opThresh:
-                    SetRaw(a, signal_thresh_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawFloat(b)));
+                    SetRaw(a, signal_thresh_xf(g, slotRawFloatArray(a), slotRawFloat(b)));
                     break;
                 case opAMClip:
-                    SetRaw(a, signal_amclip_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawFloat(b)));
+                    SetRaw(a, signal_amclip_xf(g, slotRawFloatArray(a), slotRawFloat(b)));
                     break;
                 case opScaleNeg:
-                    SetRaw(a, signal_scaleneg_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawFloat(b)));
+                    SetRaw(a, signal_scaleneg_xf(g, slotRawFloatArray(a), slotRawFloat(b)));
                     break;
                 case opClip2:
-                    SetRaw(a, signal_clip2_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawFloat(b)));
+                    SetRaw(a, signal_clip2_xf(g, slotRawFloatArray(a), slotRawFloat(b)));
                     break;
                 case opFold2:
-                    SetRaw(a, signal_fold2_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawFloat(b)));
+                    SetRaw(a, signal_fold2_xf(g, slotRawFloatArray(a), slotRawFloat(b)));
                     break;
                 case opWrap2:
-                    SetRaw(a, signal_wrap2_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawFloat(b)));
+                    SetRaw(a, signal_wrap2_xf(g, slotRawFloatArray(a), slotRawFloat(b)));
                     break;
                 case opExcess:
-                    SetRaw(a, signal_excess_xf(g, a->getPyrObject<PyrFloatArray>(), slotRawFloat(b)));
+                    SetRaw(a, signal_excess_xf(g, slotRawFloatArray(a), slotRawFloat(b)));
                     break;
                 case opFirstArg:
-                    SetRaw(a, a->getPyrObject<PyrFloatArray>());
+                    SetRaw(a, slotRawFloatArray(a));
                     break;
                 default:
                     goto send_normal_2;
@@ -1507,22 +1488,22 @@ int doSpecialBinaryArithMsg(VMGlobals* g, int numArgsPushed, bool isPrimitive) {
                 SetSymbol(a, slotRawSymbol(b));
             break;
         case tagObj:
-            if (isKindOf(b->getPyrObject<PyrFloatArray>(), class_signal)) {
+            if (isKindOf(slotRawObject(b), class_signal)) {
                 switch (opcode) {
                 case opAdd:
-                    SetObject(a, signal_add_xf(g, b->getPyrObject<PyrFloatArray>(), slotRawFloat(a)));
+                    SetObject(a, signal_add_xf(g, slotRawFloatArray(b), slotRawFloat(a)));
                     break;
                 case opSub:
-                    SetObject(a, signal_sub_fx(g, slotRawFloat(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_sub_fx(g, slotRawFloat(a), slotRawFloatArray(b)));
                     break;
                 case opMul:
-                    SetObject(a, signal_mul_xf(g, b->getPyrObject<PyrFloatArray>(), slotRawFloat(a)));
+                    SetObject(a, signal_mul_xf(g, slotRawFloatArray(b), slotRawFloat(a)));
                     break;
                 case opIDiv:
-                    SetObject(a, signal_div_fx(g, slotRawFloat(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_div_fx(g, slotRawFloat(a), slotRawFloatArray(b)));
                     break;
                 case opFDiv:
-                    SetObject(a, signal_div_fx(g, slotRawFloat(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_div_fx(g, slotRawFloat(a), slotRawFloatArray(b)));
                     break;
                 case opEQ:
                     SetFalse(a);
@@ -1531,61 +1512,61 @@ int doSpecialBinaryArithMsg(VMGlobals* g, int numArgsPushed, bool isPrimitive) {
                     SetTrue(a);
                     break;
                 case opMin:
-                    SetObject(a, signal_min_xf(g, b->getPyrObject<PyrFloatArray>(), slotRawFloat(a)));
+                    SetObject(a, signal_min_xf(g, slotRawFloatArray(b), slotRawFloat(a)));
                     break;
                 case opMax:
-                    SetObject(a, signal_max_xf(g, b->getPyrObject<PyrFloatArray>(), slotRawFloat(a)));
+                    SetObject(a, signal_max_xf(g, slotRawFloatArray(b), slotRawFloat(a)));
                     break;
                 case opRing1:
-                    SetObject(a, signal_ring1_fx(g, slotRawFloat(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_ring1_fx(g, slotRawFloat(a), slotRawFloatArray(b)));
                     break;
                 case opRing2:
-                    SetObject(a, signal_ring2_fx(g, slotRawFloat(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_ring2_fx(g, slotRawFloat(a), slotRawFloatArray(b)));
                     break;
                 case opRing3:
-                    SetObject(a, signal_ring3_fx(g, slotRawFloat(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_ring3_fx(g, slotRawFloat(a), slotRawFloatArray(b)));
                     break;
                 case opRing4:
-                    SetObject(a, signal_ring4_fx(g, slotRawFloat(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_ring4_fx(g, slotRawFloat(a), slotRawFloatArray(b)));
                     break;
                 case opDifSqr:
-                    SetObject(a, signal_difsqr_fx(g, slotRawFloat(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_difsqr_fx(g, slotRawFloat(a), slotRawFloatArray(b)));
                     break;
                 case opSumSqr:
-                    SetObject(a, signal_sumsqr_fx(g, slotRawFloat(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_sumsqr_fx(g, slotRawFloat(a), slotRawFloatArray(b)));
                     break;
                 case opSqrSum:
-                    SetObject(a, signal_sqrsum_fx(g, slotRawFloat(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_sqrsum_fx(g, slotRawFloat(a), slotRawFloatArray(b)));
                     break;
                 case opSqrDif:
-                    SetObject(a, signal_sqrdif_fx(g, slotRawFloat(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_sqrdif_fx(g, slotRawFloat(a), slotRawFloatArray(b)));
                     break;
                 case opAbsDif:
-                    SetObject(a, signal_absdif_fx(g, slotRawFloat(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_absdif_fx(g, slotRawFloat(a), slotRawFloatArray(b)));
                     break;
                 case opThresh:
-                    SetObject(a, signal_thresh_fx(g, slotRawFloat(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_thresh_fx(g, slotRawFloat(a), slotRawFloatArray(b)));
                     break;
                 case opAMClip:
-                    SetObject(a, signal_amclip_fx(g, slotRawFloat(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_amclip_fx(g, slotRawFloat(a), slotRawFloatArray(b)));
                     break;
                 case opScaleNeg:
-                    SetObject(a, signal_scaleneg_fx(g, slotRawFloat(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_scaleneg_fx(g, slotRawFloat(a), slotRawFloatArray(b)));
                     break;
                 case opClip2:
-                    SetObject(a, signal_clip2_fx(g, slotRawFloat(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_clip2_fx(g, slotRawFloat(a), slotRawFloatArray(b)));
                     break;
                 case opFold2:
-                    SetObject(a, signal_fold2_fx(g, slotRawFloat(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_fold2_fx(g, slotRawFloat(a), slotRawFloatArray(b)));
                     break;
                 case opWrap2:
-                    SetObject(a, signal_wrap2_fx(g, slotRawFloat(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_wrap2_fx(g, slotRawFloat(a), slotRawFloatArray(b)));
                     break;
                 case opExcess:
-                    SetObject(a, signal_excess_fx(g, slotRawFloat(a), b->getPyrObject<PyrFloatArray>()));
+                    SetObject(a, signal_excess_fx(g, slotRawFloat(a), slotRawFloatArray(b)));
                     break;
                 case opFirstArg:
-                    SetObject(a, a->getPyrObject<PyrFloatArray>());
+                    SetObject(a, slotRawFloatArray(a));
                     break;
                 default:
                     goto send_normal_2;

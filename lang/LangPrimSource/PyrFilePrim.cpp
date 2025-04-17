@@ -1773,12 +1773,20 @@ int prSFRead(struct VMGlobals* g, int numArgsPushed) {
     case obj_int32:
         slotRawObject(b)->size = sf_read_int(file, (int*)slotRawInt8Array(b)->b, slotRawObject(b)->size);
         break;
-    case obj_float:
-        slotRawObject(b)->size = sf_read_float(file, (float*)slotRawInt8Array(b)->b, slotRawObject(b)->size);
+    case obj_float: {
+        PyrFloatArray* floatArray = slotRawFloatArray(b);
+        floatArray->size = sf_read_float(file, floatArray->f, floatArray->size);
+        for (size_t i { 0 }; i < floatArray->size; ++i)
+            floatArray->f[i] = removeBadNans(floatArray->f[i]);
         break;
-    case obj_double:
-        slotRawObject(b)->size = sf_read_double(file, (double*)slotRawInt8Array(b)->b, slotRawObject(b)->size);
+    }
+    case obj_double: {
+        PyrDoubleArray* doubleArray = slotRawDoubleArray(b);
+        doubleArray->size = sf_read_double(file, doubleArray->d, doubleArray->size);
+        for (size_t i { 0 }; i < doubleArray->size; ++i)
+            doubleArray->d[i] = removeBadNans(doubleArray->d[i]);
         break;
+    }
     default:
         error("sample format not supported.\n");
         return errFailed;
