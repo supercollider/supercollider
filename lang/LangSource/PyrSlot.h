@@ -40,18 +40,18 @@ A PyrSlot is an 8-byte value which is either a double precision float or a
 #include "PyrSymbol.h"
 
 #if (__SIZEOF_POINTER__ == 8) || defined(__x86_64__) || defined(_M_X64) || defined(__LP64__) || defined(_WIN64)
-#    define POINTER_NEEDS_PADDING 0 \
+#    define POINTER_NEEDS_PADDING 0
 
-namespace details { 
-    static constexpr bool pointerNeedsPadding = false; 
-} 
+namespace details {
+static constexpr bool pointerNeedsPadding = false;
+}
 
 #elif (__SIZEOF_POINTER__ == 4) || defined(__i386__) || defined(_M_IX86) || defined(__ILP32__) || defined(_WIN32)      \
     || defined(__ppc__) || defined(__arm__)
-#    define POINTER_NEEDS_PADDING 1 \
+#    define POINTER_NEEDS_PADDING 1
 
-namespace details { 
-    static constexpr bool pointerNeedsPadding = true; 
+namespace details {
+static constexpr bool pointerNeedsPadding = true;
 }
 
 #else
@@ -69,8 +69,7 @@ inline void unreachable() {}
 
 // On 64-bit systems the pointer is assumed to fit into 48 bits.
 // This is not true for some very modern intel systems which use 56 bits
-//      - but this is not in common use and nan boxing is very common,
-//      so it is likely there will be a workaround 
+//      - but this is not in common use and nan boxing is very common
 
 //        |-----------------| these are free in a pointer
 // Ptr  = 1111 1111 1111 1111 000000000000000000000000000000000000000000000000
@@ -200,7 +199,6 @@ template <typename T> struct MaybePadPointerTo64Bits {
             }
         }
     }
-
 };
 
 
