@@ -49,9 +49,8 @@
 		^synth
 	}
 
-	freqscope {
-		var server = Server.default;
-		this.play(server);
-		^FreqScope.new(server: server)
+	freqscope { arg target, outbus = 0, fadeTime = 0.02, addAction=\addToHead, args;
+		FreqScope.new(server: target)
+		^this.play(target, outbus, fadeTime, addAction, args)
 	}
 }
