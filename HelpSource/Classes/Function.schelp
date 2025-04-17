@@ -512,6 +512,38 @@ argument::zoom
 A zoom value for the scope's X axis. Larger values show more. The default is 1.
 argument:: bounds
 The bounds of the code::Window:: in which the scope is embedded. A Rect specifying position and size of the window. The size does not include the border and title bar. Position is measured from the bottom-left corner of the screen (this is different than link::Classes/View#-bounds::). The default is nil and the scope window will be in the centre of the display.
+
+
+method::freqscope
+
+Play a Synth using the UGens returned by the function, similar to link::#-play:: as described above.
+Additionally, it opens a link::Classes/FreqScope:: window to visualise the output spectrum.
+For details about the arguments, refer to link::#-play::.
+For more information on link::Classes/FreqScope::, consult its documentation.
+
+code::
+x = { |freq = 440, amp = 0.1| SinOsc.ar(freq) * 0.1 }
+
+y = x.freqscope
+y.free
+
+y = x.freqscope(outbus:1, args:[\freq, 880])
+y.set(\freq, 1760)
+y.release(4)
+::
+
+argument::target
+Similar to the teletype::target:: argument in link::#-play::. The display bus of the link::Classes/FreqScope:: window will be synchronised with this target.
+argument::outbus
+Similar to the teletype::outbus:: argument in link::#-play::. The display bus of the link::Classes/FreqScope:: window will be synchronised with this outbus.
+argument::fadeTime
+Identical to the teletype::fadeTime:: argument in link::#-play::.
+argument::addAction
+Identical to the teletype::addAction:: argument in link::#-play::.
+argument::args
+Identical to the teletype::args:: argument in link::#-play::.
+
+
 method::plot
 
 note::See link::Reference/plot:: for a general reference on plotting::

@@ -50,7 +50,7 @@
 	}
 
 	freqscope { arg target, outbus = 0, fadeTime = 0.02, addAction=\addToHead, args;
-		FreqScope.new(server: target)
+		FreqScope.new(server: target, busNum: outbus);
 		^this.play(target, outbus, fadeTime, addAction, args)
 	}
 }
