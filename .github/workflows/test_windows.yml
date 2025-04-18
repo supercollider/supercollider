@@ -32,6 +32,7 @@ jobs:
           path: ${{ env.INSTALL_PATH }}
 
       - name: Extract artifact
+        shell: bash
         run: |
           cd "$INSTALL_PATH"
           echo Contents of `pwd`:
@@ -39,6 +40,7 @@ jobs:
           unzip "$ARTIFACT_FILE.zip"
 
       - name: Setup environment
+        shell: bash
         run: |
           # install jack
           # even though SC on Windows doesn't use JACK directly
