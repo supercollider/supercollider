@@ -93,11 +93,6 @@ struct XLine : public Unit {
     int mCounter;
 };
 
-struct Cutoff : public Unit {
-    double mLevel, mSlope;
-    int mWaitCounter;
-};
-
 struct LinExp : public Unit {
     float m_dstratio, m_rsrcrange, m_rrminuslo, m_dstlo;
 };
@@ -114,6 +109,7 @@ struct Fold : public Unit {
     float m_lo, m_hi, m_range;
 };
 
+// Note: no classlib definition for Unwrap!
 struct Unwrap : public Unit {
     float m_range, m_half, m_offset, m_prev;
 };
@@ -137,11 +133,6 @@ struct InRange : public Unit {
 struct InRect : public Unit {
     // nothing
 };
-
-// struct Trapezoid : public Unit
-//{
-//  float m_leftScale, m_rightScale, m_a, m_b, m_c, m_d;
-//};
 
 struct A2K : public Unit {};
 
@@ -1096,13 +1087,16 @@ void VarSaw_Ctor(VarSaw* unit) {
     }
 
     unit->mFreqMul = unit->mRate->mSampleDur;
-    unit->mPhase = ZIN0(1);
-    float duty = ZIN0(2);
-    duty = unit->mDuty = sc_clip(duty, 0.001, 0.999);
+    double phase = unit->mPhase = sc_wrap(static_cast<double>(ZIN0(1)), 0.0, 1.0);
+    float duty = unit->mDuty = sc_clip(ZIN0(2), 0.001f, 0.999f);
     unit->mInvDuty = 2.f / duty;
     unit->mInv1Duty = 2.f / (1.f - duty);
 
-    ZOUT0(0) = 0.f;
+    VarSaw_next_k(unit, 1);
+
+    unit->mPhase = phase;
+    // other members need not be reset, duty is unchanged because phase is
+    // guaranteed to be in range
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1259,7 +1253,7 @@ void T2K_Ctor(T2K* unit) {
 
 static inline void T2A_write_trigger(T2A* unit, float level) {
     float* out = OUT(0);
-    int offset = (int)IN0(1);
+    int offset = sc_clip(static_cast<int>(IN0(1)), 0, BUFLENGTH - 1);
     out[offset] = level;
 }
 
@@ -1305,7 +1299,10 @@ void T2A_Ctor(T2A* unit) {
     else
 #endif
         SETCALC(T2A_next);
+
+    unit->mLevel = 0.f;
     T2A_next(unit, 1);
+    unit->mLevel = 0.f;
 }
 
 
@@ -1547,38 +1544,6 @@ void XLine_Ctor(XLine* unit) {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-/*
-void Wrap_next(Wrap* unit, int inNumSamples)
-{
-    float *out = ZOUT(0);
-    float *in   = ZIN(0);
-    float lo = unit->m_lo;
-    float hi = unit->m_hi;
-    float range = unit->m_range;
-
-    LOOP1(inNumSamples,
-        ZXP(out) = sc_wrap(ZXP(in), lo, hi, range);
-    );
-}
-
-void Wrap_Ctor(Wrap* unit)
-{
-
-    SETCALC(Wrap_next);
-    unit->m_lo = ZIN0(1);
-    unit->m_hi = ZIN0(2);
-
-    if (unit->m_lo > unit->m_hi) {
-        float temp = unit->m_lo;
-        unit->m_lo = unit->m_hi;
-        unit->m_hi = temp;
-    }
-    unit->m_range = unit->m_hi - unit->m_lo;
-
-    Wrap_next(unit, 1);
-}
-*/
-
 
 void Wrap_next_kk(Wrap* unit, int inNumSamples) {
     float* out = ZOUT(0);
@@ -1655,39 +1620,7 @@ void Wrap_Ctor(Wrap* unit) {
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-/*
-void Fold_next(Fold* unit, int inNumSamples)
-{
-    float *out = ZOUT(0);
-    float *in   = ZIN(0);
-    float lo = unit->m_lo;
-    float hi = unit->m_hi;
-    float range = unit->m_range;
-    float range2 = unit->m_range2;
 
-    LOOP1(inNumSamples,
-        ZXP(out) = sc_fold(ZXP(in), lo, hi, range, range2);
-    );
-}
-
-void Fold_Ctor(Fold* unit)
-{
-
-    SETCALC(Fold_next);
-    unit->m_lo = ZIN0(1);
-    unit->m_hi = ZIN0(2);
-
-    if (unit->m_lo > unit->m_hi) {
-        float temp = unit->m_lo;
-        unit->m_lo = unit->m_hi;
-        unit->m_hi = temp;
-    }
-    unit->m_range = unit->m_hi - unit->m_lo;
-    unit->m_range2 = 2.f * unit->m_range;
-
-    Fold_next(unit, 1);
-}
-*/
 void Fold_next_kk(Fold* unit, int inNumSamples) {
     float* out = ZOUT(0);
     float* in = ZIN(0);
@@ -2026,6 +1959,7 @@ void Clip_Ctor(Clip* unit) {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
+// Note: no classlib definition for Unwrap!
 
 void Unwrap_next(Unwrap* unit, int inNumSamples) {
     float* out = ZOUT(0);
@@ -2180,7 +2114,7 @@ void AmpComp_Ctor(AmpComp* unit) {
         unit->m_exponent = -1.f * exp;
         SETCALC(AmpComp_next);
     }
-    AmpComp_next(unit, 1);
+    AmpComp_next_kk(unit, 1);
 }
 
 
@@ -2419,15 +2353,6 @@ static void LinExp_SetCalc(LinExp* unit) {
 
     if (!allScalar)
         return;
-
-    float srclo = ZIN0(1);
-    float srchi = ZIN0(2);
-    float dstlo = ZIN0(3);
-    float dsthi = ZIN0(4);
-    unit->m_dstlo = dstlo;
-    unit->m_dstratio = dsthi / dstlo;
-    unit->m_rsrcrange = sc_reciprocal(srchi - srclo);
-    unit->m_rrminuslo = unit->m_rsrcrange * -srclo;
 }
 
 void LinExp_Ctor(LinExp* unit) {

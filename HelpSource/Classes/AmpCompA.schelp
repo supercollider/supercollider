@@ -45,16 +45,14 @@ argument::freq
 Input frequency value. For freq == root, the output is rootAmp.
 
 argument::root
-Root freq relative to which the curve is calculated (usually lowest freq).
+Root freq relative to which the curve is calculated (usually lowest freq). Non-modulatable.
 
 argument::minAmp
-Amplitude at the minimum point of the curve (around 2512 Hz).
+Amplitude at the minimum point of the curve (around 2512 Hz). Non-modulatable.
 
 argument::rootAmp
-Amplitude at the root frequency.
+Amplitude at the root frequency. Non-modulatable.
 
-discussion::
-Apart from code::freq::, the values are not modulatable
 
 Examples::
 
