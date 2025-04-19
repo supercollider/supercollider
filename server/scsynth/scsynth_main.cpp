@@ -422,14 +422,14 @@ int scsynth_main(int argc, char** argv) {
 #ifdef NO_LIBSNDFILE
         return 1;
 #else
-        int exitCode = 0;
         try {
             World_NonRealTimeSynthesis(world, &options);
-        } catch (std::exception& exc) {
-            scprintf("%s\n", exc.what());
-            exitCode = 1;
+            return 0;
+        } catch (const std::exception& exc) {
+            scprintf("NRT synthesis failed: %s\n", exc.what());
+            World_Cleanup(world, true);
+            return 1;
         }
-        return exitCode;
 #endif
     }
 
