@@ -67,8 +67,9 @@ enum {
         immutable : set if object may not be updated.
         finalize : set if object requires finalization.
         marked : used by garbage collector debug sanity check. may be used by primitives but must be cleared before
-   exiting primitive. gc_color : GC color : black, grey, white, free, permanent scratch1 : undefined value. may be used
-   within primitives as a temporary scratch value.
+   exiting primitive.
+   gc_color : GC color : black, grey, white, free, permanent
+   scratch1 : undefined value. may be used within primitives as a temporary scratch value.
 */
 
 struct PyrObjectHdr {

@@ -30,9 +30,11 @@
 #include "GC.h"
 #include <new>
 #include <string>
+#include <optional>
 #include <string.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <cctype>
 #include "InitAlloc.h"
 #include "PredefinedSymbols.h"
 #include "SimpleStack.h"
@@ -40,8 +42,11 @@
 #include "SC_Win32Utils.h"
 #include "SC_LanguageConfig.hpp"
 #include "SC_Codecvt.hpp"
+#include "SpecialSelectorsOperatorsAndClasses.h"
 
 namespace fs = std::filesystem;
+
+using namespace Opcode;
 
 AdvancingAllocPool gParseNodePool;
 int gNumUninlinedFunctions = 0;
@@ -50,7 +55,8 @@ PyrSymbol* gSpecialUnarySelectors[opNumUnarySelectors];
 PyrSymbol* gSpecialBinarySelectors[opNumBinarySelectors];
 PyrSymbol* gSpecialSelectors[opmNumSpecialSelectors];
 PyrSymbol* gSpecialClasses[op_NumSpecialClasses];
-PyrSlot gSpecialValues[svNumSpecialValues];
+SpecialValuesStruct gSpecialValues;
+SpecialNumberStruct gSpecialNumbers;
 
 PyrParseNode* gRootParseNode;
 intptr_t gParserResult;
@@ -100,20 +106,80 @@ const char* nodename[] = { "ClassNode", "ClassExtNode", "MethodNode", "BlockNode
 
                            "ReturnNode", "BlockReturnNode" };
 
-void compileTail() {
+
+// Forward declare helpers.
+// This means they aren't a part of the public interface of the header.
+void emitPushInt(int value);
+
+void compileAnyIfMsg(PyrCallNodeBase2* node);
+void compileIfMsg(PyrCallNodeBase2* node);
+void compileIfNilMsg(PyrCallNodeBase2* node, bool flag);
+void compileCaseMsg(PyrCallNodeBase2* node);
+void compileWhileMsg(PyrCallNodeBase2* node);
+void compileLoopMsg(PyrCallNodeBase2* node);
+void compileAndMsg(PyrParseNode* arg1, PyrParseNode* arg2);
+void compileOrMsg(PyrParseNode* arg1, PyrParseNode* arg2);
+void compileQMsg(PyrParseNode* arg1, PyrParseNode* arg2);
+void compileQQMsg(PyrParseNode* arg1, PyrParseNode* arg2);
+void compileXQMsg(PyrParseNode* arg1, PyrParseNode* arg2);
+void compileSwitchMsg(PyrCallNode* node);
+void compileAssignVar(PyrParseNode* node, PyrSymbol* varName, bool drop);
+void compilePushVar(PyrParseNode* node, PyrSymbol* varName);
+bool isAnInlineableBlock(PyrParseNode* node);
+bool isAnInlineableAtomicLiteralBlock(PyrParseNode* node);
+bool isAtomicLiteral(PyrParseNode* node);
+bool isWhileTrue(PyrParseNode* node);
+void installByteCodes(PyrBlock* block);
+
+void compilePyrMethodNode(PyrMethodNode* node, PyrSlot* result);
+void compilePyrLiteralNode(PyrLiteralNode* node, PyrSlot* result);
+
+PyrClass* getNodeSuperclass(PyrClassNode* node);
+void countNodeMethods(PyrClassNode* node, int* numClassMethods, int* numInstMethods);
+void compileExtNodeMethods(PyrClassExtNode* node);
+void countVarDefs(PyrClassNode* node);
+bool compareVarDefs(PyrClassNode* node, PyrClass* classobj);
+void recompileSubclasses(PyrClass* classobj);
+void compileNodeMethods(PyrClassNode* node);
+void fillClassPrototypes(PyrClassNode* node, PyrClass* classobj, PyrClass* superclassobj);
+
+bool isThisObjNode(PyrParseNode* node);
+int conjureSelectorIndex(PyrParseNode* node, PyrBlock* func, bool isSuper, PyrSymbol* selector, int* selType);
+Byte conjureLiteralSlotIndex(PyrParseNode* node, PyrBlock* func, PyrSlot* slot);
+bool findVarName(PyrBlock* func, PyrClass** classobj, PyrSymbol* name, int* varType, int* level, int* index,
+                 PyrBlock** tempfunc);
+void countClassVarDefs(PyrClassNode* node, int* numClassMethods, int* numInstMethods);
+void dumpNodeList(PyrParseNode* node);
+int compareCallArgs(PyrMethodNode* node, PyrCallNode* cnode, int* varIndex, PyrClass* specialClass);
+
+bool findSpecialClassName(PyrSymbol* className, int* index);
+int getIndexType(PyrClassNode* classnode);
+
+ByteCodes compileSubExpression(PyrPushLitNode* litnode, bool onTailBranch);
+ByteCodes compileSubExpressionWithGoto(PyrPushLitNode* litnode, int branchLen, bool onTailBranch);
+ByteCodes compileBodyWithGoto(PyrParseNode* body, int branchLen, bool onTailBranch);
+
+
+class SetTailIsMethodReturn {
+    bool mSave;
+
+public:
+    SetTailIsMethodReturn(bool inValue) {
+        mSave = gTailIsMethodReturn;
+        gTailIsMethodReturn = inValue;
+    }
+    ~SetTailIsMethodReturn() { gTailIsMethodReturn = mSave; }
+};
+
+void emitTailCall() {
     if (gGenerateTailCallByteCodes && gIsTailCodeBranch) {
-        // if (gCompilingClass && gCompilingMethod) post("tail call %s:%s  ismethod %d\n",
-        //	slotRawSymbol(&gCompilingClass->name)->name, slotRawSymbol(&gCompilingMethod->name)->name,
-        // gTailIsMethodReturn);
         if (gTailIsMethodReturn)
-            compileByte(255);
+            TailCallReturnFromMethod.emit();
         else
-            compileByte(176);
+            TailCallReturnFromFunction.emit();
     }
 }
 
-
-PyrGC* compileGC();
 PyrGC* compileGC() { return gCompilingVMGlobals ? gCompilingVMGlobals->gc : nullptr; }
 
 void initParser() {
@@ -163,82 +229,99 @@ PyrPushNameNode* newPyrPushNameNode(PyrSlotNode* slotNode) {
     return (PyrPushNameNode*)slotNode;
 }
 
-void compilePushVar(PyrParseNode* node, PyrSymbol* varName) {
-    int level, index, vindex, varType;
+
+std::optional<OpSpecialClassEnum> findSpecialClassFromName(PyrSymbol* className) {
+    for (int i = 0; i < static_cast<int>(OpSpecialClassEnum::COUNT); ++i)
+        if (gSpecialClasses[i] == className) {
+            return static_cast<OpSpecialClassEnum>(i);
+        }
+    return std::nullopt;
+}
+
+struct FindVarNameResult {
+    int level, index, varType;
     PyrBlock* tempfunc;
     PyrClass* classobj;
+};
 
-    // postfl("compilePushVar\n");
-    classobj = gCompilingClass;
-    if (varName->name[0] >= 'A' && varName->name[0] <= 'Z') {
+std::optional<FindVarNameResult> findVarName(PyrBlock* func, PyrClass* classobjC, PyrSymbol* varName) {
+    int level, index, varType;
+    PyrClass* classobj = classobjC;
+    PyrBlock* tempfunc;
+
+    if (findVarName(func, &classobj, varName, &varType, &level, &index, &tempfunc))
+        return FindVarNameResult { level, index, varType, tempfunc, classobj };
+    else
+        return std::nullopt;
+}
+
+void compilePushVar(PyrParseNode* node, PyrSymbol* varName) {
+    if (std::isupper(varName->name[0])) {
         if (compilingCmdLine && varName->u.classobj == nullptr) {
             error("Class not defined.\n");
             nodePostErrorLine(node);
             compileErrors++;
+        } else if (const auto specialClass = findSpecialClassFromName(varName)) {
+            PushSpecialClass.emit(Operands::SpecialClass { *specialClass });
         } else {
-            if (findSpecialClassName(varName, &index)) {
-                compileOpcode(opExtended, opPushSpecialValue); // special op for pushing a class
-                compileByte(index);
-            } else {
-                PyrSlot slot;
-                SetSymbol(&slot, varName);
-                index = conjureLiteralSlotIndex(node, gCompilingBlock, &slot);
-                compileOpcode(opExtended, opExtended); // special op for pushing a class
-                compileByte(index);
-            }
+            PyrSlot slot;
+            SetSymbol(&slot, varName);
+            PushClassX.emit(Operands::Class { conjureLiteralSlotIndex(node, gCompilingBlock, &slot) });
         }
+
     } else if (varName == s_this || varName == s_super) {
         gFunctionCantBeClosed = true;
-        compileOpcode(opPushSpecialValue, opsvSelf);
+        PushSpecialValueThis.emit();
+
     } else if (varName == s_true) {
-        compileOpcode(opPushSpecialValue, opsvTrue);
+        PushSpecialValue.emit(OpSpecialValue::True);
     } else if (varName == s_false) {
-        compileOpcode(opPushSpecialValue, opsvFalse);
+        PushSpecialValue.emit(OpSpecialValue::False);
     } else if (varName == s_nil) {
-        compileOpcode(opPushSpecialValue, opsvNil);
-    } else if (findVarName(gCompilingBlock, &classobj, varName, &varType, &level, &index, &tempfunc)) {
-        switch (varType) {
+        PushSpecialValue.emit(OpSpecialValue::Nil_);
+    } else if (const auto result = findVarName(gCompilingBlock, gCompilingClass, varName)) {
+        const FindVarNameResult findResult = *result;
+        switch (findResult.varType) {
         case varInst:
-            compileOpcode(opPushInstVar, index);
+            PushInstVarX.emit(Operands::Index::fromRaw(findResult.index));
             break;
+
         case varClass: {
-            index += slotRawInt(&classobj->classVarIndex);
-            if (index < 4096) {
-                compileByte((opPushClassVar << 4) | ((index >> 8) & 15));
-                compileByte(index & 255);
-            } else {
-                compileByte(opPushClassVar);
-                compileByte((index >> 8) & 255);
-                compileByte(index & 255);
-            }
+            const auto indexOffset = findResult.index + slotRawInt(&findResult.classobj->classVarIndex);
+            if (PushClassVar.validNibble(indexOffset))
+                PushClassVar.emit(indexOffset);
+            else
+                PushClassVarX.emit(Operands::UnsignedInt<16, 1>::fromFull(indexOffset),
+                                   Operands::UnsignedInt<16, 0>::fromFull(indexOffset));
         } break;
+
         case varConst: {
-            PyrSlot* slot = slotRawObject(&classobj->constValues)->slots + index;
+            PyrSlot* slot = slotRawObject(&findResult.classobj->constValues)->slots + findResult.index;
             compilePushConstant(node, slot);
         } break;
-        case varTemp:
-            vindex = index;
-            if (level == 0) {
-                compileOpcode(opPushTempZeroVar, vindex);
-            } else if (level < 8) {
-                compileOpcode(opPushTempVar, level);
-                compileByte(vindex);
-            } else {
-                compileByte(opPushTempVar);
-                compileByte(level);
-                compileByte(vindex);
-            }
-            break;
+
+        case varTemp: {
+            const auto vindex = findResult.index;
+            if (findResult.level == 0) {
+                if (PushTempZeroVar.validNibble(vindex)) {
+                    PushTempZeroVar.emit(vindex);
+                } else {
+                    PushTempZeroVarX.emit(Operands::Index::fromRaw(vindex));
+                }
+            } else if (PushTempVar.validNibble(findResult.level))
+                PushTempVar.emit(findResult.level, Operands::Index::fromRaw(vindex));
+            else
+                PushTempVarX.emit(Operands::FrameOffset::fromRaw(findResult.level), Operands::Index::fromRaw(vindex));
+        } break;
+
         case varPseudo:
-            compileOpcode(opExtended, opSpecialOpcode);
-            compileByte(index);
+            SpecialOpcode.emit(Operands::PseudoVar::fromRaw(findResult.index));
             break;
         }
     } else {
         error("Variable '%s' not defined.\n", varName->name);
         nodePostErrorLine(node);
         compileErrors++;
-        // Debugger();
     }
 }
 
@@ -249,7 +332,7 @@ PyrCurryArgNode* newPyrCurryArgNode() {
 
 void PyrCurryArgNode::compile(PyrSlot* result) {
     if (gPartiallyAppliedFunction) {
-        compileOpcode(opPushTempZeroVar, mArgNum);
+        PushTempZeroVar.emit(mArgNum);
     } else {
         error("found _ argument outside of a call.\n");
         nodePostErrorLine((PyrParseNode*)this);
@@ -275,7 +358,6 @@ void PyrSlotNode::compile(PyrSlot* result) {
         dumpObjectSlot(&mSlot);
         nodePostErrorLine((PyrParseNode*)this);
         compileErrors++;
-        // Debugger();
     }
 }
 
@@ -328,7 +410,6 @@ PyrClassNode* newPyrClassNode(PyrSlotNode* className, PyrSlotNode* superClassNam
     node->mVarTally[varClass] = 0;
     node->mVarTally[varTemp] = 0;
     node->mVarTally[varConst] = 0;
-    // node->mVarTally[varPool] = 0;
     return node;
 }
 
@@ -880,38 +961,6 @@ void PyrClassNode::compile(PyrSlot* result) {
 
 void recompileSubclasses(PyrClass* classobj) {}
 
-#if 0
-void catVarLists(PyrVarListNode *varlist);
-void catVarLists(PyrVarListNode *varlist)
-{
-	PyrVarListNode *prevvarlist;
-	PyrVarDefNode *vardef, *lastvardef;
-
-	if (varlist) {
-		// find end of this list
-		vardef = varlist->mVarDefs;
-		for (; vardef; vardef = (PyrVarDefNode*)vardef->mNext) {
-			lastvardef = vardef;
-		}
-		prevvarlist = varlist;
-		varlist = (PyrVarListNode*)varlist->mNext;
-
-		for (; varlist; varlist = (PyrVarListNode*)varlist->mNext) {
-			vardef = varlist->mVarDefs;
-			if (lastvardef) {
-				lastvardef->mNext = (PyrParseNode*)vardef;
-			} else {
-				prevvarlist->mVarDefs = vardef;
-			}
-			// find end of this list
-			for (; vardef; vardef = (PyrVarDefNode*)vardef->mNext) {
-				lastvardef = vardef;
-			}
-		}
-	}
-}
-
-#else
 
 void catVarLists(PyrVarListNode* varlist);
 void catVarLists(PyrVarListNode* varlist) {
@@ -934,7 +983,6 @@ void catVarLists(PyrVarListNode* varlist) {
         }
     }
 }
-#endif
 
 PyrMethodNode* newPyrMethodNode(PyrSlotNode* methodName, PyrSlotNode* primitiveName, PyrArgListNode* arglist,
                                 PyrVarListNode* varlist, PyrParseNode* body, int isClassMethod) {
@@ -1090,25 +1138,7 @@ int compareCallArgs(PyrMethodNode* node, PyrCallNode* cnode, int* varIndex, PyrC
             actualArg = actualArg->mNext;
         }
     }
-    /*
-    if (special == methForwardInstVar) {
-        postfl("methForwardInstVar %s:%s  formal %d  actual %d\n", slotRawSymbol(&gCompilingClass->name)->name,
-            slotRawSymbol(&gCompilingMethod->name)->name, numFormalArgs, numActualArgs);
-    }
-    if (special == methForwardClassVar) {
-        postfl("methForwardClassVar %s:%s  formal %d  actual %d\n", slotRawSymbol(&gCompilingClass->name)->name,
-            slotRawSymbol(&gCompilingMethod->name)->name, numFormalArgs, numActualArgs);
-    }
-    if (special == methRedirectSuper) {
-        postfl("methRedirectSuper %s:%s  formal %d  actual %d\n", slotRawSymbol(&gCompilingClass->name)->name,
-            slotRawSymbol(&gCompilingMethod->name)->name, numFormalArgs, numActualArgs);
-    }
-    */
 
-    //	if (special == methTempDelegate) {
-    //		postfl("methTempDelegate %s:%s\n", slotRawSymbol(&gCompilingClass->name)->name,
-    //			slotRawSymbol(&gCompilingMethod->name)->name);
-    //	}
     return special;
 }
 
@@ -1496,99 +1526,53 @@ void PyrMethodNode::compile(PyrSlot* result) {
     // optimize common cases
 
     if (methType == methNormal || methType == methPrimitive) {
-        PyrSlot dummy;
-        PyrSymbol* name;
-
         // compile body
         initByteCodes();
 
         if (gCompilingClass == class_int) {
-            // handle some special cases
-            name = slotRawSymbol(&method->name);
+            const PyrSymbol* name = slotRawSymbol(&method->name);
             if (name == gSpecialSelectors[opmDo]) {
-                compileByte(143);
-                compileByte(0);
-                compileByte(143);
-                compileByte(1);
+                Extended::IntegerDo.emit();
             } else if (name == gSpecialSelectors[opmReverseDo]) {
-                compileByte(143);
-                compileByte(2);
-                compileByte(143);
-                compileByte(3);
-                compileByte(143);
-                compileByte(4);
+                Extended::IntegerReverseDo.emit();
             } else if (name == gSpecialSelectors[opmFor]) {
-                compileByte(143);
-                compileByte(5);
-                compileByte(143);
-                compileByte(6);
-                compileByte(143);
-                compileByte(16);
+                Extended::IntegerFor.emit();
             } else if (name == gSpecialSelectors[opmForBy]) {
-                compileByte(143);
-                compileByte(7);
-                compileByte(143);
-                compileByte(8);
-                compileByte(143);
-                compileByte(9);
+                Extended::IntegerForBy.emit();
             } else
                 goto compile_body;
         } else if (gCompilingClass == class_arrayed_collection) {
-            name = slotRawSymbol(&method->name);
+            const PyrSymbol* name = slotRawSymbol(&method->name);
             if (name == gSpecialSelectors[opmDo]) {
-                compileByte(143);
-                compileByte(10);
-                compileByte(143);
-                compileByte(1);
+                Extended::ArrayedCollectionDo.emit();
             } else if (name == gSpecialSelectors[opmReverseDo]) {
-                compileByte(143);
-                compileByte(11);
-                compileByte(143);
-                compileByte(12);
-                compileByte(143);
-                compileByte(4);
+                Extended::ArrayedCollectionReversedDo.emit();
             } else
                 goto compile_body;
         } else if (slotRawSymbol(&gCompilingClass->name) == s_dictionary) {
-            name = slotRawSymbol(&method->name);
+            const PyrSymbol* name = slotRawSymbol(&method->name);
             if (name == getsym("keysValuesArrayDo")) {
-                compileByte(143);
-                compileByte(13);
-                compileByte(143);
-                compileByte(14);
+                Extended::DictionaryKeyValuesArrayDo.emit();
             } else
                 goto compile_body;
         } else if (gCompilingClass == class_number) {
-            name = slotRawSymbol(&method->name);
+            const PyrSymbol* name = slotRawSymbol(&method->name);
             if (name == gSpecialSelectors[opmForSeries]) {
-                compileByte(143);
-                compileByte(29);
-                compileByte(143);
-                compileByte(30);
-                compileByte(143);
-                compileByte(31);
+                Extended::NumberForSeries.emit();
             } else
                 goto compile_body;
         } else if (gCompilingClass == class_float) {
-            // handle some special cases
-            name = slotRawSymbol(&method->name);
+            const PyrSymbol* name = slotRawSymbol(&method->name);
             if (name == gSpecialSelectors[opmDo]) {
-                compileByte(143);
-                compileByte(17);
-                compileByte(143);
-                compileByte(18);
+                Extended::FloatDo.emit();
             } else if (name == gSpecialSelectors[opmReverseDo]) {
-                compileByte(143);
-                compileByte(19);
-                compileByte(143);
-                compileByte(20);
-                compileByte(143);
-                compileByte(21);
+                Extended::FloatDoReverse.emit();
             } else
                 goto compile_body;
         } else {
         compile_body:
             SetTailIsMethodReturn mr(false);
+            PyrSlot dummy;
             if (mArglist) {
                 vardef = mArglist->mVarDefs;
                 for (i = 1; i < numArgs; ++i, vardef = (PyrVarDefNode*)vardef->mNext) {
@@ -1688,9 +1672,6 @@ void PyrVarDefNode::compile(PyrSlot* result) {
         COMPILENODE(mDefVal, result, false);
         compileAssignVar((PyrParseNode*)this, slotRawSymbol(&mVarName->mSlot), mDrop);
     }
-
-    // error("compilePyrVarDefNode: shouldn't get here.\n");
-    // compileErrors++;
 }
 
 void PyrVarDefNode::compileArg(PyrSlot* result) {
@@ -1703,12 +1684,11 @@ void PyrVarDefNode::compileArg(PyrSlot* result) {
         trueByteCodes = compileBodyWithGoto(this, 0, true);
         int jumplen = byteCodeLength(trueByteCodes);
 
-        compileByte(143); // special opcodes
-        compileByte(26);
-        compileByte((jumplen >> 8) & 0xFF);
-        compileByte(jumplen & 0xFF);
+        Extended::IfNotNilJumpPushNilElsePop.emit(
+            { Operands::UnsignedInt<16, 1>::fromFull(jumplen), Operands::UnsignedInt<16, 0>::fromFull(jumplen) });
+
         compileAndFreeByteCodes(trueByteCodes);
-        compileOpcode(opSpecialOpcode, opcDrop); // drop the boolean
+        Drop.emit();
     }
 
     // error("compilePyrVarDefNode: shouldn't get here.\n");
@@ -1817,16 +1797,15 @@ void PyrCallNodeBase::compilePartialApplication(int numCurryArgs, PyrSlot* resul
         PyrSlot body;
         compileCall(&body);
     }
-    compileOpcode(opSpecialOpcode, opcFunctionReturn);
+
+    BlockReturn.emit();
     installByteCodes(block);
 
     gCompilingBlock = prevBlock;
     gPartiallyAppliedFunction = prevPartiallyAppliedFunction;
 
     restoreByteCodeArray(savedBytes);
-    int index = conjureLiteralSlotIndex(this, gCompilingBlock, &blockSlot);
-    compileOpcode(opExtended, opPushLiteral);
-    compileByte(index);
+    PushLiteralX.emit(Operands::Index::fromRaw(conjureLiteralSlotIndex(this, gCompilingBlock, &blockSlot)));
 
     if (!gFunctionCantBeClosed && gFunctionHighestExternalRef == 0) {
         SetNil(&block->contextDef);
@@ -1868,7 +1847,6 @@ void PyrCallNode::compileCall(PyrSlot* result) {
     bool varFound;
     PyrParseNode* argnode2;
 
-    // postfl("compilePyrCallNode\n");
     PyrParseNode* argnode = mArglist;
     PyrParseNode* keynode = mKeyarglist;
     int numArgs = nodeListLength(argnode);
@@ -1881,291 +1859,292 @@ void PyrCallNode::compileCall(PyrSlot* result) {
                                  &selType);
 
     if (numKeyArgs > 0 || (numArgs > 15 && !(selType == selSwitch || selType == selCase))) {
-        for (; argnode; argnode = argnode->mNext) {
+        for (; argnode; argnode = argnode->mNext)
             COMPILENODE(argnode, &dummy, false);
-        }
-        for (; keynode; keynode = keynode->mNext) {
+        for (; keynode; keynode = keynode->mNext)
             COMPILENODE(keynode, &dummy, false);
-        }
+
         if (isSuper) {
-            compileTail();
-            compileByte(opSendSuper);
-            compileByte(numArgs + 2 * numKeyArgs);
-            compileByte(numKeyArgs);
-            compileByte(index);
+            emitTailCall();
+            SendSuperMsgX.emit(Operands::ArgumentCount::fromRaw(numArgs + 2 * numKeyArgs),
+                               Operands::KwArgumentCount::fromRaw(numKeyArgs), Operands::Index::fromRaw(index));
         } else {
             switch (selType) {
             case selNormal:
-                compileTail();
-                compileByte(opSendMsg);
-                compileByte(numArgs + 2 * numKeyArgs);
-                compileByte(numKeyArgs);
-                compileByte(index);
+                emitTailCall();
+                SendMsgX.emit(Operands::ArgumentCount::fromRaw(numArgs + 2 * numKeyArgs),
+                              Operands::KwArgumentCount::fromRaw(numKeyArgs), Operands::Index::fromRaw(index));
                 break;
             case selSpecial:
-                compileTail();
-                compileByte(opSendSpecialMsg);
-                compileByte(numArgs + 2 * numKeyArgs);
-                compileByte(numKeyArgs);
-                compileByte(index);
+                emitTailCall();
+                SendSpecialMsgX.emit(Operands::ArgumentCount::fromRaw(numArgs + 2 * numKeyArgs),
+                                     Operands::KwArgumentCount::fromRaw(numKeyArgs), Operands::Index::fromRaw(index));
                 break;
             case selUnary:
             case selBinary:
                 index = conjureLiteralSlotIndex((PyrParseNode*)mSelector, gCompilingBlock, &mSelector->mSlot);
                 // fall through
             default:
-                compileTail();
-                compileByte(opSendMsg);
-                compileByte(numArgs + 2 * numKeyArgs);
-                compileByte(numKeyArgs);
-                compileByte(index);
+                emitTailCall();
+                SendMsgX.emit(Operands::ArgumentCount::fromRaw(numArgs + 2 * numKeyArgs),
+                              Operands::KwArgumentCount::fromRaw(numKeyArgs), Operands::Index::fromRaw(index));
                 break;
             }
         }
     } else if (isSuper) {
         if (numArgs == 1) {
-            // pushes this as well, don't compile arg
+            // No need to compile the 'this' arg.
             gFunctionCantBeClosed = true;
-            compileTail();
-            compileOpcode(opSendSuper, numArgs);
-            compileByte(index);
+            emitTailCall();
+            SendSuperMsgThisOpt.emit(Operands::Index::fromRaw(index));
         } else {
-            for (; argnode; argnode = argnode->mNext) {
+            for (; argnode; argnode = argnode->mNext)
                 COMPILENODE(argnode, &dummy, false);
+            emitTailCall();
+            if (SendSuperMsg.validNibble(numArgs)) {
+                SendSuperMsg.emit(numArgs, Operands::Index::fromRaw(index));
+            } else {
+                SendSuperMsgX.emit(Operands::ArgumentCount::fromRaw(numArgs), Operands::KwArgumentCount::fromRaw(0),
+                                   Operands::Index::fromRaw(index));
             }
-            compileTail();
-            compileOpcode(opSendSuper, numArgs);
-            compileByte(index);
         }
+
     } else {
-        PyrSymbol* varname;
-        if (argnode->mClassno == pn_PushNameNode) {
-            varname = slotRawSymbol(&((PyrPushNameNode*)argnode)->mSlot);
-        } else {
-            varname = nullptr;
-        }
-        if (varname == s_this) {
+        PyrSymbol* varname =
+            (argnode->mClassno == pn_PushNameNode) ? slotRawSymbol(&((PyrPushNameNode*)argnode)->mSlot) : nullptr;
+
+        if (varname == s_this)
             gFunctionCantBeClosed = true;
-        }
+
         switch (selType) {
-        case selNormal:
+        case selNormal: {
             if (numArgs == 1 && varname == s_this) {
-                compileTail();
-                compileOpcode(opSendMsg, 0);
-                compileByte(index);
-                //} else if (numArgs>1 && numArgs == numBlockArgs) {
+                emitTailCall();
+                SendMsgThisOpt.emit(Operands::Index::fromRaw(index));
             } else if (numArgs > 1 && numArgs == numBlockArgs) {
-                // try for multiple push optimization
-                int code;
-                code = checkPushAllArgs(argnode, numArgs);
-                if (code == push_Normal)
+                switch (checkPushAllArgs(argnode, numArgs)) {
+                case push_Normal:
                     goto normal;
-                else if (code == push_AllArgs) {
-                    compileTail();
-                    compileByte(137); // push all args, send msg
-                    compileByte(index);
-                    // post("137 pushAllArgs     %s:%s\n", slotRawSymbol(&gCompilingClass->name)->name,
-                    //	slotRawSymbol(&gCompilingMethod->name)->name);
-                } else if (code == push_AllButFirstArg) {
+
+                case push_AllArgs: {
+                    emitTailCall();
+                    PushAllArgsAndSendMsg.emit(Operands::Index::fromRaw(index));
+                } break;
+
+                case push_AllButFirstArg: {
                     COMPILENODE(argnode, &dummy, false);
-                    compileTail();
-                    compileByte(138); // push all but first arg, send msg
-                    compileByte(index);
-                    // post("138 pushAllButFirstArg     %s:%s\n", slotRawSymbol(&gCompilingClass->name)->name,
-                    //	slotRawSymbol(&gCompilingMethod->name)->name);
-                } else
+                    emitTailCall();
+                    PushAllButFirstArgAndSendMsg.emit(Operands::Index::fromRaw(index));
+                } break;
+
+                default:
                     goto normal;
+                }
+
             } else if (numArgs > 2 && numArgs == numBlockArgs + 1) {
-                int code;
-                code = checkPushAllButFirstTwoArgs(argnode, numBlockArgs);
-                if (code == push_Normal)
+                switch (checkPushAllButFirstTwoArgs(argnode, numBlockArgs)) {
+                case push_Normal:
                     goto normal;
-                else if (code == push_AllButFirstArg2) {
+
+                case push_AllButFirstArg2: {
                     COMPILENODE(argnode, &dummy, false);
                     COMPILENODE(argnode->mNext, &dummy, false);
-                    compileTail();
-                    compileByte(141); // one arg pushed, push all but first arg, send msg
-                    compileByte(index);
-                    // post("141 pushAllButFirstArg2    %s:%s\n", slotRawSymbol(&gCompilingClass->name)->name,
-                    //	slotRawSymbol(&gCompilingMethod->name)->name);
-                } else
+                    emitTailCall();
+                    PushAllButFirstTwoArgsAndSendMsg.emit(Operands::Index::fromRaw(index));
+                } break;
+
+                default:
                     goto normal;
+                }
 
             } else {
             normal:
-                for (; argnode; argnode = argnode->mNext) {
+                for (; argnode; argnode = argnode->mNext)
                     COMPILENODE(argnode, &dummy, false);
-                }
-                compileTail();
-                compileOpcode(opSendMsg, numArgs);
-                compileByte(index);
+                emitTailCall();
+
+                if (SendMsg.validNibble(numArgs))
+                    SendMsg.emit(numArgs, Operands::Index::fromRaw(index));
+                else
+                    SendMsgX.emit(Operands::ArgumentCount::fromRaw(numArgs), Operands::KwArgumentCount::fromRaw(0),
+                                  Operands::Index::fromRaw(index));
             }
-            break;
+        } break;
+
         case selSpecial:
             if (numArgs == 1) {
                 if (varname == s_this) {
-                    compileTail();
-                    compileOpcode(opSendSpecialMsg, 0);
-                    compileByte(index);
+                    emitTailCall();
+                    SendSpecialMsgThisOpt.emit(Operands::Index::fromRaw(index));
                 } else if (varname) {
-                    PyrClass* classobj;
-                    PyrBlock* tempFunc;
-                    int varType, varLevel, varIndex;
-                    classobj = gCompilingClass;
-                    varFound =
-                        findVarName(gCompilingBlock, &classobj, varname, &varType, &varLevel, &varIndex, &tempFunc);
-                    if (varFound && varType == varInst) {
-                        // post("136 pushInstVar(sp) %s:%s '%s' %d %d\n", slotRawSymbol(&gCompilingClass->name)->name,
-                        //	slotRawSymbol(&gCompilingMethod->name)->name, varname->name, varIndex, index);
-                        compileTail();
-                        compileByte(136);
-                        compileByte(varIndex);
-                        compileByte(index);
+                    if (const auto result = findVarName(gCompilingBlock, gCompilingClass, varname);
+                        result && result->varType == varInst) {
+                        emitTailCall();
+                        PushInstVarAndSendSpecialMsg.emit(Operands::Index::fromRaw(result->index),
+                                                          Operands::Index::fromRaw(index));
                     } else
                         goto special;
+
                 } else
                     goto special;
+
             } else if (index == opmDo && isSeries(argnode, &argnode)) {
                 index = opmForSeries;
                 mArglist = linkNextNode(argnode, mArglist->mNext);
                 numArgs = nodeListLength(mArglist);
                 goto special;
+
             } else if (numArgs > 1 && numArgs == numBlockArgs) {
-                //} else if (numArgs>1 && numArgs == numBlockArgs) {
-                // try for multiple push optimization
-                int code;
-                code = checkPushAllArgs(argnode, numArgs);
-                if (code == push_Normal)
+                switch (checkPushAllArgs(argnode, numArgs)) {
+                case push_Normal:
                     goto special;
-                else if (code == push_AllArgs) {
-                    compileTail();
-                    compileByte(139); // push all args, send special msg
-                    compileByte(index);
-                    // post("139 pushAllArgs(sp) %s:%s\n", slotRawSymbol(&gCompilingClass->name)->name,
-                    //	slotRawSymbol(&gCompilingMethod->name)->name);
-                } else if (code == push_AllButFirstArg) {
+
+                case push_AllArgs: {
+                    emitTailCall();
+                    PushAllArgsAndSendSpecialMsg.emit(Operands::Index::fromRaw(index));
+                } break;
+
+                case push_AllButFirstArg: {
                     COMPILENODE(argnode, &dummy, false);
-                    compileTail();
-                    compileByte(140); // push all but first arg, send special msg
-                    compileByte(index);
-                    // post("140 pushAllButFirstArg(sp) %s:%s\n", slotRawSymbol(&gCompilingClass->name)->name,
-                    //	slotRawSymbol(&gCompilingMethod->name)->name);
-                } else
+                    emitTailCall();
+                    PushAllButFirstArgAndSendSpecialMsg.emit(Operands::Index::fromRaw(index));
+                } break;
+
+                default:
                     goto special;
+                }
+
             } else if (numArgs > 2 && numArgs == numBlockArgs + 1) {
-                int code;
-                code = checkPushAllButFirstTwoArgs(argnode, numBlockArgs);
-                if (code == push_Normal)
+                switch (checkPushAllArgs(argnode, numBlockArgs)) {
+                case push_Normal:
                     goto special;
-                else if (code == push_AllButFirstArg2) {
+
+                case push_AllButFirstArg2: {
                     COMPILENODE(argnode, &dummy, false);
                     COMPILENODE(argnode->mNext, &dummy, false);
-                    compileTail();
-                    compileByte(142); // one arg pushed, push all but first arg, send msg
-                    compileByte(index);
-                    // post("142 pushAllButFirstArg2(sp)    %s:%s\n", slotRawSymbol(&gCompilingClass->name)->name,
-                    //	slotRawSymbol(&gCompilingMethod->name)->name);
-                } else
+                    emitTailCall();
+                    PushAllButFirstTwoArgsAndSendSpecialMsg.emit(Operands::Index::fromRaw(index));
+                } break;
+
+                default:
                     goto special;
-            } else {
-                int i;
-            special:
-                for (i = 0; argnode; argnode = argnode->mNext, i++) {
-                    COMPILENODE(argnode, &dummy, false);
                 }
-                compileTail();
-                compileOpcode(opSendSpecialMsg, numArgs);
-                compileByte(index);
+
+            } else {
+            special:
+                for (; argnode; argnode = argnode->mNext)
+                    COMPILENODE(argnode, &dummy, false);
+                emitTailCall();
+                if (SendSpecialMsg.validNibble(numArgs))
+                    SendSpecialMsg.emit(numArgs, Operands::SpecialSelectors::fromRaw(index));
+                else
+                    SendSpecialMsgX.emit(Operands::ArgumentCount::fromRaw(numArgs),
+                                         Operands::KwArgumentCount::fromRaw(0), Operands::Index::fromRaw(index));
             }
             break;
-        case selUnary:
+
+        case selUnary: {
             if (numArgs != 1) {
                 index = conjureLiteralSlotIndex((PyrParseNode*)mSelector, gCompilingBlock, &mSelector->mSlot);
                 goto defaultCase;
             }
-            for (; argnode; argnode = argnode->mNext) {
+            for (; argnode; argnode = argnode->mNext)
                 COMPILENODE(argnode, &dummy, false);
-            }
-            compileTail();
-            compileOpcode(opSendSpecialUnaryArithMsg, index);
-            break;
+
+            emitTailCall();
+            SendSpecialUnaryArithMsgX.emit(Operands::UnaryMath::fromRaw(index));
+        } break;
+
         case selBinary:
             if (numArgs != 2) {
                 index = conjureLiteralSlotIndex((PyrParseNode*)mSelector, gCompilingBlock, &mSelector->mSlot);
                 goto defaultCase;
             }
-            // for (; argnode; argnode = argnode->mNext) {
-            //	COMPILENODE(argnode, &dummy, false);
-            //}
             argnode2 = argnode->mNext;
-            if (index == opAdd && argnode2->mClassno == pn_PushLitNode && IsInt(&((PyrPushLitNode*)argnode2)->mSlot)
-                && slotRawInt(&((PyrPushLitNode*)argnode2)->mSlot) == 1) {
+            if (index == static_cast<int>(OpBinaryMath::Add) && argnode2->mClassno == pn_PushLitNode
+                && IsInt(&((PyrPushLitNode*)argnode2)->mSlot) && slotRawInt(&((PyrPushLitNode*)argnode2)->mSlot) == 1) {
                 COMPILENODE(argnode, &dummy, false);
-                compileOpcode(opPushSpecialValue, opsvPlusOne);
+                PushOneAndAddOne.emit();
             } else if (index == opSub && argnode2->mClassno == pn_PushLitNode
                        && IsInt(&((PyrPushLitNode*)argnode2)->mSlot)
                        && slotRawInt(&((PyrPushLitNode*)argnode2)->mSlot) == 1) {
                 COMPILENODE(argnode, &dummy, false);
-                compileOpcode(opPushSpecialValue, opsvMinusOne);
+                PushOneAndSubtract.emit();
             } else {
                 COMPILENODE(argnode, &dummy, false);
                 COMPILENODE(argnode->mNext, &dummy, false);
-                compileTail();
-                compileOpcode(opSendSpecialBinaryArithMsg, index);
+                emitTailCall();
+                if (index < 16)
+                    SendSpecialBinaryArithMsg.emit(Operands::BinaryMathNibble::fromRaw(index));
+                else
+                    SendSpecialBinaryArithMsgX.emit(Operands::BinaryMath::fromRaw(index));
             }
             break;
+
         case selIf:
             compileAnyIfMsg(this);
             break;
+
         case selCase:
             compileCaseMsg(this);
             break;
+
         case selSwitch:
             compileSwitchMsg(this);
             break;
+
         case selWhile:
             compileWhileMsg(this);
             break;
+
         case selLoop:
             compileLoopMsg(this);
             break;
+
         case selAnd:
             if (numArgs == 2)
                 compileAndMsg(argnode, argnode->mNext);
             else
                 goto special;
             break;
+
         case selOr:
             if (numArgs == 2)
                 compileOrMsg(argnode, argnode->mNext);
             else
                 goto special;
             break;
+
         case selQuestionMark:
             if (numArgs == 2)
                 compileQMsg(argnode, argnode->mNext);
             break;
+
         case selDoubleQuestionMark:
             if (numArgs == 2)
                 compileQQMsg(argnode, argnode->mNext);
             break;
+
         case selExclamationQuestionMark:
             if (numArgs == 2)
                 compileXQMsg(argnode, argnode->mNext);
             break;
+
         default:
         defaultCase:
             if (numArgs == 1 && varname == s_this) {
-                compileTail();
-                compileOpcode(opSendMsg, 0);
-                compileByte(index);
+                emitTailCall();
+                SendMsgThisOpt.emit(Operands::Index::fromRaw(index));
             } else {
-                for (; argnode; argnode = argnode->mNext) {
+                for (; argnode; argnode = argnode->mNext)
                     COMPILENODE(argnode, &dummy, false);
-                }
-                compileTail();
-                compileOpcode(opSendMsg, numArgs);
-                compileByte(index);
+
+                emitTailCall();
+                if (SendMsg.validNibble(numArgs))
+                    SendMsg.emit(numArgs, Operands::Index::fromRaw(index));
+                else
+                    SendMsgX.emit(Operands::ArgumentCount::fromRaw(numArgs), Operands::KwArgumentCount::fromRaw(0),
+                                  Operands::Index::fromRaw(index));
             }
             break;
         }
@@ -2193,9 +2172,10 @@ ByteCodes compileBodyWithGoto(PyrParseNode* body, int branchLen, bool onTailBran
     COMPILENODE(body, &dummy, onTailBranch);
     if (branchLen) {
         if (!byteCodeLength(gCompilingByteCodes)) {
-            compileOpcode(opPushSpecialValue, opsvNil); // push nil
+            PushSpecialValue.emit(OpSpecialValue::Nil_);
         }
-        compileJump(opcJumpFwd, branchLen);
+        JumpFwd.emit(Operands::UnsignedInt<16, 1>::fromFull(branchLen),
+                     Operands::UnsignedInt<16, 0>::fromFull(branchLen));
     }
 
     subExprByteCodes = getByteCodes();
@@ -2206,22 +2186,6 @@ ByteCodes compileBodyWithGoto(PyrParseNode* body, int branchLen, bool onTailBran
     return subExprByteCodes;
 }
 
-#if 0
-ByteCodes compileDefaultValue(int litIndex, int realExprLen)
-{
-  ByteCodes	currentByteCodes, defaultByteCodes;
-
-  currentByteCodes = saveByteCodeArray();
-
-  compileOpcode(opPushSpecialValue, litIndex);
-  compileJump(realExprLen, unconditionalJump);
-
-  defaultByteCodes = getByteCodes();
-  restoreByteCodeArray(currentByteCodes);
-
-  return (defaultByteCodes);
-}
-#endif
 
 bool isAnInlineableBlock(PyrParseNode* node) {
     bool res = false;
@@ -2315,37 +2279,37 @@ bool isWhileTrue(PyrParseNode* node) {
 
 void compileAndMsg(PyrParseNode* arg1, PyrParseNode* arg2) {
     PyrSlot dummy;
-    ByteCodes trueByteCodes;
-
     COMPILENODE(arg1, &dummy, false);
     if (isAnInlineableBlock(arg2)) {
-        trueByteCodes = compileSubExpression((PyrPushLitNode*)arg2, true);
+        ByteCodes trueByteCodes = compileSubExpression((PyrPushLitNode*)arg2, true);
 
-        compileJump(opcJumpIfFalsePushFalse, byteCodeLength(trueByteCodes));
+        const int jumpLen = byteCodeLength(trueByteCodes);
+        JumpIfFalsePushFalse.emit(Operands::UnsignedInt<16, 1>::fromFull(jumpLen),
+                                  Operands::UnsignedInt<16, 0>::fromFull(jumpLen));
         compileAndFreeByteCodes(trueByteCodes);
     } else {
         COMPILENODE(arg2, &dummy, false);
-        compileTail();
-        compileOpcode(opSendSpecialMsg, 2);
-        compileByte(opmAnd);
+
+        emitTailCall();
+        SendSpecialMsg.emit(2, OpSpecialSelectors::And);
     }
 }
 
 void compileOrMsg(PyrParseNode* arg1, PyrParseNode* arg2) {
     PyrSlot dummy;
-    ByteCodes falseByteCodes;
-
     COMPILENODE(arg1, &dummy, false);
     if (isAnInlineableBlock(arg2)) {
-        falseByteCodes = compileSubExpression((PyrPushLitNode*)arg2, true);
+        ByteCodes falseByteCodes = compileSubExpression((PyrPushLitNode*)arg2, true);
 
-        compileJump(opcJumpIfTruePushTrue, byteCodeLength(falseByteCodes));
+        const int jumpLen = byteCodeLength(falseByteCodes);
+        JumpIfTruePushTrue.emit(Operands::UnsignedInt<16, 1>::fromFull(jumpLen),
+                                Operands::UnsignedInt<16, 0>::fromFull(jumpLen));
         compileAndFreeByteCodes(falseByteCodes);
     } else {
         COMPILENODE(arg2, &dummy, false);
-        compileTail();
-        compileOpcode(opSendSpecialMsg, 2);
-        compileByte(opmOr);
+
+        emitTailCall();
+        SendSpecialMsg.emit(2, OpSpecialSelectors::Or);
     }
 }
 
@@ -2355,8 +2319,7 @@ void compileQMsg(PyrParseNode* arg1, PyrParseNode* arg2) {
 
     COMPILENODE(arg1, &dummy, false);
     COMPILENODE(arg2, &dummy, false);
-    compileByte(143); // special opcodes
-    compileByte(22); // ??
+    Extended::QuestionMark.emit();
 }
 
 void compileQQMsg(PyrParseNode* arg1, PyrParseNode* arg2) {
@@ -2365,20 +2328,15 @@ void compileQQMsg(PyrParseNode* arg1, PyrParseNode* arg2) {
 
     COMPILENODE(arg1, &dummy, false);
     if (isAnInlineableBlock(arg2)) {
-        ByteCodes nilByteCodes;
-        nilByteCodes = compileSubExpression((PyrPushLitNode*)arg2, true);
-
-        int jumplen = byteCodeLength(nilByteCodes);
-        compileByte(143); // special opcodes
-        compileByte(23); // ??
-        compileByte((jumplen >> 8) & 0xFF);
-        compileByte(jumplen & 0xFF);
+        ByteCodes nilByteCodes = compileSubExpression((PyrPushLitNode*)arg2, true);
+        const int jumplen = byteCodeLength(nilByteCodes);
+        Extended::DoubleQuestionMark.emit(
+            { Operands::UnsignedInt<16, 1>::fromFull(jumplen), Operands::UnsignedInt<16, 0>::fromFull(jumplen) });
         compileAndFreeByteCodes(nilByteCodes);
     } else {
         COMPILENODE(arg2, &dummy, false);
-        compileTail();
-        compileOpcode(opSendSpecialMsg, 2);
-        compileByte(opmDoubleQuestionMark);
+        emitTailCall();
+        SendSpecialMsg.emit(2, OpSpecialSelectors::DoubleQuestionMark);
     }
 }
 
@@ -2391,17 +2349,14 @@ void compileXQMsg(PyrParseNode* arg1, PyrParseNode* arg2) {
         ByteCodes nilByteCodes;
         nilByteCodes = compileSubExpression((PyrPushLitNode*)arg2, true);
 
-        int jumplen = byteCodeLength(nilByteCodes);
-        compileByte(143); // special opcodes
-        compileByte(27); // !?
-        compileByte((jumplen >> 8) & 0xFF);
-        compileByte(jumplen & 0xFF);
+        const int jumplen = byteCodeLength(nilByteCodes);
+        Extended::IfNilThenJumpElsePopNil.emit(
+            { Operands::UnsignedInt<16, 1>::fromFull(jumplen), Operands::UnsignedInt<16, 0>::fromFull(jumplen) });
         compileAndFreeByteCodes(nilByteCodes);
     } else {
         COMPILENODE(arg2, &dummy, false);
-        compileTail();
-        compileOpcode(opSendSpecialMsg, 2);
-        compileByte(opmExclamationQuestionMark);
+        emitTailCall();
+        SendSpecialMsg.emit(2, OpSpecialSelectors::ExclamationQuestionMark);
     }
 }
 
@@ -2410,9 +2365,9 @@ void compileAnyIfMsg(PyrCallNodeBase2* node) {
 
     if (arg1->mClassno == pn_CallNode) {
         PyrCallNode* callNode = (PyrCallNode*)arg1;
-        int numCallArgs = nodeListLength(callNode->mArglist);
-        int numCallKeyArgs = nodeListLength(callNode->mKeyarglist);
-        if (numCallArgs == 1 && numCallKeyArgs == 0) {
+        const int numCallArgs = nodeListLength(callNode->mArglist);
+        const int numCallKeyArgs = nodeListLength(callNode->mKeyarglist);
+        if (numCallArgs == 1 && numCallKeyArgs == 0) { // Is a binary op with no keywords
             if (slotRawSymbol(&callNode->mSelector->mSlot) == gSpecialUnarySelectors[opIsNil]) {
                 compileIfNilMsg(node, true);
                 return;
@@ -2426,141 +2381,165 @@ void compileAnyIfMsg(PyrCallNodeBase2* node) {
 }
 
 void compileIfMsg(PyrCallNodeBase2* node) {
-    PyrSlot dummy;
-    ByteCodes trueByteCodes, falseByteCodes;
-
-    int numArgs = nodeListLength(node->mArglist);
+    const int numArgs = nodeListLength(node->mArglist);
     PyrParseNode* arg1 = node->mArglist;
-    PyrParseNode *arg2, *arg3;
 
+    PyrSlot dummy;
     if (numArgs == 2) {
-        arg2 = arg1->mNext;
+        PyrParseNode* arg2 = arg1->mNext;
 
         if (isAnInlineableBlock(arg2)) {
             COMPILENODE(arg1, &dummy, false);
 
-            trueByteCodes = compileSubExpression((PyrPushLitNode*)arg2, true);
+            ByteCodes trueByteCodes = compileSubExpression((PyrPushLitNode*)arg2, true);
             if (byteCodeLength(trueByteCodes)) {
-                compileJump(opcJumpIfFalsePushNil, byteCodeLength(trueByteCodes));
+                const int jumpLen = byteCodeLength(trueByteCodes);
+                JumpIfFalsePushNil.emit(Operands::UnsignedInt<16, 1>::fromFull(jumpLen),
+                                        Operands::UnsignedInt<16, 0>::fromFull(jumpLen));
                 compileAndFreeByteCodes(trueByteCodes);
             } else {
-                compileOpcode(opSpecialOpcode, opcDrop); // drop the boolean
-                compileOpcode(opPushSpecialValue, opsvNil); // push nil
+                Drop.emit();
+                PushSpecialValue.emit(OpSpecialValue::Nil_);
             }
-        } else
-            goto unoptimized;
+        } else {
+            for (; arg1; arg1 = arg1->mNext)
+                COMPILENODE(arg1, &dummy, false);
+
+            emitTailCall();
+            SendSpecialMsg.emit(2, OpSpecialSelectors::If);
+        }
     } else if (numArgs == 3) {
-        arg2 = arg1->mNext;
-        arg3 = arg2->mNext;
+        PyrParseNode* arg2 = arg1->mNext;
+        PyrParseNode* arg3 = arg2->mNext;
         if (isAnInlineableBlock(arg2) && isAnInlineableBlock(arg3)) {
             COMPILENODE(arg1, &dummy, false);
-            falseByteCodes = compileSubExpression((PyrPushLitNode*)arg3, true);
-            trueByteCodes = compileSubExpressionWithGoto((PyrPushLitNode*)arg2, byteCodeLength(falseByteCodes), true);
+            ByteCodes falseByteCodes = compileSubExpression((PyrPushLitNode*)arg3, true);
+            ByteCodes trueByteCodes =
+                compileSubExpressionWithGoto((PyrPushLitNode*)arg2, byteCodeLength(falseByteCodes), true);
             if (byteCodeLength(falseByteCodes)) {
-                compileJump(opcJumpIfFalse, byteCodeLength(trueByteCodes));
+                const int jumpLen = byteCodeLength(trueByteCodes);
+                JumpIfFalse.emit(Operands::UnsignedInt<16, 1>::fromFull(jumpLen),
+                                 Operands::UnsignedInt<16, 0>::fromFull(jumpLen));
                 compileAndFreeByteCodes(trueByteCodes);
                 compileAndFreeByteCodes(falseByteCodes);
             } else if (byteCodeLength(trueByteCodes)) {
-                compileJump(opcJumpIfFalsePushNil, byteCodeLength(trueByteCodes));
+                const int jumpLen = byteCodeLength(trueByteCodes);
+                JumpIfFalsePushNil.emit(Operands::UnsignedInt<16, 1>::fromFull(jumpLen),
+                                        Operands::UnsignedInt<16, 0>::fromFull(jumpLen));
                 compileAndFreeByteCodes(trueByteCodes);
             } else {
-                compileOpcode(opSpecialOpcode, opcDrop); // drop the boolean
-                compileOpcode(opPushSpecialValue, opsvNil); // push nil
+                Drop.emit();
+                PushSpecialValue.emit(OpSpecialValue::Nil_);
             }
-        } else
-            goto unoptimized;
-    } else {
-    unoptimized:
-        for (; arg1; arg1 = arg1->mNext) {
-            COMPILENODE(arg1, &dummy, false);
+        } else {
+            for (; arg1; arg1 = arg1->mNext)
+                COMPILENODE(arg1, &dummy, false);
+
+            emitTailCall();
+            SendSpecialMsg.emit(3, OpSpecialSelectors::If);
         }
-        compileTail();
-        compileOpcode(opSendSpecialMsg, numArgs);
-        compileByte(opmIf);
+    } else {
+        for (; arg1; arg1 = arg1->mNext)
+            COMPILENODE(arg1, &dummy, false);
+
+        emitTailCall();
+        if (numArgs < 16)
+            SendSpecialMsg.emit(numArgs, OpSpecialSelectors::If);
+        else
+            SendSpecialMsgX.emit(Operands::ArgumentCount::fromRaw(numArgs), Operands::KwArgumentCount::fromRaw(0),
+                                 Operands::Index::fromRaw(static_cast<int>(OpSpecialSelectors::If)));
     }
 }
 
+
+// TODO: what is flag? Give it a better name.
 void compileIfNilMsg(PyrCallNodeBase2* node, bool flag) {
     PyrSlot dummy;
-    ByteCodes trueByteCodes, falseByteCodes;
-    PyrParseNode *arg2, *arg3;
 
-    int numArgs = nodeListLength(node->mArglist);
+    const int numArgs = nodeListLength(node->mArglist);
     PyrParseNode* arg1 = node->mArglist;
 
     if (numArgs < 2) {
         COMPILENODE(arg1, &dummy, false);
-        compileTail();
-        compileOpcode(opSendSpecialMsg, numArgs);
-        compileByte(opmIf);
+        emitTailCall();
+        SendSpecialMsg.emit(numArgs, OpSpecialSelectors::If);
     } else if (numArgs == 2) {
-        arg2 = arg1->mNext;
+        PyrParseNode* arg2 = arg1->mNext;
         if (isAnInlineableBlock(arg2)) {
             PyrCallNode* callNode = (PyrCallNode*)arg1;
             COMPILENODE(callNode->mArglist, &dummy, false);
 
-            trueByteCodes = compileSubExpression((PyrPushLitNode*)arg2, true);
-            int jumplen = byteCodeLength(trueByteCodes);
+            ByteCodes trueByteCodes = compileSubExpression((PyrPushLitNode*)arg2, true);
+            const int jumplen = byteCodeLength(trueByteCodes);
             if (jumplen) {
-                compileByte(143); // special opcodes
-                compileByte(flag ? 26 : 27);
-                compileByte((jumplen >> 8) & 0xFF);
-                compileByte(jumplen & 0xFF);
+                if (flag)
+                    Extended::IfNotNilJumpPushNilElsePop.emit({ Operands::UnsignedInt<16, 1>::fromFull(jumplen),
+                                                                Operands::UnsignedInt<16, 0>::fromFull(jumplen) });
+                else
+                    Extended::IfNilThenJumpElsePopNil.emit({ Operands::UnsignedInt<16, 1>::fromFull(jumplen),
+                                                             Operands::UnsignedInt<16, 0>::fromFull(jumplen) });
                 compileAndFreeByteCodes(trueByteCodes);
             } else {
-                compileOpcode(opSpecialOpcode, opcDrop); // drop the value
-                compileOpcode(opPushSpecialValue, opsvNil); // push nil
+                Drop.emit(); // Drop the boolean
+                PushSpecialValue.emit(OpSpecialValue::Nil_);
             }
         } else {
             COMPILENODE(arg1, &dummy, false);
             COMPILENODE(arg2, &dummy, false);
-            compileTail();
-            compileOpcode(opSendSpecialMsg, numArgs);
-            compileByte(opmIf);
+            emitTailCall();
+            SendSpecialMsg.emit(numArgs, OpSpecialSelectors::If);
         }
     } else if (numArgs == 3) {
-        arg2 = arg1->mNext;
-        arg3 = arg2->mNext;
+        PyrParseNode* arg2 = arg1->mNext;
+        PyrParseNode* arg3 = arg2->mNext;
         if (isAnInlineableBlock(arg2) && isAnInlineableBlock(arg3)) {
             PyrCallNode* callNode = (PyrCallNode*)arg1;
             COMPILENODE(callNode->mArglist, &dummy, false);
 
-            falseByteCodes = compileSubExpression((PyrPushLitNode*)arg3, true);
-            int falseLen = byteCodeLength(falseByteCodes);
-            trueByteCodes = compileSubExpressionWithGoto((PyrPushLitNode*)arg2, falseLen, true);
-            int trueLen = byteCodeLength(trueByteCodes);
+            ByteCodes falseByteCodes = compileSubExpression((PyrPushLitNode*)arg3, true);
+            const int falseLen = byteCodeLength(falseByteCodes);
+            ByteCodes trueByteCodes = compileSubExpressionWithGoto((PyrPushLitNode*)arg2, falseLen, true);
+            const int trueLen = byteCodeLength(trueByteCodes);
             if (falseLen) {
-                compileByte(143); // special opcodes
-                compileByte(flag ? 24 : 25);
-                compileByte((trueLen >> 8) & 0xFF);
-                compileByte(trueLen & 0xFF);
+                if (flag)
+                    Extended::IfNotNilJump.emit({ Operands::UnsignedInt<16, 1>::fromFull(trueLen),
+                                                  Operands::UnsignedInt<16, 0>::fromFull(trueLen) });
+                else
+                    Extended::IfNilJump.emit({ Operands::UnsignedInt<16, 1>::fromFull(trueLen),
+                                               Operands::UnsignedInt<16, 0>::fromFull(trueLen) });
                 compileAndFreeByteCodes(trueByteCodes);
                 compileAndFreeByteCodes(falseByteCodes);
             } else if (trueLen) {
-                compileByte(143); // special opcodes
-                compileByte(flag ? 26 : 27);
-                compileByte((trueLen >> 8) & 0xFF);
-                compileByte(trueLen & 0xFF);
+                if (flag)
+                    Extended::IfNotNilJumpPushNilElsePop.emit({ Operands::UnsignedInt<16, 1>::fromFull(trueLen),
+                                                                Operands::UnsignedInt<16, 0>::fromFull(trueLen) });
+                else
+                    Extended::IfNilThenJumpElsePopNil.emit({ Operands::UnsignedInt<16, 1>::fromFull(trueLen),
+                                                             Operands::UnsignedInt<16, 0>::fromFull(trueLen) });
                 compileAndFreeByteCodes(trueByteCodes);
             } else {
-                compileOpcode(opSpecialOpcode, opcDrop); // drop the boolean
-                compileOpcode(opPushSpecialValue, opsvNil); // push nil
+                Drop.emit(); // Drop the boolean
+                PushSpecialValue.emit(OpSpecialValue::Nil_);
             }
         } else {
             COMPILENODE(arg1, &dummy, false);
             COMPILENODE(arg2, &dummy, false);
             COMPILENODE(arg3, &dummy, false);
-            compileTail();
-            compileOpcode(opSendSpecialMsg, numArgs);
-            compileByte(opmIf);
+            emitTailCall();
+            SendSpecialMsg.emit(numArgs, OpSpecialSelectors::If);
         }
     } else {
         for (; arg1; arg1 = arg1->mNext) {
             COMPILENODE(arg1, &dummy, false);
         }
-        compileTail();
-        compileOpcode(opSendSpecialMsg, numArgs);
-        compileByte(opmIf);
+        emitTailCall();
+        if (numArgs < 16)
+            SendSpecialMsg.emit(numArgs, OpSpecialSelectors::If);
+        else
+            SendSpecialMsgX.emit(
+                Operands::ArgumentCount::fromRaw(numArgs),
+                Operands::KwArgumentCount::fromRaw(0), // it is not possible to have keyword arguments with if calls
+                Operands::Index::fromRaw(static_cast<int>(OpSpecialSelectors::If)));
     }
 }
 
@@ -2664,9 +2643,12 @@ void compileCaseMsg(PyrCallNodeBase2* node) {
         for (; argnode; argnode = argnode->mNext, ++numArgs) {
             COMPILENODE(argnode, &dummy, false);
         }
-        compileTail();
-        compileOpcode(opSendSpecialMsg, numArgs);
-        compileByte(opmCase);
+        emitTailCall();
+        if (numArgs < 16)
+            SendSpecialMsg.emit(numArgs, OpSpecialSelectors::Case);
+        else
+            SendSpecialMsgX.emit(Operands::ArgumentCount::fromRaw(numArgs), Operands::KwArgumentCount::fromRaw(0),
+                                 Operands::Index::fromRaw(static_cast<int>(OpSpecialSelectors::Case)));
     }
 }
 
@@ -2723,8 +2705,7 @@ void compileSwitchMsg(PyrCallNode* node) {
         COMPILENODE(argnode, &dummy, false);
         compilePushConstant(node, &slot);
 
-        compileByte(143); // lookup slot in dictionary and jump to offset.
-        compileByte(28);
+        Extended::Switch.emit();
 
         argnode = argnode->mNext; // skip first arg.
 
@@ -2759,13 +2740,13 @@ void compileSwitchMsg(PyrCallNode* node) {
                     offset += byteCodeLength(byteCodes);
                     compileAndFreeByteCodes(byteCodes);
                 } else {
-                    compileOpcode(opPushSpecialValue, opsvNil);
+                    PushSpecialValue.emit(OpSpecialValue::Nil_);
                     offset += 1;
                 }
 
                 nextargnode = nextargnode->mNext;
                 if (nextargnode == nullptr) {
-                    compileOpcode(opPushSpecialValue, opsvNil);
+                    PushSpecialValue.emit(OpSpecialValue::Nil_);
                     lastOffset = offset;
                     offset += 1;
                 }
@@ -2777,7 +2758,7 @@ void compileSwitchMsg(PyrCallNode* node) {
                     offset += byteCodeLength(byteCodes);
                     compileAndFreeByteCodes(byteCodes);
                 } else {
-                    compileOpcode(opPushSpecialValue, opsvNil);
+                    PushSpecialValue.emit(OpSpecialValue::Nil_);
                     lastOffset = offset;
                     offset += 1;
                 }
@@ -2812,97 +2793,121 @@ void compileSwitchMsg(PyrCallNode* node) {
         for (; argnode; argnode = argnode->mNext) {
             COMPILENODE(argnode, &dummy, false);
         }
-        compileTail();
-        compileOpcode(opSendSpecialMsg, numArgs);
-        compileByte(opmSwitch);
+        emitTailCall();
+        if (numArgs < 16)
+            SendSpecialMsg.emit(numArgs, OpSpecialSelectors::Switch);
+        else
+            SendSpecialMsgX.emit(Operands::ArgumentCount::fromRaw(numArgs), Operands::KwArgumentCount::fromRaw(0),
+                                 Operands::Index::fromRaw(static_cast<int>(OpSpecialSelectors::Switch)));
     }
 }
 
 void compileWhileMsg(PyrCallNodeBase2* node) {
-    int numArgs;
-    PyrParseNode* argnode;
-    PyrSlot dummy;
-    ByteCodes whileByteCodes, exprByteCodes;
-    int whileByteCodeLen, exprByteCodeLen;
-
-    numArgs = nodeListLength(node->mArglist);
+    const int numArgs = nodeListLength(node->mArglist);
     if (numArgs == 1 && isAnInlineableBlock(node->mArglist)) {
-        whileByteCodes = compileSubExpression((PyrPushLitNode*)node->mArglist, false);
-
-        whileByteCodeLen = byteCodeLength(whileByteCodes);
+        ByteCodes whileByteCodes = compileSubExpression((PyrPushLitNode*)node->mArglist, false);
+        const int whileByteCodeLen = byteCodeLength(whileByteCodes);
         compileAndFreeByteCodes(whileByteCodes);
 
-        exprByteCodeLen = 1;
-        compileJump(opcJumpIfFalsePushNil, exprByteCodeLen + 3);
+        const int exprByteCodeLen = 1;
+        // UNKNOWN: where does this '3' come from?
+        const auto jumpIfFalseLength = exprByteCodeLen + 3;
+        JumpIfFalsePushNil.emit(Operands::UnsignedInt<16, 1>::fromFull(jumpIfFalseLength),
+                                Operands::UnsignedInt<16, 0>::fromFull(jumpIfFalseLength));
 
-        // opcJumpBak does a drop..
-        compileOpcode(opPushSpecialValue, opsvNil);
+        // opcJumpBak does a drop...
+        PushSpecialValue.emit(OpSpecialValue::Nil_);
 
-        compileJump(opcJumpBak, exprByteCodeLen + whileByteCodeLen + 4);
+        // UNKNOWN: where does this '4' come from?
+        const auto jumpBackLength = exprByteCodeLen + whileByteCodeLen + 4;
+        JumpBack.emit(Operands::UnsignedInt<16, 1>::fromFull(jumpBackLength),
+                      Operands::UnsignedInt<16, 0>::fromFull(jumpBackLength));
+
 
     } else if (numArgs == 2 && isWhileTrue(node->mArglist) && isAnInlineableBlock(node->mArglist->mNext)) {
-        exprByteCodes = compileSubExpression((PyrPushLitNode*)node->mArglist->mNext, false);
-
-        exprByteCodeLen = byteCodeLength(exprByteCodes);
+        ByteCodes exprByteCodes = compileSubExpression((PyrPushLitNode*)node->mArglist->mNext, false);
+        const int exprByteCodeLen = byteCodeLength(exprByteCodes);
         compileAndFreeByteCodes(exprByteCodes);
+        // UNKNOWN: where does this '1' come from?
+        const auto jumpBackLength = exprByteCodeLen + 1;
+        JumpBack.emit(Operands::UnsignedInt<16, 1>::fromFull(jumpBackLength),
+                      Operands::UnsignedInt<16, 0>::fromFull(jumpBackLength));
 
-        compileJump(opcJumpBak, exprByteCodeLen + 1);
 
     } else if (numArgs == 2 && isAnInlineableBlock(node->mArglist) && isAnInlineableBlock(node->mArglist->mNext)) {
-        whileByteCodes = compileSubExpression((PyrPushLitNode*)node->mArglist, false);
-        exprByteCodes = compileSubExpression((PyrPushLitNode*)node->mArglist->mNext, false);
+        ByteCodes whileByteCodes = compileSubExpression((PyrPushLitNode*)node->mArglist, false);
+        ByteCodes exprByteCodes = compileSubExpression((PyrPushLitNode*)node->mArglist->mNext, false);
 
-        whileByteCodeLen = byteCodeLength(whileByteCodes);
+        const int whileByteCodeLen = byteCodeLength(whileByteCodes);
         compileAndFreeByteCodes(whileByteCodes);
 
         if (exprByteCodes) {
-            exprByteCodeLen = byteCodeLength(exprByteCodes);
-            compileJump(opcJumpIfFalsePushNil, exprByteCodeLen + 3);
+            const auto exprByteCodeLen = byteCodeLength(exprByteCodes);
+            // UNKNOWN: where does this '3' come from?
+            const int jumpIfFalsePushNilLength = exprByteCodeLen + 3;
+            JumpIfFalsePushNil.emit(Operands::UnsignedInt<16, 1>::fromFull(jumpIfFalsePushNilLength),
+                                    Operands::UnsignedInt<16, 0>::fromFull(jumpIfFalsePushNilLength));
+
             compileAndFreeByteCodes(exprByteCodes);
+
+            const int jumpBackSize = exprByteCodeLen + whileByteCodeLen + 4;
+            JumpBack.emit(Operands::UnsignedInt<16, 1>::fromFull(jumpBackSize),
+                          Operands::UnsignedInt<16, 0>::fromFull(jumpBackSize));
+
         } else {
-            exprByteCodeLen = 1;
-            compileJump(opcJumpIfFalsePushNil, exprByteCodeLen + 3);
-            // opcJumpBak does a drop..
-            compileOpcode(opPushSpecialValue, opsvNil);
+            const auto exprByteCodeLen = 1;
+            // UNKNOWN: where does this '3' come from?
+            const int jumpIfFalsePushNilLength = exprByteCodeLen + 3;
+            JumpIfFalsePushNil.emit(Operands::UnsignedInt<16, 1>::fromFull(jumpIfFalsePushNilLength),
+                                    Operands::UnsignedInt<16, 0>::fromFull(jumpIfFalsePushNilLength));
+            // JumpBak does a drop..
+            PushSpecialValue.emit(OpSpecialValue::Nil_);
+            const int jumpBackSize = exprByteCodeLen + whileByteCodeLen + 4;
+            JumpBack.emit(Operands::UnsignedInt<16, 1>::fromFull(jumpBackSize),
+                          Operands::UnsignedInt<16, 0>::fromFull(jumpBackSize));
         }
 
-        compileJump(opcJumpBak, exprByteCodeLen + whileByteCodeLen + 4);
 
     } else {
-        argnode = node->mArglist;
-        for (; argnode; argnode = argnode->mNext) {
+        PyrParseNode* argnode = node->mArglist;
+        PyrSlot dummy;
+        for (; argnode; argnode = argnode->mNext)
             COMPILENODE(argnode, &dummy, false);
-        }
-        compileTail();
-        compileOpcode(opSendSpecialMsg, numArgs);
-        compileByte(opmWhile);
+
+        emitTailCall();
+        if (numArgs < 16)
+            SendSpecialMsg.emit(numArgs, OpSpecialSelectors::While);
+        else
+            SendSpecialMsgX.emit(Operands::ArgumentCount::fromRaw(numArgs), Operands::KwArgumentCount::fromRaw(0),
+                                 Operands::Index::fromRaw(static_cast<int>(OpSpecialSelectors::While)));
     }
 }
 
 void compileLoopMsg(PyrCallNodeBase2* node) {
-    int numArgs;
-    PyrParseNode* argnode;
-    PyrSlot dummy;
-    ByteCodes exprByteCodes;
-    int exprByteCodeLen;
-
-    numArgs = nodeListLength(node->mArglist);
+    const int numArgs = nodeListLength(node->mArglist);
     if (numArgs == 1 && isAnInlineableBlock(node->mArglist)) {
-        exprByteCodes = compileSubExpression((PyrPushLitNode*)node->mArglist, false);
+        ByteCodes exprByteCodes = compileSubExpression((PyrPushLitNode*)node->mArglist, false);
 
-        exprByteCodeLen = byteCodeLength(exprByteCodes);
+        const int exprByteCodeLen = byteCodeLength(exprByteCodes);
         compileAndFreeByteCodes(exprByteCodes);
 
-        compileJump(opcJumpBak, exprByteCodeLen + 1);
+        // UNKNOWN: where does this '1' come from?
+        const int jumpBackSize = exprByteCodeLen + 1;
+        JumpBack.emit(Operands::UnsignedInt<16, 1>::fromFull(jumpBackSize),
+                      Operands::UnsignedInt<16, 0>::fromFull(jumpBackSize));
 
     } else {
-        argnode = node->mArglist;
-        for (; argnode; argnode = argnode->mNext) {
+        PyrParseNode* argnode = node->mArglist;
+        PyrSlot dummy;
+        for (; argnode; argnode = argnode->mNext)
             COMPILENODE(argnode, &dummy, false);
-        }
-        compileTail();
-        compileOpcode(opSendSpecialMsg, numArgs);
-        compileByte(opmLoop);
+
+        emitTailCall();
+        if (numArgs < 16)
+            SendSpecialMsg.emit(numArgs, OpSpecialSelectors::Loop);
+        else
+            SendSpecialMsgX.emit(Operands::ArgumentCount::fromRaw(numArgs), Operands::KwArgumentCount::fromRaw(0),
+                                 Operands::Index::fromRaw(static_cast<int>(OpSpecialSelectors::Loop)));
     }
 }
 
@@ -2929,27 +2934,28 @@ int PyrBinopCallNode::isPartialApplication() {
 }
 
 void PyrBinopCallNode::compileCall(PyrSlot* result) {
-    int index, selType, isSuper, numArgs;
     PyrSlot dummy;
 
     PyrParseNode* arg1 = mArglist;
     PyrParseNode* arg2 = arg1->mNext;
     PyrParseNode* arg3 = arg2->mNext;
 
-    // postfl("compilePyrBinopCallNode\n");
-    isSuper = isSuperObjNode(arg1);
+    const int isSuper = isSuperObjNode(arg1);
     slotRawSymbol(&mSelector->mSlot)->flags |= sym_Called;
-    index = conjureSelectorIndex((PyrParseNode*)mSelector, gCompilingBlock, isSuper, slotRawSymbol(&mSelector->mSlot),
-                                 &selType);
-    numArgs = arg3 ? 3 : 2;
+    int selType;
+    const int index = conjureSelectorIndex((PyrParseNode*)mSelector, gCompilingBlock, isSuper,
+                                           slotRawSymbol(&mSelector->mSlot), &selType);
+
+    const int numArgs = arg3 ? 3 : 2;
     if (isSuper) {
         COMPILENODE(arg1, &dummy, false);
         COMPILENODE(arg2, &dummy, false);
         if (arg3)
             COMPILENODE(arg3, &dummy, false);
-        compileTail();
-        compileOpcode(opSendSuper, numArgs);
-        compileByte(index);
+
+        emitTailCall();
+        SendSuperMsg.emit(numArgs, Operands::Index::fromRaw(index));
+
     } else {
         switch (selType) {
         case selNormal:
@@ -2957,52 +2963,69 @@ void PyrBinopCallNode::compileCall(PyrSlot* result) {
             COMPILENODE(arg2, &dummy, false);
             if (arg3)
                 COMPILENODE(arg3, &dummy, false);
-            compileTail();
-            compileOpcode(opSendMsg, numArgs);
-            compileByte(index);
+
+            emitTailCall();
+            SendMsg.emit(numArgs, Operands::Index::fromRaw(index));
             break;
+
         case selSpecial:
             COMPILENODE(arg1, &dummy, false);
             COMPILENODE(arg2, &dummy, false);
             if (arg3)
                 COMPILENODE(arg3, &dummy, false);
-            compileTail();
-            compileOpcode(opSendSpecialMsg, numArgs);
-            compileByte(index);
+
+            emitTailCall();
+            SendSpecialMsg.emit(numArgs, Operands::SpecialSelectors::fromRaw(index));
             break;
+
         case selUnary:
             COMPILENODE(arg1, &dummy, false);
             COMPILENODE(arg2, &dummy, false);
             if (arg3)
                 COMPILENODE(arg3, &dummy, false);
-            compileTail();
+
+            emitTailCall();
+
+            // Drop extra arguments
             if (arg3)
-                compileOpcode(opSpecialOpcode, opcDrop); // drop third argument
-            compileOpcode(opSpecialOpcode, opcDrop); // drop second argument
-            compileOpcode(opSendSpecialUnaryArithMsg, index);
+                Drop.emit();
+            Drop.emit();
+
+            // TODO: work on better conversions
+            SendSpecialUnaryArithMsg.emit(static_cast<OpUnaryMathNibble>((Byte)index));
             break;
+
         case selBinary:
             if (arg3) {
                 COMPILENODE(arg1, &dummy, false);
                 COMPILENODE(arg2, &dummy, false);
                 COMPILENODE(arg3, &dummy, false);
-                compileTail();
-                compileOpcode(opSpecialOpcode, opcSpecialBinaryOpWithAdverb);
-                compileByte(index);
+
+                emitTailCall();
+                SpecialBinaryOpWithAdverb.emit(Operands::TrinaryMath::fromRaw(index));
+
             } else if (index == opAdd && arg2->mClassno == pn_PushLitNode && IsInt(&((PyrPushLitNode*)arg2)->mSlot)
                        && slotRawInt(&((PyrPushLitNode*)arg2)->mSlot) == 1) {
                 COMPILENODE(arg1, &dummy, false);
-                compileOpcode(opPushSpecialValue, opsvPlusOne);
+
+                PushOneAndAddOne.emit();
+
             } else if (index == opSub && arg2->mClassno == pn_PushLitNode && IsInt(&((PyrPushLitNode*)arg2)->mSlot)
                        && slotRawInt(&((PyrPushLitNode*)arg2)->mSlot) == 1) {
                 COMPILENODE(arg1, &dummy, false);
-                compileTail();
-                compileOpcode(opPushSpecialValue, opsvMinusOne);
+
+                emitTailCall();
+                PushOneAndSubtract.emit();
+
             } else {
                 COMPILENODE(arg1, &dummy, false);
                 COMPILENODE(arg2, &dummy, false);
-                compileTail();
-                compileOpcode(opSendSpecialBinaryArithMsg, index);
+
+                emitTailCall();
+                if (index < 16)
+                    SendSpecialBinaryArithMsg.emit(Operands::BinaryMathNibble::fromRaw(index));
+                else
+                    SendSpecialBinaryArithMsgX.emit(Operands::BinaryMath::fromRaw(index));
             }
             break;
         case selIf:
@@ -3037,9 +3060,9 @@ void PyrBinopCallNode::compileCall(PyrSlot* result) {
             COMPILENODE(arg2, &dummy, false);
             if (arg3)
                 COMPILENODE(arg3, &dummy, false);
-            compileTail();
-            compileOpcode(opSendMsg, numArgs);
-            compileByte(index);
+
+            emitTailCall();
+            SendMsg.emit(numArgs, Operands::Index::fromRaw(index));
             break;
         }
     }
@@ -3069,7 +3092,6 @@ PyrDropNode* newPyrDropNode(PyrParseNode* expr1, PyrParseNode* expr2) {
 }
 
 void PyrDropNode::compile(PyrSlot* result) {
-    // postfl("->compilePyrDropNode\n");
     PyrSlot dummy;
     // eliminate as many drops as possible
     if (!mExpr2) {
@@ -3084,10 +3106,9 @@ void PyrDropNode::compile(PyrSlot* result) {
         COMPILENODE(mExpr1, &dummy, false);
         COMPILENODE(mExpr2, &dummy, true);
     } else if (mExpr1 && mExpr1->mClassno == pn_DropNode) {
-        PyrDropNode* znode;
         // let the store do the drop, a bit more complex.
         // find the ultimate expression in the left subtree before the drop.
-        znode = (PyrDropNode*)mExpr1;
+        PyrDropNode* znode = (PyrDropNode*)mExpr1;
         while (znode->mExpr2 && znode->mExpr2->mClassno == pn_DropNode) {
             znode = (PyrDropNode*)znode->mExpr2;
         }
@@ -3097,15 +3118,14 @@ void PyrDropNode::compile(PyrSlot* result) {
             COMPILENODE(mExpr2, &dummy, true);
         } else {
             COMPILENODE(mExpr1, &dummy, false);
-            compileOpcode(opSpecialOpcode, opcDrop);
+            Drop.emit();
             COMPILENODE(mExpr2, &dummy, true);
         }
     } else {
         COMPILENODE(mExpr1, &dummy, false);
-        compileOpcode(opSpecialOpcode, opcDrop);
+        Drop.emit();
         COMPILENODE(mExpr2, &dummy, true);
     }
-    // postfl("<-compilePyrDropNode\n");
 }
 
 PyrPushLitNode* newPyrPushLitNode(PyrSlotNode* literalSlot, PyrParseNode* literalObj) {
@@ -3122,105 +3142,101 @@ PyrPushLitNode* newPyrPushLitNode(PyrSlotNode* literalSlot, PyrParseNode* litera
 
 
 void compilePushConstant(PyrParseNode* node, PyrSlot* slot) {
-    int index = conjureConstantIndex(node, gCompilingBlock, slot);
-    if (index < (1 << 4)) {
-        compileByte((opPushLiteral << 4) | index);
-    } else if (index < (1 << 8)) {
-        compileByte(40);
-        compileByte(index & 0xFF);
-    } else if (index < (1 << 16)) {
-        compileByte(41);
-        compileByte((index >> 8) & 0xFF);
-        compileByte(index & 0xFF);
-    } else if (index < (1 << 24)) {
-        compileByte(42);
-        compileByte((index >> 16) & 0xFF);
-        compileByte((index >> 8) & 0xFF);
-        compileByte(index & 0xFF);
-    } else {
-        compileByte(43);
-        compileByte((index >> 24) & 0xFF);
-        compileByte((index >> 16) & 0xFF);
-        compileByte((index >> 8) & 0xFF);
-        compileByte(index & 0xFF);
-    }
+    const int index = conjureConstantIndex(node, gCompilingBlock, slot);
+
+    if (index < (1 << 4))
+        PushLiteral.emit(index);
+
+    else if (index < (1 << 8))
+        PushConstant8.emit(Operands::UnsignedInt<8, 0>::fromRaw(index));
+
+    else if (index < (1 << 16))
+        PushConstant16.emit(Operands::UnsignedInt<16, 1>::fromFull(index),
+                            Operands::UnsignedInt<16, 0>::fromFull(index));
+
+    else if (index < (1 << 24))
+        PushConstant24.emit(Operands::UnsignedInt<24, 2>::fromFull(index),
+                            Operands::UnsignedInt<24, 1>::fromFull(index),
+                            Operands::UnsignedInt<24, 0>::fromFull(index));
+
+    else
+        PushConstant32.emit(
+            Operands::UnsignedInt<32, 3>::fromFull(index), Operands::UnsignedInt<32, 2>::fromFull(index),
+            Operands::UnsignedInt<32, 1>::fromFull(index), Operands::UnsignedInt<32, 0>::fromFull(index));
 }
 
-void compilePushInt(int value) {
-    // postfl("compilePushInt\n");
-    if (value >= -1 && value <= 2) {
-        compileOpcode(opPushSpecialValue, opsvZero + value);
-    } else {
-        // printf("int %d\n", value);
-        if (value >= -(1 << 7) && value <= ((1 << 7) - 1)) {
-            compileByte(44);
-            compileByte(value & 0xFF);
-        } else if (value >= -(1 << 15) && value <= ((1 << 15) - 1)) {
-            compileByte(45);
-            compileByte((value >> 8) & 0xFF);
-            compileByte(value & 0xFF);
-        } else if (value >= -(1 << 23) && value <= ((1 << 23) - 1)) {
-            compileByte(46);
-            compileByte((value >> 16) & 0xFF);
-            compileByte((value >> 8) & 0xFF);
-            compileByte(value & 0xFF);
-        } else {
-            compileByte(47);
-            compileByte((value >> 24) & 0xFF);
-            compileByte((value >> 16) & 0xFF);
-            compileByte((value >> 8) & 0xFF);
-            compileByte(value & 0xFF);
-        }
-    }
+void emitPushInt(int value) {
+    if (value == -1)
+        PushSpecialNumber.emit(OpSpecialNumbers::MinusOne);
+
+    else if (value == 0)
+        PushSpecialNumber.emit(OpSpecialNumbers::Zero);
+
+    else if (value == 1)
+        PushSpecialNumber.emit(OpSpecialNumbers::One);
+
+    else if (value == 2)
+        PushSpecialNumber.emit(OpSpecialNumbers::Two);
+
+    else if (value >= -(1 << 7) && value <= ((1 << 7) - 1))
+        PushInteger8.emit(Operands::Int<8, 0>::fromFull(value));
+
+    else if (value >= -(1 << 15) && value <= ((1 << 15) - 1))
+        PushInteger16.emit(Operands::Int<16, 1>::fromFull(value), Operands::Int<16, 0>::fromFull(value));
+
+    else if (value >= -(1 << 23) && value <= ((1 << 23) - 1))
+        PushInteger24.emit(Operands::Int<24, 2>::fromFull(value), Operands::Int<24, 1>::fromFull(value),
+                           Operands::Int<24, 0>::fromFull(value));
+
+    else
+        PushInteger32.emit(Operands::Int<32, 3>::fromFull(value), Operands::Int<32, 2>::fromFull(value),
+                           Operands::Int<32, 1>::fromFull(value), Operands::Int<32, 0>::fromFull(value));
 }
 
 void PyrSlotNode::compilePushLit(PyrSlot* result) {
-    int index;
-    PyrSlot slot;
-    ByteCodes savedBytes;
-
-    // postfl("compilePyrPushLitNode\n");
     if (IsPtr(&mSlot)) {
         PyrParseNode* literalObj = (PyrParseNode*)slotRawPtr(&mSlot);
-        // index = conjureLiteralObjIndex(gCompilingBlock, literalObj);
+
         if (literalObj->mClassno == pn_BlockNode) {
-            savedBytes = saveByteCodeArray();
+            ByteCodes savedBytes = saveByteCodeArray();
+            PyrSlot slot;
             COMPILENODE(literalObj, &slot, false);
             restoreByteCodeArray(savedBytes);
-            index = conjureLiteralSlotIndex(literalObj, gCompilingBlock, &slot);
-            compileOpcode(opExtended, opPushLiteral);
-            compileByte(index);
+
+            const Byte index = conjureLiteralSlotIndex(literalObj, gCompilingBlock, &slot);
+            PushLiteralX.emit(Operands::Index::fromRaw(index));
 
             PyrBlock* block = slotRawBlock(&slot);
-            if (NotNil(&block->contextDef)) {
+            if (NotNil(&block->contextDef))
                 METHRAW(gCompilingBlock)->needsHeapContext = 1;
-            }
+
         } else {
+            PyrSlot slot;
             COMPILENODE(literalObj, &slot, false);
             compilePushConstant((PyrParseNode*)literalObj, &slot);
         }
     } else {
-        slot = mSlot;
+        PyrSlot slot = mSlot;
         if (IsInt(&slot)) {
-            compilePushInt(slotRawInt(&slot));
+            emitPushInt(slotRawInt(&slot));
         } else if (SlotEq(&slot, &o_nil)) {
-            compileOpcode(opPushSpecialValue, opsvNil);
+            PushSpecialValue.emit(OpSpecialValue::Nil_);
         } else if (SlotEq(&slot, &o_true)) {
-            compileOpcode(opPushSpecialValue, opsvTrue);
+            PushSpecialValue.emit(OpSpecialValue::True);
         } else if (SlotEq(&slot, &o_false)) {
-            compileOpcode(opPushSpecialValue, opsvFalse);
+            PushSpecialValue.emit(OpSpecialValue::False);
         } else if (SlotEq(&slot, &o_fhalf)) {
-            compileOpcode(opPushSpecialValue, opsvFHalf);
+            PushSpecialNumber.emit(OpSpecialNumbers::Half);
         } else if (SlotEq(&slot, &o_fnegone)) {
-            compileOpcode(opPushSpecialValue, opsvFNegOne);
+            PushSpecialNumber.emit(OpSpecialNumbers::MinusOneFloat);
         } else if (SlotEq(&slot, &o_fzero)) {
-            compileOpcode(opPushSpecialValue, opsvFZero);
+            PushSpecialNumber.emit(OpSpecialNumbers::ZeroFloat);
         } else if (SlotEq(&slot, &o_fone)) {
-            compileOpcode(opPushSpecialValue, opsvFOne);
+            PushSpecialNumber.emit(OpSpecialNumbers::OneFloat);
         } else if (SlotEq(&slot, &o_ftwo)) {
-            compileOpcode(opPushSpecialValue, opsvFTwo);
+            PushSpecialNumber.emit(OpSpecialNumbers::TwoFloat);
         } else if (SlotEq(&slot, &o_inf)) {
-            compileOpcode(opPushSpecialValue, opsvInf);
+            PushSpecialValue.emit(OpSpecialValue::Inf);
         } else if (IsFloat(&slot)) {
             compilePushConstant((PyrParseNode*)this, &slot);
         } else if (IsSym(&slot)) {
@@ -3281,34 +3297,31 @@ PyrReturnNode* newPyrReturnNode(PyrParseNode* expr) {
 
 
 void PyrReturnNode::compile(PyrSlot* result) {
-    PyrPushLitNode* lit;
-    PyrSlot dummy;
-
-    // post("->compilePyrReturnNode\n");
     gFunctionCantBeClosed = true;
     if (!mExpr) {
-        compileOpcode(opSpecialOpcode, opcReturnSelf);
+        ReturnSelf.emit();
     } else if (mExpr->mClassno == pn_PushLitNode) {
-        lit = (PyrPushLitNode*)mExpr;
+        PyrPushLitNode* lit = (PyrPushLitNode*)mExpr;
         if (IsSym(&(lit->mSlot)) && slotRawSymbol(&lit->mSlot) == s_this) {
-            compileOpcode(opSpecialOpcode, opcReturnSelf);
+            ReturnSelf.emit();
         } else if (IsNil(&lit->mSlot)) {
-            compileOpcode(opSpecialOpcode, opcReturnNil);
+            ReturnNil.emit();
         } else if (IsTrue(&lit->mSlot)) {
-            compileOpcode(opSpecialOpcode, opcReturnTrue);
+            ReturnTrue.emit();
         } else if (IsFalse(&lit->mSlot)) {
-            compileOpcode(opSpecialOpcode, opcReturnFalse);
+            ReturnFalse.emit();
         } else {
+            PyrSlot dummy;
             COMPILENODE(lit, &dummy, false);
-            compileOpcode(opSpecialOpcode, opcReturn);
+            Return.emit();
         }
     } else {
         SetTailBranch branch(true);
         SetTailIsMethodReturn mr(true);
+        PyrSlot dummy;
         COMPILENODE(mExpr, &dummy, true);
-        compileOpcode(opSpecialOpcode, opcReturn);
+        Return.emit();
     }
-    // post("<-compilePyrReturnNode\n");
 }
 
 PyrBlockReturnNode* newPyrBlockReturnNode() {
@@ -3317,10 +3330,7 @@ PyrBlockReturnNode* newPyrBlockReturnNode() {
 }
 
 
-void PyrBlockReturnNode::compile(PyrSlot* result) {
-    // postfl("compilePyrBlockReturnNode\n");
-    // compileOpcode(opSpecialOpcode, opcFunctionReturn);
-}
+void PyrBlockReturnNode::compile(PyrSlot* result) {}
 
 PyrAssignNode* newPyrAssignNode(PyrSlotNode* varName, PyrParseNode* expr, int flags) {
     PyrAssignNode* node = ALLOCNODE(PyrAssignNode);
@@ -3353,89 +3363,92 @@ PyrMultiAssignVarListNode* newPyrMultiAssignVarListNode(PyrSlotNode* varNames, P
     return node;
 }
 
-void compileAssignVar(PyrParseNode* node, PyrSymbol* varName, bool drop) {
-    int level, index, vindex, varType;
-    PyrBlock* tempfunc;
-    PyrClass* classobj;
+bool isUnassignableSymbol(PyrSymbol* varName) {
+    return varName == s_this || varName == s_super || varName == s_curProcess || varName == s_curThread
+        || varName == s_curMethod || varName == s_curBlock || varName == s_curClosure;
+}
 
-    // postfl("compileAssignVar\n");
-    classobj = gCompilingClass;
-    if (varName == s_this || varName == s_super || varName == s_curProcess || varName == s_curThread
-        || varName == s_curMethod || varName == s_curBlock || varName == s_curClosure) {
+void compileAssignVar(PyrParseNode* node, PyrSymbol* varName, bool drop) {
+    if (isUnassignableSymbol(varName)) {
         error("You may not assign to '%s'.", varName->name);
         nodePostErrorLine(node);
         compileErrors++;
-    } else if (varName->name[0] >= 'A' && varName->name[0] <= 'Z') {
-        // actually this shouldn't even parse, so you won't get here.
+        return;
+    }
+    if (std::isupper(varName->name[0])) {
         error("You may not assign to a class name.");
         nodePostErrorLine(node);
         compileErrors++;
-    } else if (findVarName(gCompilingBlock, &classobj, varName, &varType, &level, &index, &tempfunc)) {
-        switch (varType) {
-        case varInst:
-            if (drop) {
-                if (index <= 15) {
-                    compileByte((opStoreInstVar << 4) | index);
-                } else {
-                    compileByte(opStoreInstVar);
-                    compileByte(index);
-                    compileByte((opSpecialOpcode << 4) | opcDrop);
-                }
-            } else {
-                compileByte(opStoreInstVar);
-                compileByte(index);
-            }
-            break;
-        case varClass: {
-            index += slotRawInt(&classobj->classVarIndex);
-            if (drop) {
-                if (index < 4096) {
-                    compileByte((opStoreClassVar << 4) | ((index >> 8) & 15));
-                    compileByte(index & 255);
-                } else {
-                    compileByte(opStoreClassVar);
-                    assert(false);
-                    vindex = 0;
-                    compileByte(vindex); // FIXME: vindex is not initalized!!!!
-                    compileByte(index);
-                    compileByte((opSpecialOpcode << 4) | opcDrop);
-                }
-            } else {
-                compileByte(opStoreClassVar);
-                compileByte((index >> 8) & 255);
-                compileByte(index & 255);
-            }
-        } break;
-        case varConst: {
-            error("You may not assign to a constant.");
-            nodePostErrorLine(node);
-            compileErrors++;
-        } break;
-        case varTemp:
-            // compileOpcode(opStoreTempVar, level);
-            // compileByte(index);
-            if (drop) {
-                if (index <= 15 && level < 8) {
-                    compileByte((opStoreTempVar << 4) | level);
-                    compileByte(index);
-                } else {
-                    compileByte(opStoreTempVar);
-                    compileByte(level);
-                    compileByte(index);
-                    compileByte((opSpecialOpcode << 4) | opcDrop);
-                }
-            } else {
-                compileByte(opStoreTempVar);
-                compileByte(level);
-                compileByte(index);
-            }
-            break;
-        }
-    } else {
+        return;
+    }
+
+    const auto result = findVarName(gCompilingBlock, gCompilingClass, varName);
+    if (!result) {
         error("Variable '%s' not defined.\n", varName->name);
         nodePostErrorLine(node);
         compileErrors++;
-        // Debugger();
+    }
+
+    const FindVarNameResult findResult = *result;
+
+    switch (findResult.varType) {
+    case varInst: {
+        if (drop) {
+            if (findResult.index <= 15) {
+                StoreInstVar.emit(findResult.index);
+            } else {
+                StoreInstVarX.emit(Operands::Index::fromRaw(findResult.index));
+                Drop.emit();
+            }
+        } else {
+            // TODO: why can't we use the shorter StoreInstVar here? It breaks for some reason.
+            StoreInstVarX.emit(Operands::Index::fromRaw(findResult.index));
+        }
+    } break;
+
+    case varClass: {
+        const auto index = findResult.index + slotRawInt(&findResult.classobj->classVarIndex);
+        if (drop) {
+            if (index < 4096) {
+                StoreClassVar.emit(index);
+            } else {
+                StoreClassVarX.emit(Operands::UnsignedInt<16, 1>::fromFull(index),
+                                    Operands::UnsignedInt<16, 0>::fromFull(index));
+                Drop.emit();
+            }
+        } else {
+            StoreClassVarX.emit(Operands::UnsignedInt<16, 1>::fromFull(index),
+                                Operands::UnsignedInt<16, 0>::fromFull(index));
+        }
+    } break;
+
+    case varConst: {
+        error("You may not assign to a constant.");
+        nodePostErrorLine(node);
+        compileErrors++;
+    } break;
+
+    case varTemp: {
+        if (drop) {
+            if (findResult.index <= 15 && findResult.level < 8) {
+                StoreTempVar.emit(findResult.level, Operands::Index::fromRaw(findResult.index));
+            } else {
+                StoreTempVarX.emit(Operands::FrameOffset::fromRaw(findResult.level),
+                                   Operands::Index::fromRaw(findResult.index));
+                Drop.emit();
+            }
+        } else {
+            // TODO: why can't we use the shorter StoreTempVarX here? It breaks for some reason.
+            StoreTempVarX.emit(Operands::FrameOffset::fromRaw(findResult.level),
+                               Operands::Index::fromRaw(findResult.index));
+        }
+    } break;
+
+    default: {
+        error("Should be impossible");
+        nodePostErrorLine(node);
+        compileErrors++;
+    } break;
     }
 }
 
@@ -3462,45 +3475,39 @@ int PyrSetterNode::isPartialApplication() {
 }
 
 void PyrSetterNode::compileCall(PyrSlot* result) {
-    int index, selType, isSuper;
     PyrSlot dummy;
     char setterName[128];
-    PyrSymbol* setterSym;
 
-    // postfl("compilePyrSetterNode\n");
     if (nodeListLength(mExpr1) > 1) {
         error("Setter method called with too many arguments.\n");
         nodePostErrorLine(mExpr1);
         compileErrors++;
+        return;
+    }
+
+    COMPILENODE(mExpr1, &dummy, false);
+    COMPILENODE(mExpr2, &dummy, false);
+
+    const int isSuper = isSuperObjNode(mExpr1);
+
+    sprintf(setterName, "%s_", slotRawSymbol(&mSelector->mSlot)->name);
+    PyrSymbol* setterSym = getsym(setterName);
+
+    slotRawSymbol(&mSelector->mSlot)->flags |= sym_Called;
+    int selType; // TODO: this is not used.
+    const int index = conjureSelectorIndex((PyrParseNode*)mSelector, gCompilingBlock, isSuper, setterSym, &selType);
+    if (isSuper) {
+        emitTailCall();
+        SendSuperMsg.emit(2, Operands::Index::fromRaw(index));
     } else {
-        COMPILENODE(mExpr1, &dummy, false);
-        COMPILENODE(mExpr2, &dummy, false);
-
-
-        // postfl("compilePyrCallNode\n");
-        isSuper = isSuperObjNode(mExpr1);
-
-        sprintf(setterName, "%s_", slotRawSymbol(&mSelector->mSlot)->name);
-        setterSym = getsym(setterName);
-
-        slotRawSymbol(&mSelector->mSlot)->flags |= sym_Called;
-        index = conjureSelectorIndex((PyrParseNode*)mSelector, gCompilingBlock, isSuper, setterSym, &selType);
-        if (isSuper) {
-            compileTail();
-            compileOpcode(opSendSuper, 2);
-            compileByte(index);
-        } else {
-            compileTail();
-            compileOpcode(opSendMsg, 2);
-            compileByte(index);
-        }
+        emitTailCall();
+        SendMsg.emit(2, Operands::Index::fromRaw(index));
     }
 }
 
 void PyrMultiAssignNode::compile(PyrSlot* result) {
     PyrSlot dummy;
 
-    // postfl("compilePyrMultiAssignNode\n");
     COMPILENODE(mExpr, &dummy, false);
     COMPILENODE(mVarList, &dummy, false);
 }
@@ -3513,20 +3520,17 @@ void PyrMultiAssignVarListNode::compile(PyrSlot* result) {
     numAssigns = nodeListLength((PyrParseNode*)mVarNames);
     varname = mVarNames;
     for (i = 0; i < numAssigns; ++i, varname = (PyrSlotNode*)varname->mNext) {
-        compileOpcode(opSpecialOpcode, opcDup);
-        compilePushInt(i);
-        compileOpcode(opSendSpecialMsg, 2);
-        compileByte(opmAt);
+        Dup.emit();
+        emitPushInt(i);
+        SendSpecialMsg.emit(2, OpSpecialSelectors::At);
         compileAssignVar((PyrParseNode*)varname, slotRawSymbol(&varname->mSlot), 1);
-        // compileOpcode(opSpecialOpcode, opcDrop);
     }
+
     if (mRest) {
-        compileOpcode(opSpecialOpcode, opcDup);
-        compilePushInt(i);
-        compileOpcode(opSendSpecialMsg, 2);
-        compileByte(opmCopyToEnd);
+        Dup.emit();
+        emitPushInt(i);
+        SendSpecialMsg.emit(2, OpSpecialSelectors::CopyToEnd);
         compileAssignVar((PyrParseNode*)mRest, slotRawSymbol(&mRest->mSlot), 1);
-        // compileOpcode(opSpecialOpcode, opcDrop);
     }
 }
 
@@ -3555,39 +3559,30 @@ int PyrDynDictNode::isPartialApplication() {
 }
 
 void PyrDynDictNode::compileCall(PyrSlot* result) {
-    int i, numItems;
-    PyrParseNode* inode;
-    PyrSlot dummy;
-
-    // postfl("compilePyrDynDictNode\n");
-    numItems = nodeListLength(mElems) >> 1;
+    const int numItems = nodeListLength(mElems) >> 1;
 
     compilePushVar((PyrParseNode*)this, s_event);
 
-    compilePushInt(numItems);
-    compileByte(110); // push nil for proto
-    compileByte(110); // push nil for parent
-    compileByte(108); // push true for know
-    compileOpcode(opSendSpecialMsg, 5);
+    emitPushInt(numItems);
+    PushSpecialValue.emit(OpSpecialValue::Nil_); // push nil for proto
+    PushSpecialValue.emit(OpSpecialValue::Nil_); // push nil for parent
+    PushSpecialValue.emit(OpSpecialValue::True); // push true for know
+    SendSpecialMsg.emit(5, OpSpecialSelectors::New);
 
-    compileByte(opmNew);
-
-    inode = mElems;
-    for (i = 0; i < numItems; ++i) {
-        // if (compilingCmdLine) post("+ %d %d\n", i, gCompilingByteCodes->size);
+    PyrParseNode* inode = mElems;
+    PyrSlot dummy;
+    for (int i = 0; i < numItems; ++i) {
         COMPILENODE(inode, &dummy, false);
         inode = (PyrParseNode*)inode->mNext;
         COMPILENODE(inode, &dummy, false);
         inode = (PyrParseNode*)inode->mNext;
-        compileOpcode(opSendSpecialMsg, 3);
-        compileByte(opmPut);
+        SendSpecialMsg.emit(3, OpSpecialSelectors::Put);
     }
 }
 
 PyrDynListNode* newPyrDynListNode(PyrParseNode* classname, PyrParseNode* elems) {
     PyrDynListNode* node;
 
-    // if (compilingCmdLine) post("newPyrDynListNode\n");
     node = ALLOCNODE(PyrDynListNode);
     node->mClassname = classname;
     node->mElems = elems;
@@ -3609,33 +3604,17 @@ int PyrDynListNode::isPartialApplication() {
 }
 
 void PyrDynListNode::compileCall(PyrSlot* result) {
-    int i, numItems;
-    PyrParseNode* inode;
+    const int numItems = nodeListLength(mElems);
+
+    compilePushVar((PyrParseNode*)this, mClassname ? slotRawSymbol(&((PyrSlotNode*)mClassname)->mSlot) : s_array);
+    emitPushInt(numItems);
+    SendSpecialMsg.emit(2, OpSpecialSelectors::New);
+
+    PyrParseNode* inode = mElems;
     PyrSlot dummy;
-
-    // postfl("compilePyrDynListNode\n");
-    numItems = nodeListLength(mElems);
-
-    if (mClassname) {
-        compilePushVar((PyrParseNode*)this, slotRawSymbol(&((PyrSlotNode*)mClassname)->mSlot));
-    } else {
-        compilePushVar((PyrParseNode*)this, s_array);
-    }
-
-    // compileOpcode(opExtended, opPushSpecialValue);
-    // compileByte(op_class_list);
-
-    compilePushInt(numItems);
-
-    compileOpcode(opSendSpecialMsg, 2);
-    compileByte(opmNew);
-
-    inode = mElems;
-    for (i = 0; i < numItems; ++i, inode = (PyrParseNode*)inode->mNext) {
-        // if (compilingCmdLine) post("+ %d %d\n", i, gCompilingByteCodes->size);
+    for (int i = 0; i < numItems; ++i, inode = (PyrParseNode*)inode->mNext) {
         COMPILENODE(inode, &dummy, false);
-        compileOpcode(opSendSpecialMsg, 2);
-        compileByte(opmAdd);
+        SendSpecialMsg.emit(2, OpSpecialSelectors::Add);
     }
 }
 
@@ -3681,72 +3660,12 @@ PyrLitDictNode* newPyrLitDictNode(PyrParseNode* elems) {
 }
 
 int litDictPut(PyrObject* dict, PyrSlot* key, PyrSlot* value);
-int litDictPut(PyrObject* dict, PyrSlot* key, PyrSlot* value) {
-#if 0
-	PyrSlot *slot, *newslot;
-	int i, index, size;
-	PyrObject *array;
-
-	bool knows = IsTrue(dict->slots + ivxIdentDict_know);
-	if (knows && IsSym(key)) {
-		if (slotRawSymbol(key) == s_parent) {
-			slotCopy(&dict->slots[ivxIdentDict_parent], value);
-			return errNone;
-		}
-		if (slotRawSymbol(key) == s_proto) {
-			slotCopy(&dict->slots[ivxIdentDict_proto], value);
-			return errNone;
-		}
-	}
-	array = slotRawObject(&dict->slots[ivxIdentDict_array]);
-	if (!isKindOf((PyrObject*)array, class_array)) return errFailed;
-
-	index = arrayAtIdentityHashInPairs(array, key);
-	slot = array->slots + index;
-	slotCopy(&slot[1], value);
-	if (IsNil(slot)) {
-		slotCopy(slot, key);
-	}
-#endif
-    return errNone;
-}
+int litDictPut(PyrObject* dict, PyrSlot* key, PyrSlot* value) { return errNone; }
 
 
 void PyrLitDictNode::dump(int level) {}
 
-void PyrLitDictNode::compile(PyrSlot* result) {
-#if 0
-	PyrSlot *resultSlot;
-	PyrSlot itemSlot;
-	PyrObject *array;
-	PyrParseNode *inode;
-	int i, numItems, flags;
-
-	//postfl("->compilePyrLitDictNode\n");
-	if (mClassname && slotRawSymbol(&((PyrSlotNode*)mClassname)->mSlot) != s_array) {
-		error("Only Array is supported as literal type.\n");
-		post("Compiling as an Array.\n");
-	}
-	resultSlot = (PyrSlot*)result;
-	numItems = mElems ? nodeListLength(mElems) : 0;
-	int numSlots = NEXTPOWEROFTWO(numItems*2);
-
-    PyrObject *obj = instantiateObject(g->gc, class_event->u.classobj, 0, true, false);
-    PyrSlot *slots = obj->slots;
-
-	flags = compilingCmdLine ? obj_immutable : obj_permanent | obj_immutable;
-	array = newPyrArray(compileGC(), numSlots, flags, false);
-	nilSlots(array->slots, numSlots);
-	inode = mElems;
-	for (i=0; i<numItems; ++i, inode = (PyrParseNode*)inode->mNext) {
-		COMPILENODE(inode, &itemSlot, false);
-		array->slots[i] = itemSlot;
-	}
-	array->size = numItems;
-	SetObject(resultSlot, array);
-	//postfl("<-compilePyrLitListNode\n");
-#endif
-}
+void PyrLitDictNode::compile(PyrSlot* result) {}
 
 
 extern LongStack closedFuncCharNo;
@@ -3777,8 +3696,6 @@ void PyrBlockNode::compile(PyrSlot* slotResult) {
     PyrSymbolArray *argNames, *varNames;
     PyrSlot dummy;
     bool hasVarExprs = false;
-
-    // postfl("->block\n");
 
     // create a new block object
 
@@ -3895,7 +3812,6 @@ void PyrBlockNode::compile(PyrSlot* slotResult) {
             }
             // put it in mArglist
             blockargs[i] = slotRawSymbol(varslot);
-            // postfl("defarg %d '%s'\n", i, slotRawSymbol(slot)->name);
         }
     }
 
@@ -3915,7 +3831,6 @@ void PyrBlockNode::compile(PyrSlot* slotResult) {
         }
         // put it in mArglist
         blockargs[numArgs] = slotRawSymbol(varslot);
-        // postfl("defrest '%s'\n", slotRawSymbol(slot)->name);
 
         if (numKwArgs > 0) {
             PyrSlot* kwvarslot;
@@ -3963,7 +3878,6 @@ void PyrBlockNode::compile(PyrSlot* slotResult) {
             }
             // put it in varlist
             blockvars[i] = slotRawSymbol(varslot);
-            // postfl("defvar %d '%s'\n", i, slotRawSymbol(slot)->name);
         }
     }
 
@@ -3974,13 +3888,11 @@ void PyrBlockNode::compile(PyrSlot* slotResult) {
             slot = slotRawObject(&block->prototypeFrame)->slots + i;
             if (vardef->hasExpr(&litval))
                 hasVarExprs = true;
-            // compilePyrLiteralNode((PyrLiteralNode*)vardef->mDefVal, &litval);
             *slot = litval;
         }
     }
 
     if (numVariableArgs > 0) {
-        // SetNil(&slotRawObject(&block->prototypeFrame)->slots[numArgs]);
         slotCopy(&slotRawObject(&block->prototypeFrame)->slots[numArgs], &o_emptyarray);
         if (numKwArgs > 0) {
             slotCopy(&slotRawObject(&block->prototypeFrame)->slots[numArgs + 1], &o_emptyarray);
@@ -3994,7 +3906,6 @@ void PyrBlockNode::compile(PyrSlot* slotResult) {
             slot = slotRawObject(&block->prototypeFrame)->slots + i + numArgs + numVariableArgs;
             if (vardef->hasExpr(&litval))
                 hasVarExprs = true;
-            // compilePyrLiteralNode(vardef->mDefVal, &litval);
             *slot = litval;
         }
     }
@@ -4004,10 +3915,6 @@ void PyrBlockNode::compile(PyrSlot* slotResult) {
     initByteCodes();
     {
         SetTailBranch branch(true);
-        /*if (compilingCmdLine) {
-            post("block %d\n", gIsTailCodeBranch);
-            DUMPNODE(mBody, 0);
-        }*/
         SetTailIsMethodReturn mr(false);
         if (hasVarExprs) {
             if (mArglist) {
@@ -4024,12 +3931,12 @@ void PyrBlockNode::compile(PyrSlot* slotResult) {
             }
         }
         if (mBody->mClassno == pn_BlockReturnNode) {
-            compileOpcode(opPushSpecialValue, opsvNil);
+            PushSpecialValue.emit(OpSpecialValue::Nil_);
         } else {
             COMPILENODE(mBody, &dummy, true);
         }
     }
-    compileOpcode(opSpecialOpcode, opcFunctionReturn);
+    BlockReturn.emit();
     installByteCodes(block);
 
     if ((!gFunctionCantBeClosed && gFunctionHighestExternalRef == 0) || mIsTopLevel) {
@@ -4038,11 +3945,6 @@ void PyrBlockNode::compile(PyrSlot* slotResult) {
         PyrString* string = newPyrStringN(compileGC(), stringLength, flags, false);
         memcpy(string->s, text + mBeginCharNo, stringLength);
         SetObject(&block->sourceCode, string);
-        // static int totalLength = 0, totalStrings = 0;
-        // totalLength += stringLength;
-        // totalStrings++;
-        // post("cf %4d %4d %6d %s:%s \n", totalStrings, stringLength, totalLength,
-        // slotRawSymbol(&gCompilingClass->name)->name, slotRawSymbol(&gCompilingMethod->name)->name);
     }
 
     gCompilingBlock = prevBlock;
@@ -4087,6 +3989,7 @@ int nodeListLength(PyrParseNode* node) {
 }
 
 
+// TODO: refactor this somehow so it is clear **exactly** what all the return arguments do.
 int conjureSelectorIndex(PyrParseNode* node, PyrBlock* func, bool isSuper, PyrSymbol* selector, int* selType) {
     int i;
     PyrObject* selectors;
@@ -4118,13 +4021,13 @@ int conjureSelectorIndex(PyrParseNode* node, PyrBlock* func, bool isSuper, PyrSy
             return opmLoop;
         } else if (selector == gSpecialSelectors[opmQuestionMark]) {
             *selType = selQuestionMark;
-            return opmAnd;
+            return opmAnd; // TODO: why are we returning opmAnd (14) ? Okay the value is ignored.
         } else if (selector == gSpecialSelectors[opmDoubleQuestionMark]) {
             *selType = selDoubleQuestionMark;
-            return opmAnd;
+            return opmAnd; // TODO: why are we returning opmAnd (14) ? Okay the value is ingored
         } else if (selector == gSpecialSelectors[opmExclamationQuestionMark]) {
             *selType = selExclamationQuestionMark;
-            return opmAnd;
+            return opmAnd; // TODO: why are we returning opmAnd (14) ?  Okay the value is ingored
         }
 
         for (i = 0; i < opmNumSpecialSelectors; ++i) {
@@ -4188,7 +4091,7 @@ int conjureSelectorIndex(PyrParseNode* node, PyrBlock* func, bool isSuper, PyrSy
     return selectors->size - 1;
 }
 
-int conjureLiteralSlotIndex(PyrParseNode* node, PyrBlock* func, PyrSlot* slot) {
+Byte conjureLiteralSlotIndex(PyrParseNode* node, PyrBlock* func, PyrSlot* slot) {
     int i;
     PyrObject* selectors;
     PyrSlot* slot2;
@@ -4235,21 +4138,18 @@ int conjureLiteralSlotIndex(PyrParseNode* node, PyrBlock* func, PyrSlot* slot) {
     slot2 = selectors->slots + selectors->size++;
     slotCopy(slot2, slot);
 
-    return selectors->size - 1;
+    return static_cast<Byte>(selectors->size - 1);
 }
 
 
 int conjureConstantIndex(PyrParseNode* node, PyrBlock* func, PyrSlot* slot) {
-    int i;
-    PyrObject* constants;
-    int newsize, flags;
-
-    flags = compilingCmdLine ? obj_immutable : obj_permanent | obj_immutable;
+    const int flags = compilingCmdLine ? obj_immutable : obj_permanent | obj_immutable;
 
     // lookup slot in constants table
+    PyrObject* constants;
     if (IsObj(&func->constants)) {
         constants = slotRawObject(&func->constants);
-        for (i = 0; i < constants->size; ++i)
+        for (int i = 0; i < constants->size; ++i)
             if (SlotEq(&constants->slots[i], slot))
                 return i;
     } else {
@@ -4260,7 +4160,7 @@ int conjureConstantIndex(PyrParseNode* node, PyrBlock* func, PyrSlot* slot) {
     // otherwise add it to the constants table
     if (constants->size + 1 > ARRAYMAXINDEXSIZE(constants)) {
         // resize literal table
-        newsize = ARRAYMAXINDEXSIZE(constants) * 2;
+        int newsize = ARRAYMAXINDEXSIZE(constants) * 2;
         // resize literal table
         SetRaw(&func->constants, (PyrObject*)newPyrArray(compileGC(), newsize, flags, false));
         memcpy(slotRawObject(&func->constants)->slots, constants->slots, constants->size * sizeof(PyrSlot));
@@ -4653,15 +4553,4 @@ void initSpecialSelectors() {
     for (i = 0; i < opNumBinarySelectors; ++i) {
         gSpecialBinarySelectors[i]->specialIndex = i;
     }
-}
-
-bool findSpecialClassName(PyrSymbol* className, int* index) {
-    int i;
-    for (i = 0; i < op_NumSpecialClasses; ++i) {
-        if (gSpecialClasses[i] == className) {
-            *index = i;
-            return true;
-        }
-    }
-    return false;
 }

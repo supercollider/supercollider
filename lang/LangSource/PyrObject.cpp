@@ -288,22 +288,20 @@ void initSymbols() {
     SetFloat(&o_ftwo, 2.);
     SetFloat(&o_inf, std::numeric_limits<double>::infinity());
 
-    slotCopy(&gSpecialValues[svNil], &o_nil);
-    slotCopy(&gSpecialValues[svFalse], &o_false);
-    slotCopy(&gSpecialValues[svTrue], &o_true);
+    gSpecialValues.Nil_ = o_nil;
+    gSpecialValues.True = o_true;
+    gSpecialValues.False = o_false;
+    gSpecialValues.Inf = o_inf;
 
-    slotCopy(&gSpecialValues[svNegOne], &o_negone);
-    slotCopy(&gSpecialValues[svZero], &o_zero);
-    slotCopy(&gSpecialValues[svOne], &o_one);
-    slotCopy(&gSpecialValues[svTwo], &o_two);
-
-    slotCopy(&gSpecialValues[svFHalf], &o_fhalf);
-    slotCopy(&gSpecialValues[svFNegOne], &o_fnegone);
-    slotCopy(&gSpecialValues[svFZero], &o_fzero);
-    slotCopy(&gSpecialValues[svFOne], &o_fone);
-    slotCopy(&gSpecialValues[svFTwo], &o_ftwo);
-    slotCopy(&gSpecialValues[svInf], &o_inf);
-
+    gSpecialNumbers.MinusOne = o_negone;
+    gSpecialNumbers.Zero = o_zero;
+    gSpecialNumbers.One = o_one;
+    gSpecialNumbers.Two = o_two;
+    gSpecialNumbers.Half = o_fhalf;
+    gSpecialNumbers.MinusOneFloat = o_fnegone;
+    gSpecialNumbers.ZeroFloat = o_fzero;
+    gSpecialNumbers.OneFloat = o_fone;
+    gSpecialNumbers.TwoFloat = o_ftwo;
 
     gFormatElemSize[obj_notindexed] = sizeof(PyrSlot);
     gFormatElemSize[obj_slot] = sizeof(PyrSlot);

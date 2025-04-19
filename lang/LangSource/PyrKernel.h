@@ -27,6 +27,7 @@ This file contains the definitions of the core objects that implement the class 
 
 #include "PyrObject.h"
 #include "VMGlobals.h"
+#include "Opcodes.h"
 
 #define classClassNumInstVars 19
 
@@ -196,26 +197,63 @@ struct PyrInterpreter : public PyrObjectHdr {
     PyrSlot codeDump, preProcessor;
 };
 
-/* special values */
-enum {
-    svNil,
-    svFalse,
-    svTrue,
-    svNegOne,
-    svZero,
-    svOne,
-    svTwo,
-    svFHalf,
-    svFNegOne,
-    svFZero,
-    svFOne,
-    svFTwo,
-    svInf,
 
-    svNumSpecialValues
+struct SpecialValuesStruct {
+    PyrSlot True, False, Nil_, Inf;
+
+    PyrSlot* operator[](OpSpecialValue v) {
+        switch (v) {
+        case OpSpecialValue::True:
+            return &True;
+        case OpSpecialValue::False:
+            return &False;
+        case OpSpecialValue::Nil_:
+            return &Nil_;
+        case OpSpecialValue::Inf:
+            return &Inf;
+        default:
+            assert(false);
+            return nullptr;
+        }
+    }
 };
+extern SpecialValuesStruct gSpecialValues;
+// Some compilers add padding to the struct so this fails
+// static_assert((int)OpSpecialValue::COUNT == sizeof(SpecialValuesStruct) / sizeof(PyrSlot));
 
-extern PyrSlot gSpecialValues[svNumSpecialValues];
+struct SpecialNumberStruct {
+    PyrSlot MinusOne, Zero, One, Two, Half, MinusOneFloat, ZeroFloat, OneFloat, TwoFloat;
+
+    PyrSlot* operator[](OpSpecialNumbers n) {
+        switch (n) {
+        case OpSpecialNumbers::MinusOne:
+            return &MinusOne;
+        case OpSpecialNumbers::Zero:
+            return &Zero;
+        case OpSpecialNumbers::One:
+            return &One;
+        case OpSpecialNumbers::Two:
+            return &Two;
+        case OpSpecialNumbers::Half:
+            return &Half;
+        case OpSpecialNumbers::MinusOneFloat:
+            return &MinusOneFloat;
+        case OpSpecialNumbers::ZeroFloat:
+            return &ZeroFloat;
+        case OpSpecialNumbers::OneFloat:
+            return &OneFloat;
+        case OpSpecialNumbers::TwoFloat:
+            return &TwoFloat;
+        default:
+            assert(false);
+            return nullptr;
+        }
+    }
+};
+extern SpecialNumberStruct gSpecialNumbers;
+// Some compilers add padding to the struct so this fails
+// static_assert((int)OpSpecialNumbers::COUNT == sizeof(SpecialNumberStruct) / sizeof(PyrSlot));
+
 
 extern PyrMethod* gNullMethod; // used to fill row table
 

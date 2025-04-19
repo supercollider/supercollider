@@ -36,30 +36,7 @@ void initByteCodes() {
     }
 }
 
-int compileOpcode(std::int64_t opcode, std::int64_t operand1) {
-    int retc;
-    if (operand1 <= 15) {
-        compileByte((opcode << 4) | operand1);
-        retc = 1;
-    } else {
-        compileByte(opcode);
-        compileByte(operand1);
-        if (opcode == opSendMsg || opcode == opSendSpecialMsg || opcode == opSendSuper) {
-            // these expect numKeyArgsPushed to be passed.
-            compileByte(0);
-        }
-        retc = 2;
-    }
-    return retc;
-}
-
-void compileJump(std::int64_t opcode, std::int64_t jumplen) {
-    compileByte((opSpecialOpcode << 4) | opcode);
-    compileByte((jumplen >> 8) & 0xFF);
-    compileByte(jumplen & 0xFF);
-}
-
-void compileByte(std::int64_t byte) {
+void emitByte(Byte byte) {
     if (gCompilingByteCodes == nullptr) {
         gCompilingByteCodes = allocByteCodes();
     }
@@ -71,23 +48,8 @@ void compileByte(std::int64_t byte) {
     *gCompilingByteCodes->ptr++ = byte;
 }
 
-int compileNumber(std::uint64_t value) {
-    compileByte((value >> 24) & 0xFF);
-    compileByte((value >> 16) & 0xFF);
-    compileByte((value >> 8) & 0xFF);
-    compileByte(value & 0xFF);
-    return 4;
-}
-
-int compileNumber24(std::uint64_t value) {
-    compileByte((value >> 16) & 0xFF);
-    compileByte((value >> 8) & 0xFF);
-    compileByte(value & 0xFF);
-    return 4;
-}
-
 void compileAndFreeByteCodes(ByteCodes byteCodes) {
-    compileByteCodes(byteCodes);
+    emitByteCodes(byteCodes);
     freeByteCodes(byteCodes);
 }
 
@@ -125,7 +87,7 @@ size_t byteCodeLength(ByteCodes byteCodes) {
  *
  ***********************************************************************/
 
-void compileByteCodes(ByteCodes byteCodes) {
+void emitByteCodes(ByteCodes byteCodes) {
     Byte* ptr;
     int i;
 
@@ -134,7 +96,7 @@ void compileByteCodes(ByteCodes byteCodes) {
 
     // postfl("[%d]\n", byteCodes->ptr - byteCodes->bytes);
     for (i = 0, ptr = byteCodes->bytes; ptr < byteCodes->ptr; ptr++, ++i) {
-        compileByte(*ptr);
+        emitByte(*ptr);
 
         // postfl("%02X ", *ptr);
         // if ((i & 15) == 15) postfl("\n");
@@ -160,9 +122,9 @@ ByteCodes allocByteCodes() {
 void reallocByteCodes(ByteCodes byteCodes) {
     Byte* newBytes;
 
-    if (byteCodes->size != (byteCodes->ptr - byteCodes->bytes)) {
-        error("reallocByteCodes called with size != byteCode len");
-    }
+    if (byteCodes->size != (byteCodes->ptr - byteCodes->bytes))
+        error("reallocByteCodes called with size %d != byteCode len %d: \n", byteCodes->size,
+              (byteCodes->ptr - byteCodes->bytes));
 
     size_t newLen = byteCodes->size << 1;
     // pyrmalloc: I think that all bytecodes are copied to objects

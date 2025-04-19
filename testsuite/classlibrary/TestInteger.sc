@@ -32,4 +32,17 @@ TestInteger : UnitTest {
 		this.assertException({-1.forBy(20, 0, { | i, j | i.postln; })}, PrimitiveFailedError);
 		this.assertException({100.forBy(200, 0.0, { | i, j | j.postln; })}, PrimitiveFailedError);
 	}
+
+	test_literals {
+		// These are tests for the compiler, making sure integers are packed and unpacked into bytecode operands correctly.
+		this.assertFloatEquals(-1.asFloat, -1.0);
+		this.assertFloatEquals(1.asFloat, 1.0);
+		this.assertFloatEquals(-256.asFloat, -256.0);
+		this.assertFloatEquals(256.asFloat, 256.0);
+		this.assertFloatEquals(65536.asFloat, 65536.0);
+		this.assertFloatEquals(-65536.asFloat, -65536.0);
+		this.assertFloatEquals(-2147483648.asFloat, -2147483648);
+		this.assertFloatEquals(2147483647.asFloat, 2147483647);
+	}
+
 }

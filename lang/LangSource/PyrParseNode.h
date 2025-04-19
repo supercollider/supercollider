@@ -25,6 +25,7 @@
 #include "ByteCodeArray.h"
 #include "Opcodes.h"
 #include "AdvancingAllocPool.h"
+#include "SpecialSelectorsOperatorsAndClasses.h"
 
 
 enum { rwPrivate = 0, rwReadOnly = 1, rwWriteOnly = 2, rwReadWrite = 3 };
@@ -398,8 +399,6 @@ extern bool compilingCmdLine;
 
 extern const char* nodename[];
 
-void compileNode(PyrParseNode* node, PyrSlot* result, bool onTailBranch);
-
 class SetTailBranch {
     bool mSave;
 
@@ -411,22 +410,8 @@ public:
     ~SetTailBranch() { gIsTailCodeBranch = mSave; }
 };
 
-class SetTailIsMethodReturn {
-    bool mSave;
-
-public:
-    SetTailIsMethodReturn(bool inValue) {
-        mSave = gTailIsMethodReturn;
-        gTailIsMethodReturn = inValue;
-    }
-    ~SetTailIsMethodReturn() { gTailIsMethodReturn = mSave; }
-};
-
 inline void compileNode(PyrParseNode* node, PyrSlot* result, bool onTailBranch) {
     SetTailBranch branch(gIsTailCodeBranch && onTailBranch);
-    /*if (compilingCmdLine) {
-        printf("stb  %14s %d %d\n", nodename[node->mClassno], onTailBranch, gIsTailCodeBranch);
-    }*/
     node->compile(result);
 }
 
@@ -463,59 +448,11 @@ PyrLitDictNode* newPyrLitDictNode(PyrParseNode* elems);
 PyrMultiAssignVarListNode* newPyrMultiAssignVarListNode(PyrSlotNode* varNames, PyrSlotNode* rest);
 PyrBlockNode* newPyrBlockNode(PyrArgListNode* arglist, PyrVarListNode* varlist, PyrParseNode* body, bool isTopLevel);
 
-void compilePyrMethodNode(PyrMethodNode* node, PyrSlot* result);
-void compilePyrLiteralNode(PyrLiteralNode* node, PyrSlot* result);
-
-PyrClass* getNodeSuperclass(PyrClassNode* node);
-void countNodeMethods(PyrClassNode* node, int* numClassMethods, int* numInstMethods);
-void compileExtNodeMethods(PyrClassExtNode* node);
-void countVarDefs(PyrClassNode* node);
-bool compareVarDefs(PyrClassNode* node, PyrClass* classobj);
-void recompileSubclasses(PyrClass* classobj);
-void compileNodeMethods(PyrClassNode* node);
-void fillClassPrototypes(PyrClassNode* node, PyrClass* classobj, PyrClass* superclassobj);
 
 int nodeListLength(PyrParseNode* node);
 bool isSuperObjNode(PyrParseNode* node);
-bool isThisObjNode(PyrParseNode* node);
-int conjureSelectorIndex(PyrParseNode* node, PyrBlock* func, bool isSuper, PyrSymbol* selector, int* selType);
-int conjureLiteralSlotIndex(PyrParseNode* node, PyrBlock* func, PyrSlot* slot);
-bool findVarName(PyrBlock* func, PyrClass** classobj, PyrSymbol* name, int* varType, int* level, int* index,
-                 PyrBlock** tempfunc);
-void countClassVarDefs(PyrClassNode* node, int* numClassMethods, int* numInstMethods);
+
 void compileNodeList(PyrParseNode* node, bool onTailBranch);
-void dumpNodeList(PyrParseNode* node);
-int compareCallArgs(PyrMethodNode* node, PyrCallNode* cnode, int* varIndex, PyrClass* specialClass);
-
-bool findSpecialClassName(PyrSymbol* className, int* index);
-int getIndexType(PyrClassNode* classnode);
-
-void compileAnyIfMsg(PyrCallNodeBase2* node);
-void compileIfMsg(PyrCallNodeBase2* node);
-void compileIfNilMsg(PyrCallNodeBase2* node, bool flag);
-void compileCaseMsg(PyrCallNodeBase2* node);
-void compileWhileMsg(PyrCallNodeBase2* node);
-void compileLoopMsg(PyrCallNodeBase2* node);
-void compileAndMsg(PyrParseNode* arg1, PyrParseNode* arg2);
-void compileOrMsg(PyrParseNode* arg1, PyrParseNode* arg2);
-void compileQMsg(PyrParseNode* arg1, PyrParseNode* arg2);
-void compileQQMsg(PyrParseNode* arg1, PyrParseNode* arg2);
-void compileXQMsg(PyrParseNode* arg1, PyrParseNode* arg2);
-void compileSwitchMsg(PyrCallNode* node);
-
-void compilePushInt(int value);
-void compileAssignVar(PyrParseNode* node, PyrSymbol* varName, bool drop);
-void compilePushVar(PyrParseNode* node, PyrSymbol* varName);
-bool isAnInlineableBlock(PyrParseNode* node);
-bool isAnInlineableAtomicLiteralBlock(PyrParseNode* node);
-bool isAtomicLiteral(PyrParseNode* node);
-bool isWhileTrue(PyrParseNode* node);
-void installByteCodes(PyrBlock* block);
-
-ByteCodes compileSubExpression(PyrPushLitNode* litnode, bool onTailBranch);
-ByteCodes compileSubExpressionWithGoto(PyrPushLitNode* litnode, int branchLen, bool onTailBranch);
-ByteCodes compileBodyWithGoto(PyrParseNode* body, int branchLen, bool onTailBranch);
-// ByteCodes compileDefaultValue(int litIndex, int realExprLen);
 
 void initParser();
 void finiParser();
@@ -546,11 +483,5 @@ extern PyrClass* gCurrentMetaClass;
 extern PyrClass* gCompilingClass;
 extern PyrMethod* gCompilingMethod;
 extern PyrBlock* gCompilingBlock;
-
-/*
-    compiling
-    "inlining" of special arithmetic opcodes.
-    inlining of IF, WHILE, AND, OR
-*/
 
 #define YYSTYPE intptr_t
