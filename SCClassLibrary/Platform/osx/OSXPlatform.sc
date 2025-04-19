@@ -79,7 +79,6 @@ OSXPlatform : UnixPlatform {
 
 	defaultTempDir {
 		// ensure trailing slash due to backwards compatibility
-		// see discussion at https://github.com/supercollider/supercollider/pull/4221
 		var tmp = "TMPDIR".getenv +/+ "supercollider".withTrailingSlash;
 		if(File.exists(tmp).not) { tmp.mkdir };
 		^tmp;
