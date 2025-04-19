@@ -15,11 +15,17 @@ the position of the nonzero digit is a uniform random variable.
 This type of noise has a high RMS level relative to its peak to peak level.
 The spectrum is emphasized towards lower frequencies.
 
-note::
-link::Classes/GrayNoise:: is derived from digital signal characteristics (e.g., bit-flipping errors) and
-should not be confused with "gray noise" or "grey noise",
-which typically refers to noise adjusted to human auditory sensitivity curves, such as the A-weighting curve.
-See link::https://en.wikipedia.org/wiki/Grey_noise::, and link::#Comparison with conventional gray noise::
+table::
+## strong::Discussion:::
+
+Grey/gray noise does not have a standard definition as pink and white noise do.
+While link::Classes/GrayNoise:: generates bit-flipping noise, the term "grey/gray noise" may also refer to noise shaped to perceptual equal loudness contours.footnote::
+
+See link::https://web.archive.org/web/20090427190825/http://www.ptpart.co.uk:80/show.php?contentid=71#Joseph Wisniewski's 1996 usenet message:: that seems to have informed the wikipedia articles on link::https://en.wikipedia.org/wiki/Grey_noise#grey noise:: and on link::https://en.wikipedia.org/wiki/Colors_of_Noise#colors of noise::.
+Notice that the bit-flipping version of gray noise is mentioned in a reply to said usenet message.
+::
+
+See link::#Comparison with a version of inverse-A-weighted noise#Comparison with a version of inverse-A-weighted noise in Example::.
 ::
 
 classmethods::
@@ -44,7 +50,7 @@ SynthDef("help-GrayNoise", { |out = 0|
 )
 ::
 
-subsection:: Comparison with conventional gray noise
+subsection:: Comparison with a version of inverse-A-weighted noise
 code::
 { GrayNoise.ar * 0.1 }.freqscope
 
