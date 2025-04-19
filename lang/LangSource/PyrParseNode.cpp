@@ -30,6 +30,7 @@
 #include "GC.h"
 #include <new>
 #include <string>
+#include <optional>
 #include <string.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -162,6 +163,15 @@ PyrPushNameNode* newPyrPushNameNode(PyrSlotNode* slotNode) {
     return (PyrPushNameNode*)slotNode;
 }
 
+
+std::optional<OpSpecialClassEnum> findSpecialClassFromName(PyrSymbol* className) {
+    for (int i = 0; i < static_cast<int>(OpSpecialClassEnum::NumSpecialClasses); ++i)
+        if (gSpecialClasses[i] == className) {
+            return static_cast<OpSpecialClassEnum>(i);
+        }
+    return std::nullopt;
+}
+
 void compilePushVar(PyrParseNode* node, PyrSymbol* varName) {
     int level, index, vindex, varType;
     PyrBlock* tempfunc;
@@ -169,26 +179,23 @@ void compilePushVar(PyrParseNode* node, PyrSymbol* varName) {
 
     // postfl("compilePushVar\n");
     classobj = gCompilingClass;
+
+    // varName is a class name
     if (varName->name[0] >= 'A' && varName->name[0] <= 'Z') {
         if (compilingCmdLine && varName->u.classobj == nullptr) {
             error("Class not defined.\n");
             nodePostErrorLine(node);
             compileErrors++;
+        } else if (const auto specialClass = findSpecialClassFromName(varName)) {
+            OpCode::PushSpecialClass.compile(Operands::SpecialClass { *specialClass });
         } else {
-            if (findSpecialClassName(varName, &index)) {
-                compileOpcode(opExtended, opPushSpecialValue); // special op for pushing a class
-                compileByte(index);
-            } else {
-                PyrSlot slot;
-                SetSymbol(&slot, varName);
-                index = conjureLiteralSlotIndex(node, gCompilingBlock, &slot);
-                compileOpcode(opExtended, opExtended); // special op for pushing a class
-                compileByte(index);
-            }
+            PyrSlot slot;
+            SetSymbol(&slot, varName);
+            OpCode::PushClassX.compile(Operands::Class { conjureLiteralSlotIndex(node, gCompilingBlock, &slot) });
         }
     } else if (varName == s_this || varName == s_super) {
         gFunctionCantBeClosed = true;
-        compileOpcode(opPushSpecialValue, opsvSelf);
+        OpCode::PushSpecialValueThis.compile();
     } else if (varName == s_true) {
         compileOpcode(opPushSpecialValue, opsvTrue);
     } else if (varName == s_false) {
@@ -198,7 +205,7 @@ void compilePushVar(PyrParseNode* node, PyrSymbol* varName) {
     } else if (findVarName(gCompilingBlock, &classobj, varName, &varType, &level, &index, &tempfunc)) {
         switch (varType) {
         case varInst:
-            compileOpcode(opPushInstVar, index);
+            OpCode::PushInstVarX.compile(Operands::Index { static_cast<Byte>(index) });
             break;
         case varClass: {
             index += slotRawInt(&classobj->classVarIndex);
@@ -218,19 +225,21 @@ void compilePushVar(PyrParseNode* node, PyrSymbol* varName) {
         case varTemp:
             vindex = index;
             if (level == 0) {
-                compileOpcode(opPushTempZeroVar, vindex);
+                if (vindex <= 15) {
+                    compileOpcode(opPushTempZeroVar, vindex);
+                } else {
+                    OpCode::PushTempZeroVarX.compile(Operands::Index { static_cast<Byte>(vindex) });
+                }
             } else if (level < 8) {
                 compileOpcode(opPushTempVar, level);
                 compileByte(vindex);
             } else {
-                compileByte(opPushTempVar);
-                compileByte(level);
-                compileByte(vindex);
+                OpCode::PushTempVarX.compile(Operands::FrameOffset { static_cast<Byte>(level) },
+                                             Operands::Index { static_cast<Byte>(vindex) });
             }
             break;
         case varPseudo:
-            compileOpcode(opExtended, opSpecialOpcode);
-            compileByte(index);
+            OpCode::SpecialOpcode.compile(Operands::PseudoVar::fromByte(static_cast<Byte>(index)));
             break;
         }
     } else {
@@ -4179,7 +4188,7 @@ int conjureSelectorIndex(PyrParseNode* node, PyrBlock* func, bool isSuper, PyrSy
     return selectors->size - 1;
 }
 
-int conjureLiteralSlotIndex(PyrParseNode* node, PyrBlock* func, PyrSlot* slot) {
+Byte conjureLiteralSlotIndex(PyrParseNode* node, PyrBlock* func, PyrSlot* slot) {
     int i;
     PyrObject* selectors;
     PyrSlot* slot2;
@@ -4226,7 +4235,7 @@ int conjureLiteralSlotIndex(PyrParseNode* node, PyrBlock* func, PyrSlot* slot) {
     slot2 = selectors->slots + selectors->size++;
     slotCopy(slot2, slot);
 
-    return selectors->size - 1;
+    return static_cast<Byte>(selectors->size - 1);
 }
 
 
@@ -4644,15 +4653,4 @@ void initSpecialSelectors() {
     for (i = 0; i < opNumBinarySelectors; ++i) {
         gSpecialBinarySelectors[i]->specialIndex = i;
     }
-}
-
-bool findSpecialClassName(PyrSymbol* className, int* index) {
-    int i;
-    for (i = 0; i < op_NumSpecialClasses; ++i) {
-        if (gSpecialClasses[i] == className) {
-            *index = i;
-            return true;
-        }
-    }
-    return false;
 }

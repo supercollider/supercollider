@@ -19,11 +19,14 @@
 */
 
 #pragma once
+#include <cstddef>
+#include <type_traits>
 
 
 typedef unsigned char Byte;
 
 #define BYTE_CODE_CHUNK_SIZE 64
+
 
 typedef struct {
     Byte* bytes;

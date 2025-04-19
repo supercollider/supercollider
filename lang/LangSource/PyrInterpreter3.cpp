@@ -543,8 +543,8 @@ static inline void checkStackDepth(VMGlobals* g, PyrSlot* sp) {
 
 HOT void Interpret(VMGlobals* g) {
     // byte code values
-    unsigned char* ip;
-    unsigned char op1;
+    Byte* ip;
+    Byte op1;
 
     // interpreter globals
     int numArgsPushed, numKeyArgsPushed;
@@ -691,52 +691,47 @@ HOT void Interpret(VMGlobals* g) {
 #endif
 
         switch (op1) {
-        case 0: //	push class
+        case OpCode::PushClassX.code:
         handle_op_0 : {
-            int op2 = ip[1];
-            ++ip; // get literal index
-            classobj = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[op2])->u.classobj;
+            const auto [classOperand] = OpCode::PushClassX.pullOperandsFromInstructions(ip);
+            classobj = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[classOperand])->u.classobj;
             if (classobj) {
                 ++sp;
                 SetObject(sp, classobj);
             } else {
                 postfl("Execution warning: Class '%s' not found\n",
-                       slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[op2])->name);
+                       slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[classOperand])->name);
                 slotCopy(++sp, &gSpecialValues[svNil]);
             }
             dispatch_opcode;
         }
-        case 1: // opExtended, opPushInstVar
+        case OpCode::PushInstVarX.code:
         handle_op_1 : {
-            int op2 = ip[1];
-            ++ip; // get inst var index
-            slotCopy(++sp, &slotRawObject(&g->receiver)->slots[op2]);
+            const auto [instVarIndex] = OpCode::PushInstVarX.pullOperandsFromInstructions(ip);
+            slotCopy(++sp, &slotRawObject(&g->receiver)->slots[instVarIndex]);
             dispatch_opcode;
         }
-        case 2: // opExtended, opPushTempVar
+        case OpCode::PushTempVarX.code:
         handle_op_2 : {
-            int op2 = ip[1]; // get temp var level
-            int op3 = ip[2]; // get temp var index
-            ip += 2;
+            const auto [frameOffset, varIndex] = OpCode::PushTempVarX.pullOperandsFromInstructions(ip);
             PyrFrame* tframe = g->frame;
-            for (; op2--; tframe = slotRawFrame(&tframe->context)) { /* noop */
+            for (Byte count = frameOffset; count > 0; count -= 1) {
+                tframe = slotRawFrame(&tframe->context);
             }
-            slotCopy(++sp, &tframe->vars[op3]);
+            slotCopy(++sp, &tframe->vars[varIndex]);
             dispatch_opcode;
         }
-        case 3: // opExtended, opPushTempZeroVar
+        case OpCode::PushTempZeroVarX.code:
         handle_op_3 : {
-            int op2 = ip[1];
-            ++ip; // get temp var index
-            slotCopy(++sp, &g->frame->vars[op2]);
+            const auto [varindex] = OpCode::PushTempZeroVarX.pullOperandsFromInstructions(ip);
+            slotCopy(++sp, &g->frame->vars[varindex]);
             dispatch_opcode;
         }
-        case 4: // opExtended, opPushLiteral
+        case OpCode::PushLiteralX.code:
         handle_op_4 : {
-            int op2 = ip[1];
-            ++ip; // get literal index
+            const auto [literalIndex] = OpCode::PushLiteralX.pullOperandsFromInstructions(ip);
             // push a block as a closure if it is one
-            slot = slotRawObject(&g->block->selectors)->slots + op2;
+            slot = slotRawObject(&g->block->selectors)->slots + literalIndex;
             if (IsObj(slot) && slotRawObject(slot)->classptr == gSpecialClasses[op_class_fundef]->u.classobj) {
                 // push a closure
                 g->sp = sp; // gc may push the stack
@@ -757,19 +752,16 @@ HOT void Interpret(VMGlobals* g) {
             }
             dispatch_opcode;
         }
-        case 5: // opExtended, opPushClassVar
+        case OpCode::PushClassVarX.code:
         handle_op_5 : {
-            int op2 = ip[1]; // get class
-            int op3 = ip[2]; // get class var index
-            ip += 2;
-            slotCopy(++sp, &g->classvars->slots[(op2 << 8) | op3]);
+            const auto [classIndex, varIndex] = OpCode::PushClassVarX.pullOperandsFromInstructions(ip);
+            slotCopy(++sp, &g->classvars->slots[(classIndex << 8) | varIndex]);
             dispatch_opcode;
         }
-        case 6: // opExtended, opPushSpecialValue == push a special class
+        case OpCode::PushSpecialClass.code:
         handle_op_6 : {
-            int op2 = ip[1];
-            ++ip; // get class name index
-            classobj = gSpecialClasses[op2]->u.classobj;
+            const auto [specialClassIndex] = OpCode::PushSpecialClass.pullOperandsFromInstructions(ip);
+            classobj = gSpecialClasses[specialClassIndex]->u.classobj;
             if (classobj) {
                 ++sp;
                 SetObject(sp, classobj);
@@ -778,15 +770,14 @@ HOT void Interpret(VMGlobals* g) {
             }
             dispatch_opcode;
         }
-        case 7: // opExtended, opStoreInstVar
+        case OpCode::StoreInstVarX.code: // opExtended, opStoreInstVar
         handle_op_7 : {
-            int op2 = ip[1];
-            ++ip; // get inst var index
+            const auto [instVarIndex] = OpCode::StoreInstVarX.pullOperandsFromInstructions(ip);
             PyrObject* obj = slotRawObject(&g->receiver);
             if (obj->IsImmutable()) {
                 StoreToImmutableA(g, sp, ip);
             } else {
-                slot = obj->slots + op2;
+                slot = obj->slots + instVarIndex;
                 slotCopy(slot, sp);
                 g->gc->GCWrite(obj, slot);
             }
@@ -814,13 +805,13 @@ HOT void Interpret(VMGlobals* g) {
             g->gc->GCWrite(g->classvars, sp);
             dispatch_opcode;
         }
-        case 10: // opExtended, opSendMsg
+        case OpCode::SendMsgX.code: // opExtended, opSendMsg
         handle_op_10 : {
-            numArgsPushed = ip[1]; // get num args
-            numKeyArgsPushed = ip[2]; // get num keyword args
-            int op3 = ip[3]; // get selector index
-            ip += 3;
-            selector = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[op3]);
+            const auto [numArgs, numKwArgs, selectorIndex] = OpCode::SendMsgX.pullOperandsFromInstructions(ip);
+
+            numArgsPushed = numArgs;
+            numKeyArgsPushed = numKwArgs;
+            selector = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[selectorIndex]);
 
             slot = sp - numArgsPushed + 1;
 

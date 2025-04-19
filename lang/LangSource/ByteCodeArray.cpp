@@ -159,9 +159,9 @@ ByteCodes allocByteCodes() {
 void reallocByteCodes(ByteCodes byteCodes) {
     Byte* newBytes;
 
-    if (byteCodes->size != (byteCodes->ptr - byteCodes->bytes)) {
-        error("reallocByteCodes called with size != byteCode len");
-    }
+    if (byteCodes->size != (byteCodes->ptr - byteCodes->bytes))
+        error("reallocByteCodes called with size %d != byteCode len %d: \n", byteCodes->size,
+              (byteCodes->ptr - byteCodes->bytes));
 
     size_t newLen = byteCodes->size << 1;
     // pyrmalloc: I think that all bytecodes are copied to objects

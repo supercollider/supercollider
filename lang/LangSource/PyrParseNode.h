@@ -475,7 +475,7 @@ int nodeListLength(PyrParseNode* node);
 bool isSuperObjNode(PyrParseNode* node);
 bool isThisObjNode(PyrParseNode* node);
 int conjureSelectorIndex(PyrParseNode* node, PyrBlock* func, bool isSuper, PyrSymbol* selector, int* selType);
-int conjureLiteralSlotIndex(PyrParseNode* node, PyrBlock* func, PyrSlot* slot);
+Byte conjureLiteralSlotIndex(PyrParseNode* node, PyrBlock* func, PyrSlot* slot);
 bool findVarName(PyrBlock* func, PyrClass** classobj, PyrSymbol* name, int* varType, int* level, int* index,
                  PyrBlock** tempfunc);
 void countClassVarDefs(PyrClassNode* node, int* numClassMethods, int* numInstMethods);
