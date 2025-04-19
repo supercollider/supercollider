@@ -17,8 +17,7 @@ The spectrum is emphasized towards lower frequencies.
 
 Grey/gray noise does not have a standard definition as pink and white noise do.
 While link::Classes/GrayNoise:: generates bit-flipping noise, the term "grey/gray noise" may also refer to noise shaped to perceptual equal loudness contours.footnote::
-
-See link::https://web.archive.org/web/20090427190825/http://www.ptpart.co.uk:80/show.php?contentid=71#Joseph Wisniewski's 1996 usenet message:: that seems to have informed the wikipedia articles on link::https://en.wikipedia.org/wiki/Grey_noise#grey noise:: and on link::https://en.wikipedia.org/wiki/Colors_of_noise::.
+See link::https://web.archive.org/web/20090427190825/http://www.ptpart.co.uk:80/show.php?contentid=71##Joseph Wisniewski's 1996 usenet message:: that seems to have informed the wikipedia articles on link::https://en.wikipedia.org/wiki/Grey_noise##Grey noise:: and on link::https://en.wikipedia.org/wiki/Colors_of_noise##Colors of noise::.
 Notice that the bit-flipping version of gray noise is mentioned in a reply to said usenet message.
 ::
 
@@ -48,18 +47,19 @@ SynthDef("help-GrayNoise", { |out = 0|
 
 subsection:: Comparison with a version of inverse-A-weighted noise
 code::
-{ GrayNoise.ar * 0.1 }.freqscope
+{ GrayNoise.ar * -20.dbamp }.freqscope
 
 (
 {
-    var binsz = s.sampleRate / 2048;
-    var in, chain;
-    in = WhiteNoise.ar(0.1);
-    chain = FFT(LocalBuf(2048), in);
-    chain = chain.pvcollect(1024, { |m, p, b, i|
-            m * AmpCompA.ir(b * binsz, minAmp: 0.2)
-            });
-    IFFT(chain);
+	var fftSize = 2048;
+	var binsz = s.sampleRate / fftSize;
+	var in, chain;
+	in = WhiteNoise.ar(-20.dbamp);
+	chain = FFT(LocalBuf(fftSize), in);
+	chain = chain.pvcollect(fftSize / 2, { |m, p, b, i|
+		m * AmpCompA.ir(b * binsz, minAmp: 0.2)
+	});
+	IFFT(chain);
 }.freqscope
 )
 ::
