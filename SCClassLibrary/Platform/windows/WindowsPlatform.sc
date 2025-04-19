@@ -43,7 +43,7 @@ WindowsPlatform : Platform {
 
 	defaultTempDir {
 		// +/+ "" looks funny but ensures trailing slash
-		var tmp = this.userAppSupportDir +/+ "tmp\\";
+		var tmp = "TEMP".getenv +/+ "supercollider".withTrailingSlash;
 		if(File.exists(tmp).not) { tmp.mkdir };
 		^tmp;
 	}
