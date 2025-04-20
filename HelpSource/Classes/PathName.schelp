@@ -7,7 +7,7 @@ description::
 PathName is a utility class for manipulating file names and paths. It expects a path to a file, and lets you access parts of that file path.
 
 note::
-Despite what the class name might suggest, link::Classes/PathName:: instances are not valid pathname arguments. SuperCollider methods handle paths using link::Classes/String::s, as such, you will need to convert link::Classes/PathName:: instances to link::Classes/String:: format to pass them as arguments. The easiest way to do so is to use the code::.fullPath:: method.
+Most classes in SC that operate on files generally expect paths to be link::Classes/String::s, not an instance of link::Classes/PathName::. Use code::.fullPath:: to convert link::Classes/PathName:: to a link::Classes/String:: expected in most cases.
 ::
 
 ClassMethods::
