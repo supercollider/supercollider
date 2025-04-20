@@ -75,7 +75,7 @@ TestPathName : UnitTest {
 
 	test_fileAndFolderAccessMethods {
 		var defaultLibFolder = Main.filenameSymbol.asString.dirname;
-		var classLibFolder = defaultLibFolder.dirname;
+		var classLibFolder = Platform.classLibraryDir;
 		var fileCount = 0, postStream;
 		//  hierarchical access to files and folders
 		// [ 'isFolder', 'isFile', 'entries', 'files', 'folders', 'deepFiles', 'parentPath',

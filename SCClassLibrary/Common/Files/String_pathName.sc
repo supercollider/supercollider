@@ -4,8 +4,8 @@
 + String {
 
 	// // backwards compat to PathName:
-	// fullPath { ^this.asPath }
 	asPath { ^this.standardizePath }
+	fullPath { ^this.asPath }
 
 	// bad name, old macOS ...
 	colonIndices { ^this.separatorIndices }
@@ -65,9 +65,6 @@
 		^(".." ++ r).dup(b.size - i).join ++ a[i..].join(r)
 	}
 
-	// old PathName method
-	asAbsolutePath { ^this.absolutePath }
-
 	allFolders {
 		^this.dirname.split.selectAs (_ != "", List)
 	}
@@ -75,11 +72,15 @@
 	folderName { ^this.dirname.basename }
 
 	nextName {
-		^if(this.last.isDecDigit, {
-			this.noEndNumbers ++ (this.endNumber + 1)
-		}, {
-			this ++ "1"
-		})
+		var name, ext;
+		if (this.last.isDecDigit) {
+			^this.noEndNumbers ++ (this.endNumber + 1)
+		};
+		#name, ext = this.splitext;
+		if (ext.isNil) {
+			^name ++ "1"
+		};
+		^name.nextName ++ "." ++ ext
 	}
 
 	noEndNumbers {
