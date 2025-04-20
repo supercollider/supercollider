@@ -6,6 +6,10 @@ categories:: Files
 description::
 PathName is a utility class for manipulating file names and paths. It expects a path to a file, and lets you access parts of that file path.
 
+note::
+Most classes in SC that operate on files generally expect paths to be link::Classes/String::s, not an instance of link::Classes/PathName::. Use code::.fullPath:: to convert link::Classes/PathName:: to a link::Classes/String:: expected in most cases.
+::
+
 ClassMethods::
 
 private::initClass
