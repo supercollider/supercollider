@@ -98,6 +98,7 @@ The following commands should install all the recommended SuperCollider dependen
 sudo dnf groupinstall "Development Tools"
 sudo dnf install cmake libsndfile-devel wayland-devel xorg-x11-server-Xwayland-devel pipewire-devel pipewire-jack-audio-connection-kit-devel systemd-devel fftw-devel alsa-lib-devel libatomic
 sudo dnf install emacs # if building with the sc-el backend (default)
+sudo dnf install libXt-devel 
 ```
 
 Installing Qt
@@ -130,6 +131,7 @@ Please note, this list has not been tested after upgrading to Qt6. Additional pa
 
 ```shell
 sudo dnf install qt6-qtbase-devel qt6-qtsvg-devel qt6-qtwebengine-devel qt6-linguist qt6-qtwebsockets-devel
+sudo dnf install qt6-qttools-devel
 ```
 
 ### Installing Qt using the official installer
