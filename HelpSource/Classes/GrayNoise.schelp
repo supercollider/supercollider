@@ -21,8 +21,6 @@ See link::https://web.archive.org/web/20090427190825/http://www.ptpart.co.uk:80/
 Notice that the bit-flipping version of gray noise is mentioned in a reply to said usenet message.
 ::
 
-See link::#Comparison with a version of inverse-A-weighted noise#Comparison with a version of inverse-A-weighted noise in Example::.
-
 classmethods::
 
 method::ar, kr
@@ -39,27 +37,8 @@ code::
 (
 SynthDef("help-GrayNoise", { |out = 0|
 	Out.ar(out,
-		GrayNoise.ar(0.1)
+		GrayNoise.ar(-20.dbamp)
 	)
 }).play;
-)
-::
-
-subsection:: Comparison with a version of inverse-A-weighted noise
-code::
-{ GrayNoise.ar * -20.dbamp }.freqscope
-
-(
-{
-	var fftSize = 2048;
-	var binsz = s.sampleRate / fftSize;
-	var in, chain;
-	in = WhiteNoise.ar(-20.dbamp);
-	chain = FFT(LocalBuf(fftSize), in);
-	chain = chain.pvcollect(fftSize / 2, { |m, p, b, i|
-		m * AmpCompA.ir(b * binsz, minAmp: 0.2)
-	});
-	IFFT(chain);
-}.freqscope
 )
 ::
