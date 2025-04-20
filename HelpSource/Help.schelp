@@ -54,14 +54,10 @@ These are useful starting points for getting help on SuperCollider:
 definitionlist::
 ## link::Tutorials/Getting-Started/00-Getting-Started-With-SC##Getting Started tutorial series:: || Get started with SuperCollider
 ## link::Guides/Glossary:: || Glossary
-## link::Guides/More-On-Getting-Help:: || How to find more help
+## link::Guides/More-On-Getting-Help:: || Using Help Files effectively and inspecting class definition files to build more understanding
 ## link::Browse.html#Tutorials#All tutorials:: || Index of all help files categorized under "Tutorials"
 ## link::Guides/UserFAQ:: || Common Errors and FAQ
 ::
-
-SECTION:: Diving deeper
-
-These are helpful for gaining a better grasp of SuperCollider:
 
 subsection:: Getting Sound
 
@@ -81,6 +77,7 @@ list::
 ## link::Classes/Synth::
 ## link::Classes/Node::
 ## link::Classes/Group::
+## link::Classes/Bus::
 ::
 
 subsubsection:: Live Coding Essentials
@@ -98,19 +95,25 @@ list::
 ## link::Classes/Pbind::
 ::
 
-subsection:: Getting Help
+SECTION:: Diving deeper
+
+These are helpful for gaining a better grasp of SuperCollider:
+
+subsection:: Debugging
 
 numberedlist::
 ## link::Guides/How-to-Use-the-Interpreter::
 ## link::Guides/Understanding-Errors::
 ## link::Guides/Debugging-tips::
 ## link::Guides/Tracing-Processes::
+## link::Guides/Internal-Snooping::
 ## link::Guides/HID_permissions::
 ## link::Guides/LID_permissions::
-## link::Guides/Internal-Snooping::
 ::
 
 subsection:: Language Reference
+
+Guides on writing code in the SuperCollider language (code::sclang::).
 
 numberedlist::
 ## link::Reference/Comments::
@@ -134,7 +137,29 @@ numberedlist::
 ## link::Guides/Tour-of-Special-Functions::
 ::
 
+subsection:: Overviews
+
+Guides and Tutorials on broad topics:
+
+numberedlist::
+## link::Reference/AudioDeviceSelection::
+## link::Guides/Tour_of_UGens::
+## link::Overviews/Operators::
+## link::Overviews/Collections::
+## link::Overviews/GenericCollectors::
+## link::Guides/Randomness::
+## link::Overviews/Streams::
+## link::Overviews/Event_types::
+## link::Guides/GUI-Introduction::
+## link::Overviews/GUI-Classes::
+## link::Guides/GUI-Layout-Management::
+## link::Guides/FFT-Overview::
+## link::Guides/Non-Realtime-Synthesis::
+::
+
 subsection:: Architecture
+
+Guides and References focused on the important relationship between the Client and Server.
 
 numberedlist::
 ## link::Guides/ClientVsServer::
@@ -153,25 +178,9 @@ numberedlist::
 ## link::Reference/Synth-Definition-File-Format::
 ::
 
-subsection:: Overview
-
-numberedlist::
-## link::Reference/AudioDeviceSelection::
-## link::Guides/Tour_of_UGens::
-## link::Overviews/Operators::
-## link::Overviews/Collections::
-## link::Overviews/GenericCollectors::
-## link::Guides/Randomness::
-## link::Overviews/Streams::
-## link::Overviews/Event_types::
-## link::Guides/GUI-Introduction::
-## link::Overviews/GUI-Classes::
-## link::Guides/GUI-Layout-Management::
-## link::Guides/FFT-Overview::
-## link::Guides/Non-Realtime-Synthesis::
-::
-
 subsection:: Extending SC
+
+If there are things you want to do that can't be achieved using SuperCollider as it exists, you can extend SuperCollider's capabilities.
 
 numberedlist::
 ## link::Reference/StartupFile::
@@ -179,8 +188,6 @@ numberedlist::
 ## link::Guides/UsingQuarks::
 ## link::Guides/WritingClasses::
 ## link::Guides/standalones::
-## link::Guides/WritingHelp::
-## link::Reference/SCDocSyntax::
 ## link::Guides/WritingTests::
 ## link::Guides/WritingUGens::
 ## link::Reference/ServerPluginAPI::
@@ -190,36 +197,35 @@ numberedlist::
 subsection:: Sharing your work
 
 definitionList::
-## Style Guidelines || list::
-## link::https://github.com/supercollider/supercollider/wiki/Style-Guidelines:-SuperCollider##SuperCollider::
+## Share Music || list::
+## link::https://scsynth.org/c/music##Music on scsynth.org::
 ::
 ## Share Code || list::
 ## http://sccode.org/
 ## link::https://scsynth.org/c/questions/code-review##Code Review on scsynth.org::
 ## link::https://scsynth.org/c/music/code-tennis##Code Tennis on scsynth.org::
-::
-## Share Music || list::
-## link::https://scsynth.org/c/music##Music on scsynth.org::
+## link::https://github.com/supercollider/supercollider/wiki/Style-Guidelines:-SuperCollider##Style Guide: SuperCollider Code (for sclang)::
 ::
 ::
 
 subsection:: Contributing to SC
 
 definitionList::
-## Style Guidelines || list::
-## link::https://github.com/supercollider/supercollider/wiki/Style-Guidelines:-SCDocs##SCDocs (schelp)::
-## link::https://github.com/supercollider/supercollider/wiki/Style-Guidelines:-Cpp##C++ code::
-::
 ## Discussing || list::
 ## link::https://scsynth.org/c/development##Development on scsynth.org::
 ::
+## Help Documents || list::
+## link::Guides/WritingHelp::
+## link::Reference/SCDocSyntax::
+## link::https://github.com/supercollider/supercollider/wiki/Style-Guidelines:-SCDocs##Style Guide: SuperCollider Help Files::
+::
 ## Developing || list::
 ## link::https://github.com/supercollider/supercollider##SuperCollider on GitHub::
+## link::https://github.com/supercollider/supercollider/wiki/Style-Guidelines:-Cpp##Style Guide: SuperCollider C++ Code (for scsynth)::
 ::
 ::
 
 subsection:: For more information
-
 
 link:: https://github.com/supercollider/supercollider/wiki##SuperCollider Wiki::
 
