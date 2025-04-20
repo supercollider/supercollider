@@ -53,7 +53,6 @@ Installing requirements on Debian
 There are dedicated READMEs in this repository for building on particular embedded Linux platforms:
 
 - Raspberry Pi: README_RASPBERRY_PI.md
-- BeagleBone Black: README_BEAGLEBONE_BLACK.md
 - Bela: README_BELA.md
 
 On Debian-like systems, the following command installs the minimal recommended dependencies for compiling scsynth and supernova:
