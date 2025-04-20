@@ -20,7 +20,9 @@
 
 #pragma once
 #include "ByteCodeArray.h"
+#include <cassert>
 #include <tuple>
+#include <cstdint>
 
 
 /* (Jordan Henderson)
@@ -63,7 +65,7 @@ template <Byte CODE, typename... OPERANDS> struct SimpleOpSpec {
 
     Tuple pullOperandsFromInstructions(unsigned char*& ip) const {
         // increment instruction pointer and get the values for each operand.
-        return { OPERANDS::fromByte(*(++ip))... };
+        return { OPERANDS::fromRaw(*(++ip))... };
     }
 
     void compile(OPERANDS... operands) const {
@@ -80,17 +82,35 @@ template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbl
     using Tuple = std::tuple<OPERANDS...>;
 
     const char* name;
+
+    template <typename N> void compile(N nibble, OPERANDS... operands) const {
+        assert(nibble < 16);
+        const Byte bytecode = startCode + nibble;
+        assert(bytecode < endCode);
+        compileByte(bytecode);
+
+        (compileByte(operands), ...);
+    }
 };
 
 template <Byte STARTCODE, Byte ENDCODE, typename ENUM_T, typename... OPERANDS> struct SecondNibbleViaEnumOpSpec {
     static constexpr OpCodeType opCodeType { OpCodeType::SecondNibbleViaEnum };
-    static constexpr auto startCode { STARTCODE };
-    static constexpr auto endCode { ENDCODE };
+    static constexpr Byte startCode { STARTCODE };
+    static constexpr Byte endCode { ENDCODE };
     static constexpr auto operandCount { sizeof...(OPERANDS) };
     using Tuple = std::tuple<OPERANDS...>;
     using Enum = ENUM_T;
 
     const char* name;
+    void compile(ENUM_T e, OPERANDS... operands) const {
+        const Byte nibble = static_cast<Byte>(e);
+        assert(nibble < 16);
+        const Byte bytecode = startCode + nibble;
+        assert(bytecode < endCode);
+        compileByte(bytecode);
+
+        (compileByte(operands), ...);
+    }
 };
 
 struct NamedByte {
@@ -100,6 +120,7 @@ struct NamedByte {
 
 template <typename Enum_T> struct OperandEnumWrapper {
     static_assert(std::is_convertible_v<std::underlying_type_t<Enum_T>, Byte>);
+    constexpr OperandEnumWrapper(Enum_T e) noexcept: value(e) {}
     Enum_T value;
     constexpr operator Byte() const { return static_cast<Byte>(value); }
 };
@@ -123,6 +144,7 @@ enum struct OpUnaryMathNibble : Byte {
     Cubed,
     Sqrt,
     Exp,
+    COUNT
 };
 
 enum struct OpBinaryMathNibble : Byte {
@@ -142,6 +164,7 @@ enum struct OpBinaryMathNibble : Byte {
     Max,
     BitAnd,
     BitOr,
+    COUNT
 };
 
 enum struct OpSpecialClassEnum : Byte {
@@ -195,17 +218,10 @@ enum struct OpSpecialClassEnum : Byte {
     Routine,
     Color,
     Rect,
-    NumSpecialClasses
+    COUNT
 };
 
-enum struct OpPseudoVarEnum : Byte {
-    Process,
-    Method,
-    FunctionDef,
-    Function,
-    Thread,
-    NumPseudoVars,
-};
+enum struct OpPseudoVarEnum : Byte { Process, Method, FunctionDef, Function, Thread, NumPseudoVars, COUNT };
 
 enum struct OpSpecialNumbers : Byte {
     MinusOne,
@@ -217,6 +233,7 @@ enum struct OpSpecialNumbers : Byte {
     ZeroFloat,
     OneFloat,
     TwoFloat,
+    COUNT
 };
 
 enum struct OpSpecialSelectors : Byte {
@@ -297,10 +314,10 @@ enum struct OpSpecialSelectors : Byte {
     Name,
     MulAdd,
     Series,
-    NumSpecialSelectors
+    COUNT
 };
 
-enum struct OpSpecialValue : Byte { True, False, Nil, Inf };
+enum struct OpSpecialValue : Byte { True, False, Nil, Inf, COUNT };
 
 enum struct OpUnaryMath : Byte {
     Neg,
@@ -357,7 +374,7 @@ enum struct OpUnaryMath : Byte {
     TriWindow,
     Ramp,
     SCurve,
-    NumUnarySelectors
+    COUNT
 };
 
 enum struct OpBinaryMath : Byte {
@@ -410,75 +427,99 @@ enum struct OpBinaryMath : Byte {
     FirstArg,
     RandRange,
     ExpRandRange,
-    NumBinarySelectors
+    COUNT
 };
 
-enum struct OpTrinaryMath : Byte {
-    Divz,
-    Clip,
-    Wrap,
-    Fold,
-    RampMult,
-    Mix,
-};
+enum struct OpTrinaryMath : Byte { Divz, Clip, Wrap, Fold, RampMult, Mix, COUNT };
+
+
 struct Operands {
+    template <typename I> constexpr static Byte to_byte(I i) {
+        static_assert(std::is_integral_v<I>);
+        assert(i < 256);
+        return static_cast<Byte>(i);
+    }
+
+    template <typename ENUM_T, typename I> constexpr static ENUM_T to_enum(I i) {
+        assert(i < static_cast<std::uint64_t>(ENUM_T::COUNT));
+        return static_cast<ENUM_T>(to_byte<I>(i));
+    }
+
+
     struct Unknown : details::NamedByte {
         static constexpr const char* name = "Unknown";
-        constexpr static Unknown fromByte(Byte b) { return { b }; }
+        constexpr static Unknown fromRaw(int b) { return { to_byte(b) }; }
     };
     struct Index : details::NamedByte {
         static constexpr const char* name = "Index";
-        constexpr static Index fromByte(Byte b) { return { b }; }
+        constexpr static Index fromRaw(int b) { return { to_byte(b) }; }
     };
     struct FrameOffset : details::NamedByte {
         static constexpr const char* name = "FrameOffset";
-        constexpr static FrameOffset fromByte(Byte b) { return { b }; }
+        constexpr static FrameOffset fromRaw(int b) { return { to_byte(b) }; }
     };
     struct Class : details::NamedByte {
         static constexpr const char* name = "Class";
-        constexpr static Class fromByte(Byte b) { return { b }; }
+        constexpr static Class fromRaw(int b) { return { to_byte(b) }; }
     };
     struct ArgumentCount : details::NamedByte {
         static constexpr const char* name = "ArgumentCount";
-        constexpr static ArgumentCount fromByte(Byte b) { return { b }; }
+        constexpr static ArgumentCount fromRaw(int b) { return { to_byte(b) }; }
     };
     struct KwArgumentCount : details::NamedByte {
         static constexpr const char* name = "KwArgumentCount";
-        constexpr static KwArgumentCount fromByte(Byte b) { return { b }; }
+        constexpr static KwArgumentCount fromRaw(int b) { return { to_byte(b) }; }
     };
     struct LowBitsOf12BitNumber : details::NamedByte {
         static constexpr const char* name = "LowBitsOf12BitNumber";
-        constexpr static LowBitsOf12BitNumber fromByte(Byte b) { return { b }; }
+        constexpr static LowBitsOf12BitNumber fromRaw(int b) { return { to_byte(b) }; }
     };
     template <size_t TOTAL, size_t PART> struct NumericByte : details::NamedByte {
         static constexpr const char* name = "NumericByte";
-        constexpr static NumericByte<TOTAL, PART> fromByte(Byte b) { return { b }; }
+        constexpr static NumericByte<TOTAL, PART> fromRaw(int b) { return { to_byte(b) }; }
     };
     struct SpecialClass : details::OperandEnumWrapper<OpSpecialClassEnum> {
+        constexpr SpecialClass(OpSpecialClassEnum s) noexcept: details::OperandEnumWrapper<OpSpecialClassEnum>(s) {}
         static constexpr const char* name = "SpecialClass";
-        constexpr static SpecialClass fromByte(Byte b) { return { static_cast<OpSpecialClassEnum>(b) }; }
+        constexpr static SpecialClass fromRaw(int b) { return { to_enum<OpSpecialClassEnum>(b) }; }
     };
     struct PseudoVar : details::OperandEnumWrapper<OpPseudoVarEnum> {
+        constexpr PseudoVar(OpPseudoVarEnum s) noexcept: details::OperandEnumWrapper<OpPseudoVarEnum>(s) {}
         static constexpr const char* name = "PseudoVar";
-        constexpr static PseudoVar fromByte(Byte b) { return { static_cast<OpPseudoVarEnum>(b) }; }
+        constexpr static PseudoVar fromRaw(int b) { return { to_enum<OpPseudoVarEnum>(b) }; }
     };
 
     struct SpecialSelectors : details::OperandEnumWrapper<OpSpecialSelectors> {
+        constexpr SpecialSelectors(OpSpecialSelectors s) noexcept: details::OperandEnumWrapper<OpSpecialSelectors>(s) {}
         static constexpr const char* name = "SpecialSelectors";
-        constexpr static SpecialSelectors fromByte(Byte b) { return { static_cast<OpSpecialSelectors>(b) }; }
+        constexpr static SpecialSelectors fromRaw(int b) { return { to_enum<OpSpecialSelectors>(b) }; }
     };
 
     struct UnaryMath : details::OperandEnumWrapper<OpUnaryMath> {
+        constexpr UnaryMath(OpUnaryMath s) noexcept: details::OperandEnumWrapper<OpUnaryMath>(s) {}
         static constexpr const char* name = "UnaryMath";
-        constexpr static UnaryMath fromByte(Byte b) { return { static_cast<OpUnaryMath>(b) }; }
+        constexpr static UnaryMath fromRaw(int b) { return { to_enum<OpUnaryMath>(b) }; }
     };
     struct BinaryMath : details::OperandEnumWrapper<OpBinaryMath> {
+        constexpr BinaryMath(OpBinaryMath s) noexcept: details::OperandEnumWrapper<OpBinaryMath>(s) {}
         static constexpr const char* name = "BinaryMath";
-        constexpr static BinaryMath fromByte(Byte b) { return { static_cast<OpBinaryMath>(b) }; }
+        constexpr static BinaryMath fromRaw(int b) { return { to_enum<OpBinaryMath>(b) }; }
     };
     struct TrinaryMath : details::OperandEnumWrapper<OpTrinaryMath> {
+        constexpr TrinaryMath(OpTrinaryMath s) noexcept: details::OperandEnumWrapper<OpTrinaryMath>(s) {}
         static constexpr const char* name = "TrinaryMath";
-        constexpr static TrinaryMath fromByte(Byte b) { return { static_cast<OpTrinaryMath>(b) }; }
+        constexpr static TrinaryMath fromRaw(int b) { return { to_enum<OpTrinaryMath>(b) }; }
+    };
+    struct BinaryMathNibble : details::OperandEnumWrapper<OpBinaryMathNibble> {
+        constexpr BinaryMathNibble(OpBinaryMathNibble s) noexcept: details::OperandEnumWrapper<OpBinaryMathNibble>(s) {}
+        static constexpr const char* name = "BinaryMathNibble";
+        constexpr static BinaryMathNibble fromRaw(int b) { return { to_enum<OpBinaryMathNibble>(b) }; }
+    };
+
+    struct SpecialValue : details::OperandEnumWrapper<OpSpecialValue> {
+        constexpr SpecialValue(OpSpecialValue s) noexcept: details::OperandEnumWrapper<OpSpecialValue>(s) {}
+        constexpr static SpecialValue fromRaw(int b) { return { to_enum<OpSpecialValue>(b) }; }
+        static constexpr const char* name = "SpecialValue";
     };
 
     //
@@ -642,11 +683,12 @@ struct OpCode {
 
     static constexpr details::SimpleOpSpec<0x20, Operands::Unknown, Operands::Unknown> JumpIfTrue { "JumpIfTrue" };
 
-    /// Push a variable from an enclosing frame onto the stack.
-    /// The second nibble of the first instruction byte gives the distance in frames between the current frame and the
-    /// desired target. The second instruction byte determines the index of the variable within that frame. For
-    /// instance, 25 02 indicates the third variable of the fifth frame outside this frame.
-    /// { var a, b, c; { { { { { c.floop }.def.dumpByteCodes }.value }.value }.value }.value }.value
+    /// Note: because the frameoffset of 0 is handled by a separate opcode, you need to subtract one from the real
+    /// value. Push a variable from an enclosing frame onto the stack. The second nibble of the first instruction byte
+    /// gives the distance in frames between the current frame and the desired target. The second instruction byte
+    /// determines the index of the variable within that frame. For instance, 25 02 indicates the third variable of the
+    /// fifth frame outside this frame. { var a, b, c; { { { { { c.floop }.def.dumpByteCodes }.value }.value }.value
+    /// }.value }.value
     static constexpr details::SecondNibbleOpSpec<0x21, 0x28, Operands::Index> PushTempVar { "PushTempVar" };
 
     /// Push a constant from the current frame onto the stack. The second instruction byte indicates the index of the
@@ -710,7 +752,9 @@ struct OpCode {
     /// The index of the variable is given by the second nibble of the first instruction byte and the second instruction
     /// byte interpreted as a 12-bit integer. The indexed array is the global collection of class variables.
     /// Server.findMethod('calculateViewBounds').dumpByteCodes
-    static constexpr details::SecondNibbleOpSpec<0x50, 0x60> PushClassVar { "PushClassVar" };
+    static constexpr details::SecondNibbleOpSpec<0x50, 0x60, Operands::LowBitsOf12BitNumber> PushClassVar {
+        "PushClassVar"
+    };
 
     /// Pushes 'this' to the top of the stack.
     static constexpr details::SimpleOpSpec<0x60> PushSpecialValueThis { "PushSpecialValueThis" };
@@ -733,7 +777,7 @@ struct OpCode {
 
     /// Pushes a commonly used value to the top of the stack.
     /// True, False, Nil, or Inf.
-    static constexpr details::SecondNibbleViaEnumOpSpec<0x6c, 0x70, OpSpecialValue> PushSpecialValue {
+    static constexpr details::SecondNibbleViaEnumOpSpec<0x6c, 0x70, Operands::SpecialValue> PushSpecialValue {
         "PushSpecialValue"
     };
 
@@ -823,6 +867,8 @@ struct OpCode {
     /// { this.hark }.def.dumpByteCodes
     static constexpr details::SimpleOpSpec<0xA0, Operands::Index> SendMsgThisOpt { "SendMsgThisOpt" };
 
+
+    /// NOTE: because zero args is handled elsewhere, you must subtract one from the total number of args before setting
     /// Call a method taking a number of arguments.
     /// The second nibble of the first instruction byte determines the number of arguments passed to the method.
     /// The second instruction byte determines the index of the selector within the block.
@@ -832,10 +878,10 @@ struct OpCode {
     /// Sets the global tail call state to 2. TODO what does this mean?
     static constexpr details::SimpleOpSpec<0xB0> TailCallReturnFromFunction { "TailCallReturnFromFunction" };
 
-    /// Call a method on super taking a number of arguments.
-    /// The second nibble of the first instruction bytes determines the number of arguments passed to the method.
-    /// The second instruction byte determines the index of the selector within the block.
-    /// Mostly used in class code, as in an interpreted context it refers to Interpreter.
+    /// NOTE: because zero args is handled elsewhere, you must subtract one from the total number of args before setting
+    /// nibble. Call a method on super taking a number of arguments. The second nibble of the first instruction bytes
+    /// determines the number of arguments passed to the method. The second instruction byte determines the index of the
+    /// selector within the block. Mostly used in class code, as in an interpreted context it refers to Interpreter.
     static constexpr details::SecondNibbleOpSpec<0xB1, 0xC0, Operands::Index> SendSuperMsg { "SendSuperMsg" };
 
     /// Push this to the top of the stack and call a special method taking one argument.
@@ -844,6 +890,7 @@ struct OpCode {
     static constexpr details::SimpleOpSpec<0xC0, Operands::Index> SendSuperMsgThisOpt { "SendSuperMsgThisOpt" };
 
 
+    /// NOTE: because zero args is handled elsewhere, you must subtract one from the total number of args before setting
     /// Call a special method taking a number of arguments.
     /// The second nibble of the first instruction byte determines the number of arguments passed to the method.
     /// The second instruction byte determines the index of the special method within gSpecialSelectors.
@@ -853,14 +900,13 @@ struct OpCode {
     };
 
     /// Perform a unary operation in-place on the top of the stack.
-    static constexpr details::SecondNibbleViaEnumOpSpec<0xD0, 0xE0, OpUnaryMathNibble> SpendSpecialUnaryArithMsg {
-        "SpendSpecialUnaryArithMsg"
+    static constexpr details::SecondNibbleViaEnumOpSpec<0xD0, 0xE0, OpUnaryMathNibble> SendSpecialUnaryArithMsg {
+        "SendSpecialUnaryArithMsg"
     };
 
     /// Perform a binary operation in-place on the top of the stack.
-    static constexpr details::SecondNibbleViaEnumOpSpec<0xE0, 0xF0, OpBinaryMathNibble> SpendSpecialBinaryArithMsg {
-        "SpendSpecialBinaryArithMsg"
-    };
+    static constexpr details::SecondNibbleViaEnumOpSpec<0xE0, 0xF0, Operands::BinaryMathNibble>
+        SendSpecialBinaryArithMsg { "SendSpecialBinaryArithMsg" };
 
     /// Pop the top of the stack and discard it.
     static constexpr details::SimpleOpSpec<0xF0> Drop { "Drop" };
