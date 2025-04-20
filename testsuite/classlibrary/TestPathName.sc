@@ -26,15 +26,15 @@ bench { TestPathName.run };
 
 TestPathName : UnitTest {
 
-		// all string manipulation methods
+	// all string manipulation methods
 	test_filePathMethods {
 
 		var p = PathName("/Users/adc/src/Sounds/FunkyChicken.abc.scd");
 
 		// keep List type for full compat
 		this.assertEquals(p.colonIndices, List[0, 6, 10, 14, 21], "colonIndices");
-		//// new, better name
-		// this.assertEquals(p.separatorIndices, List[0, 6, 10, 14, 21], "separatorIndices");
+		// new, better name
+		this.assertEquals(p.separatorIndices, List[0, 6, 10, 14, 21], "separatorIndices");
 
 		this.assertEquals(p.fileName, "FunkyChicken.abc.scd", "fileName");
 		this.assertEquals(p.fileNameWithoutExtension, "FunkyChicken.abc", "fileNameWithoutExtension");
@@ -61,11 +61,15 @@ TestPathName : UnitTest {
 
 		this.assertEquals(PathName("abc").nextName, "abc1", "nextName, no number, no extension");
 		this.assertEquals(PathName("abc9").nextName, "abc10", "nextName with number, no extension");
-		// this.assertEquals(PathName("/where/ever/abc99.txt").nextName, "/where/ever/abc100.txt",
-		//	"nextName with extension, long path and high number");
+		this.assertEquals(
+			PathName("/where/ever/abc99.txt").nextName,
+			"/where/ever/abc100.txt",
+			"nextName with extension, long path and high number"
+		);
 
 		this.assertEquals(PathName("abc/") +/+ "def", PathName("abc/def"), "concat with String");
-		this.assertEquals(PathName("abc/") +/+ PathName("/def"), PathName("abc/def"), "concat with PathName");
+		this.assertEquals(PathName("abc/") +/+ PathName("/def"), PathName("abc/def"),
+			"concat with 2 PathNames");
 
 	}
 
