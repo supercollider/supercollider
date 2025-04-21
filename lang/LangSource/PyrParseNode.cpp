@@ -3393,89 +3393,95 @@ PyrMultiAssignVarListNode* newPyrMultiAssignVarListNode(PyrSlotNode* varNames, P
     return node;
 }
 
-void compileAssignVar(PyrParseNode* node, PyrSymbol* varName, bool drop) {
-    int level, index, vindex, varType;
-    PyrBlock* tempfunc;
-    PyrClass* classobj;
+bool isUnassignableSymbol(PyrSymbol* varName) {
+    return varName == s_this || varName == s_super || varName == s_curProcess || varName == s_curThread
+        || varName == s_curMethod || varName == s_curBlock || varName == s_curClosure;
+}
 
-    // postfl("compileAssignVar\n");
-    classobj = gCompilingClass;
-    if (varName == s_this || varName == s_super || varName == s_curProcess || varName == s_curThread
-        || varName == s_curMethod || varName == s_curBlock || varName == s_curClosure) {
+void compileAssignVar(PyrParseNode* node, PyrSymbol* varName, bool drop) {
+    if (isUnassignableSymbol(varName)) {
         error("You may not assign to '%s'.", varName->name);
         nodePostErrorLine(node);
         compileErrors++;
-    } else if (varName->name[0] >= 'A' && varName->name[0] <= 'Z') {
-        // actually this shouldn't even parse, so you won't get here.
+        return;
+    }
+    if (std::isupper(varName->name[0])) {
         error("You may not assign to a class name.");
         nodePostErrorLine(node);
         compileErrors++;
-    } else if (findVarName(gCompilingBlock, &classobj, varName, &varType, &level, &index, &tempfunc)) {
-        switch (varType) {
-        case varInst:
-            if (drop) {
-                if (index <= 15) {
-                    compileByte((opStoreInstVar << 4) | index);
-                } else {
-                    compileByte(opStoreInstVar);
-                    compileByte(index);
-                    compileByte((opSpecialOpcode << 4) | opcDrop);
-                }
-            } else {
-                compileByte(opStoreInstVar);
-                compileByte(index);
-            }
-            break;
-        case varClass: {
-            index += slotRawInt(&classobj->classVarIndex);
-            if (drop) {
-                if (index < 4096) {
-                    compileByte((opStoreClassVar << 4) | ((index >> 8) & 15));
-                    compileByte(index & 255);
-                } else {
-                    compileByte(opStoreClassVar);
-                    assert(false);
-                    vindex = 0;
-                    compileByte(vindex); // FIXME: vindex is not initalized!!!!
-                    compileByte(index);
-                    compileByte((opSpecialOpcode << 4) | opcDrop);
-                }
-            } else {
-                compileByte(opStoreClassVar);
-                compileByte((index >> 8) & 255);
-                compileByte(index & 255);
-            }
-        } break;
-        case varConst: {
-            error("You may not assign to a constant.");
-            nodePostErrorLine(node);
-            compileErrors++;
-        } break;
-        case varTemp:
-            // compileOpcode(opStoreTempVar, level);
-            // compileByte(index);
-            if (drop) {
-                if (index <= 15 && level < 8) {
-                    compileByte((opStoreTempVar << 4) | level);
-                    compileByte(index);
-                } else {
-                    compileByte(opStoreTempVar);
-                    compileByte(level);
-                    compileByte(index);
-                    compileByte((opSpecialOpcode << 4) | opcDrop);
-                }
-            } else {
-                compileByte(opStoreTempVar);
-                compileByte(level);
-                compileByte(index);
-            }
-            break;
-        }
-    } else {
+        return;
+    }
+
+    const auto result = findVarName(gCompilingBlock, gCompilingClass, varName);
+    if (!result) {
         error("Variable '%s' not defined.\n", varName->name);
         nodePostErrorLine(node);
         compileErrors++;
-        // Debugger();
+    }
+
+    const FindVarNameResult findResult = *result;
+
+    switch (findResult.varType) {
+    case varInst: {
+        if (drop) {
+            if (findResult.index <= 15) {
+                OpCode::StoreInstVar.compile(findResult.index);
+            } else {
+                OpCode::StoreInstVarX.compile(Operands::Index::fromRaw(findResult.index));
+                OpCode::Drop.compile();
+            }
+        } else {
+            // TODO: why can't we use the shorter StoreInstVar here? It breaks for some reason.
+            OpCode::StoreInstVarX.compile(Operands::Index::fromRaw(findResult.index));
+        }
+    } break;
+
+    case varClass: {
+        const auto index = findResult.index + slotRawInt(&findResult.classobj->classVarIndex);
+        if (drop) {
+            if (index < 4096) {
+                OpCode::StoreClassVar.compile(index);
+            } else {
+                compileByte(opStoreClassVar);
+                assert(false); // TODO: why are we asserting false?
+                compileByte(0);
+                compileByte(index);
+                compileByte((opSpecialOpcode << 4) | opcDrop);
+            }
+        } else {
+            // TODO: why can't we use the shorter StoreClassVar here? It breaks for some reason.
+            OpCode::StoreClassVarX.compile(Operands::NumericByte<16, 1>::fromFull(index),
+                                           Operands::NumericByte<16, 0>::fromFull(index));
+        }
+    } break;
+
+    case varConst: {
+        error("You may not assign to a constant.");
+        nodePostErrorLine(node);
+        compileErrors++;
+    } break;
+
+    case varTemp: {
+        if (drop) {
+            if (findResult.index <= 15 && findResult.level < 8) {
+                OpCode::StoreTempVar.compile(findResult.level, Operands::Index::fromRaw(findResult.index));
+            } else {
+                OpCode::StoreTempVarX.compile(Operands::FrameOffset::fromRaw(findResult.level),
+                                              Operands::Index::fromRaw(findResult.index));
+                OpCode::Drop.compile();
+            }
+        } else {
+            // TODO: why can't we use the shorter StoreTempVarX here? It breaks for some reason.
+            OpCode::StoreTempVarX.compile(Operands::FrameOffset::fromRaw(findResult.level),
+                                          Operands::Index::fromRaw(findResult.index));
+        }
+    } break;
+
+    default: {
+        error("Should be impossible");
+        nodePostErrorLine(node);
+        compileErrors++;
+    } break;
     }
 }
 
