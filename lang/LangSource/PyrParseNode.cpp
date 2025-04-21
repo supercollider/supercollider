@@ -3324,34 +3324,31 @@ PyrReturnNode* newPyrReturnNode(PyrParseNode* expr) {
 
 
 void PyrReturnNode::compile(PyrSlot* result) {
-    PyrPushLitNode* lit;
-    PyrSlot dummy;
-
-    // post("->compilePyrReturnNode\n");
     gFunctionCantBeClosed = true;
     if (!mExpr) {
-        compileOpcode(opSpecialOpcode, opcReturnSelf);
+        OpCode::ReturnSelf.compile();
     } else if (mExpr->mClassno == pn_PushLitNode) {
-        lit = (PyrPushLitNode*)mExpr;
+        PyrPushLitNode* lit = (PyrPushLitNode*)mExpr;
         if (IsSym(&(lit->mSlot)) && slotRawSymbol(&lit->mSlot) == s_this) {
-            compileOpcode(opSpecialOpcode, opcReturnSelf);
+            OpCode::ReturnSelf.compile();
         } else if (IsNil(&lit->mSlot)) {
-            compileOpcode(opSpecialOpcode, opcReturnNil);
+            OpCode::ReturnNil.compile();
         } else if (IsTrue(&lit->mSlot)) {
-            compileOpcode(opSpecialOpcode, opcReturnTrue);
+            OpCode::ReturnTrue.compile();
         } else if (IsFalse(&lit->mSlot)) {
-            compileOpcode(opSpecialOpcode, opcReturnFalse);
+            OpCode::ReturnFalse.compile();
         } else {
+            PyrSlot dummy;
             COMPILENODE(lit, &dummy, false);
-            compileOpcode(opSpecialOpcode, opcReturn);
+            OpCode::Return.compile();
         }
     } else {
         SetTailBranch branch(true);
         SetTailIsMethodReturn mr(true);
+        PyrSlot dummy;
         COMPILENODE(mExpr, &dummy, true);
         compileOpcode(opSpecialOpcode, opcReturn);
     }
-    // post("<-compilePyrReturnNode\n");
 }
 
 PyrBlockReturnNode* newPyrBlockReturnNode() {
