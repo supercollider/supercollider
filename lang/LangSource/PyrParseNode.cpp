@@ -3204,52 +3204,49 @@ void compilePushInt(int value) {
 }
 
 void PyrSlotNode::compilePushLit(PyrSlot* result) {
-    int index;
-    PyrSlot slot;
-    ByteCodes savedBytes;
-
-    // postfl("compilePyrPushLitNode\n");
     if (IsPtr(&mSlot)) {
         PyrParseNode* literalObj = (PyrParseNode*)slotRawPtr(&mSlot);
-        // index = conjureLiteralObjIndex(gCompilingBlock, literalObj);
+
         if (literalObj->mClassno == pn_BlockNode) {
-            savedBytes = saveByteCodeArray();
+            ByteCodes savedBytes = saveByteCodeArray();
+            PyrSlot slot;
             COMPILENODE(literalObj, &slot, false);
             restoreByteCodeArray(savedBytes);
-            index = conjureLiteralSlotIndex(literalObj, gCompilingBlock, &slot);
-            compileOpcode(opExtended, opPushLiteral);
-            compileByte(index);
+
+            const Byte index = conjureLiteralSlotIndex(literalObj, gCompilingBlock, &slot);
+            OpCode::PushLiteralX.compile(Operands::Index::fromRaw(index));
 
             PyrBlock* block = slotRawBlock(&slot);
-            if (NotNil(&block->contextDef)) {
+            if (NotNil(&block->contextDef))
                 METHRAW(gCompilingBlock)->needsHeapContext = 1;
-            }
+
         } else {
+            PyrSlot slot;
             COMPILENODE(literalObj, &slot, false);
             compilePushConstant((PyrParseNode*)literalObj, &slot);
         }
     } else {
-        slot = mSlot;
+        PyrSlot slot = mSlot;
         if (IsInt(&slot)) {
             compilePushInt(slotRawInt(&slot));
         } else if (SlotEq(&slot, &o_nil)) {
-            compileOpcode(opPushSpecialValue, opsvNil);
+            OpCode::PushSpecialValue.compile(OpSpecialValue::Nil);
         } else if (SlotEq(&slot, &o_true)) {
-            compileOpcode(opPushSpecialValue, opsvTrue);
+            OpCode::PushSpecialValue.compile(OpSpecialValue::True);
         } else if (SlotEq(&slot, &o_false)) {
-            compileOpcode(opPushSpecialValue, opsvFalse);
+            OpCode::PushSpecialValue.compile(OpSpecialValue::False);
         } else if (SlotEq(&slot, &o_fhalf)) {
-            compileOpcode(opPushSpecialValue, opsvFHalf);
+            OpCode::PushSpecialNumber.compile(OpSpecialNumbers::Half);
         } else if (SlotEq(&slot, &o_fnegone)) {
-            compileOpcode(opPushSpecialValue, opsvFNegOne);
+            OpCode::PushSpecialNumber.compile(OpSpecialNumbers::MinusOneFloat);
         } else if (SlotEq(&slot, &o_fzero)) {
-            compileOpcode(opPushSpecialValue, opsvFZero);
+            OpCode::PushSpecialNumber.compile(OpSpecialNumbers::ZeroFloat);
         } else if (SlotEq(&slot, &o_fone)) {
-            compileOpcode(opPushSpecialValue, opsvFOne);
+            OpCode::PushSpecialNumber.compile(OpSpecialNumbers::OneFloat);
         } else if (SlotEq(&slot, &o_ftwo)) {
-            compileOpcode(opPushSpecialValue, opsvFTwo);
+            OpCode::PushSpecialNumber.compile(OpSpecialNumbers::TwoFloat);
         } else if (SlotEq(&slot, &o_inf)) {
-            compileOpcode(opPushSpecialValue, opsvInf);
+            OpCode::PushSpecialValue.compile(OpSpecialValue::Inf);
         } else if (IsFloat(&slot)) {
             compilePushConstant((PyrParseNode*)this, &slot);
         } else if (IsSym(&slot)) {
