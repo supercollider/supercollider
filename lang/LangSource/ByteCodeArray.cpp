@@ -35,25 +35,8 @@ void initByteCodes() {
     }
 }
 
-int emitOpcode(long opcode, long operand1) {
-    int retc;
-    if (operand1 <= 15) {
-        emitByte((opcode << 4) | operand1);
-        retc = 1;
-    } else {
-        emitByte(opcode);
-        emitByte(operand1);
-        if (opcode == opSendMsg || opcode == opSendSpecialMsg || opcode == opSendSuper) {
-            // these expect numKeyArgsPushed to be passed.
-            emitByte(0);
-        }
-        retc = 2;
-    }
-    return retc;
-}
-
 void emitJump(long opcode, long jumplen) {
-    emitByte((opSpecialOpcode << 4) | opcode);
+    emitByte((15 << 4) | opcode);
     emitByte((jumplen >> 8) & 0xFF);
     emitByte(jumplen & 0xFF);
 }
