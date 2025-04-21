@@ -3387,11 +3387,9 @@ void compileAssignVar(PyrParseNode* node, PyrSymbol* varName, bool drop) {
             if (index < 4096) {
                 OpCode::StoreClassVar.emit(index);
             } else {
-                emitByte(opStoreClassVar);
-                assert(false); // TODO: why are we asserting false? Don't refactor this until this can be understood.
-                emitByte(0);
-                emitByte(index);
-                emitByte((opSpecialOpcode << 4) | opcDrop);
+                OpCode::StoreClassVarX.emit(Operands::NumericByte<16, 1>::fromFull(index),
+                                            Operands::NumericByte<16, 0>::fromFull(index));
+                OpCode::Drop.emit();
             }
         } else {
             // TODO: why can't we use the shorter StoreClassVar here? It breaks for some reason.
