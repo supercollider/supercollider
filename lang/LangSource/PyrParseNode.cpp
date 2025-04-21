@@ -220,11 +220,11 @@ void compilePushVar(PyrParseNode* node, PyrSymbol* varName) {
 
         case varClass: {
             const auto indexOffset = findResult.index + slotRawInt(&findResult.classobj->classVarIndex);
-            const Byte highBits = (indexOffset >> 8) & 255;
-            const Byte lowBits = indexOffset & 255;
-            if (indexOffset < 4096) { // A 12 bit number
-                OpCode::PushClassVar.compile(highBits & 15, Operands::LowBitsOf12BitNumber { lowBits });
+            if (indexOffset < (1 << 12)) {
+                OpCode::PushClassVar.compile(indexOffset);
             } else {
+                const Byte highBits = (indexOffset >> 8) & 255;
+                const Byte lowBits = indexOffset & 255;
                 OpCode::PushClassVarX.compile(Operands::Class { highBits }, Operands::Index { lowBits });
             }
         } break;

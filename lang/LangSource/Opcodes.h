@@ -53,10 +53,8 @@ Most opcodes are simple.
 
 namespace details {
 
-enum struct OpCodeType { Simple, SecondNibble, SecondNibbleViaEnum, Loop };
 
 template <Byte CODE, typename... OPERANDS> struct SimpleOpSpec {
-    static constexpr OpCodeType opCodeType { OpCodeType::Simple };
     // static constexpr Byte code { CODE };
     static constexpr auto operandCount { sizeof...(OPERANDS) };
     using Tuple = std::tuple<OPERANDS...>;
@@ -76,7 +74,6 @@ template <Byte CODE, typename... OPERANDS> struct SimpleOpSpec {
 };
 
 template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbleOpSpec {
-    static constexpr OpCodeType opCodeType { OpCodeType::SecondNibble };
     static constexpr auto startCode { STARTCODE };
     static constexpr auto endCode { ENDCODE };
     static constexpr auto operandCount { sizeof...(OPERANDS) };
@@ -94,8 +91,27 @@ template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbl
     }
 };
 
+template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibble12bitSpec {
+    static constexpr auto startCode { STARTCODE };
+    static constexpr auto endCode { ENDCODE };
+    static constexpr auto operandCount { sizeof...(OPERANDS) };
+    using Tuple = std::tuple<OPERANDS...>;
+
+    const char* name;
+
+    void compile(int fullValue, OPERANDS... operands) const {
+        assert(fullValue < (1 << 12));
+        const Byte code = startCode + ((fullValue >> 8) & 15);
+        assert(code >= startCode);
+        assert(code < endCode);
+
+        compileByte(code);
+        compileByte(fullValue & 255);
+        (compileByte(operands), ...);
+    }
+};
+
 template <Byte STARTCODE, Byte ENDCODE, typename ENUM_T, typename... OPERANDS> struct SecondNibbleViaEnumOpSpec {
-    static constexpr OpCodeType opCodeType { OpCodeType::SecondNibbleViaEnum };
     static constexpr Byte startCode { STARTCODE };
     static constexpr Byte endCode { ENDCODE };
     static constexpr auto operandCount { sizeof...(OPERANDS) };
@@ -478,11 +494,6 @@ struct Operands {
         constexpr static KwArgumentCount fromRaw(int b) { return { to_byte(b) }; }
         constexpr static KwArgumentCount fromRaw(Byte b) { return { b }; }
     };
-    struct LowBitsOf12BitNumber : details::NamedByte {
-        static constexpr const char* name = "LowBitsOf12BitNumber";
-        constexpr static LowBitsOf12BitNumber fromRaw(int b) { return { to_byte(b) }; }
-        constexpr static LowBitsOf12BitNumber fromRaw(Byte b) { return { b }; }
-    };
     template <size_t TOTAL, size_t PART> struct NumericByte : details::NamedByte {
         static_assert(8 * PART < TOTAL);
         static constexpr const char* name = "NumericByte";
@@ -642,7 +653,7 @@ struct OpCode {
     /// Store the top of the stack in a class variable, without popping the stack.
     /// The second and third instruction bytes indicate the index of the variable within the VM's classvars field.
     /// Only used in class method code.
-    static constexpr details::SimpleOpSpec<0x09, Operands::NumericByte<2, 1>, Operands::NumericByte<2, 0>>
+    static constexpr details::SimpleOpSpec<0x09, Operands::NumericByte<16, 1>, Operands::NumericByte<16, 0>>
         StoreClassVarX {
             "StoreClassVarX",
         };
@@ -779,9 +790,7 @@ struct OpCode {
     /// The index of the variable is given by the second nibble of the first instruction byte and the second instruction
     /// byte interpreted as a 12-bit integer. The indexed array is the global collection of class variables.
     /// Server.findMethod('calculateViewBounds').dumpByteCodes
-    static constexpr details::SecondNibbleOpSpec<0x50, 0x60, Operands::LowBitsOf12BitNumber> PushClassVar {
-        "PushClassVar"
-    };
+    static constexpr details::SecondNibble12bitSpec<0x50, 0x60> PushClassVar { "PushClassVar " };
 
     /// Pushes 'this' to the top of the stack.
     static constexpr details::SimpleOpSpec<0x60> PushSpecialValueThis { "PushSpecialValueThis" };
@@ -885,9 +894,7 @@ struct OpCode {
     /// Pop and store the top of the stack in a class variable of the current class.
     /// The index of the class variable is found by interpreting the second nibble of the first byte and the entire
     /// second byte as a 12-bit integer. Only used in class code. Meta_String.findMethod('initClass').dumpByteCodes
-    static constexpr details::SecondNibbleOpSpec<0x90, 0xA0, Operands::LowBitsOf12BitNumber> StoreClassVar {
-        "StoreClassVar"
-    };
+    static constexpr details::SecondNibble12bitSpec<0x90, 0xA0> StoreClassVar { "StoreClassVar" };
 
     /// Push this to the top of the stack and call a method taking one argument.
     /// The second instruction byte determines the index of the selector within the block.
