@@ -23,6 +23,7 @@
 #include <cassert>
 #include <tuple>
 #include <cstdint>
+#include <cstring>
 
 
 /* (Jordan Henderson)
@@ -435,9 +436,9 @@ enum struct OpTrinaryMath : Byte { Divz, Clip, Wrap, Fold, RampMult, Mix, COUNT 
 
 struct Operands {
     template <typename I> constexpr static Byte to_byte(I i) {
-        static_assert(std::is_integral_v<I>);
-        assert(i < 256);
-        return static_cast<Byte>(i);
+        Byte to;
+        std::memcpy(&to, &i, sizeof(Byte));
+        return to;
     }
 
     template <typename ENUM_T, typename I> constexpr static ENUM_T to_enum(I i) {
@@ -449,34 +450,54 @@ struct Operands {
     struct Unknown : details::NamedByte {
         static constexpr const char* name = "Unknown";
         constexpr static Unknown fromRaw(int b) { return { to_byte(b) }; }
+        constexpr static Unknown fromRaw(Byte b) { return { b }; }
     };
     struct Index : details::NamedByte {
         static constexpr const char* name = "Index";
         constexpr static Index fromRaw(int b) { return { to_byte(b) }; }
+        constexpr static Index fromRaw(Byte b) { return { b }; }
     };
     struct FrameOffset : details::NamedByte {
         static constexpr const char* name = "FrameOffset";
         constexpr static FrameOffset fromRaw(int b) { return { to_byte(b) }; }
+        constexpr static FrameOffset fromRaw(Byte b) { return { b }; }
     };
     struct Class : details::NamedByte {
         static constexpr const char* name = "Class";
         constexpr static Class fromRaw(int b) { return { to_byte(b) }; }
+        constexpr static Class fromRaw(Byte b) { return { b }; }
     };
     struct ArgumentCount : details::NamedByte {
         static constexpr const char* name = "ArgumentCount";
         constexpr static ArgumentCount fromRaw(int b) { return { to_byte(b) }; }
+        constexpr static ArgumentCount fromRaw(Byte b) { return { b }; }
     };
     struct KwArgumentCount : details::NamedByte {
         static constexpr const char* name = "KwArgumentCount";
         constexpr static KwArgumentCount fromRaw(int b) { return { to_byte(b) }; }
+        constexpr static KwArgumentCount fromRaw(Byte b) { return { b }; }
     };
     struct LowBitsOf12BitNumber : details::NamedByte {
         static constexpr const char* name = "LowBitsOf12BitNumber";
         constexpr static LowBitsOf12BitNumber fromRaw(int b) { return { to_byte(b) }; }
+        constexpr static LowBitsOf12BitNumber fromRaw(Byte b) { return { b }; }
     };
     template <size_t TOTAL, size_t PART> struct NumericByte : details::NamedByte {
+        static_assert(8 * PART < TOTAL);
         static constexpr const char* name = "NumericByte";
         constexpr static NumericByte<TOTAL, PART> fromRaw(int b) { return { to_byte(b) }; }
+        constexpr static NumericByte<TOTAL, PART> fromRaw(Byte b) { return { b }; }
+
+        constexpr static NumericByte<TOTAL, PART> fromFull(std::int64_t b) {
+            assert(b < (1LL << TOTAL));
+            // NOTE: This will right shift a potentially negative number.
+            // This is IMPLEMENTATION DEFINED BEHAVIOUR, until C++20 when this is well defined.
+            // This was because, in practice, all implementations behaved the same
+            // (arithmetic right shift, meaning it preserves the sign).
+            // In C++20 this is guaranteed, this doesn't break backwards compatibility, modern compilers
+            // that support C++20 will behave as expected even when compiling on older versions.
+            return { to_byte((b >> (8LL * PART)) & 0xFF) };
+        }
     };
     struct SpecialClass : details::OperandEnumWrapper<OpSpecialClassEnum> {
         constexpr SpecialClass(OpSpecialClassEnum s) noexcept: details::OperandEnumWrapper<OpSpecialClassEnum>(s) {}
@@ -520,6 +541,11 @@ struct Operands {
         constexpr SpecialValue(OpSpecialValue s) noexcept: details::OperandEnumWrapper<OpSpecialValue>(s) {}
         constexpr static SpecialValue fromRaw(int b) { return { to_enum<OpSpecialValue>(b) }; }
         static constexpr const char* name = "SpecialValue";
+    };
+    struct SpecialNumber : details::OperandEnumWrapper<OpSpecialNumbers> {
+        constexpr SpecialNumber(OpSpecialNumbers s) noexcept: details::OperandEnumWrapper<OpSpecialNumbers>(s) {}
+        constexpr static SpecialNumber fromRaw(int b) { return { to_enum<OpSpecialNumbers>(b) }; }
+        static constexpr const char* name = "SpecialNumber";
     };
 
     //
@@ -766,7 +792,7 @@ struct OpCode {
     static constexpr details::SimpleOpSpec<0x61> PushOneAndSubtract { "PushOneAndSubtract" };
 
     /// Pushes a commonly used numerical value to the top of the stack.
-    static constexpr details::SecondNibbleViaEnumOpSpec<0x62, 0x6B, OpSpecialNumbers> PushSpecialNumber {
+    static constexpr details::SecondNibbleViaEnumOpSpec<0x62, 0x6B, Operands::SpecialNumber> PushSpecialNumber {
         "PushSpecialNumber "
     };
 

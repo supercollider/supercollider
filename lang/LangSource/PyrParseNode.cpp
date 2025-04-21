@@ -3099,7 +3099,6 @@ PyrDropNode* newPyrDropNode(PyrParseNode* expr1, PyrParseNode* expr2) {
 }
 
 void PyrDropNode::compile(PyrSlot* result) {
-    // postfl("->compilePyrDropNode\n");
     PyrSlot dummy;
     // eliminate as many drops as possible
     if (!mExpr2) {
@@ -3114,10 +3113,9 @@ void PyrDropNode::compile(PyrSlot* result) {
         COMPILENODE(mExpr1, &dummy, false);
         COMPILENODE(mExpr2, &dummy, true);
     } else if (mExpr1 && mExpr1->mClassno == pn_DropNode) {
-        PyrDropNode* znode;
         // let the store do the drop, a bit more complex.
         // find the ultimate expression in the left subtree before the drop.
-        znode = (PyrDropNode*)mExpr1;
+        PyrDropNode* znode = (PyrDropNode*)mExpr1;
         while (znode->mExpr2 && znode->mExpr2->mClassno == pn_DropNode) {
             znode = (PyrDropNode*)znode->mExpr2;
         }
@@ -3127,15 +3125,14 @@ void PyrDropNode::compile(PyrSlot* result) {
             COMPILENODE(mExpr2, &dummy, true);
         } else {
             COMPILENODE(mExpr1, &dummy, false);
-            compileOpcode(opSpecialOpcode, opcDrop);
+            OpCode::Drop.compile();
             COMPILENODE(mExpr2, &dummy, true);
         }
     } else {
         COMPILENODE(mExpr1, &dummy, false);
-        compileOpcode(opSpecialOpcode, opcDrop);
+        OpCode::Drop.compile();
         COMPILENODE(mExpr2, &dummy, true);
     }
-    // postfl("<-compilePyrDropNode\n");
 }
 
 PyrPushLitNode* newPyrPushLitNode(PyrSlotNode* literalSlot, PyrParseNode* literalObj) {
@@ -3152,56 +3149,58 @@ PyrPushLitNode* newPyrPushLitNode(PyrSlotNode* literalSlot, PyrParseNode* litera
 
 
 void compilePushConstant(PyrParseNode* node, PyrSlot* slot) {
-    int index = conjureConstantIndex(node, gCompilingBlock, slot);
-    if (index < (1 << 4)) {
-        compileByte((opPushLiteral << 4) | index);
-    } else if (index < (1 << 8)) {
-        compileByte(40);
-        compileByte(index & 0xFF);
-    } else if (index < (1 << 16)) {
-        compileByte(41);
-        compileByte((index >> 8) & 0xFF);
-        compileByte(index & 0xFF);
-    } else if (index < (1 << 24)) {
-        compileByte(42);
-        compileByte((index >> 16) & 0xFF);
-        compileByte((index >> 8) & 0xFF);
-        compileByte(index & 0xFF);
-    } else {
-        compileByte(43);
-        compileByte((index >> 24) & 0xFF);
-        compileByte((index >> 16) & 0xFF);
-        compileByte((index >> 8) & 0xFF);
-        compileByte(index & 0xFF);
-    }
+    const int index = conjureConstantIndex(node, gCompilingBlock, slot);
+
+    if (index < (1 << 4))
+        OpCode::PushLiteral.compile(index);
+
+    else if (index < (1 << 8))
+        OpCode::PushConstant8.compile(Operands::Index::fromRaw(index));
+
+    else if (index < (1 << 16))
+        OpCode::PushConstant16.compile(Operands::NumericByte<16, 1>::fromFull(index),
+                                       Operands::NumericByte<16, 0>::fromFull(index));
+
+    else if (index < (1 << 24))
+        OpCode::PushConstant24.compile(Operands::NumericByte<24, 2>::fromFull(index),
+                                       Operands::NumericByte<24, 1>::fromFull(index),
+                                       Operands::NumericByte<24, 0>::fromFull(index));
+
+    else
+        OpCode::PushConstant32.compile(
+            Operands::NumericByte<32, 3>::fromFull(index), Operands::NumericByte<32, 2>::fromFull(index),
+            Operands::NumericByte<32, 1>::fromFull(index), Operands::NumericByte<32, 0>::fromFull(index));
 }
 
 void compilePushInt(int value) {
-    // postfl("compilePushInt\n");
-    if (value >= -1 && value <= 2) {
-        compileOpcode(opPushSpecialValue, opsvZero + value);
-    } else {
-        // printf("int %d\n", value);
-        if (value >= -(1 << 7) && value <= ((1 << 7) - 1)) {
-            compileByte(44);
-            compileByte(value & 0xFF);
-        } else if (value >= -(1 << 15) && value <= ((1 << 15) - 1)) {
-            compileByte(45);
-            compileByte((value >> 8) & 0xFF);
-            compileByte(value & 0xFF);
-        } else if (value >= -(1 << 23) && value <= ((1 << 23) - 1)) {
-            compileByte(46);
-            compileByte((value >> 16) & 0xFF);
-            compileByte((value >> 8) & 0xFF);
-            compileByte(value & 0xFF);
-        } else {
-            compileByte(47);
-            compileByte((value >> 24) & 0xFF);
-            compileByte((value >> 16) & 0xFF);
-            compileByte((value >> 8) & 0xFF);
-            compileByte(value & 0xFF);
-        }
-    }
+    if (value == -1)
+        OpCode::PushSpecialNumber.compile(OpSpecialNumbers::MinusOne);
+
+    else if (value == 0)
+        OpCode::PushSpecialNumber.compile(OpSpecialNumbers::Zero);
+
+    else if (value == 1)
+        OpCode::PushSpecialNumber.compile(OpSpecialNumbers::One);
+
+    else if (value == 2)
+        OpCode::PushSpecialNumber.compile(OpSpecialNumbers::Two);
+
+    else if (value >= -(1 << 7) && value <= ((1 << 7) - 1))
+        OpCode::PushInteger8.compile(Operands::Index::fromRaw(value));
+
+    else if (value >= -(1 << 15) && value <= ((1 << 15) - 1))
+        OpCode::PushInteger16.compile(Operands::NumericByte<16, 1>::fromFull(value),
+                                      Operands::NumericByte<16, 0>::fromFull(value));
+
+    else if (value >= -(1 << 23) && value <= ((1 << 23) - 1))
+        OpCode::PushInteger24.compile(Operands::NumericByte<24, 2>::fromFull(value),
+                                      Operands::NumericByte<24, 1>::fromFull(value),
+                                      Operands::NumericByte<24, 0>::fromFull(value));
+
+    else
+        OpCode::PushInteger32.compile(
+            Operands::NumericByte<32, 3>::fromFull(value), Operands::NumericByte<32, 2>::fromFull(value),
+            Operands::NumericByte<32, 1>::fromFull(value), Operands::NumericByte<32, 0>::fromFull(value));
 }
 
 void PyrSlotNode::compilePushLit(PyrSlot* result) {
@@ -4264,16 +4263,13 @@ Byte conjureLiteralSlotIndex(PyrParseNode* node, PyrBlock* func, PyrSlot* slot) 
 
 
 int conjureConstantIndex(PyrParseNode* node, PyrBlock* func, PyrSlot* slot) {
-    int i;
-    PyrObject* constants;
-    int newsize, flags;
-
-    flags = compilingCmdLine ? obj_immutable : obj_permanent | obj_immutable;
+    const int flags = compilingCmdLine ? obj_immutable : obj_permanent | obj_immutable;
 
     // lookup slot in constants table
+    PyrObject* constants;
     if (IsObj(&func->constants)) {
         constants = slotRawObject(&func->constants);
-        for (i = 0; i < constants->size; ++i)
+        for (int i = 0; i < constants->size; ++i)
             if (SlotEq(&constants->slots[i], slot))
                 return i;
     } else {
@@ -4284,7 +4280,7 @@ int conjureConstantIndex(PyrParseNode* node, PyrBlock* func, PyrSlot* slot) {
     // otherwise add it to the constants table
     if (constants->size + 1 > ARRAYMAXINDEXSIZE(constants)) {
         // resize literal table
-        newsize = ARRAYMAXINDEXSIZE(constants) * 2;
+        int newsize = ARRAYMAXINDEXSIZE(constants) * 2;
         // resize literal table
         SetRaw(&func->constants, (PyrObject*)newPyrArray(compileGC(), newsize, flags, false));
         memcpy(slotRawObject(&func->constants)->slots, constants->slots, constants->size * sizeof(PyrSlot));
