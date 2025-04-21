@@ -67,9 +67,9 @@ template <Byte CODE, typename... OPERANDS> struct SimpleOpSpec {
         return { OPERANDS::fromRaw(*(++ip))... };
     }
 
-    void compile(OPERANDS... operands) const {
-        compileByte(code);
-        (compileByte(operands), ...);
+    void emit(OPERANDS... operands) const {
+        emitByte(code);
+        (emitByte(operands), ...);
     }
 };
 
@@ -81,13 +81,13 @@ template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbl
 
     const char* name;
 
-    template <typename N> void compile(N nibble, OPERANDS... operands) const {
+    template <typename N> void emit(N nibble, OPERANDS... operands) const {
         assert(nibble < 16);
         const Byte bytecode = startCode + nibble;
         assert(bytecode < endCode);
-        compileByte(bytecode);
+        emitByte(bytecode);
 
-        (compileByte(operands), ...);
+        (emitByte(operands), ...);
     }
 };
 
@@ -99,15 +99,15 @@ template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbl
 
     const char* name;
 
-    void compile(int fullValue, OPERANDS... operands) const {
+    void emit(int fullValue, OPERANDS... operands) const {
         assert(fullValue < (1 << 12));
         const Byte code = startCode + ((fullValue >> 8) & 15);
         assert(code >= startCode);
         assert(code < endCode);
 
-        compileByte(code);
-        compileByte(fullValue & 255);
-        (compileByte(operands), ...);
+        emitByte(code);
+        emitByte(fullValue & 255);
+        (emitByte(operands), ...);
     }
 };
 
@@ -119,14 +119,14 @@ template <Byte STARTCODE, Byte ENDCODE, typename ENUM_T, typename... OPERANDS> s
     using Enum = ENUM_T;
 
     const char* name;
-    void compile(ENUM_T e, OPERANDS... operands) const {
+    void emit(ENUM_T e, OPERANDS... operands) const {
         const Byte nibble = static_cast<Byte>(e);
         assert(nibble < 16);
         const Byte bytecode = startCode + nibble;
         assert(bytecode < endCode);
-        compileByte(bytecode);
+        emitByte(bytecode);
 
-        (compileByte(operands), ...);
+        (emitByte(operands), ...);
     }
 };
 

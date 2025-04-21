@@ -499,7 +499,7 @@ void compileQQMsg(PyrParseNode* arg1, PyrParseNode* arg2);
 void compileXQMsg(PyrParseNode* arg1, PyrParseNode* arg2);
 void compileSwitchMsg(PyrCallNode* node);
 
-void compilePushInt(int value);
+void emitPushInt(int value);
 void compileAssignVar(PyrParseNode* node, PyrSymbol* varName, bool drop);
 void compilePushVar(PyrParseNode* node, PyrSymbol* varName);
 bool isAnInlineableBlock(PyrParseNode* node);
