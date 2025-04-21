@@ -77,7 +77,11 @@ template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbl
     static constexpr auto startCode { STARTCODE };
     static constexpr auto endCode { ENDCODE };
     static constexpr auto operandCount { sizeof...(OPERANDS) };
-    using Tuple = std::tuple<OPERANDS...>;
+    template <int i> static constexpr auto codeOffset() {
+        static_assert(startCode + i < endCode);
+        return startCode + i;
+    }
+    using Tuple = std::tuple<Byte, OPERANDS...>;
 
     const char* name;
 
@@ -88,6 +92,11 @@ template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbl
         emitByte(bytecode);
 
         (emitByte(operands), ...);
+    }
+
+    Tuple pullOperandsFromInstructions(unsigned char*& ip) const {
+        // increment instruction pointer and get the values for each operand.
+        return { *ip - startCode, OPERANDS::fromRaw(*(++ip))... };
     }
 };
 
@@ -133,6 +142,7 @@ template <Byte STARTCODE, Byte ENDCODE, typename ENUM_T, typename... OPERANDS> s
 struct NamedByte {
     Byte value;
     constexpr operator Byte() const { return value; }
+    constexpr int asInt() const { return static_cast<int>(value); }
 };
 
 template <typename Enum_T> struct OperandEnumWrapper {
@@ -719,7 +729,8 @@ struct OpCode {
     /// Server.findMethod('maxNumClients').dumpByteCodes
     static constexpr details::SecondNibbleOpSpec<0x10, 0x20> PushInstVar { "PushInstVar" };
 
-    static constexpr details::SimpleOpSpec<0x20, Operands::Unknown, Operands::Unknown> JumpIfTrue { "JumpIfTrue" };
+    static constexpr details::SimpleOpSpec<0x20, Operands::NumericByte<16, 1>, Operands::NumericByte<16, 0>>
+        JumpIfTrue { "JumpIfTrue" };
 
     /// Note: because the frameoffset of 0 is handled by a separate opcode, you need to subtract one from the real
     /// value. Push a variable from an enclosing frame onto the stack. The second nibble of the first instruction byte

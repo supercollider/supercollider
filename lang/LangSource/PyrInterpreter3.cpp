@@ -705,12 +705,14 @@ HOT void Interpret(VMGlobals* g) {
             }
             dispatch_opcode;
         }
+
         case OpCode::PushInstVarX.code:
         handle_op_1 : {
             const auto [instVarIndex] = OpCode::PushInstVarX.pullOperandsFromInstructions(ip);
             slotCopy(++sp, &slotRawObject(&g->receiver)->slots[instVarIndex]);
             dispatch_opcode;
         }
+
         case OpCode::PushTempVarX.code:
         handle_op_2 : {
             const auto [frameOffset, varIndex] = OpCode::PushTempVarX.pullOperandsFromInstructions(ip);
@@ -721,12 +723,14 @@ HOT void Interpret(VMGlobals* g) {
             slotCopy(++sp, &tframe->vars[varIndex]);
             dispatch_opcode;
         }
+
         case OpCode::PushTempZeroVarX.code:
         handle_op_3 : {
             const auto [varindex] = OpCode::PushTempZeroVarX.pullOperandsFromInstructions(ip);
             slotCopy(++sp, &g->frame->vars[varindex]);
             dispatch_opcode;
         }
+
         case OpCode::PushLiteralX.code:
         handle_op_4 : {
             const auto [literalIndex] = OpCode::PushLiteralX.pullOperandsFromInstructions(ip);
@@ -752,12 +756,14 @@ HOT void Interpret(VMGlobals* g) {
             }
             dispatch_opcode;
         }
+
         case OpCode::PushClassVarX.code:
         handle_op_5 : {
             const auto [classIndex, varIndex] = OpCode::PushClassVarX.pullOperandsFromInstructions(ip);
             slotCopy(++sp, &g->classvars->slots[(classIndex << 8) | varIndex]);
             dispatch_opcode;
         }
+
         case OpCode::PushSpecialClass.code:
         handle_op_6 : {
             const auto [specialClassIndex] = OpCode::PushSpecialClass.pullOperandsFromInstructions(ip);
@@ -770,7 +776,8 @@ HOT void Interpret(VMGlobals* g) {
             }
             dispatch_opcode;
         }
-        case OpCode::StoreInstVarX.code: // opExtended, opStoreInstVar
+
+        case OpCode::StoreInstVarX.code:
         handle_op_7 : {
             const auto [instVarIndex] = OpCode::StoreInstVarX.pullOperandsFromInstructions(ip);
             PyrObject* obj = slotRawObject(&g->receiver);
@@ -783,29 +790,29 @@ HOT void Interpret(VMGlobals* g) {
             }
             dispatch_opcode;
         }
-        case 8: // opExtended, opStoreTempVar
+
+        case OpCode::StoreTempVarX.code:
         handle_op_8 : {
-            int op2 = ip[1]; // get temp var level
-            int op3 = ip[2]; // get temp var index
-            ip += 2;
+            const auto [frameOffset, index] = OpCode::StoreTempVarX.pullOperandsFromInstructions(ip);
             PyrFrame* tframe = g->frame;
-            for (; op2--; tframe = slotRawFrame(&tframe->context)) { /* noop */
+            for (Byte count = frameOffset; count > 0; count -= 1) {
+                tframe = slotRawFrame(&tframe->context);
             }
-            slot = tframe->vars + op3;
+            slot = tframe->vars + index;
             slotCopy(slot, sp);
             g->gc->GCWrite(tframe, slot);
             dispatch_opcode;
         }
-        case 9: // opExtended, opStoreClassVar
+
+        case OpCode::StoreClassVarX.code:
         handle_op_9 : {
-            int op2 = ip[1]; // get index of class name literal
-            int op3 = ip[2]; // get class var index
-            ip += 2;
-            slotCopy(&g->classvars->slots[(op2 << 8) | op3], sp);
+            const auto [indexOfName, indexOfClass] = OpCode::StoreClassVarX.pullOperandsFromInstructions(ip);
+            slotCopy(&g->classvars->slots[(indexOfName.asInt() << 8) | indexOfClass], sp);
             g->gc->GCWrite(g->classvars, sp);
             dispatch_opcode;
         }
-        case OpCode::SendMsgX.code: // opExtended, opSendMsg
+
+        case OpCode::SendMsgX.code:
         handle_op_10 : {
             const auto [numArgs, numKwArgs, selectorIndex] = OpCode::SendMsgX.pullOperandsFromInstructions(ip);
 
@@ -820,14 +827,14 @@ HOT void Interpret(VMGlobals* g) {
             else
                 goto class_lookup;
         }
-        case 11: // opExtended, opSendSuper
-        handle_op_11 : {
-            numArgsPushed = ip[1]; // get num args
-            numKeyArgsPushed = ip[2]; // get num keyword args
-            int op3 = ip[3]; // get selector index
-            ip += 3;
-            selector = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[op3]);
 
+        case OpCode::SendSuperMsgX.code:
+        handle_op_11 : {
+            const auto [numArgs, numKwArgs, selectorIndex] = OpCode::SendSuperMsgX.pullOperandsFromInstructions(ip);
+            numArgsPushed = numArgs;
+            numKeyArgsPushed = numKwArgs;
+
+            selector = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[selectorIndex]);
             slot = g->sp - numArgsPushed + 1;
             classobj = slotRawSymbol(&slotRawClass(&g->method->ownerclass)->superclass)->u.classobj;
 
@@ -837,14 +844,13 @@ HOT void Interpret(VMGlobals* g) {
                 goto msg_lookup;
         }
 
-        case 12: // opExtended, opSendSpecialMsg
+        case OpCode::SendSpecialMsgX.code:
         handle_op_12 : {
-            numArgsPushed = ip[1]; // get num args
-            numKeyArgsPushed = ip[2]; // get num keyword args
-            int op3 = ip[3]; // get selector index
-            ip += 3;
+            const auto [numArgs, numKwArgs, selectorIndex] = OpCode::SendSpecialMsgX.pullOperandsFromInstructions(ip);
+            numArgsPushed = numArgs;
+            numKeyArgsPushed = numKwArgs;
 
-            selector = gSpecialSelectors[op3];
+            selector = gSpecialSelectors[selectorIndex];
             slot = sp - numArgsPushed + 1;
 
             if (numKeyArgsPushed)
@@ -853,14 +859,14 @@ HOT void Interpret(VMGlobals* g) {
                 goto class_lookup;
         }
 
-        case 13: // opExtended, opSendSpecialUnaryArithMsg
+        case OpCode::SendSpecialUnaryArithMsgX.code:
         handle_op_13 : {
-            int op2 = ip[1];
-            ++ip; // get selector index
+            const auto [unaryMathOp] = OpCode::SendSpecialUnaryArithMsgX.pullOperandsFromInstructions(ip);
             g->sp = sp;
             g->ip = ip;
-            g->primitiveIndex = op2;
+            g->primitiveIndex = unaryMathOp;
             doSpecialUnaryArithMsg(g, -1);
+
 #if TAILCALLOPTIMIZE
             g->tailCall = 0;
 #endif
@@ -868,40 +874,40 @@ HOT void Interpret(VMGlobals* g) {
             ip = g->ip;
             dispatch_opcode;
         }
-        case 14: // opExtended, opSendSpecialBinaryArithMsg
+
+        case OpCode::SendSpecialBinaryArithMsgX.code:
         handle_op_14 : {
-            int op2 = ip[1];
-            ++ip; // get selector index
+            const auto [binaryMathOp] = OpCode::SendSpecialBinaryArithMsgX.pullOperandsFromInstructions(ip);
             g->sp = sp;
             g->ip = ip;
-            g->primitiveIndex = op2;
+            g->primitiveIndex = binaryMathOp;
             doSpecialBinaryArithMsg(g, 2, false);
             sp = g->sp;
             ip = g->ip;
             dispatch_opcode;
         }
-        case 15: // opExtended, opSpecialOpcode (none yet)
+
+        case OpCode::SpecialOpcode.code:
         handle_op_15 : {
-            int op2 = ip[1];
-            ++ip; // get extended special opcode
-            switch (op2) {
-            case opgProcess: // push thisProcess
+            const auto [psuedoVar] = OpCode::SpecialOpcode.pullOperandsFromInstructions(ip);
+            switch (psuedoVar.value) {
+            case OpPseudoVarEnum::Process:
                 ++sp;
                 SetObject(sp, g->process);
                 break;
-            case opgThread: // push thisProcess
+            case OpPseudoVarEnum::Thread:
                 ++sp;
                 SetObject(sp, g->thread);
                 break;
-            case opgMethod: // push thisMethod
+            case OpPseudoVarEnum::Method:
                 ++sp;
                 SetObject(sp, g->method);
                 break;
-            case opgFunctionDef: // push thisFunctionDef
+            case OpPseudoVarEnum::FunctionDef:
                 ++sp;
                 SetObject(sp, g->block);
                 break;
-            case opgFunction: { // push thisFunc
+            case OpPseudoVarEnum::Function: {
                 // push a closure
                 g->sp = sp; // gc may push the stack
                 PyrClosure* closure = (PyrClosure*)g->gc->New(2 * sizeof(PyrSlot), 0, obj_notindexed, true);
@@ -920,81 +926,53 @@ HOT void Interpret(VMGlobals* g) {
             }
             dispatch_opcode;
         }
-        // opPushInstVar, 0..15
-        case 16:
-        handle_op_16:
-            slotCopy(++sp, &slotRawObject(&g->receiver)->slots[0]);
-            dispatch_opcode;
-        case 17:
-        handle_op_17:
-            slotCopy(++sp, &slotRawObject(&g->receiver)->slots[1]);
-            dispatch_opcode;
-        case 18:
-        handle_op_18:
-            slotCopy(++sp, &slotRawObject(&g->receiver)->slots[2]);
-            dispatch_opcode;
-        case 19:
-        handle_op_19:
-            slotCopy(++sp, &slotRawObject(&g->receiver)->slots[3]);
-            dispatch_opcode;
-        case 20:
-        handle_op_20:
-            slotCopy(++sp, &slotRawObject(&g->receiver)->slots[4]);
-            dispatch_opcode;
-        case 21:
-        handle_op_21:
-            slotCopy(++sp, &slotRawObject(&g->receiver)->slots[5]);
-            dispatch_opcode;
-        case 22:
-        handle_op_22:
-            slotCopy(++sp, &slotRawObject(&g->receiver)->slots[6]);
-            dispatch_opcode;
-        case 23:
-        handle_op_23:
-            slotCopy(++sp, &slotRawObject(&g->receiver)->slots[7]);
-            dispatch_opcode;
-        case 24:
-        handle_op_24:
-            slotCopy(++sp, &slotRawObject(&g->receiver)->slots[8]);
-            dispatch_opcode;
-        case 25:
-        handle_op_25:
-            slotCopy(++sp, &slotRawObject(&g->receiver)->slots[9]);
-            dispatch_opcode;
-        case 26:
-        handle_op_26:
-            slotCopy(++sp, &slotRawObject(&g->receiver)->slots[10]);
-            dispatch_opcode;
-        case 27:
-        handle_op_27:
-            slotCopy(++sp, &slotRawObject(&g->receiver)->slots[11]);
-            dispatch_opcode;
-        case 28:
-        handle_op_28:
-            slotCopy(++sp, &slotRawObject(&g->receiver)->slots[12]);
-            dispatch_opcode;
-        case 29:
-        handle_op_29:
-            slotCopy(++sp, &slotRawObject(&g->receiver)->slots[13]);
-            dispatch_opcode;
-        case 30:
-        handle_op_30:
-            slotCopy(++sp, &slotRawObject(&g->receiver)->slots[14]);
-            dispatch_opcode;
-        case 31:
-        handle_op_31:
-            slotCopy(++sp, &slotRawObject(&g->receiver)->slots[15]);
-            dispatch_opcode;
 
-        case 32: // JumpIfTrue
+        case OpCode::PushInstVar.codeOffset<0>():
+        handle_op_16:
+        case OpCode::PushInstVar.codeOffset<1>():
+        handle_op_17:
+        case OpCode::PushInstVar.codeOffset<2>():
+        handle_op_18:
+        case OpCode::PushInstVar.codeOffset<3>():
+        handle_op_19:
+        case OpCode::PushInstVar.codeOffset<4>():
+        handle_op_20:
+        case OpCode::PushInstVar.codeOffset<5>():
+        handle_op_21:
+        case OpCode::PushInstVar.codeOffset<6>():
+        handle_op_22:
+        case OpCode::PushInstVar.codeOffset<7>():
+        handle_op_23:
+        case OpCode::PushInstVar.codeOffset<8>():
+        handle_op_24:
+        case OpCode::PushInstVar.codeOffset<9>():
+        handle_op_25:
+        case OpCode::PushInstVar.codeOffset<10>():
+        handle_op_26:
+        case OpCode::PushInstVar.codeOffset<11>():
+        handle_op_27:
+        case OpCode::PushInstVar.codeOffset<12>():
+        handle_op_28:
+        case OpCode::PushInstVar.codeOffset<13>():
+        handle_op_29:
+        case OpCode::PushInstVar.codeOffset<14>():
+        handle_op_30:
+        case OpCode::PushInstVar.codeOffset<15>():
+        handle_op_31 : {
+            const auto [nibble] = OpCode::PushInstVar.pullOperandsFromInstructions(ip);
+            slotCopy(++sp, &slotRawObject(&g->receiver)->slots[nibble]);
+            dispatch_opcode;
+        }
+
+        case OpCode::JumpIfTrue.code:
         handle_op_32:
-            // cannot compare with o_false because it is NaN
             if (IsTrue(sp)) {
-                int jmplen = (ip[1] << 8) | ip[2];
-                ip += jmplen + 2;
+                const auto [high16, low16] = OpCode::JumpIfTrue.pullOperandsFromInstructions(ip);
+                ip += (high16.asInt() << 8) | low16;
             } else if (IsFalse(sp)) {
-                ip += 2;
+                const auto [high16, low16] = OpCode::JumpIfTrue.pullOperandsFromInstructions(ip);
             } else {
+                // Note: we don't increment the instruction pointer in this case!
                 numArgsPushed = 1;
                 selector = gSpecialSelectors[opmNonBooleanError];
                 slot = sp;
