@@ -897,38 +897,6 @@ void PyrClassNode::compile(PyrSlot* result) {
 
 void recompileSubclasses(PyrClass* classobj) {}
 
-#if 0
-void catVarLists(PyrVarListNode *varlist);
-void catVarLists(PyrVarListNode *varlist)
-{
-	PyrVarListNode *prevvarlist;
-	PyrVarDefNode *vardef, *lastvardef;
-
-	if (varlist) {
-		// find end of this list
-		vardef = varlist->mVarDefs;
-		for (; vardef; vardef = (PyrVarDefNode*)vardef->mNext) {
-			lastvardef = vardef;
-		}
-		prevvarlist = varlist;
-		varlist = (PyrVarListNode*)varlist->mNext;
-
-		for (; varlist; varlist = (PyrVarListNode*)varlist->mNext) {
-			vardef = varlist->mVarDefs;
-			if (lastvardef) {
-				lastvardef->mNext = (PyrParseNode*)vardef;
-			} else {
-				prevvarlist->mVarDefs = vardef;
-			}
-			// find end of this list
-			for (; vardef; vardef = (PyrVarDefNode*)vardef->mNext) {
-				lastvardef = vardef;
-			}
-		}
-	}
-}
-
-#else
 
 void catVarLists(PyrVarListNode* varlist);
 void catVarLists(PyrVarListNode* varlist) {
@@ -951,7 +919,6 @@ void catVarLists(PyrVarListNode* varlist) {
         }
     }
 }
-#endif
 
 PyrMethodNode* newPyrMethodNode(PyrSlotNode* methodName, PyrSlotNode* primitiveName, PyrArgListNode* arglist,
                                 PyrVarListNode* varlist, PyrParseNode* body, int isClassMethod) {
@@ -1107,25 +1074,7 @@ int compareCallArgs(PyrMethodNode* node, PyrCallNode* cnode, int* varIndex, PyrC
             actualArg = actualArg->mNext;
         }
     }
-    /*
-    if (special == methForwardInstVar) {
-        postfl("methForwardInstVar %s:%s  formal %d  actual %d\n", slotRawSymbol(&gCompilingClass->name)->name,
-            slotRawSymbol(&gCompilingMethod->name)->name, numFormalArgs, numActualArgs);
-    }
-    if (special == methForwardClassVar) {
-        postfl("methForwardClassVar %s:%s  formal %d  actual %d\n", slotRawSymbol(&gCompilingClass->name)->name,
-            slotRawSymbol(&gCompilingMethod->name)->name, numFormalArgs, numActualArgs);
-    }
-    if (special == methRedirectSuper) {
-        postfl("methRedirectSuper %s:%s  formal %d  actual %d\n", slotRawSymbol(&gCompilingClass->name)->name,
-            slotRawSymbol(&gCompilingMethod->name)->name, numFormalArgs, numActualArgs);
-    }
-    */
 
-    //	if (special == methTempDelegate) {
-    //		postfl("methTempDelegate %s:%s\n", slotRawSymbol(&gCompilingClass->name)->name,
-    //			slotRawSymbol(&gCompilingMethod->name)->name);
-    //	}
     return special;
 }
 
@@ -2225,22 +2174,6 @@ ByteCodes compileBodyWithGoto(PyrParseNode* body, int branchLen, bool onTailBran
     return subExprByteCodes;
 }
 
-#if 0
-ByteCodes compileDefaultValue(int litIndex, int realExprLen)
-{
-  ByteCodes	currentByteCodes, defaultByteCodes;
-
-  currentByteCodes = saveByteCodeArray();
-
-  emitOpcode(opPushSpecialValue, litIndex);
-  emitJump(realExprLen, unconditionalJump);
-
-  defaultByteCodes = getByteCodes();
-  restoreByteCodeArray(currentByteCodes);
-
-  return (defaultByteCodes);
-}
-#endif
 
 bool isAnInlineableBlock(PyrParseNode* node) {
     bool res = false;
@@ -3735,72 +3668,12 @@ PyrLitDictNode* newPyrLitDictNode(PyrParseNode* elems) {
 }
 
 int litDictPut(PyrObject* dict, PyrSlot* key, PyrSlot* value);
-int litDictPut(PyrObject* dict, PyrSlot* key, PyrSlot* value) {
-#if 0
-	PyrSlot *slot, *newslot;
-	int i, index, size;
-	PyrObject *array;
-
-	bool knows = IsTrue(dict->slots + ivxIdentDict_know);
-	if (knows && IsSym(key)) {
-		if (slotRawSymbol(key) == s_parent) {
-			slotCopy(&dict->slots[ivxIdentDict_parent], value);
-			return errNone;
-		}
-		if (slotRawSymbol(key) == s_proto) {
-			slotCopy(&dict->slots[ivxIdentDict_proto], value);
-			return errNone;
-		}
-	}
-	array = slotRawObject(&dict->slots[ivxIdentDict_array]);
-	if (!isKindOf((PyrObject*)array, class_array)) return errFailed;
-
-	index = arrayAtIdentityHashInPairs(array, key);
-	slot = array->slots + index;
-	slotCopy(&slot[1], value);
-	if (IsNil(slot)) {
-		slotCopy(slot, key);
-	}
-#endif
-    return errNone;
-}
+int litDictPut(PyrObject* dict, PyrSlot* key, PyrSlot* value) { return errNone; }
 
 
 void PyrLitDictNode::dump(int level) {}
 
-void PyrLitDictNode::compile(PyrSlot* result) {
-#if 0
-	PyrSlot *resultSlot;
-	PyrSlot itemSlot;
-	PyrObject *array;
-	PyrParseNode *inode;
-	int i, numItems, flags;
-
-	//postfl("->compilePyrLitDictNode\n");
-	if (mClassname && slotRawSymbol(&((PyrSlotNode*)mClassname)->mSlot) != s_array) {
-		error("Only Array is supported as literal type.\n");
-		post("Compiling as an Array.\n");
-	}
-	resultSlot = (PyrSlot*)result;
-	numItems = mElems ? nodeListLength(mElems) : 0;
-	int numSlots = NEXTPOWEROFTWO(numItems*2);
-
-    PyrObject *obj = instantiateObject(g->gc, class_event->u.classobj, 0, true, false);
-    PyrSlot *slots = obj->slots;
-
-	flags = compilingCmdLine ? obj_immutable : obj_permanent | obj_immutable;
-	array = newPyrArray(compileGC(), numSlots, flags, false);
-	nilSlots(array->slots, numSlots);
-	inode = mElems;
-	for (i=0; i<numItems; ++i, inode = (PyrParseNode*)inode->mNext) {
-		COMPILENODE(inode, &itemSlot, false);
-		array->slots[i] = itemSlot;
-	}
-	array->size = numItems;
-	SetObject(resultSlot, array);
-	//postfl("<-compilePyrLitListNode\n");
-#endif
-}
+void PyrLitDictNode::compile(PyrSlot* result) {}
 
 
 extern LongStack closedFuncCharNo;
