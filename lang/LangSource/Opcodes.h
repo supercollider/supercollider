@@ -442,8 +442,9 @@ struct Operands {
     }
 
     template <typename ENUM_T, typename I> constexpr static ENUM_T to_enum(I i) {
+        assert(i >= 0);
         assert(i < static_cast<std::uint64_t>(ENUM_T::COUNT));
-        return static_cast<ENUM_T>(to_byte<I>(i));
+        return static_cast<ENUM_T>(i);
     }
 
 
