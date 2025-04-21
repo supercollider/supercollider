@@ -1675,7 +1675,7 @@ void PyrVarDefNode::compileArg(PyrSlot* result) {
         emitByte((jumplen >> 8) & 0xFF);
         emitByte(jumplen & 0xFF);
         compileAndFreeByteCodes(trueByteCodes);
-        emitOpcode(opSpecialOpcode, opcDrop); // drop the boolean
+        OpCode::Drop.emit();
     }
 
     // error("compilePyrVarDefNode: shouldn't get here.\n");
@@ -2161,7 +2161,7 @@ ByteCodes compileBodyWithGoto(PyrParseNode* body, int branchLen, bool onTailBran
     COMPILENODE(body, &dummy, onTailBranch);
     if (branchLen) {
         if (!byteCodeLength(gCompilingByteCodes)) {
-            emitOpcode(opPushSpecialValue, opsvNil); // push nil
+            OpCode::PushSpecialValue.emit(OpSpecialValue::Nil);
         }
         emitJump(opcJumpFwd, branchLen);
     }
@@ -2327,8 +2327,7 @@ void compileQQMsg(PyrParseNode* arg1, PyrParseNode* arg2) {
     } else {
         COMPILENODE(arg2, &dummy, false);
         emitTailCall();
-        emitOpcode(opSendSpecialMsg, 2);
-        emitByte(opmDoubleQuestionMark);
+        OpCode::SendSpecialMsg.emit(1, OpSpecialSelectors::DoubleQuestionMark);
     }
 }
 
@@ -2350,8 +2349,7 @@ void compileXQMsg(PyrParseNode* arg1, PyrParseNode* arg2) {
     } else {
         COMPILENODE(arg2, &dummy, false);
         emitTailCall();
-        emitOpcode(opSendSpecialMsg, 2);
-        emitByte(opmExclamationQuestionMark);
+        OpCode::SendSpecialMsg.emit(1, OpSpecialSelectors::ExclamationQuestionMark);
     }
 }
 
@@ -2808,7 +2806,7 @@ void compileWhileMsg(PyrCallNodeBase2* node) {
         emitJump(opcJumpIfFalsePushNil, exprByteCodeLen + 3);
 
         // opcJumpBak does a drop..
-        emitOpcode(opPushSpecialValue, opsvNil);
+        OpCode::PushSpecialValue.emit(OpSpecialValue::Nil);
 
         emitJump(opcJumpBak, exprByteCodeLen + whileByteCodeLen + 4);
 
@@ -2835,7 +2833,7 @@ void compileWhileMsg(PyrCallNodeBase2* node) {
             exprByteCodeLen = 1;
             emitJump(opcJumpIfFalsePushNil, exprByteCodeLen + 3);
             // opcJumpBak does a drop..
-            emitOpcode(opPushSpecialValue, opsvNil);
+            OpCode::PushSpecialValue.emit(OpSpecialValue::Nil);
         }
 
         emitJump(opcJumpBak, exprByteCodeLen + whileByteCodeLen + 4);
@@ -3297,7 +3295,7 @@ void PyrReturnNode::compile(PyrSlot* result) {
         SetTailIsMethodReturn mr(true);
         PyrSlot dummy;
         COMPILENODE(mExpr, &dummy, true);
-        emitOpcode(opSpecialOpcode, opcReturn);
+        OpCode::Return.emit();
     }
 }
 
@@ -3307,10 +3305,7 @@ PyrBlockReturnNode* newPyrBlockReturnNode() {
 }
 
 
-void PyrBlockReturnNode::compile(PyrSlot* result) {
-    // postfl("compilePyrBlockReturnNode\n");
-    // emitOpcode(opSpecialOpcode, opcFunctionReturn);
-}
+void PyrBlockReturnNode::compile(PyrSlot* result) {}
 
 PyrAssignNode* newPyrAssignNode(PyrSlotNode* varName, PyrParseNode* expr, int flags) {
     PyrAssignNode* node = ALLOCNODE(PyrAssignNode);
@@ -3542,39 +3537,30 @@ int PyrDynDictNode::isPartialApplication() {
 }
 
 void PyrDynDictNode::compileCall(PyrSlot* result) {
-    int i, numItems;
-    PyrParseNode* inode;
-    PyrSlot dummy;
-
-    // postfl("compilePyrDynDictNode\n");
-    numItems = nodeListLength(mElems) >> 1;
+    const int numItems = nodeListLength(mElems) >> 1;
 
     compilePushVar((PyrParseNode*)this, s_event);
 
     emitPushInt(numItems);
-    emitByte(110); // push nil for proto
-    emitByte(110); // push nil for parent
-    emitByte(108); // push true for know
-    emitOpcode(opSendSpecialMsg, 5);
+    OpCode::PushSpecialValue.emit(OpSpecialValue::Nil); // push nil for proto
+    OpCode::PushSpecialValue.emit(OpSpecialValue::Nil); // push nil for parent
+    OpCode::PushSpecialValue.emit(OpSpecialValue::True); // push true for know
+    OpCode::SendSpecialMsg.emit(4, OpSpecialSelectors::New);
 
-    emitByte(opmNew);
-
-    inode = mElems;
-    for (i = 0; i < numItems; ++i) {
-        // if (compilingCmdLine) post("+ %d %d\n", i, gCompilingByteCodes->size);
+    PyrParseNode* inode = mElems;
+    PyrSlot dummy;
+    for (int i = 0; i < numItems; ++i) {
         COMPILENODE(inode, &dummy, false);
         inode = (PyrParseNode*)inode->mNext;
         COMPILENODE(inode, &dummy, false);
         inode = (PyrParseNode*)inode->mNext;
-        emitOpcode(opSendSpecialMsg, 3);
-        emitByte(opmPut);
+        OpCode::SendSpecialMsg.emit(2, OpSpecialSelectors::Put);
     }
 }
 
 PyrDynListNode* newPyrDynListNode(PyrParseNode* classname, PyrParseNode* elems) {
     PyrDynListNode* node;
 
-    // if (compilingCmdLine) post("newPyrDynListNode\n");
     node = ALLOCNODE(PyrDynListNode);
     node->mClassname = classname;
     node->mElems = elems;
@@ -3596,33 +3582,17 @@ int PyrDynListNode::isPartialApplication() {
 }
 
 void PyrDynListNode::compileCall(PyrSlot* result) {
-    int i, numItems;
-    PyrParseNode* inode;
-    PyrSlot dummy;
+    const int numItems = nodeListLength(mElems);
 
-    // postfl("compilePyrDynListNode\n");
-    numItems = nodeListLength(mElems);
-
-    if (mClassname) {
-        compilePushVar((PyrParseNode*)this, slotRawSymbol(&((PyrSlotNode*)mClassname)->mSlot));
-    } else {
-        compilePushVar((PyrParseNode*)this, s_array);
-    }
-
-    // emitOpcode(opExtended, opPushSpecialValue);
-    // emitByte(op_class_list);
-
+    compilePushVar((PyrParseNode*)this, mClassname ? slotRawSymbol(&((PyrSlotNode*)mClassname)->mSlot) : s_array);
     emitPushInt(numItems);
+    OpCode::SendSpecialMsg.emit(1, OpSpecialSelectors::New);
 
-    emitOpcode(opSendSpecialMsg, 2);
-    emitByte(opmNew);
-
-    inode = mElems;
-    for (i = 0; i < numItems; ++i, inode = (PyrParseNode*)inode->mNext) {
-        // if (compilingCmdLine) post("+ %d %d\n", i, gCompilingByteCodes->size);
+    PyrParseNode* inode = mElems;
+    PyrSlot dummy;
+    for (int i = 0; i < numItems; ++i, inode = (PyrParseNode*)inode->mNext) {
         COMPILENODE(inode, &dummy, false);
-        emitOpcode(opSendSpecialMsg, 2);
-        emitByte(opmAdd);
+        OpCode::SendSpecialMsg.emit(1, OpSpecialSelectors::Add);
     }
 }
 
@@ -3704,8 +3674,6 @@ void PyrBlockNode::compile(PyrSlot* slotResult) {
     PyrSymbolArray *argNames, *varNames;
     PyrSlot dummy;
     bool hasVarExprs = false;
-
-    // postfl("->block\n");
 
     // create a new block object
 
@@ -3816,7 +3784,6 @@ void PyrBlockNode::compile(PyrSlot* slotResult) {
             }
             // put it in mArglist
             blockargs[i] = slotRawSymbol(varslot);
-            // postfl("defarg %d '%s'\n", i, slotRawSymbol(slot)->name);
         }
     }
 
@@ -3836,7 +3803,6 @@ void PyrBlockNode::compile(PyrSlot* slotResult) {
         }
         // put it in mArglist
         blockargs[numArgs] = slotRawSymbol(varslot);
-        // postfl("defrest '%s'\n", slotRawSymbol(slot)->name);
 
         if (numKwArgs > 0) {
             PyrSlot* kwvarslot;
@@ -3884,7 +3850,6 @@ void PyrBlockNode::compile(PyrSlot* slotResult) {
             }
             // put it in varlist
             blockvars[i] = slotRawSymbol(varslot);
-            // postfl("defvar %d '%s'\n", i, slotRawSymbol(slot)->name);
         }
     }
 
@@ -3895,13 +3860,11 @@ void PyrBlockNode::compile(PyrSlot* slotResult) {
             slot = slotRawObject(&block->prototypeFrame)->slots + i;
             if (vardef->hasExpr(&litval))
                 hasVarExprs = true;
-            // compilePyrLiteralNode((PyrLiteralNode*)vardef->mDefVal, &litval);
             *slot = litval;
         }
     }
 
     if (numVariableArgs > 0) {
-        // SetNil(&slotRawObject(&block->prototypeFrame)->slots[numArgs]);
         slotCopy(&slotRawObject(&block->prototypeFrame)->slots[numArgs], &o_emptyarray);
         if (numKwArgs > 0) {
             slotCopy(&slotRawObject(&block->prototypeFrame)->slots[numArgs + 1], &o_emptyarray);
@@ -3915,7 +3878,6 @@ void PyrBlockNode::compile(PyrSlot* slotResult) {
             slot = slotRawObject(&block->prototypeFrame)->slots + i + numArgs + numVariableArgs;
             if (vardef->hasExpr(&litval))
                 hasVarExprs = true;
-            // compilePyrLiteralNode(vardef->mDefVal, &litval);
             *slot = litval;
         }
     }
@@ -3925,10 +3887,6 @@ void PyrBlockNode::compile(PyrSlot* slotResult) {
     initByteCodes();
     {
         SetTailBranch branch(true);
-        /*if (compilingCmdLine) {
-            post("block %d\n", gIsTailCodeBranch);
-            DUMPNODE(mBody, 0);
-        }*/
         SetTailIsMethodReturn mr(false);
         if (hasVarExprs) {
             if (mArglist) {
@@ -3945,12 +3903,12 @@ void PyrBlockNode::compile(PyrSlot* slotResult) {
             }
         }
         if (mBody->mClassno == pn_BlockReturnNode) {
-            emitOpcode(opPushSpecialValue, opsvNil);
+            OpCode::PushSpecialValue.emit(OpSpecialValue::Nil);
         } else {
             COMPILENODE(mBody, &dummy, true);
         }
     }
-    emitOpcode(opSpecialOpcode, opcFunctionReturn);
+    OpCode::BlockReturn.emit();
     installByteCodes(block);
 
     if ((!gFunctionCantBeClosed && gFunctionHighestExternalRef == 0) || mIsTopLevel) {
@@ -3959,11 +3917,6 @@ void PyrBlockNode::compile(PyrSlot* slotResult) {
         PyrString* string = newPyrStringN(compileGC(), stringLength, flags, false);
         memcpy(string->s, text + mBeginCharNo, stringLength);
         SetObject(&block->sourceCode, string);
-        // static int totalLength = 0, totalStrings = 0;
-        // totalLength += stringLength;
-        // totalStrings++;
-        // post("cf %4d %4d %6d %s:%s \n", totalStrings, stringLength, totalLength,
-        // slotRawSymbol(&gCompilingClass->name)->name, slotRawSymbol(&gCompilingMethod->name)->name);
     }
 
     gCompilingBlock = prevBlock;
