@@ -88,7 +88,7 @@ Unit* sc_ugen_def::construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth
         w->mBuffer = nullptr;
         w->mScalarValue = 0;
 
-        if (unit->mCalcRate == 2) {
+        if (unit->mCalcRate == calc_FullRate) {
             /* allocate a new buffer */
             assert(unit_spec.buffer_mapping[i] >= 0);
             std::size_t buffer_id = unit_spec.buffer_mapping[i];
