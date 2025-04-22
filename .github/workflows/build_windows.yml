@@ -25,7 +25,7 @@ jobs:
             vcpkg-triplet: x86-windows-release
             use-qtwebengine: "ON" # might need to be turned off for MinGW
             qt-modules: "qtwebengine"
-            # artifact-suffix: "win32" # set if needed - will trigger artifact upload
+            artifact-suffix: "win32" # set if needed - will trigger artifact upload
             # create-installer: ${{ startsWith(github.ref, 'refs/tags/') }}
             # installer-suffix: "win32-installer"
 
