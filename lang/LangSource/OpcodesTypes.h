@@ -474,6 +474,15 @@ struct Operands {
             // that support C++20 will behave as expected even when compiling on older versions.
             return { to_byte((b >> (8LL * PART)) & 0xFF) };
         }
+
+        template <typename... TS> int getUnsignedInt(const TS&... ts) const {
+            static_assert((PART + 1) * 8 == TOTAL, "Can only all getUnsignedInt on the highest part");
+            static_assert(sizeof...(TS) == PART, "Not all numeric parts were provided");
+
+            return this->getUnsignedIntPart() | ((ts.getUnsignedIntPart()) | ...);
+        }
+
+        int getUnsignedIntPart() const { return this->asInt() << (PART * 8); }
     };
     struct SpecialClass : details::OperandEnumWrapper<OpSpecialClassEnum> {
         constexpr SpecialClass(OpSpecialClassEnum s) noexcept: details::OperandEnumWrapper<OpSpecialClassEnum>(s) {}

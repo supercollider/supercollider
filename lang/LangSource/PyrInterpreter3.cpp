@@ -807,7 +807,7 @@ HOT void Interpret(VMGlobals* g) {
         case OpCode::StoreClassVarX.code:
         handle_op_9 : {
             const auto [indexOfName, indexOfClass] = OpCode::StoreClassVarX.pullOperandsFromInstructions(ip);
-            slotCopy(&g->classvars->slots[(indexOfName.asInt() << 8) | indexOfClass], sp);
+                slotCopy(&g->classvars->slots[indexOfName.getUnsignedInt(indexOfClass)], sp);
             g->gc->GCWrite(g->classvars, sp);
             dispatch_opcode;
         }
@@ -968,8 +968,9 @@ HOT void Interpret(VMGlobals* g) {
         handle_op_32:
             if (IsTrue(sp)) {
                 const auto [high16, low16] = OpCode::JumpIfTrue.pullOperandsFromInstructions(ip);
-                ip += (high16.asInt() << 8) | low16;
+                    ip += high16.getUnsignedInt(low16);
             } else if (IsFalse(sp)) {
+                    // Nothing to do, just remove instructions.
                 const auto [high16, low16] = OpCode::JumpIfTrue.pullOperandsFromInstructions(ip);
             } else {
                 // Note: we don't increment the instruction pointer in this case!
