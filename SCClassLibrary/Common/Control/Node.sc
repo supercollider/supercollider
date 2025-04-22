@@ -457,7 +457,7 @@ Synth : Node {
 		if (blockSize.notNil or: { upsample.notNil }) {
 			server.sendMsg(66, //"s_newEx"
 				defName, nodeID, addActionID, targetNode.nodeID,
-				blockSize, upsample, *(args.asOSCArgArray)
+				blockSize ? 0, upsample ? 0.0, *(args.asOSCArgArray)
 			);
 		} {
 			server.sendMsg(9, //"s_new"
@@ -503,7 +503,7 @@ Synth : Node {
 		target = (target ? server.defaultGroup);
 		group = if(addActionID < 2) { target } { target.group };
 		if (blockSize.notNil or: { upsample.notNil }) {
-			^[66, defName, nodeID, addActionID, target.nodeID, blockSize, upsample ] ++
+			^[66, defName, nodeID, addActionID, target.nodeID, blockSize ? 0, upsample ? 0.0 ] ++
 			args.asOSCArgArray // "/s_newEx"
 		} {
 			^[9, defName, nodeID, addActionID, target.nodeID] ++
