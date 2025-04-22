@@ -4668,7 +4668,7 @@ namespace detail
       }
       run_it& operator=(BOOST_THREAD_RV_REF(run_it) x) BOOST_NOEXCEPT {
         if (this != &x) {
-          that_=x.that;
+          that_=x.that_;
           x.that_.reset();
         }
         return *this;
