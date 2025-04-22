@@ -55,25 +55,15 @@ public:
     };
 
     struct Options : public SC_LanguageClient::Options {
-        Options():
-            mLibraryConfigFile(0),
-            mDaemon(false),
-            mCallRun(false),
-            mCallStop(false),
-            mStandalone(false),
-            mArgc(0),
-            mArgv(0) {}
-
-        const char* mLibraryConfigFile;
+        std::string mLibraryConfigFile;
         bool mDaemon;
         bool mCallRun;
         bool mCallStop;
         bool mStandalone;
-        int mArgc;
-        char** mArgv;
+        std::vector<std::string> mArgs;
     };
 
-    SC_TerminalClient(const char* name);
+    SC_TerminalClient(const std::string& name);
     virtual ~SC_TerminalClient();
 
     const Options& options() const { return mOptions; }
@@ -94,9 +84,6 @@ public:
     void stop() { mIoContext.stop(); }
 
 protected:
-    bool parseOptions(int& argc, char**& argv, Options& opt);
-    void printUsage();
-
     void interpretCmdLine(const char* cmdLine, bool silent);
     void interpretCmdLine(const char* buf, size_t size, bool silent);
 
