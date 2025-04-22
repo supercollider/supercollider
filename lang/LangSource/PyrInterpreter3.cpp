@@ -305,6 +305,12 @@ static void handleSigUsr1(int param) {
 }
 #endif
 
+template <typename F> void ifTailCallOptimise(F&& f) {
+#if TAILCALLOPTIMIZE
+    std::forward<F>(f)();
+#endif
+}
+
 bool initRuntime(VMGlobals* g, int poolSize, AllocPool* inPool) {
     /*
         create a GC environment
@@ -393,9 +399,7 @@ bool initInterpreter(VMGlobals* g, PyrSymbol* selector, int numArgsPushed) {
     g->thread = slotRawThread(&g->process->mainThread);
 
     // these will be set up when the run method is called
-#if TAILCALLOPTIMIZE
-    g->tailCall = 0;
-#endif
+    ifTailCallOptimise([&]() { g->tailCall = 0; });
     g->method = nullptr;
     g->block = nullptr;
     g->frame = nullptr;
@@ -541,6 +545,44 @@ static inline void checkStackDepth(VMGlobals* g, PyrSlot* sp) {
 #    pragma GCC optimize("-fno-gcse")
 #endif
 
+
+/// Pass the name of an OpCode struct, e.g. InterpretOpcode(SendMsgX)
+/// Setups of a switch case and a label for the computed gotos.
+#define InterpretOpcode(NAME)                                                                                          \
+    case OpCode::NAME.code:                                                                                            \
+        label_##NAME:
+
+/// Pass the name of an OpCode struct that has 16 variants in the second nibble, e.g. InterpretOpcode16(PushInstVar)
+/// Setups of a switch case and a label for the computed gotos.
+#define InterpretOpcode16(NAME)                                                                                        \
+    case OpCode::NAME.codeOffset<0>():                                                                                 \
+    case OpCode::NAME.codeOffset<1>():                                                                                 \
+    case OpCode::NAME.codeOffset<2>():                                                                                 \
+    case OpCode::NAME.codeOffset<3>():                                                                                 \
+    case OpCode::NAME.codeOffset<4>():                                                                                 \
+    case OpCode::NAME.codeOffset<5>():                                                                                 \
+    case OpCode::NAME.codeOffset<6>():                                                                                 \
+    case OpCode::NAME.codeOffset<7>():                                                                                 \
+    case OpCode::NAME.codeOffset<8>():                                                                                 \
+    case OpCode::NAME.codeOffset<9>():                                                                                 \
+    case OpCode::NAME.codeOffset<10>():                                                                                \
+    case OpCode::NAME.codeOffset<11>():                                                                                \
+    case OpCode::NAME.codeOffset<12>():                                                                                \
+    case OpCode::NAME.codeOffset<13>():                                                                                \
+    case OpCode::NAME.codeOffset<14>():                                                                                \
+    case OpCode::NAME.codeOffset<15>():                                                                                \
+        label_##NAME:
+
+#define InterpertOpcode7(NAME)                                                                                         \
+    case OpCode::NAME.codeOffset<0>():                                                                                 \
+    case OpCode::NAME.codeOffset<1>():                                                                                 \
+    case OpCode::NAME.codeOffset<2>():                                                                                 \
+    case OpCode::NAME.codeOffset<3>():                                                                                 \
+    case OpCode::NAME.codeOffset<4>():                                                                                 \
+    case OpCode::NAME.codeOffset<5>():                                                                                 \
+    case OpCode::NAME.codeOffset<6>():                                                                                 \
+        label_##NAME:
+
 HOT void Interpret(VMGlobals* g) {
     // byte code values
     Byte* ip;
@@ -556,51 +598,262 @@ HOT void Interpret(VMGlobals* g) {
     PyrSlot* sp;
 
 #ifdef LABELS_AS_VALUES
-    static void* opcode_labels[] = {
-        &&handle_op_0,   &&handle_op_1,   &&handle_op_2,   &&handle_op_3,   &&handle_op_4,   &&handle_op_5,
-        &&handle_op_6,   &&handle_op_7,   &&handle_op_8,   &&handle_op_9,   &&handle_op_10,  &&handle_op_11,
-        &&handle_op_12,  &&handle_op_13,  &&handle_op_14,  &&handle_op_15,  &&handle_op_16,  &&handle_op_17,
-        &&handle_op_18,  &&handle_op_19,  &&handle_op_20,  &&handle_op_21,  &&handle_op_22,  &&handle_op_23,
-        &&handle_op_24,  &&handle_op_25,  &&handle_op_26,  &&handle_op_27,  &&handle_op_28,  &&handle_op_29,
-        &&handle_op_30,  &&handle_op_31,  &&handle_op_32,  &&handle_op_33,  &&handle_op_34,  &&handle_op_35,
-        &&handle_op_36,  &&handle_op_37,  &&handle_op_38,  &&handle_op_39,  &&handle_op_40,  &&handle_op_41,
-        &&handle_op_42,  &&handle_op_43,  &&handle_op_44,  &&handle_op_45,  &&handle_op_46,  &&handle_op_47,
-        &&handle_op_48,  &&handle_op_49,  &&handle_op_50,  &&handle_op_51,  &&handle_op_52,  &&handle_op_53,
-        &&handle_op_54,  &&handle_op_55,  &&handle_op_56,  &&handle_op_57,  &&handle_op_58,  &&handle_op_59,
-        &&handle_op_60,  &&handle_op_61,  &&handle_op_62,  &&handle_op_63,  &&handle_op_64,  &&handle_op_65,
-        &&handle_op_66,  &&handle_op_67,  &&handle_op_68,  &&handle_op_69,  &&handle_op_70,  &&handle_op_71,
-        &&handle_op_72,  &&handle_op_73,  &&handle_op_74,  &&handle_op_75,  &&handle_op_76,  &&handle_op_77,
-        &&handle_op_78,  &&handle_op_79,  &&handle_op_80,  &&handle_op_81,  &&handle_op_82,  &&handle_op_83,
-        &&handle_op_84,  &&handle_op_85,  &&handle_op_86,  &&handle_op_87,  &&handle_op_88,  &&handle_op_89,
-        &&handle_op_90,  &&handle_op_91,  &&handle_op_92,  &&handle_op_93,  &&handle_op_94,  &&handle_op_95,
-        &&handle_op_96,  &&handle_op_97,  &&handle_op_98,  &&handle_op_99,  &&handle_op_100, &&handle_op_101,
-        &&handle_op_102, &&handle_op_103, &&handle_op_104, &&handle_op_105, &&handle_op_106, &&handle_op_107,
-        &&handle_op_108, &&handle_op_109, &&handle_op_110, &&handle_op_111, &&handle_op_112, &&handle_op_113,
-        &&handle_op_114, &&handle_op_115, &&handle_op_116, &&handle_op_117, &&handle_op_118, &&handle_op_119,
-        &&handle_op_120, &&handle_op_121, &&handle_op_122, &&handle_op_123, &&handle_op_124, &&handle_op_125,
-        &&handle_op_126, &&handle_op_127, &&handle_op_128, &&handle_op_129, &&handle_op_130, &&handle_op_131,
-        &&handle_op_132, &&handle_op_133, &&handle_op_134, &&handle_op_135, &&handle_op_136, &&handle_op_137,
-        &&handle_op_138, &&handle_op_139, &&handle_op_140, &&handle_op_141, &&handle_op_142, &&handle_op_143,
-        &&handle_op_144, &&handle_op_145, &&handle_op_146, &&handle_op_147, &&handle_op_148, &&handle_op_149,
-        &&handle_op_150, &&handle_op_151, &&handle_op_152, &&handle_op_153, &&handle_op_154, &&handle_op_155,
-        &&handle_op_156, &&handle_op_157, &&handle_op_158, &&handle_op_159, &&handle_op_160, &&handle_op_161,
-        &&handle_op_162, &&handle_op_163, &&handle_op_164, &&handle_op_165, &&handle_op_166, &&handle_op_167,
-        &&handle_op_168, &&handle_op_169, &&handle_op_170, &&handle_op_171, &&handle_op_172, &&handle_op_173,
-        &&handle_op_174, &&handle_op_175, &&handle_op_176, &&handle_op_177, &&handle_op_178, &&handle_op_179,
-        &&handle_op_180, &&handle_op_181, &&handle_op_182, &&handle_op_183, &&handle_op_184, &&handle_op_185,
-        &&handle_op_186, &&handle_op_187, &&handle_op_188, &&handle_op_189, &&handle_op_190, &&handle_op_191,
-        &&handle_op_192, &&handle_op_193, &&handle_op_194, &&handle_op_195, &&handle_op_196, &&handle_op_197,
-        &&handle_op_198, &&handle_op_199, &&handle_op_200, &&handle_op_201, &&handle_op_202, &&handle_op_203,
-        &&handle_op_204, &&handle_op_205, &&handle_op_206, &&handle_op_207, &&handle_op_208, &&handle_op_209,
-        &&handle_op_210, &&handle_op_211, &&handle_op_212, &&handle_op_213, &&handle_op_214, &&handle_op_215,
-        &&handle_op_216, &&handle_op_217, &&handle_op_218, &&handle_op_219, &&handle_op_220, &&handle_op_221,
-        &&handle_op_222, &&handle_op_223, &&handle_op_224, &&handle_op_225, &&handle_op_226, &&handle_op_227,
-        &&handle_op_228, &&handle_op_229, &&handle_op_230, &&handle_op_231, &&handle_op_232, &&handle_op_233,
-        &&handle_op_234, &&handle_op_235, &&handle_op_236, &&handle_op_237, &&handle_op_238, &&handle_op_239,
-        &&handle_op_240, &&handle_op_241, &&handle_op_242, &&handle_op_243, &&handle_op_244, &&handle_op_245,
-        &&handle_op_246, &&handle_op_247, &&handle_op_248, &&handle_op_249, &&handle_op_250, &&handle_op_251,
-        &&handle_op_252, &&handle_op_253, &&handle_op_254, &&handle_op_255
-    };
+    static void* opcode_labels[] = { &&label_PushClassX,
+                                     &&label_PushInstVarX,
+                                     &&label_PushTempVarX,
+                                     &&label_PushTempZeroVarX,
+                                     &&label_PushLiteralX,
+                                     &&label_PushClassVarX,
+                                     &&label_PushSpecialClass,
+                                     &&label_StoreInstVarX,
+                                     &&label_StoreTempVarX,
+                                     &&label_StoreClassVarX,
+                                     &&label_SendMsgX,
+                                     &&label_SendSuperMsgX,
+                                     &&label_SendSpecialMsgX,
+                                     &&label_SendSpecialUnaryArithMsgX,
+                                     &&label_SendSpecialBinaryArithMsgX,
+                                     &&label_SpecialOpcode,
+                                     &&label_PushInstVar,
+                                     &&label_PushInstVar,
+                                     &&label_PushInstVar,
+                                     &&label_PushInstVar,
+                                     &&label_PushInstVar,
+                                     &&label_PushInstVar,
+                                     &&label_PushInstVar,
+                                     &&label_PushInstVar,
+                                     &&label_PushInstVar,
+                                     &&label_PushInstVar,
+                                     &&label_PushInstVar,
+                                     &&label_PushInstVar,
+                                     &&label_PushInstVar,
+                                     &&label_PushInstVar,
+                                     &&label_PushInstVar,
+                                     &&label_PushInstVar,
+                                     &&label_JumpIfTrue,
+                                     &&label_PushTempVar,
+                                     &&label_PushTempVar,
+                                     &&label_PushTempVar,
+                                     &&label_PushTempVar,
+                                     &&label_PushTempVar,
+                                     &&label_PushTempVar,
+                                     &&label_PushTempVar,
+                                     &&label_PushConstant8,
+                                     &&label_PushConstant16,
+                                     &&label_PushConstant24,
+                                     &&label_PushConstant32,
+                                     &&handle_op_44,
+                                     &&handle_op_45,
+                                     &&handle_op_46,
+                                     &&handle_op_47,
+                                     &&handle_op_48,
+                                     &&handle_op_49,
+                                     &&handle_op_50,
+                                     &&handle_op_51,
+                                     &&handle_op_52,
+                                     &&handle_op_53,
+                                     &&handle_op_54,
+                                     &&handle_op_55,
+                                     &&handle_op_56,
+                                     &&handle_op_57,
+                                     &&handle_op_58,
+                                     &&handle_op_59,
+                                     &&handle_op_60,
+                                     &&handle_op_61,
+                                     &&handle_op_62,
+                                     &&handle_op_63,
+                                     &&handle_op_64,
+                                     &&handle_op_65,
+                                     &&handle_op_66,
+                                     &&handle_op_67,
+                                     &&handle_op_68,
+                                     &&handle_op_69,
+                                     &&handle_op_70,
+                                     &&handle_op_71,
+                                     &&handle_op_72,
+                                     &&handle_op_73,
+                                     &&handle_op_74,
+                                     &&handle_op_75,
+                                     &&handle_op_76,
+                                     &&handle_op_77,
+                                     &&handle_op_78,
+                                     &&handle_op_79,
+                                     &&handle_op_80,
+                                     &&handle_op_81,
+                                     &&handle_op_82,
+                                     &&handle_op_83,
+                                     &&handle_op_84,
+                                     &&handle_op_85,
+                                     &&handle_op_86,
+                                     &&handle_op_87,
+                                     &&handle_op_88,
+                                     &&handle_op_89,
+                                     &&handle_op_90,
+                                     &&handle_op_91,
+                                     &&handle_op_92,
+                                     &&handle_op_93,
+                                     &&handle_op_94,
+                                     &&handle_op_95,
+                                     &&handle_op_96,
+                                     &&handle_op_97,
+                                     &&handle_op_98,
+                                     &&handle_op_99,
+                                     &&handle_op_100,
+                                     &&handle_op_101,
+                                     &&handle_op_102,
+                                     &&handle_op_103,
+                                     &&handle_op_104,
+                                     &&handle_op_105,
+                                     &&handle_op_106,
+                                     &&handle_op_107,
+                                     &&handle_op_108,
+                                     &&handle_op_109,
+                                     &&handle_op_110,
+                                     &&handle_op_111,
+                                     &&handle_op_112,
+                                     &&handle_op_113,
+                                     &&handle_op_114,
+                                     &&handle_op_115,
+                                     &&handle_op_116,
+                                     &&handle_op_117,
+                                     &&handle_op_118,
+                                     &&handle_op_119,
+                                     &&handle_op_120,
+                                     &&handle_op_121,
+                                     &&handle_op_122,
+                                     &&handle_op_123,
+                                     &&handle_op_124,
+                                     &&handle_op_125,
+                                     &&handle_op_126,
+                                     &&handle_op_127,
+                                     &&handle_op_128,
+                                     &&handle_op_129,
+                                     &&handle_op_130,
+                                     &&handle_op_131,
+                                     &&handle_op_132,
+                                     &&handle_op_133,
+                                     &&handle_op_134,
+                                     &&handle_op_135,
+                                     &&handle_op_136,
+                                     &&handle_op_137,
+                                     &&handle_op_138,
+                                     &&handle_op_139,
+                                     &&handle_op_140,
+                                     &&handle_op_141,
+                                     &&handle_op_142,
+                                     &&handle_op_143,
+                                     &&handle_op_144,
+                                     &&handle_op_145,
+                                     &&handle_op_146,
+                                     &&handle_op_147,
+                                     &&handle_op_148,
+                                     &&handle_op_149,
+                                     &&handle_op_150,
+                                     &&handle_op_151,
+                                     &&handle_op_152,
+                                     &&handle_op_153,
+                                     &&handle_op_154,
+                                     &&handle_op_155,
+                                     &&handle_op_156,
+                                     &&handle_op_157,
+                                     &&handle_op_158,
+                                     &&handle_op_159,
+                                     &&handle_op_160,
+                                     &&handle_op_161,
+                                     &&handle_op_162,
+                                     &&handle_op_163,
+                                     &&handle_op_164,
+                                     &&handle_op_165,
+                                     &&handle_op_166,
+                                     &&handle_op_167,
+                                     &&handle_op_168,
+                                     &&handle_op_169,
+                                     &&handle_op_170,
+                                     &&handle_op_171,
+                                     &&handle_op_172,
+                                     &&handle_op_173,
+                                     &&handle_op_174,
+                                     &&handle_op_175,
+                                     &&handle_op_176,
+                                     &&handle_op_177,
+                                     &&handle_op_178,
+                                     &&handle_op_179,
+                                     &&handle_op_180,
+                                     &&handle_op_181,
+                                     &&handle_op_182,
+                                     &&handle_op_183,
+                                     &&handle_op_184,
+                                     &&handle_op_185,
+                                     &&handle_op_186,
+                                     &&handle_op_187,
+                                     &&handle_op_188,
+                                     &&handle_op_189,
+                                     &&handle_op_190,
+                                     &&handle_op_191,
+                                     &&handle_op_192,
+                                     &&handle_op_193,
+                                     &&handle_op_194,
+                                     &&handle_op_195,
+                                     &&handle_op_196,
+                                     &&handle_op_197,
+                                     &&handle_op_198,
+                                     &&handle_op_199,
+                                     &&handle_op_200,
+                                     &&handle_op_201,
+                                     &&handle_op_202,
+                                     &&handle_op_203,
+                                     &&handle_op_204,
+                                     &&handle_op_205,
+                                     &&handle_op_206,
+                                     &&handle_op_207,
+                                     &&handle_op_208,
+                                     &&handle_op_209,
+                                     &&handle_op_210,
+                                     &&handle_op_211,
+                                     &&handle_op_212,
+                                     &&handle_op_213,
+                                     &&handle_op_214,
+                                     &&handle_op_215,
+                                     &&handle_op_216,
+                                     &&handle_op_217,
+                                     &&handle_op_218,
+                                     &&handle_op_219,
+                                     &&handle_op_220,
+                                     &&handle_op_221,
+                                     &&handle_op_222,
+                                     &&handle_op_223,
+                                     &&handle_op_224,
+                                     &&handle_op_225,
+                                     &&handle_op_226,
+                                     &&handle_op_227,
+                                     &&handle_op_228,
+                                     &&handle_op_229,
+                                     &&handle_op_230,
+                                     &&handle_op_231,
+                                     &&handle_op_232,
+                                     &&handle_op_233,
+                                     &&handle_op_234,
+                                     &&handle_op_235,
+                                     &&handle_op_236,
+                                     &&handle_op_237,
+                                     &&handle_op_238,
+                                     &&handle_op_239,
+                                     &&handle_op_240,
+                                     &&handle_op_241,
+                                     &&handle_op_242,
+                                     &&handle_op_243,
+                                     &&handle_op_244,
+                                     &&handle_op_245,
+                                     &&handle_op_246,
+                                     &&handle_op_247,
+                                     &&handle_op_248,
+                                     &&handle_op_249,
+                                     &&handle_op_250,
+                                     &&handle_op_251,
+                                     &&handle_op_252,
+                                     &&handle_op_253,
+                                     &&handle_op_254,
+                                     &&handle_op_255 };
 
 #endif
 
@@ -633,8 +886,10 @@ HOT void Interpret(VMGlobals* g) {
     if (setjmp(g->escapeInterpreter) != 0) {
         return;
     }
+
+
 #ifndef _WIN32
-    while (running) { // not going to indent body to save line space
+    while (running) {
 #else
     while (true) {
 #endif
@@ -691,393 +946,284 @@ HOT void Interpret(VMGlobals* g) {
 #endif
 
         switch (op1) {
-        case OpCode::PushClassX.code:
-        handle_op_0 : {
-            const auto [classOperand] = OpCode::PushClassX.pullOperandsFromInstructions(ip);
-            classobj = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[classOperand])->u.classobj;
-            if (classobj) {
-                ++sp;
-                SetObject(sp, classobj);
-            } else {
-                postfl("Execution warning: Class '%s' not found\n",
-                       slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[classOperand])->name);
-                slotCopy(++sp, &gSpecialValues[svNil]);
-            }
-            dispatch_opcode;
-        }
-
-        case OpCode::PushInstVarX.code:
-        handle_op_1 : {
-            const auto [instVarIndex] = OpCode::PushInstVarX.pullOperandsFromInstructions(ip);
-            slotCopy(++sp, &slotRawObject(&g->receiver)->slots[instVarIndex]);
-            dispatch_opcode;
-        }
-
-        case OpCode::PushTempVarX.code:
-        handle_op_2 : {
-            const auto [frameOffset, varIndex] = OpCode::PushTempVarX.pullOperandsFromInstructions(ip);
-            PyrFrame* tframe = g->frame;
-            for (Byte count = frameOffset; count > 0; count -= 1) {
-                tframe = slotRawFrame(&tframe->context);
-            }
-            slotCopy(++sp, &tframe->vars[varIndex]);
-            dispatch_opcode;
-        }
-
-        case OpCode::PushTempZeroVarX.code:
-        handle_op_3 : {
-            const auto [varindex] = OpCode::PushTempZeroVarX.pullOperandsFromInstructions(ip);
-            slotCopy(++sp, &g->frame->vars[varindex]);
-            dispatch_opcode;
-        }
-
-        case OpCode::PushLiteralX.code:
-        handle_op_4 : {
-            const auto [literalIndex] = OpCode::PushLiteralX.pullOperandsFromInstructions(ip);
-            // push a block as a closure if it is one
-            slot = slotRawObject(&g->block->selectors)->slots + literalIndex;
-            if (IsObj(slot) && slotRawObject(slot)->classptr == gSpecialClasses[op_class_fundef]->u.classobj) {
-                // push a closure
-                g->sp = sp; // gc may push the stack
-                PyrClosure* closure = (PyrClosure*)g->gc->New(2 * sizeof(PyrSlot), 0, obj_notindexed, true);
-                sp = g->sp;
-                closure->classptr = gSpecialClasses[op_class_func]->u.classobj;
-                closure->size = 2;
-                slotCopy(&closure->block, slot);
-                if (IsNil(&slotRawBlock(slot)->contextDef)) {
-                    slotCopy(&closure->context, &slotRawInterpreter(&g->process->interpreter)->context);
+            InterpretOpcode(PushClassX) {
+                const auto [classOperand] = OpCode::PushClassX.pullOperandsFromInstructions(ip);
+                classobj = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[classOperand])->u.classobj;
+                if (classobj) {
+                    ++sp;
+                    SetObject(sp, classobj);
                 } else {
-                    SetObject(&closure->context, g->frame);
+                    postfl("Execution warning: Class '%s' not found\n",
+                           slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[classOperand])->name);
+                    slotCopy(++sp, &gSpecialValues[svNil]);
                 }
-                ++sp;
-                SetObject(sp, closure);
-            } else {
-                slotCopy(++sp, slot);
+                dispatch_opcode;
             }
-            dispatch_opcode;
-        }
 
-        case OpCode::PushClassVarX.code:
-        handle_op_5 : {
-            const auto [classIndex, varIndex] = OpCode::PushClassVarX.pullOperandsFromInstructions(ip);
-            slotCopy(++sp, &g->classvars->slots[(classIndex << 8) | varIndex]);
-            dispatch_opcode;
-        }
-
-        case OpCode::PushSpecialClass.code:
-        handle_op_6 : {
-            const auto [specialClassIndex] = OpCode::PushSpecialClass.pullOperandsFromInstructions(ip);
-            classobj = gSpecialClasses[specialClassIndex]->u.classobj;
-            if (classobj) {
-                ++sp;
-                SetObject(sp, classobj);
-            } else {
-                slotCopy(++sp, &gSpecialValues[svNil]);
+            InterpretOpcode(PushInstVarX) {
+                const auto [instVarIndex] = OpCode::PushInstVarX.pullOperandsFromInstructions(ip);
+                slotCopy(++sp, &slotRawObject(&g->receiver)->slots[instVarIndex]);
+                dispatch_opcode;
             }
-            dispatch_opcode;
-        }
 
-        case OpCode::StoreInstVarX.code:
-        handle_op_7 : {
-            const auto [instVarIndex] = OpCode::StoreInstVarX.pullOperandsFromInstructions(ip);
-            PyrObject* obj = slotRawObject(&g->receiver);
-            if (obj->IsImmutable()) {
-                StoreToImmutableA(g, sp, ip);
-            } else {
-                slot = obj->slots + instVarIndex;
+            InterpretOpcode(PushTempVarX) {
+                const auto [frameOffset, varIndex] = OpCode::PushTempVarX.pullOperandsFromInstructions(ip);
+                PyrFrame* tframe = g->frame;
+                for (Byte count = frameOffset; count > 0; count -= 1) {
+                    tframe = slotRawFrame(&tframe->context);
+                }
+                slotCopy(++sp, &tframe->vars[varIndex]);
+                dispatch_opcode;
+            }
+
+            InterpretOpcode(PushTempZeroVarX) {
+                const auto [varindex] = OpCode::PushTempZeroVarX.pullOperandsFromInstructions(ip);
+                slotCopy(++sp, &g->frame->vars[varindex]);
+                dispatch_opcode;
+            }
+
+            InterpretOpcode(PushLiteralX) {
+                const auto [literalIndex] = OpCode::PushLiteralX.pullOperandsFromInstructions(ip);
+                // push a block as a closure if it is one
+                slot = slotRawObject(&g->block->selectors)->slots + literalIndex;
+                if (IsObj(slot) && slotRawObject(slot)->classptr == gSpecialClasses[op_class_fundef]->u.classobj) {
+                    // push a closure
+                    g->sp = sp; // gc may push the stack
+                    PyrClosure* closure = (PyrClosure*)g->gc->New(2 * sizeof(PyrSlot), 0, obj_notindexed, true);
+                    sp = g->sp;
+                    closure->classptr = gSpecialClasses[op_class_func]->u.classobj;
+                    closure->size = 2;
+                    slotCopy(&closure->block, slot);
+                    if (IsNil(&slotRawBlock(slot)->contextDef)) {
+                        slotCopy(&closure->context, &slotRawInterpreter(&g->process->interpreter)->context);
+                    } else {
+                        SetObject(&closure->context, g->frame);
+                    }
+                    ++sp;
+                    SetObject(sp, closure);
+                } else {
+                    slotCopy(++sp, slot);
+                }
+                dispatch_opcode;
+            }
+
+            InterpretOpcode(PushClassVarX) {
+                const auto [classIndex, varIndex] = OpCode::PushClassVarX.pullOperandsFromInstructions(ip);
+                slotCopy(++sp, &g->classvars->slots[(classIndex << 8) | varIndex]);
+                dispatch_opcode;
+            }
+
+            InterpretOpcode(PushSpecialClass) {
+                const auto [specialClassIndex] = OpCode::PushSpecialClass.pullOperandsFromInstructions(ip);
+                classobj = gSpecialClasses[specialClassIndex]->u.classobj;
+                if (classobj) {
+                    ++sp;
+                    SetObject(sp, classobj);
+                } else {
+                    slotCopy(++sp, &gSpecialValues[svNil]);
+                }
+                dispatch_opcode;
+            }
+
+            InterpretOpcode(StoreInstVarX) {
+                const auto [instVarIndex] = OpCode::StoreInstVarX.pullOperandsFromInstructions(ip);
+                PyrObject* obj = slotRawObject(&g->receiver);
+                if (obj->IsImmutable()) {
+                    StoreToImmutableA(g, sp, ip);
+                } else {
+                    slot = obj->slots + instVarIndex;
+                    slotCopy(slot, sp);
+                    g->gc->GCWrite(obj, slot);
+                }
+                dispatch_opcode;
+            }
+
+
+            InterpretOpcode(StoreTempVarX) {
+                const auto [frameOffset, index] = OpCode::StoreTempVarX.pullOperandsFromInstructions(ip);
+                PyrFrame* tframe = g->frame;
+                for (Byte count = frameOffset; count > 0; count -= 1) {
+                    tframe = slotRawFrame(&tframe->context);
+                }
+                slot = tframe->vars + index;
                 slotCopy(slot, sp);
-                g->gc->GCWrite(obj, slot);
+                g->gc->GCWrite(tframe, slot);
+                dispatch_opcode;
             }
-            dispatch_opcode;
-        }
 
-        case OpCode::StoreTempVarX.code:
-        handle_op_8 : {
-            const auto [frameOffset, index] = OpCode::StoreTempVarX.pullOperandsFromInstructions(ip);
-            PyrFrame* tframe = g->frame;
-            for (Byte count = frameOffset; count > 0; count -= 1) {
-                tframe = slotRawFrame(&tframe->context);
-            }
-            slot = tframe->vars + index;
-            slotCopy(slot, sp);
-            g->gc->GCWrite(tframe, slot);
-            dispatch_opcode;
-        }
-
-        case OpCode::StoreClassVarX.code:
-        handle_op_9 : {
-            const auto [indexOfName, indexOfClass] = OpCode::StoreClassVarX.pullOperandsFromInstructions(ip);
+            InterpretOpcode(StoreClassVarX) {
+                const auto [indexOfName, indexOfClass] = OpCode::StoreClassVarX.pullOperandsFromInstructions(ip);
                 slotCopy(&g->classvars->slots[indexOfName.getUnsignedInt(indexOfClass)], sp);
-            g->gc->GCWrite(g->classvars, sp);
-            dispatch_opcode;
-        }
+                g->gc->GCWrite(g->classvars, sp);
+                dispatch_opcode;
+            }
 
-        case OpCode::SendMsgX.code:
-        handle_op_10 : {
-            const auto [numArgs, numKwArgs, selectorIndex] = OpCode::SendMsgX.pullOperandsFromInstructions(ip);
+            InterpretOpcode(SendMsgX) {
+                const auto [numArgs, numKwArgs, selectorIndex] = OpCode::SendMsgX.pullOperandsFromInstructions(ip);
 
-            numArgsPushed = numArgs;
-            numKeyArgsPushed = numKwArgs;
-            selector = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[selectorIndex]);
+                numArgsPushed = numArgs;
+                numKeyArgsPushed = numKwArgs;
+                selector = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[selectorIndex]);
 
-            slot = sp - numArgsPushed + 1;
+                slot = sp - numArgsPushed + 1;
 
-            if (numKeyArgsPushed)
-                goto key_class_lookup;
-            else
-                goto class_lookup;
-        }
+                if (numKeyArgsPushed)
+                    goto key_class_lookup;
+                else
+                    goto class_lookup;
+            }
 
-        case OpCode::SendSuperMsgX.code:
-        handle_op_11 : {
-            const auto [numArgs, numKwArgs, selectorIndex] = OpCode::SendSuperMsgX.pullOperandsFromInstructions(ip);
-            numArgsPushed = numArgs;
-            numKeyArgsPushed = numKwArgs;
+            InterpretOpcode(SendSuperMsgX) {
+                const auto [numArgs, numKwArgs, selectorIndex] = OpCode::SendSuperMsgX.pullOperandsFromInstructions(ip);
+                numArgsPushed = numArgs;
+                numKeyArgsPushed = numKwArgs;
 
-            selector = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[selectorIndex]);
-            slot = g->sp - numArgsPushed + 1;
-            classobj = slotRawSymbol(&slotRawClass(&g->method->ownerclass)->superclass)->u.classobj;
+                selector = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[selectorIndex]);
+                slot = g->sp - numArgsPushed + 1;
+                classobj = slotRawSymbol(&slotRawClass(&g->method->ownerclass)->superclass)->u.classobj;
 
-            if (numKeyArgsPushed)
-                goto key_msg_lookup;
-            else
-                goto msg_lookup;
-        }
+                if (numKeyArgsPushed)
+                    goto key_msg_lookup;
+                else
+                    goto msg_lookup;
+            }
 
-        case OpCode::SendSpecialMsgX.code:
-        handle_op_12 : {
-            const auto [numArgs, numKwArgs, selectorIndex] = OpCode::SendSpecialMsgX.pullOperandsFromInstructions(ip);
-            numArgsPushed = numArgs;
-            numKeyArgsPushed = numKwArgs;
+            InterpretOpcode(SendSpecialMsgX) {
+                const auto [numArgs, numKwArgs, selectorIndex] =
+                    OpCode::SendSpecialMsgX.pullOperandsFromInstructions(ip);
+                numArgsPushed = numArgs;
+                numKeyArgsPushed = numKwArgs;
 
-            selector = gSpecialSelectors[selectorIndex];
-            slot = sp - numArgsPushed + 1;
+                selector = gSpecialSelectors[selectorIndex];
+                slot = sp - numArgsPushed + 1;
 
-            if (numKeyArgsPushed)
-                goto key_class_lookup;
-            else
-                goto class_lookup;
-        }
+                if (numKeyArgsPushed)
+                    goto key_class_lookup;
+                else
+                    goto class_lookup;
+            }
 
-        case OpCode::SendSpecialUnaryArithMsgX.code:
-        handle_op_13 : {
-            const auto [unaryMathOp] = OpCode::SendSpecialUnaryArithMsgX.pullOperandsFromInstructions(ip);
-            g->sp = sp;
-            g->ip = ip;
-            g->primitiveIndex = unaryMathOp;
-            doSpecialUnaryArithMsg(g, -1);
+            InterpretOpcode(SendSpecialUnaryArithMsgX) {
+                const auto [unaryMathOp] = OpCode::SendSpecialUnaryArithMsgX.pullOperandsFromInstructions(ip);
+                g->sp = sp;
+                g->ip = ip;
+                g->primitiveIndex = unaryMathOp;
+                doSpecialUnaryArithMsg(g, -1);
 
-#if TAILCALLOPTIMIZE
-            g->tailCall = 0;
-#endif
-            sp = g->sp;
-            ip = g->ip;
-            dispatch_opcode;
-        }
-
-        case OpCode::SendSpecialBinaryArithMsgX.code:
-        handle_op_14 : {
-            const auto [binaryMathOp] = OpCode::SendSpecialBinaryArithMsgX.pullOperandsFromInstructions(ip);
-            g->sp = sp;
-            g->ip = ip;
-            g->primitiveIndex = binaryMathOp;
-            doSpecialBinaryArithMsg(g, 2, false);
-            sp = g->sp;
-            ip = g->ip;
-            dispatch_opcode;
-        }
-
-        case OpCode::SpecialOpcode.code:
-        handle_op_15 : {
-            const auto [psuedoVar] = OpCode::SpecialOpcode.pullOperandsFromInstructions(ip);
-            switch (psuedoVar.value) {
-            case OpPseudoVarEnum::Process:
-                ++sp;
-                SetObject(sp, g->process);
-                break;
-            case OpPseudoVarEnum::Thread:
-                ++sp;
-                SetObject(sp, g->thread);
-                break;
-            case OpPseudoVarEnum::Method:
-                ++sp;
-                SetObject(sp, g->method);
-                break;
-            case OpPseudoVarEnum::FunctionDef:
-                ++sp;
-                SetObject(sp, g->block);
-                break;
-            case OpPseudoVarEnum::Function: {
-                // push a closure
-                g->sp = sp; // gc may push the stack
-                PyrClosure* closure = (PyrClosure*)g->gc->New(2 * sizeof(PyrSlot), 0, obj_notindexed, true);
+                ifTailCallOptimise([&]() { g->tailCall = 0; });
                 sp = g->sp;
-                closure->classptr = gSpecialClasses[op_class_func]->u.classobj;
-                closure->size = 2;
-                SetObject(&closure->block, g->block);
-                SetObject(&closure->context, slotRawFrame(&g->frame->context));
-                ++sp;
-                SetObject(sp, closure);
-                break;
+                ip = g->ip;
+                dispatch_opcode;
             }
-            default:
-                slotCopy(++sp, &gSpecialValues[svNil]);
-                break;
+
+            InterpretOpcode(SendSpecialBinaryArithMsgX) {
+                const auto [binaryMathOp] = OpCode::SendSpecialBinaryArithMsgX.pullOperandsFromInstructions(ip);
+                g->sp = sp;
+                g->ip = ip;
+                g->primitiveIndex = binaryMathOp;
+                doSpecialBinaryArithMsg(g, 2, false);
+                sp = g->sp;
+                ip = g->ip;
+                dispatch_opcode;
             }
-            dispatch_opcode;
-        }
 
-        case OpCode::PushInstVar.codeOffset<0>():
-        handle_op_16:
-        case OpCode::PushInstVar.codeOffset<1>():
-        handle_op_17:
-        case OpCode::PushInstVar.codeOffset<2>():
-        handle_op_18:
-        case OpCode::PushInstVar.codeOffset<3>():
-        handle_op_19:
-        case OpCode::PushInstVar.codeOffset<4>():
-        handle_op_20:
-        case OpCode::PushInstVar.codeOffset<5>():
-        handle_op_21:
-        case OpCode::PushInstVar.codeOffset<6>():
-        handle_op_22:
-        case OpCode::PushInstVar.codeOffset<7>():
-        handle_op_23:
-        case OpCode::PushInstVar.codeOffset<8>():
-        handle_op_24:
-        case OpCode::PushInstVar.codeOffset<9>():
-        handle_op_25:
-        case OpCode::PushInstVar.codeOffset<10>():
-        handle_op_26:
-        case OpCode::PushInstVar.codeOffset<11>():
-        handle_op_27:
-        case OpCode::PushInstVar.codeOffset<12>():
-        handle_op_28:
-        case OpCode::PushInstVar.codeOffset<13>():
-        handle_op_29:
-        case OpCode::PushInstVar.codeOffset<14>():
-        handle_op_30:
-        case OpCode::PushInstVar.codeOffset<15>():
-        handle_op_31 : {
-            const auto [nibble] = OpCode::PushInstVar.pullOperandsFromInstructions(ip);
-            slotCopy(++sp, &slotRawObject(&g->receiver)->slots[nibble]);
-            dispatch_opcode;
-        }
+            InterpretOpcode(SpecialOpcode) {
+                const auto [psuedoVar] = OpCode::SpecialOpcode.pullOperandsFromInstructions(ip);
+                switch (psuedoVar.value) {
+                case OpPseudoVarEnum::Process:
+                    ++sp;
+                    SetObject(sp, g->process);
+                    break;
+                case OpPseudoVarEnum::Thread:
+                    ++sp;
+                    SetObject(sp, g->thread);
+                    break;
+                case OpPseudoVarEnum::Method:
+                    ++sp;
+                    SetObject(sp, g->method);
+                    break;
+                case OpPseudoVarEnum::FunctionDef:
+                    ++sp;
+                    SetObject(sp, g->block);
+                    break;
+                case OpPseudoVarEnum::Function: {
+                    // push a closure
+                    g->sp = sp; // gc may push the stack
+                    PyrClosure* closure = (PyrClosure*)g->gc->New(2 * sizeof(PyrSlot), 0, obj_notindexed, true);
+                    sp = g->sp;
+                    closure->classptr = gSpecialClasses[op_class_func]->u.classobj;
+                    closure->size = 2;
+                    SetObject(&closure->block, g->block);
+                    SetObject(&closure->context, slotRawFrame(&g->frame->context));
+                    ++sp;
+                    SetObject(sp, closure);
+                    break;
+                }
+                default:
+                    slotCopy(++sp, &gSpecialValues[svNil]);
+                    break;
+                }
+                dispatch_opcode;
+            }
 
-        case OpCode::JumpIfTrue.code:
-        handle_op_32:
-            if (IsTrue(sp)) {
-                const auto [high16, low16] = OpCode::JumpIfTrue.pullOperandsFromInstructions(ip);
+            InterpretOpcode16(PushInstVar) {
+                const auto [nibble] = OpCode::PushInstVar.pullOperandsFromInstructions(ip);
+                slotCopy(++sp, &slotRawObject(&g->receiver)->slots[nibble]);
+                dispatch_opcode;
+            }
+
+            InterpretOpcode(JumpIfTrue) {
+                if (IsTrue(sp)) {
+                    const auto [high16, low16] = OpCode::JumpIfTrue.pullOperandsFromInstructions(ip);
                     ip += high16.getUnsignedInt(low16);
-            } else if (IsFalse(sp)) {
+                } else if (IsFalse(sp)) {
                     // Nothing to do, just remove instructions.
-                const auto [high16, low16] = OpCode::JumpIfTrue.pullOperandsFromInstructions(ip);
-            } else {
-                // Note: we don't increment the instruction pointer in this case!
-                numArgsPushed = 1;
-                selector = gSpecialSelectors[opmNonBooleanError];
-                slot = sp;
+                    const auto [high16, low16] = OpCode::JumpIfTrue.pullOperandsFromInstructions(ip);
+                } else {
+                    // Note: we don't increment the instruction pointer in this case!
+                    numArgsPushed = 1;
+                    selector = gSpecialSelectors[opmNonBooleanError];
+                    slot = sp;
 
-                goto class_lookup;
+                    goto class_lookup;
+                }
+                --sp;
+                dispatch_opcode;
             }
-            --sp;
-            dispatch_opcode;
 
-        // opPushTempVar, levels 1..7
-        case 33:
-        handle_op_33:
-            slotCopy(++sp, &slotRawFrame(&g->frame->context)->vars[ip[1]]);
-            ++ip;
-            dispatch_opcode;
-        case 34:
-        handle_op_34:
-            slotCopy(++sp, &slotRawFrame(&slotRawFrame(&g->frame->context)->context)->vars[ip[1]]);
-            ++ip;
-            dispatch_opcode;
-        case 35:
-        handle_op_35:
-            slotCopy(++sp,
-                     &slotRawFrame(&slotRawFrame(&slotRawFrame(&g->frame->context)->context)->context)->vars[ip[1]]);
-            ++ip;
-            dispatch_opcode;
-        case 36:
-        handle_op_36:
-            slotCopy(++sp,
-                     &slotRawFrame(
-                          &slotRawFrame(&slotRawFrame(&slotRawFrame(&g->frame->context)->context)->context)->context)
-                          ->vars[ip[1]]);
-            ++ip;
-            dispatch_opcode;
-        case 37:
-        handle_op_37:
-            slotCopy(
-                ++sp,
-                &slotRawFrame(
-                     &slotRawFrame(
-                          &slotRawFrame(&slotRawFrame(&slotRawFrame(&g->frame->context)->context)->context)->context)
-                          ->context)
-                     ->vars[ip[1]]);
-            ++ip;
-            dispatch_opcode;
-        case 38:
-        handle_op_38:
-            slotCopy(++sp,
-                     &slotRawFrame(
-                          &slotRawFrame(
-                               &slotRawFrame(
-                                    &slotRawFrame(&slotRawFrame(&slotRawFrame(&g->frame->context)->context)->context)
-                                         ->context)
-                                    ->context)
-                               ->context)
-                          ->vars[ip[1]]);
-            ++ip;
-            dispatch_opcode;
-        case 39:
-        handle_op_39:
-            slotCopy(
-                ++sp,
-                &slotRawFrame(
-                     &slotRawFrame(
-                          &slotRawFrame(
-                               &slotRawFrame(
-                                    &slotRawFrame(&slotRawFrame(&slotRawFrame(&g->frame->context)->context)->context)
-                                         ->context)
-                                    ->context)
-                               ->context)
-                          ->context)
-                     ->vars[ip[1]]);
-            ++ip;
-            dispatch_opcode;
+            InterpertOpcode7(PushTempVar) {
+                const auto [frameOffset, varIndex] = OpCode::PushTempVar.pullOperandsFromInstructions(ip);
+                PyrFrame* start = slotRawFrame(&g->frame->context);
+                for (int i = frameOffset; i > 0; --i)
+                    start = slotRawFrame(&start->context);
+                slotCopy(++sp, &start->vars[varIndex]);
+                dispatch_opcode;
+            }
 
-        // push literal constants.
-        case 40:
-        handle_op_40 : {
-            int ival = ip[1];
-            ip += 1;
-            slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[ival]);
-            dispatch_opcode;
-        }
-        case 41:
-        handle_op_41 : {
-            int ival = (ip[1] << 8) | ip[2];
-            ip += 2;
-            slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[ival]);
-            dispatch_opcode;
-        }
-        case 42:
-        handle_op_42 : {
-            int ival = (ip[1] << 16) | (ip[2] << 8) | ip[3];
-            ip += 3;
-            slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[ival]);
-            dispatch_opcode;
-        }
-        case 43:
-        handle_op_43 : {
-            int ival = (ip[1] << 24) | (ip[2] << 16) | (ip[3] << 8) | ip[4];
-            ip += 4;
-            slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[ival]);
-            dispatch_opcode;
-        }
+            InterpretOpcode(PushConstant8) {
+                const auto [slotIndex] = OpCode::PushConstant8.pullOperandsFromInstructions(ip);
+                slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[slotIndex]);
+                dispatch_opcode;
+            }
+
+            InterpretOpcode(PushConstant16) {
+                const auto [v1, v0] = OpCode::PushConstant16.pullOperandsFromInstructions(ip);
+                const int ival = v1.getUnsignedInt(v0);
+                slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[ival]);
+                dispatch_opcode;
+            }
+
+            InterpretOpcode(PushConstant24) {
+                const auto [v2, v1, v0] = OpCode::PushConstant24.pullOperandsFromInstructions(ip);
+                slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[v2.getUnsignedInt(v1, v0)]);
+                dispatch_opcode;
+            }
+
+            InterpretOpcode(PushConstant32) {
+                const auto [v3, v2, v1, v0] = OpCode::PushConstant32.pullOperandsFromInstructions(ip);
+                slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[v3.getUnsignedInt(v2, v1, v0)]);
+                dispatch_opcode;
+            }
         // push integers.
         case 44:
         handle_op_44 : {
