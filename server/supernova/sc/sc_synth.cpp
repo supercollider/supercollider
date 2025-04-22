@@ -51,6 +51,7 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype, int bl
         // no reblocking or resampling
         mNumTicks = 1;
         mTickCounter = 0;
+        block_size = world.mBufLength;
     } else {
         // reblocking and/or upsampling
         if (upsample > 1.0) {
@@ -107,8 +108,7 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype, int bl
 
     const size_t rate_alloc_size = mFlags & kGraph_ReblockOrResample ? sizeof(Rate) * 2 : 0;
 
-    const size_t sample_alloc_size =
-        world.mBufLength * synthdef.buffer_count + wire_buffer_alignment /* for alignment */;
+    const size_t sample_alloc_size = block_size * synthdef.buffer_count + wire_buffer_alignment; /* for alignment */
 
     const size_t total_alloc_size = alloc_size + rate_alloc_size + sample_alloc_size * sizeof(sample);
 
