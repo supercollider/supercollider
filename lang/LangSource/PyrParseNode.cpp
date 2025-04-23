@@ -3120,21 +3120,21 @@ void compilePushConstant(PyrParseNode* node, PyrSlot* slot) {
         OpCode::PushLiteral.emit(index);
 
     else if (index < (1 << 8))
-        OpCode::PushConstant8.emit(Operands::Index::fromRaw(index));
+        OpCode::PushConstant8.emit(Operands::UnsignedInt<8, 0>::fromRaw(index));
 
     else if (index < (1 << 16))
-        OpCode::PushConstant16.emit(Operands::NumericByte<16, 1>::fromFull(index),
-                                    Operands::NumericByte<16, 0>::fromFull(index));
+        OpCode::PushConstant16.emit(Operands::UnsignedInt<16, 1>::fromFull(index),
+                                    Operands::UnsignedInt<16, 0>::fromFull(index));
 
     else if (index < (1 << 24))
-        OpCode::PushConstant24.emit(Operands::NumericByte<24, 2>::fromFull(index),
-                                    Operands::NumericByte<24, 1>::fromFull(index),
-                                    Operands::NumericByte<24, 0>::fromFull(index));
+        OpCode::PushConstant24.emit(Operands::UnsignedInt<24, 2>::fromFull(index),
+                                    Operands::UnsignedInt<24, 1>::fromFull(index),
+                                    Operands::UnsignedInt<24, 0>::fromFull(index));
 
     else
         OpCode::PushConstant32.emit(
-            Operands::NumericByte<32, 3>::fromFull(index), Operands::NumericByte<32, 2>::fromFull(index),
-            Operands::NumericByte<32, 1>::fromFull(index), Operands::NumericByte<32, 0>::fromFull(index));
+            Operands::UnsignedInt<32, 3>::fromFull(index), Operands::UnsignedInt<32, 2>::fromFull(index),
+            Operands::UnsignedInt<32, 1>::fromFull(index), Operands::UnsignedInt<32, 0>::fromFull(index));
 }
 
 void emitPushInt(int value) {
@@ -3151,21 +3151,18 @@ void emitPushInt(int value) {
         OpCode::PushSpecialNumber.emit(OpSpecialNumbers::Two);
 
     else if (value >= -(1 << 7) && value <= ((1 << 7) - 1))
-        OpCode::PushInteger8.emit(Operands::Index::fromRaw(value));
+        OpCode::PushInteger8.emit(Operands::Int<8, 0>::fromFull(value));
 
     else if (value >= -(1 << 15) && value <= ((1 << 15) - 1))
-        OpCode::PushInteger16.emit(Operands::NumericByte<16, 1>::fromFull(value),
-                                   Operands::NumericByte<16, 0>::fromFull(value));
+        OpCode::PushInteger16.emit(Operands::Int<16, 1>::fromFull(value), Operands::Int<16, 0>::fromFull(value));
 
     else if (value >= -(1 << 23) && value <= ((1 << 23) - 1))
-        OpCode::PushInteger24.emit(Operands::NumericByte<24, 2>::fromFull(value),
-                                   Operands::NumericByte<24, 1>::fromFull(value),
-                                   Operands::NumericByte<24, 0>::fromFull(value));
+        OpCode::PushInteger24.emit(Operands::Int<24, 2>::fromFull(value), Operands::Int<24, 1>::fromFull(value),
+                                   Operands::Int<24, 0>::fromFull(value));
 
     else
-        OpCode::PushInteger32.emit(
-            Operands::NumericByte<32, 3>::fromFull(value), Operands::NumericByte<32, 2>::fromFull(value),
-            Operands::NumericByte<32, 1>::fromFull(value), Operands::NumericByte<32, 0>::fromFull(value));
+        OpCode::PushInteger32.emit(Operands::Int<32, 3>::fromFull(value), Operands::Int<32, 2>::fromFull(value),
+                                   Operands::Int<32, 1>::fromFull(value), Operands::Int<32, 0>::fromFull(value));
 }
 
 void PyrSlotNode::compilePushLit(PyrSlot* result) {
@@ -3387,14 +3384,14 @@ void compileAssignVar(PyrParseNode* node, PyrSymbol* varName, bool drop) {
             if (index < 4096) {
                 OpCode::StoreClassVar.emit(index);
             } else {
-                OpCode::StoreClassVarX.emit(Operands::NumericByte<16, 1>::fromFull(index),
-                                            Operands::NumericByte<16, 0>::fromFull(index));
+                OpCode::StoreClassVarX.emit(Operands::UnsignedInt<16, 1>::fromFull(index),
+                                            Operands::UnsignedInt<16, 0>::fromFull(index));
                 OpCode::Drop.emit();
             }
         } else {
             // TODO: why can't we use the shorter StoreClassVar here? It breaks for some reason.
-            OpCode::StoreClassVarX.emit(Operands::NumericByte<16, 1>::fromFull(index),
-                                        Operands::NumericByte<16, 0>::fromFull(index));
+            OpCode::StoreClassVarX.emit(Operands::UnsignedInt<16, 1>::fromFull(index),
+                                        Operands::UnsignedInt<16, 0>::fromFull(index));
         }
     } break;
 

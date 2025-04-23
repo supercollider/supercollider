@@ -23,7 +23,7 @@ template <Byte CODE, typename... OPERANDS> struct SimpleOpSpec {
 
     void emit(OPERANDS... operands) const {
         emitByte(code);
-        (emitByte(operands), ...);
+        (emitByte(static_cast<Byte>(operands)), ...);
     }
 };
 
@@ -45,7 +45,7 @@ template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbl
         assert(bytecode < endCode);
         emitByte(bytecode);
 
-        (emitByte(operands), ...);
+        (emitByte(static_cast<Byte>(operands)), ...);
     }
 
     Tuple pullOperandsFromInstructions(unsigned char*& ip) const {
@@ -70,7 +70,7 @@ template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbl
 
         emitByte(code);
         emitByte(fullValue & 255);
-        (emitByte(operands), ...);
+        (emitByte(static_cast<Byte>(operands)), ...);
     }
 };
 
@@ -415,6 +415,7 @@ enum struct OpTrinaryMath : Byte { Divz, Clip, Wrap, Fold, RampMult, Mix, COUNT 
 
 
 struct Operands {
+    /// This does a bit cast, meaning it only looks at the bottom two bytes.
     template <typename I> constexpr static Byte to_byte(I i) {
         Byte to;
         std::memcpy(&to, &i, sizeof(Byte));
@@ -458,32 +459,69 @@ struct Operands {
         constexpr static KwArgumentCount fromRaw(int b) { return { to_byte(b) }; }
         constexpr static KwArgumentCount fromRaw(Byte b) { return { b }; }
     };
-    template <size_t TOTAL, size_t PART> struct NumericByte : details::NamedByte {
+
+    template <unsigned int TOTAL, unsigned int PART> struct UnsignedInt {
         static_assert(8 * PART < TOTAL);
-        static constexpr const char* name = "NumericByte";
-        constexpr static NumericByte<TOTAL, PART> fromRaw(int b) { return { to_byte(b) }; }
-        constexpr static NumericByte<TOTAL, PART> fromRaw(Byte b) { return { b }; }
+        static constexpr const char* name = "UnsignedInt";
+        constexpr static UnsignedInt<TOTAL, PART> fromRaw(Byte b) { return { b }; }
 
-        constexpr static NumericByte<TOTAL, PART> fromFull(std::int64_t b) {
-            assert(b < (1LL << TOTAL));
-            // NOTE: This will right shift a potentially negative number.
-            // This is IMPLEMENTATION DEFINED BEHAVIOUR, until C++20 when this is well defined.
-            // This was because, in practice, all implementations behaved the same
-            // (arithmetic right shift, meaning it preserves the sign).
-            // In C++20 this is guaranteed, this doesn't break backwards compatibility, modern compilers
-            // that support C++20 will behave as expected even when compiling on older versions.
-            return { to_byte((b >> (8LL * PART)) & 0xFF) };
+        constexpr static UnsignedInt<TOTAL, PART> fromFull(unsigned int i) {
+            assert(i < (1ULL << TOTAL));
+            return { to_byte(i >> (8U * PART)) };
         }
 
-        template <typename... TS> int getUnsignedInt(const TS&... ts) const {
-            static_assert((PART + 1) * 8 == TOTAL, "Can only all getUnsignedInt on the highest part");
-            static_assert(sizeof...(TS) == PART, "Not all numeric parts were provided");
-
-            return this->getUnsignedIntPart() | ((ts.getUnsignedIntPart()) | ...);
+        constexpr static UnsignedInt<TOTAL, PART> fromFull(int i) {
+            assert(i >= 0);
+            return UnsignedInt::fromFull(static_cast<unsigned int>(i));
         }
 
-        int getUnsignedIntPart() const { return this->asInt() << (PART * 8); }
+        template <typename... TS> unsigned int asInt(const TS&... ts) const {
+            static_assert((PART + 1U) * 8U == TOTAL, "Can only call get on the highest byte");
+            static_assert(sizeof...(TS) == PART, "Not all parts were provided");
+            return asIntPart() | (ts.asIntPart() | ...);
+        }
+        unsigned int asInt() const {
+            static_assert(TOTAL == 8);
+            return static_cast<unsigned int>(value);
+        }
+
+        unsigned int asIntPart() const { return static_cast<unsigned int>(value) << (PART * 8U); }
+
+        Byte value;
+        explicit constexpr operator Byte() const { return value; }
     };
+    template <unsigned int TOTAL, unsigned int PART> struct Int {
+        static_assert(8 * PART < TOTAL);
+        static constexpr const char* name = "Int";
+        constexpr static Int<TOTAL, PART> fromRaw(Byte b) { return { b }; }
+
+        constexpr static Int<TOTAL, PART> fromFull(int i) {
+            assert(i >= -(1LL << (TOTAL - 1)) || i <= (1LL << (TOTAL - 1)) - 1);
+            return { to_byte(i >> (8 * PART)) };
+        }
+
+        template <typename... TS> int asInt(const TS&... ts) const {
+            static_assert((PART + 1) * 8 == TOTAL, "Can only call get on the highest byte");
+            static_assert(sizeof...(TS) == PART, "Not all parts were provided");
+            static constexpr unsigned int down_shift = 32U - TOTAL;
+            return (asIntPart() | (ts.asIntPart() | ...)) >> down_shift;
+        }
+        int asInt() const {
+            static_assert(TOTAL == 8);
+            static constexpr unsigned int down_shift = 32U - TOTAL;
+            return asIntPart() >> down_shift;
+        }
+
+        int asIntPart() const {
+            static constexpr unsigned int up_shift = 32U - ((PART + 1U) * 8U);
+            return static_cast<int>(value) << up_shift;
+        }
+
+        Byte value;
+        explicit constexpr operator Byte() const { return value; }
+    };
+
+
     struct SpecialClass : details::OperandEnumWrapper<OpSpecialClassEnum> {
         constexpr SpecialClass(OpSpecialClassEnum s) noexcept: details::OperandEnumWrapper<OpSpecialClassEnum>(s) {}
         static constexpr const char* name = "SpecialClass";

@@ -1053,7 +1053,7 @@ HOT void Interpret(VMGlobals* g) {
 
             InterpretOpcode(StoreClassVarX) {
                 const auto [indexOfName, indexOfClass] = OpCode::StoreClassVarX.pullOperandsFromInstructions(ip);
-                slotCopy(&g->classvars->slots[indexOfName.getUnsignedInt(indexOfClass)], sp);
+                slotCopy(&g->classvars->slots[indexOfName.asInt(indexOfClass)], sp);
                 g->gc->GCWrite(g->classvars, sp);
                 dispatch_opcode;
             }
@@ -1175,7 +1175,7 @@ HOT void Interpret(VMGlobals* g) {
             InterpretOpcode(JumpIfTrue) {
                 if (IsTrue(sp)) {
                     const auto [high16, low16] = OpCode::JumpIfTrue.pullOperandsFromInstructions(ip);
-                    ip += high16.getUnsignedInt(low16);
+                    ip += high16.asInt(low16);
                 } else if (IsFalse(sp)) {
                     // Nothing to do, just remove instructions.
                     const auto [high16, low16] = OpCode::JumpIfTrue.pullOperandsFromInstructions(ip);
@@ -1202,26 +1202,26 @@ HOT void Interpret(VMGlobals* g) {
 
             InterpretOpcode(PushConstant8) {
                 const auto [slotIndex] = OpCode::PushConstant8.pullOperandsFromInstructions(ip);
-                slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[slotIndex]);
+                slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[slotIndex.asInt()]);
                 dispatch_opcode;
             }
 
             InterpretOpcode(PushConstant16) {
                 const auto [v1, v0] = OpCode::PushConstant16.pullOperandsFromInstructions(ip);
-                const int ival = v1.getUnsignedInt(v0);
+                const int ival = v1.asInt(v0);
                 slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[ival]);
                 dispatch_opcode;
             }
 
             InterpretOpcode(PushConstant24) {
                 const auto [v2, v1, v0] = OpCode::PushConstant24.pullOperandsFromInstructions(ip);
-                slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[v2.getUnsignedInt(v1, v0)]);
+                slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[v2.asInt(v1, v0)]);
                 dispatch_opcode;
             }
 
             InterpretOpcode(PushConstant32) {
                 const auto [v3, v2, v1, v0] = OpCode::PushConstant32.pullOperandsFromInstructions(ip);
-                slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[v3.getUnsignedInt(v2, v1, v0)]);
+                slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[v3.asInt(v2, v1, v0)]);
                 dispatch_opcode;
             }
         // push integers.

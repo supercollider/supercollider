@@ -132,7 +132,7 @@ struct OpCode {
     /// Store the top of the stack in a class variable, without popping the stack.
     /// The second and third instruction bytes indicate the index of the variable within the VM's classvars field.
     /// Only used in class method code.
-    static constexpr details::SimpleOpSpec<0x09, Operands::NumericByte<16, 1>, Operands::NumericByte<16, 0>>
+    static constexpr details::SimpleOpSpec<0x09, Operands::UnsignedInt<16, 1>, Operands::UnsignedInt<16, 0>>
         StoreClassVarX {
             "StoreClassVarX",
         };
@@ -198,7 +198,7 @@ struct OpCode {
     /// Server.findMethod('maxNumClients').dumpByteCodes
     static constexpr details::SecondNibbleOpSpec<0x10, 0x20> PushInstVar { "PushInstVar" };
 
-    static constexpr details::SimpleOpSpec<0x20, Operands::NumericByte<16, 1>, Operands::NumericByte<16, 0>>
+    static constexpr details::SimpleOpSpec<0x20, Operands::UnsignedInt<16, 1>, Operands::UnsignedInt<16, 0>>
         JumpIfTrue { "JumpIfTrue" };
 
     /// Note: because the frameoffset of 0 is handled by a separate opcode, you need to subtract one from the real
@@ -213,45 +213,45 @@ struct OpCode {
     /// constant.
     /// This message is used instead of 4X PushLiteral when the index is >= 16.
     /// { a = [\a, \b, \c, \d, \e, \f, \g, \h, \i, \j, \k, \l, \m, \n, \o, \p, \q] }.def.dumpByteCodes
-    static constexpr details::SimpleOpSpec<0x28, Operands::Index> PushConstant8 { "PushConstant8" };
+    static constexpr details::SimpleOpSpec<0x28, Operands::UnsignedInt<8, 0>> PushConstant8 { "PushConstant8" };
 
     /// Push a constant from the current frame onto the stack.
     /// The second and third instruction bytes interpreted as a 16-bit integer indicate the index of the constant.
     /// This message is used instead of 28 PushConstant when the index is >= 256.
-    static constexpr details::SimpleOpSpec<0x29, Operands::NumericByte<16, 1>, Operands::NumericByte<16, 0>>
+    static constexpr details::SimpleOpSpec<0x29, Operands::UnsignedInt<16, 1>, Operands::UnsignedInt<16, 0>>
         PushConstant16 { "PushConstant16" };
 
 
     /// Push a constant from the current frame onto the stack.
     /// The second, third and fourth instruction bytes interpreted as a 24-bit integer indicate the index of the
     /// constant. This message is used instead of 29 PushConstant when the index is >= 2^16.
-    static constexpr details::SimpleOpSpec<0x2A, Operands::NumericByte<24, 2>, Operands::NumericByte<24, 1>,
-                                           Operands::NumericByte<24, 0>>
+    static constexpr details::SimpleOpSpec<0x2A, Operands::UnsignedInt<24, 2>, Operands::UnsignedInt<24, 1>,
+                                           Operands::UnsignedInt<24, 0>>
         PushConstant24 { "PushConstant24" };
 
     /// Push a constant from the current frame onto the stack.
     /// The second to fifth instruction bytes interpreted as a 32-bit integer indicate the index of the constant.
     /// This message is used instead of 2A PushConstant when the index is >= 2^24.
-    static constexpr details::SimpleOpSpec<0x2B, Operands::NumericByte<32, 3>, Operands::NumericByte<32, 2>,
-                                           Operands::NumericByte<32, 1>, Operands::NumericByte<32, 0>>
+    static constexpr details::SimpleOpSpec<0x2B, Operands::UnsignedInt<32, 3>, Operands::UnsignedInt<32, 2>,
+                                           Operands::UnsignedInt<32, 1>, Operands::UnsignedInt<32, 0>>
         PushConstant32 { "PushConstant32" };
 
     /// Push an 8 bit integer (signed) onto the stack from the operand.
-    static constexpr details::SimpleOpSpec<0x2C, Operands::Index> PushInteger8 { "PushInteger8" };
+    static constexpr details::SimpleOpSpec<0x2C, Operands::Int<8, 0>> PushInteger8 { "PushInteger8" };
 
     /// Push an 16 bit integer (signed) onto the stack from the operand.
-    static constexpr details::SimpleOpSpec<0x2D, Operands::NumericByte<16, 1>, Operands::NumericByte<16, 0>>
-        PushInteger16 { "PushInteger16" };
+    static constexpr details::SimpleOpSpec<0x2D, Operands::Int<16, 1>, Operands::Int<16, 0>> PushInteger16 {
+        "PushInteger16"
+    };
 
 
     /// Push an 24 bit integer (signed) onto the stack from the operand.
-    static constexpr details::SimpleOpSpec<0x2E, Operands::NumericByte<24, 2>, Operands::NumericByte<24, 1>,
-                                           Operands::NumericByte<24, 0>>
+    static constexpr details::SimpleOpSpec<0x2E, Operands::Int<24, 2>, Operands::Int<24, 1>, Operands::Int<24, 0>>
         PushInteger24 { "PushInteger24" };
 
     /// Push an 32 bit integer (signed) onto the stack from the operand.
-    static constexpr details::SimpleOpSpec<0x2F, Operands::NumericByte<32, 3>, Operands::NumericByte<32, 2>,
-                                           Operands::NumericByte<32, 1>, Operands::NumericByte<32, 0>>
+    static constexpr details::SimpleOpSpec<0x2F, Operands::Int<32, 3>, Operands::Int<32, 2>, Operands::Int<32, 1>,
+                                           Operands::Int<32, 0>>
         PushInteger32 { "PushInteger32" };
 
     /// Push a variable from the current frame to the top of the stack.
@@ -449,14 +449,14 @@ struct OpCode {
     /// The distance by which to jump is the value of the
     /// second and third instruction bytes interpreted as a 16-bit integer. If the top of the stack is neither True nor
     /// False, call mustBeBoolean on it without popping the value.
-    static constexpr details::SimpleOpSpec<0xF8, Operands::NumericByte<16, 1>, Operands::NumericByte<16, 0>>
+    static constexpr details::SimpleOpSpec<0xF8, Operands::UnsignedInt<16, 1>, Operands::UnsignedInt<16, 0>>
         JumpIfFalse { "JumpIfFalse" };
 
     /// If the top of the stack is True, pop and discard it.
     /// If the top of the stack is False, pop it, push nil, and jump ahead. The distance by which to jump is the value
     /// of the second and third instruction bytes interpreted as a 16-bit integer. If the top of the stack is neither
     /// True nor False, call mustBeBoolean on it without popping the value.
-    static constexpr details::SimpleOpSpec<0xF9, Operands::NumericByte<16, 1>, Operands::NumericByte<16, 0>>
+    static constexpr details::SimpleOpSpec<0xF9, Operands::UnsignedInt<16, 1>, Operands::UnsignedInt<16, 0>>
         JumpIfFalsePushNil { "JumpIfFalsePushNil" };
 
     /// If the top of the stack is True, pop and discard it.
@@ -464,26 +464,26 @@ struct OpCode {
     /// stack). The distance by which to jump is the value of the second and third instruction bytes interpreted as a
     /// 16-bit integer. If the top of the stack is neither True nor False, call mustBeBoolean on it without popping the
     /// value.
-    static constexpr details::SimpleOpSpec<0xFA, Operands::NumericByte<16, 1>, Operands::NumericByte<16, 0>>
+    static constexpr details::SimpleOpSpec<0xFA, Operands::UnsignedInt<16, 1>, Operands::UnsignedInt<16, 0>>
         JumpIfFalsePushFalse { "JumpIfFalsePushFalse" };
 
     /// If the top of the stack is True, jump ahead and set the top of the stack to True. The distance by which to jump
     /// is the value of the second and third instruction bytes interpreted as a 16-bit integer. If the top of the stack
     /// is False, pop and discard it. If the top of the stack is neither True nor False, call mustBeBoolean on it
     /// without popping the value.
-    static constexpr details::SimpleOpSpec<0xFB, Operands::NumericByte<16, 1>, Operands::NumericByte<16, 0>>
+    static constexpr details::SimpleOpSpec<0xFB, Operands::UnsignedInt<16, 1>, Operands::UnsignedInt<16, 0>>
         JumpIfFalsePushTrue { "JumpIfFalsePushTrue" };
 
     /// Jump forward the number of instructions equal to the second and third instruction bytes interpreted as a 16-bit
     /// integer.
-    static constexpr details::SimpleOpSpec<0xFC, Operands::NumericByte<16, 1>, Operands::NumericByte<16, 0>> JumpFwd {
+    static constexpr details::SimpleOpSpec<0xFC, Operands::UnsignedInt<16, 1>, Operands::UnsignedInt<16, 0>> JumpFwd {
         "JumpFwd"
     };
 
     /// Jump backward the number of instructions equal to the second and third instruction bytes interpreted as a 16-bit
     /// integer. Also pop and discard the top of the stack. From the source code: > also drops the stack. This saves an
     /// opcode in the while loop > which is the only place this opcode is used.
-    static constexpr details::SimpleOpSpec<0xFD, Operands::NumericByte<16, 1>, Operands::NumericByte<16, 0>> JumpBack {
+    static constexpr details::SimpleOpSpec<0xFD, Operands::UnsignedInt<16, 1>, Operands::UnsignedInt<16, 0>> JumpBack {
         "JumpBack"
     };
 

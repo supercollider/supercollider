@@ -38,7 +38,7 @@ extern ByteCodes gCompilingByteCodes;
 extern long totalByteCodes;
 
 void initByteCodes();
-void emitByte(long byte);
+void emitByte(Byte byte);
 void compileAndFreeByteCodes(ByteCodes byteCodes);
 void copyByteCodes(Byte* dest, ByteCodes byteCodes);
 ByteCodes getByteCodes();
