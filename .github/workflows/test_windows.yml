@@ -60,10 +60,7 @@ jobs:
         shell: bash
         continue-on-error: true
         run: |
-          # add path
-          $SCLANG $SCRIPT_ADD_PATH $TESTS_PATH
-          # run tests
-          timeout 1200 $SCLANG $SCRIPT_RUN_TESTS $TEST_LIST_PROTO $TEST_LIST_RESULT
+          timeout 20m $SCLANG --include-path $TESTS_PATH $SCRIPT_RUN_TESTS $TEST_LIST_PROTO $TEST_LIST_RESULT
 
       - name: Post test results
         shell: bash
