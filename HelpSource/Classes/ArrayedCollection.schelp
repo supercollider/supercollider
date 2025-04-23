@@ -247,37 +247,23 @@ y.postln;
 )
 ::
 
-method::insertKeepSize
-Same as link::#-insert::, but it maintains the size of the receiver.
+method::clipInsert
+Same as link::#-insert::, but it maintains the size of the receiver, and the values for index greater than the size of the link::Classes/ArrayedCollection:: will be clipped to the last index.
+
 code::
-~array = [10, 20, 30]
-~array_modified = ~array.insertKeepSize(0, 1)
-~array
-~array_modified
+~arrayA = [1, 2, 3, 4]     // -> [1, 2, 3, 4]
+~arrayA.clipInsert(0, \a)  // -> [a, 1, 2, 3]
+~arrayA                    // -> [1, 2, 3, 4]
+~arrayA.clipInsert(20, \a) // -> [1, 2, 3, a]
+~arrayA                    // -> [1, 2, 3, 4]
 
-~array = [10, 20, 30]
-~array_modified = ~array.insertKeepSize(2, 1)
-~array
-~array_modified
-::
-
-method::clipInsertKeepSize
-Same as link::#-insertKeepSize::, but values for index greater than the size of the ArrayedCollection will be clipped to the last index.
-code::
-~array = [10, 20, 30]
-~array_modified = ~array.clipInsertKeepSize(0, 1)
-~array
-~array_modified
-
-~array = [10, 20, 30]
-~array_modified = ~array.clipInsertKeepSize(2, 1)
-~array
-~array_modified
-
-~array = [10, 20, 30]
-~array_modified = ~array.clipInsertKeepSize(3, 1)
-~array
-~array_modified
+~arrayA = [1, 2, 3, 4]               // -> [1, 2, 3, 4]
+~arrayB = ~arrayA.clipInsert(0, \a)  // -> [a, 1, 2, 3]
+~arrayA                              // -> [1, 2, 3, 4]
+~arrayB                              // -> [a, 1, 2, 3]
+~arrayC = ~arrayA.clipInsert(20, \a) // -> [1, 2, 3, a]
+~arrayA                              // -> [1, 2, 3, 4]
+~arrayC                              // -> [1, 2, 3, a]
 ::
 
 method::move
