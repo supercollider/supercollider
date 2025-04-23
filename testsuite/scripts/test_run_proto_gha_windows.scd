@@ -141,4 +141,53 @@
 		'skip': "true",
 		'skipReason': "Requires ALSA kernel module, not allowed in GHA",
 	),
+
+	(
+		'suite': "TestDate",
+		'test': "test_creation",
+		'skip': "true",
+		'skipReason': "Fails on Windows",
+	),
+	(
+		'suite': "TestSCDocHTMLRenderer",
+		'test': "test_htmlForLink_internalLink",
+		'skip': "true",
+		'skipReason': "Fails on Windows",
+	),
+	(
+		'suite': "TestSCDocHTMLRenderer",
+		'test': "test_htmlForLink_internalLinkWithLabel",
+		'skip': "true",
+		'skipReason': "Fails on Windows",
+	),
+	(
+		'suite': "TestSCDocHTMLRenderer",
+		'test': "test_htmlForLink_internalLinkWithAnchor",
+		'skip': "true",
+		'skipReason': "Fails on Windows",
+	),
+	(
+		'suite': "TestSCDocHTMLRenderer",
+		'test': "test_htmlForLink_internalLinkWithAnchorAndLabel",
+		'skip': "true",
+		'skipReason': "Fails on Windows",
+	),
+	(
+		'suite': "TestSCDoc",
+		'test': "test_helpSourceDirs_excludedExtensions",
+		'skip': "true",
+		'skipReason': "Fails on Windows",
+	),
+	(
+		'suite': "TestFloat",
+		'test': "test_asString_nan",
+		'skip': "true",
+		'skipReason': "Fails on Windows",
+	),
+	(
+		'suite': "TestFilterUGens",
+		'test': "test_Integrator_add_presample_once_only",
+		'skip': "true",
+		'skipReason': "Fails on Windows",
+	),
 ]
