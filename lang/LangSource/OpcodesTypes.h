@@ -64,7 +64,7 @@ template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbl
 
     Tuple pullOperandsFromInstructions(unsigned char*& ip) const {
         // increment instruction pointer and get the values for each operand.
-        return { *ip - startCode, OPERANDS::fromRaw(*(++ip))... };
+        return { (*ip) - startCode, OPERANDS::fromRaw(*(++ip))... };
     }
 };
 

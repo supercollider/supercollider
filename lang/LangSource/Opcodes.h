@@ -318,8 +318,8 @@ struct OpCode {
     /// The third instruction byte indicates the index of the method selector.
     /// Only used within class code.
     /// RingBuffer.findMethod('add').dumpByteCodes
-    static constexpr details::SimpleOpSpec<0x88, Operands::Index, Operands::Index> PushInstVarAndSpendSpecialMsg {
-        "PushInstVarAndSpendSpecialMsg"
+    static constexpr details::SimpleOpSpec<0x88, Operands::Index, Operands::Index> PushInstVarAndSendSpecialMsg {
+        "PushInstVarAndSendSpecialMsg"
     };
 
     /// Push all arguments to the top of the stack in order given, and call a method.
@@ -382,7 +382,6 @@ struct OpCode {
     static constexpr details::SimpleOpSpec<0xA0, Operands::Index> SendMsgThisOpt { "SendMsgThisOpt" };
 
 
-    /// NOTE: because zero args is handled elsewhere, you must subtract one from the total number of args before setting
     /// Call a method taking a number of arguments.
     /// The second nibble of the first instruction byte determines the number of arguments passed to the method.
     /// The second instruction byte determines the index of the selector within the block.
@@ -392,16 +391,17 @@ struct OpCode {
     /// Sets the global tail call state to 2. TODO what does this mean?
     static constexpr details::SimpleOpSpec<0xB0> TailCallReturnFromFunction { "TailCallReturnFromFunction" };
 
+    static constexpr details::SimpleOpSpec<0xB1, Operands::Index> SendSuperMsgThisOpt { "SendSuperMsgThisOpt" };
     /// NOTE: because zero args is handled elsewhere, you must subtract one from the total number of args before setting
     /// nibble. Call a method on super taking a number of arguments. The second nibble of the first instruction bytes
     /// determines the number of arguments passed to the method. The second instruction byte determines the index of the
     /// selector within the block. Mostly used in class code, as in an interpreted context it refers to Interpreter.
-    static constexpr details::SecondNibbleOpSpec<0xB1, 0xC0, Operands::Index> SendSuperMsg { "SendSuperMsg" };
+    static constexpr details::SecondNibbleOpSpec<0xB2, 0xC0, Operands::Index> SendSuperMsg { "SendSuperMsg" };
 
     /// Push this to the top of the stack and call a special method taking one argument.
     /// The second instruction byte determines the index of the special method within gSpecialSelectors.
     /// { this.init }.def.dumpByteCodes
-    static constexpr details::SimpleOpSpec<0xC0, Operands::Index> SendSuperMsgThisOpt { "SendSuperMsgThisOpt" };
+    static constexpr details::SimpleOpSpec<0xC0, Operands::Index> SendSpecialMsgThisOpt { "SendSpecialMsgThisOpt" };
 
 
     /// NOTE: because zero args is handled elsewhere, you must subtract one from the total number of args before setting

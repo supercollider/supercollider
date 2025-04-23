@@ -1885,13 +1885,13 @@ void PyrCallNode::compileCall(PyrSlot* result) {
             // No need to compile the 'this' arg.
             gFunctionCantBeClosed = true;
             emitTailCall();
-            OpCode::SendSuperMsg.emit(numArgs - 1, Operands::Index::fromRaw(index));
+            OpCode::SendSuperMsgThisOpt.emit(Operands::Index::fromRaw(index));
         } else {
             for (; argnode; argnode = argnode->mNext)
                 COMPILENODE(argnode, &dummy, false);
             emitTailCall();
             if (numArgs < 16) {
-                OpCode::SendSuperMsg.emit(numArgs - 1, Operands::Index::fromRaw(index));
+                OpCode::SendSuperMsg.emit(numArgs, Operands::Index::fromRaw(index));
             } else {
                 OpCode::SendSuperMsgX.emit(Operands::ArgumentCount::fromRaw(numArgs),
                                            Operands::KwArgumentCount::fromRaw(0), Operands::Index::fromRaw(index));
@@ -1953,7 +1953,7 @@ void PyrCallNode::compileCall(PyrSlot* result) {
                 emitTailCall();
 
                 if (numArgs < 16)
-                    OpCode::SendMsg.emit(numArgs - 1, Operands::Index::fromRaw(index));
+                    OpCode::SendMsg.emit(numArgs, Operands::Index::fromRaw(index));
                 else
                     OpCode::SendMsgX.emit(Operands::ArgumentCount::fromRaw(numArgs),
                                           Operands::KwArgumentCount::fromRaw(0), Operands::Index::fromRaw(index));
@@ -1964,13 +1964,13 @@ void PyrCallNode::compileCall(PyrSlot* result) {
             if (numArgs == 1) {
                 if (varname == s_this) {
                     emitTailCall();
-                    OpCode::SendSuperMsgThisOpt.emit(Operands::Index::fromRaw(index));
+                    OpCode::SendSpecialMsgThisOpt.emit(Operands::Index::fromRaw(index));
                 } else if (varname) {
                     if (const auto result = findVarName(gCompilingBlock, gCompilingClass, varname);
                         result && result->varType == varInst) {
                         emitTailCall();
-                        OpCode::PushInstVarAndSpendSpecialMsg.emit(Operands::Index::fromRaw(result->index),
-                                                                   Operands::Index::fromRaw(index));
+                        OpCode::PushInstVarAndSendSpecialMsg.emit(Operands::Index::fromRaw(result->index),
+                                                                  Operands::Index::fromRaw(index));
                     } else
                         goto special;
 
@@ -2131,7 +2131,7 @@ void PyrCallNode::compileCall(PyrSlot* result) {
 
                 emitTailCall();
                 if (numArgs < 16)
-                    OpCode::SendMsg.emit(numArgs - 1, Operands::Index::fromRaw(index));
+                    OpCode::SendMsg.emit(numArgs, Operands::Index::fromRaw(index));
                 else
                     OpCode::SendMsgX.emit(Operands::ArgumentCount::fromRaw(numArgs),
                                           Operands::KwArgumentCount::fromRaw(0), Operands::Index::fromRaw(index));
@@ -2928,7 +2928,7 @@ void PyrBinopCallNode::compileCall(PyrSlot* result) {
             COMPILENODE(arg3, &dummy, false);
 
         emitTailCall();
-        OpCode::SendSuperMsg.emit(numArgs - 1, Operands::Index::fromRaw(index));
+        OpCode::SendSuperMsg.emit(numArgs, Operands::Index::fromRaw(index));
 
     } else {
         switch (selType) {
@@ -2939,7 +2939,7 @@ void PyrBinopCallNode::compileCall(PyrSlot* result) {
                 COMPILENODE(arg3, &dummy, false);
 
             emitTailCall();
-            OpCode::SendMsg.emit(numArgs - 1, Operands::Index::fromRaw(index));
+            OpCode::SendMsg.emit(numArgs, Operands::Index::fromRaw(index));
             break;
 
         case selSpecial:
@@ -3036,7 +3036,7 @@ void PyrBinopCallNode::compileCall(PyrSlot* result) {
                 COMPILENODE(arg3, &dummy, false);
 
             emitTailCall();
-            OpCode::SendMsg.emit(numArgs - 1, Operands::Index::fromRaw(index));
+            OpCode::SendMsg.emit(numArgs, Operands::Index::fromRaw(index));
             break;
         }
     }
@@ -3473,10 +3473,10 @@ void PyrSetterNode::compileCall(PyrSlot* result) {
     const int index = conjureSelectorIndex((PyrParseNode*)mSelector, gCompilingBlock, isSuper, setterSym, &selType);
     if (isSuper) {
         emitTailCall();
-        OpCode::SendSuperMsg.emit(1, Operands::Index::fromRaw(index));
+        OpCode::SendSuperMsg.emit(2, Operands::Index::fromRaw(index));
     } else {
         emitTailCall();
-        OpCode::SendMsg.emit(1, Operands::Index::fromRaw(index));
+        OpCode::SendMsg.emit(2, Operands::Index::fromRaw(index));
     }
 }
 
