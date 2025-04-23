@@ -51,7 +51,8 @@ PyrSymbol* gSpecialUnarySelectors[opNumUnarySelectors];
 PyrSymbol* gSpecialBinarySelectors[opNumBinarySelectors];
 PyrSymbol* gSpecialSelectors[opmNumSpecialSelectors];
 PyrSymbol* gSpecialClasses[op_NumSpecialClasses];
-PyrSlot gSpecialValues[svNumSpecialValues];
+SpecialValuesStruct gSpecialValues;
+SpecialNumberStruct gSpecialNumbers;
 
 PyrParseNode* gRootParseNode;
 intptr_t gParserResult;
@@ -2964,7 +2965,8 @@ void PyrBinopCallNode::compileCall(PyrSlot* result) {
                 OpCode::Drop.emit();
             OpCode::Drop.emit();
 
-            OpCode::SendSpecialUnaryArithMsg.emit(Operands::to_enum<OpUnaryMathNibble>(index));
+            // TODO: work on better conversions
+            OpCode::SendSpecialUnaryArithMsg.emit(static_cast<OpUnaryMathNibble>((Byte)index));
             break;
 
         case selBinary:

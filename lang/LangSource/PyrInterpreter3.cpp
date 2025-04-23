@@ -593,7 +593,6 @@ static inline void checkStackDepth(VMGlobals* g, PyrSlot* sp) {
     case OpCode::NAME.codeOffset<6>():                                                                                 \
     case OpCode::NAME.codeOffset<7>():                                                                                 \
     case OpCode::NAME.codeOffset<8>():                                                                                 \
-    case OpCode::NAME.codeOffset<9>():                                                                                 \
         label_##NAME:
 
 HOT void Interpret(VMGlobals* g) {
@@ -709,15 +708,15 @@ HOT void Interpret(VMGlobals* g) {
                                      &&label_PushClassVar,
                                      &&label_PushSpecialValueThis,
                                      &&label_PushOneAndSubtract,
-                                     &&handle_op_98,
-                                     &&handle_op_99,
-                                     &&handle_op_100,
-                                     &&handle_op_101,
-                                     &&handle_op_102,
-                                     &&handle_op_103,
-                                     &&handle_op_104,
-                                     &&handle_op_105,
-                                     &&handle_op_106,
+                                     &&label_PushSpecialNumber,
+                                     &&label_PushSpecialNumber,
+                                     &&label_PushSpecialNumber,
+                                     &&label_PushSpecialNumber,
+                                     &&label_PushSpecialNumber,
+                                     &&label_PushSpecialNumber,
+                                     &&label_PushSpecialNumber,
+                                     &&label_PushSpecialNumber,
+                                     &&label_PushSpecialNumber,
                                      &&handle_op_107,
                                      &&handle_op_108,
                                      &&handle_op_109,
@@ -968,7 +967,7 @@ HOT void Interpret(VMGlobals* g) {
                 } else {
                     postfl("Execution warning: Class '%s' not found\n",
                            slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[classOperand])->name);
-                    slotCopy(++sp, &gSpecialValues[svNil]);
+                    slotCopy(++sp, &gSpecialValues.Nil);
                 }
                 dispatch_opcode;
             }
@@ -1033,7 +1032,7 @@ HOT void Interpret(VMGlobals* g) {
                     ++sp;
                     SetObject(sp, classobj);
                 } else {
-                    slotCopy(++sp, &gSpecialValues[svNil]);
+                    slotCopy(++sp, &gSpecialValues.Nil);
                 }
                 dispatch_opcode;
             }
@@ -1173,7 +1172,7 @@ HOT void Interpret(VMGlobals* g) {
                     break;
                 }
                 default:
-                    slotCopy(++sp, &gSpecialValues[svNil]);
+                    slotCopy(++sp, &gSpecialValues.Nil);
                     break;
                 }
                 dispatch_opcode;
@@ -1275,8 +1274,8 @@ HOT void Interpret(VMGlobals* g) {
             }
 
             InterpretOpcode16(PushClassVar) {
-                const auto [high12, low12] = OpCode::PushClassVar.pullOperandsFromInstructions(ip);
-                slotCopy(++sp, &g->classvars->slots[(high12 << 8) | low12]);
+                const auto [slots_i] = OpCode::PushClassVar.pullOperandsFromInstructions(ip);
+                slotCopy(++sp, &g->classvars->slots[slots_i]);
                 dispatch_opcode;
             }
 
@@ -1290,7 +1289,7 @@ HOT void Interpret(VMGlobals* g) {
                     SetRaw(sp, slotRawInt(sp) - 1);
                     ifTailCallOptimise([&]() { g->tailCall = 0; });
                 } else {
-                    slotCopy(++sp, &gSpecialValues[svOne]);
+                    slotCopy(++sp, &gSpecialNumbers.One);
                     g->sp = sp;
                     g->ip = ip;
                     g->primitiveIndex = opSub;
@@ -1301,43 +1300,13 @@ HOT void Interpret(VMGlobals* g) {
                 dispatch_opcode;
             }
 
+            InterpretOpcode9(PushSpecialNumber) {
+                const auto [specialNumber] = OpCode::PushSpecialNumber.pullOperandsFromInstructions(ip);
+                slotCopy(++sp, gSpecialNumbers[specialNumber]);
+                dispatch_opcode;
+            }
 
-        case 98:
-        handle_op_98:
-            slotCopy(++sp, &gSpecialValues[svNegOne]);
-            dispatch_opcode;
-        case 99:
-        handle_op_99:
-            slotCopy(++sp, &gSpecialValues[svZero]);
-            dispatch_opcode;
-        case 100:
-        handle_op_100:
-            slotCopy(++sp, &gSpecialValues[svOne]);
-            dispatch_opcode;
-        case 101:
-        handle_op_101:
-            slotCopy(++sp, &gSpecialValues[svTwo]);
-            dispatch_opcode;
-        case 102:
-        handle_op_102:
-            slotCopy(++sp, &gSpecialValues[svFHalf]);
-            dispatch_opcode;
-        case 103:
-        handle_op_103:
-            slotCopy(++sp, &gSpecialValues[svFNegOne]);
-            dispatch_opcode;
-        case 104:
-        handle_op_104:
-            slotCopy(++sp, &gSpecialValues[svFZero]);
-            dispatch_opcode;
-        case 105:
-        handle_op_105:
-            slotCopy(++sp, &gSpecialValues[svFOne]);
-            dispatch_opcode;
-        case 106:
-        handle_op_106:
-            slotCopy(++sp, &gSpecialValues[svFTwo]);
-            dispatch_opcode;
+
         case 107: // push one and add
         handle_op_107:
             if (IsInt(sp)) {
@@ -1346,7 +1315,7 @@ HOT void Interpret(VMGlobals* g) {
                 g->tailCall = 0;
 #endif
             } else {
-                slotCopy(++sp, &gSpecialValues[svOne]);
+                slotCopy(++sp, &gSpecialNumbers.One);
                 g->sp = sp;
                 g->ip = ip;
                 g->primitiveIndex = opAdd;
@@ -1357,19 +1326,19 @@ HOT void Interpret(VMGlobals* g) {
             dispatch_opcode;
         case 108:
         handle_op_108:
-            slotCopy(++sp, &gSpecialValues[svTrue]);
+            slotCopy(++sp, &gSpecialValues.True);
             dispatch_opcode;
         case 109:
         handle_op_109:
-            slotCopy(++sp, &gSpecialValues[svFalse]);
+            slotCopy(++sp, &gSpecialValues.False);
             dispatch_opcode;
         case 110:
         handle_op_110:
-            slotCopy(++sp, &gSpecialValues[svNil]);
+            slotCopy(++sp, &gSpecialValues.Nil);
             dispatch_opcode;
         case 111:
         handle_op_111:
-            slotCopy(++sp, &gSpecialValues[svInf]);
+            slotCopy(++sp, &gSpecialValues.Inf);
             dispatch_opcode;
 
         // opStoreInstVar, 0..15
@@ -2053,7 +2022,8 @@ HOT void Interpret(VMGlobals* g) {
                 if (NotNil(sp)) {
                     int jmplen = (ip[1] << 8) | ip[2];
                     ip += jmplen + 2;
-                    slotCopy(sp, &gSpecialValues[svNil]);
+
+                    slotCopy(sp, &gSpecialValues.Nil);
                 } else {
                     ip += 2;
                     --sp;
@@ -2454,7 +2424,7 @@ HOT void Interpret(VMGlobals* g) {
             if (IsNil(sp)) {
                 SetTagRaw(sp, tagTrue);
             } else {
-                slotCopy(sp, &gSpecialValues[svFalse]);
+                slotCopy(sp, &gSpecialValues.False);
             }
 #if TAILCALLOPTIMIZE
             g->tailCall = 0;
@@ -2463,7 +2433,7 @@ HOT void Interpret(VMGlobals* g) {
         case 211: // opNotNil
         handle_op_211:
             if (NotNil(sp)) {
-                slotCopy(sp, &gSpecialValues[svTrue]);
+                slotCopy(sp, &gSpecialValues.True);
             } else {
                 SetTagRaw(sp, tagFalse);
             }
@@ -2692,7 +2662,7 @@ HOT void Interpret(VMGlobals* g) {
             dispatch_opcode;
         case 245: // opcReturnTrue
         handle_op_245:
-            slotCopy(++sp, &gSpecialValues[svTrue]);
+            slotCopy(++sp, &gSpecialValues.True);
             g->sp = sp;
             g->ip = ip;
             returnFromMethod(g);
@@ -2701,7 +2671,7 @@ HOT void Interpret(VMGlobals* g) {
             dispatch_opcode;
         case 246: // opcReturnFalse
         handle_op_246:
-            slotCopy(++sp, &gSpecialValues[svFalse]);
+            slotCopy(++sp, &gSpecialValues.False);
             g->sp = sp;
             g->ip = ip;
             returnFromMethod(g);
@@ -2710,7 +2680,7 @@ HOT void Interpret(VMGlobals* g) {
             dispatch_opcode;
         case 247: // opcReturnNil
         handle_op_247:
-            slotCopy(++sp, &gSpecialValues[svNil]);
+            slotCopy(++sp, &gSpecialValues.Nil);
             g->sp = sp;
             g->ip = ip;
             returnFromMethod(g);
@@ -2740,7 +2710,7 @@ HOT void Interpret(VMGlobals* g) {
             if (IsFalse(sp)) {
                 int jmplen = (ip[1] << 8) | ip[2];
                 ip += jmplen + 2;
-                slotCopy(sp, &gSpecialValues[svNil]);
+                slotCopy(sp, &gSpecialValues.Nil);
             } else if (IsTrue(sp)) {
                 --sp;
                 ip += 2;
@@ -2777,7 +2747,7 @@ HOT void Interpret(VMGlobals* g) {
             } else if (IsTrue(sp)) {
                 int jmplen = (ip[1] << 8) | ip[2];
                 ip += jmplen + 2;
-                slotCopy(sp, &gSpecialValues[svTrue]);
+                slotCopy(sp, &gSpecialValues.True);
             } else {
                 numArgsPushed = 1;
                 selector = gSpecialSelectors[opmNonBooleanError];
@@ -2892,7 +2862,7 @@ HOT void Interpret(VMGlobals* g) {
                             slotCopy(&obj->slots[index], sp + 1);
                             g->gc->GCWrite(obj, sp + 1);
                         } else {
-                            slotCopy(&obj->slots[index], &gSpecialValues[svNil]);
+                            slotCopy(&obj->slots[index], &gSpecialValues.Nil);
                         }
                         slotCopy(sp, slot);
                     }
@@ -2908,7 +2878,7 @@ HOT void Interpret(VMGlobals* g) {
                         slotCopy(&g->classvars->slots[methraw->specialIndex], sp + 1);
                         g->gc->GCWrite(g->classvars, sp + 1);
                     } else
-                        slotCopy(&g->classvars->slots[methraw->specialIndex], &gSpecialValues[svNil]);
+                        slotCopy(&g->classvars->slots[methraw->specialIndex], &gSpecialValues.Nil);
                     slotCopy(sp, slot);
                     break;
                 case methRedirect: /* send a different selector to self */
@@ -3064,7 +3034,7 @@ HOT void Interpret(VMGlobals* g) {
                             slotCopy(&obj->slots[index], sp + 1);
                             g->gc->GCWrite(obj, sp + 1);
                         } else
-                            slotCopy(&obj->slots[index], &gSpecialValues[svNil]);
+                            slotCopy(&obj->slots[index], &gSpecialValues.Nil);
                         slotCopy(sp, slot);
                     }
                     break;
@@ -3079,7 +3049,7 @@ HOT void Interpret(VMGlobals* g) {
                         slotCopy(&g->classvars->slots[methraw->specialIndex], sp + 1);
                         g->gc->GCWrite(g->classvars, sp + 1);
                     } else
-                        slotCopy(&g->classvars->slots[methraw->specialIndex], &gSpecialValues[svNil]);
+                        slotCopy(&g->classvars->slots[methraw->specialIndex], &gSpecialValues.Nil);
                     slotCopy(sp, slot);
                     break;
                 case methRedirect: /* send a different selector to self, e.g. this.subclassResponsibility */
