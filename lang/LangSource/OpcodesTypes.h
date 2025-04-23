@@ -31,10 +31,12 @@ template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbl
     static constexpr auto startCode { STARTCODE };
     static constexpr auto endCode { ENDCODE };
     static constexpr auto operandCount { sizeof...(OPERANDS) };
+
     template <int i> static constexpr auto codeOffset() {
         static_assert(startCode + i < endCode);
         return startCode + i;
     }
+
     using Tuple = std::tuple<Byte, OPERANDS...>;
 
     const char* name;
@@ -58,11 +60,16 @@ template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbl
     static constexpr auto startCode { STARTCODE };
     static constexpr auto endCode { ENDCODE };
     static constexpr auto operandCount { sizeof...(OPERANDS) };
-    using Tuple = std::tuple<OPERANDS...>;
+    using Tuple = std::tuple<Byte, Byte, OPERANDS...>;
 
     const char* name;
 
-    void emit(int fullValue, OPERANDS... operands) const {
+    template <int i> static constexpr auto codeOffset() {
+        static_assert(startCode + i < endCode);
+        return startCode + i;
+    }
+
+    void emit(unsigned int fullValue, OPERANDS... operands) const {
         assert(fullValue < (1 << 12));
         const Byte code = startCode + ((fullValue >> 8) & 15);
         assert(code >= startCode);
@@ -71,6 +78,11 @@ template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbl
         emitByte(code);
         emitByte(fullValue & 255);
         (emitByte(static_cast<Byte>(operands)), ...);
+    }
+
+    Tuple pullOperandsFromInstructions(unsigned char*& ip) const {
+        // increment instruction pointer and get the values for each operand.
+        return { *ip - startCode, *(++ip), OPERANDS::fromRaw(*(++ip))... };
     }
 };
 
@@ -217,6 +229,7 @@ enum struct OpSpecialNumbers : Byte {
     COUNT
 };
 
+
 enum struct OpSpecialSelectors : Byte {
     New,
     Init,
@@ -298,7 +311,13 @@ enum struct OpSpecialSelectors : Byte {
     COUNT
 };
 
-enum struct OpSpecialValue : Byte { True, False, Nil, Inf, COUNT };
+enum struct OpSpecialValue : Byte {
+    True,
+    False,
+    Nil,
+    Inf,
+    COUNT,
+};
 
 enum struct OpUnaryMath : Byte {
     Neg,
@@ -413,7 +432,6 @@ enum struct OpBinaryMath : Byte {
 
 enum struct OpTrinaryMath : Byte { Divz, Clip, Wrap, Fold, RampMult, Mix, COUNT };
 
-
 struct Operands {
     /// This does a bit cast, meaning it only looks at the bottom two bytes.
     template <typename I> constexpr static Byte to_byte(I i) {
@@ -492,15 +510,19 @@ struct Operands {
     };
     template <unsigned int TOTAL, unsigned int PART> struct Int {
         static_assert(8 * PART < TOTAL);
+        static constexpr unsigned int PARTSIZE = TOTAL / 8;
         static constexpr const char* name = "Int";
         constexpr static Int<TOTAL, PART> fromRaw(Byte b) { return { b }; }
+
+        static constexpr unsigned int down_shift = 32U - TOTAL;
+        static constexpr unsigned int up_shift = 32U - (((PARTSIZE - PART)) * 8U);
 
         constexpr static Int<TOTAL, PART> fromFull(int i) {
             assert(i >= -(1LL << (TOTAL - 1)) || i <= (1LL << (TOTAL - 1)) - 1);
             return { to_byte(i >> (8 * PART)) };
         }
 
-        template <typename... TS> int asInt(const TS&... ts) const {
+        template <typename... TS> int asInt(TS... ts) const {
             static_assert((PART + 1) * 8 == TOTAL, "Can only call get on the highest byte");
             static_assert(sizeof...(TS) == PART, "Not all parts were provided");
             static constexpr unsigned int down_shift = 32U - TOTAL;
@@ -508,14 +530,10 @@ struct Operands {
         }
         int asInt() const {
             static_assert(TOTAL == 8);
-            static constexpr unsigned int down_shift = 32U - TOTAL;
             return asIntPart() >> down_shift;
         }
 
-        int asIntPart() const {
-            static constexpr unsigned int up_shift = 32U - ((PART + 1U) * 8U);
-            return static_cast<int>(value) << up_shift;
-        }
+        int asIntPart() const { return static_cast<int>(value) << up_shift; }
 
         Byte value;
         explicit constexpr operator Byte() const { return value; }

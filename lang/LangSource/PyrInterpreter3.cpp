@@ -573,7 +573,7 @@ static inline void checkStackDepth(VMGlobals* g, PyrSlot* sp) {
     case OpCode::NAME.codeOffset<15>():                                                                                \
         label_##NAME:
 
-#define InterpertOpcode7(NAME)                                                                                         \
+#define InterpretOpcode7(NAME)                                                                                         \
     case OpCode::NAME.codeOffset<0>():                                                                                 \
     case OpCode::NAME.codeOffset<1>():                                                                                 \
     case OpCode::NAME.codeOffset<2>():                                                                                 \
@@ -581,6 +581,19 @@ static inline void checkStackDepth(VMGlobals* g, PyrSlot* sp) {
     case OpCode::NAME.codeOffset<4>():                                                                                 \
     case OpCode::NAME.codeOffset<5>():                                                                                 \
     case OpCode::NAME.codeOffset<6>():                                                                                 \
+        label_##NAME:
+
+#define InterpretOpcode9(NAME)                                                                                         \
+    case OpCode::NAME.codeOffset<0>():                                                                                 \
+    case OpCode::NAME.codeOffset<1>():                                                                                 \
+    case OpCode::NAME.codeOffset<2>():                                                                                 \
+    case OpCode::NAME.codeOffset<3>():                                                                                 \
+    case OpCode::NAME.codeOffset<4>():                                                                                 \
+    case OpCode::NAME.codeOffset<5>():                                                                                 \
+    case OpCode::NAME.codeOffset<6>():                                                                                 \
+    case OpCode::NAME.codeOffset<7>():                                                                                 \
+    case OpCode::NAME.codeOffset<8>():                                                                                 \
+    case OpCode::NAME.codeOffset<9>():                                                                                 \
         label_##NAME:
 
 HOT void Interpret(VMGlobals* g) {
@@ -642,60 +655,60 @@ HOT void Interpret(VMGlobals* g) {
                                      &&label_PushConstant16,
                                      &&label_PushConstant24,
                                      &&label_PushConstant32,
-                                     &&handle_op_44,
-                                     &&handle_op_45,
-                                     &&handle_op_46,
-                                     &&handle_op_47,
-                                     &&handle_op_48,
-                                     &&handle_op_49,
-                                     &&handle_op_50,
-                                     &&handle_op_51,
-                                     &&handle_op_52,
-                                     &&handle_op_53,
-                                     &&handle_op_54,
-                                     &&handle_op_55,
-                                     &&handle_op_56,
-                                     &&handle_op_57,
-                                     &&handle_op_58,
-                                     &&handle_op_59,
-                                     &&handle_op_60,
-                                     &&handle_op_61,
-                                     &&handle_op_62,
-                                     &&handle_op_63,
-                                     &&handle_op_64,
-                                     &&handle_op_65,
-                                     &&handle_op_66,
-                                     &&handle_op_67,
-                                     &&handle_op_68,
-                                     &&handle_op_69,
-                                     &&handle_op_70,
-                                     &&handle_op_71,
-                                     &&handle_op_72,
-                                     &&handle_op_73,
-                                     &&handle_op_74,
-                                     &&handle_op_75,
-                                     &&handle_op_76,
-                                     &&handle_op_77,
-                                     &&handle_op_78,
-                                     &&handle_op_79,
-                                     &&handle_op_80,
-                                     &&handle_op_81,
-                                     &&handle_op_82,
-                                     &&handle_op_83,
-                                     &&handle_op_84,
-                                     &&handle_op_85,
-                                     &&handle_op_86,
-                                     &&handle_op_87,
-                                     &&handle_op_88,
-                                     &&handle_op_89,
-                                     &&handle_op_90,
-                                     &&handle_op_91,
-                                     &&handle_op_92,
-                                     &&handle_op_93,
-                                     &&handle_op_94,
-                                     &&handle_op_95,
-                                     &&handle_op_96,
-                                     &&handle_op_97,
+                                     &&label_PushInteger8,
+                                     &&label_PushInteger16,
+                                     &&label_PushInteger24,
+                                     &&label_PushInteger32,
+                                     &&label_PushTempZeroVar,
+                                     &&label_PushTempZeroVar,
+                                     &&label_PushTempZeroVar,
+                                     &&label_PushTempZeroVar,
+                                     &&label_PushTempZeroVar,
+                                     &&label_PushTempZeroVar,
+                                     &&label_PushTempZeroVar,
+                                     &&label_PushTempZeroVar,
+                                     &&label_PushTempZeroVar,
+                                     &&label_PushTempZeroVar,
+                                     &&label_PushTempZeroVar,
+                                     &&label_PushTempZeroVar,
+                                     &&label_PushTempZeroVar,
+                                     &&label_PushTempZeroVar,
+                                     &&label_PushTempZeroVar,
+                                     &&label_PushTempZeroVar,
+                                     &&label_PushLiteral,
+                                     &&label_PushLiteral,
+                                     &&label_PushLiteral,
+                                     &&label_PushLiteral,
+                                     &&label_PushLiteral,
+                                     &&label_PushLiteral,
+                                     &&label_PushLiteral,
+                                     &&label_PushLiteral,
+                                     &&label_PushLiteral,
+                                     &&label_PushLiteral,
+                                     &&label_PushLiteral,
+                                     &&label_PushLiteral,
+                                     &&label_PushLiteral,
+                                     &&label_PushLiteral,
+                                     &&label_PushLiteral,
+                                     &&label_PushLiteral,
+                                     &&label_PushClassVar,
+                                     &&label_PushClassVar,
+                                     &&label_PushClassVar,
+                                     &&label_PushClassVar,
+                                     &&label_PushClassVar,
+                                     &&label_PushClassVar,
+                                     &&label_PushClassVar,
+                                     &&label_PushClassVar,
+                                     &&label_PushClassVar,
+                                     &&label_PushClassVar,
+                                     &&label_PushClassVar,
+                                     &&label_PushClassVar,
+                                     &&label_PushClassVar,
+                                     &&label_PushClassVar,
+                                     &&label_PushClassVar,
+                                     &&label_PushClassVar,
+                                     &&label_PushSpecialValueThis,
+                                     &&label_PushOneAndSubtract,
                                      &&handle_op_98,
                                      &&handle_op_99,
                                      &&handle_op_100,
@@ -1191,7 +1204,7 @@ HOT void Interpret(VMGlobals* g) {
                 dispatch_opcode;
             }
 
-            InterpertOpcode7(PushTempVar) {
+            InterpretOpcode7(PushTempVar) {
                 const auto [frameOffset, varIndex] = OpCode::PushTempVar.pullOperandsFromInstructions(ip);
                 PyrFrame* start = slotRawFrame(&g->frame->context);
                 for (int i = frameOffset; i > 0; --i)
@@ -1224,260 +1237,71 @@ HOT void Interpret(VMGlobals* g) {
                 slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[v3.asInt(v2, v1, v0)]);
                 dispatch_opcode;
             }
-        // push integers.
-        case 44:
-        handle_op_44 : {
-            int ival = (int32)(ip[1] << 24) >> 24;
-            ip += 1;
-            ++sp;
-            SetInt(sp, ival);
-            dispatch_opcode;
-        }
-        case 45:
-        handle_op_45 : {
-            int ival = (int32)((ip[1] << 24) | (ip[2] << 16)) >> 16;
-            ip += 2;
-            ++sp;
-            SetInt(sp, ival);
-            dispatch_opcode;
-        }
-        case 46:
-        handle_op_46 : {
-            int ival = (int32)((ip[1] << 24) | (ip[2] << 16) | (ip[3] << 8)) >> 8;
-            ip += 3;
-            ++sp;
-            SetInt(sp, ival);
-            dispatch_opcode;
-        }
-        case 47:
-        handle_op_47 : {
-            int ival = (int32)((ip[1] << 24) | (ip[2] << 16) | (ip[3] << 8) | ip[4]);
-            ip += 4;
-            ++sp;
-            SetInt(sp, ival);
-            dispatch_opcode;
-        }
 
-        // opPushTempZeroVar
-        case 48:
-        handle_op_48:
-            slotCopy(++sp, &g->frame->vars[0]);
-            dispatch_opcode;
-        case 49:
-        handle_op_49:
-            slotCopy(++sp, &g->frame->vars[1]);
-            dispatch_opcode;
-        case 50:
-        handle_op_50:
-            slotCopy(++sp, &g->frame->vars[2]);
-            dispatch_opcode;
-        case 51:
-        handle_op_51:
-            slotCopy(++sp, &g->frame->vars[3]);
-            dispatch_opcode;
-        case 52:
-        handle_op_52:
-            slotCopy(++sp, &g->frame->vars[4]);
-            dispatch_opcode;
-        case 53:
-        handle_op_53:
-            slotCopy(++sp, &g->frame->vars[5]);
-            dispatch_opcode;
-        case 54:
-        handle_op_54:
-            slotCopy(++sp, &g->frame->vars[6]);
-            dispatch_opcode;
-        case 55:
-        handle_op_55:
-            slotCopy(++sp, &g->frame->vars[7]);
-            dispatch_opcode;
-        case 56:
-        handle_op_56:
-            slotCopy(++sp, &g->frame->vars[8]);
-            dispatch_opcode;
-        case 57:
-        handle_op_57:
-            slotCopy(++sp, &g->frame->vars[9]);
-            dispatch_opcode;
-        case 58:
-        handle_op_58:
-            slotCopy(++sp, &g->frame->vars[10]);
-            dispatch_opcode;
-        case 59:
-        handle_op_59:
-            slotCopy(++sp, &g->frame->vars[11]);
-            dispatch_opcode;
-        case 60:
-        handle_op_60:
-            slotCopy(++sp, &g->frame->vars[12]);
-            dispatch_opcode;
-        case 61:
-        handle_op_61:
-            slotCopy(++sp, &g->frame->vars[13]);
-            dispatch_opcode;
-        case 62:
-        handle_op_62:
-            slotCopy(++sp, &g->frame->vars[14]);
-            dispatch_opcode;
-        case 63:
-        handle_op_63:
-            slotCopy(++sp, &g->frame->vars[15]);
-            dispatch_opcode;
-
-        // case opPushLiteral
-        case 64:
-        handle_op_64:
-            slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[0]);
-            dispatch_opcode;
-        case 65:
-        handle_op_65:
-            slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[1]);
-            dispatch_opcode;
-        case 66:
-        handle_op_66:
-            slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[2]);
-            dispatch_opcode;
-        case 67:
-        handle_op_67:
-            slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[3]);
-            dispatch_opcode;
-        case 68:
-        handle_op_68:
-            slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[4]);
-            dispatch_opcode;
-        case 69:
-        handle_op_69:
-            slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[5]);
-            dispatch_opcode;
-        case 70:
-        handle_op_70:
-            slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[6]);
-            dispatch_opcode;
-        case 71:
-        handle_op_71:
-            slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[7]);
-            dispatch_opcode;
-        case 72:
-        handle_op_72:
-            slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[8]);
-            dispatch_opcode;
-        case 73:
-        handle_op_73:
-            slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[9]);
-            dispatch_opcode;
-        case 74:
-        handle_op_74:
-            slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[10]);
-            dispatch_opcode;
-        case 75:
-        handle_op_75:
-            slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[11]);
-            dispatch_opcode;
-        case 76:
-        handle_op_76:
-            slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[12]);
-            dispatch_opcode;
-        case 77:
-        handle_op_77:
-            slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[13]);
-            dispatch_opcode;
-        case 78:
-        handle_op_78:
-            slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[14]);
-            dispatch_opcode;
-        case 79:
-        handle_op_79:
-            slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[15]);
-            dispatch_opcode;
-
-        // opPushClassVar
-        case 80:
-        handle_op_80:
-            handlePushClassVar(g, sp, ip, 0);
-            dispatch_opcode;
-        case 81:
-        handle_op_81:
-            handlePushClassVar(g, sp, ip, 1);
-            dispatch_opcode;
-        case 82:
-        handle_op_82:
-            handlePushClassVar(g, sp, ip, 2);
-            dispatch_opcode;
-        case 83:
-        handle_op_83:
-            handlePushClassVar(g, sp, ip, 3);
-            dispatch_opcode;
-        case 84:
-        handle_op_84:
-            handlePushClassVar(g, sp, ip, 4);
-            dispatch_opcode;
-        case 85:
-        handle_op_85:
-            handlePushClassVar(g, sp, ip, 5);
-            dispatch_opcode;
-        case 86:
-        handle_op_86:
-            handlePushClassVar(g, sp, ip, 6);
-            dispatch_opcode;
-        case 87:
-        handle_op_87:
-            handlePushClassVar(g, sp, ip, 7);
-            dispatch_opcode;
-        case 88:
-        handle_op_88:
-            handlePushClassVar(g, sp, ip, 8);
-            dispatch_opcode;
-        case 89:
-        handle_op_89:
-            handlePushClassVar(g, sp, ip, 9);
-            dispatch_opcode;
-        case 90:
-        handle_op_90:
-            handlePushClassVar(g, sp, ip, 10);
-            dispatch_opcode;
-        case 91:
-        handle_op_91:
-            handlePushClassVar(g, sp, ip, 11);
-            dispatch_opcode;
-        case 92:
-        handle_op_92:
-            handlePushClassVar(g, sp, ip, 12);
-            dispatch_opcode;
-        case 93:
-        handle_op_93:
-            handlePushClassVar(g, sp, ip, 13);
-            dispatch_opcode;
-        case 94:
-        handle_op_94:
-            handlePushClassVar(g, sp, ip, 14);
-            dispatch_opcode;
-        case 95:
-        handle_op_95:
-            handlePushClassVar(g, sp, ip, 15);
-            dispatch_opcode;
-
-        // opPushSpecialValue
-        case 96:
-        handle_op_96:
-            slotCopy(++sp, &g->receiver);
-            dispatch_opcode;
-        case 97: // push one and subtract
-        handle_op_97:
-            if (IsInt(sp)) {
-                SetRaw(sp, slotRawInt(sp) - 1);
-#if TAILCALLOPTIMIZE
-                g->tailCall = 0;
-#endif
-            } else {
-                slotCopy(++sp, &gSpecialValues[svOne]);
-                g->sp = sp;
-                g->ip = ip;
-                g->primitiveIndex = opSub;
-                prSubNum(g, -1);
-                sp = g->sp;
-                ip = g->ip;
+            InterpretOpcode(PushInteger8) {
+                const auto [i0] = OpCode::PushInteger8.pullOperandsFromInstructions(ip);
+                SetInt(++sp, i0.asInt());
+                dispatch_opcode;
             }
-            dispatch_opcode;
+
+            InterpretOpcode(PushInteger16) {
+                const auto [i1, i0] = OpCode::PushInteger16.pullOperandsFromInstructions(ip);
+                SetInt(++sp, i1.asInt(i0));
+                dispatch_opcode;
+            }
+
+            InterpretOpcode(PushInteger24) {
+                const auto [i2, i1, i0] = OpCode::PushInteger24.pullOperandsFromInstructions(ip);
+                SetInt(++sp, i2.asInt(i1, i0));
+                dispatch_opcode;
+            }
+
+            InterpretOpcode(PushInteger32) {
+                const auto [i3, i2, i1, i0] = OpCode::PushInteger32.pullOperandsFromInstructions(ip);
+                SetInt(++sp, i3.asInt(i2, i1, i0));
+                dispatch_opcode;
+            }
+
+            InterpretOpcode16(PushTempZeroVar) {
+                const auto [var_i] = OpCode::PushTempZeroVar.pullOperandsFromInstructions(ip);
+                slotCopy(++sp, &g->frame->vars[var_i]);
+                dispatch_opcode;
+            }
+
+            InterpretOpcode16(PushLiteral) {
+                const auto [slot_i] = OpCode::PushLiteral.pullOperandsFromInstructions(ip);
+                slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[slot_i]);
+                dispatch_opcode;
+            }
+
+            InterpretOpcode16(PushClassVar) {
+                const auto [high12, low12] = OpCode::PushClassVar.pullOperandsFromInstructions(ip);
+                slotCopy(++sp, &g->classvars->slots[(high12 << 8) | low12]);
+                dispatch_opcode;
+            }
+
+            InterpretOpcode(PushSpecialValueThis) {
+                slotCopy(++sp, &g->receiver);
+                dispatch_opcode;
+            }
+
+            InterpretOpcode(PushOneAndSubtract) {
+                if (IsInt(sp)) {
+                    SetRaw(sp, slotRawInt(sp) - 1);
+                    ifTailCallOptimise([&]() { g->tailCall = 0; });
+                } else {
+                    slotCopy(++sp, &gSpecialValues[svOne]);
+                    g->sp = sp;
+                    g->ip = ip;
+                    g->primitiveIndex = opSub;
+                    prSubNum(g, -1);
+                    sp = g->sp;
+                    ip = g->ip;
+                }
+                dispatch_opcode;
+            }
+
+
         case 98:
         handle_op_98:
             slotCopy(++sp, &gSpecialValues[svNegOne]);
