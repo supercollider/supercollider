@@ -5,7 +5,7 @@
 		} {
 			serverMeter.window.front
 		};
-		position !? {serverMeter.position_(position) };
+		position !? { serverMeter.position_(position) };
 		^serverMeter
 	}
 }

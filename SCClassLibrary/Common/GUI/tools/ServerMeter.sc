@@ -265,9 +265,11 @@ ServerMeter {
 	}
 
 	position_ { |point|
-		point !? {
-			point = point.asPoint;
-			window.bounds_(window.bounds.left_(point.x).bottom_(point.y)).front
-		}
+		point = point.asPoint;
+		window.bounds_(window.bounds.left_(point.x).top_(point.y)).front
+	}
+
+	position {
+		^("Position(left:" ++ window.bounds.left ++ ", bottom:" ++ (window.bounds.bottom - window.bounds.height) ++ ")")
 	}
 }

@@ -42,13 +42,33 @@ note::
 A ServerMeter encapsulates both a link::Classes/Window:: and a link::Classes/ServerMeterView:: within that Window. For more information about Windows and views see link::Guides/GUI-Introduction#Basic elements: Windows, views and containers::
 ::
 
+METHOD:: position
+
+the position of the ServerMeter window.
+The value should be a link::Classes/Point::, e.g. teletype::x@y::, or respond to teletype::.asPoint::.
+
 
 EXAMPLES::
 
 code::
-
 s = Server.internal; // use the internal server
 s.boot;
+
 // display 4 input channels & main stereo output
 m = ServerMeter.new(s, 4, 2);
+
+// Query the current window position
+m.position //-> Position(left:5.0, bottom:277.0)
+
+// Query the current window bounds
+m.window.bounds // -> Rect(5.0, 277.0, 172.0, 230.0)
+
+// Move to new position
+m.position_(0@100) //-> a ServerMeter
+
+// Retrieve the moved new window position
+m.position // -> Position(left:0.0, bottom:100.0)
+
+// Retrieve the moved new window bounds
+m.window.bounds // -> Rect(0.0, 100.0, 172.0, 230.0)
 ::
