@@ -188,19 +188,21 @@ BinaryOpUGen : BasicOpUGen {
 				^result
 			}
 		};
+
+
 		// a * b + c => MulAdd(a, b, c);
 		desc = descendants.select { |d| d.isKindOf(BinaryOpUGen) and: { d.operator == '+' }};
 		if (desc.isEmpty.not){
 			desc.do{ |adder|
 				var addValue = adder.inputs.select({|i| i !== this })[0];
-				MulAdd.maybeGetMulAddOrder(inputs[0], inputs[1], addValue) !? { |mulAddOrder|
-					var new = MulAdd.newDuringOptimisation(this.rate, *mulAddOrder);
-					adder.prepareForReplacement(new, result, 2) !? { |re|
-						adder.replace(re);
+				if (addValue.isNil.not) {
+					MulAdd.maybeGetMulAddOrder(inputs[0], inputs[1], addValue) !? { |mulAddOrder|
+						var new = MulAdd.newDuringOptimisation(this.rate, *mulAddOrder);
+						adder.prepareForReplacement(new, result, 2) !? { |re| adder.replace(re) }
 					}
 				}
 			};
-			result.returnNilIfEmpty !? { |r| ^r };
+			result.returnNilIfEmpty !? { |r| ^r	};
 		};
 
 
@@ -253,8 +255,9 @@ BinaryOpUGen : BasicOpUGen {
 					}
 				}
 			};
-			result.returnNilIfEmpty !? { |r| ^r };
+			result.returnNilIfEmpty !? { |r| ^r	};
 		};
+
 
 		^nil
 	}
@@ -424,7 +427,7 @@ MulAdd : UGen {
 		^this.multiNewList([rate] ++ args)
 	}
 
-	*new1 { arg rate, in, mul, add;
+	*new1 { arg rate, in, mul = 1.0, add = 0.0;
 		if (this.canBeMulAdd(in, mul, add)) {
 			^super.new1(rate, in, mul, add)
 		};
@@ -434,12 +437,12 @@ MulAdd : UGen {
 		^(in * mul) + add
 	}
 
-	init { arg in, mul, add;
+	init { arg in, mul = 1.0, add=0.0;
 		inputs = [in, mul, add];
 		rate = inputs.rate;
 	}
 
-	*maybeGetMulAddOrder { |in, mul, add|
+	*maybeGetMulAddOrder { |in, mul = 1.0, add = 0.0|
 		if(MulAdd.canBeMulAdd(in, mul, add)) { ^[in, mul, add] };
 		if(MulAdd.canBeMulAdd(mul, in, add)) { ^[mul, in, add] };
 		^nil
