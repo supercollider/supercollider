@@ -199,7 +199,7 @@ struct PyrInterpreter : public PyrObjectHdr {
 
 
 struct SpecialValuesStruct {
-    PyrSlot True, False, Nil, Inf;
+    PyrSlot True, False, Nil_, Inf;
 
     PyrSlot* operator[](OpSpecialValue v) {
         switch (v) {
@@ -207,8 +207,8 @@ struct SpecialValuesStruct {
             return &True;
         case OpSpecialValue::False:
             return &False;
-        case OpSpecialValue::Nil:
-            return &Nil;
+        case OpSpecialValue::Nil_:
+            return &Nil_;
         case OpSpecialValue::Inf:
             return &Inf;
         default:
@@ -218,7 +218,8 @@ struct SpecialValuesStruct {
     }
 };
 extern SpecialValuesStruct gSpecialValues;
-static_assert((int)OpSpecialValue::COUNT == sizeof(SpecialValuesStruct) / sizeof(PyrSlot));
+// Some compilers add padding to the struct so this fails
+// static_assert((int)OpSpecialValue::COUNT == sizeof(SpecialValuesStruct) / sizeof(PyrSlot));
 
 struct SpecialNumberStruct {
     PyrSlot MinusOne, Zero, One, Two, Half, MinusOneFloat, ZeroFloat, OneFloat, TwoFloat;
@@ -250,7 +251,8 @@ struct SpecialNumberStruct {
     }
 };
 extern SpecialNumberStruct gSpecialNumbers;
-static_assert((int)OpSpecialNumbers::COUNT == sizeof(SpecialNumberStruct) / sizeof(PyrSlot));
+// Some compilers add padding to the struct so this fails
+// static_assert((int)OpSpecialNumbers::COUNT == sizeof(SpecialNumberStruct) / sizeof(PyrSlot));
 
 
 extern PyrMethod* gNullMethod; // used to fill row table

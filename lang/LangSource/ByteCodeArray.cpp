@@ -35,12 +35,6 @@ void initByteCodes() {
     }
 }
 
-void emitJump(long opcode, long jumplen) {
-    emitByte((15 << 4) | opcode);
-    emitByte((jumplen >> 8) & 0xFF);
-    emitByte(jumplen & 0xFF);
-}
-
 void emitByte(Byte byte) {
     if (gCompilingByteCodes == nullptr) {
         gCompilingByteCodes = allocByteCodes();

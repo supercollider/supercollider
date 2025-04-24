@@ -49,4 +49,3 @@ void emitByteCodes(ByteCodes byteCodes);
 ByteCodes allocByteCodes();
 void reallocByteCodes(ByteCodes byteCodes);
 void freeByteCodes(ByteCodes byteCodes);
-void emitJump(long opcode, long jumplen);

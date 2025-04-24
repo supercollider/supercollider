@@ -288,7 +288,7 @@ void initSymbols() {
     SetFloat(&o_ftwo, 2.);
     SetFloat(&o_inf, std::numeric_limits<double>::infinity());
 
-    gSpecialValues.Nil = o_nil;
+    gSpecialValues.Nil_ = o_nil;
     gSpecialValues.True = o_true;
     gSpecialValues.False = o_false;
     gSpecialValues.Inf = o_inf;

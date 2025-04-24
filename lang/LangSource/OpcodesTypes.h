@@ -4,8 +4,9 @@
 #include <tuple>
 #include <cstdint>
 #include <cstring>
+#include <optional>
 
-namespace details {
+namespace Opcode::details {
 /// This does a bit cast, meaning it only looks at the bottom two bytes.
 template <typename I> constexpr static Byte to_byte(I i) {
     Byte to;
@@ -20,24 +21,24 @@ template <typename ENUM_T, typename I> constexpr static ENUM_T to_enum(I i) {
 }
 
 
+static constexpr int NoPrefix = -1;
+
+
 template <Byte CODE, typename... OPERANDS> struct SimpleOpSpec {
-    // static constexpr Byte code { CODE };
-    static constexpr auto operandCount { sizeof...(OPERANDS) };
     using Tuple = std::tuple<OPERANDS...>;
 
     const char* name;
     Byte code { CODE };
+    std::uint32_t byteSize = sizeof...(OPERANDS) + 1;
 
-    Tuple pullOperandsFromInstructions(unsigned char*& ip) const {
-        // increment instruction pointer and get the values for each operand.
-        return { OPERANDS::fromRaw(*(++ip))... };
-    }
+    Tuple pullOperandsFromInstructions(unsigned char*& ip) const { return { OPERANDS::fromRaw(*(++ip))... }; }
 
     void emit(OPERANDS... operands) const {
         emitByte(code);
         (emitByte(static_cast<Byte>(operands)), ...);
     }
 };
+
 
 template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbleOpSpec {
     static constexpr auto startCode { STARTCODE };
@@ -52,6 +53,7 @@ template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbl
     using Tuple = std::tuple<Byte, OPERANDS...>;
 
     const char* name;
+    std::uint32_t byteSize = sizeof...(OPERANDS) + 1;
 
     template <typename N> void emit(N nibble, OPERANDS... operands) const {
         assert(nibble < 16);
@@ -68,6 +70,7 @@ template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbl
     }
 };
 
+
 template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibble12bitSpec {
     static constexpr auto startCode { STARTCODE };
     static constexpr auto endCode { ENDCODE };
@@ -75,6 +78,7 @@ template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbl
     using Tuple = std::tuple<int, OPERANDS...>;
 
     const char* name;
+    std::uint32_t byteSize = sizeof...(OPERANDS) + 1;
 
     template <int i> static constexpr auto codeOffset() {
         static_assert(startCode + i < endCode);
@@ -107,6 +111,7 @@ template <Byte STARTCODE, Byte ENDCODE, typename ENUM_T, typename... OPERANDS> s
     using Enum = ENUM_T;
 
     const char* name;
+    std::uint32_t byteSize = sizeof...(OPERANDS) + 1;
 
     template <int i> static constexpr auto codeOffset() {
         static_assert(startCode + i < endCode);
@@ -129,6 +134,25 @@ template <Byte STARTCODE, Byte ENDCODE, typename ENUM_T, typename... OPERANDS> s
     }
 };
 
+template <Byte PREFIX, Byte CODE, typename... OPERANDS> struct ExtendedSimple {
+    using Tuple = std::tuple<OPERANDS...>;
+    const char* name;
+    Byte prefix { PREFIX };
+    Byte code { CODE };
+    std::uint32_t byteSize = sizeof...(OPERANDS) + 2;
+
+    Tuple pullOperandsFromInstructions(unsigned char*& ip) const { return { OPERANDS::fromRaw(*(++ip))... }; }
+
+    void emit(OPERANDS... operands) const {
+        emitByte(PREFIX);
+        emitByte(code);
+        (emitByte(static_cast<Byte>(operands)), ...);
+    }
+};
+
+
+// Using statements for opcodes without prefixes (most opcodes)
+
 struct NamedByte {
     Byte value;
     constexpr operator Byte() const { return value; }
@@ -141,7 +165,7 @@ template <typename Enum_T> struct OperandEnumWrapper {
     static constexpr Byte COUNT = (Byte)Enum_T::COUNT;
     constexpr OperandEnumWrapper(Enum_T e) noexcept: value(e) {}
     Enum_T value;
-    constexpr operator Byte() const { return static_cast<Byte>(value); }
+    explicit constexpr operator Byte() const { return static_cast<Byte>(value); }
     constexpr operator Enum_T() const { return value; }
 };
 
@@ -190,7 +214,7 @@ enum struct OpBinaryMathNibble : Byte {
 enum struct OpSpecialClassEnum : Byte {
     Object,
     Symbol,
-    Nil,
+    Nil_,
     Boolean,
     True,
     False,
@@ -341,7 +365,7 @@ enum struct OpSpecialSelectors : Byte {
 enum struct OpSpecialValue : Byte {
     True,
     False,
-    Nil,
+    Nil_,
     Inf,
     COUNT,
 };
@@ -460,34 +484,34 @@ enum struct OpBinaryMath : Byte {
 enum struct OpTrinaryMath : Byte { Divz, Clip, Wrap, Fold, RampMult, Mix, COUNT };
 
 struct Operands {
-    struct Unknown : details::NamedByte {
+    struct Unknown : Opcode::details::NamedByte {
         static constexpr const char* name = "Unknown";
-        constexpr static Unknown fromRaw(int b) { return { details::to_byte(b) }; }
+        constexpr static Unknown fromRaw(int b) { return { Opcode::details::to_byte(b) }; }
         constexpr static Unknown fromRaw(Byte b) { return { b }; }
     };
-    struct Index : details::NamedByte {
+    struct Index : Opcode::details::NamedByte {
         static constexpr const char* name = "Index";
-        constexpr static Index fromRaw(int b) { return { details::to_byte(b) }; }
+        constexpr static Index fromRaw(int b) { return { Opcode::details::to_byte(b) }; }
         constexpr static Index fromRaw(Byte b) { return { b }; }
     };
-    struct FrameOffset : details::NamedByte {
+    struct FrameOffset : Opcode::details::NamedByte {
         static constexpr const char* name = "FrameOffset";
-        constexpr static FrameOffset fromRaw(int b) { return { details::to_byte(b) }; }
+        constexpr static FrameOffset fromRaw(int b) { return { Opcode::details::to_byte(b) }; }
         constexpr static FrameOffset fromRaw(Byte b) { return { b }; }
     };
-    struct Class : details::NamedByte {
+    struct Class : Opcode::details::NamedByte {
         static constexpr const char* name = "Class";
-        constexpr static Class fromRaw(int b) { return { details::to_byte(b) }; }
+        constexpr static Class fromRaw(int b) { return { Opcode::details::to_byte(b) }; }
         constexpr static Class fromRaw(Byte b) { return { b }; }
     };
-    struct ArgumentCount : details::NamedByte {
+    struct ArgumentCount : Opcode::details::NamedByte {
         static constexpr const char* name = "ArgumentCount";
-        constexpr static ArgumentCount fromRaw(int b) { return { details::to_byte(b) }; }
+        constexpr static ArgumentCount fromRaw(int b) { return { Opcode::details::to_byte(b) }; }
         constexpr static ArgumentCount fromRaw(Byte b) { return { b }; }
     };
-    struct KwArgumentCount : details::NamedByte {
+    struct KwArgumentCount : Opcode::details::NamedByte {
         static constexpr const char* name = "KwArgumentCount";
-        constexpr static KwArgumentCount fromRaw(int b) { return { details::to_byte(b) }; }
+        constexpr static KwArgumentCount fromRaw(int b) { return { Opcode::details::to_byte(b) }; }
         constexpr static KwArgumentCount fromRaw(Byte b) { return { b }; }
     };
 
@@ -498,7 +522,7 @@ struct Operands {
 
         constexpr static UnsignedInt<TOTAL, PART> fromFull(unsigned int i) {
             assert(i < (1ULL << TOTAL));
-            return { details::to_byte(i >> (8U * PART)) };
+            return { Opcode::details::to_byte(i >> (8U * PART)) };
         }
 
         constexpr static UnsignedInt<TOTAL, PART> fromFull(int i) {
@@ -532,7 +556,7 @@ struct Operands {
 
         constexpr static Int<TOTAL, PART> fromFull(int i) {
             assert(i >= -(1LL << (TOTAL - 1)) || i <= (1LL << (TOTAL - 1)) - 1);
-            return { details::to_byte(i >> (8 * PART)) };
+            return { Opcode::details::to_byte(i >> (8 * PART)) };
         }
 
         template <typename... TS> int asInt(TS... ts) const {
@@ -553,52 +577,63 @@ struct Operands {
     };
 
 
-    struct SpecialClass : details::OperandEnumWrapper<OpSpecialClassEnum> {
-        constexpr SpecialClass(OpSpecialClassEnum s) noexcept: details::OperandEnumWrapper<OpSpecialClassEnum>(s) {}
+    struct SpecialClass : Opcode::details::OperandEnumWrapper<OpSpecialClassEnum> {
+        constexpr SpecialClass(OpSpecialClassEnum s) noexcept:
+            Opcode::details::OperandEnumWrapper<OpSpecialClassEnum>(s) {}
         static constexpr const char* name = "SpecialClass";
-        constexpr static SpecialClass fromRaw(int b) { return { details::to_enum<OpSpecialClassEnum>(b) }; }
+        constexpr static SpecialClass fromRaw(int b) { return { Opcode::details::to_enum<OpSpecialClassEnum>(b) }; }
     };
-    struct PseudoVar : details::OperandEnumWrapper<OpPseudoVarEnum> {
-        constexpr PseudoVar(OpPseudoVarEnum s) noexcept: details::OperandEnumWrapper<OpPseudoVarEnum>(s) {}
+    struct PseudoVar : Opcode::details::OperandEnumWrapper<OpPseudoVarEnum> {
+        constexpr PseudoVar(OpPseudoVarEnum s) noexcept: Opcode::details::OperandEnumWrapper<OpPseudoVarEnum>(s) {}
         static constexpr const char* name = "PseudoVar";
-        constexpr static PseudoVar fromRaw(int b) { return { details::to_enum<OpPseudoVarEnum>(b) }; }
+        constexpr static PseudoVar fromRaw(int b) { return { Opcode::details::to_enum<OpPseudoVarEnum>(b) }; }
     };
 
-    struct SpecialSelectors : details::OperandEnumWrapper<OpSpecialSelectors> {
-        constexpr SpecialSelectors(OpSpecialSelectors s) noexcept: details::OperandEnumWrapper<OpSpecialSelectors>(s) {}
+    struct SpecialSelectors : Opcode::details::OperandEnumWrapper<OpSpecialSelectors> {
+        constexpr SpecialSelectors(OpSpecialSelectors s) noexcept:
+            Opcode::details::OperandEnumWrapper<OpSpecialSelectors>(s) {}
         static constexpr const char* name = "SpecialSelectors";
-        constexpr static SpecialSelectors fromRaw(int b) { return { details::to_enum<OpSpecialSelectors>(b) }; }
+        constexpr static SpecialSelectors fromRaw(int b) { return { Opcode::details::to_enum<OpSpecialSelectors>(b) }; }
     };
 
-    struct UnaryMath : details::OperandEnumWrapper<OpUnaryMath> {
-        constexpr UnaryMath(OpUnaryMath s) noexcept: details::OperandEnumWrapper<OpUnaryMath>(s) {}
+    struct UnaryMath : Opcode::details::OperandEnumWrapper<OpUnaryMath> {
+        constexpr UnaryMath(OpUnaryMath s) noexcept: Opcode::details::OperandEnumWrapper<OpUnaryMath>(s) {}
         static constexpr const char* name = "UnaryMath";
-        constexpr static UnaryMath fromRaw(int b) { return { details::to_enum<OpUnaryMath>(b) }; }
-    };
-    struct BinaryMath : details::OperandEnumWrapper<OpBinaryMath> {
-        constexpr BinaryMath(OpBinaryMath s) noexcept: details::OperandEnumWrapper<OpBinaryMath>(s) {}
-        static constexpr const char* name = "BinaryMath";
-        constexpr static BinaryMath fromRaw(int b) { return { details::to_enum<OpBinaryMath>(b) }; }
-    };
-    struct TrinaryMath : details::OperandEnumWrapper<OpTrinaryMath> {
-        constexpr TrinaryMath(OpTrinaryMath s) noexcept: details::OperandEnumWrapper<OpTrinaryMath>(s) {}
-        static constexpr const char* name = "TrinaryMath";
-        constexpr static TrinaryMath fromRaw(int b) { return { details::to_enum<OpTrinaryMath>(b) }; }
-    };
-    struct BinaryMathNibble : details::OperandEnumWrapper<OpBinaryMathNibble> {
-        constexpr BinaryMathNibble(OpBinaryMathNibble s) noexcept: details::OperandEnumWrapper<OpBinaryMathNibble>(s) {}
-        static constexpr const char* name = "BinaryMathNibble";
-        constexpr static BinaryMathNibble fromRaw(int b) { return { details::to_enum<OpBinaryMathNibble>(b) }; }
+        constexpr static UnaryMath fromRaw(int b) { return { Opcode::details::to_enum<OpUnaryMath>(b) }; }
     };
 
-    struct SpecialValue : details::OperandEnumWrapper<OpSpecialValue> {
-        constexpr SpecialValue(OpSpecialValue s) noexcept: details::OperandEnumWrapper<OpSpecialValue>(s) {}
-        constexpr static SpecialValue fromRaw(int b) { return { details::to_enum<OpSpecialValue>(b) }; }
+    struct UnaryMathNibble : Opcode::details::OperandEnumWrapper<OpUnaryMathNibble> {
+        constexpr UnaryMathNibble(OpUnaryMathNibble n) noexcept:
+            Opcode::details::OperandEnumWrapper<OpUnaryMathNibble>(n) {}
+        static constexpr const char* name = "UnaryMathNibble";
+        constexpr static UnaryMathNibble fromRaw(int b) { return { Opcode::details::to_enum<OpUnaryMathNibble>(b) }; }
+    };
+    struct BinaryMath : Opcode::details::OperandEnumWrapper<OpBinaryMath> {
+        constexpr BinaryMath(OpBinaryMath s) noexcept: Opcode::details::OperandEnumWrapper<OpBinaryMath>(s) {}
+        static constexpr const char* name = "BinaryMath";
+        constexpr static BinaryMath fromRaw(int b) { return { Opcode::details::to_enum<OpBinaryMath>(b) }; }
+    };
+    struct TrinaryMath : Opcode::details::OperandEnumWrapper<OpTrinaryMath> {
+        constexpr TrinaryMath(OpTrinaryMath s) noexcept: Opcode::details::OperandEnumWrapper<OpTrinaryMath>(s) {}
+        static constexpr const char* name = "TrinaryMath";
+        constexpr static TrinaryMath fromRaw(int b) { return { Opcode::details::to_enum<OpTrinaryMath>(b) }; }
+    };
+    struct BinaryMathNibble : Opcode::details::OperandEnumWrapper<OpBinaryMathNibble> {
+        constexpr BinaryMathNibble(OpBinaryMathNibble s) noexcept:
+            Opcode::details::OperandEnumWrapper<OpBinaryMathNibble>(s) {}
+        static constexpr const char* name = "BinaryMathNibble";
+        constexpr static BinaryMathNibble fromRaw(int b) { return { Opcode::details::to_enum<OpBinaryMathNibble>(b) }; }
+    };
+
+    struct SpecialValue : Opcode::details::OperandEnumWrapper<OpSpecialValue> {
+        constexpr SpecialValue(OpSpecialValue s) noexcept: Opcode::details::OperandEnumWrapper<OpSpecialValue>(s) {}
+        constexpr static SpecialValue fromRaw(int b) { return { Opcode::details::to_enum<OpSpecialValue>(b) }; }
         static constexpr const char* name = "SpecialValue";
     };
-    struct SpecialNumber : details::OperandEnumWrapper<OpSpecialNumbers> {
-        constexpr SpecialNumber(OpSpecialNumbers s) noexcept: details::OperandEnumWrapper<OpSpecialNumbers>(s) {}
-        constexpr static SpecialNumber fromRaw(int b) { return { details::to_enum<OpSpecialNumbers>(b) }; }
+    struct SpecialNumber : Opcode::details::OperandEnumWrapper<OpSpecialNumbers> {
+        constexpr SpecialNumber(OpSpecialNumbers s) noexcept:
+            Opcode::details::OperandEnumWrapper<OpSpecialNumbers>(s) {}
+        constexpr static SpecialNumber fromRaw(int b) { return { Opcode::details::to_enum<OpSpecialNumbers>(b) }; }
         static constexpr const char* name = "SpecialNumber";
     };
 
