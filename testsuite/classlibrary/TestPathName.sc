@@ -49,7 +49,7 @@ TestPathName : UnitTest {
 
 		this.assert(p.isAbsolutePath, "isAbsolutePath"); // true, because ~/ expanded correctly
 		this.assert(PathName("relative.scd").isRelativePath, "isRelativePath");
-		this.assertEquals(p.asRelativePath("~/src"), "Sounds/FunkyChicken.abc.scd");
+		this.assertEquals(p.asRelativePath("/Users/adc/src"), "Sounds/FunkyChicken.abc.scd", "asRelativePath");
 
 		this.assertEquals(p.allFolders, List["Users", "adc", "src", "Sounds"], "allFolders");
 
