@@ -563,7 +563,12 @@ SCDocHTMLRenderer {
 			\NL, { }, // these shouldn't be here..
 // Plain text and modal tags
 			\TEXT, {
-				stream << this.escapeSpecialChars(node.text);
+				stream << this.escapeSpecialChars(node.text)
+				.replaceRegexp("/hh/(| )", "")
+				.replaceRegexp("/vh/(| )", "")
+				.replaceRegexp("/h/(| )", "")
+				.replaceRegexp("/l\:\\d+\\w*/(| )", "")
+				.replaceRegexp("/(x|y)\:\\d+/(| )", "")
 			},
 			\LINK, {
 				stream << this.htmlForLink(node.text);
@@ -702,7 +707,44 @@ SCDocHTMLRenderer {
 				this.renderChildren(stream, node);
 			},
 			\TABCOL, {
-				stream << "<td>";
+				var thisText = if (node.children.isArray) {
+					if(node.children[0].children.isArray) {
+						node.children[0].children[0].text
+					}
+				};
+				var parse = { |default|
+					default + case
+					{ "/x:\\d+/".matchRegexp(thisText) } {
+						var indexStart = thisText.findRegexp("/x:\\d+/")[0][0] + 3;
+						var indexLast = thisText.findRegexp("/x:\\d+/")[0][1].size - 1 + indexStart;
+						var thisTextOld = thisText;
+						"colspan='" ++ thisTextOld[indexStart..indexLast] ++ "'>"
+						}
+					{ "/y:\\d+/".matchRegexp(thisText) } {
+						var indexStart = thisText.findRegexp("/y:\\d+/")[0][0] + 3;
+						var indexLast = thisText.findRegexp("/y:\\d+/")[0][1].size - 1 + indexStart;
+						var thisTextOld = thisText;
+						"rowspan='" ++ thisTextOld[indexStart..indexLast] ++ "'>"
+						}
+					{ "/l:\\d+\\w*/".matchRegexp(thisText) } {
+						var indexStart = thisText.findRegexp("/l:\\d+\\w*/")[0][0] + 3;
+						var indexLast = thisText.findRegexp("/l:\\d+\\w*/")[0][1].size - 5 + indexStart;
+						var thisTextOld = thisText;
+						"style='line-height:" ++ thisTextOld[indexStart..indexLast] ++ ";'>"
+						}
+					{ ">" }
+					};
+				stream << if(thisText.isString) { case
+					{ thisText.contains("/hh/") } {
+						parse.("<th class='h-header'") }
+					{ thisText.contains("/vh/") } {
+						parse.("<th class='v-header'") }
+					{ thisText.contains("/h/") } {
+						parse.("<th class='hv-header'") }
+					{ parse.("<td") }
+				} {
+					"<td>"
+				};
 				noParBreak = true;
 				this.renderChildren(stream, node);
 			},

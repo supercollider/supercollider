@@ -327,6 +327,27 @@ table::
 ## c 1 || c 2 || c 3
 ::
 
+Optionally, tables can include both vertical and horizontal headers, and cells can span multiple rows or columns.
+Additionally, users can change the line-height of individual cells.
+Refer to the example below:
+teletype::
+table\::
+## /h/ /l:10em/ head || /hh/ hHead 1 || /hh/ hHead 2 ||  /hh/ hHead 3
+## /vh/ vHead 1 || /x:2/1 1-2 || 1 3
+## /vh/ vHead 2 || /y:2/2-3 1 || 2 2 || 2 3
+## /vh/ vHead 3 || 3 2 || 3 3
+## /vh/ vHead 4 || 4 1 || 4 2 || 4 3
+\::
+::
+Renders:
+table::
+## /h/ /l:10em/ head || /hh/ hHead 1 || /hh/ hHead 2 ||  /hh/ hHead 3
+## /vh/ vHead 1 || /x:2/1 1-2 || 1 3
+## /vh/ vHead 2 || /y:2/2-3 1 || 2 2 || 2 3
+## /vh/ vHead 3 || 3 2 || 3 3
+## /vh/ vHead 4 || 4 1 || 4 2 || 4 3
+::
+
 ## keyword:: definitionlist\::
 teletype:: DEFINITIONLIST\:: ::
 || A definition list item consists of one or more terms prefixed with teletype::##:: followed by a description prefixed with teletype::||::. Example:
