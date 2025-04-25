@@ -633,8 +633,16 @@ SCDocHTMLRenderer {
 			},
 // Other stuff
 			\NOTE, {
-				var thisText = if(node.children[0].children[0].text.isString || node.children[0].children[0].isArray) {
-					node.children[0].children[0].text } {
+				var thisText = if (node.children.isArray) {
+					if (node.children[0].isArray) {
+						if(node.children[0].children[0].text.isString || node.children[0].children[0].isArray) {
+							node.children[0].children[0].text } {
+							""
+						}
+					}{
+						""
+					}
+				} {
 					""
 				};
 				stream << ( "<div class='note'><span class='notelabel'>" ++
@@ -655,8 +663,16 @@ SCDocHTMLRenderer {
 				stream << "</div>";
 			},
 			\WARNING, {
-				var thisText = if(node.children[0].children[0].text.isString || node.children[0].children[0].isArray) {
-					node.children[0].children[0].text } {
+ 				var thisText = if (node.children.isArray) {
+					if (node.children[0].isArray) {
+						if(node.children[0].children[0].text.isString || node.children[0].children[0].isArray) {
+							node.children[0].children[0].text } {
+							""
+						}
+					}{
+						""
+					}
+				} {
 					""
 				};
 				stream << ( "<div class='warning'><span class='warninglabel'>" ++
