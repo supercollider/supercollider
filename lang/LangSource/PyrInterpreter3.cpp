@@ -1528,7 +1528,7 @@ HOT void Interpret(VMGlobals* g) {
                 case Extended::IntegerDo.DropAndJumpBackToLoop.code: {
                     --sp;
                     SetRaw(&g->frame->vars[2], slotRawInt(&g->frame->vars[2]) + 1); // inc i
-                    ip -= Extended::IntegerDo.jumpSize;
+                    ip -= Extended::IntegerDo.jumpSize();
                     dispatch_opcode;
                 }
 
@@ -1565,7 +1565,7 @@ HOT void Interpret(VMGlobals* g) {
                     SetRaw(&vars[2], slotRawInt(&vars[2]) - 1); // dec i
                     SetRaw(&vars[3], slotRawInt(&vars[3]) + 1); // inc j
                     // jump back to integer reverse do loop or return;
-                    ip -= Extended::IntegerReverseDo.jumpSize;
+                    ip -= Extended::IntegerReverseDo.jumpSize();
                     dispatch_opcode;
                 }
 
@@ -1625,7 +1625,7 @@ HOT void Interpret(VMGlobals* g) {
                     PyrSlot* vars = g->frame->vars;
                     SetRaw(&vars[3], slotRawInt(&vars[3]) + slotRawInt(&vars[5])); // inc i by stepval
                     SetRaw(&vars[4], slotRawInt(&vars[4]) + 1); // inc j
-                    ip -= Extended::IntegerFor.jumpSize;
+                    ip -= Extended::IntegerFor.jumpSize();
                     dispatch_opcode;
                 }
 
@@ -1712,7 +1712,7 @@ HOT void Interpret(VMGlobals* g) {
                         SetRaw(&vars[4], slotRawInt(&vars[4]) + slotRawInt(&vars[2])); // inc i
                     }
                     SetRaw(&vars[5], slotRawInt(&vars[5]) + 1); // inc j
-                    ip -= Extended::IntegerForBy.jumpSize;
+                    ip -= Extended::IntegerForBy.jumpSize();
                     dispatch_opcode;
                 }
 

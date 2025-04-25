@@ -367,7 +367,7 @@ static constexpr struct IntegerDo {
     details::SimpleOpSpec<0x01> DropAndJumpBackToLoop { "IntDo-DropAndJumpBackToLoop" };
 
     /// Jump from the drop instruction to the loop
-    unsigned int jumpSize = 1 + LoopOrReturn.byteSize + 1 + DropAndJumpBackToLoop.byteSize;
+    unsigned int jumpSize() const { return 1U + LoopOrReturn.byteSize + 1U + DropAndJumpBackToLoop.byteSize; }
 
 
     void emit() const {
@@ -392,7 +392,7 @@ static constexpr struct IntegerReverseDo {
     details::SimpleOpSpec<0x04> DropAndJumpBackToLoop { "IntReverseDo-DropAndJumpBackToLoop" };
 
     /// Jump from the drop instruction to the loop, don't jump back to the init instruction.
-    unsigned int jumpSize = 1 + LoopOrReturn.byteSize + 1 + DropAndJumpBackToLoop.byteSize;
+    unsigned int jumpSize() const { return 1U + LoopOrReturn.byteSize + 1U + DropAndJumpBackToLoop.byteSize; }
 
     void emit() const {
         emitByte(Prefix);
@@ -426,7 +426,7 @@ static constexpr struct IntegerFor {
     details::SimpleOpSpec<0x10> DropAndJumpBackToLoop { "IntFor-DropAndJumpBackToLoop" };
 
     /// Jump from the drop instruction to the loop, don't jump back to the init instruction.
-    unsigned int jumpSize = 1 + LoopOrReturn.byteSize + 1 + DropAndJumpBackToLoop.byteSize;
+    unsigned int jumpSize() const { return 1U + LoopOrReturn.byteSize + 1U + DropAndJumpBackToLoop.byteSize; }
 
     void emit() const {
         emitByte(Prefix);
@@ -444,7 +444,7 @@ static constexpr struct IntegerForBy {
     details::SimpleOpSpec<0x08> LoopOrReturn { "IntForBy-LoopOrReturn" };
     details::SimpleOpSpec<0x09> DropAndJumpBackToLoop { "IntForBy-DropAndJumpBackToLoop" };
     /// Jump from the drop instruction to the loop, don't jump back to the init instruction.
-    unsigned int jumpSize = 1 + LoopOrReturn.byteSize + 1 + DropAndJumpBackToLoop.byteSize;
+    unsigned int jumpSize() const { return 1U + LoopOrReturn.byteSize + 1U + DropAndJumpBackToLoop.byteSize; }
     void emit() const {
         emitByte(Prefix);
         Init.emit();
@@ -457,6 +457,24 @@ static constexpr struct IntegerForBy {
 } IntegerForBy;
 
 
+/// Implements `ArrayedCollection:-do`. The frame of this method holds the receiver, the
+/// apply function, and the loop accumulator (initially 0).
+static constexpr struct ArrayedCollectionDo {
+    /// The accumulator is inspected. If it is less than the size of the array, then the apply
+    /// function, indexed element of the receiver array, and accumulator are pushed to the stack and `value`
+    /// is invoked on all three.
+    details::SimpleOpSpec<0x0A> LoopOrReturn { "ArrayedCollectionDo-Init" };
+
+    /// As previously, the result of `value` is dropped, the accumulator is incremented, and the IP
+    /// is set to Init.
+    /// NOTE: this is a duplicate of a previous code! It relies on the jumpSize being the same.
+    /// This could be changed in the future so it has its own unique code.
+    details::SimpleOpSpec<0x01> DropAndJumpBackToLoop { "ArrayedCollectionDo-DropAndJumpBackToLoop" };
+
+    /// Jump from the drop instruction to the loop, don't jump back to the init instruction.
+    unsigned int jumpSize() const { return 1U + LoopOrReturn.byteSize + 1U + DropAndJumpBackToLoop.byteSize; }
+
+} ArrayedCollectionDo;
 }
 
 /// Pop and store the top of the stack in a class variable of the current class.

@@ -29,7 +29,7 @@ template <Byte CODE, typename... OPERANDS> struct SimpleOpSpec {
 
     const char* name;
     Byte code { CODE };
-    std::uint32_t byteSize = sizeof...(OPERANDS) + 1;
+    unsigned int byteSize = sizeof...(OPERANDS) + 1U;
 
     Tuple pullOperandsFromInstructions(unsigned char*& ip) const { return { OPERANDS::fromRaw(*(++ip))... }; }
 
@@ -53,7 +53,7 @@ template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbl
     using Tuple = std::tuple<Byte, OPERANDS...>;
 
     const char* name;
-    std::uint32_t byteSize = sizeof...(OPERANDS) + 1;
+    unsigned int byteSize = sizeof...(OPERANDS) + 1U;
 
     template <typename N> void emit(N nibble, OPERANDS... operands) const {
         assert(nibble < 16);
@@ -78,7 +78,7 @@ template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbl
     using Tuple = std::tuple<int, OPERANDS...>;
 
     const char* name;
-    std::uint32_t byteSize = sizeof...(OPERANDS) + 1;
+    unsigned int byteSize = sizeof...(OPERANDS) + 1U;
 
     template <int i> static constexpr auto codeOffset() {
         static_assert(startCode + i < endCode);
@@ -111,7 +111,7 @@ template <Byte STARTCODE, Byte ENDCODE, typename ENUM_T, typename... OPERANDS> s
     using Enum = ENUM_T;
 
     const char* name;
-    std::uint32_t byteSize = sizeof...(OPERANDS) + 1;
+    unsigned int byteSize = sizeof...(OPERANDS) + 1U;
 
     template <int i> static constexpr auto codeOffset() {
         static_assert(startCode + i < endCode);
@@ -139,7 +139,7 @@ template <Byte PREFIX, Byte CODE, typename... OPERANDS> struct ExtendedSimple {
     const char* name;
     Byte prefix { PREFIX };
     Byte code { CODE };
-    std::uint32_t byteSize = sizeof...(OPERANDS) + 2;
+    unsigned int byteSize = sizeof...(OPERANDS) + 2U;
 
     Tuple pullOperandsFromInstructions(unsigned char*& ip) const { return { OPERANDS::fromRaw(*(++ip))... }; }
 
