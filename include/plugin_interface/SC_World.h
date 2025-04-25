@@ -129,4 +129,4 @@ inline SndBuf* World_GetNRTBuf(struct World* inWorld, uint32 index) {
 }
 
 typedef void (*LoadPlugInFunc)(struct InterfaceTable*);
-typedef void (*UnLoadPlugInFunc)();
+typedef void (*UnLoadPlugInFunc)(void);

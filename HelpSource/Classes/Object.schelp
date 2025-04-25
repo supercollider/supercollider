@@ -48,19 +48,40 @@ Create a new instance. The creation of new instances of any Object actually happ
 
 method::newCopyArgs
 
-Creates a new instance and copies the arguments to the instance variables in the order that the variables were defined. If the superclass's code::new:: method requires arguments, the first arguments passed to code::newCopyArgs:: will be passed on to that method, and the following arguments will be copied to this class's instance variables. Class variables are ignored.
+Creates a new instance and copies the arguments to the instance variables in the order that the variables were defined.
+
+Importantly, superclass constructors are NOT called, but the values are directly placed in the superclass's instance variables.
 
 code::
 MyClass {
 	var a, b, c;
-
-	*new {
-		arg arg1, arg2, arg3;
-		// will copy arg1, arg2, arg3 to variables a, b, c
-		^super.newCopyArgs(arg1, arg2, arg3);
-	}
+    // Will copy arg1, arg2, arg3 to variables a, b, c.
+	*new { |arg1, arg2, arg3| ^super.newCopyArgs(arg1, arg2, arg3) }
+	*newKw { |arg1| ^super.newCopyArgs(arg1, c: 10) }
+	value { ^[a, b, c] }
 }
+MyClass.new(1, 2, 3).value() == [1, 2, 3];
+MyClass.newKw(1).value() == [1, nil, 10];
 ::
+
+Example of inheritance.
+code::
+Base {
+	var a, b, c;
+	*new { ^\didNotCallBase } // This is NEVER called
+}
+
+Derived : Base {
+    var d, e, f;
+    *new { |d, e, f| ^super.newCopyArgs(1, 2, 3, d, e, f) }
+    *newKw { |d, e, f| ^super.newCopyArgs(c: 3, d: d, e: e, f: f) }
+	value { ^[a, b, c, d, e, f] }
+}
+
+Derived.new(10, 11, 12).value() == [1, 2, 3, 10, 11, 12];
+Derived.newKw(10, 11, 12).value() == [nil, nil, 3, 10, 11, 12];
+::
+
 
 instancemethods::
 private::addFunc, addFuncTo, removeFunc, removeFuncFrom

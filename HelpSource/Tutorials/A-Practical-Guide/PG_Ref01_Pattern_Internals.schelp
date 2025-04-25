@@ -1,7 +1,7 @@
 title:: Pattern Guide Reference 01: Pattern Internals
 summary:: Details of pattern implementation, with guidance on writing new pattern classes
 related:: Tutorials/A-Practical-Guide/PG_Cookbook08_Swing
-categories:: Streams-Patterns-Events>A-Practical-Guide
+categories:: Streams-Patterns-Events>A-Practical-Guide, Tutorials>Pattern-Guide
 
 section::Inner workings of patterns
 

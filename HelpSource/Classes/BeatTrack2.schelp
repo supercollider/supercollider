@@ -49,7 +49,7 @@ examples::
 code::
 
 // you should load something useful for testing, like a one minute pop song
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, ExampleFiles.child);
 
 // very feature dependent
 (

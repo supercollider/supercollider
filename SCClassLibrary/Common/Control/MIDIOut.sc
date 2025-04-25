@@ -15,7 +15,7 @@ MIDIClient {
 	classvar <initialized=false;
 	*init { arg inports, outports, verbose=true; // by default initialize all available ports
 								// you still must connect to them using MIDIIn.connect
-
+		this.disposeClient; // remove old sources and destinations, in case init is called repeatedly
 		this.prInitClient;
 		this.list;
 		if(inports.isNil,{inports = sources.size});

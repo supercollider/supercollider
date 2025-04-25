@@ -71,7 +71,7 @@ std::unique_ptr<InPort::UDP> gUDPport {};
 
 PyrString* newPyrString(VMGlobals* g, char* s, int flags, bool runGC);
 
-PyrSymbol *s_call, *s_write, *s_recvoscmsg, *s_recvoscbndl, *s_netaddr, *s_recvrawmsg;
+PyrSymbol *s_call, *s_write, *s_recvoscmsg, *s_recvoscbndl, *s_netaddr, *s_recvrawmsg, *s_ipv4, *s_ipv6, *s_all;
 extern bool compiledOK;
 
 std::vector<std::unique_ptr<InPort::UDPCustom>> gCustomUdpPorts;
@@ -83,6 +83,25 @@ inline bool IsBundle(const char* ptr) { return strcmp(ptr, "#bundle") == 0; }
 inline bool IsMessage(const char* ptr) { return ptr[0] == '/'; }
 
 ///////////
+
+static void closeSocket(int socket) {
+#ifdef _WIN32
+    closesocket(socket);
+#else
+    close(socket);
+#endif
+}
+
+static void printLastSocketError(const char* name) {
+#ifdef _WIN32
+    int err = WSAGetLastError();
+#else
+    int err = errno;
+#endif
+    error("%s failed with error code %d.\n", name, err);
+}
+
+//////////
 
 const int ivxNetAddr_Hostaddr = 0;
 const int ivxNetAddr_PortID = 1;
@@ -977,8 +996,7 @@ static int prGetHostByName(VMGlobals* g, int numArgsPushed) {
 #endif
 }
 
-int prGetLangPort(VMGlobals* g, int numArgsPushed);
-int prGetLangPort(VMGlobals* g, int numArgsPushed) {
+static int prGetLangPort(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     if (!gUDPport)
         return errFailed;
@@ -986,85 +1004,171 @@ int prGetLangPort(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prMatchLangIP(VMGlobals* g, int numArgsPushed);
-int prMatchLangIP(VMGlobals* g, int numArgsPushed) {
-    PyrSlot* argString = g->sp;
-    char ipstring[40];
-    int err = slotStrVal(argString, ipstring, 39);
-    if (err)
-        return err;
-
-    std::string loopback("127.0.0.1");
-    // check for loopback address
-    if (!loopback.compare(ipstring)) {
-        SetTrue(g->sp - 1);
-        return errNone;
+static int prLocalIPs(VMGlobals* g, int numArgsPushed) {
+    PyrSlot* a = g->sp;
+    int addressFamily = AF_UNSPEC; // IPv4 + IPv6
+    if (IsSym(a)) {
+        PyrSymbol* sym = slotRawSymbol(a);
+        if (sym == s_ipv4) {
+            addressFamily = AF_INET;
+        } else if (sym == s_ipv6) {
+            addressFamily = AF_INET6;
+        } else if (sym != s_all) {
+            error("ignoring unknown option %s\n", sym->name);
+        }
+    } else if (NotNil(a)) {
+        return errWrongType;
     }
 
 #ifdef _WIN32
 
-    DWORD rv, size = 0;
-    PIP_ADAPTER_ADDRESSES adapter_addresses, aa;
-    PIP_ADAPTER_UNICAST_ADDRESS ua;
-
     // first get the size of the required buffer
-    rv = GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, NULL, NULL, &size);
+    ULONG size = 0;
+    auto rv = GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, NULL, NULL, &size);
     if (rv != ERROR_BUFFER_OVERFLOW) {
-        error("GetAdaptersAddresses() failed...");
+        error("GetAdaptersAddresses() failed.\n");
         return errFailed;
     }
+
     // now allocate a buffer for the linked list
-    adapter_addresses = (PIP_ADAPTER_ADDRESSES)malloc(size);
-
-    rv = GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, NULL, adapter_addresses, &size);
+    PIP_ADAPTER_ADDRESSES adapterAddresses = (PIP_ADAPTER_ADDRESSES)malloc(size);
+    rv = GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, NULL, adapterAddresses, &size);
     if (rv != ERROR_SUCCESS) {
-        error("GetAdaptersAddresses() failed...");
-        free(adapter_addresses);
+        error("GetAdaptersAddresses() failed.\n");
+        free(adapterAddresses);
         return errFailed;
     }
 
-    for (aa = adapter_addresses; aa != NULL; aa = aa->Next) {
-        for (ua = aa->FirstUnicastAddress; ua != NULL; ua = ua->Next) {
-            char buf[40];
-            memset(buf, 0, sizeof(buf));
-            getnameinfo(ua->Address.lpSockaddr, ua->Address.iSockaddrLength, buf, sizeof(buf), NULL, 0, NI_NUMERICHOST);
-            if (strcmp(ipstring, buf) == 0) {
-                SetTrue(g->sp - 1);
-                free(adapter_addresses);
-                return errNone;
-            }
-        }
-    }
-
-    free(adapter_addresses);
-
-#else
-
-    struct ifaddrs *ifap, *ifa;
-    if (getifaddrs(&ifap) != 0) {
-        error(strerror(errno));
-        return errFailed;
-    }
-
-    for (ifa = ifap; ifa; ifa = ifa->ifa_next) {
-        if (ifa->ifa_addr) {
-            int family = ifa->ifa_addr->sa_family;
-            if (family == AF_INET || family == AF_INET6) {
-                struct sockaddr_in* sa = (struct sockaddr_in*)ifa->ifa_addr;
-                char* addr = inet_ntoa(sa->sin_addr);
-                if (strcmp(ipstring, addr) == 0) {
-                    SetTrue(g->sp - 1);
-                    freeifaddrs(ifap);
-                    return errNone;
+    // first count the addresses
+    int count = 0;
+    for (auto aa = adapterAddresses; aa != NULL; aa = aa->Next) {
+        // skip interfaces that are not available
+        if (aa->OperStatus == IfOperStatusUp) {
+            for (auto ua = aa->FirstUnicastAddress; ua != NULL; ua = ua->Next) {
+                int family = ua->Address.lpSockaddr->sa_family;
+                if (addressFamily == AF_UNSPEC || addressFamily == family) {
+                    count++;
                 }
             }
         }
     }
 
+    // now allocate and fill Array
+    PyrObject* array = newPyrArray(g->gc, count, 0, true);
+    int index = 0;
+    for (auto aa = adapterAddresses; aa != NULL; aa = aa->Next) {
+        if (aa->OperStatus == IfOperStatusUp) {
+            for (auto ua = aa->FirstUnicastAddress; ua != NULL; ua = ua->Next) {
+                int family = ua->Address.lpSockaddr->sa_family;
+                if (addressFamily == AF_UNSPEC || addressFamily == family) {
+                    char buf[40];
+                    memset(buf, 0, sizeof(buf));
+                    getnameinfo(ua->Address.lpSockaddr, ua->Address.iSockaddrLength, buf, sizeof(buf), NULL, 0,
+                                NI_NUMERICHOST);
+                    PyrString* str = newPyrString(g->gc, buf, 0, false);
+                    SetObject(array->slots + index, (PyrObjectHdr*)str);
+                    index++;
+                }
+            }
+        }
+    }
+    array->size = index;
+
+    free(adapterAddresses);
+
+#else
+
+    struct ifaddrs* ifap;
+    if (getifaddrs(&ifap) != 0) {
+        error("getifaddrs() failed: %s.\n", strerror(errno));
+        return errFailed;
+    }
+
+    // first count addresses
+    int count = 0;
+    for (auto ifa = ifap; ifa; ifa = ifa->ifa_next) {
+        if (ifa->ifa_addr) {
+            int family = ifa->ifa_addr->sa_family;
+            if (addressFamily == AF_UNSPEC || addressFamily == family) {
+                count++;
+            }
+        }
+    }
+
+    // now allocate and fill Array
+    PyrObject* array = newPyrArray(g->gc, count, 0, true);
+    int index = 0;
+    for (auto ifa = ifap; ifa; ifa = ifa->ifa_next) {
+        if (ifa->ifa_addr) {
+            int family = ifa->ifa_addr->sa_family;
+            if (addressFamily == AF_UNSPEC || addressFamily == family) {
+                socklen_t len = (family == AF_INET6) ? sizeof(sockaddr_in6) : sizeof(sockaddr_in);
+                char buf[40];
+                memset(buf, 0, sizeof(buf));
+                // NB: getnameinfo() will fail if an interface is not available
+                if (getnameinfo(ifa->ifa_addr, len, buf, sizeof(buf), NULL, 0, NI_NUMERICHOST) == 0) {
+                    PyrString* str = newPyrString(g->gc, buf, 0, false);
+                    SetObject(array->slots + index, (PyrObjectHdr*)str);
+                    index++;
+                }
+            }
+        }
+    }
+    array->size = index; // set actual size (interfaces may have been skipped)
+
     freeifaddrs(ifap);
 #endif
 
-    SetFalse(g->sp - 1);
+    SetObject(g->sp - 1, (PyrObjectHdr*)array);
+    return errNone;
+}
+
+static int prLocalIP(VMGlobals* g, int numArgsPushed) {
+    PyrSlot* a = g->sp;
+
+    sockaddr_in remoteAddr;
+    memset(&remoteAddr, 0, sizeof(remoteAddr));
+    remoteAddr.sin_family = AF_INET;
+    remoteAddr.sin_port = sc_htons(80); // can be any port
+
+    if (NotNil(a)) {
+        // get IP address from string or symbol
+        char addr[64];
+        if (slotStrVal(a, addr, 64) != errNone) {
+            return errWrongType;
+        }
+        if (inet_pton(AF_INET, addr, &remoteAddr.sin_addr) != 1) {
+            error("%s is not a valid IP address.\n", addr);
+            return errFailed;
+        }
+    } else {
+        // use arbitrary global IP address (8.8.8.8)
+        remoteAddr.sin_addr.s_addr = sc_htonl(0x08080808);
+    }
+
+    // create temporary socket and connect it to our remote address
+    int sock = socket(AF_INET, SOCK_DGRAM, 0);
+    if (connect(sock, (struct sockaddr*)&remoteAddr, sizeof(remoteAddr)) < 0) {
+        printLastSocketError("connect");
+        closeSocket(sock);
+        return errFailed;
+    }
+    // now get local IP address
+    sockaddr_in localAddr;
+    socklen_t len = sizeof(localAddr);
+    if (getsockname(sock, (sockaddr*)&localAddr, &len) < 0) {
+        printLastSocketError("getsockname");
+        closeSocket(sock);
+        return errFailed;
+    }
+    closeSocket(sock);
+
+    const char* addrString = inet_ntoa(localAddr.sin_addr);
+    PyrString* result = newPyrString(g->gc, addrString, 0, true);
+    if (!result)
+        return errFailed;
+    SetObject(g->sp - 1, (PyrObjectHdr*)result);
+
     return errNone;
 }
 
@@ -1501,7 +1605,8 @@ void init_OSC_primitives() {
     definePrimitive(base, index++, "_OSCBytes_Array", prOSCBytes_Array, 1, 0);
     definePrimitive(base, index++, "_GetHostByName", prGetHostByName, 1, 0);
     definePrimitive(base, index++, "_GetLangPort", prGetLangPort, 1, 0);
-    definePrimitive(base, index++, "_MatchLangIP", prMatchLangIP, 2, 0);
+    definePrimitive(base, index++, "_LocalIPs", prLocalIPs, 2, 0);
+    definePrimitive(base, index++, "_LocalIP", prLocalIP, 2, 0);
     definePrimitive(base, index++, "_Exit", prExit, 1, 0);
 #ifndef NO_INTERNAL_SERVER
     definePrimitive(base, index++, "_BootInProcessServer", prBootInProcessServer, 1, 0);
@@ -1529,4 +1634,7 @@ void init_OSC_primitives() {
     s_recvrawmsg = getsym("recvRawMessage");
     s_recvoscbndl = getsym("recvOSCbundle");
     s_netaddr = getsym("NetAddr");
+    s_ipv4 = getsym("ipv4");
+    s_ipv6 = getsym("ipv6");
+    s_all = getsym("all");
 }

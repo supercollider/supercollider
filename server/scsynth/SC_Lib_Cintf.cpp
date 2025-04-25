@@ -286,7 +286,7 @@ bool checkAPIVersion(void* f, const char* filename) {
 bool checkServerVersion(void* f, const char* filename) {
     if (f) {
         InfoFunction fn = (InfoFunction)f;
-        if ((*fn)() == 1)
+        if ((*fn)() != sc_server_scsynth)
             return false;
     }
     return true;
@@ -336,7 +336,6 @@ static bool PlugIn_Load(const fs::path& filename) {
     LoadPlugInFunc loadFunc = (LoadPlugInFunc)ptr;
     (*loadFunc)(&gInterfaceTable);
 
-    // FIXME: at the moment we never call FreeLibrary() on a loaded plugin
     open_handles.push_back(hinstance);
     return true;
 

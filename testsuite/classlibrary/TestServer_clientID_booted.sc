@@ -129,13 +129,14 @@ TestServer_clientID_booted : UnitTest {
 	// first login initializes fully,
 	// second login from same address gets the same clientID, and sets running state.
 	test_remoteLogin {
-		var options, serverPid, remote1, cond, timer;
+		var options, serverPid, remote1, cond, timer, exitCond, testsFinished;
 
 		options = ServerOptions.new;
 		options.maxLogins = 4;
 
+		exitCond = CondVar.new;
 		// simulate a remote server process by starting a server process independently of SC
-		serverPid = unixCmd(Server.program + options.asOptionsString);
+		serverPid = unixCmd(Server.program + options.asOptionsString, { exitCond.signalOne });
 
 		// login with standard Server.remote method to test for
 		remote1 = Server.remote(\remoteLogin1, options: options, clientID: 3);
@@ -159,17 +160,20 @@ TestServer_clientID_booted : UnitTest {
 
 		remote1.remove;
 		thisProcess.platform.killProcessByID(serverPid);
+		testsFinished = exitCond.waitFor(5); // wait for the server process to exit
+		this.assert(testsFinished, "TIMEOUT: server process did not quit");
 	}
 
 	test_repeatedRemoteLogin {
 
-		var options, serverPid, remote1, remote2, cond, timer;
+		var options, serverPid, remote1, remote2, cond, timer, exitCond, testsFinished;
 
 		options = ServerOptions.new;
 		options.maxLogins = 4;
 
+		exitCond = CondVar.new;
 		// simulate a remote server process by starting a server process independently of SC
-		serverPid = unixCmd(Server.program + options.asOptionsString);
+		serverPid = unixCmd(Server.program + options.asOptionsString, { exitCond.signalOne });
 
 		// login with standard Server.remote method to test for
 		remote1 = Server.remote(\remoteLogin1, options: options, clientID: 3);
@@ -215,5 +219,7 @@ TestServer_clientID_booted : UnitTest {
 		remote1.remove;
 		remote2.remove;
 		thisProcess.platform.killProcessByID(serverPid);
+		testsFinished = exitCond.waitFor(5); // wait for the server process to exit
+		this.assert(testsFinished, "TIMEOUT: server process did not quit")
 	}
 }

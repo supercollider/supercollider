@@ -83,10 +83,14 @@ enum { kUnitDef_CantAliasInputsToOutputs = 1 };
 
 #define ClearUnitOnMemFailed                                                                                           \
     Print("%s: alloc failed, increase server's RT memory (e.g. via ServerOptions)\n", __func__);                       \
-    SETCALC(*ClearUnitOutputs);                                                                                        \
+    SETCALC(ClearUnitOutputs);                                                                                         \
+    ClearUnitOutputs(unit, 1);                                                                                         \
     unit->mDone = true;                                                                                                \
     return;
 
+// macro for handling RT allocation failures. Example usage:
+//     unit->mBuf = RTAlloc(mWorld, numBytes);
+//     ClearUnitIfMemFailed(unit->mBuf);
 #define ClearUnitIfMemFailed(condition)                                                                                \
     if (!(condition)) {                                                                                                \
         ClearUnitOnMemFailed                                                                                           \
@@ -108,6 +112,7 @@ template <typename ToType, typename Value>
 #define BUFDUR (unit->mRate->mBufDuration)
 #define FULLRATE (unit->mWorld->mFullRate.mSampleRate)
 #define FULLBUFLENGTH (unit->mWorld->mFullRate.mBufLength)
+#define FULLSAMPLEDUR (unit->mWorld->mFullRate.mSampleDur)
 
 #ifdef SUPERNOVA
 

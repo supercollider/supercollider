@@ -1,7 +1,7 @@
 title:: Pattern Guide Cookbook 02: Manipulating Patterns
 summary:: Manipulating pattern data
 related:: Tutorials/A-Practical-Guide/PG_Cookbook01_Basic_Sequencing, Tutorials/A-Practical-Guide/PG_Cookbook03_External_Control
-categories:: Streams-Patterns-Events>A-Practical-Guide
+categories:: Streams-Patterns-Events>A-Practical-Guide, Tutorials>Pattern-Guide
 
 section::Manipulating pattern data
 
