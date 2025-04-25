@@ -567,7 +567,7 @@ SCDocHTMLRenderer {
 				.replaceRegexp("/hh/(| )", "")
 				.replaceRegexp("/vh/(| )", "")
 				.replaceRegexp("/h/(| )", "")
-				.replaceRegexp("/l\:\\d+\\w*/(| )", "")
+				.replaceRegexp("/l\:\\d+[rem%]*/(| )", "")
 				.replaceRegexp("/(x|y)\:\\d+/(| )", "")
 			},
 			\LINK, {
@@ -726,9 +726,9 @@ SCDocHTMLRenderer {
 						var thisTextOld = thisText;
 						"rowspan='" ++ thisTextOld[indexStart..indexLast] ++ "'>"
 						}
-					{ "/l:\\d+\\w*/".matchRegexp(thisText) } {
-						var indexStart = thisText.findRegexp("/l:\\d+\\w*/")[0][0] + 3;
-						var indexLast = thisText.findRegexp("/l:\\d+\\w*/")[0][1].size - 5 + indexStart;
+					{ "/l:\\d+[rem%]*/".matchRegexp(thisText) } {
+						var indexStart = thisText.findRegexp("/l:\\d+[rem%]*/")[0][0] + 3;
+						var indexLast = thisText.findRegexp("/l:\\d+[rem%]*/")[0][1].size - 5 + indexStart;
 						var thisTextOld = thisText;
 						"style='line-height:" ++ thisTextOld[indexStart..indexLast] ++ ";'>"
 						}
