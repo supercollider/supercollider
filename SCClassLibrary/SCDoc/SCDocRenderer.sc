@@ -614,7 +614,7 @@ SCDocHTMLRenderer {
 			\IMAGE, {
 				f = node.text.split($#);
 				stream << "<div class='image'>";
-				img = "<img src='" ++ f[0] ++ "'/>";
+				img = "<img src='" ++ f[0] ++ "' width='auto' height='" ++ (f[3]?"") ++ "'/>";
 				if(f[2].isNil) {
 					stream << img;
 				} {

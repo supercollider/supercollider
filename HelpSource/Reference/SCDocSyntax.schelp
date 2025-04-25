@@ -247,17 +247,55 @@ teletype:: IMAGE\:: ::
 teletype::
 image::foo.png::
 ::
-Optionally an image caption can be given:
+Optionally, an image caption can be provided:
 teletype::
 image::foo.png#Figure 1::
 ::
 
-And, the image can be clickable and link to another page:
+Additionally, the image can be clickable and linked to another page:
 teletype::
 image::foo.png#click this image#Classes/SinOsc::
 ::
 
-Just leave the caption empty if you want a link but no caption.
+If you want a link but no caption, just leave the caption field empty:ss
+teletype::
+image::foo.png##Classes/SinOsc::
+::
+
+The image size is automatically adjusted based on the width of the HTML page and table cells.
+If vertical length control is needed, you can specify a height in pixels by adding a number after the third `#`, while the width remains automatically adjusted.
+E.g.
+
+teletype::
+table::
+##No options have been applied:
+image::functions.png::Figure 1. This is ...
+||The caption option has been applied:
+image::functions.png#Figure 2. Function::This is ...
+\::
+table::
+##The caption and page link have been applied:
+image::functions.png#Figure 3. Function#Reference/Functions#120::Click to see more information.
+||The caption, page link, and vertical size have been applied:
+image::functions.png#Figure 4. Function#Reference/Functions#120::Click to see more information.
+\::
+::
+
+becomes:
+
+table::
+##No options have been applied:
+image::functions.png::Figure 1. This is ...
+||The caption option has been applied:
+image::functions.png#Figure 2. Function::This is ...
+::
+table::
+##The caption and page link have been applied:
+image::functions.png#Figure 3. Function#Reference/Functions#120::Click to see more information.
+||The caption, page link, and vertical size have been applied:
+image::functions.png#Figure 4. Function#Reference/Functions#120::Click to see more information.
+::
+
 
 ## keyword:: math\::
 teletype:: MATH\:: ::
