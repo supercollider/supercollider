@@ -465,41 +465,6 @@ void StoreToImmutableB(VMGlobals* g, PyrSlot*& sp, unsigned char*& ip) {
 
 void dumpByteCodes(PyrBlock* theBlock);
 
-static inline void handlePushClassVar(VMGlobals* g, PyrSlot*& sp, unsigned char*& ip, unsigned char op2) {
-    unsigned char op3 = ip[1];
-    ++ip; // get class var index
-    slotCopy(++sp, &g->classvars->slots[(op2 << 8) | op3]);
-}
-
-static inline void handleStoreInstVar(VMGlobals* g, PyrSlot*& sp, unsigned char*& ip, unsigned int index) {
-    PyrObject* obj = slotRawObject(&g->receiver);
-    if (obj->IsImmutable())
-        StoreToImmutableA(g, sp, ip);
-    else {
-        PyrSlot* slot = obj->slots + index;
-        slotCopy(slot, sp--);
-        g->gc->GCWrite(obj, slot);
-    }
-}
-
-static inline void handleSendSpecialUnaryArithMsg(VMGlobals* g, PyrSlot*& sp, unsigned char*& ip, unsigned char op1) {
-    g->sp = sp;
-    g->ip = ip;
-    g->primitiveIndex = op1 & 15;
-    doSpecialUnaryArithMsg(g, -1);
-    sp = g->sp;
-    ip = g->ip;
-}
-
-static inline void handleSendSpecialBinaryArithMsg(VMGlobals* g, PyrSlot*& sp, unsigned char*& ip, unsigned char op1) {
-    g->sp = sp;
-    g->ip = ip;
-    g->primitiveIndex = op1 & 15;
-    doSpecialBinaryArithMsg(g, 2, false);
-    sp = g->sp;
-    ip = g->ip;
-}
-
 static inline bool checkStackOverflow(VMGlobals* g, PyrSlot* sp) {
     PyrObject* stack = g->gc->Stack();
     int depth = sp - stack->slots;
@@ -1014,6 +979,14 @@ HOT void Interpret(VMGlobals* g) {
         }
 #endif
 
+        const auto storeLoadSpAndIp = [&](auto action) {
+            g->sp = sp;
+            g->ip = ip;
+            action();
+            sp = g->sp;
+            ip = g->ip;
+        };
+
 
         switch (op1) {
             InterpretOpcode(PushClassX) {
@@ -1089,9 +1062,8 @@ HOT void Interpret(VMGlobals* g) {
                 if (classobj) {
                     ++sp;
                     SetObject(sp, classobj);
-                } else {
+                } else
                     slotCopy(++sp, &gSpecialValues.Nil_);
-                }
                 dispatch_opcode;
             }
 
@@ -1129,28 +1101,23 @@ HOT void Interpret(VMGlobals* g) {
 
             InterpretOpcode(SendMsgX) {
                 const auto [numArgs, numKwArgs, selectorIndex] = SendMsgX.pullOperandsFromInstructions(ip);
-
                 numArgsPushed = numArgs;
                 numKeyArgsPushed = numKwArgs;
                 selector = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[selectorIndex]);
-
                 slot = sp - numArgsPushed + 1;
-
                 if (numKeyArgsPushed)
                     goto key_class_lookup;
                 else
-                    goto class_lookup;
+                    goto class_lookup_then_msg_lookup;
             }
 
             InterpretOpcode(SendSuperMsgX) {
                 const auto [numArgs, numKwArgs, selectorIndex] = SendSuperMsgX.pullOperandsFromInstructions(ip);
                 numArgsPushed = numArgs;
                 numKeyArgsPushed = numKwArgs;
-
                 selector = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[selectorIndex]);
                 slot = g->sp - numArgsPushed + 1;
                 classobj = slotRawSymbol(&slotRawClass(&g->method->ownerclass)->superclass)->u.classobj;
-
                 if (numKeyArgsPushed)
                     goto key_msg_lookup;
                 else
@@ -1161,37 +1128,30 @@ HOT void Interpret(VMGlobals* g) {
                 const auto [numArgs, numKwArgs, selectorIndex] = SendSpecialMsgX.pullOperandsFromInstructions(ip);
                 numArgsPushed = numArgs;
                 numKeyArgsPushed = numKwArgs;
-
                 selector = gSpecialSelectors[selectorIndex];
                 slot = sp - numArgsPushed + 1;
-
                 if (numKeyArgsPushed)
                     goto key_class_lookup;
                 else
-                    goto class_lookup;
+                    goto class_lookup_then_msg_lookup;
             }
 
             InterpretOpcode(SendSpecialUnaryArithMsgX) {
                 const auto [unaryMathOp] = SendSpecialUnaryArithMsgX.pullOperandsFromInstructions(ip);
-                g->sp = sp;
-                g->ip = ip;
-                g->primitiveIndex = static_cast<Byte>(unaryMathOp);
-                doSpecialUnaryArithMsg(g, -1);
-
+                storeLoadSpAndIp([&]() {
+                    g->primitiveIndex = static_cast<Byte>(unaryMathOp);
+                    doSpecialUnaryArithMsg(g, -1);
+                });
                 ifTailCallOptimise([&]() { g->tailCall = 0; });
-                sp = g->sp;
-                ip = g->ip;
                 dispatch_opcode;
             }
 
             InterpretOpcode(SendSpecialBinaryArithMsgX) {
                 const auto [binaryMathOp] = SendSpecialBinaryArithMsgX.pullOperandsFromInstructions(ip);
-                g->sp = sp;
-                g->ip = ip;
-                g->primitiveIndex = static_cast<Byte>(binaryMathOp);
-                doSpecialBinaryArithMsg(g, 2, false);
-                sp = g->sp;
-                ip = g->ip;
+                storeLoadSpAndIp([&]() {
+                    g->primitiveIndex = static_cast<Byte>(binaryMathOp);
+                    doSpecialBinaryArithMsg(g, 2, false);
+                });
                 dispatch_opcode;
             }
 
@@ -1252,7 +1212,7 @@ HOT void Interpret(VMGlobals* g) {
                     selector = gSpecialSelectors[opmNonBooleanError];
                     slot = sp;
 
-                    goto class_lookup;
+                    goto class_lookup_then_msg_lookup;
                 }
                 --sp;
                 dispatch_opcode;
@@ -1345,12 +1305,10 @@ HOT void Interpret(VMGlobals* g) {
                     ifTailCallOptimise([&]() { g->tailCall = 0; });
                 } else {
                     slotCopy(++sp, &gSpecialNumbers.One);
-                    g->sp = sp;
-                    g->ip = ip;
-                    g->primitiveIndex = opSub;
-                    prSubNum(g, -1);
-                    sp = g->sp;
-                    ip = g->ip;
+                    storeLoadSpAndIp([&]() {
+                        g->primitiveIndex = opSub;
+                        prSubNum(g, -1);
+                    });
                 }
                 dispatch_opcode;
             }
@@ -1367,12 +1325,10 @@ HOT void Interpret(VMGlobals* g) {
                     ifTailCallOptimise([&]() { g->tailCall = 0; });
                 } else {
                     slotCopy(++sp, &gSpecialNumbers.One);
-                    g->sp = sp;
-                    g->ip = ip;
-                    g->primitiveIndex = opAdd;
-                    prAddNum(g, -1);
-                    sp = g->sp;
-                    ip = g->ip;
+                    storeLoadSpAndIp([&]() {
+                        g->primitiveIndex = opAdd;
+                        prAddNum(g, -1);
+                    });
                 }
                 dispatch_opcode;
             }
@@ -1412,11 +1368,10 @@ HOT void Interpret(VMGlobals* g) {
                 const auto [instVarIndex, selectorIndex] =
                     PushInstVarAndSendSpecialMsg.pullOperandsFromInstructions(ip);
                 slotCopy(++sp, &slotRawObject(&g->receiver)->slots[instVarIndex]);
-
                 numArgsPushed = 1;
                 selector = gSpecialSelectors[selectorIndex];
                 slot = sp;
-                goto class_lookup;
+                goto class_lookup_then_msg_lookup;
             }
 
             InterpretOpcode(PushAllArgsAndSendMsg) {
@@ -1429,7 +1384,7 @@ HOT void Interpret(VMGlobals* g) {
                 selector = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[selectorIndex]);
                 slot = sp - numArgsPushed + 1;
 
-                goto class_lookup;
+                goto class_lookup_then_msg_lookup;
             }
 
             InterpretOpcode(PushAllButFirstArgAndSendMsg) {
@@ -1442,7 +1397,7 @@ HOT void Interpret(VMGlobals* g) {
                 selector = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[selectorIndex]);
                 slot = sp - numArgsPushed + 1;
 
-                goto class_lookup;
+                goto class_lookup_then_msg_lookup;
             }
 
             InterpretOpcode(PushAllArgsAndSendSpecialMsg) {
@@ -1455,7 +1410,7 @@ HOT void Interpret(VMGlobals* g) {
                 selector = gSpecialSelectors[selectorIndex];
                 slot = sp - numArgsPushed + 1;
 
-                goto class_lookup;
+                goto class_lookup_then_msg_lookup;
             }
 
             InterpretOpcode(PushAllButFirstArgAndSendSpecialMsg) {
@@ -1468,7 +1423,7 @@ HOT void Interpret(VMGlobals* g) {
                 selector = gSpecialSelectors[specialIndex];
                 slot = sp - numArgsPushed + 1;
 
-                goto class_lookup;
+                goto class_lookup_then_msg_lookup;
             }
 
             InterpretOpcode(PushAllButFirstTwoArgsAndSendMsg) {
@@ -1481,7 +1436,7 @@ HOT void Interpret(VMGlobals* g) {
                 selector = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[index]);
                 slot = sp - numArgsPushed + 1;
 
-                goto class_lookup;
+                goto class_lookup_then_msg_lookup;
             }
 
             InterpretOpcode(PushAllButFirstTwoArgsAndSendSpecialMsg) {
@@ -1494,37 +1449,38 @@ HOT void Interpret(VMGlobals* g) {
                 selector = gSpecialSelectors[index];
                 slot = sp - numArgsPushed + 1;
 
-                goto class_lookup;
+                goto class_lookup_then_msg_lookup;
             }
 
             /// ExtendedCodes are often used to implement looping methods.
             /// They work by manipulating the instruction pointer, therefore it is imperative, the opcodes are emitted
             /// in the expected sequence.
             InterpretOpcode(ExtendedCodes) {
+                // Helpers
+                const auto pushAndPrepForCall = [&](auto selectorIndex, auto&&... args) {
+                    static_assert(sizeof...(args) != 0);
+                    (slotCopy(++sp, args), ...);
+                    numArgsPushed = sizeof...(args);
+                    selector = gSpecialSelectors[selectorIndex];
+                    slot = sp - (sizeof...(args) - 1);
+                };
+
                 const auto [extendedCode] = ExtendedCodes.pullOperandsFromInstructions(ip);
                 switch (extendedCode) {
                 case Extended::IntegerDo.LoopOrReturn.code: {
                     PyrSlot* vars = g->frame->vars;
                     if (slotRawInt(&vars[2]) < slotRawInt(&g->receiver)) {
-                        slotCopy(++sp, &vars[1]); // push function
-                        slotCopy(++sp, &vars[2]); // push i
-                        slotCopy(++sp, &vars[2]); // push i
-                        // SendSpecialMsg value
-                        numArgsPushed = 3;
-                        selector = gSpecialSelectors[opmValue];
-                        slot = sp - 2;
-
-                        goto class_lookup;
+                        // Push: function, i, and i (i is duplicated because it is its own index).
+                        pushAndPrepForCall(opmValue, &vars[1], &vars[2], &vars[2]);
+                        goto class_lookup_then_msg_lookup;
                     } else {
-                        slotCopy(++sp, &g->receiver);
-                        g->sp = sp;
-                        g->ip = ip;
-                        returnFromMethod(g);
-                        sp = g->sp;
-                        ip = g->ip;
+                        slotCopy(++sp, &g->receiver); // Push self.
+                        storeLoadSpAndIp([&]() { returnFromMethod(g); });
                     }
                     dispatch_opcode;
                 }
+                // NOTE: this is also used by ArrayedCollectionDo.
+                // TODO: rework byte codes to avoid this dual use of the opcodes.
                 case Extended::IntegerDo.DropAndJumpBackToLoop.code: {
                     --sp;
                     SetRaw(&g->frame->vars[2], slotRawInt(&g->frame->vars[2]) + 1); // inc i
@@ -1540,22 +1496,12 @@ HOT void Interpret(VMGlobals* g) {
                 case Extended::IntegerReverseDo.LoopOrReturn.code: {
                     PyrSlot* vars = g->frame->vars;
                     if (slotRawInt(&vars[2]) >= 0) {
-                        slotCopy(++sp, &vars[1]); // push function
-                        slotCopy(++sp, &vars[2]); // push i
-                        slotCopy(++sp, &vars[3]); // push j
-                        // SendSpecialMsg value
-                        numArgsPushed = 3;
-                        selector = gSpecialSelectors[opmValue];
-                        slot = sp - 2;
-
-                        goto class_lookup;
+                        // Push: function, i, and j
+                        pushAndPrepForCall(opmValue, &vars[1], &vars[2], &vars[3]);
+                        goto class_lookup_then_msg_lookup;
                     } else {
                         slotCopy(++sp, &g->receiver);
-                        g->sp = sp;
-                        g->ip = ip;
-                        returnFromMethod(g);
-                        sp = g->sp;
-                        ip = g->ip;
+                        storeLoadSpAndIp([&]() { returnFromMethod(g); });
                     }
                     dispatch_opcode;
                 }
@@ -1564,7 +1510,6 @@ HOT void Interpret(VMGlobals* g) {
                     PyrSlot* vars = g->frame->vars;
                     SetRaw(&vars[2], slotRawInt(&vars[2]) - 1); // dec i
                     SetRaw(&vars[3], slotRawInt(&vars[3]) + 1); // inc j
-                    // jump back to integer reverse do loop or return;
                     ip -= Extended::IntegerReverseDo.jumpSize();
                     dispatch_opcode;
                 }
@@ -1572,21 +1517,13 @@ HOT void Interpret(VMGlobals* g) {
 
                 case Extended::IntegerFor.Init.code: {
                     PyrSlot* vars = g->frame->vars;
-                    int tag = GetTag(&vars[1]);
-
-                    if (tag != tagInt) {
+                    if (GetTag(&vars[1]) != tagInt) {
                         if (IsFloat(&vars[1])) {
-                            // coerce to int
                             SetInt(&vars[1], (int32)(slotRawFloat(&vars[1])));
                         } else {
                             error("Integer-for : endval not a SimpleNumber.\n");
-
-                            slotCopy(++sp, &g->receiver);
-                            numArgsPushed = 1;
-                            selector = gSpecialSelectors[opmPrimitiveFailed];
-                            slot = sp;
-
-                            goto class_lookup;
+                            pushAndPrepForCall(opmPrimitiveFailed, &g->receiver);
+                            goto class_lookup_then_msg_lookup;
                         }
                     }
 
@@ -1601,22 +1538,12 @@ HOT void Interpret(VMGlobals* g) {
                     PyrSlot* vars = g->frame->vars;
                     if ((slotRawInt(&vars[5]) > 0 && slotRawInt(&vars[3]) <= slotRawInt(&vars[1]))
                         || (slotRawInt(&vars[5]) < 0 && slotRawInt(&vars[3]) >= slotRawInt(&vars[1]))) {
-                        slotCopy(++sp, &vars[2]); // push function
-                        slotCopy(++sp, &vars[3]); // push i
-                        slotCopy(++sp, &vars[4]); // push j
-                        // SendSpecialMsg value
-                        numArgsPushed = 3;
-                        selector = gSpecialSelectors[opmValue];
-                        slot = sp - 2;
-
-                        goto class_lookup;
+                        // Push: function, i, j
+                        pushAndPrepForCall(opmValue, &vars[2], &vars[3], &vars[4]);
+                        goto class_lookup_then_msg_lookup;
                     } else {
                         slotCopy(++sp, &g->receiver);
-                        g->sp = sp;
-                        g->ip = ip;
-                        returnFromMethod(g);
-                        sp = g->sp;
-                        ip = g->ip;
+                        storeLoadSpAndIp([&]() { returnFromMethod(g); });
                     }
                     dispatch_opcode;
                 }
@@ -1630,7 +1557,6 @@ HOT void Interpret(VMGlobals* g) {
                 }
 
 
-                // Integer-forBy : 143 7, 143 8, 143 9
                 case Extended::IntegerForBy.Init.code: {
                     PyrSlot* vars = g->frame->vars;
                     // Detect case of a zero-valued stepval argument, which
@@ -1638,35 +1564,23 @@ HOT void Interpret(VMGlobals* g) {
                     if ((IsFloat(vars + 2) && slotRawFloat(&vars[2]) == 0.0)
                         || (IsInt(vars + 2) && slotRawInt(&vars[2]) == 0)) {
                         error("Integer-forBy: zero-valued stepval argument.\n");
-                        slotCopy(++sp, &g->receiver);
-                        numArgsPushed = 1;
-                        selector = gSpecialSelectors[opmPrimitiveFailed];
-                        slot = sp;
-
-                        goto class_lookup;
+                        pushAndPrepForCall(opmPrimitiveFailed, &g->receiver);
+                        goto class_lookup_then_msg_lookup;
                     }
                     // If any argument is floating point we cast all arguments
                     // to floating point, including the accumulator. This avoids
                     // potential infinite loops due to integer truncation.
                     if (IsFloat(vars + 1) || IsFloat(vars + 2)) {
-                        if (IsInt(vars + 1)) {
+                        if (IsInt(vars + 1))
                             SetFloat(&vars[1], (double)(slotRawInt(&vars[1])));
-                        }
-                        if (IsInt(vars + 2)) {
+                        if (IsInt(vars + 2))
                             SetFloat(&vars[2], (double)(slotRawInt(&vars[2])));
-                        }
                         SetFloat(&vars[4], (double)(slotRawInt(&g->receiver)));
                     } else {
-                        int tag = GetTag(&vars[1]);
-                        if ((tag != tagInt) || NotInt(&vars[2])) {
+                        if ((GetTag(&vars[1]) != tagInt) || NotInt(&vars[2])) {
                             error("Integer-forBy : endval or stepval not an Integer or Float.\n");
-
-                            slotCopy(++sp, &g->receiver);
-                            numArgsPushed = 1;
-                            selector = gSpecialSelectors[opmPrimitiveFailed];
-                            slot = sp;
-
-                            goto class_lookup;
+                            pushAndPrepForCall(opmPrimitiveFailed, &g->receiver);
+                            goto class_lookup_then_msg_lookup;
                         }
                         slotCopy(&vars[4], &g->receiver);
                     }
@@ -1684,22 +1598,12 @@ HOT void Interpret(VMGlobals* g) {
                             || (slotRawInt(&vars[2]) < 0 && slotRawInt(&vars[4]) >= slotRawInt(&vars[1]));
                     }
                     if (continueForBy) {
-                        slotCopy(++sp, &vars[3]); // push function
-                        slotCopy(++sp, &vars[4]); // push i
-                        slotCopy(++sp, &vars[5]); // push j
-                        // SendSpecialMsg value
-                        numArgsPushed = 3;
-                        selector = gSpecialSelectors[opmValue];
-                        slot = sp - 2;
-
-                        goto class_lookup;
+                        // Push: function, i, j
+                        pushAndPrepForCall(opmValue, &vars[3], &vars[4], &vars[5]);
+                        goto class_lookup_then_msg_lookup;
                     } else {
                         slotCopy(++sp, &g->receiver);
-                        g->sp = sp;
-                        g->ip = ip;
-                        returnFromMethod(g);
-                        sp = g->sp;
-                        ip = g->ip;
+                        storeLoadSpAndIp([&]() { returnFromMethod(g); });
                     }
                     dispatch_opcode;
                 }
@@ -1716,31 +1620,24 @@ HOT void Interpret(VMGlobals* g) {
                     dispatch_opcode;
                 }
 
-                // ArrayedCollection-do : 143 10, 143 1
-                case 10: {
+                case Extended::ArrayedCollectionDo.LoopOrReturn.code: {
                     // 0 this, 1 func, 2 i
                     PyrSlot* vars = g->frame->vars;
-
                     if (slotRawInt(&vars[2]) < slotRawObject(&g->receiver)->size) {
                         slotCopy(++sp, &vars[1]); // push function
                         getIndexedSlot(slotRawObject(&g->receiver), ++sp, slotRawInt(&vars[2])); // push this.at(i)
                         slotCopy(++sp, &vars[2]); // push i
-                        // SendSpecialMsg value
                         numArgsPushed = 3;
                         selector = gSpecialSelectors[opmValue];
                         slot = sp - 2;
-
-                        goto class_lookup;
+                        goto class_lookup_then_msg_lookup;
                     } else {
                         slotCopy(++sp, &g->receiver);
-                        g->sp = sp;
-                        g->ip = ip;
-                        returnFromMethod(g);
-                        sp = g->sp;
-                        ip = g->ip;
+                        storeLoadSpAndIp([&]() { returnFromMethod(g); });
                     }
                     dispatch_opcode;
                 }
+                // TODO: ArrayedCollectionDo also uses the IntegerDo's DropAndJumpBackToLoop. Fix this.
 
                 // ArrayedCollection-reverseDo : 143 11, 143 12, 143 4
                 case 11:
@@ -1752,19 +1649,13 @@ HOT void Interpret(VMGlobals* g) {
                         slotCopy(++sp, &vars[1]); // push function
                         getIndexedSlot(slotRawObject(&g->receiver), ++sp, slotRawInt(&vars[2])); // push this.at(i)
                         slotCopy(++sp, &vars[3]); // push j
-                        // SendSpecialMsg value
                         numArgsPushed = 3;
                         selector = gSpecialSelectors[opmValue];
                         slot = sp - 2;
-
-                        goto class_lookup; // class_lookup:
+                        goto class_lookup_then_msg_lookup;
                     } else {
                         slotCopy(++sp, &g->receiver);
-                        g->sp = sp;
-                        g->ip = ip;
-                        returnFromMethod(g);
-                        sp = g->sp;
-                        ip = g->ip;
+                        storeLoadSpAndIp([&]() { returnFromMethod(g); });
                     }
                     dispatch_opcode;
                 }
@@ -1772,22 +1663,15 @@ HOT void Interpret(VMGlobals* g) {
                 // Dictionary-keysValuesArrayDo
                 case 13: {
                     PyrSlot* vars = g->frame->vars;
-
                     if (IsNil(&vars[1])) {
                         error("Dictionary-keysValuesArrayDo: first argument should not be nil.\n");
-
-                        slotCopy(++sp, &g->receiver);
-                        numArgsPushed = 0;
-                        selector = gSpecialSelectors[opmPrimitiveFailed];
-                        slot = sp;
-
-                        goto class_lookup;
+                        // TODO: this changed the numArgsPushed variable from 0 to 1, was this a bug?
+                        pushAndPrepForCall(opmPrimitiveFailed, &g->receiver);
+                        goto class_lookup_then_msg_lookup;
                     }
 
                     int m = slotRawInt(&vars[3]);
                     PyrObject* obj = slotRawObject(&vars[1]);
-
-
                     if (m < obj->size) {
                         slot = obj->slots + m; // key
                         while (IsNil(slot)) {
@@ -1799,59 +1683,35 @@ HOT void Interpret(VMGlobals* g) {
                             slot = obj->slots + m; // key
                         }
                         SetRaw(&vars[3], m);
-                        slotCopy(++sp, &vars[2]); // function
-                        slotCopy(++sp, &slot[0]); // key
-                        slotCopy(++sp, &slot[1]); // val
-                        slotCopy(++sp, &vars[4]); // j
+                        // Push: function, key, value, j
+                        pushAndPrepForCall(opmValue, &vars[2], &slot[0], &slot[1], &vars[4]);
                         SetRaw(&vars[4], slotRawInt(&vars[4]) + 1);
-
-                        // SendSpecialMsg value
-                        numArgsPushed = 4;
-                        selector = gSpecialSelectors[opmValue];
-                        slot = sp - 3;
-
-                        goto class_lookup; // class_lookup:
+                        goto class_lookup_then_msg_lookup;
                     } else {
                     keysValuesArrayDo_return:
                         slotCopy(++sp, &g->receiver);
-                        g->sp = sp;
-                        g->ip = ip;
-                        returnFromMethod(g);
-                        sp = g->sp;
-                        ip = g->ip;
+                        storeLoadSpAndIp([&]() { returnFromMethod(g); });
                     }
                     dispatch_opcode;
                 }
-                case 14:
+                case 14: {
                     --sp; // Drop
                     SetRaw(&g->frame->vars[3], slotRawInt(&g->frame->vars[3]) + 2); // inc i
                     ip -= 4;
                     dispatch_opcode;
-                case 15:
-                    // unused opcode.
-                    break;
+                }
 
 
                 // Float-do : 143 17, 143 18
                 case 17: {
                     PyrSlot* vars = g->frame->vars;
                     if (slotRawFloat(&vars[2]) + 0.5 < slotRawFloat(&g->receiver)) {
-                        slotCopy(++sp, &vars[1]); // push function
-                        slotCopy(++sp, &vars[2]); // push i
-                        slotCopy(++sp, &vars[2]); // push i
-                        // SendSpecialMsg value
-                        numArgsPushed = 3;
-                        selector = gSpecialSelectors[opmValue];
-                        slot = sp - 2;
-
-                        goto class_lookup;
+                        // Push: function, i, i (is is also the index).
+                        pushAndPrepForCall(opmValue, &vars[1], &vars[2], &vars[2]);
+                        goto class_lookup_then_msg_lookup;
                     } else {
                         slotCopy(++sp, &g->receiver);
-                        g->sp = sp;
-                        g->ip = ip;
-                        returnFromMethod(g);
-                        sp = g->sp;
-                        ip = g->ip;
+                        storeLoadSpAndIp([&]() { returnFromMethod(g); });
                     }
                     dispatch_opcode;
                 }
@@ -1870,22 +1730,12 @@ HOT void Interpret(VMGlobals* g) {
                 case 20: {
                     PyrSlot* vars = g->frame->vars;
                     if (slotRawFloat(&vars[2]) + 0.5 >= 0.0) {
-                        slotCopy(++sp, &vars[1]); // push function
-                        slotCopy(++sp, &vars[2]); // push i
-                        slotCopy(++sp, &vars[3]); // push j
-                        // SendSpecialMsg value
-                        numArgsPushed = 3;
-                        selector = gSpecialSelectors[opmValue];
-                        slot = sp - 2;
-
-                        goto class_lookup;
+                        // Push: function, i, j
+                        pushAndPrepForCall(opmValue, &vars[1], &vars[2], &vars[3]);
+                        goto class_lookup_then_msg_lookup;
                     } else {
                         slotCopy(++sp, &g->receiver);
-                        g->sp = sp;
-                        g->ip = ip;
-                        returnFromMethod(g);
-                        sp = g->sp;
-                        ip = g->ip;
+                        storeLoadSpAndIp([&]() { returnFromMethod(g); });
                     }
                     dispatch_opcode;
                 }
@@ -1897,11 +1747,14 @@ HOT void Interpret(VMGlobals* g) {
                     ip -= 4;
                     dispatch_opcode;
                 }
+
+
                 case 22: // ? question mark method
                     --sp;
                     if (IsNil(sp))
                         *sp = *(sp + 1);
                     dispatch_opcode;
+
                 case 23: // if not nil push this and jump. used to implement ??
                     if (NotNil(sp)) {
                         int jmplen = (ip[1] << 8) | ip[2];
@@ -1911,6 +1764,7 @@ HOT void Interpret(VMGlobals* g) {
                         ip += 2;
                     }
                     dispatch_opcode;
+
                 case 24: // ifNil
                     if (NotNil(sp)) {
                         int jmplen = (ip[1] << 8) | ip[2];
@@ -1920,6 +1774,7 @@ HOT void Interpret(VMGlobals* g) {
                     }
                     --sp;
                     dispatch_opcode;
+
                 case 25: // ifNotNil
                     if (IsNil(sp)) {
                         int jmplen = (ip[1] << 8) | ip[2];
@@ -1929,6 +1784,7 @@ HOT void Interpret(VMGlobals* g) {
                     }
                     --sp;
                     dispatch_opcode;
+
                 case 26: // ifNotNilPushNil
                     if (NotNil(sp)) {
                         int jmplen = (ip[1] << 8) | ip[2];
@@ -1940,6 +1796,7 @@ HOT void Interpret(VMGlobals* g) {
                         --sp;
                     }
                     dispatch_opcode;
+
                 case 27: // ifNilPushNil
                     if (IsNil(sp)) {
                         int jmplen = (ip[1] << 8) | ip[2];
@@ -1949,6 +1806,7 @@ HOT void Interpret(VMGlobals* g) {
                         --sp;
                     }
                     dispatch_opcode;
+
                 case 28: { // switch
                     PyrObject* obj = slotRawObject(sp);
                     const int slotIndex = 1 + arrayAtIdentityHashInPairs(obj, (sp - 1));
@@ -1956,6 +1814,7 @@ HOT void Interpret(VMGlobals* g) {
                     ip += slotRawInt(&obj->slots[slotIndex]);
                     dispatch_opcode;
                 }
+
                 // Number-forSeries : 143 29, 143 30, 143 31
                 case 29: {
                     PyrSlot* vars = g->frame->vars;
@@ -1987,13 +1846,8 @@ HOT void Interpret(VMGlobals* g) {
                         } else {
                         bailFromNumberSeries:
                             error("Number-forSeries : first, second or last not an Integer or Float.\n");
-
-                            slotCopy(++sp, &g->receiver);
-                            numArgsPushed = 1;
-                            selector = gSpecialSelectors[opmPrimitiveFailed];
-                            slot = sp;
-
-                            goto class_lookup;
+                            pushAndPrepForCall(opmPrimitiveFailed, &g->receiver);
+                            goto class_lookup_then_msg_lookup;
                         }
 
                         if (IsNil(vars + 1)) {
@@ -2030,56 +1884,33 @@ HOT void Interpret(VMGlobals* g) {
                 }
                 case 30: {
                     PyrSlot* vars = g->frame->vars;
-                    int tag = GetTag(&vars[1]);
-                    if (tag == tagInt) {
+                    if (GetTag(&vars[1]) == tagInt) {
                         if ((slotRawInt(&vars[1]) >= 0 && slotRawInt(&vars[4]) <= slotRawInt(&vars[2]))
                             || (slotRawInt(&vars[1]) < 0 && slotRawInt(&vars[4]) >= slotRawInt(&vars[2]))) {
-                            slotCopy(++sp, &vars[3]); // push function
-                            slotCopy(++sp, &vars[4]); // push i
-                            slotCopy(++sp, &vars[5]); // push j
-                            // SendSpecialMsg value
-                            numArgsPushed = 3;
-                            selector = gSpecialSelectors[opmValue];
-                            slot = sp - 2;
-
-                            goto class_lookup;
+                            // Push: function, i, j
+                            pushAndPrepForCall(opmValue, &vars[3], &vars[4], &vars[5]);
+                            goto class_lookup_then_msg_lookup;
                         } else {
                             slotCopy(++sp, &g->receiver);
-                            g->sp = sp;
-                            g->ip = ip;
-                            returnFromMethod(g);
-                            sp = g->sp;
-                            ip = g->ip;
+                            storeLoadSpAndIp([&]() { returnFromMethod(g); });
                         }
                     } else {
                         if ((slotRawFloat(&vars[1]) >= 0. && slotRawFloat(&vars[4]) <= slotRawFloat(&vars[2]))
                             || (slotRawFloat(&vars[1]) < 0. && slotRawFloat(&vars[4]) >= slotRawFloat(&vars[2]))) {
-                            slotCopy(++sp, &vars[3]); // push function
-                            slotCopy(++sp, &vars[4]); // push i
-                            slotCopy(++sp, &vars[5]); // push j
-                            // SendSpecialMsg value
-                            numArgsPushed = 3;
-                            selector = gSpecialSelectors[opmValue];
-                            slot = sp - 2;
-
-                            goto class_lookup;
+                            // Push: function, i, j
+                            pushAndPrepForCall(opmValue, &vars[3], &vars[4], &vars[5]);
+                            goto class_lookup_then_msg_lookup;
                         } else {
                             slotCopy(++sp, &g->receiver);
-                            g->sp = sp;
-                            g->ip = ip;
-                            returnFromMethod(g);
-                            sp = g->sp;
-                            ip = g->ip;
+                            storeLoadSpAndIp([&]() { returnFromMethod(g); });
                         }
                     }
                     dispatch_opcode;
                 }
                 case 31: {
-                    --sp; // Drop
+                    --sp;
                     PyrSlot* vars = g->frame->vars;
-
-                    int tag = GetTag(&vars[1]);
-                    if (tag == tagInt) {
+                    if (GetTag(&vars[1]) == tagInt) {
                         SetRaw(&vars[4], slotRawInt(&vars[4]) + slotRawInt(&vars[1])); // inc i
                     } else {
                         SetRaw(&vars[4], slotRawFloat(&vars[4]) + slotRawFloat(&vars[1])); // inc i
@@ -2088,6 +1919,9 @@ HOT void Interpret(VMGlobals* g) {
                     ip -= 4;
                     dispatch_opcode;
                 }
+
+                default:
+                    break;
                 }
                 dispatch_opcode;
             }
@@ -2106,8 +1940,7 @@ HOT void Interpret(VMGlobals* g) {
                 numArgsPushed = 1;
                 selector = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[index]);
                 slot = sp;
-
-                goto class_lookup;
+                goto class_lookup_then_msg_lookup;
             }
 
             InterpretOpcode15(SendMsg) {
@@ -2115,7 +1948,7 @@ HOT void Interpret(VMGlobals* g) {
                 numArgsPushed = numArgs;
                 selector = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[selectorIndex]);
                 slot = sp - numArgsPushed + 1;
-                goto class_lookup;
+                goto class_lookup_then_msg_lookup;
             }
 
             InterpretOpcode(TailCallReturnFromFunction) {
@@ -2130,7 +1963,6 @@ HOT void Interpret(VMGlobals* g) {
                 selector = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[selectorIndex]);
                 slot = sp;
                 classobj = slotRawSymbol(&slotRawClass(&g->method->ownerclass)->superclass)->u.classobj;
-
                 goto msg_lookup;
             }
 
@@ -2140,7 +1972,6 @@ HOT void Interpret(VMGlobals* g) {
                 selector = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[selectorIndex]);
                 slot = sp - numArgsPushed + 1;
                 classobj = slotRawSymbol(&slotRawClass(&g->method->ownerclass)->superclass)->u.classobj;
-
                 goto msg_lookup;
             }
 
@@ -2150,8 +1981,7 @@ HOT void Interpret(VMGlobals* g) {
                 numArgsPushed = 1;
                 selector = gSpecialSelectors[specialSelector];
                 slot = sp;
-
-                goto class_lookup;
+                goto class_lookup_then_msg_lookup;
             }
 
             InterpretOpcode15(SendSpecialMsg) {
@@ -2159,8 +1989,7 @@ HOT void Interpret(VMGlobals* g) {
                 numArgsPushed = numArgs;
                 selector = gSpecialSelectors[(Byte)specialSelector];
                 slot = sp - numArgsPushed + 1;
-
-                goto class_lookup;
+                goto class_lookup_then_msg_lookup;
             }
 
             InterpretOpcode16(SendSpecialUnaryArithMsg) {
@@ -2226,22 +2055,16 @@ HOT void Interpret(VMGlobals* g) {
                             --sp;
                             SetRaw(sp, slotRawInt(sp) + slotRawInt(sp + 1));
                             ifTailCallOptimise([&]() { g->tailCall = 0; });
-                        } else {
-                            g->sp = sp;
-                            g->ip = ip;
+                        } else
+                            storeLoadSpAndIp([&]() {
+                                g->primitiveIndex = (Byte)OpBinaryMathNibble::Add;
+                                prAddInt(g, -1);
+                            });
+                    } else
+                        storeLoadSpAndIp([&]() {
                             g->primitiveIndex = (Byte)OpBinaryMathNibble::Add;
-                            prAddInt(g, -1);
-                            sp = g->sp;
-                            ip = g->ip;
-                        }
-                    } else {
-                        g->sp = sp;
-                        g->ip = ip;
-                        g->primitiveIndex = (Byte)OpBinaryMathNibble::Add;
-                        prAddNum(g, -1);
-                        sp = g->sp;
-                        ip = g->ip;
-                    }
+                            prAddNum(g, -1);
+                        });
                 } break;
 
                 case OpBinaryMathNibble::Sub: {
@@ -2250,22 +2073,16 @@ HOT void Interpret(VMGlobals* g) {
                             --sp;
                             SetRaw(sp, slotRawInt(sp) - slotRawInt(sp + 1));
                             ifTailCallOptimise([&]() { g->tailCall = 0; });
-                        } else {
-                            g->sp = sp;
-                            g->ip = ip;
+                        } else
+                            storeLoadSpAndIp([&]() {
+                                g->primitiveIndex = (Byte)OpBinaryMathNibble::Sub;
+                                prSubInt(g, -1);
+                            });
+                    } else
+                        storeLoadSpAndIp([&]() {
                             g->primitiveIndex = (Byte)OpBinaryMathNibble::Sub;
-                            prSubInt(g, -1);
-                            sp = g->sp;
-                            ip = g->ip;
-                        }
-                    } else {
-                        g->sp = sp;
-                        g->ip = ip;
-                        g->primitiveIndex = (Byte)OpBinaryMathNibble::Sub;
-                        prSubNum(g, -1);
-                        sp = g->sp;
-                        ip = g->ip;
-                    }
+                            prSubNum(g, -1);
+                        });
                 } break;
 
                 case OpBinaryMathNibble::Mul: {
@@ -2274,32 +2091,24 @@ HOT void Interpret(VMGlobals* g) {
                             --sp;
                             SetRaw(sp, slotRawInt(sp) * slotRawInt(sp + 1));
                             ifTailCallOptimise([&]() { g->tailCall = 0; });
-                        } else {
-                            g->sp = sp;
-                            g->ip = ip;
+                        } else
+                            storeLoadSpAndIp([&]() {
+                                g->primitiveIndex = opMul;
+                                prMulInt(g, -1);
+                            });
+                    } else
+                        storeLoadSpAndIp([&]() {
                             g->primitiveIndex = opMul;
-                            prMulInt(g, -1);
-                            sp = g->sp;
-                            ip = g->ip;
-                        }
-                    } else {
-                        g->sp = sp;
-                        g->ip = ip;
-                        g->primitiveIndex = opMul;
-                        prMulNum(g, -1);
-                        sp = g->sp;
-                        ip = g->ip;
-                    }
+                            prMulNum(g, -1);
+                        });
                 } break;
 
                 default: {
                 default_binary_math_nibble_case:
-                    g->sp = sp;
-                    g->ip = ip;
-                    g->primitiveIndex = (Byte)binaryMathNibble;
-                    doSpecialBinaryArithMsg(g, 2, false);
-                    sp = g->sp;
-                    ip = g->ip;
+                    storeLoadSpAndIp([&]() {
+                        g->primitiveIndex = (Byte)binaryMathNibble;
+                        doSpecialBinaryArithMsg(g, 2, false);
+                    });
                 } break;
                 }
                 dispatch_opcode;
@@ -2317,60 +2126,36 @@ HOT void Interpret(VMGlobals* g) {
             }
 
             InterpretOpcode(BlockReturn) {
-                g->sp = sp;
-                g->ip = ip;
-                returnFromBlock(g);
-                sp = g->sp;
-                ip = g->ip;
+                storeLoadSpAndIp([&]() { returnFromBlock(g); });
                 dispatch_opcode;
             }
 
             InterpretOpcode(Return) {
-                g->sp = sp;
-                g->ip = ip;
-                returnFromMethod(g);
-                sp = g->sp;
-                ip = g->ip;
+                storeLoadSpAndIp([&]() { returnFromMethod(g); });
                 dispatch_opcode;
             }
 
             InterpretOpcode(ReturnSelf) {
                 slotCopy(++sp, &g->receiver);
-                g->sp = sp;
-                g->ip = ip;
-                returnFromMethod(g);
-                sp = g->sp;
-                ip = g->ip;
+                storeLoadSpAndIp([&]() { returnFromMethod(g); });
                 dispatch_opcode;
             }
 
             InterpretOpcode(ReturnTrue) {
                 slotCopy(++sp, &gSpecialValues.True);
-                g->sp = sp;
-                g->ip = ip;
-                returnFromMethod(g);
-                sp = g->sp;
-                ip = g->ip;
+                storeLoadSpAndIp([&]() { returnFromMethod(g); });
                 dispatch_opcode;
             }
 
             InterpretOpcode(ReturnFalse) {
                 slotCopy(++sp, &gSpecialValues.False);
-                g->sp = sp;
-                g->ip = ip;
-                returnFromMethod(g);
-                sp = g->sp;
-                ip = g->ip;
+                storeLoadSpAndIp([&]() { returnFromMethod(g); });
                 dispatch_opcode;
             }
 
             InterpretOpcode(ReturnNil) {
                 slotCopy(++sp, &gSpecialValues.Nil_);
-                g->sp = sp;
-                g->ip = ip;
-                returnFromMethod(g);
-                sp = g->sp;
-                ip = g->ip;
+                storeLoadSpAndIp([&]() { returnFromMethod(g); });
                 dispatch_opcode;
             }
 
@@ -2387,7 +2172,7 @@ HOT void Interpret(VMGlobals* g) {
                     numArgsPushed = 1;
                     selector = gSpecialSelectors[opmNonBooleanError];
                     slot = sp;
-                    goto class_lookup;
+                    goto class_lookup_then_msg_lookup;
                 }
                 dispatch_opcode;
             }
@@ -2404,7 +2189,7 @@ HOT void Interpret(VMGlobals* g) {
                     numArgsPushed = 1;
                     selector = gSpecialSelectors[opmNonBooleanError];
                     slot = sp;
-                    goto class_lookup;
+                    goto class_lookup_then_msg_lookup;
                 }
                 dispatch_opcode;
             }
@@ -2420,7 +2205,7 @@ HOT void Interpret(VMGlobals* g) {
                     numArgsPushed = 1;
                     selector = gSpecialSelectors[opmNonBooleanError];
                     slot = sp;
-                    goto class_lookup;
+                    goto class_lookup_then_msg_lookup;
                 }
                 dispatch_opcode;
             }
@@ -2437,7 +2222,7 @@ HOT void Interpret(VMGlobals* g) {
                     numArgsPushed = 1;
                     selector = gSpecialSelectors[opmNonBooleanError];
                     slot = sp;
-                    goto class_lookup;
+                    goto class_lookup_then_msg_lookup;
                 }
                 dispatch_opcode;
             }
@@ -2458,12 +2243,10 @@ HOT void Interpret(VMGlobals* g) {
 
             InterpretOpcode(SpecialBinaryOpWithAdverb) {
                 const auto [trinaryMath] = SpecialBinaryOpWithAdverb.pullOperandsFromInstructions(ip);
-                g->sp = sp;
-                g->ip = ip;
-                g->primitiveIndex = (Byte)trinaryMath;
-                doSpecialBinaryArithMsg(g, 3, false);
-                sp = g->sp;
-                ip = g->ip;
+                storeLoadSpAndIp([&]() {
+                    g->primitiveIndex = (Byte)trinaryMath;
+                    doSpecialBinaryArithMsg(g, 3, false);
+                });
                 dispatch_opcode;
             }
 
@@ -2475,11 +2258,9 @@ HOT void Interpret(VMGlobals* g) {
 
             ////////////////////////////////////
 
-        class_lookup:
-            // normal class lookup
+        class_lookup_then_msg_lookup:
             classobj = classOfSlot(slot);
 
-            // message sends handled here:
         msg_lookup : {
             size_t index = slotRawInt(&classobj->classIndex) + selector->u.index;
             PyrMethod* meth = nullptr;
@@ -2497,43 +2278,55 @@ HOT void Interpret(VMGlobals* g) {
 
             // and now if meth is null, bail out just like if I don't understand it
             if (UNLIKELY(meth == nullptr || (slotRawSymbol(&meth->name) != selector))) {
-                g->sp = sp;
-                g->ip = ip;
-                doesNotUnderstand(g, selector, numArgsPushed, 0);
-                sp = g->sp;
-                ip = g->ip;
+                storeLoadSpAndIp([&]() { doesNotUnderstand(g, selector, numArgsPushed, 0); });
             } else {
                 PyrMethodRaw* methraw = METHRAW(meth);
+
+                const auto pushDefaultArgsAndChopUnused = [&]() {
+                    if (numArgsPushed < methraw->numargs) {
+                        // Not enough args pushed.
+                        PyrSlot* qslot = slotRawObject(&meth->prototypeFrame)->slots + numArgsPushed - 1;
+                        for (int m = 0, mmax = methraw->numargs - numArgsPushed; m < mmax; ++m)
+                            slotCopy(++sp, ++qslot);
+                        numArgsPushed = methraw->numargs;
+                    } else if (methraw->varargs == 0 && numArgsPushed > methraw->numargs) {
+                        // Too many args.
+                        const auto num_slots_to_chop = numArgsPushed - methraw->numargs;
+                        sp -= num_slots_to_chop;
+                        numArgsPushed = methraw->numargs;
+                    }
+                };
+
                 switch (methraw->methType) {
-                case methNormal: /* normal msg send */
-                    g->sp = sp;
-                    g->ip = ip;
-                    executeMethod(g, meth, numArgsPushed, 0);
-                    sp = g->sp;
-                    ip = g->ip;
+                case methNormal:
+                    storeLoadSpAndIp([&]() { executeMethod(g, meth, numArgsPushed, 0); });
                     break;
-                case methReturnSelf: /* return self */
+
+                case methReturnSelf:
                     sp -= numArgsPushed - 1;
                     break;
-                case methReturnLiteral: /* return literal */
+
+                case methReturnLiteral:
                     sp -= numArgsPushed - 1;
-                    slotCopy(sp, &meth->selectors); /* in this case selectors is just a single value */
+                    slotCopy(sp, &meth->selectors); // in this case selectors is just a single value
                     break;
-                case methReturnArg: /* return an argument */
+
+                case methReturnArg:
                     sp -= numArgsPushed - 1;
                     index = methraw->specialIndex; // zero is index of the first argument
-                    if (index < numArgsPushed) {
+                    if (index < numArgsPushed)
                         slotCopy(sp, sp + index);
-                    } else {
+                    else
                         slotCopy(sp, &slotRawObject(&meth->prototypeFrame)->slots[index]);
-                    }
                     break;
-                case methReturnInstVar: /* return inst var */
+
+                case methReturnInstVar:
                     sp -= numArgsPushed - 1;
                     index = methraw->specialIndex;
                     slotCopy(sp, &slotRawObject(slot)->slots[index]);
                     break;
-                case methAssignInstVar: { /* assign inst var */
+
+                case methAssignInstVar: {
                     sp -= numArgsPushed - 1;
                     index = methraw->specialIndex;
                     PyrObject* obj = slotRawObject(slot);
@@ -2550,11 +2343,13 @@ HOT void Interpret(VMGlobals* g) {
                     }
                     break;
                 }
-                case methReturnClassVar: /* return class var */
+
+                case methReturnClassVar:
                     sp -= numArgsPushed - 1;
                     slotCopy(sp, &g->classvars->slots[methraw->specialIndex]);
                     break;
-                case methAssignClassVar: /* assign class var */
+
+                case methAssignClassVar:
                     sp -= numArgsPushed - 1;
                     if (numArgsPushed >= 2) {
                         slotCopy(&g->classvars->slots[methraw->specialIndex], sp + 1);
@@ -2563,86 +2358,35 @@ HOT void Interpret(VMGlobals* g) {
                         slotCopy(&g->classvars->slots[methraw->specialIndex], &gSpecialValues.Nil_);
                     slotCopy(sp, slot);
                     break;
+
                 case methRedirect: /* send a different selector to self */
-                    if (numArgsPushed < methraw->numargs) { // not enough args pushed
-                        /* push default arg values */
-                        PyrSlot* qslot;
-                        int m, mmax;
-                        qslot = slotRawObject(&meth->prototypeFrame)->slots + numArgsPushed - 1;
-                        for (m = 0, mmax = methraw->numargs - numArgsPushed; m < mmax; ++m)
-                            slotCopy(++sp, ++qslot);
-                        numArgsPushed = methraw->numargs;
-                    } else if (methraw->varargs == 0 && numArgsPushed > methraw->numargs) {
-                        const auto num_slots_to_chop = numArgsPushed - methraw->numargs;
-                        sp -= num_slots_to_chop;
-                        numArgsPushed = methraw->numargs;
-                    }
+                    pushDefaultArgsAndChopUnused();
                     selector = slotRawSymbol(&meth->selectors);
-                    goto msg_lookup;
+                    goto msg_lookup; // Note the recurrsion here!
+
                 case methRedirectSuper: /* send a different selector to self */
-                    if (numArgsPushed < methraw->numargs) { // not enough args pushed
-                        /* push default arg values */
-                        PyrSlot* qslot;
-                        int m, mmax;
-                        qslot = slotRawObject(&meth->prototypeFrame)->slots + numArgsPushed - 1;
-                        for (m = 0, mmax = methraw->numargs - numArgsPushed; m < mmax; ++m)
-                            slotCopy(++sp, ++qslot);
-                        numArgsPushed = methraw->numargs;
-                    } else if (methraw->varargs == 0 && numArgsPushed > methraw->numargs) {
-                        const auto num_slots_to_chop = numArgsPushed - methraw->numargs;
-                        sp -= num_slots_to_chop;
-                        numArgsPushed = methraw->numargs;
-                    }
+                    pushDefaultArgsAndChopUnused();
                     selector = slotRawSymbol(&meth->selectors);
                     classobj = slotRawSymbol(&slotRawClass(&meth->ownerclass)->superclass)->u.classobj;
                     goto msg_lookup;
-                case methForwardInstVar: /* forward to an instance variable */
-                    if (numArgsPushed < methraw->numargs) { // not enough args pushed
-                        /* push default arg values */
-                        PyrSlot* qslot;
-                        int m, mmax;
-                        qslot = slotRawObject(&meth->prototypeFrame)->slots + numArgsPushed - 1;
-                        for (m = 0, mmax = methraw->numargs - numArgsPushed; m < mmax; ++m)
-                            slotCopy(++sp, ++qslot);
-                        numArgsPushed = methraw->numargs;
-                    } else if (methraw->varargs == 0 && numArgsPushed > methraw->numargs) {
-                        const auto num_slots_to_chop = numArgsPushed - methraw->numargs;
-                        sp -= num_slots_to_chop;
-                        numArgsPushed = methraw->numargs;
-                    }
+
+                case methForwardInstVar:
+                    pushDefaultArgsAndChopUnused();
                     selector = slotRawSymbol(&meth->selectors);
                     index = methraw->specialIndex;
                     slotCopy(slot, &slotRawObject(slot)->slots[index]);
-
                     classobj = classOfSlot(slot);
+                    goto msg_lookup; // Note the recursion.
 
-                    goto msg_lookup;
-                case methForwardClassVar: /* forward to an instance variable */
-                    if (numArgsPushed < methraw->numargs) { // not enough args pushed
-                        /* push default arg values */
-                        PyrSlot* qslot;
-                        int m, mmax;
-                        qslot = slotRawObject(&meth->prototypeFrame)->slots + numArgsPushed - 1;
-                        for (m = 0, mmax = methraw->numargs - numArgsPushed; m < mmax; ++m)
-                            slotCopy(++sp, ++qslot);
-                        numArgsPushed = methraw->numargs;
-                    } else if (methraw->varargs == 0 && numArgsPushed > methraw->numargs) {
-                        const auto num_slots_to_chop = numArgsPushed - methraw->numargs;
-                        sp -= num_slots_to_chop;
-                        numArgsPushed = methraw->numargs;
-                    }
+                case methForwardClassVar:
+                    pushDefaultArgsAndChopUnused();
                     selector = slotRawSymbol(&meth->selectors);
                     slotCopy(slot, &g->classvars->slots[methraw->specialIndex]);
-
                     classobj = classOfSlot(slot);
+                    goto msg_lookup; // Note the recursion.
 
-                    goto msg_lookup;
-                case methPrimitive: /* primitive */
-                    g->sp = sp;
-                    g->ip = ip;
-                    doPrimitive(g, meth, numArgsPushed);
-                    sp = g->sp;
-                    ip = g->ip;
+                case methPrimitive:
+                    storeLoadSpAndIp([&]() { doPrimitive(g, meth, numArgsPushed); });
                     break;
                 } // switch (meth->methType)
             } // end handle message

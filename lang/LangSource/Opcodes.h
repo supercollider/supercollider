@@ -445,6 +445,7 @@ static constexpr struct IntegerForBy {
     details::SimpleOpSpec<0x09> DropAndJumpBackToLoop { "IntForBy-DropAndJumpBackToLoop" };
     /// Jump from the drop instruction to the loop, don't jump back to the init instruction.
     unsigned int jumpSize() const { return 1U + LoopOrReturn.byteSize + 1U + DropAndJumpBackToLoop.byteSize; }
+
     void emit() const {
         emitByte(Prefix);
         Init.emit();
@@ -473,6 +474,13 @@ static constexpr struct ArrayedCollectionDo {
 
     /// Jump from the drop instruction to the loop, don't jump back to the init instruction.
     unsigned int jumpSize() const { return 1U + LoopOrReturn.byteSize + 1U + DropAndJumpBackToLoop.byteSize; }
+
+    void emit() const {
+        emitByte(Prefix);
+        LoopOrReturn.emit();
+        emitByte(Prefix);
+        DropAndJumpBackToLoop.emit();
+    }
 
 } ArrayedCollectionDo;
 }
