@@ -55,7 +55,7 @@ template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbl
     const char* name;
     unsigned int byteSize = sizeof...(OPERANDS) + 1U;
 
-    template <typename N> void emit(N nibble, OPERANDS... operands) const {
+    void emit(unsigned int nibble, OPERANDS... operands) const {
         assert(nibble < 16);
         const Byte bytecode = startCode + nibble;
         assert(bytecode < endCode);
@@ -75,7 +75,7 @@ template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbl
     static constexpr auto startCode { STARTCODE };
     static constexpr auto endCode { ENDCODE };
     static constexpr auto operandCount { sizeof...(OPERANDS) };
-    using Tuple = std::tuple<int, OPERANDS...>;
+    using Tuple = std::tuple<unsigned int, OPERANDS...>;
 
     const char* name;
     unsigned int byteSize = sizeof...(OPERANDS) + 1U;
@@ -98,7 +98,7 @@ template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbl
 
     Tuple pullOperandsFromInstructions(unsigned char*& ip) const {
         // increment instruction pointer and get the values for each operand.
-        return { (static_cast<int>(*ip) - startCode << 8) | *(++ip), OPERANDS::fromRaw(*(++ip))... };
+        return { (static_cast<unsigned int>(*ip) - startCode << 8) | *(++ip), OPERANDS::fromRaw(*(++ip))... };
     }
 };
 
@@ -134,24 +134,6 @@ template <Byte STARTCODE, Byte ENDCODE, typename ENUM_T, typename... OPERANDS> s
     }
 };
 
-template <Byte PREFIX, Byte CODE, typename... OPERANDS> struct ExtendedSimple {
-    using Tuple = std::tuple<OPERANDS...>;
-    const char* name;
-    Byte prefix { PREFIX };
-    Byte code { CODE };
-    unsigned int byteSize = sizeof...(OPERANDS) + 2U;
-
-    Tuple pullOperandsFromInstructions(unsigned char*& ip) const { return { OPERANDS::fromRaw(*(++ip))... }; }
-
-    void emit(OPERANDS... operands) const {
-        emitByte(PREFIX);
-        emitByte(code);
-        (emitByte(static_cast<Byte>(operands)), ...);
-    }
-};
-
-
-// Using statements for opcodes without prefixes (most opcodes)
 
 struct NamedByte {
     Byte value;

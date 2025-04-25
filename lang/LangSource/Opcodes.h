@@ -483,6 +483,168 @@ static constexpr struct ArrayedCollectionDo {
     }
 
 } ArrayedCollectionDo;
+
+/// Implements `ArrayedCollection:-reverseDo`. The frame of this method holds the receiver,
+/// the apply function, the reverse accumulator `i`, and the loop count accumulator `j`.  Initially, `j = 0`.
+static constexpr struct ArrayedCollectionReversedDo {
+    /// `i` is initialized to `size - 1`.
+    details::SimpleOpSpec<0x0B> Init { "ArrayedCollectionReversedDo-Init" };
+
+    /// `i` is compared to 0. If it is greater than or equal to 0, the apply function, element
+    /// of the receiver indexed by `i`, and `j` are pushed to the stack, and `value` is invoked on all
+    /// three. Otherwise, the receiver is pushed to the stack and control exits the method.
+    details::SimpleOpSpec<0x0C> LoopOrReturn { "ArrayedCollectionReversedDo-LoopOrReturn" };
+
+    /// The top of the stack is popped, discarding the result of `value`. `i` is decremented,
+    /// `j` is incremented, and the IP is set back to `8F 03`.
+    /// NOTE: this is a duplication.
+    details::SimpleOpSpec<0x04> DropAndJumpBackToLoop { "ArrayedCollectionReversedDo-DropAndJumpBackToLoop" };
+
+    /// Jump from the drop instruction to the loop, don't jump back to the init instruction.
+    unsigned int jumpSize() const { return 1U + LoopOrReturn.byteSize + 1U + DropAndJumpBackToLoop.byteSize; }
+
+    void emit() const {
+        emitByte(Prefix);
+        Init.emit();
+        emitByte(Prefix);
+        LoopOrReturn.emit();
+        emitByte(Prefix);
+        DropAndJumpBackToLoop.emit();
+    }
+} ArrayedCollectionReversedDo;
+
+/// Implements `Dictionary:-keysValuesArrayDo`. The frame of this method holds eight variables:
+///     1. the receiver
+///     2. `array`, array representing underlying storage
+///     3. the apply function
+///     4. index accumulator `i`, updated once per key or value
+///     5. pair index accumulator `j`, updated once per pair
+///     6. `key`, slot representing the current key
+///     7. `value`, slot representing the current value
+///     8. array size
+static constexpr struct DictionaryKeyValuesArrayDo {
+    details::SimpleOpSpec<0x0D> LoopOrReturn { "DictionaryKeyValuesArrayDo-LoopOrReturn" };
+    details::SimpleOpSpec<0x0E> DropAndJumpBackToLoop { "DictionaryKeyValuesArrayDo-DropAndJumpBackToLoop" };
+    unsigned int jumpSize() const { return 1U + LoopOrReturn.byteSize + 1U + DropAndJumpBackToLoop.byteSize; }
+    void emit() const {
+        emitByte(Prefix);
+        LoopOrReturn.emit();
+        emitByte(Prefix);
+        DropAndJumpBackToLoop.emit();
+    }
+} DictionaryKeyValuesArrayDo;
+
+static constexpr struct FloatDo {
+    details::SimpleOpSpec<0x11> LoopOrReturn { "FloatDo-LoopOrReturn" };
+    details::SimpleOpSpec<0x12> DropAndJumpBackToLoop { "FloatDo-DropAndJumpBackToLoop" };
+    unsigned int jumpSize() const { return 1U + LoopOrReturn.byteSize + 1U + DropAndJumpBackToLoop.byteSize; }
+    void emit() const {
+        emitByte(Prefix);
+        LoopOrReturn.emit();
+        emitByte(Prefix);
+        DropAndJumpBackToLoop.emit();
+    }
+} FloatDo;
+
+
+static constexpr struct QuestionMark {
+    details::SimpleOpSpec<0x16> IsNil { "IsNil" };
+    void emit() const {
+        emitByte(Prefix);
+        IsNil.emit();
+    }
+} QuestionMark;
+
+static constexpr struct DoubleQuestionMark {
+    details::SimpleOpSpec<0x17, Operands::UnsignedInt<16, 1>, Operands::UnsignedInt<16, 0>> Jump { "Jump" };
+    void emit(decltype(Jump)::Tuple&& tup) const {
+        emitByte(Prefix);
+        std::apply([&](auto&&... ts) { Jump.emit(ts...); }, std::forward<decltype(Jump)::Tuple>(tup));
+    }
+} DoubleQuestionMark;
+
+static constexpr struct IfNil {
+    details::SimpleOpSpec<0x18, Operands::UnsignedInt<16, 1>, Operands::UnsignedInt<16, 0>> Jump { "Jump" };
+    void emit(decltype(Jump)::Tuple&& tup) const {
+        emitByte(Prefix);
+        std::apply([&](auto&&... ts) { Jump.emit(ts...); }, std::forward<decltype(Jump)::Tuple>(tup));
+    }
+} IfNil;
+
+static constexpr struct IfNotNil {
+    details::SimpleOpSpec<0x19, Operands::UnsignedInt<16, 1>, Operands::UnsignedInt<16, 0>> Jump { "Jump" };
+    void emit(decltype(Jump)::Tuple&& tup) const {
+        emitByte(Prefix);
+        std::apply([&](auto&&... ts) { Jump.emit(ts...); }, std::forward<decltype(Jump)::Tuple>(tup));
+    }
+} IfNotNil;
+
+static constexpr struct IfNilPushNil {
+    details::SimpleOpSpec<0x1A, Operands::UnsignedInt<16, 1>, Operands::UnsignedInt<16, 0>> Jump { "Jump" };
+    void emit(decltype(Jump)::Tuple&& tup) const {
+        emitByte(Prefix);
+        std::apply([&](auto&&... ts) { Jump.emit(ts...); }, std::forward<decltype(Jump)::Tuple>(tup));
+    }
+} IfNilPushNil;
+
+static constexpr struct IfNotNilPushNil {
+    details::SimpleOpSpec<0x1B, Operands::UnsignedInt<16, 1>, Operands::UnsignedInt<16, 0>> Jump { "Jump" };
+    void emit(decltype(Jump)::Tuple&& tup) const {
+        emitByte(Prefix);
+        std::apply([&](auto&&... ts) { Jump.emit(ts...); }, std::forward<decltype(Jump)::Tuple>(tup));
+    }
+} IfNotNilPushNil;
+
+
+static constexpr struct FloatDoReverse {
+    details::SimpleOpSpec<0x13> Init { "FloatDoReverse-Init" };
+    details::SimpleOpSpec<0x14> LoopOrReturn { "FloatDoReverse-LoopOrReturn" };
+    details::SimpleOpSpec<0x15> DropAndJumpBackToLoop { "FloatDoReverse-DropAndJumpBackToLoop" };
+    unsigned int jumpSize() const { return 1U + LoopOrReturn.byteSize + 1U + DropAndJumpBackToLoop.byteSize; }
+    void emit() const {
+        emitByte(Prefix);
+        Init.emit();
+        emitByte(Prefix);
+        LoopOrReturn.emit();
+        emitByte(Prefix);
+        DropAndJumpBackToLoop.emit();
+    }
+} FloatDoReverse;
+
+// TODO: The NumberForSeries opcode needs looking at, see Moss's Bytecode documentation.
+
+/// Implements `Number:-forSeries`.  The frame of this method holds the `receiver`,
+/// `second` value (which is used to calculate the `step` value), `last` value (which is used to
+/// calculate the `limit` value), apply function, accumulator `i`, and loop counter `j`. Note that in
+/// the description below `second` and `last` are used to name the method inputs, while `step` and
+/// `limit` are used to name the values used during iteration.
+static constexpr struct NumberForSeries {
+    /// The types and values of `receiver`, `second`, and `last` are used to calculate the
+    /// initial values of `i`, `step`, and `limit` respectively. If any of `receiver`, `second`, or `last`
+    /// is a float, the resulting values of `i`, `step`, and `limit` will be floats; otherwise they will be
+    /// ints.
+    details::SimpleOpSpec<0x1D> Init { "NumberForSeries-Init" };
+
+    // If `i` is equal to or exceeds `last` in the direction of iteration, then the `receiver`
+    /// is pushed to the stack and control exits the method. Otherwise, the apply function, `i`, and `j` are
+    /// pushed to the stack and `value` is invoked on all three.
+    details::SimpleOpSpec<0x1E> LoopOrReturn { "NumberForSeries-LoopOrReturn" };
+
+    /// The stack is popped and the result of `value` is discarded, `i` is incremented by
+    /// `step`, `j` is incremented by `1`, and the IP is reset to `8F 1E`.
+    details::SimpleOpSpec<0x1F> DropAndJumpBackToLoop { "NumberForSeries-DropAndJumpBackToLoop" };
+
+    unsigned int jumpSize() const { return 1U + LoopOrReturn.byteSize + 1U + DropAndJumpBackToLoop.byteSize; }
+
+    void emit() const {
+        emitByte(Prefix);
+        Init.emit();
+        emitByte(Prefix);
+        LoopOrReturn.emit();
+        emitByte(Prefix);
+        DropAndJumpBackToLoop.emit();
+    }
+} NumberForSeries;
 }
 
 /// Pop and store the top of the stack in a class variable of the current class.

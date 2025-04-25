@@ -1464,16 +1464,11 @@ void PyrMethodNode::compile(PyrSlot* result) {
     // optimize common cases
 
     if (methType == methNormal || methType == methPrimitive) {
-        PyrSlot dummy;
-        PyrSymbol* name;
-
         // compile body
         initByteCodes();
 
         if (gCompilingClass == class_int) {
-            // TODO: Loop OpCodes
-            // handle some special cases
-            name = slotRawSymbol(&method->name);
+            const PyrSymbol* name = slotRawSymbol(&method->name);
             if (name == gSpecialSelectors[opmDo]) {
                 Extended::IntegerDo.emit();
             } else if (name == gSpecialSelectors[opmReverseDo]) {
@@ -1485,61 +1480,37 @@ void PyrMethodNode::compile(PyrSlot* result) {
             } else
                 goto compile_body;
         } else if (gCompilingClass == class_arrayed_collection) {
-            name = slotRawSymbol(&method->name);
+            const PyrSymbol* name = slotRawSymbol(&method->name);
             if (name == gSpecialSelectors[opmDo]) {
-                emitByte(143);
-                emitByte(10);
-                emitByte(143);
-                emitByte(1);
+                Extended::ArrayedCollectionDo.emit();
             } else if (name == gSpecialSelectors[opmReverseDo]) {
-                emitByte(143);
-                emitByte(11);
-                emitByte(143);
-                emitByte(12);
-                emitByte(143);
-                emitByte(4);
+                Extended::ArrayedCollectionReversedDo.emit();
             } else
                 goto compile_body;
         } else if (slotRawSymbol(&gCompilingClass->name) == s_dictionary) {
-            name = slotRawSymbol(&method->name);
+            const PyrSymbol* name = slotRawSymbol(&method->name);
             if (name == getsym("keysValuesArrayDo")) {
-                emitByte(143);
-                emitByte(13);
-                emitByte(143);
-                emitByte(14);
+                Extended::DictionaryKeyValuesArrayDo.emit();
             } else
                 goto compile_body;
         } else if (gCompilingClass == class_number) {
-            name = slotRawSymbol(&method->name);
+            const PyrSymbol* name = slotRawSymbol(&method->name);
             if (name == gSpecialSelectors[opmForSeries]) {
-                emitByte(143);
-                emitByte(29);
-                emitByte(143);
-                emitByte(30);
-                emitByte(143);
-                emitByte(31);
+                Extended::NumberForSeries.emit();
             } else
                 goto compile_body;
         } else if (gCompilingClass == class_float) {
-            // handle some special cases
-            name = slotRawSymbol(&method->name);
+            const PyrSymbol* name = slotRawSymbol(&method->name);
             if (name == gSpecialSelectors[opmDo]) {
-                emitByte(143);
-                emitByte(17);
-                emitByte(143);
-                emitByte(18);
+                Extended::FloatDo.emit();
             } else if (name == gSpecialSelectors[opmReverseDo]) {
-                emitByte(143);
-                emitByte(19);
-                emitByte(143);
-                emitByte(20);
-                emitByte(143);
-                emitByte(21);
+                Extended::FloatDoReverse.emit();
             } else
                 goto compile_body;
         } else {
         compile_body:
             SetTailIsMethodReturn mr(false);
+            PyrSlot dummy;
             if (mArglist) {
                 vardef = mArglist->mVarDefs;
                 for (i = 1; i < numArgs; ++i, vardef = (PyrVarDefNode*)vardef->mNext) {
@@ -2288,8 +2259,7 @@ void compileQMsg(PyrParseNode* arg1, PyrParseNode* arg2) {
 
     COMPILENODE(arg1, &dummy, false);
     COMPILENODE(arg2, &dummy, false);
-    emitByte(143); // special opcodes
-    emitByte(22); // ??
+    Extended::QuestionMark.emit();
 }
 
 void compileQQMsg(PyrParseNode* arg1, PyrParseNode* arg2) {
@@ -2298,14 +2268,10 @@ void compileQQMsg(PyrParseNode* arg1, PyrParseNode* arg2) {
 
     COMPILENODE(arg1, &dummy, false);
     if (isAnInlineableBlock(arg2)) {
-        ByteCodes nilByteCodes;
-        nilByteCodes = compileSubExpression((PyrPushLitNode*)arg2, true);
-
-        int jumplen = byteCodeLength(nilByteCodes);
-        emitByte(143); // special opcodes
-        emitByte(23); // ??
-        emitByte((jumplen >> 8) & 0xFF);
-        emitByte(jumplen & 0xFF);
+        ByteCodes nilByteCodes = compileSubExpression((PyrPushLitNode*)arg2, true);
+        const int jumplen = byteCodeLength(nilByteCodes);
+        Extended::DoubleQuestionMark.emit(
+            { Operands::UnsignedInt<16, 1>::fromFull(jumplen), Operands::UnsignedInt<16, 0>::fromFull(jumplen) });
         compileAndFreeByteCodes(nilByteCodes);
     } else {
         COMPILENODE(arg2, &dummy, false);

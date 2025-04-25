@@ -1106,7 +1106,7 @@ HOT void Interpret(VMGlobals* g) {
                 selector = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[selectorIndex]);
                 slot = sp - numArgsPushed + 1;
                 if (numKeyArgsPushed)
-                    goto key_class_lookup;
+                    goto key_class_lookup_then_key_msg_lookup;
                 else
                     goto class_lookup_then_msg_lookup;
             }
@@ -1131,7 +1131,7 @@ HOT void Interpret(VMGlobals* g) {
                 selector = gSpecialSelectors[selectorIndex];
                 slot = sp - numArgsPushed + 1;
                 if (numKeyArgsPushed)
-                    goto key_class_lookup;
+                    goto key_class_lookup_then_key_msg_lookup;
                 else
                     goto class_lookup_then_msg_lookup;
             }
@@ -1383,7 +1383,6 @@ HOT void Interpret(VMGlobals* g) {
 
                 selector = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[selectorIndex]);
                 slot = sp - numArgsPushed + 1;
-
                 goto class_lookup_then_msg_lookup;
             }
 
@@ -1396,7 +1395,6 @@ HOT void Interpret(VMGlobals* g) {
 
                 selector = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[selectorIndex]);
                 slot = sp - numArgsPushed + 1;
-
                 goto class_lookup_then_msg_lookup;
             }
 
@@ -1409,7 +1407,6 @@ HOT void Interpret(VMGlobals* g) {
 
                 selector = gSpecialSelectors[selectorIndex];
                 slot = sp - numArgsPushed + 1;
-
                 goto class_lookup_then_msg_lookup;
             }
 
@@ -1422,7 +1419,6 @@ HOT void Interpret(VMGlobals* g) {
 
                 selector = gSpecialSelectors[specialIndex];
                 slot = sp - numArgsPushed + 1;
-
                 goto class_lookup_then_msg_lookup;
             }
 
@@ -1435,7 +1431,6 @@ HOT void Interpret(VMGlobals* g) {
 
                 selector = slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[index]);
                 slot = sp - numArgsPushed + 1;
-
                 goto class_lookup_then_msg_lookup;
             }
 
@@ -1448,12 +1443,11 @@ HOT void Interpret(VMGlobals* g) {
 
                 selector = gSpecialSelectors[index];
                 slot = sp - numArgsPushed + 1;
-
                 goto class_lookup_then_msg_lookup;
             }
 
             /// ExtendedCodes are often used to implement looping methods.
-            /// They work by manipulating the instruction pointer, therefore it is imperative, the opcodes are emitted
+            /// They work by manipulating the instruction pointer, therefore it is imperative the opcodes are emitted
             /// in the expected sequence.
             InterpretOpcode(ExtendedCodes) {
                 // Helpers
@@ -1514,7 +1508,6 @@ HOT void Interpret(VMGlobals* g) {
                     dispatch_opcode;
                 }
 
-
                 case Extended::IntegerFor.Init.code: {
                     PyrSlot* vars = g->frame->vars;
                     if (GetTag(&vars[1]) != tagInt) {
@@ -1548,7 +1541,7 @@ HOT void Interpret(VMGlobals* g) {
                     dispatch_opcode;
                 }
                 case Extended::IntegerFor.DropAndJumpBackToLoop.code: {
-                    --sp; // Drop
+                    --sp;
                     PyrSlot* vars = g->frame->vars;
                     SetRaw(&vars[3], slotRawInt(&vars[3]) + slotRawInt(&vars[5])); // inc i by stepval
                     SetRaw(&vars[4], slotRawInt(&vars[4]) + 1); // inc j
@@ -1608,7 +1601,7 @@ HOT void Interpret(VMGlobals* g) {
                     dispatch_opcode;
                 }
                 case Extended::IntegerForBy.DropAndJumpBackToLoop.code: {
-                    --sp; // Drop
+                    --sp;
                     PyrSlot* vars = g->frame->vars;
                     if (IsFloat(vars + 4)) {
                         SetRaw(&vars[4], slotRawFloat(&vars[4]) + slotRawFloat(&vars[2]));
@@ -1637,13 +1630,12 @@ HOT void Interpret(VMGlobals* g) {
                     }
                     dispatch_opcode;
                 }
-                // TODO: ArrayedCollectionDo also uses the IntegerDo's DropAndJumpBackToLoop. Fix this.
+                    // TODO: ArrayedCollectionDo also uses the IntegerDo's DropAndJumpBackToLoop. Fix this.
 
-                // ArrayedCollection-reverseDo : 143 11, 143 12, 143 4
-                case 11:
+                case Extended::ArrayedCollectionReversedDo.Init.code:
                     SetRaw(&g->frame->vars[2], slotRawObject(&g->receiver)->size - 1);
                     dispatch_opcode;
-                case 12: {
+                case Extended::ArrayedCollectionReversedDo.LoopOrReturn.code: {
                     PyrSlot* vars = g->frame->vars;
                     if (slotRawInt(&vars[2]) >= 0) {
                         slotCopy(++sp, &vars[1]); // push function
@@ -1659,13 +1651,14 @@ HOT void Interpret(VMGlobals* g) {
                     }
                     dispatch_opcode;
                 }
+                    // TODO: ArrayedCollectionReverseDo also uses the IntegerReverseDo's DropAndJumpBackToLoop. Fix
+                    // this.
 
-                // Dictionary-keysValuesArrayDo
-                case 13: {
+                case Extended::DictionaryKeyValuesArrayDo.LoopOrReturn.code: {
                     PyrSlot* vars = g->frame->vars;
                     if (IsNil(&vars[1])) {
                         error("Dictionary-keysValuesArrayDo: first argument should not be nil.\n");
-                        // TODO: this changed the numArgsPushed variable from 0 to 1, was this a bug?
+                        // Note: this changed the numArgsPushed variable from 0 to 1, was this a bug?
                         pushAndPrepForCall(opmPrimitiveFailed, &g->receiver);
                         goto class_lookup_then_msg_lookup;
                     }
@@ -1694,16 +1687,14 @@ HOT void Interpret(VMGlobals* g) {
                     }
                     dispatch_opcode;
                 }
-                case 14: {
-                    --sp; // Drop
+                case Extended::DictionaryKeyValuesArrayDo.DropAndJumpBackToLoop.code: {
+                    --sp;
                     SetRaw(&g->frame->vars[3], slotRawInt(&g->frame->vars[3]) + 2); // inc i
-                    ip -= 4;
+                    ip -= Extended::DictionaryKeyValuesArrayDo.jumpSize();
                     dispatch_opcode;
                 }
 
-
-                // Float-do : 143 17, 143 18
-                case 17: {
+                case Extended::FloatDo.LoopOrReturn.code: {
                     PyrSlot* vars = g->frame->vars;
                     if (slotRawFloat(&vars[2]) + 0.5 < slotRawFloat(&g->receiver)) {
                         // Push: function, i, i (is is also the index).
@@ -1715,19 +1706,18 @@ HOT void Interpret(VMGlobals* g) {
                     }
                     dispatch_opcode;
                 }
-                case 18: {
+                case Extended::FloatDo.DropAndJumpBackToLoop.code: {
                     --sp; // Drop
                     SetRaw(&g->frame->vars[2], slotRawFloat(&g->frame->vars[2]) + 1.0); // inc i
-                    ip -= 4;
+                    ip -= Extended::FloatDo.jumpSize();
                     dispatch_opcode;
                 }
 
-                // Float-reverseDo : 143 19, 143 20, 143 21
-                case 19: {
+                case Extended::FloatDoReverse.Init.code: {
                     SetFloat(&g->frame->vars[2], slotRawFloat(&g->receiver) - 1.0);
                     dispatch_opcode;
                 }
-                case 20: {
+                case Extended::FloatDoReverse.LoopOrReturn.code: {
                     PyrSlot* vars = g->frame->vars;
                     if (slotRawFloat(&vars[2]) + 0.5 >= 0.0) {
                         // Push: function, i, j
@@ -1739,12 +1729,12 @@ HOT void Interpret(VMGlobals* g) {
                     }
                     dispatch_opcode;
                 }
-                case 21: {
-                    --sp; // Drop
+                case Extended::FloatDoReverse.DropAndJumpBackToLoop.code: {
+                    --sp;
                     PyrSlot* vars = g->frame->vars;
                     SetRaw(&vars[2], slotRawFloat(&vars[2]) - 1.0); // dec i
                     SetRaw(&vars[3], slotRawFloat(&vars[3]) - 1.0); // inc j
-                    ip -= 4;
+                    ip -= Extended::FloatDoReverse.jumpSize();
                     dispatch_opcode;
                 }
 
@@ -1816,7 +1806,7 @@ HOT void Interpret(VMGlobals* g) {
                 }
 
                 // Number-forSeries : 143 29, 143 30, 143 31
-                case 29: {
+                case Extended::NumberForSeries.Init.code: {
                     PyrSlot* vars = g->frame->vars;
                     // 0 receiver, 1 step, 2 last, 3 function, 4 i, 5 j
                     if (IsInt(vars + 0) && (IsInt(vars + 1) || IsNil(vars + 1))
@@ -1882,7 +1872,7 @@ HOT void Interpret(VMGlobals* g) {
                     }
                     dispatch_opcode;
                 }
-                case 30: {
+                case Extended::NumberForSeries.LoopOrReturn.code: {
                     PyrSlot* vars = g->frame->vars;
                     if (GetTag(&vars[1]) == tagInt) {
                         if ((slotRawInt(&vars[1]) >= 0 && slotRawInt(&vars[4]) <= slotRawInt(&vars[2]))
@@ -1907,16 +1897,15 @@ HOT void Interpret(VMGlobals* g) {
                     }
                     dispatch_opcode;
                 }
-                case 31: {
+                case Extended::NumberForSeries.DropAndJumpBackToLoop.code: {
                     --sp;
                     PyrSlot* vars = g->frame->vars;
-                    if (GetTag(&vars[1]) == tagInt) {
+                    if (GetTag(&vars[1]) == tagInt)
                         SetRaw(&vars[4], slotRawInt(&vars[4]) + slotRawInt(&vars[1])); // inc i
-                    } else {
+                    else
                         SetRaw(&vars[4], slotRawFloat(&vars[4]) + slotRawFloat(&vars[1])); // inc i
-                    }
                     SetRaw(&vars[5], slotRawInt(&vars[5]) + 1); // inc j
-                    ip -= 4;
+                    ip -= Extended::NumberForSeries.jumpSize();
                     dispatch_opcode;
                 }
 
@@ -1932,7 +1921,6 @@ HOT void Interpret(VMGlobals* g) {
                 g->gc->GCWrite(g->classvars, (sp + 1));
                 dispatch_opcode;
             }
-
 
             InterpretOpcode(SendMsgThisOpt) {
                 const auto [index] = SendMsgThisOpt.pullOperandsFromInstructions(ip);
@@ -2050,56 +2038,38 @@ HOT void Interpret(VMGlobals* g) {
                 const auto [binaryMathNibble] = SendSpecialBinaryArithMsg.pullOperandsFromInstructions(ip);
                 switch (binaryMathNibble) {
                 case OpBinaryMathNibble::Add: {
-                    if (IsInt(sp - 1)) {
-                        if (IsInt(sp)) {
-                            --sp;
-                            SetRaw(sp, slotRawInt(sp) + slotRawInt(sp + 1));
-                            ifTailCallOptimise([&]() { g->tailCall = 0; });
-                        } else
-                            storeLoadSpAndIp([&]() {
-                                g->primitiveIndex = (Byte)OpBinaryMathNibble::Add;
-                                prAddInt(g, -1);
-                            });
+                    if (IsInt(sp - 1) && IsInt(sp)) {
+                        --sp;
+                        SetRaw(sp, slotRawInt(sp) + slotRawInt(sp + 1));
+                        ifTailCallOptimise([&]() { g->tailCall = 0; });
                     } else
                         storeLoadSpAndIp([&]() {
                             g->primitiveIndex = (Byte)OpBinaryMathNibble::Add;
-                            prAddNum(g, -1);
+                            IsInt(sp - 1) ? prAddInt(g, -1) : prAddNum(g, -1);
                         });
                 } break;
 
                 case OpBinaryMathNibble::Sub: {
-                    if (IsInt(sp - 1)) {
-                        if (IsInt(sp)) {
-                            --sp;
-                            SetRaw(sp, slotRawInt(sp) - slotRawInt(sp + 1));
-                            ifTailCallOptimise([&]() { g->tailCall = 0; });
-                        } else
-                            storeLoadSpAndIp([&]() {
-                                g->primitiveIndex = (Byte)OpBinaryMathNibble::Sub;
-                                prSubInt(g, -1);
-                            });
+                    if (IsInt(sp - 1) && IsInt(sp)) {
+                        --sp;
+                        SetRaw(sp, slotRawInt(sp) - slotRawInt(sp + 1));
+                        ifTailCallOptimise([&]() { g->tailCall = 0; });
                     } else
                         storeLoadSpAndIp([&]() {
                             g->primitiveIndex = (Byte)OpBinaryMathNibble::Sub;
-                            prSubNum(g, -1);
+                            IsInt(sp - 1) ? prSubInt(g, -1) : prSubNum(g, -1);
                         });
                 } break;
 
                 case OpBinaryMathNibble::Mul: {
-                    if (IsInt(sp - 1)) {
-                        if (IsInt(sp)) {
-                            --sp;
-                            SetRaw(sp, slotRawInt(sp) * slotRawInt(sp + 1));
-                            ifTailCallOptimise([&]() { g->tailCall = 0; });
-                        } else
-                            storeLoadSpAndIp([&]() {
-                                g->primitiveIndex = opMul;
-                                prMulInt(g, -1);
-                            });
+                    if (IsInt(sp - 1) && IsInt(sp)) {
+                        --sp;
+                        SetRaw(sp, slotRawInt(sp) * slotRawInt(sp + 1));
+                        ifTailCallOptimise([&]() { g->tailCall = 0; });
                     } else
                         storeLoadSpAndIp([&]() {
                             g->primitiveIndex = opMul;
-                            prMulNum(g, -1);
+                            IsInt(sp - 1) ? prMulInt(g, -1) : prMulNum(g, -1);
                         });
                 } break;
 
@@ -2279,257 +2249,268 @@ HOT void Interpret(VMGlobals* g) {
             // and now if meth is null, bail out just like if I don't understand it
             if (UNLIKELY(meth == nullptr || (slotRawSymbol(&meth->name) != selector))) {
                 storeLoadSpAndIp([&]() { doesNotUnderstand(g, selector, numArgsPushed, 0); });
-            } else {
-                PyrMethodRaw* methraw = METHRAW(meth);
+                ifTailCallOptimise([&]() { g->tailCall = 0; });
+                dispatch_opcode;
+            }
 
-                const auto pushDefaultArgsAndChopUnused = [&]() {
-                    if (numArgsPushed < methraw->numargs) {
-                        // Not enough args pushed.
-                        PyrSlot* qslot = slotRawObject(&meth->prototypeFrame)->slots + numArgsPushed - 1;
-                        for (int m = 0, mmax = methraw->numargs - numArgsPushed; m < mmax; ++m)
-                            slotCopy(++sp, ++qslot);
-                        numArgsPushed = methraw->numargs;
-                    } else if (methraw->varargs == 0 && numArgsPushed > methraw->numargs) {
-                        // Too many args.
-                        const auto num_slots_to_chop = numArgsPushed - methraw->numargs;
-                        sp -= num_slots_to_chop;
-                        numArgsPushed = methraw->numargs;
-                    }
-                };
-
-                switch (methraw->methType) {
-                case methNormal:
-                    storeLoadSpAndIp([&]() { executeMethod(g, meth, numArgsPushed, 0); });
-                    break;
-
-                case methReturnSelf:
-                    sp -= numArgsPushed - 1;
-                    break;
-
-                case methReturnLiteral:
-                    sp -= numArgsPushed - 1;
-                    slotCopy(sp, &meth->selectors); // in this case selectors is just a single value
-                    break;
-
-                case methReturnArg:
-                    sp -= numArgsPushed - 1;
-                    index = methraw->specialIndex; // zero is index of the first argument
-                    if (index < numArgsPushed)
-                        slotCopy(sp, sp + index);
-                    else
-                        slotCopy(sp, &slotRawObject(&meth->prototypeFrame)->slots[index]);
-                    break;
-
-                case methReturnInstVar:
-                    sp -= numArgsPushed - 1;
-                    index = methraw->specialIndex;
-                    slotCopy(sp, &slotRawObject(slot)->slots[index]);
-                    break;
-
-                case methAssignInstVar: {
-                    sp -= numArgsPushed - 1;
-                    index = methraw->specialIndex;
-                    PyrObject* obj = slotRawObject(slot);
-                    if (obj->IsImmutable()) {
-                        StoreToImmutableB(g, sp, ip);
-                    } else {
-                        if (numArgsPushed >= 2) {
-                            slotCopy(&obj->slots[index], sp + 1);
-                            g->gc->GCWrite(obj, sp + 1);
-                        } else {
-                            slotCopy(&obj->slots[index], &gSpecialValues.Nil_);
-                        }
-                        slotCopy(sp, slot);
-                    }
-                    break;
+            PyrMethodRaw* methraw = METHRAW(meth);
+            const auto pushDefaultArgsAndChopUnused = [&]() {
+                if (numArgsPushed < methraw->numargs) {
+                    // Not enough args pushed.
+                    PyrSlot* qslot = slotRawObject(&meth->prototypeFrame)->slots + numArgsPushed - 1;
+                    for (int m = 0, mmax = methraw->numargs - numArgsPushed; m < mmax; ++m)
+                        slotCopy(++sp, ++qslot);
+                    numArgsPushed = methraw->numargs;
+                } else if (methraw->varargs == 0 && numArgsPushed > methraw->numargs) {
+                    // Too many args.
+                    const auto num_slots_to_chop = numArgsPushed - methraw->numargs;
+                    sp -= num_slots_to_chop;
+                    numArgsPushed = methraw->numargs;
                 }
+            };
 
-                case methReturnClassVar:
-                    sp -= numArgsPushed - 1;
-                    slotCopy(sp, &g->classvars->slots[methraw->specialIndex]);
-                    break;
+            switch (methraw->methType) {
+            case methNormal:
+                storeLoadSpAndIp([&]() { executeMethod(g, meth, numArgsPushed, 0); });
+                break;
 
-                case methAssignClassVar:
-                    sp -= numArgsPushed - 1;
+            case methReturnSelf:
+                sp -= numArgsPushed - 1;
+                break;
+
+            case methReturnLiteral:
+                sp -= numArgsPushed - 1;
+                slotCopy(sp, &meth->selectors); // in this case selectors is just a single value
+                break;
+
+            case methReturnArg:
+                sp -= numArgsPushed - 1;
+                index = methraw->specialIndex; // zero is index of the first argument
+                if (index < numArgsPushed)
+                    slotCopy(sp, sp + index);
+                else
+                    slotCopy(sp, &slotRawObject(&meth->prototypeFrame)->slots[index]);
+                break;
+
+            case methReturnInstVar:
+                sp -= numArgsPushed - 1;
+                index = methraw->specialIndex;
+                slotCopy(sp, &slotRawObject(slot)->slots[index]);
+                break;
+
+            case methAssignInstVar: {
+                sp -= numArgsPushed - 1;
+                index = methraw->specialIndex;
+                PyrObject* obj = slotRawObject(slot);
+                if (obj->IsImmutable()) {
+                    StoreToImmutableB(g, sp, ip);
+                } else {
                     if (numArgsPushed >= 2) {
-                        slotCopy(&g->classvars->slots[methraw->specialIndex], sp + 1);
-                        g->gc->GCWrite(g->classvars, sp + 1);
+                        slotCopy(&obj->slots[index], sp + 1);
+                        g->gc->GCWrite(obj, sp + 1);
                     } else
-                        slotCopy(&g->classvars->slots[methraw->specialIndex], &gSpecialValues.Nil_);
+                        slotCopy(&obj->slots[index], &gSpecialValues.Nil_);
                     slotCopy(sp, slot);
-                    break;
+                }
+                break;
+            }
 
-                case methRedirect: /* send a different selector to self */
-                    pushDefaultArgsAndChopUnused();
-                    selector = slotRawSymbol(&meth->selectors);
-                    goto msg_lookup; // Note the recurrsion here!
+            case methReturnClassVar:
+                sp -= numArgsPushed - 1;
+                slotCopy(sp, &g->classvars->slots[methraw->specialIndex]);
+                break;
 
-                case methRedirectSuper: /* send a different selector to self */
-                    pushDefaultArgsAndChopUnused();
-                    selector = slotRawSymbol(&meth->selectors);
-                    classobj = slotRawSymbol(&slotRawClass(&meth->ownerclass)->superclass)->u.classobj;
-                    goto msg_lookup;
+            case methAssignClassVar:
+                sp -= numArgsPushed - 1;
+                if (numArgsPushed >= 2) {
+                    slotCopy(&g->classvars->slots[methraw->specialIndex], sp + 1);
+                    g->gc->GCWrite(g->classvars, sp + 1);
+                } else
+                    slotCopy(&g->classvars->slots[methraw->specialIndex], &gSpecialValues.Nil_);
+                slotCopy(sp, slot);
+                break;
 
-                case methForwardInstVar:
-                    pushDefaultArgsAndChopUnused();
-                    selector = slotRawSymbol(&meth->selectors);
-                    index = methraw->specialIndex;
-                    slotCopy(slot, &slotRawObject(slot)->slots[index]);
-                    classobj = classOfSlot(slot);
-                    goto msg_lookup; // Note the recursion.
+            case methRedirect: /* send a different selector to self */
+                pushDefaultArgsAndChopUnused();
+                selector = slotRawSymbol(&meth->selectors);
+                goto msg_lookup; // Note the recurrsion here!
 
-                case methForwardClassVar:
-                    pushDefaultArgsAndChopUnused();
-                    selector = slotRawSymbol(&meth->selectors);
-                    slotCopy(slot, &g->classvars->slots[methraw->specialIndex]);
-                    classobj = classOfSlot(slot);
-                    goto msg_lookup; // Note the recursion.
+            case methRedirectSuper: /* send a different selector to self */
+                pushDefaultArgsAndChopUnused();
+                selector = slotRawSymbol(&meth->selectors);
+                classobj = slotRawSymbol(&slotRawClass(&meth->ownerclass)->superclass)->u.classobj;
+                goto msg_lookup;
 
-                case methPrimitive:
-                    storeLoadSpAndIp([&]() { doPrimitive(g, meth, numArgsPushed); });
-                    break;
-                } // switch (meth->methType)
-            } // end handle message
+            case methForwardInstVar:
+                pushDefaultArgsAndChopUnused();
+                selector = slotRawSymbol(&meth->selectors);
+                index = methraw->specialIndex;
+                slotCopy(slot, &slotRawObject(slot)->slots[index]);
+                classobj = classOfSlot(slot);
+                goto msg_lookup; // Note the recursion.
+
+            case methForwardClassVar:
+                pushDefaultArgsAndChopUnused();
+                selector = slotRawSymbol(&meth->selectors);
+                slotCopy(slot, &g->classvars->slots[methraw->specialIndex]);
+                classobj = classOfSlot(slot);
+                goto msg_lookup; // Note the recursion.
+
+            case methPrimitive:
+                storeLoadSpAndIp([&]() { doPrimitive(g, meth, numArgsPushed); });
+                break;
+            }
+
             ifTailCallOptimise([&]() { g->tailCall = 0; });
             dispatch_opcode;
         }
             ////////////////////////////////////
 
-        key_class_lookup:
-            // normal class lookup
+        key_class_lookup_then_key_msg_lookup:
             classobj = classOfSlot(slot);
 
-            // message sends handled here:
         key_msg_lookup : {
             size_t index = slotRawInt(&classobj->classIndex) + selector->u.index;
             PyrMethod* meth = gRowTable[index];
 
             if (UNLIKELY(slotRawSymbol(&meth->name) != selector)) {
+                storeLoadSpAndIp([&]() { doesNotUnderstand(g, selector, numArgsPushed, numKeyArgsPushed); });
+                numKeyArgsPushed = 0;
+                ifTailCallOptimise([&]() { g->tailCall = 0; });
+                dispatch_opcode;
+            }
+            PyrMethodRaw* methraw;
+            methraw = METHRAW(meth);
+
+            switch (methraw->methType) {
+            case methNormal:
+                storeLoadSpAndIp([&]() { executeMethod(g, meth, numArgsPushed, numKeyArgsPushed); });
+                break;
+
+            case methReturnSelf:
+                sp -= numArgsPushed - 1;
+                break;
+
+            case methReturnLiteral:
+                sp -= numArgsPushed - 1;
+                slotCopy(sp, &meth->selectors); /* in this case selectors is just a single value */
+                break;
+
+            case methReturnArg:
                 g->sp = sp;
-                g->ip = ip;
-                doesNotUnderstand(g, selector, numArgsPushed, numKeyArgsPushed);
+                numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
+                numKeyArgsPushed = 0;
                 sp = g->sp;
-                ip = g->ip;
-            } else {
-                PyrMethodRaw* methraw;
-                methraw = METHRAW(meth);
-                switch (methraw->methType) {
-                case methNormal: /* normal msg send */
-                    g->sp = sp;
-                    g->ip = ip;
-                    executeMethod(g, meth, numArgsPushed, numKeyArgsPushed);
-                    sp = g->sp;
-                    ip = g->ip;
-                    break;
-                case methReturnSelf: /* return self */
-                    sp -= numArgsPushed - 1;
-                    break;
-                case methReturnLiteral: /* return literal */
-                    sp -= numArgsPushed - 1;
-                    slotCopy(sp, &meth->selectors); /* in this case selectors is just a single value */
-                    break;
-                case methReturnArg: /* return an argument */
-                    g->sp = sp;
-                    numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
-                    numKeyArgsPushed = 0;
-                    sp = g->sp;
-                    sp -= numArgsPushed - 1;
-                    index = methraw->specialIndex; // zero is index of the first argument
-                    if (index < numArgsPushed) {
-                        slotCopy(sp, sp + index);
-                    } else {
-                        slotCopy(sp, &slotRawObject(&meth->prototypeFrame)->slots[index]);
-                    }
-                    break;
-                case methReturnInstVar: /* return inst var */
-                    sp -= numArgsPushed - 1;
-                    index = methraw->specialIndex;
-                    slotCopy(sp, &slotRawObject(slot)->slots[index]);
-                    break;
-                case methAssignInstVar: { /* assign inst var */
-                    sp -= numArgsPushed - 1;
-                    numArgsPushed -= numKeyArgsPushed << 1;
-                    index = methraw->specialIndex;
-                    PyrObject* obj = slotRawObject(slot);
-                    if (obj->IsImmutable()) {
-                        StoreToImmutableB(g, sp, ip);
-                    } else {
-                        if (numArgsPushed >= 2) {
-                            slotCopy(&obj->slots[index], sp + 1);
-                            g->gc->GCWrite(obj, sp + 1);
-                        } else
-                            slotCopy(&obj->slots[index], &gSpecialValues.Nil_);
-                        slotCopy(sp, slot);
-                    }
-                    break;
+                sp -= numArgsPushed - 1;
+                index = methraw->specialIndex; // zero is index of the first argument
+                if (index < numArgsPushed) {
+                    slotCopy(sp, sp + index);
+                } else {
+                    slotCopy(sp, &slotRawObject(&meth->prototypeFrame)->slots[index]);
                 }
-                case methReturnClassVar: /* return class var */
-                    sp -= numArgsPushed - 1;
-                    slotCopy(sp, &g->classvars->slots[methraw->specialIndex]);
-                    break;
-                case methAssignClassVar: /* assign class var */
-                    sp -= numArgsPushed - 1;
+                break;
+
+            case methReturnInstVar:
+                sp -= numArgsPushed - 1;
+                index = methraw->specialIndex;
+                slotCopy(sp, &slotRawObject(slot)->slots[index]);
+                break;
+
+            case methAssignInstVar: {
+                sp -= numArgsPushed - 1;
+                numArgsPushed -= numKeyArgsPushed << 1;
+                index = methraw->specialIndex;
+                PyrObject* obj = slotRawObject(slot);
+                if (obj->IsImmutable()) {
+                    StoreToImmutableB(g, sp, ip);
+                } else {
                     if (numArgsPushed >= 2) {
-                        slotCopy(&g->classvars->slots[methraw->specialIndex], sp + 1);
-                        g->gc->GCWrite(g->classvars, sp + 1);
+                        slotCopy(&obj->slots[index], sp + 1);
+                        g->gc->GCWrite(obj, sp + 1);
                     } else
-                        slotCopy(&g->classvars->slots[methraw->specialIndex], &gSpecialValues.Nil_);
+                        slotCopy(&obj->slots[index], &gSpecialValues.Nil_);
                     slotCopy(sp, slot);
-                    break;
-                case methRedirect: /* send a different selector to self, e.g. this.subclassResponsibility */
-                    g->sp = sp;
-                    numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
-                    numKeyArgsPushed = 0;
-                    sp = g->sp;
-                    selector = slotRawSymbol(&meth->selectors);
+                }
+                break;
+            }
 
-                    goto msg_lookup;
-                case methRedirectSuper: /* send a different selector to super */
-                    g->sp = sp;
-                    numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
-                    numKeyArgsPushed = 0;
-                    sp = g->sp;
-                    selector = slotRawSymbol(&meth->selectors);
+            case methReturnClassVar:
+                sp -= numArgsPushed - 1;
+                slotCopy(sp, &g->classvars->slots[methraw->specialIndex]);
+                break;
 
-                    classobj = slotRawSymbol(&slotRawClass(&meth->ownerclass)->superclass)->u.classobj;
+            case methAssignClassVar:
+                sp -= numArgsPushed - 1;
+                if (numArgsPushed >= 2) {
+                    slotCopy(&g->classvars->slots[methraw->specialIndex], sp + 1);
+                    g->gc->GCWrite(g->classvars, sp + 1);
+                } else
+                    slotCopy(&g->classvars->slots[methraw->specialIndex], &gSpecialValues.Nil_);
+                slotCopy(sp, slot);
+                break;
 
-                    goto msg_lookup;
-                case methForwardInstVar: /* forward to an instance variable */
-                    g->sp = sp;
-                    numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
-                    numKeyArgsPushed = 0;
-                    sp = g->sp;
-                    selector = slotRawSymbol(&meth->selectors);
-                    index = methraw->specialIndex;
-                    slotCopy(slot, &slotRawObject(slot)->slots[index]);
+            case methRedirect: /* send a different selector to self, e.g. this.subclassResponsibility */
+                g->sp = sp;
+                numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
+                numKeyArgsPushed = 0;
+                sp = g->sp;
+                selector = slotRawSymbol(&meth->selectors);
+                goto msg_lookup;
 
-                    classobj = classOfSlot(slot);
+            case methRedirectSuper: /* send a different selector to super */
+                g->sp = sp;
+                numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
+                numKeyArgsPushed = 0;
+                sp = g->sp;
+                selector = slotRawSymbol(&meth->selectors);
+                classobj = slotRawSymbol(&slotRawClass(&meth->ownerclass)->superclass)->u.classobj;
+                classobj = slotRawSymbol(&slotRawClass(&meth->ownerclass)->superclass)->u.classobj;
 
-                    goto msg_lookup;
-                case methForwardClassVar: /* forward to an instance variable */
-                    g->sp = sp;
-                    numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
-                    numKeyArgsPushed = 0;
-                    sp = g->sp;
-                    selector = slotRawSymbol(&meth->selectors);
-                    slotCopy(slot, &g->classvars->slots[methraw->specialIndex]);
+                classobj = slotRawSymbol(&slotRawClass(&meth->ownerclass)->superclass)->u.classobj;
 
-                    classobj = classOfSlot(slot);
+                goto msg_lookup;
 
-                    goto msg_lookup;
-                case methPrimitive: /* primitive */
-                    g->sp = sp;
-                    g->ip = ip;
-                    doPrimitiveWithKeys(g, meth, numArgsPushed, numKeyArgsPushed);
-                    sp = g->sp;
-                    ip = g->ip;
-                    break;
-                } // switch (meth->methType)
-            } // end handle message
+            case methForwardInstVar:
+                g->sp = sp;
+                numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
+                numKeyArgsPushed = 0;
+                sp = g->sp;
+                selector = slotRawSymbol(&meth->selectors);
+                index = methraw->specialIndex;
+                slotCopy(slot, &slotRawObject(slot)->slots[index]);
+                classobj = classOfSlot(slot);
+                classobj = classOfSlot(slot);
+
+                classobj = classOfSlot(slot);
+
+                goto msg_lookup;
+
+            case methForwardClassVar:
+                g->sp = sp;
+                numArgsPushed = keywordFixStack(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
+                numKeyArgsPushed = 0;
+                sp = g->sp;
+                selector = slotRawSymbol(&meth->selectors);
+                slotCopy(slot, &g->classvars->slots[methraw->specialIndex]);
+                classobj = classOfSlot(slot);
+                classobj = classOfSlot(slot);
+
+                classobj = classOfSlot(slot);
+
+                goto msg_lookup;
+
+            case methPrimitive:
+                storeLoadSpAndIp([&]() { doPrimitiveWithKeys(g, meth, numArgsPushed, numKeyArgsPushed); });
+                break;
+            }
+
             numKeyArgsPushed = 0;
             ifTailCallOptimise([&]() { g->tailCall = 0; });
             dispatch_opcode;
         }
+
+
+            // End of Intrepreting Opcodes
         } // switch(op1)
     } // end while(running)
 #ifndef _WIN32
