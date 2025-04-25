@@ -356,11 +356,81 @@ definitionlist::
 ## keyword:: note\::
 teletype:: NOTE\:: ::
 || Create a NOTE box with important content.
+
+teletype::
 note:: like this ::
+::
+becomes:
+note:: like this ::
+
+Alternatively, note boxes can also be styled as follows:
+
+teletype::
+note::/attention/
+
+like this
+\::
+::
+becomes:
+note:: /attention/
+
+like this
+::
+
+teletype::
+note:: /caution/ like this ::
+::
+becomes:
+note:: /caution/ like this::
+
+teletype::
+note:: /hint/ like this ::
+::
+becomes:
+note:: /hint/ like this ::
+
+teletype::
+note:: /important/ like this ::
+::
+becomes:
+note:: /important/ like this ::
+
+teletype::
+note:: /seealso/ like this ::
+::
+becomes:
+note:: /seealso/ like this ::
+
+teletype::
+note:: /tip/ like this ::
+::
+becomes:
+note:: /tip/ like this::
+
 ## keyword:: warning\::
 teletype:: WARNING\:: ::
 || Create a WARNING box with very important content.
 warning:: like this ::
+
+Alternatively, warning boxes can also be styled as follows:
+
+teletype::
+warning::/danger/
+
+like this
+\::
+::
+becomes:
+warning:: /danger/
+
+like this
+::
+
+teletype::
+warning:: /error/ like this ::
+::
+becomes:
+warning:: /error/ like this::
 ## keyword:: footnote\::
 teletype:: FOOTNOTE\:: ::
 || Create a footnote which will be rendered at the end of the document.

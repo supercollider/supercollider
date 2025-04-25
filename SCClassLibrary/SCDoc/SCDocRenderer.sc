@@ -563,7 +563,15 @@ SCDocHTMLRenderer {
 			\NL, { }, // these shouldn't be here..
 // Plain text and modal tags
 			\TEXT, {
-				stream << this.escapeSpecialChars(node.text);
+				stream << this.escapeSpecialChars(node.text)
+				.replace("/attention/", "")
+				.replace("/caution/", "")
+				.replace("/danger/", "")
+				.replace("/error/", "")
+				.replace("/hint/", "")
+				.replace("/important/", "")
+				.replace("/seealso/", "")
+				.replace("/tip/", "")
 			},
 			\LINK, {
 				stream << this.htmlForLink(node.text);
@@ -625,13 +633,43 @@ SCDocHTMLRenderer {
 			},
 // Other stuff
 			\NOTE, {
-				stream << "<div class='note'><span class='notelabel'>NOTE:</span> ";
+				var thisText = if (node.children.isArray) {
+					if(node.children[0].children.isArray) {
+						node.children[0].children[0].text
+					}
+				};
+				stream << ( "<div class='note'><span class='notelabel'>" ++
+					(
+						case
+						{ thisText.contains("/attention/") } {"ATTENTION"}
+						{ thisText.contains("/caution/") } {"CAUTION"}
+						{ thisText.contains("/hint/") } {"HINT"}
+						{ thisText.contains("/important/") } {"IMPORTANT"}
+						{ thisText.contains("/seealso/") } {"SEE ALSO"}
+						{ thisText.contains("/tip/") } {"TIP"}
+						{ "NOTE" }
+					)
+					++ ":</span> "
+				);
 				noParBreak = true;
 				this.renderChildren(stream, node);
 				stream << "</div>";
 			},
 			\WARNING, {
-				stream << "<div class='warning'><span class='warninglabel'>WARNING:</span> ";
+				var thisText = if (node.children.isArray) {
+					if(node.children[0].children.isArray) {
+						node.children[0].children[0].text
+					}
+				};
+				stream << ( "<div class='warning'><span class='warninglabel'>" ++
+					(
+						case
+						{ thisText.contains("/danger/") } {"DANGER"}
+						{ thisText.contains("/error/") } {"ERROR"}
+						{ "WARNING" }
+					)
+					++ ":</span> "
+				);
 				noParBreak = true;
 				this.renderChildren(stream, node);
 				stream << "</div>";
