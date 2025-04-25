@@ -612,16 +612,18 @@ SCDocHTMLRenderer {
 				<< "</span>";
 			},
 			\IMAGE, {
+				var imageFile, imageScale;
 				f = node.text.split($#);
+				# imageFile, imageScale = f[0].split($@);
 				stream << "<div class='image'>";
-				img = "<img src='" ++ f[0] ++ "' width='auto' height='" ++ (f[3]?"") ++ "'/>";
+				img = "<img src='" ++ imageFile ++ "' width='auto' height='" ++ imageScale ++ "'>";
 				if(f[2].isNil) {
 					stream << img;
 				} {
 					stream << this.htmlForLink(f[2]++"#"++(f[3]?"")++"#"++img,false);
 				};
 				f[1] !? { stream << "<br><b>" << f[1] << "</b>" }; // ugly..
-				stream << "</div>\n";
+				stream << "\n</div>\n";
 			},
 // Other stuff
 			\NOTE, {

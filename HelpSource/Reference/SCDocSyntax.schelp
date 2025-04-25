@@ -240,6 +240,7 @@ URL's are automagically turned into links, but can be explicitly created with th
 ## keyword:: anchor\::
 teletype:: ANCHOR\:: ::
 || Manually create an anchor at this position in the document.
+
 ## keyword:: image\::
 teletype:: IMAGE\:: ::
 || Insert image, the text should be the relative path to the image.
@@ -263,7 +264,7 @@ image::foo.png##Classes/SinOsc::
 ::
 
 The image size is automatically adjusted based on the width of the HTML page and table cells.
-If vertical length control is needed, you can specify a height in pixels by adding a number after the third `#`, while the width remains automatically adjusted.
+If vertical length control is needed, you can specify a height in pixels by adding a number before the first teletype::#:: with teletype::@::, while the width remains automatically adjusted.
 E.g.
 
 teletype::
@@ -275,9 +276,9 @@ image::functions.png#Figure 2. Function::This is ...
 \::
 table::
 ##The caption and page link have been applied:
-image::functions.png#Figure 3. Function#Reference/Functions#120::Click to see more information.
+image::functions.png@150#Figure 3. Function#Reference/Functions::Click to see more information.
 ||The caption, page link, and vertical size have been applied:
-image::functions.png#Figure 4. Function#Reference/Functions#120::Click to see more information.
+image::functions.png@300#Figure 4. Function#Reference/Functions::Click to see more information.
 \::
 ::
 
@@ -291,11 +292,10 @@ image::functions.png#Figure 2. Function::This is ...
 ::
 table::
 ##The caption and page link have been applied:
-image::functions.png#Figure 3. Function#Reference/Functions#120::Click to see more information.
+image::functions.png@150#Figure 3. Function#Reference/Functions::Click to see more information.
 ||The caption, page link, and vertical size have been applied:
-image::functions.png#Figure 4. Function#Reference/Functions#120::Click to see more information.
+image::functions.png@300#Figure 4. Function#Reference/Functions::Click to see more information.
 ::
-
 
 ## keyword:: math\::
 teletype:: MATH\:: ::
