@@ -605,7 +605,6 @@ static constexpr struct Switch {
         emitByte(Prefix);
         LookupAndJump.emit();
     }
-
 } Switch;
 
 

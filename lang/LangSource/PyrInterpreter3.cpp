@@ -1138,8 +1138,8 @@ HOT void Interpret(VMGlobals* g) {
 
             InterpretOpcode(SendSpecialUnaryArithMsgX) {
                 const auto [unaryMathOp] = SendSpecialUnaryArithMsgX.pullOperandsFromInstructions(ip);
-                storeLoadSpAndIp([&]() {
-                    g->primitiveIndex = static_cast<Byte>(unaryMathOp);
+                storeLoadSpAndIp([&, unaryMathOp = unaryMathOp]() {
+                    g->primitiveIndex = (Byte)unaryMathOp;
                     doSpecialUnaryArithMsg(g, -1);
                 });
                 ifTailCallOptimise([&]() { g->tailCall = 0; });
@@ -1148,8 +1148,8 @@ HOT void Interpret(VMGlobals* g) {
 
             InterpretOpcode(SendSpecialBinaryArithMsgX) {
                 const auto [binaryMathOp] = SendSpecialBinaryArithMsgX.pullOperandsFromInstructions(ip);
-                storeLoadSpAndIp([&]() {
-                    g->primitiveIndex = static_cast<Byte>(binaryMathOp);
+                storeLoadSpAndIp([&, binaryMathOp = binaryMathOp]() {
+                    g->primitiveIndex = (Byte)binaryMathOp;
                     doSpecialBinaryArithMsg(g, 2, false);
                 });
                 dispatch_opcode;
@@ -2066,7 +2066,7 @@ HOT void Interpret(VMGlobals* g) {
 
                 default: {
                 default_binary_math_nibble_case:
-                    storeLoadSpAndIp([&]() {
+                    storeLoadSpAndIp([&, binaryMathNibble = binaryMathNibble]() {
                         g->primitiveIndex = (Byte)binaryMathNibble;
                         doSpecialBinaryArithMsg(g, 2, false);
                     });
@@ -2204,7 +2204,7 @@ HOT void Interpret(VMGlobals* g) {
 
             InterpretOpcode(SpecialBinaryOpWithAdverb) {
                 const auto [trinaryMath] = SpecialBinaryOpWithAdverb.pullOperandsFromInstructions(ip);
-                storeLoadSpAndIp([&]() {
+                storeLoadSpAndIp([&, trinaryMath = trinaryMath]() {
                     g->primitiveIndex = (Byte)trinaryMath;
                     doSpecialBinaryArithMsg(g, 3, false);
                 });
