@@ -215,7 +215,7 @@ void compilePushVar(PyrParseNode* node, PyrSymbol* varName) {
     } else if (varName == s_nil) {
         PushSpecialValue.emit(OpSpecialValue::Nil_);
     } else if (const auto result = findVarName(gCompilingBlock, gCompilingClass, varName)) {
-        FindVarNameResult findResult = *result;
+        const FindVarNameResult findResult = *result;
         switch (findResult.varType) {
         case varInst:
             PushInstVarX.emit(Operands::Index::fromRaw(findResult.index));
@@ -238,15 +238,15 @@ void compilePushVar(PyrParseNode* node, PyrSymbol* varName) {
         case varTemp: {
             const auto vindex = findResult.index;
             if (findResult.level == 0) {
-                if (vindex <= 15) {
+                if (PushTempZeroVar.validNibble(vindex)) {
                     PushTempZeroVar.emit(vindex);
                 } else {
                     PushTempZeroVarX.emit(Operands::Index::fromRaw(vindex));
                 }
-            } else if (findResult.level < 8) {
+            } else if (PushTempVar.validNibble(findResult.level)) {
                 // Note: Because a level of zero is handled by a separate opcode, we need to subtract one from the
                 // level.
-                PushTempVar.emit(findResult.level - 1, Operands::Index::fromRaw(vindex));
+                PushTempVar.emit(findResult.level, Operands::Index::fromRaw(vindex));
             } else
                 PushTempVarX.emit(Operands::FrameOffset::fromRaw(findResult.level), Operands::Index::fromRaw(vindex));
         } break;

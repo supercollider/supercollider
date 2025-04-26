@@ -1220,7 +1220,7 @@ HOT void Interpret(VMGlobals* g) {
 
             InterpretOpcode7(PushTempVar) {
                 const auto [frameOffset, varIndex] = PushTempVar.pullOperandsFromInstructions(ip);
-                PyrFrame* start = slotRawFrame(&g->frame->context);
+                PyrFrame* start = g->frame;
                 for (int i = frameOffset; i > 0; --i)
                     start = slotRawFrame(&start->context);
                 slotCopy(++sp, &start->vars[varIndex]);

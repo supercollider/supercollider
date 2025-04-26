@@ -181,7 +181,7 @@ static constexpr details::SimpleOpSpec<0x20, Operands::UnsignedInt<16, 1>, Opera
 /// determines the index of the variable within that frame. For instance, 25 02 indicates the third variable of the
 /// fifth frame outside this frame. { var a, b, c; { { { { { c.floop }.def.dumpByteCodes }.value }.value }.value
 /// }.value }.value
-static constexpr details::SecondNibbleOpSpec<0x21, 0x28, Operands::Index> PushTempVar { "PushTempVar" };
+static constexpr details::SecondNibbleNonZeroOpSpec<0x21, 0x28, Operands::Index> PushTempVar { "PushTempVar" };
 
 /// Push a constant from the current frame onto the stack. The second instruction byte indicates the index of the
 /// constant.
