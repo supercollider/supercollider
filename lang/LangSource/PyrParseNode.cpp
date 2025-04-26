@@ -104,6 +104,71 @@ const char* nodename[] = { "ClassNode", "ClassExtNode", "MethodNode", "BlockNode
 
                            "ReturnNode", "BlockReturnNode" };
 
+
+// Forward declare helpers.
+// This means they aren't a part of the public interface of the header.
+void emitPushInt(int value);
+
+void compileAnyIfMsg(PyrCallNodeBase2* node);
+void compileIfMsg(PyrCallNodeBase2* node);
+void compileIfNilMsg(PyrCallNodeBase2* node, bool flag);
+void compileCaseMsg(PyrCallNodeBase2* node);
+void compileWhileMsg(PyrCallNodeBase2* node);
+void compileLoopMsg(PyrCallNodeBase2* node);
+void compileAndMsg(PyrParseNode* arg1, PyrParseNode* arg2);
+void compileOrMsg(PyrParseNode* arg1, PyrParseNode* arg2);
+void compileQMsg(PyrParseNode* arg1, PyrParseNode* arg2);
+void compileQQMsg(PyrParseNode* arg1, PyrParseNode* arg2);
+void compileXQMsg(PyrParseNode* arg1, PyrParseNode* arg2);
+void compileSwitchMsg(PyrCallNode* node);
+void compileAssignVar(PyrParseNode* node, PyrSymbol* varName, bool drop);
+void compilePushVar(PyrParseNode* node, PyrSymbol* varName);
+bool isAnInlineableBlock(PyrParseNode* node);
+bool isAnInlineableAtomicLiteralBlock(PyrParseNode* node);
+bool isAtomicLiteral(PyrParseNode* node);
+bool isWhileTrue(PyrParseNode* node);
+void installByteCodes(PyrBlock* block);
+
+void compilePyrMethodNode(PyrMethodNode* node, PyrSlot* result);
+void compilePyrLiteralNode(PyrLiteralNode* node, PyrSlot* result);
+
+PyrClass* getNodeSuperclass(PyrClassNode* node);
+void countNodeMethods(PyrClassNode* node, int* numClassMethods, int* numInstMethods);
+void compileExtNodeMethods(PyrClassExtNode* node);
+void countVarDefs(PyrClassNode* node);
+bool compareVarDefs(PyrClassNode* node, PyrClass* classobj);
+void recompileSubclasses(PyrClass* classobj);
+void compileNodeMethods(PyrClassNode* node);
+void fillClassPrototypes(PyrClassNode* node, PyrClass* classobj, PyrClass* superclassobj);
+
+bool isThisObjNode(PyrParseNode* node);
+int conjureSelectorIndex(PyrParseNode* node, PyrBlock* func, bool isSuper, PyrSymbol* selector, int* selType);
+Byte conjureLiteralSlotIndex(PyrParseNode* node, PyrBlock* func, PyrSlot* slot);
+bool findVarName(PyrBlock* func, PyrClass** classobj, PyrSymbol* name, int* varType, int* level, int* index,
+                 PyrBlock** tempfunc);
+void countClassVarDefs(PyrClassNode* node, int* numClassMethods, int* numInstMethods);
+void dumpNodeList(PyrParseNode* node);
+int compareCallArgs(PyrMethodNode* node, PyrCallNode* cnode, int* varIndex, PyrClass* specialClass);
+
+bool findSpecialClassName(PyrSymbol* className, int* index);
+int getIndexType(PyrClassNode* classnode);
+
+ByteCodes compileSubExpression(PyrPushLitNode* litnode, bool onTailBranch);
+ByteCodes compileSubExpressionWithGoto(PyrPushLitNode* litnode, int branchLen, bool onTailBranch);
+ByteCodes compileBodyWithGoto(PyrParseNode* body, int branchLen, bool onTailBranch);
+
+
+class SetTailIsMethodReturn {
+    bool mSave;
+
+public:
+    SetTailIsMethodReturn(bool inValue) {
+        mSave = gTailIsMethodReturn;
+        gTailIsMethodReturn = inValue;
+    }
+    ~SetTailIsMethodReturn() { gTailIsMethodReturn = mSave; }
+};
+
 void emitTailCall() {
     if (gGenerateTailCallByteCodes && gIsTailCodeBranch) {
         if (gTailIsMethodReturn)
@@ -113,8 +178,6 @@ void emitTailCall() {
     }
 }
 
-
-PyrGC* compileGC();
 PyrGC* compileGC() { return gCompilingVMGlobals ? gCompilingVMGlobals->gc : nullptr; }
 
 void initParser() {
@@ -231,10 +294,12 @@ void compilePushVar(PyrParseNode* node, PyrSymbol* varName) {
                 PushClassVarX.emit(Operands::Class { highBits }, Operands::Index { lowBits });
             }
         } break;
+
         case varConst: {
             PyrSlot* slot = slotRawObject(&findResult.classobj->constValues)->slots + findResult.index;
             compilePushConstant(node, slot);
         } break;
+
         case varTemp: {
             const auto vindex = findResult.index;
             if (findResult.level == 0) {
@@ -243,18 +308,16 @@ void compilePushVar(PyrParseNode* node, PyrSymbol* varName) {
                 } else {
                     PushTempZeroVarX.emit(Operands::Index::fromRaw(vindex));
                 }
-            } else if (PushTempVar.validNibble(findResult.level)) {
-                // Note: Because a level of zero is handled by a separate opcode, we need to subtract one from the
-                // level.
+            } else if (PushTempVar.validNibble(findResult.level))
                 PushTempVar.emit(findResult.level, Operands::Index::fromRaw(vindex));
-            } else
+            else
                 PushTempVarX.emit(Operands::FrameOffset::fromRaw(findResult.level), Operands::Index::fromRaw(vindex));
         } break;
+
         case varPseudo:
             SpecialOpcode.emit(Operands::PseudoVar::fromRaw(findResult.index));
             break;
         }
-
     } else {
         error("Variable '%s' not defined.\n", varName->name);
         nodePostErrorLine(node);
@@ -295,7 +358,6 @@ void PyrSlotNode::compile(PyrSlot* result) {
         dumpObjectSlot(&mSlot);
         nodePostErrorLine((PyrParseNode*)this);
         compileErrors++;
-        // Debugger();
     }
 }
 
@@ -1610,9 +1672,6 @@ void PyrVarDefNode::compile(PyrSlot* result) {
         COMPILENODE(mDefVal, result, false);
         compileAssignVar((PyrParseNode*)this, slotRawSymbol(&mVarName->mSlot), mDrop);
     }
-
-    // error("compilePyrVarDefNode: shouldn't get here.\n");
-    // compileErrors++;
 }
 
 void PyrVarDefNode::compileArg(PyrSlot* result) {
@@ -1625,10 +1684,9 @@ void PyrVarDefNode::compileArg(PyrSlot* result) {
         trueByteCodes = compileBodyWithGoto(this, 0, true);
         int jumplen = byteCodeLength(trueByteCodes);
 
-        emitByte(143); // special opcodes
-        emitByte(26);
-        emitByte((jumplen >> 8) & 0xFF);
-        emitByte(jumplen & 0xFF);
+        Extended::IfNotNilJumpPushNilElsePop.emit(
+            { Operands::UnsignedInt<16, 1>::fromFull(jumplen), Operands::UnsignedInt<16, 0>::fromFull(jumplen) });
+
         compileAndFreeByteCodes(trueByteCodes);
         Drop.emit();
     }
@@ -2289,11 +2347,9 @@ void compileXQMsg(PyrParseNode* arg1, PyrParseNode* arg2) {
         ByteCodes nilByteCodes;
         nilByteCodes = compileSubExpression((PyrPushLitNode*)arg2, true);
 
-        int jumplen = byteCodeLength(nilByteCodes);
-        emitByte(143); // special opcodes
-        emitByte(27); // !?
-        emitByte((jumplen >> 8) & 0xFF);
-        emitByte(jumplen & 0xFF);
+        const int jumplen = byteCodeLength(nilByteCodes);
+        Extended::IfNilThenJumpElsePopNil.emit(
+            { Operands::UnsignedInt<16, 1>::fromFull(jumplen), Operands::UnsignedInt<16, 0>::fromFull(jumplen) });
         compileAndFreeByteCodes(nilByteCodes);
     } else {
         COMPILENODE(arg2, &dummy, false);
@@ -2307,9 +2363,9 @@ void compileAnyIfMsg(PyrCallNodeBase2* node) {
 
     if (arg1->mClassno == pn_CallNode) {
         PyrCallNode* callNode = (PyrCallNode*)arg1;
-        int numCallArgs = nodeListLength(callNode->mArglist);
-        int numCallKeyArgs = nodeListLength(callNode->mKeyarglist);
-        if (numCallArgs == 1 && numCallKeyArgs == 0) {
+        const int numCallArgs = nodeListLength(callNode->mArglist);
+        const int numCallKeyArgs = nodeListLength(callNode->mKeyarglist);
+        if (numCallArgs == 1 && numCallKeyArgs == 0) { // Is a binary op with no keywords
             if (slotRawSymbol(&callNode->mSelector->mSlot) == gSpecialUnarySelectors[opIsNil]) {
                 compileIfNilMsg(node, true);
                 return;
@@ -2393,10 +2449,12 @@ void compileIfMsg(PyrCallNodeBase2* node) {
     }
 }
 
+
+// TODO: what is flag? Give it a better name.
 void compileIfNilMsg(PyrCallNodeBase2* node, bool flag) {
     PyrSlot dummy;
 
-    int numArgs = nodeListLength(node->mArglist);
+    const int numArgs = nodeListLength(node->mArglist);
     PyrParseNode* arg1 = node->mArglist;
 
     if (numArgs < 2) {
@@ -2410,12 +2468,14 @@ void compileIfNilMsg(PyrCallNodeBase2* node, bool flag) {
             COMPILENODE(callNode->mArglist, &dummy, false);
 
             ByteCodes trueByteCodes = compileSubExpression((PyrPushLitNode*)arg2, true);
-            int jumplen = byteCodeLength(trueByteCodes);
+            const int jumplen = byteCodeLength(trueByteCodes);
             if (jumplen) {
-                emitByte(143); // special opcodes
-                emitByte(flag ? 26 : 27);
-                emitByte((jumplen >> 8) & 0xFF);
-                emitByte(jumplen & 0xFF);
+                if (flag)
+                    Extended::IfNotNilJumpPushNilElsePop.emit({ Operands::UnsignedInt<16, 1>::fromFull(jumplen),
+                                                                Operands::UnsignedInt<16, 0>::fromFull(jumplen) });
+                else
+                    Extended::IfNilThenJumpElsePopNil.emit({ Operands::UnsignedInt<16, 1>::fromFull(jumplen),
+                                                             Operands::UnsignedInt<16, 0>::fromFull(jumplen) });
                 compileAndFreeByteCodes(trueByteCodes);
             } else {
                 Drop.emit(); // Drop the boolean
@@ -2435,21 +2495,25 @@ void compileIfNilMsg(PyrCallNodeBase2* node, bool flag) {
             COMPILENODE(callNode->mArglist, &dummy, false);
 
             ByteCodes falseByteCodes = compileSubExpression((PyrPushLitNode*)arg3, true);
-            int falseLen = byteCodeLength(falseByteCodes);
+            const int falseLen = byteCodeLength(falseByteCodes);
             ByteCodes trueByteCodes = compileSubExpressionWithGoto((PyrPushLitNode*)arg2, falseLen, true);
-            int trueLen = byteCodeLength(trueByteCodes);
+            const int trueLen = byteCodeLength(trueByteCodes);
             if (falseLen) {
-                emitByte(143); // special opcodes
-                emitByte(flag ? 24 : 25);
-                emitByte((trueLen >> 8) & 0xFF);
-                emitByte(trueLen & 0xFF);
+                if (flag)
+                    Extended::IfNotNilJump.emit({ Operands::UnsignedInt<16, 1>::fromFull(trueLen),
+                                                  Operands::UnsignedInt<16, 0>::fromFull(trueLen) });
+                else
+                    Extended::IfNilJump.emit({ Operands::UnsignedInt<16, 1>::fromFull(trueLen),
+                                               Operands::UnsignedInt<16, 0>::fromFull(trueLen) });
                 compileAndFreeByteCodes(trueByteCodes);
                 compileAndFreeByteCodes(falseByteCodes);
             } else if (trueLen) {
-                emitByte(143); // special opcodes
-                emitByte(flag ? 26 : 27);
-                emitByte((trueLen >> 8) & 0xFF);
-                emitByte(trueLen & 0xFF);
+                if (flag)
+                    Extended::IfNotNilJumpPushNilElsePop.emit({ Operands::UnsignedInt<16, 1>::fromFull(trueLen),
+                                                                Operands::UnsignedInt<16, 0>::fromFull(trueLen) });
+                else
+                    Extended::IfNilThenJumpElsePopNil.emit({ Operands::UnsignedInt<16, 1>::fromFull(trueLen),
+                                                             Operands::UnsignedInt<16, 0>::fromFull(trueLen) });
                 compileAndFreeByteCodes(trueByteCodes);
             } else {
                 Drop.emit(); // Drop the boolean
@@ -2468,7 +2532,6 @@ void compileIfNilMsg(PyrCallNodeBase2* node, bool flag) {
         }
         emitTailCall();
         if (numArgs < 16)
-            // TODO: for some reason we DONT subtract one from the arguments here?
             SendSpecialMsg.emit(numArgs, OpSpecialSelectors::If);
         else
             SendSpecialMsgX.emit(
@@ -2640,8 +2703,7 @@ void compileSwitchMsg(PyrCallNode* node) {
         COMPILENODE(argnode, &dummy, false);
         compilePushConstant(node, &slot);
 
-        emitByte(143); // lookup slot in dictionary and jump to offset.
-        emitByte(28);
+        Extended::Switch.emit();
 
         argnode = argnode->mNext; // skip first arg.
 
@@ -3920,6 +3982,7 @@ int nodeListLength(PyrParseNode* node) {
 }
 
 
+// TODO: refactor this somehow so it is clear **exactly** what all the return arguments do.
 int conjureSelectorIndex(PyrParseNode* node, PyrBlock* func, bool isSuper, PyrSymbol* selector, int* selType) {
     int i;
     PyrObject* selectors;
@@ -3951,13 +4014,13 @@ int conjureSelectorIndex(PyrParseNode* node, PyrBlock* func, bool isSuper, PyrSy
             return opmLoop;
         } else if (selector == gSpecialSelectors[opmQuestionMark]) {
             *selType = selQuestionMark;
-            return opmAnd;
+            return opmAnd; // TODO: why are we returning opmAnd (14) ? Okay the value is ignored.
         } else if (selector == gSpecialSelectors[opmDoubleQuestionMark]) {
             *selType = selDoubleQuestionMark;
-            return opmAnd;
+            return opmAnd; // TODO: why are we returning opmAnd (14) ? Okay the value is ingored
         } else if (selector == gSpecialSelectors[opmExclamationQuestionMark]) {
             *selType = selExclamationQuestionMark;
-            return opmAnd;
+            return opmAnd; // TODO: why are we returning opmAnd (14) ?  Okay the value is ingored
         }
 
         for (i = 0; i < opmNumSpecialSelectors; ++i) {

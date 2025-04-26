@@ -563,37 +563,50 @@ static constexpr struct DoubleQuestionMark {
     }
 } DoubleQuestionMark;
 
-static constexpr struct IfNil {
+/// Used in `if(1.isNil) { 4 } { 5 }`.
+static constexpr struct IfNotNilJump {
     details::SimpleOpSpec<0x18, Operands::UnsignedInt<16, 1>, Operands::UnsignedInt<16, 0>> Jump { "Jump" };
     void emit(decltype(Jump)::Tuple&& tup) const {
         emitByte(Prefix);
         std::apply([&](auto&&... ts) { Jump.emit(ts...); }, std::forward<decltype(Jump)::Tuple>(tup));
     }
-} IfNil;
+} IfNotNilJump;
 
-static constexpr struct IfNotNil {
+/// Used in `if(1.notNil) { 4 } { 5 }`.
+static constexpr struct IfNilJump {
     details::SimpleOpSpec<0x19, Operands::UnsignedInt<16, 1>, Operands::UnsignedInt<16, 0>> Jump { "Jump" };
     void emit(decltype(Jump)::Tuple&& tup) const {
         emitByte(Prefix);
         std::apply([&](auto&&... ts) { Jump.emit(ts...); }, std::forward<decltype(Jump)::Tuple>(tup));
     }
-} IfNotNil;
+} IfNilJump;
 
-static constexpr struct IfNilPushNil {
+/// Used in `if(1.isNil) { 4 }`.
+static constexpr struct IfNotNilJumpPushNilElsePop {
     details::SimpleOpSpec<0x1A, Operands::UnsignedInt<16, 1>, Operands::UnsignedInt<16, 0>> Jump { "Jump" };
     void emit(decltype(Jump)::Tuple&& tup) const {
         emitByte(Prefix);
         std::apply([&](auto&&... ts) { Jump.emit(ts...); }, std::forward<decltype(Jump)::Tuple>(tup));
     }
-} IfNilPushNil;
+} IfNotNilJumpPushNilElsePop;
 
-static constexpr struct IfNotNilPushNil {
+/// Primarily used to implement `!?` and `if(1.notNil) { 4 }`.
+static constexpr struct IfNilThenJumpElsePopNil {
     details::SimpleOpSpec<0x1B, Operands::UnsignedInt<16, 1>, Operands::UnsignedInt<16, 0>> Jump { "Jump" };
-    void emit(decltype(Jump)::Tuple&& tup) const {
+    void emit(decltype(Jump)::Tuple tup) const {
         emitByte(Prefix);
-        std::apply([&](auto&&... ts) { Jump.emit(ts...); }, std::forward<decltype(Jump)::Tuple>(tup));
+        std::apply([&](auto... ts) { Jump.emit(ts...); }, tup);
     }
-} IfNotNilPushNil;
+} IfNilThenJumpElsePopNil;
+
+static constexpr struct Switch {
+    details::SimpleOpSpec<0x1C> LookupAndJump { "LookupAndJump" };
+    void emit() const {
+        emitByte(Prefix);
+        LookupAndJump.emit();
+    }
+
+} Switch;
 
 
 static constexpr struct FloatDoReverse {

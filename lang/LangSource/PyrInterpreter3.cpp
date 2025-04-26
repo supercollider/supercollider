@@ -1211,7 +1211,6 @@ HOT void Interpret(VMGlobals* g) {
                     numArgsPushed = 1;
                     selector = gSpecialSelectors[opmNonBooleanError];
                     slot = sp;
-
                     goto class_lookup_then_msg_lookup;
                 }
                 --sp;
@@ -1739,65 +1738,58 @@ HOT void Interpret(VMGlobals* g) {
                 }
 
 
-                case 22: // ? question mark method
+                case Extended::QuestionMark.IsNil.code: {
                     --sp;
                     if (IsNil(sp))
                         *sp = *(sp + 1);
                     dispatch_opcode;
+                }
 
-                case 23: // if not nil push this and jump. used to implement ??
-                    if (NotNil(sp)) {
-                        int jmplen = (ip[1] << 8) | ip[2];
-                        ip += jmplen + 2;
-                    } else {
+                case Extended::DoubleQuestionMark.Jump.code: {
+                    const auto [i1, i0] = Extended::DoubleQuestionMark.Jump.pullOperandsFromInstructions(ip);
+                    if (NotNil(sp))
+                        ip += i1.asInt(i0);
+                    else
                         --sp;
-                        ip += 2;
-                    }
                     dispatch_opcode;
+                }
 
-                case 24: // ifNil
+                case Extended::IfNotNilJump.Jump.code: {
+                    const auto [i1, i0] = Extended::IfNotNilJump.Jump.pullOperandsFromInstructions(ip);
+                    if (NotNil(sp))
+                        ip += i1.asInt(i0);
+                    --sp; // remove not nil from stack
+                    dispatch_opcode;
+                }
+
+                case Extended::IfNilJump.Jump.code: {
+                    const auto [i1, i0] = Extended::IfNilJump.Jump.pullOperandsFromInstructions(ip);
+                    if (IsNil(sp))
+                        ip += i1.asInt(i0);
+                    --sp; // remove nil from stack
+                    dispatch_opcode;
+                }
+
+                case Extended::IfNotNilJumpPushNilElsePop.Jump.code: {
+                    const auto [i1, i0] = Extended::IfNotNilJumpPushNilElsePop.Jump.pullOperandsFromInstructions(ip);
                     if (NotNil(sp)) {
-                        int jmplen = (ip[1] << 8) | ip[2];
-                        ip += jmplen + 2;
-                    } else {
-                        ip += 2;
-                    }
-                    --sp;
-                    dispatch_opcode;
-
-                case 25: // ifNotNil
-                    if (IsNil(sp)) {
-                        int jmplen = (ip[1] << 8) | ip[2];
-                        ip += jmplen + 2;
-                    } else {
-                        ip += 2;
-                    }
-                    --sp;
-                    dispatch_opcode;
-
-                case 26: // ifNotNilPushNil
-                    if (NotNil(sp)) {
-                        int jmplen = (ip[1] << 8) | ip[2];
-                        ip += jmplen + 2;
-
+                        ip += i1.asInt(i0);
                         slotCopy(sp, &gSpecialValues.Nil_);
-                    } else {
-                        ip += 2;
-                        --sp;
-                    }
+                    } else
+                        --sp; // Remove nil from stack, evaluate function on stack (??)
                     dispatch_opcode;
+                }
 
-                case 27: // ifNilPushNil
-                    if (IsNil(sp)) {
-                        int jmplen = (ip[1] << 8) | ip[2];
-                        ip += jmplen + 2;
-                    } else {
-                        ip += 2;
-                        --sp;
-                    }
+                case Extended::IfNilThenJumpElsePopNil.Jump.code: {
+                    const auto [i1, i0] = Extended::IfNilThenJumpElsePopNil.Jump.pullOperandsFromInstructions(ip);
+                    if (IsNil(sp))
+                        ip += i1.asInt(i0); // Jump
+                    else
+                        --sp; // Remove non-nil from the stack, evaluate function on stack (!?)
                     dispatch_opcode;
+                }
 
-                case 28: { // switch
+                case Extended::Switch.LookupAndJump.code: {
                     PyrObject* obj = slotRawObject(sp);
                     const int slotIndex = 1 + arrayAtIdentityHashInPairs(obj, (sp - 1));
                     sp -= 2;
@@ -1805,7 +1797,6 @@ HOT void Interpret(VMGlobals* g) {
                     dispatch_opcode;
                 }
 
-                // Number-forSeries : 143 29, 143 30, 143 31
                 case Extended::NumberForSeries.Init.code: {
                     PyrSlot* vars = g->frame->vars;
                     // 0 receiver, 1 step, 2 last, 3 function, 4 i, 5 j
