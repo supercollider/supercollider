@@ -36,5 +36,8 @@ __pycache__
 #vim swap files
 .*.sw?
 
+# clangd
+.cache/*
+
 # vs code files
 .vscode
