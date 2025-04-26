@@ -1843,7 +1843,7 @@ void PyrCallNode::compileCall(PyrSlot* result) {
             for (; argnode; argnode = argnode->mNext)
                 COMPILENODE(argnode, &dummy, false);
             emitTailCall();
-            if (numArgs < 16) {
+            if (SendSuperMsg.validNibble(numArgs)) {
                 SendSuperMsg.emit(numArgs, Operands::Index::fromRaw(index));
             } else {
                 SendSuperMsgX.emit(Operands::ArgumentCount::fromRaw(numArgs), Operands::KwArgumentCount::fromRaw(0),
@@ -1905,7 +1905,7 @@ void PyrCallNode::compileCall(PyrSlot* result) {
                     COMPILENODE(argnode, &dummy, false);
                 emitTailCall();
 
-                if (numArgs < 16)
+                if (SendMsg.validNibble(numArgs))
                     SendMsg.emit(numArgs, Operands::Index::fromRaw(index));
                 else
                     SendMsgX.emit(Operands::ArgumentCount::fromRaw(numArgs), Operands::KwArgumentCount::fromRaw(0),
@@ -1977,7 +1977,7 @@ void PyrCallNode::compileCall(PyrSlot* result) {
                 for (; argnode; argnode = argnode->mNext)
                     COMPILENODE(argnode, &dummy, false);
                 emitTailCall();
-                if (numArgs < 16)
+                if (SendSpecialMsg.validNibble(numArgs))
                     SendSpecialMsg.emit(numArgs, Operands::SpecialSelectors::fromRaw(index));
                 else
                     SendSpecialMsgX.emit(Operands::ArgumentCount::fromRaw(numArgs),
@@ -2082,7 +2082,7 @@ void PyrCallNode::compileCall(PyrSlot* result) {
                     COMPILENODE(argnode, &dummy, false);
 
                 emitTailCall();
-                if (numArgs < 16)
+                if (SendMsg.validNibble(numArgs))
                     SendMsg.emit(numArgs, Operands::Index::fromRaw(index));
                 else
                     SendMsgX.emit(Operands::ArgumentCount::fromRaw(numArgs), Operands::KwArgumentCount::fromRaw(0),

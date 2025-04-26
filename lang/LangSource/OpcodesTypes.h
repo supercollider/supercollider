@@ -52,11 +52,12 @@ template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbl
 
     using Tuple = std::tuple<Byte, OPERANDS...>;
 
+    bool validNibble(unsigned int nibble) const { return startCode + nibble < endCode; }
+
     const char* name;
     unsigned int byteSize = sizeof...(OPERANDS) + 1U;
 
     void emit(unsigned int nibble, OPERANDS... operands) const {
-        assert(nibble < 16);
         const Byte bytecode = startCode + nibble;
         assert(bytecode < endCode);
         emitByte(bytecode);
@@ -67,6 +68,37 @@ template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbl
     Tuple pullOperandsFromInstructions(unsigned char*& ip) const {
         // increment instruction pointer and get the values for each operand.
         return { (*ip) - startCode, OPERANDS::fromRaw(*(++ip))... };
+    }
+};
+template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbleNonZeroOpSpec {
+    static constexpr auto startCode { STARTCODE };
+    static constexpr auto endCode { ENDCODE };
+    static constexpr auto operandCount { sizeof...(OPERANDS) };
+
+    template <int i> static constexpr auto codeOffset() {
+        static_assert(startCode + i < endCode);
+        return startCode + i;
+    }
+
+    using Tuple = std::tuple<Byte, OPERANDS...>;
+
+    const char* name;
+    unsigned int byteSize = sizeof...(OPERANDS) + 1U;
+
+    bool validNibble(unsigned int nibble) const { return startCode + (nibble - 1) < endCode; }
+
+    void emit(unsigned int nibble, OPERANDS... operands) const {
+        assert(nibble != 0);
+        const Byte bytecode = startCode + (nibble - 1);
+        assert(bytecode < endCode);
+        emitByte(bytecode);
+
+        (emitByte(static_cast<Byte>(operands)), ...);
+    }
+
+    Tuple pullOperandsFromInstructions(unsigned char*& ip) const {
+        // increment instruction pointer and get the values for each operand.
+        return { (*ip) + 1 - startCode, OPERANDS::fromRaw(*(++ip))... };
     }
 };
 

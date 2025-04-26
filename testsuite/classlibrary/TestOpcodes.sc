@@ -1,6 +1,8 @@
-TestExtendedOpcodes : UnitTest {
+TestOpcodeReciever {
+	meow { |...args| ^args }
+}
 
-
+TestOpcodes : UnitTest {
 	test_int_do {
 		var c = 0;
 
@@ -32,5 +34,16 @@ TestExtendedOpcodes : UnitTest {
 		this.assertEquals(c, \notCalled);
 	}
 
+	test_special_msg {
+		var f = { |...args| args };
+		this.assertEquals([], f.());
+		this.assertEquals([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], f.(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13));
+	}
+
+	test_msg {
+		var f = TestOpcodeReciever();
+		this.assertEquals([], f.meow());
+		this.assertEquals([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], f.meow(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13));
+	}
 
 }

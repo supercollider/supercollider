@@ -662,7 +662,7 @@ static constexpr details::SimpleOpSpec<0xA0, Operands::Index> SendMsgThisOpt { "
 /// The second nibble of the first instruction byte determines the number of arguments passed to the method.
 /// The second instruction byte determines the index of the selector within the block.
 /// { a.hark(b); c.herp(d, e) }.def.dumpByteCodes
-static constexpr details::SecondNibbleOpSpec<0xA1, 0xB0, Operands::Index> SendMsg { "SendMsg" };
+static constexpr details::SecondNibbleNonZeroOpSpec<0xA1, 0xB0, Operands::Index> SendMsg { "SendMsg" };
 
 /// Sets the global tail call state to 2. TODO what does this mean?
 static constexpr details::SimpleOpSpec<0xB0> TailCallReturnFromFunction { "TailCallReturnFromFunction" };
@@ -672,7 +672,7 @@ static constexpr details::SimpleOpSpec<0xB1, Operands::Index> SendSuperMsgThisOp
 /// nibble. Call a method on super taking a number of arguments. The second nibble of the first instruction bytes
 /// determines the number of arguments passed to the method. The second instruction byte determines the index of the
 /// selector within the block. Mostly used in class code, as in an interpreted context it refers to Interpreter.
-static constexpr details::SecondNibbleOpSpec<0xB2, 0xC0, Operands::Index> SendSuperMsg { "SendSuperMsg" };
+static constexpr details::SecondNibbleNonZeroOpSpec<0xB2, 0xC0, Operands::Index> SendSuperMsg { "SendSuperMsg" };
 
 /// Push this to the top of the stack and call a special method taking one argument.
 /// The second instruction byte determines the index of the special method within gSpecialSelectors.
@@ -685,7 +685,7 @@ static constexpr details::SimpleOpSpec<0xC0, Operands::Index> SendSpecialMsgThis
 /// The second nibble of the first instruction byte determines the number of arguments passed to the method.
 /// The second instruction byte determines the index of the special method within gSpecialSelectors.
 /// { 5.init(8, 9, 10) }.def.dumpByteCodes
-static constexpr details::SecondNibbleOpSpec<0xC1, 0xD0, Operands::SpecialSelectors> SendSpecialMsg {
+static constexpr details::SecondNibbleNonZeroOpSpec<0xC1, 0xD0, Operands::SpecialSelectors> SendSpecialMsg {
     "SendSpecialMsg"
 };
 
