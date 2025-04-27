@@ -228,6 +228,8 @@ void SetResetFF_next_k(SetResetFF* unit, int inNumSamples);
 
 void ToggleFF_Ctor(ToggleFF* unit);
 void ToggleFF_next(ToggleFF* unit, int inNumSamples);
+void ToggleFF_next_ak(ToggleFF* unit, int inNumSamples);
+void ToggleFF_next_ka(ToggleFF* unit, int inNumSamples);
 
 void Latch_Ctor(Latch* unit);
 void Latch_next_ak(Latch* unit, int inNumSamples);
@@ -899,7 +901,19 @@ void SetResetFF_next_k(SetResetFF* unit, int inNumSamples) {
 
 
 void ToggleFF_Ctor(ToggleFF* unit) {
-    SETCALC(ToggleFF_next);
+    if (unit->mCalcRate == calc_FullRate) {
+        if (INRATE(0) == calc_FullRate) {
+            SETCALC(ToggleFF_next);
+        } else {
+            SETCALC(ToggleFF_next_ak);
+        }
+    } else {
+        if (INRATE(0) == calc_FullRate) {
+            SETCALC(ToggleFF_next_ka);
+        } else {
+            SETCALC(ToggleFF_next);
+        }
+    }
 
     unit->m_prevtrig = 0.f;
     unit->mLevel = 0.f;
@@ -907,7 +921,6 @@ void ToggleFF_Ctor(ToggleFF* unit) {
     unit->m_prevtrig = 0.f;
     unit->mLevel = 0.f;
 }
-
 
 void ToggleFF_next(ToggleFF* unit, int inNumSamples) {
     float* out = ZOUT(0);
@@ -917,6 +930,36 @@ void ToggleFF_next(ToggleFF* unit, int inNumSamples) {
 
     LOOP1(inNumSamples, float curtrig = ZXP(trig); if (prevtrig <= 0.f && curtrig > 0.f) level = 1.f - level;
           ZXP(out) = level; prevtrig = curtrig;);
+
+    unit->m_prevtrig = prevtrig;
+    unit->mLevel = level;
+}
+
+void ToggleFF_next_ak(ToggleFF* unit, int inNumSamples) {
+    float* out = ZOUT(0);
+    float curtrig = ZIN0(0);
+    float prevtrig = unit->m_prevtrig;
+    float level = unit->mLevel;
+
+    if (prevtrig <= 0.f && curtrig > 0.f)
+        level = 1.f - level;
+    prevtrig = curtrig;
+    LOOP1(inNumSamples, ZXP(out) = level;);
+
+    unit->m_prevtrig = prevtrig;
+    unit->mLevel = level;
+}
+
+void ToggleFF_next_ka(ToggleFF* unit, int inNumSamples) {
+    float* out = ZOUT(0);
+    float* trig = ZIN(0);
+    float prevtrig = unit->m_prevtrig;
+    float level = unit->mLevel;
+
+    LOOP1(FULLBUFLENGTH, float curtrig = ZXP(trig); if (prevtrig <= 0.f && curtrig > 0.f) level = 1.f - level;
+          prevtrig = curtrig);
+    ZXP(out) = level;
+
     unit->m_prevtrig = prevtrig;
     unit->mLevel = level;
 }
