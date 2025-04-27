@@ -7,28 +7,26 @@ ServerTreeView {
 	}
 
 	makeWindow { |bounds, parent|
+		var view;
 		bounds = if(bounds.isNil) {
 			Rect(128, 64, 400, 400)
 		} {
-			var bnds = bounds.asRect;
-			if(bounds.asRect.width < 400) {
-				"The width value you set will be changed to 400, the minimum width.".postln;
-				Rect(bnds.left, bnds.top, 400, bnds.height);
-			} {
-				bounds
-			}
+			bounds.asRect.minSize_(Size(395, 386))
 		};
 		if(parent.isNil) {
 			window = Window(this.asString, bounds, scroll:true);
 		} {
 			window = parent
-		};
-		viewParent = window;
+		}
+		.front;
+		view = UserView(window, window.view.bounds);
+		viewParent = view;
 		//if(window.view.respondsTo(\hasHorizontalScroller_)) { window.view.hasHorizontalScroller_(false) };
-		window.view.background_(Color.grey(0.9));
-		treeViewStatus = StaticText(window, Rect(tabSize, 0, window.bounds.width - (tabSize * 2) + 1, tabSize))
+		treeViewStatus = StaticText(window, Rect(tabSize, 0, window.bounds.width - (tabSize * 2) + 1, tabSize));
+		treeViewStatus
 		.string_(" STOPPED")
-		.font_(Font.sansSerif(14 ).boldVariant);
+		.font_(Font.sansSerif(14 ).boldVariant)
+		.onClose_{ updateFunc.stop };
 		window.front
 	}
 
@@ -45,9 +43,9 @@ ServerTreeView {
 		pen = GUI.current.pen;
 		font = Font.sansSerif(10);
 
-		view = UserView.new(viewParent, Rect(0,0,400,400));
+		view = UserView.new(viewParent, viewParent.bounds);
 
-		drawFunc = {|group|
+		drawFunc = { |group|
 			var thisSize, rect, endYTabs, xtabs = 0, ytabs = 0;
 			xtabs = xtabs + 1;
 			ytabs = ytabs + 1;
@@ -163,20 +161,20 @@ ServerTreeView {
 			fork {
 				loop {
 					defer {
-						if (this.server.serverIsRunning.not) {
+						if (this.server.serverRunning.not) {
 							if(window.isClosed.not) {
 								treeViewStatus.string_(" STOPPED: last updated server tree")
 								.background_(Color.grey(0.7));
-								this.server.doWhenBooted{
+								/*this.server.doWhenBooted{
 									treeViewStatus.string_(" STARTED: current server tree")
 									.background_(Color.grey(0.9))
-								}
+								}*/
 							}
 						}
 					};
 					this.server.sendMsg("/g_queryTree", 0, 0);
 					interval.wait;
-				}
+				};
 			}
 		};
 		updateFunc = updater.value;

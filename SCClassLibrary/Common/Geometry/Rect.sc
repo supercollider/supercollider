@@ -204,4 +204,17 @@ Rect {
 			this.height - thatRect.height
 		)
 	}
+	minSize_ { |minSize|
+		this.width = if (this.width < minSize.width) {
+			"The width value you set will be changed to %, the minimum width.\n".postf(minSize.width);
+			minSize.width } {
+			this.width
+		};
+		this.height = if (this.height < minSize.height) {
+					"The height value you set will be changed to %, the minimum height.\n".postf(minSize.height);
+					minSize.height } {
+					this.height
+				};
+				^this
+		}
 }

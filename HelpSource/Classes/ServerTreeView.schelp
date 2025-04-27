@@ -1,10 +1,10 @@
 class:: ServerTreeView
 summary:: Show Server-side Node Tree
 categories:: GUI>Views
-related:: Classes/ServerTreeView
+related:: Classes/Server, Classes/ServerTree
 
 description::
-ServerTreeView shows the node tree on a server.
+link::Classes/ServerTreeView:: shows the node tree on a server.
 
 note::
 The link::Classes/ServerTreeView:: will disappear when the pointed server is not running.
@@ -13,12 +13,12 @@ The link::Classes/ServerTreeView:: will disappear when the pointed server is not
 classmethods::
 
 method:: new
-argument:: aServer
+argument:: server
 The server to display its node tree.
 argument:: bounds
 A link::Classes/Rect::, or any object responding to the link::Search#asRect#.asRect:: method.
-argument:: interval
-Polling interval.
+argument:: parent
+The link::Classes/View:: or link::Classes/Window:: where a link::Classes/ServerTreeView:: placed.
 
 instancemethods::
 
@@ -28,25 +28,40 @@ Close the receiver.
 examples::
 
 code::
-// Start server
+// Boot the local server assigned to variable s:
 s.boot;
 
-// Create a ServerTreeView:
+// Play a repeating pattern that triggers a new synth every 0.4 seconds:
+x = Pn((dur: 0.4, midinote: 69, amp: 0.1)).play;
+
+// Create a ServerTreeView instance assigned to variable a:
 a = ServerTreeView(s)
 
-// Create a ServerTreeView:
+// Start plotting nodes for ServerTreeView instance assigned to variable a:
+a.start // plotting interval: 0.5 sec (default)
+
+// Create additional ServerTreeView instances:
 b = ServerTreeView(s)
+c = ServerTreeView(s, Rect(300, 300, 300, 400)) // This instance will be resized.
 
-// Create a ServerTreeView:
+// Create a ServerTreeView instance with instant plotting enabled:
+d = ServerTreeView(s, Rect(600, 300, 400, 400)).start(2) // The plotting interval of 2 seconds will not be applied while the ServerTreeView assigned to variable a is running.
 
-c = ServerTreeView(s, Rect(300, 600, 300, 600)) // arguments: server, bounds
-// Create a ServerTreeView:
+// Close the ServerTreeView instance assigned to variable b:
+b.close
 
-d = ServerTreeView(s, Rect(600, 600, 300, 600), 1) // arguments: server, bounds, interval
+// Stop the plotting process for the ServerTreeView instance assigned to variable a:
+a.stop
 
-// Close a particular ServerTreeView:
-a.close
+// Close multiple ServerTreeView instances (assigned to variables a and c):
+[a, c].do { |v| v.close }
 
-// Close some ServerTreeView instances.
-[b, c].do { |v| v.close }
+// Stop the playback of the pattern:
+x.stop
+
+// Stop the plotting process for ServerTreeView instance assigned to variable d:
+d.stop
+
+// Close the ServerTreeView instance assigned to variable d:
+d.close
 ::

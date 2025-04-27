@@ -235,6 +235,11 @@ argument:: limit
 The number of times to check for a successful boot. (5 times/sec)
 argument:: onFailure
 A function to evaluate after the server fails to boot. If onFailure is not given, an error message is posted. Providing a function suppresses the error message. If you want to supply a function and print the normal error message, make sure that your function returns "false," e.g. code::s.waitForBoot(onFailure: { ... custom action...; false })::.
+argument:: clock
+The default link::Classes/Clock:: is link::Classes/AppClock::. Use link::Classes/SystemClock:: or link::Classes/TempoClock:: if time accuracy is important.
+
+discussion::
+Refer to the discussion of link::#-doWhenBooted::.
 
 method:: doWhenBooted
 Evaluate "onComplete" as soon as the server has booted. This method assumes the server is being booted explicitly through a separate code::boot:: call. If the server is already running, "onComplete" is executed immediately.
@@ -244,6 +249,40 @@ argument:: limit
 The number of times to check for a successful boot.
 argument:: onFailure
 A function to evaluate after the server fails to boot. If onFailure is not given, an error message is posted. Providing a function suppresses the error message. If you want to supply a function and print the normal error message, make sure that your function returns "false," e.g. code::s.doWhenBooted(onFailure: { ... custom action...; false })::.
+argument:: clock
+The default link::Classes/Clock:: is link::Classes/AppClock::. Use link::Classes/SystemClock:: or link::Classes/TempoClock:: if time accuracy is important.
+
+discussion::
+
+To play with precise time control, the fourth argument clock should be set to a precise clock (see above), and then link::Overviews/GUI-Classes##GUI classes:: should be wrapped in a code::defer { ... }::.
+
+code::
+(
+t = TempoClock;
+t.tempo = 1;
+
+s.waitForBoot({
+	var win, routine;
+	defer {
+		win = Window();
+		win.background_(Color.grey(0, 0)).onClose_{ routine.stop }.front;
+	};
+	routine = fork {
+		9.do { |i|
+			1.wait;
+			{ win.background_(Color.rand) }.defer;
+			i = if (i % 4 == 0) { 93 } { 81 };
+			x = {
+				SinOsc.ar(i.midicps) * Env.perc.ar(Done.freeSelf) * [0.1, -0.1]
+			}.play
+		};
+		defer { win.close }
+	}
+}, clock: t)
+)
+
+t.tempo = 30/60
+::
 
 method:: boot
 boot the remote server, create new allocators.
@@ -354,6 +393,13 @@ s.boot;
 s.queryAllNodes; // note the root node (ID 0) and the default group (ID 1)
 s.quit;
 ::
+
+method:: rtMemoryStatus
+Queries the server for the amount of currently free real-time memory
+argument:: action
+a Function that will be evaluated when the server responds, with the current
+amount of free RT memory and the size of largest continuous block (both in bytes) passed as
+arguments. The default action prints a message.
 
 method:: peakCPU, avgCPU
 Get peak and average CPU usage.
@@ -489,7 +535,7 @@ x.free;
 // use sync
 (
 s.makeBundle(nil, {
-	b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+	b = Buffer.read(s, ExampleFiles.child);
 	s.sync; // wait until load is done and then send the rest of the bundle
 	x = { PlayBuf.ar(1, b) * 0.5 }.play;
 });
@@ -586,12 +632,82 @@ method:: meter
 Show input/output level meters.
 
 method:: plotTree
-Plot the node/group tree. As link::#-queryAllNodes:: but graphical.
+Plot the node/group tree in a graphical format, similar to link::#-queryAllNodes::.
+This creates a singleton window containing link::Classes/ServerTreeView::.
+The method returns a link::Classes/Server:: (the receiver of this call), and the created windows can be accessed via the link::#-plotTreeWindow::.
 
+note::
+If the server is not running, the window containing teletype::plotTree:: will briefly appear and then close, displaying the following message in the Post window:
+teletype::
+-> localhost
+WARNING: Server failed to respond to Group:queryTree!
+::
+::
+
+code::
+s.boot; // starts the SuperCollider server.
+
+// Open a plotTree window named ~pTree with a default refresh rate of 0.5 seconds:
+~pTree = s.plotTree;
+
+// Define and play a repeating pattern that generates a new synth every 0.4 seconds:
+x = Pn((dur: 0.4, midinote: 69, amp: 0.1)).play;
+
+/*
+The ~pTree window dynamically displays active synth nodes.
+Initially, it shows the first node,
+and upon each refresh, it retains the previous node while adding a new one.
+This results in the display of one or two subsequent nodes at each interval.
+*/
+
+x.stop; // stops the playback of the pattern.
+
+// Close the plotTree window associated with ~pTree:
+~pTree.plotTreeWindow.close;
+::
 argument:: interval
 Polling interval.
+code::
+(
+s.waitForBoot {
+	// Open a plotTree window with a refresh rate of 2 seconds:
+	var plotTree = s.plotTree(2);
+
+	// Define and play a repeating pattern that generates a new synth every 0.5 seconds:
+	x = Pn((dur: 0.5, midinote: 69, amp: 0.1)).play;
+
+	/* Since the plotTree window refreshes every 2 seconds,
+	displaying only the most recent node,
+	the first node will appear after a 2-second delay (once four notes have played),
+	meaning only every fourth synth node is visible.
+	*/
+
+	5.wait; // waits for 5 seconds.
+
+	plotTree.plotTreeWindow.close; // closes the plotTree window
+	x.stop; // stops the playback of the pattern
+}
+)
+::
+
+
 argument:: bounds
-The bounds of the scope window. A Rect specifying position and size of the window. The size does not include the border and title bar. Position is measured from the bottom-left corner of the screen (this is different than link::Classes/View#-bounds::). The default is nil and the scope window will be in the centre of the display.
+The bounds of the teletype::s.plotTree:: window.
+A Rect specifying position and size of the window.
+The size does not include the border and title bar.
+Position is measured from the bottom-left corner of the screen in the same manner as teletype::bounds:: argument for link::Classes/Window#*new::.
+The minimum size is 395 for width and 386 for height.
+Any values smaller than these will be automatically adjusted to the minimum values.
+code::
+// Create plotTree window at the default position with default size:
+s.plotTree;
+
+// Move plotTree window to the defined position with defined size:
+s.plotTree(2, Rect(200, 200, 100, 200));
+// <- The size (width: 100; height: 200) is smaller than the minimum size, so the size will be ajusted.
+
+s.plotTree; // brings the plotTree window to the front without changing its position or size.
+::
 
 method:: plotTreeView
 Plot the node/group tree graphically on a given view.
