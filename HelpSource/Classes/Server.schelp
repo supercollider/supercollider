@@ -634,6 +634,11 @@ Show input/output level meters.
 method:: plotTree
 Plot the node/group tree in a graphical format, similar to link::#-queryAllNodes::.
 This creates a singleton window containing link::Classes/ServerTreeView::.
+
+note::
+To use multiple instances of link::Classes/ServerTreeView:: per link::Classes/Server:: instance or workspace, refer to the link::Classes/ServerTreeView#examples#Examples in ServerTreeView Documentation::.
+::
+
 The method returns a link::Classes/Server:: (the receiver of this call), and the created windows can be accessed via the link::#-plotTreeWindow::.
 
 note::
