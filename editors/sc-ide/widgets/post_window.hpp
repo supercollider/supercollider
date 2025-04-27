@@ -22,6 +22,7 @@
 
 #include "util/docklet.hpp"
 #include <QAction>
+#include <QGestureEvent>
 #include <QPlainTextEdit>
 
 namespace ScIDE {
@@ -76,6 +77,8 @@ public slots:
     void openCommandLine();
     void findReferences();
 
+    bool gestureEvent(QGestureEvent* event);
+
 protected:
     virtual bool event(QEvent*);
     virtual void wheelEvent(QWheelEvent*);
@@ -92,7 +95,8 @@ private:
     void createActions(Settings::Manager*);
     void updateActionShortcuts(Settings::Manager*);
     void zoomFont(int steps);
-    QTextCharFormat formatForPostLine(QStringRef line);
+    void zoomFont(float scaler);
+    QTextCharFormat formatForPostLine(QString line);
 
     QAction* mActions[ActionCount];
     /*

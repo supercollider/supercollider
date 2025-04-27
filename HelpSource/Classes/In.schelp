@@ -130,4 +130,3 @@ y.set(\bus, c.index); x.set(\bus, c.index);	// WARNING! gets loud!
 
 x.free; y.free; z.free;
 ::
-

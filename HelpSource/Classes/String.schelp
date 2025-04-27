@@ -383,6 +383,31 @@ code::
 "[xtz]+nd".matchRegexp("xnd"); // true: any combination of x, t, z
 ::
 
+method::replaceRegexp
+This method is used to replace parts of text.
+
+argument::regex
+A perl regular expression (see link::Classes/String#Regular expressions::) with which to match the caller.
+
+argument::with
+The link::Classes/String:: to replace the found regex with.
+
+returns:: A link::Classes/String::.
+
+code::
+// remove numbers
+"g8et t8ho9se 3num5b89ers ou06t o8f h12er56e!".replaceRegexp("[0-9]", "")
+-> get those numbers out of here!
+
+// remove capital letters
+"HelLO WoRlD".replaceRegexp("(\\\w)", "\\\L$1")
+-> hello world
+
+// remove all capital letter unless at the start of a word
+"HelLO worLD! I weNT tO Paris yeSTErDay.".replaceRegexp("(\\\S)(\\\S*)", "$1\\\L$2")
+-> Hello world! I went to Paris yesterday.
+::
+
 method::findRegexp
 Perl regular expression search (see link::Classes/String#Regular expressions::). This method searches exhaustively for matches and collects them into an array of pairs, in the format code::[character index, matching string]::.
 
@@ -721,15 +746,15 @@ Perform link::#-pathMatch:: on this String, then load and execute all paths in t
 code::
 // first prepare a file with some code...
 (
-File.use("/tmp/loadPaths_example.scd", "w", { |file|
+File.use(Platform.defaultTempDir +/+ "loadPaths_example.scd", "w", { |file|
 	file << "\"This text is the result of a postln command which was loaded and executed by loadPaths\".postln;";
 	file <<	"\"I will now throw a dice for you: \".post; 7.rand;"
 })
 )
 
 // then load the file...
- // ... it posts some text, and the return value pf loadPaths is an array of the return values of each file
-"/tmp/loadPaths_example.scd".loadPaths;
+// ... it posts some text, and the return value of loadPaths is an array of the return values of each file
+(Platform.defaultTempDir +/+ "loadPaths_example.scd").loadPaths;
 ::
 
 argument::warn
@@ -996,4 +1021,3 @@ method::bounds
 Tries to return a link::Classes/Rect:: with the size needed to fit this string if drawn with given font.
 argument:: font
 A link::Classes/Font::
-

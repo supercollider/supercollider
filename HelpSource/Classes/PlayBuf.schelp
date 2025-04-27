@@ -48,8 +48,13 @@ code::
 s.boot // Boot the server, if you need to
 
 // read a whole sound into memory
-// note: not *that* columbia, the first one
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav"); // remember to free the buffer later.
+
+// ExampleFiles helps locate audio files used in examples
+p = ExampleFiles.child;
+// peek at the path to see location and the format of a path
+p.postln;
+// read the file into a buffer
+b = Buffer.read(s, p); // remember to free the buffer later.
 
 SynthDef(\help_PlayBuf, { |out = 0, bufnum = 0|
 	Out.ar(out,
@@ -132,4 +137,3 @@ SynthDef(\help_PlayBuf, { |out = 0, bufnum = 0|
 
 b.free;
 ::
-

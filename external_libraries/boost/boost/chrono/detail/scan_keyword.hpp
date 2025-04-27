@@ -67,12 +67,14 @@ scan_keyword(InputIterator& b, InputIterator e,
     unsigned char* status = statbuf;
     //  Change free by free_aux to avoid
     // Error: Could not find a match for boost::interprocess::unique_ptr<unsigned char, void(*)(void*)>::unique_ptr(int, extern "C" void(void*))
-    unique_ptr<unsigned char, void(*)(void*)> stat_hold(0, free_aux);
+    unique_ptr<unsigned char, void(*)(void*)> stat_hold(BOOST_NULLPTR, free_aux);
     if (nkw > sizeof(statbuf))
     {
         status = (unsigned char*)malloc(nkw);
-        if (status == 0)
+        if (status == BOOST_NULLPTR)
+        {
           throw_exception(std::bad_alloc());
+        }
         stat_hold.reset(status);
     }
     size_t n_might_match = nkw;  // At this point, any keyword might match

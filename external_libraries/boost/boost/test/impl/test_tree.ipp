@@ -435,7 +435,7 @@ namespace ut_detail {
 std::string
 normalize_test_case_name( const_string name )
 {
-    std::string norm_name( name.begin(), name.size() );
+    std::string norm_name( name.begin(), name.end() );
 
     if( name[0] == '&' )
         norm_name = norm_name.substr( 1 );

@@ -3,6 +3,7 @@
 #include "SC_PaUtils.hpp"
 #include <cstring>
 #include <cstdio>
+#include <cstdint>
 
 #ifdef __APPLE__
 #    include <pa_mac_core.h>

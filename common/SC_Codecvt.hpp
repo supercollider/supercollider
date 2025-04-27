@@ -39,7 +39,7 @@
 #pragma once
 
 #include <string> // string
-#include <boost/filesystem/path.hpp> // path
+#include <filesystem>
 
 #ifdef _WIN32
 #    include <codecvt> // std::codecvt_utf8_utf16, utf16
@@ -74,9 +74,9 @@ inline std::string utf16_wcstr_to_utf8_string(const wchar_t* s) {
  *
  * On POSIX platforms, this just converts using .string(). On Windows, uses
  * conversion between UTF-16 and UTF-8. */
-inline std::string path_to_utf8_str(const boost::filesystem::path& p) {
+inline std::string path_to_utf8_str(const std::filesystem::path& p) {
 #ifdef _WIN32
-    return p.string(std::codecvt_utf8_utf16<wchar_t>());
+    return std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>>().to_bytes(p.native());
 #else
     return p.string();
 #endif // _WIN32
@@ -86,11 +86,13 @@ inline std::string path_to_utf8_str(const boost::filesystem::path& p) {
  *
  * On POSIX platforms, this converts using the default constructor. On Windows,
  * uses conversion between UTF-16 and UTF-8. */
-inline boost::filesystem::path utf8_str_to_path(const std::string& s) {
+inline std::filesystem::path utf8_str_to_path(const std::string& s) {
 #ifdef _WIN32
-    return boost::filesystem::path(s, std::codecvt_utf8_utf16<wchar_t>());
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+    std::wstring wideString = converter.from_bytes(s);
+    return std::filesystem::path(std::move(wideString));
 #else
-    return boost::filesystem::path(s);
+    return std::filesystem::path(s);
 #endif // _WIN32
 }
 

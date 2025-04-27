@@ -13,13 +13,19 @@ The keys used in a Pbind are usually determined by link::Classes/Event::'s defau
 ClassMethods::
 
 method::new
-The arguments to Pbind are an alternating sequence of keys and patterns. A pattern can also be bound to an array of keys. In this case, the pattern must specify a sequence whose elements are arrays with at least as many elements as there are keys.
+The arguments to Pbind are an alternating sequence of keys and patterns, this can alternatively be specified using keyword arguments.
+A pattern can also be bound to an array of keys.
+In this case, the pattern must specify a sequence whose elements are arrays with at least as many elements as there are keys.
 
 Examples::
 
 code::
 (
-a = Pbind(\x, Pseq([1, 2, 3]), \y, Prand([100, 300, 200], inf), \zzz, 99);
+a = Pbind(
+	x:    Pseq([1, 2, 3]),
+	y:    Prand([100, 300, 200], inf),
+	zzz:  99
+);
 x = a.asStream;
 )
 
@@ -33,61 +39,56 @@ code::
 // sound examples
 
 // using the default synth def
-Pbind(\freq, Prand([300, 500, 231.2, 399.2], inf), \dur, 0.1).play;
-Pbind(\freq, Prand([300, 500, 231.2, 399.2], inf), \dur, Prand([0.1, 0.3], inf)).play;
+Pbind(
+	freq: Prand([300, 500, 231.2, 399.2], inf),
+	dur:  0.1
+).play;
 
-Pbind(\freq, Prand([1, 1.2, 2, 2.5, 3, 4], inf) * 200, \dur, 0.1).play;
+Pbind(
+	freq: Prand([300, 500, 231.2, 399.2], inf),
+	dur:  Prand([0.1, 0.3], inf)
+).play;
+
+Pbind(
+	freq: Prand([1, 1.2, 2, 2.5, 3, 4], inf) * 200,
+	dur:  0.1
+).play;
 ::
 
+The keys can be specified as keyword arguments, as above, or as a sequence of keys to patterns provided as arguments.
+Additionally, when an array of keys is provided, the pattern with be unpacked into two streams (see following example).
+However, this does not work when using keyword arguments, and therefore must go before them.
+For historical reasons, you are more likely to see the sequence of keys to patterns rather than keyword arguments.
+
 code::
+// Both of these do the same thing.
+Pbind(a: Pseq([1, 2, 3]), dur: 1).trace.play
+Pbind(\a, Pseq([1, 2, 3]), \dur, 1).trace.play
+
+
 (
 // a SynthDef
-SynthDef(\test, { |out, freq = 440, amp = 0.1, nharms = 10, pan = 0, gate = 1|
+SynthDef(\test, {
+	|out, freq = 440, amp = 0.1, nharms = 10, pan = 0, gate = 1|
 	var audio = Blip.ar(freq, nharms, amp);
 	var env = Linen.kr(gate, doneAction: Done.freeSelf);
 	OffsetOut.ar(out, Pan2.ar(audio, pan, env));
 }).add;
 )
 
-Pbind(\instrument, \test, \freq, Prand([1, 1.2, 2, 2.5, 3, 4], inf) * 200, \dur, 0.1).play;
-
-
-
-// standard syntax, arguments alternate symbols and patterns
-(
+// Assignment to multiple keys using an Array.
+// Must come before any keyword arguments.
 Pbind(
-	\instrument,		\test,
-	\nharms,	     	Pseq([4, 10, 40], inf),
-	\dur,			    Pseq([1, 1, 2, 1]/10, inf),
-	#[freq, sustain],	Ptuple([ // assignment to multiple keys
-					        Pseq((1..16) * 50, 4),
-				     	    Pseq([1/10, 0.5, 1, 2], inf)
-				        ])
-).play;
-)
+	[\freq, \sustain], Ptuple([
+                          Pseq((1..16) * 50, 4),
+                          Pseq([1/10, 0.5, 1, 2], inf)
+				       ]),
+	instrument:        \test,
+	nharms:            Pseq([4, 10, 40], inf),
+	dur:			   Pseq([1, 1, 2, 1]/10, inf),
+).play
 ::
 
-It is possible to specify a Pbind with an link::Classes/Array:: preceded by *. This takes advantage of a special
-syntactic shortcut in SC where using * expands an Array into a list of method arguments. You can see more information
-about this and other syntactic shortcuts in link::Reference/Syntax-Shortcuts:: and
-link::Overviews/SymbolicNotations::.  Another useful shortcut is that Arrays treat identifiers ending with a colon as
-link::Classes/Symbol::s. Both of these shortcuts together help make the syntax of the Pbind specification a bit more
-concise:
-
-code::
-(
-// Alternative syntax, using a key/pattern array:
-Pbind(*[
-	instrument:			\test,
-	nharms:				Pseq([4, 10, 40], inf),
-	dur:				Pseq([1, 1, 2, 1]/10, inf),
-	#[freq, sustain]:	Ptuple([
-							Pseq((1..16) * 50, 4),
-							Pseq([1/10, 0.5, 1, 2], inf)
-						])
-]).play;
-)
-::
 
 subsection::SynthDef and Event
 

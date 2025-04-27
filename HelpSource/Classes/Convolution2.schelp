@@ -105,7 +105,7 @@ x.set(\trig, 1); // after this trigger, the change will take effect.
 
 
 // next example
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, ExampleFiles.child);
 
 (
 	{ var input, kernel;
@@ -202,4 +202,3 @@ x.set(\trigPeriod, 0.1);	// fast changes
 x.set(\trigPeriod, 10.0);	// slow changes
 x.free;	// delete synth
 ::
-

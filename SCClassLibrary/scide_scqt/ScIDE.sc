@@ -394,6 +394,10 @@ ScIDE {
 		}
 	}
 
+	currentPath_ { |p|
+		currentPath = p.standardizePath;
+	}
+
 
 	// PRIVATE ///////////////////////////////////////////////////////////
 
@@ -806,7 +810,7 @@ Document {
 		^this.rangeText(rangestart, rangesize);
 	}
 
-	string_ { | string, rangestart = -1, rangesize = 1 |
+	string_ { | string, rangestart = 0, rangesize = -1 |
 		this.prSetText(string, nil, rangestart, rangesize);
 	}
 

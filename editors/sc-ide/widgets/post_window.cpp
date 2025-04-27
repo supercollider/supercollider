@@ -25,9 +25,11 @@
 #include "../core/settings/manager.hpp"
 #include "../core/settings/theme.hpp"
 #include "../core/util/overriding_action.hpp"
+#include "editor.hpp"
 
 #include <QApplication>
-#include <QDesktopWidget>
+#include <QScreen>
+#include <QWindow>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPointer>
@@ -45,9 +47,7 @@ PostWindow::PostWindow(QWidget* parent): QPlainTextEdit(parent) {
     setFrameShape(QFrame::NoFrame);
     previousChar = QChar('\n');
 
-    viewport()->setAttribute(Qt::WA_MacNoClickThrough, true);
-
-    QRect availableScreenRect = qApp->desktop()->availableGeometry(this);
+    QRect availableScreenRect = this->screen()->availableGeometry();
     mSizeHint = QSize(availableScreenRect.width() * 0.4, availableScreenRect.height() * 0.3);
 
     createActions(Main::settings());
@@ -55,6 +55,9 @@ PostWindow::PostWindow(QWidget* parent): QPlainTextEdit(parent) {
     setContextMenuPolicy(Qt::ActionsContextMenu);
 
     connect(this, SIGNAL(scrollToBottomRequest()), this, SLOT(scrollToBottom()), Qt::QueuedConnection);
+
+    grabGesture(Qt::PinchGesture);
+    setAttribute(Qt::WA_AcceptTouchEvents);
 
     applySettings(Main::settings());
 }
@@ -164,11 +167,7 @@ void PostWindow::applySettings(Settings::Manager* settings) {
     QFontMetrics metrics(font);
     QString stringOfSpaces(settings->value("IDE/editor/indentWidth").toInt(), QChar(' '));
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
     setTabStopDistance(metrics.horizontalAdvance(stringOfSpaces));
-#else
-    setTabStopWidth(metrics.width(stringOfSpaces));
-#endif
 
     updateActionShortcuts(settings);
 }
@@ -197,10 +196,10 @@ void PostWindow::post(const QString& text) {
     foreach (const QChar chr, text) {
         if (previousChar == linebreak) {
             cursor.movePosition(QTextCursor::End);
-            cursor.insertText(QStringRef(&text, startPos, position - startPos).toString(), currentFormat);
+            cursor.insertText(text.mid(startPos, position - startPos), currentFormat);
             startPos = position;
 
-            QStringRef newLine(&text, position, text.length() - 1);
+            QString newLine = text.mid(position, text.length() - 1);
             currentFormat = formatForPostLine(newLine);
         }
 
@@ -211,14 +210,14 @@ void PostWindow::post(const QString& text) {
     // handle remaining chars if not \n terminated
     if (startPos < text.length()) {
         cursor.movePosition(QTextCursor::End);
-        cursor.insertText(QStringRef(&text, startPos, text.length() - startPos).toString(), currentFormat);
+        cursor.insertText(text.mid(startPos, text.length() - startPos), currentFormat);
     }
 
     if (scroll)
         emit(scrollToBottomRequest());
 }
 
-QTextCharFormat PostWindow::formatForPostLine(QStringRef line) {
+QTextCharFormat PostWindow::formatForPostLine(QString line) {
     Settings::Manager* settings = Main::settings();
     QTextCharFormat postWindowError = settings->getThemeVal("postwindowerror");
     QTextCharFormat postWindowWarning = settings->getThemeVal("postwindowwarning");
@@ -253,10 +252,15 @@ void PostWindow::zoomOut(int steps) { zoomFont(-steps); }
 
 void PostWindow::zoomFont(int steps) {
     QFont currentFont = font();
-    const int newSize = currentFont.pointSize() + steps;
-    if (newSize <= 0)
-        return;
-    currentFont.setPointSize(newSize);
+    const float newSize = GenericCodeEditor::clampFontSize(currentFont.pointSizeF() + steps);
+    currentFont.setPointSizeF(newSize);
+    setFont(currentFont);
+}
+
+void PostWindow::zoomFont(float scaler) {
+    QFont currentFont = font();
+    const float newSize = GenericCodeEditor::clampFontSize(currentFont.pointSizeF() * scaler);
+    currentFont.setPointSizeF(newSize);
     setFont(currentFont);
 }
 
@@ -277,6 +281,10 @@ bool PostWindow::event(QEvent* event) {
         }
         break;
     }
+    case QEvent::Gesture: {
+        return gestureEvent(static_cast<QGestureEvent*>(event));
+        break;
+    }
     default:
         break;
     }
@@ -293,8 +301,9 @@ void PostWindow::wheelEvent(QWheelEvent* e) {
 
     // So rather just forward the event without modifiers.
 
-    QWheelEvent modifiedEvent(e->pos(), e->globalPos(), e->delta(), e->buttons(), 0, e->orientation());
-    QPlainTextEdit::wheelEvent(&modifiedEvent);
+    e->setModifiers(Qt::NoModifier);
+
+    QPlainTextEdit::wheelEvent(e);
     return;
 
 #if 0
@@ -335,6 +344,19 @@ QMimeData* PostWindow::createMimeDataFromSelection() const {
     return data;
 }
 
+
+bool PostWindow::gestureEvent(QGestureEvent* event) {
+    if (QGesture* pinch = event->gesture(Qt::PinchGesture)) {
+        auto* pinchGesture = static_cast<QPinchGesture*>(pinch);
+        if (pinchGesture->state() == Qt::GestureUpdated) {
+            float scaleFactor = pinchGesture->scaleFactor();
+            zoomFont(scaleFactor);
+        }
+        return true;
+    }
+    return false;
+}
+
 bool PostWindow::openDocumentation() { return Main::openDocumentation(symbolUnderCursor()); }
 
 void PostWindow::openDefinition() { Main::openDefinition(symbolUnderCursor(), window()); }
@@ -355,7 +377,9 @@ PostDocklet::PostDocklet(QWidget* parent): Docklet(tr("Post window"), parent) {
     mPostWindow = new PostWindow;
     setWidget(mPostWindow);
 
+    // This adds the QAction defined in PostWindow::createActions to the toolbar attached to the post window.
     toolBar()->addAction(mPostWindow->mActions[PostWindow::AutoScroll]);
+    toolBar()->addAction(mPostWindow->mActions[PostWindow::Clear]);
 
     // connect(this, SIGNAL(topLevelChanged(bool)), this, SLOT(onFloatingChanged(bool)));
 }

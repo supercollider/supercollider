@@ -57,8 +57,8 @@ void Usage() {
 
     scprintf("supercollider_synth  options:\n"
              "   -v print the supercollider version and exit\n"
-             "   -u <udp-port-number>    a port number 0-65535\n"
-             "   -t <tcp-port-number>    a port number 0-65535\n"
+             "   -u <udp-port-number> a port number 1-65535. Set to 0 to bind a free port.\n"
+             "   -t <tcp-port-number> a port number 1-65535. Set to 0 to bind a free port.\n"
              "   -B <bind-to-address>\n"
              "          Bind the UDP or TCP socket to this address.\n"
              "          Default 127.0.0.1. Set to 0.0.0.0 to listen on all interfaces.\n"
@@ -422,14 +422,14 @@ int scsynth_main(int argc, char** argv) {
 #ifdef NO_LIBSNDFILE
         return 1;
 #else
-        int exitCode = 0;
         try {
             World_NonRealTimeSynthesis(world, &options);
-        } catch (std::exception& exc) {
-            scprintf("%s\n", exc.what());
-            exitCode = 1;
+            return 0;
+        } catch (const std::exception& exc) {
+            scprintf("NRT synthesis failed: %s\n", exc.what());
+            World_Cleanup(world, true);
+            return 1;
         }
-        return exitCode;
 #endif
     }
 

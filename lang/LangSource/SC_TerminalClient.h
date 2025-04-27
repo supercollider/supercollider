@@ -55,25 +55,15 @@ public:
     };
 
     struct Options : public SC_LanguageClient::Options {
-        Options():
-            mLibraryConfigFile(0),
-            mDaemon(false),
-            mCallRun(false),
-            mCallStop(false),
-            mStandalone(false),
-            mArgc(0),
-            mArgv(0) {}
-
-        const char* mLibraryConfigFile;
-        bool mDaemon;
-        bool mCallRun;
-        bool mCallStop;
-        bool mStandalone;
-        int mArgc;
-        char** mArgv;
+        std::string mLibraryConfigFile;
+        bool mDaemon = false;
+        bool mCallRun = false;
+        bool mCallStop = false;
+        bool mStandalone = false;
+        std::vector<std::string> mArgs;
     };
 
-    SC_TerminalClient(const char* name);
+    SC_TerminalClient(const std::string& name);
     virtual ~SC_TerminalClient();
 
     const Options& options() const { return mOptions; }
@@ -91,12 +81,9 @@ public:
     // NOTE: It may be called from any thread, and with interpreter locked.
     virtual void sendSignal(Signal code);
 
-    void stop() { mIoService.stop(); }
+    void stop() { mIoContext.stop(); }
 
 protected:
-    bool parseOptions(int& argc, char**& argv, Options& opt);
-    void printUsage();
-
     void interpretCmdLine(const char* cmdLine, bool silent);
     void interpretCmdLine(const char* buf, size_t size, bool silent);
 
@@ -151,14 +138,14 @@ private:
 
     // app-clock io service
 protected:
-    boost::asio::io_service mIoService;
+    boost::asio::io_context mIoContext;
 
 private:
-    boost::asio::io_service::work mWork;
+    boost::asio::executor_work_guard<boost::asio::io_context::executor_type> mWork;
     boost::asio::basic_waitable_timer<std::chrono::system_clock> mTimer;
 
     // input io service
-    boost::asio::io_service mInputService;
+    boost::asio::io_context mInputContext;
     SC_Thread mInputThread;
     void inputThreadFn();
 

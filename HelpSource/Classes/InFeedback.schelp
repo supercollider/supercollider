@@ -138,4 +138,3 @@ OffsetOut.ar(0, play);
 { SinOsc.ar(440, 0, 0.2) }.play(s, 1);
 )
 ::
-

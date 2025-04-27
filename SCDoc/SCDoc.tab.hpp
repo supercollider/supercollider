@@ -66,48 +66,49 @@ extern int scdocdebug;
     PRIVATE = 267,                 /* PRIVATE  */
     SECTION = 268,                 /* SECTION  */
     SUBSECTION = 269,              /* SUBSECTION  */
-    METHOD = 270,                  /* METHOD  */
-    ARGUMENT = 271,                /* ARGUMENT  */
-    DESCRIPTION = 272,             /* DESCRIPTION  */
-    CLASSMETHODS = 273,            /* CLASSMETHODS  */
-    INSTANCEMETHODS = 274,         /* INSTANCEMETHODS  */
-    EXAMPLES = 275,                /* EXAMPLES  */
-    RETURNS = 276,                 /* RETURNS  */
-    DISCUSSION = 277,              /* DISCUSSION  */
-    LIST = 278,                    /* LIST  */
-    TREE = 279,                    /* TREE  */
-    NUMBEREDLIST = 280,            /* NUMBEREDLIST  */
-    DEFINITIONLIST = 281,          /* DEFINITIONLIST  */
-    TABLE = 282,                   /* TABLE  */
-    FOOTNOTE = 283,                /* FOOTNOTE  */
-    NOTE = 284,                    /* NOTE  */
-    WARNING = 285,                 /* WARNING  */
-    CODE = 286,                    /* CODE  */
-    LINK = 287,                    /* LINK  */
-    ANCHOR = 288,                  /* ANCHOR  */
-    SOFT = 289,                    /* SOFT  */
-    IMAGE = 290,                   /* IMAGE  */
-    TELETYPE = 291,                /* TELETYPE  */
-    MATH = 292,                    /* MATH  */
-    STRONG = 293,                  /* STRONG  */
-    EMPHASIS = 294,                /* EMPHASIS  */
-    CODEBLOCK = 295,               /* "CODE block"  */
-    TELETYPEBLOCK = 296,           /* "TELETYPE block"  */
-    MATHBLOCK = 297,               /* "MATH block"  */
-    TAGSYM = 298,                  /* "::"  */
-    BARS = 299,                    /* "||"  */
-    HASHES = 300,                  /* "##"  */
-    TEXT = 301,                    /* "text"  */
-    URL = 302,                     /* URL  */
-    COMMA = 303,                   /* COMMA  */
-    METHODNAME = 304,              /* "method name"  */
-    METHODARGS = 305,              /* "arguments string"  */
-    NEWLINE = 306,                 /* "newline"  */
-    EMPTYLINES = 307,              /* "empty lines"  */
-    BAD_METHODNAME = 308,          /* "bad method name"  */
-    START_FULL = 309,              /* START_FULL  */
-    START_PARTIAL = 310,           /* START_PARTIAL  */
-    START_METADATA = 311           /* START_METADATA  */
+    SUBSUBSECTION = 270,           /* SUBSUBSECTION  */
+    METHOD = 271,                  /* METHOD  */
+    ARGUMENT = 272,                /* ARGUMENT  */
+    DESCRIPTION = 273,             /* DESCRIPTION  */
+    CLASSMETHODS = 274,            /* CLASSMETHODS  */
+    INSTANCEMETHODS = 275,         /* INSTANCEMETHODS  */
+    EXAMPLES = 276,                /* EXAMPLES  */
+    RETURNS = 277,                 /* RETURNS  */
+    DISCUSSION = 278,              /* DISCUSSION  */
+    LIST = 279,                    /* LIST  */
+    TREE = 280,                    /* TREE  */
+    NUMBEREDLIST = 281,            /* NUMBEREDLIST  */
+    DEFINITIONLIST = 282,          /* DEFINITIONLIST  */
+    TABLE = 283,                   /* TABLE  */
+    FOOTNOTE = 284,                /* FOOTNOTE  */
+    NOTE = 285,                    /* NOTE  */
+    WARNING = 286,                 /* WARNING  */
+    CODE = 287,                    /* CODE  */
+    LINK = 288,                    /* LINK  */
+    ANCHOR = 289,                  /* ANCHOR  */
+    SOFT = 290,                    /* SOFT  */
+    IMAGE = 291,                   /* IMAGE  */
+    TELETYPE = 292,                /* TELETYPE  */
+    MATH = 293,                    /* MATH  */
+    STRONG = 294,                  /* STRONG  */
+    EMPHASIS = 295,                /* EMPHASIS  */
+    CODEBLOCK = 296,               /* "CODE block"  */
+    TELETYPEBLOCK = 297,           /* "TELETYPE block"  */
+    MATHBLOCK = 298,               /* "MATH block"  */
+    TAGSYM = 299,                  /* "::"  */
+    BARS = 300,                    /* "||"  */
+    HASHES = 301,                  /* "##"  */
+    TEXT = 302,                    /* "text"  */
+    URL = 303,                     /* URL  */
+    COMMA = 304,                   /* COMMA  */
+    METHODNAME = 305,              /* "method name"  */
+    METHODARGS = 306,              /* "arguments string"  */
+    NEWLINE = 307,                 /* "newline"  */
+    EMPTYLINES = 308,              /* "empty lines"  */
+    BAD_METHODNAME = 309,          /* "bad method name"  */
+    START_FULL = 310,              /* START_FULL  */
+    START_PARTIAL = 311,           /* START_PARTIAL  */
+    START_METADATA = 312           /* START_METADATA  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -123,7 +124,7 @@ union YYSTYPE
     char *str;
     DocNode *doc_node;
 
-#line 127 "SCDoc.tab.hpp"
+#line 128 "SCDoc.tab.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

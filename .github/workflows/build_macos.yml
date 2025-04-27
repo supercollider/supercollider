@@ -13,60 +13,78 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - job-name: "universal"
-            os-version: "12"
-            xcode-version: "13.4.1"
-            deployment-target: "10.14"
-            cmake-architectures: "x86_64;arm64"
-            use-syslibs: false
-            shared-libscsynth: false
-            system-portaudio: true
-            build-libsndfile: false
-            build-readline: false
-            build-fftw: false
-            artifact-suffix: "macOS-universal"
-            verify-app: false
+          - job-name: "arm64"
+            os-version: "15"
+            xcode-version: "16.0"
+            qt-version: "6.7.3" # will use qt from aqtinstall
+            qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
+            deployment-target: "11"
+            cmake-architectures: "arm64"
+            homebrew-packages: "libsndfile readline fftw portaudio"
+            vcpkg-packages: ""
+            vcpkg-triplet: ""
+            extra-cmake-flags: "" # -D SC_VERIFY_APP=ON # verify app doesn't seem to work with official qt6
+            artifact-suffix: "macOS-arm64"
+
+          - job-name: "x64"
+            os-version: "13"
+            xcode-version: "15.2"
+            qt-version: "6.7.3" # will use qt from aqtinstall
+            qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
+            deployment-target: "11"
+            cmake-architectures: "x86_64"
+            homebrew-packages: "libsndfile readline fftw portaudio"
+            vcpkg-packages: ""
+            vcpkg-triplet: ""
+            extra-cmake-flags: "" # -D SC_VERIFY_APP=ON # verify app doesn't seem to work with official qt6
+            artifact-suffix: "macOS-x64"
 
           - job-name: "x64 legacy"
-            os-version: "12"
-            xcode-version: "13.4.1"
-            qt-version: "5.9.9" # will use qt from aqtinstall
-            deployment-target: "10.11"
+            os-version: "13"
+            xcode-version: "14.1"
+            qt-version: "5.15.2" # will use qt from aqtinstall
+            qt-modules: 'qtwebengine'
+            deployment-target: "10.15"
             cmake-architectures: x86_64
-            use-syslibs: false
-            shared-libscsynth: false
-            build-libsndfile: true
-            system-portaudio: false
-            build-fftw: true
+            homebrew-packages: "readline portaudio"
+            vcpkg-packages: "libsndfile fftw3"
+            # homebrew-packages: "" # use this instead when cross-compiling for x86_64 on arm64
+            # homebrew-uninstall: "readline" # use this instead when cross-compiling for x86_64 on arm64
+            # vcpkg-packages: "readline portaudio libsndfile fftw3" # use this instead when cross-compiling for x86_64 on arm64
             vcpkg-triplet: x64-osx-release-supercollider # required for build-libsndfile
+            extra-cmake-flags: ""
             artifact-suffix: "macOS-x64-legacy" # set if needed - will trigger artifact upload
 
-          - job-name: "x64 use system libraries"
-            os-version: "12"
-            xcode-version: "13.4.1"
-            deployment-target: "10.14"
-            cmake-architectures: x86_64
-            use-syslibs: true
-            shared-libscsynth: false
-            verify-app: true
+          - job-name: "arm64 use system libraries"
+            os-version: "15"
+            xcode-version: "16.0"
+            deployment-target: ""
+            cmake-architectures: "arm64"
+            homebrew-packages: "qt@6 libsndfile readline fftw portaudio yaml-cpp boost"
+            vcpkg-packages: ""
+            vcpkg-triplet: ""
+            extra-cmake-flags: "-D SYSTEM_BOOST=ON -D SYSTEM_YAMLCPP=ON"
 
           - job-name: "x64 shared libscsynth"
-            os-version: "12"
-            xcode-version: "13.4.1"
-            deployment-target: "10.14"
+            os-version: "13"
+            xcode-version: "15.2"
+            qt-version: "6.7.3" # will use qt from aqtinstall
+            qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
+            deployment-target: ""
             cmake-architectures: x86_64
-            use-syslibs: false
-            shared-libscsynth: true
-            verify-app: true
+            homebrew-packages: "libsndfile readline fftw portaudio"
+            vcpkg-packages: ""
+            vcpkg-triplet: ""
+            extra-cmake-flags: "-D LIBSCSYNTH=ON"
 
     name: macOS ${{ matrix.job-name }}
     env:
       BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
       HOMEBREW_NO_ANALYTICS: 1
+      HOMEBREW_NO_ENV_HINTS: 1
       HOMEBREW_NO_AUTO_UPDATE: 1
       HOMEBREW_NO_INSTALL_CLEANUP: 1
-      HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
       USE_SYSLIBS: ${{ matrix.use-syslibs }}
       SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
       ARTIFACT_FILE: "SuperCollider-${{ inputs.sc-version }}-${{ matrix.artifact-suffix }}.dmg"
@@ -90,27 +108,19 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/Library/Caches/ccache
-          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ matrix.cmake-architectures }}-${{ steps.current-date.outputs.stamp }}
-          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ matrix.cmake-architectures }}-
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.cmake-architectures }}${{ matrix.extra-cmake-flags }}-${{ steps.current-date.outputs.stamp }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.cmake-architectures }}${{ matrix.extra-cmake-flags }}-
 
       - name: cleanup homebrew downloads # always remove existing downloads first, as we bring back relevant downloads from cache
-        run: rm -rf $(brew --cache)
+        run: rm -rf $(brew --cache)/downloads
 
       - name: cache homebrew downloads
         uses: actions/cache@v4
         id: cache-homebrew
         with:
           path: ~/Library/Caches/Homebrew/downloads
-          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ matrix.cmake-architectures }}-homebrew-${{ steps.current-date.outputs.week }}
-          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ matrix.cmake-architectures }}-homebrew-
-
-      - name: cache homebrew universal packages
-        uses: actions/cache@v4
-        if: matrix.cmake-architectures != 'x86_64' && (matrix.build-libsndfile != true || matrix.build-readline != true || matrix.build-fftw != true)
-        with:
-          path: ${{ env.BREW_UNIVERSAL_WORKDIR }}
-          key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-brew_universal-${{ steps.current-date.outputs.week }}
-          restore-keys: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-brew_universal-
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-architectures }}-homebrew-${{ steps.current-date.outputs.week }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-architectures }}-homebrew-
 
       - name: cache vcpkg
         if: matrix.vcpkg-triplet
@@ -120,55 +130,35 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.vcpkg-triplet }}-${{ steps.current-date.outputs.stamp }}
           restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.vcpkg-triplet }}-
 
-      - name: install dependencies
+      - name: setup ccache
         run: |
-          brew install ccache
-          # add ccamke to PATH - see https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions
-          echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
-          if [[ "${{ matrix.system-portaudio }}" != "false" ]]; then brew install portaudio; fi
-          if [[ "${{ matrix.build-fftw }}" != "true" ]]; then brew install fftw; fi
+          brew install ccache --quiet
+          # add ccache to PATH
+          echo "`brew --prefix ccache`/libexec" >> $GITHUB_PATH
 
-          # install universal versions of homebrew libraries
-          if [[ "${{ matrix.cmake-architectures }}" != "x86_64" ]]; then
-              echo "Downloading script for creating universal binaries from homebrew packages"
-              curl -O -J -L https://gist.githubusercontent.com/dyfer/6c83905d4593750105897e51e87ec345/raw/1f89f2fe767a2e637387e74f0c8dcc86a0963f60/brew-install-universal.sh
-              chmod +x brew-install-universal.sh
-              if [[ "${{ matrix.build-libsndfile }}" != "true" ]]; then ./brew-install-universal.sh libsndfile; fi
-              if [[ "${{ matrix.build-readline }}" != "true" ]]; then ./brew-install-universal.sh readline; fi
-              if [[ "${{ matrix.build-fftw }}" != "true" ]]; then ./brew-install-universal.sh fftw; fi
-              if [[ "${{ matrix.system-portaudio }}" != "false" ]]; then ./brew-install-universal.sh portaudio; fi
+      - name: setup vcpkg # vcpkg is not automatically installed in newer macOS runner images
+        if: matrix.vcpkg-packages && matrix.vcpkg-triplet
+        run: |
+          if [[ -z "${VCPKG_INSTALLATION_ROOT}" ]]; then
+            cd ${{ github.workspace }}/..
+            echo "setting up vcpkg in `pwd`"
+            git clone https://github.com/microsoft/vcpkg.git
+            cd vcpkg
+            ls -a
+            ./bootstrap-vcpkg.sh
+            echo "VCPKG_INSTALLATION_ROOT=`pwd`" >> $GITHUB_ENV # use the same env var that was used for VCPKG in older runner images
+            echo "`pwd`" >> $GITHUB_PATH
           fi
 
-      - name: install libsndfile # to make it compatible with older OSes (lower deployment target)
-        if: matrix.build-libsndfile == true && matrix.vcpkg-triplet
+      - name: install homebrew packages
+        if: matrix.homebrew-packages
+        run: brew install ${{ matrix.homebrew-packages }} --quiet
+
+      - name: install vcpkg packages
+        if: matrix.vcpkg-packages && matrix.vcpkg-triplet
         run: |
-          brew uninstall --ignore-dependencies libsndfile libvorbis libogg flac opus
-          vcpkg install libsndfile --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
-
-      - name: install readline # to allow cross-compiling
-        if: matrix.build-readline == true && matrix.vcpkg-triplet
-        run: |
-          brew uninstall --ignore-dependencies readline
-          vcpkg install readline --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
-          # vcpkg readline currently fails on arm64 (ncurses dependency)
-          # see https://github.com/microsoft/vcpkg/issues/22654
-
-      - name: install fftw # to allow cross-compiling
-        if: matrix.build-fftw == true && matrix.vcpkg-triplet
-        run: |
-          vcpkg install fftw3 --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
-
-      - name: install system libraries
-        if: env.USE_SYSLIBS == 'true'
-        run: brew install yaml-cpp boost@1.76
-
-      - name: install qt from homebrew
-        if: matrix.cmake-architectures == 'x86_64' && !matrix.qt-version
-        run: brew install qt@5
-
-      - name: install qt universal binary from homebrew
-        if: matrix.cmake-architectures != 'x86_64' && !matrix.qt-version
-        run: ./brew-install-universal.sh qt@5
+          if [[ -n "${{ matrix.homebrew-uninstall }}" ]]; then brew uninstall --ignore-dependencies ${{ matrix.homebrew-uninstall }}; fi
+          vcpkg install ${{ matrix.vcpkg-packages }} --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
 
       - name: install qt using aqtinstall
         uses: jurplel/install-qt-action@v3
@@ -176,35 +166,25 @@ jobs:
         env:
           DEVELOPER_DIR: "" # remove developer dir which causes installation to fail
         with:
-          modules: "qtwebengine"
+          modules: ${{ matrix.qt-modules }}
           version: ${{ matrix.qt-version }}
           cache: true
-          cache-key-prefix: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt${{ matrix.qt-version }}
+          cache-key-prefix: ${{ runner.os }}-qt${{ matrix.qt-version }}-${{ matrix.qt-modules }}
 
       - name: configure
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
 
-          EXTRA_CMAKE_FLAGS=
-
-          if $USE_SYSLIBS; then EXTRA_CMAKE_FLAGS="-DSYSTEM_BOOST=ON -DSYSTEM_YAMLCPP=ON -DBoost_INCLUDE_DIR=/usr/local/opt/boost@1.76/include $EXTRA_CMAKE_FLAGS"; fi
-
-          if $SHARED_LIBSCSYNTH; then EXTRA_CMAKE_FLAGS="-DLIBSCSYNTH=ON $EXTRA_CMAKE_FLAGS"; fi
-
-          if [[ -z "${{ matrix.qt-version }}" ]]; then EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=`brew --prefix qt@5` $EXTRA_CMAKE_FLAGS"; fi
-
-          if [[ "${{ matrix.verify-app }}" == "true" ]]; then EXTRA_CMAKE_FLAGS="-DSC_VERIFY_APP=ON $EXTRA_CMAKE_FLAGS"; fi
-
-          if [[ "${{ matrix.system-portaudio }}" == "false" ]]; then EXTRA_CMAKE_FLAGS="-DSYSTEM_PORTAUDIO=OFF $EXTRA_CMAKE_FLAGS"; fi
+          CMAKE_FLAGS="-G Xcode -D RULE_LAUNCH_COMPILE=ccache -D SUPERNOVA=ON  ${{ matrix.extra-cmake-flags }}"
 
           if [[ -n "${{ matrix.vcpkg-triplet }}" ]]; then
             export VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT
-            EXTRA_CMAKE_FLAGS="-DVCPKG_TARGET_TRIPLET=${{ matrix.vcpkg-triplet }} -DCMAKE_BUILD_TYPE=Release $EXTRA_CMAKE_FLAGS"
+            CMAKE_FLAGS="-DVCPKG_TARGET_TRIPLET=${{ matrix.vcpkg-triplet }} -DCMAKE_BUILD_TYPE=Release $CMAKE_FLAGS"
           fi
 
-          echo "EXTRA_CMAKE_FLAGS:" $EXTRA_CMAKE_FLAGS
+          echo "CMAKE_FLAGS:" $CMAKE_FLAGS
 
-          cmake -G"Xcode" -DRULE_LAUNCH_COMPILE=ccache -DSUPERNOVA=ON $EXTRA_CMAKE_FLAGS ..
+          cmake $CMAKE_FLAGS ..
 
       - name: build
         run: cmake --build $BUILD_PATH --config Release --target install

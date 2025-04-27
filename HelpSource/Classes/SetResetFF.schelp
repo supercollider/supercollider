@@ -59,4 +59,3 @@ You can reverse this behavior, by reversing the inputs so that SetResetFF is tri
 code::
 a = { 1 - SetResetFF.kr(Impulse.kr(100), Impulse.kr(50)) }.plot(duration: 0.1);
 ::
-

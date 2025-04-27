@@ -16,6 +16,7 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
+#include "server/memory_pool.hpp"
 #include <iostream>
 
 // AppleClang workaround
@@ -1009,6 +1010,23 @@ template <bool realtime> void handle_version(endpoint_ptr const& endpoint_ref) {
 }
 
 template <> void handle_version<false>(endpoint_ptr const& endpoint_ref) {}
+
+template <bool realtime> void handle_rtMemoryStatus(endpoint_ptr const& endpoint_ref) {
+    cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = endpoint_ptr(endpoint_ref)]() {
+        if (unlikely(instance->quit_received))
+            return;
+
+        char buffer[4096];
+        typedef osc::int32 i32;
+
+        osc::OutboundPacketStream p(buffer, 4096);
+        p << osc::BeginMessage("/rtMemoryStatus.reply") << (i32)(rt_pool.get_pool_size() - rt_pool.get_used_size())
+          << (i32)rt_pool.get_max_size() << osc::EndMessage;
+        endpoint->send(p.Data(), p.Size());
+    });
+}
+
+template <> void handle_rtMemoryStatus<false>(endpoint_ptr const& endpoint_ref) {}
 
 void handle_unhandled_message(ReceivedMessage const& msg) {
     log_printf("unhandled message: %s\n", msg.AddressPattern());
@@ -3216,6 +3234,10 @@ void sc_osc_handler::handle_message_int_address(ReceivedMessage const& message, 
         handle_version<realtime>(endpoint);
         break;
 
+    case cmd_rtMemoryStatus:
+        handle_rtMemoryStatus<realtime>(endpoint);
+        break;
+
     default:
         handle_unhandled_message(message);
     }
@@ -3600,6 +3622,11 @@ void sc_osc_handler::handle_message_sym_address(ReceivedMessage const& message, 
 
     if (strcmp(address + 1, "version") == 0) {
         handle_version<realtime>(endpoint);
+        return;
+    }
+
+    if (strcmp(address + 1, "rtMemoryStatus") == 0) {
+        handle_rtMemoryStatus<realtime>(endpoint);
         return;
     }
 

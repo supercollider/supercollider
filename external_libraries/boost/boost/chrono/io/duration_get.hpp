@@ -11,7 +11,7 @@
 #include <boost/chrono/config.hpp>
 #include <string>
 #include <boost/type_traits/is_scalar.hpp>
-#include <boost/utility/enable_if.hpp>
+#include <boost/core/enable_if.hpp>
 #include <boost/type_traits/is_signed.hpp>
 #include <boost/mpl/if.hpp>
 #include <boost/integer/common_factor_rt.hpp>

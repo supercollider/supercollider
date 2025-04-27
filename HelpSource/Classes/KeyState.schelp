@@ -13,6 +13,17 @@ helpful to select a GUI window rather than an SC document when using
 KeyState, as the latter will be altered by any keystrokes.
 ::
 
+WARNING::
+This UGen will not work for Linux users using Wayland, as the Wayland protocol does not allow a global keyboard or mouse state to be captured.
+The UGen will return MATH::0.0:: as constant value.
+For more information see https://github.com/supercollider/supercollider/issues/4544
+::
+
+WARNING::
+MacOS users will need to add the SuperCollider application to the Input Monitoring group in the Privacy & Security preferences to have all keys captured.
+See https://support.apple.com/en-us/guide/mac-help/mchl4cedafb6/mac
+::
+
 classmethods::
 
 method::kr
@@ -53,4 +64,3 @@ w.front; // something safe to type on
 { SinOsc.ar(800, 0, KeyState.kr(38, 0, 0.1)) }.play;
 )
 ::
-

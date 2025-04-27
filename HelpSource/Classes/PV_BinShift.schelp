@@ -39,7 +39,7 @@ code::
 s.boot;
 
 (
-c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+c = Buffer.read(s, ExampleFiles.child);
 )
 
 (
@@ -83,4 +83,3 @@ SynthDef("help-binShift2", { |out = 0, soundBufnum = 2|
 )
 
 ::
-

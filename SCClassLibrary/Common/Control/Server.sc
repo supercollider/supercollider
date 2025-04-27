@@ -1349,7 +1349,7 @@ Server {
 			"server '%' not running".format(this.name).warn;
 			^this
 		};
-		resp = OSCFunc({ |msg|
+		resp = OSCFunc({ |msg| 
 			done = true;
 			if (action.notNil) { action.value(*msg.drop(1)) } {
 				var freeKb = msg[1] / 1024;

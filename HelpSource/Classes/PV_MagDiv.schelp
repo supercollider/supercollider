@@ -33,7 +33,7 @@ SynthDef("help-magMul", { |out = 0|
 )
 
 
-c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+c = Buffer.read(s, ExampleFiles.child);
 
 (
 SynthDef("help-magMul2", { |out = 0, soundBufnum = 0|
@@ -49,4 +49,3 @@ SynthDef("help-magMul2", { |out = 0, soundBufnum = 0|
 
 c.free;
 ::
-

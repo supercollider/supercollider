@@ -1,7 +1,7 @@
 class::Function
 summary::Implements a function
 categories::Core>Kernel
-related::Classes/FunctionDef
+related::Reference/Functions, Classes/AbstractFunction, Classes/FunctionDef
 
 description::
 A Function is a reference to a FunctionDef and its defining context Frame. When a FunctionDef is encountered in your code it is pushed on the stack as a Function. A Function can be evaluated by using the 'value' method. See the Functions help file for a basic introduction.
@@ -510,7 +510,8 @@ argument::bufsize
 The size of the buffer for the ScopeView. The default is 4096.
 argument::zoom
 A zoom value for the scope's X axis. Larger values show more. The default is 1.
-
+argument:: bounds
+The bounds of the code::Window:: in which the scope is embedded. A Rect specifying position and size of the window. The size does not include the border and title bar. Position is measured from the bottom-left corner of the screen (this is different than link::Classes/View#-bounds::). The default is nil and the scope window will be in the centre of the display.
 method::plot
 
 note::See link::Reference/plot:: for a general reference on plotting::
@@ -783,6 +784,3 @@ protect {
 } { |error| \caught.postln; error.dump }
 )
 ::
-
-
-

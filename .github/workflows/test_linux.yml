@@ -2,7 +2,7 @@ name: Test Linux
 on:
   workflow_call:
     inputs:
-      artifact-file:
+      sc-version:
         required: true
         type: string
 
@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-22.04
     env:
       INSTALL_PATH: ${{ github.workspace }}/build/Install
-      ARTIFACT_FILE: ${{ inputs.artifact-file }}
+      ARTIFACT_FILE: "SuperCollider-${{ inputs.sc-version }}-ubuntu-22.04-gcc12"
       TESTS_PATH: ${{ github.workspace }}/testsuite/classlibrary
       SCLANG: ${{ github.workspace }}/build/Install/bin/sclang
       TEST_LIST_PROTO: ${{ github.workspace }}/testsuite/scripts/test_run_proto_gha.scd
@@ -42,7 +42,7 @@ jobs:
         run: |
           # install dependencies
           sudo apt-get update
-          sudo apt-get install --yes libsndfile1 libavahi-client-dev libfftw3-dev libicu-dev libudev-dev qtbase5-dev qtwebengine5-dev jackd1 socat
+          sudo apt-get install --yes libsndfile1 libavahi-client-dev libfftw3-dev libicu-dev libudev-dev qt6-base-dev libqt6svg6-dev qt6-webengine-dev libqt6webenginecore6-bin jackd1 socat
 
           # add bin to PATH so that scsynth can be found
           echo "$INSTALL_PATH/bin" >> $GITHUB_PATH
@@ -67,4 +67,4 @@ jobs:
       - name: Post test results
         shell: bash
         run: |
-          $SCLANG $SCRIPT_PRINT_RESULTS $TEST_LIST_RESULT
+          timeout 1m $SCLANG $SCRIPT_PRINT_RESULTS $TEST_LIST_RESULT

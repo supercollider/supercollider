@@ -66,6 +66,8 @@ class regex_token_iterator_implementation
    std::vector<int>                     subs;   // the sub-expressions to enumerate
 
 public:
+   regex_token_iterator_implementation(const regex_token_iterator_implementation& other)
+      : what(other.what), base(other.base), end(other.end), re(other.re), flags(other.flags), result(other.result), N(other.N), subs(other.subs) {}
    regex_token_iterator_implementation(const regex_type* p, BidirectionalIterator last, int sub, match_flag_type f)
       : end(last), re(*p), flags(f), N(0){ subs.push_back(sub); }
    regex_token_iterator_implementation(const regex_type* p, BidirectionalIterator last, const std::vector<int>& v, match_flag_type f)

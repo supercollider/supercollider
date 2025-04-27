@@ -33,7 +33,7 @@ Examples::
 code::
 
 s.boot;
-c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+c = Buffer.read(s, ExampleFiles.child);
 
 (
 SynthDef("help-randcomb", { |out = 0|
@@ -57,4 +57,3 @@ SynthDef("help-randcomb2", { |out = 0, soundBufnum = 2|
 )
 
 ::
-

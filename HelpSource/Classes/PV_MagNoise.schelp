@@ -23,7 +23,7 @@ code::
 
 s.boot;
 
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, ExampleFiles.child);
 
 (
 SynthDef("help-magNoise", { |out = 0|
@@ -48,4 +48,3 @@ SynthDef("help-magNoise2", { |out = 0, soundBufnum = 2|
 b.free;
 
 ::
-

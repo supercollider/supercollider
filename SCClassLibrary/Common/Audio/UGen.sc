@@ -285,6 +285,9 @@ UGen : AbstractFunction {
 
 	binaryValue { ^this.sign.max(0) }
 
+	isPositive { ^this >= 0 }
+	isNegative { ^this < 0 }
+	isStrictlyPositive { ^this > 0 }
 
 	// Note that this differs from |==| for other AbstractFunctions
 	// Other AbstractFunctions write '|==|' into the compound function
@@ -340,7 +343,6 @@ UGen : AbstractFunction {
 		if (rate == 'audio') {
 			n.do {| i |
 				if (inputs.at(i).rate != 'audio') {
-					//"failed".postln;
 					^("input " ++ i ++ " is not audio rate: " + inputs.at(i) + inputs.at(0).rate);
 				};
 			};

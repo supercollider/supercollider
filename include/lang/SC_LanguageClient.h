@@ -29,6 +29,7 @@
 #include "SC_Export.h"
 #include <cstdio>
 #include <cstdarg>
+#include <string>
 
 // =====================================================================
 // SC_LanguageClient - abstract sclang client.
@@ -40,17 +41,19 @@ SCLANG_DLLEXPORT void destroyLanguageClient(class SC_LanguageClient*);
 class SCLANG_DLLEXPORT SC_LanguageClient {
 public:
     struct Options {
-        Options(): mMemSpace(2 * 1024 * 1024), mMemGrow(256 * 1024), mPort(57120), mRuntimeDir(0) {}
+        static constexpr int defaultMemSpace = 2 * 1024 * 1024;
+        static constexpr int defaultMemGrow = 256 * 1024;
+        static constexpr int defaultPort = 57120;
 
-        int mMemSpace; // memory space in bytes
-        int mMemGrow; // memory growth in bytes
-        int mPort; // network port number
-        char* mRuntimeDir; // runtime directory
+        int mMemSpace = defaultMemSpace; // memory space in bytes
+        int mMemGrow = defaultMemGrow; // memory growth in bytes
+        int mPort = defaultPort; // network port number
+        std::string mRuntimeDir; // runtime directory
     };
 
 protected:
     // create singleton instance
-    SC_LanguageClient(const char* name);
+    SC_LanguageClient(const std::string& name);
     virtual ~SC_LanguageClient();
     friend void destroyLanguageClient(class SC_LanguageClient*);
 
@@ -67,7 +70,7 @@ public:
     }
 
     // initialize language runtime
-    void initRuntime(const Options& opt = Options());
+    void initRuntime(const Options& opt);
     void shutdownRuntime();
 
     // return application name
@@ -92,7 +95,7 @@ public:
     void runLibrary(const char* methodName);
     void interpretCmdLine();
     void interpretPrintCmdLine();
-    void executeFile(const char* fileName);
+    void executeFile(const std::string& fileName);
     void runMain();
     void stopMain();
 
@@ -111,11 +114,6 @@ public:
     // flush post buffer contents to screen.
     //     only called from the main language thread.
     virtual void flush() = 0;
-
-    // command line argument handling utilities
-    static void snprintMemArg(char* dst, size_t size, int arg);
-    static bool parseMemArg(const char* arg, int* res);
-    static bool parsePortArg(const char* arg, int* res);
 
     // AppClock driver
     //    to be called from client mainloop.

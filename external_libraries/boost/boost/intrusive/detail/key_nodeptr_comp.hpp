@@ -78,40 +78,40 @@ public:
       static const bool value = same_type || is_convertible<P1, const_node_ptr>::value;
    };
 
-   BOOST_INTRUSIVE_FORCEINLINE base_t base() const
+   inline base_t base() const
    {  return static_cast<const base_t&>(*this); }
 
-   BOOST_INTRUSIVE_FORCEINLINE key_nodeptr_comp(KeyTypeKeyCompare kcomp, const ValueTraits *traits)
+   inline key_nodeptr_comp(KeyTypeKeyCompare kcomp, const ValueTraits *traits)
       :  base_t(kcomp), traits_(traits)
    {}
 
    //pred(pnode)
    template<class T1>
-   BOOST_INTRUSIVE_FORCEINLINE bool operator()(const T1 &t1, typename enable_if_c< is_same_or_nodeptr_convertible<T1>::value, sfinae_type* >::type = 0) const
+   inline bool operator()(const T1 &t1, typename enable_if_c< is_same_or_nodeptr_convertible<T1>::value, sfinae_type* >::type = 0) const
    {  return base().get()(key_of_value()(*traits_->to_value_ptr(t1)));  }
 
    //operator() 2 arg
    //pred(pnode, pnode)
    template<class T1, class T2>
-   BOOST_INTRUSIVE_FORCEINLINE bool operator()
+   inline bool operator()
       (const T1 &t1, const T2 &t2, typename enable_if_c< is_same_or_nodeptr_convertible<T1>::value && is_same_or_nodeptr_convertible<T2>::value, sfinae_type* >::type = 0) const
    {  return base()(*traits_->to_value_ptr(t1), *traits_->to_value_ptr(t2));  }
 
    //pred(pnode, key)
    template<class T1, class T2>
-   BOOST_INTRUSIVE_FORCEINLINE bool operator()
+   inline bool operator()
       (const T1 &t1, const T2 &t2, typename enable_if_c< is_same_or_nodeptr_convertible<T1>::value && !is_same_or_nodeptr_convertible<T2>::value, sfinae_type* >::type = 0) const
    {  return base()(*traits_->to_value_ptr(t1), t2);  }
 
    //pred(key, pnode)
    template<class T1, class T2>
-   BOOST_INTRUSIVE_FORCEINLINE bool operator()
+   inline bool operator()
       (const T1 &t1, const T2 &t2, typename enable_if_c< !is_same_or_nodeptr_convertible<T1>::value && is_same_or_nodeptr_convertible<T2>::value, sfinae_type* >::type = 0) const
    {  return base()(t1, *traits_->to_value_ptr(t2));  }
 
    //pred(key, key)
    template<class T1, class T2>
-   BOOST_INTRUSIVE_FORCEINLINE bool operator()
+   inline bool operator()
       (const T1 &t1, const T2 &t2, typename enable_if_c< !is_same_or_nodeptr_convertible<T1>::value && !is_same_or_nodeptr_convertible<T2>::value, sfinae_type* >::type = 0) const
    {  return base()(t1, t2);  }
 

@@ -27,7 +27,7 @@ Examples::
 code::
 
 s.boot;
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, ExampleFiles.child);
 
 (
 	var in, chain;
@@ -49,4 +49,3 @@ SynthDef("help-magClip2", { |out = 0, soundBufnum = 2|
 )
 
 ::
-

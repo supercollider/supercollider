@@ -30,6 +30,7 @@
 
 #include <QApplication>
 #include <QDebug>
+#include <QGestureEvent>
 #include <QGraphicsView>
 #include <QKeyEvent>
 #include <QPainter>
@@ -58,8 +59,6 @@ GenericCodeEditor::GenericCodeEditor(Document* doc, QWidget* parent):
     Q_ASSERT(mDoc != 0);
 
     setFrameShape(QFrame::NoFrame);
-
-    viewport()->setAttribute(Qt::WA_MacNoClickThrough, true);
 
     mLineIndicator = new LineIndicator(this);
     mLineIndicator->move(contentsRect().topLeft());
@@ -102,6 +101,9 @@ GenericCodeEditor::GenericCodeEditor(Document* doc, QWidget* parent):
     doc->setLastActiveEditor(this);
 
     applySettings(Main::settings());
+
+    grabGesture(Qt::PinchGesture);
+    setAttribute(Qt::WA_AcceptTouchEvents);
 }
 
 GenericCodeEditor::~GenericCodeEditor() {
@@ -179,22 +181,23 @@ void GenericCodeEditor::setShowWhitespace(bool show) {
 
 void GenericCodeEditor::setShowLinenumber(bool show) { mLineIndicator->setHideLineIndicator(!show); }
 
-static bool findInBlock(QTextDocument* doc, const QTextBlock& block, const QRegExp& expr, int offset,
-                        QTextDocument::FindFlags options, QTextCursor& cursor) {
+static bool findInBlock(QTextDocument* doc, const QTextBlock& block, const QRegularExpression& expr, int offset,
+                        QTextDocument::FindFlags options, QTextCursor& cursor, QRegularExpressionMatch* match) {
     QString text = block.text();
     if (options & QTextDocument::FindBackward)
         text.truncate(offset);
     text.replace(QChar::Nbsp, QLatin1Char(' '));
 
-    int idx = -1;
+    qsizetype idx = -1;
     while (offset >= 0 && offset <= text.length()) {
-        idx = (options & QTextDocument::FindBackward) ? expr.lastIndexIn(text, offset) : expr.indexIn(text, offset);
+        idx = (options & QTextDocument::FindBackward) ? text.lastIndexOf(expr, offset, match)
+                                                      : text.indexOf(expr, offset, match);
         if (idx == -1)
             return false;
 
         if (options & QTextDocument::FindWholeWords) {
-            const int start = idx;
-            const int end = start + expr.matchedLength();
+            const qsizetype start = idx;
+            const qsizetype end = start + match->capturedLength(0);
             if ((start != 0 && text.at(start - 1).isLetterOrNumber())
                 || (end != text.length() && text.at(end).isLetterOrNumber())) {
                 // if this is not a whole word, continue the search in the string
@@ -212,15 +215,21 @@ static bool findInBlock(QTextDocument* doc, const QTextBlock& block, const QRegE
 
     cursor = QTextCursor(doc);
     cursor.setPosition(block.position() + idx);
-    cursor.setPosition(cursor.position() + expr.matchedLength(), QTextCursor::KeepAnchor);
+    cursor.setPosition(cursor.position() + match->capturedLength(0), QTextCursor::KeepAnchor);
     return true;
 }
 
-bool GenericCodeEditor::find(const QRegExp& expr, QTextDocument::FindFlags options) {
+static bool findInBlock(QTextDocument* doc, const QTextBlock& block, const QRegularExpression& expr, int offset,
+                        QTextDocument::FindFlags options, QTextCursor& cursor) {
+    QRegularExpressionMatch match;
+    return findInBlock(doc, block, expr, offset, options, cursor, &match);
+}
+
+bool GenericCodeEditor::find(const QRegularExpression& expr, QTextDocument::FindFlags options) {
     // Although QTextDocument provides a find() method, we implement
     // our own, because the former one is not adequate.
 
-    if (expr.isEmpty())
+    if (expr.pattern().isEmpty())
         return true;
 
     bool backwards = options & QTextDocument::FindBackward;
@@ -228,7 +237,7 @@ bool GenericCodeEditor::find(const QRegExp& expr, QTextDocument::FindFlags optio
     QTextCursor c(textCursor());
     int pos;
     if (c.hasSelection()) {
-        bool matching = expr.exactMatch(c.selectedText());
+        bool matching = expr.match(c.selectedText()).hasMatch();
 
         if (backwards == matching)
             pos = c.selectionStart();
@@ -288,10 +297,10 @@ bool GenericCodeEditor::find(const QRegExp& expr, QTextDocument::FindFlags optio
         return false;
 }
 
-int GenericCodeEditor::findAll(const QRegExp& expr, QTextDocument::FindFlags options) {
+int GenericCodeEditor::findAll(const QRegularExpression& expr, QTextDocument::FindFlags options) {
     mSearchSelections.clear();
 
-    if (expr.isEmpty()) {
+    if (expr.pattern().isEmpty()) {
         this->updateExtraSelections();
         return 0;
     }
@@ -323,81 +332,94 @@ int GenericCodeEditor::findAll(const QRegExp& expr, QTextDocument::FindFlags opt
     return mSearchSelections.count();
 }
 
-//#define CSTR(QSTR) QSTR.toStdString().c_str()
+// #define CSTR(QSTR) QSTR.toStdString().c_str()
 
-static QString resolvedReplacement(const QString& replacement, const QRegExp& expr) {
+static QString replace_backreferences_with_capturing_groups(const QString& replacement,
+                                                            const QRegularExpressionMatch& match) {
     // qDebug("START");
-    static const QRegExp rexpr("(\\\\\\\\)|(\\\\[0-9]+)");
+    static const QRegularExpression rexpr("(\\\\\\\\)|(\\\\[0-9]+)");
     QString str(replacement);
-    int i = 0;
-    while (i < str.size() && ((i = rexpr.indexIn(str, i)) != -1)) {
-        int len = rexpr.matchedLength();
-        if (rexpr.pos(1) != -1) {
-            // qDebug("%i (%s): escape", i, CSTR(rexpr.cap(1)));
+    qsizetype i = 0;
+    while (i < str.size()) {
+        QRegularExpressionMatch backref_match = rexpr.match(str, i);
+        if (!backref_match.hasMatch())
+            break;
+        i = backref_match.capturedStart(0);
+        qsizetype len = backref_match.capturedLength(0);
+        if (backref_match.capturedStart(1) != -1) {
+            // qDebug("%lli (%s): escape", i, CSTR(backref_match.captured(1)));
             str.replace(i, len, "\\");
             i += 1;
-        } else if (rexpr.pos(2) != -1) {
-            QString num_str = rexpr.cap(2);
+        } else if (backref_match.capturedStart(2) != -1) {
+            QString num_str = backref_match.captured(2);
             num_str.remove(0, 1);
             int num = num_str.toInt();
-            // qDebug("%i (%s): backref = %i", i, CSTR(rexpr.cap(2)), num);
-            if (num <= expr.captureCount()) {
-                QString cap = expr.cap(num);
+            // qDebug("%lli (%s): backref = %i", i, CSTR(backref_match.captured(2)), num);
+            if (num <= match.lastCapturedIndex()) {
+                QString cap = match.captured(num);
                 // qDebug("resolving ref to: %s", CSTR(cap));
                 str.replace(i, len, cap);
                 i += cap.size();
             } else {
-                // qDebug("ref out of range", i, num);
+                // qDebug("%lli ref out of range: backref = %i", i, num);
                 str.remove(i, len);
             }
         } else {
-            // qDebug("%i (%s): unknown match", i, CSTR(rexpr.cap(0)));
+            // qDebug("%lli (%s): unknown match", i, CSTR(backref_match.captured(0)));
             str.remove(i, len);
         }
-        // qDebug(">> [%s] %i", CSTR(str), i);
+        // qDebug(">> [%s] %lli", CSTR(str), i);
     }
     // qDebug("END");
     return str;
 }
 
-bool GenericCodeEditor::replace(const QRegExp& expr, const QString& replacement, QTextDocument::FindFlags options) {
-    if (expr.isEmpty())
+bool GenericCodeEditor::replace(const QRegularExpression& expr, const QString& replacement,
+                                QTextDocument::FindFlags options) {
+    if (expr.pattern().isEmpty())
         return true;
 
     QTextCursor cursor = textCursor();
-    if (cursor.hasSelection() && expr.exactMatch(cursor.selectedText())) {
-        QString rstr = replacement;
-        if (expr.patternSyntax() != QRegExp::FixedString)
-            rstr = resolvedReplacement(rstr, expr);
-        cursor.insertText(rstr);
+    bool captures = (expr.patternOptions() & QRegularExpression::PatternOption::DontCaptureOption) == 0;
+    if (cursor.hasSelection()) {
+        QRegularExpressionMatch match = expr.match(cursor.selectedText());
+        if (match.hasMatch()) {
+            QString rstr = replacement;
+            if (captures) {
+                rstr = replace_backreferences_with_capturing_groups(rstr, match);
+            }
+            cursor.insertText(rstr);
+        }
     }
 
     return find(expr, options);
 }
 
-int GenericCodeEditor::replaceAll(const QRegExp& expr, const QString& replacement, QTextDocument::FindFlags options) {
+int GenericCodeEditor::replaceAll(const QRegularExpression& expr, const QString& replacement,
+                                  QTextDocument::FindFlags options) {
     mSearchSelections.clear();
     updateExtraSelections();
 
-    if (expr.isEmpty())
+    if (expr.pattern().isEmpty())
         return 0;
 
     int replacements = 0;
-    bool caps = expr.patternSyntax() != QRegExp::FixedString;
+    bool captures = (expr.patternOptions() & QRegularExpression::PatternOption::DontCaptureOption) == 0;
 
     QTextDocument* doc = QPlainTextEdit::document();
     QTextBlock block = doc->begin();
     QTextCursor cursor;
+    QRegularExpressionMatch match;
 
     QTextCursor(doc).beginEditBlock();
 
     while (block.isValid()) {
         int blockPos = block.position();
         int offset = 0;
-        while (findInBlock(doc, block, expr, offset, options, cursor)) {
+        while (findInBlock(doc, block, expr, offset, options, cursor, &match)) {
             QString rstr = replacement;
-            if (caps)
-                rstr = resolvedReplacement(rstr, expr);
+            if (captures)
+                rstr = replace_backreferences_with_capturing_groups(rstr, match);
             cursor.insertText(rstr);
             ++replacements;
             offset = cursor.selectionEnd() - blockPos;
@@ -439,6 +461,18 @@ QString GenericCodeEditor::symbolUnderCursor() {
     return tokenInStringAt(position, blockString);
 }
 
+bool GenericCodeEditor::gestureEvent(QGestureEvent* event) {
+    if (QGesture* pinch = event->gesture(Qt::PinchGesture)) {
+        auto* pinchGesture = static_cast<QPinchGesture*>(pinch);
+        if (pinchGesture->state() == Qt::GestureUpdated) {
+            float scaleFactor = pinchGesture->scaleFactor();
+            zoomFont(scaleFactor);
+        }
+        return true;
+    }
+    return false;
+}
+
 bool GenericCodeEditor::event(QEvent* event) {
     switch (event->type()) {
     case QEvent::ShortcutOverride: {
@@ -452,6 +486,9 @@ bool GenericCodeEditor::event(QEvent* event) {
             return true;
         }
         break;
+    }
+    case QEvent::Gesture: {
+        return gestureEvent(static_cast<QGestureEvent*>(event));
     }
     default:
         break;
@@ -645,7 +682,7 @@ void GenericCodeEditor::mousePressEvent(QMouseEvent* e) {
         case Qt::RightButton:
             button = 1;
             break;
-        case Qt::MidButton:
+        case Qt::MiddleButton:
             button = 2;
             break;
         default:
@@ -654,8 +691,13 @@ void GenericCodeEditor::mousePressEvent(QMouseEvent* e) {
 
         Main::evaluateCodeIfCompiled(QStringLiteral("Document.findByQUuid(\'%1\').mouseDown(%2, %3, %4, %5, 1)")
                                          .arg(mDoc->id().constData())
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
                                          .arg(e->x())
                                          .arg(e->y())
+#else
+                                         .arg(e->position().x())
+                                         .arg(e->position().y())
+#endif
                                          .arg(e->modifiers())
                                          .arg(button),
                                      true);
@@ -674,7 +716,7 @@ void GenericCodeEditor::mouseDoubleClickEvent(QMouseEvent* e) {
         case Qt::RightButton:
             button = 1;
             break;
-        case Qt::MidButton:
+        case Qt::MiddleButton:
             button = 2;
             break;
         default:
@@ -683,8 +725,13 @@ void GenericCodeEditor::mouseDoubleClickEvent(QMouseEvent* e) {
 
         Main::evaluateCodeIfCompiled(QStringLiteral("Document.findByQUuid(\'%1\').mouseDown(%2, %3, %4, %5, 2)")
                                          .arg(mDoc->id().constData())
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
                                          .arg(e->x())
                                          .arg(e->y())
+#else
+                                         .arg(e->position().x())
+                                         .arg(e->position().y())
+#endif
                                          .arg(e->modifiers())
                                          .arg(button),
                                      true);
@@ -703,7 +750,7 @@ void GenericCodeEditor::mouseReleaseEvent(QMouseEvent* e) {
         case Qt::RightButton:
             button = 1;
             break;
-        case Qt::MidButton:
+        case Qt::MiddleButton:
             button = 2;
             break;
         default:
@@ -712,8 +759,13 @@ void GenericCodeEditor::mouseReleaseEvent(QMouseEvent* e) {
 
         Main::evaluateCodeIfCompiled(QStringLiteral("Document.findByQUuid(\'%1\').mouseUp(%2, %3, %4, %5)")
                                          .arg(mDoc->id().constData())
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
                                          .arg(e->x())
                                          .arg(e->y())
+#else
+                                         .arg(e->position().x())
+                                         .arg(e->position().y())
+#endif
                                          .arg(e->modifiers())
                                          .arg(button),
                                      true);
@@ -730,8 +782,9 @@ void GenericCodeEditor::wheelEvent(QWheelEvent* e) {
 
     // So rather just forward the event without modifiers.
 
-    QWheelEvent modifiedEvent(e->pos(), e->globalPos(), e->delta(), e->buttons(), 0, e->orientation());
-    QPlainTextEdit::wheelEvent(&modifiedEvent);
+    e->setModifiers(Qt::NoModifier);
+
+    QPlainTextEdit::wheelEvent(e);
     return;
 
 #if 0
@@ -820,11 +873,21 @@ void GenericCodeEditor::resetFontSize() { mDoc->resetDefaultFont(); }
 
 void GenericCodeEditor::zoomFont(int steps) {
     QFont currentFont = mDoc->defaultFont();
-    const int newSize = currentFont.pointSize() + steps;
-    if (newSize <= 0)
-        return;
-    currentFont.setPointSize(newSize);
+    const float newSize = clampFontSize(currentFont.pointSizeF() + steps);
+    currentFont.setPointSizeF(newSize);
     mDoc->setDefaultFont(currentFont);
+}
+
+void GenericCodeEditor::zoomFont(float scaler) {
+    QFont currentFont = mDoc->defaultFont();
+    const float newSize = clampFontSize(currentFont.pointSizeF() * scaler);
+    currentFont.setPointSizeF(newSize);
+    mDoc->setDefaultFont(currentFont);
+}
+
+float GenericCodeEditor::clampFontSize(float newSize) {
+    float defaultFontSize = Main::settings()->codeFont().pointSizeF();
+    return std::clamp(newSize, defaultFontSize * 0.5f, defaultFontSize * 8.0f);
 }
 
 void GenericCodeEditor::onDocumentFontChanged() {
@@ -1128,7 +1191,7 @@ void GenericCodeEditor::gotoPreviousEmptyLine() { gotoEmptyLineUpDown(true); }
 void GenericCodeEditor::gotoNextEmptyLine() { gotoEmptyLineUpDown(false); }
 
 void GenericCodeEditor::gotoEmptyLineUpDown(bool up) {
-    static const QRegExp whiteSpaceLine("^\\s*$");
+    static const QRegularExpression whiteSpaceLine("^\\s*$");
 
     const QTextCursor::MoveOperation direction = up ? QTextCursor::PreviousBlock : QTextCursor::NextBlock;
 
@@ -1139,13 +1202,13 @@ void GenericCodeEditor::gotoEmptyLineUpDown(bool up) {
 
     // find first non-whitespace line
     while (cursor.movePosition(direction)) {
-        if (!whiteSpaceLine.exactMatch(cursor.block().text()))
+        if (!whiteSpaceLine.match(cursor.block().text()).hasMatch())
             break;
     }
 
     // find first whitespace line
     while (cursor.movePosition(direction)) {
-        if (whiteSpaceLine.exactMatch(cursor.block().text())) {
+        if (whiteSpaceLine.match(cursor.block().text()).hasMatch()) {
             setTextCursor(cursor);
             cursorMoved = true;
             break;

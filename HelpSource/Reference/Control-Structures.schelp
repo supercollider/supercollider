@@ -28,6 +28,7 @@ expr.if (trueFunc, falseFunc);
 
 Examples
 code::
+(
 if([false, true].choose) {
 	"expression was true".postln  // true function
 } {
@@ -207,14 +208,14 @@ switch(value)
 { testvalue3 } { truebody3 }
 { testvalue4 } { truebody4 }
 ...
-{ defaultbody };
+{ defaultbody }; // defaultbody can be omitted.
 
 switch(value,
         testvalue1, trueFunction1,
         testvalue2, trueFunction2,
         ...
         testvalueN, trueFunctionN,
-        defaultFunction
+        defaultFunction // defaultFunction can be omitted
 );
 ::
 
@@ -291,6 +292,22 @@ method:: case
 Function implements a case method which allows for conditional evaluation with multiple cases. Since the receiver represents the first case this can be simply written as pairs of test functions and corresponding functions to be evaluated if true. Case is inlined and is therefore just as efficient as nested if statements.
 
 discussion::
+Syntax
+code::
+case
+	{ testFunction1 } { trueFunction1 }
+	{ testFunction2 } { trueFunction2 }
+	...
+	{ defaultFunction }; // defaultFunction can be omitted.
+
+case(
+	{ testFunction1 }, { trueFunction1 },
+	{ testFunction2 }, { trueFunction2 },
+	...
+	{ defaultFunction } // defaultFunction can be omitted.
+);
+::
+
 Example
 code::
 (
@@ -305,6 +322,20 @@ x = case
 	{ i == 2 }   { \wrong }
 	{ i == 0 }   { \true };
 x.postln;
+)
+::
+or
+code::
+(
+var i, x, z;
+z = [0, 1, 2];
+i = z.choose;
+x = case(
+	{ i == 2 }, { \wrong },
+	{ i == 0 }, { \true },
+	{ \defaultFunction }
+);
+[i, x].postln;
 )
 ::
 

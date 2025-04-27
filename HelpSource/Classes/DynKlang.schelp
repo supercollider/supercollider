@@ -71,4 +71,3 @@ a = Synth('help-dynKlang');
 a.setn(\freqs, Array.rand(4, 500, 2000));
 a.setn(\amps, Array.rand(4, 0.01, 0.25));
 ::
-

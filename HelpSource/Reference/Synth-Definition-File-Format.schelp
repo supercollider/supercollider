@@ -220,4 +220,3 @@ Unit generators should be listed in an order that permits efficient reuse of con
 There should be no duplicate values in the constants table.
 
 copyright © 2002 James McCartney - converted to new help system 2010 by Jonatan Liljedahl, updated for version 2 by Scott Wilson 2011
-

@@ -870,7 +870,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
         return false;
     }
 
-    if (mInputDevice != kAudioDeviceUnknown) {
+    if ((mInputDevice != kAudioDeviceUnknown) && (mWorld->mNumInputs > 0)) {
         // get a description of the data format used by the input device
         count = sizeof(AudioStreamBasicDescription);
         // err = AudioDeviceGetProperty(mInputDevice, 0, true, kAudioDevicePropertyStreamFormat, &count,

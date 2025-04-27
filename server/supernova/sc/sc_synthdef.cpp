@@ -137,11 +137,11 @@ std::vector<sc_synthdef> read_synthdefs(const char* buffer, const char* buffer_e
     return ret;
 }
 
-std::vector<sc_synthdef> read_synthdef_file(boost::filesystem::path const& filename) {
+std::vector<sc_synthdef> read_synthdef_file(std::filesystem::path const& filename) {
     using namespace std;
 
     ifstream stream;
-    stream.open(filename.string().c_str());
+    stream.open(filename.string().c_str(), std::ifstream::binary);
 
     if (!stream.is_open()) {
         cout << "cannot open file " << filename << endl;
