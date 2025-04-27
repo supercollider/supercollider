@@ -56,6 +56,9 @@ a.stop
 // Close multiple ServerTreeView instances (assigned to variables a and c):
 [a, c].do { |v| v.close }
 
+// Open a plotTree window:
+s.plotTree
+
 // Stop the playback of the pattern:
 x.stop
 
