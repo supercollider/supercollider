@@ -105,6 +105,9 @@ SynthDefOptimizer {
 
 	var finalGraph;
 	var toVisit;
+	var initRoots;
+
+	var madeAChange = true;
 
 	// IdentityDictionary[
 	//   Symbol (current.nameForDisplay) -> Array[ugen inputs, \separator, ugen weakAntecedents] (current.inputsForIdentityCheck)
@@ -116,35 +119,42 @@ SynthDefOptimizer {
 		if ( (deduplicate.not) and: { rewrite.not} ){ ^inRoots.copy };
 		^super.newCopyArgs(
 			deduplicate: deduplicate.asBoolean,
-			rewrite: rewrite.asBoolean, 
-			finalGraph: inRoots.copy, 
-			toVisit: inRoots.copy, 
+			rewrite: rewrite.asBoolean,
+			finalGraph: inRoots.copy,
+			toVisit: inRoots.copy,
+			initRoots: inRoots.copy,
 			visited: IdentityDictionary(512)
 		).prMain
 	}
 
 	prMain {
-		while { toVisit.isEmpty.not } {
-			this.prOptimise
+		while { madeAChange } {
+			madeAChange = false;
+			while { toVisit.isEmpty.not } {
+				this.prOptimise
+			};
+			if (madeAChange) {
+				finalGraph = initRoots.copy;
+				toVisit = initRoots.copy;
+				visited = IdentityDictionary(512);
+			}
 		};
 		^finalGraph
 	}
 
 	prOptimise {
 		var current;
-		// Although this might look slow, it provides large performance boosts for big graphs.
-		toVisit.removeIdenticalDuplicates;
+		//toVisit.removeIdenticalDuplicates;
 		current = toVisit.pop.source;
 
 		if (deduplicate) {
-			if (this.prDeduplicate(current)) { ^nil }
+			this.prDeduplicate(current)
 		};
 
 		if (rewrite){
-			if (this.prRewrite(current)) { ^nil }
+			this.prRewrite(current)
 		};
 
-		// no optimizations have occurred.
 		toVisit = toVisit.addAll(current.antecedents);
 	}
 
@@ -162,21 +172,20 @@ SynthDefOptimizer {
 				if (possibleReplacement.isNil.not) {
 					if (possibleReplacement != current) {
 						// because we are replacing current with possibleReplacement, we don't need to check current's descendants.
-						toVisit = toVisit.addAll(possibleReplacement.descendants);
-						toVisit = toVisit.addAll(possibleReplacement.weakDescendants);
+						//toVisit = toVisit.addAll(possibleReplacement.descendants);
+						//toVisit = toVisit.addAll(possibleReplacement.weakDescendants);
 
 						possibleReplacement.replace(current);
 
 						found.put(idIns, current);
+						madeAChange = true;
 
-						^true // stop handling the current and go to possibleReplacement's descendants.
 					}
 				} {
 					found.put(idIns, current);
 				}
 			}
 		};
-		^false
 	}
 
 	prRewrite { |current|
@@ -189,22 +198,17 @@ SynthDefOptimizer {
 					results.observableUGenReplacements !? { |replacements|
 						// The connections have already been removed, these are now disconnected UGens.
 						replacements.do{ |r|
+							if (initRoots.includes(r.key)) {
+								initRoots.replace(r.key, r.value);
+							};
 							finalGraph.remove(r.key);
 							finalGraph.add(r.value);
 						}
 					};
-
-					results.newUGens.do{ |u|
-						if (u.isKindOf(UGen)){
-							u.source.getAllDescendantsAtLevel(results.maxDepthOfOperation, ref)
-						}
-					};
-					toVisit = toVisit.addAll(ref.get);
-					^true // recur on newly added
+					madeAChange = true;
 				}
 			};
-		};
-		^false
+		}
 	}
 
 }
@@ -292,8 +296,11 @@ SynthDef {
 
 
 	// Same as new, but optimises for a fast language side compile time, rather than fast server--side performance.
-	*newFast { |name, ugenGraphFunc, rates, prependArgs, variants, metadata|
-		^SynthDef.newWithOptimizations(SynthDefOptimizationFlags.sortingAndRewrite, name, ugenGraphFunc, rates, prependArgs, variants, metadata)
+	*newFast { |...args, kwargs|
+		^SynthDef.performArgs(\newWithOptimizations, [SynthDefOptimizationFlags.sortingAndRewrite] ++ args, kwargs)
+	}
+	*newNoOpts { |...args, kwargs|
+		^SynthDef.performArgs(\newWithOptimizations, [SynthDefOptimizationFlags.onlySorting] ++ args, kwargs)
 	}
 
 	*newWithOptimizations { |newOptimizations, name, ugenGraphFunc, rates, prependArgs, variants, metadata|
@@ -689,7 +696,7 @@ SynthDef {
 	}
 
 
-	// This is one of the more important methods here. 
+	// This is one of the more important methods here.
 	// When evaluated the passed in ugenFunction, each UGen's constructor calls this method on the globally active synthdef.
 	addUGen { |ugen|
 		// Set the index, this will changed later after optimisations are done.

@@ -583,15 +583,6 @@ UGen : UGenBuiltInMethods {
 		weakAntecedents.sort{ |l, r| if(l.depth != r.depth) { l.depth > r.depth } { l.synthIndex < r.synthIndex } };
 	}
 
-	getAllDescendantsAtLevel { |level, arrayRef| // Level should be greater than 1.
-		var realThis = this.source; // For output proxies
-		if (realThis.descendants.isNil or: {realThis.descendants.isEmpty} or: { level <= 0 }) {
-			arrayRef.set(arrayRef.get.add(realThis));
-		} {
-			realThis.descendants.do({|desc| desc.getAllDescendantsAtLevel(level - 1, arrayRef) })
-		};
-	}
-
 	// Edges cannot be made as we go along because the init method is overridden in some classes to return a class that IS NOT a UGen.
 	// To fix this, you'd have to change Control and OutputProxy.
 	// Do not override this method.
