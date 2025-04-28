@@ -1,11 +1,15 @@
 {
   "recommendations": [
-    "ms-vscode.cpptools",
+    // meta-package for vscode which includes
+    // * ms-vscode.cpptools - provides c++ language support for vscode
+    // * ms-vscode.cmake-tools - provides CMake build support for vscode
     "ms-vscode.cpptools-extension-pack",
-    "ms-vscode.cmake-tools",
-    "github.vscode-github-actions",
+
+    // uses .editorconfig file to apply e.g. 
+    // tab indentation on sc files and space indentation elsewhere
     "EditorConfig.EditorConfig",
-    // syntax highlighting
+
+    // syntax highlighting in sc/schelp files for vscode
     "jatinchowdhury18.vscode-supercollider",
   ],
 }
