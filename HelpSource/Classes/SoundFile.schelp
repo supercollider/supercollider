@@ -10,8 +10,13 @@ In most cases you will wish to send commands to the server to get it to load Sou
 
 code::
 (
+// ExampleFiles helps locate audio files used in examples
+p = ExampleFiles.child;
+// peek at the path to see location and the format of a path
+p.postln;
+
 f = SoundFile.new;
-f.openRead(Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+f.openRead(p);
 f.inspect;
 f.close;
 )
@@ -88,7 +93,7 @@ SoundFile.collect("sounds/*").do { |f| f.path.postln };
 method::use
 Reads the data of a SoundFile, evaluates the function (passing the file as argument) and closes it again.
 code::
-SoundFile.use(Platform.resourceDir +/+ "sounds/a11wlk01.wav", { |f| f.inspect });
+SoundFile.use(ExampleFiles.child, { |f| f.inspect });
 ::
 
 method::normalize

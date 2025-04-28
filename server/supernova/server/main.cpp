@@ -377,8 +377,14 @@ int supernova_main(int argc, char* argv[]) {
                 exit(1);
             }
             EventLoop::run([&server]() { server.run(); });
-        } else
-            server.run_nonrt_synthesis(args);
+        } else {
+            try {
+                server.run_nonrt_synthesis(args);
+            } catch (exception const& e) {
+                cout << "Non-rt synthesis failed: " << e.what() << endl;
+                exit(1);
+            }
+        }
     } catch (const std::exception& exc) {
         cout << "\n*** ERROR: in main(): " << exc.what() << endl;
         exit(1);

@@ -96,6 +96,7 @@ if(NOT SYSTEM_YAMLCPP)
   message(STATUS "Using bundled yaml-cpp")
 
   # yaml-cpp
+  set(CMAKE_POLICY_VERSION_MINIMUM 3.10) # workaround for cmake 4
   aux_source_directory(${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/src yaml_src)
   CREATE_FINAL_FILE(${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp ${yaml_src})
 

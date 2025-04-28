@@ -39,7 +39,7 @@ struct SCRequestEvent : public QEvent {
 class LangClient : public QObject, public SC_TerminalClient {
     Q_OBJECT
 public:
-    LangClient(const char* name);
+    LangClient(const std::string& name);
     virtual ~LangClient() {}
     virtual void sendSignal(Signal);
 

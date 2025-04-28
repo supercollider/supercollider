@@ -27,6 +27,9 @@
 
 #include <boost/align/is_aligned.hpp>
 
+// NaNs are not equal to any floating point number
+static const float uninitializedControl = std::numeric_limits<float>::quiet_NaN();
+
 static InterfaceTable* ft;
 
 struct Vibrato : public Unit {
@@ -93,11 +96,6 @@ struct XLine : public Unit {
     int mCounter;
 };
 
-struct Cutoff : public Unit {
-    double mLevel, mSlope;
-    int mWaitCounter;
-};
-
 struct LinExp : public Unit {
     float m_dstratio, m_rsrcrange, m_rrminuslo, m_dstlo;
 };
@@ -114,6 +112,7 @@ struct Fold : public Unit {
     float m_lo, m_hi, m_range;
 };
 
+// Note: no classlib definition for Unwrap!
 struct Unwrap : public Unit {
     float m_range, m_half, m_offset, m_prev;
 };
@@ -137,11 +136,6 @@ struct InRange : public Unit {
 struct InRect : public Unit {
     // nothing
 };
-
-// struct Trapezoid : public Unit
-//{
-//  float m_leftScale, m_rightScale, m_a, m_b, m_c, m_d;
-//};
 
 struct A2K : public Unit {};
 
@@ -1096,13 +1090,16 @@ void VarSaw_Ctor(VarSaw* unit) {
     }
 
     unit->mFreqMul = unit->mRate->mSampleDur;
-    unit->mPhase = ZIN0(1);
-    float duty = ZIN0(2);
-    duty = unit->mDuty = sc_clip(duty, 0.001, 0.999);
+    double phase = unit->mPhase = sc_wrap(static_cast<double>(ZIN0(1)), 0.0, 1.0);
+    float duty = unit->mDuty = sc_clip(ZIN0(2), 0.001f, 0.999f);
     unit->mInvDuty = 2.f / duty;
     unit->mInv1Duty = 2.f / (1.f - duty);
 
-    ZOUT0(0) = 0.f;
+    VarSaw_next_k(unit, 1);
+
+    unit->mPhase = phase;
+    // other members need not be reset, duty is unchanged because phase is
+    // guaranteed to be in range
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1245,7 +1242,7 @@ void A2K_Ctor(A2K* unit) {
 void T2K_next(T2K* unit, int inNumSamples) {
     float out = 0.f, val;
     float* in = ZIN(0);
-    int n = unit->mWorld->mBufLength;
+    int n = FULLBUFLENGTH;
     LOOP1(n, val = ZXP(in); if (val > out) out = val;);
     ZOUT0(0) = out;
 }
@@ -1259,7 +1256,7 @@ void T2K_Ctor(T2K* unit) {
 
 static inline void T2A_write_trigger(T2A* unit, float level) {
     float* out = OUT(0);
-    int offset = (int)IN0(1);
+    int offset = sc_clip(static_cast<int>(IN0(1)), 0, BUFLENGTH - 1);
     out[offset] = level;
 }
 
@@ -1305,7 +1302,10 @@ void T2A_Ctor(T2A* unit) {
     else
 #endif
         SETCALC(T2A_next);
+
+    unit->mLevel = 0.f;
     T2A_next(unit, 1);
+    unit->mLevel = 0.f;
 }
 
 
@@ -1547,38 +1547,6 @@ void XLine_Ctor(XLine* unit) {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-/*
-void Wrap_next(Wrap* unit, int inNumSamples)
-{
-    float *out = ZOUT(0);
-    float *in   = ZIN(0);
-    float lo = unit->m_lo;
-    float hi = unit->m_hi;
-    float range = unit->m_range;
-
-    LOOP1(inNumSamples,
-        ZXP(out) = sc_wrap(ZXP(in), lo, hi, range);
-    );
-}
-
-void Wrap_Ctor(Wrap* unit)
-{
-
-    SETCALC(Wrap_next);
-    unit->m_lo = ZIN0(1);
-    unit->m_hi = ZIN0(2);
-
-    if (unit->m_lo > unit->m_hi) {
-        float temp = unit->m_lo;
-        unit->m_lo = unit->m_hi;
-        unit->m_hi = temp;
-    }
-    unit->m_range = unit->m_hi - unit->m_lo;
-
-    Wrap_next(unit, 1);
-}
-*/
-
 
 void Wrap_next_kk(Wrap* unit, int inNumSamples) {
     float* out = ZOUT(0);
@@ -1655,39 +1623,7 @@ void Wrap_Ctor(Wrap* unit) {
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-/*
-void Fold_next(Fold* unit, int inNumSamples)
-{
-    float *out = ZOUT(0);
-    float *in   = ZIN(0);
-    float lo = unit->m_lo;
-    float hi = unit->m_hi;
-    float range = unit->m_range;
-    float range2 = unit->m_range2;
 
-    LOOP1(inNumSamples,
-        ZXP(out) = sc_fold(ZXP(in), lo, hi, range, range2);
-    );
-}
-
-void Fold_Ctor(Fold* unit)
-{
-
-    SETCALC(Fold_next);
-    unit->m_lo = ZIN0(1);
-    unit->m_hi = ZIN0(2);
-
-    if (unit->m_lo > unit->m_hi) {
-        float temp = unit->m_lo;
-        unit->m_lo = unit->m_hi;
-        unit->m_hi = temp;
-    }
-    unit->m_range = unit->m_hi - unit->m_lo;
-    unit->m_range2 = 2.f * unit->m_range;
-
-    Fold_next(unit, 1);
-}
-*/
 void Fold_next_kk(Fold* unit, int inNumSamples) {
     float* out = ZOUT(0);
     float* in = ZIN(0);
@@ -2026,6 +1962,7 @@ void Clip_Ctor(Clip* unit) {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
+// Note: no classlib definition for Unwrap!
 
 void Unwrap_next(Unwrap* unit, int inNumSamples) {
     float* out = ZOUT(0);
@@ -2180,7 +2117,7 @@ void AmpComp_Ctor(AmpComp* unit) {
         unit->m_exponent = -1.f * exp;
         SETCALC(AmpComp_next);
     }
-    AmpComp_next(unit, 1);
+    AmpComp_next_kk(unit, 1);
 }
 
 
@@ -2419,15 +2356,6 @@ static void LinExp_SetCalc(LinExp* unit) {
 
     if (!allScalar)
         return;
-
-    float srclo = ZIN0(1);
-    float srchi = ZIN0(2);
-    float dstlo = ZIN0(3);
-    float dsthi = ZIN0(4);
-    unit->m_dstlo = dstlo;
-    unit->m_dstratio = dsthi / dstlo;
-    unit->m_rsrcrange = sc_reciprocal(srchi - srclo);
-    unit->m_rrminuslo = unit->m_rsrcrange * -srclo;
 }
 
 void LinExp_Ctor(LinExp* unit) {
@@ -3272,56 +3200,24 @@ void IEnvGen_Ctor(IEnvGen* unit) {
         SETCALC(IEnvGen_next_k);
     }
 
-    // pointer, offset
-    // initlevel, numstages, totaldur,
-    // [dur, shape, curve, level] * numvals
     int numStages = (int)IN0(3);
     int numvals = numStages * 4; // initlevel + (levels, dur, shape, curves) * stages
-    float offset = unit->m_offset = IN0(1);
-    float point = unit->m_pointin = IN0(0) - offset;
     unit->m_envvals = (float*)RTAlloc(unit->mWorld, (int)(numvals + 1.) * sizeof(float));
     ClearUnitIfMemFailed(unit->m_envvals);
 
+    // fill m_envvals with the values
     unit->m_envvals[0] = IN0(2);
-    //  Print("offset of and initial  values %3,3f, %3.3f\n", offset, unit->m_envvals[0]);
-    // fill m_envvals with the values;
     for (int i = 1; i <= numvals; i++) {
         unit->m_envvals[i] = IN0(4 + i);
-        //      Print("val for: %d, %3.3f\n", i, unit->m_envvals[i]);
     }
 
-    //  float out = OUT0(0);
-    float totalDur = IN0(4);
-    float level = 0.f;
-    float newtime = 0.f;
-    int stage = 0;
-    float seglen = 0.f;
-    if (point >= totalDur) {
-        unit->m_level = level = unit->m_envvals[numStages * 4]; // grab the last value
-    } else {
-        if (point <= 0.0) {
-            unit->m_level = level = unit->m_envvals[0];
-        } else {
-            float segpos = point;
-            // determine which segment the current time pointer needs calculated
-            for (int j = 0; point >= newtime; j++) {
-                seglen = unit->m_envvals[(j * 4) + 1];
-                newtime += seglen;
-                segpos -= seglen;
-                stage = j;
-            }
+    unit->m_offset = IN0(1);
+    unit->m_pointin = uninitializedControl; // trigger calculation in next_k
+    unit->m_level = uninitializedControl; // will be set in next_k
 
-            segpos = segpos + seglen;
-            float begLevel = unit->m_envvals[(stage * 4)];
-            int shape = (int)unit->m_envvals[(stage * 4) + 2];
-            int curve = (int)unit->m_envvals[(stage * 4) + 3];
-            float endLevel = unit->m_envvals[(stage * 4) + 4];
-            float pos = (segpos / seglen);
-
-            GET_ENV_VAL
-        }
-    }
-    OUT0(0) = level;
+    IEnvGen_next_k(unit, 1);
+    // No need to reset internal state: the output depends only on pointin, which doesn't
+    // change between initialization and the `next_` call. So the cached m_level is valid.
 }
 
 void IEnvGen_Dtor(IEnvGen* unit) { RTFree(unit->mWorld, unit->m_envvals); }
@@ -3333,14 +3229,10 @@ void IEnvGen_next_a(IEnvGen* unit, int inNumSamples) {
     float* pointin = IN(0);
     float offset = unit->m_offset;
     int numStages = (int)IN0(3);
-    float point; // = unit->m_pointin;
-
     float totalDur = IN0(4);
 
+    float point;
     int stagemul;
-    // pointer, offset
-    // level0, numstages, totaldur,
-    // [initval, [dur, shape, curve, level] * N ]
 
     for (int i = 0; i < inNumSamples; i++) {
         if (pointin[i] == unit->m_pointin) {
@@ -3386,14 +3278,10 @@ void IEnvGen_next_k(IEnvGen* unit, int inNumSamples) {
     float pointin = IN0(0);
     float offset = unit->m_offset;
     int numStages = (int)IN0(3);
-    float point; // = unit->m_pointin;
-
     float totalDur = IN0(4);
 
+    float point;
     int stagemul;
-    // pointer, offset
-    // level0, numstages, totaldur,
-    // [initval, [dur, shape, curve, level] * N ]
 
     for (int i = 0; i < inNumSamples; i++) {
         if (pointin == unit->m_pointin) {
