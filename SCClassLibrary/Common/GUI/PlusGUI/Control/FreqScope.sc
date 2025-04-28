@@ -474,7 +474,12 @@ FreqScope {
 				scope.kill;
 				scopeOpen = false;
 			}).front;
-			^super.newCopyArgs(scope, window)
+			^if(FreqScope.scopeOpen)
+			{
+				window.front
+			}{
+				super.newCopyArgs(scope, window)
+			}
 		});
 	}
 }
