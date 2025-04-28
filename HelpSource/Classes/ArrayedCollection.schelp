@@ -3,7 +3,7 @@ categories::Collections>Ordered
 summary:: Abstract superclass of Collections of fixed maximum size
 
 DESCRIPTION::
-link::Classes/ArrayedCollection:: is an abstract class, a subclass of link::Classes/SequenceableCollection:: whose items are held in a vector of slots, indexable by link::Classes/SimpleNumber:: starting from 0. If a float is used as index, it will be truncated. Instances of link::Classes/ArrayedCollection:: have a fixed maximum size beyond which they may not grow.
+link::Classes/ArrayedCollection:: is an abstract class, a subclass of link::Classes/SequenceableCollection:: whose items are held in a vector of slots, indexable by a link::Classes/SimpleNumber:: starting from 0. If a float is used as index, it will be truncated. Instances of link::Classes/ArrayedCollection:: have a fixed maximum size beyond which they may not grow.
 
 Its principal subclasses are link::Classes/Array:: (for holding objects), and link::Classes/RawArray::, from which link::Classes/Int8Array::, link::Classes/FloatArray::, link::Classes/Signal:: etc. inherit.
 
