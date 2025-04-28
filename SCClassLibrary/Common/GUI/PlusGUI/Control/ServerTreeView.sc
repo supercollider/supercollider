@@ -11,7 +11,7 @@ ServerTreeView {
 		bounds = if(bounds.isNil) {
 			Rect(128, 64, 400, 400)
 		} {
-			bounds.asRect.minSize_(Size(395, 386))
+			bounds.asRect.minSize(395@386)
 		};
 		if(parent.isNil) {
 			window = Window(this.asString, bounds, scroll:true);

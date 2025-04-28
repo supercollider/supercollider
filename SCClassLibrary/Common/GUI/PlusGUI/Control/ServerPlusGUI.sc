@@ -362,15 +362,11 @@
 
 	plotTree { |interval=0.5, bounds|
 		if(plotTreeWindow.isNil) {
-			bounds = bounds ? Rect(128, 64, 400, 400);
-			bounds = bounds.minSize_(Size(395, 386));
+			bounds = bounds ?? { Rect(128, 64, 400, 400) };
+			bounds = bounds.minSize(395@386);
 			plotTreeWindow = Window(name.asString ++ " Node Tree", bounds, scroll:true);
 			plotTreeWindow.onClose = { plotTreeWindow = nil };
 			this.plotTreeView(interval, plotTreeWindow, { defer { plotTreeWindow.close } });
-		} {
-			bounds = bounds ? this.plotTreeWindow.bounds;
-			bounds = bounds.minSize_(Size(395, 386));
-			plotTreeWindow.bounds_(bounds).front;
 		};
 	}
 	plotTreeView { |interval=0.5, parent, actionIfFail|

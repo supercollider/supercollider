@@ -714,6 +714,9 @@ s.plotTree(2, Rect(200, 200, 100, 200));
 s.plotTree; // brings the plotTree window to the front without changing its position or size.
 ::
 
+method:: plotTreeWindow
+See link::#-plotTree::.
+
 method:: plotTreeView
 Plot the node/group tree graphically on a given view.
 
