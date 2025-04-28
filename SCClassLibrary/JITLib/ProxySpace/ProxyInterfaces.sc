@@ -5,12 +5,13 @@
 AbstractPlayControl {
 
 	var <source, <>channelOffset;
+	var <blockSize, <upsample;
 	var <paused=false;
 
 	classvar <>buildMethods, <>proxyControlClasses; // see wrapForNodeProxy for methods
 
-	*new { | source, channelOffset = 0 |
-		^super.newCopyArgs(source, channelOffset);
+	*new { | source, channelOffset = 0, blockSize, upsample |
+		^super.newCopyArgs(source, channelOffset, blockSize, upsample);
 	}
 
 	build { ^true }
@@ -231,7 +232,17 @@ SynthControl : AbstractPlayControl {
 		server = target.server;
 		group = target.asTarget;
 		nodeID = server.nextNodeID;
-		bundle.addCancel({ [9, this.asDefName, nodeID, addAction, group.nodeID] ++ extraArgs.value });
+
+		bundle.addCancel({
+			if (blockSize.notNil or: { upsample.notNil }) {
+				[66, //"s_newEx"
+					this.asDefName, nodeID, addAction, group.nodeID,
+					blockSize ? 0, upsample ? 0.0]
+				++ (extraArgs.value);
+			} {
+				[9, this.asDefName, nodeID, addAction, group.nodeID] ++ extraArgs.value
+			}
+		});
 		if(paused) { bundle.addCancel(["/n_run", nodeID, 0]) };
 		prevBundle = bundle;
 		^nodeID

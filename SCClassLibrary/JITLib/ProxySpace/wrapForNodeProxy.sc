@@ -14,8 +14,8 @@
 		^SynthDefControl
 	}
 
-	makeProxyControl { | channelOffset = 0 |
-		^this.proxyControlClass.new(this, channelOffset);
+	makeProxyControl { | channelOffset = 0, blockSize, upsample |
+		^this.proxyControlClass.new(this, channelOffset, blockSize, upsample);
 	}
 
 

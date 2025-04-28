@@ -3,24 +3,39 @@ NodeProxy : BusPlug {
 	var <group, <objects, <nodeMap, <children;
 	var <loaded=false, <>awake=true, <paused=false;
 	var <>clock, <>quant;
+	var <blockSize, <upsample;
+
 	classvar <>buildProxyControl, <>buildProxy, <defaultFadeTime=0.02;
 
-
-	*new { | server, rate, numChannels, inputs |
-		var res = super.new(server).init;
+	*new { | server, rate, numChannels, inputs, blockSize, upsample |
+		var res = super.new(server).init(blockSize, upsample);
 		if(rate.notNil or: { numChannels.notNil }) { res.initBus(rate, numChannels) };
 		inputs.do { |o| res.add(o) };
 		^res
 	}
 
+	blockSize_ { |inBlockSize|
+		if (server.checkBlockSize(inBlockSize, this)) {
+			blockSize = inBlockSize
+		};
+	}
 
-	init {
+	upsample_ { |inUpsample|
+		if (server.checkUpsample(inUpsample, this)) {
+			upsample = inUpsample
+		};
+	}
+
+	init { |inBlockSize, inUpsample|
 		nodeMap = ProxyNodeMap.new;
 		nodeMap.put(\fadeTime, defaultFadeTime);
 		objects = Order.new;
 		loaded = false;
 		reshaping = defaultReshaping;
 		this.linkNodeMap;
+
+		inBlockSize !? { this.blockSize_(inBlockSize) };
+		inUpsample !? { this.upsample(inUpsample) };
 	}
 
 	clear { | fadeTime = 0 |
@@ -131,16 +146,20 @@ NodeProxy : BusPlug {
 		^objects.at(index).source
 	}
 
-	put { | index, obj, channelOffset = 0, extraArgs, now = true |
+	put { | index, obj, channelOffset = 0, extraArgs, now = true, blockSize, upsample |
 		var container, bundle, oldBus = bus;
 
 		if(obj.isNil) { this.removeAt(index); ^this };
+
 		if(index.isSequenceableCollection) {
-			^this.putAll(obj.asArray, index, channelOffset)
+			^this.putAll(obj.asArray, index, channelOffset, blockSize, upsample)
 		};
 
+		blockSize = blockSize ? this.blockSize;
+		upsample = upsample ? this.upsample;
+
 		bundle = MixedBundle.new;
-		container = obj.makeProxyControl(channelOffset, this);
+		container = obj.makeProxyControl(channelOffset, blockSize, upsample);
 		container.build(this, index ? 0); // bus allocation happens here
 
 

@@ -4,6 +4,7 @@ ProxySpace : LazyEnvir {
 
 	var <name, <server, <clock, <fadeTime, <quant, <reshaping;
 	var <awake=true, tempoProxy, <group;
+	var <blockSize, <upsample;
 
 	*initClass { all = IdentityDictionary.new }
 
@@ -44,6 +45,9 @@ ProxySpace : LazyEnvir {
 		if(group.isPlaying) { proxy.parentGroup = group };
 		if(quant.notNil) { proxy.quant = quant };
 		if(reshaping.notNil) { proxy.reshaping = reshaping };
+
+		if(blockSize.notNil) { proxy.blockSize = blockSize };
+		if(upsample.notNil) { proxy.upsample = upsample };
 	}
 
 
@@ -80,6 +84,18 @@ ProxySpace : LazyEnvir {
 		if(node.isPlaying.not) { "group % not playing!".postf(node); ^this };
 		group = node;
 		this.do { arg item; item.parentGroup = node };
+	}
+
+	blockSize_ { |inBlockSize|
+		if (server.checkBlockSize(inBlockSize, this)) {
+			blockSize = inBlockSize
+		};
+	}
+
+	upsample_ { |inUpsample|
+		if (server.checkUpsample(inUpsample, this)) {
+			upsample = inUpsample
+		};
 	}
 
 	makeTempoClock { | tempo = 1.0, beats, seconds |
