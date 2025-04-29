@@ -102,6 +102,7 @@ SynthDefOptimizationResult {
 SynthDefOptimizer {
 	var deduplicate = false;
 	var rewrite = false;
+	var doManyPasses = false;
 
 	var finalGraph;
 	var toVisit;
@@ -115,29 +116,36 @@ SynthDefOptimizer {
 	// Used to deduce if a UGen can be replaced by another.
 	var visited;
 
-	*new { |inRoots, deduplicate, rewrite|
+	*new { |inRoots, deduplicate, rewrite, doManyPasses|
 		if ( (deduplicate.not) and: { rewrite.not} ){ ^inRoots.copy };
 		^super.newCopyArgs(
 			deduplicate: deduplicate.asBoolean,
 			rewrite: rewrite.asBoolean,
+			doManyPasses: doManyPasses.asBoolean,
 			finalGraph: inRoots.copy,
 			toVisit: inRoots.copy,
 			initRoots: inRoots.copy,
-			visited: IdentityDictionary(512)
+			visited: IdentityDictionary(32)
 		).prMain
 	}
 
 	prMain {
-		while { madeAChange } {
-			madeAChange = false;
+		if (doManyPasses){
+			while { madeAChange } {
+				madeAChange = false;
+				while { toVisit.isEmpty.not } {
+					this.prOptimise
+				};
+				if (madeAChange) {
+					finalGraph = initRoots.copy;
+					toVisit = initRoots.copy;
+					visited = IdentityDictionary(32);
+				}
+			}
+		} {
 			while { toVisit.isEmpty.not } {
 				this.prOptimise
 			};
-			if (madeAChange) {
-				finalGraph = initRoots.copy;
-				toVisit = initRoots.copy;
-				visited = IdentityDictionary(512);
-			}
 		};
 		^finalGraph
 	}
@@ -214,15 +222,20 @@ SynthDefOptimizer {
 }
 
 SynthDefOptimizationFlags {
-	var <sorting;
-	var <deduplication;
-	var <rewrite;
+	var <sorting=true;
+	var <deduplication=true;
+	var <rewrite=true;
+	var <doManyPasses=true;
 
-	*all { ^super.newCopyArgs(sorting:true, deduplication: true, rewrite: true) }
-	*none { ^super.newCopyArgs(sorting: false, deduplication: false, rewrite: false) }
-	*onlySorting { ^super.newCopyArgs(sorting: true, deduplication: false, rewrite: false) }
-	*deduplicationAndSorting { ^super.newCopyArgs(sorting: true, deduplication: true, rewrite: false) }
-	*sortingAndRewrite { ^super.newCopyArgs(sorting: true, deduplication: false, rewrite: true) }
+	*new { |...a, k| ^this.superPerformArgs(\newCopyArgs, a, k) }
+	*all { ^this.new(sorting:true, deduplication: true, rewrite: true, doManyPasses: true) }
+	*allSingle { ^super.newCopyArgs(sorting:true, deduplication: true, rewrite: true, doManyPasses: false) }
+	*none { ^super.newCopyArgs(sorting: false, deduplication: false, rewrite: false, doManyPasses: false) }
+	*onlySorting { ^super.newCopyArgs(sorting: true, deduplication: false, rewrite: false, doManyPasses: false) }
+	*deduplicationAndSorting { ^super.newCopyArgs(sorting: true, deduplication: true, rewrite: false, doManyPasses: false) }
+	*sortingAndRewriteMany { ^super.newCopyArgs(sorting: true, deduplication: false, rewrite: true, doManyPasses: true) }
+	*sortingAndRewriteSingle { ^super.newCopyArgs(sorting: true, deduplication: false, rewrite: true, doManyPasses: false) }
+
 }
 
 SynthDef {
@@ -272,7 +285,7 @@ SynthDef {
 	*initClass {
 		synthDefDir = Platform.userAppSupportDir ++ "/synthdefs/";
 		synthDefDir.mkdir;
-		optimizationLevel = SynthDefOptimizationFlags.all;
+		optimizationLevel = SynthDefOptimizationFlags.allSingle;
 	}
 
 	*newForSynthDesc {
@@ -296,11 +309,8 @@ SynthDef {
 
 
 	// Same as new, but optimises for a fast language side compile time, rather than fast server--side performance.
-	*newFast { |...args, kwargs|
-		^SynthDef.performArgs(\newWithOptimizations, [SynthDefOptimizationFlags.sortingAndRewrite] ++ args, kwargs)
-	}
-	*newNoOpts { |...args, kwargs|
-		^SynthDef.performArgs(\newWithOptimizations, [SynthDefOptimizationFlags.onlySorting] ++ args, kwargs)
+	*newOptimize { |...args, kwargs|
+		^SynthDef.performArgs(\newWithOptimizations, [SynthDefOptimizationFlags.all] ++ args, kwargs)
 	}
 
 	*newWithOptimizations { |newOptimizations, name, ugenGraphFunc, rates, prependArgs, variants, metadata|
@@ -340,7 +350,7 @@ SynthDef {
 			rewriteInProgress = true;
 			children.do(_.initEdges); // Necessary because of init method in UGen child classes not returning instances of UGen.
 
-			effectiveUGens = SynthDefOptimizer(effectiveUGens, optimizationLevel.deduplication, optimizationLevel.rewrite);
+			effectiveUGens = SynthDefOptimizer(effectiveUGens, optimizationLevel.deduplication, optimizationLevel.rewrite, optimizationLevel.doManyPasses);
 
 			if (optimizationLevel.sorting) {
 				// Does dead code elimination as a side effect.
