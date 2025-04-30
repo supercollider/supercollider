@@ -35,7 +35,7 @@ NodeProxy : BusPlug {
 		this.linkNodeMap;
 
 		inBlockSize !? { this.blockSize_(inBlockSize) };
-		inUpsample !? { this.upsample(inUpsample) };
+		inUpsample !? { this.upsample_(inUpsample) };
 	}
 
 	clear { | fadeTime = 0 |
