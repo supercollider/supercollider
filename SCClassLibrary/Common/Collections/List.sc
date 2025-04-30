@@ -48,7 +48,7 @@ List : SequenceableCollection {
 	add { arg item; array = array.add(item); }
 	addFirst { arg item; array = array.addFirst(item); }
 	insert { arg index, item; array = array.insert(index, item); }
-	clipInsert { arg index, item;
+	boundedInsert { arg index, item;
 		var lastIndex = array.size - 1;
 		index = if(index > lastIndex) { lastIndex } { index };
 		this.insert(index, item);
