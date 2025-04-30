@@ -341,11 +341,11 @@ Event : Environment {
 					}
 				},
 				// when making s_new msg, check if blockSize or newEx new msg
-				reblock: {|msg|
+				reblock: {|msg, label|
 					var bls = ~blockSize.value;
-					var hasBls = bls.notNil and: {~server.checkBlockSize(bls) };
+					var hasBls = bls.notNil and: {~server.checkBlockSize(bls, label) };
 					var ups = ~upsample.value;
-					var hasUps = ups.notNil and: { ~server.checkUpsample(ups) };
+					var hasUps = ups.notNil and: { ~server.checkUpsample(ups, label) };
 					if (hasBls or: hasUps) {
 						// "reblock! use 66. blockSize: % upsample: % \n".postf(bs, ups);
 						msg = msg.put(0, 66).insert(5, bls ? 0).insert(6, ups ? 0);
@@ -547,7 +547,7 @@ Event : Environment {
 
 						// compute the control values and generate OSC commands
 						bndl = msgFunc.valueEnvir;
-						bndl = ~reblock.([9 /* \s_new */, instrumentName, ids, addAction, ~group]) ++ bndl;
+						bndl = ~reblock.([9 /* \s_new */, instrumentName, ids, addAction, ~group], \note) ++ bndl;
 
 						if(strum == 0 and: { (sendGate and: { sustain.isArray })
 							or: { offset.isArray } or: { lag.isArray } }) {
@@ -640,7 +640,7 @@ Event : Environment {
 						// compute the control values and generate OSC commands
 
 						bndl = msgFunc.valueEnvir;
-						bndl = ~reblock.([9 /* \s_new */, instrumentName, -1, addAction, ~group.asControlInput])
+						bndl = ~reblock.([9 /* \s_new */, instrumentName, -1, addAction, ~group.asControlInput], \grain)
 						++ bndl;
 
 
@@ -667,7 +667,7 @@ Event : Environment {
 						instrumentName = ~synthDefName.valueEnvir;
 						bndl = msgFunc.valueEnvir;
 						bndl = ~reblock.([9 /* \s_new */, instrumentName, ~id,
-							Node.actionNumberFor(~addAction), ~group]) ++ bndl;
+							Node.actionNumberFor(~addAction), ~group], \on) ++ bndl;
 						bndl = bndl.flop;
 						if ( (ids = ~id).isNil ) {
 							ids = Array.fill(bndl.size, {server.nextNodeID });
@@ -765,7 +765,7 @@ Event : Environment {
 							numChannels
 						);
 						// addToTail, so that old bus value can be overridden:
-						bundle = ~reblock.([9, instrument, ~id, 1, ~group.asControlInput])
+						bundle = ~reblock.([9, instrument, ~id, 1, ~group.asControlInput], \fadeBus)
 						++ [
 							"values", array,
 							"out", ~out.value,
@@ -896,7 +896,7 @@ Event : Environment {
 						f = ~freq;
 						~amp = ~amp.value;
 
-						bndl = ( ~reblock.([9 /* \s_new */, ~instrument, ids, addAction, ~group.asControlInput])
+						bndl = ( ~reblock.([9 /* \s_new */, ~instrument, ids, addAction, ~group.asControlInput], \monoNote)
 							++ ~msgFunc.valueEnvir).flop;
 						bndl.do { | b |
 							id = server.nextNodeID;
@@ -926,9 +926,9 @@ Event : Environment {
 						msgFunc = ~getMsgFunc.valueEnvir;
 						instrumentName = ~synthDefName.valueEnvir;
 
-						bndl = ~reblock.([9 /* \s_new */, instrumentName, ids, addAction, group])
+						bndl = ~reblock.([9 /* \s_new */, instrumentName, ids, addAction, group], \Synth)
 						++ msgFunc.valueEnvir;
-						bndl = ~reblock.(bndl);
+
 						if ((addAction == 0) || (addAction == 3)) {
 							bndl = bndl.reverse;
 						};
@@ -1065,7 +1065,7 @@ Event : Environment {
 					ids = Event.checkIDs(~id, server);
 					if (ids.isNil) { ids = msgs.collect { server.nextNodeID } };
 					bndl = ids.collect { |id, i|
-						~reblock.([9 /* \s_new */, instrumentName, id, addAction, group])
+						~reblock.([9 /* \s_new */, instrumentName, id, addAction, group], \synthEvent)
 						++ msgs[i]
 					};
 
