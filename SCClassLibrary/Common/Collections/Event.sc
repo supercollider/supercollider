@@ -204,8 +204,8 @@ Event : Environment {
 						~scale.respondsTo(\stepsPerOctave).if(
 							{ ~scale.stepsPerOctave },
 							~stepsPerOctave) + ~octave - 5.0) *
-						(12.0 * ~scale.respondsTo(\octaveRatio).if
-							({ ~scale.octaveRatio }, ~octaveRatio).log2) + 60.0);
+					(12.0 * ~scale.respondsTo(\octaveRatio).if
+						({ ~scale.octaveRatio }, ~octaveRatio).log2) + 60.0);
 				},
 				detunedFreq: #{
 					~freq.value + ~detune
@@ -339,8 +339,19 @@ Event : Environment {
 						schedBundle.value(lag, dur + ~timingOffset, server,
 							[15 /* \n_set */, msg[2], \gate, 0])
 					}
+				},
+				// when making s_new msg, check if blockSize or newEx new msg
+				reblock: {|msg|
+					var bls = ~blockSize.value;
+					var hasBls = bls.notNil and: {~server.checkBlockSize(bls) };
+					var ups = ~upsample.value;
+					var hasUps = ups.notNil and: { ~server.checkUpsample(ups) };
+					if (hasBls or: hasUps) {
+						// "reblock! use 66. blockSize: % upsample: % \n".postf(bs, ups);
+						msg = msg.put(0, 66).insert(5, bls ? 0).insert(6, ups ? 0);
+					};
+					msg
 				}
-
 			),
 
 			bufferEvent: (
@@ -536,8 +547,7 @@ Event : Environment {
 
 						// compute the control values and generate OSC commands
 						bndl = msgFunc.valueEnvir;
-						bndl = [9 /* \s_new */, instrumentName, ids, addAction, ~group] ++ bndl;
-
+						bndl = ~reblock.([9 /* \s_new */, instrumentName, ids, addAction, ~group]) ++ bndl;
 
 						if(strum == 0 and: { (sendGate and: { sustain.isArray })
 							or: { offset.isArray } or: { lag.isArray } }) {
@@ -630,7 +640,9 @@ Event : Environment {
 						// compute the control values and generate OSC commands
 
 						bndl = msgFunc.valueEnvir;
-						bndl = [9 /* \s_new */, instrumentName, -1, addAction, ~group.asControlInput] ++ bndl;
+						bndl = ~reblock.([9 /* \s_new */, instrumentName, -1, addAction, ~group.asControlInput])
+						++ bndl;
+
 
 						~schedBundleArray.(
 							~lag,
@@ -654,8 +666,8 @@ Event : Environment {
 						msgFunc = ~getMsgFunc.valueEnvir;
 						instrumentName = ~synthDefName.valueEnvir;
 						bndl = msgFunc.valueEnvir;
-						bndl = [9 /* \s_new */, instrumentName, ~id,
-							Node.actionNumberFor(~addAction), ~group] ++ bndl;
+						bndl = ~reblock.([9 /* \s_new */, instrumentName, ~id,
+							Node.actionNumberFor(~addAction), ~group]) ++ bndl;
 						bndl = bndl.flop;
 						if ( (ids = ~id).isNil ) {
 							ids = Array.fill(bndl.size, {server.nextNodeID });
@@ -753,12 +765,14 @@ Event : Environment {
 							numChannels
 						);
 						// addToTail, so that old bus value can be overridden:
-						bundle = [9, instrument, ~id, 1, ~group.asControlInput,
+						bundle = ~reblock.([9, instrument, ~id, 1, ~group.asControlInput])
+						++ [
 							"values", array,
 							"out", ~out.value,
 							"fadeTime", ~fadeTime,
 							"curve", ~curve
 						].asOSCArgArray;
+
 						~schedBundle.value(~lag, ~timingOffset, server, bundle);
 						if(~rate == \audio) { // control rate synth frees by itself, because bus holds the value
 							~stopServerNode = { server.sendBundle(server.latency, [\n_set, ~id, \gate, 0]) }
@@ -882,7 +896,7 @@ Event : Environment {
 						f = ~freq;
 						~amp = ~amp.value;
 
-						bndl = ( [9 /* \s_new */, ~instrument, ids, addAction, ~group.asControlInput]
+						bndl = ( ~reblock.([9 /* \s_new */, ~instrument, ids, addAction, ~group.asControlInput])
 							++ ~msgFunc.valueEnvir).flop;
 						bndl.do { | b |
 							id = server.nextNodeID;
@@ -912,8 +926,9 @@ Event : Environment {
 						msgFunc = ~getMsgFunc.valueEnvir;
 						instrumentName = ~synthDefName.valueEnvir;
 
-						bndl = [9 /* \s_new */, instrumentName, ids, addAction, group]
+						bndl = ~reblock.([9 /* \s_new */, instrumentName, ids, addAction, group])
 						++ msgFunc.valueEnvir;
+						bndl = ~reblock.(bndl);
 						if ((addAction == 0) || (addAction == 3)) {
 							bndl = bndl.reverse;
 						};
@@ -1050,7 +1065,7 @@ Event : Environment {
 					ids = Event.checkIDs(~id, server);
 					if (ids.isNil) { ids = msgs.collect { server.nextNodeID } };
 					bndl = ids.collect { |id, i|
-						[9 /* \s_new */, instrumentName, id, addAction, group]
+						~reblock.([9 /* \s_new */, instrumentName, id, addAction, group])
 						++ msgs[i]
 					};
 
