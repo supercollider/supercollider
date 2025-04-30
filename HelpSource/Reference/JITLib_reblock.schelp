@@ -1,0 +1,164 @@
+title:: JITLib reblock
+summary:: blockSize and upsample in JITLib
+categories:: JITLib>NodeProxy
+related:: Classes/NodeProxy, Classes/Ndef, Classes/ProxySpace, Classes/Server
+
+
+As of SC Version 3.15, synthesis in scserver becomes much more flexible, because both blockSize and upsample factor can be set per synthesis node.
+
+JITLib supports this new option at three layers:
+A link::Classes/ProxySpace:: can have its own blockSize and upsample factor that its NodeProxies or Ndefs will use; an link::Classes/Ndef:: or Classes/NodeProxy can have its own blockSize and upsample factor, and individual SynthDefControl objects (within Ndef slots) can have them too.
+
+The examples below show how to use  within JITLib, can equally be used for link::Classes/Ndef:: and in link::Classes/ProxySpace::.
+
+The server blockSize setting limits the maximum blockSize, so it has methods to check blockSize and upsample values for validity before using them in settings in NodeProxy class, instances, and slot objects.
+
+code::
+s.options.blockSize
+// true, because power of two, and <= s.options.blockSize:
+s.checkBlockSize(16, "test");
+// false, because not a power of two
+s.checkBlockSize(3, "test");
+// false, upsample also must be a  power of two
+s.checkUpsample(3, "test");
+// also true, can be nil so one can clear a blockSize value
+s.checkBlockSize(nil)
+
+
+// turn on dumpOSC to check which messages the server gets
+s.dumpOSC;
+
+
+// When nothing is set, Ndefs just uses server blockSize
+Ndef(\x, { BlockSize.ir.poll(0); LFSaw.ar(123, 0, 0.3) });
+Ndef(\x).play
+
+// lowest level to set: in nodeproxy/Ndef object
+Ndef(\x).put(0, { BlockSize.ir.poll(0); LFSaw.ar(123, 0, 0.3) }, blockSize: 32);
+// dumpOSC posts special s_newEx message = key 66,
+// defname, nodeID, 1, parentGroup, blockSize, upsample, ... synth params.
+// the default value for blockSize and upsample is 0,
+// so .... 32, 0 ... means blockSize is set to 32, upsample uses its default
+[ 66, "temp__0x10315637_1013", 1004, 1, 1000, 32, 0, "out", 4, "fadeTime", 0.02, "i_out", 4 ]
+
+// setting only the upsample value: ... groupID, 0, 2 ...
+Ndef(\x).put(0, { BlockSize.ir.poll(0); LFSaw.ar(123, 0, 0.3) }, upsample: 2);
+[ 66, "temp__0x10315637_1017", 1006, 1, 1000, 0, 2, "out", 4, "fadeTime", 0.02, "i_out", 4 ]
+
+
+// ProxySpaces can have blockSize upsample values,
+// which are passed on to new proxies in that proxyspace:
+
+Ndef.dictFor(s) // the proxyspace for all Ndefs on s
+Ndef.clear;
+
+Ndef.dictFor(s).blockSize; // nil by default
+Ndef.dictFor(s).upsample; // nil by default
+
+// set and get its blockSize:
+Ndef.dictFor(s).blockSize = 8;
+Ndef.dictFor(s).blockSize; // now 8
+// set and get its upsample factor
+Ndef.dictFor(s).upsample = 8;
+Ndef.dictFor(s).upsample; // now 8
+
+
+// New Ndefs take these settings from their proxyspace
+Ndef(\y).blockSize
+Ndef(\y).upsample
+
+
+// ... and this Ndef then uses its blockSize
+Ndef(\y, {
+	BlockSize.ir.poll(0, "blocksize");
+	SampleRate.ir.poll(0, "samplerate");
+	(SampleRate.ir / s.sampleRate).poll(0, "upsample");
+
+	LFSaw.ar(LFDNoise3.kr([3, 5]).exprange(2000, 20000)) * 0.2
+});
+Ndef(\y).play;
+
+// can be cleared again.
+Ndef.dictFor(s).blockSize = nil;  Ndef.dictFor(s).blockSize;
+Ndef.dictFor(s).upsample = nil;   Ndef.dictFor(s).upsample
+
+// at the mid level, Ndefs can have blockSize and upsample settings
+Ndef(\x).blockSize_(16).upsample_(4);
+Ndef(\x).blockSize;
+Ndef(\x).upsample;
+// which they pass on to the slot objects
+Ndef(\x).put(0, { BlockSize.ir.poll(0); LFSaw.ar(123, 0, 0.3) });
+
+// you can override the Ndef settings at the slot object level
+Ndef(\x).put(0, { BlockSize.ir.poll(0); LFSaw.ar(123, 0, 0.3) }, blockSize: 32);
+
+// blockSize/upsample can be different per slot object:
+Ndef(\x).put(5, { BlockSize.ir.poll(0); LFSaw.ar(123, 0, 0.3) }, upsample: 2);
+
+
+// *** Events and Patterns: ****
+
+s.dumpOSC; // to see bundles sent.
+
+(blockSize: 16).play; // sends reblock new message: 66 = s_newEx.
+(upsample: 16).play;
+
+// also sends 66 s_newEx messages
+Pdef(\x, Pbind(\note, Pseq((0..7), 2), \dur, 0.125, blockSize: 32)).play;
+
+::
+
+
+// a synthdef that produces bad aliasing
+(
+SynthDef(\bsTest, { |amp=0.1, freq=(60.midicps), sustain=1|
+	var snd = LFSaw.ar(XLine.kr(freq, freq * 10, sustain, doneAction: 2), 0, amp);
+
+	BlockSize.ir.poll(0, "BlockSize");
+	(SampleRate.ir / s.sampleRate).poll(0, "upsample");
+	SampleRate.ir.poll(0, "SampleRate");
+
+	// gentle filter for upsampled sounds:
+	snd = RLPF.ar(RLPF.ar(snd, 20000, 0.7), 20000, 0.7);
+	Out.ar(0, snd);
+}).add;
+)
+
+// Events work, and this synthdef polls BlockSize etc
+(instrument: \bsTest, freq: 2000, dur: 3).play
+(instrument: \bsTest, freq: 2000, dur: 3, upsample: 4).play; // less aliasing
+(instrument: \bsTest, upsample: 16).play; // even less aliasing
+(instrument: \bsTest, blockSize: { 16 }).play
+(instrument: \bsTest, blockSize: s.options.blockSize).play
+(instrument: \bsTest, upsample: 3).play
+
+// also works fine in Pbinds and Pdefs
+(
+Pdef(\x,
+	Pbind(
+		\instrument, \bsTest,
+		\note, Pseq([0, 12, 24, 36], 5),
+		\dur, 1, \legato, 2,
+		\blockSize, Pseq([64, 32, 16], 7),
+		\upsample, Pseq([1, 2, 4, 8, 16], 4)
+	)
+).play
+)
+
+// playing Pdef inside Ndef works when set in Pdef...
+Ndef(\x, Pdef(\x)).play;
+
+
+/******* Questions ****/
+// when using a synthdef as source,
+// should blockSize or upsample from Ndef be used?
+Ndef(\x).blockSize = 16;
+Ndef(\x).play.put(10, \default);
+Ndef(\x).end;
+
+// Should Pdef inherit blockSize and upsample from Ndef?
+Ndef(\x).blockSize = 16;
+Ndef(\x).upsample = 1;
+Pdef(\x, Pbind(\instrument, \bsTest, \legato, 2));
+Ndef(\x, Pdef(\x)).play;
+
