@@ -184,9 +184,9 @@ ArrayedCollection : SequenceableCollection {
 		^this.primitiveFailed;
 	}
 	boundedInsert { arg index, item;
-		var lastIndex = this.size - 1;
-		index = if(index > lastIndex) { lastIndex } { index };
-		^this.insert(index, item)[0..lastIndex]
+		if (this.size == 0) { ^this };
+		this.pop;
+		this.insert(index, item);
 	}
 	move { arg fromIndex, toIndex;
 		^this.insert(toIndex, this.removeAt(fromIndex))

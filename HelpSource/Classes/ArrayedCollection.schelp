@@ -251,21 +251,26 @@ method::boundedInsert
 Same as link::#-insert::, but it maintains the size of the receiver, and the values for index greater than the size of the link::Classes/ArrayedCollection:: will be clipped to the last index.
 
 code::
-~arrayA = [1, 2, 3]           // -> [1, 2, 3]
-~arrayA.maxSize               // -> 4
+~arrayA = [1, 2, 3]             // -> [1, 2, 3]
+~arrayA.maxSize                 // -> 4
 
-~arrayA.boundedInsert(0, \a)  // -> [a, 1, 2]
-~arrayA                       // -> [a, 1, 2, 3]
-~arrayA.boundedInsert(20, \a) // -> [a, 1, 2, a]
-~arrayA                       // -> [a, 1, 2, 3]
+~arrayA.boundedInsert(0, \a)    // -> [a, 1, 2]
+~arrayA                         // -> [a, 1, 2]
+~arrayA.boundedInsert(-2, '-a') // -> [-a, a, 1]
+~arrayA                         // -> [-a, a, 1]
+~arrayA.boundedInsert(20, \a)   // -> [-a, a, a]
+~arrayA                         // -> [-a, a, a]
 
-~arrayA = [1, 2, 3]                     // -> [1, 2, 3]
-~arrayB = ~arrayA.boundedInsert(0, \a)  // -> [a, 1, 2]
-~arrayA                                 // -> [a, 1, 2, 3]
-~arrayB                                 // -> [a, 1, 2]
-~arrayC = ~arrayA.boundedInsert(20, \a) // -> [a, 1, 2, a]
-~arrayA                                 // -> [a, 1, 2, 3]
-~arrayC                                 // -> [a, 1, 2, a]
+~arrayA = [1, 2, 3]                       // -> [1, 2, 3]
+~arrayB = ~arrayA.boundedInsert(0, \a)    // -> [a, 1, 2]
+~arrayA                                   // -> [a, 1, 2]
+~arrayB                                   // -> [a, 1, 2]
+~arrayC = ~arrayA.boundedInsert(20, \a)   // -> [a, 1, a]
+~arrayA                                   // -> [a, 1, a]
+~arrayC                                   // -> [a, 1, a]
+~arrayD = ~arrayA.boundedInsert(-2, '-1') // -> [-1, a, 1]
+~arrayA                                   // -> [-1, a, 1]
+~arrayD                                   // -> [-1, a, 1]
 ::
 
 method::move
