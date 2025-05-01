@@ -235,7 +235,7 @@ z.fill([1, 2, 3, 4]).postln;
 ::
 
 method::insert
-Inserts the item into the contents of the receiver. This method may return a new ArrayedCollection. For this reason, you should always assign the result of code::insert:: to a variable - never depend on add changing the receiver.
+Inserts the item into the contents of the receiver. This method may return a new ArrayedCollection. For this reason, you should always assign the result of code::insert:: to a variable - never depend on insert changing the receiver.
 code::
 (
 // In this case, a new object is returned  
