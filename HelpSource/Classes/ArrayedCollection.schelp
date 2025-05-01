@@ -77,14 +77,14 @@ x[y]; // returns [10, 10, 30, 30, 20]
 ::
 
 method::clipAt
-Same as link::#-at::, but values for strong::index:: greater than the size of the ArrayedCollection will be clipped to the last index.
+Same as link::#-at::, but items for strong::index:: greater than the link::Classes/ArrayedCollection:: instance size minus one will be clipped to the last index.
 code::
 y = [1, 2, 3];
 y.clipAt(13).postln;
 ::
 
 method::wrapAt
-Same as link::#-at::, but values for strong::index:: greater than the size of the ArrayedCollection will be wrapped around to 0.
+Same as link::#-at::, but items for strong::index:: greater than the link::Classes/ArrayedCollection:: instance size minus one will be wrapped around to 0.
 code::
 y = [1, 2, 3];
 y.wrapAt(3).postln; // this returns the value at index 0
@@ -93,7 +93,7 @@ y.wrapAt([-2, 1])   // index can also be a collection or negative numbers
 ::
 
 method::foldAt
-Same as link::#-at::, but values for strong::index:: greater than the size of the ArrayedCollection will be folded back.
+Same as link::#-at::, but items for strong::index:: greater than the link::Classes/ArrayedCollection:: instance size minus one will be folded back.
 code::
 y = [1, 2, 3];
 y.foldAt(3).postln; // this returns the value at index 1
@@ -114,13 +114,13 @@ method::put
 Put strong::item:: at strong::index::, replacing what is there.
 
 method::clipPut
-Same as link::#-put::, but values for strong::index:: greater than the size of the ArrayedCollection will be clipped to the last index.
+Same as link::#-put::, but items for strong::index:: greater than the link::Classes/ArrayedCollection:: instance size minus one will be clipped to the last index.
 
 method::wrapPut
-Same as link::#-put::, but values for strong::index:: greater than the size of the ArrayedCollection will be wrapped around to 0.
+Same as link::#-put::, but items for strong::index:: greater than the link::Classes/ArrayedCollection:: instance size minus one will be wrapped around to 0.
 
 method::foldPut
-Same as link::#-put::, but values for strong::index:: greater than the size of the ArrayedCollection will be folded back.
+Same as link::#-put::, but items for strong::index:: greater than the link::Classes/ArrayedCollection:: instance size minus one will be folded back.
 
 method::putEach
 Put the strong::values:: in the corresponding indices given by strong::keys::. If one of the two argument arrays is longer then it will wrap.
