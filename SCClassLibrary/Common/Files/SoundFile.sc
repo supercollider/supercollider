@@ -422,9 +422,7 @@ SoundFile {
 	asBuffer { |server|
 		var buffer, rawData;
 		server = server ? Server.default;
-		if(server.serverRunning.not) { 
-			Error("SoundFile:asBuffer - Server not running.").throw
-			"server '%' not running".format(server.name).warn; };
+		if(server.serverRunning.not) { Error("SoundFile:asBuffer - Server not running.").throw };
 		if(this.isOpen.not) { Error("SoundFile:asBuffer - SoundFile not open.").throw };
 		if(server.isLocal) {
 			buffer = Buffer.read(server, path)

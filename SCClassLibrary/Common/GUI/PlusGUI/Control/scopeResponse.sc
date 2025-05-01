@@ -27,7 +27,6 @@ Slew.scopeResponse
 		server = server ? Server.default;
 		if (server.serverRunning.not) {
 			Error("Function-scopeResponse: server not running").throw
-			"server '%' not running".format(server.name).warn;
 		};
 
 		// Create two private busses
