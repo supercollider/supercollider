@@ -107,7 +107,8 @@ code::
 ::
 
 method::boundedInsert
-Same as link::#-insert::, but it maintains the size of the receiver, and the values for index greater than the size of the link::Classes/List:: will be clipped to the last index.
+Same as link::#-insert::, but it maintains the size of the receiver, and the item for an index greater than link::Classes/List:: instance size minus one will be clipped to size - 1, which is the last index.
+
 code::
 ~alist = List[10, 20, 30, 40] // -> List[10, 20, 30, 40]
 ~alist.boundedInsert(0, 1)    // -> List[1, 10, 20, 30]
