@@ -33,7 +33,7 @@
 
 		server = Server.default;
 		if(server.serverRunning.not) {
-			(server.name.asString ++ " server not running!").postln;
+			"server '%' not running".format(server.name).warn;
 			^nil
 		};
 

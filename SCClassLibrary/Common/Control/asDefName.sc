@@ -56,7 +56,7 @@
 		target = target.asTarget;
 		server = target.server;
 		if(server.serverRunning.not) {
-			("server '" ++ server.name ++ "' not running.").warn; ^nil
+			"server '%' not running".format(server.name).warn; ^nil
 		};
 		def = this.asSynthDef(
 			fadeTime:fadeTime,

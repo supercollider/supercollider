@@ -815,7 +815,7 @@ Server {
 			if(statusWatcher.serverRunning) {
 				func.value(this)
 			} {
-				"server '%' not running".format(this.name).postln;
+				"server '%' not running".format(this.name).warn;
 				failFunc.value(this)
 			}
 		}
@@ -841,7 +841,7 @@ Server {
 
 	ping { |n = 1, wait = 0.1, func|
 		var result = 0, pingFunc;
-		if(statusWatcher.serverRunning.not) { "server not running".postln; ^this };
+		if(statusWatcher.serverRunning.not) { "server '%' not running".format(this.name).warn; ^this };
 		pingFunc = {
 			Routine.run {
 				var t, dt;

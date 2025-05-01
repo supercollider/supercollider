@@ -256,7 +256,7 @@ BusPlug : AbstractFunction {
 	play { | out, numChannels, group, multi=false, vol, fadeTime, addAction |
 		var bundle = MixedBundle.new;
 		if(this.homeServer.serverRunning.not) {
-			("server not running:" + this.homeServer).warn;
+			"server '%' not running".format(this.homeServer.name).warn;
 			^this
 		};
 		if(bus.rate == \control) { "Can't monitor a control rate bus.".warn; monitor.stop; ^this };
@@ -270,7 +270,7 @@ BusPlug : AbstractFunction {
 	playN { | outs, amps, ins, vol, fadeTime, group, addAction |
 		var bundle = MixedBundle.new;
 		if(this.homeServer.serverRunning.not) {
-			("server not running:" + this.homeServer).warn;
+			"server '%' not running".format(this.homeServer.name).warn;
 			^this
 		};
 		if(bus.rate == \control) { "Can't monitor a control rate bus.".warn; monitor.stop; ^this };

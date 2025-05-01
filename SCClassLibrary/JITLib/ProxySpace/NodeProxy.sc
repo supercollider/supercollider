@@ -469,7 +469,7 @@ NodeProxy : BusPlug {
 
 	spawn { | extraArgs, index = 0 |
 		var bundle, obj, i;
-		if(server.serverRunning.not) { "server '%' not running\n".postf(server); ^this };
+		if(server.serverRunning.not) { "server '%' not running".format(server.name).warn; ^this };
 		obj = objects.at(index);
 		if(obj.notNil) {
 			i = this.index;
@@ -484,7 +484,7 @@ NodeProxy : BusPlug {
 	send { | extraArgs, index, freeLast = true |
 		var bundle, obj, fadeTime = this.fadeTime;
 		if(objects.isEmpty) { ^this };
-		if(server.serverRunning.not) { "server '%' not running\n".postf(server); ^this };
+		if(server.serverRunning.not) { "server '%' not running".format(server.name).warn; ^this };
 		if(index.isNil) {
 			bundle = this.getBundle;
 			if(freeLast) { this.stopAllToBundle(bundle, fadeTime) };
@@ -510,7 +510,7 @@ NodeProxy : BusPlug {
 
 	sendEach { | extraArgs, freeLast = true |
 		var bundle;
-		if(server.serverRunning.not) { "server '%' not running\n".postf(server); ^this };
+		if(server.serverRunning.not) { "server '%' not running".format(server.name).warn; ^this };
 		bundle = this.getBundle;
 		if(freeLast, { this.stopAllToBundle(bundle) });
 		if(loaded.not) { this.loadToBundle(bundle) };
@@ -534,7 +534,7 @@ NodeProxy : BusPlug {
 
 	deepWakeUp {
 		var bundle = MixedBundle.new;
-		if(server.serverRunning.not) { "server '%' not running\n".postf(server); ^this };
+		if(server.serverRunning.not) { "server '%' not running".format(server.name).warn; ^this };
 		this.wakeUpToBundle(bundle);
 		bundle.schedSend(server, clock ? TempoClock.default, quant)
 	}
