@@ -57,7 +57,7 @@ List[1, 2, 3].at(0).postln;
 ::
 
 method::clipAt
-Same as link::#-at::, but items for strong::index:: greater than the link::Classes/List:: instance size minus one will be clipped to the last index.
+Same as link::#-at::, but items for strong::index:: greater than the link::Classes/List:: instance size minus one will be clipped to code::size - 1::, which is the last index.
 code::
 y = List[1, 2, 3];
 y.clipAt(13).postln;
@@ -84,7 +84,7 @@ method::put
 Put strong::item:: at strong::index::, replacing what is there.
 
 method::clipPut
-Same as link::#-put::, but items for strong::index:: greater than the link::Classes/List:: instance size minus one will be clipped to the last index.
+Same as link::#-put::, but items for strong::index:: greater than the link::Classes/List:: instance size minus one will be clipped to code::size - 1::, which is the last index.
 
 method::wrapPut
 Same as link::#-put::, but items for strong::index:: greater than the link::Classes/List:: instance size minus one will be wrapped around to 0.
