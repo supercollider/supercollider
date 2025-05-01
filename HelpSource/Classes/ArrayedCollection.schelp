@@ -265,7 +265,7 @@ y.postln;         // [1, 999, 2, 3]
 ::
 
 method::boundedInsert
-Same as link::#-insert::, but it maintains the size of the receiver, and the item for an index greater than link::Classes/ArrayedCollection:: instance size minus one will be clipped to code::size - 1::, which is the last index.
+Same as link::#-insert::, but it maintains the size of the receiver, and the item for the strong::index:: greater than link::Classes/ArrayedCollection:: instance size minus one will be clipped to code::size - 1::, which is the last index.
 
 ccode::
 (
