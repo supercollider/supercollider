@@ -80,7 +80,7 @@ method::clipAt
 Same as link::#-at::, but values for strong::index:: greater than the link::Classes/ArrayedCollection:: instance size minus one will be clipped to code::size - 1::, which is the last index.
 link::Classes/SequenceableCollection#-|@|:: is its syntactic shorcut.
 code::
-y = List[1, 2, 3]
+y = [1, 2, 3]
 
 y.clipAt(13)
 y|@|13

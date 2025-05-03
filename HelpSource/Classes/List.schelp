@@ -77,7 +77,7 @@ Similarly if the index is negative it wraps to access the elements from the end 
 Specifically link::#-wrapAt:: uses a modulo function: code::this.wrapAt(index):: is equivalent to code::this.at(index mod: size)::, insuring that the index is always in the valid range of the collection.
 link::Classes/SequenceableCollection#-@@:: is its syntactic shorcut.
 code::
-y = [1, 2, 3]
+y = List[1, 2, 3]
 
 y.wrapAt(3); // this returns the value at index 0
 y@@3       // syntactic shorcut
@@ -95,7 +95,7 @@ method::foldAt
 Same as link::#-at::, but values for strong::index:: greater than the size of the link::Classes/List:: will be folded back.
 link::Classes/SequenceableCollection#-@|@:: is its syntactic shorcut.
 code::
-y = [1, 2, 3]
+y = List[1, 2, 3]
 
 y.foldAt(3) // this returns the value at index 1
 y@|@3       // syntactic shorcut
