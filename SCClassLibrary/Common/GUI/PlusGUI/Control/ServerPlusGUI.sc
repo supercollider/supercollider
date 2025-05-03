@@ -356,7 +356,6 @@
 				recorder.setProperty(\value, 0)
 			})
 		};
-
 		this.startAliveThread;
 	}
 
@@ -367,7 +366,10 @@
 			plotTreeWindow = Window(name.asString ++ " Node Tree", bounds, scroll:true);
 			plotTreeWindow.onClose = { plotTreeWindow = nil };
 			this.plotTreeView(interval, plotTreeWindow, { defer { plotTreeWindow.close } });
-		};
+		} {
+			bounds = bounds ?? { this.plotTreeWindow.bounds };
+			plotTreeWindow.bounds_(bounds).front;
+		}
 	}
 	plotTreeView { |interval=0.5, parent, actionIfFail|
 		ServerTreeView(this, parent: parent).start(interval, actionIfFail)
