@@ -13,7 +13,8 @@ WindowsPlatform : Platform {
 
 	startup {
 		// Server setup
-		Server.program = (Platform.resourceDir +/+ "scsynth.exe").quote;
+		var scsynthPath = "SCSYNTH_PATH".getenv ?? {(Platform.resourceDir +/+ "scsynth.exe")};
+		Server.program = scsynthPath.quote;
 
 		// Score setup
 		Score.program = Server.program;

@@ -84,7 +84,7 @@ ServerOptions {
 				verbosity: 0,
 				zeroConf: false,
 				restrictedPath: nil,
-				ugenPluginsPath: nil,
+				ugenPluginsPath: "SC_UGEN_PLUGINS_PATH".getenv,
 				initialNodeID: 1000,
 				remoteControlVolume: false,
 				memoryLocking: false,

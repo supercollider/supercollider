@@ -9,11 +9,11 @@ LinuxPlatform : UnixPlatform {
 		^(deprecated ++ super.startupFiles)
 	}
 	startup {
-
+		var scsynthPath = "SCSYNTH_PATH".getenv ? "scsynth";
 		helpDir = this.systemAppSupportDir++"/Help";
 
 		// Server setup
-		Server.program = "exec scsynth";
+		Server.program = "exec %".format(scsynthPath);
 
 		// Score setup
 		Score.program = Server.program;
