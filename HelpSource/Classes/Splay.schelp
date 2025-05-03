@@ -1,7 +1,7 @@
 class:: Splay
 summary:: Splay spreads an array of channels across the stereo field
 categories:: UGens>Multichannel>Panners
-related:: Classes/SplayAz, Classes/SplayZ
+related:: Classes/SplayAz, Classes/SplayZ, Classes/LevelComp, Guides/Level_Compensation
 
 description::
 Splay spreads an array of channels across the stereo field.
@@ -89,7 +89,9 @@ true, false as before for rough equal power level compensation,
 and newly added: a float between 0 and 1. This is to offer more choices for level compensation, such as equal maximum amplitude.
 ::
 
-Overview of levelComp variants:
+For a full discussion, see link::Classes/LevelComp::;
+here is an overview of the levelComp variants:
+
 code::
 // default is equal power comp: level / ( numchans.sqrt)
 Splay.ar(ins, spread, level, center ); // true is default
@@ -116,74 +118,4 @@ Splay.ar(ins, spread, level, center, levelComp: 0.75);
 
 ::
 
-subsection:: Discussion and demonstration of level compensation options:
-code::
-
-s.meter;
-s.scope;
-
-// direct synthesis at level 0.1 -> -20db on each channel
-{ var n = 2, level = 0.1, spread = 1, pan = 0;
-	LFPulse.ar({ 100.exprand(2000) } ! n).range(-1, 1) * level
-}.play;
-
-// with levelComp true by default:
-// the same with 2 chans, spread 1, level 0.1, panned to center: -20db
-x = { |spread = 1, level = 0.1, center = 0|
-	var n = 2;
-	var snd = Splay.ar(LFPulse.ar({ 100.exprand(2000) } ! n).range(-1, 1),
-		spread, level, center);
-	Amplitude.ar(snd, 0.01, 1).ampdb.poll(1);
-	snd
-}.play;
-
-// at full spread, level -20, pan to center,
-x.set(\spread, 1, \center, 0); // -23
-// no spread, in center:
-x.set(\spread, 0, \center, 0); // -20
-// worst case: no spread, pan full left
-x.set(\spread, 0, \center, -1); // -17db
-
-//// The same tests with 20 channels, levelComp true as is default:
-x = { |spread = 1, level = 0.1, center = 0|
-	var n = 20;
-	var snd = Splay.ar(LFPulse.ar({ 100.exprand(2000) } ! n).range(-1, 1),
-		spread, level, center);
-	Amplitude.ar(snd, 0.01, 1).ampdb.poll(1);
-	snd
-}.play;
-
-// at full spread, level -20, pan to center, -17 db
-x.set(\spread, 1, \center, 0); // -17
-// no spread, in center: -21
-x.set(\spread, 0, \center, 0); // -16
-// worst case: no spread, pan full left
-x.set(\spread, 0, \center, -1); // -14db
-
-
-// here the theoretical worst case for 20 channels: 13 db too loud!
-{ Splay.ar(DC.ar(1!20), 0, 1, 0.999).ampdb.poll }.plot;
-{ Splay.ar(DC.ar(1!200), 0, 1, 0.999).ampdb.poll }.plot; // 23 db louder
-{ Splay.ar(DC.ar(1!2000), 0, 1, 0.999).ampdb.poll }.plot; // 33 db louder
-
-
-// For maximum peak safety, turn levelComp off / false,
-// and divide by the number of channels - i.e. equal amplitude:
-{ n = 2; Splay.ar(DC.ar(1!n), 1, 1/n, 0, false).ampdb.poll }.plot; // -6 db on both
-{ n = 2; Splay.ar(DC.ar(1!n), 0, 1/n, 0, false).ampdb.poll }.plot; // -3 db on both
-{ n = 2; Splay.ar(DC.ar(1!n), 0, 1/n, 0.99, false).ampdb.poll }.plot; // 0 db
-
-// these are now the same for all
-{ n = 20; Splay.ar(DC.ar(1!n), 1, 1/n, 0, false).ampdb.poll }.plot; // -4 db
-{ n = 20; Splay.ar(DC.ar(1!n), 0, 1/n, 0, false).ampdb.poll }.plot; // -3 db
-{ n = 20; Splay.ar(DC.ar(1!n), 0, 1/n, 0.99, false).ampdb.poll }.plot; // 0 db on right
-
-{ n = 200; Splay.ar(DC.ar(1!n), 1, 1/n, 0, false).ampdb.poll }.plot; // -4 db
-{ n = 200; Splay.ar(DC.ar(1!n), 0, 1/n, 0, false).ampdb.poll }.plot; // -3 db
-{ n = 200; Splay.ar(DC.ar(1!n), 0, 1/n, 0.99, false).ampdb.poll }.plot; // 0 db on right
-
-{ n = 2000; Splay.ar(DC.ar(1!n), 1, 1/n, 0, false).ampdb.poll }.plot; // -4 db
-{ n = 2000; Splay.ar(DC.ar(1!n), 0, 1/n, 0, false).ampdb.poll }.plot; // -3 db
-{ n = 2000; Splay.ar(DC.ar(1!n), 0, 1/n, 0.99, false).ampdb.poll }.plot; // 0 db on right
-::
 
