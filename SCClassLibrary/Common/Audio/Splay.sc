@@ -1,5 +1,5 @@
 LevelComp {
-	*new { |levelComp, rate|
+	*new { |levelComp, rate, n|
 		if (levelComp == true) {
 			^if(rate == \audio) {
 				// ar default is equal power for backwards compatibility
@@ -27,7 +27,7 @@ Splay : UGen {
 		var n = max(2, inArray.size);
 		var n1 = n - 1;
 		var positions = ((0 .. n1) * (2 / n1) - 1) * spread + center;
-		level = level * LevelComp(levelComp, rate);
+		level = level * LevelComp(levelComp, rate, n);
 
 		^Mix(Pan2.perform(this.methodSelectorForRate(rate), inArray, positions)) * level;
 	}
@@ -56,6 +56,7 @@ SplayAz : UGen {
 		var n = max(1, inArray.size);
 		var normSpread = spread * (n - 1 / n);
 		var pos = if(n == 1) { center } { [ center - normSpread, center + normSpread ].resamp1(n) };
+		level = level * LevelComp(levelComp, \control);
 
 		^PanAz.kr(numChans, inArray.asArray, pos, level, width, orientation).flop.collect(Mix(_))
 	}
@@ -66,7 +67,7 @@ SplayAz : UGen {
 		var normSpread = spread * (n - 1 / n);
 		var pos = if(n == 1) { center } { [ center - normSpread, center + normSpread ].resamp1(n) };
 
-		level = level * LevelComp(levelComp, rate);
+		level = level * LevelComp(levelComp, \audio);
 
 		^PanAz.ar(numChans, inArray.asArray, pos, level, width, orientation).flop.collect(Mix(_))
 	}
