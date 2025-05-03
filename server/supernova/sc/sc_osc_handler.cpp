@@ -2493,6 +2493,22 @@ void handle_b_setn(ReceivedMessage const& msg) {
     }
 }
 
+void handle_b_setSampleRate(ReceivedMessage const& msg) {
+    osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
+    osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
+    verify_argument(it, end);
+    osc::int32 buffer_index = it->AsInt32();
+    ++it;
+
+    SndBuf* buf = sc_factory->get_buffer_struct(buffer_index);
+    if (!buf) {
+        log_printf("/b_setSampleRate called on unallocated buffer\n");
+        return;
+    }
+
+    buf->samplerate = it->AsFloat();
+    buf->sampledur = 1.0 / buf->samplerate;
+}
 void handle_b_fill(ReceivedMessage const& msg) {
     osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
     osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
@@ -3162,6 +3178,10 @@ void sc_osc_handler::handle_message_int_address(ReceivedMessage const& message, 
         handle_b_setn(message);
         break;
 
+    case cmd_b_setSampleRate:
+        handle_b_setSampleRate(message);
+        break;
+
     case cmd_b_fill:
         handle_b_fill(message);
         break;
@@ -3409,6 +3429,11 @@ void dispatch_buffer_commands(const char* address, ReceivedMessage const& messag
 
     if (strcmp(address + 3, "setn") == 0) {
         handle_b_setn(message);
+        return;
+    }
+
+    if (strcmp(address + 3, "setSampleRate") == 0) {
+        handle_b_setSampleRate(message);
         return;
     }
 

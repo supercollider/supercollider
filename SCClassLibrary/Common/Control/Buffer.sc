@@ -595,6 +595,17 @@ Buffer {
 		^[\b_query, bufnum]
 	}
 
+	setSampleRate { arg value;
+		// sends the message first to check sanity of sr before changing the langage-side instance variable
+		server.listSendMsg(this.setSampleRateMsg(value));
+		sampleRate = value !? _.asFloat;
+    }
+
+	setSampleRateMsg { arg value;
+		if(bufnum.isNil) { Error("Cannot change the sample rate of a % that has been freed".format(this.class.name)).throw };
+		^[\b_setSampleRate, bufnum, value !? _.asFloat ?? 0.0]
+	}
+
 	updateInfo { arg action;
 		// add to the array here. That way, update will be accurate even if this buf
 		// has been freed

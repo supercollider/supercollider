@@ -720,6 +720,14 @@ table::
 ::
 Set contiguous ranges of sample indices to sets of values. For each range, the starting sample index is given followed by the number of samples to change, followed by the values.
 
+subsection:: /b_setSampleRate
+Set the sampling rate of the buffer.
+table::
+## strong::int:: || buffer number
+## strong::float:: || the desired sampling rate
+::
+Set the sampling rate of the buffer.
+
 subsection:: /b_fill
 Fill ranges of sample value(s).
 table::
@@ -1130,8 +1138,12 @@ enum {
 
     cmd_version = 64,
 
-    NUMBER_OF_COMMANDS = 65
-};
+    cmd_rtMemoryStatus = 65,
+    
+    cmd_b_setSampleRate = 66,
+    
+    NUMBER_OF_COMMANDS = 67
+    };
 ::
 
 copyright © 2002 James McCartney

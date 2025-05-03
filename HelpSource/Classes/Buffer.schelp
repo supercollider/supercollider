@@ -466,14 +466,20 @@ Returns the number of channels in the corresponding server-side buffer.
 method:: sampleRate
 Returns the language-side instance variable code::sampleRate::, of the corresponding server-side buffer. By default, this will be set to the server's sample rate when the code::Buffer:: is instantiated.
 
-The code::sampleRate:: setter method only changes the language-side instance variable. It does not resample the buffer or change its sample rate on the server.
-However, it can be useful, for example, for later inferring whether audio-rate or control-rate data has been writen to the buffer.
+The code::sampleRate:: setter method only changes the language-side instance variable. It does not resample the buffer or change its sample rate on the server. To change the server-side buffer sample rate, use code::setSampleRate::.
 note::
 Setting the code::sampleRate:: instance variable affects the returned link::#-duration:: (which returns code::numFrames / sampleRate::).
 ::
 warning::
 You can use link::#-query:: to inspect the buffer's sample rate on the server, but this will also emphasis::update the:: code::sampleRate:: emphasis::instance variable::, overwriting its value which you may have previously set.
 ::
+
+
+method:: setSampleRate
+Sets the sample rate of the buffer on the server side, and updates its value on the language side. This does not resample the audio.
+argument:: value
+The new desired sample rate.
+
 
 method:: duration
 Returns code::this.numFrames / this.sampleRate:: (language-side instance variables).
