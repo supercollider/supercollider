@@ -58,26 +58,54 @@ List[1, 2, 3].at(0).postln;
 
 method::clipAt
 Same as link::#-at::, but values for strong::index:: greater than the link::Classes/List:: instance size minus one will be clipped to code::size - 1::, which is the last index.
+link::Classes/SequenceableCollection#-|@|:: is its syntactic shorcut.
 code::
-y = List[1, 2, 3];
-y.clipAt(13).postln;
+y = List[1, 2, 3]
+
+y.clipAt(13)
+y|@|13
+
+y.clipAt(13).postln
+(y|@|13).postln
+y|@|13.postln
 ::
 
 method::wrapAt
-Same as link::#-at::, but values for strong::index:: greater than the link::Classes/List:: instance size minus one will be wrapped around to 0.
+link::#-wrapAt:: is the similar to link::#-at:: but with wrap-around behavior.
+If the index exceeds the upper bound of the collection code::size - 1:: it wraps back around to code::0::.
+Similarly if the index is negative it wraps to access the elements from the end of the collection.
+Specifically link::#-wrapAt:: uses a modulo function: code::this.wrapAt(index):: is equivalent to code::this.at(index mod: size)::, insuring that the index is always in the valid range of the collection.
+link::Classes/SequenceableCollection#-@@:: is its syntactic shorcut.
 code::
-y = List[1, 2, 3];
-y.wrapAt(3).postln; // this returns the value at index 0
-y.wrapAt(4).postln; // this returns the value at index 1
+y = [1, 2, 3]
+
+y.wrapAt(3); // this returns the value at index 0
+y@@3       // syntactic shorcut
+
+y.wrapAt(4); // this returns the value at index 1
+y.wrapAt([-2, 1])   // index can also be a collection or negative numbers
+y@@[-2, 1] // syntactic shorcut
+
+y.wrapAt(3).postln
+(y@@3).postln
+y@@3.postln
 ::
 
 method::foldAt
-Same as link::#-at::, but values for strong::index:: greater than the link::Classes/List:: instance size minus one will be folded back.
+Same as link::#-at::, but values for strong::index:: greater than the size of the link::Classes/List:: will be folded back.
+link::Classes/SequenceableCollection#-@|@:: is its syntactic shorcut.
 code::
-y = List[1, 2, 3];
-y.foldAt(3).postln; // this returns the value at index 1
-y.foldAt(4).postln; // this returns the value at index 0
-y.foldAt(5).postln; // this returns the value at index 1
+y = [1, 2, 3]
+
+y.foldAt(3) // this returns the value at index 1
+y@|@3       // syntactic shorcut
+
+y.foldAt(4) // this returns the value at index 0
+y.foldAt(5) // this returns the value at index 1
+
+y.foldAt(3).postln
+(y@|@3).postln
+y@|@3.postln
 ::
 
 method::put
