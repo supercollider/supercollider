@@ -5,7 +5,7 @@ related:: Classes/Splay, Classes/SplayAz, Guides/Level_Compensation
 
 DESCRIPTION::
 Mixing and Panning multichannel signals often requires link::Guides/Level_Compensation::.
-LevelComp provides a logic for this that is used in the link::Splay:: and ::SplayAz::.
+LevelComp provides a logic for this that is used in the link::Classes/Splay:: and link::Classes/SplayAz::.
 It calculates a levelComp factor
 
 CLASSMETHODS::

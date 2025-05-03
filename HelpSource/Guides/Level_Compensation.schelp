@@ -1,7 +1,7 @@
 title:: Level Compensation when Mixing and Panning
 categories:: Multichannel, Mixing, Panning
 summary:: Balancing Levels when Mixing and Panning in SC
-related:: Classes/Pan2, Classes/PanAz, Classes/Splay, Classes/SplayAz
+related:: Classes/Pan2, Classes/PanAz, Classes/Splay, Classes/SplayAz, Classes/LevelComp
 
 section::Considerations
 
