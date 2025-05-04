@@ -115,7 +115,4 @@ Splay.ar(ins, spread, level, center, levelComp: 0);
 //    1.0 is equal amplitude : level / ( numchans)
 // can be used to tune e.g. between equal power and equal amp:
 Splay.ar(ins, spread, level, center, levelComp: 0.75);
-
 ::
-
-
