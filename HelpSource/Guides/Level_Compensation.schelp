@@ -65,7 +65,7 @@ n = 10;
 // compare single channel ...
 { PinkNoise.ar }.play;
 
-//with mixdown of n to 1 with equal power compensation:
+// with mixdown of n to 1 with equal power compensation:
 // volume is quite similar, can peak, but will very rarely
 { PinkNoise.ar({ 1 } ! n).sum / n.sqrt }.play;
 ::
@@ -115,7 +115,6 @@ s.meter; s.scope;
 // levelComp can be a number between 0.0 -> no comp,
 // and 1.0 -> equal amplitude comp, with 0.5 being equal power,
 // which allows fine/tuning by hand via the exponent:
-// [[[ requires PR on Splay ]]]
 { Splay.ar(Saw.ar([100, 150, 250]), levelComp: 0.5) }.scope;
 
 // When setting spread low, levels and peaks will go up;

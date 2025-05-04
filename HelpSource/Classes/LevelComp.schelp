@@ -68,12 +68,15 @@ s.meter;
 s.scope;
 
 // direct synthesis at level 0.1 -> -20db on each channel
+(
 { var n = 2, level = 0.1, spread = 1, pan = 0;
 	LFPulse.ar({ 100.exprand(2000) } ! n).range(-1, 1) * level
 }.play;
+)
 
 // with levelComp true by default:
 // the same with 2 chans, spread 1, level 0.1, panned to center: -20db
+(
 x = { |spread = 1, level = 0.1, center = 0|
 	var n = 2;
 	var snd = Splay.ar(LFPulse.ar({ 100.exprand(2000) } ! n).range(-1, 1),
@@ -81,7 +84,7 @@ x = { |spread = 1, level = 0.1, center = 0|
 	Amplitude.ar(snd, 0.01, 1).ampdb.poll(1);
 	snd
 }.play;
-
+)
 // at full spread, level -20, pan to center,
 x.set(\spread, 1, \center, 0); // -23
 // no spread, in center:
@@ -90,6 +93,7 @@ x.set(\spread, 0, \center, 0); // -20
 x.set(\spread, 0, \center, -1); // -17db
 
 //// The same tests with 20 channels, levelComp true as is default:
+(
 x = { |spread = 1, level = 0.1, center = 0|
 	var n = 20;
 	var snd = Splay.ar(LFPulse.ar({ 100.exprand(2000) } ! n).range(-1, 1),
@@ -97,6 +101,7 @@ x = { |spread = 1, level = 0.1, center = 0|
 	Amplitude.ar(snd, 0.01, 1).ampdb.poll(1);
 	snd
 }.play;
+)
 
 // at full spread, level -20, pan to center, -17 db
 x.set(\spread, 1, \center, 0); // -17

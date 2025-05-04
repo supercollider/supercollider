@@ -16,7 +16,7 @@ LevelComp {
 		// scale by exponent: 0 is no change,
 		// 0.5 is square root = equal power
 		// 1.0 is level / numchans = equal amplitude
-		(n.reciprocal ** levelComp.clip(0.0, 1.0));
+		^n.reciprocal ** levelComp.clip(0.0, 1.0)
 	}
 }
 
@@ -54,7 +54,7 @@ SplayAz : UGen {
 	*kr { arg numChans = 4, inArray, spread = 1, level = 1, width = 2, center = 0.0, orientation = 0.5, levelComp = true;
 
 		var n = max(1, inArray.size);
-		var normSpread = spread * (n - 1 / n);
+		var normSpread = (n - 1 / n) * spread;
 		var pos = if(n == 1) { center } { [ center - normSpread, center + normSpread ].resamp1(n) };
 		level = level * LevelComp(levelComp, \control);
 
@@ -64,7 +64,7 @@ SplayAz : UGen {
 	*ar { arg numChans = 4, inArray, spread = 1, level = 1, width = 2, center = 0.0, orientation = 0.5, levelComp = true;
 
 		var n = max(1, inArray.size);
-		var normSpread = spread * (n - 1 / n);
+		var normSpread = (n - 1 / n) * spread;
 		var pos = if(n == 1) { center } { [ center - normSpread, center + normSpread ].resamp1(n) };
 
 		level = level * LevelComp(levelComp, \audio);
