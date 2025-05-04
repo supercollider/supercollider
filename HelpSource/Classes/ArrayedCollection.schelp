@@ -235,64 +235,46 @@ z.fill([1, 2, 3, 4]).postln;
 ::
 
 method::insert
-Inserts the item into the contents of the receiver. This method may return a new ArrayedCollection. For this reason, you should always assign the result of code::insert:: to a variable - never depend on insert changing the receiver.
+Inserts the item into the contents of the receiver.
+This method may return a new ArrayedCollection.
+For this reason, always assign the result of code::.insert:: to a variable - never depend on code::.insert:: changing the receiver.
 code::
-(
 // In this case, a new object is returned  
 // because the maxSize of `z` is 4,  
-// and inserting a new item exceeds this limit.  
-var y, z;
-z = [1, 2, 3, 4];
-y = z.insert(1, 999);
-z.postln;         // [1, 2, 3, 4]
-y.postln;         // [1, 999, 2, 3, 4]
-(z == y).postln;  // false
-(z === y).postln; // false
-)
+// and inserting a new item exceeds this limit. 
+z = [1, 2, 3, 4];     // -> [1, 2, 3, 4]
+y = z.insert(1, 999); // -> [1, 999, 2, 3, 4]
+z                     // -> [1, 2, 3, 4]
+y                     // -> [1, 999, 2, 3, 4]
+(z == y)              // -> false
+(z === y)             // -> false
 
-(
 // In this case, the same object is returned  
 // because the maxSize of `z` is 4,  
-// and inserting a new item does not exceed this limit.  
-var y, z;
-z = [1, 2, 3];
-y = z.insert(1, 999);
-z.postln;         // [1, 999, 2, 3]
-y.postln;         // [1, 999, 2, 3]
-(z == y).postln;  // true
-(z === y).postln; // true
-)
+// and inserting a new item does not exceed this limit. 
+z = [1, 2, 3];        // -> [1, 999, 2, 3]
+y = z.insert(1, 999); // -> [1, 999, 2, 3]
+z;                    // -> [1, 999, 2, 3]
+y;                    // -> [1, 999, 2, 3]
+(z == y);             // -> true
+(z === y);            // -> true
 ::
 
 method::boundedInsert
-Same as link::#-insert::, but it maintains the size of the receiver, and the value for the strong::index:: greater than link::Classes/ArrayedCollection:: instance size minus one will be clipped to code::size - 1::, which is the last index.
-
-ccode::
-(
-// .boundedInsert never returns a new object  
-// because inserting a new item never exceeds the maxSize.  
-var y, z;
-z = [1, 2, 3, 4];
-y = z.boundedInsert(1, 999);
-z.postln;         // [1, 999, 2, 3]
-y.postln;         // [1, 999, 2, 3]
-(z == y).postln;  // true
-(z === y).postln; // true
-)
-::
+Same as link::#-insert::, but removes the receiver's last element before inserting strong::item::.
+This changes the receiver but maintains its size.
 
 code::
-~arrayA = [1, 2, 3]                       // -> [1, 2, 3]
-
-~arrayB = ~arrayA.boundedInsert(0, \a)    // -> [a, 1, 2]
-~arrayA                                   // -> [a, 1, 2]
-~arrayB                                   // -> [a, 1, 2]
-~arrayA == ~arrayB
-~arrayA === ~arrayB
-
-~arrayC = ~arrayA.boundedInsert(20, \a)   // -> [a, 1, a]
-
-~arrayD = ~arrayA.boundedInsert(-2, '-1') // -> [-1, a, 1]
+// .boundedInsert never returns a new object  
+// because inserting a new item never exceeds the maxSize.  
+z = [1, 2, 3, 4];            // -> [1, 2, 3, 4]
+y = z.boundedInsert(1, 999); // -> [1, 999, 2, 3]
+z;                           // -> [1, 999, 2, 3]
+y;                           // -> [1, 999, 2, 3]
+z == y;                      // -> true
+(z === y);                   // -> true
+y = y.boundedInsert(20, \a); // -> [1, 999, 2, a]
+z = z.boundedInsert(-2, \b); // -> [b, 1, 999, 2]
 ::
 
 method::move

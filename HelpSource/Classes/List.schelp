@@ -99,32 +99,23 @@ method::addFirst
 Inserts the strong::item:: at the beginning of the List.
 
 method::insert
-Inserts the strong::item:: into the contents of the List at the indicated strong::index::.
+Inserts the strong::item:: into the contents of the link::Classes/List:: at the indicated strong::index::.
 code::
-~alist = List[10, 20, 30, 40] // -> List[10, 20, 30, 40]
-~alist.insert(0, 1)           // -> List[1, 10, 20, 30, 40]
-~alist                        // -> List[1, 10, 20, 30, 40]
+x = List[1, 2, 3, 4]; // -> List[1, 2, 3, 4]
+x.insert(0, 999); // -> List[999, 1, 2, 3, 4]
+x; // -> List[999, 1, 2, 3, 4]
 ::
 
 method::boundedInsert
-Same as link::#-insert::, but it maintains the size of the receiver, and the value for the strong::index:: greater than link::Classes/List:: instance size minus one will be clipped to code::size - 1::, which is the last index.
+Same as link::#-insert::, but removes the receiver's last element before inserting strong::item::.
+This changes the receiver but maintains its size.
 
 code::
-~alist = List[10, 20, 30, 40] // -> List[10, 20, 30, 40]
-~alist.boundedInsert(0, 1)    // -> List[1, 10, 20, 30]
-~alist                        // -> List[1, 10, 20, 30]
-
-~alist = List[10, 20, 30, 40] // -> List[10, 20, 30, 40]
-~alist.boundedInsert(-2, 1)   // List[1, 10, 20, 30]
-
-~alist = List[10, 20, 30, 40] // -> List[10, 20, 30, 40]
-~alist.boundedInsert(2, 1)    // -> List[10, 20, 1, 30]
-
-~alist = List[10, 20, 30, 40] // -> List[10, 20, 30, 40]
-~alist.boundedInsert(3, 1)    // -> List[10, 20, 30, 1]
-
-~alist = List[10, 20, 30, 40] // -> List[10, 20, 30, 40]
-~alist.boundedInsert(10, 1)   // -> List[10, 20, 30, 1]
+x = List[1, 2, 3, 4]; // -> List[1, 2, 3, 4]
+x.boundedInsert(1, 999); // -> List[1, 999, 2, 3]
+x; // -> List[1, 999, 2, 3]
+x.boundedInsert(20, \a); // -> List[1, 999, 2, a]
+x.boundedInsert(-2, \b); // -> List[b, 1, 999, 2]
 ::
 
 method::pop
