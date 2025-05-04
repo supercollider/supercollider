@@ -51,22 +51,7 @@ There are dedicated READMEs in this repository for building on particular embedd
 
 On Debian-like systems (e.g: Ubuntu, Linux Mint, Kali Linux, Elementary OS, Knoppix, Corel Linux, Lindows, ...), the following commands can be executed step by step to install all necessary dependencies and build SuperCollider.
 
-The following command will install all recommended dependencies for sclang except Qt:
-
-```shell
-sudo apt-get install \
-  git \
-  libasound2-dev \
-  libicu-dev \
-  libreadline6-dev \
-  libudev-dev \
-  pkg-config \
-  libncurses5-dev \
-  emacs \
-  jackd2
-```
-
-**Note:** The following command will install the minimum recommended dependencies for compiling scsynth and supernova:
+The following dependencies are recommended for compiling scsynth and supernova:
 
 ```shell
 sudo apt-get install \
@@ -82,9 +67,25 @@ sudo apt-get install \
 
 If you need to use JACK1 replace `libjack-jackd2-dev` with `libjack-dev`.
 
+The following command will install all recommended dependencies for sclang except Qt
+
+```shell
+sudo apt-get install \
+  git \
+  libasound2-dev \
+  libicu-dev \
+  libreadline6-dev \
+  libudev-dev \
+  pkg-config \
+  libncurses5-dev \
+  emacs \
+  jackd2
+```
+
 #### Installing Qt
 
-**Qt 6.2 or later** is required to be able to run the SuperCollider IDE and sclang's Qt GUI system.
+[Qt](https://www.qt.io/) 6.2 (or later) provides the GUI for SuperCollider like its IDE and allows to build custom user GUIs via *QtCollider* and is the default and recommended way to use and set up SuperCollider.
+For systems without display capabilities, it is also possible to build SuperCollider without Qt (see configure build section).
 
 Try this command to query the Qt6 version available to you:
 
@@ -108,7 +109,7 @@ sudo apt-get install \
   libqt6svgwidgets6
 ```
 
-If you are on Ubuntu, check the sections below. If these instructions don't work, you will have to use the official Qt installer.
+If you are on Ubuntu, check the sections below. If these instructions don't work, you will have to use the official Qt installer (see below).
 
 ##### Installing Qt on Ubuntu 22.04, 24.04
 
@@ -116,28 +117,28 @@ On 22.04 and 24.04 Qt6 is available in the system's package manager.
 The following should install the correct packages:
 
 ```shell
-  sudo apt-get install \
-    qt6-base-dev \
-    qt6-base-dev-tools \
-    qt6-tools-dev qt6-tools-dev-tools \
-    qt6-declarative-dev \
-    libqt6gui6 \
-    libqt6printsupport6 \
-    libqt6svgwidgets6 \
-    libqt6websockets6-dev \
-    libqt6webenginecore6 \
-    libqt6webenginecore6-bin \
-    qt6-webengine-dev \
-    qt6-webengine-dev-tools \
-    libqt6webchannel6-dev \
-    libqt6opengl6-dev \
-    libqt6svg6-dev \
-    linguist-qt6 \
-    qt6-l10n-tools \
-    libglx-dev libgl1-mesa-dev \
-    libvulkan-dev \
-    libxkbcommon-dev \
-    libxcb-xkb-dev
+sudo apt-get install \
+  qt6-base-dev \
+  qt6-base-dev-tools \
+  qt6-tools-dev qt6-tools-dev-tools \
+  qt6-declarative-dev \
+  libqt6gui6 \
+  libqt6printsupport6 \
+  libqt6svgwidgets6 \
+  libqt6websockets6-dev \
+  libqt6webenginecore6 \
+  libqt6webenginecore6-bin \
+  qt6-webengine-dev \
+  qt6-webengine-dev-tools \
+  libqt6webchannel6-dev \
+  libqt6opengl6-dev \
+  libqt6svg6-dev \
+  linguist-qt6 \
+  qt6-l10n-tools \
+  libglx-dev libgl1-mesa-dev \
+  libvulkan-dev \
+  libxkbcommon-dev \
+  libxcb-xkb-dev
 ```
 
 ### Installing requirements on Fedora
@@ -270,9 +271,9 @@ To do so it is necessary to specify the Qt path via the build variable `DCMAKE_P
 cmake -DCMAKE_PREFIX_PATH=/path/to/qt6 ..
 ```
 
-The location of `/path/to/qt6` will depend on how you installed Qt:
-
-- If you downloaded Qt from the Qt website, the path is two directories down from the top-level unpacked Qt directory, in a folder called `gcc`: `Qt/5.11.0/gcc_64/` (64-bit Linux) or `Qt/5.11.0/gcc/` (32-bit). By default, the Qt installer places `Qt/` in your home directory.
+The location of `/path/to/qt6` will depend on how you installed Qt.
+If you downloaded Qt from the Qt website, the path is two directories down from the top-level unpacked Qt directory, in a folder called `gcc`: `Qt/6.2.0/gcc_64/` on 64 bit systems.
+By default, the Qt installer places `Qt/` in your home directory.
 
 If you want to build without Qt entirely, use
 
