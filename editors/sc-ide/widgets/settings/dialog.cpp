@@ -38,19 +38,6 @@
 
 namespace ScIDE { namespace Settings {
 
-// Since qt6 some icons are matched on macOS and some are not.
-// As there doesn't seem to be a consistent icon set available on macOS
-// the icons are omitted for macOS.
-// See https://github.com/supercollider/supercollider/issues/6560
-QListWidgetItem* makeListWidgetItem(const QIcon& icon, const QString& text) {
-#ifdef Q_OS_MAC
-    return new QListWidgetItem(text);
-#else
-    return new QListWidgetItem(QIcon::fromTheme(icon), text);
-#endif
-}
-
-
 Dialog::Dialog(Manager* settings, QWidget* parent): QDialog(parent), mManager(settings), ui(new Ui::ConfigDialog) {
     ui->setupUi(this);
 
@@ -58,25 +45,25 @@ Dialog::Dialog(Manager* settings, QWidget* parent): QDialog(parent), mManager(se
 
     w = new GeneralPage;
     ui->configPageStack->addWidget(w);
-    ui->configPageList->addItem(makeListWidgetItem(QIcon::fromTheme("preferences-system"), tr("General")));
+    ui->configPageList->addItem(new QListWidgetItem(tr("General")));
     connect(this, SIGNAL(storeRequest(Manager*)), w, SLOT(store(Manager*)));
     connect(this, SIGNAL(loadRequest(Manager*)), w, SLOT(load(Manager*)));
 
     w = new SclangPage;
     ui->configPageStack->addWidget(w);
-    ui->configPageList->addItem(makeListWidgetItem(QIcon::fromTheme("applications-system"), tr("Interpreter")));
+    ui->configPageList->addItem(new QListWidgetItem(tr("Interpreter")));
     connect(this, SIGNAL(storeRequest(Manager*)), w, SLOT(store(Manager*)));
     connect(this, SIGNAL(loadRequest(Manager*)), w, SLOT(load(Manager*)));
 
     w = new EditorPage;
     ui->configPageStack->addWidget(w);
-    ui->configPageList->addItem(makeListWidgetItem(QIcon::fromTheme("accessories-text-editor"), tr("Editor")));
+    ui->configPageList->addItem(new QListWidgetItem(tr("Editor")));
     connect(this, SIGNAL(storeRequest(Manager*)), w, SLOT(store(Manager*)));
     connect(this, SIGNAL(loadRequest(Manager*)), w, SLOT(load(Manager*)));
 
     w = new ShortcutsPage;
     ui->configPageStack->addWidget(w);
-    ui->configPageList->addItem(makeListWidgetItem(QIcon::fromTheme("input-keyboard"), tr("Shortcuts")));
+    ui->configPageList->addItem(new QListWidgetItem(tr("Shortcuts")));
     connect(this, SIGNAL(storeRequest(Manager*)), w, SLOT(store(Manager*)));
     connect(this, SIGNAL(loadRequest(Manager*)), w, SLOT(load(Manager*)));
 
