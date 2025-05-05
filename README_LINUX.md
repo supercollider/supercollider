@@ -223,7 +223,7 @@ The `--recurse-submodules` option will clone the repository's submodules which a
 git submodule update --init --recursive
 ```
 
-> **Important**: Please do not download the repository via GitHubs _Download ZIP_ button as this will not contain all necessary submodules!
+> **Important**: Please do not download the repository via GitHub's _Download ZIP_ button as this will not contain all necessary submodules!
 
 ### Make a build directory
 
@@ -471,3 +471,4 @@ environment variables:
 - nescivi (marije baalman)
 - dan stowell
 - tim blechmann
+- prko
