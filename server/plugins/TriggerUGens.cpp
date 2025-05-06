@@ -899,8 +899,9 @@ void ToggleFF_Ctor(ToggleFF* unit) {
 
     unit->m_prevtrig = 0.f;
     unit->mLevel = 0.f;
-
-    ZOUT0(0) = 0.f;
+    ToggleFF_next(unit, 1);
+    unit->m_prevtrig = 0.f;
+    unit->mLevel = 0.f;
 }
 
 
