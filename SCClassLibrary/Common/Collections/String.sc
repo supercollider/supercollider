@@ -110,6 +110,21 @@ String[char] : RawArray {
 	isString { ^true }
 	asString { ^this }
 	asCompileString {
+		var out;
+		// empirically, the compiler limits `"literals"` to 8188 characters
+		// 8180 leaves a little headroom
+		^if(this.size <= 8180) {
+			this.prAsCompileString
+		} {
+			out = "[";
+			this.clump(8180).do { |substr, i|
+				if(i > 0) { out = out ++ ", " };
+				out = out ++ substr.prAsCompileString;
+			};
+			out ++ "].join"
+		}
+	}
+	prAsCompileString {
 		_String_AsCompileString
 		^this.primitiveFailed
 	}
