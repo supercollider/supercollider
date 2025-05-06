@@ -1109,9 +1109,13 @@ void PulseDivider_Ctor(PulseDivider* unit) {
 
     unit->m_prevtrig = 0.f;
     unit->mLevel = 0.f;
-    unit->mCounter = (long)floor(ZIN0(2) + 0.5);
+    long initCounter = unit->mCounter = static_cast<long>(floor(ZIN0(2) + 0.5));
 
     PulseDivider_next(unit, 1);
+
+    unit->m_prevtrig = 0.f;
+    unit->mLevel = 0.f;
+    unit->mCounter = initCounter;
 }
 
 
