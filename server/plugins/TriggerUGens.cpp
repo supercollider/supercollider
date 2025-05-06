@@ -1664,7 +1664,10 @@ void Peak_Ctor(Peak* unit) {
         }
     }
     unit->m_prevtrig = 0.f;
-    ZOUT0(0) = unit->mLevel = ZIN0(0);
+    float initLevel = unit->mLevel = std::abs(ZIN0(0));
+    Peak_next_ai(unit, 1);
+    unit->m_prevtrig = 0.f;
+    unit->mLevel = initLevel;
 }
 
 void Peak_next_ak(Peak* unit, int inNumSamples) {
@@ -1938,7 +1941,9 @@ void PeakFollower_Ctor(PeakFollower* unit) {
     }
 
     unit->mDecay = ZIN0(1);
-    ZOUT0(0) = unit->mLevel = ZIN0(0);
+    float initLevel = unit->mLevel = std::abs(ZIN0(0));
+    PeakFollower_next(unit, 1);
+    unit->mLevel = initLevel;
 }
 
 void PeakFollower_next(PeakFollower* unit, int inNumSamples) {
