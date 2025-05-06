@@ -6,10 +6,8 @@ NOTE:: link::Guides/News-3_13##News in SuperCollider version 3.13:: ::
 
 SECTION:: An introductory overview
 
-emphasis::SuperCollider:: is a cross-platform environment for audio synthesis and algorithmic composition used by musicians, artists and researchers working with sound. It can link::https://supercollider.github.io/downloads.html##be installed and run on Linux, macOS and Windows::,
-as well as microcomputers such as
-link::https://github.com/supercollider/supercollider/blob/develop/README_RASPBERRY_PI.md##Raspberry Pi:: and
-link::https://github.com/supercollider/supercollider/blob/develop/README_BEAGLEBONE_BLACK.md##BeagleBone Black::.
+emphasis::SuperCollider:: is a cross-platform environment for audio synthesis and algorithmic composition used by musicians, artists and researchers working with sound.
+It can link::https://supercollider.github.io/downloads.html##be installed and run on Linux, macOS and Windows::, as well as microcomputers such as link::https://github.com/supercollider/supercollider/blob/develop/README_RASPBERRY_PI.md##Raspberry Pi:: or link::https://github.com/supercollider/supercollider/blob/develop/README_BELA.md##Bela::.
 emphasis::SuperCollider:: link::https://www.audiosynth.com##was originally developed:: by James McCartney and link::https://supercollider.github.io/##is now distributed:: as Free Software under the GNU General Public License. It link::https://github.com/supercollider/supercollider##is maintained and developed :: by an active and enthusiastic community.
 
 emphasis::SuperCollider:: consists of three main components:
