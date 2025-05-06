@@ -1377,9 +1377,14 @@ void Timer_Ctor(Timer* unit) {
     SETCALC(Timer_next_a);
 
     unit->m_prevfrac = 0.f;
-    unit->m_previn = ZIN0(0);
-    ZOUT0(0) = unit->mLevel = 0.f;
-    unit->mCounter = 0;
+    unit->m_previn = 0;
+    unit->mCounter = -1;
+    unit->mLevel = 0;
+    Timer_next_a(unit, 1);
+    unit->m_prevfrac = 0.f;
+    unit->m_previn = 0;
+    unit->mCounter = -1;
+    unit->mLevel = 0;
 }
 
 void Timer_next_a(Timer* unit, int inNumSamples) {
