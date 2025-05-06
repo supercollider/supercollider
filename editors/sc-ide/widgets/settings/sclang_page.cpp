@@ -86,6 +86,8 @@ void SclangPage::load(Manager* s) {
 
     s->endGroup();
 
+    sclangConfigChanged = false;
+
     readLanguageConfig();
 }
 
@@ -131,6 +133,7 @@ void SclangPage::removeExcludePath() {
 
 void SclangPage::changeSelectedLanguageConfig(const QString& configPath) {
     selectedLanguageConfigFile = configPath;
+    sclangConfigChanged = true;
     readLanguageConfig();
 }
 
@@ -196,8 +199,13 @@ void SclangPage::readLanguageConfig() {
 }
 
 void SclangPage::writeLanguageConfig() {
-    if (!sclangConfigDirty)
+    if (!sclangConfigDirty) {
+        if (sclangConfigChanged) {
+            dialogConfigFileUpdated();
+            sclangConfigChanged = false; // avoid double invocation
+        }
         return;
+    }
 
     using namespace YAML;
     using std::ofstream;
@@ -232,9 +240,7 @@ void SclangPage::writeLanguageConfig() {
     ofstream fout(languageConfigFile().toStdString().c_str());
     fout << out.c_str();
 
-    QMessageBox::information(this, tr("Sclang configuration file updated"),
-                             tr("The SuperCollider language configuration has been updated. "
-                                "Reboot the interpreter to apply the changes."));
+    dialogConfigFileUpdated();
 
     sclangConfigDirty = false;
 }
@@ -296,5 +302,11 @@ void SclangPage::dialogDeleteCurrentConfigFile() {
             ui->activeConfigFileComboBox->setCurrentIndex(0);
         }
     }
+}
+
+void SclangPage::dialogConfigFileUpdated() {
+    QMessageBox::information(this, tr("Sclang configuration file updated"),
+                             tr("The SuperCollider language configuration has been updated. "
+                                "Reboot the interpreter to apply the changes."));
 }
 }} // namespace ScIDE::Settings
