@@ -367,10 +367,14 @@
 			plotTreeWindow.onClose = { plotTreeWindow = nil };
 			this.plotTreeView(interval, plotTreeWindow, { defer { plotTreeWindow.close } });
 		} {
-			bounds = bounds ?? { this.plotTreeWindow.bounds };
-			plotTreeWindow.bounds_(bounds).front;
-		}
+			if(bounds.notNil) { 
+				bounds = bounds.minSize(395@386);
+				plotTreeWindow.bounds_(bounds) 
+			};
+		};	
+		plotTreeWindow.front;
 	}
+
 	plotTreeView { |interval=0.5, parent, actionIfFail|
 		ServerTreeView(this, parent: parent).start(interval, actionIfFail)
 	}
