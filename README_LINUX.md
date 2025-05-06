@@ -33,9 +33,8 @@ For sclang and scide:
 
 There are dedicated READMEs in this repository for building on particular embedded Linux platforms:
 
-- Raspberry Pi: `README_RASPBERRY_PI.md`
-- BeagleBone Black: `README_BEAGLEBONE_BLACK.md`
-- Bela: `README_BELA.md`
+- Raspberry Pi: README_RASPBERRY_PI.md
+- Bela: README_BELA.md
 
 > Before installing the dependencies, it is recommended to update the package list on your system via
 >
