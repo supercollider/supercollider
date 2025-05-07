@@ -49,8 +49,9 @@ SclangPage::SclangPage(QWidget* parent): QWidget(parent), ui(new Ui::SclangConfi
 
     ui->runtimeDir->setFileMode(QFileDialog::Directory);
 
-    connect(ui->activeConfigFileComboBox, SIGNAL(currentTextChanged(const QString&)), this,
-            SLOT(changeSelectedLanguageConfig(const QString&)));
+    connect(ui->activeConfigFileComboBox, &QComboBox::currentTextChanged, this,
+            &SclangPage::changeSelectedLanguageConfig);
+
     connect(ui->sclang_add_configfile, SIGNAL(clicked()), this, SLOT(dialogCreateNewConfigFile()));
     connect(ui->sclang_remove_configfile, SIGNAL(clicked()), this, SLOT(dialogDeleteCurrentConfigFile()));
 
