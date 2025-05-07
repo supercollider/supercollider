@@ -632,10 +632,7 @@ method:: meter
 Show input/output level meters.
 
 code::
-// Create a singleton ServerMeter window at the default position if no ServerMeter window is open:
-s.meter // -> a ServerMeter
-
-// Bring the ServerMeter window to the front if a ServerMeter window is already open:
+// Create a singleton ServerMeter, or bring the window to the front if it has already been created.
 s.meter // -> a ServerMeter
 
 // Query the current position of the ServerMeter window:

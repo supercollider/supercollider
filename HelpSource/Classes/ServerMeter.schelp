@@ -58,17 +58,15 @@ s.boot;
 m = ServerMeter.new(s, 4, 2);
 
 // Query the current window position
-m.position //-> Position(left:5.0, bottom:277.0)
+m.position  // -> Point(5.0, 277.0)
 
 // Query the current window bounds
-m.window.bounds // -> Rect(5.0, 277.0, 172.0, 230.0)
+m.window.bounds
 
-// Move to new position
-m.position_(0@100) //-> a ServerMeter
-
-// Retrieve the moved new window position
-m.position // -> Position(left:0.0, bottom:100.0)
+// Set/Get the ServerMeter's screen position by the bottom left corner of its window
+m.position_(0@100);
+m.position // -> Point(0.0, 100.0)
 
 // Retrieve the moved new window bounds
-m.window.bounds // -> Rect(0.0, 100.0, 172.0, 230.0)
+m.window.bounds
 ::

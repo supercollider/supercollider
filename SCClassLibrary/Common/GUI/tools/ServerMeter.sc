@@ -270,6 +270,6 @@ ServerMeter {
 	}
 
 	position {
-		^("Position(left:" ++ window.bounds.left ++ ", bottom:" ++ (window.bounds.bottom - window.bounds.height) ++ ")")
+		^Point(window.bounds.left, window.bounds.bottom - window.bounds.height)
 	}
 }
