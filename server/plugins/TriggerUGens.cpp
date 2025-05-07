@@ -1572,8 +1572,11 @@ void Phasor_Ctor(Phasor* unit) {
         SETCALC(Phasor_next_ak);
     }
 
-    unit->m_previn = ZIN0(0);
-    ZOUT0(0) = unit->mLevel = ZIN0(2);
+    unit->m_previn = 0;
+    unit->mLevel = IN0(2);
+    Phasor_next_kk(unit, 1);
+    unit->m_previn = 0;
+    unit->mLevel = IN0(2);
 }
 
 void Phasor_next_kk(Phasor* unit, int inNumSamples) {
