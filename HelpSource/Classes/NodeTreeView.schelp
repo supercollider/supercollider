@@ -1,0 +1,37 @@
+TITLE:: NodeTreeView
+summary:: A graphical representation of a Server's Node Tree
+categories:: Server
+related:: Classes/Server, Classes/ServerNodeTree
+
+DESCRIPTION::
+A widget displaying a Server's node tree as nested panels.
+
+CLASSMETHODS::
+
+METHOD:: new
+Creates a new NodeTreeView.
+
+ARGUMENT:: server
+An instance of Server.
+
+returns:: The constructed NodeTreeView.
+
+INSTANCEMETHODS::
+
+METHOD:: displayControls
+Sets or gets wether to display synths controls.
+
+METHOD:: refreshRate
+Sets or gets the time interval between interface refreshes, expressed in seconds. Please note that this does not query the node tree (so it shouldn't be lower than Server's link::Classes/ServerNodeTree::'s refresh rate).
+
+private:: prNodeAsDrawCommand, prConstructDrawCommands, prDrawCommand
+
+EXAMPLES::
+
+code::
+(
+s.waitForBoot({
+	s.plotTree;
+});
+)
+::
