@@ -23,7 +23,7 @@
 #include "FFT_UGens.h"
 
 // We include vDSP even if not using for FFT, since we want to use some vectorised add/mul tricks
-#if defined(__APPLE__) && !defined(SC_IPHONE)
+#if defined(__APPLE__)
 #    include <Accelerate/Accelerate.h>
 #endif
 
@@ -303,7 +303,7 @@ void IFFT_next(IFFT* unit, int wrongNumSamples) {
 
 // Then mix the "new" time-domain data in - adding at first, then just setting (copying) where the "old" is supposed to
 // be zero.
-#if defined(__APPLE__) && !defined(SC_IPHONE)
+#if defined(__APPLE__)
         vDSP_vadd(olabuf, 1, fftbuf, 1, olabuf, 1, shuntsamps);
 #else
         // NB we re-use the "pos" variable temporarily here for write rather than read

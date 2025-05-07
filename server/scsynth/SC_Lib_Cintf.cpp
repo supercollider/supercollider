@@ -106,7 +106,6 @@ extern void PhysicalModeling_Load(InterfaceTable* table);
 extern void Demand_Load(InterfaceTable* table);
 extern void DynNoise_Load(InterfaceTable* table);
 extern void FFT_UGens_Load(InterfaceTable* table);
-extern void iPhone_Load(InterfaceTable* table);
 
 extern void DiskIO_Unload(void);
 extern void UIUGens_Unload(void);
@@ -169,9 +168,6 @@ void initialize_library(const char* uGensPluginPath) {
     Test_Load(&gInterfaceTable);
     Demand_Load(&gInterfaceTable);
     DynNoise_Load(&gInterfaceTable);
-#    if defined(SC_IPHONE) && !TARGET_IPHONE_SIMULATOR
-    iPhone_Load(&gInterfaceTable);
-#    endif
     FFT_UGens_Load(&gInterfaceTable);
     return;
 #endif // STATIC_PLUGINS

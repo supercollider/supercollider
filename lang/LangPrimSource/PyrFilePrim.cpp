@@ -58,12 +58,10 @@ Primitives for File i/o.
 #    include <direct.h>
 #endif
 
-#if defined(__APPLE__) || defined(SC_IPHONE)
+#if defined(__APPLE__)
 #    include <CoreFoundation/CFString.h>
 #    include <CoreFoundation/CFBundle.h>
-#    ifndef SC_IPHONE
-#        include <CoreServices/CoreServices.h>
-#    endif
+#    include <CoreServices/CoreServices.h>
 #endif
 
 #define DELIMITOR ':'
@@ -1391,12 +1389,6 @@ int prPipeOpenArgv(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* callerSlot = g->sp - 2;
     PyrSlot* argsSlot = g->sp - 1;
     PyrSlot* modeSlot = g->sp;
-
-    //????
-#ifdef SC_IPHONE
-    SetInt(callerSlot, 0);
-    return errNone;
-#endif
 
     // argsSlot must be an object
     if (NotObj(argsSlot) || NotObj(modeSlot))

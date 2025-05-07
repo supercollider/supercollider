@@ -76,9 +76,6 @@ static __inline__ int32 CLZ(int32 arg) {
     return arg;
 }
 
-#elif defined(SC_IPHONE)
-static __inline__ int32 CLZ(int32 arg) { return __builtin_clz(arg); }
-
 #else
 #    error "clz.h: Unsupported architecture"
 #endif

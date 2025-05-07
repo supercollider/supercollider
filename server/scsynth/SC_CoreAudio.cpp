@@ -36,10 +36,6 @@
 #    include <sys/time.h>
 #endif
 
-#ifdef SC_IPHONE
-#    include "SC_VFP11.h"
-#endif
-
 #include "nova-tt/thread_priority.hpp"
 
 
@@ -1935,12 +1931,10 @@ OSStatus RenderCallback(void* inRefCon, AudioUnitRenderActionFlags* ioActionFlag
                         UInt32 inBusNumber, UInt32 inNumberFrames, AudioBufferList* ioData) {
     SC_iCoreAudioDriver* driver = (SC_iCoreAudioDriver*)inRefCon;
 
-#    ifndef SC_IPHONE
     if (!driver->receivedIn) {
         // printf("exit output with no data \n");
         return noErr;
     }
-#    endif
 
     // float *fbuffer = (float *) driver->converter_buffer;
 
@@ -2038,13 +2032,9 @@ void SC_iCoreAudioDriver::Run(const AudioBufferList* inInputData, AudioBufferLis
                         float* busdata = inputBuses + b * bufFrames;
                         float* bufdata = (float*)buf->mData + bufFramePos * nchan;
                         if (nchan == 1) {
-#    ifdef IPHONE_VEC
-                            vcopy(busdata, bufdata, bufFrames);
-#    else
                             for (int k = 0; k < bufFrames; ++k) {
                                 busdata[k] = bufdata[k];
                             }
-#    endif
                             inputTouched[b] = bufCounter;
                         } else {
                             int minchan = sc_min(nchan, numInputBuses - b);
@@ -2098,13 +2088,9 @@ void SC_iCoreAudioDriver::Run(const AudioBufferList* inInputData, AudioBufferLis
                     float* bufdata = (float*)buf->mData + bufFramePos * nchan;
                     if (nchan == 1) {
                         if (outputTouched[b] == bufCounter) {
-#    ifdef IPHONE_VEC
-                            vcopy(bufdata, busdata, bufFrames);
-#    else
                             for (int k = 0; k < bufFrames; ++k) {
                                 bufdata[k] = busdata[k];
                             }
-#    endif
                         }
                     } else {
                         int minchan = sc_min(nchan, numOutputBuses - b);
@@ -2195,14 +2181,6 @@ void AudioSessionInterruptionCbk(void* inClientData, UInt32 inInterruptionState)
 bool SC_iCoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate) {
     AudioSessionInitialize(0, 0, AudioSessionInterruptionCbk, 0);
     unsigned long category = kAudioSessionCategory_PlayAndRecord;
-#    ifdef SC_IPHONE
-    UInt32 micInput, micInputSize = sizeof(&micInput);
-    AudioSessionGetProperty(kAudioSessionProperty_AudioInputAvailable, &micInputSize, &micInput);
-    if (!micInput) {
-        category = kAudioSessionCategory_MediaPlayback;
-        scprintf("SC_IPHONE: WARNING - no audio input available\n");
-    }
-#    endif
     AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(category), &category);
 
     if (mPreferredHardwareBufferFrameSize) {

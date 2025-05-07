@@ -36,11 +36,6 @@ LinuxPlatform : UnixPlatform {
 		this.loadStartupFiles;
 	}
 
-	initPlatform {
-		super.initPlatform;
-		this.declareFeature(\unixPipes); // pipes are possible (can't declare in UnixPlatform since IPhonePlatform is unixy yet can't support pipes)
-	}
-
 	*getTerminalEmulatorCmd {
 		"LinuxPlatform: searching for a supported terminal emulator".postln;
 		[

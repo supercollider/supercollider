@@ -25,7 +25,7 @@
 /*
  * SC_Filesystem implementation for macOS.
  */
-#if defined(__APPLE__) && !defined(SC_IPHONE)
+#if defined(__APPLE__)
 
 #    include "SC_Filesystem.hpp"
 
@@ -240,4 +240,4 @@ const char* getBundleName() {
     return SC_FOLDERNAME_APPLICATION_NAME;
 }
 
-#endif // defined(__APPLE__) && !defined(SC_IPHONE)
+#endif // defined(__APPLE__)
