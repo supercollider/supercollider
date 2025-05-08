@@ -71,7 +71,8 @@ s.checkBlockSize(nil)
 section:: Synth
 
 simplest case, start new synth process with blockSize and upsample settings...
-... request: Synth object should keep them for reference while synth is running ...
+... todo: request that Synth object should keep blockSize and upsample
+as instvars for reference while synth is running ...
 
 Synth:new has:
 arg defName, args, target, addAction=\addToHead, blockSize, upsample;
@@ -94,17 +95,19 @@ Pdef(\x, Pbind(\note, Pseq((0..7), 2), \dur, 0.125, blockSize: 31)).play;
 // a synthdef that produces aliasing,
 // so we hear how upsampling improves it:
 (
-SynthDef(\bsTest, { |amp=0.1, freq=(60.midicps), sustain=1|
-	var snd = LFSaw.ar(XLine.kr(freq, freq * 10, sustain, doneAction: 2), 0, amp);
+s.waitForBoot {
+	SynthDef(\bsTest, { |amp=0.1, freq=(60.midicps), sustain=1|
+		var snd = LFSaw.ar(XLine.kr(freq, freq * 10, sustain, doneAction: 2), 0, amp);
 
-	BlockSize.ir.poll(0, "BlockSize");
-	(SampleRate.ir / s.sampleRate).poll(0, "upsample");
-	SampleRate.ir.poll(0, "SampleRate");
+		BlockSize.ir.poll(0, "BlockSize");
+		(SampleRate.ir / s.sampleRate).poll(0, "upsample");
+		SampleRate.ir.poll(0, "SampleRate");
 
-	// gentle filter for upsampled sounds:
-	snd = RLPF.ar(RLPF.ar(snd, 20000, 0.7), 20000, 0.7);
-	Out.ar(0, snd);
-}).add;
+		// gentle filter for upsampled sounds:
+		snd = RLPF.ar(RLPF.ar(snd, 20000, 0.7), 20000, 0.7);
+		Out.ar(0, snd);
+	}).add;
+}
 )
 
 // Events work, and this synthdef polls BlockSize etc
@@ -149,6 +152,25 @@ Pdef(\x,
 	)
 ).play
 )
+
+// setting them in the Pdef works automatically:
+Pdef(\x).set(\blockSize, 8);
+Pdef(\x, Pbind(\instrument, \bsTest, \legato, 2));
+Pdef(\x).play;
+Pdef(\x).set(\upsample, 4);
+
+// In Tdefs, one can use the tdef envir as an event proto
+// which has the settings to use for individual events:
+(
+Tdef(\x).set(\blockSize, 32, \upsample, 2);
+Tdef(\x, { |envir|
+	loop {
+		(instrument: \bsTest).proto_(envir).play;
+		1.wait;
+	}
+});
+Tdef(\x).play;
+)
 ::
 
 code::
@@ -185,7 +207,7 @@ which are passed on to new proxies in that proxyspace.
 
 code::
 Ndef.clear;
-Ndef.dictFor(s) // the proxyspace for all Ndefs on s
+Ndef.dictFor(s) // the proxyspace for all Ndefs on server s
 
 Ndef.dictFor(s).blockSize; // nil by default
 Ndef.dictFor(s).upsample; // nil by default
@@ -197,7 +219,7 @@ Ndef.dictFor(s).blockSize; // now 8
 Ndef.dictFor(s).upsample = 8;
 Ndef.dictFor(s).upsample; // now 8
 
-// Newly made Ndefs take these settings from their proxyspace
+// Newly made Ndefs inherit these settings from their proxyspace
 Ndef(\y).blockSize;
 Ndef(\y).upsample;
 
@@ -229,21 +251,47 @@ Ndef(\x).upsample;
 // which they pass on to the slot objects
 Ndef(\x).put(0, { BlockSize.ir.poll(0); LFSaw.ar(123, 0, 0.3) });
 
+
 // you can override the Ndef settings at the slot object level
 Ndef(\x).put(0, { BlockSize.ir.poll(0); LFSaw.ar(123, 0, 0.3) }, blockSize: 32);
 
 // blockSize/upsample can be different per slot object:
-Ndef(\x).put(5, { BlockSize.ir.poll(0); LFSaw.ar(123, 0, 0.3) }, upsample: 2);
+Ndef(\x).put(5, { BlockSize.ir.poll(0); SampleRate.ir.poll(0); LFSaw.ar(123, 0, 0.3) }, upsample: 2);
 
+// playing a Pdef inside Ndef works when set in Pdef...
 
-// playing Pdef inside Ndef works when set in Pdef...
+Pdef(\x).set(\blockSize, nil);
+Ndef(\x).blockSize_(nil);
+Pdef(\x).set(\upsample, nil);
+Pbind(\instrument, \bsTest, \legato, 1).play;
+Pdef(\x, Pbind(\instrument, \bsTest, \legato, 1)).play;
+Pdef(\x).stop;
+
+// play from Ndef: changes need restarting play - why?
+Ndef(\x, Pdef(\x)).play;
+Ndef(\x).blockSize_(16);
+Ndef(\x, Pdef(\x)).play;
+Ndef(\x).upsample = 4;
+Ndef(\x, Pdef(\x)).play;
+Ndef(\x).blockSize_(nil);
+Ndef(\x, Pdef(\x)).play;
+Ndef(\x).upsample = nil;
 Ndef(\x, Pdef(\x)).play;
 
-Ndef(\y).put(4, { Saw.ar }, upsample: 3).play; // Synth
+// When ndef source is a synthdef, inheriting blockSize or upsample works
+Ndef(\x).blockSize = 8;
+Ndef(\x).upsample = 8;
+Ndef(\x).put(0, \bsTest).play; // why NaN fail?
+// can override at lower level:
+Ndef(\x).put(10, \bsTest, blockSize: 32, upsample: 2).play;
+Ndef(\x).end;
+
 ::
 
-/*** Which event functions get used?
-Test with checkBlockSize fail messages. ***/
+subsection:: Tests and Questions
+
+Which event functions get used for which event types:
+Test with checkBlockSize fail messages.
 code::
 (blockSize: 12).play; // eventType: \note
 (blockSize: 12, dur: inf).play; // also \note
@@ -258,24 +306,9 @@ x = (type: \play, blockSize: 12).play; // also becomes \note
 // \monoNote
 PmonoArtic(\default, \note, Pn(0, 1), \blockSize, 3).play;
 
-// todo: \fadeBus ...
-::
+// todo: eventType \fadeBus ...
 
-/******* Questions ****/
-code::
-Ndef(\z).play.put(10, \default, blockSize: 13); // Synth, but why?
+// Why is this a Synth eventType?
+Ndef(\z).play.put(10, \default, blockSize: 13);
 
-
-// When using a synthdef as source, inherit blockSize or upsample from Ndef
-// not working yet ... also, maybe better not to overwrite already-set values?
-Ndef(\x).blockSize = 16;
-Ndef(\x).play.put(10, \default, \blockSize, 13);
-Ndef(\x).end;
-
-// Should Pdef inherit blockSize and upsample from Ndef?
-// I guess yes of not already set locally otherwise...
-Ndef(\x).blockSize = 16;
-Ndef(\x).upsample = 1;
-Pdef(\x, Pbind(\instrument, \bsTest, \legato, 2));
-Ndef(\x, Pdef(\x)).play;
 ::

@@ -247,6 +247,8 @@
 				~server = server;
 				~group = group;
 				~out = out.value;
+				~blockSize = ~blockSize ?? { proxy.blockSize };
+				~upsample = ~upsample ?? { proxy.upsample };
 				finish = ~finish;
 				~finish = {
 					finish.value;
