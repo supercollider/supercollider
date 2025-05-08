@@ -67,7 +67,7 @@ code::
 ::
 
 method::at
-Returns the item at strong::index::.
+Return the item at strong::index::.
 The index can also be an array of indices to extract the specified elements.
 link::Classes/Array:: is its syntactic shortcut.
 code::

@@ -51,7 +51,7 @@ method::array
 Sets the List's Array.
 
 method::at
-Returns the item at strong::index::.
+Return the item at strong::index::.
 Accepts either a single index or an array of indices, in which case an Array of elements is returned.
 link::Classes/Array:: is its syntactic shortcut.
 code::
