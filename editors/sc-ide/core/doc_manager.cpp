@@ -711,6 +711,7 @@ void DocumentManager::handleDocListScRequest() {
         command = command.append(docData);
     }
     command = command.append("]);");
+    command = command.append(QStringLiteral("ScIDE.prSignalHandshakeCond;"));
     Main::evaluateCode(command, true);
 }
 
@@ -1187,9 +1188,11 @@ void DocumentManager::sendActiveDocument() {
         } else {
             command = command.append(QStringLiteral("ScIDE.currentPath_(\"%1\");").arg(mCurrentDocumentPath));
         }
+        command = command.append(QStringLiteral("ScIDE.prSignalHandshakeCond;"));
         Main::evaluateCodeIfCompiled(command, true);
     } else
-        Main::evaluateCodeIfCompiled(QStringLiteral("ScIDE.currentPath_(nil); Document.current = nil;"), true);
+        Main::evaluateCodeIfCompiled(
+            QStringLiteral("ScIDE.currentPath_(nil); Document.current = nil; ScIDE.prSignalHandshakeCond;"), true);
 }
 
 void DocumentManager::updateCurrentDocContents(int position, int charsRemoved, int charsAdded) {
