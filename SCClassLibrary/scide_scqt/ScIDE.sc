@@ -491,8 +491,8 @@ Document {
 	*prCurrent_ {|newCurrent|
 		current = this.current;
 		if((newCurrent === current).not, {
-			if(current.notNil, {current.didResignKey});
-			newCurrent.didBecomeKey;
+			current !? { current.didResignKey };
+			newCurrent !? { newCurrent.didBecomeKey };
 		});
 	}
 
