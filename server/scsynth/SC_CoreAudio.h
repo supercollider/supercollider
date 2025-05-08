@@ -33,12 +33,8 @@
 #define SC_AUDIO_API_JACK 2
 #define SC_AUDIO_API_PORTAUDIO 3
 #define SC_AUDIO_API_AUDIOUNITS 4
-#define SC_AUDIO_API_COREAUDIOIPHONE 5
+// #define SC_AUDIO_API_COREAUDIOIPHONE 5
 #define SC_AUDIO_API_BELA 6
-
-#ifdef SC_IPHONE
-#    define SC_AUDIO_API SC_AUDIO_API_COREAUDIOIPHONE
-#endif
 
 #ifndef SC_AUDIO_API
 #    if defined(_WIN32)
@@ -53,13 +49,6 @@
 #if SC_AUDIO_API == SC_AUDIO_API_COREAUDIO || SC_AUDIO_API == SC_AUDIO_API_AUDIOUNITS
 #    include <CoreAudio/AudioHardware.h>
 #    include <CoreAudio/HostTime.h>
-#endif
-
-#if SC_AUDIO_API == SC_AUDIO_API_COREAUDIOIPHONE
-#    include <AudioUnit/AudioUnit.h>
-#    include <AudioToolbox/AudioToolbox.h>
-#    include <AudioToolbox/AudioConverter.h>
-#    include <AudioToolbox/AUGraph.h>
 #endif
 
 
@@ -282,37 +271,3 @@ public:
 };
 
 #endif
-
-#if SC_AUDIO_API == SC_AUDIO_API_COREAUDIOIPHONE
-class SC_iCoreAudioDriver : public SC_AudioDriver {
-    AUGraph graph;
-
-    AudioStreamBasicDescription inputStreamDesc; // info about the default device
-    AudioStreamBasicDescription outputStreamDesc; // info about the default device
-
-protected:
-    // Driver interface methods
-    virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
-    virtual bool DriverStart();
-    virtual bool DriverStop();
-
-public:
-    SC_iCoreAudioDriver(struct World* inWorld);
-    virtual ~SC_iCoreAudioDriver();
-
-    void Run(const AudioBufferList* inInputData, AudioBufferList* outOutputData, int64 oscTime);
-
-    AudioBufferList* buflist;
-    AudioBufferList* floatInputList;
-    AudioBufferList* floatOutputList;
-    AudioConverterRef converter_in_to_F32;
-    AudioConverterRef converter_F32_to_out;
-    AudioConverterRef converter_in_to_out;
-    int* converter_buffer;
-
-    int receivedIn;
-    AudioUnit inputUnit;
-};
-
-inline SC_AudioDriver* SC_NewAudioDriver(struct World* inWorld) { return new SC_iCoreAudioDriver(inWorld); }
-#endif // SC_AUDIO_API_COREAUDIOIPHONE
