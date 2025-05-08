@@ -1040,7 +1040,7 @@ void Out_Ctor(Out* unit) {
         else
             SETCALC(Out_next_a);
 #else
-    SETCALC(Out_next_a);
+        SETCALC(Out_next_a);
 #endif
         unit->m_bus = world->mAudioBus;
         unit->m_busTouched = world->mAudioBusTouched;
