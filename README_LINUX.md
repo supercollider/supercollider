@@ -315,11 +315,9 @@ You can do that by adding a line such as `PATH=$PATH:$HOME/usr/local/bin` to `~/
 
 If you are developing SC or you're constantly pulling in the latest changes, rebuilding SC repeatedly can be a drag.
 Installing `ccache` can speed up re-compilation.
-Here is how to configure cmake to use it:
+Ccache will be used automatically if it's in the PATH. 
+Use can disable using ccache by setting `-D USE_CCACHE=OFF`.
 
-```shell
-cmake -DCMAKE_CXX_COMPILER=/usr/lib/ccache/g++ -DCMAKE_C_COMPILER=/usr/lib/ccache/gcc ..
-```
 
 This assumes your ccache executables are installed into `/usr/lib/ccache` - you may need to change the path to reflect your installation.
 
