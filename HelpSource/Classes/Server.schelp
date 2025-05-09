@@ -629,14 +629,13 @@ method:: freqscope
 Show frequency analyzer window.
 
 method:: meter
-Show input/output level meters.
-
+Show input/output level meter by opening the singleton instance of link::Classes/ServerMeter::.
 code::
 // Create a singleton ServerMeter, or bring the window to the front if it has already been created.
 s.meter // -> a ServerMeter
 
 // Query the current position of the ServerMeter window:
-s.meter.position // -> Position(left:5.0, bottom:277.0)
+s.meter.position // -> Point(5.0, 277.0)
 
 // Query the current bounds of the ServerMeter window:
 s.meter.window.bounds // -> Rect(5.0, 277.0, 134.0, 230.0)
@@ -645,20 +644,19 @@ s.meter.window.bounds // -> Rect(5.0, 277.0, 134.0, 230.0)
 s.meter.position_(200@200) // -> a ServerMeter
 
 // Retrieve the new position of the ServerMeter window:
-s.meter.position // -> Position(left:200.0, bottom:200.0)
+s.meter.position // -> Point(200.0, 200.0)
 
 // Retrieve the current bounds of the ServerMeter window:
 s.meter.window.bounds // -> Rect(200.0, 200.0, 134.0, 230.0)
 ::
-
 argument:: numIns
 the number of input channels. The default is nil and the number of input channels defined by code::Server.local.options.numInputBusChannels:: is used when using a local server.
 argument:: numOuts
 the number of output channels. The default is nil and the number of output channels defined by code::Server.local.options.numOutputBusChannels:: is used when using a local server.
 argument:: position
-the position of the scope window.
-The value should be a link::Classes/Point::, e.g. teletype::x@y::, or respond to teletype::asPoint::.
-The default is `teletype::nil::`, and the scope window will appear near the bottom-left side of the display: left: 5; bottom: 277. See link::Classes/ServerMeter#-position::.
+the position of the meter window, i.e. the singleton instance of link::Classes/ServerMeter::.
+(See link::Classes/ServerMeter#-position::.)
+The default is `teletype::nil::`, and the scope window will appear near the bottom-left side of the display: left: 5; bottom: 277. 
 
 method:: plotTree
 Plot the node/group tree. As link::#-queryAllNodes:: but graphical.

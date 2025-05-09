@@ -44,8 +44,9 @@ A ServerMeter encapsulates both a link::Classes/Window:: and a link::Classes/Ser
 
 METHOD:: position
 
-the position of the ServerMeter window.
+the position of the link::Classes/ServerMeter:: window.
 The value should be a link::Classes/Point::, e.g. teletype::x@y::, or respond to teletype::.asPoint::.
+E.g.: setting the position to code::150@50:: places the bottom left corner of the meter window 150 pixels from the left and 50 pixels up from the bottom of the screen.
 
 
 EXAMPLES::
