@@ -38,7 +38,9 @@ Set : Collection {
 			array.put(index, nil);
 			size = size - 1;
 			this.fixCollisionsFrom(index);
+			^item
 		});
+		^nil
 	}
 	choose {
 		var index, val;
@@ -221,8 +223,9 @@ OrderedIdentitySet : IdentitySet {
 	}
 
 	remove { arg item;
-		super.remove(item);
+		var out = super.remove(item);
 		items.remove(item);
+		^out
 	}
 	sort { arg func;
 		items.sort(func)
