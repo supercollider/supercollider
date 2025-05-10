@@ -45,8 +45,8 @@ ServerTreeView {
 
 		view = UserView.new(viewParent, viewParent.bounds);
 
-		drawFunc = { |group|
-			var thisSize, rect, endYTabs, xtabs = 0, ytabs = 0;
+		drawFunc = { |group, xtabs, ytabs|
+			var thisSize, rect, endYTabs;
 			xtabs = xtabs + 1;
 			ytabs = ytabs + 1;
 			pen.font = font;
@@ -68,7 +68,7 @@ ServerTreeView {
 						(node.key == 1).if("- default group", ""),
 						rect
 					);
-					drawFunc.value(node.value);
+					drawFunc.value(node.value, xtabs, ytabs);
 					ytabs = endYTabs;
 				},{
 					rect = Rect(xtabs * tabSize + 0.5,
@@ -90,7 +90,8 @@ ServerTreeView {
 			xtabs = xtabs - 1;
 		};
 		view.drawFunc = {
-			drawFunc.value(levels);
+			var xtabs = 0, ytabs = 0;
+			drawFunc.value(levels, xtabs, ytabs);
 		};
 
 		// msg[1] controls included
