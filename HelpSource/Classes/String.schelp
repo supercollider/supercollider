@@ -298,6 +298,10 @@ using code::++::. If neither side has a path separator, the platform's preferred
 Returns code::this:: and code::path:: concatenated. If code::path:: was a PathName, the result is a
 PathName; otherwise, it is a String.
 
+note::
+Avoid using code::+/+:: to separate URL addresses, as this can lead to unintended concatenation issues.
+::
+
 argument::path
 
 Any object that can be converted to a string. Typically, either a String, link::Classes/Symbol::, or
