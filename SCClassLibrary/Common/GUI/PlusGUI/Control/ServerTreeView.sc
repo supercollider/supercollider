@@ -157,7 +157,6 @@ ServerTreeView {
 				//view.refresh;
 				viewParent.bounds = Rect(0, 0, 400, max(viewParent.bounds.height, tabSize * (countSize.value(levels) + 2)));
 				viewParent.refresh;
-
 			}
 		}, '/g_queryTree.reply', this.server.addr).fix;
 
