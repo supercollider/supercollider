@@ -43,7 +43,7 @@ ServerTreeView {
 		pen = GUI.current.pen;
 		font = Font.sansSerif(10);
 
-		view = UserView.new(viewParent, viewParent.bounds);
+		//view = UserView.new(viewParent, viewParent.bounds);
 
 		drawFunc = { |group, xtabs, ytabs|
 			var thisSize, rect, endYTabs;
@@ -89,7 +89,7 @@ ServerTreeView {
 			});
 			xtabs = xtabs - 1;
 		};
-		view.drawFunc = {
+		viewParent.drawFunc = {
 			var xtabs = 0, ytabs = 0;
 			drawFunc.value(levels, xtabs, ytabs);
 		};
@@ -153,8 +153,11 @@ ServerTreeView {
 				size
 			};
 			defer {
-				view.bounds = Rect(0, 0, 400, max(400, tabSize * (countSize.value(levels) + 2)));
-				view.refresh;
+				//view.bounds = Rect(0, 0, 400, max(view.bounds.height, tabSize * (countSize.value(levels) + 2)));
+				//view.refresh;
+				viewParent.bounds = Rect(0, 0, 400, max(viewParent.bounds.height, tabSize * (countSize.value(levels) + 2)));
+				viewParent.refresh;
+
 			}
 		}, '/g_queryTree.reply', this.server.addr).fix;
 
