@@ -763,3 +763,12 @@ div.met_subclasses a.seemore {
 .subheader {
     color: var(--color-fg);
 }
+
+.sup {
+    font-size: 0.7em;
+    vertical-align: super;
+}
+.sub {
+    font-size: 0.7em;
+    vertical-align: sub;
+}
