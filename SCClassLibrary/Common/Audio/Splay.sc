@@ -12,8 +12,8 @@ LevelComp {
 		// if false, level is untouched
 		if (levelComp == false) { ^1 };
 
-		// if a number or control signal,
-		// scale by exponent: 0 is no change,
+		// now levelComp is a number or UGen,
+		// so we scale by exponent: 0 is no change,
 		// 0.5 is square root = equal power
 		// 1.0 is level / numchans = equal amplitude
 		^n.reciprocal ** levelComp.clip(0.0, 1.0)
