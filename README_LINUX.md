@@ -77,7 +77,6 @@ sudo apt-get install \
   libudev-dev \
   pkg-config \
   libncurses5-dev \
-  emacs \
   jackd2
 ```
 
@@ -157,7 +156,6 @@ sudo dnf install \
   fftw-devel \
   alsa-lib-devel \
   libatomic
-sudo dnf install emacs # if building with the sc-el backend (default)
 sudo dnf install libXt-devel 
 ```
 
@@ -249,11 +247,12 @@ cmake ..
 
 You can set CMake build flags via the command line using `cmake -DKEY=value ..` during the configure process where the `D` prefix is necessary!
 
-> **Example:** SuperCollider on Linux requires [Emacs](https://www.gnu.org/software/emacs/) as a build dependency - but this is only an optional build dependency which can be controlled via the build flag `SC_EL`.
-> So if you do not have `Emacs` installed, you should add `-DSC_EL=NO` as in the following command:
+> **Example:** It is possible to build an optional [Emacs](https://www.gnu.org/software/emacs/) plugin for SuperCollider.
+> As of 3.14, this plugin is not built in by default and must be enabled manually.
+> To tell CMake if this plugin should also be built as part of the build process, the flag `SC_EL` can be used - i.e. `-DSC_EL=YES`:
 >
 > ```shell
-> cmake -DSC_EL=NO ..
+> cmake -DSC_EL=YES ..
 > ```
 >
 > To display all available build flags and their values run `cmake -LH ..` in the `build` directory or use cmake gui-frontends like [`ccmake`](https://cmake.org/cmake/help/latest/manual/ccmake.1.html) or [`cmake-gui`](https://cmake.org/cmake/help/latest/manual/cmake-gui.1.html) to inspect and set the available flags.
