@@ -298,6 +298,10 @@ using code::++::. If neither side has a path separator, the platform's preferred
 Returns code::this:: and code::path:: concatenated. If code::path:: was a PathName, the result is a
 PathName; otherwise, it is a String.
 
+note::
+Do not use code::+/+:: in URLs or in other situations where forward slash is expected. code::+/+:: should only be used with filesystem paths, where it will resolve to either forward or backward slash, depending on the operating system's requirements.
+::
+
 argument::path
 
 Any object that can be converted to a string. Typically, either a String, link::Classes/Symbol::, or
