@@ -24,6 +24,8 @@
 #include <QHBoxLayout>
 #include <QWheelEvent>
 
+#include "main.hpp"
+
 namespace ScIDE {
 
 AudioStatusBox::AudioStatusBox(ScServer* server, QWidget* parent): StatusBox(parent) {
@@ -87,19 +89,39 @@ AudioStatusBox::AudioStatusBox(ScServer* server, QWidget* parent): StatusBox(par
     connect(this, &AudioStatusBox::decreaseVolume, [=]() { server->changeVolume(-0.5); });
 
     connect(this, &AudioStatusBox::increaseVolume, [=]() { server->changeVolume(+0.5); });
+
+    auto const main = Main::instance();
+    applySettings(main->settings());
+    connect(main, &Main::applySettingsRequest, this, &AudioStatusBox::applySettings);
 }
 
+void AudioStatusBox::applySettings(Settings::Manager* settings) {
+    auto backgroundColor = settings->getThemeVal("text").background().color();
+
+    mStatisticsLabel->setBackground(backgroundColor);
+    mVolumeLabel->setBackground(backgroundColor);
+    mMuteLabel->setBackground(backgroundColor);
+    mRecordLabel->setBackground(backgroundColor);
+
+    // used if e.g. server is not recording is not recording
+    noActionColor = Qt::black;
+
+    unresponsiveColor = settings->getThemeVal("number").foreground().color();
+    runningColor = settings->getThemeVal("symbol").foreground().color();
+    notRunningColor = settings->getThemeVal("text").foreground().color();
+    warningColor = settings->getThemeVal("postwindowerror").foreground().color();
+}
 
 void AudioStatusBox::onServerRunningChanged(bool running, const QString&, int, bool unresponsive) {
     if (unresponsive) {
-        mStatisticsLabel->setTextColor(Qt::yellow);
-        mVolumeLabel->setTextColor(Qt::yellow);
+        mStatisticsLabel->setTextColor(unresponsiveColor);
+        mVolumeLabel->setTextColor(unresponsiveColor);
     } else if (running) {
-        mStatisticsLabel->setTextColor(Qt::green);
-        mVolumeLabel->setTextColor(Qt::green);
+        mStatisticsLabel->setTextColor(runningColor);
+        mVolumeLabel->setTextColor(runningColor);
     } else {
-        mStatisticsLabel->setTextColor(Qt::white);
-        mVolumeLabel->setTextColor(Qt::white);
+        mStatisticsLabel->setTextColor(notRunningColor);
+        mVolumeLabel->setTextColor(notRunningColor);
     };
     if (!running) {
         updateStatistics(0, 0, 0, 0, 0, 0);
@@ -132,10 +154,10 @@ void AudioStatusBox::updateVolumeLabel(float volume) {
     mVolumeLabel->setText(QStringLiteral("%1dB ").arg(volume, 5, 'f', 1));
 }
 
-void AudioStatusBox::updateMuteLabel(bool muted) { mMuteLabel->setTextColor(muted ? Qt::red : QColor(30, 30, 30)); }
+void AudioStatusBox::updateMuteLabel(bool muted) { mMuteLabel->setTextColor(muted ? warningColor : noActionColor); }
 
 void AudioStatusBox::updateRecordLabel(bool recording) {
-    mRecordLabel->setTextColor(recording ? Qt::red : QColor(30, 30, 30));
+    mRecordLabel->setTextColor(recording ? warningColor : noActionColor);
 }
 
 
