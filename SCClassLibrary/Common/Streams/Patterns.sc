@@ -388,7 +388,7 @@ Pmono : Pattern {
 	var <>synthName, <>patternpairs;
 	*new { arg name ... pairs;
 		if (pairs.size.odd, { Error("Pmono should have odd number of args.\n").throw; });
-		^super.newCopyArgs(name.asSymbol, pairs)
+		^super.newCopyArgs(name, pairs)
 	}
 
 	embedInStream { | inevent |

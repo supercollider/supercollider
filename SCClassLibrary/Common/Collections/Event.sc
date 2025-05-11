@@ -273,37 +273,94 @@ Event : Environment {
 				instrument: \default,
 				variant: nil,
 
-				// this function should return a msgFunc: a Function that
-				// assembles a synth control list from event values
-
-				getMsgFunc: { |instrument|
-					var	synthLib, desc;
+				// TODO: What if hasGate and msgFunc are arrays?
+				getInstrumentDesc: { |instrument|
+					var	synthLib, desc, out;
 					// if user specifies a msgFunc, prefer user's choice
 					if(~msgFunc.isNil) {
-						instrument = ~instrument = instrument.asDefName;
+						out = IdentityDictionary.new;
+
+						instrument = instrument.asDefName;
+						out.put(\instrument, instrument);
 
 						synthLib = ~synthLib ?? { SynthDescLib.global };
+						out.put(\synthLib, synthLib);
 						desc = synthLib.at(instrument);
 						if (desc.notNil) {
-							~hasGate = desc.hasGate;
-							~msgFunc = desc.msgFunc;
+							out.put(\hasGate, desc.hasGate)
+							.put(\msgFunc, desc.msgFunc);
 						} {
-							~msgFunc = ~defaultMsgFunc;
+							out.put(\hasGate, ~hasGate ?? { false })
+							.put(\msgFunc, ~defaultMsgFunc);
 						};
-					} { ~msgFunc };
+					} {
+						out.put(\hasGate, ~hasGate ?? { false })
+						.put(\msgFunc, ~msgFunc)
+					};
+					out
+				},
+				getInstrumentDescs: {
+					// Pmono events reuse some elements of prior events
+					// i.e. cache for Pmono performance
+					~instrDescs ?? {
+						~instrDescs = ~instrument.asArray.collect { |instr|
+							~getInstrumentDesc.(instr)
+						};
+					};
 				},
 				synthDefName: { |instrument, variant, synthDesc|
 					// allow `nil to cancel a variant in a pattern
 					instrument = instrument.asDefName;
 					variant = variant.dereference;
-					if(variant.notNil and: { synthDesc.notNil and: { synthDesc.hasVariants } })
-					{ "%.%".format(instrument, variant).asSymbol }
-					{ instrument.asSymbol };
+					if(instrument.size >= 2) {
+						variant = variant.asArray;
+						instrument.collect { |instr, i|
+							var v = variant.wrapAt(i);
+							if(v.notNil) {
+								(instr ++ "." ++ v).asSymbol
+							} {
+								instr.asSymbol
+							}
+						};
+						instrument
+					} {
+						if(variant.notNil and: { synthDesc.notNil and: { synthDesc.hasVariants } })
+						{ "%.%".format(instrument, variant).asSymbol }
+						{ instrument.asSymbol };
+					};
 				},
 
+				getBundleArgPairs: { |descs(~instrDescs)|
+					var coll, msgFunc, hasGate;
+					if(descs.size < 2) {
+						descs[0][\msgFunc].valueEnvir;
+					} {
+						coll = IdentityDictionary.new;
+						descs.do { |instr|
+							if(instr[\msgFunc].notNil) {
+								instr[\msgFunc].valueEnvir.pairsDo { |key, value|
+									coll.put(key, value);
+								};
+							} {
+								Error("msgFunc not found for" + instr[\instrument]).throw;
+							};
+						};
+						coll.asPairs
+					};
+				},
 				getBundleArgs: { |instrument|
-					~getMsgFunc.valueEnvir(instrument).valueEnvir;
-				}.flop,
+					~getBundleArgPairs.(instrument).flop
+				},
+				checkGate: { |index|
+					if(~sendGate.size >= 1) {
+						~sendGate.wrapAt(index)
+					} {
+						~sendGate
+					}
+					?? { ~instrDescs.wrapAt(index)[\hasGate] }
+					// if(~hasGates.notNil) { ~hasGates.wrapAt(index) }
+					// { ~hasGate ?? { false } }
+				},
 
 				hasGate: true,		// assume SynthDef has gate
 				sendGate: nil,		// false => event does not specify note release
@@ -506,21 +563,18 @@ Event : Environment {
 
 					note: #{|server|
 						var freqs, lag, strum, sustain;
-						var bndl, addAction, sendGate, ids;
-						var msgFunc, instrumentName, offset, strumOffset;
+						var bndl, addAction, sendGate, ids, releaseIDs;
+						var msgFunc, /*instrumentName,*/ offset, strumOffset;
+						var descs;
 
 						// var schedBundleArray;
 
 						freqs = ~detunedFreq.value;
 
 						// msgFunc gets the synth's control values from the Event
-						msgFunc = ~getMsgFunc.valueEnvir;
-						instrumentName = ~synthDefName.valueEnvir;
-
-						// determine how to send those commands
-						// sendGate == false turns off releases
-
-						sendGate = ~sendGate ? ~hasGate;
+						descs = ~getInstrumentDescs.();
+						sendGate = descs.any { |d, i| ~checkGate.(i) };
+						// instrumentName = ~synthDefName.valueEnvir;
 
 						// update values in the Event that may be determined by functions
 
@@ -535,8 +589,8 @@ Event : Environment {
 						addAction = Node.actionNumberFor(~addAction);
 
 						// compute the control values and generate OSC commands
-						bndl = msgFunc.valueEnvir;
-						bndl = [9 /* \s_new */, instrumentName, ids, addAction, ~group] ++ bndl;
+						bndl = ~getBundleArgPairs.(descs);
+						bndl = [9 /* \s_new */, '', ids, addAction, ~group] ++ bndl;
 
 
 						if(strum == 0 and: { (sendGate and: { sustain.isArray })
@@ -556,6 +610,7 @@ Event : Environment {
 						~id = ids = Array.fill(bndl.size, { server.nextNodeID });
 						bndl = bndl.collect { | msg, i |
 							msg[2] = ids[i];
+							msg[1] = descs.wrapAt(i)[\instrument];
 							msg.asOSCArgArray
 						};
 
@@ -563,12 +618,13 @@ Event : Environment {
 
 						if (strum == 0) {
 							~schedBundleArray.(lag, offset, server, bndl, ~latency);
-							if (sendGate) {
+							releaseIDs = ids.select { |id, i| ~checkGate.(i) };
+							if (releaseIDs.size > 0) {
 								~schedBundleArray.(
 									lag,
 									sustain + offset,
 									server,
-									[15 /* \n_set */, ids, \gate, 0].flop,
+									[15 /* \n_set */, releaseIDs, \gate, 0].flop,
 									~latency
 								);
 							}
@@ -581,7 +637,10 @@ Event : Environment {
 							~schedBundleArray.(
 								lag, strumOffset, server, bndl, ~latency
 							);
-							if (sendGate) {
+							// TODO: this is wrong
+							// need to match id with strumOffset
+							releaseIDs = ids.select { |id, i| ~checkGate.(i) };
+							if (releaseIDs.size > 0) {
 								if (~strumEndsTogether) {
 									strumOffset = sustain + offset
 								} {
@@ -589,7 +648,7 @@ Event : Environment {
 								};
 								~schedBundleArray.(
 									lag, strumOffset, server,
-									[15 /* \n_set */, ids, \gate, 0].flop,
+									[15 /* \n_set */, releaseIDs, \gate, 0].flop,
 									~latency
 								);
 							}
@@ -651,12 +710,16 @@ Event : Environment {
 						~freq = freqs;
 						~amp = ~amp.value;
 						~isPlaying = true;
-						msgFunc = ~getMsgFunc.valueEnvir;
 						instrumentName = ~synthDefName.valueEnvir;
-						bndl = msgFunc.valueEnvir;
+						bndl = ~getBundleArgPairs.(instrumentName);
 						bndl = [9 /* \s_new */, instrumentName, ~id,
 							Node.actionNumberFor(~addAction), ~group] ++ bndl;
 						bndl = bndl.flop;
+						if(instrumentName.size >= 2) {
+							bndl = bndl.do { |msg, i|
+								msg[1] = instrumentName.wrapAt(i);
+							};
+						};
 						if ( (ids = ~id).isNil ) {
 							ids = Array.fill(bndl.size, {server.nextNodeID });
 							bndl = bndl.collect { | msg, i |
@@ -675,14 +738,16 @@ Event : Environment {
 
 					set: #{|server|
 						var freqs, lag, dur, strum, bndl, msgFunc;
+						var instrumentName = ~synthDefName.valueEnvir;
 						freqs = ~freq = ~detunedFreq.value;
 
 						~server = server;
 						~amp = ~amp.value;
 
 						if(~args.size == 0) {
-							msgFunc = ~getMsgFunc.valueEnvir;
-							bndl = msgFunc.valueEnvir;
+							bndl = ~getBundleArgPairs.(instrumentName);
+							// msgFunc = ~getMsgFunc.valueEnvir;
+							// bndl = msgFunc.valueEnvir;
 						} {
 							bndl = ~args.envirPairs;
 						};
@@ -692,9 +757,17 @@ Event : Environment {
 					},
 
 					off: #{|server|
-						var gate;
+						var gate = min(0.0, ~gate ? 0.0); // accept release times
+						if(~instrument.size >= 2) {
+							~id.collect { |id, i|
+								if(~checkGate.(i)) {
+									[15, id.asControlInput, \gate, gate]
+								} {
+									[\n_free, id.asControlInput]
+								}
+							};
+						};
 						if (~hasGate) {
-							gate = min(0.0, ~gate ? 0.0); // accept release times
 							~schedBundleArray.value(~lag, ~timingOffset, server,
 								[15 /* \n_set */, ~id.asControlInput, \gate, gate].flop,
 								~latency
@@ -851,40 +924,47 @@ Event : Environment {
 						};
 					},
 					monoOff:  #{|server|
-
-						if(~hasGate == false) {
-							~schedBundle.value(~lag, ~timingOffset, server,
-								[\n_free] ++ ~id.asControlInput);
-						} {
-							~schedBundle.value(~lag, ~timingOffset, server,
-								*([15 /* \n_set */, ~id.asControlInput, \gate, 0].flop) );
+						var descs = ~getInstrumentDescs.();
+						var bndl = descs.collect { |desc, i|
+							if(~checkGate.(i)) {
+								[15, ~id.wrapAt(i), \gate, 0]
+							} {
+								[\n_free, ~id.wrapAt(i)]
+							};
 						};
+
+						~schedBundle.value(~lag, ~timingOffset, server, bndl);
 
 					},
 
 					monoSet: #{|server|
-						var freqs, lag, bndl;
+						var freqs, lag, bndl, descs;
 
 						freqs = ~freq = ~detunedFreq.value;
 
 						~amp = ~amp.value;
 						~sustain = ~sustain.value;
 
-						bndl = ([15 /* \n_set */, ~id.asControlInput] ++ ~msgFunc.valueEnvir).flop;
+						descs = ~getInstrumentDescs.();
+						bndl = ([15 /* \n_set */, ~id.asControlInput] ++ ~getBundleArgPairs.(descs)).flop;
 						bndl = bndl.collect(_.asOSCArgArray);
 						~schedBundle.value(~lag, ~timingOffset, server, *bndl);
 					},
 
 					monoNote:	#{ |server|
 						var bndl, id, ids, addAction, f;
+						var descs;
 						addAction = Node.actionNumberFor(~addAction);
 						~freq = ~detunedFreq.value;
 						f = ~freq;
 						~amp = ~amp.value;
 
+						descs = ~getInstrumentDescs.();
+
 						bndl = ( [9 /* \s_new */, ~instrument, ids, addAction, ~group.asControlInput]
-							++ ~msgFunc.valueEnvir).flop;
-						bndl.do { | b |
+							++ ~getBundleArgPairs.(descs)).flop;
+						bndl.do { | b, i |
+							b[1] = descs.wrapAt(i)[\instrument];
 							id = server.nextNodeID;
 							ids = ids.add(id);
 							b[2] = id;
