@@ -44,16 +44,22 @@ Should be zero if the front is a vertex of the polygon. The first
 speaker will be directly in front. Should be 0.5 if the front
 bisects a side of the polygon. Then the first speaker will be the
 one left of center.
-argument:: levelComp
-If true, the signal level is adjusted to maintain equal power,
-keeping overall loudness the same (n.reciprocal.sqrt).
-if false, no compensation.
-if float, tunable between 0.0 and 1.0:
-0.0 is no compensation,
-0.5 is equal power,
-1.0 is equal amplitude (1/n)
 
-See link::Classes/LevelComp::
+argument:: levelComp
+a flag or numeric value:
+
+list::
+##code::true:: :  maintain equal power, keeping overall loudness the same.
+##code::false:: : off / no level change,
+##float between code::0.0:: and code::1.0:: : smooth tuning of levelComp factor:
+list::
+##code::0.0:: is none -> factor 1
+##code::0.5:: is equal power -> factor (1/n).squared
+##code::1.0:: is equal amplitude -> factor (1/n)
+::
+::
+
+See link::Classes/LevelComp:: for full discussion.
 
 method:: arFill
 argument:: numChans

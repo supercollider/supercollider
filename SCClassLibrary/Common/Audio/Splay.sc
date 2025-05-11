@@ -56,7 +56,7 @@ SplayAz : UGen {
 		var n = max(1, inArray.size);
 		var normSpread = (n - 1 / n) * spread;
 		var pos = if(n == 1) { center } { [ center - normSpread, center + normSpread ].resamp1(n) };
-		level = level * LevelComp(levelComp, \control);
+		level = level * LevelComp(levelComp, \control, n);
 
 		^PanAz.kr(numChans, inArray.asArray, pos, level, width, orientation).flop.collect(Mix(_))
 	}
@@ -67,7 +67,7 @@ SplayAz : UGen {
 		var normSpread = (n - 1 / n) * spread;
 		var pos = if(n == 1) { center } { [ center - normSpread, center + normSpread ].resamp1(n) };
 
-		level = level * LevelComp(levelComp, \audio);
+		level = level * LevelComp(levelComp, \audio, n);
 
 		^PanAz.ar(numChans, inArray.asArray, pos, level, width, orientation).flop.collect(Mix(_))
 	}

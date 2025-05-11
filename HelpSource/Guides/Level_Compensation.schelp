@@ -18,7 +18,7 @@ To balance these aspects, it helps to know more about the signals to be mixed/pa
 
 strong::Degree of Phase Correlation: :: How likely is it that the momentary peaks of the individual signals will line up in time? The two border cases are fully strong::in-phase: :: the same signal on all channels, so the peaks will always line up, and fully strong::random phase: :: different noise signals on all channels, where the peaks will be statistically very unlikely to ever line up. Most musical signals are somewhere between these extremes, i.e. phase-correlated to some degree.
 
-strong::Equal Amplitude Compensation:: is the safe bet for highly correlated signals: divide the sum of the number of channels; strong::Equal Power Compensation :: is commonly used for weakly correlated signals, as it keeps the acoustic energy constant by dividing the sum through the square root of the number of channels. As most musical signals are somewhere between the extremes, it makes sense to consider and test for the specific case whenever in doubt.
+strong::Equal Amplitude Compensation:: is the safe bet for highly correlated signals: divide the sum of the number of channels; strong::Equal Power Compensation:: is commonly used for weakly correlated signals, as it keeps the acoustic energy constant by dividing the sum through the square root of the number of channels. As most musical signals are somewhere between the extremes, it makes sense to consider and test for the specific case whenever in doubt.
 
 In the acoustics literature, this level compensation factor is called the p-value [1], and it can be generalized as follows:
 
@@ -35,7 +35,8 @@ code::
 Here are some examples for the common cases of Mixing and Panning.
 
 subsection:: Mixing M channels to 1
-Mixing down to mono is the simplest case to show the different approaches to level compensation. UGens or functions for this are Mix.ar, sum, mean.
+Mixing down to mono is the simplest case to show the different approaches to level compensation. UGens or functions for this are link::Classes/Mix::, code::sum::, code::mean::.
+
 code::
 s.meter; s.scope;
 
@@ -72,7 +73,7 @@ n = 10;
 
 subsection:: Panning 1 channel to 2
 
-Pan2 uses equal power panning:
+link::Classes/Pan2:: uses equal power panning:
 when panned to the center, both signals are at 0.7, or -3 dB
 code::
 { Pan2.ar(DC.ar(1), Line.kr(-1, 1, 0.1)) }.plot(0.1);
@@ -80,7 +81,7 @@ code::
 { Pan2.ar(PinkNoise.ar(0.2), SinOsc.kr(0.3)) }.play;
 
 ::
-LinPan2 uses equal amplitude panning:
+link::Classes/LinPan2:: uses equal amplitude panning:
 in the center, both signals are at 0.5.
 code::
 { LinPan2.ar(DC.ar(1), Line.kr(-1, 1, 0.1)) }.plot(0.1);
@@ -90,8 +91,8 @@ code::
 ::
 
 subsection:: Panning 1 channel to N
-PanAz uses equal power panning, so with a default width of 2,
-it keeps the energy constant, like Pan2.
+link::Classes/PanAz:: uses equal power panning, so with a default width of 2,
+it keeps the energy constant, like link::Classes/Pan2::.
 code::
 { PanAz.ar(4, DC.ar(1), Line.kr(-1, 1, 0.1), orientation: 0) }.plot(0.1);
 
@@ -101,8 +102,7 @@ code::
 ::
 
 subsection:: Mix/Panning M to 2 channels
-Splay mixes an array of input channels down to stereo using Pan2,
-and it has 3 options for level compensation:
+link::Classes/Splay:: mixes an array of input channels down to stereo using link::Classes/Pan2::, and it has 3 options for level compensation:
 code::
 s.meter; s.scope;
 
@@ -126,7 +126,7 @@ Note that this levelComp factor scales with the number of channels,
 so tuning to somewhere between 0.5 and 1.0 should work well when experimenting with changing numbers of channels.
 
 subsection:: Mix/Panning M channels to N
-SplayAz mixes an array of M input channels to N outputs using PanAz;
+link::Classes/SplayAz:: mixes an array of M input channels to N outputs using link::Classes/PanAz::;
 it has 3 options for level compensation:
 code::
 s.meter; s.scope;

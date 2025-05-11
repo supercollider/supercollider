@@ -19,11 +19,18 @@ An amplitude multiplier for all channels
 argument:: center
 Shift the centre of the distribution.
 argument:: levelComp
-level compensation based on number of inArray channels:
-false or floating point 0.0 is no compensation,
-true or floating point 0.5 is equal power compensation,
-and floating point 1.0 is equal amplitude compensation.
-(See discussion below)
+a flag or numeric value:
+
+list::
+##code::true:: :  maintain equal power, keeping overall loudness the same.
+##code::false:: : off / no level change,
+##float between code::0.0:: and code::1.0:: : smooth tuning of levelComp factor:
+list::
+##code::0.0:: is none -> factor 1
+##code::0.5:: is equal power -> factor (1/n).squared
+##code::1.0:: is equal amplitude -> factor (1/n)
+::
+::
 
 method:: arFill
 In analogy to Mix:arFill, this method takes a function that produces the channels. The counting index is passed to it.
@@ -109,7 +116,7 @@ Splay.ar(ins, spread, level / ins.size, center, levelComp: false);
 Splay.ar(ins, spread, level, center, levelComp: false);
 Splay.ar(ins, spread, level, center, levelComp: 0);
 
-// levelComp by float: level / (numchans ** levelComp),
+// levelComp by float: level / (numchans.pow(levelComp),
 // so 0.0 is no compensation: level / 1;
 //    0.5 is equal power : level / ( numchans.sqrt)
 //    1.0 is equal amplitude : level / ( numchans)
