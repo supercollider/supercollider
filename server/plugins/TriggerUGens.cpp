@@ -118,12 +118,12 @@ struct TDelay : public Unit {
 
 struct ZeroCrossing : public Unit {
     float mLevel, m_prevfrac, m_previn;
-    int32 mCounter;
+    long mCounter;
 };
 
 struct Timer : public Unit {
     float mLevel, m_prevfrac, m_previn;
-    int32 mCounter;
+    long mCounter;
 };
 
 struct Sweep : public Unit {
