@@ -25,6 +25,7 @@
 #include "ByteCodeArray.h"
 #include "Opcodes.h"
 #include "AdvancingAllocPool.h"
+#include "SpecialSelectorsOperatorsAndClasses.h"
 
 
 enum { rwPrivate = 0, rwReadOnly = 1, rwWriteOnly = 2, rwReadWrite = 3 };

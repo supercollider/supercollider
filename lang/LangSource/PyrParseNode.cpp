@@ -42,6 +42,7 @@
 #include "SC_Win32Utils.h"
 #include "SC_LanguageConfig.hpp"
 #include "SC_Codecvt.hpp"
+#include "SpecialSelectorsOperatorsAndClasses.h"
 
 namespace fs = std::filesystem;
 
@@ -286,13 +287,11 @@ void compilePushVar(PyrParseNode* node, PyrSymbol* varName) {
 
         case varClass: {
             const auto indexOffset = findResult.index + slotRawInt(&findResult.classobj->classVarIndex);
-            if (indexOffset < (1 << 12)) {
+            if (PushClassVar.validNibble(indexOffset))
                 PushClassVar.emit(indexOffset);
-            } else {
-                const Byte highBits = (indexOffset >> 8) & 255;
-                const Byte lowBits = indexOffset & 255;
-                PushClassVarX.emit(Operands::Class { highBits }, Operands::Index { lowBits });
-            }
+            else
+                PushClassVarX.emit(Operands::UnsignedInt<16, 1>::fromFull(indexOffset),
+                                   Operands::UnsignedInt<16, 0>::fromFull(indexOffset));
         } break;
 
         case varConst: {
@@ -3415,7 +3414,6 @@ void compileAssignVar(PyrParseNode* node, PyrSymbol* varName, bool drop) {
                 Drop.emit();
             }
         } else {
-            // TODO: why can't we use the shorter StoreClassVar here? It breaks for some reason.
             StoreClassVarX.emit(Operands::UnsignedInt<16, 1>::fromFull(index),
                                 Operands::UnsignedInt<16, 0>::fromFull(index));
         }

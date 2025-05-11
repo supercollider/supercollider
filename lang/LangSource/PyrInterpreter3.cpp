@@ -38,6 +38,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
+#include "SpecialSelectorsOperatorsAndClasses.h"
 
 #include <boost/chrono.hpp>
 
@@ -1051,8 +1052,8 @@ HOT void Interpret(VMGlobals* g) {
             }
 
             InterpretOpcode(PushClassVarX) {
-                const auto [classIndex, varIndex] = PushClassVarX.pullOperandsFromInstructions(ip);
-                slotCopy(++sp, &g->classvars->slots[(classIndex << 8) | varIndex]);
+                const auto [i1, i0] = PushClassVarX.pullOperandsFromInstructions(ip);
+                slotCopy(++sp, &g->classvars->slots[i1.asInt(i0)]);
                 dispatch_opcode;
             }
 
@@ -1093,8 +1094,8 @@ HOT void Interpret(VMGlobals* g) {
             }
 
             InterpretOpcode(StoreClassVarX) {
-                const auto [indexOfName, indexOfClass] = StoreClassVarX.pullOperandsFromInstructions(ip);
-                slotCopy(&g->classvars->slots[indexOfName.asInt(indexOfClass)], sp);
+                const auto [i1, i0] = StoreClassVarX.pullOperandsFromInstructions(ip);
+                slotCopy(&g->classvars->slots[i1.asInt(i0)], sp);
                 g->gc->GCWrite(g->classvars, sp);
                 dispatch_opcode;
             }

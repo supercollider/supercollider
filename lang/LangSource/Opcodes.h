@@ -18,11 +18,8 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#pragma once
-#include "OpcodesTypes.h"
 
-
-/* (Jordan Henderson)
+/* Jordan Henderson 2025
  --- Credit goes to Moss Heim (2018-06-19) for their work deciphering and documenting what all the bytecodes do.
  --- This struct just turns the documentation into code and copies the descriptions given into comments.
 
@@ -34,22 +31,26 @@ However, this does require some more advanced C++ ideas.
 
 Opcodes come in three types:
 * Simple
-   - These are bytecodes (Byte) followed by zero or more operands (Byte)
-   - The number of operands is always known.
+   - These are bytecodes followed by zero or more operands
+   - The number of operands is always known from the first byte.
    - They bytecode takes up exactly one byte, as do the operands.
    - e.g., SendMsgX, which has the argument count, keyword argument count, and special index as operands.
-* Loop
-   - These start with the operand '8F' and are used by the compiler to implement loop optimisations
+* Extended
+   - These start with the operand '8F' and are used by the compiler to mostly implement loop optimisations.
+   - The number of operands can be told from their second byte which specifies what they do.
 * SecondNibble
    - These use the second nibble of the bytecode as a number or enum
 
 Most opcodes are simple.
-
 */
 
 
-namespace Opcode {
+#pragma once
+#include "OpcodeDetails.h"
+#include "OpcodeOperands.h"
 
+
+namespace Opcode {
 
 /// Push a class to the top of the stack.
 /// 'Special' classes are handled by a different op code (PushSpecialClass).
@@ -82,13 +83,14 @@ static constexpr details::SimpleOpSpec<0x04, Operands::Index> PushLiteralX { "Pu
 /// Push a class variable of a class to the top of the stack.
 /// The second byte determines the class to use and the third byte determines the index of the variable to push.
 /// Only used in class method code.
-static constexpr details::SimpleOpSpec<0x05, Operands::Class, Operands::Index> PushClassVarX { "PushClassVarX" };
+static constexpr details::SimpleOpSpec<0x05, Operands::UnsignedInt<16, 1>, Operands::UnsignedInt<16, 0>> PushClassVarX {
+    "PushClassVarX"
+};
 
 /// Push a 'special' (intrinsic) class onto the stack.
 /// The second instruction byte indicates the index of the intrinsic class within the internal array
 /// `gSpecialClasses`.
 static constexpr details::SimpleOpSpec<0x06, Operands::SpecialClass> PushSpecialClass { "PushSpecialClass" };
-
 
 /// Store the top of the stack to an instance variable of the parent class.
 /// The second byte determines the index of the variable.
@@ -110,7 +112,6 @@ static constexpr details::SimpleOpSpec<0x09, Operands::UnsignedInt<16, 1>, Opera
         "StoreClassVarX",
     };
 
-
 /// Send a message.
 /// The second instruction byte indicates the number of normal arguments (TODO: document normal vs key args).
 /// The third instruction byte indicates the number of keyword arguments.
@@ -118,8 +119,8 @@ static constexpr details::SimpleOpSpec<0x09, Operands::UnsignedInt<16, 1>, Opera
 /// is known at compile-time).
 /// The stack will be modified so that all the keyword and normal arguments are consumed; the top of the
 /// stack
-/// will then be the result of the call. \n
-/// { meow(x, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14) }.def.dumpByteCodes \n
+/// will then be the result of the call.
+/// { meow(x, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14) }.def.dumpByteCodes
 /// { meow(x, a: 5) }.def.dumpByteCodes
 static constexpr details::SimpleOpSpec<0x0A, Operands::ArgumentCount, Operands::KwArgumentCount, Operands::Index>
     SendMsgX { "SendMsgX" };
@@ -128,7 +129,6 @@ static constexpr details::SimpleOpSpec<0x0A, Operands::ArgumentCount, Operands::
 /// `super.meow(...)`.;
 static constexpr details::SimpleOpSpec<0x0B, Operands::ArgumentCount, Operands::KwArgumentCount, Operands::Index>
     SendSuperMsgX { "SendSuperMsgX" };
-
 
 /// Send a 'special message' to an object.
 /// The second and third instruction bytes respectively indicate the numbers of normal and keyword arguments.
@@ -142,8 +142,8 @@ static constexpr details::SimpleOpSpec<0x0C, Operands::ArgumentCount, Operands::
 /// Send a special unary arithmetic message to the object on the top of the stack.
 /// If the object is a primitive type, the message is executed in an optimized manner.
 /// Otherwise, it becomes a normal message send.
-/// The second instruction byte indicates the value of the unary arithmetic message opcode, as defined in Opcodes.h.
-/// \n { 5.0.reciprocal }.def.dumpByteCodes
+/// The second instruction byte indicates the value of the unary arithmetic message opcode
+/// { 5.0.reciprocal }.def.dumpByteCodes
 static constexpr details::SimpleOpSpec<0x0D, Operands::UnaryMath> SendSpecialUnaryArithMsgX {
     "SendSpecialUnaryArithMsgX"
 };
@@ -151,8 +151,8 @@ static constexpr details::SimpleOpSpec<0x0D, Operands::UnaryMath> SendSpecialUna
 /// Send a special binary arithmetic message to the two objects on the top of the stack.
 /// If the receiver is a primitive type, the message is executed in an optimized manner.
 /// Otherwise, it becomes a normal message send.
-/// The second instruction byte indicates the value of the binary arithmetic message opcode, as defined in
-/// Opcodes.h. \n { 5.0.pow(5) }.def.dumpByteCodes
+/// The second instruction byte indicates the value of the binary arithmetic message opcode
+/// . { 5.0.pow(5) }.def.dumpByteCodes
 static constexpr details::SimpleOpSpec<0x0E, Operands::BinaryMath> SendSpecialBinaryArithMsgX {
     "SendSpecialBinaryArithMsgX"
 };
@@ -162,7 +162,6 @@ static constexpr details::SimpleOpSpec<0x0E, Operands::BinaryMath> SendSpecialBi
 /// One of thisProcess, thisThread, thisMethod, thisFunctionDef, thisFunction.
 /// In the case of thisFunction, a new (anonymous) closure is allocated. [TODO - how does this work?]
 static constexpr details::SimpleOpSpec<0x0F, Operands::PseudoVar> SpecialOpcode { "SpecialOpcode" };
-
 
 /// Push an instance variable from the current class to the top of the stack.
 /// The index of the variable is given by the second nibble of the instruction.
@@ -195,7 +194,6 @@ static constexpr details::SimpleOpSpec<0x28, Operands::UnsignedInt<8, 0>> PushCo
 static constexpr details::SimpleOpSpec<0x29, Operands::UnsignedInt<16, 1>, Operands::UnsignedInt<16, 0>>
     PushConstant16 { "PushConstant16" };
 
-
 /// Push a constant from the current frame onto the stack.
 /// The second, third and fourth instruction bytes interpreted as a 24-bit integer indicate the index of the
 /// constant. This message is used instead of 29 PushConstant when the index is >= 2^16.
@@ -217,7 +215,6 @@ static constexpr details::SimpleOpSpec<0x2C, Operands::Int<8, 0>> PushInteger8 {
 static constexpr details::SimpleOpSpec<0x2D, Operands::Int<16, 1>, Operands::Int<16, 0>> PushInteger16 {
     "PushInteger16"
 };
-
 
 /// Push an 24 bit integer (signed) onto the stack from the operand.
 static constexpr details::SimpleOpSpec<0x2E, Operands::Int<24, 2>, Operands::Int<24, 1>, Operands::Int<24, 0>>
@@ -249,7 +246,6 @@ static constexpr details::SecondNibble12bitSpec<0x50, 0x60> PushClassVar { "Push
 /// Pushes 'this' to the top of the stack.
 static constexpr details::SimpleOpSpec<0x60> PushSpecialValueThis { "PushSpecialValueThis" };
 
-
 /// If the top of the stack is an integer, this instruction decrements it by one.
 /// Otherwise, the integer value one is pushed to the top of the stack and prSubNum is called.
 /// { |x| x - 1; }.def.dumpByteCodes
@@ -263,7 +259,6 @@ static constexpr details::SecondNibbleViaEnumOpSpec<0x62, 0x6B, Operands::Specia
 /// If the top of the stack is an integer, this instruction increments it by one.
 /// Otherwise, the integer value one is pushed to the top of the stack and prAddNum is called.
 static constexpr details::SimpleOpSpec<0x6B> PushOneAndAddOne { "PushOneAndAddOne" };
-
 
 /// Pushes a commonly used value to the top of the stack.
 /// True, False, Nil_, or Inf.
@@ -285,7 +280,6 @@ static constexpr details::SecondNibbleOpSpec<0x70, 0x80> StoreInstVar { "StoreIn
 /// { var a, b, c, d, e, f, g, h, i; d = 5; d }.def.dumpByteCodes
 /// { var a, b, c, d, e, f, g, h, i; { d = 5; d }.def.dumpByteCodes }.value
 static constexpr details::SecondNibbleOpSpec<0x80, 0x88, Operands::Index> StoreTempVar { "StoreTempVar" };
-
 
 /// Pushes an instance variable of the current receiver to the top of the stack and calls a special method on it.
 /// The second instruction byte indicates the index of the instance variable in the class.
@@ -316,7 +310,6 @@ static constexpr details::SimpleOpSpec<0x8A, Operands::Index> PushAllButFirstArg
 static constexpr details::SimpleOpSpec<0x8B, Operands::Index> PushAllArgsAndSendSpecialMsg {
     "PushAllArgsAndSendSpecialMsg"
 };
-
 
 /// Push all arguments except the first to the top of the stack in order given, and call a special method.
 /// The second instruction byte indicates the index of the selector name in the list of special selectors
@@ -378,7 +371,6 @@ static constexpr struct IntegerDo {
     }
 } IntegerDo;
 
-
 /// The frame of this method holds the receiver (loop limit), the function argument, and two accumulators (`i`, `j`).
 /// `i` is used as the reverse accumulator, while `j` is the forward accumulator.
 static constexpr struct IntegerReverseDo {
@@ -403,7 +395,6 @@ static constexpr struct IntegerReverseDo {
         DropAndJumpBackToLoop.emit();
     }
 } IntegerReverseDo;
-
 
 /// Implements `Integer:-for`: `8F 05 8F 06 8F 10`. The frame of this method holds the receiver (loop start),
 /// the loop limit, the function argument, the accumulator, the loop count accumulator, and `stepval`.
@@ -456,7 +447,6 @@ static constexpr struct IntegerForBy {
     }
 
 } IntegerForBy;
-
 
 /// Implements `ArrayedCollection:-do`. The frame of this method holds the receiver, the
 /// apply function, and the loop accumulator (initially 0).
@@ -546,7 +536,6 @@ static constexpr struct FloatDo {
     }
 } FloatDo;
 
-
 static constexpr struct QuestionMark {
     details::SimpleOpSpec<0x16> IsNil { "IsNil" };
     void emit() const {
@@ -607,7 +596,6 @@ static constexpr struct Switch {
     }
 } Switch;
 
-
 static constexpr struct FloatDoReverse {
     details::SimpleOpSpec<0x13> Init { "FloatDoReverse-Init" };
     details::SimpleOpSpec<0x14> LoopOrReturn { "FloatDoReverse-LoopOrReturn" };
@@ -662,13 +650,13 @@ static constexpr struct NumberForSeries {
 /// Pop and store the top of the stack in a class variable of the current class.
 /// The index of the class variable is found by interpreting the second nibble of the first byte and the entire
 /// second byte as a 12-bit integer. Only used in class code. Meta_String.findMethod('initClass').dumpByteCodes
+/// Note: this also 'drop' in the interpreter.
 static constexpr details::SecondNibble12bitSpec<0x90, 0xA0> StoreClassVar { "StoreClassVar" };
 
 /// Push this to the top of the stack and call a method taking one argument.
 /// The second instruction byte determines the index of the selector within the block.
 /// { this.hark }.def.dumpByteCodes
 static constexpr details::SimpleOpSpec<0xA0, Operands::Index> SendMsgThisOpt { "SendMsgThisOpt" };
-
 
 /// Call a method taking a number of arguments.
 /// The second nibble of the first instruction byte determines the number of arguments passed to the method.
@@ -690,7 +678,6 @@ static constexpr details::SecondNibbleNonZeroOpSpec<0xB2, 0xC0, Operands::Index>
 /// The second instruction byte determines the index of the special method within gSpecialSelectors.
 /// { this.init }.def.dumpByteCodes
 static constexpr details::SimpleOpSpec<0xC0, Operands::Index> SendSpecialMsgThisOpt { "SendSpecialMsgThisOpt" };
-
 
 /// NOTE: because zero args is handled elsewhere, you must subtract one from the total number of args before setting
 /// Call a special method taking a number of arguments.
@@ -761,7 +748,6 @@ static constexpr details::SimpleOpSpec<0xFA, Operands::UnsignedInt<16, 1>, Opera
 /// is the value of the second and third instruction bytes interpreted as a 16-bit integer. If the top of the stack
 /// is False, pop and discard it. If the top of the stack is neither True nor False, call mustBeBoolean on it
 /// without popping the value.
-/// TODO: This does not appear to be used.
 static constexpr details::SimpleOpSpec<0xFB, Operands::UnsignedInt<16, 1>, Operands::UnsignedInt<16, 0>>
     JumpIfTruePushTrue { "JumpIfTruePushTrue" };
 
@@ -788,343 +774,4 @@ static constexpr details::SimpleOpSpec<0xFE, Operands::TrinaryMath> SpecialBinar
 
 /// Sets the tail call state to 1. TODO what does this mean?
 static constexpr details::SimpleOpSpec<0xFF> TailCallReturnFromMethod { "TailCallReturnFromMethod" };
-};
-
-
-/* special unary math operators */
-
-enum {
-    opNeg,
-    opNot,
-    opIsNil,
-    opNotNil,
-    opBitNot,
-    opAbs,
-    opAsFloat,
-    opAsInteger,
-    opCeil, // 5
-    opFloor,
-    opFrac,
-    opSign,
-    opSquared,
-    opCubed, // 10
-    opSqrt,
-    opExp,
-    opRecip,
-    opMIDICPS,
-    opCPSMIDI, // 15
-
-    opMIDIRatio,
-    opRatioMIDI,
-    opDbAmp,
-    opAmpDb,
-    opOctCPS, // 20
-    opCPSOct,
-    opLog,
-    opLog2,
-    opLog10,
-    opSin, // 25
-    opCos,
-    opTan,
-    opArcSin,
-    opArcCos,
-    opArcTan,
-    opSinH,
-    opCosH, // 30
-    opTanH,
-    opRand,
-    opRand2,
-    opLinRand,
-    opBiLinRand,
-
-    //	opExpRand,
-    //	opBiExpRand,
-    opSum3Rand,
-    //	opGammaRand,
-    //	opGaussRand,
-    //	opPoiRand,
-
-    opDistort,
-    opSoftClip,
-    opCoin,
-
-    opDigitValue,
-    opSilence,
-    opThru,
-    opRectWindow,
-    opHanWindow,
-    opWelchWindow,
-    opTriWindow,
-
-    opRamp,
-    opSCurve,
-
-    opNumUnarySelectors
-};
-
-// #define IS_UNARY_BOOL_OP(op) ((op) >= opCoin && (op) <= opOdd)
-#define IS_BINARY_BOOL_OP(op) ((op) >= opEQ && (op) <= opGE)
-
-
-/* special binary math operators */
-enum {
-    opAdd,
-    opSub,
-    opMul,
-    opIDiv,
-    opFDiv,
-    opMod,
-    opEQ,
-    opNE,
-    opLT,
-    opGT,
-    opLE,
-    opGE,
-    // opIdentical,
-    // opNotIdentical,
-
-    opMin,
-    opMax,
-    opBitAnd,
-    opBitOr,
-    opBitXor,
-    opLCM,
-    opGCD,
-    opRound,
-    opRoundUp,
-    opTrunc,
-    opAtan2,
-    opHypot,
-    opHypotx,
-    opPow,
-    opShiftLeft,
-    opShiftRight,
-    opUnsignedShift,
-    opFill,
-    opRing1, // a * (b + 1) == a * b + a
-    opRing2, // a * b + a + b
-    opRing3, // a*a*b
-    opRing4, // a*a*b - a*b*b
-    opDifSqr, // a*a - b*b
-    opSumSqr, // a*a + b*b
-    opSqrSum, // (a + b)^2
-    opSqrDif, // (a - b)^2
-    opAbsDif, // |a - b|
-    opThresh,
-    opAMClip,
-    opScaleNeg,
-    opClip2,
-    opExcess,
-    opFold2,
-    opWrap2,
-    opFirstArg,
-    opRandRange,
-    opExpRandRange,
-
-    opNumBinarySelectors
-};
-
-/* other special math operators */
-enum {
-    /* 3 operands */
-    opDivz,
-    opClip,
-    opWrap,
-    opFold,
-    opRampMult,
-    opMix,
-    /* 4 operands */
-    opPoly3,
-    /* 5 operands */
-    opMapRange
-};
-enum {
-    opmNew,
-    opmInit,
-    opmAt,
-    opmPut,
-    opmNext,
-    opmReset,
-    opmValue,
-    opmCopyToEnd, // used by multi assign
-    opmAdd, // used by dynamic list
-    // opmIsNil,
-    // opmNotNil,
-    opmSize,
-    opmClass,
-    opmIf,
-    opmWhile,
-    opmFor,
-    opmAnd,
-    opmOr,
-    opmCase,
-    opmSwitch,
-    opmIdentical,
-    opmNotIdentical,
-    opmPrint,
-    opmRemove,
-    opmIndexOf,
-    opmWrapAt,
-    opmClipAt,
-    opmFoldAt,
-    opmWrapPut,
-    opmClipPut,
-    opmFoldPut,
-    opmDo,
-    opmCollect,
-    opmSelect,
-    opmReject,
-    opmAny,
-    opmEvery,
-    opmFind,
-    opmChoose,
-    opmValueList,
-    opmAddFirst,
-    opmPrimitiveFailed,
-    opmSubclassResponsibility,
-    opmShouldNotImplement,
-    opmNotYetImplemented,
-    opmDoesNotUnderstand,
-
-    opmAtSign,
-    opmWrapAtSign,
-    opmClipAtSign,
-    opmFoldAtSign,
-
-    opmNewClear,
-    opmNewCopyArgs,
-    opmMultiNew,
-    opmMultiNewList,
-    opmAR,
-    opmKR,
-    opmIR,
-
-    opmCopy,
-    opmPerformList,
-    opmIsKindOf,
-    opmPostln,
-    opmAsString,
-
-    opmEnvirGet,
-    opmEnvirPut,
-
-    opmHalt,
-    opmForBy,
-    opmForSeries,
-    opmReverseDo,
-    opmLoop,
-
-    opmNonBooleanError,
-
-    opmPlusPlus,
-    opmLTLT,
-    opmQuestionMark,
-    opmDoubleQuestionMark,
-    opmExclamationQuestionMark,
-
-    opmYield,
-    opmName,
-    opmMulAdd,
-
-    opmSeries,
-
-    opmNumSpecialSelectors
-};
-
-
-enum {
-    opgProcess,
-    opgMethod,
-    opgFunctionDef,
-    opgFunction,
-    opgThread,
-    // opgSampleRate,
-    // opgAudioClock,
-    // opgLogicalClock,
-
-    opgNumPseudoVars
-};
-
-/* selector types */
-enum {
-    selNormal,
-    selSpecial,
-    selUnary,
-    selBinary,
-    selIf,
-    selWhile,
-    selAnd,
-    selOr,
-    selCase,
-    selSwitch,
-    selLoop,
-    selSuperNew,
-    selQuestionMark,
-    selDoubleQuestionMark,
-    selExclamationQuestionMark,
-
-    selNumSelectorTypes
-};
-
-
-/*
-    special classes:
-    Object, List, Number, Int, Float, Signal, Complex, Point
-*/
-
-
-enum {
-    op_class_object,
-    op_class_symbol,
-    op_class_nil,
-    op_class_boolean,
-    op_class_true,
-    op_class_false,
-    op_class_magnitude,
-    op_class_char,
-    op_class_number,
-    op_class_complex,
-    op_class_simple_number,
-    op_class_int,
-    op_class_float,
-    op_class_method,
-    op_class_fundef,
-    op_class_stream,
-    op_class_func,
-    op_class_frame,
-    op_class_process,
-    op_class_main,
-    op_class_class,
-    op_class_string,
-    op_class_collection,
-    op_class_sequenceable_collection,
-    op_class_arrayed_collection,
-    op_class_array,
-    op_class_int8array,
-    op_class_int16array,
-    op_class_int32array,
-    op_class_floatarray,
-    op_class_signal,
-    op_class_doublearray,
-    op_class_symbolarray,
-    op_class_list,
-    op_class_linkedlist,
-    op_class_bag,
-    op_class_set,
-    op_class_identityset,
-    op_class_dictionary,
-    op_class_identitydictionary,
-    op_class_sortedlist,
-    op_class_synth,
-    op_class_ref,
-    op_class_environment,
-    op_class_event,
-    op_class_wavetable,
-    op_class_env,
-
-    op_class_routine,
-    op_class_color,
-    op_class_rect,
-
-    op_NumSpecialClasses
 };

@@ -37,6 +37,7 @@
 #include "SC_InlineBinaryOp.h"
 #include "MiscInlineMath.h"
 #include "PyrKernelProto.h"
+#include "SpecialSelectorsOperatorsAndClasses.h"
 
 #include <limits>
 
