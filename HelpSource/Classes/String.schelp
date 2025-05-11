@@ -299,7 +299,7 @@ Returns code::this:: and code::path:: concatenated. If code::path:: was a PathNa
 PathName; otherwise, it is a String.
 
 note::
-Avoid using code::+/+:: to separate URL addresses, as this can lead to unintended concatenation issues.
+Do not use code::+/+:: in URLs or in other situations where forward slash is expected. code::+/+:: should only be used with filesystem paths, where it will resolve to either forward or backward slash, depending on the operating system's requirements.
 ::
 
 argument::path
