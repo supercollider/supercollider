@@ -240,29 +240,31 @@ This method may return a new ArrayedCollection.
 For this reason, always assign the result of code::.insert:: to a variable - never depend on code::.insert:: changing the receiver.
 code::
 // In this case, a new object is returned  
-// because the maxSize of `z` is 4,  
-// and inserting a new item exceeds this limit. 
-z = [1, 2, 3, 4];     // -> [1, 2, 3, 4]
+// because adding a new item would exceed the fixed maximum size of 4, 
+// which is set at the instantiation of the array z and 
+// cannot be changed at a later stage.
+// (By default, an array initialized with a size between 1 and 4 
+// retains a maximum size of 4):
+z = [1, 2, 3, 4]; // -> [1, 2, 3, 4]
 y = z.insert(1, 999); // -> [1, 999, 2, 3, 4]
-z                     // -> [1, 2, 3, 4]
-y                     // -> [1, 999, 2, 3, 4]
-(z == y)              // -> false
-(z === y)             // -> false
+z // -> [1, 2, 3, 4]
+y // -> [1, 999, 2, 3, 4]
+(z == y) // -> false
+(z === y) // -> false
 
-// In this case, the same object is returned  
-// because the maxSize of `z` is 4,  
-// and inserting a new item does not exceed this limit. 
-z = [1, 2, 3];        // -> [1, 999, 2, 3]
+// In this case, the same object is returned 
+// because the new number of elements does not exceed 
+// the number of elements at instantiation:
+z = [1, 2, 3]; // -> [1, 2, 3]
 y = z.insert(1, 999); // -> [1, 999, 2, 3]
-z;                    // -> [1, 999, 2, 3]
-y;                    // -> [1, 999, 2, 3]
-(z == y);             // -> true
-(z === y);            // -> true
+z; // -> [1, 999, 2, 3]
+y; // -> [1, 999, 2, 3]
+(z == y); // -> true
+(z === y); // -> true
 ::
 
 method::boundedInsert
-Same as link::#-insert::, but removes the receiver's last element before inserting strong::item::.
-This changes the receiver but maintains its size.
+Changes the receiver but maintains its size, therefore unlike code::.insert:: it is not necessary to reassign the result of code::.boundedInsert::.
 
 code::
 // .boundedInsert never returns a new object  
