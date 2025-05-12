@@ -3,12 +3,11 @@
 
 + String {
 
-	// // backwards compat to PathName:
+	// new final conversion:
 	asPath { ^this.standardizePath }
-	fullPath { ^this.asPath }
 
-	// bad name, old macOS ...
-	colonIndices { ^this.separatorIndices }
+	// backwards compat to PathName - needed just in case?
+	fullPath { ^this.asPath }
 
 	lastSeparatorIndex {
 		this.reverseDo { |char, revIndex|
@@ -18,7 +17,6 @@
 		};
 		^-1
 	}
-	lastColonIndex { ^this.lastSeparatorIndex }
 
 	separatorIndices {
 		var res = List[];
@@ -26,50 +24,19 @@
 		^res
 	}
 
-	//
+	// ok to leave this here is String?
 	fileName { ^this.basename }
 	fileNameWithoutExtension { ^this.basename.splitext[0] }
 	fileNameWithoutDoubleExtension {
 		^this.basename.splitext[0].splitext[0]
 	}
+	folderName { ^this.dirname.basename }
+
 	extension {
 		^this.splitext.last ? ""
 	}
 
-	// PathName:pathOnly ended with separator
-	pathOnly {
-		^this.dirname +/+ Platform.pathSeparator
-	}
-	// not sure this is useful in any way.
-	// but backwards compat.
-	diskName {
-		^this.copyRange(0, this.colonIndices.first - 1)
-	}
-
-	isRelativePath { ^this.isAbsolutePath.not }
 	isAbsolutePath { ^this.at(0).isPathSeparator }
-
-	asRelativePath { |relativeTo|
-		var r, a, b, i, mePath;
-		mePath = this.absolutePath;
-		relativeTo = (relativeTo ? PathName.scroot ).absolutePath;
-		r = Platform.pathSeparator;
-
-		a = mePath.split(r);
-		b = relativeTo.split(r);
-
-		i = 0;
-		while { a[i] == b[i] and: { i < a.size } } {
-			i = i + 1;
-		};
-		^(".." ++ r).dup(b.size - i).join ++ a[i..].join(r)
-	}
-
-	allFolders {
-		^this.dirname.split.selectAs (_ != "", List)
-	}
-
-	folderName { ^this.dirname.basename }
 
 	nextName {
 		var name, ext;
@@ -130,12 +97,12 @@
 	}
 
 	parentPath {
-		var ci = this.colonIndices;
+		var ci = this.separatorIndices;
 
 		^if((this.last.isPathSeparator) and: { ci.size > 1 }, {
 			this.copyRange(0, ci[ci.size - 2])
 		}, {
-			this.copyRange(0, this.lastColonIndex)
+			this.copyRange(0, this.lastSeparatorIndex)
 		})
 	}
 
@@ -169,5 +136,4 @@
 		doc.string = str.collection;
 		^doc
 	}
-
 }

@@ -1,84 +1,146 @@
-PathName {
+/*
+Path is an update to the PathName class, modeled on Python Path/pathlib.
+It collects all path-related methods in one consistent interface.
+For backwards compatibility, PathName is kept as a subclass with its
+old interface; PathName and its suboptimal methods will be deprecated.
 
-	var <fullPath;
+Path will also use some path-related functionality of String and File.
+Because all path-accessing primitives expect a String as input,
+calls to them will convert Path (and PathName) objects to Strings
+with .asPath.
+*/
 
+Path {
+	var <str;
+
+	// should these be settable?
 	classvar <>scroot;
 	classvar <>tmp;
 
 	*new { | path = "" |
-		^super.newCopyArgs(path.standardizePath)
+		^super.newCopyArgs(path)
 	}
+
+	*home { ^Platform.userHomeDir }
+	*cwd { ^File.getcwd }
 
 	*initClass {
 		scroot = File.getcwd;
 		tmp = Platform.defaultTempDir;
 		if(tmp.isNil, {
-			"No valid temp directory found. Please set it manually using PathName.tmp_".warn
+			"Path: No valid temp directory found. Please set it manually using Path.tmp_".warn
 		})
 	}
 
-	asPath { ^fullPath }
+	// call to convert to string
+	asPath { ^str.standardizePath }
 
-	// old PathName methods, colon was Mac OS9 path separator...
-	colonIndices { ^fullPath.separatorIndices }
-	lastColonIndex { ^fullPath.lastSeparatorIndex }
-	// new better names
-	separatorIndices { ^fullPath.separatorIndices }
-	lastSeparatorIndex { ^fullPath.lastSeparatorIndex }
+	fileName { ^str.fileName }
+	fileNameWithoutExtension { ^str.fileNameWithoutExtension }
+	fileNameWithoutDoubleExtension { ^str.fileNameWithoutDoubleExtension }
+	extension { ^str.extension }
+	// needed for isFile, isFolder distinction
+	dirname { ^str.dirname 	+/+ Platform.pathSeparator }
+	parentPath { ^this.dirname }
+	// need to keep this one?
+	folderName { ^str.dirname.basename }
 
-	fileName { ^fullPath.fileName }
-	fileNameWithoutExtension { ^fullPath.fileNameWithoutExtension }
-	fileNameWithoutDoubleExtension { ^fullPath.fileNameWithoutDoubleExtension }
-	extension { ^fullPath.extension }
+	// nested dirs,not starting slash
+	parts { ^str.split(Platform.pathSeparator).select(_.notEmpty) }
 
-	dirname { ^fullPath.dirname }
-	pathOnly { ^fullPath.pathOnly }
+	// conversions
+	absolutePath { ^str.absolutePath }
+	relativeTo { |path2| ^str.asRelativePath(path2) }
+	withName { |name| ^this.class.new(str.dirname +/+ name) }
 
-	diskName { ^fullPath.diskName }
+	// tests
+	isAbsolute { ^str.isAbsolutePath }
+	isRelative { ^str.isAbsolutePath.not }
+	exists { ^File.exists(str) }
+	== { |path2| ^str == path2.str }
 
-	isRelativePath { ^fullPath.isRelativePath }
-	isAbsolutePath { ^fullPath.isAbsolutePath }
-	absolutePath { ^fullPath.absolutePath }
+	//// we need trailing slash for that
+	isFolder { ^str.last == Platform.pathSeparator }
+	isDir { ^str.last == Platform.pathSeparator }
+	isFile { ^str.last != Platform.pathSeparator }
 
-	asRelativePath { |relativeTo| ^fullPath.asRelativePath(relativeTo) }
-	asAbsolutePath { ^fullPath.asAbsolutePath }
+	// not sure these are needed?
+	separatorIndices { ^str.separatorIndices }
+	lastSeparatorIndex { ^str.lastSeparatorIndex }
 
-	allFolders { ^fullPath.allFolders }
+	//
+	nextName { ^str.nextName }
+	noEndNumbers { ^str.noEndNumbers }
+	endNumber { ^str.endNumber }
+	endNumberIndex { ^str.endNumberIndex }
 
-	folderName { ^fullPath.folderName }
-
-	nextName { ^fullPath.nextName }
-	noEndNumbers { ^fullPath.noEndNumbers }
-	endNumber { ^fullPath.endNumber }
-	endNumberIndex { ^fullPath.endNumberIndex }
-
-	== { |other| { ^fullPath.absolutePath }
-		^other.respondsTo(\fullPath) and: { other.fullPath == this.fullPath }
-	}
-
-/* concatenation */
+	/* concatenation */
 	+/+ { | path |
-		var otherFullPath = path.respondsTo(\fullPath).if({ path.fullPath }, { path.asString });
-		^this.class.new(fullPath +/+ otherFullPath)
+		var otherstr = path.respondsTo(\str).if({ path.str }, { path.asString });
+		^this.class.new(str +/+ otherstr)
+	}
+	// search
+	match { ^str.pathMatch }
+	entries { ^str.entries }
+	files { ^str.files }
+	folders { ^str.folders }
+	deepFiles { ^str.deepFiles }
+
+	filesDo { |func| ^str.filesDo(func) }
+
+	// text output
+	streamTree { | str, tabs = 0 | str.streamTree(str, tabs) }
+	dumpTree { str.dumpTree }
+	printOn { | stream | this.storeOn(stream) }
+	storeArgs { ^[str] }
+	dumpToDoc { | title="Untitled" | str.dumpToDoc(title) }
+
+}
+
+PathName : Path {
+	// these methods are only for backwards compatibility,
+	// to be deprecated at some point.
+	// old instvar name
+	*new { | path = "" |
+		^super.newCopyArgs(path.standardizePath)
 	}
 
-	pathMatch { ^fullPath.pathMatch }
-	entries { ^fullPath.entries }
-	isFolder { ^fullPath.isFolder }
-	isFile { ^fullPath.isFile }
+	fullPath { ^str }
 
-	files { ^fullPath.files }
-	folders { ^fullPath.folders }
-	deepFiles { ^fullPath.deepFiles }
+	// old methods, colon was Mac OS9 path separator...
+	colonIndices { ^str.separatorIndices }
+	lastColonIndex { ^str.lastSeparatorIndex }
 
-	parentPath { ^fullPath.parentPath }
+	isFolder { ^str.last.isPathSeparator }
 
-	filesDo { |func| ^fullPath.filesDo(func) }
-
-	streamTree { | str, tabs = 0 | fullPath.streamTree(str, tabs) }
-	dumpTree { fullPath.dumpTree }
-	printOn { | stream |
-		stream << "PathName(" << fullPath.cs << ")"
+	isFile {
+		var path = str.pathMatch;
+		^if(path.notEmpty, {
+			path.at(0).last.isPathSeparator.not
+		}, { false })
 	}
-	dumpToDoc { | title="Untitled" | fullPath.dumpToDoc(title) }
+
+	// PathName:pathOnly ended with separator
+	pathOnly {
+		^str.dirname +/+ Platform.pathSeparator
+	}
+	// not sure this is useful in any way, but backwards compat.
+	diskName {
+		^str.copyRange(0, this.separatorIndices.first - 1)
+	}
+
+	allFolders { ^List.newFrom(this.parts.drop(-1)) }
+
+	folderName { ^str.folderName }
+
+	== { |other| { ^str.absolutePath }
+		^other.respondsTo(\str) and: { other.str == this.str }
+	}
+
+	isRelativePath { ^this.isRelative }
+	isAbsolutePath { ^this.isAbsolute }
+	asRelativePath { |path2| ^str.asRelativePath(path2) }
+
+	parentPath { ^str.parentPath }
+
 }
