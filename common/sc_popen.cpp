@@ -24,7 +24,7 @@
 #    include <array>
 #    include <string>
 
-std::tuple<pid_t, FILE*> sc_popen_shell(std::string&& command, const std::string& type) {
+std::tuple<pid_t, FILE*> sc_popen_shell(std::string command, const std::string& type) {
     std::vector<std::string> argv;
     argv.emplace_back("/bin/sh");
     argv.emplace_back("-c");
@@ -166,7 +166,7 @@ std::tuple<pid_t, FILE*> sc_popen_argv(const std::vector<std::string>& strings, 
     return sc_popen_c(commandLine.data(), type.data());
 }
 
-std::tuple<pid_t, FILE*> sc_popen_shell(std::string&& command, const std::string& type) {
+std::tuple<pid_t, FILE*> sc_popen_shell(std::string command, const std::string& type) {
     command = "cmd /c " + command;
     return sc_popen_c(command.data(), type.data());
 }
