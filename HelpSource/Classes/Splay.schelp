@@ -81,7 +81,7 @@ x.set(\spread, 1,   \center, 0);   // full stereo
 (
 x = { |spread = 1, level = 0.2, center = 0.0|
 	var numchans = 10;
-	Splay.arFill(10,
+	Splay.arFill(numchans,
 		{ |i| SinOsc.ar(LFNoise2.kr(rrand(10, 20), 200, i + 3 * 100))  },
 		spread,
 		level,
@@ -100,7 +100,7 @@ For a full discussion, see link::Classes/LevelComp::;
 here is an overview of the levelComp variants:
 
 code::
-// default is equal power comp: level / ( numchans.sqrt)
+// default is equal power comp: level / (numchans.sqrt)
 Splay.ar(ins, spread, level, center ); // true is default
 // write it explicitly for clarity
 Splay.ar(ins, spread, level, center, levelComp: true);
@@ -116,10 +116,10 @@ Splay.ar(ins, spread, level / ins.size, center, levelComp: false);
 Splay.ar(ins, spread, level, center, levelComp: false);
 Splay.ar(ins, spread, level, center, levelComp: 0);
 
-// levelComp by float: level / (numchans.pow(levelComp),
+// levelComp by float: level / numchans.pow(levelComp),
 // so 0.0 is no compensation: level / 1;
-//    0.5 is equal power : level / ( numchans.sqrt)
-//    1.0 is equal amplitude : level / ( numchans)
+//    0.5 is equal power : level / (numchans.sqrt)
+//    1.0 is equal amplitude : level / (numchans)
 // can be used to tune e.g. between equal power and equal amp:
 Splay.ar(ins, spread, level, center, levelComp: 0.75);
 ::
