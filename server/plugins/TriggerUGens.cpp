@@ -1574,7 +1574,9 @@ void Phasor_Ctor(Phasor* unit) {
 
     unit->m_previn = 0;
     unit->mLevel = IN0(2);
-    Phasor_next_kk(unit, 1);
+
+    unit->mCalcFunc(unit, 1);
+
     unit->m_previn = 0;
     unit->mLevel = IN0(2);
 }
