@@ -13,7 +13,7 @@ LinuxPlatform : UnixPlatform {
 		helpDir = this.systemAppSupportDir++"/Help";
 
 		// Server setup
-		Server.program = "exec scsynth";
+		Server.program = "scsynth";
 
 		// Score setup
 		Score.program = Server.program;
