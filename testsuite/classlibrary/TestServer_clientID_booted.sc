@@ -136,7 +136,7 @@ TestServer_clientID_booted : UnitTest {
 
 		exitCond = CondVar.new;
 		// simulate a remote server process by starting a server process independently of SC
-		serverPid = unixCmd(Server.program + options.asOptionsString, { exitCond.signalOne });
+		serverPid = unixCmd([Server.program] ++ options.asOptionsArray, { exitCond.signalOne });
 
 		// login with standard Server.remote method to test for
 		remote1 = Server.remote(\remoteLogin1, options: options, clientID: 3);
@@ -173,7 +173,7 @@ TestServer_clientID_booted : UnitTest {
 
 		exitCond = CondVar.new;
 		// simulate a remote server process by starting a server process independently of SC
-		serverPid = unixCmd(Server.program + options.asOptionsString, { exitCond.signalOne });
+		serverPid = unixCmd([Server.program] ++ options.asOptionsArray, { exitCond.signalOne });
 
 		// login with standard Server.remote method to test for
 		remote1 = Server.remote(\remoteLogin1, options: options, clientID: 3);

@@ -181,7 +181,9 @@ argument:: pid
 an Integer which is the pid of the process to kill.
 code::
 // start a server program from the cmdLine for testing
-~pid = unixCmd(Server.program + s.options.asOptionsString(57100));
+// note that we are using SequenceableCollection -unixCmd instead of String -unixCmd
+// because the latter may not return the pid of the process
+~pid = unixCmd([Server.program] ++ s.options.asOptionsArray(57100));
 // kill just that server program by its pid:
 thisProcess.platform.killProcessByID(~pid);
 ::

@@ -150,6 +150,11 @@ A Float indicating a safety threshold for output values to be clipped to. This i
 Defaults to a threshold of 1.26 (ca. 2 dB), to save some ears and still allow some headroom. Setting safetyClipThreshold to code::inf::, code::0::, or a negative value, disables clipping altogether.
 
 subsection:: Other Instance Methods
+method:: asOptionsArray
+argument:: port
+The port number for the resulting server app. Default value is 57110.
+Returns:: an Array specifying the options in the format required by the command-line server app (scsynth or supernova).
+
 method:: asOptionsString
 argument:: port
 The port number for the resulting server app. Default value is 57110.
