@@ -360,22 +360,24 @@
 	}
 
 	plotTree { |interval=0.5, bounds|
-		if(plotTreeWindow.isNil) {
+		if(serverTreeWindow.isNil) {
 			bounds = bounds ?? { Rect(128, 64, 400, 400) };
 			bounds = bounds.minSize(395@386);
-			plotTreeWindow = Window(name.asString ++ " Node Tree", bounds, scroll:true);
-			plotTreeWindow.onClose = { plotTreeWindow = nil };
-			this.plotTreeView(interval, plotTreeWindow, { defer { plotTreeWindow.close } });
+			serverTreeWindow = Window(name.asString ++ " Node Tree", bounds, scroll:true);
+			serverTreeWindow.onClose = { serverTreeWindow = nil };
+			this.plotTreeView(interval, serverTreeWindow, { defer { serverTreeWindow.close } });
 		} {
-			if(bounds.notNil) { 
+			if(bounds.notNil) {
 				bounds = bounds.minSize(395@386);
-				plotTreeWindow.bounds_(bounds) 
+				serverTreeWindow.bounds_(bounds)
 			};
-		};	
-		plotTreeWindow.front;
+		};
+		serverTreeWindow.front;
+		^serverTreeView
 	}
 
 	plotTreeView { |interval=0.5, parent, actionIfFail|
-		ServerTreeView(this, parent: parent).start(interval, actionIfFail)
+		serverTreeView = ServerTreeView(this, parent: parent);
+		serverTreeView.start(interval, actionIfFail);
 	}
 }
