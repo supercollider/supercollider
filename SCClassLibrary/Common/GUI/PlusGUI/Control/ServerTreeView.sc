@@ -37,7 +37,7 @@ ServerTreeView {
 		var pen, font;
 		var drawFunc;
 
-		treeViewStatus.string_(" STARTED: current server tree")
+		treeViewStatus.string_(" RUNNING: current server tree")
 		.background_(Color.grey(0.9));
 
 		pen = GUI.current.pen;
@@ -170,7 +170,7 @@ ServerTreeView {
 								treeViewStatus.string_(" STOPPED: last updated server tree")
 								.background_(Color.grey(0.7));
 								/*this.server.doWhenBooted{
-									treeViewStatus.string_(" STARTED: current server tree")
+									treeViewStatus.string_(" RUNNING: current server tree")
 									.background_(Color.grey(0.9))
 								}*/
 							}
