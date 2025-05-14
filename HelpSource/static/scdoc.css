@@ -28,7 +28,7 @@ input, select, textarea {
 
 div.contents {
     margin: 0;
-    padding: calc(33px + .5em) 1em 1em;
+    padding: calc(var(--menu-bar-height) + .5em) 1em 1em;
 }
 
 table {
@@ -215,7 +215,7 @@ li.menuitem a.menu-link.home {
 
 .submenu, #toc {
     position: absolute;
-    top: 33px;
+    top: var(--menu-bar-height);
     padding: 0.5em;
     display: none;
     background-color: var(--color-bg);
