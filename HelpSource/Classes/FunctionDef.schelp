@@ -116,15 +116,15 @@ code::
 
 method::filenameSymbol
 
-Return the file path (as a link::Classes/Symbol::) where the code was defined, if the file has not been saved (or you are using a terminal interface) returns nil.
+Return the file path (as a link::Classes/Symbol::) where the function was defined, if the file has not been saved (or you are using a terminal interface) returns nil.
 
-This method is particularly useful when working with multiple files with link::Classes/String#load:: and you need a path relative to the file.
 
 
 method::filename
 
 Same as link::Classes/FunctionDef#-filenameSymbol:: but returns a link::Classes/String:: for ease of use with paths.
 
+This method is particularly useful when loading multiple files or resources and you need a path relative to the current file.
 
 An example of how to load relative file for a given directory structure is as follows.
 
