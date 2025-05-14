@@ -28,6 +28,7 @@ Primitives for String.
 #include "PyrKernel.h"
 #include "GC.h"
 #include "Hash.h"
+#include "PyrSymbol.h"
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>

@@ -24,6 +24,7 @@
 #include "PyrKernel.h"
 #include "PyrListPrim.h"
 #include "PyrSymbolTable.h"
+#include "PyrSymbol.h"
 #include "Opcodes.h"
 #include "PyrKernelProto.h"
 #include "PyrObjectProto.h"
