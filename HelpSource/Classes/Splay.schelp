@@ -101,7 +101,7 @@ here is an overview of the levelComp variants:
 
 code::
 // default is equal power comp: level / (numchans.sqrt)
-Splay.ar(ins, spread, level, center ); // true is default
+Splay.ar(ins, spread, level, center); // true is default
 // write it explicitly for clarity
 Splay.ar(ins, spread, level, center, levelComp: true);
 // or do equal power as float levelComp
