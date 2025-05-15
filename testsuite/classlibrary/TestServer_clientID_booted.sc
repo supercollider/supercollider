@@ -158,7 +158,7 @@ TestServer_clientID_booted : UnitTest {
 			"after first login, remote client should have its requested clientID."
 		);
 
-		remote1.remove;
+		remote1.stopAliveThread.remove;
 		thisProcess.platform.killProcessByID(serverPid);
 		testsFinished = exitCond.waitFor(5); // wait for the server process to exit
 		this.assert(testsFinished, "TIMEOUT: server process did not quit");
@@ -216,8 +216,8 @@ TestServer_clientID_booted : UnitTest {
 		);
 
 		// cleanup
-		remote1.remove;
-		remote2.remove;
+		remote1.stopAliveThread.remove;
+		remote2.stopAliveThread.remove;
 		thisProcess.platform.killProcessByID(serverPid);
 		testsFinished = exitCond.waitFor(5); // wait for the server process to exit
 		this.assert(testsFinished, "TIMEOUT: server process did not quit")
