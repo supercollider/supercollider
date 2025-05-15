@@ -169,10 +169,10 @@ ServerTreeView {
 							if(window.isClosed.not) {
 								treeViewStatus.string_(" STOPPED: last updated server tree")
 								.background_(Color.grey(0.7));
-								/*this.server.doWhenBooted{
+								this.server.doWhenBooted{
 									treeViewStatus.string_(" RUNNING: current server tree")
 									.background_(Color.grey(0.9))
-								}*/
+								}
 							}
 						}
 					};
