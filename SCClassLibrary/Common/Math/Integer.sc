@@ -6,6 +6,8 @@ Integer : SimpleNumber {
 	+ { arg aNumber, adverb; _AddInt; ^aNumber.performBinaryOpOnSimpleNumber('+', this, adverb) }
 	- { arg aNumber, adverb; _SubInt; ^aNumber.performBinaryOpOnSimpleNumber('-', this, adverb) }
 	* { arg aNumber, adverb; _MulInt; ^aNumber.performBinaryOpOnSimpleNumber('*', this, adverb) }
+	
+	modSeaside { arg aNumber, adverb; _ModSeasideInt; ^aNumber.performBinaryOpOnSimpleNumber('modSeaside', this, adverb) }
 
 	clip { arg lo, hi; _ClipInt; ^this.primitiveFailed }
 	wrap { arg lo, hi; _WrapInt; ^this.primitiveFailed }
