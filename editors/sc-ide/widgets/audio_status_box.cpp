@@ -29,6 +29,8 @@
 namespace ScIDE {
 
 AudioStatusBox::AudioStatusBox(ScServer* server, QWidget* parent): StatusBox(parent) {
+    mServer = server;
+
     mStatisticsLabel = new StatusLabel;
     mVolumeLabel = new StatusLabel;
     mMuteLabel = new StatusLabel;
@@ -110,6 +112,12 @@ void AudioStatusBox::applySettings(Settings::Manager* settings) {
     runningColor = settings->getThemeVal("postwindowsuccess").foreground().color();
     notRunningColor = settings->getThemeVal("text").foreground().color();
     errorColor = settings->getThemeVal("postwindowerror").foreground().color();
+
+    if (mServer) {
+        updateVolumeLabel(mServer->volume());
+        updateMuteLabel(mServer->isMuted());
+        updateRecordLabel(mServer->isRecording());
+    }
 }
 
 void AudioStatusBox::onServerRunningChanged(bool running, const QString&, int, bool unresponsive) {

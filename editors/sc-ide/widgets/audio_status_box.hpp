@@ -61,6 +61,8 @@ private:
     QColor notRunningColor;
     QColor errorColor;
     QColor noActionColor;
+
+    ScServer* mServer;
 };
 
 } // namespace ScIDE
