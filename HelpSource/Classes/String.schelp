@@ -676,7 +676,7 @@ Despite the fact that the method is called 'unixCmd', strong::it does work in Wi
 ::
 
 method::unixCmd
-Execute an operating system command strong::asynchronously:: using the standard shell (code::sh:: on *nix, code::cmd:: on Windows).
+Executes an operating system command strong::asynchronously:: using the standard shell (code::sh:: on *nix, code::cmd:: on Windows).
 
 If you want to run a command without a shell, please use link::Classes/SequenceableCollection#-unixCmd::.
 argument:: action
