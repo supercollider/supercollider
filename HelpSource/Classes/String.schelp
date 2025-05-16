@@ -692,10 +692,10 @@ Use link::Classes/Integer#-pidRunning:: to test if a process is alive.
 note::
 While the underlying system call will obtaing the pid of the shell, we may get an actual pid of the command in the following situations:
 list::
-## On *nix systems, if the command is run with code::exec::, e.g. code::"exec scsynth -u 57110".unixCmd;::, which causes the calling process (the shell) to be replaced with the new command
-## On macOS specifically, if the command consists of a single executable, where macOS seems the optimize the call by not spawining a new shell
+## On *nix systems, if the command is run with code::exec::, e.g. code::"exec scsynth -u 57110".unixCmd;::, which causes the calling process (the shell) to be replaced with the new command;
+## On macOS specifically, if the command consists of a single executable, where macOS seems the optimize the call by not spawining a new shell.
 ::
-For these reasons it might have appeared that we are always getting the pid of the actual command, as opposed to the shell, which is what the documentation erroneously stated in the past.
+Past documentation incorrectly stated that this method always returned the pid of the actual command.
 
 Note that code::exec:: is not available on Windows.
 ::
