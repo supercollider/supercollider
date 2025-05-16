@@ -104,7 +104,7 @@ void AudioStatusBox::applySettings(Settings::Manager* settings) {
     mRecordLabel->setBackground(backgroundColor);
 
     // used if e.g. server is not recording is not recording
-    noActionColor = Qt::black;
+    noActionColor = settings->getThemeVal("text").foreground().color();
 
     unresponsiveColor = settings->getThemeVal("postwindowwarning").foreground().color();
     runningColor = settings->getThemeVal("postwindowsuccess").foreground().color();
