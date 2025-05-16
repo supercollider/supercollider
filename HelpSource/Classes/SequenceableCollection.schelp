@@ -956,12 +956,16 @@ code::
 Pbind(\degree, Pseries(0, 1, inf), \dur, Pseq([2, [1, [1, [2, 1, 1, -1]]], 2].convertRhythm)).play;
 ::
 
-subsection:: Starting UNIX processes
+subsection:: Starting system processes
 
 private::prUnixCmd
 
 method::unixCmd
-Execute a UNIX command strong::asynchronously::. This object should be an array of strings where the first string is the path to the executable to be run and all other strings are passed as arguments to the executable. This method starts the process directly without using a shell.
+Executes a system command strong::asynchronously::.
+This object should be an array of strings where the first string is the path to the executable to be run and all other strings are passed as arguments to the executable.
+This method starts the process directly without using a shell.
+
+If you want to run a command using a shell, use link::Classes/String#-unixCmd::.
 argument:: action
 A link::Classes/Function:: that is called when the process has exited. It is passed two arguments: the exit code and pid of the exited process.
 argument:: postOutput
