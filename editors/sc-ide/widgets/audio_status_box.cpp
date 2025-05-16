@@ -106,10 +106,10 @@ void AudioStatusBox::applySettings(Settings::Manager* settings) {
     // used if e.g. server is not recording is not recording
     noActionColor = Qt::black;
 
-    unresponsiveColor = settings->getThemeVal("number").foreground().color();
-    runningColor = settings->getThemeVal("symbol").foreground().color();
+    unresponsiveColor = settings->getThemeVal("postwindowwarning").foreground().color();
+    runningColor = settings->getThemeVal("postwindowsuccess").foreground().color();
     notRunningColor = settings->getThemeVal("text").foreground().color();
-    warningColor = settings->getThemeVal("postwindowerror").foreground().color();
+    errorColor = settings->getThemeVal("postwindowerror").foreground().color();
 }
 
 void AudioStatusBox::onServerRunningChanged(bool running, const QString&, int, bool unresponsive) {
@@ -154,10 +154,10 @@ void AudioStatusBox::updateVolumeLabel(float volume) {
     mVolumeLabel->setText(QStringLiteral("%1dB ").arg(volume, 5, 'f', 1));
 }
 
-void AudioStatusBox::updateMuteLabel(bool muted) { mMuteLabel->setTextColor(muted ? warningColor : noActionColor); }
+void AudioStatusBox::updateMuteLabel(bool muted) { mMuteLabel->setTextColor(muted ? errorColor : noActionColor); }
 
 void AudioStatusBox::updateRecordLabel(bool recording) {
-    mRecordLabel->setTextColor(recording ? warningColor : noActionColor);
+    mRecordLabel->setTextColor(recording ? errorColor : noActionColor);
 }
 
 

@@ -59,7 +59,7 @@ private:
     QColor unresponsiveColor;
     QColor runningColor;
     QColor notRunningColor;
-    QColor warningColor;
+    QColor errorColor;
     QColor noActionColor;
 };
 

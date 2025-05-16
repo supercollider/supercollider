@@ -55,8 +55,8 @@ void LangStatusBox::applySettings(Settings::Manager* settings) {
     backgroundColor = settings->getThemeVal("text").background().color();
 
     notRunningColor = settings->getThemeVal("text").foreground().color();
-    runningColor = settings->getThemeVal("symbol").foreground().color();
-    startingColor = settings->getThemeVal("number").foreground().color();
+    runningColor = settings->getThemeVal("postwindowsuccess").foreground().color();
+    startingColor = settings->getThemeVal("postwindowwarning").foreground().color();
 
     // re-render the box, otherwise we will not update after e.g. a theme switch
     if (mLang != nullptr) {
