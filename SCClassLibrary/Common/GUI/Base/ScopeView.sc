@@ -56,4 +56,12 @@ ScopeView : View {
 		waveColors = aColorArray;
 		this.setProperty( \waveColors, aColorArray );
 	}
+
+	background {
+		^this.getProperty(\background);
+	}
+
+	background_ {|color|
+		this.setProperty(\background, color);
+	}
 }

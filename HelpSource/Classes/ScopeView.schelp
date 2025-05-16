@@ -83,6 +83,12 @@ METHOD:: waveColors
     argument::
         An Array of Colors, one per channel.
 
+METHOD:: background
+    The background color of the scope.
+
+    argument::
+        A link::Classes/Color::.
+
 EXAMPLES::
 
 SUBSECTION:: A step-by-step example
