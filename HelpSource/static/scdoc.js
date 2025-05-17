@@ -254,17 +254,9 @@ function buildThemeSwitcher() {
             themeLink.appendTo(themesMenu);
         });
 
-        const lineNumberSwitch = $("<a>", {
-            text: "Show/hide line numbers",
-            href: "#",
-        });
-        lineNumberSwitch.on("click", () => {
-            // localStorage can only store strings
-            window.localStorage.setItem("showLineNumbers", window.localStorage.getItem("showLineNumbers") === "true" ? "false" : "true");
-            // not fancy but works...
-            window.location.reload();
-        });
-        themesMenu.append(lineNumberSwitch);
+        themesMenu.append($("<hr>"));
+
+        buildLineNumberSwitch(themesMenu);
 
         a.on("click", function (e) {
             e.preventDefault();
@@ -277,6 +269,22 @@ function buildThemeSwitcher() {
             }
         });
     });
+}
+
+function buildLineNumberSwitch(themesMenu) {
+    const lineNumberCheckbox = $("<input>", {
+      type: "checkbox",
+      id: "line-number-checkbox",
+      checked: getLineNumberStorageValue(),
+    }).on("click", () => {
+      setLineNumberStorageValue(!getLineNumberStorageValue());
+    });
+    const lineNumberLabel = $("<label>", {
+      text: "Line numbers",
+      for: "line-number-checkbox",
+    });
+    const lineNumberSwitch = $("<div>").append(lineNumberCheckbox).append(lineNumberLabel);
+    themesMenu.append(lineNumberSwitch);
 }
 
 function setTheme(themeName) {

@@ -37,7 +37,7 @@ const init = () => {
             value: code,
             lineWrapping: true,
             viewportMargin: Infinity,
-            lineNumbers: window.localStorage.getItem("showLineNumbers") === "true",
+            lineNumbers: getLineNumberStorageValue(),
             extraKeys: {
                 // noop: prevent both codemirror and the browser to handle Shift-Enter
                 'Shift-Enter': ()=>{}, 
@@ -165,6 +165,22 @@ const selectLine = (options = { flash: true }) => {
     let marker = editor.markText(from, to, { className: 'text-flash' })
     setTimeout(() => marker.clear(), 300)
     return editor.getRange(from, to)
+}
+
+function getLineNumberStorageValue() {
+    return window.localStorage.getItem("showLineNumbers") === "true"
+}
+
+function setLineNumberStorageValue(v) {
+    window.localStorage.setItem("showLineNumbers", v ? "true" : "false");
+    toggleLineNumbers(v);
+
+}
+
+function toggleLineNumbers(v) {
+    Array.from(document.querySelectorAll('textarea')).filter((t) => t.hasOwnProperty("editor")).forEach((textarea) => {
+      textarea.editor.setOption("lineNumbers", v);
+    });
 }
 
 init()
