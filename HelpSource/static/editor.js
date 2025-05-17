@@ -174,12 +174,11 @@ function getLineNumberStorageValue() {
 function setLineNumberStorageValue(v) {
     window.localStorage.setItem("showLineNumbers", v ? "true" : "false");
     toggleLineNumbers(v);
-
 }
 
 function toggleLineNumbers(v) {
-    Array.from(document.querySelectorAll('textarea')).filter((t) => t.hasOwnProperty("editor")).forEach((textarea) => {
-      textarea.editor.setOption("lineNumbers", v);
+    Array.from(document.querySelectorAll("textarea")).filter((t) => t.hasOwnProperty("editor")).forEach((t) => {
+      t.editor.setOption("lineNumbers", v);
     });
 }
 
