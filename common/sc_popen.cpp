@@ -167,7 +167,7 @@ std::tuple<pid_t, FILE*> sc_popen_argv(const std::vector<std::string>& strings, 
 }
 
 std::tuple<pid_t, FILE*> sc_popen_shell(std::string command, const std::string& type) {
-    command = "cmd /c " + command;
+    command = "cmd /c \"" + command + "\"";
     return sc_popen_c(command.data(), type.data());
 }
 
