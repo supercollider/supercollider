@@ -121,6 +121,8 @@ HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
 
     applySettings(Main::settings());
 
+    mWebView->settings()->setAttribute(QWebEngineSettings::JavascriptCanAccessClipboard, true);
+
     setFocusProxy(mWebView);
 }
 
