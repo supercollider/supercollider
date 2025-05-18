@@ -395,6 +395,20 @@ static void prettyFormatFloat(char* str, double d) {
         str[2] = 'n';
         str[3] = '\0';
         return;
+    } else if (std::isinf(d)) {
+        if (d > 0.0) {
+            str[0] = 'i';
+            str[1] = 'n';
+            str[2] = 'f';
+            str[3] = '\0';
+        } else {
+            str[0] = '-';
+            str[1] = 'i';
+            str[2] = 'n';
+            str[3] = 'f';
+            str[4] = '\0';
+        }
+        return;
     }
     sprintf(str, "%.14g", d);
 
