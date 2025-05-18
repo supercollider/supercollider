@@ -44,11 +44,7 @@ TestFloat : UnitTest {
 
 	test_asString_nan {
 		var zeroDivString = (0/0).asString;
-		if(zeroDivString == "-nan") {
-			this.assertEquals(zeroDivString, "-nan")
-		} {
-			this.assertEquals(zeroDivString, "nan")
-		}
+		this.assertEquals(zeroDivString, "nan");
 	}
 
 	test_asString_largeNumberUsesExp {

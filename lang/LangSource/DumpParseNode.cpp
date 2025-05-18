@@ -388,6 +388,14 @@ static void printObject(PyrSlot* slot, PyrObject* obj, char* str) {
 
 // Assumed: str has enough space to hold the representation of d
 static void prettyFormatFloat(char* str, double d) {
+    if (std::isnan(d)) {
+        // Do this manually as different implementations disagree on how to format nan.
+        str[0] = 'n';
+        str[1] = 'a';
+        str[2] = 'n';
+        str[3] = '\0';
+        return;
+    }
     sprintf(str, "%.14g", d);
 
     // append a trailing '.0' if the number would look like an integer.
