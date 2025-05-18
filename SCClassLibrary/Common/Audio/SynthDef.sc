@@ -226,12 +226,13 @@ SynthDefOptimizationFlags {
 	var <deduplication=true;
 	var <rewrite=true;
 	var <doManyPasses=true;
+	var <doRequiredOpimtization=true;
 
 	*new { |...a, k| ^this.superPerformArgs(\newCopyArgs, a, k) }
 	*all { ^this.new(sorting:true, deduplication: true, rewrite: true, doManyPasses: true) }
 	*allSingle { ^super.newCopyArgs(sorting:true, deduplication: true, rewrite: true, doManyPasses: false) }
 	// Note, none can break synthdefs as it doesn't apply the required optimizations (UGen-optimizeRequired).
-	*none { ^super.newCopyArgs(sorting: false, deduplication: false, rewrite: false, doManyPasses: false) }
+	*none { ^super.newCopyArgs(sorting: false, deduplication: false, rewrite: false, doManyPasses: false, doRequiredOpimtization: false) }
 	*onlySorting { ^super.newCopyArgs(sorting: true, deduplication: false, rewrite: false, doManyPasses: false) }
 	*deduplicationAndSorting { ^super.newCopyArgs(sorting: true, deduplication: true, rewrite: false, doManyPasses: false) }
 	*sortingAndRewriteMany { ^super.newCopyArgs(sorting: true, deduplication: false, rewrite: true, doManyPasses: true) }
@@ -351,7 +352,9 @@ SynthDef {
 			rewriteInProgress = true;
 			children.do(_.initEdges); // Necessary because of init method in UGen child classes not returning instances of UGen.
 
-			children.do(_.optimizeRequired);
+			if (optimizationLevel.doRequiredOpimtization) {
+				children.do(_.optimizeRequired)
+			};
 
 			effectiveUGens = SynthDefOptimizer(effectiveUGens, optimizationLevel.deduplication, optimizationLevel.rewrite, optimizationLevel.doManyPasses);
 
