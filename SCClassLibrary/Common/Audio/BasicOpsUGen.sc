@@ -376,6 +376,18 @@ BinaryOpUGen : BasicOpUGen {
 		^nil
 	}
 
+	optimizeRequired {
+		var results;
+		// remove firstArg, it is unnecessary now.
+		if (operator == 'firstArg') {
+			results = SynthDefOptimizationResult();
+			this.prepareForReplacement(inputs[0], results, 1) !? { |replacement|
+				this.replace(replacement);
+			}
+		}
+		^nil
+	}
+
 	optimize {
 		// Turn DC into constants
 		var i;
