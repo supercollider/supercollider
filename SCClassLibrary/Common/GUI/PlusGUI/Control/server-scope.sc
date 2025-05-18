@@ -32,10 +32,10 @@
 		var synth, synthDef, bytes, synthMsg, outUGen, server;
 
 		server = Server.default;
-		if(server.serverRunning.not) {
-			"server '%' not running".format(server.name).warn;
-			^nil
-		};
+		server.checkRunning(
+			this.asCompileString ++ "." ++ thisMethod.asString.split($:)[1],
+			thisMethod.asString + "will NOT work."
+    	);
 
 		synthDef = this.asSynthDef(name: SystemSynthDefs.generateTempName, fadeTime:fadeTime);
 		outUGen = synthDef.children.detect { |ugen| ugen.class === Out };

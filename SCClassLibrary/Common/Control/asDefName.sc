@@ -55,9 +55,10 @@
 		var def, synth, server, bytes, synthMsg;
 		target = target.asTarget;
 		server = target.server;
-		if(server.serverRunning.not) {
-			"server '%' not running".format(server.name).warn; ^nil
-		};
+		server.checkRunning(
+			this.asCompileString ++ "." ++ thisMethod.asString.split($:)[1],
+			thisMethod.asString + "will NOT work."
+    	);
 		def = this.asSynthDef(
 			fadeTime:fadeTime,
 			name: SystemSynthDefs.generateTempName

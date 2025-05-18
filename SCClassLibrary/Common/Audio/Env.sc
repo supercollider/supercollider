@@ -338,7 +338,10 @@ Env {
 
 	test { arg releaseTime = 3.0;
 		var s = Server.default;
-		if(s.serverRunning.not) { "server '%' not running".format(s.name).warn; ^this };
+		s.checkRunning(
+			this.asCompileString ++ "." ++ thisMethod.asString.split($:)[1],
+			thisMethod.asString + "will NOT work."
+    	);
 		fork {
 			var synth = { arg gate=1;
 				SinOsc.ar(800, pi/2, 0.3) * EnvGen.ar(this, gate, doneAction:2)

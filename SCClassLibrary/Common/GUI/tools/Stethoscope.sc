@@ -470,7 +470,10 @@ BusScopeSynth {
 		var bufIndex;
 		var busChannels;
 
-		if(server.serverRunning.not) { ^this };
+		server.checkRunning(
+			this.asCompileString ++ "." ++ thisMethod.asString.split($:)[1],
+			thisMethod.asString + "will NOT work."
+		);
 
 		this.stop;
 

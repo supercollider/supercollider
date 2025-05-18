@@ -413,16 +413,21 @@ SoundFile {
 					.allocRead(sf.path)
 					.sampleRate_(sf.sampleRate);
 				}
-		} {
-			"the server must be running to collect soundfiles into buffers".error
-		}
+		};
+		server.checkRunning(
+			this.asCompileString ++ "." ++ thisMethod.asString.split($:)[1],
+			thisMethod.asString + "will NOT work.\nThe server must be running to collect soundfiles into buffers"
+		);
 	}
 
 
 	asBuffer { |server|
 		var buffer, rawData;
 		server = server ? Server.default;
-		if(server.serverRunning.not) { Error("SoundFile:asBuffer - Server not running.").throw };
+		server.checkRunning(
+			this.asCompileString ++ "." ++ thisMethod.asString.split($:)[1],
+			thisMethod.asString + "will NOT work."
+		);
 		if(this.isOpen.not) { Error("SoundFile:asBuffer - SoundFile not open.").throw };
 		if(server.isLocal) {
 			buffer = Buffer.read(server, path)
