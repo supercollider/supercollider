@@ -2,14 +2,11 @@
     --menu-bar-height: 33px;
 }
 
-*,
-*::before,
-*::after {
+*, *::before, *::after {
     box-sizing: inherit;
 }
 
-html,
-body {
+html, body {
     position: relative;
     box-sizing: border-box;
     height: 100%;
@@ -24,16 +21,14 @@ body {
     background: var(--color-bg);
 }
 
-input,
-select,
-textarea {
+input, select, textarea {
     color: var(--color-input-fg);
-    background: var(--color-input-bg);
+    background: var(--color-input-bg)
 }
 
 div.contents {
     margin: 0;
-    padding: calc(var(--menu-bar-height) + 0.5em) 1em 1em;
+    padding: calc(var(--menu-bar-height) + .5em) 1em 1em;
 }
 
 table {
@@ -63,9 +58,7 @@ a {
     scroll-margin-top: var(--menu-bar-height);
 }
 
-a:link,
-a:visited,
-a:link:hover {
+a:link, a:visited, a:link:hover {
     text-decoration: none;
     color: var(--color-link);
 }
@@ -74,8 +67,7 @@ a:link:hover {
     text-decoration: underline;
 }
 
-#inheritedclassmets,
-#inheritedinstmets {
+#inheritedclassmets, #inheritedinstmets {
     margin-top: 1em;
 }
 
@@ -102,7 +94,7 @@ a.inheritedmets_toggle {
     font-size: 9pt;
     color: var(--color-fg-300);
     font-weight: normal;
-    /*    margin-left: 2em;*/
+/*    margin-left: 2em;*/
 }
 
 a.inheritedmets_toggle:hover {
@@ -123,6 +115,7 @@ a.subclass_toggle:hover {
     text-decoration: none;
     color: var(--color-fg);
 }
+
 
 #menubar {
     position: fixed;
@@ -220,8 +213,7 @@ li.menuitem a.menu-link.home {
     cursor: pointer;
 }
 
-.submenu,
-#toc {
+.submenu, #toc {
     position: absolute;
     top: var(--menu-bar-height);
     padding: 0.5em;
@@ -231,17 +223,17 @@ li.menuitem a.menu-link.home {
 }
 
 .submenu a {
-    position: relative;
-    display: block;
-    margin: 0;
-    /*      padding: 5px 10px;*/
-    padding: 0.2em;
-    width: auto;
-    white-space: nowrap;
-    text-align: left;
-    /*      text-decoration: none;*/
-    color: var(--color-fg-400);
-    font-weight: bold;
+        position: relative;
+        display: block;
+        margin: 0;
+/*      padding: 5px 10px;*/
+        padding: 0.2em;
+        width: auto;
+        white-space: nowrap;
+        text-align: left;
+/*      text-decoration: none;*/
+        color: var(--color-fg-400);
+        font-weight: bold;
 }
 
 .toc_search {
@@ -254,8 +246,9 @@ li.menuitem a.menu-link.home {
     border: 1px solid var(--color-fg-100);
 }
 
+
 .header {
-    padding-bottom: 0.18em;
+  padding-bottom: 0.18em;
 }
 
 #label {
@@ -319,8 +312,8 @@ li.menuitem a.menu-link.home {
 }
 .jump a {
     font-weight: bold;
-    padding-top: 0;
-    margin-top: 0;
+    padding-top:0;
+    margin-top:0;
 }
 
 a.footnote {
@@ -351,14 +344,14 @@ h1 {
 
 h2 {
     border-bottom: 1px solid var(--color-fg-100);
-    margin-top: 1em;
+    margin-top: 1.0em;
     text-align: left;
     margin-bottom: 2px;
     font-size: 1.6em;
 }
 
 h3 {
-    margin-top: 2em;
+    margin-top: 2.0em;
     margin-bottom: 1px;
     text-align: left;
     font-size: 1.4em;
@@ -404,8 +397,7 @@ dd {
     margin-bottom: 1.25em;
 }
 
-code,
-pre {
+code, pre {
     font-family: monospace;
     font-size: 9pt;
 }
@@ -478,8 +470,7 @@ table.arguments {
     border-collapse: collapse;
 }
 
-table.arguments td.argumentname,
-td.argumentdesc {
+table.arguments td.argumentname, td.argumentdesc {
     vertical-align: top;
     border: none;
     padding-top: 0.2em;
@@ -498,16 +489,14 @@ td p {
     margin-top: 0em;
 }
 
-.note,
-.warning {
-    /*    border-left: 4px solid #eea;*/
+.note, .warning {
+/*    border-left: 4px solid #eea;*/
     background: var(--color-warning-bg);
     padding: 0.5em;
     margin-top: 1em;
     margin-bottom: 1em;
 }
-.notelabel,
-.warninglabel {
+.notelabel, .warninglabel {
     font-weight: bold;
 }
 .warninglabel {
@@ -596,43 +585,42 @@ ul.toc li a:hover {
 .toc3 {
     font-family: monospace;
     font-weight: normal;
-    /*    font-size: 9.5pt;*/
+/*    font-size: 9.5pt;*/
 }
 .toc3 a {
     color: var(--color-fg-300);
 }
 
-ul.tree,
-ul.tree ul {
-    list-style-type: none;
-    background: url("./..images/vline.png") repeat-y;
-    margin: 0;
-    padding: 0;
-    margin-left: 1em;
+ul.tree, ul.tree ul {
+ list-style-type: none;
+ background: url("./..images/vline.png") repeat-y;
+ margin: 0;
+ padding: 0;
+ margin-left: 1em;
 }
 
 ul.tree ul {
-    margin-left: 15px;
+ margin-left: 15px;
 }
 
 ul.tree li {
-    margin: 0;
-    padding: 0 12px;
-    line-height: 20px;
-    background: url("./../images/node.png") no-repeat;
-    /* color: #369;
+ margin: 0;
+ padding: 0 12px;
+ line-height: 20px;
+ background: url("./../images/node.png") no-repeat;
+/* color: #369;
  font-weight: bold;*/
 }
 
 ul.tree li:last-child {
-    background: var(--color-bg) url("./../images/lastnode.png") no-repeat;
+ background: var(--color-bg) url("./../images/lastnode.png") no-repeat;
 }
 
 /* is this still used? */
 :target {
     border-bottom: 6px solid var(--color-warning-bg);
-    padding-top: 20px;
-    margin-top: -20px;
+    padding-top:20px;
+    margin-top:-20px;
 }
 
 a.undoc {
@@ -660,14 +648,14 @@ div.result_category {
     color: var(--color-fg-300);
     margin-top: 1em;
     margin-bottom: 0.5em;
-    /*    font-size: 9.5pt;
+/*    font-size: 9.5pt;
     border-bottom: 1px solid #ccc;*/
     font-weight: bold;
-    /*    font-size: 11pt;*/
+/*    font-size: 11pt;*/
 }
 div.met_docs {
     margin-bottom: 0.2em;
-    /*    margin-left: 2em;*/
+/*    margin-left: 2em;*/
 }
 div.met_subclasses {
     font-size: 9pt;
@@ -716,9 +704,7 @@ table#search_settings {
     font-size: 9pt;
 }
 #js_error {
-    font-family:
-        Andale Mono,
-        monospace;
+    font-family: Andale Mono, monospace;
     font-size: 9pt;
     color: var(--color-warning-fg);
 }
@@ -749,9 +735,7 @@ div.met_subclasses a.seemore {
 }
 
 .method_name {
-    font-family:
-        Andale Mono,
-        monospace;
+    font-family: Andale Mono, monospace;
     font-size: 9.5pt;
 }
 #method_note {
