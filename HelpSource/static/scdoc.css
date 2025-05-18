@@ -593,7 +593,7 @@ ul.toc li a:hover {
 
 ul.tree, ul.tree ul {
  list-style-type: none;
- background: url("./..images/vline.png") repeat-y;
+ background: url("./../images/vline.png") repeat-y;
  margin: 0;
  padding: 0;
  margin-left: 1em;
