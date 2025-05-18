@@ -511,6 +511,7 @@ TestSynthDefOptimise : UnitTest {
 		}, server, threshold: -96, forceDontPrint: true,
 		msg: "A big graph - tw 0011 (f0)."
 		);
+
 		this.compare_optimization_levels(
 			{
 				var sig, chain;
@@ -554,8 +555,6 @@ TestSynthDefOptimise : UnitTest {
 		}, server, threshold: -96, forceDontPrint: true,
 		msg: "gosub — https://sccode.org/1-5i2"
 		);
-
-
 
 		this.compare_optimization_levels(
 			{
@@ -613,72 +612,8 @@ TestSynthDefOptimise : UnitTest {
 			msg: "iakamuri — https://sccode.org/1-5hW"
 		);
 
-		/*
-		this.assert(
-		this.compare_optimization_levels({
-		Fb1({ |in, out| (in[0] * 0.05) + (out[1] * 0.95) }, SinOsc.ar, leakDC: false);
-		}, server, threshold: -70),
-		"Daniel Mayer --- Fb1 OnePole"
-		);
 
 
-		this.assert(
-		this.compare_optimization_levels({ |out, freq = 440, detun = 1.01, gate = 1, amp = 0.1,
-		ffreq = 2000, rq = 1,
-		wtPos = 0, squeeze = 0, offset = 0|
-		var numOscs = 15;
-		var sig = MultiWtOsc.ar(freq, wtPos, squeeze, offset, b,
-		numOscs: numOscs, detune: detun);
-		sig = RLPF.ar(sig, ffreq, rq);
-		sig = sig * EnvGen.kr(Env.adsr, gate, doneAction: 2);
-		sig.asArray.flat.sum;
-		}, server, threshold: -70),
-		"James Harkin --- ddwWavetable quark"
-		);
-
-
-		this.assert(
-		this.compare_optimization_levels({
-		var o = DXEnvFan.ar(
-		Dseq((0..29), inf),
-		size: 30,
-		fadeTime: 0.005
-		) * 0.25;
-		o.asArray.flat.sum
-		}, server, threshold: -70),
-		"Daniel Mayer --- DXEnvFan 1"
-		);
-
-
-				Fb1_ODEdef(\izhikevich, { |t, y, a=0.02, b=0.2, i=0|
-			[
-				{ y[0] * (0.04 * y[0] + 5.0) + 140 - y[1] + i },
-				{ a * (b * y[0] - y[1]) }
-			]
-		}, 0, [-50.0, 1.0], 1, 1);
-
-
-		// Single IZ unit
-		this.compare_optimization_levels({
-			var env = EnvGate.new;
-			var inleft = \inleft.ar(0.0, 0.0);
-			var inright = \inright.ar(0.0, 0.0);
-			var a = \a.kr(0.02, 0.05, spec: [0.0, 1.0, \lin, 0, 0.02]);
-			var b = \b.kr(0.2, 0.05, spec: [0.0, 1.0, \lin, 0, 0.2]);
-			var c = \c.kr(-65.0, 0.05, spec: [-70, -30.0, \lin, 0, -65]);
-			var d = \d.kr(8.0, 0.05, spec: [0.0, 10.0, \lin, 0, 8.0]);
-			var alpha = \alpha.kr(0.0, 0.05, spec: [-1.0, 1.0, \lin, 0, 0.0]);
-			var beta = \beta.kr(0.0, 0.05, spec: [-1.0, 1.0, \lin, 0, 0.0]);
-			var i0 = \i0.kr(3.0, 0.05, spec: [0.0, 10.0, \lin, 0, 3.0]);
-			var tm = \tm.kr(1000, 0.1, spec: [1, 4000, \lin, 0, 1000]);
-			var eq = Fb1_ODE.ar(\izhikevich,
-				[a, b,(inleft*alpha)+(inright*beta)+i0],tm, 0, [-50.0, 2.0],
-				compose: { |y| Select.kr(y[0] > 30.0, [y, [c, y[1]+d]]);}
-			);
-			Out.ar(\out.kr, eq[0]*0.01)
-		}, server, threshold: -96,
-		msg: "FB1 telephon");
-		*/
 
 		this.compare_optimization_levels(
 			{
@@ -717,6 +652,81 @@ TestSynthDefOptimise : UnitTest {
 			msg: "Yoshinosuke Horiuchi's SC808"
 		);
 
+	}
+
+	test_real_world_quarks {
+		/*
+		this.compare_optimization_levels(
+			{
+				Fb1({ |in, out| (in[0] * 0.05) + (out[1] * 0.95) }, SinOsc.ar, leakDC: false);
+			},
+			server,
+			threshold: -70,
+			duration: 0.1,
+			forceDontPrint: true,
+			msg: "Daniel Mayer --- Fb1 OnePole"
+		);
+
+		this.compare_optimization_levels(
+			{
+				var o = DXEnvFan.ar(
+					Dseq((0..29), inf),
+					size: 30,
+					fadeTime: 0.005
+				) * 0.25;
+				o.asArray.flat.sum
+			},
+			server,
+			threshold: -70,
+			duration: 0.1,
+			forceDontPrint: true,
+			msg: "Daniel Mayer --- DXEnvFan 1"
+		);
+
+
+		Fb1_ODEdef(
+			\izhikevich,
+			{ |t, y, a=0.02, b=0.2, i=0|
+			    [
+				    { y[0] * (0.04 * y[0] + 5.0) + 140 - y[1] + i },
+				    { a * (b * y[0] - y[1]) }
+			    ]
+		    },
+			0.002,
+			[-50.0, 1.0],
+			1,
+			1
+		);
+
+
+		// Single IZ unit
+		this.compare_optimization_levels(
+			{
+				var env = EnvGate.new;
+				var inleft = \inleft.ar(0.0, 0.0);
+				var inright = \inright.ar(0.0, 0.0);
+				var a = \a.kr(0.02, 0.05, spec: [0.0, 1.0, \lin, 0, 0.02]);
+				var b = \b.kr(0.2, 0.05, spec: [0.0, 1.0, \lin, 0, 0.2]);
+				var c = \c.kr(-65.0, 0.05, spec: [-70, -30.0, \lin, 0, -65]);
+				var d = \d.kr(8.0, 0.05, spec: [0.0, 10.0, \lin, 0, 8.0]);
+				var alpha = \alpha.kr(0.0, 0.05, spec: [-1.0, 1.0, \lin, 0, 0.0]);
+				var beta = \beta.kr(0.0, 0.05, spec: [-1.0, 1.0, \lin, 0, 0.0]);
+				var i0 = \i0.kr(3.0, 0.05, spec: [0.0, 10.0, \lin, 0, 3.0]);
+				var tm = \tm.kr(1000, 0.1, spec: [1, 4000, \lin, 0, 1000]);
+				var eq = Fb1_ODE.ar(\izhikevich,
+					[a, b, (inleft * alpha) + (inright * beta) + i0],
+					tm,
+					0.002,
+					[-50.0, 2.0],
+					compose: \softclip
+				);
+				eq.flat.sum;
+			},
+			server,
+			threshold: -96,
+		    msg: "FB1 telephon"
+		);
+		*/
 	}
 
 	test_io {
