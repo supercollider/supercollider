@@ -60,7 +60,7 @@ BufRd : MultiOutUGen {
 		^this.initOutputs(argNumChannels, rate);
 	}
 
-	optimize {
+	optimizeRequired {
 		var result = SynthDefOptimizationResult();
 		this.coerceInputFromScalarToDC(2, result); // phase
 		^result.returnNilIfEmpty;
@@ -91,7 +91,7 @@ BufWr : UGen {
 			loop] ++ inputArray.asArray)
 	}
 
-	optimize {
+	optimizeRequired {
 		var result = SynthDefOptimizationResult();
 		if (this.rate == \audio){
 			this.coerceInputFromScalarToDC(1, result); // phase
@@ -140,15 +140,16 @@ RecordBuf : UGen {
 		)
 	}
 
-	optimize {
-		var result = SynthDefOptimizationResult();
+	optimizeRequired {
+		var result;
 		// For each inputs, turn it into a DC if it is a number
 		if (this.rate == \audio){
+			result = SynthDefOptimizationResult();
 			(inputs.size - 7).do { |i|
 				this.coerceInputFromScalarToDC(8 + i, result)
-			};
+			}
 		};
-		^result.returnNilIfEmpty;
+		^nil;
 	}
 }
 

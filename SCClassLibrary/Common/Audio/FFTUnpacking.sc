@@ -94,7 +94,7 @@ PV_ChainUGen : UGen {
 	// If this is called inside the optimisation path, you must call initEdges on the result.
 	fftSize { ^inputs[0].fftSize }
 
-	optimize {
+	optimizeRequired {
 		var implicitResourceConnectionStrategiesIncludesBufferWrite = { |dep| dep.any{ |m| m[0] == BufferConnectionStrategy and: {m[1] != \read} } };
 		var desc = descendants.select { |d|
 			// Get all descendants that 'write' (not *just* read) to a buffer that aren't PV_Copy.
@@ -108,7 +108,6 @@ PV_ChainUGen : UGen {
 		desc = desc.removeIdenticalDuplicates;
 
 		if (desc.size > 1) {
-			var result = SynthDefOptimizationResult();
 			var first = desc[0];
 			desc.drop(-1).do { |d|
 				var newBuffer = LocalBuf(this.fftSize.initEdges).initEdges;
@@ -124,10 +123,7 @@ PV_ChainUGen : UGen {
 
 				newCopy.createWeakConnectionTo(first); // ensures copy happens before the other buffer operation.
 
-				//result.addUGen(newBuffer, 1);
-				result.addUGen(newCopy, 2);
 			};
-			^result
 		};
 		^nil;
 	}

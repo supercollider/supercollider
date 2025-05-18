@@ -279,7 +279,8 @@ Out : AbstractOut {
 		^0.0		// Out has no output
 	}
 	*numFixedArgs { ^1 }
-	optimize {
+
+	optimizeRequired {
 		var result = SynthDefOptimizationResult();
 		(inputs.size - 1).do({ |i|
 			this.coerceInputFromScalarToDC(i + 1, result);
@@ -313,7 +314,7 @@ LocalOut : AbstractOut {
 		this.multiNewList(['control'] ++ channelsArray.asArray)
 		^0.0		// LocalOut has no output
 	}
-	optimize {
+	optimizeRequired {
 		var result = SynthDefOptimizationResult();
 		this.coerceInputFromScalarToDC(0, result);
 		^result.returnNilIfEmpty;
@@ -335,7 +336,7 @@ XOut : AbstractOut {
 		this.multiNewList(['control', bus, xfade] ++ channelsArray.asArray)
 		^0.0		// Out has no output
 	}
-	optimize {
+	optimizeRequired {
 		var result = SynthDefOptimizationResult();
 		(inputs.size - 2).do({ |i|
 			this.coerceInputFromScalarToDC(i + 2, result);

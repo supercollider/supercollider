@@ -230,6 +230,7 @@ SynthDefOptimizationFlags {
 	*new { |...a, k| ^this.superPerformArgs(\newCopyArgs, a, k) }
 	*all { ^this.new(sorting:true, deduplication: true, rewrite: true, doManyPasses: true) }
 	*allSingle { ^super.newCopyArgs(sorting:true, deduplication: true, rewrite: true, doManyPasses: false) }
+	// Note, none can break synthdefs as it doesn't apply the required optimizations (UGen-optimizeRequired).
 	*none { ^super.newCopyArgs(sorting: false, deduplication: false, rewrite: false, doManyPasses: false) }
 	*onlySorting { ^super.newCopyArgs(sorting: true, deduplication: false, rewrite: false, doManyPasses: false) }
 	*deduplicationAndSorting { ^super.newCopyArgs(sorting: true, deduplication: true, rewrite: false, doManyPasses: false) }
@@ -285,7 +286,7 @@ SynthDef {
 	*initClass {
 		synthDefDir = Platform.userAppSupportDir ++ "/synthdefs/";
 		synthDefDir.mkdir;
-		optimizationLevel = SynthDefOptimizationFlags.allSingle;
+		optimizationLevel = SynthDefOptimizationFlags.onlySorting; // default is just to sort.
 	}
 
 	*newForSynthDesc {
@@ -308,7 +309,7 @@ SynthDef {
 	}
 
 
-	// Same as new, but optimises for a fast language side compile time, rather than fast server--side performance.
+	// Same as new, but optimises for server-side performance. May take a long time to compile when the graph is large.
 	*newOptimize { |...args, kwargs|
 		^SynthDef.performArgs(\newWithOptimizations, [SynthDefOptimizationFlags.all] ++ args, kwargs)
 	}
@@ -349,6 +350,8 @@ SynthDef {
 
 			rewriteInProgress = true;
 			children.do(_.initEdges); // Necessary because of init method in UGen child classes not returning instances of UGen.
+
+			children.do(_.optimizeRequired);
 
 			effectiveUGens = SynthDefOptimizer(effectiveUGens, optimizationLevel.deduplication, optimizationLevel.rewrite, optimizationLevel.doManyPasses);
 

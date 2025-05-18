@@ -325,6 +325,10 @@ UGen : UGenBuiltInMethods {
 	//    this will force the optimizer to re-evaluate those descendants before continuing upwards.
 	optimize { ^nil }
 
+	// An optimization that can't be disabled. Doesn't return a SynthDefOptimizationResult.
+	// Used to make manditory alterations to the graph.
+	optimizeRequired { ^nil }
+
 	// Choose a input validation strategy, see below for options.
 	// Should not change the UGen, only throw when a mistake has been found.
 	checkInputs { ^this.checkValidInputs }

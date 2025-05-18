@@ -58,7 +58,7 @@ TestSynthDefOptimise : UnitTest {
 	compare_optimization_levels { |f, server, threshold, forceDontPrint=false, duration=0.01, msg, extraArgs|
 		var none = TestSynthDefOptimise.compare_create_synth_def(SynthDefOptimizationFlags.none, \none, f).add;
 		var all = TestSynthDefOptimise.compare_create_synth_def(SynthDefOptimizationFlags.all, \all, f).add;
-		var cseAndSorting = TestSynthDefOptimise.compare_create_synth_def(SynthDefOptimizationFlags.deduplicationAndSorting, \cseAndSorting, f).add;
+		var deduplicationAndSorting = TestSynthDefOptimise.compare_create_synth_def(SynthDefOptimizationFlags.deduplicationAndSorting, \deduplicationAndSorting, f).add;
 		var sortingAndRewriteMany = TestSynthDefOptimise.compare_create_synth_def(SynthDefOptimizationFlags.sortingAndRewriteMany, \sortingAndRewriteMany, f).add;
 		var onlySorting = TestSynthDefOptimise.compare_create_synth_def(SynthDefOptimizationFlags.onlySorting, \onlySorting, f).add;
 		var allSingle = TestSynthDefOptimise.compare_create_synth_def(SynthDefOptimizationFlags.allSingle, \allSingle, f).add;
@@ -70,7 +70,7 @@ TestSynthDefOptimise : UnitTest {
 		fork {
 			this.assert(
 				TestSynthDefOptimise.compare_engine(server, threshold, none, all, forceDontPrint, duration, extraArgs),
-				msg + "--- null test against no optimizations and all of them. Num UGens none: % all: %"
+				msg + "--- null test against 'all'. Num UGens none: % all: %"
 				.format(none.children.size, all.children.size);
 			);
 			count = count - 1;
@@ -78,9 +78,9 @@ TestSynthDefOptimise : UnitTest {
 		};
 		fork {
 			this.assert(
-				TestSynthDefOptimise.compare_engine(server, threshold, none, cseAndSorting, forceDontPrint, duration, extraArgs),
-				msg + "--- null test against no optimizations and CSE with sorting. Num UGens none: % cseAndSorting: %"
-				.format(none.children.size, cseAndSorting.children.size);
+				TestSynthDefOptimise.compare_engine(server, threshold, none, deduplicationAndSorting, forceDontPrint, duration, extraArgs),
+				msg + "--- null test against 'deduplicationAndSorting'. Num UGens none: % deduplicationAndSorting: %"
+				.format(none.children.size, deduplicationAndSorting.children.size);
 			);
 			count = count - 1;
 			cond.signalOne;
@@ -88,7 +88,7 @@ TestSynthDefOptimise : UnitTest {
 		fork {
 			this.assert(
 				TestSynthDefOptimise.compare_engine(server, threshold, none, sortingAndRewriteMany, forceDontPrint, duration, extraArgs),
-				msg + "--- null test against no optimizations and no CSE. Num UGens none: % sortingAndRewriteMany: %"
+				msg + "--- null test against 'sortingAndRewriteMany'. Num UGens none: % sortingAndRewriteMany: %"
 				.format(none.children.size, sortingAndRewriteMany.children.size);
 			);
 			count = count - 1;
@@ -97,7 +97,7 @@ TestSynthDefOptimise : UnitTest {
 		fork {
 			this.assert(
 				TestSynthDefOptimise.compare_engine(server, threshold, none, onlySorting, forceDontPrint, duration, extraArgs),
-				msg + "--- null test against no optimizations and only sorting. Num UGens none: % onlySorting: %"
+				msg + "--- null test against 'onlySorting'. Num UGens none: % onlySorting: %"
 				.format(none.children.size, onlySorting.children.size);
 			);
 			count = count - 1;
@@ -106,7 +106,7 @@ TestSynthDefOptimise : UnitTest {
 		fork {
 			this.assert(
 				TestSynthDefOptimise.compare_engine(server, threshold, none, allSingle, forceDontPrint, duration, extraArgs),
-				msg + "--- null test against no optimizations and allSingle. Num UGens none:% allSingle%"
+				msg + "--- null test against 'allSingle'. Num UGens none:% allSingle%"
 				.format(none.children.size, allSingle.children.size);
 			);
 			count = count - 1;
