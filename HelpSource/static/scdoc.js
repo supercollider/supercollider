@@ -344,3 +344,18 @@ function renderTex() {
 window.addEventListener('DOMContentLoaded',function () {
     renderTex();
 });
+
+function getLineNumberStorageValue() {
+    return window.localStorage.getItem("showLineNumbers") === "true"
+}
+
+function setLineNumberStorageValue(v) {
+    window.localStorage.setItem("showLineNumbers", v ? "true" : "false");
+    toggleLineNumbers(v);
+}
+
+function toggleLineNumbers(v) {
+    Array.from(document.querySelectorAll("textarea")).filter((t) => t.hasOwnProperty("editor")).forEach((t) => {
+      t.editor.setOption("lineNumbers", v);
+    });
+}
