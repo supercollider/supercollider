@@ -1377,7 +1377,7 @@ int prPipeOpen(struct VMGlobals* g, int numArgsPushed) {
 
     pid_t pid;
     FILE* file;
-    std::tie(pid, file) = sc_popen(std::move(commandLine), mode);
+    std::tie(pid, file) = sc_popen_shell(std::move(commandLine), mode);
     if (file != nullptr) {
         SetPtr(&pfile->fileptr, file);
         SetInt(callerSlot, pid);

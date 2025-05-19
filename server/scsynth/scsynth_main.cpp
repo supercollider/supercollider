@@ -154,7 +154,8 @@ void Usage() {
 
 
 int scsynth_main(int argc, char** argv) {
-    startServerBootDelayWarningTimer();
+    ServerBootDelayWarningTimer bootDelayWarningTimer;
+    bootDelayWarningTimer.start();
 
     setlinebuf(stdout);
 
@@ -419,17 +420,19 @@ int scsynth_main(int argc, char** argv) {
         return 1;
 
     if (!options.mRealTime) {
+        // Server is ready!
+        bootDelayWarningTimer.stop();
 #ifdef NO_LIBSNDFILE
         return 1;
 #else
-        int exitCode = 0;
         try {
             World_NonRealTimeSynthesis(world, &options);
-        } catch (std::exception& exc) {
-            scprintf("%s\n", exc.what());
-            exitCode = 1;
+            return 0;
+        } catch (const std::exception& exc) {
+            scprintf("NRT synthesis failed: %s\n", exc.what());
+            World_Cleanup(world, true);
+            return 1;
         }
-        return exitCode;
 #endif
     }
 
@@ -446,7 +449,8 @@ int scsynth_main(int argc, char** argv) {
         }
     }
 
-    stopServerBootDelayWarningTimer();
+    // Server is ready!
+    bootDelayWarningTimer.stop();
 
     if (options.mVerbosity >= 0) {
 #ifdef NDEBUG

@@ -4,7 +4,7 @@ related::Classes/Pattern, Classes/Environment, Classes/IdentityDictionary
 categories::Collections>Unordered, Streams-Patterns-Events>Events
 
 DESCRIPTION::
-An Event specifies an action to be taken in response to a link::#-play:: message. Its key/value pairs specify the parameters of that action. Event inherits most of its methods from its superclasses, especially from link::Classes/Dictionary::. For the usage and meaning of the code::parent:: and code::proto:: events, see link::Classes/IdentityDictionary::.
+An Event specifies an action to be taken in response to a link::#-play:: message. Its key/value pairs specify the parameters of that action. Event inherits most of its methods from its superclasses, especially from link::Classes/Dictionary::. Nevertheless Event inherits from link::Classes/IdentityDictionary:: and querying values is done by checking its keys for emphasis::identity::, not emphasis::equality::. For the usage and meaning of the code::parent:: and code::proto:: events, see link::Classes/IdentityDictionary::'s helpfile.
 
 code::
 a = (x: 6, y: 7, play: { (~x * ~y).postln });
@@ -238,6 +238,23 @@ q = (n: 10, x: [1, 2, 3]);
 q[\y] = q[\x] * q[\n];	// similar to ~y = ~x * ~n, but in a separate name space
 q.y = q.x * q.n;	// shorter way to do the same (pseudo-methods)
 q.y;			// [100, 200, 300]
+::
+
+subsection::Syntax subtleties
+
+Events have a very special meaning in a musical context within SuperCollider, especially when it comes to sequencing with Patterns. Nevertheless, as the class inherits from link::Classes/IdentityDictionary::, it is often used as a convenient-to-type replacement for (Identity)Dictionary-like objects. The syntax very much reminds of the declaration of keyword arguments in function or method calls. However, there is a subtle difference:
+
+code::
+e = (a: 10);  // -> ('a': 10)
+a = nil;
+f = (a : 10); // -> nil
+              // ERROR: Primitive '_IdentDict_Put' failed.
+              // a is treated as a variable!
+a = "abc";
+f = (a : 10); // -> ("abc": 10)
+f["abc"];     // -> nil
+              // "abc" is equal to the string stored in a but not identical
+f[a]:         // -> 10
 ::
 
 subsection::Event for specifying different things to happen

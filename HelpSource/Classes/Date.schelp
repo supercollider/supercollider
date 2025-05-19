@@ -37,6 +37,10 @@ Date(2016); // -> Fri Jan  1 00:00:00 2016
 d = Date(2010, day: 15, minute: 30); // -> Fri Jan 15 00:30:00 2010
 [d.asString, d.dayOfWeek, d.rawSeconds]; // dayOfWeek and rawSeconds were computed
 ::
+
+Note::
+On Windows, code::Date:: creation fails for dates before Unix epoch, i.e. before January 1st, 1970.
+::
 ::
 
 It is possible to specify dates with "out of range" values that will be resolved into a valid range -- this allows simple date offset calculations to be performed (see example below).

@@ -244,7 +244,7 @@ void MainWindow::createActions() {
     // (such as cmd+q or window closing)
     action->setMenuRole(QAction::QuitRole);
 
-    QObject::connect(action, SIGNAL(triggered()), this, SLOT(onQuit()));
+    QObject::connect(action, &QAction::triggered, this, &QWidget::close, Qt::QueuedConnection);
     settings->addAction(action, "ide-quit", ideCategory);
 
     mActions[DocNew] = action = new QAction(QIcon::fromTheme("document-new"), tr("&New"), this);

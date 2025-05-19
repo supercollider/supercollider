@@ -24,7 +24,7 @@
 #    include <array>
 #    include <string>
 
-std::tuple<pid_t, FILE*> sc_popen(std::string&& command, const std::string& type) {
+std::tuple<pid_t, FILE*> sc_popen_shell(std::string command, const std::string& type) {
     std::vector<std::string> argv;
     argv.emplace_back("/bin/sh");
     argv.emplace_back("-c");
@@ -163,10 +163,11 @@ std::tuple<pid_t, FILE*> sc_popen_argv(const std::vector<std::string>& strings, 
         strings.begin(), strings.end(), std::string(),
         [](const std::string& a, const std::string& b) -> std::string { return a + (a.length() > 0 ? " " : "") + b; });
 
-    return sc_popen(std::move(commandLine), type);
+    return sc_popen_c(commandLine.data(), type.data());
 }
 
-std::tuple<pid_t, FILE*> sc_popen(std::string&& command, const std::string& type) {
+std::tuple<pid_t, FILE*> sc_popen_shell(std::string command, const std::string& type) {
+    command = "cmd /c " + command;
     return sc_popen_c(command.data(), type.data());
 }
 
@@ -187,7 +188,7 @@ std::tuple<pid_t, FILE*> sc_popen_c(const char* utf8_cmd, const char* mode) {
         return error_result;
     }
 
-    std::wstring cmd = L"cmd /c " + SC_Codecvt::utf8_cstr_to_utf16_wstring(utf8_cmd);
+    std::wstring cmd = SC_Codecvt::utf8_cstr_to_utf16_wstring(utf8_cmd);
 
     current_pid = GetCurrentProcess();
 

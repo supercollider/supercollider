@@ -1,12 +1,14 @@
 class:: Integer
-summary:: Integer number
+summary:: 32-bit Integer number
 categories:: Math
 
 description::
-A 32 bit integer. Integer inherits most of its behaviour from its superclass.
+A 32-bit integer. Integer inherits most of its behaviour from its superclass, link::Classes/SimpleNumber::.
 
 note::
-A 32 bit signed integer can represent values in the range -2147483648 to 2147483647. Adding up further returns in a wrapped result, so that and 2147483647+1 = -2147483648. For a larger range, one can use link::Classes/Float::, which is 64 bit and supports many (but not all) numerical methods that int does.
+Integer can represent values in the range -2147483648 (code::-2^31::) to 2147483647 (code::2^31 - 1::).
+
+The overflow behavior of an Integer is undefined. This occurs whenever the result of an operation does not fit in the range of values supported by the return type, in this case, a 32-bit signed integer. Consider using the 64-bit link::Classes/Float:: for larger numbers (up to code::±2^53::).
 ::
 
 

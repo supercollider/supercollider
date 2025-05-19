@@ -291,36 +291,36 @@ bool tryUniqueMethod(VMGlobals* g, PyrMethod* meth, PyrSlot* receiverSlot, PyrSl
     auto uniqueMethodSlot = &g->classvars->slots[cvxUniqueMethods];
     if (!isKindOfSlot(uniqueMethodSlot, class_identdict))
         return false;
-    auto arraySlot = slotRawObject(uniqueMethodSlot)->slots + ivxIdentDict_array;
-    if (!IsObj(arraySlot))
+    auto uniqueMethodDictArraySlot = slotRawObject(uniqueMethodSlot)->slots + ivxIdentDict_array;
+    if (!IsObj(uniqueMethodDictArraySlot))
         return false;
-    auto array = slotRawObject(arraySlot);
-    if (array->classptr != class_array)
+    auto uniqueMethodDictArray = slotRawObject(uniqueMethodDictArraySlot);
+    if (uniqueMethodDictArray->classptr != class_array)
         return false;
-    auto i = arrayAtIdentityHashInPairs(array, receiverSlot);
-    if (i < 0)
+    auto uniqueMethodOfReceiverIndex = arrayAtIdentityHashInPairs(uniqueMethodDictArray, receiverSlot);
+    if (uniqueMethodOfReceiverIndex < 0)
         return false;
-    auto slot = array->slots + i;
-    if (IsNil(slot))
+    auto receiverUniqueMethodsKey = uniqueMethodDictArray->slots + uniqueMethodOfReceiverIndex;
+    if (IsNil(receiverUniqueMethodsKey))
         return false;
-    ++slot;
-    if (!isKindOfSlot(slot, class_identdict))
+    auto receiverUniqueMethodsValue = receiverUniqueMethodsKey + 1;
+    if (!isKindOfSlot(receiverUniqueMethodsValue, class_identdict))
         return false;
-    auto arraySlot2 = slotRawObject(slot)->slots + ivxIdentDict_array;
-    if (!IsObj(arraySlot2))
+    auto receiverUniqueMethodsArraySlot = slotRawObject(receiverUniqueMethodsValue)->slots + ivxIdentDict_array;
+    if (!IsObj(receiverUniqueMethodsArraySlot))
         return false;
-    auto array2 = slotRawObject(arraySlot2);
-    if (array2->classptr != class_array)
+    auto receiverUniqueMethodsArray = slotRawObject(receiverUniqueMethodsArraySlot);
+    if (receiverUniqueMethodsArray->classptr != class_array)
         return false;
-    auto i2 = arrayAtIdentityHashInPairs(array2, selectorSlot);
-    if (i2 < 0)
+    auto selectorIndex = arrayAtIdentityHashInPairs(receiverUniqueMethodsArray, selectorSlot);
+    if (selectorIndex < 0)
         return false;
-    auto slot2 = array2->slots + i;
-    if (IsNil(slot2))
+    auto selectorMethodKey = receiverUniqueMethodsArray->slots + selectorIndex;
+    if (IsNil(selectorMethodKey))
         return false;
-    ++slot2;
+    auto selectorMethodValue = selectorMethodKey + 1;
     slotCopy(selectorSlot, receiverSlot);
-    slotCopy(receiverSlot, slot2);
+    slotCopy(receiverSlot, selectorMethodValue);
     blockValueWithKeys(g, static_cast<int>(numArgsPushed + 1), static_cast<int>(numKeyArgsPushed));
     return true;
 }

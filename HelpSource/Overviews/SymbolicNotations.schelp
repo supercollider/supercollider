@@ -93,8 +93,10 @@ second condition
 false
 ::
 
-section:: Array and Collection operators
+section:: SequenceableCollection operators
 
+Operators oftwn used with link::Classes/Array::, link::Classes/Collection::, link::Classes/List:: and so on.
+Due to link::Guides/Polymorphism::, the calculation result may vary depending on the class.
 definitionlist::
 ## code:: object ++ object :: || concatenation
 ## code:: collection +++ collection :: || lamination (see link::Guides/J-concepts-in-SC::)

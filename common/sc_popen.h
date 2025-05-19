@@ -37,6 +37,6 @@ std::tuple<pid_t, FILE*> sc_popen_c_argv(const char* filename, char* const argv[
  *
  * This function assumes a UTF-8 encoded, narrow-char string.
  */
-std::tuple<pid_t, FILE*> sc_popen(std::string&& command, const std::string& type);
+std::tuple<pid_t, FILE*> sc_popen_shell(std::string command, const std::string& type);
 std::tuple<pid_t, FILE*> sc_popen_argv(const std::vector<std::string>& strings, const std::string& type);
 int sc_pclose(FILE* iop, pid_t mPid);

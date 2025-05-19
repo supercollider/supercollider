@@ -161,7 +161,7 @@ jobs:
           vcpkg install ${{ matrix.vcpkg-packages }} --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
 
       - name: install qt using aqtinstall
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         if: matrix.qt-version
         env:
           DEVELOPER_DIR: "" # remove developer dir which causes installation to fail
@@ -175,7 +175,7 @@ jobs:
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
 
-          CMAKE_FLAGS="-G Xcode -D RULE_LAUNCH_COMPILE=ccache -D SUPERNOVA=ON  ${{ matrix.extra-cmake-flags }}"
+          CMAKE_FLAGS="-G Xcode -D SUPERNOVA=ON  ${{ matrix.extra-cmake-flags }}"
 
           if [[ -n "${{ matrix.vcpkg-triplet }}" ]]; then
             export VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT

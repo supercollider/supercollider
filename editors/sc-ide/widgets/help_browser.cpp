@@ -29,6 +29,8 @@
 #    include "../core/util/overriding_action.hpp"
 #    include "QtCollider/widgets/web_page.hpp"
 #    include "QtCollider/hacks/hacks_qt.hpp"
+#    include <SC_Filesystem.hpp>
+#    include "standard_dirs.hpp"
 
 #    include <QVBoxLayout>
 #    include <QToolBar>
@@ -43,6 +45,7 @@
 #    include <QKeyEvent>
 
 #    include <QWebEngineSettings>
+#    include <QWebEngineProfile>
 #    if (QT_VERSION < QT_VERSION_CHECK(6, 2, 0))
 #        include <QWebEngineContextMenuData>
 #    else
@@ -59,9 +62,14 @@ HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
     QRect availableScreenRect = qApp->primaryScreen()->availableGeometry();
     mSizeHint = QSize(availableScreenRect.width() * 0.4, availableScreenRect.height() * 0.7);
 
+    // provide custom profile for WebView so LocalStorage is indeed persistent
+    auto const profile = new QWebEngineProfile("sc-qt-ide", this);
+    profile->settings()->setAttribute(QWebEngineSettings::LocalStorageEnabled, true);
+    profile->setPersistentStoragePath(standardDirectory(ScConfigUserDir) + "/webengine-cache");
+    profile->setPersistentCookiesPolicy(QWebEngineProfile::ForcePersistentCookies);
+
     // setPage does not take ownership of webPage; it must be deleted manually later (see below)
-    mWebView = new QtCollider::WebView(this);
-    mWebView->settings()->setAttribute(QWebEngineSettings::LocalStorageEnabled, true);
+    mWebView = new QtCollider::WebView(this, profile);
     mWebView->setContextMenuPolicy(Qt::CustomContextMenu);
 
     // Set the style's standard palette to avoid system's palette incoherencies

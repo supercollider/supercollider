@@ -1300,6 +1300,9 @@ void TDelay_Ctor(TDelay* unit) {
     unit->mCounter = 0;
 
     TDelay_next(unit, 1);
+
+    unit->m_prevtrig = 0.f;
+    unit->mCounter = 0;
 }
 
 

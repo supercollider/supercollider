@@ -245,7 +245,7 @@ void UDP::handleReceivedUDP(const boost::system::error_code& error, std::size_t 
     if (error == boost::asio::error::operation_aborted)
         return; /* we're done */
 
-    if (error == boost::asio::error::connection_refused) {
+    if (error == boost::asio::error::connection_refused || error == boost::asio::error::connection_reset) {
         // avoid windows error message
         startReceiveUDP();
         return;
