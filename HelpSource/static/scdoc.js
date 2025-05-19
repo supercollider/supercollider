@@ -324,7 +324,7 @@ window.addEventListener('DOMContentLoaded',function () {
     renderTex();
 });
 
-/* copy btn icons */
+/* copy-button icons */
 var svgPaths = {
   // https://www.svgviewer.dev/s/488209/copy
   copy: '<svg xmlns="http://www.w3.org/2000/svg" class="copyIco"  viewBox="0 0 24 24"> <path d="M2 4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4h4a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2v-4H4a2 2 0 0 1-2-2V4zm8 12v4h10V10h-4v4a2 2 0 0 1-2 2h-4zm4-2V4H4v10h10z"/> </svg>',
@@ -337,11 +337,11 @@ var svgPaths = {
 document.addEventListener("DOMContentLoaded", function () {
   let mouseIsOver = false;
 
-  $(".btn").html(svgPaths.copy + svgPaths.check);
+  $(".copy-button").html(svgPaths.copy + svgPaths.check);
 
   $(".codeMirrorContainer").each(function () {
     const $container = $(this);
-    const $button = $container.find(".btn");
+    const $button = $container.find(".copy-button");
     const $editor = $container.find(".editor");
 
     $button.on("click", function () {
@@ -364,7 +364,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   $(".codeMirrorContainer").hover(
     function () {
-      $(this).find(".btn, .copyIco").fadeIn(100);
+      $(this).find(".copy-button, .copyIco").fadeIn(100);
       mouseIsOver = true;
     },
     function () {
