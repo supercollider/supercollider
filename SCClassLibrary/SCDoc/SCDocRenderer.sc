@@ -573,7 +573,7 @@ SCDocHTMLRenderer {
                 << "<textarea class='editor'>"
 				<< this.escapeSpecialChars(node.text)
 				<< "</textarea>\n"
-				<< "<button class='copy-button' aria-label='Copy code'></button>"
+				<< "<button class='copy-button' aria-label='Copy code'><span class='copy-ico'>⧉</span><span class='check-ico'>✔</span></button>"
                 << "</div>\n";
 			},
 			\CODE, {
