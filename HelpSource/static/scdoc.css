@@ -794,10 +794,6 @@ div.met_subclasses a.seemore {
     z-index: 1000;
 }
 
-.btn:focus {
-    outline: none;
-}
-
 .copyIco:hover {
     fill: var(--color-cm-class);
 }
