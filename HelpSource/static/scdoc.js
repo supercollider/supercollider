@@ -320,10 +320,6 @@ function renderTex() {
     }
 }
 
-window.addEventListener('DOMContentLoaded',function () {
-    renderTex();
-});
-
 /* copy-button icons */
 var svgPaths = {
   // https://www.svgviewer.dev/s/488209/copy
@@ -372,4 +368,6 @@ document.addEventListener("DOMContentLoaded", function () {
       mouseIsOver = false;
     },
   );
+
+  renderTex();
 });
