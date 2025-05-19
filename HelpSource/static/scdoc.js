@@ -1,3 +1,4 @@
+
 var storage;
 var menubar;
 
@@ -161,7 +162,7 @@ function set_up_toc() {
         if (event.ctrlKey && event.key === "j") {
             $("#toc").scrollTop($("#toc").scrollTop() + 10);
         }
-
+    
         if (event.ctrlKey && event.key === "k") {
             event.preventDefault();
             $("#toc").scrollTop($("#toc").scrollTop() - 10);
@@ -184,7 +185,7 @@ function fixTOC() {
 
     create_menubar_item("", helpRoot + "/Help.html", function (a, li) {
         a.addClass("home");
-        $('<span>', {
+        $('<span>', { 
             text: "SuperCollider"
         }).appendTo(a);
     });
@@ -279,7 +280,7 @@ function applyTheme(theme=null) {
         console.log(`Could not find scdoc-theme css tag! Can not apply theme ${themeName}`);
         return;
     }
-
+    
     cssThemeTag.href = `${scriptLocation.split('/').slice(0, -1).join("/")}/themes/${themeName}.css`;
 }
 
