@@ -362,10 +362,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  $(".copyIco").hover(function () {
-    $(this).children().toggleClass("btnActive");
-  });
-
   $(".codeMirrorContainer").hover(
     function () {
       $(this).find(".btn, .copyIco").fadeIn(100);

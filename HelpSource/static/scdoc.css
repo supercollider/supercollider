@@ -798,11 +798,7 @@ div.met_subclasses a.seemore {
     outline: none;
 }
 
-.btn svg {
-    fill: var(--color-cm-comment);
-}
-
-.btnActive {
+.copyIco:hover {
     fill: var(--color-cm-class);
 }
 
@@ -811,6 +807,8 @@ div.met_subclasses a.seemore {
     width: 20px;
     height: 20px;
     display: block;
+    fill: var(--color-cm-comment);
+    transition: fill .3s ease;
 }
 
 .checkmarkIco {
