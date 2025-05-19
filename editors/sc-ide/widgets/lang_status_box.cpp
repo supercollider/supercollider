@@ -60,7 +60,9 @@ void LangStatusBox::applySettings(Settings::Manager* settings) {
 
     // re-render the box, otherwise we will not update after e.g. a theme switch
     if (mLang != nullptr) {
-        onInterpreterStateChanged(mLang->state());
+        // this crashes on linux and windows, so we will skip that currently,
+        // see https://github.com/supercollider/supercollider/issues/6862
+        // onInterpreterStateChanged(mLang->state());
     }
 }
 
