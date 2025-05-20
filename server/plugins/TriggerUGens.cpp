@@ -118,12 +118,12 @@ struct TDelay : public Unit {
 
 struct ZeroCrossing : public Unit {
     float mLevel, m_prevfrac, m_previn;
-    int32 mCounter;
+    long mCounter;
 };
 
 struct Timer : public Unit {
     float mLevel, m_prevfrac, m_previn;
-    int32 mCounter;
+    long mCounter;
 };
 
 struct Sweep : public Unit {
@@ -903,8 +903,9 @@ void ToggleFF_Ctor(ToggleFF* unit) {
 
     unit->m_prevtrig = 0.f;
     unit->mLevel = 0.f;
-
-    ZOUT0(0) = 0.f;
+    ToggleFF_next(unit, 1);
+    unit->m_prevtrig = 0.f;
+    unit->mLevel = 0.f;
 }
 
 
@@ -1119,9 +1120,13 @@ void PulseDivider_Ctor(PulseDivider* unit) {
 
     unit->m_prevtrig = 0.f;
     unit->mLevel = 0.f;
-    unit->mCounter = (long)floor(ZIN0(2) + 0.5);
+    long initCounter = unit->mCounter = static_cast<long>(floor(ZIN0(2) + 0.5));
 
     PulseDivider_next(unit, 1);
+
+    unit->m_prevtrig = 0.f;
+    unit->mLevel = 0.f;
+    unit->mCounter = initCounter;
 }
 
 
@@ -1394,9 +1399,14 @@ void Timer_Ctor(Timer* unit) {
     SETCALC(Timer_next_a);
 
     unit->m_prevfrac = 0.f;
-    unit->m_previn = ZIN0(0);
-    ZOUT0(0) = unit->mLevel = 0.f;
-    unit->mCounter = 0;
+    unit->m_previn = 0;
+    unit->mCounter = -1;
+    unit->mLevel = 0;
+    Timer_next_a(unit, 1);
+    unit->m_prevfrac = 0.f;
+    unit->m_previn = 0;
+    unit->mCounter = -1;
+    unit->mLevel = 0;
 }
 
 void Timer_next_a(Timer* unit, int inNumSamples) {
@@ -1685,7 +1695,10 @@ void Peak_Ctor(Peak* unit) {
         }
     }
     unit->m_prevtrig = 0.f;
-    ZOUT0(0) = unit->mLevel = ZIN0(0);
+    float initLevel = unit->mLevel = std::abs(ZIN0(0));
+    Peak_next_ai(unit, 1);
+    unit->m_prevtrig = 0.f;
+    unit->mLevel = initLevel;
 }
 
 void Peak_next_ak(Peak* unit, int inNumSamples) {
@@ -1959,7 +1972,9 @@ void PeakFollower_Ctor(PeakFollower* unit) {
     }
 
     unit->mDecay = ZIN0(1);
-    ZOUT0(0) = unit->mLevel = ZIN0(0);
+    float initLevel = unit->mLevel = std::abs(ZIN0(0));
+    PeakFollower_next(unit, 1);
+    unit->mLevel = initLevel;
 }
 
 void PeakFollower_next(PeakFollower* unit, int inNumSamples) {
