@@ -321,8 +321,7 @@ function renderTex() {
     }
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-
+function copyButtonInCodeArea() {
     document.querySelectorAll('.codeMirrorContainer').forEach(container => {
         const button = container.querySelector('.copy-button');
         const editor = container.querySelector('.editor');
@@ -337,7 +336,10 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
     });
+}
 
 
+document.addEventListener("DOMContentLoaded", function () {
+    copyButtonInCodeArea();
     renderTex();
 });
