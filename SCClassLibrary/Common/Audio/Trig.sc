@@ -302,7 +302,7 @@ SendPeakRMS : UGen {
 	writeOutputSpecs {}
 }
 
-InitializationSample : UGen {
+InitializationSample : PureUGen {
 	*ar { |in = 0.0|
 		^this.multiNew('audio', in)
 	}
