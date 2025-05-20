@@ -27,7 +27,7 @@
 
 namespace ScIDE {
 
-LangStatusBox::LangStatusBox(ScProcess* lang, QWidget* parent): StatusBox(parent) {
+LangStatusBox::LangStatusBox(ScProcess* lang, QWidget* parent): StatusBox(parent), mLang(lang) {
     mLabel = new StatusLabel;
     QHBoxLayout* layout = new QHBoxLayout;
     layout->setContentsMargins(0, 0, 0, 0);
@@ -45,10 +45,6 @@ LangStatusBox::LangStatusBox(ScProcess* lang, QWidget* parent): StatusBox(parent
     auto const main = Main::instance();
     applySettings(main->settings());
     connect(main, &Main::applySettingsRequest, this, &LangStatusBox::applySettings);
-
-    onInterpreterStateChanged(lang->state());
-
-    mLang = lang;
 }
 
 void LangStatusBox::applySettings(Settings::Manager* settings) {
@@ -59,11 +55,7 @@ void LangStatusBox::applySettings(Settings::Manager* settings) {
     startingColor = settings->getThemeVal("postwindowwarning").foreground().color();
 
     // re-render the box, otherwise we will not update after e.g. a theme switch
-    if (mLang != nullptr) {
-        // this crashes on linux and windows, so we will skip that currently,
-        // see https://github.com/supercollider/supercollider/issues/6862
-        // onInterpreterStateChanged(mLang->state());
-    }
+    onInterpreterStateChanged(mLang->state());
 }
 
 void LangStatusBox::onInterpreterStateChanged(QProcess::ProcessState state) {
