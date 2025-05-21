@@ -82,6 +82,9 @@ SCDocHTMLRenderer {
 			};
 		};
 
+		// use only forward slash as path separator
+		result = result.replace(Platform.pathSeparator, "/");
+
 		if(linkAnchor.isEmpty) {
 			^result
 		} {
