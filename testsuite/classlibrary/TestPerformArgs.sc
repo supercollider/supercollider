@@ -64,4 +64,26 @@ TestPerformArgs : UnitTest {
 			"superPerformArgs works as expected"
 		);
 	}
+
+	test_syntax_shorthand {
+		var a = ( foo: {|self ...args, kwargs| (self: self, args: args, kwargs: kwargs) } );
+		var b = { |...args, kwargs| (args: args, kwargs: kwargs) };
+		[
+			(args: [], kwargs: []),
+			(),
+			(args: []),
+			(kwargs: []),
+			(args: [1], kwargs: [bar: 10]),
+			(args: [1,2,3,4,5,6,7,8,9,0], kwargs: [a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, g: 7, h: 8, i: 9, j: 0]),
+		].do { |arguments|
+			this.assertEquals(
+				(self: a, args: arguments.args ?? { [] }, kwargs: arguments.kwargs ?? {[]}),
+				a.*foo(arguments.args, arguments.kwargs)
+			);
+			this.assertEquals(
+				(args: arguments.args ?? { [] }, kwargs: arguments.kwargs ?? {[]}),
+				b.*(arguments.args, arguments.kwargs)
+			);
+		}
+	}
 }

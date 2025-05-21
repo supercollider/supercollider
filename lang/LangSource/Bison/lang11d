@@ -345,7 +345,21 @@ msgsend : name blocklist1
 				$$ = (intptr_t)newPyrCallNode(selectornode, args, (PyrParseNode*)$5, (PyrParseNode*)$7);
 			}
 
-		| expr '.' '*' '(' exprseq ',' exprseq ')'
+		| expr '.' '*' name '(' arglist1 ')'
+		    {
+		        PyrSlot slot;
+
+		        SetSymbol(&slot, s_performArgs);
+				PyrSlotNode* selectornode = newPyrSlotNode(&slot);
+
+				PyrParseNode* args = linkNextNode(
+					(PyrParseNode*)$1,
+					newPyrPushLitNode((PyrSlotNode*)$4, NULL)
+                );
+				args = linkNextNode(args, (PyrParseNode*)$6);
+				$$ = (intptr_t)newPyrCallNode(selectornode, args, NULL, 0);
+            }
+		| expr '.' '*' '(' arglist1 ')'
 		    {
 		        PyrSlot slot, slot2;
 		        SetSymbol(&slot, s_performArgs);
@@ -356,7 +370,6 @@ msgsend : name blocklist1
 					newPyrPushLitNode(newPyrSlotNode(&slot2), NULL)
                 );
 				args = linkNextNode(args, (PyrParseNode*)$5);
-				args = linkNextNode(args, (PyrParseNode*)$7);
 				$$ = (intptr_t)newPyrCallNode(selectornode, args, NULL, 0);
             }
 
