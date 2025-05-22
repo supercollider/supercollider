@@ -37,6 +37,9 @@ EnvironmentRedirect {
 		^result
 	}
 
+	// if used in a distributed system, these local methods act without
+	// calling the dispatch and thereby redistributing the data recursively
+
 	localPut { arg key, obj;
 		envir.put(key, obj)
 	}
@@ -232,11 +235,13 @@ LazyEnvir : EnvironmentRedirect {
 		^proxy
 	}
 
+	// if used in a distributed system, these local methods act without
+	// calling the dispatch and thereby redistributing the data recursively
+
 	localRemoveAt { arg key;
 		var proxy;
 		proxy = envir.removeAt(key);
 		if(proxy.notNil) { proxy.clear };
-		dispatch.value(key, nil);
 		^proxy
 	}
 
