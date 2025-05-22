@@ -59,6 +59,8 @@ WebView::WebView(QWidget* parent, QWebEngineProfile* profile): QWebEngineView(pa
     page->action(QWebEnginePage::Copy)->setShortcut(QKeySequence::Copy);
     page->action(QWebEnginePage::Paste)->setShortcut(QKeySequence::Paste);
     page->action(QWebEnginePage::Reload)->setShortcut(QKeySequence::Refresh);
+    page->action(QWebEnginePage::Back)->setShortcut(QKeySequence::Back);
+    page->action(QWebEnginePage::Forward)->setShortcut(QKeySequence::Forward);
 
     connect(this, SIGNAL(loadFinished(bool)), this, SLOT(pageLoaded(bool)));
 }

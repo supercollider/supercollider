@@ -162,14 +162,26 @@ void HelpBrowser::createActions() {
     // For the sake of display:
     mWebView->pageAction(QWebEnginePage::Copy)->setShortcut(QKeySequence::Copy);
     mWebView->pageAction(QWebEnginePage::Paste)->setShortcut(QKeySequence::Paste);
+
+    // proxy page actions to avoid shortcuts conflicts with main window
+    // note that we assign shortcuts here as they don't depend on IDE settings
+    auto proxyPageAction = [this](QAction* pageAction) {
+        // OverridingAction limits shortcut context to this widget
+        auto ovrAction = new OverridingAction(pageAction->icon(), pageAction->text(), this);
+        connect(ovrAction, SIGNAL(triggered()), pageAction, SLOT(trigger()));
+        // disable pageAction shortcut and assign it to ovrAction instead
+        ovrAction->setShortcut(pageAction->shortcut());
+        pageAction->setShortcut(QKeySequence());
+        ovrAction->addToWidget(this);
+        return ovrAction;
+    };
+    mActions[Back] = proxyPageAction(mWebView->pageAction(QWebEnginePage::Back));
+    mActions[Forward] = proxyPageAction(mWebView->pageAction(QWebEnginePage::Forward));
+    mActions[Reload] = proxyPageAction(mWebView->pageAction(QWebEnginePage::Reload));
 }
 
 void HelpBrowser::applySettings(Settings::Manager* settings) {
     settings->beginGroup("IDE/shortcuts");
-
-    mWebView->pageAction(QWebEnginePage::Back)->setShortcut(QKeySequence::Back);
-
-    mWebView->pageAction(QWebEnginePage::Forward)->setShortcut(QKeySequence::Forward);
 
     mActions[DocClose]->setShortcut(settings->shortcut("ide-document-close"));
 
@@ -396,9 +408,9 @@ void HelpBrowser::onContextMenuRequest(const QPoint& pos) {
         menu.addSeparator();
     }
 
-    menu.addAction(mWebView->pageAction(QWebEnginePage::Back));
-    menu.addAction(mWebView->pageAction(QWebEnginePage::Forward));
-    menu.addAction(mWebView->pageAction(QWebEnginePage::Reload));
+    menu.addAction(mActions[Back]);
+    menu.addAction(mActions[Forward]);
+    menu.addAction(mActions[Reload]);
 
 #    if (QT_VERSION < QT_VERSION_CHECK(6, 2, 0))
     if (contextData.selectedText().isEmpty())
@@ -411,9 +423,9 @@ void HelpBrowser::onContextMenuRequest(const QPoint& pos) {
 
     menu.addSeparator();
 
-    menu.addAction(mWebView->pageAction(QWebEnginePage::Back));
-    menu.addAction(mWebView->pageAction(QWebEnginePage::Forward));
-    menu.addAction(mWebView->pageAction(QWebEnginePage::Reload));
+    menu.addAction(mActions[Back]);
+    menu.addAction(mActions[Forward]);
+    menu.addAction(mActions[Reload]);
 
     menu.addSeparator();
 
@@ -491,9 +503,9 @@ HelpBrowserDocklet::HelpBrowserDocklet(QWidget* parent): Docklet(tr("Help browse
 
     toolBar()->addWidget(mHelpBrowser->loadProgressIndicator(), 1);
     toolBar()->addAction(mHelpBrowser->mActions[HelpBrowser::GoHome]);
-    toolBar()->addAction(mHelpBrowser->mWebView->pageAction(QWebEnginePage::Back));
-    toolBar()->addAction(mHelpBrowser->mWebView->pageAction(QWebEnginePage::Forward));
-    toolBar()->addAction(mHelpBrowser->mWebView->pageAction(QWebEnginePage::Reload));
+    toolBar()->addAction(mHelpBrowser->mActions[HelpBrowser::Back]);
+    toolBar()->addAction(mHelpBrowser->mActions[HelpBrowser::Forward]);
+    toolBar()->addAction(mHelpBrowser->mActions[HelpBrowser::Reload]);
     toolBar()->addWidget(mFindBox);
 
     connect(mFindBox, SIGNAL(query(QString, bool)), mHelpBrowser, SLOT(findText(QString, bool)));
