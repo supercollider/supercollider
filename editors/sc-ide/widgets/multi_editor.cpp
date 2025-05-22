@@ -1024,7 +1024,9 @@ void MultiEditor::onDocModified(Document* doc) {
         icon = mDocModifiedIcon;
 
     Main::evaluateCodeIfCompiled(
-        QStringLiteral("Document.findByQUuid(\'%1\').prSetEdited(%2)").arg(doc->id().constData()).arg(isModified),
+        QStringLiteral("var doc = Document.findByQUuid(\'%1\'); doc !? { doc.prSetEdited(%2) };")
+            .arg(doc->id().constData())
+            .arg(isModified),
         true);
 
     mTabs->setTabIcon(tabIdx, icon);
