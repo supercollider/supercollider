@@ -32,9 +32,8 @@ EnvironmentRedirect {
 	}
 
 	removeAt { arg key;
-		var hadKey = true;
-		var result = envir.removeAtFail(key) { hadKey = false; nil };
-		if (hadKey) { dispatch.value(key, nil) };
+		var result = envir.removeAt(key);
+		if (result.notNil) { dispatch.value(key, nil) };
 		^result
 	}
 
@@ -168,7 +167,7 @@ EnvironmentRedirect {
 		^this[selector].functionPerformList(\value, this, args);
 	}
 
-	printOn { | stream |
+	printOn { arg stream;
 		if (stream.atLimit) { ^this };
 		stream << this.class.name << "[" ;
 		envir.printItemsOn(stream);
@@ -253,7 +252,7 @@ LazyEnvir : EnvironmentRedirect {
 		^result
 	}
 
-	storeOn { | stream |
+	storeOn { arg stream;
 		if (stream.atLimit) { ^this };
 		stream << this.class.name << ".newFrom([" ;
 		stream <<<* envir.getPairs.collect { |x, i| if(i.even) { x } { x.source } };
