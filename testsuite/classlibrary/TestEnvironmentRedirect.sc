@@ -55,3 +55,22 @@ TestEnvironmentRedirect : UnitTest {
 	}
 
 }
+
+TestLazyEnvir : TestEnvironmentRedirect {
+	setUp {
+		envir = LazyEnvir();
+		envir.dispatch = { |key, val|
+			notified = true;
+			argsPassed = [key, val];
+		};
+	}
+
+	// these need to be made explicit to become registered, subclassing is not enough
+	test_dispatch_put { super.test_dispatch_put }
+	test_dispatch_put_twice { super.test_dispatch_put_twice }
+	test_dispatch_replace { super.test_dispatch_replace }
+	test_dispatch_set_nil { super.test_dispatch_set_nil }
+	test_dispatch_remove { super.test_dispatch_remove }
+	test_dispatch_remove_twice { super.test_dispatch_remove_twice }
+	test_dispatch_remove_nonexisting { super.test_dispatch_remove_nonexisting }
+}
