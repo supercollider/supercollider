@@ -18,7 +18,7 @@ TestEnvironmentRedirect : UnitTest {
 
 	test_dispatch_put_twice {
 		envir[\test] = 1;
-		this.assert(notified, "should not run dispatch when the same value is put twice");
+		this.assert(notified, "should run dispatch when the same value is put twice");
 		this.assertEquals(argsPassed, [\test, 1], "should pass correct args to dispatch");
 	}
 
