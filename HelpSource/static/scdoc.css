@@ -536,6 +536,8 @@ td p {
     overflow-wrap: break-word;
     right: 0;
     line-height: 130%;
+    text-indent: -0.7em;
+    padding-left: 0.7em;
 }
 #toctitle {
     font-weight: bold;
