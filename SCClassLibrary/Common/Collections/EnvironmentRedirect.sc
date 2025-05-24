@@ -27,8 +27,11 @@ EnvironmentRedirect {
 	}
 
 	put { arg key, obj;
-		envir.put(key, obj);
-		dispatch.value(key, obj);
+		var allNil = obj.isNil and: { envir.at(key).isNil };
+		if(allNil.not) {
+			envir.put(key, obj);
+			dispatch.value(key, obj);
+		}
 	}
 
 	removeAt { arg key;
@@ -221,16 +224,20 @@ LazyEnvir : EnvironmentRedirect {
 	}
 
 	put { arg key, obj;
-		this.at(key).source_(obj);
-		dispatch.value(key, obj);
+		var proxy = this.at(key);
+		var allNil = obj.isNil and: { proxy.source.isNil };
+		if(allNil.not) {
+			this.at(key).source_(obj);
+			dispatch.value(key, obj)
+		}
 	}
 
 	removeAt { arg key;
-		var proxy;
+		var proxy, somethingToRemove;
 		proxy = envir.removeAt(key);
-		if (proxy.notNil) {
+		if (proxy.notNil and: { proxy.source.notNil }) {
 			proxy.clear;
-			dispatch.value(key, nil);
+			dispatch.value(key, nil)
 		};
 		^proxy
 	}
