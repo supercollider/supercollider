@@ -1,27 +1,28 @@
 OSXPlatform : UnixPlatform {
 	var <>preferencesAction; // Warning: scapp only
 	var <>sleepAction, <>wakeAction, <>isSleeping=false;
-
+	
 	initPlatform {
 		super.initPlatform;
 		recordingsDir = "~/Music/SuperCollider Recordings".standardizePath;
 		this.declareFeature(\unixPipes); // pipes are possible (can't declare in UnixPlatform since IPhonePlatform is unixy yet can't support pipes)
 	}
-
+	
 	name { ^\osx }
-
+	version { ^"sw_vers -productVersion".unixCmdGetStdOut }
+	
 	startupFiles {
 		var filename = "startup.rtf";
 		var deprecated = [this.systemAppSupportDir +/+ filename, this.userAppSupportDir +/+ filename];
 		Platform.deprecatedStartupFiles(deprecated);
 		^(deprecated ++ super.startupFiles)
 	}
-
+	
 	startup {
 		Server.program = "exec %/scsynth".format((Platform.resourceDir +/+ "../Resources").shellQuote);
-
+		
 		Score.program = Server.program;
-
+		
 		if(Platform.ideName == "scapp") {
 			Document.implementationClass.startup;
 		};
@@ -37,13 +38,13 @@ OSXPlatform : UnixPlatform {
 			CocoaMenuItem.clearCustomItems;
 		};
 	}
-
+	
 	defaultGUIScheme { ^\qt }
-
+	
 	findHelpFile { | string |
 		^string.findHelpFile;
 	}
-
+	
 	// for now just write syntax colours. Could be other things.
 	writeClientCSS {
 		var theme, file, string;
@@ -94,5 +95,5 @@ OSXPlatform : UnixPlatform {
 		dir = Platform.userAppSupportDir +/+ "tmp/";
 		if(File.exists(dir).not) { dir.mkdir };
 		^dir;
-	}
+	}    
 }

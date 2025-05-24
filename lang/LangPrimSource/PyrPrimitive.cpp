@@ -3348,6 +3348,13 @@ int numUninlinedFunctionsInClassLib(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
+static int prBuildString(struct VMGlobals* g, int numArgsPushed) {
+    PyrSlot* result = g->sp;
+    const auto buildString = SC_BuildString();
+    SetObject(result, newPyrString(g->gc, buildString.c_str(), 0, 1));
+    return errNone;
+}
+
 
 #define PRIMGROWSIZE 480
 PrimitiveTable gPrimitiveTable;
@@ -3932,6 +3939,7 @@ void initPrimitives() {
     definePrimitive(base, index++, "_SC_VersionPatch", prVersionPatch, 1, 0);
     definePrimitive(base, index++, "_SC_VersionTweak", prVersionTweak, 1, 0);
     definePrimitive(base, index++, "_NumUninlinedFunctionInClassLib", numUninlinedFunctionsInClassLib, 1, 0);
+    definePrimitive(base, index++, "_SC_BuildString", prBuildString, 1, 0);
 
     // void initOscilPrimitives();
     // void initControllerPrimitives();
