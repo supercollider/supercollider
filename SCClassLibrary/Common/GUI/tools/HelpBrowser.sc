@@ -278,6 +278,8 @@ HelpBrowser {
 
 		webView.enterInterpretsSelection = true;
 
+		webView.setAttribute(\javascriptCanAccessClipboard, true);
+
 		window.view.keyDownAction = { arg view, char, mods, uni, kcode, key;
 			var keyPlus, keyZero, keyMinus, keyEquals, keySlash;
 			var keyD, keyU, keyF, keyG, keyH, keyJ, keyK, keyL, keyT;

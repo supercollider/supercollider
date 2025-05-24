@@ -774,3 +774,80 @@ div.met_subclasses a.seemore {
 .subheader {
     color: var(--color-fg);
 }
+
+/* Copy button */
+.codeMirrorContainer {
+    position: relative;
+}
+
+.copy-button {
+    position: absolute;
+    top: 4px;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+
+    /* Hidden by default */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease;
+}
+
+.codeMirrorContainer:hover .copy-button,
+.codeMirrorContainer:hover .copy-ico {
+    opacity: 1;
+    visibility: visible;
+}
+
+.codeMirrorContainer:not(:hover) .check-ico {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.copy-ico,
+.check-ico {
+    width: 20px;
+    height: 20px;
+    display: block;
+    font-size: 18px;
+    color: var(--color-cm-comment);
+    transition: color 0.3s ease, opacity 0.2s ease;
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.copy-ico:hover {
+    color: var(--color-cm-class);
+}
+
+.copy-button.copied .copy-ico {
+    display: none;
+}
+
+.copy-button.copied .check-ico {
+    animation: fadeCheckmark 1.4s ease forwards;
+    visibility: visible;
+}
+
+@keyframes fadeCheckmark {
+    0% {
+        opacity: 0;
+    }
+    10%,
+    90% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        visibility: hidden;
+    }
+}

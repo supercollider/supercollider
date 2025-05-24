@@ -572,9 +572,12 @@ SCDocHTMLRenderer {
 				stream << this.htmlForLink(node.text);
 			},
 			\CODEBLOCK, {
-				stream << "<textarea class='editor'>"
+				stream << "<div class='codeMirrorContainer'>"
+                << "<textarea class='editor'>"
 				<< this.escapeSpecialChars(node.text)
-				<< "</textarea>\n";
+				<< "</textarea>\n"
+				<< "<button class='copy-button' aria-label='Copy code'><span class='copy-ico'>⧉</span><span class='check-ico'>✔</span></button>"
+                << "</div>\n";
 			},
 			\CODE, {
 				stream << "<code>"

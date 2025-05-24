@@ -321,6 +321,25 @@ function renderTex() {
     }
 }
 
-window.addEventListener('DOMContentLoaded',function () {
+function copyButtonInCodeArea() {
+    document.querySelectorAll('.codeMirrorContainer').forEach(container => {
+        const button = container.querySelector('.copy-button');
+        const editor = container.querySelector('.editor');
+
+        button.addEventListener('click', () => {
+            navigator.clipboard.writeText(editor.value).then(() => {
+                button.classList.add('copied');
+
+                setTimeout(() => {
+                    button.classList.remove('copied');
+                }, 1400);
+            });
+        });
+    });
+}
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    copyButtonInCodeArea();
     renderTex();
 });
