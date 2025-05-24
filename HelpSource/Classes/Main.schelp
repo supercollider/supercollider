@@ -200,3 +200,9 @@ Get the current link::Classes/Platform::
 
 method::argv
 Get the command-line arguments passed to sclang.
+
+method::systemInformation
+Return a dictionary with system/context information like SuperCollider, QT, and OS versions.
+
+method::postBugReportInfo
+Post system information that is useful to attach to bug reports.
