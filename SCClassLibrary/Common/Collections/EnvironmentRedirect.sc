@@ -233,7 +233,7 @@ LazyEnvir : EnvironmentRedirect {
 	}
 
 	removeAt { arg key;
-		var proxy, somethingToRemove;
+		var proxy;
 		proxy = envir.removeAt(key);
 		if (proxy.notNil and: { proxy.source.notNil }) {
 			proxy.clear;
