@@ -90,9 +90,13 @@ PyrObject* signal_offset(PyrObject* outSignal, float inValue) {
 
 PyrObject* signal_add_xx(VMGlobals* g, PyrObject* ina, PyrObject* inb) { BINOP_LOOP1(+); }
 
+PyrObject* signal_sub_xx(VMGlobals* g, PyrObject* ina, PyrObject* inb) { BINOP_LOOP2(*++c = *++a - *++b;); }
+
 PyrObject* signal_mul_xx(VMGlobals* g, PyrObject* ina, PyrObject* inb) { BINOP_LOOP1(*); }
 
-PyrObject* signal_sub_xx(VMGlobals* g, PyrObject* ina, PyrObject* inb) { BINOP_LOOP2(*++c = *++a - *++b;); }
+PyrObject* signal_mod_xx(VMGlobals* g, PyrObject* ina, PyrObject* inb) { BINOP_LOOP2(++a; *++c = sc_mod(*a, *++b)); }
+
+PyrObject* signal_pow_xx(VMGlobals* g, PyrObject* ina, PyrObject* inb) { BINOP_LOOP2(++a; *++c = sc_pow(*a, *++b);); }
 
 PyrObject* signal_ring1_xx(VMGlobals* g, PyrObject* ina, PyrObject* inb) { BINOP_LOOP2(++a; *++c = *a * *++b + *a;); }
 
@@ -172,6 +176,22 @@ PyrObject* signal_mul_xf(VMGlobals* g, PyrObject* ina, float inb) {
         float* c = (float*)(outc->slots) - 1;
         UNROLL_CODE(outc->size, c, *++c = *++a * inb;)
     }
+    return outc;
+}
+
+PyrObject* signal_mod_xf(VMGlobals* g, PyrObject* ina, double inb) {
+    PyrObject* outc = newPyrSignal(g, ina->size);
+    float* a = (float*)(ina->slots) - 1;
+    float* c = (float*)(outc->slots) - 1;
+    UNROLL_CODE(outc->size, c, ++a; *++c = sc_mod(static_cast<double>(*a), inb);)
+    return outc;
+}
+
+PyrObject* signal_pow_xf(VMGlobals* g, PyrObject* ina, double inb) {
+    PyrObject* outc = newPyrSignal(g, ina->size);
+    float* a = (float*)(ina->slots) - 1;
+    float* c = (float*)(outc->slots) - 1;
+    UNROLL_CODE(outc->size, c, ++a; *++c = sc_pow(static_cast<double>(*a), inb);)
     return outc;
 }
 
@@ -282,6 +302,22 @@ PyrObject* signal_absdif_xf(VMGlobals* g, PyrObject* ina, float inb) {
     float* a = (float*)(ina->slots) - 1;
     float* c = (float*)(outc->slots) - 1;
     UNROLL_CODE(outc->size, c, ++a; *++c = fabs(*a - inb);)
+    return outc;
+}
+
+PyrObject* signal_mod_fx(VMGlobals* g, double ina, PyrObject* inb) {
+    PyrObject* outc = newPyrSignal(g, inb->size);
+    float* b = (float*)(inb->slots) - 1;
+    float* c = (float*)(outc->slots) - 1;
+    UNROLL_CODE(outc->size, c, ++b; *++c = sc_mod(ina, static_cast<double>(*b)););
+    return outc;
+}
+
+PyrObject* signal_pow_fx(VMGlobals* g, double ina, PyrObject* inb) {
+    PyrObject* outc = newPyrSignal(g, inb->size);
+    float* b = (float*)(inb->slots) - 1;
+    float* c = (float*)(outc->slots) - 1;
+    UNROLL_CODE(outc->size, c, ++b; *++c = sc_pow(ina, static_cast<double>(*b));)
     return outc;
 }
 
