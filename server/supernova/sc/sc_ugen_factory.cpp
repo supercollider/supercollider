@@ -41,7 +41,7 @@ std::unique_ptr<sc_ugen_factory> sc_factory;
 
 Unit* sc_ugen_def::construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth* parent, int parentIndex, World* world,
                              linear_allocator& allocator) {
-    const int buffer_length = world->mBufLength;
+    const int buffer_length = parent->mFullRate->mBufLength;
 
     const size_t output_count = unit_spec.output_specs.size();
 
@@ -69,10 +69,10 @@ Unit* sc_ugen_def::construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth
     /* initialize members from synth */
     unit->mParent = static_cast<Graph*>(parent);
     unit->mParentIndex = parentIndex;
-    if (unit_spec.rate == 2)
-        unit->mRate = &world->mFullRate;
+    if (unit_spec.rate == calc_FullRate)
+        unit->mRate = parent->mFullRate;
     else
-        unit->mRate = &world->mBufRate;
+        unit->mRate = parent->mBufRate;
 
     unit->mBufLength = unit->mRate->mBufLength;
 
@@ -88,7 +88,7 @@ Unit* sc_ugen_def::construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth
         w->mBuffer = nullptr;
         w->mScalarValue = 0;
 
-        if (unit->mCalcRate == 2) {
+        if (unit->mCalcRate == calc_FullRate) {
             /* allocate a new buffer */
             assert(unit_spec.buffer_mapping[i] >= 0);
             std::size_t buffer_id = unit_spec.buffer_mapping[i];

@@ -11,7 +11,9 @@ namespace {
 struct test_synth_definition : public synth_definition {
     test_synth_definition(): synth_definition(symbol("foo")) {}
 
-    abstract_synth* create_instance(int node_id) { return new test_synth(node_id, this); }
+    abstract_synth* create_instance(int node_id, int block_size, double upsample) {
+        return new test_synth(node_id, this);
+    }
 };
 }
 
@@ -22,7 +24,7 @@ BOOST_AUTO_TEST_CASE(synth_factory_test_1) {
 
     sf.register_definition(new test_synth_definition);
 
-    unique_ptr<abstract_synth> s(sf.create_instance("foo", 1));
+    unique_ptr<abstract_synth> s(sf.create_instance("foo", 1, 0, 0.0));
 
     BOOST_REQUIRE(s.get() != 0);
 }

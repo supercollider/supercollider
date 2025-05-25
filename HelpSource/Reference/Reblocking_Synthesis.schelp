@@ -1,0 +1,314 @@
+title:: Reblocking Synthesis
+summary:: Using blockSize and upsample in SuperCollider
+categories:: Synthesis
+related:: Classes/Server, Classes/Synth, Classes/Event, Classes/Pattern, Classes/NodeProxy, Classes/Ndef, Classes/ProxySpace
+
+
+
+As of SC Version 3.15, synthesis in scserver becomes much more flexible through Reblocking,  which make blockSize and upsample factor settable per synthesis node.
+
+section:: Background
+
+[rough sketch / layout only, to be written out fully]
+subsection:: SampleRate - trade sound quality vs CPU efficiency
+
+SampleRate tradeoff ... just fast enough for human ears 44100 resp. 48000.
+Higher samplerates in recordings are common for better quality when transforming sounds,
+e.g. transposing them down will sound better.
+In audio synthesis, any generated signals with frequencies above half SR will produce aliasing,
+which means they will be reflected down into the audible range ...
+Many processes, such modulation-intensive patches, may lead to unwanted aliasing.
+code::
+FreqScope(); s.scope; s.meter;
+{ SinOsc.ar(MouseX.kr(20, SampleRate.ir).poll(5, "freq")) * 0.1 }.play;
+{ SinOsc.ar(Line.kr(20, SampleRate.ir, 10, doneAction: 2).poll(5, "freq")) * 0.1 }.play;
+
+// a Saw wave only produces overtones below the sample rate, sounds clean
+{ Saw.ar(MouseX.kr(20, SampleRate.ir * 0.5, \exponential).poll(1)) * 0.1 }.play;
+// as freq goes up above 1000, spectral lines that move down are freq reflected
+// at half sample rate, producing inharmonic background noise
+{ LFSaw.ar(MouseX.kr(20, SampleRate.ir * 0.5, \exponential).poll(1), 0, 0.1) }.play;
+
+// try to subtract them, to bring out the difference of aliasing products ...
+(
+{ var freq = MouseX.kr(20, SampleRate.ir * 0.5, \exponential).poll(1);
+	[LFSaw.ar(freq, 0, 0.7), Saw.ar(freq)].sum * 0.1
+}.play;
+)
+
+// add a modulation example here
+...
+
+// upsampling example with same sound and filtering to show improvement
+...
+::
+
+subsection:: BlockSize - trade sound quality and fast response for CPU efficiency
+
+server blocksize ...
+hardwareBufferSize ...
+point to Latency tester in SpeakersCorner ...
+higher resolution for control signals ...
+feedback processes often work much better at single sample == blocksize 1 ...
+
+
+subsection:: Server checks limits for blockSize and upsample options
+
+The server blockSize setting limits the maximum blockSize, so it has methods to check blockSize and upsample values for validity before using them in settings in NodeProxy class, instances, and slot objects.
+
+code::
+s.options.blockSize
+// true, because power of two, and <= s.options.blockSize:
+s.checkBlockSize(16, "test");
+// false, because not a power of two
+s.checkBlockSize(3, "test");
+// false, upsample also must be a  power of two
+s.checkUpsample(3, "test");
+// also true, can be nil so one can clear a blockSize value
+s.checkBlockSize(nil)
+::
+
+section:: Synth
+
+simplest case, start new synth process with blockSize and upsample settings...
+... todo: request that Synth object should keep blockSize and upsample
+as instvars for reference while synth is running ...
+
+Synth:new has:
+arg defName, args, target, addAction=\addToHead, blockSize, upsample;
+
+
+
+section:: Events and Patterns
+Events and Patterns create and end usually short synth processes in many ways,
+and all of them support blockSize and upsample settings per event...
+
+code::
+s.dumpOSC; // turn on dumpOSC to see the bundles sent.
+
+(blockSize: 16).play; // sends reblock new message: 66 = s_newEx.
+(upsample: 16).play;
+
+// also sends 66 s_newEx messages
+Pdef(\x, Pbind(\note, Pseq((0..7), 2), \dur, 0.125, blockSize: 31)).play;
+
+// a synthdef that produces aliasing,
+// so we hear how upsampling improves it:
+(
+s.waitForBoot {
+	SynthDef(\bsTest, { |amp=0.1, freq=(60.midicps), sustain=1|
+		var snd = LFSaw.ar(XLine.kr(freq, freq * 10, sustain, doneAction: 2), 0, amp);
+
+		BlockSize.ir.poll(0, "BlockSize");
+		(SampleRate.ir / s.sampleRate).poll(0, "upsample");
+		SampleRate.ir.poll(0, "SampleRate");
+
+		// gentle filter for upsampled sounds:
+		snd = RLPF.ar(RLPF.ar(snd, 20000, 0.7), 20000, 0.7);
+		Out.ar(0, snd);
+	}).add;
+}
+)
+
+// Events work, and this synthdef polls BlockSize etc
+(instrument: \bsTest, freq: 2000, dur: 3).play
+(instrument: \bsTest, freq: 2000, dur: 3, upsample: 4).play; // less aliasing
+(instrument: \bsTest, freq: 2000, dur: 3, upsample: 16).play; // even less
+(instrument: \bsTest, blockSize: { 16 }).play; // blockSize is evaluated
+(instrument: \bsTest, blockSize: s.options.blockSize).play
+(instrument: \bsTest, upsample: 3).play
+
+(
+PmonoArtic(
+	\default,
+	\dur, 0.15,
+	\note, Pbrown(0, 12, 3),
+	\blockSize, 16,
+	\legato, Pwhite(0.8, 1.5, 13)
+).play;
+)
+::
+
+section:: JITLib: ProxySpace, Ndef, NodeProxy, Pdef
+
+JITLib supports blockSize and upsample at three layers:
+Classes/Pdef, Classes/PatternProxy, Classes/Tdef, Classes/TaskProxy can set blockSize and upsample for events and patterns generated within them.
+A link::Classes/ProxySpace:: can have its own blockSize and upsample factor that its NodeProxies or Ndefs will use; an link::Classes/Ndef:: or Classes/NodeProxy can have its own blockSize and upsample factor, and individual SynthDefControl objects (within Ndef slots) can have their own settings too.
+
+subsection:: Pdef, PatternProxy, Tdef, TaskProxy
+
+... Pbinds should inherit from enclosing Pdefs ...
+
+code::
+// already works fine when set within Pbinds and Pdefs
+(
+Pdef(\x,
+	Pbind(
+		\instrument, \bsTest,
+		\note, Pseq([0, 12, 24, 36], 5),
+		\dur, 1, \legato, 2,
+		\blockSize, Pseq([63, 32, 16], 7),
+		\upsample, Pseq([1, 2, 4, 8, 16], 4)
+	)
+).play
+)
+
+// setting them in the Pdef works automatically:
+Pdef(\x).set(\blockSize, 8);
+Pdef(\x, Pbind(\instrument, \bsTest, \legato, 2));
+Pdef(\x).play;
+Pdef(\x).set(\upsample, 4);
+
+// In Tdefs, one can use the tdef envir as an event proto
+// which has the settings to use for individual events:
+(
+Tdef(\x).set(\blockSize, 32, \upsample, 2);
+Tdef(\x, { |envir|
+	loop {
+		(instrument: \bsTest).proto_(envir).play;
+		1.wait;
+	}
+});
+Tdef(\x).play;
+)
+::
+
+code::
+// When nothing is set, Ndefs just uses server blockSize
+Ndef(\x, { BlockSize.ir.poll(0); LFSaw.ar(123, 0, 0.3) });
+Ndef(\x).play;
+::
+
+subsection:: NodeProxy slot objects
+The lowest level to set blockSize and upsample is at the objects
+within nodeproxy/Ndef objects, the slots for synthesis processes.
+
+code::
+// turn on dumpOSC to check which messages the server gets
+s.dumpOSC;
+
+Ndef(\x).put(0, { BlockSize.ir.poll(0); LFSaw.ar(123, 0, 0.3) }, blockSize: 32);
+
+// dumpOSC shows: the message begins with 66, which is the special \s_newEx key.
+// the args are defname, nodeID, 1, parentGroup, blockSize, upsample, ... synth params.
+// the default value for blockSize and upsample is 0,
+// so .... 32, 0 ... means blockSize is set to 32, upsample uses its default
+[ 66, "temp__0x10315637_1013", 1004, 1, 1000, 32, 0, "out", 4, "fadeTime", 0.02, "i_out", 4 ]
+
+// setting only the upsample value: ... groupID, 0, 2 ...
+Ndef(\x).put(0, { BlockSize.ir.poll(0); LFSaw.ar(123, 0, 0.3) }, upsample: 2);
+[ 66, "temp__0x10315637_1017", 1006, 1, 1000, 0, 2, "out", 4, "fadeTime", 0.02, "i_out", 4 ]
+::
+
+subsection:: ProxySpace
+
+ProxySpaces can have blockSize upsample values,
+which are passed on to new proxies in that proxyspace.
+
+code::
+Ndef.clear;
+Ndef.dictFor(s) // the proxyspace for all Ndefs on server s
+
+Ndef.dictFor(s).blockSize; // nil by default
+Ndef.dictFor(s).upsample; // nil by default
+
+// set and get its blockSize:
+Ndef.dictFor(s).blockSize = 8;
+Ndef.dictFor(s).blockSize; // now 8
+// set and get its upsample factor
+Ndef.dictFor(s).upsample = 8;
+Ndef.dictFor(s).upsample; // now 8
+
+// Newly made Ndefs inherit these settings from their proxyspace
+Ndef(\y).blockSize;
+Ndef(\y).upsample;
+
+
+// ... and this Ndef then uses its proxyspace's blockSize
+(
+Ndef(\y, {
+	BlockSize.ir.poll(0, "blocksize");
+	SampleRate.ir.poll(0, "samplerate");
+	(SampleRate.ir / s.sampleRate).poll(0, "upsample");
+
+	LFSaw.ar(LFDNoise3.kr([3, 5]).exprange(2000, 20000)) * 0.2
+});
+Ndef(\y).play;
+)
+
+// blockSize and upsample can be cleared again.
+Ndef.dictFor(s).blockSize = nil;  Ndef.dictFor(s).blockSize;
+Ndef.dictFor(s).upsample = nil;   Ndef.dictFor(s).upsample;
+::
+
+subsection:: Ndef, NodeProxy
+
+code::
+// at the mid level, Ndefs can have blockSize and upsample settings
+Ndef(\x).blockSize_(16).upsample_(4);
+Ndef(\x).blockSize;
+Ndef(\x).upsample;
+// which they pass on to the slot objects
+Ndef(\x).put(0, { BlockSize.ir.poll(0); LFSaw.ar(123, 0, 0.3) });
+
+
+// you can override the Ndef settings at the slot object level
+Ndef(\x).put(0, { BlockSize.ir.poll(0); LFSaw.ar(123, 0, 0.3) }, blockSize: 32);
+
+// blockSize/upsample can be different per slot object:
+Ndef(\x).put(5, { BlockSize.ir.poll(0); SampleRate.ir.poll(0); LFSaw.ar(123, 0, 0.3) }, upsample: 2);
+
+// playing a Pdef inside Ndef works when set in Pdef...
+
+Pdef(\x).set(\blockSize, nil);
+Ndef(\x).blockSize_(nil);
+Pdef(\x).set(\upsample, nil);
+Pbind(\instrument, \bsTest, \legato, 1).play;
+Pdef(\x, Pbind(\instrument, \bsTest, \legato, 1)).play;
+Pdef(\x).stop;
+
+// play from Ndef: changes need restarting play - why?
+Ndef(\x, Pdef(\x)).play;
+Ndef(\x).blockSize_(16);
+Ndef(\x, Pdef(\x)).play;
+Ndef(\x).upsample = 4;
+Ndef(\x, Pdef(\x)).play;
+Ndef(\x).blockSize_(nil);
+Ndef(\x, Pdef(\x)).play;
+Ndef(\x).upsample = nil;
+Ndef(\x, Pdef(\x)).play;
+
+// When ndef source is a synthdef, inheriting blockSize or upsample works
+Ndef(\x).blockSize = 8;
+Ndef(\x).upsample = 8;
+Ndef(\x).put(0, \bsTest).play; // why NaN fail?
+// can override at lower level:
+Ndef(\x).put(10, \bsTest, blockSize: 32, upsample: 2).play;
+Ndef(\x).end;
+
+::
+
+subsection:: Tests and Questions
+
+Which event functions get used for which event types:
+Test with checkBlockSize fail messages.
+code::
+(blockSize: 12).play; // eventType: \note
+(blockSize: 12, dur: inf).play; // also \note
+
+(type: \grain, blockSize: 12).play; // \grain
+x = (type: \on, blockSize: 12).play; // \on
+x.release;
+
+// synthEvent:play
+x = (type: \play, blockSize: 12).play; // also becomes \note
+
+// \monoNote
+PmonoArtic(\default, \note, Pn(0, 1), \blockSize, 3).play;
+
+// todo: eventType \fadeBus ...
+
+// Why is this a Synth eventType?
+Ndef(\z).play.put(10, \default, blockSize: 13);
+
+::

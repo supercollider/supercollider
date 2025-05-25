@@ -14,8 +14,8 @@
 		^SynthDefControl
 	}
 
-	makeProxyControl { | channelOffset = 0 |
-		^this.proxyControlClass.new(this, channelOffset);
+	makeProxyControl { | channelOffset = 0, blockSize, upsample |
+		^this.proxyControlClass.new(this, channelOffset, blockSize, upsample);
 	}
 
 
@@ -247,6 +247,8 @@
 				~server = server;
 				~group = group;
 				~out = out.value;
+				~blockSize = ~blockSize ?? { proxy.blockSize };
+				~upsample = ~upsample ?? { proxy.upsample };
 				finish = ~finish;
 				~finish = {
 					finish.value;
