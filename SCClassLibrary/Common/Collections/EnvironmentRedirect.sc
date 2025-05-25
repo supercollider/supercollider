@@ -27,27 +27,15 @@ EnvironmentRedirect {
 	}
 
 	put { arg key, obj;
-		var allNil = obj.isNil and: { envir.at(key).isNil };
-		if(allNil.not) {
-			envir.put(key, obj);
-			dispatch.value(key, obj);
-		}
+		envir.put(key, obj);
+		dispatch.value(key, obj);
 	}
-
-	removeAt { arg key;
-		var result = envir.removeAt(key);
-		if (result.notNil) { dispatch.value(key, nil) };
-		^result
-	}
-
-	// if used in a distributed system, these local methods act without
-	// calling the dispatch and thereby redistributing the data recursively
 
 	localPut { arg key, obj;
 		envir.put(key, obj)
 	}
 
-	localRemoveAt { arg key;
+	removeAt { arg key;
 		^envir.removeAt(key)
 	}
 
@@ -173,7 +161,7 @@ EnvironmentRedirect {
 		^this[selector].functionPerformList(\value, this, args);
 	}
 
-	printOn { arg stream;
+	printOn { | stream |
 		if (stream.atLimit) { ^this };
 		stream << this.class.name << "[" ;
 		envir.printItemsOn(stream);
@@ -224,32 +212,14 @@ LazyEnvir : EnvironmentRedirect {
 	}
 
 	put { arg key, obj;
-		var proxy = this.at(key);
-		var allNil = obj.isNil and: { proxy.source.isNil };
-		if(allNil.not) {
-			this.at(key).source_(obj);
-			dispatch.value(key, obj)
-		}
+		this.at(key).source_(obj);
+		dispatch.value(key, obj); // forward to dispatch for networking
 	}
 
 	removeAt { arg key;
 		var proxy;
 		proxy = envir.removeAt(key);
-		if (proxy.notNil and: { proxy.source.notNil }) {
-			proxy.clear;
-			dispatch.value(key, nil)
-		};
-		^proxy
-	}
-
-	// if used in a distributed system, these local methods act without
-	// calling the dispatch and thereby redistributing the data recursively
-
-	localRemoveAt { arg key;
-		var proxy;
-		proxy = envir.removeAt(key);
 		if(proxy.notNil) { proxy.clear };
-		^proxy
 	}
 
 	localPut { arg key, obj;
@@ -265,7 +235,7 @@ LazyEnvir : EnvironmentRedirect {
 		^result
 	}
 
-	storeOn { arg stream;
+	storeOn { | stream |
 		if (stream.atLimit) { ^this };
 		stream << this.class.name << ".newFrom([" ;
 		stream <<<* envir.getPairs.collect { |x, i| if(i.even) { x } { x.source } };

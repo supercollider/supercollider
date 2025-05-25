@@ -60,8 +60,7 @@ l = LazyEnvir.push;
 method::copy
 Copies the environment into a new one, with each placeholder being copied as well.
 
-
-method::localPut, localRemoveAt
+method::localPut
 Sets the value of the key directly. This method is mainly used internally.
 
 method::proxyClass
