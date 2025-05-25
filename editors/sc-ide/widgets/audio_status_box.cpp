@@ -82,6 +82,10 @@ AudioStatusBox::AudioStatusBox(ScServer* server, QWidget* parent): StatusBox(par
     connect(server, SIGNAL(mutedChanged(bool)), this, SLOT(updateMuteLabel(bool)));
     connect(server, SIGNAL(recordingChanged(bool)), this, SLOT(updateRecordLabel(bool)));
 
+    auto const main = Main::instance();
+    applySettings(main->settings());
+    connect(main, &Main::applySettingsRequest, this, &AudioStatusBox::applySettings);
+
     onServerRunningChanged(false, "", 0, false);
     updateVolumeLabel(server->volume());
     updateMuteLabel(server->isMuted());
@@ -91,10 +95,6 @@ AudioStatusBox::AudioStatusBox(ScServer* server, QWidget* parent): StatusBox(par
     connect(this, &AudioStatusBox::decreaseVolume, [=]() { server->changeVolume(-0.5); });
 
     connect(this, &AudioStatusBox::increaseVolume, [=]() { server->changeVolume(+0.5); });
-
-    auto const main = Main::instance();
-    applySettings(main->settings());
-    connect(main, &Main::applySettingsRequest, this, &AudioStatusBox::applySettings);
 }
 
 void AudioStatusBox::applySettings(Settings::Manager* settings) {
