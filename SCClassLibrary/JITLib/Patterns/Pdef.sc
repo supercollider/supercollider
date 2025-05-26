@@ -778,32 +778,24 @@ PbindProxy : Pattern {
 
 Pbindef : Pdef {
 	*new { arg key ... pairs;
-		var pat, src, newPairs;
+		var pat, src, oldPairs;
 		pat = super.new(key);
 		src = pat.source;
 		if(pairs.isEmpty.not) {
-			if(src.class === PbindProxy) {
+			if(src.isKindOf(PbindProxy)) {
 				src.set(*pairs);
 				pat.wakeUp;
 			} {
-				if(src.isKindOf(Pbind))
-				{
-					newPairs = src.patternpairs.copy;
-					pairs.pairsDo { |key, pat|
-						if(newPairs.includes(key).not) {
-							newPairs = newPairs.add(key);
-							newPairs = newPairs.add(pat);
-						}
-					}
+				if(src.isKindOf(Pbind)) {
+					src = PbindProxy(*src.patternpairs.copy).set(*pairs);
+				} {
+					src = PbindProxy(*pairs);
 				};
-
-				src = PbindProxy.new(*newPairs).quant_(pat.quant);
-				pat.source = src
+				pat.source = src;
 			};
-		};
+			^pat
 
-		^pat
-
+		}
 	}
 
 	storeArgs { ^[key]++pattern.storeArgs }
