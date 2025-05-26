@@ -25,6 +25,7 @@ jobs:
             vcpkg-triplet: x86-windows-release
             use-qtwebengine: "ON" # might need to be turned off for MinGW
             qt-modules: "qtwebengine"
+            ctest: true
             # artifact-suffix: "win32" # set if needed - will trigger artifact upload
             # create-installer: ${{ startsWith(github.ref, 'refs/tags/') }}
             # installer-suffix: "win32-installer"
@@ -41,6 +42,7 @@ jobs:
             vcpkg-triplet: x64-windows-release
             use-qtwebengine: "ON" # might need to be turned off for MinGW
             qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
+            ctest: true
             artifact-suffix: "win64" # set if needed - will trigger artifact upload
             create-installer: ${{ startsWith(github.ref, 'refs/tags/') }}
             installer-suffix: "win64-installer"
@@ -57,6 +59,7 @@ jobs:
             vcpkg-triplet: x64-windows-release
             use-qtwebengine: "ON" # might need to be turned off for MinGW
             qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
+            ctest: false
 
           - job-name: "64-bit MinGW"
             fftw-arch: "x64"
@@ -69,6 +72,7 @@ jobs:
             use-qtwebengine: "OFF" # might need to be turned off for MinGW
             qt-modules: "qtpositioning"
             artifact-suffix: "win64-mingw" # set if needed - will trigger artifact upload
+            ctest: true
 
     name: Windows ${{ matrix.job-name }}
     env:
@@ -197,3 +201,12 @@ jobs:
         with:
           name: ${{ env.INSTALLER_FILE }}
           path: ${{ env.INSTALL_PATH }}/*.exe
+
+      - name: Configure CTests
+        if: matrix.ctest
+        run: cd ${{ github.workspace }}
+
+      - name: Run CTests
+        if: matrix.ctest
+        shell: bash
+        run: cmake --build $BUILD_PATH --config Release --target test
