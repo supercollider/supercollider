@@ -1,5 +1,6 @@
 ServerTreeView {
-	var <server, <bounds, viewParent, <window, resp, updateFunc, updater, tabSize = 25, treeViewStatus;
+	var <server, <bounds, <window, <isRunning, isRunningText, tabSize = 25;
+	var viewParent, resp, updateFunc, updater, treeViewStatus, funcStart, funcStop;
 
 	*new { |server, bounds, parent|
 		server  = server ?? { Server.default };
@@ -19,15 +20,58 @@ ServerTreeView {
 			window = parent
 		}
 		.front;
+
+		window.onClose_{
+			updater.stop;
+			CmdPeriod.remove(updateFunc);
+			resp.free;
+			ServerBoot.remove(funcStart, server);
+			ServerQuit.remove(funcStop, server);
+		};
+
 		view = UserView(window, window.view.bounds);
 		viewParent = view;
-		//if(window.view.respondsTo(\hasHorizontalScroller_)) { window.view.hasHorizontalScroller_(false) };
-		treeViewStatus = StaticText(window, Rect(tabSize, 0, window.bounds.width - (tabSize * 2) + 1, tabSize));
+		treeViewStatus = StaticText(
+			viewParent,
+			Rect(tabSize, 0, viewParent.bounds.width - (tabSize * 2) + 1, tabSize)
+		);
+
 		treeViewStatus
 		.string_(" STOPPED")
-		.font_(Font.sansSerif(14 ).boldVariant)
-		.onClose_{ updateFunc.stop };
-		window.front
+		.font_(Font.sansSerif(14).boldVariant);
+
+		// The following three lines are suggested by @dyfer, but it is contrary to the design by @telephon.
+		// If this part is added, then the lin
+		// So I did not add this part, but I left it as comment.
+		/*
+		if(server.serverRunning) {
+		this.start;
+		};
+		*/
+		isRunningText = {
+			treeViewStatus.string_(" RUNNING: current server tree")
+			.background_(Color.grey(0.9))
+		};
+
+		funcStart = {
+			if(this.isRunning == false and: window.isClosed.not) {
+				isRunningText.();
+				isRunning = true;
+				updateFunc.()
+			}
+		};
+
+		funcStop = {
+			if(window.isClosed.not) {
+				treeViewStatus.string_(" STOPPED: last updated server tree")
+				.background_(Color.grey(0.7));
+				isRunning = false;
+				updater.stop;
+			}
+		};
+
+		ServerBoot.add(funcStart, server);
+		ServerQuit.add(funcStop, server);
 	}
 
 	start { |interval = 0.5, actionIfFail|
@@ -35,27 +79,36 @@ ServerTreeView {
 		var collectChildren, levels, countSize;
 		var view, bounds;
 		var pen, font;
-		var drawFunc;
-
-		treeViewStatus.string_(" RUNNING: current server tree")
-		.background_(Color.grey(0.9));
+		var drawFunc, lastGroupRect, lastSynthRect, lastRect, lastNodeKey, lastNodeSize;
 
 		pen = GUI.current.pen;
 		font = Font.sansSerif(10);
 
 		drawFunc = { |group, xtabs, ytabs|
-			var thisSize, rect, endYTabs;
+			var thisSize, rect, endYTabs, verticalStretchFactor = 1, defaultGroupRect;
 			xtabs = xtabs + 1;
 			ytabs = ytabs + 1;
 			pen.font = font;
-			group.do({|node|
+			group.do({ |node, index|
 				if(node.value.isArray, {
 					thisSize = countSize.value(node);
+					verticalStretchFactor = thisSize.expexp(1, 1000, 1, 1.04);
 					endYTabs = ytabs + thisSize + 0.2;
 					rect = Rect(xtabs * tabSize + 0.5,
-						ytabs * tabSize + 0.5,
+						if (
+							lastRect.notNil && (node.key != 1) && (lastNodeKey != 1)
+						) {
+							if (index == 0) {
+								ytabs * tabSize * verticalStretchFactor
+							} {
+								lastRect.bottom + 5
+							}
+						}
+						{
+							ytabs * tabSize * verticalStretchFactor
+						} + 0.5,
 						viewParent.bounds.width - (xtabs * tabSize * 2),
-						thisSize * tabSize;
+						thisSize * tabSize * verticalStretchFactor
 					);
 					pen.fillColor = Color.grey(0.8);
 					pen.fillRect(rect);
@@ -63,14 +116,38 @@ ServerTreeView {
 					pen.color = Color.black;
 					pen.stringInRect(
 						" Group" + node.key.asString +
-						(node.key == 1).if("- default group", ""),
+						if(node.key == 1) {
+							defaultGroupRect = rect;
+							"- default group"
+						} {
+							""
+						},
 						rect
 					);
 					drawFunc.value(node.value, xtabs, ytabs);
 					ytabs = endYTabs;
+					lastNodeSize = node.value.size;
+					lastGroupRect = rect;
 				},{
 					rect = Rect(xtabs * tabSize + 0.5,
-						ytabs * tabSize + 0.5,
+						/*
+							ytabs * tabSize * (
+							if ("localhost|(S|s)cope".matchRegexp(node.asString)) {
+							verticalStretchFactor.debug(node.key).linlin(1, 1.05, 1.01, 1.03)
+							} {
+							1
+							}
+							) + 0.5
+							*/
+						if(defaultGroupRect.notNil) {
+							if ("localhost|(S|s)cope".matchRegexp(node.asString)) {
+								tabSize * (index - 2) + defaultGroupRect.bottom + 5
+							}{
+								tabSize * index + defaultGroupRect.bottom
+							}
+						} {
+							ytabs * tabSize * verticalStretchFactor
+						} + 0.5,
 						7 * tabSize,
 						0.8 * tabSize
 					);
@@ -83,7 +160,10 @@ ServerTreeView {
 						rect
 					);
 					ytabs = ytabs + 1;
+					lastSynthRect = rect
 				});
+				lastRect = rect;
+				lastNodeKey = node.key
 			});
 			xtabs = xtabs - 1;
 		};
@@ -156,51 +236,56 @@ ServerTreeView {
 				} {
 					viewParent.bounds.height
 				};
-				viewParent.bounds = Rect(0, 0, 400, max(height, tabSize * (countSize.value(levels) + 2)));
+				viewParent.bounds = Rect(0, 0, 400, max(height, tabSize * countSize.value(levels) * 1.06));
 				viewParent.refresh;
 			}
 		}, '/g_queryTree.reply', this.server.addr).fix;
 
-		updater = {
-			fork {
-				loop {
-					defer {
-						if (this.server.serverRunning.not) {
-							if(window.isClosed.not) {
-								treeViewStatus.string_(" STOPPED: last updated server tree")
-								.background_(Color.grey(0.7));
-								this.server.doWhenBooted{
-									treeViewStatus.string_(" RUNNING: current server tree")
-									.background_(Color.grey(0.9))
-								}
+		if(window.isClosed.not) {
+			if(updater.isPlaying.not) {
+				updateFunc = {
+					if(updater.notNil) {
+						updater.stop;
+						updater = nil
+					};
+					updater = (
+						fork {
+							loop {
+								defer {
+									if(server.serverRunning && window.isClosed.not && this.isRunning){
+										isRunningText.()
+									}
+								};
+								this.server.sendMsg("/g_queryTree", 0, 0);
+								interval.wait
 							}
 						}
-					};
-					this.server.sendMsg("/g_queryTree", 0, 0);
-					interval.wait;
+					)
 				};
+				updateFunc.();
+
+				CmdPeriod.add(updateFunc);
+				SystemClock.sched(3, {
+					if(done.not && (isRunning == true), {
+						actionIfFail.value();
+						"Server failed to respond to Group:queryTree!".warn;
+					});
+				});
+				isRunning = true
+			} {
+				"A serverTreeView is already running, so your request will not be executed.\n".warn
 			}
-		};
-		updateFunc = updater.value;
-		CmdPeriod.add(updater);
-		SystemClock.sched(3, {
-			if(done.not, {
-				actionIfFail.value();
-				"Server failed to respond to Group:queryTree!".warn;
-			});
-		});
+		} {
+			"The window containing the ServerTreeView instance is closed.\nCreate one to plot server-side node tree.".warn
+		}
 	}
 
 	stop {
-		treeViewStatus.string_(" STOPPED: last updated server tree")
-		.background_(Color.grey(0.7));
-		updateFunc.stop;
-		CmdPeriod.remove(updater);
-		resp.free;
+		funcStop.();
+		CmdPeriod.remove(updateFunc);
 	}
 
 	close {
-		this.stop;
-		window.close
+		window.close;
 	}
 }

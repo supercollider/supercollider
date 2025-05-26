@@ -51,7 +51,7 @@ d = ServerTreeView(s, Rect(600, 300, 400, 400)).start(2) // The plotting interva
 b.close
 
 // Stop the plotting process for the ServerTreeView instance assigned to variable a:
-a.stop
+a.stop // NOTE: Its label is changed to STOPPED, but still runsd due to d.
 
 // Close multiple ServerTreeView instances (assigned to variables a and c):
 [a, c].do { |v| v.close }
@@ -59,11 +59,14 @@ a.stop
 // Open a plotTree window:
 s.plotTree
 
+// Stop the plotting process for ServerTreeView instance assigned to variable d:
+d.stop // NOTE: Its label is changed to STOPPED, but still runsd due to s.plotTree.
+
+// Stop the plotting process for s.plotTree
+s.serverTreeView.stop // NOTE: stops itself and d.
+
 // Stop the playback of the pattern:
 x.stop
-
-// Stop the plotting process for ServerTreeView instance assigned to variable d:
-d.stop
 
 // Close the ServerTreeView instance assigned to variable d:
 d.close

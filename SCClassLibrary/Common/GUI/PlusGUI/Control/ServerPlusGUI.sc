@@ -360,19 +360,36 @@
 	}
 
 	plotTree { |interval=0.5, bounds|
-		if(serverTreeWindow.isNil) {
+		if(serverTreeWindow.isNil or: { serverTreeWindow.isClosed }) {
 			bounds = bounds ?? { Rect(128, 64, 400, 400) };
 			bounds = bounds.minSize(395@386);
 			serverTreeWindow = Window(name.asString ++ " Node Tree", bounds, scroll:true);
 			serverTreeWindow.onClose = { serverTreeWindow = nil };
-			this.plotTreeView(interval, serverTreeWindow, { defer { serverTreeWindow.close } });
+			this.plotTreeView(
+				interval,
+				serverTreeWindow,
+				{ defer { serverTreeWindow.close };
+					(
+						".plotTree closes the window if the related server is not running when the window is opened.\n"
+						++ "To start such an interface when the related server is not running, use ServerTreeView."
+					).warn;
+			});
+			serverTreeWindow.front
 		} {
+			serverTreeWindow.alwaysOnTop_(true).front.alwaysOnTop_(false);
+			(
+				"The .plotTree method only allows one window.\n"
+				++ "To open multiple instances, use ServerTreeView."
+			).warn;
 			if(bounds.notNil) {
-				bounds = bounds.minSize(395@386);
-				serverTreeWindow.bounds_(bounds)
+				serverTreeWindow.bounds = bounds.minSize(395@386)
 			};
+			if(interval.notNil) {
+				serverTreeView.stop;
+				serverTreeView.start(interval)
+			};
+			serverTreeWindow.front
 		};
-		serverTreeWindow.front;
 		^serverTreeView
 	}
 
