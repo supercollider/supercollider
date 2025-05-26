@@ -129,7 +129,7 @@ TestPatternProxy : UnitTest {
 
 	test_update {
 		var assert = { |what, which|
-			this.assert(what, "testing '%' failed.".format(which), false)
+			this.assert(what, "Test named '%' failed.".format(which), false)
 		};
 
 		Pdefn.clear;
@@ -190,7 +190,7 @@ TestPatternProxy : UnitTest {
 		var assert = { |a, b, which|
 			//a = a.collect(removeCleanup);
 			//b = b.collect(removeCleanup);
-			this.assert(a == b, "testing '%' failed.".format(which), false)
+			this.assertEquals(a, b, "Test named '%' failed. The following two should be equal:\n%\n%".format(which, a, b), false)
 		};
 
 

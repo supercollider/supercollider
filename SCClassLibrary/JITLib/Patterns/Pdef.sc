@@ -793,9 +793,8 @@ Pbindef : Pdef {
 				};
 				pat.source = src;
 			};
-			^pat
-
-		}
+		};
+		^pat
 	}
 
 	storeArgs { ^[key]++pattern.storeArgs }
