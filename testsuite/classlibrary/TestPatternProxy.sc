@@ -316,6 +316,25 @@ TestPatternProxy : UnitTest {
 
 		Pdefn.clear;
 
+		Pdef.clear;
+		Pdef(\p, Pbind(\a, 4, \b, Pkey(\c)));
+		Pbindef(\p, \b, Pkey(\a));
+		assert.(
+			Pbindef(\p).asStream.nextN(1, ()),
+			[(a:4, b: 4)],
+			5.5
+		);
+
+		Pdef.clear;
+		Pbindef(\x, \a, 1, \b, Pkey(\c));
+		Pbindef(\p, \b, Pkey(\a));
+		assert.(
+			Pbindef(\p).asStream.nextN(1, ()),
+			[(a:4, b: 4)],
+			5.6
+		);
+
+
 		Pdefn(\x, 9);
 		Pdefn(\y, Pseq([1, 2, 3]));
 		Pdefn(\z, Pdefn(\x) + Pdefn(\y));
