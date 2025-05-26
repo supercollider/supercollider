@@ -326,7 +326,7 @@ TestPatternProxy : UnitTest {
 		);
 
 		Pdef.clear;
-		Pbindef(\x, \a, 1, \b, Pkey(\c));
+		Pbindef(\p, \a, 4, \b, Pkey(\c));
 		Pbindef(\p, \b, Pkey(\a));
 		assert.(
 			Pbindef(\p).asStream.nextN(1, ()),
