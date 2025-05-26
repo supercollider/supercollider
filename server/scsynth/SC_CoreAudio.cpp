@@ -885,17 +885,58 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
             return false;
         }
 
-        if (
-            // We do not support mismatched input and output sample rates, but there's no harm in skipping
-            // this check if numInputBusChannels == 0. This allows the user to disable input entirely as
-            // a workaround for a sample rate mismatch.
-            mWorld->mNumInputs > 0 && !mExplicitSampleRate
-            && inputStreamDesc.mSampleRate != outputStreamDesc.mSampleRate) {
-            scprintf("ERROR: Input sample rate is %g, but output is %g. "
-                     "Mismatched sample rates are not supported. "
-                     "To disable input, set the number of input channels to 0.\n",
+        if (!mExplicitSampleRate && inputStreamDesc.mSampleRate != outputStreamDesc.mSampleRate) {
+            UInt32 dataSize;
+
+            // Check if the input device is in use
+            UInt32 inUse = 0;
+            dataSize = sizeof(inUse);
+
+            propertyAddress.mSelector = kAudioDevicePropertyDeviceIsRunningSomewhere;
+            propertyAddress.mScope = kAudioDevicePropertyScopeInput;
+
+            OSStatus status = AudioObjectGetPropertyData(mInputDevice, &propertyAddress, 0, nullptr, &dataSize, &inUse);
+
+            if (status == noErr && inUse) {
+                scprintf("ERROR: Input sample rate is %g, but output is %g. "
+                         "Input device is in use - we won't try changing its sample rate to match the output.\n"
+                         "Possible solutions:\n"
+                         "- in your system's \"Audio MIDI Setup\", set sample rate to the same "
+                         "value on both the input and output devices\n"
+                         "WARNING: this may interrupt audio capture of another application "
+                         "currently using the input device!\n"
+                         "- or, disable input completely:\n"
+                         "    s.options.numInputBusChannels = 0;\n",
+                         inputStreamDesc.mSampleRate, outputStreamDesc.mSampleRate);
+                return false;
+            }
+
+            scprintf("WARNING: Input sample rate is %g, but output is %g. "
+                     "Attempting to set input sample rate to match the output.\n",
                      inputStreamDesc.mSampleRate, outputStreamDesc.mSampleRate);
-            return false;
+
+            auto sampleRate = outputStreamDesc.mSampleRate;
+            dataSize = sizeof(sampleRate);
+
+            // Set the same rate on the input device
+            propertyAddress.mSelector = kAudioDevicePropertyNominalSampleRate;
+            propertyAddress.mScope = kAudioDevicePropertyScopeInput;
+
+            err = AudioObjectSetPropertyData(mInputDevice, &propertyAddress, 0, NULL, dataSize, &sampleRate);
+            if (err != noErr) {
+                scprintf("ERROR: Setting sample rate failed. OSStatus %4.4s\n"
+                         "Possible solutions:\n"
+                         "- explicitly set the sample rate to one supported by both devices:\n"
+                         "    s.options.sampleRate = <rate>;\n"
+                         "- or, in your system's \"Audio MIDI Setup\", set sample rate to the same "
+                         "value on both the input and output devices\n"
+                         "- or, disable input completely:\n"
+                         "    s.options.numInputBusChannels = 0;\n",
+                         (char*)&err);
+                return false;
+            }
+            // set mExplicitSampleRate so that we open both input and output with the new sample rate further down
+            mExplicitSampleRate = sampleRate;
         }
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////
