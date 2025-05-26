@@ -272,7 +272,7 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) 
     fprintf(stdout, "\nDevice options:\n");
     for (int i = 0; i < numDevices; i++) {
         pdi = Pa_GetDeviceInfo(i);
-        fprintf(stdout, "%d: %s\u2028   (%d ins, %d outs)\n", i, GetPaDeviceName(i).c_str(), pdi->maxInputChannels,
+        fprintf(stdout, "%d: %s\n   (%d ins, %d outs)\n", i, GetPaDeviceName(i).c_str(), pdi->maxInputChannels,
                 pdi->maxOutputChannels);
     }
 
