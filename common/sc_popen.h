@@ -29,6 +29,7 @@
 #    define WTERMSIG(w) (w)
 
 std::tuple<pid_t, FILE*> sc_popen_c(const char* utf8_cmd, const char* mode);
+std::string quoteWindowsArg(const std::string& arg);
 #else
 std::tuple<pid_t, FILE*> sc_popen_c_argv(const char* filename, char* const argv[], const char* type);
 #endif
