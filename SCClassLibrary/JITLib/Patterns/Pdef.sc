@@ -778,10 +778,10 @@ PbindProxy : Pattern {
 
 Pbindef : Pdef {
 	*new { arg key ... pairs;
-		var pat, src, oldPairs;
+		var pat, src;
 		pat = super.new(key);
-		src = pat.source;
 		if(pairs.isEmpty.not) {
+			src = pat.source;
 			if(src.isKindOf(PbindProxy)) {
 				src.set(*pairs);
 				pat.wakeUp;
