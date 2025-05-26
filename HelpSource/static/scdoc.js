@@ -254,6 +254,10 @@ function buildThemeSwitcher() {
             themeLink.appendTo(themesMenu);
         });
 
+        themesMenu.append($("<hr>"));
+
+        buildLineNumberSwitch(themesMenu);
+
         a.on("click", function (e) {
             e.preventDefault();
             themesMenu.toggle();
@@ -265,6 +269,22 @@ function buildThemeSwitcher() {
             }
         });
     });
+}
+
+function buildLineNumberSwitch(themesMenu) {
+    const lineNumberCheckbox = $("<input>", {
+      type: "checkbox",
+      id: "line-number-checkbox",
+      checked: getLineNumberStorageValue(),
+    }).on("click", () => {
+      setLineNumberStorageValue(!getLineNumberStorageValue());
+    });
+    const lineNumberLabel = $("<label>", {
+      text: "Line numbers",
+      for: "line-number-checkbox",
+    });
+    const lineNumberSwitch = $("<div>").append(lineNumberCheckbox).append(lineNumberLabel);
+    themesMenu.append(lineNumberSwitch);
 }
 
 function setTheme(themeName) {
@@ -343,3 +363,18 @@ document.addEventListener("DOMContentLoaded", function () {
     copyButtonInCodeArea();
     renderTex();
 });
+
+function getLineNumberStorageValue() {
+    return window.localStorage.getItem("showLineNumbers") === "true"
+}
+
+function setLineNumberStorageValue(v) {
+    window.localStorage.setItem("showLineNumbers", v ? "true" : "false");
+    toggleLineNumbers(v);
+}
+
+function toggleLineNumbers(v) {
+    Array.from(document.querySelectorAll("textarea")).filter((t) => t.hasOwnProperty("editor")).forEach((t) => {
+      t.editor.setOption("lineNumbers", v);
+    });
+}
