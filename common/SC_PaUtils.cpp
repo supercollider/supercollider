@@ -5,6 +5,9 @@
 #include <cstdio>
 #include <cstdint>
 
+#ifdef _WIN32
+#    include <pa_win_wasapi.h>
+#endif
 #ifdef __APPLE__
 #    include <pa_mac_core.h>
 #endif
@@ -169,6 +172,22 @@ PaStreamParameters MakePaStreamParameters(int device, int channelCount, double s
     static PaMacCoreStreamInfo macInfo;
     PaMacCore_SetupStreamInfo(&macInfo, paMacCorePro);
     streamParams.hostApiSpecificStreamInfo = &macInfo;
+#elif defined(_WIN32)
+    // WASAPI options
+    static PaWasapiStreamInfo wasapiInfo = []() {
+        PaWasapiStreamInfo info;
+        memset(&info, 0, sizeof(info));
+        info.size = sizeof(PaWasapiStreamInfo);
+        info.hostApiType = paWASAPI;
+        info.version = 1;
+        info.flags = paWinWasapiAutoConvert; // automatic sample rate conversion
+        return info;
+    }();
+
+    const PaDeviceInfo* info = Pa_GetDeviceInfo(device);
+    const PaHostApiInfo* api = Pa_GetHostApiInfo(info->hostApi);
+    if (api->type == paWASAPI)
+        streamParams.hostApiSpecificStreamInfo = &wasapiInfo;
 #else
     streamParams.hostApiSpecificStreamInfo = nullptr;
 #endif
