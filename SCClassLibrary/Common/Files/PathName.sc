@@ -1,13 +1,14 @@
 /*
-Path is an update to the PathName class, modeled on Python Path/pathlib.
+Path is an update/replacement for the PathName class, modeled on Python Path/pathlib.
 It collects all path-related methods in one consistent interface.
 For backwards compatibility, PathName is kept as a subclass with its
-old interface; PathName and its suboptimal methods will be deprecated.
+old interface; PathName and its suboptimal methods may be deprecated later.
 
-Path will also use some path-related functionality of String and File.
-Because all path-accessing primitives expect a String as input,
-calls to them will convert Path (and PathName) objects to Strings
-with .asPath.
+Path may later also add path-related functionality from String and File.
+All path-accessing primitives expect a String as input,
+so methods calling them should call obj.asPathString(path);
+this converts Path objects to Strings, and leaves Strings untouched.
+
 */
 
 Path {
@@ -32,30 +33,46 @@ Path {
 		})
 	}
 
-	// call to convert to string
-	asPath { ^str.standardizePath }
-
-	fileName { ^str.fileName }
-	fileNameWithoutExtension { ^str.fileNameWithoutExtension }
-	fileNameWithoutDoubleExtension { ^str.fileNameWithoutDoubleExtension }
-	extension { ^str.extension }
-	// needed for isFile, isFolder distinction
-	dirname { ^str.dirname 	+/+ Platform.pathSeparator }
-	parentPath { ^this.dirname }
-	// need to keep this one?
-	folderName { ^str.dirname.basename }
-
-	// nested dirs,not starting slash
+	// access path parts - recommended new:
+	name { ^str.basename }
+	parent { ^Path(str.dirname) }
+	// nested dirs as strings, drop initial empty string
 	parts { ^str.split(Platform.pathSeparator).select(_.notEmpty) }
 
+	// from PathName
+	fileName { ^str.basename }
+	fileNameWithoutExtension { ^str.basename.splitext[0] }
+	fileNameWithoutDoubleExtension { ^str.basename.splitext[0].splitext[0] }
+	extension { ^str.splitext.last ? "" }
+	type { File.type(str) }
+
+	// needed for PathName isFile, isFolder distinction
+	dirname { ^str.dirname 	+/+ Platform.pathSeparator }
+	// also from PathName - need to keep this one?
+	folderName { ^str.dirname.basename }
+
 	// conversions
-	absolutePath { ^str.absolutePath }
-	relativeTo { |path2| ^str.asRelativePath(path2) }
-	withName { |name| ^this.class.new(str.dirname +/+ name) }
+	absolutePath { ^Path(str.absolutePath) }
+	relativeTo { |path2| ^Path(str.asRelativePath(path2)) }
+	withName { |name| ^Path(str.dirname +/+ name) }
+	// call this to convert to string before read or write primitive
+	asPathString { ^str.standardizePath }
+	// for OSC communication
+	asOSCArgArray { ^str.standardizePath }
+
+	asPath { ^this }
 
 	// tests
-	isAbsolute { ^str.isAbsolutePath }
-	isRelative { ^str.isAbsolutePath.not }
+	isAbsolute {
+		^Platform.case(\windows) {
+			"Windows".postln;
+			str.drop(1).beginsWith(":\\") or: { "\\\\".beginsWith("\\\\") }
+		} {
+			// unix
+			str.at(0).isPathSeparator
+		}
+	}
+	isRelative { ^this.isAbsolute.not }
 	exists { ^File.exists(str) }
 	== { |path2| ^str == path2.str }
 
@@ -65,28 +82,72 @@ Path {
 	isFile { ^str.last != Platform.pathSeparator }
 
 	// not sure these are needed?
-	separatorIndices { ^str.separatorIndices }
-	lastSeparatorIndex { ^str.lastSeparatorIndex }
+	separatorIndices {
+		var res = List[];
+		str.do { |ch, i| if (ch.isPathSeparator) { res = res.add(i) } };
+		^res
+	}
 
-	//
-	nextName { ^str.nextName }
-	noEndNumbers { ^str.noEndNumbers }
-	endNumber { ^str.endNumber }
-	endNumberIndex { ^str.endNumberIndex }
+	lastSeparatorIndex { ^this.separatorIndices.last ? -1 }
+
+	// are these good enough to keep here?
+	nextName {
+		var name, ext;
+		if (str.last.isDecDigit) {
+			^this.noEndNumbers ++ (this.endNumber + 1)
+		};
+		#name, ext = str.splitext;
+		if (ext.isNil) {
+			^name ++ "1"
+		};
+		^Path(name).nextName ++ "." ++ ext
+	}
+
+	noEndNumbers {
+		^str[..this.endNumberIndex]
+	}
+
+	endNumber {	// turn consecutive digits at the end of this into a number.
+		^str[this.endNumberIndex + 1..].asInteger
+	}
+
+	endNumberIndex {
+		var index = str.lastIndex;
+		while({
+			index > 0 and: { str.at(index).isDecDigit }
+		}, {
+			index = index - 1
+		});
+		^index
+	}
 
 	/* concatenation */
 	+/+ { | path |
 		var otherstr = path.respondsTo(\str).if({ path.str }, { path.asString });
 		^this.class.new(str +/+ otherstr)
 	}
+
 	// search
 	match { ^str.pathMatch }
-	entries { ^str.entries }
-	files { ^str.files }
-	folders { ^str.folders }
-	deepFiles { ^str.deepFiles }
+	entries { ^pathMatch(str +/+ "*") }
+	files { ^this.entries.select({ | item |item.isFile }) }
+	folders { ^this.entries.select({ | item | item.isFolder }) }
 
-	filesDo { |func| ^str.filesDo(func) }
+	deepFiles { ^this.entries.collect({ | item |
+			if(item.isFile, {
+				item
+			},{
+			Path(item).deepFiles
+			})
+		}).flatIf { |item| item.isKindOf(String).not }
+	}
+
+	filesDo { | func |
+		this.files.do(func);
+		this.folders.do { | path |
+			Path(path).filesDo(func)
+		};
+	}
 
 	// text output
 	streamTree { | str, tabs = 0 | str.streamTree(str, tabs) }
@@ -108,17 +169,10 @@ PathName : Path {
 	fullPath { ^str }
 
 	// old methods, colon was Mac OS9 path separator...
-	colonIndices { ^str.separatorIndices }
-	lastColonIndex { ^str.lastSeparatorIndex }
+	colonIndices { ^this.separatorIndices }
+	lastColonIndex { ^this.lastSeparatorIndex }
 
 	isFolder { ^str.last.isPathSeparator }
-
-	isFile {
-		var path = str.pathMatch;
-		^if(path.notEmpty, {
-			path.at(0).last.isPathSeparator.not
-		}, { false })
-	}
 
 	// PathName:pathOnly ended with separator
 	pathOnly {
@@ -131,8 +185,6 @@ PathName : Path {
 
 	allFolders { ^List.newFrom(this.parts.drop(-1)) }
 
-	folderName { ^str.folderName }
-
 	== { |other| { ^str.absolutePath }
 		^other.respondsTo(\str) and: { other.str == this.str }
 	}
@@ -141,6 +193,7 @@ PathName : Path {
 	isAbsolutePath { ^this.isAbsolute }
 	asRelativePath { |path2| ^str.asRelativePath(path2) }
 
-	parentPath { ^str.parentPath }
+	// alias for PathName:dirname
+	parentPath { ^this.dirname }
 
 }
