@@ -3505,7 +3505,7 @@ void doPrimitive(VMGlobals* g, PyrMethod* meth, int numArgsPushed) {
 #ifdef GC_SANITYCHECK
         g->gc->SanityCheck();
 #endif
-    } catch (std::exception& ex) {
+    } catch (std::exception&) {
         g->lastExceptions[g->thread] = std::make_pair(std::current_exception(), meth);
         err = errException;
     } catch (...) {
@@ -3548,7 +3548,7 @@ void doPrimitiveWithKeys(VMGlobals* g, PyrMethod* meth, int allArgsPushed, int n
         g->numpop = allArgsPushed - 1;
         try {
             err = ((PrimitiveWithKeysHandler)def[1].func)(g, allArgsPushed, numKeyArgsPushed);
-        } catch (std::exception& ex) {
+        } catch (std::exception&) {
             g->lastExceptions[g->thread] = std::make_pair(std::current_exception(), meth);
             err = errException;
         } catch (...) {
@@ -3622,7 +3622,7 @@ void doPrimitiveWithKeys(VMGlobals* g, PyrMethod* meth, int allArgsPushed, int n
     g->numpop = numArgsNeeded - 1;
     try {
         err = (*def->func)(g, numArgsNeeded);
-    } catch (std::exception& ex) {
+    } catch (std::exception&) {
         g->lastExceptions[g->thread] = std::make_pair(std::current_exception(), meth);
         err = errException;
     } catch (...) {

@@ -227,7 +227,7 @@ static void PMProcessMidi(PtTimestamp timestamp, void* userData) {
 
     for (int i = 0; i < gNumMIDIInPorts; ++i) {
         for (;;) {
-            long Tstatus, data1, data2;
+            long Tstatus;
             // Only lock the PM mutex while accessing the PortMidi functionality. It is very important to not acquire
             // the lang mutex while holding the PM mutex to avoid a deadlock, since the laguage may try to acquire the
             // PM mutex for a MIDIOut operation
@@ -415,7 +415,7 @@ static int initMIDI(int numIn, int numOut) {
         const PmDeviceInfo* devInfo = Pm_GetDeviceInfo(pmdid);
         const PmError error = Pm_OpenOutput(&gMIDIOutStreams[i], pmdid, NULL, 512L, NULL, NULL, 0);
 
-        std::printf("MIDI: device %d %d %d %s (%s)\n", i, pmdid, &gMIDIOutStreams[i], Pm_GetErrorText(error),
+        std::printf("MIDI: device %d %d %p %s (%s)\n", i, pmdid, &gMIDIOutStreams[i], Pm_GetErrorText(error),
                     devInfo->name);
 
         if (error) {

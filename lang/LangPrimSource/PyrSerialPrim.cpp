@@ -203,7 +203,7 @@ private:
                 if (bytesTransferred > 0) {
                     dataAvailable();
                 }
-            } catch (const boost::system::system_error& e) {
+            } catch (const boost::system::system_error&) {
                 // TODO: pass info on error to sclang? ignore spurious errors?
                 doneAction();
                 return;
@@ -374,7 +374,7 @@ static int prSerialPort_Open(struct VMGlobals* g, int numArgsPushed) {
         } else {
             throw;
         }
-    } catch (std::exception& e) {
+    } catch (std::exception&) {
         delete port;
         // TODO: check error types to provide better messages, such as when port doesn't exist
         throw;

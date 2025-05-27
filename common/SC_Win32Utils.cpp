@@ -186,7 +186,7 @@ int win32_pipewrite(int s, char* buf, int len) {
 bool win32_thread_set_affinity(int i) {
 #    if STRICT_THREAD_AFFINITY
     // SetThreadAffinityMask forces a thread to run only on the specified core(s)
-    DWORD_PTR mask = 1 << i;
+    DWORD_PTR mask = (DWORD_PTR)1 << i;
     DWORD_PTR prev = SetThreadAffinityMask(GetCurrentThread(), mask);
 #        if DEBUG_THREAD_AFFINITY
     fprintf(stdout, "set thread %d affinity mask: previous: %lx, new: %lx\n", i, prev, mask);
