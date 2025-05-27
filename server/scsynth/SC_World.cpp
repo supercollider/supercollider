@@ -286,6 +286,19 @@ bool asioThreadStarted();
 }
 
 
+int World_Size() {
+    return sizeof(WorldOptions);
+}
+
+World* World_New_NoOptions() { 
+    WorldOptions Options; 
+
+    // Options.mUGensPluginPath = "C:\\Users\\s.cornaz\\supercollider\\Coucou\\SuperCollider\\plugins";
+    Options.mUGensPluginPath = "C:\\Users\\s.cornaz\\supercollider\\build\\server\\plugins\\Release";
+    Options.mSharedMemoryID = 57110;
+    return World_New(&Options);
+}
+
 World* World_New(WorldOptions* inOptions) {
 #if (_POSIX_MEMLOCK - 0) >= 200112L
     if (inOptions->mMemoryLocking && inOptions->mRealTime) {
@@ -926,6 +939,14 @@ void World_Cleanup(World* world, bool unload_plugins) {
     if (!world)
         return;
 
+
+    if (world->udpSocket)
+    {
+        world->udpSocket->Close();
+        delete world->udpSocket;
+        world->udpSocket = nullptr;
+    }
+
     if (scsynth::asioThreadStarted()) {
         scsynth::stopAsioThread();
     }
@@ -1186,12 +1207,17 @@ bool SendMsgFromEngine(World* inWorld, FifoMsg& inMsg) { return inWorld->hw->mAu
 
 void SetPrintFunc(PrintFunc func) { gPrint = func; }
 
-
 int scprintf(const char* fmt, ...) {
     va_list vargs;
     va_start(vargs, fmt);
     if (gPrint)
-        return (*gPrint)(fmt, vargs);
+    {
+        char buffer[1024 * 2]; 
+
+        vsnprintf(buffer, sizeof(buffer), fmt, vargs);
+        va_end(vargs);
+        return (*gPrint)(buffer, vargs);
+    }
     else
         return vprintf(fmt, vargs);
 }

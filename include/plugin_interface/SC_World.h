@@ -114,6 +114,8 @@ struct World {
     BelaScope* mBelaScope;
     uint32 mBelaMaxScopeChannels;
 #endif // SC_BELA
+
+    IClosable* udpSocket = nullptr;
 };
 
 inline SndBuf* World_GetBuf(struct World* inWorld, uint32 index) {

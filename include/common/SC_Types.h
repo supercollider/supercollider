@@ -67,3 +67,7 @@ const unsigned int kSCNameByteLen = 8 * sizeof(int32);
 #else
 #    define sc_typeof_cast(x) /* (typeof(x)) */
 #endif
+
+struct IClosable {
+    virtual void Close() = 0;
+};

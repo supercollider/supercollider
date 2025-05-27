@@ -190,7 +190,7 @@ static void tcp_reply_func(struct ReplyAddress* addr, char* msg, int size) {
 }
 
 
-class SC_UdpInPort {
+class SC_UdpInPort : public IClosable {
     struct World* mWorld;
     int mPortNum;
     std::string mbindTo;
@@ -248,6 +248,15 @@ class SC_UdpInPort {
 public:
     boost::asio::ip::udp::socket udpSocket;
 
+    ~SC_UdpInPort() { Close(); }
+
+    virtual void Close() override { 
+        boost::system::error_code error;
+
+        udpSocket.shutdown(boost::asio::ip::udp::socket::shutdown_both, error);
+        udpSocket.close();
+    }
+
     SC_UdpInPort(struct World* world, std::string bindTo, int inPortNum):
         mWorld(world),
         mPortNum(inPortNum),
@@ -270,6 +279,7 @@ public:
             mRendezvousThread = std::move(thread);
         }
 #endif
+        mWorld->udpSocket = this;
 
         startReceiveUDP();
     }
@@ -469,6 +479,7 @@ void startAsioThread() {
 void stopAsioThread() {
     ioContext.stop();
     gAsioThread.join();
+    ioContext.reset();
 }
 
 bool asioThreadStarted() { return gAsioThread.joinable(); }
