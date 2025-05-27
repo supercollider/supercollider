@@ -1,0 +1,108 @@
+name: Test Cpp macOS
+on:
+  workflow_call:
+
+jobs:
+  build-macos:
+    runs-on: macos-${{ matrix.os-version }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - job-name: "arm64"
+            os-version: "15"
+            xcode-version: "16.0"
+            # qt-version: "6.7.3" # will use qt from aqtinstall
+            # qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
+            # deployment-target: "11"
+            cmake-architectures: "arm64"
+            homebrew-packages: "qt@6 libsndfile readline fftw portaudio" # useing qt@6 from homebrew
+
+          - job-name: "x64"
+            os-version: "13"
+            xcode-version: "15.2"
+            qt-version: "6.7.3" # on x64 macOS 13 we need to use qt from aqtinstall
+            qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
+            deployment-target: "11"
+            cmake-architectures: "x86_64"
+            homebrew-packages: "libsndfile readline fftw portaudio"
+
+
+    name: macOS ${{ matrix.job-name }}
+    env:
+      BUILD_PATH: ${{ github.workspace }}/build
+      INSTALL_PATH: ${{ github.workspace }}/build/Install
+      HOMEBREW_NO_ANALYTICS: 1
+      HOMEBREW_NO_ENV_HINTS: 1
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      HOMEBREW_NO_INSTALL_CLEANUP: 1
+      USE_SYSLIBS: ${{ matrix.use-syslibs }}
+      SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
+      DEVELOPER_DIR: "/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer"
+      MACOSX_DEPLOYMENT_TARGET: "${{ matrix.deployment-target }}"
+      CMAKE_OSX_ARCHITECTURES: "${{ matrix.cmake-architectures }}"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: prepare timestamp for cache
+        id: current-date
+        run: |
+          echo "stamp=$(date '+%Y-%m-%d')" >> $GITHUB_OUTPUT
+          echo "week=$(date '+%U')" >> $GITHUB_OUTPUT
+
+      - name: cache ccache
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/ccache
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.cmake-architectures }}${{ matrix.extra-cmake-flags }}-${{ steps.current-date.outputs.stamp }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.cmake-architectures }}${{ matrix.extra-cmake-flags }}-
+
+      - name: cleanup homebrew downloads # always remove existing downloads first, as we bring back relevant downloads from cache
+        run: rm -rf $(brew --cache)/downloads
+
+      - name: cache homebrew downloads
+        uses: actions/cache@v4
+        id: cache-homebrew
+        with:
+          path: ~/Library/Caches/Homebrew/downloads
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-architectures }}-homebrew-${{ steps.current-date.outputs.week }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-architectures }}-homebrew-
+
+      - name: setup ccache
+        run: |
+          brew install ccache --quiet
+          # add ccache to PATH
+          echo "`brew --prefix ccache`/libexec" >> $GITHUB_PATH
+
+      - name: install homebrew packages
+        if: matrix.homebrew-packages
+        run: brew install ${{ matrix.homebrew-packages }} --quiet
+
+      - name: install qt using aqtinstall
+        uses: jurplel/install-qt-action@v4
+        if: matrix.qt-version
+        env:
+          DEVELOPER_DIR: "" # remove developer dir which causes installation to fail
+        with:
+          modules: ${{ matrix.qt-modules }}
+          version: ${{ matrix.qt-version }}
+          cache: true
+          cache-key-prefix: ${{ runner.os }}-qt${{ matrix.qt-version }}-${{ matrix.qt-modules }}
+
+      - name: configure
+        run: |
+          mkdir $BUILD_PATH && cd $BUILD_PATH
+
+          CMAKE_FLAGS="-G Xcode -D SUPERNOVA=ON  ${{ matrix.extra-cmake-flags }}"
+
+          echo "CMAKE_FLAGS:" $CMAKE_FLAGS
+
+          cmake $CMAKE_FLAGS ..
+
+      - name: build
+        run: cmake --build $BUILD_PATH --config Release
+
+      - name: run cpp tests
+        run: cmake --build $BUILD_PATH --config Release --target RUN_TESTS

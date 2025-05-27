@@ -75,21 +75,36 @@ jobs:
       sc-version: ${{ needs.version-getter.outputs.sc-version }}
     secrets: inherit
 
-  test-linux:
+  test-cpp-linux:
+    needs: [lint]
+    uses: ./.github/workflows/test_cpp_linux.yml
+    secrets: inherit
+
+  test-cpp-macos:
+    needs: [lint]
+    uses: ./.github/workflows/test_cpp_macos.yml
+    secrets: inherit
+
+  test-cpp-windows:
+    needs: [lint]
+    uses: ./.github/workflows/test_cpp_windows.yml
+    secrets: inherit
+
+  test-classlibrary-linux:
     needs: [version-getter, build-linux]
     uses: ./.github/workflows/test_linux.yml
     with:
       sc-version: ${{ needs.version-getter.outputs.sc-version }}
     secrets: inherit
 
-  test-macos:
+  test-classlibrary-macos:
     needs: [version-getter, build-macos]
     uses: ./.github/workflows/test_macos.yml
     with:
       sc-version: ${{ needs.version-getter.outputs.sc-version }}
     secrets: inherit
 
-  # test-windows:
+  # test-classlibrary-windows:
   #   needs: [version-getter, build-windows]
   #   uses: ./.github/workflows/test_windows.yml
   #   with:
