@@ -25,13 +25,14 @@ TestPath : UnitTest {
 		this.assert(p.isAbsolute, "isAbsolute");
 		this.assert(Path("relative.scd").isRelative, "isRelative");
 		this.assert(Path(TestPath.filenameSymbol.asString).exists, "file exists");
+
 		/////  how to test these? isFolder checked for trialing slash. cant tell without it.
-		this.assert(p.dirname.isFolder, "isFolder");
+		this.assert(Path(p.dirname).isFolder, "isFolder");
 		// this.assert(p.dirname.isDir, "isDir");
 		this.assert(p.isFile, "isFile");
 
 		// conversions
-		this.assertEquals(p.relativeTo("/Users/adc/src"), "Sounds/FunkyChicken.abc.scd", "relativeTo");
+		this.assertEquals(p.relativeTo("/Users/adc/src"), Path("Sounds/FunkyChicken.abc.scd"), "relativeTo");
 		this.assertEquals(p.withName("newName.txt"), Path("/Users/adc/src/Sounds/newName.txt"), "withName");
 
 		this.assertEquals(PathName("abc").nextName, "abc1", "nextName, no number, no extension");
@@ -52,7 +53,7 @@ TestPath : UnitTest {
 		var classLibFolder = Platform.classLibraryDir;
 		var fileCount = 0, postStream;
 		//  hierarchical access to files and folders
-		// [ 'isFolder', 'isFile', 'entries', 'files', 'folders', 'deepFiles', 'parentPath',
+		// [ 'isFolder', 'isFile', 'entries', 'files', 'folders', 'deepFiles',
 		// 'filesDo', 'streamTree', 'dumpTree', 'printOn', 'dumpToDoc']
 
 		// this.assert(Path("~/").isFolder, "isFolder: home should be a folder");
@@ -63,10 +64,6 @@ TestPath : UnitTest {
 		this.assert(
 			Path(classLibFolder).deepFiles.size > Path(classLibFolder).folders.size,
 			"deepFiles: SCClassLibrary has more deepFiles than folders"
-		);
-		this.assertEquals(
-			Path(defaultLibFolder).parentPath, (classLibFolder +/+ "/"),
-			"parentPath is correct"
 		);
 
 		Path(classLibFolder).filesDo {|path, i| fileCount = fileCount + 1 };
@@ -121,12 +118,14 @@ TestPathName : UnitTest {
 
 		// pathOnly ends with a training slash
 		this.assertEquals(p.pathOnly, "/Users/adc/src/Sounds/", "pathOnly");
+		this.assertEquals(p.parentPath, "/Users/adc/src/Sounds/", "parentPath");
 
 		// diskName expects no separator at beginning ...
 		this.assertEquals(PathName("ABC/def/ghj.scd").diskName, "ABC", "diskName");
 
 		this.assert(p.isAbsolutePath, "isAbsolutePath"); // true, because ~/ expanded correctly
 		this.assert(PathName("relative.scd").isRelativePath, "isRelativePath");
+
 		this.assertEquals(p.asRelativePath("/Users/adc/src"), "Sounds/FunkyChicken.abc.scd", "asRelativePath");
 
 		this.assertEquals(p.allFolders, List["Users", "adc", "src", "Sounds"], "allFolders");
@@ -147,7 +146,7 @@ TestPathName : UnitTest {
 
 		this.assertEquals(PathName("abc/") +/+ "def", PathName("abc/def"), "concat with String");
 		this.assertEquals(PathName("abc/") +/+ PathName("/def"), PathName("abc/def"),
-			"concat with 2 PathNames");
+		"concat with 2 PathNames");
 
 	}
 
@@ -155,6 +154,7 @@ TestPathName : UnitTest {
 		var defaultLibFolder = Main.filenameSymbol.asString.dirname;
 		var classLibFolder = Platform.classLibraryDir;
 		var fileCount = 0, postStream;
+
 		//  hierarchical access to files and folders
 		// [ 'isFolder', 'isFile', 'entries', 'files', 'folders', 'deepFiles', 'parentPath',
 		// 'filesDo', 'streamTree', 'dumpTree', 'printOn', 'dumpToDoc']
