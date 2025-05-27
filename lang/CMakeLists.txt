@@ -203,7 +203,11 @@ if(0 AND FINAL_BUILD) # sclang final-builds are broken
 	CREATE_FINAL_FILE(libsclang_final.cpp ${sclang_sources})
 	add_library(libsclang STATIC libsclang_final.cpp ${sclang_parser_source})
 else()
-	add_library(libsclang STATIC ${sclang_sources} ${sclang_parser_source})
+	if (LIBSCLANG)
+		add_library(libsclang SHARED ${sclang_sources} ${sclang_parser_source})
+	else()
+		add_library(libsclang STATIC ${sclang_sources} ${sclang_parser_source})
+	endif()
 endif()
 
 target_compile_definitions(libsclang PRIVATE YYSTACK_USE_ALLOC)
@@ -227,7 +231,7 @@ if(SC_QT OR SC_IDE)
     set_property(TARGET libsclang PROPERTY INSTALL_RPATH_USE_LINK_PATH TRUE)
 endif()
 
-if(FALSE) # libsclang is a shared library
+if(LIBSCLANG)
   target_compile_definitions(libsclang PRIVATE   BUILDING_SCLANG)
   target_compile_definitions(libsclang INTERFACE BUILDING_SCLANG)
 endif()

@@ -163,6 +163,7 @@ if (AUDIOAPI STREQUAL jack)
 endif()
 
 option(LIBSCSYNTH "Compile libscsynth as shared library" OFF)
+option(LIBSCLANG "Compile libsclang as shared library" OFF)
 
 option(INSTALL_HELP "Install help docs and examples along with the software" ON)
 option(SC_DOC_RENDER "Pre-render SCDoc documentation. (For putting online, etc)" OFF)

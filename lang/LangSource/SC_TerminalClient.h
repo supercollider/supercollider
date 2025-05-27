@@ -165,3 +165,7 @@ private:
     bool mUseReadline;
     boost::sync::semaphore mReadlineSem;
 };
+
+SCLANG_DLLEXPORT_C SC_LanguageClient* StartClient();
+SCLANG_DLLEXPORT_C void PlayFile(SC_LanguageClient* Client);
+SCLANG_DLLEXPORT_C void SetLogFD(const char* path);
