@@ -158,5 +158,6 @@ jobs:
         run: cmake --build $BUILD_PATH --config Release --parallel 2
 
       - name: run cpp tests
-        shell: bash
-        run: cmake --build $BUILD_PATH --config Release --target "${{ matrix.test-cmd }}"
+        working-directory: ${{ env.BUILD_PATH }}
+        shell: cmd
+        run: cmake --build . --config Release --target ${{ matrix.test-cmd }}
