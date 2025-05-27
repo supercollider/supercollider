@@ -71,6 +71,8 @@ argument:: completionMessage
 A valid OSC message or a Function which will return one. A Function will be passed this Buffer as an argument when evaluated.
 argument:: bufnum
 An explicitly specified buffer number. Supplying a number bypasses the server's buffer allocator, which can lead to conflicts. The best practice is to leave this unset and let the buffer number allocator choose the next available bufnum.
+argument:: sampleRate
+	The sample rate of the buffer. The default is the sample rate of the server. 0 or nil will reset to the Server's sample rate.
 discussion::
 code::
 // Allocate 8 second stereo buffer
@@ -93,6 +95,8 @@ argument:: completionMessage
 A valid OSC message or a Function which will return one. A Function will be passed each Buffer and its index in the array as arguments when evaluated.
 argument:: bufnum
 An explicitly specified buffer number. Supplying a number bypasses the server's buffer allocator, which can lead to conflicts. The best practice is to leave this unset and let the buffer number allocator choose the next available bufnum.
+argument:: sampleRate
+The sample rate of the buffer. The default is the sample rate of the server.
 discussion::
 N.B. You must treat the array of Buffers as a group. Freeing them individually or reusing them can result in allocation errors. You should free all Buffers in the array at the same time by iterating over it with do.
 code::
@@ -401,6 +405,8 @@ argument:: numChannels
 The number of channels for the Buffer. The default is 1.
 argument:: bufnum
 An explicitly specified buffer number. Supplying a number bypasses the server's buffer allocator, which can lead to conflicts. The best practice is to leave this unset and let the buffer number allocator choose the next available bufnum.
+argument:: sampleRate
+The sample rate of the buffer. The default is the sample rate of the server.
 discussion::
 code::
 s.boot;
@@ -466,14 +472,20 @@ Returns the number of channels in the corresponding server-side buffer.
 method:: sampleRate
 Returns the language-side instance variable code::sampleRate::, of the corresponding server-side buffer. By default, this will be set to the server's sample rate when the code::Buffer:: is instantiated.
 
-The code::sampleRate:: setter method only changes the language-side instance variable. It does not resample the buffer or change its sample rate on the server.
-However, it can be useful, for example, for later inferring whether audio-rate or control-rate data has been writen to the buffer.
+The code::sampleRate:: setter method only changes the language-side instance variable. It does not resample the buffer or change its sample rate on the server. To change the server-side buffer sample rate, use code::setSampleRate::.
 note::
 Setting the code::sampleRate:: instance variable affects the returned link::#-duration:: (which returns code::numFrames / sampleRate::).
 ::
 warning::
 You can use link::#-query:: to inspect the buffer's sample rate on the server, but this will also emphasis::update the:: code::sampleRate:: emphasis::instance variable::, overwriting its value which you may have previously set.
 ::
+
+
+method:: setSampleRate
+Sets the sample rate of the buffer on the server side, and updates its value on the language side. This does not resample the audio.
+argument:: value
+The new desired sample rate. 0 or nil will set to the Server's sample rate.
+
 
 method:: duration
 Returns code::this.numFrames / this.sampleRate:: (language-side instance variables).
