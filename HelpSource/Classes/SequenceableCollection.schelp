@@ -732,6 +732,9 @@ method:: +, -, *, /, div, min, max, <, <=, >, >=, bitXor, lcm, gcd, round, trunc
 
 method:: %, **, &, |, >>, +>>, <!
 
+method:: modSeaside
+Pre-3.14 modulo with unexpected behavior for negative integer modulus; see link::Classes/Integer#-modSeaside::. Calling code::modSeaside:: on a non-integer operand will fall back to code::mod:: behavior; see link::Classes/Float#-modSeaside::.
+
 method::performBinaryOp
 Creates a new collection of the results of applying the selector with the operand to all elements in the receiver. If the operand is a collection then elements of that collection are paired with elements of the receiver.
 code::

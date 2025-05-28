@@ -226,6 +226,15 @@ Addition.
 method:: -
 Subtraction.
 
+method:: modSeaside
+Pre-3.14 modulo with unexpected behavior for negative integer modulus. E.g., 
+code::
+(..-9).mod(-3) 
+// returns [0, -1, -2, 0, -1, -2, 0, -1, -2, 0]
+(..-9).modSeaside(-3)
+// returns [0, 2, 1, 0, -4, -5, 0, -4, -5, 0]
+::
+
 method:: clip
 returns::
 LIST::

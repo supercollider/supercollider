@@ -303,7 +303,8 @@ method:: /
 Division.
 
 method:: %
-Floating point modulo.
+Modulo.
+NOTE:: Uses floored division. Prior to SC 3.14, integer modulo would exhibit unexpected behavior for negative modulus; see link::Classes/Integer#-modSeaside::.::
 
 method:: **
 Exponentiation. Same as pow.
