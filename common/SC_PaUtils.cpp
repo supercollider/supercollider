@@ -174,20 +174,22 @@ PaStreamParameters MakePaStreamParameters(int device, int channelCount, double s
     streamParams.hostApiSpecificStreamInfo = &macInfo;
 #elif defined(_WIN32)
     // WASAPI options
-    static PaWasapiStreamInfo wasapiInfo = []() {
-        PaWasapiStreamInfo info;
-        memset(&info, 0, sizeof(info));
-        info.size = sizeof(PaWasapiStreamInfo);
-        info.hostApiType = paWASAPI;
-        info.version = 1;
-        info.flags = paWinWasapiAutoConvert; // automatic sample rate conversion
-        return info;
-    }();
-
     const PaDeviceInfo* info = Pa_GetDeviceInfo(device);
     const PaHostApiInfo* api = Pa_GetHostApiInfo(info->hostApi);
-    if (api->type == paWASAPI)
+    if (api->type == paWASAPI) {
+        static PaWasapiStreamInfo wasapiInfo = []() {
+            PaWasapiStreamInfo info;
+            memset(&info, 0, sizeof(info));
+            info.size = sizeof(PaWasapiStreamInfo);
+            info.hostApiType = paWASAPI;
+            info.version = 1;
+            info.flags = paWinWasapiAutoConvert; // automatic sample rate conversion
+            return info;
+        }();
         streamParams.hostApiSpecificStreamInfo = &wasapiInfo;
+    } else {
+        streamParams.hostApiSpecificStreamInfo = nullptr;
+    }
 #else
     streamParams.hostApiSpecificStreamInfo = nullptr;
 #endif
