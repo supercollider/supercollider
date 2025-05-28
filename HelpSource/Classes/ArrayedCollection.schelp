@@ -67,62 +67,130 @@ code::
 ::
 
 method::at 
-Return the item at strong::index::, which is specified as an integer or a float starting from 0. 
+Returns the item at strong::index::, which is specified as an integer or a float starting from 0. 
 For non-negative indices, float values are emphasis::floored:: (rounded down to the nearest integer).
 Negative float indices between -1 and 0 return the first item. 
-Out of range indices (≤ -1 or ≥ size) return nil.
-
-Examples:
-
+Out of range indices (≤ -1 or ≥ size) return code::nil:::
 code::
 x = [10, 20];
-x.at(-1); // returns nil
+
+x.at(-1);   // returns nil
 x.at(-0.9); // returns 10
 x.at(-0.1); // returns 10
-x.at(-0); // returns 10
-x.at(0); // returns 10
-x.at(1.1); // returns 20
-x.at(1.9); // returns 20
-x.at(2); // returns nil
+x.at(-0);   // returns 10
+x.at(0);    // returns 10
+x.at(1.1);  // returns 20
+x.at(1.9);  // returns 20
+x.at(2);    // returns nil
 ::
 
-The index can also be an Array of indices to extract specified elements. 
+link::Classes/Array:: is its syntactic shortcut:
+code::
+x = [1, 2, 3]
 
-Examples:
+// Retrieve the value at index 1:
+x.at(1) // returns 2
 
+// Equivalent shorthand syntax:
+x[1]    // returns 2
+
+// Sound example:
+(
+var pitches =  [43.0, 55.0, 58.86, 57.42, 67.0];
+fork {
+	pitches.size.do{ |i|
+		{
+			var freq = pitches[i].midicps;
+			var env = Env.perc.ar(Done.freeSelf);
+			SinOsc.ar(freq) * 0.1 * env
+		}.play;
+		0.2.wait
+	}
+}
+)
+::
+
+The index can also be an Array of indices to extract specified elements:
 code::
 x = [10, 20, 30];
-y = [0, 0, 2, 2, 1];
-x[y]; // returns [10, 10, 30, 30, 20]
 
 x.at([-1.1, 0.0, 1.1, 2.2, 3.3]); // returns [nil, 10, 20, 30, nil]
-x.at((-1.1, 0 .. 3.3)); // the same as above
-x[(-1.1, 0 .. 3.3)]; // the same as above
+x.at((-1.1, 0 .. 3.3));           // same as above
+x[(-1.1, 0 .. 3.3)];              // same as above (syntactic shortcut)
+
+y = [0, 0, 2, 2, 1];
+x[y]; // returns [10, 10, 30, 30, 20]
 ::
 
 method::clipAt
-Same as link::#-at::, but values for strong::index:: greater than the size of the ArrayedCollection will be clipped to the last index.
+Similar to link::#-at::, but guarantees that any value for index is valid by clipping values outside the collection's bounds.
+Values greater than code::size - 1:: are clipped to that last index, and values below code::0:: (negative) are clipped to 0.
+The index can also be an array of indices to extract the specified elements.
+link::Classes/SequenceableCollection#-|@|:: is its syntactic shortcut.
 code::
-y = [1, 2, 3];
-y.clipAt(13).postln;
+a = [1, 2, 3]
+a.clipAt(2) // same as at
+a.clipAt(3) // clips
+a.clipAt([-1, 3, 1]) // array of indices
+a|@|3 //syntactic shortcut
 ::
 
 method::wrapAt
-Same as link::#-at::, but values for strong::index:: greater than the size of the ArrayedCollection will be wrapped around to 0.
+Similar to link::#-at::, but guarantees that any value for index is valid by wrapping values outside the collection's bounds.
+If the index exceeds code::size - 1::, it wraps back around to code::0::.
+Similarly, if the index is below code::0:: (negative), it wraps to access elements from the end of the collection.
+code::this.wrapAt(index):: is equivalent to code::this.at(index mod: size)::, ensuring the index is always within the valid range of the collection.
+The index can also be an array of indices to extract the specified elements.
+link::Classes/SequenceableCollection#-@@:: is its syntactic shortcut.
 code::
-y = [1, 2, 3];
-y.wrapAt(3).postln; // this returns the value at index 0
-y.wrapAt(4).postln; // this returns the value at index 1
-y.wrapAt([-2, 1])   // index can also be a collection or negative numbers
+a = [1, 2, 3]
+a.wrapAt(2) // same as at
+a.wrapAt(3) // wraps
+a.wrapAt([-1, 3, 1]) // array of indices
+a@@3 //syntactic shortcut
+
+(
+var pitches =  [43.0, 55.0, 58.86, 57.42, 67.0];
+fork {
+	32.do{ |i|
+		{
+			var freq = pitches.wrapAt(i).midicps;
+			var env = Env.perc.ar(Done.freeSelf);
+			SinOsc.ar(freq) * 0.1 * env
+		}.play;
+		0.2.wait
+	}
+}
+)
 ::
 
 method::foldAt
-Same as link::#-at::, but values for strong::index:: greater than the size of the ArrayedCollection will be folded back.
+Similar to link::#-at::, but guarantees that any value for index is valid by reflecting values outside the collection's bounds.
+Values greater than code::size - 1:: are reflected back toward lower indices.
+Similarly, if the index is below code::0:: (negative), it folds in the opposite direction.
+This creates a symmetrical mapping of any index within the collection's boundaries.
+The index can also be an array of indices to extract the specified elements.
+link::Classes/SequenceableCollection#-@|@:: is its syntactic shortcut.
 code::
-y = [1, 2, 3];
-y.foldAt(3).postln; // this returns the value at index 1
-y.foldAt(4).postln; // this returns the value at index 0
-y.foldAt(5).postln; // this returns the value at index 1
+a = [1, 2, 3]
+a.foldAt(2) // same as at
+a.foldAt(3) // folds back
+a.foldAt([-1, 3, 1]) // array of indices
+a@|@3 //syntactic shortcut
+
+(
+var pitches =  [43.0, 55.0, 58.86, 57.42, 67.0];
+fork {
+	32.do{ |i|
+		{
+			var freq = pitches.foldAt(i).midicps;
+			var env = Env.perc.ar(Done.freeSelf);
+			SinOsc.ar(freq) * 0.1 * env
+		}.play;
+		0.2.wait
+	}
+}
+)
 ::
 
 method::plot
@@ -146,13 +214,13 @@ z = x.put([0.5, 1], 150); // [150, 150, 3]
 ::
 
 method::clipPut
-Same as link::#-put::, but values for strong::index:: greater than the size of the ArrayedCollection will be clipped to the last index.
+Same as link::#-put::, but values for strong::index:: greater than the link::Classes/ArrayedCollection:: instance size minus one will be clipped to code::size - 1::, which is the last index.
 
 method::wrapPut
-Same as link::#-put::, but values for strong::index:: greater than the size of the ArrayedCollection will be wrapped around to 0.
+Same as link::#-put::, but values for strong::index:: greater than the link::Classes/ArrayedCollection:: instance size minus one will be wrapped around to 0.
 
 method::foldPut
-Same as link::#-put::, but values for strong::index:: greater than the size of the ArrayedCollection will be folded back.
+Same as link::#-put::, but values for strong::index:: greater than the link::Classes/ArrayedCollection:: instance size minus one will be folded back.
 
 method::putEach
 Put the strong::values:: in the corresponding indices given by strong::keys::. If one of the two argument arrays is longer then it will wrap.

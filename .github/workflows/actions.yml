@@ -12,6 +12,7 @@ on:
       - 'HelpSource/**'
       - 'sounds/**'
       - '*.md'
+  workflow_dispatch:
 
 jobs:
   lint:

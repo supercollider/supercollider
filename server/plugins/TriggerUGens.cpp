@@ -118,12 +118,12 @@ struct TDelay : public Unit {
 
 struct ZeroCrossing : public Unit {
     float mLevel, m_prevfrac, m_previn;
-    int32 mCounter;
+    long mCounter;
 };
 
 struct Timer : public Unit {
     float mLevel, m_prevfrac, m_previn;
-    int32 mCounter;
+    long mCounter;
 };
 
 struct Sweep : public Unit {
@@ -849,6 +849,10 @@ void SetResetFF_Ctor(SetResetFF* unit) {
     unit->mLevel = 0.f;
 
     SetResetFF_next_k(unit, 1);
+
+    unit->m_prevtrig = 0.f;
+    unit->m_prevreset = 0.f;
+    unit->mLevel = 0.f;
 }
 
 
@@ -899,8 +903,9 @@ void ToggleFF_Ctor(ToggleFF* unit) {
 
     unit->m_prevtrig = 0.f;
     unit->mLevel = 0.f;
-
-    ZOUT0(0) = 0.f;
+    ToggleFF_next(unit, 1);
+    unit->m_prevtrig = 0.f;
+    unit->mLevel = 0.f;
 }
 
 
@@ -964,7 +969,10 @@ void Latch_Ctor(Latch* unit) {
     unit->m_prevtrig = 0.f;
     unit->mLevel = 0.f;
 
-    ZOUT0(0) = ZIN0(1) > 0.f ? ZIN0(0) : 0.f;
+    Latch_next_ak(unit, 1);
+
+    unit->m_prevtrig = 0.f;
+    unit->mLevel = 0.f;
 }
 
 
@@ -1043,6 +1051,8 @@ void Gate_Ctor(Gate* unit) {
     unit->mLevel = 0.f;
 
     Gate_next_ak(unit, 1);
+
+    unit->mLevel = 0.f;
 }
 
 
@@ -1082,6 +1092,8 @@ void Schmidt_Ctor(Schmidt* unit) {
     unit->mLevel = 0.f;
 
     Schmidt_next(unit, 1);
+
+    unit->mLevel = 0.f;
 }
 
 void Schmidt_next(Schmidt* unit, int inNumSamples) {
@@ -1108,9 +1120,13 @@ void PulseDivider_Ctor(PulseDivider* unit) {
 
     unit->m_prevtrig = 0.f;
     unit->mLevel = 0.f;
-    unit->mCounter = (long)floor(ZIN0(2) + 0.5);
+    long initCounter = unit->mCounter = static_cast<long>(floor(ZIN0(2) + 0.5));
 
     PulseDivider_next(unit, 1);
+
+    unit->m_prevtrig = 0.f;
+    unit->mLevel = 0.f;
+    unit->mCounter = initCounter;
 }
 
 
@@ -1152,6 +1168,10 @@ void PulseCount_Ctor(PulseCount* unit) {
     unit->mLevel = 0.f;
 
     PulseCount_next_k(unit, 1);
+
+    unit->m_prevtrig = 0.f;
+    unit->m_prevreset = 0.f;
+    unit->mLevel = 0.f;
 }
 
 
@@ -1222,6 +1242,10 @@ void Stepper_Ctor(Stepper* unit) {
     unit->mLevel = (float)resetval;
 
     Stepper_next_ak(unit, 1);
+
+    unit->m_prevtrig = 0.f;
+    unit->m_prevreset = 0.f;
+    unit->mLevel = (float)resetval;
 }
 
 
@@ -1300,6 +1324,9 @@ void TDelay_Ctor(TDelay* unit) {
     unit->mCounter = 0;
 
     TDelay_next(unit, 1);
+
+    unit->m_prevtrig = 0.f;
+    unit->mCounter = 0;
 }
 
 
@@ -1372,9 +1399,14 @@ void Timer_Ctor(Timer* unit) {
     SETCALC(Timer_next_a);
 
     unit->m_prevfrac = 0.f;
-    unit->m_previn = ZIN0(0);
-    ZOUT0(0) = unit->mLevel = 0.f;
-    unit->mCounter = 0;
+    unit->m_previn = 0;
+    unit->mCounter = -1;
+    unit->mLevel = 0;
+    Timer_next_a(unit, 1);
+    unit->m_prevfrac = 0.f;
+    unit->m_previn = 0;
+    unit->mCounter = -1;
+    unit->mLevel = 0;
 }
 
 void Timer_next_a(Timer* unit, int inNumSamples) {
@@ -1663,7 +1695,10 @@ void Peak_Ctor(Peak* unit) {
         }
     }
     unit->m_prevtrig = 0.f;
-    ZOUT0(0) = unit->mLevel = ZIN0(0);
+    float initLevel = unit->mLevel = std::abs(ZIN0(0));
+    Peak_next_ai(unit, 1);
+    unit->m_prevtrig = 0.f;
+    unit->mLevel = initLevel;
 }
 
 void Peak_next_ak(Peak* unit, int inNumSamples) {
@@ -1937,7 +1972,9 @@ void PeakFollower_Ctor(PeakFollower* unit) {
     }
 
     unit->mDecay = ZIN0(1);
-    ZOUT0(0) = unit->mLevel = ZIN0(0);
+    float initLevel = unit->mLevel = std::abs(ZIN0(0));
+    PeakFollower_next(unit, 1);
+    unit->mLevel = initLevel;
 }
 
 void PeakFollower_next(PeakFollower* unit, int inNumSamples) {
@@ -2020,6 +2057,9 @@ void MostChange_Ctor(MostChange* unit) {
     unit->mPrevB = 0.f;
     unit->mRecent = 1;
     MostChange_next_aa(unit, 1);
+    unit->mPrevA = 0.f;
+    unit->mPrevB = 0.f;
+    unit->mRecent = 1;
 }
 
 void MostChange_next_ak(MostChange* unit, int inNumSamples) {
@@ -2107,6 +2147,9 @@ void LeastChange_Ctor(LeastChange* unit) {
     unit->mPrevB = 0.f;
     unit->mRecent = 0;
     LeastChange_next_aa(unit, 1);
+    unit->mPrevA = 0.f;
+    unit->mPrevB = 0.f;
+    unit->mRecent = 0;
 }
 
 void LeastChange_next_ak(LeastChange* unit, int inNumSamples) {
@@ -2183,9 +2226,12 @@ void LastValue_Ctor(LastValue* unit) {
         SETCALC(LastValue_next_kk);
     }
 
-    unit->mPrev = ZIN0(0);
-    unit->mCurr = ZIN0(0);
+    float initPrev = unit->mPrev = ZIN0(0);
+    float initCurr = unit->mCurr = ZIN0(0);
     LastValue_next_kk(unit, 1);
+
+    unit->mPrev = initPrev;
+    unit->mCurr = initCurr;
 }
 
 void LastValue_next_kk(LastValue* unit, int inNumSamples) {

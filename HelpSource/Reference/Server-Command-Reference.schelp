@@ -567,6 +567,7 @@ table::
 ## strong::int:: || number of frames
 ## strong::int:: || number of channels (optional. default = 1 channel)
 ## strong::bytes:: || an OSC message to execute upon completion. (optional)
+## strong::float:: || the required sample rate (optional. default (or 0) = the server's sample rate)
 ::
 Allocates zero filled buffer to number of channels and samples.
 definitionlist::
@@ -719,6 +720,14 @@ table::
     ::
 ::
 Set contiguous ranges of sample indices to sets of values. For each range, the starting sample index is given followed by the number of samples to change, followed by the values.
+
+subsection:: /b_setSampleRate
+Set the sampling rate of the buffer.
+table::
+## strong::int:: || buffer number
+## strong::float:: || the desired sampling rate. 0 or nil will set to the Server's sample rate.
+::
+Set the sampling rate of the buffer.
 
 subsection:: /b_fill
 Fill ranges of sample value(s).
@@ -1130,8 +1139,12 @@ enum {
 
     cmd_version = 64,
 
-    NUMBER_OF_COMMANDS = 65
-};
+    cmd_rtMemoryStatus = 65,
+
+    cmd_b_setSampleRate = 66,
+
+    NUMBER_OF_COMMANDS = 67
+    };
 ::
 
 copyright © 2002 James McCartney

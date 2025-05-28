@@ -1,3 +1,4 @@
+
 var storage;
 var menubar;
 
@@ -87,15 +88,19 @@ escape_regexp = function(str) {
 }
 
 var toc_items;
+var firstMatch = null; // Variable to store the first match
+
 function toc_search(search_string) {
-//TODO: on enter, go to first match
     var re = RegExp("^"+escape_regexp(search_string),"i");
+    firstMatch = null; // Reset first match on each search
 
     for(var i=0;i<toc_items.length;i++) {
         var li = toc_items[i];
         var a = li.firstChild;
         if(re.test(a.innerHTML)) {
             li.style.display = "";
+            if(firstMatch === null) firstMatch = a; // Set first match
+
             var lev = li.className[3];
             for(var i2 = i-1;i2>=0;i2--) {
                 var e = toc_items[i2];
@@ -110,7 +115,6 @@ function toc_search(search_string) {
         }
     }
 }
-
 
 function set_up_toc() {
     var toc_container = $("<div>", {id: "toc-container"})
@@ -143,7 +147,30 @@ function set_up_toc() {
             $("#toc_search").focus();
         }
     });
+
+    $("#toc_search").on('keydown', function(event) {
+        if (event.key === 'Escape') {
+            $("#toc").toggle();
+        };
+
+        if (event.key === 'Enter' && firstMatch !== null) {
+            firstMatch.click(); // Simulate a click on the first matched item
+            $("#toc").toggle();
+        }
+
+        //TOC scroll with ctrl+{j,k}
+        if (event.ctrlKey && event.key === "j") {
+            $("#toc").scrollTop($("#toc").scrollTop() + 10);
+        }
+    
+        if (event.ctrlKey && event.key === "k") {
+            event.preventDefault();
+            $("#toc").scrollTop($("#toc").scrollTop() - 10);
+        }
+    });
 }
+
+
 
 function fixTOC() {
     addInheritedMethods();
@@ -227,6 +254,10 @@ function buildThemeSwitcher() {
             themeLink.appendTo(themesMenu);
         });
 
+        themesMenu.append($("<hr>"));
+
+        buildLineNumberSwitch(themesMenu);
+
         a.on("click", function (e) {
             e.preventDefault();
             themesMenu.toggle();
@@ -238,6 +269,22 @@ function buildThemeSwitcher() {
             }
         });
     });
+}
+
+function buildLineNumberSwitch(themesMenu) {
+    const lineNumberCheckbox = $("<input>", {
+      type: "checkbox",
+      id: "line-number-checkbox",
+      checked: getLineNumberStorageValue(),
+    }).on("click", () => {
+      setLineNumberStorageValue(!getLineNumberStorageValue());
+    });
+    const lineNumberLabel = $("<label>", {
+      text: "Line numbers",
+      for: "line-number-checkbox",
+    });
+    const lineNumberSwitch = $("<div>").append(lineNumberCheckbox).append(lineNumberLabel);
+    themesMenu.append(lineNumberSwitch);
 }
 
 function setTheme(themeName) {
@@ -294,6 +341,40 @@ function renderTex() {
     }
 }
 
-window.addEventListener('DOMContentLoaded',function () {
+function copyButtonInCodeArea() {
+    document.querySelectorAll('.codeMirrorContainer').forEach(container => {
+        const button = container.querySelector('.copy-button');
+        const editor = container.querySelector('.editor');
+
+        button.addEventListener('click', () => {
+            navigator.clipboard.writeText(editor.value).then(() => {
+                button.classList.add('copied');
+
+                setTimeout(() => {
+                    button.classList.remove('copied');
+                }, 1400);
+            });
+        });
+    });
+}
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    copyButtonInCodeArea();
     renderTex();
 });
+
+function getLineNumberStorageValue() {
+    return window.localStorage.getItem("showLineNumbers") === "true"
+}
+
+function setLineNumberStorageValue(v) {
+    window.localStorage.setItem("showLineNumbers", v ? "true" : "false");
+    toggleLineNumbers(v);
+}
+
+function toggleLineNumbers(v) {
+    Array.from(document.querySelectorAll("textarea")).filter((t) => t.hasOwnProperty("editor")).forEach((t) => {
+      t.editor.setOption("lineNumbers", v);
+    });
+}

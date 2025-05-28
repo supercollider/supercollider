@@ -1,3 +1,7 @@
+:root {
+    --menu-bar-height: 33px;
+}
+
 *, *::before, *::after {
     box-sizing: inherit;
 }
@@ -24,14 +28,15 @@ input, select, textarea {
 
 div.contents {
     margin: 0;
-    padding: calc(33px + .5em) 1em 1em;
+    padding: calc(var(--menu-bar-height) + .5em) 1em 1em;
 }
 
 table {
     border-collapse: collapse;
     font-size: 10pt;
-    margin-top: 1em;
-    margin-left: 2em;
+    margin: 0.7em 0;
+    width: 100%;
+    table-layout: auto;
 }
 table td {
     border: 1px solid var(--color-fg-200);
@@ -43,8 +48,14 @@ table table {
 }
 
 p {
-    margin-top: 1em;
-    margin-bottom: 0.3em;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+a {
+    /* The menu bar takes some pixels which we need to respect
+    when jumping to an anchor. */
+    scroll-margin-top: var(--menu-bar-height);
 }
 
 a:link, a:visited, a:link:hover {
@@ -110,7 +121,7 @@ a.subclass_toggle:hover {
     position: fixed;
     text-indent: 0;
     width: 100%;
-    height: 33px;
+    height: var(--menu-bar-height);
     padding: 0.5em 0;
     background-color: var(--color-bg);
     box-shadow: 0em 0em 0.25em var(--color-fg-200);
@@ -134,7 +145,7 @@ a.subclass_toggle:hover {
 #menubar .menuitem .home {
     /* It is better to make the logo a background image instead of an <img> because it is purely
     decorative. */
-    background-image: url("images/SC_icon.png");
+    background-image: url("../images/SC_icon.png");
     background-repeat: no-repeat;
     background-position: 0.5em center;
     background-size: 1.5em;
@@ -204,7 +215,7 @@ li.menuitem a.menu-link.home {
 
 .submenu, #toc {
     position: absolute;
-    top: 33px;
+    top: var(--menu-bar-height);
     padding: 0.5em;
     display: none;
     background-color: var(--color-bg);
@@ -534,7 +545,8 @@ td p {
 }
 
 li {
-    padding-bottom: 0.5em;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
 }
 
 ul.toc {
@@ -582,7 +594,7 @@ ul.toc li a:hover {
 
 ul.tree, ul.tree ul {
  list-style-type: none;
- background: url(images/vline.png) repeat-y;
+ background: url("./../images/vline.png") repeat-y;
  margin: 0;
  padding: 0;
  margin-left: 1em;
@@ -596,13 +608,13 @@ ul.tree li {
  margin: 0;
  padding: 0 12px;
  line-height: 20px;
- background: url(images/node.png) no-repeat;
+ background: url("./../images/node.png") no-repeat;
 /* color: #369;
  font-weight: bold;*/
 }
 
 ul.tree li:last-child {
- background: var(--color-bg) url(images/lastnode.png) no-repeat;
+ background: var(--color-bg) url("./../images/lastnode.png") no-repeat;
 }
 
 /* is this still used? */
@@ -761,4 +773,81 @@ div.met_subclasses a.seemore {
 
 .subheader {
     color: var(--color-fg);
+}
+
+/* Copy button */
+.codeMirrorContainer {
+    position: relative;
+}
+
+.copy-button {
+    position: absolute;
+    top: 4px;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+
+    /* Hidden by default */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease;
+}
+
+.codeMirrorContainer:hover .copy-button,
+.codeMirrorContainer:hover .copy-ico {
+    opacity: 1;
+    visibility: visible;
+}
+
+.codeMirrorContainer:not(:hover) .check-ico {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.copy-ico,
+.check-ico {
+    width: 20px;
+    height: 20px;
+    display: block;
+    font-size: 18px;
+    color: var(--color-cm-comment);
+    transition: color 0.3s ease, opacity 0.2s ease;
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.copy-ico:hover {
+    color: var(--color-cm-class);
+}
+
+.copy-button.copied .copy-ico {
+    display: none;
+}
+
+.copy-button.copied .check-ico {
+    animation: fadeCheckmark 1.4s ease forwards;
+    visibility: visible;
+}
+
+@keyframes fadeCheckmark {
+    0% {
+        opacity: 0;
+    }
+    10%,
+    90% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        visibility: hidden;
+    }
 }
