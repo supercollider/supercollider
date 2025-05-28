@@ -1,6 +1,5 @@
 ServerTreeView {
-	var <server, <bounds, <window, <isRunning, isRunningText, tabSize = 25;
-	var viewParent, resp, updateFunc, updater, treeViewStatus, funcStart, funcStop;
+	var <server, <bounds, <window, <>isUpdating, isUpdatingText, isNotUpdatingText, viewParent, resp, updateFunc, updater, tabSize = 25, treeViewStatus;
 
 	*new { |server, bounds, parent|
 		server  = server ?? { Server.default };
@@ -24,9 +23,7 @@ ServerTreeView {
 		window.onClose_{
 			updater.stop;
 			CmdPeriod.remove(updateFunc);
-			resp.free;
-			ServerBoot.remove(funcStart, server);
-			ServerQuit.remove(funcStop, server);
+			resp.free
 		};
 
 		view = UserView(window, window.view.bounds);
@@ -40,6 +37,16 @@ ServerTreeView {
 		.string_(" STOPPED")
 		.font_(Font.sansSerif(14).boldVariant);
 
+		isUpdatingText = {
+			treeViewStatus.string_(" RUNNING: current server tree")
+			.background_(Color.grey(0.9))
+		};
+		isNotUpdatingText = {
+			treeViewStatus.string_(" STOPPED: last updated server tree")
+											.background_(Color.grey(0.7))
+		};
+		isUpdating = false;
+
 		// The following three lines are suggested by @dyfer, but it is contrary to the design by @telephon.
 		// If this part is added, then the lin
 		// So I did not add this part, but I left it as comment.
@@ -48,30 +55,6 @@ ServerTreeView {
 		this.start;
 		};
 		*/
-		isRunningText = {
-			treeViewStatus.string_(" RUNNING: current server tree")
-			.background_(Color.grey(0.9))
-		};
-
-		funcStart = {
-			if(this.isRunning == false and: window.isClosed.not) {
-				isRunningText.();
-				isRunning = true;
-				updateFunc.()
-			}
-		};
-
-		funcStop = {
-			if(window.isClosed.not) {
-				treeViewStatus.string_(" STOPPED: last updated server tree")
-				.background_(Color.grey(0.7));
-				isRunning = false;
-				updater.stop;
-			}
-		};
-
-		ServerBoot.add(funcStart, server);
-		ServerQuit.add(funcStop, server);
 	}
 
 	start { |interval = 0.5, actionIfFail|
@@ -140,14 +123,17 @@ ServerTreeView {
 							) + 0.5
 							*/
 						if(defaultGroupRect.notNil) {
-							if ("localhost|(S|s)cope".matchRegexp(node.asString)) {
-								tabSize * (index - 2) + defaultGroupRect.bottom + 5
-							}{
-								tabSize * index + defaultGroupRect.bottom
-							}
+							if ("localhost|stethoscope|system_freqScope".matchRegexp(node.asString)) {
+								if (group.asString.contains("localhost")) {
+									tabSize * (index - 2) + defaultGroupRect.bottom + 5
+								} {
+									tabSize * (index - 1) + defaultGroupRect.bottom + 5
+								}
+							} { tabSize * index + defaultGroupRect.bottom }
 						} {
 							ytabs * tabSize * verticalStretchFactor
-						} + 0.5,
+						}
+						+ 0.5,
 						7 * tabSize,
 						0.8 * tabSize
 					);
@@ -168,8 +154,9 @@ ServerTreeView {
 			xtabs = xtabs - 1;
 		};
 		viewParent.drawFunc = {
+
 			var xtabs = 0, ytabs = 0;
-			drawFunc.value(levels, xtabs, ytabs);
+			drawFunc.value(levels, xtabs, ytabs)
 		};
 
 		// msg[1] controls included
@@ -233,13 +220,15 @@ ServerTreeView {
 			defer {
 				var height = if(viewParent.bounds.isNil) {
 					400
-				} {
+					} {
 					viewParent.bounds.height
-				};
+					};
 				viewParent.bounds = Rect(0, 0, 400, max(height, tabSize * countSize.value(levels) * 1.06));
-				viewParent.refresh;
+				viewParent.refresh
 			}
 		}, '/g_queryTree.reply', this.server.addr).fix;
+
+		isUpdating = true;
 
 		if(window.isClosed.not) {
 			if(updater.isPlaying.not) {
@@ -252,8 +241,12 @@ ServerTreeView {
 						fork {
 							loop {
 								defer {
-									if(server.serverRunning && window.isClosed.not && this.isRunning){
-										isRunningText.()
+									if(server.serverRunning && window.isClosed.not && this.isUpdating){
+										isUpdatingText.()
+									} {
+										if (done) {
+											isNotUpdatingText.()
+										}
 									}
 								};
 								this.server.sendMsg("/g_queryTree", 0, 0);
@@ -266,12 +259,12 @@ ServerTreeView {
 
 				CmdPeriod.add(updateFunc);
 				SystemClock.sched(3, {
-					if(done.not && (isRunning == true), {
+					if(done.not && (isUpdating == true), {
 						actionIfFail.value();
 						"Server failed to respond to Group:queryTree!".warn;
 					});
 				});
-				isRunning = true
+				isUpdating = true
 			} {
 				"A serverTreeView is already running, so your request will not be executed.\n".warn
 			}
@@ -281,11 +274,22 @@ ServerTreeView {
 	}
 
 	stop {
-		funcStop.();
+		if(window.isClosed.not) {
+			isNotUpdatingText.();
+			isUpdating = false;
+			updater.stop;
+			resp.free;
+			resp = nil
+		};
 		CmdPeriod.remove(updateFunc);
 	}
 
 	close {
-		window.close;
+		this.stop;
+		window.close
+	}
+
+	front {
+		window.front.debug
 	}
 }

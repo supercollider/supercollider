@@ -7,7 +7,7 @@ description::
 link::Classes/ServerTreeView:: shows the node tree on a server.
 
 note::
-The link::Classes/ServerTreeView:: will disappear when the pointed server is not running.
+Unlikely to link::Classes/Server#-plotTree::, the link::Classes/ServerTreeView:: will not disappear when the pointed server is not running.
 ::
 
 classmethods::
@@ -51,22 +51,19 @@ d = ServerTreeView(s, Rect(600, 300, 400, 400)).start(2) // The plotting interva
 b.close
 
 // Stop the plotting process for the ServerTreeView instance assigned to variable a:
-a.stop // NOTE: Its label is changed to STOPPED, but still runsd due to d.
+a.stop
 
 // Close multiple ServerTreeView instances (assigned to variables a and c):
 [a, c].do { |v| v.close }
 
 // Open a plotTree window:
-s.plotTree
-
-// Stop the plotting process for ServerTreeView instance assigned to variable d:
-d.stop // NOTE: Its label is changed to STOPPED, but still runsd due to s.plotTree.
-
-// Stop the plotting process for s.plotTree
-s.serverTreeView.stop // NOTE: stops itself and d.
+s.plotTree // This changes also the interval of the ServerTreeView instances assinge to variabled since there is currently only one updater for this class.
 
 // Stop the playback of the pattern:
 x.stop
+
+// Stop the plotting process for ServerTreeView instance assigned to variable d:
+d.stop
 
 // Close the ServerTreeView instance assigned to variable d:
 d.close

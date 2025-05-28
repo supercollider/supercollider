@@ -359,37 +359,58 @@
 		this.startAliveThread;
 	}
 
-	plotTree { |interval=0.5, bounds|
+	plotTree { |interval, bounds|
 		if(serverTreeWindow.isNil or: { serverTreeWindow.isClosed }) {
+			var actionIfFail = {
+					defer { serverTreeWindow.close };
+					(
+						".plotTree closes the window if the related server is not running when the window is opened.\n"
+						++ "To start such an interface when the related server is not running, use ServerTreeView."
+					).warn;
+			};
 			bounds = bounds ?? { Rect(128, 64, 400, 400) };
 			bounds = bounds.minSize(395@386);
 			serverTreeWindow = Window(name.asString ++ " Node Tree", bounds, scroll:true);
 			serverTreeWindow.onClose = { serverTreeWindow = nil };
 			this.plotTreeView(
-				interval,
+				interval ?? { 0.5 },
 				serverTreeWindow,
-				{ defer { serverTreeWindow.close };
-					(
-						".plotTree closes the window if the related server is not running when the window is opened.\n"
-						++ "To start such an interface when the related server is not running, use ServerTreeView."
-					).warn;
-			});
+				actionIfFail);
 			serverTreeWindow.front
 		} {
-			serverTreeWindow.alwaysOnTop_(true).front.alwaysOnTop_(false);
-			(
-				"The .plotTree method only allows one window.\n"
-				++ "To open multiple instances, use ServerTreeView."
-			).warn;
-			if(bounds.notNil) {
-				serverTreeWindow.bounds = bounds.minSize(395@386)
+			if (serverTreeWindow.isClosed.not) {
+				serverTreeWindow.alwaysOnTop_(true).front.alwaysOnTop_(false);
+				(
+					"The .plotTree method only allows one window.\n"
+					++ "To open multiple instances, use ServerTreeView."
+				).warn;
+				if(bounds.notNil) {
+					serverTreeWindow.bounds = bounds.minSize(395@386)
+					};
+				if (this.serverRunning) {
+					if (this.serverTreeView.isUpdating) {
+						if (interval.notNil) {
+							{
+								serverTreeView.stop;
+								this.latency.wait;
+								serverTreeView.start(interval ?? { 0.5 })
+							}.fork(clock: AppClock)
+						}
+					} {
+						if (interval.notNil) {
+							serverTreeView.start(interval);
+							serverTreeView.isUpdating = true
+						}
+					}
+				} {
+					{
+						this.latency.wait;
+						serverTreeView.start(interval ?? { 0.5 })
+					}.fork(clock: AppClock)
+				};
+				serverTreeWindow.front
+				}
 			};
-			if(interval.notNil) {
-				serverTreeView.stop;
-				serverTreeView.start(interval)
-			};
-			serverTreeWindow.front
-		};
 		^serverTreeView
 	}
 
