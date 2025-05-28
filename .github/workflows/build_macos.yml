@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - job-name: "arm64"
+          - job-name: "arm64  with ctest"
             os-version: "15"
             xcode-version: "16.0"
             qt-version: "6.7.3" # will use qt from aqtinstall
@@ -27,7 +27,7 @@ jobs:
             artifact-suffix: "macOS-arm64"
             ctest: true
 
-          - job-name: "x64"
+          - job-name: "x64 with ctest"
             os-version: "13"
             xcode-version: "15.2"
             qt-version: "6.7.3" # will use qt from aqtinstall
@@ -58,7 +58,7 @@ jobs:
             artifact-suffix: "macOS-x64-legacy" # set if needed - will trigger artifact upload
             ctest: false
 
-          - job-name: "arm64 use system libraries"
+          - job-name: "arm64 use system libraries with ctest"
             os-version: "15"
             xcode-version: "16.0"
             deployment-target: ""
@@ -214,10 +214,6 @@ jobs:
           name: ${{ env.ARTIFACT_FILE }}
           path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
 
-      - name: Configure CTests
-        if: matrix.ctest
-        run: cd ${{ github.workspace }}
-
       - name: Run CTests
         if: matrix.ctest
-        run: cmake --build $BUILD_PATH --config Release --target test
+        run: cmake --build $BUILD_PATH --config Release --target RUN_TESTS

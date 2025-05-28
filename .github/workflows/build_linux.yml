@@ -30,7 +30,7 @@ jobs:
             shared-libscsynth: false
             ctest: false
 
-          - job-name: ""
+          - job-name: "with ctest"
             os-version: "22.04"
             c-compiler: "gcc-12"
             cxx-compiler: "g++-12"
@@ -39,7 +39,7 @@ jobs:
             artifact-suffix: "ubuntu-22.04-gcc12" # will trigger artifact upload; after changing this update the test-linux artifact-file in actions.yml
             ctest: true
 
-          - job-name: "use system libraries"
+          - job-name: "use system libraries with ctest"
             os-version: "24.04"
             c-compiler: "gcc-13"
             cxx-compiler: "g++-13"
@@ -87,13 +87,13 @@ jobs:
             shared-libscsynth: false
             ctest: false
 
-          - job-name: ""
+          - job-name: "with ctest"
             os-version: "24.04"
             c-compiler: "clang-18"
             cxx-compiler: "clang++-18"
             use-syslibs: false
             shared-libscsynth: false
-            ctest: false
+            ctest: true
 
     name: Ubuntu ${{ matrix.os-version }} ${{ matrix.c-compiler }} ${{ matrix.job-name }}
     env:
@@ -187,4 +187,3 @@ jobs:
       - name: Run CTests
         if: matrix.ctest
         run: cmake --build $BUILD_PATH --config Release --target test
-

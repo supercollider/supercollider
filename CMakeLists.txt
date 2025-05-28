@@ -23,11 +23,6 @@ message(STATUS "Building from ${GIT_REF_TYPE} ${GIT_BRANCH_OR_TAG}, commit hash 
 include(CTest)
 enable_testing()
 
-
-if(CMAKE_GENERATOR MATCHES "Xcode")
-	set(CMAKE_XCODE_GENERATE_SCHEME YES)
-endif()
-
 include (cmake_modules/FinalFile.cmake)
 
 if(CMAKE_GENERATOR MATCHES "Visual Studio" OR CMAKE_GENERATOR MATCHES "Xcode")
