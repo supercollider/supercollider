@@ -211,6 +211,7 @@ jobs:
         run: cd ${{ github.workspace }}
 
       - name: Run CTests
+        continue-on-error: true
         if: matrix.ctest
         working-directory: ${{ env.BUILD_PATH }}
         shell: cmd

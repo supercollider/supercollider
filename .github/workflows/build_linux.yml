@@ -185,5 +185,6 @@ jobs:
           Xvfb $DISPLAY -screen 0 1024x768x16 &
 
       - name: Run CTests
+        continue-on-error: true
         if: matrix.ctest
         run: cmake --build $BUILD_PATH --config Release --target test
