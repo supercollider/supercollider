@@ -87,7 +87,7 @@ code::
 ~d = ~a sect: ~b; // intersection of a and b
 ~c.postcs; ""; // post the whole construction
 ~d.postcs; "";
-~c.value; // Set[4, 0, 5, 7]
+~c.value; // Set[4, 0, 5, 7] (order doesn't matter)
 ~d.value; // Set[4, 5]
 ~b = Set[4, 5, 13, 0];
 ~c.value;
@@ -117,6 +117,16 @@ code::
 
 ~a = Prand([100, 200]);
 ~b.value.asStream.nextN(10);
+
+// keyword arguments
+
+~a = { |x=0, y=0| x + y };
+~a.(2, 3);
+~a.(y:3);
+
+~k = 1997;
+~a.(x:2, y:~k);
+
 
 
 // to do : flop!
