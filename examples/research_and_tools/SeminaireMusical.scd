@@ -450,13 +450,26 @@ v_play.action = { f_play.value(solution_index) };
 v_spiel.action = f_neu;
 
 f_freqToNoteName = { |freq|
-	var midinote = freq.cpsmidi;
-	var note = (midinote - 60).round;
-	var deviation = ((freq / midinote.round.midicps).ratiomidi * 100).round.asInteger;
-	var deviationString = if(deviation > 0) { "+" ++ deviation } { if(deviation == 0) { "" } { deviation } };
+	var midinote, note, deviation;
+	var f_deviationString = { |d|
+		if(d > 0) { "+" ++ d } { if(d == 0) { "" } { d } }
+	};
+
 	if(mode == \western) {
-		format("% %", eurNotes.at(note % 12), deviationString)
-	} { "" }; // indian note names to be done.
+		midinote = freq.cpsmidi;
+		note = (midinote - 60).round;
+		deviation = ((freq / midinote.round.midicps).ratiomidi * 100).round.asInteger;
+		format("% %", eurNotes.at(note % 12), f_deviationString.(deviation))
+	} {
+		if(mode == \indian) {
+			freq = freq.wrap(240.0, 480.0);
+			note = (indFreqs.indexOfGreaterThan(freq) - 1).max(0);
+			if(note.isNil) { nil } {
+				deviation = ((freq / indFreqs[note]).ratiomidi * 100).round.asInteger;
+				format("% %", indNotes.at(note), f_deviationString.(deviation))
+			}
+		}
+	}
 };
 
 f_makeDisplayString = { |index|
@@ -467,7 +480,7 @@ f_makeDisplayString = { |index|
 		"reference tone: " + f_freqToNoteName.(freq0)
 	};
 	var str = "      note number last played: %       %      %";
-	format(str, note.round(0.1), noteName, referenceName ? "")
+	format(str, note.round(0.1), noteName ? "", referenceName ? "")
 
 };
 
