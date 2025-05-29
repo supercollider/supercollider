@@ -6,19 +6,32 @@
 
 
 (
-var dec, v_spiel, v_klang, v_neu, v_play, v_guess, v_display, v_context, v_referenceTone;
-var f_setButtons, f_neu, f_play, f_guess, f_playReferenceTone, f_freeReferenceTone;
-var spiel="sm_sine", freqs, index;
-var intervalle, freq0, note0, rates, nameList, numChoices, amp=0.5, referenceToneSynth;
-var partchRatios, partchTonalities, partchPairsToRatio;
+// parameters
+var mode=\western, allowBase=true, amp=0.5;
 
-var mode=\western, allowBase=true;
+// resources:
 var eurNotes, indNotes, chords, chordKeys;
+var partchRatios, partchTonalities, partchPairsToRatio;
+var indFreqs;
+
+// states:
+var solution_index;
+var freqs, intervalle, rates, counts, freq0, note0, numChoices;
+
+// internal states:
+var referenceToneSynth;
+
+// display states:
+var synthDefName="sm_sine", nameList;
+
+// views:
+var dec, v_spiel, v_klang, v_neu, v_play, v_guess, v_display, v_context, v_referenceTone;
+
+// functions
+var f_setButtons, f_neu, f_play, f_guess, f_playReferenceTone, f_freeReferenceTone;
+var f_freqToNoteName, f_makeDisplayString;
 
 if(Server.default.serverRunning.not) { Server.default.boot };
-
-eurNotes = #["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "Bb", "B", "C'"];
-indNotes = #["Sa", "re", "Re", "ga", "Ga", "Ma", "ma", "Pa", "dha", "Dha", "ni", "Ni", "Sa'"];
 
 
 chords = IdentityDictionary[
@@ -80,16 +93,22 @@ partchPairsToRatio = { |pairs|
 	pairs.collect { |x| x.reduce('/') };
 };
 
+
+// see: http://www.soundofindia.com/showarticle.asp?in_article_id=-446619640
+indFreqs =  #[240, 256, 270, 288, 300, 320, 337.5, 360, 384, 400, 432, 450, 480];
+
+
+eurNotes = #["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "Bb", "B", "C'"];
+indNotes = #["Sa", "re", "Re", "ga", "Ga", "Ma", "ma", "Pa", "dha", "Dha", "ni", "Ni", "Sa'"];
+
+
 // GUI
 
 w = Window("Séminaire musical", Rect(10, 250, 880, 420));
 
 w.view.decorator = dec = FlowLayout(w.view.bounds);
 dec.shift(20, 20);
-v_spiel = ListView(w, Rect(0,0, 120, 130))
-/*.items_(
-["noten", "frequenzen", "noten + oktave","intervalle","times","beatings", "akkorde"]
-);*/
+v_spiel = ListView(w, Rect(0,0, 120, 150))
 .items_(
 	[
 		"notes",
@@ -98,7 +117,9 @@ v_spiel = ListView(w, Rect(0,0, 120, 130))
 		"intervals",
 		"times",
 		"beatings",
-		"chords"
+		"chords",
+		"intonation",
+		"counts"
 	]
 );
 dec.shift(10);
@@ -169,8 +190,10 @@ v_guess = Array.fill(13, {
 });
 
 dec.nextLine;
-dec.shift(20);
-v_display = StaticText(w, Rect(0,0,300,35));
+//dec.shift(20, 0);
+v_display = StaticText(w, Rect(0,0, w.view.bounds.width, 20))
+.string_("     ...")
+.align_(\left);
 
 w.front;
 
@@ -206,9 +229,7 @@ f_neu = {
 			switch(mode,
 
 				\indian, {
-
-					freqs = #[240, 256, 270, 288, 300, 320, 337.5, 360, 384, 400, 432, 450, 480];
-					// see: http://www.soundofindia.com/showarticle.asp?in_article_id=-446619640
+					freqs = indFreqs;
 					nameList = indNotes;
 					freq0 = freqs[0];
 				},
@@ -234,6 +255,7 @@ f_neu = {
 				}
 			);
 			v_klang.enabled = true;
+			solution_index = freqs.size.rand;
 		},
 
 		// frequencies
@@ -242,6 +264,7 @@ f_neu = {
 			freqs = nameList;
 			freq0 = 440;
 			v_klang.enabled = true;
+			solution_index = freqs.size.rand;
 		},
 		// notes + octaves
 		2, {
@@ -252,7 +275,7 @@ f_neu = {
 				freqs = partchPairsToRatio.(ratios) * freq0;
 				nameList = ratios.collect { |x| "%/%".format(*x) };
 				randomOctaves = { octaves.choose } ! 13;
-				// TODO!!!
+				freqs = freqs * randomOctaves;
 			} {
 				if(mode == \indian) {
 					freqs = #[240, 256, 270, 288, 300, 320, 337.5, 360, 384, 400, 432, 450, 480];
@@ -265,6 +288,7 @@ f_neu = {
 				freqs = freqs * ({ octaves.choose } ! 12);
 			};
 			v_klang.enabled = true;
+			solution_index = freqs.size.rand;
 		},
 		// intervals
 		3, {
@@ -277,11 +301,11 @@ f_neu = {
 					"-sext", "+sext", "7/4", "-sept", "sept", "oktav"
 				];
 			} {
-				// TODO: proper partch intervals
+				// TODO: use proper partch intervals instead of just the ones below
 				freq0 =  if(mode == \partch) {
 					392
 				} {
-					#[240, 256, 270, 288, 300, 320, 337.5, 360, 384, 400, 432, 450].choose;
+					indFreqs.choose;
 				};
 
 				freq0 = freq0 * octaves.choose;
@@ -291,7 +315,9 @@ f_neu = {
 				#["16/15", "9/8", "6/5", "5/4", "4/3", "17/12", "3/2", "8/5", "5/3", "7/4",
 					"16/9", "15/8", "2/1"];
 			};
+			solution_index = freqs.size.rand;
 			v_klang.enabled = true;
+
 		},
 		// times
 		4, {
@@ -300,8 +326,10 @@ f_neu = {
 			freqs = rrand(1600, 8000)  ! 13;
 			rates = { exprand(0.9, 19) } ! 13;
 			nameList = rates.round(0.01);
+			solution_index = freqs.size.rand;
 
 			v_klang.enabled = false;
+
 
 		},
 		// beatings
@@ -310,8 +338,10 @@ f_neu = {
 			freq0 = ((0..12).choose + 60).midicps * octaves.choose;
 			rates = { exprand(0.9, 40) } ! 13;
 			nameList = rates.round(0.01);
+			solution_index = freqs.size.rand;
 
 			v_klang.enabled = true;
+
 
 		},
 		// chords
@@ -320,11 +350,50 @@ f_neu = {
 			freq0 = (note0 + 60).midicps;
 			freqs = freq0 ! 13;
 			nameList = chordKeys[ (0..chordKeys.size-1).scramble.keep(13)].sort;
+			solution_index = freqs.size.rand;
+
 			v_klang.enabled = true;
-		}
+		},
+		// intonation
+		7, {
+			if(mode == \western) {
+				freq0 = ((0..11).choose + 60).midicps * octaves.choose;
+				intervalle = [-75, -62, -50, -25, -17, -10, 0, 10, 17, 25, 50, 62, 75];
+				freqs = freq0 * (intervalle / 100).midiratio;
+				nameList = intervalle.collect { |x| x + "ct" };
+
+			} {
+				// TODO: use proper partch intervals instead of just the ones below
+				freq0 =  if(mode == \partch) {
+					392
+				} {
+					indFreqs.choose;
+				};
+
+				freq0 = freq0 * octaves.choose;
+				intervalle = [-75, -62, -50, -25, -17, -10, 0, 10, 17, 25, 50, 62, 75];
+				freqs = freq0 * (intervalle / 100).midiratio;
+				nameList = intervalle.collect { |x| x + "ct" };
+			};
+			solution_index = freqs.size.rand;
+		},
+		// counts
+		8, {
+			referenceToneIsPlaying = false;
+			freq0 = nil; // no base tone
+			freqs = rrand(1600, 8000)  ! 13;
+			rates = { exprand(4,16) } ! 13;
+			counts = (1..13).scramble;
+			nameList = counts;
+			solution_index = freqs.size.rand;
+
+			v_klang.enabled = false;
+
+
+		},
 	);
+	v_klang.enabled = true;
 	numChoices = freqs.size;
-	index = freqs.size.rand;
 	f_setButtons.(nameList);
 	f_freeReferenceTone.value;
 	if(referenceToneIsPlaying) { f_playReferenceTone.value };
@@ -337,31 +406,34 @@ f_play = { |i|
 		switch(v_spiel.value,
 			3, { // intervall
 				fork {
-					Synth(spiel, [\freq, freq0, \amp, amp]);
+					Synth(synthDefName, [\freq, freq0, \amp, amp]);
 					0.4.wait;
-					Synth(spiel, [\freq, freq0 * intervalle[i], \amp, amp]);
+					Synth(synthDefName, [\freq, freq0 * intervalle[i], \amp, amp]);
 				}
 			},
 			4, { // rates
 				Synth("sm_click", [\freq, freqs[i], \rate, rates[i], \amp, amp])
 			},
 			5, { // beatings
-					Synth(spiel, [\freq, freq0,  \amp, amp]);
-					Synth(spiel, [\freq, freq0 + rates[i], \amp, amp])
+				Synth(synthDefName, [\freq, freq0,  \amp, amp]);
+				Synth(synthDefName, [\freq, freq0 + rates[i], \amp, amp])
 			},
 			6, { // akkorde
 				fork {
 					var strum = [0, 0.04].choose.rand;
 					var notes = chords[nameList[i]].degreeToKey(#[0, 2, 4, 5, 7, 9, 11]) + note0;
 					notes.do { |val|
-						Synth(spiel, [\freq, (val + 60).midicps, \amp, amp * 0.5]);
+						Synth(synthDefName, [\freq, (val + 60).midicps, \amp, amp * 0.5]);
 						strum.wait;
 					}
 				}
 
 			},
+			8, { // counts
+				Synth("sm_count", [\freq, freqs[i], \rate, rates[i], \count, counts[i], \amp, amp])
+			},
 			{
-				Synth(spiel, [\freq, freqs[i], \amp, amp])
+				Synth(synthDefName, [\freq, freqs[i], \amp, amp])
 			}
 		)
 	}
@@ -372,24 +444,45 @@ f_playReferenceTone = { v_referenceTone.valueAction = 1 };
 f_freeReferenceTone = { v_referenceTone.valueAction = 0 };
 
 // funktionen zu buttons
+
 v_neu.action = f_neu;
-v_play.action = { f_play.value(index) };
+v_play.action = { f_play.value(solution_index) };
 v_spiel.action = f_neu;
+
+f_freqToNoteName = { |freq|
+	var midinote = freq.cpsmidi;
+	var note = (midinote - 60).round;
+	var deviation = ((freq / midinote.round.midicps).ratiomidi * 100).round.asInteger;
+	var deviationString = if(deviation > 0) { "+" ++ deviation } { if(deviation == 0) { "" } { deviation } };
+	if(mode == \western) {
+		format("% %", eurNotes.at(note % 12), deviationString)
+	} { "" }; // indian note names to be done.
+};
+
+f_makeDisplayString = { |index|
+	var freq = freqs[index];
+	var note = freq.cpsmidi - 60;
+	var noteName = f_freqToNoteName.(freq);
+	var referenceName = if(v_referenceTone.value > 0 and: { freq0.notNil }) {
+		"reference tone: " + f_freqToNoteName.(freq0)
+	};
+	var str = "      note number last played: %       %      %";
+	format(str, note.round(0.1), noteName, referenceName ? "")
+
+};
+
 v_guess.do {|but, i|
-	var note, ratio;
 	but.action = {
-		if(index == i) {
+		if(solution_index == i) {
 			but.states = [[but.states[0][0], Color.red, Color.yellow]];
 		};
 		f_play.value(i);
-		// MOVE THIS
-		note = (freqs[i].cpsmidi - 60).round(0.1);
-		ratio = (freqs[i] / freqs[0]).asFraction(1000);
-		v_display.string = "note number last played:" + note + "(% / %)".format(*ratio);
+		v_display.string = f_makeDisplayString.value(i);
+
 	};
 };
 v_klang.action = {|view|
-	spiel =
+	synthDefName =
 	["sm_sine", "sm_noise", "sm_pulse", "sm_bell", "sm_string", "sm_timbremix"][view.value.asInteger]
 };
 v_referenceTone.action = { |view|
@@ -413,7 +506,7 @@ SynthDef("sm_sine", { arg freq=440, amp=0.5;
 	amp = AmpComp.kr(freq) * amp;
 	Out.ar(0,
 		Pan2.ar(
-			SinOsc.ar(freq) * EnvGen.kr(Env.perc(0.03, Rand(0.3, 2), amp), doneAction:2),
+			SinOsc.ar(freq) * EnvGen.ar(Env.perc(0.03, Rand(0.3, 2), amp), doneAction:2),
 			Rand(-0.5, 0.5)
 		)
 	)
@@ -426,7 +519,7 @@ SynthDef("sm_noise", { arg freq=440, amp=0.5;
 	u = BPF.ar(PinkNoise.ar(20), freq, Rand(0.1, 0.005));
 	Out.ar(0,
 		Pan2.ar(
-			u * EnvGen.kr(
+			u * EnvGen.ar(
 				Env.linen(Rand(0.03, 0.2), Rand(0.3, 2), Rand(0.3, 0.8), amp),
 				doneAction:2
 			),
@@ -442,7 +535,7 @@ SynthDef("sm_pulse", { arg freq=440, amp=0.5;
 	u = Pulse.ar(freq, Rand(0.3, 0.5), 0.3);
 	Out.ar(0,
 		Pan2.ar(
-			u * EnvGen.kr(Env.perc(0.03, Rand(0.3, 2), amp), doneAction:2),
+			u * EnvGen.ar(Env.perc(0.03, Rand(0.3, 2), amp), doneAction:2),
 			Rand(-0.5, 0.5)
 		)
 	)
@@ -459,7 +552,7 @@ SynthDef("sm_bell", { arg freq=440, amp=0.5;
 				[1] ++ ({ rrand(0.1, 0.3) } ! (n-1)).sort.reverse,
 				{ pi.rand } ! n
 			], freq)
-			* EnvGen.kr(Env.perc(0.03, Rand(0.3, 2), amp * 0.5), doneAction:2),
+			* EnvGen.ar(Env.perc(0.03, Rand(0.3, 2), amp * 0.5), doneAction:2),
 			Rand(-0.5, 0.5)
 		)
 	)
@@ -480,7 +573,7 @@ SynthDef("sm_string", { arg freq=440, amp=0.5;
 	);
 
 	//DetectSilence.ar(u, doneAction:2);
-	amp = amp * EnvGen.kr(Env.linen(0, sustain, 0.1), doneAction:2);
+	amp = amp * EnvGen.ar(Env.linen(0, sustain, 0.1), doneAction:2);
 	Out.ar(0,
 		Pan2.ar(u * amp, freq.cpsmidi % 12 / 6 - 1)
 	);
@@ -493,7 +586,21 @@ SynthDef("sm_click", { arg freq=440, rate=1, amp=0.5;
 	u = SinOsc.ar(freq) * Decay.kr(Impulse.kr(rate, 0, 40), 0.002, 0.04);
 	Out.ar(0,
 		Pan2.ar(
-			u * EnvGen.kr(Env.linen(0, min(2, IRand(4, 8) / rate), 0.1, amp), doneAction:2),
+			u * EnvGen.ar(Env.linen(0, min(2, IRand(4, 8) / rate), 0.1, amp), doneAction:2),
+			Rand(-0.5, 0.5)
+		)
+	)
+
+}).add;
+
+
+SynthDef("sm_count", { arg freq=440, rate=1, count=1, amp=0.5;
+	var u, trigs;
+	amp = AmpComp.kr(freq) * amp;
+	trigs = TDuty.ar(1/rate, 0, Dseries(1, 0, count));
+	u = SinOsc.ar(freq) * Decay.ar(trigs * 40, 0.002, 0.04);
+	Out.ar(0,
+		Pan2.ar(u * EnvGen.ar(Env.linen(0, count/rate + 0.5, 0), 1, amp, doneAction:2),
 			Rand(-0.5, 0.5)
 		)
 	)
@@ -506,7 +613,7 @@ SynthDef("sm_beatings", { arg freq=440, rate=1, amp=0.5;
 	u = SinOsc.ar([0, rate] + freq).sum * 0.3;
 	Out.ar(0,
 		Pan2.ar(
-			u * EnvGen.kr(Env.linen(0.01, max(Rand(0.3, 2),  3 / rate), 0.5, amp), doneAction:2),
+			u * EnvGen.ar(Env.linen(0.01, max(Rand(0.3, 2),  3 / rate), 0.5, amp), doneAction:2),
 			Rand(-0.5, 0.5)
 		)
 	)
@@ -520,7 +627,7 @@ SynthDef("sm_referenceTone", { arg freq=440, amp=0.5, gate=1.0;
 		LFNoise1.kr(0.11, 0.05, 0.4), 0.15).sum;
 	u = RLPF.ar(u, LFNoise2.kr(0.3, 0.2, 1) * 5000, 0.5);
 	Out.ar(0,
-		u * EnvGen.kr(Env.asr(1.0, amp, 1.0), gate, doneAction:2)
+		u * EnvGen.ar(Env.asr(1.0, amp, 1.0), gate, doneAction:2)
 	)
 
 }).add;
@@ -533,7 +640,7 @@ SynthDef("sm_timbremix", { arg freq=440, amp=0.5;
 		Pan2.ar(
 			u = sum(
 				SinOsc.ar(freq, 0, amp)
-			) * EnvGen.kr(Env.perc(0.03, Rand(0.3, 2))),
+			) * EnvGen.ar(Env.perc(0.03, Rand(0.3, 2))),
 
 			Rand(-0.5, 0.5)
 		)
