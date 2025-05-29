@@ -114,9 +114,9 @@ The index can also be an Array of indices to extract specified elements:
 code::
 x = [10, 20, 30];
 
-x.at([-1.1, 0.0, 1.1, 2.2, 3.3]); // returns [nil, 10, 20, 30, nil]
-x.at((-1.1, 0 .. 3.3));           // same as above
-x[(-1.1, 0 .. 3.3)];              // same as above (syntactic shortcut)
+x.at([-1, 0, 1, 2, 3]); // returns [nil, 10, 20, 30, nil]
+x.at((-1..3));           // same as above
+x[(-1..3)];              // same as above (syntactic shortcut)
 
 y = [0, 0, 2, 2, 1];
 x[y]; // returns [10, 10, 30, 30, 20]
@@ -203,14 +203,13 @@ code::
 ::
 
 method::put
-Put strong::item:: at strong::index:: starting from 0, specified as an integer or float, or even array of float, replacing what is there.
-If a float is used as index, it will be truncated.
+Put strong::item:: at strong::index:: starting from 0, replacing what is there. strong::index:: can be an array of indices. If a float is used as index, it will be truncated.
 
 Example:
 code::
 x = [1, 2, 3];
-y = x.put(0.5, 150); // -> [150, 2, 3]
-z = x.put([0.5, 1], 150); // [150, 150, 3]
+y = x.put(0, 150); // -> [150, 2, 3]
+z = x.put([0, 1], 150); // [150, 150, 3]
 ::
 
 method::clipPut
