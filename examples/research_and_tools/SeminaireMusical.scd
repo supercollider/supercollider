@@ -607,6 +607,7 @@ SynthDef("sm_count", { arg freq=440, rate=1, count=1, amp=0.5;
 
 }).add;
 
+
 SynthDef("sm_beatings", { arg freq=440, rate=1, amp=0.5;
 	var u;
 	amp = AmpComp.kr(freq) * amp;
@@ -617,6 +618,26 @@ SynthDef("sm_beatings", { arg freq=440, rate=1, amp=0.5;
 			Rand(-0.5, 0.5)
 		)
 	)
+
+}).add;
+
+SynthDef("sm_timbremix", { arg freq=440, amp=0.5;
+	var n = 10, u;
+	var ratios = ([1.0] ++ { ExpRand(1.0, 6.0) }.dup(n));
+	freq = freq * ratios;
+	amp = amp * (Rand(1.2, 1.6) ** ratios.neg);
+	amp[0] = 1;
+	amp = amp * 0.4 * AmpCompA.ir(freq);
+	Out.ar(0,
+		Pan2.ar(
+			u = sum(
+				SinOsc.ar(freq, 0, amp)
+			) * EnvGen.ar(Env.perc(0.03, Rand(0.5, 3))),
+
+			Rand(-0.5, 0.5)
+		)
+	);
+	DetectSilence.ar(u, doneAction:2);
 
 }).add;
 
@@ -632,21 +653,6 @@ SynthDef("sm_referenceTone", { arg freq=440, amp=0.5, gate=1.0;
 
 }).add;
 
-SynthDef("sm_timbremix", { arg freq=440, amp=0.5;
-	var n = 10, u;
-	freq = freq * ([1.0] ++ { ExpRand(1.0, 3.0) }.dup(18));
-	amp = amp * 0.4 * (AmpComp.ir(freq) * ([1.0] ++ (1..n).reciprocal));
-	Out.ar(0,
-		Pan2.ar(
-			u = sum(
-				SinOsc.ar(freq, 0, amp)
-			) * EnvGen.ar(Env.perc(0.03, Rand(0.3, 2))),
 
-			Rand(-0.5, 0.5)
-		)
-	);
-	DetectSilence.ar(u, doneAction:2);
-
-}).add;
 
 )
