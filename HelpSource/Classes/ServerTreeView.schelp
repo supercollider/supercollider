@@ -7,7 +7,7 @@ description::
 link::Classes/ServerTreeView:: shows the node tree on a server.
 
 note::
-Unlikely to link::Classes/Server#-plotTree::, the link::Classes/ServerTreeView:: will not disappear when the pointed server is not running.
+Unlike to link::Classes/Server#-plotTree::, the link::Classes/ServerTreeView:: will not disappear when the pointed server is not running.
 ::
 
 classmethods::
@@ -57,7 +57,7 @@ a.stop
 [a, c].do { |v| v.close }
 
 // Open a plotTree window:
-s.plotTree // This changes also the interval of the ServerTreeView instances assinge to variabled since there is currently only one updater for this class.
+s.plotTree // This also changes the interval of the ServerTreeView instance assigned to a variable, since there is currently only one updater for this class.
 
 // Stop the playback of the pattern:
 x.stop
