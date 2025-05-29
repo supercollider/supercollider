@@ -697,7 +697,7 @@ code::
 ~pTree = s.plotTree
 
 // Define and play a repeating pattern that generates a new synth every 0.4 seconds:
-x = Pn((dur: 0.4, midinote: 69, amp: 0.1)).play
+x = Pn((dur: 0.4, midinote: 69, amp: 0.1)).play;
 
 /*
 The ~pTree window dynamically displays active synth nodes.
@@ -735,13 +735,13 @@ s.waitForBoot {
 	meaning only every fourth synth node is visible.
 	*/
 
-	5.wait; // waits for 5 seconds.
+	5.wait; // wait for 5 seconds.
 
-	x.stop; // stops the playback of the pattern
+	x.stop; // stop the playback of the pattern
 
-	2.wait; // waits for 5 seconds.
+	2.wait; // wait for 5 seconds.
 
-	plotTree.close; // closes the plotTree window
+	plotTree.close; // close the plotTree window
 }
 )
 ::
