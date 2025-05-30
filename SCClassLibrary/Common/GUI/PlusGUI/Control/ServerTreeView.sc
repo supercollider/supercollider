@@ -192,9 +192,11 @@ ServerTreeView {
 			defer {
 				var height;
 				view !? {
-					height = if(view.bounds.isNil) { 400 } { view.bounds.height };
-					view.bounds = Rect(0, 0, min(window.bounds.width - 4, 394), max(height, tabSize * countSize.value(levels) * 1.06));
-					view.refresh
+					window !? {
+						height = if(view.bounds.isNil) { 400 } { view.bounds.height };
+						view.bounds = Rect(0, 0, min(window.bounds.width - 4, 394), max(height, tabSize * countSize.value(levels) * 1.06));
+						view.refresh
+					}
 				}
 			}
 		}, '/g_queryTree.reply', this.server.addr).fix;
