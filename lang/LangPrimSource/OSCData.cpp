@@ -458,7 +458,7 @@ static int prNetAddr_SendBundle(VMGlobals* g, int numArgsPushed) {
     int err = slotDoubleVal(args, &time);
     if (!err) {
         time += slotRawFloat(&g->thread->seconds);
-        SetFloat(args, time);
+        SetFloat<AssertDouble::Okay>(args, time);
     }
     int numargs = numArgsPushed - 1;
     makeSynthBundle(&packet, args, numargs, true);
@@ -658,10 +658,10 @@ static PyrObject* ConvertOSCMessage(int inSize, const char* inData) {
             SetInt(slots + i + 1, msg.geti());
             break;
         case 'f':
-            SetFloat(slots + i + 1, msg.getf());
+            SetFloat<AssertDouble::CouldBeBadNan>(slots + i + 1, msg.getf());
             break;
         case 'd':
-            SetFloat(slots + i + 1, msg.getd());
+            SetFloat<AssertDouble::CouldBeBadNan>(slots + i + 1, msg.getd());
             break;
         case 's':
             SetSymbol(slots + i + 1, getsym(msg.gets()));
@@ -675,7 +675,7 @@ static PyrObject* ConvertOSCMessage(int inSize, const char* inData) {
             SetChar(slots + i + 1, (char)msg.geti());
             break;
         case 't':
-            SetFloat(slots + i + 1, OSCToElapsedTime(msg.gett()));
+            SetFloat<AssertDouble::CouldBeBadNan>(slots + i + 1, OSCToElapsedTime(msg.gett()));
             break;
 
             // argument tags without any associated value
@@ -688,7 +688,7 @@ static PyrObject* ConvertOSCMessage(int inSize, const char* inData) {
             msg.count++;
             break;
         case 'I':
-            SetFloat(slots + i + 1, dInfinity);
+            SetFloat<AssertDouble::Okay>(slots + i + 1, dInfinity);
             msg.count++;
             break;
         case 'N':
@@ -735,7 +735,7 @@ static PyrObject* ConvertOSCBundle(int inSize, const char* inData) {
 
     if (oscTime != 1) {
         double seconds = static_cast<double>(oscTime) * kOSCtoSecs;
-        SetFloat(slots, seconds);
+        SetFloat<AssertDouble::Okay>(slots, seconds);
     } else {
         SetNil(slots); // immediate
     }
@@ -787,7 +787,7 @@ void PerformOSCBundle(int inSize, const char* inData, PyrObject* replyObj, int i
             ++g->sp;
             SetObject(g->sp, g->process);
             ++g->sp;
-            SetFloat(g->sp, seconds);
+            SetFloat<AssertDouble::CouldBeBadNan>(g->sp, seconds);
             ++g->sp;
             SetObject(g->sp, replyObj);
             ++g->sp;
@@ -810,7 +810,7 @@ void PerformOSCMessage(int inSize, const char* inData, PyrObject* replyObj, int 
     ++g->sp;
     SetObject(g->sp, g->process);
     ++g->sp;
-    SetFloat(g->sp, time); // time
+    SetFloat<AssertDouble::CouldBeBadNan>(g->sp, time); // time
     ++g->sp;
     SetObject(g->sp, replyObj);
     ++g->sp;
@@ -854,7 +854,7 @@ void ProcessRawMessage(std::unique_ptr<char[]> inData, size_t inSize, ReplyAddre
         ++g->sp;
         SetObject(g->sp, g->process);
         ++g->sp;
-        SetFloat(g->sp, time); // time
+        SetFloat<AssertDouble::CouldBeBadNan>(g->sp, time); // time
         ++g->sp;
         SetObject(g->sp, ConvertReplyAddress(&replyAddress));
         ++g->sp;
@@ -1370,11 +1370,11 @@ int prGetSharedControl(VMGlobals* g, int numArgsPushed) {
     if (err)
         return err;
     if (index < 0 || index >= gInternalSynthServer.mNumSharedControls) {
-        SetFloat(a, 0.);
+        SetFloat<AssertDouble::Okay>(a, 0.);
         return errNone;
     }
     float val = gInternalSynthServer.mSharedControls[index];
-    SetFloat(a, val);
+    SetFloat<AssertDouble::CouldBeBadNan>(a, val);
     return errNone;
 }
 
@@ -1477,7 +1477,7 @@ int prGetControlBusValue(VMGlobals* g, int numArgsPushed) {
     server_shared_memory_client* client = (server_shared_memory_client*)slotRawPtr(ptrSlot);
 
     float value = client->get_control_busses()[busIndex];
-    SetFloat(a, value);
+    SetFloat<AssertDouble::CouldBeBadNan>(a, value);
     return errNone;
 }
 
@@ -1510,7 +1510,7 @@ int prGetControlBusValues(VMGlobals* g, int numArgsPushed) {
 
     for (int i = 0; i != numberOfChannels; ++i) {
         float value = client->get_control_busses()[busIndex + i];
-        SetFloat(ret->slots + i, value);
+        SetFloat<AssertDouble::CouldBeBadNan>(ret->slots + i, value);
     }
 
     SetObject(a, ret);

@@ -1986,10 +1986,10 @@ HOT void Interpret(VMGlobals* g) {
 
                 case OpUnaryMathNibble::Not: {
                     if (IsTrue(sp)) {
-                        SetTagRaw(sp, tagFalse);
+                        SetRaw(sp, false);
                         ifTailCallOptimise([&]() { g->tailCall = 0; });
                     } else if (IsFalse(sp)) {
-                        SetTagRaw(sp, tagTrue);
+                        SetRaw(sp, true);
                         ifTailCallOptimise([&]() { g->tailCall = 0; });
                     } else
                         goto default_unary_math_nibble_case;
@@ -1997,7 +1997,7 @@ HOT void Interpret(VMGlobals* g) {
 
                 case OpUnaryMathNibble::IsNil: {
                     if (IsNil(sp))
-                        SetTagRaw(sp, tagTrue);
+                        SetRaw(sp, true);
                     else
                         slotCopy(sp, &gSpecialValues.False);
                     ifTailCallOptimise([&]() { g->tailCall = 0; });
@@ -2007,7 +2007,7 @@ HOT void Interpret(VMGlobals* g) {
                     if (NotNil(sp))
                         slotCopy(sp, &gSpecialValues.True);
                     else
-                        SetTagRaw(sp, tagFalse);
+                        SetRaw(sp, false);
                     ifTailCallOptimise([&]() { g->tailCall = 0; });
                 } break;
 

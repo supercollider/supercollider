@@ -132,7 +132,7 @@ template <> struct TypeCodec<float> {
         return val;
     }
 
-    static void write(PyrSlot* slot, const float val) { SetFloat(slot, val); }
+    static void write(PyrSlot* slot, const float val) { SetFloat<AssertDouble::CouldBeBadNan>(slot, val); }
 };
 
 template <> struct TypeCodec<double> {
@@ -151,7 +151,7 @@ template <> struct TypeCodec<double> {
 
     static void write(PyrSlot* slot, const double val) {
         // NOTE: the signature actually reads SetFloat(PyrSlot*, double):
-        SetFloat(slot, val);
+        SetFloat<AssertDouble::CouldBeBadNan>(slot, val);
     }
 };
 
