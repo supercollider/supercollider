@@ -42,10 +42,10 @@ a.start // plotting interval: 0.5 sec (default)
 
 // Create additional ServerTreeView instances:
 b = ServerTreeView(s)
-c = ServerTreeView(s, Rect(300, 300, 300, 400)) // This instance will be resized.
+c = ServerTreeView(s, Rect(400, 50, 300, 400)) // This instance will be resized.
 
 // Create a ServerTreeView instance with instant plotting enabled:
-d = ServerTreeView(s, Rect(600, 300, 400, 400)).start(2) // The plotting interval of 2 seconds will not be applied while the ServerTreeView assigned to variable a is running.
+d = ServerTreeView(s, Rect(600, 50, 400, 400)).start(2) // The plotting interval of 2 seconds will not be applied while the ServerTreeView assigned to variable a is running.
 
 // Close the ServerTreeView instance assigned to variable b:
 b.close
