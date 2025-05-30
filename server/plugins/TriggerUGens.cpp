@@ -900,7 +900,7 @@ void SetResetFF_next_k(SetResetFF* unit, int inNumSamples) {
 
 
 void ToggleFF_Ctor(ToggleFF* unit) {
-    if (unit->mCalcRate == calc_FullRate and INRATE(0) != calc_FullRate) {
+    if (unit->mCalcRate == calc_FullRate && INRATE(0) != calc_FullRate) {
         SETCALC(ToggleFF_next_ak);
     } else {
         SETCALC(ToggleFF_next);
