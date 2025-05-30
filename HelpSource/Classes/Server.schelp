@@ -684,7 +684,7 @@ s.boot
 s.plotTree
 
 // Close it:
-s.serverTreeWindow.close
+s.serverTreeView.close
 
 // Open a plotTree window named ~pTree with a default refresh rate:
 ~pTree = s.plotTree
