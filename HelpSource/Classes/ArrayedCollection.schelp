@@ -3,7 +3,7 @@ categories::Collections>Ordered
 summary:: Abstract superclass of Collections of fixed maximum size
 
 DESCRIPTION::
-link::Classes/ArrayedCollection:: is an abstract class, a subclass of link::Classes/SequenceableCollection:: whose items are held in a vector of slots, indexable by a link::Classes/SimpleNumber:: starting from 0. If a float is used as index, it will be truncated. Instances of link::Classes/ArrayedCollection:: have a fixed maximum size beyond which they may not grow.
+code::ArrayedCollection:: is an abstract class, a subclass of link::Classes/SequenceableCollection:: whose items are held in a vector of slots, indexable by a link::Classes/SimpleNumber:: starting from 0. If a float is used as index, it will be truncated. Instances of code::ArrayedCollection:: have a fixed maximum size beyond which they may not grow.
 
 Its principal subclasses are link::Classes/Array:: (for holding objects), and link::Classes/RawArray::, from which link::Classes/Int8Array::, link::Classes/FloatArray::, link::Classes/Signal:: etc. inherit.
 
@@ -66,11 +66,34 @@ code::
 [[1, 2], [3, [4, 5]]].isRectangular // false
 ::
 
-method::at 
-Returns the item at strong::index::, which is specified as an integer or a float starting from 0. 
-For non-negative indices, float values are emphasis::floored:: (rounded down to the nearest integer).
-Negative float indices between -1 and 0 return the first item. 
-Out of range indices (≤ -1 or ≥ size) return code::nil:::
+method::at
+Returns the item at code::index::, specified as an integer (or float) starting from code::0::.
+
+code::
+x = [1, 2, 3];
+x.at(2); // returns 3
+x[2];    // equivalent shorthand syntax
+::
+
+The code::index:: can also be an link::Classes/Array:: of indices to extract specified elements:
+code::
+x = [10, 20, 30];
+
+x.at([-1, 0, 1, 2, 3]); // returns [nil, 10, 20, 30, nil]
+x.at((-1..3));          // same, as a range
+x[(-1..3)];             // same as above
+
+y = [0, 0, 2, 2, 1];
+x[y];                   // returns [10, 10, 30, 30, 20]
+::
+
+Float indices are also supported with the following behavior:
+list::
+	## Positive float indices are floored to the nearest lower integer.
+	## Negative float indices in the range (-1, 0) return the first item, code::this.at(0)::.
+	## Out-of-range indices, code::<= -1:: or code::>= this.size::, return code::nil::.
+::
+
 code::
 x = [10, 20];
 
@@ -84,17 +107,8 @@ x.at(1.9);  // returns 20
 x.at(2);    // returns nil
 ::
 
-link::Classes/Array:: is its syntactic shortcut:
+A sound example:
 code::
-x = [1, 2, 3]
-
-// Retrieve the value at index 1:
-x.at(1) // returns 2
-
-// Equivalent shorthand syntax:
-x[1]    // returns 2
-
-// Sound example:
 (
 var pitches =  [43.0, 55.0, 58.86, 57.42, 67.0];
 fork {
@@ -108,18 +122,6 @@ fork {
 	}
 }
 )
-::
-
-The index can also be an Array of indices to extract specified elements:
-code::
-x = [10, 20, 30];
-
-x.at([-1, 0, 1, 2, 3]); // returns [nil, 10, 20, 30, nil]
-x.at((-1..3));           // same as above
-x[(-1..3)];              // same as above (syntactic shortcut)
-
-y = [0, 0, 2, 2, 1];
-x[y]; // returns [10, 10, 30, 30, 20]
 ::
 
 method::clipAt
