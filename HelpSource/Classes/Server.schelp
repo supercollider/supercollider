@@ -758,7 +758,7 @@ s.plotTree;
 
 // Move plotTree window to the defined position with defined size:
 s.plotTree(2, Rect(200, 200, 100, 200));
-// <- The size (width: 100; height: 200) is smaller than the minimum size, so the size will be ajusted.
+// <- The size (width: 100; height: 200) is smaller than the minimum size, so the size will be adjusted.
 
 s.plotTree; // brings the plotTree window to the front without changing its position or size.
 ::

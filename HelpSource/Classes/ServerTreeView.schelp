@@ -57,13 +57,13 @@ a.stop
 [a, c].do { |v| v.close }
 
 // Open a plotTree window:
-s.plotTree // This also changes the interval of the ServerTreeView instance assigned to a variable, since there is currently only one updater for this class.
-
-// Stop the playback of the pattern:
-x.stop
+s.plotTree // This also changes the interval of the ServerTreeView instance assigned to variable d, since there is currently only one updater for this class.
 
 // Stop the plotting process for ServerTreeView instance assigned to variable d:
 d.stop
+
+// Stop the playback of the pattern:
+x.stop
 
 // Close the ServerTreeView instance assigned to variable d:
 d.close
