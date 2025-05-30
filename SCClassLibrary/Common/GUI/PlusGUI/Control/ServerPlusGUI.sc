@@ -370,6 +370,7 @@
 			serverTreeWindow.front
 		} {
 			serverTreeWindow.alwaysOnTop_(true).front.alwaysOnTop_(false);
+			interval !? { serverTreeView.start(interval) };
 		};
 		^serverTreeView
 	}

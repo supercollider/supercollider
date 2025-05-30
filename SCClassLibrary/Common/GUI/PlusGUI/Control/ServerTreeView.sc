@@ -45,6 +45,8 @@ ServerTreeView {
 			^this
 		};
 
+		updater !? { updater.isPlaying.if{ this.stop } };
+
 		pen = GUI.current.pen;
 		font = Font.sansSerif(10);
 
