@@ -99,7 +99,7 @@ TestServer_boot : UnitTest {
 
 	// test that setting notify=false, then notify=true doesn't cause ServerBoot to be run
 	test_notifyAndServerBootActions {
-		var count = 0;
+		var finished, count = 0;
 		var condVar = CondVar.new;
 		var func = { count = count + 1; condVar.signalOne };
 
@@ -109,8 +109,8 @@ TestServer_boot : UnitTest {
 
 		// No efficient way to ensure that ServerTree has run at this point, if it was going to.
 
-		condVar.waitFor(3);
-
+		finished = condVar.waitFor(3);
+		this.assert(finished, "TIMEOUT", report: false);
 		this.assertEquals(count, 1, "Toggling Server.notify should not cause ServerBoot actions to run.");
 
 		s.quit;
