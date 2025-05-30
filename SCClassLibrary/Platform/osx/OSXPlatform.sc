@@ -5,7 +5,6 @@ OSXPlatform : UnixPlatform {
 	initPlatform {
 		super.initPlatform;
 		recordingsDir = "~/Music/SuperCollider Recordings".standardizePath;
-		this.declareFeature(\unixPipes); // pipes are possible (can't declare in UnixPlatform since IPhonePlatform is unixy yet can't support pipes)
 	}
 
 	name { ^\osx }

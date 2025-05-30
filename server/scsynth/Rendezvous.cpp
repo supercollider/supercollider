@@ -49,7 +49,7 @@ static const char* SCRendezvousProtocolString(SCRendezvousProtocol proto) {
 }
 #endif
 
-#if defined(__APPLE__) && !defined(SC_IPHONE)
+#if defined(__APPLE__)
 #    include <CoreServices/CoreServices.h>
 
 void PublishPortToRendezvous(SCRendezvousProtocol protocol, short portNum) {

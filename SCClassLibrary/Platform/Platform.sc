@@ -215,6 +215,12 @@ Platform {
 }
 
 UnixPlatform : Platform {
+
+	initPlatform {
+		super.initPlatform;
+		this.declareFeature(\unixPipes);
+	}
+
 	pathSeparator { ^$/ }
     pathDelimiter { ^$: }
 

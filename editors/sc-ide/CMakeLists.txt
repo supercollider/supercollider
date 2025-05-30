@@ -164,7 +164,6 @@ set ( ide_src
     ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_win.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_unix.cpp
-    ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_iphone.cpp
 
     ${CMAKE_SOURCE_DIR}/editors/sc-ide/primitives/localsocket_utils.cpp
     ${CMAKE_SOURCE_DIR}/editors/sc-ide/primitives/localsocket_utils.hpp

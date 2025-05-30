@@ -21,10 +21,6 @@
 
 #include "SC_PlugIn.h"
 
-#ifdef SC_IPHONE
-#    include "SC_VFP11.h"
-#endif
-
 #ifdef SUPERNOVA
 #    include "nova-tt/spin_lock.hpp"
 #    include "nova-tt/rw_spinlock.hpp"
@@ -581,32 +577,6 @@ void In_next_a(In* unit, int inNumSamples) {
     }
 }
 
-#ifdef IPHONE_VEC
-void vIn_next_a(In* unit, int inNumSamples) {
-    World* world = unit->mWorld;
-    int bufLength = world->mBufLength;
-    int numChannels = unit->mNumOutputs;
-
-    float fbusChannel = ZIN0(0);
-    IO_a_update_channels(unit, world, fbusChannel, numChannels, bufLength);
-
-    float* in = unit->m_bus;
-    int32* touched = unit->m_busTouched;
-    const int32 bufCounter = unit->mWorld->mBufCounter;
-    const int32 maxChannel = world->mNumAudioBusChannels;
-
-    for (int i = 0; i < numChannels; ++i, in += bufLength) {
-        AudioBusGuard<true> guard(unit, fbusChannel + i, maxChannel);
-
-        float* out = OUT(i);
-        if (guard.isValid && (touched[i] == bufCounter))
-            vcopy(out, in, inNumSamples);
-        else
-            vfill(out, 0.f, inNumSamples);
-    }
-}
-#endif
-
 void In_next_k(In* unit, int inNumSamples) {
     World* world = unit->mWorld;
     uint32 numChannels = unit->mNumOutputs;
@@ -970,37 +940,6 @@ void Out_next_a(Out* unit, int inNumSamples) {
     }
 }
 
-
-#ifdef IPHONE_VEC
-void vOut_next_a(Out* unit, int inNumSamples) {
-    // Print("Out_next_a %d\n", unit->mNumInputs);
-    World* world = unit->mWorld;
-    int bufLength = world->mBufLength;
-    int numChannels = unit->mNumInputs - 1;
-
-    float fbusChannel = ZIN0(0);
-    IO_a_update_channels(unit, world, fbusChannel, numChannels, bufLength);
-
-    float* out = unit->m_bus;
-    int32* touched = unit->m_busTouched;
-    int32 bufCounter = unit->mWorld->mBufCounter;
-    for (int i = 0; i < numChannels; ++i, out += bufLength) {
-        AudioBusGuard<false> guard(unit, fbusChannel + i, maxChannel);
-
-        if (guard.isValid) {
-            float* in = IN(i + 1);
-            if (touched[i] == bufCounter) {
-                vadd(out, out, in, inNumSamples);
-            } else {
-                vcopy(out, in, inNumSamples);
-                touched[i] = bufCounter;
-            }
-        }
-    }
-}
-#endif
-
-
 #ifdef NOVA_SIMD
 FLATTEN void Out_next_a_nova(Out* unit, int inNumSamples) {
     World* world = unit->mWorld;
@@ -1101,12 +1040,7 @@ void Out_Ctor(Out* unit) {
         else
             SETCALC(Out_next_a);
 #else
-
-#    ifdef IPHONE_VEC
-        SETCALC(vOut_next_a);
-#    else
         SETCALC(Out_next_a);
-#    endif
 #endif
         unit->m_bus = world->mAudioBus;
         unit->m_busTouched = world->mAudioBusTouched;

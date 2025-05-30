@@ -151,11 +151,6 @@ int prString_POpen(struct VMGlobals* g, int numArgsPushed) {
     if (error != errNone)
         return error;
 
-#ifdef SC_IPHONE
-    SetInt(a, 0);
-    return errNone;
-#endif
-
     pid_t pid;
     FILE* stream;
     std::tie(pid, stream) = sc_popen_shell(std::move(cmdline), "r");
@@ -171,11 +166,6 @@ int prString_POpen(struct VMGlobals* g, int numArgsPushed) {
 int prArrayPOpen(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* callerSlot = g->sp - 1;
     PyrSlot* postOutputSlot = g->sp;
-
-#ifdef SC_IPHONE
-    SetInt(a, 0);
-    return errNone;
-#endif
 
     if (NotObj(callerSlot))
         return errWrongType;

@@ -64,8 +64,7 @@ Main : Process {
 				(
 					osx: "For help type cmd-d.",
 					linux: "For help type ctrl-c ctrl-h (Emacs) or :SChelp (vim).",
-					windows: "For help press F1.",
-					iphone: ""
+					windows: "For help press F1."
 				).at(platform.name);
 
 			})

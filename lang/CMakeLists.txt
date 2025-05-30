@@ -76,7 +76,6 @@ set(sclang_sources
 	${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_Filesystem_win.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_Filesystem_unix.cpp
-	${CMAKE_SOURCE_DIR}/common/SC_Filesystem_iphone.cpp
 
 	${CMAKE_SOURCE_DIR}/common/fftlib.c
 	${CMAKE_SOURCE_DIR}/common/Samp.cpp
