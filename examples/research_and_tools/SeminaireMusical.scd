@@ -192,7 +192,6 @@ v_guess = Array.fill(13, {
 dec.nextLine;
 //dec.shift(20, 0);
 v_display = StaticText(w, Rect(0,0, w.view.bounds.width, 20))
-.string_("     ...")
 .align_(\left);
 
 w.front;
@@ -358,8 +357,9 @@ f_neu = {
 		7, {
 			if(mode == \western) {
 				freq0 = ((0..11).choose + 60).midicps * octaves.choose;
-				intervalle = [-75, -62, -50, -25, -17, -10, 0, 10, 17, 25, 50, 62, 75];
-				freqs = freq0 * (intervalle / 100).midiratio;
+				intervalle = (1..6).collect { |x| x * 10 + 10.rand };
+				intervalle = (intervalle.reverse.neg ++ 0 ++ intervalle);
+				freqs = freq0 * intervalle.midiratio;
 				nameList = intervalle.collect { |x| x + "ct" };
 
 			} {
@@ -371,8 +371,9 @@ f_neu = {
 				};
 
 				freq0 = freq0 * octaves.choose;
-				intervalle = [-75, -62, -50, -25, -17, -10, 0, 10, 17, 25, 50, 62, 75];
-				freqs = freq0 * (intervalle / 100).midiratio;
+				intervalle = (1..6).collect { |x| x * 10 + 10.rand };
+				intervalle = (intervalle.reverse.neg ++ 0 ++ intervalle);
+				freqs = freq0 * intervalle.midiratio;
 				nameList = intervalle.collect { |x| x + "ct" };
 			};
 			solution_index = freqs.size.rand;
