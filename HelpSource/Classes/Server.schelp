@@ -739,7 +739,7 @@ s.waitForBoot {
 
 	x.stop; // stop the playback of the pattern
 
-	2.wait; // wait for 5 seconds.
+	2.wait; // wait for 2 seconds.
 
 	plotTree.close; // close the plotTree window
 }
