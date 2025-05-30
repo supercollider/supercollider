@@ -1456,8 +1456,11 @@ void Sweep_Ctor(Sweep* unit) {
         }
     }
 
-    unit->m_previn = ZIN0(0);
-    ZOUT0(0) = unit->mLevel = 0.f;
+    unit->m_previn = 0.f;
+    unit->mLevel = 0.f;
+    Sweep_next_aa(unit, 1);
+    unit->m_previn = 0.f;
+    unit->mLevel = 0.f;
 }
 
 void Sweep_next_0k(Sweep* unit, int inNumSamples) {
