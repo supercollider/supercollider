@@ -242,7 +242,7 @@ ServerMeter {
 			server.name ++ " levels (dBFS)",
 			Rect(
 				5,
-				372 + Platform.case(\windows, { 62 }, \linux, { 20 }, \osx, { 0 }),
+				376 + Platform.case(\windows, { 58 }, \linux, { 20 }, \osx, { 0 }),
 				ServerMeterView.getWidth(numIns, numOuts),
 				ServerMeterView.height),
 			false);
