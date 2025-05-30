@@ -666,7 +666,7 @@ note::
 To use multiple instances of link::Classes/ServerTreeView:: per link::Classes/Server:: instance or workspace, refer to the link::Classes/ServerTreeView#examples#Examples in ServerTreeView Documentation::.
 ::
 
-The method returns a link::Classes/Server:: (the receiver of this call), and the created link::Classes\View:: instance can be accessed via the link::#-serverTreeView::.
+The method returns a link::Classes/Server:: (the receiver of this call), and the created link::Classes/View:: instance can be accessed via the link::#-serverTreeView::.
 
 note::
 If the server is not running, the window containing teletype::plotTree:: will briefly appear and then close, displaying the following message in the Post window:
