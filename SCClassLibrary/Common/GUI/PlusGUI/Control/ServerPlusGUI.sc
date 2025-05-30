@@ -371,8 +371,8 @@
 			window.onClose_({ serverTreeView = nil });
 		} {
 			bounds !? { serverTreeView.window.bounds_(bounds) };
-			serverTreeView.window.alwaysOnTop_(true).front.alwaysOnTop_(false);
 			interval !? { serverTreeView.start(interval) };
+			serverTreeView.window.alwaysOnTop_(true).front.alwaysOnTop_(false);
 		};
 		^serverTreeView
 	}
