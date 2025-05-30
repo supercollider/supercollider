@@ -25,7 +25,6 @@
 
 #include <boost/align/is_aligned.hpp>
 
-#include "Unroll.h"
 #include "simd_peakmeter.hpp"
 
 #ifdef NOVA_SIMD
@@ -1480,7 +1479,7 @@ void Sweep_next_0a(Sweep* unit, int inNumSamples) {
     double level = unit->mLevel;
     float sampledur = SAMPLEDUR;
 
-    LOOP1(inNumSamples, ZXP(out) = level; level += ZXP(rate) * sampledur);
+    LOOP1(inNumSamples, float step = ZXP(rate) * sampledur; ZXP(out) = level; level += step);
 
     unit->mLevel = level;
 }
@@ -1493,7 +1492,9 @@ void Sweep_next_kk(Sweep* unit, int inNumSamples) {
     double level = unit->mLevel;
 
     if (previn <= 0.f && curin > 0.f) {
+        // note: frac calculation is wrong
         float frac = -previn / (curin - previn);
+        // also, we are applying current rate to previous increment, which is not formally correct
         level = frac * step;
     }
 
@@ -1512,11 +1513,13 @@ void Sweep_next_ka(Sweep* unit, int inNumSamples) {
     float sampledur = SAMPLEDUR;
 
     if (previn <= 0.f && curin > 0.f) {
+        // note: frac calculation is wrong
         float frac = -previn / (curin - previn);
+        // also, we are applying current rate to previous increment, which is not formally correct
         level = frac * rate[ZOFF] * sampledur;
     }
 
-    LOOP1(inNumSamples, ZXP(out) = level; level += ZXP(rate) * sampledur;);
+    LOOP1(inNumSamples, float step = ZXP(rate) * sampledur; ZXP(out) = level; level += step;);
 
     unit->m_previn = curin;
     unit->mLevel = level;
@@ -1531,7 +1534,9 @@ void Sweep_next_ak(Sweep* unit, int inNumSamples) {
 
     LOOP1(
         inNumSamples, float curin = ZXP(in); if (previn <= 0.f && curin > 0.f) {
+            // note: frac calculation is wrong
             float frac = -previn / (curin - previn);
+            // also, we are applying current rate to previous increment, which is not formally correct
             level = frac * step;
         } ZXP(out) = level;
         level += step; previn = curin;);
@@ -1550,7 +1555,9 @@ void Sweep_next_aa(Sweep* unit, int inNumSamples) {
 
     LOOP1(
         inNumSamples, float curin = ZXP(in); float step = ZXP(rate) * sampledur; if (previn <= 0.f && curin > 0.f) {
+            // note: frac calculation is wrong
             float frac = -previn / (curin - previn);
+            // also, we are applying current rate to previous increment, which is not formally correct
             level = frac * step;
         } ZXP(out) = level;
         level += step; previn = curin;);
