@@ -3937,7 +3937,7 @@ void PyrBlockNode::compile(PyrSlot* slotResult) {
     // declare vars
     if (numVars) {
         PyrSymbol **blockargs, **blockvars;
-        blockargs = slotRawSymbolArray(&block->argNames)->symbols;
+        blockargs = block->argNames.isObjectHdr() ? slotRawSymbolArray(&block->argNames)->symbols : nullptr;
         blockvars = slotRawSymbolArray(&block->varNames)->symbols;
         vardef = mVarlist->mVarDefs;
         for (i = 0; i < numVars; ++i, vardef = (PyrVarDefNode*)vardef->mNext) {
@@ -4288,7 +4288,9 @@ bool findVarName(PyrBlock* func, PyrClass** classobj, PyrSymbol* name, int* varT
     }
     if (name->name[0] >= 'A' && name->name[0] <= 'Z')
         return false;
-    for (j = 0; func; func = slotRawBlock(&func->contextDef), ++j) {
+
+    j = 0;
+    while (func != nullptr) {
         methraw = METHRAW(func);
         numargs = methraw->posargs;
         for (i = 0; i < numargs; ++i) {
@@ -4319,6 +4321,9 @@ bool findVarName(PyrBlock* func, PyrClass** classobj, PyrSymbol* name, int* varT
                 return true;
             }
         }
+
+        func = slotRawBlock(&func->contextDef);
+        ++j;
     }
 
     if (classFindInstVar(*classobj, name, index)) {
