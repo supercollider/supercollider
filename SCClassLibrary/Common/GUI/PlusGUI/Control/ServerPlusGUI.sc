@@ -360,16 +360,17 @@
 	}
 
 	plotTree { |interval, bounds|
-		if(serverTreeWindow.isNil or: { serverTreeWindow.isClosed }) {
+		var window;
+		serverTreeView.isNil.if {
 			bounds = bounds ?? { Rect(128, 64, 400, 400) };
 			bounds = bounds.minSize(395@386);
-			serverTreeWindow = Window(name.asString ++ " Node Tree", bounds, scroll:true);
+			window = Window(name.asString ++ " Node Tree", bounds, scroll:true).front;
 			this.plotTreeView(
 				interval ?? { 0.5 },
-				serverTreeWindow);
-			serverTreeWindow.front
+				window);
+			window.onClose_({ serverTreeView = nil });
 		} {
-			serverTreeWindow.alwaysOnTop_(true).front.alwaysOnTop_(false);
+			serverTreeView.window.alwaysOnTop_(true).front.alwaysOnTop_(false);
 			interval !? { serverTreeView.start(interval) };
 		};
 		^serverTreeView
