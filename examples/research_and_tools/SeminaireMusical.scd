@@ -240,7 +240,8 @@ f_neu = {
 				},
 
 				\partch, {
-					tonality = partchTonalities.scramble.keep(3).flat.as(IdentitySet).as(Array).keep(13);
+					tonality = partchTonalities.scramble.keep(3)
+					.flat.as(IdentitySet).as(Array).keep(13);
 					ratios = partchRatios.at(tonality);
 					freq0 = 392; // Partch's reference G
 					freqs = partchPairsToRatio.(ratios) * freq0;
@@ -268,7 +269,8 @@ f_neu = {
 		// notes + octaves
 		2, {
 			if(mode == \partch) {
-				tonality = partchTonalities.scramble.keep(3).flat.as(IdentitySet).as(Array).keep(13);
+				tonality = partchTonalities.scramble.keep(3)
+				.flat.as(IdentitySet).as(Array).keep(13);
 				ratios = partchRatios.at(tonality);
 				freq0 = 392; // Partch's reference G
 				freqs = partchPairsToRatio.(ratios) * freq0;
@@ -358,22 +360,21 @@ f_neu = {
 			if(mode == \western) {
 				freq0 = ((0..11).choose + 60).midicps * octaves.choose;
 				intervalle = (1..6).collect { |x| x * 10 + 10.rand };
-				intervalle = (intervalle.reverse.neg ++ 0 ++ intervalle);
-				freqs = freq0 * intervalle.midiratio;
+				intervalle = intervalle.reverse.neg ++ 0 ++ intervalle;
+				freqs = freq0 * (intervalle / 100).midiratio;
 				nameList = intervalle.collect { |x| x + "ct" };
 
 			} {
-				// TODO: use proper partch intervals instead of just the ones below
 				freq0 =  if(mode == \partch) {
-					392
+					392 * partchRatios.choose.reduce('/')
 				} {
 					indFreqs.choose;
 				};
 
 				freq0 = freq0 * octaves.choose;
 				intervalle = (1..6).collect { |x| x * 10 + 10.rand };
-				intervalle = (intervalle.reverse.neg ++ 0 ++ intervalle);
-				freqs = freq0 * intervalle.midiratio;
+				intervalle = intervalle.reverse.neg ++ 0 ++ intervalle;
+				freqs = freq0 * (intervalle / 100).midiratio;
 				nameList = intervalle.collect { |x| x + "ct" };
 			};
 			solution_index = freqs.size.rand;
