@@ -365,7 +365,7 @@
 			bounds = bounds ?? { Rect(128, 64, 400, 400) };
 			bounds = bounds.minSize(395@386);
 			window = Window(name.asString ++ " Node Tree", bounds, scroll:true).front;
-			this.plotTreeView(
+			nodeTreeView = this.plotTreeView(
 				interval ?? { 0.5 },
 				window);
 			window.onClose_({ nodeTreeView = nil });
@@ -378,7 +378,6 @@
 	}
 
 	plotTreeView { |interval=0.5, parent, actionIfFail|
-		nodeTreeView = NodeTreeView(this, parent: parent);
-		nodeTreeView.start(interval, actionIfFail);
+		^NodeTreeView(this, parent: parent).start(interval, actionIfFail);
 	}
 }

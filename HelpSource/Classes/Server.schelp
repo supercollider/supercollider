@@ -672,56 +672,41 @@ note::
 To use multiple instances of link::Classes/NodeTreeView:: per link::Classes/Server:: instance or workspace, refer to the link::Classes/NodeTreeView#examples#Examples in NodeTreeView Documentation::.
 ::
 
-The method returns a link::Classes/Server:: (the receiver of this call), and the created link::Classes/View:: instance can be accessed via the link::#-nodeTreeView::.
-
-note::
-If the server is not running, the window containing teletype::plotTree:: will briefly appear and then close, displaying the following message in the Post window:
-teletype::
--> localhost
-WARNING: Server failed to respond to Group:queryTree!
-::
-::
+This method returns an instance of link::Classes/NodeTreeView::, which can also be accessed via link::#-nodeTreeView:: method. Before version 3.14, this method returned an instance of the Server itself.
 
 code::
 // start the SuperCollider server:
-s.boot
+s.boot;
 
-// Open a plotTree window with a default refresh rate of 0.5 seconds:
-s.plotTree
+// Open a NodeTreeView window with a default refresh rate every 0.5 seconds:
+s.plotTree;
 
 // Close it:
-s.nodeTreeView.close
-
-// Open a plotTree window named ~pTree with a default refresh rate:
-~pTree = s.plotTree
-
-// Close the plotTree window associated with ~pTree:
-~pTree.close
+s.nodeTreeView.close;
 ::
 
 code::
-~pTree = s.plotTree
+s.plotTree;
 
 // Define and play a repeating pattern that generates a new synth every 0.4 seconds:
 x = Pn((dur: 0.4, midinote: 69, amp: 0.1)).play;
 
 /*
-The ~pTree window dynamically displays active synth nodes.
-Initially, it shows the first node,
-and upon each refresh, it retains the previous node while adding a new one.
+The NodeTreeView window dynamically displays active synth nodes.
+Initially, it shows the first node, and upon each refresh, it retains the previous node while adding a new one.
 This results in the display of one or two subsequent nodes at each interval.
 */
 
 // stop updating plotTree:
-~pTree.stop
+s.nodeTreeView.stop;
 
 // start updating plotTree:
-~pTree.start
+s.nodeTreeView.start;
 
 // stop the playback of the pattern:
-x.stop
+x.stop;
 
-~pTree.close
+s.nodeTreeView.close;
 ::
 argument:: interval
 Polling interval.
@@ -729,7 +714,7 @@ code::
 (
 s.waitForBoot {
 	// Open a plotTree window with a refresh rate of 2 seconds:
-	var plotTree = s.plotTree(2);
+	s.plotTree(2);
 
 	// Define and play a repeating pattern that generates a new synth every 0.5 seconds:
 	x = Pn((dur: 0.5, midinote: 69, amp: 0.1)).play;
@@ -747,7 +732,7 @@ s.waitForBoot {
 
 	2.wait; // wait for 2 seconds.
 
-	plotTree.close; // close the plotTree window
+	s.nodeTreeView.close; // close the plotTree window
 }
 )
 ::
@@ -784,7 +769,7 @@ Parent view.
 argument:: actionIfFail
 Function to be evaluated in case communication with the server cannot be established.
 
-returns:: Function to be evaluated in order to clean up all actions performed inside the method. To be called for instance by the onClose method of the enclosing window.
+returns:: An Instance of link::Classes/NodeTreeView::.
 
 subsection:: Recording Support
 
