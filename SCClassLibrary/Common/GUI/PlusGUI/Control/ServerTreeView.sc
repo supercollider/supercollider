@@ -1,5 +1,7 @@
 ServerTreeView {
-	var <server, <bounds, viewParent, <window, resp, updateFunc, updater, tabSize = 25, treeViewStatus;
+	var <server, <bounds, <window, view, resp, updateFunc, updater, tabSize = 25, treeViewStatus;
+	var runningFunc, stoppedFunc, serverController;
+	var globalAlpha = 1;
 
 	*new { |server, bounds, parent|
 		server  = server ?? { Server.default };
@@ -7,7 +9,6 @@ ServerTreeView {
 	}
 
 	makeWindow { |bounds, parent|
-		var view;
 		bounds = if(bounds.isNil) {
 			Rect(128, 64, 400, 400)
 		} {
@@ -19,78 +20,115 @@ ServerTreeView {
 			window = parent
 		}
 		.front;
-		view = UserView(window, window.view.bounds);
-		viewParent = view;
-		//if(window.view.respondsTo(\hasHorizontalScroller_)) { window.view.hasHorizontalScroller_(false) };
-		treeViewStatus = StaticText(window, Rect(tabSize, 0, window.bounds.width - (tabSize * 2) + 1, tabSize));
-		treeViewStatus
-		.string_(" STOPPED")
-		.font_(Font.sansSerif(14 ).boldVariant)
-		.onClose_{ updateFunc.stop };
-		window.front
+
+		view = UserView(window, window.view.bounds.resizeBy(-4));
+		view.onClose_{
+			view = nil;
+			this.stop;
+		};
+
+		treeViewStatus = StaticText(
+			view,
+			Rect(tabSize, 0, view.bounds.width - (tabSize * 2) + 1, tabSize);
+		).align_(\center).stringColor_(Color.grey(0.4));
+
 	}
 
 	start { |interval = 0.5, actionIfFail|
 		var done = false;
 		var collectChildren, levels, countSize;
-		var view, bounds;
 		var pen, font;
-		var drawFunc;
+		var drawFunc, lastGroupRect, lastSynthRect, lastRect, lastNodeKey, lastNodeSize;
 
-		treeViewStatus.string_(" STARTED: current server tree")
-		.background_(Color.grey(0.9));
+		view ?? {
+			"The ServerTreeView instance was closed".warn;
+			^this
+		};
+
+		updater !? { updater.isPlaying.if{ this.stop } };
 
 		pen = GUI.current.pen;
 		font = Font.sansSerif(10);
 
-		view = UserView.new(viewParent, viewParent.bounds);
-
-		drawFunc = { |group|
-			var thisSize, rect, endYTabs, xtabs = 0, ytabs = 0;
+		drawFunc = { |group, xtabs, ytabs|
+			var thisSize, rect, endYTabs, verticalStretchFactor = 1, defaultGroupRect;
 			xtabs = xtabs + 1;
 			ytabs = ytabs + 1;
 			pen.font = font;
-			group.do({|node|
+			group.do({ |node, index|
 				if(node.value.isArray, {
 					thisSize = countSize.value(node);
+					verticalStretchFactor = thisSize.expexp(1, 1000, 1, 1.04);
 					endYTabs = ytabs + thisSize + 0.2;
 					rect = Rect(xtabs * tabSize + 0.5,
-						ytabs * tabSize + 0.5,
-						viewParent.bounds.width - (xtabs * tabSize * 2),
-						thisSize * tabSize;
+						if (
+							lastRect.notNil && (node.key != 1) && (lastNodeKey != 1)
+						) {
+							if (index == 0) {
+								ytabs * tabSize * verticalStretchFactor
+							} {
+								lastRect.bottom + 5
+							}
+						}
+						{
+							ytabs * tabSize * verticalStretchFactor
+						} + 0.5,
+						view.bounds.width - (xtabs * tabSize * 2),
+						thisSize * tabSize * verticalStretchFactor
 					);
-					pen.fillColor = Color.grey(0.8);
+					pen.fillColor = Color.grey(0.8, globalAlpha);
 					pen.fillRect(rect);
 					pen.strokeRect(rect);
-					pen.color = Color.black;
+					pen.color = Color.grey(0, globalAlpha);
 					pen.stringInRect(
 						" Group" + node.key.asString +
-						(node.key == 1).if("- default group", ""),
+						if(node.key == 1) {
+							defaultGroupRect = rect;
+							"- default group"
+						} {
+							""
+						},
 						rect
 					);
-					drawFunc.value(node.value);
+					drawFunc.value(node.value, xtabs, ytabs);
 					ytabs = endYTabs;
+					lastNodeSize = node.value.size;
+					lastGroupRect = rect;
 				},{
 					rect = Rect(xtabs * tabSize + 0.5,
-						ytabs * tabSize + 0.5,
+						if(defaultGroupRect.notNil) {
+							if ("localhost|stethoscope|system_freqScope".matchRegexp(node.asString)) {
+								if (group.asString.contains("localhost")) {
+									tabSize * (index - 2) + defaultGroupRect.bottom + 5
+								} {
+									tabSize * (index - 1) + defaultGroupRect.bottom + 5
+								}
+							} { tabSize * index + defaultGroupRect.bottom }
+						} {
+							ytabs * tabSize * verticalStretchFactor
+						}
+						+ 0.5,
 						7 * tabSize,
 						0.8 * tabSize
 					);
 					pen.fillColor = Color.white;
 					pen.fillRect(rect);
 					pen.strokeRect(rect);
-					pen.color = Color.black;
+					pen.color = Color.grey(0, globalAlpha);
 					pen.stringInRect(
 						" " ++ node.key.asString + node.value.asString,
 						rect
 					);
 					ytabs = ytabs + 1;
+					lastSynthRect = rect
 				});
+				lastRect = rect;
+				lastNodeKey = node.key
 			});
 			xtabs = xtabs - 1;
 		};
 		view.drawFunc = {
-			drawFunc.value(levels);
+			drawFunc.value(levels, 0, 0)
 		};
 
 		// msg[1] controls included
@@ -152,51 +190,73 @@ ServerTreeView {
 				size
 			};
 			defer {
-				view.bounds = Rect(0, 0, 400, max(400, tabSize * (countSize.value(levels) + 2)));
-				view.refresh;
+				var height;
+				view !? {
+					window !? {
+						height = if(view.bounds.isNil) { 400 } { view.bounds.height };
+						view.bounds = Rect(0, 0, min(window.bounds.width - 4, 394), max(height, tabSize * countSize.value(levels) * 1.06));
+						view.refresh
+					}
+				}
 			}
 		}, '/g_queryTree.reply', this.server.addr).fix;
 
-		updater = {
-			fork {
+		updateFunc = {
+			updater = fork {
 				loop {
-					defer {
-						if (this.server.serverRunning.not) {
-							if(window.isClosed.not) {
-								treeViewStatus.string_(" STOPPED: last updated server tree")
-								.background_(Color.grey(0.7));
-								/*this.server.doWhenBooted{
-									treeViewStatus.string_(" STARTED: current server tree")
-									.background_(Color.grey(0.9))
-								}*/
-							}
-						}
-					};
 					this.server.sendMsg("/g_queryTree", 0, 0);
 					interval.wait;
-				};
+				}
 			}
 		};
-		updateFunc = updater.value;
-		CmdPeriod.add(updateFunc);
+
 		SystemClock.sched(3, {
 			if(done.not, {
 				actionIfFail.value();
-				"Server failed to respond to Group:queryTree!".warn;
+				// "Server failed to respond to Group:queryTree!".warn;
 			});
 		});
+
+		runningFunc = {
+			globalAlpha = 1;
+			updateFunc.value;
+			CmdPeriod.add(updateFunc);
+			defer {
+				treeViewStatus.string_("");
+			}
+		};
+		stoppedFunc = { | serverStopped = false |
+			updater.stop;
+			CmdPeriod.remove(updateFunc);
+			defer {
+				var msg;
+				view !? {
+					msg = serverStopped.if{ "Server not running." } { "View stopped." };
+					((levels.size ? 0) > 0).if({ msg = msg ++ " Last node tree:"});
+					treeViewStatus.string_(msg);
+					globalAlpha = 0.6;
+					view.refresh;
+				}
+			}
+		};
+
+		serverController = SimpleController(server)
+		.put(\serverRunning, { if(server.serverRunning, runningFunc, { stoppedFunc.(true) }) });
+
+		if(server.serverRunning, runningFunc, { stoppedFunc.(true) }); // start here
 	}
 
 	stop {
-		treeViewStatus.string_(" STOPPED: last updated server tree")
-		.background_(Color.grey(0.7));
-		updateFunc.stop;
-		CmdPeriod.remove(updateFunc);
+		serverController.remove;
+		stoppedFunc.(false);
 		resp.free;
 	}
 
 	close {
-		this.stop;
 		window.close
+	}
+
+	front {
+		window.front
 	}
 }

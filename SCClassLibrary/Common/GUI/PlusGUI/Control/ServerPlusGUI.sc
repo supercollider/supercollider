@@ -359,23 +359,26 @@
 		this.startAliveThread;
 	}
 
-	plotTree { |interval=0.5, bounds|
-		if(plotTreeWindow.isNil) {
+	plotTree { |interval, bounds|
+		var window;
+		serverTreeView.isNil.if {
 			bounds = bounds ?? { Rect(128, 64, 400, 400) };
 			bounds = bounds.minSize(395@386);
-			plotTreeWindow = Window(name.asString ++ " Node Tree", bounds, scroll:true);
-			plotTreeWindow.onClose = { plotTreeWindow = nil };
-			this.plotTreeView(interval, plotTreeWindow, { defer { plotTreeWindow.close } });
+			window = Window(name.asString ++ " Node Tree", bounds, scroll:true).front;
+			this.plotTreeView(
+				interval ?? { 0.5 },
+				window);
+			window.onClose_({ serverTreeView = nil });
 		} {
-			if(bounds.notNil) { 
-				bounds = bounds.minSize(395@386);
-				plotTreeWindow.bounds_(bounds) 
-			};
-		};	
-		plotTreeWindow.front;
+			bounds !? { serverTreeView.window.bounds_(bounds) };
+			interval !? { serverTreeView.start(interval) };
+			serverTreeView.window.alwaysOnTop_(true).front.alwaysOnTop_(false);
+		};
+		^serverTreeView
 	}
 
 	plotTreeView { |interval=0.5, parent, actionIfFail|
-		ServerTreeView(this, parent: parent).start(interval, actionIfFail)
+		serverTreeView = ServerTreeView(this, parent: parent);
+		serverTreeView.start(interval, actionIfFail);
 	}
 }
