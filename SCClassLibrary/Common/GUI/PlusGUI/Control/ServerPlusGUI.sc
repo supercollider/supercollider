@@ -361,24 +361,24 @@
 
 	plotTree { |interval, bounds|
 		var window;
-		serverTreeView.isNil.if {
+		nodeTreeView.isNil.if {
 			bounds = bounds ?? { Rect(128, 64, 400, 400) };
 			bounds = bounds.minSize(395@386);
 			window = Window(name.asString ++ " Node Tree", bounds, scroll:true).front;
 			this.plotTreeView(
 				interval ?? { 0.5 },
 				window);
-			window.onClose_({ serverTreeView = nil });
+			window.onClose_({ nodeTreeView = nil });
 		} {
-			bounds !? { serverTreeView.window.bounds_(bounds) };
-			interval !? { serverTreeView.start(interval) };
-			serverTreeView.window.alwaysOnTop_(true).front.alwaysOnTop_(false);
+			bounds !? { nodeTreeView.window.bounds_(bounds) };
+			interval !? { nodeTreeView.start(interval) };
+			nodeTreeView.window.alwaysOnTop_(true).front.alwaysOnTop_(false);
 		};
-		^serverTreeView
+		^nodeTreeView
 	}
 
 	plotTreeView { |interval=0.5, parent, actionIfFail|
-		serverTreeView = ServerTreeView(this, parent: parent);
-		serverTreeView.start(interval, actionIfFail);
+		nodeTreeView = NodeTreeView(this, parent: parent);
+		nodeTreeView.start(interval, actionIfFail);
 	}
 }

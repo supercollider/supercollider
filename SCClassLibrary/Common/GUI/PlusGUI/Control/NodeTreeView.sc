@@ -1,4 +1,4 @@
-ServerTreeView {
+NodeTreeView {
 	var <server, <bounds, <window, view, resp, updateFunc, updater, tabSize = 25, treeViewStatus;
 	var runningFunc, stoppedFunc, serverController;
 	var globalAlpha = 1;
@@ -41,7 +41,7 @@ ServerTreeView {
 		var drawFunc, lastGroupRect, lastSynthRect, lastRect, lastNodeKey, lastNodeSize;
 
 		view ?? {
-			"The ServerTreeView instance was closed".warn;
+			"The NodeTreeView instance was closed".warn;
 			^this
 		};
 
