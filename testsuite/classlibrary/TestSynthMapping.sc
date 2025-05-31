@@ -15,7 +15,7 @@ TestSynthAudioMapping : UnitTest {
 	}
 
 	tearDown {
-		server.quit.remove;
+		server.quitSync.remove;
 	}
 
 	sendSynthDef { |n1, n2|

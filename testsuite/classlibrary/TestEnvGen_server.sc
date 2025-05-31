@@ -7,7 +7,7 @@ TestEnvGen_server : UnitTest {
 	}
 
 	tearDown {
-		if(server.serverRunning) { server.quit };
+		if(server.serverRunning) { server.quitSync };
 		server.remove;
 	}
 
@@ -61,7 +61,7 @@ TestEnvGen_server : UnitTest {
 		var cleanup = {
 			tr_resp.free;
 			n_end_resp.free;
-			server.quit;
+			server.quitSync;
 			Server.scsynth;
 		};
 

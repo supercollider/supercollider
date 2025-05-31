@@ -40,7 +40,7 @@ TestServer_GUI : UnitTest {
 		this.assert(button.value == 1, "ServerBoot should be able to update GUI objects in the main function");
 
 		ServerBoot.remove(updateFunc, server);
-		server.quit;
+		server.quitSync;
 	}
 
 	// Test that a GUI function executed by ServerTree completes during boot.
@@ -59,7 +59,7 @@ TestServer_GUI : UnitTest {
 		this.assert(button.value == 1, "ServerTree should be able to update GUI objects in the main function during boot");
 
 		ServerTree.remove(updateFunc, server);
-		server.quit;
+		server.quitSync;
 	}
 
 	// Test that a GUI function executed by ServerTree completes during cmd-period.
@@ -81,7 +81,7 @@ TestServer_GUI : UnitTest {
 		this.assert(button.value == 1, "ServerTree should be able to update GUI objects in the main function during CmdPeriod");
 
 		ServerTree.remove(updateFunc, server);
-		server.quit;
+		server.quitSync;
 	}
 
 	// Test that a GUI function executed by ServerQuit completes.
@@ -93,7 +93,7 @@ TestServer_GUI : UnitTest {
 		ServerQuit.add(updateFunc, server);
 
 		server.bootSync;
-		server.quit;
+		server.quitSync;
 
 		fork { 3.wait; cond.test_(true).signal };
 		cond.wait;

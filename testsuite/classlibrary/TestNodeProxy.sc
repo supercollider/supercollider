@@ -113,7 +113,7 @@ TestNodeProxy : UnitTest {
 			"asCode-posting nodeproxy with settings should post these correctly."
 		);
 
-		server.quit;
+		server.quitSync;
 	}
 
 	test_asCode_single_ndef {
@@ -278,7 +278,7 @@ TestNodeProxy : UnitTest {
 
 		this.assertFloatEquals(result, proxy.source, "after the crossfade from a ugen function to a value the bus should have this value");
 
-		server.quit;
+		server.quitSync;
 		server.remove;
 	}
 
@@ -324,7 +324,7 @@ TestNodeProxyBusMapping : UnitTest {
 
 
 	tearDown {
-		server.quit.remove;
+		server.quitSync.remove;
 	}
 
 	test_audiorate_mapping {

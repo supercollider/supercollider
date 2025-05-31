@@ -1156,6 +1156,35 @@ Server {
 		this.newAllocators;
 	}
 
+	quitSync { |condition|
+		condition ?? { condition = Condition.new };
+		condition.test = false;
+		this.quit;
+		this.prWaitForPidRelease({
+			condition.test = true;
+			condition.signal
+		}, {
+			// we may end up here
+			// if the server happened to become unresponsive recently
+			// in that case we try to quit again
+			this.quit;
+			this.prWaitForPidRelease({
+				condition.test = true;
+				condition.signal
+			}, {
+				// as a last resort...
+				"Server '%' failed to quit".format(this.name).postln;
+				this.pid !? {
+					"Forcing process to stop via system command.".postln;
+					thisProcess.platform.killProcessByID(this.pid)
+				};
+				condition.test = true;
+				condition.signal
+			});
+		}, 4); // timeout is longer than ServerStatusWatcher waiting to declare the server unresponsive
+		condition.wait;
+	}
+
 	*quitAll { |watchShutDown = true|
 		all.do { |server|
 			if(server.sendQuit === true) {
@@ -1354,7 +1383,7 @@ Server {
 			"server '%' not running".format(this.name).warn;
 			^this
 		};
-		resp = OSCFunc({ |msg| 
+		resp = OSCFunc({ |msg|
 			done = true;
 			if (action.notNil) { action.value(*msg.drop(1)) } {
 				var freeKb = msg[1] / 1024;

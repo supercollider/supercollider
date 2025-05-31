@@ -950,6 +950,11 @@ Routine.run {
 )
 ::
 
+method:: quitSync
+Quit the Server and wait until the server process actually shuts down.
+argument:: condition
+an optional instance of link::Classes/Condition:: used for evaluating this.
+
 subsection:: Bela
 
 method:: belaScope

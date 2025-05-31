@@ -11,8 +11,7 @@ TestNodeProxy_Server : UnitTest {
 
 	tearDown {
 		proxy.clear;
-		server.sync;
-		server.quit;
+		server.quitSync;
 		server.remove;
 	}
 
@@ -80,13 +79,13 @@ TestNodeProxy_Server : UnitTest {
 
 	test_loaded_after_quit {
 		proxy.send;
-		server.quit;
+		server.quitSync;
 		this.assertEquals(proxy.loaded, false, "NodeProxy should not be loaded after server quit");
 	}
 
 	test_send_after_quit {
 		proxy.send;
-		server.quit;
+		server.quitSync;
 		proxy.send;
 		this.assertEquals(proxy.loaded, false, "After server quit, sending should not set node as loaded");
 	}
@@ -95,7 +94,7 @@ TestNodeProxy_Server : UnitTest {
 		var build;
 
 		proxy.source = { build = true; Silent.ar };
-		server.quit;
+		server.quitSync;
 		proxy.rebuild;
 		this.assertEquals(build, true, "After server quit, rebuilding NodeProxy should rebuild SynthDef");
 	}
