@@ -357,26 +357,15 @@ f_neu = {
 		},
 		// intonation
 		7, {
-			if(mode == \western) {
-				freq0 = ((0..11).choose + 60).midicps * octaves.choose;
-				intervalle = (1..6).collect { |x| x * 10 + 10.rand };
-				intervalle = intervalle.reverse.neg ++ 0 ++ intervalle;
-				freqs = freq0 * (intervalle / 100).midiratio;
-				nameList = intervalle.collect { |x| x + "ct" };
-
-			} {
-				freq0 =  if(mode == \partch) {
-					392 * partchRatios.choose.reduce('/')
-				} {
-					indFreqs.choose;
-				};
-
-				freq0 = freq0 * octaves.choose;
-				intervalle = (1..6).collect { |x| x * 10 + 10.rand };
-				intervalle = intervalle.reverse.neg ++ 0 ++ intervalle;
-				freqs = freq0 * (intervalle / 100).midiratio;
-				nameList = intervalle.collect { |x| x + "ct" };
-			};
+			freq0 = switch(mode)
+			{ \partch } { 392 * partchRatios.choose.reduce('/') }
+			{ \indian } { indFreqs.choose }
+			{ ((0..11).choose + 60).midicps };
+			freq0 = freq0 * octaves.choose;
+			intervalle = (1..6).collect { |x| x * 10 + 10.rand };
+			intervalle = intervalle.reverse.neg ++ 0 ++ intervalle;
+			freqs = freq0 * (intervalle / 100).midiratio;
+			nameList = intervalle.collect { |x| x + "ct" };
 			solution_index = freqs.size.rand;
 		},
 		// counts
