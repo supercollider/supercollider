@@ -35,13 +35,18 @@ TestNetAddr : UnitTest {
 
 	doReceiveTest {
 		|port, testMsg, msgType, registerMethod, unregisterMethod, sendMethod|
-		var messageReceived = Condition(false);
+		var messageReceived = CondVar();
 		var messageValue = nil;
 		var addr = NetAddr("127.0.0.1", port);
 		var func = {
 			|msg, time, replyAddr, recvPort|
-			messageValue = [msg, time, replyAddr, recvPort];
-			messageReceived.test_(true).signal;
+			if (recvPort != port) {
+				// filter out eventual late messages from server, until we have a way to wait for it to quit synchronously
+				warn("TestNetAddr:doReceiveTest: skipping message received on unexpected port %: %".format(recvPort, msg));
+			} {
+				messageValue = [msg, time, replyAddr, recvPort];
+				messageReceived.signalOne;
+			}
 		};
 		var msg, time, replyAddr, recvPort;
 
@@ -53,29 +58,20 @@ TestNetAddr : UnitTest {
 			*testMsg.isArray.if({ testMsg }, { [testMsg] })
 		);
 
-		{
-			if (messageReceived.test.not) {
-				messageValue = \timeout;
-				messageReceived.unhang;
-			}
-		}.defer(1);
-
-		messageReceived.wait();
+		messageReceived.waitFor(1) { messageValue.notNil };
 
 		thisProcess.perform(unregisterMethod, func);
 
-		if (messageValue == \timeout) {
-			this.assert(false, "addr.sendRaw was never received");
-		} {
-			#msg, time, replyAddr, recvPort = messageValue;
+		if (messageValue.isNil) {
+			this.assert(false, "addr.% was never received".format(sendMethod));
+		};
 
-			this.assert(messageValue != \timeout);
-			this.assertEquals(msg, testMsg, "Correct message received");
-			this.assertFloatEquals(time, AppClock.seconds, "Timestamp is valid", within: 0.1);
-			this.assertEquals(replyAddr.addr, addr.addr, "Hostname is valid");
-			this.assertEquals(replyAddr.port, 57120, "Port is valid");
-			this.assertEquals(recvPort, port, "recvPort is valid");
-		}
+		#msg, time, replyAddr, recvPort = messageValue;
+		this.assertEquals(msg, testMsg, "Correct message received");
+		this.assertFloatEquals(time, AppClock.seconds, "Timestamp is valid", within: 0.1);
+		this.assertEquals(replyAddr.addr, addr.addr, "Hostname is valid");
+		this.assertEquals(replyAddr.port, 57120, "Port is valid");
+		this.assertEquals(recvPort, port, "recvPort is valid");
 	}
 
 	test_receiveRaw {
