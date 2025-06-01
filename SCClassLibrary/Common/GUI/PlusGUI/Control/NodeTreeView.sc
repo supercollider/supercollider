@@ -67,10 +67,10 @@ NodeTreeView {
 							view.bounds.width - (xtabs * tabSize * 2),
 							thisSize * tabSize;
 						);
-						pen.fillColor = Color.grey(0.8);
+						pen.fillColor = Color.grey(0.8, globalAlpha);
 						pen.fillRect(rect);
 						pen.strokeRect(rect);
-						pen.color = Color.black;
+						pen.color = Color.grey(0, globalAlpha);
 						pen.stringInRect(
 							" Group" + node.key.asString +
 							(node.key == 1).if("- default group", ""),
@@ -87,7 +87,7 @@ NodeTreeView {
 						pen.fillColor = Color.white;
 						pen.fillRect(rect);
 						pen.strokeRect(rect);
-						pen.color = Color.black;
+						pen.color = Color.grey(0, globalAlpha);
 						pen.stringInRect(
 							" " ++ node.key.asString + node.value.asString,
 							rect
