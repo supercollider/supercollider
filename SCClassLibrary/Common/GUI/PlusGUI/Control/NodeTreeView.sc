@@ -156,7 +156,7 @@ NodeTreeView {
 
 				array.do({|elem|
 					var sizeFactor = if (elem.key < 1000) {
-						(elem.value.size + 1).expexp(1, 501, 1, 1.004)
+						(elem.value.size + 1).expexp(1, 501, 1, 1.006)
 					} {
 						array.size.linlin(0, 100, 1.03, 1.032)
 					};
