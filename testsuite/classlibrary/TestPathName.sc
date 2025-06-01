@@ -44,7 +44,7 @@ bench { TestPathName.run };
 TestPathName : UnitTest {
 
 	test_classMethods {
-		this.assert(PathName.scroot == Platform.userHomeDir, "scroot");
+		this.assert(PathName.scroot == File.getcwd, "scroot");
 		this.assert(PathName.tmp == Platform.defaultTempDir, "tmp");
 	}
 
