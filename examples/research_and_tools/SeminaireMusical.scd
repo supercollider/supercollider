@@ -4,6 +4,29 @@
 // julian rohrhuber
 // renate wieser
 
+/*
+
+This is an extended sound and music comprehension tool.
+It is written to give a concisely written usable example,
+which can be easily extended.
+
+As usual, select all (cmd-a) and hit cmd-enter.
+The synth server should start automatically,
+if there is an error in the console, make sure
+your soundcard in and out sample rates match.
+
+In playing with this, you can try different combinations.
+Some are harder, some are easier. There are no scores.
+
+1. click next test and play ...
+2. try to find the corresponding button in the row below
+3. when you've found it, it will turn yello.
+Return to 1.
+
+If "including low tones" is selected, frequencies that
+require base speakers will not be excluded.
+
+*/
 
 (
 // parameters
@@ -357,6 +380,7 @@ f_neu = {
 		},
 		// intonation
 		7, {
+			referenceToneIsPlaying = false;
 			freq0 = switch(mode)
 			{ \partch } { 392 * partchRatios.choose.reduce('/') }
 			{ \indian } { indFreqs.choose }
