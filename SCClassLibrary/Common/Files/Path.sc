@@ -44,12 +44,15 @@ Path {
 	fileNameWithoutExtension { ^str.basename.splitext[0] }
 	fileNameWithoutDoubleExtension { ^str.basename.splitext[0].splitext[0] }
 	extension { ^str.splitext.last ? "" }
+	// from File
 	type { File.type(str) }
 
 	// needed for PathName isFile, isFolder distinction
 	dirname { ^str.dirname 	+/+ Platform.pathSeparator }
-	// also from PathName - need to keep this one?
+	// also from PathName - need to keep this one here?
 	folderName { ^str.dirname.basename }
+
+	fullPath { ^str } // compat
 
 	// conversions
 	absolutePath { ^this.class.new(str.absolutePath) }
@@ -57,9 +60,10 @@ Path {
 	withName { |name| ^Path(str.dirname +/+ name) }
 	// call this to convert to string before read or write primitive
 	asPathString { ^str.standardizePath }
-	// for OSC communication
+	// call for OSC communication
 	asOSCArgArray { ^str.standardizePath }
 
+	// match with String.asPath
 	asPath { ^this }
 
 	// tests
@@ -76,7 +80,7 @@ Path {
 	exists { ^File.exists(str) }
 	== { |path2| ^str == path2.str }
 
-	//// we need trailing slash for that
+	//// we need trailing slash for these
 	isFolder { ^str.last == Platform.pathSeparator }
 	isDir { ^str.last == Platform.pathSeparator }
 	isFile { ^str.last != Platform.pathSeparator }
