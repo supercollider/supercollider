@@ -256,7 +256,7 @@ BusPlug : AbstractFunction {
 	play { | out, numChannels, group, multi=false, vol, fadeTime, addAction |
 		var bundle = MixedBundle.new;
 		this.homeServer.checkRunning(
-			this.asCompileString ++ "." ++ thisMethod.asString.split($:)[1],
+			this.asCompileString ++ "." ++ thisMethod.name,
 			thisMethod.asString + "will NOT work."
 		);
 		if(bus.rate == \control) { "Can't monitor a control rate bus.".warn; monitor.stop; ^this };
@@ -270,7 +270,7 @@ BusPlug : AbstractFunction {
 	playN { | outs, amps, ins, vol, fadeTime, group, addAction |
 		var bundle = MixedBundle.new;
 		this.homeServer.checkRunning(
-			this.asCompileString ++ "." ++ thisMethod.asString.split($:)[1],
+			this.asCompileString ++ "." ++ thisMethod.name,
 			thisMethod.asString + "will NOT work."
 		);
 		if(bus.rate == \control) { "Can't monitor a control rate bus.".warn; monitor.stop; ^this };

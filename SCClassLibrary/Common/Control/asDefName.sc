@@ -56,7 +56,7 @@
 		target = target.asTarget;
 		server = target.server;
 		server.checkRunning(
-			this.asCompileString ++ "." ++ thisMethod.asString.split($:)[1],
+			this.asCompileString ++ "." ++ thisMethod.name,
 			thisMethod.asString + "will NOT work."
     	);
 		def = this.asSynthDef(

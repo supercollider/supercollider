@@ -415,7 +415,7 @@ SoundFile {
 				}
 		};
 		server.checkRunning(
-			this.asCompileString ++ "." ++ thisMethod.asString.split($:)[1],
+			this.asCompileString ++ "." ++ thisMethod.name,
 			thisMethod.asString + "will NOT work.\nThe server must be running to collect soundfiles into buffers"
 		);
 	}
@@ -425,7 +425,7 @@ SoundFile {
 		var buffer, rawData;
 		server = server ? Server.default;
 		server.checkRunning(
-			this.asCompileString ++ "." ++ thisMethod.asString.split($:)[1],
+			this.asCompileString ++ "." ++ thisMethod.name,
 			thisMethod.asString + "will NOT work."
 		);
 		if(this.isOpen.not) { Error("SoundFile:asBuffer - SoundFile not open.").throw };

@@ -470,7 +470,7 @@ NodeProxy : BusPlug {
 	spawn { | extraArgs, index = 0 |
 		var bundle, obj, i;
 		server.checkRunning(
-			this.asCompileString ++ "." ++ thisMethod.asString.split($:)[1],
+			this.asCompileString ++ "." ++ thisMethod.name,
 			thisMethod.asString + "will NOT work."
 		);
 		obj = objects.at(index);
@@ -488,7 +488,7 @@ NodeProxy : BusPlug {
 		var bundle, obj, fadeTime = this.fadeTime;
 		if(objects.isEmpty) { ^this };
 		server.checkRunning(
-			this.asCompileString ++ "." ++ thisMethod.asString.split($:)[1],
+			this.asCompileString ++ "." ++ thisMethod.name,
 			thisMethod.asString + "will NOT work."
 		);
 		if(index.isNil) {
@@ -517,7 +517,7 @@ NodeProxy : BusPlug {
 	sendEach { | extraArgs, freeLast = true |
 		var bundle;
 		server.checkRunning(
-			this.asCompileString ++ "." ++ thisMethod.asString.split($:)[1],
+			this.asCompileString ++ "." ++ thisMethod.name,
 			thisMethod.asString + "will NOT work."
 		);
 		bundle = this.getBundle;
@@ -544,7 +544,7 @@ NodeProxy : BusPlug {
 	deepWakeUp {
 		var bundle = MixedBundle.new;
 		server.checkRunning(
-			this.asCompileString ++ "." ++ thisMethod.asString.split($:)[1],
+			this.asCompileString ++ "." ++ thisMethod.name,
 			thisMethod.asString + "will NOT work."
 		);
 		this.wakeUpToBundle(bundle);

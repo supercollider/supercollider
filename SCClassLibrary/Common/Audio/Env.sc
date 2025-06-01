@@ -339,7 +339,7 @@ Env {
 	test { arg releaseTime = 3.0;
 		var s = Server.default;
 		s.checkRunning(
-			this.asCompileString ++ "." ++ thisMethod.asString.split($:)[1],
+			this.asCompileString ++ "." ++ thisMethod.name,
 			thisMethod.asString + "will NOT work."
     	);
 		fork {

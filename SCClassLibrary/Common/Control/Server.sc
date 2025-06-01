@@ -818,7 +818,7 @@ Server {
 				failFunc.value(this)
 			};
 			this.checkRunning(
-				this.asCompileString ++ "." ++ thisMethod.asString.split($:)[1],
+				this.asCompileString ++ "." ++ thisMethod.name,
 				thisMethod.asString + "will NOT work."
 			);
 		}
@@ -844,7 +844,7 @@ Server {
 	ping { |n = 1, wait = 0.1, func|
 		var result = 0, pingFunc;
 		this.checkRunning(
-			this.asCompileString ++ "." ++ thisMethod.asString.split($:)[1],
+			this.asCompileString ++ "." ++ thisMethod.name,
 			thisMethod.asString + "will NOT work."
     	);
 		pingFunc = {
@@ -1351,7 +1351,7 @@ Server {
 	rtMemoryStatus { |action|
 		var resp, done = false;
 		this.checkRunning(
-			this.asCompileString ++ "." ++ thisMethod.asString.split($:)[1],
+			this.asCompileString ++ "." ++ thisMethod.name,
 			thisMethod.asString + "will NOT work."
     	);
 		resp = OSCFunc({ |msg| 
