@@ -257,7 +257,8 @@ BusPlug : AbstractFunction {
 		var bundle = MixedBundle.new;
 		this.homeServer.checkRunning(
 			this.asCompileString ++ "." ++ thisMethod.name,
-			thisMethod.asString + "will NOT work."
+			this.asCompileString + "calling method\n" 
+			+ thisMethod.asString + "will NOT work."
 		);
 		if(bus.rate == \control) { "Can't monitor a control rate bus.".warn; monitor.stop; ^this };
 		group = group ?? {this.homeServer.defaultGroup};
@@ -271,7 +272,8 @@ BusPlug : AbstractFunction {
 		var bundle = MixedBundle.new;
 		this.homeServer.checkRunning(
 			this.asCompileString ++ "." ++ thisMethod.name,
-			thisMethod.asString + "will NOT work."
+			this.asCompileString + "calling method\n" 
+			+ thisMethod.asString + "will NOT work."
 		);
 		if(bus.rate == \control) { "Can't monitor a control rate bus.".warn; monitor.stop; ^this };
 		group = group ?? {this.homeServer.defaultGroup};

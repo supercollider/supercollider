@@ -819,7 +819,8 @@ Server {
 			};
 			this.checkRunning(
 				this.asCompileString ++ "." ++ thisMethod.name,
-				thisMethod.asString + "will NOT work."
+				this.asCompileString + "calling method\n" 
+				+ thisMethod.asString + "will NOT work."
 			);
 		}
 	}
@@ -845,7 +846,8 @@ Server {
 		var result = 0, pingFunc;
 		this.checkRunning(
 			this.asCompileString ++ "." ++ thisMethod.name,
-			thisMethod.asString + "will NOT work."
+			this.asCompileString + "calling method\n" 
+			+ thisMethod.asString + "will NOT work."
     	);
 		pingFunc = {
 			Routine.run {
@@ -1352,7 +1354,8 @@ Server {
 		var resp, done = false;
 		this.checkRunning(
 			this.asCompileString ++ "." ++ thisMethod.name,
-			thisMethod.asString + "will NOT work."
+			this.asCompileString + "calling method\n" 
+			+ thisMethod.asString + "will NOT work."
     	);
 		resp = OSCFunc({ |msg| 
 			done = true;

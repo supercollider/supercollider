@@ -27,7 +27,8 @@ Slew.scopeResponse
 		server = server ? Server.default;
 		server.checkRunning(
 			this.asCompileString ++ "." ++ thisMethod.name,
-			thisMethod.asString + "will NOT work."
+			this.asCompileString + "calling method\n" 
+			+ thisMethod.asString + "will NOT work."
 		);
 
 		// Create two private busses

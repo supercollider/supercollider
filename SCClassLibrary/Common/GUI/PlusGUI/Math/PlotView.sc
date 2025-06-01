@@ -1432,7 +1432,8 @@ Plotter {
 		var plotter, action;
 		server.checkRunning(
 			this.asCompileString ++ "." ++ thisMethod.name,
-			thisMethod.asString + "will NOT work."
+			this.asCompileString + "calling method\n" 
+			+ thisMethod.asString + "will NOT work."
 		);
 		if(numFrames.isNil) { "Buffer not allocated, can't plot data".warn; ^nil };
 
