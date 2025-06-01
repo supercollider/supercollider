@@ -348,8 +348,14 @@ f_neu = {
 			referenceToneIsPlaying = false;
 			freq0 = nil; // no base tone
 			freqs = rrand(1600, 8000)  ! 13;
-			rates = { exprand(0.9, 19) } ! 13;
-			nameList = rates.round(0.01);
+
+			if(mode == \numerical) {
+				rates = { exprand(0.6, 4) } ! 13;
+				nameList = (rates * 60).round(0.1) // bpm
+			} {
+				rates = { exprand(0.9, 19) } ! 13;
+				nameList = rates.round(0.01)
+			};
 			solution_index = freqs.size.rand;
 
 			v_klang.enabled = false;
