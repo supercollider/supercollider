@@ -340,8 +340,9 @@ Env {
 		var s = Server.default;
 		s.checkRunning(
 			this.asCompileString ++ "." ++ thisMethod.name,
-			this.asCompileString + "calling method\n" 
-			+ thisMethod.asString + "will NOT work."
+			this.asCompileString + "calling method\n"
+			++ thisMethod.asString + "will NOT work.",
+			this
     	);
 		fork {
 			var synth = { arg gate=1;

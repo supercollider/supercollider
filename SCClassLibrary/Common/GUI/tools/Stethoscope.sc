@@ -472,8 +472,9 @@ BusScopeSynth {
 
 		server.checkRunning(
 			this.asCompileString ++ "." ++ thisMethod.name,
-			this.asCompileString + "calling method\n" 
-			+ thisMethod.asString + "will NOT work."
+			this.asCompileString + "calling method\n"
+			++ thisMethod.asString + "will NOT work.",
+			this
 		);
 
 		this.stop;

@@ -472,7 +472,8 @@ NodeProxy : BusPlug {
 		server.checkRunning(
 			this.asCompileString ++ "." ++ thisMethod.name,
 			this.asCompileString + "calling method\n" 
-			+ thisMethod.asString + "will NOT work."
+			++ thisMethod.asString + "will NOT work.",
+			this
 		);
 		obj = objects.at(index);
 		if(obj.notNil) {
@@ -491,7 +492,8 @@ NodeProxy : BusPlug {
 		server.checkRunning(
 			this.asCompileString ++ "." ++ thisMethod.name,
 			this.asCompileString + "calling method\n" 
-			+ thisMethod.asString + "will NOT work."
+			++ thisMethod.asString + "will NOT work.",
+			this
 		);
 		if(index.isNil) {
 			bundle = this.getBundle;
@@ -521,7 +523,8 @@ NodeProxy : BusPlug {
 		server.checkRunning(
 			this.asCompileString ++ "." ++ thisMethod.name,
 			this.asCompileString + "calling method\n" 
-			+ thisMethod.asString + "will NOT work."
+			++ thisMethod.asString + "will NOT work.",
+			this
 		);
 		bundle = this.getBundle;
 		if(freeLast, { this.stopAllToBundle(bundle) });
@@ -549,7 +552,8 @@ NodeProxy : BusPlug {
 		server.checkRunning(
 			this.asCompileString ++ "." ++ thisMethod.name,
 			this.asCompileString + "calling method\n" 
-			+ thisMethod.asString + "will NOT work."
+			++ thisMethod.asString + "will NOT work.",
+			this
 		);
 		this.wakeUpToBundle(bundle);
 		bundle.schedSend(server, clock ? TempoClock.default, quant)

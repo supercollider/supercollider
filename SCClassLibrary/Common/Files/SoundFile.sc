@@ -416,8 +416,10 @@ SoundFile {
 		};
 		server.checkRunning(
 			this.asCompileString ++ "." ++ thisMethod.name,
-			this.asCompileString + "calling method\n" 
-			+ thisMethod.asString + "will NOT work.\nThe server must be running to collect soundfiles into buffers"
+			this.asCompileString + "calling method\n"
+			++ thisMethod.asString + "will NOT work\n"
+			++ "The server must be running to collect soundfiles into buffers",
+			this
 		);
 	}
 
@@ -428,8 +430,9 @@ SoundFile {
 		server.checkRunning(
 			this.asCompileString ++ "." ++ thisMethod.name,
 			this.asCompileString + "calling method\n" 
-			+ thisMethod.asString + "will NOT work."
-		);
+			++ thisMethod.asString + "will NOT work.",
+			this
+			);
 		if(this.isOpen.not) { Error("SoundFile:asBuffer - SoundFile not open.").throw };
 		if(server.isLocal) {
 			buffer = Buffer.read(server, path)

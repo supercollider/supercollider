@@ -815,13 +815,14 @@ Server {
 			if(statusWatcher.serverRunning) {
 				func.value(this)
 			} {
+				this.checkRunning(
+					this.asCompileString ++ "." ++ thisMethod.name,
+					this.asCompileString + "calling method\n"
+					++ thisMethod.asString + "will NOT work.",
+					this
+				);
 				failFunc.value(this)
 			};
-			this.checkRunning(
-				this.asCompileString ++ "." ++ thisMethod.name,
-				this.asCompileString + "calling method\n" 
-				+ thisMethod.asString + "will NOT work."
-			);
 		}
 	}
 
@@ -846,8 +847,9 @@ Server {
 		var result = 0, pingFunc;
 		this.checkRunning(
 			this.asCompileString ++ "." ++ thisMethod.name,
-			this.asCompileString + "calling method\n" 
-			+ thisMethod.asString + "will NOT work."
+			this.asCompileString + "calling method\n"
+			++ thisMethod.asString + "will NOT work.",
+			this
     	);
 		pingFunc = {
 			Routine.run {
@@ -1354,8 +1356,9 @@ Server {
 		var resp, done = false;
 		this.checkRunning(
 			this.asCompileString ++ "." ++ thisMethod.name,
-			this.asCompileString + "calling method\n" 
-			+ thisMethod.asString + "will NOT work."
+			this.asCompileString + "calling method\n"
+			++ thisMethod.asString + "will NOT work.",
+			this
     	);
 		resp = OSCFunc({ |msg| 
 			done = true;
@@ -1432,13 +1435,14 @@ Server {
 		this.program = this.program.replace("scsynth", "supernova")
 	}
 
-	checkRunning { |label, failMessage|
+	checkRunning { |label, failMessage, return|
 		var msg;
-		if (this.serverRunning) { ^true };
+		if (this.serverRunning) { true; ^return };
 		msg = "server '%' not running.".format(this.name);
 		label !? { msg = "%\n   %".format(msg, label) };
 		failMessage !? { msg = "%\n%".format(msg, failMessage) };
 		msg.warn;
-		^false
+		false;
+		^return
 	}
 }

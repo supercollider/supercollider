@@ -58,7 +58,8 @@
 		server.checkRunning(
 			this.asCompileString ++ "." ++ thisMethod.name,
 			this.asCompileString + "calling method\n" 
-			+ thisMethod.asString + "will NOT work."
+			++ thisMethod.asString + "will NOT work.",
+			this
     	);
 		def = this.asSynthDef(
 			fadeTime:fadeTime,

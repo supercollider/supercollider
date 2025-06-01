@@ -258,7 +258,8 @@ BusPlug : AbstractFunction {
 		this.homeServer.checkRunning(
 			this.asCompileString ++ "." ++ thisMethod.name,
 			this.asCompileString + "calling method\n" 
-			+ thisMethod.asString + "will NOT work."
+			++ thisMethod.asString + "will NOT work.",
+			this
 		);
 		if(bus.rate == \control) { "Can't monitor a control rate bus.".warn; monitor.stop; ^this };
 		group = group ?? {this.homeServer.defaultGroup};
@@ -273,7 +274,8 @@ BusPlug : AbstractFunction {
 		this.homeServer.checkRunning(
 			this.asCompileString ++ "." ++ thisMethod.name,
 			this.asCompileString + "calling method\n" 
-			+ thisMethod.asString + "will NOT work."
+			++ thisMethod.asString + "will NOT work.",
+			this
 		);
 		if(bus.rate == \control) { "Can't monitor a control rate bus.".warn; monitor.stop; ^this };
 		group = group ?? {this.homeServer.defaultGroup};
