@@ -13,7 +13,37 @@ PathName : Path {
 	colonIndices { ^this.separatorIndices }
 	lastColonIndex { ^this.lastSeparatorIndex }
 
-	isFolder { ^str.last.isPathSeparator }
+	// convenience to generate successive filenames
+	nextName {
+		var name, ext;
+		if (str.last.isDecDigit) {
+			^this.noEndNumbers ++ (this.endNumber + 1)
+		};
+		#name, ext = str.splitext;
+		if (ext.isNil) {
+			^name ++ "1"
+		};
+		^Path(name).nextName ++ "." ++ ext
+	}
+
+	noEndNumbers {
+		^str[..this.endNumberIndex]
+	}
+
+	// turn consecutive digits at the end of str into a number.
+	endNumber {
+		^str[this.endNumberIndex + 1..].asInteger
+	}
+
+	endNumberIndex {
+		var index = str.lastIndex;
+		while({
+			index > 0 and: { str.at(index).isDecDigit }
+		}, {
+			index = index - 1
+		});
+		^index
+	}
 
 	// PathName:pathOnly ends with separator
 	pathOnly {
