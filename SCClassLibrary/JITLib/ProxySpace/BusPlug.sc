@@ -255,12 +255,11 @@ BusPlug : AbstractFunction {
 
 	play { | out, numChannels, group, multi=false, vol, fadeTime, addAction |
 		var bundle = MixedBundle.new;
-		this.homeServer.checkRunning(
-			this.asCompileString ++ "." ++ thisMethod.name,
-			this.asCompileString + "calling method\n" 
-			++ thisMethod.asString + "will NOT work.",
-			this
-		);
+		var warnLabel = this.asCompileString ++ "." ++ thisMethod.name;
+		var warnMessage = this.asCompileString + "calling method\n" ++ thisMethod.asString + "will NOT work.";
+
+		if(this.homeServer.warnIfNotRunning(warnLabel, warnMessage)) { ^this };
+
 		if(bus.rate == \control) { "Can't monitor a control rate bus.".warn; monitor.stop; ^this };
 		group = group ?? {this.homeServer.defaultGroup};
 		this.playToBundle(bundle, out, numChannels, group, multi, vol, fadeTime, addAction);
@@ -271,12 +270,11 @@ BusPlug : AbstractFunction {
 
 	playN { | outs, amps, ins, vol, fadeTime, group, addAction |
 		var bundle = MixedBundle.new;
-		this.homeServer.checkRunning(
-			this.asCompileString ++ "." ++ thisMethod.name,
-			this.asCompileString + "calling method\n" 
-			++ thisMethod.asString + "will NOT work.",
-			this
-		);
+		var warnLabel = this.asCompileString ++ "." ++ thisMethod.name;
+		var warnMessage = this.asCompileString + "calling method\n" ++ thisMethod.asString + "will NOT work.";
+
+		if(this.homeServer.warnIfNotRunning(warnLabel, warnMessage)) { ^this };
+
 		if(bus.rate == \control) { "Can't monitor a control rate bus.".warn; monitor.stop; ^this };
 		group = group ?? {this.homeServer.defaultGroup};
 		this.playNToBundle(bundle, outs, amps, ins, vol, fadeTime, group, addAction);

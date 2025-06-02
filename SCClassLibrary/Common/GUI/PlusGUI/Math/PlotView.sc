@@ -1430,12 +1430,11 @@ Plotter {
 + Buffer {
 	plot { |name, bounds, minval, maxval, separately = false, parent|
 		var plotter, action;
-		server.checkRunning(
-			this.asCompileString ++ "." ++ thisMethod.name,
-			this.asCompileString + "calling method\n" 
-			++ thisMethod.asString + "will NOT work.",
-			this
-		);
+		var warnLabel = this.asCompileString ++ "." ++ thisMethod.name;
+		var warnMessage = this.asCompileString + "calling method\n" ++ thisMethod.asString + "will NOT work.";
+
+		if(server.warnIfNotRunning(warnLabel, warnMessage)) { ^this };
+
 		if(numFrames.isNil) { "Buffer not allocated, can't plot data".warn; ^nil };
 
 		plotter = [0].plot(

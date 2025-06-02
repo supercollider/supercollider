@@ -321,5 +321,17 @@ ServerStatusWatcher {
 			"Switched off notification messages from server '%'\n".postf(server.name);
 		};
 	}
-
+	
+	warnIfNotRunning { |label, failMessage|
+		var msg;
+		if (this.serverRunning.not) {
+			msg = "server '%' not running.".format(this);
+			label !? { msg = "%\n   %".format(msg, label) };
+			failMessage !? { msg = "%\n%".format(msg, failMessage) };
+			msg.warn;
+			^true
+		}{
+			^false
+		}
+	}
 }

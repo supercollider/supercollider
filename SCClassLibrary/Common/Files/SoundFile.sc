@@ -404,35 +404,31 @@ SoundFile {
 		^files;
 	}
 
-	*collectIntoBuffers { | path = "sounds/*", server |
+	*collectIntoBuffers { |path = "sounds/*", server|
+		var warnLabel = this.asCompileString ++ "." ++ thisMethod.name;
+		var warnMessage = this.asCompileString + "calling method\n" 
+			++ thisMethod.asString + "will NOT work.\n"
+			++ "The server must be running to collect soundfiles into buffers";
 		server = server ?? { Server.default };
-		if (server.serverRunning) {
-			^this.collect(path)
-				.collect { |  sf |
-					Buffer(server, sf.numFrames, sf.numChannels)
-					.allocRead(sf.path)
-					.sampleRate_(sf.sampleRate);
-				}
-		};
-		server.checkRunning(
-			this.asCompileString ++ "." ++ thisMethod.name,
-			this.asCompileString + "calling method\n"
-			++ thisMethod.asString + "will NOT work\n"
-			++ "The server must be running to collect soundfiles into buffers",
-			this
-		);
+		if(server.warnIfNotRunning(warnLabel, warnMessage)) { ^this };
+
+		^this.collect(path)
+		.collect { |sf|
+			Buffer(server, sf.numFrames, sf.numChannels)
+			.allocRead(sf.path)
+			.sampleRate_(sf.sampleRate);
+		}
 	}
 
 
 	asBuffer { |server|
 		var buffer, rawData;
+		var warnLabel = this.asCompileString ++ "." ++ thisMethod.name;
+		var warnMessage = this.asCompileString + "calling method\n" ++ thisMethod.asString + "will NOT work.";
+
 		server = server ? Server.default;
-		server.checkRunning(
-			this.asCompileString ++ "." ++ thisMethod.name,
-			this.asCompileString + "calling method\n" 
-			++ thisMethod.asString + "will NOT work.",
-			this
-			);
+		if(server.warnIfNotRunning(warnLabel, warnMessage)) { ^this };
+
 		if(this.isOpen.not) { Error("SoundFile:asBuffer - SoundFile not open.").throw };
 		if(server.isLocal) {
 			buffer = Buffer.read(server, path)

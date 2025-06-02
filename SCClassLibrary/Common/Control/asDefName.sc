@@ -52,15 +52,14 @@
 	}
 
 	play { arg target, outbus = 0, fadeTime = 0.02, addAction=\addToHead, args;
-		var def, synth, server, bytes, synthMsg;
+		var server, warnLabel, warnMessage, def, synth, bytes, synthMsg;
 		target = target.asTarget;
 		server = target.server;
-		server.checkRunning(
-			this.asCompileString ++ "." ++ thisMethod.name,
-			this.asCompileString + "calling method\n" 
-			++ thisMethod.asString + "will NOT work.",
-			this
-    	);
+		warnLabel = this.asCompileString ++ "." ++ thisMethod.name;
+		warnMessage = this.asCompileString + "calling method\n" ++ thisMethod.asString + "will NOT work.";
+
+		if(server.warnIfNotRunning(warnLabel, warnMessage)) { ^this };
+		
 		def = this.asSynthDef(
 			fadeTime:fadeTime,
 			name: SystemSynthDefs.generateTempName

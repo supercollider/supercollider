@@ -338,12 +338,11 @@ Env {
 
 	test { arg releaseTime = 3.0;
 		var s = Server.default;
-		s.checkRunning(
-			this.asCompileString ++ "." ++ thisMethod.name,
-			this.asCompileString + "calling method\n"
-			++ thisMethod.asString + "will NOT work.",
-			this
-    	);
+		var warnLabel = this.asCompileString ++ "." ++ thisMethod.name;
+		var warnMessage = this.asCompileString + "calling method\n" ++ thisMethod.asString + "will NOT work.";
+
+		if(s.warnIfNotRunning(warnLabel, warnMessage)) { ^this };
+		
 		fork {
 			var synth = { arg gate=1;
 				SinOsc.ar(800, pi/2, 0.3) * EnvGen.ar(this, gate, doneAction:2)

@@ -29,15 +29,12 @@
 
 + Function {
 	scope { arg numChannels, outbus = 0, fadeTime = 0.05, bufsize = 4096, zoom, bounds;
-		var synth, synthDef, bytes, synthMsg, outUGen, server;
+		var server, warnLabel, warnMessage, synth, synthDef, bytes, synthMsg, outUGen;
 
 		server = Server.default;
-		server.checkRunning(
-			this.asCompileString ++ "." ++ thisMethod.name,
-			this.asCompileString + "calling method\n"
-			++ thisMethod.asString + "will NOT work.",
-			this
-			);
+		warnLabel = this.asCompileString ++ "." ++ thisMethod.name;
+		warnMessage = this.asCompileString + "calling method\n" ++ thisMethod.asString + "will NOT work.";
+		if(server.warnIfNotRunning(warnLabel, warnMessage)) { ^this };
 
 		synthDef = this.asSynthDef(name: SystemSynthDefs.generateTempName, fadeTime:fadeTime);
 		outUGen = synthDef.children.detect { |ugen| ugen.class === Out };
@@ -47,7 +44,8 @@
 		bytes = synthDef.asBytes;
 		synthMsg = synth.newMsg(server, [\i_out, outbus, \out, outbus], \addToHead);
 		server.sendMsg("/d_recv", bytes, synthMsg);
-		server.scope(numChannels, outbus, bufsize, zoom, outUGen.rate).bounds_(bounds); 
+		server.scope(numChannels, outbus, bufsize, zoom, outUGen.rate);
+		bounds !? { server.scopeWindow.bounds_(bounds) };
 		^synth
 	}
 

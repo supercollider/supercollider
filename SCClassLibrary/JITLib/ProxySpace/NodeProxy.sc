@@ -468,13 +468,12 @@ NodeProxy : BusPlug {
 	// starting processes
 
 	spawn { | extraArgs, index = 0 |
-		var bundle, obj, i;
-		server.checkRunning(
-			this.asCompileString ++ "." ++ thisMethod.name,
-			this.asCompileString + "calling method\n" 
-			++ thisMethod.asString + "will NOT work.",
-			this
-		);
+		var warnLabel, warnMessage, bundle, obj, i;
+
+		warnLabel = this.asCompileString ++ "." ++ thisMethod.name;
+		warnMessage = this.asCompileString + "calling method\n" ++ thisMethod.asString + "will NOT work.";
+		if(server.warnIfNotRunning(warnLabel, warnMessage)) { ^this };
+
 		obj = objects.at(index);
 		if(obj.notNil) {
 			i = this.index;
@@ -487,14 +486,14 @@ NodeProxy : BusPlug {
 
 
 	send { | extraArgs, index, freeLast = true |
-		var bundle, obj, fadeTime = this.fadeTime;
+		var warnLabel, warnMessage, bundle, obj, fadeTime = this.fadeTime;
+
 		if(objects.isEmpty) { ^this };
-		server.checkRunning(
-			this.asCompileString ++ "." ++ thisMethod.name,
-			this.asCompileString + "calling method\n" 
-			++ thisMethod.asString + "will NOT work.",
-			this
-		);
+
+		warnLabel = this.asCompileString ++ "." ++ thisMethod.name;
+		warnMessage = this.asCompileString + "calling method\n" ++ thisMethod.asString + "will NOT work.";
+		if(server.warnIfNotRunning(warnLabel, warnMessage)) { ^this };
+
 		if(index.isNil) {
 			bundle = this.getBundle;
 			if(freeLast) { this.stopAllToBundle(bundle, fadeTime) };
@@ -519,13 +518,12 @@ NodeProxy : BusPlug {
 	}
 
 	sendEach { | extraArgs, freeLast = true |
-		var bundle;
-		server.checkRunning(
-			this.asCompileString ++ "." ++ thisMethod.name,
-			this.asCompileString + "calling method\n" 
-			++ thisMethod.asString + "will NOT work.",
-			this
-		);
+		var warnLabel, warnMessage, bundle;
+
+		warnLabel = this.asCompileString ++ "." ++ thisMethod.name;
+		warnMessage = this.asCompileString + "calling method\n" ++ thisMethod.asString + "will NOT work.";
+		if(server.warnIfNotRunning(warnLabel, warnMessage)) { ^this };
+
 		bundle = this.getBundle;
 		if(freeLast, { this.stopAllToBundle(bundle) });
 		if(loaded.not) { this.loadToBundle(bundle) };
@@ -548,13 +546,13 @@ NodeProxy : BusPlug {
 	}
 
 	deepWakeUp {
-		var bundle = MixedBundle.new;
-		server.checkRunning(
-			this.asCompileString ++ "." ++ thisMethod.name,
-			this.asCompileString + "calling method\n" 
-			++ thisMethod.asString + "will NOT work.",
-			this
-		);
+		var warnLabel, warnMessage, bundle;
+
+		warnLabel = this.asCompileString ++ "." ++ thisMethod.name;
+		warnMessage = this.asCompileString + "calling method\n" ++ thisMethod.asString + "will NOT work.";
+		if(server.warnIfNotRunning(warnLabel, warnMessage)) { ^this };
+
+		bundle = MixedBundle.new;
 		this.wakeUpToBundle(bundle);
 		bundle.schedSend(server, clock ? TempoClock.default, quant)
 	}

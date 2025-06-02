@@ -465,17 +465,12 @@ BusScopeSynth {
 	}
 
 	play { arg bufSize, bus, cycle;
-		var synthDef;
-		var synthArgs;
-		var bufIndex;
-		var busChannels;
+		var warnLabel, warnMessage, synthDef, synthArgs, bufIndex, busChannels;
 
-		server.checkRunning(
-			this.asCompileString ++ "." ++ thisMethod.name,
-			this.asCompileString + "calling method\n"
-			++ thisMethod.asString + "will NOT work.",
-			this
-		);
+		warnLabel = this.asCompileString ++ "." ++ thisMethod.name;
+		warnMessage = this.asCompileString + "calling method\n" ++ thisMethod.asString + "will NOT work.";
+
+		if(server.warnIfNotRunning(warnLabel, warnMessage)) { ^this };
 
 		this.stop;
 

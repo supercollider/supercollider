@@ -22,15 +22,12 @@ Slew.scopeResponse
 + Function {
 	scopeResponse { |server, freqMode=1, label="Empirical Frequency response", mute = false|
 
-		var bus1, bus2, synth, win, fs;
+		var warnLabel, warnMessage, bus1, bus2, synth, win, fs;
 
 		server = server ? Server.default;
-		server.checkRunning(
-			this.asCompileString ++ "." ++ thisMethod.name,
-			this.asCompileString + "calling method\n"
-			++ thisMethod.asString + "will NOT work.",
-			this
-		);
+		warnLabel = this.asCompileString ++ "." ++ thisMethod.name;
+		warnMessage = this.asCompileString + "calling method\n" ++ thisMethod.asString + "will NOT work.";
+		if(server.warnIfNotRunning(warnLabel, warnMessage)) { ^this };
 
 		// Create two private busses
 		bus1 = Bus.audio(server, 1);
