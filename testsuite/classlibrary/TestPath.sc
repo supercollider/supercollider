@@ -68,8 +68,4 @@ TestPath : UnitTest {
 		this.assertEquals(fileCount, Path(classLibFolder).deepFiles.size,
 			"filesDo and deepFiles find the same number of files.");
 	}
-
-
 }
-
-

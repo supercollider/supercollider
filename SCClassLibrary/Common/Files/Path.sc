@@ -172,5 +172,4 @@ Path {
 		doc.string = str.collection;
 		^doc
 	}
-
 }
