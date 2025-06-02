@@ -72,19 +72,20 @@ extern int yydebug;
     TRUEOBJ = 273,                 /* TRUEOBJ  */
     FALSEOBJ = 274,                /* FALSEOBJ  */
     PSEUDOVAR = 275,               /* PSEUDOVAR  */
-    ELLIPSIS = 276,                /* ELLIPSIS  */
-    DOTDOT = 277,                  /* DOTDOT  */
-    PIE = 278,                     /* PIE  */
-    BEGINCLOSEDFUNC = 279,         /* BEGINCLOSEDFUNC  */
-    BADTOKEN = 280,                /* BADTOKEN  */
-    INTERPRET = 281,               /* INTERPRET  */
-    BEGINGENERATOR = 282,          /* BEGINGENERATOR  */
-    LEFTARROW = 283,               /* LEFTARROW  */
-    WHILE = 284,                   /* WHILE  */
-    BINOP = 285,                   /* BINOP  */
-    KEYBINOP = 286,                /* KEYBINOP  */
-    READWRITEVAR = 287,            /* READWRITEVAR  */
-    UMINUS = 288                   /* UMINUS  */
+    KWEXPAND = 276,                /* KWEXPAND  */
+    ELLIPSIS = 277,                /* ELLIPSIS  */
+    DOTDOT = 278,                  /* DOTDOT  */
+    PIE = 279,                     /* PIE  */
+    BEGINCLOSEDFUNC = 280,         /* BEGINCLOSEDFUNC  */
+    BADTOKEN = 281,                /* BADTOKEN  */
+    INTERPRET = 282,               /* INTERPRET  */
+    BEGINGENERATOR = 283,          /* BEGINGENERATOR  */
+    LEFTARROW = 284,               /* LEFTARROW  */
+    WHILE = 285,                   /* WHILE  */
+    BINOP = 286,                   /* BINOP  */
+    KEYBINOP = 287,                /* KEYBINOP  */
+    READWRITEVAR = 288,            /* READWRITEVAR  */
+    UMINUS = 289                   /* UMINUS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif

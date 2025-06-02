@@ -946,6 +946,8 @@ int processbinop(char* token) {
         return '>';
     if (strcmp(token, "-") == 0)
         return '-';
+    if (strcmp(token, "**") == 0)
+        return KWEXPAND;
     if (strcmp(token, "*") == 0)
         return '*';
     if (strcmp(token, "+") == 0)

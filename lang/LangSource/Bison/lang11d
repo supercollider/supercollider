@@ -1,13 +1,13 @@
 %token	NAME INTEGER SC_FLOAT ACCIDENTAL SYMBOL STRING ASCII PRIMITIVENAME CLASSNAME CURRYARG
 %token  VAR ARG CLASSVAR SC_CONST
 %token	NILOBJ TRUEOBJ FALSEOBJ
-%token	PSEUDOVAR
+%token	PSEUDOVAR KWEXPAND
 %token  ELLIPSIS DOTDOT PIE BEGINCLOSEDFUNC
 %token  BADTOKEN INTERPRET
 %token  BEGINGENERATOR LEFTARROW WHILE
 %left	':'
 %right  '='
-%left	BINOP KEYBINOP '-' '<' '>' '*' '+' '|' READWRITEVAR
+%left	BINOP KEYBINOP '-' '<' '>' '*' '+' '|' READWRITEVAR KWEXPAND
 %left	'.'
 %right  '`'
 %right  UMINUS
@@ -208,7 +208,7 @@ msgsend : name blocklist1
 				$$ = (intptr_t)newPyrCallNode((PyrSlotNode*)$2, (PyrParseNode*)$5,
 						(PyrParseNode*)$6, (PyrParseNode*)$8);
 			}
-		| name '(' arglistv1 optkeyarglist ')'
+		| name '(' argListWithPerformList optkeyarglist ')'
 			{
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -226,7 +226,7 @@ msgsend : name blocklist1
 					newPyrPushLitNode((PyrSlotNode*)$1, NULL));
 				$$ = (intptr_t)newPyrCallNode(selectornode, args, (PyrParseNode*)$4, 0);
 			}
-		| '(' binop2 ')' '(' arglistv1 optkeyarglist ')'
+		| '(' binop2 ')' '(' argListWithPerformList optkeyarglist ')'
 			{
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -287,7 +287,7 @@ msgsend : name blocklist1
 					(PyrParseNode*)$3);
 				$$ = (intptr_t)newPyrCallNode(selectornode, args, (PyrParseNode*)$4, (PyrParseNode*)$6);
 			}
-		| classname '(' arglistv1 optkeyarglist ')'
+		| classname '(' argListWithPerformList optkeyarglist ')'
 			{
 				PyrSlotNode *selectornode, *selectornode2;
 				PyrSlot slot, slot2;
@@ -308,6 +308,9 @@ msgsend : name blocklist1
 				args = linkNextNode(args, (PyrParseNode*)$3);
 				$$ = (intptr_t)newPyrCallNode(selectornode, args, (PyrParseNode*)$5, 0);
 			}
+
+
+
 		| expr '.' '(' ')' blocklist
 			{
 				PyrSlotNode *selectornode;
@@ -345,22 +348,7 @@ msgsend : name blocklist1
 				$$ = (intptr_t)newPyrCallNode(selectornode, args, (PyrParseNode*)$5, (PyrParseNode*)$7);
 			}
 
-		| expr '.' '*' '(' exprseq ',' exprseq ')'
-		    {
-		        PyrSlot slot, slot2;
-		        SetSymbol(&slot, s_performArgs);
-		        SetSymbol(&slot2, s_value);
-				PyrSlotNode* selectornode = newPyrSlotNode(&slot);
-				PyrParseNode* args = linkNextNode(
-					(PyrParseNode*)$1,
-					newPyrPushLitNode(newPyrSlotNode(&slot2), NULL)
-                );
-				args = linkNextNode(args, (PyrParseNode*)$5);
-				args = linkNextNode(args, (PyrParseNode*)$7);
-				$$ = (intptr_t)newPyrCallNode(selectornode, args, NULL, 0);
-            }
-
-		| expr '.' '(' arglistv1 optkeyarglist ')'
+		| expr '.' '(' argListWithPerformList optkeyarglist ')'
 			{
 				PyrSlotNode *selectornode;
 				PyrSlot slot, slot2;
@@ -382,6 +370,104 @@ msgsend : name blocklist1
 			}
 
 
+		// Keyword expand section
+		| expr '.' name '(' KWEXPAND expr ')'  
+			{
+				PyrSlot selectorSlot;
+				if (isSuperObjNode((PyrParseNode*)$1)) {
+					SetRaw(&((PyrPushNameNode*)$1)->mSlot, s_this);
+					SetSymbol(&selectorSlot, s_superPerformArgs);
+				} else {
+					SetSymbol(&selectorSlot, s_performArgs);
+				}
+				PyrSlotNode* selectornode = newPyrSlotNode(&selectorSlot);
+
+				PyrParseNode* args;
+				args = linkNextNode((PyrParseNode*)$1, newPyrPushLitNode((PyrSlotNode*)$3, NULL));
+				PyrSlot nil_slot;
+				SetNil(&nil_slot);
+				PyrSlotNode* nil_slot_node = newPyrSlotNode(&nil_slot);
+				args = linkNextNode(args, newPyrPushLitNode(nil_slot_node, NULL));
+				args = linkNextNode(args, (PyrParseNode*)$6);
+				$$ = (intptr_t)newPyrCallNode(selectornode, args, NULL, 0);
+			}
+
+		| expr '.' '(' KWEXPAND expr ')'  
+			{
+				PyrSlot selectorSlot;
+				if (isSuperObjNode((PyrParseNode*)$1)) {
+					SetRaw(&((PyrPushNameNode*)$1)->mSlot, s_this);
+					SetSymbol(&selectorSlot, s_superPerformArgs);
+				} else {
+					SetSymbol(&selectorSlot, s_performArgs);
+				}
+				PyrSlotNode* selectornode = newPyrSlotNode(&selectorSlot);
+
+				PyrParseNode* args;
+
+				PyrSlot value_slot;
+				SetSymbol(&value_slot, s_value);
+				PyrSlotNode* value_slot_node = newPyrSlotNode(&value_slot);
+				args = linkNextNode((PyrParseNode*)$1, newPyrPushLitNode(value_slot_node, NULL));
+
+				PyrSlot nil_slot;
+				SetNil(&nil_slot);
+				PyrSlotNode* nil_slot_node = newPyrSlotNode(&nil_slot);
+				args = linkNextNode(args, newPyrPushLitNode(nil_slot_node, NULL));
+
+				args = linkNextNode(args, (PyrParseNode*)$5);
+				$$ = (intptr_t)newPyrCallNode(selectornode, args, NULL, 0);
+			}
+		| classname '(' KWEXPAND expr ')'  
+			{ 
+				PyrSlot selectorSlot;
+				if (isSuperObjNode((PyrParseNode*)$1)) {
+					SetRaw(&((PyrPushNameNode*)$1)->mSlot, s_this);
+					SetSymbol(&selectorSlot, s_superPerformArgs);
+				} else {
+					SetSymbol(&selectorSlot, s_performArgs);
+				}
+				PyrSlotNode* selectornode = newPyrSlotNode(&selectorSlot);
+
+				PyrSlot value_slot;
+				SetSymbol(&value_slot, s_value);
+				PyrSlotNode* value_slot_node = newPyrSlotNode(&value_slot);
+
+				PyrParseNode* args;
+				args = linkNextNode((PyrParseNode*)$1, newPyrPushLitNode(value_slot_node, NULL));
+				PyrSlot nil_slot;
+				SetNil(&nil_slot);
+				PyrSlotNode* nil_slot_node = newPyrSlotNode(&nil_slot);
+				args = linkNextNode(args, newPyrPushLitNode(nil_slot_node, NULL));
+				args = linkNextNode(args, (PyrParseNode*)$4);
+				$$ = (intptr_t)newPyrCallNode(selectornode, args, NULL, 0);
+			}
+		| name '(' KWEXPAND expr ')'  
+			{ 
+				PyrSlot selectorSlot;
+				if (isSuperObjNode((PyrParseNode*)$1)) {
+					SetRaw(&((PyrPushNameNode*)$1)->mSlot, s_this);
+					SetSymbol(&selectorSlot, s_superPerformArgs);
+				} else {
+					SetSymbol(&selectorSlot, s_performArgs);
+				}
+				PyrSlotNode* selectornode = newPyrSlotNode(&selectorSlot);
+
+				PyrSlot value_slot;
+				SetSymbol(&value_slot, s_value);
+				PyrSlotNode* value_slot_node = newPyrSlotNode(&value_slot);
+
+				PyrParseNode* args;
+				args = linkNextNode((PyrParseNode*)$1, newPyrPushLitNode(value_slot_node, NULL));
+				PyrSlot nil_slot;
+				SetNil(&nil_slot);
+				PyrSlotNode* nil_slot_node = newPyrSlotNode(&nil_slot);
+				args = linkNextNode(args, newPyrPushLitNode(nil_slot_node, NULL));
+				args = linkNextNode(args, (PyrParseNode*)$4);
+				$$ = (intptr_t)newPyrCallNode(selectornode, args, NULL, 0);
+			}
+
+
 		| expr '.' name '(' ')' blocklist
 			{
 				$$ = (intptr_t)newPyrCallNode((PyrSlotNode*)$3, (PyrParseNode*)$1, NULL, (PyrParseNode*)$6);
@@ -392,7 +478,7 @@ msgsend : name blocklist1
 				args = linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$5);
 				$$ = (intptr_t)newPyrCallNode((PyrSlotNode*)$3, args, (PyrParseNode*)$6, (PyrParseNode*)$8);
 			}
-		| expr '.' name '(' arglistv1 optkeyarglist ')'
+		| expr '.' name '(' argListWithPerformList optkeyarglist ')'
 			{
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -1252,7 +1338,7 @@ arglist1	: exprseq
 					{ $$ = (intptr_t)linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$3); }
 			;
 
-arglistv1	: '*' exprseq
+argListWithPerformList	: '*' exprseq
 				{ $$ = $2; }
 			| arglist1 ',' '*' exprseq
 					{ $$ = (intptr_t)linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$4); }
@@ -1631,6 +1717,7 @@ pseudovar	: PSEUDOVAR { $$ = zzval; }
 
 binop	: BINOP { $$ = zzval; }
 		| READWRITEVAR { $$ = zzval; }
+		| KWEXPAND { $$ = zzval; }
 		| '<'  { $$ = zzval; }
 		| '>'  { $$ = zzval; }
 		| '-'  { $$ = zzval; }

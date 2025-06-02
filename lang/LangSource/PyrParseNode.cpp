@@ -3110,9 +3110,11 @@ PyrPushLitNode* newPyrPushLitNode(PyrSlotNode* literalSlot, PyrParseNode* litera
     if (literalSlot) {
         node = literalSlot;
         node->mClassno = pn_PushLitNode;
-    } else {
+    } else if (literalObj) {
         node = ALLOCSLOTNODE(PyrSlotNode, pn_PushLitNode);
         SetPtr(&node->mSlot, (PyrObject*)literalObj);
+    } else {
+        error("newPyrPushLitNode: shouldn't get here,\n");
     }
     return node;
 }
