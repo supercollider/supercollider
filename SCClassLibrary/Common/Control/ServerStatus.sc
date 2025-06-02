@@ -331,15 +331,12 @@ ServerStatusWatcher {
 		};
 	}
 	
-	warnIfNotRunning { |label, failMessage|
-		var msg;
-		if (this.serverRunning.not) {
-			msg = "server '%' not running.".format(this);
-			label !? { msg = "%\n   %".format(msg, label) };
-			failMessage !? { msg = "%\n%".format(msg, failMessage) };
-			msg.warn;
+	warnIfNotRunning { |method|
+		if (this.serverRunning.not) { 	
+			"Server '%' not running.\nThe method '%' requires a running server.".format(this, method.name).warn;
 			^true
-		}{
+		}
+		{
 			^false
 		}
 	}

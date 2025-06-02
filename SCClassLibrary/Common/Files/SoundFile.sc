@@ -405,12 +405,8 @@ SoundFile {
 	}
 
 	*collectIntoBuffers { |path = "sounds/*", server|
-		var warnLabel = this.asCompileString ++ "." ++ thisMethod.name;
-		var warnMessage = this.asCompileString + "calling method\n" 
-			++ thisMethod.asString + "will NOT work.\n"
-			++ "The server must be running to collect soundfiles into buffers";
 		server = server ?? { Server.default };
-		if(server.warnIfNotRunning(warnLabel, warnMessage)) { ^this };
+		if(server.warnIfNotRunning(thisMethod)) { ^this };
 
 		^this.collect(path)
 		.collect { |sf|
@@ -423,11 +419,9 @@ SoundFile {
 
 	asBuffer { |server|
 		var buffer, rawData;
-		var warnLabel = this.asCompileString ++ "." ++ thisMethod.name;
-		var warnMessage = this.asCompileString + "calling method\n" ++ thisMethod.asString + "will NOT work.";
 
 		server = server ? Server.default;
-		if(server.warnIfNotRunning(warnLabel, warnMessage)) { ^this };
+		if(server.warnIfNotRunning(thisMethod)) { ^this };
 
 		if(this.isOpen.not) { Error("SoundFile:asBuffer - SoundFile not open.").throw };
 		if(server.isLocal) {

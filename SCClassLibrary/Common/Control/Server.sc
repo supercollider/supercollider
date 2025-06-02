@@ -808,15 +808,12 @@ Server {
 	}
 
 	ifRunning { |func, failFunc|
-		if(statusWatcher.unresponsive) {
+		^if(statusWatcher.unresponsive) {
 			"server '%' not responsive".format(this.name).postln;
-			^failFunc.value(this)
+			failFunc.value(this)
 		} {
-			var warnLabel = this.asCompileString ++ "." ++ thisMethod.name;
-			var warnMessage = this.asCompileString + "calling method\n" ++ thisMethod.asString + "will NOT work.";
-			
-			if(statusWatcher.warnIfNotRunning(warnLabel, warnMessage)) { failFunc.value(this); ^this };
-			^func.value(this)
+			if(statusWatcher.warnIfNotRunning(thisMethod)) { ^failFunc.value(this) };
+			func.value(this)
 		}
 	}
 
@@ -839,10 +836,8 @@ Server {
 
 	ping { |n = 1, wait = 0.1, func|
 		var result = 0, pingFunc;
-		var warnLabel = this.asCompileString ++ "." ++ thisMethod.name;
-		var warnMessage = this.asCompileString + "calling method\n" ++ thisMethod.asString + "will NOT work.";
 
-		if(this.warnIfNotRunning(warnLabel, warnMessage)) { ^this };
+		if(this.warnIfNotRunning(thisMethod)) { ^this };
 
 		pingFunc = {
 			Routine.run {
@@ -1352,10 +1347,8 @@ Server {
 
 	rtMemoryStatus { |action|
 		var resp, done = false;
-		var warnLabel = this.asCompileString ++ "." ++ thisMethod.name;
-		var warnMessage = this.asCompileString + "calling method\n" ++ thisMethod.asString + "will NOT work.";
 
-		if(this.warnIfNotRunning(warnLabel, warnMessage)) { ^this };
+		if(this.warnIfNotRunning(thisMethod)) { ^this };
 
 		resp = OSCFunc({ |msg| 
 			done = true;
@@ -1432,16 +1425,12 @@ Server {
 		this.program = this.program.replace("scsynth", "supernova")
 	}
 
-	warnIfNotRunning { |label, failMessage|
-		var msg;
+	warnIfNotRunning { |method|
 		if (this.serverRunning.not) {
-			msg = "server '%' not running.".format(this.name);
-			label !? { msg = "%\n   %".format(msg, label) };
-			failMessage !? { msg = "%\n%".format(msg, failMessage) };
-			msg.warn;
+			"Server '%' not running.\nThe method '%' requires a running server.".format(this.name, method.name).warn;
 			^true
-		}{
-			^false
-		}
-	}
+  		} {
+        	^false
+    	}
+    }
 }

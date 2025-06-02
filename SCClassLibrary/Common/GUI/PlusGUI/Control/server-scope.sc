@@ -29,12 +29,10 @@
 
 + Function {
 	scope { arg numChannels, outbus = 0, fadeTime = 0.05, bufsize = 4096, zoom, bounds;
-		var server, warnLabel, warnMessage, synth, synthDef, bytes, synthMsg, outUGen;
+		var server, synth, synthDef, bytes, synthMsg, outUGen;
 
 		server = Server.default;
-		warnLabel = this.asCompileString ++ "." ++ thisMethod.name;
-		warnMessage = this.asCompileString + "calling method\n" ++ thisMethod.asString + "will NOT work.";
-		if(server.warnIfNotRunning(warnLabel, warnMessage)) { ^this };
+		if(server.warnIfNotRunning(thisMethod)) { ^this };
 
 		synthDef = this.asSynthDef(name: SystemSynthDefs.generateTempName, fadeTime:fadeTime);
 		outUGen = synthDef.children.detect { |ugen| ugen.class === Out };

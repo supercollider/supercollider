@@ -468,11 +468,9 @@ NodeProxy : BusPlug {
 	// starting processes
 
 	spawn { | extraArgs, index = 0 |
-		var warnLabel, warnMessage, bundle, obj, i;
+		var bundle, obj, i;
 
-		warnLabel = this.asCompileString ++ "." ++ thisMethod.name;
-		warnMessage = this.asCompileString + "calling method\n" ++ thisMethod.asString + "will NOT work.";
-		if(server.warnIfNotRunning(warnLabel, warnMessage)) { ^this };
+		if(server.warnIfNotRunning(thisMethod)) { ^this };
 
 		obj = objects.at(index);
 		if(obj.notNil) {
@@ -486,13 +484,11 @@ NodeProxy : BusPlug {
 
 
 	send { | extraArgs, index, freeLast = true |
-		var warnLabel, warnMessage, bundle, obj, fadeTime = this.fadeTime;
+		var bundle, obj, fadeTime = this.fadeTime;
 
 		if(objects.isEmpty) { ^this };
 
-		warnLabel = this.asCompileString ++ "." ++ thisMethod.name;
-		warnMessage = this.asCompileString + "calling method\n" ++ thisMethod.asString + "will NOT work.";
-		if(server.warnIfNotRunning(warnLabel, warnMessage)) { ^this };
+		if(server.warnIfNotRunning(thisMethod)) { ^this };
 
 		if(index.isNil) {
 			bundle = this.getBundle;
@@ -518,11 +514,9 @@ NodeProxy : BusPlug {
 	}
 
 	sendEach { | extraArgs, freeLast = true |
-		var warnLabel, warnMessage, bundle;
+		var bundle;
 
-		warnLabel = this.asCompileString ++ "." ++ thisMethod.name;
-		warnMessage = this.asCompileString + "calling method\n" ++ thisMethod.asString + "will NOT work.";
-		if(server.warnIfNotRunning(warnLabel, warnMessage)) { ^this };
+		if(server.warnIfNotRunning(thisMethod)) { ^this };
 
 		bundle = this.getBundle;
 		if(freeLast, { this.stopAllToBundle(bundle) });
@@ -546,11 +540,9 @@ NodeProxy : BusPlug {
 	}
 
 	deepWakeUp {
-		var warnLabel, warnMessage, bundle;
+		var bundle;
 
-		warnLabel = this.asCompileString ++ "." ++ thisMethod.name;
-		warnMessage = this.asCompileString + "calling method\n" ++ thisMethod.asString + "will NOT work.";
-		if(server.warnIfNotRunning(warnLabel, warnMessage)) { ^this };
+		if(server.warnIfNotRunning(thisMethod)) { ^this };
 
 		bundle = MixedBundle.new;
 		this.wakeUpToBundle(bundle);

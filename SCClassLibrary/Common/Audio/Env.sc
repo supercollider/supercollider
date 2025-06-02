@@ -338,10 +338,8 @@ Env {
 
 	test { arg releaseTime = 3.0;
 		var s = Server.default;
-		var warnLabel = this.asCompileString ++ "." ++ thisMethod.name;
-		var warnMessage = this.asCompileString + "calling method\n" ++ thisMethod.asString + "will NOT work.";
-
-		if(s.warnIfNotRunning(warnLabel, warnMessage)) { ^this };
+		
+		if(s.warnIfNotRunning(thisMethod)) { ^this };
 		
 		fork {
 			var synth = { arg gate=1;
