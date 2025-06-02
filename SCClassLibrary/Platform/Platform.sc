@@ -198,11 +198,11 @@ Platform {
 	// hook for clients to write frontend.css
 	writeClientCSS {}
 
-	killProcessByID { |pid|
+	killProcessByID { |pid, force = true, subprocesses = true|
 		^this.subclassResponsibility(\killProcessByID)
 	}
 
-	killAll { |cmdLineArgs|
+	killAll { |cmdLineArgs, force = true|
 		^this.subclassResponsibility(\killAll)
 	}
 
@@ -234,12 +234,10 @@ UnixPlatform : Platform {
 		^arch.asSymbol;
 	}
 
-	killProcessByID { |pid|
-		("kill -9 " ++ pid).unixCmd;
-	}
+	// killProcessByID moved to LinuxPlatform and OSXPlatform due to different implementations
 
-	killAll { |cmdLineArgs|
-		("killall -9 " ++ cmdLineArgs).unixCmd;
+	killAll { |cmdLineArgs, force = true|
+		"killall -% %".format(force.if({"KILL"}, {"TERM"}), cmdLineArgs).unixCmd;
 	}
 
 	defaultTempDir {

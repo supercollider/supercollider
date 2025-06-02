@@ -298,6 +298,10 @@ using code::++::. If neither side has a path separator, the platform's preferred
 Returns code::this:: and code::path:: concatenated. If code::path:: was a PathName, the result is a
 PathName; otherwise, it is a String.
 
+note::
+Do not use code::+/+:: in URLs or in other situations where forward slash is expected. code::+/+:: should only be used with filesystem paths, where it will resolve to either forward or backward slash, depending on the operating system's requirements.
+::
+
 argument::path
 
 Any object that can be converted to a string. Typically, either a String, link::Classes/Symbol::, or
@@ -672,13 +676,29 @@ Despite the fact that the method is called 'unixCmd', strong::it does work in Wi
 ::
 
 method::unixCmd
-Execute a UNIX command strong::asynchronously:: using the standard shell (sh).
+Executes an operating system command strong::asynchronously:: using the standard shell (code::sh:: on *nix, code::cmd:: on Windows).
+
+If you want to run a command without a shell, please use link::Classes/SequenceableCollection#-unixCmd::.
 argument:: action
 A link::Classes/Function:: that is called when the process has exited. It is passed two arguments: the exit code and pid of the exited process.
 argument:: postOutput
 A link::Classes/Boolean:: that controls whether or not the output of the process is displayed in the post window.
 returns::
-An link::Classes/Integer:: - the pid of the newly created process. Use link::Classes/Integer#-pidRunning:: to test if a process is alive.
+An link::Classes/Integer:: - the pid of the strong::shell:: running the command, not of the command itself (see note below for exceptions).
+
+To get the actual pid of the command, use link::Classes/SequenceableCollection#-unixCmd::, which does not use a shell and returns the actual pid of the command.
+
+Use link::Classes/Integer#-pidRunning:: to test if a process is alive.
+note::
+While the underlying system call will obtaing the pid of the shell, we may get an actual pid of the command in the following situations:
+list::
+## On *nix systems, if the command is run with code::exec::, e.g. code::"exec scsynth -u 57110".unixCmd;::, which causes the calling process (the shell) to be replaced with the new command;
+## On macOS specifically, if the command consists of a single executable, where macOS seems the optimize the call by not spawining a new shell.
+::
+Past documentation incorrectly stated that this method always returned the pid of the actual command.
+
+Note that code::exec:: is not available on Windows.
+::
 discussion::
 Example:
 code::
@@ -694,9 +714,9 @@ code::
 ::
 
 method::systemCmd
-Executes a UNIX command strong::synchronously:: using the standard shell (sh).
+Executes an operating system command strong::synchronously:: using the standard shell (code::sh:: on *nix, code::cmd:: on Windows).
 
-returns:: Error code of the UNIX command
+returns:: Error code of the system command
 
 method::runInTerminal
 Execute the String in a new terminal window (strong::asynchronously::).
@@ -829,13 +849,13 @@ method::withoutTrailingSlash
 Removes a trailing path separator if one is present.
 
 method::basename
-Return the filename from a Unix path.
+Return the filename from a filesystem path.
 code::
 "Imaginary/Directory/fish.rtf".basename;
 ::
 
 method::dirname
-Return the directory name from a Unix path.
+Return the directory name from a filesystem path.
 code::
 "Imaginary/Directory/fish.rtf".dirname;
 ::

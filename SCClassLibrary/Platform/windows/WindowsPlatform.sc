@@ -33,12 +33,12 @@ WindowsPlatform : Platform {
 		"del %%.*meta%".format(34.asAscii, path, 34.asAscii).systemCmd;
 	}
 
-	killProcessByID { |pid|
-		("taskkill /F /pid " ++ pid).unixCmd;
+	killProcessByID { |pid, force = true, subprocesses = true|
+		"taskkill % % /pid %".format(force.if({"/f"}, {""}), subprocesses.if({"/t"}, {""}), pid).unixCmd;
 	}
 
-	killAll { |cmdLineArgs|
-		("taskkill /F /IM " ++ cmdLineArgs).unixCmd;
+	killAll { |cmdLineArgs, force = true|
+		"taskkill % /im %".format(force.if({"/f"}, {""}), cmdLineArgs).unixCmd;
 	}
 
 	defaultTempDir {

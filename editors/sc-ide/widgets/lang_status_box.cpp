@@ -23,9 +23,11 @@
 
 #include <QHBoxLayout>
 
+#include "main.hpp"
+
 namespace ScIDE {
 
-LangStatusBox::LangStatusBox(ScProcess* lang, QWidget* parent): StatusBox(parent) {
+LangStatusBox::LangStatusBox(ScProcess* lang, QWidget* parent): StatusBox(parent), mLang(lang) {
     mLabel = new StatusLabel;
     QHBoxLayout* layout = new QHBoxLayout;
     layout->setContentsMargins(0, 0, 0, 0);
@@ -39,7 +41,21 @@ LangStatusBox::LangStatusBox(ScProcess* lang, QWidget* parent): StatusBox(parent
     connect(lang, SIGNAL(stateChanged(QProcess::ProcessState)), this,
             SLOT(onInterpreterStateChanged(QProcess::ProcessState)));
 
-    onInterpreterStateChanged(lang->state());
+    // initialize formats from settings:
+    auto const main = Main::instance();
+    applySettings(main->settings());
+    connect(main, &Main::applySettingsRequest, this, &LangStatusBox::applySettings);
+}
+
+void LangStatusBox::applySettings(Settings::Manager* settings) {
+    backgroundColor = settings->getThemeVal("text").background().color();
+
+    notRunningColor = settings->getThemeVal("text").foreground().color();
+    runningColor = settings->getThemeVal("postwindowsuccess").foreground().color();
+    startingColor = settings->getThemeVal("postwindowwarning").foreground().color();
+
+    // re-render the box, otherwise we will not update after e.g. a theme switch
+    onInterpreterStateChanged(mLang->state());
 }
 
 void LangStatusBox::onInterpreterStateChanged(QProcess::ProcessState state) {
@@ -49,22 +65,23 @@ void LangStatusBox::onInterpreterStateChanged(QProcess::ProcessState state) {
     switch (state) {
     case QProcess::NotRunning:
         text = tr("Inactive");
-        color = Qt::white;
+        color = notRunningColor;
         break;
 
     case QProcess::Starting:
         text = tr("Booting");
-        color = QColor(255, 255, 0);
+        color = startingColor;
         break;
 
     case QProcess::Running:
         text = tr("Active");
-        color = Qt::green;
+        color = runningColor;
         break;
     }
 
     mLabel->setText(text);
     mLabel->setTextColor(color);
+    mLabel->setBackground(backgroundColor);
 }
 
 } // namespace ScIDE
