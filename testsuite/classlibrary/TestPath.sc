@@ -1,8 +1,6 @@
 /*
 // Path, the offical new interface class for paths:
 TestPath.run;
-// PathName old interface for backwards compatibility:
-TestPathName.run
 */
 
 TestPath : UnitTest {
@@ -35,17 +33,17 @@ TestPath : UnitTest {
 		this.assertEquals(p.relativeTo("/Users/adc/src"), Path("Sounds/FunkyChicken.abc.scd"), "relativeTo");
 		this.assertEquals(p.withName("newName.txt"), Path("/Users/adc/src/Sounds/newName.txt"), "withName");
 
-		this.assertEquals(PathName("abc").nextName, "abc1", "nextName, no number, no extension");
-		this.assertEquals(PathName("abc9").nextName, "abc10", "nextName with number, no extension");
+		this.assertEquals(Path("abc").nextName, "abc1", "nextName, no number, no extension");
+		this.assertEquals(Path("abc9").nextName, "abc10", "nextName with number, no extension");
 		this.assertEquals(
-			PathName("/where/ever/abc99.txt").nextName,
+			Path("/where/ever/abc99.txt").nextName,
 			"/where/ever/abc100.txt",
 			"nextName with extension, long path and high number"
 		);
 
-		this.assertEquals(PathName("abc/") +/+ "def", PathName("abc/def"), "concat with String");
-		this.assertEquals(PathName("abc/") +/+ PathName("/def"), PathName("abc/def"),
-		"concat with 2 PathNames");
+		this.assertEquals(Path("abc/") +/+ "def", Path("abc/def"), "concat with String");
+		this.assertEquals(Path("abc/") +/+ Path("/def"), Path("abc/def"),
+		"concat with 2 Paths");
 	}
 
 	test_fileAndFolderAccessMethods {

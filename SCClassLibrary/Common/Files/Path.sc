@@ -1,14 +1,7 @@
 /*
-Path is an update/replacement for the PathName class, modeled on Python Path/pathlib.
-It collects all path-related methods in one consistent interface.
-For backwards compatibility, PathName is kept as a subclass with its
-old interface; PathName and its suboptimal methods may be deprecated later.
-
-Path may later also add path-related functionality from String and File.
-All path-accessing primitives expect a String as input,
-so methods calling them should call obj.asPathString(path);
-this converts Path objects to Strings, and leaves Strings untouched.
-
+Path.class.methods.printAll;
+Path.methods.printAll.size;
+ "";
 */
 
 Path {
@@ -18,8 +11,8 @@ Path {
 	classvar <>scroot;
 	classvar <>tmp;
 
-	*new { | path = "" |
-		^super.newCopyArgs(path)
+	*new { | str = "" |
+		^super.newCopyArgs(str)
 	}
 
 	*home { ^Platform.userHomeDir }
@@ -44,8 +37,6 @@ Path {
 	fileNameWithoutExtension { ^str.basename.splitext[0] }
 	fileNameWithoutDoubleExtension { ^str.basename.splitext[0].splitext[0] }
 	extension { ^str.splitext.last ? "" }
-	// from File
-	type { File.type(str) }
 
 	// needed for PathName isFile, isFolder distinction
 	dirname { ^str.dirname 	+/+ Platform.pathSeparator }
@@ -53,6 +44,9 @@ Path {
 	folderName { ^str.dirname.basename }
 
 	fullPath { ^str } // compat
+
+	// from File
+	type { File.type(str) }
 
 	// conversions
 	absolutePath { ^this.class.new(str.absolutePath) }
@@ -85,44 +79,40 @@ Path {
 	isDir { ^str.last == Platform.pathSeparator }
 	isFile { ^str.last != Platform.pathSeparator }
 
-	// not sure these are needed?
+	// replace PathName:colonIndices
 	separatorIndices {
 		var res = List[];
 		str.do { |ch, i| if (ch.isPathSeparator) { res = res.add(i) } };
 		^res
 	}
 
+	// replace PathName:lastColonIndex
 	lastSeparatorIndex { ^this.separatorIndices.last ? -1 }
 
-	// are these good enough to keep here?
-	nextName {
-		var name, ext;
-		if (str.last.isDecDigit) {
-			^this.noEndNumbers ++ (this.endNumber + 1)
+	nextName { |indexOfNumber, numExtToRemove=2|
+		var parent = str.dirname, basefile = str.basename;
+		var filename, extensions, nameParts, digitIndices;
+		var partIndex, endNumber = 0, nextFileName, nextName;
+		filename = basefile;
+		numExtToRemove.do { filename = filename.splitext[0] };
+		extensions = basefile.drop(filename.size);
+
+		nameParts = filename.separate { |a, b| a.isDecDigit != b.isDecDigit };
+		digitIndices = nameParts.selectIndices { |part| part[0].isDecDigit };
+
+		if (digitIndices.notEmpty) {
+			indexOfNumber = (indexOfNumber ? digitIndices.lastIndex).clip(0, digitIndices.lastIndex);
+			partIndex = digitIndices.at(indexOfNumber);
+			endNumber = nameParts.at(partIndex).asInteger;
+			nextFileName = nameParts.put(partIndex, (endNumber + 1).asString).join("");
+		} {
+			// no endNumber:
+			nextFileName = filename ++ 1;
 		};
-		#name, ext = str.splitext;
-		if (ext.isNil) {
-			^name ++ "1"
-		};
-		^Path(name).nextName ++ "." ++ ext
-	}
+		nextName = parent +/+ nextFileName ++ extensions;
+		if (nextName.beginsWith("./")) { nextName = nextName.drop(2) };
 
-	noEndNumbers {
-		^str[..this.endNumberIndex]
-	}
-
-	endNumber {	// turn consecutive digits at the end of this into a number.
-		^str[this.endNumberIndex + 1..].asInteger
-	}
-
-	endNumberIndex {
-		var index = str.lastIndex;
-		while({
-			index > 0 and: { str.at(index).isDecDigit }
-		}, {
-			index = index - 1
-		});
-		^index
+		^nextName
 	}
 
 	/* concatenation */
@@ -133,18 +123,19 @@ Path {
 
 	// search
 	match { ^str.pathMatch }
-	pathMatch { ^str.pathMatch } // compat
+	pathMatch { ^str.pathMatch } // compatibility
+
 	entries { ^pathMatch(str +/+ "*").collect { |str| this.class.new(str) } }
 	files { ^this.entries.select({ | item |item.isFile }) }
 	folders { ^this.entries.select({ | item | item.isFolder }) }
 
 	deepFiles { ^this.entries.collect({ | item |
-			if(item.isFile, {
-				item
-			},{
+		if(item.isFile, {
+			item
+		},{
 			Path(item).deepFiles
-			})
-		}).flatIf { |item| item.isKindOf(String).not }
+		})
+	}).flatIf { |item| item.isKindOf(String).not }
 	}
 
 	filesDo { | func |
