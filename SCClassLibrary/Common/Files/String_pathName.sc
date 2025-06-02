@@ -5,12 +5,12 @@
 
 	// new final conversion:
 	asPathString { ^this.standardizePath }
-	fullPath { ^this }
-
 	asPath { ^Path(this) }
 
+	fullPath { ^this }
+
 	// keep these for speed: pathMatch returns strings,
-	// and it is faster todistinguish files and folders here.
+	// and it is faster to distinguish files and folders here.
 	isFolder { ^this.last.isPathSeparator }
 
 	isFile {
