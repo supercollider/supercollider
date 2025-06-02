@@ -38,7 +38,7 @@ NodeTreeView {
 		var done = false;
 		var collectChildren, levels, countSize;
 		var pen, font;
-		var drawFunc, lastGroupRect, lastSynthRect, lastRect, lastNodeKey, lastNodeSize;
+		var drawFunc;
 
 		view ?? {
 			"The NodeTreeView instance was closed".warn;
@@ -50,85 +50,54 @@ NodeTreeView {
 		pen = GUI.current.pen;
 		font = Font.sansSerif(10);
 
-		drawFunc = { |group, xtabs, ytabs|
-			var thisSize, rect, endYTabs, verticalStretchFactor = 1, defaultGroupRect;
-			xtabs = xtabs + 1;
-			ytabs = ytabs + 1;
-			pen.font = font;
-			group.do({ |node, index|
-				if(node.value.isArray, {
-					thisSize = countSize.value(node);
-					verticalStretchFactor = thisSize.expexp(1, 1000, 1, 1.04);
-					endYTabs = ytabs + thisSize + 0.2;
-					rect = Rect(xtabs * tabSize + 0.5,
-						if (
-							lastRect.notNil && (node.key != 1) && (lastNodeKey != 1)
-						) {
-							if (index == 0) {
-								ytabs * tabSize * verticalStretchFactor
-							} {
-								lastRect.bottom + 5
-							}
-						}
-						{
-							ytabs * tabSize * verticalStretchFactor
-						} + 0.5,
-						view.bounds.width - (xtabs * tabSize * 2),
-						thisSize * tabSize * verticalStretchFactor
-					);
-					pen.fillColor = Color.grey(0.8, globalAlpha);
-					pen.fillRect(rect);
-					pen.strokeRect(rect);
-					pen.color = Color.grey(0, globalAlpha);
-					pen.stringInRect(
-						" Group" + node.key.asString +
-						if(node.key == 1) {
-							defaultGroupRect = rect;
-							"- default group"
-						} {
-							""
-						},
-						rect
-					);
-					drawFunc.value(node.value, xtabs, ytabs);
-					ytabs = endYTabs;
-					lastNodeSize = node.value.size;
-					lastGroupRect = rect;
-				},{
-					rect = Rect(xtabs * tabSize + 0.5,
-						if(defaultGroupRect.notNil) {
-							if ("localhost|stethoscope|system_freqScope".matchRegexp(node.asString)) {
-								if (group.asString.contains("localhost")) {
-									tabSize * (index - 2) + defaultGroupRect.bottom + 5
-								} {
-									tabSize * (index - 1) + defaultGroupRect.bottom + 5
-								}
-							} { tabSize * index + defaultGroupRect.bottom }
-						} {
-							ytabs * tabSize * verticalStretchFactor
-						}
-						+ 0.5,
-						7 * tabSize,
-						0.8 * tabSize
-					);
-					pen.fillColor = Color.white;
-					pen.fillRect(rect);
-					pen.strokeRect(rect);
-					pen.color = Color.grey(0, globalAlpha);
-					pen.stringInRect(
-						" " ++ node.key.asString + node.value.asString,
-						rect
-					);
-					ytabs = ytabs + 1;
-					lastSynthRect = rect
-				});
-				lastRect = rect;
-				lastNodeKey = node.key
-			});
-			xtabs = xtabs - 1;
-		};
 		view.drawFunc = {
-			drawFunc.value(levels, 0, 0)
+			var xtabs = 0, ytabs = 0, drawFunc;
+
+			drawFunc = {|group|
+				var thisSize, rect, endYTabs;
+				xtabs = xtabs + 1;
+				ytabs = ytabs + 1;
+				pen.font = font;
+				group.do({|node, index|
+					if(node.value.isArray, {
+						thisSize = countSize.value(node);
+						endYTabs = ytabs + thisSize + 0.2;
+						rect = Rect(xtabs * tabSize + 0.5,
+							ytabs * tabSize + 0.5,
+							view.bounds.width - (xtabs * tabSize * 2),
+							thisSize * tabSize;
+						);
+						pen.fillColor = Color.grey(0.8, globalAlpha);
+						pen.fillRect(rect);
+						pen.strokeRect(rect);
+						pen.color = Color.grey(0, globalAlpha);
+						pen.stringInRect(
+							" Group" + node.key.asString +
+							(node.key == 1).if("- default group", ""),
+							rect
+						);
+						drawFunc.value(node.value);
+						ytabs = endYTabs;
+					},{
+						rect = Rect(xtabs * tabSize + 0.5,
+							ytabs * tabSize + 0.5,
+							7 * tabSize,
+							0.8 * tabSize
+						);
+						pen.fillColor = Color.white;
+						pen.fillRect(rect);
+						pen.strokeRect(rect);
+						pen.color = Color.grey(0, globalAlpha);
+						pen.stringInRect(
+							" " ++ node.key.asString + node.value.asString,
+							rect
+						);
+						ytabs = ytabs + 1;
+					});
+				});
+				xtabs = xtabs - 1;
+			};
+			drawFunc.value(levels);
 		};
 
 		// msg[1] controls included
@@ -184,8 +153,18 @@ NodeTreeView {
 			levels = collectChildren.value(finalEvent);
 			countSize = {|array|
 				var size = 0;
+
 				array.do({|elem|
-					if(elem.value.isArray, { size = size + countSize.value(elem.value) + 2}, {size = size + 1;});
+					var sizeFactor = if (elem.key < 1000) {
+						(elem.value.size + 1).expexp(1, 501, 1, 1.006)
+					} {
+						array.size.linlin(0, 100, 1.03, 1.032)
+					};
+					if (elem.value.isArray) {
+						size = size + (countSize.value(elem.value) * sizeFactor) + 2.5
+					} {
+						size = size + 1
+				};
 				});
 				size
 			};
@@ -194,7 +173,11 @@ NodeTreeView {
 				view !? {
 					window !? {
 						height = if(view.bounds.isNil) { 400 } { view.bounds.height };
-						view.bounds = Rect(0, 0, min(window.bounds.width - 4, 394), max(height, tabSize * countSize.value(levels) * 1.06));
+						view.bounds = Rect(
+							0,
+							0,
+							min(window.bounds.width - 4, 394),
+							max(height, tabSize * countSize.value(levels) + (tabSize * 2.3)));
 						view.refresh
 					}
 				}
