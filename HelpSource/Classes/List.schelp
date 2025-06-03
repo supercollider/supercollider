@@ -19,37 +19,46 @@ x = x.add(i);
 Example:
 
 code::
-(
-// Create a new array with maxSize 3:
-x = Array.new(3); y = nil;
-"Make an empty array of size 3: \nx:% \ny: %\n".format(x, y).postln;
+// Create a new empty collections with size 3:
+x = Array.new(3); 
+y = Array.new(3); 
+z = List.new(3);
 
-// Try to add 5 items to the array:
-5.do { |i| y = x.add(i) };
-// If the array size exceeds maxSize, .add returns a new array .
-
-// Now, x's size is 4, which is one size bigger than the initial x, while, y is the new array with added items.
-"After adding 5 items to each: \nx:%\ny: %\n".format(x, y).postln;
-
-// Attempt to access the 5th item (index 4):
-"Accessing:\nx.at(4): \nx:%\ny: %".format(x.at(4), y[4]).postln;""
-// x.at(4) returns nil (out of bounds), y[4] returns the value (4).
+// Try to add 7 items to the array and list.
+// If the array exceeds maxSize, it will only
+// grow to an internally specified max size.
+( 
+7.do { |i|
+	x.add(i);
+	y = y.add(i); // reassign array y on each add
+	z.add(i);
+};
 )
+
+// Attempt to access the 5th item:
+x.at(4); // -> nil (out of bounds)
+y.at(4); // -> 4
+z.at(4); // -> 4
+
+// x grew only to size 4
+x.postln; // -> [ 0, 1, 2, 3 ]
+y.postln; // -> [ 0, 1, 2, 3, 4, 5, 6 ]
+z.postln; // -> List[ 0, 1, 2, 3, 4, 5, 6 ]
 ::
 
 List has no size limitation and is thus more flexible, but has slightly more overhead:
 code::
 (
-// Create a new List with maxSize 3 (but the size can still grow):
+// Create a new empty List with size: 3
 x = List.new(3);
 
-// Print the empty List:
-x.postln;
+x.postln; // -> List[ ]
 
-// Add numbers 0 to 4 to the List, printing the List after each addition:
-5.do({ |i|
-    x.add(i).postln;  // .add modifies the List in place, returns the same List.
-});
+// Add numbers 0 to 4 to the List
+5.do({ |i| x.add(i) });
+
+// The list has been modified in-place with each added item
+x.postln; // -> List[ 0, 1, 2, 3, 4 ]
 )
 ::
 
