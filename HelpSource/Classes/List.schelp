@@ -171,7 +171,24 @@ method::addFirst
 Inserts the strong::item:: at the beginning of the List.
 
 method::insert
-Inserts the strong::item:: into the contents of the List at the indicated strong::index::.
+Inserts the strong::item:: into the contents of the link::Classes/List:: at the indicated strong::index::.
+code::
+x = List[1, 2, 3, 4]; // -> List[1, 2, 3, 4]
+x.insert(0, 999); // -> List[999, 1, 2, 3, 4]
+x; // -> List[999, 1, 2, 3, 4]
+::
+
+method::boundedInsert
+Same as link::#-insert::, but removes the receiver's last element before inserting strong::item::.
+This changes the receiver but maintains its size.
+
+code::
+x = List[1, 2, 3, 4]; // -> List[1, 2, 3, 4]
+x.boundedInsert(1, 999); // -> List[1, 999, 2, 3]
+x; // -> List[1, 999, 2, 3]
+x.boundedInsert(20, \a); // -> List[1, 999, 2, a]
+x.boundedInsert(-2, \b); // -> List[b, 1, 999, 2]
+::
 
 method::pop
 Remove and return the last element of the List.
