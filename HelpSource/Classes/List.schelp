@@ -96,7 +96,7 @@ Sets the List's Array.
 
 method::at
 Return the item at strong::index::.
-See link::Classes/SequenceableCollection#Index::.
+See link::Classes/SequenceableCollection#Indexing::..
 Accepts either a single index or an array of indices, in which case an Array of elements is returned.
 link::Classes/Array:: is its syntactic shortcut.
 code::
@@ -198,7 +198,7 @@ fork {
 ::
 
 method::put
-Put strong::item:: at strong::index::, replacing what is there. See link::Classes/SequenceableCollection#Index::.
+Put strong::item:: at strong::index::, replacing what is there. See link::Classes/SequenceableCollection#Indexing::..
 
 method::clipPut
 Same as link::#-put::, but values for strong::index:: greater than the link::Classes/List:: instance size minus one will be clipped to code::size - 1::, which is the last index.
@@ -225,7 +225,7 @@ method::grow
 Increase the size of the List by strong::sizeIncrease:: number of slots.
 
 method::removeAt
-Remove and return the item at strong::index::, shrinking the size of the List. See link::Classes/SequenceableCollection#Index::.
+Remove and return the item at strong::index::, shrinking the size of the List. See link::Classes/SequenceableCollection#Indexing::..
 code::
 y = List[1, 2, 3];
 y.removeAt(1);
@@ -262,7 +262,7 @@ List[1, 2, 3, 4, 5, 6].pairsDo({ |a, b| [a, b].postln });
 ::
 
 method::copyRange
-Return a new List which is a copy of the indexed slots of the receiver from start to end. See link::Classes/SequenceableCollection#Index::.
+Return a new List which is a copy of the indexed slots of the receiver from start to end. See link::Classes/SequenceableCollection#Indexing::..
 code::
 (
 var y, z;
@@ -274,7 +274,7 @@ y.postln;
 ::
 
 method::copySeries
-Return a new List consisting of the values starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::. See link::Classes/SequenceableCollection#Index::.
+Return a new List consisting of the values starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::. See link::Classes/SequenceableCollection#Indexing::..
 code::
 (
 var y, z;
@@ -285,7 +285,7 @@ y.postln;
 ::
 
 method::putSeries
-Put strong::value:: at every index starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::. See link::Classes/SequenceableCollection#Index::.
+Put strong::value:: at every index starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::. See link::Classes/SequenceableCollection#Indexing::..
 code::
 (
 var y, z;
