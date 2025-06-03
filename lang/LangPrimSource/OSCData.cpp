@@ -356,7 +356,7 @@ static int netAddrSend(PyrObject* netAddrObj, int msglen, char* bufptr, bool sen
         if (err)
             return err;
 
-        unsigned long ulAddress = (unsigned int)addr;
+        std::uint64_t ulAddress = (unsigned int)addr;
 
         using namespace boost::asio;
         ip::udp::endpoint address(ip::address_v4(ulAddress), port);
@@ -405,7 +405,7 @@ static int prNetAddr_Connect(VMGlobals* g, int numArgsPushed) {
     if (err)
         return err;
 
-    unsigned long ulAddress = (unsigned int)addr;
+    std::uint64_t ulAddress = (unsigned int)addr;
 
     try {
         OutPort::TCP* comPort =

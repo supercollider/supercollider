@@ -51,8 +51,8 @@ public:
         }
     }
 
-    long doDeepCopy(PyrSlot* objectSlot) {
-        long err = errNone;
+    std::int64_t doDeepCopy(PyrSlot* objectSlot) {
+        std::int64_t err = errNone;
 
         try {
             if (IsObj(objectSlot)) {

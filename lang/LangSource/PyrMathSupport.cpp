@@ -29,6 +29,7 @@
 #if defined(__FreeBSD__) || defined(__NetBSD__)
 #    include <complex.h>
 #endif
+#include <cstdint>
 
 #define SQRT2M1 0.41421356f
 
@@ -458,13 +459,13 @@ unsigned short primeslist[NUMPRIMES] = {
     65371, 65381, 65393, 65407, 65413, 65419, 65423, 65437, 65447, 65449, 65479, 65497, 65519, 65521
 };
 
-long nthPrime(int n) {
+std::int64_t nthPrime(int n) {
     if (n < 0 || n >= NUMPRIMES)
         return 0;
     return primeslist[n];
 }
 
-long findPrime(int n) {
+std::int64_t findPrime(int n) {
     // binary search of primes table
     int i, p, lo = 0, hi = NUMPRIMES - 1;
     while (hi >= lo) {
@@ -480,7 +481,7 @@ long findPrime(int n) {
     return -1;
 }
 
-long prevPrime(int n) {
+std::int64_t prevPrime(int n) {
     // binary search of primes table
     int i, p, lo = 0, hi = NUMPRIMES - 1;
     while (hi >= lo) {
@@ -496,7 +497,7 @@ long prevPrime(int n) {
     return sc_clip(hi, 0, NUMPRIMES - 1);
 }
 
-long nextPrime(int n) {
+std::int64_t nextPrime(int n) {
     // binary search of primes table
     int i, p, lo = 0, hi = NUMPRIMES - 1;
     while (hi >= lo) {

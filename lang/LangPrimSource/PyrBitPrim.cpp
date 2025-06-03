@@ -85,7 +85,7 @@ int prSetBit(VMGlobals* g, int numArgsPushed) {
     if (err)
         return err;
     bit = bit & 31;
-    mask = 1L << bit;
+    mask = 1LL << bit;
     if (IsFalse(c)) {
         SetRaw(a, slotRawInt(a) & ~mask);
     } else {

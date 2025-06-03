@@ -101,7 +101,7 @@ extern LongStack generatorStack;
 # endif
 # ifndef YY_NULLPTR
 #  if defined __cplusplus
-#   if 201103L <= __cplusplus
+#   if 201103LL <= __cplusplus
 #    define YY_NULLPTR nullptr
 #   else
 #    define YY_NULLPTR 0
