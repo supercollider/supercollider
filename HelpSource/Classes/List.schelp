@@ -6,10 +6,11 @@ categories::Collections>Ordered
 DESCRIPTION::
 List is a subclass of SequenceableCollection with unlimited growth in size. Although not a subclass of link::Classes/Array:: or its superclass link::Classes/ArrayedCollection:: it uses an Array in its implementation and is in many cases interchangeable with one. (List implements many of the same methods as Array.)
 
-note::
-Size limitations of arrays and flexibility of lists in SuperCollider
+Many of List's methods are inherited from link::Classes/SequenceableCollection:: or link::Classes/Collection:: and are documented in those helpfiles.
 
-Arrays have a fixed maximum size. If you add beyond that size, a new link::Classes/Array:: is created and returned, but you must use an assignment statement or the new array will be lost. (See the link::Classes/Array#description#Description:: section in link::Classes/Array::. documentation). The idiomatic way to add new item in link::Classes/Array:: is:
+subsection::Size limitations of arrays and flexibility of lists in SuperCollider
+
+Arrays have a fixed maximum size. Adding beyond that size, a new link::Classes/Array:: is created and returned. In order to be able to use it, the variable holding the old array can be reassigned to the new one. Threfore, the idiomatic way to add new item in link::Classes/Array:: is:
 
 code::
 x = x.add(i);
@@ -19,24 +20,38 @@ Example:
 
 code::
 (
-x = Array.new(3);
-postf("\nMake an empty array with size 3:\nx: %;\t%y: %\n", x, join("\t"!2), y);
+// Create a new array with maxSize 3:
+x = Array.new(3); y = nil;
+"Make an empty array of size 3: \nx:% \ny: %\n".format(x, y).postln;
 
-5.do({ |i| y = x.add(i) });
-postf("\nAfter adding 5 items to each:\nx: %;\t\ty: %", x, y);
+// Try to add 5 items to the array:
+5.do { |i| y = x.add(i) };
+// If the array size exceeds maxSize, .add returns a new array .
 
-postf("\nAccessing:\nx.at(4): %;\t\ty[4]: %\n", x.at(4), y[4]);
+// Now, x's size is 4, which is one size bigger than the initial x, while, y is the new array with added items.
+"After adding 5 items to each: \nx:%\ny: %\n".format(x, y).postln;
+
+// Attempt to access the 5th item (index 4):
+"Accessing:\nx.at(4): \nx:%\ny: %".format(x.at(4), y[4]).postln;""
+// x.at(4) returns nil (out of bounds), y[4] returns the value (4).
 )
 ::
 
-List has no size limitation and is thus more flexible, but has slightly more overhead.
+List has no size limitation and is thus more flexible, but has slightly more overhead:
+code::
+(
+// Create a new List with maxSize 3 (but the size can still grow):
+x = List.new(3);
 
-strong::Index starting from 0:: anchor::Index starting from 0::
+// Print the empty List:
+x.postln;
 
-Arrays and Lists use 0-based indexing, meaning the first item is accessed with index 0. Therefore, the index 4 in code::x.at(4):: and code::z[4]:: in the example above refers to the fifth item, counting from the left (i.e., after the first four items). If the index is out of bounds, code::nil:: is returned because there is no item at the requested index in the array or list referred to. In the given example, code::x.at(4):: returns code::nil:: because the index 4 is out of bounds. The method code::.add(4):: adds the value 4 to the end of the array or list.
+// Add numbers 0 to 4 to the List, printing the List after each addition:
+5.do({ |i|
+    x.add(i).postln;  // .add modifies the List in place, returns the same List.
+});
+)
 ::
-
-Many of List's methods are inherited from link::Classes/SequenceableCollection:: or link::Classes/Collection:: and are documented in those helpfiles.
 
 CLASSMETHODS::
 
@@ -71,8 +86,8 @@ method::array
 Sets the List's Array.
 
 method::at
-Return the item at strong::index::. 
-See link::#Index starting from 0::.
+Return the item at strong::index::.
+See link::Classes/SequenceableCollection#Index::.
 Accepts either a single index or an array of indices, in which case an Array of elements is returned.
 link::Classes/Array:: is its syntactic shortcut.
 code::
@@ -174,7 +189,7 @@ fork {
 ::
 
 method::put
-Put strong::item:: at strong::index::, replacing what is there. See link::#Index starting from 0::.
+Put strong::item:: at strong::index::, replacing what is there. See link::Classes/SequenceableCollection#Index::.
 
 method::clipPut
 Same as link::#-put::, but values for strong::index:: greater than the link::Classes/List:: instance size minus one will be clipped to code::size - 1::, which is the last index.
@@ -201,7 +216,7 @@ method::grow
 Increase the size of the List by strong::sizeIncrease:: number of slots.
 
 method::removeAt
-Remove and return the item at strong::index::, shrinking the size of the List. See link::#Index starting from 0::.
+Remove and return the item at strong::index::, shrinking the size of the List. See link::Classes/SequenceableCollection#Index::.
 code::
 y = List[1, 2, 3];
 y.removeAt(1);
@@ -238,7 +253,7 @@ List[1, 2, 3, 4, 5, 6].pairsDo({ |a, b| [a, b].postln });
 ::
 
 method::copyRange
-Return a new List which is a copy of the indexed slots of the receiver from start to end. See link::#Index starting from 0::.
+Return a new List which is a copy of the indexed slots of the receiver from start to end. See link::Classes/SequenceableCollection#Index::.
 code::
 (
 var y, z;
@@ -250,7 +265,7 @@ y.postln;
 ::
 
 method::copySeries
-Return a new List consisting of the values starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::. See link::#Index starting from 0::.
+Return a new List consisting of the values starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::. See link::Classes/SequenceableCollection#Index::.
 code::
 (
 var y, z;
@@ -261,7 +276,7 @@ y.postln;
 ::
 
 method::putSeries
-Put strong::value:: at every index starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::. See link::#Index starting from 0::.
+Put strong::value:: at every index starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::. See link::Classes/SequenceableCollection#Index::.
 code::
 (
 var y, z;
