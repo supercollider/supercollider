@@ -100,7 +100,7 @@ PyrSlot temporaryKeywordStack[temporaryKeywordStackCapacity];
 bool gKeywordError = true;
 extern bool gTraceInterpreter;
 
-long cvxUniqueMethods;
+std::int64_t cvxUniqueMethods;
 extern int ivxIdentDict_array;
 
 void StoreToImmutableB(VMGlobals* g, PyrSlot*& sp, unsigned char*& ip);
@@ -110,8 +110,8 @@ void initUniqueMethods() {
     cvxUniqueMethods = classVarOffset("Object", "uniqueMethods", &dummyclass);
 }
 
-HOT void sendMessageImpl(VMGlobals* g, PyrSymbol* selector, PyrSlot* recvrSlot, PyrClass* classobj, long numArgsPushed,
-                         long numKeyArgsPushed) {
+HOT void sendMessageImpl(VMGlobals* g, PyrSymbol* selector, PyrSlot* recvrSlot, PyrClass* classobj,
+                         std::int64_t numArgsPushed, std::int64_t numKeyArgsPushed) {
     ResetTailCall reset_tail_call { g };
 
     // General strategy here is to switch on the method type, which add different optimizations.
@@ -262,7 +262,7 @@ lookup_again:
     }
 }
 
-HOT void sendMessage(VMGlobals* g, PyrSymbol* selector, long numArgsPushed, long numKeyArgsPushed) {
+HOT void sendMessage(VMGlobals* g, PyrSymbol* selector, std::int64_t numArgsPushed, std::int64_t numKeyArgsPushed) {
     const GCSanityChecker gc_sanity_checker(g, "sendMessage");
 
     auto recvrSlot = g->sp - numArgsPushed + 1;
@@ -271,7 +271,8 @@ HOT void sendMessage(VMGlobals* g, PyrSymbol* selector, long numArgsPushed, long
 }
 
 
-HOT void sendSuperMessage(VMGlobals* g, PyrSymbol* selector, long numArgsPushed, long numKeyArgsPushed) {
+HOT void sendSuperMessage(VMGlobals* g, PyrSymbol* selector, std::int64_t numArgsPushed,
+                          std::int64_t numKeyArgsPushed) {
     const GCSanityChecker gc_sanity_checker(g, "sendSuperMessage");
 
     auto recvrSlot = g->sp - numArgsPushed + 1;
@@ -284,8 +285,8 @@ extern PyrClass* class_identdict;
 
 // An optimization for unique methods.
 // Returns false if it isn't a unique method.
-bool tryUniqueMethod(VMGlobals* g, PyrMethod* meth, PyrSlot* receiverSlot, PyrSlot* selectorSlot, long numArgsPushed,
-                     long numKeyArgsPushed) {
+bool tryUniqueMethod(VMGlobals* g, PyrMethod* meth, PyrSlot* receiverSlot, PyrSlot* selectorSlot,
+                     std::int64_t numArgsPushed, std::int64_t numKeyArgsPushed) {
     if (slotRawClass(&meth->ownerclass) != class_object)
         return false;
     auto uniqueMethodSlot = &g->classvars->slots[cvxUniqueMethods];
@@ -325,7 +326,7 @@ bool tryUniqueMethod(VMGlobals* g, PyrMethod* meth, PyrSlot* receiverSlot, PyrSl
     return true;
 }
 
-void doesNotUnderstand(VMGlobals* g, PyrSymbol* selector, long numArgsPushed, long numKeyArgsPushed) {
+void doesNotUnderstand(VMGlobals* g, PyrSymbol* selector, std::int64_t numArgsPushed, std::int64_t numKeyArgsPushed) {
     const GCSanityChecker check(g, "doesNotUnderstand");
 
     auto receiverSlot = g->sp - numArgsPushed + 1;
@@ -363,8 +364,8 @@ void kwArgMismatchErrorBlock(const char* argName, void*) {
 
 // This function puts the arguments into the passed in callFrame ready to be called.
 // It will also lookup arguments in the environment if one is passed in.
-void prepareArgsForExecute(VMGlobals* g, PyrBlock* block, PyrFrame* callFrame, long totalSuppliedArgs,
-                           long numKwArgsSupplied, bool isMethod, PyrObject* optionalEnvirLookup) {
+void prepareArgsForExecute(VMGlobals* g, PyrBlock* block, PyrFrame* callFrame, std::int64_t totalSuppliedArgs,
+                           std::int64_t numKwArgsSupplied, bool isMethod, PyrObject* optionalEnvirLookup) {
     // There are some instances where the proto is a nullptr.
     // There is nothing this function can do in that case.
     if (!IsObj(&block->prototypeFrame))
@@ -512,7 +513,7 @@ inline PyrFrame* createFrameForExecuteMethod(VMGlobals* g, PyrBlock* block) {
     return frame;
 }
 
-HOT void executeMethod(VMGlobals* g, PyrBlock* meth, long totalNumArgsPushed, long numKwArgsPushed) {
+HOT void executeMethod(VMGlobals* g, PyrBlock* meth, std::int64_t totalNumArgsPushed, std::int64_t numKwArgsPushed) {
     prepForTailCall(g);
     const GCSanityChecker gc_sanity_checker(g, "executeMethod");
 
@@ -705,9 +706,10 @@ HOT void returnFromMethod(VMGlobals* g) {
 }
 
 
-int keywordFixStack(VMGlobals* g, PyrMethod* meth, PyrMethodRaw* methraw, long allArgsPushed, long numKeyArgsPushed) {
+int keywordFixStack(VMGlobals* g, PyrMethod* meth, PyrMethodRaw* methraw, std::int64_t allArgsPushed,
+                    std::int64_t numKeyArgsPushed) {
     PyrSlot *pslot, *qslot;
-    long i, j, m, diff, numArgsPushed, numArgsNeeded;
+    std::int64_t i, j, m, diff, numArgsPushed, numArgsNeeded;
 
     if (numKeyArgsPushed) {
         // evacuate keyword args to separate area

@@ -340,16 +340,49 @@ z.fill([1, 2, 3, 4]).postln;
 ::
 
 method::insert
-Inserts the item into the contents of the receiver at the specified index, which is an integer starting from 0. This method may return a new ArrayedCollection. For this reason, you should always assign the result of code::insert:: to a variable - never depend on add changing the receiver.
+Inserts the item into the contents of the receiver at the specified index, which is an integer starting from 0. 
+This method may return a new ArrayedCollection. 
+For this reason, you should always assign the result of code::insert:: to a variable - never depend on add changing the receiver.
+
 code::
-(
-// in this case a new object is returned
-var y, z;
-z = [1, 2, 3, 4];
-y = z.insert(1, 999);
-z.postln;
-y.postln;
-)
+// In this case, a new object is returned  
+// because adding a new item would exceed the fixed maximum size of 4, 
+// which is set at the instantiation of the array z and 
+// cannot be changed at a later stage.
+// (By default, an array initialized with a size between 1 and 4 
+// retains a maximum size of 4):
+z = [1, 2, 3, 4]; // -> [1, 2, 3, 4]
+y = z.insert(1, 999); // -> [1, 999, 2, 3, 4]
+z // -> [1, 2, 3, 4]
+y // -> [1, 999, 2, 3, 4]
+(z == y) // -> false
+(z === y) // -> false
+
+// In this case, the same object is returned 
+// because the new number of elements does not exceed 
+// the number of elements at instantiation:
+z = [1, 2, 3]; // -> [1, 2, 3]
+y = z.insert(1, 999); // -> [1, 999, 2, 3]
+z; // -> [1, 999, 2, 3]
+y; // -> [1, 999, 2, 3]
+(z == y); // -> true
+(z === y); // -> true
+::
+
+method::boundedInsert
+Changes the receiver but maintains its size, therefore unlike code::.insert:: it is not necessary to reassign the result of code::.boundedInsert::.
+
+code::
+// .boundedInsert never returns a new object  
+// because inserting a new item never exceeds the maxSize.  
+z = [1, 2, 3, 4];            // -> [1, 2, 3, 4]
+y = z.boundedInsert(1, 999); // -> [1, 999, 2, 3]
+z;                           // -> [1, 999, 2, 3]
+y;                           // -> [1, 999, 2, 3]
+z == y;                      // -> true
+(z === y);                   // -> true
+y = y.boundedInsert(20, \a); // -> [1, 999, 2, a]
+z = z.boundedInsert(-2, \b); // -> [b, 1, 999, 2]
 ::
 
 method::move

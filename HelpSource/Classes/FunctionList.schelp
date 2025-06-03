@@ -61,7 +61,7 @@ code::
 // example
 
 a = nil;
-a = a.addFunc { |x = "", y = ""| "this % is an % example\n".postf(x, y); 1 };
+a = a.addFunc { |x = "", y = ""| "this % is an % example\n".postf(x, y); 1 };
 a.postln;
 a = a.addFunc { |x = "", y = ""| "there is no % that is %\n".postf(x, y); 2 };
 a.value;
@@ -110,6 +110,7 @@ a.value
 a = a.flop;
 a.value
 a.value([-1, 1])
+a.value(x:[-1, 1]); // kwargs
 ::
 
 code::

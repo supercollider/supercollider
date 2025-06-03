@@ -383,7 +383,7 @@ int prFilePos(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
     PyrFile* pfile;
     FILE* file;
-    long length;
+    std::int64_t length;
 
     a = g->sp;
     pfile = (PyrFile*)slotRawObject(a);

@@ -873,12 +873,12 @@ int prSimpleNumberSeries(struct VMGlobals* g, int numArgsPushed) {
         PyrSlot* slots = obj->slots;
         if (first == 0. && step == 1.) {
             // Faster iteration for common case
-            for (long i = 0; i < size; ++i) {
+            for (std::int64_t i = 0; i < size; ++i) {
                 SetFloat(slots + i, i);
             }
         } else {
             double val = first;
-            for (long i = 0; i < size; ++i) {
+            for (std::int64_t i = 0; i < size; ++i) {
                 val = first + step * i;
                 SetFloat(slots + i, val);
             }

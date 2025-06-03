@@ -364,7 +364,7 @@ Server {
 	var <defaultGroup, <defaultGroups;
 
 	var <syncThread, <syncTasks;
-	var <window, <>scopeWindow, <serverMeter, <emacsbuf, <plotTreeWindow;
+	var <window, <>scopeWindow, <serverMeter, <emacsbuf, <nodeTreeView;
 	var <volume, <recorder, <statusWatcher;
 	var <pid, serverInterface;
 	var pidReleaseCondition;
@@ -972,7 +972,8 @@ Server {
 		}, onFailure: onFailure ? false);
 
 		if(remoteControlled) {
-			"You will have to manually boot remote server.".postln;
+			"*** %: can't boot a remote server - "
+			"You will have to boot it on its machine.".postf(this);
 		} {
 			this.prPingApp({
 				this.quit;
@@ -1064,7 +1065,7 @@ Server {
 	}
 
 	reboot { |func, onFailure| // func is evaluated when server is off
-		if(isLocal.not) { "can't reboot a remote server".postln; ^this };
+		if(remoteControlled) { "*** %: can't reboot a remote server".postf(this); ^this };
 		if(statusWatcher.serverRunning and: { this.unresponsive.not }) {
 			this.quit({
 				func.value;
@@ -1115,6 +1116,10 @@ Server {
 	quit { |onComplete, onFailure, watchShutDown = true|
 		var func;
 
+		if (remoteControlled) {
+			"*** %: can't quit a remote server.\n\n".postf(this);
+			^this
+		};
 		addr.sendMsg("/quit");
 
 		if(this.unresponsive) {

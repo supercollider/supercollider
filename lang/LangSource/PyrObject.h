@@ -28,6 +28,7 @@ PyrObject represents the structure of all SC Objects.
 #include "PyrSlot.h"
 
 #include <vector>
+#include <cstdint>
 
 /* special gc colors */
 enum {
@@ -265,9 +266,11 @@ void getIndexedSlot(struct PyrObject* obj, PyrSlot* a, int index);
 int putIndexedSlot(struct VMGlobals* g, struct PyrObject* obj, PyrSlot* c, int index);
 int putIndexedFloat(PyrObject* obj, double val, int index);
 
-inline long ARRAYMAXINDEXSIZE(PyrObjectHdr* obj) { return (1L << obj->obj_sizeclass); }
+inline std::int64_t ARRAYMAXINDEXSIZE(PyrObjectHdr* obj) { return (1LL << obj->obj_sizeclass); }
 
-inline long MAXINDEXSIZE(PyrObjectHdr* obj) { return ((1L << obj->obj_sizeclass) * gFormatElemCapc[obj->obj_format]); }
+inline std::int64_t MAXINDEXSIZE(PyrObjectHdr* obj) {
+    return ((1LL << obj->obj_sizeclass) * gFormatElemCapc[obj->obj_format]);
+}
 
 std::tuple<int, std::vector<std::string>> PyrCollToVectorStdString(PyrObject* coll);
 

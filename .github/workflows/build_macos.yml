@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - job-name: "arm64"
+          - job-name: "arm64  with ctest"
             os-version: "15"
             xcode-version: "16.0"
             qt-version: "6.7.3" # will use qt from aqtinstall
@@ -25,8 +25,9 @@ jobs:
             vcpkg-triplet: ""
             extra-cmake-flags: "" # -D SC_VERIFY_APP=ON # verify app doesn't seem to work with official qt6
             artifact-suffix: "macOS-arm64"
+            ctest: true
 
-          - job-name: "x64"
+          - job-name: "x64 with ctest"
             os-version: "13"
             xcode-version: "15.2"
             qt-version: "6.7.3" # will use qt from aqtinstall
@@ -38,6 +39,7 @@ jobs:
             vcpkg-triplet: ""
             extra-cmake-flags: "" # -D SC_VERIFY_APP=ON # verify app doesn't seem to work with official qt6
             artifact-suffix: "macOS-x64"
+            ctest: true
 
           - job-name: "x64 legacy"
             os-version: "13"
@@ -54,8 +56,9 @@ jobs:
             vcpkg-triplet: x64-osx-release-supercollider # required for build-libsndfile
             extra-cmake-flags: ""
             artifact-suffix: "macOS-x64-legacy" # set if needed - will trigger artifact upload
+            ctest: false
 
-          - job-name: "arm64 use system libraries"
+          - job-name: "arm64 use system libraries with ctest"
             os-version: "15"
             xcode-version: "16.0"
             deployment-target: ""
@@ -64,6 +67,7 @@ jobs:
             vcpkg-packages: ""
             vcpkg-triplet: ""
             extra-cmake-flags: "-D SYSTEM_BOOST=ON -D SYSTEM_YAMLCPP=ON"
+            ctest: true
 
           - job-name: "x64 shared libscsynth"
             os-version: "13"
@@ -76,6 +80,7 @@ jobs:
             vcpkg-packages: ""
             vcpkg-triplet: ""
             extra-cmake-flags: "-D LIBSCSYNTH=ON"
+            ctest: false
 
     name: macOS ${{ matrix.job-name }}
     env:
@@ -208,3 +213,8 @@ jobs:
         with:
           name: ${{ env.ARTIFACT_FILE }}
           path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
+
+      - name: Run CTests
+        continue-on-error: true
+        if: matrix.ctest
+        run: cmake --build $BUILD_PATH --config Release --target RUN_TESTS

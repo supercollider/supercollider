@@ -20,6 +20,7 @@ jobs:
             cxx-compiler: "g++-9"
             use-syslibs: false
             shared-libscsynth: false
+            ctest: false
 
           - job-name: ""
             os-version: "22.04"
@@ -27,21 +28,24 @@ jobs:
             cxx-compiler: "g++-11"
             use-syslibs: false
             shared-libscsynth: false
+            ctest: false
 
-          - job-name: ""
+          - job-name: "with ctest"
             os-version: "22.04"
             c-compiler: "gcc-12"
             cxx-compiler: "g++-12"
             use-syslibs: false
             shared-libscsynth: false
             artifact-suffix: "ubuntu-22.04-gcc12" # will trigger artifact upload; after changing this update the test-linux artifact-file in actions.yml
+            ctest: true
 
-          - job-name: "use system libraries"
+          - job-name: "use system libraries with ctest"
             os-version: "24.04"
             c-compiler: "gcc-13"
             cxx-compiler: "g++-13"
             use-syslibs: true
             shared-libscsynth: false
+            ctest: true
 
           - job-name: "shared libscsynth"
             os-version: "24.04"
@@ -49,6 +53,7 @@ jobs:
             cxx-compiler: "g++-14"
             use-syslibs: false
             shared-libscsynth: true
+            ctest: false
             
           - job-name: ""
             os-version: "22.04"
@@ -56,6 +61,7 @@ jobs:
             cxx-compiler: "clang++-11"
             use-syslibs: false
             shared-libscsynth: false
+            ctest: false
 
           - job-name: ""
             os-version: "24.04"
@@ -63,6 +69,7 @@ jobs:
             cxx-compiler: "clang++-15"
             use-syslibs: false
             shared-libscsynth: false
+            ctest: false
 
           - job-name: ""
             os-version: "24.04"
@@ -70,6 +77,7 @@ jobs:
             cxx-compiler: "clang++-16"
             use-syslibs: false
             shared-libscsynth: false
+            ctest: false
 
           - job-name: ""
             os-version: "24.04"
@@ -77,13 +85,15 @@ jobs:
             cxx-compiler: "clang++-17"
             use-syslibs: false
             shared-libscsynth: false
+            ctest: false
 
-          - job-name: ""
+          - job-name: "with ctest"
             os-version: "24.04"
             c-compiler: "clang-18"
             cxx-compiler: "clang++-18"
             use-syslibs: false
             shared-libscsynth: false
+            ctest: true
 
     name: Ubuntu ${{ matrix.os-version }} ${{ matrix.c-compiler }} ${{ matrix.job-name }}
     env:
@@ -149,6 +159,7 @@ jobs:
           cd $BUILD_PATH
           make install -j2
 
+
       - name: create archive
         if: matrix.artifact-suffix
         run: cd $INSTALL_PATH && zip --symlinks -r $ARTIFACT_FILE.zip .
@@ -159,3 +170,21 @@ jobs:
         with:
           name: ${{ env.ARTIFACT_FILE }}
           path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}.zip
+
+      - name: Configure CTests
+        if: matrix.ctest
+        run: |
+          cd $BUILD_PATH
+          sudo apt-get install --yes xvfb jackd1 socat
+          # start jack
+          jackd --no-realtime --silent -d dummy &
+
+          # start virtual display server
+          export DISPLAY=:99
+          echo "DISPLAY=$DISPLAY" >> $GITHUB_ENV
+          Xvfb $DISPLAY -screen 0 1024x768x16 &
+
+      - name: Run CTests
+        continue-on-error: true
+        if: matrix.ctest
+        run: cmake --build $BUILD_PATH --config Release --target test

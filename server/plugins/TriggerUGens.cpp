@@ -228,6 +228,7 @@ void SetResetFF_next_k(SetResetFF* unit, int inNumSamples);
 
 void ToggleFF_Ctor(ToggleFF* unit);
 void ToggleFF_next(ToggleFF* unit, int inNumSamples);
+void ToggleFF_next_ak(ToggleFF* unit, int inNumSamples);
 
 void Latch_Ctor(Latch* unit);
 void Latch_next_ak(Latch* unit, int inNumSamples);
@@ -899,7 +900,11 @@ void SetResetFF_next_k(SetResetFF* unit, int inNumSamples) {
 
 
 void ToggleFF_Ctor(ToggleFF* unit) {
-    SETCALC(ToggleFF_next);
+    if (unit->mCalcRate == calc_FullRate && INRATE(0) != calc_FullRate) {
+        SETCALC(ToggleFF_next_ak);
+    } else {
+        SETCALC(ToggleFF_next);
+    }
 
     unit->m_prevtrig = 0.f;
     unit->mLevel = 0.f;
@@ -907,7 +912,6 @@ void ToggleFF_Ctor(ToggleFF* unit) {
     unit->m_prevtrig = 0.f;
     unit->mLevel = 0.f;
 }
-
 
 void ToggleFF_next(ToggleFF* unit, int inNumSamples) {
     float* out = ZOUT(0);
@@ -917,6 +921,22 @@ void ToggleFF_next(ToggleFF* unit, int inNumSamples) {
 
     LOOP1(inNumSamples, float curtrig = ZXP(trig); if (prevtrig <= 0.f && curtrig > 0.f) level = 1.f - level;
           ZXP(out) = level; prevtrig = curtrig;);
+
+    unit->m_prevtrig = prevtrig;
+    unit->mLevel = level;
+}
+
+void ToggleFF_next_ak(ToggleFF* unit, int inNumSamples) {
+    float* out = ZOUT(0);
+    float curtrig = ZIN0(0);
+    float prevtrig = unit->m_prevtrig;
+    float level = unit->mLevel;
+
+    if (prevtrig <= 0.f && curtrig > 0.f)
+        level = 1.f - level;
+    prevtrig = curtrig;
+    LOOP1(inNumSamples, ZXP(out) = level;);
+
     unit->m_prevtrig = prevtrig;
     unit->mLevel = level;
 }
@@ -1456,8 +1476,11 @@ void Sweep_Ctor(Sweep* unit) {
         }
     }
 
-    unit->m_previn = ZIN0(0);
-    ZOUT0(0) = unit->mLevel = 0.f;
+    unit->m_previn = 0.f;
+    unit->mLevel = 0.f;
+    Sweep_next_aa(unit, 1);
+    unit->m_previn = 0.f;
+    unit->mLevel = 0.f;
 }
 
 void Sweep_next_0k(Sweep* unit, int inNumSamples) {
@@ -1465,7 +1488,7 @@ void Sweep_next_0k(Sweep* unit, int inNumSamples) {
     double rate = ZIN0(1) * SAMPLEDUR;
     double level = unit->mLevel;
 
-    LOOP1(inNumSamples, level += rate; ZXP(out) = level;);
+    LOOP1(inNumSamples, ZXP(out) = level; level += rate);
 
     unit->mLevel = level;
 }
@@ -1476,7 +1499,7 @@ void Sweep_next_0a(Sweep* unit, int inNumSamples) {
     double level = unit->mLevel;
     float sampledur = SAMPLEDUR;
 
-    LOOP1(inNumSamples, float zrate = ZXP(rate) * sampledur; level += zrate; ZXP(out) = level;);
+    LOOP1(inNumSamples, float step = ZXP(rate) * sampledur; ZXP(out) = level; level += step);
 
     unit->mLevel = level;
 }
@@ -1484,16 +1507,18 @@ void Sweep_next_0a(Sweep* unit, int inNumSamples) {
 void Sweep_next_kk(Sweep* unit, int inNumSamples) {
     float* out = ZOUT(0);
     float curin = ZIN0(0);
-    double rate = ZIN0(1) * SAMPLEDUR;
+    double step = ZIN0(1) * SAMPLEDUR;
     float previn = unit->m_previn;
     double level = unit->mLevel;
 
     if (previn <= 0.f && curin > 0.f) {
+        // note: frac calculation is wrong
         float frac = -previn / (curin - previn);
-        level = frac * rate;
+        // also, we are applying current rate to previous increment, which is not formally correct
+        level = frac * step;
     }
 
-    LOOP1(inNumSamples, level += rate; ZXP(out) = level;);
+    LOOP1(inNumSamples, ZXP(out) = level; level += step);
 
     unit->m_previn = curin;
     unit->mLevel = level;
@@ -1508,11 +1533,13 @@ void Sweep_next_ka(Sweep* unit, int inNumSamples) {
     float sampledur = SAMPLEDUR;
 
     if (previn <= 0.f && curin > 0.f) {
+        // note: frac calculation is wrong
         float frac = -previn / (curin - previn);
+        // also, we are applying current rate to previous increment, which is not formally correct
         level = frac * rate[ZOFF] * sampledur;
     }
 
-    LOOP1(inNumSamples, float zrate = ZXP(rate) * sampledur; level += zrate; ZXP(out) = level;);
+    LOOP1(inNumSamples, float step = ZXP(rate) * sampledur; ZXP(out) = level; level += step;);
 
     unit->m_previn = curin;
     unit->mLevel = level;
@@ -1521,16 +1548,18 @@ void Sweep_next_ka(Sweep* unit, int inNumSamples) {
 void Sweep_next_ak(Sweep* unit, int inNumSamples) {
     float* out = ZOUT(0);
     float* in = ZIN(0);
-    double rate = ZIN0(1) * SAMPLEDUR;
+    double step = ZIN0(1) * SAMPLEDUR;
     float previn = unit->m_previn;
     double level = unit->mLevel;
 
     LOOP1(
         inNumSamples, float curin = ZXP(in); if (previn <= 0.f && curin > 0.f) {
+            // note: frac calculation is wrong
             float frac = -previn / (curin - previn);
-            level = frac * rate;
-        } else { level += rate; } ZXP(out) = level;
-        previn = curin;);
+            // also, we are applying current rate to previous increment, which is not formally correct
+            level = frac * step;
+        } ZXP(out) = level;
+        level += step; previn = curin;);
 
     unit->m_previn = previn;
     unit->mLevel = level;
@@ -1545,11 +1574,13 @@ void Sweep_next_aa(Sweep* unit, int inNumSamples) {
     float sampledur = SAMPLEDUR;
 
     LOOP1(
-        inNumSamples, float curin = ZXP(in); float zrate = ZXP(rate) * sampledur; if (previn <= 0.f && curin > 0.f) {
+        inNumSamples, float curin = ZXP(in); float step = ZXP(rate) * sampledur; if (previn <= 0.f && curin > 0.f) {
+            // note: frac calculation is wrong
             float frac = -previn / (curin - previn);
-            level = frac * zrate;
-        } else { level += zrate; } ZXP(out) = level;
-        previn = curin;);
+            // also, we are applying current rate to previous increment, which is not formally correct
+            level = frac * step;
+        } ZXP(out) = level;
+        level += step; previn = curin;);
 
     unit->m_previn = previn;
     unit->mLevel = level;
@@ -1572,8 +1603,13 @@ void Phasor_Ctor(Phasor* unit) {
         SETCALC(Phasor_next_ak);
     }
 
-    unit->m_previn = ZIN0(0);
-    ZOUT0(0) = unit->mLevel = ZIN0(2);
+    unit->m_previn = 0;
+    float initLevel = unit->mLevel = IN0(2);
+
+    unit->mCalcFunc(unit, 1);
+
+    unit->m_previn = 0;
+    unit->mLevel = initLevel;
 }
 
 void Phasor_next_kk(Phasor* unit, int inNumSamples) {
