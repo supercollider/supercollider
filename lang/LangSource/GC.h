@@ -30,6 +30,7 @@ Based on Wilson and Johnstone's real time collector and the Baker treadmill.
 #include "VMGlobals.h"
 #include "AdvancingAllocPool.h"
 #include "function_attributes.h"
+#include <cstdint>
 
 void DumpSimpleBackTrace(VMGlobals* g);
 
@@ -37,7 +38,7 @@ const int kMaxPoolSet = 7;
 const int kNumGCSizeClasses = 28;
 const int kFinalizerSet = kNumGCSizeClasses;
 const int kNumGCSets = kNumGCSizeClasses + 1;
-const int kScanThreshold = 256;
+const std::int64_t kScanThreshold = 256LL;
 
 
 class GCSet {
@@ -197,7 +198,7 @@ private:
     PyrObjectHdr mGrey;
 
     int32 mPartialScanSlot;
-    int32 mNumToScan;
+    std::int64_t mNumToScan;
     int32 mNumGrey;
 
     int32 mFlips, mCollects, mAllocTotal, mScans, mNumAllocs, mStackScans, mNumPartialScans, mSlotsScanned,
@@ -303,9 +304,9 @@ inline void PyrGC::ToGrey2(PyrObjectHdr* obj) {
 }
 
 inline PyrObject* PyrGC::Allocate(size_t inNumBytes, int32 sizeclass, bool inRunCollection) {
-    if (inRunCollection && mNumToScan >= kScanThreshold)
+    if (inRunCollection && mNumToScan >= kScanThreshold) {
         Collect();
-    else {
+    } else {
         if (inRunCollection)
             mUncollectedAllocations = 0;
         else
