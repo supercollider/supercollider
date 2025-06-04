@@ -217,12 +217,12 @@ a.size // 9
 The SuperCollider IDE uses UTF-8 to decode and display strings.
 See link::Classes/String#Character encodings##String:: for more information.
 
-A string literal may comprise no more than 8188 characters (bytes). A
+A string literal may comprise no more than 81916 characters (bytes). A
 string object can be larger as a result of string operations.
 
 code::
 // artificially generate a long string
-a = String.fill(9000, { "abcdefghijklmnopqrstuvwxyz".choose });
+a = String.fill(81920, { "abcdefghijklmnopqrstuvwxyz".choose });
 
 // wrap it in quote marks to make it a literal
 a = "\"" ++ a ++ "\"";
@@ -230,7 +230,7 @@ a = "\"" ++ a ++ "\"";
 // interpret the literal
 b = a.interpret;
 
-b.size;  // 8188 and NOT 9000
+b.size;  // 81916 and NOT 81920
 ::
 
 section::Identifiers
