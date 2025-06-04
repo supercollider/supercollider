@@ -9,7 +9,11 @@ OSXPlatform : UnixPlatform {
 	}
 
 	name { ^\osx }
-	version { ^"sw_vers -productVersion".unixCmdGetStdOut.replace($\n, "") }
+	version { 
+		var version = "sw_vers -productVersion".unixCmdGetStdOut.replace($\n, "");
+		var architecture = "uname -m".unixCmdGetStdOut.replace($\n, "");
+		^"% (%)".format(version, architecture);
+	}
 
 	startupFiles {
 		var filename = "startup.rtf";
