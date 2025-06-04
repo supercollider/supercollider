@@ -77,6 +77,16 @@ OSXPlatform : UnixPlatform {
 		file.close;
 	}
 
+	killProcessByID { |pid, force = true, subprocesses = true|
+		var cmd;
+		var sig = force.if({"KILL"}, {"TERM"});
+		cmd = "kill -% %".format(sig, pid);
+		if(subprocesses) {
+			cmd = "pkill -% -P %; %".format(sig, pid, cmd);
+		};
+		cmd.unixCmd;
+	}
+
 	defaultTempDir {
 		var dir;
 		// ensure trailing slash due to backwards compatibility

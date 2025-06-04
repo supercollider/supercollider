@@ -51,8 +51,8 @@ public:
             g->allocPool->Free(objectArray);
     }
 
-    long doDeepFreeze(PyrSlot* objectSlot) {
-        long err = errNone;
+    std::int64_t doDeepFreeze(PyrSlot* objectSlot) {
+        std::int64_t err = errNone;
 
         try {
             if (IsObj(objectSlot)) {

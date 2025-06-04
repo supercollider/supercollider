@@ -666,13 +666,13 @@ The default is `teletype::nil::`, and the scope window will appear near the bott
 
 method:: plotTree
 Plot the node/group tree in a graphical format, similar to link::#-queryAllNodes::.
-This creates a singleton window containing link::Classes/ServerTreeView::.
+This creates a singleton window containing link::Classes/NodeTreeView::.
 
 note::
-To use multiple instances of link::Classes/ServerTreeView:: per link::Classes/Server:: instance or workspace, refer to the link::Classes/ServerTreeView#examples#Examples in ServerTreeView Documentation::.
+To use multiple instances of link::Classes/NodeTreeView:: per link::Classes/Server:: instance or workspace, refer to the link::Classes/NodeTreeView#examples#Examples in NodeTreeView Documentation::.
 ::
 
-The method returns a link::Classes/Server:: (the receiver of this call), and the created windows can be accessed via the link::#-plotTreeWindow::.
+The method returns a link::Classes/Server:: (the receiver of this call), and the created link::Classes/View:: instance can be accessed via the link::#-nodeTreeView::.
 
 note::
 If the server is not running, the window containing teletype::plotTree:: will briefly appear and then close, displaying the following message in the Post window:
@@ -683,10 +683,24 @@ WARNING: Server failed to respond to Group:queryTree!
 ::
 
 code::
-s.boot; // starts the SuperCollider server.
+// start the SuperCollider server:
+s.boot
 
-// Open a plotTree window named ~pTree with a default refresh rate of 0.5 seconds:
-~pTree = s.plotTree;
+// Open a plotTree window with a default refresh rate of 0.5 seconds:
+s.plotTree
+
+// Close it:
+s.nodeTreeView.close
+
+// Open a plotTree window named ~pTree with a default refresh rate:
+~pTree = s.plotTree
+
+// Close the plotTree window associated with ~pTree:
+~pTree.close
+::
+
+code::
+~pTree = s.plotTree
 
 // Define and play a repeating pattern that generates a new synth every 0.4 seconds:
 x = Pn((dur: 0.4, midinote: 69, amp: 0.1)).play;
@@ -698,10 +712,16 @@ and upon each refresh, it retains the previous node while adding a new one.
 This results in the display of one or two subsequent nodes at each interval.
 */
 
-x.stop; // stops the playback of the pattern.
+// stop updating plotTree:
+~pTree.stop
 
-// Close the plotTree window associated with ~pTree:
-~pTree.plotTreeWindow.close;
+// start updating plotTree:
+~pTree.start
+
+// stop the playback of the pattern:
+x.stop
+
+~pTree.close
 ::
 argument:: interval
 Polling interval.
@@ -714,21 +734,23 @@ s.waitForBoot {
 	// Define and play a repeating pattern that generates a new synth every 0.5 seconds:
 	x = Pn((dur: 0.5, midinote: 69, amp: 0.1)).play;
 
-	/* Since the plotTree window refreshes every 2 seconds,
+	/*
+	Since the plotTree window refreshes every 2 seconds,
 	displaying only the most recent node,
 	the first node will appear after a 2-second delay (once four notes have played),
 	meaning only every fourth synth node is visible.
 	*/
 
-	5.wait; // waits for 5 seconds.
+	5.wait; // wait for 5 seconds.
 
-	plotTree.plotTreeWindow.close; // closes the plotTree window
-	x.stop; // stops the playback of the pattern
+	x.stop; // stop the playback of the pattern
+
+	2.wait; // wait for 2 seconds.
+
+	plotTree.close; // close the plotTree window
 }
 )
 ::
-
-
 argument:: bounds
 The bounds of the teletype::s.plotTree:: window.
 A Rect specifying position and size of the window.
@@ -742,13 +764,13 @@ s.plotTree;
 
 // Move plotTree window to the defined position with defined size:
 s.plotTree(2, Rect(200, 200, 100, 200));
-// <- The size (width: 100; height: 200) is smaller than the minimum size, so the size will be ajusted.
+// <- The size (width: 100; height: 200) is smaller than the minimum size, so the size will be adjusted.
 
 s.plotTree; // brings the plotTree window to the front without changing its position or size.
 ::
 
-method:: plotTreeWindow
-See link::#-plotTree::.
+method:: nodeTreeView
+An Instance of link::Classes/NodeTreeView:: that is created by the link::#-plotTree:: method.
 
 method:: plotTreeView
 Plot the node/group tree graphically on a given view.

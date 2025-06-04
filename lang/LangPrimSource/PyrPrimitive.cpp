@@ -840,6 +840,17 @@ void reallocStack(struct VMGlobals* g, int stackNeeded, int stackDepth) {
     g->sp = array->slots + stackDepth - 1;
 }
 
+bool maybeReallocStack(struct VMGlobals* g, int toAppend) {
+    PyrObject* stack = g->gc->Stack();
+    int stackDepth = g->sp - stack->slots + 1;
+    int stackSize = ARRAYMAXINDEXSIZE(stack);
+    int stackNeeded = stackDepth + toAppend + 64; // 64 to allow extra for normal stack operations.
+    const bool realloc = stackNeeded > stackSize;
+    if (realloc)
+        reallocStack(g, stackNeeded, stackDepth);
+    return realloc;
+}
+
 
 int blockValueArray(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* b;
@@ -1035,10 +1046,14 @@ int blockValueEnvirWithKeys(VMGlobals* g, int allArgsPushed, int numKeyArgsPushe
 
 template <class SendMessageImpl>
 int objectPerformArgsImpl(struct VMGlobals* g, int numArgsPushed, SendMessageImpl&& sendMessageImpl) {
-    auto receiverSlot = g->sp - numArgsPushed + 1;
-    auto selectorSlot = receiverSlot + 1;
-    auto argsArraySlot = selectorSlot + 1;
-    auto kwargsArraySlot = argsArraySlot + 1;
+    PyrSlot *receiverSlot, *selectorSlot, *argsArraySlot, *kwargsArraySlot;
+    const auto initKnownSlots = [&]() {
+        receiverSlot = g->sp - numArgsPushed + 1;
+        selectorSlot = receiverSlot + 1;
+        argsArraySlot = selectorSlot + 1;
+        kwargsArraySlot = argsArraySlot + 1;
+    };
+    initKnownSlots();
 
     if (!IsSym(selectorSlot)) {
         char str[128];
@@ -1081,6 +1096,9 @@ int objectPerformArgsImpl(struct VMGlobals* g, int numArgsPushed, SendMessageImp
         g->numpop = 0;
         return errNone;
     }
+
+    if (maybeReallocStack(g, argsSize + kwSize))
+        initKnownSlots();
 
     if (argsSize > 0)
         std::copy(argsArray->slots, argsArray->slots + argsSize, selectorSlot);
@@ -1481,18 +1499,8 @@ int performListTemplate(struct VMGlobals* g, int numArgsPushed, int numKeyArgsPu
     }();
 
     // realloc stack if needed.
-    if (array->size > 0) {
-        auto stack = g->gc->Stack();
-        int stackDepth = static_cast<int>(g->sp - stack->slots + 1);
-        int stackSize = static_cast<int>(ARRAYMAXINDEXSIZE(stack));
-        int stackNeeded = stackDepth + array->size + 64; // 64 to allow extra for normal stack operations.
-        assert(stackDepth >= 0);
-        assert(stackSize >= 0);
-        assert(stackNeeded >= 0);
-        if (stackNeeded > stackSize) {
-            reallocStack(g, stackNeeded, stackDepth);
-            receiverSlot = g->sp - rollingNumArgsOnStack + 1;
-        }
+    if (array->size > 0 && maybeReallocStack(g, array->size)) {
+        receiverSlot = g->sp - rollingNumArgsOnStack + 1;
     }
 
     // copy remaining args next to receiver, overwriting the selector

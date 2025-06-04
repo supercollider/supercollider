@@ -118,7 +118,7 @@ public:
     typedef void (*ClientNotifyFunc)(void* clientData);
 
 public:
-    TCP(unsigned long inAddress, int inPort, HandlerType, ClientNotifyFunc notifyFunc = 0, void* clientData = 0);
+    TCP(std::uint64_t inAddress, int inPort, HandlerType, ClientNotifyFunc notifyFunc = 0, void* clientData = 0);
     int Close();
 
     boost::asio::ip::tcp::socket& Socket() { return mSocket; }

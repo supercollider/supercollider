@@ -81,6 +81,8 @@ copymethod:: ArrayedCollection -put
 
 copymethod:: ArrayedCollection -insert
 
+copymethod:: ArrayedCollection -boundedInsert
+
 copymethod:: ArrayedCollection -clipAt
 
 copymethod:: ArrayedCollection -wrapAt
