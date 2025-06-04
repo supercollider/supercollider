@@ -1349,7 +1349,7 @@ Server {
 	}
 
 	rtMemoryStatus { |action|
-		var resp, done = false;
+		var resp, freeKb, done = false;
 		if (this.serverRunning.not) {
 			"server '%' not running".format(this.name).warn;
 			^this
@@ -1357,7 +1357,7 @@ Server {
 		resp = OSCFunc({ |msg| 
 			done = true;
 			if (action.notNil) { action.value(*msg.drop(1)) } {
-				var freeKb = msg[1] / 1024;
+				freeKb = msg[1] / 1024;
 				"Used RT memory: % kb".format(options.memSize - freeKb).postln;
 				"Free RT memory: % kb".format(freeKb).postln;
 				"Largest free chunk: % kb".format(msg[2] / 1024).postln;

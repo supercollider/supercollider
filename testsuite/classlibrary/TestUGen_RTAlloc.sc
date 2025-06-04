@@ -284,23 +284,25 @@ TestUGen_RTAlloc : UnitTest {
 		var blockSize = server.options.blockSize;
 		var smallBuf = Buffer.alloc(server, blockSize);
 		var bigBuf = Buffer.alloc(server, nextPowerOfTwo(this.memSizeFloats) * 2);
+		var noneIsInvalid, out;
 
 		var testAllocPass = { |ugen, testFunc|
 			var out = this.awaitSynthOutput(testFunc, blockSize * 4);
 			if (out.isNil) {
 				this.assert(false, "% successful alloc test should complete".format(ugen));
 			} {
-				var noneIsInvalid = out.drop(1).any(_ == (-1)).not;
+				noneIsInvalid = out.drop(1).any(_ == (-1)).not;
 				this.assert(noneIsInvalid, "% successful alloc should return a valid bufnum".format(ugen));
 			};
 		};
 
 		var testAllocFail = { |ugen, testFunc|
-			var out = this.awaitSynthOutput(testFunc, blockSize * 4);
+			var allInvalid;
+			out = this.awaitSynthOutput(testFunc, blockSize * 4);
 			if (out.isNil) {
 				this.assert(false, "% failed alloc test should complete".format(ugen));
 			} {
-				var allInvalid = out.drop(1).every(_ == (-1));
+				allInvalid = out.drop(1).every(_ == (-1));
 				this.assert(allInvalid, "% should only return -1 on alloc fail".format(ugen));
 			};
 		};

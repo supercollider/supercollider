@@ -17,12 +17,11 @@ TestCollection : UnitTest {
 		var testable = Collection.allSubclasses.reject(rejectList.includes(_));
 
 		testable.do { |c|
-			var obj;
+			var obj, r;
 			// only test classes than can be constructed like this.
 			try { obj = c.newFrom([1, 2]) };
-			obj !? {|o|
-			    var r;
-				try { r = o.remove(1) } { |e|
+			obj !? {
+				try { r = obj.remove(1) } { |e|
 				    // Ignore classes that explicitly don't implement remove.
 					if(e.isKindOf(ShouldNotImplementError)){
 					    r = \skip;
@@ -39,12 +38,11 @@ TestCollection : UnitTest {
 		};
 
 		testable.do { |c|
-        			var obj;
+        			var obj, r;
         			// only test classes than can be constructed like this.
         			try { obj = c.new };
-        			obj !? {|o|
-        			    var r;
-        				try { r = o.remove(1) } { |e|
+        			obj !? {
+        				try { r = obj.remove(1) } { |e|
         				    // Ignore classes that explicitly don't implement remove.
         					if(e.isKindOf(ShouldNotImplementError)){
         					    r = \skip;

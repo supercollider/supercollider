@@ -540,11 +540,13 @@ IdentityDictionary : Dictionary {
 	}
 
 	doesNotUnderstand { |selector... args, kwargs|
+		var sel, forward;
 		if (know.not) {
             ^this.superPerformArgs(\doesNotUnderstand, args, kwargs)
 		};
-        this[selector] !? { |func|
-			^func.performArgs(\functionPerformList, [\value, this, args], kwargs);
+        sel = this[selector];
+		sel !? {
+			^sel.performArgs(\functionPerformList, [\value, this, args], kwargs);
         };
 
         if (selector.isSetter) {
@@ -553,11 +555,12 @@ IdentityDictionary : Dictionary {
                 warn(selector.asCompileString
                     + "exists as a method name, so you can't use it as a pseudo-method.")
             };
-            ^this[selector] = args[0];
+            ^sel = args[0];
         };
 
-        this[\forward] !? { |func|
-			^func.performArgs(\functionPerformList, [\value, this, selector, args], kwargs);
+        forward = this[\forward];
+		forward !? {
+			^forward.performArgs(\functionPerformList, [\value, this, selector, args], kwargs);
         };
 
         ^nil

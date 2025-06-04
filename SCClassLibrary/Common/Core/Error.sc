@@ -184,9 +184,9 @@ DoesNotUnderstandError : MethodError {
 		receiver.dump;
 		"ARGS:\n".post;
 		args.dumpAll;
-		keywordArgumentPairs !? {|kw|
+		keywordArgumentPairs !? {
 			"KEYWORD ARGUMENTS:".postln;
-			kw.dumpAll;
+			keywordArgumentPairs.dumpAll;
 		};
 		this.errorPathString.post;
 		if(protectedBacktrace.notNil, { this.postProtectedBacktrace });

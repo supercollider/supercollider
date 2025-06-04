@@ -77,6 +77,10 @@ enum {
 
 extern AdvancingAllocPool gParseNodePool;
 
+// This value count the un-inlined functions, these are not desirable in the class library because they are slow.
+// There is a primitive that returns this value so it can be checked in sclang's unit tests.
+extern int gNumUninlinedFunctions;
+
 #define ALLOCNODE(type) (new (gParseNodePool.Alloc(sizeof(type))) type())
 #define ALLOCSLOTNODE(type, classno) (new (gParseNodePool.Alloc(sizeof(type))) type(classno))
 #define COMPILENODE(node, result, onTailBranch) (compileNode((node), (result), (onTailBranch)))
