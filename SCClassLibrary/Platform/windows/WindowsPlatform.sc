@@ -1,6 +1,6 @@
 WindowsPlatform : Platform {
 	name { ^\windows }
-	version { ^"[System.Environment]::OSVersion.Version".unixCmdGetStdOut }
+	version { ^"[System.Environment]::OSVersion.Version".unixCmdGetStdOut.replace($\n, "") }
 
 	startupFiles {
 		var deprecated = ["startup.sc", "~\\SuperCollider\\startup.sc".standardizePath];
