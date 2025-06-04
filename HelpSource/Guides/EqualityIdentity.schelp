@@ -1,17 +1,19 @@
 title:: Identity and Equality in SuperCollider
 summary:: Distinction between reference equality (identity, ===) and value equality (equality, ==) in SuperCollider
 categories:: Tutorials
-related:: TODO, Classes/Event, Classes/Float, Guides/Intro-to-Objects
+related:: Classes/Event, Classes/Float, Guides/Intro-to-Objects
 
 The distinction between identity and equality connects to wider issues in philosophy, logic, and computer science.footnote::
-For philosophcial background see link::https://plato.stanford.edu/archives/fall2022/entries/identity/##Noonan/Curtis 2022::. What SuperCollider calls Identity and Equality roughly correspond to what philosophy calls "numeric identity" and "relative identity," respectively; and more precisely, to what computer science calls "reference equality" and "value equality," respectively. (E.g., link::https://web.mit.edu/6.102/www/sp23/classes/10-equality/#reference_equality_vs_value_equality#Miller/Goldman 2023::, accessed May 2025.) ::
+For philosophical background see link::https://plato.stanford.edu/archives/fall2022/entries/identity/##Noonan/Curtis 2022::.
+What SuperCollider calls Identity and Equality roughly correspond to what philosophy calls "numeric identity" and "relative identity," respectively; and more precisely, to what computer science calls "reference equality" and "value equality," respectively.
+(E.g., link::https://web.mit.edu/6.102/www/sp23/classes/10-equality/#reference_equality_vs_value_equality#Miller/Goldman 2023::, accessed May 2025.) ::
 
 The present discussion is more narrowly concerned with an overview of how the distinction is understood in SuperCollider.
 
 section:: Two objects that are equal to each other are not necessarily identical.
 
 Note:: The word "object" here refers to emphasis::instances:: of classes, not to the abstract class link::Classes/Object::.
-See link::Guides/Intro-to-Objects::
+See link::Guides/Intro-to-Objects::.
 
 A factory may produce thousands of screwdrivers each day that are all emphasis::equal:: to each other with respect to some specification; but each single screwdriver is emphasis::identical:: only to itself (because it occupies this particular location at this particular time, or has a particular serial number stamped on it).
 Thus we can say that identity, the relation of an object to itself, is a stronger relation than equality, the relation of an object so some other object with respect to a common property.
@@ -102,9 +104,9 @@ however, in that case, keys should not be link::Classes/String::s, but link::Cla
 The following example demonstrates why:
 
 code::
-"String" == "String" // -> true
+"String" == "String"; // -> true
 //what happens next may surprise you:
-"String" === "String" // -> false
+"String" === "String"; // -> false
 //because each String object is a separate instance.
 
 //Dictionary with a String key (works):
@@ -164,4 +166,6 @@ code::
 To understand this behavior, we must know two things:
 First, instances of link::Classes/Function:: do not have unique representations, that is, like link::Classes/String:: (mentioned above), each code::{1}:: expression in the code is assigned a separate instance.
 Thus code::{1} === {1}:: will return code::false::.
-Second, emphasis::unlike:: link::Classes/String::, link::Classes/Function:: does not implement a code::==:: method, and therefore its code::==:: defaults to code::===::. code::{1} == {1}:: is thus really a question about whether the two functions designate the same object instance in memory, i.e. whether code::{1} === {1}::---which, as we just learned, returns code::false::.
+Second, emphasis::unlike:: link::Classes/String::, link::Classes/Function:: does not implement a code::==:: method, and therefore its code::==:: defaults to code::===::. 
+code::{1} == {1}:: is thus really a question about whether the two functions designate the same object instance in memory, 
+i.e. whether code::{1} === {1}::---which, as we just learned, returns code::false::.
