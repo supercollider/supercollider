@@ -219,29 +219,40 @@ Main : Process {
 				{ Server.program.contains("scsynth") } { "scsynth" }
 				{ Server.program.contains("supernova") } { "supernova" }
 				{ "unknown" },
-			includes: LanguageConfig.includePaths.collect {
-				|path|
+			includes: LanguageConfig.includePaths.collect { |path|
 				PathName(path).fileName
 			},
 		)
 	}
 	
-	*postBugReportInfo {
-		var keys = #[version, buildString, qtVersion, platform, platformVersion, argv, server, audioDevices, includes];
+	*postBugReportInfo { |includePaths=true, includeDevices=false|
 		var info = this.systemInformation;
-		keys.do {
-			|key|
-			var value = info[key];
-			if (value.isKindOf(Array)) {
-				"%:".format(key).postln;
-				value.do {
-					|item|
-					"    - %".format(item).postln
-				}
-			} {
-				"%: %".format(key, value.asString.stripWhiteSpace()).postln;
-			}
-		}
+
+		"Copy the content between the ### lines".postln;
+		"#".dup(40).join.postln;
+
+		"* SuperCollider version: % (%)".format(
+			info[\version],
+			info[\buildString],
+		).postln;
+		"* Operating system: % %".format(
+			info[\platform],
+			info[\platformVersion],
+		).postln;
+		"* Other details".postln;
+		"	* Qt version: %".format(info[\qtVersion]).postln;
+		"	* argv: %".format(info[\argv].join(" ")).postln;
+		"	* server: %".format(info[\server]).postln;
+
+		if(includePaths, {
+			"	* includes: %".format(info[\includes].join(", ")).postln;
+		});
+
+		if(includeDevices, {
+			"	* devices: %".format(info[\audioDevices].join(", ")).postln;
+		});
+		
+		"#".dup(40).join.postln;
 	}
 
 	pid {
