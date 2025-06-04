@@ -56,7 +56,7 @@ QC_LANG_PRIMITIVE(QtGUI_DebugLevel, 0, PyrSlot* r, PyrSlot* a, VMGlobals* g) {
 }
 
 QC_LANG_PRIMITIVE(Qt_Version, 0, PyrSlot* r, PyrSlot* a, VMGlobals* g) {
-    auto version = QString{qVersion()};
+    auto version = QString { qVersion() };
     QtCollider::set(r, version);
     return errNone;
 }
