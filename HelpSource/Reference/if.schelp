@@ -47,6 +47,15 @@ code::
 )
 ::
 
+Further explanations can be found in the following parts of the link::Guides/UserFAQ:::
+list::
+## 'If' statements inside a SynthDef
+## link::Guides/UserFAQ#What is a Boolean in the server?::
+## Why is x ＞ 0 'non-Boolean' in the 'test'?
+## link::Guides/UserFAQ#If you can't branch, what good is a comparison in the server?::
+## link::Guides/UserFAQ#Logical operators: And, Or, Not, Xor::
+::
+
 section:: Optimization
 
 The functions will be inlined, which plucks the code from the functions and uses a more efficient jump statement.
