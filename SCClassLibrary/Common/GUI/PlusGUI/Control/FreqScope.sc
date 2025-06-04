@@ -374,12 +374,17 @@ FreqScope {
 			};
 
 			window = Window(
-				"Freq Analyzer",
-				rect.resizeBy(
-					pad[0] + pad[1] + 4,
-					pad[2] + pad[3] + 4
-				).moveTo(0, Platform.case(\windows, { 78 }, { 0 })),
-				false);
+ 				"Freq Analyzer",
+ 				rect.resizeBy(pad[0] + pad[1] + 4, pad[2] + pad[3] + 4
+ 				).moveTo(
+					5,
+					Platform.case(
+						\windows, { Window.screenBounds.height - Window.availableBounds.height * 1.6 },
+						{ 0 }
+						)
+					),
+				false
+			);
 
 			freqLabel.size.do({ arg i;
 				freqLabel[i] = StaticText(window, Rect(pad[0] - (freqLabelDist*0.5) + (i*freqLabelDist), pad[2] - 10, freqLabelDist, 10))

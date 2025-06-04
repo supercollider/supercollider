@@ -239,13 +239,14 @@ ServerMeter {
 		numOuts = numOuts ?? { server.options.numOutputBusChannels };
 
 		window = Window.new(
-			server.name ++ " levels (dBFS)",
-			Rect(
-				5,
-				376 + Platform.case(\windows, { 58 }, \linux, { 20 }, \osx, { 0 }),
-				ServerMeterView.getWidth(numIns, numOuts),
-				ServerMeterView.height),
-			false);
+ 			server.name ++ " levels (dBFS)",
+ 			Rect(
+ 				5,
+ 				376 + Platform.case(\windows, { 58 }, \linux, { 26 }, \osx, { 0 }),
+ 				ServerMeterView.getWidth(numIns, numOuts),
+ 				ServerMeterView.height
+				),
+ 			false);
 
 		meterView = ServerMeterView(server, window, 0@0, numIns, numOuts);
 		meterView.view.keyDownAction_( { arg view, char, modifiers;
