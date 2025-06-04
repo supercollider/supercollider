@@ -44,6 +44,7 @@
 namespace fs = std::filesystem;
 
 AdvancingAllocPool gParseNodePool;
+int gNumUninlinedFunctions = 0;
 
 PyrSymbol* gSpecialUnarySelectors[opNumUnarySelectors];
 PyrSymbol* gSpecialBinarySelectors[opNumBinarySelectors];
@@ -2230,6 +2231,7 @@ bool isAnInlineableBlock(PyrParseNode* node) {
         anode = (PyrPushLitNode*)node;
         if (IsPtr(&anode->mSlot) && (bnode = (PyrBlockNode*)(slotRawPtr(&anode->mSlot)))->mClassno == pn_BlockNode) {
             if (bnode->mArglist || bnode->mVarlist) {
+                gNumUninlinedFunctions += 1;
                 if (SC_LanguageConfig::getPostInlineWarnings()) {
                     post("WARNING: FunctionDef contains variable declarations and so"
                          " will not be inlined.\n");
@@ -2253,6 +2255,7 @@ bool isAnInlineableAtomicLiteralBlock(PyrParseNode* node) {
         anode = (PyrPushLitNode*)node;
         if (IsPtr(&anode->mSlot) && (bnode = (PyrBlockNode*)(slotRawPtr(&anode->mSlot)))->mClassno == pn_BlockNode) {
             if (bnode->mArglist || bnode->mVarlist) {
+                gNumUninlinedFunctions += 1;
                 if (SC_LanguageConfig::getPostInlineWarnings()) {
                     post("WARNING: FunctionDef contains variable declarations and so"
                          " will not be inlined.\n");

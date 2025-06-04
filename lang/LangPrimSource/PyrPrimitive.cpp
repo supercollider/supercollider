@@ -3334,6 +3334,12 @@ static int prVersionTweak(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
+int numUninlinedFunctionsInClassLib(struct VMGlobals* g, int numArgsPushed) {
+    PyrSlot* result = g->sp;
+    SetInt(result, gNumUninlinedFunctions);
+    return errNone;
+}
+
 
 #define PRIMGROWSIZE 480
 PrimitiveTable gPrimitiveTable;
@@ -3917,6 +3923,7 @@ void initPrimitives() {
     definePrimitive(base, index++, "_SC_VersionMinor", prVersionMinor, 1, 0);
     definePrimitive(base, index++, "_SC_VersionPatch", prVersionPatch, 1, 0);
     definePrimitive(base, index++, "_SC_VersionTweak", prVersionTweak, 1, 0);
+    definePrimitive(base, index++, "_NumUninlinedFunctionInClassLib", numUninlinedFunctionsInClassLib, 1, 0);
 
     // void initOscilPrimitives();
     // void initControllerPrimitives();
