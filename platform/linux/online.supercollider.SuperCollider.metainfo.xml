@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>io.github.supercollider.SuperCollider</id>
+  <id>online.supercollider.SuperCollider</id>
 
   <name>SuperCollider</name>
   <summary>SuperCollider is a platform for audio synthesis and algorithmic composition</summary>

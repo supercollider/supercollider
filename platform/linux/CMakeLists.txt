@@ -10,5 +10,5 @@ install(FILES ../../icons/sc_ide.svg
 install(FILES supercollider.xml
     DESTINATION share/mime/packages )
 
-install(FILES io.github.supercollider.SuperCollider.metainfo.xml
+install(FILES online.supercollider.SuperCollider.metainfo.xml
     DESTINATION share/metainfo )
