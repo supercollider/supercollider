@@ -216,13 +216,13 @@ Platform {
 		^(
 			version: Main.version,
 			buildString: Main.scBuildString,
-			qtVersion:  if(\QtGUI.asClass, { QtGUI.version }, { nil }),
+			qtVersion:  if(\QtGUI.asClass.isNil, { nil }, { QtGUI.version }),
 			platform: thisProcess.platform.name,
 			platformVersion: thisProcess.platform.version,
 			platformArchitecture: this.architecture,
 			argv: thisProcess.argv,
 			audioDevices: ServerOptions.devices,
-			server: case 
+			server: case
 				{ Server.program.contains("scsynth") } { "scsynth" }
 				{ Server.program.contains("supernova") } { "supernova" }
 				{ "unknown" },
@@ -231,7 +231,7 @@ Platform {
 			},
 		)
 	}
-	
+
 	*postBugReportInfo { |includePaths=true, includeDevices=false|
 		var info = this.systemInformation;
 
@@ -259,7 +259,7 @@ Platform {
 		if(includeDevices, {
 			"	* devices: %".format(info[\audioDevices].join(", ")).postln;
 		});
-		
+
 		"#".dup(40).join.postln;
 	}
 }
