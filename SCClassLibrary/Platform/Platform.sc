@@ -221,7 +221,7 @@ Platform {
 			platformVersion: thisProcess.platform.version,
 			platformArchitecture: this.architecture,
 			argv: thisProcess.argv,
-			audioDevices: ServerOptions.devices,
+			audioDevices: if(thisProcess.platform.name == \linux, {[]}, {ServerOptions.devices}),
 			server: case
 				{ Server.program.contains("scsynth") } { "scsynth" }
 				{ Server.program.contains("supernova") } { "supernova" }
