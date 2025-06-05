@@ -373,16 +373,8 @@ FreqScope {
 				});
 			};
 
-			window = Window(
- 				"Freq Analyzer",
- 				rect.resizeBy(pad[0] + pad[1] + 4, pad[2] + pad[3] + 4
- 				).moveTo(
-					5,
-					Platform.case(
-						\windows, { Window.screenBounds.height - Window.availableBounds.height * 1.6 },
-						{ 0 }
-						)
-					),
+			window = Window("Freq Analyzer", rect.resizeBy(pad[0] + pad[1] + 4, pad[2] + pad[3] + 4)
+				.moveTo(5, Window.screenBounds.height - Window.availableBounds.height * 1.6),
 				false
 			);
 
