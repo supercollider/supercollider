@@ -1060,6 +1060,15 @@ NodeProxy : BusPlug {
 		};
 		^specs
 	}
+
+	// NodeProxyPartMap support
+	
+	partMap { | indices |
+		^NodeProxyPartMap(this, indices)
+	}
+
+	proxyNeedsWakeUp { ^true }
+	proxyToWakeUp { ^this }
 }
 
 
