@@ -211,7 +211,7 @@ Main : Process {
 		^(
 			version: Main.version,
 			buildString: Main.scBuildString,
-			qtVersion:  \QtGUI.asClass !? _.version,
+			qtVersion:  if(\QtGUI.asClass, { QtGUI.version }, { nil }),
 			platform: thisProcess.platform.name,
 			platformVersion: thisProcess.platform.version,
 			argv: thisProcess.argv,
