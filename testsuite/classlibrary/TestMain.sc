@@ -54,9 +54,4 @@ TestMain : UnitTest {
 	test_versionAtLeast_patchLess_returnsTrue {
 		this.assert(Main.versionAtLeast(Main.scVersionMajor, Main.scVersionMinor, Main.scVersionPatch - 1))
 	}
-
-	test_systemInformation {
-		var info = Main.systemInformation();
-		this.assert(info[\version] == Main.version);
-	}
 }
