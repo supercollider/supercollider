@@ -1,5 +1,5 @@
 title:: Identity and Equality in SuperCollider
-summary:: Distinction between reference equality (identity, ===) and value equality (equality, ==) in SuperCollider
+summary:: Distinction between reference equality ("identity", ===) and value equality ("equality", ==) in SuperCollider
 categories:: Tutorials
 related:: Classes/Event, Classes/Float, Guides/Intro-to-Objects
 
@@ -26,7 +26,7 @@ code::
 a = [1,2,3];
 b = [1,2,3];
 a === a // -> true: identity as relation of an object (a) to itself.
-a == a // -> true; identical objects are necessariy equal.
+a == a // -> true; identical objects are necessarily equal.
 a === b // -> false; because a and b are distinct objects by virtue of their memory locations.
 a == b // -> true; equal objects need not be identical.
 ::
@@ -53,7 +53,7 @@ The behavior of code::===::, on the other hand, depends more on lower-level impl
 
 The following two examples illustrate the difference further with respect to two relevant use cases:
 Copying the contents of a variable rather than merely assigning it to another variable (a distinction fundamental to programming, not just in SuperCollider);
-and indexing into an instance oflink::Classes/IdentityDictionary:: or link::Classes/Event:: (specific to SuperCollider).
+and indexing into an instance of link::Classes/IdentityDictionary:: or link::Classes/Event:: (specific to SuperCollider).
 
 subsection:: Where the distinction matters: Creating multiple instances from an object given in one variable using the .copy method
 
@@ -66,7 +66,7 @@ code::
 x = ['C', 'E', 'G']; // C major
 y = x; // this will cause trouble in a moment.
 z = x; // this too.
-// obviously x equals y and z at this point.
+// x equals y and z at this point.
 // now change last note in y to get a minor:
 y[2] = 'A'; // -> ['C', 'E', 'A'] ... OK
 //change first note in z to get e minor;
@@ -99,8 +99,8 @@ Thus, the distinction between equality and identity is implicit in such simple i
 subsection:: Where the distinction matters: Do not use Strings as keys for IdentityDictionary and Event.
 
 In link::Classes/Dictionary:: and its subclasses, the choice of lookup algorithm can impact performance.
-Using identity for this algorithm, as link::Classes/IdentityDictionary:: and link::Classes/Event:: do, is generally faster than usign equality, as link::Classes/Dictionary:: does;
-however, in that case, keys should not be link::Classes/String::s, but link::Classes/Symbol::s.
+Using identity for this algorithm, as link::Classes/IdentityDictionary:: and link::Classes/Event:: do, is generally faster than usign equality, as link::Classes/Dictionary:: does.
+Therefore when using link::Classes/IdentityDictionary:: and link::Classes/Event:: keys should not be link::Classes/String::s, but link::Classes/Symbol::s.
 The following example demonstrates why:
 
 code::
@@ -151,7 +151,7 @@ code::
 Set[1,2,3] === Set[1,2,3] // -> false
 ::
 
-subsection:: For any object, equality defaults to identity unless overridden by a subclass.
+subsection:: Unless overridden by a subclass, checking for equality defaults to checking for identity.
 Not all classes explicitly implement a code::==:: method.
 In that case, code::==:: simply defaults to code::===::.
 An instance of this is link::Classes/Function::,footnote::
