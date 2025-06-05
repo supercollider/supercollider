@@ -20,7 +20,7 @@ Some are harder, some are easier. There are no scores.
 
 1. click next test and play ...
 2. try to find the corresponding button in the row below
-3. when you've found it, it will turn yello.
+3. when you've found it, it will turn yellow.
 Return to 1.
 
 If "including low tones" is selected, frequencies that
