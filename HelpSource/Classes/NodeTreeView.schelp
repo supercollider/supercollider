@@ -6,9 +6,6 @@ related:: Classes/Server, Classes/ServerTree
 description::
 link::Classes/NodeTreeView:: shows the node tree on a server.
 
-note::
-Unlike to link::Classes/Server#-plotTree::, the link::Classes/NodeTreeView:: will not disappear when the pointed server is not running.
-::
 
 classmethods::
 
