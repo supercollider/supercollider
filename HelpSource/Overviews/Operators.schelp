@@ -135,15 +135,6 @@ code::
 { 10.0.rand2 }.dup(30).plot.plotMode_(\steps)
 ::
 
-copymethod:: SimpleNumber -coin
-copymethod:: SimpleNumber -rand
-copymethod:: SimpleNumber -rand2
-copymethod:: SimpleNumber -rrand
-copymethod:: SimpleNumber -linrand
-copymethod:: SimpleNumber -bilinrand
-copymethod:: SimpleNumber -sum3rand
-copymethod:: SimpleNumber -exprand
-
 
 subsection:: Other
 
