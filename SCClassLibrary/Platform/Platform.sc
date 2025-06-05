@@ -219,6 +219,7 @@ Platform {
 			qtVersion:  if(\QtGUI.asClass, { QtGUI.version }, { nil }),
 			platform: thisProcess.platform.name,
 			platformVersion: thisProcess.platform.version,
+			platformArchitecture: this.architecture,
 			argv: thisProcess.argv,
 			audioDevices: ServerOptions.devices,
 			server: case 
@@ -241,9 +242,10 @@ Platform {
 			info[\version],
 			info[\buildString],
 		).postln;
-		"* Operating system: % %".format(
+		"* Operating system: % % (%)".format(
 			info[\platform],
 			info[\platformVersion],
+			info[\platformArchitecture],
 		).postln;
 		"* Other details".postln;
 		"	* Qt version: %".format(info[\qtVersion]).postln;

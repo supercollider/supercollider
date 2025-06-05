@@ -10,9 +10,7 @@ OSXPlatform : UnixPlatform {
 
 	name { ^\osx }
 	version { 
-		var version = "sw_vers -productVersion".unixCmdGetStdOut.replace($\n, "");
-		var architecture = "uname -m".unixCmdGetStdOut.replace($\n, "");
-		^"% (%)".format(version, architecture);
+		^"sw_vers -productVersion".unixCmdGetStdOut.replace($\n, "");
 	}
 
 	startupFiles {
