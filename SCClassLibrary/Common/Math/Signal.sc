@@ -267,6 +267,7 @@ Signal[float] : FloatArray {
 	* { arg aNumber; _Mul; ^aNumber.performBinaryOpOnSignal('*', this) }
 	/ { arg aNumber; _FDiv; ^aNumber.performBinaryOpOnSignal('/', this) }
 	mod { arg aNumber; _Mod; ^aNumber.performBinaryOpOnSignal('mod', this) }
+	modSeaside { arg aNumber; _Mod; ^aNumber.performBinaryOpOnSignal('mod', this) }
 	div { arg aNumber; _IDiv; ^aNumber.performBinaryOpOnSignal('div', this) }
 	pow { arg aNumber; _Pow; ^aNumber.performBinaryOpOnSignal('pow', this) }
 	min { arg aNumber; _Min; ^aNumber.performBinaryOpOnSignal('min', this) }

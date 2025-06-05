@@ -862,6 +862,7 @@ SequenceableCollection : Collection {
 	/ { arg aNumber, adverb; ^this.performBinaryOp('/', aNumber, adverb) }
 	div { arg aNumber, adverb; ^this.performBinaryOp('div', aNumber, adverb) }
 	mod { arg aNumber, adverb; ^this.performBinaryOp('mod', aNumber, adverb) }
+	modSeaside { arg aNumber, adverb; ^this.performBinaryOp('modSeaside', aNumber, adverb) }
 	pow { arg aNumber, adverb; ^this.performBinaryOp('pow', aNumber, adverb) }
 	min { arg aNumber, adverb; ^this.performBinaryOp('min', aNumber, adverb) }
 	max { arg aNumber=0, adverb; ^this.performBinaryOp('max', aNumber, adverb) }

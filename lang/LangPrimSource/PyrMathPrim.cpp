@@ -302,6 +302,36 @@ int prSubInt(VMGlobals* g, int numArgsPushed) { return prOpInt<subNum>(g, numArg
 
 int prMulInt(VMGlobals* g, int numArgsPushed) { return prOpInt<mulNum>(g, numArgsPushed); }
 
+int prModSeasideInt(struct VMGlobals* g, int numArgsPushed) {
+    PyrSlot* a = g->sp - 1;
+    PyrSlot* b = g->sp;
+    int in;
+    int err;
+
+    if (NotInt(a) || (NotInt(b) && NotFloat(b)))
+        return errWrongType;
+
+    err = slotIntVal(a, &in);
+    if (err)
+        return err;
+    if (IsInt(b)) {
+        int hi, res;
+        err = slotIntVal(b, &hi);
+        if (err)
+            return err;
+        res = sc_mod_seaside(in, hi);
+        SetRaw(a, res);
+    } else {
+        float hi, res;
+        err = slotFloatVal(b, &hi);
+        if (err)
+            return err;
+        res = sc_mod((double)in, (double)hi);
+        SetFloat(a, res);
+    }
+
+    return errNone;
+}
 
 int prNthPrime(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
@@ -1299,6 +1329,7 @@ void initMathPrimitives() {
     definePrimitive(base, index++, "_AddInt", prAddInt, 2, 0);
     definePrimitive(base, index++, "_SubInt", prSubInt, 2, 0);
     definePrimitive(base, index++, "_MulInt", prMulInt, 2, 0);
+    definePrimitive(base, index++, "_ModSeasideInt", prModSeasideInt, 2, 0);
     definePrimitive(base, index++, "_AddFloat", prAddFloat, 2, 0);
     definePrimitive(base, index++, "_SubFloat", prSubFloat, 2, 0);
     definePrimitive(base, index++, "_MulFloat", prMulFloat, 2, 0);

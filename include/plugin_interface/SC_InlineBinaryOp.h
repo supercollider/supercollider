@@ -325,16 +325,6 @@ inline int sc_div(int a, int b) {
     return c;
 }
 
-/*
-inline int sc_mod(int a, int b)
-{
-    long c;
-    c = a % b;
-    if (c<0) c += b;
-    return c;
-}
-*/
-
 /// Modulo
 inline int sc_mod(int in, int hi) {
     // avoid the divide if possible
@@ -352,6 +342,28 @@ inline int sc_mod(int in, int hi) {
 
     if (hi == lo)
         return lo;
+    return in - hi * sc_floor((float64)in / hi);
+}
+
+/**
+ * Modulo with old behavior;
+ * gives unexpected results for all values with negative integer modulus,
+ *  i.e., affected cases: for a, b both integers: a mod -b.
+ */
+inline int sc_mod_seaside(int in, int hi) {
+    // avoid the divide if possible
+    const int lo = 0;
+    if (in >= hi) {
+        in -= hi;
+        if (in < hi)
+            return in;
+    } else if (in < lo) {
+        in += hi;
+        if (in >= lo)
+            return in;
+    } else
+        return in;
+
 
     int c;
     c = in % hi;
