@@ -555,7 +555,7 @@ IdentityDictionary : Dictionary {
                 warn(selector.asCompileString
                     + "exists as a method name, so you can't use it as a pseudo-method.")
             };
-            ^sel = args[0];
+            ^this[selector] = args[0];
         };
 
         forward = this[\forward];
