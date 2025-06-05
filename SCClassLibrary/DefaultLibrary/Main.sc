@@ -207,55 +207,6 @@ Main : Process {
 		}
 	}
 
-	*systemInformation {
-		^(
-			version: Main.version,
-			buildString: Main.scBuildString,
-			qtVersion:  if(\QtGUI.asClass, { QtGUI.version }, { nil }),
-			platform: thisProcess.platform.name,
-			platformVersion: thisProcess.platform.version,
-			argv: thisProcess.argv,
-			audioDevices: ServerOptions.devices,
-			server: case 
-				{ Server.program.contains("scsynth") } { "scsynth" }
-				{ Server.program.contains("supernova") } { "supernova" }
-				{ "unknown" },
-			includes: LanguageConfig.includePaths.collect { |path|
-				PathName(path).fileName
-			},
-		)
-	}
-	
-	*postBugReportInfo { |includePaths=true, includeDevices=false|
-		var info = this.systemInformation;
-
-		"Copy the content between the ### lines".postln;
-		"#".dup(40).join.postln;
-
-		"* SuperCollider version: % (%)".format(
-			info[\version],
-			info[\buildString],
-		).postln;
-		"* Operating system: % %".format(
-			info[\platform],
-			info[\platformVersion],
-		).postln;
-		"* Other details".postln;
-		"	* Qt version: %".format(info[\qtVersion]).postln;
-		"	* argv: %".format(info[\argv].join(" ")).postln;
-		"	* server: %".format(info[\server]).postln;
-
-		if(includePaths, {
-			"	* includes: %".format(info[\includes].join(", ")).postln;
-		});
-
-		if(includeDevices, {
-			"	* devices: %".format(info[\audioDevices].join(", ")).postln;
-		});
-		
-		"#".dup(40).join.postln;
-	}
-
 	pid {
 		_GetPid
 		^this.primitiveFailed
