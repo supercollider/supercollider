@@ -496,20 +496,34 @@ Plot {
 	}
 
 	levels { |x, y|
+		var xOffset = x[1] - x[0] / 2;
 		Pen.smoothing_(false);
 		y.size.do { |i|
-			Pen.moveTo(x[i] @ y[i]);
-			Pen.lineTo(x[i + 1] ?? { plotBounds.right } @ y[i]);
+			var lastX = { if (y.size - 1 == i) {
+						plotBounds.right + xOffset
+					} {
+						plotBounds.right
+					}
+				};
+			Pen.moveTo(x[i] - xOffset @ y[i]);
+			Pen.lineTo(x[i + 1] ?? lastX - xOffset @ y[i]);
 		};
 		Pen.stroke
 	}
 
 	steps { |x, y|
+		var xOffset = x[1] - x[0] / 2;
 		Pen.smoothing_(false);
 		Pen.moveTo(x.first @ y.first);
 		y.size.do { |i|
-			Pen.lineTo(x[i] @ y[i]);
-			Pen.lineTo(x[i + 1] ?? { plotBounds.right } @ y[i]);
+			var lastX = { if (y.size - 1 == i) {
+						plotBounds.right + xOffset
+					} {
+						plotBounds.right
+					}
+				};
+			Pen.lineTo(x[i] - xOffset @ y[i]);
+			Pen.lineTo(x[i + 1] ?? lastX - xOffset @ y[i]);
 		};
 		Pen.stroke;
 	}
@@ -522,10 +536,13 @@ Plot {
 			var centery = 0.linlin(this.spec.minval, this.spec.maxval, plotBounds.bottom, plotBounds.top, clip:nil);
 			var rely = y[i] - centery;
 			var gap = (nextx - x[i]) * 0.1;
+			var thisX = x[i] + gap;
+			var width = x[1] - x[0];
+			nextx = if (y.size - 1 == i) { nextx + (width / 2) } { nextx };
 			if (rely < 0) {
-				Pen.addRect(Rect(x[i] + gap, centery + rely, nextx- x[i] - (2 * gap), rely.abs))
+				Pen.addRect(Rect(thisX - (width / 2), centery + rely, nextx- x[i] - (2 * gap), rely.abs))
 			} {
-				Pen.addRect(Rect(x[i] + gap, centery, nextx - x[i] - ( 2 * gap), rely))
+				Pen.addRect(Rect(thisX - (width / 2), centery, nextx - x[i] - ( 2 * gap), rely))
 			}
 		};
 		Pen.fill
@@ -1289,7 +1306,7 @@ Plotter {
 
 + ArrayedCollection {
 	plot { |name, bounds, discrete = false, numChannels, minval, maxval, separately = true, parent|
-		var array, plotter, depth, hasSubArrays;
+		var array, plotter, depth, hasSubArrays, flatArraySorted;
 		array = this.as(Array);
 
 		depth = array.maxDepth;
@@ -1313,11 +1330,15 @@ Plotter {
 		numChannels !? { array = array.unlace(numChannels) };
 		array = array.collect {|elem, i|
 			case {elem.isKindOf(Env)}		{elem.asMultichannelSignal.flop}
-				 {elem.isKindOf(Wavetable)} {elem.asSignal}
-				 {elem.isNil}				{Error("Cannot plot array: non-numeric value at index %".format(i)).throw}
-  				 {hasSubArrays}				{elem.asArray} 
-			  	 {elem};
+			{elem.isKindOf(Wavetable)} {elem.asSignal}
+			{elem.isNil}				{Error("Cannot plot array: non-numeric value at index %".format(i)).throw}
+			{hasSubArrays}				{elem.asArray}
+			{elem};
 		};
+
+		flatArraySorted = array.flat.asSet.asArray.sort;
+		//minval = minval ?? { flatArraySorted[0] - (flatArraySorted[1] - flatArraySorted[0]) };
+		maxval = maxval ?? { flatArraySorted.last + (flatArraySorted.last - flatArraySorted[flatArraySorted.size - 2]) };
 
 		plotter.setValue(
 			array,
@@ -1327,6 +1348,15 @@ Plotter {
 			minval: minval,
 			maxval: maxval
 		);
+
+		if (flatArraySorted.every { |item| item.isInteger }){
+			plotter.domain_((flatArraySorted.first..flatArraySorted.last))
+		};
+		// This is to prevent the following error from occurring when the domain value is a float:
+		// ERROR: [Plotter:-domain_] Domain array size [87] does not match data array size [9]
+		//[87] and [9] vary according to array items.
+
+		plotter.domainSpecs_([flatArraySorted.first - 0.5, flatArraySorted.last + 0.5].asSpec);
 
 		^plotter
 	}
