@@ -271,7 +271,6 @@ public:
             try {
                 udpSocket.set_option(sendBufferSize);
             } catch (boost::system::system_error& e) {}
-            udpSocket.get_option(sendBufferSize);
         }
 
         boost::asio::socket_base::receive_buffer_size receiveBufferSize;
@@ -281,7 +280,6 @@ public:
             try {
                 udpSocket.set_option(receiveBufferSize);
             } catch (boost::system::system_error& e) {}
-            udpSocket.get_option(receiveBufferSize);
         }
 
 #ifdef USE_RENDEZVOUS

@@ -212,7 +212,6 @@ UDP::UDP(int inPortNum, HandlerType handlerType, int portsToCheck): mPortNum(inP
         try {
             mUdpSocket.set_option(sendBufferSize);
         } catch (boost::system::system_error& e) {}
-        mUdpSocket.get_option(sendBufferSize);
     }
 
     boost::asio::socket_base::receive_buffer_size receiveBufferSize;
@@ -222,7 +221,6 @@ UDP::UDP(int inPortNum, HandlerType handlerType, int portsToCheck): mPortNum(inP
         try {
             mUdpSocket.set_option(receiveBufferSize);
         } catch (boost::system::system_error& e) {}
-        mUdpSocket.get_option(receiveBufferSize);
     }
 
     initHandler(handlerType);
