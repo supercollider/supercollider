@@ -462,3 +462,19 @@ else()
         RUNTIME DESTINATION "bin"
         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endif()
+
+add_custom_target(Help
+	COMMAND
+		# use CMAKE_COMMAND to wrap the command to be executed w/ env variables
+		${CMAKE_COMMAND} -E env
+		SC_HELP_SOURCE_DIR=${CMAKE_SOURCE_DIR}/HelpSource
+		SC_HELP_TARGET_DIR=${CMAKE_BINARY_DIR}/Help/
+		$<TARGET_FILE:sclang>
+		"--exclude-default-paths"
+		"--include-path"
+			"${CMAKE_SOURCE_DIR}/SCClassLibrary"
+		"${CMAKE_SOURCE_DIR}/tools/build_help.scd"
+	DEPENDS
+		sclang
+	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+)
