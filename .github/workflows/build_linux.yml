@@ -87,7 +87,7 @@ jobs:
             shared-libscsynth: false
             ctest: false
 
-          - job-name: "with ctest and help"
+          - job-name: "with ctest"
             os-version: "24.04"
             c-compiler: "clang-18"
             cxx-compiler: "clang++-18"
