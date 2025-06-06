@@ -405,7 +405,7 @@ Plot {
 			Pen.width = 1.0;
 			Pen.joinStyle = 1;
 			Pen.addRect(plotBounds);
-			Pen.clip; // clip curve to bounds.
+			//Pen.clip; // clip curve to bounds.
 
 			if(ycoord.at(0).isSequenceableCollection) { // multi channel expansion when superposed
 				ycoord.flop.do { |y, i|
