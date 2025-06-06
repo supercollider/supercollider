@@ -206,22 +206,22 @@ UDP::UDP(int inPortNum, HandlerType handlerType, int portsToCheck): mPortNum(inP
     }
 
     boost::asio::socket_base::send_buffer_size sendBufferSize;
-    mUdpSocket.get_option(sendBufferSize);
-    if (sendBufferSize.value() < UDP::sendBufferSize) {
-        sendBufferSize = UDP::sendBufferSize;
-        try {
+    try {
+        mUdpSocket.get_option(sendBufferSize);
+        if (sendBufferSize.value() < UDP::sendBufferSize) {
+            sendBufferSize = UDP::sendBufferSize;
             mUdpSocket.set_option(sendBufferSize);
-        } catch (boost::system::system_error& e) {}
-    }
+        }
+    } catch (boost::system::system_error& e) { printf("(sclang) SC_UdpInPort: WARNING: failed to set send buffer size\n"); }
 
     boost::asio::socket_base::receive_buffer_size receiveBufferSize;
-    mUdpSocket.get_option(receiveBufferSize);
-    if (receiveBufferSize.value() < UDP::receiveBufferSize) {
-        receiveBufferSize = UDP::receiveBufferSize;
-        try {
+    try {
+        mUdpSocket.get_option(receiveBufferSize);
+        if (receiveBufferSize.value() < UDP::receiveBufferSize) {
+            receiveBufferSize = UDP::receiveBufferSize;
             mUdpSocket.set_option(receiveBufferSize);
-        } catch (boost::system::system_error& e) {}
-    }
+        }
+    } catch (boost::system::system_error& e) { printf("(sclang) SC_UdpInPort: WARNING: failed to set receive buffer size\n"); }
 
     initHandler(handlerType);
 

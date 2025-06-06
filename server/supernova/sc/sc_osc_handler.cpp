@@ -612,21 +612,25 @@ void sc_osc_handler::open_udp_socket(ip::address address, unsigned int port) {
         sc_notify_observers::udp_socket.open(udp::v4());
 
     boost::asio::socket_base::send_buffer_size send_buffer_size;
-    udp_socket.get_option(send_buffer_size);
-    if (send_buffer_size.value() < sc_osc_handler::udp_send_buffer_size) {
-        send_buffer_size = sc_osc_handler::udp_send_buffer_size;
-        try {
+    try {
+        udp_socket.get_option(send_buffer_size);
+        if (send_buffer_size.value() < sc_osc_handler::udp_send_buffer_size) {
+            send_buffer_size = sc_osc_handler::udp_send_buffer_size;
             udp_socket.set_option(send_buffer_size);
-        } catch (boost::system::system_error& e) {}
+        }
+    } catch (boost::system::system_error& e) {
+        printf("WARNING: failed to set send buffer size\n");
     }
 
     boost::asio::socket_base::receive_buffer_size recv_buffer_size;
-    udp_socket.get_option(recv_buffer_size);
-    if (recv_buffer_size.value() < sc_osc_handler::udp_receive_buffer_size) {
-        recv_buffer_size = sc_osc_handler::udp_receive_buffer_size;
-        try {
+    try {
+        udp_socket.get_option(recv_buffer_size);
+        if (recv_buffer_size.value() < sc_osc_handler::udp_receive_buffer_size) {
+            recv_buffer_size = sc_osc_handler::udp_receive_buffer_size;
             udp_socket.set_option(recv_buffer_size);
-        } catch (boost::system::system_error& e) {}
+        }
+    } catch (boost::system::system_error& e) {
+        printf("WARNING: failed to set receive buffer size\n");
     }
 
     sc_notify_observers::udp_socket.bind(udp::endpoint(address, port));
