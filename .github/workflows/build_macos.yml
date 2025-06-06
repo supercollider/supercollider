@@ -26,6 +26,7 @@ jobs:
             extra-cmake-flags: "" # -D SC_VERIFY_APP=ON # verify app doesn't seem to work with official qt6
             artifact-suffix: "macOS-arm64"
             ctest: true
+            build_help: true
 
           - job-name: "x64 with ctest"
             os-version: "13"
@@ -213,6 +214,22 @@ jobs:
         with:
           name: ${{ env.ARTIFACT_FILE }}
           path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
+
+      - name: Build help
+        if: matrix.build_help
+        continue-on-error: false
+        run: timeout 5m cmake --build $BUILD_PATH --config Release --target Help
+    
+      - name: create help archive
+        if: matrix.build_help
+        run: cd $BUILD_PATH/Help && zip --symlinks -r Help.zip .
+
+      - name: upload help artifacts
+        uses: actions/upload-artifact@v4
+        if: matrix.build_help
+        with:
+          name: SuperCollider-${{ inputs.sc-version }}-RenderedHelp.zip
+          path: ${{ env.BUILD_PATH }}/Help/Help.zip
 
       - name: Run CTests
         continue-on-error: true
