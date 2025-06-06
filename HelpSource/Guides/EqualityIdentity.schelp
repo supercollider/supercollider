@@ -13,7 +13,7 @@ The present discussion is more narrowly concerned with an overview of how the di
 section:: Two objects that are equal to each other are not necessarily identical.
 
 Note:: The word "object" here refers to emphasis::instances:: of classes, not to the abstract class link::Classes/Object::.
-See link::Guides/Intro-to-Objects::.
+See link::Guides/Intro-to-Objects::.::
 
 A factory may produce thousands of screwdrivers each day that are all emphasis::equal:: to each other with respect to some specification; but each single screwdriver is emphasis::identical:: only to itself (because it occupies this particular location at this particular time, or has a particular serial number stamped on it).
 Thus we can say that identity, the relation of an object to itself, is a stronger relation than equality, the relation of an object so some other object with respect to a common property.
