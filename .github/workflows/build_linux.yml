@@ -87,13 +87,14 @@ jobs:
             shared-libscsynth: false
             ctest: false
 
-          - job-name: "with ctest"
+          - job-name: "with ctest and help"
             os-version: "24.04"
             c-compiler: "clang-18"
             cxx-compiler: "clang++-18"
             use-syslibs: false
             shared-libscsynth: false
             ctest: true
+            build_help: true
 
     name: Ubuntu ${{ matrix.os-version }} ${{ matrix.c-compiler }} ${{ matrix.job-name }}
     env:
@@ -188,3 +189,19 @@ jobs:
         continue-on-error: true
         if: matrix.ctest
         run: cmake --build $BUILD_PATH --config Release --target test
+
+      - name: Build help
+        if: matrix.build_help
+        continue-on-error: false
+        run: timeout 5m cmake --build $BUILD_PATH --config Release --target Help
+    
+      - name: create help archive
+        if: matrix.build_help
+        run: cd $BUILD_PATH/Help && zip --symlinks -r Help.zip .
+
+      - name: upload help artifacts
+        uses: actions/upload-artifact@v4
+        if: matrix.build_help
+        with:
+          name: SuperCollider-${{ inputs.sc-version }}-RenderedHelp.zip
+          path: ${{ env.BUILD_PATH }}/Help/Help.zip
