@@ -165,7 +165,9 @@ Volume {
 	}
 
 	freeSynth {
-		ampSynth.release;
+		if(ampSynth.isPlaying) {
+			ampSynth.release;
+		}
 	}
 
 	// sets volume back to 1 - removes the synth
