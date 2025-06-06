@@ -205,24 +205,24 @@ UDP::UDP(int inPortNum, HandlerType handlerType, int portsToCheck): mPortNum(inP
         }
     }
 
-    boost::asio::socket_base::send_buffer_size send_buffer_size;
-    mUdpSocket.get_option(send_buffer_size);
-    if (send_buffer_size.value() < 8 * 1024 * 1024) {
-        send_buffer_size = 8 * 1024 * 1024;
+    boost::asio::socket_base::send_buffer_size sendBufferSize;
+    mUdpSocket.get_option(sendBufferSize);
+    if (sendBufferSize.value() < 8 * 1024 * 1024) {
+        sendBufferSize = 8 * 1024 * 1024;
         try {
-            mUdpSocket.set_option(send_buffer_size);
+            mUdpSocket.set_option(sendBufferSize);
         } catch (boost::system::system_error& e) {}
-        mUdpSocket.get_option(send_buffer_size);
+        mUdpSocket.get_option(sendBufferSize);
     }
 
-    boost::asio::socket_base::receive_buffer_size recv_buffer_size;
-    mUdpSocket.get_option(recv_buffer_size);
-    if (recv_buffer_size.value() < 8 * 1024 * 1024) {
-        recv_buffer_size = 8 * 1024 * 1024;
+    boost::asio::socket_base::receive_buffer_size receiveBufferSize;
+    mUdpSocket.get_option(receiveBufferSize);
+    if (receiveBufferSize.value() < 8 * 1024 * 1024) {
+        receiveBufferSize = 8 * 1024 * 1024;
         try {
-            mUdpSocket.set_option(recv_buffer_size);
+            mUdpSocket.set_option(receiveBufferSize);
         } catch (boost::system::system_error& e) {}
-        mUdpSocket.get_option(recv_buffer_size);
+        mUdpSocket.get_option(receiveBufferSize);
     }
 
     initHandler(handlerType);
