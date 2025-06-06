@@ -99,6 +99,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sstream>
 #include "SCDoc.h"
 
 //#define YYLEX_PARAM &yylval, &yylloc
@@ -128,7 +129,7 @@ static inline bool stringEqual(const char * a, const char * b)
 }
 
 
-#line 132 "SCDoc.tab.cpp"
+#line 133 "SCDoc.tab.cpp"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -274,12 +275,12 @@ typedef enum yysymbol_kind_t yysymbol_kind_t;
 
 
 /* Second part of user prologue.  */
-#line 100 "SCDoc.y"
+#line 101 "SCDoc.y"
 
 //int scdoclex (YYSTYPE * yylval_param, struct YYLTYPE * yylloc_param );
 int scdoclex (void);
 
-#line 283 "SCDoc.tab.cpp"
+#line 284 "SCDoc.tab.cpp"
 
 
 #ifdef short
@@ -670,20 +671,20 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   107,   107,   108,   111,   117,   121,   129,   130,   133,
-     134,   137,   138,   139,   142,   143,   144,   145,   148,   149,
-     150,   151,   154,   155,   158,   159,   160,   163,   163,   164,
-     167,   168,   171,   172,   173,   176,   179,   180,   183,   184,
-     185,   188,   189,   195,   207,   212,   213,   224,   235,   236,
-     239,   248,   249,   252,   253,   256,   257,   260,   261,   264,
-     265,   268,   269,   277,   278,   281,   282,   283,   286,   287,
-     290,   291,   292,   293,   294,   295,   296,   299,   300,   303,
-     304,   307,   308,   309,   310,   311,   314,   315,   316,   317,
-     318,   319,   320,   321,   324,   325,   326,   329,   330,   331,
-     334,   335,   338,   339,   342,   345,   346,   349,   350,   353,
-     354,   357,   364,   365,   368,   369,   372,   373,   376,   377,
-     380,   381,   384,   385,   388,   389,   392,   393,   396,   397,
-     400,   401,   402,   403,   406,   407
+       0,   108,   108,   109,   112,   118,   122,   130,   131,   134,
+     135,   138,   139,   140,   143,   144,   145,   146,   149,   150,
+     151,   152,   155,   156,   159,   160,   161,   164,   164,   165,
+     168,   169,   172,   173,   174,   177,   180,   181,   184,   185,
+     186,   189,   190,   197,   209,   214,   215,   226,   237,   238,
+     241,   250,   251,   254,   255,   258,   259,   262,   263,   266,
+     267,   270,   271,   279,   280,   283,   284,   285,   288,   289,
+     292,   293,   294,   295,   296,   297,   298,   301,   302,   305,
+     306,   309,   310,   311,   312,   313,   316,   317,   318,   319,
+     320,   321,   322,   323,   326,   327,   328,   331,   332,   333,
+     336,   337,   340,   341,   344,   347,   348,   351,   352,   355,
+     356,   359,   366,   367,   370,   371,   374,   375,   378,   379,
+     382,   383,   386,   387,   390,   391,   394,   395,   398,   399,
+     402,   403,   404,   405,   408,   409
 };
 #endif
 
@@ -1539,291 +1540,291 @@ yydestruct (const char *yymsg,
   switch (yykind)
     {
     case YYSYMBOL_TEXT: /* "text"  */
-#line 98 "SCDoc.y"
+#line 99 "SCDoc.y"
             { free(((*yyvaluep).str)); }
-#line 1545 "SCDoc.tab.cpp"
+#line 1546 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_URL: /* URL  */
-#line 98 "SCDoc.y"
+#line 99 "SCDoc.y"
             { free(((*yyvaluep).str)); }
-#line 1551 "SCDoc.tab.cpp"
+#line 1552 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_COMMA: /* COMMA  */
-#line 98 "SCDoc.y"
+#line 99 "SCDoc.y"
             { free(((*yyvaluep).str)); }
-#line 1557 "SCDoc.tab.cpp"
+#line 1558 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_METHODNAME: /* "method name"  */
-#line 98 "SCDoc.y"
+#line 99 "SCDoc.y"
             { free(((*yyvaluep).str)); }
-#line 1563 "SCDoc.tab.cpp"
+#line 1564 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_METHODARGS: /* "arguments string"  */
-#line 98 "SCDoc.y"
+#line 99 "SCDoc.y"
             { free(((*yyvaluep).str)); }
-#line 1569 "SCDoc.tab.cpp"
+#line 1570 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_document: /* document  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1575 "SCDoc.tab.cpp"
+#line 1576 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_dochead: /* dochead  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1581 "SCDoc.tab.cpp"
+#line 1582 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_headline: /* headline  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1587 "SCDoc.tab.cpp"
+#line 1588 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_optsections: /* optsections  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1593 "SCDoc.tab.cpp"
+#line 1594 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_sections: /* sections  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1599 "SCDoc.tab.cpp"
+#line 1600 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_section: /* section  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1605 "SCDoc.tab.cpp"
+#line 1606 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_optsubsections: /* optsubsections  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1611 "SCDoc.tab.cpp"
+#line 1612 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_subsections: /* subsections  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1617 "SCDoc.tab.cpp"
+#line 1618 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_subsection: /* subsection  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1623 "SCDoc.tab.cpp"
+#line 1624 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_optsubsubsections: /* optsubsubsections  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1629 "SCDoc.tab.cpp"
+#line 1630 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_subsubsections: /* subsubsections  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1635 "SCDoc.tab.cpp"
+#line 1636 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_subsubsection: /* subsubsection  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1641 "SCDoc.tab.cpp"
+#line 1642 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_optMETHODARGS: /* optMETHODARGS  */
-#line 98 "SCDoc.y"
+#line 99 "SCDoc.y"
             { free(((*yyvaluep).str)); }
-#line 1647 "SCDoc.tab.cpp"
+#line 1648 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_methodname: /* methodname  */
-#line 98 "SCDoc.y"
+#line 99 "SCDoc.y"
             { free(((*yyvaluep).str)); }
-#line 1653 "SCDoc.tab.cpp"
+#line 1654 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_methnames: /* methnames  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1659 "SCDoc.tab.cpp"
+#line 1660 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_methodbody: /* methodbody  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1665 "SCDoc.tab.cpp"
+#line 1666 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_optbody: /* optbody  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1671 "SCDoc.tab.cpp"
+#line 1672 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_optargs: /* optargs  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1677 "SCDoc.tab.cpp"
+#line 1678 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_args: /* args  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1683 "SCDoc.tab.cpp"
+#line 1684 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_arg: /* arg  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1689 "SCDoc.tab.cpp"
+#line 1690 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_optreturns: /* optreturns  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1695 "SCDoc.tab.cpp"
+#line 1696 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_optdiscussion: /* optdiscussion  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1701 "SCDoc.tab.cpp"
+#line 1702 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_body: /* body  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1707 "SCDoc.tab.cpp"
+#line 1708 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_blockA: /* blockA  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1713 "SCDoc.tab.cpp"
+#line 1714 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_blockB: /* blockB  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1719 "SCDoc.tab.cpp"
+#line 1720 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_bodyelem: /* bodyelem  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1725 "SCDoc.tab.cpp"
+#line 1726 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_prose: /* prose  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1731 "SCDoc.tab.cpp"
+#line 1732 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_proseelem: /* proseelem  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1737 "SCDoc.tab.cpp"
+#line 1738 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_listbody: /* listbody  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1743 "SCDoc.tab.cpp"
+#line 1744 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_tablerow: /* tablerow  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1749 "SCDoc.tab.cpp"
+#line 1750 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_tablebody: /* tablebody  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1755 "SCDoc.tab.cpp"
+#line 1756 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_tablecells: /* tablecells  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1761 "SCDoc.tab.cpp"
+#line 1762 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_defterms: /* defterms  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1767 "SCDoc.tab.cpp"
+#line 1768 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_deflistrow: /* deflistrow  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1773 "SCDoc.tab.cpp"
+#line 1774 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_deflistbody: /* deflistbody  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1779 "SCDoc.tab.cpp"
+#line 1780 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_anywordurl: /* anywordurl  */
-#line 98 "SCDoc.y"
+#line 99 "SCDoc.y"
             { free(((*yyvaluep).str)); }
-#line 1785 "SCDoc.tab.cpp"
+#line 1786 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_anyword: /* anyword  */
-#line 98 "SCDoc.y"
+#line 99 "SCDoc.y"
             { free(((*yyvaluep).str)); }
-#line 1791 "SCDoc.tab.cpp"
+#line 1792 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_words: /* words  */
-#line 98 "SCDoc.y"
+#line 99 "SCDoc.y"
             { free(((*yyvaluep).str)); }
-#line 1797 "SCDoc.tab.cpp"
+#line 1798 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_words2: /* words2  */
-#line 98 "SCDoc.y"
+#line 99 "SCDoc.y"
             { free(((*yyvaluep).str)); }
-#line 1803 "SCDoc.tab.cpp"
+#line 1804 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_anywordnl: /* anywordnl  */
-#line 98 "SCDoc.y"
+#line 99 "SCDoc.y"
             { free(((*yyvaluep).str)); }
-#line 1809 "SCDoc.tab.cpp"
+#line 1810 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_wordsnl: /* wordsnl  */
-#line 98 "SCDoc.y"
+#line 99 "SCDoc.y"
             { free(((*yyvaluep).str)); }
-#line 1815 "SCDoc.tab.cpp"
+#line 1816 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_nocommawords: /* nocommawords  */
-#line 98 "SCDoc.y"
+#line 99 "SCDoc.y"
             { free(((*yyvaluep).str)); }
-#line 1821 "SCDoc.tab.cpp"
+#line 1822 "SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_commalist: /* commalist  */
-#line 97 "SCDoc.y"
+#line 98 "SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1827 "SCDoc.tab.cpp"
+#line 1828 "SCDoc.tab.cpp"
         break;
 
       default:
@@ -2119,262 +2120,263 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* start: document  */
-#line 107 "SCDoc.y"
+#line 108 "SCDoc.y"
                 { topnode = (yyvsp[0].doc_node); }
-#line 2125 "SCDoc.tab.cpp"
+#line 2126 "SCDoc.tab.cpp"
     break;
 
   case 3: /* start: document error  */
-#line 108 "SCDoc.y"
+#line 109 "SCDoc.y"
                       { topnode = NULL; doc_node_free_tree((yyvsp[-1].doc_node)); }
-#line 2131 "SCDoc.tab.cpp"
+#line 2132 "SCDoc.tab.cpp"
     break;
 
   case 4: /* document: START_FULL eateol dochead optsections  */
-#line 112 "SCDoc.y"
+#line 113 "SCDoc.y"
     {
         (yyval.doc_node) = doc_node_create("DOCUMENT");
         doc_node_add_child((yyval.doc_node), (yyvsp[-1].doc_node));
         doc_node_add_child((yyval.doc_node), (yyvsp[0].doc_node));
     }
-#line 2141 "SCDoc.tab.cpp"
+#line 2142 "SCDoc.tab.cpp"
     break;
 
   case 5: /* document: START_PARTIAL sections  */
-#line 118 "SCDoc.y"
+#line 119 "SCDoc.y"
     {
         (yyval.doc_node) = doc_node_make_take_children("BODY",NULL,(yyvsp[0].doc_node));
     }
-#line 2149 "SCDoc.tab.cpp"
+#line 2150 "SCDoc.tab.cpp"
     break;
 
   case 6: /* document: START_METADATA dochead optsections  */
-#line 122 "SCDoc.y"
+#line 123 "SCDoc.y"
     {
         (yyval.doc_node) = doc_node_create("DOCUMENT");
         doc_node_add_child((yyval.doc_node), (yyvsp[-1].doc_node));
         doc_node_add_child((yyval.doc_node), (yyvsp[0].doc_node));
     }
-#line 2159 "SCDoc.tab.cpp"
+#line 2160 "SCDoc.tab.cpp"
     break;
 
   case 9: /* dochead: dochead headline  */
-#line 133 "SCDoc.y"
+#line 134 "SCDoc.y"
                           { (yyval.doc_node) = doc_node_add_child((yyvsp[-1].doc_node),(yyvsp[0].doc_node)); }
-#line 2165 "SCDoc.tab.cpp"
+#line 2166 "SCDoc.tab.cpp"
     break;
 
   case 10: /* dochead: headline  */
-#line 134 "SCDoc.y"
+#line 135 "SCDoc.y"
                   { (yyval.doc_node) = doc_node_make("HEADER",NULL,(yyvsp[0].doc_node)); }
-#line 2171 "SCDoc.tab.cpp"
+#line 2172 "SCDoc.tab.cpp"
     break;
 
   case 11: /* headline: headtag words2 eol  */
-#line 137 "SCDoc.y"
+#line 138 "SCDoc.y"
                              { (yyval.doc_node) = doc_node_make((yyvsp[-2].id),(yyvsp[-1].str),NULL); }
-#line 2177 "SCDoc.tab.cpp"
+#line 2178 "SCDoc.tab.cpp"
     break;
 
   case 12: /* headline: CATEGORIES commalist eol  */
-#line 138 "SCDoc.y"
+#line 139 "SCDoc.y"
                                    { (yyval.doc_node) = doc_node_make_take_children("CATEGORIES",NULL,(yyvsp[-1].doc_node)); }
-#line 2183 "SCDoc.tab.cpp"
+#line 2184 "SCDoc.tab.cpp"
     break;
 
   case 13: /* headline: RELATED commalist eol  */
-#line 139 "SCDoc.y"
+#line 140 "SCDoc.y"
                                 { (yyval.doc_node) = doc_node_make_take_children("RELATED",NULL,(yyvsp[-1].doc_node)); }
-#line 2189 "SCDoc.tab.cpp"
+#line 2190 "SCDoc.tab.cpp"
     break;
 
   case 14: /* headtag: CLASS  */
-#line 142 "SCDoc.y"
+#line 143 "SCDoc.y"
                { (yyval.id) = "TITLE"; }
-#line 2195 "SCDoc.tab.cpp"
+#line 2196 "SCDoc.tab.cpp"
     break;
 
   case 15: /* headtag: TITLE  */
-#line 143 "SCDoc.y"
+#line 144 "SCDoc.y"
                { (yyval.id) = "TITLE"; }
-#line 2201 "SCDoc.tab.cpp"
+#line 2202 "SCDoc.tab.cpp"
     break;
 
   case 16: /* headtag: SUMMARY  */
-#line 144 "SCDoc.y"
+#line 145 "SCDoc.y"
                  { (yyval.id) = "SUMMARY"; }
-#line 2207 "SCDoc.tab.cpp"
+#line 2208 "SCDoc.tab.cpp"
     break;
 
   case 17: /* headtag: REDIRECT  */
-#line 145 "SCDoc.y"
+#line 146 "SCDoc.y"
                   { (yyval.id) = "REDIRECT"; }
-#line 2213 "SCDoc.tab.cpp"
+#line 2214 "SCDoc.tab.cpp"
     break;
 
   case 18: /* sectiontag: CLASSMETHODS  */
-#line 148 "SCDoc.y"
+#line 149 "SCDoc.y"
                          { (yyval.id) = "CLASSMETHODS"; method_type = "CMETHOD"; }
-#line 2219 "SCDoc.tab.cpp"
+#line 2220 "SCDoc.tab.cpp"
     break;
 
   case 19: /* sectiontag: INSTANCEMETHODS  */
-#line 149 "SCDoc.y"
+#line 150 "SCDoc.y"
                             { (yyval.id) = "INSTANCEMETHODS"; method_type = "IMETHOD"; }
-#line 2225 "SCDoc.tab.cpp"
+#line 2226 "SCDoc.tab.cpp"
     break;
 
   case 20: /* sectiontag: DESCRIPTION  */
-#line 150 "SCDoc.y"
+#line 151 "SCDoc.y"
                         { (yyval.id) = "DESCRIPTION"; method_type = "METHOD"; }
-#line 2231 "SCDoc.tab.cpp"
+#line 2232 "SCDoc.tab.cpp"
     break;
 
   case 21: /* sectiontag: EXAMPLES  */
-#line 151 "SCDoc.y"
+#line 152 "SCDoc.y"
                      { (yyval.id) = "EXAMPLES"; method_type = "METHOD"; }
-#line 2237 "SCDoc.tab.cpp"
+#line 2238 "SCDoc.tab.cpp"
     break;
 
   case 23: /* optsections: %empty  */
-#line 155 "SCDoc.y"
+#line 156 "SCDoc.y"
              { (yyval.doc_node) = doc_node_make("BODY",NULL,NULL); }
-#line 2243 "SCDoc.tab.cpp"
+#line 2244 "SCDoc.tab.cpp"
     break;
 
   case 24: /* sections: sections section  */
-#line 158 "SCDoc.y"
+#line 159 "SCDoc.y"
                            { (yyval.doc_node) = doc_node_add_child((yyvsp[-1].doc_node),(yyvsp[0].doc_node)); }
-#line 2249 "SCDoc.tab.cpp"
+#line 2250 "SCDoc.tab.cpp"
     break;
 
   case 25: /* sections: section  */
-#line 159 "SCDoc.y"
+#line 160 "SCDoc.y"
                   { (yyval.doc_node) = doc_node_make("BODY",NULL,(yyvsp[0].doc_node)); }
-#line 2255 "SCDoc.tab.cpp"
+#line 2256 "SCDoc.tab.cpp"
     break;
 
   case 26: /* sections: subsubsections  */
-#line 160 "SCDoc.y"
+#line 161 "SCDoc.y"
                          { (yyval.doc_node) = doc_node_make_take_children("BODY",NULL,(yyvsp[0].doc_node)); }
-#line 2261 "SCDoc.tab.cpp"
+#line 2262 "SCDoc.tab.cpp"
     break;
 
   case 27: /* $@1: %empty  */
-#line 163 "SCDoc.y"
+#line 164 "SCDoc.y"
                  { method_type = "METHOD"; }
-#line 2267 "SCDoc.tab.cpp"
+#line 2268 "SCDoc.tab.cpp"
     break;
 
   case 28: /* section: SECTION $@1 words2 eol optsubsections  */
-#line 163 "SCDoc.y"
+#line 164 "SCDoc.y"
                                                                        { (yyval.doc_node) = doc_node_make_take_children("SECTION",(yyvsp[-2].str),(yyvsp[0].doc_node)); }
-#line 2273 "SCDoc.tab.cpp"
+#line 2274 "SCDoc.tab.cpp"
     break;
 
   case 29: /* section: sectiontag optsubsections  */
-#line 164 "SCDoc.y"
+#line 165 "SCDoc.y"
                                    { (yyval.doc_node) = doc_node_make_take_children((yyvsp[-1].id), NULL,(yyvsp[0].doc_node)); }
-#line 2279 "SCDoc.tab.cpp"
+#line 2280 "SCDoc.tab.cpp"
     break;
 
   case 31: /* optsubsections: %empty  */
-#line 168 "SCDoc.y"
+#line 169 "SCDoc.y"
                 { (yyval.doc_node) = NULL; }
-#line 2285 "SCDoc.tab.cpp"
+#line 2286 "SCDoc.tab.cpp"
     break;
 
   case 32: /* subsections: subsections subsection  */
-#line 171 "SCDoc.y"
+#line 172 "SCDoc.y"
                                     { (yyval.doc_node) = doc_node_add_child((yyvsp[-1].doc_node),(yyvsp[0].doc_node)); }
-#line 2291 "SCDoc.tab.cpp"
+#line 2292 "SCDoc.tab.cpp"
     break;
 
   case 33: /* subsections: subsection  */
-#line 172 "SCDoc.y"
+#line 173 "SCDoc.y"
                         { (yyval.doc_node) = doc_node_make("(SUBSECTIONS)",NULL,(yyvsp[0].doc_node)); }
-#line 2297 "SCDoc.tab.cpp"
+#line 2298 "SCDoc.tab.cpp"
     break;
 
   case 35: /* subsection: SUBSECTION words2 eol optsubsubsections  */
-#line 176 "SCDoc.y"
+#line 177 "SCDoc.y"
                                                     { (yyval.doc_node) = doc_node_make_take_children("SUBSECTION", (yyvsp[-2].str), (yyvsp[0].doc_node)); }
-#line 2303 "SCDoc.tab.cpp"
+#line 2304 "SCDoc.tab.cpp"
     break;
 
   case 37: /* optsubsubsections: %empty  */
-#line 180 "SCDoc.y"
+#line 181 "SCDoc.y"
                    { (yyval.doc_node) = NULL; }
-#line 2309 "SCDoc.tab.cpp"
+#line 2310 "SCDoc.tab.cpp"
     break;
 
   case 38: /* subsubsections: subsubsections subsubsection  */
-#line 183 "SCDoc.y"
+#line 184 "SCDoc.y"
                                              { (yyval.doc_node) = doc_node_add_child((yyvsp[-1].doc_node),(yyvsp[0].doc_node)); }
-#line 2315 "SCDoc.tab.cpp"
+#line 2316 "SCDoc.tab.cpp"
     break;
 
   case 39: /* subsubsections: subsubsection  */
-#line 184 "SCDoc.y"
+#line 185 "SCDoc.y"
                               { (yyval.doc_node) = doc_node_make("(SUBSUBSECTIONS)",NULL,(yyvsp[0].doc_node)); }
-#line 2321 "SCDoc.tab.cpp"
+#line 2322 "SCDoc.tab.cpp"
     break;
 
   case 40: /* subsubsections: body  */
-#line 185 "SCDoc.y"
+#line 186 "SCDoc.y"
                      { (yyval.doc_node) = doc_node_make_take_children("(SUBSUBSECTIONS)",NULL,(yyvsp[0].doc_node)); }
-#line 2327 "SCDoc.tab.cpp"
+#line 2328 "SCDoc.tab.cpp"
     break;
 
   case 41: /* subsubsection: SUBSUBSECTION words2 eol optbody  */
-#line 188 "SCDoc.y"
+#line 189 "SCDoc.y"
                                                 { (yyval.doc_node) = doc_node_make_take_children("SUBSUBSECTION", (yyvsp[-2].str), (yyvsp[0].doc_node)); }
-#line 2333 "SCDoc.tab.cpp"
+#line 2334 "SCDoc.tab.cpp"
     break;
 
   case 42: /* subsubsection: METHOD methnames optMETHODARGS eol methodbody  */
-#line 190 "SCDoc.y"
-               {
-                 (yyvsp[-3].doc_node)->id = "METHODNAMES";
-                 (yyval.doc_node) = doc_node_make(method_type,(yyvsp[-2].str),(yyvsp[-3].doc_node));
-                 doc_node_add_child((yyval.doc_node), (yyvsp[0].doc_node));
-               }
-#line 2343 "SCDoc.tab.cpp"
+#line 191 "SCDoc.y"
+    {
+        (yyvsp[-3].doc_node)->id = "METHODNAMES";
+        (yyval.doc_node) = doc_node_make(method_type,(yyvsp[-2].str),(yyvsp[-3].doc_node));
+        doc_node_add_child((yyval.doc_node), (yyvsp[0].doc_node));
+//        doc_node_add_child($2, $3);
+    }
+#line 2345 "SCDoc.tab.cpp"
     break;
 
   case 43: /* subsubsection: COPYMETHOD words eol  */
-#line 195 "SCDoc.y"
+#line 197 "SCDoc.y"
                                     {
-               if ( !(strchr((yyvsp[-1].str), ' ')) ) {
-                 yyerror("COPYMETHOD requires 2 arguments (class name and method name)");
-                 YYERROR;
-               }
+                if ( !(strchr((yyvsp[-1].str), ' ')) ) {
+                  yyerror("COPYMETHOD requires 2 arguments (class name and method name)");
+                  YYERROR;
+                }
 
-               (yyval.doc_node) = doc_node_make(
-               stringEqual(method_type, "CMETHOD") ? "CCOPYMETHOD"
-                                                   : (stringEqual(method_type, "IMETHOD") ? "ICOPYMETHOD"
-                                                                                          : "COPYMETHOD"),
-               (yyvsp[-1].str), NULL
-               ); }
-#line 2360 "SCDoc.tab.cpp"
+                (yyval.doc_node) = doc_node_make(
+                stringEqual(method_type, "CMETHOD") ? "CCOPYMETHOD"
+                                                    : (stringEqual(method_type, "IMETHOD") ? "ICOPYMETHOD"
+                                                                                           : "COPYMETHOD"),
+                (yyvsp[-1].str), NULL
+                ); }
+#line 2362 "SCDoc.tab.cpp"
     break;
 
   case 44: /* subsubsection: PRIVATE commalist eoleof  */
-#line 207 "SCDoc.y"
+#line 209 "SCDoc.y"
                                         { (yyval.doc_node) = doc_node_make_take_children( stringEqual(method_type, "CMETHOD") ? "CPRIVATE"
                                                                                                                 : "IPRIVATE",
                 NULL, (yyvsp[-1].doc_node)); }
-#line 2368 "SCDoc.tab.cpp"
+#line 2370 "SCDoc.tab.cpp"
     break;
 
   case 45: /* optMETHODARGS: %empty  */
-#line 212 "SCDoc.y"
+#line 214 "SCDoc.y"
                { (yyval.str) = NULL; }
-#line 2374 "SCDoc.tab.cpp"
+#line 2376 "SCDoc.tab.cpp"
     break;
 
   case 46: /* optMETHODARGS: "arguments string"  */
-#line 214 "SCDoc.y"
+#line 216 "SCDoc.y"
     {
 //        $$ = doc_node_make("ARGSTRING",$1,NULL);
         (yyval.str) = (yyvsp[0].str);
@@ -2383,11 +2385,11 @@ yyreduce:
             YYERROR;
         }
     }
-#line 2387 "SCDoc.tab.cpp"
+#line 2389 "SCDoc.tab.cpp"
     break;
 
   case 47: /* methodname: "method name"  */
-#line 225 "SCDoc.y"
+#line 227 "SCDoc.y"
     {
         char *p = (yyvsp[0].str)+strlen((yyvsp[0].str))-1;
         if(*p=='_') {
@@ -2396,441 +2398,441 @@ yyreduce:
         };
         (yyval.str) = (yyvsp[0].str);
     }
-#line 2400 "SCDoc.tab.cpp"
+#line 2402 "SCDoc.tab.cpp"
     break;
 
   case 48: /* methnames: methnames COMMA methodname  */
-#line 235 "SCDoc.y"
+#line 237 "SCDoc.y"
                                       { free((yyvsp[-1].str)); (yyvsp[-1].str) = NULL; (yyval.doc_node) = doc_node_add_child((yyvsp[-2].doc_node), doc_node_make("STRING",(yyvsp[0].str),NULL)); }
-#line 2406 "SCDoc.tab.cpp"
+#line 2408 "SCDoc.tab.cpp"
     break;
 
   case 49: /* methnames: methodname  */
-#line 236 "SCDoc.y"
+#line 238 "SCDoc.y"
                       { (yyval.doc_node) = doc_node_make("(METHODNAMES)",NULL,doc_node_make("STRING",(yyvsp[0].str),NULL)); }
-#line 2412 "SCDoc.tab.cpp"
+#line 2414 "SCDoc.tab.cpp"
     break;
 
   case 50: /* methodbody: optbody optargs optreturns optdiscussion  */
-#line 240 "SCDoc.y"
+#line 242 "SCDoc.y"
     {
         (yyval.doc_node) = doc_node_make_take_children("METHODBODY",NULL,(yyvsp[-3].doc_node));
         doc_node_add_child((yyval.doc_node), (yyvsp[-2].doc_node));
         doc_node_add_child((yyval.doc_node), (yyvsp[-1].doc_node));
         doc_node_add_child((yyval.doc_node), (yyvsp[0].doc_node));
     }
-#line 2423 "SCDoc.tab.cpp"
+#line 2425 "SCDoc.tab.cpp"
     break;
 
   case 52: /* optbody: %empty  */
-#line 249 "SCDoc.y"
+#line 251 "SCDoc.y"
          { (yyval.doc_node) = NULL; }
-#line 2429 "SCDoc.tab.cpp"
+#line 2431 "SCDoc.tab.cpp"
     break;
 
   case 54: /* optargs: %empty  */
-#line 253 "SCDoc.y"
+#line 255 "SCDoc.y"
          { (yyval.doc_node) = NULL; }
-#line 2435 "SCDoc.tab.cpp"
+#line 2437 "SCDoc.tab.cpp"
     break;
 
   case 55: /* args: args arg  */
-#line 256 "SCDoc.y"
+#line 258 "SCDoc.y"
                { (yyval.doc_node) = doc_node_add_child((yyvsp[-1].doc_node),(yyvsp[0].doc_node)); }
-#line 2441 "SCDoc.tab.cpp"
+#line 2443 "SCDoc.tab.cpp"
     break;
 
   case 56: /* args: arg  */
-#line 257 "SCDoc.y"
+#line 259 "SCDoc.y"
           { (yyval.doc_node) = doc_node_make("ARGUMENTS",NULL,(yyvsp[0].doc_node)); }
-#line 2447 "SCDoc.tab.cpp"
+#line 2449 "SCDoc.tab.cpp"
     break;
 
   case 57: /* arg: ARGUMENT words eol optbody  */
-#line 260 "SCDoc.y"
+#line 262 "SCDoc.y"
                                 { (yyval.doc_node) = doc_node_make_take_children("ARGUMENT", (yyvsp[-2].str), (yyvsp[0].doc_node)); }
-#line 2453 "SCDoc.tab.cpp"
+#line 2455 "SCDoc.tab.cpp"
     break;
 
   case 58: /* arg: ARGUMENT eol body  */
-#line 261 "SCDoc.y"
+#line 263 "SCDoc.y"
                        { (yyval.doc_node) = doc_node_make_take_children("ARGUMENT", NULL, (yyvsp[0].doc_node)); }
-#line 2459 "SCDoc.tab.cpp"
+#line 2461 "SCDoc.tab.cpp"
     break;
 
   case 59: /* optreturns: RETURNS body  */
-#line 264 "SCDoc.y"
+#line 266 "SCDoc.y"
                          { (yyval.doc_node) = doc_node_make_take_children("RETURNS",NULL,(yyvsp[0].doc_node)); }
-#line 2465 "SCDoc.tab.cpp"
+#line 2467 "SCDoc.tab.cpp"
     break;
 
   case 60: /* optreturns: %empty  */
-#line 265 "SCDoc.y"
+#line 267 "SCDoc.y"
             { (yyval.doc_node) = NULL; }
-#line 2471 "SCDoc.tab.cpp"
+#line 2473 "SCDoc.tab.cpp"
     break;
 
   case 61: /* optdiscussion: DISCUSSION body  */
-#line 268 "SCDoc.y"
+#line 270 "SCDoc.y"
                                { (yyval.doc_node) = doc_node_make_take_children("DISCUSSION",NULL,(yyvsp[0].doc_node)); }
-#line 2477 "SCDoc.tab.cpp"
+#line 2479 "SCDoc.tab.cpp"
     break;
 
   case 62: /* optdiscussion: %empty  */
-#line 269 "SCDoc.y"
+#line 271 "SCDoc.y"
                { (yyval.doc_node) = NULL; }
-#line 2483 "SCDoc.tab.cpp"
+#line 2485 "SCDoc.tab.cpp"
     break;
 
   case 65: /* blockA: blockB bodyelem  */
-#line 281 "SCDoc.y"
+#line 283 "SCDoc.y"
                         { (yyval.doc_node) = doc_node_add_child((yyvsp[-1].doc_node),(yyvsp[0].doc_node)); }
-#line 2489 "SCDoc.tab.cpp"
+#line 2491 "SCDoc.tab.cpp"
     break;
 
   case 66: /* blockA: blockA bodyelem  */
-#line 282 "SCDoc.y"
+#line 284 "SCDoc.y"
                         { (yyval.doc_node) = doc_node_add_child((yyvsp[-1].doc_node),(yyvsp[0].doc_node)); }
-#line 2495 "SCDoc.tab.cpp"
+#line 2497 "SCDoc.tab.cpp"
     break;
 
   case 67: /* blockA: bodyelem  */
-#line 283 "SCDoc.y"
+#line 285 "SCDoc.y"
                  { (yyval.doc_node) = doc_node_make("(SECTIONBODY)",NULL,(yyvsp[0].doc_node)); }
-#line 2501 "SCDoc.tab.cpp"
+#line 2503 "SCDoc.tab.cpp"
     break;
 
   case 68: /* blockB: blockA prose  */
-#line 286 "SCDoc.y"
+#line 288 "SCDoc.y"
                      { (yyval.doc_node) = doc_node_add_child((yyvsp[-1].doc_node),(yyvsp[0].doc_node)); }
-#line 2507 "SCDoc.tab.cpp"
+#line 2509 "SCDoc.tab.cpp"
     break;
 
   case 69: /* blockB: prose  */
-#line 287 "SCDoc.y"
+#line 289 "SCDoc.y"
               { (yyval.doc_node) = doc_node_make("(SECTIONBODY)",NULL,(yyvsp[0].doc_node)); }
-#line 2513 "SCDoc.tab.cpp"
+#line 2515 "SCDoc.tab.cpp"
     break;
 
   case 70: /* bodyelem: rangetag body "::"  */
-#line 290 "SCDoc.y"
+#line 292 "SCDoc.y"
                                { (yyval.doc_node) = doc_node_make_take_children((yyvsp[-2].id),NULL,(yyvsp[-1].doc_node)); }
-#line 2519 "SCDoc.tab.cpp"
+#line 2521 "SCDoc.tab.cpp"
     break;
 
   case 71: /* bodyelem: listtag listbody "::"  */
-#line 291 "SCDoc.y"
+#line 293 "SCDoc.y"
                                   { (yyval.doc_node) = doc_node_make_take_children((yyvsp[-2].id),NULL,(yyvsp[-1].doc_node)); }
-#line 2525 "SCDoc.tab.cpp"
+#line 2527 "SCDoc.tab.cpp"
     break;
 
   case 72: /* bodyelem: TABLE tablebody "::"  */
-#line 292 "SCDoc.y"
+#line 294 "SCDoc.y"
                                  { (yyval.doc_node) = doc_node_make_take_children("TABLE",NULL,(yyvsp[-1].doc_node)); }
-#line 2531 "SCDoc.tab.cpp"
+#line 2533 "SCDoc.tab.cpp"
     break;
 
   case 73: /* bodyelem: DEFINITIONLIST deflistbody "::"  */
-#line 293 "SCDoc.y"
+#line 295 "SCDoc.y"
                                             { (yyval.doc_node) = doc_node_make_take_children("DEFINITIONLIST",NULL,(yyvsp[-1].doc_node)); }
-#line 2537 "SCDoc.tab.cpp"
+#line 2539 "SCDoc.tab.cpp"
     break;
 
   case 74: /* bodyelem: blocktag wordsnl "::"  */
-#line 294 "SCDoc.y"
+#line 296 "SCDoc.y"
                                   { (yyval.doc_node) = doc_node_make((yyvsp[-2].id),(yyvsp[-1].str),NULL); }
-#line 2543 "SCDoc.tab.cpp"
+#line 2545 "SCDoc.tab.cpp"
     break;
 
   case 75: /* bodyelem: CLASSTREE words eoleof  */
-#line 295 "SCDoc.y"
+#line 297 "SCDoc.y"
                                  { (yyval.doc_node) = doc_node_make("CLASSTREE",(yyvsp[-1].str),NULL); }
-#line 2549 "SCDoc.tab.cpp"
+#line 2551 "SCDoc.tab.cpp"
     break;
 
   case 76: /* bodyelem: KEYWORD commalist eoleof  */
-#line 296 "SCDoc.y"
+#line 298 "SCDoc.y"
                                    { (yyval.doc_node) = doc_node_make_take_children("KEYWORD",NULL,(yyvsp[-1].doc_node));
 //            printf("keyword '%s'\n",$2->children[0]->text);
         }
-#line 2557 "SCDoc.tab.cpp"
+#line 2559 "SCDoc.tab.cpp"
     break;
 
   case 77: /* bodyelem: "empty lines"  */
-#line 299 "SCDoc.y"
+#line 301 "SCDoc.y"
                      { (yyval.doc_node) = NULL; }
-#line 2563 "SCDoc.tab.cpp"
+#line 2565 "SCDoc.tab.cpp"
     break;
 
   case 78: /* bodyelem: IMAGE words2 "::"  */
-#line 300 "SCDoc.y"
+#line 302 "SCDoc.y"
                               { (yyval.doc_node) = doc_node_make("IMAGE",(yyvsp[-1].str),NULL); }
-#line 2569 "SCDoc.tab.cpp"
+#line 2571 "SCDoc.tab.cpp"
     break;
 
   case 79: /* prose: prose proseelem  */
-#line 303 "SCDoc.y"
+#line 305 "SCDoc.y"
                        { (yyval.doc_node) = doc_node_add_child((yyvsp[-1].doc_node), (yyvsp[0].doc_node)); }
-#line 2575 "SCDoc.tab.cpp"
+#line 2577 "SCDoc.tab.cpp"
     break;
 
   case 80: /* prose: proseelem  */
-#line 304 "SCDoc.y"
+#line 306 "SCDoc.y"
                  { (yyval.doc_node) = doc_node_make("PROSE",NULL,(yyvsp[0].doc_node)); }
-#line 2581 "SCDoc.tab.cpp"
+#line 2583 "SCDoc.tab.cpp"
     break;
 
   case 81: /* proseelem: anyword  */
-#line 307 "SCDoc.y"
+#line 309 "SCDoc.y"
                    { (yyval.doc_node) = doc_node_make(NODE_TEXT,(yyvsp[0].str),NULL); }
-#line 2587 "SCDoc.tab.cpp"
+#line 2589 "SCDoc.tab.cpp"
     break;
 
   case 82: /* proseelem: URL  */
-#line 308 "SCDoc.y"
+#line 310 "SCDoc.y"
                { (yyval.doc_node) = doc_node_make("LINK",(yyvsp[0].str),NULL); }
-#line 2593 "SCDoc.tab.cpp"
+#line 2595 "SCDoc.tab.cpp"
     break;
 
   case 83: /* proseelem: inlinetag words "::"  */
-#line 309 "SCDoc.y"
+#line 311 "SCDoc.y"
                                   { (yyval.doc_node) = doc_node_make((yyvsp[-2].id),(yyvsp[-1].str),NULL); }
-#line 2599 "SCDoc.tab.cpp"
+#line 2601 "SCDoc.tab.cpp"
     break;
 
   case 84: /* proseelem: FOOTNOTE body "::"  */
-#line 310 "SCDoc.y"
+#line 312 "SCDoc.y"
                                 { (yyval.doc_node) = doc_node_make_take_children("FOOTNOTE",NULL,(yyvsp[-1].doc_node)); }
-#line 2605 "SCDoc.tab.cpp"
+#line 2607 "SCDoc.tab.cpp"
     break;
 
   case 85: /* proseelem: "newline"  */
-#line 311 "SCDoc.y"
+#line 313 "SCDoc.y"
                    { (yyval.doc_node) = doc_node_create(NODE_NL); }
-#line 2611 "SCDoc.tab.cpp"
+#line 2613 "SCDoc.tab.cpp"
     break;
 
   case 86: /* inlinetag: LINK  */
-#line 314 "SCDoc.y"
+#line 316 "SCDoc.y"
                 { (yyval.id) = "LINK"; }
-#line 2617 "SCDoc.tab.cpp"
+#line 2619 "SCDoc.tab.cpp"
     break;
 
   case 87: /* inlinetag: STRONG  */
-#line 315 "SCDoc.y"
+#line 317 "SCDoc.y"
                   { (yyval.id) = "STRONG"; }
-#line 2623 "SCDoc.tab.cpp"
+#line 2625 "SCDoc.tab.cpp"
     break;
 
   case 88: /* inlinetag: SOFT  */
-#line 316 "SCDoc.y"
+#line 318 "SCDoc.y"
                 { (yyval.id) = "SOFT"; }
-#line 2629 "SCDoc.tab.cpp"
+#line 2631 "SCDoc.tab.cpp"
     break;
 
   case 89: /* inlinetag: EMPHASIS  */
-#line 317 "SCDoc.y"
+#line 319 "SCDoc.y"
                     { (yyval.id) = "EMPHASIS"; }
-#line 2635 "SCDoc.tab.cpp"
+#line 2637 "SCDoc.tab.cpp"
     break;
 
   case 90: /* inlinetag: CODE  */
-#line 318 "SCDoc.y"
+#line 320 "SCDoc.y"
                 { (yyval.id) = "CODE"; }
-#line 2641 "SCDoc.tab.cpp"
+#line 2643 "SCDoc.tab.cpp"
     break;
 
   case 91: /* inlinetag: TELETYPE  */
-#line 319 "SCDoc.y"
+#line 321 "SCDoc.y"
                     { (yyval.id) = "TELETYPE"; }
-#line 2647 "SCDoc.tab.cpp"
+#line 2649 "SCDoc.tab.cpp"
     break;
 
   case 92: /* inlinetag: MATH  */
-#line 320 "SCDoc.y"
+#line 322 "SCDoc.y"
                 { (yyval.id) = "MATH"; }
-#line 2653 "SCDoc.tab.cpp"
+#line 2655 "SCDoc.tab.cpp"
     break;
 
   case 93: /* inlinetag: ANCHOR  */
-#line 321 "SCDoc.y"
+#line 323 "SCDoc.y"
                   { (yyval.id) = "ANCHOR"; }
-#line 2659 "SCDoc.tab.cpp"
+#line 2661 "SCDoc.tab.cpp"
     break;
 
   case 94: /* blocktag: "CODE block"  */
-#line 324 "SCDoc.y"
+#line 326 "SCDoc.y"
                     { (yyval.id) = "CODEBLOCK"; }
-#line 2665 "SCDoc.tab.cpp"
+#line 2667 "SCDoc.tab.cpp"
     break;
 
   case 95: /* blocktag: "MATH block"  */
-#line 325 "SCDoc.y"
+#line 327 "SCDoc.y"
                     { (yyval.id) = "MATHBLOCK"; }
-#line 2671 "SCDoc.tab.cpp"
+#line 2673 "SCDoc.tab.cpp"
     break;
 
   case 96: /* blocktag: "TELETYPE block"  */
-#line 326 "SCDoc.y"
+#line 328 "SCDoc.y"
                         { (yyval.id) = "TELETYPEBLOCK"; }
-#line 2677 "SCDoc.tab.cpp"
+#line 2679 "SCDoc.tab.cpp"
     break;
 
   case 97: /* listtag: LIST  */
-#line 329 "SCDoc.y"
+#line 331 "SCDoc.y"
               { (yyval.id) = "LIST"; }
-#line 2683 "SCDoc.tab.cpp"
+#line 2685 "SCDoc.tab.cpp"
     break;
 
   case 98: /* listtag: TREE  */
-#line 330 "SCDoc.y"
+#line 332 "SCDoc.y"
               { (yyval.id) = "TREE"; }
-#line 2689 "SCDoc.tab.cpp"
+#line 2691 "SCDoc.tab.cpp"
     break;
 
   case 99: /* listtag: NUMBEREDLIST  */
-#line 331 "SCDoc.y"
+#line 333 "SCDoc.y"
                       { (yyval.id) = "NUMBEREDLIST"; }
-#line 2695 "SCDoc.tab.cpp"
+#line 2697 "SCDoc.tab.cpp"
     break;
 
   case 100: /* rangetag: WARNING  */
-#line 334 "SCDoc.y"
+#line 336 "SCDoc.y"
                   { (yyval.id) = "WARNING"; }
-#line 2701 "SCDoc.tab.cpp"
+#line 2703 "SCDoc.tab.cpp"
     break;
 
   case 101: /* rangetag: NOTE  */
-#line 335 "SCDoc.y"
+#line 337 "SCDoc.y"
                { (yyval.id) = "NOTE"; }
-#line 2707 "SCDoc.tab.cpp"
+#line 2709 "SCDoc.tab.cpp"
     break;
 
   case 102: /* listbody: listbody "##" body  */
-#line 338 "SCDoc.y"
+#line 340 "SCDoc.y"
                                { (yyval.doc_node) = doc_node_add_child((yyvsp[-2].doc_node), doc_node_make_take_children("ITEM",NULL,(yyvsp[0].doc_node))); }
-#line 2713 "SCDoc.tab.cpp"
+#line 2715 "SCDoc.tab.cpp"
     break;
 
   case 103: /* listbody: "##" body  */
-#line 339 "SCDoc.y"
+#line 341 "SCDoc.y"
                       { (yyval.doc_node) = doc_node_make("(LISTBODY)",NULL, doc_node_make_take_children("ITEM",NULL,(yyvsp[0].doc_node))); }
-#line 2719 "SCDoc.tab.cpp"
+#line 2721 "SCDoc.tab.cpp"
     break;
 
   case 104: /* tablerow: "##" tablecells  */
-#line 342 "SCDoc.y"
+#line 344 "SCDoc.y"
                             { (yyval.doc_node) = doc_node_make_take_children("TABROW",NULL,(yyvsp[0].doc_node)); }
-#line 2725 "SCDoc.tab.cpp"
+#line 2727 "SCDoc.tab.cpp"
     break;
 
   case 105: /* tablebody: tablebody tablerow  */
-#line 345 "SCDoc.y"
+#line 347 "SCDoc.y"
                               { (yyval.doc_node) = doc_node_add_child((yyvsp[-1].doc_node),(yyvsp[0].doc_node)); }
-#line 2731 "SCDoc.tab.cpp"
+#line 2733 "SCDoc.tab.cpp"
     break;
 
   case 106: /* tablebody: tablerow  */
-#line 346 "SCDoc.y"
+#line 348 "SCDoc.y"
                     { (yyval.doc_node) = doc_node_make("(TABLEBODY)",NULL,(yyvsp[0].doc_node)); }
-#line 2737 "SCDoc.tab.cpp"
+#line 2739 "SCDoc.tab.cpp"
     break;
 
   case 107: /* tablecells: tablecells "||" optbody  */
-#line 349 "SCDoc.y"
+#line 351 "SCDoc.y"
                                     { (yyval.doc_node) = doc_node_add_child((yyvsp[-2].doc_node), doc_node_make_take_children("TABCOL",NULL,(yyvsp[0].doc_node))); }
-#line 2743 "SCDoc.tab.cpp"
+#line 2745 "SCDoc.tab.cpp"
     break;
 
   case 108: /* tablecells: optbody  */
-#line 350 "SCDoc.y"
+#line 352 "SCDoc.y"
                     { (yyval.doc_node) = doc_node_make("(TABLECELLS)",NULL, doc_node_make_take_children("TABCOL",NULL,(yyvsp[0].doc_node))); }
-#line 2749 "SCDoc.tab.cpp"
+#line 2751 "SCDoc.tab.cpp"
     break;
 
   case 109: /* defterms: defterms "##" body  */
-#line 353 "SCDoc.y"
+#line 355 "SCDoc.y"
                                { (yyval.doc_node) = doc_node_add_child((yyvsp[-2].doc_node),doc_node_make_take_children("TERM",NULL,(yyvsp[0].doc_node))); }
-#line 2755 "SCDoc.tab.cpp"
+#line 2757 "SCDoc.tab.cpp"
     break;
 
   case 110: /* defterms: "##" body  */
-#line 354 "SCDoc.y"
+#line 356 "SCDoc.y"
                       { (yyval.doc_node) = doc_node_make("(TERMS)",NULL,doc_node_make_take_children("TERM",NULL,(yyvsp[0].doc_node))); }
-#line 2761 "SCDoc.tab.cpp"
+#line 2763 "SCDoc.tab.cpp"
     break;
 
   case 111: /* deflistrow: defterms "||" optbody  */
-#line 358 "SCDoc.y"
+#line 360 "SCDoc.y"
     {
         (yyval.doc_node) = doc_node_make_take_children("DEFLISTITEM", NULL, (yyvsp[-2].doc_node));
         doc_node_add_child((yyval.doc_node), doc_node_make_take_children("DEFINITION", NULL, (yyvsp[0].doc_node)));
     }
-#line 2770 "SCDoc.tab.cpp"
+#line 2772 "SCDoc.tab.cpp"
     break;
 
   case 112: /* deflistbody: deflistbody deflistrow  */
-#line 364 "SCDoc.y"
+#line 366 "SCDoc.y"
                                     { (yyval.doc_node) = doc_node_add_child((yyvsp[-1].doc_node),(yyvsp[0].doc_node)); }
-#line 2776 "SCDoc.tab.cpp"
+#line 2778 "SCDoc.tab.cpp"
     break;
 
   case 113: /* deflistbody: deflistrow  */
-#line 365 "SCDoc.y"
+#line 367 "SCDoc.y"
                         { (yyval.doc_node) = doc_node_make("(DEFLISTBODY)",NULL,(yyvsp[0].doc_node)); }
-#line 2782 "SCDoc.tab.cpp"
+#line 2784 "SCDoc.tab.cpp"
     break;
 
   case 118: /* words: words anyword  */
-#line 376 "SCDoc.y"
+#line 378 "SCDoc.y"
                      { (yyval.str) = strmerge((yyvsp[-1].str),(yyvsp[0].str)); }
-#line 2788 "SCDoc.tab.cpp"
+#line 2790 "SCDoc.tab.cpp"
     break;
 
   case 120: /* words2: words2 anywordurl  */
-#line 380 "SCDoc.y"
+#line 382 "SCDoc.y"
                           { (yyval.str) = strmerge((yyvsp[-1].str),(yyvsp[0].str)); }
-#line 2794 "SCDoc.tab.cpp"
+#line 2796 "SCDoc.tab.cpp"
     break;
 
   case 127: /* anywordnl: eol  */
-#line 393 "SCDoc.y"
+#line 395 "SCDoc.y"
                { (yyval.str) = strdup("\n"); }
-#line 2800 "SCDoc.tab.cpp"
+#line 2802 "SCDoc.tab.cpp"
     break;
 
   case 128: /* wordsnl: wordsnl anywordnl  */
-#line 396 "SCDoc.y"
+#line 398 "SCDoc.y"
                            { (yyval.str) = strmerge((yyvsp[-1].str),(yyvsp[0].str)); }
-#line 2806 "SCDoc.tab.cpp"
+#line 2808 "SCDoc.tab.cpp"
     break;
 
   case 130: /* nocommawords: nocommawords "text"  */
-#line 400 "SCDoc.y"
+#line 402 "SCDoc.y"
                                 { (yyval.str) = strmerge((yyvsp[-1].str),(yyvsp[0].str)); }
-#line 2812 "SCDoc.tab.cpp"
+#line 2814 "SCDoc.tab.cpp"
     break;
 
   case 131: /* nocommawords: nocommawords URL  */
-#line 401 "SCDoc.y"
+#line 403 "SCDoc.y"
                                 { (yyval.str) = strmerge((yyvsp[-1].str),(yyvsp[0].str)); }
-#line 2818 "SCDoc.tab.cpp"
+#line 2820 "SCDoc.tab.cpp"
     break;
 
   case 134: /* commalist: commalist COMMA nocommawords  */
-#line 406 "SCDoc.y"
+#line 408 "SCDoc.y"
                                         { free((yyvsp[-1].str)); (yyvsp[-1].str)=NULL; (yyval.doc_node) = doc_node_add_child((yyvsp[-2].doc_node),doc_node_make("STRING",(yyvsp[0].str),NULL)); }
-#line 2824 "SCDoc.tab.cpp"
+#line 2826 "SCDoc.tab.cpp"
     break;
 
   case 135: /* commalist: nocommawords  */
-#line 407 "SCDoc.y"
+#line 409 "SCDoc.y"
                         { (yyval.doc_node) = doc_node_make("(COMMALIST)",NULL,doc_node_make("STRING",(yyvsp[0].str),NULL)); }
-#line 2830 "SCDoc.tab.cpp"
+#line 2832 "SCDoc.tab.cpp"
     break;
 
 
-#line 2834 "SCDoc.tab.cpp"
+#line 2836 "SCDoc.tab.cpp"
 
       default: break;
     }
@@ -3059,7 +3061,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 410 "SCDoc.y"
+#line 412 "SCDoc.y"
 
 
 DocNode * scdoc_parse_run(int mode) {
@@ -3086,7 +3088,14 @@ DocNode * scdoc_parse_run(int mode) {
 
 void scdocerror(const char *str)
 {
-    error("In %s:\n  At line %d: %s\n\n",scdoc_current_file,scdoclineno,str);
+
+    error("In %s:\n  At line %d: %s\n\n", scdoc_current_file, scdoclineno, str);
+
+    std::stringstream ss{};
+
+    ss << "In " << scdoc_current_file << "\nAt line " <<  scdoclineno << ": " << str << "\n\n";
+    scdoc_errors.push_back(ss.str());
+
 
 /*  FIXME: this does not work well, since the reported linenumber is often *after* the actual error line
     fseek(scdocin, 0, SEEK_SET);
