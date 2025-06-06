@@ -18,7 +18,8 @@ OSXPlatform : UnixPlatform {
 	}
 
 	startup {
-		Server.program = "exec %/scsynth".format((Platform.resourceDir +/+ "../Resources").shellQuote);
+		var scsynthPath = "SCSYNTH_PATH".getenv ?? { Platform.resourceDir +/+ "../Resources/scsynth" };
+		Server.program = "exec %".format(scsynthPath.shellQuote);
 
 		Score.program = Server.program;
 
