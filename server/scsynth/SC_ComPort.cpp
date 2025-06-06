@@ -245,6 +245,9 @@ class SC_UdpInPort {
                                                  asio::placeholders::bytes_transferred));
     }
 
+    static constexpr int receiveBufferSize = 8 * 1024 * 1024;
+    static constexpr int sendBufferSize = 8 * 1024 * 1024;
+
 public:
     boost::asio::ip::udp::socket udpSocket;
 
@@ -263,8 +266,8 @@ public:
 
         boost::asio::socket_base::send_buffer_size sendBufferSize;
         udpSocket.get_option(sendBufferSize);
-        if (sendBufferSize.value() < 8 * 1024 * 1024) {
-            sendBufferSize = 8 * 1024 * 1024;
+        if (sendBufferSize.value() < SC_UdpInPort::sendBufferSize) {
+            sendBufferSize = SC_UdpInPort::sendBufferSize;
             try {
                 udpSocket.set_option(sendBufferSize);
             } catch (boost::system::system_error& e) {}
@@ -273,8 +276,8 @@ public:
 
         boost::asio::socket_base::receive_buffer_size receiveBufferSize;
         udpSocket.get_option(receiveBufferSize);
-        if (receiveBufferSize.value() < 8 * 1024 * 1024) {
-            receiveBufferSize = 8 * 1024 * 1024;
+        if (receiveBufferSize.value() < SC_UdpInPort::receiveBufferSize) {
+            receiveBufferSize = SC_UdpInPort::receiveBufferSize;
             try {
                 udpSocket.set_option(receiveBufferSize);
             } catch (boost::system::system_error& e) {}

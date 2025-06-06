@@ -613,8 +613,8 @@ void sc_osc_handler::open_udp_socket(ip::address address, unsigned int port) {
 
     boost::asio::socket_base::send_buffer_size send_buffer_size;
     udp_socket.get_option(send_buffer_size);
-    if (send_buffer_size.value() < 8 * 1024 * 1024) {
-        send_buffer_size = 8 * 1024 * 1024;
+    if (send_buffer_size.value() < sc_osc_handler::udp_send_buffer_size) {
+        send_buffer_size = sc_osc_handler::udp_send_buffer_size;
         try {
             udp_socket.set_option(send_buffer_size);
         } catch (boost::system::system_error& e) {}
@@ -623,8 +623,8 @@ void sc_osc_handler::open_udp_socket(ip::address address, unsigned int port) {
 
     boost::asio::socket_base::receive_buffer_size recv_buffer_size;
     udp_socket.get_option(recv_buffer_size);
-    if (recv_buffer_size.value() < 8 * 1024 * 1024) {
-        recv_buffer_size = 8 * 1024 * 1024;
+    if (recv_buffer_size.value() < sc_osc_handler::udp_receive_buffer_size) {
+        recv_buffer_size = sc_osc_handler::udp_receive_buffer_size;
         try {
             udp_socket.set_option(recv_buffer_size);
         } catch (boost::system::system_error& e) {}
