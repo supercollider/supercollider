@@ -1,6 +1,6 @@
-#line 2 "lex.scdoc.cpp"
+#line 1 "lex.scdoc.cpp"
 
-#line 4 "lex.scdoc.cpp"
+#line 3 "lex.scdoc.cpp"
 
 #define  YY_INT_ALIGNED short int
 
@@ -2119,10 +2119,10 @@ int scdoc_start_token = 0;
 
 static int method_caller;
 
-#line 2123 "lex.scdoc.cpp"
+#line 2122 "lex.scdoc.cpp"
 #define YY_NO_UNISTD_H 1
 
-#line 2126 "lex.scdoc.cpp"
+#line 2125 "lex.scdoc.cpp"
 
 #define INITIAL 0
 #define verbatim 1
@@ -2362,7 +2362,7 @@ if (scdoc_start_token) {
 
 
 
-#line 2366 "lex.scdoc.cpp"
+#line 2365 "lex.scdoc.cpp"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -2994,7 +2994,7 @@ YY_RULE_SETUP
 #line 183 "SCDoc.l"
 ECHO;
 	YY_BREAK
-#line 2998 "lex.scdoc.cpp"
+#line 2997 "lex.scdoc.cpp"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(verbatim):
 case YY_STATE_EOF(verbatim2):
