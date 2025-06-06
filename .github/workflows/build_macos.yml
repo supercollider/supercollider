@@ -20,7 +20,8 @@ jobs:
             qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
             deployment-target: "11"
             cmake-architectures: "arm64"
-            homebrew-packages: "libsndfile readline fftw portaudio"
+            # coreutils is installed in order to obtain timeout which is necessary for building help
+            homebrew-packages: "libsndfile readline fftw portaudio coreutils"
             vcpkg-packages: ""
             vcpkg-triplet: ""
             extra-cmake-flags: "" # -D SC_VERIFY_APP=ON # verify app doesn't seem to work with official qt6
