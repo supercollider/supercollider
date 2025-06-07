@@ -373,9 +373,11 @@ FreqScope {
 				});
 			};
 
-			window = Window("Freq Analyzer", rect.resizeBy(pad[0] + pad[1] + 4, pad[2] + pad[3] + 4)
-				.moveTo(5, Window.screenBounds.height - Window.availableBounds.top - Window.availableBounds.height),
-				false
+			window = Window(
+				"Freq Analyzer",
+				rect.resizeBy(pad[0] + pad[1] + 4, pad[2] + pad[3] + 4)
+				.moveTo(5, Window.availableBottom)
+				, false
 			);
 
 			freqLabel.size.do({ arg i;

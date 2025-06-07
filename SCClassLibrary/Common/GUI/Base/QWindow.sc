@@ -172,6 +172,10 @@ Window {
 	onClose { ^view.onClose }
 	onClose_ { arg func; view.onClose_(func) }
 
+	*availableBottom {
+		^this.screenBounds.height - this.availableBounds.top - this.availableBounds.height
+	}
+
 	// TODO
 	addToOnClose{ arg function; }
 	removeFromOnClose{ arg function; }

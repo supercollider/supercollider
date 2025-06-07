@@ -241,9 +241,9 @@ ServerMeter {
 		window = Window.new(
 			server.name ++ " levels (dBFS)",
 			Rect(
-				5, 
-				Window.screenBounds.height - Window.availableBounds.top - Window.availableBounds.height + 328 + 70, 
-				ServerMeterView.getWidth(numIns, numOuts), 
+				5,
+				328 + 60 + Window.availableBottom,
+				ServerMeterView.getWidth(numIns, numOuts),
 				ServerMeterView.height
 			),
 			false);
