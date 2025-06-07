@@ -127,117 +127,133 @@ ServerOptions {
 		inDevice = outDevice = dev;
 	}
 
-	asOptionsString { | port = 57110 |
+	asOptionsArray { | port = 57110 |
 		var o;
-		o = if(protocol == \tcp, " -t ", " -u ");
-		o = o ++ port;
+		o = if(protocol == \tcp, ["-t"], ["-u"]);
+		o = o ++ [port.asString];
 
-		o = o ++ " -a " ++ (numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels) ;
-		o = o ++ " -i " ++ numInputBusChannels;
-		o = o ++ " -o " ++ numOutputBusChannels;
+		o = o ++ ["-a", (numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels).asString] ;
+		o = o ++ ["-i", numInputBusChannels.asString];
+		o = o ++ ["-o", numOutputBusChannels.asString];
 
 		if (bindAddress != defaultValues[\bindAddress], {
-			o = o ++ " -B " ++ bindAddress;
+			o = o ++ ["-B", bindAddress.asString];
 		});
 		if (numControlBusChannels !== defaultValues[\numControlBusChannels], {
-			numControlBusChannels = numControlBusChannels.asInteger;
-			o = o ++ " -c " ++ numControlBusChannels;
+			numControlBusChannels = numControlBusChannels.asInteger.asString;
+			o = o ++ ["-c", numControlBusChannels.asString];
 		});
 		if (numBuffers !== defaultValues[\numBuffers], {
 			numBuffers = numBuffers.asInteger;
-			o = o ++ " -b " ++ numBuffers;
+			o = o ++ ["-b", numBuffers.asString];
 		});
 		if (maxNodes !== defaultValues[\maxNodes], {
 			maxNodes = maxNodes.asInteger;
-			o = o ++ " -n " ++ maxNodes;
+			o = o ++ ["-n", maxNodes.asString];
 		});
 		if (maxSynthDefs !== defaultValues[\maxSynthDefs], {
 			maxSynthDefs = maxSynthDefs.asInteger;
-			o = o ++ " -d " ++ maxSynthDefs;
+			o = o ++ ["-d", maxSynthDefs.asString];
 		});
 		if (blockSize !== defaultValues[\blockSize], {
 			blockSize = blockSize.asInteger;
-			o = o ++ " -z " ++ blockSize;
+			o = o ++ ["-z", blockSize.asString];
 		});
 		if (hardwareBufferSize.notNil, {
-			o = o ++ " -Z " ++ hardwareBufferSize;
+			o = o ++ ["-Z", hardwareBufferSize.asString];
 		});
 		if (memSize !== defaultValues[\memSize], {
 			memSize = memSize.asInteger;
-			o = o ++ " -m " ++ memSize;
+			o = o ++ ["-m", memSize.asString];
 		});
 		if (numRGens !== defaultValues[\numRGens], {
 			numRGens = numRGens.asInteger;
-			o = o ++ " -r " ++ numRGens;
+			o = o ++ ["-r", numRGens.asString];
 		});
 		if (numWireBufs !== defaultValues[\numWireBufs], {
 			numWireBufs = numWireBufs.asInteger;
-			o = o ++ " -w " ++ numWireBufs;
+			o = o ++ ["-w", numWireBufs.asString];
 		});
 		if (sampleRate.notNil, {
-			o = o ++ " -S " ++ sampleRate;
+			o = o ++ ["-S", sampleRate.asString];
 		});
 		if (loadDefs.not, {
-			o = o ++ " -D 0";
+			o = o ++ ["-D", "0"];
 		});
 		if (inputStreamsEnabled.notNil, {
-			o = o ++ " -I " ++ inputStreamsEnabled ;
+			o = o ++ ["-I", inputStreamsEnabled.asString];
 		});
 		if (outputStreamsEnabled.notNil, {
-			o = o ++ " -O " ++ outputStreamsEnabled ;
+			o = o ++ ["-O", outputStreamsEnabled.asString];
 		});
 		if (inDevice == outDevice)
 		{
 			if (inDevice.notNil,
 				{
-					o = o ++ " -H %".format(inDevice.quote);
+					o = o ++ ["-H", inDevice];
 			});
 		}
 		{
-			o = o ++ " -H % %".format((inDevice ? "").asString.quote, (outDevice ? "").asString.quote);
+			o = o ++ ["-H", (inDevice ? "").asString, (outDevice ? "").asString];
 		};
 		if (verbosity != defaultValues[\verbosity], {
-			o = o ++ " -V " ++ verbosity;
+			o = o ++ ["-V", verbosity.asString];
 		});
 		if (zeroConf.not, {
-			o = o ++ " -R 0";
+			o = o ++ ["-R", "0"];
 		});
 		if (restrictedPath.notNil, {
-			o = o ++ " -P " ++ restrictedPath;
+			o = o ++ ["-P", restrictedPath.asString];
 		});
 		if (ugenPluginsPath.notNil, {
 			if(ugenPluginsPath.isString, {
 				ugenPluginsPath = ugenPluginsPath.bubble;
 			});
-			o = o ++ " -U " ++ ugenPluginsPath.collect{|p|
-				thisProcess.platform.formatPathForCmdLine(p)
-			}.join(Platform.pathDelimiter);
+			o = o ++ ["-U", ugenPluginsPath.join(Platform.pathDelimiter)]; // we need to add quoting if using these in a shell, see asOptionsString
 		});
 		if (memoryLocking, {
-			o = o ++ " -L";
+			o = o ++ "-L";
 		});
 		if (threads.notNil, {
 			if (Server.program.asString.contains("supernova")) {
-				o = o ++ " -T " ++ threads;
+				o = o ++ ["-T", threads.asString];
 			}
 		});
 		if (threadPinning.notNil, {
 			if (Server.program.asString.contains("supernova")) {
-				o = o ++ " -y " ++ threadPinning.asBoolean.asInteger;
+				o = o ++ ["-y", threadPinning.asBoolean.asInteger.asString];
 			}
 		});
 		if (useSystemClock, {
-			o = o ++ " -C 1"
+			o = o ++ ["-C", "1"]
 		}, {
-			o = o ++ " -C 0"
+			o = o ++ ["-C", "0"]
 		});
 		if (maxLogins.notNil, {
-			o = o ++ " -l " ++ maxLogins;
+			o = o ++ ["-l", maxLogins.asString];
 		});
 		if (thisProcess.platform.name === \osx && safetyClipThreshold.notNil, {
-			o = o ++ " -s " ++ safetyClipThreshold;
+			o = o ++ ["-s", safetyClipThreshold.asString];
 		});
-		^o
+		^o;
+	}
+
+	asOptionsString { | port = 57110 |
+		var arr = this.asOptionsArray(port);
+		arr = arr.collect({ | item |
+			if(item.includes(Platform.pathSeparator)) {
+				item.split(Platform.pathDelimiter).collect({ | p |
+					thisProcess.platform.formatPathForCmdLine(p) // add individual path's quoting for shell
+				}).join(Platform.pathDelimiter)
+			} {
+				if(item.includes($ )) {
+					item.quote // handle device names with spaces
+				} {
+					item
+				}
+			}
+		});
+		^"".scatList(arr);
 	}
 
 	firstPrivateBus { // after the outs and ins
@@ -1034,8 +1050,8 @@ Server {
 		pidReleaseCondition.signal;
 
 		"Server '%' exited with exit code %."
-			.format(this.name, exitCode)
-			.postln;
+		.format(this.name, exitCode)
+		.postln;
 		statusWatcher.quit(watchShutDown: false);
 	}
 
@@ -1047,7 +1063,7 @@ Server {
 			onComplete.value;
 		} {
 			this.disconnectSharedMemory;
-			pid = unixCmd(program ++ options.asOptionsString(addr.port), { |exitCode|
+			pid = unixCmd([program] ++ options.asOptionsArray(addr.port), { |exitCode|
 				this.prOnServerProcessExit(exitCode);
 			});
 			("Booting server '%' on address %:%.").format(this.name, addr.hostname, addr.port.asString).postln;
@@ -1354,7 +1370,7 @@ Server {
 			"server '%' not running".format(this.name).warn;
 			^this
 		};
-		resp = OSCFunc({ |msg| 
+		resp = OSCFunc({ |msg|
 			done = true;
 			if (action.notNil) { action.value(*msg.drop(1)) } {
 				freeKb = msg[1] / 1024;

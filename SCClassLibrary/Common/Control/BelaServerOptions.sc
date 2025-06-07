@@ -36,20 +36,20 @@ BelaServerOptions : ServerOptions {
 		defaultValues.keysValuesDo { |key, val| this.instVarPut(key, val) };
 	}
 
-	asOptionsString { | port = 57110 |
-		var o = super.asOptionsString(port);
-		o = o ++ " -J " ++ numAnalogInChannels;
-		o = o ++ " -K " ++ numAnalogOutChannels;
-		o = o ++ " -G " ++ numDigitalChannels;
-		o = o ++ " -Q " ++ headphoneLevel;
-		o = o ++ " -X " ++ pgaGainLeft;
-		o = o ++ " -Y " ++ pgaGainRight;
-		o = o ++ " -A " ++ speakerMuted;
-		o = o ++ " -x " ++ dacLevel;
-		o = o ++ " -y " ++ adcLevel;
-		o = o ++ " -g " ++ numMultiplexChannels;
-		o = o ++ " -T " ++ belaPRU;
-		o = o ++ " -E " ++ belaMaxScopeChannels;
+	asOptionsArray { | port = 57110 |
+		var o = super.asOptionsArray(port);
+		o = o ++ ["-J", numAnalogInChannels.asString];
+		o = o ++ ["-K", numAnalogOutChannels.asString];
+		o = o ++ ["-G", numDigitalChannels.asString];
+		o = o ++ ["-Q", headphoneLevel.asString];
+		o = o ++ ["-X", pgaGainLeft.asString];
+		o = o ++ ["-Y", pgaGainRight.asString];
+		o = o ++ ["-A", speakerMuted.asString];
+		o = o ++ ["-x", dacLevel.asString];
+		o = o ++ ["-y", adcLevel.asString];
+		o = o ++ ["-g", numMultiplexChannels.asString];
+		o = o ++ ["-T", belaPRU.asString];
+		o = o ++ ["-E", belaMaxScopeChannels.asString];
 		^o
 	}
 }
