@@ -142,6 +142,15 @@ add_library(ML_UGens MODULE
 	${scplugin_common_sources}
 )
 
+if(SC_ABLETON_LINK)
+	add_library(Link_UGen MODULE
+		LinkUGen.cpp
+	)
+	include(../../external_libraries/link/AbletonLinkConfig.cmake)
+	target_link_libraries(Link_UGen PRIVATE Ableton::Link)
+	list(APPEND plugins Link_UGen)
+endif()
+
 if(NOT NO_LIBSNDFILE)
 	set(diskio_sources DiskIO_UGens.cpp)
 
