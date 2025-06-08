@@ -129,6 +129,7 @@ bool isAnInlineableAtomicLiteralBlock(PyrParseNode* node);
 bool isAtomicLiteral(PyrParseNode* node);
 bool isWhileTrue(PyrParseNode* node);
 void installByteCodes(PyrBlock* block);
+void compileExit(PyrCallNodeBase2* node);
 
 void compilePyrMethodNode(PyrMethodNode* node, PyrSlot* result);
 void compilePyrLiteralNode(PyrLiteralNode* node, PyrSlot* result);
@@ -2095,6 +2096,9 @@ void PyrCallNode::compileCall(PyrSlot* result) {
         case selWhile:
             compileWhileMsg(this);
             break;
+        case selExit:
+            compileExit(this);
+            break;
 
         case selLoop:
             compileLoopMsg(this);
@@ -2799,6 +2803,9 @@ void compileSwitchMsg(PyrCallNode* node) {
     }
 }
 
+
+void compileExit(PyrCallNodeBase2* node) { Extended::Exit.emit(); }
+
 void compileWhileMsg(PyrCallNodeBase2* node) {
     const int numArgs = nodeListLength(node->mArglist);
     if (numArgs == 1 && isAnInlineableBlock(node->mArglist)) {
@@ -3033,6 +3040,9 @@ void PyrBinopCallNode::compileCall(PyrSlot* result) {
             break;
         case selWhile:
             compileWhileMsg(this);
+            break;
+        case selExit:
+            compileExit(this);
             break;
         case selLoop:
             compileLoopMsg(this);
@@ -3995,6 +4005,9 @@ int conjureSelectorIndex(PyrParseNode* node, PyrBlock* func, bool isSuper, PyrSy
         } else if (selector == gSpecialSelectors[opmWhile]) {
             *selType = selWhile;
             return opmWhile;
+        } else if (selector == gSpecialSelectors[opmExit]) {
+            *selType = selExit;
+            return opmExit;
         } else if (selector == gSpecialSelectors[opmAnd]) {
             *selType = selAnd;
             return opmAnd;
@@ -4462,6 +4475,7 @@ void initSpecialSelectors() {
     sel[opmClass] = getsym("class");
     sel[opmIf] = getsym("if");
     sel[opmWhile] = getsym("while");
+    sel[opmExit] = getsym("pr_force_exit_sc");
     sel[opmFor] = getsym("for");
     sel[opmAnd] = getsym("and");
     sel[opmOr] = getsym("or");

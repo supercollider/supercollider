@@ -180,9 +180,13 @@ Integer : SimpleNumber {
 	}
 
 	// exit the program and return the result code to unix shell
-	exit {
+	prExit {
 		_Exit
 		^this.primitiveFailed
+	}
+	exit {
+		this.prExit;
+		1.pr_force_exit_sc;
 	}
 	asStringToBase { | base=10, width=8 |
 		var rest = this, string, mask;

@@ -81,10 +81,11 @@ extern int yydebug;
     BEGINGENERATOR = 282,          /* BEGINGENERATOR  */
     LEFTARROW = 283,               /* LEFTARROW  */
     WHILE = 284,                   /* WHILE  */
-    BINOP = 285,                   /* BINOP  */
-    KEYBINOP = 286,                /* KEYBINOP  */
-    READWRITEVAR = 287,            /* READWRITEVAR  */
-    UMINUS = 288                   /* UMINUS  */
+    EXIT = 285,                    /* EXIT  */
+    BINOP = 286,                   /* BINOP  */
+    KEYBINOP = 287,                /* KEYBINOP  */
+    READWRITEVAR = 288,            /* READWRITEVAR  */
+    UMINUS = 289                   /* UMINUS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif

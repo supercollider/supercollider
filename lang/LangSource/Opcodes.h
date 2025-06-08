@@ -645,7 +645,15 @@ static constexpr struct NumberForSeries {
         DropAndJumpBackToLoop.emit();
     }
 } NumberForSeries;
-}
+static constexpr struct Exit {
+    details::SimpleOpSpec<0xFF> Exit { "Exit" };
+    void emit() const {
+        emitByte(Prefix);
+        Exit.emit();
+    }
+} Exit;
+
+} // extended
 
 /// Pop and store the top of the stack in a class variable of the current class.
 /// The index of the class variable is found by interpreting the second nibble of the first byte and the entire

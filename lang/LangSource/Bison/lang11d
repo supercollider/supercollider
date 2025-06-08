@@ -4,7 +4,7 @@
 %token	PSEUDOVAR
 %token  ELLIPSIS DOTDOT PIE BEGINCLOSEDFUNC
 %token  BADTOKEN INTERPRET
-%token  BEGINGENERATOR LEFTARROW WHILE
+%token  BEGINGENERATOR LEFTARROW WHILE EXIT
 %left	':'
 %right  '='
 %left	BINOP KEYBINOP '-' '<' '>' '*' '+' '|' READWRITEVAR
@@ -358,7 +358,7 @@ msgsend : name blocklist1
 				args = linkNextNode(args, (PyrParseNode*)$5);
 				args = linkNextNode(args, (PyrParseNode*)$7);
 				$$ = (intptr_t)newPyrCallNode(selectornode, args, NULL, 0);
-            }
+			}
 
 		| expr '.' '(' arglistv1 optkeyarglist ')'
 			{
@@ -1600,6 +1600,7 @@ floatp	: floatr
 
 name		: NAME { $$ = zzval; }
 			| WHILE { $$ = zzval; }
+			| EXIT { $$ = zzval; }
 		;
 
 classname		: CLASSNAME { $$ = zzval; }

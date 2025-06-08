@@ -1901,11 +1901,11 @@ HOT void Interpret(VMGlobals* g) {
                     dispatch_opcode;
                 }
 
-                default:
-                    break;
+                case Extended::Exit.Exit.code: {
+                    return;
                 }
-                dispatch_opcode;
-            }
+                }
+            } // InterpretOpcode(Extended)
 
             InterpretOpcode16(StoreClassVar) {
                 const auto [index] = StoreClassVar.pullOperandsFromInstructions(ip);

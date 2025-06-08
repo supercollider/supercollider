@@ -239,6 +239,7 @@ enum {
     opmMulAdd,
 
     opmSeries,
+    opmExit,
 
     opmNumSpecialSelectors
 };
@@ -274,6 +275,7 @@ enum {
     selQuestionMark,
     selDoubleQuestionMark,
     selExclamationQuestionMark,
+    selExit,
 
     selNumSelectorTypes
 };

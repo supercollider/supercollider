@@ -1032,6 +1032,13 @@ int processident(char* token) {
         zzval = (intptr_t)node;
         return WHILE;
     }
+    if (strcmp("pr_force_exit_sc", token) == 0) {
+        sym = getsym(token);
+        SetSymbol(&slot, sym);
+        node = newPyrSlotNode(&slot);
+        zzval = (intptr_t)node;
+        return EXIT;
+    }
     if (strcmp("pi", token) == 0) {
         SetFloat(&slot, pi);
         node = newPyrSlotNode(&slot);
