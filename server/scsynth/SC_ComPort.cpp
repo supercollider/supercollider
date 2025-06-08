@@ -245,6 +245,9 @@ class SC_UdpInPort {
                                                  asio::placeholders::bytes_transferred));
     }
 
+    static constexpr int receiveBufferSize = 8 * 1024 * 1024;
+    static constexpr int sendBufferSize = 8 * 1024 * 1024;
+
 public:
     boost::asio::ip::udp::socket udpSocket;
 
@@ -261,8 +264,23 @@ public:
         if (inPortNum == 0)
             mPortNum = udpSocket.local_endpoint().port();
 
-        boost::asio::socket_base::send_buffer_size option(65536);
-        udpSocket.set_option(option);
+        try {
+            boost::asio::socket_base::send_buffer_size sendBufferSize;
+            udpSocket.get_option(sendBufferSize);
+            if (sendBufferSize.value() < SC_UdpInPort::sendBufferSize) {
+                sendBufferSize = SC_UdpInPort::sendBufferSize;
+                udpSocket.set_option(sendBufferSize);
+            }
+        } catch (boost::system::system_error& e) { printf("WARNING: failed to set send buffer size\n"); }
+
+        try {
+            boost::asio::socket_base::receive_buffer_size receiveBufferSize;
+            udpSocket.get_option(receiveBufferSize);
+            if (receiveBufferSize.value() < SC_UdpInPort::receiveBufferSize) {
+                receiveBufferSize = SC_UdpInPort::receiveBufferSize;
+                udpSocket.set_option(receiveBufferSize);
+            }
+        } catch (boost::system::system_error& e) { printf("WARNING: failed to set receive buffer size\n"); }
 
 #ifdef USE_RENDEZVOUS
         if (world->mRendezvous) {
