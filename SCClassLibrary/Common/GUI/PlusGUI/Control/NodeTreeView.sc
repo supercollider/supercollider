@@ -21,7 +21,15 @@ NodeTreeView {
 		}
 		.front;
 
-		view = UserView(window, window.view.bounds.resizeBy(-4));
+		view = UserView(
+			window,
+			if(window.isView)
+			{
+				window.bounds.resizeBy(-4)
+			} {
+				window.view.bounds.resizeBy(-4)
+			}
+		);
 		view.onClose_{
 			view = nil;
 			this.stop;
@@ -164,7 +172,7 @@ NodeTreeView {
 						size = size + (countSize.value(elem.value) * sizeFactor) + 2.5
 					} {
 						size = size + 1
-				};
+					};
 				});
 				size
 			};
