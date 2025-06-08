@@ -17,7 +17,11 @@ NodeTreeView {
 		if(parent.isNil) {
 			window = Window(this.asString, bounds, scroll:true);
 		} {
-			window = parent
+			window = if(parent.isView) {
+				parent.scroll(bounds: parent.bounds.moveTo(0, 0), hasVerticalScroller: true)
+			} {
+				window = parent
+			}
 		}
 		.front;
 
