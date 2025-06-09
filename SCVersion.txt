@@ -2,7 +2,7 @@
 # Note that you need to "make install" for this information to be copied into all places.
 
 set(SC_VERSION_MAJOR 3)
-set(SC_VERSION_MINOR 14)
+set(SC_VERSION_MINOR 15)
 set(SC_VERSION_PATCH 0)
 set(SC_VERSION_TWEAK "-dev")
 set(SC_VERSION ${SC_VERSION_MAJOR}.${SC_VERSION_MINOR}.${SC_VERSION_PATCH}${SC_VERSION_TWEAK})
