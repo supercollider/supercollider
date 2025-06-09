@@ -1649,4 +1649,18 @@ SequenceableCollection : Collection {
 	sanitize { arg ... args;
 		^this.multiChannelPerform(\sanitize, *args);
 	}
+
+	sortItemOccurrence {
+		var answer = this.asSet.asArray.collect { |uniqueItem, uniqueIndex|
+			Dictionary[
+				\uniqueItem -> uniqueItem,
+				\occurrence -> this.occurrencesOf(uniqueItem)
+			]
+		}.sortBy(\occurrence)
+		.reverse.collect { |item|
+			item.atAll([\uniqueItem, \occurrence]).asEvent
+		}
+		.do {|item| item.postcs };
+		^answer
+	}
 }
