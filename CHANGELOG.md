@@ -56,7 +56,7 @@ These are the highlights of the changes in SC 3.14. See sections below for detai
 - The initialization sample of multiple UGens was fixed
 - Documentation can now also be themed like the IDE
 - Due to updated bundled boost libraries, FluCoMa UGens which were working under SuperCollider 3.13 are not compatible anymore with 3.14! Go to <https://github.com/flucoma/flucoma-sc> to check for compatible version.
-- Even though these are not as much of user-facing changes, there were countles structural upgrades: we migrated to qt6, added and improved tests, updated 3rd-party libraries, updated the build system for most recent build tools, and adapted a new organizational structure for development
+- Even though these are not as much of user-facing changes, there were countless structural upgrades: we migrated to qt6, added and improved tests, updated 3rd-party libraries, updated the build system for most recent build tools, and adapted a new organizational structure for development
 
 **Full Changelog**: https://github.com/supercollider/supercollider/compare/Version-3.13.1...Version-3.14.0
 
