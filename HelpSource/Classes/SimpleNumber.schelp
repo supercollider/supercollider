@@ -993,7 +993,6 @@ i.e. between -this and +this (including -this and +this).
 
 method:: rrand
 Returns a random number from a uniform distribution with the range between code::this:: and code::arg::.
-
 argument::arg
 The other (upper or lower) limit of the range.
 
@@ -1011,9 +1010,8 @@ More formally, code::.linrand:: samples from a distribution over [0, 1) with a p
 discussion::
 Best explained visually:
 code::
-{1.0.linrand}.dup(1000).plotHisto;
+{1.0.linrand}.dup(10000).plotHisto;
 ::
-
 
 method:: bilinrand
 Bilateral linearly distributed random number in the range (-this, +this).
@@ -1024,12 +1022,12 @@ Formally like code::.linrand::, but the probability density function is emphasis
 discussion::
 Best explained visually:
 code::
-{1.0.bilinrand}.dup(1000).plotHisto;
+{1.0.bilinrand}.dup(10000).plotHisto;
 ::
 
 method:: sum3rand
-Returns a random number from the range [-this, this), distribution approximates a bell-like (Gaussian or normal) distribution.
-returns:: Always a link::Classes/Float::.
+Returns a link::Classes/Float:: from the range [-this, this), distribution approximates a bell-like (Gaussian or normal) distribution.
+returns:: Always returns a link::Classes/Float::.
 
 discussion::
 Loosely approximates a Gaussian distribution by summing three uniform random generators.
@@ -1039,20 +1037,20 @@ code::
 ::
 
 method:: exprand
-Returns a Random number in the range [this, arg) drawn from a log-uniform distribution.
+Returns a link::Classes/Float:: in the range [this, arg) drawn from a log-uniform distribution.
 Receiver (i.e., code::this::) must not be zero.
 Note that the value is emphasis::not:: drawn from an exponential distribution.
 argument::arg
 The other (upper or lower) limit of the range. Must be of same sign as code::this::, and must not be zero.
-returns:: Always a link::Classes/Float::.
+returns:: Always returns a link::Classes/Float::.
 
 method:: gauss
-Random number sampled from a Gaussian distribution with mean code::this:: and standard deviation code::stddev::.
+Returns a link::Classes/Float:: sampled from a Gaussian distribution with mean code::this:: and standard deviation code::stddev::.
 The range of the gaussian distribution is unbounded and thus may return +/-inf;
 consider using link::Classes/SimpleNumber#-clip#clip::.
 argument::stddev
 The standard deviation.
-returns:: Always a link::Classes/Float::.
+returns:: Always returns a link::Classes/Float::.
 
 method:: partition
 randomly partition a number into parts of at least min size.
@@ -1066,7 +1064,6 @@ code::
 75.partition(8, 3);
 75.partition(75, 1);
 ::
-
 
 subsection:: UGen Compatibility Methods
 
