@@ -85,6 +85,12 @@ A link::Classes/Symbol:: naming the architecture for which this version of Super
 Returns one of 'AArch32' (32-bit ARM), 'AArch64' (64-bit ARM, introduced in ARMv8), 'Itanium64', 'i386', 'x86_64',
 'PowerPC', or 'unknown' if the architecture is unidentifiable.
 
+method::systemInformation
+Return a dictionary with system/context information like SuperCollider, QT, and OS versions.
+
+method::postBugReportInfo
+Post system information that is useful to attach to bug reports.
+
 subsection:: Features
 
 method:: when

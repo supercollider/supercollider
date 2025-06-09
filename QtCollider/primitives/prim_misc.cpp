@@ -55,6 +55,12 @@ QC_LANG_PRIMITIVE(QtGUI_DebugLevel, 0, PyrSlot* r, PyrSlot* a, VMGlobals* g) {
     return errNone;
 }
 
+QC_LANG_PRIMITIVE(Qt_Version, 0, PyrSlot* r, PyrSlot* a, VMGlobals* g) {
+    auto version = QString { qVersion() };
+    QtCollider::set(r, version);
+    return errNone;
+}
+
 QC_LANG_PRIMITIVE(QWindow_ScreenBounds, 0, PyrSlot* r, PyrSlot* a, VMGlobals* g) {
     if (!QcApplication::compareThread())
         return QtCollider::wrongThreadError();
@@ -420,6 +426,7 @@ void defineMiscPrimitives() {
     LangPrimitiveDefiner definer;
     definer.define<QtGUI_SetDebugLevel>();
     definer.define<QtGUI_DebugLevel>();
+    definer.define<Qt_Version>();
     definer.define<QWindow_ScreenBounds>();
     definer.define<QWindow_AvailableGeometry>();
     definer.define<Qt_StringBounds>();

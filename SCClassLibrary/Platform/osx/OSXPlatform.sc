@@ -9,6 +9,9 @@ OSXPlatform : UnixPlatform {
 	}
 
 	name { ^\osx }
+	version { 
+		^"sw_vers -productVersion".unixCmdGetStdOut.replace($\n, "");
+	}
 
 	startupFiles {
 		var filename = "startup.rtf";
