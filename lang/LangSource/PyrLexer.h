@@ -62,7 +62,13 @@ void traverseDepTree2(ClassDependancy* classdep, int level);
 void compileClassExtensions();
 void compileClass(PyrSymbol* fileSym, int startPos, int endPos, int lineOffset);
 
-SCLANG_DLLEXPORT_C void runLibrary(PyrSymbol* selector);
+
+struct FatalInterpreterError : public std::runtime_error {
+    using std::runtime_error::runtime_error;
+};
+
+// All exceptions are caught, except FataInterpreterErrors
+SCLANG_DLLEXPORT_C void runLibrary(PyrSymbol* selector) noexcept(false);
 
 void interpretCmdLine(const char* textbuf, int textlen, char* methodname);
 

@@ -2262,7 +2262,7 @@ void signal_init_globs();
 
 void dumpByteCodes(PyrBlock* theBlock);
 
-SCLANG_DLLEXPORT_C void runLibrary(PyrSymbol* selector) {
+SCLANG_DLLEXPORT_C void runLibrary(PyrSymbol* selector) noexcept(false) {
     VMGlobals* g = gMainVMGlobals;
     g->canCallOS = true;
     try {
@@ -2273,7 +2273,10 @@ SCLANG_DLLEXPORT_C void runLibrary(PyrSymbol* selector) {
         } else {
             postfl("Library has not been compiled successfully.\n");
         }
-    } catch (std::exception& ex) {
+    } catch (const FatalInterpreterError& er) {
+        error("A fatal interpreter error has occured. Reason: %s\n", er.what());
+        std::rethrow_exception(std::current_exception());
+    } catch (const std::exception& ex) {
         PyrMethod* meth = g->method;
         if (meth) {
             int ip = slotRawInt8Array(&meth->code) ? g->ip - slotRawInt8Array(&meth->code)->b : -1;
